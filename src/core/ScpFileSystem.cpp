@@ -1178,7 +1178,7 @@ void TSCPFileSystem::ChangeFileToken(const std::wstring DelimitedName,
     std::wstring Str;
     if (Token.GetIDValid())
     {
-        Str = IntToStr(Token.GetID());
+        Str = IntToStr(static_cast<int>(Token.GetID()));
     }
     else if (Token.GetNameValid())
     {
@@ -1805,7 +1805,7 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
                             OperationProgress->ChangeTransferSize(AsciiBuf.GetSize());
                             while (!OperationProgress->IsTransferDone())
                             {
-                                unsigned long BlockSize = OperationProgress->TransferBlockSize();
+                                size_t BlockSize = OperationProgress->TransferBlockSize();
                                 FSecureShell->Send(
                                     AsciiBuf.GetData() + static_cast<unsigned int>(OperationProgress->TransferedSize),
                                     BlockSize);

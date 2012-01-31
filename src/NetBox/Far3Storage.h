@@ -32,7 +32,7 @@ public:
   virtual nb::TDateTime ReadDateTime(const std::wstring Name, nb::TDateTime Default);
   virtual double ReadFloat(const std::wstring Name, double Default);
   virtual std::wstring ReadStringRaw(const std::wstring Name, const std::wstring Default);
-  virtual int ReadBinaryData(const std::wstring Name, void * Buffer, size_t Size);
+  virtual size_t ReadBinaryData(const std::wstring Name, void * Buffer, size_t Size);
 
   virtual void Writebool(const std::wstring Name, bool Value);
   virtual void Writeint(const std::wstring Name, int Value);

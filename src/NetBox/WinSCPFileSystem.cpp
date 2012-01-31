@@ -3506,7 +3506,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
     }
 }
 //---------------------------------------------------------------------------
-std::wstring TWinSCPFileSystem::ProgressBar(int Percentage, int Width)
+std::wstring TWinSCPFileSystem::ProgressBar(size_t Percentage, size_t Width)
 {
     std::wstring Result;
     // 0xB0 - 0x2591

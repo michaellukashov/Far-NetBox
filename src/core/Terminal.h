@@ -238,7 +238,7 @@ private:
     TSessionData *FTunnelData;
     TSessionLog *FTunnelLog;
     TTunnelUI *FTunnelUI;
-    int FTunnelLocalPortNumber;
+    size_t FTunnelLocalPortNumber;
     std::wstring FTunnelError;
     queryuser_signal_type FOnQueryUser;
     promptuser_signal_type FOnPromptUser;
@@ -561,7 +561,7 @@ public:
     const nb::notify_signal_type &GetOnClose() const { return FOnClose; }
     void SetOnClose(const nb::notify_slot_type &value) { FOnClose.connect(value); }
     // __property int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber };
-    int GetTunnelLocalPortNumber() { return FTunnelLocalPortNumber; }
+    size_t GetTunnelLocalPortNumber() { return FTunnelLocalPortNumber; }
 };
 //---------------------------------------------------------------------------
 class TSecondaryTerminal : public TTerminal

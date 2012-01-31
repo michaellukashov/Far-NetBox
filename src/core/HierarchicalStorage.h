@@ -41,7 +41,7 @@ public:
     virtual nb::TDateTime ReadDateTime(const std::wstring Name, nb::TDateTime Default) = 0;
     virtual double ReadFloat(const std::wstring Name, double Default) = 0;
     virtual std::wstring ReadStringRaw(const std::wstring Name, const std::wstring Default) = 0;
-    virtual int ReadBinaryData(const std::wstring Name, void *Buffer, size_t Size) = 0;
+    virtual size_t ReadBinaryData(const std::wstring Name, void *Buffer, size_t Size) = 0;
 
     virtual std::wstring ReadString(const std::wstring Name, const std::wstring Default);
     std::wstring ReadBinaryData(const std::wstring Name);
@@ -111,7 +111,7 @@ public:
     virtual nb::TDateTime ReadDateTime(const std::wstring Name, nb::TDateTime Default);
     virtual double ReadFloat(const std::wstring Name, double Default);
     virtual std::wstring ReadStringRaw(const std::wstring Name, const std::wstring Default);
-    virtual int ReadBinaryData(const std::wstring Name, void *Buffer, size_t Size);
+    virtual size_t ReadBinaryData(const std::wstring Name, void *Buffer, size_t Size);
 
     virtual void Writebool(const std::wstring Name, bool Value);
     virtual void Writeint(const std::wstring Name, int Value);

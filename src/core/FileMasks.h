@@ -94,7 +94,7 @@ private:
     TMasks FExcludeMasks;
 
     void SetStr(const std::wstring value, bool SingleMask);
-    void CreateMaskMask(const std::wstring Mask, int Start, int End, bool Ex,
+    void CreateMaskMask(const std::wstring Mask, size_t Start, size_t End, bool Ex,
                         TMaskMask &MaskMask);
     static inline void ReleaseMaskMask(TMaskMask &MaskMask);
     inline void Clear();
@@ -104,7 +104,7 @@ private:
                              const std::wstring Path, const TParams *Params, const TMasks &Masks);
     static inline bool MatchesMaskMask(const TMaskMask &MaskMask, const std::wstring Str);
     static inline bool IsAnyMask(const std::wstring Mask);
-    void ThrowError(int Start, int End);
+    void ThrowError(size_t Start, size_t End);
 };
 //---------------------------------------------------------------------------
 std::wstring MaskFileName(const std::wstring FileName, const std::wstring Mask);

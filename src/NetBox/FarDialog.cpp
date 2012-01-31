@@ -585,7 +585,7 @@ long TFarDialog::DialogProc(int Msg, int Param1, void *Param2)
 long TFarDialog::DefaultDialogProc(int Msg, int Param1, void *Param2)
 {
     TFarEnvGuard Guard;
-    return GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetHandle(), Msg, Param1, Param2);
+    return static_cast<long>(GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetHandle(), Msg, Param1, Param2));
 }
 //---------------------------------------------------------------------------
 long TFarDialog::FailDialogProc(int Msg, int Param1, void *Param2)
@@ -634,7 +634,7 @@ bool TFarDialog::MouseEvent(MOUSE_EVENT_RECORD *Event)
         INPUT_RECORD Rec = {0};
         Rec.EventType = MOUSE_EVENT;
         memmove(&Rec.Event.MouseEvent, Event, sizeof(*Event));
-        Result = DefaultDialogProc(DN_INPUT, 0, static_cast<void *>(&Rec));
+        Result = DefaultDialogProc(DN_INPUT, 0, static_cast<void *>(&Rec)) != 0;
     }
 
     return Result;
@@ -842,7 +842,7 @@ INT_PTR TFarDialog::SendMessage(int Msg, int Param1, void *Param2)
 FarColor TFarDialog::GetSystemColor(PaletteColors colorId)
 {
     FarColor color = {0};
-    if (GetFarPlugin()->FarAdvControl(ACTL_GETCOLOR, colorId, &color))
+    if (GetFarPlugin()->FarAdvControl(ACTL_GETCOLOR, colorId, &color) != 0)
     {
         // TODO: throw error
     }
@@ -1358,7 +1358,7 @@ long TFarDialogItem::FailItemProc(int Msg, void *Param)
     switch (Msg)
     {
     case DN_KILLFOCUS:
-        Result = GetItem();
+        Result = static_cast<long>(GetItem());
         break;
 
     default:
@@ -1490,7 +1490,7 @@ void TFarDialogItem::SetSelected(size_t value)
         {
             SendMessage(DM_SETCHECK, reinterpret_cast<void *>(value));
         }
-        UpdateSelected(value);
+        UpdateSelected(static_cast<int>(value));
     }
 }
 //---------------------------------------------------------------------------
@@ -1696,7 +1696,7 @@ bool TFarDialogItem::MouseClick(MOUSE_EVENT_RECORD *Event)
     INPUT_RECORD Rec = {0};
     Rec.EventType = MOUSE_EVENT;
     memmove(&Rec.Event.MouseEvent, Event, sizeof(*Event));
-    return DefaultItemProc(DN_CONTROLINPUT, static_cast<void *>(&Rec));
+    return DefaultItemProc(DN_CONTROLINPUT, static_cast<void *>(&Rec)) != 0;
 }
 //---------------------------------------------------------------------------
 bool TFarDialogItem::MouseMove(int /*X*/, int /*Y*/,
@@ -1705,7 +1705,7 @@ bool TFarDialogItem::MouseMove(int /*X*/, int /*Y*/,
     INPUT_RECORD Rec = {0};
     Rec.EventType = MOUSE_EVENT;
     memmove(&Rec.Event.MouseEvent, Event, sizeof(*Event));
-    return DefaultDialogProc(DN_INPUT, 0, reinterpret_cast<void *>(&Rec));
+    return DefaultDialogProc(DN_INPUT, 0, reinterpret_cast<void *>(&Rec)) != 0;
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::Text(int X, int Y, const FarColor &Color, const std::wstring Str, bool AOem)
@@ -1802,7 +1802,7 @@ void TFarButton::SetDataInternal(const std::wstring value)
             Margin = 2;
             break;
         }
-        SetWidth(Margin + StripHotKey(AValue).size() + Margin);
+        SetWidth(static_cast<int>(Margin + StripHotKey(AValue).size() + Margin));
     }
 }
 //---------------------------------------------------------------------------
@@ -2195,7 +2195,7 @@ void TFarList::UpdateItem(size_t Index)
 
     FarListUpdate ListUpdate;
     memset(&ListUpdate, 0, sizeof(ListUpdate));
-    ListUpdate.Index = Index;
+    ListUpdate.Index = static_cast<int>(Index);
     ListUpdate.Item = *ListItem;
     GetDialogItem()->SendMessage(DM_LISTUPDATE, reinterpret_cast<void *>(&ListUpdate));
 }

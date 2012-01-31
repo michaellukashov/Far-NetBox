@@ -385,11 +385,11 @@ std::wstring TXmlStorage::ReadStringRaw(const std::wstring Name, const std::wstr
     return result.empty() ? Default : result;
 }
 //---------------------------------------------------------------------------
-int TXmlStorage::ReadBinaryData(const std::wstring Name,
+size_t TXmlStorage::ReadBinaryData(const std::wstring Name,
                                 void *Buffer, size_t Size)
 {
     nb::Error(SNotImplemented, 3028);
-    int Result = 0;
+    size_t Result = 0;
     return Result;
 }
 //---------------------------------------------------------------------------

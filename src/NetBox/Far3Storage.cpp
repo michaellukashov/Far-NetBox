@@ -229,7 +229,7 @@ std::wstring TFar3Storage::ReadStringRaw(const std::wstring Name, const std::wst
   return Result;
 }
 //---------------------------------------------------------------------------
-int TFar3Storage::ReadBinaryData(const std::wstring Name,
+size_t TFar3Storage::ReadBinaryData(const std::wstring Name,
   void * Buffer, size_t Size)
 {
   return FPluginSettings.Get(FRoot, Name.c_str(), Buffer, Size);

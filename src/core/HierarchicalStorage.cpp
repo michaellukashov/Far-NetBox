@@ -542,10 +542,10 @@ std::wstring TRegistryStorage::ReadStringRaw(const std::wstring Name, const std:
     READ_REGISTRY(ReadString);
 }
 //---------------------------------------------------------------------------
-int TRegistryStorage::ReadBinaryData(const std::wstring Name,
+size_t TRegistryStorage::ReadBinaryData(const std::wstring Name,
                                      void *Buffer, size_t Size)
 {
-    int Result;
+    size_t Result;
     if (FRegistry->ValueExists(Name))
     {
         try

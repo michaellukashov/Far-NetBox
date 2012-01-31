@@ -84,7 +84,7 @@ public:
 
     TBatchOverwrite BatchOverwrite;
     bool SkipToAll;
-    unsigned long CPSLimit;
+    size_t CPSLimit;
 
     bool TotalSizeSet;
 

@@ -458,7 +458,7 @@ void TCopyParamList::Save(THierarchicalStorage *Storage) const
     Storage->ClearSubKeys();
     for (size_t Index = 0; Index < GetCount(); Index++)
     {
-        if (Storage->OpenSubKey(IntToStr(Index), true))
+        if (Storage->OpenSubKey(IntToStr(static_cast<int>(Index)), true))
         {
             {
                 BOOST_SCOPE_EXIT ( (Storage) )

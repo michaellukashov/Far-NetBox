@@ -562,7 +562,7 @@ std::wstring TRemoteToken::GetDisplayText() const
     }
     else if (FIDValid)
     {
-        return IntToStr(FID);
+        return IntToStr(static_cast<int>(FID));
     }
     else
     {
@@ -1001,7 +1001,7 @@ void TRemoteFile::SetListingStr(const std::wstring value)
         Line = ReplaceChar(Line, '\t', ' ');
         // DEBUG_PRINTF(L"Line = %s", Line.c_str());
 
-        SetType(Line[0]);
+        SetType(static_cast<char>(Line[0]));
         Line.erase(0, 1);
 
 #define GETNCOL  \

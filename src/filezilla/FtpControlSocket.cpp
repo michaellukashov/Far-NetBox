@@ -3601,7 +3601,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 					_int64 nOffset = -1;
 					CString reply = GetReply();
 					reply.MakeLower();
-					int pos = reply.Find(_T("restarting at offset "));
+					size_t pos = reply.Find(_T("restarting at offset "));
 					if (pos != -1)
 						pos += _tcslen(_T("restarting at offset "));
 
