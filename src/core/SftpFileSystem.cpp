@@ -358,7 +358,7 @@ public:
         {
             if (Version < 4)
             {
-                assert(Owner->GetIDValid() && Group->GetIDValid());
+                // assert(Owner->GetIDValid() && Group->GetIDValid());
                 Flags |= SSH_FILEXFER_ATTR_UIDGID;
             }
             else
@@ -400,7 +400,7 @@ public:
         {
             if (Version < 4)
             {
-                assert(Owner->GetIDValid() && Group->GetIDValid());
+                // assert(Owner->GetIDValid() && Group->GetIDValid());
                 AddCardinal(Owner->GetID());
                 AddCardinal(Group->GetID());
             }
