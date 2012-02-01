@@ -72,14 +72,8 @@
   20040911 +0200
 
 */
-#include "setup.h"
-#include <stdio.h>
-#include <ctype.h>
-#include <string.h>
 
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h> /* for strtol() */
-#endif
+#include "setup.h"
 
 #include <curl/curl.h>
 #include "rawstr.h"
@@ -484,6 +478,10 @@ static int parsedate(const char *date, time_t *output)
     *output = 0;
     return PARSEDATE_SOONER;
   }
+
+  if((mdaynum > 31) || (monnum > 11) ||
+     (hournum > 23) || (minnum > 59) || (secnum > 60))
+    return PARSEDATE_FAIL; /* clearly an illegal date */
 
   tm.tm_sec = secnum;
   tm.tm_min = minnum;

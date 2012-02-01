@@ -7,7 +7,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2012, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -251,6 +251,12 @@
 #  endif
 #endif
 
+#ifdef USE_LWIPSOCK
+#  include <lwip/init.h>
+#  include <lwip/sockets.h>
+#  include <lwip/netdb.h>
+#endif
+
 #ifdef HAVE_EXTRA_STRICMP_H
 #  include <extra/stricmp.h>
 #endif
@@ -279,7 +285,6 @@
 #ifdef HAVE_ASSERT_H
 #include <assert.h>
 #endif
-#include <errno.h>
 
 #ifdef __TANDEM /* for nsr-tandem-nsk systems */
 #include <floss.h>
@@ -314,6 +319,7 @@
 #  include <io.h>
 #  include <sys/types.h>
 #  include <sys/stat.h>
+#  undef  lseek
 #  define lseek(fdes,offset,whence)  _lseeki64(fdes, offset, whence)
 #  define fstat(fdes,stp)            _fstati64(fdes, stp)
 #  define stat(fname,stp)            _stati64(fname, stp)
@@ -329,6 +335,7 @@
 #  include <io.h>
 #  include <sys/types.h>
 #  include <sys/stat.h>
+#  undef  lseek
 #  define lseek(fdes,offset,whence)  _lseek(fdes, (long)offset, whence)
 #  define fstat(fdes,stp)            _fstat(fdes, stp)
 #  define stat(fname,stp)            _stat(fname, stp)
@@ -480,6 +487,9 @@
 #ifdef USE_ARES
 #  define CURLRES_ASYNCH
 #  define CURLRES_ARES
+/* now undef the stock libc functions just to avoid them being used */
+#  undef HAVE_GETADDRINFO
+#  undef HAVE_GETHOSTBYNAME
 #elif defined(USE_THREADS_POSIX) || defined(USE_THREADS_WIN32)
 #  define CURLRES_ASYNCH
 #  define CURLRES_THREADED
@@ -563,6 +573,7 @@ int netware_init(void);
 #define USE_HTTP_NEGOTIATE
 #endif
 
+/* Single point where USE_NTLM definition might be done */
 #if !defined(CURL_DISABLE_HTTP) && !defined(CURL_DISABLE_NTLM)
 #if defined(USE_SSLEAY) || defined(USE_WINDOWS_SSPI) || \
    defined(USE_GNUTLS) || defined(USE_NSS)
@@ -580,12 +591,54 @@ int netware_init(void);
 #define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
 #endif
 
+/* Provide a mechanism to silence picky compilers, such as gcc 4.6+.
+   Parameters should of course normally not be unused, but for example when we
+   have multiple implementations of the same interface it may happen. */
+#ifndef __GNUC__
+#define UNUSED_PARAM /*NOTHING*/
+#else
+#define UNUSED_PARAM __attribute__((unused))
+#endif
+
 /*
  * Include macros and defines that should only be processed once.
  */
 
 #ifndef __SETUP_ONCE_H
 #include "setup_once.h"
+#endif
+
+/*
+ * Definition of our NOP statement Object-like macro
+ */
+
+#ifndef Curl_nop_stmt
+#  define Curl_nop_stmt do { } WHILE_FALSE
+#endif
+
+/*
+ * Ensure that Winsock and lwIP TCP/IP stacks are not mixed.
+ */
+
+#if defined(__LWIP_OPT_H__)
+#  if defined(SOCKET) || \
+     defined(USE_WINSOCK) || \
+     defined(HAVE_ERRNO_H) || \
+     defined(HAVE_WINSOCK_H) || \
+     defined(HAVE_WINSOCK2_H) || \
+     defined(HAVE_WS2TCPIP_H)
+#    error "Winsock and lwIP TCP/IP stack definitions shall not coexist!"
+#  endif
+#endif
+
+/*
+ * Portable symbolic names for Winsock shutdown() mode flags.
+ */
+
+#ifdef USE_WINSOCK
+#  define SHUT_RD   0x00
+#  define SHUT_WR   0x01
+#  define SHUT_RDWR 0x02
 #endif
 
 #endif /* HEADER_CURL_LIB_SETUP_H */

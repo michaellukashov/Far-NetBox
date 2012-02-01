@@ -25,9 +25,6 @@
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
-#ifdef HAVE_SYS_TIME_H
-#include <sys/time.h>
-#endif
 
 #if !defined(HAVE_SELECT) && !defined(HAVE_POLL_FINE)
 #error "We can't compile without select() or poll() support."
@@ -48,20 +45,6 @@
 #include "connect.h"
 #include "select.h"
 #include "warnless.h"
-
-/* Winsock and TPF sockets are not in range [0..FD_SETSIZE-1] */
-
-#if defined(USE_WINSOCK) || defined(TPF)
-#define VERIFY_SOCK(x) do { } while(0)
-#else
-#define VALID_SOCK(s) (((s) >= 0) && ((s) < FD_SETSIZE))
-#define VERIFY_SOCK(x) do { \
-  if(!VALID_SOCK(x)) { \
-    SET_SOCKERRNO(EINVAL); \
-    return -1; \
-  } \
-} while(0)
-#endif
 
 /* Convenience local macros */
 
@@ -93,7 +76,7 @@
  *   -1 = system call error, invalid timeout value, or interrupted
  *    0 = specified timeout has elapsed
  */
-static int wait_ms(int timeout_ms)
+int Curl_wait_ms(int timeout_ms)
 {
 #if !defined(MSDOS) && !defined(USE_WINSOCK)
 #ifndef HAVE_POLL_FINE
@@ -142,11 +125,11 @@ static int wait_ms(int timeout_ms)
 }
 
 /*
- * This is an internal function used for waiting for read or write
- * events on a pair of file descriptors.  It uses poll() when a fine
- * poll() is available, in order to avoid limits with FD_SETSIZE,
- * otherwise select() is used.  An error is returned if select() is
- * being used and a file descriptor is too large for FD_SETSIZE.
+ * Wait for read or write events on a set of file descriptors. It uses poll()
+ * when a fine poll() is available, in order to avoid limits with FD_SETSIZE,
+ * otherwise select() is used.  An error is returned if select() is being used
+ * and a file descriptor is too large for FD_SETSIZE.
+ *
  * A negative timeout value makes this function wait indefinitely,
  * unles no valid file descriptor is given, when this happens the
  * negative timeout is ignored and the function times out immediately.
@@ -157,13 +140,20 @@ static int wait_ms(int timeout_ms)
  * Return values:
  *   -1 = system call error or fd >= FD_SETSIZE
  *    0 = timeout
- *    CURL_CSELECT_IN | CURL_CSELECT_OUT | CURL_CSELECT_ERR
+ *    [bitmask] = action as described below
+ *
+ * CURL_CSELECT_IN - first socket is readable
+ * CURL_CSELECT_IN2 - second socket is readable
+ * CURL_CSELECT_OUT - write socket is writable
+ * CURL_CSELECT_ERR - an error condition occurred
  */
-int Curl_socket_ready(curl_socket_t readfd, curl_socket_t writefd,
-                      long timeout_ms)
+int Curl_socket_check(curl_socket_t readfd0, /* two sockets to read from */
+                      curl_socket_t readfd1,
+                      curl_socket_t writefd, /* socket to write to */
+                      long timeout_ms)       /* milliseconds to wait */
 {
 #ifdef HAVE_POLL_FINE
-  struct pollfd pfd[2];
+  struct pollfd pfd[3];
   int num;
 #else
   struct timeval pending_tv;
@@ -179,8 +169,10 @@ int Curl_socket_ready(curl_socket_t readfd, curl_socket_t writefd,
   int r;
   int ret;
 
-  if((readfd == CURL_SOCKET_BAD) && (writefd == CURL_SOCKET_BAD)) {
-    r = wait_ms((int)timeout_ms);
+  if((readfd0 == CURL_SOCKET_BAD) && (readfd1 == CURL_SOCKET_BAD) &&
+     (writefd == CURL_SOCKET_BAD)) {
+    /* no sockets, just wait */
+    r = Curl_wait_ms((int)timeout_ms);
     return r;
   }
 
@@ -197,8 +189,14 @@ int Curl_socket_ready(curl_socket_t readfd, curl_socket_t writefd,
 #ifdef HAVE_POLL_FINE
 
   num = 0;
-  if(readfd != CURL_SOCKET_BAD) {
-    pfd[num].fd = readfd;
+  if(readfd0 != CURL_SOCKET_BAD) {
+    pfd[num].fd = readfd0;
+    pfd[num].events = POLLRDNORM|POLLIN|POLLRDBAND|POLLPRI;
+    pfd[num].revents = 0;
+    num++;
+  }
+  if(readfd1 != CURL_SOCKET_BAD) {
+    pfd[num].fd = readfd1;
     pfd[num].events = POLLRDNORM|POLLIN|POLLRDBAND|POLLPRI;
     pfd[num].revents = 0;
     num++;
@@ -235,9 +233,16 @@ int Curl_socket_ready(curl_socket_t readfd, curl_socket_t writefd,
 
   ret = 0;
   num = 0;
-  if(readfd != CURL_SOCKET_BAD) {
+  if(readfd0 != CURL_SOCKET_BAD) {
     if(pfd[num].revents & (POLLRDNORM|POLLIN|POLLERR|POLLHUP))
       ret |= CURL_CSELECT_IN;
+    if(pfd[num].revents & (POLLRDBAND|POLLPRI|POLLNVAL))
+      ret |= CURL_CSELECT_ERR;
+    num++;
+  }
+  if(readfd1 != CURL_SOCKET_BAD) {
+    if(pfd[num].revents & (POLLRDNORM|POLLIN|POLLERR|POLLHUP))
+      ret |= CURL_CSELECT_IN2;
     if(pfd[num].revents & (POLLRDBAND|POLLPRI|POLLNVAL))
       ret |= CURL_CSELECT_ERR;
     num++;
@@ -257,11 +262,18 @@ int Curl_socket_ready(curl_socket_t readfd, curl_socket_t writefd,
   maxfd = (curl_socket_t)-1;
 
   FD_ZERO(&fds_read);
-  if(readfd != CURL_SOCKET_BAD) {
-    VERIFY_SOCK(readfd);
-    FD_SET(readfd, &fds_read);
-    FD_SET(readfd, &fds_err);
-    maxfd = readfd;
+  if(readfd0 != CURL_SOCKET_BAD) {
+    VERIFY_SOCK(readfd0);
+    FD_SET(readfd0, &fds_read);
+    FD_SET(readfd0, &fds_err);
+    maxfd = readfd0;
+  }
+  if(readfd1 != CURL_SOCKET_BAD) {
+    VERIFY_SOCK(readfd1);
+    FD_SET(readfd1, &fds_read);
+    FD_SET(readfd1, &fds_err);
+    if(readfd1 > maxfd)
+      maxfd = readfd1;
   }
 
   FD_ZERO(&fds_write);
@@ -303,10 +315,16 @@ int Curl_socket_ready(curl_socket_t readfd, curl_socket_t writefd,
     return 0;
 
   ret = 0;
-  if(readfd != CURL_SOCKET_BAD) {
-    if(FD_ISSET(readfd, &fds_read))
+  if(readfd0 != CURL_SOCKET_BAD) {
+    if(FD_ISSET(readfd0, &fds_read))
       ret |= CURL_CSELECT_IN;
-    if(FD_ISSET(readfd, &fds_err))
+    if(FD_ISSET(readfd0, &fds_err))
+      ret |= CURL_CSELECT_ERR;
+  }
+  if(readfd1 != CURL_SOCKET_BAD) {
+    if(FD_ISSET(readfd1, &fds_read))
+      ret |= CURL_CSELECT_IN2;
+    if(FD_ISSET(readfd1, &fds_err))
       ret |= CURL_CSELECT_ERR;
   }
   if(writefd != CURL_SOCKET_BAD) {
@@ -364,7 +382,7 @@ int Curl_poll(struct pollfd ufds[], unsigned int nfds, int timeout_ms)
     }
   }
   if(fds_none) {
-    r = wait_ms((int)timeout_ms);
+    r = Curl_wait_ms(timeout_ms);
     return r;
   }
 

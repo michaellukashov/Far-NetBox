@@ -195,4 +195,16 @@ Curl_cache_addr(struct SessionHandle *data, Curl_addrinfo *addr,
 extern sigjmp_buf curl_jmpenv;
 #endif
 
+/*
+ * Function provided by the resolver backend to set DNS servers to use.
+ */
+CURLcode Curl_set_dns_servers(struct SessionHandle *data, char *servers);
+
+/*
+ * Destroy the hostcache of this handle.
+ */
+void Curl_hostcache_destroy(struct SessionHandle *data);
+
+CURLcode Curl_loadhostpairs(struct SessionHandle *data);
+
 #endif /* HEADER_CURL_HOSTIP_H */

@@ -25,11 +25,7 @@
 #include "setup.h"
 
 #ifdef USE_LIBSSH2
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <ctype.h>
+
 #ifdef HAVE_LIMITS_H
 #  include <limits.h>
 #endif
@@ -45,11 +41,6 @@
 #include <fcntl.h>
 #endif
 
-#ifdef HAVE_TIME_H
-#include <time.h>
-#endif
-
-#ifndef WIN32
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
 #endif
@@ -69,7 +60,6 @@
 #include <in.h>
 #include <inet.h>
 #endif
-#endif /* !WIN32 */
 
 #if (defined(NETWARE) && defined(__NOVELL_LIBC__))
 #undef in_addr_t
@@ -107,6 +97,11 @@
 #include "curl_memory.h"
 /* The last #include file should be: */
 #include "memdebug.h"
+
+#ifdef WIN32
+#  undef  PATH_MAX
+#  define PATH_MAX MAX_PATH
+#endif
 
 #ifndef PATH_MAX
 #define PATH_MAX 1024 /* just an extra precaution since there are systems that
@@ -170,12 +165,14 @@ const struct Curl_handler Curl_handler_scp = {
   scp_doing,                            /* doing */
   ssh_getsock,                          /* proto_getsock */
   ssh_getsock,                          /* doing_getsock */
+  ZERO_NULL,                            /* domore_getsock */
   ssh_perform_getsock,                  /* perform_getsock */
   scp_disconnect,                       /* disconnect */
   ZERO_NULL,                            /* readwrite */
   PORT_SSH,                             /* defport */
   CURLPROTO_SCP,                        /* protocol */
-  PROTOPT_DIRLOCK | PROTOPT_CLOSEACTION /* flags */
+  PROTOPT_DIRLOCK | PROTOPT_CLOSEACTION
+  | PROTOPT_NOURLQUERY                  /* flags */
 };
 
 
@@ -194,12 +191,14 @@ const struct Curl_handler Curl_handler_sftp = {
   sftp_doing,                           /* doing */
   ssh_getsock,                          /* proto_getsock */
   ssh_getsock,                          /* doing_getsock */
+  ZERO_NULL,                            /* domore_getsock */
   ssh_perform_getsock,                  /* perform_getsock */
   sftp_disconnect,                      /* disconnect */
   ZERO_NULL,                            /* readwrite */
   PORT_SSH,                             /* defport */
   CURLPROTO_SFTP,                       /* protocol */
-  PROTOPT_DIRLOCK | PROTOPT_CLOSEACTION /* flags */
+  PROTOPT_DIRLOCK | PROTOPT_CLOSEACTION
+  | PROTOPT_NOURLQUERY                  /* flags */
 };
 
 
@@ -645,10 +644,9 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
   struct SSHPROTO *sftp_scp = data->state.proto.ssh;
   struct ssh_conn *sshc = &conn->proto.sshc;
   curl_socket_t sock = conn->sock[FIRSTSOCKET];
-#ifdef CURL_LIBSSH2_DEBUG
   const char *fingerprint;
-#endif /* CURL_LIBSSH2_DEBUG */
-  const char *host_public_key_md5;
+  char md5buffer[33];
+  char *new_readdir_line;
   int rc = LIBSSH2_ERROR_NONE, i;
   int err;
   int seekerr = CURL_SEEKFUNC_OK;
@@ -670,7 +668,7 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
       /* fall-through */
 
     case SSH_S_STARTUP:
-      rc = libssh2_session_startup(sshc->ssh_session, sock);
+      rc = libssh2_session_startup(sshc->ssh_session, (int)sock);
       if(rc == LIBSSH2_ERROR_EAGAIN) {
         break;
       }
@@ -685,48 +683,40 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
 
       /* fall-through */
     case SSH_HOSTKEY:
-
-#ifdef CURL_LIBSSH2_DEBUG
       /*
        * Before we authenticate we should check the hostkey's fingerprint
        * against our known hosts. How that is handled (reading from file,
-       * whatever) is up to us. As for know not much is implemented, besides
-       * showing how to get the fingerprint.
+       * whatever) is up to us.
        */
       fingerprint = libssh2_hostkey_hash(sshc->ssh_session,
                                          LIBSSH2_HOSTKEY_HASH_MD5);
 
       /* The fingerprint points to static storage (!), don't free() it. */
-      infof(data, "Fingerprint: ");
-      for(rc = 0; rc < 16; rc++)
-        infof(data, "%02X ", (unsigned char) fingerprint[rc]);
-      infof(data, "\n");
-#endif /* CURL_LIBSSH2_DEBUG */
+      for(i = 0; i < 16; i++)
+        snprintf(&md5buffer[i*2], 3, "%02x", (unsigned char) fingerprint[i]);
+      infof(data, "SSH MD5 fingerprint: %s\n", md5buffer);
 
       /* Before we authenticate we check the hostkey's MD5 fingerprint
-       * against a known fingerprint, if available.  This implementation pulls
-       * it from the curl option.
+       * against a known fingerprint, if available.
        */
       if(data->set.str[STRING_SSH_HOST_PUBLIC_KEY_MD5] &&
          strlen(data->set.str[STRING_SSH_HOST_PUBLIC_KEY_MD5]) == 32) {
-        char buf[33];
-        host_public_key_md5 = libssh2_hostkey_hash(sshc->ssh_session,
-                                                   LIBSSH2_HOSTKEY_HASH_MD5);
-        for(i = 0; i < 16; i++)
-          snprintf(&buf[i*2], 3, "%02x",
-                   (unsigned char) host_public_key_md5[i]);
-        if(!strequal(buf, data->set.str[STRING_SSH_HOST_PUBLIC_KEY_MD5])) {
+        if(!strequal(md5buffer,
+                     data->set.str[STRING_SSH_HOST_PUBLIC_KEY_MD5])) {
           failf(data,
                 "Denied establishing ssh session: mismatch md5 fingerprint. "
                 "Remote %s is not equal to %s",
-                buf, data->set.str[STRING_SSH_HOST_PUBLIC_KEY_MD5]);
+                md5buffer, data->set.str[STRING_SSH_HOST_PUBLIC_KEY_MD5]);
           state(conn, SSH_SESSION_FREE);
-          sshc->actualcode = CURLE_PEER_FAILED_VERIFICATION;
-          break;
+          result = sshc->actualcode = CURLE_PEER_FAILED_VERIFICATION;
         }
+        else
+          infof(data, "MD5 checksum match!\n");
+        /* as we already matched, we skip the check for known hosts */
       }
+      else
+        result = ssh_knownhost(conn);
 
-      result = ssh_knownhost(conn);
       if(!result)
         state(conn, SSH_AUTHLIST);
       break;
@@ -1065,7 +1055,20 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
       /*
        * Support some of the "FTP" commands
        */
-      if(curl_strequal("pwd", sshc->quote_item->data)) {
+      char *cmd = sshc->quote_item->data;
+      sshc->acceptfail = FALSE;
+
+      /* if a command starts with an asterisk, which a legal SFTP command never
+         can, the command will be allowed to fail without it causing any
+         aborts or cancels etc. It will cause libcurl to act as if the command
+         is successful, whatever the server reponds. */
+
+      if(cmd[0] == '*') {
+        cmd++;
+        sshc->acceptfail = TRUE;
+      }
+
+      if(curl_strequal("pwd", cmd)) {
         /* output debug output if that is requested */
         char *tmp = aprintf("257 \"%s\" is current directory.\n",
                             sftp_scp->path);
@@ -1087,12 +1090,12 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
         state(conn, SSH_SFTP_NEXT_QUOTE);
         break;
       }
-      else if(sshc->quote_item->data) {
+      else if(cmd) {
         /*
          * the arguments following the command must be separated from the
          * command with a space so we can check for it unconditionally
          */
-        cp = strchr(sshc->quote_item->data, ' ');
+        cp = strchr(cmd, ' ');
         if(cp == NULL) {
           failf(data, "Syntax error in SFTP command. Supply parameter(s)!");
           state(conn, SSH_SFTP_CLOSE);
@@ -1123,9 +1126,9 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
          * OpenSSH's sftp program and call the appropriate libssh2
          * functions.
          */
-        if(curl_strnequal(sshc->quote_item->data, "chgrp ", 6) ||
-           curl_strnequal(sshc->quote_item->data, "chmod ", 6) ||
-           curl_strnequal(sshc->quote_item->data, "chown ", 6) ) {
+        if(curl_strnequal(cmd, "chgrp ", 6) ||
+           curl_strnequal(cmd, "chmod ", 6) ||
+           curl_strnequal(cmd, "chown ", 6) ) {
           /* attribute change */
 
           /* sshc->quote_path1 contains the mode to set */
@@ -1148,8 +1151,8 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
           state(conn, SSH_SFTP_QUOTE_STAT);
           break;
         }
-        else if(curl_strnequal(sshc->quote_item->data, "ln ", 3) ||
-                curl_strnequal(sshc->quote_item->data, "symlink ", 8)) {
+        else if(curl_strnequal(cmd, "ln ", 3) ||
+                curl_strnequal(cmd, "symlink ", 8)) {
           /* symbolic linking */
           /* sshc->quote_path1 is the source */
           /* get the destination */
@@ -1170,12 +1173,12 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
           state(conn, SSH_SFTP_QUOTE_SYMLINK);
           break;
         }
-        else if(curl_strnequal(sshc->quote_item->data, "mkdir ", 6)) {
+        else if(curl_strnequal(cmd, "mkdir ", 6)) {
           /* create dir */
           state(conn, SSH_SFTP_QUOTE_MKDIR);
           break;
         }
-        else if(curl_strnequal(sshc->quote_item->data, "rename ", 7)) {
+        else if(curl_strnequal(cmd, "rename ", 7)) {
           /* rename file */
           /* first param is the source path */
           /* second param is the dest. path */
@@ -1195,12 +1198,12 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
           state(conn, SSH_SFTP_QUOTE_RENAME);
           break;
         }
-        else if(curl_strnequal(sshc->quote_item->data, "rmdir ", 6)) {
+        else if(curl_strnequal(cmd, "rmdir ", 6)) {
           /* delete dir */
           state(conn, SSH_SFTP_QUOTE_RMDIR);
           break;
         }
-        else if(curl_strnequal(sshc->quote_item->data, "rm ", 3)) {
+        else if(curl_strnequal(cmd, "rm ", 3)) {
           state(conn, SSH_SFTP_QUOTE_UNLINK);
           break;
         }
@@ -1248,7 +1251,21 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
       break;
 
     case SSH_SFTP_QUOTE_STAT:
-      if(!curl_strnequal(sshc->quote_item->data, "chmod", 5)) {
+    {
+      char *cmd = sshc->quote_item->data;
+      sshc->acceptfail = FALSE;
+
+      /* if a command starts with an asterisk, which a legal SFTP command never
+         can, the command will be allowed to fail without it causing any
+         aborts or cancels etc. It will cause libcurl to act as if the command
+         is successful, whatever the server reponds. */
+
+      if(cmd[0] == '*') {
+        cmd++;
+        sshc->acceptfail = TRUE;
+      }
+
+      if(!curl_strnequal(cmd, "chmod", 5)) {
         /* Since chown and chgrp only set owner OR group but libssh2 wants to
          * set them both at once, we need to obtain the current ownership
          * first.  This takes an extra protocol round trip.
@@ -1260,7 +1277,7 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
         if(rc == LIBSSH2_ERROR_EAGAIN) {
           break;
         }
-        else if(rc != 0) { /* get those attributes */
+        else if(rc != 0 && !sshc->acceptfail) { /* get those attributes */
           err = (int)(libssh2_sftp_last_error(sshc->sftp_session));
           Curl_safefree(sshc->quote_path1);
           sshc->quote_path1 = NULL;
@@ -1276,10 +1293,11 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
       }
 
       /* Now set the new attributes... */
-      if(curl_strnequal(sshc->quote_item->data, "chgrp", 5)) {
+      if(curl_strnequal(cmd, "chgrp", 5)) {
         sshc->quote_attrs.gid = strtoul(sshc->quote_path1, NULL, 10);
         sshc->quote_attrs.flags = LIBSSH2_SFTP_ATTR_UIDGID;
-        if(sshc->quote_attrs.gid == 0 && !ISDIGIT(sshc->quote_path1[0])) {
+        if(sshc->quote_attrs.gid == 0 && !ISDIGIT(sshc->quote_path1[0]) &&
+           !sshc->acceptfail) {
           Curl_safefree(sshc->quote_path1);
           sshc->quote_path1 = NULL;
           Curl_safefree(sshc->quote_path2);
@@ -1291,7 +1309,7 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
           break;
         }
       }
-      else if(curl_strnequal(sshc->quote_item->data, "chmod", 5)) {
+      else if(curl_strnequal(cmd, "chmod", 5)) {
         sshc->quote_attrs.permissions = strtoul(sshc->quote_path1, NULL, 8);
         sshc->quote_attrs.flags = LIBSSH2_SFTP_ATTR_PERMISSIONS;
         /* permissions are octal */
@@ -1308,10 +1326,11 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
           break;
         }
       }
-      else if(curl_strnequal(sshc->quote_item->data, "chown", 5)) {
+      else if(curl_strnequal(cmd, "chown", 5)) {
         sshc->quote_attrs.uid = strtoul(sshc->quote_path1, NULL, 10);
         sshc->quote_attrs.flags = LIBSSH2_SFTP_ATTR_UIDGID;
-        if(sshc->quote_attrs.uid == 0 && !ISDIGIT(sshc->quote_path1[0])) {
+        if(sshc->quote_attrs.uid == 0 && !ISDIGIT(sshc->quote_path1[0]) &&
+           !sshc->acceptfail) {
           Curl_safefree(sshc->quote_path1);
           sshc->quote_path1 = NULL;
           Curl_safefree(sshc->quote_path2);
@@ -1327,6 +1346,7 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
       /* Now send the completed structure... */
       state(conn, SSH_SFTP_QUOTE_SETSTAT);
       break;
+    }
 
     case SSH_SFTP_QUOTE_SETSTAT:
       rc = libssh2_sftp_stat_ex(sshc->sftp_session, sshc->quote_path2,
@@ -1336,7 +1356,7 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
       if(rc == LIBSSH2_ERROR_EAGAIN) {
         break;
       }
-      else if(rc != 0) {
+      else if(rc != 0 && !sshc->acceptfail) {
         err = (int)(libssh2_sftp_last_error(sshc->sftp_session));
         Curl_safefree(sshc->quote_path1);
         sshc->quote_path1 = NULL;
@@ -1361,7 +1381,7 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
       if(rc == LIBSSH2_ERROR_EAGAIN) {
         break;
       }
-      else if(rc != 0) {
+      else if(rc != 0 && !sshc->acceptfail) {
         err = (int)(libssh2_sftp_last_error(sshc->sftp_session));
         Curl_safefree(sshc->quote_path1);
         sshc->quote_path1 = NULL;
@@ -1380,11 +1400,11 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
     case SSH_SFTP_QUOTE_MKDIR:
       rc = libssh2_sftp_mkdir_ex(sshc->sftp_session, sshc->quote_path1,
                                  (unsigned int)strlen(sshc->quote_path1),
-                                 0755);
+                                 data->set.new_directory_perms);
       if(rc == LIBSSH2_ERROR_EAGAIN) {
         break;
       }
-      else if(rc != 0) {
+      else if(rc != 0 && !sshc->acceptfail) {
         err = (int)(libssh2_sftp_last_error(sshc->sftp_session));
         Curl_safefree(sshc->quote_path1);
         sshc->quote_path1 = NULL;
@@ -1409,7 +1429,7 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
       if(rc == LIBSSH2_ERROR_EAGAIN) {
         break;
       }
-      else if(rc != 0) {
+      else if(rc != 0 && !sshc->acceptfail) {
         err = (int)(libssh2_sftp_last_error(sshc->sftp_session));
         Curl_safefree(sshc->quote_path1);
         sshc->quote_path1 = NULL;
@@ -1430,7 +1450,7 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
       if(rc == LIBSSH2_ERROR_EAGAIN) {
         break;
       }
-      else if(rc != 0) {
+      else if(rc != 0 && !sshc->acceptfail) {
         err = (int)(libssh2_sftp_last_error(sshc->sftp_session));
         Curl_safefree(sshc->quote_path1);
         sshc->quote_path1 = NULL;
@@ -1449,7 +1469,7 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
       if(rc == LIBSSH2_ERROR_EAGAIN) {
         break;
       }
-      else if(rc != 0) {
+      else if(rc != 0 && !sshc->acceptfail) {
         err = (int)(libssh2_sftp_last_error(sshc->sftp_session));
         Curl_safefree(sshc->quote_path1);
         sshc->quote_path1 = NULL;
@@ -1581,7 +1601,7 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
                                     SEEK_SET);
         }
 
-        if(seekerr != CURL_SEEKFUNC_OK){
+        if(seekerr != CURL_SEEKFUNC_OK) {
 
           if(seekerr != CURL_SEEKFUNC_CANTSEEK) {
             failf(data, "Could not seek stream");
@@ -1864,10 +1884,13 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
       }
       Curl_safefree(sshc->readdir_linkPath);
       sshc->readdir_linkPath = NULL;
-      sshc->readdir_line = realloc(sshc->readdir_line,
-                                   sshc->readdir_totalLen + 4 +
-                                   sshc->readdir_len);
-      if(!sshc->readdir_line) {
+
+      /* get room for the filename and extra output */
+      sshc->readdir_totalLen += 4 + sshc->readdir_len;
+      new_readdir_line = realloc(sshc->readdir_line, sshc->readdir_totalLen);
+      if(!new_readdir_line) {
+        Curl_safefree(sshc->readdir_line);
+        sshc->readdir_line = NULL;
         Curl_safefree(sshc->readdir_filename);
         sshc->readdir_filename = NULL;
         Curl_safefree(sshc->readdir_longentry);
@@ -1876,6 +1899,7 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
         sshc->actualcode = CURLE_OUT_OF_MEMORY;
         break;
       }
+      sshc->readdir_line = new_readdir_line;
 
       sshc->readdir_currLen += snprintf(sshc->readdir_line +
                                         sshc->readdir_currLen,
@@ -2388,10 +2412,39 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
         }
         sshc->ssh_session = NULL;
       }
+
+      /* worst-case scenario cleanup */
+
+      DEBUGASSERT(sshc->ssh_session == NULL);
+      DEBUGASSERT(sshc->ssh_channel == NULL);
+      DEBUGASSERT(sshc->sftp_session == NULL);
+      DEBUGASSERT(sshc->sftp_handle == NULL);
+#ifdef HAVE_LIBSSH2_KNOWNHOST_API
+      DEBUGASSERT(sshc->kh == NULL);
+#endif
+
+      Curl_safefree(sshc->rsa_pub);
+      Curl_safefree(sshc->rsa);
+
+      Curl_safefree(sshc->quote_path1);
+      Curl_safefree(sshc->quote_path2);
+
+      Curl_safefree(sshc->homedir);
+
+      Curl_safefree(sshc->readdir_filename);
+      Curl_safefree(sshc->readdir_longentry);
+      Curl_safefree(sshc->readdir_line);
+      Curl_safefree(sshc->readdir_linkPath);
+
+      /* the code we are about to return */
+      result = sshc->actualcode;
+
+      memset(sshc, 0, sizeof(struct ssh_conn));
+
       conn->bits.close = TRUE;
+      sshc->state = SSH_SESSION_FREE; /* current */
       sshc->nextstate = SSH_NO_STATE;
       state(conn, SSH_STOP);
-      result = sshc->actualcode;
       break;
 
     case SSH_QUIT:
@@ -2488,7 +2541,7 @@ static void ssh_block2waitfor(struct connectdata *conn, bool block)
 }
 #else
   /* no libssh2 directional support so we simply don't know */
-#define ssh_block2waitfor(x,y)
+#define ssh_block2waitfor(x,y) Curl_nop_stmt
 #endif
 
 /* called repeatedly until done from multi.c */
@@ -2500,7 +2553,7 @@ static CURLcode ssh_multi_statemach(struct connectdata *conn, bool *done)
                  implementation */
 
   result = ssh_statemach_act(conn, &block);
-  *done = (bool)(sshc->state == SSH_STOP);
+  *done = (sshc->state == SSH_STOP) ? TRUE : FALSE;
   ssh_block2waitfor(conn, block);
 
   return result;
@@ -2706,7 +2759,7 @@ CURLcode scp_perform(struct connectdata *conn,
     result = ssh_easy_statemach(conn, FALSE);
     *dophase_done = TRUE; /* with the easy interface we are done here */
   }
-  *connected = conn->bits.tcpconnect;
+  *connected = conn->bits.tcpconnect[FIRSTSOCKET];
 
   if(*dophase_done) {
     DEBUGF(infof(conn->data, "DO phase is complete\n"));
@@ -2913,7 +2966,7 @@ CURLcode sftp_perform(struct connectdata *conn,
     result = ssh_easy_statemach(conn, FALSE);
     *dophase_done = TRUE; /* with the easy interface we are done here */
   }
-  *connected = conn->bits.tcpconnect;
+  *connected = conn->bits.tcpconnect[FIRSTSOCKET];
 
   if(*dophase_done) {
     DEBUGF(infof(conn->data, "DO phase is complete\n"));

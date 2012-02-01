@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2012, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -175,6 +175,24 @@ int curlx_uztosi(size_t uznum)
 }
 
 /*
+** unsigned size_t to unsigned long
+*/
+
+unsigned long curlx_uztoul(size_t uznum)
+{
+#ifdef __INTEL_COMPILER
+# pragma warning(push)
+# pragma warning(disable:810) /* conversion may lose significant bits */
+#endif
+
+  return (unsigned long)(uznum & (size_t) CURL_MASK_ULONG);
+
+#ifdef __INTEL_COMPILER
+# pragma warning(pop)
+#endif
+}
+
+/*
 ** signed long to signed int
 */
 
@@ -262,6 +280,25 @@ size_t curlx_sotouz(curl_off_t sonum)
 
   DEBUGASSERT(sonum >= 0);
   return (size_t)(sonum & (curl_off_t) CURL_MASK_USIZE_T);
+
+#ifdef __INTEL_COMPILER
+#  pragma warning(pop)
+#endif
+}
+
+/*
+** signed int to unsigned size_t
+*/
+
+size_t curlx_sitouz(int sinum)
+{
+#ifdef __INTEL_COMPILER
+#  pragma warning(push)
+#  pragma warning(disable:810) /* conversion may lose significant bits */
+#endif
+
+  DEBUGASSERT(sinum >= 0);
+  return (size_t) sinum;
 
 #ifdef __INTEL_COMPILER
 #  pragma warning(pop)

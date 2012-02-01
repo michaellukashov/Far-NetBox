@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2012, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -19,21 +19,17 @@
  * KIND, either express or implied.
  *
  ***************************************************************************/
+
 #include "setup.h"
 
 #ifdef USE_WINDOWS_SSPI
 
 #ifndef CURL_DISABLE_HTTP
-/* -- WIN32 approved -- */
-#include <stdio.h>
-#include <string.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <ctype.h>
 
 #include "urldata.h"
 #include "sendf.h"
 #include "rawstr.h"
+#include "warnless.h"
 #include "curl_base64.h"
 #include "http_negotiate.h"
 #include "curl_memory.h"
@@ -45,12 +41,15 @@
 #include "memdebug.h"
 
 static int
-get_gss_name(struct connectdata *conn, bool proxy, char *server)
+get_gss_name(struct connectdata *conn, bool proxy,
+             struct negotiatedata *neg_ctx)
 {
-  struct negotiatedata *neg_ctx = proxy?&conn->data->state.proxyneg:
-    &conn->data->state.negotiate;
   const char* service;
   size_t length;
+
+  if(proxy && !conn->proxy.name)
+    /* proxy auth requested but no given proxy name, error out! */
+    return -1;
 
   /* GSSAPI implementation by Globus (known as GSI) requires the name to be
      of form "<service>/<fqdn>" instead of <service>@<fqdn> (ie. slash instead
@@ -71,7 +70,7 @@ get_gss_name(struct connectdata *conn, bool proxy, char *server)
   if(length + 1 > sizeof(neg_ctx->server_name))
     return EMSGSIZE;
 
-  snprintf(server, sizeof(neg_ctx->server_name), "%s/%s",
+  snprintf(neg_ctx->server_name, sizeof(neg_ctx->server_name), "%s/%s",
            service, proxy ? conn->proxy.name : conn->host.name);
 
   return 0;
@@ -84,7 +83,7 @@ int Curl_input_negotiate(struct connectdata *conn, bool proxy,
 {
   struct negotiatedata *neg_ctx = proxy?&conn->data->state.proxyneg:
     &conn->data->state.negotiate;
-  BYTE                          *input_token = 0;
+  BYTE              *input_token = 0;
   SecBufferDesc     out_buff_desc;
   SecBuffer         out_sec_buff;
   SecBufferDesc     in_buff_desc;
@@ -96,6 +95,7 @@ int Curl_input_negotiate(struct connectdata *conn, bool proxy,
   size_t len = 0, input_token_len = 0;
   bool gss = FALSE;
   const char* protocol;
+  CURLcode error;
 
   while(*header && ISSPACE(*header))
     header++;
@@ -129,9 +129,11 @@ int Curl_input_negotiate(struct connectdata *conn, bool proxy,
     return -1;
   }
 
-  if(strlen(neg_ctx->server_name) == 0 &&
-     (ret = get_gss_name(conn, proxy, neg_ctx->server_name)))
-    return ret;
+  if(0 == strlen(neg_ctx->server_name)) {
+    ret = get_gss_name(conn, proxy, neg_ctx);
+    if(ret)
+      return ret;
+  }
 
   if(!neg_ctx->output_token) {
     PSecPkgInfo SecurityPackage;
@@ -176,9 +178,10 @@ int Curl_input_negotiate(struct connectdata *conn, bool proxy,
     if(!input_token)
       return -1;
 
-    input_token_len = Curl_base64_decode(header,
-                                         (unsigned char **)&input_token);
-    if(input_token_len == 0)
+    error = Curl_base64_decode(header,
+                               (unsigned char **)&input_token,
+                               &input_token_len);
+    if(error || input_token_len == 0)
       return -1;
   }
 
@@ -187,7 +190,7 @@ int Curl_input_negotiate(struct connectdata *conn, bool proxy,
   out_buff_desc.cBuffers  = 1;
   out_buff_desc.pBuffers  = &out_sec_buff;
 
-  out_sec_buff.cbBuffer   = neg_ctx->max_token_length;
+  out_sec_buff.cbBuffer   = curlx_uztoul(neg_ctx->max_token_length);
   out_sec_buff.BufferType = SECBUFFER_TOKEN;
   out_sec_buff.pvBuffer   = neg_ctx->output_token;
 
@@ -195,9 +198,9 @@ int Curl_input_negotiate(struct connectdata *conn, bool proxy,
   if(input_token) {
     in_buff_desc.ulVersion = 0;
     in_buff_desc.cBuffers  = 1;
-    in_buff_desc.pBuffers  = &out_sec_buff;
+    in_buff_desc.pBuffers  = &in_sec_buff;
 
-    in_sec_buff.cbBuffer   = input_token_len;
+    in_sec_buff.cbBuffer   = curlx_uztoul(input_token_len);
     in_sec_buff.BufferType = SECBUFFER_TOKEN;
     in_sec_buff.pvBuffer   = input_token;
   }
@@ -238,16 +241,19 @@ CURLcode Curl_output_negotiate(struct connectdata *conn, bool proxy)
   struct negotiatedata *neg_ctx = proxy?&conn->data->state.proxyneg:
     &conn->data->state.negotiate;
   char *encoded = NULL;
-  size_t len;
+  size_t len = 0;
   char *userp;
+  CURLcode error;
 
-  len = Curl_base64_encode(conn->data,
-                           (const char*)neg_ctx->output_token,
-                           neg_ctx->output_token_length,
-                           &encoded);
+  error = Curl_base64_encode(conn->data,
+                             (const char*)neg_ctx->output_token,
+                             neg_ctx->output_token_length,
+                             &encoded, &len);
+  if(error)
+    return error;
 
   if(len == 0)
-    return CURLE_OUT_OF_MEMORY;
+    return CURLE_REMOTE_ACCESS_DENIED;
 
   userp = aprintf("%sAuthorization: %s %s\r\n", proxy ? "Proxy-" : "",
                   neg_ctx->protocol, encoded);

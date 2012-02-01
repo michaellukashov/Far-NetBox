@@ -36,11 +36,6 @@
  */
 
 #include "setup.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <ctype.h>
-#include <string.h>
 
 #if defined(DJGPP) && (DJGPP_MINOR < 4)
 #undef _MPRINTF_REPLACE /* don't use x_was_used() here */
@@ -108,7 +103,7 @@ static const char upper_digits[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
       done++; \
     else \
      return done; /* return immediately on failure */ \
-  } while(0)
+  } WHILE_FALSE
 
 /* Data type to read from the arglist */
 typedef enum  {
