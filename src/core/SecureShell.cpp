@@ -1034,15 +1034,25 @@ void TSecureShell::SendNull()
     Send("", 1);
 }
 //---------------------------------------------------------------------------
-void TSecureShell::SendStr(const std::wstring Str)
+void TSecureShell::SendStr(const std::wstring Str, bool Utf)
 {
     CheckConnection();
-    Send(nb::W2MB(Str.c_str()).c_str(), Str.size());
+    // Send(nb::W2MB(Str.c_str()).c_str(), Str.size());
+    if (!Utf)
+    {
+        std::string str = nb::W2MB(Str.c_str());
+        Send(str.c_str(), str.size());
+    }
+    else
+    {
+        std::string encoded = ::EncodeUTF(Str);
+        Send(encoded.c_str(), encoded.size());
+    }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::SendLine(const std::wstring Line)
+void TSecureShell::SendLine(const std::wstring Line, bool Utf)
 {
-    SendStr(Line);
+    SendStr(Line, Utf);
     Send("\n", 1);
     FLog->Add(llInput, Line);
 }

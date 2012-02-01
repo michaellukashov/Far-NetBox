@@ -173,7 +173,7 @@ public:
     void SetLinkTo(const std::wstring value) { FLinkTo = value; }
     // __property std::wstring ListingStr = { read = GetListingStr, write = SetListingStr };
     std::wstring GetListingStr();
-    void SetListingStr(const std::wstring value);
+    void SetListingStr(const std::wstring value, bool Utf);
     // __property TRights * Rights = { read = FRights, write = SetRights };
     TRights *GetRights() const { return FRights; }
     void SetRights(TRights *value);
@@ -206,6 +206,8 @@ public:
     bool GetIsInaccesibleDirectory() const;
     // __property std::wstring Extension  = { read=GetExtension };
     std::wstring GetExtension();
+private:
+    std::wstring DecodeString(const std::wstring Value, bool Utf);
 };
 //---------------------------------------------------------------------------
 class TRemoteDirectoryFile : public TRemoteFile

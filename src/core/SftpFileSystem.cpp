@@ -709,7 +709,7 @@ public:
             {
                 // update permissions and user/group name
                 // modification time and filename is ignored
-                File->SetListingStr(ListingStr);
+                File->SetListingStr(ListingStr, Utf);
             }
             catch(...)
             {

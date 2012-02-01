@@ -349,6 +349,9 @@ void TSCPFileSystem::Init(TSecureShell *SecureShell)
     FLsFullTime = FTerminal->GetSessionData()->GetSCPLsFullTime();
     FOutput = new nb::TStringList();
     FProcessingCommand = false;
+    FUtfStrings = false;
+    FUtfNever = false;
+    FProcessingCommand = false;
 
     FFileSystemInfo.ProtocolBaseName = L"SCP";
     FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
@@ -565,7 +568,7 @@ void TSCPFileSystem::SendCommand(const std::wstring Cmd)
     // We suppose, that 'Cmd' already contains command that ensures,
     // that 'LastLine' will be printed
     // DEBUG_PRINTF(L"Cmd = %s", Cmd.c_str());
-    FSecureShell->SendLine(Cmd);
+    FSecureShell->SendLine(Cmd, FUtfStrings);
     FProcessingCommand = true;
 }
 //---------------------------------------------------------------------------
@@ -651,7 +654,15 @@ void TSCPFileSystem::ReadCommandOutput(int Params, const std::wstring *Cmd)
                 IsLast = IsLastLine(Line);
                 if (!IsLast || !Line.empty())
                 {
+                    // if (!FUtfStrings)
+                    // {
                     FOutput->Add(Line);
+                    // }
+                    // else
+                    // {
+                    // std::string encoded = ::EncodeUTF(Line);
+                    // FOutput->Add(::MB2W(encoded.c_str()));
+                    // }
                     if (FLAGSET(Params, coReadProgress))
                     {
                         Total++;
@@ -759,6 +770,26 @@ void TSCPFileSystem::DoStartup()
     SkipStartupMessage();
     if (FTerminal->GetSessionData()->GetDetectReturnVar()) { DetectReturnVar(); }
     FTerminal->SetExceptionOnFail(false);
+
+  FUtfNever =
+    (FTerminal->GetSessionData()->GetNotUtf() == asOn);
+  FUtfStrings =
+    (FTerminal->GetSessionData()->GetNotUtf() == asOff) ||
+    ((FTerminal->GetSessionData()->GetNotUtf() == asAuto) &&
+      !FUtfNever);
+
+  if (FUtfStrings)
+  {
+    FTerminal->LogEvent(L"We will use UTF-8 strings when appropriate");
+  }
+  else if (FUtfNever)
+  {
+    FTerminal->LogEvent(L"We will never use UTF-8 strings");
+  }
+  else
+  {
+    FTerminal->LogEvent(L"We will use UTF-8 strings for status messages only");
+  }
 
 #define COND_OPER(OPER) if (FTerminal->GetSessionData()->Get##OPER()) OPER()
     COND_OPER(ClearAliases);
@@ -1103,7 +1134,7 @@ TRemoteFile *TSCPFileSystem::CreateRemoteFile(
     try
     {
         File->SetTerminal(FTerminal);
-        File->SetListingStr(ListingStr);
+        File->SetListingStr(ListingStr, FUtfStrings);
         File->ShiftTime(FTerminal->GetSessionData()->GetTimeDifference());
         File->Complete();
     }

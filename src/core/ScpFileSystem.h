@@ -88,6 +88,8 @@ private:
     bool FProcessingCommand;
     int FLsFullTime;
     captureoutput_signal_type FOnCaptureOutput;
+    bool FUtfStrings;
+    bool FUtfNever;
     TSCPFileSystem *Self;
 
     void ClearAliases();
