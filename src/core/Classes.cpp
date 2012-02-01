@@ -42,7 +42,7 @@ size_t __cdecl debug_printf2(const char *format, ...)
     va_start(args, format);
     len = _vscprintf(format, args);
     std::string buf(len + sizeof(char), 0);
-    _vsnprintf_s(&buf[0], len, buf.size(), format, args);
+    vsprintf_s(&buf[0], buf.size(), format, args);
 
     va_end(args);
     OutputDebugStringA(buf.c_str());
