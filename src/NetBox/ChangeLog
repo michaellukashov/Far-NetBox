@@ -1,5 +1,6 @@
 NetBox 2.0.8 ??.02.2012
 ---------------------
+  * Bugfix: dialog "Change file attributes" did not work
 
 NetBox 2.0.7 30.01.2012
 ---------------------
