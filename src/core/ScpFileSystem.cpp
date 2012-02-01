@@ -1801,7 +1801,7 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
                             // Send last file access and modification time
                             swprintf_s(const_cast<wchar_t *>(Buf.c_str()), Buf.size(), L"T%lu 0 %lu 0", static_cast<unsigned long>(MTime),
                                        static_cast<unsigned long>(ATime));
-                            FSecureShell->SendLine(Buf.c_str());
+                            FSecureShell->SendLine(Buf.c_str(), FUtfStrings);
                             SCPResponse();
                         }
 
@@ -1814,7 +1814,7 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
                                    static_cast<int>(OperationProgress->AsciiTransfer ? AsciiBuf.GetSize() :
                                                     OperationProgress->LocalSize),
                                    DestFileName.c_str());
-                        FSecureShell->SendLine(Buf.c_str());
+                        FSecureShell->SendLine(Buf.c_str(), FUtfStrings);
                         SCPResponse();
                         // Indicate we started transfering file, we need to finish it
                         // If not, it's fatal error
@@ -1985,7 +1985,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
     // Send directory modes (rights), filesize and file name
     Buf = FORMAT(L"D%s 0 %s",
                  CopyParam->RemoteFileRights(Attrs).GetOctal().c_str(), DestFileName.c_str());
-    FSecureShell->SendLine(Buf);
+    FSecureShell->SendLine(Buf, FUtfStrings);
     SCPResponse();
 
     {
