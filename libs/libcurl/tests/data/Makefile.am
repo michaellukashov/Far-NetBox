@@ -47,15 +47,19 @@ test542 test543 test544 test545 test546 test547 test548 test549 test550	\
 test551 test552 test553 test554 test555 test556 test557 test560 test561	\
 test562 test563 test564 test565 test566 test567 test568 test569 test570	\
 test571 test572 test573 test574 test575 test576 test578 test579 test580	\
-test581 test582 test583 test584 test585 test586 \
+test581 test582 test583 test584 test585 test586 test587 test588 test590 \
+test591 test592 test593 test594 test595 test596 test597 \
 test600 test601 test602 test603 test604	\
 test605 test606 test607 test608 test609 test610 test611 test612 test613	\
 test614 test615 test616 test617 test618 test619 test620 test621 test622	\
 test623 test624 test625 test626 test627 test628 test629 test630 test631	\
-test632 test633 test634 test635 test636 test637 test700 test701 test702	\
-test703 test704 test705 test706 test707 test708 test800 test801 test802	\
+test632 test633 test634 test635 test636 test637 test638 test639 \
+test700 test701 test702	test703 test704 test705 test706 test707 test708 \
+test709 test710 \
+test800 test801 test802	\
 test803 test804 test805 test806 test807 test808 test809 test810 test811	\
-test812 test813 test1000 test1001 test1002 test1003 test1004 test1005	\
+test812 test813 test814 test815 \
+test1000 test1001 test1002 test1003 test1004 test1005	\
 test1006 test1007 test1008 test1009 test1010 test1011 test1012 test1013	\
 test1014 test1015 test1016 test1017 test1018 test1019 test1020 test1021	\
 test1022 test1023 test1024 test1025 test1026 test1027 test1028 test1029	\
@@ -71,9 +75,15 @@ test1094 test1095 test1096 test1097 test1098 test1099 test1100 test1101	\
 test1102 test1103 test1104 test1105 test1106 test1107 test1108 test1109	\
 test1110 test1111 test1112 test1113 test1114 test1115 test1116 test1117	\
 test1118 test1119 test1120 test1121 test1122 test1123 test1124 test1125	\
-test1126 test1127 test1128 test1200 test1201 test1202 test1203 test1300	\
-test1301 test1302 test1303 test1304 test1305 test1306 test1307 test1308	\
-test1309 test2000 test2001 test2002 test2003 test2004
+test1126 test1127 test1128 test1129 test1130 test1131 \
+test1200 test1201 test1202 test1203 test1204 test1205 test1206 test1207 \
+test1208 test1209 test1210 test1211 \
+test1220 \
+test1300 test1301 test1302 test1303 test1304 test1305	\
+test1306 test1307 test1308 test1309 test1310 test1311 test1312 test1313 \
+test1314 test1315 test1316 test1317 test1318 test1319 test1320 test1321 \
+test1322 test1323 test1324 test1325 test1326 test1327 \
+test2000 test2001 test2002 test2003 test2004
 
 EXTRA_DIST = $(TESTCASES) DISABLED
 

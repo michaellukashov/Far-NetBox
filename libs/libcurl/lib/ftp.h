@@ -139,6 +139,7 @@ struct ftp_conn {
                        already has been done */
   bool cwdfail;     /* set TRUE if a CWD command fails, as then we must prevent
                        caching the current directory */
+  bool wait_data_conn; /* this is set TRUE if data connection is waited */
   char *prevpath;   /* conn->path from the previous transfer */
   char transfertype; /* set by ftp_transfertype for use by Curl_client_write()a
                         and others (A/I or zero) */
@@ -146,10 +147,15 @@ struct ftp_conn {
   int count2; /* general purpose counter for the state machine */
   int count3; /* general purpose counter for the state machine */
   ftpstate state; /* always use ftp.c:state() to change state! */
+  ftpstate state_saved; /* transfer type saved to be reloaded after
+                           data connection is established */
+  curl_off_t retr_size_saved; /* Size of retrieved file saved */
   char * server_os;     /* The target server operating system. */
   curl_off_t known_filesize; /* file size is different from -1, if wildcard
                                 LIST parsing was done and wc_statemach set
                                 it */
 };
+
+#define DEFAULT_ACCEPT_TIMEOUT   60000 /* milliseconds == one minute */
 
 #endif /* HEADER_CURL_FTP_H */

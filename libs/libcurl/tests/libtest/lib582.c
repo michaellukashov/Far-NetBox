@@ -21,20 +21,19 @@
  ***************************************************************************/
 #include "test.h"
 
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
 
 #include "testutil.h"
 #include "warnless.h"
 #include "memdebug.h"
 
-#define MAIN_LOOP_HANG_TIMEOUT     4 * 1000
+#define TEST_HANG_TIMEOUT 60 * 1000
 
 struct Sockets
 {
-  curl_socket_t* sockets;
-  int count;
+  curl_socket_t *sockets;
+  int count;      /* number of sockets actually stored in array */
+  int max_count;  /* max number of sockets that fit in allocated array */
 };
 
 struct ReadWriteSockets
@@ -54,8 +53,9 @@ static void removeFd(struct Sockets* sockets, curl_socket_t fd, int mention)
 
   for (i = 0; i < sockets->count; ++i) {
     if (sockets->sockets[i] == fd) {
-      memmove(&sockets->sockets[i], &sockets->sockets[i + 1],
-              sizeof(curl_socket_t) * (sockets->count - i - 1));
+      if (i < sockets->count - 1)
+        memmove(&sockets->sockets[i], &sockets->sockets[i + 1],
+              sizeof(curl_socket_t) * (sockets->count - (i + 1)));
       --sockets->count;
     }
   }
@@ -72,8 +72,29 @@ static void addFd(struct Sockets* sockets, curl_socket_t fd, const char *what)
    */
   fprintf(stderr, "Add socket fd %d for %s\n", (int) fd, what);
   removeFd(sockets, fd, 0);
-  sockets->sockets = realloc(sockets->sockets,
-        sizeof(curl_socket_t) * (sockets->count + 1));
+  /*
+   * Allocate array storage when required.
+   */
+  if(!sockets->sockets) {
+    sockets->sockets = malloc(sizeof(curl_socket_t) * 20U);
+    if(!sockets->sockets)
+      return;
+    sockets->max_count = 20;
+  }
+  else if(sockets->count + 1 > sockets->max_count) {
+    curl_socket_t *oldptr = sockets->sockets;
+    sockets->sockets = realloc(oldptr, sizeof(curl_socket_t) *
+                               (sockets->max_count + 20));
+    if(!sockets->sockets) {
+      /* cleanup in test_cleanup */
+      sockets->sockets = oldptr;
+      return;
+    }
+    sockets->max_count += 20;
+  }
+  /*
+   * Add file descriptor to array.
+   */
   sockets->sockets[sockets->count] = fd;
   ++sockets->count;
 }
@@ -177,13 +198,12 @@ static void updateFdSet(struct Sockets* sockets, fd_set* fdset,
   }
 }
 
-static void notifyCurl(CURL* curl, curl_socket_t s, int evBitmask,
-                       const char* info)
+static void notifyCurl(CURLM *curl, curl_socket_t s, int evBitmask,
+                       const char *info)
 {
   int numhandles = 0;
   CURLMcode result = curl_multi_socket_action(curl, s, evBitmask, &numhandles);
-  if (result != CURLM_OK && result != CURLM_CALL_MULTI_PERFORM)
-  {
+  if (result != CURLM_OK) {
     fprintf(stderr, "Curl error on %s: %i (%s)\n",
             info, result, curl_multi_strerror(result));
   }
@@ -192,14 +212,12 @@ static void notifyCurl(CURL* curl, curl_socket_t s, int evBitmask,
 /**
  * Invoke curl when a file descriptor is set.
  */
-static void checkFdSet(CURL* curl, struct Sockets* sockets, fd_set* fdset,
-                       int evBitmask, const char* name)
+static void checkFdSet(CURLM *curl, struct Sockets *sockets, fd_set *fdset,
+                       int evBitmask, const char *name)
 {
   int i;
-  for (i = 0; i < sockets->count; ++i)
-  {
-    if (FD_ISSET(sockets->sockets[i], fdset))
-    {
+  for (i = 0; i < sockets->count; ++i) {
+    if (FD_ISSET(sockets->sockets[i], fdset)) {
       notifyCurl(curl, sockets->sockets[i], evBitmask, name);
     }
   }
@@ -208,30 +226,30 @@ static void checkFdSet(CURL* curl, struct Sockets* sockets, fd_set* fdset,
 int test(char *URL)
 {
   int res = 0;
-  CURL *curl;
-  FILE *hd_src ;
+  CURL *curl = NULL;
+  FILE *hd_src = NULL;
   int hd ;
   int error;
   struct_stat file_info;
   CURLM *m = NULL;
-  struct timeval ml_start;
-  char ml_timedout = FALSE;
-  struct ReadWriteSockets sockets = {{0, 0}, {0, 0}};
+  struct ReadWriteSockets sockets = {{NULL, 0, 0}, {NULL, 0, 0}};
   struct timeval timeout = {-1, 0};
   int success = 0;
 
+  start_test_timing();
+
   if (!libtest_arg3) {
     fprintf(stderr, "Usage: lib582 [url] [filename] [username]\n");
-    return -1;
+    return TEST_ERR_USAGE;
   }
 
   hd_src = fopen(libtest_arg2, "rb");
   if(NULL == hd_src) {
     error = ERRNO;
-    fprintf(stderr, "fopen() failed with error: %d %s\n",
+    fprintf(stderr, "fopen() failed with error: %d (%s)\n",
             error, strerror(error));
-    fprintf(stderr, "Error opening file: %s\n", libtest_arg2);
-    return TEST_ERR_MAJOR_BAD;
+    fprintf(stderr, "Error opening file: (%s)\n", libtest_arg2);
+    return TEST_ERR_FOPEN;
   }
 
   /* get the file size of the local file */
@@ -239,83 +257,55 @@ int test(char *URL)
   if(hd == -1) {
     /* can't open file, bail out */
     error = ERRNO;
-    fprintf(stderr, "fstat() failed with error: %d %s\n",
+    fprintf(stderr, "fstat() failed with error: %d (%s)\n",
             error, strerror(error));
-    fprintf(stderr, "ERROR: cannot open file %s\n", libtest_arg2);
+    fprintf(stderr, "ERROR: cannot open file (%s)\n", libtest_arg2);
     fclose(hd_src);
-    return -1;
+    return TEST_ERR_FSTAT;
   }
   fprintf(stderr, "Set to upload %d bytes\n", (int)file_info.st_size);
 
-  if (curl_global_init(CURL_GLOBAL_ALL) != CURLE_OK) {
-    fprintf(stderr, "curl_global_init() failed\n");
+  res_global_init(CURL_GLOBAL_ALL);
+  if(res) {
     fclose(hd_src);
-    return TEST_ERR_MAJOR_BAD;
+    return res;
   }
 
-  if ((curl = curl_easy_init()) == NULL) {
-    fprintf(stderr, "curl_easy_init() failed\n");
-    fclose(hd_src);
-    curl_global_cleanup();
-    return TEST_ERR_MAJOR_BAD;
-  }
+  easy_init(curl);
 
   /* enable uploading */
-  test_setopt(curl, CURLOPT_UPLOAD, 1L);
+  easy_setopt(curl, CURLOPT_UPLOAD, 1L);
 
   /* specify target */
-  test_setopt(curl,CURLOPT_URL, URL);
+  easy_setopt(curl,CURLOPT_URL, URL);
 
   /* go verbose */
-  test_setopt(curl, CURLOPT_VERBOSE, 1L);
+  easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 
   /* now specify which file to upload */
-  test_setopt(curl, CURLOPT_READDATA, hd_src);
+  easy_setopt(curl, CURLOPT_READDATA, hd_src);
 
-  test_setopt(curl, CURLOPT_USERPWD, libtest_arg3);
-  test_setopt(curl, CURLOPT_SSH_PUBLIC_KEYFILE, "curl_client_key.pub");
-  test_setopt(curl, CURLOPT_SSH_PRIVATE_KEYFILE, "curl_client_key");
+  easy_setopt(curl, CURLOPT_USERPWD, libtest_arg3);
+  easy_setopt(curl, CURLOPT_SSH_PUBLIC_KEYFILE, "curl_client_key.pub");
+  easy_setopt(curl, CURLOPT_SSH_PRIVATE_KEYFILE, "curl_client_key");
 
-  test_setopt(curl, CURLOPT_INFILESIZE_LARGE,
-                   (curl_off_t)file_info.st_size);
+  easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)file_info.st_size);
 
-  if ((m = curl_multi_init()) == NULL) {
-    fprintf(stderr, "curl_multi_init() failed\n");
-    curl_easy_cleanup(curl);
-    curl_global_cleanup();
-    fclose(hd_src);
-    return TEST_ERR_MAJOR_BAD;
-  }
-  test_multi_setopt(m, CURLMOPT_SOCKETFUNCTION, curlSocketCallback);
-  test_multi_setopt(m, CURLMOPT_SOCKETDATA, &sockets);
+  multi_init(m);
 
-  test_multi_setopt(m, CURLMOPT_TIMERFUNCTION, curlTimerCallback);
-  test_multi_setopt(m, CURLMOPT_TIMERDATA, &timeout);
+  multi_setopt(m, CURLMOPT_SOCKETFUNCTION, curlSocketCallback);
+  multi_setopt(m, CURLMOPT_SOCKETDATA, &sockets);
 
-  if ((res = (int)curl_multi_add_handle(m, curl)) != CURLM_OK) {
-    fprintf(stderr, "curl_multi_add_handle() failed, "
-            "with code %d\n", res);
-    curl_multi_cleanup(m);
-    curl_easy_cleanup(curl);
-    curl_global_cleanup();
-    fclose(hd_src);
-    return TEST_ERR_MAJOR_BAD;
-  }
+  multi_setopt(m, CURLMOPT_TIMERFUNCTION, curlTimerCallback);
+  multi_setopt(m, CURLMOPT_TIMERDATA, &timeout);
 
-  ml_timedout = FALSE;
-  ml_start = tutil_tvnow();
+  multi_add_handle(m, curl);
 
   while (!checkForCompletion(m, &success))
   {
     fd_set readSet, writeSet;
     curl_socket_t maxFd = 0;
     struct timeval tv = {10, 0};
-
-    if (tutil_tvdiff(tutil_tvnow(), ml_start) >
-        MAIN_LOOP_HANG_TIMEOUT) {
-      ml_timedout = TRUE;
-      break;
-    }
 
     FD_ZERO(&readSet);
     FD_ZERO(&writeSet);
@@ -345,6 +335,8 @@ int test(char *URL)
       /* Curl's timer has elapsed. */
       notifyCurl(m, CURL_SOCKET_TIMEOUT, 0, "timeout");
     }
+
+    abort_on_test_timeout();
   }
 
   if (!success)
@@ -352,28 +344,24 @@ int test(char *URL)
     fprintf(stderr, "Error uploading file.\n");
     res = TEST_ERR_MAJOR_BAD;
   }
-  else if (ml_timedout) {
-    fprintf(stderr, "ABORTING TEST, since it seems "
-            "that it would have run forever.\n");
-    res = TEST_ERR_RUNS_FOREVER;
-  }
 
 test_cleanup:
 
-  if(m)
-    curl_multi_remove_handle(m, curl);
-  curl_easy_cleanup(curl);
-  if(m) {
-    fprintf(stderr, "Now multi-cleanup!\n");
-    curl_multi_cleanup(m);
-  }
+  /* proper cleanup sequence - type PB */
 
-  fclose(hd_src); /* close the local file */
-  if (sockets.read.sockets != 0)
+  curl_multi_remove_handle(m, curl);
+  curl_easy_cleanup(curl);
+  curl_multi_cleanup(m);
+  curl_global_cleanup();
+
+  /* close the local file */
+  fclose(hd_src);
+
+  /* free local memory */
+  if(sockets.read.sockets)
     free(sockets.read.sockets);
-  if (sockets.write.sockets != 0)
+  if(sockets.write.sockets)
     free(sockets.write.sockets);
 
-  curl_global_cleanup();
   return res;
 }

@@ -148,7 +148,9 @@ option(ENABLE_IPV6 "Define if you want to enable IPv6 support" OFF)
 mark_as_advanced(ENABLE_IPV6)
 
 if(WIN32)
-  list_spaces_append_once(CMAKE_C_STANDARD_LIBRARIES wsock32.lib ws2_32.lib)  # bufferoverflowu.lib
+  find_library(WSOCK32_LIBRARY wsock32)
+  find_library(WS2_32_LIBRARY ws2_32)
+  list_spaces_append_once(CMAKE_C_STANDARD_LIBRARIES ${WSOCK32_LIBRARY} ${WS2_32_LIBRARY})  # bufferoverflowu.lib
   if(CURL_DISABLE_LDAP)
     # Remove wldap32.lib from space-separated list
     string(REPLACE " " ";" _LIST ${CMAKE_C_STANDARD_LIBRARIES})
@@ -380,7 +382,7 @@ if(CMAKE_USE_OPENSSL)
   check_include_file_concat("openssl/rand.h"   HAVE_OPENSSL_RAND_H)
 endif(CMAKE_USE_OPENSSL)
 
-if(NOT HAVE_LDAP_H) 
+if(NOT HAVE_LDAP_H)
   message(STATUS "LDAP_H not found CURL_DISABLE_LDAP set ON")
   set(CURL_DISABLE_LDAP ON CACHE BOOL "" FORCE)
 endif()
@@ -782,7 +784,7 @@ if(HAVE_SOCKLEN_T)
   check_type_size("socklen_t" CURL_SIZEOF_CURL_SOCKLEN_T)
   set(CMAKE_EXTRA_INCLUDE_FILES)
   if(NOT HAVE_CURL_SIZEOF_CURL_SOCKLEN_T)
-    message(FATAL_ERROR 
+    message(FATAL_ERROR
      "Check for sizeof socklen_t failed, see CMakeFiles/CMakerror.log")
   endif()
 else()
@@ -861,4 +863,3 @@ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/curl"
     DESTINATION include
     FILES_MATCHING PATTERN "*.h"
     PATTERN "curlbuild.h" EXCLUDE)
- 

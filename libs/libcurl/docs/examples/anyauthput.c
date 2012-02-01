@@ -27,6 +27,7 @@
 #  ifdef __VMS
      typedef int intptr_t;
 #  endif
+#  include <stdint.h>
 #  include <unistd.h>
 #endif
 #include <sys/types.h>
@@ -41,6 +42,7 @@
 #endif
 
 #include <curl/curl.h>
+#include "printf_macro.h"
 
 #if LIBCURL_VERSION_NUM < 0x070c03
 #error "upgrade your libcurl to no less than 7.12.3"
@@ -92,7 +94,7 @@ static size_t read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
 
   retcode = read(fd, ptr, size * nmemb);
 
-  fprintf(stderr, "*** We read %d bytes from file\n", retcode);
+  fprintf(stderr, "*** We read %" _FMT_SIZE_T " bytes from file\n", retcode);
 
   return retcode;
 }

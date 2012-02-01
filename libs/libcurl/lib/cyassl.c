@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2012, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -27,15 +27,16 @@
  */
 
 #include "setup.h"
+
 #ifdef USE_CYASSL
 
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
+#ifdef HAVE_LIMITS_H
+#include <limits.h>
+#endif
+
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
 #endif
-
 
 #include "urldata.h"
 #include "sendf.h"
@@ -257,7 +258,7 @@ cyassl_connect_step2(struct connectdata *conn,
   }
 
   conssl->connecting_state = ssl_connect_3;
-  infof(data, "SSL connected");
+  infof(data, "SSL connected\n");
 
   return CURLE_OK;
 }
@@ -403,7 +404,12 @@ size_t Curl_cyassl_version(char *buffer, size_t size)
 
 int Curl_cyassl_init(void)
 {
+#if (LIBCYASSL_VERSION_HEX >= 0x02000000)
+  if(SSL_library_init() != SSL_SUCCESS)
+    return 0;
+#else
   InitCyaSSL();
+#endif
 
   return 1;
 }
@@ -412,7 +418,7 @@ int Curl_cyassl_init(void)
 bool Curl_cyassl_data_pending(const struct connectdata* conn, int connindex)
 {
   if(conn->ssl[connindex].handle)   /* SSL is in use */
-    return (bool)(0 != SSL_pending(conn->ssl[connindex].handle));
+    return (0 != SSL_pending(conn->ssl[connindex].handle)) ? TRUE : FALSE;
   else
     return FALSE;
 }

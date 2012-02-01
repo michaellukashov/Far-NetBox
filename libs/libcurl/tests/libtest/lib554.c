@@ -40,6 +40,14 @@ struct WriteThis {
 
 static size_t read_callback(void *ptr, size_t size, size_t nmemb, void *userp)
 {
+#ifdef LIB587
+  (void)ptr;
+  (void)size;
+  (void)nmemb;
+  (void)userp;
+  return CURL_READFUNC_ABORT;
+#else
+
   struct WriteThis *pooh = (struct WriteThis *)userp;
 
   if(size*nmemb < 1)
@@ -53,6 +61,7 @@ static size_t read_callback(void *ptr, size_t size, size_t nmemb, void *userp)
   }
 
   return 0;                         /* no more data left to deliver */
+#endif
 }
 
 int test(char *URL)
@@ -135,6 +144,16 @@ int test(char *URL)
 
   if(formrc)
     printf("curl_formadd(3) = %d\n", (int)formrc);
+
+  formrc = curl_formadd(&formpost, &lastptr,
+                        CURLFORM_COPYNAME, "somename",
+                        CURLFORM_BUFFER, "somefile.txt",
+                        CURLFORM_BUFFERPTR, "blah blah",
+                        CURLFORM_BUFFERLENGTH, 9,
+                        CURLFORM_END);
+
+  if(formrc)
+    printf("curl_formadd(4) = %d\n", (int)formrc);
 
   if ((curl = curl_easy_init()) == NULL) {
     fprintf(stderr, "curl_easy_init() failed\n");

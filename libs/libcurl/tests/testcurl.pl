@@ -70,10 +70,10 @@ use vars qw($version $fixed $infixed $CURLDIR $git $pwd $build $buildlog
 
 use vars qw($name $email $desc $confopts $runtestopts $setupfile $mktarball
             $extvercmd $nogitpull $nobuildconf $crosscompile
-            $timestamp);
+            $timestamp $notes);
 
 # version of this script
-$version='2010-08-20';
+$version='2011-12-27';
 $fixed=0;
 
 # Determine if we're running from git or a canned copy of curl,
@@ -308,6 +308,7 @@ if ($fixed < 4) {
     print F "email='$email'\n";
     print F "desc='$desc'\n";
     print F "confopts='$confopts'\n";
+    print F "notes='$notes'\n";
     print F "fixed='$fixed'\n";
     close(F);
 }
@@ -330,12 +331,14 @@ logit 'TRANSFER CONTROL ==== 1120 CHAR LINE' . $str1066os . 'LINE_END';
 logit "NAME = $name";
 logit "EMAIL = $email";
 logit "DESC = $desc";
+logit "NOTES = $notes";
 logit "CONFOPTS = $confopts";
 logit "CPPFLAGS = ".$ENV{CPPFLAGS};
 logit "CFLAGS = ".$ENV{CFLAGS};
 logit "LDFLAGS = ".$ENV{LDFLAGS};
 logit "CC = ".$ENV{CC};
 logit "MAKEFLAGS = ".$ENV{MAKEFLAGS};
+logit "ACLOCAL_FLAGS = ".$ENV{ACLOCAL_FLAGS};
 logit "PKG_CONFIG_PATH = ".$ENV{PKG_CONFIG_PATH};
 logit "target = ".$targetos;
 logit "version = $version"; # script version
@@ -429,13 +432,16 @@ if ($git) {
     unlink "autom4te.cache";
 
     # generate the build files
-    logit "invoke buildconf, but filter off aclocal underquoted definition warnings";
+    logit "invoke buildconf";
     open(F, "./buildconf 2>&1 |") or die;
     open(LOG, ">$buildlog") or die;
     while (<F>) {
-      next if /warning: underquoted definition of/;
-      print;
-      print LOG;
+      my $ll = $_;
+      # ignore messages pertaining to third party m4 files we don't care
+      next if ($ll =~ /aclocal\/gtk\.m4/);
+      next if ($ll =~ /aclocal\/gtkextra\.m4/);
+      print $ll;
+      print LOG $ll;
     }
     close(F);
     close(LOG);

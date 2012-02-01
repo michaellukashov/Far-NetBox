@@ -21,15 +21,7 @@
  * KIND, either express or implied.
  *
  ***************************************************************************/
-
-#include <stdio.h>
-#if defined(WIN32)
-#include <time.h>
-#else
-#ifdef HAVE_SYS_TIME_H
-#include <sys/time.h>
-#endif
-#endif
+#include "setup.h"
 
 #include <curl/curl.h>
 
@@ -95,10 +87,10 @@ void Curl_cookie_clearsess(struct CookieInfo *cookies);
 
 #if defined(CURL_DISABLE_HTTP) || defined(CURL_DISABLE_COOKIES)
 #define Curl_cookie_list(x) NULL
-#define Curl_cookie_loadfiles(x) do { } while (0)
+#define Curl_cookie_loadfiles(x) Curl_nop_stmt
 #define Curl_cookie_init(x,y,z,w) NULL
-#define Curl_cookie_cleanup(x) do { } while (0)
-#define Curl_flush_cookies(x,y)
+#define Curl_cookie_cleanup(x) Curl_nop_stmt
+#define Curl_flush_cookies(x,y) Curl_nop_stmt
 #else
 void Curl_flush_cookies(struct SessionHandle *data, int cleanup);
 void Curl_cookie_cleanup(struct CookieInfo *);

@@ -22,11 +22,6 @@
 
 #include "setup.h"
 
-#include <stdio.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <errno.h>
-
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h> /* required for send() & recv() prototypes */
 #endif
@@ -55,7 +50,6 @@
 #define Curl_sec_read(a,b,c,d) -1
 #endif
 
-#include <string.h>
 #include "curl_memory.h"
 #include "strerror.h"
 
@@ -79,7 +73,7 @@ static size_t convert_lineends(struct SessionHandle *data,
     return(size);
   }
 
-  if(data->state.prev_block_had_trailing_cr == TRUE) {
+  if(data->state.prev_block_had_trailing_cr) {
     /* The previous block of incoming data
        had a trailing CR, which was turned into a LF. */
     if(*startPtr == '\n') {
@@ -533,17 +527,17 @@ CURLcode Curl_read_plain(curl_socket_t sockfd,
  * Returns a regular CURLcode value.
  */
 CURLcode Curl_read(struct connectdata *conn, /* connection data */
-              curl_socket_t sockfd,     /* read from this socket */
-              char *buf,                /* store read data here */
-              size_t sizerequested,     /* max amount to read */
-              ssize_t *n)               /* amount bytes read */
+                   curl_socket_t sockfd,     /* read from this socket */
+                   char *buf,                /* store read data here */
+                   size_t sizerequested,     /* max amount to read */
+                   ssize_t *n)               /* amount bytes read */
 {
   CURLcode curlcode = CURLE_RECV_ERROR;
   ssize_t nread = 0;
   size_t bytesfromsocket = 0;
   char *buffertofill = NULL;
-  bool pipelining = (bool)(conn->data->multi &&
-                     Curl_multi_canPipeline(conn->data->multi));
+  bool pipelining = (conn->data->multi &&
+                     Curl_multi_canPipeline(conn->data->multi)) ? TRUE : FALSE;
 
   /* Set 'num' to 0 or 1, depending on which socket that has been sent here.
      If it is the second socket, we set num to 1. Otherwise to 0. This lets

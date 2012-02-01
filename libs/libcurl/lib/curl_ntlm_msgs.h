@@ -1,5 +1,5 @@
-#ifndef __HTTP_NTLM_H
-#define __HTTP_NTLM_H
+#ifndef HEADER_CURL_NTLM_MSGS_H
+#define HEADER_CURL_NTLM_MSGS_H
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -7,7 +7,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -22,26 +22,42 @@
  *
  ***************************************************************************/
 
-typedef enum {
-  CURLNTLM_NONE, /* not a ntlm */
-  CURLNTLM_BAD,  /* an ntlm, but one we don't like */
-  CURLNTLM_FIRST, /* the first 401-reply we got with NTLM */
-  CURLNTLM_FINE, /* an ntlm we act on */
+#include "setup.h"
 
-  CURLNTLM_LAST  /* last entry in this enum, don't use */
-} CURLntlm;
+#ifdef USE_NTLM
 
-/* this is for ntlm header input */
-CURLntlm Curl_input_ntlm(struct connectdata *conn, bool proxy,
-                         const char *header);
+/* This is to generate a base64 encoded NTLM type-1 message */
+CURLcode Curl_ntlm_create_type1_message(const char *userp,
+                                        const char *passwdp,
+                                        struct ntlmdata *ntlm,
+                                        char **outptr,
+                                        size_t *outlen);
 
-/* this is for creating ntlm header output */
-CURLcode Curl_output_ntlm(struct connectdata *conn, bool proxy);
+/* This is to generate a base64 encoded NTLM type-3 message */
+CURLcode Curl_ntlm_create_type3_message(struct SessionHandle *data,
+                                        const char *userp,
+                                        const char *passwdp,
+                                        struct ntlmdata *ntlm,
+                                        char **outptr,
+                                        size_t *outlen);
 
-void Curl_ntlm_cleanup(struct connectdata *conn);
-#ifndef USE_NTLM
-#define Curl_ntlm_cleanup(x)
+/* This is to decode a NTLM type-2 message */
+CURLcode Curl_ntlm_decode_type2_message(struct SessionHandle *data,
+                                        const char* header,
+                                        struct ntlmdata* ntlm);
+
+/* This is to clean up the ntlm data structure */
+#ifdef USE_WINDOWS_SSPI
+void Curl_ntlm_sspi_cleanup(struct ntlmdata *ntlm);
+#else
+#define Curl_ntlm_sspi_cleanup(x)
 #endif
+
+/* NTLM buffer fixed size, large enough for long user + host + domain */
+#define NTLM_BUFSIZE 1024
+
+/* Stuff only required for curl_ntlm_msgs.c */
+#ifdef BUILDING_CURL_NTLM_MSGS_C
 
 /* Flag bits definitions based on http://davenport.sourceforge.net/ntlm.html */
 
@@ -146,4 +162,9 @@ void Curl_ntlm_cleanup(struct connectdata *conn);
 
 #define NTLMFLAG_NEGOTIATE_56                    (1<<31)
 /* Indicates that 56-bit encryption is supported. */
-#endif
+
+#endif /* BUILDING_CURL_NTLM_MSGS_C */
+
+#endif /* USE_NTLM */
+
+#endif /* HEADER_CURL_NTLM_MSGS_H */

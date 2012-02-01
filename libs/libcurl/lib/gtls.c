@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2012, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -29,14 +29,15 @@
  */
 
 #include "setup.h"
+
 #ifdef USE_GNUTLS
+
 #include <gnutls/gnutls.h>
 #include <gnutls/x509.h>
+#ifndef USE_GNUTLS_NETTLE
 #include <gcrypt.h>
+#endif
 
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
 #endif
@@ -79,6 +80,17 @@ static void tls_log_func(int level, const char *str)
 #endif
 static bool gtls_inited = FALSE;
 
+#if defined(GNUTLS_VERSION_NUMBER)
+#  if (GNUTLS_VERSION_NUMBER >= 0x020c00)
+#    undef gnutls_transport_set_lowat
+#    define gnutls_transport_set_lowat(A,B) Curl_nop_stmt
+#    define USE_GNUTLS_PRIORITY_SET_DIRECT 1
+#  endif
+#  if (GNUTLS_VERSION_NUMBER >= 0x020c03)
+#    define GNUTLS_MAPS_WINSOCK_ERRORS 1
+#  endif
+#endif
+
 /*
  * Custom push and pull callback functions used by GNU TLS to read and write
  * to the socket.  These functions are simple wrappers to send() and recv()
@@ -96,9 +108,13 @@ static bool gtls_inited = FALSE;
  * resort global errno variable using gnutls_transport_set_global_errno,
  * with a transport agnostic error value. This implies that some winsock
  * error translation must take place in these callbacks.
+ *
+ * Paragraph above applies to GNU TLS versions older than 2.12.3, since
+ * this version GNU TLS does its own internal winsock error translation
+ * using system_errno() function.
  */
 
-#ifdef USE_WINSOCK
+#if defined(USE_WINSOCK) && !defined(GNUTLS_MAPS_WINSOCK_ERRORS)
 #  define gtls_EINTR  4
 #  define gtls_EIO    5
 #  define gtls_EAGAIN 11
@@ -119,7 +135,7 @@ static int gtls_mapped_sockerrno(void)
 static ssize_t Curl_gtls_push(void *s, const void *buf, size_t len)
 {
   ssize_t ret = swrite(GNUTLS_POINTER_TO_INT_CAST(s), buf, len);
-#ifdef USE_WINSOCK
+#if defined(USE_WINSOCK) && !defined(GNUTLS_MAPS_WINSOCK_ERRORS)
   if(ret < 0)
     gnutls_transport_set_global_errno(gtls_mapped_sockerrno());
 #endif
@@ -129,7 +145,7 @@ static ssize_t Curl_gtls_push(void *s, const void *buf, size_t len)
 static ssize_t Curl_gtls_pull(void *s, void *buf, size_t len)
 {
   ssize_t ret = sread(GNUTLS_POINTER_TO_INT_CAST(s), buf, len);
-#ifdef USE_WINSOCK
+#if defined(USE_WINSOCK) && !defined(GNUTLS_MAPS_WINSOCK_ERRORS)
   if(ret < 0)
     gnutls_transport_set_global_errno(gtls_mapped_sockerrno());
 #endif
@@ -187,7 +203,7 @@ static void showtime(struct SessionHandle *data,
            tm->tm_hour,
            tm->tm_min,
            tm->tm_sec);
-  infof(data, "%s", data->state.buffer);
+  infof(data, "%s\n", data->state.buffer);
 }
 
 static gnutls_datum load_file (const char *file)
@@ -310,7 +326,9 @@ static CURLcode
 gtls_connect_step1(struct connectdata *conn,
                    int sockindex)
 {
+#ifndef USE_GNUTLS_PRIORITY_SET_DIRECT
   static const int cert_type_priority[] = { GNUTLS_CRT_X509, 0 };
+#endif
   struct SessionHandle *data = conn->data;
   gnutls_session session;
   int rc;
@@ -430,18 +448,32 @@ gtls_connect_step1(struct connectdata *conn,
     return CURLE_SSL_CONNECT_ERROR;
 
   if(data->set.ssl.version == CURL_SSLVERSION_SSLv3) {
+#ifndef USE_GNUTLS_PRIORITY_SET_DIRECT
     static const int protocol_priority[] = { GNUTLS_SSL3, 0 };
-    gnutls_protocol_set_priority(session, protocol_priority);
+    rc = gnutls_protocol_set_priority(session, protocol_priority);
+#else
+    const char *err;
+    /* the combination of the cipher ARCFOUR with SSL 3.0 and TLS 1.0 is not
+       vulnerable to attacks such as the BEAST, why this code now explicitly
+       asks for that
+    */
+    rc = gnutls_priority_set_direct(session,
+                                    "NORMAL:-VERS-TLS-ALL:+VERS-SSL3.0:"
+                                    "-CIPHER-ALL:+ARCFOUR-128",
+                                    &err);
+#endif
     if(rc != GNUTLS_E_SUCCESS)
       return CURLE_SSL_CONNECT_ERROR;
   }
 
+#ifndef USE_GNUTLS_PRIORITY_SET_DIRECT
   /* Sets the priority on the certificate types supported by gnutls. Priority
      is higher for types specified before others. After specifying the types
      you want, you must append a 0. */
   rc = gnutls_certificate_type_set_priority(session, cert_type_priority);
   if(rc != GNUTLS_E_SUCCESS)
     return CURLE_SSL_CONNECT_ERROR;
+#endif
 
   if(data->set.str[STRING_CERT]) {
     if(gnutls_certificate_set_x509_key_file(
@@ -1011,7 +1043,9 @@ int Curl_gtls_seed(struct SessionHandle *data)
   static bool ssl_seeded = FALSE;
 
   /* Quickly add a bit of entropy */
+#ifndef USE_GNUTLS_NETTLE
   gcry_fast_random_poll();
+#endif
 
   if(!ssl_seeded || data->set.str[STRING_SSL_RANDOM_FILE] ||
      data->set.str[STRING_SSL_EGDSOCKET]) {

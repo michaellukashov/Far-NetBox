@@ -26,6 +26,7 @@ AC_PREREQ(2.57)
 dnl We don't know the version number "statically" so we use a dash here
 AC_INIT([curl], [-], [a suitable curl mailing list: http://curl.haxx.se/mail/])
 
+XC_OVR_ZZ50
 CURL_OVERRIDE_AUTOCONF
 
 dnl configure script copyright
@@ -313,6 +314,26 @@ if test "x$cross_compiling" != "xno" &&
    test "x$enable_shared" != "xno"; then
   supports_unittests=no
 fi
+
+# IRIX 6.5.24 gcc 3.3 autobuilds fail unittests library compilation due to
+# a problem related with OpenSSL headers and library versions not matching.
+# Disable unit tests while time to further investigate this is found.
+case $host in
+  mips-sgi-irix6.5)
+    if test "$compiler_id" = "GNU_C"; then
+      supports_unittests=no
+    fi
+    ;;
+esac
+
+# All AIX autobuilds fails unit tests linking against unittests library
+# due to unittests library being built with no symbols or members. Libtool ?
+# Disable unit tests while time to further investigate this is found.
+case $host_os in
+  aix*)
+    supports_unittests=no
+    ;;
+esac
 
 dnl Build unit tests when option --enable-debug is given.
 if test "x$want_debug" = "xyes" &&
@@ -1330,7 +1351,7 @@ if test X"$OPT_SSL" != Xno; then
     dnl the user told us to look
     OPENSSL_PCDIR="$OPT_SSL/lib/pkgconfig"
     AC_MSG_NOTICE([PKG_CONFIG_LIBDIR will be set to "$OPENSSL_PCDIR"])
-    if test -e "$OPENSSL_PCDIR/openssl.pc"; then
+    if test -f "$OPENSSL_PCDIR/openssl.pc"; then
       PKGTEST="yes"
     fi
 
@@ -1494,7 +1515,8 @@ if test X"$OPT_SSL" != Xno; then
                     RAND_egd \
                     ENGINE_cleanup \
                     CRYPTO_cleanup_all_ex_data \
-                    SSL_get_shutdown )
+                    SSL_get_shutdown \
+                    SSLv2_client_method )
 
     dnl Make an attempt to detect if this is actually yassl's headers and
     dnl OpenSSL emulation layer. We still leave everything else believing
@@ -1779,17 +1801,30 @@ if test "$OPENSSL_ENABLED" != "1"; then
 fi dnl OPENSSL != 1
 
 dnl ---
-dnl If GnuTLS is enabled, we MUST verify that it uses libgcrypt since
-dnl curl code relies on that but recent GnuTLS versions can in fact build
-dnl with different crypto libraries which curl right now cannot handle
+dnl Check which crypto backend GnuTLS uses
 dnl ---
 
 if test "$GNUTLS_ENABLED" = "1"; then
-  AC_CHECK_LIB(gcrypt,
-               gcry_control, ,
-    [
-      AC_MSG_ERROR([need GnuTLS built with gcrypt to function with GnuTLS])
-    ])
+  USE_GNUTLS_NETTLE=
+  # First check if we can detect either crypto library via transitive linking
+  AC_CHECK_LIB(gnutls, nettle_MD5Init, [ USE_GNUTLS_NETTLE=1 ])
+  if test "$USE_GNUTLS_NETTLE" = ""; then
+    AC_CHECK_LIB(gnutls, gcry_control, [ USE_GNUTLS_NETTLE=0 ])
+  fi
+  # If not, try linking directly to both of them to see if they are available
+  if test "$USE_GNUTLS_NETTLE" = ""; then
+    AC_CHECK_LIB(nettle, nettle_MD5Init, [ USE_GNUTLS_NETTLE=1 ])
+  fi
+  if test "$USE_GNUTLS_NETTLE" = ""; then
+    AC_CHECK_LIB(gcrypt, gcry_control, [ USE_GNUTLS_NETTLE=0 ])
+  fi
+  if test "$USE_GNUTLS_NETTLE" = ""; then
+    AC_MSG_ERROR([GnuTLS found, but neither gcrypt nor nettle found])
+  fi
+  if test "$USE_GNUTLS_NETTLE" = "1"; then
+    AC_DEFINE(USE_GNUTLS_NETTLE, 1, [if GnuTLS uses nettle as crypto backend])
+    AC_SUBST(USE_GNUTLS_NETTLE, [1])
+  fi
 fi
 
 dnl ---
@@ -2312,54 +2347,200 @@ if test X"$OPT_LIBRTMP" != Xno; then
 fi
 
 dnl **********************************************************************
+dnl Check for linker switch for versioned symbols
+dnl **********************************************************************
+
+AC_MSG_CHECKING([if libraries can be versioned])
+GLD=`$LD --help < /dev/null 2>/dev/null | grep version-script`
+if test -z "$GLD"; then
+    versioned_symbols_flavour=
+    AC_MSG_RESULT(no)
+    AC_MSG_WARN(***
+*** You need an ld version supporting the --version-script option.
+)
+else
+    AC_MSG_RESULT(yes)
+
+AC_MSG_CHECKING([whether versioned symbols are wanted])
+versioned_symbols_flavour=
+
+AC_ARG_ENABLE(versioned-symbols,
+AC_HELP_STRING([--enable-versioned-symbols], [Enable versioned symbols in shared library])
+AC_HELP_STRING([--disable-versioned-symbols], [Disable versioned symbols in shared library]),
+[ case "$enableval" in
+  yes) AC_MSG_RESULT(yes)
+    if test "x$OPENSSL_ENABLED" = "x1"; then
+      versioned_symbols_flavour="OPENSSL_"
+    elif test "x$GNUTLS_ENABLED" == "x1"; then
+      versioned_symbols_flavour="GNUTLS_"
+    elif test "x$NSS_ENABLED" == "x1"; then
+      versioned_symbols_flavour="NSS_"
+    elif test "x$POLARSSL_ENABLED" == "x1"; then
+      versioned_symbols_flavour="POLARSSL_"
+    elif test "x$CYASSL_ENABLED" == "x1"; then
+      versioned_symbols_flavour="CYASSL_"
+    elif test "x$AXTLS_ENABLED" == "x1"; then
+      versioned_symbols_flavour="AXTLS_"
+    else
+      versioned_symbols_flavour=""
+    fi
+    versioned_symbols="yes"
+    ;;
+
+  *)   AC_MSG_RESULT(no)
+    ;;
+  esac
+], [
+AC_MSG_RESULT(no)
+]
+)
+fi
+
+AC_SUBST(VERSIONED_FLAVOUR, ["$versioned_symbols_flavour"])
+AM_CONDITIONAL(VERSIONED_SYMBOLS, test "x$versioned_symbols" = "xyes")
+
+
+dnl **********************************************************************
 dnl Check for the presence of IDN libraries and headers
 dnl **********************************************************************
 
 AC_MSG_CHECKING([whether to build with libidn])
+OPT_IDN="default"
 AC_ARG_WITH(libidn,
 AC_HELP_STRING([--with-libidn=PATH],[Enable libidn usage])
 AC_HELP_STRING([--without-libidn],[Disable libidn usage]),
-  [LIBIDN="$withval"])
-
-case "$LIBIDN" in
+  [OPT_IDN=$withval])
+case "$OPT_IDN" in
   no)
-       AC_MSG_RESULT(no)
-       ;;
-  *)   AC_MSG_RESULT(yes)
-
-       idn=""
-       dnl if there is a given path, check that FIRST
-       if test -n "$LIBIDN"; then
-         if test "x$LIBIDN" != "xyes"; then
-            oldLDFLAGS=$LDFLAGS
-            oldCPPFLAGS=$CPPFLAGS
-            LDFLAGS="$LDFLAGS -L$LIBIDN/lib"
-            CPPFLAGS="$CPPFLAGS -I$LIBIDN/include"
-            idn="yes"
-            AC_CHECK_LIB(idn, idna_to_ascii_4i, ,
-                         idn=""
-                         LDFLAGS=$oldLDFLAGS
-                         CPPFLAGS=$oldCPPFLAGS)
-         fi
-       fi
-
-       if test "x$idn" != "xyes"; then
-          dnl check with default paths
-          idn="yes"
-          AC_CHECK_LIB(idn, idna_to_ascii_lz, ,
-                       idn="")
-       fi
-
-       if test "x$idn" = "xyes"; then
-         curl_idn_msg="enabled"
-         AC_SUBST(IDN_ENABLED, [1])
-         dnl different versions of libidn have different setups of these:
-         AC_CHECK_FUNCS( idn_free idna_strerror tld_strerror)
-         AC_CHECK_HEADERS( idn-free.h tld.h )
-       fi
-
-       ;;
+    dnl --without-libidn option used
+    want_idn="no"
+    AC_MSG_RESULT([no])
+    ;;
+  default)
+    dnl configure option not specified
+    want_idn="yes"
+    want_idn_path="default"
+    AC_MSG_RESULT([(assumed) yes])
+    ;;
+  yes)
+    dnl --with-libidn option used without path
+    want_idn="yes"
+    want_idn_path="default"
+    AC_MSG_RESULT([yes])
+    ;;
+  *)
+    dnl --with-libidn option used with path
+    want_idn="yes"
+    want_idn_path="$withval"
+    AC_MSG_RESULT([yes ($withval)])
+    ;;
 esac
+
+if test "$want_idn" = "yes"; then
+  dnl idn library support has been requested
+  clean_CPPFLAGS="$CPPFLAGS"
+  clean_LDFLAGS="$LDFLAGS"
+  clean_LIBS="$LIBS"
+  PKGCONFIG="no"
+  #
+  if test "$want_idn_path" != "default"; then
+    dnl path has been specified
+    IDN_PCDIR="$want_idn_path/lib$libsuff/pkgconfig"
+    CURL_CHECK_PKGCONFIG(libidn, [$IDN_PCDIR])
+    if test "$PKGCONFIG" != "no"; then
+      IDN_LIBS=`CURL_EXPORT_PCDIR([$IDN_PCDIR]) dnl
+        $PKGCONFIG --libs-only-l libidn 2>/dev/null`
+      IDN_LDFLAGS=`CURL_EXPORT_PCDIR([$IDN_PCDIR]) dnl
+        $PKGCONFIG --libs-only-L libidn 2>/dev/null`
+      IDN_CPPFLAGS=`CURL_EXPORT_PCDIR([$IDN_PCDIR]) dnl
+        $PKGCONFIG --cflags-only-I libidn 2>/dev/null`
+      IDN_DIR=`echo $IDN_LDFLAGS | $SED -e 's/-L//'`
+    else
+      dnl pkg-config not available or provides no info
+      IDN_LIBS="-lidn"
+      IDN_LDFLAGS="-L$want_idn_path/lib$libsuff"
+      IDN_CPPFLAGS="-I$want_idn_path/include"
+      IDN_DIR="$want_idn_path/lib$libsuff"
+    fi
+  else
+    dnl path not specified
+    CURL_CHECK_PKGCONFIG(libidn)
+    if test "$PKGCONFIG" != "no"; then
+      IDN_LIBS=`$PKGCONFIG --libs-only-l libidn 2>/dev/null`
+      IDN_LDFLAGS=`$PKGCONFIG --libs-only-L libidn 2>/dev/null`
+      IDN_CPPFLAGS=`$PKGCONFIG --cflags-only-I libidn 2>/dev/null`
+      IDN_DIR=`echo $IDN_LDFLAGS | $SED -e 's/-L//'`
+    else
+      dnl pkg-config not available or provides no info
+      IDN_LIBS="-lidn"
+    fi
+  fi
+  #
+  if test "$PKGCONFIG" != "no"; then
+    AC_MSG_NOTICE([pkg-config: IDN_LIBS: "$IDN_LIBS"])
+    AC_MSG_NOTICE([pkg-config: IDN_LDFLAGS: "$IDN_LDFLAGS"])
+    AC_MSG_NOTICE([pkg-config: IDN_CPPFLAGS: "$IDN_CPPFLAGS"])
+    AC_MSG_NOTICE([pkg-config: IDN_DIR: "$IDN_DIR"])
+  else
+    AC_MSG_NOTICE([IDN_LIBS: "$IDN_LIBS"])
+    AC_MSG_NOTICE([IDN_LDFLAGS: "$IDN_LDFLAGS"])
+    AC_MSG_NOTICE([IDN_CPPFLAGS: "$IDN_CPPFLAGS"])
+    AC_MSG_NOTICE([IDN_DIR: "$IDN_DIR"])
+  fi
+  #
+  CPPFLAGS="$IDN_CPPFLAGS $CPPFLAGS"
+  LDFLAGS="$IDN_LDFLAGS $LDFLAGS"
+  LIBS="$IDN_LIBS $LIBS"
+  #
+  AC_MSG_CHECKING([if idna_to_ascii_4i can be linked])
+  AC_LINK_IFELSE([
+    AC_LANG_FUNC_LINK_TRY([idna_to_ascii_4i])
+  ],[
+    AC_MSG_RESULT([yes])
+    tst_links_libidn="yes"
+  ],[
+    AC_MSG_RESULT([no])
+    tst_links_libidn="no"
+  ])
+  if test "$tst_links_libidn" = "no"; then
+    AC_MSG_CHECKING([if idna_to_ascii_lz can be linked])
+    AC_LINK_IFELSE([
+      AC_LANG_FUNC_LINK_TRY([idna_to_ascii_lz])
+    ],[
+      AC_MSG_RESULT([yes])
+      tst_links_libidn="yes"
+    ],[
+      AC_MSG_RESULT([no])
+      tst_links_libidn="no"
+    ])
+  fi
+  #
+  if test "$tst_links_libidn" = "yes"; then
+    AC_DEFINE(HAVE_LIBIDN, 1, [Define to 1 if you have the `idn' library (-lidn).])
+    dnl different versions of libidn have different setups of these:
+    AC_CHECK_FUNCS( idn_free idna_strerror tld_strerror )
+    AC_CHECK_HEADERS( idn-free.h tld.h )
+    if test "x$ac_cv_header_tld_h" = "xyes"; then
+      AC_SUBST([IDN_ENABLED], [1])
+      curl_idn_msg="enabled"
+      if test -n "$IDN_DIR"; then
+        LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$IDN_DIR"
+        export LD_LIBRARY_PATH
+        AC_MSG_NOTICE([Added $IDN_DIR to LD_LIBRARY_PATH])
+      fi
+    else
+      AC_MSG_WARN([Libraries for IDN support too old: IDN disabled])
+      CPPFLAGS="$clean_CPPFLAGS"
+      LDFLAGS="$clean_LDFLAGS"
+      LIBS="$clean_LIBS"
+    fi
+  else
+    AC_MSG_WARN([Cannot find libraries for IDN support: IDN disabled])
+    CPPFLAGS="$clean_CPPFLAGS"
+    LDFLAGS="$clean_LDFLAGS"
+    LIBS="$clean_LIBS"
+  fi
+fi
 
 
 dnl Let's hope this split URL remains working:
@@ -2419,6 +2600,7 @@ AC_CHECK_HEADERS(
         stdbool.h \
         arpa/tftp.h \
         sys/filio.h \
+        sys/wait.h \
         setjmp.h,
 dnl to do if not found
 [],
@@ -2564,6 +2746,7 @@ CURL_CHECK_FUNC_SIGINTERRUPT
 CURL_CHECK_FUNC_SIGNAL
 CURL_CHECK_FUNC_SIGSETJMP
 CURL_CHECK_FUNC_SOCKET
+CURL_CHECK_FUNC_SOCKETPAIR
 CURL_CHECK_FUNC_STRCASECMP
 CURL_CHECK_FUNC_STRCASESTR
 CURL_CHECK_FUNC_STRCMPI
@@ -2794,6 +2977,10 @@ AC_HELP_STRING([--disable-crypto-auth],[Disable cryptographic authentication]),
        AC_MSG_RESULT(yes)
 )
 
+CURL_CHECK_OPTION_NTLM_WB
+
+CURL_CHECK_NTLM_WB
+
 dnl ************************************************************
 dnl disable TLS-SRP authentication
 dnl
@@ -2969,6 +3156,9 @@ if test "x$CURL_DISABLE_HTTP" != "x1"; then
   if test "x$USE_SSLEAY" = "x1" -o "x$USE_WINDOWS_SSPI" = "x1" \
       -o "x$GNUTLS_ENABLED" = "x1" -o "x$NSS_ENABLED" = "x1"; then
     SUPPORT_FEATURES="$SUPPORT_FEATURES NTLM"
+    if test "x$NTLM_WB_ENABLED" = "x1"; then
+      SUPPORT_FEATURES="$SUPPORT_FEATURES NTLM_WB"
+    fi
   fi
 fi
 if test "x$USE_TLS_SRP" = "x1"; then
@@ -3079,6 +3269,7 @@ AC_CONFIG_FILES([Makefile \
            include/curl/Makefile \
            src/Makefile \
            lib/Makefile \
+           lib/libcurl.vers \
            tests/Makefile \
            tests/data/Makefile \
            tests/server/Makefile \

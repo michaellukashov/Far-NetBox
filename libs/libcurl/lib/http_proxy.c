@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2012, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -27,6 +27,7 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+
 #include "urldata.h"
 #include <curl/curl.h>
 #include "http_proxy.h"
@@ -201,11 +202,11 @@ CURLcode Curl_proxyCONNECT(struct connectdata *conn,
       else {
         DEBUGF(infof(data,
                      "Multi mode finished polling for response from "
-                     "proxy CONNECT."));
+                     "proxy CONNECT\n"));
       }
     }
     else {
-      DEBUGF(infof(data, "Easy mode waiting response from proxy CONNECT."));
+      DEBUGF(infof(data, "Easy mode waiting response from proxy CONNECT\n"));
     }
 
     /* at this point, either:
@@ -408,8 +409,15 @@ CURLcode Curl_proxyCONNECT(struct connectdata *conn,
                         keepon=FALSE;
                       }
                     }
-                    else
+                    else {
                       keepon = FALSE;
+                      if(200 == data->info.httpproxycode) {
+                        if(gotbytes - (i+1))
+                          failf(data, "Proxy CONNECT followed by %zd bytes "
+                                "of opaque data. Data ignored (known bug #39)",
+                                gotbytes - (i+1));
+                      }
+                    }
                     break; /* breaks out of for-loop, not switch() */
                   }
 
