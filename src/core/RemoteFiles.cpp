@@ -1365,9 +1365,8 @@ bool TRemoteFile::GetHaveFullFileName() const
 int TRemoteFile::GetAttr()
 {
     int Result = 0;
-    nb::Error(SNotImplemented, 215);
-    if (GetRights()->GetReadOnly()) { Result |= 0; } // FIXME faReadOnly;
-    if (GetIsHidden()) { Result |= 0; } // FIXME faHidden;
+    if (GetRights()->GetReadOnly()) { Result |= faReadOnly; }
+    if (GetIsHidden()) { Result |= faHidden; }
     return Result;
 }
 //---------------------------------------------------------------------------
