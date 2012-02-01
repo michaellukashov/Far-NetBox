@@ -1086,7 +1086,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin *AFarPlugin) :
     }
     std::wstring LegalCopyright; // = Configuration->GetFileInfoString(L"LegalCopyright");
 
-    int Height = 16;
+    int Height = 15;
 #ifndef NO_FILEZILLA
     Height += 2;
 #endif
@@ -1121,24 +1121,21 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin *AFarPlugin) :
     Text->SetCenterGroup(true);
 
     Text = new TFarText(this);
-    // Text->Move(0, 1);
     Text->SetCaption(FMTLOAD(WINSCPFAR_BASED_VERSION, LoadStr(WINSCPFAR_VERSION).c_str()));
-    Text->SetCenterGroup(true);
-
-    Text = new TFarText(this);
-    // Text->Move(0, 1);
-    Text->SetCaption(LoadStr(WINSCPFAR_BASED_COPYRIGHT));
     Text->SetCenterGroup(true);
 
     if (!ProductName.empty())
     {
         Text = new TFarText(this);
-        Text->Move(0, 1);
         Text->SetCaption(FORMAT(GetMsg(ABOUT_PRODUCT_VERSION).c_str(),
                                 ProductName.c_str(),
                                 LoadStr(WINSCP_VERSION).c_str()));
         Text->SetCenterGroup(true);
     }
+
+    Text = new TFarText(this);
+    Text->SetCaption(LoadStr(WINSCPFAR_BASED_COPYRIGHT));
+    Text->SetCenterGroup(true);
 
     if (!Comments.empty())
     {
@@ -2956,7 +2953,7 @@ void TSessionDialog::UpdateControls()
 
     // Environment tab
     DSTModeUnixCheck->SetEnabled(!FtpProtocol);
-    UtfCombo->SetEnabled(FSProtocol != fsSCPonly);
+    // UtfCombo->SetEnabled(FSProtocol != fsSCPonly);
     TimeDifferenceEdit->SetEnabled((FtpProtocol || (FSProtocol == fsSCPonly)));
 
     // Recycle bin tab

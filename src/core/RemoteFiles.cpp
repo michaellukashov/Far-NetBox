@@ -11,6 +11,7 @@
 #include "Interface.h"
 #include "Terminal.h"
 #include "TextsCore.h"
+#include "PuttyIntf.h"
 //---------------------------------------------------------------------------
 
 /* TODO 1 : Path class instead of std::wstring (handle relativity...) */
@@ -987,7 +988,7 @@ std::wstring TRemoteFile::GetRightsStr()
     return FRights->GetUnknown() ? std::wstring() : FRights->GetText();
 }
 //---------------------------------------------------------------------------
-void TRemoteFile::SetListingStr(const std::wstring value)
+void TRemoteFile::SetListingStr(const std::wstring value, bool Utf)
 {
     // DEBUG_PRINTF(L"begin, value = %s", value.c_str());
     // Value stored in 'value' can be used for error message
@@ -1365,10 +1366,16 @@ bool TRemoteFile::GetHaveFullFileName() const
 int TRemoteFile::GetAttr()
 {
     int Result = 0;
-    nb::Error(SNotImplemented, 215);
-    if (GetRights()->GetReadOnly()) { Result |= 0; } // FIXME faReadOnly;
-    if (GetIsHidden()) { Result |= 0; } // FIXME faHidden;
+    if (GetRights()->GetReadOnly()) { Result |= faReadOnly; }
+    if (GetIsHidden()) { Result |= faHidden; }
     return Result;
+}
+//---------------------------------------------------------------------------
+std::wstring TRemoteFile::DecodeString(const std::wstring Value, bool Utf)
+{
+    if (!Utf) return Value;
+    std::string Result = ::DecodeUTF(nb::W2MB(Value.c_str()));
+    return nb::MB2W(Result.c_str());
 }
 //---------------------------------------------------------------------------
 void TRemoteFile::SetTerminal(TTerminal *value)

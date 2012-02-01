@@ -173,7 +173,7 @@ public:
     void SetLinkTo(const std::wstring value) { FLinkTo = value; }
     // __property std::wstring ListingStr = { read = GetListingStr, write = SetListingStr };
     std::wstring GetListingStr();
-    void SetListingStr(const std::wstring value);
+    void SetListingStr(const std::wstring value, bool Utf);
     // __property TRights * Rights = { read = FRights, write = SetRights };
     TRights *GetRights() const { return FRights; }
     void SetRights(TRights *value);
@@ -206,6 +206,8 @@ public:
     bool GetIsInaccesibleDirectory() const;
     // __property std::wstring Extension  = { read=GetExtension };
     std::wstring GetExtension();
+private:
+    std::wstring DecodeString(const std::wstring Value, bool Utf);
 };
 //---------------------------------------------------------------------------
 class TRemoteDirectoryFile : public TRemoteFile
@@ -467,21 +469,34 @@ private:
     // unsigned short GetNumberUnset() const;
 };
 //---------------------------------------------------------------------------
-enum TValidProperty { vpRights, vpGroup, vpOwner, vpModification, vpLastAccess };
+enum TValidProperty
+{
+    vpRights = 0x1,
+    vpGroup = 0x2,
+    vpOwner = 0x4,
+    vpModification = 0x8,
+    vpLastAccess = 0x10,
+};
 // FIXME
 // typedef Set<TValidProperty, vpRights, vpLastAccess> TValidProperties;
 struct TValidProperties
 {
 public:
+    TValidProperties() :
+        FValue(0)
+    {
+    }
     void Clear()
-    {}
+    {
+        FValue = 0;
+    }
     bool Contains(TValidProperty value) const
     {
-        return false;
+        return (FValue & value) != 0;
     }
     bool operator == (const TValidProperties &rhs) const
     {
-        return false;
+        return FValue == rhs.FValue;
     }
     bool operator != (const TValidProperties &rhs) const
     {
@@ -489,16 +504,20 @@ public:
     }
     TValidProperties &operator << (const TValidProperty value)
     {
+        FValue |= value;
         return *this;
     }
     TValidProperties &operator >> (const TValidProperty value)
     {
+        FValue &= ~((__int64)value);
         return *this;
     }
     bool Empty() const
     {
-        return true;
+        return FValue == 0;
     }
+private:
+    __int64 FValue;
 };
 
 

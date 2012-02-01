@@ -856,7 +856,7 @@ size_t TSecureShell::Receive(char *Buf, size_t Len)
     return Len;
 }
 //---------------------------------------------------------------------------
-std::wstring TSecureShell::ReceiveLine()
+std::wstring TSecureShell::ReceiveLine(bool Utf)
 {
     unsigned Index = 0;
     char Ch;
@@ -894,10 +894,11 @@ std::wstring TSecureShell::ReceiveLine()
     }
     while (!EOL);
 
-    // DEBUG_PRINTF(L"Line1 = %s", nb::MB2W(Line.c_str()).c_str());
+    // DEBUG_PRINTF2("Line1 = %s", Line.c_str());
+    std::string Result = Utf ? ::DecodeUTF(Line) : Line;
     // We don't want end-of-line character
     // Line.resize(Line.size()-1);
-    std::wstring LineW = ::TrimRight(nb::MB2W(Line.c_str()));
+    std::wstring LineW = ::TrimRight(nb::MB2W(Result.c_str()));
     // DEBUG_PRINTF(L"Line2 = %s", LineW.c_str());
     CaptureOutput(llOutput, LineW);
     return LineW;
@@ -1034,15 +1035,25 @@ void TSecureShell::SendNull()
     Send("", 1);
 }
 //---------------------------------------------------------------------------
-void TSecureShell::SendStr(const std::wstring Str)
+void TSecureShell::SendStr(const std::wstring Str, bool Utf)
 {
     CheckConnection();
-    Send(nb::W2MB(Str.c_str()).c_str(), Str.size());
+    // Send(nb::W2MB(Str.c_str()).c_str(), Str.size());
+    if (!Utf)
+    {
+        std::string str = nb::W2MB(Str.c_str());
+        Send(str.c_str(), str.size());
+    }
+    else
+    {
+        std::string encoded = ::EncodeUTF(Str);
+        Send(encoded.c_str(), encoded.size());
+    }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::SendLine(const std::wstring Line)
+void TSecureShell::SendLine(const std::wstring Line, bool Utf)
 {
-    SendStr(Line);
+    SendStr(Line, Utf);
     Send("\n", 1);
     FLog->Add(llInput, Line);
 }
@@ -1563,7 +1574,7 @@ bool TSecureShell::ProcessNetworkEvents(SOCKET Socket)
 bool TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
                                    WSANETWORKEVENTS *Events)
 {
-    // DEBUG_PRINTF(L"begin");
+    // DEBUG_PRINTF(L"begin, MSec = %u", MSec);
     CheckConnection();
 
     bool Result = false;
@@ -1572,7 +1583,7 @@ bool TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
     {
         if (Configuration->GetActualLogProtocol() >= 2)
         {
-            LogEvent(L"Looking for network events");
+            // LogEvent(L"Looking for network events");
         }
         unsigned int TicksBefore = GetTickCount();
         int HandleCount;
@@ -1632,7 +1643,7 @@ bool TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
             {
                 if (Configuration->GetActualLogProtocol() >= 2)
                 {
-                    LogEvent(L"Timeout waiting for network events");
+                    // LogEvent(L"Timeout waiting for network events");
                 }
 
                 MSec = 0;

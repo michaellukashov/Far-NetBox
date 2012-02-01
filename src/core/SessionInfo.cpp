@@ -1,15 +1,15 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 
-#include "boostdefines.hpp"
-#include <boost/scope_exit.hpp>
-#include <boost/bind.hpp>
-
 #include <stdio.h>
 #include <lmcons.h>
 #define SECURITY_WIN32
 #include <sspi.h>
 #include <secext.h>
+
+#include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
+#include <boost/bind.hpp>
 
 #include "Common.h"
 #include "SessionInfo.h"
