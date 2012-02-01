@@ -856,7 +856,7 @@ size_t TSecureShell::Receive(char *Buf, size_t Len)
     return Len;
 }
 //---------------------------------------------------------------------------
-std::wstring TSecureShell::ReceiveLine()
+std::wstring TSecureShell::ReceiveLine(bool Utf)
 {
     unsigned Index = 0;
     char Ch;
@@ -894,10 +894,11 @@ std::wstring TSecureShell::ReceiveLine()
     }
     while (!EOL);
 
-    // DEBUG_PRINTF(L"Line1 = %s", nb::MB2W(Line.c_str()).c_str());
+    // DEBUG_PRINTF2("Line1 = %s", Line.c_str());
+    std::string Result = Utf ? ::DecodeUTF(Line) : Line;
     // We don't want end-of-line character
     // Line.resize(Line.size()-1);
-    std::wstring LineW = ::TrimRight(nb::MB2W(Line.c_str()));
+    std::wstring LineW = ::TrimRight(nb::MB2W(Result.c_str()));
     // DEBUG_PRINTF(L"Line2 = %s", LineW.c_str());
     CaptureOutput(llOutput, LineW);
     return LineW;
