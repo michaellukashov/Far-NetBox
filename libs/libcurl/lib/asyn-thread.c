@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2012, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -22,9 +22,6 @@
 
 #include "setup.h"
 
-#include <string.h>
-#include <errno.h>
-
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
 #endif
@@ -37,16 +34,12 @@
 #ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
 #endif
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>     /* required for free() prototypes */
-#endif
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>     /* for the close() proto */
 #endif
 #ifdef __VMS
 #include <in.h>
 #include <inet.h>
-#include <stdlib.h>
 #endif
 
 #if defined(USE_THREADS_POSIX)
@@ -182,7 +175,6 @@ struct thread_sync_data {
 
 struct thread_data {
   curl_thread_t thread_hnd;
-  curl_socket_t dummy_sock;
   unsigned int poll_interval;
   int interval_end;
   struct thread_sync_data tsd;
@@ -336,9 +328,6 @@ static void destroy_async_data (struct Curl_async *async)
   if(async->os_specific) {
     struct thread_data *td = (struct thread_data*) async->os_specific;
 
-    if(td->dummy_sock != CURL_SOCKET_BAD)
-      sclose(td->dummy_sock);
-
     if(td->thread_hnd != curl_thread_t_null)
       Curl_thread_join(&td->thread_hnd);
 
@@ -371,7 +360,6 @@ static bool init_resolve_thread (struct connectdata *conn,
   conn->async.done = FALSE;
   conn->async.status = 0;
   conn->async.dns = NULL;
-  td->dummy_sock = CURL_SOCKET_BAD;
   td->thread_hnd = curl_thread_t_null;
 
   if(!init_thread_sync_data(&td->tsd, hostname, port, hints))
@@ -381,16 +369,6 @@ static bool init_resolve_thread (struct connectdata *conn,
   conn->async.hostname = strdup(hostname);
   if(!conn->async.hostname)
     goto err_exit;
-
-#ifdef WIN32
-  /* This socket is only to keep Curl_resolver_fdset() and select() happy;
-   * should never become signalled for read since it's unbound but
-   * Windows needs at least 1 socket in select().
-   */
-  td->dummy_sock = socket(AF_INET, SOCK_DGRAM, 0);
-  if(td->dummy_sock == CURL_SOCKET_BAD)
-    goto err_exit;
-#endif
 
 #ifdef HAVE_GETADDRINFO
   td->thread_hnd = Curl_thread_create(getaddrinfo_thread, &td->tsd);
@@ -421,7 +399,7 @@ static bool init_resolve_thread (struct connectdata *conn,
    socket error string function can be used for this pupose. */
 static const char *gai_strerror(int ecode)
 {
-  switch (ecode){
+  switch (ecode) {
   case EAI_AGAIN:
     return "The name could not be resolved at this time";
   case EAI_BADFLAGS:
@@ -581,17 +559,9 @@ int Curl_resolver_getsock(struct connectdata *conn,
                           curl_socket_t *socks,
                           int numsocks)
 {
-  const struct thread_data *td =
-    (const struct thread_data *) conn->async.os_specific;
-
-  if(td && td->dummy_sock != CURL_SOCKET_BAD) {
-    if(numsocks) {
-      /* return one socket waiting for readable, even though this is just
-         a dummy */
-      socks[0] = td->dummy_sock;
-      return GETSOCK_READSOCK(0);
-    }
-  }
+  (void)conn;
+  (void)socks;
+  (void)numsocks;
   return 0;
 }
 
@@ -633,14 +603,28 @@ Curl_addrinfo *Curl_resolver_getaddrinfo(struct connectdata *conn,
                                          int *waitp)
 {
   struct addrinfo hints;
+  struct in_addr in;
   Curl_addrinfo *res;
   int error;
   char sbuf[NI_MAXSERV];
   int pf = PF_INET;
+#ifdef CURLRES_IPV6
+  struct in6_addr in6;
+#endif /* CURLRES_IPV6 */
 
   *waitp = 0; /* default to synchronous response */
 
-#ifndef CURLRES_IPV4
+  /* First check if this is an IPv4 address string */
+  if(Curl_inet_pton(AF_INET, hostname, &in) > 0)
+    /* This is a dotted IP address 123.123.123.123-style */
+    return Curl_ip2addr(AF_INET, &in, hostname, port);
+
+#ifdef CURLRES_IPV6
+  /* check if this is an IPv6 address string */
+  if(Curl_inet_pton (AF_INET6, hostname, &in6) > 0)
+    /* This is an IPv6 address literal */
+    return Curl_ip2addr(AF_INET6, &in6, hostname, port);
+
   /*
    * Check if a limited name resolve has been requested.
    */
@@ -660,7 +644,7 @@ Curl_addrinfo *Curl_resolver_getaddrinfo(struct connectdata *conn,
     /* the stack seems to be a non-ipv6 one */
     pf = PF_INET;
 
-#endif /* !CURLRES_IPV4 */
+#endif /* CURLRES_IPV6 */
 
   memset(&hints, 0, sizeof(hints));
   hints.ai_family = pf;
@@ -688,5 +672,14 @@ Curl_addrinfo *Curl_resolver_getaddrinfo(struct connectdata *conn,
 }
 
 #endif /* !HAVE_GETADDRINFO */
+
+CURLcode Curl_set_dns_servers(struct SessionHandle *data,
+                              char *servers)
+{
+  (void)data;
+  (void)servers;
+  return CURLE_NOT_BUILT_IN;
+
+}
 
 #endif /* CURLRES_THREADED */

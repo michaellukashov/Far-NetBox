@@ -19,15 +19,10 @@
  * KIND, either express or implied.
  *
  ***************************************************************************/
+
 #include "setup.h"
 
 #ifndef CURL_DISABLE_HTTP
-/* -- WIN32 approved -- */
-#include <stdio.h>
-#include <string.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <ctype.h>
 
 #include "urldata.h" /* it includes http_chunks.h */
 #include "sendf.h"   /* for the client write stuff */
@@ -84,9 +79,9 @@
  We avoid the use of isxdigit to accommodate non-ASCII hosts. */
 static bool Curl_isxdigit(char digit)
 {
-  return (bool)( (digit >= 0x30 && digit <= 0x39)    /* 0-9 */
-              || (digit >= 0x41 && digit <= 0x46)    /* A-F */
-              || (digit >= 0x61 && digit <= 0x66) ); /* a-f */
+  return ( (digit >= 0x30 && digit <= 0x39) /* 0-9 */
+        || (digit >= 0x41 && digit <= 0x46) /* A-F */
+        || (digit >= 0x61 && digit <= 0x66) /* a-f */ ) ? TRUE : FALSE;
 }
 
 void Curl_httpchunk_init(struct connectdata *conn)

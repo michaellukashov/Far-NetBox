@@ -22,9 +22,6 @@
 
 #include "setup.h"
 
-#include <string.h>
-#include <stdlib.h>
-
 #include "hash.h"
 #include "llist.h"
 
@@ -41,11 +38,14 @@ hash_element_dtor(void *user, void *element)
   struct curl_hash *h = (struct curl_hash *) user;
   struct curl_hash_element *e = (struct curl_hash_element *) element;
 
-  if(e->key)
-    free(e->key);
+  Curl_safefree(e->key);
 
-  if(e->ptr)
+  if(e->ptr) {
     h->dtor(e->ptr);
+    e->ptr = NULL;
+  }
+
+  e->key_len = 0;
 
   free(e);
 }
@@ -75,16 +75,22 @@ Curl_hash_init(struct curl_hash *h,
     for(i = 0; i < slots; ++i) {
       h->table[i] = Curl_llist_alloc((curl_llist_dtor) hash_element_dtor);
       if(!h->table[i]) {
-        while(i--)
+        while(i--) {
           Curl_llist_destroy(h->table[i], NULL);
+          h->table[i] = NULL;
+        }
         free(h->table);
+        h->table = NULL;
+        h->slots = 0;
         return 1; /* failure */
       }
     }
     return 0; /* fine */
   }
-  else
+  else {
+    h->slots = 0;
     return 1; /* failure */
+  }
 }
 
 struct curl_hash *
@@ -190,6 +196,7 @@ int Curl_hash_delete(struct curl_hash *h, void *key, size_t key_len)
     he = le->ptr;
     if(h->comp_func(he->key, he->key_len, key, key_len)) {
       Curl_llist_remove(l, le, (void *) h);
+      --h->size;
       return 0;
     }
   }
@@ -243,6 +250,9 @@ Curl_hash_clean(struct curl_hash *h)
   }
 
   free(h->table);
+  h->table = NULL;
+  h->size = 0;
+  h->slots = 0;
 }
 
 void
@@ -253,6 +263,9 @@ Curl_hash_clean_with_criterium(struct curl_hash *h, void *user,
   struct curl_llist_element *lnext;
   struct curl_llist *list;
   int i;
+
+  if(!h)
+    return;
 
   for(i = 0; i < h->slots; ++i) {
     list = h->table[i];

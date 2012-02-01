@@ -35,14 +35,6 @@
  * OpenLDAP library versions, USE_OPENLDAP shall not be defined.
  */
 
-/* -- WIN32 approved -- */
-#include <stdio.h>
-#include <string.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <errno.h>
-
 #ifdef CURL_LDAP_WIN            /* Use Windows LDAP implementation. */
 # include <winldap.h>
 # ifndef LDAP_VENDOR_NAME
@@ -113,11 +105,11 @@ static void _ldap_free_urldesc (LDAPURLDesc *ludp);
   #define LDAP_TRACE(x)   do { \
                             _ldap_trace ("%u: ", __LINE__); \
                             _ldap_trace x; \
-                          } while(0)
+                          } WHILE_FALSE
 
   static void _ldap_trace (const char *fmt, ...);
 #else
-  #define LDAP_TRACE(x)   ((void)0)
+  #define LDAP_TRACE(x)   Curl_nop_stmt
 #endif
 
 
@@ -138,6 +130,7 @@ const struct Curl_handler Curl_handler_ldap = {
   ZERO_NULL,                            /* doing */
   ZERO_NULL,                            /* proto_getsock */
   ZERO_NULL,                            /* doing_getsock */
+  ZERO_NULL,                            /* domore_getsock */
   ZERO_NULL,                            /* perform_getsock */
   ZERO_NULL,                            /* disconnect */
   ZERO_NULL,                            /* readwrite */
@@ -162,6 +155,7 @@ const struct Curl_handler Curl_handler_ldaps = {
   ZERO_NULL,                            /* doing */
   ZERO_NULL,                            /* proto_getsock */
   ZERO_NULL,                            /* doing_getsock */
+  ZERO_NULL,                            /* domore_getsock */
   ZERO_NULL,                            /* perform_getsock */
   ZERO_NULL,                            /* disconnect */
   ZERO_NULL,                            /* readwrite */
@@ -184,9 +178,9 @@ static CURLcode Curl_ldap(struct connectdata *conn, bool *done)
   struct SessionHandle *data=conn->data;
   int ldap_proto = LDAP_VERSION3;
   int ldap_ssl = 0;
-  char *val_b64;
-  size_t val_b64_sz;
-  curl_off_t dlsize=0;
+  char *val_b64 = NULL;
+  size_t val_b64_sz = 0;
+  curl_off_t dlsize = 0;
 #ifdef LDAP_OPT_NETWORK_TIMEOUT
   struct timeval ldap_timeout = {10,0}; /* 10 sec connection/search timeout */
 #endif
@@ -413,10 +407,20 @@ static CURLcode Curl_ldap(struct connectdata *conn, bool *done)
                       (char *)attribute +
                       (strlen((char *)attribute) - 7)) == 0)) {
             /* Binary attribute, encode to base64. */
-            val_b64_sz = Curl_base64_encode(data,
-                                            vals[i]->bv_val,
-                                            vals[i]->bv_len,
-                                            &val_b64);
+            CURLcode error = Curl_base64_encode(data,
+                                                vals[i]->bv_val,
+                                                vals[i]->bv_len,
+                                                &val_b64,
+                                                &val_b64_sz);
+            if(error) {
+              ldap_value_free_len(vals);
+              ldap_memfree(attribute);
+              ldap_memfree(dn);
+              if(ber)
+                ber_free(ber, 0);
+              status = error;
+              goto quit;
+            }
             if(val_b64_sz > 0) {
               Curl_client_write(conn, CLIENTWRITE_BODY, val_b64, val_b64_sz);
               free(val_b64);

@@ -22,8 +22,6 @@
 
 #include "setup.h"
 
-#include <string.h>
-
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
 #endif
@@ -36,16 +34,12 @@
 #ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
 #endif
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>     /* required for free() prototypes */
-#endif
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>     /* for the close() proto */
 #endif
 #ifdef __VMS
 #include <in.h>
 #include <inet.h>
-#include <stdlib.h>
 #endif
 
 #ifdef HAVE_PROCESS_H
@@ -72,5 +66,16 @@
  **********************************************************************/
 #ifdef CURLRES_SYNCH
 
+/*
+ * Function provided by the resolver backend to set DNS servers to use.
+ */
+CURLcode Curl_set_dns_servers(struct SessionHandle *data,
+                              char *servers)
+{
+  (void)data;
+  (void)servers;
+  return CURLE_NOT_BUILT_IN;
+
+}
 
 #endif /* truly sync */

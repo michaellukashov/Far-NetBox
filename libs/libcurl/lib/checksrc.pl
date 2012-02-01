@@ -62,7 +62,7 @@ while(1) {
         next;
     }
     elsif($file =~ /-W(.*)/) {
-        $wlist = $1;
+        $wlist .= " $1 ";
         $file = shift @ARGV;
         next;
     }
@@ -79,7 +79,7 @@ if(!$file) {
 }
 
 do {
-    if($file ne "$wlist") {
+    if("$wlist" !~ / $file /) {
         my $fullname = $file;
         $fullname = "$dir/$file" if ($fullname !~ '^\.?\.?/');
         scanfile($fullname);
@@ -145,9 +145,14 @@ sub scanfile {
         }
 
         # check for "} else"
-        if($l =~ /^(.*)\} else/) {
+        if($l =~ /^(.*)\} *else/) {
             checkwarn($line, length($1), $file, $l, "else after closing brace on same line");
         }
+        # check for "){"
+        if($l =~ /^(.*)\)\{/) {
+            checkwarn($line, length($1)+1, $file, $l, "missing space after close paren");
+        }
+
         # check for open brace first on line but not first column
         # only alert if previous line ended with a close paren and wasn't a cpp
         # line

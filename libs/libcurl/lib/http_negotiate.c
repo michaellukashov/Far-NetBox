@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2012, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -19,27 +19,25 @@
  * KIND, either express or implied.
  *
  ***************************************************************************/
+
 #include "setup.h"
 
 #ifdef HAVE_GSSAPI
 #ifdef HAVE_OLD_GSSMIT
 #define GSS_C_NT_HOSTBASED_SERVICE gss_nt_service_name
+#define NCOMPAT 1
 #endif
 
 #ifndef CURL_DISABLE_HTTP
- /* -- WIN32 approved -- */
-#include <stdio.h>
-#include <string.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <ctype.h>
 
 #include "urldata.h"
 #include "sendf.h"
+#include "curl_gssapi.h"
 #include "rawstr.h"
 #include "curl_base64.h"
 #include "http_negotiate.h"
 #include "curl_memory.h"
+#include "url.h"
 
 #ifdef HAVE_SPNEGO
 #  include <spnegohelp.h>
@@ -126,7 +124,7 @@ log_gss_error(struct connectdata *conn, OM_uint32 error_status,
     gss_release_buffer(&min_stat, &status_string);
   } while(!GSS_ERROR(maj_stat) && msg_ctx != 0);
 
-  infof(conn->data, "%s", buf);
+  infof(conn->data, "%s\n", buf);
 }
 
 /* returning zero (0) means success, everything else is treated as "failure"
@@ -134,15 +132,18 @@ log_gss_error(struct connectdata *conn, OM_uint32 error_status,
 int Curl_input_negotiate(struct connectdata *conn, bool proxy,
                          const char *header)
 {
-  struct negotiatedata *neg_ctx = proxy?&conn->data->state.proxyneg:
-    &conn->data->state.negotiate;
+  struct SessionHandle *data = conn->data;
+  struct negotiatedata *neg_ctx = proxy?&data->state.proxyneg:
+    &data->state.negotiate;
   OM_uint32 major_status, minor_status, minor_status2;
   gss_buffer_desc input_token = GSS_C_EMPTY_BUFFER;
   gss_buffer_desc output_token = GSS_C_EMPTY_BUFFER;
   int ret;
-  size_t len, rawlen;
+  size_t len;
+  size_t rawlen = 0;
   bool gss;
   const char* protocol;
+  CURLcode error;
 
   while(*header && ISSPACE(*header))
     header++;
@@ -171,7 +172,7 @@ int Curl_input_negotiate(struct connectdata *conn, bool proxy,
     /* We finished successfully our part of authentication, but server
      * rejected it (since we're again here). Exit with an error since we
      * can't invent anything better */
-    Curl_cleanup_negotiate(conn->data);
+    Curl_cleanup_negotiate(data);
     return -1;
   }
 
@@ -185,9 +186,9 @@ int Curl_input_negotiate(struct connectdata *conn, bool proxy,
 
   len = strlen(header);
   if(len > 0) {
-    rawlen = Curl_base64_decode(header,
-                                (unsigned char **)&input_token.value);
-    if(rawlen == 0)
+    error = Curl_base64_decode(header,
+                               (unsigned char **)&input_token.value, &rawlen);
+    if(error || rawlen == 0)
       return -1;
     input_token.length = rawlen;
 
@@ -220,7 +221,7 @@ int Curl_input_negotiate(struct connectdata *conn, bool proxy,
                                  NULL)) {
         free(spnegoToken);
         spnegoToken = NULL;
-        infof(conn->data, "Parse SPNEGO Target Token failed\n");
+        infof(data, "Parse SPNEGO Target Token failed\n");
       }
       else {
         free(input_token.value);
@@ -232,30 +233,25 @@ int Curl_input_negotiate(struct connectdata *conn, bool proxy,
         input_token.length = mechTokenLength;
         free(mechToken);
         mechToken = NULL;
-        infof(conn->data, "Parse SPNEGO Target Token succeeded\n");
+        infof(data, "Parse SPNEGO Target Token succeeded\n");
       }
     }
 #endif
   }
 
-  major_status = gss_init_sec_context(&minor_status,
-                                      GSS_C_NO_CREDENTIAL,
-                                      &neg_ctx->context,
-                                      neg_ctx->server_name,
-                                      GSS_C_NO_OID,
-                                      0,
-                                      0,
-                                      GSS_C_NO_CHANNEL_BINDINGS,
-                                      &input_token,
-                                      NULL,
-                                      &output_token,
-                                      NULL,
-                                      NULL);
+  major_status = Curl_gss_init_sec_context(data,
+                                           &minor_status,
+                                           &neg_ctx->context,
+                                           neg_ctx->server_name,
+                                           GSS_C_NO_CHANNEL_BINDINGS,
+                                           &input_token,
+                                           &output_token,
+                                           NULL);
   if(input_token.length > 0)
     gss_release_buffer(&minor_status2, &input_token);
   neg_ctx->status = major_status;
   if(GSS_ERROR(major_status)) {
-    /* Curl_cleanup_negotiate(conn->data) ??? */
+    /* Curl_cleanup_negotiate(data) ??? */
     log_gss_error(conn, minor_status,
                   "gss_init_sec_context() failed: ");
     return -1;
@@ -277,8 +273,9 @@ CURLcode Curl_output_negotiate(struct connectdata *conn, bool proxy)
   struct negotiatedata *neg_ctx = proxy?&conn->data->state.proxyneg:
     &conn->data->state.negotiate;
   char *encoded = NULL;
-  size_t len;
+  size_t len = 0;
   char *userp;
+  CURLcode error;
 
 #ifdef HAVE_SPNEGO /* Handle SPNEGO */
   if(checkprefix("Negotiate", neg_ctx->protocol)) {
@@ -324,13 +321,21 @@ CURLcode Curl_output_negotiate(struct connectdata *conn, bool proxy)
     }
   }
 #endif
-  len = Curl_base64_encode(conn->data,
-                           neg_ctx->output_token.value,
-                           neg_ctx->output_token.length,
-                           &encoded);
+  error = Curl_base64_encode(conn->data,
+                             neg_ctx->output_token.value,
+                             neg_ctx->output_token.length,
+                             &encoded, &len);
+  if(error) {
+    Curl_safefree(neg_ctx->output_token.value);
+    neg_ctx->output_token.value = NULL;
+    return error;
+  }
 
-  if(len == 0)
-    return CURLE_OUT_OF_MEMORY;
+  if(len == 0) {
+    Curl_safefree(neg_ctx->output_token.value);
+    neg_ctx->output_token.value = NULL;
+    return CURLE_REMOTE_ACCESS_DENIED;
+  }
 
   userp = aprintf("%sAuthorization: %s %s\r\n", proxy ? "Proxy-" : "",
                   neg_ctx->protocol, encoded);

@@ -46,15 +46,16 @@
 #ifndef CURL_DISABLE_FTP
 #if defined(HAVE_KRB4) || defined(HAVE_GSSAPI)
 
-#include <stdarg.h>
-#include <string.h>
-
 #ifdef HAVE_NETDB_H
 #include <netdb.h>
 #endif
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
+
+#ifdef HAVE_LIMITS_H
+#include <limits.h>
 #endif
 
 #include "urldata.h"
@@ -64,6 +65,7 @@
 #include "ftp.h"
 #include "sendf.h"
 #include "rawstr.h"
+#include "warnless.h"
 
 /* The last #include file should be: */
 #include "memdebug.h"
@@ -283,12 +285,13 @@ static ssize_t sec_recv(struct connectdata *conn, int sockindex,
 static void do_sec_send(struct connectdata *conn, curl_socket_t fd,
                         const char *from, int length)
 {
-  size_t bytes;
-  size_t htonl_bytes;
-  char *buffer;
+  int bytes, htonl_bytes; /* 32-bit integers for htonl */
+  char *buffer = NULL;
   char *cmd_buffer;
+  size_t cmd_size = 0;
+  CURLcode error;
   enum protection_level prot_level = conn->data_prot;
-  bool iscmd = prot_level == PROT_CMD;
+  bool iscmd = (prot_level == PROT_CMD)?TRUE:FALSE;
 
   DEBUGASSERT(prot_level > PROT_NONE && prot_level < PROT_LAST);
 
@@ -300,9 +303,17 @@ static void do_sec_send(struct connectdata *conn, curl_socket_t fd,
   }
   bytes = conn->mech->encode(conn->app_data, from, length, prot_level,
                              (void**)&buffer, conn);
+  if(!buffer || bytes <= 0)
+    return; /* error */
+
   if(iscmd) {
-    bytes = Curl_base64_encode(conn->data, buffer, bytes, &cmd_buffer);
-    if(bytes > 0) {
+    error = Curl_base64_encode(conn->data, buffer, curlx_sitouz(bytes),
+                               &cmd_buffer, &cmd_size);
+    if(error) {
+      free(buffer);
+      return; /* error */
+    }
+    if(cmd_size > 0) {
       static const char *enc = "ENC ";
       static const char *mic = "MIC ";
       if(prot_level == PROT_PRIVATE)
@@ -310,7 +321,7 @@ static void do_sec_send(struct connectdata *conn, curl_socket_t fd,
       else
         socket_write(conn, fd, mic, 4);
 
-      socket_write(conn, fd, cmd_buffer, bytes);
+      socket_write(conn, fd, cmd_buffer, cmd_size);
       socket_write(conn, fd, "\r\n", 2);
       infof(conn->data, "Send: %s%s\n", prot_level == PROT_PRIVATE?enc:mic,
             cmd_buffer);
@@ -320,7 +331,7 @@ static void do_sec_send(struct connectdata *conn, curl_socket_t fd,
   else {
     htonl_bytes = htonl(bytes);
     socket_write(conn, fd, &htonl_bytes, sizeof(htonl_bytes));
-    socket_write(conn, fd, buffer, bytes);
+    socket_write(conn, fd, buffer, curlx_sitouz(bytes));
   }
   free(buffer);
 }
@@ -365,14 +376,20 @@ int Curl_sec_read_msg(struct connectdata *conn, char *buffer,
   int decoded_len;
   char *buf;
   int ret_code;
+  size_t decoded_sz = 0;
+  CURLcode error;
 
   DEBUGASSERT(level > PROT_NONE && level < PROT_LAST);
 
-  decoded_len = Curl_base64_decode(buffer + 4, (unsigned char **)&buf);
-  if(decoded_len <= 0) {
+  error = Curl_base64_decode(buffer + 4, (unsigned char **)&buf, &decoded_sz);
+  if(error || decoded_sz == 0)
+    return -1;
+
+  if(decoded_sz > (size_t)INT_MAX) {
     free(buf);
     return -1;
   }
+  decoded_len = curlx_uztosi(decoded_sz);
 
   decoded_len = conn->mech->decode(conn->app_data, buf, decoded_len,
                                    level, conn);

@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2012, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -32,9 +32,6 @@
 
 #include "setup.h"
 
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
 #ifdef HAVE_LIMITS_H
 #include <limits.h>
 #endif
@@ -123,7 +120,16 @@
 /* 0.9.6 didn't have X509_STORE_set_flags() */
 #define HAVE_X509_STORE_SET_FLAGS 1
 #else
-#define X509_STORE_set_flags(x,y)
+#define X509_STORE_set_flags(x,y) Curl_nop_stmt
+#endif
+
+#if OPENSSL_VERSION_NUMBER >= 0x10000000L
+#define HAVE_ERR_REMOVE_THREAD_STATE 1
+#endif
+
+#ifndef HAVE_SSLV2_CLIENT_METHOD
+#undef OPENSSL_NO_SSL2 /* undef first to avoid compiler warnings */
+#define OPENSSL_NO_SSL2
 #endif
 
 /*
@@ -169,14 +175,14 @@ static int passwd_callback(char *buf, int num, int verify
 #define seed_enough(x) rand_enough()
 static bool rand_enough(void)
 {
-  return (bool)(0 != RAND_status());
+  return (0 != RAND_status()) ? TRUE : FALSE;
 }
 #else
 #define seed_enough(x) rand_enough(x)
 static bool rand_enough(int nread)
 {
   /* this is a very silly decision to make */
-  return (bool)(nread > 500);
+  return (nread > 500) ? TRUE : FALSE;
 }
 #endif
 
@@ -460,6 +466,7 @@ int cert_stuff(struct connectdata *conn,
         failf(data, SSL_CLIENT_CERT_ERR);
         EVP_PKEY_free(pri);
         X509_free(x509);
+        sk_X509_pop_free(ca, X509_free);
         return 0;
       }
 
@@ -468,6 +475,7 @@ int cert_stuff(struct connectdata *conn,
               cert_file);
         EVP_PKEY_free(pri);
         X509_free(x509);
+        sk_X509_pop_free(ca, X509_free);
         return 0;
       }
 
@@ -476,6 +484,7 @@ int cert_stuff(struct connectdata *conn,
               "does not match certificate in same file", cert_file);
         EVP_PKEY_free(pri);
         X509_free(x509);
+        sk_X509_pop_free(ca, X509_free);
         return 0;
       }
       /* Set Certificate Verification chain */
@@ -485,12 +494,14 @@ int cert_stuff(struct connectdata *conn,
             failf(data, "cannot add certificate to certificate chain");
             EVP_PKEY_free(pri);
             X509_free(x509);
+            sk_X509_pop_free(ca, X509_free);
             return 0;
           }
           if(!SSL_CTX_add_client_CA(ctx, sk_X509_value(ca, i))) {
             failf(data, "cannot add certificate to client CA list");
             EVP_PKEY_free(pri);
             X509_free(x509);
+            sk_X509_pop_free(ca, X509_free);
             return 0;
           }
         }
@@ -498,6 +509,7 @@ int cert_stuff(struct connectdata *conn,
 
       EVP_PKEY_free(pri);
       X509_free(x509);
+      sk_X509_pop_free(ca, X509_free);
       cert_done = 1;
       break;
 #else
@@ -700,20 +712,27 @@ int Curl_ossl_init(void)
 /* Global cleanup */
 void Curl_ossl_cleanup(void)
 {
-  /* Free the SSL error strings */
-  ERR_free_strings();
-
-  /* EVP_cleanup() removes all ciphers and digests from the table. */
+  /* Free ciphers and digests lists */
   EVP_cleanup();
 
 #ifdef HAVE_ENGINE_CLEANUP
+  /* Free engine list */
   ENGINE_cleanup();
 #endif
 
 #ifdef HAVE_CRYPTO_CLEANUP_ALL_EX_DATA
-  /* this function was not present in 0.9.6b, but was added sometimes
-     later */
+  /* Free OpenSSL ex_data table */
   CRYPTO_cleanup_all_ex_data();
+#endif
+
+  /* Free OpenSSL error strings */
+  ERR_free_strings();
+
+  /* Free thread local error state, destroying hash upon zero refcount */
+#ifdef HAVE_ERR_REMOVE_THREAD_STATE
+  ERR_remove_thread_state(NULL);
+#else
+  ERR_remove_state(0);
 #endif
 }
 
@@ -813,18 +832,16 @@ struct curl_slist *Curl_ossl_engines_list(struct SessionHandle *data)
 {
   struct curl_slist *list = NULL;
 #if defined(USE_SSLEAY) && defined(HAVE_OPENSSL_ENGINE_H)
-  struct curl_slist *beg = NULL;
+  struct curl_slist *beg;
   ENGINE *e;
 
   for(e = ENGINE_get_first(); e; e = ENGINE_get_next(e)) {
-    list = curl_slist_append(list, ENGINE_get_id(e));
-    if(list == NULL) {
-      curl_slist_free_all(beg);
+    beg = curl_slist_append(list, ENGINE_get_id(e));
+    if(!beg) {
+      curl_slist_free_all(list);
       return NULL;
     }
-    else if(beg == NULL) {
-      beg = list;
-    }
+    list = beg;
   }
 #endif
   (void) data;
@@ -965,17 +982,6 @@ void Curl_ossl_session_free(void *ptr)
  */
 int Curl_ossl_close_all(struct SessionHandle *data)
 {
-  /*
-    ERR_remove_state() frees the error queue associated with
-    thread pid.  If pid == 0, the current thread will have its
-    error queue removed.
-
-    Since error queue data structures are allocated
-    automatically for new threads, they must be freed when
-    threads are terminated in oder to avoid memory leaks.
-  */
-  ERR_remove_state(0);
-
 #ifdef HAVE_OPENSSL_ENGINE_H
   if(data->state.engine) {
     ENGINE_finish(data->state.engine);
@@ -1410,7 +1416,7 @@ static void ssl_tls_trace(int direction, int ssl_ver, int content_type,
 #ifdef SSL_CTRL_SET_TLSEXT_HOSTNAME
 #  define use_sni(x)  sni = (x)
 #else
-#  define use_sni(x)  do { } while (0)
+#  define use_sni(x)  Curl_nop_stmt
 #endif
 
 static CURLcode
@@ -1425,6 +1431,7 @@ ossl_connect_step1(struct connectdata *conn,
   X509_LOOKUP *lookup=NULL;
   curl_socket_t sockfd = conn->sock[sockindex];
   struct ssl_connect_data *connssl = &conn->ssl[sockindex];
+  long ctx_options;
 #ifdef SSL_CTRL_SET_TLSEXT_HOSTNAME
   bool sni;
 #ifdef ENABLE_IPV6
@@ -1492,6 +1499,10 @@ ossl_connect_step1(struct connectdata *conn,
     return CURLE_OUT_OF_MEMORY;
   }
 
+#ifdef SSL_MODE_RELEASE_BUFFERS
+  SSL_CTX_set_mode(connssl->ctx, SSL_MODE_RELEASE_BUFFERS);
+#endif
+
 #ifdef SSL_CTRL_SET_MSG_CALLBACK
   if(data->set.fdebug && data->set.verbose) {
     /* the SSL trace callback is only used for verbose logging so we only
@@ -1526,20 +1537,43 @@ ossl_connect_step1(struct connectdata *conn,
      If someone writes an application with libcurl and openssl who wants to
      enable the feature, one can do this in the SSL callback.
 
+     SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG option enabling allowed proper
+     interoperability with web server Netscape Enterprise Server 2.0.1 which
+     was released back in 1996.
+
+     Due to CVE-2010-4180, option SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG has
+     become ineffective as of OpenSSL 0.9.8q and 1.0.0c. In order to mitigate
+     CVE-2010-4180 when using previous OpenSSL versions we no longer enable
+     this option regardless of OpenSSL version and SSL_OP_ALL definition.
+
+     OpenSSL added a work-around for a SSL 3.0/TLS 1.0 CBC vulnerability
+     (http://www.openssl.org/~bodo/tls-cbc.txt). In 0.9.6e they added a bit to
+     SSL_OP_ALL that _disables_ that work-around despite the fact that
+     SSL_OP_ALL is documented to do "rather harmless" workarounds. In order to
+     keep the secure work-around, the SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS bit
+     must not be set.
   */
+
+  ctx_options = SSL_OP_ALL;
+
 #ifdef SSL_OP_NO_TICKET
-  /* expect older openssl releases to not have this define so only use it if
-     present */
-#define CURL_CTX_OPTIONS SSL_OP_ALL|SSL_OP_NO_TICKET
-#else
-#define CURL_CTX_OPTIONS SSL_OP_ALL
+  ctx_options |= SSL_OP_NO_TICKET;
 #endif
 
-  SSL_CTX_set_options(connssl->ctx, CURL_CTX_OPTIONS);
+#ifdef SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG
+  /* mitigate CVE-2010-4180 */
+  ctx_options &= ~SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG;
+#endif
+
+#ifdef SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS
+  ctx_options &= ~SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS;
+#endif
 
   /* disable SSLv2 in the default case (i.e. allow SSLv3 and TLSv1) */
   if(data->set.ssl.version == CURL_SSLVERSION_DEFAULT)
-    SSL_CTX_set_options(connssl->ctx, SSL_OP_NO_SSLv2);
+    ctx_options |= SSL_OP_NO_SSLv2;
+
+  SSL_CTX_set_options(connssl->ctx, ctx_options);
 
 #if 0
   /*
@@ -1632,7 +1666,8 @@ ossl_connect_step1(struct connectdata *conn,
   if(data->set.str[STRING_SSL_CRLFILE]) {
     /* tell SSL where to find CRL file that is used to check certificate
      * revocation */
-    lookup=X509_STORE_add_lookup(connssl->ctx->cert_store,X509_LOOKUP_file());
+    lookup=X509_STORE_add_lookup(SSL_CTX_get_cert_store(connssl->ctx),
+                                 X509_LOOKUP_file());
     if(!lookup ||
        (!X509_load_crl_file(lookup,data->set.str[STRING_SSL_CRLFILE],
                             X509_FILETYPE_PEM)) ) {
@@ -1643,7 +1678,7 @@ ossl_connect_step1(struct connectdata *conn,
     else {
       /* Everything is fine. */
       infof(data, "successfully load CRL file:\n");
-      X509_STORE_set_flags(connssl->ctx->cert_store,
+      X509_STORE_set_flags(SSL_CTX_get_cert_store(connssl->ctx),
                            X509_V_FLAG_CRL_CHECK|X509_V_FLAG_CRL_CHECK_ALL);
     }
     infof(data,
@@ -1856,14 +1891,14 @@ static CURLcode push_certinfo_len(struct SessionHandle *data,
      equivalent of curl_slist_append but doesn't strdup() the given data as
      like in this place the extra malloc/free is totally pointless */
   nl = curl_slist_append(ci->certinfo[certnum], output);
+  free(output);
   if(!nl) {
     curl_slist_free_all(ci->certinfo[certnum]);
+    ci->certinfo[certnum] = NULL;
     res = CURLE_OUT_OF_MEMORY;
   }
   else
     ci->certinfo[certnum] = nl;
-
-  free(output);
 
   return res;
 }
@@ -1918,7 +1953,7 @@ do {                              \
       pubkey_show(data, _num, #_type, #_name, (unsigned char*)bufp, len); \
     } \
   } \
-} while(0)
+} WHILE_FALSE
 
 static int X509V3_ext(struct SessionHandle *data,
                       int certnum,
@@ -2563,7 +2598,7 @@ bool Curl_ossl_data_pending(const struct connectdata *conn,
 {
   if(conn->ssl[connindex].handle)
     /* SSL is in use */
-    return (bool)(0 != SSL_pending(conn->ssl[connindex].handle));
+    return (0 != SSL_pending(conn->ssl[connindex].handle)) ? TRUE : FALSE;
   else
     return FALSE;
 }

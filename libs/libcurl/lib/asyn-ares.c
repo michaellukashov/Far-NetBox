@@ -22,8 +22,6 @@
 
 #include "setup.h"
 
-#include <string.h>
-
 #ifdef HAVE_LIMITS_H
 #include <limits.h>
 #endif
@@ -39,16 +37,12 @@
 #ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
 #endif
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>     /* required for free() prototypes */
-#endif
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>     /* for the close() proto */
 #endif
 #ifdef __VMS
 #include <in.h>
 #include <inet.h>
-#include <stdlib.h>
 #endif
 
 #ifdef HAVE_PROCESS_H
@@ -233,18 +227,19 @@ int Curl_resolver_getsock(struct connectdata *conn,
   struct timeval maxtime;
   struct timeval timebuf;
   struct timeval *timeout;
+  long milli;
   int max = ares_getsock((ares_channel)conn->data->state.resolver,
                          (ares_socket_t *)socks, numsocks);
-
 
   maxtime.tv_sec = CURL_TIMEOUT_RESOLVE;
   maxtime.tv_usec = 0;
 
   timeout = ares_timeout((ares_channel)conn->data->state.resolver, &maxtime,
                          &timebuf);
-
-  Curl_expire(conn->data,
-              (timeout->tv_sec * 1000) + (timeout->tv_usec/1000));
+  milli = (timeout->tv_sec * 1000) + (timeout->tv_usec/1000);
+  if(milli == 0)
+    milli += 10;
+  Curl_expire(conn->data, milli);
 
   return max;
 }
@@ -336,9 +331,12 @@ CURLcode Curl_resolver_is_resolved(struct connectdata *conn,
     res->temp_ai = NULL;
     destroy_async_data(&conn->async);
     if(!conn->async.dns) {
-      failf(data, "Could not resolve host: %s (%s)", conn->host.dispname,
+      failf(data, "Could not resolve %s: %s (%s)",
+            conn->bits.proxy?"proxy":"host",
+            conn->host.dispname,
             ares_strerror(conn->async.status));
-      return CURLE_COULDNT_RESOLVE_HOST;
+      return conn->bits.proxy?CURLE_COULDNT_RESOLVE_PROXY:
+        CURLE_COULDNT_RESOLVE_HOST;
     }
     *dns = conn->async.dns;
   }
@@ -424,7 +422,7 @@ CURLcode Curl_resolver_wait_resolv(struct connectdata *conn,
   if(!conn->async.dns) {
     /* a name was not resolved */
     if((timeout < 0) || (conn->async.status == ARES_ETIMEOUT)) {
-      if(conn->bits.httpproxy) {
+      if(conn->bits.proxy) {
         failf(data, "Resolving proxy timed out: %s", conn->proxy.dispname);
         rc = CURLE_COULDNT_RESOLVE_PROXY;
       }
@@ -434,7 +432,7 @@ CURLcode Curl_resolver_wait_resolv(struct connectdata *conn,
       }
     }
     else if(conn->async.done) {
-      if(conn->bits.httpproxy) {
+      if(conn->bits.proxy) {
         failf(data, "Could not resolve proxy: %s (%s)", conn->proxy.dispname,
               ares_strerror(conn->async.status));
         rc = CURLE_COULDNT_RESOLVE_PROXY;
@@ -605,5 +603,32 @@ Curl_addrinfo *Curl_resolver_getaddrinfo(struct connectdata *conn,
     *waitp = 1; /* expect asynchronous response */
   }
   return NULL; /* no struct yet */
+}
+
+CURLcode Curl_set_dns_servers(struct SessionHandle *data,
+                              char *servers)
+{
+  CURLcode result = CURLE_NOT_BUILT_IN;
+#if (ARES_VERSION >= 0x010704)
+  int ares_result = ares_set_servers_csv(data->state.resolver, servers);
+  switch(ares_result) {
+  case ARES_SUCCESS:
+    result = CURLE_OK;
+    break;
+  case ARES_ENOMEM:
+    result = CURLE_OUT_OF_MEMORY;
+    break;
+  case ARES_ENOTINITIALIZED:
+  case ARES_ENODATA:
+  case ARES_EBADSTR:
+  default:
+    result = CURLE_BAD_FUNCTION_ARGUMENT;
+    break;
+  }
+#else /* too old c-ares version! */
+  (void)data;
+  (void)servers;
+#endif
+  return result;
 }
 #endif /* CURLRES_ARES */

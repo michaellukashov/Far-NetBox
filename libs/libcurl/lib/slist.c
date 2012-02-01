@@ -22,11 +22,6 @@
 
 #include "setup.h"
 
-#include <stdio.h>
-#include <stdarg.h>
-#include <stdlib.h>
-
-#include <string.h>
 #include "curl_memory.h"
 #include "slist.h"
 
@@ -124,10 +119,7 @@ void curl_slist_free_all(struct curl_slist *list)
   item = list;
   do {
     next = item->next;
-
-    if(item->data) {
-      free(item->data);
-    }
+    Curl_safefree(item->data);
     free(item);
     item = next;
   } while(next);

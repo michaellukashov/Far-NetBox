@@ -1,5 +1,5 @@
-#ifndef __NSSG_H
-#define __NSSG_H
+#ifndef HEADER_CURL_NSSG_H
+#define HEADER_CURL_NSSG_H
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -21,6 +21,7 @@
  * KIND, either express or implied.
  *
  ***************************************************************************/
+#include "setup.h"
 
 #ifdef USE_NSS
 /*
@@ -28,6 +29,7 @@
  */
 
 #include "urldata.h"
+
 CURLcode Curl_nss_connect(struct connectdata *conn, int sockindex);
 CURLcode Curl_nss_connect_nonblocking(struct connectdata *conn,
                                       int sockindex,
@@ -55,7 +57,7 @@ CURLcode Curl_nss_force_init(struct SessionHandle *data);
 #define curlssl_connect Curl_nss_connect
 
 /* NSS has its own session ID cache */
-#define curlssl_session_free(x)
+#define curlssl_session_free(x) Curl_nop_stmt
 #define curlssl_close_all Curl_nss_close_all
 #define curlssl_close Curl_nss_close
 /* NSS has no shutdown function provided and thus always fail */
@@ -68,4 +70,4 @@ CURLcode Curl_nss_force_init(struct SessionHandle *data);
 #define curlssl_data_pending(x,y) (x=x, y=y, 0)
 
 #endif /* USE_NSS */
-#endif
+#endif /* HEADER_CURL_NSSG_H */
