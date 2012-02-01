@@ -2953,7 +2953,7 @@ void TSessionDialog::UpdateControls()
 
     // Environment tab
     DSTModeUnixCheck->SetEnabled(!FtpProtocol);
-    UtfCombo->SetEnabled(FSProtocol != fsSCPonly);
+    // UtfCombo->SetEnabled(FSProtocol != fsSCPonly);
     TimeDifferenceEdit->SetEnabled((FtpProtocol || (FSProtocol == fsSCPonly)));
 
     // Recycle bin tab
