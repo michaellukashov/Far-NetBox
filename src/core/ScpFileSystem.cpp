@@ -718,7 +718,7 @@ void TSCPFileSystem::ExecCommand(const std::wstring Cmd, int Params,
                 ::Busy(false);
             }
         } BOOST_SCOPE_EXIT_END
-        // DEBUG_PRINTF(L"Cmd = %s", Cmd.c_str());
+        // DEBUG_PRINTF(L"Cmd = %s, CmdString = %s", Cmd.c_str(), CmdString.c_str());
         SendCommand(Cmd);
 
         int COParams = coWaitForLastLine;
