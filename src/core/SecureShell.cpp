@@ -1563,7 +1563,7 @@ bool TSecureShell::ProcessNetworkEvents(SOCKET Socket)
 bool TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
                                    WSANETWORKEVENTS *Events)
 {
-    // DEBUG_PRINTF(L"begin");
+    // DEBUG_PRINTF(L"begin, MSec = %u", MSec);
     CheckConnection();
 
     bool Result = false;
@@ -1572,7 +1572,7 @@ bool TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
     {
         if (Configuration->GetActualLogProtocol() >= 2)
         {
-            LogEvent(L"Looking for network events");
+            // LogEvent(L"Looking for network events");
         }
         unsigned int TicksBefore = GetTickCount();
         int HandleCount;
@@ -1632,7 +1632,7 @@ bool TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
             {
                 if (Configuration->GetActualLogProtocol() >= 2)
                 {
-                    LogEvent(L"Timeout waiting for network events");
+                    // LogEvent(L"Timeout waiting for network events");
                 }
 
                 MSec = 0;
