@@ -79,7 +79,7 @@ public:
 private:
     typedef std::vector<TRemoteToken> TTokens;
     typedef std::map<std::wstring, size_t> TNameMap;
-    typedef std::map<unsigned int, size_t> TIDMap;
+    typedef std::map<size_t, size_t> TIDMap;
     TTokens FTokens;
     TNameMap FNameMap;
     TIDMap FIDMap;

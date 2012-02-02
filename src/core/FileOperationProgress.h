@@ -40,7 +40,7 @@ private:
     unsigned int FSuspendTime;
     // when current file was started being transfered
     nb::TDateTime FFileStartTime;
-    int FFilesFinished;
+    size_t FFilesFinished;
     fileoperationprogress_signal_type FOnProgress;
     fileoperationfinished_signal_type FOnFinished;
     bool FReset;

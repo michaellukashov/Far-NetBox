@@ -973,13 +973,13 @@ void TStringList::CustomSort(TStringListSortCompare CompareFunc)
     if (!GetSorted() && (GetCount() > 1))
     {
         Changing();
-        QuickSort(0, static_cast<int>(GetCount() - 1), CompareFunc);
+        QuickSort(0, GetCount() - 1, CompareFunc);
         Changed();
     }
 }
-void TStringList::QuickSort(int L, int R, TStringListSortCompare SCompare)
+void TStringList::QuickSort(size_t L, size_t R, TStringListSortCompare SCompare)
 {
-    int I, J, P;
+    size_t I, J, P;
     do
     {
         I = L;

@@ -229,9 +229,9 @@ public:
     // __property int BottomIndex = { read = GetBottomIndex };
     size_t GetBottomIndex();
     // __property std::wstring Line[int Index]  = { read=GetLine };
-    std::wstring GetLine(int Index);
+    std::wstring GetLine(size_t Index);
     // __property TLogLineType Type[int Index]  = { read=GetType };
-    TLogLineType GetType(int Index);
+    TLogLineType GetType(size_t Index);
     // __property OnChange;
     // __property TNotifyEvent OnStateChange = { read = FOnStateChange, write = FOnStateChange };
     const nb::notify_signal_type &GetOnStateChange() const { return FOnStateChange; }

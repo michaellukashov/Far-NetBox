@@ -874,7 +874,7 @@ void TTerminal::Open()
     // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-bool TTerminal::IsListenerFree(unsigned int PortNumber)
+bool TTerminal::IsListenerFree(size_t PortNumber)
 {
     SOCKET Socket = socket(AF_INET, SOCK_STREAM, 0);
     bool Result = (Socket != INVALID_SOCKET);
@@ -920,7 +920,7 @@ void TTerminal::OpenTunnel()
         FTunnelData->SetName(FMTLOAD(TUNNEL_SESSION_NAME, FSessionData->GetSessionName().c_str()));
         FTunnelData->SetTunnel(false);
         FTunnelData->SetHostName(FSessionData->GetTunnelHostName());
-        FTunnelData->SetPortNumber(FSessionData->GetTunnelPortNumber());
+        FTunnelData->SetPortNumber(static_cast<int>(FSessionData->GetTunnelPortNumber()));
         FTunnelData->SetUserName(FSessionData->GetTunnelUserName());
         FTunnelData->SetPassword(FSessionData->GetTunnelPassword());
         FTunnelData->SetPublicKeyFile(FSessionData->GetTunnelPublicKeyFile());
@@ -1050,13 +1050,13 @@ void TTerminal::Reopen(int Params)
 }
 //---------------------------------------------------------------------------
 bool TTerminal::PromptUser(TSessionData *Data, TPromptKind Kind,
-                           const std::wstring Name, const std::wstring Instructions, const std::wstring Prompt, bool Echo, int MaxLen, std::wstring &Result)
+                           const std::wstring Name, const std::wstring Instructions, const std::wstring Prompt, bool Echo, size_t MaxLen, std::wstring &Result)
 {
     bool AResult;
     nb::TStringList Prompts;
     nb::TStringList Results;
     {
-        Prompts.AddObject(Prompt, reinterpret_cast<nb::TObject *>(Echo));
+        Prompts.AddObject(Prompt, reinterpret_cast<nb::TObject *>((size_t)(Echo)));
         Results.AddObject(Result, reinterpret_cast<nb::TObject *>(MaxLen));
 
         AResult = PromptUser(Data, Kind, Name, Instructions, &Prompts, &Results);
@@ -1707,7 +1707,7 @@ void TTerminal::DoStartReadDirectory()
     }
 }
 //---------------------------------------------------------------------------
-void TTerminal::DoReadDirectoryProgress(int Progress, bool &Cancel)
+void TTerminal::DoReadDirectoryProgress(size_t Progress, bool &Cancel)
 {
     if (FReadingCurrentDirectory && (!FOnReadDirectoryProgress.empty()))
     {
@@ -2012,9 +2012,9 @@ int TTerminal::ConfirmFileOverwrite(const std::wstring FileName,
         if (FileParams != NULL)
         {
             Message = FMTLOAD(FILE_OVERWRITE_DETAILS, Message.c_str(),
-                              IntToStr((int)FileParams->SourceSize).c_str(),
+                              IntToStr(static_cast<int>(FileParams->SourceSize)).c_str(),
                               UserModificationStr(FileParams->SourceTimestamp, FileParams->SourcePrecision).c_str(),
-                              IntToStr(FileParams->DestSize).c_str(),
+                              IntToStr(static_cast<int>(FileParams->DestSize)).c_str(),
                               UserModificationStr(FileParams->DestTimestamp, FileParams->DestPrecision).c_str());
         }
         Result = QueryUser(Message, NULL, Answers, QueryParams);

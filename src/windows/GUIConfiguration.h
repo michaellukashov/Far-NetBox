@@ -174,7 +174,7 @@ private:
     nb::TDateTime FIgnoreCancelBeforeFinish;
     bool FQueueAutoPopup;
     bool FQueueRememberPassword;
-    int FQueueTransfersLimit;
+    size_t FQueueTransfersLimit;
     TGUICopyParamType FDefaultCopyParam;
     bool FBeepOnFinish;
     nb::TDateTime FBeepOnFinishAfter;
@@ -234,8 +234,8 @@ public:
     int GetMaxWatchDirectories() { return FMaxWatchDirectories; }
     void SetMaxWatchDirectories(int value) { FMaxWatchDirectories = value; }
     // __property int QueueTransfersLimit = { read = FQueueTransfersLimit, write = FQueueTransfersLimit };
-    int GetQueueTransfersLimit() { return FQueueTransfersLimit; }
-    void SetQueueTransfersLimit(int value) { FQueueTransfersLimit = value; }
+    size_t GetQueueTransfersLimit() { return FQueueTransfersLimit; }
+    void SetQueueTransfersLimit(size_t value) { FQueueTransfersLimit = value; }
     // __property bool QueueAutoPopup = { read = FQueueAutoPopup, write = FQueueAutoPopup };
     bool GetQueueAutoPopup() { return FQueueAutoPopup; }
     void SetQueueAutoPopup(bool value) { FQueueAutoPopup = value; }

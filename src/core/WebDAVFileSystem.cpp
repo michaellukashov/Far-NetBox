@@ -1660,7 +1660,7 @@ const wchar_t *TWebDAVFileSystem::GetOption(int OptionID) const
 int TWebDAVFileSystem::GetOptionVal(int OptionID) const
 {
     TSessionData *Data = FTerminal->GetSessionData();
-    int Result;
+    int Result =0;
 
     switch (OptionID)
     {
@@ -1760,7 +1760,7 @@ int TWebDAVFileSystem::GetOptionVal(int OptionID) const
 
     case OPTION_SPEEDLIMIT_DOWNLOAD_VALUE:
     case OPTION_SPEEDLIMIT_UPLOAD_VALUE:
-        Result = (FFileTransferCPSLimit / 1024); // FZAPI expects KiB/s
+        Result = static_cast<int>((FFileTransferCPSLimit / 1024)); // FZAPI expects KiB/s
         break;
 
     case OPTION_MPEXT_SHOWHIDDEN:
@@ -1887,7 +1887,7 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t *Path,
                            Entry->Name,
                            Entry->Permissions,
                            Entry->OwnerGroup,
-                           IntToStr(Entry->Size).c_str(),
+                           IntToStr(static_cast<int>(Entry->Size)).c_str(),
                            int(Entry->Dir), int(Entry->Link), Entry->Year, Entry->Month, Entry->Day,
                            Entry->Hour, Entry->Minute, int(Entry->HasTime), int(Entry->HasDate));
                 throw ETerminal(FMTLOAD(LIST_LINE_ERROR, EntryData.c_str()), &E);
@@ -2400,7 +2400,7 @@ CURLcode TWebDAVFileSystem::CURLPrepare(const char *webDavPath,
 {
     CURLcode urlCode = FCURLIntf->Prepare(webDavPath,
                                           FTerminal->GetSessionData(),
-                                          FTerminal->GetConfiguration()->GetActualLogProtocol(),
+                                          static_cast<int>(FTerminal->GetConfiguration()->GetActualLogProtocol()),
                                           handleTimeout);
     CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_HTTPAUTH, CURLAUTH_ANY));
     CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_FOLLOWLOCATION, 1));

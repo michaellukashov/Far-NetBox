@@ -318,7 +318,7 @@ public:
     void SetSorted(bool value);
     virtual void Sort();
     virtual void CustomSort(TStringListSortCompare CompareFunc);
-    void QuickSort(int L, int R, TStringListSortCompare SCompare);
+    void QuickSort(size_t L, size_t R, TStringListSortCompare SCompare);
 
     void LoadFromFile(const std::wstring FileName);
     const nb::notify_signal_type &GetOnChange() const { return FOnChange; }

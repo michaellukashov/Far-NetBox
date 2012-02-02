@@ -511,16 +511,16 @@ void TSessionData::Load(THierarchicalStorage *Storage)
         READ_SFTP_BUG(SignedTS);
 #undef READ_SFTP_BUG
 
-        SetSFTPMaxVersion(Storage->Readint(L"SFTPMaxVersion", GetSFTPMaxVersion()));
-        SetSFTPMinPacketSize(Storage->Readint(L"SFTPMinPacketSize", GetSFTPMinPacketSize()));
-        SetSFTPMaxPacketSize(Storage->Readint(L"SFTPMaxPacketSize", GetSFTPMaxPacketSize()));
+        SetSFTPMaxVersion(static_cast<size_t>(Storage->Readint(L"SFTPMaxVersion", GetSFTPMaxVersion())));
+        SetSFTPMinPacketSize(static_cast<size_t>(Storage->Readint(L"SFTPMinPacketSize", GetSFTPMinPacketSize())));
+        SetSFTPMaxPacketSize(static_cast<size_t>(Storage->Readint(L"SFTPMaxPacketSize", GetSFTPMaxPacketSize())));
 
         SetColor(Storage->Readint(L"Color", GetColor()));
 
         SetProtocolStr(Storage->ReadString(L"Protocol", GetProtocolStr()));
 
         SetTunnel(Storage->Readbool(L"Tunnel", GetTunnel()));
-        SetTunnelPortNumber(Storage->Readint(L"TunnelPortNumber", GetTunnelPortNumber()));
+        SetTunnelPortNumber(static_cast<size_t>(Storage->Readint(L"TunnelPortNumber", GetTunnelPortNumber())));
         SetTunnelUserName(Storage->ReadString(L"TunnelUserName", GetTunnelUserName()));
         // must be loaded after TunnelUserName,
         // because TunnelHostName may be in format user@host
@@ -538,7 +538,7 @@ void TSessionData::Load(THierarchicalStorage *Storage)
             }
         }
         SetTunnelPublicKeyFile(Storage->ReadString(L"TunnelPublicKeyFile", GetTunnelPublicKeyFile()));
-        SetTunnelLocalPortNumber(Storage->Readint(L"TunnelLocalPortNumber", GetTunnelLocalPortNumber()));
+        SetTunnelLocalPortNumber(static_cast<size_t>(Storage->Readint(L"TunnelLocalPortNumber", GetTunnelLocalPortNumber())));
 
         // Ftp prefix
         SetFtpPasvMode(Storage->Readbool(L"FtpPasvMode", GetFtpPasvMode()));
@@ -549,7 +549,7 @@ void TSessionData::Load(THierarchicalStorage *Storage)
         SetFtpPingType(static_cast<TPingType>(Storage->Readint(L"FtpPingType", GetFtpPingType())));
         SetFtps(static_cast<TFtps>(Storage->Readint(L"Ftps", GetFtps())));
 
-        SetFtpProxyLogonType(Storage->Readint(L"FtpProxyLogonType", GetFtpProxyLogonType()));
+        SetFtpProxyLogonType(static_cast<size_t>(Storage->Readint(L"FtpProxyLogonType", GetFtpProxyLogonType())));
 
         SetCustomParam1(Storage->ReadString(L"CustomParam1", GetCustomParam1()));
         SetCustomParam2(Storage->ReadString(L"CustomParam2", GetCustomParam2()));
@@ -1199,7 +1199,7 @@ bool TSessionData::ParseUrl(const std::wstring Url, TOptions *Options,
     return true;
 }
 //---------------------------------------------------------------------
-void TSessionData::ConfigureTunnel(int APortNumber)
+void TSessionData::ConfigureTunnel(size_t APortNumber)
 {
     FOrigHostName = GetHostName();
     FOrigPortNumber = GetPortNumber();
@@ -1313,7 +1313,7 @@ void TSessionData::SetHostName(const std::wstring value)
     }
 }
 //---------------------------------------------------------------------
-void TSessionData::SetPortNumber(int value)
+void TSessionData::SetPortNumber(size_t value)
 {
     SET_SESSION_PROPERTY(PortNumber);
 }

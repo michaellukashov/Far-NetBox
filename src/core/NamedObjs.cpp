@@ -62,7 +62,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList *List)
                 {
                     N = 0;
                 };
-            Name += L" (" + IntToStr(N+1) + L")";
+            Name += L" (" + IntToStr(static_cast<int>(N+1)) + L")";
         }
 }
 //--- TNamedObjectList ------------------------------------------------------

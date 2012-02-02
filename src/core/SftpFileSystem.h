@@ -109,13 +109,13 @@ protected:
     void SendCustomReadFile(TSFTPPacket *Packet, TSFTPPacket *Response,
                             // const std::string RemoteHandle,
                             const std::wstring FileName,
-                            unsigned long Flags);
+                            size_t Flags);
     void CustomReadFile(const std::wstring FileName,
                         TRemoteFile *& File, char Type, TRemoteFile *ALinkedByFile = NULL,
-                        int AllowStatus = -1);
+                        size_t AllowStatus = -1);
     virtual std::wstring GetCurrentDirectory();
     std::wstring GetHomeDirectory();
-    size_t GotStatusPacket(TSFTPPacket *Packet, int AllowStatus);
+    size_t GotStatusPacket(TSFTPPacket *Packet, size_t AllowStatus);
     bool inline IsAbsolutePath(const std::wstring Path);
     bool RemoteFileExists(const std::wstring FullPath, TRemoteFile **File = NULL);
     TRemoteFile *LoadFile(TSFTPPacket *Packet,
@@ -129,15 +129,15 @@ protected:
     std::wstring RealPath(const std::wstring Path, const std::wstring BaseDir);
     void ReserveResponse(const TSFTPPacket *Packet,
                          TSFTPPacket *Response);
-    int ReceivePacket(TSFTPPacket *Packet, int ExpectedType = -1,
-                      int AllowStatus = -1);
+    size_t ReceivePacket(TSFTPPacket *Packet, size_t ExpectedType = -1,
+                      size_t AllowStatus = -1);
     bool PeekPacket();
     void RemoveReservation(size_t Reservation);
     void SendPacket(const TSFTPPacket *Packet);
-    int ReceiveResponse(const TSFTPPacket *Packet,
-                        TSFTPPacket *Response, int ExpectedType = -1, int AllowStatus = -1);
-    int SendPacketAndReceiveResponse(const TSFTPPacket *Packet,
-                                     TSFTPPacket *Response, int ExpectedType = -1, int AllowStatus = -1);
+    size_t ReceiveResponse(const TSFTPPacket *Packet,
+                        TSFTPPacket *Response, size_t ExpectedType = -1, size_t AllowStatus = -1);
+    size_t SendPacketAndReceiveResponse(const TSFTPPacket *Packet,
+                                        TSFTPPacket *Response, size_t ExpectedType = -1, size_t AllowStatus = -1);
     void UnreserveResponse(TSFTPPacket *Response);
     void TryOpenDirectory(const std::wstring Directory);
     bool SupportsExtension(const std::wstring Extension) const;
@@ -156,7 +156,7 @@ protected:
                     TFileOperationProgressType *OperationProgress, unsigned int Flags,
                     TUploadSessionAction &Action, bool &ChildError);
     std::string SFTPOpenRemoteFile(const std::wstring FileName,
-                                   unsigned int OpenType, __int64 Size = -1);
+                                   size_t OpenType, __int64 Size = -1);
     int SFTPOpenRemote(void *AOpenParams, void *Param2);
     void SFTPCloseRemote(const std::string &Handle,
                          const std::wstring FileName, TFileOperationProgressType *OperationProgress,
@@ -191,7 +191,7 @@ protected:
                            TFileOperationProgressType *OperationProgress);
     size_t DownloadBlockSize(
         TFileOperationProgressType *OperationProgress);
-    int PacketLength(char *LenBuf, int ExpectedType);
+    size_t PacketLength(char *LenBuf, size_t ExpectedType);
 
 private:
     const TSessionData *GetSessionData() const;

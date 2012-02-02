@@ -50,7 +50,7 @@ private:
     TFileMasks FExcludeFileMask;
     bool FNegativeExclude;
     bool FClearArchive;
-    unsigned long FCPSLimit;
+    size_t FCPSLimit;
 
     static std::wstring Untokenize(const std::wstring FileName);
     wchar_t *ReplaceChar(std::wstring &FileName, wchar_t *InvalidChar) const;
@@ -146,8 +146,8 @@ public:
     bool GetClearArchive() const { return FClearArchive; }
     void SetClearArchive(bool value) { FClearArchive = value; }
     // __property unsigned long CPSLimit = { read = FCPSLimit, write = FCPSLimit };
-    unsigned long GetCPSLimit() const { return FCPSLimit; }
-    void SetCPSLimit(unsigned long value) { FCPSLimit = value; }
+    size_t GetCPSLimit() const { return FCPSLimit; }
+    void SetCPSLimit(size_t value) { FCPSLimit = value; }
 };
 //---------------------------------------------------------------------------
 unsigned long GetSpeedLimit(const std::wstring Text);

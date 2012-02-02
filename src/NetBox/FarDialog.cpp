@@ -2697,7 +2697,7 @@ long TFarLister::ItemProc(int Msg, long Param)
             else
             {
                 long ShiftTab = KEY_SHIFTTAB;
-                SendDialogMessage(DM_KEY, 1, reinterpret_cast<int>(&ShiftTab));
+                SendDialogMessage(DM_KEY, 1, static_cast<int>((size_t)(&ShiftTab)));
             }
         }
         else if ((Param == KEY_DOWN) || (Param == KEY_RIGHT))
@@ -2756,7 +2756,7 @@ long TFarLister::ItemProc(int Msg, long Param)
             SetFocus();
         }
 
-        MOUSE_EVENT_RECORD *Event = reinterpret_cast<MOUSE_EVENT_RECORD *>(Param);
+        MOUSE_EVENT_RECORD *Event = reinterpret_cast<MOUSE_EVENT_RECORD *>((size_t)(Param));
         nb::TPoint P = MouseClientPosition(Event);
 
         if (FLAGSET(Event->dwEventFlags, DOUBLE_CLICK) &&

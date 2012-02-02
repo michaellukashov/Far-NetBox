@@ -13,7 +13,7 @@ struct TMessageParams
     TMessageParams();
 
     const TQueryButtonAlias *Aliases;
-    unsigned int AliasesCount;
+    size_t AliasesCount;
     unsigned int Flags;
     unsigned int Params;
     unsigned int Timer;

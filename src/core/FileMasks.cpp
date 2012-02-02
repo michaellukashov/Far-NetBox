@@ -251,7 +251,7 @@ bool TMask::GetMatches(const std::wstring Str)
 
 //---------------------------------------------------------------------------
 EFileMasksException::EFileMasksException(
-    const std::wstring Message, int AErrorStart, int AErrorLen) :
+    const std::wstring Message, size_t AErrorStart, size_t AErrorLen) :
     std::exception(nb::W2MB(Message.c_str()).c_str())
 {
     ErrorStart = AErrorStart;
@@ -1156,7 +1156,7 @@ void TFileCustomCommand::ValidatePattern(const std::wstring /*Command*/,
     }
     else if ((PatternCmd != TEXT_TOKEN) && (PatternLen(Index, PatternCmd) == 1))
     {
-        Found[1] = Index;
+        Found[1] = static_cast<int>(Index);
     }
 }
 //---------------------------------------------------------------------------

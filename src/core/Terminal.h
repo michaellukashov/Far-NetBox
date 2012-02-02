@@ -265,7 +265,7 @@ protected:
     bool FTunnelOpening;
 
     void DoStartReadDirectory();
-    void DoReadDirectoryProgress(int Progress, bool &Cancel);
+    void DoReadDirectoryProgress(size_t Progress, bool &Cancel);
     void DoReadDirectory(bool ReloadOnly);
     void DoCreateDirectory(const std::wstring DirName);
     void DoDeleteFile(const std::wstring FileName, const TRemoteFile *File,
@@ -346,7 +346,7 @@ protected:
     std::wstring FileUrl(const std::wstring Protocol, const std::wstring FileName);
     bool PromptUser(TSessionData *Data, TPromptKind Kind,
                     const std::wstring Name, const std::wstring Instructions, const std::wstring Prompt, bool Echo,
-                    int MaxLen, std::wstring &Result);
+                    size_t MaxLen, std::wstring &Result);
     void FileFind(const std::wstring FileName, const TRemoteFile *File, void *Param);
     void DoFilesFind(const std::wstring Directory, TFilesFindParams &Params);
     bool DoCreateLocalFile(const std::wstring FileName,
@@ -368,7 +368,7 @@ protected:
     virtual void DisplayBanner(const std::wstring Banner);
     virtual void Closed();
     virtual void HandleExtendedException(const std::exception *E);
-    bool IsListenerFree(unsigned int PortNumber);
+    bool IsListenerFree(size_t PortNumber);
     void DoFinished(TFileOperation Operation, TOperationSide Side, bool Temp,
                     const std::wstring FileName, bool Success, TOnceDoneOperation &OnceDoneOperation);
     void RollbackAction(TSessionAction &Action,

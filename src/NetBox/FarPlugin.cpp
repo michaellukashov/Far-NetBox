@@ -723,7 +723,7 @@ int TCustomFarPlugin::MaxMessageLines()
     return TerminalInfo().y - 5;
 }
 //---------------------------------------------------------------------------
-int TCustomFarPlugin::MaxMenuItemLength()
+size_t TCustomFarPlugin::MaxMenuItemLength()
 {
     // got from maximal length of path in FAR's folders history
     return TerminalInfo().x - 13;
@@ -1191,7 +1191,7 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
         int Count = 0;
         for (size_t i = 0; i < Items->GetCount(); i++)
         {
-            int flags = reinterpret_cast<int>(Items->GetObject(i));
+            size_t flags = reinterpret_cast<size_t>(Items->GetObject(i));
             if (FLAGCLEAR(Flags, MIF_HIDDEN))
             {
                 memset(&MenuItems[Count], 0, sizeof(MenuItems[Count]));
@@ -1217,9 +1217,9 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
             Result = static_cast<int>(MenuItems[ResultItem].UserData);
             if (Selected != -1)
             {
-                Items->PutObject(Selected, (nb::TObject *)(int(Items->GetObject(Selected)) & ~MIF_SELECTED));
+                Items->PutObject(Selected, (nb::TObject *)((size_t)(Items->GetObject(Selected)) & ~MIF_SELECTED));
             }
-            Items->PutObject(Result, (nb::TObject *)(int(Items->GetObject(Result)) | MIF_SELECTED));
+            Items->PutObject(Result, (nb::TObject *)((size_t)(Items->GetObject(Result)) | MIF_SELECTED));
         }
         else
         {
@@ -1238,7 +1238,7 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
 //---------------------------------------------------------------------------
 bool TCustomFarPlugin::InputBox(const std::wstring Title,
                                 const std::wstring Prompt, std::wstring &Text, unsigned long Flags,
-                                const std::wstring HistoryName, int MaxLen, farinputboxvalidate_slot_type *OnValidate)
+                                const std::wstring HistoryName, size_t MaxLen, farinputboxvalidate_slot_type *OnValidate)
 {
     bool Repeat = false;
     int Result = 0;
@@ -1450,7 +1450,7 @@ void TCustomFarPlugin::ShowTerminalScreen()
     TerminalInfo(&Size, &Cursor);
 
     std::wstring Blank = ::StringOfChar(' ', Size.x);
-    Blank.resize(Size.x);
+    Blank.resize(static_cast<size_t>(Size.x));
     for (int Y = 0; Y < Size.y; Y++)
     {
         Text(0, Y, 7/* LIGHTGRAY */, Blank);
@@ -1662,13 +1662,13 @@ DWORD TCustomFarPlugin::FarControl(int Command, int Param1, LONG_PTR Param2, HAN
 int TCustomFarPlugin::FarAdvControl(int Command, void *Param)
 {
     TFarEnvGuard Guard;
-    return FStartupInfo.AdvControl(FStartupInfo.ModuleNumber, Command, Param);
+    return static_cast<int>(FStartupInfo.AdvControl(FStartupInfo.ModuleNumber, Command, Param));
 }
 //---------------------------------------------------------------------------
 int TCustomFarPlugin::FarAdvControl(int Command, int Param)
 {
     TFarEnvGuard Guard;
-    return FStartupInfo.AdvControl(FStartupInfo.ModuleNumber, Command, reinterpret_cast<void *>(Param));
+    return static_cast<int>(FStartupInfo.AdvControl(FStartupInfo.ModuleNumber, Command, reinterpret_cast<void *>((size_t)(Param))));
 }
 //---------------------------------------------------------------------------
 int TCustomFarPlugin::FarEditorControl(int Command, void *Param)
@@ -2295,7 +2295,7 @@ void TFarPanelModes::ClearPanelMode(PanelMode &Mode)
 {
     if (Mode.ColumnTypes)
     {
-        int ColumnTypesCount = Mode.ColumnTypes ?
+        size_t ColumnTypesCount = Mode.ColumnTypes ?
                                CommaCount(std::wstring(Mode.ColumnTypes)) + 1 : 0;
 
         delete[] Mode.ColumnTypes;
@@ -2715,9 +2715,9 @@ void TFarPanelInfo::SetFocusedItem(TFarPanelItem *value)
     // delete Items;
 }
 //---------------------------------------------------------------------------
-int TFarPanelInfo::GetFocusedIndex()
+size_t TFarPanelInfo::GetFocusedIndex()
 {
-    return FPanelInfo->CurrentItem;
+    return static_cast<size_t>(FPanelInfo->CurrentItem);
 }
 //---------------------------------------------------------------------------
 void TFarPanelInfo::SetFocusedIndex(size_t value)
@@ -2727,8 +2727,8 @@ void TFarPanelInfo::SetFocusedIndex(size_t value)
     // DEBUG_PRINTF(L"GetFocusedIndex = %d, value = %d", GetFocusedIndex(), value);
     if (GetFocusedIndex() != value)
     {
-        assert(value != -1 && value < FPanelInfo->ItemsNumber);
-        FPanelInfo->CurrentItem = value;
+        assert(value != -1 && value < static_cast<size_t>(FPanelInfo->ItemsNumber));
+        FPanelInfo->CurrentItem = static_cast<int>(value);
         PanelRedrawInfo PanelInfo;
         PanelInfo.CurrentItem = FPanelInfo->CurrentItem;
         PanelInfo.TopPanelItem = FPanelInfo->TopPanelItem;
@@ -2784,7 +2784,7 @@ std::wstring TFarPanelInfo::GetCurrentDirectory()
     {
         Result.resize(Size);
         FarPlugin->FarControl(FCTL_GETPANELDIR,
-                              Size,
+                              static_cast<int>(Size),
                               reinterpret_cast<LONG_PTR>(Result.c_str()),
                               FOwner != NULL ? PANEL_ACTIVE : PANEL_PASSIVE);
     }
@@ -2864,7 +2864,7 @@ void TFarMenuItems::SetItemFocused(size_t value)
     }
 }
 //---------------------------------------------------------------------------
-void TFarMenuItems::SetFlag(size_t Index, int Flag, bool Value)
+void TFarMenuItems::SetFlag(size_t Index, size_t Flag, bool Value)
 {
     if (GetFlag(Index, Flag) != Value)
     {
@@ -2881,7 +2881,7 @@ void TFarMenuItems::SetFlag(size_t Index, int Flag, bool Value)
     }
 }
 //---------------------------------------------------------------------------
-bool TFarMenuItems::GetFlag(size_t Index, int Flag)
+bool TFarMenuItems::GetFlag(size_t Index, size_t Flag)
 {
     return (reinterpret_cast<size_t>(GetObject(Index)) & Flag) > 0;
 }

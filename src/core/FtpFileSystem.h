@@ -219,7 +219,7 @@ private:
     bool FFileTransferCancelled;
     __int64 FFileTransferResumed;
     bool FFileTransferPreserveTime;
-    unsigned long FFileTransferCPSLimit;
+    size_t FFileTransferCPSLimit;
     bool FAwaitingProgress;
     captureoutput_signal_type FOnCaptureOutput;
     std::wstring FUserName;

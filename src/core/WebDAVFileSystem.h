@@ -164,7 +164,7 @@ private:
     bool FFileTransferCancelled;
     __int64 FFileTransferResumed;
     bool FFileTransferPreserveTime;
-    unsigned long FFileTransferCPSLimit;
+    size_t FFileTransferCPSLimit;
     bool FAwaitingProgress;
     TCommand FLastCommand;
     int FLastReadDirectoryProgress;

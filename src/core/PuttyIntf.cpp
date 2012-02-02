@@ -104,12 +104,12 @@ int from_backend(void *frontend, int is_stderr, const char *data, int datalen)
     if (is_stderr >= 0)
     {
         assert((is_stderr == 0) || (is_stderr == 1));
-        (static_cast<TSecureShell *>(frontend))->FromBackend((is_stderr == 1), data, datalen);
+        (static_cast<TSecureShell *>(frontend))->FromBackend((is_stderr == 1), data, static_cast<size_t>(datalen));
     }
     else
     {
         assert(is_stderr == -1);
-        (static_cast<TSecureShell *>(frontend))->CWrite(data, datalen);
+        (static_cast<TSecureShell *>(frontend))->CWrite(data, static_cast<size_t>(datalen));
     }
     return 0;
 }
@@ -134,14 +134,14 @@ int get_userpass_input(prompts_t *p, unsigned char * /*in*/, int /*inlen*/)
         for (int Index = 0; Index < static_cast<int>(p->n_prompts); Index++)
         {
             prompt_t *Prompt = p->prompts[Index];
-            Prompts.AddObject(nb::MB2W(Prompt->prompt), reinterpret_cast<nb::TObject *>(Prompt->echo));
+            Prompts.AddObject(nb::MB2W(Prompt->prompt), reinterpret_cast<nb::TObject *>((size_t)(Prompt->echo)));
             Results.AddObject(L"", reinterpret_cast<nb::TObject *>(Prompt->result_len));
         }
 
         if (SecureShell->PromptUser(p->to_server, nb::MB2W(p->name), p->name_reqd,
                                     nb::MB2W(p->instruction), p->instr_reqd, &Prompts, &Results))
         {
-            for (int Index = 0; Index < static_cast<int>(p->n_prompts); Index++)
+            for (size_t Index = 0; Index < p->n_prompts; Index++)
             {
                 prompt_t *Prompt = p->prompts[Index];
                 std::string Str = nb::W2MB(Results.GetString(Index).c_str());
@@ -435,7 +435,7 @@ long reg_query_winscp_value_ex(HKEY Key, const char *ValueName, unsigned long * 
         char *DataStr = reinterpret_cast<char *>(Data);
         strncpy_s(DataStr, *DataSize, nb::W2MB(Value.c_str()).c_str(), *DataSize);
         DataStr[*DataSize - 1] = '\0';
-        *DataSize = strlen(DataStr);
+        *DataSize = static_cast<unsigned long>(strlen(DataStr));
     }
 
     return R;
@@ -608,7 +608,7 @@ bool HasGSSAPI()
             {
                 ssh_gss_cleanup(List);
             } BOOST_SCOPE_EXIT_END
-            for (int Index = 0; (has <= 0) && (Index < List->nlibraries); Index++)
+            for (size_t Index = 0; (has <= 0) && (Index < static_cast<size_t>(List->nlibraries)); Index++)
             {
                 ssh_gss_library *library = &List->libraries[Index];
                 Ssh_gss_ctx ctx;

@@ -728,27 +728,26 @@ void TSecureShell::FromBackend(bool IsStdErr, const char *Data, size_t Length)
     else
     {
         unsigned char *p = reinterpret_cast<unsigned char *>(const_cast<char *>(Data));
-        unsigned Len = static_cast<unsigned>(Length);
+        size_t Len = Length;
 
         // with event-select mechanism we can now receive data even before we
         // actually expect them (OutPtr can be NULL)
 
         if ((OutPtr != NULL) && (OutLen > 0) && (Len > 0))
         {
-            unsigned Used = OutLen;
+            size_t Used = OutLen;
             if (Used > Len) { Used = Len; }
             memcpy(OutPtr, p, Used);
             OutPtr += Used; OutLen -= Used;
             p += Used; Len -= Used;
         }
 
-        if (Len > 0)
+        if (static_cast<int>(Len) > 0)
         {
             if (PendSize < PendLen + Len)
             {
                 PendSize = PendLen + Len + 4096;
-                Pending = (char *)
-                          (Pending ? srealloc(Pending, PendSize) : smalloc(PendSize));
+                Pending = static_cast<char *>(Pending ? srealloc(Pending, PendSize) : smalloc(PendSize));
                 if (!Pending) { FatalError(L"Out of memory"); }
             }
             memcpy(Pending + PendLen, p, Len);
@@ -785,7 +784,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const char *Data, size_t Length)
 //---------------------------------------------------------------------------
 bool TSecureShell::Peek(char *& Buf, size_t Len)
 {
-    bool Result = (static_cast<int>(PendLen) >= Len);
+    bool Result = (PendLen >= Len);
 
     if (Result)
     {
@@ -858,7 +857,7 @@ size_t TSecureShell::Receive(char *Buf, size_t Len)
 //---------------------------------------------------------------------------
 std::wstring TSecureShell::ReceiveLine(bool Utf)
 {
-    unsigned Index = 0;
+    size_t Index = 0;
     char Ch;
     std::string Line;
     bool EOL = false;
@@ -1012,7 +1011,7 @@ void TSecureShell::DispatchSendBuffer(size_t BufSize)
 void TSecureShell::Send(const char *Buf, size_t Len)
 {
     CheckConnection();
-    size_t BufSize = FBackend->send(FBackendHandle, const_cast<char *>(Buf), Len);
+    size_t BufSize = FBackend->send(FBackendHandle, const_cast<char *>(Buf), static_cast<int>(Len));
     if (Configuration->GetActualLogProtocol() >= 1)
     {
         LogEvent(FORMAT(L"Sent %u bytes", Len));
@@ -1496,7 +1495,7 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS &Events)
     WSANETWORKEVENTS AEvents;
     if (WSAEnumNetworkEvents(Socket, NULL, &AEvents) == 0)
     {
-        noise_ultralight(Socket);
+        noise_ultralight(static_cast<unsigned long>(Socket));
         noise_ultralight(AEvents.lNetworkEvents);
 
         Events.lNetworkEvents |= AEvents.lNetworkEvents;
@@ -1594,7 +1593,7 @@ bool TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
             {
                 sfree(Handles);
             } BOOST_SCOPE_EXIT_END
-            Handles = sresize(Handles, HandleCount + 1, HANDLE);
+            Handles = sresize(Handles, static_cast<size_t>(HandleCount + 1), HANDLE);
             Handles[HandleCount] = FSocketEvent;
             unsigned int WaitResult = WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, MSec);
             if (WaitResult < WAIT_OBJECT_0 + HandleCount)
@@ -1849,7 +1848,7 @@ void TSecureShell::VerifyHostKey(const std::wstring Host, int Port,
         std::string StoredKeys2(10240, 0);
 #ifdef MPEXT
         if (retrieve_host_key(nb::W2MB(host.c_str()).c_str(), Port, nb::W2MB(KeyType.c_str()).c_str(),
-                              const_cast<char *>(StoredKeys2.c_str()), StoredKeys2.size()) == 0)
+                              const_cast<char *>(StoredKeys2.c_str()), static_cast<int>(StoredKeys2.size())) == 0)
 #else
         if (verify_host_key(nb::W2MB(host.c_str()).c_str(), Port, nb::W2MB(KeyType.c_str()).c_str(),
                             (char *)StoredKeys2.c_str()))

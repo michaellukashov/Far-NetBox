@@ -2192,7 +2192,7 @@ int TFTPFileSystem::GetOptionVal(int OptionID) const
 
     case OPTION_SPEEDLIMIT_DOWNLOAD_VALUE:
     case OPTION_SPEEDLIMIT_UPLOAD_VALUE:
-        Result = (FFileTransferCPSLimit / 1024); // FZAPI expects KiB/s
+        Result = static_cast<int>((FFileTransferCPSLimit / 1024)); // FZAPI expects KiB/s
         break;
 
     case OPTION_MPEXT_SHOWHIDDEN:
@@ -3246,7 +3246,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t *Path,
         assert(UnixComparePaths(AbsolutePath(FFileList->GetDirectory(), false), Path));
         USEDPARAM(Path);
 
-        for (unsigned int Index = 0; Index < Count; Index++)
+        for (size_t Index = 0; Index < Count; Index++)
         {
             const TListDataEntry *Entry = &Entries[Index];
             TRemoteFile *File = new TRemoteFile();
@@ -3336,7 +3336,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t *Path,
                            Entry->Name,
                            Entry->Permissions,
                            Entry->OwnerGroup,
-                           IntToStr(Entry->Size).c_str(),
+                           IntToStr(static_cast<int>(Entry->Size)).c_str(),
                            int(Entry->Dir), int(Entry->Link), Entry->Year, Entry->Month, Entry->Day,
                            Entry->Hour, Entry->Minute, int(Entry->HasTime), int(Entry->HasDate));
                 throw ETerminal(FMTLOAD(LIST_LINE_ERROR, EntryData.c_str()), &E);
@@ -3452,7 +3452,7 @@ bool TFTPFileSystem::Unquote(std::wstring &Str)
     assert((Str.size() > 0) && ((Str[0] == '"') || (Str[0] == '\'')));
 
     size_t Index = 0;
-    wchar_t Quote;
+    wchar_t Quote = 0;
     while (Index < Str.size())
     {
         switch (State)

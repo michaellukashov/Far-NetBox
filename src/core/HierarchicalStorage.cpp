@@ -33,7 +33,7 @@ std::wstring UnMungeStr(const std::wstring Str)
 {
     std::string Result2;
     Result2.resize(Str.size() * sizeof(wchar_t) * 3 + 1);
-    putty_unmungestr(const_cast<char *>(nb::W2MB(Str.c_str()).c_str()), const_cast<char *>(Result2.c_str()), Result2.size());
+    putty_unmungestr(const_cast<char *>(nb::W2MB(Str.c_str()).c_str()), const_cast<char *>(Result2.c_str()), static_cast<int>(Result2.size()));
     std::wstring Result = nb::MB2W(Result2.c_str());
     PackStr(Result);
     return Result;
@@ -262,7 +262,7 @@ void THierarchicalStorage::WriteValues(nb::TStrings *Strings,
             }
             else
             {
-                WriteString(IntToStr(Index), Strings->GetString(Index));
+                WriteString(IntToStr(static_cast<int>(Index)), Strings->GetString(Index));
             }
         }
     }
@@ -284,7 +284,7 @@ std::wstring THierarchicalStorage::ReadString(const std::wstring Name, const std
 //---------------------------------------------------------------------------
 std::wstring THierarchicalStorage::ReadBinaryData(const std::wstring Name)
 {
-    int Size = BinaryDataSize(Name);
+    size_t Size = static_cast<size_t>(BinaryDataSize(Name));
     std::wstring Value(Size, 0);
     ReadBinaryData(Name, const_cast<wchar_t *>(Value.c_str()), Size);
     return Value;
@@ -389,7 +389,7 @@ bool TRegistryStorage::Copy(TRegistryStorage *Storage)
                                             &Type, &Buffer[0], &Size);
                 if (RegResult == ERROR_MORE_DATA)
                 {
-                    Buffer.resize(Size);
+                    Buffer.resize(static_cast<size_t>(Size));
                 }
             }
             while (RegResult == ERROR_MORE_DATA);

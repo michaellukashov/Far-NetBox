@@ -9,9 +9,9 @@
 class EFileMasksException : public std::exception
 {
 public:
-    explicit EFileMasksException(const std::wstring Message, int ErrorStart, int ErrorLen);
-    int ErrorStart;
-    int ErrorLen;
+    explicit EFileMasksException(const std::wstring Message, size_t ErrorStart, size_t ErrorLen);
+    size_t ErrorStart;
+    size_t ErrorLen;
 };
 //---------------------------------------------------------------------------
 namespace Masks

@@ -708,7 +708,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage *Storage, bool All)
         }
         else if (All || FCopyParamList->GetModified())
         {
-            Storage->Writeint(L"CopyParamList", FCopyParamList->GetCount());
+            Storage->Writeint(L"CopyParamList", static_cast<int>(FCopyParamList->GetCount()));
             FCopyParamList->Save(Storage);
         }
     }
@@ -1064,8 +1064,8 @@ nb::TStrings *TGUIConfiguration::GetLocales()
                                             ChangeFileExt(ModuleFileName(), std::wstring(L".") + Exts->GetString(Index)));
                     if (!LangName.empty())
                     {
-                        FLocales->AddObject(LangName, reinterpret_cast<nb::TObject *>(
-                                                AdditionaLanguageMask + Exts->GetString(Index)[2]));
+                        FLocales->AddObject(LangName, reinterpret_cast<nb::TObject *>((size_t)(
+                                                AdditionaLanguageMask + Exts->GetString(Index)[2])));
                     }
                 }
             }

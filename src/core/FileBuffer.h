@@ -22,9 +22,9 @@ public:
     void Convert(TEOLType Source, char *Dest, int Params, bool &Token);
     void Insert(size_t Index, const char *Buf, size_t Len);
     void Delete(size_t Index, size_t Len);
-    DWORD LoadStream(nb::TStream *Stream, const DWORD Len, bool ForceLen);
-    DWORD ReadStream(nb::TStream *Stream, const DWORD Len, bool ForceLen);
-    void WriteToStream(nb::TStream *Stream, const DWORD Len);
+    size_t LoadStream(nb::TStream *Stream, size_t Len, bool ForceLen);
+    size_t ReadStream(nb::TStream *Stream, size_t Len, bool ForceLen);
+    void WriteToStream(nb::TStream *Stream, size_t  Len);
     // __property nb::TMemoryStream * Memory  = { read=FMemory, write=SetMemory };
     nb::TMemoryStream *GetMemory() { return FMemory; }
     void SetMemory(nb::TMemoryStream *value);

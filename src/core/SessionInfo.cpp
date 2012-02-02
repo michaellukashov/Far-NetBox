@@ -142,7 +142,7 @@ public:
                         FLog->Add(llAction, FORMAT(L"        <type value=\"%s\" />", XmlEscape(std::wstring(File->GetType(), 1)).c_str()));
                         if (!File->GetIsDirectory())
                         {
-                            FLog->Add(llAction, FORMAT(L"        <size value=\"%s\" />", IntToStr(File->GetSize()).c_str()));
+                            FLog->Add(llAction, FORMAT(L"        <size value=\"%s\" />", IntToStr(static_cast<int>(File->GetSize())).c_str()));
                         }
                         FLog->Add(llAction, FORMAT(L"        <modification value=\"%s\" />", XmlTimestamp(File->GetModification()).c_str()));
                         FLog->Add(llAction, FORMAT(L"        <permissions value=\"%s\" />", XmlEscape(File->GetRights()->GetText()).c_str()));
@@ -582,15 +582,15 @@ std::wstring TSessionLog::GetSessionName()
     return FSessionData->GetSessionName();
 }
 //---------------------------------------------------------------------------
-std::wstring TSessionLog::GetLine(int Index)
+std::wstring TSessionLog::GetLine(size_t Index)
 {
     return GetString(Index - FTopIndex);
 }
 //---------------------------------------------------------------------------
-TLogLineType TSessionLog::GetType(int Index)
+TLogLineType TSessionLog::GetType(size_t Index)
 {
     void *ptr = GetObject(Index - FTopIndex);
-    return static_cast<TLogLineType>(reinterpret_cast<int>(ptr));
+    return static_cast<TLogLineType>(reinterpret_cast<size_t>(ptr));
 }
 //---------------------------------------------------------------------------
 void TSessionLog::DoAddToParent(TLogLineType Type, const std::wstring Line)
@@ -607,7 +607,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring Line)
         FTopIndex = 0;
     }
 
-    nb::TStringList::AddObject(Line, static_cast<nb::TObject *>(reinterpret_cast<void *>(Type)));
+    nb::TStringList::AddObject(Line, static_cast<nb::TObject *>(reinterpret_cast<void *>((size_t)(Type))));
 
     FLoggedLines++;
 
