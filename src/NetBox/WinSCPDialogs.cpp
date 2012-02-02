@@ -3686,7 +3686,7 @@ TLoginType TSessionDialog::GetLoginType()
 //---------------------------------------------------------------------------
 TFSProtocol TSessionDialog::IndexToFSProtocol(size_t Index, bool AllowScpFallback)
 {
-    bool InBounds = (Index != 0) && (Index < LENOF(FSOrder));
+    bool InBounds = (Index != -1) && (Index < LENOF(FSOrder));
     assert(InBounds);
     TFSProtocol Result = fsSFTP;
     if (InBounds)
