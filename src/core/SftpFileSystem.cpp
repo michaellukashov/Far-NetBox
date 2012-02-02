@@ -1703,6 +1703,8 @@ TSFTPFileSystem::TSFTPFileSystem(TTerminal *ATerminal) :
 void TSFTPFileSystem::Init(TSecureShell *SecureShell)
 {
     FSecureShell = SecureShell;
+    FFileSystemInfoValid = false;
+    FVersion = -1;
     FPacketReservations = new nb::TList();
     FPreviousLoggedPacket = 0;
     FNotLoggedPackets = 0;
@@ -2132,7 +2134,7 @@ size_t TSFTPFileSystem::GotStatusPacket(TSFTPPacket *Packet,
         if ((FVersion >= 3) ||
                 // if version is not decided yet (i.e. this is status response
                 // to the init request), go on only if there are any more data
-                ((FVersion < 0) && (Packet->GetRemainingLength() > 0)))
+                ((FVersion == -1) && (Packet->GetRemainingLength() > 0)))
         {
             // message is in UTF only since SFTP specification 01 (specification 00
             // is also version 3)
@@ -2638,7 +2640,7 @@ void TSFTPFileSystem::DoStartup()
 
     FVersion = Packet.GetCardinal();
     FTerminal->LogEvent(FORMAT(L"SFTP version %d negotiated.", FVersion));
-    if (FVersion < SFTPMinVersion || FVersion > SFTPMaxVersion)
+    if (FVersion == -1 || (int)FVersion < SFTPMinVersion || FVersion > SFTPMaxVersion)
     {
         FTerminal->FatalError(NULL, FMTLOAD(SFTP_VERSION_NOT_SUPPORTED,
                                             FVersion, SFTPMinVersion, SFTPMaxVersion));

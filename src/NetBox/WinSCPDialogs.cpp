@@ -1366,9 +1366,10 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
 
     nb::TPoint S = nb::TPoint(40, ShowSavePassword ? 1 : 0);
 
-    if (S.x < static_cast<int>(Instructions.size()))
+    int x = static_cast<int>(Instructions.size());
+    if (S.x < x)
     {
-        S.x = Instructions.size();
+        S.x = x;
     }
     if (!Instructions.empty())
     {
@@ -1377,9 +1378,10 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
 
     for (size_t Index = 0; Index < Prompts->GetCount(); Index++)
     {
-        if (S.x < static_cast<int>(Prompts->GetString(Index).size()))
+        int x = static_cast<int>(Prompts->GetString(Index).size());
+        if (S.x < x)
         {
-            S.x = Prompts->GetString(Index).size();
+            S.x = x;
         }
         S.y += 2;
     }
@@ -2522,7 +2524,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
         for (size_t Index = Configuration->GetTunnelLocalPortNumberLow();
                 Index <= Configuration->GetTunnelLocalPortNumberHigh(); Index++)
         {
-            TunnelLocalPortNumberEdit->GetItems()->Add(IntToStr(Index));
+            TunnelLocalPortNumberEdit->GetItems()->Add(IntToStr(static_cast<int>(Index)));
         }
     }
 
@@ -3247,7 +3249,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
     // Tunnel tab
     TunnelCheck->SetChecked(SessionData->GetTunnel());
     TunnelUserNameEdit->SetText(SessionData->GetTunnelUserName());
-    TunnelPortNumberEdit->SetAsInteger(SessionData->GetTunnelPortNumber());
+    TunnelPortNumberEdit->SetAsInteger(static_cast<int>(SessionData->GetTunnelPortNumber()));
     TunnelHostNameEdit->SetText(SessionData->GetTunnelHostName());
     TunnelPasswordEdit->SetText(SessionData->GetTunnelPassword());
     TunnelPrivateKeyEdit->SetText(SessionData->GetTunnelPublicKeyFile());
@@ -3257,7 +3259,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
     }
     else
     {
-        TunnelLocalPortNumberEdit->SetText(IntToStr(SessionData->GetTunnelLocalPortNumber()));
+        TunnelLocalPortNumberEdit->SetText(IntToStr(static_cast<int>(SessionData->GetTunnelLocalPortNumber())));
     }
 
     // SSH tab
@@ -3684,7 +3686,7 @@ TLoginType TSessionDialog::GetLoginType()
 //---------------------------------------------------------------------------
 TFSProtocol TSessionDialog::IndexToFSProtocol(size_t Index, bool AllowScpFallback)
 {
-    bool InBounds = (Index >= 0) && (Index < LENOF(FSOrder));
+    bool InBounds = (Index != 0) && (Index < LENOF(FSOrder));
     assert(InBounds);
     TFSProtocol Result = fsSFTP;
     if (InBounds)
@@ -3700,7 +3702,7 @@ TFSProtocol TSessionDialog::IndexToFSProtocol(size_t Index, bool AllowScpFallbac
 //---------------------------------------------------------------------------
 TLoginType TSessionDialog::IndexToLoginType(size_t Index)
 {
-    bool InBounds = (Index >= 0) && (Index <= ltNormal);
+    bool InBounds = (Index != -1) && (Index <= ltNormal);
     assert(InBounds);
     TLoginType Result = ltAnonymous;
     if (InBounds)
@@ -6927,7 +6929,7 @@ void TSynchronizeChecklistDialog::AddColumn(std::wstring &List,
         }
         if (Scroll > Len - Width)
         {
-            Scroll = Len - Width;
+            Scroll = static_cast<int>(Len - Width);
         }
         else if (!Header && LastCol && (Scroll < Len - Width))
         {
