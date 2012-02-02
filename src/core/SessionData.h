@@ -117,9 +117,9 @@ private:
     int FSFTPDownloadQueue;
     int FSFTPUploadQueue;
     int FSFTPListingQueue;
-    int FSFTPMaxVersion;
-    unsigned long FSFTPMinPacketSize;
-    unsigned long FSFTPMaxPacketSize;
+    size_t FSFTPMaxVersion;
+    size_t FSFTPMinPacketSize;
+    size_t FSFTPMaxPacketSize;
     TDSTMode FDSTMode;
     TAutoSwitch FSFTPBugs[SFTP_BUG_COUNT];
     bool FDeleteToRecycleBin;
@@ -181,7 +181,7 @@ public:
                   TStoredSessionList *StoredSessions, bool &DefaultsOnly,
                   std::wstring *FileName, bool *AProtocolDefined);
     bool ParseOptions(TOptions *Options);
-    void ConfigureTunnel(int PortNumber);
+    void ConfigureTunnel(size_t PortNumber);
     void RollbackTunnel();
     void ExpandEnvironmentVariables();
     static void ValidatePath(const std::wstring Path);
@@ -370,10 +370,10 @@ public:
     int GetSFTPListingQueue() const { return FSFTPListingQueue; }
     void SetSFTPListingQueue(size_t value);
     // __property int SFTPMaxVersion = { read = FSFTPMaxVersion, write = SetSFTPMaxVersion };
-    int GetSFTPMaxVersion() const { return FSFTPMaxVersion; }
+    size_t GetSFTPMaxVersion() const { return FSFTPMaxVersion; }
     // __property unsigned long SFTPMaxPacketSize = { read = FSFTPMaxPacketSize, write = SetSFTPMaxPacketSize };
-    unsigned long GetSFTPMinPacketSize() const { return FSFTPMinPacketSize; }
-    unsigned long GetSFTPMaxPacketSize() const { return FSFTPMaxPacketSize; }
+    size_t GetSFTPMinPacketSize() const { return FSFTPMinPacketSize; }
+    size_t GetSFTPMaxPacketSize() const { return FSFTPMaxPacketSize; }
     // __property TAutoSwitch SFTPBug[TSftpBug Bug]  = { read=GetSFTPBug, write=SetSFTPBug };
     void SetSFTPBug(TSftpBug Bug, TAutoSwitch value);
     TAutoSwitch GetSFTPBug(TSftpBug Bug) const;
@@ -452,7 +452,7 @@ public:
     std::wstring GetSource();
 
     void SetHostName(const std::wstring value);
-    void SetPortNumber(int value);
+    void SetPortNumber(size_t value);
     void SetUserName(const std::wstring value);
     void SetPasswordless(bool value);
     void SetPingInterval(int value);

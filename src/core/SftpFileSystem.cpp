@@ -139,9 +139,9 @@
 #define OGQ_LIST_OWNERS 0x01
 #define OGQ_LIST_GROUPS 0x02
 //---------------------------------------------------------------------------
-const int SFTPMinVersion = 0;
-const int SFTPMaxVersion = 5;
-const int SFTPNoMessageNumber = -1;
+const size_t SFTPMinVersion = 0;
+const size_t SFTPMaxVersion = 5;
+const size_t SFTPNoMessageNumber = -1;
 
 const int asNo =            0;
 const int asOK =            1 << SSH_FX_OK;
@@ -347,7 +347,7 @@ public:
                        TRemoteToken *Group, __int64 *MTime, __int64 *ATime,
                        __int64 *Size, bool IsDirectory, size_t Version, bool Utf)
     {
-        int Flags = 0;
+        size_t Flags = 0;
         if (Size != NULL)
         {
             Flags |= SSH_FILEXFER_ATTR_SIZE;
@@ -436,7 +436,7 @@ public:
     }
 
     void AddProperties(const TRemoteProperties *Properties,
-                       unsigned short BaseRights, bool IsDirectory, int Version, bool Utf,
+                       unsigned short BaseRights, bool IsDirectory, size_t Version, bool Utf,
                        TChmodSessionAction *Action)
     {
         enum ValidEnum { valNone = 0, valRights = 0x01, valOwner = 0x02, valGroup = 0x04,
@@ -583,7 +583,7 @@ public:
         return result;
     }
 
-    void GetFile(TRemoteFile *File, int Version, TDSTMode DSTMode, bool Utf, bool SignedTS, bool Complete)
+    void GetFile(TRemoteFile *File, size_t Version, TDSTMode DSTMode, bool Utf, bool SignedTS, bool Complete)
     {
         assert(File);
         size_t Flags;
@@ -773,7 +773,7 @@ public:
         }
         else
         {
-            FMessageNumber = static_cast<unsigned int>(SFTPNoMessageNumber);
+            FMessageNumber = SFTPNoMessageNumber;
         }
     }
 
@@ -821,7 +821,7 @@ public:
     std::wstring Dump() const
     {
         std::wstring Result;
-        for (unsigned int Index = 0; Index < GetLength(); Index++)
+        for (size_t Index = 0; Index < GetLength(); Index++)
         {
             Result += CharToHex(GetData()[Index]) + L",";
             if (((Index + 1) % 25) == 0)
@@ -973,7 +973,7 @@ private:
         FCapacity = 0;
         FLength = 0;
         FPosition = 0;
-        FMessageNumber = static_cast<unsigned int>(SFTPNoMessageNumber);
+        FMessageNumber = SFTPNoMessageNumber;
         FType = static_cast<unsigned char>(-1);
         FReservedBy = NULL;
         Self = this;
@@ -1096,7 +1096,7 @@ public:
     }
 
     bool ReceivePacket(TSFTPPacket *Packet,
-                       int ExpectedType = -1, int AllowStatus = -1, void **Token = NULL)
+                       size_t ExpectedType = -1, size_t AllowStatus = -1, void **Token = NULL)
     {
         assert(FRequests->GetCount());
         bool Result;
@@ -1138,7 +1138,7 @@ public:
         return Result;
     }
 
-    bool Next(int ExpectedType = -1, int AllowStatus = -1)
+    bool Next(size_t ExpectedType = -1, size_t AllowStatus = -1)
     {
         return ReceivePacket(NULL, ExpectedType, AllowStatus);
     }
@@ -1517,7 +1517,7 @@ protected:
     virtual bool InitRequest(TSFTPQueuePacket *Request)
     {
         bool Result = false;
-        while (!Result && (FIndex < static_cast<int>(FFileList->GetCount())))
+        while (!Result && (FIndex < FFileList->GetCount()))
         {
             TRemoteFile *File = reinterpret_cast<TRemoteFile *>(FFileList->GetObject(FIndex));
             FIndex++;
@@ -1551,7 +1551,7 @@ protected:
     virtual bool SendRequest()
     {
         bool Result =
-            (FIndex < static_cast<int>(FFileList->GetCount())) &&
+            (FIndex < FFileList->GetCount()) &&
             TSFTPFixedLenQueue::SendRequest();
         return Result;
     }
@@ -1563,7 +1563,7 @@ protected:
 
 private:
     nb::TStrings *FFileList;
-    int FIndex;
+    size_t FIndex;
 };
 //---------------------------------------------------------------------------
 class TSFTPCalculateFilesChecksumQueue : public TSFTPFixedLenQueue
@@ -1703,6 +1703,8 @@ TSFTPFileSystem::TSFTPFileSystem(TTerminal *ATerminal) :
 void TSFTPFileSystem::Init(TSecureShell *SecureShell)
 {
     FSecureShell = SecureShell;
+    FFileSystemInfoValid = false;
+    FVersion = -1;
     FPacketReservations = new nb::TList();
     FPreviousLoggedPacket = 0;
     FNotLoggedPackets = 0;
@@ -1960,8 +1962,8 @@ size_t TSFTPFileSystem::TransferBlockSize(size_t Overhead,
 
     // size + message number + type
     const size_t SFTPPacketOverhead = 4 + 4 + 1;
-    size_t AMinPacketSize = FSecureShell->MinPacketSize();
-    size_t AMaxPacketSize = FSecureShell->MaxPacketSize();
+    size_t AMinPacketSize = static_cast<size_t>(FSecureShell->MinPacketSize());
+    size_t AMaxPacketSize = static_cast<size_t>(FSecureShell->MaxPacketSize());
     bool MaxPacketSizeValid = (AMaxPacketSize > 0);
     size_t Result = OperationProgress->CPS();
 
@@ -2079,7 +2081,7 @@ void TSFTPFileSystem::SendPacket(const TSFTPPacket *Packet)
 }
 //---------------------------------------------------------------------------
 size_t TSFTPFileSystem::GotStatusPacket(TSFTPPacket *Packet,
-                                        int AllowStatus)
+                                        size_t AllowStatus)
 {
     size_t Code = Packet->GetCardinal();
 
@@ -2132,7 +2134,7 @@ size_t TSFTPFileSystem::GotStatusPacket(TSFTPPacket *Packet,
         if ((FVersion >= 3) ||
                 // if version is not decided yet (i.e. this is status response
                 // to the init request), go on only if there are any more data
-                ((FVersion < 0) && (Packet->GetRemainingLength() > 0)))
+                ((FVersion == -1) && (Packet->GetRemainingLength() > 0)))
         {
             // message is in UTF only since SFTP specification 01 (specification 00
             // is also version 3)
@@ -2200,13 +2202,13 @@ void TSFTPFileSystem::RemoveReservation(size_t Reservation)
     FPacketReservations->Delete(Reservation);
 }
 //---------------------------------------------------------------------------
-inline int TSFTPFileSystem::PacketLength(char *LenBuf, int ExpectedType)
+size_t TSFTPFileSystem::PacketLength(char *LenBuf, size_t ExpectedType)
 {
-    int Length = GET_32BIT(LenBuf);
+    size_t Length = GET_32BIT(LenBuf);
     if (Length > SFTP_MAX_PACKET_LEN)
     {
         std::wstring Message = FMTLOAD(SFTP_PACKET_TOO_BIG,
-                                       int(Length), SFTP_MAX_PACKET_LEN);
+                                       Length, SFTP_MAX_PACKET_LEN);
         if (ExpectedType == SSH_FXP_VERSION)
         {
             std::wstring LenString(nb::MB2W(LenBuf), 4);
@@ -2225,18 +2227,18 @@ bool TSFTPFileSystem::PeekPacket()
     Result = FSecureShell->Peek(Buf, 4);
     if (Result)
     {
-        int Length = PacketLength(Buf, -1);
+        size_t Length = PacketLength(Buf, -1);
         Result = FSecureShell->Peek(Buf, 4 + Length);
     }
     return Result;
 }
 //---------------------------------------------------------------------------
-int TSFTPFileSystem::ReceivePacket(TSFTPPacket *Packet,
-                                   int ExpectedType, int AllowStatus)
+size_t TSFTPFileSystem::ReceivePacket(TSFTPPacket *Packet,
+                                      size_t ExpectedType, size_t AllowStatus)
 {
     TSFTPBusy Busy(this);
 
-    int Result = SSH_FX_OK;
+    size_t Result = SSH_FX_OK;
     size_t Reservation = FPacketReservations->IndexOf(reinterpret_cast<nb::TObject *>(Packet));
 
     if ((Reservation == -1) || (Packet->GetCapacity() == 0))
@@ -2249,7 +2251,7 @@ int TSFTPFileSystem::ReceivePacket(TSFTPPacket *Packet,
             assert(Packet);
             char LenBuf[4];
             FSecureShell->Receive(LenBuf, sizeof(LenBuf));
-            int Length = PacketLength(LenBuf, ExpectedType);
+            size_t Length = PacketLength(LenBuf, ExpectedType);
             Packet->SetCapacity(Length);
             FSecureShell->Receive(Packet->GetData(), Length);
             Packet->DataUpdated(Length);
@@ -2281,13 +2283,13 @@ int TSFTPFileSystem::ReceivePacket(TSFTPPacket *Packet,
             }
 
             if ((Reservation == -1) ||
-                    Packet->GetMessageNumber() != static_cast<unsigned int>(FPacketNumbers[Reservation]))
+                    Packet->GetMessageNumber() != FPacketNumbers[Reservation])
             {
                 TSFTPPacket *ReservedPacket;
-                unsigned int MessageNumber;
+                size_t MessageNumber;
                 for (size_t Index = 0; Index < FPacketReservations->GetCount(); Index++)
                 {
-                    MessageNumber = static_cast<unsigned int>(FPacketNumbers[Index]);
+                    MessageNumber = FPacketNumbers[Index];
                     if (MessageNumber == Packet->GetMessageNumber())
                     {
                         ReservedPacket = static_cast<TSFTPPacket *>(FPacketReservations->GetItem(Index));
@@ -2301,7 +2303,7 @@ int TSFTPFileSystem::ReceivePacket(TSFTPPacket *Packet,
                         {
                             FTerminal->LogEvent(L"Discarding reserved response");
                             RemoveReservation(Index);
-                            if ((Reservation != -1) && (Reservation > static_cast<int>(Index)))
+                            if ((Reservation != -1) && (Reservation > Index))
                             {
                                 Reservation--;
                                 assert(Reservation == FPacketReservations->IndexOf(reinterpret_cast<nb::TObject *>(Packet)));
@@ -2321,11 +2323,11 @@ int TSFTPFileSystem::ReceivePacket(TSFTPPacket *Packet,
     // (and it have not worked anyway until recent fix to UnreserveResponse)
     if (Reservation != -1)
     {
-        assert(Packet->GetMessageNumber() == static_cast<unsigned int>(FPacketNumbers[Reservation]));
+        assert(Packet->GetMessageNumber() == FPacketNumbers[Reservation]);
         RemoveReservation(Reservation);
     }
 
-    if (ExpectedType >= 0)
+    if (ExpectedType != -1)
     {
         if (Packet->GetType() == SSH_FXP_STATUS)
         {
@@ -2386,11 +2388,11 @@ void TSFTPFileSystem::UnreserveResponse(TSFTPPacket *Response)
     }
 }
 //---------------------------------------------------------------------------
-int TSFTPFileSystem::ReceiveResponse(
-    const TSFTPPacket *Packet, TSFTPPacket *Response, int ExpectedType,
-    int AllowStatus)
+size_t TSFTPFileSystem::ReceiveResponse(
+    const TSFTPPacket *Packet, TSFTPPacket *Response, size_t ExpectedType,
+    size_t AllowStatus)
 {
-    int Result;
+    size_t Result;
     size_t MessageNumber = Packet->GetMessageNumber();
     TSFTPPacket *AResponse = (Response ? Response : new TSFTPPacket());
     {
@@ -2411,11 +2413,11 @@ int TSFTPFileSystem::ReceiveResponse(
     return Result;
 }
 //---------------------------------------------------------------------------
-int TSFTPFileSystem::SendPacketAndReceiveResponse(
-    const TSFTPPacket *Packet, TSFTPPacket *Response, int ExpectedType,
-    int AllowStatus)
+size_t TSFTPFileSystem::SendPacketAndReceiveResponse(
+    const TSFTPPacket *Packet, TSFTPPacket *Response, size_t ExpectedType,
+    size_t AllowStatus)
 {
-    int Result;
+    size_t Result;
     TSFTPBusy Busy(this);
     SendPacket(Packet);
     Result = ReceiveResponse(Packet, Response, ExpectedType, AllowStatus);
@@ -2620,7 +2622,7 @@ void TSFTPFileSystem::DoStartup()
     FVersion = -1;
     FFileSystemInfoValid = false;
     TSFTPPacket Packet(SSH_FXP_INIT);
-    int MaxVersion = GetSessionData()->GetSFTPMaxVersion();
+    size_t MaxVersion = GetSessionData()->GetSFTPMaxVersion();
     if (MaxVersion > SFTPMaxVersion)
     {
         MaxVersion = SFTPMaxVersion;
@@ -2638,7 +2640,7 @@ void TSFTPFileSystem::DoStartup()
 
     FVersion = Packet.GetCardinal();
     FTerminal->LogEvent(FORMAT(L"SFTP version %d negotiated.", FVersion));
-    if (FVersion < SFTPMinVersion || FVersion > SFTPMaxVersion)
+    if (FVersion == -1 || FVersion < SFTPMinVersion || FVersion > SFTPMaxVersion)
     {
         FTerminal->FatalError(NULL, FMTLOAD(SFTP_VERSION_NOT_SUPPORTED,
                                             FVersion, SFTPMinVersion, SFTPMaxVersion));
@@ -3057,7 +3059,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList *FileList)
             }
         } BOOST_SCOPE_EXIT_END
         bool isEOF = false;
-        int Total = 0;
+        size_t Total = 0;
         TRemoteFile *File;
 
         Packet.ChangeType(SSH_FXP_READDIR);
@@ -3256,7 +3258,7 @@ void TSFTPFileSystem::SendCustomReadFile(TSFTPPacket *Packet,
         TSFTPPacket *Response,
         // const std::string RemoteHandle,
         const std::wstring FileName,
-        unsigned long Flags)
+        size_t Flags)
 {
     if ((Packet->GetType() == SSH_FXP_STAT) || (Packet->GetType() == SSH_FXP_LSTAT))
     {
@@ -3279,11 +3281,11 @@ void TSFTPFileSystem::SendCustomReadFile(TSFTPPacket *Packet,
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::CustomReadFile(const std::wstring FileName,
                                      TRemoteFile *& File, char Type, TRemoteFile *ALinkedByFile,
-                                     int AllowStatus)
+                                     size_t AllowStatus)
 {
-    unsigned long Flags = SSH_FILEXFER_ATTR_SIZE | SSH_FILEXFER_ATTR_PERMISSIONS |
-                          SSH_FILEXFER_ATTR_ACCESSTIME | SSH_FILEXFER_ATTR_MODIFYTIME |
-                          SSH_FILEXFER_ATTR_OWNERGROUP;
+    size_t Flags = SSH_FILEXFER_ATTR_SIZE | SSH_FILEXFER_ATTR_PERMISSIONS |
+                   SSH_FILEXFER_ATTR_ACCESSTIME | SSH_FILEXFER_ATTR_MODIFYTIME |
+                   SSH_FILEXFER_ATTR_OWNERGROUP;
     TSFTPPacket Packet(Type);
     SendCustomReadFile(&Packet, &Packet, FileName, Flags);
     ReceiveResponse(&Packet, &Packet, SSH_FXP_ATTRS, AllowStatus);
@@ -4418,7 +4420,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
 }
 //---------------------------------------------------------------------------
 std::string TSFTPFileSystem::SFTPOpenRemoteFile(
-    const std::wstring FileName, unsigned int OpenType, __int64 Size)
+    const std::wstring FileName, size_t OpenType, __int64 Size)
 {
     TSFTPPacket Packet(SSH_FXP_OPEN);
 
@@ -4429,11 +4431,11 @@ std::string TSFTPFileSystem::SFTPOpenRemoteFile(
     }
     else
     {
-        unsigned long Access =
+        size_t Access =
             FLAGMASK(FLAGSET(OpenType, SSH_FXF_READ), ACE4_READ_DATA) |
             FLAGMASK(FLAGSET(OpenType, SSH_FXF_WRITE), ACE4_WRITE_DATA | ACE4_APPEND_DATA);
 
-        unsigned long Flags;
+        size_t Flags;
 
         if (FLAGSET(OpenType, SSH_FXF_CREAT | SSH_FXF_EXCL))
         {
@@ -4477,7 +4479,7 @@ int TSFTPFileSystem::SFTPOpenRemote(void *AOpenParams, void * /*Param2*/)
     assert(OpenParams);
     TFileOperationProgressType *OperationProgress = OpenParams->OperationProgress;
 
-    int OpenType = 0;
+    size_t OpenType = 0;
     bool Success = false;
     bool ConfirmOverwriting = false;
 
@@ -5144,7 +5146,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
 
             FTerminal->LogEvent(L"Opening remote file.");
             FILE_OPERATION_LOOP (FMTLOAD(SFTP_OPEN_FILE_ERROR, FileName.c_str()),
-                int OpenType = SSH_FXF_READ;
+                size_t OpenType = SSH_FXF_READ;
                 if ((FVersion >= 4) && OperationProgress->AsciiTransfer)
                 {
                     OpenType |= SSH_FXF_TEXT;
@@ -5231,8 +5233,8 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
                                 FTerminal->LogEvent(FORMAT(
                                                         L"Received incomplete data packet before end of file, "
                                                         L"offset: %s, size: %d, requested: %d",
-                                                        IntToStr(OperationProgress->TransferedSize).c_str(), int(DataLen),
-                                                        int(BlockSize)));
+                                                        IntToStr(static_cast<int>(OperationProgress->TransferedSize)).c_str(), static_cast<int>(DataLen),
+                                                        static_cast<int>(BlockSize)));
                                 FTerminal->TerminalError(NULL, LoadStr(SFTP_INCOMPLETE_BEFORE_EOF));
                             }
 
@@ -5249,7 +5251,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
                             }
                             else if (DataLen < BlockSize)
                             {
-                                if (OperationProgress->TransferedSize + DataLen !=
+                                if (OperationProgress->TransferedSize + static_cast<__int64>(DataLen) !=
                                         OperationProgress->TransferSize)
                                 {
                                     // with native text transfer mode (SFTP>=4), do not bother about

@@ -537,13 +537,13 @@ std::wstring ExpandEnvironmentVariables(const std::wstring Str)
 
     Buf.resize(Size);
     // Buf.Unique(); //FIXME
-    size_t Len = ExpandEnvironmentStrings(Str.c_str(), const_cast<wchar_t *>(Buf.c_str()), Size);
+    size_t Len = ExpandEnvironmentStrings(Str.c_str(), const_cast<wchar_t *>(Buf.c_str()), static_cast<DWORD>(Size));
 
     if (Len > Size)
     {
         Buf.resize(Len);
         // Buf.Unique();
-        ExpandEnvironmentStrings(Str.c_str(), const_cast<wchar_t *>(Buf.c_str()), Len);
+        ExpandEnvironmentStrings(Str.c_str(), const_cast<wchar_t *>(Buf.c_str()), static_cast<DWORD>(Len));
     }
 
     PackStr(Buf);
@@ -804,7 +804,7 @@ std::wstring StrToHex(const std::wstring Str, bool UpperCase, char Separator)
     std::wstring Result;
     for (size_t i = 0; i < Str.size(); i++)
     {
-        Result += CharToHex(Str[i], UpperCase);
+        Result += CharToHex(static_cast<char>(Str[i]), UpperCase);
         if ((Separator != L'\0') && (i < Str.size()))
         {
             Result += Separator;
@@ -1877,7 +1877,7 @@ std::wstring DoEncodeUrl(const std::wstring S, const std::wstring Chars)
     {
         if (Chars.find_first_of(s[i]) != std::wstring::npos)
         {
-            std::wstring H = CharToHex(s[i]);
+            std::wstring H = CharToHex(static_cast<char>(s[i]));
             s.insert(i + 1, H);
             s[i] = L'%';
             i += H.size();
@@ -2106,7 +2106,7 @@ int StrToInt(const std::wstring value)
     __int64 Value = 0;
     if (TryStrToInt(value, Value))
     {
-        return Value;
+        return static_cast<int>(Value);
     }
     else
     {
@@ -2132,7 +2132,7 @@ int StrToIntDef(const std::wstring value, int defval)
     __int64 Value = 0;
     if (TryStrToInt(value, Value))
     {
-        return Value;
+        return static_cast<int>(Value);
     }
     else
     {
@@ -2428,7 +2428,7 @@ __int64 FileWrite(HANDLE Handle, const void *Buffer, __int64 Count)
 {
     __int64 Result = -1;
     DWORD res = 0;
-    if (::WriteFile(Handle, Buffer, Count, &res, NULL))
+    if (::WriteFile(Handle, Buffer, static_cast<DWORD>(Count), &res, NULL))
     {
         Result = res;
     }
@@ -2608,7 +2608,7 @@ std::wstring FmtLoadStr(int id, ...)
     HINSTANCE hInstance = FarPlugin ? FarPlugin->GetHandle() : GetModuleHandle(0);
     // DEBUG_PRINTF(L"hInstance = %u", hInstance);
     format.resize(255);
-    size_t Length = ::LoadString(hInstance, id, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(format.c_str())), format.size());
+    size_t Length = ::LoadString(hInstance, id, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(format.c_str())), static_cast<int>(format.size()));
     format.resize(Length);
     // DEBUG_PRINTF(L"format = %s", format.c_str());
     if (!Length)

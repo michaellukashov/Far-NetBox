@@ -537,7 +537,7 @@ bool TTerminalQueue::ItemProcessUserAction(TQueueItem *Item, void *Arg)
     bool Result = !FFinished;
     if (Result)
     {
-        TTerminalItem *TerminalItem;
+        TTerminalItem *TerminalItem = NULL;
 
         {
             TGuard Guard(FItemsSection);
@@ -669,7 +669,7 @@ bool TTerminalQueue::ItemPause(TQueueItem *Item, bool Pause)
     bool Result = !FFinished;
     if (Result)
     {
-        TTerminalItem *TerminalItem;
+        TTerminalItem *TerminalItem = NULL;
 
         {
             TGuard Guard(FItemsSection);

@@ -477,9 +477,9 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
         MenuItems->SetDisabled(MPageant, !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->GetPageantPath()))));
         MenuItems->SetDisabled(MPuttygen, !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->GetPuttygenPath()))));
 
-        int Result = Menu(FMENU_WRAPMODE, GetMsg(MENU_COMMANDS), L"", MenuItems);
+        size_t Result = static_cast<size_t>(Menu(FMENU_WRAPMODE, GetMsg(MENU_COMMANDS), L"", MenuItems));
 
-        if (Result >= 0)
+        if (Result != -1)
         {
             if ((Result == MLog) && FileSystem)
             {
@@ -569,7 +569,7 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
             {
                 FileSystem->ToggleSynchronizeBrowsing();
             }
-            else if ((Result == MInformation) && FileSystem)
+            else if (Result == MInformation && FileSystem)
             {
                 FileSystem->ShowInformation();
             }
@@ -634,7 +634,7 @@ struct TFarMessageData
 
     const TMessageParams *Params;
     int Buttons[15 + 1];
-    int ButtonCount;
+    size_t ButtonCount;
 };
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::MessageClick(void *Token, int Result, bool &Close)
@@ -817,7 +817,7 @@ int TWinSCPPlugin::MoreMessageDialog(const std::wstring Str,
         Result = Message(Flags, GetMsg(TitleId), DialogStr, ButtonLabels, &FarParams);
         if (FarParams.TimerAnswer > 0)
         {
-            Result = FarParams.TimerAnswer;
+            Result = static_cast<int>(FarParams.TimerAnswer);
         }
         else if (Result < 0)
         {

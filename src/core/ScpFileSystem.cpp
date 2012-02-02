@@ -350,7 +350,6 @@ void TSCPFileSystem::Init(TSecureShell *SecureShell)
     FCommandSet = new TCommandSet(FTerminal->GetSessionData());
     FLsFullTime = FTerminal->GetSessionData()->GetSCPLsFullTime();
     FOutput = new nb::TStringList();
-    FProcessingCommand = false;
     FUtfStrings = false;
     FUtfNever = false;
     FProcessingCommand = false;
@@ -742,8 +741,8 @@ void TSCPFileSystem::ExecCommand(TFSCommand Cmd, int Params, ...)
     {
         int MinL = FCommandSet->GetMinLines(Cmd);
         int MaxL = FCommandSet->GetMaxLines(Cmd);
-        if (((MinL >= 0) && (MinL > FOutput->GetCount())) ||
-                ((MaxL >= 0) && (MaxL > FOutput->GetCount())))
+        if (((MinL >= 0) && (MinL > static_cast<int>(FOutput->GetCount()))) ||
+                ((MaxL >= 0) && (MaxL > static_cast<int>(FOutput->GetCount()))))
         {
             FTerminal->TerminalError(::FmtLoadStr(INVALID_OUTPUT_ERROR,
                                                   FullCommand.c_str(), GetOutput()->GetText().c_str()));
@@ -1154,7 +1153,7 @@ void TSCPFileSystem::CustomReadFile(const std::wstring FileName,
                 Params, FTerminal->GetSessionData()->GetListingCommand().c_str(), Options, DelimitStr(FileName).c_str());
     if (FOutput->GetCount())
     {
-        int LineIndex = 0;
+        size_t LineIndex = 0;
         if (IsTotalListingLine(FOutput->GetString(LineIndex)) && FOutput->GetCount() > 1)
         {
             LineIndex++;
@@ -1525,7 +1524,7 @@ void TSCPFileSystem::CopyToRemote(nb::TStrings *FilesToCopy,
                 !OperationProgress->Cancel; IFile++)
         {
             std::wstring FileName = FilesToCopy->GetString(IFile);
-            bool CanProceed;
+            bool CanProceed = false;
 
             std::wstring FileNameOnly =
                 CopyParam->ChangeFileName(ExtractFileName(FileName, false), osLocal, true);
@@ -1833,7 +1832,7 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
                             {
                                 size_t BlockSize = OperationProgress->TransferBlockSize();
                                 FSecureShell->Send(
-                                    AsciiBuf.GetData() + static_cast<unsigned int>(OperationProgress->TransferedSize),
+                                    AsciiBuf.GetData() + OperationProgress->TransferedSize,
                                     BlockSize);
                                 OperationProgress->AddTransfered(BlockSize);
                                 if (OperationProgress->Cancel == csCancelTransfer)
@@ -1959,7 +1958,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
                                         const std::wstring TargetDir, const TCopyParamType *CopyParam, int Params,
                                         TFileOperationProgressType *OperationProgress, int Level)
 {
-    int Attrs;
+    int Attrs = 0;
 
     FTerminal->LogEvent(FORMAT(L"Entering directory \"%s\".", DirectoryName.c_str()));
 
@@ -2529,7 +2528,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
 
                                     if (OperationProgress->AsciiTransfer)
                                     {
-                                        unsigned int PrevBlockSize = BlockBuf.GetSize();
+                                        size_t PrevBlockSize = BlockBuf.GetSize();
                                         BlockBuf.Convert(FTerminal->GetSessionData()->GetEOLType(),
                                                          FTerminal->GetConfiguration()->GetLocalEOLType(), 0, ConvertToken);
                                         OperationProgress->SetLocalSize(

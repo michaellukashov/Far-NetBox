@@ -1,7 +1,7 @@
 NetBox 2.0.8 ??.02.2012
 ---------------------
   * CURL upgraded to version 7.24.0
-  * SCP: Allow to change option "UTF-8 encoding for filenames"; fixed file names encoding/decoding
+  * Bugfix: SCP: fixed UTF-8 file names encoding/decoding; allow to change option "UTF-8 encoding for filenames"
   * Bugfix: dialog "Change file attributes" did not work
 
 NetBox 2.0.7 30.01.2012

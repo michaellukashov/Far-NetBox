@@ -53,9 +53,9 @@ void TFileBuffer::SetMemory(nb::TMemoryStream *value)
     }
 }
 //---------------------------------------------------------------------------
-DWORD TFileBuffer::ReadStream(nb::TStream *Stream, const DWORD Len, bool ForceLen)
+size_t TFileBuffer::ReadStream(nb::TStream *Stream, size_t  Len, bool ForceLen)
 {
-    DWORD Result = 0;
+    size_t Result = 0;
     try
     {
         SetSize(GetPosition() + Len);
@@ -83,7 +83,7 @@ DWORD TFileBuffer::ReadStream(nb::TStream *Stream, const DWORD Len, bool ForceLe
     return Result;
 }
 //---------------------------------------------------------------------------
-DWORD TFileBuffer::LoadStream(nb::TStream *Stream, const DWORD Len, bool ForceLen)
+size_t TFileBuffer::LoadStream(nb::TStream *Stream, size_t Len, bool ForceLen)
 {
     FMemory->Seek(0, nb::soFromBeginning);
     return ReadStream(Stream, Len, ForceLen);
@@ -219,7 +219,7 @@ void TFileBuffer::Delete(size_t Index, size_t Len)
     SetSize(GetSize() - Len);
 }
 //---------------------------------------------------------------------------
-void TFileBuffer::WriteToStream(nb::TStream *Stream, const DWORD Len)
+void TFileBuffer::WriteToStream(nb::TStream *Stream, size_t Len)
 {
     try
     {

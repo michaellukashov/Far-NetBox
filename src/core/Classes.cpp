@@ -977,9 +977,9 @@ void TStringList::CustomSort(TStringListSortCompare CompareFunc)
         Changed();
     }
 }
-void TStringList::QuickSort(int L, int R, TStringListSortCompare SCompare)
+void TStringList::QuickSort(size_t L, size_t R, TStringListSortCompare SCompare)
 {
-    int I, J, P;
+    size_t I, J, P;
     do
     {
         I = L;
@@ -1639,7 +1639,7 @@ void TRegistry::GetValueNames(TStrings *Strings)
         for (size_t I = 0; I < Info.NumSubKeys; I++)
         {
             DWORD Len = Info.MaxValueLen + 1;
-            RegEnumValue(GetCurrentKey(), I, &S[0], &Len, NULL, NULL, NULL, NULL);
+            RegEnumValue(GetCurrentKey(), static_cast<DWORD>(I), &S[0], &Len, NULL, NULL, NULL, NULL);
             Strings->Add(S.c_str());
         }
     }
@@ -1656,7 +1656,7 @@ void TRegistry::GetKeyNames(TStrings *Strings)
         for (size_t I = 0; I < Info.NumSubKeys; I++)
         {
             DWORD Len = Info.MaxSubKeyLen + 1;
-            RegEnumKeyEx(GetCurrentKey(), I, &S[0], &Len, NULL, NULL, NULL, NULL);
+            RegEnumKeyEx(GetCurrentKey(), static_cast<DWORD>(I), &S[0], &Len, NULL, NULL, NULL, NULL);
             Strings->Add(S.c_str());
         }
     }
@@ -1876,7 +1876,7 @@ std::wstring TRegistry::ReadString(const std::wstring Name)
     if (Len > 0)
     {
         Result.resize(Len);
-        GetData(Name, static_cast<void *>(const_cast<wchar_t *>(Result.c_str())), Len, RegData);
+        GetData(Name, static_cast<void *>(const_cast<wchar_t *>(Result.c_str())), static_cast<DWORD>(Len), RegData);
         if ((RegData == rdString) || (RegData == rdExpandString))
         {
             PackStr(Result);
@@ -1907,7 +1907,7 @@ size_t TRegistry::ReadBinaryData(const std::wstring Name,
         TRegDataType RegData = Info.RegData;
         if (((RegData == rdBinary) || (RegData == rdUnknown)) && (Result <= BufSize))
         {
-            GetData(Name, Buffer, Result, RegData);
+            GetData(Name, Buffer, static_cast<DWORD>(Result), RegData);
         }
         else
         {
@@ -1942,7 +1942,7 @@ void TRegistry::PutData(const std::wstring Name, const void *Buffer,
     int DataType = nb::RegDataToDataType(RegData);
     // DEBUG_PRINTF(L"GetCurrentKey = %d, Name = %s, REG_DWORD = %d, DataType = %d, BufSize = %d", GetCurrentKey(), Name.c_str(), REG_DWORD, DataType, BufSize);
     if (RegSetValueEx(GetCurrentKey(), Name.c_str(), 0, DataType,
-                      reinterpret_cast<const BYTE *>(Buffer), BufSize) != ERROR_SUCCESS)
+                      reinterpret_cast<const BYTE *>(Buffer), static_cast<DWORD>(BufSize)) != ERROR_SUCCESS)
     {
         throw std::exception("RegSetValueEx failed");    // ERegistryException(); // FIXME .CreateResFmt(SRegSetDataFailed, Name.c_str());
     }

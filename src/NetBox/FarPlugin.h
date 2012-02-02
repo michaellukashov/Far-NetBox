@@ -121,7 +121,7 @@ public:
                 const std::wstring Message, nb::TStrings *Buttons = NULL,
                 TFarMessageParams *Params = NULL, bool Oem = false);
     int MaxMessageLines();
-    int MaxMenuItemLength();
+    size_t MaxMenuItemLength();
     int Menu(unsigned int Flags, const std::wstring Title,
              const std::wstring Bottom, nb::TStrings *Items, const FarKey *BreakKeys,
              int &BreakCode);
@@ -132,7 +132,7 @@ public:
              const FarKey *BreakKeys, int &BreakCode);
     bool InputBox(const std::wstring Title, const std::wstring Prompt,
                   std::wstring &Text, unsigned long Flags, const std::wstring HistoryName = L"",
-                  int MaxLen = 255, farinputboxvalidate_slot_type *OnValidate = NULL);
+                  size_t MaxLen = 255, farinputboxvalidate_slot_type *OnValidate = NULL);
     std::wstring GetMsg(int MsgId);
     void SaveScreen(HANDLE &Screen);
     void RestoreScreen(HANDLE &Screen);
@@ -438,7 +438,7 @@ public:
     int GetSelectedCount();
     TFarPanelItem *GetFocusedItem();
     void SetFocusedItem(TFarPanelItem *value);
-    int GetFocusedIndex();
+    size_t GetFocusedIndex();
     void SetFocusedIndex(size_t value);
     nb::TRect GetBounds();
     TFarPanelType GetType();
@@ -486,8 +486,8 @@ protected:
 private:
     size_t FItemFocused;
 
-    void SetFlag(size_t Index, int Flag, bool Value);
-    bool GetFlag(size_t Index, int Flag);
+    void SetFlag(size_t Index, size_t Flag, bool Value);
+    bool GetFlag(size_t Index, size_t Flag);
 };
 //---------------------------------------------------------------------------
 class TFarEditorInfo

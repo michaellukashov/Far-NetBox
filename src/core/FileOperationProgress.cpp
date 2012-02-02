@@ -278,7 +278,7 @@ size_t TFileOperationProgressType::AdjustToCPSLimit(
 size_t TFileOperationProgressType::LocalBlockSize()
 {
     size_t Result = TRANSFER_BUF_SIZE;
-    if (LocallyUsed + Result > static_cast<__int64>(LocalSize))
+    if (LocallyUsed + Result > LocalSize)
     {
         Result = static_cast<size_t>(LocalSize - LocallyUsed);
     }
@@ -343,7 +343,7 @@ void TFileOperationProgressType::AddTransfered(__int64 ASize,
     if (AddToTotals)
     {
         TotalTransfered += ASize;
-        unsigned long Ticks = GetTickCount();
+        size_t Ticks = static_cast<size_t>(GetTickCount());
         if (FTicks.empty() ||
                 (FTicks.back() > Ticks) || // ticks wrap after 49.7 days
                 ((Ticks - FTicks.back()) >= 1000))
@@ -372,7 +372,7 @@ void TFileOperationProgressType::AddResumed(__int64 ASize)
 size_t TFileOperationProgressType::TransferBlockSize()
 {
     size_t Result = TRANSFER_BUF_SIZE;
-    if (TransferedSize + Result > static_cast<__int64>(TransferSize))
+    if (TransferedSize + Result > TransferSize)
     {
         Result = (TransferSize - TransferedSize);
     }
