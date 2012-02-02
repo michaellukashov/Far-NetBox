@@ -2259,7 +2259,7 @@ void TFarPanelModes::SetPanelMode(size_t Mode, const std::wstring ColumnTypes,
                                   const std::wstring StatusColumnWidths)
 {
     size_t ColumnTypesCount = !ColumnTypes.empty() ? CommaCount(ColumnTypes) + 1 : 0;
-    assert(Mode >= 0 && Mode < LENOF(FPanelModes));
+    assert(Mode != -1 && Mode < LENOF(FPanelModes));
     assert(!ColumnTitles || (ColumnTitles->GetCount() == ColumnTypesCount));
 
     ClearPanelMode(FPanelModes[Mode]);
@@ -2727,7 +2727,7 @@ void TFarPanelInfo::SetFocusedIndex(size_t value)
     // DEBUG_PRINTF(L"GetFocusedIndex = %d, value = %d", GetFocusedIndex(), value);
     if (GetFocusedIndex() != value)
     {
-        assert(value >= 0 && value < FPanelInfo->ItemsNumber);
+        assert(value != -1 && value < FPanelInfo->ItemsNumber);
         FPanelInfo->CurrentItem = value;
         PanelRedrawInfo PanelInfo;
         PanelInfo.CurrentItem = FPanelInfo->CurrentItem;
