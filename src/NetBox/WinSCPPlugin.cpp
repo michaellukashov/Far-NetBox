@@ -331,9 +331,8 @@ int TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD *Rec)
     if ((Rec->EventType == KEY_EVENT) &&
             Rec->Event.KeyEvent.bKeyDown &&
             (Rec->Event.KeyEvent.uChar.AsciiChar == 'W') &&
-            (FLAGSET(Rec->Event.KeyEvent.dwControlKeyState, LEFT_ALT_PRESSED) ||
-             FLAGSET(Rec->Event.KeyEvent.dwControlKeyState, RIGHT_ALT_PRESSED)) &&
-            FLAGSET(Rec->Event.KeyEvent.dwControlKeyState, SHIFT_PRESSED))
+            (Rec->Event.KeyEvent.dwControlKeyState & ALTMASK) &&
+            (Rec->Event.KeyEvent.dwControlKeyState & SHIFTMASK))
     {
         CommandsMenu(false);
         Result = 1;

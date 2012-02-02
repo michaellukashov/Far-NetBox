@@ -31,6 +31,11 @@
 
 
 //---------------------------------------------------------------------------
+#define RMASK (RIGHT_ALT_PRESSED | LEFT_ALT_PRESSED | RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED | SHIFT_PRESSED)
+#define ALTMASK (RIGHT_ALT_PRESSED | LEFT_ALT_PRESSED)
+#define CTRLMASK (RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED)
+#define SHIFTMASK (SHIFT_PRESSED)
+//---------------------------------------------------------------------------
 class TCustomFarFileSystem;
 class TFarPanelModes;
 class TFarKeyBarTitles;

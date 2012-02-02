@@ -400,7 +400,7 @@ INT_PTR WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1,
 
     if (Dialog != NULL)
     {
-        Result = Dialog->DialogProc(Msg, Param1, reinterpret_cast<void *>(Param2));
+        Result = Dialog->DialogProc(Msg, Param1, Param2);
     }
 
     if ((Msg == DN_CLOSE) && Result)
@@ -466,7 +466,9 @@ long TFarDialog::DialogProc(int Msg, int Param1, void *Param2)
 
                 if (!Result && (Msg == DN_CONTROLINPUT))
                 {
-                    Result = Key(I, reinterpret_cast<long>(Param2));
+                    INPUT_RECORD *Rec = reinterpret_cast<INPUT_RECORD *>(Param2);
+                    const KEY_EVENT_RECORD &Event = Rec->Event.KeyEvent;
+                    Result = Key(I, static_cast<long>(Event.wVirtualKeyCode | (Event.dwControlKeyState << 16)));
                 }
                 Handled = true;
             }
@@ -654,7 +656,7 @@ bool TFarDialog::HotKey(WORD Key, DWORD ControlState)
 {
     bool Result = false;
     char HotKey = 0;
-    if ((LEFT_ALT_PRESSED & ControlState) &&
+    if ((ControlState & ALTMASK) &&
         ('A' <= Key) && (Key <= 'Z'))
     {
         Result = true;
@@ -2711,8 +2713,8 @@ long TFarLister::ItemProc(int Msg, void *Param)
             KEY_EVENT_RECORD *KeyEvent = &Rec->Event.KeyEvent;
 
             size_t NewTopIndex = GetTopIndex();
-            WORD param = KeyEvent->wVirtualKeyCode;
-            if ((param == VK_UP) || (param == VK_LEFT))
+            WORD Key = KeyEvent->wVirtualKeyCode;
+            if ((Key == VK_UP) || (Key == VK_LEFT))
             {
                 if (NewTopIndex > 0)
                 {
@@ -2727,7 +2729,7 @@ long TFarLister::ItemProc(int Msg, void *Param)
                     SendDialogMessage(DN_CONTROLINPUT, 1, static_cast<void *>(&Rec));
                 }
             }
-            else if ((param == VK_DOWN) || (param == VK_RIGHT))
+            else if ((Key == VK_DOWN) || (Key == VK_RIGHT))
             {
                 if (NewTopIndex < GetItems()->GetCount() - GetHeight())
                 {
@@ -2742,7 +2744,7 @@ long TFarLister::ItemProc(int Msg, void *Param)
                     SendDialogMessage(DN_CONTROLINPUT, 1, static_cast<void *>(&Rec));
                 }
             }
-            else if (param == VK_PRIOR) // TODO: check
+            else if (Key == VK_PRIOR)
             {
                 if (NewTopIndex > GetHeight() - 1)
                 {
@@ -2753,7 +2755,7 @@ long TFarLister::ItemProc(int Msg, void *Param)
                     NewTopIndex = 0;
                 }
             }
-            else if (param == VK_NEXT)
+            else if (Key == VK_NEXT)
             {
                 if (NewTopIndex < GetItems()->GetCount() - GetHeight() - GetHeight() + 1)
                 {
@@ -2764,11 +2766,11 @@ long TFarLister::ItemProc(int Msg, void *Param)
                     NewTopIndex = GetItems()->GetCount() - GetHeight();
                 }
             }
-            else if (param == VK_HOME)
+            else if (Key == VK_HOME)
             {
                 NewTopIndex = 0;
             }
-            else if (param == VK_END)
+            else if (Key == VK_END)
             {
                 NewTopIndex = GetItems()->GetCount() - GetHeight();
             }

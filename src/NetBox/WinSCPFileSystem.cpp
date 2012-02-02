@@ -888,8 +888,8 @@ bool TWinSCPFileSystem::ProcessKeyEx(WORD Key, DWORD ControlState)
 
     TFarPanelItem *Focused = GetPanelInfo()->GetFocusedItem();
 
-    if ((Key == 'W') && (ControlState & SHIFT_PRESSED) &&
-        (ControlState & LEFT_ALT_PRESSED))
+    if ((Key == 'W') && (ControlState & SHIFTMASK) &&
+        (ControlState & ALTMASK))
     {
         WinSCPPlugin()->CommandsMenu(true);
         Handled = true;
@@ -908,13 +908,13 @@ bool TWinSCPFileSystem::ProcessKeyEx(WORD Key, DWORD ControlState)
             Data = static_cast<TSessionData *>(Focused->GetUserData());
         }
 
-        if ((Key == 'F') && FLAGSET(ControlState, LEFT_CTRL_PRESSED))
+        if ((Key == 'F') && (ControlState & CTRLMASK))
         {
             InsertSessionNameOnCommandLine();
             Handled = true;
         }
 
-        if ((Key == VK_RETURN) && FLAGSET(ControlState, LEFT_CTRL_PRESSED))
+        if ((Key == VK_RETURN) && (ControlState && CTRLMASK))
         {
             InsertSessionNameOnCommandLine();
             Handled = true;
@@ -937,14 +937,14 @@ bool TWinSCPFileSystem::ProcessKeyEx(WORD Key, DWORD ControlState)
             Handled = true;
         }
 
-        if (Key == VK_F4 && (ControlState & SHIFT_PRESSED))
+        if (Key == VK_F4 && (ControlState & SHIFTMASK))
         {
             EditConnectSession(NULL, true);
             Handled = true;
         }
 
         if (((Key == VK_F5) || (Key == VK_F6)) &&
-            (ControlState & SHIFT_PRESSED))
+            (ControlState & SHIFTMASK))
         {
             if (Data != NULL)
             {
@@ -955,78 +955,78 @@ bool TWinSCPFileSystem::ProcessKeyEx(WORD Key, DWORD ControlState)
     }
     else if (Connected())
     {
-        if ((Key == 'F') && (ControlState & LEFT_CTRL_PRESSED))
+        if ((Key == 'F') && (ControlState & CTRLMASK))
         {
             InsertFileNameOnCommandLine(true);
             Handled = true;
         }
 
-        if ((Key == VK_RETURN) && FLAGSET(ControlState, LEFT_CTRL_PRESSED))
+        if ((Key == VK_RETURN) && (ControlState & CTRLMASK))
         {
             InsertFileNameOnCommandLine(false);
             Handled = true;
         }
 
-        if ((Key == 'R') && (ControlState & LEFT_CTRL_PRESSED))
+        if ((Key == 'R') && (ControlState & CTRLMASK))
         {
             FReloadDirectory = true;
         }
 
-        if ((Key == 'A') && (ControlState & LEFT_CTRL_PRESSED))
+        if ((Key == 'A') && (ControlState & CTRLMASK))
         {
             FileProperties();
             Handled = true;
         }
 
-        if ((Key == 'G') && (ControlState & LEFT_CTRL_PRESSED))
+        if ((Key == 'G') && (ControlState & CTRLMASK))
         {
             ApplyCommand();
             Handled = true;
         }
 
-        if ((Key == 'Q') && (ControlState & SHIFT_PRESSED) &&
-              (ControlState & LEFT_ALT_PRESSED))
+        if ((Key == 'Q') && (ControlState & SHIFTMASK) &&
+              (ControlState & ALTMASK))
         {
             QueueShow(false);
             Handled = true;
         }
 
-        if ((Key == 'B') && (ControlState & LEFT_CTRL_PRESSED) &&
-              (ControlState & LEFT_ALT_PRESSED))
+        if ((Key == 'B') && (ControlState & CTRLMASK) &&
+              (ControlState & ALTMASK))
         {
             ToggleSynchronizeBrowsing();
             Handled = true;
         }
 
         if ((Key == VK_INSERT) &&
-            (FLAGSET(ControlState, LEFT_ALT_PRESSED | SHIFT_PRESSED) || FLAGSET(ControlState, LEFT_CTRL_PRESSED | LEFT_ALT_PRESSED)))
+            (ControlState & (ALTMASK | SHIFTMASK)) || (ControlState & (CTRLMASK | ALTMASK)))
         {
             CopyFullFileNamesToClipboard();
             Handled = true;
         }
 
-        if ((Key == VK_F6) && ((ControlState & (LEFT_ALT_PRESSED | SHIFT_PRESSED)) == LEFT_ALT_PRESSED))
+        if ((Key == VK_F6) && (ControlState & ALTMASK) && !(ControlState & SHIFTMASK))
         {
             CreateLink();
             Handled = true;
         }
 
         if (Focused && ((Key == VK_F5) || (Key == VK_F6)) &&
-            ((ControlState & (LEFT_ALT_PRESSED | SHIFT_PRESSED)) == SHIFT_PRESSED))
+            (ControlState & SHIFTMASK) && !(ControlState & ALTMASK))
         {
             TransferFiles((Key == VK_F6));
             Handled = true;
         }
 
         if (Focused && (Key == VK_F6) &&
-            ((ControlState & (LEFT_ALT_PRESSED | SHIFT_PRESSED)) == (SHIFT_PRESSED | LEFT_ALT_PRESSED)))
+            ((ControlState & SHIFTMASK) && (ControlState & ALTMASK)))
         {
             RenameFile();
             Handled = true;
         }
 
-        if ((Key == VK_F12) && (ControlState & SHIFT_PRESSED) &&
-            (ControlState & LEFT_ALT_PRESSED))
+        if ((Key == VK_F12) && (ControlState & SHIFTMASK) &&
+            (ControlState & ALTMASK))
         {
             OpenDirectory(false);
             Handled = true;
