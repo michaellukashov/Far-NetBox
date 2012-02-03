@@ -323,7 +323,7 @@ void *TCustomFarPlugin::OpenPlugin(int OpenFrom, INT_PTR Item)
         {
             Buf = reinterpret_cast<wchar_t *>(Item);
             StrFromFar(Buf);
-            Item = reinterpret_cast<int>(Buf.c_str());
+            Item = reinterpret_cast<INT_PTR>(Buf.c_str());
         }
 
         TCustomFarFileSystem *Result = OpenPluginEx(OpenFrom, Item);
@@ -855,7 +855,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
             Button->SetOnClick(boost::bind(&TFarMessageDialog::ButtonClick, this, _1, _2));
             std::wstring Caption = Buttons->GetString(Index);
             if ((FParams->Timeout > 0) &&
-                    (FParams->TimeoutButton == static_cast<unsigned int>(Index)))
+                    (FParams->TimeoutButton == Index))
             {
                 FTimeoutButtonCaption = Caption;
                 Caption = FORMAT(FParams->TimeoutStr.c_str(), Caption.c_str(), static_cast<int>(FParams->Timeout / 1000));

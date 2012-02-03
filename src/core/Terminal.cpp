@@ -920,7 +920,7 @@ void TTerminal::OpenTunnel()
         FTunnelData->SetName(FMTLOAD(TUNNEL_SESSION_NAME, FSessionData->GetSessionName().c_str()));
         FTunnelData->SetTunnel(false);
         FTunnelData->SetHostName(FSessionData->GetTunnelHostName());
-        FTunnelData->SetPortNumber(static_cast<int>(FSessionData->GetTunnelPortNumber()));
+        FTunnelData->SetPortNumber(FSessionData->GetTunnelPortNumber());
         FTunnelData->SetUserName(FSessionData->GetTunnelUserName());
         FTunnelData->SetPassword(FSessionData->GetTunnelPassword());
         FTunnelData->SetPublicKeyFile(FSessionData->GetTunnelPublicKeyFile());
