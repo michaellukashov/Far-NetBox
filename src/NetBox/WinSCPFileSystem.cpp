@@ -914,7 +914,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(WORD Key, DWORD ControlState)
             Handled = true;
         }
 
-        if ((Key == VK_RETURN) && (ControlState && CTRLMASK))
+        if ((Key == VK_RETURN) && (ControlState & CTRLMASK))
         {
             InsertSessionNameOnCommandLine();
             Handled = true;
