@@ -1372,7 +1372,7 @@ long TFarDialogItem::FailItemProc(int Msg, void *Param)
 //---------------------------------------------------------------------------
 long TFarDialogItem::ItemProc(int Msg, void *Param)
 {
-    long Result;
+    long Result = 0;
     bool Handled = false;
 
     if (Msg == DN_GOTFOCUS)
@@ -1869,7 +1869,7 @@ long TFarButton::ItemProc(int Msg, void *Param)
     {
         if (!GetEnabled())
         {
-            return true;
+            return 1;
         }
         else
         {
@@ -1880,7 +1880,7 @@ long TFarButton::ItemProc(int Msg, void *Param)
             }
             if (!Close)
             {
-                return true;
+                return 1;
             }
         }
     }
@@ -1929,7 +1929,7 @@ long TFarCheckBox::ItemProc(int Msg, void *Param)
         {
             UpdateSelected(reinterpret_cast<int>(Param));
         }
-        return Allow;
+        return static_cast<long>(Allow);
     }
     else
     {
@@ -1973,7 +1973,7 @@ long TFarRadioButton::ItemProc(int Msg, void *Param)
             // Manual says that Param should contain ID of previously selected dialog item
             UpdateSelected(reinterpret_cast<int>(Param));
         }
-        return Allow;
+        return static_cast<long>(Allow);
     }
     else
     {
@@ -2474,7 +2474,7 @@ long TFarList::ItemProc(int Msg, void *Param)
             GetDialogItem()->UpdateData(GetString(param));
         }
     }
-    return false;
+    return static_cast<long>(false);
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -2493,19 +2493,19 @@ TFarListBox::~TFarListBox()
 //---------------------------------------------------------------------------
 long TFarListBox::ItemProc(int Msg, void *Param)
 {
-    bool Result;
+    long Result = 0;
     if (Msg == DN_CONTROLINPUT)
     {
         const INPUT_RECORD *Rec = static_cast<const INPUT_RECORD *>(Param);
         const KEY_EVENT_RECORD &Event = Rec->Event.KeyEvent;
         if (GetDialog()->HotKey(Event.wVirtualKeyCode, Event.dwControlKeyState))
         {
-            Result = true;
+            Result = 1;
         }
     }
     else if (FList->ItemProc(Msg, Param))
     {
-        Result = true;
+        Result = 1;
     }
     else
     {
@@ -2583,7 +2583,7 @@ long TFarComboBox::ItemProc(int Msg, void *Param)
 
     if (FList->ItemProc(Msg, Param))
     {
-        return true;
+        return static_cast<long>(true);
     }
     else
     {
