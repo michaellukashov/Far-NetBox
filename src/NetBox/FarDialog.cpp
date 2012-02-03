@@ -592,7 +592,7 @@ long TFarDialog::DefaultDialogProc(int Msg, int Param1, long Param2)
 //---------------------------------------------------------------------------
 long TFarDialog::FailDialogProc(int Msg, int Param1, long Param2)
 {
-    long Result;
+    long Result = 0;
     switch (Msg)
     {
     case DN_CLOSE:
@@ -1345,7 +1345,7 @@ bool TFarDialogItem::GetIsEmpty()
 //---------------------------------------------------------------------------
 long TFarDialogItem::FailItemProc(int Msg, long Param)
 {
-    long Result;
+    long Result = 0;
     switch (Msg)
     {
     case DN_KILLFOCUS:
