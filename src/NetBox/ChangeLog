@@ -1,5 +1,6 @@
 NetBox 2.0.8 ??.02.2012
 ---------------------
+  * Far3: Fixed hotkeys handling
   * CURL upgraded to version 7.24.0
   * Bugfix: SCP: fixed UTF-8 file names encoding/decoding; allow to change option "UTF-8 encoding for filenames"
   * Bugfix: dialog "Change file attributes" did not work
