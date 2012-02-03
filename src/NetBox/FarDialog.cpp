@@ -1361,7 +1361,7 @@ long TFarDialogItem::FailItemProc(int Msg, long Param)
 //---------------------------------------------------------------------------
 long TFarDialogItem::ItemProc(int Msg, long Param)
 {
-    long Result;
+    long Result = 0;
     bool Handled = false;
 
     if (Msg == DN_GOTFOCUS)
@@ -1851,7 +1851,7 @@ long TFarButton::ItemProc(int Msg, long Param)
     {
         if (!GetEnabled())
         {
-            return true;
+            return 1;
         }
         else
         {
@@ -1862,7 +1862,7 @@ long TFarButton::ItemProc(int Msg, long Param)
             }
             if (!Close)
             {
-                return true;
+                return 1;
             }
         }
     }
@@ -1911,7 +1911,7 @@ long TFarCheckBox::ItemProc(int Msg, long Param)
         {
             UpdateSelected(Param);
         }
-        return Allow;
+        return static_cast<long>(Allow);
     }
     else
     {
@@ -1955,7 +1955,7 @@ long TFarRadioButton::ItemProc(int Msg, long Param)
             // Manual says that Param should contain ID of previously selected dialog item
             UpdateSelected(Param);
         }
-        return Allow;
+        return static_cast<long>(Allow);
     }
     else
     {
@@ -2454,7 +2454,7 @@ long TFarList::ItemProc(int Msg, long Param)
             GetDialogItem()->UpdateData(GetString(Param));
         }
     }
-    return false;
+    return static_cast<long>(false);
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -2473,18 +2473,18 @@ TFarListBox::~TFarListBox()
 //---------------------------------------------------------------------------
 long TFarListBox::ItemProc(int Msg, long Param)
 {
-    bool Result;
+    long Result = 0;
     // FAR WORKAROUND
     // Since 1.70 final, hotkeys do not work when list box has focus.
     if ((Msg == DN_KEY) &&
             // (static_cast<short int>(GetDialog()->GetFarPlugin()->FarVersion()) >= static_cast<short int>(FAR170)) &&
             GetDialog()->HotKey(Param))
     {
-        Result = true;
+        Result = 1;
     }
     else if (FList->ItemProc(Msg, Param))
     {
-        Result = true;
+        Result = 1;
     }
     else
     {
@@ -2562,7 +2562,7 @@ long TFarComboBox::ItemProc(int Msg, long Param)
 
     if (FList->ItemProc(Msg, Param))
     {
-        return true;
+        return static_cast<long>(true);
     }
     else
     {
