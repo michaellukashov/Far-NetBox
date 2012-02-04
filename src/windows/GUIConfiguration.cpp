@@ -1064,7 +1064,7 @@ nb::TStrings *TGUIConfiguration::GetLocales()
                                             ChangeFileExt(ModuleFileName(), std::wstring(L".") + Exts->GetString(Index)));
                     if (!LangName.empty())
                     {
-                        FLocales->AddObject(LangName, reinterpret_cast<nb::TObject *>((size_t)(
+                        FLocales->AddObject(LangName, reinterpret_cast<nb::TObject *>(static_cast<size_t>(
                                                 AdditionaLanguageMask + Exts->GetString(Index)[2])));
                     }
                 }

@@ -1716,7 +1716,6 @@ void TSFTPFileSystem::Init(TSecureShell *SecureShell)
     FSupport = new TSFTPSupport();
     FExtensions = new nb::TStringList();
     FFixedPaths = NULL;
-    FFileSystemInfoValid = false;
     Self = this;
 }
 //---------------------------------------------------------------------------
@@ -2331,7 +2330,7 @@ size_t TSFTPFileSystem::ReceivePacket(TSFTPPacket *Packet,
     {
         if (Packet->GetType() == SSH_FXP_STATUS)
         {
-            if ((int)AllowStatus < 0)
+            if (static_cast<int>(AllowStatus) < 0)
             {
                 AllowStatus = (ExpectedType == SSH_FXP_STATUS ? asOK : asNo);
             }
