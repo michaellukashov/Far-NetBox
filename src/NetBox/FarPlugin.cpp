@@ -2104,10 +2104,6 @@ void TCustomFarFileSystem::ClosePlugin()
 {
     FClosed = true;
     FarControl(FCTL_CLOSEPLUGIN, 0, NULL);
-    // FAR WORKAROUND
-    // Calling UpdatePanel() is necessary, otherwise plugin remains in panel,
-    // but it causes FAR to fail
-    // UpdatePanel();
 }
 //---------------------------------------------------------------------------
 std::wstring TCustomFarFileSystem::GetMsg(int MsgId)
