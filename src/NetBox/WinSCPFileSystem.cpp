@@ -2183,7 +2183,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring Dir, int OpMode)
     // workaround to ignore "change to root directory" command issued by FAR,
     // before file is opened for viewing/editing from "find file" dialog
     // when plugin uses UNIX style paths
-    else if (OpMode &OPM_FIND && OpMode &OPM_SILENT && Dir == L"\\")
+    else if ((OpMode & OPM_FIND) && (OpMode & OPM_SILENT) && (Dir == L"\\"))
     {
         if (FSavedFindFolder.empty())
         {
@@ -2204,7 +2204,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring Dir, int OpMode)
     }
     else
     {
-        if (OpMode & OPM_FIND && FSavedFindFolder.empty())
+        if ((OpMode & OPM_FIND) && FSavedFindFolder.empty())
         {
             FSavedFindFolder = FTerminal->GetCurrentDirectory();
         }
