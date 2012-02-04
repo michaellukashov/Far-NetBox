@@ -48,15 +48,6 @@ enum THandlesFunction { hfProcessKey, hfProcessHostFile, hfProcessEvent };
 typedef boost::signal1<void, std::wstring &> farinputboxvalidate_signal_type;
 typedef farinputboxvalidate_signal_type::slot_type farinputboxvalidate_slot_type;
 //---------------------------------------------------------------------------
-enum
-{
-    FAR170BETA4 = MAKEFARVERSION(1, 70, 1282),
-    FAR170BETA5 = MAKEFARVERSION(1, 70, 1634),
-    FAR170ALPHA6 = MAKEFARVERSION(1, 70, 1812),
-    FAR170 = MAKEFARVERSION(1, 70, 2087),
-    FAR20 = MAKEFARVERSION(2, 0, 1666),
-};
-//---------------------------------------------------------------------------
 // typedef void (*TFarMessageTimerEvent)(unsigned int &Result);
 typedef boost::signal1<void, size_t &> farmessagetimer_signal_type;
 typedef farmessagetimer_signal_type::slot_type farmessagetimer_slot_type;
