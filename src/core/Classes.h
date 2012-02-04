@@ -420,16 +420,9 @@ public:
     TSHFileInfo();
     virtual ~TSHFileInfo();
 
-    //get the system's image list
-    HIMAGELIST GetSystemImageListHandle(BOOL bSmallIcon);
-
     //get the image's index in the system's image list
     int GetFileIconIndex( std::wstring strFileName, BOOL bSmallIcon);
     int GetDirIconIndex(BOOL bSmallIcon);
-
-    //get a handle to the icon
-    HICON GetFileIconHandle(const std::wstring strFileName, BOOL bSmallIcon);
-    HICON GetFolderIconHandle(BOOL bSmallIcon );
 
     //get file type
     std::wstring GetFileType(const std::wstring strFileName);
