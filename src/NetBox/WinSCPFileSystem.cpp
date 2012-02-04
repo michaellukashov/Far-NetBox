@@ -999,7 +999,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(WORD Key, DWORD ControlState)
         }
 
         if ((Key == VK_INSERT) &&
-            (ControlState & (ALTMASK | SHIFTMASK)) || (ControlState & (CTRLMASK | ALTMASK)))
+            ((ControlState & (ALTMASK | SHIFTMASK)) || (ControlState & (CTRLMASK | ALTMASK))))
         {
             CopyFullFileNamesToClipboard();
             Handled = true;
