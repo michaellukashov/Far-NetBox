@@ -2018,7 +2018,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
                 std::wstring FileName = IncludeTrailingBackslash(DirectoryName) + SearchRec.cFileName;
                 try
                 {
-                    if ((wcscmp(SearchRec.cFileName, L".") != 0) && (wcscmp(SearchRec.cFileName, L"..") != 0))
+                    if ((wcscmp(SearchRec.cFileName, THISDIRECTORY) != 0) && (wcscmp(SearchRec.cFileName, PARENTDIRECTORY) != 0))
                     {
                         SCPSource(FileName, TargetDirFull, CopyParam, Params, OperationProgress, Level + 1);
                     }

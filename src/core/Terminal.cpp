@@ -625,7 +625,7 @@ std::wstring TTerminal::ExpandFileName(const std::wstring Path,
     if (!IsAbsolutePath(path) && !BasePath.empty())
     {
         // TODO: Handle more complicated cases like "../../xxx"
-        if (path == L"..")
+        if (path == PARENTDIRECTORY)
         {
             path = UnixExcludeTrailingBackslash(UnixExtractFilePath(
                                                     UnixExcludeTrailingBackslash(BasePath)));
@@ -4107,7 +4107,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
                     MaskParams.Size = Size;
                     std::wstring RemoteFileName =
                         CopyParam->ChangeFileName(FileName, osLocal, false);
-                    if ((FileName != L".") && (FileName != L"..") &&
+                    if ((FileName != THISDIRECTORY) && (FileName != PARENTDIRECTORY) &&
                             CopyParam->AllowTransfer(Data.LocalDirectory + FileName, osLocal,
                                                      FLAGSET(SearchRec.dwFileAttributes, faDirectory), MaskParams) &&
                             !FFileSystem->TemporaryTransferFile(FileName) &&

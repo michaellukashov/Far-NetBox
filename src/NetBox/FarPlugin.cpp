@@ -11,6 +11,7 @@
 #include "Exceptions.h"
 #include "TextsCore.h"
 #include "FileMasks.h"
+#include "RemoteFiles.h"
 #include "puttyexp.h"
 
 //---------------------------------------------------------------------------
@@ -2514,7 +2515,7 @@ unsigned long TFarPanelItem::GetFileAttributes()
 //---------------------------------------------------------------------------
 bool TFarPanelItem::GetIsParentDirectory()
 {
-    return (GetFileName() == L"..");
+    return (GetFileName() == PARENTDIRECTORY);
 }
 //---------------------------------------------------------------------------
 bool TFarPanelItem::GetIsFile()
