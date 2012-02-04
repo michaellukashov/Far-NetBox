@@ -533,7 +533,6 @@ long TFarDialog::DialogProc(int Msg, int Param1, long Param2)
                     // flag DIF_LISTNOCLOSE.
                     if (Button == NULL)
                     {
-                        assert(static_cast<short int>(FarPlugin->FarVersion()) >= static_cast<short int>(FAR170ALPHA6));
                         assert(dynamic_cast<TFarListBox *>(GetItem(Param1)) != NULL);
                         Result = false;
                     }
@@ -2476,9 +2475,7 @@ long TFarListBox::ItemProc(int Msg, long Param)
     long Result = 0;
     // FAR WORKAROUND
     // Since 1.70 final, hotkeys do not work when list box has focus.
-    if ((Msg == DN_KEY) &&
-            // (static_cast<short int>(GetDialog()->GetFarPlugin()->FarVersion()) >= static_cast<short int>(FAR170)) &&
-            GetDialog()->HotKey(Param))
+    if ((Msg == DN_KEY) && GetDialog()->HotKey(Param))
     {
         Result = 1;
     }
