@@ -1,14 +1,14 @@
 #pragma once
 
 #include <FileSystems.h>
-#include "FtpFileSystem.h"
+#include "Terminal.h"
 #include "EasyURL.h"
 //---------------------------------------------------------------------------
 class TCURLIntf;
-// class TSecureShell;
 struct TListDataEntry;
 class TMessageQueue;
 class TiXmlElement;
+struct TFileTransferData;
 //---------------------------------------------------------------------------
 class TWebDAVFileSystem : public TCustomFileSystem
 {
@@ -16,7 +16,7 @@ class TWebDAVFileSystem : public TCustomFileSystem
     friend class TFileListHelper;
 public:
     explicit TWebDAVFileSystem(TTerminal *ATerminal);
-    virtual void Init(TSecureShell *SecureShell);
+    virtual void Init();
     virtual ~TWebDAVFileSystem();
 
     virtual void Open();
@@ -75,8 +75,7 @@ public:
     virtual std::wstring GetUserName();
 
 protected:
-    enum TOverwriteMode { omOverwrite, omResume };
-protected:
+    virtual std::wstring GetCurrentDirectory();
 
     bool HandleListData(const wchar_t *Path, const TListDataEntry *Entries,
                         size_t Count);
@@ -88,6 +87,7 @@ protected:
     void EnsureLocation();
     std::wstring ActualCurrentDirectory();
     void Discard();
+    void DoChangeDirectory(const std::wstring Directory);
 
     void Sink(const std::wstring FileName,
               const TRemoteFile *File, const std::wstring TargetDir,
@@ -119,15 +119,10 @@ protected:
     void ResetCaches();
     void CaptureOutput(const std::wstring Str);
     void DoReadDirectory(TRemoteFileList *FileList);
-    void DoChangeDirectory(const std::wstring Directory);
     void FileTransfer(const std::wstring FileName, const std::wstring LocalFile,
                       const std::wstring RemoteFile, const std::wstring RemotePath, bool Get,
                       __int64 Size, int Type, TFileTransferData &UserData,
                       TFileOperationProgressType *OperationProgress);
-
-protected:
-
-    virtual std::wstring GetCurrentDirectory();
 
 protected:
     const wchar_t *GetOption(int OptionID) const;
@@ -142,7 +137,6 @@ private:
         FEAT
     };
 
-    // TSecureShell * FSecureShell;
     TFileSystemInfo FFileSystemInfo;
     std::wstring FCurrentDirectory;
     std::wstring FHomeDirectory;
@@ -178,6 +172,7 @@ private:
     int m_ProgressPercent; ///< Progress percent value
     TWebDAVFileSystem *Self;
 
+private:
     void CustomReadFile(const std::wstring FileName,
                         TRemoteFile *& File, TRemoteFile *ALinkedByFile);
     static std::wstring DelimitStr(const std::wstring Str);
@@ -197,6 +192,7 @@ private:
         ItemDirectory,
         ItemFile,
     };
+
 private:
     virtual bool CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, std::wstring &errorInfo);
     virtual bool MakeDirectory(const wchar_t *path, std::wstring &errorInfo);

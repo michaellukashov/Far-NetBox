@@ -84,7 +84,7 @@ struct TSinkFileParams
 class TFileListHelper
 {
 public:
-    TFileListHelper(TWebDAVFileSystem *FileSystem, TRemoteFileList *FileList,
+    explicit TFileListHelper(TWebDAVFileSystem *FileSystem, TRemoteFileList *FileList,
                     bool IgnoreFileList) :
         FFileSystem(FileSystem),
         FFileList(FFileSystem->FFileList),
@@ -109,7 +109,6 @@ private:
 //===========================================================================
 TWebDAVFileSystem::TWebDAVFileSystem(TTerminal *ATerminal) :
     TCustomFileSystem(ATerminal),
-    // FSecureShell(NULL),
     FFileList(NULL),
     FProcessingCommand(false),
     FCURLIntf(NULL),
@@ -135,9 +134,8 @@ TWebDAVFileSystem::TWebDAVFileSystem(TTerminal *ATerminal) :
     Self = this;
 }
 
-void TWebDAVFileSystem::Init(TSecureShell *SecureShell)
+void TWebDAVFileSystem::Init()
 {
-    // FSecureShell = SecureShell;
     FLsFullTime = FTerminal->GetSessionData()->GetSCPLsFullTime();
     FProcessingCommand = false;
 
@@ -145,11 +143,6 @@ void TWebDAVFileSystem::Init(TSecureShell *SecureShell)
         FTerminal->GetSessionData()->GetFSProtocol() == fsHTTP ?
         CONST_HTTP_PROTOCOL_BASE_NAME : CONST_HTTPS_PROTOCOL_BASE_NAME;
     FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
-    // capabilities of SCP protocol are fixed
-    for (int Index = 0; Index < fcCount; Index++)
-    {
-        FFileSystemInfo.IsCapable[Index] = IsCapable(static_cast<TFSCapability>(Index));
-    }
 }
 //---------------------------------------------------------------------------
 TWebDAVFileSystem::~TWebDAVFileSystem()
@@ -160,7 +153,6 @@ TWebDAVFileSystem::~TWebDAVFileSystem()
     FLastError = NULL;
     delete FTransferStatusCriticalSection;
     FTransferStatusCriticalSection = NULL;
-    // delete FSecureShell;
     delete FCURLIntf;
     FCURLIntf = NULL;
     CloseHandle(FAbortEvent);
@@ -169,7 +161,6 @@ TWebDAVFileSystem::~TWebDAVFileSystem()
 void TWebDAVFileSystem::Open()
 {
     DEBUG_PRINTF(L"begin");
-    // FSecureShell->Open();
 
     FCurrentDirectory = L"";
     FHomeDirectory = L"";
@@ -215,9 +206,24 @@ void TWebDAVFileSystem::Open()
         }
     }
 
+    std::wstring HostName = Data->GetHostName();
+    if (::LowerCase(HostName.substr(0, 7)) == L"http://")
+    {
+        HostName.erase(0, 7);
+    }
+    else if (LowerCase(HostName.substr(0, 8)) == L"https://")
+    {
+        HostName.erase(0, 8);
+    }
+    int Port = Data->GetPortNumber();
+    std::wstring ProtocolName = FTerminal->GetSessionData()->GetFSProtocol() == fsHTTP ?
+                                L"http" : L"https";
+    std::wstring UserName = Data->GetUserName();
+    std::wstring Password = Data->GetPassword();
+    std::wstring Account = Data->GetFtpAccount();
+    std::wstring Path = Data->GetRemoteDirectory();
+    std::wstring url = FORMAT(L"%s://%s:%d%s", ProtocolName.c_str(), HostName.c_str(), Port, Path.c_str());
     int ServerType = 0;
-    // int Pasv = (Data->GetFtpPasvMode() ? 1 : 2);
-    // int TimeZoneOffset = int(Round(double(Data->GetTimeDifference()) * 24 * 60));
     int UTF8 = 0;
     switch (Data->GetNotUtf())
     {
@@ -237,23 +243,6 @@ void TWebDAVFileSystem::Open()
     FPasswordFailed = false;
     bool PromptedForCredentials = false;
 
-    std::wstring HostName = Data->GetHostName();
-    if (::LowerCase(HostName.substr(0, 7)) == L"http://")
-    {
-        HostName.erase(0, 7);
-    }
-    else if (LowerCase(HostName.substr(0, 8)) == L"https://")
-    {
-        HostName.erase(0, 8);
-    }
-    int Port = Data->GetPortNumber();
-    std::wstring ProtocolName = FTerminal->GetSessionData()->GetFSProtocol() == fsHTTP ?
-                                L"http" : L"https";
-    std::wstring UserName = Data->GetUserName();
-    std::wstring Password = Data->GetPassword();
-    std::wstring Account = Data->GetFtpAccount();
-    std::wstring Path = Data->GetRemoteDirectory();
-    std::wstring url = FORMAT(L"%s://%s:%d%s", ProtocolName.c_str(), HostName.c_str(), Port, Path.c_str());
     do
     {
         FSystem = L"";
@@ -320,7 +309,6 @@ void TWebDAVFileSystem::Open()
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::Close()
 {
-    // FSecureShell->Close();
     assert(FActive);
     if (FCURLIntf->Close())
     {
@@ -336,13 +324,12 @@ void TWebDAVFileSystem::Close()
 //---------------------------------------------------------------------------
 bool TWebDAVFileSystem::GetActive()
 {
-    // return FSecureShell->GetActive();
     return FActive;
 }
 //---------------------------------------------------------------------------
 const TSessionInfo &TWebDAVFileSystem::GetSessionInfo()
 {
-    return FSessionInfo; // FSecureShell->GetSessionInfo();
+    return FSessionInfo;
 }
 //---------------------------------------------------------------------------
 const TFileSystemInfo &TWebDAVFileSystem::GetFileSystemInfo(bool Retrieve)
@@ -358,7 +345,7 @@ bool TWebDAVFileSystem::TemporaryTransferFile(const std::wstring /*FileName*/)
 //---------------------------------------------------------------------------
 bool TWebDAVFileSystem::GetStoredCredentialsTried()
 {
-    return false; // FSecureShell->GetStoredCredentialsTried();
+    return false;
 }
 //---------------------------------------------------------------------------
 std::wstring TWebDAVFileSystem::GetUserName()

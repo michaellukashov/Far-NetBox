@@ -1677,7 +1677,7 @@ struct TOpenRemoteFileParams
     int Params;
     bool Resume;
     bool Resuming;
-    TSFTPOverwriteMode OverwriteMode;
+    TOverwriteMode OverwriteMode;
     __int64 DestFileSize; // output
     std::string RemoteFileHandle; // output
     TOverwriteFileParams *FileParams;
@@ -3761,7 +3761,7 @@ void TSFTPFileSystem::CopyToRemote(nb::TStrings *FilesToCopy,
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::SFTPConfirmOverwrite(std::wstring &FileName,
         int Params, TFileOperationProgressType *OperationProgress,
-        TSFTPOverwriteMode &OverwriteMode, const TOverwriteFileParams *FileParams)
+        TOverwriteMode &OverwriteMode, const TOverwriteFileParams *FileParams)
 {
     bool CanAppend = (FVersion < 4) || !OperationProgress->AsciiTransfer;
     int Answer;
@@ -4985,7 +4985,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
         bool DeleteLocalFile = false;
         std::string RemoteHandle;
         std::wstring LocalFileName = DestFullName;
-        TSFTPOverwriteMode OverwriteMode = omOverwrite;
+        TOverwriteMode OverwriteMode = omOverwrite;
 
         {
             BOOST_SCOPE_EXIT ( (&Self) (&LocalHandle) (&FileStream) (&DeleteLocalFile)
