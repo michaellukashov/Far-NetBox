@@ -533,7 +533,6 @@ long TFarDialog::DialogProc(int Msg, int Param1, void *Param2)
                     // flag DIF_LISTNOCLOSE.
                     if (Button == NULL)
                     {
-                        // assert(static_cast<short int>(FarPlugin->FarVersion()) >= static_cast<short int>(FAR170ALPHA6));
                         assert(dynamic_cast<TFarListBox *>(GetItem(Param1)) != NULL);
                         Result = false;
                     }
@@ -592,7 +591,7 @@ long TFarDialog::DefaultDialogProc(int Msg, int Param1, void *Param2)
 //---------------------------------------------------------------------------
 long TFarDialog::FailDialogProc(int Msg, int Param1, void *Param2)
 {
-    long Result;
+    long Result = 0;
     switch (Msg)
     {
     case DN_CLOSE:
@@ -1356,7 +1355,7 @@ bool TFarDialogItem::GetIsEmpty()
 //---------------------------------------------------------------------------
 long TFarDialogItem::FailItemProc(int Msg, void *Param)
 {
-    long Result;
+    long Result = 0;
     switch (Msg)
     {
     case DN_KILLFOCUS:

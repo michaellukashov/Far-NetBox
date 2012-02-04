@@ -907,7 +907,7 @@ void ProcessLocalDirectory(const std::wstring DirName,
         sig.connect(CallBackFunc);
         do
         {
-            if ((wcscmp(SearchRec.cFileName, L".") != 0) && (wcscmp(SearchRec.cFileName, L"..") != 0))
+            if ((wcscmp(SearchRec.cFileName, THISDIRECTORY) != 0) && (wcscmp(SearchRec.cFileName, PARENTDIRECTORY) != 0))
             {
                 if ((SearchRec.dwFileAttributes & FindAttrs) != 0)
                 {
@@ -2456,7 +2456,7 @@ bool RenameFile(const std::wstring from, const std::wstring to)
 bool DirectoryExists(const std::wstring filename)
 {
     // DEBUG_PRINTF(L"filename = %s", filename.c_str());
-    if ((filename == L".") || (filename == L".."))
+    if ((filename == THISDIRECTORY) || (filename == PARENTDIRECTORY))
     {
         return true;
     }

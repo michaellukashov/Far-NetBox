@@ -2331,7 +2331,7 @@ size_t TSFTPFileSystem::ReceivePacket(TSFTPPacket *Packet,
     {
         if (Packet->GetType() == SSH_FXP_STATUS)
         {
-            if (AllowStatus < 0)
+            if ((int)AllowStatus < 0)
             {
                 AllowStatus = (ExpectedType == SSH_FXP_STATUS ? asOK : asNo);
             }
@@ -2527,7 +2527,7 @@ std::wstring TSFTPFileSystem::Canonify(const std::wstring Path)
     {
         std::wstring APath = UnixExcludeTrailingBackslash(path);
         std::wstring Name = UnixExtractFileName(APath);
-        if (Name == L"." || Name == L"..")
+        if (Name == THISDIRECTORY || Name == PARENTDIRECTORY)
         {
             Result = path;
         }
@@ -2574,7 +2574,7 @@ std::wstring TSFTPFileSystem::GetHomeDirectory()
 {
     if (FHomeDirectory.empty())
     {
-        FHomeDirectory = RealPath(L".");
+        FHomeDirectory = RealPath(THISDIRECTORY);
     }
     return FHomeDirectory;
 }
@@ -4731,7 +4731,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const std::wstring DirectoryName,
             std::wstring FileName = DirectoryName + SearchRec.cFileName;
             try
             {
-                if ((wcscmp(SearchRec.cFileName, L".") != 0) && (wcscmp(SearchRec.cFileName, L"..") != 0))
+                if ((wcscmp(SearchRec.cFileName, THISDIRECTORY) != 0) && (wcscmp(SearchRec.cFileName, PARENTDIRECTORY) != 0))
                 {
                     SFTPSourceRobust(FileName, DestFullName, CopyParam, Params, OperationProgress,
                                      Flags & ~tfFirstLevel);

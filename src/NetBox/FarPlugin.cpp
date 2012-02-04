@@ -11,9 +11,9 @@
 #include "Exceptions.h"
 #include "TextsCore.h"
 #include "FileMasks.h"
+#include "RemoteFiles.h"
 #include "puttyexp.h"
 
-// FAR WORKAROUND
 //---------------------------------------------------------------------------
 TCustomFarPlugin *FarPlugin = NULL;
 #define FAR_TITLE_SUFFIX L" - Far"
@@ -47,7 +47,6 @@ TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
     FOpenedPlugins->SetOwnsObjects(false);
     FSavedTitles = new nb::TStringList();
     FTopDialog = NULL;
-    FOldFar = true;
     FValidFarSystemSettings = false;
 
     memset(&FPluginInfo, 0, sizeof(FPluginInfo));
@@ -102,7 +101,6 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo *Info)
     {
         ResetCachedInfo();
         // Info->StructSize = 336 for FAR 1.65
-        FOldFar = (Info->StructSize < StartupInfoMinSize);
         memset(&FStartupInfo, 0, sizeof(FStartupInfo));
         memcpy(&FStartupInfo, Info,
                Info->StructSize >= sizeof(FStartupInfo) ?
@@ -117,8 +115,6 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo *Info)
                          static_cast<const char *>(reinterpret_cast<const void *>(Info)));
         if (Info->StructSize > FSFOffset)
         {
-            FOldFar = FOldFar | (Info->FSF->StructSize < StandardFunctionsMinSize);
-
             memcpy(&FFarStandardFunctions, Info->FSF,
                    Info->FSF->StructSize >= sizeof(FFarStandardFunctions) ?
                    sizeof(FFarStandardFunctions) : Info->FSF->StructSize);
@@ -294,7 +290,6 @@ int TCustomFarPlugin::Configure(const struct ConfigureInfo *Info)
     {
         ResetCachedInfo();
         int Result = ConfigureEx(0);
-
         InvalidateOpenPanelInfo();
 
         return Result;
@@ -366,16 +361,6 @@ void TCustomFarPlugin::ClosePanel(void *Plugin)
     }
 }
 //---------------------------------------------------------------------------
-bool TCustomFarPlugin::IsOldFar()
-{
-    return FOldFar;
-}
-//---------------------------------------------------------------------------
-void TCustomFarPlugin::OldFar()
-{
-    throw std::exception("");
-}
-//---------------------------------------------------------------------------
 void TCustomFarPlugin::HandleFileSystemException(
     TCustomFarFileSystem *FileSystem, const std::exception *E, int OpMode)
 {
@@ -402,7 +387,6 @@ void TCustomFarPlugin::GetOpenPanelInfo(struct OpenPanelInfo *Info)
     try
     {
         ResetCachedInfo();
-        // assert(!FOldFar);
         assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
         {
@@ -423,7 +407,6 @@ int TCustomFarPlugin::GetFindData(struct GetFindDataInfo *Info)
     try
     {
         ResetCachedInfo();
-        // assert(!FOldFar);
         assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
         {
@@ -445,7 +428,6 @@ void TCustomFarPlugin::FreeFindData(const struct FreeFindDataInfo *Info)
     try
     {
         ResetCachedInfo();
-        // assert(!FOldFar);
         assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
         {
@@ -468,7 +450,6 @@ int TCustomFarPlugin::ProcessHostFile(const struct ProcessHostFileInfo *Info)
         ResetCachedInfo();
         if (HandlesFunction(hfProcessHostFile))
         {
-            // assert(!FOldFar);
             assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
             {
@@ -497,7 +478,6 @@ int TCustomFarPlugin::ProcessPanelInput(const struct ProcessPanelInputInfo *Info
         ResetCachedInfo();
         if (HandlesFunction(hfProcessKey))
         {
-            // assert(!FOldFar);
             assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
             {
@@ -528,7 +508,6 @@ int TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void *Param)
         ResetCachedInfo();
         if (HandlesFunction(hfProcessEvent))
         {
-            // assert(!FOldFar);
             assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
             std::wstring Buf;
@@ -563,7 +542,6 @@ int TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo *Info)
     try
     {
         ResetCachedInfo();
-        // assert(!FOldFar);
         assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
         {
@@ -585,7 +563,6 @@ int TCustomFarPlugin::MakeDirectory(struct MakeDirectoryInfo *Info)
     try
     {
         ResetCachedInfo();
-        // assert(!FOldFar);
         assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
         {
@@ -607,7 +584,6 @@ int TCustomFarPlugin::DeleteFiles(const struct DeleteFilesInfo *Info)
     try
     {
         ResetCachedInfo();
-        // assert(!FOldFar);
         assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
         {
@@ -629,7 +605,6 @@ int TCustomFarPlugin::GetFiles(struct GetFilesInfo *Info)
     try
     {
         ResetCachedInfo();
-        // assert(!FOldFar);
         assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
         {
@@ -652,7 +627,6 @@ int TCustomFarPlugin::PutFiles(const struct PutFilesInfo *Info)
     try
     {
         ResetCachedInfo();
-        // assert(!FOldFar);
         assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
         {
@@ -839,7 +813,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
             Button->SetOnClick(boost::bind(&TFarMessageDialog::ButtonClick, this, _1, _2));
             std::wstring Caption = Buttons->GetString(Index);
             if ((FParams->Timeout > 0) &&
-                    (FParams->TimeoutButton == static_cast<unsigned int>(Index)))
+                    (FParams->TimeoutButton == Index))
             {
                 FTimeoutButtonCaption = Caption;
                 Caption = FORMAT(FParams->TimeoutStr.c_str(), Caption.c_str(), static_cast<int>(FParams->Timeout / 1000));
@@ -2140,11 +2114,7 @@ void TCustomFarFileSystem::RedrawPanel(bool Another)
 void TCustomFarFileSystem::ClosePanel()
 {
     FClosed = true;
-    FarControl(FCTL_CLOSEPANEL, 0, reinterpret_cast<void *>(L"C:\\"));
-    // FAR WORKAROUND
-    // Calling UpdatePanel() is necessary, otherwise plugin remains in panel,
-    // but it causes FAR to fail
-    // UpdatePanel();
+    FarControl(FCTL_CLOSEPANEL, 0, NULL);
 }
 //---------------------------------------------------------------------------
 std::wstring TCustomFarFileSystem::GetMsg(int MsgId)
@@ -2560,7 +2530,7 @@ unsigned long TFarPanelItem::GetFileAttributes()
 //---------------------------------------------------------------------------
 bool TFarPanelItem::GetIsParentDirectory()
 {
-    return (GetFileName() == L"..");
+    return (GetFileName() == PARENTDIRECTORY);
 }
 //---------------------------------------------------------------------------
 bool TFarPanelItem::GetIsFile()

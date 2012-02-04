@@ -57,9 +57,6 @@ enum THandlesFunction { hfProcessKey, hfProcessHostFile, hfProcessEvent };
 typedef boost::signal1<void, std::wstring &> farinputboxvalidate_signal_type;
 typedef farinputboxvalidate_signal_type::slot_type farinputboxvalidate_slot_type;
 //---------------------------------------------------------------------------
-const size_t StartupInfoMinSize = 132; // 372;
-const size_t StandardFunctionsMinSize = 228;
-//---------------------------------------------------------------------------
 // typedef void (*TFarMessageTimerEvent)(unsigned int &Result);
 typedef boost::signal1<void, size_t &> farmessagetimer_signal_type;
 typedef farmessagetimer_signal_type::slot_type farmessagetimer_slot_type;
@@ -196,7 +193,6 @@ protected:
     bool FTerminalScreenShowing;
     TCriticalSection *FCriticalSection;
     unsigned int FFarThread;
-    bool FOldFar;
     bool FValidFarSystemSettings;
     unsigned int FFarSystemSettings;
     nb::TPoint FNormalConsoleSize;
@@ -213,8 +209,6 @@ protected:
     virtual int ProcessEditorInputEx(const INPUT_RECORD *Rec) = 0;
     virtual void HandleFileSystemException(TCustomFarFileSystem *FileSystem,
                                            const std::exception *E, int OpMode = 0);
-    virtual bool IsOldFar();
-    virtual void OldFar();
     void ResetCachedInfo();
     size_t MaxLength(nb::TStrings *Strings);
     int FarMessage(unsigned int Flags,

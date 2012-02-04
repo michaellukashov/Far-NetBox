@@ -314,7 +314,7 @@ bool DeleteDirectory(const std::wstring DirName)
     {
         if (FLAGSET(sr.dwFileAttributes, faDirectory))
         {
-            if ((wcscmp(sr.cFileName, L".") != 0) && (wcscmp(sr.cFileName, L"..") != 0))
+            if ((wcscmp(sr.cFileName, THISDIRECTORY) != 0) && (wcscmp(sr.cFileName, PARENTDIRECTORY) != 0))
             {
                 retval = ::DeleteDirectory(DirName + L"\\" + sr.cFileName);
             }
@@ -330,7 +330,7 @@ bool DeleteDirectory(const std::wstring DirName)
             {
                 if (FLAGSET(sr.dwFileAttributes, faDirectory))
                 {
-                    if ((wcscmp(sr.cFileName, L".") != 0) && (wcscmp(sr.cFileName, L"..") != 0))
+                    if ((wcscmp(sr.cFileName, THISDIRECTORY) != 0) && (wcscmp(sr.cFileName, PARENTDIRECTORY) != 0))
                     {
                         retval = ::DeleteDirectory(DirName + L"\\" + sr.cFileName);
                     }

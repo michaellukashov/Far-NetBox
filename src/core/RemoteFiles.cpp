@@ -408,7 +408,7 @@ int FakeFileImageIndex(const std::wstring FileName, unsigned long Attrs,
     std::wstring fileName = FileName;
     nb::TSHFileInfo SHFileInfo;
     // On Win2k we get icon of "ZIP drive" for ".." (parent directory)
-    if ((fileName == L"..") ||
+    if ((fileName == PARENTDIRECTORY) ||
             ((fileName.size() == 2) && (fileName[2] == ':') &&
              (tolower(fileName[1]) >= 'a') && (tolower(fileName[1]) <= 'z')) ||
             IsReservedName(fileName))

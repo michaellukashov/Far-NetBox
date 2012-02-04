@@ -1,5 +1,7 @@
 NetBox 2.0.8 ??.02.2012
 ---------------------
+  * Bugfix: Fixed change directory on remote server when option "Cache directory changes" is set
+  * Bugfix: do not set "C:\" as current directory when plugin panel is closed
   * Far3: Fixed hotkeys handling
   * CURL upgraded to version 7.24.0
   * Bugfix: SCP: fixed UTF-8 file names encoding/decoding; allow to change option "UTF-8 encoding for filenames"

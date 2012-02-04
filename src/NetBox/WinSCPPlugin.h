@@ -50,7 +50,6 @@ protected:
     virtual bool ConfigureEx(int Item);
     virtual int ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info);
     virtual int ProcessEditorInputEx(const INPUT_RECORD *Rec);
-    virtual void OldFar();
     bool CopyParamDialog(const std::wstring Caption, TCopyParamType &CopyParam,
                          int CopyParamAttrs);
     void MessageClick(void *Token, int Result, bool &Close);

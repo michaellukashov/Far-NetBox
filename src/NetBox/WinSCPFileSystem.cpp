@@ -2155,7 +2155,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(const std::wstring NewPath)
         if (!ComparePaths(AnotherPanel->GetCurrentDirectory(), NewPath))
         {
             // FAR WORKAROUND
-            // If FCTL_SETANOTHERPANELDIR above fails, Far default current
+            // If FCTL_SETPANELDIR above fails, Far default current
             // directory to initial (?) one. So move this back to
             // previous directory.
             FarPanelDirectory fpd;
@@ -2186,7 +2186,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring Dir, int OpMode)
     // workaround to ignore "change to root directory" command issued by FAR,
     // before file is opened for viewing/editing from "find file" dialog
     // when plugin uses UNIX style paths
-    else if (OpMode &OPM_FIND && OpMode &OPM_SILENT && Dir == L"\\")
+    else if ((OpMode & OPM_FIND) && (OpMode & OPM_SILENT) && (Dir == L"\\"))
     {
         if (FSavedFindFolder.empty())
         {
@@ -2207,7 +2207,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring Dir, int OpMode)
     }
     else
     {
-        if (OpMode & OPM_FIND && FSavedFindFolder.empty())
+        if ((OpMode & OPM_FIND) && FSavedFindFolder.empty())
         {
             FSavedFindFolder = FTerminal->GetCurrentDirectory();
         }
@@ -2241,6 +2241,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring Dir, int OpMode)
                     }
                     Self->FNoProgress = false;
                 } BOOST_SCOPE_EXIT_END
+                // DEBUG_PRINTF(L"Dir = %s, FTerminal->GetCurrentDirectory = %s", Dir.c_str(), FTerminal->GetCurrentDirectory().c_str());
                 if (Dir == L"\\")
                 {
                     FTerminal->ChangeDirectory(ROOTDIRECTORY);

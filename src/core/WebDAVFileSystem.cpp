@@ -1263,7 +1263,7 @@ void TWebDAVFileSystem::DirectorySource(const std::wstring DirectoryName,
             std::wstring FileName = DirectoryName + SearchRec.cFileName;
             try
             {
-                if ((wcscmp(SearchRec.cFileName, L".") != 0) && (wcscmp(SearchRec.cFileName, L"..") != 0))
+                if ((wcscmp(SearchRec.cFileName, THISDIRECTORY) != 0) && (wcscmp(SearchRec.cFileName, PARENTDIRECTORY) != 0))
                 {
                     SourceRobust(FileName, DestFullName, CopyParam, Params, OperationProgress,
                                  Flags & ~(tfFirstLevel | tfAutoResume));

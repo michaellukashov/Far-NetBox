@@ -25,7 +25,6 @@
 #include <Bookmarks.h>
 #include <Queue.h>
 #include <farcolor.hpp>
-// FAR WORKAROUND
 //---------------------------------------------------------------------------
 enum TButtonResult { brCancel = -1, brOK = 1, brConnect };
 //---------------------------------------------------------------------------

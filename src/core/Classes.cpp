@@ -1119,44 +1119,15 @@ TDateTime Now()
 //---------------------------------------------------------------------------
 TSHFileInfo::TSHFileInfo()
 {
-
 }
 
 TSHFileInfo::~TSHFileInfo()
 {
 }
 
-
-HIMAGELIST  TSHFileInfo::GetSystemImageListHandle( BOOL bSmallIcon )
+int TSHFileInfo::GetFileIconIndex(std::wstring strFileName, BOOL bSmallIcon)
 {
-    HIMAGELIST  hSystemImageList;
-    SHFILEINFO    ssfi;
-
-    if (bSmallIcon)
-    {
-        hSystemImageList = (HIMAGELIST)SHGetFileInfo(
-                               reinterpret_cast<LPCTSTR>(std::wstring(L"c:\\").c_str()),
-                               0,
-                               &ssfi,
-                               sizeof(SHFILEINFO),
-                               SHGFI_SYSICONINDEX | SHGFI_SMALLICON);
-    }
-    else
-    {
-        hSystemImageList = reinterpret_cast<HIMAGELIST>(SHGetFileInfo(
-                               reinterpret_cast<LPCTSTR>(std::wstring(L"c:\\").c_str()),
-                               0,
-                               &ssfi,
-                               sizeof(SHFILEINFO),
-                               SHGFI_SYSICONINDEX | SHGFI_LARGEICON));
-    }
-    return hSystemImageList;
-}
-
-
-int TSHFileInfo::GetFileIconIndex( std::wstring strFileName , BOOL bSmallIcon )
-{
-    SHFILEINFO    sfi;
+    SHFILEINFO sfi;
 
     if (bSmallIcon)
     {
@@ -1176,14 +1147,12 @@ int TSHFileInfo::GetFileIconIndex( std::wstring strFileName , BOOL bSmallIcon )
             sizeof(SHFILEINFO),
             SHGFI_SYSICONINDEX | SHGFI_LARGEICON | SHGFI_USEFILEATTRIBUTES);
     }
-
     return sfi.iIcon;
-
 }
 
-int TSHFileInfo::GetDirIconIndex(BOOL bSmallIcon )
+int TSHFileInfo::GetDirIconIndex(BOOL bSmallIcon)
 {
-    SHFILEINFO    sfi;
+    SHFILEINFO sfi;
     if (bSmallIcon)
     {
         SHGetFileInfo(
@@ -1203,58 +1172,11 @@ int TSHFileInfo::GetDirIconIndex(BOOL bSmallIcon )
             SHGFI_SYSICONINDEX | SHGFI_LARGEICON | SHGFI_USEFILEATTRIBUTES);
     }
     return sfi.iIcon;
-}
-HICON TSHFileInfo::GetFileIconHandle(const std::wstring strFileName, BOOL bSmallIcon)
-{
-    SHFILEINFO    sfi;
-    if (bSmallIcon)
-    {
-        SHGetFileInfo(
-            static_cast<LPCTSTR>(strFileName.c_str()),
-            FILE_ATTRIBUTE_NORMAL,
-            &sfi,
-            sizeof(SHFILEINFO),
-            SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
-    }
-    else
-    {
-        SHGetFileInfo(
-            static_cast<LPCTSTR>(strFileName.c_str()),
-            FILE_ATTRIBUTE_NORMAL,
-            &sfi,
-            sizeof(SHFILEINFO),
-            SHGFI_ICON | SHGFI_LARGEICON | SHGFI_USEFILEATTRIBUTES);
-    }
-    return sfi.hIcon;
-}
-
-HICON TSHFileInfo::GetFolderIconHandle(BOOL bSmallIcon )
-{
-    SHFILEINFO    sfi;
-    if (bSmallIcon)
-    {
-        SHGetFileInfo(
-            reinterpret_cast<LPCTSTR>(L"Doesn't matter"),
-            FILE_ATTRIBUTE_DIRECTORY,
-            &sfi,
-            sizeof(SHFILEINFO),
-            SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
-    }
-    else
-    {
-        SHGetFileInfo(
-            reinterpret_cast<LPCTSTR>(L"Does not matter"),
-            FILE_ATTRIBUTE_DIRECTORY,
-            &sfi,
-            sizeof(SHFILEINFO),
-            SHGFI_ICON | SHGFI_LARGEICON | SHGFI_USEFILEATTRIBUTES);
-    }
-    return sfi.hIcon;
 }
 
 std::wstring TSHFileInfo::GetFileType(const std::wstring strFileName)
 {
-    SHFILEINFO    sfi;
+    SHFILEINFO sfi;
 
     SHGetFileInfo(
         reinterpret_cast<LPCTSTR>(strFileName.c_str()),
@@ -1264,7 +1186,6 @@ std::wstring TSHFileInfo::GetFileType(const std::wstring strFileName)
         SHGFI_TYPENAME | SHGFI_USEFILEATTRIBUTES);
 
     return sfi.szTypeName;
-
 }
 
 //---------------------------------------------------------------------------

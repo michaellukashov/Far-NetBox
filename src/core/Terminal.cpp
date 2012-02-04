@@ -625,7 +625,7 @@ std::wstring TTerminal::ExpandFileName(const std::wstring Path,
     if (!IsAbsolutePath(path) && !BasePath.empty())
     {
         // TODO: Handle more complicated cases like "../../xxx"
-        if (path == L"..")
+        if (path == PARENTDIRECTORY)
         {
             path = UnixExcludeTrailingBackslash(UnixExtractFilePath(
                                                     UnixExcludeTrailingBackslash(BasePath)));
@@ -920,7 +920,7 @@ void TTerminal::OpenTunnel()
         FTunnelData->SetName(FMTLOAD(TUNNEL_SESSION_NAME, FSessionData->GetSessionName().c_str()));
         FTunnelData->SetTunnel(false);
         FTunnelData->SetHostName(FSessionData->GetTunnelHostName());
-        FTunnelData->SetPortNumber(static_cast<int>(FSessionData->GetTunnelPortNumber()));
+        FTunnelData->SetPortNumber(FSessionData->GetTunnelPortNumber());
         FTunnelData->SetUserName(FSessionData->GetTunnelUserName());
         FTunnelData->SetPassword(FSessionData->GetTunnelPassword());
         FTunnelData->SetPublicKeyFile(FSessionData->GetTunnelPublicKeyFile());
@@ -2284,7 +2284,7 @@ void TTerminal::ReadCurrentDirectory()
         {
             assert(FDirectoryChangesCache != NULL);
             std::wstring currentDirectory = GetCurrentDirectory();
-            if (!currentDirectory.empty())
+            if (!currentDirectory.empty() && !FLastDirectoryChange.empty() && (currentDirectory != OldDirectory))
             {
                 FDirectoryChangesCache->AddDirectoryChange(OldDirectory,
                         FLastDirectoryChange, currentDirectory);
@@ -3461,12 +3461,13 @@ void TTerminal::ChangeDirectory(const std::wstring Directory)
         assert(!GetSessionData()->GetCacheDirectoryChanges() || (FDirectoryChangesCache != NULL));
         // never use directory change cache during startup, this ensures, we never
         // end-up initially in non-existing directory
-        // DEBUG_PRINTF(L"PeekCurrentDirectory = %s", PeekCurrentDirectory().c_str());
         if ((GetStatus() == ssOpened) &&
                 GetSessionData()->GetCacheDirectoryChanges() &&
                 FDirectoryChangesCache->GetDirectoryChange(PeekCurrentDirectory(),
                         Directory, CachedDirectory))
         {
+            // DEBUG_PRINTF(L"PeekCurrentDirectory = %s", PeekCurrentDirectory().c_str());
+            // DEBUG_PRINTF(L"Directory = %s, CachedDirectory = %s", Directory.c_str(), CachedDirectory.c_str());
             LogEvent(FORMAT(L"Cached directory change via \"%s\" to \"%s\".",
                             Directory.c_str(), CachedDirectory.c_str()));
             FFileSystem->CachedChangeDirectory(CachedDirectory);
@@ -4106,7 +4107,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
                     MaskParams.Size = Size;
                     std::wstring RemoteFileName =
                         CopyParam->ChangeFileName(FileName, osLocal, false);
-                    if ((FileName != L".") && (FileName != L"..") &&
+                    if ((FileName != THISDIRECTORY) && (FileName != PARENTDIRECTORY) &&
                             CopyParam->AllowTransfer(Data.LocalDirectory + FileName, osLocal,
                                                      FLAGSET(SearchRec.dwFileAttributes, faDirectory), MaskParams) &&
                             !FFileSystem->TemporaryTransferFile(FileName) &&
