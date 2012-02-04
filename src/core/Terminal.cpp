@@ -3461,12 +3461,13 @@ void TTerminal::ChangeDirectory(const std::wstring Directory)
         assert(!GetSessionData()->GetCacheDirectoryChanges() || (FDirectoryChangesCache != NULL));
         // never use directory change cache during startup, this ensures, we never
         // end-up initially in non-existing directory
-        // DEBUG_PRINTF(L"PeekCurrentDirectory = %s", PeekCurrentDirectory().c_str());
         if ((GetStatus() == ssOpened) &&
                 GetSessionData()->GetCacheDirectoryChanges() &&
                 FDirectoryChangesCache->GetDirectoryChange(PeekCurrentDirectory(),
                         Directory, CachedDirectory))
         {
+            // DEBUG_PRINTF(L"PeekCurrentDirectory = %s", PeekCurrentDirectory().c_str());
+            // DEBUG_PRINTF(L"Directory = %s, CachedDirectory = %s", Directory.c_str(), CachedDirectory.c_str());
             LogEvent(FORMAT(L"Cached directory change via \"%s\" to \"%s\".",
                             Directory.c_str(), CachedDirectory.c_str()));
             FFileSystem->CachedChangeDirectory(CachedDirectory);

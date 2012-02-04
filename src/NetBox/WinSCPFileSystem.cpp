@@ -2238,6 +2238,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring Dir, int OpMode)
                     }
                     Self->FNoProgress = false;
                 } BOOST_SCOPE_EXIT_END
+                // DEBUG_PRINTF(L"Dir = %s, FTerminal->GetCurrentDirectory = %s", Dir.c_str(), FTerminal->GetCurrentDirectory().c_str());
                 if (Dir == L"\\")
                 {
                     FTerminal->ChangeDirectory(ROOTDIRECTORY);
