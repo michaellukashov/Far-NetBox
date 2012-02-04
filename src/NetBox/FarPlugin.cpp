@@ -47,7 +47,6 @@ TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
     FOpenedPlugins->SetOwnsObjects(false);
     FSavedTitles = new nb::TStringList();
     FTopDialog = NULL;
-    FOldFar = true;
     FValidFarSystemSettings = false;
 
     memset(&FPluginInfo, 0, sizeof(FPluginInfo));
@@ -102,7 +101,6 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo *Info)
     {
         ResetCachedInfo();
         // Info->StructSize = 336 for FAR 1.65
-        FOldFar = (Info->StructSize < StartupInfoMinSize);
         memset(&FStartupInfo, 0, sizeof(FStartupInfo));
         memcpy(&FStartupInfo, Info,
                Info->StructSize >= sizeof(FStartupInfo) ?
@@ -117,8 +115,6 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo *Info)
                          static_cast<const char *>(reinterpret_cast<const void *>(Info)));
         if (Info->StructSize > FSFOffset)
         {
-            FOldFar = FOldFar | (Info->FSF->StructSize < StandardFunctionsMinSize);
-
             memcpy(&FFarStandardFunctions, Info->FSF,
                    Info->FSF->StructSize >= sizeof(FFarStandardFunctions) ?
                    sizeof(FFarStandardFunctions) : Info->FSF->StructSize);
@@ -289,13 +285,7 @@ int TCustomFarPlugin::Configure(int Item)
     try
     {
         ResetCachedInfo();
-        if (IsOldFar())
-        {
-            OldFar();
-        }
-
         int Result = ConfigureEx(Item);
-
         InvalidateOpenPluginInfo();
 
         return Result;
@@ -313,10 +303,6 @@ void *TCustomFarPlugin::OpenPlugin(int OpenFrom, INT_PTR Item)
     try
     {
         ResetCachedInfo();
-        if (IsOldFar())
-        {
-            OldFar();
-        }
 
         std::wstring Buf;
         if ((OpenFrom == OPEN_SHORTCUT) || (OpenFrom == OPEN_COMMANDLINE))
@@ -373,16 +359,6 @@ void TCustomFarPlugin::ClosePlugin(void *Plugin)
     }
 }
 //---------------------------------------------------------------------------
-bool TCustomFarPlugin::IsOldFar()
-{
-    return FOldFar;
-}
-//---------------------------------------------------------------------------
-void TCustomFarPlugin::OldFar()
-{
-    throw std::exception("");
-}
-//---------------------------------------------------------------------------
 void TCustomFarPlugin::HandleFileSystemException(
     TCustomFarFileSystem *FileSystem, const std::exception *E, int OpMode)
 {
@@ -410,7 +386,6 @@ void TCustomFarPlugin::GetOpenPluginInfo(HANDLE Plugin,
     try
     {
         ResetCachedInfo();
-        assert(!FOldFar);
         assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
         {
@@ -432,7 +407,6 @@ int TCustomFarPlugin::GetFindData(HANDLE Plugin,
     try
     {
         ResetCachedInfo();
-        assert(!FOldFar);
         assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
         {
@@ -455,7 +429,6 @@ void TCustomFarPlugin::FreeFindData(HANDLE Plugin,
     try
     {
         ResetCachedInfo();
-        assert(!FOldFar);
         assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
         {
@@ -479,7 +452,6 @@ int TCustomFarPlugin::ProcessHostFile(HANDLE Plugin,
         ResetCachedInfo();
         if (HandlesFunction(hfProcessHostFile))
         {
-            assert(!FOldFar);
             assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
             {
@@ -509,7 +481,6 @@ int TCustomFarPlugin::ProcessKey(HANDLE Plugin, int Key,
         ResetCachedInfo();
         if (HandlesFunction(hfProcessKey))
         {
-            assert(!FOldFar);
             assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
             {
@@ -540,7 +511,6 @@ int TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void *Param)
         ResetCachedInfo();
         if (HandlesFunction(hfProcessEvent))
         {
-            assert(!FOldFar);
             assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
             std::wstring Buf;
@@ -575,7 +545,6 @@ int TCustomFarPlugin::SetDirectory(HANDLE Plugin, const wchar_t *Dir, int OpMode
     try
     {
         ResetCachedInfo();
-        assert(!FOldFar);
         assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
         {
@@ -597,7 +566,6 @@ int TCustomFarPlugin::MakeDirectory(HANDLE Plugin, const wchar_t **Name, int OpM
     try
     {
         ResetCachedInfo();
-        assert(!FOldFar);
         assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
         {
@@ -620,7 +588,6 @@ int TCustomFarPlugin::DeleteFiles(HANDLE Plugin,
     try
     {
         ResetCachedInfo();
-        assert(!FOldFar);
         assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
         {
@@ -644,7 +611,6 @@ int TCustomFarPlugin::GetFiles(HANDLE Plugin,
     try
     {
         ResetCachedInfo();
-        assert(!FOldFar);
         assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
         {
@@ -668,7 +634,6 @@ int TCustomFarPlugin::PutFiles(HANDLE Plugin,
     try
     {
         ResetCachedInfo();
-        assert(!FOldFar);
         assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
         {

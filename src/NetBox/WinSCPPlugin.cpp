@@ -607,11 +607,6 @@ void TWinSCPPlugin::ShowExtendedException(const std::exception *E)
     }
 }
 //---------------------------------------------------------------------------
-void TWinSCPPlugin::OldFar()
-{
-    throw ExtException(FORMAT(GetMsg(OLD_FAR).c_str(), FormatFarVersion(GetMinFarVersion()).c_str()));
-}
-//---------------------------------------------------------------------------
 void TWinSCPPlugin::HandleException(const std::exception *E, int OpMode)
 {
     if (((OpMode & OPM_FIND) == 0) || ::InheritsFrom<std::exception, EFatal>(E))

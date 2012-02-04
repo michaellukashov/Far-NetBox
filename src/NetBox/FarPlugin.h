@@ -200,7 +200,6 @@ protected:
     bool FTerminalScreenShowing;
     TCriticalSection *FCriticalSection;
     unsigned int FFarThread;
-    bool FOldFar;
     bool FValidFarSystemSettings;
     unsigned int FFarSystemSettings;
     nb::TPoint FNormalConsoleSize;
@@ -217,8 +216,6 @@ protected:
     virtual int ProcessEditorInputEx(const INPUT_RECORD *Rec) = 0;
     virtual void HandleFileSystemException(TCustomFarFileSystem *FileSystem,
                                            const std::exception *E, int OpMode = 0);
-    virtual bool IsOldFar();
-    virtual void OldFar();
     void ResetCachedInfo();
     size_t MaxLength(nb::TStrings *Strings);
     int FarMessage(unsigned int Flags,
