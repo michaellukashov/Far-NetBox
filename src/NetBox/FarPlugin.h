@@ -57,9 +57,6 @@ enum
     FAR20 = MAKEFARVERSION(2, 0, 1666),
 };
 //---------------------------------------------------------------------------
-const size_t StartupInfoMinSize = 132; // 372;
-const size_t StandardFunctionsMinSize = 228;
-//---------------------------------------------------------------------------
 // typedef void (*TFarMessageTimerEvent)(unsigned int &Result);
 typedef boost::signal1<void, size_t &> farmessagetimer_signal_type;
 typedef farmessagetimer_signal_type::slot_type farmessagetimer_slot_type;
