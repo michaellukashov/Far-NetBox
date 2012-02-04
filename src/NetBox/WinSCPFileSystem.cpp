@@ -20,7 +20,6 @@
 #include "Bookmarks.h"
 #include "GUITools.h"
 #include "XmlStorage.h"
-// FAR WORKAROUND
 //---------------------------------------------------------------------------
 TSessionPanelItem::TSessionPanelItem(TSessionData *ASessionData):
     TCustomFarPanelItem()
@@ -2154,7 +2153,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(const std::wstring NewPath)
         if (!ComparePaths(AnotherPanel->GetCurrentDirectory(), NewPath))
         {
             // FAR WORKAROUND
-            // If FCTL_SETANOTHERPANELDIR above fails, Far default current
+            // If FCTL_SETPANELDIR above fails, Far default current
             // directory to initial (?) one. So move this back to
             // previous directory.
             FarControl(FCTL_SETPANELDIR,

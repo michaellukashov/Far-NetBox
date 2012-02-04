@@ -13,7 +13,6 @@
 #include "FileMasks.h"
 #include "puttyexp.h"
 
-// FAR WORKAROUND
 //---------------------------------------------------------------------------
 TCustomFarPlugin *FarPlugin = NULL;
 #define FAR_TITLE_SUFFIX L" - Far"
