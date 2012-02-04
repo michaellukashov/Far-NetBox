@@ -2138,7 +2138,7 @@ void TCustomFarFileSystem::RedrawPanel(bool Another)
 void TCustomFarFileSystem::ClosePlugin()
 {
     FClosed = true;
-    FarControl(FCTL_CLOSEPLUGIN, 0, reinterpret_cast<LONG_PTR>(L"C:\\"));
+    FarControl(FCTL_CLOSEPLUGIN, 0, NULL);
     // FAR WORKAROUND
     // Calling UpdatePanel() is necessary, otherwise plugin remains in panel,
     // but it causes FAR to fail
