@@ -129,9 +129,6 @@ extern "C"
         return FarPlugin->ProcessPanelInput(Info);
     }
 
-    // TODO: int WINAPI ProcessEditorEventW(const struct ProcessEditorEventInfo *Info);
-    // TODO: int WINAPI ProcessEditorInputW(const struct ProcessEditorInputInfo *Info);
-
     int WINAPI ProcessEventW(HANDLE Plugin, int Event, void *Param)
     {
         assert(FarPlugin);
