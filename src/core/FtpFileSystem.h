@@ -82,8 +82,6 @@ public:
     virtual std::wstring GetUserName();
 
 protected:
-    enum TOverwriteMode { omOverwrite, omResume };
-
     virtual std::wstring GetCurrentDirectory();
 
     const wchar_t *GetOption(int OptionID) const;

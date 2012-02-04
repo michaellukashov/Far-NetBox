@@ -15,6 +15,8 @@ class TFileOperationProgressType;
 class TRemoteProperties;
 class TSecureShell;
 //---------------------------------------------------------------------------
+enum TOverwriteMode { omOverwrite, omAppend, omResume };
+//---------------------------------------------------------------------------
 enum TFSCommand { fsNull = 0, fsVarValue, fsLastLine, fsFirstLine,
                   fsCurrentDirectory, fsChangeDirectory, fsListDirectory, fsListCurrentDirectory,
                   fsListFile, fsLookupUsersGroups, fsCopyToRemote, fsCopyToLocal, fsDeleteFile,

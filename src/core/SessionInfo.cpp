@@ -607,7 +607,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring Line)
         FTopIndex = 0;
     }
 
-    nb::TStringList::AddObject(Line, static_cast<nb::TObject *>(reinterpret_cast<void *>((size_t)(Type))));
+    nb::TStringList::AddObject(Line, static_cast<nb::TObject *>(reinterpret_cast<void *>(static_cast<size_t>(Type))));
 
     FLoggedLines++;
 

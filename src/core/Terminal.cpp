@@ -758,8 +758,7 @@ void TTerminal::Open()
                         {
                             FFSProtocol = cfsHTTP;
                             FFileSystem = new TWebDAVFileSystem(this);
-                            (static_cast<TWebDAVFileSystem *>(FFileSystem))->Init(FSecureShell);
-                            FSecureShell = NULL;
+                            static_cast<TWebDAVFileSystem *>(FFileSystem)->Init();
                             FFileSystem->Open();
                             GetLog()->AddSeparator();
                             LogEvent(L"Using HTTP protocol.");
@@ -768,8 +767,7 @@ void TTerminal::Open()
                         {
                             FFSProtocol = cfsHTTPS;
                             FFileSystem = new TWebDAVFileSystem(this);
-                            (static_cast<TWebDAVFileSystem *>(FFileSystem))->Init(FSecureShell);
-                            FSecureShell = NULL;
+                            static_cast<TWebDAVFileSystem *>(FFileSystem)->Init();
                             FFileSystem->Open();
                             GetLog()->AddSeparator();
                             LogEvent(L"Using HTTPS protocol.");
