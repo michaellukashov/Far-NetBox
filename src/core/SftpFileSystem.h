@@ -9,8 +9,6 @@ struct TOverwriteFileParams;
 struct TSFTPSupport;
 class TSecureShell;
 //---------------------------------------------------------------------------
-enum TSFTPOverwriteMode { omOverwrite, omAppend, omResume };
-//---------------------------------------------------------------------------
 class TSFTPFileSystem : public TCustomFileSystem
 {
     friend class TSFTPPacket;
@@ -166,7 +164,7 @@ protected:
                              int Params, TFileOperationProgressType *OperationProgress, unsigned int Flags);
     void SFTPConfirmOverwrite(std::wstring &FileName,
                               int Params, TFileOperationProgressType *OperationProgress,
-                              TSFTPOverwriteMode &Mode, const TOverwriteFileParams *FileParams);
+                              TOverwriteMode &Mode, const TOverwriteFileParams *FileParams);
     bool SFTPConfirmResume(const std::wstring DestFileName, bool PartialBiggerThanSource,
                            TFileOperationProgressType *OperationProgress);
     void SFTPSinkRobust(const std::wstring FileName,
