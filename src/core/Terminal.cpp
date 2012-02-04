@@ -2284,7 +2284,7 @@ void TTerminal::ReadCurrentDirectory()
         {
             assert(FDirectoryChangesCache != NULL);
             std::wstring currentDirectory = GetCurrentDirectory();
-            if (!currentDirectory.empty())
+            if (!currentDirectory.empty() && !FLastDirectoryChange.empty() && (currentDirectory != OldDirectory))
             {
                 FDirectoryChangesCache->AddDirectoryChange(OldDirectory,
                         FLastDirectoryChange, currentDirectory);
