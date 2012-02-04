@@ -10,6 +10,7 @@
 #include <list>
 #include "FtpFileSystem.h"
 #include "FileZillaIntf.h"
+#include "AsyncProxySocketLayer.h"
 
 #include "Common.h"
 #include "Exceptions.h"
@@ -183,7 +184,7 @@ struct TSinkFileParams
 class TFileListHelper
 {
 public:
-    TFileListHelper(TFTPFileSystem *FileSystem, TRemoteFileList *FileList,
+    explicit TFileListHelper(TFTPFileSystem *FileSystem, TRemoteFileList *FileList,
                     bool IgnoreFileList) :
         FFileSystem(FileSystem),
         FFileList(FFileSystem->FFileList),
@@ -359,7 +360,7 @@ void TFTPFileSystem::Open()
     std::wstring Password = Data->GetPassword();
     std::wstring Account = Data->GetFtpAccount();
     std::wstring Path = Data->GetRemoteDirectory();
-    int ServerType;
+    int ServerType = 0;
     switch (Data->GetFtps())
     {
     case ftpsImplicit:
@@ -2100,26 +2101,26 @@ int TFTPFileSystem::GetOptionVal(int OptionID) const
         switch (Data->GetProxyMethod())
         {
         case pmNone:
-            Result = 0; // PROXYTYPE_NOPROXY;
+            Result = PROXYTYPE_NOPROXY;
             break;
 
         case pmSocks4:
-            Result = 2; // PROXYTYPE_SOCKS4A
+            Result = PROXYTYPE_SOCKS4A;
             break;
 
         case pmSocks5:
-            Result = 3; // PROXYTYPE_SOCKS5
+            Result = PROXYTYPE_SOCKS5;
             break;
 
         case pmHTTP:
-            Result = 4; // PROXYTYPE_HTTP11
+            Result = PROXYTYPE_HTTP11;
             break;
 
         case pmTelnet:
         case pmCmd:
         default:
             assert(false);
-            Result = 0; // PROXYTYPE_NOPROXY;
+            Result = PROXYTYPE_NOPROXY;
             break;
         }
         break;
