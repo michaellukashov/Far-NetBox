@@ -64,10 +64,10 @@ struct TFileTransferData
     }
 
     std::wstring FileName;
-    int Params;
-    bool AutoResume;
-    int OverwriteResult;
     const TCopyParamType *CopyParam;
+    int Params;
+    int OverwriteResult;
+    bool AutoResume;
 };
 
 //---------------------------------------------------------------------------
@@ -75,10 +75,10 @@ struct TSinkFileParams
 {
     std::wstring TargetDir;
     const TCopyParamType *CopyParam;
-    int Params;
     TFileOperationProgressType *OperationProgress;
-    bool Skipped;
     unsigned int Flags;
+    int Params;
+    bool Skipped;
 };
 //---------------------------------------------------------------------------
 class TFileListHelper
