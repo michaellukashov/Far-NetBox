@@ -320,7 +320,7 @@ size_t CEasyURL::InternalReader(void *buffer, size_t size, size_t nmemb, void *u
 int CEasyURL::InternalProgress(void *userData, double dltotal, double dlnow,
     double ultotal, double ulnow)
 {
-    DEBUG_PRINTF(L"dlnow = %.2f, dltotal = %.2f, ulnow = %.2f, ultotal = %.2f", dlnow, dltotal, ulnow, ultotal);
+    // DEBUG_PRINTF(L"dlnow = %.2f, dltotal = %.2f, ulnow = %.2f, ultotal = %.2f", dlnow, dltotal, ulnow, ultotal);
     TCURLProgressInfo *progress = static_cast<TCURLProgressInfo *>(userData);
     assert(progress);
     CEasyURL *EasyURL = progress->EasyURLPtr;
@@ -340,7 +340,6 @@ int CEasyURL::InternalProgress(void *userData, double dltotal, double dlnow,
         if (progress->ProgressPtr)
         {
             *progress->ProgressPtr = static_cast<size_t>(percent);
-            DEBUG_PRINTF(L"progress->Progress = %u", *progress->ProgressPtr);
         }
         __int64 Bytes = static_cast<__int64>(dlnow);
         __int64 TransferSize = static_cast<__int64>(dltotal);
