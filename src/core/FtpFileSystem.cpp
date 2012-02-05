@@ -2366,7 +2366,7 @@ unsigned int TFTPFileSystem::WaitForReply(bool Command, bool WantLastCode)
     ResetReply();
     FWaitingForReply = true;
 
-    unsigned int Reply;
+    unsigned int Reply = 0;
 
     {
         BOOST_SCOPE_EXIT ( (&Self) )
