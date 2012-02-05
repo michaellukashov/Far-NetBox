@@ -22,8 +22,8 @@ class TFTPFileSystem : public TCustomFileSystem
 
 public:
     explicit TFTPFileSystem(TTerminal *ATerminal);
-    virtual void Init();
     virtual ~TFTPFileSystem();
+    virtual void Init();
 
     virtual void Open();
     virtual void Close();
