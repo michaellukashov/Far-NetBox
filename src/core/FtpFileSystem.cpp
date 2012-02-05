@@ -2280,7 +2280,7 @@ void TFTPFileSystem::PoolForFatalNonCommandReply()
 
     FWaitingForReply = true;
 
-    unsigned int Reply;
+    unsigned int Reply = 0;
 
     {
         BOOST_SCOPE_EXIT ( (&Self) )
