@@ -122,10 +122,10 @@ protected:
 
     void Add(TFarDialogItem *Item);
     void Add(TFarDialogContainer *Container);
-    long SendMessage(int Msg, int Param1, int Param2);
-    virtual long DialogProc(int Msg, int Param1, long Param2);
-    virtual long FailDialogProc(int Msg, int Param1, long Param2);
-    long DefaultDialogProc(int Msg, int Param1, long Param2);
+    LONG_PTR SendMessage(int Msg, int Param1, LONG_PTR Param2);
+    virtual long DialogProc(int Msg, int Param1, LONG_PTR Param2);
+    virtual long FailDialogProc(int Msg, int Param1, LONG_PTR Param2);
+    long DefaultDialogProc(int Msg, int Param1, LONG_PTR Param2);
     virtual bool MouseEvent(MOUSE_EVENT_RECORD *Event);
     virtual bool Key(TFarDialogItem *Item, long KeyCode);
     virtual void Change();
@@ -295,12 +295,12 @@ protected:
 
     virtual void Detach();
     void DialogResized();
-    long SendMessage(int Msg, int Param);
-    long SendDialogMessage(int Msg, int Param1, int Param2);
-    virtual long ItemProc(int Msg, long Param);
-    long DefaultItemProc(int Msg, int Param);
-    long DefaultDialogProc(int Msg, int Param1, int Param2);
-    virtual long FailItemProc(int Msg, long Param);
+    LONG_PTR SendMessage(int Msg, int Param);
+    LONG_PTR SendDialogMessage(int Msg, int Param1, LONG_PTR Param2);
+    virtual long ItemProc(int Msg, LONG_PTR Param);
+    long DefaultItemProc(int Msg, LONG_PTR Param);
+    long DefaultDialogProc(int Msg, int Param1, LONG_PTR Param2);
+    virtual long FailItemProc(int Msg, LONG_PTR Param);
     virtual void Change();
     void DialogChange();
     void SetAlterType(size_t Index, bool value);
@@ -388,7 +388,7 @@ public:
 protected:
     virtual void SetDataInternal(const std::wstring value);
     virtual std::wstring GetData();
-    virtual long ItemProc(int Msg, long Param);
+    virtual long ItemProc(int Msg, LONG_PTR Param);
     virtual bool HotKey(char HotKey);
 
 private:
@@ -420,7 +420,7 @@ public:
 
 protected:
     farallowchange_signal_type FOnAllowChange;
-    virtual long ItemProc(int Msg, long Param);
+    virtual long ItemProc(int Msg, LONG_PTR Param);
     virtual bool GetIsEmpty();
     virtual void SetData(const std::wstring value);
 };
@@ -439,7 +439,7 @@ public:
 
 protected:
     farallowchange_signal_type FOnAllowChange;
-    virtual long ItemProc(int Msg, long Param);
+    virtual long ItemProc(int Msg, LONG_PTR Param);
     virtual bool GetIsEmpty();
     virtual void SetData(const std::wstring value);
 };
@@ -470,7 +470,7 @@ public:
     void SetReadOnly(bool value) { SetFlag(DIF_READONLY, value); }
 
 protected:
-    virtual long ItemProc(int Msg, long Param);
+    virtual long ItemProc(int Msg, LONG_PTR Param);
     virtual void Detach();
 
 private:
@@ -543,7 +543,7 @@ public:
 
 protected:
     virtual void Changed();
-    virtual long ItemProc(int Msg, long Param);
+    virtual long ItemProc(int Msg, LONG_PTR Param);
     virtual void Init();
     void UpdatePosition(int Position);
     int GetPosition();
@@ -591,7 +591,7 @@ public:
     void SetAutoSelect(TFarListBoxAutoSelect value);
 
 protected:
-    virtual long ItemProc(int Msg, long Param);
+    virtual long ItemProc(int Msg, LONG_PTR Param);
     virtual void Init();
     virtual bool CloseQuery();
 
@@ -626,7 +626,7 @@ public:
     void SetDropDownList(bool value) { SetFlag(DIF_DROPDOWNLIST, value); }
 
 protected:
-    virtual long ItemProc(int Msg, long Param);
+    virtual long ItemProc(int Msg, LONG_PTR Param);
     virtual void Init();
 
 private:
@@ -647,7 +647,7 @@ public:
     bool GetScrollBar();
 
 protected:
-    virtual long ItemProc(int Msg, long Param);
+    virtual long ItemProc(int Msg, LONG_PTR Param);
     virtual void DoFocus();
 
 private:

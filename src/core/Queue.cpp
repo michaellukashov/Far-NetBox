@@ -760,7 +760,7 @@ void TTerminalQueue::ProcessEvent()
             TGuard Guard(FItemsSection);
 
             if ((FFreeTerminals == 0) &&
-                    (((int)FTransfersLimit <= 0) ||
+                    ((static_cast<int>(FTransfersLimit) <= 0) ||
                      (FTerminals->GetCount() < FTransfersLimit + FTemporaryTerminals)))
             {
                 FOverallTerminals++;
@@ -1568,7 +1568,7 @@ void TTerminalQueueStatus::ResetStats()
 //---------------------------------------------------------------------------
 size_t TTerminalQueueStatus::GetActiveCount()
 {
-    if ((int)FActiveCount < 0)
+    if (static_cast<int>(FActiveCount) < 0)
     {
         FActiveCount = 0;
 

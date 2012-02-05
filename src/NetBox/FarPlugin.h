@@ -139,11 +139,10 @@ public:
     bool Editor(const std::wstring FileName, unsigned int Flags,
                 std::wstring Title = L"");
 
-    int FarAdvControl(int Command, void *Param = NULL);
-    int FarAdvControl(int Command, int Param);
+    INT_PTR FarAdvControl(int Command, void *Param = NULL);
     DWORD FarControl(int Command, int Param1, LONG_PTR Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
     int FarEditorControl(int Command, void *Param);
-    unsigned int FarSystemSettings();
+    INT_PTR FarSystemSettings();
     void Text(int X, int Y, int Color, const std::wstring Str);
     void FlushText();
     void WriteConsole(const std::wstring Str);
@@ -189,7 +188,7 @@ protected:
     TCriticalSection *FCriticalSection;
     unsigned int FFarThread;
     bool FValidFarSystemSettings;
-    unsigned int FFarSystemSettings;
+    INT_PTR FFarSystemSettings;
     nb::TPoint FNormalConsoleSize;
     TCustomFarPlugin *Self;
 

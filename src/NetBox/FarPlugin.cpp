@@ -1593,7 +1593,7 @@ void TCustomFarPlugin::ResetCachedInfo()
     FValidFarSystemSettings = false;
 }
 //---------------------------------------------------------------------------
-unsigned int TCustomFarPlugin::FarSystemSettings()
+INT_PTR TCustomFarPlugin::FarSystemSettings()
 {
     if (!FValidFarSystemSettings)
     {
@@ -1624,16 +1624,10 @@ DWORD TCustomFarPlugin::FarControl(int Command, int Param1, LONG_PTR Param2, HAN
     return FStartupInfo.Control(Plugin, Command, Param1, Param2);
 }
 //---------------------------------------------------------------------------
-int TCustomFarPlugin::FarAdvControl(int Command, void *Param)
+INT_PTR TCustomFarPlugin::FarAdvControl(int Command, void *Param)
 {
     TFarEnvGuard Guard;
-    return static_cast<int>(FStartupInfo.AdvControl(FStartupInfo.ModuleNumber, Command, Param));
-}
-//---------------------------------------------------------------------------
-int TCustomFarPlugin::FarAdvControl(int Command, int Param)
-{
-    TFarEnvGuard Guard;
-    return static_cast<int>(FStartupInfo.AdvControl(FStartupInfo.ModuleNumber, Command, reinterpret_cast<void *>((size_t)(Param))));
+    return FStartupInfo.AdvControl(FStartupInfo.ModuleNumber, Command, Param);
 }
 //---------------------------------------------------------------------------
 int TCustomFarPlugin::FarEditorControl(int Command, void *Param)

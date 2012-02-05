@@ -3706,7 +3706,7 @@ TLoginType TSessionDialog::IndexToLoginType(size_t Index)
     TLoginType Result = ltAnonymous;
     if (InBounds)
     {
-        Result = TLoginType(Index);
+        Result = static_cast<TLoginType>(Index);
     }
     return Result;
 }

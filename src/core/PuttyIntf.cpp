@@ -134,7 +134,7 @@ int get_userpass_input(prompts_t *p, unsigned char * /*in*/, int /*inlen*/)
         for (int Index = 0; Index < static_cast<int>(p->n_prompts); Index++)
         {
             prompt_t *Prompt = p->prompts[Index];
-            Prompts.AddObject(nb::MB2W(Prompt->prompt), reinterpret_cast<nb::TObject *>((size_t)(Prompt->echo)));
+            Prompts.AddObject(nb::MB2W(Prompt->prompt), reinterpret_cast<nb::TObject *>(static_cast<size_t>(Prompt->echo)));
             Results.AddObject(L"", reinterpret_cast<nb::TObject *>(Prompt->result_len));
         }
 
