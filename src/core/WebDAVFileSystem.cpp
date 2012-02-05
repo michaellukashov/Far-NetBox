@@ -161,7 +161,7 @@ void TWebDAVFileSystem::Open()
     // initialize FCURLIntf on the first connect only
     if (FCURLIntf == NULL)
     {
-        FCURLIntf = new CEasyURL(FTerminal);
+        FCURLIntf = new CEasyURL(FTerminal, this);
         FCURLIntf->Init();
 
         try

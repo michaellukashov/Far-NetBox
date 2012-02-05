@@ -8,8 +8,9 @@ class TCURLIntf;
 struct TListDataEntry;
 class TMessageQueue;
 class TiXmlElement;
+
 //---------------------------------------------------------------------------
-class TWebDAVFileSystem : public TCustomFileSystem
+class TWebDAVFileSystem : public TCustomFileSystem, public TFileSystemIntf
 {
     friend class CEasyURL;
     friend class TFileListHelper;
@@ -73,6 +74,9 @@ public:
     virtual bool GetStoredCredentialsTried();
     virtual std::wstring GetUserName();
 
+public:
+    void FileTransferProgress(__int64 TransferSize, __int64 Bytes);
+
 protected:
     virtual std::wstring GetCurrentDirectory();
 
@@ -114,7 +118,6 @@ protected:
     void ReadDirectoryProgress(__int64 Bytes);
     void ResetFileTransfer();
     void DoFileTransferProgress(__int64 TransferSize, __int64 Bytes);
-    void FileTransferProgress(__int64 TransferSize, __int64 Bytes);
     void ResetCaches();
     void CaptureOutput(const std::wstring Str);
     void DoReadDirectory(TRemoteFileList *FileList);

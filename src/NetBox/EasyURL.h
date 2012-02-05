@@ -5,7 +5,11 @@
 #include <curl/curl.h>
 #include "SessionInfo.h"
 
+//---------------------------------------------------------------------------
+
 #define CHECK_CURL_CALL(code, fc) { if (code == CURLE_OK) { code = fc; } }
+
+//---------------------------------------------------------------------------
 
 enum ProxyTypes
 {
@@ -15,8 +19,12 @@ enum ProxyTypes
     PROXY_HTTP,
 };
 
+//---------------------------------------------------------------------------
+
 class TSessionData;
 class TTerminal;
+
+//---------------------------------------------------------------------------
 
 /** @brief CURL slist wrapper
  *
@@ -44,6 +52,22 @@ public:
 private:
     curl_slist *m_SList;
 };
+
+//---------------------------------------------------------------------------
+
+/** @brief interface for CURL based filesystems
+  *
+  */
+class TFileSystemIntf
+{
+public:
+    virtual ~TFileSystemIntf()
+    {}
+
+    virtual void FileTransferProgress(__int64 TransferSize, __int64 Bytes) = 0;
+};
+
+//---------------------------------------------------------------------------
 
 class TCURLIntf
 {
@@ -140,7 +164,7 @@ public:
 class CEasyURL : public TCURLIntf
 {
 public:
-    explicit CEasyURL(TTerminal *Terminal);
+    explicit CEasyURL(TTerminal *Terminal, TFileSystemIntf *FileSystem);
     virtual void Init();
     virtual ~CEasyURL();
 
@@ -178,6 +202,9 @@ public:
 
     virtual void SetDebugLevel(TLogLevel Level) { FDebugLevel = Level; }
 
+protected:
+    TFileSystemIntf *GetFileSystem() { return FFileSystem; }
+
 private:
     int DebugOutput(TLogLineType type, const char *data, size_t size);
 
@@ -197,6 +224,7 @@ private:
 
 private:
     TTerminal *FTerminal;
+    TFileSystemIntf *FFileSystem;
     CURL *m_CURL; ///< CURL
     bool m_Prepared; ///< Prepare statement flag
 

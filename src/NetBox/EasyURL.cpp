@@ -3,8 +3,9 @@
 #include "SessionData.h"
 #include "Terminal.h"
 
-CEasyURL::CEasyURL(TTerminal *Terminal) :
+CEasyURL::CEasyURL(TTerminal *Terminal, TFileSystemIntf *FileSystem) :
     FTerminal(Terminal),
+    FFileSystem(FileSystem),
     m_CURL(NULL),
     m_Prepared(false),
     m_regex(INVALID_HANDLE_VALUE),
@@ -336,6 +337,10 @@ int CEasyURL::InternalProgress(void *userData, double dltotal, double dlnow,
         const double percent = dlnow * 100.0 / dltotal;
         *progress->ProgressPtr = static_cast<size_t>(percent);
         DEBUG_PRINTF(L"progress->Progress = %u", *progress->ProgressPtr);
+        __int64 Bytes = static_cast<__int64>(dlnow);
+        __int64 TransferSize = static_cast<__int64>(dltotal);
+        assert(EasyURL->GetFileSystem());
+        EasyURL->GetFileSystem()->FileTransferProgress(TransferSize, Bytes);
     }
     return CURLE_OK;
 }
