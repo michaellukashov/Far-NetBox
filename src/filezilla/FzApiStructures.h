@@ -59,7 +59,7 @@ typedef struct
     __int64 size;
     t_server server;
     int nType;
-    int nUserData;
+    void *UserData;
 } t_transferfile;
 
 #endif
