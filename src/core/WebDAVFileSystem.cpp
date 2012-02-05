@@ -314,7 +314,6 @@ const TSessionInfo &TWebDAVFileSystem::GetSessionInfo()
 //---------------------------------------------------------------------------
 const TFileSystemInfo &TWebDAVFileSystem::GetFileSystemInfo(bool Retrieve)
 {
-    // nb::Error(SNotImplemented, 1009);
     return FFileSystemInfo;
 }
 //---------------------------------------------------------------------------
@@ -508,6 +507,7 @@ void TWebDAVFileSystem::ReadCurrentDirectory()
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::HomeDirectory()
 {
+    nb::Error(SNotImplemented, 1009);
     // ExecCommand(fsHomeDirectory);
 }
 //---------------------------------------------------------------------------
@@ -922,9 +922,6 @@ void TWebDAVFileSystem::CustomCommandOnFile(const std::wstring FileName,
     if (Dir && (Params & ccRecursive))
     {
         TCustomCommandParams AParams(Command, Params, OutputEvent);
-        // AParams.Command = Command;
-        // AParams.Params = Params;
-        // AParams.OutputEvent.connect(OutputEvent);
         FTerminal->ProcessDirectory(FileName, boost::bind(&TTerminal::CustomCommandOnFile, FTerminal, _1, _2, _3),
                                     &AParams);
     }
@@ -936,7 +933,6 @@ void TWebDAVFileSystem::CustomCommandOnFile(const std::wstring FileName,
                                Data, FTerminal->GetCurrentDirectory(), FileName, L"").
                            Complete(Command, true);
 
-        // AnyCommand(Cmd, &OutputEvent);
     }
 }
 //---------------------------------------------------------------------------

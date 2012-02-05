@@ -1054,7 +1054,7 @@ bool TTerminal::PromptUser(TSessionData *Data, TPromptKind Kind,
     nb::TStringList Prompts;
     nb::TStringList Results;
     {
-        Prompts.AddObject(Prompt, reinterpret_cast<nb::TObject *>((size_t)(Echo)));
+        Prompts.AddObject(Prompt, reinterpret_cast<nb::TObject *>(static_cast<size_t>(Echo)));
         Results.AddObject(Result, reinterpret_cast<nb::TObject *>(MaxLen));
 
         AResult = PromptUser(Data, Kind, Name, Instructions, &Prompts, &Results);

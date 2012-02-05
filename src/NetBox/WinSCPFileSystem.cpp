@@ -4096,7 +4096,7 @@ void TWinSCPFileSystem::MultipleEdit(const std::wstring Directory,
                 if ((Window.Type == WTYPE_EDITOR) &&
                         AnsiSameText(Window.Name, i->second.LocalFileName))
                 {
-                    FarPlugin->FarAdvControl(ACTL_SETCURRENTWINDOW, Window.Pos);
+                    FarPlugin->FarAdvControl(ACTL_SETCURRENTWINDOW, 0, reinterpret_cast<void *>(Window.Pos));
                     break;
                 }
             }

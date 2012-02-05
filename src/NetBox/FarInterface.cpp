@@ -54,7 +54,7 @@ size_t BeginThread(void *SecurityAttributes, DWORD StackSize,
     DWORD &ThreadId)
 {
     HANDLE Result = ::CreateThread(static_cast<LPSECURITY_ATTRIBUTES>(SecurityAttributes),
-        StackSize,
+        static_cast<size_t>(StackSize),
         static_cast<LPTHREAD_START_ROUTINE>(&threadstartroutine),
         Parameter,
         CreationFlags, &ThreadId);

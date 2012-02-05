@@ -602,7 +602,7 @@ void TSessionLog::DoAddToParent(TLogLineType Type, const std::wstring Line)
 void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring Line)
 {
     // DEBUG_PRINTF(L"begin: Line = %s", Line.c_str());
-    if ((int)FTopIndex < 0)
+    if (static_cast<int>(FTopIndex) < 0)
     {
         FTopIndex = 0;
     }

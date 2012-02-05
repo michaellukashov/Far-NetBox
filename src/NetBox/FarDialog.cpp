@@ -310,9 +310,9 @@ void TFarDialog::Add(TFarDialogItem *DialogItem)
     R.Left = Left;
     R.Top = Top;
 
-    if (FDialogItemsCapacity == static_cast<int>(GetItems()->GetCount()))
+    if (FDialogItemsCapacity == GetItems()->GetCount())
     {
-        int DialogItemsDelta = 10;
+        size_t DialogItemsDelta = 10;
         FarDialogItem *NewDialogItems;
         NewDialogItems = new FarDialogItem[GetItems()->GetCount() + DialogItemsDelta];
         if (FDialogItems)
@@ -751,9 +751,11 @@ int TFarDialog::ShowModal()
             HANDLE dlg = GetFarPlugin()->GetStartupInfo()->DialogInit(
                              &MainGuid, &MainGuid,
                              Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom,
-                             StrToFar(AHelpTopic), FDialogItems, GetItemCount(), 0, GetFlags(),
+                             StrToFar(AHelpTopic), FDialogItems, 
+                             GetItemCount(), 0, GetFlags(),
                              DialogProcGeneral,
                              reinterpret_cast<void *>(this));
+
            BResult = GetFarPlugin()->GetStartupInfo()->DialogRun(dlg);
         }
 
@@ -833,7 +835,7 @@ void TFarDialog::Change()
     }
 }
 //---------------------------------------------------------------------------
-INT_PTR TFarDialog::SendMessage(int Msg, int Param1, void *Param2)
+LONG_PTR TFarDialog::SendMessage(int Msg, int Param1, void *Param2)
 {
     assert(GetHandle());
     TFarEnvGuard Guard;
@@ -1240,9 +1242,9 @@ void TFarDialogItem::SetType(FARDIALOGITEMTYPES value)
     }
 }
 //---------------------------------------------------------------------------
-int TFarDialogItem::GetType()
+size_t TFarDialogItem::GetType()
 {
-    return GetDialogItem()->Type;
+    return static_cast<size_t>(GetDialogItem()->Type);
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::SetAlterType(FARDIALOGITEMTYPES Index, bool value)
@@ -1423,13 +1425,13 @@ void TFarDialogItem::DoExit()
 long TFarDialogItem::DefaultItemProc(int Msg, void *Param)
 {
     TFarEnvGuard Guard;
-    return GetDialog()->GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, GetItem(), Param);
+    return GetDialog()->GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, static_cast<int>(GetItem()), Param);
 }
 //---------------------------------------------------------------------------
 long TFarDialogItem::DefaultDialogProc(int Msg, int Param1, void *Param2)
 {
     TFarEnvGuard Guard;
-    return GetDialog()->GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, Param1, Param2);
+    return GetDialog()->GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, static_cast<int>(Param1), Param2);
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::Change()
@@ -1491,11 +1493,11 @@ void TFarDialogItem::SetSelected(size_t value)
         {
             SendMessage(DM_SETCHECK, reinterpret_cast<void *>(value));
         }
-        UpdateSelected(static_cast<int>(value));
+        UpdateSelected(value);
     }
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::UpdateSelected(int value)
+void TFarDialogItem::UpdateSelected(size_t value)
 {
     if (GetSelected() != value)
     {
@@ -1607,7 +1609,7 @@ size_t TFarDialogItem::GetHeight()
 //---------------------------------------------------------------------------
 bool TFarDialogItem::CanFocus()
 {
-    int Type = GetType();
+     size_t Type = GetType();
     return GetVisible() && GetEnabled() && GetTabStop() &&
            (Type == DI_EDIT || Type == DI_PSWEDIT || Type == DI_FIXEDIT ||
             Type == DI_BUTTON || Type == DI_CHECKBOX || Type == DI_RADIOBUTTON ||
@@ -2662,7 +2664,7 @@ long TFarLister::ItemProc(int Msg, void *Param)
         size_t ScrollBarPos = 0;
         if (GetItems()->GetCount() > GetHeight())
         {
-            ScrollBarPos = static_cast<int>((static_cast<float>(GetHeight() - 3) * (static_cast<float>(FTopIndex) / (GetItems()->GetCount() - GetHeight())))) + 1;
+            ScrollBarPos = static_cast<size_t>((static_cast<float>(GetHeight() - 3) * (static_cast<float>(FTopIndex) / (GetItems()->GetCount() - GetHeight())))) + 1;
         }
         int DisplayWidth = GetWidth() - (AScrollBar ? 1 : 0);
         FarColor Color = GetDialog()->GetSystemColor(

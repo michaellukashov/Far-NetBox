@@ -45,7 +45,7 @@ protected:
     virtual void GetPluginInfoEx(PLUGIN_FLAGS &Flags, nb::TStrings * DiskMenuStrings,
                                  nb::TStrings *PluginMenuStrings, nb::TStrings *PluginConfigStrings,
                                  nb::TStrings *CommandPrefixes);
-    virtual TCustomFarFileSystem *OpenPluginEx(int OpenFrom, int Item);
+    virtual TCustomFarFileSystem *OpenPluginEx(int OpenFrom, LONG_PTR Item);
     virtual bool ImportSessions();
     virtual bool ConfigureEx(int Item);
     virtual int ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info);

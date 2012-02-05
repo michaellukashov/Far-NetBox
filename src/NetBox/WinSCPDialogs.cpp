@@ -3553,7 +3553,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
         for (size_t Index = 0; Index < CIPHER_COUNT; Index++)
         {
             nb::TObject *Obj = static_cast<nb::TObject *>(CipherListBox->GetItems()->GetObject(Index));
-            SessionData->SetCipher(Index, static_cast<TCipher>(reinterpret_cast<int>(Obj)));
+            SessionData->SetCipher(Index, static_cast<TCipher>(reinterpret_cast<size_t>(Obj)));
         }
 
         // KEX tab
@@ -3708,7 +3708,7 @@ TLoginType TSessionDialog::IndexToLoginType(size_t Index)
     TLoginType Result = ltAnonymous;
     if (InBounds)
     {
-        Result = TLoginType(Index);
+        Result = static_cast<TLoginType>(Index);
     }
     return Result;
 }

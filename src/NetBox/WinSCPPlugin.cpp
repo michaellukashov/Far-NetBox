@@ -224,7 +224,7 @@ bool TWinSCPPlugin::ConfigureEx(int /*Item*/)
         MenuItems->AddSeparator();
         size_t MAbout = MenuItems->Add(GetMsg(CONFIG_ABOUT));
 
-        int Result;
+        int Result = 0;
 
         do
         {
@@ -345,7 +345,7 @@ int TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD *Rec)
     return Result;
 }
 //---------------------------------------------------------------------------
-TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(int OpenFrom, int Item)
+TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(int OpenFrom, LONG_PTR Item)
 {
     TWinSCPFileSystem *FileSystem = NULL;
     try
@@ -476,7 +476,7 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
         MenuItems->SetDisabled(MPageant, !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->GetPageantPath()))));
         MenuItems->SetDisabled(MPuttygen, !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->GetPuttygenPath()))));
 
-        size_t Result = static_cast<size_t>(Menu(FMENU_WRAPMODE, GetMsg(MENU_COMMANDS), L"", MenuItems));
+        int Result = Menu(FMENU_WRAPMODE, GetMsg(MENU_COMMANDS), L"", MenuItems);
 
         if (Result != -1)
         {
@@ -639,7 +639,7 @@ void TWinSCPPlugin::MessageClick(void *Token, int Result, bool &Close)
 
     if ((Data.Params != NULL) && (Data.Params->Aliases != NULL))
     {
-        for (unsigned int i = 0; i < Data.Params->AliasesCount; i++)
+        for (size_t i = 0; i < Data.Params->AliasesCount; i++)
         {
             if ((static_cast<int>(Data.Params->Aliases[i].Button) == Data.Buttons[Result]) &&
                     (!Data.Params->Aliases[i].OnClick.empty()))

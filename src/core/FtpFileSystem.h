@@ -199,7 +199,7 @@ private:
     bool FMultineResponse;
     int FLastCode;
     int FLastCodeClass;
-    int FLastReadDirectoryProgress;
+    size_t FLastReadDirectoryProgress;
     std::wstring FTimeoutStatus;
     std::wstring FDisconnectStatus;
     nb::TStrings *FLastResponse;

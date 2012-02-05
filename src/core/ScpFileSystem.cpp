@@ -645,7 +645,7 @@ void TSCPFileSystem::ReadCommandOutput(int Params, const std::wstring *Cmd)
         {
             std::wstring Line;
             bool IsLast = true;
-            unsigned int Total = 0;
+            size_t Total = 0;
             // #55: fixed so, even when last line of command output does not
             // contain CR/LF, we can recognize last line
             do

@@ -143,11 +143,10 @@ public:
                 std::wstring Title = L"");
     bool Editor(const std::wstring FileName, unsigned int Flags,
                 std::wstring Title = L"");
-
     int FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, int Param1, void *Param2 = NULL);
     DWORD FarControl(FILE_CONTROL_COMMANDS Command, int Param1, void *Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
     int FarEditorControl(EDITOR_CONTROL_COMMANDS Command, void *Param);
-    unsigned int FarSystemSettings();
+    INT_PTR FarSystemSettings();
     void Text(int X, int Y, int Color, const std::wstring Str);
     void FlushText();
     void WriteConsole(const std::wstring Str);
@@ -194,7 +193,7 @@ protected:
     TCriticalSection *FCriticalSection;
     unsigned int FFarThread;
     bool FValidFarSystemSettings;
-    unsigned int FFarSystemSettings;
+    INT_PTR FFarSystemSettings;
     nb::TPoint FNormalConsoleSize;
     TCustomFarPlugin *Self;
 
@@ -202,7 +201,7 @@ protected:
     virtual void GetPluginInfoEx(PLUGIN_FLAGS &Flags,
                                  nb::TStrings *DiskMenuStrings, nb::TStrings *PluginMenuStrings,
                                  nb::TStrings *PluginConfigStrings, nb::TStrings *CommandPrefixes) = 0;
-    virtual TCustomFarFileSystem *OpenPluginEx(int OpenFrom, int Item) = 0;
+    virtual TCustomFarFileSystem *OpenPluginEx(int OpenFrom, LONG_PTR Item) = 0;
     virtual bool ImportSessions() = 0;
     virtual bool ConfigureEx(int Item) = 0;
     virtual int ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info) = 0;
