@@ -20,7 +20,7 @@
 #include "SecureShell.h"
 #include "FileZillaIntf.h"
 #include "FarUtil.h"
-#include "tinyXML\tinyxml.h"
+#include "tinyXML/tinyxml.h"
 
 namespace alg = boost::algorithm;
 
