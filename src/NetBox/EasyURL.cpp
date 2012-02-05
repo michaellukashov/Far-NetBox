@@ -111,28 +111,28 @@ CURLcode CEasyURL::Prepare(const char *path,
     CURLcode urlCode = CURLE_OK;
 
     const std::string url = m_TopURL + (path ? path : "");
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_URL, url.c_str()));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_URL, url.c_str()));
     if (handleTimeout)
     {
-        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_TIMEOUT, Data->GetTimeout()));
+        CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_TIMEOUT, Data->GetTimeout()));
     }
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_WRITEFUNCTION, CEasyURL::InternalWriter));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_WRITEDATA, &m_Output));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_NOPROGRESS, 0L));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROGRESSFUNCTION, CEasyURL::InternalProgress));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROGRESSDATA, &m_Progress));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_WRITEFUNCTION, CEasyURL::InternalWriter));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_WRITEDATA, &m_Output));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_NOPROGRESS, 0L));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROGRESSFUNCTION, CEasyURL::InternalProgress));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROGRESSDATA, &m_Progress));
 
     if (LogLevel >= 1)
     {
-        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_DEBUGFUNCTION, CEasyURL::InternalDebug));
-        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_DEBUGDATA, this));
-        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_VERBOSE, TRUE));
+        CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_DEBUGFUNCTION, CEasyURL::InternalDebug));
+        CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_DEBUGDATA, this));
+        CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_VERBOSE, TRUE));
     }
 
     if (!m_UserName.empty() || !m_Password.empty())
     {
-        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_USERNAME, m_UserName.c_str()));
-        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PASSWORD, m_Password.c_str()));
+        CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_USERNAME, m_UserName.c_str()));
+        CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PASSWORD, m_Password.c_str()));
     }
     TProxyMethod ProxyMethod = Data->GetProxyMethod();
     if (ProxyMethod != pmNone)
@@ -165,18 +165,18 @@ CURLcode CEasyURL::Prepare(const char *path,
             proxy += ":";
             proxy += NumberToText(port);
         }
-        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXY, proxy.c_str()));
-        // CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYPORT, port));
-        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYTYPE, proxy_type));
+        CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXY, proxy.c_str()));
+        // CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYPORT, port));
+        CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYTYPE, proxy_type));
 
         std::string login = nb::W2MB(Data->GetProxyUsername().c_str());
         std::string password = nb::W2MB(Data->GetProxyPassword().c_str());
         if (!login.empty())
         {
-            CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYUSERNAME, login.c_str()));
+            CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYUSERNAME, login.c_str()));
             if (!password.empty())
             {
-                CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYPASSWORD, password.c_str()));
+                CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYPASSWORD, password.c_str()));
             }
         }
     }
@@ -190,8 +190,8 @@ CURLcode CEasyURL::Prepare(const char *path,
 CURLcode CEasyURL::SetSlist(CSlistURL &slist)
 {
     CURLcode urlCode = CURLE_OK;
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_POSTQUOTE, static_cast<curl_slist *>(slist)));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_HTTPHEADER, static_cast<curl_slist *>(slist)));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_POSTQUOTE, static_cast<curl_slist *>(slist)));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_HTTPHEADER, static_cast<curl_slist *>(slist)));
     return urlCode;
 }
 
@@ -236,10 +236,10 @@ CURLcode CEasyURL::SetInput(CNBFile *in, int *progress)
     m_Input.Total = in->GetFileSize();
 
     CURLcode urlCode = CURLE_OK;
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_UPLOAD, 1L));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_READFUNCTION, CEasyURL::InternalReader));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_READDATA, &m_Input));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_INFILESIZE_LARGE, static_cast<curl_off_t>(in->GetFileSize())));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_UPLOAD, 1L));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_READFUNCTION, CEasyURL::InternalReader));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_READDATA, &m_Input));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_INFILESIZE_LARGE, static_cast<curl_off_t>(in->GetFileSize())));
     return urlCode;
 }
 

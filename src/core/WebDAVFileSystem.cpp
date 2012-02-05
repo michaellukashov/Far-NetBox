@@ -2055,7 +2055,7 @@ bool TWebDAVFileSystem::SendPropFindRequest(const wchar_t *dir, std::wstring &re
 
     CURLcode urlCode = CURLPrepare(webDavPath.c_str());
     std::string resp;
-    CHECK_CUCALL(urlCode, FCURLIntf->SetOutput(resp, &m_ProgressPercent));
+    CHECK_CURL_CALL(urlCode, FCURLIntf->SetOutput(resp, &m_ProgressPercent));
 
     CSlistURL slist;
     slist.Append("Depth: 1");
@@ -2065,13 +2065,13 @@ bool TWebDAVFileSystem::SendPropFindRequest(const wchar_t *dir, std::wstring &re
     slist.Append(contentLength);
     slist.Append("Connection: Keep-Alive");
 
-    CHECK_CUCALL(urlCode, FCURLIntf->SetSlist(slist));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_CUSTOMREQUEST, "PROPFIND"));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_MAXREDIRS, 5));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_POSTFIELDS, requestData));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_POSTFIELDSIZE, requestDataLen));
+    CHECK_CURL_CALL(urlCode, FCURLIntf->SetSlist(slist));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_CUSTOMREQUEST, "PROPFIND"));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_MAXREDIRS, 5));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_POSTFIELDS, requestData));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_POSTFIELDSIZE, requestDataLen));
 
-    CHECK_CUCALL(urlCode, FCURLIntf->Perform());
+    CHECK_CURL_CALL(urlCode, FCURLIntf->Perform());
     // DEBUG_PRINTF(L"urlCode = %d", urlCode);
     if (urlCode != CURLE_OK)
     {
@@ -2390,12 +2390,12 @@ CURLcode TWebDAVFileSystem::CURLPrepare(const char *webDavPath,
                                           FTerminal->GetSessionData(),
                                           static_cast<int>(FTerminal->GetConfiguration()->GetActualLogProtocol()),
                                           handleTimeout);
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_HTTPAUTH, CURLAUTH_ANY));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_FOLLOWLOCATION, 1));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_POST301, 1));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_HTTPAUTH, CURLAUTH_ANY));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_FOLLOWLOCATION, 1));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_POST301, 1));
 
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_SSL_VERIFYPEER, 0L));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_SSL_VERIFYHOST, 0L));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_SSL_VERIFYPEER, 0L));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_SSL_VERIFYHOST, 0L));
     return urlCode;
 }
 
@@ -2421,10 +2421,10 @@ bool TWebDAVFileSystem::MakeDirectory(const wchar_t *path, std::wstring &errorIn
     slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
     slist.Append("Content-Length: 0");
     slist.Append("Connection: Keep-Alive");
-    CHECK_CUCALL(urlCode, FCURLIntf->SetSlist(slist));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_CUSTOMREQUEST, "MKCOL"));
+    CHECK_CURL_CALL(urlCode, FCURLIntf->SetSlist(slist));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_CUSTOMREQUEST, "MKCOL"));
 
-    CHECK_CUCALL(urlCode, FCURLIntf->Perform());
+    CHECK_CURL_CALL(urlCode, FCURLIntf->Perform());
     if (urlCode != CURLE_OK)
     {
         errorInfo = nb::MB2W(curl_easy_strerror(urlCode));
@@ -2656,9 +2656,9 @@ bool TWebDAVFileSystem::GetFile(const wchar_t *remotePath, const wchar_t *localP
     // slist.Append("Content-Type: application/octet-stream");
     slist.Append("Content-Length: 0");
     slist.Append("Connection: Keep-Alive");
-    CHECK_CUCALL(urlCode, FCURLIntf->SetSlist(slist));
-    CHECK_CUCALL(urlCode, FCURLIntf->SetOutput(&outFile, &m_ProgressPercent));
-    CHECK_CUCALL(urlCode, FCURLIntf->Perform());
+    CHECK_CURL_CALL(urlCode, FCURLIntf->SetSlist(slist));
+    CHECK_CURL_CALL(urlCode, FCURLIntf->SetOutput(&outFile, &m_ProgressPercent));
+    CHECK_CURL_CALL(urlCode, FCURLIntf->Perform());
 
     outFile.Close();
     m_ProgressPercent = -1;
@@ -2693,9 +2693,9 @@ bool TWebDAVFileSystem::PutFile(const wchar_t *remotePath, const wchar_t *localP
     CSlistURL slist;
     slist.Append("Expect:");    //Expect: 100-continue is not wanted
     slist.Append("Connection: Keep-Alive");
-    CHECK_CUCALL(urlCode, FCURLIntf->SetSlist(slist));
-    CHECK_CUCALL(urlCode, FCURLIntf->SetInput(&inFile, &m_ProgressPercent));
-    CHECK_CUCALL(urlCode, FCURLIntf->Perform());
+    CHECK_CURL_CALL(urlCode, FCURLIntf->SetSlist(slist));
+    CHECK_CURL_CALL(urlCode, FCURLIntf->SetInput(&inFile, &m_ProgressPercent));
+    CHECK_CURL_CALL(urlCode, FCURLIntf->Perform());
 
     inFile.Close();
     m_ProgressPercent = -1;
@@ -2725,10 +2725,10 @@ bool TWebDAVFileSystem::Rename(const wchar_t *srcPath, const wchar_t *dstPath, c
     dstParam += dstWebDavPath;
     slist.Append(dstParam.c_str());
     slist.Append("Connection: Keep-Alive");
-    CHECK_CUCALL(urlCode, FCURLIntf->SetSlist(slist));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_CUSTOMREQUEST, "MOVE"));
+    CHECK_CURL_CALL(urlCode, FCURLIntf->SetSlist(slist));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_CUSTOMREQUEST, "MOVE"));
 
-    CHECK_CUCALL(urlCode, FCURLIntf->Perform());
+    CHECK_CURL_CALL(urlCode, FCURLIntf->Perform());
 
     if (urlCode != CURLE_OK)
     {
@@ -2748,10 +2748,10 @@ bool TWebDAVFileSystem::Delete(const wchar_t *path, const ItemType /*type*/, std
     slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
     slist.Append("Content-Length: 0");
     slist.Append("Connection: Keep-Alive");
-    CHECK_CUCALL(urlCode, FCURLIntf->SetSlist(slist));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_CUSTOMREQUEST, "DELETE"));
+    CHECK_CURL_CALL(urlCode, FCURLIntf->SetSlist(slist));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_CUSTOMREQUEST, "DELETE"));
 
-    CHECK_CUCALL(urlCode, FCURLIntf->Perform());
+    CHECK_CURL_CALL(urlCode, FCURLIntf->Perform());
     if (urlCode != CURLE_OK)
     {
         errorInfo = nb::MB2W(curl_easy_strerror(urlCode));

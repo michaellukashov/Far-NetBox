@@ -5,7 +5,7 @@
 #include <curl/curl.h>
 #include "SessionInfo.h"
 
-#define CHECK_CUCALL(code, fc) if (code == CURLE_OK) code = fc
+#define CHECK_CURL_CALL(code, fc) { if (code == CURLE_OK) { code = fc; } }
 
 enum ProxyTypes
 {
