@@ -98,21 +98,21 @@ public:
      *  @param $progress pointer to variable to save progress percent of the current operation
      *  @return curl status
      */
-    virtual CURLcode SetOutput(std::string &out, int *progress) = 0;
+    virtual CURLcode SetOutput(std::string &out, size_t *progress) = 0;
 
     /** @brief Set output as file
      *  @param $out output file
      *  @param $progress pointer to variable to save progress percent of the current operation
      *  @return curl status
      */
-    virtual CURLcode SetOutput(CNBFile *out, int *progress) = 0;
+    virtual CURLcode SetOutput(CNBFile *out, size_t *progress) = 0;
 
     /** @brief Set input as file (upload operations)
      *  @param $in input file
      *  @param $progress pointer to variable to save progress percent of the current operation
      *  @return curl status
      */
-    virtual CURLcode SetInput(CNBFile *in, int *progress) = 0;
+    virtual CURLcode SetInput(CNBFile *in, size_t *progress) = 0;
 
     /** @brief Set abort event handle
      *  @param $event abort event handle
@@ -177,21 +177,21 @@ public:
      *  @param $progress pointer to variable to save progress percent of the current operation
      *  @return curl status
      */
-    virtual CURLcode SetOutput(std::string &out, int *progress);
+    virtual CURLcode SetOutput(std::string &out, size_t *progress);
 
     /** @brief Set output as file
      *  @param $out output file
      *  @param $progress pointer to variable to save progress percent of the current operation
      *  @return curl status
      */
-    virtual CURLcode SetOutput(CNBFile *out, int *progress);
+    virtual CURLcode SetOutput(CNBFile *out, size_t *progress);
 
     /** @brief Set input as file (upload operations)
      *  @param $in input file
      *  @param $progress pointer to variable to save progress percent of the current operation
      *  @return curl status
      */
-    virtual CURLcode SetInput(CNBFile *in, int *progress);
+    virtual CURLcode SetInput(CNBFile *in, size_t *progress);
 
     /** @brief Set abort event handle
      *  @param $event abort event handle
@@ -278,7 +278,7 @@ private:
         unsigned __int64 Current;
         unsigned __int64 Total;
         CNBFile *File;
-        int *Progress;
+        size_t *ProgressPtr;
         HANDLE AbortEvent;
         enum InputReaderType
         {
@@ -291,7 +291,7 @@ private:
     /// Progress description
     struct Progress
     {
-        int *ProgressPtr;
+        size_t *ProgressPtr;
         HANDLE AbortEvent;
         bool Aborted;
     };

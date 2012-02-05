@@ -161,7 +161,7 @@ private:
     size_t FFileTransferCPSLimit;
     bool FAwaitingProgress;
     TCommand FLastCommand;
-    int FLastReadDirectoryProgress;
+    size_t FLastReadDirectoryProgress;
     nb::TStrings *FLastResponse;
     nb::TStrings *FLastError;
     TCriticalSection *FTransferStatusCriticalSection;
@@ -169,7 +169,7 @@ private:
     bool FDoListAll;
     mutable std::wstring FOptionScratch;
     HANDLE FAbortEvent;
-    int m_ProgressPercent; ///< Progress percent value
+    size_t m_ProgressPercent; ///< Progress percent value
     TWebDAVFileSystem *Self;
 
 private:

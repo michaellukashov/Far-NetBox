@@ -196,7 +196,7 @@ CURLcode CEasyURL::SetSlist(CSlistURL &slist)
 }
 
 
-CURLcode CEasyURL::SetOutput(std::string &out, int *progress)
+CURLcode CEasyURL::SetOutput(std::string &out, size_t *progress)
 {
     assert(m_Prepared);
     assert(progress);
@@ -209,7 +209,7 @@ CURLcode CEasyURL::SetOutput(std::string &out, int *progress)
 }
 
 
-CURLcode CEasyURL::SetOutput(CNBFile *out, int *progress)
+CURLcode CEasyURL::SetOutput(CNBFile *out, size_t *progress)
 {
     assert(m_Prepared);
     assert(out);
@@ -223,7 +223,7 @@ CURLcode CEasyURL::SetOutput(CNBFile *out, int *progress)
 }
 
 
-CURLcode CEasyURL::SetInput(CNBFile *in, int *progress)
+CURLcode CEasyURL::SetInput(CNBFile *in, size_t *progress)
 {
     assert(m_Prepared);
     assert(in);
@@ -231,7 +231,7 @@ CURLcode CEasyURL::SetInput(CNBFile *in, int *progress)
 
     m_Input.Type = InputReader::TypeFile;
     m_Input.File = in;
-    m_Input.Progress = progress;
+    m_Input.ProgressPtr = progress;
     m_Input.Current = 0;
     m_Input.Total = in->GetFileSize();
 
@@ -311,11 +311,11 @@ size_t CEasyURL::InternalReader(void *buffer, size_t size, size_t nmemb, void *u
             reader->Current += buffLen;
             if (reader->Total != 0)
             {
-                *reader->Progress = static_cast<int>(reader->Current * 100 / reader->Total);
+                *reader->ProgressPtr = static_cast<size_t>(reader->Current * 100 / reader->Total);
             }
             else
             {
-                *reader->Progress = 100;
+                *reader->ProgressPtr = 100;
             }
         }
     }
