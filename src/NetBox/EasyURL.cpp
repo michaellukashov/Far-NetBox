@@ -13,6 +13,8 @@ CEasyURL::CEasyURL(TTerminal *Terminal, TFileSystemIntf *FileSystem) :
     m_brackets(0),
     FDebugLevel(LOG_STATUS)
 {
+    assert(FTerminal);
+    assert(FFileSystem);
 }
 
 void CEasyURL::Init()

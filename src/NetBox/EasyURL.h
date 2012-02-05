@@ -4,6 +4,7 @@
 
 #include <curl/curl.h>
 #include "SessionInfo.h"
+#include "FileSystems.h"
 
 //---------------------------------------------------------------------------
 
@@ -51,20 +52,6 @@ public:
     }
 private:
     curl_slist *m_SList;
-};
-
-//---------------------------------------------------------------------------
-
-/** @brief interface for CURL based filesystems
-  *
-  */
-class TFileSystemIntf
-{
-public:
-    virtual ~TFileSystemIntf()
-    {}
-
-    virtual void FileTransferProgress(__int64 TransferSize, __int64 Bytes) = 0;
 };
 
 //---------------------------------------------------------------------------

@@ -46,7 +46,21 @@ struct TFileTransferData
     bool AutoResume;
 };
 //---------------------------------------------------------------------------
-class TCustomFileSystem
+
+/** @brief interface for custom filesystems
+  *
+  */
+class TFileSystemIntf
+{
+public:
+    virtual ~TFileSystemIntf()
+    {}
+
+    virtual void FileTransferProgress(__int64 TransferSize, __int64 Bytes) = 0;
+};
+
+//---------------------------------------------------------------------------
+class TCustomFileSystem : public TFileSystemIntf
 {
 public:
     explicit TCustomFileSystem()
@@ -113,6 +127,11 @@ public:
 
     // __property std::wstring CurrentDirectory = { read = GetCurrentDirectory };
     virtual std::wstring GetCurrentDirectory() = 0;
+
+public:
+    virtual void FileTransferProgress(__int64 TransferSize, __int64 Bytes)
+    {
+    }
 
 protected:
     TTerminal *FTerminal;

@@ -10,7 +10,7 @@ class TMessageQueue;
 class TiXmlElement;
 
 //---------------------------------------------------------------------------
-class TWebDAVFileSystem : public TCustomFileSystem, public TFileSystemIntf
+class TWebDAVFileSystem : public TCustomFileSystem
 {
     friend class CEasyURL;
     friend class TFileListHelper;
@@ -75,7 +75,7 @@ public:
     virtual std::wstring GetUserName();
 
 public:
-    void FileTransferProgress(__int64 TransferSize, __int64 Bytes);
+    virtual void FileTransferProgress(__int64 TransferSize, __int64 Bytes);
 
 protected:
     virtual std::wstring GetCurrentDirectory();
