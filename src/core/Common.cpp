@@ -1788,27 +1788,6 @@ int ContinueAnswer(int Answers)
     return Result;
 }
 //---------------------------------------------------------------------------
-/*
-TPasLibModule * FindModule(void * Instance)
-{
-  TPasLibModule * CurModule;
-  CurModule = reinterpret_cast<TPasLibModule*>(LibModuleList);
-
-  while (CurModule)
-  {
-    if (CurModule->Instance == Instance)
-    {
-      break;
-    }
-    else
-    {
-      CurModule = CurModule->Next;
-    }
-  }
-  return CurModule;
-}
-*/
-//---------------------------------------------------------------------------
 std::wstring LoadStr(int Ident, unsigned int MaxLength)
 {
     std::wstring Result;

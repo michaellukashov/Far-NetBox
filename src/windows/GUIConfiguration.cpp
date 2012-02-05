@@ -554,7 +554,7 @@ TGUIConfiguration::TGUIConfiguration() : TConfiguration(),
     dynamic_cast<nb::TStringList *>(FLocales)->SetSorted(true);
     dynamic_cast<nb::TStringList *>(FLocales)->SetCaseSensitive(false);
     FCopyParamList = new TCopyParamList();
-    CoreSetResourceModule(GetResourceModule());
+    CoreSetResourceModule(0);
 }
 //---------------------------------------------------------------------------
 TGUIConfiguration::~TGUIConfiguration()
@@ -889,7 +889,6 @@ void TGUIConfiguration::SetLocale(LCID value)
         if (Module != NULL)
         {
             FLocale = value;
-            SetResourceModule(Module);
         }
         else
         {
@@ -917,46 +916,8 @@ void TGUIConfiguration::SetLocaleSafe(LCID value)
         if (Module != NULL)
         {
             FLocale = value;
-            SetResourceModule(Module);
         }
     }
-}
-//---------------------------------------------------------------------------
-void TGUIConfiguration::FreeResourceModule(HANDLE Instance)
-{
-    nb::Error(SNotImplemented, 91);
-    TPasLibModule *MainModule = NULL;  // FindModule(0); // FIXME HInstance);
-    if (Instance != MainModule->Instance)
-    {
-        FreeLibrary(static_cast<HMODULE>(Instance));
-    }
-}
-//---------------------------------------------------------------------------
-HANDLE TGUIConfiguration::ChangeResourceModule(HANDLE Instance)
-{
-    nb::Error(SNotImplemented, 92);
-    if (Instance == NULL)
-    {
-        Instance = 0; // FIXME HInstance;
-    }
-    TPasLibModule *MainModule = NULL;  // FindModule(0); // FIXME HInstance);
-    HANDLE Result = MainModule->ResInstance;
-    MainModule->ResInstance = Instance;
-    CoreSetResourceModule(Instance);
-    return Result;
-}
-//---------------------------------------------------------------------------
-HANDLE TGUIConfiguration::GetResourceModule()
-{
-    return 0; // FindModule(0/*HInstance*/)->ResInstance;
-}
-//---------------------------------------------------------------------------
-void TGUIConfiguration::SetResourceModule(HANDLE Instance)
-{
-    HANDLE PrevHandle = ChangeResourceModule(Instance);
-    FreeResourceModule(PrevHandle);
-
-    DefaultLocalized();
 }
 //---------------------------------------------------------------------------
 nb::TStrings *TGUIConfiguration::GetLocales()

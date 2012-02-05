@@ -5,7 +5,6 @@
 #include "Configuration.h"
 #include "CopyParam.h"
 //---------------------------------------------------------------------------
-struct TPasLibModule;
 class TGUIConfiguration;
 enum TLogView { lvNone, lvWindow, pvPanel };
 enum TInterface { ifCommander, ifExplorer };
@@ -196,10 +195,7 @@ protected:
     virtual void LoadData(THierarchicalStorage *Storage);
     virtual HANDLE LoadNewResourceModule(LCID Locale,
                                          std::wstring *FileName = NULL);
-    HANDLE GetResourceModule();
-    virtual void SetResourceModule(HANDLE Instance);
     LCID InternalLocale();
-    void FreeResourceModule(HANDLE Instance);
     virtual bool GetRememberPassword();
     static std::wstring PropertyToKey(const std::wstring Property);
     virtual void DefaultLocalized();
@@ -209,8 +205,6 @@ public:
     TGUIConfiguration();
     virtual ~TGUIConfiguration();
     virtual void Default();
-
-    HANDLE ChangeResourceModule(HANDLE Instance);
 
     // __property bool ContinueOnError = { read = FContinueOnError, write = FContinueOnError };
     bool GetContinueOnError() { return FContinueOnError; }
