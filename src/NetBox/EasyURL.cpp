@@ -45,7 +45,6 @@ CEasyURL::~CEasyURL()
     }
 }
 
-
 bool CEasyURL::Initialize(const wchar_t *url, const wchar_t *userName,
                           const wchar_t *password)
 {
@@ -83,7 +82,6 @@ bool CEasyURL::Initialize(const wchar_t *url, const wchar_t *userName,
     return true;
 }
 
-
 bool CEasyURL::Close()
 {
     if (m_CURL)
@@ -93,7 +91,6 @@ bool CEasyURL::Close()
     m_CURL = NULL;
     return true;
 }
-
 
 CURLcode CEasyURL::Prepare(const char *path,
                            const TSessionData *Data, int LogLevel,
@@ -186,7 +183,6 @@ CURLcode CEasyURL::Prepare(const char *path,
     return urlCode;
 }
 
-
 CURLcode CEasyURL::SetSlist(CSlistURL &slist)
 {
     CURLcode urlCode = CURLE_OK;
@@ -194,7 +190,6 @@ CURLcode CEasyURL::SetSlist(CSlistURL &slist)
     CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_HTTPHEADER, static_cast<curl_slist *>(slist)));
     return urlCode;
 }
-
 
 CURLcode CEasyURL::SetOutput(std::string &out, size_t *progress)
 {
@@ -208,7 +203,6 @@ CURLcode CEasyURL::SetOutput(std::string &out, size_t *progress)
     return CURLE_OK;
 }
 
-
 CURLcode CEasyURL::SetOutput(CNBFile *out, size_t *progress)
 {
     assert(m_Prepared);
@@ -221,7 +215,6 @@ CURLcode CEasyURL::SetOutput(CNBFile *out, size_t *progress)
 
     return CURLE_OK;
 }
-
 
 CURLcode CEasyURL::SetInput(CNBFile *in, size_t *progress)
 {
@@ -243,13 +236,11 @@ CURLcode CEasyURL::SetInput(CNBFile *in, size_t *progress)
     return urlCode;
 }
 
-
 void CEasyURL::SetAbortEvent(HANDLE event)
 {
     m_Input.AbortEvent = m_Output.AbortEvent = m_ProgressInfo.AbortEvent = event;
     m_ProgressInfo.Aborted = false;
 }
-
 
 CURLcode CEasyURL::Perform()
 {
@@ -288,7 +279,6 @@ size_t CEasyURL::InternalWriter(void *buffer, size_t size, size_t nmemb, void *u
     return buffLen;
 }
 
-
 size_t CEasyURL::InternalReader(void *buffer, size_t size, size_t nmemb, void *userData)
 {
     InputReader *reader = static_cast<InputReader *>(userData);
@@ -322,7 +312,6 @@ size_t CEasyURL::InternalReader(void *buffer, size_t size, size_t nmemb, void *u
 
     return buffLen;
 }
-
 
 int CEasyURL::InternalProgress(void *userData, double dltotal, double dlnow,
     double ultotal, double ulnow)
