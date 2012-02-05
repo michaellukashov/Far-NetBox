@@ -4786,7 +4786,7 @@ void TSFTPFileSystem::CopyToLocal(nb::TStrings *FilesToCopy,
     {
         Success = false;
         FileName = FilesToCopy->GetString(Index);
-        File = (TRemoteFile *)FilesToCopy->GetObject(Index);
+        File = static_cast<TRemoteFile *>(FilesToCopy->GetObject(Index));
 
         assert(!FAvoidBusy);
         FAvoidBusy = true;
