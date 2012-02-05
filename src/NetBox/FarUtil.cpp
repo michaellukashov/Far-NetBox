@@ -176,7 +176,7 @@ std::wstring NumberToWString(unsigned long number)
 
 void CheckAbortEvent(HANDLE *AbortEvent)
 {
-    //Very-very bad architecture... TODO!
+    assert(AbortEvent);
     static HANDLE stdIn = GetStdHandle(STD_INPUT_HANDLE);
     INPUT_RECORD rec;
     DWORD readCount = 0;

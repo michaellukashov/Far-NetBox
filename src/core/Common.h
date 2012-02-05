@@ -106,8 +106,6 @@ void AddToList(std::wstring &List, const std::wstring Value, char Delimiter);
 bool Is2000();
 bool IsWin7();
 bool IsExactly2008R2();
-struct TPasLibModule;
-TPasLibModule *FindModule(void *Instance);
 __int64 Round(double Number);
 //---------------------------------------------------------------------------
 // typedef void (* TProcessLocalFileEvent)
@@ -191,16 +189,6 @@ public:
 
 private:
     TCriticalSection *FCriticalSection;
-};
-//---------------------------------------------------------------------------
-// C++B TLibModule is invalid (differs from PAS definition)
-struct TPasLibModule
-{
-    TPasLibModule *Next;
-    void *Instance;
-    void *CodeInstance;
-    void *DataInstance;
-    void *ResInstance;
 };
 //---------------------------------------------------------------------------
 extern int Win32Platform;

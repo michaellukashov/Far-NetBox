@@ -3,24 +3,29 @@
 #include "SessionData.h"
 #include "Terminal.h"
 
-CEasyURL::CEasyURL(TTerminal *Terminal) :
+CEasyURL::CEasyURL(TTerminal *Terminal, TFileSystemIntf *FileSystem) :
     FTerminal(Terminal),
+    FFileSystem(FileSystem),
     m_CURL(NULL),
     m_Prepared(false),
     m_regex(INVALID_HANDLE_VALUE),
     m_match(NULL),
     m_brackets(0),
-    FDebugLevel(LOG_STATUS)
+    FDebugLevel(LOG_STATUS),
+    FAbortEvent(0)
 {
+    assert(FTerminal);
+    assert(FFileSystem);
 }
 
 void CEasyURL::Init()
 {
-    m_Input.AbortEvent = m_Output.AbortEvent = m_Progress.AbortEvent = NULL;
+    m_Input.AbortEvent = m_Output.AbortEvent = m_ProgressInfo.AbortEvent = NULL;
     m_Input.Type = InputReader::None;
     m_Output.Type = OutputWriter::None;
-    m_Progress.ProgressPtr = NULL;
-    m_Progress.Aborted = false;
+    m_ProgressInfo.EasyURLPtr = this;
+    m_ProgressInfo.ProgressPtr = NULL;
+    m_ProgressInfo.Aborted = false;
     // init regex
     if (FarPlugin->GetStartupInfo()->RegExpControl(0, RECTL_CREATE, 0, reinterpret_cast<void *>(&m_regex)))
     {
@@ -44,7 +49,6 @@ CEasyURL::~CEasyURL()
         FarPlugin->GetStartupInfo()->RegExpControl(m_regex, RECTL_FREE, 0, NULL);
     }
 }
-
 
 bool CEasyURL::Initialize(const wchar_t *url, const wchar_t *userName,
                           const wchar_t *password)
@@ -83,7 +87,6 @@ bool CEasyURL::Initialize(const wchar_t *url, const wchar_t *userName,
     return true;
 }
 
-
 bool CEasyURL::Close()
 {
     if (m_CURL)
@@ -91,9 +94,12 @@ bool CEasyURL::Close()
         curl_easy_cleanup(m_CURL);
     }
     m_CURL = NULL;
+    if (FAbortEvent)
+    {
+        ::CloseHandle(FAbortEvent);
+    }
     return true;
 }
-
 
 CURLcode CEasyURL::Prepare(const char *path,
                            const TSessionData *Data, int LogLevel,
@@ -106,33 +112,39 @@ CURLcode CEasyURL::Prepare(const char *path,
     curl_easy_reset(m_CURL);
     m_Output.Type = OutputWriter::None;
     m_Input.Type = InputReader::None;
-    m_Progress.ProgressPtr = NULL;
+    m_ProgressInfo.ProgressPtr = NULL;
+    if (FAbortEvent)
+    {
+        ::CloseHandle(FAbortEvent);
+    }
+    FAbortEvent = CreateEvent(NULL, true, false, NULL);
+    SetAbortEvent(FAbortEvent);
 
     CURLcode urlCode = CURLE_OK;
 
     const std::string url = m_TopURL + (path ? path : "");
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_URL, url.c_str()));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_URL, url.c_str()));
     if (handleTimeout)
     {
-        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_TIMEOUT, Data->GetTimeout()));
+        CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_TIMEOUT, Data->GetTimeout()));
     }
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_WRITEFUNCTION, CEasyURL::InternalWriter));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_WRITEDATA, &m_Output));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_NOPROGRESS, 0L));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROGRESSFUNCTION, CEasyURL::InternalProgress));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROGRESSDATA, &m_Progress));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_WRITEFUNCTION, CEasyURL::InternalWriter));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_WRITEDATA, &m_Output));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_NOPROGRESS, 0L));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROGRESSFUNCTION, CEasyURL::InternalProgress));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROGRESSDATA, &m_ProgressInfo));
 
     if (LogLevel >= 1)
     {
-        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_DEBUGFUNCTION, CEasyURL::InternalDebug));
-        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_DEBUGDATA, this));
-        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_VERBOSE, TRUE));
+        CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_DEBUGFUNCTION, CEasyURL::InternalDebug));
+        CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_DEBUGDATA, this));
+        CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_VERBOSE, TRUE));
     }
 
     if (!m_UserName.empty() || !m_Password.empty())
     {
-        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_USERNAME, m_UserName.c_str()));
-        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PASSWORD, m_Password.c_str()));
+        CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_USERNAME, m_UserName.c_str()));
+        CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PASSWORD, m_Password.c_str()));
     }
     TProxyMethod ProxyMethod = Data->GetProxyMethod();
     if (ProxyMethod != pmNone)
@@ -165,18 +177,18 @@ CURLcode CEasyURL::Prepare(const char *path,
             proxy += ":";
             proxy += NumberToText(port);
         }
-        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXY, proxy.c_str()));
-        // CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYPORT, port));
-        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYTYPE, proxy_type));
+        CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXY, proxy.c_str()));
+        // CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYPORT, port));
+        CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYTYPE, proxy_type));
 
         std::string login = nb::W2MB(Data->GetProxyUsername().c_str());
         std::string password = nb::W2MB(Data->GetProxyPassword().c_str());
         if (!login.empty())
         {
-            CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYUSERNAME, login.c_str()));
+            CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYUSERNAME, login.c_str()));
             if (!password.empty())
             {
-                CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYPASSWORD, password.c_str()));
+                CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYPASSWORD, password.c_str()));
             }
         }
     }
@@ -186,30 +198,27 @@ CURLcode CEasyURL::Prepare(const char *path,
     return urlCode;
 }
 
-
 CURLcode CEasyURL::SetSlist(CSlistURL &slist)
 {
     CURLcode urlCode = CURLE_OK;
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_POSTQUOTE, static_cast<curl_slist *>(slist)));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_HTTPHEADER, static_cast<curl_slist *>(slist)));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_POSTQUOTE, static_cast<curl_slist *>(slist)));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_HTTPHEADER, static_cast<curl_slist *>(slist)));
     return urlCode;
 }
 
-
-CURLcode CEasyURL::SetOutput(std::string &out, int *progress)
+CURLcode CEasyURL::SetOutput(std::string &out, size_t *progress)
 {
     assert(m_Prepared);
     assert(progress);
 
     m_Output.Type = OutputWriter::TypeString;
     m_Output.String = &out;
-    m_Progress.ProgressPtr = progress;
+    m_ProgressInfo.ProgressPtr = progress;
 
     return CURLE_OK;
 }
 
-
-CURLcode CEasyURL::SetOutput(CNBFile *out, int *progress)
+CURLcode CEasyURL::SetOutput(CNBFile *out, size_t *progress)
 {
     assert(m_Prepared);
     assert(out);
@@ -217,13 +226,12 @@ CURLcode CEasyURL::SetOutput(CNBFile *out, int *progress)
 
     m_Output.Type = OutputWriter::TypeFile;
     m_Output.File = out;
-    m_Progress.ProgressPtr = progress;
+    m_ProgressInfo.ProgressPtr = progress;
 
     return CURLE_OK;
 }
 
-
-CURLcode CEasyURL::SetInput(CNBFile *in, int *progress)
+CURLcode CEasyURL::SetInput(CNBFile *in, size_t *progress)
 {
     assert(m_Prepared);
     assert(in);
@@ -231,25 +239,23 @@ CURLcode CEasyURL::SetInput(CNBFile *in, int *progress)
 
     m_Input.Type = InputReader::TypeFile;
     m_Input.File = in;
-    m_Input.Progress = progress;
+    m_Input.ProgressPtr = progress;
     m_Input.Current = 0;
     m_Input.Total = in->GetFileSize();
 
     CURLcode urlCode = CURLE_OK;
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_UPLOAD, 1L));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_READFUNCTION, CEasyURL::InternalReader));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_READDATA, &m_Input));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_INFILESIZE_LARGE, static_cast<curl_off_t>(in->GetFileSize())));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_UPLOAD, 1L));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_READFUNCTION, CEasyURL::InternalReader));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_READDATA, &m_Input));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_INFILESIZE_LARGE, static_cast<curl_off_t>(in->GetFileSize())));
     return urlCode;
 }
 
-
 void CEasyURL::SetAbortEvent(HANDLE event)
 {
-    m_Input.AbortEvent = m_Output.AbortEvent = m_Progress.AbortEvent = event;
-    m_Progress.Aborted = false;
+    m_Input.AbortEvent = m_Output.AbortEvent = m_ProgressInfo.AbortEvent = event;
+    m_ProgressInfo.Aborted = false;
 }
-
 
 CURLcode CEasyURL::Perform()
 {
@@ -288,7 +294,6 @@ size_t CEasyURL::InternalWriter(void *buffer, size_t size, size_t nmemb, void *u
     return buffLen;
 }
 
-
 size_t CEasyURL::InternalReader(void *buffer, size_t size, size_t nmemb, void *userData)
 {
     InputReader *reader = static_cast<InputReader *>(userData);
@@ -311,11 +316,11 @@ size_t CEasyURL::InternalReader(void *buffer, size_t size, size_t nmemb, void *u
             reader->Current += buffLen;
             if (reader->Total != 0)
             {
-                *reader->Progress = static_cast<int>(reader->Current * 100 / reader->Total);
+                *reader->ProgressPtr = static_cast<size_t>(reader->Current * 100 / reader->Total);
             }
             else
             {
-                *reader->Progress = 100;
+                *reader->ProgressPtr = 100;
             }
         }
     }
@@ -323,24 +328,46 @@ size_t CEasyURL::InternalReader(void *buffer, size_t size, size_t nmemb, void *u
     return buffLen;
 }
 
-
-int CEasyURL::InternalProgress(void *userData, double dltotal, double dlnow, double /*ultotal*/, double /*ulnow*/)
+int CEasyURL::InternalProgress(void *userData, double dltotal, double dlnow,
+    double ultotal, double ulnow)
 {
-    Progress *prg = static_cast<Progress *>(userData);
-    assert(prg);
+    // DEBUG_PRINTF(L"dlnow = %.2f, dltotal = %.2f, ulnow = %.2f, ultotal = %.2f", dlnow, dltotal, ulnow, ultotal);
+    TCURLProgressInfo *progress = static_cast<TCURLProgressInfo *>(userData);
+    assert(progress);
+    CEasyURL *EasyURL = progress->EasyURLPtr;
+    assert(EasyURL);
 
-    ::CheckAbortEvent(&prg->AbortEvent);
+    ::CheckAbortEvent(&progress->AbortEvent);
 
-    if (prg->AbortEvent && WaitForSingleObject(prg->AbortEvent, 0) == WAIT_OBJECT_0)
+    if (progress->AbortEvent && WaitForSingleObject(progress->AbortEvent, 0) == WAIT_OBJECT_0)
     {
-        prg->Aborted = true;
+        progress->Aborted = true;
         return CURLE_ABORTED_BY_CALLBACK;
     }
 
-    if (prg->ProgressPtr && dltotal > 0)
+    if (dltotal > 0)
     {
         const double percent = dlnow * 100.0 / dltotal;
-        *prg->ProgressPtr = static_cast<int>(percent);
+        if (progress->ProgressPtr)
+        {
+            *progress->ProgressPtr = static_cast<size_t>(percent);
+        }
+        __int64 Bytes = static_cast<__int64>(dlnow);
+        __int64 TransferSize = static_cast<__int64>(dltotal);
+        assert(EasyURL->GetFileSystem());
+        EasyURL->GetFileSystem()->FileTransferProgress(TransferSize, Bytes);
+    }
+    else if (ultotal > 0)
+    {
+        const double percent = ulnow * 100.0 / ultotal;
+        if (progress->ProgressPtr)
+        {
+            *progress->ProgressPtr = static_cast<size_t>(percent);
+        }
+        __int64 Bytes = static_cast<__int64>(ulnow);
+        __int64 TransferSize = static_cast<__int64>(ultotal);
+        assert(EasyURL->GetFileSystem());
+        EasyURL->GetFileSystem()->FileTransferProgress(TransferSize, Bytes);
     }
     return CURLE_OK;
 }
