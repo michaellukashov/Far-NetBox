@@ -8,7 +8,6 @@ class TCURLIntf;
 struct TListDataEntry;
 class TMessageQueue;
 class TiXmlElement;
-struct TFileTransferData;
 //---------------------------------------------------------------------------
 class TWebDAVFileSystem : public TCustomFileSystem
 {

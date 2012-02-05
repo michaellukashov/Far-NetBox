@@ -13,7 +13,6 @@ class TCriticalSection;
 class TMessageQueue;
 struct TOverwriteFileParams;
 struct TListDataEntry;
-struct TFileTransferData;
 struct TFtpsCertificateData;
 //---------------------------------------------------------------------------
 class TFTPFileSystem : public TCustomFileSystem

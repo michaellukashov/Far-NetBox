@@ -149,24 +149,6 @@ class TMessageQueue : public std::list<std::pair<WPARAM, LPARAM> >
 {
 };
 //---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
-struct TFileTransferData
-{
-    TFileTransferData()
-    {
-        Params = 0;
-        AutoResume = false;
-        OverwriteResult = -1;
-        CopyParam = NULL;
-    }
-
-    std::wstring FileName;
-    int Params;
-    bool AutoResume;
-    int OverwriteResult;
-    const TCopyParamType *CopyParam;
-};
-//---------------------------------------------------------------------------
 const int tfFirstLevel = 0x01;
 const int tfAutoResume = 0x02;
 const wchar_t CertificateStorageKey[] = L"FtpsCertificates";

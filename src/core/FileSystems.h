@@ -29,6 +29,23 @@ const int dfNoRecursive = 0x01;
 const int dfAlternative = 0x02;
 const int dfForceDelete = 0x04;
 //---------------------------------------------------------------------------
+struct TFileTransferData
+{
+    TFileTransferData()
+    {
+        CopyParam = NULL;
+        Params = 0;
+        OverwriteResult = -1;
+        AutoResume = false;
+    }
+
+    std::wstring FileName;
+    const TCopyParamType *CopyParam;
+    int Params;
+    int OverwriteResult;
+    bool AutoResume;
+};
+//---------------------------------------------------------------------------
 class TCustomFileSystem
 {
 public:

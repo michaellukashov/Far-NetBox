@@ -52,23 +52,6 @@ const int tfAutoResume = 0x02;
 //===========================================================================
 
 class TSessionData;
-//===========================================================================
-struct TFileTransferData
-{
-    TFileTransferData()
-    {
-        Params = 0;
-        AutoResume = false;
-        OverwriteResult = -1;
-        CopyParam = NULL;
-    }
-
-    std::wstring FileName;
-    const TCopyParamType *CopyParam;
-    int Params;
-    int OverwriteResult;
-    bool AutoResume;
-};
 
 //---------------------------------------------------------------------------
 struct TSinkFileParams
@@ -1979,7 +1962,6 @@ void TWebDAVFileSystem::FileTransfer(const std::wstring FileName,
         if (Get)
         {
             bool res = WebDAVGetFile(FullRemoteFileName.c_str(), LocalFile.c_str(), Size, errorInfo);
-            HandleTransferStatus(true, Size, Size, -1, -1, -1, -1, true);
             if (!res)
             {
                 FFileTransferAbort = ftaSkip;
