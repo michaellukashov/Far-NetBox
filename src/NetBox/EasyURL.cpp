@@ -16,11 +16,11 @@ CEasyURL::CEasyURL(TTerminal *Terminal) :
 
 void CEasyURL::Init()
 {
-    m_Input.AbortEvent = m_Output.AbortEvent = m_Progress.AbortEvent = NULL;
+    m_Input.AbortEvent = m_Output.AbortEvent = m_ProgressInfo.AbortEvent = NULL;
     m_Input.Type = InputReader::None;
     m_Output.Type = OutputWriter::None;
-    m_Progress.ProgressPtr = NULL;
-    m_Progress.Aborted = false;
+    m_ProgressInfo.ProgressPtr = NULL;
+    m_ProgressInfo.Aborted = false;
     // init regex
     if (FarPlugin->GetStartupInfo()->RegExpControl(0, RECTL_CREATE, reinterpret_cast<LONG_PTR>(&m_regex)))
     {
@@ -106,7 +106,7 @@ CURLcode CEasyURL::Prepare(const char *path,
     curl_easy_reset(m_CURL);
     m_Output.Type = OutputWriter::None;
     m_Input.Type = InputReader::None;
-    m_Progress.ProgressPtr = NULL;
+    m_ProgressInfo.ProgressPtr = NULL;
 
     CURLcode urlCode = CURLE_OK;
 
@@ -120,7 +120,7 @@ CURLcode CEasyURL::Prepare(const char *path,
     CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_WRITEDATA, &m_Output));
     CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_NOPROGRESS, 0L));
     CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROGRESSFUNCTION, CEasyURL::InternalProgress));
-    CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROGRESSDATA, &m_Progress));
+    CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROGRESSDATA, &m_ProgressInfo));
 
     if (LogLevel >= 1)
     {
@@ -203,7 +203,7 @@ CURLcode CEasyURL::SetOutput(std::string &out, size_t *progress)
 
     m_Output.Type = OutputWriter::TypeString;
     m_Output.String = &out;
-    m_Progress.ProgressPtr = progress;
+    m_ProgressInfo.ProgressPtr = progress;
 
     return CURLE_OK;
 }
@@ -217,7 +217,7 @@ CURLcode CEasyURL::SetOutput(CNBFile *out, size_t *progress)
 
     m_Output.Type = OutputWriter::TypeFile;
     m_Output.File = out;
-    m_Progress.ProgressPtr = progress;
+    m_ProgressInfo.ProgressPtr = progress;
 
     return CURLE_OK;
 }
@@ -246,8 +246,8 @@ CURLcode CEasyURL::SetInput(CNBFile *in, size_t *progress)
 
 void CEasyURL::SetAbortEvent(HANDLE event)
 {
-    m_Input.AbortEvent = m_Output.AbortEvent = m_Progress.AbortEvent = event;
-    m_Progress.Aborted = false;
+    m_Input.AbortEvent = m_Output.AbortEvent = m_ProgressInfo.AbortEvent = event;
+    m_ProgressInfo.Aborted = false;
 }
 
 

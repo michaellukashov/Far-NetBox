@@ -173,7 +173,7 @@ public:
 
     virtual bool Aborted() const
     {
-        return m_Progress.Aborted;
+        return m_ProgressInfo.Aborted;
     }
 
     virtual void SetDebugLevel(TLogLevel Level) { FDebugLevel = Level; }
@@ -245,7 +245,7 @@ private:
         HANDLE AbortEvent;
         bool Aborted;
     };
-    TCURLProgressInfo m_Progress;
+    TCURLProgressInfo m_ProgressInfo;
     HANDLE m_regex;
     RegExpMatch *m_match;
     int m_brackets;
