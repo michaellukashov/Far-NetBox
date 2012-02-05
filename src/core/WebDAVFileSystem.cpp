@@ -188,6 +188,8 @@ void TWebDAVFileSystem::Open()
             {
             default:
             case 0:
+                LogLevel = TCURLIntf::LOG_ERROR;
+                break;
             case 1:
                 LogLevel = TCURLIntf::LOG_WARNING;
                 break;
