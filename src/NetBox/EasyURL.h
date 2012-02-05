@@ -239,13 +239,13 @@ private:
     InputReader m_Input;
 
     /// Progress description
-    struct Progress
+    struct TCURLProgressInfo
     {
         size_t *ProgressPtr;
         HANDLE AbortEvent;
         bool Aborted;
     };
-    Progress m_Progress;
+    TCURLProgressInfo m_Progress;
     HANDLE m_regex;
     RegExpMatch *m_match;
     int m_brackets;

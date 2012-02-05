@@ -324,10 +324,11 @@ size_t CEasyURL::InternalReader(void *buffer, size_t size, size_t nmemb, void *u
 }
 
 
-int CEasyURL::InternalProgress(void *userData, double dltotal, double dlnow, double /*ultotal*/, double /*ulnow*/)
+int CEasyURL::InternalProgress(void *userData, double dltotal, double dlnow,
+    double ultotal, double ulnow)
 {
     DEBUG_PRINTF(L"dlnow = %.2f, dltotal = %.2f, ulnow = %.2f, ultotal = %.2f", dlnow, dltotal, ulnow, ultotal);
-    Progress *progress = static_cast<Progress *>(userData);
+    TCURLProgressInfo *progress = static_cast<TCURLProgressInfo *>(userData);
     assert(progress);
 
     ::CheckAbortEvent(&progress->AbortEvent);
