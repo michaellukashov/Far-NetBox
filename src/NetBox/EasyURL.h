@@ -18,8 +18,8 @@ enum ProxyTypes
 class TSessionData;
 class TTerminal;
 
-/**
- * CURL slist wrapper
+/** @brief CURL slist wrapper
+ *
  */
 class CSlistURL
 {
@@ -64,12 +64,11 @@ public:
         LOG_INFO = 7,
         LOG_DEBUG = 8
     };
-    /**
-     * Initialize easy curl
-     * \param url URL to connect
-     * \param userName user name
-     * \param password password
-     * \return false if error
+    /** @brief Initialize easy curl
+     *  @param $url URL to connect
+     *  @param $userName user name
+     *  @param $password password
+     *  @return false if error
      */
     virtual bool Initialize(const wchar_t *url, const wchar_t *userName,
         const wchar_t *password) = 0;
@@ -79,62 +78,54 @@ public:
      */
     virtual bool Close() = 0;
 
-    /**
-     * Prepare easy curl state
-     * \param path requested path
-     * \param handleTimeout true to handle timeout
-     * \return curl status
+    /** @brief Prepare easy curl state
+     *  @param $path requested path
+     *  @param $handleTimeout true to handle timeout
+     *  @return curl status
      */
     virtual CURLcode Prepare(const char *path,
         const TSessionData *Data,
         int LogLevel, const bool handleTimeout = true) = 0;
 
-    /**
-     * Set slist
-     * \param slist slist object
-     * \return curl status
+    /** @brief Set slist
+     *  @param $slist slist object
+     *  @return curl status
      */
     virtual CURLcode SetSlist(CSlistURL &slist) = 0;
 
-    /**
-     * Set output as std::string buffer
-     * \param out output std::string buffer
-     * \param progress pointer to variable to save progress percent of the current operation
-     * \return curl status
+    /** @brief Set output as std::string buffer
+     *  @param $out output std::string buffer
+     *  @param $progress pointer to variable to save progress percent of the current operation
+     *  @return curl status
      */
     virtual CURLcode SetOutput(std::string &out, int *progress) = 0;
 
-    /**
-     * Set output as file
-     * \param out output file
-     * \param progress pointer to variable to save progress percent of the current operation
-     * \return curl status
+    /** @brief Set output as file
+     *  @param $out output file
+     *  @param $progress pointer to variable to save progress percent of the current operation
+     *  @return curl status
      */
     virtual CURLcode SetOutput(CNBFile *out, int *progress) = 0;
 
-    /**
-     * Set input as file (upload operations)
-     * \param in input file
-     * \param progress pointer to variable to save progress percent of the current operation
-     * \return curl status
+    /** @brief Set input as file (upload operations)
+     *  @param $in input file
+     *  @param $progress pointer to variable to save progress percent of the current operation
+     *  @return curl status
      */
     virtual CURLcode SetInput(CNBFile *in, int *progress) = 0;
 
-    /**
-     * Set abort event handle
-     * \param event abort event handle
+    /** @brief Set abort event handle
+     *  @param $event abort event handle
      */
     virtual void SetAbortEvent(HANDLE event) = 0;
 
-    /**
-     * Perform request
-     * \return curl status
+    /** @brief Perform request
+     *  @return curl status
      */
     virtual CURLcode Perform() = 0;
 
-    /**
-     * Get top URL
-     * \return top URL
+    /** @brief Get top URL
+     *  @return top URL
      */
     virtual const char *GetTopURL() const = 0;
     // virtual operator CURL *() = 0;
@@ -144,8 +135,7 @@ public:
     virtual CURL *GetCURL() = 0;
 };
 
-/**
- * CURL easy wrapper
+/** @brief CURL easy wrapper
  */
 class CEasyURL : public TCURLIntf
 {
@@ -154,77 +144,67 @@ public:
     virtual void Init();
     virtual ~CEasyURL();
 
-    /**
-     * Initialize easy curl
-     * \param url URL to connect
-     * \param userName user name
-     * \param password password
-     * \return false if error
+    /** @brief Initialize easy curl
+     *  @param $url URL to connect
+     *  @param $userName user name
+     *  @param $password password
+     *  @return false if error
      */
     virtual bool Initialize(const wchar_t *url, const wchar_t *userName,
         const wchar_t *password);
 
-    /**
-     * Close curl
+    /** @brief Close curl
      */
     virtual bool Close();
 
-    /**
-     * Prepare easy curl state
-     * \param path requested path
-     * \param handleTimeout true to handle timeout
-     * \return curl status
+    /** @brief Prepare easy curl state
+     *  @param $path requested path
+     *  @param $handleTimeout true to handle timeout
+     *  @return curl status
      */
     virtual CURLcode Prepare(const char *path,
         const TSessionData *Data,
         int LogLevel, const bool handleTimeout = true);
 
-    /**
-     * Set slist
-     * \param slist slist object
-     * \return curl status
+    /** @brief Set slist
+     *  @param $slist slist object
+     *  @return curl status
      */
     virtual CURLcode SetSlist(CSlistURL &slist);
 
-    /**
-     * Set output as std::string buffer
-     * \param out output std::string buffer
-     * \param progress pointer to variable to save progress percent of the current operation
-     * \return curl status
+    /** @brief Set output as std::string buffer
+     *  @param $out output std::string buffer
+     *  @param $progress pointer to variable to save progress percent of the current operation
+     *  @return curl status
      */
     virtual CURLcode SetOutput(std::string &out, int *progress);
 
-    /**
-     * Set output as file
-     * \param out output file
-     * \param progress pointer to variable to save progress percent of the current operation
-     * \return curl status
+    /** @brief Set output as file
+     *  @param $out output file
+     *  @param $progress pointer to variable to save progress percent of the current operation
+     *  @return curl status
      */
     virtual CURLcode SetOutput(CNBFile *out, int *progress);
 
-    /**
-     * Set input as file (upload operations)
-     * \param in input file
-     * \param progress pointer to variable to save progress percent of the current operation
-     * \return curl status
+    /** @brief Set input as file (upload operations)
+     *  @param $in input file
+     *  @param $progress pointer to variable to save progress percent of the current operation
+     *  @return curl status
      */
     virtual CURLcode SetInput(CNBFile *in, int *progress);
 
-    /**
-     * Set abort event handle
-     * \param event abort event handle
+    /** @brief Set abort event handle
+     *  @param $event abort event handle
      */
     virtual void SetAbortEvent(HANDLE event);
 
-    /**
-     * Perform request
-     * \return curl status
+    /** @brief Perform request
+     *  @return curl status
      */
     virtual CURLcode Perform();
 
-    /**
-     * Get top URL
-     * \return top URL
+    /** @brief Get top URL
+     *  @return top URL
      */
     virtual const char *GetTopURL() const
     {
@@ -252,13 +232,13 @@ private:
     int DebugOutput(TLogLineType type, const char *data, size_t size);
 
 private:
-    //Internal reader callback (see libcurl docs)
+    /// Internal reader callback (see libcurl docs)
     static size_t InternalReader(void *buffer, size_t size, size_t nmemb, void *userData);
 
-    //Internal writer callback (see libcurl docs)
+    /// Internal writer callback (see libcurl docs)
     static size_t InternalWriter(void *buffer, size_t size, size_t nmemb, void *userData);
 
-    //Internal progress counter callback (see libcurl docs)
+    /// Internal progress counter callback (see libcurl docs)
     static int InternalProgress(void *userData, double dltotal, double dlnow, double ultotal, double ulnow);
 
     static int InternalDebug(CURL *handle, curl_infotype type,
@@ -268,13 +248,13 @@ private:
 private:
     TTerminal *FTerminal;
     CURL *m_CURL; ///< CURL
-    bool m_Prepared; ///< Preapre statement flag
+    bool m_Prepared; ///< Prepare statement flag
 
     std::string m_TopURL; ///< Top URL (ftp://host:21)
     std::string m_UserName; ///< User name
     std::string m_Password; ///< Password
 
-    //! Output writer description
+    /// Output writer description
     struct OutputWriter
     {
         enum OutputWriterType
@@ -292,13 +272,13 @@ private:
     };
     OutputWriter m_Output;
 
-    //! Input reader description
+    /// Input reader description
     struct InputReader
     {
         unsigned __int64 Current;
         unsigned __int64 Total;
-        CNBFile  *File;
-        int    *Progress;
+        CNBFile *File;
+        int *Progress;
         HANDLE AbortEvent;
         enum InputReaderType
         {
@@ -308,11 +288,11 @@ private:
     };
     InputReader m_Input;
 
-    //! Progress description
+    /// Progress description
     struct Progress
     {
         int *ProgressPtr;
-        HANDLE  AbortEvent;
+        HANDLE AbortEvent;
         bool Aborted;
     };
     Progress m_Progress;
