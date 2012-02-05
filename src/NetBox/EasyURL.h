@@ -144,68 +144,18 @@ public:
     virtual void Init();
     virtual ~CEasyURL();
 
-    /** @brief Initialize easy curl
-     *  @param $url URL to connect
-     *  @param $userName user name
-     *  @param $password password
-     *  @return false if error
-     */
     virtual bool Initialize(const wchar_t *url, const wchar_t *userName,
         const wchar_t *password);
-
-    /** @brief Close curl
-     */
     virtual bool Close();
-
-    /** @brief Prepare easy curl state
-     *  @param $path requested path
-     *  @param $handleTimeout true to handle timeout
-     *  @return curl status
-     */
     virtual CURLcode Prepare(const char *path,
         const TSessionData *Data,
         int LogLevel, const bool handleTimeout = true);
-
-    /** @brief Set slist
-     *  @param $slist slist object
-     *  @return curl status
-     */
     virtual CURLcode SetSlist(CSlistURL &slist);
-
-    /** @brief Set output as std::string buffer
-     *  @param $out output std::string buffer
-     *  @param $progress pointer to variable to save progress percent of the current operation
-     *  @return curl status
-     */
     virtual CURLcode SetOutput(std::string &out, size_t *progress);
-
-    /** @brief Set output as file
-     *  @param $out output file
-     *  @param $progress pointer to variable to save progress percent of the current operation
-     *  @return curl status
-     */
     virtual CURLcode SetOutput(CNBFile *out, size_t *progress);
-
-    /** @brief Set input as file (upload operations)
-     *  @param $in input file
-     *  @param $progress pointer to variable to save progress percent of the current operation
-     *  @return curl status
-     */
     virtual CURLcode SetInput(CNBFile *in, size_t *progress);
-
-    /** @brief Set abort event handle
-     *  @param $event abort event handle
-     */
     virtual void SetAbortEvent(HANDLE event);
-
-    /** @brief Perform request
-     *  @return curl status
-     */
     virtual CURLcode Perform();
-
-    /** @brief Get top URL
-     *  @return top URL
-     */
     virtual const char *GetTopURL() const
     {
         return m_TopURL.c_str();
