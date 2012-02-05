@@ -2121,130 +2121,130 @@ std::wstring TWebDAVFileSystem::GetBadResponseInfo(const int code) const
     const wchar_t *descr = NULL;
     switch (code)
     {
-    case HTTP_STATUS_CONTINUE           :
+    case HTTP_STATUS_CONTINUE:
         descr = L"OK to continue with request";
         break;
-    case HTTP_STATUS_SWITCH_PROTOCOLS   :
+    case HTTP_STATUS_SWITCH_PROTOCOLS:
         descr = L"Server has switched protocols in upgrade header";
         break;
-    case HTTP_STATUS_OK                 :
+    case HTTP_STATUS_OK:
         descr = L"Request completed";
         break;
-    case HTTP_STATUS_CREATED            :
+    case HTTP_STATUS_CREATED:
         descr = L"Object created, reason = new URI";
         break;
-    case HTTP_STATUS_ACCEPTED           :
+    case HTTP_STATUS_ACCEPTED:
         descr = L"Async completion (TBS)";
         break;
-    case HTTP_STATUS_PARTIAL            :
+    case HTTP_STATUS_PARTIAL:
         descr = L"Partial completion";
         break;
-    case HTTP_STATUS_NO_CONTENT         :
+    case HTTP_STATUS_NO_CONTENT:
         descr = L"No info to return";
         break;
-    case HTTP_STATUS_RESET_CONTENT      :
+    case HTTP_STATUS_RESET_CONTENT:
         descr = L"Request completed, but clear form";
         break;
-    case HTTP_STATUS_PARTIAL_CONTENT    :
+    case HTTP_STATUS_PARTIAL_CONTENT:
         descr = L"Partial GET furfilled";
         break;
     case HTTP_STATUS_WEBDAV_MULTI_STATUS:
         descr = L"WebDAV Multi-Status";
         break;
-    case HTTP_STATUS_AMBIGUOUS          :
+    case HTTP_STATUS_AMBIGUOUS:
         descr = L"Server couldn't decide what to return";
         break;
-    case HTTP_STATUS_MOVED              :
+    case HTTP_STATUS_MOVED:
         descr = L"Object permanently moved";
         break;
-    case HTTP_STATUS_REDIRECT           :
+    case HTTP_STATUS_REDIRECT:
         descr = L"Object temporarily moved";
         break;
-    case HTTP_STATUS_REDIRECT_METHOD    :
+    case HTTP_STATUS_REDIRECT_METHOD:
         descr = L"Redirection w/ new access method";
         break;
-    case HTTP_STATUS_NOT_MODIFIED       :
+    case HTTP_STATUS_NOT_MODIFIED:
         descr = L"If-modified-since was not modified";
         break;
-    case HTTP_STATUS_USE_PROXY          :
+    case HTTP_STATUS_USE_PROXY:
         descr = L"Redirection to proxy, location header specifies proxy to use";
         break;
     case HTTP_STATUS_REDIRECT_KEEP_VERB :
         descr = L"HTTP/1.1: keep same verb";
         break;
-    case HTTP_STATUS_BAD_REQUEST        :
+    case HTTP_STATUS_BAD_REQUEST:
         descr = L"Invalid syntax";
         break;
-    case HTTP_STATUS_DENIED             :
+    case HTTP_STATUS_DENIED:
         descr = L"Unauthorized";
         break;
-    case HTTP_STATUS_PAYMENT_REQ        :
+    case HTTP_STATUS_PAYMENT_REQ:
         descr = L"Payment required";
         break;
-    case HTTP_STATUS_FORBIDDEN          :
+    case HTTP_STATUS_FORBIDDEN:
         descr = L"Request forbidden";
         break;
-    case HTTP_STATUS_NOT_FOUND          :
+    case HTTP_STATUS_NOT_FOUND:
         descr = L"Object not found";
         break;
-    case HTTP_STATUS_BAD_METHOD         :
+    case HTTP_STATUS_BAD_METHOD:
         descr = L"Method is not allowed";
         break;
-    case HTTP_STATUS_NONE_ACCEPTABLE    :
+    case HTTP_STATUS_NONE_ACCEPTABLE:
         descr = L"No response acceptable to client found";
         break;
-    case HTTP_STATUS_PROXY_AUTH_REQ     :
+    case HTTP_STATUS_PROXY_AUTH_REQ:
         descr = L"Proxy authentication required";
         break;
-    case HTTP_STATUS_REQUEST_TIMEOUT    :
+    case HTTP_STATUS_REQUEST_TIMEOUT:
         descr = L"Server timed out waiting for request";
         break;
-    case HTTP_STATUS_CONFLICT           :
+    case HTTP_STATUS_CONFLICT:
         descr = L"User should resubmit with more info";
         break;
-    case HTTP_STATUS_GONE               :
+    case HTTP_STATUS_GONE:
         descr = L"The resource is no longer available";
         break;
-    case HTTP_STATUS_LENGTH_REQUIRED    :
+    case HTTP_STATUS_LENGTH_REQUIRED:
         descr = L"The server refused to accept request w/o a length";
         break;
-    case HTTP_STATUS_PRECOND_FAILED     :
+    case HTTP_STATUS_PRECOND_FAILED:
         descr = L"Precondition given in request failed";
         break;
-    case HTTP_STATUS_REQUEST_TOO_LARGE  :
+    case HTTP_STATUS_REQUEST_TOO_LARGE:
         descr = L"Request entity was too large";
         break;
-    case HTTP_STATUS_URI_TOO_LONG       :
+    case HTTP_STATUS_URI_TOO_LONG:
         descr = L"Request URI too long";
         break;
-    case HTTP_STATUS_UNSUPPORTED_MEDIA  :
+    case HTTP_STATUS_UNSUPPORTED_MEDIA:
         descr = L"Unsupported media type";
         break;
-    case 416                            :
+    case 416:
         descr = L"Requested Range Not Satisfiable";
         break;
-    case 417                            :
+    case 417:
         descr = L"Expectation Failed";
         break;
-    case HTTP_STATUS_RETRY_WITH         :
+    case HTTP_STATUS_RETRY_WITH:
         descr = L"Retry after doing the appropriate action";
         break;
-    case HTTP_STATUS_SERVER_ERROR       :
+    case HTTP_STATUS_SERVER_ERROR:
         descr = L"Internal server error";
         break;
-    case HTTP_STATUS_NOT_SUPPORTED      :
+    case HTTP_STATUS_NOT_SUPPORTED:
         descr = L"Required not supported";
         break;
-    case HTTP_STATUS_BAD_GATEWAY        :
+    case HTTP_STATUS_BAD_GATEWAY:
         descr = L"Error response received from gateway";
         break;
-    case HTTP_STATUS_SERVICE_UNAVAIL    :
+    case HTTP_STATUS_SERVICE_UNAVAIL:
         descr = L"Temporarily overloaded";
         break;
-    case HTTP_STATUS_GATEWAY_TIMEOUT    :
+    case HTTP_STATUS_GATEWAY_TIMEOUT:
         descr = L"Timed out waiting for gateway";
         break;
-    case HTTP_STATUS_VERSION_NOT_SUP    :
+    case HTTP_STATUS_VERSION_NOT_SUP:
         descr = L"HTTP version not supported";
         break;
     }
