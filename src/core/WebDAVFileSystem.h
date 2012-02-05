@@ -98,14 +98,14 @@ protected:
                     const TCopyParamType *CopyParam, int Params,
                     TFileOperationProgressType *OperationProgress, unsigned int Flags);
     void SinkFile(const std::wstring FileName, const TRemoteFile *File, void *Param);
-    void SourceRobust(const std::wstring FileName,
+    void WebDAVSourceRobust(const std::wstring FileName,
                       const std::wstring TargetDir, const TCopyParamType *CopyParam, int Params,
                       TFileOperationProgressType *OperationProgress, unsigned int Flags);
-    void Source(const std::wstring FileName,
+    void WebDAVSource(const std::wstring FileName,
                 const std::wstring TargetDir, const TCopyParamType *CopyParam, int Params,
                 TFileOperationProgressType *OperationProgress, unsigned int Flags,
                 TUploadSessionAction &Action);
-    void DirectorySource(const std::wstring DirectoryName,
+    void WebDAVDirectorySource(const std::wstring DirectoryName,
                          const std::wstring TargetDir, int Attrs, const TCopyParamType *CopyParam,
                          int Params, TFileOperationProgressType *OperationProgress, unsigned int Flags);
     bool ConfirmOverwrite(std::wstring &FileName,

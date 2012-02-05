@@ -1015,7 +1015,7 @@ void TWebDAVFileSystem::CopyToRemote(nb::TStrings *FilesToCopy,
                         FTerminal->DirectoryModified(FullTargetDir + FileNameOnly, true);
                     }
                 }
-                SourceRobust(FileName, FullTargetDir, CopyParam, Params, OperationProgress,
+                WebDAVSourceRobust(FileName, FullTargetDir, CopyParam, Params, OperationProgress,
                              tfFirstLevel);
                 Success = true;
                 FLastDataSent = nb::Now();
@@ -1033,7 +1033,7 @@ void TWebDAVFileSystem::CopyToRemote(nb::TStrings *FilesToCopy,
 }
 
 //---------------------------------------------------------------------------
-void TWebDAVFileSystem::SourceRobust(const std::wstring FileName,
+void TWebDAVFileSystem::WebDAVSourceRobust(const std::wstring FileName,
                                      const std::wstring TargetDir, const TCopyParamType *CopyParam, int Params,
                                      TFileOperationProgressType *OperationProgress, unsigned int Flags)
 {
@@ -1046,7 +1046,7 @@ void TWebDAVFileSystem::SourceRobust(const std::wstring FileName,
         Retry = false;
         try
         {
-            Source(FileName, TargetDir, CopyParam, Params, OperationProgress,
+            WebDAVSource(FileName, TargetDir, CopyParam, Params, OperationProgress,
                    Flags, Action);
         }
         catch (std::exception &E)
@@ -1073,7 +1073,7 @@ void TWebDAVFileSystem::SourceRobust(const std::wstring FileName,
     while (Retry);
 }
 //---------------------------------------------------------------------------
-void TWebDAVFileSystem::Source(const std::wstring FileName,
+void TWebDAVFileSystem::WebDAVSource(const std::wstring FileName,
                                const std::wstring TargetDir, const TCopyParamType *CopyParam, int Params,
                                TFileOperationProgressType *OperationProgress, unsigned int Flags,
                                TUploadSessionAction &Action)
@@ -1102,7 +1102,7 @@ void TWebDAVFileSystem::Source(const std::wstring FileName,
     if (Dir)
     {
         Action.Cancel();
-        DirectorySource(IncludeTrailingBackslash(FileName), TargetDir,
+        WebDAVDirectorySource(IncludeTrailingBackslash(FileName), TargetDir,
                         Attrs, CopyParam, Params, OperationProgress, Flags);
     }
     else
@@ -1192,7 +1192,7 @@ void TWebDAVFileSystem::Source(const std::wstring FileName,
     }
 }
 //---------------------------------------------------------------------------
-void TWebDAVFileSystem::DirectorySource(const std::wstring DirectoryName,
+void TWebDAVFileSystem::WebDAVDirectorySource(const std::wstring DirectoryName,
                                         const std::wstring TargetDir, int Attrs, const TCopyParamType *CopyParam,
                                         int Params, TFileOperationProgressType *OperationProgress, unsigned int Flags)
 {
@@ -1227,7 +1227,7 @@ void TWebDAVFileSystem::DirectorySource(const std::wstring DirectoryName,
             {
                 if ((wcscmp(SearchRec.cFileName, THISDIRECTORY) != 0) && (wcscmp(SearchRec.cFileName, PARENTDIRECTORY) != 0))
                 {
-                    SourceRobust(FileName, DestFullName, CopyParam, Params, OperationProgress,
+                    WebDAVSourceRobust(FileName, DestFullName, CopyParam, Params, OperationProgress,
                                  Flags & ~(tfFirstLevel | tfAutoResume));
                     // if any file got uploaded (i.e. there were any file in the
                     // directory and at least one was not skipped),
