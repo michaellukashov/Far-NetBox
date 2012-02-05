@@ -222,7 +222,6 @@ void TWebDAVFileSystem::Open()
                                 L"http" : L"https";
     std::wstring UserName = Data->GetUserName();
     std::wstring Password = Data->GetPassword();
-    std::wstring Account = Data->GetFtpAccount();
     std::wstring Path = Data->GetRemoteDirectory();
     std::wstring url = FORMAT(L"%s://%s:%d%s", ProtocolName.c_str(), HostName.c_str(), Port, Path.c_str());
     int ServerType = 0;
@@ -1803,7 +1802,7 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t *Path,
                     }
                     catch (...)
                     {
-                        // ignore permissions errors with FTP
+                        // ignore permissions errors with WebDAV
                     }
                 }
                 // FIXME
@@ -1920,10 +1919,10 @@ void TWebDAVFileSystem::ResetFileTransfer()
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::ReadDirectoryProgress(__int64 Bytes)
 {
-    // with FTP we do not know exactly how many entries we have received,
+    // with WebDAV we do not know exactly how many entries we have received,
     // instead we know number of bytes received only.
     // so we report approximation based on average size of entry.
-    int Progress = static_cast<int>(Bytes / 80);
+    size_t Progress = static_cast<size_t>(Bytes / 80);
     if (Progress - FLastReadDirectoryProgress >= 10)
     {
         bool Cancel = false;
