@@ -334,13 +334,28 @@ int CEasyURL::InternalProgress(void *userData, double dltotal, double dlnow,
         return CURLE_ABORTED_BY_CALLBACK;
     }
 
-    if (progress->ProgressPtr && dltotal > 0)
+    if (dltotal > 0)
     {
         const double percent = dlnow * 100.0 / dltotal;
-        *progress->ProgressPtr = static_cast<size_t>(percent);
-        DEBUG_PRINTF(L"progress->Progress = %u", *progress->ProgressPtr);
+        if (progress->ProgressPtr)
+        {
+            *progress->ProgressPtr = static_cast<size_t>(percent);
+            DEBUG_PRINTF(L"progress->Progress = %u", *progress->ProgressPtr);
+        }
         __int64 Bytes = static_cast<__int64>(dlnow);
         __int64 TransferSize = static_cast<__int64>(dltotal);
+        assert(EasyURL->GetFileSystem());
+        EasyURL->GetFileSystem()->FileTransferProgress(TransferSize, Bytes);
+    }
+    else if (ultotal > 0)
+    {
+        const double percent = ulnow * 100.0 / ultotal;
+        if (progress->ProgressPtr)
+        {
+            *progress->ProgressPtr = static_cast<size_t>(percent);
+        }
+        __int64 Bytes = static_cast<__int64>(ulnow);
+        __int64 TransferSize = static_cast<__int64>(ultotal);
         assert(EasyURL->GetFileSystem());
         EasyURL->GetFileSystem()->FileTransferProgress(TransferSize, Bytes);
     }
