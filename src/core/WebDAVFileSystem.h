@@ -8,7 +8,7 @@ class TCURLIntf;
 struct TListDataEntry;
 class TMessageQueue;
 class TiXmlElement;
-struct TFileTransferData;
+
 //---------------------------------------------------------------------------
 class TWebDAVFileSystem : public TCustomFileSystem
 {
@@ -16,8 +16,8 @@ class TWebDAVFileSystem : public TCustomFileSystem
     friend class TFileListHelper;
 public:
     explicit TWebDAVFileSystem(TTerminal *ATerminal);
-    virtual void Init();
     virtual ~TWebDAVFileSystem();
+    virtual void Init();
 
     virtual void Open();
     virtual void Close();
@@ -74,6 +74,9 @@ public:
     virtual bool GetStoredCredentialsTried();
     virtual std::wstring GetUserName();
 
+public:
+    virtual void FileTransferProgress(__int64 TransferSize, __int64 Bytes);
+
 protected:
     virtual std::wstring GetCurrentDirectory();
 
@@ -99,14 +102,14 @@ protected:
                     const TCopyParamType *CopyParam, int Params,
                     TFileOperationProgressType *OperationProgress, unsigned int Flags);
     void SinkFile(const std::wstring FileName, const TRemoteFile *File, void *Param);
-    void SourceRobust(const std::wstring FileName,
+    void WebDAVSourceRobust(const std::wstring FileName,
                       const std::wstring TargetDir, const TCopyParamType *CopyParam, int Params,
                       TFileOperationProgressType *OperationProgress, unsigned int Flags);
-    void Source(const std::wstring FileName,
+    void WebDAVSource(const std::wstring FileName,
                 const std::wstring TargetDir, const TCopyParamType *CopyParam, int Params,
                 TFileOperationProgressType *OperationProgress, unsigned int Flags,
                 TUploadSessionAction &Action);
-    void DirectorySource(const std::wstring DirectoryName,
+    void WebDAVDirectorySource(const std::wstring DirectoryName,
                          const std::wstring TargetDir, int Attrs, const TCopyParamType *CopyParam,
                          int Params, TFileOperationProgressType *OperationProgress, unsigned int Flags);
     bool ConfirmOverwrite(std::wstring &FileName,
@@ -115,7 +118,6 @@ protected:
     void ReadDirectoryProgress(__int64 Bytes);
     void ResetFileTransfer();
     void DoFileTransferProgress(__int64 TransferSize, __int64 Bytes);
-    void FileTransferProgress(__int64 TransferSize, __int64 Bytes);
     void ResetCaches();
     void CaptureOutput(const std::wstring Str);
     void DoReadDirectory(TRemoteFileList *FileList);
@@ -168,7 +170,6 @@ private:
     TAutoSwitch FListAll;
     bool FDoListAll;
     mutable std::wstring FOptionScratch;
-    HANDLE FAbortEvent;
     size_t m_ProgressPercent; ///< Progress percent value
     TWebDAVFileSystem *Self;
 
@@ -194,14 +195,14 @@ private:
     };
 
 private:
-    virtual bool CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, std::wstring &errorInfo);
-    virtual bool MakeDirectory(const wchar_t *path, std::wstring &errorInfo);
-    virtual bool GetList(const std::wstring Directory, std::wstring &errorInfo);
-    virtual bool GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, std::wstring &errorInfo);
-    virtual bool PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, std::wstring &errorInfo);
-    virtual bool Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType type, std::wstring &errorInfo);
-    virtual bool Delete(const wchar_t *path, const ItemType type, std::wstring &errorInfo);
-    virtual bool Aborted() const
+    bool WebDAVCheckExisting(const wchar_t *path, const ItemType type, bool &isExist, std::wstring &errorInfo);
+    bool WebDAVMakeDirectory(const wchar_t *path, std::wstring &errorInfo);
+    bool WebDAVGetList(const std::wstring Directory, std::wstring &errorInfo);
+    bool WebDAVGetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, std::wstring &errorInfo);
+    bool WebDAVPutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, std::wstring &errorInfo);
+    bool WebDAVRename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType type, std::wstring &errorInfo);
+    bool WebDAVDelete(const wchar_t *path, const ItemType type, std::wstring &errorInfo);
+    bool WebDAVAborted() const
     {
         return FCURLIntf->Aborted();
     }

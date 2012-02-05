@@ -2437,7 +2437,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
                         {
                             BOOST_SCOPE_EXIT ( (&File) (&FileStream) )
                             {
-                                if (File) { CloseHandle(File); }
+                                if (File) { ::CloseHandle(File); }
                                 if (FileStream) { delete FileStream; }
                             } BOOST_SCOPE_EXIT_END
                             try

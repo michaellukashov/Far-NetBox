@@ -13,7 +13,6 @@ class TCriticalSection;
 class TMessageQueue;
 struct TOverwriteFileParams;
 struct TListDataEntry;
-struct TFileTransferData;
 struct TFtpsCertificateData;
 //---------------------------------------------------------------------------
 class TFTPFileSystem : public TCustomFileSystem
@@ -23,8 +22,8 @@ class TFTPFileSystem : public TCustomFileSystem
 
 public:
     explicit TFTPFileSystem(TTerminal *ATerminal);
-    virtual void Init();
     virtual ~TFTPFileSystem();
+    virtual void Init();
 
     virtual void Open();
     virtual void Close();
@@ -80,6 +79,9 @@ public:
     virtual bool TemporaryTransferFile(const std::wstring FileName);
     virtual bool GetStoredCredentialsTried();
     virtual std::wstring GetUserName();
+
+public:
+    virtual void FileTransferProgress(__int64 TransferSize, __int64 Bytes);
 
 protected:
     virtual std::wstring GetCurrentDirectory();
@@ -159,7 +161,6 @@ protected:
     void ReadDirectoryProgress(__int64 Bytes);
     void ResetFileTransfer();
     void DoFileTransferProgress(__int64 TransferSize, __int64 Bytes);
-    void FileTransferProgress(__int64 TransferSize, __int64 Bytes);
     void ResetCaches();
     void CaptureOutput(const std::wstring Str);
     void DoReadDirectory(TRemoteFileList *FileList);
