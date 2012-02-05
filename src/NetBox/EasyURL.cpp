@@ -326,21 +326,21 @@ size_t CEasyURL::InternalReader(void *buffer, size_t size, size_t nmemb, void *u
 
 int CEasyURL::InternalProgress(void *userData, double dltotal, double dlnow, double /*ultotal*/, double /*ulnow*/)
 {
-    Progress *prg = static_cast<Progress *>(userData);
-    assert(prg);
+    Progress *progress = static_cast<Progress *>(userData);
+    assert(progress);
 
-    ::CheckAbortEvent(&prg->AbortEvent);
+    ::CheckAbortEvent(&progress->AbortEvent);
 
-    if (prg->AbortEvent && WaitForSingleObject(prg->AbortEvent, 0) == WAIT_OBJECT_0)
+    if (progress->AbortEvent && WaitForSingleObject(progress->AbortEvent, 0) == WAIT_OBJECT_0)
     {
-        prg->Aborted = true;
+        progress->Aborted = true;
         return CURLE_ABORTED_BY_CALLBACK;
     }
 
-    if (prg->ProgressPtr && dltotal > 0)
+    if (progress->ProgressPtr && dltotal > 0)
     {
         const double percent = dlnow * 100.0 / dltotal;
-        *prg->ProgressPtr = static_cast<int>(percent);
+        *progress->ProgressPtr = static_cast<int>(percent);
     }
     return CURLE_OK;
 }
