@@ -3827,13 +3827,13 @@ void TTerminal::OpenLocalFile(const std::wstring FileName,
 
             if ((AHandle == NULL) || NoHandle)
             {
-                CloseHandle(Handle);
+                ::CloseHandle(Handle);
                 Handle = NULL;
             }
         }
         catch (...)
         {
-            CloseHandle(Handle);
+            ::CloseHandle(Handle);
             throw;
         }
     }
@@ -4610,7 +4610,7 @@ void TTerminal::SynchronizeLocalTimestamp(const std::wstring /*FileName*/,
         FILETIME WrTime = DateTimeToFileTime(ChecklistItem->Remote.Modification,
                        GetSessionData()->GetDSTMode());
         bool Result = SetFileTime(Handle, NULL, NULL, &WrTime) > 0;
-        CloseHandle(Handle);
+        ::CloseHandle(Handle);
         if (!Result)
         {
             nb::Abort();

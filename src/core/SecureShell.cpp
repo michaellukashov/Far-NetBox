@@ -55,7 +55,7 @@ TSecureShell::~TSecureShell()
     assert(FWaiting == 0);
     SetActive(false);
     ResetConnection();
-    CloseHandle(FSocketEvent);
+    ::CloseHandle(FSocketEvent);
     ClearConfig(FConfig);
     delete FConfig;
     FConfig = NULL;

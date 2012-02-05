@@ -138,7 +138,7 @@ TWebDAVFileSystem::~TWebDAVFileSystem()
     FTransferStatusCriticalSection = NULL;
     delete FCURLIntf;
     FCURLIntf = NULL;
-    CloseHandle(FAbortEvent);
+    ::CloseHandle(FAbortEvent);
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::Open()

@@ -4992,7 +4992,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
                                (&DestFileName) (&RemoteHandle)
                                (&OperationProgress) )
             {
-                if (LocalHandle) { CloseHandle(LocalHandle); }
+                if (LocalHandle) { ::CloseHandle(LocalHandle); }
                 if (FileStream) { delete FileStream; }
                 if (DeleteLocalFile && (!ResumeAllowed || OperationProgress->LocallyUsed == 0) &&
                         (OverwriteMode == omOverwrite))
@@ -5034,7 +5034,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
 
                     if (!ResumeTransfer)
                     {
-                        CloseHandle(LocalHandle);
+                        ::CloseHandle(LocalHandle);
                         LocalHandle = NULL;
                         FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, DestPartialFullName.c_str()),
                             THROWOSIFFALSE(::DeleteFile(DestPartialFullName));
@@ -5092,7 +5092,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
                         // is NULL when overwritting read-only file
                         if (LocalHandle)
                         {
-                            CloseHandle(LocalHandle);
+                            ::CloseHandle(LocalHandle);
                             LocalHandle = NULL;
                         }
                     }
@@ -5333,7 +5333,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
                 }
             }
 
-            CloseHandle(LocalHandle);
+            ::CloseHandle(LocalHandle);
             LocalHandle = NULL;
 
             if (ResumeAllowed)

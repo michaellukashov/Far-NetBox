@@ -254,7 +254,7 @@ TFTPFileSystem::~TFTPFileSystem()
     delete FQueue;
     FQueue = NULL;
 
-    CloseHandle(FQueueEvent);
+    ::CloseHandle(FQueueEvent);
 
     delete FQueueCriticalSection;
     FQueueCriticalSection = NULL;
