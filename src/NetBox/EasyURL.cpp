@@ -340,7 +340,7 @@ int CEasyURL::InternalProgress(void *userData, double dltotal, double dlnow, dou
     if (progress->ProgressPtr && dltotal > 0)
     {
         const double percent = dlnow * 100.0 / dltotal;
-        *progress->ProgressPtr = static_cast<int>(percent);
+        *progress->ProgressPtr = static_cast<size_t>(percent);
     }
     return CURLE_OK;
 }
