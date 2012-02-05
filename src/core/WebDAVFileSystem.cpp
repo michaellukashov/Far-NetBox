@@ -193,7 +193,6 @@ void TWebDAVFileSystem::Open()
             case 1:
                 LogLevel = TCURLIntf::LOG_WARNING;
                 break;
-
             case 2:
                 LogLevel = TCURLIntf::LOG_INFO;
                 break;
@@ -430,12 +429,6 @@ void TWebDAVFileSystem::EnsureLocation()
     /*
     if (!FCurrentDirectory.empty())
     {
-      // Make sure that the FZAPI current working directory,
-      // is actually our working directory.
-      // It may not be because:
-      // 1) We did cached directory change
-      // 2) Listing was requested for non-current directory, which
-      // makes FZAPI change its current directory (and not restoring it back afterwards)
       if (!UnixComparePaths(ActualCurrentDirectory(), FCurrentDirectory))
       {
         FTerminal->LogEvent(FORMAT(L"Synchronizing current directory \"%s\".",
@@ -489,10 +482,8 @@ std::wstring TWebDAVFileSystem::GetCurrentDirectory()
 void TWebDAVFileSystem::DoStartup()
 {
     DEBUG_PRINTF(L"begin");
-    // DetectReturnVar must succeed,
     // otherwise session is to be closed.
     FTerminal->SetExceptionOnFail(true);
-    // if (FTerminal->GetSessionData()->GetDetectReturnVar()) DetectReturnVar();
     FTerminal->SetExceptionOnFail(false);
 
     // retrieve initialize working directory to save it as home directory
@@ -1856,8 +1847,7 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t *Path,
                 }
                 else
                 {
-                    // With SCP we estimate date to be today, if we have at least time
-
+                    // We estimate date to be today, if we have at least time
                     File->SetModification(nb::TDateTime(0.0));
                     File->SetModificationFmt(mfNone);
                 }
