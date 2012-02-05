@@ -326,6 +326,7 @@ size_t CEasyURL::InternalReader(void *buffer, size_t size, size_t nmemb, void *u
 
 int CEasyURL::InternalProgress(void *userData, double dltotal, double dlnow, double /*ultotal*/, double /*ulnow*/)
 {
+    DEBUG_PRINTF(L"dlnow = %.2f, dltotal = %.2f, ulnow = %.2f, ultotal = %.2f", dlnow, dltotal, ulnow, ultotal);
     Progress *progress = static_cast<Progress *>(userData);
     assert(progress);
 
@@ -341,6 +342,7 @@ int CEasyURL::InternalProgress(void *userData, double dltotal, double dlnow, dou
     {
         const double percent = dlnow * 100.0 / dltotal;
         *progress->ProgressPtr = static_cast<size_t>(percent);
+        DEBUG_PRINTF(L"progress->Progress = %u", *progress->ProgressPtr);
     }
     return CURLE_OK;
 }
