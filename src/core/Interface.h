@@ -62,7 +62,7 @@ struct TQueryParams
     explicit TQueryParams(unsigned int AParams = 0, std::wstring AHelpKeyword = HELP_NONE);
 
     const TQueryButtonAlias *Aliases;
-    unsigned int AliasesCount;
+    size_t AliasesCount;
     unsigned int Params;
     unsigned int Timer;
     queryparamstimer_slot_type *TimerEvent;

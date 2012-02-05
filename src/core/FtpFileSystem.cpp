@@ -875,7 +875,7 @@ void TFTPFileSystem::ReadDirectoryProgress(__int64 Bytes)
     // with FTP we do not know exactly how many entries we have received,
     // instead we know number of bytes received only.
     // so we report approximation based on average size of entry.
-    int Progress = static_cast<int>(Bytes / 80);
+    size_t Progress = static_cast<size_t>(Bytes / 80);
     if (Progress - FLastReadDirectoryProgress >= 10)
     {
         bool Cancel = false;

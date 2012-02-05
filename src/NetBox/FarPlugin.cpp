@@ -104,7 +104,7 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo *Info)
         memset(&FStartupInfo, 0, sizeof(FStartupInfo));
         memcpy(&FStartupInfo, Info,
                Info->StructSize >= sizeof(FStartupInfo) ?
-               sizeof(FStartupInfo) : Info->StructSize);
+               sizeof(FStartupInfo) : static_cast<size_t>(Info->StructSize));
         StrFromFar(FStartupInfo.ModuleName);
         // the minimum we really need
         assert(FStartupInfo.GetMsg != NULL);
@@ -113,10 +113,10 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo *Info)
         memset(&FFarStandardFunctions, 0, sizeof(FFarStandardFunctions));
         size_t FSFOffset = (static_cast<const char *>(reinterpret_cast<const void *>(&Info->FSF)) -
                          static_cast<const char *>(reinterpret_cast<const void *>(Info)));
-        if (Info->StructSize > FSFOffset)
+        if (static_cast<size_t>(Info->StructSize) > FSFOffset)
         {
             memcpy(&FFarStandardFunctions, Info->FSF,
-                   Info->FSF->StructSize >= sizeof(FFarStandardFunctions) ?
+                   static_cast<size_t>(Info->FSF->StructSize) >= sizeof(FFarStandardFunctions) ?
                    sizeof(FFarStandardFunctions) : Info->FSF->StructSize);
         }
     }
@@ -831,7 +831,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
             Button->SetBottom(Button->GetTop());
             Button->SetResult(Index + 1);
             Button->SetCenterGroup(true);
-            Button->SetTag(reinterpret_cast<int>(Buttons->GetObject(Index)));
+            Button->SetTag(reinterpret_cast<size_t>(Buttons->GetObject(Index)));
             if (PrevButton != NULL)
             {
                 Button->Move(PrevButton->GetRight() - Button->GetLeft() + 1, 0);
@@ -917,7 +917,7 @@ void TFarMessageDialog::Idle()
 
     if (FParams->Timer > 0)
     {
-        unsigned int SinceLastTimer = static_cast<int>((static_cast<double>(nb::Now()) - static_cast<double>(FLastTimerTime)) * 24*60*60*1000);
+        size_t SinceLastTimer = static_cast<size_t>((static_cast<double>(nb::Now()) - static_cast<double>(FLastTimerTime)) * 24*60*60*1000);
         if (SinceLastTimer >= FParams->Timeout)
         {
             assert(FParams->TimerEvent != NULL);
@@ -938,7 +938,7 @@ void TFarMessageDialog::Idle()
 
     if (FParams->Timeout > 0)
     {
-        unsigned int Running = static_cast<int>((static_cast<double>(nb::Now()) - static_cast<double>(FStartTime)) * 24*60*60*1000);
+        size_t Running = static_cast<size_t>((static_cast<double>(nb::Now()) - static_cast<double>(FStartTime)) * 24*60*60*1000);
         if (Running >= FParams->Timeout)
         {
             assert(FTimeoutButton != NULL);
@@ -948,7 +948,7 @@ void TFarMessageDialog::Idle()
         {
             std::wstring Caption =
                 FORMAT(L" %s ", FORMAT(FParams->TimeoutStr.c_str(),
-                                       FTimeoutButtonCaption.c_str(), int((FParams->Timeout - Running) / 1000)).c_str()).c_str();
+                                       FTimeoutButtonCaption.c_str(), static_cast<int>((FParams->Timeout - Running) / 1000)).c_str()).c_str();
             size_t sz = FTimeoutButton->GetCaption().size() > Caption.size() ? FTimeoutButton->GetCaption().size() - Caption.size() : 0;
             Caption += ::StringOfChar(L' ', sz);
             FTimeoutButton->SetCaption(Caption);
@@ -1182,9 +1182,9 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
             Result = static_cast<int>(MenuItems[ResultItem].UserData);
             if (Selected != -1)
             {
-                Items->PutObject(Selected, (nb::TObject *)((size_t)(Items->GetObject(Selected)) & ~MIF_SELECTED));
+                Items->PutObject(Selected, (nb::TObject *)(reinterpret_cast<size_t>(Items->GetObject(Selected)) & ~MIF_SELECTED));
             }
-            Items->PutObject(Result, (nb::TObject *)((size_t)(Items->GetObject(Result)) | MIF_SELECTED));
+            Items->PutObject(Result, (nb::TObject *)(reinterpret_cast<size_t>(Items->GetObject(Result)) | MIF_SELECTED));
         }
         else
         {
@@ -1226,7 +1226,9 @@ bool TCustomFarPlugin::InputBox(const std::wstring Title,
                          StrToFar(Prompt.c_str()),
                          StrToFar(HistoryName.c_str()),
                          StrToFar(AText.c_str()),
-                         const_cast<wchar_t *>(DestText.c_str()), MaxLen, NULL,
+                         const_cast<wchar_t *>(DestText.c_str()),
+                         static_cast<int>(MaxLen),
+                         NULL,
                          FIB_ENABLEEMPTY | FIB_BUTTONS | Flags);
         }
         RestoreScreen(ScreenHandle);
@@ -2257,7 +2259,7 @@ void TFarPanelModes::ClearPanelMode(PanelMode &Mode)
         delete[] Mode.ColumnWidths;
         if (Mode.ColumnTitles)
         {
-            for (int Index = 0; Index < ColumnTypesCount; Index++)
+            for (size_t Index = 0; Index < ColumnTypesCount; Index++)
             {
                 // delete[] Mode.ColumnTitles[Index];
             }

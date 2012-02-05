@@ -1150,7 +1150,7 @@ BOOL CFtpControlSocket::Send(CString str, BOOL bUpdateRecvTime)
 		char* utf8 = new char[len + 1];
 		WideCharToMultiByte(CP_UTF8, 0, unicode, -1, utf8, len + 1, 0, 0);
 
-		int sendLen = strlen(utf8);
+		size_t sendLen = strlen(utf8);
 		if (!m_awaitsReply && !m_sendBuffer)
         {
             // DEBUG_PRINTF(L"utf8 = %s", nb::MB2W(utf8).c_str());

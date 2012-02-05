@@ -99,8 +99,8 @@ public:
     void GetNextItemPosition(int &Left, int &Top);
     int GetDefaultGroup() const { return FDefaultGroup; }
     void SetDefaultGroup(const int &value) { FDefaultGroup = value; }
-    int GetTag() const { return FTag; }
-    void SetTag(const int &value) { FTag = value; }
+    size_t GetTag() const { return FTag; }
+    void SetTag(size_t value) { FTag = value; }
     TFarDialogItem *GetItemFocused() const { return FItemFocused; }
     void SetItemFocused(TFarDialogItem *const &value);
     int GetResult() const { return FResult; }
@@ -158,11 +158,11 @@ private:
     TFarBox *FBorderBox;
     TItemPosition FNextItemPosition;
     int FDefaultGroup;
-    int FTag;
+    size_t FTag;
     TFarDialogItem *FItemFocused;
     key_signal_type FOnKey;
     FarDialogItem *FDialogItems;
-    int FDialogItemsCapacity;
+    size_t FDialogItemsCapacity;
     int FChangesLocked;
     bool FChangesPending;
     int FResult;
@@ -250,8 +250,8 @@ public:
     void SetTabStop(bool value) { SetFlag(DIF_NOFOCUS | DIF_INVERSE, value); }
     bool GetOem() { return FOem; }
     void SetOem(bool value) { FOem = value; }
-    int GetTag() { return FTag; }
-    void SetTag(int value) { FTag = value; }
+    size_t GetTag() { return FTag; }
+    void SetTag(size_t value) { FTag = value; }
     TFarDialog *GetDialog() { return FDialog; }
 
     const nb::notify_signal_type &GetOnExit() const { return FOnExit; }
@@ -270,7 +270,7 @@ public:
 protected:
     int FDefaultType;
     int FGroup;
-    int FTag;
+    size_t FTag;
     nb::notify_signal_type FOnExit;
     mouse_click_signal_type FOnMouseClick;
 
@@ -282,8 +282,8 @@ protected:
     void SetCenterGroup(bool value) { SetFlag(DIF_CENTERGROUP, value); }
     virtual std::wstring GetData();
     virtual void SetData(const std::wstring value);
-    int GetType();
-    void SetType(int value);
+    size_t GetType();
+    void SetType(size_t value);
     size_t GetSelected();
     void SetSelected(size_t value);
     TFarDialogContainer *GetContainer() { return FContainer; }
@@ -295,7 +295,7 @@ protected:
 
     virtual void Detach();
     void DialogResized();
-    LONG_PTR SendMessage(int Msg, int Param);
+    LONG_PTR SendMessage(int Msg, LONG_PTR Param);
     LONG_PTR SendDialogMessage(int Msg, int Param1, LONG_PTR Param2);
     virtual long ItemProc(int Msg, LONG_PTR Param);
     long DefaultItemProc(int Msg, LONG_PTR Param);
@@ -318,7 +318,7 @@ protected:
 
     virtual void SetDataInternal(const std::wstring value);
     void UpdateData(const std::wstring value);
-    void UpdateSelected(int value);
+    void UpdateSelected(size_t value);
 
     bool GetFlag(size_t Index);
     void SetFlag(size_t Index, bool value);
