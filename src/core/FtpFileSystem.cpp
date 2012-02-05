@@ -941,7 +941,7 @@ void TFTPFileSystem::FileTransfer(const std::wstring FileName,
             nb::W2MB(RemoteFile.c_str()).c_str(),
             nb::W2MB(RemotePath.c_str()).c_str(),
             Get, Size, Type, &UserData);
-        // we may actually catch reponse code of the listing
+        // we may actually catch response code of the listing
         // command (when checking for existence of the remote file)
         unsigned int Reply = WaitForCommandReply();
         GotReply(Reply, FLAGMASK(FFileTransferCancelled, REPLY_ALLOW_CANCEL));
