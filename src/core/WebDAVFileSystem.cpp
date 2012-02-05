@@ -507,6 +507,7 @@ void TWebDAVFileSystem::ReadCurrentDirectory()
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::HomeDirectory()
 {
+    nb::Error(SNotImplemented, 1009);
     // ExecCommand(fsHomeDirectory);
 }
 //---------------------------------------------------------------------------
