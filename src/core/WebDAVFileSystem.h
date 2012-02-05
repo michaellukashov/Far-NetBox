@@ -194,14 +194,14 @@ private:
     };
 
 private:
-    bool CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, std::wstring &errorInfo);
-    bool MakeDirectory(const wchar_t *path, std::wstring &errorInfo);
-    bool GetList(const std::wstring Directory, std::wstring &errorInfo);
-    bool GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, std::wstring &errorInfo);
-    bool PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, std::wstring &errorInfo);
-    bool Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType type, std::wstring &errorInfo);
-    bool Delete(const wchar_t *path, const ItemType type, std::wstring &errorInfo);
-    bool Aborted() const
+    bool WebDAVCheckExisting(const wchar_t *path, const ItemType type, bool &isExist, std::wstring &errorInfo);
+    bool WebDAVMakeDirectory(const wchar_t *path, std::wstring &errorInfo);
+    bool WebDAVGetList(const std::wstring Directory, std::wstring &errorInfo);
+    bool WebDAVGetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, std::wstring &errorInfo);
+    bool WebDAVPutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, std::wstring &errorInfo);
+    bool WebDAVRename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType type, std::wstring &errorInfo);
+    bool WebDAVDelete(const wchar_t *path, const ItemType type, std::wstring &errorInfo);
+    bool WebDAVAborted() const
     {
         return FCURLIntf->Aborted();
     }
