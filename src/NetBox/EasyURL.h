@@ -27,8 +27,8 @@ class TTerminal;
 //---------------------------------------------------------------------------
 
 /** @brief CURL slist wrapper
- *
- */
+  *
+  */
 class CSlistURL
 {
 public:
@@ -88,12 +88,13 @@ public:
         LOG_INFO = 7,
         LOG_DEBUG = 8
     };
+
     /** @brief Initialize easy curl
-     *  @param $url URL to connect
-     *  @param $userName user name
-     *  @param $password password
-     *  @return false if error
-     */
+      * @param $url URL to connect
+      * @param $userName user name
+      * @param $password password
+      * @return false if error
+      */
     virtual bool Initialize(const wchar_t *url, const wchar_t *userName,
         const wchar_t *password) = 0;
 
@@ -103,54 +104,54 @@ public:
     virtual bool Close() = 0;
 
     /** @brief Prepare easy curl state
-     *  @param $path requested path
-     *  @param $handleTimeout true to handle timeout
-     *  @return curl status
-     */
+      * @param $path requested path
+      * @param $handleTimeout true to handle timeout
+      * @return curl status
+      */
     virtual CURLcode Prepare(const char *path,
         const TSessionData *Data,
         int LogLevel, const bool handleTimeout = true) = 0;
 
     /** @brief Set slist
-     *  @param $slist slist object
-     *  @return curl status
-     */
+      * @param $slist slist object
+      * @return curl status
+      */
     virtual CURLcode SetSlist(CSlistURL &slist) = 0;
 
     /** @brief Set output as std::string buffer
-     *  @param $out output std::string buffer
-     *  @param $progress pointer to variable to save progress percent of the current operation
-     *  @return curl status
-     */
+      * @param $out output std::string buffer
+      * @param $progress pointer to variable to save progress percent of the current operation
+      * @return curl status
+      */
     virtual CURLcode SetOutput(std::string &out, size_t *progress) = 0;
 
     /** @brief Set output as file
-     *  @param $out output file
-     *  @param $progress pointer to variable to save progress percent of the current operation
-     *  @return curl status
-     */
+      * @param $out output file
+      * @param $progress pointer to variable to save progress percent of the current operation
+      * @return curl status
+      */
     virtual CURLcode SetOutput(CNBFile *out, size_t *progress) = 0;
 
     /** @brief Set input as file (upload operations)
-     *  @param $in input file
-     *  @param $progress pointer to variable to save progress percent of the current operation
-     *  @return curl status
-     */
+      * @param $in input file
+      * @param $progress pointer to variable to save progress percent of the current operation
+      * @return curl status
+      */
     virtual CURLcode SetInput(CNBFile *in, size_t *progress) = 0;
 
     /** @brief Set abort event handle
-     *  @param $event abort event handle
-     */
+      * @param $event abort event handle
+      */
     virtual void SetAbortEvent(HANDLE event) = 0;
 
     /** @brief Perform request
-     *  @return curl status
-     */
+      * @return curl status
+      */
     virtual CURLcode Perform() = 0;
 
     /** @brief Get top URL
-     *  @return top URL
-     */
+      * @return top URL
+      */
     virtual const char *GetTopURL() const = 0;
     // virtual operator CURL *() = 0;
     virtual bool Aborted() const = 0;
@@ -160,7 +161,7 @@ public:
 };
 
 /** @brief CURL easy wrapper
- */
+  */
 class CEasyURL : public TCURLIntf
 {
 public:
