@@ -11,7 +11,8 @@ CEasyURL::CEasyURL(TTerminal *Terminal, TFileSystemIntf *FileSystem) :
     m_regex(INVALID_HANDLE_VALUE),
     m_match(NULL),
     m_brackets(0),
-    FDebugLevel(LOG_STATUS)
+    FDebugLevel(LOG_STATUS),
+    FAbortEvent(0)
 {
     assert(FTerminal);
     assert(FFileSystem);
@@ -93,6 +94,10 @@ bool CEasyURL::Close()
         curl_easy_cleanup(m_CURL);
     }
     m_CURL = NULL;
+    if (FAbortEvent)
+    {
+        ::CloseHandle(FAbortEvent);
+    }
     return true;
 }
 
@@ -108,6 +113,12 @@ CURLcode CEasyURL::Prepare(const char *path,
     m_Output.Type = OutputWriter::None;
     m_Input.Type = InputReader::None;
     m_ProgressInfo.ProgressPtr = NULL;
+    if (FAbortEvent)
+    {
+        ::CloseHandle(FAbortEvent);
+    }
+    FAbortEvent = CreateEvent(NULL, true, false, NULL);
+    SetAbortEvent(FAbortEvent);
 
     CURLcode urlCode = CURLE_OK;
 

@@ -126,11 +126,6 @@ public:
       */
     virtual CURLcode SetInput(CNBFile *in, size_t *progress) = 0;
 
-    /** @brief Set abort event handle
-      * @param $event abort event handle
-      */
-    virtual void SetAbortEvent(HANDLE event) = 0;
-
     /** @brief Perform request
       * @return curl status
       */
@@ -166,7 +161,6 @@ public:
     virtual CURLcode SetOutput(std::string &out, size_t *progress);
     virtual CURLcode SetOutput(CNBFile *out, size_t *progress);
     virtual CURLcode SetInput(CNBFile *in, size_t *progress);
-    virtual void SetAbortEvent(HANDLE event);
     virtual CURLcode Perform();
     virtual const char *GetTopURL() const
     {
@@ -209,6 +203,11 @@ private:
     static int InternalDebug(CURL *handle, curl_infotype type,
         char *data, size_t size,
         void *userp);
+
+    /** @brief Set abort event handle
+      * @param $event abort event handle
+      */
+    void SetAbortEvent(HANDLE event);
 
 private:
     TTerminal *FTerminal;
@@ -267,5 +266,6 @@ private:
     RegExpMatch *m_match;
     int m_brackets;
     TLogLevel FDebugLevel;
+    HANDLE FAbortEvent;
 };
 
