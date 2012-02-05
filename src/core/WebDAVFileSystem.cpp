@@ -1976,9 +1976,10 @@ void TWebDAVFileSystem::FileTransfer(const std::wstring FileName,
     std::wstring errorInfo;
     FILE_OPERATION_LOOP(FMTLOAD(TRANSFER_ERROR, FileName.c_str()),
         DEBUG_PRINTF(L"RemoteFile = %s, FileName = %s", RemoteFile.c_str(), FileName.c_str());
+        std::wstring FullRemoteFileName = RemotePath + RemoteFile;
         if (Get)
         {
-            bool res = GetFile((RemotePath + RemoteFile).c_str(), LocalFile.c_str(), Size, errorInfo);
+            bool res = GetFile(FullRemoteFileName.c_str(), LocalFile.c_str(), Size, errorInfo);
             if (!res)
             {
                 FFileTransferAbort = ftaSkip;
@@ -1991,7 +1992,7 @@ void TWebDAVFileSystem::FileTransfer(const std::wstring FileName,
         }
         else
         {
-            bool res = PutFile((RemotePath + RemoteFile).c_str(), LocalFile.c_str(), Size, errorInfo);
+            bool res = PutFile(FullRemoteFileName.c_str(), LocalFile.c_str(), Size, errorInfo);
             if (!res)
             {
                 FFileTransferAbort = ftaSkip;
