@@ -194,14 +194,14 @@ private:
     };
 
 private:
-    virtual bool CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, std::wstring &errorInfo);
-    virtual bool MakeDirectory(const wchar_t *path, std::wstring &errorInfo);
-    virtual bool GetList(const std::wstring Directory, std::wstring &errorInfo);
-    virtual bool GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, std::wstring &errorInfo);
-    virtual bool PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, std::wstring &errorInfo);
-    virtual bool Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType type, std::wstring &errorInfo);
-    virtual bool Delete(const wchar_t *path, const ItemType type, std::wstring &errorInfo);
-    virtual bool Aborted() const
+    bool CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, std::wstring &errorInfo);
+    bool MakeDirectory(const wchar_t *path, std::wstring &errorInfo);
+    bool GetList(const std::wstring Directory, std::wstring &errorInfo);
+    bool GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, std::wstring &errorInfo);
+    bool PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, std::wstring &errorInfo);
+    bool Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType type, std::wstring &errorInfo);
+    bool Delete(const wchar_t *path, const ItemType type, std::wstring &errorInfo);
+    bool Aborted() const
     {
         return FCURLIntf->Aborted();
     }
