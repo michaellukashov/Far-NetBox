@@ -19,6 +19,7 @@ void CEasyURL::Init()
     m_Input.AbortEvent = m_Output.AbortEvent = m_ProgressInfo.AbortEvent = NULL;
     m_Input.Type = InputReader::None;
     m_Output.Type = OutputWriter::None;
+    m_ProgressInfo.EasyURLPtr = this;
     m_ProgressInfo.ProgressPtr = NULL;
     m_ProgressInfo.Aborted = false;
     // init regex
@@ -319,6 +320,8 @@ int CEasyURL::InternalProgress(void *userData, double dltotal, double dlnow,
     DEBUG_PRINTF(L"dlnow = %.2f, dltotal = %.2f, ulnow = %.2f, ultotal = %.2f", dlnow, dltotal, ulnow, ultotal);
     TCURLProgressInfo *progress = static_cast<TCURLProgressInfo *>(userData);
     assert(progress);
+    CEasyURL *EasyURL = progress->EasyURLPtr;
+    assert(EasyURL);
 
     ::CheckAbortEvent(&progress->AbortEvent);
 

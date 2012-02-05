@@ -241,6 +241,7 @@ private:
     /// Progress description
     struct TCURLProgressInfo
     {
+        CEasyURL *EasyURLPtr;
         size_t *ProgressPtr;
         HANDLE AbortEvent;
         bool Aborted;
