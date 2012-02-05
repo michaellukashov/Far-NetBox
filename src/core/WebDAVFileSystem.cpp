@@ -109,7 +109,6 @@ TWebDAVFileSystem::TWebDAVFileSystem(TTerminal *ATerminal) :
     FLastResponse(new nb::TStringList()),
     FLastError(new nb::TStringList()),
     FTransferStatusCriticalSection(new TCriticalSection()),
-    FAbortEvent(CreateEvent(NULL, true, false, NULL)),
     m_ProgressPercent(0),
     FListAll(asAuto),
     FDoListAll(false)
@@ -138,7 +137,6 @@ TWebDAVFileSystem::~TWebDAVFileSystem()
     FTransferStatusCriticalSection = NULL;
     delete FCURLIntf;
     FCURLIntf = NULL;
-    ::CloseHandle(FAbortEvent);
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::Open()
@@ -282,7 +280,6 @@ void TWebDAVFileSystem::Open()
                       UserName.c_str(),
                       Password.c_str());
         assert(FActive);
-        FCURLIntf->SetAbortEvent(FAbortEvent);
 
         FPasswordFailed = false;
     }

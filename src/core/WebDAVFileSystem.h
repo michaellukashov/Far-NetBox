@@ -170,7 +170,6 @@ private:
     TAutoSwitch FListAll;
     bool FDoListAll;
     mutable std::wstring FOptionScratch;
-    HANDLE FAbortEvent;
     size_t m_ProgressPercent; ///< Progress percent value
     TWebDAVFileSystem *Self;
 
