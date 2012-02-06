@@ -1475,12 +1475,12 @@ void TFarDialogItem::DialogChange()
     GetDialog()->Change();
 }
 //---------------------------------------------------------------------------
-long TFarDialogItem::SendDialogMessage(int Msg, int Param1, void *Param2)
+LONG_PTR TFarDialogItem::SendDialogMessage(int Msg, int Param1, void *Param2)
 {
     return GetDialog()->SendMessage(Msg, Param1, Param2);
 }
 //---------------------------------------------------------------------------
-long TFarDialogItem::SendMessage(int Msg, void *Param)
+LONG_PTR TFarDialogItem::SendMessage(int Msg, void *Param)
 {
     return GetDialog()->SendMessage(Msg, GetItem(), Param);
 }
