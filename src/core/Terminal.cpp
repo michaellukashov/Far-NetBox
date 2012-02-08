@@ -1132,6 +1132,11 @@ int TTerminal::QueryUserException(const std::wstring Query,
     {
         MoreMessages.Add(std::wstring(nb::MB2W(E->what())));
     }
+    const ExtException *EE = dynamic_cast<const ExtException *>(E);
+    if ((EE != NULL) && (EE->GetMoreMessages() != NULL))
+    {
+        MoreMessages.AddStrings(EE->GetMoreMessages());
+    }
     Result = QueryUser(!Query.empty() ? Query : std::wstring(nb::MB2W(E->what())),
                        MoreMessages.GetCount() ? &MoreMessages : NULL,
                        Answers, Params, QueryType);
