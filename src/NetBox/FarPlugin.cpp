@@ -1495,7 +1495,7 @@ void TCustomFarPlugin::UpdateConsoleTitle(const std::wstring Title)
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::UpdateConsoleTitleProgress(short Progress)
 {
-    assert(!FCurrentTitle.empty());
+    // assert(!FCurrentTitle.empty());
     FCurrentProgress = Progress;
     UpdateConsoleTitle();
 }
