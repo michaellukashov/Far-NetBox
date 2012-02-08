@@ -2759,7 +2759,7 @@ int TWinSCPFileSystem::PutFilesEx(nb::TObjectList *PanelItems, bool Move, int Op
 
             // if file is saved under different name, FAR tries to upload original file,
             // but let's be robust and check for new name, in case it changes.
-            // OMP_EDIT is set since 1.70 final, only.
+            // OPM_EDIT is set since 1.70 final, only.
             // When comparing, beware that one path may be long path and the other short
             // (since 1.70 alpha 6, DestPath in GetFiles is short path,
             // while current path in PutFiles is long path)
