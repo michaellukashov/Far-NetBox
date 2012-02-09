@@ -234,7 +234,7 @@ public:
         Init();
         FLength = Len;
         SetCapacity (FLength);
-        memcpy(GetData(), Source, Len);
+        memmove(GetData(), Source, Len);
     }
 
     explicit TSFTPPacket(const std::wstring Source)
@@ -242,7 +242,7 @@ public:
         Init();
         FLength = Source.size() * sizeof(wchar_t);
         SetCapacity(FLength);
-        memcpy(GetData(), Source.c_str(), FLength);
+        memmove(GetData(), Source.c_str(), FLength);
     }
 
     ~TSFTPPacket()
@@ -278,7 +278,7 @@ public:
         unsigned char Buf[4];
         PUT_32BIT(Buf, FMessageNumber);
 
-        memcpy(FData + 1, Buf, sizeof(Buf));
+        memmove(FData + 1, Buf, sizeof(Buf));
     }
 
     void AddByte(unsigned char Value)
@@ -544,7 +544,7 @@ public:
         // cannot happen anyway as Need() would raise exception
         assert(Len < SFTP_MAX_PACKET_LEN);
         ResultA.resize(Len);
-        memcpy(const_cast<char *>(ResultA.c_str()), FData + FPosition, Len);
+        memmove(const_cast<char *>(ResultA.c_str()), FData + FPosition, Len);
         FPosition += Len;
         // DEBUG_PRINTF(L"Result = %s", nb::MB2W(ResultA.c_str()).c_str());
         return ResultA;
@@ -878,7 +878,7 @@ public:
                 char *NData = (new char[FCapacity + FSendPrefixLen]) + FSendPrefixLen;
                 if (FData)
                 {
-                    memcpy(NData - FSendPrefixLen, FData - FSendPrefixLen,
+                    memmove(NData - FSendPrefixLen, FData - FSendPrefixLen,
                            (FLength < FCapacity ? FLength : FCapacity) + FSendPrefixLen);
                     delete[] (FData - FSendPrefixLen);
                 }
@@ -994,7 +994,7 @@ private:
         {
             SetCapacity(GetLength() + ALength + SFTP_PACKET_ALLOC_DELTA);
         }
-        memcpy(FData + GetLength(), AData, ALength);
+        memmove(FData + GetLength(), AData, ALength);
         FLength += ALength;
     }
 

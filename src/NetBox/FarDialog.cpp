@@ -317,7 +317,7 @@ void TFarDialog::Add(TFarDialogItem *DialogItem)
         NewDialogItems = new FarDialogItem[GetItems()->GetCount() + DialogItemsDelta];
         if (FDialogItems)
         {
-            memcpy(NewDialogItems, FDialogItems, FDialogItemsCapacity * sizeof(FarDialogItem));
+            memmove(NewDialogItems, FDialogItems, FDialogItemsCapacity * sizeof(FarDialogItem));
             delete[] FDialogItems;
         }
         memset(NewDialogItems + FDialogItemsCapacity, 0,

@@ -2613,7 +2613,7 @@ void TRemoteProperties::Load(THierarchicalStorage *Storage)
     unsigned char Buf[sizeof(Valid)];
     if (Storage->ReadBinaryData(L"Valid", &Buf, sizeof(Buf)) == sizeof(Buf))
     {
-        memcpy(&Valid, Buf, sizeof(Valid));
+        memmove(&Valid, Buf, sizeof(Valid));
     }
 
     if (Valid.Contains(vpRights))

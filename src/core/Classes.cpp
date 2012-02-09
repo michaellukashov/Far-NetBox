@@ -360,7 +360,7 @@ void TStrings::SetTextStr(const std::wstring Text)
             }
             std::wstring S;
             S.resize(P - Start);
-            memcpy(const_cast<wchar_t *>(S.c_str()), Start, (P - Start) * sizeof(wchar_t));
+            memmove(const_cast<wchar_t *>(S.c_str()), Start, (P - Start) * sizeof(wchar_t));
             Add(S);
             if (*P == 0x0D) { P++; }
             if (*P == 0x0A) { P++; }
@@ -485,13 +485,13 @@ std::wstring TStrings::GetTextStr()
         L = S.size() * sizeof(wchar_t);
         if (L != 0)
         {
-            memcpy(P, S.c_str(), L);
+            memmove(P, S.c_str(), L);
             P += S.size();
         };
         L = LB.size() * sizeof(wchar_t);
         if (L != 0)
         {
-            memcpy(P, LB.c_str(), L);
+            memmove(P, LB.c_str(), L);
             P += LB.size();
         };
     }
