@@ -2523,15 +2523,6 @@ int TWinSCPFileSystem::GetFilesEx(nb::TObjectList *PanelItems, bool Move,
     // DEBUG_PRINTF(L"begin, DestPath = %s, Connected = %d", DestPath.c_str(), Connected());
     if (Connected())
     {
-        // FAR WORKAROUND
-        // is it?
-        // Probable reason was that search result window displays files from several
-        // directories and the plugin can hold data for one directory only
-        if (OpMode & OPM_FIND)
-        {
-            throw ExtException(GetMsg(VIEW_FROM_FIND_NOT_SUPPORTED));
-        }
-
         FFileList = CreateFileList(PanelItems, osRemote);
         {
             BOOST_SCOPE_EXIT ( (&Self) )
