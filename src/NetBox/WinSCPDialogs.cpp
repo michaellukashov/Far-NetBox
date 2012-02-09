@@ -2766,7 +2766,7 @@ void TSessionDialog::Change()
     {
         if (FTransferProtocolIndex != TransferProtocolCombo->GetItems()->GetSelected())
         {
-            TransferProtocolComboChange();
+            // TransferProtocolComboChange();
         }
         if (FLoginTypeIndex != LoginTypeCombo->GetItems()->GetSelected())
         {
