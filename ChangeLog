@@ -1,4 +1,5 @@
 NetBox 2.0.9 ??.02.2012
+  * Get rid of error "View from find dialog is not supported" when "Find file" dialog is called.
 
 NetBox 2.0.8 06.02.2012
 ---------------------
