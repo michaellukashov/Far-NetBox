@@ -1,4 +1,6 @@
 NetBox 2.0.9 ??.02.2012
+  * Bugfix: SFTP: resume transfer now works properly
+    (http://forum.farmanager.com/viewtopic.php?f=39&t=6638#p90373)
   * Get rid of error "View from find dialog is not supported" when "Find file" dialog is called.
 
 NetBox 2.0.8 06.02.2012
