@@ -1,5 +1,7 @@
 NetBox 2.0.9 ??.02.2012
-  * Bugfix: SFTP: resume transfer now works properly
+  * Bugfix: FTP: Option "Seconds between keepalives" did not change
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=525#p90266)
+  * Bugfix: SFTP: resume transfer did not work
     (http://forum.farmanager.com/viewtopic.php?f=39&t=6638#p90373)
   * Get rid of error "View from find dialog is not supported" when "Find file" dialog is called.
 
