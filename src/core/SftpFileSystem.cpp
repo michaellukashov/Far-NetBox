@@ -240,9 +240,9 @@ public:
     explicit TSFTPPacket(const std::wstring Source)
     {
         Init();
-        FLength = Source.size();
+        FLength = Source.size() * sizeof(wchar_t);
         SetCapacity(FLength);
-        memcpy(GetData(), Source.c_str(), Source.size());
+        memcpy(GetData(), Source.c_str(), FLength);
     }
 
     ~TSFTPPacket()
