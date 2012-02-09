@@ -380,7 +380,7 @@ TFileMasks::TParams::TParams() :
 //---------------------------------------------------------------------------
 std::wstring TFileMasks::TParams::ToString() const
 {
-    return std::wstring(L"[") + IntToStr(static_cast<int>(Size)) + L"]";
+    return std::wstring(L"[") + Int64ToStr(Size) + L"]";
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------

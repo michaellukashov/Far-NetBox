@@ -5232,7 +5232,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
                                 FTerminal->LogEvent(FORMAT(
                                                         L"Received incomplete data packet before end of file, "
                                                         L"offset: %s, size: %d, requested: %d",
-                                                        IntToStr(static_cast<int>(OperationProgress->TransferedSize)).c_str(), static_cast<int>(DataLen),
+                                                        Int64ToStr(OperationProgress->TransferedSize).c_str(), static_cast<int>(DataLen),
                                                         static_cast<int>(BlockSize)));
                                 FTerminal->TerminalError(NULL, LoadStr(SFTP_INCOMPLETE_BEFORE_EOF));
                             }
