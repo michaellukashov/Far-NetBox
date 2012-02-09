@@ -102,7 +102,7 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo *Info)
         ResetCachedInfo();
         // Info->StructSize = 336 for FAR 1.65
         memset(&FStartupInfo, 0, sizeof(FStartupInfo));
-        memcpy(&FStartupInfo, Info,
+        memmove(&FStartupInfo, Info,
                Info->StructSize >= sizeof(FStartupInfo) ?
                sizeof(FStartupInfo) : static_cast<size_t>(Info->StructSize));
         StrFromFar(FStartupInfo.ModuleName);
@@ -115,7 +115,7 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo *Info)
                          static_cast<const char *>(reinterpret_cast<const void *>(Info)));
         if (static_cast<size_t>(Info->StructSize) > FSFOffset)
         {
-            memcpy(&FFarStandardFunctions, Info->FSF,
+            memmove(&FFarStandardFunctions, Info->FSF,
                    static_cast<size_t>(Info->FSF->StructSize) >= sizeof(FFarStandardFunctions) ?
                    sizeof(FFarStandardFunctions) : Info->FSF->StructSize);
         }
@@ -186,7 +186,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo *Info)
         // DEBUG_PRINTF(L"CommandPrefix = %s", CommandPrefix.c_str());
         FPluginInfo.CommandPrefix = StrToFar(DuplicateStr(CommandPrefix));
 
-        memcpy(Info, &FPluginInfo, sizeof(FPluginInfo));
+        memmove(Info, &FPluginInfo, sizeof(FPluginInfo));
     }
     catch (const std::exception &E)
     {
@@ -1863,7 +1863,7 @@ void TCustomFarFileSystem::GetOpenPluginInfo(struct OpenPluginInfo *Info)
             FOpenPluginInfoValid = true;
         }
 
-        memcpy(Info, &FOpenPluginInfo, sizeof(FOpenPluginInfo));
+        memmove(Info, &FOpenPluginInfo, sizeof(FOpenPluginInfo));
     }
 }
 //---------------------------------------------------------------------------
@@ -2277,7 +2277,7 @@ void TFarPanelModes::FillOpenPluginInfo(struct OpenPluginInfo *Info)
     Info->PanelModesNumber = LENOF(FPanelModes);
     PanelMode *PanelModesArray = new PanelMode[LENOF(FPanelModes)];
     Info->PanelModesArray = PanelModesArray;
-    memcpy(PanelModesArray, &FPanelModes, sizeof(FPanelModes));
+    memmove(PanelModesArray, &FPanelModes, sizeof(FPanelModes));
     FReferenced = true;
 }
 //---------------------------------------------------------------------------
@@ -2387,7 +2387,7 @@ void TFarKeyBarTitles::FillOpenPluginInfo(struct OpenPluginInfo *Info)
     assert(Info);
     KeyBarTitles *KeyBar = new KeyBarTitles;
     Info->KeyBar = KeyBar;
-    memcpy(KeyBar, &FKeyBarTitles, sizeof(FKeyBarTitles));
+    memmove(KeyBar, &FKeyBarTitles, sizeof(FKeyBarTitles));
     FReferenced = true;
 }
 //---------------------------------------------------------------------------

@@ -3319,7 +3319,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t *Path,
                            Entry->Name,
                            Entry->Permissions,
                            Entry->OwnerGroup,
-                           IntToStr(static_cast<int>(Entry->Size)).c_str(),
+                           Int64ToStr(Entry->Size).c_str(),
                            int(Entry->Dir), int(Entry->Link), Entry->Year, Entry->Month, Entry->Day,
                            Entry->Hour, Entry->Minute, int(Entry->HasTime), int(Entry->HasDate));
                 throw ETerminal(FMTLOAD(LIST_LINE_ERROR, EntryData.c_str()), &E);

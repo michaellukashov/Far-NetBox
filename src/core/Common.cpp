@@ -2826,10 +2826,12 @@ std::wstring ExpandUNCFileName(const std::wstring FileName)
     return Result;
 }
 
-__int64 FileSeek(HANDLE file, __int64 offset, __int64 size)
+__int64 FileSeek(HANDLE file, __int64 offset, int Origin)
 {
-    nb::Error(SNotImplemented, 300);
-    return 0;
+    LONG low = offset & 0xFFFFFFFF;
+    LONG high = offset >> 32;
+    low = ::SetFilePointer(file, low, &high, static_cast<DWORD>(Origin));
+    return ((_int64)high << 32) + low;
 }
 
 void InitPlatformId()

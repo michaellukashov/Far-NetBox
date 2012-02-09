@@ -360,8 +360,9 @@ std::wstring FormatDateTimeSpan(const std::wstring TimeFormat, nb::TDateTime Dat
     // "integer overflow" error occurs
     // Result += FormatDateTime(TimeFormat, nb::TDateTime(DateTime - int(DateTime)));
     // DEBUG_PRINTF(L"TimeFormat = %s", TimeFormat.c_str());
+    nb::TDateTime dt(DateTime - static_cast<int>(DateTime));
     unsigned int H, M, S, MS;
-    DateTime.DecodeTime(H, M, S, MS);
+    dt.DecodeTime(H, M, S, MS);
     Result += FORMAT(L"%d:%02d:%02d", H, M, S);
     return Result;
 }

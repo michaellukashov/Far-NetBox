@@ -1326,7 +1326,7 @@ std::wstring TRemoteFile::GetListingStr()
     return FORMAT(L"%c%s %3s %-8s %-8s %9s %-12s %s%s",
                   GetType(), GetRights()->GetText().c_str(), IntToStr(GetINodeBlocks()).c_str(),
                   GetOwner().GetName().c_str(),
-                  GetGroup().GetName().c_str(), IntToStr(static_cast<int>(GetSize())).c_str(), GetModificationStr().c_str(),
+                  GetGroup().GetName().c_str(), Int64ToStr(GetSize()).c_str(), GetModificationStr().c_str(),
                   GetFileName().c_str(),
                   LinkPart.c_str());
 }
@@ -2613,7 +2613,7 @@ void TRemoteProperties::Load(THierarchicalStorage *Storage)
     unsigned char Buf[sizeof(Valid)];
     if (Storage->ReadBinaryData(L"Valid", &Buf, sizeof(Buf)) == sizeof(Buf))
     {
-        memcpy(&Valid, Buf, sizeof(Valid));
+        memmove(&Valid, Buf, sizeof(Valid));
     }
 
     if (Valid.Contains(vpRights))

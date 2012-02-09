@@ -82,7 +82,7 @@ unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t *FileName, unsigned int
                                 }
                                 if (Len > 0)
                                 {
-                                    memcpy(Data, VersionInfo, Len);
+                                    memmove(Data, VersionInfo, Len);
                                 }
                             }
                         }
@@ -141,7 +141,7 @@ bool GetFileVersionInfoFix(const wchar_t *FileName, unsigned long Handle,
             {
                 ConvBuf = DataSize - VersionInfo->wLength;
                 // DEBUG_PRINTF(L"ConvBuf = %d", ConvBuf);
-                memcpy((static_cast<char *>(Data)) + VersionInfo->wLength, Signature, ConvBuf > 4 * sizeof(char) ? 4 * sizeof(char) : ConvBuf );
+                memmove((static_cast<char *>(Data)) + VersionInfo->wLength, Signature, ConvBuf > 4 * sizeof(char) ? 4 * sizeof(char) : ConvBuf );
                 // DEBUG_PRINTF(L"Data = %s", Data);
             }
         }
