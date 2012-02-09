@@ -942,7 +942,6 @@ bool TSessionData::ParseUrl(const std::wstring Url, TOptions *Options,
     bool ProtocolDefined = false;
     bool PortNumberDefined = false;
     TFSProtocol AFSProtocol = fsSCPonly;
-    int APortNumber = 0;
     TFtps AFtps = ftpsNone;
     std::wstring url = Url;
     if (::LowerCase(url.substr(0, 7)) == L"netbox:")
@@ -953,14 +952,12 @@ bool TSessionData::ParseUrl(const std::wstring Url, TOptions *Options,
     if (::LowerCase(url.substr(0, 4)) == L"scp:")
     {
         AFSProtocol = fsSCPonly;
-        APortNumber = SshPortNumber;
         url.erase(0, 4);
         ProtocolDefined = true;
     }
     else if (::LowerCase(url.substr(0, 5)) == L"sftp:")
     {
         AFSProtocol = fsSFTPonly;
-        APortNumber = SshPortNumber;
         url.erase(0, 5);
         ProtocolDefined = true;
     }
@@ -968,7 +965,6 @@ bool TSessionData::ParseUrl(const std::wstring Url, TOptions *Options,
     {
         AFSProtocol = fsFTP;
         SetFtps(ftpsNone);
-        APortNumber = FtpPortNumber;
         url.erase(0, 4);
         ProtocolDefined = true;
     }
@@ -976,21 +972,18 @@ bool TSessionData::ParseUrl(const std::wstring Url, TOptions *Options,
     {
         AFSProtocol = fsFTP;
         AFtps = ftpsImplicit;
-        APortNumber = FtpsImplicitPortNumber;
         url.erase(0, 5);
         ProtocolDefined = true;
     }
     else if (::LowerCase(url.substr(0, 5)) == L"http:")
     {
         AFSProtocol = fsHTTP;
-        APortNumber = HTTPPortNumber;
         url.erase(0, 5);
         ProtocolDefined = true;
     }
     else if (::LowerCase(url.substr(0, 6)) == L"https:")
     {
         AFSProtocol = fsHTTPS;
-        APortNumber = HTTPSPortNumber;
         url.erase(0, 6);
         ProtocolDefined = true;
     }
@@ -1093,10 +1086,6 @@ bool TSessionData::ParseUrl(const std::wstring Url, TOptions *Options,
             {
                 SetPortNumber(StrToIntDef(DecodeUrlChars(HostInfo), -1));
                 PortNumberDefined = true;
-            }
-            else if (ProtocolDefined)
-            {
-                SetPortNumber(APortNumber);
             }
 
             if (ProtocolDefined)
