@@ -3481,7 +3481,14 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
         {
             SessionData->SetPingType(ptOff);
         }
-        SessionData->SetPingInterval(PingIntervalSecEdit->GetAsInteger());
+        if ((GetFSProtocol() == fsFTP) || (GetFSProtocol() == fsFTPS))
+        {
+            SessionData->SetFtpPingInterval(PingIntervalSecEdit->GetAsInteger());
+        }
+        else
+        {
+            SessionData->SetPingInterval(PingIntervalSecEdit->GetAsInteger());
+        }
         SessionData->SetTimeout(TimeoutEdit->GetAsInteger());
 
         if (IPv4Button->GetChecked())
