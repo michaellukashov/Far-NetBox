@@ -1,4 +1,4 @@
-NetBox 2.0.9 ??.02.2012
+NetBox 2.0.9 11.02.2012
   * FTPS: Allow to configure type of connection: explicit/implicit
     (Session options --> FTP(S) --> Encryption: Require explicit/implicit FTP)
   * Bugfix: FTP: Option "Seconds between keepalives" did not change
