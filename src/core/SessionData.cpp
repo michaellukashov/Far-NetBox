@@ -162,6 +162,7 @@ void TSessionData::Default()
     // FTP
     SetFtpPasvMode(true);
     SetFtpAllowEmptyPassword(false);
+    SetFtpEncryption(fesPlainFTP);
     SetFtpForcePasvIp(false);
     SetFtpAccount(L"");
     SetFtpPingInterval(30);
@@ -304,6 +305,7 @@ void TSessionData::Assign(nb::TPersistent *Source)
 
         DUPL(FtpPasvMode);
         DUPL(FtpAllowEmptyPassword);
+        DUPL(FtpEncryption);
         DUPL(FtpForcePasvIp);
         DUPL(FtpAccount);
         DUPL(FtpPingInterval);
@@ -543,6 +545,7 @@ void TSessionData::Load(THierarchicalStorage *Storage)
         // Ftp prefix
         SetFtpPasvMode(Storage->Readbool(L"FtpPasvMode", GetFtpPasvMode()));
         SetFtpAllowEmptyPassword(Storage->Readbool(L"FtpAllowEmptyPassword", GetFtpAllowEmptyPassword()));
+        SetFtpEncryption(static_cast<TFtpEncryptionSwitch>(Storage->Readint(L"FtpEncryption", GetFtpEncryption())));
         SetFtpForcePasvIp(Storage->Readbool(L"FtpForcePasvIp", GetFtpForcePasvIp()));
         SetFtpAccount(Storage->ReadString(L"FtpAccount", GetFtpAccount()));
         SetFtpPingInterval(Storage->Readint(L"FtpPingInterval", GetFtpPingInterval()));
@@ -807,6 +810,7 @@ void TSessionData::Save(THierarchicalStorage *Storage,
 
             WRITE_DATA_EX(bool, L"FtpPasvMode", GetFtpPasvMode(), );
             WRITE_DATA_EX(bool, L"FtpAllowEmptyPassword", GetFtpAllowEmptyPassword(), );
+            WRITE_DATA_EX(int, L"FtpEncryption", GetFtpEncryption(), );
             WRITE_DATA_EX(bool, L"FtpForcePasvIp", GetFtpForcePasvIp(), );
             WRITE_DATA_EX(String, L"FtpAccount", GetFtpAccount(), );
             WRITE_DATA_EX(int, L"FtpPingInterval", GetFtpPingInterval(), );
@@ -2164,6 +2168,11 @@ void TSessionData::SetFtpPasvMode(bool value)
 void TSessionData::SetFtpAllowEmptyPassword(bool value)
 {
     SET_SESSION_PROPERTY(FtpAllowEmptyPassword);
+}
+//---------------------------------------------------------------------
+void TSessionData::SetFtpEncryption(TFtpEncryptionSwitch value)
+{
+    SET_SESSION_PROPERTY(FtpEncryption);
 }
 //---------------------------------------------------------------------
 void TSessionData::SetFtpForcePasvIp(bool value)

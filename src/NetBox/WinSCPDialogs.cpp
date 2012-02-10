@@ -29,6 +29,13 @@
 //---------------------------------------------------------------------------
 enum TButtonResult { brCancel = -1, brOK = 1, brConnect };
 //---------------------------------------------------------------------------
+TFtps FtpEncryptionToFtps(TFtpEncryptionSwitch value)
+{
+    return value == fesPlainFTP ? ftpsNone : 
+           value == fesExplicit ? ftpsExplicitSsl :
+           value == fesImplicit ? ftpsImplicit : ftpsNone;
+}
+//---------------------------------------------------------------------------
 class TWinSCPDialog : public TFarDialog
 {
 public:
@@ -1652,6 +1659,7 @@ private:
     TFarRadioButton *IPv6Button;
     TFarCheckBox *FtpPasvModeCheck;
     TFarCheckBox *FtpAllowEmptyPasswordCheck;
+    TFarComboBox *FtpEncryptionCombo;
     TSessionDialog *Self;
 
     void LoadPing(TSessionData *SessionData);
@@ -2232,6 +2240,19 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
     }
 
     new TFarSeparator(this);
+
+    Text = new TFarText(this);
+    Text->SetCaption(GetMsg(LOGIN_FTP_ENCRYPTION));
+
+    SetNextItemPosition(ipRight);
+
+    FtpEncryptionCombo = new TFarComboBox(this);
+    FtpEncryptionCombo->SetDropDownList(true);
+    // FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_USE_PLAIN_FTP));
+    FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_REQUIRE_EXPLICIT_FTP));
+    FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_REQUIRE_IMPLICIT_FTP));
+    FtpEncryptionCombo->SetWidth(30);
+    FtpEncryptionCombo->SetRight(CRect.Right - 12 - 2);
 
     // Connection tab
 
@@ -2922,6 +2943,7 @@ void TSessionDialog::UpdateControls()
 
     // FTP tab
     FtpTab->SetEnabled(FtpProtocol);
+    FtpEncryptionCombo->SetEnabled(FtpsProtocol);
 
     // SSH tab
     SshTab->SetEnabled(SshProtocol);
@@ -3200,6 +3222,26 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
         }
     }
 
+    TFtpEncryptionSwitch FtpEncryption = SessionData->GetFtpEncryption();
+    switch (FtpEncryption)
+    {
+    case fesPlainFTP:
+        FtpEncryptionCombo->GetItems()->SetSelected(0);
+        break;
+
+    case fesExplicit:
+        FtpEncryptionCombo->GetItems()->SetSelected(0);
+        break;
+
+    case fesImplicit:
+        FtpEncryptionCombo->GetItems()->SetSelected(1);
+        break;
+
+    default:
+        FtpEncryptionCombo->GetItems()->SetSelected(0);
+        break;
+    }
+
     // Connection tab
     FtpPasvModeCheck->SetChecked(SessionData->GetFtpPasvMode());
     LoadPing(SessionData);
@@ -3457,14 +3499,26 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
 
             SessionData->SetPostLoginCommands(PostLoginCommands->GetText());
         }
-        // TODO: FTPS tab
         if (GetFSProtocol() == fsFTPS)
         {
-            SessionData->SetFtps(ftpsImplicit);
+            SessionData->SetFtps(FtpEncryptionToFtps(SessionData->GetFtpEncryption()));
         }
         else
         {
             SessionData->SetFtps(ftpsNone);
+        }
+
+        switch (FtpEncryptionCombo->GetItems()->GetSelected())
+        {
+            case 0:
+                SessionData->SetFtpEncryption(fesExplicit);
+                break;
+            case 1:
+                SessionData->SetFtpEncryption(fesImplicit);
+                break;
+            default:
+                SessionData->SetFtpEncryption(fesPlainFTP);
+                break;
         }
 
         // Connection tab
