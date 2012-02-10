@@ -1652,6 +1652,7 @@ private:
     TFarRadioButton *IPv6Button;
     TFarCheckBox *FtpPasvModeCheck;
     TFarCheckBox *FtpAllowEmptyPasswordCheck;
+    TFarComboBox *FtpEncryptionCombo;
     TSessionDialog *Self;
 
     void LoadPing(TSessionData *SessionData);
@@ -2232,6 +2233,19 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
     }
 
     new TFarSeparator(this);
+
+    Text = new TFarText(this);
+    Text->SetCaption(GetMsg(LOGIN_FTP_ENCRYPTION));
+
+    SetNextItemPosition(ipRight);
+
+    FtpEncryptionCombo = new TFarComboBox(this);
+    FtpEncryptionCombo->SetDropDownList(true);
+    FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_USE_PLAIN_FTP));
+    FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_REQUIRE_EXPLICIT_FTP));
+    FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_REQUIRE_IMPLICIT_FTP));
+    FtpEncryptionCombo->SetWidth(30);
+    FtpEncryptionCombo->SetRight(CRect.Right - 12 - 2);
 
     // Connection tab
 
