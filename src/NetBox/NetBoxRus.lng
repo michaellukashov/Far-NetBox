@@ -365,8 +365,8 @@
 "Post login &commands:"
 "&Encryption:"
 "Use plain FTP"
-"Require explicit FTP over TLS"
-"Require implicit FTP over TLS"
+"Require explicit FTP over SSL"
+"Require implicit FTP over SSL"
 
 "Attributes"
 "Change file attributes for"
