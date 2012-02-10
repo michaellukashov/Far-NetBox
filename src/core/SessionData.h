@@ -143,6 +143,7 @@ private:
     bool FFtpPasvMode;
     bool FFtpForcePasvIp;
     bool FFtpAllowEmptyPassword;
+    TFtpEncryptionSwitch FFtpEncryption;
     TLoginType FLoginType;
     std::wstring FFtpAccount;
     int FFtpPingInterval;
@@ -424,6 +425,8 @@ public:
     bool GetFtpPasvMode() const { return FFtpPasvMode; }
     bool GetFtpAllowEmptyPassword() const { return FFtpAllowEmptyPassword; }
     void SetFtpAllowEmptyPassword(bool value);
+    TFtpEncryptionSwitch GetFtpEncryption() const { return FFtpEncryption; }
+    void SetFtpEncryption(TFtpEncryptionSwitch value);
     // __property bool FtpForcePasvIp = { read = FFtpForcePasvIp, write = SetFtpForcePasvIp };
     bool GetFtpForcePasvIp() const { return FFtpForcePasvIp; }
     // __property std::wstring FtpAccount = { read = FFtpAccount, write = SetFtpAccount };
