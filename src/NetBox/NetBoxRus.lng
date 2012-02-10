@@ -363,6 +363,10 @@
 "&Allow empty password"
 " Protocol options "
 "Post login &commands:"
+"&Encryption:"
+"Use plain FTP"
+"Require explicit FTP over TLS"
+"Require implicit FTP over TLS"
 
 "Attributes"
 "Change file attributes for"
