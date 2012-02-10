@@ -1132,6 +1132,11 @@ int TTerminal::QueryUserException(const std::wstring Query,
     {
         MoreMessages.Add(std::wstring(nb::MB2W(E->what())));
     }
+    const ExtException *EE = dynamic_cast<const ExtException *>(E);
+    if ((EE != NULL) && (EE->GetMoreMessages() != NULL))
+    {
+        MoreMessages.AddStrings(EE->GetMoreMessages());
+    }
     Result = QueryUser(!Query.empty() ? Query : std::wstring(nb::MB2W(E->what())),
                        MoreMessages.GetCount() ? &MoreMessages : NULL,
                        Answers, Params, QueryType);
@@ -2010,9 +2015,9 @@ int TTerminal::ConfirmFileOverwrite(const std::wstring FileName,
         if (FileParams != NULL)
         {
             Message = FMTLOAD(FILE_OVERWRITE_DETAILS, Message.c_str(),
-                              IntToStr(static_cast<int>(FileParams->SourceSize)).c_str(),
+                              Int64ToStr(FileParams->SourceSize).c_str(),
                               UserModificationStr(FileParams->SourceTimestamp, FileParams->SourcePrecision).c_str(),
-                              IntToStr(static_cast<int>(FileParams->DestSize)).c_str(),
+                              Int64ToStr(FileParams->DestSize).c_str(),
                               UserModificationStr(FileParams->DestTimestamp, FileParams->DestPrecision).c_str());
         }
         Result = QueryUser(Message, NULL, Answers, QueryParams);

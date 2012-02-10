@@ -162,6 +162,7 @@ void TSessionData::Default()
     // FTP
     SetFtpPasvMode(true);
     SetFtpAllowEmptyPassword(false);
+    SetFtpEncryption(fesPlainFTP);
     SetFtpForcePasvIp(false);
     SetFtpAccount(L"");
     SetFtpPingInterval(30);
@@ -304,6 +305,7 @@ void TSessionData::Assign(nb::TPersistent *Source)
 
         DUPL(FtpPasvMode);
         DUPL(FtpAllowEmptyPassword);
+        DUPL(FtpEncryption);
         DUPL(FtpForcePasvIp);
         DUPL(FtpAccount);
         DUPL(FtpPingInterval);
@@ -543,6 +545,7 @@ void TSessionData::Load(THierarchicalStorage *Storage)
         // Ftp prefix
         SetFtpPasvMode(Storage->Readbool(L"FtpPasvMode", GetFtpPasvMode()));
         SetFtpAllowEmptyPassword(Storage->Readbool(L"FtpAllowEmptyPassword", GetFtpAllowEmptyPassword()));
+        SetFtpEncryption(static_cast<TFtpEncryptionSwitch>(Storage->Readint(L"FtpEncryption", GetFtpEncryption())));
         SetFtpForcePasvIp(Storage->Readbool(L"FtpForcePasvIp", GetFtpForcePasvIp()));
         SetFtpAccount(Storage->ReadString(L"FtpAccount", GetFtpAccount()));
         SetFtpPingInterval(Storage->Readint(L"FtpPingInterval", GetFtpPingInterval()));
@@ -807,6 +810,7 @@ void TSessionData::Save(THierarchicalStorage *Storage,
 
             WRITE_DATA_EX(bool, L"FtpPasvMode", GetFtpPasvMode(), );
             WRITE_DATA_EX(bool, L"FtpAllowEmptyPassword", GetFtpAllowEmptyPassword(), );
+            WRITE_DATA_EX(int, L"FtpEncryption", GetFtpEncryption(), );
             WRITE_DATA_EX(bool, L"FtpForcePasvIp", GetFtpForcePasvIp(), );
             WRITE_DATA_EX(String, L"FtpAccount", GetFtpAccount(), );
             WRITE_DATA_EX(int, L"FtpPingInterval", GetFtpPingInterval(), );
@@ -942,7 +946,6 @@ bool TSessionData::ParseUrl(const std::wstring Url, TOptions *Options,
     bool ProtocolDefined = false;
     bool PortNumberDefined = false;
     TFSProtocol AFSProtocol = fsSCPonly;
-    int APortNumber = 0;
     TFtps AFtps = ftpsNone;
     std::wstring url = Url;
     if (::LowerCase(url.substr(0, 7)) == L"netbox:")
@@ -953,14 +956,12 @@ bool TSessionData::ParseUrl(const std::wstring Url, TOptions *Options,
     if (::LowerCase(url.substr(0, 4)) == L"scp:")
     {
         AFSProtocol = fsSCPonly;
-        APortNumber = SshPortNumber;
         url.erase(0, 4);
         ProtocolDefined = true;
     }
     else if (::LowerCase(url.substr(0, 5)) == L"sftp:")
     {
         AFSProtocol = fsSFTPonly;
-        APortNumber = SshPortNumber;
         url.erase(0, 5);
         ProtocolDefined = true;
     }
@@ -968,7 +969,6 @@ bool TSessionData::ParseUrl(const std::wstring Url, TOptions *Options,
     {
         AFSProtocol = fsFTP;
         SetFtps(ftpsNone);
-        APortNumber = FtpPortNumber;
         url.erase(0, 4);
         ProtocolDefined = true;
     }
@@ -976,21 +976,18 @@ bool TSessionData::ParseUrl(const std::wstring Url, TOptions *Options,
     {
         AFSProtocol = fsFTP;
         AFtps = ftpsImplicit;
-        APortNumber = FtpsImplicitPortNumber;
         url.erase(0, 5);
         ProtocolDefined = true;
     }
     else if (::LowerCase(url.substr(0, 5)) == L"http:")
     {
         AFSProtocol = fsHTTP;
-        APortNumber = HTTPPortNumber;
         url.erase(0, 5);
         ProtocolDefined = true;
     }
     else if (::LowerCase(url.substr(0, 6)) == L"https:")
     {
         AFSProtocol = fsHTTPS;
-        APortNumber = HTTPSPortNumber;
         url.erase(0, 6);
         ProtocolDefined = true;
     }
@@ -1093,10 +1090,6 @@ bool TSessionData::ParseUrl(const std::wstring Url, TOptions *Options,
             {
                 SetPortNumber(StrToIntDef(DecodeUrlChars(HostInfo), -1));
                 PortNumberDefined = true;
-            }
-            else if (ProtocolDefined)
-            {
-                SetPortNumber(APortNumber);
             }
 
             if (ProtocolDefined)
@@ -2175,6 +2168,11 @@ void TSessionData::SetFtpPasvMode(bool value)
 void TSessionData::SetFtpAllowEmptyPassword(bool value)
 {
     SET_SESSION_PROPERTY(FtpAllowEmptyPassword);
+}
+//---------------------------------------------------------------------
+void TSessionData::SetFtpEncryption(TFtpEncryptionSwitch value)
+{
+    SET_SESSION_PROPERTY(FtpEncryption);
 }
 //---------------------------------------------------------------------
 void TSessionData::SetFtpForcePasvIp(bool value)

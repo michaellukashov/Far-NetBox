@@ -1,4 +1,14 @@
-NetBox 2.0.8 ??.02.2012
+NetBox 2.0.9 11.02.2012
+  * FTPS: Allow to configure type of connection: explicit/implicit
+    (Session options --> FTP(S) --> Encryption: Require explicit/implicit FTP)
+  * Bugfix: FTP: Option "Seconds between keepalives" did not change
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=525#p90266)
+  * Bugfix: SFTP: resume transfer did not work
+    (http://forum.farmanager.com/viewtopic.php?f=39&t=6638#p90373)
+  * Get rid of error "View from find dialog is not supported" when "Find file" dialog is called.
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=510#p90041)
+
+NetBox 2.0.8 06.02.2012
 ---------------------
   * WebDAV: Fixed progress indication
   * Fixed a number of x64-related issues

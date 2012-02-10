@@ -737,7 +737,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const char *Data, size_t Length)
         {
             size_t Used = OutLen;
             if (Used > Len) { Used = Len; }
-            memcpy(OutPtr, p, Used);
+            memmove(OutPtr, p, Used);
             OutPtr += Used; OutLen -= Used;
             p += Used; Len -= Used;
         }
@@ -750,7 +750,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const char *Data, size_t Length)
                 Pending = static_cast<char *>(Pending ? srealloc(Pending, PendSize) : smalloc(PendSize));
                 if (!Pending) { FatalError(L"Out of memory"); }
             }
-            memcpy(Pending + PendLen, p, Len);
+            memmove(Pending + PendLen, p, Len);
             PendLen += Len;
             // DEBUG_PRINTF(L"PendLen = %d", PendLen);
         }
@@ -821,7 +821,7 @@ size_t TSecureShell::Receive(char *Buf, size_t Len)
                 {
                     PendUsed = OutLen;
                 }
-                memcpy(OutPtr, Pending, PendUsed);
+                memmove(OutPtr, Pending, PendUsed);
                 memmove(Pending, Pending + PendUsed, PendLen - PendUsed);
                 OutPtr += PendUsed;
                 OutLen -= PendUsed;

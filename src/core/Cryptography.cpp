@@ -85,7 +85,7 @@ static void hmac_sha1_key(const unsigned char key[], unsigned long key_len, hmac
     }
     else                                        /* otherwise store key data     */
     {
-        memcpy(cx->key + cx->klen, key, key_len);
+        memmove(cx->key + cx->klen, key, key_len);
     }
 
     cx->klen += key_len;                        /* update the key length count  */
@@ -173,7 +173,7 @@ void aes_set_encrypt_key(const unsigned char in_key[], unsigned int klen, void *
 void aes_encrypt_block(const unsigned char in_blk[], unsigned char out_blk[], void *cx)
 {
     int Index;
-    memcpy(out_blk, in_blk, BLOCK_SIZE);
+    memmove(out_blk, in_blk, BLOCK_SIZE);
     for (Index = 0; Index < 4; Index++)
     {
         unsigned char t;
@@ -248,7 +248,7 @@ static void derive_key(const unsigned char pwd[],  /* the PASSWORD     */
     hmac_sha1_key(pwd, pwd_len, c1);
 
     /* set HMAC context (c2) for password and salt      */
-    memcpy(c2, c1, sizeof(hmac_ctx));
+    memmove(c2, c1, sizeof(hmac_ctx));
     hmac_sha1_data(salt, salt_len, c2);
 
     /* find the number of SHA blocks in the key         */
@@ -260,7 +260,7 @@ static void derive_key(const unsigned char pwd[],  /* the PASSWORD     */
         memset(ux, 0, OUT_BLOCK_LENGTH);
 
         /* set HMAC context (c3) for password and salt  */
-        memcpy(c3, c2, sizeof(hmac_ctx));
+        memmove(c3, c2, sizeof(hmac_ctx));
 
         /* enter additional data for 1st block into uu  */
         uu[0] = (unsigned char)((i + 1) >> 24);
@@ -284,7 +284,7 @@ static void derive_key(const unsigned char pwd[],  /* the PASSWORD     */
             }
 
             /* set HMAC context (c3) for password   */
-            memcpy(c3, c1, sizeof(hmac_ctx));
+            memmove(c3, c1, sizeof(hmac_ctx));
         }
 
         /* compile key blocks into the key output   */
@@ -354,7 +354,7 @@ static void fcrypt_init(
 
     if (pwd_ver != NULL)
     {
-        memcpy(pwd_ver, kbuf + 2 * KEY_LENGTH(mode), PWD_VER_LENGTH);
+        memmove(pwd_ver, kbuf + 2 * KEY_LENGTH(mode), PWD_VER_LENGTH);
     }
 }
 

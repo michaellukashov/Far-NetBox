@@ -1516,12 +1516,9 @@ int CompareFileTime(nb::TDateTime T1, nb::TDateTime T2)
     // (when one time is seconds-precision and other is millisecond-precision,
     // we may have times like 12:00:00.000 and 12:00:01.999, which should
     // be treated the same)
-    //  FIXME
-    nb::Error(SNotImplemented, 57);
-    /*
     static nb::TDateTime TwoSeconds(0, 0, 2, 0);
-    int Result;
-    if (T1 == T2)
+    int Result = 0;
+    if (fabs(T1 - T2) < 0.0001)
     {
       // just optimalisation
       Result = 0;
@@ -1539,8 +1536,6 @@ int CompareFileTime(nb::TDateTime T1, nb::TDateTime T2)
       Result = 0;
     }
     return Result;
-    */
-    return 0;
 }
 
 nb::TDateTime Date()
@@ -2831,10 +2826,12 @@ std::wstring ExpandUNCFileName(const std::wstring FileName)
     return Result;
 }
 
-__int64 FileSeek(HANDLE file, __int64 offset, __int64 size)
+__int64 FileSeek(HANDLE file, __int64 offset, int Origin)
 {
-    nb::Error(SNotImplemented, 300);
-    return 0;
+    LONG low = offset & 0xFFFFFFFF;
+    LONG high = offset >> 32;
+    low = ::SetFilePointer(file, low, &high, static_cast<DWORD>(Origin));
+    return ((_int64)high << 32) + low;
 }
 
 void InitPlatformId()

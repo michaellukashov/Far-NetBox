@@ -1,8 +1,8 @@
 #pragma once
 
-#define PLUGIN_VERSION_NUM 2,0,8,56
-#define PLUGIN_VERSION_TXT "2.0.8"
-#define PLUGIN_VERSION_WTXT L"2.0.8"
+#define PLUGIN_VERSION_NUM 2,0,9,60
+#define PLUGIN_VERSION_TXT "2.0.9"
+#define PLUGIN_VERSION_WTXT L"2.0.9"
 
 #define PLUGIN_NAME         L"NetBox"
 #define PLUGIN_AUTHOR       L"Michael Lukashov"

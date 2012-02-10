@@ -160,13 +160,13 @@ TCommandSet::TCommandSet(TSessionData *aSessionData):
 //---------------------------------------------------------------------------
 void TCommandSet::CopyFrom(TCommandSet *Source)
 {
-    memcpy(&CommandSet, Source->CommandSet, sizeof(CommandSet));
+    memmove(&CommandSet, Source->CommandSet, sizeof(CommandSet));
 }
 //---------------------------------------------------------------------------
 void TCommandSet::Default()
 {
     assert(sizeof(CommandSet) == sizeof(DefaultCommandSet));
-    memcpy(&CommandSet, &DefaultCommandSet, sizeof(CommandSet));
+    memmove(&CommandSet, &DefaultCommandSet, sizeof(CommandSet));
 }
 //---------------------------------------------------------------------------
 int TCommandSet::GetMaxLines(TFSCommand Cmd)
