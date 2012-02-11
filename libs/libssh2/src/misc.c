@@ -94,7 +94,7 @@ static int wsa2errno(void)
  * Replacement for the standard recv, return -errno on failure.
  */
 ssize_t
-_libssh2_recv(libssh2_socket_t sock, void *buffer, size_t length, int flags)
+_libssh2_recv(libssh2_socket_t sock, void *buffer, size_t length, int flags, void **abstract)
 {
     ssize_t rc = recv(sock, buffer, length, flags);
 #ifdef WIN32
@@ -108,8 +108,14 @@ _libssh2_recv(libssh2_socket_t sock, void *buffer, size_t length, int flags)
             return -errno;
     }
 #else
-    if (rc < 0 )
-        return -errno;
+    if (rc < 0 ){
+        /* Sometimes the first recv() function call sets errno to ENOENT on
+           Solaris and HP-UX */
+        if ( errno == ENOENT )
+            return -EAGAIN;
+        else
+            return -errno;
+    }
 #endif
     return rc;
 }
@@ -120,7 +126,7 @@ _libssh2_recv(libssh2_socket_t sock, void *buffer, size_t length, int flags)
  */
 ssize_t
 _libssh2_send(libssh2_socket_t sock, const void *buffer, size_t length,
-              int flags)
+              int flags, void **abstract)
 {
     ssize_t rc = send(sock, buffer, length, flags);
 #ifdef WIN32
@@ -418,7 +424,7 @@ _libssh2_debug(LIBSSH2_SESSION * session, int context, const char *format, ...)
         }
     }
 
-    gettimeofday(&now, NULL);
+    _libssh2_gettimeofday(&now, NULL);
     if(!firstsec) {
         firstsec = now.tv_sec;
     }
@@ -557,16 +563,15 @@ void _libssh2_list_insert(struct list_node *after, /* insert before this */
 
 #endif
 
-
-
-#ifndef HAVE_GETTIMEOFDAY
+/* this define is defined in misc.h for the correct platforms */
+#ifdef LIBSSH2_GETTIMEOFDAY_WIN32
 /*
  * gettimeofday
  * Implementation according to:
  * The Open Group Base Specifications Issue 6
  * IEEE Std 1003.1, 2004 Edition
  */
-  
+
 /*
  *  THIS SOFTWARE IS NOT COPYRIGHTED
  *
@@ -585,9 +590,7 @@ void _libssh2_list_insert(struct list_node *after, /* insert before this */
 /* Offset between 1/1/1601 and 1/1/1970 in 100 nanosec units */
 #define _W32_FT_OFFSET (116444736000000000)
 
-
-int __cdecl gettimeofday(struct timeval *tp,
-                         void *tzp)
+int __cdecl _libssh2_gettimeofday(struct timeval *tp, void *tzp)
  {
   union {
     unsigned __int64 ns100; /*time since 1 Jan 1601 in 100ns units */

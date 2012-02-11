@@ -257,7 +257,7 @@ aes_ctr_init(EVP_CIPHER_CTX *ctx, const unsigned char *key,
 static int
 aes_ctr_do_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
                   const unsigned char *in,
-                  unsigned int inl) /* encrypt/decrypt data */
+                  size_t inl) /* encrypt/decrypt data */
 {
     aes_ctr_ctx *c = EVP_CIPHER_CTX_get_app_data(ctx);
     unsigned char b1[AES_BLOCK_SIZE];
@@ -315,39 +315,49 @@ aes_ctr_cleanup(EVP_CIPHER_CTX *ctx) /* cleanup ctx */
 }
 
 static const EVP_CIPHER *
-make_ctr_evp (size_t keylen)
+make_ctr_evp (size_t keylen, EVP_CIPHER *aes_ctr_cipher)
 {
-    static EVP_CIPHER aes_ctr_cipher;
+    aes_ctr_cipher->block_size = 16;
+    aes_ctr_cipher->key_len = keylen;
+    aes_ctr_cipher->iv_len = 16;
+    aes_ctr_cipher->init = aes_ctr_init;
+    aes_ctr_cipher->do_cipher = aes_ctr_do_cipher;
+    aes_ctr_cipher->cleanup = aes_ctr_cleanup;
 
-    memset(&aes_ctr_cipher, 0, sizeof(aes_ctr_cipher));
-
-    aes_ctr_cipher.block_size = 16;
-    aes_ctr_cipher.key_len = keylen;
-    aes_ctr_cipher.iv_len = 16;
-    aes_ctr_cipher.init = aes_ctr_init;
-    aes_ctr_cipher.do_cipher = aes_ctr_do_cipher;
-    aes_ctr_cipher.cleanup = aes_ctr_cleanup;
-
-    return &aes_ctr_cipher;
+    return aes_ctr_cipher;
 }
 
 const EVP_CIPHER *
 _libssh2_EVP_aes_128_ctr(void)
 {
-    return make_ctr_evp (16);
+    static EVP_CIPHER aes_ctr_cipher;
+    return !aes_ctr_cipher.key_len?
+        make_ctr_evp (16, &aes_ctr_cipher) : &aes_ctr_cipher;
 }
 
 const EVP_CIPHER *
 _libssh2_EVP_aes_192_ctr(void)
 {
-    return make_ctr_evp (24);
+    static EVP_CIPHER aes_ctr_cipher;
+    return !aes_ctr_cipher.key_len?
+        make_ctr_evp (24, &aes_ctr_cipher) : &aes_ctr_cipher;
 }
 
 const EVP_CIPHER *
 _libssh2_EVP_aes_256_ctr(void)
 {
-    return make_ctr_evp (32);
+    static EVP_CIPHER aes_ctr_cipher;
+    return !aes_ctr_cipher.key_len?
+        make_ctr_evp (32, &aes_ctr_cipher) : &aes_ctr_cipher;
 }
+
+void _libssh2_init_aes_ctr(void)
+{
+    _libssh2_EVP_aes_128_ctr();
+    _libssh2_EVP_aes_192_ctr();
+    _libssh2_EVP_aes_256_ctr();
+}
+
 #endif /* LIBSSH2_AES_CTR */
 
 /* TODO: Optionally call a passphrase callback specified by the
@@ -656,10 +666,9 @@ gen_publickey_from_rsa_evp(LIBSSH2_SESSION *session,
         LIBSSH2_FREE(session, method_buf);
     }
 
-    _libssh2_error(session,
-                   LIBSSH2_ERROR_ALLOC,
-                   "Unable to allocate memory for private key data");
-    return -1;
+    return _libssh2_error(session,
+                          LIBSSH2_ERROR_ALLOC,
+                          "Unable to allocate memory for private key data");
 }
 
 static int
@@ -711,10 +720,9 @@ gen_publickey_from_dsa_evp(LIBSSH2_SESSION *session,
         LIBSSH2_FREE(session, method_buf);
     }
 
-    _libssh2_error(session,
-                   LIBSSH2_ERROR_ALLOC,
-                   "Unable to allocate memory for private key data");
-    return -1;
+    return _libssh2_error(session,
+                          LIBSSH2_ERROR_ALLOC,
+                          "Unable to allocate memory for private key data");
 }
 
 int
@@ -737,10 +745,10 @@ _libssh2_pub_priv_keyfile(LIBSSH2_SESSION *session,
 
     bp = BIO_new_file(privatekey, "r");
     if (bp == NULL) {
-        _libssh2_error(session,
-                       LIBSSH2_ERROR_FILE,
-                       "Unable to open private key file");
-        return -1;
+        return _libssh2_error(session,
+                              LIBSSH2_ERROR_FILE,
+                              "Unable to extract public key from private key "
+                              "file: Unable to open private key file");
     }
     if (!EVP_get_cipherbyname("des")) {
         /* If this cipher isn't loaded it's a pretty good indication that none
@@ -755,11 +763,12 @@ _libssh2_pub_priv_keyfile(LIBSSH2_SESSION *session,
     BIO_free(bp);
 
     if (pk == NULL) {
-        _libssh2_error(session,
-                       LIBSSH2_ERROR_FILE,
-                       "Wrong passphrase or invalid/unrecognized "
-                       "private key file format");
-        return -1;
+        return _libssh2_error(session,
+                              LIBSSH2_ERROR_FILE,
+                              "Unable to extract public key "
+                              "from private key file: "
+                              "Wrong passphrase or invalid/unrecognized "
+                              "private key file format");
     }
 
     switch (pk->type) {
@@ -774,10 +783,11 @@ _libssh2_pub_priv_keyfile(LIBSSH2_SESSION *session,
         break;
 
     default :
-        st = -1;
-        _libssh2_error(session,
-                       LIBSSH2_ERROR_FILE,
-                       "Unsupported private key file format");
+        st = _libssh2_error(session,
+                            LIBSSH2_ERROR_FILE,
+                            "Unable to extract public key "
+                            "from private key file: "
+                            "Unsupported private key file format");
         break;
     }
 

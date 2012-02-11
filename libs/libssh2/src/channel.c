@@ -1734,6 +1734,9 @@ libssh2_channel_handle_extended_data(LIBSSH2_CHANNEL *channel,
  * It is important to not return 0 until the currently read channel is
  * complete. If we read stuff from the wire but it was no payload data to fill
  * in the buffer with, we MUST make sure to return LIBSSH2_ERROR_EAGAIN.
+ *
+ * The receive window must be maintained (enlarged) by the user of this
+ * function.
  */
 ssize_t _libssh2_channel_read(LIBSSH2_CHANNEL *channel, int stream_id,
                               char *buf, size_t buflen)
@@ -1754,6 +1757,7 @@ ssize_t _libssh2_channel_read(LIBSSH2_CHANNEL *channel, int stream_id,
                        stream_id);
         channel->read_state = libssh2_NB_state_created;
     }
+
     rc = 1; /* set to >0 to let the while loop start */
 
     /* Process all pending incoming packets in all states in order to "even
@@ -1764,15 +1768,6 @@ ssize_t _libssh2_channel_read(LIBSSH2_CHANNEL *channel, int stream_id,
 
     if ((rc < 0) && (rc != LIBSSH2_ERROR_EAGAIN))
         return _libssh2_error(session, rc, "transport read");
-
-    /*
-     * =============================== NOTE ===============================
-     * I know this is very ugly and not a really good use of "goto", but
-     * this case statement would be even uglier to do it any other way
-     */
-    if (channel->read_state == libssh2_NB_state_jump1) {
-        goto channel_read_ex_point1;
-    }
 
     read_packet = _libssh2_list_first(&session->packets);
     while (read_packet && (bytes_read < (int) buflen)) {
@@ -1871,26 +1866,6 @@ ssize_t _libssh2_channel_read(LIBSSH2_CHANNEL *channel, int stream_id,
            more off the network again */
         channel->read_state = libssh2_NB_state_created;
 
-    if(channel->remote.window_size < (LIBSSH2_CHANNEL_WINDOW_DEFAULT*30)) {
-        /* the window is getting too narrow, expand it! */
-
-      channel_read_ex_point1:
-        channel->read_state = libssh2_NB_state_jump1;
-        /* the actual window adjusting may not finish so we need to deal with
-           this special state here */
-        rc = _libssh2_channel_receive_window_adjust(channel,
-                                                    (LIBSSH2_CHANNEL_WINDOW_DEFAULT*60), 0, NULL);
-        if (rc == LIBSSH2_ERROR_EAGAIN)
-            return rc;
-
-        _libssh2_debug(session, LIBSSH2_TRACE_CONN,
-                       "channel_read() filled %d adjusted %d",
-                       bytes_read, buflen);
-        /* continue in 'created' state to drain the already read packages
-           first before starting to empty the socket further */
-        channel->read_state = libssh2_NB_state_created;
-    }
-
     return bytes_read;
 }
 
@@ -1903,15 +1878,28 @@ ssize_t _libssh2_channel_read(LIBSSH2_CHANNEL *channel, int stream_id,
  * currently read channel is complete. If we read stuff from the wire but it
  * was no payload data to fill in the buffer with, we MUST make sure to return
  * LIBSSH2_ERROR_EAGAIN.
+ *
+ * This function will first make sure there's a receive window enough to
+ * receive a full buffer's wort of contents. An application may choose to
+ * adjust the receive window more to increase transfer performance.
  */
 LIBSSH2_API ssize_t
 libssh2_channel_read_ex(LIBSSH2_CHANNEL *channel, int stream_id, char *buf,
                         size_t buflen)
 {
     int rc;
+    unsigned long recv_window;
 
     if(!channel)
         return LIBSSH2_ERROR_BAD_USE;
+
+    recv_window = libssh2_channel_window_read_ex(channel, NULL, NULL);
+
+    if(buflen > recv_window) {
+        BLOCK_ADJUST(rc, channel->session,
+                     _libssh2_channel_receive_window_adjust(channel, buflen,
+                                                            0, NULL));
+    }
 
     BLOCK_ADJUST(rc, channel->session,
                  _libssh2_channel_read(channel, stream_id, buf, buflen));
@@ -2022,7 +2010,7 @@ _libssh2_channel_write(LIBSSH2_CHANNEL *channel, int stream_id,
 
         if(channel->local.window_size <= 0)
             /* there's no room for data so we stop */
-            return 0;
+            return (rc==LIBSSH2_ERROR_EAGAIN?rc:0);
 
         channel->write_bufwrite = buflen;
 
