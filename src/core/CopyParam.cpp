@@ -623,7 +623,7 @@ unsigned long GetSpeedLimit(const std::wstring Text)
     return Speed * 1024;
 }
 //---------------------------------------------------------------------------
-std::wstring SetSpeedLimit(unsigned long Limit)
+std::wstring SetSpeedLimit(size_t Limit)
 {
     std::wstring Text;
     if (Limit == 0)

@@ -53,11 +53,11 @@ class TSessionData : public TNamedObject
 
 private:
     std::wstring FHostName;
-    int FPortNumber;
+    size_t FPortNumber;
     std::wstring FUserName;
     std::wstring FPassword;
     bool FPasswordless;
-    int FPingInterval;
+    size_t FPingInterval;
     TPingType FPingType;
     bool FTryAgent;
     bool FAgentFwd;
@@ -108,15 +108,15 @@ private:
     std::wstring FProxyLocalCommand;
     TAutoSwitch FProxyDNS;
     bool FProxyLocalhost;
-    int FFtpProxyLogonType;
+    size_t FFtpProxyLogonType;
     TAutoSwitch FBugs[BUG_COUNT];
     std::wstring FCustomParam1;
     std::wstring FCustomParam2;
     bool FResolveSymlinks;
     nb::TDateTime FTimeDifference;
-    int FSFTPDownloadQueue;
-    int FSFTPUploadQueue;
-    int FSFTPListingQueue;
+    size_t FSFTPDownloadQueue;
+    size_t FSFTPUploadQueue;
+    size_t FSFTPListingQueue;
     size_t FSFTPMaxVersion;
     size_t FSFTPMinPacketSize;
     size_t FSFTPMaxPacketSize;
@@ -191,7 +191,7 @@ public:
     // __property std::wstring HostName  = { read=FHostName, write=SetHostName };
     std::wstring GetHostName() const { return FHostName; }
     // __property int PortNumber  = { read=FPortNumber, write=SetPortNumber };
-    int GetPortNumber() const { return FPortNumber; }
+    size_t GetPortNumber() const { return FPortNumber; }
     TLoginType GetLoginType() const;
     void SetLoginType(TLoginType value);
     // __property std::wstring UserName  = { read=FUserName, write=SetUserName };
@@ -202,7 +202,7 @@ public:
     // __property bool Passwordless = { read=FPasswordless, write=SetPasswordless };
     bool GetPasswordless() const { return FPasswordless; }
     // __property int PingInterval  = { read=FPingInterval, write=SetPingInterval };
-    int GetPingInterval() const { return FPingInterval; }
+    size_t GetPingInterval() const { return FPingInterval; }
     // __property bool TryAgent  = { read=FTryAgent, write=SetTryAgent };
     bool GetTryAgent() const { return FTryAgent; }
     // __property bool AgentFwd  = { read=FAgentFwd, write=SetAgentFwd };
@@ -349,7 +349,7 @@ public:
     // __property bool ProxyLocalhost  = { read=FProxyLocalhost, write=SetProxyLocalhost };
     bool GetProxyLocalhost() const { return FProxyLocalhost; }
     // __property int FtpProxyLogonType  = { read=FFtpProxyLogonType, write=SetFtpProxyLogonType };
-    int GetFtpProxyLogonType() const { return FFtpProxyLogonType; }
+    size_t GetFtpProxyLogonType() const { return FFtpProxyLogonType; }
     // __property TAutoSwitch Bug[TSshBug Bug]  = { read=GetBug, write=SetBug };
     void SetBug(TSshBug Bug, TAutoSwitch value);
     TAutoSwitch GetBug(TSshBug Bug) const;
@@ -362,13 +362,13 @@ public:
     // __property bool ResolveSymlinks = { read = FResolveSymlinks, write = SetResolveSymlinks };
     bool GetResolveSymlinks() const { return FResolveSymlinks; }
     // __property int SFTPDownloadQueue = { read = FSFTPDownloadQueue, write = SetSFTPDownloadQueue };
-    int GetSFTPDownloadQueue() const { return FSFTPDownloadQueue; }
-    void SetSFTPDownloadQueue(int value);
+    size_t GetSFTPDownloadQueue() const { return FSFTPDownloadQueue; }
+    void SetSFTPDownloadQueue(size_t value);
     // __property int SFTPUploadQueue = { read = FSFTPUploadQueue, write = SetSFTPUploadQueue };
-    int GetSFTPUploadQueue() const { return FSFTPUploadQueue; }
-    void SetSFTPUploadQueue(int value);
+    size_t GetSFTPUploadQueue() const { return FSFTPUploadQueue; }
+    void SetSFTPUploadQueue(size_t value);
     // __property int SFTPListingQueue = { read = FSFTPListingQueue, write = SetSFTPListingQueue };
-    int GetSFTPListingQueue() const { return FSFTPListingQueue; }
+    size_t GetSFTPListingQueue() const { return FSFTPListingQueue; }
     void SetSFTPListingQueue(size_t value);
     // __property int SFTPMaxVersion = { read = FSFTPMaxVersion, write = SetSFTPMaxVersion };
     size_t GetSFTPMaxVersion() const { return FSFTPMaxVersion; }
@@ -524,7 +524,7 @@ public:
     void SetRekeyTime(unsigned int value);
     void SetColor(int value);
     void SetTunnelHostName(const std::wstring value);
-    void SetTunnelPortNumber(int value);
+    void SetTunnelPortNumber(size_t value);
     void SetTunnelUserName(const std::wstring value);
     void SetTunnelPublicKeyFile(const std::wstring value);
     void SetTunnelLocalPortNumber(size_t value);

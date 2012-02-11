@@ -2017,12 +2017,12 @@ void TSessionData::SetCustomParam2(const std::wstring value)
     SET_SESSION_PROPERTY(CustomParam2);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetSFTPDownloadQueue(int value)
+void TSessionData::SetSFTPDownloadQueue(size_t value)
 {
     SET_SESSION_PROPERTY(SFTPDownloadQueue);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetSFTPUploadQueue(int value)
+void TSessionData::SetSFTPUploadQueue(size_t value)
 {
     SET_SESSION_PROPERTY(SFTPUploadQueue);
 }
@@ -2104,7 +2104,7 @@ void TSessionData::SetTunnelHostName(const std::wstring val)
     }
 }
 //---------------------------------------------------------------------
-void TSessionData::SetTunnelPortNumber(int value)
+void TSessionData::SetTunnelPortNumber(size_t value)
 {
     SET_SESSION_PROPERTY(TunnelPortNumber);
 }
