@@ -23,7 +23,6 @@
     <ClCompile Include="src\compress.c" />
     <ClCompile Include="src\crc32.c" />
     <ClCompile Include="src\deflate.c" />
-    <ClCompile Include="src\example.c" />
     <ClCompile Include="src\gzclose.c" />
     <ClCompile Include="src\gzlib.c" />
     <ClCompile Include="src\gzread.c" />
@@ -32,7 +31,6 @@
     <ClCompile Include="src\inffast.c" />
     <ClCompile Include="src\inflate.c" />
     <ClCompile Include="src\inftrees.c" />
-    <ClCompile Include="src\minigzip.c" />
     <ClCompile Include="src\trees.c" />
     <ClCompile Include="src\uncompr.c" />
     <ClCompile Include="src\zutil.c" />
