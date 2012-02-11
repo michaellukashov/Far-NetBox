@@ -151,6 +151,6 @@ public:
 };
 //---------------------------------------------------------------------------
 unsigned long GetSpeedLimit(const std::wstring Text);
-std::wstring SetSpeedLimit(unsigned long Limit);
+std::wstring SetSpeedLimit(size_t Limit);
 //---------------------------------------------------------------------------
 #endif

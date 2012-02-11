@@ -1070,7 +1070,7 @@ private:
 //---------------------------------------------------------------------------
 std::wstring ReplaceCopyright(const std::wstring S)
 {
-    return ::StringReplace(S, L"©", L"(c)");
+    return ::StringReplace(S, L"ï¿½", L"(c)");
 }
 //---------------------------------------------------------------------------
 TAboutDialog::TAboutDialog(TCustomFarPlugin *AFarPlugin) :
@@ -6946,7 +6946,7 @@ void TSynchronizeChecklistDialog::AddColumn(std::wstring &List,
     char Separator = '\xB3';
     StrToFar(Value);
     size_t Len = Value.size();
-    int Width = FWidths[Column];
+    size_t Width = static_cast<size_t>(FWidths[Column]);
     bool Right = (Column == 2) || (Column == 3) || (Column == 6) || (Column == 7);
     bool LastCol = (Column == FColumns - 1);
     if (Len <= Width)

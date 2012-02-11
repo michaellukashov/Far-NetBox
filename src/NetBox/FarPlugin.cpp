@@ -1227,7 +1227,7 @@ bool TCustomFarPlugin::InputBox(const std::wstring Title,
                          StrToFar(HistoryName.c_str()),
                          StrToFar(AText.c_str()),
                          const_cast<wchar_t *>(DestText.c_str()),
-                         static_cast<int>(MaxLen),
+                         MaxLen,
                          NULL,
                          FIB_ENABLEEMPTY | FIB_BUTTONS | Flags);
         }
@@ -1405,7 +1405,7 @@ void TCustomFarPlugin::ScrollTerminalScreen(int Rows)
     Dest.X = 0;
     Dest.Y = 0;
     Fill.Char.AsciiChar = ' ';
-    // Fill.Ñhar.UnicodeChar = L' ';
+    // Fill.ï¿½har.UnicodeChar = L' ';
     Fill.Attributes = 7;
     ScrollConsoleScreenBuffer(FConsoleOutput, &Source, NULL, Dest, &Fill);
 }
@@ -1701,7 +1701,7 @@ std::wstring TCustomFarPlugin::TemporaryDir()
     std::wstring Result;
     Result.resize(MAX_PATH);
     TFarEnvGuard Guard;
-    FFarStandardFunctions.MkTemp(const_cast<wchar_t *>(Result.c_str()), static_cast<DWORD>(Result.size()), NULL);
+    FFarStandardFunctions.MkTemp(const_cast<wchar_t *>(Result.c_str()), Result.size(), NULL);
     PackStr(Result);
     StrFromFar(Result);
     return Result;
@@ -1798,7 +1798,7 @@ void TCustomFarFileSystem::ClearOpenPluginInfo(OpenPluginInfo &Info)
         assert(!Info.DescrFiles);
         assert(!Info.DescrFilesNumber);
         assert(Info.PanelModesNumber == 0 || Info.PanelModesNumber == PANEL_MODES_COUNT);
-        for (int Index = 0; Index < Info.PanelModesNumber; Index++)
+        for (size_t Index = 0; Index < Info.PanelModesNumber; Index++)
         {
             assert(Info.PanelModesArray);
             TFarPanelModes::ClearPanelMode(
@@ -2172,14 +2172,14 @@ int TCustomFarFileSystem::PutFilesEx(nb::TObjectList * /*PanelItems*/,
 }
 //---------------------------------------------------------------------------
 nb::TObjectList *TCustomFarFileSystem::CreatePanelItemList(
-    struct PluginPanelItem *PanelItem, int ItemsNumber)
+    struct PluginPanelItem *PanelItem, size_t ItemsNumber)
 {
     // DEBUG_PRINTF(L"ItemsNumber = %d", ItemsNumber);
     nb::TObjectList *PanelItems = new nb::TObjectList();
     PanelItems->SetOwnsObjects(false);
     try
     {
-        for (int Index = 0; Index < ItemsNumber; Index++)
+        for (size_t Index = 0; Index < ItemsNumber; Index++)
         {
             PanelItems->Add(new TFarPanelItem(&PanelItem[Index]));
         }
@@ -2432,7 +2432,7 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem *PanelItem)
     PanelItem->Owner = StrToFar(TCustomFarPlugin::DuplicateStr(Owner));
     // PanelItem->CustomColumnData = new wchar_t *[PanelItem->CustomColumnNumber];
     wchar_t **CustomColumnData = new wchar_t *[PanelItem->CustomColumnNumber];
-    for (int Index = 0; Index < PanelItem->CustomColumnNumber; Index++)
+    for (size_t Index = 0; Index < PanelItem->CustomColumnNumber; Index++)
     {
         CustomColumnData[Index] =
             StrToFar(TCustomFarPlugin::DuplicateStr(GetCustomColumnData(Index)));
@@ -2556,7 +2556,7 @@ TFarPanelInfo::~TFarPanelInfo()
     delete FItems;
 }
 //---------------------------------------------------------------------------
-int TFarPanelInfo::GetItemCount()
+size_t TFarPanelInfo::GetItemCount()
 {
     return FPanelInfo->ItemsNumber;
 }
@@ -2567,9 +2567,9 @@ nb::TRect TFarPanelInfo::GetBounds()
     return nb::TRect(rect.left, rect.top, rect.right, rect.bottom);
 }
 //---------------------------------------------------------------------------
-int TFarPanelInfo::GetSelectedCount()
+size_t TFarPanelInfo::GetSelectedCount()
 {
-    int Count = FPanelInfo->SelectedItemsNumber;
+    size_t Count = FPanelInfo->SelectedItemsNumber;
 
     if (Count == 1)
     {
@@ -2596,7 +2596,7 @@ nb::TObjectList *TFarPanelInfo::GetItems()
         FItems = new nb::TObjectList();
     }
     // DEBUG_PRINTF(L"FPanelInfo->ItemsNumber = %d", FPanelInfo->ItemsNumber);
-    for (int Index = 0; Index < FPanelInfo->ItemsNumber; Index++)
+    for (size_t Index = 0; Index < FPanelInfo->ItemsNumber; Index++)
     {
         // DEBUG_PRINTF(L"Index = %d", Index);
         // TODO: move to common function
@@ -2684,8 +2684,8 @@ void TFarPanelInfo::SetFocusedIndex(size_t value)
     // DEBUG_PRINTF(L"GetFocusedIndex = %d, value = %d", GetFocusedIndex(), value);
     if (GetFocusedIndex() != value)
     {
-        assert(value != -1 && value < static_cast<size_t>(FPanelInfo->ItemsNumber));
-        FPanelInfo->CurrentItem = static_cast<int>(value);
+        assert(value != -1 && value < FPanelInfo->ItemsNumber);
+        FPanelInfo->CurrentItem = value;
         PanelRedrawInfo PanelInfo;
         PanelInfo.CurrentItem = FPanelInfo->CurrentItem;
         PanelInfo.TopPanelItem = FPanelInfo->TopPanelItem;

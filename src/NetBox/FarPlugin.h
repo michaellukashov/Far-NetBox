@@ -308,7 +308,7 @@ private:
 
     void ClearOpenPluginInfo(OpenPluginInfo &Info);
     nb::TObjectList *CreatePanelItemList(struct PluginPanelItem *PanelItem,
-                                         int ItemsNumber);
+                                         size_t ItemsNumber);
     TFarPanelInfo *GetPanelInfo(int Another);
 };
 //---------------------------------------------------------------------------
@@ -431,8 +431,8 @@ public:
     virtual ~TFarPanelInfo();
 
     nb::TObjectList *GetItems();
-    int GetItemCount();
-    int GetSelectedCount();
+    size_t GetItemCount();
+    size_t GetSelectedCount();
     TFarPanelItem *GetFocusedItem();
     void SetFocusedItem(TFarPanelItem *value);
     size_t GetFocusedIndex();
