@@ -1714,43 +1714,12 @@ std::wstring TSessionData::AdjustHostName(const std::wstring hostName, const std
 //---------------------------------------------------------------------
 void TSessionData::RemoveProtocolPrefix(std::wstring &hostName)
 {
-    switch (GetFSProtocol())
-    {
-    case fsSCPonly:
-    {
-        hostName = AdjustHostName(hostName, L"scp://");
-        break;
-    }
-    case fsSFTP:
-    {
-        hostName = AdjustHostName(hostName, L"sftp://");
-        break;
-    }
-    case fsFTP:
-    {
-        hostName = AdjustHostName(hostName, L"ftp://");
-        break;
-    }
-    case fsFTPS:
-    {
-        hostName = AdjustHostName(hostName, L"ftps://");
-        break;
-    }
-    case fsHTTP:
-    {
-        hostName = AdjustHostName(hostName, L"http://");
-        break;
-    }
-    case fsHTTPS:
-    {
-        hostName = AdjustHostName(hostName, L"https://");
-        break;
-    }
-    default:
-    {
-        break;
-    }
-    }
+    hostName = AdjustHostName(hostName, L"scp://");
+    hostName = AdjustHostName(hostName, L"sftp://");
+    hostName = AdjustHostName(hostName, L"ftp://");
+    hostName = AdjustHostName(hostName, L"ftps://");
+    hostName = AdjustHostName(hostName, L"http://");
+    hostName = AdjustHostName(hostName, L"https://");
 }
 
 //---------------------------------------------------------------------
