@@ -1701,25 +1701,23 @@ void TSessionData::SetRekeyTime(unsigned int value)
     SET_SESSION_PROPERTY(RekeyTime);
 }
 //---------------------------------------------------------------------
-std::wstring TSessionData::AdjustHostName(const std::wstring hostName, const std::wstring prefix)
+void TSessionData::AdjustHostName(std::wstring &hostName, const std::wstring prefix)
 {
-    std::wstring result = hostName;
-    if (::LowerCase(result.substr(0, prefix.size())) == prefix)
+    if (::LowerCase(hostName.substr(0, prefix.size())) == prefix)
     {
-        result.erase(0, prefix.size());
-        result = ::ReplaceStrAll(result, L"/", L"_");
+        hostName.erase(0, prefix.size());
+        hostName = ::ReplaceStrAll(hostName, L"/", L"_");
     }
-    return result;
 }
 //---------------------------------------------------------------------
 void TSessionData::RemoveProtocolPrefix(std::wstring &hostName)
 {
-    hostName = AdjustHostName(hostName, L"scp://");
-    hostName = AdjustHostName(hostName, L"sftp://");
-    hostName = AdjustHostName(hostName, L"ftp://");
-    hostName = AdjustHostName(hostName, L"ftps://");
-    hostName = AdjustHostName(hostName, L"http://");
-    hostName = AdjustHostName(hostName, L"https://");
+    AdjustHostName(hostName, L"scp://");
+    AdjustHostName(hostName, L"sftp://");
+    AdjustHostName(hostName, L"ftp://");
+    AdjustHostName(hostName, L"ftps://");
+    AdjustHostName(hostName, L"http://");
+    AdjustHostName(hostName, L"https://");
 }
 
 //---------------------------------------------------------------------
