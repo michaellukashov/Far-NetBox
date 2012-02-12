@@ -1707,8 +1707,8 @@ std::wstring TSessionData::AdjustHostName(const std::wstring hostName, const std
     if (::LowerCase(result.substr(0, prefix.size())) == prefix)
     {
         result.erase(0, prefix.size());
+        result = ::ReplaceStrAll(result, L"/", L"_");
     }
-    result = ::ReplaceStrAll(result, L"/", L"_");
     return result;
 }
 //---------------------------------------------------------------------
