@@ -1,5 +1,6 @@
 NetBox 2.0.10 ??.02.2012
 ---------------------
+  * various minor bugfixes
   * libssh2 core upgraded to 1.4.0
   * zlib core upgraded to 1.2.6
 
