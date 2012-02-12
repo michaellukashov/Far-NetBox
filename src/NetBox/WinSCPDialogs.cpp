@@ -3393,14 +3393,14 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
         // save session data
 
         // Basic tab
+        SessionData->SetFSProtocol(GetFSProtocol());
+
         SessionData->SetHostName(HostNameEdit->GetText());
         SessionData->SetPortNumber(PortNumberEdit->GetAsInteger());
         SessionData->SetUserName(UserNameEdit->GetText());
         SessionData->SetPassword(PasswordEdit->GetText());
         SessionData->SetLoginType(GetLoginType());
         SessionData->SetPublicKeyFile(PrivateKeyEdit->GetText());
-
-        SessionData->SetFSProtocol(GetFSProtocol());
 
         // Directories tab
         SessionData->SetRemoteDirectory(RemoteDirectoryEdit->GetText());
