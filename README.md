@@ -10,13 +10,20 @@ HOW TO INSTALL
 ==============
 
 You can either download an appropriate binary package for your  
-platform or build from source. Binaries can be obtained from  
-[here](https://github.com/michaellukashov/Far-NetBox/downloads/). 
+platform or build from source. Binaries can be obtained from [here](https://github.com/michaellukashov/Far-NetBox/downloads/). 
 
 Unpack the archive in the plugin directory Far (... Far \ Plugins).
 
 HOW TO BUILD FROM SOURCE
 ========================
+
+To build plugin from source, you will need:
+
+  * Visual Studio 2010  
+  * Microsoft Platform SDK, available for download at [http://www.microsoft.com/msdownload/platformsdk/sdkupdate/](http://www.microsoft.com/msdownload/platformsdk/sdkupdate/).  
+  * Perl 5 (to compile openssl), available at [http://www.activestate.com/ActivePerl/](http://www.activestate.com/ActivePerl/)  
+  * UnxUtils [http://unxutils.sourceforge.net/](http://unxutils.sourceforge.net/)  
+  * nasm [http://www.nasm.us/pub/nasm/releasebuilds/2.09.10/win32/](http://www.nasm.us/pub/nasm/releasebuilds/2.09.10/win32/)  
 
 1.  Download the source:
 

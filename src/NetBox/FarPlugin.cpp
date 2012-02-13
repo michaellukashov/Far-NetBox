@@ -1145,7 +1145,7 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
                            int &BreakCode)
 {
     assert(Items && Items->GetCount());
-    int Result;
+    size_t Result = 0;
     FarMenuItem *MenuItems = new FarMenuItem[Items->GetCount()];
     {
         BOOST_SCOPE_EXIT ( (&MenuItems) )
@@ -1179,7 +1179,7 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
 
         if (ResultItem >= 0)
         {
-            Result = static_cast<int>(MenuItems[ResultItem].UserData);
+            Result = MenuItems[ResultItem].UserData;
             if (Selected != -1)
             {
                 Items->PutObject(Selected, (nb::TObject *)(reinterpret_cast<size_t>(Items->GetObject(Selected)) & ~MIF_SELECTED));

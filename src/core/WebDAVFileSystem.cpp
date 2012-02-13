@@ -197,7 +197,7 @@ void TWebDAVFileSystem::Open()
     {
         HostName.erase(0, 8);
     }
-    int Port = Data->GetPortNumber();
+    size_t Port = Data->GetPortNumber();
     std::wstring ProtocolName = FTerminal->GetSessionData()->GetFSProtocol() == fsHTTP ?
                                 L"http" : L"https";
     std::wstring UserName = Data->GetUserName();

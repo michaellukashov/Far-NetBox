@@ -411,9 +411,10 @@ INT_PTR WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1,
     return Result;
 }
 //---------------------------------------------------------------------------
-long TFarDialog::DialogProc(int Msg, int Param1, void *Param2)
+LONG_PTR TFarDialog::DialogProc(int Msg, int Param1, void *Param2)
 {
-    long Result = 0;
+
+    LONG_PTR Result = 0;
     bool Handled = false;
 
     try
@@ -583,15 +584,15 @@ long TFarDialog::DialogProc(int Msg, int Param1, void *Param2)
     return Result;
 }
 //---------------------------------------------------------------------------
-long TFarDialog::DefaultDialogProc(int Msg, int Param1, void *Param2)
+LONG_PTR TFarDialog::DefaultDialogProc(int Msg, int Param1, void *Param2)
 {
     TFarEnvGuard Guard;
-    return static_cast<long>(GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetHandle(), Msg, Param1, Param2));
+    return GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetHandle(), Msg, Param1, Param2);
 }
 //---------------------------------------------------------------------------
-long TFarDialog::FailDialogProc(int Msg, int Param1, void *Param2)
+LONG_PTR TFarDialog::FailDialogProc(int Msg, int Param1, void *Param2)
 {
-    long Result = 0;
+    LONG_PTR Result = 0;
     switch (Msg)
     {
     case DN_CLOSE:
@@ -1355,13 +1356,13 @@ bool TFarDialogItem::GetIsEmpty()
     return GetData().empty();
 }
 //---------------------------------------------------------------------------
-long TFarDialogItem::FailItemProc(int Msg, void *Param)
+LONG_PTR TFarDialogItem::FailItemProc(int Msg, void *Param)
 {
-    long Result = 0;
+    LONG_PTR Result = 0;
     switch (Msg)
     {
     case DN_KILLFOCUS:
-        Result = static_cast<long>(GetItem());
+        Result = static_cast<LONG_PTR>(GetItem());
         break;
 
     default:
@@ -1371,9 +1372,9 @@ long TFarDialogItem::FailItemProc(int Msg, void *Param)
     return Result;
 }
 //---------------------------------------------------------------------------
-long TFarDialogItem::ItemProc(int Msg, void *Param)
+LONG_PTR TFarDialogItem::ItemProc(int Msg, void *Param)
 {
-    long Result = 0;
+    LONG_PTR Result = 0;
     bool Handled = false;
 
     if (Msg == DN_GOTFOCUS)
@@ -1422,16 +1423,16 @@ void TFarDialogItem::DoExit()
     }
 }
 //---------------------------------------------------------------------------
-long TFarDialogItem::DefaultItemProc(int Msg, void *Param)
+LONG_PTR TFarDialogItem::DefaultItemProc(int Msg, void *Param)
 {
     TFarEnvGuard Guard;
-    return GetDialog()->GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, static_cast<int>(GetItem()), Param);
+    return GetDialog()->GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, GetItem(), Param);
 }
 //---------------------------------------------------------------------------
-long TFarDialogItem::DefaultDialogProc(int Msg, int Param1, void *Param2)
+LONG_PTR TFarDialogItem::DefaultDialogProc(int Msg, int Param1, void *Param2)
 {
     TFarEnvGuard Guard;
-    return GetDialog()->GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, static_cast<int>(Param1), Param2);
+    return GetDialog()->GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, Param1, Param2);
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::Change()
@@ -1864,7 +1865,7 @@ void TFarButton::SetBrackets(TFarButtonBrackets value)
     }
 }
 //---------------------------------------------------------------------------
-long TFarButton::ItemProc(int Msg, void *Param)
+LONG_PTR TFarButton::ItemProc(int Msg, void *Param)
 {
     if (Msg == DN_BTNCLICK)
     {
@@ -1917,7 +1918,7 @@ TFarCheckBox::TFarCheckBox(TFarDialog *ADialog) :
 {
 }
 //---------------------------------------------------------------------------
-long TFarCheckBox::ItemProc(int Msg, void *Param)
+LONG_PTR TFarCheckBox::ItemProc(int Msg, void *Param)
 {
     if (Msg == DN_BTNCLICK)
     {
@@ -1930,7 +1931,7 @@ long TFarCheckBox::ItemProc(int Msg, void *Param)
         {
             UpdateSelected(reinterpret_cast<int>(Param));
         }
-        return static_cast<long>(Allow);
+        return static_cast<LONG_PTR>(Allow);
     }
     else
     {
@@ -1958,7 +1959,7 @@ TFarRadioButton::TFarRadioButton(TFarDialog *ADialog) :
 {
 }
 //---------------------------------------------------------------------------
-long TFarRadioButton::ItemProc(int Msg, void *Param)
+LONG_PTR TFarRadioButton::ItemProc(int Msg, void *Param)
 {
     if (Msg == DN_BTNCLICK)
     {
@@ -2009,7 +2010,7 @@ void TFarEdit::Detach()
     TFarDialogItem::Detach();
 }
 //---------------------------------------------------------------------------
-long TFarEdit::ItemProc(int Msg, void *Param)
+LONG_PTR TFarEdit::ItemProc(int Msg, void *Param)
 {
     if (Msg == DN_EDITCHANGE)
     {
@@ -2459,7 +2460,7 @@ void TFarList::Init()
     // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-long TFarList::ItemProc(int Msg, void *Param)
+LONG_PTR TFarList::ItemProc(int Msg, void *Param)
 {
     assert(GetDialogItem() != NULL);
     if (Msg == DN_LISTCHANGE)
@@ -2475,7 +2476,7 @@ long TFarList::ItemProc(int Msg, void *Param)
             GetDialogItem()->UpdateData(GetString(param));
         }
     }
-    return static_cast<long>(false);
+    return static_cast<LONG_PTR>(false);
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -2492,9 +2493,9 @@ TFarListBox::~TFarListBox()
     SAFE_DESTROY(FList);
 }
 //---------------------------------------------------------------------------
-long TFarListBox::ItemProc(int Msg, void *Param)
+LONG_PTR TFarListBox::ItemProc(int Msg, void *Param)
 {
-    long Result = 0;
+    LONG_PTR Result = 0;
     if (Msg == DN_CONTROLINPUT)
     {
         const INPUT_RECORD *Rec = static_cast<const INPUT_RECORD *>(Param);
@@ -2573,7 +2574,7 @@ void TFarComboBox::ResizeToFitContent()
     SetWidth(FList->GetMaxLength());
 }
 //---------------------------------------------------------------------------
-long TFarComboBox::ItemProc(int Msg, void *Param)
+LONG_PTR TFarComboBox::ItemProc(int Msg, void *Param)
 {
     if (Msg == DN_EDITCHANGE)
     {
@@ -2584,7 +2585,7 @@ long TFarComboBox::ItemProc(int Msg, void *Param)
 
     if (FList->ItemProc(Msg, Param))
     {
-        return static_cast<long>(true);
+        return static_cast<LONG_PTR>(true);
     }
     else
     {
@@ -2654,9 +2655,9 @@ void TFarLister::DoFocus()
     // TODO: hide cursor
 }
 //---------------------------------------------------------------------------
-long TFarLister::ItemProc(int Msg, void *Param)
+LONG_PTR TFarLister::ItemProc(int Msg, void *Param)
 {
-    long Result = 0;
+    LONG_PTR Result = 0;
 
     if (Msg == DN_DRAWDLGITEM)
     {
