@@ -2860,15 +2860,14 @@ void TSessionDialog::TransferProtocolComboChange()
     }
     else if (GetFSProtocol() == fsFTPS)
     {
-        if ((PortNumberEdit->GetAsInteger() == 21 && FSessionData->GetFtpEncryption() == fesImplicit) ||
-            (PortNumberEdit->GetAsInteger() == 80))
+        if (PortNumberEdit->GetAsInteger() == 22 || PortNumberEdit->GetAsInteger() == 80)
         {
             PortNumberEdit->SetAsInteger(990);
         }
     }
     else if (GetFSProtocol() == fsHTTP)
     {
-        if (PortNumberEdit->GetAsInteger() == 990 || PortNumberEdit->GetAsInteger() == 443)
+        if (PortNumberEdit->GetAsInteger() == 21 || PortNumberEdit->GetAsInteger() == 990 || PortNumberEdit->GetAsInteger() == 443)
         {
             PortNumberEdit->SetAsInteger(80);
             ::AdjustRemoteDir(HostNameEdit, RemoteDirectoryEdit, UpdateDirectoriesCheck);
