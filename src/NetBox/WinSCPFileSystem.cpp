@@ -38,10 +38,12 @@ void TSessionPanelItem::SetPanelModes(TFarPanelModes *PanelModes)
             delete ColumnTitles;
         } BOOST_SCOPE_EXIT_END
         ColumnTitles->Add(FarPlugin->GetMsg(SESSION_NAME_COL_TITLE));
+        /*
         for (size_t Index = 0; Index < PANEL_MODES_COUNT; Index++)
         {
             PanelModes->SetPanelMode(Index, L"N", L"0", ColumnTitles, false, false, false);
         }
+        */
     }
 }
 //---------------------------------------------------------------------------

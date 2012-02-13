@@ -1854,7 +1854,7 @@ void TCustomFarFileSystem::GetOpenPluginInfo(struct OpenPluginInfo *Info)
                 FOpenPluginInfo.CurDir = StrToFar(TCustomFarPlugin::DuplicateStr(CurDir));
                 FOpenPluginInfo.Format = StrToFar(TCustomFarPlugin::DuplicateStr(Format));
                 FOpenPluginInfo.PanelTitle = StrToFar(TCustomFarPlugin::DuplicateStr(PanelTitle));
-                // PanelModes->FillOpenPluginInfo(&FOpenPluginInfo);
+                PanelModes->FillOpenPluginInfo(&FOpenPluginInfo);
                 FOpenPluginInfo.StartSortOrder = StartSortOrder;
                 KeyBarTitles->FillOpenPluginInfo(&FOpenPluginInfo);
                 FOpenPluginInfo.ShortcutData = StrToFar(TCustomFarPlugin::DuplicateStr(ShortcutData));
@@ -2276,8 +2276,8 @@ void TFarPanelModes::FillOpenPluginInfo(struct OpenPluginInfo *Info)
     assert(Info);
     Info->PanelModesNumber = LENOF(FPanelModes);
     PanelMode *PanelModesArray = new PanelMode[LENOF(FPanelModes)];
-    Info->PanelModesArray = PanelModesArray;
     memmove(PanelModesArray, &FPanelModes, sizeof(FPanelModes));
+    Info->PanelModesArray = PanelModesArray;
     FReferenced = true;
 }
 //---------------------------------------------------------------------------
