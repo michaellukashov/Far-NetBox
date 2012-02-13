@@ -1,6 +1,11 @@
 NetBox 2.0.10 ??.02.2012
 ---------------------
-  * various minor bugfixes
+  * Interface settings: Enable option "Use custom settings for "Detailed" panel mode"
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=540#p90652)
+  * Session properies: Enable autocorrect port number
+  * Bugfix: Set default port number when plugin is called from command-line
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=525#p90619)
+  * Various minor bugfixes
   * libssh2 core upgraded to 1.4.0
   * zlib core upgraded to 1.2.6
 

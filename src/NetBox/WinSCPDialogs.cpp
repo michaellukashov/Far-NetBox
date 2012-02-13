@@ -358,7 +358,7 @@ bool TWinSCPPlugin::ConfigurationDialog()
 
         TFarCheckBox *CustomPanelCheck = new TFarCheckBox(Dialog);
         CustomPanelCheck->SetCaption(GetMsg(CONFIG_PANEL_MODE_CHECK));
-        CustomPanelCheck->SetEnabled(false);
+        CustomPanelCheck->SetEnabled(true);
 
         Text = new TFarText(Dialog);
         Text->SetLeft(Text->GetLeft() + 4);
@@ -2789,7 +2789,7 @@ void TSessionDialog::Change()
     {
         if (FTransferProtocolIndex != TransferProtocolCombo->GetItems()->GetSelected())
         {
-            // TransferProtocolComboChange();
+            TransferProtocolComboChange();
         }
         if (FLoginTypeIndex != LoginTypeCombo->GetItems()->GetSelected())
         {
@@ -2862,14 +2862,14 @@ void TSessionDialog::TransferProtocolComboChange()
     }
     else if (GetFSProtocol() == fsFTPS)
     {
-        if (PortNumberEdit->GetAsInteger() == 21 || PortNumberEdit->GetAsInteger() == 80)
+        if (PortNumberEdit->GetAsInteger() == 22 || PortNumberEdit->GetAsInteger() == 80)
         {
             PortNumberEdit->SetAsInteger(990);
         }
     }
     else if (GetFSProtocol() == fsHTTP)
     {
-        if (PortNumberEdit->GetAsInteger() == 990 || PortNumberEdit->GetAsInteger() == 443)
+        if (PortNumberEdit->GetAsInteger() == 21 || PortNumberEdit->GetAsInteger() == 990 || PortNumberEdit->GetAsInteger() == 443)
         {
             PortNumberEdit->SetAsInteger(80);
             ::AdjustRemoteDir(HostNameEdit, RemoteDirectoryEdit, UpdateDirectoriesCheck);

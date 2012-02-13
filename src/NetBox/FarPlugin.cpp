@@ -1863,7 +1863,7 @@ void TCustomFarFileSystem::GetOpenPanelInfo(struct OpenPanelInfo *Info)
                 FOpenPanelInfo.Format = StrToFar(TCustomFarPlugin::DuplicateStr(Format));
                 FOpenPanelInfo.PanelTitle = StrToFar(TCustomFarPlugin::DuplicateStr(PanelTitle));
                 // FOpenPanelInfo.StartPanelMode=L'4';
-                // PanelModes->FillOpenPluginInfo(&FOpenPluginInfo);
+                PanelModes->FillOpenPanelInfo(&FOpenPanelInfo);
                 // Info->StartSortMode = SM_NAME;
                 // Info->StartSortOrder = 0;
 
@@ -2304,8 +2304,8 @@ void TFarPanelModes::FillOpenPanelInfo(struct OpenPanelInfo *Info)
     assert(Info);
     Info->PanelModesNumber = LENOF(FPanelModes);
     PanelMode *PanelModesArray = new PanelMode[LENOF(FPanelModes)];
-    Info->PanelModesArray = PanelModesArray;
     memmove(PanelModesArray, &FPanelModes, sizeof(FPanelModes));
+    Info->PanelModesArray = PanelModesArray;
     FReferenced = true;
 }
 //---------------------------------------------------------------------------
