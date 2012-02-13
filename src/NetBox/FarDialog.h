@@ -76,8 +76,8 @@ public:
     nb::TRect GetClientRect() const;
     std::wstring GetHelpTopic() const { return FHelpTopic; }
     void SetHelpTopic(const std::wstring value);
-    unsigned int GetFlags() const { return FFlags; }
-    void SetFlags(const unsigned int &value);
+    size_t GetFlags() const { return FFlags; }
+    void SetFlags(size_t value);
     bool GetCentered() const;
     void SetCentered(const bool &value);
     nb::TPoint GetSize() const;
@@ -148,7 +148,7 @@ protected:
 private:
     TCustomFarPlugin *FFarPlugin;
     nb::TRect FBounds;
-    unsigned int FFlags;
+    size_t FFlags;
     std::wstring FHelpTopic;
     bool FVisible;
     nb::TObjectList *FItems;
@@ -230,8 +230,8 @@ public:
     void SetWidth(int value);
     size_t GetHeight();
     void SetHeight(int value);
-    unsigned int GetFlags();
-    void SetFlags(unsigned int value);
+    size_t GetFlags();
+    void SetFlags(size_t value);
     bool GetEnabled() { return FEnabled; }
     void SetEnabled(bool value);
     bool GetIsEnabled() { return FIsEnabled; }
@@ -343,7 +343,7 @@ private:
     unsigned long FColorMask;
     bool FOem;
 
-    void UpdateFlags(unsigned int value);
+    void UpdateFlags(size_t value);
     void SetCoordinate(size_t Index, int value);
     int GetCoordinate(size_t Index);
     TFarDialogItem *GetPrevItem();
@@ -534,8 +534,8 @@ public:
     void SetTopIndex(size_t value);
     size_t GetMaxLength();
     int GetVisibleCount();
-    unsigned int GetFlags(size_t Index);
-    void SetFlags(size_t Index, unsigned int value);
+    size_t GetFlags(size_t Index);
+    void SetFlags(size_t Index, size_t value);
     bool GetDisabled(size_t Index) { return GetFlag(Index, LIF_DISABLE); }
     void SetDisabled(size_t Index, bool value) { SetFlag(Index, LIF_DISABLE, value); }
     bool GetChecked(size_t Index) { return GetFlag(Index, LIF_CHECKED); }
@@ -562,8 +562,8 @@ private:
     TFarList *Self;
 
     inline size_t GetSelectedInt(bool Init);
-    bool GetFlag(size_t Index, int Flag);
-    void SetFlag(size_t Index, int Flag, bool value);
+    bool GetFlag(size_t Index, size_t Flag);
+    void SetFlag(size_t Index, size_t Flag, bool value);
 };
 //---------------------------------------------------------------------------
 enum TFarListBoxAutoSelect { asOnlyFocus, asAlways, asNever };

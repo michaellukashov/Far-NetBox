@@ -194,7 +194,7 @@ void TFarDialog::SetHelpTopic(const std::wstring value)
     }
 }
 //---------------------------------------------------------------------------
-void TFarDialog::SetFlags(const unsigned int &value)
+void TFarDialog::SetFlags(size_t value)
 {
     if (GetFlags() != value)
     {
@@ -1138,7 +1138,7 @@ void TFarDialogItem::SetColor(size_t Index, char value)
     }
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::SetFlags(unsigned int value)
+void TFarDialogItem::SetFlags(size_t value)
 {
     if (GetFlags() != value)
     {
@@ -1147,7 +1147,7 @@ void TFarDialogItem::SetFlags(unsigned int value)
     }
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::UpdateFlags(unsigned int value)
+void TFarDialogItem::UpdateFlags(size_t value)
 {
     if (GetFlags() != value)
     {
@@ -1413,13 +1413,13 @@ void TFarDialogItem::DoExit()
 LONG_PTR TFarDialogItem::DefaultItemProc(int Msg, LONG_PTR Param)
 {
     TFarEnvGuard Guard;
-    return GetDialog()->GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, static_cast<int>(GetItem()), Param);
+    return GetDialog()->GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, GetItem(), Param);
 }
 //---------------------------------------------------------------------------
 LONG_PTR TFarDialogItem::DefaultDialogProc(int Msg, int Param1, LONG_PTR Param2)
 {
     TFarEnvGuard Guard;
-    return GetDialog()->GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, static_cast<int>(Param1), Param2);
+    return GetDialog()->GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, Param1, Param2);
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::Change()
@@ -1479,7 +1479,7 @@ void TFarDialogItem::SetSelected(size_t value)
     {
         if (GetDialog()->GetHandle())
         {
-            SendMessage(DM_SETCHECK, static_cast<int>(value));
+            SendMessage(DM_SETCHECK, value);
         }
         UpdateSelected(value);
     }
@@ -2406,12 +2406,12 @@ size_t TFarList::GetSelected()
     return Result;
 }
 //---------------------------------------------------------------------------
-unsigned int TFarList::GetFlags(size_t Index)
+size_t TFarList::GetFlags(size_t Index)
 {
     return FListItems->Items[Index].Flags;
 }
 //---------------------------------------------------------------------------
-void TFarList::SetFlags(size_t Index, unsigned int value)
+void TFarList::SetFlags(size_t Index, size_t value)
 {
     if (FListItems->Items[Index].Flags != value)
     {
@@ -2423,12 +2423,12 @@ void TFarList::SetFlags(size_t Index, unsigned int value)
     }
 }
 //---------------------------------------------------------------------------
-bool TFarList::GetFlag(size_t Index, int Flag)
+bool TFarList::GetFlag(size_t Index, size_t Flag)
 {
-    return FLAGSET(GetFlags(Index), static_cast<unsigned int>(Flag));
+    return FLAGSET(GetFlags(Index), Flag);
 }
 //---------------------------------------------------------------------------
-void TFarList::SetFlag(size_t Index, int Flag, bool value)
+void TFarList::SetFlag(size_t Index, size_t Flag, bool value)
 {
     SetFlags(Index, (GetFlags(Index) & ~Flag) | FLAGMASK(value, Flag));
 }
