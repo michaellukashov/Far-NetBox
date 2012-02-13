@@ -123,9 +123,9 @@ protected:
     void Add(TFarDialogItem *Item);
     void Add(TFarDialogContainer *Container);
     LONG_PTR SendMessage(int Msg, int Param1, LONG_PTR Param2);
-    virtual long DialogProc(int Msg, int Param1, LONG_PTR Param2);
-    virtual long FailDialogProc(int Msg, int Param1, LONG_PTR Param2);
-    long DefaultDialogProc(int Msg, int Param1, LONG_PTR Param2);
+    virtual LONG_PTR DialogProc(int Msg, int Param1, LONG_PTR Param2);
+    virtual LONG_PTR FailDialogProc(int Msg, int Param1, LONG_PTR Param2);
+    LONG_PTR DefaultDialogProc(int Msg, int Param1, LONG_PTR Param2);
     virtual bool MouseEvent(MOUSE_EVENT_RECORD *Event);
     virtual bool Key(TFarDialogItem *Item, long KeyCode);
     virtual void Change();
@@ -297,10 +297,10 @@ protected:
     void DialogResized();
     LONG_PTR SendMessage(int Msg, LONG_PTR Param);
     LONG_PTR SendDialogMessage(int Msg, int Param1, LONG_PTR Param2);
-    virtual long ItemProc(int Msg, LONG_PTR Param);
-    long DefaultItemProc(int Msg, LONG_PTR Param);
-    long DefaultDialogProc(int Msg, int Param1, LONG_PTR Param2);
-    virtual long FailItemProc(int Msg, LONG_PTR Param);
+    virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
+    LONG_PTR DefaultItemProc(int Msg, LONG_PTR Param);
+    LONG_PTR DefaultDialogProc(int Msg, int Param1, LONG_PTR Param2);
+    virtual LONG_PTR FailItemProc(int Msg, LONG_PTR Param);
     virtual void Change();
     void DialogChange();
     void SetAlterType(size_t Index, bool value);

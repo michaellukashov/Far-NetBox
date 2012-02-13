@@ -411,9 +411,9 @@ LONG_PTR WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1
     return Result;
 }
 //---------------------------------------------------------------------------
-long TFarDialog::DialogProc(int Msg, int Param1, LONG_PTR Param2)
+LONG_PTR TFarDialog::DialogProc(int Msg, int Param1, LONG_PTR Param2)
 {
-    long Result = 0;
+    LONG_PTR Result = 0;
     bool Handled = false;
 
     try
@@ -583,13 +583,13 @@ long TFarDialog::DialogProc(int Msg, int Param1, LONG_PTR Param2)
     return Result;
 }
 //---------------------------------------------------------------------------
-long TFarDialog::DefaultDialogProc(int Msg, int Param1, LONG_PTR Param2)
+LONG_PTR TFarDialog::DefaultDialogProc(int Msg, int Param1, LONG_PTR Param2)
 {
     TFarEnvGuard Guard;
-    return static_cast<long>(GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetHandle(), Msg, Param1, Param2));
+    return GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetHandle(), Msg, Param1, Param2);
 }
 //---------------------------------------------------------------------------
-long TFarDialog::FailDialogProc(int Msg, int Param1, LONG_PTR Param2)
+LONG_PTR TFarDialog::FailDialogProc(int Msg, int Param1, LONG_PTR Param2)
 {
     long Result = 0;
     switch (Msg)
@@ -1410,13 +1410,13 @@ void TFarDialogItem::DoExit()
     }
 }
 //---------------------------------------------------------------------------
-long TFarDialogItem::DefaultItemProc(int Msg, LONG_PTR Param)
+LONG_PTR TFarDialogItem::DefaultItemProc(int Msg, LONG_PTR Param)
 {
     TFarEnvGuard Guard;
     return GetDialog()->GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, static_cast<int>(GetItem()), Param);
 }
 //---------------------------------------------------------------------------
-long TFarDialogItem::DefaultDialogProc(int Msg, int Param1, LONG_PTR Param2)
+LONG_PTR TFarDialogItem::DefaultDialogProc(int Msg, int Param1, LONG_PTR Param2)
 {
     TFarEnvGuard Guard;
     return GetDialog()->GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, static_cast<int>(Param1), Param2);

@@ -4074,7 +4074,7 @@ void TWinSCPFileSystem::MultipleEdit(const std::wstring Directory,
     {
         assert(i != FMultipleEdits.end());
 
-        int WindowCount = FarPlugin->FarAdvControl(ACTL_GETWINDOWCOUNT);
+        INT_PTR WindowCount = FarPlugin->FarAdvControl(ACTL_GETWINDOWCOUNT);
         WindowInfo Window;
         Window.Pos = 0;
         while (Window.Pos < WindowCount)
