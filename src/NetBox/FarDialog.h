@@ -388,7 +388,7 @@ public:
 protected:
     virtual void SetDataInternal(const std::wstring value);
     virtual std::wstring GetData();
-    virtual long ItemProc(int Msg, LONG_PTR Param);
+    virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
     virtual bool HotKey(char HotKey);
 
 private:
@@ -420,7 +420,7 @@ public:
 
 protected:
     farallowchange_signal_type FOnAllowChange;
-    virtual long ItemProc(int Msg, LONG_PTR Param);
+    virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
     virtual bool GetIsEmpty();
     virtual void SetData(const std::wstring value);
 };
@@ -439,7 +439,7 @@ public:
 
 protected:
     farallowchange_signal_type FOnAllowChange;
-    virtual long ItemProc(int Msg, LONG_PTR Param);
+    virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
     virtual bool GetIsEmpty();
     virtual void SetData(const std::wstring value);
 };
@@ -470,7 +470,7 @@ public:
     void SetReadOnly(bool value) { SetFlag(DIF_READONLY, value); }
 
 protected:
-    virtual long ItemProc(int Msg, LONG_PTR Param);
+    virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
     virtual void Detach();
 
 private:
@@ -543,7 +543,7 @@ public:
 
 protected:
     virtual void Changed();
-    virtual long ItemProc(int Msg, LONG_PTR Param);
+    virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
     virtual void Init();
     void UpdatePosition(int Position);
     int GetPosition();
@@ -591,7 +591,7 @@ public:
     void SetAutoSelect(TFarListBoxAutoSelect value);
 
 protected:
-    virtual long ItemProc(int Msg, LONG_PTR Param);
+    virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
     virtual void Init();
     virtual bool CloseQuery();
 
@@ -626,7 +626,7 @@ public:
     void SetDropDownList(bool value) { SetFlag(DIF_DROPDOWNLIST, value); }
 
 protected:
-    virtual long ItemProc(int Msg, LONG_PTR Param);
+    virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
     virtual void Init();
 
 private:
@@ -647,7 +647,7 @@ public:
     bool GetScrollBar();
 
 protected:
-    virtual long ItemProc(int Msg, LONG_PTR Param);
+    virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
     virtual void DoFocus();
 
 private:

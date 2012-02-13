@@ -591,7 +591,7 @@ LONG_PTR TFarDialog::DefaultDialogProc(int Msg, int Param1, LONG_PTR Param2)
 //---------------------------------------------------------------------------
 LONG_PTR TFarDialog::FailDialogProc(int Msg, int Param1, LONG_PTR Param2)
 {
-    long Result = 0;
+    LONG_PTR Result = 0;
     switch (Msg)
     {
     case DN_CLOSE:
@@ -1344,13 +1344,13 @@ bool TFarDialogItem::GetIsEmpty()
     return GetData().empty();
 }
 //---------------------------------------------------------------------------
-long TFarDialogItem::FailItemProc(int Msg, LONG_PTR Param)
+LONG_PTR TFarDialogItem::FailItemProc(int Msg, LONG_PTR Param)
 {
-    long Result = 0;
+    LONG_PTR Result = 0;
     switch (Msg)
     {
     case DN_KILLFOCUS:
-        Result = static_cast<long>(GetItem());
+        Result = static_cast<LONG_PTR>(GetItem());
         break;
 
     default:
@@ -1360,9 +1360,9 @@ long TFarDialogItem::FailItemProc(int Msg, LONG_PTR Param)
     return Result;
 }
 //---------------------------------------------------------------------------
-long TFarDialogItem::ItemProc(int Msg, LONG_PTR Param)
+LONG_PTR TFarDialogItem::ItemProc(int Msg, LONG_PTR Param)
 {
-    long Result = 0;
+    LONG_PTR Result = 0;
     bool Handled = false;
 
     if (Msg == DN_GOTFOCUS)
@@ -1846,7 +1846,7 @@ void TFarButton::SetBrackets(TFarButtonBrackets value)
     }
 }
 //---------------------------------------------------------------------------
-long TFarButton::ItemProc(int Msg, LONG_PTR Param)
+LONG_PTR TFarButton::ItemProc(int Msg, LONG_PTR Param)
 {
     if (Msg == DN_BTNCLICK)
     {
@@ -1899,7 +1899,7 @@ TFarCheckBox::TFarCheckBox(TFarDialog *ADialog) :
 {
 }
 //---------------------------------------------------------------------------
-long TFarCheckBox::ItemProc(int Msg, LONG_PTR Param)
+LONG_PTR TFarCheckBox::ItemProc(int Msg, LONG_PTR Param)
 {
     if (Msg == DN_BTNCLICK)
     {
@@ -1912,7 +1912,7 @@ long TFarCheckBox::ItemProc(int Msg, LONG_PTR Param)
         {
             UpdateSelected(Param);
         }
-        return static_cast<long>(Allow);
+        return static_cast<LONG_PTR>(Allow);
     }
     else
     {
@@ -1940,7 +1940,7 @@ TFarRadioButton::TFarRadioButton(TFarDialog *ADialog) :
 {
 }
 //---------------------------------------------------------------------------
-long TFarRadioButton::ItemProc(int Msg, LONG_PTR Param)
+LONG_PTR TFarRadioButton::ItemProc(int Msg, LONG_PTR Param)
 {
     if (Msg == DN_BTNCLICK)
     {
@@ -1991,7 +1991,7 @@ void TFarEdit::Detach()
     TFarDialogItem::Detach();
 }
 //---------------------------------------------------------------------------
-long TFarEdit::ItemProc(int Msg, LONG_PTR Param)
+LONG_PTR TFarEdit::ItemProc(int Msg, LONG_PTR Param)
 {
     if (Msg == DN_EDITCHANGE)
     {
@@ -2440,7 +2440,7 @@ void TFarList::Init()
     // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-long TFarList::ItemProc(int Msg, LONG_PTR Param)
+LONG_PTR TFarList::ItemProc(int Msg, LONG_PTR Param)
 {
     assert(GetDialogItem() != NULL);
     if (Msg == DN_LISTCHANGE)
@@ -2455,7 +2455,7 @@ long TFarList::ItemProc(int Msg, LONG_PTR Param)
             GetDialogItem()->UpdateData(GetString(Param));
         }
     }
-    return static_cast<long>(false);
+    return static_cast<LONG_PTR>(false);
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -2472,9 +2472,9 @@ TFarListBox::~TFarListBox()
     SAFE_DESTROY(FList);
 }
 //---------------------------------------------------------------------------
-long TFarListBox::ItemProc(int Msg, LONG_PTR Param)
+LONG_PTR TFarListBox::ItemProc(int Msg, LONG_PTR Param)
 {
-    long Result = 0;
+    LONG_PTR Result = 0;
     // FAR WORKAROUND
     // Since 1.70 final, hotkeys do not work when list box has focus.
     if ((Msg == DN_KEY) && GetDialog()->HotKey(Param))
@@ -2550,7 +2550,7 @@ void TFarComboBox::ResizeToFitContent()
     SetWidth(FList->GetMaxLength());
 }
 //---------------------------------------------------------------------------
-long TFarComboBox::ItemProc(int Msg, LONG_PTR Param)
+LONG_PTR TFarComboBox::ItemProc(int Msg, LONG_PTR Param)
 {
     if (Msg == DN_EDITCHANGE)
     {
@@ -2561,7 +2561,7 @@ long TFarComboBox::ItemProc(int Msg, LONG_PTR Param)
 
     if (FList->ItemProc(Msg, Param))
     {
-        return static_cast<long>(true);
+        return static_cast<LONG_PTR>(true);
     }
     else
     {
@@ -2631,9 +2631,9 @@ void TFarLister::DoFocus()
     // TODO: hide cursor
 }
 //---------------------------------------------------------------------------
-long TFarLister::ItemProc(int Msg, LONG_PTR Param)
+LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
 {
-    long Result = 0;
+    LONG_PTR Result = 0;
 
     if (Msg == DN_DRAWDLGITEM)
     {
