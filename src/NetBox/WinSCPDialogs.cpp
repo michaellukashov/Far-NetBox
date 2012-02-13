@@ -2787,7 +2787,7 @@ void TSessionDialog::Change()
     {
         if (FTransferProtocolIndex != TransferProtocolCombo->GetItems()->GetSelected())
         {
-            // TransferProtocolComboChange();
+            TransferProtocolComboChange();
         }
         if (FLoginTypeIndex != LoginTypeCombo->GetItems()->GetSelected())
         {
@@ -2860,7 +2860,8 @@ void TSessionDialog::TransferProtocolComboChange()
     }
     else if (GetFSProtocol() == fsFTPS)
     {
-        if (PortNumberEdit->GetAsInteger() == 21 || PortNumberEdit->GetAsInteger() == 80)
+        if ((PortNumberEdit->GetAsInteger() == 21 && FSessionData->GetFtpEncryption() == fesImplicit) ||
+            (PortNumberEdit->GetAsInteger() == 80))
         {
             PortNumberEdit->SetAsInteger(990);
         }
