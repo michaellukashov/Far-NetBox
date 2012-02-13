@@ -6403,7 +6403,7 @@ public:
 protected:
     virtual bool CloseQuery();
     virtual void Change();
-    virtual long DialogProc(int Msg, int Param1, long Param2);
+    virtual LONG_PTR DialogProc(int Msg, int Param1, LONG_PTR Param2);
 
     void TransferSettingsButtonClick(TFarButton *Sender, bool &Close);
     void CopyParamListerClick(TFarDialogItem *Item, MOUSE_EVENT_RECORD *Event);
@@ -6742,7 +6742,7 @@ bool TFullSynchronizeDialog::CloseQuery()
     return CanClose;
 }
 //---------------------------------------------------------------------------
-long TFullSynchronizeDialog::DialogProc(int Msg, int Param1, long Param2)
+LONG_PTR TFullSynchronizeDialog::DialogProc(int Msg, int Param1, LONG_PTR Param2)
 {
     if (Msg == DN_RESIZECONSOLE)
     {
@@ -6846,7 +6846,7 @@ public:
     bool Execute(TSynchronizeChecklist *Checklist);
 
 protected:
-    virtual long DialogProc(int Msg, int Param1, long Param2);
+    virtual LONG_PTR DialogProc(int Msg, int Param1, LONG_PTR Param2);
     virtual bool Key(TFarDialogItem *Item, long KeyCode);
     void CheckAllButtonClick(TFarButton *Sender, bool &Close);
     void VideoModeButtonClick(TFarButton *Sender, bool &Close);
@@ -7278,7 +7278,7 @@ void TSynchronizeChecklistDialog::UpdateControls()
     UncheckAllButton->SetEnabled((FChecked > 0));
 }
 //---------------------------------------------------------------------------
-long TSynchronizeChecklistDialog::DialogProc(int Msg, int Param1, long Param2)
+LONG_PTR TSynchronizeChecklistDialog::DialogProc(int Msg, int Param1, LONG_PTR Param2)
 {
     if (Msg == DN_RESIZECONSOLE)
     {
@@ -7478,7 +7478,7 @@ protected:
     void DoLog(TSynchronizeController *Controller,
                TSynchronizeLogEntry Entry, const std::wstring Message);
     void DoSynchronizeThreads(nb::TObject *Sender, const nb::threadmethod_slot_type &slot);
-    virtual long DialogProc(int Msg, int Param1, size_t Param2);
+    virtual LONG_PTR DialogProc(int Msg, int Param1, LONG_PTR Param2);
     virtual bool CloseQuery();
     virtual bool Key(TFarDialogItem *Item, long KeyCode);
     TCopyParamType GetCopyParams();
@@ -7733,7 +7733,7 @@ void TSynchronizeDialog::DoSynchronizeThreads(nb::TObject * /*Sender*/,
     }
 }
 //---------------------------------------------------------------------------
-long TSynchronizeDialog::DialogProc(int Msg, int Param1, size_t Param2)
+LONG_PTR TSynchronizeDialog::DialogProc(int Msg, int Param1, LONG_PTR Param2)
 {
     if (FAbort)
     {

@@ -76,8 +76,8 @@ public:
     nb::TRect GetClientRect() const;
     std::wstring GetHelpTopic() const { return FHelpTopic; }
     void SetHelpTopic(const std::wstring value);
-    unsigned int GetFlags() const { return FFlags; }
-    void SetFlags(const unsigned int &value);
+    size_t GetFlags() const { return FFlags; }
+    void SetFlags(size_t value);
     bool GetCentered() const;
     void SetCentered(const bool &value);
     nb::TPoint GetSize() const;
@@ -123,9 +123,9 @@ protected:
     void Add(TFarDialogItem *Item);
     void Add(TFarDialogContainer *Container);
     LONG_PTR SendMessage(int Msg, int Param1, LONG_PTR Param2);
-    virtual long DialogProc(int Msg, int Param1, LONG_PTR Param2);
-    virtual long FailDialogProc(int Msg, int Param1, LONG_PTR Param2);
-    long DefaultDialogProc(int Msg, int Param1, LONG_PTR Param2);
+    virtual LONG_PTR DialogProc(int Msg, int Param1, LONG_PTR Param2);
+    virtual LONG_PTR FailDialogProc(int Msg, int Param1, LONG_PTR Param2);
+    LONG_PTR DefaultDialogProc(int Msg, int Param1, LONG_PTR Param2);
     virtual bool MouseEvent(MOUSE_EVENT_RECORD *Event);
     virtual bool Key(TFarDialogItem *Item, long KeyCode);
     virtual void Change();
@@ -148,7 +148,7 @@ protected:
 private:
     TCustomFarPlugin *FFarPlugin;
     nb::TRect FBounds;
-    unsigned int FFlags;
+    size_t FFlags;
     std::wstring FHelpTopic;
     bool FVisible;
     nb::TObjectList *FItems;
@@ -230,8 +230,8 @@ public:
     void SetWidth(int value);
     size_t GetHeight();
     void SetHeight(int value);
-    unsigned int GetFlags();
-    void SetFlags(unsigned int value);
+    size_t GetFlags();
+    void SetFlags(size_t value);
     bool GetEnabled() { return FEnabled; }
     void SetEnabled(bool value);
     bool GetIsEnabled() { return FIsEnabled; }
@@ -297,10 +297,10 @@ protected:
     void DialogResized();
     LONG_PTR SendMessage(int Msg, LONG_PTR Param);
     LONG_PTR SendDialogMessage(int Msg, int Param1, LONG_PTR Param2);
-    virtual long ItemProc(int Msg, LONG_PTR Param);
-    long DefaultItemProc(int Msg, LONG_PTR Param);
-    long DefaultDialogProc(int Msg, int Param1, LONG_PTR Param2);
-    virtual long FailItemProc(int Msg, LONG_PTR Param);
+    virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
+    LONG_PTR DefaultItemProc(int Msg, LONG_PTR Param);
+    LONG_PTR DefaultDialogProc(int Msg, int Param1, LONG_PTR Param2);
+    virtual LONG_PTR FailItemProc(int Msg, LONG_PTR Param);
     virtual void Change();
     void DialogChange();
     void SetAlterType(size_t Index, bool value);
@@ -343,7 +343,7 @@ private:
     unsigned long FColorMask;
     bool FOem;
 
-    void UpdateFlags(unsigned int value);
+    void UpdateFlags(size_t value);
     void SetCoordinate(size_t Index, int value);
     int GetCoordinate(size_t Index);
     TFarDialogItem *GetPrevItem();
@@ -388,7 +388,7 @@ public:
 protected:
     virtual void SetDataInternal(const std::wstring value);
     virtual std::wstring GetData();
-    virtual long ItemProc(int Msg, LONG_PTR Param);
+    virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
     virtual bool HotKey(char HotKey);
 
 private:
@@ -420,7 +420,7 @@ public:
 
 protected:
     farallowchange_signal_type FOnAllowChange;
-    virtual long ItemProc(int Msg, LONG_PTR Param);
+    virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
     virtual bool GetIsEmpty();
     virtual void SetData(const std::wstring value);
 };
@@ -439,7 +439,7 @@ public:
 
 protected:
     farallowchange_signal_type FOnAllowChange;
-    virtual long ItemProc(int Msg, LONG_PTR Param);
+    virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
     virtual bool GetIsEmpty();
     virtual void SetData(const std::wstring value);
 };
@@ -470,7 +470,7 @@ public:
     void SetReadOnly(bool value) { SetFlag(DIF_READONLY, value); }
 
 protected:
-    virtual long ItemProc(int Msg, LONG_PTR Param);
+    virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
     virtual void Detach();
 
 private:
@@ -534,8 +534,8 @@ public:
     void SetTopIndex(size_t value);
     size_t GetMaxLength();
     int GetVisibleCount();
-    unsigned int GetFlags(size_t Index);
-    void SetFlags(size_t Index, unsigned int value);
+    size_t GetFlags(size_t Index);
+    void SetFlags(size_t Index, size_t value);
     bool GetDisabled(size_t Index) { return GetFlag(Index, LIF_DISABLE); }
     void SetDisabled(size_t Index, bool value) { SetFlag(Index, LIF_DISABLE, value); }
     bool GetChecked(size_t Index) { return GetFlag(Index, LIF_CHECKED); }
@@ -543,7 +543,7 @@ public:
 
 protected:
     virtual void Changed();
-    virtual long ItemProc(int Msg, LONG_PTR Param);
+    virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
     virtual void Init();
     void UpdatePosition(int Position);
     int GetPosition();
@@ -562,8 +562,8 @@ private:
     TFarList *Self;
 
     inline size_t GetSelectedInt(bool Init);
-    bool GetFlag(size_t Index, int Flag);
-    void SetFlag(size_t Index, int Flag, bool value);
+    bool GetFlag(size_t Index, size_t Flag);
+    void SetFlag(size_t Index, size_t Flag, bool value);
 };
 //---------------------------------------------------------------------------
 enum TFarListBoxAutoSelect { asOnlyFocus, asAlways, asNever };
@@ -591,7 +591,7 @@ public:
     void SetAutoSelect(TFarListBoxAutoSelect value);
 
 protected:
-    virtual long ItemProc(int Msg, LONG_PTR Param);
+    virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
     virtual void Init();
     virtual bool CloseQuery();
 
@@ -626,7 +626,7 @@ public:
     void SetDropDownList(bool value) { SetFlag(DIF_DROPDOWNLIST, value); }
 
 protected:
-    virtual long ItemProc(int Msg, LONG_PTR Param);
+    virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
     virtual void Init();
 
 private:
@@ -647,7 +647,7 @@ public:
     bool GetScrollBar();
 
 protected:
-    virtual long ItemProc(int Msg, LONG_PTR Param);
+    virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
     virtual void DoFocus();
 
 private:
