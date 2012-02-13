@@ -1,6 +1,7 @@
 NetBox 2.0.10 ??.02.2012
 ---------------------
-  * various minor bugfixes
+  * Bugfix: Set default port number when plugin is called from command-line
+  * Various minor bugfixes
   * libssh2 core upgraded to 1.4.0
   * zlib core upgraded to 1.2.6
 
