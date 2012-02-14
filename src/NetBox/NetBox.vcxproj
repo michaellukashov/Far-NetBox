@@ -117,7 +117,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN32;CURL_STATICLIB;_DEBUG;_WINDOWS;_USRDLL;_AFXDLL;_DLL;NETBOX_DEBUG;MPEXT;NO_STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN64;CURL_STATICLIB;_DEBUG;_WINDOWS;_WINDLL;_USRDLL;MPEXT;NETBOX_DEBUG;MPEXT;NO_STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\core;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x64\inc32;..\..\libs\boost;..\filezilla;..\filezilla\misc;..\..\libs\tinyXML;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <MinimalRebuild>false</MinimalRebuild>
@@ -126,7 +126,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\libs\openssl\x64;..\..\libs\boost\stage\x64;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libputty;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libtinyxml;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mfc100ud.lib;Atl.lib;uafxcwd.lib;comctl32.lib;msvcrtd.lib;msvcprtd.lib;msvcmrtd.lib;msvcurtd.lib;libeay32.lib;ssleay32.lib;libputty.lib;libtinyxml.lib;Ws2_32.lib;winhttp.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfcs100ud.lib;Atls.lib;uafxcwd.lib;comctl32.lib;libcpmt.lib;libcpmt1.lib;libcmt.lib;windowscodecs.lib;runtmchk.lib;libeay32.lib;ssleay32.lib;libputty.lib;libtinyxml.lib;Ws2_32.lib;winhttp.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>uafxcwd.lib;mfc100ud.lib;Atl.lib;comctl32.lib;msvcrtd.lib;msvcurtd.lib;msvcprtd.lib;libc.lib;libcmt.lib;msvcrt.lib;libcmtd.lib;mfc100ud.lib;Atl.lib;comctl32.lib;mfcs100ud.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <AdditionalOptions>/verbose:lib %(AdditionalOptions)</AdditionalOptions>
