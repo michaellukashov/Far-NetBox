@@ -23,8 +23,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include <afx.h>
-
 class t_server
 {
 public:
