@@ -31,7 +31,7 @@ mkdir %PKGDIRARCH% > NUL
 call .\makeCopyCommon.cmd %~d0%~p0 %PKGDIRARCH%
 call .\makeCopyCommon.cmd %~d0%~p0\..\.. %PKGDIRARCH%
 copy ..\..\%FARVER%_%PLUGINARCH%\Plugins\%PLUGINNAME%\*.dll %PKGDIRARCH% > NUL
-copy ..\..\dlls\%PLUGINARCH%\*.dll %PKGDIRARCH% > NUL
+@rem copy ..\..\dlls\%PLUGINARCH%\*.dll %PKGDIRARCH% > NUL
 copy ..\..\libs\openssl\%PLUGINARCH%\*.dll %PKGDIRARCH% > NUL
 call .\makeCopyCommon.cmd %~d0%~p0 ..\..\%FARVER%_%PLUGINARCH%\Plugins\%PLUGINNAME% > NUL
 
