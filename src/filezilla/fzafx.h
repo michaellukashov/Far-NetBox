@@ -4,9 +4,9 @@
 #define _int64 __int64
 //---------------------------------------------------------------------------
 
-// #ifndef _AFXDLL
+#ifndef _AFXDLL
 // #define _AFXDLL
-// #endif
+#endif
 
 #ifndef MPEXT
 #define MPEXT

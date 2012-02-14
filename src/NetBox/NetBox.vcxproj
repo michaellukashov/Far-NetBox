@@ -93,7 +93,7 @@
       <WarningLevel>Level2</WarningLevel>
       <Optimization>Disabled</Optimization>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN32;CURL_STATICLIB;_DEBUG;_WINDOWS;_WINDLL;_USRDLL;_AFXEXT;NETBOX_DEBUG;MPEXT;NO_STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN32;CURL_STATICLIB;_DEBUG;_WINDOWS;_WINDLL;_USRDLL;NETBOX_DEBUG;MPEXT;NO_STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\core;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x86\inc32;..\..\libs\boost;..\filezilla;..\filezilla\misc;..\..\libs\tinyXML;</AdditionalIncludeDirectories>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
