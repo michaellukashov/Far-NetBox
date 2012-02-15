@@ -106,7 +106,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\libs\openssl\x86;..\..\libs\boost\stage;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libputty;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libtinyxml;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mfcs100ud.lib;Atlsd.lib;uafxcwd.lib;comctl32.lib;libcmtd.lib;libcpmtd.lib;libcpmtd0.lib;libcpmtd1.lib;windowscodecs.lib;libeay32.lib;ssleay32.lib;libputty.lib;Ws2_32.lib;winhttp.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Version.lib;libtinyxml.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfcs100ud.lib;Atlsd.lib;uafxcwd.lib;libcmtd.lib;libcpmtd.lib;windowscodecs.lib;delayimp.lib;libtinyxml.lib;libeay32.lib;ssleay32.lib;libputty.lib;Ws2_32.lib;kernel32.lib;user32.lib;gdi32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>uafxcwd.lib;mfcs100ud.lib;Atls.lib;comctl32.lib;msvcrtd.lib;msvcurtd.lib;msvcprtd.lib;libc.lib;libcmt.lib;msvcrt.lib;libcmtd.lib;mfc100ud.lib;Atl.lib;comctl32.lib;mfcs100ud.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <AdditionalOptions>/verbose:lib %(AdditionalOptions)</AdditionalOptions>
