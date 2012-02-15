@@ -2522,7 +2522,7 @@ void TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
                 Error = MoreMessages->GetString(0);
                 MoreMessages->Delete(0);
             }
-
+            /*
             if (Disconnected)
             {
                 // for fatal error, it is essential that there is some message
@@ -2537,6 +2537,7 @@ void TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
                 }
             }
             else
+            */
             {
                 throw ExtException(Error, MoreMessages, true);
             }

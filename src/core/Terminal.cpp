@@ -1335,7 +1335,7 @@ bool TTerminal::DoQueryReopen(std::exception *E)
 {
     bool Result = false;
     EFatal *Fatal = dynamic_cast<EFatal *>(E);
-    assert(Fatal != NULL);
+    // assert(Fatal != NULL);
     if ((Fatal != NULL) && Fatal->GetReopenQueried())
     {
         Result = false;
