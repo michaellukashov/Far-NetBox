@@ -2,8 +2,6 @@
 #include "stdafx.h"
 #define NO_WIN32_LEAN_AND_MEAN
 
-#include <shlobj.h>
-#include <Shellapi.h>
 #include <Common.h>
 
 #include "boostdefines.hpp"
