@@ -1,5 +1,6 @@
 NetBox 2.0.10 ??.02.2012
 ---------------------
+  * FTP: Session options --> Connection --> Server response timeout: 0 means no timeout
   * Interface settings: Enable option "Use custom settings for "Detailed" panel mode"
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=540#p90652)
   * Session properies: Enable autocorrect port number
