@@ -1,10 +1,4 @@
-::
-:: This file is used to create a distribution package
-::
-
-
-@rem @echo off
-@rem exit 0 /b
+@echo off
 
 set PLUGINNAME=NetBox
 set PLUGINARCH=%1
@@ -28,12 +22,15 @@ if exist %PKGDIRARCH% rmdir /S /Q %PKGDIRARCH%
 :: Copy files
 if not exist %PKGDIR% ( mkdir %PKGDIR% > NUL )
 mkdir %PKGDIRARCH% > NUL
-call .\makeCopyCommon.cmd %~d0%~p0 %PKGDIRARCH%
-call .\makeCopyCommon.cmd %~d0%~p0\..\.. %PKGDIRARCH%
+
+if exist %~d0%~p0\*.lng copy %~d0%~p0\*.lng %PKGDIRARCH% > NUL
+if exist %~d0%~p0\*.hlf copy %~d0%~p0\*.hlf %PKGDIRARCH% > NUL
+if exist %~d0%~p0\..\..\ChangeLog copy %~d0%~p0\..\..\ChangeLog %PKGDIRARCH% > NUL
+if exist %~d0%~p0\..\..\*.md copy %~d0%~p0\..\..\*.md %PKGDIRARCH% > NUL
+if exist %~d0%~p0\..\..\LICENSE.txt copy %~d0%~p0\..\..\LICENSE.txt %PKGDIRARCH% > NUL
+
 copy ..\..\%FARVER%_%PLUGINARCH%\Plugins\%PLUGINNAME%\*.dll %PKGDIRARCH% > NUL
 @rem copy ..\..\dlls\%PLUGINARCH%\*.dll %PKGDIRARCH% > NUL
-copy ..\..\libs\openssl\%PLUGINARCH%\*.dll %PKGDIRARCH% > NUL
-call .\makeCopyCommon.cmd %~d0%~p0 ..\..\%FARVER%_%PLUGINARCH%\Plugins\%PLUGINNAME% > NUL
 
 :: Make archive
 if exist %PKGNAME% del %PKGNAME%
