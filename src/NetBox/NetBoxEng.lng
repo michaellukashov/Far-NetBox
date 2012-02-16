@@ -272,7 +272,7 @@
 "minutes"
 " Timeouts "
 "Server &response timeout:"
-"seconds"
+"seconds (0 - no timeout)"
 " Keepalives "
 "&Off"
 "Sending of &null SSH packets"
