@@ -595,7 +595,7 @@ int CTransferSocket::CheckForTimeout(int delay)
 		return 0;
 	}
 	CTimeSpan span = CTime::GetCurrentTime()-m_LastActiveTime;
-	if (span.GetTotalSeconds()>=delay)
+	if ((delay > 0) && (span.GetTotalSeconds()>=delay))
 	{
 		m_pOwner->ShowStatus(IDS_ERRORMSG_TIMEOUT, 1);
 		Close();

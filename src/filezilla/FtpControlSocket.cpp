@@ -1320,7 +1320,7 @@ void CFtpControlSocket::CheckForTimeout()
 			return;
 	}
 	CTimeSpan span=CTime::GetCurrentTime()-m_LastRecvTime;
-	if (span.GetTotalSeconds()>=delay)
+	if ((delay > 0) && (span.GetTotalSeconds()>=delay))
 	{
 		ShowStatus(IDS_ERRORMSG_TIMEOUT, 1);
 		DoClose();
