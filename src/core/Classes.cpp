@@ -1,7 +1,6 @@
 #pragma once
 
 #include "stdafx.h"
-#include <ShellAPI.h>
 
 #include "boostdefines.hpp"
 #include <boost/algorithm/string.hpp>

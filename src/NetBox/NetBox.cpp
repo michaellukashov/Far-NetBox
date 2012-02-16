@@ -1,8 +1,6 @@
 #include "FarTexts.h"
 
-#ifdef _AFXDLL
 #include "afxdll.h"
-#endif
 
 #include "stdafx.h"
 #include "FarUtil.h"
@@ -211,9 +209,7 @@ extern "C"
 
         assert(!Processes);
         Processes++;
-#ifdef _AFXDLL
         InitExtensionModule(HInst);
-#endif
         WSADATA wsaData;
         WSAStartup(MAKEWORD(2, 2), &wsaData);
         curl_global_init(CURL_GLOBAL_ALL);
@@ -230,9 +226,7 @@ extern "C"
         {
             assert(FarPlugin);
             SAFE_DESTROY(FarPlugin);
-#ifdef _AFXDLL
             TermExtensionModule();
-#endif
             curl_global_cleanup();
             WSACleanup();
         }

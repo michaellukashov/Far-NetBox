@@ -1162,7 +1162,7 @@ nb::TRect TFarDialogItem::GetActualBounds()
                      GetDialogItem()->X2, GetDialogItem()->Y2);
 }
 //---------------------------------------------------------------------------
-unsigned int TFarDialogItem::GetFlags()
+size_t TFarDialogItem::GetFlags()
 {
     return GetDialogItem()->Flags;
 }

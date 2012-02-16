@@ -1,7 +1,5 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
-// #include <shfolder.h>
-#include <shlobj.h>
 
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
