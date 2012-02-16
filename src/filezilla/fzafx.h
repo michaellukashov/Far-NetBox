@@ -4,10 +4,6 @@
 #define _int64 __int64
 //---------------------------------------------------------------------------
 
-#ifndef _AFXDLL
-// #define _AFXDLL
-#endif
-
 #ifndef MPEXT
 #define MPEXT
 #endif
