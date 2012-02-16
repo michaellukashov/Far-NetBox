@@ -2522,7 +2522,7 @@ void TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
                 Error = MoreMessages->GetString(0);
                 MoreMessages->Delete(0);
             }
-
+            /*
             if (Disconnected)
             {
                 // for fatal error, it is essential that there is some message
@@ -2537,6 +2537,7 @@ void TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
                 }
             }
             else
+            */
             {
                 throw ExtException(Error, MoreMessages, true);
             }
@@ -3027,8 +3028,9 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
     }
     else
     {
+        std::string str(reinterpret_cast<const char *>(Data.Hash), Data.HashLen);
         FSessionInfo.CertificateFingerprint =
-            StrToHex(std::wstring(nb::MB2W(reinterpret_cast<const char *>(Data.Hash), Data.HashLen)), false, ':');
+            StrToHex(nb::MB2W(str.c_str()), false, ':');
 
         int VerificationResultStr;
         switch (Data.VerificationResult)

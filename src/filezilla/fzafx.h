@@ -4,10 +4,6 @@
 #define _int64 __int64
 //---------------------------------------------------------------------------
 
-#ifndef _AFXDLL
-#define _AFXDLL
-#endif
-
 #ifndef MPEXT
 #define MPEXT
 #endif
@@ -22,7 +18,7 @@
 #define MPEXT_NO_IDENT
 #define MPEXT_NO_CACHE
 #define MPEXT_NO_SPEED_LIM_RULES
-// #define MPEXT_NO_SSLDLL
+#define MPEXT_NO_SSLDLL
 #define _AFX_NOFORCE_LIBS
 //---------------------------------------------------------------------------
 #include <afx.h>

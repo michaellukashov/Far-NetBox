@@ -1,8 +1,5 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
-// #include <ShFolder.h>
-#include <shlobj.h>
-#include <ShellAPI.h>
 
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
