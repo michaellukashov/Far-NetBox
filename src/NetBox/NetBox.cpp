@@ -206,27 +206,27 @@ extern "C"
         return FarPlugin->ProcessEditorInput(Info);
     }
 
-    int WINAPI AnalyseW(const struct AnalyseInfo *Info)
+    HANDLE WINAPI AnalyseW(const struct AnalyseInfo *Info)
     {
         if (Info->StructSize < sizeof(AnalyseInfo))
-            return FALSE;
+            return INVALID_HANDLE_VALUE;
         assert(FarPlugin);
         TFarPluginGuard Guard;
         if (!Info->FileName)
         {
-            return FALSE;
+            return INVALID_HANDLE_VALUE;
         }
 
         const size_t fileNameLen = wcslen(Info->FileName);
         if (fileNameLen < 8 || _wcsicmp(Info->FileName + fileNameLen - 7, L".netbox") != 0)
         {
-            return FALSE;
+            return INVALID_HANDLE_VALUE;
         }
         if (Info->BufferSize > 4 && strncmp(reinterpret_cast<const char *>(Info->Buffer), "<?xml", 5) != 0)
         {
-            return FALSE;
+            return INVALID_HANDLE_VALUE;
         }
-        return FALSE;
+        return INVALID_HANDLE_VALUE;
     }
 
     HANDLE WINAPI OpenW(const struct OpenInfo *Info)
