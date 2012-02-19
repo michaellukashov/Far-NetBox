@@ -2305,10 +2305,14 @@ void CFtpListResult::copyStr(CString &target, int pos, const char *source, int l
 			int len = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)p, -1, NULL, 0);
 			if (len != 0)
 			{
-				LPWSTR p1 = new WCHAR[len + 1];
+				WCHAR buf[1024];
+				LPWSTR p1 = buf;
+				if (len + 1 > sizeof(buf))
+					p1 = new WCHAR[len + 1];
 				MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)p, -1 , (LPWSTR)p1, len + 1);
 				target = target.Left(pos) + W2CT(p1);
-				delete [] p1;
+				if (len + 1 > sizeof(buf))
+					delete [] p1;
 			}
 			else
 				target = target.Left(pos) + A2CT(p);
