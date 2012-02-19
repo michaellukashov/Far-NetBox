@@ -2283,8 +2283,10 @@ const char * CFtpListResult::strnstr(const char *str, int len, const char *c) co
 void CFtpListResult::copyStr(CString &target, int pos, const char *source, int len, bool mayInvalidateUTF8 /*=false*/)
 {
 	USES_CONVERSION;
-	
-	char *p = new char[len + 1];
+	char pbuf[1024];
+	char *p = pbuf;
+	if (len + 1 > sizeof(pbuf))
+		p = new char[len + 1];
 	memcpy(p, source, len);
 	p[len] = '\0';
 	if (m_bUTF8 && *m_bUTF8)
@@ -2320,7 +2322,8 @@ void CFtpListResult::copyStr(CString &target, int pos, const char *source, int l
 	}
 	else
 		target = target.Left(pos) + A2CT(p);
-	delete [] p;
+	if (len + 1 > sizeof(pbuf))
+		delete [] p;
 }
 
 BOOL CFtpListResult::parseAsIBM(const char *line, const int linelen, t_directory::t_direntry &direntry)
