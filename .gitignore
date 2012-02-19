@@ -42,4 +42,4 @@ src/NetBox/NetBox
 *.idb
 *.aps
 *.idc
-
+*.ctl
