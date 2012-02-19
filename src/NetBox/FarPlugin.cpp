@@ -1525,6 +1525,14 @@ void TCustomFarPlugin::UpdateConsoleTitle()
 {
     std::wstring Title = FormatConsoleTitle();
     SetConsoleTitle(StrToFar(Title));
+    if (FCurrentProgress != -1)
+    {
+        FarAdvControl(ACTL_SETPROGRESSSTATE, (void *)TBPF_NORMAL);
+        PROGRESSVALUE pv;
+        pv.Completed = FCurrentProgress;
+        pv.Total = 100;
+        FarAdvControl(ACTL_SETPROGRESSVALUE, (void *)&pv);
+    }
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::SaveScreen(HANDLE &Screen)

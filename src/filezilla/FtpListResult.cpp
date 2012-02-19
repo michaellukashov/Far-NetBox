@@ -2283,8 +2283,10 @@ const char * CFtpListResult::strnstr(const char *str, int len, const char *c) co
 void CFtpListResult::copyStr(CString &target, int pos, const char *source, int len, bool mayInvalidateUTF8 /*=false*/)
 {
 	USES_CONVERSION;
-	
-	char *p = new char[len + 1];
+	char pbuf[1024];
+	char *p = pbuf;
+	if (len + 1 > sizeof(pbuf))
+		p = new char[len + 1];
 	memcpy(p, source, len);
 	p[len] = '\0';
 	if (m_bUTF8 && *m_bUTF8)
@@ -2305,10 +2307,14 @@ void CFtpListResult::copyStr(CString &target, int pos, const char *source, int l
 			int len = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)p, -1, NULL, 0);
 			if (len != 0)
 			{
-				LPWSTR p1 = new WCHAR[len + 1];
+				WCHAR buf[1024];
+				LPWSTR p1 = buf;
+				if (len + 1 > sizeof(buf))
+					p1 = new WCHAR[len + 1];
 				MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)p, -1 , (LPWSTR)p1, len + 1);
 				target = target.Left(pos) + W2CT(p1);
-				delete [] p1;
+				if (len + 1 > sizeof(buf))
+					delete [] p1;
 			}
 			else
 				target = target.Left(pos) + A2CT(p);
@@ -2316,7 +2322,8 @@ void CFtpListResult::copyStr(CString &target, int pos, const char *source, int l
 	}
 	else
 		target = target.Left(pos) + A2CT(p);
-	delete [] p;
+	if (len + 1 > sizeof(pbuf))
+		delete [] p;
 }
 
 BOOL CFtpListResult::parseAsIBM(const char *line, const int linelen, t_directory::t_direntry &direntry)

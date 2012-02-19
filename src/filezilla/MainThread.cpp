@@ -75,7 +75,10 @@ CMainThread::~CMainThread()
 }
 
 BOOL CMainThread::InitInstance()
-{	
+{
+    AFX_MANAGE_STATE(AfxGetModuleState());
+    afxCurrentResourceHandle = ::HInst;
+
 	m_nTimerID=SetTimer(0,1,1000,0);
 #ifndef MPEXT_NO_CACHE
 	m_pDirectoryCache=new CDirectoryCache;					
