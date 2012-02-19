@@ -13,6 +13,8 @@ void InitExtensionModule(HINSTANCE HInst)
     ::HInst = HInst;
     // Insert this DLL into the resource chain
     // new CDynLinkLibrary(MyExtDLL);
+    AFX_MANAGE_STATE(AfxGetModuleState());
+    afxCurrentResourceHandle = ::HInst;
 }
 
 void TermExtensionModule()
