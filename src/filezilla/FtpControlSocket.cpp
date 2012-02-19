@@ -5679,7 +5679,6 @@ int CFtpControlSocket::OnLayerCallback(std::list<t_callbackMsg>& callbacks)
 						delete pData;
 						delete [] iter->str;
 						ResetOperation(FZ_REPLY_ERROR);
-						delete [] iter->str;
 						continue;
 					}
 					break;
