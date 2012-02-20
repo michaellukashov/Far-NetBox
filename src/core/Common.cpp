@@ -2008,9 +2008,6 @@ bool IsExactly2008R2()
 {
     bool Result = false;
     HMODULE Kernel32 = GetModuleHandle(L"kernel32.dll");
-    // typedef bool BOOL;
-    // typedef unsigned long DWORD;
-    // typedef unsigned long *PDWORD;
     typedef BOOL (WINAPI *TGetProductInfo)(DWORD, DWORD, DWORD, DWORD, PDWORD);
     TGetProductInfo GetProductInfo =
         reinterpret_cast<TGetProductInfo>(GetProcAddress(Kernel32, "GetProductInfoA"));
