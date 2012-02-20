@@ -44,14 +44,11 @@ enum TFarShiftStatus { fsNone, fsCtrl, fsAlt, fsShift, fsCtrlShift,
                        fsAltShift, fsCtrlAlt
                      };
 enum THandlesFunction { hfProcessKey, hfProcessHostFile, hfProcessEvent };
-// typedef void (*TFarInputBoxValidateEvent)(std::wstring &Text);
 typedef boost::signal1<void, std::wstring &> farinputboxvalidate_signal_type;
 typedef farinputboxvalidate_signal_type::slot_type farinputboxvalidate_slot_type;
 //---------------------------------------------------------------------------
-// typedef void (*TFarMessageTimerEvent)(unsigned int &Result);
 typedef boost::signal1<void, size_t &> farmessagetimer_signal_type;
 typedef farmessagetimer_signal_type::slot_type farmessagetimer_slot_type;
-// typedef void (*TFarMessageClickEvent)(void *Token, int Result, bool &Close);
 typedef boost::signal3<void, void *, int, bool &> farmessageclick_signal_type;
 typedef farmessageclick_signal_type::slot_type farmessageclick_slot_type;
 

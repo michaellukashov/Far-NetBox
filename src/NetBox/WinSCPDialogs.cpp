@@ -5492,8 +5492,6 @@ bool TWinSCPFileSystem::LinkDialog(std::wstring &FileName,
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-// typedef void (nb::TObject::*TFeedFileSystemData)
-// (nb::TObject * Control, int Label, std::wstring Value);
 typedef boost::signal3<void, nb::TObject *, int, std::wstring> feedfilesystemdata_signal_type;
 typedef feedfilesystemdata_signal_type::slot_type feedfilesystemdata_slot_type;
 //---------------------------------------------------------------------------

@@ -82,12 +82,8 @@ public:
 enum TLogLineType { llOutput, llInput, llStdError, llMessage, llException, llAction };
 enum TLogAction { laUpload, laDownload, laTouch, laChmod, laMkdir, laRm, laMv, laCall, laLs };
 //---------------------------------------------------------------------------
-// typedef void (nb::TObject::*TCaptureOutputEvent)(
-// const std::wstring Str, bool StdError);
 typedef boost::signal2<void, const std::wstring, bool> captureoutput_signal_type;
 typedef captureoutput_signal_type::slot_type captureoutput_slot_type;
-// typedef void (nb::TObject::*TCalculatedChecksumEvent)(
-// const std::wstring FileName, const std::wstring Alg, const std::wstring Hash);
 typedef boost::signal3<void, const std::wstring, const std::wstring, const std::wstring > calculatedchecksum_signal_type;
 typedef calculatedchecksum_signal_type::slot_type calculatedchecksum_slot_type;
 //---------------------------------------------------------------------------
@@ -199,7 +195,6 @@ public:
     void FileList(TRemoteFileList *FileList);
 };
 //---------------------------------------------------------------------------
-// typedef void (nb::TObject::*TDoAddLog)(TLogLineType Type, const std::wstring Line);
 typedef boost::signal2<void, TLogLineType, const std::wstring > doaddlog_signal_type;
 typedef doaddlog_signal_type::slot_type doaddlog_slot_type;
 //---------------------------------------------------------------------------

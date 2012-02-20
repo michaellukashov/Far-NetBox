@@ -108,8 +108,6 @@ bool IsWin7();
 bool IsExactly2008R2();
 __int64 Round(double Number);
 //---------------------------------------------------------------------------
-// typedef void (* TProcessLocalFileEvent)
-// (const std::wstring FileName, const WIN32_FIND_DATA Rec, void * Param);
 typedef boost::signal3<void, const std::wstring, const WIN32_FIND_DATA, void *> processlocalfile_signal_type;
 typedef processlocalfile_signal_type::slot_type processlocalfile_slot_type;
 bool FileSearchRec(const std::wstring FileName, WIN32_FIND_DATA &Rec);

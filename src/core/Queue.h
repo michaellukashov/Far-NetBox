@@ -60,17 +60,11 @@ class TTerminalQueue;
 class TQueueItemProxy;
 class TTerminalQueueStatus;
 //---------------------------------------------------------------------------
-// typedef void (nb::TObject::*TQueueListUpdate)
-// (TTerminalQueue *Queue);
 typedef boost::signal1<void, TTerminalQueue *> queuelistupdate_signal_type;
 typedef queuelistupdate_signal_type::slot_type queuelistupdate_slot_type;
-// typedef void (nb::TObject::*TQueueItemUpdateEvent)
-// (TTerminalQueue *Queue, TQueueItem *Item);
 typedef boost::signal2<void, TTerminalQueue *, TQueueItem *> queueitemupdate_signal_type;
 typedef queueitemupdate_signal_type::slot_type queueitemupdate_slot_type;
 enum TQueueEvent { qeEmpty, qePendingUserAction };
-// typedef void (nb::TObject::*TQueueEventEvent)
-// (TTerminalQueue *Queue, TQueueEvent Event);
 typedef boost::signal2<void, TTerminalQueue *, TQueueEvent> queueevent_signal_type;
 typedef queueevent_signal_type::slot_type queueevent_slot_type;
 //---------------------------------------------------------------------------

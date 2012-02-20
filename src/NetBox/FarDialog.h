@@ -41,17 +41,12 @@ class TFarList;
 struct FarDialogItem;
 enum TItemPosition { ipNewLine, ipBelow, ipRight };
 //---------------------------------------------------------------------------
-// typedef void (nb::TObject::*TFarKeyEvent)
-// (TFarDialog *Sender, TFarDialogItem *Item, long KeyCode, bool &Handled);
 typedef boost::signal4<void, TFarDialog *, TFarDialogItem *, long, bool &> key_signal_type;
 typedef key_signal_type::slot_type key_slot_type;
 
-// typedef void (nb::TObject::*TFarMouseClickEvent)
-// (TFarDialogItem *Item, MOUSE_EVENT_RECORD *Event);
 typedef boost::signal2<void, TFarDialogItem *, MOUSE_EVENT_RECORD *> mouse_click_signal_type;
 typedef mouse_click_signal_type::slot_type mouse_click_slot_type;
 
-// typedef void (nb::TObject::*TFarProcessGroupEvent)(TFarDialogItem *Item, void *Arg);
 typedef boost::signal2<void, TFarDialogItem *, void *> processgroupevent_signal_type;
 typedef processgroupevent_signal_type::slot_type processgroupevent_slot_type;
 //---------------------------------------------------------------------------
@@ -397,8 +392,6 @@ private:
     TFarButtonBrackets FBrackets;
 };
 //---------------------------------------------------------------------------
-// typedef void (*TFarAllowChange)(TFarDialogItem *Sender,
-// long NewState, bool &AllowChange);
 typedef boost::signal3<void, TFarDialogItem *, long, bool &> farallowchange_signal_type;
 typedef farallowchange_signal_type::slot_type farallowchange_slot_type;
 //---------------------------------------------------------------------------
