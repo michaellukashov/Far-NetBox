@@ -1092,7 +1092,7 @@ int TCustomFarPlugin::FarMessage(unsigned int Flags,
 //---------------------------------------------------------------------------
 int TCustomFarPlugin::Message(unsigned int Flags,
                               const std::wstring Title, const std::wstring Message, nb::TStrings *Buttons,
-                              TFarMessageParams *Params, bool Oem)
+                              TFarMessageParams *Params)
 {
     // DEBUG_PRINTF(L"Message = %s", Message.c_str());
     // when message is shown while some "custom" output is on screen,
@@ -1113,9 +1113,6 @@ int TCustomFarPlugin::Message(unsigned int Flags,
     {
         assert(Params == NULL);
         std::wstring Items = Title + L"\n" + Message;
-        if (!Oem)
-        {
-        }
         TFarEnvGuard Guard;
         Result = FStartupInfo.Message(FStartupInfo.ModuleNumber,
                                       Flags | FMSG_ALLINONE | FMSG_LEFTALIGN,
@@ -2878,13 +2875,6 @@ std::wstring TFarEditorInfo::GetFileName()
 TFarEnvGuard::TFarEnvGuard()
 {
     assert(FarPlugin != NULL);
-    /*
-    assert(AreFileApisANSI());
-    if (!FarPlugin->GetANSIApis())
-    {
-        SetFileApisToOEM();
-    }
-    */
 }
 //---------------------------------------------------------------------------
 TFarEnvGuard::~TFarEnvGuard()
@@ -2924,14 +2914,6 @@ TFarPluginEnvGuard::TFarPluginEnvGuard()
 TFarPluginEnvGuard::~TFarPluginEnvGuard()
 {
     assert(FarPlugin != NULL);
-    /*
-    assert(AreFileApisANSI());
-
-    if (!FANSIApis)
-    {
-        SetFileApisToOEM();
-    }
-    */
 }
 //---------------------------------------------------------------------------
 void FarWrapText(const std::wstring Text, nb::TStrings *Result, size_t MaxWidth)
@@ -2989,6 +2971,5 @@ std::wstring StrFromFar(const char *S)
 {
     // FIXME
     std::wstring Result = nb::MB2W(S);
-    // OemToChar(Result.c_str(), Result.c_str());
     return Result;
 }

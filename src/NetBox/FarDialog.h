@@ -243,8 +243,6 @@ public:
     void SetVisible(bool value) { SetFlag(DIF_HIDDEN | DIF_INVERSE, value); }
     bool GetTabStop() { return GetFlag(DIF_NOFOCUS | DIF_INVERSE); }
     void SetTabStop(bool value) { SetFlag(DIF_NOFOCUS | DIF_INVERSE, value); }
-    bool GetOem() { return FOem; }
-    void SetOem(bool value) { FOem = value; }
     size_t GetTag() { return FTag; }
     void SetTag(size_t value) { FTag = value; }
     TFarDialog *GetDialog() { return FDialog; }
@@ -307,7 +305,7 @@ protected:
     virtual bool MouseMove(int X, int Y, MOUSE_EVENT_RECORD *Event);
     virtual bool MouseClick(MOUSE_EVENT_RECORD *Event);
     nb::TPoint MouseClientPosition(MOUSE_EVENT_RECORD *Event);
-    void Text(int X, int Y, int Color, const std::wstring Str, bool Oem = false);
+    void Text(int X, int Y, int Color, const std::wstring Str);
     void Redraw();
     virtual bool HotKey(char HotKey);
 
@@ -336,7 +334,6 @@ private:
     bool FIsEnabled;
     unsigned long FColors;
     unsigned long FColorMask;
-    bool FOem;
 
     void UpdateFlags(size_t value);
     void SetCoordinate(size_t Index, int value);

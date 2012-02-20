@@ -6882,14 +6882,12 @@ TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
     SetCaption(GetMsg(CHECKLIST_TITLE));
 
     Header = new TFarText(this);
-    Header->SetOem(true);
 
     ListBox = new TFarListBox(this);
     ListBox->SetNoBox(true);
     // align list with bottom of the window
     ListBox->SetBottom(-5);
     ListBox->SetOnMouseClick(boost::bind(&TSynchronizeChecklistDialog::ListBoxClick, this, _1, _2));
-    ListBox->SetOem(true);
 
     std::wstring Actions = GetMsg(CHECKLIST_ACTIONS);
     int Action = 0;
@@ -6930,7 +6928,6 @@ TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
 void TSynchronizeChecklistDialog::AddColumn(std::wstring &List,
         std::wstring Value, size_t Column, bool Header)
 {
-    // OEM character set (Ansi does not have the ascii art we need)
     char Separator = '\xB3';
     size_t Len = Value.size();
     size_t Width = static_cast<size_t>(FWidths[Column]);

@@ -3480,7 +3480,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
         }
         std::wstring Message =
             Message1 + ProgressBar1 + Message2 + ProgressBar2;
-        FPlugin->Message(0, Title, Message, NULL, NULL, true);
+        FPlugin->Message(0, Title, Message, NULL, NULL);
 
         if (First)
         {

@@ -113,7 +113,7 @@ public:
     static wchar_t *DuplicateStr(const std::wstring Str, bool AllowEmpty = false);
     int Message(unsigned int Flags, const std::wstring Title,
                 const std::wstring Message, nb::TStrings *Buttons = NULL,
-                TFarMessageParams *Params = NULL, bool Oem = false);
+                TFarMessageParams *Params = NULL);
     int MaxMessageLines();
     size_t MaxMenuItemLength();
     int Menu(unsigned int Flags, const std::wstring Title,
@@ -521,7 +521,6 @@ extern TCustomFarPlugin *FarPlugin;
 //---------------------------------------------------------------------------
 inline std::wstring StrFromFar(wchar_t *S)
 {
-    // OemToChar(S, S);
     return std::wstring(S);
 }
 //---------------------------------------------------------------------------
@@ -533,7 +532,6 @@ inline std::wstring StrFromFar(const wchar_t *S)
 //---------------------------------------------------------------------------
 inline std::wstring StrFromFar(std::wstring &S)
 {
-    // OemToChar(S.c_str(), S.c_str());
     return std::wstring(S);
     // return L"";
 }
