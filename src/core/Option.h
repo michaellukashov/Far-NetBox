@@ -21,11 +21,8 @@ public:
     std::wstring SwitchValue(const std::wstring Switch, const std::wstring Default = L"");
     bool UnusedSwitch(std::wstring &Switch);
 
-    // __property int ParamCount = { read = FParamCount };
     int GetParamCount() { return FParamCount; }
-    // __property std::wstring Param[int Index] = { read = GetParam };
     std::wstring GetParam(int Index);
-    // __property bool Empty = { read = GetEmpty };
     bool GetEmpty();
 
 protected:

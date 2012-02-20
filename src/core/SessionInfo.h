@@ -82,12 +82,8 @@ public:
 enum TLogLineType { llOutput, llInput, llStdError, llMessage, llException, llAction };
 enum TLogAction { laUpload, laDownload, laTouch, laChmod, laMkdir, laRm, laMv, laCall, laLs };
 //---------------------------------------------------------------------------
-// typedef void (nb::TObject::*TCaptureOutputEvent)(
-// const std::wstring Str, bool StdError);
 typedef boost::signal2<void, const std::wstring, bool> captureoutput_signal_type;
 typedef captureoutput_signal_type::slot_type captureoutput_slot_type;
-// typedef void (nb::TObject::*TCalculatedChecksumEvent)(
-// const std::wstring FileName, const std::wstring Alg, const std::wstring Hash);
 typedef boost::signal3<void, const std::wstring, const std::wstring, const std::wstring > calculatedchecksum_signal_type;
 typedef calculatedchecksum_signal_type::slot_type calculatedchecksum_slot_type;
 //---------------------------------------------------------------------------
@@ -199,7 +195,6 @@ public:
     void FileList(TRemoteFileList *FileList);
 };
 //---------------------------------------------------------------------------
-// typedef void (nb::TObject::*TDoAddLog)(TLogLineType Type, const std::wstring Line);
 typedef boost::signal2<void, TLogLineType, const std::wstring > doaddlog_signal_type;
 typedef doaddlog_signal_type::slot_type doaddlog_slot_type;
 //---------------------------------------------------------------------------
@@ -221,33 +216,20 @@ public:
     void Lock();
     void Unlock();
 
-    // __property TSessionLog * Parent = { read = FParent, write = FParent };
     TSessionLog *GetParent() { return FParent; }
     void SetParent(TSessionLog *value) { FParent = value; }
-    // __property bool Logging = { read = FLogging };
     bool GetLogging() { return FLogging; }
-    // __property int BottomIndex = { read = GetBottomIndex };
     size_t GetBottomIndex();
-    // __property std::wstring Line[int Index]  = { read=GetLine };
     std::wstring GetLine(size_t Index);
-    // __property TLogLineType Type[int Index]  = { read=GetType };
     TLogLineType GetType(size_t Index);
-    // __property OnChange;
-    // __property TNotifyEvent OnStateChange = { read = FOnStateChange, write = FOnStateChange };
     const nb::notify_signal_type &GetOnStateChange() const { return FOnStateChange; }
     void SetOnStateChange(const nb::notify_slot_type &value) { FOnStateChange.connect(value); }
-    // __property std::wstring CurrentFileName = { read = FCurrentFileName };
     std::wstring GetCurrentFileName() { return FCurrentFileName; }
-    // __property bool LoggingToFile = { read = GetLoggingToFile };
     bool GetLoggingToFile();
-    // __property int TopIndex = { read = FTopIndex };
     size_t GetTopIndex() { return FTopIndex; }
-    // __property std::wstring SessionName = { read = GetSessionName };
     std::wstring GetSessionName();
-    // __property std::wstring Name = { read = FName, write = FName };
     std::wstring GetName() { return FName; }
     void SetName(const std::wstring value) { FName = value; }
-    // __property Count;
 
 protected:
     void CloseLogFile();

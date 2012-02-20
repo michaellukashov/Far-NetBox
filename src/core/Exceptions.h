@@ -71,7 +71,6 @@ class EFatal : public ExtException
 public:
     // fatal errors are always copied, new message is only appended
     explicit EFatal(const std::wstring Msg, const std::exception *E);
-    // __property bool ReopenQueried = { read = FReopenQueried, write = FReopenQueried };
     bool GetReopenQueried() { return FReopenQueried; }
     void SetReopenQueried(bool value) { FReopenQueried = value; }
 

@@ -1898,26 +1898,6 @@ std::wstring EncodeUrlString(const std::wstring S)
     return DoEncodeUrl(S, NonUrlChars());
 }
 //---------------------------------------------------------------------------
-void OemToAnsi(std::wstring &Str)
-{
-    if (!Str.empty())
-    {
-        // Str.Unique();
-        // FIXME OemToChar(Str.c_str(), Str.c_str());
-        nb::Error(SNotImplemented, 61);
-    }
-}
-//---------------------------------------------------------------------------
-void AnsiToOem(std::wstring &Str)
-{
-    if (!Str.empty())
-    {
-        // Str.Unique();
-        // FIXME CharToOem(Str.c_str(), Str.c_str());
-        nb::Error(SNotImplemented, 62);
-    }
-}
-//---------------------------------------------------------------------------
 std::wstring EscapeHotkey(const std::wstring Caption)
 {
     return ::StringReplace(Caption, L"&", L"&&");
@@ -2008,9 +1988,6 @@ bool IsExactly2008R2()
 {
     bool Result = false;
     HMODULE Kernel32 = GetModuleHandle(L"kernel32.dll");
-    // typedef bool BOOL;
-    // typedef unsigned long DWORD;
-    // typedef unsigned long *PDWORD;
     typedef BOOL (WINAPI *TGetProductInfo)(DWORD, DWORD, DWORD, DWORD, PDWORD);
     TGetProductInfo GetProductInfo =
         reinterpret_cast<TGetProductInfo>(GetProcAddress(Kernel32, "GetProductInfoA"));

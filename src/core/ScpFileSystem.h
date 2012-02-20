@@ -70,9 +70,7 @@ public:
     virtual std::wstring GetUserName();
 
 protected:
-    // __property nb::TStrings * Output = { read = FOutput };
     nb::TStrings *GetOutput() { return FOutput; };
-    // __property int ReturnCode = { read = FReturnCode };
     int GetReturnCode() { return FReturnCode; }
 
     virtual std::wstring GetCurrentDirectory();

@@ -21,14 +21,9 @@ enum TFileOperation { foNone, foCopy, foMove, foDelete, foSetProperties,
 enum TCancelStatus { csContinue = 0, csCancel, csCancelTransfer, csRemoteAbort };
 enum TResumeStatus { rsNotAvailable, rsEnabled, rsDisabled };
 enum TBatchOverwrite { boNo, boAll, boNone, boOlder, boAlternateResume, boAppend, boResume };
-// typedef void (nb::TObject::*TFileOperationProgressEvent)
-// (TFileOperationProgressType & ProgressData, TCancelStatus & Cancel);
 typedef boost::signal2<void, TFileOperationProgressType &, TCancelStatus &> fileoperationprogress_signal_type;
 typedef fileoperationprogress_signal_type::slot_type fileoperationprogress_slot_type;
 
-// typedef void (nb::TObject::*TFileOperationFinished)
-// (TFileOperation Operation, TOperationSide Side, bool Temp,
-// const std::wstring FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
 typedef boost::signal6<void, TFileOperation, TOperationSide, bool,
         const std::wstring, bool, TOnceDoneOperation &> fileoperationfinished_signal_type;
 typedef fileoperationfinished_signal_type::slot_type fileoperationfinished_slot_type;

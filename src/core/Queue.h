@@ -60,17 +60,11 @@ class TTerminalQueue;
 class TQueueItemProxy;
 class TTerminalQueueStatus;
 //---------------------------------------------------------------------------
-// typedef void (nb::TObject::*TQueueListUpdate)
-// (TTerminalQueue *Queue);
 typedef boost::signal1<void, TTerminalQueue *> queuelistupdate_signal_type;
 typedef queuelistupdate_signal_type::slot_type queuelistupdate_slot_type;
-// typedef void (nb::TObject::*TQueueItemUpdateEvent)
-// (TTerminalQueue *Queue, TQueueItem *Item);
 typedef boost::signal2<void, TTerminalQueue *, TQueueItem *> queueitemupdate_signal_type;
 typedef queueitemupdate_signal_type::slot_type queueitemupdate_slot_type;
 enum TQueueEvent { qeEmpty, qePendingUserAction };
-// typedef void (nb::TObject::*TQueueEventEvent)
-// (TTerminalQueue *Queue, TQueueEvent Event);
 typedef boost::signal2<void, TTerminalQueue *, TQueueEvent> queueevent_signal_type;
 typedef queueevent_signal_type::slot_type queueevent_slot_type;
 //---------------------------------------------------------------------------
@@ -88,27 +82,19 @@ public:
     TTerminalQueueStatus *CreateStatus(TTerminalQueueStatus *Current);
     void Idle();
 
-    // __property bool IsEmpty = { read = GetIsEmpty };
     bool GetIsEmpty();
-    // __property int TransfersLimit = { read = FTransfersLimit, write = SetTransfersLimit };
     size_t GetTransfersLimit() { return FTransfersLimit; }
     void SetTransfersLimit(size_t value);
-    // __property TQueryUserEvent OnQueryUser = { read = FOnQueryUser, write = FOnQueryUser };
     queryuser_signal_type &GetOnQueryUser() { return FOnQueryUser; }
     void SetOnQueryUser(const queryuser_slot_type &value) { FOnQueryUser.connect(value); }
-    // __property TPromptUserEvent OnPromptUser = { read = FOnPromptUser, write = FOnPromptUser };
     promptuser_signal_type &GetOnPromptUser() { return FOnPromptUser; }
     void SetOnPromptUser(const promptuser_slot_type &value) { FOnPromptUser.connect(value); }
-    // __property TExtendedExceptionEvent OnShowExtendedException = { read = FOnShowExtendedException, write = FOnShowExtendedException };
     extendedexception_signal_type &GetOnShowExtendedException() { return FOnShowExtendedException; }
     void SetOnShowExtendedException(const extendedexception_slot_type &value) { FOnShowExtendedException.connect(value); }
-    // __property TQueueListUpdate OnListUpdate = { read = FOnListUpdate, write = FOnListUpdate };
     queuelistupdate_signal_type &GetOnListUpdate() { return FOnListUpdate; }
     void SetOnListUpdate(const queuelistupdate_slot_type &value) { FOnListUpdate.connect(value); }
-    // __property TQueueItemUpdateEvent OnQueueItemUpdate = { read = FOnQueueItemUpdate, write = FOnQueueItemUpdate };
     queueitemupdate_signal_type &GetOnQueueItemUpdate() { return FOnQueueItemUpdate; }
     void SetOnQueueItemUpdate(const queueitemupdate_slot_type &value) { FOnQueueItemUpdate.connect(value); }
-    // __property TQueueEventEvent OnEvent = { read = FOnEvent, write = FOnEvent };
     queueevent_signal_type &GetOnEvent() { return FOnEvent; }
     void SetOnEvent(const queueevent_slot_type &value) { FOnEvent.connect(value); }
 
@@ -191,9 +177,7 @@ public:
 
     static bool IsUserActionStatus(TStatus Status);
 
-    // __property TStatus Status = { read = GetStatus };
     TStatus GetStatus();
-    // __property HANDLE CompleteEvent = { read = FCompleteEvent, write = FCompleteEvent };
     HANDLE GetCompleteEvent() { return FCompleteEvent; }
     void SetCompleteEvent(HANDLE value) { FCompleteEvent = value; }
 
@@ -238,17 +222,11 @@ public:
     bool Resume();
     bool SetCPSLimit(unsigned long CPSLimit);
 
-    // __property TFileOperationProgressType *ProgressData = { read = GetProgressData };
     TFileOperationProgressType *GetProgressData();
-    // __property TQueueItem::TInfo *Info = { read = FInfo };
     TQueueItem::TInfo *GetInfo() { return FInfo; }
-    // __property TQueueItem::TStatus Status = { read = FStatus };
     TQueueItem::TStatus GetStatus() { return FStatus; }
-    // __property bool ProcessingUserAction = { read = FProcessingUserAction };
     bool GetProcessingUserAction() { return FProcessingUserAction; }
-    // __property int Index = { read = GetIndex };
     size_t GetIndex();
-    // __property void *UserData = { read = FUserData, write = FUserData };
     void *GetUserData() { return FUserData; }
     void SetUserData(void *value) { FUserData = value; }
 
@@ -278,11 +256,8 @@ public:
 
     TQueueItemProxy *FindByQueueItem(TQueueItem *QueueItem);
 
-    // __property int Count = { read = GetCount };
     size_t GetCount();
-    // __property int ActiveCount = { read = GetActiveCount };
     size_t GetActiveCount();
-    // __property TQueueItemProxy *Items[int Index] = { read = GetItem };
     TQueueItemProxy *GetItem(size_t Index);
 
 protected:

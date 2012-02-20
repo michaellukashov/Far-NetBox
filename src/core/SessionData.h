@@ -163,7 +163,6 @@ private:
     static std::wstring DecryptPassword(const std::wstring Password, const std::wstring Key);
     static std::wstring StronglyRecryptPassword(const std::wstring Password, const std::wstring Key);
 
-    // __property std::wstring InternalStorageKey = { read = GetInternalStorageKey };
     std::wstring GetInternalStorageKey();
 
 public:
@@ -188,270 +187,152 @@ public:
     static void ValidatePath(const std::wstring Path);
     static void ValidateName(const std::wstring Name);
 
-    // __property std::wstring HostName  = { read=FHostName, write=SetHostName };
     std::wstring GetHostName() const { return FHostName; }
-    // __property int PortNumber  = { read=FPortNumber, write=SetPortNumber };
     size_t GetPortNumber() const { return FPortNumber; }
     TLoginType GetLoginType() const;
     void SetLoginType(TLoginType value);
-    // __property std::wstring UserName  = { read=FUserName, write=SetUserName };
     std::wstring GetUserName() const { return FUserName; }
-    // __property std::wstring Password  = { read=GetPassword, write=SetPassword };
     void SetPassword(const std::wstring value);
     std::wstring GetPassword() const;
-    // __property bool Passwordless = { read=FPasswordless, write=SetPasswordless };
     bool GetPasswordless() const { return FPasswordless; }
-    // __property int PingInterval  = { read=FPingInterval, write=SetPingInterval };
     size_t GetPingInterval() const { return FPingInterval; }
-    // __property bool TryAgent  = { read=FTryAgent, write=SetTryAgent };
     bool GetTryAgent() const { return FTryAgent; }
-    // __property bool AgentFwd  = { read=FAgentFwd, write=SetAgentFwd };
     bool GetAgentFwd() const { return FAgentFwd; }
-    // __property std::wstring ListingCommand = { read = FListingCommand, write = SetListingCommand };
     const std::wstring GetListingCommand() const { return FListingCommand; }
-    // __property bool AuthTIS  = { read=FAuthTIS, write=SetAuthTIS };
     bool GetAuthTIS() const { return FAuthTIS; }
-    // __property bool AuthKI  = { read=FAuthKI, write=SetAuthKI };
     bool GetAuthKI() const { return FAuthKI; }
-    // __property bool AuthKIPassword  = { read=FAuthKIPassword, write=SetAuthKIPassword };
     bool GetAuthKIPassword() const { return FAuthKIPassword; }
-    // __property bool AuthGSSAPI  = { read=FAuthGSSAPI, write=SetAuthGSSAPI };
     bool GetAuthGSSAPI() const { return FAuthGSSAPI; }
-    // __property bool GSSAPIFwdTGT = { read=FGSSAPIFwdTGT, write=SetGSSAPIFwdTGT };
     bool GetGSSAPIFwdTGT() const { return FGSSAPIFwdTGT; }
-    // __property std::wstring GSSAPIServerRealm = { read=FGSSAPIServerRealm, write=SetGSSAPIServerRealm };
     const std::wstring GetGSSAPIServerRealm() const { return FGSSAPIServerRealm; }
-    // __property bool ChangeUsername  = { read=FChangeUsername, write=SetChangeUsername };
     bool GetChangeUsername() const { return FChangeUsername; }
-    // __property bool Compression  = { read=FCompression, write=SetCompression };
     bool GetCompression() const { return FCompression; }
-    // __property TSshProt SshProt  = { read=FSshProt, write=SetSshProt };
     TSshProt GetSshProt() const { return FSshProt; }
-    // __property bool UsesSsh = { read = GetUsesSsh };
     bool GetUsesSsh();
-    // __property bool Ssh2DES  = { read=FSsh2DES, write=SetSsh2DES };
     bool GetSsh2DES() const { return FSsh2DES; }
-    // __property bool SshNoUserAuth  = { read=FSshNoUserAuth, write=SetSshNoUserAuth };
     bool GetSshNoUserAuth() const { return FSshNoUserAuth; }
-    // __property TCipher Cipher[size_t Index] = { read=GetCipher, write=SetCipher };
     void SetCipher(size_t Index, TCipher value);
     TCipher GetCipher(size_t Index) const;
-    // __property TKex Kex[size_t Index] = { read=GetKex, write=SetKex };
     void SetKex(size_t Index, TKex value);
     TKex GetKex(size_t Index) const;
-    // __property std::wstring PublicKeyFile  = { read=FPublicKeyFile, write=SetPublicKeyFile };
     const std::wstring GetPublicKeyFile() const { return FPublicKeyFile; }
-    // __property TProtocol Protocol  = { read=FProtocol, write=SetProtocol };
     TProtocol GetProtocol() const { return FProtocol; }
-    // __property std::wstring ProtocolStr  = { read=GetProtocolStr, write=SetProtocolStr };
     void SetProtocolStr(const std::wstring value);
     std::wstring GetProtocolStr() const;
-    // __property TFSProtocol FSProtocol  = { read=FFSProtocol, write=SetFSProtocol  };
     TFSProtocol GetFSProtocol() const { return FFSProtocol; }
-    // __property std::wstring FSProtocolStr  = { read=GetFSProtocolStr };
     std::wstring GetFSProtocolStr();
-    // __property bool Modified  = { read=FModified, write=FModified };
     bool GetModified() const { return FModified; }
     void SetModified(bool value) { FModified = value; }
-    // __property bool CanLogin  = { read=GetCanLogin };
     bool GetCanLogin();
-    // __property bool ClearAliases = { read = FClearAliases, write = SetClearAliases };
     bool GetClearAliases() const { return FClearAliases; }
-    // __property nb::TDateTime PingIntervalDT = { read = GetPingIntervalDT, write = SetPingIntervalDT };
     void SetPingIntervalDT(nb::TDateTime value);
     nb::TDateTime GetPingIntervalDT() const;
-    // __property nb::TDateTime TimeDifference = { read = FTimeDifference, write = SetTimeDifference };
     nb::TDateTime GetTimeDifference() const { return FTimeDifference; }
-    // __property TPingType PingType = { read = FPingType, write = SetPingType };
     TPingType GetPingType() const { return FPingType; }
-    // __property std::wstring SessionName  = { read=GetSessionName };
     std::wstring GetSessionName();
     bool HasSessionName();
-    // __property std::wstring DefaultSessionName  = { read=GetDefaultSessionName };
     std::wstring GetDefaultSessionName();
-    // __property std::wstring SessionUrl  = { read=GetSessionUrl };
     std::wstring GetSessionUrl();
-    // __property std::wstring LocalDirectory  = { read=FLocalDirectory, write=SetLocalDirectory };
     std::wstring GetLocalDirectory() const { return FLocalDirectory; }
-    // __property std::wstring RemoteDirectory  = { read=FRemoteDirectory, write=SetRemoteDirectory };
     std::wstring GetRemoteDirectory() const { return FRemoteDirectory; }
     void SetRemoteDirectory(const std::wstring value);
-    // __property bool UpdateDirectories = { read=FUpdateDirectories, write=SetUpdateDirectories };
     bool GetUpdateDirectories() const { return FUpdateDirectories; }
-    // __property bool CacheDirectories = { read=FCacheDirectories, write=SetCacheDirectories };
     bool GetCacheDirectories() const { return FCacheDirectories; }
-    // __property bool CacheDirectoryChanges = { read=FCacheDirectoryChanges, write=SetCacheDirectoryChanges };
     bool GetCacheDirectoryChanges() const { return FCacheDirectoryChanges; }
-    // __property bool PreserveDirectoryChanges = { read=FPreserveDirectoryChanges, write=SetPreserveDirectoryChanges };
     bool GetPreserveDirectoryChanges() const { return FPreserveDirectoryChanges; }
-    // __property bool LockInHome = { read=FLockInHome, write=SetLockInHome };
     bool GetLockInHome() const { return FLockInHome; }
-    // __property bool Special = { read=FSpecial, write=SetSpecial };
     bool GetSpecial() const { return FSpecial; }
-    // __property bool Selected  = { read=FSelected, write=FSelected };
     bool GetSelected() const { return FSelected; }
     void SetSelected(bool value) { FSelected = value; }
-    // __property std::wstring InfoTip  = { read=GetInfoTip };
     std::wstring GetInfoTip();
-    // __property bool DefaultShell = { read = GetDefaultShell, write = SetDefaultShell };
     bool GetDefaultShell();
     void SetDefaultShell(bool value);
-    // __property bool DetectReturnVar = { read = GetDetectReturnVar, write = SetDetectReturnVar };
     void SetDetectReturnVar(bool value);
     bool GetDetectReturnVar();
-    // __property TEOLType EOLType = { read = FEOLType, write = SetEOLType };
     TEOLType GetEOLType() const { return FEOLType; }
-    // __property bool LookupUserGroups = { read = FLookupUserGroups, write = SetLookupUserGroups };
     bool GetLookupUserGroups() const { return FLookupUserGroups; }
-    // __property std::wstring ReturnVar = { read = FReturnVar, write = SetReturnVar };
     std::wstring GetReturnVar() const { return FReturnVar; }
-    // __property bool Scp1Compatibility = { read = FScp1Compatibility, write = SetScp1Compatibility };
     bool GetScp1Compatibility() const { return FScp1Compatibility; }
-    // __property std::wstring Shell = { read = FShell, write = SetShell };
     std::wstring GetShell() const { return FShell; }
-    // __property std::wstring SftpServer = { read = FSftpServer, write = SetSftpServer };
     std::wstring GetSftpServer() const { return FSftpServer; }
-    // __property int Timeout = { read = FTimeout, write = SetTimeout };
     int GetTimeout() const { return FTimeout; }
-    // __property nb::TDateTime TimeoutDT = { read = GetTimeoutDT };
     nb::TDateTime GetTimeoutDT();
-    // __property bool UnsetNationalVars = { read = FUnsetNationalVars, write = SetUnsetNationalVars };
     bool GetUnsetNationalVars() const { return FUnsetNationalVars; }
-    // __property bool IgnoreLsWarnings  = { read=FIgnoreLsWarnings, write=SetIgnoreLsWarnings };
     bool GetIgnoreLsWarnings() const { return FIgnoreLsWarnings; }
-    // __property bool TcpNoDelay  = { read=FTcpNoDelay, write=SetTcpNoDelay };
     bool GetTcpNoDelay() const { return FTcpNoDelay; }
-    // __property std::wstring SshProtStr  = { read=GetSshProtStr };
     std::wstring GetSshProtStr();
-    // __property std::wstring CipherList  = { read=GetCipherList, write=SetCipherList };
     void SetCipherList(const std::wstring value);
     std::wstring GetCipherList() const;
-    // __property std::wstring KexList  = { read=GetKexList, write=SetKexList };
     void SetKexList(const std::wstring value);
     std::wstring GetKexList() const;
-    // __property TProxyMethod ProxyMethod  = { read=FProxyMethod, write=SetProxyMethod };
     TProxyMethod GetProxyMethod() const { return FProxyMethod; }
-    // __property std::wstring ProxyHost  = { read=FProxyHost, write=SetProxyHost };
     std::wstring GetProxyHost() const { return FProxyHost; }
-    // __property int ProxyPort  = { read=FProxyPort, write=SetProxyPort };
     int GetProxyPort() const { return FProxyPort; }
-    // __property std::wstring ProxyUsername  = { read=FProxyUsername, write=SetProxyUsername };
     std::wstring GetProxyUsername() const { return FProxyUsername; }
-    // __property std::wstring ProxyPassword  = { read=GetProxyPassword, write=SetProxyPassword };
     std::wstring GetProxyPassword() const;
     void SetProxyPassword(const std::wstring value);
-    // __property std::wstring ProxyTelnetCommand  = { read=FProxyTelnetCommand, write=SetProxyTelnetCommand };
     std::wstring GetProxyTelnetCommand() const { return FProxyTelnetCommand; }
-    // __property std::wstring ProxyLocalCommand  = { read=FProxyLocalCommand, write=SetProxyLocalCommand };
     std::wstring GetProxyLocalCommand() const { return FProxyLocalCommand; }
-    // __property TAutoSwitch ProxyDNS  = { read=FProxyDNS, write=SetProxyDNS };
     TAutoSwitch GetProxyDNS() const { return FProxyDNS; }
-    // __property bool ProxyLocalhost  = { read=FProxyLocalhost, write=SetProxyLocalhost };
     bool GetProxyLocalhost() const { return FProxyLocalhost; }
-    // __property int FtpProxyLogonType  = { read=FFtpProxyLogonType, write=SetFtpProxyLogonType };
     size_t GetFtpProxyLogonType() const { return FFtpProxyLogonType; }
-    // __property TAutoSwitch Bug[TSshBug Bug]  = { read=GetBug, write=SetBug };
     void SetBug(TSshBug Bug, TAutoSwitch value);
     TAutoSwitch GetBug(TSshBug Bug) const;
-    // __property std::wstring CustomParam1 = { read = FCustomParam1, write = SetCustomParam1 };
     std::wstring GetCustomParam1() const { return FCustomParam1; }
-    // __property std::wstring CustomParam2 = { read = FCustomParam2, write = SetCustomParam2 };
     std::wstring GetCustomParam2() const { return FCustomParam2; }
-    // __property std::wstring SessionKey = { read = GetSessionKey };
     std::wstring GetSessionKey();
-    // __property bool ResolveSymlinks = { read = FResolveSymlinks, write = SetResolveSymlinks };
     bool GetResolveSymlinks() const { return FResolveSymlinks; }
-    // __property int SFTPDownloadQueue = { read = FSFTPDownloadQueue, write = SetSFTPDownloadQueue };
     size_t GetSFTPDownloadQueue() const { return FSFTPDownloadQueue; }
     void SetSFTPDownloadQueue(size_t value);
-    // __property int SFTPUploadQueue = { read = FSFTPUploadQueue, write = SetSFTPUploadQueue };
     size_t GetSFTPUploadQueue() const { return FSFTPUploadQueue; }
     void SetSFTPUploadQueue(size_t value);
-    // __property int SFTPListingQueue = { read = FSFTPListingQueue, write = SetSFTPListingQueue };
     size_t GetSFTPListingQueue() const { return FSFTPListingQueue; }
     void SetSFTPListingQueue(size_t value);
-    // __property int SFTPMaxVersion = { read = FSFTPMaxVersion, write = SetSFTPMaxVersion };
     size_t GetSFTPMaxVersion() const { return FSFTPMaxVersion; }
-    // __property unsigned long SFTPMaxPacketSize = { read = FSFTPMaxPacketSize, write = SetSFTPMaxPacketSize };
     size_t GetSFTPMinPacketSize() const { return FSFTPMinPacketSize; }
     size_t GetSFTPMaxPacketSize() const { return FSFTPMaxPacketSize; }
-    // __property TAutoSwitch SFTPBug[TSftpBug Bug]  = { read=GetSFTPBug, write=SetSFTPBug };
     void SetSFTPBug(TSftpBug Bug, TAutoSwitch value);
     TAutoSwitch GetSFTPBug(TSftpBug Bug) const;
-    // __property TAutoSwitch SCPLsFullTime = { read = FSCPLsFullTime, write = SetSCPLsFullTime };
     TAutoSwitch GetSCPLsFullTime() const { return FSCPLsFullTime; }
-    // __property TAutoSwitch FtpListAll = { read = FFtpListAll, write = SetFtpListAll };
     TAutoSwitch GetFtpListAll() const { return FFtpListAll; }
-    // __property TDSTMode DSTMode = { read = FDSTMode, write = SetDSTMode };
     TDSTMode GetDSTMode() const { return FDSTMode; }
-    // __property bool DeleteToRecycleBin = { read = FDeleteToRecycleBin, write = SetDeleteToRecycleBin };
     bool GetDeleteToRecycleBin() const { return FDeleteToRecycleBin; }
-    // __property bool OverwrittenToRecycleBin = { read = FOverwrittenToRecycleBin, write = SetOverwrittenToRecycleBin };
     bool GetOverwrittenToRecycleBin() const { return FOverwrittenToRecycleBin; }
-    // __property std::wstring RecycleBinPath = { read = FRecycleBinPath, write = SetRecycleBinPath };
     std::wstring GetRecycleBinPath() const { return FRecycleBinPath; }
-    // __property std::wstring PostLoginCommands = { read = FPostLoginCommands, write = SetPostLoginCommands };
     std::wstring GetPostLoginCommands() const { return FPostLoginCommands; }
-    // __property TAddressFamily AddressFamily = { read = FAddressFamily, write = SetAddressFamily };
     TAddressFamily GetAddressFamily() const { return FAddressFamily; }
-    // __property std::wstring RekeyData = { read = FRekeyData, write = SetRekeyData };
     std::wstring GetRekeyData() const { return FRekeyData; }
-    // __property unsigned int RekeyTime = { read = FRekeyTime, write = SetRekeyTime };
     unsigned int GetRekeyTime() const { return FRekeyTime; }
-    // __property int Color = { read = FColor, write = SetColor };
     int GetColor() const { return FColor; }
-    // __property bool Tunnel = { read = FTunnel, write = SetTunnel };
     bool GetTunnel() const { return FTunnel; }
     void SetTunnel(bool value);
-    // __property std::wstring TunnelHostName = { read = FTunnelHostName, write = SetTunnelHostName };
     std::wstring GetTunnelHostName() const { return FTunnelHostName; }
-    // __property int TunnelPortNumber = { read = FTunnelPortNumber, write = SetTunnelPortNumber };
     size_t GetTunnelPortNumber() const { return FTunnelPortNumber; }
-    // __property std::wstring TunnelUserName = { read = FTunnelUserName, write = SetTunnelUserName };
     std::wstring GetTunnelUserName() const { return FTunnelUserName; }
-    // __property std::wstring TunnelPassword = { read = GetTunnelPassword, write = SetTunnelPassword };
     void SetTunnelPassword(const std::wstring value);
     std::wstring GetTunnelPassword();
-    // __property std::wstring TunnelPublicKeyFile = { read = FTunnelPublicKeyFile, write = SetTunnelPublicKeyFile };
     std::wstring GetTunnelPublicKeyFile() const { return FTunnelPublicKeyFile; }
-    // __property bool TunnelAutoassignLocalPortNumber = { read = GetTunnelAutoassignLocalPortNumber };
     bool GetTunnelAutoassignLocalPortNumber();
-    // __property int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber, write = SetTunnelLocalPortNumber };
     size_t GetTunnelLocalPortNumber() const { return FTunnelLocalPortNumber; }
-    // __property std::wstring TunnelPortFwd = { read = FTunnelPortFwd, write = SetTunnelPortFwd };
     std::wstring GetTunnelPortFwd() const { return FTunnelPortFwd; }
     void SetTunnelPortFwd(const std::wstring value);
-    // __property bool FtpPasvMode = { read = FFtpPasvMode, write = SetFtpPasvMode };
     bool GetFtpPasvMode() const { return FFtpPasvMode; }
     bool GetFtpAllowEmptyPassword() const { return FFtpAllowEmptyPassword; }
     void SetFtpAllowEmptyPassword(bool value);
     TFtpEncryptionSwitch GetFtpEncryption() const { return FFtpEncryption; }
     void SetFtpEncryption(TFtpEncryptionSwitch value);
-    // __property bool FtpForcePasvIp = { read = FFtpForcePasvIp, write = SetFtpForcePasvIp };
     bool GetFtpForcePasvIp() const { return FFtpForcePasvIp; }
-    // __property std::wstring FtpAccount = { read = FFtpAccount, write = SetFtpAccount };
     std::wstring GetFtpAccount() const { return FFtpAccount; }
-    // __property int FtpPingInterval  = { read=FFtpPingInterval, write=SetFtpPingInterval };
     int GetFtpPingInterval() const { return FFtpPingInterval; }
-    // __property nb::TDateTime FtpPingIntervalDT  = { read=GetFtpPingIntervalDT };
     nb::TDateTime GetFtpPingIntervalDT();
-    // __property TPingType FtpPingType = { read = FFtpPingType, write = SetFtpPingType };
     TPingType GetFtpPingType() const { return FFtpPingType; }
-    // __property TFtps Ftps = { read = FFtps, write = SetFtps };
     TFtps GetFtps() const { return FFtps; }
-    // __property TAutoSwitch NotUtf = { read = FNotUtf, write = SetNotUtf };
     TAutoSwitch GetNotUtf() const { return FNotUtf; }
-    // __property std::wstring HostKey = { read = FHostKey, write = SetHostKey };
     std::wstring GetHostKey() const { return FHostKey; }
-    // __property std::wstring StorageKey = { read = GetStorageKey };
     std::wstring GetStorageKey();
-    // __property std::wstring OrigHostName = { read = FOrigHostName };
     std::wstring GetOrigHostName() const { return FOrigHostName; }
-    // __property int OrigPortNumber = { read = FOrigPortNumber };
     int GetOrigPortNumber() const { return FOrigPortNumber; }
-    // __property std::wstring LocalName = { read = GetLocalName };
     std::wstring GetLocalName();
-    // __property std::wstring Source = { read = GetSource };
     std::wstring GetSource();
 
     void SetHostName(const std::wstring value);
@@ -563,9 +444,7 @@ public:
     TSessionData *NewSession(const std::wstring SessionName, TSessionData *Session);
     TSessionData *ParseUrl(const std::wstring Url, TOptions *Options, bool &DefaultsOnly,
                            std::wstring *FileName = NULL, bool *ProtocolDefined = NULL);
-    // __property TSessionData * Sessions[size_t Index]  = { read=AtSession };
     TSessionData *GetSession(size_t Index) { return static_cast<TSessionData *>(AtObject(Index)); }
-    // __property TSessionData * DefaultSettings  = { read=FDefaultSettings, write=SetDefaultSettings };
     TSessionData *GetDefaultSettings() const { return FDefaultSettings; }
     void SetDefaultSettings(TSessionData *value);
 

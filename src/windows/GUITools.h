@@ -18,7 +18,6 @@
 //---------------------------------------------------------------------------
 class TSessionData;
 //---------------------------------------------------------------------------
-// typedef void (nb::TObject::*TProcessMessagesEvent)();
 typedef boost::signal0<void> processmessages_signal_type;
 typedef processmessages_signal_type::slot_type processmessages_slot_type;
 //---------------------------------------------------------------------------

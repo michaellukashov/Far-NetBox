@@ -841,17 +841,13 @@ public:
         return *this;
     }
 
-    // __property unsigned int GetLength() = { read = FLength };
     size_t GetLength() const { return FLength; }
-    // __property unsigned int RemainingLength = { read = GetRemainingLength };
     size_t GetRemainingLength() const
     {
         return GetLength() - FPosition;
     }
 
-    // __property char * Data = { read = FData };
     char *GetData() const { return FData; }
-    // __property char * SendData = { read = GetSendData };
     char *GetSendData() const
     {
         char *Result = FData - FSendPrefixLen;
@@ -860,13 +856,11 @@ public:
         return Result;
     }
 
-    // __property unsigned int SendLength = { read = GetSendLength };
     size_t GetSendLength() const
     {
         return FSendPrefixLen + GetLength();
     }
 
-    // __property unsigned int Capacity = { read = FCapacity, write = SetCapacity };
     size_t GetCapacity() const { return FCapacity; }
     void SetCapacity(size_t ACapacity)
     {
@@ -893,9 +887,7 @@ public:
         }
     }
 
-    // __property unsigned char Type = { read = FType };
     unsigned char GetType() const { return FType; }
-    // __property unsigned char RequestType = { read = GetRequestType };
     unsigned char GetRequestType()
     {
         if (FMessageNumber != SFTPNoMessageNumber)
@@ -909,13 +901,10 @@ public:
         }
     }
 
-    // __property unsigned int MessageNumber = { read = FMessageNumber, write = FMessageNumber };
     size_t GetMessageNumber() const { return FMessageNumber; }
     void SetMessageNumber(size_t value) { FMessageNumber = value; }
-    // __property TSFTPFileSystem * ReservedBy = { read = FReservedBy, write = FReservedBy };
     TSFTPFileSystem *GetReservedBy() const { return FReservedBy; }
     void SetReservedBy(TSFTPFileSystem *value) { FReservedBy = value; }
-    // __property std::wstring TypeName = { read = GetTypeName };
     std::wstring GetTypeName() const
     {
 #define TYPE_CASE(TYPE) case TYPE: return nb::MB2W(#TYPE)

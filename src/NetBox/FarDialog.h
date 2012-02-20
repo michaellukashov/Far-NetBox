@@ -41,17 +41,12 @@ class TFarList;
 struct FarDialogItem;
 enum TItemPosition { ipNewLine, ipBelow, ipRight };
 //---------------------------------------------------------------------------
-// typedef void (nb::TObject::*TFarKeyEvent)
-// (TFarDialog *Sender, TFarDialogItem *Item, long KeyCode, bool &Handled);
 typedef boost::signal4<void, TFarDialog *, TFarDialogItem *, long, bool &> key_signal_type;
 typedef key_signal_type::slot_type key_slot_type;
 
-// typedef void (nb::TObject::*TFarMouseClickEvent)
-// (TFarDialogItem *Item, MOUSE_EVENT_RECORD *Event);
 typedef boost::signal2<void, TFarDialogItem *, MOUSE_EVENT_RECORD *> mouse_click_signal_type;
 typedef mouse_click_signal_type::slot_type mouse_click_slot_type;
 
-// typedef void (nb::TObject::*TFarProcessGroupEvent)(TFarDialogItem *Item, void *Arg);
 typedef boost::signal2<void, TFarDialogItem *, void *> processgroupevent_signal_type;
 typedef processgroupevent_signal_type::slot_type processgroupevent_slot_type;
 //---------------------------------------------------------------------------
@@ -248,8 +243,6 @@ public:
     void SetVisible(bool value) { SetFlag(DIF_HIDDEN | DIF_INVERSE, value); }
     bool GetTabStop() { return GetFlag(DIF_NOFOCUS | DIF_INVERSE); }
     void SetTabStop(bool value) { SetFlag(DIF_NOFOCUS | DIF_INVERSE, value); }
-    bool GetOem() { return FOem; }
-    void SetOem(bool value) { FOem = value; }
     size_t GetTag() { return FTag; }
     void SetTag(size_t value) { FTag = value; }
     TFarDialog *GetDialog() { return FDialog; }
@@ -312,7 +305,7 @@ protected:
     virtual bool MouseMove(int X, int Y, MOUSE_EVENT_RECORD *Event);
     virtual bool MouseClick(MOUSE_EVENT_RECORD *Event);
     nb::TPoint MouseClientPosition(MOUSE_EVENT_RECORD *Event);
-    void Text(int X, int Y, int Color, const std::wstring Str, bool Oem = false);
+    void Text(int X, int Y, int Color, const std::wstring Str);
     void Redraw();
     virtual bool HotKey(char HotKey);
 
@@ -341,7 +334,6 @@ private:
     bool FIsEnabled;
     unsigned long FColors;
     unsigned long FColorMask;
-    bool FOem;
 
     void UpdateFlags(size_t value);
     void SetCoordinate(size_t Index, int value);
@@ -397,8 +389,6 @@ private:
     TFarButtonBrackets FBrackets;
 };
 //---------------------------------------------------------------------------
-// typedef void (*TFarAllowChange)(TFarDialogItem *Sender,
-// long NewState, bool &AllowChange);
 typedef boost::signal3<void, TFarDialogItem *, long, bool &> farallowchange_signal_type;
 typedef farallowchange_signal_type::slot_type farallowchange_slot_type;
 //---------------------------------------------------------------------------
