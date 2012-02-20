@@ -3479,7 +3479,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
             ProgressBar2 += ProgressBar(ProgressData.TransferProgress(), ProgressWidth) + L"\n";
         }
         std::wstring Message =
-            StrToFar(Message1) + ProgressBar1 + StrToFar(Message2) + ProgressBar2;
+            Message1 + ProgressBar1 + Message2 + ProgressBar2;
         FPlugin->Message(0, Title, Message, NULL, NULL, true);
 
         if (First)

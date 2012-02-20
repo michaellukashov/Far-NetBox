@@ -538,18 +538,3 @@ inline std::wstring StrFromFar(std::wstring &S)
     // return L"";
 }
 //---------------------------------------------------------------------------
-
-inline wchar_t *StrToFar(const std::wstring &S)
-{
-    // CharToOem(S.c_str(), S.c_str());
-    return const_cast<wchar_t *>(S.c_str());
-}
-
-//---------------------------------------------------------------------------
-inline wchar_t *StrToFar(const wchar_t *S)
-{
-    // S.Unique();
-    // CharToOem(S, S);
-    return const_cast<wchar_t *>(S);
-}
-//---------------------------------------------------------------------------

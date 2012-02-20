@@ -6932,7 +6932,6 @@ void TSynchronizeChecklistDialog::AddColumn(std::wstring &List,
 {
     // OEM character set (Ansi does not have the ascii art we need)
     char Separator = '\xB3';
-    StrToFar(Value);
     size_t Len = Value.size();
     size_t Width = static_cast<size_t>(FWidths[Column]);
     bool Right = (Column == 2) || (Column == 3) || (Column == 6) || (Column == 7);
