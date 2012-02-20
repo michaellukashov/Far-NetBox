@@ -57,20 +57,14 @@ public:
     virtual void WriteString(const std::wstring Name, const std::wstring Value);
     void WriteBinaryData(const std::wstring Name, const std::wstring Value);
 
-    // __property std::wstring Storage  = { read=FStorage };
     std::wstring GetStorage() { return FStorage; }
-    // __property std::wstring CurrentSubKey  = { read=GetCurrentSubKey };
     std::wstring GetCurrentSubKey();
-    // __property TStorageAccessMode AccessMode  = { read=FAccessMode, write=SetAccessMode };
     TStorageAccessMode GetAccessMode() { return FAccessMode; }
     virtual void SetAccessMode(TStorageAccessMode value);
-    // __property bool Explicit = { read = FExplicit, write = FExplicit };
     bool GetExplicit() { return FExplicit; }
     void SetExplicit(bool value) { FExplicit = value; }
-    // __property bool MungeStringValues = { read = FMungeStringValues, write = FMungeStringValues };
     bool GetMungeStringValues() { return FMungeStringValues; }
     void SetMungeStringValues(bool value) { FMungeStringValues = value; }
-    // __property std::wstring Source = { read = GetSource };
     virtual std::wstring GetSource() = 0;
 
 protected:
@@ -127,7 +121,6 @@ public:
 protected:
     virtual std::wstring GetSource();
 
-    // __property int Failed  = { read=GetFailed, write=FFailed };
     int GetFailed();
     void SetFailed(int value) { FFailed = value; }
 

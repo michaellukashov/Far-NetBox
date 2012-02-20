@@ -125,7 +125,6 @@ public:
     virtual bool GetStoredCredentialsTried() = 0;
     virtual std::wstring GetUserName() = 0;
 
-    // __property std::wstring CurrentDirectory = { read = GetCurrentDirectory };
     virtual std::wstring GetCurrentDirectory() = 0;
 
 public:

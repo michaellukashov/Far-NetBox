@@ -379,7 +379,6 @@ protected:
     std::wstring EncryptPassword(const std::wstring Password);
     std::wstring DecryptPassword(const std::wstring Password);
 
-    // __property TFileOperationProgressType * OperationProgress = { read=FOperationProgress };
     TFileOperationProgressType *GetOperationProgress() { return FOperationProgress; }
 
 public:
@@ -482,23 +481,15 @@ public:
     static std::wstring ExpandFileName(const std::wstring Path,
                                        const std::wstring BasePath);
 
-    // __property TSessionData * SessionData = { read = FSessionData };
     TSessionData *GetSessionData() { return FSessionData; }
-    // __property TSessionLog * Log = { read = FLog };
     TSessionLog *GetLog() { return FLog; }
-    // __property TConfiguration * Configuration = { read = FConfiguration };
     TConfiguration *GetConfiguration() { return FConfiguration; }
-    // __property bool Active = { read = GetActive };
     bool GetActive();
-    // __property TSessionStatus Status = { read = FStatus };
     TSessionStatus GetStatus() { return FStatus; }
-    // __property std::wstring CurrentDirectory = { read = GetCurrentDirectory, write = SetCurrentDirectory };
     std::wstring GetCurrentDirectory();
     void SetCurrentDirectory(const std::wstring value);
-    // __property bool ExceptionOnFail = { read = GetExceptionOnFail, write = SetExceptionOnFail };
     bool GetExceptionOnFail() const;
     void SetExceptionOnFail(bool value);
-    // __property TRemoteDirectory * Files = { read = FFiles };
     TRemoteDirectory *GetFiles() { return FFiles; }
     const nb::notify_signal_type &GetOnChangeDirectory() const { return FOnChangeDirectory; }
     void SetOnChangeDirectory(const nb::notify_slot_type &value) { FOnChangeDirectory.connect(value); }
@@ -510,43 +501,27 @@ public:
     void SetOnReadDirectoryProgress(const readdirectoryprogress_slot_type &value) { FOnReadDirectoryProgress.connect(value); }
     deletelocalfile_signal_type &GetOnDeleteLocalFile() { return FOnDeleteLocalFile; }
     void SetOnDeleteLocalFile(const deletelocalfile_slot_type &value) { FOnDeleteLocalFile.connect(value); }
-    // __property const TRemoteTokenList * Groups = { read = GetGroups };
     const TRemoteTokenList *GetGroups();
-    // __property const TRemoteTokenList * Users = { read = GetUsers };
     const TRemoteTokenList *GetUsers();
-    // __property const TRemoteTokenList * Membership = { read = GetMembership };
     const TRemoteTokenList *GetMembership();
-    // __property TFileOperationProgressEvent OnProgress  = { read=FOnProgress, write=FOnProgress };
     const fileoperationprogress_signal_type &GetOnProgress() const { return FOnProgress; }
     void SetOnProgress(const fileoperationprogress_slot_type &value) { FOnProgress.connect(value); }
-    // __property TFileOperationFinished OnFinished  = { read=FOnFinished, write=FOnFinished };
     const fileoperationfinished_signal_type &GetOnFinished() const { return FOnFinished; }
     void SetOnFinished(const fileoperationfinished_slot_type &value) { FOnFinished.connect(value); }
-    // __property TCurrentFSProtocol FSProtocol = { read = FFSProtocol };
     TCurrentFSProtocol GetFSProtocol() { return FFSProtocol; }
     bool GetUseBusyCursor() { return FUseBusyCursor; }
     void SetUseBusyCursor(bool value) { FUseBusyCursor = value; }
-    // __property std::wstring UserName = { read=GetUserName };
     std::wstring GetUserName();
-    // __property bool IsCapable[TFSCapability Capability] = { read = GetIsCapable };
     bool GetIsCapable(TFSCapability Capability) const;
-    // __property bool AreCachesEmpty = { read = GetAreCachesEmpty };
     bool GetAreCachesEmpty() const;
-    // __property bool CommandSessionOpened = { read = GetCommandSessionOpened };
     bool GetCommandSessionOpened();
-    // __property TTerminal * CommandSession = { read = GetCommandSession };
     TTerminal *GetCommandSession();
     bool GetAutoReadDirectory() { return FAutoReadDirectory; }
     void SetAutoReadDirectory(bool value) { FAutoReadDirectory = value; }
-    // __property nb::TStrings * FixedPaths = { read = GetFixedPaths };
     nb::TStrings *GetFixedPaths();
-    // __property bool ResolvingSymlinks = { read = GetResolvingSymlinks };
     bool GetResolvingSymlinks();
-    // __property std::wstring Password = { read = GetPassword };
     std::wstring GetPassword();
-    // __property std::wstring TunnelPassword = { read = GetTunnelPassword };
     std::wstring GetTunnelPassword();
-    // __property bool StoredCredentialsTried = { read = GetStoredCredentialsTried };
     bool GetStoredCredentialsTried();
     queryuser_signal_type &GetOnQueryUser() { return FOnQueryUser; }
     void SetOnQueryUser(const queryuser_slot_type &value) { FOnQueryUser.connect(value); }
@@ -560,7 +535,6 @@ public:
     void SetOnInformation(const informationevent_slot_type &value) { FOnInformation.connect(value); }
     const nb::notify_signal_type &GetOnClose() const { return FOnClose; }
     void SetOnClose(const nb::notify_slot_type &value) { FOnClose.connect(value); }
-    // __property int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber };
     size_t GetTunnelLocalPortNumber() { return FTunnelLocalPortNumber; }
 };
 //---------------------------------------------------------------------------
@@ -598,9 +572,7 @@ public:
     virtual void Idle();
     void RecryptPasswords();
 
-    // __property TTerminal * Terminals[int Index]  = { read=GetTerminal };
     TTerminal *GetTerminal(size_t Index);
-    // __property int ActiveCount = { read = GetActiveCount };
     int GetActiveCount();
 
 protected:
@@ -719,9 +691,7 @@ public:
 
     ~TSynchronizeChecklist();
 
-    // __property int Count = { read = GetCount };
     size_t GetCount() const;
-    // __property const TItem * Item[int Index] = { read = GetItem };
     const TItem *GetItem(size_t Index) const;
 
 protected:

@@ -82,29 +82,18 @@ public:
     std::wstring FullCommand(TFSCommand Cmd, ...);
     std::wstring FullCommand(TFSCommand Cmd, va_list args);
     static std::wstring ExtractCommand(const std::wstring Command);
-    // __property int MaxLines[TFSCommand Cmd]  = { read=GetMaxLines};
     int GetMaxLines(TFSCommand Cmd);
-    // __property int MinLines[TFSCommand Cmd]  = { read=GetMinLines };
     int GetMinLines(TFSCommand Cmd);
-    // __property bool ModifiesFiles[TFSCommand Cmd]  = { read=GetModifiesFiles };
     bool GetModifiesFiles(TFSCommand Cmd);
-    // __property bool ChangesDirectory[TFSCommand Cmd]  = { read=GetChangesDirectory };
     bool GetChangesDirectory(TFSCommand Cmd);
-    // __property bool OneLineCommand[TFSCommand Cmd]  = { read=GetOneLineCommand };
     bool GetOneLineCommand(TFSCommand Cmd);
-    // __property std::wstring Commands[TFSCommand Cmd]  = { read=GetCommands, write=SetCommands };
     std::wstring GetCommand(TFSCommand Cmd);
     void SetCommand(TFSCommand Cmd, const std::wstring value);
-    // __property std::wstring FirstLine = { read = GetFirstLine };
     std::wstring GetFirstLine();
-    // __property bool InteractiveCommand[TFSCommand Cmd] = { read = GetInteractiveCommand };
     bool GetInteractiveCommand(TFSCommand Cmd);
-    // __property std::wstring LastLine  = { read=GetLastLine };
     std::wstring GetLastLine();
-    //  __property TSessionData * SessionData  = { read=FSessionData, write=FSessionData };
     TSessionData *GetSessionData() { return FSessionData; }
     void SetSessionData(TSessionData *value) { FSessionData = value; }
-    // __property std::wstring ReturnVar  = { read=GetReturnVar, write=FReturnVar };
     std::wstring GetReturnVar();
     void SetReturnVar(const std::wstring value) { FReturnVar = value; }
 };

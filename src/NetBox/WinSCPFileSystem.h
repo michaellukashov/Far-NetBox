@@ -236,7 +236,6 @@ protected:
     bool IsLogging();
     void ShowLog();
 
-    // __property  TTerminal * Terminal = { read = FTerminal };
     TTerminal *GetTerminal() { return FTerminal; }
 
 private:

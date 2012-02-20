@@ -109,7 +109,6 @@ class TTabbedDialog : public TWinSCPDialog
 
 public:
     explicit TTabbedDialog(TCustomFarPlugin *AFarPlugin, int TabCount);
-    // __property int Tab = { read = FTab };
     int GetTab() { return FTab; }
 
 protected:
@@ -131,10 +130,8 @@ class TTabButton : public TFarButton
 public:
     explicit TTabButton(TTabbedDialog *Dialog);
 
-    // __property int Tab = { read = FTab, write = FTab };
     int GetTab() { return FTab; }
     void SetTab(int value) { FTab = value; }
-    // __property std::wstring GetTabName() = { read = FTabName, write = SetTabName };
     std::wstring GetTabName() { return FTabName; }
     void SetTabName(const std::wstring value);
 
@@ -3927,18 +3924,13 @@ public:
     explicit TRightsContainer(TFarDialog *ADialog, bool AAnyDirectories,
                               bool ShowButtons, bool ShowSpecials,
                               TFarDialogItem *EnabledDependency);
-    // __property bool AddXToDirectories = { read = GetAddXToDirectories, write = SetAddXToDirectories };
     bool GetAddXToDirectories();
     void SetAddXToDirectories(bool value);
-    // __property TRights Rights = { read = GetRights, write = SetRights };
     TRights GetRights();
     void SetRights(const TRights &value);
-    // __property TFarCheckBox * Checks[TRights::TRight Right] = { read = GetChecks };
     TFarCheckBox *GetCheck(TRights::TRight Right);
-    // __property TRights::TState States[TRights::TRight Right] = { read = GetStates, write = SetStates };
     TRights::TState GetState(TRights::TRight Right);
     void SetState(TRights::TRight Flag, TRights::TState value);
-    // __property bool AllowUndef = { read = GetAllowUndef, write = SetAllowUndef };
     bool GetAllowUndef();
     void SetAllowUndef(bool value);
 
@@ -4584,10 +4576,8 @@ public:
     explicit TCopyParamsContainer(TFarDialog *ADialog,
                                   int Options, int CopyParamAttrs);
 
-    // __property TCopyParamType Params = { read = GetParams, write = SetParams };
     TCopyParamType GetParams();
     void SetParams(TCopyParamType value);
-    // __property int Height = { read = GetHeight };
     int GetHeight();
 
 protected:

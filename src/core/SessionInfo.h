@@ -221,33 +221,20 @@ public:
     void Lock();
     void Unlock();
 
-    // __property TSessionLog * Parent = { read = FParent, write = FParent };
     TSessionLog *GetParent() { return FParent; }
     void SetParent(TSessionLog *value) { FParent = value; }
-    // __property bool Logging = { read = FLogging };
     bool GetLogging() { return FLogging; }
-    // __property int BottomIndex = { read = GetBottomIndex };
     size_t GetBottomIndex();
-    // __property std::wstring Line[int Index]  = { read=GetLine };
     std::wstring GetLine(size_t Index);
-    // __property TLogLineType Type[int Index]  = { read=GetType };
     TLogLineType GetType(size_t Index);
-    // __property OnChange;
-    // __property TNotifyEvent OnStateChange = { read = FOnStateChange, write = FOnStateChange };
     const nb::notify_signal_type &GetOnStateChange() const { return FOnStateChange; }
     void SetOnStateChange(const nb::notify_slot_type &value) { FOnStateChange.connect(value); }
-    // __property std::wstring CurrentFileName = { read = FCurrentFileName };
     std::wstring GetCurrentFileName() { return FCurrentFileName; }
-    // __property bool LoggingToFile = { read = GetLoggingToFile };
     bool GetLoggingToFile();
-    // __property int TopIndex = { read = FTopIndex };
     size_t GetTopIndex() { return FTopIndex; }
-    // __property std::wstring SessionName = { read = GetSessionName };
     std::wstring GetSessionName();
-    // __property std::wstring Name = { read = FName, write = FName };
     std::wstring GetName() { return FName; }
     void SetName(const std::wstring value) { FName = value; }
-    // __property Count;
 
 protected:
     void CloseLogFile();

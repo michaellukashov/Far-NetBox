@@ -11,8 +11,6 @@ class TNamedObject : public nb::TPersistent
 public:
     TNamedObject() : nb::TPersistent() {};
     explicit TNamedObject(const std::wstring aName);
-    // __property AnsiString Name = { read = FName, write = SetName };
-    // __property bool Hidden = { read = FHidden };
     bool GetHidden() { return FHidden; }
     std::wstring GetName() { return FName; }
     void SetName(const std::wstring value);
@@ -42,10 +40,8 @@ public:
     void AlphaSort();
     virtual TNamedObject *AtObject(size_t Index);
     TNamedObject *FindByName(const std::wstring Name, bool CaseSensitive = false);
-    // __property int Count = { read = GetCount, write = SetCount };
     size_t GetCount();
     void SetCount(size_t value);
-    // __property int HiddenCount = { read = FHiddenCount, write = FHiddenCount };
     size_t GetHiddenCount() { return FHiddenCount; }
     void SetHiddenCount(size_t value) { FHiddenCount = value; }
 };
