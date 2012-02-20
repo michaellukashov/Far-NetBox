@@ -1473,6 +1473,7 @@ void TCustomFarPlugin::ClearConsoleTitle()
         FCurrentTitle = L"";
         FCurrentProgress = -1;
         SetConsoleTitle(Title.c_str());
+        UpdateProgress(TBPF_NORMAL, 0);
     }
     FSavedTitles->Delete(FSavedTitles->GetCount() - 1);
 }
@@ -1506,18 +1507,21 @@ std::wstring TCustomFarPlugin::FormatConsoleTitle()
     return Title;
 }
 //---------------------------------------------------------------------------
+void TCustomFarPlugin::UpdateProgress(int state, int progress)
+{
+    FarAdvControl(ACTL_SETPROGRESSSTATE, (void *)state);
+    PROGRESSVALUE pv;
+    pv.Completed = progress;
+    pv.Total = 100;
+    FarAdvControl(ACTL_SETPROGRESSVALUE, (void *)&pv);
+}
+//---------------------------------------------------------------------------
 void TCustomFarPlugin::UpdateConsoleTitle()
 {
     std::wstring Title = FormatConsoleTitle();
     SetConsoleTitle(Title.c_str());
-    if (FCurrentProgress != -1)
-    {
-        FarAdvControl(ACTL_SETPROGRESSSTATE, (void *)TBPF_NORMAL);
-        PROGRESSVALUE pv;
-        pv.Completed = FCurrentProgress;
-        pv.Total = 100;
-        FarAdvControl(ACTL_SETPROGRESSVALUE, (void *)&pv);
-    }
+    short progress = FCurrentProgress != -1 ? FCurrentProgress : 0;
+    UpdateProgress(TBPF_NORMAL, progress);
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::SaveScreen(HANDLE &Screen)

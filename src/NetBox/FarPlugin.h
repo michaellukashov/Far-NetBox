@@ -217,6 +217,9 @@ public:
     void RunTests();
 #endif
 private:
+    void UpdateProgress(int state, int progress);
+
+private:
     PluginInfo FPluginInfo;
     nb::TStringList *FSavedTitles;
     std::wstring FCurrentTitle;
