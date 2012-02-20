@@ -49,8 +49,6 @@ std::wstring CopyToChars(const std::wstring Str, size_t &From, const std::wstrin
                          char *Delimiter = NULL);
 std::wstring DelimitStr(const std::wstring Str, const std::wstring Chars);
 std::wstring ShellDelimitStr(const std::wstring Str, char Quote);
-void OemToAnsi(std::wstring &Str);
-void AnsiToOem(std::wstring &Str);
 std::wstring ExceptionLogString(const std::exception *E);
 bool IsNumber(const std::wstring Str);
 std::wstring SystemTemporaryDirectory();
