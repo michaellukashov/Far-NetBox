@@ -1516,11 +1516,11 @@ std::wstring TCustomFarPlugin::FormatConsoleTitle()
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::UpdateProgress(int state, int progress)
 {
-    FarAdvControl(ACTL_SETPROGRESSSTATE, (void *)state);
-    PROGRESSVALUE pv;
+    FarAdvControl(ACTL_SETPROGRESSSTATE, state, NULL);
+    ProgressValue pv;
     pv.Completed = progress;
     pv.Total = 100;
-    FarAdvControl(ACTL_SETPROGRESSVALUE, (void *)&pv);
+    FarAdvControl(ACTL_SETPROGRESSVALUE, 0, &pv);
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::UpdateConsoleTitle()
@@ -1860,10 +1860,10 @@ void TCustomFarFileSystem::GetOpenPanelInfo(struct OpenPanelInfo *Info)
                     PanelTitle, PanelModes, FOpenPanelInfo.StartPanelMode,
                     FOpenPanelInfo.StartSortMode, StartSortOrder, KeyBarTitles, ShortcutData);
 
-                FOpenPluginInfo.HostFile = TCustomFarPlugin::DuplicateStr(HostFile);
-                FOpenPluginInfo.CurDir = TCustomFarPlugin::DuplicateStr(CurDir);
-                FOpenPluginInfo.Format = TCustomFarPlugin::DuplicateStr(Format);
-                FOpenPluginInfo.PanelTitle = TCustomFarPlugin::DuplicateStr(PanelTitle);
+                FOpenPanelInfo.HostFile = TCustomFarPlugin::DuplicateStr(HostFile);
+                FOpenPanelInfo.CurDir = TCustomFarPlugin::DuplicateStr(CurDir);
+                FOpenPanelInfo.Format = TCustomFarPlugin::DuplicateStr(Format);
+                FOpenPanelInfo.PanelTitle = TCustomFarPlugin::DuplicateStr(PanelTitle);
                 // FOpenPanelInfo.StartPanelMode=L'4';
                 PanelModes->FillOpenPanelInfo(&FOpenPanelInfo);
                 // Info->StartSortMode = SM_NAME;
@@ -2384,7 +2384,7 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
     };
     Labels[FunctionKey - 1].Key.VirtualKeyCode = VK_F1 + FunctionKey - 1;
     Labels[FunctionKey - 1].Key.ControlKeyState = FKeys[shift];
-    Labels[FunctionKey - 1].Text = StrToFar(TCustomFarPlugin::DuplicateStr(Title, true));
+    Labels[FunctionKey - 1].Text = TCustomFarPlugin::DuplicateStr(Title, true);
     Labels[FunctionKey-1].LongText = NULL;
 }
 //---------------------------------------------------------------------------
@@ -2443,7 +2443,6 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem *PanelItem)
     // PanelItem->PackSize = (long int)Size;
 
     // ASCOPY(PanelItem->FindData.lpwszFileName, FileName);
-    PanelItem->FindData.lpwszFileName = TCustomFarPlugin::DuplicateStr(FileName);
     PanelItem->FileName = TCustomFarPlugin::DuplicateStr(FileName);
     // DEBUG_PRINTF(L"PanelItem->FindData.lpwszFileName = %s", PanelItem->FindData.lpwszFileName);
     PanelItem->Description = TCustomFarPlugin::DuplicateStr(Description);
