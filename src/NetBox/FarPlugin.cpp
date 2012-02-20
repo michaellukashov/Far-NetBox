@@ -105,7 +105,6 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo *Info)
         memmove(&FStartupInfo, Info,
                Info->StructSize >= sizeof(FStartupInfo) ?
                sizeof(FStartupInfo) : static_cast<size_t>(Info->StructSize));
-        StrFromFar(FStartupInfo.ModuleName);
         // the minimum we really need
         assert(FStartupInfo.GetMsg != NULL);
         assert(FStartupInfo.Message != NULL);
@@ -308,7 +307,6 @@ void *TCustomFarPlugin::OpenPlugin(int OpenFrom, INT_PTR Item)
         if ((OpenFrom == OPEN_SHORTCUT) || (OpenFrom == OPEN_COMMANDLINE))
         {
             Buf = reinterpret_cast<wchar_t *>(Item);
-            StrFromFar(Buf);
             Item = reinterpret_cast<INT_PTR>(Buf.c_str());
         }
 
@@ -517,7 +515,6 @@ int TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void *Param)
             if ((Event == FE_CHANGEVIEWMODE) || (Event == FE_COMMAND))
             {
                 Buf = static_cast<wchar_t *>(Param);
-                StrFromFar(Buf);
                 Param = const_cast<void *>(reinterpret_cast<const void *>(Buf.c_str()));
             }
 
@@ -1231,7 +1228,7 @@ bool TCustomFarPlugin::InputBox(const std::wstring Title,
         Repeat = false;
         if (Result)
         {
-            Text = StrFromFar(DestText.c_str());
+            Text = DestText.c_str();
             if (OnValidate)
             {
                 try
@@ -1317,7 +1314,6 @@ HWND TCustomFarPlugin::GetConsoleWindow()
 {
     wchar_t Title[1024];
     GetConsoleTitle(Title, sizeof(Title) - 1);
-    StrFromFar(Title);
     HWND Result = FindWindow(NULL, Title);
     return Result;
 }
@@ -1443,7 +1439,6 @@ void TCustomFarPlugin::ShowConsoleTitle(const std::wstring Title)
 {
     wchar_t SaveTitle[1024];
     GetConsoleTitle(SaveTitle, sizeof(SaveTitle));
-    StrFromFar(SaveTitle);
     TConsoleTitleParam Param;
     Param.Progress = FCurrentProgress;
     Param.Own = !FCurrentTitle.empty() && (FormatConsoleTitle() == SaveTitle);
@@ -1551,7 +1546,6 @@ std::wstring TCustomFarPlugin::GetMsg(int MsgId)
 {
     TFarEnvGuard Guard;
     std::wstring Result = FStartupInfo.GetMsg(FStartupInfo.ModuleNumber, MsgId);
-    StrFromFar(Result);
     return Result;
 }
 //---------------------------------------------------------------------------
@@ -1707,7 +1701,6 @@ std::wstring TCustomFarPlugin::TemporaryDir()
     TFarEnvGuard Guard;
     FFarStandardFunctions.MkTemp(const_cast<wchar_t *>(Result.c_str()), Result.size(), NULL);
     PackStr(Result);
-    StrFromFar(Result);
     return Result;
 }
 //---------------------------------------------------------------------------
@@ -1960,7 +1953,7 @@ int TCustomFarFileSystem::SetDirectory(const wchar_t *Dir, int OpMode)
 {
     ResetCachedInfo();
     InvalidateOpenPluginInfo();
-    int Result = SetDirectoryEx(StrFromFar(Dir), OpMode);
+    int Result = SetDirectoryEx(Dir, OpMode);
     InvalidateOpenPluginInfo();
     return Result;
 }
@@ -1979,7 +1972,6 @@ int TCustomFarFileSystem::MakeDirectory(const wchar_t **Name, int OpMode)
                 *Name = TCustomFarPlugin::DuplicateStr(NameStr, true);
             }
         } BOOST_SCOPE_EXIT_END
-        StrFromFar(NameStr);
         Result = MakeDirectoryEx(NameStr, OpMode);
     }
     return Result;
@@ -2018,7 +2010,6 @@ int TCustomFarFileSystem::GetFiles(struct PluginPanelItem *PanelItem,
             }
             delete PanelItems;
         } BOOST_SCOPE_EXIT_END
-        StrFromFar(DestPathStr);
         Result = GetFilesEx(PanelItems, Move > 0, DestPathStr, OpMode);
     }
 
@@ -2479,7 +2470,7 @@ unsigned long TFarPanelItem::GetFlags()
 std::wstring TFarPanelItem::GetFileName()
 {
     std::wstring Result = FPanelItem->FindData.lpwszFileName;
-    return StrFromFar(Result);
+    return Result;
 }
 //---------------------------------------------------------------------------
 void *TFarPanelItem::GetUserData()
@@ -2745,7 +2736,7 @@ std::wstring TFarPanelInfo::GetCurrentDirectory()
                               reinterpret_cast<LONG_PTR>(Result.c_str()),
                               FOwner != NULL ? PANEL_ACTIVE : PANEL_PASSIVE);
     }
-    return StrFromFar(Result.c_str());
+    return Result.c_str();
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -2868,7 +2859,7 @@ std::wstring TFarEditorInfo::GetFileName()
         Result.resize(buffLen + 1, 0);
         FarPlugin->FarEditorControl(ECTL_GETFILENAME, &Result[0]);
     }
-    return StrFromFar(Result);
+    return Result;
 };
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -2965,11 +2956,4 @@ void FarWrapText(const std::wstring Text, nb::TStrings *Result, size_t MaxWidth)
             Result->Add(L"");
         }
     }
-}
-//---------------------------------------------------------------------------
-std::wstring StrFromFar(const char *S)
-{
-    // FIXME
-    std::wstring Result = nb::MB2W(S);
-    return Result;
 }

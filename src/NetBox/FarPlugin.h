@@ -518,21 +518,3 @@ private:
 void FarWrapText(const std::wstring Text, nb::TStrings *Result, size_t MaxWidth);
 //---------------------------------------------------------------------------
 extern TCustomFarPlugin *FarPlugin;
-//---------------------------------------------------------------------------
-inline std::wstring StrFromFar(wchar_t *S)
-{
-    return std::wstring(S);
-}
-//---------------------------------------------------------------------------
-inline std::wstring StrFromFar(const wchar_t *S)
-{
-    // nb::Error(SNotImplemented, 21);
-    return std::wstring(S);
-}
-//---------------------------------------------------------------------------
-inline std::wstring StrFromFar(std::wstring &S)
-{
-    return std::wstring(S);
-    // return L"";
-}
-//---------------------------------------------------------------------------
