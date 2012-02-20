@@ -3383,6 +3383,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
 {
     static unsigned long LastTicks;
     unsigned long Ticks = GetTickCount();
+    short percents = static_cast<short>(ProgressData.OverallProgress());
     if (Ticks - LastTicks > 500 || First)
     {
         LastTicks = Ticks;
@@ -3486,12 +3487,16 @@ void TWinSCPFileSystem::ShowOperationProgress(
         {
             FPlugin->ShowConsoleTitle(Title);
         }
-        FPlugin->UpdateConsoleTitleProgress(static_cast<short>(ProgressData.OverallProgress()));
+        FPlugin->UpdateConsoleTitleProgress(percents);
 
         if (FPlugin->CheckForEsc())
         {
             CancelConfiguration(ProgressData);
         }
+    }
+    if (percents == 100)
+    {
+        FPlugin->UpdateConsoleTitleProgress(percents);
     }
 }
 //---------------------------------------------------------------------------
