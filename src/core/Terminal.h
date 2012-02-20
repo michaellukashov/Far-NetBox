@@ -41,63 +41,34 @@ struct TFilesFindParams;
 class TTunnelUI;
 class TCallbackGuard;
 //---------------------------------------------------------------------------
-// typedef void (nb::TObject::*TQueryUserEvent)
-// (nb::TObject * Sender, const std::wstring Query, nb::TStrings * MoreMessages, int Answers,
-// const TQueryParams * Params, int & Answer, TQueryType QueryType, void * Arg);
 typedef boost::signal8<void, nb::TObject *, const std::wstring, nb::TStrings *, int,
         const TQueryParams *, int &, TQueryType, void *> queryuser_signal_type;
 typedef queryuser_signal_type::slot_type queryuser_slot_type;
-// typedef void (nb::TObject::*TPromptUserEvent)
-// (TTerminal * Terminal, TPromptKind Kind, std::wstring Name, std::wstring Instructions,
-// nb::TStrings * Prompts, nb::TStrings * Results, bool & Result, void * Arg);
 typedef boost::signal8<void, TTerminal *, TPromptKind, const std::wstring, std::wstring,
         nb::TStrings *, nb::TStrings *, bool &, void *> promptuser_signal_type;
 typedef promptuser_signal_type::slot_type promptuser_slot_type;
-// typedef void (nb::TObject::*TDisplayBannerEvent)
-// (TTerminal * Terminal, std::wstring SessionName, const std::wstring Banner,
-// bool & NeverShowAgain, int Options);
 typedef boost::signal5<void, TTerminal *, const std::wstring, const std::wstring,
         bool &, int> displaybanner_signal_type;
 typedef displaybanner_signal_type::slot_type displaybanner_slot_type;
-// typedef void (nb::TObject::*TExtendedExceptionEvent)
-// (TTerminal * Terminal, const std::exception * E, void * Arg);
 typedef boost::signal3<void, TTerminal *, const std::exception *, void *> extendedexception_signal_type;
 typedef extendedexception_signal_type::slot_type extendedexception_slot_type;
-// typedef void (nb::TObject::*TReadDirectoryEvent)(nb::TObject * Sender, bool ReloadOnly);
 typedef boost::signal2<void, nb::TObject *, bool> readdirectory_signal_type;
 typedef readdirectory_signal_type::slot_type readdirectory_slot_type;
-// typedef void (nb::TObject::*TReadDirectoryProgressEvent)(
-// nb::TObject* Sender, int Progress, bool & Cancel);
 typedef boost::signal3<void, nb::TObject *, int, bool &> readdirectoryprogress_signal_type;
 typedef readdirectoryprogress_signal_type::slot_type readdirectoryprogress_slot_type;
-// typedef void (nb::TObject::*TProcessFileEvent)
-// (const std::wstring FileName, const TRemoteFile * File, void * Param);
 typedef boost::signal3<void, const std::wstring, const TRemoteFile *, void *> processfile_signal_type;
 typedef processfile_signal_type::slot_type processfile_slot_type;
-// typedef void (nb::TObject::*TProcessFileEventEx)
-// (const std::wstring FileName, const TRemoteFile * File, void * Param, int Index);
 typedef boost::signal4<void, const std::wstring, const TRemoteFile *, void *, int> processfileex_signal_type;
 typedef processfileex_signal_type::slot_type processfileex_slot_type;
-// typedef int (nb::TObject::*TFileOperationEvent)
-// (void * Param1, void * Param2);
 typedef boost::signal2<int, void *, void *> fileoperation_signal_type;
 typedef fileoperation_signal_type::slot_type fileoperation_slot_type;
-// typedef void (nb::TObject::*TSynchronizeDirectory)
-// (const std::wstring LocalDirectory, const std::wstring RemoteDirectory,
-// bool & Continue, bool Collect);
 typedef boost::signal4<void, const std::wstring, const std::wstring,
         bool &, bool> synchronizedirectory_signal_type;
 typedef synchronizedirectory_signal_type::slot_type synchronizedirectory_slot_type;
-// typedef void (nb::TObject::*TDeleteLocalFileEvent)(
-// const std::wstring FileName, bool Alternative);
 typedef boost::signal2<void, const std::wstring, bool> deletelocalfile_signal_type;
 typedef deletelocalfile_signal_type::slot_type deletelocalfile_slot_type;
-// typedef int (nb::TObject::*TDirectoryModifiedEvent)
-// (TTerminal * Terminal, const std::wstring Directory, bool SubDirs);
 typedef boost::signal3<int, TTerminal *, const std::wstring, bool> directorymodified_signal_type;
 typedef directorymodified_signal_type::slot_type directorymodified_slot_type;
-// typedef void (nb::TObject::*TInformationEvent)
-// (TTerminal * Terminal, const std::wstring Str, bool Status, bool Active);
 typedef boost::signal4<void, TTerminal *, const std::wstring, bool, bool> informationevent_signal_type;
 typedef informationevent_signal_type::slot_type informationevent_slot_type;
 //---------------------------------------------------------------------------
@@ -379,7 +350,6 @@ protected:
     std::wstring EncryptPassword(const std::wstring Password);
     std::wstring DecryptPassword(const std::wstring Password);
 
-    // __property TFileOperationProgressType * OperationProgress = { read=FOperationProgress };
     TFileOperationProgressType *GetOperationProgress() { return FOperationProgress; }
 
 public:
@@ -482,23 +452,15 @@ public:
     static std::wstring ExpandFileName(const std::wstring Path,
                                        const std::wstring BasePath);
 
-    // __property TSessionData * SessionData = { read = FSessionData };
     TSessionData *GetSessionData() { return FSessionData; }
-    // __property TSessionLog * Log = { read = FLog };
     TSessionLog *GetLog() { return FLog; }
-    // __property TConfiguration * Configuration = { read = FConfiguration };
     TConfiguration *GetConfiguration() { return FConfiguration; }
-    // __property bool Active = { read = GetActive };
     bool GetActive();
-    // __property TSessionStatus Status = { read = FStatus };
     TSessionStatus GetStatus() { return FStatus; }
-    // __property std::wstring CurrentDirectory = { read = GetCurrentDirectory, write = SetCurrentDirectory };
     std::wstring GetCurrentDirectory();
     void SetCurrentDirectory(const std::wstring value);
-    // __property bool ExceptionOnFail = { read = GetExceptionOnFail, write = SetExceptionOnFail };
     bool GetExceptionOnFail() const;
     void SetExceptionOnFail(bool value);
-    // __property TRemoteDirectory * Files = { read = FFiles };
     TRemoteDirectory *GetFiles() { return FFiles; }
     const nb::notify_signal_type &GetOnChangeDirectory() const { return FOnChangeDirectory; }
     void SetOnChangeDirectory(const nb::notify_slot_type &value) { FOnChangeDirectory.connect(value); }
@@ -510,43 +472,27 @@ public:
     void SetOnReadDirectoryProgress(const readdirectoryprogress_slot_type &value) { FOnReadDirectoryProgress.connect(value); }
     deletelocalfile_signal_type &GetOnDeleteLocalFile() { return FOnDeleteLocalFile; }
     void SetOnDeleteLocalFile(const deletelocalfile_slot_type &value) { FOnDeleteLocalFile.connect(value); }
-    // __property const TRemoteTokenList * Groups = { read = GetGroups };
     const TRemoteTokenList *GetGroups();
-    // __property const TRemoteTokenList * Users = { read = GetUsers };
     const TRemoteTokenList *GetUsers();
-    // __property const TRemoteTokenList * Membership = { read = GetMembership };
     const TRemoteTokenList *GetMembership();
-    // __property TFileOperationProgressEvent OnProgress  = { read=FOnProgress, write=FOnProgress };
     const fileoperationprogress_signal_type &GetOnProgress() const { return FOnProgress; }
     void SetOnProgress(const fileoperationprogress_slot_type &value) { FOnProgress.connect(value); }
-    // __property TFileOperationFinished OnFinished  = { read=FOnFinished, write=FOnFinished };
     const fileoperationfinished_signal_type &GetOnFinished() const { return FOnFinished; }
     void SetOnFinished(const fileoperationfinished_slot_type &value) { FOnFinished.connect(value); }
-    // __property TCurrentFSProtocol FSProtocol = { read = FFSProtocol };
     TCurrentFSProtocol GetFSProtocol() { return FFSProtocol; }
     bool GetUseBusyCursor() { return FUseBusyCursor; }
     void SetUseBusyCursor(bool value) { FUseBusyCursor = value; }
-    // __property std::wstring UserName = { read=GetUserName };
     std::wstring GetUserName();
-    // __property bool IsCapable[TFSCapability Capability] = { read = GetIsCapable };
     bool GetIsCapable(TFSCapability Capability) const;
-    // __property bool AreCachesEmpty = { read = GetAreCachesEmpty };
     bool GetAreCachesEmpty() const;
-    // __property bool CommandSessionOpened = { read = GetCommandSessionOpened };
     bool GetCommandSessionOpened();
-    // __property TTerminal * CommandSession = { read = GetCommandSession };
     TTerminal *GetCommandSession();
     bool GetAutoReadDirectory() { return FAutoReadDirectory; }
     void SetAutoReadDirectory(bool value) { FAutoReadDirectory = value; }
-    // __property nb::TStrings * FixedPaths = { read = GetFixedPaths };
     nb::TStrings *GetFixedPaths();
-    // __property bool ResolvingSymlinks = { read = GetResolvingSymlinks };
     bool GetResolvingSymlinks();
-    // __property std::wstring Password = { read = GetPassword };
     std::wstring GetPassword();
-    // __property std::wstring TunnelPassword = { read = GetTunnelPassword };
     std::wstring GetTunnelPassword();
-    // __property bool StoredCredentialsTried = { read = GetStoredCredentialsTried };
     bool GetStoredCredentialsTried();
     queryuser_signal_type &GetOnQueryUser() { return FOnQueryUser; }
     void SetOnQueryUser(const queryuser_slot_type &value) { FOnQueryUser.connect(value); }
@@ -560,7 +506,6 @@ public:
     void SetOnInformation(const informationevent_slot_type &value) { FOnInformation.connect(value); }
     const nb::notify_signal_type &GetOnClose() const { return FOnClose; }
     void SetOnClose(const nb::notify_slot_type &value) { FOnClose.connect(value); }
-    // __property int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber };
     size_t GetTunnelLocalPortNumber() { return FTunnelLocalPortNumber; }
 };
 //---------------------------------------------------------------------------
@@ -598,9 +543,7 @@ public:
     virtual void Idle();
     void RecryptPasswords();
 
-    // __property TTerminal * Terminals[int Index]  = { read=GetTerminal };
     TTerminal *GetTerminal(size_t Index);
-    // __property int ActiveCount = { read = GetActiveCount };
     int GetActiveCount();
 
 protected:
@@ -719,9 +662,7 @@ public:
 
     ~TSynchronizeChecklist();
 
-    // __property int Count = { read = GetCount };
     size_t GetCount() const;
-    // __property const TItem * Item[int Index] = { read = GetItem };
     const TItem *GetItem(size_t Index) const;
 
 protected:

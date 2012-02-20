@@ -38,21 +38,14 @@ public:
 
     int Compare(const TRemoteToken &rht) const;
 
-    // __property std::wstring Name = { read = FName, write = FName };
     std::wstring GetName() const { return FName; }
     void SetName(const std::wstring value) { FName = value; }
-    // __property bool NameValid = { read = GetNameValid };
     bool GetNameValid() const;
-    // __property unsigned int ID = { read = FID, write = SetID };
     size_t GetID() const { return FID; }
     void SetID(size_t value);
-    // __property bool IDValid = { read = FIDValid };
     bool GetIDValid() const { return FIDValid; }
-    // __property bool IsSet  = { read = GetIsSet };
     bool GetIsSet() const;
-    // __property std::wstring LogText = { read = GetLogText };
     std::wstring GetLogText() const;
-    // __property std::wstring DisplayText = { read = GetDisplayText };
     std::wstring GetDisplayText() const;
 
 private:
@@ -125,86 +118,54 @@ public:
     void ShiftTime(const nb::TDateTime &Difference);
     void Complete();
 
-    // __property int Attr = { read = GetAttr };
     int GetAttr();
-    // __property bool BrokenLink = { read = GetBrokenLink };
     bool GetBrokenLink();
-    // __property TRemoteFileList * Directory = { read = FDirectory, write = FDirectory };
     TRemoteFileList *GetDirectory() const { return FDirectory; }
     void SetDirectory(TRemoteFileList *value) { FDirectory = value; }
-    // __property std::wstring RightsStr = { read = GetRightsStr };
     std::wstring GetRightsStr();
-    // __property __int64 Size = { read = FSize, write = FSize };
     __int64 GetSize() const { return FSize; }
     void SetSize(__int64 value) { FSize = value; }
-    // __property TRemoteToken Owner = { read = FOwner, write = FOwner };
     TRemoteToken GetOwner() const { return FOwner; }
     void SetOwner(TRemoteToken value) { FOwner = value; }
-    // __property TRemoteToken Group = { read = FGroup, write = FGroup };
     TRemoteToken GetGroup() const { return FGroup; }
     void SetGroup(TRemoteToken value) { FGroup = value; }
-    // __property std::wstring FileName = { read = FFileName, write = FFileName };
     std::wstring GetFileName() const { return FFileName; }
     void SetFileName(const std::wstring value) { FFileName = value; }
-    // __property int INodeBlocks = { read = FINodeBlocks };
     int GetINodeBlocks() { return FINodeBlocks; };
-    // __property nb::TDateTime Modification = { read = FModification, write = SetModification };
     nb::TDateTime GetModification() const { return FModification; }
     void SetModification(const nb::TDateTime &value);
-    // __property std::wstring ModificationStr = { read = GetModificationStr };
     std::wstring GetModificationStr();
-    // __property std::wstring UserModificationStr = { read = GetUserModificationStr };
     std::wstring GetUserModificationStr();
-    // __property TModificationFmt ModificationFmt = { read = FModificationFmt, write = FModificationFmt };
     TModificationFmt GetModificationFmt() const { return FModificationFmt; }
     void SetModificationFmt(TModificationFmt value) { FModificationFmt = value; }
-    // __property nb::TDateTime LastAccess = { read = FLastAccess, write = FLastAccess };
     nb::TDateTime GetLastAccess() const { return FLastAccess; }
     void SetLastAccess(nb::TDateTime value) { FLastAccess = value; }
-    // __property bool IsSymLink = { read = FIsSymLink };
     bool GetIsSymLink() const { return FIsSymLink; }
-    // __property bool IsDirectory = { read = GetIsDirectory };
     bool GetIsDirectory() const;
-    // __property TRemoteFile * LinkedFile = { read = GetLinkedFile, write = SetLinkedFile };
     TRemoteFile *GetLinkedFile();
     void SetLinkedFile(TRemoteFile *value);
-    // __property std::wstring LinkTo = { read = FLinkTo, write = FLinkTo };
     std::wstring GetLinkTo() const { return FLinkTo; }
     void SetLinkTo(const std::wstring value) { FLinkTo = value; }
-    // __property std::wstring ListingStr = { read = GetListingStr, write = SetListingStr };
     std::wstring GetListingStr();
     void SetListingStr(const std::wstring value, bool Utf);
-    // __property TRights * Rights = { read = FRights, write = SetRights };
     TRights *GetRights() const { return FRights; }
     void SetRights(TRights *value);
-    // __property TTerminal * Terminal = { read = FTerminal, write = SetTerminal };
     TTerminal *GetTerminal() const { return FTerminal; }
     void SetTerminal(TTerminal *value);
-    // __property char Type = { read = GetType, write = SetType };
     char GetType() const;
     void SetType(char AType);
-    // __property bool Selected  = { read=FSelected, write=FSelected };
     bool GetSelected() { return FSelected; }
     void SetSelected(bool value) { FSelected = value; }
-    // __property std::wstring FullFileName  = { read = GetFullFileName, write = FFullFileName };
     std::wstring GetFullFileName() const;
     void SetFullFileName(const std::wstring value) { FFullFileName = value; }
-    // __property bool HaveFullFileName  = { read = GetHaveFullFileName };
     bool GetHaveFullFileName() const;
-    // __property int IconIndex = { read = GetIconIndex };
     int GetIconIndex() const;
-    // __property std::wstring TypeName = { read = GetTypeName };
     std::wstring GetTypeName();
-    // __property bool IsHidden = { read = GetIsHidden, write = SetIsHidden };
     bool GetIsHidden();
     void SetIsHidden(bool value);
-    // __property bool IsParentDirectory = { read = GetIsParentDirectory };
     bool GetIsParentDirectory() const;
-    // __property bool IsThisDirectory = { read = GetIsThisDirectory };
     bool GetIsThisDirectory() const;
-    // __property bool IsInaccesibleDirectory  = { read=GetIsInaccesibleDirectory };
     bool GetIsInaccesibleDirectory() const;
-    // __property std::wstring Extension  = { read=GetExtension };
     std::wstring GetExtension();
 private:
     std::wstring DecodeString(const std::wstring Value, bool Utf);
@@ -247,20 +208,13 @@ public:
     TRemoteFile *FindFile(const std::wstring FileName);
     virtual void DuplicateTo(TRemoteFileList *Copy);
     virtual void AddFile(TRemoteFile *File);
-    // __property std::wstring Directory = { read = FDirectory, write = SetDirectory };
     std::wstring GetDirectory() { return FDirectory; }
     virtual void SetDirectory(const std::wstring value);
-    // __property TRemoteFile * Files[int Index] = { read = GetFiles };
     TRemoteFile *GetFile(size_t Index);
-    // __property std::wstring FullDirectory  = { read=GetFullDirectory };
     std::wstring GetFullDirectory();
-    // __property bool IsRoot = { read = GetIsRoot };
     bool GetIsRoot();
-    // __property std::wstring ParentPath = { read = GetParentPath };
     std::wstring GetParentPath();
-    // __property __int64 TotalSize = { read = GetTotalSize };
     __int64 GetTotalSize();
-    // __property nb::TDateTime Timestamp = { read = FTimestamp };
     nb::TDateTime GetTimestamp() { return FTimestamp; }
 };
 //---------------------------------------------------------------------------
@@ -287,22 +241,15 @@ public:
     virtual void AddFile(TRemoteFile *File);
     virtual void SetDirectory(const std::wstring value);
     virtual void DuplicateTo(TRemoteFileList *Copy);
-    // __property TTerminal * Terminal = { read = FTerminal, write = FTerminal };
     TTerminal *GetTerminal() { return FTerminal; }
     void SetTerminal(TTerminal *value) { FTerminal = value; }
-    // __property nb::TStrings * SelectedFiles  = { read=GetSelectedFiles };
     nb::TStrings *GetSelectedFiles();
-    // __property bool IncludeParentDirectory = { read = FIncludeParentDirectory, write = SetIncludeParentDirectory };
     bool GetIncludeParentDirectory() { return FIncludeParentDirectory; }
     void SetIncludeParentDirectory(bool value);
-    // __property bool IncludeThisDirectory = { read = FIncludeThisDirectory, write = SetIncludeThisDirectory };
     bool GetIncludeThisDirectory() { return FIncludeThisDirectory; }
     void SetIncludeThisDirectory(bool value);
-    // __property bool Loaded = { read = GetLoaded };
     bool GetLoaded();
-    // __property TRemoteFile * ParentDirectory = { read = FParentDirectory };
     TRemoteFile *GetParentDirectory() { return FParentDirectory; }
-    // __property TRemoteFile * ThisDirectory = { read = FThisDirectory };
     TRemoteFile *GetThisDirectory() { return FThisDirectory; }
 };
 //---------------------------------------------------------------------------
@@ -320,7 +267,6 @@ public:
     void ClearFileList(const std::wstring Directory, bool SubDirs);
     void Clear();
 
-    // __property bool IsEmpty = { read = GetIsEmpty };
     bool GetIsEmpty() const;
 protected:
     virtual void Delete(size_t Index);
@@ -348,7 +294,6 @@ public:
     void Serialize(std::wstring &Data);
     void Deserialize(const std::wstring Data);
 
-    // __property bool IsEmpty = { read = GetIsEmpty };
     bool GetIsEmpty() const;
 
 private:
@@ -422,40 +367,26 @@ public:
     operator unsigned short() const;
     operator unsigned long() const;
 
-    // __property bool AllowUndef = { read = FAllowUndef, write = SetAllowUndef };
     bool GetAllowUndef() const { return FAllowUndef; }
     void SetAllowUndef(bool value);
-    // __property bool IsUndef = { read = GetIsUndef };
     bool GetIsUndef() const;
-    // __property std::wstring ModeStr = { read = GetModeStr };
     std::wstring GetModeStr() const;
-    // __property std::wstring SimplestStr = { read = GetSimplestStr };
     std::wstring GetSimplestStr() const;
-    // __property std::wstring Octal = { read = GetOctal, write = SetOctal };
     std::wstring GetOctal() const;
     void SetOctal(const std::wstring value);
-    // __property unsigned short Number = { read = GetNumber, write = SetNumber };
     unsigned short GetNumber() const;
     void SetNumber(unsigned short value);
-    // __property unsigned short NumberSet = { read = FSet };
     unsigned short GetNumberSet() const { return FSet; }
-    // __property unsigned short NumberUnset = { read = FUnset };
     unsigned short GetNumberUnset() const { return FUnset; }
-    // __property unsigned long NumberDecadic = { read = GetNumberDecadic };
     unsigned long GetNumberDecadic() const;
-    // __property bool ReadOnly = { read = GetReadOnly, write = SetReadOnly };
     bool GetReadOnly();
     void SetReadOnly(bool value);
-    // __property bool Right[TRight Right] = { read = GetRight, write = SetRight };
     bool GetRight(TRight Right) const;
     void SetRight(TRight Right, bool value);
-    // __property TState RightUndef[TRight Right] = { read = GetRightUndef, write = SetRightUndef };
     TState GetRightUndef(TRight Right) const;
     void SetRightUndef(TRight Right, TState value);
-    // __property std::wstring Text = { read = GetText, write = SetText };
     std::wstring GetText() const;
     void SetText(const std::wstring value);
-    // __property bool Unknown = { read = FUnknown };
     bool GetUnknown() { return FUnknown; }
 
 private:

@@ -150,21 +150,14 @@ public:
     void OldKeyfileWarning();
     void PuttyLogEvent(const std::wstring Str);
 
-    // __property bool Active = { read = FActive, write = SetActive };
     bool GetActive() { return FActive; }
     void SetActive(bool value);
-    // __property bool Ready = { read = GetReady };
     bool GetReady();
-    // __property TCaptureOutputEvent OnCaptureOutput = { read = FOnCaptureOutput, write = FOnCaptureOutput };
     captureoutput_signal_type &GetOnCaptureOutput() { return FOnCaptureOutput; }
     void SetOnCaptureOutput(const captureoutput_slot_type &value) { FOnCaptureOutput.connect(value); }
-    // __property nb::TDateTime LastDataSent = { read = FLastDataSent };
     nb::TDateTime GetLastDataSent() { return FLastDataSent; }
-    // __property std::wstring LastTunnelError = { read = FLastTunnelError };
     std::wstring GetLastTunnelError() { return FLastTunnelError; }
-    // __property std::wstring UserName = { read = FUserName };
     std::wstring GetUserName() { return FUserName; }
-    // __property bool Simple = { read = FSimple, write = FSimple };
     bool GetSimple() { return FSimple; }
     void SetSimple(bool value) { FSimple = value; }
 private:

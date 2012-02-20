@@ -58,12 +58,8 @@ const int fsoDisableTimestamp = 0x01;
 const int fsoAllowSelectedOnly = 0x02;
 enum TSessionActionEnum { saAdd, saEdit, saConnect };
 //---------------------------------------------------------------------------
-// typedef void (nb::TObject::*TGetSynchronizeOptionsEvent)
-// (int Params, TSynchronizeOptions & Options);
 typedef boost::signal2<void, int, TSynchronizeOptions &> getsynchronizeoptions_signal_type;
 typedef getsynchronizeoptions_signal_type::slot_type getsynchronizeoptions_slot_type;
-// typedef void (nb::TObject::*TGetSpaceAvailable)
-// (const std::wstring Path, TSpaceAvailable & ASpaceAvailable, bool & Close);
 typedef boost::signal3<void, const std::wstring, TSpaceAvailable &, bool &> getspaceavailable_signal_type;
 typedef getspaceavailable_signal_type::slot_type getspaceavailable_slot_type;
 struct TMultipleEdit
@@ -80,7 +76,6 @@ struct TEditHistory
     bool operator==(const TEditHistory &rh) { return (FileName == rh.FileName) && (Directory == rh.Directory); }
 };
 //---------------------------------------------------------------------------
-// typedef void (nb::TObject::* TProcessSessionEvent)(TSessionData * Data, void * Param);
 typedef boost::signal2<void, TSessionData *, void *> processsession_signal_type;
 typedef processsession_signal_type::slot_type processsession_slot_type;
 //---------------------------------------------------------------------------
@@ -236,7 +231,6 @@ protected:
     bool IsLogging();
     void ShowLog();
 
-    // __property  TTerminal * Terminal = { read = FTerminal };
     TTerminal *GetTerminal() { return FTerminal; }
 
 private:

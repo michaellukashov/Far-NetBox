@@ -53,14 +53,11 @@ enum TFarShiftStatus { fsNone, fsCtrl, fsAlt, fsShift, fsCtrlShift,
                        fsAltShift, fsCtrlAlt
                      };
 enum THandlesFunction { hfProcessKey, hfProcessHostFile, hfProcessEvent };
-// typedef void (*TFarInputBoxValidateEvent)(std::wstring &Text);
 typedef boost::signal1<void, std::wstring &> farinputboxvalidate_signal_type;
 typedef farinputboxvalidate_signal_type::slot_type farinputboxvalidate_slot_type;
 //---------------------------------------------------------------------------
-// typedef void (*TFarMessageTimerEvent)(unsigned int &Result);
 typedef boost::signal1<void, size_t &> farmessagetimer_signal_type;
 typedef farmessagetimer_signal_type::slot_type farmessagetimer_slot_type;
-// typedef void (*TFarMessageClickEvent)(void *Token, int Result, bool &Close);
 typedef boost::signal3<void, void *, int, bool &> farmessageclick_signal_type;
 typedef farmessageclick_signal_type::slot_type farmessageclick_slot_type;
 
@@ -121,7 +118,7 @@ public:
     static wchar_t *DuplicateStr(const std::wstring Str, bool AllowEmpty = false);
     int Message(unsigned int Flags, const std::wstring Title,
                 const std::wstring Message, nb::TStrings *Buttons = NULL,
-                TFarMessageParams *Params = NULL, bool Oem = false);
+                TFarMessageParams *Params = NULL);
     int MaxMessageLines();
     size_t MaxMenuItemLength();
     int Menu(unsigned int Flags, const std::wstring Title,
@@ -224,6 +221,9 @@ protected:
 public:
     void RunTests();
 #endif
+private:
+    void UpdateProgress(int state, int progress);
+
 private:
     PluginInfo FPluginInfo;
     nb::TStringList *FSavedTitles;
@@ -522,38 +522,3 @@ private:
 void FarWrapText(const std::wstring Text, nb::TStrings *Result, size_t MaxWidth);
 //---------------------------------------------------------------------------
 extern TCustomFarPlugin *FarPlugin;
-//---------------------------------------------------------------------------
-inline std::wstring StrFromFar(wchar_t *S)
-{
-    // OemToChar(S, S);
-    return std::wstring(S);
-}
-//---------------------------------------------------------------------------
-inline std::wstring StrFromFar(const wchar_t *S)
-{
-    // nb::Error(SNotImplemented, 21);
-    return std::wstring(S);
-}
-//---------------------------------------------------------------------------
-inline std::wstring StrFromFar(std::wstring &S)
-{
-    // OemToChar(S.c_str(), S.c_str());
-    return std::wstring(S);
-    // return L"";
-}
-//---------------------------------------------------------------------------
-
-inline wchar_t *StrToFar(const std::wstring &S)
-{
-    // CharToOem(S.c_str(), S.c_str());
-    return const_cast<wchar_t *>(S.c_str());
-}
-
-//---------------------------------------------------------------------------
-inline wchar_t *StrToFar(const wchar_t *S)
-{
-    // S.Unique();
-    // CharToOem(S, S);
-    return const_cast<wchar_t *>(S);
-}
-//---------------------------------------------------------------------------

@@ -25,15 +25,11 @@ public:
     size_t LoadStream(nb::TStream *Stream, size_t Len, bool ForceLen);
     size_t ReadStream(nb::TStream *Stream, size_t Len, bool ForceLen);
     void WriteToStream(nb::TStream *Stream, size_t  Len);
-    // __property nb::TMemoryStream * Memory  = { read=FMemory, write=SetMemory };
     nb::TMemoryStream *GetMemory() { return FMemory; }
     void SetMemory(nb::TMemoryStream *value);
-    // __property char * Data = { read=GetData };
     char *GetData() const { return static_cast<char *>(FMemory->GetMemory()); }
-    // __property int Size = { read=FSize, write=SetSize };
     __int64 GetSize() { return FSize; }
     void SetSize(__int64 value);
-    // __property int Position = { read=GetPosition, write=SetPosition };
     __int64 GetPosition() const;
     void SetPosition(__int64 value);
 
