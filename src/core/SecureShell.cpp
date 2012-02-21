@@ -136,10 +136,10 @@ void TSecureShell::StoreToConfig(TSessionData *Data, Config *cfg, bool Simple)
     ClearConfig(cfg);
 
     // user-configurable settings
-    ASCOPY(cfg->host, nb::W2MB(Data->GetHostName().c_str()));
-    // cfg->host = ::StrNew(nb::W2MB(Data->GetHostName().c_str()).c_str());
-    ASCOPY(cfg->username, nb::W2MB(Data->GetUserName().c_str()));
-    // cfg->username = ::StrNew(nb::W2MB(Data->GetUserName().c_str())).c_str();
+    ASCOPY(cfg->host, nb::W2MB(Data->GetHostName().c_str(), Data->GetCodePageAsNumber()));
+    // cfg->host = ::StrNew(nb::W2MB(Data->GetHostName().c_str(), Data->GetCodePageAsNumber()).c_str());
+    ASCOPY(cfg->username, nb::W2MB(Data->GetUserName().c_str(), Data->GetCodePageAsNumber()));
+    // cfg->username = ::StrNew(nb::W2MB(Data->GetUserName().c_str(), Data->GetCodePageAsNumber())).c_str();
     cfg->port = Data->GetPortNumber();
     cfg->protocol = PROT_SSH;
     // always set 0, as we will handle keepalives ourselves to avoid
@@ -149,8 +149,8 @@ void TSecureShell::StoreToConfig(TSessionData *Data, Config *cfg, bool Simple)
     cfg->tryagent = Data->GetTryAgent();
     cfg->agentfwd = Data->GetAgentFwd();
     cfg->addressfamily = Data->GetAddressFamily();
-    ASCOPY(cfg->ssh_rekey_data, nb::W2MB(Data->GetRekeyData().c_str()));
-    // cfg->ssh_rekey_data = ::StrNew(nb::W2MB(Data->GetRekeyData().c_str())).c_str();
+    ASCOPY(cfg->ssh_rekey_data, nb::W2MB(Data->GetRekeyData().c_str(), Data->GetCodePageAsNumber()));
+    // cfg->ssh_rekey_data = ::StrNew(nb::W2MB(Data->GetRekeyData().c_str(), Data->GetCodePageAsNumber())).c_str();
     cfg->ssh_rekey_time = Data->GetRekeyTime();
 
     for (int c = 0; c < CIPHER_COUNT; c++)
@@ -187,8 +187,8 @@ void TSecureShell::StoreToConfig(TSessionData *Data, Config *cfg, bool Simple)
     std::wstring SPublicKeyFile = Data->GetPublicKeyFile();
     if (SPublicKeyFile.empty()) { SPublicKeyFile = Configuration->GetDefaultKeyFile(); }
     SPublicKeyFile = StripPathQuotes(ExpandEnvironmentVariables(SPublicKeyFile));
-    ASCOPY(cfg->keyfile.path, nb::W2MB(SPublicKeyFile.c_str()));
-    // cfg->keyfile.path = ::StrNew(nb::W2MB(SPublicKeyFile.c_str())).c_str();
+    ASCOPY(cfg->keyfile.path, nb::W2MB(SPublicKeyFile.c_str(), Data->GetCodePageAsNumber()));
+    // cfg->keyfile.path = ::StrNew(nb::W2MB(SPublicKeyFile.c_str(), Data->GetCodePageAsNumber())).c_str();
     cfg->sshprot = Data->GetSshProt();
     cfg->ssh2_des_cbc = Data->GetSsh2DES();
     cfg->ssh_no_userauth = Data->GetSshNoUserAuth();
@@ -199,22 +199,22 @@ void TSecureShell::StoreToConfig(TSessionData *Data, Config *cfg, bool Simple)
     cfg->change_username = Data->GetChangeUsername();
 
     cfg->proxy_type = Data->GetProxyMethod();
-    ASCOPY(cfg->proxy_host, nb::W2MB(Data->GetProxyHost().c_str()));
-    // cfg->proxy_host = ::StrNew(nb::W2MB(Data->GetProxyHost().c_str())).c_str();
+    ASCOPY(cfg->proxy_host, nb::W2MB(Data->GetProxyHost().c_str(), Data->GetCodePageAsNumber()));
+    // cfg->proxy_host = ::StrNew(nb::W2MB(Data->GetProxyHost().c_str(), Data->GetCodePageAsNumber())).c_str();
     cfg->proxy_port = Data->GetProxyPort();
-    ASCOPY(cfg->proxy_username, nb::W2MB(Data->GetProxyUsername().c_str()));
-    // cfg->proxy_username = ::StrNew(nb::W2MB(Data->GetProxyUsername().c_str())).c_str();
-    ASCOPY(cfg->proxy_password, nb::W2MB(Data->GetProxyPassword().c_str()));
-    // cfg->proxy_password = ::StrNew(nb::W2MB(Data->GetProxyPassword().c_str())).c_str();
+    ASCOPY(cfg->proxy_username, nb::W2MB(Data->GetProxyUsername().c_str(), Data->GetCodePageAsNumber()));
+    // cfg->proxy_username = ::StrNew(nb::W2MB(Data->GetProxyUsername().c_str(), Data->GetCodePageAsNumber())).c_str();
+    ASCOPY(cfg->proxy_password, nb::W2MB(Data->GetProxyPassword().c_str(), Data->GetCodePageAsNumber()));
+    // cfg->proxy_password = ::StrNew(nb::W2MB(Data->GetProxyPassword().c_str(), Data->GetCodePageAsNumber())).c_str();
     if (Data->GetProxyMethod() == pmCmd)
     {
-        ASCOPY(cfg->proxy_telnet_command, nb::W2MB(Data->GetProxyLocalCommand().c_str()));
-        // cfg->proxy_telnet_command = ::StrNew(nb::W2MB(Data->GetProxyLocalCommand().c_str())).c_str();
+        ASCOPY(cfg->proxy_telnet_command, nb::W2MB(Data->GetProxyLocalCommand().c_str(), Data->GetCodePageAsNumber()));
+        // cfg->proxy_telnet_command = ::StrNew(nb::W2MB(Data->GetProxyLocalCommand().c_str(), Data->GetCodePageAsNumber())).c_str();
     }
     else
     {
-        ASCOPY(cfg->proxy_telnet_command, nb::W2MB(Data->GetProxyTelnetCommand().c_str()));
-        // cfg->proxy_telnet_command = ::StrNew(nb::W2MB(Data->GetProxyTelnetCommand().c_str())).c_str();
+        ASCOPY(cfg->proxy_telnet_command, nb::W2MB(Data->GetProxyTelnetCommand().c_str(), Data->GetCodePageAsNumber()));
+        // cfg->proxy_telnet_command = ::StrNew(nb::W2MB(Data->GetProxyTelnetCommand().c_str(), Data->GetCodePageAsNumber())).c_str();
     }
     cfg->proxy_dns = Data->GetProxyDNS();
     cfg->even_proxy_localhost = Data->GetProxyLocalhost();
@@ -239,8 +239,8 @@ void TSecureShell::StoreToConfig(TSessionData *Data, Config *cfg, bool Simple)
     {
         assert(!Simple);
         // DEBUG_PRINTF(L"Data->GetTunnelPortFwd = %s", Data->GetTunnelPortFwd().c_str());
-        ASCOPY(cfg->portfwd, nb::W2MB(Data->GetTunnelPortFwd().c_str()));
-        // cfg->portfwd = ::StrNew(nb::W2MB(Data->GetTunnelPortFwd().c_str()).c_str());
+        ASCOPY(cfg->portfwd, nb::W2MB(Data->GetTunnelPortFwd().c_str(), Data->GetCodePageAsNumber()));
+        // cfg->portfwd = ::StrNew(nb::W2MB(Data->GetTunnelPortFwd().c_str(), Data->GetCodePageAsNumber()).c_str());
         // when setting up a tunnel, do not open shell/sftp
         cfg->ssh_no_shell = TRUE;
     }
@@ -260,8 +260,8 @@ void TSecureShell::StoreToConfig(TSessionData *Data, Config *cfg, bool Simple)
             }
             else
             {
-                // ASCOPY(cfg->remote_cmd_ptr, nb::W2MB(Data->GetShell().c_str()));
-                cfg->remote_cmd_ptr = ::StrNew(nb::W2MB(Data->GetShell().c_str()).c_str());
+                // ASCOPY(cfg->remote_cmd_ptr, nb::W2MB(Data->GetShell().c_str(), Data->GetCodePageAsNumber()));
+                cfg->remote_cmd_ptr = ::StrNew(nb::W2MB(Data->GetShell().c_str(), Data->GetCodePageAsNumber()).c_str());
             }
         }
         else
@@ -274,8 +274,8 @@ void TSecureShell::StoreToConfig(TSessionData *Data, Config *cfg, bool Simple)
             else
             {
                 cfg->ssh_subsys = FALSE;
-                // cfg->remote_cmd_ptr = (char *)nb::W2MB(Data->GetSftpServer().c_str()).c_str();
-                cfg->remote_cmd_ptr = ::StrNew(nb::W2MB(Data->GetSftpServer().c_str()).c_str());
+                // cfg->remote_cmd_ptr = (char *)nb::W2MB(Data->GetSftpServer().c_str(), Data->GetCodePageAsNumber()).c_str();
+                cfg->remote_cmd_ptr = ::StrNew(nb::W2MB(Data->GetSftpServer().c_str(), Data->GetCodePageAsNumber()).c_str());
             }
 
             if (Data->GetFSProtocol() != fsSFTPonly)
@@ -289,7 +289,7 @@ void TSecureShell::StoreToConfig(TSessionData *Data, Config *cfg, bool Simple)
                 }
                 else
                 {
-                    cfg->remote_cmd_ptr2 = ::StrNew(nb::W2MB(Data->GetShell().c_str()).c_str());
+                    cfg->remote_cmd_ptr2 = ::StrNew(nb::W2MB(Data->GetShell().c_str(), Data->GetCodePageAsNumber()).c_str());
                 }
             }
 
@@ -335,12 +335,12 @@ void TSecureShell::Open()
     char *RealHost = NULL;
     FreeBackend(); // in case we are reconnecting
     const char *InitError = FBackend->init(this, &FBackendHandle, FConfig,
-                                           const_cast<char *>(nb::W2MB(FSessionData->GetHostName().c_str()).c_str()), FSessionData->GetPortNumber(), &RealHost, 0,
+                                           const_cast<char *>(nb::W2MB(FSessionData->GetHostName().c_str(), FSessionData->GetCodePageAsNumber()).c_str()), FSessionData->GetPortNumber(), &RealHost, 0,
                                            FConfig->tcp_keepalives);
     sfree(RealHost);
     if (InitError)
     {
-        PuttyFatalError(nb::MB2W(InitError));
+        PuttyFatalError(nb::MB2W(InitError, FSessionData->GetCodePageAsNumber()));
     }
     FUI->Information(LoadStr(STATUS_CONNECT), true);
     Init();
@@ -675,7 +675,7 @@ void TSecureShell::CWrite(const char *Data, size_t Length)
     ResetSessionInfo();
 
     // We send only whole line at once, so we have to cache incoming data
-    FCWriteTemp += DeleteChar(std::wstring(nb::MB2W(std::string(Data, Length).c_str())), '\r');
+    FCWriteTemp += DeleteChar(std::wstring(nb::MB2W(std::string(Data, Length).c_str(), FSessionData->GetCodePageAsNumber())), '\r');
 
     std::wstring Line;
     // Do we have at least one complete line in std error cache?
@@ -716,14 +716,14 @@ void TSecureShell::FromBackend(bool IsStdErr, const char *Data, size_t Length)
     {
         LogEvent(FORMAT(L"Received %u bytes (%d)", Length, static_cast<int>(IsStdErr)));
     }
-    // DEBUG_PRINTF(L"IsStdErr = %d, Length = %d, Data = '%s'", IsStdErr, Length, nb::MB2W(Data).c_str());
+    // DEBUG_PRINTF(L"IsStdErr = %d, Length = %d, Data = '%s'", IsStdErr, Length, nb::MB2W(Data, FSessionData->GetCodePageAsNumber()).c_str());
 
     // Following is taken from scp.c from_backend() and modified
 
     if (IsStdErr)
     {
         std::string Str(Data, Length);
-        AddStdError(nb::MB2W(Str.c_str()));
+        AddStdError(nb::MB2W(Str.c_str(), FSessionData->GetCodePageAsNumber()));
     }
     else
     {
@@ -875,7 +875,7 @@ std::wstring TSecureShell::ReceiveLine(bool Utf)
                 Index++;
             }
             EOL = static_cast<bool>(Index && (Pending[Index-1] == '\n'));
-            // DEBUG_PRINTF(L"PendLen = %d, Index = %d, EOL = %d, Pending = %s", PendLen, Index, EOL, nb::MB2W(Pending).c_str());
+            // DEBUG_PRINTF(L"PendLen = %d, Index = %d, EOL = %d, Pending = %s", PendLen, Index, EOL, nb::MB2W(Pending, FSessionData->GetCodePageAsNumber()).c_str());
             size_t PrevLen = Line.size();
             Line.resize(PrevLen + Index);
             Receive(const_cast<char *>(Line.c_str()) + PrevLen, Index);
@@ -897,7 +897,7 @@ std::wstring TSecureShell::ReceiveLine(bool Utf)
     std::string Result = Utf ? ::DecodeUTF(Line) : Line;
     // We don't want end-of-line character
     // Line.resize(Line.size()-1);
-    std::wstring LineW = ::TrimRight(nb::MB2W(Result.c_str()));
+    std::wstring LineW = ::TrimRight(nb::MB2W(Result.c_str(), FSessionData->GetCodePageAsNumber()));
     // DEBUG_PRINTF(L"Line2 = %s", LineW.c_str());
     CaptureOutput(llOutput, LineW);
     return LineW;
@@ -1037,10 +1037,10 @@ void TSecureShell::SendNull()
 void TSecureShell::SendStr(const std::wstring Str, bool Utf)
 {
     CheckConnection();
-    // Send(nb::W2MB(Str.c_str()).c_str(), Str.size());
+    // Send(nb::W2MB(Str.c_str(), FSessionData()->GetCodePageAsNumber()).c_str(), Str.size());
     if (!Utf)
     {
-        std::string str = nb::W2MB(Str.c_str());
+        std::string str = nb::W2MB(Str.c_str(), FSessionData->GetCodePageAsNumber());
         Send(str.c_str(), str.size());
     }
     else
@@ -1064,11 +1064,11 @@ int TSecureShell::TranslatePuttyMessage(
     for (size_t Index = 0; Index < Count; Index++)
     {
         const char *Original = Translation[Index].Original;
-        // DEBUG_PRINTF(L"Original = %s", nb::MB2W(Original).c_str());
+        // DEBUG_PRINTF(L"Original = %s", nb::MB2W(Original, FSessionData->GetCodePageAsNumber()).c_str());
         const char *Div = strchr(Original, '%');
         if (Div == NULL)
         {
-            if (strcmp(nb::W2MB(Message.c_str()).c_str(), Original) == 0)
+            if (strcmp(nb::W2MB(Message.c_str(), FSessionData->GetCodePageAsNumber()).c_str(), Original) == 0)
             {
                 Message = LoadStr(Translation[Index].Translation);
                 // DEBUG_PRINTF(L"Message = %s", Message.c_str());
@@ -1082,8 +1082,8 @@ int TSecureShell::TranslatePuttyMessage(
             size_t PrefixLen = Div - Original;
             size_t SuffixLen = OriginalLen - PrefixLen - 1;
             if ((static_cast<size_t>(Message.size()) >= OriginalLen - 1) &&
-                    (strncmp(nb::W2MB(Message.c_str()).c_str(), Original, PrefixLen) == 0) &&
-                    (strncmp(nb::W2MB(Message.c_str()).c_str() + Message.size() - SuffixLen, Div + 1, SuffixLen) == 0))
+                    (strncmp(nb::W2MB(Message.c_str(), FSessionData->GetCodePageAsNumber()).c_str(), Original, PrefixLen) == 0) &&
+                    (strncmp(nb::W2MB(Message.c_str(), FSessionData->GetCodePageAsNumber()).c_str() + Message.size() - SuffixLen, Div + 1, SuffixLen) == 0))
             {
                 Message = FMTLOAD(Translation[Index].Translation,
                                   ::TrimRight(Message.substr(PrefixLen, Message.size() - PrefixLen - SuffixLen)).c_str());
@@ -1847,15 +1847,15 @@ void TSecureShell::VerifyHostKey(const std::wstring Host, int Port,
     {
         std::string StoredKeys2(10240, 0);
 #ifdef MPEXT
-        if (retrieve_host_key(nb::W2MB(host.c_str()).c_str(), Port, nb::W2MB(KeyType.c_str()).c_str(),
+        if (retrieve_host_key(nb::W2MB(host.c_str(), FSessionData->GetCodePageAsNumber()).c_str(), Port, nb::W2MB(KeyType.c_str(), FSessionData->GetCodePageAsNumber()).c_str(),
                               const_cast<char *>(StoredKeys2.c_str()), static_cast<int>(StoredKeys2.size())) == 0)
 #else
-        if (verify_host_key(nb::W2MB(host.c_str()).c_str(), Port, nb::W2MB(KeyType.c_str()).c_str(),
+        if (verify_host_key(nb::W2MB(host.c_str(), FSessionData->GetCodePageAsNumber()).c_str(), Port, nb::W2MB(KeyType.c_str(), FSessionData->GetCodePageAsNumber()).c_str(),
                             (char *)StoredKeys2.c_str()))
 #endif
-            // if (0)
+        // if (0)
         {
-            StoredKeys = nb::MB2W(StoredKeys2.c_str()); // PackStr(StoredKeys);
+            StoredKeys = nb::MB2W(StoredKeys2.c_str(), FSessionData->GetCodePageAsNumber()); // PackStr(StoredKeys);
             std::wstring buf = StoredKeys;
             while (!Result && !buf.empty())
             {
@@ -1923,8 +1923,8 @@ void TSecureShell::VerifyHostKey(const std::wstring Host, int Port,
                 keyStr = StoredKeys + Delimiter + keyStr;
                 // fall thru
             case qaYes:
-                store_host_key(nb::W2MB(host.c_str()).c_str(), Port, nb::W2MB(KeyType.c_str()).c_str(),
-                               const_cast<char *>(nb::W2MB(keyStr.c_str()).c_str()));
+                store_host_key(nb::W2MB(host.c_str(), FSessionData->GetCodePageAsNumber()).c_str(), Port, nb::W2MB(KeyType.c_str(), FSessionData->GetCodePageAsNumber()).c_str(),
+                               const_cast<char *>(nb::W2MB(keyStr.c_str(), FSessionData->GetCodePageAsNumber()).c_str()));
                 break;
 
             case qaCancel:
