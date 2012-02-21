@@ -1037,7 +1037,9 @@ void TSecureShell::SendNull()
 void TSecureShell::SendStr(const std::wstring Str, bool Utf)
 {
     CheckConnection();
-    // Send(nb::W2MB(Str.c_str(), FSessionData()->GetCodePageAsNumber()).c_str(), Str.size());
+    std::string str = nb::W2MB(Str.c_str(), FSessionData->GetCodePageAsNumber());
+    Send(str.c_str(), str.size());
+    /*
     if (!Utf)
     {
         std::string str = nb::W2MB(Str.c_str(), FSessionData->GetCodePageAsNumber());
@@ -1048,6 +1050,7 @@ void TSecureShell::SendStr(const std::wstring Str, bool Utf)
         std::string encoded = ::EncodeUTF(Str);
         Send(encoded.c_str(), encoded.size());
     }
+    */
 }
 //---------------------------------------------------------------------------
 void TSecureShell::SendLine(const std::wstring Line, bool Utf)
