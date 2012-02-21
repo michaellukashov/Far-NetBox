@@ -31,6 +31,7 @@ const int FtpPortNumber = 21;
 const int HTTPPortNumber = 80;
 const int HTTPSPortNumber = 443;
 const int FtpsImplicitPortNumber = 990;
+const std::wstring CONST_DEFAULT_CODEPAGE = L"65001 (UTF-8)";
 //---------------------------------------------------------------------
 nb::TDateTime SecToDateTime(int Sec)
 {
@@ -101,6 +102,7 @@ void TSessionData::Default()
     SetSpecial(false);
     SetFSProtocol(fsSFTP);
     SetAddressFamily(afAuto);
+    SetCodePage(CONST_DEFAULT_CODEPAGE);
     SetRekeyData(L"1G");
     SetRekeyTime(60);
 
@@ -216,6 +218,7 @@ void TSessionData::Assign(nb::TPersistent *Source)
         DUPL(KexList);
         DUPL(PublicKeyFile);
         DUPL(AddressFamily);
+        DUPL(CodePage);
         DUPL(RekeyData);
         DUPL(RekeyTime);
         DUPL(HostKey);
@@ -402,6 +405,7 @@ void TSessionData::Load(THierarchicalStorage *Storage)
         SetPublicKeyFile(Storage->ReadString(L"PublicKeyFile", GetPublicKeyFile()));
         SetAddressFamily(static_cast<TAddressFamily>
                          (Storage->Readint(L"AddressFamily", GetAddressFamily())));
+        SetCodePage(Storage->ReadString(L"CodePage", GetCodePage()));
         SetRekeyData(Storage->ReadString(L"RekeyBytes", GetRekeyData()));
         SetRekeyTime(Storage->Readint(L"RekeyTime", GetRekeyTime()));
 
@@ -661,6 +665,7 @@ void TSessionData::Save(THierarchicalStorage *Storage,
         WRITE_DATA_EX(String, L"Cipher", GetCipherList(), );
         WRITE_DATA_EX(String, L"KEX", GetKexList(), );
         WRITE_DATA_EX(int, L"AddressFamily", GetAddressFamily(), );
+        WRITE_DATA_EX(String, L"CodePage", GetCodePage(), );
         WRITE_DATA_EX(String, L"RekeyBytes", GetRekeyData(), );
         WRITE_DATA_EX(int, L"RekeyTime", GetRekeyTime(), );
 
@@ -1700,6 +1705,11 @@ void TSessionData::SetPingType(TPingType value)
 void TSessionData::SetAddressFamily(TAddressFamily value)
 {
     SET_SESSION_PROPERTY(AddressFamily);
+}
+//---------------------------------------------------------------------------
+void TSessionData::SetCodePage(const std::wstring value)
+{
+    SET_SESSION_PROPERTY(CodePage);
 }
 //---------------------------------------------------------------------------
 void TSessionData::SetRekeyData(const std::wstring value)
