@@ -1599,7 +1599,7 @@ private:
     TFarRadioButton *PingNullPacketButton;
     TFarRadioButton *PingDummyCommandButton;
     TFarEdit *PingIntervalSecEdit;
-    TFarComboBox *CodePageCombo;
+    TFarComboBox *CodePageEdit;
     TFarComboBox *SshProxyMethodCombo;
     TFarComboBox *FtpProxyMethodCombo;
     TFarEdit *ProxyHostEdit;
@@ -1677,7 +1677,8 @@ private:
     void UpdateControls();
     void TransferProtocolComboChange();
     void LoginTypeComboChange();
-    void FillCodePageCombo();
+    void FillCodePageEdit();
+    void CodePageEditAdd(unsigned int cp);
 };
 //---------------------------------------------------------------------------
 #define BUG(BUGID, MSG, PREFIX) \
@@ -2331,16 +2332,12 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
 
     SetNextItemPosition(ipNewLine);
 
-    CodePageCombo = new TFarComboBox(this);
-    // CodePageCombo->SetLeft(FtpProxyMethodCombo->GetLeft());
-    CodePageCombo->SetWidth(30);
-    // CodePageCombo->SetRight(FtpProxyMethodCombo->GetRight());
-    CodePageCombo->SetDropDownList(true);
-    FillCodePageCombo();
+    CodePageEdit = new TFarComboBox(this);
+    CodePageEdit->SetWidth(30);
+    // CodePageEdit->SetDropDownList(true);
+    FillCodePageEdit();
 
     SetNextItemPosition(ipNewLine);
-
-    // new TFarSeparator(this);
 
     // Proxy tab
 
@@ -3917,24 +3914,21 @@ void TSessionDialog::WindowsEnvironmentButtonClick(
     DSTModeWinCheck->SetChecked(true);
 }
 //---------------------------------------------------------------------------
-void TSessionDialog::FillCodePageCombo()
+void TSessionDialog::FillCodePageEdit()
+{
+    CodePageEditAdd(CP_UTF8);
+    CodePageEditAdd(CP_OEMCP);
+    CodePageEditAdd(CP_ACP);
+    CodePageEditAdd(20866); // KOI8-r
+}
+//---------------------------------------------------------------------------
+void TSessionDialog::CodePageEditAdd(unsigned int cp)
 {
     CPINFOEX cpInfoEx;
-    if (GetCPInfoEx(CP_UTF8, 0, &cpInfoEx))
+    if (GetCPInfoEx(cp, 0, &cpInfoEx))
     {
-        CodePageCombo->GetItems()->Add(cpInfoEx.CodePageName);
-    }
-    if (GetCPInfoEx(CP_OEMCP, 0, &cpInfoEx))
-    {
-        CodePageCombo->GetItems()->Add(cpInfoEx.CodePageName);
-    }
-    if (GetCPInfoEx(CP_ACP, 0, &cpInfoEx))
-    {
-        CodePageCombo->GetItems()->Add(cpInfoEx.CodePageName);
-    }
-    if (GetCPInfoEx(20866, 0, &cpInfoEx))   // KOI8-r
-    {
-        CodePageCombo->GetItems()->Add(cpInfoEx.CodePageName);
+        CodePageEdit->GetItems()->AddObject(cpInfoEx.CodePageName,
+            static_cast<nb::TObject *>(reinterpret_cast<void *>(cpInfoEx.CodePage)));
     }
 }
 //---------------------------------------------------------------------------
