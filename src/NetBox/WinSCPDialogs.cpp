@@ -1838,9 +1838,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
     TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_SCP));
 #ifndef NO_FILEZILLA
     TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_FTP));
-#ifndef MPEXT_NO_SSLDLL
     TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_FTPS));
-#endif
 #endif
     TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_HTTP));
     TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_HTTPS));
