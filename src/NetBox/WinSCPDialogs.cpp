@@ -3273,6 +3273,15 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
         break;
     }
 
+    if (SessionData->GetCodePage().empty())
+    {
+        CodePageEdit->SetText(CodePageEdit->GetItems()->GetString(0));
+    }
+    else
+    {
+        CodePageEdit->SetText(SessionData->GetCodePage());
+    }
+
     // Proxy tab
     SshProxyMethodCombo->GetItems()->SetSelected(SessionData->GetProxyMethod());
     if (SessionData->GetProxyMethod() >= static_cast<int>(FtpProxyMethodCombo->GetItems()->GetCount()))
@@ -3567,6 +3576,9 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
         {
             SessionData->SetAddressFamily(afAuto);
         }
+        SessionData->SetCodePage(
+            (CodePageEdit->GetText() == CodePageEdit->GetItems()->GetString(0)) ?
+            std::wstring() : CodePageEdit->GetText());
 
         // Proxy tab
         SessionData->SetProxyMethod(static_cast<TProxyMethod>(SshProxyMethodCombo->GetItems()->GetSelected()));
