@@ -465,4 +465,6 @@ private:
                 TSessionData *FactoryDefaults);
 };
 //---------------------------------------------------------------------------
+bool GetCodePageInfo(UINT CodePage, CPINFOEX &CodePageInfoEx);
+//---------------------------------------------------------------------------
 #endif

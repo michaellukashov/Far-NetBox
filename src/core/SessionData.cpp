@@ -33,6 +33,25 @@ const int HTTPSPortNumber = 443;
 const int FtpsImplicitPortNumber = 990;
 const std::wstring CONST_DEFAULT_CODEPAGE = L"65001 (UTF-8)";
 //---------------------------------------------------------------------
+bool GetCodePageInfo(UINT CodePage, CPINFOEX &CodePageInfoEx)
+{
+    if (!GetCPInfoEx(CodePage, 0, &CodePageInfoEx))
+    {
+        CPINFO CodePageInfo;
+
+        if (!GetCPInfo(CodePage, &CodePageInfo))
+            return false;
+
+        CodePageInfoEx.MaxCharSize = CodePageInfo.MaxCharSize;
+        CodePageInfoEx.CodePageName[0] = L'\0';
+    }
+
+    if (CodePageInfoEx.MaxCharSize != 1)
+        return false;
+
+    return true;
+}
+//---------------------------------------------------------------------
 nb::TDateTime SecToDateTime(int Sec)
 {
     return nb::TDateTime(static_cast<unsigned short>(Sec/60/60),
