@@ -565,11 +565,13 @@ public:
 
     inline std::string GetString(bool Utf)
     {
+        /*
         if (Utf)
         {
             return GetUtfString();
         }
         else
+        */
         {
             return GetStringA();
         }
