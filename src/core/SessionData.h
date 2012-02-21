@@ -303,6 +303,7 @@ public:
     std::wstring GetPostLoginCommands() const { return FPostLoginCommands; }
     TAddressFamily GetAddressFamily() const { return FAddressFamily; }
     std::wstring GetCodePage() const { return FCodePage; }
+    unsigned int GetCodePageAsNumber() const;
     std::wstring GetRekeyData() const { return FRekeyData; }
     unsigned int GetRekeyTime() const { return FRekeyTime; }
     int GetColor() const { return FColor; }
@@ -466,5 +467,6 @@ private:
 };
 //---------------------------------------------------------------------------
 bool GetCodePageInfo(UINT CodePage, CPINFOEX &CodePageInfoEx);
+unsigned int GetCodePageAsNumber(const std::wstring CodePage);
 //---------------------------------------------------------------------------
 #endif

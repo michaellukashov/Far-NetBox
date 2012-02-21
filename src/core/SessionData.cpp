@@ -31,7 +31,8 @@ const int FtpPortNumber = 21;
 const int HTTPPortNumber = 80;
 const int HTTPSPortNumber = 443;
 const int FtpsImplicitPortNumber = 990;
-const std::wstring CONST_DEFAULT_CODEPAGE = L"65001 (UTF-8)";
+const unsigned int CONST_DEFAULT_CODEPAGE = 65001;
+const std::wstring CONST_DEFAULT_CODEPAGE_STRING = L"65001 (UTF-8)";
 //---------------------------------------------------------------------
 bool GetCodePageInfo(UINT CodePage, CPINFOEX &CodePageInfoEx)
 {
@@ -51,6 +52,13 @@ bool GetCodePageInfo(UINT CodePage, CPINFOEX &CodePageInfoEx)
 
     return true;
 }
+//---------------------------------------------------------------------
+unsigned int GetCodePageAsNumber(const std::wstring CodePage)
+{
+    unsigned int codePage = _wtoi(CodePage.c_str());
+    return codePage == 0 ? CONST_DEFAULT_CODEPAGE : codePage;
+}
+
 //---------------------------------------------------------------------
 nb::TDateTime SecToDateTime(int Sec)
 {
@@ -121,7 +129,7 @@ void TSessionData::Default()
     SetSpecial(false);
     SetFSProtocol(fsSFTP);
     SetAddressFamily(afAuto);
-    SetCodePage(CONST_DEFAULT_CODEPAGE);
+    SetCodePage(CONST_DEFAULT_CODEPAGE_STRING);
     SetRekeyData(L"1G");
     SetRekeyTime(60);
 
@@ -2256,6 +2264,12 @@ std::wstring TSessionData::GetLocalName()
     }
     return Result;
 }
+//---------------------------------------------------------------------
+unsigned int TSessionData::GetCodePageAsNumber() const
+{
+    return ::GetCodePageAsNumber(GetCodePage());
+}
+
 //=== TStoredSessionList ----------------------------------------------
 TStoredSessionList::TStoredSessionList(bool aReadOnly):
     TNamedObjectList(), FReadOnly(aReadOnly)
