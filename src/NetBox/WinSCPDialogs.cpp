@@ -1599,6 +1599,7 @@ private:
     TFarRadioButton *PingNullPacketButton;
     TFarRadioButton *PingDummyCommandButton;
     TFarEdit *PingIntervalSecEdit;
+    TFarComboBox *CodePageCombo;
     TFarComboBox *SshProxyMethodCombo;
     TFarComboBox *FtpProxyMethodCombo;
     TFarEdit *ProxyHostEdit;
@@ -1676,6 +1677,7 @@ private:
     void UpdateControls();
     void TransferProtocolComboChange();
     void LoginTypeComboChange();
+    void FillCodePageCombo();
 };
 //---------------------------------------------------------------------------
 #define BUG(BUGID, MSG, PREFIX) \
@@ -2322,7 +2324,23 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
 
     SetNextItemPosition(ipNewLine);
 
-    new TFarSeparator(this);
+    Separator = new TFarSeparator(this);
+
+    Text = new TFarText(this);
+    Text->SetCaption(GetMsg(LOGIN_CODE_PAGE));
+
+    SetNextItemPosition(ipNewLine);
+
+    CodePageCombo = new TFarComboBox(this);
+    // CodePageCombo->SetLeft(FtpProxyMethodCombo->GetLeft());
+    CodePageCombo->SetWidth(30);
+    // CodePageCombo->SetRight(FtpProxyMethodCombo->GetRight());
+    CodePageCombo->SetDropDownList(true);
+    FillCodePageCombo();
+
+    SetNextItemPosition(ipNewLine);
+
+    // new TFarSeparator(this);
 
     // Proxy tab
 
@@ -3897,6 +3915,27 @@ void TSessionDialog::WindowsEnvironmentButtonClick(
 {
     EOLTypeCombo->GetItems()->SetSelected(1);
     DSTModeWinCheck->SetChecked(true);
+}
+//---------------------------------------------------------------------------
+void TSessionDialog::FillCodePageCombo()
+{
+    CPINFOEX cpInfoEx;
+    if (GetCPInfoEx(CP_UTF8, 0, &cpInfoEx))
+    {
+        CodePageCombo->GetItems()->Add(cpInfoEx.CodePageName);
+    }
+    if (GetCPInfoEx(CP_OEMCP, 0, &cpInfoEx))
+    {
+        CodePageCombo->GetItems()->Add(cpInfoEx.CodePageName);
+    }
+    if (GetCPInfoEx(CP_ACP, 0, &cpInfoEx))
+    {
+        CodePageCombo->GetItems()->Add(cpInfoEx.CodePageName);
+    }
+    if (GetCPInfoEx(20866, 0, &cpInfoEx))   // KOI8-r
+    {
+        CodePageCombo->GetItems()->Add(cpInfoEx.CodePageName);
+    }
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
