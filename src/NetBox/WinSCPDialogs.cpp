@@ -3937,7 +3937,7 @@ void TSessionDialog::FillCodePageEdit()
 void TSessionDialog::CodePageEditAdd(unsigned int cp)
 {
     CPINFOEX cpInfoEx;
-    if (GetCPInfoEx(cp, 0, &cpInfoEx))
+    if (::GetCodePageInfo(cp, cpInfoEx))
     {
         CodePageEdit->GetItems()->AddObject(cpInfoEx.CodePageName,
             static_cast<nb::TObject *>(reinterpret_cast<void *>(cpInfoEx.CodePage)));
