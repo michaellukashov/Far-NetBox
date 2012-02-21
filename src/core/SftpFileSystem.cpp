@@ -327,11 +327,13 @@ public:
 
     inline void AddString(const std::wstring Value, bool Utf)
     {
+        /*
         if (Utf)
         {
             AddUtfString(Value);
         }
         else
+        */
         {
             AddStringW(Value);
         }
