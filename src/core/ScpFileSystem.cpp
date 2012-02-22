@@ -1375,9 +1375,9 @@ void TSCPFileSystem::SCPResponse(bool *GotLastLine)
     case 2:     /* fatal error */
         // pscp adds 'Resp' to 'Msg', why?
         std::wstring MsgW = FSecureShell->ReceiveLine(FUtfStrings);
-        std::string Msg = nb::W2MB(MsgW.c_str());
+        std::string Msg = nb::W2MB(MsgW.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber());
         std::string Line = Resp + Msg;
-        std::wstring LineW = nb::MB2W(Line.c_str());
+        std::wstring LineW = nb::MB2W(Line.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber());
         if (IsLastLine(LineW))
         {
             if (GotLastLine != NULL)
@@ -1497,7 +1497,7 @@ void TSCPFileSystem::CopyToRemote(nb::TStrings *FilesToCopy,
         }
         catch (const std::exception &E)
         {
-            // DEBUG_PRINTF(L"E.what = %s", nb::MB2W(E.what()).c_str());
+            // DEBUG_PRINTF(L"E.what = %s", nb::MB2W(E.what(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str());
             if (GotLastLine && FTerminal->GetActive())
             {
                 FTerminal->TerminalError(&E, LoadStr(SCP_INIT_ERROR));
@@ -2482,7 +2482,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
                             catch (const std::exception &E)
                             {
                                 // In this step we can still cancel transfer, so we do it
-                                SCPError(nb::MB2W(E.what()), false);
+                                SCPError(nb::MB2W(E.what(), FTerminal->GetSessionData()->GetCodePageAsNumber()), false);
                                 throw;
                             }
 

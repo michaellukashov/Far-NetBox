@@ -129,6 +129,7 @@ private:
     TAutoSwitch FSCPLsFullTime;
     TAutoSwitch FFtpListAll;
     TAddressFamily FAddressFamily;
+    std::wstring FCodePage;
     std::wstring FRekeyData;
     unsigned int FRekeyTime;
     int FColor;
@@ -301,6 +302,8 @@ public:
     std::wstring GetRecycleBinPath() const { return FRecycleBinPath; }
     std::wstring GetPostLoginCommands() const { return FPostLoginCommands; }
     TAddressFamily GetAddressFamily() const { return FAddressFamily; }
+    std::wstring GetCodePage() const { return FCodePage; }
+    unsigned int GetCodePageAsNumber() const;
     std::wstring GetRekeyData() const { return FRekeyData; }
     unsigned int GetRekeyTime() const { return FRekeyTime; }
     int GetColor() const { return FColor; }
@@ -401,6 +404,7 @@ public:
     void SetRecycleBinPath(const std::wstring value);
     void SetPostLoginCommands(const std::wstring value);
     void SetAddressFamily(TAddressFamily value);
+    void SetCodePage(const std::wstring value);
     void SetRekeyData(const std::wstring value);
     void SetRekeyTime(unsigned int value);
     void SetColor(int value);
@@ -461,5 +465,8 @@ private:
                 TSessionData *Data, bool All, bool RecryptPasswordOnly,
                 TSessionData *FactoryDefaults);
 };
+//---------------------------------------------------------------------------
+bool GetCodePageInfo(UINT CodePage, CPINFOEX &CodePageInfoEx);
+unsigned int GetCodePageAsNumber(const std::wstring CodePage);
 //---------------------------------------------------------------------------
 #endif

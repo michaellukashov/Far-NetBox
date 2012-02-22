@@ -1599,6 +1599,7 @@ private:
     TFarRadioButton *PingNullPacketButton;
     TFarRadioButton *PingDummyCommandButton;
     TFarEdit *PingIntervalSecEdit;
+    TFarComboBox *CodePageEdit;
     TFarComboBox *SshProxyMethodCombo;
     TFarComboBox *FtpProxyMethodCombo;
     TFarEdit *ProxyHostEdit;
@@ -1676,6 +1677,8 @@ private:
     void UpdateControls();
     void TransferProtocolComboChange();
     void LoginTypeComboChange();
+    void FillCodePageEdit();
+    void CodePageEditAdd(unsigned int cp);
 };
 //---------------------------------------------------------------------------
 #define BUG(BUGID, MSG, PREFIX) \
@@ -2322,7 +2325,19 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
 
     SetNextItemPosition(ipNewLine);
 
-    new TFarSeparator(this);
+    Separator = new TFarSeparator(this);
+
+    Text = new TFarText(this);
+    Text->SetCaption(GetMsg(LOGIN_CODE_PAGE));
+
+    SetNextItemPosition(ipNewLine);
+
+    CodePageEdit = new TFarComboBox(this);
+    CodePageEdit->SetWidth(30);
+    // CodePageEdit->SetDropDownList(true);
+    FillCodePageEdit();
+
+    SetNextItemPosition(ipNewLine);
 
     // Proxy tab
 
@@ -3258,6 +3273,15 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
         break;
     }
 
+    if (SessionData->GetCodePage().empty())
+    {
+        CodePageEdit->SetText(CodePageEdit->GetItems()->GetString(0));
+    }
+    else
+    {
+        CodePageEdit->SetText(SessionData->GetCodePage());
+    }
+
     // Proxy tab
     SshProxyMethodCombo->GetItems()->SetSelected(SessionData->GetProxyMethod());
     if (SessionData->GetProxyMethod() >= static_cast<int>(FtpProxyMethodCombo->GetItems()->GetCount()))
@@ -3552,6 +3576,9 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
         {
             SessionData->SetAddressFamily(afAuto);
         }
+        SessionData->SetCodePage(
+            (CodePageEdit->GetText() == CodePageEdit->GetItems()->GetString(0)) ?
+            std::wstring() : CodePageEdit->GetText());
 
         // Proxy tab
         SessionData->SetProxyMethod(static_cast<TProxyMethod>(SshProxyMethodCombo->GetItems()->GetSelected()));
@@ -3897,6 +3924,24 @@ void TSessionDialog::WindowsEnvironmentButtonClick(
 {
     EOLTypeCombo->GetItems()->SetSelected(1);
     DSTModeWinCheck->SetChecked(true);
+}
+//---------------------------------------------------------------------------
+void TSessionDialog::FillCodePageEdit()
+{
+    CodePageEditAdd(CP_UTF8);
+    CodePageEditAdd(CP_OEMCP);
+    CodePageEditAdd(CP_ACP);
+    CodePageEditAdd(20866); // KOI8-r
+}
+//---------------------------------------------------------------------------
+void TSessionDialog::CodePageEditAdd(unsigned int cp)
+{
+    CPINFOEX cpInfoEx;
+    if (::GetCodePageInfo(cp, cpInfoEx))
+    {
+        CodePageEdit->GetItems()->AddObject(cpInfoEx.CodePageName,
+            static_cast<nb::TObject *>(reinterpret_cast<void *>(cpInfoEx.CodePage)));
+    }
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------

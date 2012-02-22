@@ -31,6 +31,34 @@ const int FtpPortNumber = 21;
 const int HTTPPortNumber = 80;
 const int HTTPSPortNumber = 443;
 const int FtpsImplicitPortNumber = 990;
+const unsigned int CONST_DEFAULT_CODEPAGE = 65001;
+const std::wstring CONST_DEFAULT_CODEPAGE_STRING = L"65001 (UTF-8)";
+//---------------------------------------------------------------------
+bool GetCodePageInfo(UINT CodePage, CPINFOEX &CodePageInfoEx)
+{
+    if (!GetCPInfoEx(CodePage, 0, &CodePageInfoEx))
+    {
+        CPINFO CodePageInfo;
+
+        if (!GetCPInfo(CodePage, &CodePageInfo))
+            return false;
+
+        CodePageInfoEx.MaxCharSize = CodePageInfo.MaxCharSize;
+        CodePageInfoEx.CodePageName[0] = L'\0';
+    }
+
+    if (CodePageInfoEx.MaxCharSize != 1)
+        return false;
+
+    return true;
+}
+//---------------------------------------------------------------------
+unsigned int GetCodePageAsNumber(const std::wstring CodePage)
+{
+    unsigned int codePage = _wtoi(CodePage.c_str());
+    return codePage == 0 ? CONST_DEFAULT_CODEPAGE : codePage;
+}
+
 //---------------------------------------------------------------------
 nb::TDateTime SecToDateTime(int Sec)
 {
@@ -101,6 +129,7 @@ void TSessionData::Default()
     SetSpecial(false);
     SetFSProtocol(fsSFTP);
     SetAddressFamily(afAuto);
+    SetCodePage(CONST_DEFAULT_CODEPAGE_STRING);
     SetRekeyData(L"1G");
     SetRekeyTime(60);
 
@@ -216,6 +245,7 @@ void TSessionData::Assign(nb::TPersistent *Source)
         DUPL(KexList);
         DUPL(PublicKeyFile);
         DUPL(AddressFamily);
+        DUPL(CodePage);
         DUPL(RekeyData);
         DUPL(RekeyTime);
         DUPL(HostKey);
@@ -402,6 +432,7 @@ void TSessionData::Load(THierarchicalStorage *Storage)
         SetPublicKeyFile(Storage->ReadString(L"PublicKeyFile", GetPublicKeyFile()));
         SetAddressFamily(static_cast<TAddressFamily>
                          (Storage->Readint(L"AddressFamily", GetAddressFamily())));
+        SetCodePage(Storage->ReadString(L"CodePage", GetCodePage()));
         SetRekeyData(Storage->ReadString(L"RekeyBytes", GetRekeyData()));
         SetRekeyTime(Storage->Readint(L"RekeyTime", GetRekeyTime()));
 
@@ -661,6 +692,7 @@ void TSessionData::Save(THierarchicalStorage *Storage,
         WRITE_DATA_EX(String, L"Cipher", GetCipherList(), );
         WRITE_DATA_EX(String, L"KEX", GetKexList(), );
         WRITE_DATA_EX(int, L"AddressFamily", GetAddressFamily(), );
+        WRITE_DATA_EX(String, L"CodePage", GetCodePage(), );
         WRITE_DATA_EX(String, L"RekeyBytes", GetRekeyData(), );
         WRITE_DATA_EX(int, L"RekeyTime", GetRekeyTime(), );
 
@@ -1702,6 +1734,11 @@ void TSessionData::SetAddressFamily(TAddressFamily value)
     SET_SESSION_PROPERTY(AddressFamily);
 }
 //---------------------------------------------------------------------------
+void TSessionData::SetCodePage(const std::wstring value)
+{
+    SET_SESSION_PROPERTY(CodePage);
+}
+//---------------------------------------------------------------------------
 void TSessionData::SetRekeyData(const std::wstring value)
 {
     SET_SESSION_PROPERTY(RekeyData);
@@ -2227,6 +2264,12 @@ std::wstring TSessionData::GetLocalName()
     }
     return Result;
 }
+//---------------------------------------------------------------------
+unsigned int TSessionData::GetCodePageAsNumber() const
+{
+    return ::GetCodePageAsNumber(GetCodePage());
+}
+
 //=== TStoredSessionList ----------------------------------------------
 TStoredSessionList::TStoredSessionList(bool aReadOnly):
     TNamedObjectList(), FReadOnly(aReadOnly)

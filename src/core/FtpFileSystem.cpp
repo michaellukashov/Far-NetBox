@@ -102,10 +102,10 @@ bool TFileZillaImpl::HandleAsynchRequestOverwrite(
     bool HasTime1, bool HasTime2, void *UserData, int &RequestResult)
 {
     return FFileSystem->HandleAsynchRequestOverwrite(
-               const_cast<wchar_t *>(nb::MB2W(FileName1).c_str()), FileName1Len,
-               const_cast<wchar_t *>(nb::MB2W(FileName2).c_str()),
-               const_cast<wchar_t *>(nb::MB2W(Path1).c_str()),
-               const_cast<wchar_t *>(nb::MB2W(Path2).c_str()), Size1, Size2, Time1, Time2,
+               const_cast<wchar_t *>(nb::MB2W(FileName1, FFileSystem->FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str()), FileName1Len,
+               const_cast<wchar_t *>(nb::MB2W(FileName2, FFileSystem->FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str()),
+               const_cast<wchar_t *>(nb::MB2W(Path1, FFileSystem->FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str()),
+               const_cast<wchar_t *>(nb::MB2W(Path2, FFileSystem->FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str()), Size1, Size2, Time1, Time2,
                HasTime1, HasTime2, UserData, RequestResult);
 }
 //---------------------------------------------------------------------------
@@ -118,7 +118,7 @@ bool TFileZillaImpl::HandleAsynchRequestVerifyCertificate(
 bool TFileZillaImpl::HandleListData(const char *Path,
                                     const TListDataEntry *Entries, size_t Count)
 {
-    return FFileSystem->HandleListData(nb::MB2W(Path).c_str(), Entries, Count);
+    return FFileSystem->HandleListData(nb::MB2W(Path, FFileSystem->FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str(), Entries, Count);
 }
 //---------------------------------------------------------------------------
 bool TFileZillaImpl::HandleTransferStatus(bool Valid, __int64 TransferSize,
@@ -141,7 +141,7 @@ bool TFileZillaImpl::HandleCapabilities(bool Mfmt)
 //---------------------------------------------------------------------------
 bool TFileZillaImpl::CheckError(int ReturnCode, const char *Context)
 {
-    return FFileSystem->CheckError(ReturnCode, nb::MB2W(Context).c_str());
+    return FFileSystem->CheckError(ReturnCode, nb::MB2W(Context, FFileSystem->FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str());
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -444,7 +444,7 @@ void TFTPFileSystem::Open()
                       nb::W2MB(Password.c_str()).c_str(),
                       nb::W2MB(Account.c_str()).c_str(),
                       false,
-                      nb::W2MB(Path.c_str()).c_str(),
+                      nb::W2MB(Path.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str(),
                       ServerType, Pasv, TimeZoneOffset, UTF8, Data->GetFtpForcePasvIp());
 
         assert(FActive);
@@ -563,7 +563,7 @@ std::wstring TFTPFileSystem::ActualCurrentDirectory()
 {
     char CurrentPath[1024];
     FFileZillaIntf->GetCurrentPath(CurrentPath, sizeof(CurrentPath));
-    std::wstring fn = UnixExcludeTrailingBackslash(std::wstring(nb::MB2W(CurrentPath)));
+    std::wstring fn = UnixExcludeTrailingBackslash(std::wstring(nb::MB2W(CurrentPath, FTerminal->GetSessionData()->GetCodePageAsNumber())));
     if (fn.empty())
     {
         fn = L"/";
@@ -733,8 +733,8 @@ void TFTPFileSystem::ChangeFileProperties(const std::wstring AFileName,
             std::wstring FilePath = UnixExtractFilePath(FileName);
             // FZAPI wants octal number represented as decadic
             FFileZillaIntf->Chmod(Rights.GetNumberDecadic(),
-                                  nb::W2MB(FileNameOnly.c_str()).c_str(),
-                                  nb::W2MB(FilePath.c_str()).c_str());
+                                  nb::W2MB(FileNameOnly.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str(),
+                                  nb::W2MB(FilePath.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str());
 
             GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
         }
@@ -937,9 +937,9 @@ void TFTPFileSystem::FileTransfer(const std::wstring FileName,
 {
     FILE_OPERATION_LOOP(FMTLOAD(TRANSFER_ERROR, FileName.c_str()),
         FFileZillaIntf->FileTransfer(
-            nb::W2MB(LocalFile.c_str()).c_str(),
-            nb::W2MB(RemoteFile.c_str()).c_str(),
-            nb::W2MB(RemotePath.c_str()).c_str(),
+            nb::W2MB(LocalFile.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str(),
+            nb::W2MB(RemoteFile.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str(),
+            nb::W2MB(RemotePath.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str(),
             Get, Size, Type, &UserData);
         // we may actually catch response code of the listing
         // command (when checking for existence of the remote file)
@@ -1571,7 +1571,7 @@ void TFTPFileSystem::CreateDirectory(const std::wstring ADirName)
         // ignore file list
         TFileListHelper Helper(this, NULL, true);
 
-        FFileZillaIntf->MakeDir(nb::W2MB(DirName.c_str()).c_str());
+        FFileZillaIntf->MakeDir(nb::W2MB(DirName.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str());
 
         GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
     }
@@ -1622,13 +1622,13 @@ void TFTPFileSystem::DeleteFile(const std::wstring AFileName,
             {
                 EnsureLocation();
             }
-            FFileZillaIntf->RemoveDir(nb::W2MB(FileNameOnly.c_str()).c_str(),
-                                      nb::W2MB(FilePath.c_str()).c_str());
+            FFileZillaIntf->RemoveDir(nb::W2MB(FileNameOnly.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str(),
+                                      nb::W2MB(FilePath.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str());
         }
         else
         {
-            FFileZillaIntf->Delete(nb::W2MB(FileNameOnly.c_str()).c_str(),
-                                   nb::W2MB(FilePath.c_str()).c_str());
+            FFileZillaIntf->Delete(nb::W2MB(FileNameOnly.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str(),
+                                   nb::W2MB(FilePath.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str());
         }
         GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
     }
@@ -1776,7 +1776,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
 
             if (Result)
             {
-                FFileZillaIntf->SetCurrentPath(nb::W2MB(FCurrentDirectory.c_str()).c_str());
+                FFileZillaIntf->SetCurrentPath(nb::W2MB(FCurrentDirectory.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str());
             }
             else
             {
@@ -1801,7 +1801,7 @@ void TFTPFileSystem::DoReadDirectory(TRemoteFileList *FileList)
     // 1) List() lists again the last listed directory, not the current working directory
     // 2) we handle this way the cached directory change
     std::wstring Directory = AbsolutePath(FileList->GetDirectory(), false);
-    FFileZillaIntf->List(nb::W2MB(Directory.c_str()).c_str());
+    FFileZillaIntf->List(nb::W2MB(Directory.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str());
 
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_ALLOW_CANCEL);
 
@@ -1949,10 +1949,10 @@ void TFTPFileSystem::RenameFile(const std::wstring AFileName,
         // ignore file list
         TFileListHelper Helper(this, NULL, true);
 
-        FFileZillaIntf->Rename(nb::W2MB(FileNameOnly.c_str()).c_str(),
-                               nb::W2MB(NewNameOnly.c_str()).c_str(),
-                               nb::W2MB(FilePathOnly.c_str()).c_str(),
-                               nb::W2MB(NewPathOnly.c_str()).c_str());
+        FFileZillaIntf->Rename(nb::W2MB(FileNameOnly.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str(),
+                               nb::W2MB(NewNameOnly.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str(),
+                               nb::W2MB(FilePathOnly.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str(),
+                               nb::W2MB(NewPathOnly.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str());
 
         GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
     }
