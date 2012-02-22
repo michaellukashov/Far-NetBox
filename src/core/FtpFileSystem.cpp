@@ -102,10 +102,10 @@ bool TFileZillaImpl::HandleAsynchRequestOverwrite(
     bool HasTime1, bool HasTime2, void *UserData, int &RequestResult)
 {
     return FFileSystem->HandleAsynchRequestOverwrite(
-               const_cast<wchar_t *>(nb::MB2W(FileName1).c_str()), FileName1Len,
-               const_cast<wchar_t *>(nb::MB2W(FileName2).c_str()),
-               const_cast<wchar_t *>(nb::MB2W(Path1).c_str()),
-               const_cast<wchar_t *>(nb::MB2W(Path2).c_str()), Size1, Size2, Time1, Time2,
+               const_cast<wchar_t *>(nb::MB2W(FileName1, FFileSystem->FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str()), FileName1Len,
+               const_cast<wchar_t *>(nb::MB2W(FileName2, FFileSystem->FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str()),
+               const_cast<wchar_t *>(nb::MB2W(Path1, FFileSystem->FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str()),
+               const_cast<wchar_t *>(nb::MB2W(Path2, FFileSystem->FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str()), Size1, Size2, Time1, Time2,
                HasTime1, HasTime2, UserData, RequestResult);
 }
 //---------------------------------------------------------------------------
@@ -118,7 +118,7 @@ bool TFileZillaImpl::HandleAsynchRequestVerifyCertificate(
 bool TFileZillaImpl::HandleListData(const char *Path,
                                     const TListDataEntry *Entries, size_t Count)
 {
-    return FFileSystem->HandleListData(nb::MB2W(Path).c_str(), Entries, Count);
+    return FFileSystem->HandleListData(nb::MB2W(Path, FFileSystem->FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str(), Entries, Count);
 }
 //---------------------------------------------------------------------------
 bool TFileZillaImpl::HandleTransferStatus(bool Valid, __int64 TransferSize,
@@ -141,7 +141,7 @@ bool TFileZillaImpl::HandleCapabilities(bool Mfmt)
 //---------------------------------------------------------------------------
 bool TFileZillaImpl::CheckError(int ReturnCode, const char *Context)
 {
-    return FFileSystem->CheckError(ReturnCode, nb::MB2W(Context).c_str());
+    return FFileSystem->CheckError(ReturnCode, nb::MB2W(Context, FFileSystem->FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str());
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -563,7 +563,7 @@ std::wstring TFTPFileSystem::ActualCurrentDirectory()
 {
     char CurrentPath[1024];
     FFileZillaIntf->GetCurrentPath(CurrentPath, sizeof(CurrentPath));
-    std::wstring fn = UnixExcludeTrailingBackslash(std::wstring(nb::MB2W(CurrentPath)));
+    std::wstring fn = UnixExcludeTrailingBackslash(std::wstring(nb::MB2W(CurrentPath, FTerminal->GetSessionData()->GetCodePageAsNumber())));
     if (fn.empty())
     {
         fn = L"/";
