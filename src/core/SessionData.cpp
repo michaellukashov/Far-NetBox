@@ -2559,7 +2559,7 @@ size_t TStoredSessionList::IndexOf(TSessionData *Data)
             return Index;
         }
     }
-    return -1;
+    return NPOS;
 }
 //---------------------------------------------------------------------------
 TSessionData *TStoredSessionList::NewSession(

@@ -228,7 +228,7 @@ size_t TList::IndexOf(void *value) const
     }
     if (Result == FList.size())
     {
-        Result = -1;
+        Result = NPOS;
     }
     return Result;
 }
@@ -605,7 +605,7 @@ size_t TStrings::IndexOf(const std::wstring S)
         }
     }
     // DEBUG_PRINTF(L"end");
-    return -1;
+    return NPOS;
 }
 size_t TStrings::IndexOfName(const std::wstring Name)
 {
@@ -618,7 +618,7 @@ size_t TStrings::IndexOfName(const std::wstring Name)
             return Index;
         }
     }
-    return -1;
+    return NPOS;
 }
 const std::wstring TStrings::GetName(size_t Index)
 {
@@ -783,7 +783,7 @@ bool TStringList::Find(const std::wstring S, size_t &Index)
 size_t TStringList::IndexOf(const std::wstring S)
 {
     // DEBUG_PRINTF(L"begin");
-    size_t Result = -1;
+    size_t Result = NPOS;
     if (!GetSorted())
     {
         Result = parent::IndexOf(S);
@@ -792,7 +792,7 @@ size_t TStringList::IndexOf(const std::wstring S)
     {
         if (!Find(S, Result))
         {
-            Result = -1;
+            Result = NPOS;
         }
     }
     // DEBUG_PRINTF(L"end");

@@ -883,7 +883,7 @@ void TFTPFileSystem::ReadDirectoryProgress(__int64 Bytes)
         FTerminal->DoReadDirectoryProgress(Progress, Cancel);
         if (Cancel)
         {
-            FTerminal->DoReadDirectoryProgress(-2, Cancel);
+            FTerminal->DoReadDirectoryProgress(static_cast<size_t>(-2), Cancel);
             FFileZillaIntf->Cancel();
         }
     }

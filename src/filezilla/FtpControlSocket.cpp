@@ -1158,7 +1158,7 @@ BOOL CFtpControlSocket::Send(CString str, BOOL bUpdateRecvTime)
 			DoClose();
 			return FALSE;
 		}
-		if (res != sendLen)
+		if (res != static_cast<int>(sendLen))
 		{
 			if (res == -2)
 				res = 0;
