@@ -530,7 +530,7 @@ void TBookmark::SetLocal(const std::wstring value)
     if (GetLocal() != value)
     {
         FLocal = value;
-        Modify(-1);
+        Modify(NPOS);
     }
 }
 //---------------------------------------------------------------------------
@@ -539,7 +539,7 @@ void TBookmark::SetRemote(const std::wstring value)
     if (GetRemote() != value)
     {
         FRemote = value;
-        Modify(-1);
+        Modify(NPOS);
     }
 }
 //---------------------------------------------------------------------------
@@ -558,7 +558,7 @@ void TBookmark::SetShortCut(nb::TShortCut value)
     if (GetShortCut() != value)
     {
         FShortCut = value;
-        Modify(-1);
+        Modify(NPOS);
     }
 }
 //---------------------------------------------------------------------------

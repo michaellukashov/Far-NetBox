@@ -547,7 +547,7 @@ TSessionLog::TSessionLog(TSessionUI *UI, TSessionData *SessionData,
     FSessionData = SessionData;
     FFile = NULL;
     FLoggedLines = 0;
-    FTopIndex = -1;
+    FTopIndex = NPOS;
     FCurrentLogFileName = L"";
     FCurrentFileName = L"";
     FLoggingActions = false;
@@ -959,7 +959,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData *Data)
         ADF(L"Transfer Protocol: %s", Data->GetFSProtocolStr().c_str());
         wchar_t *PingTypes = L"-NC";
         TPingType PingType;
-        int PingInterval;
+        size_t PingInterval;
         if ((Data->GetFSProtocol() == fsFTP) || (Data->GetFSProtocol() == fsFTPS))
         {
             PingType = Data->GetFtpPingType();

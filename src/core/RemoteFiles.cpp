@@ -1665,7 +1665,7 @@ bool TRemoteDirectoryCache::HasNewerFileList(const std::wstring Directory,
         TRemoteFileList *FileList = reinterpret_cast<TRemoteFileList *>(GetObject(Index));
         if (FileList->GetTimestamp() <= Timestamp)
         {
-            Index = -1;
+            Index = NPOS;
         }
     }
     return (Index != -1);

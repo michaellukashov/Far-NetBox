@@ -1432,7 +1432,7 @@ void TSessionData::SetPasswordless(bool value)
     SET_SESSION_PROPERTY(Passwordless);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetPingInterval(int value)
+void TSessionData::SetPingInterval(size_t value)
 {
     SET_SESSION_PROPERTY(PingInterval);
 }
@@ -1716,7 +1716,7 @@ void TSessionData::SetPingIntervalDT(nb::TDateTime value)
     unsigned int hour, min, sec, msec;
 
     value.DecodeTime(hour, min, sec, msec);
-    SetPingInterval((static_cast<int>(hour))*60*60 + (static_cast<int>(min))*60 + sec);
+    SetPingInterval((static_cast<size_t>(hour))*60*60 + (static_cast<int>(min))*60 + sec);
 }
 //---------------------------------------------------------------------------
 nb::TDateTime TSessionData::GetPingIntervalDT() const
@@ -2200,7 +2200,7 @@ void TSessionData::SetFtpAccount(const std::wstring value)
     SET_SESSION_PROPERTY(FtpAccount);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetFtpPingInterval(int value)
+void TSessionData::SetFtpPingInterval(size_t value)
 {
     SET_SESSION_PROPERTY(FtpPingInterval);
 }
@@ -2559,7 +2559,7 @@ size_t TStoredSessionList::IndexOf(TSessionData *Data)
             return Index;
         }
     }
-    return -1;
+    return NPOS;
 }
 //---------------------------------------------------------------------------
 TSessionData *TStoredSessionList::NewSession(

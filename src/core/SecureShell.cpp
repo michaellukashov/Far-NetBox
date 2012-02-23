@@ -306,7 +306,6 @@ void TSecureShell::StoreToConfig(TSessionData *Data, Config *cfg, bool Simple)
     }
 
     cfg->connect_timeout = Data->GetTimeout() * 1000;
-    // cfg->sndbuf = Data->GetSshSendBuf();
 
     // permanent settings
     cfg->nopty = TRUE;

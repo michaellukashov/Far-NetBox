@@ -147,7 +147,7 @@ private:
     TFtpEncryptionSwitch FFtpEncryption;
     TLoginType FLoginType;
     std::wstring FFtpAccount;
-    int FFtpPingInterval;
+    size_t FFtpPingInterval;
     TPingType FFtpPingType;
     TFtps FFtps;
     TAutoSwitch FNotUtf;
@@ -326,7 +326,7 @@ public:
     void SetFtpEncryption(TFtpEncryptionSwitch value);
     bool GetFtpForcePasvIp() const { return FFtpForcePasvIp; }
     std::wstring GetFtpAccount() const { return FFtpAccount; }
-    int GetFtpPingInterval() const { return FFtpPingInterval; }
+    size_t GetFtpPingInterval() const { return FFtpPingInterval; }
     nb::TDateTime GetFtpPingIntervalDT();
     TPingType GetFtpPingType() const { return FFtpPingType; }
     TFtps GetFtps() const { return FFtps; }
@@ -342,7 +342,7 @@ public:
     void SetPortNumber(size_t value);
     void SetUserName(const std::wstring value);
     void SetPasswordless(bool value);
-    void SetPingInterval(int value);
+    void SetPingInterval(size_t value);
     void SetTryAgent(bool value);
     void SetAgentFwd(bool value);
     void SetAuthTIS(bool value);
@@ -416,7 +416,7 @@ public:
     void SetFtpPasvMode(bool value);
     void SetFtpForcePasvIp(bool value);
     void SetFtpAccount(const std::wstring value);
-    void SetFtpPingInterval(int value);
+    void SetFtpPingInterval(size_t value);
     void SetFtpPingType(TPingType value);
     void SetFtps(TFtps value);
     void SetNotUtf(TAutoSwitch value);

@@ -1047,7 +1047,7 @@ TFarDialogItem::TFarDialogItem(TFarDialog *ADialog, FARDIALOGITEMTYPES AType) :
     FEnabledDependency(NULL),
     FEnabledDependencyNegative(NULL),
     FContainer(NULL),
-    FItem(-1),
+    FItem(NPOS),
     FEnabled(false),
     FIsEnabled(false),
     FColors(0),
@@ -2289,7 +2289,7 @@ void TFarList::UpdatePosition(int Position)
         }
         else
         {
-            SetCurPos(Position, -1);
+            SetCurPos(Position, NPOS);
         }
     }
 }
@@ -2306,9 +2306,9 @@ void TFarList::SetCurPos(size_t Position, size_t TopIndex)
 //---------------------------------------------------------------------------
 void TFarList::SetTopIndex(size_t value)
 {
-    if (value != GetTopIndex())
+    if (value != static_cast<size_t>(GetTopIndex()))
     {
-        SetCurPos(-1, value);
+        SetCurPos(NPOS, value);
     }
 }
 //---------------------------------------------------------------------------
@@ -2356,12 +2356,12 @@ int TFarList::GetVisibleCount()
 //---------------------------------------------------------------------------
 size_t TFarList::GetSelectedInt(bool Init)
 {
-    size_t Result = -1;
+    size_t Result = NPOS;
     assert(GetDialogItem() != NULL);
     // DEBUG_PRINTF(L"GetCount = %d, Init = %d", GetCount(), Init);
     if (GetCount() == 0)
     {
-        Result = -1;
+        Result = NPOS;
     }
     else if (GetDialogItem()->GetDialog()->GetHandle() && !Init)
     {

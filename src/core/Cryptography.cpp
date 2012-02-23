@@ -577,7 +577,7 @@ bool UnscramblePassword(std::wstring &Password)
     {
         int Len = (S[0] - '0') + 10 * (S[1] - '0') + 100 * (S[2] - '0');
         size_t Total = (((Len + 3) / 17) * 17 + 17);
-        if ((Len >= 0) && (Total == Password.size()) && (Total - (S - (char *)Password.c_str()) - 3 == Len))
+        if ((Len >= 0) && (Total == Password.size()) && (Total - (S - (char *)Password.c_str()) - 3 == static_cast<size_t>(Len)))
         {
             Password.erase(Password.size() - Len, 1);
             Result = true;

@@ -224,14 +224,14 @@ bool TWinSCPPlugin::ConfigureEx(int /*Item*/)
         MenuItems->AddSeparator();
         size_t MAbout = MenuItems->Add(GetMsg(CONFIG_ABOUT));
 
-        int Result = 0;
+        size_t Result = 0;
 
         do
         {
             Result = Menu(FMENU_WRAPMODE, GetMsg(PLUGIN_TITLE), L"", MenuItems);
             // DEBUG_PRINTF(L"Result = %d", Result);
 
-            if (Result >= 0)
+            if (Result != -1)
             {
                 if (Result == MInterface)
                 {
@@ -302,7 +302,7 @@ bool TWinSCPPlugin::ConfigureEx(int /*Item*/)
                 }
             }
         }
-        while (Result >= 0);
+        while (Result != -1);
     }
     // DEBUG_PRINTF(L"end");
     return Change;
@@ -476,7 +476,7 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
         MenuItems->SetDisabled(MPageant, !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->GetPageantPath()))));
         MenuItems->SetDisabled(MPuttygen, !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->GetPuttygenPath()))));
 
-        int Result = Menu(FMENU_WRAPMODE, GetMsg(MENU_COMMANDS), L"", MenuItems);
+        size_t Result = Menu(FMENU_WRAPMODE, GetMsg(MENU_COMMANDS), L"", MenuItems);
 
         if (Result != -1)
         {

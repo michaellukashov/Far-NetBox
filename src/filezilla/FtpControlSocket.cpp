@@ -1158,7 +1158,7 @@ BOOL CFtpControlSocket::Send(CString str, BOOL bUpdateRecvTime)
 			DoClose();
 			return FALSE;
 		}
-		if (res != sendLen)
+		if (res != static_cast<int>(sendLen))
 		{
 			if (res == -2)
 				res = 0;
@@ -4438,9 +4438,6 @@ void CFtpControlSocket::ResetOperation(int nSuccessful /*=FALSE*/)
 							dir.direntry[i].bUnsure = TRUE;
 							if (!((CFileTransferData *)m_Operation.pData)->transferfile.get)
 								dir.direntry[i].size = -1;
-						}
-						else if (nSuccessful & FZ_REPLY_ERROR)
-						{
 							if (!GetLength64(((CFileTransferData *)m_Operation.pData)->transferfile.localfile, dir.direntry[i].size))
 								dir.direntry[i].size = -1;
 						}
