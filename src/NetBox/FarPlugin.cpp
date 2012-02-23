@@ -1145,7 +1145,7 @@ size_t TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
         {
             delete[] MenuItems;
         } BOOST_SCOPE_EXIT_END
-        size_t Selected = -1;
+        size_t Selected = NPOS;
         int Count = 0;
         for (size_t i = 0; i < Items->GetCount(); i++)
         {
@@ -2747,12 +2747,12 @@ std::wstring TFarPanelInfo::GetCurrentDirectory()
 TFarMenuItems::TFarMenuItems() :
     nb::TStringList()
 {
-    FItemFocused = -1;
+    FItemFocused = NPOS;
 }
 //---------------------------------------------------------------------------
 void TFarMenuItems::Clear()
 {
-    FItemFocused = -1;
+    FItemFocused = NPOS;
     nb::TStringList::Clear();
 }
 //---------------------------------------------------------------------------
@@ -2760,7 +2760,7 @@ void TFarMenuItems::Delete(size_t Index)
 {
     if (Index == FItemFocused)
     {
-        FItemFocused = -1;
+        FItemFocused = NPOS;
     }
     nb::TStringList::Delete(Index);
 }
@@ -2771,7 +2771,7 @@ void TFarMenuItems::PutObject(size_t Index, nb::TObject *AObject)
     bool Focused = (reinterpret_cast<size_t>(AObject) & MIF_SEPARATOR) != 0;
     if ((Index == GetItemFocused()) && !Focused)
     {
-        FItemFocused = -1;
+        FItemFocused = NPOS;
     }
     if (Focused)
     {

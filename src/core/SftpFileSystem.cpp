@@ -141,7 +141,7 @@
 //---------------------------------------------------------------------------
 const size_t SFTPMinVersion = 0;
 const size_t SFTPMaxVersion = 5;
-const size_t SFTPNoMessageNumber = -1;
+const size_t SFTPNoMessageNumber = NPOS;
 
 const int asNo =            0;
 const int asOK =            1 << SSH_FX_OK;
@@ -1701,7 +1701,7 @@ void TSFTPFileSystem::Init(TSecureShell *SecureShell)
 {
     FSecureShell = SecureShell;
     FFileSystemInfoValid = false;
-    FVersion = -1;
+    FVersion = NPOS;
     FPacketReservations = new nb::TList();
     FPreviousLoggedPacket = 0;
     FNotLoggedPackets = 0;
@@ -2223,7 +2223,7 @@ bool TSFTPFileSystem::PeekPacket()
     Result = FSecureShell->Peek(Buf, 4);
     if (Result)
     {
-        size_t Length = PacketLength(Buf, -1);
+        size_t Length = PacketLength(Buf, NPOS);
         Result = FSecureShell->Peek(Buf, 4 + Length);
     }
     return Result;
@@ -2615,7 +2615,7 @@ std::wstring TSFTPFileSystem::GetCurrentDirectory()
 void TSFTPFileSystem::DoStartup()
 {
     // do not know yet
-    FVersion = -1;
+    FVersion = NPOS;
     FFileSystemInfoValid = false;
     TSFTPPacket Packet(SSH_FXP_INIT, GetSessionData()->GetCodePageAsNumber());
     size_t MaxVersion = GetSessionData()->GetSFTPMaxVersion();

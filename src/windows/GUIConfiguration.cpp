@@ -1067,7 +1067,7 @@ size_t TGUIConfiguration::GetCopyParamIndex()
     size_t Result;
     if (FCopyParamCurrent.empty())
     {
-        Result = -1;
+        Result = NPOS;
     }
     else
     {

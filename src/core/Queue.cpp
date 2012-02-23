@@ -1556,7 +1556,7 @@ TTerminalQueueStatus::~TTerminalQueueStatus()
 //---------------------------------------------------------------------------
 void TTerminalQueueStatus::ResetStats()
 {
-    FActiveCount = -1;
+    FActiveCount = NPOS;
 }
 //---------------------------------------------------------------------------
 size_t TTerminalQueueStatus::GetActiveCount()

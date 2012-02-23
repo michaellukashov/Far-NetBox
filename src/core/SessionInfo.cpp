@@ -547,7 +547,7 @@ TSessionLog::TSessionLog(TSessionUI *UI, TSessionData *SessionData,
     FSessionData = SessionData;
     FFile = NULL;
     FLoggedLines = 0;
-    FTopIndex = -1;
+    FTopIndex = NPOS;
     FCurrentLogFileName = L"";
     FCurrentFileName = L"";
     FLoggingActions = false;

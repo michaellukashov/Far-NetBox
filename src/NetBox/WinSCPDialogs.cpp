@@ -6090,7 +6090,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
     bool Result;
     bool Repeat;
 
-    size_t ItemFocused = -1;
+    size_t ItemFocused = NPOS;
 
     do
     {
@@ -6104,7 +6104,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
                 delete Bookmarks;
                 delete BookmarkPaths;
             } BOOST_SCOPE_EXIT_END
-            size_t BookmarksOffset = -1;
+            size_t BookmarksOffset = NPOS;
 
             size_t MaxLength = FPlugin->MaxMenuItemLength();
             size_t MaxHistory = 40;
@@ -6122,7 +6122,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
                 BookmarkItems->Add(MinimizeName(Path, MaxLength, true));
             }
 
-            size_t FirstItemFocused = -1;
+            size_t FirstItemFocused = NPOS;
             nb::TStringList *BookmarkDirectories = new nb::TStringList();
             {
                 BOOST_SCOPE_EXIT ( (&BookmarkDirectories) )
@@ -6222,7 +6222,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
                     else
                     {
                         FPathHistory->Clear();
-                        ItemFocused = -1;
+                        ItemFocused = NPOS;
                     }
                     Repeat = true;
                 }
@@ -6236,13 +6236,13 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
                     Repeat = true;
                 }
             }
-            else if (ItemFocused != -1)
+            else if (ItemFocused != NPOS)
             {
                 Directory = BookmarkPaths->GetString(ItemFocused);
                 if (Directory.empty())
                 {
                     // empty trailing line in no-bookmark mode selected
-                    ItemFocused = -1;
+                    ItemFocused = NPOS;
                 }
             }
 

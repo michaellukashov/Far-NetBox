@@ -2621,7 +2621,7 @@ bool TWebDAVFileSystem::WebDAVGetFile(const wchar_t *remotePath, const wchar_t *
     CHECK_CURL_CALL(urlCode, FCURLIntf->Perform());
 
     outFile.Close();
-    m_ProgressPercent = -1;
+    m_ProgressPercent = NPOS;
 
     if (urlCode != CURLE_OK)
     {
@@ -2657,7 +2657,7 @@ bool TWebDAVFileSystem::WebDAVPutFile(const wchar_t *remotePath, const wchar_t *
     CHECK_CURL_CALL(urlCode, FCURLIntf->Perform());
 
     inFile.Close();
-    m_ProgressPercent = -1;
+    m_ProgressPercent = NPOS;
 
     if (urlCode != CURLE_OK)
     {
