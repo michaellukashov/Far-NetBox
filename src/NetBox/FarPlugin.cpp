@@ -1119,7 +1119,7 @@ int TCustomFarPlugin::Message(unsigned int Flags,
     return Result;
 }
 //---------------------------------------------------------------------------
-int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
+size_t TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
                            const std::wstring Bottom, const FarMenuItem *Items, int Count,
                            const int *BreakKeys, int &BreakCode)
 {
@@ -1128,12 +1128,12 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
     std::wstring ATitle = Title;
     std::wstring ABottom = Bottom;
     TFarEnvGuard Guard;
-    return FStartupInfo.Menu(FStartupInfo.ModuleNumber, -1, -1, 0,
+    return static_cast<size_t>(FStartupInfo.Menu(FStartupInfo.ModuleNumber, -1, -1, 0,
                              Flags, ATitle.c_str(), ABottom.c_str(), NULL, BreakKeys,
-                             &BreakCode, Items, Count);
+                             &BreakCode, Items, Count));
 }
 //---------------------------------------------------------------------------
-int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
+size_t TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
                            const std::wstring Bottom, nb::TStrings *Items, const int *BreakKeys,
                            int &BreakCode)
 {
@@ -1167,10 +1167,10 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
             }
         }
 
-        int ResultItem = Menu(Flags | FMENU_USEEXT, Title, Bottom,
+        size_t ResultItem = Menu(Flags | FMENU_USEEXT, Title, Bottom,
                               reinterpret_cast<const FarMenuItem *>(MenuItems), Count, BreakKeys, BreakCode);
 
-        if (ResultItem >= 0)
+        if (ResultItem != -1)
         {
             Result = MenuItems[ResultItem].UserData;
             if (Selected != -1)
@@ -1187,7 +1187,7 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
     return Result;
 }
 //---------------------------------------------------------------------------
-int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
+size_t TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
                            const std::wstring Bottom, nb::TStrings *Items)
 {
     int BreakCode;

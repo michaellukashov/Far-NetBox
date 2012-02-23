@@ -116,12 +116,12 @@ public:
                 TFarMessageParams *Params = NULL);
     int MaxMessageLines();
     size_t MaxMenuItemLength();
-    int Menu(unsigned int Flags, const std::wstring Title,
+    size_t Menu(unsigned int Flags, const std::wstring Title,
              const std::wstring Bottom, nb::TStrings *Items, const int *BreakKeys,
              int &BreakCode);
-    int Menu(unsigned int Flags, const std::wstring Title,
+    size_t Menu(unsigned int Flags, const std::wstring Title,
              const std::wstring Bottom, nb::TStrings *Items);
-    int Menu(unsigned int Flags, const std::wstring Title,
+    size_t Menu(unsigned int Flags, const std::wstring Title,
              const std::wstring Bottom, const FarMenuItem *Items, int Count,
              const int *BreakKeys, int &BreakCode);
     bool InputBox(const std::wstring Title, const std::wstring Prompt,
