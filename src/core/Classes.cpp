@@ -1039,8 +1039,8 @@ int TStringList::CompareStrings(const std::wstring S1, const std::wstring S2)
 //---------------------------------------------------------------------------
 /**
  * @brief Encoding multibyte to wide std::string
- * @param src source char *
- * @param cp code page
+ * @param $src source char *
+ * @param $cp code page
  * @return std::wstring
  */
 std::wstring MB2W(const char *src, const UINT cp)
@@ -1064,8 +1064,8 @@ std::wstring MB2W(const char *src, const UINT cp)
 
 /**
  * @brief Encoding wide to multibyte std::string
- * @param src std::wstring
- * @param cp code page
+ * @param $src std::wstring
+ * @param $cp code page
  * @return multibyte std::string
  */
 std::string W2MB(const wchar_t *src, const UINT cp)
