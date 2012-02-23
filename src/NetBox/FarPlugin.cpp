@@ -849,7 +849,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
             }
 
             // DEBUG_PRINTF(L"Button->GetLeft = %d, Button->GetRight = %d, GetBorderBox()->GetLeft = %d", Button->GetLeft(), Button->GetRight(), GetBorderBox()->GetLeft());
-            if (MaxLen < Button->GetRight() - GetBorderBox()->GetLeft())
+            if (MaxLen < static_cast<size_t>(Button->GetRight() - GetBorderBox()->GetLeft()))
             {
                 MaxLen = Button->GetRight() - GetBorderBox()->GetLeft();
             }
@@ -865,7 +865,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
             FCheckBox = new TFarCheckBox(this);
             FCheckBox->SetCaption(FParams->CheckBoxLabel);
 
-            if (MaxLen < FCheckBox->GetRight() - GetBorderBox()->GetLeft())
+            if (MaxLen < static_cast<size_t>(FCheckBox->GetRight() - GetBorderBox()->GetLeft()))
             {
                 MaxLen = FCheckBox->GetRight() - GetBorderBox()->GetLeft();
             }
@@ -1799,7 +1799,7 @@ void TCustomFarFileSystem::ClearOpenPluginInfo(OpenPluginInfo &Info)
         assert(!Info.DescrFiles);
         assert(!Info.DescrFilesNumber);
         assert(Info.PanelModesNumber == 0 || Info.PanelModesNumber == PANEL_MODES_COUNT);
-        for (size_t Index = 0; Index < Info.PanelModesNumber; Index++)
+        for (size_t Index = 0; Index < static_cast<size_t>(Info.PanelModesNumber); Index++)
         {
             assert(Info.PanelModesArray);
             TFarPanelModes::ClearPanelMode(
@@ -2427,7 +2427,7 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem *PanelItem)
     PanelItem->Owner = TCustomFarPlugin::DuplicateStr(Owner);
     // PanelItem->CustomColumnData = new wchar_t *[PanelItem->CustomColumnNumber];
     wchar_t **CustomColumnData = new wchar_t *[PanelItem->CustomColumnNumber];
-    for (size_t Index = 0; Index < PanelItem->CustomColumnNumber; Index++)
+    for (size_t Index = 0; Index < static_cast<size_t>(PanelItem->CustomColumnNumber); Index++)
     {
         CustomColumnData[Index] =
             TCustomFarPlugin::DuplicateStr(GetCustomColumnData(Index));
@@ -2591,7 +2591,7 @@ nb::TObjectList *TFarPanelInfo::GetItems()
         FItems = new nb::TObjectList();
     }
     // DEBUG_PRINTF(L"FPanelInfo->ItemsNumber = %d", FPanelInfo->ItemsNumber);
-    for (size_t Index = 0; Index < FPanelInfo->ItemsNumber; Index++)
+    for (size_t Index = 0; Index < static_cast<size_t>(FPanelInfo->ItemsNumber); Index++)
     {
         // DEBUG_PRINTF(L"Index = %d", Index);
         // TODO: move to common function

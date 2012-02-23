@@ -5169,7 +5169,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
                     } BOOST_SCOPE_EXIT_END
                     TSFTPPacket DataPacket(GetSessionData()->GetCodePageAsNumber());
 
-                    int QueueLen = static_cast<int>(File->GetSize() / DownloadBlockSize(OperationProgress)) + 1;
+                    size_t QueueLen = File->GetSize() / DownloadBlockSize(OperationProgress) + 1;
                     if ((QueueLen > GetSessionData()->GetSFTPDownloadQueue()) ||
                             (QueueLen < 0))
                     {

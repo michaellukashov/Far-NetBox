@@ -2285,7 +2285,7 @@ void TFarList::SetCurPos(size_t Position, size_t TopIndex)
 //---------------------------------------------------------------------------
 void TFarList::SetTopIndex(size_t value)
 {
-    if (value != GetTopIndex())
+    if (value != static_cast<size_t>(GetTopIndex()))
     {
         SetCurPos(-1, value);
     }

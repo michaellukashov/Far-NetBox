@@ -6902,7 +6902,7 @@ private:
     static const size_t FColumns = 8;
     int FWidths[FColumns];
     std::wstring FActions[TSynchronizeChecklist::ActionCount];
-    int FScroll;
+    size_t FScroll;
     bool FCanScrollRight;
     size_t FChecked;
 
@@ -7006,7 +7006,7 @@ void TSynchronizeChecklistDialog::AddColumn(std::wstring &List,
     }
     else
     {
-        int Scroll = FScroll;
+        size_t Scroll = FScroll;
         if ((Scroll > 0) && !Header)
         {
             if (List.empty())
@@ -7022,7 +7022,7 @@ void TSynchronizeChecklistDialog::AddColumn(std::wstring &List,
         }
         if (Scroll > Len - Width)
         {
-            Scroll = static_cast<int>(Len - Width);
+            Scroll = Len - Width;
         }
         else if (!Header && LastCol && (Scroll < Len - Width))
         {
