@@ -1950,7 +1950,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
     EOLTypeCombo = new TFarComboBox(this);
     EOLTypeCombo->SetDropDownList(true);
     EOLTypeCombo->SetWidth(7);
-    EOLTypeCombo->SetRight(CRect.Right - 2);
+    EOLTypeCombo->SetRight(CRect.Right);
     EOLTypeCombo->GetItems()->Add(L"LF");
     EOLTypeCombo->GetItems()->Add(L"CR/LF");
 
@@ -1963,8 +1963,8 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
     SetNextItemPosition(ipRight);
 
     CodePageEdit = new TFarComboBox(this);
-    CodePageEdit->SetWidth(28);
-    CodePageEdit->SetRight(CRect.Right - 2);
+    CodePageEdit->SetWidth(30);
+    CodePageEdit->SetRight(CRect.Right);
     FillCodePageEdit();
 
     SetNextItemPosition(ipNewLine);
