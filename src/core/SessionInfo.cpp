@@ -957,6 +957,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData *Data)
             ADF(L"Tunnel: Local port number: %d", Data->GetTunnelLocalPortNumber());
         }
         ADF(L"Transfer Protocol: %s", Data->GetFSProtocolStr().c_str());
+        ADF(L"Code Page: %d", Data->GetCodePageAsNumber());
         wchar_t *PingTypes = L"-NC";
         TPingType PingType;
         size_t PingInterval;
