@@ -4072,7 +4072,7 @@ void TWinSCPFileSystem::MultipleEdit(const std::wstring Directory,
         FLastMultipleEditDirectory = Directory;
 
         if (FarPlugin->Editor(FLastMultipleEditFile,
-                              EF_NONMODAL | VF_IMMEDIATERETURN | VF_DISABLEHISTORY, FullFileName))
+                              EF_NONMODAL | EF_IMMEDIATERETURN | EF_DISABLEHISTORY, FullFileName))
         {
             assert(FLastMultipleEditFile == L"");
         }
