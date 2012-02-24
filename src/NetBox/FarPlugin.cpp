@@ -1577,7 +1577,7 @@ bool TCustomFarPlugin::Viewer(const std::wstring FileName,
     int Result = FStartupInfo.Viewer(
                      FileName.c_str(),
                      Title.c_str(), 0, 0, -1, -1, Flags,
-                     65001);
+                     CP_AUTODETECT);
     return Result > 0;
 }
 //---------------------------------------------------------------------------
@@ -1588,7 +1588,7 @@ bool TCustomFarPlugin::Editor(const std::wstring FileName,
     int Result = FStartupInfo.Editor(
                      FileName.c_str(),
                      Title.c_str(), 0, 0, -1, -1, Flags, -1, -1,
-                     65001);
+                     CP_AUTODETECT);
     return (Result == EEC_MODIFIED) || (Result == EEC_NOT_MODIFIED);
 }
 //---------------------------------------------------------------------------
