@@ -1664,7 +1664,7 @@ int TCustomFarPlugin::FarEditorControl(EDITOR_CONTROL_COMMANDS Command, void *Pa
     }
 
     TFarEnvGuard Guard;
-    return FStartupInfo.EditorControl(0, Command, 0, Param);
+    return FStartupInfo.EditorControl(-1, Command, 0, Param);
 }
 //---------------------------------------------------------------------------
 TFarEditorInfo *TCustomFarPlugin::EditorInfo()
