@@ -249,7 +249,8 @@ TCustomFarFileSystem *TCustomFarPlugin::GetPanelFileSystem(bool Another,
 {
     // DEBUG_PRINTF(L"begin");
     TCustomFarFileSystem *Result = NULL;
-    PanelInfo Info;
+    PanelInfo Info = {0};
+    Info.StructSize = sizeof(PanelInfo);
     FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<void *>(&Info), Another ? PANEL_PASSIVE : PANEL_ACTIVE);
 
     if (Info.PluginHandle)
