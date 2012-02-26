@@ -1,3 +1,6 @@
+NetBox 2.0.13 ??.03.2012
+---------------------
+
 NetBox 2.0.12 26.02.2012
 ---------------------
   * FTP: Bugfix: cannot set session option "Keepalives: Off"
