@@ -31,8 +31,7 @@ const int FtpPortNumber = 21;
 const int HTTPPortNumber = 80;
 const int HTTPSPortNumber = 443;
 const int FtpsImplicitPortNumber = 990;
-const unsigned int CONST_DEFAULT_CODEPAGE = 65001;
-const std::wstring CONST_DEFAULT_CODEPAGE_STRING = L"65001 (UTF-8)";
+const unsigned int CONST_DEFAULT_CODEPAGE = CP_ACP;
 //---------------------------------------------------------------------
 bool GetCodePageInfo(UINT CodePage, CPINFOEX &CodePageInfoEx)
 {
@@ -138,7 +137,7 @@ void TSessionData::Default()
     SetSpecial(false);
     SetFSProtocol(fsSFTP);
     SetAddressFamily(afAuto);
-    SetCodePage(CONST_DEFAULT_CODEPAGE_STRING);
+    SetCodePage(::GetCodePageAsString(CONST_DEFAULT_CODEPAGE));
     SetRekeyData(L"1G");
     SetRekeyTime(60);
 
