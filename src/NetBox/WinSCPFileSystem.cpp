@@ -3730,37 +3730,35 @@ void TWinSCPFileSystem::UploadOnSave(bool NoReload)
     TFarEditorInfo *Info = FPlugin->EditorInfo();
     if (Info != NULL)
     {
+        BOOST_SCOPE_EXIT ( (&Info) )
         {
-            BOOST_SCOPE_EXIT ( (&Info) )
+            delete Info;
+        } BOOST_SCOPE_EXIT_END
+        bool NativeEdit =
+            (FLastEditorID >= 0) &&
+            (FLastEditorID == Info->GetEditorID()) &&
+            !FLastEditFile.empty();
+
+        TMultipleEdits::iterator I = FMultipleEdits.find(Info->GetEditorID());
+        bool MultipleEdit = (I != FMultipleEdits.end());
+
+        if (NativeEdit || MultipleEdit)
+        {
+            // make sure this is reset before any dialog is shown as it may cause recursion
+            FEditorPendingSave = false;
+
+            if (NativeEdit)
             {
-                delete Info;
-            } BOOST_SCOPE_EXIT_END
-            bool NativeEdit =
-                (FLastEditorID >= 0) &&
-                (FLastEditorID == Info->GetEditorID()) &&
-                !FLastEditFile.empty();
+                assert(FLastEditFile == Info->GetFileName());
+                // always upload under the most recent name
+                UploadFromEditor(NoReload, FLastEditFile, FTerminal->GetCurrentDirectory());
+            }
 
-            TMultipleEdits::iterator I = FMultipleEdits.find(Info->GetEditorID());
-            bool MultipleEdit = (I != FMultipleEdits.end());
-
-            if (NativeEdit || MultipleEdit)
+            if (MultipleEdit)
             {
-                // make sure this is reset before any dialog is shown as it may cause recursion
-                FEditorPendingSave = false;
-
-                if (NativeEdit)
-                {
-                    assert(FLastEditFile == Info->GetFileName());
-                    // always upload under the most recent name
-                    UploadFromEditor(NoReload, FLastEditFile, FTerminal->GetCurrentDirectory());
-                }
-
-                if (MultipleEdit)
-                {
-                    UploadFromEditor(NoReload, Info->GetFileName(), I->second.Directory);
-                    // note that panel gets not refreshed upon switch to
-                    // panel view. but that's intentional
-                }
+                UploadFromEditor(NoReload, Info->GetFileName(), I->second.Directory);
+                // note that panel gets not refreshed upon switch to
+                // panel view. but that's intentional
             }
         }
     }
@@ -3787,18 +3785,16 @@ void TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
             TFarEditorInfo *Info = FPlugin->EditorInfo();
             if (Info != NULL)
             {
+                BOOST_SCOPE_EXIT ( (&Info) )
                 {
-                    BOOST_SCOPE_EXIT ( (&Info) )
-                    {
-                        delete Info;
-                    } BOOST_SCOPE_EXIT_END
-                    TMultipleEdits::iterator I = FMultipleEdits.find(Info->GetEditorID());
-                    if (I != FMultipleEdits.end())
-                    {
-                        std::wstring FullFileName = UnixIncludeTrailingBackslash(I->second.Directory) +
-                                                    I->second.FileName;
-                        FPlugin->FarEditorControl(ECTL_SETTITLE, static_cast<void *>(const_cast<wchar_t *>(FullFileName.c_str())));
-                    }
+                    delete Info;
+                } BOOST_SCOPE_EXIT_END
+                TMultipleEdits::iterator I = FMultipleEdits.find(Info->GetEditorID());
+                if (I != FMultipleEdits.end())
+                {
+                    std::wstring FullFileName = UnixIncludeTrailingBackslash(I->second.Directory) +
+                                                I->second.FileName;
+                    FPlugin->FarEditorControl(ECTL_SETTITLE, static_cast<void *>(const_cast<wchar_t *>(FullFileName.c_str())));
                 }
             }
         }
@@ -3813,40 +3809,38 @@ void TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
             TFarEditorInfo *Info = FPlugin->EditorInfo();
             if (Info != NULL)
             {
+                BOOST_SCOPE_EXIT ( (&Info) )
                 {
-                    BOOST_SCOPE_EXIT ( (&Info) )
-                    {
-                        delete Info;
-                    } BOOST_SCOPE_EXIT_END
-                    if (!FLastEditFile.empty() &&
-                            AnsiSameText(FLastEditFile, Info->GetFileName()))
-                    {
-                        FLastEditorID = Info->GetEditorID();
-                        FEditorPendingSave = false;
-                    }
+                    delete Info;
+                } BOOST_SCOPE_EXIT_END
+                if (!FLastEditFile.empty() &&
+                        AnsiSameText(FLastEditFile, Info->GetFileName()))
+                {
+                    FLastEditorID = Info->GetEditorID();
+                    FEditorPendingSave = false;
+                }
 
-                    if (!FLastMultipleEditFile.empty())
+                if (!FLastMultipleEditFile.empty())
+                {
+                    bool IsLastMultipleEditFile = AnsiSameText(FLastMultipleEditFile, Info->GetFileName());
+                    assert(IsLastMultipleEditFile);
+                    if (IsLastMultipleEditFile)
                     {
-                        bool IsLastMultipleEditFile = AnsiSameText(FLastMultipleEditFile, Info->GetFileName());
-                        assert(IsLastMultipleEditFile);
-                        if (IsLastMultipleEditFile)
+                        FLastMultipleEditFile = L"";
+
+                        TMultipleEdit MultipleEdit;
+                        MultipleEdit.FileName = ExtractFileName(Info->GetFileName(), false);
+                        MultipleEdit.Directory = FLastMultipleEditDirectory;
+                        MultipleEdit.LocalFileName = Info->GetFileName();
+                        MultipleEdit.PendingSave = false;
+                        FMultipleEdits[Info->GetEditorID()] = MultipleEdit;
+                        if (FLastMultipleEditReadOnly)
                         {
-                            FLastMultipleEditFile = L"";
-
-                            TMultipleEdit MultipleEdit;
-                            MultipleEdit.FileName = ExtractFileName(Info->GetFileName(), false);
-                            MultipleEdit.Directory = FLastMultipleEditDirectory;
-                            MultipleEdit.LocalFileName = Info->GetFileName();
-                            MultipleEdit.PendingSave = false;
-                            FMultipleEdits[Info->GetEditorID()] = MultipleEdit;
-                            if (FLastMultipleEditReadOnly)
-                            {
-                                EditorSetParameter Parameter;
-                                memset(&Parameter, 0, sizeof(Parameter));
-                                Parameter.Type = ESPT_LOCKMODE;
-                                Parameter.iParam = TRUE;
-                                FPlugin->FarEditorControl(ECTL_SETPARAM, &Parameter);
-                            }
+                            EditorSetParameter Parameter;
+                            memset(&Parameter, 0, sizeof(Parameter));
+                            Parameter.Type = ESPT_LOCKMODE;
+                            Parameter.iParam = TRUE;
+                            FPlugin->FarEditorControl(ECTL_SETPARAM, &Parameter);
                         }
                     }
                 }
@@ -3864,36 +3858,34 @@ void TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
         TFarEditorInfo *Info = FPlugin->EditorInfo();
         if (Info != NULL)
         {
+            BOOST_SCOPE_EXIT ( (&Info) )
             {
-                BOOST_SCOPE_EXIT ( (&Info) )
+                delete Info;
+            } BOOST_SCOPE_EXIT_END
+            if (FLastEditorID == Info->GetEditorID())
+            {
+                FLastEditorID = -1;
+            }
+
+            TMultipleEdits::iterator I = FMultipleEdits.find(Info->GetEditorID());
+            if (I != FMultipleEdits.end())
+            {
+                if (I->second.PendingSave)
                 {
-                    delete Info;
-                } BOOST_SCOPE_EXIT_END
-                if (FLastEditorID == Info->GetEditorID())
-                {
-                    FLastEditorID = -1;
+                    UploadFromEditor(true, Info->GetFileName(), I->second.Directory);
+                    // reload panel content (if uploaded to current directory.
+                    // no need for RefreshPanel as panel is not visible yet.
+                    UpdatePanel();
                 }
 
-                TMultipleEdits::iterator I = FMultipleEdits.find(Info->GetEditorID());
-                if (I != FMultipleEdits.end())
+                if (::DeleteFile(Info->GetFileName()))
                 {
-                    if (I->second.PendingSave)
-                    {
-                        UploadFromEditor(true, Info->GetFileName(), I->second.Directory);
-                        // reload panel content (if uploaded to current directory.
-                        // no need for RefreshPanel as panel is not visible yet.
-                        UpdatePanel();
-                    }
-
-                    if (::DeleteFile(Info->GetFileName()))
-                    {
-                        // remove directory only if it is empty
-                        // (to avoid deleting another directory if user uses "save as")
-                        ::RemoveDir(ExcludeTrailingBackslash(ExtractFilePath(Info->GetFileName())));
-                    }
-
-                    FMultipleEdits.erase(I);
+                    // remove directory only if it is empty
+                    // (to avoid deleting another directory if user uses "save as")
+                    ::RemoveDir(ExcludeTrailingBackslash(ExtractFilePath(Info->GetFileName())));
                 }
+
+                FMultipleEdits.erase(I);
             }
         }
     }
@@ -3902,46 +3894,44 @@ void TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
         TFarEditorInfo *Info = FPlugin->EditorInfo();
         if (Info != NULL)
         {
+            BOOST_SCOPE_EXIT ( (&Info) )
             {
-                BOOST_SCOPE_EXIT ( (&Info) )
-                {
-                    delete Info;
-                } BOOST_SCOPE_EXIT_END
-                if ((FLastEditorID >= 0) && (FLastEditorID == Info->GetEditorID()))
-                {
-                    // if the file is saved under different name ("save as"), we upload
-                    // the file back under that name
-                    FLastEditFile = Info->GetFileName();
+                delete Info;
+            } BOOST_SCOPE_EXIT_END
+            if ((FLastEditorID >= 0) && (FLastEditorID == Info->GetEditorID()))
+            {
+                // if the file is saved under different name ("save as"), we upload
+                // the file back under that name
+                FLastEditFile = Info->GetFileName();
 
-                    if (FarConfiguration->GetEditorUploadOnSave())
-                    {
-                        FEditorPendingSave = true;
-                    }
+                if (FarConfiguration->GetEditorUploadOnSave())
+                {
+                    FEditorPendingSave = true;
+                }
+            }
+
+            TMultipleEdits::iterator I = FMultipleEdits.find(Info->GetEditorID());
+            if (I != FMultipleEdits.end())
+            {
+                if (I->second.LocalFileName != Info->GetFileName())
+                {
+                    // update file name (after "save as")
+                    I->second.LocalFileName = Info->GetFileName();
+                    I->second.FileName = ::ExtractFileName(Info->GetFileName(), true);
+                    // update editor title
+                    std::wstring FullFileName = UnixIncludeTrailingBackslash(I->second.Directory) +
+                                                I->second.FileName;
+                    // note that we need to reset the title periodically (see EE_REDRAW)
+                    FPlugin->FarEditorControl(ECTL_SETTITLE, static_cast<void *>(const_cast<wchar_t *>(FullFileName.c_str())));
                 }
 
-                TMultipleEdits::iterator I = FMultipleEdits.find(Info->GetEditorID());
-                if (I != FMultipleEdits.end())
+                if (FarConfiguration->GetEditorUploadOnSave())
                 {
-                    if (I->second.LocalFileName != Info->GetFileName())
-                    {
-                        // update file name (after "save as")
-                        I->second.LocalFileName = Info->GetFileName();
-                        I->second.FileName = ::ExtractFileName(Info->GetFileName(), true);
-                        // update editor title
-                        std::wstring FullFileName = UnixIncludeTrailingBackslash(I->second.Directory) +
-                                                    I->second.FileName;
-                        // note that we need to reset the title periodically (see EE_REDRAW)
-                        FPlugin->FarEditorControl(ECTL_SETTITLE, static_cast<void *>(const_cast<wchar_t *>(FullFileName.c_str())));
-                    }
-
-                    if (FarConfiguration->GetEditorUploadOnSave())
-                    {
-                        FEditorPendingSave = true;
-                    }
-                    else
-                    {
-                        I->second.PendingSave = true;
-                    }
+                    FEditorPendingSave = true;
+                }
+                else
+                {
+                    I->second.PendingSave = true;
                 }
             }
         }

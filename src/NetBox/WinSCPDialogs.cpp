@@ -3550,7 +3550,11 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
 
         // Connection tab
         SessionData->SetFtpPasvMode(FtpPasvModeCheck->GetChecked());
-        if (PingNullPacketButton->GetChecked())
+        if (PingOffButton->GetChecked())
+        {
+            SessionData->SetPingType(ptOff);
+        }
+        else if (PingNullPacketButton->GetChecked())
         {
             SessionData->SetPingType(ptNullPacket);
         }
@@ -3564,6 +3568,22 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
         }
         if ((GetFSProtocol() == fsFTP) || (GetFSProtocol() == fsFTPS))
         {
+            if (PingOffButton->GetChecked())
+            {
+                SessionData->SetFtpPingType(ptOff);
+            }
+            else if (PingNullPacketButton->GetChecked())
+            {
+                SessionData->SetFtpPingType(ptNullPacket);
+            }
+            else if (PingDummyCommandButton->GetChecked())
+            {
+                SessionData->SetFtpPingType(ptDummyCommand);
+            }
+            else
+            {
+                SessionData->SetFtpPingType(ptOff);
+            }
             SessionData->SetFtpPingInterval(PingIntervalSecEdit->GetAsInteger());
         }
         else
@@ -3688,6 +3708,9 @@ void TSessionDialog::LoadPing(TSessionData *SessionData)
 
     switch ((FSProtocol == fsFTP) || (FSProtocol == fsFTPS) ? SessionData->GetFtpPingType() : SessionData->GetPingType())
     {
+    case ptOff:
+        PingOffButton->SetChecked(true);
+        break;
     case ptNullPacket:
         PingNullPacketButton->SetChecked(true);
         break;
@@ -3708,7 +3731,11 @@ void TSessionDialog::LoadPing(TSessionData *SessionData)
 void TSessionDialog::SavePing(TSessionData *SessionData)
 {
     TPingType PingType;
-    if (PingNullPacketButton->GetChecked())
+    if (PingOffButton->GetChecked())
+    {
+        PingType = ptOff;
+    }
+    else if (PingNullPacketButton->GetChecked())
     {
         PingType = ptNullPacket;
     }
@@ -3936,9 +3963,11 @@ void TSessionDialog::WindowsEnvironmentButtonClick(
 //---------------------------------------------------------------------------
 void TSessionDialog::FillCodePageEdit()
 {
-    CodePageEditAdd(CP_UTF8);
-    CodePageEditAdd(CP_OEMCP);
     CodePageEditAdd(CP_ACP);
+    // CodePageEditAdd(CP_UTF8);
+    CodePageEdit->GetItems()->AddObject(L"65001 (UTF-8)",
+        static_cast<nb::TObject *>(reinterpret_cast<void *>(65001)));
+    CodePageEditAdd(CP_OEMCP);
     CodePageEditAdd(20866); // KOI8-r
 }
 //---------------------------------------------------------------------------
@@ -8483,8 +8512,7 @@ bool TQueueDialog::FillQueueItemLine(std::wstring &Line,
         }
     }
 
-    Line = FORMAT(L"%s %s  %s %s",
-                  // Operation.c_str(), Direction.c_str(), PathMaxLen, PathMaxLen, Values[0].c_str(), Values[1].c_str());
+    Line = FORMAT(L"%1s %1s  %-49s %s",
                   Operation.c_str(), Direction.c_str(), Values[0].c_str(), Values[1].c_str());
 
     return true;
