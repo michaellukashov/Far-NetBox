@@ -1,5 +1,6 @@
 NetBox 2.0.12 ??.02.2012
 ---------------------
+  * FTP: Bugfix: cannot set session option "Keepalives: Off"
   * Far3: Bugfix: Editor/viewer settings: "[x] Allow more than one edited file", "[x] Upload after every save"
     did not work
   * Session properties: It is now possible to select charset encoding for filenames
