@@ -468,5 +468,6 @@ private:
 //---------------------------------------------------------------------------
 bool GetCodePageInfo(UINT CodePage, CPINFOEX &CodePageInfoEx);
 unsigned int GetCodePageAsNumber(const std::wstring CodePage);
+std::wstring GetCodePageAsString(unsigned int cp);
 //---------------------------------------------------------------------------
 #endif
