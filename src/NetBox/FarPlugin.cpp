@@ -1396,8 +1396,7 @@ void TCustomFarPlugin::ScrollTerminalScreen(int Rows)
     Source.Bottom = static_cast<SHORT>(Size.y);
     Dest.X = 0;
     Dest.Y = 0;
-    Fill.Char.AsciiChar = ' ';
-    // Fill.�har.UnicodeChar = L' ';
+    Fill.Char.UnicodeChar = L' ';
     Fill.Attributes = 7;
     ScrollConsoleScreenBuffer(FConsoleOutput, &Source, NULL, Dest, &Fill);
 }
@@ -1408,8 +1407,8 @@ void TCustomFarPlugin::ShowTerminalScreen()
     nb::TPoint Size, Cursor;
     TerminalInfo(&Size, &Cursor);
 
-    std::wstring Blank = ::StringOfChar(' ', Size.x);
-    Blank.resize(static_cast<size_t>(Size.x));
+    std::wstring Blank = ::StringOfChar(L' ', Size.x);
+    // Blank.resize(static_cast<size_t>(Size.x));
     for (int Y = 0; Y < Size.y; Y++)
     {
         Text(0, Y, 7/* LIGHTGRAY */, Blank);
