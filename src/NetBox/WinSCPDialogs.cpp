@@ -3548,7 +3548,11 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
 
         // Connection tab
         SessionData->SetFtpPasvMode(FtpPasvModeCheck->GetChecked());
-        if (PingNullPacketButton->GetChecked())
+        if (PingOffButton->GetChecked())
+        {
+            SessionData->SetPingType(ptOff);
+        }
+        else if (PingNullPacketButton->GetChecked())
         {
             SessionData->SetPingType(ptNullPacket);
         }
@@ -3562,6 +3566,22 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
         }
         if ((GetFSProtocol() == fsFTP) || (GetFSProtocol() == fsFTPS))
         {
+            if (PingOffButton->GetChecked())
+            {
+                SessionData->SetFtpPingType(ptOff);
+            }
+            else if (PingNullPacketButton->GetChecked())
+            {
+                SessionData->SetFtpPingType(ptNullPacket);
+            }
+            else if (PingDummyCommandButton->GetChecked())
+            {
+                SessionData->SetFtpPingType(ptDummyCommand);
+            }
+            else
+            {
+                SessionData->SetFtpPingType(ptOff);
+            }
             SessionData->SetFtpPingInterval(PingIntervalSecEdit->GetAsInteger());
         }
         else
@@ -3686,6 +3706,9 @@ void TSessionDialog::LoadPing(TSessionData *SessionData)
 
     switch ((FSProtocol == fsFTP) || (FSProtocol == fsFTPS) ? SessionData->GetFtpPingType() : SessionData->GetPingType())
     {
+    case ptOff:
+        PingOffButton->SetChecked(true);
+        break;
     case ptNullPacket:
         PingNullPacketButton->SetChecked(true);
         break;
@@ -3706,7 +3729,11 @@ void TSessionDialog::LoadPing(TSessionData *SessionData)
 void TSessionDialog::SavePing(TSessionData *SessionData)
 {
     TPingType PingType;
-    if (PingNullPacketButton->GetChecked())
+    if (PingOffButton->GetChecked())
+    {
+        PingType = ptOff;
+    }
+    else if (PingNullPacketButton->GetChecked())
     {
         PingType = ptNullPacket;
     }
