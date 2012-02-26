@@ -8493,8 +8493,7 @@ bool TQueueDialog::FillQueueItemLine(std::wstring &Line,
         }
     }
 
-    Line = FORMAT(L"%s %s  %s %s",
-                  // Operation.c_str(), Direction.c_str(), PathMaxLen, PathMaxLen, Values[0].c_str(), Values[1].c_str());
+    Line = FORMAT(L"%1s %1s  %-49s %s",
                   Operation.c_str(), Direction.c_str(), Values[0].c_str(), Values[1].c_str());
 
     return true;
