@@ -65,6 +65,7 @@ std::wstring GetCodePageAsString(unsigned int cp)
     {
         return std::wstring(cpInfoEx.CodePageName);
     }
+    return IntToStr(CONST_DEFAULT_CODEPAGE);
 }
 
 //---------------------------------------------------------------------
