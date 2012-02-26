@@ -58,6 +58,15 @@ unsigned int GetCodePageAsNumber(const std::wstring CodePage)
     unsigned int codePage = _wtoi(CodePage.c_str());
     return codePage == 0 ? CONST_DEFAULT_CODEPAGE : codePage;
 }
+//---------------------------------------------------------------------
+std::wstring GetCodePageAsString(unsigned int cp)
+{
+    CPINFOEX cpInfoEx;
+    if (::GetCodePageInfo(cp, cpInfoEx))
+    {
+        return std::wstring(cpInfoEx.CodePageName);
+    }
+}
 
 //---------------------------------------------------------------------
 nb::TDateTime SecToDateTime(int Sec)
