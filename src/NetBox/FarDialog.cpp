@@ -816,7 +816,7 @@ void TFarDialog::Change()
             {
                 DItem = GetItem(i);
                 DItem->Change();
-                if (DItem->GetContainer() && NotifiedContainers->IndexOf(DItem->GetContainer()) == -1)
+                if (DItem->GetContainer() && NotifiedContainers->IndexOf(DItem->GetContainer()) == NPOS)
                 {
                     NotifiedContainers->Add(DItem->GetContainer());
                 }
@@ -975,7 +975,7 @@ std::wstring TFarDialogContainer::GetMsg(int MsgId)
 //---------------------------------------------------------------------------
 void TFarDialogContainer::Add(TFarDialogItem *Item)
 {
-    assert(FItems->IndexOf(Item) == -1);
+    assert(FItems->IndexOf(Item) == NPOS);
     Item->SetContainer(this);
     FItems->Add(Item);
 }
@@ -2364,7 +2364,7 @@ size_t TFarList::GetSelected()
     size_t Result = GetSelectedInt(false);
     // DEBUG_PRINTF(L"Result = %d", Result);
 
-    if ((Result == -1) && (GetCount() > 0))
+    if ((Result == NPOS) && (GetCount() > 0))
     {
         Result = 0;
     }

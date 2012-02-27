@@ -2130,7 +2130,7 @@ size_t TSFTPFileSystem::GotStatusPacket(TSFTPPacket *Packet,
         if ((FVersion >= 3) ||
                 // if version is not decided yet (i.e. this is status response
                 // to the init request), go on only if there are any more data
-                ((FVersion == -1) && (Packet->GetRemainingLength() > 0)))
+                ((FVersion == NPOS) && (Packet->GetRemainingLength() > 0)))
         {
             // message is in UTF only since SFTP specification 01 (specification 00
             // is also version 3)
@@ -2237,7 +2237,7 @@ size_t TSFTPFileSystem::ReceivePacket(TSFTPPacket *Packet,
     size_t Result = SSH_FX_OK;
     size_t Reservation = FPacketReservations->IndexOf(reinterpret_cast<nb::TObject *>(Packet));
 
-    if ((Reservation == -1) || (Packet->GetCapacity() == 0))
+    if ((Reservation == NPOS) || (Packet->GetCapacity() == 0))
     {
         bool IsReserved;
         do
@@ -2278,7 +2278,7 @@ size_t TSFTPFileSystem::ReceivePacket(TSFTPPacket *Packet,
                 }
             }
 
-            if ((Reservation == -1) ||
+            if ((Reservation == NPOS) ||
                     Packet->GetMessageNumber() != FPacketNumbers[Reservation])
             {
                 TSFTPPacket *ReservedPacket;
@@ -2347,7 +2347,7 @@ void TSFTPFileSystem::ReserveResponse(const TSFTPPacket *Packet,
 {
     if (Response != NULL)
     {
-        assert(FPacketReservations->IndexOf(reinterpret_cast<nb::TObject *>(Response)) == -1);
+        assert(FPacketReservations->IndexOf(reinterpret_cast<nb::TObject *>(Response)) == NPOS);
         // mark response as not received yet
         Response->SetCapacity(0);
         Response->SetReservedBy(this);
@@ -2636,7 +2636,7 @@ void TSFTPFileSystem::DoStartup()
 
     FVersion = Packet.GetCardinal();
     FTerminal->LogEvent(FORMAT(L"SFTP version %d negotiated.", FVersion));
-    if (FVersion == -1 || FVersion < SFTPMinVersion || FVersion > SFTPMaxVersion)
+    if (FVersion == NPOS || FVersion < SFTPMinVersion || FVersion > SFTPMaxVersion)
     {
         FTerminal->FatalError(NULL, FMTLOAD(SFTP_VERSION_NOT_SUPPORTED,
                                             FVersion, SFTPMinVersion, SFTPMaxVersion));

@@ -344,7 +344,7 @@ void TCopyParamList::Insert(size_t Index, const std::wstring Name,
                             TCopyParamType *CopyParam, TCopyParamRule *Rule)
 {
     // DEBUG_PRINTF(L"begin");
-    assert(FNames->IndexOf(Name) == -1);
+    assert(FNames->IndexOf(Name) == NPOS);
     FNames->Insert(Index, Name);
     assert(CopyParam != NULL);
     FCopyParams->Insert(Index, reinterpret_cast<nb::TObject *>(CopyParam));
@@ -1079,7 +1079,7 @@ size_t TGUIConfiguration::GetCopyParamIndex()
 void TGUIConfiguration::SetCopyParamIndex(size_t value)
 {
     std::wstring Name;
-    if (value == -1)
+    if (value == NPOS)
     {
         Name = L"";
     }

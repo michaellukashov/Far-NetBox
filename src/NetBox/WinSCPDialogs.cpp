@@ -6163,7 +6163,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
                 {
                     TBookmark *Bookmark = BookmarkList->GetBookmark(i);
                     std::wstring RemoteDirectory = Bookmark->GetRemote();
-                    if (!RemoteDirectory.empty() && (BookmarkDirectories->IndexOf(RemoteDirectory.c_str()) == -1))
+                    if (!RemoteDirectory.empty() && (BookmarkDirectories->IndexOf(RemoteDirectory.c_str()) == NPOS))
                     {
                         size_t Pos;
                         Pos = BookmarkDirectories->Add(RemoteDirectory);
@@ -6213,7 +6213,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
                 }
             }
 
-            if (ItemFocused == -1)
+            if (ItemFocused == NPOS)
             {
                 BookmarkItems->SetItemFocused(FirstItemFocused);
             }

@@ -2357,7 +2357,7 @@ void TStoredSessionList::Load(THierarchicalStorage *Storage,
         {
             for (size_t Index = 0; Index < nb::TObjectList::GetCount(); Index++)
             {
-                if (Loaded->IndexOf(GetItem(Index)) == -1)
+                if (Loaded->IndexOf(GetItem(Index)) == NPOS)
                 {
                     Delete(Index);
                     Index--;

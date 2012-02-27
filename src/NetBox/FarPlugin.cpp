@@ -1157,7 +1157,7 @@ size_t TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
                 MenuItems[Count].Flags = flags;
                 if (MenuItems[Count].Flags & MIF_SELECTED)
                 {
-                    assert(Selected == -1);
+                    assert(Selected == NPOS);
                     Selected = i;
                 }
                 std::wstring Str = Text;

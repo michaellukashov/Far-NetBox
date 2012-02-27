@@ -1575,12 +1575,12 @@ void TRemoteDirectory::SetIncludeParentDirectory(bool value)
         FIncludeParentDirectory = value;
         if (value && GetParentDirectory())
         {
-            assert(IndexOf(GetParentDirectory()) == -1);
+            assert(IndexOf(GetParentDirectory()) == NPOS);
             Add(GetParentDirectory());
         }
         else if (!value && GetParentDirectory())
         {
-            assert(IndexOf(GetParentDirectory()) != -1);
+            assert(IndexOf(GetParentDirectory()) != NPOS);
             nb::Error(SNotImplemented, 216);
             // FIXME Extract(GetParentDirectory());
         }

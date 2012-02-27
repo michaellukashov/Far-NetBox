@@ -846,7 +846,7 @@ unsigned int HexToInt(const std::wstring Hex, size_t MinChars)
         size_t A = Digits.find_first_of(static_cast<wchar_t>(toupper(Hex[I])));
         if (A == std::wstring::npos)
         {
-            if ((MinChars == -1) || (I <= MinChars))
+            if ((MinChars == NPOS) || (I <= MinChars))
             {
                 Result = 0;
             }
