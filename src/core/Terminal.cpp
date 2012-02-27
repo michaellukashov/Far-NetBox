@@ -5084,7 +5084,7 @@ TTerminal *TTerminalList::NewTerminal(TSessionData *Data)
 //---------------------------------------------------------------------------
 void TTerminalList::FreeTerminal(TTerminal *Terminal)
 {
-    assert(IndexOf(Terminal) != -1);
+    assert(IndexOf(Terminal) != NPOS);
     Remove(Terminal);
 }
 //---------------------------------------------------------------------------

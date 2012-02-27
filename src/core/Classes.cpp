@@ -125,7 +125,7 @@ void TList::SetCount(size_t NewCount)
     if (NewCount <= FList.size())
     {
         size_t sz = FList.size();
-        for (size_t I = sz - 1; (I != -1) && (I >= NewCount); I--)
+        for (size_t I = sz - 1; (I != NPOS) && (I >= NewCount); I--)
         {
             Delete(I);
         }
@@ -158,7 +158,7 @@ size_t TList::Add(void *value)
 }
 void *TList::Extract(void *item)
 {
-    if (Remove(item) != -1)
+    if (Remove(item) != NPOS)
     {
         return item;
     }
@@ -170,7 +170,7 @@ void *TList::Extract(void *item)
 size_t TList::Remove(void *item)
 {
     size_t Result = IndexOf(item);
-    if (Result != -1)
+    if (Result != NPOS)
     {
         Delete(Result);
     }
@@ -756,7 +756,7 @@ bool TStringList::Find(const std::wstring S, size_t &Index)
     bool Result = false;
     size_t L = 0;
     size_t H = GetCount() - 1;
-    while ((H != -1) && (L <= H))
+    while ((H != NPOS) && (L <= H))
     {
         size_t I = (L + H) >> 1;
         int C = CompareStrings(FList[I].FString, S);

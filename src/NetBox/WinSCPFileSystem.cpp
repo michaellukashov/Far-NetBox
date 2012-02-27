@@ -3137,7 +3137,7 @@ void TWinSCPFileSystem::TerminalChangeDirectory(nb::TObject * /*Sender*/)
     {
         std::wstring Directory = FTerminal->GetCurrentDirectory();
         size_t Index = FPathHistory->IndexOf(Directory.c_str());
-        if (Index != -1)
+        if (Index != NPOS)
         {
             FPathHistory->Delete(Index);
         }
@@ -3349,7 +3349,7 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
             assert(FFileList);
             assert(FPanelItems->GetCount() == FFileList->GetCount());
             size_t Index = FFileList->IndexOf(FileName.c_str());
-            assert(Index != -1);
+            assert(Index != NPOS);
             PanelItem = static_cast<TFarPanelItem *>(FPanelItems->GetItem(Index));
         }
 

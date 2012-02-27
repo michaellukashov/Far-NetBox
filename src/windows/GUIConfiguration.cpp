@@ -324,7 +324,7 @@ bool TCopyParamList::CompareItem(size_t Index,
 //---------------------------------------------------------------------------
 void TCopyParamList::Clear()
 {
-    for (size_t i = GetCount() - 1; i != -1; i--)
+    for (size_t i = GetCount() - 1; i != NPOS; i--)
     {
         FCopyParams->Delete(i);
         FRules->Delete(i);
@@ -385,7 +385,7 @@ void TCopyParamList::Move(size_t CurIndex, size_t NewIndex)
 //---------------------------------------------------------------------------
 void TCopyParamList::Delete(size_t Index)
 {
-    assert((Index != -1) && (Index < GetCount()));
+    assert((Index != NPOS) && (Index < GetCount()));
     FNames->Delete(Index);
     delete GetCopyParam(Index);
     FCopyParams->Delete(Index);
@@ -1106,8 +1106,8 @@ TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(const std::wstring Name)
     if (!Name.empty())
     {
         size_t Index = FCopyParamList->IndexOfName(Name);
-        assert(Index != -1);
-        if (Index != -1)
+        assert(Index != NPOS);
+        if (Index != NPOS)
         {
             const TCopyParamType *Preset = FCopyParamList->GetCopyParam(Index);
             assert(Preset != NULL);

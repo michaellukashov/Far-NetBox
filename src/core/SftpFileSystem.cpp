@@ -1925,7 +1925,7 @@ bool TSFTPFileSystem::IsCapable(int Capability) const
 //---------------------------------------------------------------------------
 bool TSFTPFileSystem::SupportsExtension(const std::wstring Extension) const
 {
-    return FSupport->Loaded && (FSupport->Extensions->IndexOf(Extension.c_str()) != -1);
+    return FSupport->Loaded && (FSupport->Extensions->IndexOf(Extension.c_str()) != NPOS);
 }
 //---------------------------------------------------------------------------
 inline void TSFTPFileSystem::BusyStart()
@@ -2299,7 +2299,7 @@ size_t TSFTPFileSystem::ReceivePacket(TSFTPPacket *Packet,
                         {
                             FTerminal->LogEvent(L"Discarding reserved response");
                             RemoveReservation(Index);
-                            if ((Reservation != -1) && (Reservation > Index))
+                            if ((Reservation != NPOS) && (Reservation > Index))
                             {
                                 Reservation--;
                                 assert(Reservation == FPacketReservations->IndexOf(reinterpret_cast<nb::TObject *>(Packet)));
@@ -2317,13 +2317,13 @@ size_t TSFTPFileSystem::ReceivePacket(TSFTPPacket *Packet,
     // but if it raises exception, removal is unnecessarily
     // postponed until the packet is removed
     // (and it have not worked anyway until recent fix to UnreserveResponse)
-    if (Reservation != -1)
+    if (Reservation != NPOS)
     {
         assert(Packet->GetMessageNumber() == FPacketNumbers[Reservation]);
         RemoveReservation(Reservation);
     }
 
-    if (ExpectedType != -1)
+    if (ExpectedType != NPOS)
     {
         if (Packet->GetType() == SSH_FXP_STATUS)
         {
@@ -2374,7 +2374,7 @@ void TSFTPFileSystem::UnreserveResponse(TSFTPPacket *Response)
     }
     else
     {
-        if (Reservation != -1)
+        if (Reservation != NPOS)
         {
             // we probably do not remove the item at all, because
             // we must remember that the respose was expected, so we skip it

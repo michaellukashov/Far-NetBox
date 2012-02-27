@@ -1523,13 +1523,13 @@ bool TSessionData::GetUsesSsh()
 //---------------------------------------------------------------------
 void TSessionData::SetCipher(size_t Index, TCipher value)
 {
-    assert(Index != -1 && Index < CIPHER_COUNT);
+    assert(Index != NPOS && Index < CIPHER_COUNT);
     SET_SESSION_PROPERTY(Ciphers[Index]);
 }
 //---------------------------------------------------------------------
 TCipher TSessionData::GetCipher(size_t Index) const
 {
-    assert(Index != -1 && Index < CIPHER_COUNT);
+    assert(Index != NPOS && Index < CIPHER_COUNT);
     return FCiphers[Index];
 }
 //---------------------------------------------------------------------
@@ -1577,13 +1577,13 @@ std::wstring TSessionData::GetCipherList() const
 //---------------------------------------------------------------------
 void TSessionData::SetKex(size_t Index, TKex value)
 {
-    assert(Index != -1 && Index < KEX_COUNT);
+    assert(Index != NPOS && Index < KEX_COUNT);
     SET_SESSION_PROPERTY(Kex[Index]);
 }
 //---------------------------------------------------------------------
 TKex TSessionData::GetKex(size_t Index) const
 {
-    assert(Index != -1 && Index < KEX_COUNT);
+    assert(Index != NPOS && Index < KEX_COUNT);
     return FKex[Index];
 }
 //---------------------------------------------------------------------

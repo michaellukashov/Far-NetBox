@@ -228,7 +228,7 @@ bool TWinSCPPlugin::ConfigureEx(int /*Item*/)
             Result = Menu(FMENU_WRAPMODE, GetMsg(PLUGIN_TITLE), L"", MenuItems);
             // DEBUG_PRINTF(L"Result = %d", Result);
 
-            if (Result != -1)
+            if (Result != NPOS)
             {
                 if (Result == MInterface)
                 {
@@ -299,7 +299,7 @@ bool TWinSCPPlugin::ConfigureEx(int /*Item*/)
                 }
             }
         }
-        while (Result != -1);
+        while (Result != NPOS);
     }
     // DEBUG_PRINTF(L"end");
     return Change;
@@ -475,7 +475,7 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 
         size_t Result = Menu(FMENU_WRAPMODE, GetMsg(MENU_COMMANDS), L"", MenuItems);
 
-        if (Result != -1)
+        if (Result != NPOS)
         {
             if ((Result == MLog) && FileSystem)
             {
