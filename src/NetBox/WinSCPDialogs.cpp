@@ -2262,8 +2262,8 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
     FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_REQUIRE_EXPLICIT_FTP));
     FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_REQUIRE_IMPLICIT_FTP));
     FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_REQUIRE_EXPLICIT_TLS_FTP));
-    FtpEncryptionCombo->SetWidth(40);
-    FtpEncryptionCombo->SetRight(CRect.Right - 12 - 2);
+    FtpEncryptionCombo->SetWidth(35);
+    // FtpEncryptionCombo->SetRight(CRect.Right - 12 - 2);
 
     // Connection tab
 
