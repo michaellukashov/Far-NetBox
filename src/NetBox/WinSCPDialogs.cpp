@@ -32,8 +32,9 @@ enum TButtonResult { brCancel = -1, brOK = 1, brConnect };
 TFtps FtpEncryptionToFtps(TFtpEncryptionSwitch value)
 {
     return value == fesPlainFTP ? ftpsNone : 
-           value == fesExplicit ? ftpsExplicitSsl :
-           value == fesImplicit ? ftpsImplicit : ftpsNone;
+           value == fesExplicitSSL ? ftpsExplicitSsl :
+           value == fesImplicit ? ftpsImplicit :
+           value == fesExplicitTLS ? ftpsExplicitTls : ftpsNone;
 }
 //---------------------------------------------------------------------------
 class TWinSCPDialog : public TFarDialog
@@ -2261,8 +2262,9 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
     // FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_USE_PLAIN_FTP));
     FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_REQUIRE_EXPLICIT_FTP));
     FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_REQUIRE_IMPLICIT_FTP));
-    FtpEncryptionCombo->SetWidth(30);
-    FtpEncryptionCombo->SetRight(CRect.Right - 12 - 2);
+    FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_REQUIRE_EXPLICIT_TLS_FTP));
+    FtpEncryptionCombo->SetWidth(35);
+    // FtpEncryptionCombo->SetRight(CRect.Right - 12 - 2);
 
     // Connection tab
 
@@ -3243,12 +3245,16 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
         FtpEncryptionCombo->GetItems()->SetSelected(0);
         break;
 
-    case fesExplicit:
+    case fesExplicitSSL:
         FtpEncryptionCombo->GetItems()->SetSelected(0);
         break;
 
     case fesImplicit:
         FtpEncryptionCombo->GetItems()->SetSelected(1);
+        break;
+
+    case fesExplicitTLS:
+        FtpEncryptionCombo->GetItems()->SetSelected(2);
         break;
 
     default:
@@ -3536,10 +3542,13 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
         switch (FtpEncryptionCombo->GetItems()->GetSelected())
         {
             case 0:
-                SessionData->SetFtpEncryption(fesExplicit);
+                SessionData->SetFtpEncryption(fesExplicitSSL);
                 break;
             case 1:
                 SessionData->SetFtpEncryption(fesImplicit);
+                break;
+            case 2:
+                SessionData->SetFtpEncryption(fesExplicitTLS);
                 break;
             default:
                 SessionData->SetFtpEncryption(fesPlainFTP);
