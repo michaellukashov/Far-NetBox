@@ -15,7 +15,7 @@
 //---------------------------------------------------------------------------
 class TCriticalSection;
 enum TAutoSwitch { asOn, asOff, asAuto };
-enum TFtpEncryptionSwitch { fesPlainFTP, fesExplicit, fesImplicit };
+enum TFtpEncryptionSwitch { fesPlainFTP, fesExplicitSSL, fesImplicit, fesExplicitTLS };
 //---------------------------------------------------------------------------
 class TConfiguration : public nb::TObject
 {
