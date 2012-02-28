@@ -4264,7 +4264,7 @@ void TTerminal::SynchronizeCollectFile(const std::wstring FileName,
 
             bool Modified = false;
             size_t LocalIndex = Data->LocalFileList->IndexOf(LocalFileName.c_str());
-            bool New = (LocalIndex == -1);
+            bool New = (LocalIndex == NPOS);
             if (!New)
             {
                 TSynchronizeFileData *LocalData =
@@ -5084,7 +5084,7 @@ TTerminal *TTerminalList::NewTerminal(TSessionData *Data)
 //---------------------------------------------------------------------------
 void TTerminalList::FreeTerminal(TTerminal *Terminal)
 {
-    assert(IndexOf(Terminal) != -1);
+    assert(IndexOf(Terminal) != NPOS);
     Remove(Terminal);
 }
 //---------------------------------------------------------------------------

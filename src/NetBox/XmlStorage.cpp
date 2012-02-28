@@ -273,7 +273,7 @@ std::wstring TXmlStorage::GetSubKeyText(const std::wstring Name)
     {
         return std::wstring();
     }
-    return ToStdWString(Element->GetText());
+    return ToStdWString(Element->GetText() ? std::string(Element->GetText()) : std::string());
 }
 //---------------------------------------------------------------------------
 TiXmlElement *TXmlStorage::FindElement(const std::wstring Name)

@@ -1925,7 +1925,7 @@ bool TSFTPFileSystem::IsCapable(int Capability) const
 //---------------------------------------------------------------------------
 bool TSFTPFileSystem::SupportsExtension(const std::wstring Extension) const
 {
-    return FSupport->Loaded && (FSupport->Extensions->IndexOf(Extension.c_str()) != -1);
+    return FSupport->Loaded && (FSupport->Extensions->IndexOf(Extension.c_str()) != NPOS);
 }
 //---------------------------------------------------------------------------
 inline void TSFTPFileSystem::BusyStart()
@@ -2130,7 +2130,7 @@ size_t TSFTPFileSystem::GotStatusPacket(TSFTPPacket *Packet,
         if ((FVersion >= 3) ||
                 // if version is not decided yet (i.e. this is status response
                 // to the init request), go on only if there are any more data
-                ((FVersion == -1) && (Packet->GetRemainingLength() > 0)))
+                ((FVersion == NPOS) && (Packet->GetRemainingLength() > 0)))
         {
             // message is in UTF only since SFTP specification 01 (specification 00
             // is also version 3)
@@ -2237,7 +2237,7 @@ size_t TSFTPFileSystem::ReceivePacket(TSFTPPacket *Packet,
     size_t Result = SSH_FX_OK;
     size_t Reservation = FPacketReservations->IndexOf(reinterpret_cast<nb::TObject *>(Packet));
 
-    if ((Reservation == -1) || (Packet->GetCapacity() == 0))
+    if ((Reservation == NPOS) || (Packet->GetCapacity() == 0))
     {
         bool IsReserved;
         do
@@ -2278,7 +2278,7 @@ size_t TSFTPFileSystem::ReceivePacket(TSFTPPacket *Packet,
                 }
             }
 
-            if ((Reservation == -1) ||
+            if ((Reservation == NPOS) ||
                     Packet->GetMessageNumber() != FPacketNumbers[Reservation])
             {
                 TSFTPPacket *ReservedPacket;
@@ -2299,7 +2299,7 @@ size_t TSFTPFileSystem::ReceivePacket(TSFTPPacket *Packet,
                         {
                             FTerminal->LogEvent(L"Discarding reserved response");
                             RemoveReservation(Index);
-                            if ((Reservation != -1) && (Reservation > Index))
+                            if ((Reservation != NPOS) && (Reservation > Index))
                             {
                                 Reservation--;
                                 assert(Reservation == FPacketReservations->IndexOf(reinterpret_cast<nb::TObject *>(Packet)));
@@ -2317,13 +2317,13 @@ size_t TSFTPFileSystem::ReceivePacket(TSFTPPacket *Packet,
     // but if it raises exception, removal is unnecessarily
     // postponed until the packet is removed
     // (and it have not worked anyway until recent fix to UnreserveResponse)
-    if (Reservation != -1)
+    if (Reservation != NPOS)
     {
         assert(Packet->GetMessageNumber() == FPacketNumbers[Reservation]);
         RemoveReservation(Reservation);
     }
 
-    if (ExpectedType != -1)
+    if (ExpectedType != NPOS)
     {
         if (Packet->GetType() == SSH_FXP_STATUS)
         {
@@ -2347,7 +2347,7 @@ void TSFTPFileSystem::ReserveResponse(const TSFTPPacket *Packet,
 {
     if (Response != NULL)
     {
-        assert(FPacketReservations->IndexOf(reinterpret_cast<nb::TObject *>(Response)) == -1);
+        assert(FPacketReservations->IndexOf(reinterpret_cast<nb::TObject *>(Response)) == NPOS);
         // mark response as not received yet
         Response->SetCapacity(0);
         Response->SetReservedBy(this);
@@ -2374,7 +2374,7 @@ void TSFTPFileSystem::UnreserveResponse(TSFTPPacket *Response)
     }
     else
     {
-        if (Reservation != -1)
+        if (Reservation != NPOS)
         {
             // we probably do not remove the item at all, because
             // we must remember that the respose was expected, so we skip it
@@ -2636,7 +2636,7 @@ void TSFTPFileSystem::DoStartup()
 
     FVersion = Packet.GetCardinal();
     FTerminal->LogEvent(FORMAT(L"SFTP version %d negotiated.", FVersion));
-    if (FVersion == -1 || FVersion < SFTPMinVersion || FVersion > SFTPMaxVersion)
+    if (FVersion == NPOS || FVersion < SFTPMinVersion || FVersion > SFTPMaxVersion)
     {
         FTerminal->FatalError(NULL, FMTLOAD(SFTP_VERSION_NOT_SUPPORTED,
                                             FVersion, SFTPMinVersion, SFTPMaxVersion));

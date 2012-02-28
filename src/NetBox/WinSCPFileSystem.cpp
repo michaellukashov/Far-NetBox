@@ -538,7 +538,7 @@ bool TWinSCPFileSystem::GetFindDataEx(nb::TObjectList *PanelItems, int OpMode)
                     if (Slash != std::wstring::npos)
                     {
                         Name.resize(Slash);
-                        if (ChildPaths->IndexOf(Name.c_str()) == -1)
+                        if (ChildPaths->IndexOf(Name.c_str()) == NPOS)
                         {
                             PanelItems->Add(static_cast<nb::TObject *>(new TSessionFolderPanelItem(Name)));
                             ChildPaths->Add(Name);
@@ -1138,230 +1138,229 @@ void TWinSCPFileSystem::ApplyCommand()
     nb::TStrings *FileList = CreateSelectedFileList(osRemote);
     if (FileList != NULL)
     {
+        BOOST_SCOPE_EXIT ( (&FileList) )
         {
-            BOOST_SCOPE_EXIT ( (&FileList) )
+            delete FileList;
+        } BOOST_SCOPE_EXIT_END
+        int Params = FarConfiguration->GetApplyCommandParams();
+        std::wstring Command = FarConfiguration->GetApplyCommandCommand();
+        if (ApplyCommandDialog(Command, Params))
+        {
+            DEBUG_PRINTF(L"Command = %s, Params = %d", Command.c_str(), Params);
+            FarConfiguration->SetApplyCommandParams(Params);
+            FarConfiguration->SetApplyCommandCommand(Command);
+            if (FLAGCLEAR(Params, ccLocal))
             {
-                delete FileList;
-            } BOOST_SCOPE_EXIT_END
-            int Params = FarConfiguration->GetApplyCommandParams();
-            std::wstring Command = FarConfiguration->GetApplyCommandCommand();
-            if (ApplyCommandDialog(Command, Params))
-            {
-                FarConfiguration->SetApplyCommandParams(Params);
-                FarConfiguration->SetApplyCommandCommand(Command);
-                if (FLAGCLEAR(Params, ccLocal))
-                {
-                    if (EnsureCommandSessionFallback(fcShellAnyCommand))
-                    {
-                        TCustomCommandData Data(GetTerminal());
-                        TRemoteCustomCommand RemoteCustomCommand(Data, GetTerminal()->GetCurrentDirectory());
-                        TFarInteractiveCustomCommand InteractiveCustomCommand(
-                            FPlugin, &RemoteCustomCommand);
-
-                        Command = InteractiveCustomCommand.Complete(Command, false);
-
-                        {
-                            BOOST_SCOPE_EXIT ( (&Self) )
-                            {
-                                Self->GetPanelInfo()->ApplySelection();
-                                if (Self->UpdatePanel())
-                                {
-                                    Self->RedrawPanel();
-                                }
-                            } BOOST_SCOPE_EXIT_END
-                            captureoutput_signal_type OutputEvent;
-                            FOutputLog = false;
-                            if (FLAGSET(Params, ccShowResults))
-                            {
-                                assert(!FNoProgress);
-                                FNoProgress = true;
-                                FOutputLog = true;
-                                OutputEvent.connect(boost::bind(&TWinSCPFileSystem::TerminalCaptureLog, this, _1, _2));
-                            }
-
-                            if (FLAGSET(Params, ccCopyResults))
-                            {
-                                assert(FCapturedLog == NULL);
-                                FCapturedLog = new nb::TStringList();
-                                OutputEvent.connect(boost::bind(&TWinSCPFileSystem::TerminalCaptureLog, this, _1, _2));
-                            }
-
-                            {
-                                BOOST_SCOPE_EXIT ( (&Self) (&Params) )
-                                {
-                                    if (FLAGSET(Params, ccShowResults))
-                                    {
-                                        Self->FNoProgress = false;
-                                        Self->FPlugin->ScrollTerminalScreen(1);
-                                        Self->FPlugin->SaveTerminalScreen();
-                                    }
-
-                                    if (FLAGSET(Params, ccCopyResults))
-                                    {
-                                        Self->FPlugin->FarCopyToClipboard(Self->FCapturedLog);
-                                        SAFE_DESTROY(Self->FCapturedLog);
-                                    }
-                                } BOOST_SCOPE_EXIT_END
-                                if (FLAGSET(Params, ccShowResults))
-                                {
-                                    FPlugin->ShowTerminalScreen();
-                                }
-
-                                FTerminal->CustomCommandOnFiles(Command, Params, FileList, OutputEvent);
-                            }
-                        }
-                    }
-                }
-                else
+                if (EnsureCommandSessionFallback(fcShellAnyCommand))
                 {
                     TCustomCommandData Data(GetTerminal());
-                    TLocalCustomCommand LocalCustomCommand(Data, GetTerminal()->GetCurrentDirectory());
-                    TFarInteractiveCustomCommand InteractiveCustomCommand(FPlugin,
-                            &LocalCustomCommand);
+                    TRemoteCustomCommand RemoteCustomCommand(Data, GetTerminal()->GetCurrentDirectory());
+                    TFarInteractiveCustomCommand InteractiveCustomCommand(
+                        FPlugin, &RemoteCustomCommand);
 
                     Command = InteractiveCustomCommand.Complete(Command, false);
 
-                    nb::TStrings *LocalFileList = NULL;
-                    nb::TStrings *RemoteFileList = NULL;
                     {
-                        BOOST_SCOPE_EXIT ( (&RemoteFileList) (&LocalFileList) )
+                        BOOST_SCOPE_EXIT ( (&Self) )
                         {
-                            delete RemoteFileList;
-                            delete LocalFileList;
+                            Self->GetPanelInfo()->ApplySelection();
+                            if (Self->UpdatePanel())
+                            {
+                                Self->RedrawPanel();
+                            }
                         } BOOST_SCOPE_EXIT_END
-                        bool FileListCommand = LocalCustomCommand.IsFileListCommand(Command);
-                        bool LocalFileCommand = LocalCustomCommand.HasLocalFileName(Command);
-
-                        if (LocalFileCommand)
+                        captureoutput_signal_type OutputEvent;
+                        FOutputLog = false;
+                        if (FLAGSET(Params, ccShowResults))
                         {
-                            TFarPanelInfo *AnotherPanel = GetAnotherPanelInfo();
-                            RequireLocalPanel(AnotherPanel, GetMsg(APPLY_COMMAND_LOCAL_PATH_REQUIRED));
-
-                            LocalFileList = CreateSelectedFileList(osLocal, AnotherPanel);
-
-                            if (FileListCommand)
-                            {
-                                if ((LocalFileList == NULL) || (LocalFileList->GetCount() != 1))
-                                {
-                                    throw ExtException(GetMsg(CUSTOM_COMMAND_SELECTED_UNMATCH1));
-                                }
-                            }
-                            else
-                            {
-                                if ((LocalFileList == NULL) ||
-                                        ((LocalFileList->GetCount() != 1) &&
-                                         (FileList->GetCount() != 1) &&
-                                         (LocalFileList->GetCount() != FileList->GetCount())))
-                                {
-                                    throw ExtException(GetMsg(CUSTOM_COMMAND_SELECTED_UNMATCH));
-                                }
-                            }
+                            assert(!FNoProgress);
+                            FNoProgress = true;
+                            FOutputLog = true;
+                            OutputEvent.connect(boost::bind(&TWinSCPFileSystem::TerminalCaptureLog, this, _1, _2));
                         }
 
-                        std::wstring TempDir;
-
-                        TemporarilyDownloadFiles(FileList, GUIConfiguration->GetDefaultCopyParam(), TempDir);
+                        if (FLAGSET(Params, ccCopyResults))
+                        {
+                            assert(FCapturedLog == NULL);
+                            FCapturedLog = new nb::TStringList();
+                            OutputEvent.connect(boost::bind(&TWinSCPFileSystem::TerminalCaptureLog, this, _1, _2));
+                        }
 
                         {
-                            BOOST_SCOPE_EXIT ( (&TempDir) )
+                            BOOST_SCOPE_EXIT ( (&Self) (&Params) )
                             {
-                                RecursiveDeleteFile(ExcludeTrailingBackslash(TempDir), false);
-                            } BOOST_SCOPE_EXIT_END
-                            RemoteFileList = new nb::TStringList();
-
-                            TMakeLocalFileListParams MakeFileListParam;
-                            MakeFileListParam.FileList = RemoteFileList;
-                            MakeFileListParam.IncludeDirs = FLAGSET(Params, ccApplyToDirectories);
-                            MakeFileListParam.Recursive =
-                                FLAGSET(Params, ccRecursive) && !FileListCommand;
-
-                            ProcessLocalDirectory(TempDir, boost::bind(&TTerminal::MakeLocalFileList, FTerminal, _1, _2, _3), &MakeFileListParam);
-
-                            TFileOperationProgressType Progress(boost::bind(&TWinSCPFileSystem::OperationProgress, this, _1, _2), boost::bind(&TWinSCPFileSystem::OperationFinished, this, _1, _2, _3, _4, _5, _6));
-
-                            Progress.Start(foCustomCommand, osRemote, FileListCommand ? 1 : FileList->GetCount());
-
-                            {
-                                BOOST_SCOPE_EXIT ( (&Progress) )
+                                if (FLAGSET(Params, ccShowResults))
                                 {
-                                    Progress.Stop();
-                                } BOOST_SCOPE_EXIT_END
-                                if (FileListCommand)
-                                {
-                                    std::wstring LocalFile;
-                                    std::wstring FileList = MakeFileList(RemoteFileList);
-
-                                    if (LocalFileCommand)
-                                    {
-                                        assert(LocalFileList->GetCount() == 1);
-                                        LocalFile = LocalFileList->GetString(0);
-                                    }
-
-                                    TCustomCommandData Data(FTerminal);
-                                    TLocalCustomCommand CustomCommand(Data,
-                                                                      GetTerminal()->GetCurrentDirectory(), L"", LocalFile, FileList);
-                                    ExecuteShellAndWait(FPlugin->GetHandle(), CustomCommand.Complete(Command, true),
-                                                        processmessages_signal_type());
+                                    Self->FNoProgress = false;
+                                    Self->FPlugin->ScrollTerminalScreen(1);
+                                    Self->FPlugin->SaveTerminalScreen();
                                 }
-                                else if (LocalFileCommand)
+
+                                if (FLAGSET(Params, ccCopyResults))
                                 {
-                                    if (LocalFileList->GetCount() == 1)
-                                    {
-                                        std::wstring LocalFile = LocalFileList->GetString(0);
+                                    Self->FPlugin->FarCopyToClipboard(Self->FCapturedLog);
+                                    SAFE_DESTROY(Self->FCapturedLog);
+                                }
+                            } BOOST_SCOPE_EXIT_END
+                            if (FLAGSET(Params, ccShowResults))
+                            {
+                                FPlugin->ShowTerminalScreen();
+                            }
 
-                                        for (size_t Index = 0; Index < RemoteFileList->GetCount(); Index++)
-                                        {
-                                            std::wstring FileName = RemoteFileList->GetString(Index);
-                                            TCustomCommandData Data(FTerminal);
-                                            TLocalCustomCommand CustomCommand(Data,
-                                                                              GetTerminal()->GetCurrentDirectory(), FileName, LocalFile, L"");
-                                            ExecuteShellAndWait(FPlugin->GetHandle(),
-                                                                CustomCommand.Complete(Command, true), processmessages_signal_type());
-                                        }
+                            FTerminal->CustomCommandOnFiles(Command, Params, FileList, OutputEvent);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                TCustomCommandData Data(GetTerminal());
+                TLocalCustomCommand LocalCustomCommand(Data, GetTerminal()->GetCurrentDirectory());
+                TFarInteractiveCustomCommand InteractiveCustomCommand(FPlugin,
+                        &LocalCustomCommand);
+
+                Command = InteractiveCustomCommand.Complete(Command, false);
+
+                nb::TStrings *LocalFileList = NULL;
+                nb::TStrings *RemoteFileList = NULL;
+                {
+                    BOOST_SCOPE_EXIT ( (&RemoteFileList) (&LocalFileList) )
+                    {
+                        delete RemoteFileList;
+                        delete LocalFileList;
+                    } BOOST_SCOPE_EXIT_END
+                    bool FileListCommand = LocalCustomCommand.IsFileListCommand(Command);
+                    bool LocalFileCommand = LocalCustomCommand.HasLocalFileName(Command);
+
+                    if (LocalFileCommand)
+                    {
+                        TFarPanelInfo *AnotherPanel = GetAnotherPanelInfo();
+                        RequireLocalPanel(AnotherPanel, GetMsg(APPLY_COMMAND_LOCAL_PATH_REQUIRED));
+
+                        LocalFileList = CreateSelectedFileList(osLocal, AnotherPanel);
+
+                        if (FileListCommand)
+                        {
+                            if ((LocalFileList == NULL) || (LocalFileList->GetCount() != 1))
+                            {
+                                throw ExtException(GetMsg(CUSTOM_COMMAND_SELECTED_UNMATCH1));
+                            }
+                        }
+                        else
+                        {
+                            if ((LocalFileList == NULL) ||
+                                    ((LocalFileList->GetCount() != 1) &&
+                                     (FileList->GetCount() != 1) &&
+                                     (LocalFileList->GetCount() != FileList->GetCount())))
+                            {
+                                throw ExtException(GetMsg(CUSTOM_COMMAND_SELECTED_UNMATCH));
+                            }
+                        }
+                    }
+
+                    std::wstring TempDir;
+
+                    TemporarilyDownloadFiles(FileList, GUIConfiguration->GetDefaultCopyParam(), TempDir);
+
+                    {
+                        BOOST_SCOPE_EXIT ( (&TempDir) )
+                        {
+                            RecursiveDeleteFile(ExcludeTrailingBackslash(TempDir), false);
+                        } BOOST_SCOPE_EXIT_END
+                        RemoteFileList = new nb::TStringList();
+
+                        TMakeLocalFileListParams MakeFileListParam;
+                        MakeFileListParam.FileList = RemoteFileList;
+                        MakeFileListParam.IncludeDirs = FLAGSET(Params, ccApplyToDirectories);
+                        MakeFileListParam.Recursive =
+                            FLAGSET(Params, ccRecursive) && !FileListCommand;
+
+                        ProcessLocalDirectory(TempDir, boost::bind(&TTerminal::MakeLocalFileList, FTerminal, _1, _2, _3), &MakeFileListParam);
+
+                        TFileOperationProgressType Progress(boost::bind(&TWinSCPFileSystem::OperationProgress, this, _1, _2), boost::bind(&TWinSCPFileSystem::OperationFinished, this, _1, _2, _3, _4, _5, _6));
+
+                        Progress.Start(foCustomCommand, osRemote, FileListCommand ? 1 : FileList->GetCount());
+
+                        {
+                            BOOST_SCOPE_EXIT ( (&Progress) )
+                            {
+                                Progress.Stop();
+                            } BOOST_SCOPE_EXIT_END
+                            if (FileListCommand)
+                            {
+                                std::wstring LocalFile;
+                                std::wstring FileList = MakeFileList(RemoteFileList);
+
+                                if (LocalFileCommand)
+                                {
+                                    assert(LocalFileList->GetCount() == 1);
+                                    LocalFile = LocalFileList->GetString(0);
+                                }
+
+                                TCustomCommandData Data(FTerminal);
+                                TLocalCustomCommand CustomCommand(Data,
+                                                                  GetTerminal()->GetCurrentDirectory(), L"", LocalFile, FileList);
+                                ExecuteShellAndWait(FPlugin->GetHandle(), CustomCommand.Complete(Command, true),
+                                                    processmessages_signal_type());
+                            }
+                            else if (LocalFileCommand)
+                            {
+                                if (LocalFileList->GetCount() == 1)
+                                {
+                                    std::wstring LocalFile = LocalFileList->GetString(0);
+
+                                    for (size_t Index = 0; Index < RemoteFileList->GetCount(); Index++)
+                                    {
+                                        std::wstring FileName = RemoteFileList->GetString(Index);
+                                        TCustomCommandData Data(FTerminal);
+                                        TLocalCustomCommand CustomCommand(Data,
+                                                                          GetTerminal()->GetCurrentDirectory(), FileName, LocalFile, L"");
+                                        ExecuteShellAndWait(FPlugin->GetHandle(),
+                                                            CustomCommand.Complete(Command, true), processmessages_signal_type());
                                     }
-                                    else if (RemoteFileList->GetCount() == 1)
-                                    {
-                                        std::wstring FileName = RemoteFileList->GetString(0);
+                                }
+                                else if (RemoteFileList->GetCount() == 1)
+                                {
+                                    std::wstring FileName = RemoteFileList->GetString(0);
 
-                                        for (size_t Index = 0; Index < LocalFileList->GetCount(); Index++)
-                                        {
-                                            TCustomCommandData Data(FTerminal);
-                                            TLocalCustomCommand CustomCommand(
-                                                Data, GetTerminal()->GetCurrentDirectory(),
-                                                FileName, LocalFileList->GetString(Index), L"");
-                                            ExecuteShellAndWait(FPlugin->GetHandle(),
-                                                                CustomCommand.Complete(Command, true), processmessages_signal_type());
-                                        }
-                                    }
-                                    else
+                                    for (size_t Index = 0; Index < LocalFileList->GetCount(); Index++)
                                     {
-                                        if (LocalFileList->GetCount() != RemoteFileList->GetCount())
-                                        {
-                                            throw ExtException(GetMsg(CUSTOM_COMMAND_PAIRS_DOWNLOAD_FAILED));
-                                        }
-
-                                        for (size_t Index = 0; Index < LocalFileList->GetCount(); Index++)
-                                        {
-                                            std::wstring FileName = RemoteFileList->GetString(Index);
-                                            TCustomCommandData Data(FTerminal);
-                                            TLocalCustomCommand CustomCommand(
-                                                Data, GetTerminal()->GetCurrentDirectory(),
-                                                FileName, LocalFileList->GetString(Index), L"");
-                                            ExecuteShellAndWait(FPlugin->GetHandle(),
-                                                                CustomCommand.Complete(Command, true), processmessages_signal_type());
-                                        }
+                                        TCustomCommandData Data(FTerminal);
+                                        TLocalCustomCommand CustomCommand(
+                                            Data, GetTerminal()->GetCurrentDirectory(),
+                                            FileName, LocalFileList->GetString(Index), L"");
+                                        ExecuteShellAndWait(FPlugin->GetHandle(),
+                                                            CustomCommand.Complete(Command, true), processmessages_signal_type());
                                     }
                                 }
                                 else
                                 {
-                                    for (size_t Index = 0; Index < RemoteFileList->GetCount(); Index++)
+                                    if (LocalFileList->GetCount() != RemoteFileList->GetCount())
                                     {
+                                        throw ExtException(GetMsg(CUSTOM_COMMAND_PAIRS_DOWNLOAD_FAILED));
+                                    }
+
+                                    for (size_t Index = 0; Index < LocalFileList->GetCount(); Index++)
+                                    {
+                                        std::wstring FileName = RemoteFileList->GetString(Index);
                                         TCustomCommandData Data(FTerminal);
-                                        TLocalCustomCommand CustomCommand(Data,
-                                                                          GetTerminal()->GetCurrentDirectory(), RemoteFileList->GetString(Index), L"", L"");
+                                        TLocalCustomCommand CustomCommand(
+                                            Data, GetTerminal()->GetCurrentDirectory(),
+                                            FileName, LocalFileList->GetString(Index), L"");
                                         ExecuteShellAndWait(FPlugin->GetHandle(),
                                                             CustomCommand.Complete(Command, true), processmessages_signal_type());
                                     }
+                                }
+                            }
+                            else
+                            {
+                                for (size_t Index = 0; Index < RemoteFileList->GetCount(); Index++)
+                                {
+                                    TCustomCommandData Data(FTerminal);
+                                    TLocalCustomCommand CustomCommand(Data,
+                                                                      GetTerminal()->GetCurrentDirectory(), RemoteFileList->GetString(Index), L"", L"");
+                                    ExecuteShellAndWait(FPlugin->GetHandle(),
+                                                        CustomCommand.Complete(Command, true), processmessages_signal_type());
                                 }
                             }
                         }
@@ -3141,7 +3140,7 @@ void TWinSCPFileSystem::TerminalChangeDirectory(nb::TObject * /*Sender*/)
     {
         std::wstring Directory = FTerminal->GetCurrentDirectory();
         size_t Index = FPathHistory->IndexOf(Directory.c_str());
-        if (Index != -1)
+        if (Index != NPOS)
         {
             FPathHistory->Delete(Index);
         }
@@ -3353,7 +3352,7 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
             assert(FFileList);
             assert(FPanelItems->GetCount() == FFileList->GetCount());
             size_t Index = FFileList->IndexOf(FileName.c_str());
-            assert(Index != -1);
+            assert(Index != NPOS);
             PanelItem = static_cast<TFarPanelItem *>(FPanelItems->GetItem(Index));
         }
 

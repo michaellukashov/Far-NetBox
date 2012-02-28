@@ -318,7 +318,7 @@ nb::TStrings *TCommandSet::CreateCommandList()
         if (!Cmd.empty())
         {
             Cmd = ExtractCommand(Cmd);
-            if ((Cmd != L"%s") && (CommandList->IndexOf(Cmd.c_str()) == -1))
+            if ((Cmd != L"%s") && (CommandList->IndexOf(Cmd.c_str()) == NPOS))
             {
                 CommandList->Add(Cmd);
             }

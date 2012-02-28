@@ -331,7 +331,7 @@ void TTerminalQueue::TerminalFinished(TTerminalItem *TerminalItem)
             TGuard Guard(FItemsSection);
 
             size_t Index = FTerminals->IndexOf(static_cast<nb::TObject *>(TerminalItem));
-            assert(Index != -1);
+            assert(Index != NPOS);
 
             if (Index < FFreeTerminals)
             {
@@ -365,7 +365,7 @@ bool TTerminalQueue::TerminalFree(TTerminalItem *TerminalItem)
             TGuard Guard(FItemsSection);
 
             size_t Index = FTerminals->IndexOf(static_cast<nb::TObject *>(TerminalItem));
-            assert(Index != -1);
+            assert(Index != NPOS);
             assert(Index >= FFreeTerminals);
 
             Result = (FTransfersLimit <= 0) || (Index < FTransfersLimit);
@@ -521,7 +521,7 @@ bool TTerminalQueue::ItemGetData(TQueueItem *Item,
     {
         TGuard Guard(FItemsSection);
 
-        Result = (FItems->IndexOf(static_cast<nb::TObject *>(Item)) != -1);
+        Result = (FItems->IndexOf(static_cast<nb::TObject *>(Item)) != NPOS);
         if (Result)
         {
             Item->GetData(Proxy);
@@ -542,7 +542,7 @@ bool TTerminalQueue::ItemProcessUserAction(TQueueItem *Item, void *Arg)
         {
             TGuard Guard(FItemsSection);
 
-            Result = (FItems->IndexOf(static_cast<nb::TObject *>(Item)) != -1) &&
+            Result = (FItems->IndexOf(static_cast<nb::TObject *>(Item)) != NPOS) &&
                      TQueueItem::IsUserActionStatus(Item->GetStatus());
             if (Result)
             {
@@ -570,7 +570,7 @@ bool TTerminalQueue::ItemMove(TQueueItem *Item, TQueueItem *BeforeItem)
 
             size_t Index = FItems->IndexOf(static_cast<nb::TObject *>(Item));
             size_t IndexDest = FItems->IndexOf(static_cast<nb::TObject *>(BeforeItem));
-            Result = (Index != -1) && (IndexDest != -1) &&
+            Result = (Index != NPOS) && (IndexDest != NPOS) &&
                      (Item->GetStatus() == TQueueItem::qsPending) &&
                      (BeforeItem->GetStatus() == TQueueItem::qsPending);
             if (Result)
@@ -599,7 +599,7 @@ bool TTerminalQueue::ItemExecuteNow(TQueueItem *Item)
             TGuard Guard(FItemsSection);
 
             size_t Index = FItems->IndexOf(static_cast<nb::TObject *>(Item));
-            Result = (Index != -1) && (Item->GetStatus() == TQueueItem::qsPending) &&
+            Result = (Index != NPOS) && (Item->GetStatus() == TQueueItem::qsPending) &&
                      // prevent double-initiation when "execute" is clicked twice too fast
                      (Index >= FItemsInProcess);
             if (Result)
@@ -638,7 +638,7 @@ bool TTerminalQueue::ItemDelete(TQueueItem *Item)
             TGuard Guard(FItemsSection);
 
             size_t Index = FItems->IndexOf(static_cast<nb::TObject *>(Item));
-            Result = (Index != -1);
+            Result = (Index != NPOS);
             if (Result)
             {
                 if (Item->GetStatus() == TQueueItem::qsPending)
@@ -674,7 +674,7 @@ bool TTerminalQueue::ItemPause(TQueueItem *Item, bool Pause)
         {
             TGuard Guard(FItemsSection);
 
-            Result = (FItems->IndexOf(static_cast<nb::TObject *>(Item)) != -1) &&
+            Result = (FItems->IndexOf(static_cast<nb::TObject *>(Item)) != NPOS) &&
                      ((Pause && (Item->GetStatus() == TQueueItem::qsProcessing)) ||
                       (!Pause && (Item->GetStatus() == TQueueItem::qsPaused)));
             if (Result)
@@ -707,7 +707,7 @@ bool TTerminalQueue::ItemSetCPSLimit(TQueueItem *Item, unsigned long CPSLimit)
     {
         TGuard Guard(FItemsSection);
 
-        Result = (FItems->IndexOf(static_cast<nb::TObject *>(Item)) != -1);
+        Result = (FItems->IndexOf(static_cast<nb::TObject *>(Item)) != NPOS);
         if (Result)
         {
             Item->SetCPSLimit(CPSLimit);
@@ -1531,7 +1531,7 @@ size_t TQueueItemProxy::GetIndex()
 {
     assert(FQueueStatus != NULL);
     size_t Index = FQueueStatus->FList->IndexOf(static_cast<nb::TObject *>(static_cast<void *>(this)));
-    assert(Index != -1);
+    assert(Index != NPOS);
     return Index;
 }
 //---------------------------------------------------------------------------

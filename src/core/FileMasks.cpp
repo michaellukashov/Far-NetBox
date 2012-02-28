@@ -809,7 +809,7 @@ void TCustomCommand::GetToken(
     const std::wstring Command, size_t Index, size_t &Len, char &PatternCmd)
 {
     assert(Index < Command.size());
-    const wchar_t *Ptr = Command.c_str() + Index - 1;
+    const wchar_t *Ptr = Command.c_str() + Index;
 
     if (Ptr[0] == L'!')
     {
@@ -823,7 +823,7 @@ void TCustomCommand::GetToken(
             Len = PatternLen(Index, PatternCmd);
         }
 
-        if (Len == -1)
+        if (Len == NPOS)
         {
             throw ExtException(FMTLOAD(CUSTOM_COMMAND_UNKNOWN, PatternCmd, Index));
         }
@@ -868,7 +868,7 @@ std::wstring TCustomCommand::Complete(const std::wstring Command,
     while (Index < Command.size())
     {
         size_t Len = 0;
-        char PatternCmd;
+        char PatternCmd = L'\0';
         GetToken(Command, Index, Len, PatternCmd);
 
         if (PatternCmd == TEXT_TOKEN)

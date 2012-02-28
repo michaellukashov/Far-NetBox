@@ -45,7 +45,7 @@ int TNamedObject::CompareName(const std::wstring aName,
 void TNamedObject::MakeUniqueIn(TNamedObjectList *List)
 {
     // This object can't be item of list, it would create infinite loop
-    if (List && (List->IndexOf(this) == -1))
+    if (List && (List->IndexOf(this) == NPOS))
         while (List->FindByName(GetName()))
         {
             size_t N = 0, P = 0;

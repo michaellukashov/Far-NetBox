@@ -243,7 +243,7 @@ public:
     {
         const wchar_t *Name = (StdError ? L"erroroutput" : L"output");
         size_t Index = FNames->IndexOf(Name);
-        if (Index != -1)
+        if (Index != NPOS)
         {
             FValues->PutString(Index, FValues->GetString(Index) + L"\r\n" + Output);
         }

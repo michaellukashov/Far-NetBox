@@ -341,7 +341,7 @@ void TCustomFarPlugin::ClosePanel(void *Plugin)
     {
         ResetCachedInfo();
         TCustomFarFileSystem *FileSystem = static_cast<TCustomFarFileSystem *>(Plugin);
-        assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
+        assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
         {
             BOOST_SCOPE_EXIT ( (&Self) (&FileSystem) )
             {
@@ -369,7 +369,7 @@ void TCustomFarPlugin::HandleFileSystemException(
     // panel contents on themselves (like ProcessPanelInput), the instance of filesystem
     // may not exists anymore.
     // Check against object pointer is stupid, but no other idea so far.
-    if (FOpenedPlugins->IndexOf(FileSystem) != -1)
+    if (FOpenedPlugins->IndexOf(FileSystem) != NPOS)
     {
         DEBUG_PRINTF(L"before FileSystem->HandleException");
         FileSystem->HandleException(E, OpMode);
@@ -387,7 +387,7 @@ void TCustomFarPlugin::GetOpenPanelInfo(struct OpenPanelInfo *Info)
     try
     {
         ResetCachedInfo();
-        assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
+        assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
 
         {
             TGuard Guard(FileSystem->GetCriticalSection());
@@ -407,7 +407,7 @@ int TCustomFarPlugin::GetFindData(struct GetFindDataInfo *Info)
     try
     {
         ResetCachedInfo();
-        assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
+        assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
 
         {
             TGuard Guard(FileSystem->GetCriticalSection());
@@ -428,7 +428,7 @@ void TCustomFarPlugin::FreeFindData(const struct FreeFindDataInfo *Info)
     try
     {
         ResetCachedInfo();
-        assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
+        assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
 
         {
             TGuard Guard(FileSystem->GetCriticalSection());
@@ -450,7 +450,7 @@ int TCustomFarPlugin::ProcessHostFile(const struct ProcessHostFileInfo *Info)
         ResetCachedInfo();
         if (HandlesFunction(hfProcessHostFile))
         {
-            assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
+            assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
 
             {
                 TGuard Guard(FileSystem->GetCriticalSection());
@@ -478,7 +478,7 @@ int TCustomFarPlugin::ProcessPanelInput(const struct ProcessPanelInputInfo *Info
         ResetCachedInfo();
         if (HandlesFunction(hfProcessKey))
         {
-            assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
+            assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
 
             {
                 TGuard Guard(FileSystem->GetCriticalSection());
@@ -508,7 +508,7 @@ int TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void *Param)
         ResetCachedInfo();
         if (HandlesFunction(hfProcessEvent))
         {
-            assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
+            assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
 
             std::wstring Buf;
             if ((Event == FE_CHANGEVIEWMODE) || (Event == FE_COMMAND))
@@ -541,7 +541,7 @@ int TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo *Info)
     try
     {
         ResetCachedInfo();
-        assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
+        assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
 
         {
             TGuard Guard(FileSystem->GetCriticalSection());
@@ -562,7 +562,7 @@ int TCustomFarPlugin::MakeDirectory(struct MakeDirectoryInfo *Info)
     try
     {
         ResetCachedInfo();
-        assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
+        assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
 
         {
             TGuard Guard(FileSystem->GetCriticalSection());
@@ -583,7 +583,7 @@ int TCustomFarPlugin::DeleteFiles(const struct DeleteFilesInfo *Info)
     try
     {
         ResetCachedInfo();
-        assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
+        assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
 
         {
             TGuard Guard(FileSystem->GetCriticalSection());
@@ -604,7 +604,7 @@ int TCustomFarPlugin::GetFiles(struct GetFilesInfo *Info)
     try
     {
         ResetCachedInfo();
-        assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
+        assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
 
         {
             TGuard Guard(FileSystem->GetCriticalSection());
@@ -626,7 +626,7 @@ int TCustomFarPlugin::PutFiles(const struct PutFilesInfo *Info)
     try
     {
         ResetCachedInfo();
-        assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
+        assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
 
         {
             TGuard Guard(FileSystem->GetCriticalSection());
@@ -1159,7 +1159,7 @@ size_t TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
                 MenuItems[Count].Flags = flags;
                 if (MenuItems[Count].Flags & MIF_SELECTED)
                 {
-                    assert(Selected == -1);
+                    assert(Selected == NPOS);
                     Selected = i;
                 }
                 std::wstring Str = Text;
@@ -1172,10 +1172,10 @@ size_t TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
         size_t ResultItem = Menu(Flags, Title, Bottom,
                               reinterpret_cast<const FarMenuItem *>(MenuItems), Count, BreakKeys, BreakCode);
 
-        if (ResultItem != -1)
+        if (ResultItem != NPOS)
         {
             Result = MenuItems[ResultItem].UserData;
-            if (Selected != -1)
+            if (Selected != NPOS)
             {
                 Items->PutObject(Selected, (nb::TObject *)(reinterpret_cast<size_t>(Items->GetObject(Selected)) & ~MIF_SELECTED));
             }
@@ -1404,8 +1404,7 @@ void TCustomFarPlugin::ScrollTerminalScreen(int Rows)
     Source.Bottom = static_cast<SHORT>(Size.y);
     Dest.X = 0;
     Dest.Y = 0;
-    Fill.Char.AsciiChar = ' ';
-    // Fill.�har.UnicodeChar = L' ';
+    Fill.Char.UnicodeChar = L' ';
     Fill.Attributes = 7;
     ScrollConsoleScreenBuffer(FConsoleOutput, &Source, NULL, Dest, &Fill);
 }
@@ -1416,8 +1415,8 @@ void TCustomFarPlugin::ShowTerminalScreen()
     nb::TPoint Size, Cursor;
     TerminalInfo(&Size, &Cursor);
 
-    std::wstring Blank = ::StringOfChar(' ', Size.x);
-    Blank.resize(static_cast<size_t>(Size.x));
+    std::wstring Blank = ::StringOfChar(L' ', Size.x);
+    // Blank.resize(static_cast<size_t>(Size.x));
     for (int Y = 0; Y < Size.y; Y++)
     {
         Text(0, Y, 7/* LIGHTGRAY */, Blank);
@@ -1862,7 +1861,7 @@ void TCustomFarFileSystem::GetOpenPanelInfo(struct OpenPanelInfo *Info)
                     FOpenPanelInfo.StartSortMode, StartSortOrder, KeyBarTitles, ShortcutData);
 
                 FOpenPanelInfo.HostFile = TCustomFarPlugin::DuplicateStr(HostFile);
-                FOpenPanelInfo.CurDir = TCustomFarPlugin::DuplicateStr(CurDir);
+                FOpenPanelInfo.CurDir = TCustomFarPlugin::DuplicateStr(::StringReplace(CurDir, L"/", L"\\"));
                 FOpenPanelInfo.Format = TCustomFarPlugin::DuplicateStr(Format);
                 FOpenPanelInfo.PanelTitle = TCustomFarPlugin::DuplicateStr(PanelTitle);
                 // FOpenPanelInfo.StartPanelMode=L'4';
@@ -2231,7 +2230,7 @@ void TFarPanelModes::SetPanelMode(size_t Mode, const std::wstring ColumnTypes,
                                   const std::wstring StatusColumnWidths)
 {
     size_t ColumnTypesCount = !ColumnTypes.empty() ? CommaCount(ColumnTypes) + 1 : 0;
-    assert(Mode != -1 && Mode < LENOF(FPanelModes));
+    assert(Mode != NPOS && Mode < LENOF(FPanelModes));
     assert(!ColumnTitles || (ColumnTitles->GetCount() == ColumnTypesCount));
 
     ClearPanelMode(FPanelModes[Mode]);
@@ -2688,7 +2687,7 @@ void TFarPanelInfo::SetFocusedItem(TFarPanelItem *value)
 {
     nb::TObjectList *Items = GetItems();
     size_t Index = Items->IndexOf(static_cast<nb::TObject *>(value));
-    assert(Index != -1);
+    assert(Index != NPOS);
     SetFocusedIndex(Index);
     // delete Items;
 }
@@ -2705,7 +2704,7 @@ void TFarPanelInfo::SetFocusedIndex(size_t value)
     // DEBUG_PRINTF(L"GetFocusedIndex = %d, value = %d", GetFocusedIndex(), value);
     if (GetFocusedIndex() != value)
     {
-        assert(value != -1 && value < FPanelInfo->ItemsNumber);
+        assert(value != NPOS && value < FPanelInfo->ItemsNumber);
         FPanelInfo->CurrentItem = value;
         PanelRedrawInfo PanelInfo;
         PanelInfo.CurrentItem = FPanelInfo->CurrentItem;
@@ -2804,7 +2803,7 @@ void TFarMenuItems::PutObject(size_t Index, nb::TObject *AObject)
     }
     if (Focused)
     {
-        if (GetItemFocused() != -1)
+        if (GetItemFocused() != NPOS)
         {
             SetFlag(GetItemFocused(), MIF_SELECTED, false);
         }
@@ -2836,7 +2835,7 @@ void TFarMenuItems::SetItemFocused(size_t value)
 {
     if (GetItemFocused() != value)
     {
-        if (GetItemFocused() != -1)
+        if (GetItemFocused() != NPOS)
         {
             SetFlag(GetItemFocused(), MIF_SELECTED, false);
         }

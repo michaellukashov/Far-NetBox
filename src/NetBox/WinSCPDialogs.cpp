@@ -31,8 +31,9 @@ enum TButtonResult { brCancel = -1, brOK = 1, brConnect };
 TFtps FtpEncryptionToFtps(TFtpEncryptionSwitch value)
 {
     return value == fesPlainFTP ? ftpsNone : 
-           value == fesExplicit ? ftpsExplicitSsl :
-           value == fesImplicit ? ftpsImplicit : ftpsNone;
+           value == fesExplicitSSL ? ftpsExplicitSsl :
+           value == fesImplicit ? ftpsImplicit :
+           value == fesExplicitTLS ? ftpsExplicitTls : ftpsNone;
 }
 //---------------------------------------------------------------------------
 class TWinSCPDialog : public TFarDialog
@@ -2263,8 +2264,9 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
     // FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_USE_PLAIN_FTP));
     FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_REQUIRE_EXPLICIT_FTP));
     FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_REQUIRE_IMPLICIT_FTP));
-    FtpEncryptionCombo->SetWidth(30);
-    FtpEncryptionCombo->SetRight(CRect.Right - 12 - 2);
+    FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_REQUIRE_EXPLICIT_TLS_FTP));
+    FtpEncryptionCombo->SetWidth(35);
+    // FtpEncryptionCombo->SetRight(CRect.Right - 12 - 2);
 
     // Connection tab
 
@@ -3245,12 +3247,16 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
         FtpEncryptionCombo->GetItems()->SetSelected(0);
         break;
 
-    case fesExplicit:
+    case fesExplicitSSL:
         FtpEncryptionCombo->GetItems()->SetSelected(0);
         break;
 
     case fesImplicit:
         FtpEncryptionCombo->GetItems()->SetSelected(1);
+        break;
+
+    case fesExplicitTLS:
+        FtpEncryptionCombo->GetItems()->SetSelected(2);
         break;
 
     default:
@@ -3538,10 +3544,13 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
         switch (FtpEncryptionCombo->GetItems()->GetSelected())
         {
             case 0:
-                SessionData->SetFtpEncryption(fesExplicit);
+                SessionData->SetFtpEncryption(fesExplicitSSL);
                 break;
             case 1:
                 SessionData->SetFtpEncryption(fesImplicit);
+                break;
+            case 2:
+                SessionData->SetFtpEncryption(fesExplicitTLS);
                 break;
             default:
                 SessionData->SetFtpEncryption(fesPlainFTP);
@@ -3803,7 +3812,7 @@ TLoginType TSessionDialog::GetLoginType()
 //---------------------------------------------------------------------------
 TFSProtocol TSessionDialog::IndexToFSProtocol(size_t Index, bool AllowScpFallback)
 {
-    bool InBounds = (Index != -1) && (Index < LENOF(FSOrder));
+    bool InBounds = (Index != NPOS) && (Index < LENOF(FSOrder));
     assert(InBounds);
     TFSProtocol Result = fsSFTP;
     if (InBounds)
@@ -3819,7 +3828,7 @@ TFSProtocol TSessionDialog::IndexToFSProtocol(size_t Index, bool AllowScpFallbac
 //---------------------------------------------------------------------------
 TLoginType TSessionDialog::IndexToLoginType(size_t Index)
 {
-    bool InBounds = (Index != -1) && (Index <= ltNormal);
+    bool InBounds = (Index != NPOS) && (Index <= ltNormal);
     assert(InBounds);
     TLoginType Result = ltAnonymous;
     if (InBounds)
@@ -6167,7 +6176,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
                 {
                     TBookmark *Bookmark = BookmarkList->GetBookmark(i);
                     std::wstring RemoteDirectory = Bookmark->GetRemote();
-                    if (!RemoteDirectory.empty() && (BookmarkDirectories->IndexOf(RemoteDirectory.c_str()) == -1))
+                    if (!RemoteDirectory.empty() && (BookmarkDirectories->IndexOf(RemoteDirectory.c_str()) == NPOS))
                     {
                         size_t Pos;
                         Pos = BookmarkDirectories->Add(RemoteDirectory);
@@ -6175,7 +6184,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
                         {
                             FirstItemFocused = Pos;
                         }
-                        else if ((FirstItemFocused != -1) && (FirstItemFocused >= Pos))
+                        else if ((FirstItemFocused != NPOS) && (FirstItemFocused >= Pos))
                         {
                             FirstItemFocused++;
                         }
@@ -6199,7 +6208,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
 
                     BookmarksOffset = BookmarkItems->GetCount();
 
-                    if (FirstItemFocused != -1)
+                    if (FirstItemFocused != NPOS)
                     {
                         FirstItemFocused += BookmarkItems->GetCount();
                     }
@@ -6217,7 +6226,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
                 }
             }
 
-            if (ItemFocused == -1)
+            if (ItemFocused == NPOS)
             {
                 BookmarkItems->SetItemFocused(FirstItemFocused);
             }
@@ -6251,7 +6260,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
                 assert(BreakCode >= 0 && BreakCode <= 4);
                 if ((BreakCode == 0) || (BreakCode == 1))
                 {
-                    assert(ItemFocused != -1);
+                    assert(ItemFocused != NPOS);
                     if (ItemFocused >= BookmarksOffset)
                     {
                         TBookmark *Bookmark = static_cast<TBookmark *>(Bookmarks->GetItem(ItemFocused - BookmarksOffset));
@@ -6285,7 +6294,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
                 }
             }
 
-            Result = (BreakCode < 0) && (ItemFocused != -1);
+            Result = (BreakCode < 0) && (ItemFocused != NPOS);
         }
     }
     while (Repeat);
@@ -7228,7 +7237,7 @@ std::wstring TSynchronizeChecklistDialog::ItemLine(
     }
 
     size_t Action = ChecklistItem->Action - 1;
-    assert((Action != -1) && (Action < LENOF(FActions)));
+    assert((Action != NPOS) && (Action < LENOF(FActions)));
     AddColumn(Line, FActions[Action], 4);
 
     if (ChecklistItem->Action == TSynchronizeChecklist::saDeleteLocal)
@@ -7402,7 +7411,7 @@ void TSynchronizeChecklistDialog::ListBoxClick(
     TFarDialogItem * /*Item*/, MOUSE_EVENT_RECORD * /*Event*/)
 {
     size_t Index = ListBox->GetItems()->GetSelected();
-    if (Index != -1)
+    if (Index != NPOS)
     {
         if (ListBox->GetItems()->GetChecked(Index))
         {
@@ -7436,7 +7445,7 @@ bool TSynchronizeChecklistDialog::Key(TFarDialogItem *Item, long KeyCode)
                  (Key == VK_ADD) || (Key == VK_SUBTRACT))
         {
             size_t Index = ListBox->GetItems()->GetSelected();
-            if (Index != -1)
+            if (Index != NPOS)
             {
                 if (ListBox->GetItems()->GetChecked(Index) && (Key != VK_ADD))
                 {
@@ -8140,7 +8149,7 @@ void TQueueDialog::OperationButtonClick(TFarButton *Sender,
                                         bool & /*Close*/)
 {
     TQueueItemProxy *QueueItem = NULL;
-    if (QueueListBox->GetItems()->GetSelected() != -1)
+    if (QueueListBox->GetItems()->GetSelected() != NPOS)
     {
         QueueItem = reinterpret_cast<TQueueItemProxy *>(
                         QueueListBox->GetItems()->GetObject(QueueListBox->GetItems()->GetSelected()));
@@ -8232,7 +8241,7 @@ bool TQueueDialog::Key(TFarDialogItem * /*Item*/, long KeyCode)
 void TQueueDialog::UpdateControls()
 {
     TQueueItemProxy *QueueItem = NULL;
-    if (QueueListBox->GetItems()->GetSelected() != -1)
+    if (QueueListBox->GetItems()->GetSelected() != NPOS)
     {
         QueueItem = reinterpret_cast<TQueueItemProxy *>(
                         QueueListBox->GetItems()->GetObject(QueueListBox->GetItems()->GetSelected()));
