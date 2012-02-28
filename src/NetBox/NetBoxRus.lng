@@ -368,6 +368,7 @@
 "Use plain FTP"
 "Require explicit FTP over SSL"
 "Require implicit FTP over SSL"
+"Require explicit FTP over TLS"
 
 "Attributes"
 "Change file attributes for"
