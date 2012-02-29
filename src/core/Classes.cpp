@@ -398,7 +398,8 @@ std::wstring TStrings::GetDelimitedText() const
             std::wstring line = GetString(i);
             Result += GetQuoteChar() + line + GetQuoteChar() + GetDelimiter();
         }
-        Result.resize(Result.size() - 1);
+        if (Result.size() > 0)
+            Result.resize(Result.size() - 1);
     }
     return Result;
 }
