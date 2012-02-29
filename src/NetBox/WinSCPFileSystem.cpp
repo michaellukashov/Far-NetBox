@@ -3504,7 +3504,7 @@ std::wstring TWinSCPFileSystem::ProgressBar(size_t Percentage, size_t Width)
     std::wstring Result;
     // 0xB0 - 0x2591
     // 0xDB - 0x2588
-    Result = ::StringOfChar(0x2588, (Width - 5) * Percentage / 100);
+    Result = ::StringOfChar(0x2588, (Width - 5) * (Percentage > 100 ? 100 : Percentage) / 100);
     Result += ::StringOfChar(0x2591, (Width - 5) - Result.size());
     Result += FORMAT(L"%4d%%", Percentage);
     return Result;
