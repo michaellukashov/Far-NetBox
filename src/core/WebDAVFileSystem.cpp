@@ -1563,10 +1563,10 @@ void TWebDAVFileSystem::SinkFile(const std::wstring FileName,
         DEBUG_PRINTF(L"before FTerminal->HandleException");
         SUSPEND_OPERATION (
             if (!FTerminal->HandleException(&E))
-    {
-        throw;
-    }
-    );
+            {
+                throw;
+            }
+        );
 
         if (OperationProgress->Cancel)
         {

@@ -3750,10 +3750,10 @@ void TSFTPFileSystem::CopyToRemote(nb::TStrings *FilesToCopy,
                 DEBUG_PRINTF(L"before FTerminal->HandleException");
                 SUSPEND_OPERATION (
                     if (!FTerminal->HandleException(&E))
-            {
-                throw;
-            };
-            );
+                    {
+                        throw;
+                    };
+                );
             }
         }
         Index++;
