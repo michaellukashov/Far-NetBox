@@ -3772,25 +3772,25 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(std::wstring &FileName,
 
         // possibly we can allow alternate resume at least in some cases
         if (CanAppend)
-{
-    Answers |= qaRetry;
-}
-TQueryButtonAlias Aliases[3];
-Aliases[0].Button = qaRetry;
-Aliases[0].Alias = LoadStr(APPEND_BUTTON);
-Aliases[1].Button = qaAll;
-Aliases[1].Alias = LoadStr(YES_TO_NEWER_BUTTON);
-Aliases[2].Button = qaIgnore;
-Aliases[2].Alias = LoadStr(RENAME_BUTTON);
-TQueryParams QueryParams(qpNeverAskAgainCheck);
-QueryParams.NoBatchAnswers = qaIgnore | qaRetry | qaAll;
-QueryParams.Aliases = Aliases;
-QueryParams.AliasesCount = LENOF(Aliases);
-Answer = FTerminal->ConfirmFileOverwrite(FileName, FileParams,
-         Answers, &QueryParams,
-         OperationProgress->Side == osLocal ? osRemote : osLocal,
-         Params, OperationProgress);
-);
+        {
+            Answers |= qaRetry;
+        }
+        TQueryButtonAlias Aliases[3];
+        Aliases[0].Button = qaRetry;
+        Aliases[0].Alias = LoadStr(APPEND_BUTTON);
+        Aliases[1].Button = qaAll;
+        Aliases[1].Alias = LoadStr(YES_TO_NEWER_BUTTON);
+        Aliases[2].Button = qaIgnore;
+        Aliases[2].Alias = LoadStr(RENAME_BUTTON);
+        TQueryParams QueryParams(qpNeverAskAgainCheck);
+        QueryParams.NoBatchAnswers = qaIgnore | qaRetry | qaAll;
+        QueryParams.Aliases = Aliases;
+        QueryParams.AliasesCount = LENOF(Aliases);
+        Answer = FTerminal->ConfirmFileOverwrite(FileName, FileParams,
+                 Answers, &QueryParams,
+                 OperationProgress->Side == osLocal ? osRemote : osLocal,
+                 Params, OperationProgress);
+    );
 
     if (CanAppend &&
             ((Answer == qaRetry) || (Answer == qaSkip)))
