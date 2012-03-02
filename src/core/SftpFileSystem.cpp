@@ -3966,14 +3966,15 @@ void TSFTPFileSystem::SFTPSourceRobust(const std::wstring FileName,
     TUploadSessionAction Action(FTerminal->GetLog());
     TOpenRemoteFileParams OpenParams;
     OpenParams.OverwriteMode = omOverwrite;
-
+    TOverwriteFileParams FileParams;
     do
     {
         Retry = false;
         bool ChildError = false;
         try
         {
-            SFTPSource(FileName, TargetDir, CopyParam, Params, &OpenParams, OperationProgress,
+            SFTPSource(FileName, TargetDir, CopyParam, Params,
+                       &OpenParams, &FileParams, OperationProgress,
                        Flags, Action, ChildError);
         }
         catch (std::exception &E)
@@ -4008,6 +4009,7 @@ void TSFTPFileSystem::SFTPSourceRobust(const std::wstring FileName,
 void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
                                  const std::wstring TargetDir, const TCopyParamType *CopyParam, int Params,
                                  TOpenRemoteFileParams *OpenParams,
+                                 TOverwriteFileParams *FileParams,
                                  TFileOperationProgressType *OperationProgress, unsigned int Flags,
                                  TUploadSessionAction &Action, bool &ChildError)
 {
@@ -4022,8 +4024,6 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
         FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", FileName.c_str()));
         THROW_SKIP_FILE_NULL;
     }
-
-    TOverwriteFileParams FileParams;
 
     HANDLE File = 0;
     __int64 MTime = 0, ATime = 0;
@@ -4090,8 +4090,8 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
                             IsCapable(fcRename);
             OperationProgress->SetResumeStatus(ResumeAllowed ? rsEnabled : rsDisabled);
 
-            FileParams.SourceSize = OperationProgress->LocalSize;
-            FileParams.SourceTimestamp = UnixToDateTime(MTime,
+            FileParams->SourceSize = OperationProgress->LocalSize;
+            FileParams->SourceTimestamp = UnixToDateTime(MTime,
                                          GetSessionData()->GetDSTMode());
 
             if (ResumeAllowed)
@@ -4106,8 +4106,8 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
                     if (DestFileExists)
                     {
                         OpenParams->DestFileSize = file->GetSize();
-                        FileParams.DestSize = OpenParams->DestFileSize;
-                        FileParams.DestTimestamp = file->GetModification();
+                        FileParams->DestSize = OpenParams->DestFileSize;
+                        FileParams->DestTimestamp = file->GetModification();
                         DestRights = *file->GetRights();
                         // if destination file is symlink, never do resumable transfer,
                         // as it would delete the symlink.
@@ -4167,7 +4167,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
                             {
                                 std::wstring PrevDestFileName = DestFileName;
                                 SFTPConfirmOverwrite(DestFileName,
-                                                     Params, OperationProgress, OpenParams->OverwriteMode, &FileParams);
+                                                     Params, OperationProgress, OpenParams->OverwriteMode, FileParams);
                                 if (PrevDestFileName != DestFileName)
                                 {
                                     // update paths in case user changes the file name
@@ -4192,7 +4192,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
             OpenParams->OperationProgress = OperationProgress;
             OpenParams->CopyParam = CopyParam;
             OpenParams->Params = Params;
-            OpenParams->FileParams = &FileParams;
+            OpenParams->FileParams = FileParams;
             OpenParams->Confirmed = false;
 
             FTerminal->LogEvent(L"Opening remote file.");

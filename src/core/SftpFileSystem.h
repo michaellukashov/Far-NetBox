@@ -153,6 +153,7 @@ protected:
     void SFTPSource(const std::wstring FileName,
                     const std::wstring TargetDir, const TCopyParamType *CopyParam, int Params,
                     TOpenRemoteFileParams *OpenParams,
+                    TOverwriteFileParams *FileParams,
                     TFileOperationProgressType *OperationProgress,
                     unsigned int Flags,
                     TUploadSessionAction &Action, bool &ChildError);
