@@ -3765,7 +3765,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(std::wstring &FileName,
         TOverwriteMode &OverwriteMode, const TOverwriteFileParams *FileParams)
 {
     bool CanAppend = (FVersion < 4) || !OperationProgress->AsciiTransfer;
-    int Answer;
+    int Answer = 0;
     SUSPEND_OPERATION
     (
         int Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll | qaIgnore;
