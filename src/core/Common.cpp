@@ -2727,6 +2727,7 @@ std::wstring ExpandEnvVars(const std::wstring &str)
 std::wstring StringOfChar(const wchar_t c, size_t len)
 {
     std::wstring result;
+    if (int(len) < 0) len = 0;
     result.resize(len, c);
     return result;
 }

@@ -23,7 +23,8 @@ To build plugin from source, you will need:
   * Microsoft Platform SDK, available for download at [http://www.microsoft.com/msdownload/platformsdk/sdkupdate/](http://www.microsoft.com/msdownload/platformsdk/sdkupdate/).  
   * Perl 5 (to compile openssl), available at [http://www.activestate.com/ActivePerl/](http://www.activestate.com/ActivePerl/)  
   * UnxUtils [http://unxutils.sourceforge.net/](http://unxutils.sourceforge.net/)  
-  * nasm [http://www.nasm.us/pub/nasm/releasebuilds/2.09.10/win32/](http://www.nasm.us/pub/nasm/releasebuilds/2.09.10/win32/)  
+  * nasm [http://www.nasm.us/pub/nasm/releasebuilds/2.09.10/win32/](http://www.nasm.us/pub/nasm/releasebuilds/2.09.10/win32/)
+
 
 1.  Download the source:
 
@@ -35,6 +36,7 @@ To build plugin from source, you will need:
         git clone git://github.com/michaellukashov/Far-NetBox.git
 
     From now on, we assume that your source tree is C:/src/Far-NetBox
+
 
 2.  Compile boost libraries:
     
@@ -72,16 +74,19 @@ To build plugin from source, you will need:
         call bjam architecture=x86 address-model=64 variant=debug link=static threading=multi runtime-debugging=on runtime-link=static stage -j3  
         cp -R libs/boost/libs/signals/build/stage/* libs/boost/stage/x64
 
+
 3. Compile openssl:
 
         cd libs/openssl  
         call src/NetBox/scripts/build_openssl.bat x86  
         call src/NetBox/scripts/build_openssl.bat x64  
 
+
 4. Compile NetBox plugin:
 
         cmd /c %VS100COMNTOOLS%\..\..\VC\vcvarsall.bat x86 && devenv NetBox.sln /Build "Debug|Win32" /USEENV /Project "NetBox"
         cmd /c %VS100COMNTOOLS%\..\..\VC\vcvarsall.bat x86_amd64 && devenv NetBox.sln /Build "Debug|x64" /USEENV /Project "NetBox"
+
 
 DISCLAIMER
 ========================
