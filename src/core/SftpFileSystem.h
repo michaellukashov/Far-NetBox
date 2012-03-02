@@ -5,6 +5,7 @@
 #include <FileSystems.h>
 //---------------------------------------------------------------------------
 class TSFTPPacket;
+struct TOpenRemoteFileParams;
 struct TOverwriteFileParams;
 struct TSFTPSupport;
 class TSecureShell;
@@ -151,7 +152,9 @@ protected:
                           TFileOperationProgressType *OperationProgress, unsigned int Flags);
     void SFTPSource(const std::wstring FileName,
                     const std::wstring TargetDir, const TCopyParamType *CopyParam, int Params,
-                    TFileOperationProgressType *OperationProgress, unsigned int Flags,
+                    TOpenRemoteFileParams *OpenParams,
+                    TFileOperationProgressType *OperationProgress,
+                    unsigned int Flags,
                     TUploadSessionAction &Action, bool &ChildError);
     std::string SFTPOpenRemoteFile(const std::wstring FileName,
                                    size_t OpenType, __int64 Size = -1);
