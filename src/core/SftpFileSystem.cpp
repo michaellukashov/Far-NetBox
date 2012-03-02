@@ -1728,6 +1728,7 @@ TSFTPFileSystem::~TSFTPFileSystem()
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::Open()
 {
+    ResetConnection();
     FSecureShell->Open();
 }
 //---------------------------------------------------------------------------
