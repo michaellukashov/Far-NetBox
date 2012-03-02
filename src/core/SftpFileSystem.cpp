@@ -1842,11 +1842,13 @@ void TSFTPFileSystem::Idle()
 void TSFTPFileSystem::ResetConnection()
 {
     // there must be no valid packet reservation at the end
+    /*
     for (size_t i = 0; i < FPacketReservations->GetCount(); i++)
     {
         assert(FPacketReservations->GetItem(i) == NULL);
         delete static_cast<TSFTPPacket *>(FPacketReservations->GetItem(i));
     }
+    */
     FPacketReservations->Clear();
     FPacketNumbers.clear();
 }
