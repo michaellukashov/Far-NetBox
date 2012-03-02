@@ -2286,13 +2286,8 @@ size_t TSFTPFileSystem::ReceivePacket(TSFTPPacket *Packet,
                 TSFTPPacket *ReservedPacket;
                 size_t MessageNumber;
                 size_t idx = 0;
-                // for (size_t Index = 0; Index < FPacketReservations->GetCount(); Index++)
                 for (size_t Index = 0; Index < FPacketNumbers.size(); Index++)
                 {
-                    // if (FPacketReservations->GetItem(Index) == NULL)
-                    // {
-                        // continue;
-                    // }
                     MessageNumber = FPacketNumbers[Index];
                     if (MessageNumber == Packet->GetMessageNumber())
                     {
