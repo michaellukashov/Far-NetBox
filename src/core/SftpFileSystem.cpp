@@ -2377,7 +2377,7 @@ void TSFTPFileSystem::UnreserveResponse(TSFTPPacket *Response)
         if (Reservation != NPOS)
         {
             // we probably do not remove the item at all, because
-            // we must remember that the respose was expected, so we skip it
+            // we must remember that the response was expected, so we skip it
             // in receivepacket()
             FPacketReservations->SetItem(Reservation, NULL);
         }
