@@ -1,5 +1,8 @@
-NetBox 2.0.13 ??.03.2012
+NetBox 2.0.13 03.03.2012
 ---------------------
+  * SFTP: AV if a connection breaks; AV after reconnect
+    (http://forum.farmanager.com/viewtopic.php?f=39&t=6638&p=91993#p91993)
+  * FTP: Fixed bug causing a "string too long" error
   * FTPS: Added option "Explicit FTP over TLS" (issue #7)
   * SCP: Bugfix: Ctrl-G ("Apply command") did not work; fixed scroll terminal screen
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=570#p91648)
