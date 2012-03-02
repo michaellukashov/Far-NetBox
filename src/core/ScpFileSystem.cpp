@@ -1623,11 +1623,11 @@ void TSCPFileSystem::CopyToRemote(nb::TStrings *FilesToCopy,
                         if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, FileName.c_str()),
                                                           &E,
                                                           qaOK | qaAbort, &params, qtError) == qaAbort)
-                {
-                    OperationProgress->Cancel = csCancel;
-                }
-                OperationProgress->Finish(FileName, false, OnceDoneOperation);
-                if (!FTerminal->HandleException(&E)) throw;
+                        {
+                            OperationProgress->Cancel = csCancel;
+                        }
+                        OperationProgress->Finish(FileName, false, OnceDoneOperation);
+                        if (!FTerminal->HandleException(&E)) throw;
                     );
                 }
                 catch (const EScpSkipFile &E)
@@ -2023,10 +2023,10 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
                         if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, FileName.c_str()),
                                                           &E,
                                                           qaOK | qaAbort, &params, qtError) == qaAbort)
-                {
-                    OperationProgress->Cancel = csCancel;
-                }
-                if (!FTerminal->HandleException(&E)) throw;
+                        {
+                            OperationProgress->Cancel = csCancel;
+                        }
+                        if (!FTerminal->HandleException(&E)) throw;
                     );
                 }
                 catch (const EScpSkipFile &E)
@@ -2606,11 +2606,11 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
                     // DEBUG_PRINTF(L"AbsoluteFileName = %s", AbsoluteFileName.c_str());
                     if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, AbsoluteFileName.c_str()),
                                                       &E, qaOK | qaAbort, &params, qtError) == qaAbort)
-            {
-                OperationProgress->Cancel = csCancel;
-            }
-            FTerminal->FLog->AddException(&E);
-            );
+                    {
+                        OperationProgress->Cancel = csCancel;
+                    }
+                    FTerminal->FLog->AddException(&E);
+                );
             }
             // this was inside above condition, but then transfer was considered
             // succesfull, even when for example user refused to overwrite file
