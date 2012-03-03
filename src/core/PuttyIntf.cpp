@@ -486,30 +486,6 @@ std::wstring KeyTypeName(TKeyType KeyType)
     return nb::MB2W(key_type_to_str(KeyType));
 }
 //---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
-struct TUnicodeEmitParams
-{
-    std::wstring Buffer;
-    size_t Pos;
-    size_t Len;
-};
-//---------------------------------------------------------------------------
-extern "C" void UnicodeEmit(void *AParams, long int Output)
-{
-    if (Output == 0xFFFFL) // see Putty's charset\internal.h
-    {
-        throw ExtException(LoadStr(DECODE_UTF_ERROR));
-    }
-    TUnicodeEmitParams *Params = static_cast<TUnicodeEmitParams *>(AParams);
-    if (Params->Pos >= Params->Len)
-    {
-        Params->Len += 50;
-        Params->Buffer.resize(Params->Len);
-    }
-    Params->Buffer[Params->Pos] = static_cast<wchar_t>(Output);
-    Params->Pos++;
-}
-//---------------------------------------------------------------------------
 __int64 ParseSize(const std::wstring SizeStr)
 {
     return parse_blocksize(nb::W2MB(SizeStr.c_str()).c_str());
