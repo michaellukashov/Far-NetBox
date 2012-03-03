@@ -556,7 +556,7 @@ void TSCPFileSystem::SendCommand(const std::wstring Cmd)
     // We suppose, that 'Cmd' already contains command that ensures,
     // that 'LastLine' will be printed
     // DEBUG_PRINTF(L"Cmd = %s", Cmd.c_str());
-    FSecureShell->SendLine(Cmd, FUtfStrings);
+    FSecureShell->SendLine(Cmd);
     FProcessingCommand = true;
 }
 //---------------------------------------------------------------------------
@@ -614,7 +614,7 @@ bool TSCPFileSystem::IsLastLine(std::wstring &Line)
 //---------------------------------------------------------------------------
 void TSCPFileSystem::SkipFirstLine()
 {
-    std::wstring Line = FSecureShell->ReceiveLine(FUtfStrings);
+    std::wstring Line = FSecureShell->ReceiveLine();
     if (Line != FCommandSet->GetFirstLine())
     {
         FTerminal->TerminalError(NULL, FMTLOAD(FIRST_LINE_EXPECTED, Line.c_str()));
@@ -637,7 +637,7 @@ void TSCPFileSystem::ReadCommandOutput(int Params, const std::wstring *Cmd)
             // contain CR/LF, we can recognize last line
             do
             {
-                Line = FSecureShell->ReceiveLine(FUtfStrings);
+                Line = FSecureShell->ReceiveLine();
                 // DEBUG_PRINTF(L"Line = %s", Line.c_str());
                 IsLast = IsLastLine(Line);
                 if (!IsLast || !Line.empty())
@@ -1114,7 +1114,7 @@ TRemoteFile *TSCPFileSystem::CreateRemoteFile(
     try
     {
         File->SetTerminal(FTerminal);
-        File->SetListingStr(ListingStr, FUtfStrings);
+        File->SetListingStr(ListingStr);
         File->ShiftTime(FTerminal->GetSessionData()->GetTimeDifference());
         File->Complete();
     }
@@ -1372,7 +1372,7 @@ void TSCPFileSystem::SCPResponse(bool *GotLastLine)
     case 1:     /* error */
     case 2:     /* fatal error */
         // pscp adds 'Resp' to 'Msg', why?
-        std::wstring MsgW = FSecureShell->ReceiveLine(FUtfStrings);
+        std::wstring MsgW = FSecureShell->ReceiveLine();
         std::string Msg = nb::W2MB(MsgW.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber());
         std::string Line = Resp + Msg;
         std::wstring LineW = nb::MB2W(Line.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber());
@@ -1787,7 +1787,7 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
                             // Send last file access and modification time
                             swprintf_s(const_cast<wchar_t *>(Buf.c_str()), Buf.size(), L"T%lu 0 %lu 0", static_cast<unsigned long>(MTime),
                                        static_cast<unsigned long>(ATime));
-                            FSecureShell->SendLine(Buf.c_str(), FUtfStrings);
+                            FSecureShell->SendLine(Buf.c_str());
                             SCPResponse();
                         }
 
@@ -1800,7 +1800,7 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
                                    static_cast<int>(OperationProgress->AsciiTransfer ? AsciiBuf.GetSize() :
                                                     OperationProgress->LocalSize),
                                    DestFileName.c_str());
-                        FSecureShell->SendLine(Buf.c_str(), FUtfStrings);
+                        FSecureShell->SendLine(Buf.c_str());
                         SCPResponse();
                         // Indicate we started transfering file, we need to finish it
                         // If not, it's fatal error
@@ -1971,7 +1971,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
     // Send directory modes (rights), filesize and file name
     Buf = FORMAT(L"D%s 0 %s",
                  CopyParam->RemoteFileRights(Attrs).GetOctal().c_str(), DestFileName.c_str());
-    FSecureShell->SendLine(Buf, FUtfStrings);
+    FSecureShell->SendLine(Buf);
     SCPResponse();
 
     {
@@ -2091,7 +2091,7 @@ void TSCPFileSystem::CopyToLocal(nb::TStrings *FilesToCopy,
                 // terminated, so we need not to terminate it. There is also
                 // possibility that remote side waits for confirmation, so it will hang.
                 // This should not happen (hope)
-                std::wstring Line = Self->FSecureShell->ReceiveLine(Self->FUtfStrings);
+                std::wstring Line = Self->FSecureShell->ReceiveLine();
                 LastLineRead = Self->IsLastLine(Line);
                 if (!LastLineRead)
                 {
@@ -2239,7 +2239,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
         try
         {
             // Receive control record
-            std::wstring Line = FSecureShell->ReceiveLine(FUtfStrings);
+            std::wstring Line = FSecureShell->ReceiveLine();
 
             if (Line.size() == 0) { FTerminal->FatalError(NULL, LoadStr(SCP_EMPTY_LINE)); }
 

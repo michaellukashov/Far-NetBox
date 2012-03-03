@@ -987,7 +987,7 @@ std::wstring TRemoteFile::GetRightsStr()
     return FRights->GetUnknown() ? std::wstring() : FRights->GetText();
 }
 //---------------------------------------------------------------------------
-void TRemoteFile::SetListingStr(const std::wstring value, bool Utf)
+void TRemoteFile::SetListingStr(const std::wstring value)
 {
     // DEBUG_PRINTF(L"begin, value = %s", value.c_str());
     // Value stored in 'value' can be used for error message

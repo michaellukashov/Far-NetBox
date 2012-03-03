@@ -854,7 +854,7 @@ size_t TSecureShell::Receive(char *Buf, size_t Len)
     return Len;
 }
 //---------------------------------------------------------------------------
-std::wstring TSecureShell::ReceiveLine(bool Utf)
+std::wstring TSecureShell::ReceiveLine()
 {
     size_t Index = 0;
     char Ch;
@@ -1029,16 +1029,16 @@ void TSecureShell::SendNull()
     Send("", 1);
 }
 //---------------------------------------------------------------------------
-void TSecureShell::SendStr(const std::wstring Str, bool Utf)
+void TSecureShell::SendStr(const std::wstring Str)
 {
     CheckConnection();
     std::string str = nb::W2MB(Str.c_str(), FSessionData->GetCodePageAsNumber());
     Send(str.c_str(), str.size());
 }
 //---------------------------------------------------------------------------
-void TSecureShell::SendLine(const std::wstring Line, bool Utf)
+void TSecureShell::SendLine(const std::wstring Line)
 {
-    SendStr(Line, Utf);
+    SendStr(Line);
     Send("\n", 1);
     FLog->Add(llInput, Line);
 }
