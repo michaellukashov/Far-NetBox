@@ -167,8 +167,6 @@ public:
     bool GetIsThisDirectory() const;
     bool GetIsInaccesibleDirectory() const;
     std::wstring GetExtension();
-private:
-    std::wstring DecodeString(const std::wstring Value, bool Utf);
 };
 //---------------------------------------------------------------------------
 class TRemoteDirectoryFile : public TRemoteFile

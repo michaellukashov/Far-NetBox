@@ -892,12 +892,8 @@ std::wstring TSecureShell::ReceiveLine(bool Utf)
     }
     while (!EOL);
 
-    // DEBUG_PRINTF2("Line1 = %s", Line.c_str());
-    // std::string Result = Utf ? ::DecodeUTF(Line) : Line;
     // We don't want end-of-line character
-    // Line.resize(Line.size()-1);
     std::wstring LineW = ::TrimRight(nb::MB2W(Line.c_str(), FSessionData->GetCodePageAsNumber()));
-    // DEBUG_PRINTF(L"Line2 = %s", LineW.c_str());
     CaptureOutput(llOutput, LineW);
     return LineW;
 }

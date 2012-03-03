@@ -510,30 +510,6 @@ extern "C" void UnicodeEmit(void *AParams, long int Output)
     Params->Pos++;
 }
 //---------------------------------------------------------------------------
-std::string DecodeUTF(const std::string &UTF)
-{
-    // DEBUG_PRINTF(L"UTF = %s", nb::MB2W(UTF.c_str()).c_str());
-    charset_state State;
-    char *Str;
-    TUnicodeEmitParams Params;
-    std::wstring Result;
-
-    State.s0 = 0;
-    Str = const_cast<char *>(UTF.c_str());
-    Params.Pos = 0;
-    Params.Len = UTF.size();
-    Params.Buffer.resize(Params.Len);
-
-    while (*Str)
-    {
-        read_utf8(NULL, static_cast<unsigned char>(*Str), &State, UnicodeEmit, &Params);
-        Str++;
-    }
-    Params.Buffer.resize(Params.Pos);
-
-    return nb::W2MB(Params.Buffer.c_str());
-}
-//---------------------------------------------------------------------------
 struct TUnicodeEmitParams2
 {
     std::string Buffer;

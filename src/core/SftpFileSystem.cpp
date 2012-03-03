@@ -543,25 +543,9 @@ public:
         return Result;
     }
 
-    inline std::string GetUtfString()
-    {
-        std::string utf = GetStringA();
-        std::string Result = DecodeUTF(utf);
-        return Result;
-    }
-
     inline std::string GetString(bool Utf)
     {
-        /*
-        if (Utf)
-        {
-            return GetUtfString();
-        }
-        else
-        */
-        {
-            return GetStringA();
-        }
+        return GetStringA();
     }
 
     // now purposeless alias to GetString

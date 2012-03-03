@@ -1370,13 +1370,6 @@ int TRemoteFile::GetAttr()
     return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring TRemoteFile::DecodeString(const std::wstring Value, bool Utf)
-{
-    if (!Utf) return Value;
-    std::string Result = ::DecodeUTF(nb::W2MB(Value.c_str()));
-    return nb::MB2W(Result.c_str());
-}
-//---------------------------------------------------------------------------
 void TRemoteFile::SetTerminal(TTerminal *value)
 {
     FTerminal = value;
