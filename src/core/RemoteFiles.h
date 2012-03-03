@@ -147,7 +147,7 @@ public:
     std::wstring GetLinkTo() const { return FLinkTo; }
     void SetLinkTo(const std::wstring value) { FLinkTo = value; }
     std::wstring GetListingStr();
-    void SetListingStr(const std::wstring value, bool Utf);
+    void SetListingStr(const std::wstring value);
     TRights *GetRights() const { return FRights; }
     void SetRights(TRights *value);
     TTerminal *GetTerminal() const { return FTerminal; }
@@ -167,8 +167,6 @@ public:
     bool GetIsThisDirectory() const;
     bool GetIsInaccesibleDirectory() const;
     std::wstring GetExtension();
-private:
-    std::wstring DecodeString(const std::wstring Value, bool Utf);
 };
 //---------------------------------------------------------------------------
 class TRemoteDirectoryFile : public TRemoteFile
