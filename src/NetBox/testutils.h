@@ -54,6 +54,10 @@ protected:
         DEBUG_PRINTF(L"call");
         return -1;
     }
+    virtual bool ImportSessions()
+    {
+        return false;
+    }
 };
 
 //------------------------------------------------------------------------------
