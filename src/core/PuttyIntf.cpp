@@ -510,29 +510,6 @@ extern "C" void UnicodeEmit(void *AParams, long int Output)
     Params->Pos++;
 }
 //---------------------------------------------------------------------------
-struct TUnicodeEmitParams2
-{
-    std::string Buffer;
-    size_t Pos;
-    size_t Len;
-};
-//---------------------------------------------------------------------------
-extern "C" void UnicodeEmit2(void *AParams, long int Output)
-{
-    if (Output == 0xFFFFL) // see Putty's charset\internal.h
-    {
-        throw ExtException(LoadStr(DECODE_UTF_ERROR));
-    }
-    TUnicodeEmitParams2 *Params = static_cast<TUnicodeEmitParams2 *>(AParams);
-    if (Params->Pos >= Params->Len)
-    {
-        Params->Len += 50;
-        Params->Buffer.resize(Params->Len);
-    }
-    Params->Buffer[Params->Pos] = static_cast<unsigned char>(Output);
-    Params->Pos++;
-}
-//---------------------------------------------------------------------------
 __int64 ParseSize(const std::wstring SizeStr)
 {
     return parse_blocksize(nb::W2MB(SizeStr.c_str()).c_str());
