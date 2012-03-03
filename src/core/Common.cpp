@@ -2290,9 +2290,7 @@ int AnsiCompareIC(const std::wstring str1, const std::wstring str2)
 
 bool AnsiContainsText(const std::wstring str1, const std::wstring str2)
 {
-    // FIXME
-    nb::Error(SNotImplemented, 76);
-    return false;
+    return ::Pos(str1, str2) != NPOS;
 }
 
 void RaiseLastOSError()
