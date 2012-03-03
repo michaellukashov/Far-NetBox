@@ -557,39 +557,6 @@ extern "C" void UnicodeEmit2(void *AParams, long int Output)
     Params->Pos++;
 }
 //---------------------------------------------------------------------------
-std::string EncodeUTF(const std::wstring Source)
-{
-    // std::wstring::c_bstr() returns NULL for empty strings
-    // (as opposite to std::wstring::c_str() which returns "")
-    // DEBUG_PRINTF(L"Source = %s", nb::MB2W(Source.c_str()).c_str());
-    if (Source.empty())
-    {
-        return "";
-    }
-    else
-    {
-        charset_state State;
-        wchar_t *Str;
-        TUnicodeEmitParams2 Params;
-
-        State.s0 = 0;
-        Str = const_cast<wchar_t *>(Source.c_str());
-        Params.Pos = 0;
-        Params.Len = Source.size();
-        Params.Buffer.resize(Params.Len);
-
-        while (*Str)
-        {
-            write_utf8(NULL, *Str, &State, UnicodeEmit2, &Params);
-            Str++;
-        }
-        Params.Buffer.resize(Params.Pos);
-
-        // return nb::W2MB(Params.Buffer.c_str());
-        return Params.Buffer;
-    }
-}
-//---------------------------------------------------------------------------
 __int64 ParseSize(const std::wstring SizeStr)
 {
     return parse_blocksize(nb::W2MB(SizeStr.c_str()).c_str());

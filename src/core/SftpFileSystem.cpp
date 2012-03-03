@@ -319,24 +319,9 @@ public:
         AddStringA(ValueA);
     }
 
-    inline void AddUtfString(const std::wstring Value)
-    {
-        // AddStringW(Value);
-        AddStringA(EncodeUTF(Value));
-    }
-
     inline void AddString(const std::wstring Value, bool Utf)
     {
-        /*
-        if (Utf)
-        {
-            AddUtfString(Value);
-        }
-        else
-        */
-        {
-            AddStringW(Value);
-        }
+        AddStringW(Value);
     }
 
     // now purposeless alias to AddString

@@ -16,8 +16,6 @@
 #include "TextsCore.h"
 #include "SecureShell.h"
 
-std::string EncodeUTF(const std::wstring Source);
-
 //---------------------------------------------------------------------------
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
   FILE_OPERATION_LOOP_CUSTOM(Self->FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
