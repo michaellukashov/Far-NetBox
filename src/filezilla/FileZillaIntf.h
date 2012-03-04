@@ -31,14 +31,14 @@ struct TFtpsCertificateData
 {
   struct TContact
   {
-    const char * Organization;
-    const char * Unit;
-    const char * CommonName;
-    const char * Mail;
-    const char * Country;
-    const char * StateProvince;
-    const char * Town;
-    const char * Other;
+    const wchar_t * Organization;
+    const wchar_t * Unit;
+    const wchar_t * CommonName;
+    const wchar_t * Mail;
+    const wchar_t * Country;
+    const wchar_t * StateProvince;
+    const wchar_t * Town;
+    const wchar_t * Other;
   };
 
   TContact Subject;

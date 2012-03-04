@@ -2980,28 +2980,28 @@ std::wstring FormatContactList(const std::wstring Entry1, const std::wstring Ent
 std::wstring FormatContact(const TFtpsCertificateData::TContact &Contact)
 {
     std::wstring Result =
-        FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 1).c_str(),
+        FORMAT(::LoadStrPart(VERIFY_CERT_CONTACT, 1).c_str(),
                FormatContactList(FormatContactList(FormatContactList(
-                                     nb::MB2W(Contact.Organization).c_str(),
-                                     nb::MB2W(Contact.Unit).c_str()).c_str(),
-                                 nb::MB2W(Contact.CommonName).c_str()).c_str(),
-                                 nb::MB2W(Contact.Mail).c_str()).c_str());
+                                     Contact.Organization,
+                                     Contact.Unit).c_str(),
+                                 Contact.CommonName).c_str(),
+                                 Contact.Mail).c_str());
 
     if ((Contact.Country && *Contact.Country) ||
             (Contact.StateProvince && *Contact.StateProvince) ||
             (Contact.Town && *Contact.Town))
     {
         Result +=
-            FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 2).c_str(),
+            FORMAT(::LoadStrPart(VERIFY_CERT_CONTACT, 2).c_str(),
                    FormatContactList(FormatContactList(
-                                         nb::MB2W(Contact.Country).c_str(),
-                                         nb::MB2W(Contact.StateProvince).c_str()).c_str(),
-                                     nb::MB2W(Contact.Town).c_str()).c_str());
+                                         Contact.Country,
+                                         Contact.StateProvince).c_str(),
+                                     Contact.Town).c_str());
     }
 
     if (Contact.Other && *Contact.Other)
     {
-        Result += FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 3).c_str(), Contact.Other);
+        Result += FORMAT(::LoadStrPart(VERIFY_CERT_CONTACT, 3).c_str(), Contact.Other);
     }
 
     return Result;

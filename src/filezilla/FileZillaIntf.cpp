@@ -259,14 +259,14 @@ bool TFileZillaIntf::PostMessage(WPARAM wParam, LPARAM lParam)
 void CopyContact(TFtpsCertificateData::TContact & Dest,
   const t_SslCertData::t_Contact& Source)
 {
-  Dest.Organization = reinterpret_cast<const char *>(Source.Organization);
-  Dest.Unit = reinterpret_cast<const char *>(Source.Unit);
-  Dest.CommonName = reinterpret_cast<const char *>(Source.CommonName);
-  Dest.Mail = reinterpret_cast<const char *>(Source.Mail);
-  Dest.Country = reinterpret_cast<const char *>(Source.Country);
-  Dest.StateProvince = reinterpret_cast<const char *>(Source.StateProvince);
-  Dest.Town = reinterpret_cast<const char *>(Source.Town);
-  Dest.Other = reinterpret_cast<const char *>(Source.Other);
+  Dest.Organization = Source.Organization;
+  Dest.Unit = Source.Unit;
+  Dest.CommonName = Source.CommonName;
+  Dest.Mail = Source.Mail;
+  Dest.Country = Source.Country;
+  Dest.StateProvince = Source.StateProvince;
+  Dest.Town = Source.Town;
+  Dest.Other = Source.Other;
 }
 //---------------------------------------------------------------------------
 void CopyValidityTime(TFtpsCertificateData::TValidityTime & Dest,
