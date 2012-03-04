@@ -9,26 +9,18 @@ set ( CMAKE_CXX_FLAGS
 set ( CMAKE_CXX_FLAGS_DEBUG "-D_DEBUG;_MT" )
 set ( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG;BOOST_DISABLE_ASSERTS" )
 
-set (CMAKE_MFC_FLAG 1)
-
-set ( LINKER_FLAGS 
-      "/verbose:lib /NODEFAULTLIB:uafxcwd.lib,mfcs100ud.lib,Atls.lib,comctl32.lib,msvcrt.lib,msvcrtd.lib,msvcurtd.lib,msvcprtd.lib,msvcp100d.lib,libc.lib,libcmt.lib,msvcrt.lib,libcmtd.lib,mfc100ud.lib,Atl.lib,comctl32.lib,mfcs100ud.lib"
-)
-
 set ( CMAKE_LINK_FLAGS
-    "/INCREMENTAL:NO ${LINKER_FLAGS}"
-    # /NODEFAULTLIB:LIBCMT.LIB /NODEFAULTLIB:MSVCRT.LIB /NODEFAULTLIB:LIBCMTD.LIB"
-    # /NODEFAULTLIB:LIBCPMTD.LIB"
+    "/INCREMENTAL:NO /NODEFAULTLIB:LIBCMT.LIB /NODEFAULTLIB:MSVCRT.LIB /NODEFAULTLIB:LIBCMTD.LIB"
+    #/NODEFAULTLIB:LIBCPMTD.LIB"
     # /NODEFAULTLIB:MSVCPRTD.LIB"
 )
 
-set ( CMAKE_EXE_LINKER_FLAGS ${LINKER_FLAGS} )
-
 # definitions
 ADD_DEFINITIONS("-DNETBOX_DEBUG")
-ADD_DEFINITIONS("-DUSE_FASTFLOW -D_FF_WIN_XP;CURL_STATICLIB;MPEXT;NO_SECURITY"
-)
-ADD_DEFINITIONS("-D_WINDLL;_USRDLL")
+ADD_DEFINITIONS("-DUSE_FASTFLOW
+                -D_FF_WIN_XP;CURL_STATICLIB;MPEXT;NO_SECURITY
+")
+ADD_DEFINITIONS("-D_USRDLL;_AFXDLL;_AFXEXT;_DLL")
 
 include ( ${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake )
 # message ( "system: ${CMAKE_SYSTEM_NAME}" )
@@ -272,14 +264,14 @@ set_target_properties( libtinyxml
 #-------------------------------------------------------------------------------
 
 set ( NETBOX_LIBRARIES
-    mfcs100ud.lib
-    Atlsd.lib
+    mfc100ud.lib
+    Atl.lib
     uafxcwd.lib
     comctl32.lib
-    libcmtd.lib
-    libcpmtd.lib
-    windowscodecs.lib
-    delayimp.lib
+    msvcrtd.lib
+    msvcprtd.lib
+    msvcmrtd.lib
+    msvcurtd.lib
     libputty
     libtinyxml
     libcurl
