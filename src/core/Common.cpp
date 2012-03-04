@@ -293,8 +293,6 @@ std::wstring ExceptionLogString(const std::exception *E)
     }
     else
     {
-        // wchar_t Buffer[1024] = {0};
-        // FIXME ExceptionErrorMessage(ExceptObject(), ExceptAddr(), Buffer, sizeof(Buffer));
         return std::wstring(nb::MB2W(E->what()));
     }
 }
@@ -533,7 +531,6 @@ std::wstring ExpandEnvironmentVariables(const std::wstring Str)
     size_t Size = 1024;
 
     Buf.resize(Size);
-    // Buf.Unique(); //FIXME
     size_t Len = ExpandEnvironmentStrings(Str.c_str(), const_cast<wchar_t *>(Buf.c_str()), static_cast<DWORD>(Size));
 
     if (Len > Size)
@@ -550,35 +547,36 @@ std::wstring ExpandEnvironmentVariables(const std::wstring Str)
 //---------------------------------------------------------------------------
 std::wstring ExtractShortPathName(const std::wstring Path1)
 {
-    return Path1; //FIXME
+    // FIXME
+    return Path1;
 }
 
-std::wstring ExtractDirectory(const std::wstring path, wchar_t delimiter)
 //
 // Returns everything, including the trailing path separator, except the filename
 // part of the path.
 //
 // "/foo/bar/baz.txt" --> "/foo/bar/"
+std::wstring ExtractDirectory(const std::wstring path, wchar_t delimiter)
 {
     return path.substr(0,path.find_last_of(delimiter) + 1);
 }
 
-std::wstring ExtractFilename(const std::wstring path, wchar_t delimiter)
 //
 // Returns only the filename part of the path.
 //
 // "/foo/bar/baz.txt" --> "baz.txt"
+std::wstring ExtractFilename(const std::wstring path, wchar_t delimiter)
 {
     return path.substr(path.find_last_of(delimiter) + 1);
 }
 
-std::wstring ExtractFileExtension(const std::wstring path, wchar_t delimiter)
 //
 // Returns the file's extension, if any. The period is considered part
 // of the extension.
 //
 // "/foo/bar/baz.txt" --> ".txt"
 // "/foo/bar/baz" --> ""
+std::wstring ExtractFileExtension(const std::wstring path, wchar_t delimiter)
 {
     std::wstring filename = ExtractFilename(path, delimiter);
     std::wstring::size_type n = filename.find_last_of('.');
@@ -589,7 +587,6 @@ std::wstring ExtractFileExtension(const std::wstring path, wchar_t delimiter)
     return std::wstring();
 }
 
-std::wstring ChangeFileExtension(const std::wstring path, const std::wstring ext, wchar_t delimiter)
 //
 // Modifies the filename's extension. The period is considered part
 // of the extension.
@@ -598,6 +595,7 @@ std::wstring ChangeFileExtension(const std::wstring path, const std::wstring ext
 // "/foo/bar/baz.txt", "" --> "/foo/bar/baz"
 // "/foo/bar/baz", ".txt" --> "/foo/bar/baz.txt"
 //
+std::wstring ChangeFileExtension(const std::wstring path, const std::wstring ext, wchar_t delimiter)
 {
     std::wstring filename = ExtractFilename(path, delimiter);
     return ExtractDirectory(path, delimiter)
@@ -1091,7 +1089,7 @@ static TDateTimeParams *GetDateTimeParams()
 
             case TIME_ZONE_ID_INVALID:
             default:
-                throw std::exception(); // FIXME (TIMEZONE_ERROR);
+                throw std::exception();
             }
             // Is it same as SysUtils::UnixDateDelta = 25569 ??
             DateTimeParams.UnixEpoch = EncodeDateVerbose(1970, 1, 1);
@@ -1493,8 +1491,7 @@ std::wstring FixedLenDateTimeFormat(const std::wstring Format)
             if (!AsIs && (strchr("dDeEmMhHnNsS", F) != NULL) &&
                     ((Index == Result.size()) || (Result[Index + 1] != F)))
             {
-                nb::Error(SNotImplemented, 56);
-                // FIXME Result.insert(Index, F);
+                Result.insert(Index, std::wstring(1, F));
             }
 
             while ((Index <= Result.size()) && (F == Result[Index]))
@@ -2290,9 +2287,7 @@ int AnsiCompareIC(const std::wstring str1, const std::wstring str2)
 
 bool AnsiContainsText(const std::wstring str1, const std::wstring str2)
 {
-    // FIXME
-    nb::Error(SNotImplemented, 76);
-    return false;
+    return ::Pos(str1, str2) != NPOS;
 }
 
 void RaiseLastOSError()
@@ -2334,8 +2329,6 @@ std::wstring FormatFloat(const std::wstring Format, double value)
 {
     // DEBUG_PRINTF(L"Format = %s", Format.c_str());
     // #,##0 "B"
-    // FIXME
-    // nb::Error(SNotImplemented, 78);
     std::wstring result(20, 0);
     swprintf_s(&result[0], result.size(), L"%.2f", value);
     return result.c_str();

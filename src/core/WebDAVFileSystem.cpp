@@ -672,7 +672,7 @@ TRemoteFile *TWebDAVFileSystem::CreateRemoteFile(
     try
     {
         File->SetTerminal(FTerminal);
-        File->SetListingStr(ListingStr, true);
+        File->SetListingStr(ListingStr);
         File->ShiftTime(FTerminal->GetSessionData()->GetTimeDifference());
         File->Complete();
     }

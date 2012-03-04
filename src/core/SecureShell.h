@@ -113,13 +113,13 @@ public:
     void KeepAlive();
     size_t Receive(char *Buf, size_t Len);
     bool Peek(char *& Buf, size_t Len);
-    std::wstring ReceiveLine(bool Utf = false);
+    std::wstring ReceiveLine();
     void Send(const char *Buf, size_t Len);
-    void SendStr(const std::wstring Str, bool Utf = false);
+    void SendStr(const std::wstring Str);
     void SendSpecial(int Code);
     void Idle(unsigned int MSec = 0);
     void SendEOF();
-    void SendLine(const std::wstring Line, bool Utf = false);
+    void SendLine(const std::wstring Line);
     void SendNull();
 
     const TSessionInfo &GetSessionInfo();

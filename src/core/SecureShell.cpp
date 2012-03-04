@@ -854,7 +854,7 @@ size_t TSecureShell::Receive(char *Buf, size_t Len)
     return Len;
 }
 //---------------------------------------------------------------------------
-std::wstring TSecureShell::ReceiveLine(bool Utf)
+std::wstring TSecureShell::ReceiveLine()
 {
     size_t Index = 0;
     char Ch;
@@ -892,12 +892,8 @@ std::wstring TSecureShell::ReceiveLine(bool Utf)
     }
     while (!EOL);
 
-    // DEBUG_PRINTF2("Line1 = %s", Line.c_str());
-    // std::string Result = Utf ? ::DecodeUTF(Line) : Line;
     // We don't want end-of-line character
-    // Line.resize(Line.size()-1);
     std::wstring LineW = ::TrimRight(nb::MB2W(Line.c_str(), FSessionData->GetCodePageAsNumber()));
-    // DEBUG_PRINTF(L"Line2 = %s", LineW.c_str());
     CaptureOutput(llOutput, LineW);
     return LineW;
 }
@@ -1033,28 +1029,16 @@ void TSecureShell::SendNull()
     Send("", 1);
 }
 //---------------------------------------------------------------------------
-void TSecureShell::SendStr(const std::wstring Str, bool Utf)
+void TSecureShell::SendStr(const std::wstring Str)
 {
     CheckConnection();
     std::string str = nb::W2MB(Str.c_str(), FSessionData->GetCodePageAsNumber());
     Send(str.c_str(), str.size());
-    /*
-    if (!Utf)
-    {
-        std::string str = nb::W2MB(Str.c_str(), FSessionData->GetCodePageAsNumber());
-        Send(str.c_str(), str.size());
-    }
-    else
-    {
-        std::string encoded = ::EncodeUTF(Str);
-        Send(encoded.c_str(), encoded.size());
-    }
-    */
 }
 //---------------------------------------------------------------------------
-void TSecureShell::SendLine(const std::wstring Line, bool Utf)
+void TSecureShell::SendLine(const std::wstring Line)
 {
-    SendStr(Line, Utf);
+    SendStr(Line);
     Send("\n", 1);
     FLog->Add(llInput, Line);
 }

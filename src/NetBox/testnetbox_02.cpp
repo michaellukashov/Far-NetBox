@@ -248,7 +248,7 @@ BOOST_FIXTURE_TEST_CASE(test5, base_fixture_t)
 
 BOOST_FIXTURE_TEST_CASE(test6, base_fixture_t)
 {
-    BOOST_CHECK_THROW(::Error(SListIndexError, 0), ExtException);
+    BOOST_CHECK_THROW(nb::Error(SListIndexError, 0), ExtException);
 }
 
 BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
@@ -257,7 +257,7 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
     Lines.SetSorted(true);
     if (1)
     {
-        Lines.SetDuplicates(dupAccept);
+        Lines.SetDuplicates(nb::dupAccept);
         Lines.Add(L"aaa");
         Lines.Add(L"aaa");
         Lines.Add(L"bbb");
@@ -268,7 +268,7 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
     Lines.Clear();
     if (1)
     {
-        Lines.SetDuplicates(dupIgnore);
+        Lines.SetDuplicates(nb::dupIgnore);
         Lines.Add(L"aaa");
         Lines.Add(L"aaa");
         Lines.Add(L"bbb");
@@ -278,7 +278,7 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
     Lines.Clear();
     if (1)
     {
-        Lines.SetDuplicates(dupError);
+        Lines.SetDuplicates(nb::dupError);
         Lines.Add(L"aaa");
         Lines.Add(L"bbb");
         BOOST_CHECK_THROW(Lines.Add(L"aaa"), std::exception);
@@ -515,7 +515,7 @@ BOOST_FIXTURE_TEST_CASE(test15, base_fixture_t)
         TFileMasks m(L"*.txt;*.log");
         BOOST_CHECK_EQUAL(true, m.Matches(L"test.log"));
 
-        int Start, Length;
+        size_t Start, Length;
         BOOST_CHECK_EQUAL(true, m.GetIsValid(Start, Length));
         m.SetMask(L"*.exe");
         BOOST_CHECK_EQUAL(true, m.Matches(L"test.exe"));
