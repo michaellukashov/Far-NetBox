@@ -1631,22 +1631,7 @@ public:
 private:
     TSFTPFileSystem *FFileSystem;
 };
-//===========================================================================
-struct TOpenRemoteFileParams
-{
-    int LocalFileAttrs;
-    std::wstring RemoteFileName;
-    TFileOperationProgressType *OperationProgress;
-    const TCopyParamType *CopyParam;
-    int Params;
-    bool Resume;
-    bool Resuming;
-    TOverwriteMode OverwriteMode;
-    __int64 DestFileSize; // output
-    std::string RemoteFileHandle; // output
-    TOverwriteFileParams *FileParams;
-    bool Confirmed;
-};
+
 //---------------------------------------------------------------------------
 struct TSinkFileParams
 {

@@ -4,6 +4,7 @@
 
 #include <SessionInfo.h>
 #include "Exceptions.h"
+#include "Terminal.h"
 //---------------------------------------------------------------------------
 class TTerminal;
 class TRights;
@@ -31,12 +32,12 @@ const int dfForceDelete = 0x04;
 //---------------------------------------------------------------------------
 struct TFileTransferData
 {
-    TFileTransferData()
+    TFileTransferData() :
+        CopyParam(NULL),
+        Params(0),
+        OverwriteResult(-1),
+        AutoResume(false)
     {
-        CopyParam = NULL;
-        Params = 0;
-        OverwriteResult = -1;
-        AutoResume = false;
     }
 
     std::wstring FileName;
@@ -44,6 +45,35 @@ struct TFileTransferData
     int Params;
     int OverwriteResult;
     bool AutoResume;
+};
+//---------------------------------------------------------------------------
+struct TOpenRemoteFileParams
+{
+    TOpenRemoteFileParams() :
+      OperationProgress(NULL),
+      CopyParam(NULL),
+      FileParams(NULL),
+      DestFileSize(0),
+      LocalFileAttrs(0),
+      Params(0),
+      OverwriteMode(omOverwrite),
+      Resume(false),
+      Resuming(false),
+      Confirmed(false)
+    {
+    }
+    TFileOperationProgressType *OperationProgress;
+    const TCopyParamType *CopyParam;
+    TOverwriteFileParams *FileParams;
+    __int64 DestFileSize; // output
+    int LocalFileAttrs;
+    int Params;
+    TOverwriteMode OverwriteMode;
+    std::wstring RemoteFileName;
+    std::string RemoteFileHandle; // output
+    bool Resume;
+    bool Resuming;
+    bool Confirmed;
 };
 //---------------------------------------------------------------------------
 
