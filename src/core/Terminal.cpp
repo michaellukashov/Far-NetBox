@@ -70,20 +70,28 @@ struct TMoveFileParams
 //---------------------------------------------------------------------------
 struct TFilesFindParams
 {
+    TFilesFindParams() :
+        OnFileFound(NULL),
+        OnFindingFile(NULL),
+        Cancel(false)
+    {
+    }
     TFileMasks FileMask;
     const filefound_slot_type *OnFileFound;
     const findingfile_slot_type *OnFindingFile;
     bool Cancel;
 };
 //---------------------------------------------------------------------------
-TCalculateSizeStats::TCalculateSizeStats()
+TCalculateSizeStats::TCalculateSizeStats() :
+    Files(0),
+    Directories(0),
+    SymLinks(0)
 {
-    memset(this, 0, sizeof(*this));
 }
 //---------------------------------------------------------------------------
-TSynchronizeOptions::TSynchronizeOptions()
+TSynchronizeOptions::TSynchronizeOptions() :
+    Filter(0)
 {
-    memset(this, 0, sizeof(*this));
 }
 //---------------------------------------------------------------------------
 TSynchronizeOptions::~TSynchronizeOptions()
@@ -91,9 +99,13 @@ TSynchronizeOptions::~TSynchronizeOptions()
     delete Filter;
 }
 //---------------------------------------------------------------------------
-TSpaceAvailable::TSpaceAvailable()
+TSpaceAvailable::TSpaceAvailable() :
+    BytesOnDevice(0),
+    UnusedBytesOnDevice(0),
+    BytesAvailableToUser(0),
+    UnusedBytesAvailableToUser(0),
+    BytesPerAllocationUnit(0)
 {
-    memset(this, 0, sizeof(*this));
 }
 //---------------------------------------------------------------------------
 TOverwriteFileParams::TOverwriteFileParams()
