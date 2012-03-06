@@ -1351,10 +1351,12 @@ void TFTPFileSystem::Source(const std::wstring FileName,
         THROW_SKIP_FILE_NULL;
     }
 
+    // HANDLE File = 0;
+    __int64 MTime = 0, ATime = 0;
     __int64 Size = 0;
 
     FTerminal->OpenLocalFile(FileName, GENERIC_READ, &OpenParams->LocalFileAttrs,
-                             NULL, NULL, NULL, NULL, &Size);
+                             NULL, NULL, &MTime, &ATime, &Size);
 
     OperationProgress->SetFileInProgress();
 
@@ -1394,6 +1396,16 @@ void TFTPFileSystem::Source(const std::wstring FileName,
 
         unsigned int TransferType = (OperationProgress->AsciiTransfer ? 1 : 2);
 
+        // should we check for interrupted transfer?
+        bool ResumeAllowed = !OperationProgress->AsciiTransfer &&
+                        CopyParam->AllowResume(OperationProgress->LocalSize) &&
+                        IsCapable(fcRename);
+        OperationProgress->SetResumeStatus(ResumeAllowed ? rsEnabled : rsDisabled);
+
+        FileParams->SourceSize = OperationProgress->LocalSize;
+        FileParams->SourceTimestamp = UnixToDateTime(MTime,
+                                     FTerminal->GetSessionData()->GetDSTMode());
+        bool DoResume = (ResumeAllowed && (OpenParams->OverwriteMode == omOverwrite));
         {
             // ignore file list
             TFileListHelper Helper(this, NULL, true);
@@ -1404,7 +1416,7 @@ void TFTPFileSystem::Source(const std::wstring FileName,
             // not used for uploads, but we get new name (if any) back in this field
             UserData.FileName = DestFileName;
             UserData.Params = Params;
-            UserData.AutoResume = FLAGSET(Flags, tfAutoResume);
+            UserData.AutoResume = FLAGSET(Flags, tfAutoResume) || DoResume;
             UserData.CopyParam = CopyParam;
             FileTransfer(FileName, FileName, DestFileName,
                          TargetDir, false, Size, TransferType, UserData, OperationProgress);
