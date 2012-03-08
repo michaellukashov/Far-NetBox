@@ -2512,6 +2512,10 @@ void TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
                         MoreMessages->Add(LoadStr(FTP_CANNOT_OPEN_ACTIVE_CONNECTION));
                     }
                 }
+                if (FLastCode == 421)
+                {
+                    Disconnected = true;
+                }
 
                 MoreMessages->AddStrings(FLastError);
                 // already cleared from WaitForReply, but GotReply can be also called
