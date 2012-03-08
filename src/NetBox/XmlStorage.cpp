@@ -327,7 +327,6 @@ std::wstring TXmlStorage::GetValue(TiXmlElement *Element)
 //---------------------------------------------------------------------------
 bool TXmlStorage::ValueExists(const std::wstring Value)
 {
-    // nb::Error(SNotImplemented, 3025);
     bool result = false;
     TiXmlElement *Element = FindElement(Value);
     if (Element != NULL)

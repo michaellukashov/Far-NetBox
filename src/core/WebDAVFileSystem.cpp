@@ -728,7 +728,6 @@ void TWebDAVFileSystem::DeleteFile(const std::wstring FileName,
 void TWebDAVFileSystem::RenameFile(const std::wstring FileName,
                                    const std::wstring NewName)
 {
-    // nb::Error(SNotImplemented, 1011);
     // DEBUG_PRINTF(L"FileName = %s, NewName = %s", FileName.c_str(), NewName.c_str());
     // DEBUG_PRINTF(L"FCurrentDirectory = %s", FCurrentDirectory.c_str());
     std::wstring FullFileName = ::UnixIncludeTrailingBackslash(FCurrentDirectory) + FileName;
@@ -978,7 +977,6 @@ void TWebDAVFileSystem::CopyToRemote(nb::TStrings *FilesToCopy,
                                      int Params, TFileOperationProgressType *OperationProgress,
                                      TOnceDoneOperation &OnceDoneOperation)
 {
-    // nb::Error(SNotImplemented, 1005);
     assert((FilesToCopy != NULL) && (OperationProgress != NULL));
 
     Params &= ~cpAppend;

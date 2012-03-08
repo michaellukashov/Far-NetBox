@@ -312,9 +312,7 @@ std::wstring SystemTemporaryDirectory()
 
 std::wstring SysErrorMessage(int ErrorCode)
 {
-    // nb::Error(SNotImplemented, 41);
     std::wstring Result;
-    // LPTSTR lpszTemp;
     wchar_t Buffer[255];
     int Len = ::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM |
                               FORMAT_MESSAGE_ARGUMENT_ARRAY, NULL, ErrorCode, 0,
@@ -1155,7 +1153,6 @@ static void EncodeDSTMargin(const SYSTEMTIME &Date, unsigned short Year,
         Result = EncodeDateVerbose(Year, Date.wMonth, Date.wDay) +
                  EncodeTimeVerbose(Date.wHour, Date.wMinute, Date.wSecond, Date.wMilliseconds);
     }
-    // nb::Error(SNotImplemented, 46);
 }
 //---------------------------------------------------------------------------
 static bool IsDateInDST(const nb::TDateTime &DateTime)
@@ -1252,7 +1249,6 @@ nb::TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode)
 
     nb::TDateTime Result;
     // DEBUG_PRINTF(L"TimeStamp = %u, DSTMode = %d", TimeStamp, DSTMode);
-    // nb::Error(SNotImplemented, 49);
     Result = nb::TDateTime(Params->UnixEpoch + (TimeStamp / 86400.0));
 
     if (Params->DaylightHack)
@@ -1419,7 +1415,6 @@ nb::TDateTime AdjustDateTimeFromUnix(nb::TDateTime &DateTime, TDSTMode DSTMode)
     {
         if ((DSTMode == dstmWin) || (DSTMode == dstmUnix))
         {
-            // nb::Error(SNotImplemented, 55);
             DateTime = DateTime - Params->CurrentDaylightDifference;
         }
 
@@ -1638,7 +1633,6 @@ void DecodeTime(const nb::TDateTime &DateTime, unsigned int &Hour,
 std::wstring FormatDateTime(const std::wstring fmt, nb::TDateTime DateTime)
 {
     // DEBUG_PRINTF(L"fmt = %s", fmt.c_str());
-    // nb::Error(SNotImplemented, 59);
     std::wstring Result;
     // DateTimeToString(Result, fmt, DateTime);
     boost::local_time::local_time_facet *output_facet = new boost::local_time::local_time_facet();
@@ -2778,7 +2772,6 @@ std::wstring ExpandFileName(const std::wstring FileName)
 
 std::wstring GetUniversalName(std::wstring &FileName)
 {
-    // nb::Error(SNotImplemented, 35);
     std::wstring Result = FileName;
     return Result;
 }

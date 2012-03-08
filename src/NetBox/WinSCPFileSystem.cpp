@@ -370,7 +370,6 @@ TWinSCPFileSystem::~TWinSCPFileSystem()
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::HandleException(const std::exception *E, int OpMode)
 {
-    // nb::Error(SNotImplemented, 120);
     if ((GetTerminal() != NULL) && ::InheritsFrom<std::exception, EFatal>(E))
     {
         if (!FClosed)
@@ -2635,7 +2634,6 @@ int TWinSCPFileSystem::GetFilesEx(nb::TObjectList *PanelItems, bool Move,
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::ExportSession(TSessionData *Data, void *AParam)
 {
-    // nb::Error(SNotImplemented, 3001);
     TExportSessionParam &Param = *static_cast<TExportSessionParam *>(AParam);
 
     THierarchicalStorage *ExportStorage = NULL;
