@@ -689,6 +689,7 @@ void TTerminal::Open()
     bool Reopen = false;
     do
     {
+        Reopen = false;
         try
         {
             {
@@ -878,8 +879,22 @@ void TTerminal::Open()
         catch (EFatal &E)
         {
             Reopen = DoQueryReopen(&E);
-            if (!Reopen)
+            if (Reopen)
+            {
+                delete FFileSystem;
+                FFileSystem = NULL;
+                delete FSecureShell;
+                FSecureShell = NULL;
+                delete FTunnelData;
+                FTunnelData = NULL;
+                FStatus = ssClosed;
+                delete FTunnel;
+                FTunnel = NULL;
+            }
+            else
+            {
                 throw;
+            }
         }
         catch (const std::exception &E)
         {
