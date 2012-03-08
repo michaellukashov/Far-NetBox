@@ -887,6 +887,7 @@ void TTerminal::Open()
             FatalError(&E, L"");
         }
     } while (Reopen);
+    FSessionData->SetNumberOfRetries(0);
     // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
