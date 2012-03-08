@@ -212,6 +212,8 @@ void TSessionData::Default()
     SetCustomParam1(L"");
     SetCustomParam2(L"");
 
+    FNumberOfRetries = 0;
+
     FSelected = false;
     FModified = false;
     FSource = ::ssNone;
@@ -357,6 +359,8 @@ void TSessionData::Assign(nb::TPersistent *Source)
         DUPL(CustomParam2);
 
 #undef DUPL
+        FNumberOfRetries = (static_cast<TSessionData *>(Source))->GetNumberOfRetries();
+
         FModified = (static_cast<TSessionData *>(Source))->GetModified();
         FSource = (static_cast<TSessionData *>(Source))->FSource;
     }
@@ -630,6 +634,7 @@ void TSessionData::Load(THierarchicalStorage *Storage)
         Storage->SetAccessMode(AccessMode);
     }
 
+    FNumberOfRetries = 0;
     FModified = false;
     FSource = ssStored;
 }

@@ -630,7 +630,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
         TFarSeparator *Separator;
         TFarText *Text;
 
-        Dialog->SetSize(nb::TPoint(76, 13));
+        Dialog->SetSize(nb::TPoint(76, 14));
         Dialog->SetCaption(FORMAT(L"%s - %s",
                                   GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_ENDURANCE)).c_str()));
 
@@ -682,9 +682,29 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
         SessionReopenAutoEdit->SetFixed(true);
         SessionReopenAutoEdit->SetMask(L"999");
         SessionReopenAutoEdit->SetWidth(5);
+        SessionReopenAutoEdit->Move(12, 0);
 
         Text = new TFarText(Dialog);
         Text->SetCaption(GetMsg(TRANSFER_SESSION_REOPEN_AUTO_UNIT));
+        Text->SetEnabledDependency(SessionReopenAutoCheck);
+
+        Dialog->SetNextItemPosition(ipNewLine);
+
+        Text = new TFarText(Dialog);
+        Text->SetCaption(GetMsg(TRANSFER_SESSION_REOPEN_NUMBER_OF_RETRIES_LABEL));
+        Text->SetEnabledDependency(SessionReopenAutoCheck);
+        Text->Move(4, 0);
+
+        Dialog->SetNextItemPosition(ipRight);
+
+        TFarEdit *SessionReopenNumberOfRetriesEdit = new TFarEdit(Dialog);
+        SessionReopenNumberOfRetriesEdit->SetEnabledDependency(SessionReopenAutoCheck);
+        SessionReopenNumberOfRetriesEdit->SetFixed(true);
+        SessionReopenNumberOfRetriesEdit->SetMask(L"999");
+        SessionReopenNumberOfRetriesEdit->SetWidth(5);
+
+        Text = new TFarText(Dialog);
+        Text->SetCaption(GetMsg(TRANSFER_SESSION_REOPEN_NUMBER_OF_RETRIES_LABEL2));
         Text->SetEnabledDependency(SessionReopenAutoCheck);
 
         Dialog->AddStandardButtons();
@@ -697,7 +717,9 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
 
         SessionReopenAutoCheck->SetChecked((Configuration->GetSessionReopenAuto() > 0));
         SessionReopenAutoEdit->SetAsInteger((Configuration->GetSessionReopenAuto() > 0 ?
-                                             (Configuration->GetSessionReopenAuto() / 1000): 5));
+                                             (Configuration->GetSessionReopenAuto() / 1000) : 5));
+        SessionReopenNumberOfRetriesEdit->SetAsInteger((Configuration->GetSessionReopenAutoMaximumNumberOfRetries() > 0 ?
+                                             Configuration->GetSessionReopenAutoMaximumNumberOfRetries() : CONST_DEFAULT_NUMBER_OF_RETRIES));
 
         Result = (Dialog->ShowModal() == brOK);
 
@@ -720,6 +742,8 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
 
                 Configuration->SetSessionReopenAuto(
                     (SessionReopenAutoCheck->GetChecked() ? (SessionReopenAutoEdit->GetAsInteger() * 1000) : 0));
+                Configuration->SetSessionReopenAutoMaximumNumberOfRetries(
+                    (SessionReopenAutoCheck->GetChecked() ? SessionReopenNumberOfRetriesEdit->GetAsInteger() : CONST_DEFAULT_NUMBER_OF_RETRIES));
             }
         }
     }

@@ -1354,21 +1354,31 @@ bool TTerminal::DoQueryReopen(std::exception *E)
     }
     else
     {
-        LogEvent(L"Connection was lost, asking what to do.");
-
-        TQueryParams Params(qpAllowContinueOnError);
-        Params.Timeout = Configuration->GetSessionReopenAuto();
-        Params.TimeoutAnswer = qaRetry;
-        TQueryButtonAlias Aliases[1];
-        Aliases[0].Button = qaRetry;
-        Aliases[0].Alias = LoadStr(RECONNECT_BUTTON);
-        Params.Aliases = Aliases;
-        Params.AliasesCount = LENOF(Aliases);
-        Result = (QueryUserException(L"", E, qaRetry | qaAbort, &Params, qtError) == qaRetry);
-
-        if (Fatal != NULL)
+        int NumberOfRetries = FSessionData->GetNumberOfRetries();
+        if (NumberOfRetries >= FConfiguration->GetSessionReopenAutoMaximumNumberOfRetries())
         {
-            Fatal->SetReopenQueried(true);
+            LogEvent(FORMAT(L"Reached maximum number of retries: %d", FConfiguration->GetSessionReopenAutoMaximumNumberOfRetries()));
+        }
+        else
+        {
+            NumberOfRetries++;
+            FSessionData->SetNumberOfRetries(NumberOfRetries);
+            LogEvent(L"Connection was lost, asking what to do.");
+
+            TQueryParams Params(qpAllowContinueOnError);
+            Params.Timeout = Configuration->GetSessionReopenAuto();
+            Params.TimeoutAnswer = qaRetry;
+            TQueryButtonAlias Aliases[1];
+            Aliases[0].Button = qaRetry;
+            Aliases[0].Alias = LoadStr(RECONNECT_BUTTON);
+            Params.Aliases = Aliases;
+            Params.AliasesCount = LENOF(Aliases);
+            Result = (QueryUserException(L"", E, qaRetry | qaAbort, &Params, qtError) == qaRetry);
+
+            if (Fatal != NULL)
+            {
+                Fatal->SetReopenQueried(true);
+            }
         }
     }
     return Result;

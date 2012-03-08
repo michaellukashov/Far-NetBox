@@ -477,6 +477,8 @@
 "Auto&matically reconnect session, if it breaks during transfer"
 "&Reconnect after"
 "seconds"
+"Ma&ximum number of retries: "
+"(0-99)"
 
 " When downloading to editor/viewer "
 "Use default &download options"
