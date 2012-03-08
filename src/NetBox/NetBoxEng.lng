@@ -474,7 +474,6 @@
 "KiB"
 "Di&sable"
 " Automatic reconnect "
-"Auto&matically reconnect session, if it breaks during transfer"
 "&Reconnect after"
 "seconds"
 "Ma&ximum number of retries: "
