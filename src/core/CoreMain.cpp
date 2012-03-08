@@ -15,7 +15,8 @@
 TConfiguration *Configuration = NULL;
 TStoredSessionList *StoredSessions = NULL;
 //---------------------------------------------------------------------------
-TQueryButtonAlias::TQueryButtonAlias()
+TQueryButtonAlias::TQueryButtonAlias() :
+    Button(0)
 {
     OnClick.disconnect_all_slots();
 }

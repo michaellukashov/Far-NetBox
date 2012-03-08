@@ -3715,25 +3715,34 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(std::wstring &FileName,
         TOverwriteMode &OverwriteMode, const TOverwriteFileParams *FileParams)
 {
     bool CanAppend = (FVersion < 4) || !OperationProgress->AsciiTransfer;
+    bool CanResume =
+        (FileParams != NULL) &&
+        (FileParams->DestSize < FileParams->SourceSize);
     int Answer = 0;
     SUSPEND_OPERATION
     (
+        // abort = "append"
+        // retry = "resume"
+        // all = "yes to newer"
+        // ignore = "rename"
         int Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll | qaIgnore;
 
         // possibly we can allow alternate resume at least in some cases
         if (CanAppend)
         {
-            Answers |= qaRetry;
+            Answers |= qaAbort | qaRetry;
         }
-        TQueryButtonAlias Aliases[3];
-        Aliases[0].Button = qaRetry;
+        TQueryButtonAlias Aliases[4];
+        Aliases[0].Button = qaAbort;
         Aliases[0].Alias = LoadStr(APPEND_BUTTON);
-        Aliases[1].Button = qaAll;
-        Aliases[1].Alias = LoadStr(YES_TO_NEWER_BUTTON);
-        Aliases[2].Button = qaIgnore;
-        Aliases[2].Alias = LoadStr(RENAME_BUTTON);
+        Aliases[1].Button = qaRetry;
+        Aliases[1].Alias = LoadStr(RESUME_BUTTON);
+        Aliases[2].Button = qaAll;
+        Aliases[2].Alias = LoadStr(YES_TO_NEWER_BUTTON);
+        Aliases[3].Button = qaIgnore;
+        Aliases[3].Alias = LoadStr(RENAME_BUTTON);
         TQueryParams QueryParams(qpNeverAskAgainCheck);
-        QueryParams.NoBatchAnswers = qaIgnore | qaRetry | qaAll;
+        QueryParams.NoBatchAnswers = qaIgnore | qaAbort | qaRetry | qaAll;
         QueryParams.Aliases = Aliases;
         QueryParams.AliasesCount = LENOF(Aliases);
         Answer = FTerminal->ConfirmFileOverwrite(FileName, FileParams,
@@ -3743,8 +3752,19 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(std::wstring &FileName,
     );
 
     if (CanAppend &&
-            ((Answer == qaRetry) || (Answer == qaSkip)))
+            ((Answer == qaAbort) || (Answer == qaRetry) || (Answer == qaSkip)))
     {
+        switch (Answer)
+        {
+        // append
+        case qaAbort:
+            Params |= cpAppend;
+            break;
+            // resume
+        case qaRetry:
+            Params |= cpResume;
+            break;
+        }
         // duplicated in TTerminal::ConfirmFileOverwrite
         bool CanAlternateResume =
             (FileParams->DestSize < FileParams->SourceSize) && !OperationProgress->AsciiTransfer;
@@ -3755,7 +3775,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(std::wstring &FileName,
         {
             OverwriteMode = omAppend;
         }
-        else if (CanAlternateResume &&
+        else if (CanAlternateResume && CanResume &&
                  ((BatchOverwrite == boResume) || (BatchOverwrite == boAlternateResume)))
         {
             OverwriteMode = omResume;
