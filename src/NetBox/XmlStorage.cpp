@@ -331,7 +331,6 @@ bool TXmlStorage::ValueExists(const std::wstring Value)
     TiXmlElement *Element = FindElement(Value);
     if (Element != NULL)
     {
-        FCurrentElement->RemoveChild(Element);
         result = true;
     }
     return result;
