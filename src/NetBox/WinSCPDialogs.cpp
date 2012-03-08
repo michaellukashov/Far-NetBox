@@ -668,12 +668,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
         Separator->Move(0, 1);
 
         TFarCheckBox *SessionReopenAutoCheck = new TFarCheckBox(Dialog);
-        SessionReopenAutoCheck->SetCaption(GetMsg(TRANSFER_SESSION_REOPEN_AUTO));
-
-        Text = new TFarText(Dialog);
-        Text->SetCaption(GetMsg(TRANSFER_SESSION_REOPEN_AUTO_LABEL));
-        Text->SetEnabledDependency(SessionReopenAutoCheck);
-        Text->Move(4, 0);
+        SessionReopenAutoCheck->SetCaption(GetMsg(TRANSFER_SESSION_REOPEN_AUTO_LABEL));
 
         Dialog->SetNextItemPosition(ipRight);
 
@@ -685,7 +680,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
         SessionReopenAutoEdit->Move(12, 0);
 
         Text = new TFarText(Dialog);
-        Text->SetCaption(GetMsg(TRANSFER_SESSION_REOPEN_AUTO_UNIT));
+        Text->SetCaption(GetMsg(TRANSFER_SESSION_REOPEN_AUTO_LABEL2));
         Text->SetEnabledDependency(SessionReopenAutoCheck);
 
         Dialog->SetNextItemPosition(ipNewLine);
