@@ -342,7 +342,7 @@ void TWinSCPFileSystem::Init(TSecureShell * /* SecureShell */)
 TWinSCPFileSystem::~TWinSCPFileSystem()
 {
     // DEBUG_PRINTF(L"FTerminal = %x", FTerminal);
-    if (FTerminal)
+    if (FTerminal && FTerminal->GetActive())
     {
         SaveSession();
     }
@@ -2972,7 +2972,7 @@ nb::TStrings *TWinSCPFileSystem::CreateFileList(nb::TObjectList *PanelItems,
 void TWinSCPFileSystem::SaveSession()
 {
     // DEBUG_PRINTF(L"FTerminal->GetSessionData()->Name = %s", FTerminal->GetSessionData()->Name.c_str());
-    if (!FTerminal->GetSessionData()->GetName().empty())
+    if (FTerminal->GetActive() && !FTerminal->GetSessionData()->GetName().empty())
     {
         // DEBUG_PRINTF(L"FTerminal->GetCurrentDirectory = %s", FTerminal->GetCurrentDirectory().c_str());
         FTerminal->GetSessionData()->SetRemoteDirectory(FTerminal->GetCurrentDirectory());
