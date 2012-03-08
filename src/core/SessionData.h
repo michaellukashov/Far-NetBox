@@ -157,6 +157,7 @@ private:
     int FOrigPortNumber;
     TProxyMethod FOrigProxyMethod;
     TSessionSource FSource;
+    int FNumberOfRetries;
 
     void SavePasswords(THierarchicalStorage *Storage, bool PuttyExport);
     void Modify();
@@ -421,6 +422,9 @@ public:
     void SetFtps(TFtps value);
     void SetNotUtf(TAutoSwitch value);
     void SetHostKey(const std::wstring value);
+
+    int GetNumberOfRetries() const { return FNumberOfRetries; }
+    void SetNumberOfRetries(int value) { FNumberOfRetries = value; }
 private:
     void AdjustHostName(std::wstring &hostName, const std::wstring prefix);
     void RemoveProtocolPrefix(std::wstring &hostName);
