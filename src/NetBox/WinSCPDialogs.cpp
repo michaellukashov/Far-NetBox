@@ -697,7 +697,9 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
 
         SessionReopenAutoCheck->SetChecked((Configuration->GetSessionReopenAuto() > 0));
         SessionReopenAutoEdit->SetAsInteger((Configuration->GetSessionReopenAuto() > 0 ?
-                                             (Configuration->GetSessionReopenAuto() / 1000): 5));
+                                             (Configuration->GetSessionReopenAuto() / 1000) : 5));
+        SessionReopenNumberOfRetriesEdit->SetAsInteger((Configuration->GetSessionReopenAutoMaximumNumberOfRetries() > 0 ?
+                                             Configuration->GetSessionReopenAutoMaximumNumberOfRetries() : CONST_DEFAULT_NUMBER_OF_RETRIES));
 
         Result = (Dialog->ShowModal() == brOK);
 
@@ -720,6 +722,8 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
 
                 Configuration->SetSessionReopenAuto(
                     (SessionReopenAutoCheck->GetChecked() ? (SessionReopenAutoEdit->GetAsInteger() * 1000) : 0));
+                Configuration->SetSessionReopenAutoMaximumNumberOfRetries(
+                    (SessionReopenAutoCheck->GetChecked() ? SessionReopenNumberOfRetriesEdit->GetAsInteger() : CONST_DEFAULT_NUMBER_OF_RETRIES));
             }
         }
     }

@@ -13,6 +13,8 @@
 #define SET_CONFIG_PROPERTY(PROPERTY) \
   SET_CONFIG_PROPERTY_EX(PROPERTY, )
 //---------------------------------------------------------------------------
+#define CONST_DEFAULT_NUMBER_OF_RETRIES 2
+//---------------------------------------------------------------------------
 class TCriticalSection;
 enum TAutoSwitch { asOn, asOff, asAuto };
 enum TFtpEncryptionSwitch { fesPlainFTP, fesExplicitSSL, fesImplicit, fesExplicitTLS };
@@ -40,6 +42,7 @@ private:
     bool FConfirmResume;
     bool FAutoReadDirectoryAfterOp;
     int FSessionReopenAuto;
+    int FSessionReopenAutoMaximumNumberOfRetries;
     int FSessionReopenBackground;
     int FSessionReopenTimeout;
     std::wstring FIniFileStorageName;
@@ -163,6 +166,8 @@ public:
     std::wstring GetPartialExt() const;
     int GetSessionReopenAuto() { return FSessionReopenAuto; }
     void SetSessionReopenAuto(int value);
+    int GetSessionReopenAutoMaximumNumberOfRetries() { return FSessionReopenAutoMaximumNumberOfRetries; }
+    void SetSessionReopenAutoMaximumNumberOfRetries(int value);
     int GetSessionReopenBackground() { return FSessionReopenBackground; }
     void SetSessionReopenBackground(int value);
     int GetSessionReopenTimeout() { return FSessionReopenTimeout; }
