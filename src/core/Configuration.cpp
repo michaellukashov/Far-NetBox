@@ -96,7 +96,7 @@ void TConfiguration::Default()
     FAutoReadDirectoryAfterOp = true;
     FSessionReopenAuto = 5000;
     FSessionReopenAutoMaximumNumberOfRetries = CONST_DEFAULT_NUMBER_OF_RETRIES;
-    FSessionReopenBackground = 2000;
+    FSessionReopenBackground = 10000;
     FSessionReopenTimeout = 0;
     FTunnelLocalPortNumberLow = 50000;
     FTunnelLocalPortNumberHigh = 50099;
