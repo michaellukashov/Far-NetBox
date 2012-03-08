@@ -1406,6 +1406,7 @@ bool TTerminal::QueryReopen(std::exception *E, int Params,
             try
             {
                 Reopen(Params);
+                FSessionData->SetNumberOfRetries(0);
             }
             catch (std::exception &E)
             {
