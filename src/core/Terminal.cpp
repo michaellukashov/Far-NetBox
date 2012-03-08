@@ -1381,10 +1381,10 @@ bool TTerminal::DoQueryReopen(std::exception *E)
             Params.AliasesCount = LENOF(Aliases);
             Result = (QueryUserException(L"", E, qaRetry | qaAbort, &Params, qtError) == qaRetry);
 
-            if (Fatal != NULL)
-            {
-                Fatal->SetReopenQueried(true);
-            }
+        }
+        if (Fatal != NULL)
+        {
+            Fatal->SetReopenQueried(true);
         }
     }
     return Result;
