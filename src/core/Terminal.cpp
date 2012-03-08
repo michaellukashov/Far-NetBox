@@ -1381,10 +1381,10 @@ bool TTerminal::DoQueryReopen(std::exception *E)
             Params.AliasesCount = LENOF(Aliases);
             Result = (QueryUserException(L"", E, qaRetry | qaAbort, &Params, qtError) == qaRetry);
 
-            if (Fatal != NULL)
-            {
-                Fatal->SetReopenQueried(true);
-            }
+        }
+        if (Fatal != NULL)
+        {
+            Fatal->SetReopenQueried(true);
         }
     }
     return Result;
@@ -1411,9 +1411,7 @@ bool TTerminal::QueryReopen(std::exception *E, int Params,
                 if (!GetActive())
                 {
                     Result =
-                        ((Configuration->GetSessionReopenTimeout() == 0) ||
-                         (static_cast<int>(static_cast<double>(nb::Now() - Start) * 24*60*60*1000) < Configuration->GetSessionReopenTimeout())) &&
-                        DoQueryReopen(&E);
+                        (Configuration->GetSessionReopenTimeout() == 0) && DoQueryReopen(&E);
                 }
                 else
                 {
