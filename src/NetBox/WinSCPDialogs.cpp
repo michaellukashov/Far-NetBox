@@ -630,7 +630,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
         TFarSeparator *Separator;
         TFarText *Text;
 
-        Dialog->SetSize(nb::TPoint(76, 14));
+        Dialog->SetSize(nb::TPoint(76, 13));
         Dialog->SetCaption(FORMAT(L"%s - %s",
                                   GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_ENDURANCE)).c_str()));
 
