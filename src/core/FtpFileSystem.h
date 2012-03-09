@@ -150,14 +150,18 @@ protected:
                       TFileOperationProgressType *OperationProgress, unsigned int Flags);
     void Source(const std::wstring FileName,
                 const std::wstring TargetDir, const TCopyParamType *CopyParam, int Params,
+                TOpenRemoteFileParams *OpenParams,
+                TOverwriteFileParams *FileParams,
                 TFileOperationProgressType *OperationProgress, unsigned int Flags,
                 TUploadSessionAction &Action);
     void DirectorySource(const std::wstring DirectoryName,
                          const std::wstring TargetDir, int Attrs, const TCopyParamType *CopyParam,
                          int Params, TFileOperationProgressType *OperationProgress, unsigned int Flags);
     bool ConfirmOverwrite(std::wstring &FileName,
-                          TOverwriteMode &OverwriteMode, TFileOperationProgressType *OperationProgress,
-                          const TOverwriteFileParams *FileParams, int Params, bool AutoResume);
+                          int Params, TFileOperationProgressType *OperationProgress,
+                          TOverwriteMode &OverwriteMode,
+                          bool AutoResume,
+                          const TOverwriteFileParams *FileParams);
     void ReadDirectoryProgress(__int64 Bytes);
     void ResetFileTransfer();
     void DoFileTransferProgress(__int64 TransferSize, __int64 Bytes);

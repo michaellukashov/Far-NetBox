@@ -709,7 +709,6 @@ TStringList::~TStringList()
 {}
 void TStringList::Assign(TPersistent *Source)
 {
-    // nb::Error(SNotImplemented, 13);
     parent::Assign(Source);
 }
 size_t TStringList::GetCount() const

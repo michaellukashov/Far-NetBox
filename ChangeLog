@@ -1,4 +1,11 @@
-NetBox 2.0.14 ??.03.2012
+NetBox 2.0.14 09.03.2012
+---------------------
+  * FTP: Query reopen connection if error occurs in background transfer
+  * SFTP: Add button "Resume" in "Confirm overwrite" dialog 
+    (http://forum.farmanager.com/viewtopic.php?f=39&t=6638#p90521)
+  * Rename option "Automatically reconnect session, if it breaks during transfer" --> "Reconnect after [ ] seconds";
+    add option "Maximum number of retries" (F11 --> NetBox commands --> Configure --> NetBox --> Endurance settings --> Maximum number of retries: [ ])
+    (http://forum.farmanager.com/viewtopic.php?f=39&p=92250#p92214)
   * Bugfix: Session options --> Proxy --> Proxy type --> Telnet causes crash
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=92140#p92140)
   * Various minor bugfixes

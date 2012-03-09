@@ -503,7 +503,17 @@ void TFTPFileSystem::Idle()
 {
     if (FActive && !FWaitingForReply)
     {
-        PoolForFatalNonCommandReply();
+        try
+        {
+            PoolForFatalNonCommandReply();
+        }
+        catch (EFatal &E)
+        {
+            if (!FTerminal->QueryReopen(&E, ropNoReadDirectory, NULL))
+            {
+                throw;
+            }
+        }
 
         // Keep session alive
         if ((FTerminal->GetSessionData()->GetFtpPingType() != ptOff) &&
@@ -759,8 +769,10 @@ void TFTPFileSystem::CalculateFilesChecksum(const std::wstring /*Alg*/,
 }
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::ConfirmOverwrite(std::wstring &FileName,
-                                      TOverwriteMode &OverwriteMode, TFileOperationProgressType *OperationProgress,
-                                      const TOverwriteFileParams *FileParams, int Params, bool AutoResume)
+    int Params, TFileOperationProgressType *OperationProgress,
+    TOverwriteMode &OverwriteMode,
+    bool AutoResume,
+    const TOverwriteFileParams *FileParams)
 {
     bool Result;
     bool CanAutoResume = FLAGSET(Params, cpNoConfirmation) && AutoResume;
@@ -1293,13 +1305,17 @@ void TFTPFileSystem::SourceRobust(const std::wstring FileName,
     bool Retry;
 
     TUploadSessionAction Action(FTerminal->GetLog());
+    TOpenRemoteFileParams OpenParams;
+    OpenParams.OverwriteMode = omOverwrite;
+    TOverwriteFileParams FileParams;
 
     do
     {
         Retry = false;
         try
         {
-            Source(FileName, TargetDir, CopyParam, Params, OperationProgress,
+            Source(FileName, TargetDir, CopyParam, Params,
+                   &OpenParams, &FileParams, OperationProgress,
                    Flags, Action);
         }
         catch (std::exception &E)
@@ -1328,6 +1344,8 @@ void TFTPFileSystem::SourceRobust(const std::wstring FileName,
 //---------------------------------------------------------------------------
 void TFTPFileSystem::Source(const std::wstring FileName,
                             const std::wstring TargetDir, const TCopyParamType *CopyParam, int Params,
+                            TOpenRemoteFileParams *OpenParams,
+                            TOverwriteFileParams *FileParams,
                             TFileOperationProgressType *OperationProgress, unsigned int Flags,
                             TUploadSessionAction &Action)
 {
@@ -1343,20 +1361,21 @@ void TFTPFileSystem::Source(const std::wstring FileName,
         THROW_SKIP_FILE_NULL;
     }
 
-    __int64 Size;
-    int Attrs;
+    // HANDLE File = 0;
+    __int64 MTime = 0, ATime = 0;
+    __int64 Size = 0;
 
-    FTerminal->OpenLocalFile(FileName, GENERIC_READ, &Attrs,
-                             NULL, NULL, NULL, NULL, &Size);
+    FTerminal->OpenLocalFile(FileName, GENERIC_READ, &OpenParams->LocalFileAttrs,
+                             NULL, NULL, &MTime, &ATime, &Size);
 
     OperationProgress->SetFileInProgress();
 
-    bool Dir = FLAGSET(Attrs, faDirectory);
+    bool Dir = FLAGSET(OpenParams->LocalFileAttrs, faDirectory);
     if (Dir)
     {
         Action.Cancel();
         DirectorySource(IncludeTrailingBackslash(FileName), TargetDir,
-                        Attrs, CopyParam, Params, OperationProgress, Flags);
+                        OpenParams->LocalFileAttrs, CopyParam, Params, OperationProgress, Flags);
     }
     else
     {
@@ -1387,6 +1406,16 @@ void TFTPFileSystem::Source(const std::wstring FileName,
 
         unsigned int TransferType = (OperationProgress->AsciiTransfer ? 1 : 2);
 
+        // should we check for interrupted transfer?
+        bool ResumeAllowed = !OperationProgress->AsciiTransfer &&
+                        CopyParam->AllowResume(OperationProgress->LocalSize) &&
+                        IsCapable(fcRename);
+        OperationProgress->SetResumeStatus(ResumeAllowed ? rsEnabled : rsDisabled);
+
+        FileParams->SourceSize = OperationProgress->LocalSize;
+        FileParams->SourceTimestamp = UnixToDateTime(MTime,
+                                     FTerminal->GetSessionData()->GetDSTMode());
+        bool DoResume = (ResumeAllowed && (OpenParams->OverwriteMode == omOverwrite));
         {
             // ignore file list
             TFileListHelper Helper(this, NULL, true);
@@ -1397,7 +1426,7 @@ void TFTPFileSystem::Source(const std::wstring FileName,
             // not used for uploads, but we get new name (if any) back in this field
             UserData.FileName = DestFileName;
             UserData.Params = Params;
-            UserData.AutoResume = FLAGSET(Flags, tfAutoResume);
+            UserData.AutoResume = FLAGSET(Flags, tfAutoResume) || DoResume;
             UserData.CopyParam = CopyParam;
             FileTransfer(FileName, FileName, DestFileName,
                          TargetDir, false, Size, TransferType, UserData, OperationProgress);
@@ -1435,10 +1464,10 @@ void TFTPFileSystem::Source(const std::wstring FileName,
             )
         }
     }
-    else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
+    else if (CopyParam->GetClearArchive() && FLAGSET(OpenParams->LocalFileAttrs, faArchive))
     {
         FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, FileName.c_str()),
-            THROWOSIFFALSE(FileSetAttr(FileName, Attrs & ~faArchive) == 0);
+            THROWOSIFFALSE(FileSetAttr(FileName, OpenParams->LocalFileAttrs & ~faArchive) == 0);
         )
     }
 }
@@ -2493,6 +2522,10 @@ void TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
                         MoreMessages->Add(LoadStr(FTP_CANNOT_OPEN_ACTIVE_CONNECTION));
                     }
                 }
+                if (FLastCode == 421)
+                {
+                    Disconnected = true;
+                }
 
                 MoreMessages->AddStrings(FLastError);
                 // already cleared from WaitForReply, but GotReply can be also called
@@ -2905,9 +2938,10 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
                 }
             }
 
-            if (ConfirmOverwrite(FileName, OverwriteMode, OperationProgress,
-                                 (NoFileParams ? NULL : &FileParams), UserData.Params,
-                                 UserData.AutoResume && UserData.CopyParam->AllowResume(FileParams.SourceSize)))
+            if (ConfirmOverwrite(FileName, UserData.Params, OperationProgress,
+                                 OverwriteMode, 
+                                 UserData.AutoResume && UserData.CopyParam->AllowResume(FileParams.SourceSize),
+                                 (NoFileParams ? NULL : &FileParams)))
             {
                 switch (OverwriteMode)
                 {

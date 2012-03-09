@@ -32,6 +32,7 @@ TConfiguration::TConfiguration() :
     FConfirmResume(false),
     FAutoReadDirectoryAfterOp(false),
     FSessionReopenAuto(0),
+    FSessionReopenAutoMaximumNumberOfRetries(0),
     FSessionReopenBackground(0),
     FSessionReopenTimeout(0),
     FTunnelLocalPortNumberLow(0),
@@ -94,7 +95,8 @@ void TConfiguration::Default()
     FConfirmResume = true;
     FAutoReadDirectoryAfterOp = true;
     FSessionReopenAuto = 5000;
-    FSessionReopenBackground = 2000;
+    FSessionReopenAutoMaximumNumberOfRetries = CONST_DEFAULT_NUMBER_OF_RETRIES;
+    FSessionReopenBackground = 10000;
     FSessionReopenTimeout = 0;
     FTunnelLocalPortNumberLow = 50000;
     FTunnelLocalPortNumberHigh = 50099;
@@ -155,6 +157,7 @@ THierarchicalStorage *TConfiguration::CreateStorage()
     KEY(bool,     ConfirmResume); \
     KEY(bool,     AutoReadDirectoryAfterOp); \
     KEY(int,  SessionReopenAuto); \
+    KEY(int,  SessionReopenAutoMaximumNumberOfRetries); \
     KEY(int,  SessionReopenBackground); \
     KEY(int,  SessionReopenTimeout); \
     KEY(int,  TunnelLocalPortNumberLow); \
@@ -1052,6 +1055,11 @@ bool TConfiguration::GetRememberPassword()
 void TConfiguration::SetSessionReopenAuto(int value)
 {
     SET_CONFIG_PROPERTY(SessionReopenAuto);
+}
+//---------------------------------------------------------------------------
+void TConfiguration::SetSessionReopenAutoMaximumNumberOfRetries(int value)
+{
+    SET_CONFIG_PROPERTY(SessionReopenAutoMaximumNumberOfRetries);
 }
 //---------------------------------------------------------------------------
 void TConfiguration::SetSessionReopenBackground(int value)

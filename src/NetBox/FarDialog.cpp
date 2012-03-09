@@ -737,9 +737,12 @@ int TFarDialog::ShowModal()
     TFarDialog *PrevTopDialog = GetFarPlugin()->FTopDialog;
     GetFarPlugin()->FTopDialog = this;
     {
-        BOOST_SCOPE_EXIT ( (&Self) (&PrevTopDialog) )
+        HANDLE dlg = INVALID_HANDLE_VALUE;
+        BOOST_SCOPE_EXIT ( (&Self) (&PrevTopDialog) (&dlg) )
         {
             Self->GetFarPlugin()->FTopDialog = PrevTopDialog;
+            if (dlg != INVALID_HANDLE_VALUE)
+                Self->GetFarPlugin()->GetStartupInfo()->DialogFree(dlg);
         } BOOST_SCOPE_EXIT_END
         assert(GetDefaultButton());
         assert(GetDefaultButton()->GetDefault());
@@ -749,7 +752,7 @@ int TFarDialog::ShowModal()
         {
             TFarEnvGuard Guard;
             nb::TRect Bounds = GetBounds();
-            HANDLE dlg = GetFarPlugin()->GetStartupInfo()->DialogInit(
+            dlg = GetFarPlugin()->GetStartupInfo()->DialogInit(
                              &MainGuid, &MainGuid,
                              Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom,
                              AHelpTopic.c_str(), FDialogItems, 

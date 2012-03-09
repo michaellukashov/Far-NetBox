@@ -343,7 +343,7 @@ void TWinSCPFileSystem::Init(TSecureShell * /* SecureShell */)
 TWinSCPFileSystem::~TWinSCPFileSystem()
 {
     // DEBUG_PRINTF(L"FTerminal = %x", FTerminal);
-    if (FTerminal)
+    if (FTerminal && FTerminal->GetActive())
     {
         SaveSession();
     }
@@ -371,7 +371,6 @@ TWinSCPFileSystem::~TWinSCPFileSystem()
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::HandleException(const std::exception *E, int OpMode)
 {
-    // nb::Error(SNotImplemented, 120);
     if ((GetTerminal() != NULL) && ::InheritsFrom<std::exception, EFatal>(E))
     {
         if (!FClosed)
@@ -2638,7 +2637,6 @@ int TWinSCPFileSystem::GetFilesEx(nb::TObjectList *PanelItems, bool Move,
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::ExportSession(TSessionData *Data, void *AParam)
 {
-    // nb::Error(SNotImplemented, 3001);
     TExportSessionParam &Param = *static_cast<TExportSessionParam *>(AParam);
 
     THierarchicalStorage *ExportStorage = NULL;
@@ -2975,7 +2973,7 @@ nb::TStrings *TWinSCPFileSystem::CreateFileList(nb::TObjectList *PanelItems,
 void TWinSCPFileSystem::SaveSession()
 {
     // DEBUG_PRINTF(L"FTerminal->GetSessionData()->Name = %s", FTerminal->GetSessionData()->Name.c_str());
-    if (!FTerminal->GetSessionData()->GetName().empty())
+    if (FTerminal->GetActive() && !FTerminal->GetSessionData()->GetName().empty())
     {
         // DEBUG_PRINTF(L"FTerminal->GetCurrentDirectory = %s", FTerminal->GetCurrentDirectory().c_str());
         FTerminal->GetSessionData()->SetRemoteDirectory(FTerminal->GetCurrentDirectory());
