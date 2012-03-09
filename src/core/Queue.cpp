@@ -913,7 +913,18 @@ bool TBackgroundTerminal::DoQueryReopen(std::exception * /*E*/)
     }
     else
     {
-        Sleep(Configuration->GetSessionReopenBackground());
+        int NumberOfRetries = GetSessionData()->GetNumberOfRetries();
+        if (NumberOfRetries >= GetConfiguration()->GetSessionReopenAutoMaximumNumberOfRetries())
+        {
+            LogEvent(FORMAT(L"Reached maximum number of retries: %d", GetConfiguration()->GetSessionReopenAutoMaximumNumberOfRetries()));
+            Result = false;
+        }
+        else
+        {
+            NumberOfRetries++;
+            GetSessionData()->SetNumberOfRetries(NumberOfRetries);
+            Sleep(GetConfiguration()->GetSessionReopenBackground()); // GetConfiguration()->GetSessionReopenAuto()); //
+        }
         Result = true;
     }
     return Result;
