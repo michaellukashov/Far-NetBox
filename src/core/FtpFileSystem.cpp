@@ -2211,6 +2211,10 @@ int TFTPFileSystem::GetOptionVal(int OptionID) const
         Result = (FDoListAll ? TRUE : FALSE);
         break;
 
+    case OPTION_MPEXT_SSLSESSIONREUSE:
+        Result = (Data->GetSslSessionReuse() ? TRUE : FALSE);
+        break;
+
     default:
         assert(false);
         Result = FALSE;
