@@ -1,5 +1,9 @@
 NetBox 2.0.15 ??.03.2012
 ---------------------
+  * Bugfix: FTPS: Failure on SSL session resuming (http://winscp.net/tracker/show_bug.cgi?id=668).
+    Some FTPS servers, e.g. vsftpd, require reuse of SSL session for FTPS data connections
+    (see require_ssl_reuse option in vsftpd.conf man page).
+    Add new FTPS session option "Session ID re-use".
 
 NetBox 2.0.14 09.03.2012
 ---------------------
