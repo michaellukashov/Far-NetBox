@@ -740,7 +740,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData *Data, bool Edit)
     // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-bool TWinSCPFileSystem::ProcessEventEx(int Event, void *Param)
+bool TWinSCPFileSystem::ProcessPanelEventEx(int Event, void *Param)
 {
     bool Result = false;
     if (Connected())
@@ -758,8 +758,8 @@ bool TWinSCPFileSystem::ProcessEventEx(int Event, void *Param)
         {
             // FAR WORKAROUND
             // Control(FCTL_CLOSEPLUGIN) does not seem to close plugin when called from
-            // ProcessEvent(FE_IDLE). So if TTerminal::Idle() causes session to close
-            // we must count on having ProcessEvent(FE_IDLE) called again.
+            // ProcessPanelEvent(FE_IDLE). So if TTerminal::Idle() causes session to close
+            // we must count on having ProcessPanelEvent(FE_IDLE) called again.
             FTerminal->Idle();
             if (FQueue != NULL)
             {

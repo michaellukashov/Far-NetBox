@@ -500,26 +500,27 @@ int TCustomFarPlugin::ProcessPanelInput(const struct ProcessPanelInputInfo *Info
     }
 }
 //---------------------------------------------------------------------------
-int TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void *Param)
+int TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEventInfo *Info)
 {
-    TCustomFarFileSystem *FileSystem = static_cast<TCustomFarFileSystem *>(Plugin);
+    TCustomFarFileSystem *FileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
     try
     {
         ResetCachedInfo();
-        if (HandlesFunction(hfProcessEvent))
+        if (HandlesFunction(hfProcessPanelEvent))
         {
             assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
 
             std::wstring Buf;
-            if ((Event == FE_CHANGEVIEWMODE) || (Event == FE_COMMAND))
+            void *Param = Info->Param;
+            if ((Info->Event == FE_CHANGEVIEWMODE) || (Info->Event == FE_COMMAND))
             {
-                Buf = static_cast<wchar_t *>(Param);
+                Buf = static_cast<wchar_t *>(Info->Param);
                 Param = const_cast<void *>(reinterpret_cast<const void *>(Buf.c_str()));
             }
 
             {
                 TGuard Guard(FileSystem->GetCriticalSection());
-                return FileSystem->ProcessEvent(Event, Param);
+                return FileSystem->ProcessPanelEvent(Info->Event, Param);
             }
         }
         else
@@ -531,7 +532,7 @@ int TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void *Param)
     {
         DEBUG_PRINTF(L"before HandleFileSystemException");
         HandleFileSystemException(FileSystem, &E);
-        return Event == FE_COMMAND ? true : false;
+        return Info->Event == FE_COMMAND ? true : false;
     }
 }
 //---------------------------------------------------------------------------
@@ -1833,7 +1834,7 @@ void TCustomFarFileSystem::GetOpenPanelInfo(struct OpenPanelInfo *Info)
     if (FClosed)
     {
         // FAR WORKAROUND
-        // if plugin is closed from ProcessEvent(FE_IDLE), is does not close,
+        // if plugin is closed from ProcessPanelEvent(FE_IDLE), is does not close,
         // so we close it here on the very next opportunity
         ClosePanel();
     }
@@ -1964,10 +1965,10 @@ int TCustomFarFileSystem::ProcessPanelInput(const struct ProcessPanelInputInfo *
    return FALSE;
 }
 //---------------------------------------------------------------------------
-int TCustomFarFileSystem::ProcessEvent(int Event, void *Param)
+int TCustomFarFileSystem::ProcessPanelEvent(int Event, void *Param)
 {
     ResetCachedInfo();
-    return ProcessEventEx(Event, Param);
+    return ProcessPanelEventEx(Event, Param);
 }
 //---------------------------------------------------------------------------
 int TCustomFarFileSystem::SetDirectory(const struct SetDirectoryInfo *Info)
@@ -2154,7 +2155,7 @@ bool TCustomFarFileSystem::ProcessKeyEx(WORD /*Key*/, DWORD /*ControlState*/)
     return false;
 }
 //---------------------------------------------------------------------------
-bool TCustomFarFileSystem::ProcessEventEx(int /*Event*/, void * /*Param*/)
+bool TCustomFarFileSystem::ProcessPanelEventEx(int /*Event*/, void * /*Param*/)
 {
     return false;
 }

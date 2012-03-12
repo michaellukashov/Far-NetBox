@@ -127,11 +127,13 @@ extern "C"
         return FarPlugin->ProcessPanelInput(Info);
     }
 
-    int WINAPI ProcessEventW(HANDLE Plugin, int Event, void *Param)
+    int WINAPI ProcessPanelEventW(const struct ProcessPanelEventInfo *Info)
     {
+        if (Info->StructSize < sizeof(ProcessPanelEventInfo))
+            return FALSE;
         assert(FarPlugin);
         TFarPluginGuard Guard;
-        return FarPlugin->ProcessEvent(Plugin, Event, Param);
+        return FarPlugin->ProcessPanelEvent(Info);
     }
 
     int WINAPI SetDirectoryW(const struct SetDirectoryInfo *Info)

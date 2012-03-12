@@ -56,7 +56,7 @@ TWinSCPPlugin::~TWinSCPPlugin()
 //---------------------------------------------------------------------------
 bool TWinSCPPlugin::HandlesFunction(THandlesFunction Function)
 {
-    return (Function == hfProcessKey || Function == hfProcessEvent);
+    return (Function == hfProcessKey || Function == hfProcessPanelEvent);
 }
 //---------------------------------------------------------------------------
 VersionInfo TWinSCPPlugin::GetMinFarVersion()

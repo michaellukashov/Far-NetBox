@@ -109,7 +109,7 @@ protected:
     virtual int GetFilesEx(nb::TObjectList *PanelItems, bool Move,
                            std::wstring &DestPath, int OpMode);
     virtual int PutFilesEx(nb::TObjectList *PanelItems, bool Move, int OpMode);
-    virtual bool ProcessEventEx(int Event, void *Param);
+    virtual bool ProcessPanelEventEx(int Event, void *Param);
 
     void ProcessEditorEvent(int Event, void *Param);
 

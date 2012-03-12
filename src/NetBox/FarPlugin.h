@@ -52,7 +52,7 @@ const int MaxMessageWidth = 64;
 enum TFarShiftStatus { fsNone, fsCtrl, fsAlt, fsShift, fsCtrlShift,
                        fsAltShift, fsCtrlAlt
                      };
-enum THandlesFunction { hfProcessKey, hfProcessHostFile, hfProcessEvent };
+enum THandlesFunction { hfProcessKey, hfProcessHostFile, hfProcessPanelEvent };
 typedef boost::signal1<void, std::wstring &> farinputboxvalidate_signal_type;
 typedef farinputboxvalidate_signal_type::slot_type farinputboxvalidate_slot_type;
 //---------------------------------------------------------------------------
@@ -103,7 +103,7 @@ public:
     virtual int ProcessHostFile(const struct ProcessHostFileInfo *Info);
 
     virtual int ProcessPanelInput(const struct ProcessPanelInputInfo *Info);
-    virtual int ProcessEvent(HANDLE Plugin, int Event, void *Param);
+    virtual int ProcessPanelEvent(const struct ProcessPanelEventInfo *Info);
 
     virtual int SetDirectory(const struct SetDirectoryInfo *Info);
     virtual int MakeDirectory(struct MakeDirectoryInfo *Info);
@@ -250,7 +250,7 @@ public:
     void FreeFindData(const struct FreeFindDataInfo *Info);
     int ProcessHostFile(const struct ProcessHostFileInfo *Info);
     int ProcessPanelInput(const struct ProcessPanelInputInfo *Info);
-    int ProcessEvent(int Event, void *Param);
+    int ProcessPanelEvent(int Event, void *Param);
     int SetDirectory(const struct SetDirectoryInfo *Info);
     int MakeDirectory(struct MakeDirectoryInfo *Info);
     int DeleteFiles(const struct DeleteFilesInfo *Info);
@@ -270,7 +270,7 @@ protected:
     virtual bool GetFindDataEx(nb::TObjectList *PanelItems, int OpMode) = 0;
     virtual bool ProcessHostFileEx(nb::TObjectList *PanelItems, int OpMode);
     virtual bool ProcessKeyEx(WORD Key, DWORD ControlState);
-    virtual bool ProcessEventEx(int Event, void *Param);
+    virtual bool ProcessPanelEventEx(int Event, void *Param);
     virtual bool SetDirectoryEx(const std::wstring Dir, int OpMode);
     virtual int MakeDirectoryEx(std::wstring &Name, int OpMode);
     virtual bool DeleteFilesEx(nb::TObjectList *PanelItems, int OpMode);
