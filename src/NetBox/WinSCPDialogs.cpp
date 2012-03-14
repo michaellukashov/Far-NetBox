@@ -1679,6 +1679,7 @@ private:
     TFarRadioButton *IPv6Button;
     TFarCheckBox *FtpPasvModeCheck;
     TFarCheckBox *FtpAllowEmptyPasswordCheck;
+    TFarCheckBox *SslSessionReuseCheck;
     TFarComboBox *FtpEncryptionCombo;
     TSessionDialog *Self;
 
@@ -2260,18 +2261,10 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
     FtpAllowEmptyPasswordCheck = new TFarCheckBox(this);
     FtpAllowEmptyPasswordCheck->SetCaption(GetMsg(LOGIN_FTP_ALLOW_EMPTY_PASSWORD));
 
-    Separator = new TFarSeparator(this);
+    SslSessionReuseCheck = new TFarCheckBox(this);
+    SslSessionReuseCheck->SetCaption(GetMsg(LOGIN_FTP_SSLSESSIONREUSE));
 
-    Text = new TFarText(this);
-    Text->SetCaption(GetMsg(LOGIN_FTP_POST_LOGIN_COMMANDS));
-
-    for (size_t Index = 0; Index < LENOF(PostLoginCommandsEdits); Index++)
-    {
-        TFarEdit *Edit = new TFarEdit(this);
-        PostLoginCommandsEdits[Index] = Edit;
-    }
-
-    new TFarSeparator(this);
+    SetNextItemPosition(ipNewLine);
 
     Text = new TFarText(this);
     Text->SetCaption(GetMsg(LOGIN_FTP_ENCRYPTION));
@@ -2286,6 +2279,21 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
     FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_REQUIRE_EXPLICIT_TLS_FTP));
     FtpEncryptionCombo->SetWidth(35);
     // FtpEncryptionCombo->SetRight(CRect.Right - 12 - 2);
+
+    SetNextItemPosition(ipNewLine);
+
+    Separator = new TFarSeparator(this);
+
+    Text = new TFarText(this);
+    Text->SetCaption(GetMsg(LOGIN_FTP_POST_LOGIN_COMMANDS));
+
+    for (size_t Index = 0; Index < LENOF(PostLoginCommandsEdits); Index++)
+    {
+        TFarEdit *Edit = new TFarEdit(this);
+        PostLoginCommandsEdits[Index] = Edit;
+    }
+
+    new TFarSeparator(this);
 
     // Connection tab
 
@@ -2962,7 +2970,6 @@ void TSessionDialog::UpdateControls()
 
     // Connection sheet
     FtpPasvModeCheck->SetEnabled(FtpProtocol);
-    FtpAllowEmptyPasswordCheck->SetEnabled(FtpProtocol);
     if (FtpProtocol && (FtpProxyMethodCombo->GetItems()->GetSelected() != pmNone) && !FtpPasvModeCheck->GetChecked())
     {
         FtpPasvModeCheck->SetChecked(true);
@@ -2978,6 +2985,8 @@ void TSessionDialog::UpdateControls()
 
     // FTP tab
     FtpTab->SetEnabled(FtpProtocol);
+    FtpAllowEmptyPasswordCheck->SetEnabled(FtpProtocol);
+    SslSessionReuseCheck->SetEnabled(FtpsProtocol);
     FtpEncryptionCombo->SetEnabled(FtpsProtocol);
 
     // SSH tab
@@ -3258,6 +3267,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
             PostLoginCommandsEdits[Index]->SetText(PostLoginCommands->GetString(Index));
         }
     }
+    SslSessionReuseCheck->SetChecked(SessionData->GetSslSessionReuse());
 
     TFtpEncryptionSwitch FtpEncryption = SessionData->GetFtpEncryption();
     switch (FtpEncryption)
@@ -3534,6 +3544,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
 
         // FTP tab
         SessionData->SetFtpAllowEmptyPassword(FtpAllowEmptyPasswordCheck->GetChecked());
+        SessionData->SetSslSessionReuse(SslSessionReuseCheck->GetChecked());
         nb::TStrings *PostLoginCommands = new nb::TStringList;
         {
             BOOST_SCOPE_EXIT ( (&PostLoginCommands) )

@@ -55,6 +55,8 @@ static char THIS_FILE[] = __FILE__;
 #define GetOption(OPTION) GetInstanceOption(this->m_pApiLogParent, OPTION)
 #define GetOptionVal(OPTION) GetInstanceOptionVal(this->m_pApiLogParent, OPTION)
 
+const size_t CFtpControlSocket::m_MaxSslSessions = 10;
+
 class CFtpControlSocket::CFileTransferData : public CFtpControlSocket::t_operation::COpData
 {
 public:
@@ -189,6 +191,8 @@ CFtpControlSocket::CFtpControlSocket(CMainThread *pMainThread) : CControlSocket(
 
 	m_mayBeMvsFilesystem = false;
 	m_mayBeBS2000Filesystem = false;
+	m_Port = 0;
+	m_SslSessions = NULL;
 }
 
 CFtpControlSocket::~CFtpControlSocket()
@@ -205,6 +209,11 @@ CFtpControlSocket::~CFtpControlSocket()
 	{
 		delete m_pDataFile;
 		m_pDataFile=0;
+	}
+	if (m_SslSessions)
+	{
+		free(m_SslSessions);
+		m_SslSessions = NULL;
 	}
 }
 
@@ -272,12 +281,24 @@ bool CFtpControlSocket::InitConnect()
 		DoClose(FZ_REPLY_CRITICALERROR);
 		return false;
 	}
+	if (m_SslSessions)
+	{
+		ShowStatus(_T("Internal error: m_SslSessions not zero in Connect"), 1);
+		DoClose(FZ_REPLY_CRITICALERROR);
+		return false;
+	}
 
 #ifndef MPEXT_NO_SSL
 	if (m_CurrentServer.nServerType & FZ_SERVERTYPE_LAYER_SSL_IMPLICIT ||
 		m_CurrentServer.nServerType & FZ_SERVERTYPE_LAYER_SSL_EXPLICIT ||
 		m_CurrentServer.nServerType & FZ_SERVERTYPE_LAYER_TLS_EXPLICIT)
 	{
+		int nSslSessionReuse = COptions::GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE);
+		if (nSslSessionReuse)
+		{
+			m_SslSessions = (ssl_session_info_t *)calloc(CFtpControlSocket::m_MaxSslSessions, sizeof(ssl_session_info_t));
+		}
+
 		m_pSslLayer = new CAsyncSslSocketLayer;
 		AddLayer(m_pSslLayer);
 		TCHAR buffer[1000];
@@ -412,7 +433,8 @@ void CFtpControlSocket::Connect(t_server &server)
 			DoClose(FZ_REPLY_CRITICALERROR);
 			return;
 		}
-		int res = m_pSslLayer->InitSSLConnection(true);
+		int res = m_pSslLayer->InitSSLConnection(true, m_ServerName, m_Port,
+			m_SslSessions, m_MaxSslSessions);
 #ifndef MPEXT_NO_SSLDLL
 		if (res == SSL_FAILURE_LOADDLLS)
 			ShowStatus(IDS_ERRORMSG_CANTLOADSSLDLLS, 1);
@@ -475,6 +497,7 @@ void CFtpControlSocket::Connect(t_server &server)
 		}
 	}
 	m_ServerName = logontype?fwhost:hostname;
+	m_Port = port;
 	m_LastRecvTime = m_LastSendTime = CTime::GetCurrentTime();
 }
 
@@ -538,7 +561,8 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 				DoClose(FZ_REPLY_CRITICALERROR);
 				return;
 			}
-			int res = m_pSslLayer->InitSSLConnection(true);
+			int res = m_pSslLayer->InitSSLConnection(true, m_ServerName, m_Port,
+				m_SslSessions, m_MaxSslSessions);
 #ifndef MPEXT_NO_SSLDLL
 			if (res == SSL_FAILURE_LOADDLLS)
 				ShowStatus(IDS_ERRORMSG_CANTLOADSSLDLLS, 1);
@@ -1284,6 +1308,8 @@ void CFtpControlSocket::DoClose(int nError /*=0*/)
 	m_mayBeMvsFilesystem = false;
 	m_mayBeBS2000Filesystem = false;
 
+	free(m_SslSessions);
+	m_SslSessions = NULL;
 	CControlSocket::Close();
 }
 

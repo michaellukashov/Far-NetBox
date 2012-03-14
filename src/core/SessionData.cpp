@@ -212,6 +212,8 @@ void TSessionData::Default()
     SetCustomParam1(L"");
     SetCustomParam2(L"");
 
+    SetSslSessionReuse(true);
+
     FNumberOfRetries = 0;
 
     FSelected = false;
@@ -357,6 +359,7 @@ void TSessionData::Assign(nb::TPersistent *Source)
 
         DUPL(CustomParam1);
         DUPL(CustomParam2);
+        DUPL(SslSessionReuse);
 
 #undef DUPL
         FNumberOfRetries = (static_cast<TSessionData *>(Source))->GetNumberOfRetries();
@@ -600,6 +603,8 @@ void TSessionData::Load(THierarchicalStorage *Storage)
 
         SetCustomParam1(Storage->ReadString(L"CustomParam1", GetCustomParam1()));
         SetCustomParam2(Storage->ReadString(L"CustomParam2", GetCustomParam2()));
+
+        SetSslSessionReuse(Storage->Readbool(L"SslSessionReuse", GetSslSessionReuse()));
 
         Storage->CloseSubKey();
     };
@@ -867,6 +872,8 @@ void TSessionData::Save(THierarchicalStorage *Storage,
 
             WRITE_DATA_EX(String, L"CustomParam1", GetCustomParam1(), );
             WRITE_DATA_EX(String, L"CustomParam2", GetCustomParam2(), );
+
+            WRITE_DATA_EX(bool, L"SslSessionReuse", GetSslSessionReuse(), );
         }
 
         SavePasswords(Storage, PuttyExport);
@@ -2044,6 +2051,11 @@ void TSessionData::SetCustomParam1(const std::wstring value)
 void TSessionData::SetCustomParam2(const std::wstring value)
 {
     SET_SESSION_PROPERTY(CustomParam2);
+}
+//---------------------------------------------------------------------
+void TSessionData::SetSslSessionReuse(bool value)
+{
+    SET_SESSION_PROPERTY(SslSessionReuse);
 }
 //---------------------------------------------------------------------
 void TSessionData::SetSFTPDownloadQueue(size_t value)

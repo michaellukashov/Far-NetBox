@@ -158,6 +158,7 @@ private:
     TProxyMethod FOrigProxyMethod;
     TSessionSource FSource;
     int FNumberOfRetries;
+    bool FSslSessionReuse;
 
     void SavePasswords(THierarchicalStorage *Storage, bool PuttyExport);
     void Modify();
@@ -425,6 +426,8 @@ public:
 
     int GetNumberOfRetries() const { return FNumberOfRetries; }
     void SetNumberOfRetries(int value) { FNumberOfRetries = value; }
+    bool GetSslSessionReuse() const { return FSslSessionReuse; }
+    void SetSslSessionReuse(bool value);
 private:
     void AdjustHostName(std::wstring &hostName, const std::wstring prefix);
     void RemoveProtocolPrefix(std::wstring &hostName);
