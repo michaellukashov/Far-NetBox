@@ -32,6 +32,7 @@ class TFarPanelModes;
 class TFarKeyBarTitles;
 class TFarPanelInfo;
 class TFarDialog;
+class TWinSCPFileSystem;
 class TFarDialogItem;
 class TCriticalSection;
 class TFarMessageDialog;
@@ -74,6 +75,7 @@ class TCustomFarPlugin : public nb::TObject
 {
     friend TCustomFarFileSystem;
     friend TFarDialog;
+    friend TWinSCPFileSystem;
     friend TFarDialogItem;
     friend TFarMessageDialog;
     friend TFarPluginGuard;
