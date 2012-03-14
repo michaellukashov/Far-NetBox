@@ -1520,7 +1520,7 @@ void TCustomFarPlugin::UpdateConsoleTitle()
     std::wstring Title = FormatConsoleTitle();
     SetConsoleTitle(Title.c_str());
     short progress = FCurrentProgress != -1 ? FCurrentProgress : 0;
-    UpdateProgress(TBPF_NORMAL, progress);
+    UpdateProgress(progress != 0 ? TBPF_NORMAL : TBPF_NOPROGRESS, progress);
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::SaveScreen(HANDLE &Screen)
