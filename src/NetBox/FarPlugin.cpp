@@ -1509,10 +1509,13 @@ std::wstring TCustomFarPlugin::FormatConsoleTitle()
 void TCustomFarPlugin::UpdateProgress(int state, int progress)
 {
     FarAdvControl(ACTL_SETPROGRESSSTATE, (void *)state);
-    PROGRESSVALUE pv;
-    pv.Completed = progress;
-    pv.Total = 100;
-    FarAdvControl(ACTL_SETPROGRESSVALUE, (void *)&pv);
+    if (state == TBPF_NORMAL)
+    {
+        PROGRESSVALUE pv;
+        pv.Completed = progress;
+        pv.Total = 100;
+        FarAdvControl(ACTL_SETPROGRESSVALUE, (void *)&pv);
+    }
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::UpdateConsoleTitle()
