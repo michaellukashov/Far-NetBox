@@ -8104,6 +8104,7 @@ TQueueDialog::TQueueDialog(TCustomFarPlugin *AFarPlugin,
     FFileSystem(AFileSystem),
     FClosingPlugin(ClosingPlugin)
 {
+    GetFarPlugin()->UpdateProgress(PS_INDETERMINATE, 100);
     TFarSeparator *Separator = NULL;
     TFarText *Text = NULL;
 
