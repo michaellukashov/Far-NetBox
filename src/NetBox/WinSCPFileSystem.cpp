@@ -763,7 +763,6 @@ bool TWinSCPFileSystem::ProcessEventEx(int Event, void *Param)
             if (FQueue != NULL)
             {
                 FQueue->Idle();
-                FarPlugin->UpdateProgress(PS_INDETERMINATE, 0);
             }
             ProcessQueue(true);
         }
@@ -3513,6 +3512,7 @@ TTerminalQueueStatus *TWinSCPFileSystem::ProcessQueue(bool Hidden)
 {
     TTerminalQueueStatus *Result = NULL;
     assert(FQueueStatus != NULL);
+    FarPlugin->UpdateProgress(FQueueStatus->GetCount() > 0 ? PS_INDETERMINATE : PS_NOPROGRESS, 0);
 
     if (FQueueStatusInvalidated || FQueueItemInvalidated)
     {
