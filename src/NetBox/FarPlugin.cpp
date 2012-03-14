@@ -1472,7 +1472,7 @@ void TCustomFarPlugin::ClearConsoleTitle()
         FCurrentTitle = L"";
         FCurrentProgress = -1;
         SetConsoleTitle(Title.c_str());
-        UpdateProgress(TBPF_NORMAL, 0);
+        UpdateProgress(TBPF_NOPROGRESS, 0);
     }
     FSavedTitles->Delete(FSavedTitles->GetCount() - 1);
 }
