@@ -763,6 +763,7 @@ bool TWinSCPFileSystem::ProcessEventEx(int Event, void *Param)
             if (FQueue != NULL)
             {
                 FQueue->Idle();
+                FarPlugin->UpdateProgress(PS_INDETERMINATE, 0);
             }
             ProcessQueue(true);
         }
