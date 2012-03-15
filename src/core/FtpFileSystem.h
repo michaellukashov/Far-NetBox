@@ -11,6 +11,7 @@ class TFileZillaIntf;
 class TFileZillaImpl;
 class TCriticalSection;
 class TMessageQueue;
+class TFTPServerCapabilities;
 struct TOverwriteFileParams;
 struct TListDataEntry;
 struct TFtpsCertificateData;
@@ -230,6 +231,7 @@ private:
     bool FDoListAll;
     bool FMfmt;
     nb::TDateTime FLastDataSent;
+    TFTPServerCapabilities *FCapabilities;
     mutable std::wstring FOptionScratch;
     TFTPFileSystem *Self;
 private:

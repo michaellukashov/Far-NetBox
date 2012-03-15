@@ -11,6 +11,7 @@
 #include "FtpFileSystem.h"
 #include "FileZillaIntf.h"
 #include "AsyncProxySocketLayer.h"
+#include "FtpControlSocket.h"
 
 #include "Common.h"
 #include "Exceptions.h"
@@ -224,6 +225,7 @@ void TFTPFileSystem::Init()
     FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
     FTimeoutStatus = LoadStr(IDS_ERRORMSG_TIMEOUT);
     FDisconnectStatus = LoadStr(IDS_STATUSMSG_DISCONNECTED);
+    FCapabilities = new TFTPServerCapabilities();
 }
 
 //---------------------------------------------------------------------------
@@ -255,6 +257,8 @@ TFTPFileSystem::~TFTPFileSystem()
     FLastError = NULL;
     delete FFeatures;
     FFeatures = NULL;
+    delete FCapabilities;
+    FCapabilities = NULL;
 
     ResetCaches();
 }
