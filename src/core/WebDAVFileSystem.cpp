@@ -12,6 +12,7 @@
 
 #include "WebDAVFileSystem.h"
 
+#include "PuttyIntf.h"
 #include "Terminal.h"
 #include "Common.h"
 #include "Exceptions.h"
@@ -41,33 +42,15 @@ static std::wstring UnixExcludeLeadingBackslash(const std::wstring str)
 //---------------------------------------------------------------------------
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
   FILE_OPERATION_LOOP_CUSTOM(Self->FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
-//---------------------------------------------------------------------------
-const int ecRaiseExcept = 1;
-const int ecIgnoreWarnings = 2;
-const int ecReadProgress = 4;
-const int ecDefault = ecRaiseExcept;
-//---------------------------------------------------------------------------
-const int tfFirstLevel = 0x01;
-const int tfAutoResume = 0x02;
 //===========================================================================
 
 class TSessionData;
 
 //---------------------------------------------------------------------------
-struct TSinkFileParams
-{
-    std::wstring TargetDir;
-    const TCopyParamType *CopyParam;
-    TFileOperationProgressType *OperationProgress;
-    unsigned int Flags;
-    int Params;
-    bool Skipped;
-};
-//---------------------------------------------------------------------------
-class TFileListHelper
+class TWebDAVFileListHelper
 {
 public:
-    explicit TFileListHelper(TWebDAVFileSystem *FileSystem, TRemoteFileList *FileList,
+    explicit TWebDAVFileListHelper(TWebDAVFileSystem *FileSystem, TRemoteFileList *FileList,
                     bool IgnoreFileList) :
         FFileSystem(FileSystem),
         FFileList(FFileSystem->FFileList),
@@ -77,7 +60,7 @@ public:
         FFileSystem->FIgnoreFileList = IgnoreFileList;
     }
 
-    ~TFileListHelper()
+    ~TWebDAVFileListHelper()
     {
         FFileSystem->FFileList = FFileList;
         FFileSystem->FIgnoreFileList = FIgnoreFileList;
@@ -574,7 +557,7 @@ void TWebDAVFileSystem::DoReadDirectory(TRemoteFileList *FileList)
 
     FLastReadDirectoryProgress = 0;
 
-    TFileListHelper Helper(this, FileList, false);
+    TWebDAVFileListHelper Helper(this, FileList, false);
 
     // always specify path to list, do not attempt to
     // list "current" dir as:
@@ -1127,7 +1110,7 @@ void TWebDAVFileSystem::WebDAVSource(const std::wstring FileName,
 
         {
             // ignore file list
-            TFileListHelper Helper(this, NULL, true);
+            TWebDAVFileListHelper Helper(this, NULL, true);
 
             FFileTransferCPSLimit = OperationProgress->CPSLimit;
             // not used for uploads anyway
@@ -1499,7 +1482,7 @@ void TWebDAVFileSystem::Sink(const std::wstring FileName,
 
         {
             // ignore file list
-            TFileListHelper Helper(this, NULL, true);
+            TWebDAVFileListHelper Helper(this, NULL, true);
 
             FFileTransferCPSLimit = OperationProgress->CPSLimit;
             FFileTransferPreserveTime = CopyParam->GetPreserveTime();

@@ -1,10 +1,9 @@
 #pragma once
 
-#define PLUGIN_VERSION_NUM 2,0,15,87
+#define PLUGIN_VERSION_NUM 2,0,15,88
 #define PLUGIN_VERSION_TXT "2.0.15"
 #define PLUGIN_VERSION_WTXT L"2.0.15"
 
-#define PLUGIN_NAME         L"NetBox"
 #define PLUGIN_AUTHOR       L"Michael Lukashov"
 #define PLUGIN_DESCR        L"SFTP/FTP/FTPS/SCP/WebDAV client for FAR 2.0/3.0"
 #define PLUGIN_FILENAME     L"NetBox.dll"

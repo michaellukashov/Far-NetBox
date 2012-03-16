@@ -71,11 +71,6 @@ to tim.kosse@gmx.de
 #include "AsyncSocketExLayer.h"
 #endif //NOLAYERS
 
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#endif
-
 #ifndef GWL_USERDATA
 #define GWL_USERDATA GWLP_USERDATA
 #endif

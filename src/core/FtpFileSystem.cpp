@@ -149,24 +149,12 @@ class TMessageQueue : public std::list<std::pair<WPARAM, LPARAM> >
 {
 };
 //---------------------------------------------------------------------------
-const int tfFirstLevel = 0x01;
-const int tfAutoResume = 0x02;
 const wchar_t CertificateStorageKey[] = L"FtpsCertificates";
 //---------------------------------------------------------------------------
-struct TSinkFileParams
-{
-    std::wstring TargetDir;
-    const TCopyParamType *CopyParam;
-    int Params;
-    TFileOperationProgressType *OperationProgress;
-    bool Skipped;
-    unsigned int Flags;
-};
-//---------------------------------------------------------------------------
-class TFileListHelper
+class TFTPFileListHelper
 {
 public:
-    explicit TFileListHelper(TFTPFileSystem *FileSystem, TRemoteFileList *FileList,
+    explicit TFTPFileListHelper(TFTPFileSystem *FileSystem, TRemoteFileList *FileList,
                     bool IgnoreFileList) :
         FFileSystem(FileSystem),
         FFileList(FFileSystem->FFileList),
@@ -176,7 +164,7 @@ public:
         FFileSystem->FIgnoreFileList = IgnoreFileList;
     }
 
-    ~TFileListHelper()
+    ~TFTPFileListHelper()
     {
         FFileSystem->FFileList = FFileList;
         FFileSystem->FIgnoreFileList = FIgnoreFileList;
@@ -1172,7 +1160,7 @@ void TFTPFileSystem::Sink(const std::wstring FileName,
 
         {
             // ignore file list
-            TFileListHelper Helper(this, NULL, true);
+            TFTPFileListHelper Helper(this, NULL, true);
 
             FFileTransferCPSLimit = OperationProgress->CPSLimit;
             FFileTransferPreserveTime = CopyParam->GetPreserveTime();
@@ -1418,7 +1406,7 @@ void TFTPFileSystem::Source(const std::wstring FileName,
         bool DoResume = (ResumeAllowed && (OpenParams->OverwriteMode == omOverwrite));
         {
             // ignore file list
-            TFileListHelper Helper(this, NULL, true);
+            TFTPFileListHelper Helper(this, NULL, true);
 
             FFileTransferCPSLimit = OperationProgress->CPSLimit;
             // not used for uploads anyway
@@ -1598,7 +1586,7 @@ void TFTPFileSystem::CreateDirectory(const std::wstring ADirName)
 
     {
         // ignore file list
-        TFileListHelper Helper(this, NULL, true);
+        TFTPFileListHelper Helper(this, NULL, true);
 
         FFileZillaIntf->MakeDir(nb::W2MB(DirName.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str());
 
@@ -1636,7 +1624,7 @@ void TFTPFileSystem::DeleteFile(const std::wstring AFileName,
 
     {
         // ignore file list
-        TFileListHelper Helper(this, NULL, true);
+        TFTPFileListHelper Helper(this, NULL, true);
 
         if (Dir)
         {
@@ -1824,7 +1812,7 @@ void TFTPFileSystem::DoReadDirectory(TRemoteFileList *FileList)
 
     FLastReadDirectoryProgress = 0;
 
-    TFileListHelper Helper(this, FileList, false);
+    TFTPFileListHelper Helper(this, FileList, false);
 
     // always specify path to list, do not attempt to list "current" dir as:
     // 1) List() lists again the last listed directory, not the current working directory
@@ -1976,7 +1964,7 @@ void TFTPFileSystem::RenameFile(const std::wstring AFileName,
 
     {
         // ignore file list
-        TFileListHelper Helper(this, NULL, true);
+        TFTPFileListHelper Helper(this, NULL, true);
 
         FFileZillaIntf->Rename(nb::W2MB(FileNameOnly.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str(),
                                nb::W2MB(NewNameOnly.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str(),
@@ -2992,16 +2980,6 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
         return true;
     }
 }
-//---------------------------------------------------------------------------
-struct TClipboardHandler
-{
-    std::wstring Text;
-
-    void Copy(nb::TObject * /*Sender*/)
-    {
-        CopyToClipboard(Text);
-    }
-};
 //---------------------------------------------------------------------------
 std::wstring FormatContactList(const std::wstring Entry1, const std::wstring Entry2)
 {

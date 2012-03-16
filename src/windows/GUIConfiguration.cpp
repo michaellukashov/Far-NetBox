@@ -650,6 +650,7 @@ std::wstring TGUIConfiguration::PropertyToKey(const std::wstring Property)
 }
 //---------------------------------------------------------------------------
 // duplicated from core\configuration.cpp
+#undef BLOCK
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
   { \
@@ -659,6 +660,7 @@ std::wstring TGUIConfiguration::PropertyToKey(const std::wstring Property)
       } BOOST_SCOPE_EXIT_END \
       BLOCK \
   }
+#undef REGCONFIG
 #define REGCONFIG(CANCREATE) \
   BLOCK(L"Interface", CANCREATE, \
     KEY(bool,     ContinueOnError); \
@@ -689,6 +691,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage *Storage, bool All)
     TConfiguration::SaveData(Storage, All);
 
     // duplicated from core\configuration.cpp
+#undef KEY
 #define KEY(TYPE, VAR) Storage->Write ## TYPE(PropertyToKey(nb::MB2W(#VAR)), Get##VAR())
     REGCONFIG(true);
 #undef KEY
@@ -728,6 +731,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage *Storage)
     TConfiguration::LoadData(Storage);
 
     // duplicated from core\configuration.cpp
+#undef KEY
 #define KEY(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(PropertyToKey(nb::MB2W(#VAR)), Get##VAR()))
     // #pragma warn -eas
     REGCONFIG(false);

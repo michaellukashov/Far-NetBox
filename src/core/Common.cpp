@@ -24,12 +24,12 @@ int Win32BuildNumber = 0;
 // int Win32CSDVersion = 0;
 //---------------------------------------------------------------------------
 
-inline int StringCmp(const wchar_t *s1, const wchar_t *s2)
+int StringCmp(const wchar_t *s1, const wchar_t *s2)
 {
     return ::CompareString(0, SORT_STRINGSORT, s1, -1, s2, -1) - 2;
 }
 
-inline int StringCmpI(const wchar_t *s1, const wchar_t *s2)
+int StringCmpI(const wchar_t *s1, const wchar_t *s2)
 {
     return ::CompareString(0, NORM_IGNORECASE | SORT_STRINGSORT, s1, -1, s2, -1) - 2;
 }
