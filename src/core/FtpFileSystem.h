@@ -18,7 +18,7 @@ struct TFtpsCertificateData;
 class TFTPFileSystem : public TCustomFileSystem
 {
     friend class TFileZillaImpl;
-    friend class TFileListHelper;
+    friend class TFTPFileListHelper;
 
 public:
     explicit TFTPFileSystem(TTerminal *ATerminal);

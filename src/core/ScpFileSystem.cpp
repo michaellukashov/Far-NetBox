@@ -17,6 +17,7 @@
 #include "SecureShell.h"
 
 //---------------------------------------------------------------------------
+#undef FILE_OPERATION_LOOP_EX
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
   FILE_OPERATION_LOOP_CUSTOM(Self->FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
 //---------------------------------------------------------------------------
@@ -27,10 +28,6 @@ const int coOnlyReturnCode = 8;
 const int coIgnoreWarnings = 16;
 const int coReadProgress = 32;
 
-const int ecRaiseExcept = 1;
-const int ecIgnoreWarnings = 2;
-const int ecReadProgress = 4;
-const int ecDefault = ecRaiseExcept;
 //---------------------------------------------------------------------------
 #define THROW_FILE_SKIPPED(MESSAGE, EXCEPTION) \
   throw EScpFileSkipped(MESSAGE, EXCEPTION)

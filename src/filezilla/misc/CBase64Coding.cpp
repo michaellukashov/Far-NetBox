@@ -26,8 +26,6 @@
 //Modified for use with CAsyncProxySocket, removed tracing code
 
 #if defined( _DEBUG ) && ! defined( WFC_STL )
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #define new DEBUG_NEW
 #endif // _DEBUG
 

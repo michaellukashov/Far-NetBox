@@ -3,14 +3,11 @@
 #define SecureShellH
 
 #include <set>
+
+#include "PuttyIntf.h"
 #include "Configuration.h"
 #include "SessionData.h"
 #include "SessionInfo.h"
-//---------------------------------------------------------------------------
-#ifndef PuttyIntfH
-struct Backend;
-struct Config;
-#endif
 //---------------------------------------------------------------------------
 struct _WSANETWORKEVENTS;
 typedef struct _WSANETWORKEVENTS WSANETWORKEVENTS;

@@ -30,6 +30,25 @@ const int dfNoRecursive = 0x01;
 const int dfAlternative = 0x02;
 const int dfForceDelete = 0x04;
 //---------------------------------------------------------------------------
+const int tfFirstLevel =   0x01;
+const int tfAutoResume = 0x02;
+const int tfNewDirectory = 0x04;
+//---------------------------------------------------------------------------
+const int ecRaiseExcept = 1;
+const int ecIgnoreWarnings = 2;
+const int ecReadProgress = 4;
+const int ecDefault = ecRaiseExcept;
+//---------------------------------------------------------------------------
+struct TSinkFileParams
+{
+    std::wstring TargetDir;
+    const TCopyParamType *CopyParam;
+    TFileOperationProgressType *OperationProgress;
+    int Params;
+    unsigned int Flags;
+    bool Skipped;
+};
+//---------------------------------------------------------------------------
 struct TFileTransferData
 {
     TFileTransferData() :
@@ -45,6 +64,16 @@ struct TFileTransferData
     int Params;
     int OverwriteResult;
     bool AutoResume;
+};
+//---------------------------------------------------------------------------
+struct TClipboardHandler
+{
+    std::wstring Text;
+
+    void Copy(nb::TObject * /*Sender*/)
+    {
+        CopyToClipboard(Text);
+    }
 };
 //---------------------------------------------------------------------------
 struct TOpenRemoteFileParams

@@ -13,6 +13,7 @@
 #include "HelpCore.h"
 #include "Common.h"
 #include "CoreMain.h"
+#include "FileSystems.h"
 
 #ifndef AUTO_WINSOCK
 #include <winsock2.h>
@@ -1787,16 +1788,6 @@ TCipher TSecureShell::FuncToSsh2Cipher(const void *Cipher)
     assert(Result != cipWarn);
     return Result;
 }
-//---------------------------------------------------------------------------
-struct TClipboardHandler
-{
-    std::wstring Text;
-
-    void Copy(nb::TObject * /*Sender*/)
-    {
-        CopyToClipboard(Text);
-    }
-};
 //---------------------------------------------------------------------------
 void TSecureShell::VerifyHostKey(const std::wstring Host, int Port,
                                  const std::wstring KeyType, const std::wstring KeyStr, const std::wstring Fingerprint)
