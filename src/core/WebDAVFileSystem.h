@@ -13,7 +13,7 @@ class TiXmlElement;
 class TWebDAVFileSystem : public TCustomFileSystem
 {
     friend class CEasyURL;
-    friend class TFileListHelper;
+    friend class TWebDAVFileListHelper;
 public:
     explicit TWebDAVFileSystem(TTerminal *ATerminal);
     virtual ~TWebDAVFileSystem();

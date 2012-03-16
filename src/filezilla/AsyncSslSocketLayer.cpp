@@ -93,8 +93,6 @@ Version 2.0:
 
 #if defined _DEBUG && defined _AFX
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
 // Simple macro to declare function type and function pointer based on the

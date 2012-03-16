@@ -151,20 +151,21 @@ const int asOpUnsupported = 1 << SSH_FX_OP_UNSUPPORTED;
 const int asNoSuchFile =    1 << SSH_FX_NO_SUCH_FILE;
 const int asAll = 0xFFFF;
 
-const int tfFirstLevel =   0x01;
-const int tfNewDirectory = 0x02;
 //---------------------------------------------------------------------------
+#ifndef GET_32BIT
 #define GET_32BIT(cp) \
     (((unsigned long)(unsigned char)(cp)[0] << 24) | \
     ((unsigned long)(unsigned char)(cp)[1] << 16) | \
     ((unsigned long)(unsigned char)(cp)[2] << 8) | \
     ((unsigned long)(unsigned char)(cp)[3]))
-
+#endif
+#ifndef PUT_32BIT
 #define PUT_32BIT(cp, value) { \
     (cp)[0] = (unsigned char)((value) >> 24); \
     (cp)[1] = (unsigned char)((value) >> 16); \
     (cp)[2] = (unsigned char)((value) >> 8); \
     (cp)[3] = (unsigned char)(value); }
+#endif
 //---------------------------------------------------------------------------
 #define SFTP_PACKET_ALLOC_DELTA 256
 //---------------------------------------------------------------------------
@@ -1632,16 +1633,6 @@ private:
     TSFTPFileSystem *FFileSystem;
 };
 
-//---------------------------------------------------------------------------
-struct TSinkFileParams
-{
-    std::wstring TargetDir;
-    const TCopyParamType *CopyParam;
-    int Params;
-    TFileOperationProgressType *OperationProgress;
-    bool Skipped;
-    unsigned int Flags;
-};
 //===========================================================================
 TSFTPFileSystem::TSFTPFileSystem(TTerminal *ATerminal) :
     TCustomFileSystem(ATerminal)

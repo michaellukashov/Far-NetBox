@@ -232,6 +232,8 @@ int AnsiCompareText(const std::wstring str1, const std::wstring str2);
 int AnsiCompareIC(const std::wstring str1, const std::wstring str2);
 bool AnsiContainsText(const std::wstring str1, const std::wstring str2);
 
+int StringCmp(const wchar_t *s1, const wchar_t *s2);
+int StringCmpI(const wchar_t *s1, const wchar_t *s2);
 //---------------------------------------------------------------------------
 
 class EOSError : public std::exception

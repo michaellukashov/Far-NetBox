@@ -6,11 +6,11 @@
 
 #include "SessionData.h"
 
+#include "PuttyIntf.h"
 #include "Common.h"
 #include "Exceptions.h"
 #include "CoreMain.h"
 #include "TextsCore.h"
-#include "PuttyIntf.h"
 #include "RemoteFiles.h"
 //---------------------------------------------------------------------------
 enum TProxyType { pxNone, pxHTTP, pxSocks, pxTelnet }; // 0.53b and older

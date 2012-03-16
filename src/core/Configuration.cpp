@@ -149,6 +149,7 @@ THierarchicalStorage *TConfiguration::CreateStorage()
       BLOCK \
   }
 #define KEY(TYPE, VAR) KEYEX(TYPE, VAR, VAR)
+#undef REGCONFIG
 #define REGCONFIG(CANCREATE) \
   BLOCK(L"Interface", CANCREATE, \
     KEY(String,   RandomSeedFile); \

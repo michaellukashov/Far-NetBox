@@ -10,7 +10,6 @@
 //---------------------------------------------------------------------------
 
 inline int IsSlash(wchar_t x) { return x==L'\\' || x==L'/'; }
-inline int __cdecl StringCmpI(const wchar_t *s1, const wchar_t *s2) { return CompareString(0,NORM_IGNORECASE|SORT_STRINGSORT,s1,-1,s2,-1)-2; }
 inline wchar_t __cdecl Upper(wchar_t Ch) { CharUpperBuff(&Ch, 1); return Ch; }
 inline wchar_t __cdecl Lower(wchar_t Ch) { CharLowerBuff(&Ch, 1); return Ch; }
 

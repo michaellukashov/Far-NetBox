@@ -48,8 +48,6 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
 #define GetOption(OPTION) GetInstanceOption(this->m_pApiLogParent, OPTION)
@@ -229,8 +227,11 @@ CFtpControlSocket::~CFtpControlSocket()
 #define CONNECT_GSS_NEEDUSER -7
 #endif
 #ifndef MPEXT_NO_SSL
+#undef CONNECT_SSL_INIT
 #define CONNECT_SSL_INIT -8
+#undef CONNECT_SSL_NEGOTIATE
 #define CONNECT_SSL_NEGOTIATE -9
+#undef CONNECT_SSL_WAITDONE
 #define CONNECT_SSL_WAITDONE -10
 #define CONNECT_SSL_PBSZ -11
 #define CONNECT_SSL_PROT -12
