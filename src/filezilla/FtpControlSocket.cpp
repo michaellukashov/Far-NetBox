@@ -663,6 +663,21 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 			return;
 		}
 #endif
+		// TODO: send OPTS MLST
+		if (0)
+		{
+			int option = 0;
+			if (m_serverCapabilities.GetCapability(mlsd_command, &option) == yes)
+			{
+				std::string args;
+				if (m_serverCapabilities.GetCapability(opst_mlst_command, &args) == yes)
+				{
+					m_Operation.nOpState = CONNECT_OPTSMLST;
+					Send("OPTS MLST " + CString(args.c_str()));
+				}
+				return;
+			}
+		}
 
 		ShowStatus(IDS_STATUSMSG_CONNECTED, 0);
 		m_pOwner->SetConnected(TRUE);
