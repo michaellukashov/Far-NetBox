@@ -1334,6 +1334,7 @@ void TFTPFileSystem::SourceRobust(const std::wstring FileName,
     while (Retry);
 }
 //---------------------------------------------------------------------------
+// Copy file to remote host
 void TFTPFileSystem::Source(const std::wstring FileName,
                             const std::wstring TargetDir, const TCopyParamType *CopyParam, int Params,
                             TOpenRemoteFileParams *OpenParams,
