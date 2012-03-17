@@ -1,5 +1,7 @@
 NetBox 2.0.15 ??.03.2012
 ---------------------
+  * Bugfix: Folder shortcuts to plugin sessions did not work
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=93033#p93033)
   * Improvement: Show progress indication on taskbar under Win7 if background transfer is active
   * Bugfix: Far3: Cannot run command on remote server (Issue #9)
   * Bugfix: FTPS: Failure on SSL session resuming (http://winscp.net/tracker/show_bug.cgi?id=668).

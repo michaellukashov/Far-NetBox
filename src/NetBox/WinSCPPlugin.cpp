@@ -376,7 +376,7 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(int OpenFrom, LONG_PTR Item)
                     if (P != std::wstring::npos)
                     {
                         Directory = Name.substr(P + 1, Name.size() - P);
-                        Name.resize(P - 1);
+                        Name.resize(P);
                     }
 
                     TWinSCPFileSystem *PanelSystem;

@@ -3500,6 +3500,7 @@ void TTerminal::HomeDirectory()
 void TTerminal::ChangeDirectory(const std::wstring Directory)
 {
     // DEBUG_PRINTF(L"begin, Directory = %s", Directory.c_str());
+    std::wstring DirectoryNormalized = ::ToUnixPath(Directory);
     assert(FFileSystem);
     try
     {
@@ -3510,25 +3511,25 @@ void TTerminal::ChangeDirectory(const std::wstring Directory)
         if ((GetStatus() == ssOpened) &&
                 GetSessionData()->GetCacheDirectoryChanges() &&
                 FDirectoryChangesCache->GetDirectoryChange(PeekCurrentDirectory(),
-                        Directory, CachedDirectory))
+                        DirectoryNormalized, CachedDirectory))
         {
             // DEBUG_PRINTF(L"PeekCurrentDirectory = %s", PeekCurrentDirectory().c_str());
             // DEBUG_PRINTF(L"Directory = %s, CachedDirectory = %s", Directory.c_str(), CachedDirectory.c_str());
             LogEvent(FORMAT(L"Cached directory change via \"%s\" to \"%s\".",
-                            Directory.c_str(), CachedDirectory.c_str()));
+                            DirectoryNormalized.c_str(), CachedDirectory.c_str()));
             FFileSystem->CachedChangeDirectory(CachedDirectory);
         }
         else
         {
-            LogEvent(FORMAT(L"Changing directory to \"%s\".", Directory.c_str()));
-            FFileSystem->ChangeDirectory(Directory);
+            LogEvent(FORMAT(L"Changing directory to \"%s\".", DirectoryNormalized.c_str()));
+            FFileSystem->ChangeDirectory(DirectoryNormalized);
         }
-        FLastDirectoryChange = Directory;
+        FLastDirectoryChange = DirectoryNormalized;
         ReactOnCommand(fsChangeDirectory);
     }
     catch (const std::exception &E)
     {
-        CommandError(&E, FMTLOAD(CHANGE_DIR_ERROR, Directory.c_str()));
+        CommandError(&E, FMTLOAD(CHANGE_DIR_ERROR, DirectoryNormalized.c_str()));
     }
     // DEBUG_PRINTF(L"end, FLastDirectoryChange = %s", FLastDirectoryChange.c_str());
 }
