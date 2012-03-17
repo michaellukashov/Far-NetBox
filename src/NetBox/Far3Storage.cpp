@@ -149,9 +149,19 @@ void TFar3Storage::GetSubKeyNames(nb::TStrings *Strings)
 //---------------------------------------------------------------------------
 void TFar3Storage::GetValueNames(nb::TStrings * Strings)
 {
-  // DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
-  nb::Error(SNotImplemented, 3010);
-  // DEBUG_PRINTF(L"end, FRoot = %d", FRoot);
+    DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
+    Strings->Clear();
+    FarSettingsEnum settings = {0};
+    settings.Root = FRoot;
+    if (FPluginSettings.GetSubKeyNames(settings))
+    {
+        for (size_t I = 0; I < settings.Count; I++)
+        {
+            const struct FarSettingsName *Item = &settings.Items[I];
+            Strings->Add(Item->Name);
+        }
+    }
+    DEBUG_PRINTF(L"end, Strings->GetCount() = %d", Strings->GetCount());
 }
 //---------------------------------------------------------------------------
 bool TFar3Storage::DeleteValue(const std::wstring Name)
