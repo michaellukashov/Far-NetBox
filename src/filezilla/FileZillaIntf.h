@@ -187,7 +187,7 @@ protected:
     __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
     bool FileTransfer) = 0;
   virtual bool HandleReply(int Command, unsigned int Reply) = 0;
-  virtual bool HandleCapabilities(bool Mfmt) = 0;
+  virtual bool HandleCapabilities(TFTPServerCapabilities &ServerCapabilities) = 0;
   virtual bool CheckError(int ReturnCode, const char * Context);
 
   inline bool Check(int ReturnCode, const char * Context, int Expected = -1);
