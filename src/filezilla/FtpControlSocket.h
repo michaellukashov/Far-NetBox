@@ -44,6 +44,11 @@ public:
 protected:
 	struct t_cap
 	{
+		t_cap() :
+			cap(unknown),
+			option(),
+			number(0)
+		{}
 		ftp_capabilities_t cap;
 		std::string option;
 		int number;
