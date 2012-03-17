@@ -241,6 +241,7 @@ CFtpControlSocket::~CFtpControlSocket()
 #define CONNECT_SYST -14
 #define CONNECT_OPTSUTF8 -15
 #define CONNECT_CLNT -16
+#define CONNECT_OPTSMLST -17
 
 bool CFtpControlSocket::InitConnect()
 {
@@ -621,6 +622,9 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 		}
 	}
 #endif
+	else if (m_Operation.nOpState == CONNECT_OPTSMLST)
+	{
+	}
 	else if (m_Operation.nOpState == CONNECT_FEAT)
 	{
 		#ifdef MPEXT
