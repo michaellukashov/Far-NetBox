@@ -436,7 +436,6 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
 
     case FZ_MSG_CAPABILITIES:
       serverCapabilities = *(TFTPServerCapabilities *)lParam;
-      // Result = HandleCapabilities(lParam & FZ_CAPABILITIES_MFMT);
       Result = HandleCapabilities(serverCapabilities.GetCapability(mfmt_command) == yes);
       break;
 

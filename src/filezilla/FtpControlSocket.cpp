@@ -624,8 +624,6 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 	else if (m_Operation.nOpState == CONNECT_FEAT)
 	{
 		#ifdef MPEXT
-		// int capabilities = (m_hasMfmtCmd ? FZ_CAPABILITIES_MFMT : 0);
-		// PostMessage(m_pOwner->m_hOwnerWnd, m_pOwner->m_nReplyMessageID, FZ_MSG_MAKEMSG(FZ_MSG_CAPABILITIES, 0), (LPARAM)capabilities);
 		PostMessage(m_pOwner->m_hOwnerWnd, m_pOwner->m_nReplyMessageID, FZ_MSG_MAKEMSG(FZ_MSG_CAPABILITIES, 0), (LPARAM)&m_serverCapabilities);
 		#endif
 		if (!m_bAnnouncesUTF8 && !m_CurrentServer.nUTF8)
