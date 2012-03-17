@@ -2170,6 +2170,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 #endif
 			cmd += _T(" -a");
 
+		DEBUG_PRINTF(L"cmd = %s", (LPCWSTR)cmd);
 		if (!Send(cmd))
 			return;
 
@@ -4040,6 +4041,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 			if ((m_pOwner->GetOption(FZAPI_OPTION_SHOWHIDDEN) || pData->transferfile.remotefile.Left(1)==".") && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
 #endif
 				cmd += " -a";
+			DEBUG_PRINTF(L"cmd = %s", (LPCWSTR)cmd);
 			if(!Send(cmd))
 				bError=TRUE;
 			else if(pData->bPasv)
