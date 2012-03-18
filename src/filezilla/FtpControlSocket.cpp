@@ -628,7 +628,77 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 	else if (m_Operation.nOpState == CONNECT_FEAT)
 	{
 		#ifdef MPEXT
-		PostMessage(m_pOwner->m_hOwnerWnd, m_pOwner->m_nReplyMessageID, FZ_MSG_MAKEMSG(FZ_MSG_CAPABILITIES, 0), (LPARAM)&m_serverCapabilities);
+		std::string facts;
+		if (m_serverCapabilities.GetCapability(mlsd_command, &facts) == yes)
+		{
+			ftp_capabilities_t cap = m_serverCapabilities.GetCapability(opst_mlst_command);
+			if (cap == unknown)
+			{
+				std::transform(facts.begin(), facts.end(), facts.begin(), ::tolower);
+				bool had_unset = false;
+				std::string opts_facts;
+				// Create a list of all facts understood by both FZ and the server.
+				// Check if there's any supported fact not enabled by default, should that
+				// be the case we need to send OPTS MLST
+				while (!facts.empty())
+				{
+					size_t delim = facts.find_first_of(';');
+					if (delim == -1)
+						break;
+						
+					if (!delim)
+					{
+						facts = facts.substr(1, std::string::npos);
+						continue;
+					}
+
+					bool enabled = false;
+					std::string fact;
+
+					if (facts[delim - 1] == '*')
+					{
+						if (delim == 1)
+						{
+							facts = facts.substr(delim + 1, std::string::npos);
+							continue;
+						}
+						enabled = true;
+						fact = facts.substr(0, delim - 1);
+					}
+					else
+					{
+						enabled = false;
+						fact = facts.substr(0, delim);
+					}
+					facts = facts.substr(delim + 1, std::string::npos);
+
+					if (fact == "type" ||
+						fact == "size" ||
+						fact == "modify" ||
+						fact == "perm" ||
+						fact == "unix.mode" ||
+						fact == "unix.owner" ||
+						fact == "unix.user" ||
+						fact == "unix.group" ||
+						fact == "unix.uid" ||
+						fact == "unix.gid" ||
+						fact == "x.hidden")
+					{
+						had_unset |= !enabled;
+						opts_facts += fact + ";";
+					}
+				}
+				if (had_unset)
+				{
+					m_serverCapabilities.SetCapability(opst_mlst_command, yes, opts_facts);
+				}
+				else
+				{
+					m_serverCapabilities.SetCapability(opst_mlst_command, no);
+				}
+			}
+		}
+        PostMessage(m_pOwner->m_hOwnerWnd, m_pOwner->m_nReplyMessageID, FZ_MSG_MAKEMSG(FZ_MSG_CAPABILITIES, 0), (LPARAM)&m_serverCapabilities);
 		#endif
 		if (!m_bAnnouncesUTF8 && !m_CurrentServer.nUTF8)
 			m_bUTF8 = false;
@@ -674,8 +744,8 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 				{
 					m_Operation.nOpState = CONNECT_OPTSMLST;
 					Send("OPTS MLST " + CString(args.c_str()));
+                    return;
 				}
-				return;
 			}
 		}
 
