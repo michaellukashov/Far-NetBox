@@ -29,6 +29,40 @@
 // FtpControlSocket.h : Header-Datei
 //
 
+//---------------------------------------------------------------------------
+#ifdef MPEXT
+class TFTPServerCapabilities
+{
+public:
+	ftp_capabilities_t GetCapability(ftp_capability_names_t name);
+	ftp_capabilities_t GetCapabilityString(ftp_capability_names_t name, std::string *pOption = NULL);
+
+	void SetCapability(ftp_capability_names_t name, ftp_capabilities_t cap);
+	void SetCapability(ftp_capability_names_t name, ftp_capabilities_t cap, const std::string &option);
+	void Clear() { m_capabilityMap.clear(); }
+	void Assign(TFTPServerCapabilities *Source)
+	{
+		m_capabilityMap.clear();
+		if (Source)
+			m_capabilityMap = Source->m_capabilityMap;
+	}
+protected:
+	struct t_cap
+	{
+		t_cap() :
+			cap(unknown),
+			option(),
+			number(0)
+		{}
+		ftp_capabilities_t cap;
+		std::string option;
+		int number;
+	};
+	std::map<ftp_capability_names_t, t_cap> m_capabilityMap;
+};
+#endif
+//---------------------------------------------------------------------------
+
 class CTransferSocket;
 class CMainThread;
 /////////////////////////////////////////////////////////////////////////////
@@ -156,6 +190,7 @@ protected:
 	bool m_hasClntCmd;
 #ifdef MPEXT
 	bool m_hasMfmtCmd;
+	TFTPServerCapabilities m_serverCapabilities;
 #endif
 	bool m_isFileZilla;
 
