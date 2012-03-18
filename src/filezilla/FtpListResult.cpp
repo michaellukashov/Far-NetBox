@@ -1284,7 +1284,7 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
 	DEBUG_PRINTF2("str = %s", str);
 	if (!str)
 		return FALSE;
-	CString facts = str;
+	CString facts(str, tokenlen);
 	if (facts.IsEmpty())
 		return FALSE;
 	// direntry.flags = 0;
@@ -1346,27 +1346,12 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
 		else if (factname == _T("modify") ||
 			(!direntry.date.hasdate && factname == _T("create")))
 		{
-			CTime dateTime;
-			const char* time = dateTime.ParseFormat(value, _T("%Y%m%d"));
-
-			if (!time)
+			if (!parseMlsdDateTime(value, direntry))
 				return FALSE;
-
-			if (*time)
-			{
-				if (!dateTime.ParseFormat(time, _T("%H%M%S"), dateTime))
-					return 0;
-				direntry.date.hasdate = TRUE; // |= CDirentry::flag_timestamp_date | CDirentry::flag_timestamp_time | CDirentry::flag_timestamp_seconds;
-				direntry.date.hastime = TRUE;
-			}
-			else
-				direntry.date.hasdate = TRUE; // |= CDirentry::flag_timestamp_date;
-
-			direntry.EntryTime = dateTime.FromTimezone(wxDateTime::GMT0);
 		}
 		else if (factname == _T("perm"))
 		{
-			if (!value.empty())
+			if (!value.IsEmpty())
 			{
 				if (!direntry.permissionstr.IsEmpty())
 					direntry.permissionstr = value + _T(" (") + direntry.permissionstr + _T(")");
@@ -1396,18 +1381,19 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
 	// The order of the facts is undefined, so assemble ownerGroup in correct
 	// order
 	if (!owner.IsEmpty())
-		entry.ownergroup += owner;
+		direntry.ownergroup += owner;
 	else if (!uid.IsEmpty())
-		entry.ownergroup += uid;
+		direntry.ownergroup += uid;
 	if (!group.IsEmpty())
-		entry.ownergroup += _T(" ") + group;
+		direntry.ownergroup += _T(" ") + group;
 	else if (!gid.IsEmpty())
-		entry.ownergroup += _T(" ") + gid;
+		direntry.ownergroup += _T(" ") + gid;
 
-	// if (!pLine->GetToken(1, token, true, true))
-		// return FALSE;
+	if (!(str = GetNextToken(line, linelen, tokenlen, pos, 0)))
+		return FALSE;
 
-	entry.name = token.GetString();
+	direntry.name = CString(str, tokenlen);
+	DEBUG_PRINTF(L"direntry.name = %s", (LPCWSTR)direntry.name);
 	return TRUE;
 }
 
@@ -2891,6 +2877,43 @@ bool CFtpListResult::parseTime(const char *str, int len, t_directory::t_direntry
 	date.hastime = TRUE;
 
 	return true;
+}
+
+bool CFtpListResult::parseMlsdDateTime(const CString value, t_directory::t_direntry &direntry) const
+{
+	DEBUG_PRINTF(L"begin, value = %s", (LPCWSTR)value);
+	if (value.IsEmpty())
+		return FALSE;
+
+	bool result = FALSE;
+	int Year, Month, Day, Hours, Minutes, Seconds;
+	Year=Month=Day=Hours=Minutes=Seconds=0;
+	if (swscanf((LPCWSTR)value, L"%4d%2d%2d%2d%2d%2d", &Year, &Month, &Day, &Hours, &Minutes, &Seconds) == 6)
+	{
+		direntry.date.hasdate = TRUE;
+		direntry.date.hastime = TRUE;
+		result = TRUE;
+	}
+	else if (swscanf((LPCWSTR)value, L"%4d%2d%2d", &Year, &Month, &Day) == 3)
+	{
+		direntry.date.hasdate = TRUE;
+		direntry.date.hastime = FALSE;
+		result = TRUE;
+	}
+	if (result)
+	{
+		direntry.date.year = Year;
+		direntry.date.month = Month;
+		direntry.date.day = Day;
+		direntry.date.hour = Hours;
+		direntry.date.minute = Minutes;
+		direntry.date.second = Seconds;
+		CTime dateTime(Year, Month, Day, Hours, Minutes, Seconds);
+		// direntry.EntryTime = dateTime.FromTimezone(GMT0);
+		direntry.EntryTime = dateTime;
+	}
+	DEBUG_PRINTF(L"end");
+	return result;
 }
 
 BOOL CFtpListResult::parseAsWfFtp(const char *line, const int linelen, t_directory::t_direntry &direntry)
