@@ -1281,8 +1281,133 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
 	int tokenlen = 0;
 
 	const char *str = GetNextToken(line, linelen, tokenlen, pos, 0);
+	DEBUG_PRINTF2("str = %s", str);
 	if (!str)
 		return FALSE;
+	CString facts = str;
+	if (facts.IsEmpty())
+		return FALSE;
+	// direntry.flags = 0;
+	direntry.dir = FALSE;
+	direntry.bLink = FALSE;
+	direntry.size = -1;
+	direntry.ownergroup = _T("");
+	direntry.permissionstr = _T("");
+
+	CString owner, group, uid, gid;
+
+	while (!facts.IsEmpty())
+	{
+		int delim = facts.Find(';');
+		if (delim < 3)
+		{
+			if (delim != -1)
+				return 0;
+			else
+				delim = facts.GetLength();
+		}
+
+		int pos = facts.Find('=');
+		if (pos < 1 || pos > delim)
+			return FALSE;
+
+		CString factname = facts.Left(pos);
+		factname.MakeLower();
+		CString value = facts.Mid(pos + 1, delim - pos - 1);
+		DEBUG_PRINTF(L"factname = %s, value = %s", (LPCWSTR)factname, (LPCWSTR)value);
+		if (factname == _T("type"))
+		{
+			if (!value.CompareNoCase(_T("dir")))
+				direntry.dir = TRUE;
+			else if (!value.Left(13).CompareNoCase(_T("OS.unix=slink")))
+			{
+				direntry.dir = TRUE;
+				direntry.bLink = TRUE;
+				if (value[13] == ':' && value[14] != 0)
+					direntry.linkTarget = value.Mid(14);
+			}
+			else if (!value.CompareNoCase(_T("cdir")) ||
+					 !value.CompareNoCase(_T("pdir")))
+				return FALSE;
+		}
+		else if (factname == _T("size"))
+		{
+			direntry.size = 0;
+
+			for (unsigned int i = 0; i < value.GetLength(); ++i)
+			{
+				if (value[i] < '0' || value[i] > '9')
+					return FALSE;
+				direntry.size *= 10;
+				direntry.size += value[i] - '0';
+			}
+			DEBUG_PRINTF(L"direntry.size = %llu", direntry.size);
+		}
+		else if (factname == _T("modify") ||
+			(!direntry.date.hasdate && factname == _T("create")))
+		{
+			CTime dateTime;
+			const char* time = dateTime.ParseFormat(value, _T("%Y%m%d"));
+
+			if (!time)
+				return FALSE;
+
+			if (*time)
+			{
+				if (!dateTime.ParseFormat(time, _T("%H%M%S"), dateTime))
+					return 0;
+				direntry.date.hasdate = TRUE; // |= CDirentry::flag_timestamp_date | CDirentry::flag_timestamp_time | CDirentry::flag_timestamp_seconds;
+				direntry.date.hastime = TRUE;
+			}
+			else
+				direntry.date.hasdate = TRUE; // |= CDirentry::flag_timestamp_date;
+
+			direntry.EntryTime = dateTime.FromTimezone(wxDateTime::GMT0);
+		}
+		else if (factname == _T("perm"))
+		{
+			if (!value.empty())
+			{
+				if (!direntry.permissionstr.IsEmpty())
+					direntry.permissionstr = value + _T(" (") + direntry.permissionstr + _T(")");
+				else
+					direntry.permissionstr = value;
+			}
+		}
+		else if (factname == _T("unix.mode"))
+		{
+			if (!direntry.permissionstr.IsEmpty())
+				direntry.permissionstr = direntry.permissionstr + _T(" (") + value + _T(")");
+			else
+				direntry.permissionstr = value;
+		}
+		else if (factname == _T("unix.owner") || factname == _T("unix.user"))
+			owner = value;
+		else if (factname == _T("unix.group"))
+			group = value;
+		else if (factname == _T("unix.uid"))
+			uid = value;
+		else if (factname == _T("unix.gid"))
+			gid = value;
+
+		facts = facts.Mid(delim + 1);
+	}
+
+	// The order of the facts is undefined, so assemble ownerGroup in correct
+	// order
+	if (!owner.IsEmpty())
+		entry.ownergroup += owner;
+	else if (!uid.IsEmpty())
+		entry.ownergroup += uid;
+	if (!group.IsEmpty())
+		entry.ownergroup += _T(" ") + group;
+	else if (!gid.IsEmpty())
+		entry.ownergroup += _T(" ") + gid;
+
+	// if (!pLine->GetToken(1, token, true, true))
+		// return FALSE;
+
+	entry.name = token.GetString();
 	return TRUE;
 }
 
