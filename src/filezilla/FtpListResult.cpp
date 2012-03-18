@@ -1277,6 +1277,9 @@ BOOL CFtpListResult::parseAsEPLF(const char *line, const int linelen, t_director
 
 BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_directory::t_direntry &direntry)
 {
+	// MLSD format as described here: http://www.ietf.org/internet-drafts/draft-ietf-ftpext-mlst-16.txt
+	// Parsing is done strict, abort on slightest error.
+
 	int pos = 0;
 	int tokenlen = 0;
 
@@ -1399,9 +1402,6 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
 
 BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_directory::t_direntry &direntry)
 {
-	// MLSD format as described here: http://www.ietf.org/internet-drafts/draft-ietf-ftpext-mlst-16.txt
-	// Parsing is done strict, abort on slightest error.
-
 	int pos = 0;
 	int tokenlen = 0;
 
