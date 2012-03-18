@@ -1281,7 +1281,7 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
 	int tokenlen = 0;
 
 	const char *str = GetNextToken(line, linelen, tokenlen, pos, 0);
-	DEBUG_PRINTF2("str = %s", str);
+	// DEBUG_PRINTF2("str = %s", str);
 	if (!str)
 		return FALSE;
 	CString facts(str, tokenlen);
@@ -1314,7 +1314,7 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
 		CString factname = facts.Left(pos);
 		factname.MakeLower();
 		CString value = facts.Mid(pos + 1, delim - pos - 1);
-		DEBUG_PRINTF(L"factname = %s, value = %s", (LPCWSTR)factname, (LPCWSTR)value);
+		// DEBUG_PRINTF(L"factname = %s, value = %s", (LPCWSTR)factname, (LPCWSTR)value);
 		if (factname == _T("type"))
 		{
 			if (!value.CompareNoCase(_T("dir")))
@@ -1341,7 +1341,7 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
 				direntry.size *= 10;
 				direntry.size += value[i] - '0';
 			}
-			DEBUG_PRINTF(L"direntry.size = %llu", direntry.size);
+			// DEBUG_PRINTF(L"direntry.size = %llu", direntry.size);
 		}
 		else if (factname == _T("modify") ||
 			(!direntry.date.hasdate && factname == _T("create")))
@@ -1393,7 +1393,7 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
 		return FALSE;
 
 	direntry.name = CString(str, tokenlen);
-	DEBUG_PRINTF(L"direntry.name = %s", (LPCWSTR)direntry.name);
+	// DEBUG_PRINTF(L"direntry.name = %s", (LPCWSTR)direntry.name);
 	return TRUE;
 }
 
@@ -2881,7 +2881,7 @@ bool CFtpListResult::parseTime(const char *str, int len, t_directory::t_direntry
 
 bool CFtpListResult::parseMlsdDateTime(const CString value, t_directory::t_direntry &direntry) const
 {
-	DEBUG_PRINTF(L"begin, value = %s", (LPCWSTR)value);
+	// DEBUG_PRINTF(L"begin, value = %s", (LPCWSTR)value);
 	if (value.IsEmpty())
 		return FALSE;
 
@@ -2912,7 +2912,7 @@ bool CFtpListResult::parseMlsdDateTime(const CString value, t_directory::t_diren
 		// direntry.EntryTime = dateTime.FromTimezone(GMT0);
 		direntry.EntryTime = dateTime;
 	}
-	DEBUG_PRINTF(L"end");
+	// DEBUG_PRINTF(L"end");
 	return result;
 }
 
