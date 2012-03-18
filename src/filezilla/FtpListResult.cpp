@@ -1290,7 +1290,6 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
 	CString facts(str, tokenlen);
 	if (facts.IsEmpty())
 		return FALSE;
-	// direntry.flags = 0;
 	direntry.dir = FALSE;
 	direntry.bLink = FALSE;
 	direntry.size = -1;
@@ -1395,7 +1394,7 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
 	if (!(str = GetNextToken(line, linelen, tokenlen, pos, 0)))
 		return FALSE;
 
-	direntry.name = CString(str, tokenlen);
+	copyStr(direntry.name, 0, str, tokenlen, true);
 	// DEBUG_PRINTF(L"direntry.name = %s", (LPCWSTR)direntry.name);
 	return TRUE;
 }
