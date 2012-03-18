@@ -511,7 +511,10 @@ BOOL CFtpListResult::parseLine(const char *lineToParse, const int linelen, t_dir
 
 	nFTPServerType = 0;
 	direntry.ownergroup = _T("");
-	
+
+	if (parseAsMlsd(lineToParse, linelen, direntry))
+		return TRUE;
+
 	if (parseAsUnix(lineToParse, linelen, direntry))
 		return TRUE;
 	
@@ -1272,8 +1275,22 @@ BOOL CFtpListResult::parseAsEPLF(const char *line, const int linelen, t_director
 	return FALSE;
 }
 
+BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_directory::t_direntry &direntry)
+{
+	int pos = 0;
+	int tokenlen = 0;
+
+	const char *str = GetNextToken(line, linelen, tokenlen, pos, 0);
+	if (!str)
+		return FALSE;
+	return TRUE;
+}
+
 BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_directory::t_direntry &direntry)
 {
+	// MLSD format as described here: http://www.ietf.org/internet-drafts/draft-ietf-ftpext-mlst-16.txt
+	// Parsing is done strict, abort on slightest error.
+
 	int pos = 0;
 	int tokenlen = 0;
 

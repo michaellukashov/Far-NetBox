@@ -72,6 +72,7 @@ private:
 
 	BOOL parseAsVMS(const char *line, const int linelen, t_directory::t_direntry &direntry);
 	BOOL parseAsEPLF(const char *line, const int linelen, t_directory::t_direntry &direntry);
+	BOOL parseAsMlsd(const char *line, const int linelen, t_directory::t_direntry &direntry);
 	BOOL parseAsUnix(const char *line, const int linelen, t_directory::t_direntry &direntry);
 	BOOL parseAsDos(const char *line, const int linelen, t_directory::t_direntry &direntry);
 	BOOL parseAsOther(const char *line, const int linelen, t_directory::t_direntry &direntry);
