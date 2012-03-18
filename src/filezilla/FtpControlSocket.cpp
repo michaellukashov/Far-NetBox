@@ -624,14 +624,23 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 #endif
 	else if (m_Operation.nOpState == CONNECT_OPTSMLST)
 	{
+		int code = GetReplyCode();
+		// DEBUG_PRINTF(L"code = %d", code);
+		if (code != 2 && code != 3)
+			m_serverCapabilities.SetCapability(mlsd_command, no);
+
+		ShowStatus(IDS_STATUSMSG_CONNECTED, 0);
+		m_pOwner->SetConnected(TRUE);
+		ResetOperation(FZ_REPLY_OK);
+		return;
 	}
 	else if (m_Operation.nOpState == CONNECT_FEAT)
 	{
 		#ifdef MPEXT
 		std::string facts;
-		if (m_serverCapabilities.GetCapability(mlsd_command, &facts) == yes)
+		if (m_serverCapabilities.GetCapabilityString(mlsd_command, &facts) == yes)
 		{
-			ftp_capabilities_t cap = m_serverCapabilities.GetCapability(opst_mlst_command);
+			ftp_capabilities_t cap = m_serverCapabilities.GetCapabilityString(opst_mlst_command);
 			if (cap == unknown)
 			{
 				std::transform(facts.begin(), facts.end(), facts.begin(), ::tolower);
@@ -733,19 +742,15 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 			return;
 		}
 #endif
-		// TODO: send OPTS MLST
-		if (0)
+		if (m_serverCapabilities.GetCapability(mlsd_command) == yes)
 		{
-			int option = 0;
-			if (m_serverCapabilities.GetCapability(mlsd_command, &option) == yes)
+			std::string args;
+			if (m_serverCapabilities.GetCapabilityString(opst_mlst_command, &args) == yes &&
+				!args.empty())
 			{
-				std::string args;
-				if (m_serverCapabilities.GetCapability(opst_mlst_command, &args) == yes)
-				{
-					m_Operation.nOpState = CONNECT_OPTSMLST;
-					Send("OPTS MLST " + CString(args.c_str()));
-                    return;
-				}
+				m_Operation.nOpState = CONNECT_OPTSMLST;
+				Send("OPTS MLST " + CString(args.c_str()));
+				return;
 			}
 		}
 
@@ -6097,15 +6102,13 @@ bool CFtpControlSocket::CheckForcePasvIp(CString & host)
 }
 
 //---------------------------------------------------------------------------
-ftp_capabilities_t TFTPServerCapabilities::GetCapability(ftp_capability_names_t name, int *option)
+ftp_capabilities_t TFTPServerCapabilities::GetCapability(ftp_capability_names_t name)
 {
 	t_cap tcap = m_capabilityMap[name];
-	if (option)
-		*option = tcap.number;
 	return tcap.cap;
 }
 
-ftp_capabilities_t TFTPServerCapabilities::GetCapability(ftp_capability_names_t name, std::string *option)
+ftp_capabilities_t TFTPServerCapabilities::GetCapabilityString(ftp_capability_names_t name, std::string *option)
 {
 	t_cap tcap = m_capabilityMap[name];
 	if (option)

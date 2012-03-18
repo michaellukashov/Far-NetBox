@@ -34,13 +34,18 @@
 class TFTPServerCapabilities
 {
 public:
-	ftp_capabilities_t GetCapability(ftp_capability_names_t name, int *option);
-	ftp_capabilities_t GetCapability(ftp_capability_names_t name, std::string *pOption = NULL);
+	ftp_capabilities_t GetCapability(ftp_capability_names_t name);
+	ftp_capabilities_t GetCapabilityString(ftp_capability_names_t name, std::string *pOption = NULL);
 
 	void SetCapability(ftp_capability_names_t name, ftp_capabilities_t cap);
 	void SetCapability(ftp_capability_names_t name, ftp_capabilities_t cap, const std::string &option);
 	void Clear() { m_capabilityMap.clear(); }
-	void Assign(TFTPServerCapabilities *Source) { m_capabilityMap = Source->m_capabilityMap; }
+	void Assign(TFTPServerCapabilities *Source)
+	{
+		m_capabilityMap.clear();
+		if (Source)
+			m_capabilityMap = Source->m_capabilityMap;
+	}
 protected:
 	struct t_cap
 	{
