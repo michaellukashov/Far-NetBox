@@ -438,7 +438,7 @@ t_directory::t_direntry *CFtpListResult::getList(int &num, CTime EntryTime)
 			delete [] tmpline;
 			if (tmp)
 				m_server.nServerType |= tmp;
-			if (direntry.name!="." && direntry.name!="..")
+			if (direntry.name!=_MPT(".") && direntry.name!=_MPT(".."))
 			{
 				AddLine(direntry);
 			}
@@ -489,7 +489,7 @@ t_directory::t_direntry *CFtpListResult::getList(int &num, CTime EntryTime)
 		delete [] m_curline;
 	delete [] line;
 	m_curline=0;
-	
+
 	num=m_EntryList.size();
 	if (!num)
 		return 0;
@@ -500,7 +500,7 @@ t_directory::t_direntry *CFtpListResult::getList(int &num, CTime EntryTime)
 		res[i]=*iter;
 		res[i].EntryTime=EntryTime;
 	}
-	m_EntryList.clear();	
+	m_EntryList.clear();
 
 	return res;
 }
@@ -517,7 +517,7 @@ BOOL CFtpListResult::parseLine(const char *lineToParse, const int linelen, t_dir
 
 	if (parseAsUnix(lineToParse, linelen, direntry))
 		return TRUE;
-	
+
 	if (parseAsDos(lineToParse, linelen, direntry))
 		return TRUE;
 
@@ -531,7 +531,7 @@ BOOL CFtpListResult::parseLine(const char *lineToParse, const int linelen, t_dir
 #endif // LISTDEBUG
 		return TRUE;
 	}
-	
+
 	if (parseAsOther(lineToParse, linelen, direntry))
 		return TRUE;
 
@@ -605,7 +605,7 @@ void CFtpListResult::AddData(char *data, int size)
 			delete [] tmpline;
 			if (tmp)
 				m_server.nServerType |= tmp;
-			if (direntry.name!="." && direntry.name!="..")
+			if (direntry.name!=_MPT(".") && direntry.name!=_MPT(".."))
 			{
 				AddLine(direntry);
 			}
@@ -672,7 +672,7 @@ void CFtpListResult::SendToMessageLog(HWND hWnd, UINT nMsg)
 	{
 		CString status = line;
 		delete [] line;
-		
+
 		//Displays a message in the message log
 		t_ffam_statusmessage *pStatus = new t_ffam_statusmessage;
 		pStatus->post = TRUE;
@@ -680,7 +680,7 @@ void CFtpListResult::SendToMessageLog(HWND hWnd, UINT nMsg)
 		pStatus->type = FZ_LOG_DEBUG;
 		if (!PostMessage(hWnd, nMsg, FZ_MSG_MAKEMSG(FZ_MSG_STATUS, 0), (LPARAM)pStatus))
 			delete pStatus;
-	
+
 		line = GetLine();
 	}
 	curpos = oldlistpos;
@@ -730,7 +730,7 @@ char * CFtpListResult::GetLine()
 			pos=0;
 		}
 	}
-	
+
 	char *res = new char[reslen+1];
 	res[reslen]=0;
 	int respos=0;
@@ -787,12 +787,12 @@ void CFtpListResult::AddLine(t_directory::t_direntry &direntry)
 	if (m_server.nServerType&FZ_SERVERTYPE_SUB_FTP_VMS && 
 		(!COptions::GetOptionVal(OPTION_VMSALLREVISIONS) || direntry.dir))
 	{ //Remove version information, only keep the latest file
-		int pos=direntry.name.ReverseFind(';');
+		int pos=direntry.name.ReverseFind(_MPT(';'));
 		if (pos<=0 || pos>=(direntry.name.GetLength()-1))
 			return;;
 		int version=_ttoi(direntry.name.Mid(pos+1));
 		direntry.name=direntry.name.Left(pos);
-		
+
 		tEntryList::iterator entryiter=m_EntryList.begin();
 		tTempData::iterator dataiter=m_TempData.begin();
 		BOOL bContinue=FALSE;
@@ -939,7 +939,7 @@ bool CFtpListResult::ParseShortDate(const char *str, int len, t_directory::t_dir
 	else
 		return false;
 	
-	
+
 	//Extract the second date field
 	const char *p = str + i + 1;
 	len -= i + 1;
@@ -1424,7 +1424,7 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
 		str = GetNextToken(line, linelen, tokenlen, pos, 0);
 		if (!str)
 			return FALSE;
-		direntry.permissionstr += " ";
+		direntry.permissionstr += _MPT(" ");
 		copyStr(direntry.permissionstr, direntry.permissionstr.GetLength(), str, tokenlen);
 	}
 
@@ -1432,12 +1432,12 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
 	//Always assume links point directories
 	//GUI frontend should try to figure out
 	//to where the link really points
-	if (direntry.permissionstr[0]=='d' || direntry.permissionstr[0]=='l')
+	if (direntry.permissionstr[0]==_MPT('d') || direntry.permissionstr[0]==_MPT('l'))
 		direntry.dir = true;
 	else
 		direntry.dir = false;
-	
-	if (direntry.permissionstr[0]=='l')
+
+	if (direntry.permissionstr[0]==_MPT('l'))
 		direntry.bLink = true;
 	else
 		direntry.bLink = false;
@@ -1457,18 +1457,18 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
 		else if (!IsNumeric(str, tokenlen))
 		{
 			// Check for Connect:Enterprise server
-			if (direntry.permissionstr.GetLength() > 3 && 
-				(direntry.permissionstr.Right(3) == "FTP" || 
-				 direntry.permissionstr.Right(3) == "FTS" ||
-				 direntry.permissionstr.Right(3) == "TCP" ||
-				 direntry.permissionstr.Right(3) == "SSH"))
+			if (direntry.permissionstr.GetLength() > 3 &&
+				(direntry.permissionstr.Right(3) == _MPT("FTP") ||
+				 direntry.permissionstr.Right(3) == _MPT("FTS") ||
+				 direntry.permissionstr.Right(3) == _MPT("TCP") ||
+				 direntry.permissionstr.Right(3) == _MPT("SSH")))
 				groupid = TRUE;
 
 			copyStr(direntry.ownergroup, direntry.ownergroup.GetLength(), str, tokenlen);
 		}
 		else
 			groupid = TRUE;
-	
+
 		if (!bNetPresenz && groupid)
 		{
 			//Unused param
@@ -1487,7 +1487,7 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
 	const char *skipped = GetNextToken(line, linelen,skippedlen, pos, 0);
 	if (!skipped)
 		return FALSE;
-	
+
 	str = GetNextToken(line, linelen, tokenlen, pos, 0);
 	if (!str)
 		return FALSE;
@@ -1610,9 +1610,9 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
 		{
 			//We should've not skipped the last token
 			//This also fixes the problem with the NetPresenz detection
-			if (bNetPresenz && direntry.dir && direntry.ownergroup != "")
+			if (bNetPresenz && direntry.dir && direntry.ownergroup != _MPT(""))
 			{
-				direntry.ownergroup = "folder " + direntry.ownergroup;
+				direntry.ownergroup = _MPT("folder ") + direntry.ownergroup;
 			}
 		}
 	}
@@ -1628,7 +1628,7 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
 		}
 		str = 0;
 	}
-		
+
 	//Month
 	if (!str)
 		str = GetNextToken(line, linelen, tokenlen, pos, 0);
@@ -1689,7 +1689,7 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
 			smonthlen = pos2-smonth - (p-smonth) - 1;
 			smonth = p + 1;
 			/* Try to detect difference between yyyy/dd/mm and yyyy/mm/dd
-			 * Unfortunately we have to guess which one is the right if 
+			 * Unfortunately we have to guess which one is the right if
 			 * the month is < 12
 			 */
 			if (strntoi64(smonth, smonthlen) > 12)
@@ -1728,7 +1728,7 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
 			smonthlen = pos2-smonth - (p-smonth) - 1;
 			smonth = p + 1;
 			/* Try to detect difference between yyyy/dd/mm and yyyy/mm/dd
-			 * Unfortunately we have to guess which one is the right if 
+			 * Unfortunately we have to guess which one is the right if
 			 * the month is < 12
 			 */
 			if (strntoi64(smonth, smonthlen) > 12)
@@ -1812,7 +1812,7 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
 		smonthlen = sdaylen;
 		sdaylen = tmplen;
 	}
-	
+
 	//Time/Year
 	str = GetNextToken(line, linelen, tokenlen, pos, 0);
 	if (!str)
@@ -1853,7 +1853,7 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
 				return false;
 			if ((unsigned char)smonth[i] < 128)
 				return false;
-	
+
 			smonthlen = i;
 			direntry.date.month = (int)strntoi64(smonth, smonthlen);
 			if (!direntry.date.month || direntry.date.month > 12)
@@ -1893,7 +1893,7 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
 		direntry.date.hastime = TRUE;
 
 		//Problem: Some servers use times only for files newer than 6 months,
-		//others use one year as limit. So there is no support for files with time 
+		//others use one year as limit. So there is no support for files with time
 		//dated in the near future. Under normal conditions there should not be such files
 		if (!direntry.date.year)
 		{
@@ -2509,7 +2509,7 @@ BOOL CFtpListResult::parseAsIBMMVS(const char *line, const int linelen, t_direct
 {
 	int pos = 0;
 	int tokenlen = 0;
-	
+
 	// volume
 	const char *str = GetNextToken(line, linelen, tokenlen, pos, 0);
 	if (!str)
@@ -2584,7 +2584,7 @@ BOOL CFtpListResult::parseAsIBMMVS(const char *line, const int linelen, t_direct
 	if (!str)
 		return FALSE;
 	if (!IsNumeric(str, tokenlen))
-		return FALSE; 
+		return FALSE;
 	
 	// dsorg
 	str = GetNextToken(line, linelen, tokenlen, pos, 0);
@@ -2690,8 +2690,8 @@ BOOL CFtpListResult::parseAsIBMMVSPDS2(const char *line, const int linelen, t_di
 
 	direntry.dir = FALSE;
 	direntry.bLink = FALSE;
-	direntry.ownergroup = "";
-	direntry.permissionstr = "";
+	direntry.ownergroup = _MPT("");
+	direntry.permissionstr = _MPT("");
 	direntry.size = -1;
 	direntry.date.hasdate = direntry.date.hastime = FALSE;
 
@@ -2722,12 +2722,12 @@ BOOL CFtpListResult::parseAsIBMMVSPDS2(const char *line, const int linelen, t_di
 
 	if (m_server.nServerType & FZ_SERVERTYPE_SUB_FTP_BS2000)
 	{
-		int pos = direntry.name.ReverseFind(':');
+		int pos = direntry.name.ReverseFind(_MPT(':'));
 		if (pos != -1)
 			direntry.name = direntry.name.Mid(pos + 1);
-		if (direntry.name[0] == '$')
+		if (direntry.name[0] == _MPT('$'))
 		{
-			int pos = direntry.name.Find('.');
+			int pos = direntry.name.Find(_MPT('.'));
 			if (pos != -1)
 				direntry.name = direntry.name.Mid(pos + 1);
 		}
@@ -2847,12 +2847,12 @@ bool CFtpListResult::parseTime(const char *str, int len, t_directory::t_direntry
 		date.minute += str[i] - '0';
 		if (date.minute > 59)
 			return false;
-	
+
 		i++;
 		if (i == len)
 			break;
 	}
-	
+
 	//Convert to 24h format
 	//I really wish we would have the following system:
 	//one year->ten months->ten days->ten hours->ten minutes->ten seconds and so on...
@@ -2864,7 +2864,7 @@ bool CFtpListResult::parseTime(const char *str, int len, t_directory::t_direntry
 			if (date.hour < 12)
 				date.hour += 12;
 		}
-		else 
+		else
 			if (date.hour == 12)
 				date.hour = 0;
 	}

@@ -40,7 +40,7 @@ const bool operator == (const t_server &a,const t_server &b)
 		return false;
 	if (a.account != b.account)
 		return false;
-	if (a.pass!=b.pass && a.user!="anonymous")
+	if (a.pass!=b.pass && a.user!=_MPT("anonymous"))
 		return false;
 	if (a.nServerType!=b.nServerType)
 		return false;

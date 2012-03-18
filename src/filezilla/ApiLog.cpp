@@ -113,14 +113,12 @@ void CApiLog::LogMessage(int nMessageType, UINT nFormatID, ...) const
 	if (nMessageType>=FZ_LOG_APIERROR && (nMessageType-FZ_LOG_APIERROR)>=m_pApiLogParent->m_nDebugLevel)
 		return;
 
-	// std::wstring str;
 	CString str;
 	str.LoadString(nFormatID);
 
 	va_list ap;
     
     va_start(ap, nFormatID);
-    // std::wstring text;
     CString text;
 	text.FormatV(str, ap);
 	va_end(ap);
@@ -129,7 +127,7 @@ void CApiLog::LogMessage(int nMessageType, UINT nFormatID, ...) const
 	if (nMessageType>=FZ_LOG_DEBUG)
 		return;
 #endif
-	SendLogMessage(nMessageType, text); // (LPCTSTR)nb::W2MB(text.c_str()).c_str());
+	SendLogMessage(nMessageType, text);
 }
 
 void CApiLog::LogMessage(CString SourceFile, int nSourceLine, void *pInstance, int nMessageType, LPCTSTR pMsgFormat, ...) const
@@ -142,7 +140,7 @@ void CApiLog::LogMessage(CString SourceFile, int nSourceLine, void *pInstance, i
 	int pos=SourceFile.ReverseFind(_MPT('\\'));
 	if (pos!=-1)
 		SourceFile=SourceFile.Mid(pos+1);
-	
+
 	va_list ap;
     
 	va_start(ap, pMsgFormat);

@@ -86,7 +86,7 @@ public:
 	virtual void Connect(t_server &server);
 	virtual void OnTimer();
 	virtual BOOL IsReady();
-	virtual void List(BOOL bFinish, int nError=0, CServerPath path=CServerPath(), CString subdir="", int nListMode = 0);
+	virtual void List(BOOL bFinish, int nError=0, CServerPath path=CServerPath(), CString subdir=MPT(""), int nListMode = 0);
 	virtual void FtpCommand(LPCTSTR pCommand);
 	virtual void Disconnect();
 	virtual void FileTransfer(t_transferfile *transferfile = 0, BOOL bFinish = FALSE, int nError = 0);

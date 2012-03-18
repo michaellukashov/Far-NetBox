@@ -3,10 +3,6 @@
 #include <Options.h>
 #include <FileZillaIntern.h>
 #include <FileZillaIntf.h>
-#include <Crypt.h>
-
-#include <Common.h>
-
 //---------------------------------------------------------------------------
 CString COptions::GetInstanceOption(CApiLog * Instance, int OptionID)
 {
@@ -17,9 +13,7 @@ CString COptions::GetInstanceOption(CApiLog * Instance, int OptionID)
 
   const TFileZillaIntf * Intf = Intern->GetOwner();
   ASSERT(Intf != NULL);
-  const wchar_t *res = Intf->Option(OptionID);
-  // DEBUG_PRINTF(L"res = %s", res);
-  CString Result = res;
+  CString Result = Intf->Option(OptionID);
   switch (OptionID)
   {
     case OPTION_PROXYPASS:

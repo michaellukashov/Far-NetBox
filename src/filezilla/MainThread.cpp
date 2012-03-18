@@ -309,7 +309,7 @@ void CMainThread::Command(const t_command &command)
 	*pCommand=command;
 	VERIFY(PostThreadMessage(m_nInternalMessageID,FZAPI_THREADMSG_COMMAND,(LPARAM)pCommand));
 	m_LastCommand=command;
-	LCS;	
+	LCS;
 }
 
 BOOL CMainThread::LastOperationSuccessful()
