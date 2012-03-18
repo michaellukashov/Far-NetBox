@@ -177,6 +177,7 @@ CFtpControlSocket::CFtpControlSocket(CMainThread *pMainThread) : CControlSocket(
 	m_hasClntCmd = false;
 #ifdef MPEXT
 	m_hasMfmtCmd = false;
+	m_serverCapabilities.Clear();
 #endif
 
 	m_awaitsReply = false;
@@ -240,6 +241,7 @@ CFtpControlSocket::~CFtpControlSocket()
 #define CONNECT_SYST -14
 #define CONNECT_OPTSUTF8 -15
 #define CONNECT_CLNT -16
+#define CONNECT_OPTSMLST -17
 
 bool CFtpControlSocket::InitConnect()
 {
@@ -250,6 +252,7 @@ bool CFtpControlSocket::InitConnect()
 	m_hasClntCmd = false;
 #ifdef MPEXT
 	m_hasMfmtCmd = false;
+	m_serverCapabilities.Clear();
 #endif
 	m_isFileZilla = false;
 
@@ -619,11 +622,92 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 		}
 	}
 #endif
+	else if (m_Operation.nOpState == CONNECT_OPTSMLST)
+	{
+		int code = GetReplyCode();
+		if (code != 2 && code != 3)
+			m_serverCapabilities.SetCapability(mlsd_command, no);
+
+		ShowStatus(IDS_STATUSMSG_CONNECTED, 0);
+		m_pOwner->SetConnected(TRUE);
+		ResetOperation(FZ_REPLY_OK);
+		return;
+	}
 	else if (m_Operation.nOpState == CONNECT_FEAT)
 	{
 		#ifdef MPEXT
 		int capabilities = (m_hasMfmtCmd ? FZ_CAPABILITIES_MFMT : 0);
 		PostMessage(m_pOwner->m_hOwnerWnd, m_pOwner->m_nReplyMessageID, FZ_MSG_MAKEMSG(FZ_MSG_CAPABILITIES, 0), (LPARAM)capabilities);
+		std::string facts;
+		if (m_serverCapabilities.GetCapabilityString(mlsd_command, &facts) == yes)
+		{
+			ftp_capabilities_t cap = m_serverCapabilities.GetCapabilityString(opst_mlst_command);
+			if (cap == unknown)
+			{
+				std::transform(facts.begin(), facts.end(), facts.begin(), ::tolower);
+				bool had_unset = false;
+				std::string opts_facts;
+				// Create a list of all facts understood by both FZ and the server.
+				// Check if there's any supported fact not enabled by default, should that
+				// be the case we need to send OPTS MLST
+				while (!facts.empty())
+				{
+					size_t delim = facts.find_first_of(';');
+					if (delim == -1)
+						break;
+						
+					if (!delim)
+					{
+						facts = facts.substr(1, std::string::npos);
+						continue;
+					}
+
+					bool enabled = false;
+					std::string fact;
+
+					if (facts[delim - 1] == '*')
+					{
+						if (delim == 1)
+						{
+							facts = facts.substr(delim + 1, std::string::npos);
+							continue;
+						}
+						enabled = true;
+						fact = facts.substr(0, delim - 1);
+					}
+					else
+					{
+						enabled = false;
+						fact = facts.substr(0, delim);
+					}
+					facts = facts.substr(delim + 1, std::string::npos);
+
+					if (fact == "type" ||
+						fact == "size" ||
+						fact == "modify" ||
+						fact == "perm" ||
+						fact == "unix.mode" ||
+						fact == "unix.owner" ||
+						fact == "unix.user" ||
+						fact == "unix.group" ||
+						fact == "unix.uid" ||
+						fact == "unix.gid" ||
+						fact == "x.hidden")
+					{
+						had_unset |= !enabled;
+						opts_facts += fact + ";";
+					}
+				}
+				if (had_unset)
+				{
+					m_serverCapabilities.SetCapability(opst_mlst_command, yes, opts_facts);
+				}
+				else
+				{
+					m_serverCapabilities.SetCapability(opst_mlst_command, no);
+				}
+			}
+		}
 		#endif
 		if (!m_bAnnouncesUTF8 && !m_CurrentServer.nUTF8)
 			m_bUTF8 = false;
@@ -658,6 +742,17 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 			return;
 		}
 #endif
+		if (m_serverCapabilities.GetCapability(mlsd_command) == yes)
+		{
+			std::string args;
+			if (m_serverCapabilities.GetCapabilityString(opst_mlst_command, &args) == yes &&
+				!args.empty())
+			{
+				m_Operation.nOpState = CONNECT_OPTSMLST;
+				Send("OPTS MLST " + CString(args.c_str()));
+				return;
+			}
+		}
 
 		ShowStatus(IDS_STATUSMSG_CONNECTED, 0);
 		m_pOwner->SetConnected(TRUE);
@@ -1295,6 +1390,7 @@ void CFtpControlSocket::DoClose(int nError /*=0*/)
 	m_hasClntCmd = false;
 #ifdef MPEXT
 	m_hasMfmtCmd = false;
+	m_serverCapabilities.Clear();
 #endif
 
 	m_awaitsReply = false;
@@ -2149,6 +2245,10 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 #endif
 			cmd += _T(" -a");
 
+#ifdef MPEXT
+		if (m_serverCapabilities.GetCapability(mlsd_command) == yes)
+			cmd = _T("MLSD");
+#endif
 		if (!Send(cmd))
 			return;
 
@@ -4019,6 +4119,10 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 			if ((m_pOwner->GetOption(FZAPI_OPTION_SHOWHIDDEN) || pData->transferfile.remotefile.Left(1)==".") && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
 #endif
 				cmd += " -a";
+#ifdef MPEXT
+			if (m_serverCapabilities.GetCapability(mlsd_command) == yes)
+				cmd = _T("MLSD");
+#endif
 			if(!Send(cmd))
 				bError=TRUE;
 			else if(pData->bPasv)
@@ -5793,6 +5897,15 @@ void CFtpControlSocket::DiscardLine(CStringA line)
 #ifdef MPEXT
 		else if (line == _T(" MFMT"))
 			m_hasMfmtCmd = true;
+		else if (line == _T(" MLSD"))
+			m_serverCapabilities.SetCapability(mlsd_command, yes);
+		else if (line.Left(5) == _T(" MLST"))
+		{
+			USES_CONVERSION;
+			m_serverCapabilities.SetCapability(mlsd_command, yes, (LPCSTR)line.Mid(6));
+			// MSLT/MLSD specs require use of UTC
+			// m_serverCapabilities.SetCapability(timezone_offset, no);
+		}
 #endif
 	}
 }
@@ -5951,4 +6064,37 @@ bool CFtpControlSocket::CheckForcePasvIp(CString & host)
 	}
 	return result;
 }
+
+//---------------------------------------------------------------------------
+ftp_capabilities_t TFTPServerCapabilities::GetCapability(ftp_capability_names_t name)
+{
+	t_cap tcap = m_capabilityMap[name];
+	return tcap.cap;
+}
+
+ftp_capabilities_t TFTPServerCapabilities::GetCapabilityString(ftp_capability_names_t name, std::string *option)
+{
+	t_cap tcap = m_capabilityMap[name];
+	if (option)
+		*option = tcap.option;
+	return tcap.cap;
+}
+
+void TFTPServerCapabilities::SetCapability(ftp_capability_names_t name, ftp_capabilities_t cap)
+{
+	t_cap tcap = m_capabilityMap[name];
+	tcap.cap = cap;
+	tcap.number = 1;
+	m_capabilityMap[name] = tcap;
+}
+
+void TFTPServerCapabilities::SetCapability(ftp_capability_names_t name, ftp_capabilities_t cap, const std::string &option)
+{
+	t_cap tcap = m_capabilityMap[name];
+	tcap.cap = cap;
+	tcap.option = option;
+	tcap.number = 0;
+	m_capabilityMap[name] = tcap;
+}
+
 #endif
