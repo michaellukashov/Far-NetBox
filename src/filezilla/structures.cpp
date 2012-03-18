@@ -64,6 +64,7 @@ t_directory::t_direntry::t_direntry()
 
 t_directory::t_direntry::t_date::t_date()
 {
+	year=month=day=hour=minute=0;
 	hasdate=hastime=FALSE;
 }
 
