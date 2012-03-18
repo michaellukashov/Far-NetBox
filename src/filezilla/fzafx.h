@@ -20,6 +20,8 @@
 #define MPEXT_NO_SPEED_LIM_RULES
 #define MPEXT_NO_SSLDLL
 #define _AFX_NOFORCE_LIBS
+#define _MPT(T) _T(T)
+#define _MPAT(T) T
 //---------------------------------------------------------------------------
 #include <afx.h>
 #include "wtypes.h"

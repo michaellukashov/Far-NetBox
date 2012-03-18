@@ -139,7 +139,7 @@ void CApiLog::LogMessage(CString SourceFile, int nSourceLine, void *pInstance, i
 	assert(nSourceLine>0);
 
 
-	int pos=SourceFile.ReverseFind('\\');
+	int pos=SourceFile.ReverseFind(_MPT('\\'));
 	if (pos!=-1)
 		SourceFile=SourceFile.Mid(pos+1);
 	
@@ -174,7 +174,7 @@ void CApiLog::LogMessageRaw(CString SourceFile, int nSourceLine, void *pInstance
 	assert(m_hTargetWnd || m_pApiLogParent);
 	assert(nSourceLine>0);
 
-	int pos=SourceFile.ReverseFind('\\');
+	int pos=SourceFile.ReverseFind(_MPT('\\'));
 	if (pos!=-1)
 		SourceFile=SourceFile.Mid(pos+1);
 	

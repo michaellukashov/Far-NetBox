@@ -138,7 +138,7 @@ CAsyncProxySocketLayer::CAsyncProxySocketLayer()
 	m_nProxyPeerPort=0;
 	m_pProxyPeerHost = NULL;
 	m_pStrBuffer = NULL;
-    memset(&m_ProxyData, 0, sizeof(m_ProxyData));
+	memset(&m_ProxyData, 0, sizeof(m_ProxyData));
 	m_ProxyData.pProxyHost = NULL;
 	m_ProxyData.pProxyUser = NULL;
 	m_ProxyData.pProxyPass = NULL;
@@ -454,6 +454,9 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
 			}
 			//No auth needed
 			//Send connection request
+			#ifdef MPEXT
+			const
+			#endif
 			char *lpszAsciiHost = m_pProxyPeerHost?m_pProxyPeerHost:"";
 			char *command=new char[10+strlen(lpszAsciiHost)+1];
 			memset(command,0,10+strlen(lpszAsciiHost)+1);
@@ -526,6 +529,9 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
 					ClearBuffer();
 					return;
 				}
+				#ifdef MPEXT
+				const
+				#endif
 				char * lpszAsciiHost = m_pProxyPeerHost?m_pProxyPeerHost:"";
 				char *command = new char[10+strlen(lpszAsciiHost)+1];
 				memset(command,0,10+strlen(lpszAsciiHost)+1);
