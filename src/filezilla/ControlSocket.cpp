@@ -197,7 +197,7 @@ BOOL CControlSocket::Connect(CString hostAddress, UINT nHostPort)
 
 void CControlSocket::SetDirectoryListing(t_directory *pDirectory, bool bSetWorkingDir /*=true*/)
 {
-	DEBUG_PRINTF(L"begin");
+	// DEBUG_PRINTF(L"begin");
 	if (m_pDirectoryListing)
 		delete m_pDirectoryListing;
 	m_CurrentServer=pDirectory->server;
@@ -206,7 +206,7 @@ void CControlSocket::SetDirectoryListing(t_directory *pDirectory, bool bSetWorki
 
 	if (bSetWorkingDir)
 		m_pOwner->SetWorkingDir(pDirectory);
-	DEBUG_PRINTF(L"end");
+	// DEBUG_PRINTF(L"end");
 }
 
 int CControlSocket::OnLayerCallback(std::list<t_callbackMsg>& callbacks)
