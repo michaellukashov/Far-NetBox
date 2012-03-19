@@ -10,6 +10,21 @@
 #include "Far3Storage.h"
 #include "FarPlugin.h"
 //---------------------------------------------------------------------------
+enum NetBoxConfirmationsSettings
+{
+	NBCS_COPYOVERWRITE                  = 0x00000001,
+	NBCS_MOVEOVERWRITE                  = 0x00000002,
+	NBCS_DRAGANDDROP                    = 0x00000004,
+	NBCS_DELETE                         = 0x00000008,
+	NBCS_DELETENONEMPTYFOLDERS          = 0x00000010,
+	NBCS_INTERRUPTOPERATION             = 0x00000020,
+	NBCS_DISCONNECTNETWORKDRIVE         = 0x00000040,
+	NBCS_RELOADEDITEDFILE               = 0x00000080,
+	NBCS_CLEARHISTORYLIST               = 0x00000100,
+	NBCS_EXIT                           = 0x00000200,
+	NBCS_OVERWRITEDELETEROFILES         = 0x00000400,
+};
+//---------------------------------------------------------------------------
 TFarConfiguration::TFarConfiguration(TCustomFarPlugin *APlugin) :
     TGUIConfiguration()
 {
@@ -190,16 +205,76 @@ void TFarConfiguration::SetPlugin(TCustomFarPlugin *value)
     }
 }
 //---------------------------------------------------------------------------
-void TFarConfiguration::CacheFarSettings()
+__int64 TFarConfiguration::GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_t *Name)
 {
-    FFarConfirmations = GetPlugin()->FarAdvControl(ACTL_GETCONFIRMATIONS, 0);
+    __int64 result = 0;
+    FarSettingsCreate settings = {sizeof(FarSettingsCreate), FarGuid, INVALID_HANDLE_VALUE};
+    HANDLE Settings = FFarPlugin->GetStartupInfo()->SettingsControl(INVALID_HANDLE_VALUE, SCTL_CREATE, 0, &settings) ? settings.Handle : 0;
+    if (Settings)
+    {
+        FarSettingsItem item = {Root, Name, FST_UNKNOWN, {0} };
+        if(FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_GET, 0, &item) && FST_QWORD == item.Type)
+        {
+            result = item.Number;
+        }
+        FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_FREE, 0, 0);
+    }
+    return result;
 }
 //---------------------------------------------------------------------------
-int TFarConfiguration::FarConfirmations()
+__int64 TFarConfiguration::GetConfirmationsSetting(HANDLE &Settings, const wchar_t *Name)
+{
+    FarSettingsItem item = {FSSF_CONFIRMATIONS, Name, FST_UNKNOWN, {0} };
+    if(FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_GET, 0, &item) && FST_QWORD == item.Type)
+    {
+        return item.Number;
+    }
+    return 0;
+}
+
+//---------------------------------------------------------------------------
+__int64 TFarConfiguration::GetConfirmationsSettings()
+{
+    __int64 result = 0;
+    FarSettingsCreate settings = {sizeof(FarSettingsCreate), FarGuid, INVALID_HANDLE_VALUE};
+    HANDLE Settings = FFarPlugin->GetStartupInfo()->SettingsControl(INVALID_HANDLE_VALUE, SCTL_CREATE, 0, &settings) ? settings.Handle : 0;
+    if (Settings)
+    {
+        if (GetConfirmationsSetting(Settings, L"Copy"))
+            result |= NBCS_COPYOVERWRITE;
+        if (GetConfirmationsSetting(Settings, L"Move"))
+            result |= NBCS_MOVEOVERWRITE;
+        // if (GetConfirmationsSetting(Settings, L"RO"))
+            // result |= NBCS_MOVEOVERWRITE;
+        if (GetConfirmationsSetting(Settings, L"Drag"))
+            result |= NBCS_DRAGANDDROP;
+        if (GetConfirmationsSetting(Settings, L"Delete"))
+            result |= NBCS_DELETE;
+        if (GetConfirmationsSetting(Settings, L"DeleteFolder"))
+            result |= NBCS_DELETENONEMPTYFOLDERS;
+        if (GetConfirmationsSetting(Settings, L"Esc"))
+            result |= NBCS_INTERRUPTOPERATION;
+        if (GetConfirmationsSetting(Settings, L"AllowReedit"))
+            result |= NBCS_RELOADEDITEDFILE;
+        if (GetConfirmationsSetting(Settings, L"HistoryClear"))
+            result |= NBCS_CLEARHISTORYLIST;
+        if (GetConfirmationsSetting(Settings, L"Exit"))
+            result |= NBCS_EXIT;
+        FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_FREE, 0, 0);
+    }
+    return result;
+}
+//---------------------------------------------------------------------------
+void TFarConfiguration::CacheFarSettings()
+{
+    FFarConfirmations = GetConfirmationsSettings();
+}
+//---------------------------------------------------------------------------
+__int64 TFarConfiguration::FarConfirmations()
 {
     if (GetCurrentThreadId() == GetPlugin()->GetFarThread())
     {
-        return GetPlugin()->FarAdvControl(ACTL_GETCONFIRMATIONS, 0);
+        return GetConfirmationsSettings();
     }
     else
     {
@@ -217,7 +292,7 @@ bool TFarConfiguration::GetConfirmOverwriting()
     else
     {
         assert(GetPlugin());
-        return (FarConfirmations() & FCS_COPYOVERWRITE) != 0;
+        return (FarConfirmations() & NBCS_COPYOVERWRITE) != 0;
     }
 }
 //---------------------------------------------------------------------------
@@ -240,7 +315,7 @@ void TFarConfiguration::SetConfirmOverwriting(bool value)
 bool TFarConfiguration::GetConfirmDeleting()
 {
     assert(GetPlugin());
-    return (FarConfirmations() & FCS_DELETE) != 0;
+    return (FarConfirmations() & NBCS_DELETE) != 0;
 }
 //---------------------------------------------------------------------------
 std::wstring TFarConfiguration::ModuleFileName()
