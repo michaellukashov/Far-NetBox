@@ -86,8 +86,13 @@ protected:
     virtual void Saved();
 
 private:
+    __int64 GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_t *Name);
+    __int64 GetConfirmationsSetting(HANDLE &Settings, const wchar_t *Name);
+    __int64 GetConfirmationsSettings();
+
+private:
     TCustomFarPlugin *FFarPlugin;
-    int FFarConfirmations;
+    __int64 FFarConfirmations;
     bool FConfirmOverwritingOverride;
     bool FConfirmSynchronizedBrowsing;
     bool FForceInheritance;
@@ -117,7 +122,7 @@ private:
     TBookmarks *FBookmarks;
     TFarConfiguration *Self;
 
-    int FarConfirmations();
+    __int64 FarConfirmations();
 };
 //---------------------------------------------------------------------------
 #define FarConfiguration ((TFarConfiguration *) Configuration)
