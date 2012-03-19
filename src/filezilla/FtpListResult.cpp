@@ -511,7 +511,10 @@ BOOL CFtpListResult::parseLine(const char *lineToParse, const int linelen, t_dir
 
 	nFTPServerType = 0;
 	direntry.ownergroup = _T("");
-	
+
+	if (parseAsMlsd(lineToParse, linelen, direntry))
+		return TRUE;
+
 	if (parseAsUnix(lineToParse, linelen, direntry))
 		return TRUE;
 	
@@ -1270,6 +1273,126 @@ BOOL CFtpListResult::parseAsEPLF(const char *line, const int linelen, t_director
 	}
 
 	return FALSE;
+}
+
+BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_directory::t_direntry &direntry)
+{
+	// MLSD format as described here: http://www.ietf.org/internet-drafts/draft-ietf-ftpext-mlst-16.txt
+	// Parsing is done strict, abort on slightest error.
+
+	int pos = 0;
+	int tokenlen = 0;
+
+	const char *str = GetNextToken(line, linelen, tokenlen, pos, 0);
+	if (!str)
+		return FALSE;
+	CString facts(str, tokenlen);
+	if (facts.IsEmpty())
+		return FALSE;
+	direntry.dir = FALSE;
+	direntry.bLink = FALSE;
+	direntry.size = -1;
+	direntry.ownergroup = _T("");
+	direntry.permissionstr = _T("");
+
+	CString owner, group, uid, gid;
+
+	while (!facts.IsEmpty())
+	{
+		int delim = facts.Find(';');
+		if (delim < 3)
+		{
+			if (delim != -1)
+				return 0;
+			else
+				delim = facts.GetLength();
+		}
+
+		int pos = facts.Find('=');
+		if (pos < 1 || pos > delim)
+			return FALSE;
+
+		CString factname = facts.Left(pos);
+		factname.MakeLower();
+		CString value = facts.Mid(pos + 1, delim - pos - 1);
+		if (factname == _T("type"))
+		{
+			if (!value.CompareNoCase(_T("dir")))
+				direntry.dir = TRUE;
+			else if (!value.Left(13).CompareNoCase(_T("OS.unix=slink")))
+			{
+				direntry.dir = TRUE;
+				direntry.bLink = TRUE;
+				if (value[13] == ':' && value[14] != 0)
+					direntry.linkTarget = value.Mid(14);
+			}
+			else if (!value.CompareNoCase(_T("cdir")) ||
+					 !value.CompareNoCase(_T("pdir")))
+				return FALSE;
+		}
+		else if (factname == _T("size"))
+		{
+			direntry.size = 0;
+
+			for (unsigned int i = 0; i < value.GetLength(); ++i)
+			{
+				if (value[i] < '0' || value[i] > '9')
+					return FALSE;
+				direntry.size *= 10;
+				direntry.size += value[i] - '0';
+			}
+		}
+		else if (factname == _T("modify") ||
+			(!direntry.date.hasdate && factname == _T("create")))
+		{
+			if (!parseMlsdDateTime(value, direntry))
+				return FALSE;
+		}
+		else if (factname == _T("perm"))
+		{
+			if (!value.IsEmpty())
+			{
+				if (!direntry.permissionstr.IsEmpty())
+					direntry.permissionstr = value + _T(" (") + direntry.permissionstr + _T(")");
+				else
+					direntry.permissionstr = value;
+			}
+		}
+		else if (factname == _T("unix.mode"))
+		{
+			if (!direntry.permissionstr.IsEmpty())
+				direntry.permissionstr = direntry.permissionstr + _T(" (") + value + _T(")");
+			else
+				direntry.permissionstr = value;
+		}
+		else if (factname == _T("unix.owner") || factname == _T("unix.user"))
+			owner = value;
+		else if (factname == _T("unix.group"))
+			group = value;
+		else if (factname == _T("unix.uid"))
+			uid = value;
+		else if (factname == _T("unix.gid"))
+			gid = value;
+
+		facts = facts.Mid(delim + 1);
+	}
+
+	// The order of the facts is undefined, so assemble ownerGroup in correct
+	// order
+	if (!owner.IsEmpty())
+		direntry.ownergroup += owner;
+	else if (!uid.IsEmpty())
+		direntry.ownergroup += uid;
+	if (!group.IsEmpty())
+		direntry.ownergroup += _T(" ") + group;
+	else if (!gid.IsEmpty())
+		direntry.ownergroup += _T(" ") + gid;
+
+	if (!(str = GetNextToken(line, linelen, tokenlen, pos, 0)))
+		return FALSE;
+
+	copyStr(direntry.name, 0, str, tokenlen, true);
+	return TRUE;
 }
 
 BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_directory::t_direntry &direntry)
@@ -2749,6 +2872,41 @@ bool CFtpListResult::parseTime(const char *str, int len, t_directory::t_direntry
 	date.hastime = TRUE;
 
 	return true;
+}
+
+bool CFtpListResult::parseMlsdDateTime(const CString value, t_directory::t_direntry &direntry) const
+{
+	if (value.IsEmpty())
+		return FALSE;
+
+	bool result = FALSE;
+	int Year, Month, Day, Hours, Minutes, Seconds;
+	Year=Month=Day=Hours=Minutes=Seconds=0;
+	if (swscanf((LPCWSTR)value, L"%4d%2d%2d%2d%2d%2d", &Year, &Month, &Day, &Hours, &Minutes, &Seconds) == 6)
+	{
+		direntry.date.hasdate = TRUE;
+		direntry.date.hastime = TRUE;
+		result = TRUE;
+	}
+	else if (swscanf((LPCWSTR)value, L"%4d%2d%2d", &Year, &Month, &Day) == 3)
+	{
+		direntry.date.hasdate = TRUE;
+		direntry.date.hastime = FALSE;
+		result = TRUE;
+	}
+	if (result)
+	{
+		direntry.date.year = Year;
+		direntry.date.month = Month;
+		direntry.date.day = Day;
+		direntry.date.hour = Hours;
+		direntry.date.minute = Minutes;
+		direntry.date.second = Seconds;
+		CTime dateTime(Year, Month, Day, Hours, Minutes, Seconds);
+		// direntry.EntryTime = dateTime.FromTimezone(GMT0);
+		direntry.EntryTime = dateTime;
+	}
+	return result;
 }
 
 BOOL CFtpListResult::parseAsWfFtp(const char *line, const int linelen, t_directory::t_direntry &direntry)
