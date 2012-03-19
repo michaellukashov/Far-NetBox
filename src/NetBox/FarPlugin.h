@@ -80,6 +80,20 @@ struct TFarMessageParams
     void *Token;
 };
 //---------------------------------------------------------------------------
+enum NetBoxSystemSettings
+{
+    NBSS_DELETETORECYCLEBIN             = 0x00000002,
+    // NBSS_USESYSTEMCOPYROUTINE           = 0x00000004,
+    // NBSS_COPYFILESOPENEDFORWRITING      = 0x00000008,
+    // NBSS_CREATEFOLDERSINUPPERCASE       = 0x00000010,
+    // NBSS_SAVECOMMANDSHISTORY            = 0x00000020,
+    // NBSS_SAVEFOLDERSHISTORY             = 0x00000040,
+    // NBSS_SAVEVIEWANDEDITHISTORY         = 0x00000080,
+    // NBSS_USEWINDOWSREGISTEREDTYPES      = 0x00000100,
+    // NBSS_AUTOSAVESETUP                  = 0x00000200,
+    // NBSS_SCANSYMLINK                    = 0x00000400,
+};
+//---------------------------------------------------------------------------
 class TCustomFarPlugin : public nb::TObject
 {
     friend TCustomFarFileSystem;
@@ -145,7 +159,7 @@ public:
     int FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, int Param1, void *Param2 = NULL);
     DWORD FarControl(FILE_CONTROL_COMMANDS Command, int Param1, void *Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
     int FarEditorControl(EDITOR_CONTROL_COMMANDS Command, void *Param);
-    INT_PTR FarSystemSettings();
+    __int64 FarSystemSettings();
     void Text(int X, int Y, int Color, const std::wstring Str);
     void FlushText();
     void WriteConsole(const std::wstring Str);
@@ -192,7 +206,7 @@ protected:
     TCriticalSection *FCriticalSection;
     unsigned int FFarThread;
     bool FValidFarSystemSettings;
-    INT_PTR FFarSystemSettings;
+    __int64 FFarSystemSettings;
     nb::TPoint FNormalConsoleSize;
     TCustomFarPlugin *Self;
 
@@ -225,6 +239,7 @@ public:
 #endif
 private:
     void UpdateProgress(int state, int progress);
+    __int64 GetSystemSetting(HANDLE &Settings, const wchar_t *Name);
 
 private:
     PluginInfo FPluginInfo;

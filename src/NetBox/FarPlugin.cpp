@@ -1481,7 +1481,7 @@ void TCustomFarPlugin::ClearConsoleTitle()
         FCurrentTitle = L"";
         FCurrentProgress = -1;
         SetConsoleTitle(Title.c_str());
-        UpdateProgress(PS_NOPROGRESS, 0);
+        UpdateProgress(TBPS_NOPROGRESS, 0);
     }
     FSavedTitles->Delete(FSavedTitles->GetCount() - 1);
 }
@@ -1518,7 +1518,7 @@ std::wstring TCustomFarPlugin::FormatConsoleTitle()
 void TCustomFarPlugin::UpdateProgress(int state, int progress)
 {
     FarAdvControl(ACTL_SETPROGRESSSTATE, state, NULL);
-    if (state == PS_NORMAL)
+    if (state == TBPS_NORMAL)
     {
         ProgressValue pv;
         pv.Completed = progress;
@@ -1532,7 +1532,7 @@ void TCustomFarPlugin::UpdateConsoleTitle()
     std::wstring Title = FormatConsoleTitle();
     SetConsoleTitle(Title.c_str());
     short progress = FCurrentProgress != -1 ? FCurrentProgress : 0;
-    UpdateProgress(progress != 0 ? PS_NORMAL : PS_NOPROGRESS, progress);
+    UpdateProgress(progress != 0 ? TBPS_NORMAL : TBPS_NOPROGRESS, progress);
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::SaveScreen(HANDLE &Screen)
@@ -1608,12 +1608,31 @@ void TCustomFarPlugin::ResetCachedInfo()
     FValidFarSystemSettings = false;
 }
 //---------------------------------------------------------------------------
-INT_PTR TCustomFarPlugin::FarSystemSettings()
+__int64 TCustomFarPlugin::GetSystemSetting(HANDLE &Settings, const wchar_t *Name)
+{
+    FarSettingsItem item = {FSSF_SYSTEM, Name, FST_UNKNOWN, {0} };
+    if (FStartupInfo.SettingsControl(Settings, SCTL_GET, 0, &item) && FST_QWORD == item.Type)
+    {
+        return item.Number;
+    }
+    return 0;
+}
+//---------------------------------------------------------------------------
+__int64 TCustomFarPlugin::FarSystemSettings()
 {
     if (!FValidFarSystemSettings)
     {
-        FFarSystemSettings = FarAdvControl(ACTL_GETSYSTEMSETTINGS, 0);
-        FValidFarSystemSettings = true;
+        FFarSystemSettings = 0;
+        FarSettingsCreate settings = {sizeof(FarSettingsCreate), FarGuid, INVALID_HANDLE_VALUE};
+        HANDLE Settings = FStartupInfo.SettingsControl(INVALID_HANDLE_VALUE, SCTL_CREATE, 0, &settings) ? settings.Handle : 0;
+        if (Settings)
+        {
+            if (GetSystemSetting(Settings, L"DeleteToRecycleBin"))
+                FFarSystemSettings |= NBSS_DELETETORECYCLEBIN;
+
+            FStartupInfo.SettingsControl(Settings, SCTL_FREE, 0, 0);
+            FValidFarSystemSettings = true;
+        }
     }
     return FFarSystemSettings;
 }

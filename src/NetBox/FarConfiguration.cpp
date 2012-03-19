@@ -18,11 +18,11 @@ enum NetBoxConfirmationsSettings
 	NBCS_DELETE                         = 0x00000008,
 	NBCS_DELETENONEMPTYFOLDERS          = 0x00000010,
 	NBCS_INTERRUPTOPERATION             = 0x00000020,
-	NBCS_DISCONNECTNETWORKDRIVE         = 0x00000040,
+	// NBCS_DISCONNECTNETWORKDRIVE         = 0x00000040,
 	NBCS_RELOADEDITEDFILE               = 0x00000080,
 	NBCS_CLEARHISTORYLIST               = 0x00000100,
 	NBCS_EXIT                           = 0x00000200,
-	NBCS_OVERWRITEDELETEROFILES         = 0x00000400,
+	// NBCS_OVERWRITEDELETEROFILES         = 0x00000400,
 };
 //---------------------------------------------------------------------------
 TFarConfiguration::TFarConfiguration(TCustomFarPlugin *APlugin) :
@@ -213,7 +213,7 @@ __int64 TFarConfiguration::GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_t
     if (Settings)
     {
         FarSettingsItem item = {Root, Name, FST_UNKNOWN, {0} };
-        if(FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_GET, 0, &item) && FST_QWORD == item.Type)
+        if (FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_GET, 0, &item) && FST_QWORD == item.Type)
         {
             result = item.Number;
         }
@@ -225,7 +225,7 @@ __int64 TFarConfiguration::GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_t
 __int64 TFarConfiguration::GetConfirmationsSetting(HANDLE &Settings, const wchar_t *Name)
 {
     FarSettingsItem item = {FSSF_CONFIRMATIONS, Name, FST_UNKNOWN, {0} };
-    if(FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_GET, 0, &item) && FST_QWORD == item.Type)
+    if (FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_GET, 0, &item) && FST_QWORD == item.Type)
     {
         return item.Number;
     }

@@ -3199,7 +3199,7 @@ void TWinSCPFileSystem::TerminalDeleteLocalFile(const std::wstring FileName,
         bool Alternative)
 {
     if (!RecursiveDeleteFile(FileName,
-                             (FLAGSET(FPlugin->FarSystemSettings(), FSS_DELETETORECYCLEBIN)) != Alternative))
+                             (FLAGSET(FPlugin->FarSystemSettings(), NBSS_DELETETORECYCLEBIN)) != Alternative))
     {
         throw ExtException(FORMAT(GetMsg(DELETE_LOCAL_FILE_ERROR).c_str(), FileName.c_str()));
     }
@@ -3515,7 +3515,7 @@ TTerminalQueueStatus *TWinSCPFileSystem::ProcessQueue(bool Hidden)
 {
     TTerminalQueueStatus *Result = NULL;
     assert(FQueueStatus != NULL);
-    FarPlugin->UpdateProgress(FQueueStatus->GetCount() > 0 ? PS_INDETERMINATE : PS_NOPROGRESS, 0);
+    FarPlugin->UpdateProgress(FQueueStatus->GetCount() > 0 ? TBPS_INDETERMINATE : TBPS_NOPROGRESS, 0);
 
     if (FQueueStatusInvalidated || FQueueItemInvalidated)
     {
