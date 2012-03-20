@@ -400,6 +400,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
           Dest.Day = Source.date.day;
           Dest.Hour = Source.date.hour;
           Dest.Minute = Source.date.minute;
+          Dest.Second = Source.date.second;
           Dest.HasTime = Source.date.hastime;
           Dest.HasDate = Source.date.hasdate;
           Dest.LinkTarget = reinterpret_cast<const wchar_t *>(Source.linkTarget.GetBuffer(Source.linkTarget.GetLength()));
