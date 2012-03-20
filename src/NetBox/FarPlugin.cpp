@@ -2008,16 +2008,13 @@ int TCustomFarFileSystem::MakeDirectory(struct MakeDirectoryInfo *Info)
     std::wstring NameStr = Info->Name;
     int Result = 0;
     {
-        /*
         BOOST_SCOPE_EXIT ( (&NameStr) (&Info) )
         {
             if (0 != wcscmp(NameStr.c_str(), Info->Name))
             {
-                // wcscpy_s(*Name, NameStr.size(), NameStr.c_str());
-                *Info->Name = TCustomFarPlugin::DuplicateStr(NameStr, true);
+                Info->Name = TCustomFarPlugin::DuplicateStr(NameStr, true);
             }
         } BOOST_SCOPE_EXIT_END
-        */
         Result = MakeDirectoryEx(NameStr, Info->OpMode);
     }
     return Result;
