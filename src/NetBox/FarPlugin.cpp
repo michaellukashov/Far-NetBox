@@ -2044,13 +2044,10 @@ int TCustomFarFileSystem::GetFiles(struct GetFilesInfo *Info)
     {
         BOOST_SCOPE_EXIT ( (&DestPathStr) (&Info) (&PanelItems) )
         {
-            /*
             if (DestPathStr != Info->DestPath)
             {
-                // wcscpy_s(*DestPath, DestPathStr.size(), DestPathStr.c_str());
-                *Info->DestPath = TCustomFarPlugin::DuplicateStr(DestPathStr, true);
+                Info->DestPath = TCustomFarPlugin::DuplicateStr(DestPathStr, true);
             }
-            */
             delete PanelItems;
         } BOOST_SCOPE_EXIT_END
         Result = GetFilesEx(PanelItems, Info->Move > 0, DestPathStr, Info->OpMode);
