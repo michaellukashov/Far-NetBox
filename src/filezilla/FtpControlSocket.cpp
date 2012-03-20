@@ -625,7 +625,6 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 	else if (m_Operation.nOpState == CONNECT_OPTSMLST)
 	{
 		int code = GetReplyCode();
-		// DEBUG_PRINTF(L"code = %d", code);
 		if (code != 2 && code != 3)
 			m_serverCapabilities.SetCapability(mlsd_command, no);
 
@@ -707,7 +706,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 				}
 			}
 		}
-        PostMessage(m_pOwner->m_hOwnerWnd, m_pOwner->m_nReplyMessageID, FZ_MSG_MAKEMSG(FZ_MSG_CAPABILITIES, 0), (LPARAM)&m_serverCapabilities);
+		PostMessage(m_pOwner->m_hOwnerWnd, m_pOwner->m_nReplyMessageID, FZ_MSG_MAKEMSG(FZ_MSG_CAPABILITIES, 0), (LPARAM)&m_serverCapabilities);
 		#endif
 		if (!m_bAnnouncesUTF8 && !m_CurrentServer.nUTF8)
 			m_bUTF8 = false;
@@ -2247,7 +2246,10 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 		if (m_serverCapabilities.GetCapability(mlsd_command) == yes)
 			cmd = _T("MLSD");
 
-		DEBUG_PRINTF(L"cmd = %s", (LPCWSTR)cmd);
+#ifdef MPEXT
+		if (m_serverCapabilities.GetCapability(mlsd_command) == yes)
+			cmd = _T("MLSD");
+#endif
 		if (!Send(cmd))
 			return;
 
@@ -4118,7 +4120,10 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 			if ((m_pOwner->GetOption(FZAPI_OPTION_SHOWHIDDEN) || pData->transferfile.remotefile.Left(1)==".") && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
 #endif
 				cmd += " -a";
-			DEBUG_PRINTF(L"cmd = %s", (LPCWSTR)cmd);
+#ifdef MPEXT
+			if (m_serverCapabilities.GetCapability(mlsd_command) == yes)
+				cmd = _T("MLSD");
+#endif
 			if(!Send(cmd))
 				bError=TRUE;
 			else if(pData->bPasv)
@@ -5922,10 +5927,8 @@ void CFtpControlSocket::DiscardLine(CStringA line)
 			m_hasMfmtCmd = true;
 			m_serverCapabilities.SetCapability(mfmt_command, yes);
 		}
-		else if (line == _T("PRET"))
-		{
+		else if (line == _T(" PRET"))
 			m_serverCapabilities.SetCapability(pret_command, yes);
-		}
 		else if (line == _T("MDTM"))
 		{
 			m_serverCapabilities.SetCapability(mdtm_command, yes);
