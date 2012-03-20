@@ -21,6 +21,7 @@ struct TListDataEntry
   int Day;
   int Hour;
   int Minute;
+  int Second;
   bool HasTime;
   bool HasDate;
   bool Dir;
