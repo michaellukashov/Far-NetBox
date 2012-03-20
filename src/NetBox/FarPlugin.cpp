@@ -307,12 +307,12 @@ void *TCustomFarPlugin::OpenPlugin(const struct OpenInfo *Info)
     try
     {
         ResetCachedInfo();
-        int Item = 0;
+        LONG_PTR Item = 0;
         if (*Info->Guid == MenuCommandsGuid)
             Item = 1;
         if ((Info->OpenFrom == OPEN_SHORTCUT) || (Info->OpenFrom == OPEN_COMMANDLINE))
         {
-          Item = static_cast<int>(static_cast<INT_PTR>(Info->Data));
+          Item = static_cast<LONG_PTR>(Info->Data);
         }
         TCustomFarFileSystem *Result = OpenPluginEx(Info->OpenFrom, Item);
 

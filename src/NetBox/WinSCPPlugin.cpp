@@ -369,7 +369,16 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(int OpenFrom, LONG_PTR Item)
             else if (OpenFrom == OPEN_SHORTCUT || OpenFrom == OPEN_COMMANDLINE)
             {
                 std::wstring Directory;
-                std::wstring Name = reinterpret_cast<wchar_t *>(Item);
+                std::wstring Name;
+                if (OpenFrom == OPEN_SHORTCUT)
+                {
+                    OpenShortcutInfo *Info = reinterpret_cast<OpenShortcutInfo *>(Item);
+                    Name = Info->ShortcutData;
+                }
+                else
+                {
+                    Name = reinterpret_cast<wchar_t *>(Item);
+                }
                 if (OpenFrom == OPEN_SHORTCUT)
                 {
                     size_t P = Name.find(L"\1");

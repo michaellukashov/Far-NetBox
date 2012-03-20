@@ -443,7 +443,7 @@ void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
     if (!SessionList())
     {
         Flags = !OPIF_DISABLEFILTER | !OPIF_DISABLESORTGROUPS | !OPIF_DISABLEHIGHLIGHTING |
-                OPIF_SHOWPRESERVECASE | OPIF_COMPAREFATTIME;
+                OPIF_SHOWPRESERVECASE | OPIF_COMPAREFATTIME | OPIF_SHORTCUT;
 
         // When slash is added to the end of path, windows style paths
         // (vandyke: c:/windows/system) are displayed correctly on command-line, but
@@ -467,7 +467,8 @@ void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
     {
         CurDir = FSessionsFolder;
         Format = L"netbox";
-        Flags = !OPIF_DISABLESORTGROUPS | !OPIF_DISABLEHIGHLIGHTING | OPIF_ADDDOTS | OPIF_SHOWPRESERVECASE;
+        Flags = !OPIF_DISABLESORTGROUPS | !OPIF_DISABLEHIGHLIGHTING | OPIF_ADDDOTS |
+                OPIF_SHOWPRESERVECASE | OPIF_SHORTCUT;
         PanelTitle = FORMAT(L" %s ", GetMsg(NB_STORED_SESSION_TITLE).c_str());
 
         TSessionPanelItem::SetPanelModes(PanelModes);
