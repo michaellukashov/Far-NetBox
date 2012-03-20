@@ -435,6 +435,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
       break;
 
     case FZ_MSG_CAPABILITIES:
+      serverCapabilities = *(TFTPServerCapabilities *)lParam;
       Result = HandleCapabilities(serverCapabilities);
       break;
 
