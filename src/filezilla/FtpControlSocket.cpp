@@ -2244,6 +2244,8 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 		if (m_pOwner->GetOption(FZAPI_OPTION_SHOWHIDDEN) && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
 #endif
 			cmd += _T(" -a");
+		if (m_serverCapabilities.GetCapability(mlsd_command) == yes)
+			cmd = _T("MLSD");
 
 #ifdef MPEXT
 		if (m_serverCapabilities.GetCapability(mlsd_command) == yes)
@@ -3636,7 +3638,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 									TRY
 									{
 										if (pDate->hastime)
-											pData->pFileTime = new CTime(pDate->year, pDate->month, pDate->day, pDate->hour, pDate->minute, 0);
+											pData->pFileTime = new CTime(pDate->year, pDate->month, pDate->day, pDate->hour, pDate->minute, pDate->second);
 										else
 											pData->pFileTime = new CTime(pDate->year, pDate->month, pDate->day, 0, 0, 0);
 
@@ -4977,7 +4979,8 @@ int CFtpControlSocket::CheckOverwriteFile()
 									m_pDirectoryListing->direntry[i].date.day,
 									m_pDirectoryListing->direntry[i].date.hastime?m_pDirectoryListing->direntry[i].date.hour:0,
 									m_pDirectoryListing->direntry[i].date.hastime?m_pDirectoryListing->direntry[i].date.minute:0,
-									0,-1);
+									m_pDirectoryListing->direntry[i].date.hastime?m_pDirectoryListing->direntry[i].date.second:0,
+									-1);
 							}
 							CATCH_ALL(e)
 							{
