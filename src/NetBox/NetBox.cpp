@@ -228,7 +228,7 @@ extern "C"
         {
             return INVALID_HANDLE_VALUE;
         }
-        return INVALID_HANDLE_VALUE;
+        return HANDLE(1);
     }
 
     HANDLE WINAPI OpenW(const struct OpenInfo *Info)
