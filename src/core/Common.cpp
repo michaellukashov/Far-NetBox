@@ -1507,7 +1507,7 @@ int CompareFileTime(nb::TDateTime T1, nb::TDateTime T2)
     // be treated the same)
     static nb::TDateTime TwoSeconds(0, 0, 2, 0);
     int Result = 0;
-    if (fabs(T1 - T2) < 0.0001)
+    if (fabs(T1 - T2) < std::numeric_limits<double>::epsilon())
     {
       // just optimalisation
       Result = 0;
