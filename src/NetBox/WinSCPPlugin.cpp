@@ -362,7 +362,7 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, LONG_PTR It
 
             if (OpenFrom == OPEN_LEFTDISKMENU || OpenFrom == OPEN_RIGHTDISKMENU ||
                 OpenFrom == OPEN_PLUGINSMENU ||
-                OpenFrom == OPEN_FINDLIST || OpenFrom == OPEN_ANALYSE)
+                OpenFrom == OPEN_FINDLIST)
             {
                 // nothing
             }
@@ -420,6 +420,12 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, LONG_PTR It
                 {
                     FileSystem->SetDirectoryEx(Directory, OPM_SILENT);
                 }
+            }
+            else if (OpenFrom == OPEN_ANALYSE)
+            {
+                OpenAnalyseInfo *Info = reinterpret_cast<OpenAnalyseInfo *>(Item);
+                const wchar_t  *FileName = Info->Info->FileName;
+                DEBUG_PRINTF(L"FileName = %s", FileName);
             }
             else
             {

@@ -34,7 +34,7 @@ protected:
     {
         DEBUG_PRINTF(L"call");
     }
-    virtual TCustomFarFileSystem *OpenPluginEx(int OpenFrom, LONG_PTR Item)
+    virtual TCustomFarFileSystem *OpenPluginEx(OPENFROM OpenFrom, LONG_PTR Item)
     {
         DEBUG_PRINTF(L"call");
         return NULL;

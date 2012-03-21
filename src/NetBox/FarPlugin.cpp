@@ -310,7 +310,10 @@ void *TCustomFarPlugin::OpenPlugin(const struct OpenInfo *Info)
         LONG_PTR Item = 0;
         if (*Info->Guid == MenuCommandsGuid)
             Item = 1;
-        if ((Info->OpenFrom == OPEN_SHORTCUT) || (Info->OpenFrom == OPEN_COMMANDLINE))
+        if ((Info->OpenFrom == OPEN_SHORTCUT) || 
+            (Info->OpenFrom == OPEN_COMMANDLINE) ||
+            (Info->OpenFrom == OPEN_ANALYSE))
+            
         {
           Item = static_cast<LONG_PTR>(Info->Data);
         }
