@@ -2740,7 +2740,7 @@ wchar_t *AnsiStrScan(const wchar_t *Str, const wchar_t TokenPrefix)
 
 std::wstring ChangeFileExt(const std::wstring FileName, const std::wstring ext)
 {
-    std::wstring result = ::ChangeFileExtension(FileName, ext, L'.');
+    std::wstring result = ::ChangeFileExtension(FileName, ext);
     return result;
 }
 
