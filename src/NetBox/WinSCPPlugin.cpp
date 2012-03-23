@@ -424,39 +424,35 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, LONG_PTR It
             else if (OpenFrom == OPEN_ANALYSE)
             {
                 OpenAnalyseInfo *Info = reinterpret_cast<OpenAnalyseInfo *>(Item);
-                const wchar_t  *XmlFileName = Info->Info->FileName;
-                DEBUG_PRINTF(L"XmlFileName = %s", XmlFileName);
+                const wchar_t *XmlFileName = Info->Info->FileName;
+                TSessionData *Session = NULL;
                 THierarchicalStorage *ImportStorage = NULL;
                 {
-                    BOOST_SCOPE_EXIT ( (&ImportStorage) )
+                    BOOST_SCOPE_EXIT ( (&ImportStorage) (&Session) )
                     {
                         delete ImportStorage;
+                        delete Session;
                     } BOOST_SCOPE_EXIT_END
+
                     ImportStorage = new TXmlStorage(XmlFileName, Configuration->GetStoredSessionsSubKey());
                     ImportStorage->Init();
                     ImportStorage->SetAccessMode(smRead);
-                    if (ImportStorage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), false) &&
-                            ImportStorage->HasSubKeys())
+                    if (!(ImportStorage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), false) &&
+                        ImportStorage->HasSubKeys()))
                     {
-                        StoredSessions->Load(ImportStorage, /* AsModified */ true, /* UseDefaults */ true);
-                        // modified only, explicit
-                        // StoredSessions->Save(false, true);
-                        // TODO: get session name, init TSessionData *
-                        // TODO: call FileSystem->Connect(Session);
-                        bool DefaultsOnly = false;
-                        std::wstring SessionName = ChangeFileExt(ExtractFilename(XmlFileName, L'\\'), L"");
-                        TSessionData *Session = StoredSessions->ParseUrl(SessionName, NULL, DefaultsOnly);
-                        if (DefaultsOnly)
-                        {
-                            nb::Abort();
-                        }
-                        if (!Session->GetCanLogin())
-                        {
-                            assert(false);
-                            nb::Abort();
-                        }
-                        FileSystem->Connect(Session);
+                        assert(false);
+                        nb::Abort();
                     }
+                    std::wstring SessionName = ::PuttyUnMungeStr(ImportStorage->ReadStringRaw(L"Session", L""));
+                    Session = new TSessionData(SessionName);
+                    Session->Load(ImportStorage);
+                    Session->SetModified(true);
+                    if (!Session->GetCanLogin())
+                    {
+                        assert(false);
+                        nb::Abort();
+                    }
+                    FileSystem->Connect(Session);
                 }
             }
             else
