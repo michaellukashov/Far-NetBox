@@ -1,6 +1,8 @@
-NetBox 2.0.16 ??.03.2012
+NetBox 2.0.16 24.03.2012
 ---------------------
-  * Far3: adapted to Far 3.0 build 2556:
+  * Improvement: open session by pressing Enter on .netbox file
+  * Far3: Bugfix: NumEnter opens .netbox file instead of opening session
+  * Far3: adapted to Far 3.0 build 2551:
     - fixed confirmations before delete file or session
     - fixed open session when plugin is called from Folders history
   * FTP: Use MLSD/MLST to list file in directory with FTP protocol
