@@ -534,7 +534,6 @@ std::wstring ExpandEnvironmentVariables(const std::wstring Str)
     if (Len > Size)
     {
         Buf.resize(Len);
-        // Buf.Unique();
         ExpandEnvironmentStrings(Str.c_str(), const_cast<wchar_t *>(Buf.c_str()), static_cast<DWORD>(Len));
     }
 
