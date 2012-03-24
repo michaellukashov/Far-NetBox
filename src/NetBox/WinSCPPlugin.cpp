@@ -409,6 +409,39 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(int OpenFrom, LONG_PTR Item)
                     FileSystem->SetDirectoryEx(Directory, OPM_SILENT);
                 }
             }
+            else if (OpenFrom == OPEN_ANALYSE)
+            {
+                const wchar_t *XmlFileName = reinterpret_cast<const wchar_t *>(Item);
+                TSessionData *Session = NULL;
+                THierarchicalStorage *ImportStorage = NULL;
+                {
+                    BOOST_SCOPE_EXIT ( (&ImportStorage) (&Session) )
+                    {
+                        delete ImportStorage;
+                        delete Session;
+                    } BOOST_SCOPE_EXIT_END
+
+                    ImportStorage = new TXmlStorage(XmlFileName, Configuration->GetStoredSessionsSubKey());
+                    ImportStorage->Init();
+                    ImportStorage->SetAccessMode(smRead);
+                    if (!(ImportStorage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), false) &&
+                        ImportStorage->HasSubKeys()))
+                    {
+                        assert(false);
+                        nb::Abort();
+                    }
+                    std::wstring SessionName = ::PuttyUnMungeStr(ImportStorage->ReadStringRaw(L"Session", L""));
+                    Session = new TSessionData(SessionName);
+                    Session->Load(ImportStorage);
+                    Session->SetModified(true);
+                    if (!Session->GetCanLogin())
+                    {
+                        assert(false);
+                        nb::Abort();
+                    }
+                    FileSystem->Connect(Session);
+                }
+            }
             else
             {
                 assert(false);

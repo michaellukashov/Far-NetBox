@@ -11,7 +11,6 @@
 #include "FtpFileSystem.h"
 #include "FileZillaIntf.h"
 #include "AsyncProxySocketLayer.h"
-#include "FtpControlSocket.h"
 
 #include "Common.h"
 #include "Exceptions.h"
@@ -63,7 +62,7 @@ protected:
                                       __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
                                       bool FileTransfer);
     virtual bool HandleReply(int Command, unsigned int Reply);
-    virtual bool HandleCapabilities(TFTPServerCapabilities &ServerCapabilities);
+    virtual bool HandleCapabilities(bool Mfmt);
     virtual bool CheckError(int ReturnCode, const char *Context);
 
 private:
@@ -135,9 +134,9 @@ bool TFileZillaImpl::HandleReply(int Command, unsigned int Reply)
     return FFileSystem->HandleReply(Command, Reply);
 }
 //---------------------------------------------------------------------------
-bool TFileZillaImpl::HandleCapabilities(TFTPServerCapabilities &ServerCapabilities)
+bool TFileZillaImpl::HandleCapabilities(bool Mfmt)
 {
-    return FFileSystem->HandleCapabilities(ServerCapabilities);
+    return FFileSystem->HandleCapabilities(Mfmt);
 }
 //---------------------------------------------------------------------------
 bool TFileZillaImpl::CheckError(int ReturnCode, const char *Context)
@@ -210,7 +209,7 @@ TFTPFileSystem::TFTPFileSystem(TTerminal *ATerminal):
     // FOnCaptureOutput(NULL),
     FFileSystemInfoValid(false),
     FDoListAll(false),
-    FServerCapabilities(NULL)
+    FMfmt(false)
 {
     Self = this;
 }
@@ -225,7 +224,6 @@ void TFTPFileSystem::Init()
     FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
     FTimeoutStatus = LoadStr(IDS_ERRORMSG_TIMEOUT);
     FDisconnectStatus = LoadStr(IDS_STATUSMSG_DISCONNECTED);
-    FServerCapabilities = new TFTPServerCapabilities();
 }
 
 //---------------------------------------------------------------------------
@@ -257,8 +255,6 @@ TFTPFileSystem::~TFTPFileSystem()
     FLastError = NULL;
     delete FFeatures;
     FFeatures = NULL;
-    delete FServerCapabilities;
-    FServerCapabilities = NULL;
 
     ResetCaches();
 }
@@ -1334,7 +1330,6 @@ void TFTPFileSystem::SourceRobust(const std::wstring FileName,
     while (Retry);
 }
 //---------------------------------------------------------------------------
-// Copy file to remote host
 void TFTPFileSystem::Source(const std::wstring FileName,
                             const std::wstring TargetDir, const TCopyParamType *CopyParam, int Params,
                             TOpenRemoteFileParams *OpenParams,
@@ -1431,7 +1426,7 @@ void TFTPFileSystem::Source(const std::wstring FileName,
 
         // we are not able to tell if setting timestamp succeeded,
         // so we log it always (if supported)
-        if (FFileTransferPreserveTime && (FServerCapabilities->GetCapability(mfmt_command) == yes))
+        if (FFileTransferPreserveTime && FMfmt)
         {
             // Inspired by SysUtils::FileAge
             WIN32_FIND_DATA FindData;
@@ -1714,7 +1709,7 @@ bool TFTPFileSystem::IsCapable(int Capability) const
         return true;
 
     case fcPreservingTimestampUpload:
-        return FServerCapabilities->GetCapability(mfmt_command) == yes;
+        return FMfmt;
 
     case fcModeChangingUpload:
     case fcLoadingAdditionalProperties:
@@ -2012,7 +2007,6 @@ const TFileSystemInfo &TFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
     if (!FFileSystemInfoValid)
     {
         FFileSystemInfo.RemoteSystem = FSystem;
-        // FFileSystemInfo.RemoteSystem.Unique();
 
         if (FFeatures->GetCount() == 0)
         {
@@ -3405,9 +3399,9 @@ bool TFTPFileSystem::HandleReply(int Command, unsigned int Reply)
     }
 }
 //---------------------------------------------------------------------------
-bool TFTPFileSystem::HandleCapabilities(TFTPServerCapabilities &ServerCapabilities)
+bool TFTPFileSystem::HandleCapabilities(bool Mfmt)
 {
-    FServerCapabilities->Assign(&ServerCapabilities);
+    FMfmt = Mfmt;
     FFileSystemInfoValid = false;
     return true;
 }

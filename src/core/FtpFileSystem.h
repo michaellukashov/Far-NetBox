@@ -11,7 +11,6 @@ class TFileZillaIntf;
 class TFileZillaImpl;
 class TCriticalSection;
 class TMessageQueue;
-class TFTPServerCapabilities;
 struct TOverwriteFileParams;
 struct TListDataEntry;
 struct TFtpsCertificateData;
@@ -129,7 +128,7 @@ protected:
                               __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
                               bool FileTransfer);
     bool HandleReply(int Command, unsigned int Reply);
-    bool HandleCapabilities(TFTPServerCapabilities &ServerCapabilities);
+    bool HandleCapabilities(bool Mfmt);
     bool CheckError(int ReturnCode, const wchar_t *Context);
     void EnsureLocation();
     std::wstring ActualCurrentDirectory();
@@ -229,7 +228,7 @@ private:
     std::wstring FUserName;
     TAutoSwitch FListAll;
     bool FDoListAll;
-	TFTPServerCapabilities *FServerCapabilities;
+    bool FMfmt;
     nb::TDateTime FLastDataSent;
     mutable std::wstring FOptionScratch;
     TFTPFileSystem *Self;

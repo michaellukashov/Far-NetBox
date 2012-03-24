@@ -534,7 +534,6 @@ std::wstring ExpandEnvironmentVariables(const std::wstring Str)
     if (Len > Size)
     {
         Buf.resize(Len);
-        // Buf.Unique();
         ExpandEnvironmentStrings(Str.c_str(), const_cast<wchar_t *>(Buf.c_str()), static_cast<DWORD>(Len));
     }
 
@@ -2740,7 +2739,7 @@ wchar_t *AnsiStrScan(const wchar_t *Str, const wchar_t TokenPrefix)
 
 std::wstring ChangeFileExt(const std::wstring FileName, const std::wstring ext)
 {
-    std::wstring result = ::ChangeFileExtension(FileName, ext, L'.');
+    std::wstring result = ::ChangeFileExtension(FileName, ext);
     return result;
 }
 

@@ -85,6 +85,7 @@ protected:
     bool HandleTransferStatus(bool Valid, __int64 TransferSize,
                               __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
                               bool FileTransfer);
+    bool HandleCapabilities(bool Mfmt);
     bool CheckError(int ReturnCode, const wchar_t *Context);
     void EnsureLocation();
     std::wstring ActualCurrentDirectory();

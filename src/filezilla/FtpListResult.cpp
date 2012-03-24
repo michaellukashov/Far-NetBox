@@ -2878,7 +2878,6 @@ bool CFtpListResult::parseTime(const char *str, int len, t_directory::t_direntry
 
 bool CFtpListResult::parseMlsdDateTime(const CString value, t_directory::t_direntry &direntry) const
 {
-	// DEBUG_PRINTF(L"begin, value = %s", (LPCWSTR)value);
 	if (value.IsEmpty())
 		return FALSE;
 
@@ -2909,7 +2908,6 @@ bool CFtpListResult::parseMlsdDateTime(const CString value, t_directory::t_diren
 		// direntry.EntryTime = dateTime.FromTimezone(GMT0);
 		direntry.EntryTime = dateTime;
 	}
-	// DEBUG_PRINTF(L"end");
 	return result;
 }
 
