@@ -196,7 +196,9 @@ extern "C"
         {
             return INVALID_HANDLE_VALUE;
         }
-        return reinterpret_cast<HANDLE>(-2);
+        HANDLE handle = static_cast<HANDLE>(FarPlugin->OpenPlugin(OPEN_ANALYSE,
+            reinterpret_cast<INT_PTR>(fileName)));
+        return handle;
     }
 
 //---------------------------------------------------------------------------
