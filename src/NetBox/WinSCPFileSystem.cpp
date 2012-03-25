@@ -4120,7 +4120,7 @@ void TWinSCPFileSystem::EditHistory()
 
         if ((Result >= 0) && (Result < static_cast<int>(FEditHistories.size())))
         {
-            TRemoteFile *File;
+            TRemoteFile *File = NULL;
             std::wstring FullFileName =
                 UnixIncludeTrailingBackslash(FEditHistories[Result].Directory) + FEditHistories[Result].FileName;
             FTerminal->ReadFile(FullFileName, File);
