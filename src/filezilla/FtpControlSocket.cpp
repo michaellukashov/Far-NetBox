@@ -636,8 +636,6 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 	else if (m_Operation.nOpState == CONNECT_FEAT)
 	{
 		#ifdef MPEXT
-		int capabilities = (m_hasMfmtCmd ? FZ_CAPABILITIES_MFMT : 0);
-		PostMessage(m_pOwner->m_hOwnerWnd, m_pOwner->m_nReplyMessageID, FZ_MSG_MAKEMSG(FZ_MSG_CAPABILITIES, 0), (LPARAM)capabilities);
 		std::string facts;
 		if (m_serverCapabilities.GetCapabilityString(mlsd_command, &facts) == yes)
 		{
@@ -708,6 +706,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 				}
 			}
 		}
+		PostMessage(m_pOwner->m_hOwnerWnd, m_pOwner->m_nReplyMessageID, FZ_MSG_MAKEMSG(FZ_MSG_CAPABILITIES, 0), (LPARAM)&m_serverCapabilities);
 		#endif
 		if (!m_bAnnouncesUTF8 && !m_CurrentServer.nUTF8)
 			m_bUTF8 = false;
@@ -5887,27 +5886,65 @@ void CFtpControlSocket::DiscardLine(CStringA line)
 {
 	if (m_Operation.nOpMode == CSMODE_CONNECT && m_Operation.nOpState == CONNECT_FEAT)
 	{
-		line.MakeUpper();
+		line.MakeUpper().Trim(" ");
+		if (line == _T("MODE Z") || line.Left(7) == _T("MODE Z "))
+		{
 #ifndef MPEXT_NO_ZLIB
-		if (line == _T(" MODE Z") || line.Left(8) == _T(" MODE Z "))
 			m_zlibSupported = true;
-		else
 #endif
-			if (line == _T(" UTF8") && m_CurrentServer.nUTF8 != 2)
+#ifdef MPEXT
+			m_serverCapabilities.SetCapability(mode_z_support, yes);
+#endif
+		}
+		else if (line == _T("UTF8") && m_CurrentServer.nUTF8 != 2)
+		{
+			
 			m_bAnnouncesUTF8 = true;
-		else if (line == _T(" CLNT") || line.Left(6) == _T(" CLNT "))
+#ifdef MPEXT
+			m_serverCapabilities.SetCapability(utf8_command, yes);
+#endif
+		}
+		else if (line == _T("CLNT") || line.Left(5) == _T("CLNT "))
+		{
 			m_hasClntCmd = true;
 #ifdef MPEXT
-		else if (line == _T(" MFMT"))
-			m_hasMfmtCmd = true;
-		else if (line == _T(" MLSD"))
+			m_serverCapabilities.SetCapability(clnt_command, yes);
+#endif
+		}
+#ifdef MPEXT
+		else if (line == _T("MLSD"))
+		{
 			m_serverCapabilities.SetCapability(mlsd_command, yes);
-		else if (line.Left(5) == _T(" MLST"))
+		}
+		else if (line.Left(4) == _T("MLST"))
 		{
 			USES_CONVERSION;
-			m_serverCapabilities.SetCapability(mlsd_command, yes, (LPCSTR)line.Mid(6));
+			m_serverCapabilities.SetCapability(mlsd_command, yes, (LPCSTR)line.Mid(5));
 			// MSLT/MLSD specs require use of UTC
 			// m_serverCapabilities.SetCapability(timezone_offset, no);
+		}
+		else if (line == _T("MFMT"))
+		{
+			m_hasMfmtCmd = true;
+			m_serverCapabilities.SetCapability(mfmt_command, yes);
+		}
+		else if (line == _T(" PRET"))
+			m_serverCapabilities.SetCapability(pret_command, yes);
+		else if (line == _T("MDTM"))
+		{
+			m_serverCapabilities.SetCapability(mdtm_command, yes);
+		}
+		else if (line == _T("SIZE"))
+		{
+			m_serverCapabilities.SetCapability(size_command, yes);
+		}
+		else if (line == _T("TVFS"))
+		{
+			m_serverCapabilities.SetCapability(tvfs_support, yes);
+		}
+		else if (line == _T("REST STREAM"))
+		{
+			m_serverCapabilities.SetCapability(rest_stream, yes);
 		}
 #endif
 	}
