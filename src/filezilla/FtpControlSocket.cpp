@@ -2401,9 +2401,9 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 	else if (m_Operation.nOpState != LIST_INIT)
 	{
 		CString retmsg = GetReply();
-        DEBUG_PRINTF(L"retmsg = %s", (LPCWSTR)retmsg);
 		BOOL error = FALSE;
 		int code = GetReplyCode();
+		DEBUG_PRINTF(L"retmsg = %s, code = %d, m_Operation.nOpState = %d", (LPCWSTR)retmsg, code, m_Operation.nOpState);
 		switch (m_Operation.nOpState)
 		{
 		case LIST_PWD: //Reply to PWD command
@@ -2596,6 +2596,24 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 			m_Operation.nOpState = LIST_LIST;
 			break;
 		case LIST_LIST:
+			if (IsMisleadingListResponse())
+			{
+				ShowStatus(IDS_STATUSMSG_DIRLISTSUCCESSFUL, 0);
+
+				t_directory listing;
+				listing.server = m_CurrentServer;
+				listing.path = m_pOwner->GetCurrentPath();
+
+				SetDirectoryListing(&listing);
+				ResetOperation(FZ_REPLY_OK);
+				return;
+			}
+			else if (code != 1)
+				error = TRUE;
+			else
+				m_Operation.nOpState = LIST_WAITFINISH;
+			break;
+		case LIST_LIST_MLST:
 			if (IsMisleadingListResponse())
 			{
 				ShowStatus(IDS_STATUSMSG_DIRLISTSUCCESSFUL, 0);
