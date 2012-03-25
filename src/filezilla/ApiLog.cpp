@@ -86,8 +86,8 @@ void CApiLog::LogMessage(int nMessageType, LPCTSTR pMsgFormat, ...) const
 	va_end(ap);
 	
 #ifdef MPEXT
-	if (nMessageType>=FZ_LOG_DEBUG)
-		return;
+	// if (nMessageType>=FZ_LOG_DEBUG)
+		// return;
 #endif
 	SendLogMessage(nMessageType, text); // (LPCTSTR)nb::W2MB(text.c_str()).c_str());
 }
@@ -149,11 +149,9 @@ void CApiLog::LogMessage(CString SourceFile, int nSourceLine, void *pInstance, i
 	CString text;
 	text.FormatV(pMsgFormat, ap);
 	va_end(ap);
-#ifndef _DEBUG
 #ifdef MPEXT
-	if (nMessageType>FZ_LOG_DEBUG)
+	if (nMessageType>=FZ_LOG_DEBUG)
 		return;
-#endif
 #endif
 
 	CString msg;
@@ -196,8 +194,8 @@ void CApiLog::SendLogMessage(int nMessageType, LPCTSTR pMsg) const
 	assert(m_pApiLogParent);
 	assert(m_pApiLogParent->m_hTargetWnd == 0);
 	assert(m_pApiLogParent->m_nLogMessage == 0);
-	if (nMessageType>=FZ_LOG_APIERROR && (nMessageType-FZ_LOG_APIERROR)>=m_pApiLogParent->m_nDebugLevel)
-		return;
+	// if (nMessageType>=FZ_LOG_APIERROR && (nMessageType-FZ_LOG_APIERROR)>=m_pApiLogParent->m_nDebugLevel)
+		// return;
 	//Displays a message in the message log	
 	t_ffam_statusmessage *pStatus = new t_ffam_statusmessage;
 	pStatus->post = TRUE;
