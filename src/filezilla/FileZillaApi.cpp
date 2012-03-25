@@ -473,14 +473,14 @@ int CFileZillaApi::List(const CServerPath& parent, CString dirname, int nListMod
 		return m_pMainThread->LastOperationSuccessful()?FZ_REPLY_OK:FZ_REPLY_ERROR;
 }
 
-int CFileZillaApi::ListFile(const CServerPath& file, int nListMode /*=FZ_LIST_USECACHE*/)
+int CFileZillaApi::ListFile(const CServerPath& path, const CString& fileName, int nListMode /*=FZ_LIST_USECACHE*/)
 {
 	//Check if call allowed
 	if (!m_bInitialized)
 		return FZ_REPLY_NOTINITIALIZED;
 	if (IsConnected()==FZ_REPLY_NOTCONNECTED)
 		return FZ_REPLY_NOTCONNECTED;
-	if (file.IsEmpty())
+	if (fileName.IsEmpty())
 		return FZ_REPLY_INVALIDPARAM;
 	
 	if (m_pMainThread->IsBusy())
@@ -488,7 +488,8 @@ int CFileZillaApi::ListFile(const CServerPath& file, int nListMode /*=FZ_LIST_US
 
 	t_command command;
 	command.id=FZ_COMMAND_LISTFILE;
-	command.path=file;
+	command.path=path;
+	command.param1=fileName;
 	command.param4=nListMode;
 	m_pMainThread->Command(command);
 	if (m_hOwnerWnd)

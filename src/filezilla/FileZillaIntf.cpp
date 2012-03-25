@@ -219,9 +219,10 @@ bool TFileZillaIntf::List(const char * APath)
 bool TFileZillaIntf::ListFile(const char * AFullFileName)
 {
   ASSERT(FFileZillaApi != NULL);
+  CString fileName(AFullFileName);
   CServerPath Path(FServer->nServerType);
-  Path.SetPath(CString(AFullFileName), TRUE);
-  return Check(FFileZillaApi->ListFile(Path), "listfile");
+  Path.SetPath(fileName, TRUE);
+  return Check(FFileZillaApi->ListFile(Path, fileName), "listfile");
 }
 //---------------------------------------------------------------------------
 bool TFileZillaIntf::FileTransfer(const char * LocalFile,

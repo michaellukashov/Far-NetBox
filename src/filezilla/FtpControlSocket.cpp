@@ -117,6 +117,7 @@ public:
 	}
 	CString rawpwd;
 	CServerPath path;
+	CString fileName;
 	CString subdir;
 	int nListMode;
 	BOOL bPasv;
@@ -2276,9 +2277,9 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 		Send(cmd);
 }
 
-void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPath path /*=CServerPath()*/, CString subdir /*=""*/,int nListMode/*=0*/)
+void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPath path /*=CServerPath()*/, CString fileName /*=""*/,int nListMode/*=0*/)
 {
-	LogMessage(__FILE__, __LINE__, this,FZ_LOG_DEBUG, _T("ListFile(%s,%d,\"%s\",\"%s\",%d)  OpMode=%d OpState=%d"), bFinish?_T("TRUE"):_T("FALSE"), nError, path.GetPath(), subdir, nListMode,
+	LogMessage(__FILE__, __LINE__, this,FZ_LOG_DEBUG, _T("ListFile(%s,%d,\"%s\",\"%s\",%d)  OpMode=%d OpState=%d"), bFinish?_T("TRUE"):_T("FALSE"), nError, path.GetPath(), fileName, nListMode,
 				m_Operation.nOpMode, m_Operation.nOpState);
 
 	USES_CONVERSION;
@@ -2390,24 +2391,6 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 		else if (pData->pDirectoryListing && pData->nFinish==1)
 		{
 			ShowStatus(IDS_STATUSMSG_DIRLISTSUCCESSFUL,0);
-#ifndef MPEXT_NO_CACHE
-			CDirectoryCache cache;
-			cache.Lock();
-			t_directory dir;
-			if (!pData->path.IsEmpty() && pData->subdir!="")
-			{
-				if (cache.Lookup(pData->pDirectoryListing->path, pData->pDirectoryListing->server, dir))
-					pData->pDirectoryListing->Merge(dir, pData->ListStartTime);
-				cache.Store(*pData->pDirectoryListing,pData->path,pData->subdir);
-			}
-			else
-			{
-				if (cache.Lookup(pData->pDirectoryListing->path, pData->pDirectoryListing->server, dir))
-					pData->pDirectoryListing->Merge(dir, pData->ListStartTime);
-				cache.Store(*pData->pDirectoryListing);
-			}
-			cache.Unlock();
-#endif
 			SetDirectoryListing(pData->pDirectoryListing);
 			ResetOperation(FZ_REPLY_OK);
 			return;
@@ -2446,32 +2429,6 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 				return;
 			if (pData->path.IsEmpty() || pData->path == m_pOwner->GetCurrentPath())
 			{
-#ifndef MPEXT_NO_CACHE
-				if (pData->nListMode & FZ_LIST_USECACHE)
-				{
-					t_directory dir;
-					CDirectoryCache cache;
-					BOOL res = cache.Lookup(m_pOwner->GetCurrentPath(), m_CurrentServer, dir);
-					if (res)
-					{
-						BOOL bExact = TRUE;
-						if (pData->nListMode & FZ_LIST_EXACT)
-							for (int i=0; i<dir.num; i++)
-								if (dir.direntry[i].bUnsure || (dir.direntry[i].size==-1 && !dir.direntry[i].dir))
-								{
-									bExact = FALSE;
-									break;
-								}
-						if (bExact)
-						{
-							ShowStatus(IDS_STATUSMSG_DIRLISTSUCCESSFUL, 0);
-							SetDirectoryListing(&dir);
-							ResetOperation(FZ_REPLY_OK);
-							return;
-						}
-					}
-				}
-#endif
 				m_Operation.nOpState = NeedModeCommand() ? LIST_MODE : (NeedOptsCommand() ? LIST_OPTS : LIST_TYPE);
 			}
 			else
@@ -2502,32 +2459,6 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 			}
 			else
 			{
-#ifndef MPEXT_NO_CACHE
-				if (pData->nListMode & FZ_LIST_USECACHE)
-				{
-					t_directory dir;
-					CDirectoryCache cache;
-					BOOL res = cache.Lookup(m_pOwner->GetCurrentPath(), m_CurrentServer, dir);
-					if (res)
-					{
-						BOOL bExact = TRUE;
-						if (pData->nListMode & FZ_LIST_EXACT)
-							for (int i=0; i<dir.num; i++)
-								if (dir.direntry[i].bUnsure || (dir.direntry[i].size==-1 && !dir.direntry[i].dir))
-								{
-									bExact = FALSE;
-									break;
-								}
-						if (bExact)
-						{
-							ShowStatus(IDS_STATUSMSG_DIRLISTSUCCESSFUL, 0);
-							SetDirectoryListing(&dir);
-							ResetOperation(FZ_REPLY_OK);
-							return;
-						}
-					}
-				}
-#endif
 				m_Operation.nOpState = NeedModeCommand() ? LIST_MODE : (NeedOptsCommand() ? LIST_OPTS : LIST_TYPE);
 			}
 			break;
@@ -2552,32 +2483,6 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 				pData->rawpwd = retmsg;
 				if (!ParsePwdReply(pData->rawpwd))
 					return;
-#ifndef MPEXT_NO_CACHE
-				if (pData->nListMode & FZ_LIST_USECACHE)
-				{
-					t_directory dir;
-					CDirectoryCache cache;
-					BOOL res = cache.Lookup(m_pOwner->GetCurrentPath(), m_CurrentServer, dir);
-					if (res)
-					{
-						BOOL bExact = TRUE;
-						if (pData->nListMode & FZ_LIST_EXACT)
-							for (int i=0; i<dir.num; i++)
-								if (dir.direntry[i].bUnsure || (dir.direntry[i].size==-1 && !dir.direntry[i].dir))
-								{
-									bExact = FALSE;
-									break;
-								}
-						if (bExact)
-						{
-							ShowStatus(IDS_STATUSMSG_DIRLISTSUCCESSFUL, 0);
-							SetDirectoryListing(&dir);
-							ResetOperation(FZ_REPLY_OK);
-							return;
-						}
-					}
-				}
-#endif
 			}
 			m_Operation.nOpState = NeedModeCommand() ? LIST_MODE : (NeedOptsCommand() ? LIST_OPTS : LIST_TYPE);
 			break;
@@ -2697,24 +2602,6 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 				listing.server = m_CurrentServer;
 				listing.path = m_pOwner->GetCurrentPath();
 
-#ifndef MPEXT_NO_CACHE
-				CDirectoryCache cache;
-				cache.Lock();
-				t_directory dir;
-				if (!pData->path.IsEmpty() && pData->subdir != "")
-				{
-					if (cache.Lookup(listing.path, listing.server, dir))
-						listing.Merge(dir, pData->ListStartTime);
-					cache.Store(listing, pData->path, pData->subdir);
-				}
-				else
-				{
-					if (cache.Lookup(listing.path, listing.server, dir))
-						listing.Merge(dir, pData->ListStartTime);
-					cache.Store(listing);
-				}
-				cache.Unlock();
-#endif
 				SetDirectoryListing(&listing);
 				ResetOperation(FZ_REPLY_OK);
 				return;
@@ -2739,8 +2626,8 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 		pData=new CListData;
 		pData->nListMode=nListMode;
 		pData->path=path;
-		DEBUG_PRINTF(L"path = %s", (LPCWSTR)path.GetPath());
-		pData->subdir=subdir;
+		pData->fileName=fileName;
+		DEBUG_PRINTF(L"fileName = %s", (LPCWSTR)fileName);
 		m_Operation.pData=pData;
 		ShowStatus(IDS_STATUSMSG_RETRIEVINGDIRLIST, 0);
 		pData->nFinish=-1;
@@ -2778,32 +2665,6 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 				}
 				else
 				{
-#ifndef MPEXT_NO_CACHE
-					if (pData->nListMode&FZ_LIST_USECACHE)
-					{
-						t_directory dir;
-						CDirectoryCache cache;
-						BOOL res = cache.Lookup(realpath, m_CurrentServer,dir);
-						if (res)
-						{
-							BOOL bExact = TRUE;
-							if (pData->nListMode & FZ_LIST_EXACT)
-								for (int i = 0; i < dir.num; i++)
-									if (dir.direntry[i].bUnsure || (dir.direntry[i].size == -1 && !dir.direntry[i].dir))
-									{
-										bExact = FALSE;
-										break;
-									}
-							if (bExact)
-							{
-								ShowStatus(IDS_STATUSMSG_DIRLISTSUCCESSFUL,0);
-								SetDirectoryListing(&dir);
-								ResetOperation(FZ_REPLY_OK);
-								return;
-							}
-						}
-					}
-#endif
 					m_Operation.nOpState = NeedModeCommand() ? LIST_MODE : (NeedOptsCommand() ? LIST_OPTS : LIST_TYPE);;
 				}
 			}
@@ -3056,12 +2917,7 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 
 		m_pTransferSocket->SetActive();
 
-		cmd = _T("MLST");
-#ifdef MPEXT
-		std::string args;
-		if (m_serverCapabilities.GetCapabilityString(opts_mlst_command, &args) == yes)
-			cmd += _T(" ") + CString(args.c_str());
-#endif
+		cmd = _T("MLST ") + pData->fileName;
 		DEBUG_PRINTF(L"cmd = %s", (LPCWSTR)cmd);
 		if (!Send(cmd))
 			return;
