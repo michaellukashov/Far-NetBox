@@ -4120,21 +4120,24 @@ void TWinSCPFileSystem::EditHistory()
 
         if ((Result >= 0) && (Result < static_cast<int>(FEditHistories.size())))
         {
-            TRemoteFile *File = NULL;
             std::wstring FullFileName =
                 UnixIncludeTrailingBackslash(FEditHistories[Result].Directory) + FEditHistories[Result].FileName;
+            TRemoteFile *File = NULL;
             FTerminal->ReadFile(FullFileName, File);
             {
                 BOOST_SCOPE_EXIT ( (&File) )
                 {
                     delete File;
                 } BOOST_SCOPE_EXIT_END
-                if (!File->GetHaveFullFileName())
+                if (File)
                 {
-                    File->SetFullFileName(FullFileName);
+                    if (!File->GetHaveFullFileName())
+                    {
+                        File->SetFullFileName(FullFileName);
+                    }
+                    MultipleEdit(FEditHistories[Result].Directory,
+                                 FEditHistories[Result].FileName, File);
                 }
-                MultipleEdit(FEditHistories[Result].Directory,
-                             FEditHistories[Result].FileName, File);
             }
         }
     }
