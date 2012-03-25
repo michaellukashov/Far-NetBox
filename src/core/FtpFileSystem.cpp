@@ -1899,37 +1899,41 @@ void TFTPFileSystem::ReadFile(const std::wstring FileName,
 {
     std::wstring Path = UnixExtractFilePath(FileName);
     std::wstring NameOnly = UnixExtractFileName(FileName);
-
-    // FZAPI does not have efficient way to read properties of one file.
-    // If case we need properties of set of files from the same directory,
-    // cache the file list for future
     TRemoteFile *AFile = NULL;
-    if ((FFileListCache != NULL) &&
-            UnixComparePaths(Path, FFileListCache->GetDirectory()) &&
-            (TTerminal::IsAbsolutePath(FFileListCache->GetDirectory()) ||
-             (FFileListCachePath == GetCurrentDirectory())))
+    if (FServerCapabilities->GetCapability(mlsd_command) == yes)
     {
-        AFile = FFileListCache->FindFile(NameOnly);
     }
-
-    // if cache is invalid or file is not in cache, (re)read the directory
-    if (AFile == NULL)
+    else
     {
-        delete FFileListCache;
-        FFileListCache = NULL;
-        FFileListCache = new TRemoteFileList();
-        FFileListCache->SetDirectory(Path);
-        ReadDirectory(FFileListCache);
-        FFileListCachePath = GetCurrentDirectory();
+        // FZAPI does not have efficient way to read properties of one file.
+        // If case we need properties of set of files from the same directory,
+        // cache the file list for future
+        if ((FFileListCache != NULL) &&
+                UnixComparePaths(Path, FFileListCache->GetDirectory()) &&
+                (TTerminal::IsAbsolutePath(FFileListCache->GetDirectory()) ||
+                 (FFileListCachePath == GetCurrentDirectory())))
+        {
+            AFile = FFileListCache->FindFile(NameOnly);
+        }
 
-        AFile = FFileListCache->FindFile(NameOnly);
+        // if cache is invalid or file is not in cache, (re)read the directory
         if (AFile == NULL)
         {
-            File = NULL;
-            throw ExtException(FMTLOAD(FILE_NOT_EXISTS, FileName.c_str()));
+            delete FFileListCache;
+            FFileListCache = NULL;
+            FFileListCache = new TRemoteFileList();
+            FFileListCache->SetDirectory(Path);
+            ReadDirectory(FFileListCache);
+            FFileListCachePath = GetCurrentDirectory();
+
+            AFile = FFileListCache->FindFile(NameOnly);
         }
     }
-
+    if (AFile == NULL)
+    {
+        File = NULL;
+        throw ExtException(FMTLOAD(FILE_NOT_EXISTS, FileName.c_str()));
+    }
     assert(AFile != NULL);
     File = AFile->Duplicate();
 }
