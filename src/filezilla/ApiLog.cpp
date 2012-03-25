@@ -149,10 +149,11 @@ void CApiLog::LogMessage(CString SourceFile, int nSourceLine, void *pInstance, i
 	CString text;
 	text.FormatV(pMsgFormat, ap);
 	va_end(ap);
-
+#ifndef _DEBUG
 #ifdef MPEXT
-	if (nMessageType>=FZ_LOG_DEBUG)
+	if (nMessageType>FZ_LOG_DEBUG)
 		return;
+#endif
 #endif
 
 	CString msg;
