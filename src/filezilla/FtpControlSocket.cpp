@@ -1466,7 +1466,8 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 	#define LIST_PORT_PASV	7
 	#define LIST_TYPE	8
 	#define LIST_LIST	9
-	#define LIST_WAITFINISH	10
+	#define LIST_LIST_MLST	10
+	#define LIST_WAITFINISH	11
 
 	ASSERT(!m_Operation.nOpMode || m_Operation.nOpMode&CSMODE_LIST);
 
@@ -2400,6 +2401,7 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 	else if (m_Operation.nOpState != LIST_INIT)
 	{
 		CString retmsg = GetReply();
+        DEBUG_PRINTF(L"retmsg = %s", (LPCWSTR)retmsg);
 		BOOL error = FALSE;
 		int code = GetReplyCode();
 		switch (m_Operation.nOpState)
@@ -2906,6 +2908,10 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 	}
 	else if (m_Operation.nOpState==LIST_TYPE)
 		cmd=_T("TYPE A");
+	else if (m_Operation.nOpState==LIST_LIST_MLST)
+	{
+		DEBUG_PRINTF(L"LIST_LIST_MLST");
+	}
 	else if (m_Operation.nOpState==LIST_LIST)
 	{
 		if (!m_pTransferSocket)
@@ -2919,6 +2925,7 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 
 		cmd = _T("MLST ") + pData->fileName;
 		DEBUG_PRINTF(L"cmd = %s", (LPCWSTR)cmd);
+		m_Operation.nOpState=LIST_LIST_MLST;
 		if (!Send(cmd))
 			return;
 
@@ -5079,7 +5086,7 @@ void CFtpControlSocket::Cancel(BOOL bQuit/*=FALSE*/)
 	const int nOpMode = m_Operation.nOpMode;
 	if (nOpMode==CSMODE_CONNECT)
 		DoClose(FZ_REPLY_CANCEL);
-	else if (nOpMode & CSMODE_LIST || nOpMode & CSMODE_LISTFILE)
+	else if (nOpMode & (CSMODE_LIST|CSMODE_LISTFILE))
 	{
 		if (m_Operation.nOpState == LIST_WAITFINISH)
 			m_skipReply = true;
@@ -5103,7 +5110,7 @@ void CFtpControlSocket::Cancel(BOOL bQuit/*=FALSE*/)
 
 void CFtpControlSocket::TransfersocketListenFinished(unsigned int ip, unsigned short port)
 {
-	if (m_Operation.nOpMode&CSMODE_TRANSFER || m_Operation.nOpMode&CSMODE_LIST || m_Operation.nOpMode&CSMODE_LISTFILE)
+	if (m_Operation.nOpMode&CSMODE_TRANSFER || m_Operation.nOpMode&(CSMODE_LIST|CSMODE_LISTFILE))
 	{
 		CString host;
 		host.Format(_T("%d,%d,%d,%d,%d,%d"),ip%256,(ip>>8)%256,(ip>>16)%256,(ip>>24)%256,port%256,port>>8);
@@ -5113,7 +5120,7 @@ void CFtpControlSocket::TransfersocketListenFinished(unsigned int ip, unsigned s
 
 void CFtpControlSocket::ResumeTransfer()
 {
-	if (m_pTransferSocket && (m_Operation.nOpMode&CSMODE_TRANSFER || m_Operation.nOpMode&CSMODE_LIST || m_Operation.nOpMode&CSMODE_LISTFILE))
+	if (m_pTransferSocket && (m_Operation.nOpMode&CSMODE_TRANSFER || m_Operation.nOpMode&(CSMODE_LIST|CSMODE_LISTFILE)))
 	{
 		m_pTransferSocket->OnSend(0);
 		m_pTransferSocket->OnReceive(0);

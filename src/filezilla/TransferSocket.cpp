@@ -94,7 +94,7 @@ CTransferSocket::CTransferSocket(CFtpControlSocket *pOwner, int nMode)
 	m_pGssLayer = NULL;
 #endif
 
-	if (m_nMode & CSMODE_LIST)
+	if (m_nMode & (CSMODE_LIST|CSMODE_LISTFILE))
 	{
 		m_pListResult = new CFtpListResult(pOwner->m_CurrentServer, &pOwner->m_bUTF8);
 		m_pListResult->InitLog(this);
@@ -163,7 +163,7 @@ void CTransferSocket::OnReceive(int nErrorCode)
 	if (m_bListening)
 		return;
 
-	if (m_nMode&CSMODE_LIST)
+	if (m_nMode&(CSMODE_LIST|CSMODE_LISTFILE))
 	{
 		if (m_nTransferState == STATE_STARTING)
 			OnConnect(0);
@@ -1048,7 +1048,7 @@ void CTransferSocket::UpdateStatusBar(bool forceUpdate)
 #endif
 	status->timeelapsed=elapsed;
 	status->bytes=m_transferdata.transfersize-m_transferdata.transferleft;
-	if (m_transferdata.transfersize>0 && !(m_nMode&CSMODE_LIST))
+	if (m_transferdata.transfersize>0 && !(m_nMode&(CSMODE_LIST|CSMODE_LISTFILE)))
 	{
 		double leftmodifier=static_cast<double>(m_transferdata.transfersize-m_transferdata.nTransferStart-m_transferdata.transferleft);
 		leftmodifier*=100;
