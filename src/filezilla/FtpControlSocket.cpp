@@ -2739,6 +2739,7 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 		pData=new CListData;
 		pData->nListMode=nListMode;
 		pData->path=path;
+		DEBUG_PRINTF(L"path = %s", (LPCWSTR)path.GetPath());
 		pData->subdir=subdir;
 		m_Operation.pData=pData;
 		ShowStatus(IDS_STATUSMSG_RETRIEVINGDIRLIST, 0);
@@ -3061,6 +3062,7 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 		if (m_serverCapabilities.GetCapabilityString(opts_mlst_command, &args) == yes)
 			cmd += _T(" ") + CString(args.c_str());
 #endif
+		DEBUG_PRINTF(L"cmd = %s", (LPCWSTR)cmd);
 		if (!Send(cmd))
 			return;
 
@@ -3081,6 +3083,7 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 
 		return;
 	}
+	DEBUG_PRINTF(L"cmd = %s", (LPCWSTR)cmd);
 	if (cmd != _T(""))
 		Send(cmd);
 }
