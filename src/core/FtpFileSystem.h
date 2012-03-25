@@ -169,6 +169,7 @@ protected:
     void ResetCaches();
     void CaptureOutput(const std::wstring Str);
     void DoReadDirectory(TRemoteFileList *FileList);
+    void DoReadFile(const std::wstring Path, const std::wstring NameOnly, TRemoteFile *& AFile);
     void FileTransfer(const std::wstring FileName, const std::wstring LocalFile,
                       const std::wstring RemoteFile, const std::wstring RemotePath, bool Get,
                       __int64 Size, int Type, TFileTransferData &UserData,

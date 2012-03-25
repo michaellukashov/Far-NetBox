@@ -1894,6 +1894,24 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList *FileList)
     while (Repeat);
 }
 //---------------------------------------------------------------------------
+void TFTPFileSystem::DoReadFile(const std::wstring Path, const std::wstring NameOnly, TRemoteFile *& AFile)
+{
+    try
+    {
+        std::wstring Directory = AbsolutePath(Path, false);
+        std::wstring FullFileName = UnixIncludeTrailingBackslash(Directory) + NameOnly;
+        FFileZillaIntf->ListFile(nb::W2MB(FullFileName.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str());
+
+        GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_ALLOW_CANCEL);
+
+        FLastDataSent = nb::Now();
+    }
+    catch (ExtException &E)
+    {
+        throw;
+    }
+}
+//---------------------------------------------------------------------------
 void TFTPFileSystem::ReadFile(const std::wstring FileName,
                               TRemoteFile *& File)
 {
@@ -1902,6 +1920,13 @@ void TFTPFileSystem::ReadFile(const std::wstring FileName,
     TRemoteFile *AFile = NULL;
     if (FServerCapabilities->GetCapability(mlsd_command) == yes)
     {
+        TRemoteFile *OneFile = new TRemoteFile(NULL);
+        BOOST_SCOPE_EXIT ( (&OneFile) )
+        {
+            delete OneFile;
+        } BOOST_SCOPE_EXIT_END
+        DoReadFile(Path, NameOnly, OneFile);
+        AFile = OneFile->Duplicate();
     }
     else
     {
