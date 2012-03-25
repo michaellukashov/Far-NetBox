@@ -639,7 +639,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 		std::string facts;
 		if (m_serverCapabilities.GetCapabilityString(mlsd_command, &facts) == yes)
 		{
-			ftp_capabilities_t cap = m_serverCapabilities.GetCapabilityString(opst_mlst_command);
+			ftp_capabilities_t cap = m_serverCapabilities.GetCapabilityString(opts_mlst_command);
 			if (cap == unknown)
 			{
 				std::transform(facts.begin(), facts.end(), facts.begin(), ::tolower);
@@ -698,11 +698,11 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 				}
 				if (had_unset)
 				{
-					m_serverCapabilities.SetCapability(opst_mlst_command, yes, opts_facts);
+					m_serverCapabilities.SetCapability(opts_mlst_command, yes, opts_facts);
 				}
 				else
 				{
-					m_serverCapabilities.SetCapability(opst_mlst_command, no);
+					m_serverCapabilities.SetCapability(opts_mlst_command, no);
 				}
 			}
 		}
@@ -744,7 +744,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 		if (m_serverCapabilities.GetCapability(mlsd_command) == yes)
 		{
 			std::string args;
-			if (m_serverCapabilities.GetCapabilityString(opst_mlst_command, &args) == yes &&
+			if (m_serverCapabilities.GetCapabilityString(opts_mlst_command, &args) == yes &&
 				!args.empty())
 			{
 				m_Operation.nOpState = CONNECT_OPTSMLST;
@@ -1185,6 +1185,8 @@ void CFtpControlSocket::ProcessReply()
 	}
 	else if (m_Operation.nOpMode&CSMODE_LIST)
 		List(FALSE);
+	else if (m_Operation.nOpMode&CSMODE_LISTFILE)
+		ListFile(FALSE);
 	else if (m_Operation.nOpMode&CSMODE_DELETE)
 		Delete( _T(""),CServerPath());
 	else if (m_Operation.nOpMode&CSMODE_RMDIR)
@@ -2274,6 +2276,815 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 		Send(cmd);
 }
 
+void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPath path /*=CServerPath()*/, CString subdir /*=""*/,int nListMode/*=0*/)
+{
+	LogMessage(__FILE__, __LINE__, this,FZ_LOG_DEBUG, _T("ListFile(%s,%d,\"%s\",\"%s\",%d)  OpMode=%d OpState=%d"), bFinish?_T("TRUE"):_T("FALSE"), nError, path.GetPath(), subdir, nListMode,
+				m_Operation.nOpMode, m_Operation.nOpState);
+
+	USES_CONVERSION;
+
+	ASSERT(!m_Operation.nOpMode || m_Operation.nOpMode&CSMODE_LISTFILE);
+
+	m_Operation.nOpMode|=CSMODE_LISTFILE;
+
+	if (!m_pOwner->IsConnected())
+	{
+		ResetOperation(FZ_REPLY_ERROR|FZ_REPLY_NOTCONNECTED);
+		return;
+	}
+
+	if (bFinish || nError)
+		if (m_Operation.nOpMode!=CSMODE_LISTFILE)
+			return; //Old message coming in
+
+	if (nError)
+	{
+		delete m_pTransferSocket;
+		m_pTransferSocket=0;
+		if (nError&CSMODE_TRANSFERTIMEOUT)
+			DoClose();
+		else
+			ResetOperation(FZ_REPLY_ERROR);
+		return;
+	}
+
+	CListData *pData = static_cast<CListData *>(m_Operation.pData);
+
+	if (bFinish)
+	{
+		DEBUG_PRINTF(L"bFinish");
+		if (!m_pTransferSocket || m_pTransferSocket->m_bListening)
+		{
+			delete m_pDirectoryListing;
+			m_pDirectoryListing = 0;
+			delete m_pTransferSocket;
+			m_pTransferSocket = 0;
+			ResetOperation(FZ_REPLY_ERROR);
+			return;
+		}
+
+		int num = 0;
+		pData->pDirectoryListing = new t_directory;
+		if (COptions::GetOptionVal(OPTION_DEBUGSHOWLISTING))
+			m_pTransferSocket->m_pListResult->SendToMessageLog(m_pOwner->m_hOwnerWnd, m_pOwner->m_nReplyMessageID);
+		pData->pDirectoryListing->direntry = m_pTransferSocket->m_pListResult->getList(num, pData->ListStartTime);
+		pData->pDirectoryListing->num = num;
+		if (m_pTransferSocket->m_pListResult->m_server.nServerType & FZ_SERVERTYPE_SUB_FTP_VMS && m_CurrentServer.nServerType & FZ_SERVERTYPE_FTP)
+			m_CurrentServer.nServerType |= FZ_SERVERTYPE_SUB_FTP_VMS;
+
+		pData->pDirectoryListing->server = m_CurrentServer;
+		pData->pDirectoryListing->path.SetServer(pData->pDirectoryListing->server);
+		if (pData->rawpwd != "")
+		{
+			if (!pData->pDirectoryListing->path.SetPath(pData->rawpwd))
+			{
+				delete m_pDirectoryListing;
+				m_pDirectoryListing=0;
+				delete m_pTransferSocket;
+				m_pTransferSocket=0;
+				ResetOperation(FZ_REPLY_ERROR);
+				return;
+			}
+			m_pOwner->SetCurrentPath(pData->pDirectoryListing->path);
+		}
+		else
+			pData->pDirectoryListing->path = m_pOwner->GetCurrentPath();
+
+		if (m_Operation.nOpState!=LIST_WAITFINISH)
+		{
+			return;
+		}
+		else
+		{
+			delete m_pTransferSocket;
+			m_pTransferSocket=0;
+		}
+	}
+
+	if (m_Operation.nOpState==LIST_WAITFINISH)
+	{
+		if (!bFinish)
+		{
+			if (pData->nFinish==-1)
+			{
+				int code=GetReplyCode();
+				if (code== 2)
+				{
+					pData->nFinish=1;
+				}
+				else
+					pData->nFinish=0;
+			}
+		}
+		else
+		{
+			if (m_pTransferSocket)
+				delete m_pTransferSocket;
+			m_pTransferSocket=0;
+		}
+		if (pData->nFinish==0)
+		{
+			ResetOperation(FZ_REPLY_ERROR);
+			return;
+		}
+		else if (pData->pDirectoryListing && pData->nFinish==1)
+		{
+			ShowStatus(IDS_STATUSMSG_DIRLISTSUCCESSFUL,0);
+#ifndef MPEXT_NO_CACHE
+			CDirectoryCache cache;
+			cache.Lock();
+			t_directory dir;
+			if (!pData->path.IsEmpty() && pData->subdir!="")
+			{
+				if (cache.Lookup(pData->pDirectoryListing->path, pData->pDirectoryListing->server, dir))
+					pData->pDirectoryListing->Merge(dir, pData->ListStartTime);
+				cache.Store(*pData->pDirectoryListing,pData->path,pData->subdir);
+			}
+			else
+			{
+				if (cache.Lookup(pData->pDirectoryListing->path, pData->pDirectoryListing->server, dir))
+					pData->pDirectoryListing->Merge(dir, pData->ListStartTime);
+				cache.Store(*pData->pDirectoryListing);
+			}
+			cache.Unlock();
+#endif
+			SetDirectoryListing(pData->pDirectoryListing);
+			ResetOperation(FZ_REPLY_OK);
+			return;
+		}
+		return;
+	}
+	else if (m_Operation.nOpState != LIST_INIT)
+	{
+		CString retmsg = GetReply();
+		BOOL error = FALSE;
+		int code = GetReplyCode();
+		switch (m_Operation.nOpState)
+		{
+		case LIST_PWD: //Reply to PWD command
+			if (code != 2 && code !=3 )
+			{
+				error = TRUE;
+				break;
+			}
+
+			pData->rawpwd = retmsg;
+			if ((m_mayBeMvsFilesystem || m_mayBeBS2000Filesystem) && m_CurrentServer.nServerType & FZ_SERVERTYPE_FTP &&
+				pData->rawpwd[0] != '/')
+			{
+				m_mayBeMvsFilesystem = false;
+				m_mayBeBS2000Filesystem = false;
+				if (m_mayBeBS2000Filesystem)
+					m_CurrentServer.nServerType |= FZ_SERVERTYPE_SUB_FTP_BS2000;
+				else
+					m_CurrentServer.nServerType |= FZ_SERVERTYPE_SUB_FTP_MVS;
+
+				if (!pData->path.IsEmpty())
+					pData->path.SetServer(m_CurrentServer);
+			}
+			if (!ParsePwdReply(pData->rawpwd))
+				return;
+			if (pData->path.IsEmpty() || pData->path == m_pOwner->GetCurrentPath())
+			{
+#ifndef MPEXT_NO_CACHE
+				if (pData->nListMode & FZ_LIST_USECACHE)
+				{
+					t_directory dir;
+					CDirectoryCache cache;
+					BOOL res = cache.Lookup(m_pOwner->GetCurrentPath(), m_CurrentServer, dir);
+					if (res)
+					{
+						BOOL bExact = TRUE;
+						if (pData->nListMode & FZ_LIST_EXACT)
+							for (int i=0; i<dir.num; i++)
+								if (dir.direntry[i].bUnsure || (dir.direntry[i].size==-1 && !dir.direntry[i].dir))
+								{
+									bExact = FALSE;
+									break;
+								}
+						if (bExact)
+						{
+							ShowStatus(IDS_STATUSMSG_DIRLISTSUCCESSFUL, 0);
+							SetDirectoryListing(&dir);
+							ResetOperation(FZ_REPLY_OK);
+							return;
+						}
+					}
+				}
+#endif
+				m_Operation.nOpState = NeedModeCommand() ? LIST_MODE : (NeedOptsCommand() ? LIST_OPTS : LIST_TYPE);
+			}
+			else
+				m_Operation.nOpState = LIST_CWD;
+			break;
+		case LIST_CWD:
+			if (code != 2 && code != 3)
+				error = TRUE;
+			m_Operation.nOpState = LIST_PWD2;
+			break;
+		case LIST_PWD2: //Reply to PWD command
+			if (code !=2 && code != 3)
+				error = TRUE;
+			else
+			{
+				pData->rawpwd = retmsg;
+				if (!ParsePwdReply(pData->rawpwd))
+					return;
+			}
+			if (pData->subdir != "")
+			{
+				if (pData->path != m_pOwner->GetCurrentPath())
+				{
+					ResetOperation(FZ_REPLY_ERROR);
+					return;
+				}
+				m_Operation.nOpState = LIST_CWD2;
+			}
+			else
+			{
+#ifndef MPEXT_NO_CACHE
+				if (pData->nListMode & FZ_LIST_USECACHE)
+				{
+					t_directory dir;
+					CDirectoryCache cache;
+					BOOL res = cache.Lookup(m_pOwner->GetCurrentPath(), m_CurrentServer, dir);
+					if (res)
+					{
+						BOOL bExact = TRUE;
+						if (pData->nListMode & FZ_LIST_EXACT)
+							for (int i=0; i<dir.num; i++)
+								if (dir.direntry[i].bUnsure || (dir.direntry[i].size==-1 && !dir.direntry[i].dir))
+								{
+									bExact = FALSE;
+									break;
+								}
+						if (bExact)
+						{
+							ShowStatus(IDS_STATUSMSG_DIRLISTSUCCESSFUL, 0);
+							SetDirectoryListing(&dir);
+							ResetOperation(FZ_REPLY_OK);
+							return;
+						}
+					}
+				}
+#endif
+				m_Operation.nOpState = NeedModeCommand() ? LIST_MODE : (NeedOptsCommand() ? LIST_OPTS : LIST_TYPE);
+			}
+			break;
+		case LIST_CWD2:
+			if (pData->lastCmdSentCDUP)
+			{
+				CString reply = GetReply().Left(3);
+				int replycode = _ttoi(reply);
+				if (replycode >= 500 && replycode < 505)
+					break;
+				pData->lastCmdSentCDUP = false;
+			}
+			if (code != 2 && code != 3)
+				error = TRUE;
+			m_Operation.nOpState = LIST_PWD3;
+			break;
+		case LIST_PWD3: //Reply to PWD command
+			if (code != 2 && code != 3)
+				error = TRUE;
+			else
+			{
+				pData->rawpwd = retmsg;
+				if (!ParsePwdReply(pData->rawpwd))
+					return;
+#ifndef MPEXT_NO_CACHE
+				if (pData->nListMode & FZ_LIST_USECACHE)
+				{
+					t_directory dir;
+					CDirectoryCache cache;
+					BOOL res = cache.Lookup(m_pOwner->GetCurrentPath(), m_CurrentServer, dir);
+					if (res)
+					{
+						BOOL bExact = TRUE;
+						if (pData->nListMode & FZ_LIST_EXACT)
+							for (int i=0; i<dir.num; i++)
+								if (dir.direntry[i].bUnsure || (dir.direntry[i].size==-1 && !dir.direntry[i].dir))
+								{
+									bExact = FALSE;
+									break;
+								}
+						if (bExact)
+						{
+							ShowStatus(IDS_STATUSMSG_DIRLISTSUCCESSFUL, 0);
+							SetDirectoryListing(&dir);
+							ResetOperation(FZ_REPLY_OK);
+							return;
+						}
+					}
+				}
+#endif
+			}
+			m_Operation.nOpState = NeedModeCommand() ? LIST_MODE : (NeedOptsCommand() ? LIST_OPTS : LIST_TYPE);
+			break;
+		case LIST_MODE:
+#ifndef MPEXT_NO_ZLIB
+			if (code == 2 || code == 3)
+				m_useZlib = !m_useZlib;
+#endif
+			m_Operation.nOpState = NeedOptsCommand() ? LIST_OPTS : LIST_TYPE;
+			break;
+		case LIST_OPTS:
+#ifndef MPEXT_NO_ZLIB
+			if (code == 2 || code == 3)
+				m_zlibLevel = pData->newZlibLevel;
+#endif
+			m_Operation.nOpState = LIST_TYPE;
+			break;
+		case LIST_TYPE:
+			if (code!=2 && code!=3)
+				error=TRUE;
+			m_Operation.nOpState = LIST_PORT_PASV;
+			break;
+		case LIST_PORT_PASV:
+			if (code!=2 && code!=3)
+			{
+				error=TRUE;
+				break;
+			}
+			if (pData->bPasv)
+			{
+				CString temp;
+				int i,j;
+				// MP EXT
+				if((i=retmsg.Find(_T("(")))>=0&&(j=retmsg.Find(_T(")")))>=0)
+				{
+					i++;
+					j--;
+				}
+				else
+				{
+					// MP EXT
+					if ((i=retmsg.Mid(4).FindOneOf(_T("0123456789")))>=0)
+					{
+						i += 4;
+						j = retmsg.GetLength() - 1;
+					}
+					else
+					{
+						if (!pData->bTriedPortPasvOnce)
+						{
+							pData->bTriedPortPasvOnce = TRUE;
+							pData->bPasv = !pData->bPasv;
+						}
+						else
+							error=TRUE;
+						break;
+					}
+				}
+
+#ifdef MPEXT
+				temp = retmsg.Mid(i,(j-i)+1);
+#endif
+				if (GetFamily() == AF_INET)
+				{
+#ifndef MPEXT
+					temp = retmsg.Mid(i,(j-i)+1);
+#endif
+					i=temp.ReverseFind(',');
+					pData->port=atol(  T2CA( temp.Right(temp.GetLength()-(i+1)) )  ); //get ls byte of server socket
+					temp=temp.Left(i);
+					i=temp.ReverseFind(',');
+					pData->port+=256*atol(  T2CA( temp.Right(temp.GetLength()-(i+1)) )  ); // add ms byte to server socket
+					pData->host = temp.Left(i);
+					pData->host.Replace(',', '.');
+#ifdef MPEXT
+					if (!CheckForcePasvIp(pData->host))
+					{
+						error = TRUE;
+						break;
+					}
+#endif
+				}
+				else if (GetFamily() == AF_INET6)
+				{
+					temp = temp.Mid(3);
+					pData->port = atol( T2CA(temp.Left(temp.GetLength() - 1) ) );
+					if ((int)pData->port < 0 || pData->port > 65535)
+					{
+						LogMessage(__FILE__, __LINE__, this, FZ_LOG_WARNING, _T("Port %u not valid"), pData->port);
+						error = TRUE;
+						break;
+					}
+
+					unsigned int tmpPort;
+					if (!GetPeerName(pData->host, tmpPort))
+					{
+						LogMessage(__FILE__, __LINE__, this, FZ_LOG_WARNING, _T("GetPeerName failed"));
+						error = TRUE;
+						break;
+					}
+				}
+				else
+				{
+					LogMessage(__FILE__, __LINE__, this, FZ_LOG_WARNING, _T("Protocol %d not supported"), GetFamily());
+					error = TRUE;
+					break;
+				}
+			}
+			m_Operation.nOpState = LIST_LIST;
+			break;
+		case LIST_LIST:
+			if (IsMisleadingListResponse())
+			{
+				ShowStatus(IDS_STATUSMSG_DIRLISTSUCCESSFUL, 0);
+
+				t_directory listing;
+				listing.server = m_CurrentServer;
+				listing.path = m_pOwner->GetCurrentPath();
+
+#ifndef MPEXT_NO_CACHE
+				CDirectoryCache cache;
+				cache.Lock();
+				t_directory dir;
+				if (!pData->path.IsEmpty() && pData->subdir != "")
+				{
+					if (cache.Lookup(listing.path, listing.server, dir))
+						listing.Merge(dir, pData->ListStartTime);
+					cache.Store(listing, pData->path, pData->subdir);
+				}
+				else
+				{
+					if (cache.Lookup(listing.path, listing.server, dir))
+						listing.Merge(dir, pData->ListStartTime);
+					cache.Store(listing);
+				}
+				cache.Unlock();
+#endif
+				SetDirectoryListing(&listing);
+				ResetOperation(FZ_REPLY_OK);
+				return;
+			}
+			else if (code != 1)
+				error = TRUE;
+			else
+				m_Operation.nOpState = LIST_WAITFINISH;
+			break;
+		default:
+			error = TRUE;
+		}
+
+		if (error)
+		{
+			ResetOperation(FZ_REPLY_ERROR);
+			return;
+		}
+	}
+	if (m_Operation.nOpState==LIST_INIT)
+	{ //Initialize some variables
+		pData=new CListData;
+		pData->nListMode=nListMode;
+		pData->path=path;
+		pData->subdir=subdir;
+		m_Operation.pData=pData;
+		ShowStatus(IDS_STATUSMSG_RETRIEVINGDIRLIST, 0);
+		pData->nFinish=-1;
+		if (m_pDirectoryListing)
+		{
+			delete m_pDirectoryListing;
+			m_pDirectoryListing=0;
+		}
+
+		if (COptions::GetOptionVal(OPTION_PROXYTYPE)!=PROXYTYPE_NOPROXY && !m_CurrentServer.fwbypass)
+			pData->bPasv = TRUE;
+		else if (m_CurrentServer.nPasv == 1)
+			pData->bPasv = TRUE;
+		else if (m_CurrentServer.nPasv == 2)
+			pData->bPasv = FALSE;
+		else
+			pData->bPasv = COptions::GetOptionVal(OPTION_PASV);
+
+		CServerPath path = pData->path;
+		CServerPath realpath = m_pOwner->GetCurrentPath();
+		if (!realpath.IsEmpty())
+		{
+			if (!pData->path.IsEmpty() && pData->path != realpath)
+				m_Operation.nOpState=LIST_CWD;
+			else if (!pData->path.IsEmpty() && pData->subdir!="")
+				m_Operation.nOpState=LIST_CWD2;
+			else
+			{
+				if (pData->nListMode & FZ_LIST_REALCHANGE)
+				{
+					if (pData->subdir == "")
+						m_Operation.nOpState = LIST_CWD;
+					else
+						m_Operation.nOpState = LIST_CWD2;
+				}
+				else
+				{
+#ifndef MPEXT_NO_CACHE
+					if (pData->nListMode&FZ_LIST_USECACHE)
+					{
+						t_directory dir;
+						CDirectoryCache cache;
+						BOOL res = cache.Lookup(realpath, m_CurrentServer,dir);
+						if (res)
+						{
+							BOOL bExact = TRUE;
+							if (pData->nListMode & FZ_LIST_EXACT)
+								for (int i = 0; i < dir.num; i++)
+									if (dir.direntry[i].bUnsure || (dir.direntry[i].size == -1 && !dir.direntry[i].dir))
+									{
+										bExact = FALSE;
+										break;
+									}
+							if (bExact)
+							{
+								ShowStatus(IDS_STATUSMSG_DIRLISTSUCCESSFUL,0);
+								SetDirectoryListing(&dir);
+								ResetOperation(FZ_REPLY_OK);
+								return;
+							}
+						}
+					}
+#endif
+					m_Operation.nOpState = NeedModeCommand() ? LIST_MODE : (NeedOptsCommand() ? LIST_OPTS : LIST_TYPE);;
+				}
+			}
+		}
+		else
+			m_Operation.nOpState = LIST_PWD;
+	}
+	CString cmd;
+	if (m_Operation.nOpState == LIST_PWD)
+		cmd=_T("PWD");
+	else if (m_Operation.nOpState==LIST_CWD)
+		cmd=_T("CWD ") + pData->path.GetPath(); //Command to retrieve the current directory
+	else if (m_Operation.nOpState==LIST_PWD2)
+		cmd=_T("PWD");
+	else if (m_Operation.nOpState==LIST_CWD2)
+	{
+		if (!pData->subdir)
+		{
+			ResetOperation(FZ_REPLY_ERROR);
+			return;
+		}
+		if (pData->subdir != _T("..") )
+		{
+			if (m_CurrentServer.nServerType & FZ_SERVERTYPE_SUB_FTP_VMS)
+			{
+				CServerPath path = m_pOwner->GetCurrentPath();
+				path.AddSubdir(pData->subdir);
+				cmd = _T("CWD ") + path.GetPath();
+			}
+			else
+				cmd = _T("CWD ") + pData->subdir;
+		}
+		else
+		{
+			if (pData->lastCmdSentCDUP)
+			{
+				pData->lastCmdSentCDUP = false;
+				cmd = _T("CWD ..");
+			}
+			else
+			{
+				pData->lastCmdSentCDUP = true;
+				cmd = _T("CDUP");
+			}
+		}
+	}
+	else if (m_Operation.nOpState == LIST_PWD3)
+		cmd=_T("PWD");
+	else if (m_Operation.nOpState == LIST_MODE)
+	{
+#ifdef MPEXT_NO_ZLIB
+		ASSERT(false);
+#else
+		if (m_useZlib)
+#endif
+			cmd = _T("MODE S");
+#ifndef MPEXT_NO_ZLIB
+		else
+			cmd = _T("MODE Z");
+#endif
+	}
+	else if (m_Operation.nOpState == LIST_OPTS)
+	{
+#ifdef MPEXT_NO_ZLIB
+		ASSERT(false);
+#else
+		pData->newZlibLevel = COptions::GetOptionVal(OPTION_MODEZ_LEVEL);
+		cmd.Format(_T("OPTS MODE Z LEVEL %d"), pData->newZlibLevel);
+#endif
+	}
+	else if (m_Operation.nOpState == LIST_PORT_PASV)
+	{
+		m_pTransferSocket = new CTransferSocket(this, m_Operation.nOpMode);
+#ifndef MPEXT_NO_ZLIB
+		if (m_useZlib)
+		{
+			if (!m_pTransferSocket->InitZlib(m_zlibLevel))
+			{
+				ShowStatus(_T("Failed to initialize zlib"), 1);
+				ResetOperation(FZ_REPLY_ERROR);
+				return;
+			}
+		}
+#endif
+		m_pTransferSocket->m_nInternalMessageID = m_pOwner->m_nInternalMessageID;
+#ifndef MPEXT_NO_GSS
+		if (m_pGssLayer && m_pGssLayer->AuthSuccessful())
+			m_pTransferSocket->UseGSS(m_pGssLayer);
+#endif
+		m_pTransferSocket->SetFamily(GetFamily());
+		if (!m_pTransferSocket->Create(
+#ifndef MPEXT_NO_SSL
+				m_pSslLayer && m_bProtP
+#endif
+		) ||
+			!m_pTransferSocket->AsyncSelect())
+		{
+			ShowStatus(_T("Failed to create socket"), 1);
+			ResetOperation(FZ_REPLY_ERROR);
+			return;
+		}
+		if (pData->bPasv)
+			switch (GetFamily())
+			{
+			case AF_INET:
+				cmd = _T("PASV");
+				break;
+			case AF_INET6:
+				cmd = _T("EPSV");
+				break;
+			default:
+				LogMessage(__FILE__, __LINE__, this, FZ_LOG_WARNING, _T("Protocol %d not supported"), GetFamily());
+				ResetOperation(FZ_REPLY_ERROR);
+				return;
+			}
+		else
+		{
+			m_pTransferSocket->m_bListening=TRUE;
+			if (m_pProxyLayer)
+			{
+				SOCKADDR_IN addr;
+				int len=sizeof(addr);
+				if (!m_pProxyLayer->GetPeerName((SOCKADDR *)&addr,&len))
+				{
+					ResetOperation(FZ_REPLY_ERROR);
+					return;
+				}
+				else if (!m_pTransferSocket->Listen(addr.sin_addr.S_un.S_addr))
+				{
+					ResetOperation(FZ_REPLY_ERROR);
+					return;
+				}
+			}
+			else
+			{
+				//Set up an active file transfer
+				CString tempHostname;
+				UINT nPort;
+
+				if (// create listen socket (let MFC choose the port) & start the socket listening
+					!m_pTransferSocket->Listen() ||
+					!m_pTransferSocket->GetSockName(tempHostname, nPort))
+				{
+					ShowStatus(_T("Failed to create listen socket"), 1);
+					ResetOperation(FZ_REPLY_ERROR);
+					return;
+				}
+
+				CString host;
+				bool bError = false;
+
+				if (GetFamily() == AF_INET)
+				{
+					host = COptions::GetOption(OPTION_TRANSFERIP);
+					if (host != "")
+					{
+						DWORD ip = inet_addr(T2CA(host));
+						if (ip != INADDR_NONE)
+							host.Format(_T("%d,%d,%d,%d"), ip%256, (ip>>8)%256, (ip>>16)%256, ip>>24);
+						else
+						{
+							hostent *fullname = gethostbyname(T2CA(host));
+							if (!fullname)
+								host = "";
+							else
+							{
+								DWORD ip = ((LPIN_ADDR)fullname->h_addr)->s_addr;
+								if (ip != INADDR_NONE)
+									host.Format(_T("%d,%d,%d,%d"), ip%256, (ip>>8)%256, (ip>>16)%256, ip>>24);
+								else
+									host = "";
+							}
+						}
+					}
+					if (host == "")
+					{
+						UINT temp;
+
+						if (!GetSockName(host, temp))
+						{
+							ShowStatus(_T("Failed to get socket address "), 1);
+							bError = true;
+						}
+
+						host.Replace('.', ',');
+					}
+
+					if (!bError)
+					{
+						host.Format(host+",%d,%d", nPort/256, nPort%256);
+						cmd = _T("PORT ") + host; // send PORT cmd to server
+					}
+				}
+				else if (GetFamily() == AF_INET6)
+				{
+					host = COptions::GetOption(OPTION_TRANSFERIP6);
+					if (host != "")
+					{
+						USES_CONVERSION;
+						addrinfo hints, *res;
+						memset(&hints, 0, sizeof(addrinfo));
+						hints.ai_family = AF_INET6;
+						hints.ai_socktype = SOCK_STREAM;
+						if (!p_getaddrinfo(T2CA(host), "1024", &hints, &res))
+						{
+							host = Inet6AddrToString(((SOCKADDR_IN6 *)res->ai_addr)->sin6_addr);
+							p_freeaddrinfo(res);
+						}
+						else
+							host = _T("");
+					}
+					if (host == "")
+					{
+						UINT temp;
+
+						if(!GetSockName(host, temp))
+							bError = true;
+					}
+
+					if (!bError)
+					{
+						// assamble EPRT command
+						cmd.Format(_T("EPRT |2|") +	host + "|%d|", nPort);
+					}
+				}
+				else
+				{
+					LogMessage(__FILE__, __LINE__, this, FZ_LOG_WARNING, _T("Protocol %d not supported"), GetFamily());
+					bError = true;
+				}
+
+				if (bError)
+				{
+					ResetOperation(FZ_REPLY_ERROR);
+					return;
+				}
+			}
+		}
+	}
+	else if (m_Operation.nOpState==LIST_TYPE)
+		cmd=_T("TYPE A");
+	else if (m_Operation.nOpState==LIST_LIST)
+	{
+		if (!m_pTransferSocket)
+		{
+			LogMessage(__FILE__, __LINE__, this,FZ_LOG_APIERROR, _T("Error: m_pTransferSocket==NULL") );
+			ResetOperation(FZ_REPLY_ERROR);
+			return;
+		}
+
+		m_pTransferSocket->SetActive();
+
+		cmd = _T("MLST");
+#ifdef MPEXT
+		std::string args;
+		if (m_serverCapabilities.GetCapabilityString(opts_mlst_command, &args) == yes)
+			cmd += _T(" ") + CString(args.c_str());
+#endif
+		if (!Send(cmd))
+			return;
+
+		pData->ListStartTime=CTime::GetCurrentTime();
+
+		if (pData->bPasv)
+		{
+			// if PASV create the socket & initiate outbound data channel connection
+			if (!m_pTransferSocket->Connect(pData->host,pData->port))
+			{
+				if (GetLastError()!=WSAEWOULDBLOCK)
+				{
+					ResetOperation(FZ_REPLY_ERROR);
+					return;
+				}
+			}
+		}
+
+		return;
+	}
+	if (cmd != _T(""))
+		Send(cmd);
+}
+
 void CFtpControlSocket::TransferEnd(int nMode)
 {
 	LogMessage(__FILE__, __LINE__, this,FZ_LOG_DEBUG, _T("TransferEnd(%d/%x)  OpMode=%d OpState=%d"), nMode, nMode, m_Operation.nOpMode, m_Operation.nOpState);
@@ -2287,6 +3098,8 @@ void CFtpControlSocket::TransferEnd(int nMode)
 		FileTransfer(0,TRUE,nMode&(CSMODE_TRANSFERERROR|CSMODE_TRANSFERTIMEOUT));
 	else if (m_Operation.nOpMode&CSMODE_LIST)
 		List(TRUE,nMode&(CSMODE_TRANSFERERROR|CSMODE_TRANSFERTIMEOUT));
+	else if (m_Operation.nOpMode&CSMODE_LISTFILE)
+		ListFile(TRUE,nMode&(CSMODE_TRANSFERERROR|CSMODE_TRANSFERTIMEOUT));
 }
 
 void CFtpControlSocket::OnClose(int nErrorCode)
@@ -4407,7 +5220,7 @@ void CFtpControlSocket::Cancel(BOOL bQuit/*=FALSE*/)
 	const int nOpMode = m_Operation.nOpMode;
 	if (nOpMode==CSMODE_CONNECT)
 		DoClose(FZ_REPLY_CANCEL);
-	else if (nOpMode & CSMODE_LIST)
+	else if (nOpMode & CSMODE_LIST || nOpMode & CSMODE_LISTFILE)
 	{
 		if (m_Operation.nOpState == LIST_WAITFINISH)
 			m_skipReply = true;
@@ -4431,7 +5244,7 @@ void CFtpControlSocket::Cancel(BOOL bQuit/*=FALSE*/)
 
 void CFtpControlSocket::TransfersocketListenFinished(unsigned int ip, unsigned short port)
 {
-	if (m_Operation.nOpMode&CSMODE_TRANSFER || m_Operation.nOpMode&CSMODE_LIST)
+	if (m_Operation.nOpMode&CSMODE_TRANSFER || m_Operation.nOpMode&CSMODE_LIST || m_Operation.nOpMode&CSMODE_LISTFILE)
 	{
 		CString host;
 		host.Format(_T("%d,%d,%d,%d,%d,%d"),ip%256,(ip>>8)%256,(ip>>16)%256,(ip>>24)%256,port%256,port>>8);
@@ -4441,7 +5254,7 @@ void CFtpControlSocket::TransfersocketListenFinished(unsigned int ip, unsigned s
 
 void CFtpControlSocket::ResumeTransfer()
 {
-	if (m_pTransferSocket && (m_Operation.nOpMode&CSMODE_TRANSFER || m_Operation.nOpMode&CSMODE_LIST))
+	if (m_pTransferSocket && (m_Operation.nOpMode&CSMODE_TRANSFER || m_Operation.nOpMode&CSMODE_LIST || m_Operation.nOpMode&CSMODE_LISTFILE))
 	{
 		m_pTransferSocket->OnSend(0);
 		m_pTransferSocket->OnReceive(0);
@@ -4518,7 +5331,7 @@ void CFtpControlSocket::ResetOperation(int nSuccessful /*=FALSE*/)
 			ShowStatus(IDS_ERRORMSG_CANTCONNECT, 1);
 		}
 
-		if (m_Operation.nOpMode & (CSMODE_LIST|CSMODE_TRANSFER) && nSuccessful==FZ_REPLY_OK)
+		if (m_Operation.nOpMode & (CSMODE_LIST|CSMODE_LISTFILE|CSMODE_TRANSFER) && nSuccessful==FZ_REPLY_OK)
 			m_LastSendTime=CTime::GetCurrentTime();
 
 		//Update remote file entry
@@ -4626,7 +5439,7 @@ void CFtpControlSocket::ResetOperation(int nSuccessful /*=FALSE*/)
 					ShowStatus((m_Operation.nOpMode&CSMODE_DOWNLOAD)?IDS_ERRORMSG_DOWNLOADABORTED:IDS_ERRORMSG_UPLOADABORTED,1);
 				else
 					ShowStatus(((CFileTransferData*)m_Operation.pData)->transferfile.get?IDS_ERRORMSG_DOWNLOADFAILED:IDS_ERRORMSG_UPLOADFAILED,1);
-			else if (m_Operation.nOpMode&CSMODE_LIST)
+			else if (m_Operation.nOpMode&(CSMODE_LIST|CSMODE_LISTFILE))
 				ShowStatus(IDS_ERRORMSG_CANTGETLIST,1);
 		}
 		else if (m_Operation.pData && m_Operation.nOpMode&CSMODE_TRANSFER && nSuccessful==FZ_REPLY_OK)
@@ -5956,7 +6769,8 @@ bool CFtpControlSocket::NeedModeCommand()
 	return false;
 #else
 	bool useZlib;
-	if (m_Operation.nOpMode == CSMODE_LIST || (m_Operation.nOpMode == CSMODE_TRANSFER && m_Operation.nOpMode <= FILETRANSFER_TYPE))
+	if (m_Operation.nOpMode == CSMODE_LIST || m_Operation.nOpMode == CSMODE_LISTFILE ||
+		(m_Operation.nOpMode == CSMODE_TRANSFER && m_Operation.nOpMode <= FILETRANSFER_TYPE))
 		useZlib = COptions::GetOptionVal(OPTION_MODEZ_USE) != 0;
 	else
 		useZlib = COptions::GetOptionVal(OPTION_MODEZ_USE) > 1;

@@ -151,6 +151,7 @@ public:
 
   bool List();
   bool List(const char * Path);
+  bool ListFile(const char * Path);
 
   bool CustomCommand(const wchar_t * Command);
 
