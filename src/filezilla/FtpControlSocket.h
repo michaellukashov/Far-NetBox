@@ -192,6 +192,7 @@ protected:
 #ifdef MPEXT
 	bool m_hasMfmtCmd;
 	TFTPServerCapabilities m_serverCapabilities;
+	CStringA m_ListFile;
 #endif
 	bool m_isFileZilla;
 

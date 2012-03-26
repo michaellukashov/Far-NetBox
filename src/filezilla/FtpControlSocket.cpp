@@ -179,6 +179,7 @@ CFtpControlSocket::CFtpControlSocket(CMainThread *pMainThread) : CControlSocket(
 #ifdef MPEXT
 	m_hasMfmtCmd = false;
 	m_serverCapabilities.Clear();
+	m_ListFile = "";
 #endif
 
 	m_awaitsReply = false;
@@ -254,6 +255,7 @@ bool CFtpControlSocket::InitConnect()
 #ifdef MPEXT
 	m_hasMfmtCmd = false;
 	m_serverCapabilities.Clear();
+	m_ListFile = "";
 #endif
 	m_isFileZilla = false;
 
@@ -1393,6 +1395,7 @@ void CFtpControlSocket::DoClose(int nError /*=0*/)
 #ifdef MPEXT
 	m_hasMfmtCmd = false;
 	m_serverCapabilities.Clear();
+	m_ListFile = "";
 #endif
 
 	m_awaitsReply = false;
@@ -2608,10 +2611,14 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 				ResetOperation(FZ_REPLY_OK);
 				return;
 			}
-			else if (code != 1)
+			else if (code != 2)
 				error = TRUE;
 			else
-				m_Operation.nOpState = LIST_WAITFINISH;
+			{
+				// m_Operation.nOpState = LIST_WAITFINISH;
+				ResetOperation(FZ_REPLY_OK);
+				return;
+			}
 			break;
 		default:
 			error = TRUE;
@@ -6623,6 +6630,12 @@ void CFtpControlSocket::DiscardLine(CStringA line)
 		}
 #endif
 	}
+#ifdef MPEXT
+	else if (m_Operation.nOpMode == CSMODE_LISTFILE)
+	{
+		m_ListFile = line.Trim(" ");
+	}
+#endif
 }
 
 bool CFtpControlSocket::NeedModeCommand()
@@ -6663,22 +6676,26 @@ CString CFtpControlSocket::GetReply()
 
 	USES_CONVERSION;
 
+	LPCSTR line = (LPCSTR)m_RecvBuffer.front();
 	if (m_bUTF8)
 	{
 		// convert from UTF-8 to ANSI
-		LPCSTR utf8 = (LPCSTR)m_RecvBuffer.front();
-		if (!utf8_valid((const unsigned char*)utf8, strlen(utf8)))
+		if (m_Operation.nOpMode&CSMODE_LISTFILE && m_Operation.nOpState==LIST_LISTFILE)
+		{
+			line = (LPCSTR)m_ListFile;
+		}
+		if (!utf8_valid((const unsigned char*)line, strlen(line)))
 		{
 			if (m_CurrentServer.nUTF8 != 1)
 			{
 				LogMessage(__FILE__, __LINE__, this, FZ_LOG_WARNING, _T("Server does not send proper UTF-8, falling back to local charset"));
 				m_bUTF8 = false;
 			}
-			return A2CT(m_RecvBuffer.front());
+			return A2CT(line);
 		}
 
 		// convert from UTF-8 to ANSI
-		int len = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, NULL, 0);
+		int len = MultiByteToWideChar(CP_UTF8, 0, line, -1, NULL, 0);
 		if (!len)
 		{
 			m_RecvBuffer.pop_front();
@@ -6689,14 +6706,14 @@ CString CFtpControlSocket::GetReply()
 		else
 		{
 			LPWSTR p1 = new WCHAR[len + 1];
-			MultiByteToWideChar(CP_UTF8, 0, utf8, -1 , (LPWSTR)p1, len + 1);
+			MultiByteToWideChar(CP_UTF8, 0, line, -1 , (LPWSTR)p1, len + 1);
 			CString reply = W2CT(p1);
 			delete [] p1;
 			return reply;
 		}
 	}
 	else
-		return A2CT(m_RecvBuffer.front());
+		return A2CT(line);
 }
 
 void CFtpControlSocket::OnSend(int nErrorCode)
