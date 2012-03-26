@@ -1466,7 +1466,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 	#define LIST_PORT_PASV	7
 	#define LIST_TYPE	8
 	#define LIST_LIST	9
-	#define LIST_LIST_MLST	10
+	#define LIST_LISTFILE	10
 	#define LIST_WAITFINISH	11
 
 	ASSERT(!m_Operation.nOpMode || m_Operation.nOpMode&CSMODE_LIST);
@@ -2593,9 +2593,9 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 					break;
 				}
 			}
-			m_Operation.nOpState = LIST_LIST;
+			m_Operation.nOpState = LIST_LISTFILE;
 			break;
-		case LIST_LIST:
+		case LIST_LISTFILE:
 			if (IsMisleadingListResponse())
 			{
 				ShowStatus(IDS_STATUSMSG_DIRLISTSUCCESSFUL, 0);
@@ -2613,7 +2613,7 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 			else
 				m_Operation.nOpState = LIST_WAITFINISH;
 			break;
-		case LIST_LIST_MLST:
+		case LIST_LISTFILE:
 			if (IsMisleadingListResponse())
 			{
 				ShowStatus(IDS_STATUSMSG_DIRLISTSUCCESSFUL, 0);
@@ -2926,11 +2926,11 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 	}
 	else if (m_Operation.nOpState==LIST_TYPE)
 		cmd=_T("TYPE A");
-	else if (m_Operation.nOpState==LIST_LIST_MLST)
+	else if (m_Operation.nOpState==LIST_LISTFILE)
 	{
-		DEBUG_PRINTF(L"LIST_LIST_MLST");
+		DEBUG_PRINTF(L"LIST_LISTFILE");
 	}
-	else if (m_Operation.nOpState==LIST_LIST)
+	else if (m_Operation.nOpState==LIST_LISTFILE)
 	{
 		if (!m_pTransferSocket)
 		{
@@ -2943,7 +2943,7 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 
 		cmd = _T("MLST ") + pData->fileName;
 		DEBUG_PRINTF(L"cmd = %s", (LPCWSTR)cmd);
-		m_Operation.nOpState=LIST_LIST_MLST;
+		m_Operation.nOpState=LIST_LISTFILE;
 		if (!Send(cmd))
 			return;
 
@@ -3089,7 +3089,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 	//     |         |
 	//     |         |
 	//     |    +---------+
-	//     |    |LIST_LIST|-----\ //List failes, maybe folder is list protected
+	//     |    |LIST_LIST|-----\ //List fails, maybe folder is list protected
 	//     |    +---------+     | //Use SIZE and MDTM to get file information
 	//     |         |        +----+
 	//     |         |        |SIZE|
