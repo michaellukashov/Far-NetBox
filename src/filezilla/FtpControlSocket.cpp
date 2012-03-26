@@ -2613,24 +2613,6 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 			else
 				m_Operation.nOpState = LIST_WAITFINISH;
 			break;
-		case LIST_LISTFILE:
-			if (IsMisleadingListResponse())
-			{
-				ShowStatus(IDS_STATUSMSG_DIRLISTSUCCESSFUL, 0);
-
-				t_directory listing;
-				listing.server = m_CurrentServer;
-				listing.path = m_pOwner->GetCurrentPath();
-
-				SetDirectoryListing(&listing);
-				ResetOperation(FZ_REPLY_OK);
-				return;
-			}
-			else if (code != 1)
-				error = TRUE;
-			else
-				m_Operation.nOpState = LIST_WAITFINISH;
-			break;
 		default:
 			error = TRUE;
 		}
@@ -2929,9 +2911,6 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 	else if (m_Operation.nOpState==LIST_LISTFILE)
 	{
 		DEBUG_PRINTF(L"LIST_LISTFILE");
-	}
-	else if (m_Operation.nOpState==LIST_LISTFILE)
-	{
 		if (!m_pTransferSocket)
 		{
 			LogMessage(__FILE__, __LINE__, this,FZ_LOG_APIERROR, _T("Error: m_pTransferSocket==NULL") );
@@ -2943,7 +2922,6 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 
 		cmd = _T("MLST ") + pData->fileName;
 		DEBUG_PRINTF(L"cmd = %s", (LPCWSTR)cmd);
-		m_Operation.nOpState=LIST_LISTFILE;
 		if (!Send(cmd))
 			return;
 
