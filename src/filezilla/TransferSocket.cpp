@@ -170,7 +170,6 @@ void CTransferSocket::OnReceive(int nErrorCode)
 		
 		char *buffer = new char[BUFSIZE];
 		int numread = CAsyncSocketEx::Receive(buffer, BUFSIZE);
-		if (numread != -1) DEBUG_PRINTF2("%s", std::string(buffer, numread).c_str());
 		if (numread != SOCKET_ERROR && numread)
 		{
 			m_LastActiveTime = CTime::GetCurrentTime();
