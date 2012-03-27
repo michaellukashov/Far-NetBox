@@ -63,7 +63,7 @@ protected:
                                       __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
                                       bool FileTransfer);
     virtual bool HandleReply(int Command, unsigned int Reply);
-    virtual bool HandleCapabilities(TFTPServerCapabilities &ServerCapabilities);
+    virtual bool HandleCapabilities(TFTPServerCapabilities *ServerCapabilities);
     virtual bool CheckError(int ReturnCode, const char *Context);
 
 private:
@@ -135,7 +135,7 @@ bool TFileZillaImpl::HandleReply(int Command, unsigned int Reply)
     return FFileSystem->HandleReply(Command, Reply);
 }
 //---------------------------------------------------------------------------
-bool TFileZillaImpl::HandleCapabilities(TFTPServerCapabilities &ServerCapabilities)
+bool TFileZillaImpl::HandleCapabilities(TFTPServerCapabilities *ServerCapabilities)
 {
     return FFileSystem->HandleCapabilities(ServerCapabilities);
 }
@@ -3433,9 +3433,9 @@ bool TFTPFileSystem::HandleReply(int Command, unsigned int Reply)
     }
 }
 //---------------------------------------------------------------------------
-bool TFTPFileSystem::HandleCapabilities(TFTPServerCapabilities &ServerCapabilities)
+bool TFTPFileSystem::HandleCapabilities(TFTPServerCapabilities *ServerCapabilities)
 {
-    FServerCapabilities->Assign(&ServerCapabilities);
+    FServerCapabilities->Assign(ServerCapabilities);
     FFileSystemInfoValid = false;
     return true;
 }

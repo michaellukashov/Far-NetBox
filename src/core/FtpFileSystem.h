@@ -129,7 +129,7 @@ protected:
                               __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
                               bool FileTransfer);
     bool HandleReply(int Command, unsigned int Reply);
-    bool HandleCapabilities(TFTPServerCapabilities &ServerCapabilities);
+    bool HandleCapabilities(TFTPServerCapabilities *ServerCapabilities);
     bool CheckError(int ReturnCode, const wchar_t *Context);
     void EnsureLocation();
     std::wstring ActualCurrentDirectory();
