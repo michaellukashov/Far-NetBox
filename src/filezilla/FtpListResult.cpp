@@ -1390,7 +1390,7 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
 	else if (!gid.IsEmpty())
 		direntry.ownergroup += _T(" ") + gid;
 
-	if (!(str = GetNextToken(line, linelen, tokenlen, pos, 0)))
+	if (!(str = GetNextToken(line, linelen, tokenlen, pos, 1)))
 		return FALSE;
 
 	copyStr(direntry.name, 0, str, tokenlen, true);
