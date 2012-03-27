@@ -2020,17 +2020,18 @@ void TFarEdit::SetHistoryMask(size_t Index, const std::wstring value)
     {
         assert(!GetDialog()->GetHandle());
         FarDialogItem *item = GetDialogItem();
-        // assert(item->Mask == item->History);
 
         delete[] item->Mask;
+        delete[] item->History;
         if (value.empty())
         {
             item->Mask = NULL;
+            item->History = NULL;
         }
         else
         {
             item->Mask = TCustomFarPlugin::DuplicateStr(value);
-
+            item->History = TCustomFarPlugin::DuplicateStr(value);
         }
         bool PrevHistory = !GetHistory().empty();
         SetFlag(DIF_HISTORY, (Index == 0) && !value.empty());
