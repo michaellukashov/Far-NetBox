@@ -2173,6 +2173,7 @@ void TFarList::UpdateItem(size_t Index)
 
     FarListUpdate ListUpdate;
     memset(&ListUpdate, 0, sizeof(ListUpdate));
+    ListUpdate.StructSize = sizeof(FarListUpdate);
     ListUpdate.Index = static_cast<int>(Index);
     ListUpdate.Item = *ListItem;
     GetDialogItem()->SendMessage(DM_LISTUPDATE, reinterpret_cast<void *>(&ListUpdate));
@@ -2302,6 +2303,7 @@ void TFarList::SetCurPos(size_t Position, size_t TopIndex)
     assert(GetDialogItem() != NULL);
     assert(GetDialogItem()->GetDialog()->GetHandle());
     FarListPos ListPos;
+    ListPos.StructSize = sizeof(FarListPos);
     ListPos.SelectPos = Position;
     ListPos.TopPos = TopIndex;
     GetDialogItem()->SendMessage(DM_LISTSETCURPOS, reinterpret_cast<void *>(&ListPos));
@@ -2331,6 +2333,7 @@ int TFarList::GetTopIndex()
     else
     {
         FarListPos ListPos;
+        ListPos.StructSize = sizeof(FarListPos);
         assert(GetDialogItem() != NULL);
         GetDialogItem()->SendMessage(DM_LISTGETCURPOS, reinterpret_cast<void *>(&ListPos));
         Result = ListPos.TopPos;

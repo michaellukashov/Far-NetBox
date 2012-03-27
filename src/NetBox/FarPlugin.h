@@ -214,7 +214,7 @@ protected:
     virtual void GetPluginInfoEx(PLUGIN_FLAGS &Flags,
                                  nb::TStrings *DiskMenuStrings, nb::TStrings *PluginMenuStrings,
                                  nb::TStrings *PluginConfigStrings, nb::TStrings *CommandPrefixes) = 0;
-    virtual TCustomFarFileSystem *OpenPluginEx(OPENFROM OpenFrom, LONG_PTR Item) = 0;
+    virtual TCustomFarFileSystem *OpenPluginEx(OPENFROM OpenFrom, INT_PTR Item) = 0;
     virtual bool ImportSessions() = 0;
     virtual bool ConfigureEx(int Item) = 0;
     virtual int ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info) = 0;

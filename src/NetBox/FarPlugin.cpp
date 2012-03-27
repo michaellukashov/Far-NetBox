@@ -307,7 +307,7 @@ void *TCustomFarPlugin::OpenPlugin(const struct OpenInfo *Info)
     try
     {
         ResetCachedInfo();
-        LONG_PTR Item = 0;
+        INT_PTR Item = 0;
         if (*Info->Guid == MenuCommandsGuid)
             Item = 1;
         if ((Info->OpenFrom == OPEN_SHORTCUT) || 
@@ -315,7 +315,7 @@ void *TCustomFarPlugin::OpenPlugin(const struct OpenInfo *Info)
             (Info->OpenFrom == OPEN_ANALYSE))
             
         {
-          Item = static_cast<LONG_PTR>(Info->Data);
+          Item = Info->Data;
         }
         TCustomFarFileSystem *Result = OpenPluginEx(Info->OpenFrom, Item);
 
@@ -325,7 +325,7 @@ void *TCustomFarPlugin::OpenPlugin(const struct OpenInfo *Info)
         }
         else
         {
-            Result = static_cast<TCustomFarFileSystem *>(INVALID_HANDLE_VALUE);
+            Result = NULL;
         }
 
         return Result;
@@ -334,7 +334,7 @@ void *TCustomFarPlugin::OpenPlugin(const struct OpenInfo *Info)
     {
         DEBUG_PRINTF(L"before HandleException");
         HandleException(&E);
-        return static_cast<void *>(INVALID_HANDLE_VALUE);
+        return NULL;
     }
 }
 //---------------------------------------------------------------------------

@@ -345,7 +345,7 @@ int TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD *Rec)
     return Result;
 }
 //---------------------------------------------------------------------------
-TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, LONG_PTR Item)
+TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, INT_PTR Item)
 {
     TWinSCPFileSystem *FileSystem = NULL;
     try
