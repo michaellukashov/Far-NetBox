@@ -11,6 +11,7 @@
 #include "FarTexts.h"
 #include "FarDialog.h"
 #include "plugin.hpp"
+#include "XmlStorage.h"
 #include <Common.h>
 #include <CoreMain.h>
 #include <Exceptions.h>
