@@ -2250,9 +2250,6 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 		if (m_pOwner->GetOption(FZAPI_OPTION_SHOWHIDDEN) && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
 #endif
 			cmd += _T(" -a");
-		if (m_serverCapabilities.GetCapability(mlsd_command) == yes)
-			cmd = _T("MLSD");
-
 #ifdef MPEXT
 		if (m_serverCapabilities.GetCapability(mlsd_command) == yes)
 			cmd = _T("MLSD");
