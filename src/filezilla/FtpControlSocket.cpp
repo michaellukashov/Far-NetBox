@@ -2613,6 +2613,58 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 			else
 			{
 				// m_Operation.nOpState = LIST_WAITFINISH;
+				if (!m_pTransferSocket || m_pTransferSocket->m_bListening)
+				{
+					delete m_pDirectoryListing;
+					m_pDirectoryListing = 0;
+					delete m_pTransferSocket;
+					m_pTransferSocket = 0;
+					ResetOperation(FZ_REPLY_ERROR);
+					return;
+				}
+				USES_CONVERSION;
+				int size = m_ListFile.GetLength();
+				char *buffer = new char[size + 1];
+				memmove(buffer, m_ListFile.GetBuffer(size), size);
+				m_pTransferSocket->m_pListResult->AddData(buffer, size);
+				int num = 0;
+				pData->pDirectoryListing = new t_directory;
+				if (COptions::GetOptionVal(OPTION_DEBUGSHOWLISTING))
+					m_pTransferSocket->m_pListResult->SendToMessageLog(m_pOwner->m_hOwnerWnd, m_pOwner->m_nReplyMessageID);
+				pData->pDirectoryListing->direntry = m_pTransferSocket->m_pListResult->getList(num, pData->ListStartTime);
+				pData->pDirectoryListing->num = num;
+				if (m_pTransferSocket->m_pListResult->m_server.nServerType & FZ_SERVERTYPE_SUB_FTP_VMS && m_CurrentServer.nServerType & FZ_SERVERTYPE_FTP)
+					m_CurrentServer.nServerType |= FZ_SERVERTYPE_SUB_FTP_VMS;
+
+				pData->pDirectoryListing->server = m_CurrentServer;
+				pData->pDirectoryListing->path.SetServer(pData->pDirectoryListing->server);
+				if (pData->rawpwd != "")
+				{
+					if (!pData->pDirectoryListing->path.SetPath(pData->rawpwd))
+					{
+						delete m_pDirectoryListing;
+						m_pDirectoryListing=0;
+						delete m_pTransferSocket;
+						m_pTransferSocket=0;
+						ResetOperation(FZ_REPLY_ERROR);
+						return;
+					}
+					m_pOwner->SetCurrentPath(pData->pDirectoryListing->path);
+				}
+				else
+					pData->pDirectoryListing->path = m_pOwner->GetCurrentPath();
+
+				if (m_Operation.nOpState!=LIST_LISTFILE)
+				{
+					return;
+				}
+				else
+				{
+					delete m_pTransferSocket;
+					m_pTransferSocket=0;
+				}
+				ShowStatus(IDS_STATUSMSG_DIRLISTSUCCESSFUL,0);
+				SetDirectoryListing(pData->pDirectoryListing);
 				ResetOperation(FZ_REPLY_OK);
 				return;
 			}
