@@ -2612,7 +2612,6 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 				error = TRUE;
 			else
 			{
-				// m_Operation.nOpState = LIST_WAITFINISH;
 				if (!m_pTransferSocket || m_pTransferSocket->m_bListening)
 				{
 					delete m_pDirectoryListing;
