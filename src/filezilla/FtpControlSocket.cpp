@@ -1469,7 +1469,6 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 	#define LIST_PORT_PASV	7
 	#define LIST_TYPE	8
 	#define LIST_LIST	9
-	#define LIST_LISTFILE	10
 	#define LIST_WAITFINISH	11
 
 	ASSERT(!m_Operation.nOpMode || m_Operation.nOpMode&CSMODE_LIST);
@@ -2284,6 +2283,8 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 				m_Operation.nOpMode, m_Operation.nOpState);
 
 	USES_CONVERSION;
+
+	#define LIST_LISTFILE	10
 
 	ASSERT(!m_Operation.nOpMode || m_Operation.nOpMode&CSMODE_LISTFILE);
 
