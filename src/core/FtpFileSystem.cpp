@@ -1900,11 +1900,24 @@ void TFTPFileSystem::DoReadFile(const std::wstring Path, const std::wstring Name
     {
         std::wstring Directory = AbsolutePath(Path, false);
         std::wstring FullFileName = UnixIncludeTrailingBackslash(Directory) + NameOnly;
-        FFileZillaIntf->ListFile(nb::W2MB(FullFileName.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str());
+        
+        TRemoteFileList *FileList = new TRemoteFileList();
+        {
+            BOOST_SCOPE_EXIT ( (&FileList) )
+            {
+                delete FileList;
+            } BOOST_SCOPE_EXIT_END
+            FileList->SetDirectory(Directory);
+            TFTPFileListHelper Helper(this, FileList, false);
+            FFileZillaIntf->ListFile(nb::W2MB(FullFileName.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str());
 
-        GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_ALLOW_CANCEL);
+            GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_ALLOW_CANCEL);
+            TRemoteFile *File = FileList->FindFile(FullFileName);
+            if (File)
+                AFile = File->Duplicate();
 
-        FLastDataSent = nb::Now();
+            FLastDataSent = nb::Now();
+        }
     }
     catch (ExtException &E)
     {
