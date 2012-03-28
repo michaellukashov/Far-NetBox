@@ -1933,13 +1933,7 @@ void TFTPFileSystem::ReadFile(const std::wstring FileName,
     TRemoteFile *AFile = NULL;
     if (FServerCapabilities->GetCapability(mlsd_command) == yes)
     {
-        TRemoteFile *OneFile = new TRemoteFile(NULL);
-        BOOST_SCOPE_EXIT ( (&OneFile) )
-        {
-            delete OneFile;
-        } BOOST_SCOPE_EXIT_END
-        DoReadFile(Path, NameOnly, OneFile);
-        AFile = OneFile->Duplicate();
+        DoReadFile(Path, NameOnly, AFile);
     }
     else
     {
