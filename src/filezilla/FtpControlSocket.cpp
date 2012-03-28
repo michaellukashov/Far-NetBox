@@ -2391,7 +2391,7 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 		}
 		else if (pData->pDirectoryListing && pData->nFinish==1)
 		{
-			ShowStatus(IDS_STATUSMSG_DIRLISTSUCCESSFUL,0);
+			ShowStatus(IDS_STATUSMSG_FILELISTSUCCESSFUL,0);
 			SetDirectoryListing(pData->pDirectoryListing);
 			ResetOperation(FZ_REPLY_OK);
 			return;
@@ -2598,7 +2598,7 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 		case LIST_LISTFILE:
 			if (IsMisleadingListResponse())
 			{
-				ShowStatus(IDS_STATUSMSG_DIRLISTSUCCESSFUL, 0);
+				ShowStatus(IDS_STATUSMSG_FILELISTSUCCESSFUL, 0);
 
 				t_directory listing;
 				listing.server = m_CurrentServer;
@@ -2663,7 +2663,7 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 					delete m_pTransferSocket;
 					m_pTransferSocket=0;
 				}
-				ShowStatus(IDS_STATUSMSG_DIRLISTSUCCESSFUL,0);
+				ShowStatus(IDS_STATUSMSG_FILELISTSUCCESSFUL,0);
 				SetDirectoryListing(pData->pDirectoryListing);
 				ResetOperation(FZ_REPLY_OK);
 				return;
@@ -2687,7 +2687,7 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 		pData->fileName=fileName;
 		DEBUG_PRINTF(L"fileName = %s", (LPCWSTR)fileName);
 		m_Operation.pData=pData;
-		ShowStatus(IDS_STATUSMSG_RETRIEVINGDIRLIST, 0);
+		ShowStatus(IDS_STATUSMSG_RETRIEVINGFILELIST, 0);
 		pData->nFinish=-1;
 		if (m_pDirectoryListing)
 		{
