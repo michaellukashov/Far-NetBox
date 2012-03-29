@@ -85,7 +85,7 @@ public:
 	//Operations
 	virtual void Connect(t_server &server)=0;
 	virtual void List(BOOL bFinish, int nError=0, CServerPath path=CServerPath(), CString subdir="", int nListMode = 0)=0;
-	virtual void ListFile(BOOL bFinish, int nError=0, CServerPath path=CServerPath(), CString fileName="", int nListMode = 0)=0;
+	virtual void ListFile(int nError=0, CServerPath path=CServerPath(), CString fileName="")=0;
 	virtual void FtpCommand(LPCTSTR pCommand)=0;
 	virtual void Disconnect()=0;
 	virtual void FileTransfer(t_transferfile *transferfile = 0, BOOL bFinish = FALSE, int nError = 0)=0;

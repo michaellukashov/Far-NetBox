@@ -1189,7 +1189,7 @@ void CFtpControlSocket::ProcessReply()
 	else if (m_Operation.nOpMode&CSMODE_LIST)
 		List(FALSE);
 	else if (m_Operation.nOpMode&CSMODE_LISTFILE)
-		ListFile(FALSE);
+		ListFile();
 	else if (m_Operation.nOpMode&CSMODE_DELETE)
 		Delete( _T(""),CServerPath());
 	else if (m_Operation.nOpMode&CSMODE_RMDIR)
@@ -2277,9 +2277,9 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 		Send(cmd);
 }
 
-void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPath path /*=CServerPath()*/, CString fileName /*=""*/,int nListMode/*=0*/)
+void CFtpControlSocket::ListFile(int nError /*=FALSE*/, CServerPath path /*=CServerPath()*/, CString fileName /*=""*/)
 {
-	LogMessage(__FILE__, __LINE__, this,FZ_LOG_DEBUG, _T("ListFile(%s,%d,\"%s\",\"%s\",%d)  OpMode=%d OpState=%d"), bFinish?_T("TRUE"):_T("FALSE"), nError, path.GetPath(), fileName, nListMode,
+	LogMessage(__FILE__, __LINE__, this,FZ_LOG_DEBUG, _T("ListFile(%d,\"%s\",\"%s\")  OpMode=%d OpState=%d"), nError, path.GetPath(), fileName,
 				m_Operation.nOpMode, m_Operation.nOpState);
 
 	USES_CONVERSION;
@@ -2296,7 +2296,7 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 		return;
 	}
 
-	if (bFinish || nError)
+	if (nError)
 		if (m_Operation.nOpMode!=CSMODE_LISTFILE)
 			return; //Old message coming in
 
@@ -2313,93 +2313,7 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 
 	CListData *pData = static_cast<CListData *>(m_Operation.pData);
 
-	if (bFinish)
-	{
-		DEBUG_PRINTF(L"bFinish");
-		if (!m_pTransferSocket || m_pTransferSocket->m_bListening)
-		{
-			delete m_pDirectoryListing;
-			m_pDirectoryListing = 0;
-			delete m_pTransferSocket;
-			m_pTransferSocket = 0;
-			ResetOperation(FZ_REPLY_ERROR);
-			return;
-		}
-
-		int num = 0;
-		pData->pDirectoryListing = new t_directory;
-		if (COptions::GetOptionVal(OPTION_DEBUGSHOWLISTING))
-			m_pTransferSocket->m_pListResult->SendToMessageLog(m_pOwner->m_hOwnerWnd, m_pOwner->m_nReplyMessageID);
-		pData->pDirectoryListing->direntry = m_pTransferSocket->m_pListResult->getList(num, pData->ListStartTime);
-		pData->pDirectoryListing->num = num;
-		if (m_pTransferSocket->m_pListResult->m_server.nServerType & FZ_SERVERTYPE_SUB_FTP_VMS && m_CurrentServer.nServerType & FZ_SERVERTYPE_FTP)
-			m_CurrentServer.nServerType |= FZ_SERVERTYPE_SUB_FTP_VMS;
-
-		pData->pDirectoryListing->server = m_CurrentServer;
-		pData->pDirectoryListing->path.SetServer(pData->pDirectoryListing->server);
-		if (pData->rawpwd != "")
-		{
-			if (!pData->pDirectoryListing->path.SetPath(pData->rawpwd))
-			{
-				delete m_pDirectoryListing;
-				m_pDirectoryListing=0;
-				delete m_pTransferSocket;
-				m_pTransferSocket=0;
-				ResetOperation(FZ_REPLY_ERROR);
-				return;
-			}
-			m_pOwner->SetCurrentPath(pData->pDirectoryListing->path);
-		}
-		else
-			pData->pDirectoryListing->path = m_pOwner->GetCurrentPath();
-
-		if (m_Operation.nOpState!=LIST_WAITFINISH)
-		{
-			return;
-		}
-		else
-		{
-			delete m_pTransferSocket;
-			m_pTransferSocket=0;
-		}
-	}
-
-	if (m_Operation.nOpState==LIST_WAITFINISH)
-	{
-		if (!bFinish)
-		{
-			if (pData->nFinish==-1)
-			{
-				int code=GetReplyCode();
-				if (code== 2)
-				{
-					pData->nFinish=1;
-				}
-				else
-					pData->nFinish=0;
-			}
-		}
-		else
-		{
-			if (m_pTransferSocket)
-				delete m_pTransferSocket;
-			m_pTransferSocket=0;
-		}
-		if (pData->nFinish==0)
-		{
-			ResetOperation(FZ_REPLY_ERROR);
-			return;
-		}
-		else if (pData->pDirectoryListing && pData->nFinish==1)
-		{
-			ShowStatus(IDS_STATUSMSG_FILELISTSUCCESSFUL,0);
-			SetDirectoryListing(pData->pDirectoryListing);
-			ResetOperation(FZ_REPLY_OK);
-			return;
-		}
-		return;
-	}
-	else if (m_Operation.nOpState != LIST_INIT)
+	if (m_Operation.nOpState != LIST_INIT)
 	{
 		CString retmsg = GetReply();
 		BOOL error = FALSE;
@@ -2682,7 +2596,6 @@ void CFtpControlSocket::ListFile(BOOL bFinish, int nError /*=FALSE*/, CServerPat
 	if (m_Operation.nOpState==LIST_INIT)
 	{ //Initialize some variables
 		pData=new CListData;
-		pData->nListMode=nListMode;
 		pData->path=path;
 		pData->fileName=fileName;
 		DEBUG_PRINTF(L"fileName = %s", (LPCWSTR)fileName);
@@ -3016,8 +2929,6 @@ void CFtpControlSocket::TransferEnd(int nMode)
 		FileTransfer(0,TRUE,nMode&(CSMODE_TRANSFERERROR|CSMODE_TRANSFERTIMEOUT));
 	else if (m_Operation.nOpMode&CSMODE_LIST)
 		List(TRUE,nMode&(CSMODE_TRANSFERERROR|CSMODE_TRANSFERTIMEOUT));
-	else if (m_Operation.nOpMode&CSMODE_LISTFILE)
-		ListFile(TRUE,nMode&(CSMODE_TRANSFERERROR|CSMODE_TRANSFERTIMEOUT));
 }
 
 void CFtpControlSocket::OnClose(int nErrorCode)

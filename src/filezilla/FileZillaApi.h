@@ -330,7 +330,7 @@ public:
 	int List(const CServerPath& path, int nListMode=FZ_LIST_USECACHE);
 	int List(const CServerPath& parent, CString dirname, int nListMode=FZ_LIST_USECACHE);
 
-	int ListFile(const CServerPath& path, const CString& fileName, int nListMode=FZ_LIST_EXACT); //Get info about specified file
+	int ListFile(const CServerPath& path, const CString& fileName); //Get info about specified file
 
 	int FileTransfer(const t_transferfile &TransferFile);
 	int GetCurrentServer(t_server &server);
