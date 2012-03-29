@@ -473,6 +473,7 @@ int CFileZillaApi::List(const CServerPath& parent, CString dirname, int nListMod
 		return m_pMainThread->LastOperationSuccessful()?FZ_REPLY_OK:FZ_REPLY_ERROR;
 }
 
+#ifdef MPEXT
 int CFileZillaApi::ListFile(const CServerPath& path, const CString& fileName)
 {
 	//Check if call allowed
@@ -496,6 +497,7 @@ int CFileZillaApi::ListFile(const CServerPath& path, const CString& fileName)
 	else
 		return m_pMainThread->LastOperationSuccessful()?FZ_REPLY_OK:FZ_REPLY_ERROR;
 }
+#endif
 
 int CFileZillaApi::FileTransfer(const t_transferfile &TransferFile)
 {

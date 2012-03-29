@@ -85,7 +85,9 @@ typedef struct
 #define FZ_COMMAND_RENAME		0x0080
 #define FZ_COMMAND_MAKEDIR		0x0100
 #define FZ_COMMAND_CHMOD		0x0200
+#ifdef MPEXT
 #define FZ_COMMAND_LISTFILE		0x0400
+#endif
 
 #define FZ_MSG_OFFSET 16
 #define FZ_MSG_OFFSETMASK 0xFFFF
