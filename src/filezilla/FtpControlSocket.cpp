@@ -1469,7 +1469,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 	#define LIST_PORT_PASV	7
 	#define LIST_TYPE	8
 	#define LIST_LIST	9
-	#define LIST_WAITFINISH	11
+	#define LIST_WAITFINISH	10
 
 	ASSERT(!m_Operation.nOpMode || m_Operation.nOpMode&CSMODE_LIST);
 
@@ -2277,6 +2277,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 		Send(cmd);
 }
 
+#ifdef MPEXT
 void CFtpControlSocket::ListFile(CServerPath path /*=CServerPath()*/, CString fileName /*=""*/)
 {
 	LogMessage(__FILE__, __LINE__, this,FZ_LOG_DEBUG, _T("ListFile(\"%s\",\"%s\")  OpMode=%d OpState=%d"), path.GetPath(), fileName,
@@ -2284,7 +2285,7 @@ void CFtpControlSocket::ListFile(CServerPath path /*=CServerPath()*/, CString fi
 
 	USES_CONVERSION;
 
-	#define LIST_LISTFILE	10
+	#define LIST_LISTFILE	1
 
 	ASSERT(!m_Operation.nOpMode || m_Operation.nOpMode&CSMODE_LISTFILE);
 
@@ -2323,56 +2324,25 @@ void CFtpControlSocket::ListFile(CServerPath path /*=CServerPath()*/, CString fi
 				error = TRUE;
 			else
 			{
-				if (!m_pTransferSocket || m_pTransferSocket->m_bListening)
-				{
-					delete m_pDirectoryListing;
-					m_pDirectoryListing = 0;
-					delete m_pTransferSocket;
-					m_pTransferSocket = 0;
-					ResetOperation(FZ_REPLY_ERROR);
-					return;
-				}
 				USES_CONVERSION;
 				int size = m_ListFile.GetLength();
 				char *buffer = new char[size + 1];
 				memmove(buffer, m_ListFile.GetBuffer(size), size);
-				m_pTransferSocket->m_pListResult->AddData(buffer, size);
+				CFtpListResult * pListResult = new CFtpListResult(m_CurrentServer, &m_bUTF8);
+				pListResult->InitLog(this);
+				pListResult->AddData(buffer, size);
 				int num = 0;
 				pData->pDirectoryListing = new t_directory;
 				if (COptions::GetOptionVal(OPTION_DEBUGSHOWLISTING))
-					m_pTransferSocket->m_pListResult->SendToMessageLog(m_pOwner->m_hOwnerWnd, m_pOwner->m_nReplyMessageID);
-				pData->pDirectoryListing->direntry = m_pTransferSocket->m_pListResult->getList(num, pData->ListStartTime);
+					pListResult->SendToMessageLog(m_pOwner->m_hOwnerWnd, m_pOwner->m_nReplyMessageID);
+				pData->pDirectoryListing->direntry = pListResult->getList(num, pData->ListStartTime);
 				pData->pDirectoryListing->num = num;
-				if (m_pTransferSocket->m_pListResult->m_server.nServerType & FZ_SERVERTYPE_SUB_FTP_VMS && m_CurrentServer.nServerType & FZ_SERVERTYPE_FTP)
+				if (pListResult->m_server.nServerType & FZ_SERVERTYPE_SUB_FTP_VMS && m_CurrentServer.nServerType & FZ_SERVERTYPE_FTP)
 					m_CurrentServer.nServerType |= FZ_SERVERTYPE_SUB_FTP_VMS;
-
 				pData->pDirectoryListing->server = m_CurrentServer;
 				pData->pDirectoryListing->path.SetServer(pData->pDirectoryListing->server);
-				if (pData->rawpwd != "")
-				{
-					if (!pData->pDirectoryListing->path.SetPath(pData->rawpwd))
-					{
-						delete m_pDirectoryListing;
-						m_pDirectoryListing=0;
-						delete m_pTransferSocket;
-						m_pTransferSocket=0;
-						ResetOperation(FZ_REPLY_ERROR);
-						return;
-					}
-					m_pOwner->SetCurrentPath(pData->pDirectoryListing->path);
-				}
-				else
-					pData->pDirectoryListing->path = m_pOwner->GetCurrentPath();
+				pData->pDirectoryListing->path = m_pOwner->GetCurrentPath();
 
-				if (m_Operation.nOpState!=LIST_LISTFILE)
-				{
-					return;
-				}
-				else
-				{
-					delete m_pTransferSocket;
-					m_pTransferSocket=0;
-				}
 				ShowStatus(IDS_STATUSMSG_LISTFILESUCCESSFUL,0);
 				SetDirectoryListing(pData->pDirectoryListing);
 				ResetOperation(FZ_REPLY_OK);
@@ -2390,7 +2360,6 @@ void CFtpControlSocket::ListFile(CServerPath path /*=CServerPath()*/, CString fi
 			return;
 		}
 	}
-	CString cmd;
 	if (m_Operation.nOpState==LIST_INIT)
 	{ //Initialize some variables
 		pData=new CListData;
@@ -2405,47 +2374,16 @@ void CFtpControlSocket::ListFile(CServerPath path /*=CServerPath()*/, CString fi
 			delete m_pDirectoryListing;
 			m_pDirectoryListing=0;
 		}
-
-		m_Operation.nOpState = LIST_LISTFILE;
-	}
-	else if (m_Operation.nOpState==LIST_LISTFILE)
-	{
-		DEBUG_PRINTF(L"LIST_LISTFILE");
-		if (!m_pTransferSocket)
-		{
-			LogMessage(__FILE__, __LINE__, this,FZ_LOG_APIERROR, _T("Error: m_pTransferSocket==NULL") );
-			ResetOperation(FZ_REPLY_ERROR);
-			return;
-		}
-
-		m_pTransferSocket->SetActive();
-
-		cmd = _T("MLST ") + pData->fileName;
-		DEBUG_PRINTF(L"cmd = %s", (LPCWSTR)cmd);
+        m_Operation.nOpState = LIST_LISTFILE;
+		CString cmd = _T("MLST ") + pData->fileName;
 		if (!Send(cmd))
 			return;
 
 		pData->ListStartTime=CTime::GetCurrentTime();
-/*
-		if (pData->bPasv)
-		{
-			// if PASV create the socket & initiate outbound data channel connection
-			if (!m_pTransferSocket->Connect(pData->host,pData->port))
-			{
-				if (GetLastError()!=WSAEWOULDBLOCK)
-				{
-					ResetOperation(FZ_REPLY_ERROR);
-					return;
-				}
-			}
-		}
-*/
 		return;
 	}
-	DEBUG_PRINTF(L"cmd = %s", (LPCWSTR)cmd);
-	if (cmd != _T(""))
-		Send(cmd);
 }
+#endif
 
 void CFtpControlSocket::TransferEnd(int nMode)
 {
