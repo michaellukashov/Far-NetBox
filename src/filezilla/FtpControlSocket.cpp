@@ -2299,69 +2299,14 @@ void CFtpControlSocket::ListFile(CServerPath path /*=CServerPath()*/, CString fi
 
 	CListData *pData = static_cast<CListData *>(m_Operation.pData);
 
-	if (m_Operation.nOpState != LIST_INIT)
+	BOOL error = FALSE;
+	CString cmd;
+	CString retmsg;
+	int code = -1;
+	switch (m_Operation.nOpState)
 	{
-		CString retmsg = GetReply();
-		BOOL error = FALSE;
-		int code = GetReplyCode();
-		DEBUG_PRINTF(L"retmsg = %s, code = %d, m_Operation.nOpState = %d", (LPCWSTR)retmsg, code, m_Operation.nOpState);
-		switch (m_Operation.nOpState)
-		{
-		case LIST_LISTFILE:
-			if (IsMisleadingListResponse())
-			{
-				ShowStatus(IDS_STATUSMSG_LISTFILESUCCESSFUL, 0);
-
-				t_directory listing;
-				listing.server = m_CurrentServer;
-				listing.path = m_pOwner->GetCurrentPath();
-
-				SetDirectoryListing(&listing);
-				ResetOperation(FZ_REPLY_OK);
-				return;
-			}
-			else if (code != 2)
-				error = TRUE;
-			else
-			{
-				USES_CONVERSION;
-				int size = m_ListFile.GetLength();
-				char *buffer = new char[size + 1];
-				memmove(buffer, m_ListFile.GetBuffer(size), size);
-				CFtpListResult * pListResult = new CFtpListResult(m_CurrentServer, &m_bUTF8);
-				pListResult->InitLog(this);
-				pListResult->AddData(buffer, size);
-				int num = 0;
-				pData->pDirectoryListing = new t_directory;
-				if (COptions::GetOptionVal(OPTION_DEBUGSHOWLISTING))
-					pListResult->SendToMessageLog(m_pOwner->m_hOwnerWnd, m_pOwner->m_nReplyMessageID);
-				pData->pDirectoryListing->direntry = pListResult->getList(num, pData->ListStartTime);
-				pData->pDirectoryListing->num = num;
-				if (pListResult->m_server.nServerType & FZ_SERVERTYPE_SUB_FTP_VMS && m_CurrentServer.nServerType & FZ_SERVERTYPE_FTP)
-					m_CurrentServer.nServerType |= FZ_SERVERTYPE_SUB_FTP_VMS;
-				pData->pDirectoryListing->server = m_CurrentServer;
-				pData->pDirectoryListing->path.SetServer(pData->pDirectoryListing->server);
-				pData->pDirectoryListing->path = m_pOwner->GetCurrentPath();
-
-				ShowStatus(IDS_STATUSMSG_LISTFILESUCCESSFUL,0);
-				SetDirectoryListing(pData->pDirectoryListing);
-				ResetOperation(FZ_REPLY_OK);
-				return;
-			}
-			break;
-		default:
-			error = TRUE;
-			break;
-		}
-
-		if (error)
-		{
-			ResetOperation(FZ_REPLY_ERROR);
-			return;
-		}
-	}
-	if (m_Operation.nOpState==LIST_INIT)
-	{ //Initialize some variables
+	case LIST_INIT:
+		//Initialize some variables
 		pData=new CListData;
 		pData->path=path;
 		pData->fileName=fileName;
@@ -2374,12 +2319,65 @@ void CFtpControlSocket::ListFile(CServerPath path /*=CServerPath()*/, CString fi
 			delete m_pDirectoryListing;
 			m_pDirectoryListing=0;
 		}
-        m_Operation.nOpState = LIST_LISTFILE;
-		CString cmd = _T("MLST ") + pData->fileName;
+		m_Operation.nOpState = LIST_LISTFILE;
+		cmd = _T("MLST ") + pData->fileName;
 		if (!Send(cmd))
 			return;
-
 		pData->ListStartTime=CTime::GetCurrentTime();
+		break;
+	case LIST_LISTFILE:
+		retmsg = GetReply();
+		code = GetReplyCode();
+		DEBUG_PRINTF(L"retmsg = %s, code = %d, m_Operation.nOpState = %d", (LPCWSTR)retmsg, code, m_Operation.nOpState);
+		if (IsMisleadingListResponse())
+		{
+			ShowStatus(IDS_STATUSMSG_LISTFILESUCCESSFUL, 0);
+
+			t_directory listing;
+			listing.server = m_CurrentServer;
+			listing.path = m_pOwner->GetCurrentPath();
+
+			SetDirectoryListing(&listing);
+			ResetOperation(FZ_REPLY_OK);
+			return;
+		}
+		else if (code != 2)
+			error = TRUE;
+		else
+		{
+			USES_CONVERSION;
+			int size = m_ListFile.GetLength();
+			char *buffer = new char[size + 1];
+			memmove(buffer, m_ListFile.GetBuffer(size), size);
+			CFtpListResult * pListResult = new CFtpListResult(m_CurrentServer, &m_bUTF8);
+			pListResult->InitLog(this);
+			pListResult->AddData(buffer, size);
+			int num = 0;
+			pData->pDirectoryListing = new t_directory;
+			if (COptions::GetOptionVal(OPTION_DEBUGSHOWLISTING))
+				pListResult->SendToMessageLog(m_pOwner->m_hOwnerWnd, m_pOwner->m_nReplyMessageID);
+			pData->pDirectoryListing->direntry = pListResult->getList(num, pData->ListStartTime);
+			pData->pDirectoryListing->num = num;
+			if (pListResult->m_server.nServerType & FZ_SERVERTYPE_SUB_FTP_VMS && m_CurrentServer.nServerType & FZ_SERVERTYPE_FTP)
+				m_CurrentServer.nServerType |= FZ_SERVERTYPE_SUB_FTP_VMS;
+			pData->pDirectoryListing->server = m_CurrentServer;
+			pData->pDirectoryListing->path.SetServer(pData->pDirectoryListing->server);
+			pData->pDirectoryListing->path = m_pOwner->GetCurrentPath();
+
+			ShowStatus(IDS_STATUSMSG_LISTFILESUCCESSFUL,0);
+			SetDirectoryListing(pData->pDirectoryListing);
+			ResetOperation(FZ_REPLY_OK);
+			return;
+		}
+		break;
+	default:
+		error = TRUE;
+		break;
+	}
+
+	if (error)
+	{
+		ResetOperation(FZ_REPLY_ERROR);
 		return;
 	}
 }
