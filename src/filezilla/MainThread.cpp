@@ -216,7 +216,7 @@ BOOL CMainThread::OnThreadMessage(UINT Msg, WPARAM wParam, LPARAM lParam)
 					break;
 				case FZ_COMMAND_LISTFILE:
 					ASSERT(m_pControlSocket);
-					m_pControlSocket->ListFile(0, pCommand->path, pCommand->param1);
+					m_pControlSocket->ListFile(pCommand->path, pCommand->param1);
 					break;
 				case FZ_COMMAND_FILETRANSFER:
 					ASSERT(m_pControlSocket);

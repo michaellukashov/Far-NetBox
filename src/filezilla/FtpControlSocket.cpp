@@ -2277,9 +2277,9 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 		Send(cmd);
 }
 
-void CFtpControlSocket::ListFile(int nError /*=FALSE*/, CServerPath path /*=CServerPath()*/, CString fileName /*=""*/)
+void CFtpControlSocket::ListFile(CServerPath path /*=CServerPath()*/, CString fileName /*=""*/)
 {
-	LogMessage(__FILE__, __LINE__, this,FZ_LOG_DEBUG, _T("ListFile(%d,\"%s\",\"%s\")  OpMode=%d OpState=%d"), nError, path.GetPath(), fileName,
+	LogMessage(__FILE__, __LINE__, this,FZ_LOG_DEBUG, _T("ListFile(\"%s\",\"%s\")  OpMode=%d OpState=%d"), path.GetPath(), fileName,
 				m_Operation.nOpMode, m_Operation.nOpState);
 
 	USES_CONVERSION;
@@ -2293,21 +2293,6 @@ void CFtpControlSocket::ListFile(int nError /*=FALSE*/, CServerPath path /*=CSer
 	if (!m_pOwner->IsConnected())
 	{
 		ResetOperation(FZ_REPLY_ERROR|FZ_REPLY_NOTCONNECTED);
-		return;
-	}
-
-	if (nError)
-		if (m_Operation.nOpMode!=CSMODE_LISTFILE)
-			return; //Old message coming in
-
-	if (nError)
-	{
-		delete m_pTransferSocket;
-		m_pTransferSocket=0;
-		if (nError&CSMODE_TRANSFERTIMEOUT)
-			DoClose();
-		else
-			ResetOperation(FZ_REPLY_ERROR);
 		return;
 	}
 
@@ -2513,7 +2498,7 @@ void CFtpControlSocket::ListFile(int nError /*=FALSE*/, CServerPath path /*=CSer
 		case LIST_LISTFILE:
 			if (IsMisleadingListResponse())
 			{
-				ShowStatus(IDS_STATUSMSG_FILELISTSUCCESSFUL, 0);
+				ShowStatus(IDS_STATUSMSG_LISTFILESUCCESSFUL, 0);
 
 				t_directory listing;
 				listing.server = m_CurrentServer;
@@ -2577,7 +2562,7 @@ void CFtpControlSocket::ListFile(int nError /*=FALSE*/, CServerPath path /*=CSer
 					delete m_pTransferSocket;
 					m_pTransferSocket=0;
 				}
-				ShowStatus(IDS_STATUSMSG_FILELISTSUCCESSFUL,0);
+				ShowStatus(IDS_STATUSMSG_LISTFILESUCCESSFUL,0);
 				SetDirectoryListing(pData->pDirectoryListing);
 				ResetOperation(FZ_REPLY_OK);
 				return;
@@ -2600,7 +2585,7 @@ void CFtpControlSocket::ListFile(int nError /*=FALSE*/, CServerPath path /*=CSer
 		pData->fileName=fileName;
 		DEBUG_PRINTF(L"fileName = %s", (LPCWSTR)fileName);
 		m_Operation.pData=pData;
-		ShowStatus(IDS_STATUSMSG_RETRIEVINGFILELIST, 0);
+		ShowStatus(IDS_STATUSMSG_RETRIEVINGLISTFILE, 0);
 		pData->nFinish=-1;
 		if (m_pDirectoryListing)
 		{
@@ -5268,8 +5253,10 @@ void CFtpControlSocket::ResetOperation(int nSuccessful /*=FALSE*/)
 					ShowStatus((m_Operation.nOpMode&CSMODE_DOWNLOAD)?IDS_ERRORMSG_DOWNLOADABORTED:IDS_ERRORMSG_UPLOADABORTED,1);
 				else
 					ShowStatus(((CFileTransferData*)m_Operation.pData)->transferfile.get?IDS_ERRORMSG_DOWNLOADFAILED:IDS_ERRORMSG_UPLOADFAILED,1);
-			else if (m_Operation.nOpMode&(CSMODE_LIST|CSMODE_LISTFILE))
+			else if (m_Operation.nOpMode&CSMODE_LIST)
 				ShowStatus(IDS_ERRORMSG_CANTGETLIST,1);
+			else if (m_Operation.nOpMode&CSMODE_LISTFILE)
+				ShowStatus(IDS_ERRORMSG_CANTGETLISTFILE,1);
 		}
 		else if (m_Operation.pData && m_Operation.nOpMode&CSMODE_TRANSFER && nSuccessful==FZ_REPLY_OK)
 			ShowStatus(((CFileTransferData*)m_Operation.pData)->transferfile.get?IDS_STATUSMSG_DOWNLOADSUCCESSFUL:IDS_STATUSMSG_UPLOADSUCCESSFUL,0);
