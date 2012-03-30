@@ -1894,34 +1894,23 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList *FileList)
     while (Repeat);
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::DoReadFile(const std::wstring Path, const std::wstring NameOnly, TRemoteFile *& AFile)
+void TFTPFileSystem::DoReadFile(const std::wstring FileName, TRemoteFile *& AFile)
 {
-    try
+    TRemoteFileList *FileList = new TRemoteFileList();
     {
-        std::wstring Directory = AbsolutePath(Path, false);
-        std::wstring FullFileName = UnixIncludeTrailingBackslash(Directory) + NameOnly;
-        
-        TRemoteFileList *FileList = new TRemoteFileList();
+        BOOST_SCOPE_EXIT ( (&FileList) )
         {
-            BOOST_SCOPE_EXIT ( (&FileList) )
-            {
-                delete FileList;
-            } BOOST_SCOPE_EXIT_END
-            FileList->SetDirectory(Directory);
-            TFTPFileListHelper Helper(this, FileList, false);
-            FFileZillaIntf->ListFile(nb::W2MB(FullFileName.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str());
+            delete FileList;
+        } BOOST_SCOPE_EXIT_END
+        TFTPFileListHelper Helper(this, FileList, false);
+        FFileZillaIntf->ListFile(nb::W2MB(FileName.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str());
 
-            GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_ALLOW_CANCEL);
-            TRemoteFile *File = FileList->FindFile(FullFileName);
-            if (File)
-                AFile = File->Duplicate();
+        GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_ALLOW_CANCEL);
+        TRemoteFile *File = FileList->FindFile(FileName);
+        if (File)
+            AFile = File->Duplicate();
 
-            FLastDataSent = nb::Now();
-        }
-    }
-    catch (ExtException &E)
-    {
-        throw;
+        FLastDataSent = nb::Now();
     }
 }
 //---------------------------------------------------------------------------
@@ -1933,13 +1922,7 @@ void TFTPFileSystem::ReadFile(const std::wstring FileName,
     TRemoteFile *AFile = NULL;
     if (FServerCapabilities->GetCapability(mlsd_command) == yes)
     {
-        TRemoteFile *OneFile = new TRemoteFile(NULL);
-        BOOST_SCOPE_EXIT ( (&OneFile) )
-        {
-            delete OneFile;
-        } BOOST_SCOPE_EXIT_END
-        DoReadFile(Path, NameOnly, OneFile);
-        AFile = OneFile->Duplicate();
+        DoReadFile(FileName, AFile);
     }
     else
     {

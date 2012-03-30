@@ -85,7 +85,9 @@ typedef struct
 #define FZ_COMMAND_RENAME		0x0080
 #define FZ_COMMAND_MAKEDIR		0x0100
 #define FZ_COMMAND_CHMOD		0x0200
+#ifdef MPEXT
 #define FZ_COMMAND_LISTFILE		0x0400
+#endif
 
 #define FZ_MSG_OFFSET 16
 #define FZ_MSG_OFFSETMASK 0xFFFF
@@ -330,7 +332,7 @@ public:
 	int List(const CServerPath& path, int nListMode=FZ_LIST_USECACHE);
 	int List(const CServerPath& parent, CString dirname, int nListMode=FZ_LIST_USECACHE);
 
-	int ListFile(const CServerPath& path, const CString& fileName, int nListMode=FZ_LIST_EXACT); //Get info about specified file
+	int ListFile(const CServerPath& path, const CString& fileName); //Get info about specified file
 
 	int FileTransfer(const t_transferfile &TransferFile);
 	int GetCurrentServer(t_server &server);

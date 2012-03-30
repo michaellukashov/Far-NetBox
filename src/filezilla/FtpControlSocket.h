@@ -87,7 +87,9 @@ public:
 	virtual void OnTimer();
 	virtual BOOL IsReady();
 	virtual void List(BOOL bFinish, int nError=0, CServerPath path=CServerPath(), CString subdir="", int nListMode = 0);
-	virtual void ListFile(BOOL bFinish, int nError=0, CServerPath path=CServerPath(), CString fileName="", int nListMode = 0);
+#ifdef MPEXT
+	virtual void ListFile(CServerPath path=CServerPath(), CString fileName="");
+#endif
 	virtual void FtpCommand(LPCTSTR pCommand);
 	virtual void Disconnect();
 	virtual void FileTransfer(t_transferfile *transferfile = 0, BOOL bFinish = FALSE, int nError = 0);
