@@ -21,6 +21,7 @@ struct TListDataEntry
   int Day;
   int Hour;
   int Minute;
+  int Second;
   bool HasTime;
   bool HasDate;
   bool Dir;
@@ -65,6 +66,7 @@ struct TFtpsCertificateData
 };
 //---------------------------------------------------------------------------
 class t_server;
+class TFTPServerCapabilities;
 //---------------------------------------------------------------------------
 class TFileZillaIntf
 {
@@ -150,6 +152,7 @@ public:
 
   bool List();
   bool List(const char * Path);
+  bool ListFile(const char * FullFileName);
 
   bool CustomCommand(const wchar_t * Command);
 
@@ -187,7 +190,7 @@ protected:
     __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
     bool FileTransfer) = 0;
   virtual bool HandleReply(int Command, unsigned int Reply) = 0;
-  virtual bool HandleCapabilities(bool Mfmt) = 0;
+  virtual bool HandleCapabilities(TFTPServerCapabilities *ServerCapabilities) = 0;
   virtual bool CheckError(int ReturnCode, const char * Context);
 
   inline bool Check(int ReturnCode, const char * Context, int Expected = -1);

@@ -11,6 +11,7 @@
 #include "FtpFileSystem.h"
 #include "FileZillaIntf.h"
 #include "AsyncProxySocketLayer.h"
+#include "FtpControlSocket.h"
 
 #include "Common.h"
 #include "Exceptions.h"
@@ -62,7 +63,7 @@ protected:
                                       __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
                                       bool FileTransfer);
     virtual bool HandleReply(int Command, unsigned int Reply);
-    virtual bool HandleCapabilities(bool Mfmt);
+    virtual bool HandleCapabilities(TFTPServerCapabilities *ServerCapabilities);
     virtual bool CheckError(int ReturnCode, const char *Context);
 
 private:
@@ -134,9 +135,9 @@ bool TFileZillaImpl::HandleReply(int Command, unsigned int Reply)
     return FFileSystem->HandleReply(Command, Reply);
 }
 //---------------------------------------------------------------------------
-bool TFileZillaImpl::HandleCapabilities(bool Mfmt)
+bool TFileZillaImpl::HandleCapabilities(TFTPServerCapabilities *ServerCapabilities)
 {
-    return FFileSystem->HandleCapabilities(Mfmt);
+    return FFileSystem->HandleCapabilities(ServerCapabilities);
 }
 //---------------------------------------------------------------------------
 bool TFileZillaImpl::CheckError(int ReturnCode, const char *Context)
@@ -209,7 +210,7 @@ TFTPFileSystem::TFTPFileSystem(TTerminal *ATerminal):
     // FOnCaptureOutput(NULL),
     FFileSystemInfoValid(false),
     FDoListAll(false),
-    FMfmt(false)
+    FServerCapabilities(NULL)
 {
     Self = this;
 }
@@ -224,6 +225,7 @@ void TFTPFileSystem::Init()
     FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
     FTimeoutStatus = LoadStr(IDS_ERRORMSG_TIMEOUT);
     FDisconnectStatus = LoadStr(IDS_STATUSMSG_DISCONNECTED);
+    FServerCapabilities = new TFTPServerCapabilities();
 }
 
 //---------------------------------------------------------------------------
@@ -255,6 +257,8 @@ TFTPFileSystem::~TFTPFileSystem()
     FLastError = NULL;
     delete FFeatures;
     FFeatures = NULL;
+    delete FServerCapabilities;
+    FServerCapabilities = NULL;
 
     ResetCaches();
 }
@@ -1330,6 +1334,7 @@ void TFTPFileSystem::SourceRobust(const std::wstring FileName,
     while (Retry);
 }
 //---------------------------------------------------------------------------
+// Copy file to remote host
 void TFTPFileSystem::Source(const std::wstring FileName,
                             const std::wstring TargetDir, const TCopyParamType *CopyParam, int Params,
                             TOpenRemoteFileParams *OpenParams,
@@ -1426,7 +1431,7 @@ void TFTPFileSystem::Source(const std::wstring FileName,
 
         // we are not able to tell if setting timestamp succeeded,
         // so we log it always (if supported)
-        if (FFileTransferPreserveTime && FMfmt)
+        if (FFileTransferPreserveTime && (FServerCapabilities->GetCapability(mfmt_command) == yes))
         {
             // Inspired by SysUtils::FileAge
             WIN32_FIND_DATA FindData;
@@ -1709,7 +1714,7 @@ bool TFTPFileSystem::IsCapable(int Capability) const
         return true;
 
     case fcPreservingTimestampUpload:
-        return FMfmt;
+        return FServerCapabilities->GetCapability(mfmt_command) == yes;
 
     case fcModeChangingUpload:
     case fcLoadingAdditionalProperties:
@@ -1889,42 +1894,67 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList *FileList)
     while (Repeat);
 }
 //---------------------------------------------------------------------------
+void TFTPFileSystem::DoReadFile(const std::wstring FileName, TRemoteFile *& AFile)
+{
+    TRemoteFileList *FileList = new TRemoteFileList();
+    {
+        BOOST_SCOPE_EXIT ( (&FileList) )
+        {
+            delete FileList;
+        } BOOST_SCOPE_EXIT_END
+        TFTPFileListHelper Helper(this, FileList, false);
+        FFileZillaIntf->ListFile(nb::W2MB(FileName.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str());
+
+        GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_ALLOW_CANCEL);
+        TRemoteFile *File = FileList->FindFile(FileName);
+        if (File)
+            AFile = File->Duplicate();
+
+        FLastDataSent = nb::Now();
+    }
+}
+//---------------------------------------------------------------------------
 void TFTPFileSystem::ReadFile(const std::wstring FileName,
                               TRemoteFile *& File)
 {
     std::wstring Path = UnixExtractFilePath(FileName);
     std::wstring NameOnly = UnixExtractFileName(FileName);
-
-    // FZAPI does not have efficient way to read properties of one file.
-    // If case we need properties of set of files from the same directory,
-    // cache the file list for future
     TRemoteFile *AFile = NULL;
-    if ((FFileListCache != NULL) &&
-            UnixComparePaths(Path, FFileListCache->GetDirectory()) &&
-            (TTerminal::IsAbsolutePath(FFileListCache->GetDirectory()) ||
-             (FFileListCachePath == GetCurrentDirectory())))
+    if (FServerCapabilities->GetCapability(mlsd_command) == yes)
     {
-        AFile = FFileListCache->FindFile(NameOnly);
+        DoReadFile(FileName, AFile);
     }
-
-    // if cache is invalid or file is not in cache, (re)read the directory
-    if (AFile == NULL)
+    else
     {
-        delete FFileListCache;
-        FFileListCache = NULL;
-        FFileListCache = new TRemoteFileList();
-        FFileListCache->SetDirectory(Path);
-        ReadDirectory(FFileListCache);
-        FFileListCachePath = GetCurrentDirectory();
+        // FZAPI does not have efficient way to read properties of one file.
+        // If case we need properties of set of files from the same directory,
+        // cache the file list for future
+        if ((FFileListCache != NULL) &&
+                UnixComparePaths(Path, FFileListCache->GetDirectory()) &&
+                (TTerminal::IsAbsolutePath(FFileListCache->GetDirectory()) ||
+                 (FFileListCachePath == GetCurrentDirectory())))
+        {
+            AFile = FFileListCache->FindFile(NameOnly);
+        }
 
-        AFile = FFileListCache->FindFile(NameOnly);
+        // if cache is invalid or file is not in cache, (re)read the directory
         if (AFile == NULL)
         {
-            File = NULL;
-            throw ExtException(FMTLOAD(FILE_NOT_EXISTS, FileName.c_str()));
+            delete FFileListCache;
+            FFileListCache = NULL;
+            FFileListCache = new TRemoteFileList();
+            FFileListCache->SetDirectory(Path);
+            ReadDirectory(FFileListCache);
+            FFileListCachePath = GetCurrentDirectory();
+
+            AFile = FFileListCache->FindFile(NameOnly);
         }
     }
-
+    if (AFile == NULL)
+    {
+        File = NULL;
+        throw ExtException(FMTLOAD(FILE_NOT_EXISTS, FileName.c_str()));
+    }
     assert(AFile != NULL);
     File = AFile->Duplicate();
 }
@@ -2007,7 +2037,6 @@ const TFileSystemInfo &TFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
     if (!FFileSystemInfoValid)
     {
         FFileSystemInfo.RemoteSystem = FSystem;
-        // FFileSystemInfo.RemoteSystem.Unique();
 
         if (FFeatures->GetCount() == 0)
         {
@@ -3400,9 +3429,9 @@ bool TFTPFileSystem::HandleReply(int Command, unsigned int Reply)
     }
 }
 //---------------------------------------------------------------------------
-bool TFTPFileSystem::HandleCapabilities(bool Mfmt)
+bool TFTPFileSystem::HandleCapabilities(TFTPServerCapabilities *ServerCapabilities)
 {
-    FMfmt = Mfmt;
+    FServerCapabilities->Assign(ServerCapabilities);
     FFileSystemInfoValid = false;
     return true;
 }

@@ -1,6 +1,7 @@
 //---------------------------------------------------------------------------
 #include "fzafx.h"
 //---------------------------------------------------------------------------
+#include "FtpControlSocket.h"
 #include "FileZillaIntf.h"
 #include "FileZillaIntern.h"
 #include "FzApiStructures.h"
@@ -215,6 +216,17 @@ bool TFileZillaIntf::List(const char * APath)
   return Check(FFileZillaApi->List(Path), "list");
 }
 //---------------------------------------------------------------------------
+#ifdef MPEXT
+bool TFileZillaIntf::ListFile(const char * AFullFileName)
+{
+  ASSERT(FFileZillaApi != NULL);
+  CString fileName(AFullFileName);
+  CServerPath Path(FServer->nServerType);
+  Path.SetPath(fileName, TRUE);
+  return Check(FFileZillaApi->ListFile(Path, fileName), "listfile");
+}
+#endif
+//---------------------------------------------------------------------------
 bool TFileZillaIntf::FileTransfer(const char * LocalFile,
   const char * RemoteFile, const char * RemotePath, bool Get, __int64 Size,
   int Type, void * UserData)
@@ -283,7 +295,7 @@ void CopyValidityTime(TFtpsCertificateData::TValidityTime & Dest,
 bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
 {
   bool Result;
-
+  TFTPServerCapabilities serverCapabilities;
   unsigned int MessageID = FZ_MSG_ID(wParam);
 
   // DEBUG_PRINTF(L"MessageID = %u, lParam = %u", MessageID, lParam);
@@ -399,6 +411,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
           Dest.Day = Source.date.day;
           Dest.Hour = Source.date.hour;
           Dest.Minute = Source.date.minute;
+          Dest.Second = Source.date.second;
           Dest.HasTime = Source.date.hastime;
           Dest.HasDate = Source.date.hasdate;
           Dest.LinkTarget = reinterpret_cast<const wchar_t *>(Source.linkTarget.GetBuffer(Source.linkTarget.GetLength()));
@@ -434,7 +447,8 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
       break;
 
     case FZ_MSG_CAPABILITIES:
-      Result = HandleCapabilities(lParam & FZ_CAPABILITIES_MFMT);
+      serverCapabilities = *(TFTPServerCapabilities *)lParam;
+      Result = HandleCapabilities(&serverCapabilities);
       break;
 
     case FZ_MSG_SOCKETSTATUS:
