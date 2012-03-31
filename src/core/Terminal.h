@@ -305,14 +305,14 @@ protected:
                          const TRemoteFile *File, void *Param);
     void RecycleFile(const std::wstring FileName, const TRemoteFile *File);
     void DoStartup();
-    virtual bool DoQueryReopen(std::exception *E);
-    virtual void FatalError(const std::exception *E, const std::wstring Msg);
-    void ResetConnection();
-    virtual bool DoPromptUser(TSessionData *Data, TPromptKind Kind,
+    virtual bool __fastcall DoQueryReopen(std::exception *E);
+    virtual void __fastcall FatalError(const std::exception *E, const std::wstring Msg);
+    void __fastcall ResetConnection();
+    virtual bool __fastcall DoPromptUser(TSessionData *Data, TPromptKind Kind,
                               const std::wstring Name, const std::wstring Instructions, nb::TStrings *Prompts,
                               nb::TStrings *Response);
-    void OpenTunnel();
-    void CloseTunnel();
+    void __fastcall OpenTunnel();
+    void __fastcall CloseTunnel();
     void DoInformation(const std::wstring Str, bool Status, bool Active = true);
     std::wstring FileUrl(const std::wstring Protocol, const std::wstring FileName);
     bool PromptUser(TSessionData *Data, TPromptKind Kind,
@@ -324,22 +324,22 @@ protected:
                            TFileOperationProgressType *OperationProgress, HANDLE *AHandle,
                            bool NoConfirmation);
 
-    virtual void Information(const std::wstring Str, bool Status);
-    virtual int QueryUser(const std::wstring Query,
+    virtual void __fastcall Information(const std::wstring Str, bool Status);
+    virtual int __fastcall QueryUser(const std::wstring Query,
                           nb::TStrings *MoreMessages, int Answers, const TQueryParams *Params,
                           TQueryType QueryType = qtConfirmation);
-    virtual int QueryUserException(const std::wstring Query,
+    virtual int __fastcall QueryUserException(const std::wstring Query,
                                    const std::exception *E, int Answers, const TQueryParams *Params,
                                    TQueryType QueryType = qtConfirmation);
-    virtual int QueryUserException(const std::wstring Query,
+    virtual int __fastcall QueryUserException(const std::wstring Query,
                                    const ExtException *E, int Answers, const TQueryParams *Params,
                                    TQueryType QueryType = qtConfirmation);
-    virtual bool PromptUser(TSessionData *Data, TPromptKind Kind,
+    virtual bool __fastcall PromptUser(TSessionData *Data, TPromptKind Kind,
                             const std::wstring Name, const std::wstring Instructions, nb::TStrings *Prompts, nb::TStrings *Results);
-    virtual void DisplayBanner(const std::wstring Banner);
-    virtual void Closed();
-    virtual void HandleExtendedException(const std::exception *E);
-    bool IsListenerFree(size_t PortNumber);
+    virtual void __fastcall DisplayBanner(const std::wstring Banner);
+    virtual void __fastcall Closed();
+    virtual void __fastcall HandleExtendedException(const std::exception *E);
+    bool __fastcall IsListenerFree(size_t PortNumber);
     void DoFinished(TFileOperation Operation, TOperationSide Side, bool Temp,
                     const std::wstring FileName, bool Success, TOnceDoneOperation &OnceDoneOperation);
     void RollbackAction(TSessionAction &Action,
@@ -347,25 +347,25 @@ protected:
     void DoAnyCommand(const std::wstring Command, const captureoutput_slot_type &OutputEvent,
                       TCallSessionAction *Action);
     TRemoteFileList *DoReadDirectoryListing(const std::wstring Directory, bool UseCache);
-    std::wstring EncryptPassword(const std::wstring Password);
-    std::wstring DecryptPassword(const std::wstring Password);
+    std::wstring __fastcall EncryptPassword(const std::wstring Password);
+    std::wstring __fastcall DecryptPassword(const std::wstring Password);
 
-    TFileOperationProgressType *GetOperationProgress() { return FOperationProgress; }
+    TFileOperationProgressType * __fastcall GetOperationProgress() { return FOperationProgress; }
 
 public:
     explicit TTerminal();
-    virtual void Init(TSessionData *SessionData, TConfiguration *Configuration);
+    virtual void __fastcall Init(TSessionData *SessionData, TConfiguration *Configuration);
     virtual ~TTerminal();
-    void Open();
-    void Close();
-    void Reopen(int Params);
-    virtual void DirectoryModified(const std::wstring Path, bool SubDirs);
-    virtual void DirectoryLoaded(TRemoteFileList *FileList);
-    void ShowExtendedException(const std::exception *E);
-    void Idle();
-    void RecryptPasswords();
-    bool AllowedAnyCommand(const std::wstring Command);
-    void AnyCommand(const std::wstring Command,
+    void __fastcall Open();
+    void __fastcall Close();
+    void __fastcall Reopen(int Params);
+    virtual void __fastcall DirectoryModified(const std::wstring Path, bool SubDirs);
+    virtual void __fastcall DirectoryLoaded(TRemoteFileList *FileList);
+    void __fastcall ShowExtendedException(const std::exception *E);
+    void __fastcall Idle();
+    void __fastcall RecryptPasswords();
+    bool __fastcall AllowedAnyCommand(const std::wstring Command);
+    void __fastcall AnyCommand(const std::wstring Command,
                     const captureoutput_slot_type *OutputEvent);
     void CloseOnCompletion(TOnceDoneOperation Operation = odoDisconnect, const std::wstring Message = L"");
     std::wstring AbsolutePath(const std::wstring Path, bool Local);
@@ -449,15 +449,15 @@ public:
     void inline LogEvent(const std::wstring Str);
 
     static bool IsAbsolutePath(const std::wstring Path);
-    static std::wstring ExpandFileName(const std::wstring Path,
+    static std::wstring __fastcall ExpandFileName(const std::wstring Path,
                                        const std::wstring BasePath);
 
-    TSessionData *GetSessionData() { return FSessionData; }
-    TSessionLog *GetLog() { return FLog; }
-    TConfiguration *GetConfiguration() { return FConfiguration; }
-    bool GetActive();
-    TSessionStatus GetStatus() { return FStatus; }
-    std::wstring GetCurrentDirectory();
+    TSessionData *__fastcall GetSessionData() { return FSessionData; }
+    TSessionLog *__fastcall GetLog() { return FLog; }
+    TConfiguration *__fastcall GetConfiguration() { return FConfiguration; }
+    bool __fastcall GetActive();
+    TSessionStatus __fastcall GetStatus() { return FStatus; }
+    std::wstring __fastcall GetCurrentDirectory();
     void SetCurrentDirectory(const std::wstring value);
     bool GetExceptionOnFail() const;
     void SetExceptionOnFail(bool value);
@@ -513,16 +513,16 @@ class TSecondaryTerminal : public TTerminal
 {
 public:
     explicit TSecondaryTerminal(TTerminal *MainTerminal);
-    virtual void Init(TSessionData *SessionData, TConfiguration *Configuration,
+    virtual void __fastcall Init(TSessionData *SessionData, TConfiguration *Configuration,
                       const std::wstring Name);
     virtual ~TSecondaryTerminal()
     {}
 
 protected:
-    virtual void DirectoryLoaded(TRemoteFileList *FileList);
-    virtual void DirectoryModified(const std::wstring Path,
+    virtual void __fastcall DirectoryLoaded(TRemoteFileList *FileList);
+    virtual void __fastcall DirectoryModified(const std::wstring Path,
                                    bool SubDirs);
-    virtual bool DoPromptUser(TSessionData *Data, TPromptKind Kind,
+    virtual bool __fastcall DoPromptUser(TSessionData *Data, TPromptKind Kind,
                               const std::wstring Name, const std::wstring Instructions, nb::TStrings *Prompts, nb::TStrings *Results);
 
 private:

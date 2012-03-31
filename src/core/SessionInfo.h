@@ -62,20 +62,20 @@ public:
     {}
     virtual ~TSessionUI()
     {}
-    virtual void Information(const std::wstring Str, bool Status) = 0;
-    virtual int QueryUser(const std::wstring Query,
+    virtual void __fastcall Information(const std::wstring Str, bool Status) = 0;
+    virtual int __fastcall QueryUser(const std::wstring Query,
                           nb::TStrings *MoreMessages, int Answers, const TQueryParams *Params,
                           TQueryType QueryType = qtConfirmation) = 0;
-    virtual int QueryUserException(const std::wstring Query,
+    virtual int __fastcall QueryUserException(const std::wstring Query,
                                    const std::exception *E, int Answers, const TQueryParams *Params,
                                    TQueryType QueryType = qtConfirmation) = 0;
-    virtual bool PromptUser(TSessionData *Data, TPromptKind Kind,
+    virtual bool __fastcall PromptUser(TSessionData *Data, TPromptKind Kind,
                             const std::wstring Name, const std::wstring Instructions, nb::TStrings *Prompts,
                             nb::TStrings *Results) = 0;
-    virtual void DisplayBanner(const std::wstring Banner) = 0;
-    virtual void FatalError(const std::exception *E, const std::wstring Msg) = 0;
-    virtual void HandleExtendedException(const std::exception *E) = 0;
-    virtual void Closed() = 0;
+    virtual void __fastcall DisplayBanner(const std::wstring Banner) = 0;
+    virtual void __fastcall FatalError(const std::exception *E, const std::wstring Msg) = 0;
+    virtual void __fastcall HandleExtendedException(const std::exception *E) = 0;
+    virtual void __fastcall Closed() = 0;
 };
 //---------------------------------------------------------------------------
 // Duplicated in LogMemo.h for design-time-only purposes

@@ -252,9 +252,9 @@ public:
     explicit TKeepaliveThread(TWinSCPFileSystem *FileSystem, nb::TDateTime Interval);
     virtual ~TKeepaliveThread()
     {}
-    virtual void Init();
-    virtual void Execute();
-    virtual void Terminate();
+    virtual void __fastcall Init();
+    virtual void __fastcall Execute();
+    virtual void __fastcall Terminate();
 
 private:
     TWinSCPFileSystem *FFileSystem;
@@ -270,19 +270,19 @@ TKeepaliveThread::TKeepaliveThread(TWinSCPFileSystem *FileSystem,
 {
 }
 //---------------------------------------------------------------------------
-void TKeepaliveThread::Init()
+void __fastcall TKeepaliveThread::Init()
 {
     TSimpleThread::Init();
     FEvent = CreateEvent(NULL, false, false, NULL);
     Start();
 }
 //---------------------------------------------------------------------------
-void TKeepaliveThread::Terminate()
+void __fastcall TKeepaliveThread::Terminate()
 {
     SetEvent(FEvent);
 }
 //---------------------------------------------------------------------------
-void TKeepaliveThread::Execute()
+void __fastcall TKeepaliveThread::Execute()
 {
     while (!IsFinished())
     {

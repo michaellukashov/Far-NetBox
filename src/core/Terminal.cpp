@@ -212,11 +212,11 @@ public:
     explicit TTunnelThread(TSecureShell *SecureShell);
     virtual ~TTunnelThread();
 
-    virtual void Init();
-    virtual void Terminate();
+    virtual void __fastcall Init();
+    virtual void __fastcall Terminate();
 
 protected:
-    virtual void Execute();
+    virtual void __fastcall Execute();
 
 private:
     TSecureShell *FSecureShell;
@@ -232,7 +232,7 @@ TTunnelThread::TTunnelThread(TSecureShell *SecureShell) :
 {
 }
 //---------------------------------------------------------------------------
-void TTunnelThread::Init()
+void __fastcall TTunnelThread::Init()
 {
     Self = this;
     TSimpleThread::Init();
@@ -246,12 +246,12 @@ TTunnelThread::~TTunnelThread()
     Close();
 }
 //---------------------------------------------------------------------------
-void TTunnelThread::Terminate()
+void __fastcall TTunnelThread::Terminate()
 {
     FTerminated = true;
 }
 //---------------------------------------------------------------------------
-void TTunnelThread::Execute()
+void __fastcall TTunnelThread::Execute()
 {
     // DEBUG_PRINTF(L"begin");
     try
@@ -283,20 +283,20 @@ public:
     explicit TTunnelUI(TTerminal *Terminal);
     virtual ~TTunnelUI()
     {}
-    virtual void Information(const std::wstring Str, bool Status);
-    virtual int QueryUser(const std::wstring Query,
+    virtual void __fastcall Information(const std::wstring Str, bool Status);
+    virtual int __fastcall QueryUser(const std::wstring Query,
                           nb::TStrings *MoreMessages, int Answers, const TQueryParams *Params,
                           TQueryType QueryType);
-    virtual int QueryUserException(const std::wstring Query,
+    virtual int __fastcall QueryUserException(const std::wstring Query,
                                    const std::exception *E, int Answers, const TQueryParams *Params,
                                    TQueryType QueryType);
-    virtual bool PromptUser(TSessionData *Data, TPromptKind Kind,
+    virtual bool __fastcall PromptUser(TSessionData *Data, TPromptKind Kind,
                             const std::wstring Name, const std::wstring Instructions, nb::TStrings *Prompts,
                             nb::TStrings *Results);
-    virtual void DisplayBanner(const std::wstring Banner);
-    virtual void FatalError(const std::exception *E, const std::wstring Msg);
-    virtual void HandleExtendedException(const std::exception *E);
-    virtual void Closed();
+    virtual void __fastcall DisplayBanner(const std::wstring Banner);
+    virtual void __fastcall FatalError(const std::exception *E, const std::wstring Msg);
+    virtual void __fastcall HandleExtendedException(const std::exception *E);
+    virtual void __fastcall Closed();
 
 private:
     TTerminal *FTerminal;
@@ -309,7 +309,7 @@ TTunnelUI::TTunnelUI(TTerminal *Terminal)
     FTerminalThread = GetCurrentThreadId();
 }
 //---------------------------------------------------------------------------
-void TTunnelUI::Information(const std::wstring Str, bool Status)
+void __fastcall TTunnelUI::Information(const std::wstring Str, bool Status)
 {
     if (GetCurrentThreadId() == FTerminalThread)
     {
@@ -317,7 +317,7 @@ void TTunnelUI::Information(const std::wstring Str, bool Status)
     }
 }
 //---------------------------------------------------------------------------
-int TTunnelUI::QueryUser(const std::wstring Query,
+int __fastcall TTunnelUI::QueryUser(const std::wstring Query,
                          nb::TStrings *MoreMessages, int Answers, const TQueryParams *Params,
                          TQueryType QueryType)
 {
@@ -333,7 +333,7 @@ int TTunnelUI::QueryUser(const std::wstring Query,
     return Result;
 }
 //---------------------------------------------------------------------------
-int TTunnelUI::QueryUserException(const std::wstring Query,
+int __fastcall TTunnelUI::QueryUserException(const std::wstring Query,
                                   const std::exception *E, int Answers, const TQueryParams *Params,
                                   TQueryType QueryType)
 {
@@ -349,7 +349,7 @@ int TTunnelUI::QueryUserException(const std::wstring Query,
     return Result;
 }
 //---------------------------------------------------------------------------
-bool TTunnelUI::PromptUser(TSessionData *Data, TPromptKind Kind,
+bool __fastcall TTunnelUI::PromptUser(TSessionData *Data, TPromptKind Kind,
                            const std::wstring Name, const std::wstring Instructions, nb::TStrings *Prompts, nb::TStrings *Results)
 {
     bool Result;
@@ -371,7 +371,7 @@ bool TTunnelUI::PromptUser(TSessionData *Data, TPromptKind Kind,
     return Result;
 }
 //---------------------------------------------------------------------------
-void TTunnelUI::DisplayBanner(const std::wstring Banner)
+void __fastcall TTunnelUI::DisplayBanner(const std::wstring Banner)
 {
     if (GetCurrentThreadId() == FTerminalThread)
     {
@@ -379,12 +379,12 @@ void TTunnelUI::DisplayBanner(const std::wstring Banner)
     }
 }
 //---------------------------------------------------------------------------
-void TTunnelUI::FatalError(const std::exception *E, const std::wstring Msg)
+void __fastcall TTunnelUI::FatalError(const std::exception *E, const std::wstring Msg)
 {
     throw ESshFatal(Msg, E);
 }
 //---------------------------------------------------------------------------
-void TTunnelUI::HandleExtendedException(const std::exception *E)
+void __fastcall TTunnelUI::HandleExtendedException(const std::exception *E)
 {
     if (GetCurrentThreadId() == FTerminalThread)
     {
@@ -392,7 +392,7 @@ void TTunnelUI::HandleExtendedException(const std::exception *E)
     }
 }
 //---------------------------------------------------------------------------
-void TTunnelUI::Closed()
+void __fastcall TTunnelUI::Closed()
 {
     // noop
 }
@@ -404,9 +404,9 @@ public:
     inline TCallbackGuard(TTerminal *FTerminal);
     inline ~TCallbackGuard();
 
-    void FatalError(const std::exception *E, const std::wstring Msg);
-    inline void Verify();
-    void Dismiss();
+    void __fastcall FatalError(const std::exception *E, const std::wstring Msg);
+    inline void __fastcall Verify();
+    void __fastcall Dismiss();
 
 private:
     ExtException *FFatalError;
@@ -444,7 +444,7 @@ public:
     }
 };
 //---------------------------------------------------------------------------
-void TCallbackGuard::FatalError(const std::exception *E, const std::wstring Msg)
+void __fastcall TCallbackGuard::FatalError(const std::exception *E, const std::wstring Msg)
 {
     assert(FGuarding);
 
@@ -465,13 +465,13 @@ void TCallbackGuard::FatalError(const std::exception *E, const std::wstring Msg)
     throw ECallbackGuardAbort();
 }
 //---------------------------------------------------------------------------
-void TCallbackGuard::Dismiss()
+void __fastcall TCallbackGuard::Dismiss()
 {
     assert(FFatalError == NULL);
     FGuarding = false;
 }
 //---------------------------------------------------------------------------
-void TCallbackGuard::Verify()
+void __fastcall TCallbackGuard::Verify()
 {
     if (FGuarding)
     {
@@ -492,7 +492,7 @@ TTerminal::TTerminal() :
 {
 }
 
-void TTerminal::Init(TSessionData *SessionData, TConfiguration *Configuration)
+void __fastcall TTerminal::Init(TSessionData *SessionData, TConfiguration *Configuration)
 {
     FConfiguration = Configuration;
     FSessionData = new TSessionData(L"");
@@ -564,7 +564,7 @@ TTerminal::~TTerminal()
     SAFE_DESTROY(FSessionData);
 }
 //---------------------------------------------------------------------------
-void TTerminal::Idle()
+void __fastcall TTerminal::Idle()
 {
     // once we disconnect, do nothing, until reconnect handler
     // "receives the information"
@@ -599,12 +599,12 @@ void TTerminal::Idle()
     }
 }
 //---------------------------------------------------------------------
-std::wstring TTerminal::EncryptPassword(const std::wstring Password)
+std::wstring __fastcall TTerminal::EncryptPassword(const std::wstring Password)
 {
     return Configuration->EncryptPassword(Password, GetSessionData()->GetSessionName());
 }
 //---------------------------------------------------------------------
-std::wstring TTerminal::DecryptPassword(const std::wstring Password)
+std::wstring __fastcall TTerminal::DecryptPassword(const std::wstring Password)
 {
     std::wstring Result;
     try
@@ -618,7 +618,7 @@ std::wstring TTerminal::DecryptPassword(const std::wstring Password)
     return Result;
 }
 //---------------------------------------------------------------------------
-void TTerminal::RecryptPasswords()
+void __fastcall TTerminal::RecryptPasswords()
 {
     FSessionData->RecryptPasswords();
     FPassword = EncryptPassword(DecryptPassword(FPassword));
@@ -630,7 +630,7 @@ bool TTerminal::IsAbsolutePath(const std::wstring Path)
     return !Path.empty() && Path[0] == '/';
 }
 //---------------------------------------------------------------------------
-std::wstring TTerminal::ExpandFileName(const std::wstring Path,
+std::wstring __fastcall TTerminal::ExpandFileName(const std::wstring Path,
                                        const std::wstring BasePath)
 {
     std::wstring path = UnixExcludeTrailingBackslash(Path);
@@ -650,12 +650,12 @@ std::wstring TTerminal::ExpandFileName(const std::wstring Path,
     return path;
 }
 //---------------------------------------------------------------------------
-bool TTerminal::GetActive()
+bool __fastcall TTerminal::GetActive()
 {
     return (FFileSystem != NULL) && FFileSystem->GetActive();
 }
 //---------------------------------------------------------------------------
-void TTerminal::Close()
+void __fastcall TTerminal::Close()
 {
     FFileSystem->Close();
 
@@ -665,7 +665,7 @@ void TTerminal::Close()
     }
 }
 //---------------------------------------------------------------------------
-void TTerminal::ResetConnection()
+void __fastcall TTerminal::ResetConnection()
 {
     FAnyInformation = false;
     // used to be called from Reopen(), why?
@@ -682,7 +682,7 @@ void TTerminal::ResetConnection()
     // as they can still be referenced in the GUI atm
 }
 //---------------------------------------------------------------------------
-void TTerminal::Open()
+void __fastcall TTerminal::Open()
 {
     // DEBUG_PRINTF(L"begin");
     FLog->ReflectSettings();
@@ -906,7 +906,7 @@ void TTerminal::Open()
     // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-bool TTerminal::IsListenerFree(size_t PortNumber)
+bool __fastcall TTerminal::IsListenerFree(size_t PortNumber)
 {
     SOCKET Socket = socket(AF_INET, SOCK_STREAM, 0);
     bool Result = (Socket != INVALID_SOCKET);
@@ -924,7 +924,7 @@ bool TTerminal::IsListenerFree(size_t PortNumber)
     return Result;
 }
 //---------------------------------------------------------------------------
-void TTerminal::OpenTunnel()
+void __fastcall TTerminal::OpenTunnel()
 {
     assert(FTunnelData == NULL);
 
@@ -994,7 +994,7 @@ void TTerminal::OpenTunnel()
     }
 }
 //---------------------------------------------------------------------------
-void TTerminal::CloseTunnel()
+void __fastcall TTerminal::CloseTunnel()
 {
     SAFE_DESTROY_EX(TTunnelThread, FTunnelThread);
     FTunnelError = FTunnel->GetLastTunnelError();
@@ -1653,7 +1653,7 @@ void TTerminal::SetCurrentDirectory(const std::wstring Value)
     }
 }
 //---------------------------------------------------------------------------
-std::wstring TTerminal::GetCurrentDirectory()
+std::wstring __fastcall TTerminal::GetCurrentDirectory()
 {
     if (FFileSystem)
     {

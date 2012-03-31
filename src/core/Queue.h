@@ -13,20 +13,20 @@ class TSimpleThread : public nb::TObject
 public:
     explicit TSimpleThread();
     virtual ~TSimpleThread();
-    virtual void Init();
-    virtual void Start();
-    void WaitFor(unsigned int Milliseconds = INFINITE);
-    virtual void Terminate() = 0;
-    void Close();
-    bool IsFinished();
+    virtual void __fastcall Init();
+    virtual void __fastcall Start();
+    void __fastcall WaitFor(unsigned int Milliseconds = INFINITE);
+    virtual void __fastcall Terminate() = 0;
+    void __fastcall Close();
+    bool __fastcall IsFinished();
 
-    static int ThreadProc(void *Thread);
+    static int __fastcall ThreadProc(void *Thread);
 protected:
     HANDLE FThread;
     bool FFinished;
 
-    virtual void Execute() = 0;
-    virtual void Finished();
+    virtual void __fastcall Execute() = 0;
+    virtual void __fastcall Finished();
 
 private:
     TSimpleThread(const TSimpleThread &);
@@ -36,10 +36,10 @@ private:
 class TSignalThread : public TSimpleThread
 {
 public:
-    virtual void Init();
-    virtual void Start();
-    virtual void Terminate();
-    void TriggerEvent();
+    virtual void __fastcall Init();
+    virtual void __fastcall Start();
+    virtual void __fastcall Terminate();
+    void __fastcall TriggerEvent();
 
 protected:
     HANDLE FEvent;
@@ -48,9 +48,9 @@ protected:
     explicit TSignalThread();
     virtual ~TSignalThread();
 
-    bool WaitForEvent();
-    virtual void Execute();
-    virtual void ProcessEvent() = 0;
+    bool __fastcall WaitForEvent();
+    virtual void __fastcall Execute();
+    virtual void __fastcall ProcessEvent() = 0;
 };
 //---------------------------------------------------------------------------
 class TTerminal;
@@ -77,26 +77,26 @@ public:
     explicit TTerminalQueue(TTerminal *Terminal, TConfiguration *Configuration);
     virtual ~TTerminalQueue();
 
-    virtual void Init();
-    void AddItem(TQueueItem *Item);
-    TTerminalQueueStatus *CreateStatus(TTerminalQueueStatus *Current);
-    void Idle();
+    virtual void __fastcall Init();
+    void __fastcall AddItem(TQueueItem *Item);
+    TTerminalQueueStatus * __fastcall CreateStatus(TTerminalQueueStatus *Current);
+    void __fastcall Idle();
 
-    bool GetIsEmpty();
-    size_t GetTransfersLimit() { return FTransfersLimit; }
-    void SetTransfersLimit(size_t value);
-    queryuser_signal_type &GetOnQueryUser() { return FOnQueryUser; }
-    void SetOnQueryUser(const queryuser_slot_type &value) { FOnQueryUser.connect(value); }
-    promptuser_signal_type &GetOnPromptUser() { return FOnPromptUser; }
-    void SetOnPromptUser(const promptuser_slot_type &value) { FOnPromptUser.connect(value); }
-    extendedexception_signal_type &GetOnShowExtendedException() { return FOnShowExtendedException; }
-    void SetOnShowExtendedException(const extendedexception_slot_type &value) { FOnShowExtendedException.connect(value); }
-    queuelistupdate_signal_type &GetOnListUpdate() { return FOnListUpdate; }
-    void SetOnListUpdate(const queuelistupdate_slot_type &value) { FOnListUpdate.connect(value); }
-    queueitemupdate_signal_type &GetOnQueueItemUpdate() { return FOnQueueItemUpdate; }
-    void SetOnQueueItemUpdate(const queueitemupdate_slot_type &value) { FOnQueueItemUpdate.connect(value); }
-    queueevent_signal_type &GetOnEvent() { return FOnEvent; }
-    void SetOnEvent(const queueevent_slot_type &value) { FOnEvent.connect(value); }
+    bool __fastcall GetIsEmpty();
+    size_t __fastcall GetTransfersLimit() { return FTransfersLimit; }
+    void __fastcall SetTransfersLimit(size_t value);
+    queryuser_signal_type & __fastcall GetOnQueryUser() { return FOnQueryUser; }
+    void __fastcall SetOnQueryUser(const queryuser_slot_type &value) { FOnQueryUser.connect(value); }
+    promptuser_signal_type & __fastcall GetOnPromptUser() { return FOnPromptUser; }
+    void __fastcall SetOnPromptUser(const promptuser_slot_type &value) { FOnPromptUser.connect(value); }
+    extendedexception_signal_type & __fastcall GetOnShowExtendedException() { return FOnShowExtendedException; }
+    void __fastcall SetOnShowExtendedException(const extendedexception_slot_type &value) { FOnShowExtendedException.connect(value); }
+    queuelistupdate_signal_type & __fastcall GetOnListUpdate() { return FOnListUpdate; }
+    void __fastcall SetOnListUpdate(const queuelistupdate_slot_type &value) { FOnListUpdate.connect(value); }
+    queueitemupdate_signal_type & __fastcall GetOnQueueItemUpdate() { return FOnQueueItemUpdate; }
+    void __fastcall SetOnQueueItemUpdate(const queueitemupdate_slot_type &value) { FOnQueueItemUpdate.connect(value); }
+    queueevent_signal_type & __fastcall GetOnEvent() { return FOnEvent; }
+    void __fastcall SetOnEvent(const queueevent_slot_type &value) { FOnEvent.connect(value); }
 
 protected:
     friend class TTerminalItem;
@@ -125,33 +125,33 @@ protected:
     nb::TDateTime FLastIdle;
     TTerminalQueue *Self;
 
-    TQueueItem *GetItem(size_t Index);
-    bool ItemGetData(TQueueItem *Item, TQueueItemProxy *Proxy);
-    bool ItemProcessUserAction(TQueueItem *Item, void *Arg);
-    bool ItemMove(TQueueItem *Item, TQueueItem *BeforeItem);
-    bool ItemExecuteNow(TQueueItem *Item);
-    bool ItemDelete(TQueueItem *Item);
-    bool ItemPause(TQueueItem *Item, bool Pause);
-    bool ItemSetCPSLimit(TQueueItem *Item, unsigned long CPSLimit);
+    TQueueItem * __fastcall GetItem(size_t Index);
+    bool __fastcall ItemGetData(TQueueItem *Item, TQueueItemProxy *Proxy);
+    bool __fastcall ItemProcessUserAction(TQueueItem *Item, void *Arg);
+    bool __fastcall ItemMove(TQueueItem *Item, TQueueItem *BeforeItem);
+    bool __fastcall ItemExecuteNow(TQueueItem *Item);
+    bool __fastcall ItemDelete(TQueueItem *Item);
+    bool __fastcall ItemPause(TQueueItem *Item, bool Pause);
+    bool __fastcall ItemSetCPSLimit(TQueueItem *Item, unsigned long CPSLimit);
 
-    void RetryItem(TQueueItem *Item);
-    void DeleteItem(TQueueItem *Item);
+    void __fastcall RetryItem(TQueueItem *Item);
+    void __fastcall DeleteItem(TQueueItem *Item);
 
-    virtual void ProcessEvent();
-    void TerminalFinished(TTerminalItem *TerminalItem);
-    bool TerminalFree(TTerminalItem *TerminalItem);
+    virtual void __fastcall ProcessEvent();
+    void __fastcall TerminalFinished(TTerminalItem *TerminalItem);
+    bool __fastcall TerminalFree(TTerminalItem *TerminalItem);
 
-    void DoQueryUser(nb::TObject *Sender, const std::wstring Query,
+    void __fastcall DoQueryUser(nb::TObject *Sender, const std::wstring Query,
                      nb::TStrings *MoreMessages, int Answers, const TQueryParams *Params, int &Answer,
                      TQueryType Type, void *Arg);
-    void DoPromptUser(TTerminal *Terminal, TPromptKind Kind,
+    void __fastcall DoPromptUser(TTerminal *Terminal, TPromptKind Kind,
                       const std::wstring Name, const std::wstring Instructions, nb::TStrings *Prompts,
                       nb::TStrings *Results, bool &Result, void *Arg);
-    void DoShowExtendedException(TTerminal *Terminal,
+    void __fastcall DoShowExtendedException(TTerminal *Terminal,
                                  const std::exception *E, void *Arg);
-    void DoQueueItemUpdate(TQueueItem *Item);
-    void DoListUpdate();
-    void DoEvent(TQueueEvent Event);
+    void __fastcall DoQueueItemUpdate(TQueueItem *Item);
+    void __fastcall DoListUpdate();
+    void __fastcall DoEvent(TQueueEvent Event);
 };
 //---------------------------------------------------------------------------
 class TQueueItem : public nb::TObject
@@ -175,11 +175,11 @@ public:
         std::wstring ModifiedRemote;
     };
 
-    static bool IsUserActionStatus(TStatus Status);
+    static bool __fastcall IsUserActionStatus(TStatus Status);
 
-    TStatus GetStatus();
-    HANDLE GetCompleteEvent() { return FCompleteEvent; }
-    void SetCompleteEvent(HANDLE value) { FCompleteEvent = value; }
+    TStatus __fastcall GetStatus();
+    HANDLE __fastcall GetCompleteEvent() { return FCompleteEvent; }
+    void __fastcall SetCompleteEvent(HANDLE value) { FCompleteEvent = value; }
 
 protected:
     TStatus FStatus;
@@ -196,13 +196,13 @@ protected:
     explicit TQueueItem();
     virtual ~TQueueItem();
 
-    void SetStatus(TStatus Status);
-    void Execute(TTerminalItem *TerminalItem);
-    virtual void DoExecute(TTerminal *Terminal) = 0;
-    void SetProgress(TFileOperationProgressType &ProgressData);
-    void GetData(TQueueItemProxy *Proxy);
-    void SetCPSLimit(unsigned long CPSLimit);
-    virtual std::wstring StartupDirectory() = 0;
+    void __fastcall SetStatus(TStatus Status);
+    void __fastcall Execute(TTerminalItem *TerminalItem);
+    virtual void __fastcall DoExecute(TTerminal *Terminal) = 0;
+    void __fastcall SetProgress(TFileOperationProgressType &ProgressData);
+    void __fastcall GetData(TQueueItemProxy *Proxy);
+    void __fastcall SetCPSLimit(unsigned long CPSLimit);
+    virtual std::wstring __fastcall StartupDirectory() = 0;
 };
 //---------------------------------------------------------------------------
 class TQueueItemProxy
@@ -212,23 +212,23 @@ class TQueueItemProxy
     friend class TTerminalQueue;
 
 public:
-    bool Update();
-    bool ProcessUserAction(void *Arg = NULL);
-    bool Move(bool Sooner);
-    bool Move(TQueueItemProxy *BeforeItem);
-    bool ExecuteNow();
-    bool Delete();
-    bool Pause();
-    bool Resume();
-    bool SetCPSLimit(unsigned long CPSLimit);
+    bool __fastcall Update();
+    bool __fastcall ProcessUserAction(void *Arg = NULL);
+    bool __fastcall Move(bool Sooner);
+    bool __fastcall Move(TQueueItemProxy *BeforeItem);
+    bool __fastcall ExecuteNow();
+    bool __fastcall Delete();
+    bool __fastcall Pause();
+    bool __fastcall Resume();
+    bool __fastcall SetCPSLimit(unsigned long CPSLimit);
 
-    TFileOperationProgressType *GetProgressData();
-    TQueueItem::TInfo *GetInfo() { return FInfo; }
-    TQueueItem::TStatus GetStatus() { return FStatus; }
-    bool GetProcessingUserAction() { return FProcessingUserAction; }
-    size_t GetIndex();
-    void *GetUserData() { return FUserData; }
-    void SetUserData(void *value) { FUserData = value; }
+    TFileOperationProgressType * __fastcall GetProgressData();
+    TQueueItem::TInfo * __fastcall GetInfo() { return FInfo; }
+    TQueueItem::TStatus __fastcall GetStatus() { return FStatus; }
+    bool __fastcall GetProcessingUserAction() { return FProcessingUserAction; }
+    size_t __fastcall GetIndex();
+    void * __fastcall GetUserData() { return FUserData; }
+    void __fastcall SetUserData(void *value) { FUserData = value; }
 
 private:
     TFileOperationProgressType *FProgressData;
@@ -254,18 +254,18 @@ class TTerminalQueueStatus
 public:
     virtual ~TTerminalQueueStatus();
 
-    TQueueItemProxy *FindByQueueItem(TQueueItem *QueueItem);
+    TQueueItemProxy * __fastcall FindByQueueItem(TQueueItem *QueueItem);
 
-    size_t GetCount();
-    size_t GetActiveCount();
-    TQueueItemProxy *GetItem(size_t Index);
+    size_t __fastcall GetCount();
+    size_t __fastcall GetActiveCount();
+    TQueueItemProxy * __fastcall GetItem(size_t Index);
 
 protected:
     TTerminalQueueStatus();
 
-    void Add(TQueueItemProxy *ItemProxy);
-    void Delete(TQueueItemProxy *ItemProxy);
-    void ResetStats();
+    void __fastcall Add(TQueueItemProxy *ItemProxy);
+    void __fastcall Delete(TQueueItemProxy *ItemProxy);
+    void __fastcall ResetStats();
 
 private:
     nb::TList *FList;
@@ -280,8 +280,8 @@ protected:
     virtual ~TLocatedQueueItem()
     {}
 
-    virtual void DoExecute(TTerminal *Terminal);
-    virtual std::wstring StartupDirectory();
+    virtual void __fastcall DoExecute(TTerminal *Terminal);
+    virtual std::wstring __fastcall StartupDirectory();
 
 private:
     std::wstring FCurrentDir;
@@ -311,7 +311,7 @@ public:
     virtual ~TUploadQueueItem()
     {}
 protected:
-    virtual void DoExecute(TTerminal *Terminal);
+    virtual void __fastcall DoExecute(TTerminal *Terminal);
 };
 //---------------------------------------------------------------------------
 class TDownloadQueueItem : public TTransferQueueItem
@@ -323,7 +323,7 @@ public:
     virtual ~TDownloadQueueItem()
     {}
 protected:
-    virtual void DoExecute(TTerminal *Terminal);
+    virtual void __fastcall DoExecute(TTerminal *Terminal);
 };
 //---------------------------------------------------------------------------
 #endif
