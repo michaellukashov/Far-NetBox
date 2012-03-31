@@ -230,7 +230,7 @@ private:
     std::wstring FUserName;
     TAutoSwitch FListAll;
     bool FDoListAll;
-	TFTPServerCapabilities *FServerCapabilities;
+    TFTPServerCapabilities *FServerCapabilities;
     nb::TDateTime FLastDataSent;
     mutable std::wstring FOptionScratch;
     TFTPFileSystem *Self;
