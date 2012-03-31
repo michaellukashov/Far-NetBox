@@ -45,8 +45,8 @@ private:
     std::vector<__int64> FTotalTransferredThen;
 
 protected:
-    void ClearTransfer();
-    inline void DoProgress();
+    void __fastcall ClearTransfer();
+    inline void __fastcall DoProgress();
 
 public:
     // common data
@@ -90,46 +90,46 @@ public:
         const fileoperationprogress_slot_type &AOnProgress,
         const fileoperationfinished_slot_type &AOnFinished);
     ~TFileOperationProgressType();
-    void AddLocallyUsed(__int64 ASize);
-    void AddTransfered(__int64 ASize, bool AddToTotals = true);
-    void AddResumed(__int64 ASize);
-    void Clear();
-    size_t CPS();
-    void Finish(const std::wstring FileName, bool Success,
+    void __fastcall AddLocallyUsed(__int64 ASize);
+    void __fastcall AddTransfered(__int64 ASize, bool AddToTotals = true);
+    void __fastcall AddResumed(__int64 ASize);
+    void __fastcall Clear();
+    size_t __fastcall CPS();
+    void __fastcall Finish(const std::wstring FileName, bool Success,
                 TOnceDoneOperation &OnceDoneOperation);
-    size_t LocalBlockSize();
-    bool IsLocallyDone();
-    bool IsTransferDone();
-    void SetFile(const std::wstring AFileName, bool AFileInProgress = true);
-    void SetFileInProgress();
-    size_t OperationProgress();
-    size_t TransferBlockSize();
-    size_t AdjustToCPSLimit(size_t Size);
-    static size_t StaticBlockSize();
-    void Reset();
-    void Resume();
-    void SetLocalSize(__int64 ASize);
-    void SetAsciiTransfer(bool AAsciiTransfer);
-    void SetResumeStatus(TResumeStatus AResumeStatus);
-    void SetTransferSize(__int64 ASize);
-    void ChangeTransferSize(__int64 ASize);
-    void RollbackTransfer();
-    void SetTotalSize(__int64 ASize);
-    void Start(TFileOperation AOperation, TOperationSide ASide, size_t ACount);
-    void Start(TFileOperation AOperation,
+    size_t __fastcall LocalBlockSize();
+    bool __fastcall IsLocallyDone();
+    bool __fastcall IsTransferDone();
+    void __fastcall SetFile(const std::wstring AFileName, bool AFileInProgress = true);
+    void __fastcall SetFileInProgress();
+    size_t __fastcall OperationProgress();
+    size_t __fastcall TransferBlockSize();
+    size_t __fastcall AdjustToCPSLimit(size_t Size);
+    static size_t __fastcall StaticBlockSize();
+    void __fastcall Reset();
+    void __fastcall Resume();
+    void __fastcall SetLocalSize(__int64 ASize);
+    void __fastcall SetAsciiTransfer(bool AAsciiTransfer);
+    void __fastcall SetResumeStatus(TResumeStatus AResumeStatus);
+    void __fastcall SetTransferSize(__int64 ASize);
+    void __fastcall ChangeTransferSize(__int64 ASize);
+    void __fastcall RollbackTransfer();
+    void __fastcall SetTotalSize(__int64 ASize);
+    void __fastcall Start(TFileOperation AOperation, TOperationSide ASide, size_t ACount);
+    void __fastcall Start(TFileOperation AOperation,
                TOperationSide ASide, size_t ACount, bool ATemp, const std::wstring ADirectory,
                size_t ACPSLimit);
-    void Stop();
-    void Suspend();
+    void __fastcall Stop();
+    void __fastcall Suspend();
     // whole operation
-    nb::TDateTime TimeElapsed();
+    nb::TDateTime __fastcall TimeElapsed();
     // only current file
-    nb::TDateTime TimeExpected();
-    nb::TDateTime TotalTimeExpected();
-    nb::TDateTime TotalTimeLeft();
-    size_t TransferProgress();
-    size_t OverallProgress();
-    size_t TotalTransferProgress();
+    nb::TDateTime __fastcall TimeExpected();
+    nb::TDateTime __fastcall TotalTimeExpected();
+    nb::TDateTime __fastcall TotalTimeLeft();
+    size_t __fastcall TransferProgress();
+    size_t __fastcall OverallProgress();
+    size_t __fastcall TotalTransferProgress();
 private:
     TFileOperationProgressType(const TFileOperationProgressType &rhs);
     void operator=(const TFileOperationProgressType &rhs);
