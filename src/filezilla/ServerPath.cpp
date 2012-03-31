@@ -21,11 +21,14 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include <assert.h>
 #include "ServerPath.h"
 #include "structures.h"
 
 #ifdef _DEBUG
+#ifndef _MSC_VER
+#undef THIS_FILE
+static char THIS_FILE[]=__FILE__;
+#endif
 #define new DEBUG_NEW
 #endif
 
@@ -121,7 +124,7 @@ CServerPath::CServerPath(CString path, int nServerType)
 				int pos1 = path.Find( _T("[") );
 				if (pos1 == -1 || path.Right(1) != _T("]"))
 				{
-					assert(FALSE);
+					ASSERT(FALSE);
 					m_bEmpty = TRUE;
 					return;
 				}
@@ -169,7 +172,7 @@ CServerPath::CServerPath(CString path, int nServerType)
 				m_Prefix = path;
 				return;
 			}
-			assert(pos == 2);
+			ASSERT(pos == 2);
 			m_Prefix = path.Left(pos);
 			path = path.Mid(pos + 1);
 			pos = path.Find( _T("\\") );
@@ -184,7 +187,7 @@ CServerPath::CServerPath(CString path, int nServerType)
 		}
 		break;
 	default:
-		assert(FALSE);
+		ASSERT(FALSE);
 	}
 }
 
@@ -454,7 +457,7 @@ const CString CServerPath::GetPath() const
 
 		break;
 	default:
-		assert(FALSE);
+		ASSERT(FALSE);
 	}
 	return path;
 }
@@ -531,7 +534,7 @@ CString CServerPath::GetLastSegment() const
 
 CServerPath CServerPath::GetParent() const
 {
-	assert(HasParent());
+	ASSERT(HasParent());
 	CServerPath path;
 	path = *this;
 	path.m_Segments.pop_back();
@@ -664,7 +667,7 @@ CString CServerPath::GetSafePath() const
 
 CString CServerPath::GetSubdirsOf(const CServerPath &path) const
 {
-	assert(IsParentOf(path));
+	ASSERT(IsParentOf(path));
 	CServerPath subdirs=path;
 	CString ret;
 	while(IsParentOf(subdirs))
@@ -753,7 +756,7 @@ CServerPath::CServerPath(CString subdir, const CServerPath &parent)
 	if ( subdir==_T("") )
 	{
 		if (IsEmpty())
-			assert(FALSE);
+			ASSERT(FALSE);
 		else
 			return;
 	}
@@ -817,13 +820,13 @@ CServerPath::CServerPath(CString subdir, const CServerPath &parent)
 				int pos1=subdir.Find( _T("[") );
 				if (pos1==-1)
 				{
-					assert( subdir.Right(1)!=_T("]") );
+					ASSERT( subdir.Right(1)!=_T("]") );
 					while ( subdir.Replace( _T(".."), _T(".") ) );
 				}
 				else
 				{
 					if (subdir.Right(1)!=_MPT("]"))
-						assert(FALSE);
+						ASSERT(FALSE);
 					subdir=subdir.Left(subdir.GetLength()-1);
 					if (pos1)
 						m_Prefix=subdir.Left(pos1);
@@ -835,7 +838,7 @@ CServerPath::CServerPath(CString subdir, const CServerPath &parent)
 					pos1=subdir.Find( _T("[") );
 					int pos2=subdir.Find( _T("]") );
 					if (pos1!=-1 || pos2!=-1)
-						assert(FALSE);
+						ASSERT(FALSE);
 				}
 				int pos=subdir.Find( _T(".") );
 				while(pos!=-1)
@@ -914,7 +917,7 @@ CServerPath::CServerPath(CString subdir, const CServerPath &parent)
 				subdir=subdir.Mid(pos+1);
 				subdir.TrimLeft( _T("\\") );
 				if (subdir.Find( _T(":") )!=-1)
-					assert(FALSE);
+					ASSERT(FALSE);
 			}
 			if (pos==-1 || pos==1)
 			{
@@ -929,11 +932,11 @@ CServerPath::CServerPath(CString subdir, const CServerPath &parent)
 					m_Segments.push_back(subdir);			
 			}
 			else
-				assert(FALSE);
+				ASSERT(FALSE);
 		}
 		break;
 	default:
-		assert(FALSE);
+		ASSERT(FALSE);
 	}	
 }
 
@@ -1357,7 +1360,7 @@ CString CServerPath::FormatFilename(CString fn, bool omitPath /*=false*/) const
 		path += fn;
 		break;
 	default:
-		assert(FALSE);
+		ASSERT(FALSE);
 	}
 	return path;
 }

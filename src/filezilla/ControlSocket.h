@@ -16,7 +16,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-// ControlSocket.h: Schnittstelle fï¿½r die Klasse CControlSocket.
+// ControlSocket.h: Schnittstelle für die Klasse CControlSocket.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -30,7 +30,7 @@
 #include "AsyncSocketEx.h"
 #include "FileZillaApi.h"
 #include "ApiLog.h"
-#include "structures.h"	// Hinzugefï¿½gt von der Klassenansicht
+#include "structures.h"	// Hinzugefügt von der Klassenansicht
 #ifndef MPEXT_NO_IDENT
 #include "IdentServerControl.h"	// Added by ClassView
 #endif

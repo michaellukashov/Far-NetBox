@@ -32,6 +32,10 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
+#ifndef _MSC_VER
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
 #endif
 
 #define BUFSIZE 16384

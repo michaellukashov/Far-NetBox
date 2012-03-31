@@ -45,9 +45,16 @@
 
 #include "Classes.h"
 #include "Common.h"
+#ifdef MPEXT
+#define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))
+#endif
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
+#ifndef _MSC_VER
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
 #endif
 
 #define GetOption(OPTION) GetInstanceOption(this->m_pApiLogParent, OPTION)
