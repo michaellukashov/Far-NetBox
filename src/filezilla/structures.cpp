@@ -20,6 +20,12 @@
 #include <structures.h>
 
 
+#ifndef _MSC_VER
+AFX_COMDAT int _afxInitDataA[] = { -1, 0, 0, 0 };
+AFX_COMDAT CStringDataA* _afxDataNilA = (CStringDataA*)&_afxInitDataA;
+AFX_COMDAT LPCSTR _afxPchNilA = (LPCSTR)(((BYTE*)&_afxInitDataA)+sizeof(CStringDataA));
+#endif
+
 t_directory::t_directory()
 {
 	direntry=0;

@@ -23,6 +23,11 @@
 #define _MPT(T) _T(T)
 #define _MPAT(T) T
 //---------------------------------------------------------------------------
+#ifndef _MSC_VER
+#define GetOption(OPTION) GetInstanceOption(this->m_pApiLogParent, OPTION)
+#define GetOptionVal(OPTION) GetInstanceOptionVal(this->m_pApiLogParent, OPTION)
+#endif
+//---------------------------------------------------------------------------
 #include <afx.h>
 #include "wtypes.h"
 #include <afxmt.h>
@@ -38,7 +43,18 @@
 class CFileFix;
 #define CFile CFileFix
 //---------------------------------------------------------------------------
+#ifdef _MSC_VER
 #include <FzApiStructures.h>
+#else
+#include "MFC64bitFix.h"
+#include <ApiLog.h>
+#include <FileZillaApi.h>
+#include <FileZillaOpt.h>
+#include <Options.h>
+#include <Crypt.h>
+#include <TextsFileZilla.h>
+#include <structures.h>
+#endif
 //---------------------------------------------------------------------------
 #include <oleauto.h>
 #include <afxdisp.h>
@@ -46,10 +62,16 @@ class CFileFix;
 //---------------------------------------------------------------------------
 #define _strlwr strlwr
 #ifndef USEDPARAM
+#ifndef _MSC_VER
+#define USEDPARAM(p) ((p) == (p))
+#else
 #define USEDPARAM(p) (void)(p);
 #endif
+#endif
 //---------------------------------------------------------------------------
+#ifndef _MSC_VER
 extern HINSTANCE HInst;
+#endif
 
 //---------------------------------------------------------------------------
 const int FILEEXISTS_ASK = -1;

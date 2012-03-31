@@ -49,8 +49,10 @@ static char THIS_FILE[]=__FILE__;
 #define new DEBUG_NEW
 #endif
 
+#ifdef _MSC_VER
 #define GetOption(OPTION) GetInstanceOption(this->m_pApiLogParent, OPTION)
 #define GetOptionVal(OPTION) GetInstanceOptionVal(this->m_pApiLogParent, OPTION)
+#endif
 
 #ifndef MPEXT
 std::list<CControlSocket::t_ActiveList> CControlSocket::m_InstanceList[2];

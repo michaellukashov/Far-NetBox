@@ -37,14 +37,15 @@
 #include "filezillaapi.h"
 #include "misc/utf8.h"
 
+#ifdef _MSC_VER
 #include <MFC64bitFix.h>
 #include <TextsFileZilla.h>
 #include <FileZillaOpt.h>
 #include <Options.h>
 #include <Crypt.h>
-
 #include "Classes.h"
 #include "Common.h"
+#endif
 #ifdef MPEXT
 #define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))
 #endif
@@ -57,8 +58,10 @@ static char THIS_FILE[] = __FILE__;
 #endif
 #endif
 
+#ifdef _MSC_VER
 #define GetOption(OPTION) GetInstanceOption(this->m_pApiLogParent, OPTION)
 #define GetOptionVal(OPTION) GetInstanceOptionVal(this->m_pApiLogParent, OPTION)
+#endif
 
 const size_t CFtpControlSocket::m_MaxSslSessions = 10;
 
@@ -4239,7 +4242,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 				cmd += _MPT(" -a");
 #ifdef MPEXT
 			if (m_serverCapabilities.GetCapability(mlsd_command) == yes)
-				cmd = _MPT("MLSD");
+				cmd = _MPAT("MLSD");
 #endif
 			if(!Send(cmd))
 				bError=TRUE;
@@ -6006,7 +6009,7 @@ void CFtpControlSocket::DiscardLine(CStringA line)
 	if (m_Operation.nOpMode == CSMODE_CONNECT && m_Operation.nOpState == CONNECT_FEAT)
 	{
 		line.MakeUpper().Trim(" ");
-		if (line == _T("MODE Z") || line.Left(7) == _T("MODE Z "))
+		if (line == _MPAT("MODE Z") || line.Left(7) == _MPAT("MODE Z "))
 		{
 #ifndef MPEXT_NO_ZLIB
 			m_zlibSupported = true;
@@ -6015,7 +6018,7 @@ void CFtpControlSocket::DiscardLine(CStringA line)
 			m_serverCapabilities.SetCapability(mode_z_support, yes);
 #endif
 		}
-		else if (line == _T("UTF8") && m_CurrentServer.nUTF8 != 2)
+		else if (line == _MPAT("UTF8") && m_CurrentServer.nUTF8 != 2)
 		{
 			
 			m_bAnnouncesUTF8 = true;
@@ -6023,7 +6026,7 @@ void CFtpControlSocket::DiscardLine(CStringA line)
 			m_serverCapabilities.SetCapability(utf8_command, yes);
 #endif
 		}
-		else if (line == _T("CLNT") || line.Left(5) == _T("CLNT "))
+		else if (line == _MPAT("CLNT") || line.Left(5) == _MPAT("CLNT "))
 		{
 			m_hasClntCmd = true;
 #ifdef MPEXT
@@ -6031,37 +6034,37 @@ void CFtpControlSocket::DiscardLine(CStringA line)
 #endif
 		}
 #ifdef MPEXT
-		else if (line == _T("MLSD"))
+		else if (line == _MPAT("MLSD"))
 		{
 			m_serverCapabilities.SetCapability(mlsd_command, yes);
 		}
-		else if (line.Left(4) == _T("MLST"))
+		else if (line.Left(4) == _MPAT("MLST"))
 		{
 			USES_CONVERSION;
 			m_serverCapabilities.SetCapability(mlsd_command, yes, (LPCSTR)line.Mid(5));
 			// MSLT/MLSD specs require use of UTC
 			// m_serverCapabilities.SetCapability(timezone_offset, no);
 		}
-		else if (line == _T("MFMT"))
+		else if (line == _MPAT("MFMT"))
 		{
 			m_hasMfmtCmd = true;
 			m_serverCapabilities.SetCapability(mfmt_command, yes);
 		}
-		else if (line == _T(" PRET"))
+		else if (line == _MPAT(" PRET"))
 			m_serverCapabilities.SetCapability(pret_command, yes);
-		else if (line == _T("MDTM"))
+		else if (line == _MPAT("MDTM"))
 		{
 			m_serverCapabilities.SetCapability(mdtm_command, yes);
 		}
-		else if (line == _T("SIZE"))
+		else if (line == _MPAT("SIZE"))
 		{
 			m_serverCapabilities.SetCapability(size_command, yes);
 		}
-		else if (line == _T("TVFS"))
+		else if (line == _MPAT("TVFS"))
 		{
 			m_serverCapabilities.SetCapability(tvfs_support, yes);
 		}
-		else if (line == _T("REST STREAM"))
+		else if (line == _MPAT("REST STREAM"))
 		{
 			m_serverCapabilities.SetCapability(rest_stream, yes);
 		}

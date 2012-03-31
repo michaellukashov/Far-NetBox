@@ -41,8 +41,10 @@ static char THIS_FILE[] = __FILE__;
 #define ECS m_CriticalSection.Lock()
 #define LCS m_CriticalSection.Unlock()
 
+#ifdef _MSC_VER
 #define GetOption(OPTION) GetInstanceOption(this->m_pApiLogParent, OPTION)
 #define GetOptionVal(OPTION) GetInstanceOptionVal(this->m_pApiLogParent, OPTION)
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // CMainThread
@@ -78,8 +80,10 @@ CMainThread::~CMainThread()
 
 BOOL CMainThread::InitInstance()
 {
+#ifdef _MSC_VER
 	AFX_MANAGE_STATE(AfxGetModuleState());
 	afxCurrentResourceHandle = ::HInst;
+#endif
 
 	m_nTimerID=SetTimer(0,1,1000,0);
 #ifndef MPEXT_NO_CACHE
