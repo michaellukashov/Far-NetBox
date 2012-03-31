@@ -88,10 +88,7 @@ bool TFileZillaIntf::GetCurrentPath(char * Path, size_t MaxLen)
   bool Result = Check(FFileZillaApi->GetCurrentPath(APath), "getcurrentpath");
   if (Result)
   {
-    // char nstring[APath.Size()];
-    // strcpy_s(nstring, APath);
-    // strncpy(Path, APath.GetPath(), MaxLen);
-	CString path = APath.GetPath();
+    CString path = APath.GetPath();
     strcpy_s(Path, MaxLen, nb::W2MB(path.GetBuffer(MaxLen)).c_str());
     Path[MaxLen - 1] = '\0';
   }
@@ -215,6 +212,17 @@ bool TFileZillaIntf::List(const char * APath)
   return Check(FFileZillaApi->List(Path), "list");
 }
 //---------------------------------------------------------------------------
+#ifdef MPEXT
+bool TFileZillaIntf::ListFile(const wchar_t * AFullFileName)
+{
+  ASSERT(FFileZillaApi != NULL);
+  CString fileName(AFullFileName);
+  CServerPath Path(FServer->nServerType);
+  Path.SetPath(fileName, TRUE);
+  return Check(FFileZillaApi->ListFile(Path, fileName), "listfile");
+}
+#endif
+//---------------------------------------------------------------------------
 bool TFileZillaIntf::FileTransfer(const char * LocalFile,
   const char * RemoteFile, const char * RemotePath, bool Get, __int64 Size,
   int Type, void * UserData)
@@ -283,7 +291,6 @@ void CopyValidityTime(TFtpsCertificateData::TValidityTime & Dest,
 bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
 {
   bool Result;
-
   unsigned int MessageID = FZ_MSG_ID(wParam);
 
   // DEBUG_PRINTF(L"MessageID = %u, lParam = %u", MessageID, lParam);
@@ -435,7 +442,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
       break;
 
     case FZ_MSG_CAPABILITIES:
-      Result = HandleCapabilities(lParam & FZ_CAPABILITIES_MFMT);
+      Result = HandleCapabilities((TFTPServerCapabilities *)lParam);
       break;
 
     case FZ_MSG_SOCKETSTATUS:

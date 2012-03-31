@@ -74,3 +74,10 @@ BEGIN
   IDS_ERRORMSG_UNKNOWNSSLERROR, "Unknown error in SSL layer"
   IDS_ERRORMSG_SSLCERTIFICATEERROR, "Could not verify SSL certificate"
 END
+
+STRINGTABLE
+BEGIN
+  IDS_ERRORMSG_CANTGETLISTFILE, "Could not retrieve file information"
+  IDS_STATUSMSG_LISTFILESUCCESSFUL, "Retrieve file information successful"
+  IDS_STATUSMSG_RETRIEVINGLISTFILE, "Retrieving file information..."
+END
