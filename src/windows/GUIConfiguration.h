@@ -26,13 +26,13 @@ public:
     TGUICopyParamType(const TGUICopyParamType &Source);
     ~TGUICopyParamType();
 
-    void Load(THierarchicalStorage *Storage);
-    void Save(THierarchicalStorage *Storage);
+    void __fastcall Load(THierarchicalStorage *Storage);
+    void __fastcall Save(THierarchicalStorage *Storage);
 
-    virtual void Default();
-    virtual void Assign(const TCopyParamType *Source);
-    TGUICopyParamType &operator =(const TGUICopyParamType &rhp);
-    TGUICopyParamType &operator =(const TCopyParamType &rhp);
+    virtual void __fastcall Default();
+    virtual void __fastcall Assign(const TCopyParamType *Source);
+    TGUICopyParamType & __fastcall operator =(const TGUICopyParamType &rhp);
+    TGUICopyParamType & __fastcall operator =(const TCopyParamType &rhp);
 
     bool GetQueue() const { return FQueue; }
     void SetQueue(bool value) { FQueue = value; }
@@ -44,8 +44,8 @@ public:
     void SetNewerOnly(bool value) { FNewerOnly = value; }
 
 protected:
-    void GUIDefault();
-    void GUIAssign(const TGUICopyParamType *Source);
+    void __fastcall GUIDefault();
+    void __fastcall GUIAssign(const TGUICopyParamType *Source);
 
 private:
     bool FQueue;
@@ -71,13 +71,13 @@ public:
     TCopyParamRule(const TCopyParamRuleData &Data);
     TCopyParamRule(const TCopyParamRule &Source);
 
-    bool Matches(const TCopyParamRuleData &Value) const;
-    void Load(THierarchicalStorage *Storage);
-    void Save(THierarchicalStorage *Storage) const;
+    bool __fastcall Matches(const TCopyParamRuleData &Value) const;
+    void __fastcall Load(THierarchicalStorage *Storage);
+    void __fastcall Save(THierarchicalStorage *Storage) const;
 
-    std::wstring GetInfoStr(const std::wstring Separator) const;
+    std::wstring __fastcall GetInfoStr(const std::wstring Separator) const;
 
-    bool operator ==(const TCopyParamRule &rhp) const;
+    bool __fastcall operator ==(const TCopyParamRule &rhp) const;
 
     TCopyParamRuleData GetData() { return FData; }
     void SetData(TCopyParamRuleData value) { FData = value; }
@@ -86,7 +86,7 @@ public:
 private:
     TCopyParamRuleData FData;
 
-    inline bool Match(const std::wstring Mask,
+    inline bool __fastcall Match(const std::wstring Mask,
                       const std::wstring Value, bool Path, bool Local = true) const;
 };
 //---------------------------------------------------------------------------
@@ -96,34 +96,34 @@ class TCopyParamList
 public:
     TCopyParamList();
     virtual ~TCopyParamList();
-    int Find(const TCopyParamRuleData &Value) const;
+    int __fastcall Find(const TCopyParamRuleData &Value) const;
 
-    void Load(THierarchicalStorage *Storage, int Count);
-    void Save(THierarchicalStorage *Storage) const;
+    void __fastcall Load(THierarchicalStorage *Storage, int Count);
+    void __fastcall Save(THierarchicalStorage *Storage) const;
 
-    static void ValidateName(const std::wstring Name);
+    static void __fastcall ValidateName(const std::wstring Name);
 
-    void operator=(const TCopyParamList &rhl);
-    bool operator==(const TCopyParamList &rhl) const;
+    void __fastcall operator=(const TCopyParamList &rhl);
+    bool __fastcall operator==(const TCopyParamList &rhl) const;
 
-    void Clear();
-    void Add(const std::wstring Name,
+    void __fastcall Clear();
+    void __fastcall Add(const std::wstring Name,
              TCopyParamType *CopyParam, TCopyParamRule *Rule);
-    void Insert(size_t Index, const std::wstring Name,
+    void __fastcall Insert(size_t Index, const std::wstring Name,
                 TCopyParamType *CopyParam, TCopyParamRule *Rule);
-    void Change(size_t Index, const std::wstring Name,
+    void __fastcall Change(size_t Index, const std::wstring Name,
                 TCopyParamType *CopyParam, TCopyParamRule *Rule);
-    void Move(size_t CurIndex, size_t NewIndex);
-    void Delete(size_t Index);
-    size_t IndexOfName(const std::wstring Name) const;
+    void __fastcall Move(size_t CurIndex, size_t NewIndex);
+    void __fastcall Delete(size_t Index);
+    size_t __fastcall IndexOfName(const std::wstring Name) const;
 
-    size_t GetCount() const;
-    std::wstring GetName(size_t Index) const;
-    const TCopyParamRule *GetRule(size_t Index) const;
-    const TCopyParamType *GetCopyParam(size_t Index) const;
-    bool GetModified() { return FModified; }
-    nb::TStrings *GetNameList() const;
-    bool GetAnyRule() const;
+    size_t __fastcall GetCount() const;
+    std::wstring __fastcall GetName(size_t Index) const;
+    const TCopyParamRule * __fastcall GetRule(size_t Index) const;
+    const TCopyParamType * __fastcall GetCopyParam(size_t Index) const;
+    bool __fastcall GetModified() { return FModified; }
+    nb::TStrings * __fastcall GetNameList() const;
+    bool __fastcall GetAnyRule() const;
 
 private:
     static std::wstring FInvalidChars;
@@ -136,7 +136,7 @@ private:
     void Init();
     void Reset();
     void Modify();
-    bool CompareItem(size_t Index, const TCopyParamType *CopyParam,
+    bool __fastcall CompareItem(size_t Index, const TCopyParamType *CopyParam,
                      const TCopyParamRule *Rule) const;
 };
 //---------------------------------------------------------------------------
@@ -178,82 +178,82 @@ private:
 protected:
     LCID FLocale;
 
-    virtual void SaveData(THierarchicalStorage *Storage, bool All);
-    virtual void LoadData(THierarchicalStorage *Storage);
-    virtual HANDLE LoadNewResourceModule(LCID Locale,
+    virtual void __fastcall SaveData(THierarchicalStorage *Storage, bool All);
+    virtual void __fastcall LoadData(THierarchicalStorage *Storage);
+    virtual HANDLE __fastcall LoadNewResourceModule(LCID Locale,
                                          std::wstring *FileName = NULL);
-    LCID InternalLocale();
-    virtual bool GetRememberPassword();
-    static std::wstring PropertyToKey(const std::wstring Property);
-    virtual void DefaultLocalized();
-    virtual void Saved();
+    LCID __fastcall InternalLocale();
+    virtual bool __fastcall GetRememberPassword();
+    static std::wstring __fastcall PropertyToKey(const std::wstring Property);
+    virtual void __fastcall DefaultLocalized();
+    virtual void __fastcall Saved();
 
 public:
     TGUIConfiguration();
     virtual ~TGUIConfiguration();
-    virtual void Default();
+    virtual void __fastcall Default();
 
-    bool GetContinueOnError() { return FContinueOnError; }
-    void SetContinueOnError(bool value) { FContinueOnError = value; }
-    bool GetConfirmCommandSession() { return FConfirmCommandSession; }
-    void SetConfirmCommandSession(bool value) { FConfirmCommandSession = value; }
-    int GetSynchronizeParams() { return FSynchronizeParams; }
-    void SetSynchronizeParams(int value) { FSynchronizeParams = value; }
-    int GetSynchronizeOptions() { return FSynchronizeOptions; }
-    void SetSynchronizeOptions(int value) { FSynchronizeOptions = value; }
-    int GetSynchronizeModeAuto() { return FSynchronizeModeAuto; }
-    void SetSynchronizeModeAuto(int value) { FSynchronizeModeAuto = value; }
-    int GetSynchronizeMode() { return FSynchronizeMode; }
-    void SetSynchronizeMode(int value) { FSynchronizeMode = value; }
-    int GetMaxWatchDirectories() { return FMaxWatchDirectories; }
-    void SetMaxWatchDirectories(int value) { FMaxWatchDirectories = value; }
-    size_t GetQueueTransfersLimit() { return FQueueTransfersLimit; }
-    void SetQueueTransfersLimit(size_t value) { FQueueTransfersLimit = value; }
-    bool GetQueueAutoPopup() { return FQueueAutoPopup; }
-    void SetQueueAutoPopup(bool value) { FQueueAutoPopup = value; }
-    bool GetQueueRememberPassword() { return FQueueRememberPassword; }
-    void SetQueueRememberPassword(bool value) { FQueueRememberPassword = value; }
-    virtual LCID GetLocale();
-    void SetLocale(LCID value);
-    void SetLocaleSafe(LCID value);
-    nb::TStrings *GetLocales();
-    std::wstring GetPuttyPath() { return FPuttyPath; }
-    void SetPuttyPath(const std::wstring value) { FPuttyPath = value; }
-    std::wstring GetDefaultPuttyPath() { return FDefaultPuttyPath; }
-    std::wstring GetPSftpPath() { return FPSftpPath; }
-    void SetPSftpPath(const std::wstring value) { FPSftpPath = value; }
-    bool GetPuttyPassword() { return FPuttyPassword; }
-    void SetPuttyPassword(bool value) { FPuttyPassword = value; }
-    bool GetTelnetForFtpInPutty() { return FTelnetForFtpInPutty; }
-    void SetTelnetForFtpInPutty(bool value) { FTelnetForFtpInPutty = value; }
-    std::wstring GetPuttySession() { return FPuttySession; }
-    void SetPuttySession(std::wstring value) { FPuttySession = value; }
-    nb::TDateTime GetIgnoreCancelBeforeFinish() { return FIgnoreCancelBeforeFinish; }
-    void SetIgnoreCancelBeforeFinish(nb::TDateTime value) { FIgnoreCancelBeforeFinish = value; }
-    TGUICopyParamType &GetDefaultCopyParam() { return FDefaultCopyParam; }
-    void SetDefaultCopyParam(const TGUICopyParamType &value);
-    bool GetBeepOnFinish() { return FBeepOnFinish; }
-    void SetBeepOnFinish(bool value) { FBeepOnFinish = value; }
-    bool GetSynchronizeBrowsing() { return FSynchronizeBrowsing; }
-    void SetSynchronizeBrowsing(bool value) { FSynchronizeBrowsing = value; }
-    nb::TDateTime GetBeepOnFinishAfter() { return FBeepOnFinishAfter; }
-    void SetBeepOnFinishAfter(nb::TDateTime value) { FBeepOnFinishAfter = value; }
-    const TCopyParamList *GetCopyParamList();
-    void SetCopyParamList(const TCopyParamList *value);
-    std::wstring GetCopyParamCurrent() { return FCopyParamCurrent; }
-    void SetCopyParamCurrent(const std::wstring value);
-    size_t GetCopyParamIndex();
-    void SetCopyParamIndex(size_t value);
-    TGUICopyParamType GetCurrentCopyParam();
-    TGUICopyParamType GetCopyParamPreset(const std::wstring Name);
-    TRemoteProperties GetNewDirectoryProperties() { return FNewDirectoryProperties; }
-    void SetNewDirectoryProperties(const TRemoteProperties &value);
-    int GetKeepUpToDateChangeDelay() { return FKeepUpToDateChangeDelay; }
-    void SetKeepUpToDateChangeDelay(int value) { FKeepUpToDateChangeDelay = value; }
-    std::wstring GetChecksumAlg() { return FChecksumAlg; }
-    void SetChecksumAlg(const std::wstring value) { FChecksumAlg = value; }
-    int GetSessionReopenAutoIdle() { return FSessionReopenAutoIdle; }
-    void SetSessionReopenAutoIdle(int value) { FSessionReopenAutoIdle = value; }
+    bool __fastcall GetContinueOnError() { return FContinueOnError; }
+    void __fastcall SetContinueOnError(bool value) { FContinueOnError = value; }
+    bool __fastcall GetConfirmCommandSession() { return FConfirmCommandSession; }
+    void __fastcall SetConfirmCommandSession(bool value) { FConfirmCommandSession = value; }
+    int __fastcall GetSynchronizeParams() { return FSynchronizeParams; }
+    void __fastcall SetSynchronizeParams(int value) { FSynchronizeParams = value; }
+    int __fastcall GetSynchronizeOptions() { return FSynchronizeOptions; }
+    void __fastcall SetSynchronizeOptions(int value) { FSynchronizeOptions = value; }
+    int __fastcall GetSynchronizeModeAuto() { return FSynchronizeModeAuto; }
+    void __fastcall SetSynchronizeModeAuto(int value) { FSynchronizeModeAuto = value; }
+    int __fastcall GetSynchronizeMode() { return FSynchronizeMode; }
+    void __fastcall SetSynchronizeMode(int value) { FSynchronizeMode = value; }
+    int __fastcall GetMaxWatchDirectories() { return FMaxWatchDirectories; }
+    void __fastcall SetMaxWatchDirectories(int value) { FMaxWatchDirectories = value; }
+    size_t __fastcall GetQueueTransfersLimit() { return FQueueTransfersLimit; }
+    void __fastcall SetQueueTransfersLimit(size_t value) { FQueueTransfersLimit = value; }
+    bool __fastcall GetQueueAutoPopup() { return FQueueAutoPopup; }
+    void __fastcall SetQueueAutoPopup(bool value) { FQueueAutoPopup = value; }
+    bool __fastcall GetQueueRememberPassword() { return FQueueRememberPassword; }
+    void __fastcall SetQueueRememberPassword(bool value) { FQueueRememberPassword = value; }
+    virtual LCID __fastcall GetLocale();
+    void __fastcall SetLocale(LCID value);
+    void __fastcall SetLocaleSafe(LCID value);
+    nb::TStrings * __fastcall GetLocales();
+    std::wstring __fastcall GetPuttyPath() { return FPuttyPath; }
+    void __fastcall SetPuttyPath(const std::wstring value) { FPuttyPath = value; }
+    std::wstring __fastcall GetDefaultPuttyPath() { return FDefaultPuttyPath; }
+    std::wstring __fastcall GetPSftpPath() { return FPSftpPath; }
+    void __fastcall SetPSftpPath(const std::wstring value) { FPSftpPath = value; }
+    bool __fastcall GetPuttyPassword() { return FPuttyPassword; }
+    void __fastcall SetPuttyPassword(bool value) { FPuttyPassword = value; }
+    bool __fastcall GetTelnetForFtpInPutty() { return FTelnetForFtpInPutty; }
+    void __fastcall SetTelnetForFtpInPutty(bool value) { FTelnetForFtpInPutty = value; }
+    std::wstring __fastcall GetPuttySession() { return FPuttySession; }
+    void __fastcall SetPuttySession(std::wstring value) { FPuttySession = value; }
+    nb::TDateTime __fastcall GetIgnoreCancelBeforeFinish() { return FIgnoreCancelBeforeFinish; }
+    void __fastcall SetIgnoreCancelBeforeFinish(nb::TDateTime value) { FIgnoreCancelBeforeFinish = value; }
+    TGUICopyParamType & __fastcall GetDefaultCopyParam() { return FDefaultCopyParam; }
+    void __fastcall SetDefaultCopyParam(const TGUICopyParamType &value);
+    bool __fastcall GetBeepOnFinish() { return FBeepOnFinish; }
+    void __fastcall SetBeepOnFinish(bool value) { FBeepOnFinish = value; }
+    bool __fastcall GetSynchronizeBrowsing() { return FSynchronizeBrowsing; }
+    void __fastcall SetSynchronizeBrowsing(bool value) { FSynchronizeBrowsing = value; }
+    nb::TDateTime __fastcall GetBeepOnFinishAfter() { return FBeepOnFinishAfter; }
+    void __fastcall SetBeepOnFinishAfter(nb::TDateTime value) { FBeepOnFinishAfter = value; }
+    const TCopyParamList * __fastcall GetCopyParamList();
+    void __fastcall SetCopyParamList(const TCopyParamList *value);
+    std::wstring __fastcall GetCopyParamCurrent() { return FCopyParamCurrent; }
+    void __fastcall SetCopyParamCurrent(const std::wstring value);
+    size_t __fastcall GetCopyParamIndex();
+    void __fastcall SetCopyParamIndex(size_t value);
+    TGUICopyParamType __fastcall GetCurrentCopyParam();
+    TGUICopyParamType __fastcall GetCopyParamPreset(const std::wstring Name);
+    TRemoteProperties __fastcall GetNewDirectoryProperties() { return FNewDirectoryProperties; }
+    void __fastcall SetNewDirectoryProperties(const TRemoteProperties &value);
+    int __fastcall GetKeepUpToDateChangeDelay() { return FKeepUpToDateChangeDelay; }
+    void __fastcall SetKeepUpToDateChangeDelay(int value) { FKeepUpToDateChangeDelay = value; }
+    std::wstring __fastcall GetChecksumAlg() { return FChecksumAlg; }
+    void __fastcall SetChecksumAlg(const std::wstring value) { FChecksumAlg = value; }
+    int __fastcall GetSessionReopenAutoIdle() { return FSessionReopenAutoIdle; }
+    void __fastcall SetSessionReopenAutoIdle(int value) { FSessionReopenAutoIdle = value; }
 };
 //---------------------------------------------------------------------------
 #define GUIConfiguration (dynamic_cast<TGUIConfiguration *>(Configuration))

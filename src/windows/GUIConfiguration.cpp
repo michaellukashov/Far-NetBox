@@ -46,7 +46,7 @@ TGUICopyParamType::~TGUICopyParamType()
     // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-void TGUICopyParamType::Assign(const TCopyParamType *Source)
+void __fastcall TGUICopyParamType::Assign(const TCopyParamType *Source)
 {
     TCopyParamType::Assign(Source);
 
@@ -58,7 +58,7 @@ void TGUICopyParamType::Assign(const TCopyParamType *Source)
     }
 }
 //---------------------------------------------------------------------------
-void TGUICopyParamType::GUIAssign(const TGUICopyParamType *Source)
+void __fastcall TGUICopyParamType::GUIAssign(const TGUICopyParamType *Source)
 {
     SetQueue(Source->GetQueue());
     SetQueueNoConfirmation(Source->GetQueueNoConfirmation());
@@ -66,14 +66,14 @@ void TGUICopyParamType::GUIAssign(const TGUICopyParamType *Source)
     SetNewerOnly(Source->GetNewerOnly());
 }
 //---------------------------------------------------------------------------
-void TGUICopyParamType::Default()
+void __fastcall TGUICopyParamType::Default()
 {
     TCopyParamType::Default();
 
     GUIDefault();
 }
 //---------------------------------------------------------------------------
-void TGUICopyParamType::GUIDefault()
+void __fastcall TGUICopyParamType::GUIDefault()
 {
     SetQueue(false);
     SetQueueNoConfirmation(true);
@@ -81,7 +81,7 @@ void TGUICopyParamType::GUIDefault()
     SetNewerOnly(false);
 }
 //---------------------------------------------------------------------------
-void TGUICopyParamType::Load(THierarchicalStorage *Storage)
+void __fastcall TGUICopyParamType::Load(THierarchicalStorage *Storage)
 {
     TCopyParamType::Load(Storage);
 
@@ -91,7 +91,7 @@ void TGUICopyParamType::Load(THierarchicalStorage *Storage)
     SetNewerOnly(Storage->Readbool(L"NewerOnly", GetNewerOnly()));
 }
 //---------------------------------------------------------------------------
-void TGUICopyParamType::Save(THierarchicalStorage *Storage)
+void __fastcall TGUICopyParamType::Save(THierarchicalStorage *Storage)
 {
     TCopyParamType::Save(Storage);
 
@@ -101,20 +101,20 @@ void TGUICopyParamType::Save(THierarchicalStorage *Storage)
     Storage->Writebool(L"NewerOnly", GetNewerOnly());
 }
 //---------------------------------------------------------------------------
-TGUICopyParamType &TGUICopyParamType::operator =(const TCopyParamType &rhp)
+TGUICopyParamType & __fastcall TGUICopyParamType::operator =(const TCopyParamType &rhp)
 {
     Assign(&rhp);
     return *this;
 }
 //---------------------------------------------------------------------------
-TGUICopyParamType &TGUICopyParamType::operator =(const TGUICopyParamType &rhp)
+TGUICopyParamType & __fastcall TGUICopyParamType::operator =(const TGUICopyParamType &rhp)
 {
     Assign(&rhp);
     return *this;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-void TCopyParamRuleData::Default()
+void __fastcall TCopyParamRuleData::Default()
 {
     HostName = L"";
     UserName = L"";
@@ -141,7 +141,7 @@ TCopyParamRule::TCopyParamRule(const TCopyParamRule &Source)
 }
 //---------------------------------------------------------------------------
 #define C(Property) (Property == rhp.Property)
-bool TCopyParamRule::operator==(const TCopyParamRule &rhp) const
+bool __fastcall TCopyParamRule::operator==(const TCopyParamRule &rhp) const
 {
     return
         C(FData.HostName) &&
@@ -152,7 +152,7 @@ bool TCopyParamRule::operator==(const TCopyParamRule &rhp) const
 }
 #undef C
 //---------------------------------------------------------------------------
-bool TCopyParamRule::Match(const std::wstring Mask,
+bool __fastcall TCopyParamRule::Match(const std::wstring Mask,
                            const std::wstring Value, bool Path, bool Local) const
 {
     bool Result;
@@ -175,7 +175,7 @@ bool TCopyParamRule::Match(const std::wstring Mask,
     return Result;
 }
 //---------------------------------------------------------------------------
-bool TCopyParamRule::Matches(const TCopyParamRuleData &Value) const
+bool __fastcall TCopyParamRule::Matches(const TCopyParamRuleData &Value) const
 {
     return
         Match(FData.HostName, Value.HostName, false) &&
@@ -184,7 +184,7 @@ bool TCopyParamRule::Matches(const TCopyParamRuleData &Value) const
         Match(FData.LocalDirectory, Value.LocalDirectory, true, true);
 }
 //---------------------------------------------------------------------------
-void TCopyParamRule::Load(THierarchicalStorage *Storage)
+void __fastcall TCopyParamRule::Load(THierarchicalStorage *Storage)
 {
     FData.HostName = Storage->ReadString(L"HostName", FData.HostName);
     FData.UserName = Storage->ReadString(L"UserName", FData.UserName);
@@ -192,7 +192,7 @@ void TCopyParamRule::Load(THierarchicalStorage *Storage)
     FData.LocalDirectory = Storage->ReadString(L"LocalDirectory", FData.LocalDirectory);
 }
 //---------------------------------------------------------------------------
-void TCopyParamRule::Save(THierarchicalStorage *Storage) const
+void __fastcall TCopyParamRule::Save(THierarchicalStorage *Storage) const
 {
     Storage->WriteString(L"HostName", FData.HostName);
     Storage->WriteString(L"UserName", FData.UserName);
@@ -200,7 +200,7 @@ void TCopyParamRule::Save(THierarchicalStorage *Storage) const
     Storage->WriteString(L"LocalDirectory", FData.LocalDirectory);
 }
 //---------------------------------------------------------------------------
-bool TCopyParamRule::GetEmpty() const
+bool __fastcall TCopyParamRule::GetEmpty() const
 {
     return
         FData.HostName.empty() &&
@@ -209,7 +209,7 @@ bool TCopyParamRule::GetEmpty() const
         FData.LocalDirectory.empty();
 }
 //---------------------------------------------------------------------------
-std::wstring TCopyParamRule::GetInfoStr(const std::wstring Separator) const
+std::wstring __fastcall TCopyParamRule::GetInfoStr(const std::wstring Separator) const
 {
     std::wstring Result;
 #define ADD(FMT, ELEM) \
@@ -224,14 +224,14 @@ std::wstring TCopyParamRule::GetInfoStr(const std::wstring Separator) const
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-std::wstring TCopyParamList::FInvalidChars(L"/\\[]");
+std::wstring __fastcall TCopyParamList::FInvalidChars(L"/\\[]");
 //---------------------------------------------------------------------------
 TCopyParamList::TCopyParamList()
 {
     Init();
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::Init()
+void __fastcall TCopyParamList::Init()
 {
     FCopyParams = new nb::TObjectList();
     FRules = new nb::TObjectList();
@@ -251,19 +251,19 @@ TCopyParamList::~TCopyParamList()
     // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::Reset()
+void __fastcall TCopyParamList::Reset()
 {
     SAFE_DESTROY(FNameList);
     FModified = false;
 }
 //---------------------------------------------------------------------
-void TCopyParamList::Modify()
+void __fastcall TCopyParamList::Modify()
 {
     SAFE_DESTROY(FNameList);
     FModified = true;
 }
 //---------------------------------------------------------------------
-void TCopyParamList::ValidateName(const std::wstring Name)
+void __fastcall TCopyParamList::ValidateName(const std::wstring Name)
 {
     if (::LastDelimiter(Name, FInvalidChars) != std::wstring::npos)
     {
@@ -271,7 +271,7 @@ void TCopyParamList::ValidateName(const std::wstring Name)
     }
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::operator=(const TCopyParamList &rhl)
+void __fastcall TCopyParamList::operator=(const TCopyParamList &rhl)
 {
     Clear();
 
@@ -290,7 +290,7 @@ void TCopyParamList::operator=(const TCopyParamList &rhl)
     Modify();
 }
 //---------------------------------------------------------------------------
-bool TCopyParamList::operator==(const TCopyParamList &rhl) const
+bool __fastcall TCopyParamList::operator==(const TCopyParamList &rhl) const
 {
     bool Result = (GetCount() == rhl.GetCount());
     if (Result)
@@ -307,12 +307,12 @@ bool TCopyParamList::operator==(const TCopyParamList &rhl) const
     return Result;
 }
 //---------------------------------------------------------------------------
-size_t TCopyParamList::IndexOfName(const std::wstring Name) const
+size_t __fastcall TCopyParamList::IndexOfName(const std::wstring Name) const
 {
     return FNames->IndexOf(Name.c_str());
 }
 //---------------------------------------------------------------------------
-bool TCopyParamList::CompareItem(size_t Index,
+bool __fastcall TCopyParamList::CompareItem(size_t Index,
                                  const TCopyParamType *CopyParam, const TCopyParamRule *Rule) const
 {
     return
@@ -322,7 +322,7 @@ bool TCopyParamList::CompareItem(size_t Index,
          ((Rule != NULL) && (*GetRule(Index)) == (*Rule)));
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::Clear()
+void __fastcall TCopyParamList::Clear()
 {
     for (size_t i = GetCount() - 1; i != NPOS; i--)
     {
@@ -334,13 +334,13 @@ void TCopyParamList::Clear()
     FNames->Clear();
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::Add(const std::wstring Name,
+void __fastcall TCopyParamList::Add(const std::wstring Name,
                          TCopyParamType *CopyParam, TCopyParamRule *Rule)
 {
     Insert(GetCount(), Name, CopyParam, Rule);
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::Insert(size_t Index, const std::wstring Name,
+void __fastcall TCopyParamList::Insert(size_t Index, const std::wstring Name,
                             TCopyParamType *CopyParam, TCopyParamRule *Rule)
 {
     // DEBUG_PRINTF(L"begin");
@@ -353,7 +353,7 @@ void TCopyParamList::Insert(size_t Index, const std::wstring Name,
     // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::Change(size_t Index, const std::wstring Name,
+void __fastcall TCopyParamList::Change(size_t Index, const std::wstring Name,
                             TCopyParamType *CopyParam, TCopyParamRule *Rule)
 {
     if ((Name != GetName(Index)) || !CompareItem(Index, CopyParam, Rule))
@@ -372,7 +372,7 @@ void TCopyParamList::Change(size_t Index, const std::wstring Name,
     }
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::Move(size_t CurIndex, size_t NewIndex)
+void __fastcall TCopyParamList::Move(size_t CurIndex, size_t NewIndex)
 {
     if (CurIndex != NewIndex)
     {
@@ -383,7 +383,7 @@ void TCopyParamList::Move(size_t CurIndex, size_t NewIndex)
     }
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::Delete(size_t Index)
+void __fastcall TCopyParamList::Delete(size_t Index)
 {
     assert((Index != NPOS) && (Index < GetCount()));
     FNames->Delete(Index);
@@ -394,7 +394,7 @@ void TCopyParamList::Delete(size_t Index)
     Modify();
 }
 //---------------------------------------------------------------------------
-int TCopyParamList::Find(const TCopyParamRuleData &Value) const
+int __fastcall TCopyParamList::Find(const TCopyParamRuleData &Value) const
 {
     int Result = -1;
     size_t i = 0;
@@ -412,7 +412,7 @@ int TCopyParamList::Find(const TCopyParamRuleData &Value) const
     return Result;
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::Load(THierarchicalStorage *Storage, int ACount)
+void __fastcall TCopyParamList::Load(THierarchicalStorage *Storage, int ACount)
 {
     for (int Index = 0; Index < ACount; Index++)
     {
@@ -453,7 +453,7 @@ void TCopyParamList::Load(THierarchicalStorage *Storage, int ACount)
     Reset();
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::Save(THierarchicalStorage *Storage) const
+void __fastcall TCopyParamList::Save(THierarchicalStorage *Storage) const
 {
     Storage->ClearSubKeys();
     for (size_t Index = 0; Index < GetCount(); Index++)
@@ -480,27 +480,27 @@ void TCopyParamList::Save(THierarchicalStorage *Storage) const
     }
 }
 //---------------------------------------------------------------------------
-size_t TCopyParamList::GetCount() const
+size_t __fastcall TCopyParamList::GetCount() const
 {
     return FCopyParams->GetCount();
 }
 //---------------------------------------------------------------------------
-const TCopyParamRule *TCopyParamList::GetRule(size_t Index) const
+const TCopyParamRule * __fastcall TCopyParamList::GetRule(size_t Index) const
 {
     return reinterpret_cast<TCopyParamRule *>(FRules->GetItem(Index));
 }
 //---------------------------------------------------------------------------
-const TCopyParamType *TCopyParamList::GetCopyParam(size_t Index) const
+const TCopyParamType * __fastcall TCopyParamList::GetCopyParam(size_t Index) const
 {
     return reinterpret_cast<TCopyParamType *>(FCopyParams->GetItem(Index));
 }
 //---------------------------------------------------------------------------
-std::wstring TCopyParamList::GetName(size_t Index) const
+std::wstring __fastcall TCopyParamList::GetName(size_t Index) const
 {
     return FNames->GetString(Index);
 }
 //---------------------------------------------------------------------------
-nb::TStrings *TCopyParamList::GetNameList() const
+nb::TStrings * __fastcall TCopyParamList::GetNameList() const
 {
     if (FNameList == NULL)
     {
@@ -514,7 +514,7 @@ nb::TStrings *TCopyParamList::GetNameList() const
     return FNameList;
 }
 //---------------------------------------------------------------------------
-bool TCopyParamList::GetAnyRule() const
+bool __fastcall TCopyParamList::GetAnyRule() const
 {
     bool Result = false;
     size_t i = 0;
@@ -563,7 +563,7 @@ TGUIConfiguration::~TGUIConfiguration()
     delete FCopyParamList;
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::Default()
+void __fastcall TGUIConfiguration::Default()
 {
     // DEBUG_PRINTF(L"begin");
     TConfiguration::Default();
@@ -609,7 +609,7 @@ void TGUIConfiguration::Default()
     // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::DefaultLocalized()
+void __fastcall TGUIConfiguration::DefaultLocalized()
 {
     // DEBUG_PRINTF(L"begin: FCopyParamListDefaults = %d", FCopyParamListDefaults);
     if (FCopyParamListDefaults)
@@ -642,7 +642,7 @@ void TGUIConfiguration::DefaultLocalized()
     // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-std::wstring TGUIConfiguration::PropertyToKey(const std::wstring Property)
+std::wstring __fastcall TGUIConfiguration::PropertyToKey(const std::wstring Property)
 {
     // no longer useful
     size_t P = ::LastDelimiter(Property, L".>");
@@ -686,7 +686,7 @@ std::wstring TGUIConfiguration::PropertyToKey(const std::wstring Property)
     KEY(int,  SessionReopenAutoIdle); \
   ); \
 //---------------------------------------------------------------------------
-void TGUIConfiguration::SaveData(THierarchicalStorage *Storage, bool All)
+void __fastcall TGUIConfiguration::SaveData(THierarchicalStorage *Storage, bool All)
 {
     TConfiguration::SaveData(Storage, All);
 
@@ -726,7 +726,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage *Storage, bool All)
     }
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::LoadData(THierarchicalStorage *Storage)
+void __fastcall TGUIConfiguration::LoadData(THierarchicalStorage *Storage)
 {
     TConfiguration::LoadData(Storage);
 
@@ -786,7 +786,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage *Storage)
     }
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::Saved()
+void __fastcall TGUIConfiguration::Saved()
 {
     TConfiguration::Saved();
 
@@ -794,7 +794,7 @@ void TGUIConfiguration::Saved()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-HANDLE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
+HANDLE __fastcall TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
         std::wstring *FileName)
 {
     std::wstring LibraryFileName;
@@ -859,7 +859,7 @@ HANDLE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
     return NewInstance;
 }
 //---------------------------------------------------------------------------
-LCID TGUIConfiguration::InternalLocale()
+LCID __fastcall TGUIConfiguration::InternalLocale()
 {
     LCID Result;
     if (GetTranslationCount(GetApplicationInfo()) > 0)
@@ -885,7 +885,7 @@ LCID TGUIConfiguration::GetLocale()
     return FLocale;
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::SetLocale(LCID value)
+void __fastcall TGUIConfiguration::SetLocale(LCID value)
 {
     if (GetLocale() != value)
     {
@@ -901,7 +901,7 @@ void TGUIConfiguration::SetLocale(LCID value)
     }
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::SetLocaleSafe(LCID value)
+void __fastcall TGUIConfiguration::SetLocaleSafe(LCID value)
 {
     if (GetLocale() != value)
     {
@@ -924,7 +924,7 @@ void TGUIConfiguration::SetLocaleSafe(LCID value)
     }
 }
 //---------------------------------------------------------------------------
-nb::TStrings *TGUIConfiguration::GetLocales()
+nb::TStrings * __fastcall TGUIConfiguration::GetLocales()
 {
     nb::Error(SNotImplemented, 93);
     std::wstring LocalesExts;
@@ -1040,23 +1040,23 @@ nb::TStrings *TGUIConfiguration::GetLocales()
     return FLocales;
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::SetDefaultCopyParam(const TGUICopyParamType &value)
+void __fastcall TGUIConfiguration::SetDefaultCopyParam(const TGUICopyParamType &value)
 {
     FDefaultCopyParam.Assign(&value);
     Changed();
 }
 //---------------------------------------------------------------------------
-bool TGUIConfiguration::GetRememberPassword()
+bool __fastcall TGUIConfiguration::GetRememberPassword()
 {
     return GetQueueRememberPassword() || GetPuttyPassword();
 }
 //---------------------------------------------------------------------------
-const TCopyParamList *TGUIConfiguration::GetCopyParamList()
+const TCopyParamList * __fastcall TGUIConfiguration::GetCopyParamList()
 {
     return FCopyParamList;
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::SetCopyParamList(const TCopyParamList *value)
+void __fastcall TGUIConfiguration::SetCopyParamList(const TCopyParamList *value)
 {
     if (!(*FCopyParamList == *value))
     {
@@ -1066,7 +1066,7 @@ void TGUIConfiguration::SetCopyParamList(const TCopyParamList *value)
     }
 }
 //---------------------------------------------------------------------------
-size_t TGUIConfiguration::GetCopyParamIndex()
+size_t __fastcall TGUIConfiguration::GetCopyParamIndex()
 {
     size_t Result;
     if (FCopyParamCurrent.empty())
@@ -1080,7 +1080,7 @@ size_t TGUIConfiguration::GetCopyParamIndex()
     return Result;
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::SetCopyParamIndex(size_t value)
+void __fastcall TGUIConfiguration::SetCopyParamIndex(size_t value)
 {
     std::wstring Name;
     if (value == NPOS)
@@ -1094,17 +1094,17 @@ void TGUIConfiguration::SetCopyParamIndex(size_t value)
     SetCopyParamCurrent(Name);
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::SetCopyParamCurrent(const std::wstring value)
+void __fastcall TGUIConfiguration::SetCopyParamCurrent(const std::wstring value)
 {
     SET_CONFIG_PROPERTY(CopyParamCurrent);
 }
 //---------------------------------------------------------------------------
-TGUICopyParamType TGUIConfiguration::GetCurrentCopyParam()
+TGUICopyParamType __fastcall TGUIConfiguration::GetCurrentCopyParam()
 {
     return GetCopyParamPreset(GetCopyParamCurrent());
 }
 //---------------------------------------------------------------------------
-TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(const std::wstring Name)
+TGUICopyParamType __fastcall TGUIConfiguration::GetCopyParamPreset(const std::wstring Name)
 {
     TGUICopyParamType Result = FDefaultCopyParam;
     if (!Name.empty())
@@ -1126,7 +1126,7 @@ TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(const std::wstring Name)
     return Result;
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::SetNewDirectoryProperties(
+void __fastcall TGUIConfiguration::SetNewDirectoryProperties(
     const TRemoteProperties &value)
 {
     SET_CONFIG_PROPERTY(NewDirectoryProperties);
