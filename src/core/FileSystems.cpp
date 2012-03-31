@@ -5,12 +5,12 @@
 #include "RemoteFiles.h"
 #include "Common.h"
 //---------------------------------------------------------------------------
-TCustomFileSystem::TCustomFileSystem(TTerminal *ATerminal):
+__fastcall TCustomFileSystem::TCustomFileSystem(TTerminal *ATerminal):
     FTerminal(ATerminal)
 {
     assert(FTerminal);
 }
 //---------------------------------------------------------------------------
-TCustomFileSystem::~TCustomFileSystem()
+__fastcall TCustomFileSystem::~TCustomFileSystem()
 {
 }

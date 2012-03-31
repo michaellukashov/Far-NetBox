@@ -17,118 +17,118 @@ class TWebDAVFileSystem : public TCustomFileSystem
 public:
     explicit TWebDAVFileSystem(TTerminal *ATerminal);
     virtual ~TWebDAVFileSystem();
-    virtual void Init();
+    virtual void __fastcall Init();
 
-    virtual void Open();
-    virtual void Close();
-    virtual bool GetActive();
-    virtual void Idle();
-    virtual std::wstring AbsolutePath(const std::wstring Path, bool Local);
-    virtual void AnyCommand(const std::wstring Command,
+    virtual void __fastcall Open();
+    virtual void __fastcall Close();
+    virtual bool __fastcall GetActive();
+    virtual void __fastcall Idle();
+    virtual std::wstring __fastcall AbsolutePath(const std::wstring Path, bool Local);
+    virtual void __fastcall AnyCommand(const std::wstring Command,
                             const captureoutput_slot_type *OutputEvent);
-    virtual void ChangeDirectory(const std::wstring Directory);
-    virtual void CachedChangeDirectory(const std::wstring Directory);
-    virtual void AnnounceFileListOperation();
-    virtual void ChangeFileProperties(const std::wstring FileName,
+    virtual void __fastcall ChangeDirectory(const std::wstring Directory);
+    virtual void __fastcall CachedChangeDirectory(const std::wstring Directory);
+    virtual void __fastcall AnnounceFileListOperation();
+    virtual void __fastcall ChangeFileProperties(const std::wstring FileName,
                                       const TRemoteFile *File, const TRemoteProperties *Properties,
                                       TChmodSessionAction &Action);
-    virtual bool LoadFilesProperties(nb::TStrings *FileList);
-    virtual void CalculateFilesChecksum(const std::wstring Alg,
+    virtual bool __fastcall LoadFilesProperties(nb::TStrings *FileList);
+    virtual void __fastcall CalculateFilesChecksum(const std::wstring Alg,
                                         nb::TStrings *FileList, nb::TStrings *Checksums,
                                         calculatedchecksum_slot_type *OnCalculatedChecksum);
-    virtual void CopyToLocal(nb::TStrings *FilesToCopy,
+    virtual void __fastcall CopyToLocal(nb::TStrings *FilesToCopy,
                              const std::wstring TargetDir, const TCopyParamType *CopyParam,
                              int Params, TFileOperationProgressType *OperationProgress,
                              TOnceDoneOperation &OnceDoneOperation);
-    virtual void CopyToRemote(nb::TStrings *FilesToCopy,
+    virtual void __fastcall CopyToRemote(nb::TStrings *FilesToCopy,
                               const std::wstring TargetDir, const TCopyParamType *CopyParam,
                               int Params, TFileOperationProgressType *OperationProgress,
                               TOnceDoneOperation &OnceDoneOperation);
-    virtual void CreateDirectory(const std::wstring DirName);
-    virtual void CreateLink(const std::wstring FileName, const std::wstring PointTo, bool Symbolic);
-    virtual void DeleteFile(const std::wstring FileName,
+    virtual void __fastcall CreateDirectory(const std::wstring DirName);
+    virtual void __fastcall CreateLink(const std::wstring FileName, const std::wstring PointTo, bool Symbolic);
+    virtual void __fastcall DeleteFile(const std::wstring FileName,
                             const TRemoteFile *File, int Params, TRmSessionAction &Action);
-    virtual void CustomCommandOnFile(const std::wstring FileName,
+    virtual void __fastcall CustomCommandOnFile(const std::wstring FileName,
                                      const TRemoteFile *File, const std::wstring Command, int Params, const captureoutput_slot_type &OutputEvent);
-    virtual void DoStartup();
-    virtual void HomeDirectory();
-    virtual bool IsCapable(int Capability) const;
-    virtual void LookupUsersGroups();
-    virtual void ReadCurrentDirectory();
-    virtual void ReadDirectory(TRemoteFileList *FileList);
-    virtual void ReadFile(const std::wstring FileName,
+    virtual void __fastcall DoStartup();
+    virtual void __fastcall HomeDirectory();
+    virtual bool __fastcall IsCapable(int Capability) const;
+    virtual void __fastcall LookupUsersGroups();
+    virtual void __fastcall ReadCurrentDirectory();
+    virtual void __fastcall ReadDirectory(TRemoteFileList *FileList);
+    virtual void __fastcall ReadFile(const std::wstring FileName,
                           TRemoteFile *& File);
-    virtual void ReadSymlink(TRemoteFile *SymlinkFile,
+    virtual void __fastcall ReadSymlink(TRemoteFile *SymlinkFile,
                              TRemoteFile *& File);
-    virtual void RenameFile(const std::wstring FileName,
+    virtual void __fastcall RenameFile(const std::wstring FileName,
                             const std::wstring NewName);
-    virtual void CopyFile(const std::wstring FileName,
+    virtual void __fastcall CopyFile(const std::wstring FileName,
                           const std::wstring NewName);
-    virtual std::wstring FileUrl(const std::wstring FileName);
-    virtual nb::TStrings *GetFixedPaths();
-    virtual void SpaceAvailable(const std::wstring Path,
+    virtual std::wstring __fastcall FileUrl(const std::wstring FileName);
+    virtual nb::TStrings * __fastcall GetFixedPaths();
+    virtual void __fastcall __fastcall SpaceAvailable(const std::wstring Path,
                                 TSpaceAvailable &ASpaceAvailable);
-    virtual const TSessionInfo &GetSessionInfo();
-    virtual const TFileSystemInfo &GetFileSystemInfo(bool Retrieve);
-    virtual bool TemporaryTransferFile(const std::wstring FileName);
-    virtual bool GetStoredCredentialsTried();
-    virtual std::wstring GetUserName();
+    virtual const TSessionInfo & __fastcall GetSessionInfo();
+    virtual const TFileSystemInfo & __fastcall GetFileSystemInfo(bool Retrieve);
+    virtual bool __fastcall TemporaryTransferFile(const std::wstring FileName);
+    virtual bool __fastcall GetStoredCredentialsTried();
+    virtual std::wstring __fastcall GetUserName();
 
 public:
-    virtual void FileTransferProgress(__int64 TransferSize, __int64 Bytes);
+    virtual void __fastcall __fastcall FileTransferProgress(__int64 TransferSize, __int64 Bytes);
 
 protected:
-    virtual std::wstring GetCurrentDirectory();
+    virtual std::wstring __fastcall GetCurrentDirectory();
 
-    bool HandleListData(const wchar_t *Path, const TListDataEntry *Entries,
+    bool __fastcall HandleListData(const wchar_t *Path, const TListDataEntry *Entries,
                         size_t Count);
-    bool HandleTransferStatus(bool Valid, __int64 TransferSize,
+    bool __fastcall HandleTransferStatus(bool Valid, __int64 TransferSize,
                               __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
                               bool FileTransfer);
-    bool HandleCapabilities(bool Mfmt);
-    bool CheckError(int ReturnCode, const wchar_t *Context);
-    void EnsureLocation();
-    std::wstring ActualCurrentDirectory();
-    void Discard();
-    void DoChangeDirectory(const std::wstring Directory);
+    bool __fastcall HandleCapabilities(bool Mfmt);
+    bool __fastcall CheckError(int ReturnCode, const wchar_t *Context);
+    void __fastcall EnsureLocation();
+    std::wstring __fastcall ActualCurrentDirectory();
+    void __fastcall Discard();
+    void __fastcall DoChangeDirectory(const std::wstring Directory);
 
-    void Sink(const std::wstring FileName,
+    void __fastcall Sink(const std::wstring FileName,
               const TRemoteFile *File, const std::wstring TargetDir,
               const TCopyParamType *CopyParam, int Params,
               TFileOperationProgressType *OperationProgress, unsigned int Flags,
               TDownloadSessionAction &Action);
-    void SinkRobust(const std::wstring FileName,
+    void __fastcall SinkRobust(const std::wstring FileName,
                     const TRemoteFile *File, const std::wstring TargetDir,
                     const TCopyParamType *CopyParam, int Params,
                     TFileOperationProgressType *OperationProgress, unsigned int Flags);
     void SinkFile(const std::wstring FileName, const TRemoteFile *File, void *Param);
-    void WebDAVSourceRobust(const std::wstring FileName,
+    void __fastcall WebDAVSourceRobust(const std::wstring FileName,
                       const std::wstring TargetDir, const TCopyParamType *CopyParam, int Params,
                       TFileOperationProgressType *OperationProgress, unsigned int Flags);
-    void WebDAVSource(const std::wstring FileName,
+    void __fastcall WebDAVSource(const std::wstring FileName,
                 const std::wstring TargetDir, const TCopyParamType *CopyParam, int Params,
                 TFileOperationProgressType *OperationProgress, unsigned int Flags,
                 TUploadSessionAction &Action);
-    void WebDAVDirectorySource(const std::wstring DirectoryName,
+    void __fastcall WebDAVDirectorySource(const std::wstring DirectoryName,
                          const std::wstring TargetDir, int Attrs, const TCopyParamType *CopyParam,
                          int Params, TFileOperationProgressType *OperationProgress, unsigned int Flags);
-    bool ConfirmOverwrite(std::wstring &FileName,
+    bool __fastcall ConfirmOverwrite(std::wstring &FileName,
                           TOverwriteMode &OverwriteMode, TFileOperationProgressType *OperationProgress,
                           const TOverwriteFileParams *FileParams, int Params, bool AutoResume);
-    void ReadDirectoryProgress(__int64 Bytes);
-    void ResetFileTransfer();
-    void DoFileTransferProgress(__int64 TransferSize, __int64 Bytes);
-    void ResetCaches();
-    void CaptureOutput(const std::wstring Str);
-    void DoReadDirectory(TRemoteFileList *FileList);
-    void FileTransfer(const std::wstring FileName, const std::wstring LocalFile,
+    void __fastcall ReadDirectoryProgress(__int64 Bytes);
+    void __fastcall ResetFileTransfer();
+    void __fastcall DoFileTransferProgress(__int64 TransferSize, __int64 Bytes);
+    void __fastcall ResetCaches();
+    void __fastcall CaptureOutput(const std::wstring Str);
+    void __fastcall DoReadDirectory(TRemoteFileList *FileList);
+    void __fastcall FileTransfer(const std::wstring FileName, const std::wstring LocalFile,
                       const std::wstring RemoteFile, const std::wstring RemotePath, bool Get,
                       __int64 Size, int Type, TFileTransferData &UserData,
                       TFileOperationProgressType *OperationProgress);
 
 protected:
-    const wchar_t *GetOption(int OptionID) const;
-    int GetOptionVal(int OptionID) const;
+    const wchar_t * __fastcall GetOption(int OptionID) const;
+    int __fastcall GetOptionVal(int OptionID) const;
 
 private:
     enum TCommand
@@ -174,12 +174,12 @@ private:
     TWebDAVFileSystem *Self;
 
 private:
-    void CustomReadFile(const std::wstring FileName,
+    void __fastcall CustomReadFile(const std::wstring FileName,
                         TRemoteFile *& File, TRemoteFile *ALinkedByFile);
-    static std::wstring DelimitStr(const std::wstring Str);
-    TRemoteFile *CreateRemoteFile(const std::wstring ListingStr,
+    static std::wstring __fastcall DelimitStr(const std::wstring Str);
+    TRemoteFile * __fastcall CreateRemoteFile(const std::wstring ListingStr,
                                   TRemoteFile *LinkedByFile = NULL);
-    void CaptureOutput(const std::wstring AddedLine, bool StdError);
+    void __fastcall CaptureOutput(const std::wstring AddedLine, bool StdError);
 
 private:
     enum
@@ -294,6 +294,6 @@ protected:
     CURLcode CURLPrepare(const char *webDavPath, const bool handleTimeout = true);
 private:
     TWebDAVFileSystem(const TWebDAVFileSystem &);
-    void operator=(const TWebDAVFileSystem &);
+    void __fastcall operator=(const TWebDAVFileSystem &);
 };
 

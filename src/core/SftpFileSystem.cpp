@@ -184,7 +184,7 @@ struct TSFTPSupport
         delete Extensions;
     }
 
-    void Reset()
+    void __fastcall Reset()
     {
         AttributeMask = 0;
         AttributeBits = 0;
@@ -255,7 +255,7 @@ public:
         if (FReservedBy) { FReservedBy->UnreserveResponse(this); }
     }
 
-    void ChangeType(size_t AType)
+    void __fastcall ChangeType(size_t AType)
     {
         FPosition = 0;
         FLength = 0;
@@ -269,7 +269,7 @@ public:
         }
     }
 
-    void Reuse()
+    void __fastcall Reuse()
     {
         AssignNumber();
 
@@ -282,12 +282,12 @@ public:
         memmove(FData + 1, Buf, sizeof(Buf));
     }
 
-    void AddByte(unsigned char Value)
+    void __fastcall AddByte(unsigned char Value)
     {
         Add(&Value, sizeof(Value));
     }
 
-    void AddCardinal(size_t Value)
+    void __fastcall AddCardinal(size_t Value)
     {
         // duplicated in Reuse()
         unsigned char Buf[4];
@@ -295,43 +295,43 @@ public:
         Add(&Buf, sizeof(Buf));
     }
 
-    void AddInt64(__int64 Value)
+    void __fastcall AddInt64(__int64 Value)
     {
         AddCardinal(static_cast<size_t>(Value >> 32));
         AddCardinal(static_cast<size_t>(Value & 0xFFFFFFFF));
     }
 
-    void AddData(const void *Data, size_t ALength)
+    void __fastcall AddData(const void *Data, size_t ALength)
     {
         AddCardinal(ALength);
         Add(Data, ALength);
     }
 
-    void AddStringA(const std::string &ValueA)
+    void __fastcall AddStringA(const std::string &ValueA)
     {
         // std::string ValueA = nb::W2MB(Value.c_str(), FCodePage);
         AddCardinal(ValueA.size());
         Add(ValueA.c_str(), ValueA.size());
     }
 
-    void AddStringW(const std::wstring ValueW)
+    void __fastcall AddStringW(const std::wstring ValueW)
     {
         std::string ValueA = nb::W2MB(ValueW.c_str(), FCodePage);
         AddStringA(ValueA);
     }
 
-    inline void AddString(const std::wstring Value)
+    inline void __fastcall AddString(const std::wstring Value)
     {
         AddStringW(Value);
     }
 
     // now purposeless alias to AddString
-    inline void AddPathString(const std::wstring Value)
+    inline void __fastcall AddPathString(const std::wstring Value)
     {
         AddString(Value);
     }
 
-    void AddProperties(unsigned short *Rights, TRemoteToken *Owner,
+    void __fastcall AddProperties(unsigned short *Rights, TRemoteToken *Owner,
                        TRemoteToken *Group, __int64 *MTime, __int64 *ATime,
                        __int64 *Size, bool IsDirectory, size_t Version)
     {
@@ -423,7 +423,7 @@ public:
         }
     }
 
-    void AddProperties(const TRemoteProperties *Properties,
+    void __fastcall AddProperties(const TRemoteProperties *Properties,
                        unsigned short BaseRights, bool IsDirectory, size_t Version,
                        TChmodSessionAction *Action)
     {
@@ -557,7 +557,7 @@ public:
         return result;
     }
 
-    void GetFile(TRemoteFile *File, size_t Version, TDSTMode DSTMode, bool SignedTS, bool Complete)
+    void __fastcall GetFile(TRemoteFile *File, size_t Version, TDSTMode DSTMode, bool SignedTS, bool Complete)
     {
         assert(File);
         size_t Flags;
@@ -736,7 +736,7 @@ public:
         return FPosition < FLength ? FData + FPosition : NULL;
     }
 
-    void DataUpdated(size_t ALength)
+    void __fastcall DataUpdated(size_t ALength)
     {
         FPosition = 0;
         FLength = ALength;
@@ -751,7 +751,7 @@ public:
         }
     }
 
-    void LoadFromFile(const std::wstring FileName)
+    void __fastcall LoadFromFile(const std::wstring FileName)
     {
         nb::TStringList *DumpLines = new nb::TStringList();
         std::wstring Dump;
@@ -836,7 +836,7 @@ public:
     }
 
     size_t GetCapacity() const { return FCapacity; }
-    void SetCapacity(size_t ACapacity)
+    void __fastcall SetCapacity(size_t ACapacity)
     {
         if (ACapacity != GetCapacity())
         {
@@ -876,9 +876,9 @@ public:
     }
 
     size_t GetMessageNumber() const { return FMessageNumber; }
-    void SetMessageNumber(size_t value) { FMessageNumber = value; }
+    void __fastcall SetMessageNumber(size_t value) { FMessageNumber = value; }
     TSFTPFileSystem *GetReservedBy() const { return FReservedBy; }
-    void SetReservedBy(TSFTPFileSystem *value) { FReservedBy = value; }
+    void __fastcall SetReservedBy(TSFTPFileSystem *value) { FReservedBy = value; }
     std::wstring GetTypeName() const
     {
 #define TYPE_CASE(TYPE) case TYPE: return nb::MB2W(#TYPE, FCodePage)
@@ -931,7 +931,7 @@ private:
     unsigned int FCodePage;
     TSFTPPacket *Self;
 
-    void Init(unsigned int codePage)
+    void __fastcall Init(unsigned int codePage)
     {
         FData = NULL;
         FCapacity = 0;
@@ -944,7 +944,7 @@ private:
         Self = this;
     }
 
-    void AssignNumber()
+    void __fastcall AssignNumber()
     {
         // this is not strictly thread-safe, but as it is accessed from multiple
         // threads only for multiple connection, it is not problem if two threads get
@@ -953,7 +953,7 @@ private:
         FMessageCounter++;
     }
 
-    inline void Add(const void *AData, size_t ALength)
+    inline void __fastcall Add(const void *AData, size_t ALength)
     {
         if (GetLength() + ALength > GetCapacity())
         {
@@ -963,7 +963,7 @@ private:
         FLength += ALength;
     }
 
-    inline void Need(size_t Size)
+    inline void __fastcall Need(size_t Size)
     {
         if (FPosition + Size > FLength)
         {
@@ -1011,7 +1011,7 @@ public:
         return SendRequests();
     }
 
-    virtual void Dispose()
+    virtual void __fastcall Dispose()
     {
         assert(FFileSystem->FTerminal->GetActive());
 
@@ -1053,7 +1053,7 @@ public:
         }
     }
 
-    void DisposeSafe()
+    void __fastcall DisposeSafe()
     {
         if (FFileSystem->FTerminal->GetActive())
         {
@@ -1131,7 +1131,7 @@ protected:
 
     virtual bool End(TSFTPPacket *Response) = 0;
 
-    virtual void SendPacket(TSFTPQueuePacket *Packet)
+    virtual void __fastcall SendPacket(TSFTPQueuePacket *Packet)
     {
         FFileSystem->SendPacket(Packet);
     }
@@ -1220,7 +1220,7 @@ public:
         UnregisterReceiveHandler();
     }
 
-    virtual void Dispose()
+    virtual void __fastcall Dispose()
     {
         // we do not want to receive asynchronous notifications anymore,
         // while waiting synchronously for pending responses
@@ -1253,7 +1253,7 @@ protected:
         return true;
     }
 
-    void UnregisterReceiveHandler()
+    void __fastcall UnregisterReceiveHandler()
     {
         if (FReceiveHandlerRegistered)
         {
@@ -1286,7 +1286,7 @@ public:
         return TSFTPFixedLenQueue::Init(QueueLen);
     }
 
-    void InitFillGapRequest(__int64 Offset, size_t Missing,
+    void __fastcall InitFillGapRequest(__int64 Offset, size_t Missing,
                             TSFTPPacket *Packet)
     {
         InitRequest(Packet, Offset, Missing);
@@ -1310,7 +1310,7 @@ protected:
         return true;
     }
 
-    void InitRequest(TSFTPPacket *Request, __int64 Offset,
+    void __fastcall InitRequest(TSFTPPacket *Request, __int64 Offset,
                      size_t Size)
     {
         Request->ChangeType(SSH_FXP_READ);
@@ -1414,7 +1414,7 @@ protected:
         return Result;
     }
 
-    virtual void SendPacket(TSFTPQueuePacket *Packet)
+    virtual void __fastcall SendPacket(TSFTPQueuePacket *Packet)
     {
         TSFTPAsynchronousQueue::SendPacket(Packet);
         OperationProgress->AddTransfered(FLastBlockSize);
@@ -1640,7 +1640,7 @@ TSFTPFileSystem::TSFTPFileSystem(TTerminal *ATerminal) :
     Self = this;
 }
 
-void TSFTPFileSystem::Init(TSecureShell *SecureShell)
+void __fastcall TSFTPFileSystem::Init(TSecureShell *SecureShell)
 {
     FSecureShell = SecureShell;
     FFileSystemInfoValid = false;
@@ -1669,13 +1669,13 @@ TSFTPFileSystem::~TSFTPFileSystem()
     delete FSecureShell;
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::Open()
+void __fastcall TSFTPFileSystem::Open()
 {
     ResetConnection();
     FSecureShell->Open();
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::Close()
+void __fastcall TSFTPFileSystem::Close()
 {
     FSecureShell->Close();
 }
@@ -1761,7 +1761,7 @@ std::wstring TSFTPFileSystem::GetUserName()
     return FSecureShell->GetUserName();
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::Idle()
+void __fastcall TSFTPFileSystem::Idle()
 {
     // Keep session alive
     if ((GetSessionData()->GetPingType() != ptOff) &&
@@ -1783,7 +1783,7 @@ void TSFTPFileSystem::Idle()
     FSecureShell->Idle();
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::ResetConnection()
+void __fastcall TSFTPFileSystem::ResetConnection()
 {
     // there must be no valid packet reservation at the end
     /*
@@ -1874,7 +1874,7 @@ bool TSFTPFileSystem::SupportsExtension(const std::wstring Extension) const
     return FSupport->Loaded && (FSupport->Extensions->IndexOf(Extension.c_str()) != NPOS);
 }
 //---------------------------------------------------------------------------
-inline void TSFTPFileSystem::BusyStart()
+inline void __fastcall TSFTPFileSystem::BusyStart()
 {
     if (FBusy == 0 && FTerminal->GetUseBusyCursor() && !FAvoidBusy)
     {
@@ -1884,7 +1884,7 @@ inline void TSFTPFileSystem::BusyStart()
     assert(FBusy < 10);
 }
 //---------------------------------------------------------------------------
-inline void TSFTPFileSystem::BusyEnd()
+inline void __fastcall TSFTPFileSystem::BusyEnd()
 {
     assert(FBusy > 0);
     FBusy--;
@@ -1984,7 +1984,7 @@ size_t TSFTPFileSystem::DownloadBlockSize(
     return Result;
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::SendPacket(const TSFTPPacket *Packet)
+void __fastcall TSFTPFileSystem::SendPacket(const TSFTPPacket *Packet)
 {
     BusyStart();
     {
@@ -2129,7 +2129,7 @@ size_t TSFTPFileSystem::GotStatusPacket(TSFTPPacket *Packet,
     }
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::RemoveReservation(size_t Reservation)
+void __fastcall TSFTPFileSystem::RemoveReservation(size_t Reservation)
 {
     for (size_t Index = Reservation+1; Index < FPacketReservations->GetCount(); Index++)
     {
@@ -2288,7 +2288,7 @@ size_t TSFTPFileSystem::ReceivePacket(TSFTPPacket *Packet,
     return Result;
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::ReserveResponse(const TSFTPPacket *Packet,
+void __fastcall TSFTPFileSystem::ReserveResponse(const TSFTPPacket *Packet,
                                       TSFTPPacket *Response)
 {
     if (Response != NULL)
@@ -2307,7 +2307,7 @@ void TSFTPFileSystem::ReserveResponse(const TSFTPPacket *Packet,
     FPacketNumbers[FPacketReservations->GetCount() - 1] = Packet->GetMessageNumber();
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::UnreserveResponse(TSFTPPacket *Response)
+void __fastcall TSFTPFileSystem::UnreserveResponse(TSFTPPacket *Response)
 {
     size_t Reservation = FPacketReservations->IndexOf(reinterpret_cast<nb::TObject *>(Response));
     if (Response->GetCapacity() != 0)
@@ -2521,7 +2521,7 @@ std::wstring TSFTPFileSystem::GetHomeDirectory()
     return FHomeDirectory;
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::LoadFile(TRemoteFile *File, TSFTPPacket *Packet,
+void __fastcall TSFTPFileSystem::LoadFile(TRemoteFile *File, TSFTPPacket *Packet,
                                bool Complete)
 {
     Packet->GetFile(File, FVersion, GetSessionData()->GetDSTMode(),
@@ -2558,7 +2558,7 @@ std::wstring TSFTPFileSystem::GetCurrentDirectory()
     return FCurrentDirectory;
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::DoStartup()
+void __fastcall TSFTPFileSystem::DoStartup()
 {
     // do not know yet
     FVersion = NPOS;
@@ -2837,7 +2837,7 @@ char *TSFTPFileSystem::GetEOL() const
     }
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::LookupUsersGroups()
+void __fastcall TSFTPFileSystem::LookupUsersGroups()
 {
     assert(SupportsExtension(SFTP_EXT_OWNER_GROUP));
 
@@ -2887,7 +2887,7 @@ void TSFTPFileSystem::LookupUsersGroups()
     }
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::ReadCurrentDirectory()
+void __fastcall TSFTPFileSystem::ReadCurrentDirectory()
 {
     if (!FDirectoryToChangeTo.empty())
     {
@@ -2901,12 +2901,12 @@ void TSFTPFileSystem::ReadCurrentDirectory()
     }
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::HomeDirectory()
+void __fastcall TSFTPFileSystem::HomeDirectory()
 {
     ChangeDirectory(GetHomeDirectory());
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::TryOpenDirectory(const std::wstring Directory)
+void __fastcall TSFTPFileSystem::TryOpenDirectory(const std::wstring Directory)
 {
     FTerminal->LogEvent(FORMAT(L"Trying to open directory \"%s\".", Directory.c_str()));
     TRemoteFile *File;
@@ -2931,11 +2931,11 @@ void TSFTPFileSystem::TryOpenDirectory(const std::wstring Directory)
     }
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::AnnounceFileListOperation()
+void __fastcall TSFTPFileSystem::AnnounceFileListOperation()
 {
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::ChangeDirectory(const std::wstring Directory)
+void __fastcall TSFTPFileSystem::ChangeDirectory(const std::wstring Directory)
 {
     std::wstring Path, Current;
 
@@ -2950,12 +2950,12 @@ void TSFTPFileSystem::ChangeDirectory(const std::wstring Directory)
     FDirectoryToChangeTo = Path;
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::CachedChangeDirectory(const std::wstring Directory)
+void __fastcall TSFTPFileSystem::CachedChangeDirectory(const std::wstring Directory)
 {
     FDirectoryToChangeTo = UnixExcludeTrailingBackslash(Directory);
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::ReadDirectory(TRemoteFileList *FileList)
+void __fastcall TSFTPFileSystem::ReadDirectory(TRemoteFileList *FileList)
 {
     assert(FileList && !FileList->GetDirectory().empty());
 
@@ -3118,7 +3118,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList *FileList)
     }
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::ReadSymlink(TRemoteFile *SymlinkFile,
+void __fastcall TSFTPFileSystem::ReadSymlink(TRemoteFile *SymlinkFile,
                                   TRemoteFile *& File)
 {
     assert(SymlinkFile && SymlinkFile->GetIsSymLink());
@@ -3158,7 +3158,7 @@ void TSFTPFileSystem::ReadSymlink(TRemoteFile *SymlinkFile,
                     UnixExtractFileName(SymlinkFile->GetLinkTo()));
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::ReadFile(const std::wstring FileName,
+void __fastcall TSFTPFileSystem::ReadFile(const std::wstring FileName,
                                TRemoteFile *& File)
 {
     CustomReadFile(FileName, File, SSH_FXP_LSTAT);
@@ -3196,7 +3196,7 @@ bool TSFTPFileSystem::RemoteFileExists(const std::wstring FullPath,
     return Result;
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::SendCustomReadFile(TSFTPPacket *Packet,
+void __fastcall TSFTPFileSystem::SendCustomReadFile(TSFTPPacket *Packet,
         TSFTPPacket *Response,
         // const std::string RemoteHandle,
         const std::wstring FileName,
@@ -3221,7 +3221,7 @@ void TSFTPFileSystem::SendCustomReadFile(TSFTPPacket *Packet,
     ReserveResponse(Packet, Response);
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::CustomReadFile(const std::wstring FileName,
+void __fastcall TSFTPFileSystem::CustomReadFile(const std::wstring FileName,
                                      TRemoteFile *& File, char Type, TRemoteFile *ALinkedByFile,
                                      size_t AllowStatus)
 {
@@ -3243,7 +3243,7 @@ void TSFTPFileSystem::CustomReadFile(const std::wstring FileName,
     }
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::DoDeleteFile(const std::wstring FileName, char Type)
+void __fastcall TSFTPFileSystem::DoDeleteFile(const std::wstring FileName, char Type)
 {
     TSFTPPacket Packet(Type, GetSessionData()->GetCodePageAsNumber());
     std::wstring RealFileName = LocalCanonify(FileName);
@@ -3251,7 +3251,7 @@ void TSFTPFileSystem::DoDeleteFile(const std::wstring FileName, char Type)
     SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::DeleteFile(const std::wstring FileName,
+void __fastcall TSFTPFileSystem::DeleteFile(const std::wstring FileName,
                                  const TRemoteFile *File, int Params, TRmSessionAction &Action)
 {
     char Type;
@@ -3279,7 +3279,7 @@ void TSFTPFileSystem::DeleteFile(const std::wstring FileName,
     DoDeleteFile(FileName, Type);
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::RenameFile(const std::wstring FileName,
+void __fastcall TSFTPFileSystem::RenameFile(const std::wstring FileName,
                                  const std::wstring NewName)
 {
     TSFTPPacket Packet(SSH_FXP_RENAME, GetSessionData()->GetCodePageAsNumber());
@@ -3303,13 +3303,13 @@ void TSFTPFileSystem::RenameFile(const std::wstring FileName,
     SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::CopyFile(const std::wstring /*FileName*/,
+void __fastcall TSFTPFileSystem::CopyFile(const std::wstring /*FileName*/,
                                const std::wstring /*NewName*/)
 {
     assert(false);
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::CreateDirectory(const std::wstring DirName)
+void __fastcall TSFTPFileSystem::CreateDirectory(const std::wstring DirName)
 {
     TSFTPPacket Packet(SSH_FXP_MKDIR, GetSessionData()->GetCodePageAsNumber());
     std::wstring CanonifiedName = Canonify(DirName);
@@ -3318,7 +3318,7 @@ void TSFTPFileSystem::CreateDirectory(const std::wstring DirName)
     SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::CreateLink(const std::wstring FileName,
+void __fastcall TSFTPFileSystem::CreateLink(const std::wstring FileName,
                                  const std::wstring PointTo, bool Symbolic)
 {
     USEDPARAM(Symbolic);
@@ -3343,7 +3343,7 @@ void TSFTPFileSystem::CreateLink(const std::wstring FileName,
     SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::ChangeFileProperties(const std::wstring FileName,
+void __fastcall TSFTPFileSystem::ChangeFileProperties(const std::wstring FileName,
         const TRemoteFile * /*File*/, const TRemoteProperties *AProperties,
         TChmodSessionAction &Action)
 {
@@ -3454,7 +3454,7 @@ bool TSFTPFileSystem::LoadFilesProperties(nb::TStrings *FileList)
     return Result;
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring Alg,
+void __fastcall TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring Alg,
         nb::TStrings *FileList, nb::TStrings *Checksums,
         calculatedchecksum_slot_type *OnCalculatedChecksum,
         TFileOperationProgressType *OperationProgress, bool FirstLevel)
@@ -3583,7 +3583,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring Alg,
     // queue is discarded here
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::CalculateFilesChecksum(const std::wstring Alg,
+void __fastcall TSFTPFileSystem::CalculateFilesChecksum(const std::wstring Alg,
         nb::TStrings *FileList, nb::TStrings *Checksums,
         calculatedchecksum_slot_type *OnCalculatedChecksum)
 {
@@ -3605,14 +3605,14 @@ void TSFTPFileSystem::CalculateFilesChecksum(const std::wstring Alg,
     }
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::CustomCommandOnFile(const std::wstring /*FileName*/,
+void __fastcall TSFTPFileSystem::CustomCommandOnFile(const std::wstring /*FileName*/,
         const TRemoteFile * /*File*/, const std::wstring /*Command*/, int /*Params*/,
         const captureoutput_slot_type & /*OutputEvent*/)
 {
     assert(false);
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::AnyCommand(const std::wstring /*Command*/,
+void __fastcall TSFTPFileSystem::AnyCommand(const std::wstring /*Command*/,
                                  const captureoutput_slot_type * /*OutputEvent*/)
 {
     assert(false);
@@ -3628,7 +3628,7 @@ nb::TStrings *TSFTPFileSystem::GetFixedPaths()
     return FFixedPaths;
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::SpaceAvailable(const std::wstring Path,
+void __fastcall TSFTPFileSystem::SpaceAvailable(const std::wstring Path,
                                      TSpaceAvailable &ASpaceAvailable)
 {
     TSFTPPacket Packet(SSH_FXP_EXTENDED, GetSessionData()->GetCodePageAsNumber());
@@ -3644,7 +3644,7 @@ void TSFTPFileSystem::SpaceAvailable(const std::wstring Path,
 //---------------------------------------------------------------------------
 // transfer protocol
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::CopyToRemote(nb::TStrings *FilesToCopy,
+void __fastcall TSFTPFileSystem::CopyToRemote(nb::TStrings *FilesToCopy,
                                    const std::wstring TargetDir, const TCopyParamType *CopyParam,
                                    int Params, TFileOperationProgressType *OperationProgress,
                                    TOnceDoneOperation &OnceDoneOperation)
@@ -3701,7 +3701,7 @@ void TSFTPFileSystem::CopyToRemote(nb::TStrings *FilesToCopy,
     }
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::SFTPConfirmOverwrite(std::wstring &FileName,
+void __fastcall TSFTPFileSystem::SFTPConfirmOverwrite(std::wstring &FileName,
         int Params, TFileOperationProgressType *OperationProgress,
         TOverwriteMode &OverwriteMode, const TOverwriteFileParams *FileParams)
 {
@@ -3916,7 +3916,7 @@ bool TSFTPFileSystem::SFTPConfirmResume(const std::wstring DestFileName,
     return ResumeTransfer;
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::SFTPSourceRobust(const std::wstring FileName,
+void __fastcall TSFTPFileSystem::SFTPSourceRobust(const std::wstring FileName,
                                        const std::wstring TargetDir, const TCopyParamType *CopyParam, int Params,
                                        TFileOperationProgressType *OperationProgress, unsigned int Flags)
 {
@@ -3967,7 +3967,7 @@ void TSFTPFileSystem::SFTPSourceRobust(const std::wstring FileName,
     // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
+void __fastcall TSFTPFileSystem::SFTPSource(const std::wstring FileName,
                                  const std::wstring TargetDir, const TCopyParamType *CopyParam, int Params,
                                  TOpenRemoteFileParams *OpenParams,
                                  TOverwriteFileParams *FileParams,
@@ -4599,7 +4599,7 @@ int TSFTPFileSystem::SFTPOpenRemote(void *AOpenParams, void * /*Param2*/)
     return 0;
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::SFTPCloseRemote(const std::string &Handle,
+void __fastcall TSFTPFileSystem::SFTPCloseRemote(const std::string &Handle,
                                       const std::wstring FileName, TFileOperationProgressType *OperationProgress,
                                       bool TransferFinished, bool Request, TSFTPPacket *Packet)
 {
@@ -4633,7 +4633,7 @@ void TSFTPFileSystem::SFTPCloseRemote(const std::string &Handle,
     );
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::SFTPDirectorySource(const std::wstring DirectoryName,
+void __fastcall TSFTPFileSystem::SFTPDirectorySource(const std::wstring DirectoryName,
         const std::wstring TargetDir, int Attrs, const TCopyParamType *CopyParam,
         int Params, TFileOperationProgressType *OperationProgress, unsigned int Flags)
 {
@@ -4734,7 +4734,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const std::wstring DirectoryName,
     }
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::CopyToLocal(nb::TStrings *FilesToCopy,
+void __fastcall TSFTPFileSystem::CopyToLocal(nb::TStrings *FilesToCopy,
                                   const std::wstring TargetDir, const TCopyParamType *CopyParam,
                                   int Params, TFileOperationProgressType *OperationProgress,
                                   TOnceDoneOperation &OnceDoneOperation)
@@ -4785,7 +4785,7 @@ void TSFTPFileSystem::CopyToLocal(nb::TStrings *FilesToCopy,
     }
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::SFTPSinkRobust(const std::wstring FileName,
+void __fastcall TSFTPFileSystem::SFTPSinkRobust(const std::wstring FileName,
                                      const TRemoteFile *File, const std::wstring TargetDir,
                                      const TCopyParamType *CopyParam, int Params,
                                      TFileOperationProgressType *OperationProgress, unsigned int Flags)
@@ -4833,7 +4833,7 @@ void TSFTPFileSystem::SFTPSinkRobust(const std::wstring FileName,
     while (Retry);
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
+void __fastcall TSFTPFileSystem::SFTPSink(const std::wstring FileName,
                                const TRemoteFile *File, const std::wstring TargetDir,
                                const TCopyParamType *CopyParam, int Params,
                                TFileOperationProgressType *OperationProgress, unsigned int Flags,
@@ -4894,7 +4894,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
             FTerminal->ProcessDirectory(FileName, boost::bind(&TSFTPFileSystem::SFTPSinkFile, this, _1, _2, _3), &SinkFileParams);
 
             // Do not delete directory if some of its files were skip.
-            // Throw "skip file" for the directory to avoid attempt to deletion
+            // Throw "skip file" for the directory to avoid __fastcall attempt to deletion
             // of any parent directory
             if ((Params & cpDelete) && SinkFileParams.Skipped)
             {
@@ -5284,7 +5284,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
                     // ignore errors
                     if (RemoteFilePacket.GetType() == SSH_FXP_ATTRS)
                     {
-                        // load file, avoid completion (resolving symlinks) as we do not need that
+                        // load file, avoid __fastcall completion (resolving symlinks) as we do not need that
                         AFile = LoadFile(&RemoteFilePacket, NULL, UnixExtractFileName(FileName),
                                          NULL, false);
                     }

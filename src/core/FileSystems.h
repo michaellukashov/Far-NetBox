@@ -115,7 +115,7 @@ public:
     virtual ~TFileSystemIntf()
     {}
 
-    virtual void FileTransferProgress(__int64 TransferSize, __int64 Bytes) = 0;
+    virtual void __fastcall FileTransferProgress(__int64 TransferSize, __int64 Bytes) = 0;
 };
 
 //---------------------------------------------------------------------------
@@ -124,70 +124,70 @@ class TCustomFileSystem : public TFileSystemIntf
 public:
     explicit TCustomFileSystem()
     {}
-    virtual void Init()
+    virtual void __fastcall Init()
     {}
     virtual ~TCustomFileSystem();
 
-    virtual void Open() = 0;
-    virtual void Close() = 0;
-    virtual bool GetActive() = 0;
-    virtual void Idle() = 0;
-    virtual std::wstring AbsolutePath(const std::wstring Path, bool Local) = 0;
-    virtual void AnyCommand(const std::wstring Command,
+    virtual void __fastcall Open() = 0;
+    virtual void __fastcall Close() = 0;
+    virtual bool __fastcall GetActive() = 0;
+    virtual void __fastcall Idle() = 0;
+    virtual std::wstring __fastcall AbsolutePath(const std::wstring Path, bool Local) = 0;
+    virtual void __fastcall AnyCommand(const std::wstring Command,
                             const captureoutput_slot_type *OutputEvent) = 0;
-    virtual void ChangeDirectory(const std::wstring Directory) = 0;
-    virtual void CachedChangeDirectory(const std::wstring Directory) = 0;
-    virtual void AnnounceFileListOperation() = 0;
-    virtual void ChangeFileProperties(const std::wstring FileName,
+    virtual void __fastcall ChangeDirectory(const std::wstring Directory) = 0;
+    virtual void __fastcall CachedChangeDirectory(const std::wstring Directory) = 0;
+    virtual void __fastcall AnnounceFileListOperation() = 0;
+    virtual void __fastcall ChangeFileProperties(const std::wstring FileName,
                                       const TRemoteFile *File, const TRemoteProperties *Properties,
                                       TChmodSessionAction &Action) = 0;
-    virtual bool LoadFilesProperties(nb::TStrings *FileList) = 0;
-    virtual void CalculateFilesChecksum(const std::wstring Alg,
+    virtual bool __fastcall LoadFilesProperties(nb::TStrings *FileList) = 0;
+    virtual void __fastcall CalculateFilesChecksum(const std::wstring Alg,
                                         nb::TStrings *FileList, nb::TStrings *Checksums,
                                         calculatedchecksum_slot_type *OnCalculatedChecksum) = 0;
-    virtual void CopyToLocal(nb::TStrings *FilesToCopy,
+    virtual void __fastcall CopyToLocal(nb::TStrings *FilesToCopy,
                              const std::wstring TargetDir, const TCopyParamType *CopyParam,
                              int Params, TFileOperationProgressType *OperationProgress,
                              TOnceDoneOperation &OnceDoneOperation) = 0;
-    virtual void CopyToRemote(nb::TStrings *FilesToCopy,
+    virtual void __fastcall CopyToRemote(nb::TStrings *FilesToCopy,
                               const std::wstring TargetDir, const TCopyParamType *CopyParam,
                               int Params, TFileOperationProgressType *OperationProgress,
                               TOnceDoneOperation &OnceDoneOperation) = 0;
-    virtual void CreateDirectory(const std::wstring DirName) = 0;
-    virtual void CreateLink(const std::wstring FileName, const std::wstring PointTo, bool Symbolic) = 0;
-    virtual void DeleteFile(const std::wstring FileName,
+    virtual void __fastcall CreateDirectory(const std::wstring DirName) = 0;
+    virtual void __fastcall CreateLink(const std::wstring FileName, const std::wstring PointTo, bool Symbolic) = 0;
+    virtual void __fastcall DeleteFile(const std::wstring FileName,
                             const TRemoteFile *File, int Params,
                             TRmSessionAction &Action) = 0;
-    virtual void CustomCommandOnFile(const std::wstring FileName,
+    virtual void __fastcall CustomCommandOnFile(const std::wstring FileName,
                                      const TRemoteFile *File, const std::wstring Command, int Params, const captureoutput_slot_type &OutputEvent) = 0;
-    virtual void DoStartup() = 0;
-    virtual void HomeDirectory() = 0;
-    virtual bool IsCapable(int Capability) const = 0;
-    virtual void LookupUsersGroups() = 0;
-    virtual void ReadCurrentDirectory() = 0;
-    virtual void ReadDirectory(TRemoteFileList *FileList) = 0;
-    virtual void ReadFile(const std::wstring FileName,
+    virtual void __fastcall DoStartup() = 0;
+    virtual void __fastcall HomeDirectory() = 0;
+    virtual bool __fastcall IsCapable(int Capability) const = 0;
+    virtual void __fastcall LookupUsersGroups() = 0;
+    virtual void __fastcall ReadCurrentDirectory() = 0;
+    virtual void __fastcall ReadDirectory(TRemoteFileList *FileList) = 0;
+    virtual void __fastcall ReadFile(const std::wstring FileName,
                           TRemoteFile *& File) = 0;
-    virtual void ReadSymlink(TRemoteFile *SymLinkFile,
+    virtual void __fastcall ReadSymlink(TRemoteFile *SymLinkFile,
                              TRemoteFile *& File) = 0;
-    virtual void RenameFile(const std::wstring FileName,
+    virtual void __fastcall RenameFile(const std::wstring FileName,
                             const std::wstring NewName) = 0;
-    virtual void CopyFile(const std::wstring FileName,
+    virtual void __fastcall CopyFile(const std::wstring FileName,
                           const std::wstring NewName) = 0;
-    virtual std::wstring FileUrl(const std::wstring FileName) = 0;
-    virtual nb::TStrings *GetFixedPaths() = 0;
-    virtual void SpaceAvailable(const std::wstring Path,
+    virtual std::wstring __fastcall FileUrl(const std::wstring FileName) = 0;
+    virtual nb::TStrings * __fastcall GetFixedPaths() = 0;
+    virtual void __fastcall SpaceAvailable(const std::wstring Path,
                                 TSpaceAvailable &ASpaceAvailable) = 0;
-    virtual const TSessionInfo &GetSessionInfo() = 0;
-    virtual const TFileSystemInfo &GetFileSystemInfo(bool Retrieve) = 0;
-    virtual bool TemporaryTransferFile(const std::wstring FileName) = 0;
-    virtual bool GetStoredCredentialsTried() = 0;
-    virtual std::wstring GetUserName() = 0;
+    virtual const TSessionInfo & __fastcall GetSessionInfo() = 0;
+    virtual const TFileSystemInfo & __fastcall GetFileSystemInfo(bool Retrieve) = 0;
+    virtual bool __fastcall TemporaryTransferFile(const std::wstring FileName) = 0;
+    virtual bool __fastcall GetStoredCredentialsTried() = 0;
+    virtual std::wstring __fastcall GetUserName() = 0;
 
-    virtual std::wstring GetCurrentDirectory() = 0;
+    virtual std::wstring __fastcall GetCurrentDirectory() = 0;
 
 public:
-    virtual void FileTransferProgress(__int64 TransferSize, __int64 Bytes)
+    virtual void __fastcall FileTransferProgress(__int64 TransferSize, __int64 Bytes)
     {
     }
 
@@ -196,7 +196,7 @@ protected:
 
     explicit TCustomFileSystem(TTerminal *ATerminal);
 
-    static void FindCustomCommandPattern(
+    static void __fastcall FindCustomCommandPattern(
         const std::wstring Command, int Index, int &Len, char &PatternCmd);
 };
 //---------------------------------------------------------------------------

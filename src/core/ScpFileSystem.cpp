@@ -328,7 +328,7 @@ TSCPFileSystem::TSCPFileSystem(TTerminal *ATerminal) :
     Self = this;
 }
 
-void TSCPFileSystem::Init(TSecureShell *SecureShell)
+void __fastcall TSCPFileSystem::Init(TSecureShell *SecureShell)
 {
     FSecureShell = SecureShell;
     FCommandSet = new TCommandSet(FTerminal->GetSessionData());
@@ -354,12 +354,12 @@ TSCPFileSystem::~TSCPFileSystem()
     delete FSecureShell;
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::Open()
+void __fastcall TSCPFileSystem::Open()
 {
     FSecureShell->Open();
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::Close()
+void __fastcall TSCPFileSystem::Close()
 {
     FSecureShell->Close();
 }
@@ -427,7 +427,7 @@ std::wstring TSCPFileSystem::GetUserName()
     return FSecureShell->GetUserName();
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::Idle()
+void __fastcall TSCPFileSystem::Idle()
 {
     // Keep session alive
     if ((FTerminal->GetSessionData()->GetPingType ()!= ptOff) &&
@@ -514,7 +514,7 @@ std::wstring TSCPFileSystem::DelimitStr(const std::wstring Str)
     return str;
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::EnsureLocation()
+void __fastcall TSCPFileSystem::EnsureLocation()
 {
     if (!FCachedDirectoryChange.empty())
     {
@@ -542,7 +542,7 @@ void TSCPFileSystem::EnsureLocation()
     }
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::SendCommand(const std::wstring Cmd)
+void __fastcall TSCPFileSystem::SendCommand(const std::wstring Cmd)
 {
     EnsureLocation();
 
@@ -609,7 +609,7 @@ bool TSCPFileSystem::IsLastLine(std::wstring &Line)
     return Result;
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::SkipFirstLine()
+void __fastcall TSCPFileSystem::SkipFirstLine()
 {
     std::wstring Line = FSecureShell->ReceiveLine();
     if (Line != FCommandSet->GetFirstLine())
@@ -618,7 +618,7 @@ void TSCPFileSystem::SkipFirstLine()
     }
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::ReadCommandOutput(int Params, const std::wstring *Cmd)
+void __fastcall TSCPFileSystem::ReadCommandOutput(int Params, const std::wstring *Cmd)
 {
     {
         BOOST_SCOPE_EXIT ( (&Self) )
@@ -685,7 +685,7 @@ void TSCPFileSystem::ReadCommandOutput(int Params, const std::wstring *Cmd)
     }
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::ExecCommand(const std::wstring Cmd, int Params,
+void __fastcall TSCPFileSystem::ExecCommand(const std::wstring Cmd, int Params,
                                  const std::wstring CmdString)
 {
     if (Params < 0) { Params = ecDefault; }
@@ -712,7 +712,7 @@ void TSCPFileSystem::ExecCommand(const std::wstring Cmd, int Params,
     }
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::ExecCommand(TFSCommand Cmd, int Params, ...)
+void __fastcall TSCPFileSystem::ExecCommand(TFSCommand Cmd, int Params, ...)
 {
     if (Params < 0) { Params = ecDefault; }
     va_list args;
@@ -734,12 +734,12 @@ void TSCPFileSystem::ExecCommand(TFSCommand Cmd, int Params, ...)
     }
 }
 //---------------------------------------------------------------------------
-std::wstring TSCPFileSystem::GetCurrentDirectory()
+std::wstring __fastcall TSCPFileSystem::GetCurrentDirectory()
 {
     return FCurrentDirectory;
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::DoStartup()
+void __fastcall TSCPFileSystem::DoStartup()
 {
     // SkipStartupMessage and DetectReturnVar must succeed,
     // otherwise session is to be closed.
@@ -774,7 +774,7 @@ void TSCPFileSystem::DoStartup()
 #undef COND_OPER
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::SkipStartupMessage()
+void __fastcall TSCPFileSystem::SkipStartupMessage()
 {
     try
     {
@@ -787,7 +787,7 @@ void TSCPFileSystem::SkipStartupMessage()
     }
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::LookupUsersGroups()
+void __fastcall TSCPFileSystem::LookupUsersGroups()
 {
     ExecCommand(fsLookupUsersGroups);
     FTerminal->FUsers.Clear();
@@ -804,7 +804,7 @@ void TSCPFileSystem::LookupUsersGroups()
     }
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::DetectReturnVar()
+void __fastcall TSCPFileSystem::DetectReturnVar()
 {
     // This suppose that something was already executed (probably SkipStartupMessage())
     // or return code variable is already set on start up.
@@ -867,7 +867,7 @@ void TSCPFileSystem::DetectReturnVar()
     }
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::ClearAlias(const std::wstring Alias)
+void __fastcall TSCPFileSystem::ClearAlias(const std::wstring Alias)
 {
     if (!Alias.empty())
     {
@@ -878,7 +878,7 @@ void TSCPFileSystem::ClearAlias(const std::wstring Alias)
     }
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::ClearAliases()
+void __fastcall TSCPFileSystem::ClearAliases()
 {
     try
     {
@@ -902,7 +902,7 @@ void TSCPFileSystem::ClearAliases()
     }
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::UnsetNationalVars()
+void __fastcall TSCPFileSystem::UnsetNationalVars()
 {
     try
     {
@@ -918,7 +918,7 @@ void TSCPFileSystem::UnsetNationalVars()
     }
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::ReadCurrentDirectory()
+void __fastcall TSCPFileSystem::ReadCurrentDirectory()
 {
     if (FCachedDirectoryChange.empty())
     {
@@ -931,17 +931,17 @@ void TSCPFileSystem::ReadCurrentDirectory()
     }
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::HomeDirectory()
+void __fastcall TSCPFileSystem::HomeDirectory()
 {
     ExecCommand(fsHomeDirectory);
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::AnnounceFileListOperation()
+void __fastcall TSCPFileSystem::AnnounceFileListOperation()
 {
     // noop
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::ChangeDirectory(const std::wstring Directory)
+void __fastcall TSCPFileSystem::ChangeDirectory(const std::wstring Directory)
 {
     std::wstring ToDir;
     if (!Directory.empty() &&
@@ -957,12 +957,12 @@ void TSCPFileSystem::ChangeDirectory(const std::wstring Directory)
     FCachedDirectoryChange = L"";
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::CachedChangeDirectory(const std::wstring Directory)
+void __fastcall TSCPFileSystem::CachedChangeDirectory(const std::wstring Directory)
 {
     FCachedDirectoryChange = UnixExcludeTrailingBackslash(Directory);
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::ReadDirectory(TRemoteFileList *FileList)
+void __fastcall TSCPFileSystem::ReadDirectory(TRemoteFileList *FileList)
 {
     assert(FileList);
     // emtying file list moved before command execution
@@ -1092,13 +1092,13 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList *FileList)
     while (Again);
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::ReadSymlink(TRemoteFile *SymlinkFile,
+void __fastcall TSCPFileSystem::ReadSymlink(TRemoteFile *SymlinkFile,
                                  TRemoteFile *& File)
 {
     CustomReadFile(SymlinkFile->GetLinkTo(), File, SymlinkFile);
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::ReadFile(const std::wstring FileName,
+void __fastcall TSCPFileSystem::ReadFile(const std::wstring FileName,
                               TRemoteFile *& File)
 {
     CustomReadFile(FileName, File, NULL);
@@ -1124,7 +1124,7 @@ TRemoteFile *TSCPFileSystem::CreateRemoteFile(
     return File;
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::CustomReadFile(const std::wstring FileName,
+void __fastcall TSCPFileSystem::CustomReadFile(const std::wstring FileName,
                                     TRemoteFile *& File, TRemoteFile *ALinkedByFile)
 {
     File = NULL;
@@ -1147,7 +1147,7 @@ void TSCPFileSystem::CustomReadFile(const std::wstring FileName,
     }
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::DeleteFile(const std::wstring FileName,
+void __fastcall TSCPFileSystem::DeleteFile(const std::wstring FileName,
                                 const TRemoteFile *File, int Params, TRmSessionAction &Action)
 {
     USEDPARAM(File);
@@ -1157,31 +1157,31 @@ void TSCPFileSystem::DeleteFile(const std::wstring FileName,
     ExecCommand(fsDeleteFile, 0, DelimitStr(FileName).c_str());
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::RenameFile(const std::wstring FileName,
+void __fastcall TSCPFileSystem::RenameFile(const std::wstring FileName,
                                 const std::wstring NewName)
 {
     ExecCommand(fsRenameFile, 0, DelimitStr(FileName).c_str(), DelimitStr(NewName).c_str());
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::CopyFile(const std::wstring FileName,
+void __fastcall TSCPFileSystem::CopyFile(const std::wstring FileName,
                               const std::wstring NewName)
 {
     ExecCommand(fsCopyFile, 0, DelimitStr(FileName).c_str(), DelimitStr(NewName).c_str());
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::CreateDirectory(const std::wstring DirName)
+void __fastcall TSCPFileSystem::CreateDirectory(const std::wstring DirName)
 {
     ExecCommand(fsCreateDirectory, 0, DelimitStr(DirName).c_str());
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::CreateLink(const std::wstring FileName,
+void __fastcall TSCPFileSystem::CreateLink(const std::wstring FileName,
                                 const std::wstring PointTo, bool Symbolic)
 {
     ExecCommand(fsCreateLink, 0,
                 Symbolic ? L"-s" : L"", DelimitStr(PointTo).c_str(), DelimitStr(FileName).c_str());
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::ChangeFileToken(const std::wstring DelimitedName,
+void __fastcall TSCPFileSystem::ChangeFileToken(const std::wstring DelimitedName,
                                      const TRemoteToken &Token, TFSCommand Cmd, const std::wstring RecursiveStr)
 {
     std::wstring Str;
@@ -1200,7 +1200,7 @@ void TSCPFileSystem::ChangeFileToken(const std::wstring DelimitedName,
     }
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::ChangeFileProperties(const std::wstring FileName,
+void __fastcall TSCPFileSystem::ChangeFileProperties(const std::wstring FileName,
         const TRemoteFile *File, const TRemoteProperties *Properties,
         TChmodSessionAction &Action)
 {
@@ -1265,14 +1265,14 @@ bool TSCPFileSystem::LoadFilesProperties(nb::TStrings * /*FileList*/ )
     return false;
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::CalculateFilesChecksum(const std::wstring /*Alg*/,
+void __fastcall TSCPFileSystem::CalculateFilesChecksum(const std::wstring /*Alg*/,
         nb::TStrings * /*FileList*/, nb::TStrings * /*Checksums*/,
         calculatedchecksum_slot_type * /*OnCalculatedChecksum*/)
 {
     assert(false);
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::CustomCommandOnFile(const std::wstring FileName,
+void __fastcall TSCPFileSystem::CustomCommandOnFile(const std::wstring FileName,
         const TRemoteFile *File, const std::wstring Command, int Params,
         const captureoutput_slot_type &OutputEvent)
 {
@@ -1313,7 +1313,7 @@ void TSCPFileSystem::CaptureOutput(const std::wstring AddedLine, bool StdError)
     }
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::AnyCommand(const std::wstring Command,
+void __fastcall TSCPFileSystem::AnyCommand(const std::wstring Command,
                                 const captureoutput_slot_type *OutputEvent)
 {
     assert(FSecureShell->GetOnCaptureOutput().empty());
@@ -1344,7 +1344,7 @@ nb::TStrings *TSCPFileSystem::GetFixedPaths()
     return NULL;
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::SpaceAvailable(const std::wstring Path,
+void __fastcall TSCPFileSystem::SpaceAvailable(const std::wstring Path,
                                     TSpaceAvailable & /*ASpaceAvailable*/)
 {
     assert(false);
@@ -1352,7 +1352,7 @@ void TSCPFileSystem::SpaceAvailable(const std::wstring Path,
 //---------------------------------------------------------------------------
 // transfer protocol
 //---------------------------------------------------------------------------
-void TSCPFileSystem::SCPResponse(bool *GotLastLine)
+void __fastcall TSCPFileSystem::SCPResponse(bool *GotLastLine)
 {
     // Taken from scp.c response() and modified
 
@@ -1418,7 +1418,7 @@ void TSCPFileSystem::SCPResponse(bool *GotLastLine)
     }
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::CopyToRemote(nb::TStrings *FilesToCopy,
+void __fastcall TSCPFileSystem::CopyToRemote(nb::TStrings *FilesToCopy,
                                   const std::wstring TargetDir, const TCopyParamType *CopyParam,
                                   int Params, TFileOperationProgressType *OperationProgress,
                                   TOnceDoneOperation &OnceDoneOperation)
@@ -1646,7 +1646,7 @@ void TSCPFileSystem::CopyToRemote(nb::TStrings *FilesToCopy,
 }
 
 //---------------------------------------------------------------------------
-void TSCPFileSystem::SCPSource(const std::wstring FileName,
+void __fastcall TSCPFileSystem::SCPSource(const std::wstring FileName,
                                const std::wstring TargetDir, const TCopyParamType *CopyParam, int Params,
                                TFileOperationProgressType *OperationProgress, int Level)
 {
@@ -1938,7 +1938,7 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
     FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory finished.", FileName.c_str()));
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
+void __fastcall TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
                                         const std::wstring TargetDir, const TCopyParamType *CopyParam, int Params,
                                         TFileOperationProgressType *OperationProgress, int Level)
 {
@@ -2057,7 +2057,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
     }
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::CopyToLocal(nb::TStrings *FilesToCopy,
+void __fastcall TSCPFileSystem::CopyToLocal(nb::TStrings *FilesToCopy,
                                  const std::wstring TargetDir, const TCopyParamType *CopyParam,
                                  int Params, TFileOperationProgressType *OperationProgress,
                                  TOnceDoneOperation &OnceDoneOperation)
@@ -2180,14 +2180,14 @@ void TSCPFileSystem::CopyToLocal(nb::TStrings *FilesToCopy,
     }
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::SCPError(const std::wstring Message, bool Fatal)
+void __fastcall TSCPFileSystem::SCPError(const std::wstring Message, bool Fatal)
 {
     SCPSendError(Message, Fatal);
     DEBUG_PRINTF(L"Message = %s", Message.c_str());
     THROW_FILE_SKIPPED(Message, NULL);
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::SCPSendError(const std::wstring Message, bool Fatal)
+void __fastcall TSCPFileSystem::SCPSendError(const std::wstring Message, bool Fatal)
 {
     char ErrorLevel = static_cast<char>(Fatal ? 2 : 1);
     FTerminal->LogEvent(FORMAT(L"Sending SCP error (%d) to remote side:",
@@ -2198,7 +2198,7 @@ void TSCPFileSystem::SCPSendError(const std::wstring Message, bool Fatal)
     FSecureShell->SendLine(L"scp: error");
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
+void __fastcall TSCPFileSystem::SCPSink(const std::wstring TargetDir,
                              const std::wstring FileName, const std::wstring SourceDir,
                              const TCopyParamType *CopyParam, bool &Success,
                              TFileOperationProgressType *OperationProgress, int Params,

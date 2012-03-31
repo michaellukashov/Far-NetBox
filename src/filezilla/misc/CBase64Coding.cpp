@@ -2,6 +2,12 @@
 #include "CBase64Coding.hpp"
 #pragma hdrstop
 
+#ifdef MPEXT
+#ifndef _MSC_VER
+#pragma warn -inl
+#endif
+#endif
+
 #define CARRIAGE_RETURN (13)
 #define LINE_FEED       (10)
 
@@ -26,6 +32,10 @@
 //Modified for use with CAsyncProxySocket, removed tracing code
 
 #if defined( _DEBUG ) && ! defined( WFC_STL )
+#ifndef _MSC_VER
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
 #define new DEBUG_NEW
 #endif // _DEBUG
 

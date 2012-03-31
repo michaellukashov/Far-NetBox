@@ -28,6 +28,10 @@
 #endif
 
 #ifdef _DEBUG
+#ifndef _MSC_VER
+#undef THIS_FILE
+static char THIS_FILE[]=__FILE__;
+#endif
 #define new DEBUG_NEW
 #endif
 

@@ -6,6 +6,10 @@
 #include "FileZillaIntf.h"
 #include "FileZillaApi.h"
 //---------------------------------------------------------------------------
+#ifndef _MSC_VER
+#pragma package(smart_init)
+#endif
+//---------------------------------------------------------------------------
 TFileZillaIntern::TFileZillaIntern(TFileZillaIntf * AOwner) :
   FOwner(AOwner)
 {
@@ -16,8 +20,8 @@ TFileZillaIntern::TFileZillaIntern(TFileZillaIntf * AOwner) :
 BOOL TFileZillaIntern::PostMessage(HWND hWnd, UINT Msg, WPARAM wParam,
   LPARAM lParam) const
 {
-  assert(hWnd == NULL);
-  assert(Msg == 0);
+  ASSERT(hWnd == NULL);
+  ASSERT(Msg == 0);
 
   bool Result;
   unsigned int MessageID = FZ_MSG_ID(wParam);
@@ -43,14 +47,14 @@ BOOL TFileZillaIntern::PostMessage(HWND hWnd, UINT Msg, WPARAM wParam,
     // connection during session, filezilla does not support it,
     // so we are either secure or not for whole session
     case FZ_MSG_SECURESERVER:
-      assert(lParam == 0);
+      ASSERT(lParam == 0);
       Result = false;
       break;
 
     // should never get here, call compiled out in filezilla code
     case FZ_MSG_QUITCOMPLETE:
     default:
-      assert(FALSE);
+      ASSERT(FALSE);
       Result = false;
       break;
   }

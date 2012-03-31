@@ -75,6 +75,19 @@ to tim.kosse@gmx.de
 #define GWL_USERDATA GWLP_USERDATA
 #endif
 
+#ifndef _MSC_VER
+#ifdef MPEXT
+#pragma warn -inl
+#endif
+#endif
+
+#ifdef _DEBUG
+#ifndef _MSC_VER
+#undef THIS_FILE
+static char THIS_FILE[]=__FILE__;
+#endif
+#endif
+
 #ifndef CCRITICALSECTIONWRAPPERINCLUDED
 class CCriticalSectionWrapper
 {
