@@ -3,7 +3,11 @@
 #include "Common.h"
 #include "FileBuffer.h"
 //---------------------------------------------------------------------------
-char *EOLToStr(TEOLType EOLType)
+#ifndef _MSC_VER
+#pragma package(smart_init)
+#endif
+//---------------------------------------------------------------------------
+char * __fastcall EOLToStr(TEOLType EOLType)
 {
     switch (EOLType)
     {
@@ -25,7 +29,7 @@ TFileBuffer::~TFileBuffer()
     delete FMemory;
 }
 //---------------------------------------------------------------------------
-void TFileBuffer::SetSize(__int64 value)
+void __fastcall TFileBuffer::SetSize(__int64 value)
 {
     if (FSize != value)
     {
@@ -34,17 +38,17 @@ void TFileBuffer::SetSize(__int64 value)
     }
 }
 //---------------------------------------------------------------------------
-void TFileBuffer::SetPosition(__int64 value)
+void __fastcall TFileBuffer::SetPosition(__int64 value)
 {
     FMemory->SetPosition(value);
 }
 //---------------------------------------------------------------------------
-__int64 TFileBuffer::GetPosition() const
+__int64 __fastcall TFileBuffer::GetPosition() const
 {
     return FMemory->GetPosition();
 }
 //---------------------------------------------------------------------------
-void TFileBuffer::SetMemory(nb::TMemoryStream *value)
+void __fastcall TFileBuffer::SetMemory(nb::TMemoryStream *value)
 {
     if (FMemory != value)
     {
@@ -53,7 +57,7 @@ void TFileBuffer::SetMemory(nb::TMemoryStream *value)
     }
 }
 //---------------------------------------------------------------------------
-size_t TFileBuffer::ReadStream(nb::TStream *Stream, size_t  Len, bool ForceLen)
+size_t __fastcall TFileBuffer::ReadStream(nb::TStream *Stream, size_t  Len, bool ForceLen)
 {
     size_t Result = 0;
     try
@@ -83,13 +87,13 @@ size_t TFileBuffer::ReadStream(nb::TStream *Stream, size_t  Len, bool ForceLen)
     return Result;
 }
 //---------------------------------------------------------------------------
-size_t TFileBuffer::LoadStream(nb::TStream *Stream, size_t Len, bool ForceLen)
+size_t __fastcall TFileBuffer::LoadStream(nb::TStream *Stream, size_t Len, bool ForceLen)
 {
     FMemory->Seek(0, nb::soFromBeginning);
     return ReadStream(Stream, Len, ForceLen);
 }
 //---------------------------------------------------------------------------
-void TFileBuffer::Convert(char *Source, char *Dest, int Params,
+void __fastcall TFileBuffer::Convert(char *Source, char *Dest, int Params,
                           bool & /*Token*/)
 {
     assert(strlen(Source) <= 2);
@@ -188,46 +192,43 @@ void TFileBuffer::Convert(char *Source, char *Dest, int Params,
     }
 }
 //---------------------------------------------------------------------------
-void TFileBuffer::Convert(TEOLType Source, TEOLType Dest, int Params,
+void __fastcall TFileBuffer::Convert(TEOLType Source, TEOLType Dest, int Params,
                           bool &Token)
 {
     Convert(EOLToStr(Source), EOLToStr(Dest), Params, Token);
 }
 //---------------------------------------------------------------------------
-void TFileBuffer::Convert(char *Source, TEOLType Dest, int Params,
+void __fastcall TFileBuffer::Convert(char *Source, TEOLType Dest, int Params,
                           bool &Token)
 {
     Convert(Source, EOLToStr(Dest), Params, Token);
 }
 //---------------------------------------------------------------------------
-void TFileBuffer::Convert(TEOLType Source, char *Dest, int Params,
+void __fastcall TFileBuffer::Convert(TEOLType Source, char *Dest, int Params,
                           bool &Token)
 {
     Convert(EOLToStr(Source), Dest, Params, Token);
 }
 //---------------------------------------------------------------------------
-void TFileBuffer::Insert(size_t Index, const char *Buf, size_t Len)
+void __fastcall TFileBuffer::Insert(size_t Index, const char *Buf, size_t Len)
 {
     SetSize(GetSize() + Len);
     memmove(GetData() + Index + Len, GetData() + Index, GetSize() - Index - Len);
     memmove(GetData() + Index, Buf, Len);
 }
 //---------------------------------------------------------------------------
-void TFileBuffer::Delete(size_t Index, size_t Len)
+void __fastcall TFileBuffer::Delete(size_t Index, size_t Len)
 {
     memmove(GetData() + Index, GetData() + Index + Len, GetSize() - Index - Len);
     SetSize(GetSize() - Len);
 }
 //---------------------------------------------------------------------------
-void TFileBuffer::WriteToStream(nb::TStream *Stream, size_t Len)
+void __fastcall TFileBuffer::WriteToStream(nb::TStream *Stream, size_t Len)
 {
     try
     {
-        // DEBUG_PRINTF(L"before WriteBuffer: GetPosition = %d", GetPosition());
         Stream->WriteBuffer(GetData() + GetPosition(), Len);
-        // DEBUG_PRINTF(L"after WriteBuffer");
         FMemory->Seek(Len, nb::soFromCurrent);
-        // DEBUG_PRINTF(L"after Seek");
     }
     catch (const nb::EWriteError &)
     {
@@ -238,18 +239,15 @@ void TFileBuffer::WriteToStream(nb::TStream *Stream, size_t Len)
 TSafeHandleStream::TSafeHandleStream(HANDLE AHandle) :
     nb::THandleStream(AHandle)
 {
-    // DEBUG_PRINTF(L"FHandle = %d", FHandle);
 }
 
 TSafeHandleStream::~TSafeHandleStream()
 {
-    // DEBUG_PRINTF(L"FHandle = %d", FHandle);
 }
 
 //---------------------------------------------------------------------------
-__int64 TSafeHandleStream::Read(void *Buffer, __int64 Count)
+__int64 __fastcall TSafeHandleStream::Read(void *Buffer, __int64 Count)
 {
-    // DEBUG_PRINTF(L"FHandle = %d", FHandle);
     __int64 Result = ::FileRead(FHandle, Buffer, Count);
     if (Result == static_cast<__int64>(-1))
     {
@@ -258,10 +256,9 @@ __int64 TSafeHandleStream::Read(void *Buffer, __int64 Count)
     return Result;
 }
 //---------------------------------------------------------------------------
-__int64 TSafeHandleStream::Write(const void *Buffer, __int64 Count)
+__int64 __fastcall TSafeHandleStream::Write(const void *Buffer, __int64 Count)
 {
-    __int64 Result = ::FileWrite(FHandle, Buffer, Count);
-    // DEBUG_PRINTF(L"Result = %d, FHandle = %d, Count = %d", Result, FHandle, Count);
+   __int64 Result = ::FileWrite(FHandle, Buffer, Count);
     if (Result == -1)
     {
         ::RaiseLastOSError();

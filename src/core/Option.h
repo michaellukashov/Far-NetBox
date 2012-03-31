@@ -11,27 +11,27 @@ class TOptions
 public:
     TOptions();
 
-    bool FindSwitch(const std::wstring Switch);
-    bool FindSwitch(const std::wstring Switch, std::wstring &Value);
-    bool FindSwitch(const std::wstring Switch, int &ParamsStart,
+    bool __fastcall FindSwitch(const std::wstring Switch);
+    bool __fastcall FindSwitch(const std::wstring Switch, std::wstring &Value);
+    bool __fastcall FindSwitch(const std::wstring Switch, int &ParamsStart,
                     int &ParamsCount);
-    bool FindSwitch(const std::wstring Switch, nb::TStrings *Params,
+    bool __fastcall FindSwitch(const std::wstring Switch, nb::TStrings *Params,
                     int ParamsMax = -1);
-    void ParamsProcessed(int Position, int Count);
-    std::wstring SwitchValue(const std::wstring Switch, const std::wstring Default = L"");
-    bool UnusedSwitch(std::wstring &Switch);
+    void __fastcall ParamsProcessed(int Position, int Count);
+    std::wstring __fastcall SwitchValue(const std::wstring Switch, const std::wstring Default = L"");
+    bool __fastcall UnusedSwitch(std::wstring &Switch);
 
-    int GetParamCount() { return FParamCount; }
-    std::wstring GetParam(int Index);
-    bool GetEmpty();
+    int __fastcall GetParamCount() { return FParamCount; }
+    std::wstring __fastcall GetParam(int Index);
+    bool __fastcall GetEmpty();
 
 protected:
     std::wstring FSwitchMarks;
     std::wstring FSwitchValueDelimiters;
 
-    void Add(const std::wstring Option);
+    void __fastcall Add(const std::wstring Option);
 
-    bool FindSwitch(const std::wstring Switch,
+    bool __fastcall FindSwitch(const std::wstring Switch,
                     std::wstring &Value, int &ParamsStart, int &ParamsCount);
 
 private:

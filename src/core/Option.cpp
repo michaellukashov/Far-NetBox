@@ -11,7 +11,7 @@ TOptions::TOptions()
     FParamCount = 0;
 }
 //---------------------------------------------------------------------------
-void TOptions::Add(const std::wstring Value)
+void __fastcall TOptions::Add(const std::wstring Value)
 {
     if (!FNoMoreSwitches &&
             (Value.size() == 2) &&
@@ -67,7 +67,7 @@ void TOptions::Add(const std::wstring Value)
     }
 }
 //---------------------------------------------------------------------------
-std::wstring TOptions::GetParam(int Index)
+std::wstring __fastcall TOptions::GetParam(int Index)
 {
     assert((Index >= 1) && (Index <= FParamCount));
 
@@ -90,12 +90,12 @@ std::wstring TOptions::GetParam(int Index)
     return Result;
 }
 //---------------------------------------------------------------------------
-bool TOptions::GetEmpty()
+bool __fastcall TOptions::GetEmpty()
 {
     return FOptions.empty();
 }
 //---------------------------------------------------------------------------
-bool TOptions::FindSwitch(const std::wstring Switch,
+bool __fastcall TOptions::FindSwitch(const std::wstring Switch,
                           std::wstring &Value, int &ParamsStart, int &ParamsCount)
 {
     ParamsStart = 0;
@@ -138,14 +138,14 @@ bool TOptions::FindSwitch(const std::wstring Switch,
     return Found;
 }
 //---------------------------------------------------------------------------
-bool TOptions::FindSwitch(const std::wstring Switch, std::wstring &Value)
+bool __fastcall TOptions::FindSwitch(const std::wstring Switch, std::wstring &Value)
 {
     int ParamsStart;
     int ParamsCount;
     return FindSwitch(Switch, Value, ParamsStart, ParamsCount);
 }
 //---------------------------------------------------------------------------
-bool TOptions::FindSwitch(const std::wstring Switch)
+bool __fastcall TOptions::FindSwitch(const std::wstring Switch)
 {
     std::wstring Value;
     int ParamsStart;
@@ -153,7 +153,7 @@ bool TOptions::FindSwitch(const std::wstring Switch)
     return FindSwitch(Switch, Value, ParamsStart, ParamsCount);
 }
 //---------------------------------------------------------------------------
-bool TOptions::FindSwitch(const std::wstring Switch,
+bool __fastcall TOptions::FindSwitch(const std::wstring Switch,
                           nb::TStrings *Params, int ParamsMax)
 {
     std::wstring Value;
@@ -178,7 +178,7 @@ bool TOptions::FindSwitch(const std::wstring Switch,
     return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring TOptions::SwitchValue(const std::wstring Switch,
+std::wstring __fastcall TOptions::SwitchValue(const std::wstring Switch,
                                    const std::wstring Default)
 {
     std::wstring Value;
@@ -190,7 +190,7 @@ std::wstring TOptions::SwitchValue(const std::wstring Switch,
     return Value;
 }
 //---------------------------------------------------------------------------
-bool TOptions::UnusedSwitch(std::wstring &Switch)
+bool __fastcall TOptions::UnusedSwitch(std::wstring &Switch)
 {
     bool Result = false;
     size_t Index = 0;
@@ -208,7 +208,7 @@ bool TOptions::UnusedSwitch(std::wstring &Switch)
     return Result;
 }
 //---------------------------------------------------------------------------
-void TOptions::ParamsProcessed(int ParamsStart, int ParamsCount)
+void __fastcall TOptions::ParamsProcessed(int ParamsStart, int ParamsCount)
 {
     if (ParamsCount > 0)
     {

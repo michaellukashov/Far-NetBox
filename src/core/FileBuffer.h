@@ -16,22 +16,22 @@ class TFileBuffer
 public:
     TFileBuffer();
     virtual ~TFileBuffer();
-    void Convert(char *Source, char *Dest, int Params, bool &Token);
-    void Convert(TEOLType Source, TEOLType Dest, int Params, bool &Token);
-    void Convert(char *Source, TEOLType Dest, int Params, bool &Token);
-    void Convert(TEOLType Source, char *Dest, int Params, bool &Token);
-    void Insert(size_t Index, const char *Buf, size_t Len);
-    void Delete(size_t Index, size_t Len);
-    size_t LoadStream(nb::TStream *Stream, size_t Len, bool ForceLen);
-    size_t ReadStream(nb::TStream *Stream, size_t Len, bool ForceLen);
-    void WriteToStream(nb::TStream *Stream, size_t  Len);
-    nb::TMemoryStream *GetMemory() { return FMemory; }
-    void SetMemory(nb::TMemoryStream *value);
-    char *GetData() const { return static_cast<char *>(FMemory->GetMemory()); }
-    __int64 GetSize() { return FSize; }
-    void SetSize(__int64 value);
-    __int64 GetPosition() const;
-    void SetPosition(__int64 value);
+    void __fastcall Convert(char *Source, char *Dest, int Params, bool &Token);
+    void __fastcall Convert(TEOLType Source, TEOLType Dest, int Params, bool &Token);
+    void __fastcall Convert(char *Source, TEOLType Dest, int Params, bool &Token);
+    void __fastcall Convert(TEOLType Source, char *Dest, int Params, bool &Token);
+    void __fastcall Insert(size_t Index, const char *Buf, size_t Len);
+    void __fastcall Delete(size_t Index, size_t Len);
+    size_t __fastcall LoadStream(nb::TStream *Stream, size_t Len, bool ForceLen);
+    size_t __fastcall ReadStream(nb::TStream *Stream, size_t Len, bool ForceLen);
+    void __fastcall WriteToStream(nb::TStream *Stream, size_t  Len);
+    nb::TMemoryStream * __fastcall GetMemory() { return FMemory; }
+    void __fastcall SetMemory(nb::TMemoryStream *value);
+    char * __fastcall GetData() const { return static_cast<char *>(FMemory->GetMemory()); }
+    __int64 __fastcall GetSize() { return FSize; }
+    void __fastcall SetSize(__int64 value);
+    __int64 __fastcall GetPosition() const;
+    void __fastcall SetPosition(__int64 value);
 
 private:
     nb::TMemoryStream *FMemory;
@@ -45,11 +45,11 @@ class TSafeHandleStream : public nb::THandleStream
 public:
     explicit TSafeHandleStream(HANDLE AHandle);
     virtual ~TSafeHandleStream();
-    virtual __int64 Read(void *Buffer, __int64 Count);
-    virtual __int64 Write(const void *Buffer, __int64 Count);
+    virtual __int64 __fastcall Read(void *Buffer, __int64 Count);
+    virtual __int64 __fastcall Write(const void *Buffer, __int64 Count);
 };
 
 //---------------------------------------------------------------------------
-char *EOLToStr(TEOLType EOLType);
+char * __fastcall EOLToStr(TEOLType EOLType);
 //---------------------------------------------------------------------------
 #endif

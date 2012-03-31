@@ -1257,7 +1257,7 @@ THandleStream::~THandleStream()
     //   CloseHandle(FHandle);
 }
 
-__int64 THandleStream::Read(void *Buffer, __int64 Count)
+__int64 __fastcall THandleStream::Read(void *Buffer, __int64 Count)
 {
     __int64 Result = ::FileRead(FHandle, Buffer, Count);
     // DEBUG_PRINTF(L"Result = %d, FHandle = %d, Count = %d", Result, FHandle, Count);
@@ -1265,34 +1265,30 @@ __int64 THandleStream::Read(void *Buffer, __int64 Count)
     return Result;
 }
 
-__int64 THandleStream::Write(const void *Buffer, __int64 Count)
+__int64 __fastcall THandleStream::Write(const void *Buffer, __int64 Count)
 {
     __int64 Result = ::FileWrite(FHandle, Buffer, Count);
-    // DEBUG_PRINTF(L"Result = %d, FHandle = %d, Count = %d", Result, FHandle, Count);
     if (Result == -1) { Result = 0; }
     return Result;
 }
-__int64 THandleStream::Seek(__int64 Offset, __int64 Origin)
+__int64 __fastcall THandleStream::Seek(__int64 Offset, __int64 Origin)
 {
     __int64 Result = ::FileSeek(FHandle, Offset, Origin);
-    // DEBUG_PRINTF(L"Result = %d, FHandle = %d, Offset = %d, Origin = %d", Result, FHandle, Offset, Origin);
     return Result;
 }
-__int64 THandleStream::Seek(const __int64 Offset, TSeekOrigin Origin)
+__int64 __fastcall THandleStream::Seek(const __int64 Offset, TSeekOrigin Origin)
 {
     nb::Error(SNotImplemented, 1202);
     return 0;
 }
 
-void THandleStream::SetSize(const __int64 NewSize)
+void __fastcall THandleStream::SetSize(const __int64 NewSize)
 {
-    // __int64 res =
     Seek(NewSize, nb::soFromBeginning);
     // LARGE_INTEGER li;
     // li.QuadPart = size;
     // if (SetFilePointer(fh.get(), li.LowPart, &li.HighPart, FILE_BEGIN) == -1)
     // handleLastErrorImpl(_path);
-    // DEBUG_PRINTF(L"FHandle = %d, res = %d", FHandle, res);
     ::Win32Check(::SetEndOfFile(FHandle) > 0);
 }
 
@@ -1310,7 +1306,7 @@ TMemoryStream::~TMemoryStream()
     Clear();
 }
 
-__int64 TMemoryStream::Read(void *Buffer, __int64 Count)
+__int64 __fastcall TMemoryStream::Read(void *Buffer, __int64 Count)
 {
     __int64 Result = 0;
     if ((FPosition >= 0) && (Count >= 0))
@@ -1328,14 +1324,14 @@ __int64 TMemoryStream::Read(void *Buffer, __int64 Count)
     return Result;
 }
 
-__int64 TMemoryStream::Seek(__int64 Offset, __int64 Origin)
+__int64 __fastcall TMemoryStream::Seek(__int64 Offset, __int64 Origin)
 {
     // return Seek(Offset, nb::soFromCurrent);
     nb::Error(SNotImplemented, 1303);
     return 0;
 }
 
-__int64 TMemoryStream::Seek(const __int64 Offset, TSeekOrigin Origin)
+__int64 __fastcall TMemoryStream::Seek(const __int64 Offset, TSeekOrigin Origin)
 {
     switch (Origin)
     {
@@ -1358,21 +1354,21 @@ void TMemoryStream::SaveToStream(TStream *Stream)
     if (FSize != 0) { Stream->WriteBuffer(FMemory, FSize); }
 }
 
-void TMemoryStream::SaveToFile(const std::wstring FileName)
+void __fastcall TMemoryStream::SaveToFile(const std::wstring FileName)
 {
     // TFileStream Stream(FileName, fmCreate);
     // SaveToStream(Stream);
     nb::Error(SNotImplemented, 1203);
 }
 
-void TMemoryStream::Clear()
+void __fastcall TMemoryStream::Clear()
 {
     SetCapacity(0);
     FSize = 0;
     FPosition = 0;
 }
 
-void TMemoryStream::SetSize(const __int64 NewSize)
+void __fastcall TMemoryStream::SetSize(const __int64 NewSize)
 {
     __int64 OldPosition = FPosition;
     SetCapacity(NewSize);
@@ -1380,20 +1376,18 @@ void TMemoryStream::SetSize(const __int64 NewSize)
     if (OldPosition > NewSize) { Seek(0, nb::soFromEnd); }
 }
 
-void TMemoryStream::SetCapacity(__int64 NewCapacity)
+void __fastcall TMemoryStream::SetCapacity(__int64 NewCapacity)
 {
     SetPointer(Realloc(NewCapacity), FSize);
     FCapacity = NewCapacity;
 }
 
-void *TMemoryStream::Realloc(__int64 &NewCapacity)
+void * __fastcall TMemoryStream::Realloc(__int64 &NewCapacity)
 {
-    // DEBUG_PRINTF(L"FSize = %d, NewCapacity1 = %d", FSize, NewCapacity);
     if ((NewCapacity > 0) && (NewCapacity != FSize))
     {
         NewCapacity = (NewCapacity + (MemoryDelta - 1)) & ~(MemoryDelta - 1);
     }
-    // DEBUG_PRINTF(L"NewCapacity2 = %d", NewCapacity);
     void *Result = FMemory;
     if (NewCapacity != FCapacity)
     {
@@ -1421,13 +1415,13 @@ void *TMemoryStream::Realloc(__int64 &NewCapacity)
     return Result;
 }
 
-void TMemoryStream::SetPointer(void *Ptr, __int64 Size)
+void __fastcall TMemoryStream::SetPointer(void *Ptr, __int64 Size)
 {
     FMemory = Ptr;
     FSize = Size;
 }
 
-__int64 TMemoryStream::Write(const void *Buffer, __int64 Count)
+__int64 __fastcall TMemoryStream::Write(const void *Buffer, __int64 Count)
 {
     __int64 Result = 0;
     if ((FPosition >= 0) && (Count >= 0))
