@@ -1,5 +1,8 @@
 NetBox 2.0.18 ??.04.2012
 ---------------------
+  * FTP: Use MLSD/MLST to list file in directory with FTP protocol
+    - When copying files from/to server, seconds are preserved
+    - Use MLST to get file properties
 
 NetBox 2.0.17 27.03.2012
 ---------------------
