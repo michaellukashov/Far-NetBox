@@ -10,6 +10,10 @@
 #include "FileInfo.h"
 #include "FileBuffer.h"
 //---------------------------------------------------------------------------
+#ifndef _MSC_VER
+#pragma package(smart_init)
+#endif
+//---------------------------------------------------------------------------
 #define DWORD_ALIGN( base, ptr ) \
     ( (LPBYTE)(base) + ((((LPBYTE)(ptr) - (LPBYTE)(base)) + 3) & ~3) )
 struct VS_VERSION_INFO_STRUCT32
@@ -95,7 +99,7 @@ unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t *FileName, unsigned int
     return Len;
 }
 //---------------------------------------------------------------------------
-unsigned int GetFileVersionInfoSizeFix(const wchar_t *FileName, unsigned long *Handle)
+unsigned int __fastcall GetFileVersionInfoSizeFix(const wchar_t *FileName, unsigned long *Handle)
 {
     unsigned int Len;
     if (IsWin7())
@@ -117,7 +121,7 @@ unsigned int GetFileVersionInfoSizeFix(const wchar_t *FileName, unsigned long *H
     return Len;
 }
 //---------------------------------------------------------------------------
-bool GetFileVersionInfoFix(const wchar_t *FileName, unsigned long Handle,
+bool __fastcall GetFileVersionInfoFix(const wchar_t *FileName, unsigned long Handle,
                            unsigned int DataSize, void *Data)
 {
     bool Result = false;
@@ -155,7 +159,7 @@ bool GetFileVersionInfoFix(const wchar_t *FileName, unsigned long Handle,
 }
 //---------------------------------------------------------------------------
 // Return pointer to file version info block
-void *CreateFileInfo(const std::wstring FileName)
+void * __fastcall CreateFileInfo(const std::wstring FileName)
 {
     unsigned long Handle;
     unsigned int Size;
@@ -183,7 +187,7 @@ void *CreateFileInfo(const std::wstring FileName)
 }
 //---------------------------------------------------------------------------
 // Free file version info block memory
-void FreeFileInfo(void *FileInfo)
+void __fastcall FreeFileInfo(void *FileInfo)
 {
     delete[] FileInfo;
 }
@@ -192,7 +196,7 @@ typedef TTranslation TTranslations[65536];
 typedef TTranslation *PTranslations;
 //---------------------------------------------------------------------------
 // Return pointer to fixed file version info
-VS_FIXEDFILEINFO GetFixedFileInfo(void *FileInfo)
+VS_FIXEDFILEINFO __fastcall GetFixedFileInfo(void *FileInfo)
 {
     UINT Len;
     VS_FIXEDFILEINFO *pResult = NULL;
@@ -205,7 +209,7 @@ VS_FIXEDFILEINFO GetFixedFileInfo(void *FileInfo)
 
 //---------------------------------------------------------------------------
 // Return number of available file version info translations
-unsigned GetTranslationCount(void *FileInfo)
+unsigned __fastcall GetTranslationCount(void *FileInfo)
 {
     PTranslations P;
     UINT Len;
@@ -217,7 +221,7 @@ unsigned GetTranslationCount(void *FileInfo)
 }
 //---------------------------------------------------------------------------
 // Return i-th translation in the file version info translation list
-TTranslation GetTranslation(void *FileInfo, unsigned i)
+TTranslation __fastcall GetTranslation(void *FileInfo, unsigned i)
 {
     PTranslations P;
     UINT Len;
@@ -235,7 +239,7 @@ TTranslation GetTranslation(void *FileInfo, unsigned i)
 };
 //---------------------------------------------------------------------------
 // Return the name of the specified language
-std::wstring GetLanguage(unsigned int Language)
+std::wstring __fastcall GetLanguage(unsigned int Language)
 {
     UINT Len;
     wchar_t P[512];
@@ -250,24 +254,19 @@ std::wstring GetLanguage(unsigned int Language)
 //---------------------------------------------------------------------------
 // Return the value of the specified file version info string using the
 // specified translation
-std::wstring GetFileInfoString(void *FileInfo,
+std::wstring __fastcall GetFileInfoString(void *FileInfo,
                                TTranslation Translation, std::wstring StringName)
 {
     std::wstring Result;
     wchar_t *P = NULL;
     UINT Len;
-    // DEBUG_PRINTF(L"StringName = %s", StringName.c_str());
-    // DEBUG_PRINTF(L"IntToHex(Translation.Language, 4) = %s", IntToHex(Translation.Language, 4).c_str());
-    // DEBUG_PRINTF(L"IntToHex(Translation.CharSet, 4) = %s", IntToHex(Translation.CharSet, 4).c_str());
     std::wstring subBlock = std::wstring((L"\\StringFileInfo\\000004E4") +
                                          // IntToHex(Translation.Language, 4) +
                                          // IntToHex(Translation.CharSet, 4) +
                                          std::wstring(L"\\") + StringName);
-    // DEBUG_PRINTF(L"subBlock = %s", subBlock.c_str());
     // 4e40409 58324546\Comments
     if (!VerQueryValue(FileInfo, subBlock.c_str(), reinterpret_cast<void **>(&P), &Len))
     {
-        // DEBUG_PRINTF(L"Len = %d", Len);
         throw std::exception("Specified file info string not available");
     }
     // c_str() makes sure that returned string has only necessary bytes allocated
@@ -279,7 +278,7 @@ std::wstring GetFileInfoString(void *FileInfo,
     return Result;
 };
 //---------------------------------------------------------------------------
-int CalculateCompoundVersion(int MajorVer,
+int __fastcall CalculateCompoundVersion(int MajorVer,
                              int MinorVer, int Release, int Build)
 {
     int CompoundVer = Build + 10000 * (Release + 100 * (MinorVer +
