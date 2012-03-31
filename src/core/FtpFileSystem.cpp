@@ -8,7 +8,9 @@
 #ifndef NO_FILEZILLA
 //---------------------------------------------------------------------------
 #include <list>
+#ifndef MPEXT
 #define MPEXT
+#endif
 #include "FtpFileSystem.h"
 #include "FileZillaIntf.h"
 #include "AsyncProxySocketLayer.h"
