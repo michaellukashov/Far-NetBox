@@ -8,6 +8,7 @@
 #ifndef NO_FILEZILLA
 //---------------------------------------------------------------------------
 #include <list>
+#define MPEXT
 #include "FtpFileSystem.h"
 #include "FileZillaIntf.h"
 #include "AsyncProxySocketLayer.h"
@@ -1903,7 +1904,7 @@ void TFTPFileSystem::DoReadFile(const std::wstring FileName, TRemoteFile *& AFil
             delete FileList;
         } BOOST_SCOPE_EXIT_END
         TFTPFileListHelper Helper(this, FileList, false);
-        FFileZillaIntf->ListFile(nb::W2MB(FileName.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str());
+        FFileZillaIntf->ListFile(FileName.c_str());
 
         GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_ALLOW_CANCEL);
         TRemoteFile *File = FileList->FindFile(FileName);

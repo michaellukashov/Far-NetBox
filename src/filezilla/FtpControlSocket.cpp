@@ -683,20 +683,21 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 					}
 					facts = facts.substr(delim + 1, std::string::npos);
 
-					if (fact == "type" ||
-						fact == "size" ||
-						fact == "modify" ||
-						fact == "perm" ||
-						fact == "unix.mode" ||
-						fact == "unix.owner" ||
-						fact == "unix.user" ||
-						fact == "unix.group" ||
-						fact == "unix.uid" ||
-						fact == "unix.gid" ||
-						fact == "x.hidden")
+					if (!strcmp(fact.c_str(), "type") ||
+						!strcmp(fact.c_str(), "size") ||
+						!strcmp(fact.c_str(), "modify") ||
+						!strcmp(fact.c_str(), "perm") ||
+						!strcmp(fact.c_str(), "unix.mode") ||
+						!strcmp(fact.c_str(), "unix.owner") ||
+						!strcmp(fact.c_str(), "unix.user") ||
+						!strcmp(fact.c_str(), "unix.group") ||
+						!strcmp(fact.c_str(), "unix.uid") ||
+						!strcmp(fact.c_str(), "unix.gid") ||
+						!strcmp(fact.c_str(), "x.hidden"))
 					{
 						had_unset |= !enabled;
-						opts_facts += fact + ";";
+						opts_facts += fact.c_str();
+						opts_facts += ";";
 					}
 				}
 				if (had_unset)
@@ -2348,7 +2349,7 @@ void CFtpControlSocket::ListFile(CServerPath path /*=CServerPath()*/, CString fi
 			USES_CONVERSION;
 			int size = m_ListFile.GetLength();
 			char *buffer = new char[size + 1];
-			memmove(buffer, m_ListFile.GetBuffer(size), size);
+			memmove(buffer, (LPCSTR)m_ListFile, m_ListFile.GetLength());
 			CFtpListResult * pListResult = new CFtpListResult(m_CurrentServer, &m_bUTF8);
 			pListResult->InitLog(this);
 			pListResult->AddData(buffer, size);
@@ -4516,7 +4517,7 @@ void CFtpControlSocket::Cancel(BOOL bQuit/*=FALSE*/)
 	const int nOpMode = m_Operation.nOpMode;
 	if (nOpMode==CSMODE_CONNECT)
 		DoClose(FZ_REPLY_CANCEL);
-	else if (nOpMode & (CSMODE_LIST|CSMODE_LISTFILE))
+	else if (nOpMode & CSMODE_LIST)
 	{
 		if (m_Operation.nOpState == LIST_WAITFINISH)
 			m_skipReply = true;
@@ -4540,7 +4541,7 @@ void CFtpControlSocket::Cancel(BOOL bQuit/*=FALSE*/)
 
 void CFtpControlSocket::TransfersocketListenFinished(unsigned int ip, unsigned short port)
 {
-	if (m_Operation.nOpMode&CSMODE_TRANSFER || m_Operation.nOpMode&(CSMODE_LIST|CSMODE_LISTFILE))
+	if (m_Operation.nOpMode&CSMODE_TRANSFER || m_Operation.nOpMode&CSMODE_LIST)
 	{
 		CString host;
 		host.Format(_T("%d,%d,%d,%d,%d,%d"),ip%256,(ip>>8)%256,(ip>>16)%256,(ip>>24)%256,port%256,port>>8);
@@ -4550,7 +4551,7 @@ void CFtpControlSocket::TransfersocketListenFinished(unsigned int ip, unsigned s
 
 void CFtpControlSocket::ResumeTransfer()
 {
-	if (m_pTransferSocket && (m_Operation.nOpMode&CSMODE_TRANSFER || m_Operation.nOpMode&(CSMODE_LIST|CSMODE_LISTFILE)))
+	if (m_pTransferSocket && (m_Operation.nOpMode&CSMODE_TRANSFER || m_Operation.nOpMode&CSMODE_LIST))
 	{
 		m_pTransferSocket->OnSend(0);
 		m_pTransferSocket->OnReceive(0);
@@ -6062,7 +6063,7 @@ void CFtpControlSocket::DiscardLine(CStringA line)
 #ifdef MPEXT
 	else if (m_Operation.nOpMode == CSMODE_LISTFILE)
 	{
-		m_ListFile = line.Trim(" ");
+		m_ListFile = line;
 	}
 #endif
 }

@@ -2,9 +2,10 @@
 #ifndef FileZillaIntfH
 #define FileZillaIntfH
 //---------------------------------------------------------------------------
+#include <map>
+
 #include <time.h>
 #include <FileZillaOpt.h>
-#include <FileZillaApi.h>
 //---------------------------------------------------------------------------
 class CFileZillaApi;
 class TFileZillaIntern;
@@ -152,7 +153,9 @@ public:
 
   bool List();
   bool List(const char * Path);
-  bool ListFile(const char * FullFileName);
+#ifdef MPEXT
+  bool ListFile(const wchar_t * FullFileName);
+#endif
 
   bool CustomCommand(const wchar_t * Command);
 
@@ -200,5 +203,68 @@ private:
   TFileZillaIntern * FIntern;
   t_server * FServer;
 };
+
+#ifdef MPEXT
+
+//---------------------------------------------------------------------------
+enum ftp_capabilities_t
+{
+    unknown,
+    yes,
+    no
+};
+
+//---------------------------------------------------------------------------
+enum ftp_capability_names_t
+{
+    syst_command = 1, // reply of SYST command as option
+    feat_command,
+    clnt_command, // set to 'yes' if CLNT should be sent
+    utf8_command, // set to 'yes' if OPTS UTF8 ON should be sent
+    mlsd_command,
+    opts_mlst_command, // Arguments for OPTS MLST command
+    mfmt_command,
+    pret_command,
+    mdtm_command,
+    size_command,
+    mode_z_support,
+    tvfs_support, // Trivial virtual file store (RFC 3659)
+    list_hidden_support, // LIST -a command
+    rest_stream, // supports REST+STOR in addition to APPE
+};
+
+//---------------------------------------------------------------------------
+class TFTPServerCapabilities
+{
+public:
+	ftp_capabilities_t GetCapability(ftp_capability_names_t name);
+	ftp_capabilities_t GetCapabilityString(ftp_capability_names_t name, std::string *pOption = NULL);
+
+	void SetCapability(ftp_capability_names_t name, ftp_capabilities_t cap);
+	void SetCapability(ftp_capability_names_t name, ftp_capabilities_t cap, const std::string &option);
+	void Clear() { m_capabilityMap.clear(); }
+	void Assign(TFTPServerCapabilities *Source)
+	{
+		m_capabilityMap.clear();
+		if (Source)
+			m_capabilityMap = Source->m_capabilityMap;
+	}
+protected:
+	struct t_cap
+	{
+		t_cap() :
+			cap(unknown),
+			option(),
+			number(0)
+		{}
+		ftp_capabilities_t cap;
+		std::string option;
+		int number;
+	};
+	std::map<ftp_capability_names_t, t_cap> m_capabilityMap;
+};
+
+#endif
+
 //---------------------------------------------------------------------------
 #endif // FileZillaIntfH

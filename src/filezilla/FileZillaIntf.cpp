@@ -1,7 +1,6 @@
 //---------------------------------------------------------------------------
 #include "fzafx.h"
 //---------------------------------------------------------------------------
-#include "FtpControlSocket.h"
 #include "FileZillaIntf.h"
 #include "FileZillaIntern.h"
 #include "FzApiStructures.h"
@@ -217,7 +216,7 @@ bool TFileZillaIntf::List(const char * APath)
 }
 //---------------------------------------------------------------------------
 #ifdef MPEXT
-bool TFileZillaIntf::ListFile(const char * AFullFileName)
+bool TFileZillaIntf::ListFile(const wchar_t * AFullFileName)
 {
   ASSERT(FFileZillaApi != NULL);
   CString fileName(AFullFileName);
@@ -295,7 +294,6 @@ void CopyValidityTime(TFtpsCertificateData::TValidityTime & Dest,
 bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
 {
   bool Result;
-  TFTPServerCapabilities serverCapabilities;
   unsigned int MessageID = FZ_MSG_ID(wParam);
 
   // DEBUG_PRINTF(L"MessageID = %u, lParam = %u", MessageID, lParam);
@@ -447,8 +445,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
       break;
 
     case FZ_MSG_CAPABILITIES:
-      serverCapabilities = *(TFTPServerCapabilities *)lParam;
-      Result = HandleCapabilities(&serverCapabilities);
+      Result = HandleCapabilities((TFTPServerCapabilities *)lParam);
       break;
 
     case FZ_MSG_SOCKETSTATUS:
