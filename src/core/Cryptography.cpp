@@ -385,7 +385,7 @@ static int fcrypt_end(unsigned char mac[], fcrypt_ctx cx[1])
 //---------------------------------------------------------------------------
 #define PASSWORD_MANAGER_AES_MODE 3
 //---------------------------------------------------------------------------
-static void FillBufferWithRandomData(char *Buf, size_t Len)
+static void __fastcall FillBufferWithRandomData(char *Buf, size_t Len)
 {
     while (Len > 0)
     {
@@ -395,7 +395,7 @@ static void FillBufferWithRandomData(char *Buf, size_t Len)
     }
 }
 //---------------------------------------------------------------------------
-static std::wstring AES256Salt()
+static std::wstring __fastcall AES256Salt()
 {
     std::wstring Result;
     Result.resize(SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
@@ -403,7 +403,7 @@ static std::wstring AES256Salt()
     return Result;
 }
 //---------------------------------------------------------------------------
-void AES256EncyptWithMAC(const std::wstring Input, const std::wstring Password,
+void __fastcall AES256EncyptWithMAC(const std::wstring Input, const std::wstring Password,
                          std::wstring Salt, std::wstring &Output, std::wstring Mac)
 {
     fcrypt_ctx aes;
@@ -421,7 +421,7 @@ void AES256EncyptWithMAC(const std::wstring Input, const std::wstring Password,
     fcrypt_end((unsigned char *)(Mac.c_str()), &aes);
 }
 //---------------------------------------------------------------------------
-void AES256EncyptWithMAC(const std::wstring Input, std::wstring &Password,
+void __fastcall AES256EncyptWithMAC(const std::wstring Input, std::wstring &Password,
                          std::wstring &Output)
 {
     std::wstring Salt;
@@ -431,7 +431,7 @@ void AES256EncyptWithMAC(const std::wstring Input, std::wstring &Password,
     Output = Salt + Encrypted + Mac;
 }
 //---------------------------------------------------------------------------
-bool AES256DecryptWithMAC(const std::wstring Input, const std::wstring Password,
+bool __fastcall AES256DecryptWithMAC(const std::wstring Input, const std::wstring Password,
                           std::wstring Salt, std::wstring &Output, std::wstring Mac)
 {
     fcrypt_ctx aes;
@@ -448,7 +448,7 @@ bool AES256DecryptWithMAC(const std::wstring Input, const std::wstring Password,
     return (Mac2 == Mac);
 }
 //---------------------------------------------------------------------------
-bool AES256DecryptWithMAC(const std::wstring Input, const std::wstring Password,
+bool __fastcall AES256DecryptWithMAC(const std::wstring Input, const std::wstring Password,
                           std::wstring &Output)
 {
     bool Result =
@@ -467,7 +467,7 @@ bool AES256DecryptWithMAC(const std::wstring Input, const std::wstring Password,
     return Result;
 }
 //---------------------------------------------------------------------------
-void AES256CreateVerifier(const std::wstring Input, std::wstring &Verifier)
+void __fastcall AES256CreateVerifier(const std::wstring Input, std::wstring &Verifier)
 {
     std::wstring Salt = AES256Salt();
     std::wstring Dummy = AES256Salt();
@@ -479,7 +479,7 @@ void AES256CreateVerifier(const std::wstring Input, std::wstring &Verifier)
     Verifier = Salt + Dummy + Mac;
 }
 //---------------------------------------------------------------------------
-bool AES256Verify(const std::wstring Input, const std::wstring Verifier)
+bool __fastcall AES256Verify(const std::wstring Input, const std::wstring Verifier)
 {
     int SaltLength = SALT_LENGTH(PASSWORD_MANAGER_AES_MODE);
     std::wstring Salt = Verifier.substr(0, SaltLength);
@@ -518,7 +518,7 @@ unsigned char SScrambleTable[256] =
 unsigned char *ScrambleTable;
 unsigned char *UnscrambleTable;
 //---------------------------------------------------------------------------
-void ScramblePassword(std::wstring &Password)
+void __fastcall ScramblePassword(std::wstring &Password)
 {
 #define SCRAMBLE_LENGTH_EXTENSION 50
     int Len = Password.size();
@@ -551,7 +551,7 @@ void ScramblePassword(std::wstring &Password)
     delete[] Buf;
 }
 //---------------------------------------------------------------------------
-bool UnscramblePassword(std::wstring &Password)
+bool __fastcall UnscramblePassword(std::wstring &Password)
 {
     char *S = (char *)nb::W2MB(Password.c_str()).c_str();
     int Last = 31;
@@ -590,7 +590,7 @@ bool UnscramblePassword(std::wstring &Password)
     return Result;
 }
 //---------------------------------------------------------------------------
-void CryptographyInitialize()
+void __fastcall CryptographyInitialize()
 {
     ScrambleTable = SScrambleTable;
     UnscrambleTable = new unsigned char[256];
@@ -601,19 +601,19 @@ void CryptographyInitialize()
     srand((unsigned int)time(NULL) ^ (unsigned int)_getpid());
 }
 //---------------------------------------------------------------------------
-void CryptographyFinalize()
+void __fastcall CryptographyFinalize()
 {
     delete[] UnscrambleTable;
     UnscrambleTable = NULL;
     ScrambleTable = NULL;
 }
 //---------------------------------------------------------------------------
-size_t PasswordMaxLength()
+size_t __fastcall PasswordMaxLength()
 {
     return 128;
 }
 //---------------------------------------------------------------------------
-int IsValidPassword(const std::wstring Password)
+int __fastcall IsValidPassword(const std::wstring Password)
 {
     if (Password.empty() || (Password.size() > PasswordMaxLength()))
     {
