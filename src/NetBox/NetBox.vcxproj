@@ -753,7 +753,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='UnityRelease|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='UnityDebug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="stdafx.cpp">
+    <ClCompile Include="nbafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='UnityDebug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -798,7 +798,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
-    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="nbafx.h" />
     <ClInclude Include="WebDAV.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='UnityDebug|Win32'">true</ExcludedFromBuild>
     </ClInclude>

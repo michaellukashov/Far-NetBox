@@ -1,8 +1,8 @@
-#include "FarTexts.h"
 
 #include "afxdll.h"
+#include "nbafx.h"
 
-#include "stdafx.h"
+#include "FarTexts.h"
 #include "FarUtil.h"
 #include "EasyURL.h"
 #include "resource.h"

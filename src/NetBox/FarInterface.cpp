@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------
-#include "stdafx.h"
+#include "nbafx.h"
 
 #include "Common.h"
 #include "CoreMain.h"

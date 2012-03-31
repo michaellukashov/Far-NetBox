@@ -1,6 +1,6 @@
 #pragma once
 
-#include "fzafx.h"
+#include "stdafx.h"
 
 void InitExtensionModule(HINSTANCE HInst);
 void TermExtensionModule();

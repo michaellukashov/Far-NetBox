@@ -114,7 +114,7 @@ Version history
 - 1.0 initial release
 */
 
-#include "fzafx.h"
+#include "stdafx.h"
 #include "AsyncProxySocketLayer.h"
 #include "atlconv.h" //Unicode<->Ascii conversion macros declared here
 #include "CBase64coding.hpp"

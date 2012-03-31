@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------
-#include "fzafx.h"
+#include "stdafx.h"
 #include <Options.h>
 #include <FileZillaIntern.h>
 #include <FileZillaIntf.h>

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "nbafx.h"
 #include "EasyURL.h"
 #include "SessionData.h"
 #include "Terminal.h"

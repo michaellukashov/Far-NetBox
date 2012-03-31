@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------
-#include "stdafx.h"
+#include "nbafx.h"
 #define NO_WIN32_LEAN_AND_MEAN
 
 #include <Common.h>

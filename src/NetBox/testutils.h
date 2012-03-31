@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "nbafx.h"
 #include <time.h>
 #include <stdio.h>
 #include <iostream>

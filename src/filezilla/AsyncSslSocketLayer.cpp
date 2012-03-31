@@ -88,7 +88,7 @@ Version 2.0:
 
 */
 
-#include "fzafx.h"
+#include "stdafx.h"
 #include "AsyncSslSocketLayer.h"
 
 #if defined _DEBUG && defined _AFX

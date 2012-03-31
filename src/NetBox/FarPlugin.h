@@ -25,6 +25,7 @@
 #include "Classes.h"
 #pragma warning(pop)
 #include "Common.h"
+#include "plugin.hpp"
 
 //---------------------------------------------------------------------------
 class TCustomFarFileSystem;

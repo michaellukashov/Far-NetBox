@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------
-#include "stdafx.h"
+#include "nbafx.h"
 
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>

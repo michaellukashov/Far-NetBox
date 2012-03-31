@@ -20,7 +20,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "fzafx.h"
+#include "stdafx.h"
 #include "FtpListResult.h"
 #include "FileZillaApi.h"
 #include "FileZillaOpt.h"

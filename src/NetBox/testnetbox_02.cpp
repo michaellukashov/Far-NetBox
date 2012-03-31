@@ -4,7 +4,7 @@
 // testnetbox_02 --run_test=testnetbox_02/test1 --log_level=all 2>&1 | tee res.txt
 //------------------------------------------------------------------------------
 
-#include "stdafx.h"
+#include "nbafx.h"
 #include <time.h>
 #include <stdio.h>
 #include <iostream>

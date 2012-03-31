@@ -7,7 +7,7 @@
 #include "leak_detector.h"
 // extern int GC_find_leak;
 
-#include "stdafx.h"
+#include "nbafx.h"
 #include <time.h>
 #include <stdio.h>
 #include <iostream>

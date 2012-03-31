@@ -1,4 +1,4 @@
-#include "fzafx.h"
+#include "stdafx.h"
 #include "afxdll.h"
 
 HINSTANCE HInst;

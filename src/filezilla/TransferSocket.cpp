@@ -19,7 +19,7 @@
 // TransferSocket.cpp: Implementierungsdatei
 //
 
-#include "fzafx.h"
+#include "stdafx.h"
 #ifndef MPEXT
 #include "filezilla.h"
 #endif

@@ -25,7 +25,7 @@
 #include <boost/signals/signal4.hpp>
 
 #include "FarPlugin.h"
-#include "stdafx.h"
+#include "nbafx.h"
 
 #define MAX_SIZE -1
 
