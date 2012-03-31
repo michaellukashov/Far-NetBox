@@ -114,7 +114,7 @@ TGUICopyParamType & __fastcall TGUICopyParamType::operator =(const TGUICopyParam
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-void __fastcall TCopyParamRuleData::Default()
+void TCopyParamRuleData::Default()
 {
     HostName = L"";
     UserName = L"";
@@ -224,7 +224,7 @@ std::wstring __fastcall TCopyParamRule::GetInfoStr(const std::wstring Separator)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-std::wstring __fastcall TCopyParamList::FInvalidChars(L"/\\[]");
+std::wstring TCopyParamList::FInvalidChars(L"/\\[]");
 //---------------------------------------------------------------------------
 TCopyParamList::TCopyParamList()
 {

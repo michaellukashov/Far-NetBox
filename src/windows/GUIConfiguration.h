@@ -79,9 +79,9 @@ public:
 
     bool __fastcall operator ==(const TCopyParamRule &rhp) const;
 
-    TCopyParamRuleData GetData() { return FData; }
-    void SetData(TCopyParamRuleData value) { FData = value; }
-    bool GetEmpty() const;
+    TCopyParamRuleData __fastcall GetData() { return FData; }
+    void __fastcall SetData(TCopyParamRuleData value) { FData = value; }
+    bool __fastcall GetEmpty() const;
 
 private:
     TCopyParamRuleData FData;
@@ -133,9 +133,9 @@ private:
     mutable nb::TStrings *FNameList;
     bool FModified;
 
-    void Init();
-    void Reset();
-    void Modify();
+    void __fastcall Init();
+    void __fastcall Reset();
+    void __fastcall Modify();
     bool __fastcall CompareItem(size_t Index, const TCopyParamType *CopyParam,
                      const TCopyParamRule *Rule) const;
 };

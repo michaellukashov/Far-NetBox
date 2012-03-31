@@ -64,9 +64,9 @@ public:
     TCopyParamType();
     TCopyParamType(const TCopyParamType &Source);
     virtual ~TCopyParamType();
-    TCopyParamType &operator =(const TCopyParamType &rhp);
-    virtual void Assign(const TCopyParamType *Source);
-    virtual void Default();
+    TCopyParamType & __fastcall operator =(const TCopyParamType &rhp);
+    virtual void __fastcall Assign(const TCopyParamType *Source);
+    virtual void __fastcall Default();
     std::wstring ChangeFileName(const std::wstring FileName,
                                 TOperationSide Side, bool FirstLevel) const;
     int LocalFileAttrs(const TRights &Rights) const;

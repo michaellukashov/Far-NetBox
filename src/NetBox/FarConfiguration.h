@@ -69,21 +69,21 @@ public:
     TBookmarkList *GetBookmark(const std::wstring Key);
     void SetBookmark(const std::wstring Key, TBookmarkList *value);
 
-    virtual void Load();
-    virtual void Save(bool All, bool Explicit);
-    virtual void Default();
-    virtual THierarchicalStorage *CreateStorage();
+    virtual void __fastcall Load();
+    virtual void __fastcall Save(bool All, bool Explicit);
+    virtual void __fastcall Default();
+    virtual THierarchicalStorage * __fastcall CreateStorage();
     void CacheFarSettings();
 
 protected:
-    virtual bool GetConfirmOverwriting();
-    virtual void SetConfirmOverwriting(bool value);
+    virtual bool __fastcall GetConfirmOverwriting();
+    virtual void __fastcall SetConfirmOverwriting(bool value);
 
-    virtual void SaveData(THierarchicalStorage *Storage, bool All);
-    virtual void LoadData(THierarchicalStorage *Storage);
+    virtual void __fastcall SaveData(THierarchicalStorage *Storage, bool All);
+    virtual void __fastcall LoadData(THierarchicalStorage *Storage);
 
-    virtual std::wstring ModuleFileName();
-    virtual void Saved();
+    virtual std::wstring __fastcall ModuleFileName();
+    virtual void __fastcall Saved();
 
 private:
     TCustomFarPlugin *FFarPlugin;

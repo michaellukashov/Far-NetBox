@@ -65,16 +65,16 @@ protected:
     TStorage FStorage;
     TCriticalSection *FCriticalSection;
 
-    virtual void Changed();
-    virtual void SaveData(THierarchicalStorage *Storage, bool All);
-    virtual void LoadData(THierarchicalStorage *Storage);
-    virtual void CopyData(THierarchicalStorage *Source, THierarchicalStorage *Target);
-    virtual void LoadAdmin(THierarchicalStorage *Storage);
-    virtual void Saved();
+    virtual void __fastcall Changed();
+    virtual void __fastcall SaveData(THierarchicalStorage *Storage, bool All);
+    virtual void __fastcall LoadData(THierarchicalStorage *Storage);
+    virtual void __fastcall CopyData(THierarchicalStorage *Source, THierarchicalStorage *Target);
+    virtual void __fastcall LoadAdmin(THierarchicalStorage *Storage);
+    virtual void __fastcall Saved();
     void CleanupRegistry(const std::wstring CleanupSubKey);
     std::wstring BannerHash(const std::wstring Banner);
 
-    virtual std::wstring ModuleFileName();
+    virtual std::wstring __fastcall ModuleFileName();
 
     std::wstring GetFileFileInfoString(const std::wstring Key,
                                        const std::wstring FileName);
@@ -93,9 +93,9 @@ protected:
 public:
     TConfiguration();
     virtual ~TConfiguration();
-    virtual void Default();
-    virtual void Load();
-    virtual void Save(bool All, bool Explicit);
+    virtual void __fastcall Default();
+    virtual void __fastcall Load();
+    virtual void __fastcall Save(bool All, bool Explicit);
     void Export(const std::wstring FileName);
     void CleanupConfiguration();
     void CleanupIniFile();
@@ -109,11 +109,11 @@ public:
                                    TRemoteDirectoryChangesCache *DirectoryChangesCache);
     bool ShowBanner(const std::wstring SessionKey, const std::wstring Banner);
     void NeverShowBanner(const std::wstring SessionKey, const std::wstring Banner);
-    virtual THierarchicalStorage *CreateStorage();
+    virtual THierarchicalStorage * __fastcall CreateStorage();
     void TemporaryLogging(const std::wstring ALogFileName);
-    virtual std::wstring EncryptPassword(const std::wstring Password, const std::wstring Key);
-    virtual std::wstring DecryptPassword(const std::wstring Password, const std::wstring Key);
-    virtual std::wstring StronglyRecryptPassword(const std::wstring Password, const std::wstring Key);
+    virtual std::wstring __fastcall EncryptPassword(const std::wstring Password, const std::wstring Key);
+    virtual std::wstring __fastcall DecryptPassword(const std::wstring Password, const std::wstring Key);
+    virtual std::wstring __fastcall StronglyRecryptPassword(const std::wstring Password, const std::wstring Key);
 
     VS_FIXEDFILEINFO GetFixedApplicationInfo();
     void *GetApplicationInfo();
@@ -128,8 +128,8 @@ public:
     std::wstring GetRootKeyStr();
     std::wstring GetConfigurationSubKey();
     TEOLType GetLocalEOLType();
-    virtual std::wstring GetVersionStr();
-    virtual std::wstring GetVersion();
+    virtual std::wstring __fastcall GetVersionStr();
+    virtual std::wstring __fastcall GetVersion();
     int GetCompoundVersion();
     std::wstring GetProductVersion();
     std::wstring GetProductName();
@@ -156,13 +156,13 @@ public:
     std::wstring GetDefaultLogFileName();
     const nb::notify_signal_type &GetOnChange() const { return FOnChange; }
     void SetOnChange(const nb::notify_slot_type &value) { FOnChange.connect(value); }
-    virtual bool GetConfirmOverwriting();
-    virtual void SetConfirmOverwriting(bool value);
+    virtual bool __fastcall GetConfirmOverwriting();
+    virtual void __fastcall SetConfirmOverwriting(bool value);
     bool GetConfirmResume();
     void SetConfirmResume(bool value);
     bool GetAutoReadDirectoryAfterOp();
     void SetAutoReadDirectoryAfterOp(bool value);
-    virtual bool GetRememberPassword();
+    virtual bool __fastcall GetRememberPassword();
     std::wstring GetPartialExt() const;
     int GetSessionReopenAuto() { return FSessionReopenAuto; }
     void SetSessionReopenAuto(int value);
@@ -187,7 +187,7 @@ public:
     std::wstring GetRegistryStorageKey();
     std::wstring GetIniFileStorageName();
     void SetIniFileStorageName(const std::wstring value);
-    virtual std::wstring GetDefaultKeyFile();
+    virtual std::wstring __fastcall GetDefaultKeyFile();
 
     bool GetDisablePasswordStoring() { return FDisablePasswordStoring; }
     bool GetForceBanners() { return FForceBanners; }

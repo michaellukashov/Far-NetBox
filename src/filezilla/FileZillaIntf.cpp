@@ -38,14 +38,14 @@ void __fastcall TFileZillaIntf::SetResourceModule(void * ResourceHandle)
   ModuleState->m_hCurrentResourceHandle = static_cast<HINSTANCE>(ResourceHandle);
 }
 //---------------------------------------------------------------------------
-__fastcall TFileZillaIntf::TFileZillaIntf() :
+TFileZillaIntf::TFileZillaIntf() :
   FFileZillaApi(NULL),
   FIntern(new TFileZillaIntern(this)),
   FServer(new t_server())
 {
 }
 //---------------------------------------------------------------------------
-__fastcall TFileZillaIntf::~TFileZillaIntf()
+TFileZillaIntf::~TFileZillaIntf()
 {
   ASSERT(FFileZillaApi == NULL);
 
