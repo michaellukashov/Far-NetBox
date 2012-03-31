@@ -6,7 +6,7 @@
 #include "Terminal.h"
 
 //---------------------------------------------------------------------------
-bool ExceptionMessage(const std::exception *E, std::wstring &Message)
+bool __fastcall ExceptionMessage(const std::exception *E, std::wstring &Message)
 {
     bool Result = true;
     if (dynamic_cast<const nb::EAbort *>(E) != NULL)
@@ -28,7 +28,7 @@ bool ExceptionMessage(const std::exception *E, std::wstring &Message)
     return Result;
 }
 //---------------------------------------------------------------------------
-nb::TStrings *ExceptionToMoreMessages(const std::exception *E)
+nb::TStrings * __fastcall ExceptionToMoreMessages(const std::exception *E)
 {
     nb::TStrings *Result = NULL;
     std::wstring Message;
@@ -135,7 +135,7 @@ ExtException &ExtException::operator =(const ExtException &E) throw()
 }
 
 //---------------------------------------------------------------------------
-void ExtException::AddMoreMessages(const std::exception *E)
+void __fastcall ExtException::AddMoreMessages(const std::exception *E)
 {
     if (E != NULL)
     {
@@ -190,7 +190,7 @@ ExtException::~ExtException()
     FMoreMessages = NULL;
 }
 //---------------------------------------------------------------------------
-std::wstring LastSysErrorMessage()
+std::wstring __fastcall LastSysErrorMessage()
 {
     int LastError = GetLastError();
     std::wstring Result;

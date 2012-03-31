@@ -5,9 +5,9 @@
 #include "Classes.h"
 
 //---------------------------------------------------------------------------
-bool ExceptionMessage(const std::exception *E, std::wstring &Message);
-std::wstring LastSysErrorMessage();
-nb::TStrings *ExceptionToMoreMessages(const std::exception *E);
+bool __fastcall ExceptionMessage(const std::exception *E, std::wstring &Message);
+std::wstring __fastcall LastSysErrorMessage();
+nb::TStrings * __fastcall ExceptionToMoreMessages(const std::exception *E);
 //---------------------------------------------------------------------------
 enum TOnceDoneOperation { odoIdle, odoDisconnect, odoShutDown };
 //---------------------------------------------------------------------------
@@ -30,7 +30,7 @@ public:
     const std::wstring GetMessage() const { return FMessage; }
     void SetMessage(const std::wstring value) { FMessage = value; }
 protected:
-    void AddMoreMessages(const std::exception *E);
+    void __fastcall AddMoreMessages(const std::exception *E);
 
 private:
     nb::TStrings *FMoreMessages;
