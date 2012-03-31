@@ -1,5 +1,22 @@
-NetBox 2.0.16 ??.03.2012
+NetBox 2.0.18 ??.04.2012
 ---------------------
+  * FTP: Use MLSD/MLST to list file in directory with FTP protocol
+    - When copying files from/to server, seconds are preserved
+    - Use MLST to get file properties
+
+NetBox 2.0.17 27.03.2012
+---------------------
+  * FTP(S): Problem with space in file/directory names in FTPS session (Issue #11)
+  * Far3: Restore history in edit dialog items
+  * Far3: Adapt to Far 3.0 build 2574
+
+NetBox 2.0.16 24.03.2012
+---------------------
+  * Improvement: open session by pressing Enter on .netbox file
+  * Far3: Bugfix: NumEnter opens .netbox file instead of opening session
+  * Far3: adapted to Far 3.0 build 2551:
+    - fixed confirmations before delete file or session
+    - fixed open session when plugin is called from Folders history
   * FTP: Use MLSD/MLST to list file in directory with FTP protocol
     (http://winscp.net/tracker/show_bug.cgi?id=568)
 

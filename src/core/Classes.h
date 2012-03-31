@@ -392,7 +392,7 @@ public:
     }
     bool operator == (const TDateTime &rhs)
     {
-        return fabs(FValue - rhs.FValue) < 0.000001;
+        return fabs(FValue - rhs.FValue) < std::numeric_limits<double>::epsilon();
     }
     bool operator != (const TDateTime &rhs)
     {

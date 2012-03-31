@@ -766,6 +766,7 @@ void CFtpListResult::AddLine(t_directory::t_direntry &direntry)
 		st.wDay = direntry.date.day;
 		st.wHour = direntry.date.hour;
 		st.wMinute = direntry.date.minute;
+		st.wSecond = direntry.date.second;
 		
 		FILETIME ft;
 		SystemTimeToFileTime(&st, &ft);
@@ -780,6 +781,7 @@ void CFtpListResult::AddLine(t_directory::t_direntry &direntry)
 		direntry.date.day = st.wDay;
 		direntry.date.hour = st.wHour;
 		direntry.date.minute = st.wMinute;
+		direntry.date.second = st.wSecond;
 	}
 	direntry.lName = direntry.name;
 	direntry.lName.MakeLower();
@@ -1388,7 +1390,7 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
 	else if (!gid.IsEmpty())
 		direntry.ownergroup += _T(" ") + gid;
 
-	if (!(str = GetNextToken(line, linelen, tokenlen, pos, 0)))
+	if (!(str = GetNextToken(line, linelen, tokenlen, pos, 1)))
 		return FALSE;
 
 	copyStr(direntry.name, 0, str, tokenlen, true);

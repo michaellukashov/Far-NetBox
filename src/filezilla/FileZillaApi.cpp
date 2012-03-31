@@ -473,6 +473,32 @@ int CFileZillaApi::List(const CServerPath& parent, CString dirname, int nListMod
 		return m_pMainThread->LastOperationSuccessful()?FZ_REPLY_OK:FZ_REPLY_ERROR;
 }
 
+#ifdef MPEXT
+int CFileZillaApi::ListFile(const CServerPath& path, const CString& fileName)
+{
+	//Check if call allowed
+	if (!m_bInitialized)
+		return FZ_REPLY_NOTINITIALIZED;
+	if (IsConnected()==FZ_REPLY_NOTCONNECTED)
+		return FZ_REPLY_NOTCONNECTED;
+	if (fileName.IsEmpty())
+		return FZ_REPLY_INVALIDPARAM;
+	
+	if (m_pMainThread->IsBusy())
+		return FZ_REPLY_BUSY;
+
+	t_command command;
+	command.id=FZ_COMMAND_LISTFILE;
+	command.path=path;
+	command.param1=fileName;
+	m_pMainThread->Command(command);
+	if (m_hOwnerWnd)
+		return FZ_REPLY_WOULDBLOCK;
+	else
+		return m_pMainThread->LastOperationSuccessful()?FZ_REPLY_OK:FZ_REPLY_ERROR;
+}
+#endif
+
 int CFileZillaApi::FileTransfer(const t_transferfile &TransferFile)
 {
 	//Check if call allowed

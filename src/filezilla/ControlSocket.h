@@ -16,7 +16,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-// ControlSocket.h: Schnittstelle für die Klasse CControlSocket.
+// ControlSocket.h: Schnittstelle fï¿½r die Klasse CControlSocket.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -30,7 +30,7 @@
 #include "AsyncSocketEx.h"
 #include "FileZillaApi.h"
 #include "ApiLog.h"
-#include "structures.h"	// Hinzugefügt von der Klassenansicht
+#include "structures.h"	// Hinzugefï¿½gt von der Klassenansicht
 #ifndef MPEXT_NO_IDENT
 #include "IdentServerControl.h"	// Added by ClassView
 #endif
@@ -50,6 +50,9 @@
 #define CSMODE_MKDIR			0x0800
 #define CSMODE_RENAME			0x1000
 #define CSMODE_CHMOD			0x2000
+#ifdef MPEXT
+#define CSMODE_LISTFILE			0x4000
+#endif
 
 typedef struct
 {
@@ -84,6 +87,9 @@ public:
 	//Operations
 	virtual void Connect(t_server &server)=0;
 	virtual void List(BOOL bFinish, int nError=0, CServerPath path=CServerPath(), CString subdir=_MPT(""), int nListMode = 0)=0;
+#ifdef MPEXT
+	virtual void ListFile(CServerPath path=CServerPath(), CString fileName="")=0;
+#endif
 	virtual void FtpCommand(LPCTSTR pCommand)=0;
 	virtual void Disconnect()=0;
 	virtual void FileTransfer(t_transferfile *transferfile = 0, BOOL bFinish = FALSE, int nError = 0)=0;

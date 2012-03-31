@@ -74,8 +74,8 @@ CMainThread::~CMainThread()
 
 BOOL CMainThread::InitInstance()
 {
-    AFX_MANAGE_STATE(AfxGetModuleState());
-    afxCurrentResourceHandle = ::HInst;
+	AFX_MANAGE_STATE(AfxGetModuleState());
+	afxCurrentResourceHandle = ::HInst;
 
 	m_nTimerID=SetTimer(0,1,1000,0);
 #ifndef MPEXT_NO_CACHE
@@ -213,6 +213,10 @@ BOOL CMainThread::OnThreadMessage(UINT Msg, WPARAM wParam, LPARAM lParam)
 				case FZ_COMMAND_LIST:
 					ASSERT(m_pControlSocket);
 					m_pControlSocket->List(FALSE, 0, pCommand->path, pCommand->param1, pCommand->param4);
+					break;
+				case FZ_COMMAND_LISTFILE:
+					ASSERT(m_pControlSocket);
+					m_pControlSocket->ListFile(pCommand->path, pCommand->param1);
 					break;
 				case FZ_COMMAND_FILETRANSFER:
 					ASSERT(m_pControlSocket);

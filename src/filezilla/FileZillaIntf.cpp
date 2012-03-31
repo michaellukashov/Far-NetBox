@@ -213,6 +213,17 @@ bool TFileZillaIntf::List(const wchar_t * APath)
   return Check(FFileZillaApi->List(Path), L"list");
 }
 //---------------------------------------------------------------------------
+#ifdef MPEXT
+bool TFileZillaIntf::ListFile(const wchar_t * AFullFileName)
+{
+  ASSERT(FFileZillaApi != NULL);
+  CString fileName(AFullFileName);
+  CServerPath Path(FServer->nServerType);
+  Path.SetPath(fileName, TRUE);
+  return Check(FFileZillaApi->ListFile(Path, fileName), L"listfile");
+}
+#endif
+//---------------------------------------------------------------------------
 bool TFileZillaIntf::FileTransfer(const wchar_t * LocalFile,
   const wchar_t * RemoteFile, const wchar_t * RemotePath, bool Get, __int64 Size,
   int Type, void * UserData)
@@ -281,7 +292,6 @@ void CopyValidityTime(TFtpsCertificateData::TValidityTime & Dest,
 bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
 {
   bool Result;
-
   CString a;
   unsigned int MessageID = FZ_MSG_ID(wParam);
 
@@ -394,6 +404,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
           Dest.Day = Source.date.day;
           Dest.Hour = Source.date.hour;
           Dest.Minute = Source.date.minute;
+          Dest.Second = Source.date.second;
           Dest.HasTime = Source.date.hastime;
           Dest.HasDate = Source.date.hasdate;
           Dest.LinkTarget = Source.linkTarget;
@@ -429,7 +440,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
       break;
 
     case FZ_MSG_CAPABILITIES:
-      Result = HandleCapabilities(lParam & FZ_CAPABILITIES_MFMT);
+      Result = HandleCapabilities((TFTPServerCapabilities *)lParam);
       break;
 
     case FZ_MSG_SOCKETSTATUS:
