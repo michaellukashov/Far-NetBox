@@ -206,7 +206,7 @@ std::wstring CutToChar(std::wstring &Str, wchar_t Ch, bool Trim)
 }
 //---------------------------------------------------------------------------
 std::wstring CopyToChars(const std::wstring Str, size_t &From, const std::wstring Chars,
-                         bool Trim, char *Delimiter, bool DoubleDelimiterEscapes)
+                         bool Trim, wchar_t *Delimiter, bool DoubleDelimiterEscapes)
 {
     std::wstring Result;
     size_t P;
