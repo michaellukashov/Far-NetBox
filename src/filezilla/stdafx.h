@@ -69,7 +69,7 @@ class CFileFix;
 #endif
 #endif
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
+#ifdef _MSC_VER
 extern HINSTANCE HInst;
 #endif
 
