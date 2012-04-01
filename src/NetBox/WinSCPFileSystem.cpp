@@ -214,7 +214,7 @@ public:
                                  TCustomCommand *ChildCustomCommand);
 
 protected:
-    virtual void Prompt(size_t Index, const std::wstring Prompt,
+    virtual void __fastcall Prompt(size_t Index, const std::wstring Prompt,
                         std::wstring &Value);
 
 private:

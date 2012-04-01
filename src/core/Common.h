@@ -46,7 +46,7 @@ std::wstring BooleanToEngStr(bool B);
 std::wstring DefaultStr(const std::wstring Str, const std::wstring Default);
 std::wstring CutToChar(std::wstring &Str, wchar_t Ch, bool Trim);
 std::wstring CopyToChars(const std::wstring Str, size_t &From, const std::wstring Chs, bool Trim,
-                         char *Delimiter = NULL);
+                         char *Delimiter = NULL, bool DoubleDelimiterEscapes = false);
 std::wstring DelimitStr(const std::wstring Str, const std::wstring Chars);
 std::wstring ShellDelimitStr(const std::wstring Str, char Quote);
 std::wstring ExceptionLogString(const std::exception *E);
@@ -100,7 +100,7 @@ std::wstring LoadStr(int Ident, unsigned int MaxLength = 0);
 std::wstring LoadStrPart(int Ident, int Part);
 std::wstring EscapeHotkey(const std::wstring Caption);
 bool CutToken(std::wstring &Str, std::wstring &Token);
-void AddToList(std::wstring &List, const std::wstring Value, char Delimiter);
+void AddToList(std::wstring &List, const std::wstring Value, const std::wstring &Delimiter);
 bool Is2000();
 bool IsWin7();
 bool IsExactly2008R2();

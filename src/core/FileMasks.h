@@ -44,8 +44,13 @@ public:
     struct TParams
     {
         TParams();
+        // TParams(const TParams &rhs)
+        // {
+            // Size = rhs.Size;
+            // Modification = rhs.Modification;
+        // }
         __int64 Size;
-    nb::TDateTime Modification;
+        nb::TDateTime Modification;
 
         std::wstring ToString() const;
     };
@@ -58,7 +63,7 @@ public:
 
     TFileMasks();
     TFileMasks(int ForceDirectoryMasks);
-    explicit TFileMasks(const TFileMasks &Source);
+    TFileMasks(const TFileMasks &Source);
     explicit TFileMasks(const std::wstring AMasks);
     virtual ~TFileMasks();
     TFileMasks & __fastcall operator =(const TFileMasks &rhm);
@@ -72,6 +77,8 @@ public:
                  const std::wstring Path = L"", const TParams *Params = NULL) const;
     bool __fastcall Matches(const std::wstring FileName, bool Local, bool Directory,
                  const TParams *Params = NULL) const;
+
+    bool GetIsValid(size_t &Start, size_t &Length) const;
 
     std::wstring __fastcall GetMasks() const { return FStr; }
     void __fastcall SetMasks(const std::wstring value);
@@ -121,16 +128,15 @@ private:
   mutable nb::TStrings * FMasksStr[4];
 
     void __fastcall SetStr(const std::wstring value, bool SingleMask);
-    void __fastcall SetMasks(const UnicodeString value);
     void __fastcall CreateMaskMask(const std::wstring Mask, size_t Start, size_t End, bool Ex,
                         TMaskMask &MaskMask);
-  void __fastcall CreateMask(const UnicodeString & MaskStr, int MaskStart,
-    int MaskEnd, bool Include);
-  nb::TStrings * __fastcall GetMasksStr(int Index) const;
-  static UnicodeString __fastcall MakeDirectoryMask(UnicodeString Str);
+    void __fastcall CreateMask(const std::wstring & MaskStr, int MaskStart,
+        int MaskEnd, bool Include);
+    nb::TStrings * __fastcall GetMasksStr(int Index) const;
+    static std::wstring __fastcall MakeDirectoryMask(std::wstring Str);
     static inline void __fastcall ReleaseMaskMask(TMaskMask &MaskMask);
-  inline void __fastcall Init();
-  void __fastcall DoInit(bool Delete);
+    inline void __fastcall Init();
+    void __fastcall DoInit(bool Delete);
     inline void __fastcall Clear();
     static void __fastcall Clear(TMasks &Masks);
     static void __fastcall TrimEx(std::wstring &Str, size_t &Start, size_t &End);
@@ -138,7 +144,7 @@ private:
                              const std::wstring Path, const TParams *Params, const TMasks &Masks, bool Recurse);
     static inline bool __fastcall MatchesMaskMask(const TMaskMask &MaskMask, const std::wstring Str);
     static inline bool __fastcall IsAnyMask(const std::wstring Mask);
-  static UnicodeString __fastcall ComposeMaskStr(nb::TStrings * MasksStr, bool Directory);
+    static std::wstring __fastcall ComposeMaskStr(nb::TStrings * MasksStr, bool Directory);
     void __fastcall ThrowError(size_t Start, size_t End);
 };
 //---------------------------------------------------------------------------
@@ -169,12 +175,12 @@ protected:
     void __fastcall GetToken(const std::wstring Command,
                   size_t Index, size_t &Len, wchar_t &PatternCmd);
     void __fastcall CustomValidate(const std::wstring Command, void *Arg);
-    bool __fastcall FindPattern(const std::wstring Command, wchar_t PatternCmd);
+    virtual bool __fastcall FindPattern(const std::wstring Command, wchar_t PatternCmd);
 
     virtual void __fastcall ValidatePattern(const std::wstring Command,
                                  size_t Index, size_t Len, wchar_t PatternCmd, void *Arg);
 
-    virtual size_t __fastcall PatternLen(size_t Index, char PatternCmd) = 0;
+    virtual size_t __fastcall PatternLen(size_t Index, wchar_t PatternCmd) = 0;
     virtual bool __fastcall PatternReplacement(size_t Index, const std::wstring Pattern,
                                     std::wstring &Replacement, bool &Delimit) = 0;
     virtual void __fastcall DelimitReplacement(std::wstring &Replacement, wchar_t Quote);
@@ -223,7 +229,7 @@ public:
     virtual bool __fastcall IsFileCommand(const std::wstring Command);
 
 protected:
-    virtual size_t __fastcall PatternLen(size_t Index, char PatternCmd);
+    virtual size_t __fastcall PatternLen(size_t Index, wchar_t PatternCmd);
     virtual bool __fastcall PatternReplacement(size_t Index, const std::wstring Pattern,
                                     std::wstring &Replacement, bool &Delimit);
 

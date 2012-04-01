@@ -206,27 +206,38 @@ std::wstring CutToChar(std::wstring &Str, wchar_t Ch, bool Trim)
 }
 //---------------------------------------------------------------------------
 std::wstring CopyToChars(const std::wstring Str, size_t &From, const std::wstring Chars,
-                         bool Trim, char *Delimiter)
+                         bool Trim, char *Delimiter, bool DoubleDelimiterEscapes)
 {
+    std::wstring Result;
     size_t P;
     for (P = From; P < Str.size(); P++)
     {
         if (::IsDelimiter(Str, Chars, P))
         {
+          if (DoubleDelimiterEscapes &&
+              (P < Str.size()) &&
+              ::IsDelimiter(Chars, Str, P + 1))
+          {
+            Result += Str[P];
+            P++;
+          }
+          else
+          {
             break;
+          }
+        }
+        else
+        {
+          Result += Str[P];
         }
     }
-    // DEBUG_PRINTF(L"CopyToChars: Str = %s, Chars = %s, From = %d, P = %d", Str.c_str(), Chars.c_str(), From, P);
 
-    std::wstring Result;
     if (P < Str.size())
     {
         if (Delimiter != NULL)
         {
             *Delimiter = static_cast<char>(Str[P]);
         }
-        Result = Str.substr(From, P - From);
-        From = P + 1;
     }
     else
     {
@@ -237,15 +248,18 @@ std::wstring CopyToChars(const std::wstring Str, size_t &From, const std::wstrin
         Result = Str.substr(From, Str.size() - From + 1);
         From = P;
     }
-    if (Trim)
-    {
+      // even if we reached the end, return index, as if there were the delimiter,
+      // so caller can easily find index of the end of the piece by subtracting
+      // 2 from From (as long as he did not asked for trimming)
+      From = P+1;
+      if (Trim)
+      {
         Result = ::TrimRight(Result);
-        while ((P < Str.size()) && (Str[P] == L' '))
+        while ((From < Str.size()) && (Str[From] == L' '))
         {
-            P++;
+          From++;
         }
-    }
-    // DEBUG_PRINTF(L"CopyToChars: Result = %s", Result.c_str());
+      }
     return Result;
 }
 //---------------------------------------------------------------------------
@@ -1954,13 +1968,18 @@ bool CutToken(std::wstring &Str, std::wstring &Token)
     return Result;
 }
 //---------------------------------------------------------------------------
-void AddToList(std::wstring &List, const std::wstring Value, wchar_t Delimiter)
+void AddToList(std::wstring &List, const std::wstring Value, const std::wstring &Delimiter)
 {
-    if (!List.empty() && (List[List.size()] != Delimiter))
+  if (!Value.empty())
+  {
+    if (!List.empty() &&
+        ((List.size() < Delimiter.size()) ||
+         (List.substr(List.size() - Delimiter.size() + 1, Delimiter.size()) != Delimiter)))
     {
-        List += Delimiter;
+      List += Delimiter;
     }
     List += Value;
+  }
 }
 //---------------------------------------------------------------------------
 bool Is2000()

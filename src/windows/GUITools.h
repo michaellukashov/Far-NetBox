@@ -54,14 +54,14 @@ public:
                         const std::wstring FileName, const std::wstring LocalFileName,
                         const std::wstring FileList);
 
-    virtual bool IsFileCommand(const std::wstring Command);
+    virtual bool __fastcall IsFileCommand(const std::wstring Command);
     bool HasLocalFileName(const std::wstring Command);
 
 protected:
-    virtual size_t PatternLen(size_t Index, char PatternCmd);
-    virtual bool PatternReplacement(size_t Index, const std::wstring Pattern,
+    virtual size_t __fastcall PatternLen(size_t Index, char PatternCmd);
+    virtual bool __fastcall PatternReplacement(size_t Index, const std::wstring Pattern,
                                     std::wstring &Replacement, bool &Delimit);
-    virtual void DelimitReplacement(const std::wstring Replacement, char Quote);
+    virtual void __fastcall DelimitReplacement(const std::wstring Replacement, char Quote);
 
 private:
     std::wstring FLocalFileName;
