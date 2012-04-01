@@ -1394,7 +1394,7 @@ void __fastcall TFTPFileSystem::Source(const std::wstring FileName,
         OperationProgress->SetTransferSize(OperationProgress->LocalSize);
         OperationProgress->TransferingFile = false;
 
-        TDateTime Modification;
+        nb::TDateTime Modification;
         // Inspired by SysUtils::FileAge
         WIN32_FIND_DATA FindData;
         HANDLE Handle = FindFirstFile(FileName.c_str(), &FindData);
@@ -1907,7 +1907,7 @@ void __fastcall TFTPFileSystem::ReadDirectory(TRemoteFileList *FileList)
             // further try without "-a" only as the server may not support it
             if (FListAll == asAuto)
             {
-                if (!FTerminal->Active)
+                if (!FTerminal->GetActive())
                 {
                     FTerminal->Reopen(ropNoReadDirectory);
                 }
@@ -2133,7 +2133,7 @@ const wchar_t * __fastcall TFTPFileSystem::GetOption(int OptionID) const
         FOptionScratch = Data->GetProxyPassword();
         break;
     case OPTION_TRANSFERIP:
-        FOptionScratch = FTerminal->Configuration->ExternalIpAddress;
+        FOptionScratch = FTerminal->GetConfiguration()->GetExternalIpAddress();
         break;
 
     case OPTION_ANONPWD:
@@ -2260,7 +2260,7 @@ int __fastcall TFTPFileSystem::GetOptionVal(int OptionID) const
         break;
 
     case OPTION_MPEXT_SNDBUF:
-      Result = Data->SendBuf;
+      Result = Data->GetSendBuf();
       break;
 
     case OPTION_MPEXT_SSLSESSIONREUSE:
@@ -2532,7 +2532,7 @@ void __fastcall TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
                 FLAGSET(Reply, TFileZillaIntf::REPLY_DISCONNECTED) ||
                 FLAGSET(Reply, TFileZillaIntf::REPLY_NOTCONNECTED);
 
-            std::wtring HelpKeyword;
+            std::wstring HelpKeyword;
             nb::TStrings *MoreMessages = new nb::TStringList();
             try
             {

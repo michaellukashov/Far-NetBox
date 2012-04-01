@@ -2130,7 +2130,7 @@ TFarList::~TFarList()
     delete FListItems;
 }
 //---------------------------------------------------------------------------
-void TFarList::Assign(nb::TPersistent *Source)
+void __fastcall TFarList::Assign(nb::TPersistent *Source)
 {
     nb::TStringList::Assign(Source);
 

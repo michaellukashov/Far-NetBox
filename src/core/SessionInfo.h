@@ -211,7 +211,7 @@ public:
     void AddException(const std::exception *E);
     void AddSeparator();
 
-    virtual void Clear();
+    virtual void __fastcall Clear();
     void ReflectSettings();
     void Lock();
     void Unlock();

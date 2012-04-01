@@ -11,11 +11,11 @@ class TNamedObject : public nb::TPersistent
 public:
     TNamedObject() : nb::TPersistent() {};
     explicit TNamedObject(const std::wstring aName);
-    bool GetHidden() { return FHidden; }
-    std::wstring GetName() { return FName; }
-    void SetName(const std::wstring value);
-    int CompareName(const std::wstring aName, bool CaseSensitive = false);
-    void MakeUniqueIn(TNamedObjectList *List);
+    bool __fastcall GetHidden() { return FHidden; }
+    std::wstring __fastcall GetName() { return FName; }
+    void __fastcall SetName(const std::wstring value);
+    int __fastcall CompareName(const std::wstring aName, bool CaseSensitive = false);
+    void __fastcall MakeUniqueIn(TNamedObjectList *List);
 private:
     std::wstring FName;
     bool FHidden;

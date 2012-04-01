@@ -25,9 +25,9 @@ enum TSshProt { ssh1only, ssh1, ssh2, ssh2only };
 enum TKex { kexWarn, kexDHGroup1, kexDHGroup14, kexDHGEx, kexRSA };
 #define KEX_COUNT (kexRSA+1)
 enum TSshBug { sbIgnore1, sbPlainPW1, sbRSA1, sbHMAC2, sbDeriveKey2, sbRSAPad2,
-               sbRekey2, sbPKSessID2, sbMaxPkt2
+               sbPKSessID2, sbRekey2, sbMaxPkt2, sbIgnore2
              };
-#define BUG_COUNT (sbMaxPkt2+1)
+#define BUG_COUNT (sbIgnore2+1)
 enum TSftpBug { sbSymlink, sbSignedTS };
 #define SFTP_BUG_COUNT (sbSignedTS+1)
 enum TPingType { ptOff, ptNullPacket, ptDummyCommand };
@@ -45,8 +45,8 @@ extern const TKex DefaultKexList[KEX_COUNT];
 extern const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][15];
 extern const std::wstring CONST_LOGIN_ANONYMOUS;
 extern const int DefaultSendBuf;
-extern const UnicodeString AnonymousUserName;
-extern const UnicodeString AnonymousPassword;
+extern const std::wstring AnonymousUserName;
+extern const std::wstring AnonymousPassword;
 //---------------------------------------------------------------------------
 class TStoredSessionList;
 //---------------------------------------------------------------------------
@@ -166,13 +166,14 @@ private:
     int FNumberOfRetries;
     bool FSslSessionReuse;
 
-    void SavePasswords(THierarchicalStorage *Storage, bool PuttyExport);
-    void Modify();
-    static std::wstring EncryptPassword(const std::wstring Password, const std::wstring Key);
-    static std::wstring DecryptPassword(const std::wstring Password, const std::wstring Key);
-    static std::wstring StronglyRecryptPassword(const std::wstring Password, const std::wstring Key);
+    void __fastcall SavePasswords(THierarchicalStorage *Storage, bool PuttyExport);
+    void __fastcall Modify();
+    void __fastcall DoLoad(THierarchicalStorage * Storage, bool & RewritePassword);
+    static std::wstring __fastcall EncryptPassword(const std::wstring Password, const std::wstring Key);
+    static std::wstring __fastcall DecryptPassword(const std::wstring Password, const std::wstring Key);
+    static std::wstring __fastcall StronglyRecryptPassword(const std::wstring Password, const std::wstring Key);
 
-    std::wstring GetInternalStorageKey();
+    std::wstring __fastcall GetInternalStorageKey();
 
 public:
     explicit TSessionData(const std::wstring aName);
@@ -198,11 +199,12 @@ public:
 
     std::wstring GetHostName() const { return FHostName; }
     size_t GetPortNumber() const { return FPortNumber; }
-    TLoginType GetLoginType() const;
-    void SetLoginType(TLoginType value);
+    TLoginType __fastcall GetLoginType() const;
+    void __fastcall SetLoginType(TLoginType value);
     std::wstring GetUserName() const { return FUserName; }
-    void SetPassword(const std::wstring value);
-    std::wstring GetPassword() const;
+    std::wstring __fastcall GetUserNameExpanded();
+    void __fastcall SetPassword(const std::wstring value);
+    std::wstring __fastcall GetPassword() const;
     bool GetPasswordless() const { return FPasswordless; }
     size_t GetPingInterval() const { return FPingInterval; }
     bool GetTryAgent() const { return FTryAgent; }
@@ -217,34 +219,36 @@ public:
     bool GetChangeUsername() const { return FChangeUsername; }
     bool GetCompression() const { return FCompression; }
     TSshProt GetSshProt() const { return FSshProt; }
-    bool GetUsesSsh();
+    bool __fastcall GetUsesSsh();
     bool GetSsh2DES() const { return FSsh2DES; }
     bool GetSshNoUserAuth() const { return FSshNoUserAuth; }
-    void SetCipher(size_t Index, TCipher value);
-    TCipher GetCipher(size_t Index) const;
-    void SetKex(size_t Index, TKex value);
-    TKex GetKex(size_t Index) const;
+    void __fastcall SetCipher(size_t Index, TCipher value);
+    TCipher __fastcall GetCipher(size_t Index) const;
+    void __fastcall SetKex(size_t Index, TKex value);
+    TKex __fastcall GetKex(size_t Index) const;
     const std::wstring GetPublicKeyFile() const { return FPublicKeyFile; }
     TProtocol GetProtocol() const { return FProtocol; }
-    void SetProtocolStr(const std::wstring value);
-    std::wstring GetProtocolStr() const;
+    void __fastcall SetProtocolStr(const std::wstring value);
+    std::wstring __fastcall GetProtocolStr() const;
     TFSProtocol GetFSProtocol() const { return FFSProtocol; }
-    std::wstring GetFSProtocolStr();
+    std::wstring __fastcall GetFSProtocolStr();
     bool GetModified() const { return FModified; }
-    void SetModified(bool value) { FModified = value; }
-    bool GetCanLogin();
+    void __fastcall SetModified(bool value) { FModified = value; }
+    bool __fastcall GetCanLogin();
     bool GetClearAliases() const { return FClearAliases; }
-    void SetPingIntervalDT(nb::TDateTime value);
-    nb::TDateTime GetPingIntervalDT() const;
-    nb::TDateTime GetTimeDifference() const { return FTimeDifference; }
+    void __fastcall SetPingIntervalDT(nb::TDateTime value);
+    nb::TDateTime __fastcall GetPingIntervalDT() const;
+    nb::TDateTime __fastcall GetTimeDifference() const { return FTimeDifference; }
     TPingType GetPingType() const { return FPingType; }
-    std::wstring GetSessionName();
-    bool HasSessionName();
-    std::wstring GetDefaultSessionName();
-    std::wstring GetSessionUrl();
-    std::wstring GetLocalDirectory() const { return FLocalDirectory; }
-    std::wstring GetRemoteDirectory() const { return FRemoteDirectory; }
-    void SetRemoteDirectory(const std::wstring value);
+    std::wstring __fastcall GetSessionName();
+    bool __fastcall HasSessionName();
+    std::wstring __fastcall GetDefaultSessionName();
+    std::wstring __fastcall GetSessionUrl();
+    std::wstring __fastcall GetLocalDirectory() const { return FLocalDirectory; }
+    std::wstring __fastcall GetRemoteDirectory() const { return FRemoteDirectory; }
+    void __fastcall SetRemoteDirectory(const std::wstring value);
+	bool __fastcall GetSynchronizeBrowsing() const { return FSynchronizeBrowsing; }
+    void __fastcall SetSynchronizeBrowsing(bool value);
     bool GetUpdateDirectories() const { return FUpdateDirectories; }
     bool GetCacheDirectories() const { return FCacheDirectories; }
     bool GetCacheDirectoryChanges() const { return FCacheDirectoryChanges; }
@@ -252,12 +256,12 @@ public:
     bool GetLockInHome() const { return FLockInHome; }
     bool GetSpecial() const { return FSpecial; }
     bool GetSelected() const { return FSelected; }
-    void SetSelected(bool value) { FSelected = value; }
-    std::wstring GetInfoTip();
-    bool GetDefaultShell();
-    void SetDefaultShell(bool value);
-    void SetDetectReturnVar(bool value);
-    bool GetDetectReturnVar();
+    void __fastcall SetSelected(bool value) { FSelected = value; }
+    std::wstring __fastcall GetInfoTip();
+    bool __fastcall GetDefaultShell();
+    void __fastcall SetDefaultShell(bool value);
+    void __fastcall SetDetectReturnVar(bool value);
+    bool __fastcall GetDetectReturnVar();
     TEOLType GetEOLType() const { return FEOLType; }
     bool GetLookupUserGroups() const { return FLookupUserGroups; }
     std::wstring GetReturnVar() const { return FReturnVar; }
@@ -265,178 +269,183 @@ public:
     std::wstring GetShell() const { return FShell; }
     std::wstring GetSftpServer() const { return FSftpServer; }
     int GetTimeout() const { return FTimeout; }
-    nb::TDateTime GetTimeoutDT();
+    nb::TDateTime __fastcall GetTimeoutDT();
     bool GetUnsetNationalVars() const { return FUnsetNationalVars; }
     bool GetIgnoreLsWarnings() const { return FIgnoreLsWarnings; }
     bool GetTcpNoDelay() const { return FTcpNoDelay; }
-    std::wstring GetSshProtStr();
-    void SetCipherList(const std::wstring value);
-    std::wstring GetCipherList() const;
-    void SetKexList(const std::wstring value);
-    std::wstring GetKexList() const;
-    TProxyMethod GetProxyMethod() const { return FProxyMethod; }
-    std::wstring GetProxyHost() const { return FProxyHost; }
-    int GetProxyPort() const { return FProxyPort; }
-    std::wstring GetProxyUsername() const { return FProxyUsername; }
-    std::wstring GetProxyPassword() const;
-    void SetProxyPassword(const std::wstring value);
-    std::wstring GetProxyTelnetCommand() const { return FProxyTelnetCommand; }
-    std::wstring GetProxyLocalCommand() const { return FProxyLocalCommand; }
-    TAutoSwitch GetProxyDNS() const { return FProxyDNS; }
-    bool GetProxyLocalhost() const { return FProxyLocalhost; }
-    size_t GetFtpProxyLogonType() const { return FFtpProxyLogonType; }
-    void SetBug(TSshBug Bug, TAutoSwitch value);
-    TAutoSwitch GetBug(TSshBug Bug) const;
-    std::wstring GetCustomParam1() const { return FCustomParam1; }
-    std::wstring GetCustomParam2() const { return FCustomParam2; }
-    std::wstring GetSessionKey();
-    bool GetResolveSymlinks() const { return FResolveSymlinks; }
-    size_t GetSFTPDownloadQueue() const { return FSFTPDownloadQueue; }
-    void SetSFTPDownloadQueue(size_t value);
-    size_t GetSFTPUploadQueue() const { return FSFTPUploadQueue; }
-    void SetSFTPUploadQueue(size_t value);
-    size_t GetSFTPListingQueue() const { return FSFTPListingQueue; }
-    void SetSFTPListingQueue(size_t value);
-    size_t GetSFTPMaxVersion() const { return FSFTPMaxVersion; }
-    size_t GetSFTPMinPacketSize() const { return FSFTPMinPacketSize; }
-    size_t GetSFTPMaxPacketSize() const { return FSFTPMaxPacketSize; }
-    void SetSFTPBug(TSftpBug Bug, TAutoSwitch value);
-    TAutoSwitch GetSFTPBug(TSftpBug Bug) const;
-    TAutoSwitch GetSCPLsFullTime() const { return FSCPLsFullTime; }
-    TAutoSwitch GetFtpListAll() const { return FFtpListAll; }
-    TDSTMode GetDSTMode() const { return FDSTMode; }
-    bool GetDeleteToRecycleBin() const { return FDeleteToRecycleBin; }
-    bool GetOverwrittenToRecycleBin() const { return FOverwrittenToRecycleBin; }
-    std::wstring GetRecycleBinPath() const { return FRecycleBinPath; }
-    std::wstring GetPostLoginCommands() const { return FPostLoginCommands; }
-    TAddressFamily GetAddressFamily() const { return FAddressFamily; }
-    std::wstring GetCodePage() const { return FCodePage; }
-    unsigned int GetCodePageAsNumber() const;
-    std::wstring GetRekeyData() const { return FRekeyData; }
-    unsigned int GetRekeyTime() const { return FRekeyTime; }
-    int GetColor() const { return FColor; }
-    bool GetTunnel() const { return FTunnel; }
-    void SetTunnel(bool value);
-    std::wstring GetTunnelHostName() const { return FTunnelHostName; }
-    size_t GetTunnelPortNumber() const { return FTunnelPortNumber; }
-    std::wstring GetTunnelUserName() const { return FTunnelUserName; }
-    void SetTunnelPassword(const std::wstring value);
-    std::wstring GetTunnelPassword();
-    std::wstring GetTunnelPublicKeyFile() const { return FTunnelPublicKeyFile; }
-    bool GetTunnelAutoassignLocalPortNumber();
-    size_t GetTunnelLocalPortNumber() const { return FTunnelLocalPortNumber; }
-    std::wstring GetTunnelPortFwd() const { return FTunnelPortFwd; }
-    void SetTunnelPortFwd(const std::wstring value);
-    bool GetFtpPasvMode() const { return FFtpPasvMode; }
-    bool GetFtpAllowEmptyPassword() const { return FFtpAllowEmptyPassword; }
-    void SetFtpAllowEmptyPassword(bool value);
-    TFtpEncryptionSwitch GetFtpEncryption() const { return FFtpEncryption; }
-    void SetFtpEncryption(TFtpEncryptionSwitch value);
-    bool GetFtpForcePasvIp() const { return FFtpForcePasvIp; }
-    std::wstring GetFtpAccount() const { return FFtpAccount; }
-    size_t GetFtpPingInterval() const { return FFtpPingInterval; }
-    nb::TDateTime GetFtpPingIntervalDT();
-    TPingType GetFtpPingType() const { return FFtpPingType; }
-    TFtps GetFtps() const { return FFtps; }
-    TAutoSwitch GetNotUtf() const { return FNotUtf; }
-    std::wstring GetHostKey() const { return FHostKey; }
-    std::wstring GetStorageKey();
-    std::wstring GetOrigHostName() const { return FOrigHostName; }
-    int GetOrigPortNumber() const { return FOrigPortNumber; }
-    std::wstring GetLocalName();
-    std::wstring GetSource();
+    int __fastcall GetSendBuf() const { return FSendBuf; }
+    void __fastcall SetSendBuf(int value);
+    bool __fastcall GetSshSimple() const { return FSshSimple; }
+    void __fastcall SetSshSimple(bool value);
+    std::wstring __fastcall GetSshProtStr();
+    void __fastcall SetCipherList(const std::wstring value);
+    std::wstring __fastcall GetCipherList() const;
+    void __fastcall SetKexList(const std::wstring value);
+    std::wstring __fastcall GetKexList() const;
+    TProxyMethod __fastcall GetProxyMethod() const { return FProxyMethod; }
+    std::wstring __fastcall GetProxyHost() const { return FProxyHost; }
+    int __fastcall GetProxyPort() const { return FProxyPort; }
+    std::wstring __fastcall GetProxyUsername() const { return FProxyUsername; }
+    std::wstring __fastcall GetProxyPassword() const;
+    void __fastcall __fastcall SetProxyPassword(const std::wstring value);
+    std::wstring __fastcall GetProxyTelnetCommand() const { return FProxyTelnetCommand; }
+    std::wstring __fastcall GetProxyLocalCommand() const { return FProxyLocalCommand; }
+    TAutoSwitch __fastcall GetProxyDNS() const { return FProxyDNS; }
+    bool __fastcall GetProxyLocalhost() const { return FProxyLocalhost; }
+    size_t __fastcall GetFtpProxyLogonType() const { return FFtpProxyLogonType; }
+    void __fastcall SetBug(TSshBug Bug, TAutoSwitch value);
+    TAutoSwitch __fastcall GetBug(TSshBug Bug) const;
+    std::wstring __fastcall GetCustomParam1() const { return FCustomParam1; }
+    std::wstring __fastcall GetCustomParam2() const { return FCustomParam2; }
+    std::wstring __fastcall GetSessionKey();
+    bool __fastcall GetResolveSymlinks() const { return FResolveSymlinks; }
+    size_t __fastcall GetSFTPDownloadQueue() const { return FSFTPDownloadQueue; }
+    void __fastcall SetSFTPDownloadQueue(size_t value);
+    size_t __fastcall GetSFTPUploadQueue() const { return FSFTPUploadQueue; }
+    void __fastcall SetSFTPUploadQueue(size_t value);
+    size_t __fastcall GetSFTPListingQueue() const { return FSFTPListingQueue; }
+    void __fastcall SetSFTPListingQueue(size_t value);
+    size_t __fastcall GetSFTPMaxVersion() const { return FSFTPMaxVersion; }
+    size_t __fastcall GetSFTPMinPacketSize() const { return FSFTPMinPacketSize; }
+    size_t __fastcall GetSFTPMaxPacketSize() const { return FSFTPMaxPacketSize; }
+    void __fastcall SetSFTPBug(TSftpBug Bug, TAutoSwitch value);
+    TAutoSwitch __fastcall GetSFTPBug(TSftpBug Bug) const;
+    TAutoSwitch __fastcall GetSCPLsFullTime() const { return FSCPLsFullTime; }
+    TAutoSwitch __fastcall GetFtpListAll() const { return FFtpListAll; }
+    TDSTMode __fastcall GetDSTMode() const { return FDSTMode; }
+    bool __fastcall GetDeleteToRecycleBin() const { return FDeleteToRecycleBin; }
+    bool __fastcall GetOverwrittenToRecycleBin() const { return FOverwrittenToRecycleBin; }
+    std::wstring __fastcall GetRecycleBinPath() const { return FRecycleBinPath; }
+    std::wstring __fastcall GetPostLoginCommands() const { return FPostLoginCommands; }
+    TAddressFamily __fastcall GetAddressFamily() const { return FAddressFamily; }
+    std::wstring __fastcall GetCodePage() const { return FCodePage; }
+    unsigned int __fastcall GetCodePageAsNumber() const;
+    std::wstring __fastcall GetRekeyData() const { return FRekeyData; }
+    unsigned int __fastcall GetRekeyTime() const { return FRekeyTime; }
+    int __fastcall GetColor() const { return FColor; }
+    bool __fastcall GetTunnel() const { return FTunnel; }
+    void __fastcall SetTunnel(bool value);
+    std::wstring __fastcall GetTunnelHostName() const { return FTunnelHostName; }
+    size_t __fastcall GetTunnelPortNumber() const { return FTunnelPortNumber; }
+    std::wstring __fastcall GetTunnelUserName() const { return FTunnelUserName; }
+    void __fastcall SetTunnelPassword(const std::wstring value);
+    std::wstring __fastcall GetTunnelPassword();
+    std::wstring __fastcall GetTunnelPublicKeyFile() const { return FTunnelPublicKeyFile; }
+    bool __fastcall GetTunnelAutoassignLocalPortNumber();
+    size_t __fastcall GetTunnelLocalPortNumber() const { return FTunnelLocalPortNumber; }
+    std::wstring __fastcall GetTunnelPortFwd() const { return FTunnelPortFwd; }
+    void __fastcall SetTunnelPortFwd(const std::wstring value);
+    bool __fastcall GetFtpPasvMode() const { return FFtpPasvMode; }
+    bool __fastcall GetFtpAllowEmptyPassword() const { return FFtpAllowEmptyPassword; }
+    void __fastcall SetFtpAllowEmptyPassword(bool value);
+    TFtpEncryptionSwitch __fastcall GetFtpEncryption() const { return FFtpEncryption; }
+    void __fastcall SetFtpEncryption(TFtpEncryptionSwitch value);
+    bool __fastcall GetFtpForcePasvIp() const { return FFtpForcePasvIp; }
+    std::wstring __fastcall GetFtpAccount() const { return FFtpAccount; }
+    size_t __fastcall GetFtpPingInterval() const { return FFtpPingInterval; }
+    nb::TDateTime __fastcall GetFtpPingIntervalDT();
+    TPingType __fastcall GetFtpPingType() const { return FFtpPingType; }
+    TFtps __fastcall GetFtps() const { return FFtps; }
+    TAutoSwitch __fastcall GetNotUtf() const { return FNotUtf; }
+    std::wstring __fastcall GetHostKey() const { return FHostKey; }
+    std::wstring __fastcall GetStorageKey();
+    std::wstring __fastcall GetOrigHostName() const { return FOrigHostName; }
+    int __fastcall GetOrigPortNumber() const { return FOrigPortNumber; }
+    std::wstring __fastcall GetLocalName();
+    std::wstring __fastcall GetSource();
 
-    void SetHostName(const std::wstring value);
-    void SetPortNumber(size_t value);
-    void SetUserName(const std::wstring value);
-    void SetPasswordless(bool value);
-    void SetPingInterval(size_t value);
-    void SetTryAgent(bool value);
-    void SetAgentFwd(bool value);
-    void SetAuthTIS(bool value);
-    void SetAuthKI(bool value);
-    void SetAuthKIPassword(bool value);
-    void SetAuthGSSAPI(bool value);
-    void SetGSSAPIFwdTGT(bool value);
-    void SetGSSAPIServerRealm(const std::wstring value);
-    void SetChangeUsername(bool value);
-    void SetCompression(bool value);
-    void SetSshProt(TSshProt value);
-    void SetSsh2DES(bool value);
-    void SetSshNoUserAuth(bool value);
-    void SetPublicKeyFile(const std::wstring value);
+    void __fastcall SetHostName(const std::wstring value);
+    std::wstring __fastcall GetHostNameExpanded();
+    void __fastcall SetPortNumber(size_t value);
+    void __fastcall SetUserName(const std::wstring value);
+    void __fastcall SetPasswordless(bool value);
+    void __fastcall SetPingInterval(size_t value);
+    void __fastcall SetTryAgent(bool value);
+    void __fastcall SetAgentFwd(bool value);
+    void __fastcall SetAuthTIS(bool value);
+    void __fastcall SetAuthKI(bool value);
+    void __fastcall SetAuthKIPassword(bool value);
+    void __fastcall SetAuthGSSAPI(bool value);
+    void __fastcall SetGSSAPIFwdTGT(bool value);
+    void __fastcall SetGSSAPIServerRealm(const std::wstring value);
+    void __fastcall SetChangeUsername(bool value);
+    void __fastcall SetCompression(bool value);
+    void __fastcall SetSshProt(TSshProt value);
+    void __fastcall SetSsh2DES(bool value);
+    void __fastcall SetSshNoUserAuth(bool value);
+    void __fastcall SetPublicKeyFile(const std::wstring value);
 
-    void SetTimeDifference(nb::TDateTime value);
-    void SetPingType(TPingType value);
-    void SetProtocol(TProtocol value);
-    void SetFSProtocol(TFSProtocol value);
-    void SetLocalDirectory(const std::wstring value);
-    void SetUpdateDirectories(bool value);
-    void SetCacheDirectories(bool value);
-    void SetCacheDirectoryChanges(bool value);
-    void SetPreserveDirectoryChanges(bool value);
-    void SetLockInHome(bool value);
-    void SetSpecial(bool value);
-    void SetListingCommand(const std::wstring value);
-    void SetClearAliases(bool value);
-    void SetEOLType(TEOLType value);
-    void SetLookupUserGroups(bool value);
-    void SetReturnVar(const std::wstring value);
-    void SetScp1Compatibility(bool value);
-    void SetShell(const std::wstring value);
-    void SetSftpServer(const std::wstring value);
-    void SetTimeout(int value);
-    void SetUnsetNationalVars(bool value);
-    void SetIgnoreLsWarnings(bool value);
-    void SetTcpNoDelay(bool value);
-    void SetProxyMethod(TProxyMethod value);
-    void SetProxyHost(const std::wstring value);
-    void SetProxyPort(int value);
-    void SetProxyUsername(const std::wstring value);
-    void SetProxyTelnetCommand(const std::wstring value);
-    void SetProxyLocalCommand(const std::wstring value);
-    void SetProxyDNS(TAutoSwitch value);
-    void SetProxyLocalhost(bool value);
-    void SetFtpProxyLogonType(size_t value);
-    void SetCustomParam1(const std::wstring value);
-    void SetCustomParam2(const std::wstring value);
-    void SetResolveSymlinks(bool value);
-    void SetSFTPMaxVersion(size_t value);
-    void SetSFTPMinPacketSize(size_t value);
-    void SetSFTPMaxPacketSize(size_t value);
-    void SetSCPLsFullTime(TAutoSwitch value);
-    void SetFtpListAll(TAutoSwitch value);
-    void SetDSTMode(TDSTMode value);
-    void SetDeleteToRecycleBin(bool value);
-    void SetOverwrittenToRecycleBin(bool value);
-    void SetRecycleBinPath(const std::wstring value);
-    void SetPostLoginCommands(const std::wstring value);
-    void SetAddressFamily(TAddressFamily value);
-    void SetCodePage(const std::wstring value);
-    void SetRekeyData(const std::wstring value);
-    void SetRekeyTime(unsigned int value);
-    void SetColor(int value);
-    void SetTunnelHostName(const std::wstring value);
-    void SetTunnelPortNumber(size_t value);
-    void SetTunnelUserName(const std::wstring value);
-    void SetTunnelPublicKeyFile(const std::wstring value);
-    void SetTunnelLocalPortNumber(size_t value);
-    void SetFtpPasvMode(bool value);
-    void SetFtpForcePasvIp(bool value);
-    void SetFtpAccount(const std::wstring value);
-    void SetFtpPingInterval(size_t value);
-    void SetFtpPingType(TPingType value);
-    void SetFtps(TFtps value);
-    void SetNotUtf(TAutoSwitch value);
-    void SetHostKey(const std::wstring value);
+    void __fastcall SetTimeDifference(nb::TDateTime value);
+    void __fastcall SetPingType(TPingType value);
+    void __fastcall SetProtocol(TProtocol value);
+    void __fastcall SetFSProtocol(TFSProtocol value);
+    void __fastcall SetLocalDirectory(const std::wstring value);
+    void __fastcall SetUpdateDirectories(bool value);
+    void __fastcall SetCacheDirectories(bool value);
+    void __fastcall SetCacheDirectoryChanges(bool value);
+    void __fastcall SetPreserveDirectoryChanges(bool value);
+    void __fastcall SetLockInHome(bool value);
+    void __fastcall SetSpecial(bool value);
+    void __fastcall SetListingCommand(const std::wstring value);
+    void __fastcall SetClearAliases(bool value);
+    void __fastcall SetEOLType(TEOLType value);
+    void __fastcall SetLookupUserGroups(bool value);
+    void __fastcall SetReturnVar(const std::wstring value);
+    void __fastcall SetScp1Compatibility(bool value);
+    void __fastcall SetShell(const std::wstring value);
+    void __fastcall SetSftpServer(const std::wstring value);
+    void __fastcall SetTimeout(int value);
+    void __fastcall SetUnsetNationalVars(bool value);
+    void __fastcall SetIgnoreLsWarnings(bool value);
+    void __fastcall SetTcpNoDelay(bool value);
+    void __fastcall SetProxyMethod(TProxyMethod value);
+    void __fastcall SetProxyHost(const std::wstring value);
+    void __fastcall SetProxyPort(int value);
+    void __fastcall SetProxyUsername(const std::wstring value);
+    void __fastcall SetProxyTelnetCommand(const std::wstring value);
+    void __fastcall SetProxyLocalCommand(const std::wstring value);
+    void __fastcall SetProxyDNS(TAutoSwitch value);
+    void __fastcall SetProxyLocalhost(bool value);
+    void __fastcall SetFtpProxyLogonType(size_t value);
+    void __fastcall SetCustomParam1(const std::wstring value);
+    void __fastcall SetCustomParam2(const std::wstring value);
+    void __fastcall SetResolveSymlinks(bool value);
+    void __fastcall SetSFTPMaxVersion(size_t value);
+    void __fastcall SetSFTPMinPacketSize(size_t value);
+    void __fastcall SetSFTPMaxPacketSize(size_t value);
+    void __fastcall SetSCPLsFullTime(TAutoSwitch value);
+    void __fastcall SetFtpListAll(TAutoSwitch value);
+    void __fastcall SetDSTMode(TDSTMode value);
+    void __fastcall SetDeleteToRecycleBin(bool value);
+    void __fastcall SetOverwrittenToRecycleBin(bool value);
+    void __fastcall SetRecycleBinPath(const std::wstring value);
+    void __fastcall SetPostLoginCommands(const std::wstring value);
+    void __fastcall SetAddressFamily(TAddressFamily value);
+    void __fastcall SetCodePage(const std::wstring value);
+    void __fastcall SetRekeyData(const std::wstring value);
+    void __fastcall SetRekeyTime(unsigned int value);
+    void __fastcall SetColor(int value);
+    void __fastcall SetTunnelHostName(const std::wstring value);
+    void __fastcall SetTunnelPortNumber(size_t value);
+    void __fastcall SetTunnelUserName(const std::wstring value);
+    void __fastcall SetTunnelPublicKeyFile(const std::wstring value);
+    void __fastcall SetTunnelLocalPortNumber(size_t value);
+    void __fastcall SetFtpPasvMode(bool value);
+    void __fastcall SetFtpForcePasvIp(bool value);
+    void __fastcall SetFtpAccount(const std::wstring value);
+    void __fastcall SetFtpPingInterval(size_t value);
+    void __fastcall SetFtpPingType(TPingType value);
+    void __fastcall SetFtps(TFtps value);
+    void __fastcall SetNotUtf(TAutoSwitch value);
+    void __fastcall SetHostKey(const std::wstring value);
 
-    int GetNumberOfRetries() const { return FNumberOfRetries; }
-    void SetNumberOfRetries(int value) { FNumberOfRetries = value; }
-    bool GetSslSessionReuse() const { return FSslSessionReuse; }
-    void SetSslSessionReuse(bool value);
+    int __fastcall GetNumberOfRetries() const { return FNumberOfRetries; }
+    void __fastcall SetNumberOfRetries(int value) { FNumberOfRetries = value; }
+    bool __fastcall GetSslSessionReuse() const { return FSslSessionReuse; }
+    void __fastcall SetSslSessionReuse(bool value);
 private:
-    void AdjustHostName(std::wstring &hostName, const std::wstring prefix);
-    void RemoveProtocolPrefix(std::wstring &hostName);
+    void __fastcall AdjustHostName(std::wstring &hostName, const std::wstring prefix);
+    void __fastcall RemoveProtocolPrefix(std::wstring &hostName);
 };
 //---------------------------------------------------------------------------
 class TStoredSessionList : public TNamedObjectList
@@ -465,14 +474,13 @@ public:
     TSessionData * __fastcall GetDefaultSettings() const { return FDefaultSettings; }
     void __fastcall SetDefaultSettings(TSessionData *value);
 
-    static void ImportHostKeys(const std::wstring TargetKey,
+    static void __fastcall ImportHostKeys(const std::wstring TargetKey,
                                const std::wstring SourceKey, TStoredSessionList *Sessions,
                                bool OnlySelected);
 
 private:
     TSessionData *FDefaultSettings;
     bool FReadOnly;
-    void __fastcall SetDefaultSettings(TSessionData * value);
     void __fastcall DoSave(THierarchicalStorage *Storage, bool All, bool RecryptPasswordOnly);
     void __fastcall DoSave(bool All, bool Explicit, bool RecryptPasswordOnly);
     void __fastcall DoSave(THierarchicalStorage *Storage,

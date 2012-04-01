@@ -50,7 +50,7 @@ public:
     void Delete(TBookmark *Bookmark);
     TBookmark *FindByName(const std::wstring Node, const std::wstring Name);
     TBookmark *FindByShortCut(nb::TShortCut ShortCut);
-    virtual void Assign(nb::TPersistent *Source);
+    virtual void __fastcall Assign(nb::TPersistent *Source);
     void LoadOptions(THierarchicalStorage *Storage);
     void SaveOptions(THierarchicalStorage *Storage);
     void ShortCuts(TShortCuts &ShortCuts);
@@ -79,7 +79,7 @@ class TBookmark : public nb::TPersistent
 public:
     TBookmark();
 
-    virtual void Assign(nb::TPersistent *Source);
+    virtual void __fastcall Assign(nb::TPersistent *Source);
 
     std::wstring GetName() { return FName; }
     void SetName(const std::wstring value);

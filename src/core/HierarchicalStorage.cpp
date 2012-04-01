@@ -622,3 +622,9 @@ int TRegistryStorage::GetFailed()
     FFailed = 0;
     return Result;
 }
+
+//===========================================================================
+TOptionsStorage::TOptionsStorage(nb::TStrings * Options) :
+  TCustomIniFileStorage(std::wstring(L"Command-line options"), new TOptionsIniFile(Options))
+{
+}

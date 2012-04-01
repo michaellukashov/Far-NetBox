@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------
-#ifdef _MSC_VER
+#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
 #endif
@@ -94,7 +94,7 @@ TSessionData::TSessionData(const std::wstring aName):
     FModified = true;
 }
 //---------------------------------------------------------------------
-__fastcall void TSessionData::Default()
+void __fastcall TSessionData::Default()
 {
     SetHostName(L"");
     SetPortNumber(SshPortNumber);
@@ -154,7 +154,7 @@ __fastcall void TSessionData::Default()
     SetAddressFamily(afAuto);
     SetCodePage(::GetCodePageAsString(CONST_DEFAULT_CODEPAGE));
     SetRekeyData(L"1G");
-    SetRekeyTime(MinsPerHour);
+    SetRekeyTime(nb::MinsPerHour);
 
     // FS common
     SetLocalDirectory(L"");
@@ -391,9 +391,8 @@ void __fastcall TSessionData::Assign(nb::TPersistent *Source)
     }
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::Load(THierarchicalStorage *Storage)
+void __fastcall TSessionData::DoLoad(THierarchicalStorage *Storage, bool & RewritePassword)
 {
-    bool RewritePassword = false;
     if (Storage->OpenSubKey(GetInternalStorageKey(), false))
     {
         SetPortNumber(Storage->Readint(L"PortNumber", GetPortNumber()));
@@ -473,7 +472,7 @@ void __fastcall TSessionData::Load(THierarchicalStorage *Storage)
         SetFSProtocol(static_cast<TFSProtocol>(Storage->Readint(L"FSProtocol", GetFSProtocol())));
         SetLocalDirectory(Storage->ReadString(L"LocalDirectory", GetLocalDirectory()));
         SetRemoteDirectory(Storage->ReadString(L"RemoteDirectory", GetRemoteDirectory()));
-        SetSynchronizeBrowsing(Storage->Readbool(L"SynchronizeBrowsing", SynchronizeBrowsing));
+        SetSynchronizeBrowsing(Storage->Readbool(L"SynchronizeBrowsing", GetSynchronizeBrowsing()));
         SetUpdateDirectories(Storage->Readbool(L"UpdateDirectories", GetUpdateDirectories()));
         SetCacheDirectories(Storage->Readbool(L"CacheDirectories", GetCacheDirectories()));
         SetCacheDirectoryChanges(Storage->Readbool(L"CacheDirectoryChanges", GetCacheDirectoryChanges()));
@@ -504,7 +503,7 @@ void __fastcall TSessionData::Load(THierarchicalStorage *Storage)
         SetNotUtf(static_cast<TAutoSwitch>(Storage->Readint(L"Utf", Storage->Readint(L"SFTPUtfBug", GetNotUtf()))));
 
         SetTcpNoDelay(Storage->Readbool(L"TcpNoDelay", GetTcpNoDelay()));
-        SetSendBuf(Storage->Readint(L"SendBuf", Storage->ReadInteger("SshSendBuf", GetSendBuf())));
+        SetSendBuf(Storage->Readint(L"SendBuf", Storage->Readint(L"SshSendBuf", GetSendBuf())));
         SetSshSimple(Storage->Readbool(L"SshSimple", GetSshSimple()));
 
         SetProxyMethod(static_cast<TProxyMethod>(Storage->Readint(L"ProxyMethod", -1)));
@@ -635,7 +634,7 @@ void __fastcall TSessionData::Load(THierarchicalStorage *Storage)
 void __fastcall TSessionData::Load(THierarchicalStorage * Storage)
 {
     bool RewritePassword = false;
-    if (Storage->OpenSubKey(InternalStorageKey, False))
+    if (Storage->OpenSubKey(GetInternalStorageKey(), false))
     {
         DoLoad(Storage, RewritePassword);
 
@@ -1126,7 +1125,7 @@ bool __fastcall TSessionData::ParseUrl(const std::wstring Url, TOptions *Options
             {
                 assert(P < url.size());
                 P++;
-                assert(P < Url.Length());
+                assert(P < Url.size());
             }
             ARemoteDirectory = url.substr(P, url.size() - P);
 
@@ -1277,24 +1276,21 @@ bool __fastcall TSessionData::ParseUrl(const std::wstring Url, TOptions *Options
         }
         if (Options->FindSwitch(L"rawsettings"))
         {
-            TStrings * RawSettings = NULL;
+            nb::TStrings * RawSettings = NULL;
             TOptionsStorage * OptionsStorage = NULL;
-            try
+            BOOST_SCOPE_EXIT ( (&RawSettings) (&OptionsStorage) )
             {
-                RawSettings = new TStringList();
-
-                if (Options->FindSwitch(L"rawsettings", RawSettings))
-                {
-                    OptionsStorage = new TOptionsStorage(RawSettings);
-
-                    bool Dummy;
-                   DoLoad(OptionsStorage, Dummy);
-                }
-             }
-            __finally
-           {
                 delete RawSettings;
                 delete OptionsStorage;
+            } BOOST_SCOPE_EXIT_END
+            RawSettings = new nb::TStringList();
+
+            if (Options->FindSwitch(L"rawsettings", RawSettings))
+            {
+                OptionsStorage = new TOptionsStorage(RawSettings);
+
+                bool Dummy;
+               DoLoad(OptionsStorage, Dummy);
             }
         }
         if (Options->FindSwitch(L"allowemptypassword", Value))
@@ -1429,10 +1425,12 @@ void __fastcall TSessionData::SetHostName(const std::wstring value)
             memset(const_cast<wchar_t *>(XPassword.c_str()), 0, XPassword.size() * sizeof(wchar_t));
         }
     }
+}
+
 //---------------------------------------------------------------------
 std::wstring __fastcall TSessionData::GetHostNameExpanded()
 {
-  return ::ExpandEnvironmentVariables(HostName);
+  return ::ExpandEnvironmentVariables(GetHostName());
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionData::SetPortNumber(size_t value)
@@ -1468,19 +1466,6 @@ void __fastcall TSessionData::SetIgnoreLsWarnings(bool value)
 void __fastcall TSessionData::SetUnsetNationalVars(bool value)
 {
     SET_SESSION_PROPERTY(UnsetNationalVars);
-}
-//---------------------------------------------------------------------
-void __fastcall TSessionData::SetUserName(std::wstring value)
-{
-  // UserName is key for password encryption
-  std::wstring XPassword = Password;
-  SET_SESSION_PROPERTY(UserName);
-  Password = XPassword;
-  if (!XPassword.IsEmpty())
-  {
-    XPassword.Unique();
-    memset(XPassword.c_str(), 0, XPassword.Length() * sizeof(*XPassword.c_str()));
-  }
 }
 //---------------------------------------------------------------------
 std::wstring __fastcall TSessionData::GetUserNameExpanded()
@@ -2156,11 +2141,6 @@ void __fastcall TSessionData::SetSslSessionReuse(bool value)
 void __fastcall TSessionData::SetSFTPDownloadQueue(size_t value)
 {
     SET_SESSION_PROPERTY(SFTPDownloadQueue);
-}
-//---------------------------------------------------------------------
-void __fastcall TSessionData::SetSFTPDownloadQueue(int value)
-{
-  SET_SESSION_PROPERTY(SFTPDownloadQueue);
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionData::SetSFTPUploadQueue(size_t value)

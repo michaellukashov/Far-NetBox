@@ -70,7 +70,7 @@ TPersistent::TPersistent()
 TPersistent::~TPersistent()
 {}
 
-void TPersistent::Assign(TPersistent *Source)
+void __fastcall TPersistent::Assign(TPersistent *Source)
 {
     if (Source != NULL)
     {
@@ -82,17 +82,17 @@ void TPersistent::Assign(TPersistent *Source)
     }
 }
 
-void TPersistent::AssignTo(TPersistent *Dest)
+void __fastcall TPersistent::AssignTo(TPersistent *Dest)
 {
     Dest->AssignError(this);
 }
 
-TPersistent *TPersistent::GetOwner()
+TPersistent * __fastcall TPersistent::GetOwner()
 {
     return NULL;
 }
 
-void TPersistent::AssignError(TPersistent *Source)
+void __fastcall TPersistent::AssignError(TPersistent *Source)
 {
     (void)Source;
     std::wstring SourceName = L"nil";
@@ -335,6 +335,7 @@ void TObjectList::Notify(void *Ptr, int Action)
 }
 //---------------------------------------------------------------------------
 const std::wstring sLineBreak = L"\n";
+const int MinsPerHour = 60;
 static const int MemoryDelta = 0x2000;
 //---------------------------------------------------------------------------
 

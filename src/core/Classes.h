@@ -30,6 +30,7 @@ namespace nb {
 
 //---------------------------------------------------------------------------
 extern const std::wstring sLineBreak;
+extern const int MinsPerHour;
 //---------------------------------------------------------------------------
 std::wstring MB2W(const char *src, const UINT cp = CP_ACP);
 std::string W2MB(const wchar_t *src, const UINT cp = CP_ACP);
@@ -138,12 +139,12 @@ class TPersistent : public TObject
 public:
     TPersistent();
     virtual ~TPersistent();
-    virtual void Assign(TPersistent *Source);
+    virtual void __fastcall Assign(TPersistent *Source);
 protected:
-    virtual void AssignTo(TPersistent *Dest);
-    virtual TPersistent *GetOwner();
+    virtual void __fastcall AssignTo(TPersistent *Dest);
+    virtual TPersistent * __fastcall GetOwner();
 private:
-    void AssignError(TPersistent *Source);
+    void __fastcall AssignError(TPersistent *Source);
 };
 
 //---------------------------------------------------------------------------
@@ -228,53 +229,53 @@ public:
     }
     virtual ~TStrings()
     {}
-    size_t Add(const std::wstring S);
-    virtual size_t GetCount() const = 0;
-    virtual void Delete(size_t Index) = 0;
-    virtual std::wstring GetString(size_t Index) const = 0;
-    virtual std::wstring GetText();
-    virtual std::wstring GetTextStr();
-    virtual void SetText(const std::wstring Text);
-    virtual void SetTextStr(const std::wstring Text);
-    void SetCommaText(const std::wstring Value);
-    virtual void BeginUpdate();
-    virtual void EndUpdate();
-    virtual void SetUpdateState(bool Updating);
-    virtual TObject *GetObject(size_t Index);
-    size_t AddObject(const std::wstring S, TObject *AObject);
-    virtual void InsertObject(size_t Index, const std::wstring Key, TObject *AObject);
-    bool Equals(TStrings *value);
-    virtual void Clear() = 0;
-    virtual void PutObject(size_t Index, TObject *AObject);
-    virtual void PutString(size_t Index, const std::wstring S);
-    void SetDuplicates(TDuplicatesEnum value);
-    void Move(size_t CurIndex, size_t NewIndex);
-    size_t IndexOf(const std::wstring S);
-    virtual size_t IndexOfName(const std::wstring Name);
-    const std::wstring GetName(size_t Index);
-    std::wstring ExtractName(const std::wstring S);
-    const std::wstring GetValue(const std::wstring Name);
-    void SetValue(const std::wstring Name, const std::wstring Value);
-    std::wstring GetCommaText();
-    void AddStrings(TStrings *Strings);
-    void Append(const std::wstring value);
-    virtual void Insert(size_t Index, const std::wstring AString) = 0;
-    void SaveToStream(TStream *Stream);
-    wchar_t GetDelimiter() const { return FDelimiter; }
-    void SetDelimiter(wchar_t value)
+    size_t __fastcall Add(const std::wstring S);
+    virtual size_t __fastcall GetCount() const = 0;
+    virtual void __fastcall Delete(size_t Index) = 0;
+    virtual std::wstring __fastcall GetString(size_t Index) const = 0;
+    virtual std::wstring __fastcall GetText();
+    virtual std::wstring __fastcall GetTextStr();
+    virtual void __fastcall SetText(const std::wstring Text);
+    virtual void __fastcall SetTextStr(const std::wstring Text);
+    void __fastcall SetCommaText(const std::wstring Value);
+    virtual void __fastcall BeginUpdate();
+    virtual void __fastcall EndUpdate();
+    virtual void __fastcall SetUpdateState(bool Updating);
+    virtual TObject * __fastcall GetObject(size_t Index);
+    size_t __fastcall AddObject(const std::wstring S, TObject *AObject);
+    virtual void __fastcall InsertObject(size_t Index, const std::wstring Key, TObject *AObject);
+    bool __fastcall Equals(TStrings *value);
+    virtual void __fastcall Clear() = 0;
+    virtual void __fastcall PutObject(size_t Index, TObject *AObject);
+    virtual void __fastcall PutString(size_t Index, const std::wstring S);
+    void __fastcall SetDuplicates(TDuplicatesEnum value);
+    void __fastcall Move(size_t CurIndex, size_t NewIndex);
+    size_t __fastcall IndexOf(const std::wstring S);
+    virtual size_t __fastcall IndexOfName(const std::wstring Name);
+    const std::wstring __fastcall GetName(size_t Index);
+    std::wstring __fastcall ExtractName(const std::wstring S);
+    const std::wstring __fastcall GetValue(const std::wstring Name);
+    void __fastcall SetValue(const std::wstring Name, const std::wstring Value);
+    std::wstring __fastcall GetCommaText();
+    void __fastcall AddStrings(TStrings *Strings);
+    void __fastcall Append(const std::wstring value);
+    virtual void __fastcall Insert(size_t Index, const std::wstring AString) = 0;
+    void __fastcall SaveToStream(TStream *Stream);
+    wchar_t __fastcall GetDelimiter() const { return FDelimiter; }
+    void __fastcall SetDelimiter(wchar_t value)
     {
         FDelimiter = value;
     }
-    wchar_t GetQuoteChar() const { return FQuoteChar; }
-    void SetQuoteChar(wchar_t value)
+    wchar_t __fastcall GetQuoteChar() const { return FQuoteChar; }
+    void __fastcall SetQuoteChar(wchar_t value)
     {
         FQuoteChar = value;
     }
-    std::wstring GetDelimitedText() const;
-    void SetDelimitedText(const std::wstring Value);
-    virtual int CompareStrings(const std::wstring S1, const std::wstring S2);
-    int GetUpdateCount() const { return FUpdateCount; }
-    void Assign(TPersistent *Source);
+    std::wstring __fastcall GetDelimitedText() const;
+    void __fastcall SetDelimitedText(const std::wstring Value);
+    virtual int __fastcall CompareStrings(const std::wstring S1, const std::wstring S2);
+    int __fastcall GetUpdateCount() const { return FUpdateCount; }
+    virtual void __fastcall Assign(TPersistent *Source);
 protected:
     TDuplicatesEnum FDuplicates;
     wchar_t FDelimiter;
@@ -299,48 +300,48 @@ class TStringList : public TStrings
 public:
     TStringList();
     virtual ~TStringList();
-    virtual void Assign(TPersistent *Source);
-    virtual size_t GetCount() const;
-    virtual void Clear();
-    size_t Add(const std::wstring S);
-    size_t AddObject(const std::wstring S, TObject *AObject);
-    virtual bool Find(const std::wstring S, size_t &Index);
-    size_t IndexOf(const std::wstring S);
-    virtual void PutString(size_t Index, const std::wstring S);
-    virtual void Delete(size_t Index);
-    virtual TObject *GetObject(size_t Index);
-    virtual void InsertObject(size_t Index, const std::wstring Key, TObject *AObject);
-    void InsertItem(size_t Index, const std::wstring S, TObject *AObject);
-    virtual std::wstring GetString(size_t Index) const;
-    bool GetCaseSensitive() const;
-    void SetCaseSensitive(bool value);
-    bool GetSorted() const;
-    void SetSorted(bool value);
-    virtual void Sort();
-    virtual void CustomSort(TStringListSortCompare CompareFunc);
-    void QuickSort(size_t L, size_t R, TStringListSortCompare SCompare);
+    virtual void __fastcall Assign(TPersistent *Source);
+    virtual size_t __fastcall GetCount() const;
+    virtual void __fastcall Clear();
+    size_t __fastcall Add(const std::wstring S);
+    size_t __fastcall AddObject(const std::wstring S, TObject *AObject);
+    virtual bool __fastcall Find(const std::wstring S, size_t &Index);
+    virtual size_t __fastcall IndexOf(const std::wstring S);
+    virtual void __fastcall PutString(size_t Index, const std::wstring S);
+    virtual void __fastcall Delete(size_t Index);
+    virtual TObject * __fastcall GetObject(size_t Index);
+    virtual void __fastcall InsertObject(size_t Index, const std::wstring Key, TObject *AObject);
+    void __fastcall InsertItem(size_t Index, const std::wstring S, TObject *AObject);
+    virtual std::wstring __fastcall GetString(size_t Index) const;
+    bool __fastcall GetCaseSensitive() const;
+    void __fastcall SetCaseSensitive(bool value);
+    bool __fastcall GetSorted() const;
+    void __fastcall SetSorted(bool value);
+    virtual void __fastcall Sort();
+    virtual void __fastcall CustomSort(TStringListSortCompare CompareFunc);
+    void __fastcall QuickSort(size_t L, size_t R, TStringListSortCompare SCompare);
 
-    void LoadFromFile(const std::wstring FileName);
-    const nb::notify_signal_type &GetOnChange() const { return FOnChange; }
-    void SetOnChange(const nb::notify_slot_type &onChange)
+    void __fastcall LoadFromFile(const std::wstring FileName);
+    const nb::notify_signal_type & __fastcall GetOnChange() const { return FOnChange; }
+    void __fastcall SetOnChange(const nb::notify_slot_type &onChange)
     {
         FOnChange.connect(onChange);
     }
-    const nb::notify_signal_type &GetOnChanging() const { return FOnChanging; }
-    void SetOnChanging(const nb::notify_slot_type &onChanging)
+    const nb::notify_signal_type & __fastcall GetOnChanging() const { return FOnChanging; }
+    void __fastcall SetOnChanging(const nb::notify_slot_type &onChanging)
     {
         FOnChanging.connect(onChanging);
     }
 
-    virtual void PutObject(size_t Index, TObject *AObject);
-    virtual void SetUpdateState(bool Updating);
-    virtual void Changing();
-    virtual void Changed();
-    virtual void Insert(size_t Index, const std::wstring S);
-    virtual int CompareStrings(const std::wstring S1, const std::wstring S2);
+    virtual void __fastcall PutObject(size_t Index, TObject *AObject);
+    virtual void __fastcall SetUpdateState(bool Updating);
+    virtual void __fastcall Changing();
+    virtual void __fastcall Changed();
+    virtual void __fastcall Insert(size_t Index, const std::wstring S);
+    virtual int __fastcall CompareStrings(const std::wstring S1, const std::wstring S2);
 
 private:
-    void ExchangeItems(size_t Index1, size_t Index2);
+    void __fastcall ExchangeItems(size_t Index1, size_t Index2);
 
 private:
     nb::notify_signal_type FOnChange;

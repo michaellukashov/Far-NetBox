@@ -263,11 +263,11 @@ public:
                      TRemoteFileList *FileList);
     void AddFileList(TRemoteFileList *FileList);
     void ClearFileList(const std::wstring Directory, bool SubDirs);
-    void Clear();
+    virtual void __fastcall Clear();
 
     bool GetIsEmpty() const;
 protected:
-    virtual void Delete(size_t Index);
+    virtual void __fastcall Delete(size_t Index);
 private:
     TCriticalSection *FSection;
     TRemoteDirectoryCache *Self;
@@ -287,7 +287,7 @@ public:
     void ClearDirectoryChangeTarget(const std::wstring TargetDir);
     bool GetDirectoryChange(const std::wstring SourceDir,
                             const std::wstring Change, std::wstring &TargetDir);
-    void Clear();
+    virtual void __fastcall Clear();
 
     void Serialize(std::wstring &Data);
     void Deserialize(const std::wstring Data);

@@ -131,6 +131,12 @@ private:
     void Init();
 };
 //---------------------------------------------------------------------------
+class TOptionsStorage : public TRegistryStorage
+{
+public:
+  explicit TOptionsStorage(nb::TStrings * Options);
+};
+//---------------------------------------------------------------------------
 std::wstring PuttyMungeStr(const std::wstring Str);
 std::wstring PuttyUnMungeStr(const std::wstring Str);
 //---------------------------------------------------------------------------

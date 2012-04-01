@@ -516,7 +516,7 @@ public:
     explicit TFarList(TFarDialogItem *ADialogItem = NULL);
     virtual ~TFarList();
 
-    virtual void Assign(nb::TPersistent *Source);
+    virtual void __fastcall Assign(nb::TPersistent *Source);
 
     size_t GetSelected();
     void SetSelected(size_t value);
@@ -532,12 +532,12 @@ public:
     void SetChecked(size_t Index, bool value) { SetFlag(Index, LIF_CHECKED, value); }
 
 protected:
-    virtual void Changed();
-    virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
-    virtual void Init();
+    virtual void __fastcall Changed();
+    virtual LONG_PTR __fastcall ItemProc(int Msg, LONG_PTR Param);
+    virtual void __fastcall Init();
     void UpdatePosition(int Position);
     int GetPosition();
-    virtual void Put(size_t Index, const std::wstring S);
+    virtual void __fastcall Put(size_t Index, const std::wstring S);
     void SetCurPos(size_t Position, size_t TopIndex);
     void UpdateItem(size_t Index);
 

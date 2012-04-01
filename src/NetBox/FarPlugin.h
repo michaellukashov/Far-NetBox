@@ -466,28 +466,28 @@ public:
     explicit TFarMenuItems();
     virtual ~TFarMenuItems()
     {}
-    void AddSeparator(bool Visible = true);
-    virtual size_t Add(const std::wstring Text, bool Visible = true);
+    void __fastcall AddSeparator(bool Visible = true);
+    virtual size_t __fastcall Add(const std::wstring Text, bool Visible = true);
 
-    virtual void Clear();
-    virtual void Delete(size_t Index);
+    virtual void __fastcall Clear();
+    virtual void __fastcall Delete(size_t Index);
 
-    size_t GetItemFocused() { return FItemFocused; }
-    void SetItemFocused(size_t value);
+    size_t __fastcall GetItemFocused() { return FItemFocused; }
+    void __fastcall SetItemFocused(size_t value);
 
-    bool GetDisabled(size_t Index) { return GetFlag(Index, MIF_DISABLE); }
-    void SetDisabled(size_t Index, bool value) { SetFlag(Index, MIF_DISABLE, value); }
-    bool GetChecked(size_t Index) { return GetFlag(Index, MIF_CHECKED); }
-    void SetChecked(size_t Index, bool value) { SetFlag(Index, MIF_CHECKED, value); }
+    bool __fastcall GetDisabled(size_t Index) { return GetFlag(Index, MIF_DISABLE); }
+    void __fastcall SetDisabled(size_t Index, bool value) { SetFlag(Index, MIF_DISABLE, value); }
+    bool __fastcall GetChecked(size_t Index) { return GetFlag(Index, MIF_CHECKED); }
+    void __fastcall SetChecked(size_t Index, bool value) { SetFlag(Index, MIF_CHECKED, value); }
 
 protected:
-    virtual void PutObject(size_t Index, nb::TObject *AObject);
+    virtual void __fastcall PutObject(size_t Index, nb::TObject *AObject);
 
 private:
     size_t FItemFocused;
 
-    void SetFlag(size_t Index, size_t Flag, bool Value);
-    bool GetFlag(size_t Index, size_t Flag);
+    void __fastcall SetFlag(size_t Index, size_t Flag, bool Value);
+    bool __fastcall GetFlag(size_t Index, size_t Flag);
 };
 //---------------------------------------------------------------------------
 class TFarEditorInfo
