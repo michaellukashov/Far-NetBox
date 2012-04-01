@@ -1,4 +1,9 @@
 //---------------------------------------------------------------------------
+#ifndef _MSC_VER
+#include <vcl.h>
+#pragma hdrstop
+#endif
+
 #include "stdafx.h"
 
 #include <stdio.h>
@@ -16,30 +21,41 @@
 #include "Exceptions.h"
 #include "TextsCore.h"
 //---------------------------------------------------------------------------
-std::wstring XmlEscape(std::wstring Str)
+#ifndef _MSC_VER
+#pragma package(smart_init)
+#endif
+//---------------------------------------------------------------------------
+std::wstring __fastcall DoXmlEscape(std::wstring Str, bool NewLine)
 {
     for (size_t i = 0; i < Str.size(); i++)
     {
         const wchar_t *Repl = NULL;
         switch (Str[i])
         {
-        case '&':
+        case L'&':
             Repl = L"amp;";
             break;
 
-        case '>':
+        case L'>':
             Repl = L"gt;";
             break;
 
-        case '<':
+        case L'<':
             Repl = L"lt;";
             break;
 
-        case '"':
+        case L'"':
             Repl = L"quot;";
             break;
 
-        case '\r':
+      case L'\n':
+        if (NewLine)
+        {
+          Repl = L"#10;";
+        }
+        break;
+
+        case L'\r':
             Str.erase(i, 1);
             i--;
             break;
@@ -52,25 +68,54 @@ std::wstring XmlEscape(std::wstring Str)
             i += wcslen(Repl);
         }
     }
-    // Str = AnsiToUtf8(Str);
     return Str;
 }
 //---------------------------------------------------------------------------
-std::wstring XmlTimestamp(const nb::TDateTime DateTime)
+std::wstring __fastcall XmlEscape(std::wstring Str)
+{
+    return DoXmlEscape(Str, false);
+}
+//---------------------------------------------------------------------------
+std::wstring __fastcall XmlAttributeEscape(std::wstring Str)
+{
+  return DoXmlEscape(Str, true);
+}
+//---------------------------------------------------------------------------
+std::wstring __fastcall XmlTimestamp(const nb::TDateTime DateTime)
 {
     return FormatDateTime(L"yyyy'-'mm'-'dd'T'hh':'nn':'ss'.'zzz'Z'", ConvertTimestampToUTC(DateTime));
 }
 //---------------------------------------------------------------------------
-std::wstring XmlTimestamp()
+std::wstring __fastcall XmlTimestamp()
 {
     return XmlTimestamp(nb::Now());
 }
 //---------------------------------------------------------------------------
-// #pragma warn -inl
+nb::TStrings * __fastcall ExceptionToMessages(const std::exception * E)
+{
+  nb::TStrings * Result = NULL;
+  std::wstring Message;
+  if (ExceptionMessage(E, Message))
+  {
+    Result = new nb::TStringList();
+    Result->Add(Message);
+    const ExtException * EE = dynamic_cast<const ExtException *>(E);
+    if ((EE != NULL) && (EE->GetMoreMessages() != NULL))
+    {
+      Result->AddStrings(EE->GetMoreMessages());
+    }
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+#ifndef _MSC_VER
+#pragma warn -inl
+#endif
 class TSessionActionRecord
 {
 public:
-    TSessionActionRecord(TSessionLog *Log, TLogAction Action) :
+    TSessionActionRecord(TActionLog *Log, TLogAction Action) :
         FLog(Log),
         FAction(Action),
         FState(Opened),
@@ -78,7 +123,8 @@ public:
         FErrorMessages(NULL),
         FNames(new nb::TStringList()),
         FValues(new nb::TStringList()),
-        FFileList(NULL)
+        FFileList(NULL),
+        FFile(NULL)
     {
         FLog->AddPendingAction(this);
     }
@@ -89,9 +135,10 @@ public:
         delete FNames;
         delete FValues;
         delete FFileList;
+    delete FFile;
     }
 
-    void Restart()
+    void __fastcall Restart()
     {
         FState = Opened;
         FRecursive = false;
@@ -99,16 +146,18 @@ public:
         FErrorMessages = NULL;
         delete FFileList;
         FFileList = NULL;
+        delete FFile;
+        FFile = NULL;
         FNames->Clear();
         FValues->Clear();
     }
 
-    bool Record()
+    bool __fastcall Record()
     {
         bool Result = (FState != Opened);
         if (Result)
         {
-            if ((FLog->FLoggingActions) && (FState != Cancelled))
+            if ((FLog->FLogging) && (FState != Cancelled))
             {
                 const wchar_t *Name = ActionName();
                 std::wstring Attrs;
@@ -116,77 +165,86 @@ public:
                 {
                     Attrs = L" recursive=\"true\"";
                 }
-                FLog->Add(llAction, FORMAT(L"  <%s%s>", Name,  Attrs.c_str()));
+                FLog->AddIndented(FORMAT(L"  <%s%s>", Name,  Attrs.c_str()));
                 for (size_t Index = 0; Index < FNames->GetCount(); Index++)
                 {
                     std::wstring Value = FValues->GetString(Index);
                     if (Value.empty())
                     {
-                        FLog->Add(llAction, FORMAT(L"    <%s />", FNames->GetString(Index).c_str()));
+                        FLog->AddIndented(FORMAT(L"    <%s />", FNames->GetString(Index).c_str()));
                     }
                     else
                     {
-                        FLog->Add(llAction, FORMAT(L"    <%s value=\"%s\" />",
+                        FLog->AddIndented(FORMAT(L"    <%s value=\"%s\" />",
                                                    FNames->GetString(Index).c_str(), XmlEscape(Value).c_str()));
                     }
                 }
                 if (FFileList != NULL)
                 {
-                    FLog->Add(llAction, L"    <files>");
+                    FLog->AddIndented(L"    <files>");
                     for (size_t Index = 0; Index < FFileList->GetCount(); Index++)
                     {
                         TRemoteFile *File = FFileList->GetFile(Index);
 
-                        FLog->Add(llAction, L"      <file>");
-                        FLog->Add(llAction, FORMAT(L"        <filename value=\"%s\" />", XmlEscape(File->GetFileName()).c_str()));
-                        FLog->Add(llAction, FORMAT(L"        <type value=\"%s\" />", XmlEscape(std::wstring(File->GetType(), 1)).c_str()));
+                        FLog->AddIndented(L"      <file>");
+                        FLog->AddIndented(FORMAT(L"        <filename value=\"%s\" />", XmlEscape(File->GetFileName()).c_str()));
+                        FLog->AddIndented(FORMAT(L"        <type value=\"%s\" />", XmlEscape(std::wstring(File->GetType(), 1)).c_str()));
                         if (!File->GetIsDirectory())
                         {
-                            FLog->Add(llAction, FORMAT(L"        <size value=\"%s\" />", Int64ToStr(File->GetSize()).c_str()));
+                            FLog->AddIndented(FORMAT(L"        <size value=\"%s\" />", Int64ToStr(File->GetSize()).c_str()));
                         }
-                        FLog->Add(llAction, FORMAT(L"        <modification value=\"%s\" />", XmlTimestamp(File->GetModification()).c_str()));
-                        FLog->Add(llAction, FORMAT(L"        <permissions value=\"%s\" />", XmlEscape(File->GetRights()->GetText()).c_str()));
-                        FLog->Add(llAction, L"      </file>");
+                        FLog->AddIndented(FORMAT(L"        <modification value=\"%s\" />", XmlTimestamp(File->GetModification()).c_str()));
+                        FLog->AddIndented(FORMAT(L"        <permissions value=\"%s\" />", XmlEscape(File->GetRights()->GetText()).c_str()));
+                        FLog->AddIndented(L"      </file>");
                     }
-                    FLog->Add(llAction, L"    </files>");
+                    FLog->AddIndented(L"    </files>");
                 }
+        if (FFile != NULL)
+        {
+          FLog->AddIndented(L"  <file>");
+          FLog->AddIndented(FORMAT(L"    <type value=\"%s\" />", XmlAttributeEscape(std::wstring(1, FFile->GetType())).c_str()));
+          if (!FFile->GetIsDirectory())
+          {
+            FLog->AddIndented(FORMAT(L"    <size value=\"%s\" />", IntToStr(FFile->GetSize()).c_str()));
+          }
+          FLog->AddIndented(FORMAT(L"    <modification value=\"%s\" />", XmlTimestamp(FFile->GetModification()).c_str()));
+          FLog->AddIndented(FORMAT(L"    <permissions value=\"%s\" />", XmlAttributeEscape(FFile->GetRights()->GetText()).c_str()));
+          FLog->AddIndented(L"  </file>");
+        }
                 if (FState == RolledBack)
                 {
                     if (FErrorMessages != NULL)
                     {
-                        FLog->Add(llAction, L"    <result success=\"false\">");
-                        for (size_t Index = 0; Index < FErrorMessages->GetCount(); Index++)
-                        {
-                            FLog->Add(llAction,
-                                      FORMAT(L"      <message>%s</message>", XmlEscape(FErrorMessages->GetString(Index).c_str()).c_str()));
-                        }
-                        FLog->Add(llAction, L"    </result>");
+                        FLog->AddIndented(L"    <result success=\"false\">");
+                        FLog->AddMessages(L"    ", FErrorMessages);
+                        FLog->AddIndented(L"    </result>");
                     }
                     else
                     {
-                        FLog->Add(llAction, L"    <result success=\"false\" />");
+                        FLog->AddIndented(L"    <result success=\"false\" />");
                     }
                 }
                 else
                 {
-                    FLog->Add(llAction, L"    <result success=\"true\" />");
+                    FLog->AddIndented(L"    <result success=\"true\" />");
                 }
-                FLog->Add(llAction, FORMAT(L"  </%s>", Name));
+                FLog->AddIndented(FORMAT(L"  </%s>", Name));
             }
             delete this;
         }
         return Result;
     }
 
-    void Commit()
+    void __fastcall Commit()
     {
         Close(Committed);
     }
 
-    void Rollback(const std::exception *E)
+    void __fastcall Rollback(const std::exception *E)
     {
         assert(FErrorMessages == NULL);
-        FErrorMessages = new nb::TStringList();
+        FErrorMessages = ExceptionToMessages(E);
+/*
         if (E->what() && *E->what())
         {
             FErrorMessages->Add(nb::MB2W(E->what()));
@@ -201,45 +259,46 @@ public:
             delete FErrorMessages;
             FErrorMessages = NULL;
         }
+*/
         Close(RolledBack);
     }
 
-    void Cancel()
+    void __fastcall Cancel()
     {
         Close(Cancelled);
     }
 
-    void FileName(const std::wstring FileName)
+    void __fastcall FileName(const std::wstring FileName)
     {
         Parameter(L"filename", FileName);
     }
 
-    void Destination(const std::wstring Destination)
+    void __fastcall Destination(const std::wstring Destination)
     {
         Parameter(L"destination", Destination);
     }
 
-    void Rights(const TRights &Rights)
+    void __fastcall Rights(const TRights &Rights)
     {
         Parameter(L"permissions", Rights.GetText());
     }
 
-    void Modification(const nb::TDateTime DateTime)
+    void __fastcall Modification(const nb::TDateTime DateTime)
     {
         Parameter(L"modification", XmlTimestamp(DateTime));
     }
 
-    void Recursive()
+    void __fastcall Recursive()
     {
         FRecursive = true;
     }
 
-    void Command(const std::wstring Command)
+    void __fastcall Command(const std::wstring Command)
     {
         Parameter(L"command", Command);
     }
 
-    void AddOutput(const std::wstring Output, bool StdError)
+    void __fastcall AddOutput(const std::wstring Output, bool StdError)
     {
         const wchar_t *Name = (StdError ? L"erroroutput" : L"output");
         size_t Index = FNames->IndexOf(Name);
@@ -253,7 +312,7 @@ public:
         }
     }
 
-    void FileList(TRemoteFileList *FileList)
+    void __fastcall FileList(TRemoteFileList *FileList)
     {
         if (FFileList == NULL)
         {
@@ -262,17 +321,26 @@ public:
         FileList->DuplicateTo(FFileList);
     }
 
+  void __fastcall File(TRemoteFile * File)
+  {
+    if (FFile != NULL)
+    {
+      delete FFile;
+    }
+    FFile = File->Duplicate(true);
+  }
+
 protected:
     enum TState { Opened, Committed, RolledBack, Cancelled };
 
-    inline void Close(TState State)
+    inline void __fastcall Close(TState State)
     {
         assert(FState == Opened);
         FState = State;
         FLog->RecordPendingActions();
     }
 
-    const wchar_t *ActionName()
+    const wchar_t * __fastcall ActionName()
     {
         switch (FAction)
         {
@@ -285,18 +353,19 @@ protected:
         case laMv: return L"mv";
         case laCall: return L"call";
         case laLs: return L"ls";
+        case laStat: return L"stat";
         default: assert(false); return L"";
         }
     }
 
-    void Parameter(const std::wstring Name, const std::wstring Value = L"")
+    void __fastcall Parameter(const std::wstring Name, const std::wstring Value = L"")
     {
         FNames->Add(Name);
         FValues->Add(Value);
     }
 
 private:
-    TSessionLog *FLog;
+    TActionLog *FLog;
     TLogAction FAction;
     TState FState;
     bool FRecursive;
@@ -304,13 +373,16 @@ private:
     nb::TStrings *FNames;
     nb::TStrings *FValues;
     TRemoteFileList *FFileList;
+  TRemoteFile * FFile;
 };
-// #pragma warn .inl
+#ifndef _MSC_VER
+#pragma warn .inl
+#endif
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TSessionAction::TSessionAction(TSessionLog *Log, TLogAction Action)
+TSessionAction::TSessionAction(TActionLog *Log, TLogAction Action)
 {
-    if (Log->FLoggingActions)
+    if (Log->FLogging)
     {
         FRecord = new TSessionActionRecord(Log, Action);
     }
@@ -328,7 +400,7 @@ TSessionAction::~TSessionAction()
     }
 }
 //---------------------------------------------------------------------------
-void TSessionAction::Restart()
+void __fastcall TSessionAction::Restart()
 {
     if (FRecord != NULL)
     {
@@ -336,7 +408,7 @@ void TSessionAction::Restart()
     }
 }
 //---------------------------------------------------------------------------
-void TSessionAction::Commit()
+void __fastcall TSessionAction::Commit()
 {
     if (FRecord != NULL)
     {
@@ -346,7 +418,7 @@ void TSessionAction::Commit()
     }
 }
 //---------------------------------------------------------------------------
-void TSessionAction::Rollback(const std::exception *E)
+void __fastcall TSessionAction::Rollback(const std::exception *E)
 {
     if (FRecord != NULL)
     {
@@ -356,7 +428,7 @@ void TSessionAction::Rollback(const std::exception *E)
     }
 }
 //---------------------------------------------------------------------------
-void TSessionAction::Cancel()
+void __fastcall TSessionAction::Cancel()
 {
     if (FRecord != NULL)
     {
@@ -367,19 +439,19 @@ void TSessionAction::Cancel()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TFileSessionAction::TFileSessionAction(TSessionLog *Log, TLogAction Action) :
+TFileSessionAction::TFileSessionAction(TActionLog *Log, TLogAction Action) :
     TSessionAction(Log, Action)
 {
 };
 //---------------------------------------------------------------------------
 TFileSessionAction::TFileSessionAction(
-    TSessionLog *Log, TLogAction Action, const std::wstring AFileName) :
+    TActionLog *Log, TLogAction Action, const std::wstring AFileName) :
     TSessionAction(Log, Action)
 {
     FileName(AFileName);
 };
 //---------------------------------------------------------------------------
-void TFileSessionAction::FileName(const std::wstring FileName)
+void __fastcall TFileSessionAction::FileName(const std::wstring FileName)
 {
     if (FRecord != NULL)
     {
@@ -389,18 +461,18 @@ void TFileSessionAction::FileName(const std::wstring FileName)
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TFileLocationSessionAction::TFileLocationSessionAction(
-    TSessionLog *Log, TLogAction Action) :
+    TActionLog *Log, TLogAction Action) :
     TFileSessionAction(Log, Action)
 {
 };
 //---------------------------------------------------------------------------
 TFileLocationSessionAction::TFileLocationSessionAction(
-    TSessionLog *Log, TLogAction Action, const std::wstring FileName) :
+    TActionLog *Log, TLogAction Action, const std::wstring FileName) :
     TFileSessionAction(Log, Action, FileName)
 {
 };
 //---------------------------------------------------------------------------
-void TFileLocationSessionAction::Destination(const std::wstring Destination)
+void __fastcall TFileLocationSessionAction::Destination(const std::wstring Destination)
 {
     if (FRecord != NULL)
     {
@@ -409,20 +481,20 @@ void TFileLocationSessionAction::Destination(const std::wstring Destination)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TUploadSessionAction::TUploadSessionAction(TSessionLog *Log) :
+TUploadSessionAction::TUploadSessionAction(TActionLog *Log) :
     TFileLocationSessionAction(Log, laUpload)
 {
 };
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TDownloadSessionAction::TDownloadSessionAction(TSessionLog *Log) :
+TDownloadSessionAction::TDownloadSessionAction(TActionLog *Log) :
     TFileLocationSessionAction(Log, laDownload)
 {
 };
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TChmodSessionAction::TChmodSessionAction(
-    TSessionLog *Log, const std::wstring FileName) :
+    TActionLog *Log, const std::wstring FileName) :
     TFileSessionAction(Log, laChmod, FileName)
 {
 }
@@ -436,13 +508,13 @@ void TChmodSessionAction::Recursive()
 }
 //---------------------------------------------------------------------------
 TChmodSessionAction::TChmodSessionAction(
-    TSessionLog *Log, const std::wstring FileName, const TRights &ARights) :
+    TActionLog *Log, const std::wstring FileName, const TRights &ARights) :
     TFileSessionAction(Log, laChmod, FileName)
 {
     Rights(ARights);
 }
 //---------------------------------------------------------------------------
-void TChmodSessionAction::Rights(const TRights &Rights)
+void __fastcall TChmodSessionAction::Rights(const TRights &Rights)
 {
     if (FRecord != NULL)
     {
@@ -451,7 +523,7 @@ void TChmodSessionAction::Rights(const TRights &Rights)
 }
 //---------------------------------------------------------------------------
 TTouchSessionAction::TTouchSessionAction(
-    TSessionLog *Log, const std::wstring FileName, const nb::TDateTime &Modification) :
+    TActionLog *Log, const std::wstring FileName, const nb::TDateTime &Modification) :
     TFileSessionAction(Log, laTouch, FileName)
 {
     if (FRecord != NULL)
@@ -461,18 +533,18 @@ TTouchSessionAction::TTouchSessionAction(
 }
 //---------------------------------------------------------------------------
 TMkdirSessionAction::TMkdirSessionAction(
-    TSessionLog *Log, const std::wstring FileName) :
+    TActionLog *Log, const std::wstring FileName) :
     TFileSessionAction(Log, laMkdir, FileName)
 {
 }
 //---------------------------------------------------------------------------
 TRmSessionAction::TRmSessionAction(
-    TSessionLog *Log, const std::wstring FileName) :
+    TActionLog *Log, const std::wstring FileName) :
     TFileSessionAction(Log, laRm, FileName)
 {
 }
 //---------------------------------------------------------------------------
-void TRmSessionAction::Recursive()
+void __fastcall TRmSessionAction::Recursive()
 {
     if (FRecord != NULL)
     {
@@ -480,14 +552,14 @@ void TRmSessionAction::Recursive()
     }
 }
 //---------------------------------------------------------------------------
-TMvSessionAction::TMvSessionAction(TSessionLog *Log,
+TMvSessionAction::TMvSessionAction(TActionLog *Log,
                                    const std::wstring FileName, const std::wstring ADestination) :
     TFileLocationSessionAction(Log, laMv, FileName)
 {
     Destination(ADestination);
 }
 //---------------------------------------------------------------------------
-TCallSessionAction::TCallSessionAction(TSessionLog *Log,
+TCallSessionAction::TCallSessionAction(TActionLog *Log,
                                        const std::wstring Command, const std::wstring Destination) :
     TSessionAction(Log, laCall)
 {
@@ -498,7 +570,7 @@ TCallSessionAction::TCallSessionAction(TSessionLog *Log,
     }
 }
 //---------------------------------------------------------------------------
-void TCallSessionAction::AddOutput(const std::wstring Output, bool StdError)
+void __fastcall TCallSessionAction::AddOutput(const std::wstring Output, bool StdError)
 {
     if (FRecord != NULL)
     {
@@ -506,7 +578,7 @@ void TCallSessionAction::AddOutput(const std::wstring Output, bool StdError)
     }
 }
 //---------------------------------------------------------------------------
-TLsSessionAction::TLsSessionAction(TSessionLog *Log,
+TLsSessionAction::TLsSessionAction(TActionLog *Log,
                                    const std::wstring Destination) :
     TSessionAction(Log, laLs)
 {
@@ -516,12 +588,26 @@ TLsSessionAction::TLsSessionAction(TSessionLog *Log,
     }
 }
 //---------------------------------------------------------------------------
-void TLsSessionAction::FileList(TRemoteFileList *FileList)
+void __fastcall TLsSessionAction::FileList(TRemoteFileList *FileList)
 {
     if (FRecord != NULL)
     {
         FRecord->FileList(FileList);
     }
+}
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+TStatSessionAction::TStatSessionAction(TActionLog * Log, const std::wstring & FileName) :
+  TFileSessionAction(Log, laStat, FileName)
+{
+}
+//---------------------------------------------------------------------------
+void __fastcall TStatSessionAction::File(TRemoteFile * File)
+{
+  if (FRecord != NULL)
+  {
+    FRecord->File(File);
+  }
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -535,247 +621,27 @@ TFileSystemInfo::TFileSystemInfo()
     memset(&IsCapable, false, sizeof(IsCapable));
 }
 //---------------------------------------------------------------------------
-const char *LogLineMarks = "<>!.*";
-TSessionLog::TSessionLog(TSessionUI *UI, TSessionData *SessionData,
-                         TConfiguration *Configuration):
-    nb::TStringList()
-{
-    FCriticalSection = new TCriticalSection;
-    FConfiguration = Configuration;
-    FParent = NULL;
-    FUI = UI;
-    FSessionData = SessionData;
-    FFile = NULL;
-    FLoggedLines = 0;
-    FTopIndex = NPOS;
-    FCurrentLogFileName = L"";
-    FCurrentFileName = L"";
-    FLoggingActions = false;
-    FClosed = false;
-    FPendingActions = new nb::TList();
-    Self = this;
-}
 //---------------------------------------------------------------------------
-TSessionLog::~TSessionLog()
+FILE * __fastcall OpenFile(std::wstring LogFileName, TSessionData * SessionData, bool Append, std::wstring & NewFileName)
 {
-    assert(FPendingActions->GetCount() == 0);
-    delete FPendingActions;
-    FClosed = true;
-    ReflectSettings();
-    assert(FFile == NULL);
-    delete FCriticalSection;
-}
-//---------------------------------------------------------------------------
-void TSessionLog::Lock()
-{
-    FCriticalSection->Enter();
-}
-//---------------------------------------------------------------------------
-void TSessionLog::Unlock()
-{
-    FCriticalSection->Leave();
-}
-//---------------------------------------------------------------------------
-std::wstring TSessionLog::GetSessionName()
-{
-    assert(FSessionData != NULL);
-    return FSessionData->GetSessionName();
-}
-//---------------------------------------------------------------------------
-std::wstring TSessionLog::GetLine(size_t Index)
-{
-    return GetString(Index - FTopIndex);
-}
-//---------------------------------------------------------------------------
-TLogLineType TSessionLog::GetType(size_t Index)
-{
-    void *ptr = GetObject(Index - FTopIndex);
-    return static_cast<TLogLineType>(reinterpret_cast<size_t>(ptr));
-}
-//---------------------------------------------------------------------------
-void TSessionLog::DoAddToParent(TLogLineType Type, const std::wstring Line)
-{
-    assert(FParent != NULL);
-    FParent->Add(Type, Line);
-}
-//---------------------------------------------------------------------------
-void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring Line)
-{
-    // DEBUG_PRINTF(L"begin: Line = %s", Line.c_str());
-    if (static_cast<int>(FTopIndex) < 0)
-    {
-        FTopIndex = 0;
-    }
-
-    nb::TStringList::AddObject(Line, static_cast<nb::TObject *>(reinterpret_cast<void *>(static_cast<size_t>(Type))));
-
-    FLoggedLines++;
-
-    if (LogToFile())
-    {
-        if (FFile == NULL)
+  FILE * Result;
+  std::wstring ANewFileName = StripPathQuotes(ExpandEnvironmentVariables(LogFileName));
+  nb::TDateTime N = nb::Now();
+/*
+        // FFile = _wfopen(NewFileName.c_str(),
+        // FConfiguration->GetLogFileAppend() && !FLogging ? L"a" : L"w");
+        FFile = _fsopen(nb::W2MB(NewFileName.c_str()).c_str(),
+                        FConfiguration->GetLogFileAppend() && !FLogging ? "a" : "w", SH_DENYWR);
+        if (FFile)
         {
-            OpenLogFile();
+            setvbuf(static_cast<FILE *>(FFile), NULL, _IONBF, BUFSIZ);
+            FCurrentFileName = NewFileName;
+        }
+        else
+        {
+            throw ExtException(FMTLOAD(LOG_OPENERROR, NewFileName.c_str()));
         }
 
-        if (FFile != NULL)
-        {
-            if (Type != llAction)
-            {
-                SYSTEMTIME t;
-                ::GetLocalTime(&t);
-                // std::wstring Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", nb::Now());
-                std::wstring Timestamp = FORMAT(L" %04d-%02d-%02d %02d:%02d:%02d.%03d ",
-                                                t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond, t.wMilliseconds);
-                fputc(LogLineMarks[Type], static_cast<FILE *>(FFile));
-                // fwrite(Timestamp.c_str(), 1, Timestamp.size() * sizeof(wchar_t), (FILE *)FFile);
-                fprintf_s(static_cast<FILE *>(FFile), "%s", const_cast<char *>(nb::W2MB(Timestamp.c_str()).c_str()));
-            }
-            // use fwrite instead of fprintf to make sure that even
-            // non-ascii data (unicode) gets in.
-            fprintf_s(static_cast<FILE *>(FFile), "%s", const_cast<char *>(nb::W2MB(Line.c_str()).c_str()));
-            fputc('\n', static_cast<FILE *>(FFile));
-        }
-    }
-    // DEBUG_PRINTF(L"end");
-}
-//---------------------------------------------------------------------------
-void TSessionLog::DoAdd(TLogLineType Type, const std::wstring Line,
-                        const doaddlog_slot_type &func)
-{
-    std::wstring Prefix;
-    std::wstring line = Line;
-
-    if ((Type != llAction) && !GetName().empty())
-    {
-        Prefix = L"[" + GetName() + L"] ";
-    }
-    doaddlog_signal_type sig;
-    sig.connect(func);
-    while (!line.empty())
-    {
-        sig(Type, Prefix + CutToChar(line, '\n', false));
-    }
-}
-//---------------------------------------------------------------------------
-void TSessionLog::Add(TLogLineType Type, const std::wstring Line)
-{
-    assert(FConfiguration);
-    if (GetLogging() && (FConfiguration->GetLogActions() == (Type == llAction)))
-    {
-        try
-        {
-            if (FParent != NULL)
-            {
-                DoAdd(Type, Line, boost::bind(&TSessionLog::DoAddToParent, this, _1, _2));
-            }
-            else
-            {
-                TGuard Guard(FCriticalSection);
-
-                BeginUpdate();
-                {
-                    BOOST_SCOPE_EXIT ( (&Self) )
-                    {
-                        Self->DeleteUnnecessary();
-                        Self->EndUpdate();
-                    } BOOST_SCOPE_EXIT_END
-                    DoAdd(Type, Line, boost::bind(&TSessionLog::DoAddToSelf, this, _1, _2));
-                }
-            }
-        }
-        catch (const std::exception &E)
-        {
-            // We failed logging, turn it off and notify user.
-            FConfiguration->SetLogging(false);
-            try
-            {
-                throw ExtException(FMTLOAD(LOG_GEN_ERROR), &E);
-            }
-            catch (const std::exception &E)
-            {
-                AddException(&E);
-                FUI->HandleExtendedException(&E);
-            }
-        }
-    }
-}
-//---------------------------------------------------------------------------
-void TSessionLog::AddException(const std::exception *E)
-{
-    if (E != NULL)
-    {
-        Add(llException, ExceptionLogString(E));
-    }
-}
-//---------------------------------------------------------------------------
-void TSessionLog::ReflectSettings()
-{
-    TGuard Guard(FCriticalSection);
-
-    bool ALogging =
-        !FClosed &&
-        ((FParent != NULL) || FConfiguration->GetLogging()) &&
-        ((FParent == NULL) || !FConfiguration->GetLogActions());
-
-    bool LoggingActions = ALogging && FConfiguration->GetLogActions();
-    if (LoggingActions && !FLoggingActions)
-    {
-        FLoggingActions = true;
-        FLogging = ALogging;
-        Add(llAction, L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-        Add(llAction, FORMAT(L"<session xmlns=\"http://winscp.net/schema/session/1.0\" name=\"%s\" start=\"%s\">",
-                             XmlEscape(FSessionData->GetSessionName()).c_str(), XmlTimestamp().c_str()));
-        StateChange();
-    }
-    else if (!LoggingActions && FLoggingActions)
-    {
-        FLoggingActions = false;
-        Add(llAction, L"</session>");
-        FLogging = ALogging;
-        StateChange();
-    }
-    else if (FLogging != ALogging)
-    {
-        FLogging = ALogging;
-        StateChange();
-    }
-
-    // if logging to file was turned off or log file was change -> close current log file
-    // but disallow changing logfilename for xml logging
-    if ((FFile != NULL) &&
-            ((!LogToFile() || (FCurrentLogFileName != FConfiguration->GetLogFileName())) && !FLoggingActions))
-    {
-        CloseLogFile();
-    }
-
-    DeleteUnnecessary();
-}
-//---------------------------------------------------------------------------
-bool TSessionLog::LogToFile()
-{
-    return GetLogging() && FConfiguration->GetLogToFile() && (FParent == NULL);
-}
-//---------------------------------------------------------------------------
-void TSessionLog::CloseLogFile()
-{
-    if (FFile != NULL)
-    {
-        fclose(static_cast<FILE *>(FFile));
-        FFile = NULL;
-    }
-    FCurrentLogFileName = L"";
-    FCurrentFileName = L"";
-    StateChange();
-}
-//---------------------------------------------------------------------------
-void TSessionLog::OpenLogFile()
-{
-    try
-    {
-        assert(FFile == NULL);
-        assert(FConfiguration != NULL);
-        FCurrentLogFileName = FConfiguration->GetLogFileName();
         std::wstring NewFileName = StripPathQuotes(ExpandEnvironmentVariables(FCurrentLogFileName));
         SYSTEMTIME t;
         ::GetLocalTime(&t);
@@ -824,19 +690,290 @@ void TSessionLog::OpenLogFile()
                 Index += Replacement.size() - 1;
             }
         }
-        // FFile = _wfopen(NewFileName.c_str(),
-        // FConfiguration->GetLogFileAppend() && !FLoggingActions ? L"a" : L"w");
-        FFile = _fsopen(nb::W2MB(NewFileName.c_str()).c_str(),
-                        FConfiguration->GetLogFileAppend() && !FLoggingActions ? "a" : "w", SH_DENYWR);
-        if (FFile)
+*/
+  for (int Index = 1; Index < ANewFileName.size(); Index++)
+  {
+    if (ANewFileName[Index] == L'!')
+    {
+      std::wstring Replacement;
+      // keep consistent with TFileCustomCommand::PatternReplacement
+      switch (tolower(ANewFileName[Index + 1]))
+      {
+        case L'y':
+          Replacement = FormatDateTime(L"yyyy", N);
+          break;
+
+        case L'm':
+          Replacement = FormatDateTime(L"mm", N);
+          break;
+
+        case L'd':
+          Replacement = FormatDateTime(L"dd", N);
+          break;
+
+        case L't':
+          Replacement = FormatDateTime(L"hhnnss", N);
+          break;
+
+        case L'@':
+          Replacement = MakeValidFileName(SessionData->GetHostNameExpanded());
+          break;
+
+        case L's':
+          Replacement = MakeValidFileName(SessionData->GetSessionName());
+          break;
+
+        case L'!':
+          Replacement = L"!";
+          break;
+
+        default:
+          Replacement = std::wstring(L"!") + ANewFileName[Index + 1];
+          break;
+      }
+      ANewFileName.erase(Index, 2);
+      ANewFileName.insert(Index, Replacement);
+      Index += Replacement.size() - 1;
+    }
+  }
+  Result = _wfopen(ANewFileName.c_str(), (Append ? L"a" : L"w"));
+  if (Result != NULL)
+  {
+    setvbuf(Result, NULL, _IONBF, BUFSIZ);
+    NewFileName = ANewFileName;
+  }
+  else
+  {
+    throw ExtException(FMTLOAD(LOG_OPENERROR, ANewFileName.c_str()));
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+const wchar_t *LogLineMarks = L"<>!.*";
+
+TSessionLog::TSessionLog(TSessionUI *UI, TSessionData *SessionData,
+                         TConfiguration *Configuration):
+    nb::TStringList()
+{
+    FCriticalSection = new TCriticalSection;
+    FConfiguration = Configuration;
+    FParent = NULL;
+    FUI = UI;
+    FSessionData = SessionData;
+    FFile = NULL;
+    FLoggedLines = 0;
+    FTopIndex = NPOS;
+    FCurrentLogFileName = L"";
+    FCurrentFileName = L"";
+    FClosed = false;
+    Self = this;
+}
+//---------------------------------------------------------------------------
+TSessionLog::~TSessionLog()
+{
+    FClosed = true;
+    ReflectSettings();
+    assert(FFile == NULL);
+    delete FCriticalSection;
+}
+//---------------------------------------------------------------------------
+void __fastcall TSessionLog::Lock()
+{
+    FCriticalSection->Enter();
+}
+//---------------------------------------------------------------------------
+void __fastcall TSessionLog::Unlock()
+{
+    FCriticalSection->Leave();
+}
+//---------------------------------------------------------------------------
+std::wstring __fastcall TSessionLog::GetSessionName()
+{
+    assert(FSessionData != NULL);
+    return FSessionData->GetSessionName();
+}
+//---------------------------------------------------------------------------
+std::wstring __fastcall TSessionLog::GetLine(size_t Index)
+{
+    return GetString(Index - FTopIndex);
+}
+//---------------------------------------------------------------------------
+TLogLineType __fastcall TSessionLog::GetType(size_t Index)
+{
+    void *ptr = GetObject(Index - FTopIndex);
+    return static_cast<TLogLineType>(reinterpret_cast<size_t>(ptr));
+}
+//---------------------------------------------------------------------------
+void TSessionLog::DoAddToParent(TLogLineType Type, const std::wstring Line)
+{
+    assert(FParent != NULL);
+    FParent->Add(Type, Line);
+}
+//---------------------------------------------------------------------------
+void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring Line)
+{
+    if (static_cast<int>(FTopIndex) < 0)
+    {
+        FTopIndex = 0;
+    }
+
+    nb::TStringList::AddObject(Line, static_cast<nb::TObject *>(reinterpret_cast<void *>(static_cast<size_t>(Type))));
+
+    FLoggedLines++;
+
+    if (LogToFile())
+    {
+        if (FFile == NULL)
         {
-            setvbuf(static_cast<FILE *>(FFile), NULL, _IONBF, BUFSIZ);
-            FCurrentFileName = NewFileName;
+            OpenLogFile();
         }
-        else
+
+        if (FFile != NULL)
         {
-            throw ExtException(FMTLOAD(LOG_OPENERROR, NewFileName.c_str()));
+/*
+            if (Type != llAction)
+            {
+                SYSTEMTIME t;
+                ::GetLocalTime(&t);
+                // std::wstring Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", nb::Now());
+                std::wstring Timestamp = FORMAT(L" %04d-%02d-%02d %02d:%02d:%02d.%03d ",
+                                                t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond, t.wMilliseconds);
+                fputc(LogLineMarks[Type], static_cast<FILE *>(FFile));
+                // fwrite(Timestamp.c_str(), 1, Timestamp.size() * sizeof(wchar_t), (FILE *)FFile);
+                fprintf_s(static_cast<FILE *>(FFile), "%s", const_cast<char *>(nb::W2MB(Timestamp.c_str()).c_str()));
+            }
+            // use fwrite instead of fprintf to make sure that even
+            // non-ascii data (unicode) gets in.
+            fprintf_s(static_cast<FILE *>(FFile), "%s", const_cast<char *>(nb::W2MB(Line.c_str()).c_str()));
+            fputc('\n', static_cast<FILE *>(FFile));
+*/
+            std::wstring Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", nb::Now());
+            // UTF8String UtfLine = UTF8String(std::wstring(LogLineMarks[Type]) + Timestamp + Line + L"\n");
+            // fwrite(UtfLine.c_str(), UtfLine.size(), 1, (FILE *)FFile);
+            nb::Error(SNotImplemented, 1490);
         }
+    }
+}
+//---------------------------------------------------------------------------
+void __fastcall TSessionLog::DoAdd(TLogLineType Type, const std::wstring Line,
+                        const doaddlog_slot_type &func)
+{
+    std::wstring Prefix;
+    std::wstring line = Line;
+
+    if (!GetName().empty())
+    {
+        Prefix = L"[" + GetName() + L"] ";
+    }
+    doaddlog_signal_type sig;
+    sig.connect(func);
+    while (!line.empty())
+    {
+        sig(Type, Prefix + CutToChar(line, '\n', false));
+    }
+}
+//---------------------------------------------------------------------------
+void __fastcall TSessionLog::Add(TLogLineType Type, const std::wstring Line)
+{
+    assert(FConfiguration);
+    if (GetLogging())
+    {
+        try
+        {
+            if (FParent != NULL)
+            {
+                DoAdd(Type, Line, boost::bind(&TSessionLog::DoAddToParent, this, _1, _2));
+            }
+            else
+            {
+                TGuard Guard(FCriticalSection);
+
+                BeginUpdate();
+                {
+                    BOOST_SCOPE_EXIT ( (&Self) )
+                    {
+                        Self->DeleteUnnecessary();
+                        Self->EndUpdate();
+                    } BOOST_SCOPE_EXIT_END
+                    DoAdd(Type, Line, boost::bind(&TSessionLog::DoAddToSelf, this, _1, _2));
+                }
+            }
+        }
+        catch (const std::exception &E)
+        {
+            // We failed logging, turn it off and notify user.
+            FConfiguration->SetLogging(false);
+            try
+            {
+                throw ExtException(FMTLOAD(LOG_GEN_ERROR), &E);
+            }
+            catch (const std::exception &E)
+            {
+                AddException(&E);
+                FUI->HandleExtendedException(&E);
+            }
+        }
+    }
+}
+//---------------------------------------------------------------------------
+void __fastcall TSessionLog::AddException(const std::exception *E)
+{
+    if (E != NULL)
+    {
+        Add(llException, ExceptionLogString(E));
+    }
+}
+//---------------------------------------------------------------------------
+void __fastcall TSessionLog::ReflectSettings()
+{
+    TGuard Guard(FCriticalSection);
+
+    bool ALogging =
+        !FClosed &&
+    ((FParent != NULL) || FConfiguration->GetLogging());
+
+  if (FLogging != ALogging)
+    {
+        FLogging = ALogging;
+        StateChange();
+    }
+
+  // if logging to file was turned off or log file was changed -> close current log file
+    if ((FFile != NULL) &&
+      (!LogToFile() || (FCurrentLogFileName != FConfiguration->GetLogFileName())))
+    {
+        CloseLogFile();
+    }
+
+    DeleteUnnecessary();
+}
+//---------------------------------------------------------------------------
+bool __fastcall TSessionLog::LogToFile()
+{
+    return GetLogging() && FConfiguration->GetLogToFile() && (FParent == NULL);
+}
+//---------------------------------------------------------------------------
+void __fastcall TSessionLog::CloseLogFile()
+{
+    if (FFile != NULL)
+    {
+        fclose(static_cast<FILE *>(FFile));
+        FFile = NULL;
+    }
+    FCurrentLogFileName = L"";
+    FCurrentFileName = L"";
+    StateChange();
+}
+//---------------------------------------------------------------------------
+void __fastcall TSessionLog::OpenLogFile()
+{
+    try
+    {
+        assert(FFile == NULL);
+        assert(FConfiguration != NULL);
+        FCurrentLogFileName = FConfiguration->GetLogFileName();
+        FFile = OpenFile(FCurrentLogFileName, FSessionData, FConfiguration->GetLogFileAppend(), FCurrentFileName);
     }
     catch (const std::exception &E)
     {
@@ -844,6 +981,7 @@ void TSessionLog::OpenLogFile()
         FCurrentLogFileName = L"";
         FCurrentFileName = L"";
         FConfiguration->SetLogToFile(false);
+        FConfiguration->SetLogFileName(std::wstring());
         try
         {
             throw ExtException(FMTLOAD(LOG_GEN_ERROR), &E);
@@ -857,7 +995,7 @@ void TSessionLog::OpenLogFile()
     StateChange();
 }
 //---------------------------------------------------------------------------
-void TSessionLog::StateChange()
+void __fastcall TSessionLog::StateChange()
 {
     if (!FOnStateChange.empty())
     {
@@ -865,7 +1003,7 @@ void TSessionLog::StateChange()
     }
 }
 //---------------------------------------------------------------------------
-void TSessionLog::DeleteUnnecessary()
+void __fastcall TSessionLog::DeleteUnnecessary()
 {
     BeginUpdate();
     {
@@ -888,9 +1026,9 @@ void TSessionLog::DeleteUnnecessary()
     }
 }
 //---------------------------------------------------------------------------
-void TSessionLog::AddStartupInfo()
+void __fastcall TSessionLog::AddStartupInfo()
 {
-    if (GetLogging() && !FConfiguration->GetLogActions())
+    if (GetLogging())
     {
         if (FParent != NULL)
         {
@@ -916,7 +1054,8 @@ void TSessionLog::DoAddStartupInfo(TSessionData *Data)
 
             Self->EndUpdate();
         } BOOST_SCOPE_EXIT_END
-#define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), boost::bind(&TSessionLog::DoAddToSelf, this, _1, _2));
+        // #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), boost::bind(&TSessionLog::DoAddToSelf, this, _1, _2));
+        #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), boost::bind(&TSessionLog::DoAddToSelf, this, _1, _2));
         AddSeparator();
         ADF(L"NetBox %s (OS %s)", FConfiguration->GetVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
         THierarchicalStorage *Storage = FConfiguration->CreateStorage();
@@ -932,20 +1071,19 @@ void TSessionLog::DoAddStartupInfo(TSessionData *Data)
         HINSTANCE Secur32 = LoadLibrary(L"secur32.dll");
         TGetUserNameEx GetUserNameEx =
             (Secur32 != NULL) ? reinterpret_cast<TGetUserNameEx>(GetProcAddress(Secur32, "GetUserNameEx")) : NULL;
-        char UserName[UNLEN + 1];
+        wchar_t UserName[UNLEN + 1];
         unsigned long UserNameSize = LENOF(UserName);
-        if ((GetUserNameEx == NULL) || !GetUserNameEx(NameSamCompatible, UserName, &UserNameSize))
+        if ((GetUserNameEx == NULL) || !GetUserNameEx(NameSamCompatible, (LPSTR)UserName, &UserNameSize))
         {
-            // wcscpy(UserName, L"<Failed to retrieve username>");
-            strcpy(UserName, "<Failed to retrieve username>");
+            wcscpy(UserName, L"<Failed to retrieve username>");
         }
-        ADF(L"Local account: %s", nb::MB2W(UserName).c_str());
+        ADF(L"Local account: %s", UserName);
         ADF(L"Login time: %s", FormatDateTime(L"dddddd tt", nb::Now()).c_str());
         AddSeparator();
         ADF(L"Session name: %s (%s)", Data->GetSessionName().c_str(), Data->GetSource().c_str());
-        ADF(L"Host name: %s (Port: %d)", Data->GetHostName().c_str(), Data->GetPortNumber());
+        ADF(L"Host name: %s (Port: %d)", Data->GetHostNameExpanded().c_str(), Data->GetPortNumber());
         ADF(L"User name: %s (Password: %s, Key file: %s)",
-            Data->GetUserName().c_str(), BooleanToEngStr(!Data->GetPassword().empty()).c_str(),
+            Data->GetUserNameExpanded().c_str(), BooleanToEngStr(!Data->GetPassword().empty()).c_str(),
             BooleanToEngStr(!Data->GetPublicKeyFile().empty()).c_str())
         ADF(L"Tunnel: %s", BooleanToEngStr(Data->GetTunnel()).c_str());
         if (Data->GetTunnel())
@@ -1102,16 +1240,204 @@ void TSessionLog::Clear()
     nb::TStringList::Clear();
 }
 //---------------------------------------------------------------------------
-void TSessionLog::AddPendingAction(TSessionActionRecord *Action)
+//---------------------------------------------------------------------------
+TActionLog::TActionLog(TSessionUI* UI, TSessionData * SessionData,
+  TConfiguration * Configuration)
 {
-    FPendingActions->Add(static_cast<nb::TObject *>(static_cast<void *>(Action)));
+  FCriticalSection = new TCriticalSection;
+  FConfiguration = Configuration;
+  FUI = UI;
+  FSessionData = SessionData;
+  FFile = NULL;
+  FCurrentLogFileName = L"";
+  FCurrentFileName = L"";
+  FLogging = false;
+  FClosed = false;
+  FPendingActions = new nb::TList();
+  FIndent = L"  ";
+  FInGroup = false;
+  FEnabled = true;
 }
 //---------------------------------------------------------------------------
-void TSessionLog::RecordPendingActions()
+TActionLog::~TActionLog()
+{
+  assert(FPendingActions->GetCount() == 0);
+  delete FPendingActions;
+  FClosed = true;
+  ReflectSettings();
+  assert(FFile == NULL);
+  delete FCriticalSection;
+}
+//---------------------------------------------------------------------------
+void __fastcall TActionLog::Add(const std::wstring & Line)
+{
+  assert(FConfiguration);
+  if (FLogging)
+  {
+    try
+    {
+      TGuard Guard(FCriticalSection);
+      if (FFile == NULL)
+      {
+        OpenLogFile();
+      }
+
+      if (FFile != NULL)
+      {
+        // UTF8String UtfLine = UTF8String(Line);
+        // fwrite(UtfLine.c_str(), UtfLine.Length(), 1, (FILE *)FFile);
+        // fwrite("\n", 1, 1, (FILE *)FFile);
+        nb::Error(SNotImplemented, 1491);
+      }
+    }
+    catch (const std::exception &E)
+    {
+      // We failed logging, turn it off and notify user.
+      FConfiguration->SetLogActions(false);
+      try
+      {
+        throw ExtException(FMTLOAD(LOG_GEN_ERROR), &E);
+      }
+      catch (const std::exception &E)
+      {
+        FUI->HandleExtendedException(&E);
+      }
+    }
+  }
+}
+//---------------------------------------------------------------------------
+void __fastcall TActionLog::AddIndented(const std::wstring & Line)
+{
+  Add(FIndent + Line);
+}
+//---------------------------------------------------------------------------
+void __fastcall TActionLog::AddFailure(nb::TStrings * Messages)
+{
+  AddIndented(L"<failure>");
+  AddMessages(L"  ", Messages);
+  AddIndented(L"</failure>");
+}
+//---------------------------------------------------------------------------
+void __fastcall TActionLog::AddFailure(const std::exception * E)
+{
+  nb::TStrings * Messages = ExceptionToMessages(E);
+  if (Messages != NULL)
+  {
+    AddFailure(Messages);
+  }
+}
+//---------------------------------------------------------------------------
+void __fastcall TActionLog::AddMessages(std::wstring Indent, nb::TStrings * Messages)
+{
+  for (int Index = 0; Index < Messages->GetCount(); Index++)
+  {
+    AddIndented(
+      FORMAT((Indent + L"<message>%s</message>").c_str(), XmlEscape(Messages->GetString(Index)).c_str()));
+  }
+}
+//---------------------------------------------------------------------------
+void __fastcall TActionLog::ReflectSettings()
+{
+  TGuard Guard(FCriticalSection);
+
+  bool ALogging =
+    !FClosed && FConfiguration->GetLogActions() && GetEnabled();
+
+  if (ALogging && !FLogging)
+  {
+    FLogging = true;
+    Add(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+    Add(FORMAT(L"<session xmlns=\"http://winscp.net/schema/session/1.0\" name=\"%s\" start=\"%s\">",
+      XmlAttributeEscape(FSessionData->GetSessionName()).c_str(), XmlTimestamp().c_str()));
+  }
+  else if (!ALogging && FLogging)
+  {
+    if (FInGroup)
+    {
+      EndGroup();
+    }
+    Add(L"</session>");
+    CloseLogFile();
+    FLogging = false;
+  }
+
+}
+//---------------------------------------------------------------------------
+void __fastcall TActionLog::CloseLogFile()
+{
+  if (FFile != NULL)
+  {
+    fclose((FILE *)FFile);
+    FFile = NULL;
+  }
+  FCurrentLogFileName = L"";
+  FCurrentFileName = L"";
+}
+//---------------------------------------------------------------------------
+void __fastcall TActionLog::OpenLogFile()
+{
+  try
+  {
+    assert(FFile == NULL);
+    assert(FConfiguration != NULL);
+    FCurrentLogFileName = FConfiguration->GetActionsLogFileName();
+    FFile = OpenFile(FCurrentLogFileName, FSessionData, false, FCurrentFileName);
+  }
+  catch (const std::exception & E)
+  {
+    // We failed logging to file, turn it off and notify user.
+    FCurrentLogFileName = L"";
+    FCurrentFileName = L"";
+    FConfiguration->SetLogActions(false);
+    try
+    {
+      throw ExtException(FMTLOAD(LOG_GEN_ERROR), &E);
+    }
+    catch (const std::exception & E)
+    {
+      FUI->HandleExtendedException(&E);
+    }
+  }
+}
+//---------------------------------------------------------------------------
+void __fastcall TActionLog::AddPendingAction(TSessionActionRecord * Action)
+{
+  FPendingActions->Add(Action);
+}
+//---------------------------------------------------------------------------
+void __fastcall TActionLog::RecordPendingActions()
 {
     while ((FPendingActions->GetCount() > 0) &&
-            reinterpret_cast<TSessionActionRecord *>(FPendingActions->GetItem(0))->Record())
+         static_cast<TSessionActionRecord *>(FPendingActions->GetItem(0))->Record())
     {
         FPendingActions->Delete(0);
     }
+}
+//---------------------------------------------------------------------------
+void __fastcall TActionLog::BeginGroup(std::wstring Name)
+{
+      assert(!FInGroup);
+      FInGroup = true;
+      assert(FIndent == L"  ");
+      AddIndented(FORMAT(L"<group name=\"%s\" start=\"%s\">",
+            XmlAttributeEscape(Name).c_str(), XmlTimestamp().c_str()));
+      FIndent = L"    ";
+}
+//---------------------------------------------------------------------------
+void __fastcall TActionLog::EndGroup()
+{
+  assert(FInGroup);
+  FInGroup = false;
+  assert(FIndent == L"    ");
+  FIndent = L"  ";
+  AddIndented(L"</group>");
+}
+//---------------------------------------------------------------------------
+void __fastcall TActionLog::SetEnabled(bool value)
+{
+  if (GetEnabled() != value)
+  {
+    FEnabled = value;
+    ReflectSettings();
+  }
 }

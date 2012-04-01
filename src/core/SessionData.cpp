@@ -1720,7 +1720,7 @@ void __fastcall TSessionData::SetReturnVar(const std::wstring value)
     SET_SESSION_PROPERTY(ReturnVar);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetLookupUserGroups(bool value)
+void __fastcall TSessionData::SetLookupUserGroups(TAutoSwitch value)
 {
     SET_SESSION_PROPERTY(LookupUserGroups);
 }

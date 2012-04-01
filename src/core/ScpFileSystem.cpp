@@ -1713,7 +1713,7 @@ void __fastcall TSCPFileSystem::SCPSource(const std::wstring FileName,
                 std::wstring((OperationProgress->AsciiTransfer ? L"Ascii" : L"Binary")) +
                 L" transfer mode selected.");
 
-            TUploadSessionAction Action(FTerminal->GetLog());
+            TUploadSessionAction Action(FTerminal->GetActionLog());
             Action.FileName(ExpandUNCFileName(FileName));
             Action.Destination(AbsoluteFileName);
 
@@ -1907,12 +1907,12 @@ void __fastcall TSCPFileSystem::SCPSource(const std::wstring FileName,
             // log touch and chmod actions only if upload succeeds.
             if (CopyParam->GetPreserveTime())
             {
-                TTouchSessionAction(FTerminal->GetLog(), AbsoluteFileName,
+                TTouchSessionAction(FTerminal->GetActionLog(), AbsoluteFileName,
                                     UnixToDateTime(MTime, FTerminal->GetSessionData()->GetDSTMode()));
             }
             if (CopyParam->GetPreserveRights())
             {
-                TChmodSessionAction(FTerminal->GetLog(), AbsoluteFileName,
+                TChmodSessionAction(FTerminal->GetActionLog(), AbsoluteFileName,
                                     Rights);
             }
         }
@@ -2408,7 +2408,7 @@ void __fastcall TSCPFileSystem::SCPSink(const std::wstring TargetDir,
                 }
                 else if (Ctrl == 'C')
                 {
-                    TDownloadSessionAction Action(FTerminal->GetLog());
+                    TDownloadSessionAction Action(FTerminal->GetActionLog());
                     Action.FileName(AbsoluteFileName);
 
                     try

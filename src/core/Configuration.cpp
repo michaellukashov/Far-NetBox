@@ -1053,7 +1053,7 @@ bool TConfiguration::GetRememberPassword()
     return false;
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetSessionReopenAuto(int value)
+void TConfiguration::SetSessionReopenAuto(size_t value)
 {
     SET_CONFIG_PROPERTY(SessionReopenAuto);
 }
@@ -1063,12 +1063,12 @@ void TConfiguration::SetSessionReopenAutoMaximumNumberOfRetries(int value)
     SET_CONFIG_PROPERTY(SessionReopenAutoMaximumNumberOfRetries);
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetSessionReopenBackground(int value)
+void TConfiguration::SetSessionReopenBackground(size_t value)
 {
     SET_CONFIG_PROPERTY(SessionReopenBackground);
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetSessionReopenTimeout(int value)
+void TConfiguration::SetSessionReopenTimeout(size_t value)
 {
     SET_CONFIG_PROPERTY(SessionReopenTimeout);
 }

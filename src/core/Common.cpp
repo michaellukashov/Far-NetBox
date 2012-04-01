@@ -1042,6 +1042,31 @@ nb::TDateTime StrToDateTime(const std::wstring Value)
     return nb::TDateTime();
 }
 
+bool TryStrToDateTime(const std::wstring value, nb::TDateTime &Value, nb::TFormatSettings &FormatSettings)
+{
+    nb::Error(SNotImplemented, 147);
+    return false;
+}
+
+bool TryRelativeStrToDateTime(const std::wstring value, nb::TDateTime &Value)
+{
+    nb::Error(SNotImplemented, 149);
+    return false;
+}
+
+std::wstring DateTimeToStr(std::wstring &Result, const std::wstring &Format,
+  nb::TDateTime DateTime)
+{
+    nb::Error(SNotImplemented, 148);
+    return L"";
+}
+
+std::wstring DateTimeToString(nb::TDateTime DateTime)
+{
+    nb::Error(SNotImplemented, 146);
+    return L"";
+}
+
 //---------------------------------------------------------------------------
 // DayOfWeek returns the day of the week of the given date. The result is an
 // integer between 1 and 7, corresponding to Sunday through Saturday.
@@ -1647,7 +1672,7 @@ std::wstring FormatDateTime(const std::wstring fmt, nb::TDateTime DateTime)
 {
     // DEBUG_PRINTF(L"fmt = %s", fmt.c_str());
     std::wstring Result;
-    // DateTimeToString(Result, fmt, DateTime);
+    // DateTimeToStr(Result, fmt, DateTime);
     boost::local_time::local_time_facet *output_facet = new boost::local_time::local_time_facet();
     std::wstringstream ss;
     ss.imbue(std::locale(std::locale::classic(), output_facet));

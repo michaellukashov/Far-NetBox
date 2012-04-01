@@ -498,6 +498,7 @@ void __fastcall TTerminal::Init(TSessionData *SessionData, TConfiguration *Confi
     FSessionData = new TSessionData(L"");
     FSessionData->Assign(SessionData);
     FLog = new TSessionLog(this, FSessionData, Configuration);
+    FActionLog = new TActionLog(this, FSessionData, Configuration);
     FFiles = new TRemoteDirectory(this);
     FExceptionOnFail = 0;
     FInTransaction = 0;
@@ -558,6 +559,7 @@ TTerminal::~TTerminal()
 
     SAFE_DESTROY_EX(TCustomFileSystem, FFileSystem);
     SAFE_DESTROY_EX(TSessionLog, FLog);
+    SAFE_DESTROY_EX(TActionLog, FActionLog);
     delete FFiles;
     delete FDirectoryCache;
     delete FDirectoryChangesCache;
@@ -686,6 +688,7 @@ void __fastcall TTerminal::Open()
 {
     // DEBUG_PRINTF(L"begin");
     FLog->ReflectSettings();
+    FActionLog->ReflectSettings();
     bool Reopen = false;
     do
     {
@@ -2438,7 +2441,7 @@ void TTerminal::CustomReadDirectory(TRemoteFileList *FileList)
 //---------------------------------------------------------------------------
 TRemoteFileList *TTerminal::ReadDirectoryListing(const std::wstring Directory, const TFileMasks &Mask)
 {
-    TLsSessionAction Action(GetLog(), AbsolutePath(Directory, true));
+    TLsSessionAction Action(GetActionLog(), AbsolutePath(Directory, true));
     TRemoteFileList *FileList = NULL;
     try
     {
@@ -2864,7 +2867,7 @@ void TTerminal::DeleteFile(const std::wstring FileName,
 void TTerminal::DoDeleteFile(const std::wstring FileName,
                              const TRemoteFile *File, int Params)
 {
-    TRmSessionAction Action(GetLog(), AbsolutePath(FileName, true));
+    TRmSessionAction Action(GetActionLog(), AbsolutePath(FileName, true));
     try
     {
         assert(FFileSystem);
@@ -3058,7 +3061,7 @@ void TTerminal::ChangeFileProperties(const std::wstring FileName,
 void TTerminal::DoChangeFileProperties(const std::wstring FileName,
                                        const TRemoteFile *File, const TRemoteProperties *Properties)
 {
-    TChmodSessionAction Action(GetLog(), AbsolutePath(FileName, true));
+    TChmodSessionAction Action(GetActionLog(), AbsolutePath(FileName, true));
     try
     {
         assert(FFileSystem);
@@ -3260,7 +3263,7 @@ void TTerminal::RenameFile(const TRemoteFile *File,
 void TTerminal::DoRenameFile(const std::wstring FileName,
                              const std::wstring NewName, bool Move)
 {
-    TMvSessionAction Action(GetLog(), AbsolutePath(FileName, true), AbsolutePath(NewName, true));
+    TMvSessionAction Action(GetActionLog(), AbsolutePath(FileName, true), AbsolutePath(NewName, true));
     try
     {
         assert(FFileSystem);
@@ -3431,7 +3434,7 @@ void TTerminal::CreateDirectory(const std::wstring DirName,
 //---------------------------------------------------------------------------
 void TTerminal::DoCreateDirectory(const std::wstring DirName)
 {
-    TMkdirSessionAction Action(GetLog(), AbsolutePath(DirName, true));
+    TMkdirSessionAction Action(GetActionLog(), AbsolutePath(DirName, true));
     try
     {
         assert(FFileSystem);
@@ -3601,7 +3604,7 @@ TTerminal *TTerminal::GetCommandSession()
             CommandSessionData->SetFSProtocol(fsSCPonly);
             CommandSessionData->SetClearAliases(false);
             CommandSessionData->SetUnsetNationalVars(false);
-            CommandSessionData->SetLookupUserGroups(false);
+            CommandSessionData->SetLookupUserGroups(asOn);
 
             FCommandSession->FExceptionOnFail = FExceptionOnFail;
 
@@ -3659,7 +3662,7 @@ void TTerminal::AnyCommand(const std::wstring Command,
 #pragma warning(pop)
     };
 
-    TCallSessionAction Action(GetLog(), Command, GetCurrentDirectory());
+    TCallSessionAction Action(GetActionLog(), Command, GetCurrentDirectory());
     TOutputProxy ProxyOutputEvent(Action, OutputEvent);
     DoAnyCommand(Command, boost::bind(&TOutputProxy::Output, &ProxyOutputEvent, _1, _2),
                  &Action);

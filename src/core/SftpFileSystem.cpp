@@ -3924,7 +3924,7 @@ void __fastcall TSFTPFileSystem::SFTPSourceRobust(const std::wstring FileName,
     // the same in TFTPFileSystem
     bool Retry;
 
-    TUploadSessionAction Action(FTerminal->GetLog());
+    TUploadSessionAction Action(FTerminal->GetActionLog());
     TOpenRemoteFileParams OpenParams;
     OpenParams.OverwriteMode = omOverwrite;
     TOverwriteFileParams FileParams;
@@ -4312,7 +4312,7 @@ void __fastcall TSFTPFileSystem::SFTPSource(const std::wstring FileName,
                 std::auto_ptr<TTouchSessionAction> TouchAction;
                 if (CopyParam->GetPreserveTime())
                 {
-                    TouchAction.reset(new TTouchSessionAction(FTerminal->GetLog(), DestFullName,
+                    TouchAction.reset(new TTouchSessionAction(FTerminal->GetActionLog(), DestFullName,
                                       UnixToDateTime(MTime, GetSessionData()->GetDSTMode())));
                 }
                 std::auto_ptr<TChmodSessionAction> ChmodAction;
@@ -4321,7 +4321,7 @@ void __fastcall TSFTPFileSystem::SFTPSource(const std::wstring FileName,
                 // of overwritten file to new file
                 if (CopyParam->GetPreserveRights())
                 {
-                    ChmodAction.reset(new TChmodSessionAction(FTerminal->GetLog(), DestFullName, Rights));
+                    ChmodAction.reset(new TChmodSessionAction(FTerminal->GetActionLog(), DestFullName, Rights));
                 }
                 try
                 {
@@ -4793,7 +4793,7 @@ void __fastcall TSFTPFileSystem::SFTPSinkRobust(const std::wstring FileName,
     // the same in TFTPFileSystem
     bool Retry;
 
-    TDownloadSessionAction Action(FTerminal->GetLog());
+    TDownloadSessionAction Action(FTerminal->GetActionLog());
 
     do
     {

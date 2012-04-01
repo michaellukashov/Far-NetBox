@@ -791,7 +791,7 @@ TRemoteFile *TRemoteFile::Duplicate(bool Standalone) const
     return Result;
 }
 //---------------------------------------------------------------------------
-void TRemoteFile::LoadTypeInfo()
+void __fastcall TRemoteFile::LoadTypeInfo()
 {
     /* TODO : If file is link: Should be attributes taken from linked file? */
     unsigned long Attrs = 0;
@@ -803,7 +803,7 @@ void TRemoteFile::LoadTypeInfo()
     FIconIndex = FakeFileImageIndex(DumbFileName, Attrs, &FTypeName);
 }
 //---------------------------------------------------------------------------
-int TRemoteFile::GetIconIndex() const
+int __fastcall TRemoteFile::GetIconIndex() const
 {
     if (FIconIndex == -1)
     {
@@ -812,7 +812,7 @@ int TRemoteFile::GetIconIndex() const
     return FIconIndex;
 }
 //---------------------------------------------------------------------------
-std::wstring TRemoteFile::GetTypeName()
+std::wstring __fastcall TRemoteFile::GetTypeName()
 {
     // check avilability of type info by icon index, because type name can be empty
     if (FIconIndex < 0)
@@ -822,7 +822,7 @@ std::wstring TRemoteFile::GetTypeName()
     return FTypeName;
 }
 //---------------------------------------------------------------------------
-bool TRemoteFile::GetIsHidden()
+bool __fastcall TRemoteFile::GetIsHidden()
 {
     bool Result;
     switch (FIsHidden)
@@ -843,27 +843,27 @@ bool TRemoteFile::GetIsHidden()
     return Result;
 }
 //---------------------------------------------------------------------------
-void TRemoteFile::SetIsHidden(bool value)
+void __fastcall TRemoteFile::SetIsHidden(bool value)
 {
     FIsHidden = value ? 1 : 0;
 }
 //---------------------------------------------------------------------------
-bool TRemoteFile::GetIsDirectory() const
+bool __fastcall TRemoteFile::GetIsDirectory() const
 {
     return (toupper(GetType()) == FILETYPE_DIRECTORY);
 }
 //---------------------------------------------------------------------------
-bool TRemoteFile::GetIsParentDirectory() const
+bool __fastcall TRemoteFile::GetIsParentDirectory() const
 {
     return (GetFileName() == PARENTDIRECTORY);
 }
 //---------------------------------------------------------------------------
-bool TRemoteFile::GetIsThisDirectory() const
+bool __fastcall TRemoteFile::GetIsThisDirectory() const
 {
     return (GetFileName() == THISDIRECTORY);
 }
 //---------------------------------------------------------------------------
-bool TRemoteFile::GetIsInaccesibleDirectory() const
+bool __fastcall TRemoteFile::GetIsInaccesibleDirectory() const
 {
     bool Result;
     if (GetIsDirectory())
@@ -880,28 +880,25 @@ bool TRemoteFile::GetIsInaccesibleDirectory() const
     return Result;
 }
 //---------------------------------------------------------------------------
-char TRemoteFile::GetType() const
+wchar_t __fastcall TRemoteFile::GetType() const
 {
     if (GetIsSymLink() && FLinkedFile) { return FLinkedFile->GetType(); }
     else { return FType; }
 }
 //---------------------------------------------------------------------------
-void TRemoteFile::SetType(char AType)
+void __fastcall TRemoteFile::SetType(wchar_t AType)
 {
     FType = AType;
-    // Allow even non-standard file types (e.g. 'S')
-    // if (!std::wstring("-DL").find_first_of((char)toupper(FType))) nb::Abort();
-    FIsSymLink = (static_cast<char>(toupper(FType)) == FILETYPE_SYMLINK);
+  FIsSymLink = ((wchar_t)towupper(FType) == FILETYPE_SYMLINK);
 }
 //---------------------------------------------------------------------------
-TRemoteFile *TRemoteFile::GetLinkedFile()
+TRemoteFile * __fastcall TRemoteFile::GetLinkedFile()
 {
-    // it would be called releatedly for broken symlinks
-    //if (!FLinkedFile) FindLinkedFile();
+    // do not call FindLinkedFile as it would be called releatedly for broken symlinks
     return FLinkedFile;
 }
 //---------------------------------------------------------------------------
-void TRemoteFile::SetLinkedFile(TRemoteFile *value)
+void __fastcall TRemoteFile::SetLinkedFile(TRemoteFile *value)
 {
     if (FLinkedFile != value)
     {
@@ -910,7 +907,7 @@ void TRemoteFile::SetLinkedFile(TRemoteFile *value)
     }
 }
 //---------------------------------------------------------------------------
-bool TRemoteFile::GetBrokenLink()
+bool __fastcall TRemoteFile::GetBrokenLink()
 {
     assert(GetTerminal());
     // If file is symlink but we couldn't find linked file we assume broken link
@@ -919,7 +916,7 @@ bool TRemoteFile::GetBrokenLink()
     // "!FLinkTo.empty()" removed because it does not work with SFTP
 }
 //---------------------------------------------------------------------------
-void TRemoteFile::ShiftTime(const nb::TDateTime &Difference)
+void __fastcall TRemoteFile::ShiftTime(const nb::TDateTime &Difference)
 {
     double D = static_cast<double>(Difference.operator double());
     if ((abs(D) > std::numeric_limits<double>::epsilon()) && (FModificationFmt != mfMDY))
@@ -931,7 +928,7 @@ void TRemoteFile::ShiftTime(const nb::TDateTime &Difference)
     }
 }
 //---------------------------------------------------------------------------
-void TRemoteFile::SetModification(const nb::TDateTime &value)
+void __fastcall TRemoteFile::SetModification(const nb::TDateTime &value)
 {
     if (FModification != value)
     {
@@ -940,12 +937,12 @@ void TRemoteFile::SetModification(const nb::TDateTime &value)
     }
 }
 //---------------------------------------------------------------------------
-std::wstring TRemoteFile::GetUserModificationStr()
+std::wstring __fastcall TRemoteFile::GetUserModificationStr()
 {
     return ::UserModificationStr(GetModification(), FModificationFmt);
 }
 //---------------------------------------------------------------------------
-std::wstring TRemoteFile::GetModificationStr()
+std::wstring __fastcall TRemoteFile::GetModificationStr()
 {
     unsigned int Year, Month, Day, Hour, Min, Sec, MSec;
     GetModification().DecodeDate(Year, Month, Day);
@@ -972,22 +969,22 @@ std::wstring TRemoteFile::GetModificationStr()
     }
 }
 //---------------------------------------------------------------------------
-std::wstring TRemoteFile::GetExtension()
+std::wstring __fastcall TRemoteFile::GetExtension()
 {
     return UnixExtractFileExt(FFileName);
 }
 //---------------------------------------------------------------------------
-void TRemoteFile::SetRights(TRights *value)
+void __fastcall TRemoteFile::SetRights(TRights *value)
 {
     FRights->Assign(value);
 }
 //---------------------------------------------------------------------------
-std::wstring TRemoteFile::GetRightsStr()
+std::wstring __fastcall TRemoteFile::GetRightsStr()
 {
     return FRights->GetUnknown() ? std::wstring() : FRights->GetText();
 }
 //---------------------------------------------------------------------------
-void TRemoteFile::SetListingStr(const std::wstring value)
+void __fastcall TRemoteFile::SetListingStr(const std::wstring value)
 {
     // DEBUG_PRINTF(L"begin, value = %s", value.c_str());
     // Value stored in 'value' can be used for error message
@@ -1241,7 +1238,7 @@ void TRemoteFile::SetListingStr(const std::wstring value)
     // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-void TRemoteFile::Complete()
+void __fastcall TRemoteFile::Complete()
 {
     assert(GetTerminal() != NULL);
     if (GetIsSymLink() && GetTerminal()->GetResolvingSymlinks())
@@ -1250,7 +1247,7 @@ void TRemoteFile::Complete()
     }
 }
 //---------------------------------------------------------------------------
-void TRemoteFile::FindLinkedFile()
+void __fastcall TRemoteFile::FindLinkedFile()
 {
     assert(GetTerminal() && GetIsSymLink());
 
@@ -1313,7 +1310,7 @@ void TRemoteFile::FindLinkedFile()
     }
 }
 //---------------------------------------------------------------------------
-std::wstring TRemoteFile::GetListingStr()
+std::wstring __fastcall TRemoteFile::GetListingStr()
 {
     // note that ModificationStr is longer than 12 for mfFull
     std::wstring LinkPart;
@@ -1330,7 +1327,7 @@ std::wstring TRemoteFile::GetListingStr()
                   LinkPart.c_str());
 }
 //---------------------------------------------------------------------------
-std::wstring TRemoteFile::GetFullFileName() const
+std::wstring __fastcall TRemoteFile::GetFullFileName() const
 {
     if (FFullFileName.empty())
     {
@@ -1357,12 +1354,12 @@ std::wstring TRemoteFile::GetFullFileName() const
     }
 }
 //---------------------------------------------------------------------------
-bool TRemoteFile::GetHaveFullFileName() const
+bool __fastcall TRemoteFile::GetHaveFullFileName() const
 {
     return !FFullFileName.empty() || (GetDirectory() != NULL);
 }
 //---------------------------------------------------------------------------
-int TRemoteFile::GetAttr()
+int __fastcall TRemoteFile::GetAttr()
 {
     int Result = 0;
     if (GetRights()->GetReadOnly()) { Result |= faReadOnly; }
@@ -1370,7 +1367,7 @@ int TRemoteFile::GetAttr()
     return Result;
 }
 //---------------------------------------------------------------------------
-void TRemoteFile::SetTerminal(TTerminal *value)
+void __fastcall TRemoteFile::SetTerminal(TTerminal *value)
 {
     FTerminal = value;
     if (FLinkedFile)

@@ -97,7 +97,7 @@ private:
     std::wstring FLinkTo;
     TRights *FRights;
     TTerminal *FTerminal;
-    char FType;
+    wchar_t FType;
     bool FSelected;
     bool FCyclicLink;
     std::wstring FFullFileName;
@@ -105,68 +105,68 @@ private:
     std::wstring FTypeName;
     TRemoteFile *Self;
 
-    void LoadTypeInfo();
+    void __fastcall LoadTypeInfo();
 
 protected:
-    void FindLinkedFile();
+    void __fastcall FindLinkedFile();
 
 public:
     explicit TRemoteFile(TRemoteFile *ALinkedByFile = NULL);
     virtual ~TRemoteFile();
-    TRemoteFile *Duplicate(bool Standalone = true) const;
+    TRemoteFile * __fastcall Duplicate(bool Standalone = true) const;
 
-    void ShiftTime(const nb::TDateTime &Difference);
-    void Complete();
+    void __fastcall ShiftTime(const nb::TDateTime &Difference);
+    void __fastcall Complete();
 
-    int GetAttr();
-    bool GetBrokenLink();
-    TRemoteFileList *GetDirectory() const { return FDirectory; }
-    void SetDirectory(TRemoteFileList *value) { FDirectory = value; }
-    std::wstring GetRightsStr();
-    __int64 GetSize() const { return FSize; }
-    void SetSize(__int64 value) { FSize = value; }
-    TRemoteToken GetOwner() const { return FOwner; }
-    void SetOwner(TRemoteToken value) { FOwner = value; }
-    TRemoteToken GetGroup() const { return FGroup; }
-    void SetGroup(TRemoteToken value) { FGroup = value; }
-    std::wstring GetFileName() const { return FFileName; }
-    void SetFileName(const std::wstring value) { FFileName = value; }
-    int GetINodeBlocks() { return FINodeBlocks; };
-    nb::TDateTime GetModification() const { return FModification; }
-    void SetModification(const nb::TDateTime &value);
-    std::wstring GetModificationStr();
-    std::wstring GetUserModificationStr();
-    TModificationFmt GetModificationFmt() const { return FModificationFmt; }
-    void SetModificationFmt(TModificationFmt value) { FModificationFmt = value; }
-    nb::TDateTime GetLastAccess() const { return FLastAccess; }
-    void SetLastAccess(nb::TDateTime value) { FLastAccess = value; }
-    bool GetIsSymLink() const { return FIsSymLink; }
-    bool GetIsDirectory() const;
-    TRemoteFile *GetLinkedFile();
-    void SetLinkedFile(TRemoteFile *value);
-    std::wstring GetLinkTo() const { return FLinkTo; }
-    void SetLinkTo(const std::wstring value) { FLinkTo = value; }
-    std::wstring GetListingStr();
-    void SetListingStr(const std::wstring value);
-    TRights *GetRights() const { return FRights; }
-    void SetRights(TRights *value);
-    TTerminal *GetTerminal() const { return FTerminal; }
-    void SetTerminal(TTerminal *value);
-    char GetType() const;
-    void SetType(char AType);
-    bool GetSelected() { return FSelected; }
-    void SetSelected(bool value) { FSelected = value; }
-    std::wstring GetFullFileName() const;
-    void SetFullFileName(const std::wstring value) { FFullFileName = value; }
-    bool GetHaveFullFileName() const;
-    int GetIconIndex() const;
-    std::wstring GetTypeName();
-    bool GetIsHidden();
-    void SetIsHidden(bool value);
-    bool GetIsParentDirectory() const;
-    bool GetIsThisDirectory() const;
-    bool GetIsInaccesibleDirectory() const;
-    std::wstring GetExtension();
+    int __fastcall GetAttr();
+    bool __fastcall GetBrokenLink();
+    TRemoteFileList * __fastcall GetDirectory() const { return FDirectory; }
+    void __fastcall SetDirectory(TRemoteFileList *value) { FDirectory = value; }
+    std::wstring __fastcall GetRightsStr();
+    __int64 __fastcall GetSize() const { return FSize; }
+    void __fastcall SetSize(__int64 value) { FSize = value; }
+    TRemoteToken __fastcall GetOwner() const { return FOwner; }
+    void __fastcall SetOwner(TRemoteToken value) { FOwner = value; }
+    TRemoteToken __fastcall GetGroup() const { return FGroup; }
+    void __fastcall SetGroup(TRemoteToken value) { FGroup = value; }
+    std::wstring __fastcall GetFileName() const { return FFileName; }
+    void __fastcall SetFileName(const std::wstring value) { FFileName = value; }
+    int __fastcall GetINodeBlocks() { return FINodeBlocks; };
+    nb::TDateTime __fastcall GetModification() const { return FModification; }
+    void __fastcall SetModification(const nb::TDateTime &value);
+    std::wstring __fastcall GetModificationStr();
+    std::wstring __fastcall GetUserModificationStr();
+    TModificationFmt __fastcall GetModificationFmt() const { return FModificationFmt; }
+    void __fastcall SetModificationFmt(TModificationFmt value) { FModificationFmt = value; }
+    nb::TDateTime __fastcall GetLastAccess() const { return FLastAccess; }
+    void __fastcall SetLastAccess(nb::TDateTime value) { FLastAccess = value; }
+    bool __fastcall GetIsSymLink() const { return FIsSymLink; }
+    bool __fastcall GetIsDirectory() const;
+    TRemoteFile * __fastcall GetLinkedFile();
+    void __fastcall SetLinkedFile(TRemoteFile *value);
+    std::wstring __fastcall GetLinkTo() const { return FLinkTo; }
+    void __fastcall SetLinkTo(const std::wstring value) { FLinkTo = value; }
+    std::wstring __fastcall GetListingStr();
+    void __fastcall SetListingStr(const std::wstring value);
+    TRights * __fastcall GetRights() const { return FRights; }
+    void __fastcall SetRights(TRights *value);
+    TTerminal * __fastcall GetTerminal() const { return FTerminal; }
+    void __fastcall SetTerminal(TTerminal *value);
+    wchar_t __fastcall GetType() const;
+    void __fastcall SetType(wchar_t AType);
+    bool __fastcall GetSelected() { return FSelected; }
+    void __fastcall SetSelected(bool value) { FSelected = value; }
+    std::wstring __fastcall GetFullFileName() const;
+    void __fastcall SetFullFileName(const std::wstring value) { FFullFileName = value; }
+    bool __fastcall GetHaveFullFileName() const;
+    int __fastcall GetIconIndex() const;
+    std::wstring __fastcall GetTypeName();
+    bool __fastcall GetIsHidden();
+    void __fastcall SetIsHidden(bool value);
+    bool __fastcall GetIsParentDirectory() const;
+    bool __fastcall GetIsThisDirectory() const;
+    bool __fastcall GetIsInaccesibleDirectory() const;
+    std::wstring __fastcall GetExtension();
 };
 //---------------------------------------------------------------------------
 class TRemoteDirectoryFile : public TRemoteFile

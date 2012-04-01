@@ -171,6 +171,7 @@ public:
 private:
     TSessionData *FSessionData;
     TSessionLog *FLog;
+    TActionLog * FActionLog;
     TConfiguration *FConfiguration;
     std::wstring FCurrentDirectory;
     std::wstring FLockDirectory;
@@ -454,6 +455,7 @@ public:
 
     TSessionData *__fastcall GetSessionData() { return FSessionData; }
     TSessionLog *__fastcall GetLog() { return FLog; }
+    TActionLog * __fastcall GetActionLog() { return FActionLog; };
     TConfiguration *__fastcall GetConfiguration() { return FConfiguration; }
     bool __fastcall GetActive();
     TSessionStatus __fastcall GetStatus() { return FStatus; }

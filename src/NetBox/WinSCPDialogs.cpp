@@ -3515,7 +3515,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
         SessionData->SetShell((SessionData->GetDefaultShell() ? std::wstring() : ShellEdit->GetText()));
         SessionData->SetDetectReturnVar(ReturnVarEdit->GetText() == ReturnVarEdit->GetItems()->GetString(0));
         SessionData->SetReturnVar((SessionData->GetDetectReturnVar() ? std::wstring() : ReturnVarEdit->GetText()));
-        SessionData->SetLookupUserGroups(LookupUserGroupsCheck->GetChecked());
+        SessionData->SetLookupUserGroups((TAutoSwitch)LookupUserGroupsCheck->GetChecked());
         SessionData->SetClearAliases(ClearAliasesCheck->GetChecked());
         SessionData->SetIgnoreLsWarnings(IgnoreLsWarningsCheck->GetChecked());
         SessionData->SetScp1Compatibility(Scp1CompatibilityCheck->GetChecked());

@@ -926,7 +926,7 @@ int TSecureShell::TimeoutPrompt(queryparamstimer_slot_type *PoolEvent)
         TQueryParams Params(qpFatalAbort | qpAllowContinueOnError | qpIgnoreAbort);
         Params.Timer = 500;
         Params.TimerEvent = PoolEvent;
-        Params.TimerMessage = FMTLOAD(TIMEOUT_STILL_WAITING2, FSessionData->GetTimeout());
+        Params.TimerMessage = FMTLOAD(TIMEOUT_STILL_WAITING3, FSessionData->GetTimeout());
         Params.TimerAnswers = qaAbort;
         Answer = FUI->QueryUser(FMTLOAD(CONFIRM_PROLONG_TIMEOUT3, FSessionData->GetTimeout(), FSessionData->GetTimeout()),
                                 NULL, qaRetry | qaAbort, &Params);

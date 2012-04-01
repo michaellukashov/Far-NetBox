@@ -94,7 +94,7 @@ private:
     bool FCacheDirectoryChanges;
     bool FPreserveDirectoryChanges;
     bool FSelected;
-    bool FLookupUserGroups;
+    TAutoSwitch FLookupUserGroups;
     std::wstring FReturnVar;
     bool FScp1Compatibility;
     std::wstring FShell;
@@ -263,7 +263,7 @@ public:
     void __fastcall SetDetectReturnVar(bool value);
     bool __fastcall GetDetectReturnVar();
     TEOLType GetEOLType() const { return FEOLType; }
-    bool GetLookupUserGroups() const { return FLookupUserGroups; }
+    TAutoSwitch GetLookupUserGroups() const { return FLookupUserGroups; }
     std::wstring GetReturnVar() const { return FReturnVar; }
     bool GetScp1Compatibility() const { return FScp1Compatibility; }
     std::wstring GetShell() const { return FShell; }
@@ -389,7 +389,7 @@ public:
     void __fastcall SetListingCommand(const std::wstring value);
     void __fastcall SetClearAliases(bool value);
     void __fastcall SetEOLType(TEOLType value);
-    void __fastcall SetLookupUserGroups(bool value);
+    void __fastcall SetLookupUserGroups(TAutoSwitch value);
     void __fastcall SetReturnVar(const std::wstring value);
     void __fastcall SetScp1Compatibility(bool value);
     void __fastcall SetShell(const std::wstring value);

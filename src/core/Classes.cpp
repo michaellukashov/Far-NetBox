@@ -1965,4 +1965,18 @@ bool TShortCut::operator < (const TShortCut &rhs) const
     return false;
 }
 
+//---------------------------------------------------------------------------
+
+void __fastcall GetLocaleFormatSettings(int LCID, TFormatSettings &FormatSettings)
+{
+    nb::Error(SNotImplemented, 1204);
+}
+
+int __fastcall GetDefaultLCID()
+{
+    nb::Error(SNotImplemented, 1205);
+    return 0;
+}
+
+
 } // namespace nb

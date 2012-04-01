@@ -8,7 +8,7 @@
 
 #include "SessionData.h"
 #include "Interface.h"
-// #include "Exceptions.h"
+#include "Exceptions.h"
 //---------------------------------------------------------------------------
 enum TSessionStatus { ssClosed, ssOpening, ssOpened };
 //---------------------------------------------------------------------------
@@ -79,29 +79,30 @@ public:
 };
 //---------------------------------------------------------------------------
 // Duplicated in LogMemo.h for design-time-only purposes
-enum TLogLineType { llOutput, llInput, llStdError, llMessage, llException, llAction };
-enum TLogAction { laUpload, laDownload, laTouch, laChmod, laMkdir, laRm, laMv, laCall, laLs };
+enum TLogLineType { llOutput, llInput, llStdError, llMessage, llException };
+enum TLogAction { laUpload, laDownload, laTouch, laChmod, laMkdir, laRm, laMv, laCall, laLs, laStat };
 //---------------------------------------------------------------------------
 typedef boost::signal2<void, const std::wstring, bool> captureoutput_signal_type;
 typedef captureoutput_signal_type::slot_type captureoutput_slot_type;
-typedef boost::signal3<void, const std::wstring, const std::wstring, const std::wstring > calculatedchecksum_signal_type;
+typedef boost::signal3<void, const std::wstring, const std::wstring, const std::wstring> calculatedchecksum_signal_type;
 typedef calculatedchecksum_signal_type::slot_type calculatedchecksum_slot_type;
 //---------------------------------------------------------------------------
 class TCriticalSection;
 class TSessionActionRecord;
 class TSessionLog;
+class TActionLog;
 //---------------------------------------------------------------------------
 class TSessionAction
 {
 public:
-    explicit TSessionAction(TSessionLog *Log, TLogAction Action);
+    explicit TSessionAction(TActionLog *Log, TLogAction Action);
     ~TSessionAction();
 
-    void Restart();
+    void __fastcall Restart();
 
-    void Commit();
-    void Rollback(const std::exception *E = NULL);
-    void Cancel();
+    void __fastcall Commit();
+    void __fastcall Rollback(const std::exception *E = NULL);
+    void __fastcall Cancel();
 
 protected:
     TSessionActionRecord *FRecord;
@@ -110,31 +111,31 @@ protected:
 class TFileSessionAction : public TSessionAction
 {
 public:
-    explicit TFileSessionAction(TSessionLog *Log, TLogAction Action);
-    explicit TFileSessionAction(TSessionLog *Log, TLogAction Action, const std::wstring FileName);
+    explicit TFileSessionAction(TActionLog *Log, TLogAction Action);
+    explicit TFileSessionAction(TActionLog *Log, TLogAction Action, const std::wstring FileName);
 
-    void FileName(const std::wstring FileName);
+    void __fastcall FileName(const std::wstring FileName);
 };
 //---------------------------------------------------------------------------
 class TFileLocationSessionAction : public TFileSessionAction
 {
 public:
-    explicit TFileLocationSessionAction(TSessionLog *Log, TLogAction Action);
-    explicit TFileLocationSessionAction(TSessionLog *Log, TLogAction Action, const std::wstring FileName);
+    explicit TFileLocationSessionAction(TActionLog *Log, TLogAction Action);
+    explicit TFileLocationSessionAction(TActionLog *Log, TLogAction Action, const std::wstring FileName);
 
-    void Destination(const std::wstring Destination);
+    void __fastcall Destination(const std::wstring Destination);
 };
 //---------------------------------------------------------------------------
 class TUploadSessionAction : public TFileLocationSessionAction
 {
 public:
-    explicit TUploadSessionAction(TSessionLog *Log);
+    explicit TUploadSessionAction(TActionLog *Log);
 };
 //---------------------------------------------------------------------------
 class TDownloadSessionAction : public TFileLocationSessionAction
 {
 public:
-    explicit TDownloadSessionAction(TSessionLog *Log);
+    explicit TDownloadSessionAction(TActionLog *Log);
 };
 //---------------------------------------------------------------------------
 class TRights;
@@ -142,60 +143,68 @@ class TRights;
 class TChmodSessionAction : public TFileSessionAction
 {
 public:
-    explicit TChmodSessionAction(TSessionLog *Log, const std::wstring FileName);
-    explicit TChmodSessionAction(TSessionLog *Log, const std::wstring FileName,
+    explicit TChmodSessionAction(TActionLog *Log, const std::wstring FileName);
+    explicit TChmodSessionAction(TActionLog *Log, const std::wstring FileName,
                                  const TRights &Rights);
 
-    void Rights(const TRights &Rights);
-    void Recursive();
+    void __fastcall Rights(const TRights &Rights);
+    void __fastcall Recursive();
 };
 //---------------------------------------------------------------------------
 class TTouchSessionAction : public TFileSessionAction
 {
 public:
-    explicit TTouchSessionAction(TSessionLog *Log, const std::wstring FileName,
+    explicit TTouchSessionAction(TActionLog *Log, const std::wstring FileName,
                                  const nb::TDateTime &Modification);
 };
 //---------------------------------------------------------------------------
 class TMkdirSessionAction : public TFileSessionAction
 {
 public:
-    explicit TMkdirSessionAction(TSessionLog *Log, const std::wstring FileName);
+    explicit TMkdirSessionAction(TActionLog *Log, const std::wstring FileName);
 };
 //---------------------------------------------------------------------------
 class TRmSessionAction : public TFileSessionAction
 {
 public:
-    explicit TRmSessionAction(TSessionLog *Log, const std::wstring FileName);
+    explicit TRmSessionAction(TActionLog *Log, const std::wstring FileName);
 
-    void Recursive();
+    void __fastcall Recursive();
 };
 //---------------------------------------------------------------------------
 class TMvSessionAction : public TFileLocationSessionAction
 {
 public:
-    explicit TMvSessionAction(TSessionLog *Log, const std::wstring FileName,
+    explicit TMvSessionAction(TActionLog *Log, const std::wstring FileName,
                               const std::wstring Destination);
 };
 //---------------------------------------------------------------------------
 class TCallSessionAction : public TSessionAction
 {
 public:
-    explicit TCallSessionAction(TSessionLog *Log, const std::wstring Command,
+    explicit TCallSessionAction(TActionLog *Log, const std::wstring Command,
                                 const std::wstring Destination);
 
-    void AddOutput(const std::wstring Output, bool StdError);
+    void __fastcall AddOutput(const std::wstring Output, bool StdError);
 };
 //---------------------------------------------------------------------------
 class TLsSessionAction : public TSessionAction
 {
 public:
-    explicit TLsSessionAction(TSessionLog *Log, const std::wstring Destination);
+    explicit TLsSessionAction(TActionLog *Log, const std::wstring Destination);
 
-    void FileList(TRemoteFileList *FileList);
+    void __fastcall FileList(TRemoteFileList *FileList);
 };
 //---------------------------------------------------------------------------
-typedef boost::signal2<void, TLogLineType, const std::wstring > doaddlog_signal_type;
+class TStatSessionAction : public TFileSessionAction
+{
+public:
+  explicit TStatSessionAction(TActionLog * Log, const std::wstring & FileName);
+
+  void __fastcall File(TRemoteFile * File);
+};
+//---------------------------------------------------------------------------
+typedef boost::signal2<void, TLogLineType, const std::wstring> doaddlog_signal_type;
 typedef doaddlog_signal_type::slot_type doaddlog_slot_type;
 //---------------------------------------------------------------------------
 class TSessionLog : protected nb::TStringList
@@ -206,36 +215,34 @@ public:
     explicit TSessionLog(TSessionUI *UI, TSessionData *SessionData,
                          TConfiguration *Configuration);
     virtual ~TSessionLog();
-    virtual void Add(TLogLineType Type, const std::wstring Line);
-    void AddStartupInfo();
-    void AddException(const std::exception *E);
-    void AddSeparator();
+    virtual void __fastcall Add(TLogLineType Type, const std::wstring Line);
+    void __fastcall AddStartupInfo();
+    void __fastcall AddException(const std::exception *E);
+    void __fastcall AddSeparator();
 
     virtual void __fastcall Clear();
-    void ReflectSettings();
-    void Lock();
-    void Unlock();
+    void __fastcall ReflectSettings();
+    void __fastcall Lock();
+    void __fastcall Unlock();
 
-    TSessionLog *GetParent() { return FParent; }
-    void SetParent(TSessionLog *value) { FParent = value; }
-    bool GetLogging() { return FLogging; }
-    size_t GetBottomIndex();
-    std::wstring GetLine(size_t Index);
-    TLogLineType GetType(size_t Index);
+    TSessionLog * __fastcall GetParent() { return FParent; }
+    void __fastcall SetParent(TSessionLog *value) { FParent = value; }
+    bool __fastcall GetLogging() { return FLogging; }
+    size_t __fastcall GetBottomIndex();
+    std::wstring __fastcall GetLine(size_t Index);
+    TLogLineType __fastcall GetType(size_t Index);
     const nb::notify_signal_type &GetOnStateChange() const { return FOnStateChange; }
     void SetOnStateChange(const nb::notify_slot_type &value) { FOnStateChange.connect(value); }
-    std::wstring GetCurrentFileName() { return FCurrentFileName; }
-    bool GetLoggingToFile();
-    size_t GetTopIndex() { return FTopIndex; }
-    std::wstring GetSessionName();
-    std::wstring GetName() { return FName; }
-    void SetName(const std::wstring value) { FName = value; }
+    std::wstring __fastcall GetCurrentFileName() { return FCurrentFileName; }
+    bool __fastcall GetLoggingToFile();
+    size_t __fastcall GetTopIndex() { return FTopIndex; }
+    std::wstring __fastcall GetSessionName();
+    std::wstring __fastcall GetName() { return FName; }
+    void __fastcall SetName(const std::wstring value) { FName = value; }
 
 protected:
-    void CloseLogFile();
-    bool LogToFile();
-    inline void AddPendingAction(TSessionActionRecord *Action);
-    void RecordPendingActions();
+    void __fastcall CloseLogFile();
+    bool __fastcall LogToFile();
 
 private:
     TConfiguration *FConfiguration;
@@ -250,21 +257,67 @@ private:
     TSessionUI *FUI;
     TSessionData *FSessionData;
     std::wstring FName;
-    bool FLoggingActions;
     bool FClosed;
-    nb::TList *FPendingActions;
     nb::notify_signal_type FOnStateChange;
     TSessionLog *Self;
 
-    void DeleteUnnecessary();
-    void StateChange();
-    void OpenLogFile();
-    std::wstring GetLogFileName();
-    void DoAdd(TLogLineType Type, const std::wstring Line,
+    std::wstring __fastcall GetLine(int Index);
+    TLogLineType __fastcall GetType(int Index);
+    void __fastcall DeleteUnnecessary();
+    void __fastcall StateChange();
+    void __fastcall OpenLogFile();
+    std::wstring __fastcall GetLogFileName();
+    void __fastcall DoAdd(TLogLineType Type, const std::wstring Line,
                const doaddlog_slot_type &func);
     void DoAddToParent(TLogLineType aType, const std::wstring aLine);
     void DoAddToSelf(TLogLineType aType, const std::wstring aLine);
     void DoAddStartupInfo(TSessionData *Data);
+};
+//---------------------------------------------------------------------------
+class TActionLog
+{
+friend class TSessionAction;
+friend class TSessionActionRecord;
+public:
+  explicit TActionLog(TSessionUI* UI, TSessionData * SessionData,
+    TConfiguration * Configuration);
+  virtual ~TActionLog();
+
+  void __fastcall ReflectSettings();
+  void __fastcall AddFailure(const std::exception * E);
+  void __fastcall AddFailure(nb::TStrings * Messages);
+  void __fastcall BeginGroup(std::wstring Name);
+  void __fastcall EndGroup();
+
+  std::wstring __fastcall GetCurrentFileName() const { return FCurrentFileName; };
+  bool __fastcall GetEnabled() const { return FEnabled; }
+  void __fastcall SetEnabled(bool value);
+
+protected:
+  void __fastcall CloseLogFile();
+  inline void __fastcall AddPendingAction(TSessionActionRecord * Action);
+  void __fastcall RecordPendingActions();
+  void __fastcall Add(const std::wstring  & Line);
+  void __fastcall AddIndented(const std::wstring  & Line);
+  void __fastcall AddMessages(std::wstring Indent, nb::TStrings * Messages);
+
+private:
+  TConfiguration * FConfiguration;
+  TCriticalSection * FCriticalSection;
+  bool FLogging;
+  void * FFile;
+  std::wstring  FCurrentLogFileName;
+  std::wstring  FCurrentFileName;
+  TSessionUI * FUI;
+  TSessionData * FSessionData;
+  nb::TList * FPendingActions;
+  bool FClosed;
+  bool FInGroup;
+  std::wstring FIndent;
+  bool FEnabled;
+
+  void __fastcall OpenLogFile();
+  std::wstring  __fastcall GetLogFileName();
 };
 //---------------------------------------------------------------------------
 #endif

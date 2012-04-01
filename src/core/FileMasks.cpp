@@ -376,7 +376,7 @@ TFileMasks::TParams::TParams() :
 //---------------------------------------------------------------------------
 std::wstring TFileMasks::TParams::ToString() const
 {
-    return std::wstring(L"[") + Int64ToStr(Size) + L"/" + DateTimeToStr(Modification) + L"]";
+    return std::wstring(L"[") + Int64ToStr(Size) + L"/" + ::DateTimeToString(Modification) + L"]";
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -786,14 +786,14 @@ void __fastcall TFileMasks::CreateMask(
         Boundary = TMask::Open;
       }
 
-      TFormatSettings FormatSettings;
-      GetLocaleFormatSettings(GetDefaultLCID(), FormatSettings);
+      nb::TFormatSettings FormatSettings;
+      GetLocaleFormatSettings(nb::GetDefaultLCID(), FormatSettings);
       FormatSettings.DateSeparator = L'-';
       FormatSettings.TimeSeparator = L':';
-      FormatSettings.ShortDateFormat = "yyyy/mm/dd";
-      FormatSettings.ShortTimeFormat = "hh:nn:ss";
+      FormatSettings.ShortDateFormat = L"yyyy/mm/dd";
+      FormatSettings.ShortTimeFormat = L"hh:nn:ss";
 
-      TDateTime Modification;
+      nb::TDateTime Modification;
       if (TryStrToDateTime(PartStr, Modification, FormatSettings) ||
           TryRelativeStrToDateTime(PartStr, Modification))
       {
@@ -826,7 +826,7 @@ void __fastcall TFileMasks::CreateMask(
     }
     else if (!PartStr.empty())
     {
-      int D = PartStr.LastDelimiter(DirectoryMaskDelimiters);
+      int D = ::LastDelimiter(PartStr, DirectoryMaskDelimiters);
 
       Directory = (D > 0) && (D == PartStr.size());
 
@@ -851,7 +851,7 @@ void __fastcall TFileMasks::CreateMask(
       else if (FForceDirectoryMasks > 0)
       {
         Directory = true;
-        Mask.MaskStr.insert(PartStart - MaskStart + PartStr.size(), DirectoryMaskDelimiters[1]);
+        Mask.MaskStr.insert(PartStart - MaskStart + PartStr.size(), std::wstring(1, DirectoryMaskDelimiters[1]));
       }
 
       if (D != NPOS)
@@ -949,7 +949,7 @@ void __fastcall TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
         while (NextMaskFrom < Str.size())
         {
             size_t MaskStart = NextMaskFrom;
-            char NextMaskDelimiter;
+            wchar_t NextMaskDelimiter;
             std::wstring MaskStr;
             if (SingleMask)
             {

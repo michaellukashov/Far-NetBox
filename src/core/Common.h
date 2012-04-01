@@ -122,6 +122,11 @@ bool UsesDaylightHack();
 nb::TDateTime EncodeDateVerbose(unsigned int Year, unsigned int Month, unsigned int Day);
 nb::TDateTime EncodeTimeVerbose(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec);
 nb::TDateTime StrToDateTime(const std::wstring Value);
+bool TryStrToDateTime(const std::wstring value, nb::TDateTime &Value, nb::TFormatSettings &FormatSettings);
+bool TryRelativeStrToDateTime(const std::wstring value, nb::TDateTime &Value);
+std::wstring DateTimeToStr(std::wstring &Result, const std::wstring &Format,
+  nb::TDateTime DateTime);
+std::wstring DateTimeToString(nb::TDateTime DateTime);
 unsigned int DayOfWeek(const nb::TDateTime &DateTime);
 nb::TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode);
 FILETIME DateTimeToFileTime(const nb::TDateTime &DateTime, TDSTMode DSTMode);

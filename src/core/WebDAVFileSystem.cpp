@@ -1013,7 +1013,7 @@ void __fastcall TWebDAVFileSystem::WebDAVSourceRobust(const std::wstring FileNam
 {
     bool Retry = false;
 
-    TUploadSessionAction Action(FTerminal->GetLog());
+    TUploadSessionAction Action(FTerminal->GetActionLog());
 
     do
     {
@@ -1138,7 +1138,7 @@ void __fastcall TWebDAVFileSystem::WebDAVSource(const std::wstring FileName,
           HANDLE Handle = FindFirstFile(DestFullName.c_str(), &FindData);
           if (Handle != INVALID_HANDLE_VALUE)
           {
-            TTouchSessionAction TouchAction(FTerminal->GetLog(), DestFullName,
+            TTouchSessionAction TouchAction(FTerminal->GetActionLog(), DestFullName,
               UnixToDateTime(
                 ConvertTimestampToUnixSafe(FindData.ftLastWriteTime, dstmUnix),
                 dstmUnix));
@@ -1335,7 +1335,7 @@ void __fastcall TWebDAVFileSystem::SinkRobust(const std::wstring FileName,
     // the same in TSFTPFileSystem
     bool Retry;
 
-    TDownloadSessionAction Action(FTerminal->GetLog());
+    TDownloadSessionAction Action(FTerminal->GetActionLog());
 
     do
     {

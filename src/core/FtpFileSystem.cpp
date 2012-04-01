@@ -26,6 +26,7 @@
 #include "TextsCore.h"
 #include "TextsFileZilla.h"
 #include "HelpCore.h"
+#include "TextsCore.h"
 #ifdef MPEXT
 #define OPENSSL_NO_EC
 #define OPENSSL_NO_ECDSA
@@ -1028,7 +1029,7 @@ void __fastcall TFTPFileSystem::SinkRobust(const std::wstring FileName,
     // the same in TSFTPFileSystem
     bool Retry;
 
-    TDownloadSessionAction Action(FTerminal->GetLog());
+    TDownloadSessionAction Action(FTerminal->GetActionLog());
 
     do
     {
@@ -1306,7 +1307,7 @@ void __fastcall TFTPFileSystem::SourceRobust(const std::wstring FileName,
     // the same in TSFTPFileSystem
     bool Retry;
 
-    TUploadSessionAction Action(FTerminal->GetLog());
+    TUploadSessionAction Action(FTerminal->GetActionLog());
     TOpenRemoteFileParams OpenParams;
     OpenParams.OverwriteMode = omOverwrite;
     TOverwriteFileParams FileParams;
@@ -2576,7 +2577,7 @@ void __fastcall TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
                 {
                     if (!FTerminal->GetSessionData()->GetFtpPasvMode())
                     {
-                        MoreMessages->Add(LoadStr(FTP_CANNOT_OPEN_ACTIVE_CONNECTION));
+                        MoreMessages->Add(LoadStr(FTP_CANNOT_OPEN_ACTIVE_CONNECTION2));
                         HelpKeyword = HELP_FTP_CANNOT_OPEN_ACTIVE_CONNECTION;
                     }
                 }

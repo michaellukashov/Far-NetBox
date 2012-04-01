@@ -654,4 +654,45 @@ public:
     bool operator < (const TShortCut &rhs) const;
 };
 
+//---------------------------------------------------------------------------
+
+// From SysUtils.hpp
+struct TFormatSettings
+{
+private:
+    // typedef StaticArray<System::UnicodeString, 12> _TFormatSettings__1;
+
+    // typedef StaticArray<System::UnicodeString, 12> _TFormatSettings__2;
+
+    // typedef StaticArray<System::UnicodeString, 7> _TFormatSettings__3;
+
+    // typedef StaticArray<System::UnicodeString, 7> _TFormatSettings__4;
+public:
+    unsigned char CurrencyFormat;
+    unsigned char NegCurrFormat;
+    wchar_t ThousandSeparator;
+    wchar_t DecimalSeparator;
+    unsigned char CurrencyDecimals;
+    wchar_t DateSeparator;
+    wchar_t TimeSeparator;
+    wchar_t ListSeparator;
+    std::wstring CurrencyString;
+    std::wstring ShortDateFormat;
+    std::wstring LongDateFormat;
+    std::wstring TimeAMString;
+    std::wstring TimePMString;
+    std::wstring ShortTimeFormat;
+    std::wstring LongTimeFormat;
+    // _TFormatSettings__1 ShortMonthNames;
+    // _TFormatSettings__2 LongMonthNames;
+    // _TFormatSettings__3 ShortDayNames;
+    // _TFormatSettings__4 LongDayNames;
+    unsigned short TwoDigitYearCenturyWindow;
+};
+
+void __fastcall GetLocaleFormatSettings(int LCID, TFormatSettings &FormatSettings);
+int __fastcall GetDefaultLCID();
+
+//---------------------------------------------------------------------------
+
 } // namespace nb
