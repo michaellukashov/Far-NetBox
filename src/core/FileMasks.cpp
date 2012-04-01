@@ -537,7 +537,7 @@ bool __fastcall TFileMasks::MatchesMasks(const std::wstring FileName, bool Direc
 
         if (Result)
         {
-      bool HasSize = (Params != NULL);
+            bool HasSize = (Params != NULL);
 
             switch (Mask.HighSizeMask)
             {
@@ -589,8 +589,8 @@ bool __fastcall TFileMasks::MatchesMasks(const std::wstring FileName, bool Direc
           case TMask::Close:
             Result = HasModification && (Params->Modification <= Mask.HighModification);
             break;
-        }
-        }
+         }
+      }
 
       if (Result)
       {
