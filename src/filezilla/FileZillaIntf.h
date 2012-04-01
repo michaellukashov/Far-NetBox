@@ -188,7 +188,7 @@ protected:
   virtual bool __fastcall HandleAsynchRequestVerifyCertificate(
     const TFtpsCertificateData & Data, int & RequestResult) = 0;
   virtual bool __fastcall HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
-    unsigned int Count) = 0;
+    size_t Count) = 0;
   virtual bool __fastcall HandleTransferStatus(bool Valid, __int64 TransferSize,
     __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
     bool FileTransfer) = 0;
