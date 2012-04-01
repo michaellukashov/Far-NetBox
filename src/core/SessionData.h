@@ -44,6 +44,9 @@ extern const TCipher DefaultCipherList[CIPHER_COUNT];
 extern const TKex DefaultKexList[KEX_COUNT];
 extern const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][15];
 extern const std::wstring CONST_LOGIN_ANONYMOUS;
+extern const int DefaultSendBuf;
+extern const UnicodeString AnonymousUserName;
+extern const UnicodeString AnonymousPassword;
 //---------------------------------------------------------------------------
 class TStoredSessionList;
 //---------------------------------------------------------------------------
@@ -85,6 +88,7 @@ private:
     std::wstring FRemoteDirectory;
     bool FLockInHome;
     bool FSpecial;
+    bool FSynchronizeBrowsing;
     bool FUpdateDirectories;
     bool FCacheDirectories;
     bool FCacheDirectoryChanges;
@@ -99,6 +103,8 @@ private:
     bool FUnsetNationalVars;
     bool FIgnoreLsWarnings;
     bool FTcpNoDelay;
+    int FSendBuf;
+    bool FSshSimple;
     TProxyMethod FProxyMethod;
     std::wstring FProxyHost;
     int FProxyPort;
@@ -170,25 +176,25 @@ private:
 
 public:
     explicit TSessionData(const std::wstring aName);
-    void Default();
-    void NonPersistant();
-    void Load(THierarchicalStorage *Storage);
-    void Save(THierarchicalStorage *Storage, bool PuttyExport,
+    void __fastcall Default();
+    void __fastcall NonPersistant();
+    void __fastcall Load(THierarchicalStorage *Storage);
+    void __fastcall Save(THierarchicalStorage *Storage, bool PuttyExport,
               const TSessionData *Default = NULL);
-    void SaveRecryptedPasswords(THierarchicalStorage *Storage);
-    void RecryptPasswords();
-    bool HasAnyPassword();
-    void Remove();
-    virtual void Assign(nb::TPersistent *Source);
-    bool ParseUrl(const std::wstring Url, TOptions *Options,
+    void __fastcall SaveRecryptedPasswords(THierarchicalStorage *Storage);
+    void __fastcall RecryptPasswords();
+    bool __fastcall HasAnyPassword();
+    void __fastcall Remove();
+    virtual void __fastcall Assign(nb::TPersistent *Source);
+    bool __fastcall ParseUrl(const std::wstring Url, TOptions *Options,
                   TStoredSessionList *StoredSessions, bool &DefaultsOnly,
                   std::wstring *FileName, bool *AProtocolDefined);
-    bool ParseOptions(TOptions *Options);
-    void ConfigureTunnel(size_t PortNumber);
-    void RollbackTunnel();
-    void ExpandEnvironmentVariables();
-    static void ValidatePath(const std::wstring Path);
-    static void ValidateName(const std::wstring Name);
+    bool __fastcall ParseOptions(TOptions *Options);
+    void __fastcall ConfigureTunnel(size_t PortNumber);
+    void __fastcall RollbackTunnel();
+    void __fastcall ExpandEnvironmentVariables();
+    static void __fastcall ValidatePath(const std::wstring Path);
+    static void __fastcall ValidateName(const std::wstring Name);
 
     std::wstring GetHostName() const { return FHostName; }
     size_t GetPortNumber() const { return FPortNumber; }
@@ -438,26 +444,26 @@ class TStoredSessionList : public TNamedObjectList
 public:
     explicit TStoredSessionList(bool aReadOnly = false);
     virtual ~TStoredSessionList();
-    void Load(const std::wstring aKey, bool UseDefaults);
-    void Load();
-    void Save(bool All, bool Explicit);
-    void Saved();
-    void Export(const std::wstring FileName);
-    void Load(THierarchicalStorage *Storage, bool AsModified = false,
+    void __fastcall Load(const std::wstring aKey, bool UseDefaults);
+    void __fastcall Load();
+    void __fastcall Save(bool All, bool Explicit);
+    void __fastcall Saved();
+    void __fastcall Export(const std::wstring FileName);
+    void __fastcall Load(THierarchicalStorage *Storage, bool AsModified = false,
               bool UseDefaults = false);
-    void Save(THierarchicalStorage *Storage, bool All = false);
-    void SelectAll(bool Select);
-    void Import(TStoredSessionList *From, bool OnlySelected);
-    void RecryptPasswords();
-    void SelectSessionsToImport(TStoredSessionList *Dest, bool SSHOnly);
-    void Cleanup();
-    size_t IndexOf(TSessionData *Data);
-    TSessionData *NewSession(const std::wstring SessionName, TSessionData *Session);
-    TSessionData *ParseUrl(const std::wstring Url, TOptions *Options, bool &DefaultsOnly,
+    void __fastcall Save(THierarchicalStorage *Storage, bool All = false);
+    void __fastcall SelectAll(bool Select);
+    void __fastcall Import(TStoredSessionList *From, bool OnlySelected);
+    void __fastcall RecryptPasswords();
+    void __fastcall SelectSessionsToImport(TStoredSessionList *Dest, bool SSHOnly);
+    void __fastcall Cleanup();
+    size_t __fastcall IndexOf(TSessionData *Data);
+    TSessionData * __fastcall NewSession(const std::wstring SessionName, TSessionData *Session);
+    TSessionData *__fastcall ParseUrl(const std::wstring Url, TOptions *Options, bool &DefaultsOnly,
                            std::wstring *FileName = NULL, bool *ProtocolDefined = NULL);
-    TSessionData *GetSession(size_t Index) { return static_cast<TSessionData *>(AtObject(Index)); }
-    TSessionData *GetDefaultSettings() const { return FDefaultSettings; }
-    void SetDefaultSettings(TSessionData *value);
+    TSessionData * __fastcall GetSession(size_t Index) { return static_cast<TSessionData *>(AtObject(Index)); }
+    TSessionData * __fastcall GetDefaultSettings() const { return FDefaultSettings; }
+    void __fastcall SetDefaultSettings(TSessionData *value);
 
     static void ImportHostKeys(const std::wstring TargetKey,
                                const std::wstring SourceKey, TStoredSessionList *Sessions,
@@ -466,9 +472,10 @@ public:
 private:
     TSessionData *FDefaultSettings;
     bool FReadOnly;
-    void DoSave(THierarchicalStorage *Storage, bool All, bool RecryptPasswordOnly);
-    void DoSave(bool All, bool Explicit, bool RecryptPasswordOnly);
-    void DoSave(THierarchicalStorage *Storage,
+    void __fastcall SetDefaultSettings(TSessionData * value);
+    void __fastcall DoSave(THierarchicalStorage *Storage, bool All, bool RecryptPasswordOnly);
+    void __fastcall DoSave(bool All, bool Explicit, bool RecryptPasswordOnly);
+    void __fastcall DoSave(THierarchicalStorage *Storage,
                 TSessionData *Data, bool All, bool RecryptPasswordOnly,
                 TSessionData *FactoryDefaults);
 };
