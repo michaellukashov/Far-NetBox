@@ -2160,7 +2160,7 @@ int __fastcall TFTPFileSystem::GetOptionVal(int OptionID) const
     case OPTION_PROXYTYPE:
         switch (Data->GetProxyMethod())
         {
-        case ::pmNone:
+        case pmNone:
             Result = PROXYTYPE_NOPROXY;
             break;
 
@@ -3111,7 +3111,7 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
     {
         std::string str(reinterpret_cast<const char *>(Data.Hash), Data.HashLen);
         FSessionInfo.CertificateFingerprint =
-            StrToHex(nb::MB2W(str.c_str()), false, 'L:');
+            StrToHex(nb::MB2W(str.c_str()), false, L':');
 
         int VerificationResultStr;
         switch (Data.VerificationResult)

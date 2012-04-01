@@ -35,6 +35,7 @@ TConfiguration::TConfiguration() :
     FSessionReopenAutoMaximumNumberOfRetries(0),
     FSessionReopenBackground(0),
     FSessionReopenTimeout(0),
+    FSessionReopenAutoStall(0),
     FTunnelLocalPortNumberLow(0),
     FTunnelLocalPortNumberHigh(0),
     FCacheDirectoryChangesMaxSize(0),
