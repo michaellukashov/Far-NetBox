@@ -334,7 +334,7 @@ void TObjectList::Notify(void *Ptr, int Action)
     parent::Notify(Ptr, Action);
 }
 //---------------------------------------------------------------------------
-const std::wstring sLineBreak = L"\n";
+const std::wstring sLineBreak = L"\r\n";
 const int MinsPerHour = 60;
 static const int MemoryDelta = 0x2000;
 //---------------------------------------------------------------------------
