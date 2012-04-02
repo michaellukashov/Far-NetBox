@@ -693,8 +693,8 @@ namespace System
 //
 namespace Sysutils
 {
-  extern PACKAGE String __fastcall IntToStr(int Value)/* overload */;
-  extern PACKAGE String __fastcall IntToStr(__int64 Value)/* overload */;
+  extern PACKAGE System::String __fastcall IntToStr(int Value)/* overload */;
+  extern PACKAGE System::String __fastcall IntToStr(__int64 Value)/* overload */;
 }
 
 // #pragma option push -w-inl
