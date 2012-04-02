@@ -6,6 +6,8 @@
 
 // #pragma delphiheader begin
 
+#include <string>
+
 // #include <sysmac.h>
 // #include <stdarg.h>
 #include <StrHlpr.hpp>
@@ -88,6 +90,7 @@ namespace System
     __fastcall UnicodeString(unsigned __int64 src): Data(0) { sprintf(L"%Lu", src); }
     __fastcall UnicodeString(double src);
     __fastcall UnicodeString(const WideString &src);
+    __fastcall UnicodeString(const std::wstring &src);
 
 #if !defined(ANSISTRING_AS_TEMPLATE)    
     __fastcall UnicodeString(const AnsiString &src): Data(0) {
