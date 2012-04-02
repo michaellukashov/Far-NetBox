@@ -4,10 +4,10 @@
 #ifndef USTRING_H
 #define USTRING_H
 
-#pragma delphiheader begin
+// #pragma delphiheader begin
 
-#include <sysmac.h>
-#include <stdarg.h>
+// #include <sysmac.h>
+// #include <stdarg.h>
 #include <StrHlpr.hpp>
 
 namespace System
@@ -260,7 +260,7 @@ namespace System
 
 } // namespace System
 
-#pragma delphiheader end.
+// #pragma delphiheader end.
 
 #endif  // USTRING_H
 

@@ -1,21 +1,135 @@
-// CodeGear C++Builder
-// Copyright (c) 1995, 2009 by Embarcadero Technologies, Inc.
-// All rights reserved
-
-// (DO NOT EDIT: machine generated header) 'System.pas' rev: 21.00
-
 #ifndef SystemHPP
 #define SystemHPP
 
-#pragma delphiheader begin
-#pragma option push
-#pragma option -w-      // All warnings off
-#pragma option -Vx      // Zero-length empty class member functions
+// #pragma delphiheader begin
+// #pragma option push
+#pragma warning(push, 1)
+// #pragma option -w-      // All warnings off
+// #pragma option -Vx      // Zero-length empty class member functions
 #pragma pack(push,8)
 #define BCC32_HAS_CLASSMETHODS  // Flag we'll use __classmethod
 #define ANSISTRING_AS_TEMPLATE  // Flag AnsiStringT<CP> support
 #define _DELPHI_STRING_UNICODE  // Flag we're Unicode Mode
-#include <sysmac.h>	// system macros
+#define WIDECHAR_IS_WCHAR
+
+// #include <sysmac.h>	// system macros
+namespace System
+{
+typedef signed char          Shortint;         // -128..127
+typedef short                Smallint;         // -32768..32767
+typedef unsigned char        Byte;             // 0..255
+typedef unsigned short       Word;             // 0..65535
+typedef unsigned long        DWord;            // 0..4294967295
+typedef unsigned             LongWord;         // 0..4294967295
+typedef void*                Pointer;          //
+typedef Pointer*             PPointer;         //
+typedef char                 AnsiChar;         //
+typedef signed long          Longint;          // -2147483648..2147484647
+typedef signed __int64       Largeint;         //
+typedef unsigned int         Cardinal;         // 0..4294967295
+typedef long double          Extended;         // 10 byte real
+typedef float                Single;           // 4 byte real
+typedef double               Double;           // 8 byte real
+
+enum TTextLineBreakStyle { tlbsLF, tlbsCRLF };
+
+#define RTL_DELPHIRETURN 
+#define PACKAGE 
+#define __fastcall
+
+#if defined(ANSISTRING_AS_TEMPLATE)
+    class RTL_DELPHIRETURN AnsiStringBase;
+    template <unsigned short CP> class RTL_DELPHIRETURN AnsiStringT;
+    typedef  AnsiStringT<0> AnsiString;
+#else
+    class RTL_DELPHIRETURN AnsiString;
+#endif
+    class RTL_DELPHIRETURN WideString;
+    class RTL_DELPHIRETURN UnicodeString;
+
+    template <unsigned char sz> class SmallStringBase;
+    template <unsigned char sz> class SmallString;
+
+    template<class T> class RTL_DELPHIRETURN DynamicArray;
+
+    class RTL_DELPHIRETURN TDateTimeBase;
+    class RTL_DELPHIRETURN TDateTime;
+
+    // Helper template used for when Delphi functions return static arrays.
+    // The .hpp file uses StaticArray<type, size> to express such return
+    // types.
+    template <typename T, int size> struct StaticArray
+    {
+        T data[size];
+
+        int Size() const { return size; };
+
+        const T& operator[](int index) const { return data[index]; }
+        T& operator[](int index) { return data[index]; }
+
+        operator const T*() const { return data; }
+        operator T*() { return data; }
+    };
+
+    typedef bool                 Boolean;          //
+    typedef int                  Integer;          // -2147483648..2147484647
+#if defined(WIDECHAR_IS_WCHAR)
+    typedef wchar_t              WideChar;         // Unicode character
+#else
+    typedef uint16_t             WideChar;
+#endif
+    /* Unfortunate name :( */
+    typedef signed char          Shortint;         // -128..127
+    typedef short                Smallint;         // -32768..32767
+    typedef unsigned char        Byte;             // 0..255
+    typedef unsigned short       Word;             // 0..65535
+    typedef unsigned long        DWord;            // 0..4294967295
+    typedef unsigned             LongWord;         // 0..4294967295
+    typedef void*                Pointer;          //
+    typedef Pointer*             PPointer;         //
+    typedef char                 AnsiChar;         //
+    typedef signed long          Longint;          // -2147483648..2147484647
+    typedef signed __int64       Largeint;         //
+    typedef unsigned int         Cardinal;         // 0..4294967295
+    typedef long double          Extended;         // 10 byte real
+    typedef float                Single;           // 4 byte real
+    typedef double               Double;           // 8 byte real
+    typedef char* const          Openstring;       // D16 string/D32 shortstring formalparm
+    typedef void*                file;             //
+    typedef void*                Text;             //
+    typedef Text                 TextFile;         //
+    typedef char*                PAnsiChar;        //
+    typedef WideChar*            PWideChar;        //
+    // Uppercase 'C' 'Char' maps to Delphi's native 'char'
+    // type for backward compatibility. To avoid confusion
+    // of 'char' and 'Char', it's best to use _DCHAR
+#if defined(_DELPHI_STRING_UNICODE)
+    typedef WideChar             Char;
+    typedef PWideChar            PChar;            //
+    typedef WideChar             _DCHAR;
+    #define _D(__s)              L ## __s
+#else
+    typedef char                 Char;             // 0..255
+    typedef PAnsiChar            PChar;            //
+    typedef char                 _DCHAR;
+    #define _D(__s)              __s
+#endif
+
+    typedef unsigned char        ByteBool;         //
+    typedef unsigned short       WordBool;         //
+    typedef Cardinal             LongBool;         //
+
+#if defined(_DELPHI_STRING_UNICODE)
+    typedef UnicodeString        String;           //
+#else
+    typedef AnsiString           String;           //
+#endif
+    typedef SmallStringBase<255> ShortStringBase;  //
+    typedef SmallString<255>     ShortString;      //
+    typedef ShortString*         PShortString;     //
+    typedef AnsiString*          PAnsiString;      //
+    typedef UnicodeString*       PUnicodeString;   //
+} // namespace System
 
 //-- user supplied -----------------------------------------------------------
 namespace System
@@ -26,7 +140,7 @@ namespace System
 }
 namespace System
 {
-  typedef UCS4Char* TUCS4CharArray;
+  // typedef UCS4Char* TUCS4CharArray;
 }
 namespace System
 {
@@ -79,206 +193,17 @@ typedef Word UInt16;
 
 typedef unsigned UInt32;
 
-#pragma option push -b-
-enum System__1 { vcPrivate, vcProtected, vcPublic, vcPublished };
-#pragma option pop
+// #pragma option push -b-
+// enum System__1 { vcPrivate, vcProtected, vcPublic, vcPublished };
+// #pragma option pop
 
-typedef Set<System__1, vcPrivate, vcPublished>  TVisibilityClasses;
-
-#define TArray__1 DynamicArray
-
-#pragma pack(push,1)
-struct TInterfaceEntry
-{
-	
-public:
-	GUID IID;
-	void *VTable;
-	int IOffset;
-	int ImplGetter;
-};
-#pragma pack(pop)
-
-
-typedef TInterfaceEntry *PInterfaceEntry;
-
-struct TInterfaceTable;
-typedef TInterfaceTable *PInterfaceTable;
-
-#pragma pack(push,1)
-struct TInterfaceTable
-{
-	
-public:
-	int EntryCount;
-	StaticArray<TInterfaceEntry, 10000> Entries;
-};
-#pragma pack(pop)
-
-
-struct TMethod
-{
-	
-public:
-	void *Code;
-	void *Data;
-};
-
-
-struct TDispatchMessage
-{
-	
-public:
-	Word MsgID;
-};
-
-
-struct TMonitor;
-typedef TMonitor *PMonitor;
-
-typedef PMonitor *PPMonitor;
-
-struct TMonitor
-{
-	
-private:
-	struct TWaitingThread;
-	typedef TWaitingThread *PWaitingThread;
-	
-	struct TWaitingThread
-	{
-		
-public:
-		TMonitor::TWaitingThread *Next;
-		unsigned Thread;
-		void *WaitEvent;
-	};
-	
-	
-	
-private:
-	int FLockCount;
-	int FRecursionCount;
-	unsigned FOwningThread;
-	void *FLockEvent;
-	int FSpinCount;
-	TWaitingThread *FWaitQueue;
-	void __fastcall QueueWaiter(TWaitingThread &WaitingThread);
-	void __fastcall RemoveWaiter(TWaitingThread &WaitingThread);
-	PWaitingThread __fastcall DequeueWaiter(void);
-	void * __fastcall GetEvent(void);
-	unsigned __fastcall CheckOwningThread(void);
-	static void __fastcall CheckMonitorSupport();
-	static PMonitor __fastcall Create();
-	static void __fastcall Destroy(TObject* AObject)/* overload */;
-	static PPMonitor __fastcall GetFieldAddress(TObject* AObject);
-	static PMonitor __fastcall GetMonitor(TObject* AObject);
-	void __fastcall Destroy(void)/* overload */;
-	bool __fastcall Enter(unsigned Timeout)/* overload */;
-	void __fastcall Exit(void)/* overload */;
-	bool __fastcall TryEnter(void)/* overload */;
-	bool __fastcall Wait(unsigned Timeout)/* overload */;
-	void __fastcall Pulse(void)/* overload */;
-	void __fastcall PulseAll(void)/* overload */;
-	
-public:
-	static void __fastcall SetSpinCount(TObject* AObject, int ASpinCount);
-	static void __fastcall Enter(TObject* AObject)/* overload */;
-	static bool __fastcall Enter(TObject* AObject, unsigned Timeout)/* overload */;
-	static void __fastcall Exit(TObject* AObject)/* overload */;
-	static bool __fastcall TryEnter(TObject* AObject)/* overload */;
-	static bool __fastcall Wait(TObject* AObject, unsigned Timeout)/* overload */;
-	static void __fastcall Pulse(TObject* AObject)/* overload */;
-	static void __fastcall PulseAll(TObject* AObject)/* overload */;
-};
-
-
-__interface IEnumerator;
-typedef System::DelphiInterface<IEnumerator> _di_IEnumerator;
-__interface IEnumerator  : public IInterface 
-{
-	
-public:
-	virtual TObject* __fastcall GetCurrent(void) = 0 ;
-	virtual bool __fastcall MoveNext(void) = 0 ;
-	virtual void __fastcall Reset(void) = 0 ;
-	__property TObject* Current = {read=GetCurrent};
-};
-
-__interface IEnumerable;
-typedef System::DelphiInterface<IEnumerable> _di_IEnumerable;
-__interface IEnumerable  : public IInterface 
-{
-	
-public:
-	virtual _di_IEnumerator __fastcall GetEnumerator(void) = 0 ;
-};
-
-template<typename T> __interface IEnumerator__1;
-// template<typename T> typedef System::DelphiInterface<IEnumerator__1<T> > _di_IEnumerator__1;
-// Template declaration generated by Delphi parameterized types is
-// used only for accessing Delphi variables and fields.
-// Don't instantiate with new type parameters in user code.
-template<typename T> __interface IEnumerator__1  : public IEnumerator 
-{
-	
-public:
-	HIDESBASE virtual T __fastcall GetCurrent(void) = 0 ;
-	__property T Current = {read=GetCurrent};
-};
-
-template<typename T> __interface IEnumerable__1;
-// template<typename T> typedef System::DelphiInterface<IEnumerable__1<T> > _di_IEnumerable__1;
-// Template declaration generated by Delphi parameterized types is
-// used only for accessing Delphi variables and fields.
-// Don't instantiate with new type parameters in user code.
-template<typename T> __interface IEnumerable__1  : public IEnumerable 
-{
-	
-public:
-	HIDESBASE virtual System::DelphiInterface<IEnumerator__1<T> >  __fastcall GetEnumerator(void) = 0 ;
-};
-
-__interface IComparable;
-typedef System::DelphiInterface<IComparable> _di_IComparable;
-__interface IComparable  : public IInterface 
-{
-	
-public:
-	virtual int __fastcall CompareTo(TObject* Obj) = 0 ;
-};
-
-template<typename T> __interface IComparable__1;
-// template<typename T> typedef System::DelphiInterface<IComparable__1<T> > _di_IComparable__1;
-// Template declaration generated by Delphi parameterized types is
-// used only for accessing Delphi variables and fields.
-// Don't instantiate with new type parameters in user code.
-template<typename T> __interface IComparable__1  : public IComparable 
-{
-	
-public:
-	HIDESBASE virtual int __fastcall CompareTo(T Value) = 0 ;
-};
-
-template<typename T> __interface IEquatable__1;
-// template<typename T> typedef System::DelphiInterface<IEquatable__1<T> > _di_IEquatable__1;
-// Template declaration generated by Delphi parameterized types is
-// used only for accessing Delphi variables and fields.
-// Don't instantiate with new type parameters in user code.
-template<typename T> __interface IEquatable__1  : public IInterface 
-{
-	
-public:
-	virtual bool __fastcall Equals(T Value) = 0 ;
-};
-
-typedef TMetaClass* TInterfacedClass;
+// typedef TMetaClass* TInterfacedClass;
 
 typedef WideChar UCS2Char;
 
 typedef WideChar * PUCS2Char;
 
-typedef TUCS4CharArray *PUCS4CharArray;
+// typedef TUCS4CharArray *PUCS4CharArray;
 
 typedef AnsiStringT<65001> UTF8String;
 
@@ -308,15 +233,15 @@ typedef unsigned *PError;
 
 typedef WordBool *PWordBool;
 
-typedef _di_IInterface *PUnknown;
+// typedef _di_IInterface *PUnknown;
 
-typedef PUnknown *PPUnknown;
+// typedef PUnknown *PPUnknown;
 
 typedef WideChar * *PPWideChar;
 
 typedef char * *PPAnsiChar;
 
-typedef Comp *PComp;
+// typedef Comp *PComp;
 
 typedef TDateTime *PDateTime;
 
@@ -324,82 +249,10 @@ typedef Word TVarType;
 
 typedef int TVarOp;
 
-struct TMonitorSupport;
-typedef TMonitorSupport *PMonitorSupport;
-
-struct TMonitorSupport
-{
-	
-public:
-	void * __fastcall (*NewSyncObject)(void);
-	void __fastcall (*FreeSyncObject)(void * SyncObject);
-	void * __fastcall (*NewWaitObject)(void);
-	void __fastcall (*FreeWaitObject)(void * WaitObject);
-	unsigned __fastcall (*WaitAndOrSignalObject)(void * SignalObject, void * WaitObject, unsigned Timeout);
-};
-
-
-#pragma pack(push,1)
-struct PackageUnitEntry
-{
-	
-public:
-	void *Init;
-	void *FInit;
-};
-#pragma pack(pop)
-
-
-typedef UnitEntryTable *PUnitEntryTable;
-
-typedef StaticArray<void *, 536870911> TTypeTable;
-
-typedef TTypeTable *PTypeTable;
-
-struct TPackageTypeInfo
-{
-	
-public:
-	int TypeCount;
-	TTypeTable *TypeTable;
-	int UnitCount;
-	ShortString *UnitNames;
-};
-
-
-typedef TPackageTypeInfo *PPackageTypeInfo;
-
-struct PackageInfoTable
-{
-	
-public:
-	int UnitCount;
-	UnitEntryTable *UnitInfo;
-	TPackageTypeInfo TypeInfo;
-};
-
-
-typedef PackageInfoTable *PackageInfo;
-
-typedef PackageInfo __fastcall (*GetPackageInfoTable)(void);
-
-#pragma pack(push,1)
-struct TCVModInfo
-{
-	
-public:
-	char *ModName;
-	char *LibName;
-	void *UserData;
-};
-#pragma pack(pop)
-
-
-typedef TCVModInfo *PCVModInfo;
-
 typedef unsigned TResourceHandle;
 
-#pragma pack(push,1)
+// #pragma pack(push,1)
+#pragma warning(push, 1)
 struct TFileRec
 {
 	
@@ -431,14 +284,15 @@ public:
 		
 	};
 };
-#pragma pack(pop)
-
+// #pragma pack(pop)
+#pragma warning(pop)
 
 typedef StaticArray<char, 128> TTextBuf;
 
 typedef TTextBuf *PTextBuf;
 
-#pragma pack(push,1)
+// #pragma pack(push,1)
+#pragma warning(push, 1)
 struct TTextRec
 {
 	
@@ -458,48 +312,12 @@ public:
 	StaticArray<WideChar, 260> Name;
 	TTextBuf Buffer;
 };
-#pragma pack(pop)
+// #pragma pack(pop)
+#pragma warning(pop)
 
+// typedef int __fastcall (*TTextIOFunc)(TTextRec &F);
 
-typedef int __fastcall (*TTextIOFunc)(TTextRec &F);
-
-typedef int __fastcall (*TFileIOFunc)(TFileRec &F);
-
-struct TInitContext;
-typedef TInitContext *PInitContext;
-
-struct TInitContext
-{
-	
-public:
-	TInitContext *OuterContext;
-	void *ExcFrame;
-	PackageInfoTable *InitTable;
-	int InitCount;
-	TLibModule *Module;
-	void *DLLSaveEBP;
-	void *DLLSaveEBX;
-	void *DLLSaveESI;
-	void *DLLSaveEDI;
-	void __fastcall (*ExitProcessTLS)(void);
-	Byte DLLInitState;
-	unsigned ThreadID;
-};
-
-
-typedef ImgDelayDescr TImgDelayDescr;
-
-typedef ImgDelayDescr *PImgDelayDescr;
-
-typedef DelayLoadProc TDelayLoadProc;
-
-typedef DelayLoadProc *PDelayLoadProc;
-
-typedef DelayLoadInfo TDelayLoadInfo;
-
-typedef DelayLoadInfo *PDelayLoadInfo;
-
-typedef DelayedLoadHook TDelayedLoadHook;
+// typedef int __fastcall (*TFileIOFunc)(TFileRec &F);
 
 //-- var, const, procedure ---------------------------------------------------
 static const bool False = false;
@@ -563,26 +381,8 @@ static const ShortInt vmtDynamicTable = -60;
 static const ShortInt vmtClassName = -56;
 static const ShortInt vmtInstanceSize = -52;
 static const ShortInt vmtParent = -48;
-static const ShortInt vmtEquals [[deprecated("Use VMTOFFSET in asm code")]] = -44;
-static const ShortInt vmtGetHashCode [[deprecated("Use VMTOFFSET in asm code")]] = -40;
-static const ShortInt vmtToString [[deprecated("Use VMTOFFSET in asm code")]] = -36;
-static const ShortInt vmtSafeCallException [[deprecated("Use VMTOFFSET in asm code")]] = -32;
-static const ShortInt vmtAfterConstruction [[deprecated("Use VMTOFFSET in asm code")]] = -28;
-static const ShortInt vmtBeforeDestruction [[deprecated("Use VMTOFFSET in asm code")]] = -24;
-static const ShortInt vmtDispatch [[deprecated("Use VMTOFFSET in asm code")]] = -20;
-static const ShortInt vmtDefaultHandler [[deprecated("Use VMTOFFSET in asm code")]] = -16;
-static const ShortInt vmtNewInstance [[deprecated("Use VMTOFFSET in asm code")]] = -12;
-static const ShortInt vmtFreeInstance [[deprecated("Use VMTOFFSET in asm code")]] = -8;
-static const ShortInt vmtDestroy [[deprecated("Use VMTOFFSET in asm code")]] = -4;
-static const ShortInt vmtQueryInterface [[deprecated("Use VMTOFFSET in asm code")]] = 0x0;
-static const ShortInt vmtAddRef [[deprecated("Use VMTOFFSET in asm code")]] = 0x4;
-static const ShortInt vmtRelease [[deprecated("Use VMTOFFSET in asm code")]] = 0x8;
-static const ShortInt vmtCreateObject [[deprecated("Use VMTOFFSET in asm code")]] = 0xc;
 static const ShortInt hfFieldSize = 0x4;
 static const ShortInt hfMonitorOffset = 0x0;
-#define DefaultMethodRttiVisibility (Set<System__1, vcPrivate, vcPublished> () << vcPublic << vcPublished )
-#define DefaultFieldRttiVisibility (Set<System__1, vcPrivate, vcPublished> () << vcPrivate << vcProtected << vcPublic << vcPublished )
-#define DefaultPropertyRttiVisibility (Set<System__1, vcPrivate, vcPublished> () << vcPublic << vcPublished )
 static const ShortInt opAdd = 0x0;
 static const ShortInt opSubtract = 0x1;
 static const ShortInt opMultiply = 0x2;
@@ -606,19 +406,19 @@ static const ShortInt opCmpGE = 0x13;
 static const ShortInt NumSmallBlockTypes = 0x37;
 extern PACKAGE void *DispCallByIDProc;
 extern PACKAGE void *ExceptProc;
-extern PACKAGE void __fastcall (*ErrorProc)(Byte ErrorCode, void * ErrorAddr);
+// extern PACKAGE void __fastcall (*ErrorProc)(Byte ErrorCode, void * ErrorAddr);
 extern PACKAGE void *ExceptClsProc;
 extern PACKAGE void *ExceptObjProc;
 extern PACKAGE void *RaiseExceptionProc;
 extern PACKAGE void *RTLUnwindProc;
 extern PACKAGE void *RaiseExceptObjProc;
 extern PACKAGE void *ExceptionAcquired;
-extern PACKAGE TClass ExceptionClass;
-extern PACKAGE TSafeCallErrorProc SafeCallErrorProc;
-extern PACKAGE TAssertErrorProc AssertErrorProc;
-extern PACKAGE void __fastcall (*ExitProcessProc)(void);
-extern PACKAGE void __fastcall (*AbstractErrorProc)(void);
-extern PACKAGE unsigned HPrevInst [[deprecated]];
+// extern PACKAGE TClass ExceptionClass;
+// extern PACKAGE TSafeCallErrorProc SafeCallErrorProc;
+// extern PACKAGE TAssertErrorProc AssertErrorProc;
+// extern PACKAGE void __fastcall (*ExitProcessProc)(void);
+// extern PACKAGE void __fastcall (*AbstractErrorProc)(void);
+// extern PACKAGE unsigned HPrevInst [[deprecated]];
 extern PACKAGE unsigned MainThreadID;
 extern PACKAGE bool IsLibrary;
 extern PACKAGE int CmdShow;
@@ -639,11 +439,11 @@ extern PACKAGE TextFile Input;
 extern PACKAGE TextFile Output;
 extern PACKAGE TextFile ErrOutput;
 extern PACKAGE WideChar * *envp;
-extern PACKAGE void __fastcall (*VarClearProc)(TVarData &v);
-extern PACKAGE void __fastcall (*VarAddRefProc)(TVarData &v);
-extern PACKAGE void __fastcall (*VarCopyProc)(TVarData &Dest, const TVarData &Source);
-extern PACKAGE void __fastcall (*VarToLStrProc)(AnsiString &Dest, const TVarData &Source);
-extern PACKAGE void __fastcall (*VarToWStrProc)(WideString &Dest, const TVarData &Source);
+// extern PACKAGE void __fastcall (*VarClearProc)(TVarData &v);
+// extern PACKAGE void __fastcall (*VarAddRefProc)(TVarData &v);
+// extern PACKAGE void __fastcall (*VarCopyProc)(TVarData &Dest, const TVarData &Source);
+// extern PACKAGE void __fastcall (*VarToLStrProc)(AnsiString &Dest, const TVarData &Source);
+// extern PACKAGE void __fastcall (*VarToWStrProc)(WideString &Dest, const TVarData &Source);
 static const ShortInt CPUi386 = 0x2;
 static const ShortInt CPUi486 = 0x3;
 static const ShortInt CPUPentium = 0x4;
@@ -656,9 +456,9 @@ extern PACKAGE int DefaultSystemCodePage;
 extern PACKAGE int DefaultUnicodeCodePage;
 extern PACKAGE unsigned UTF8CompareLocale;
 extern PACKAGE TTextLineBreakStyle DefaultTextLineBreakStyle;
-#define sLineBreak "\r\n"
-extern PACKAGE int AllocMemCount [[deprecated]];
-extern PACKAGE int AllocMemSize [[deprecated]];
+// #define sLineBreak "\r\n"
+// extern PACKAGE int AllocMemCount [[deprecated]];
+// extern PACKAGE int AllocMemSize [[deprecated]];
 extern PACKAGE bool ReportMemoryLeaksOnShutdown;
 extern PACKAGE bool NeverSleepOnMMThreadContention;
 extern PACKAGE TSystemThreadFuncProc SystemThreadFuncProc;
@@ -668,42 +468,42 @@ static const Word fmInput = 0xd7b1;
 static const Word fmOutput = 0xd7b2;
 static const Word fmInOut = 0xd7b3;
 static const ShortInt tfCRLF = 0x1;
-extern PACKAGE TLibModule *LibModuleList;
-extern PACKAGE TModuleUnloadRec *ModuleUnloadList;
-extern PACKAGE void *UnloadDelayLoadedDLLPtr;
-extern PACKAGE void *DelayLoadHelper;
-extern PACKAGE void *pfnDliNotifyHook;
-extern PACKAGE void *pfnDliFailureHook;
-extern PACKAGE void __fastcall TextStart [[deprecated]](void);
+// extern PACKAGE TLibModule *LibModuleList;
+// extern PACKAGE TModuleUnloadRec *ModuleUnloadList;
+// extern PACKAGE void *UnloadDelayLoadedDLLPtr;
+// extern PACKAGE void *DelayLoadHelper;
+// extern PACKAGE void *pfnDliNotifyHook;
+// extern PACKAGE void *pfnDliFailureHook;
+// extern PACKAGE void __fastcall TextStart [[deprecated]](void);
 extern "C" void __stdcall SetLastError(int ErrorCode);
 extern PACKAGE void * __fastcall SysGetMem(int Size);
 extern PACKAGE int __fastcall SysFreeMem(void * P);
 extern PACKAGE void * __fastcall SysReallocMem(void * P, int Size);
 extern PACKAGE void * __fastcall SysAllocMem(unsigned Size);
-extern PACKAGE bool __fastcall SysRegisterExpectedMemoryLeak(void * P);
-extern PACKAGE bool __fastcall SysUnregisterExpectedMemoryLeak(void * P);
-extern PACKAGE void __fastcall GetMemoryManagerState(TMemoryManagerState &AMemoryManagerState);
-extern PACKAGE void __fastcall GetMemoryMap(TChunkStatus *AMemoryMap);
-extern PACKAGE THeapStatus __fastcall GetHeapStatus [[deprecated]](void);
-extern PACKAGE bool __fastcall AttemptToUseSharedMemoryManager(void);
-extern PACKAGE bool __fastcall ShareMemoryManager(void);
-extern PACKAGE TMinimumBlockAlignment __fastcall GetMinimumBlockAlignment(void);
-extern PACKAGE void __fastcall SetMinimumBlockAlignment(TMinimumBlockAlignment AMinimumBlockAlignment);
+// extern PACKAGE bool __fastcall SysRegisterExpectedMemoryLeak(void * P);
+// extern PACKAGE bool __fastcall SysUnregisterExpectedMemoryLeak(void * P);
+// extern PACKAGE void __fastcall GetMemoryManagerState(TMemoryManagerState &AMemoryManagerState);
+// extern PACKAGE void __fastcall GetMemoryMap(TChunkStatus *AMemoryMap);
+// extern PACKAGE THeapStatus __fastcall GetHeapStatus [[deprecated]](void);
+// extern PACKAGE bool __fastcall AttemptToUseSharedMemoryManager(void);
+// extern PACKAGE bool __fastcall ShareMemoryManager(void);
+// extern PACKAGE TMinimumBlockAlignment __fastcall GetMinimumBlockAlignment(void);
+// extern PACKAGE void __fastcall SetMinimumBlockAlignment(TMinimumBlockAlignment AMinimumBlockAlignment);
 extern PACKAGE void * __fastcall AllocMem(unsigned Size);
-extern PACKAGE bool __fastcall RegisterExpectedMemoryLeak(void * P);
-extern PACKAGE bool __fastcall UnregisterExpectedMemoryLeak(void * P);
-extern PACKAGE void __fastcall GetMemoryManager [[deprecated]](TMemoryManager &MemMgr)/* overload */;
-extern PACKAGE void __fastcall SetMemoryManager [[deprecated]](const TMemoryManager &MemMgr)/* overload */;
-extern PACKAGE void __fastcall GetMemoryManager(TMemoryManagerEx &MemMgrEx)/* overload */;
-extern PACKAGE void __fastcall SetMemoryManager(const TMemoryManagerEx &MemMgrEx)/* overload */;
-extern PACKAGE bool __fastcall IsMemoryManagerSet(void);
-extern PACKAGE TObject* __fastcall ExceptObject(void);
-extern PACKAGE void * __fastcall ExceptAddr(void);
-extern PACKAGE void * __fastcall AcquireExceptionObject(void);
-extern PACKAGE void __fastcall ReleaseExceptionObject(void);
-extern PACKAGE void * __fastcall RaiseList [[deprecated("Use AcquireExceptionObject")]](void);
-extern PACKAGE void * __fastcall SetRaiseList [[deprecated("Use AcquireExceptionObject")]](void * NewPtr);
-extern PACKAGE void __fastcall SetInOutRes(int NewValue);
+// extern PACKAGE bool __fastcall RegisterExpectedMemoryLeak(void * P);
+// extern PACKAGE bool __fastcall UnregisterExpectedMemoryLeak(void * P);
+// extern PACKAGE void __fastcall GetMemoryManager [[deprecated]](TMemoryManager &MemMgr)/* overload */;
+// extern PACKAGE void __fastcall SetMemoryManager [[deprecated]](const TMemoryManager &MemMgr)/* overload */;
+// extern PACKAGE void __fastcall GetMemoryManager(TMemoryManagerEx &MemMgrEx)/* overload */;
+// extern PACKAGE void __fastcall SetMemoryManager(const TMemoryManagerEx &MemMgrEx)/* overload */;
+// extern PACKAGE bool __fastcall IsMemoryManagerSet(void);
+// extern PACKAGE TObject* __fastcall ExceptObject(void);
+// extern PACKAGE void * __fastcall ExceptAddr(void);
+// extern PACKAGE void * __fastcall AcquireExceptionObject(void);
+// extern PACKAGE void __fastcall ReleaseExceptionObject(void);
+// extern PACKAGE void * __fastcall RaiseList [[deprecated("Use AcquireExceptionObject")]](void);
+// extern PACKAGE void * __fastcall SetRaiseList [[deprecated("Use AcquireExceptionObject")]](void * NewPtr);
+// extern PACKAGE void __fastcall SetInOutRes(int NewValue);
 extern PACKAGE void __fastcall ChDir(const UnicodeString S)/* overload */;
 extern PACKAGE void __fastcall ChDir(WideChar * P)/* overload */;
 extern PACKAGE int __fastcall IOResult(void);
@@ -730,20 +530,20 @@ extern PACKAGE Extended __fastcall Sin(const Extended X);
 extern PACKAGE Extended __fastcall Ln(const Extended X);
 extern PACKAGE Extended __fastcall ArcTan(const Extended X);
 extern PACKAGE Extended __fastcall Sqrt(const Extended X);
-extern PACKAGE int __fastcall Flush(TextFile &t);
-extern PACKAGE void __fastcall Mark [[deprecated]](void);
-extern PACKAGE void __fastcall Release [[deprecated]](void);
-extern PACKAGE void __fastcall FPower10(void);
-extern PACKAGE void * __fastcall GetDynaMethod(TClass vmt, short selector);
-extern PACKAGE bool __fastcall MonitorEnter(TObject* AObject, unsigned Timeout = (unsigned)(0xffffffff));
-extern PACKAGE bool __fastcall MonitorTryEnter(TObject* AObject);
-extern PACKAGE void __fastcall MonitorExit(TObject* AObject);
-extern PACKAGE bool __fastcall MonitorWait(TObject* AObject, unsigned Timeout);
-extern PACKAGE void __fastcall MonitorPulse(TObject* AObject);
-extern PACKAGE void __fastcall MonitorPulseAll(TObject* AObject);
-extern PACKAGE void __fastcall MemoryBarrier(void);
-extern PACKAGE int __fastcall BeginThread(void * SecurityAttributes, unsigned StackSize, TThreadFunc ThreadFunc, void * Parameter, unsigned CreationFlags, unsigned &ThreadId);
-extern PACKAGE void __fastcall EndThread(int ExitCode);
+// extern PACKAGE int __fastcall Flush(TextFile &t);
+// extern PACKAGE void __fastcall Mark [[deprecated]](void);
+// extern PACKAGE void __fastcall Release [[deprecated]](void);
+// extern PACKAGE void __fastcall FPower10(void);
+// extern PACKAGE void * __fastcall GetDynaMethod(TClass vmt, short selector);
+// extern PACKAGE bool __fastcall MonitorEnter(TObject* AObject, unsigned Timeout = (unsigned)(0xffffffff));
+// extern PACKAGE bool __fastcall MonitorTryEnter(TObject* AObject);
+// extern PACKAGE void __fastcall MonitorExit(TObject* AObject);
+// extern PACKAGE bool __fastcall MonitorWait(TObject* AObject, unsigned Timeout);
+// extern PACKAGE void __fastcall MonitorPulse(TObject* AObject);
+// extern PACKAGE void __fastcall MonitorPulseAll(TObject* AObject);
+// extern PACKAGE void __fastcall MemoryBarrier(void);
+// extern PACKAGE int __fastcall BeginThread(void * SecurityAttributes, unsigned StackSize, TThreadFunc ThreadFunc, void * Parameter, unsigned CreationFlags, unsigned &ThreadId);
+// extern PACKAGE void __fastcall EndThread(int ExitCode);
 extern PACKAGE Word __fastcall StringElementSize(const UnicodeString S)/* overload */;
 extern PACKAGE Word __fastcall StringElementSize(const RawByteString S)/* overload */;
 extern PACKAGE Word __fastcall StringCodePage(const UnicodeString S)/* overload */;
@@ -757,59 +557,59 @@ extern PACKAGE int __fastcall Pos(const RawByteString substr, const RawByteStrin
 extern PACKAGE AnsiString __fastcall StringOfChar(char ch, int Count)/* overload */;
 extern PACKAGE int __fastcall Pos(const WideString substr, const WideString str)/* overload */;
 extern PACKAGE UnicodeString __fastcall StringOfChar(WideChar ch, int Count)/* overload */;
-extern PACKAGE UCS4String __fastcall UnicodeStringToUCS4String(const UnicodeString S);
-extern PACKAGE UnicodeString __fastcall UCS4StringToUnicodeString(const UCS4String S);
+// extern PACKAGE UCS4String __fastcall UnicodeStringToUCS4String(const UnicodeString S);
+// extern PACKAGE UnicodeString __fastcall UCS4StringToUnicodeString(const UCS4String S);
 extern PACKAGE void __fastcall UniqueString(UnicodeString &str)/* overload */;
 extern PACKAGE int __fastcall Pos(const UnicodeString substr, const UnicodeString str)/* overload */;
 extern PACKAGE void __fastcall SetCodePage(RawByteString &S, Word CodePage, bool Convert = true);
-extern PACKAGE void __fastcall InitializeArray(void * p, void * typeInfo, unsigned elemCount);
-extern PACKAGE UnicodeString __fastcall WideCharToString(WideChar * Source);
-extern PACKAGE UnicodeString __fastcall WideCharLenToString(WideChar * Source, int SourceLen);
-extern PACKAGE void __fastcall WideCharToStrVar(WideChar * Source, UnicodeString &Dest);
-extern PACKAGE void __fastcall WideCharLenToStrVar(WideChar * Source, int SourceLen, UnicodeString &Dest)/* overload */;
-extern PACKAGE void __fastcall WideCharLenToStrVar(WideChar * Source, int SourceLen, AnsiString &Dest)/* overload */;
+// extern PACKAGE void __fastcall InitializeArray(void * p, void * typeInfo, unsigned elemCount);
+// extern PACKAGE UnicodeString __fastcall WideCharToString(WideChar * Source);
+// extern PACKAGE UnicodeString __fastcall WideCharLenToString(WideChar * Source, int SourceLen);
+// extern PACKAGE void __fastcall WideCharToStrVar(WideChar * Source, UnicodeString &Dest);
+// extern PACKAGE void __fastcall WideCharLenToStrVar(WideChar * Source, int SourceLen, UnicodeString &Dest)/* overload */;
+// extern PACKAGE void __fastcall WideCharLenToStrVar(WideChar * Source, int SourceLen, AnsiString &Dest)/* overload */;
 extern PACKAGE WideChar * __fastcall StringToWideChar(const UnicodeString Source, WideChar * Dest, int DestSize);
-extern PACKAGE UnicodeString __fastcall OleStrToString(WideChar * Source);
-extern PACKAGE void __fastcall OleStrToStrVar(WideChar * Source, AnsiString &Dest)/* overload */;
-extern PACKAGE void __fastcall OleStrToStrVar(WideChar * Source, UnicodeString &Dest)/* overload */;
-extern PACKAGE WideChar * __fastcall StringToOleStr(const AnsiString Source)/* overload */;
-extern PACKAGE WideChar * __fastcall StringToOleStr(const UnicodeString Source)/* overload */;
-extern PACKAGE void __fastcall GetVariantManager [[deprecated]](TVariantManager &VarMgr);
-extern PACKAGE void __fastcall SetVariantManager [[deprecated]](const TVariantManager &VarMgr);
-extern PACKAGE bool __fastcall IsVariantManagerSet [[deprecated]](void);
-extern PACKAGE void __fastcall CopyArray(void * dest, void * source, void * typeInfo, int cnt);
-extern PACKAGE void __fastcall FinalizeArray(void * p, void * typeInfo, unsigned cnt);
-extern PACKAGE void __fastcall DynArrayClear(void * &a, void * typeInfo);
-extern PACKAGE void __fastcall DynArraySetLength(void * &a, void * typeInfo, int dimCnt, PLongint lengthVec);
-extern PACKAGE int __fastcall DynArraySize(void * a);
+// extern PACKAGE UnicodeString __fastcall OleStrToString(WideChar * Source);
+// extern PACKAGE void __fastcall OleStrToStrVar(WideChar * Source, AnsiString &Dest)/* overload */;
+// extern PACKAGE void __fastcall OleStrToStrVar(WideChar * Source, UnicodeString &Dest)/* overload */;
+// extern PACKAGE WideChar * __fastcall StringToOleStr(const AnsiString Source)/* overload */;
+// extern PACKAGE WideChar * __fastcall StringToOleStr(const UnicodeString Source)/* overload */;
+// extern PACKAGE void __fastcall GetVariantManager [[deprecated]](TVariantManager &VarMgr);
+// extern PACKAGE void __fastcall SetVariantManager [[deprecated]](const TVariantManager &VarMgr);
+// extern PACKAGE bool __fastcall IsVariantManagerSet [[deprecated]](void);
+// extern PACKAGE void __fastcall CopyArray(void * dest, void * source, void * typeInfo, int cnt);
+// extern PACKAGE void __fastcall FinalizeArray(void * p, void * typeInfo, unsigned cnt);
+// extern PACKAGE void __fastcall DynArrayClear(void * &a, void * typeInfo);
+// extern PACKAGE void __fastcall DynArraySetLength(void * &a, void * typeInfo, int dimCnt, PLongint lengthVec);
+// extern PACKAGE int __fastcall DynArraySize(void * a);
 extern PACKAGE unsigned __fastcall FindHInstance(void * Address);
-extern PACKAGE unsigned __fastcall FindClassHInstance(TClass ClassType);
+// extern PACKAGE unsigned __fastcall FindClassHInstance(TClass ClassType);
 extern PACKAGE unsigned __fastcall FindResourceHInstance(unsigned Instance);
 extern PACKAGE UnicodeString __fastcall GetUILanguages(const Word LANGID);
 extern PACKAGE UnicodeString __fastcall GetLocaleOverride(UnicodeString AppName);
 extern PACKAGE unsigned __fastcall LoadResourceModule(WideChar * ModuleName, bool CheckOwner = true);
-extern PACKAGE UnicodeString __fastcall GetResourceModuleName(UnicodeString HostAppName, UnicodeString ModuleName);
-extern PACKAGE void __fastcall EnumModules(TEnumModuleFunc Func, void * Data)/* overload */;
-extern PACKAGE void __fastcall EnumResourceModules(TEnumModuleFunc Func, void * Data)/* overload */;
-extern PACKAGE void __fastcall EnumModules(TEnumModuleFuncLW Func, void * Data)/* overload */;
-extern PACKAGE void __fastcall EnumResourceModules(TEnumModuleFuncLW Func, void * Data)/* overload */;
-extern PACKAGE void __fastcall AddModuleUnloadProc(TModuleUnloadProc Proc)/* overload */;
-extern PACKAGE void __fastcall RemoveModuleUnloadProc(TModuleUnloadProc Proc)/* overload */;
-extern PACKAGE void __fastcall AddModuleUnloadProc(TModuleUnloadProcLW Proc)/* overload */;
-extern PACKAGE void __fastcall RemoveModuleUnloadProc(TModuleUnloadProcLW Proc)/* overload */;
-extern PACKAGE void __fastcall RegisterModule(PLibModule LibModule);
-extern PACKAGE void __fastcall UnregisterModule(PLibModule LibModule);
-extern PACKAGE double __cdecl CompToDouble(Comp Value);
-extern PACKAGE void __cdecl DoubleToComp(double Value, Comp &Result);
-extern PACKAGE Currency __cdecl CompToCurrency(Comp Value);
-extern PACKAGE void __cdecl CurrencyToComp(Currency Value, Comp &Result);
+// extern PACKAGE UnicodeString __fastcall GetResourceModuleName(UnicodeString HostAppName, UnicodeString ModuleName);
+// extern PACKAGE void __fastcall EnumModules(TEnumModuleFunc Func, void * Data)/* overload */;
+// extern PACKAGE void __fastcall EnumResourceModules(TEnumModuleFunc Func, void * Data)/* overload */;
+// extern PACKAGE void __fastcall EnumModules(TEnumModuleFuncLW Func, void * Data)/* overload */;
+// extern PACKAGE void __fastcall EnumResourceModules(TEnumModuleFuncLW Func, void * Data)/* overload */;
+// extern PACKAGE void __fastcall AddModuleUnloadProc(TModuleUnloadProc Proc)/* overload */;
+// extern PACKAGE void __fastcall RemoveModuleUnloadProc(TModuleUnloadProc Proc)/* overload */;
+// extern PACKAGE void __fastcall AddModuleUnloadProc(TModuleUnloadProcLW Proc)/* overload */;
+// extern PACKAGE void __fastcall RemoveModuleUnloadProc(TModuleUnloadProcLW Proc)/* overload */;
+// extern PACKAGE void __fastcall RegisterModule(PLibModule LibModule);
+// extern PACKAGE void __fastcall UnregisterModule(PLibModule LibModule);
+// extern PACKAGE double __cdecl CompToDouble(Comp Value);
+// extern PACKAGE void __cdecl DoubleToComp(double Value, Comp &Result);
+// extern PACKAGE Currency __cdecl CompToCurrency(Comp Value);
+// extern PACKAGE void __cdecl CurrencyToComp(Currency Value, Comp &Result);
 extern PACKAGE void * __cdecl GetMemory(int Size);
 extern PACKAGE int __cdecl FreeMemory(void * P);
 extern PACKAGE void * __cdecl ReallocMemory(void * P, int Size);
-extern PACKAGE void __fastcall SetLineBreakStyle(TextFile &T, TTextLineBreakStyle Style);
-extern PACKAGE int __fastcall UnicodeToUtf8 [[deprecated]](char * Dest, WideChar * Source, int MaxBytes)/* overload */;
+// extern PACKAGE void __fastcall SetLineBreakStyle(TextFile &T, TTextLineBreakStyle Style);
+// extern PACKAGE int __fastcall UnicodeToUtf8 [[deprecated]](char * Dest, WideChar * Source, int MaxBytes)/* overload */;
 extern PACKAGE unsigned __fastcall UnicodeToUtf8(char * Dest, unsigned MaxDestBytes, WideChar * Source, unsigned SourceChars)/* overload */;
-extern PACKAGE int __fastcall Utf8ToUnicode [[deprecated]](WideChar * Dest, char * Source, int MaxChars)/* overload */;
+// extern PACKAGE int __fastcall Utf8ToUnicode [[deprecated]](WideChar * Dest, char * Source, int MaxChars)/* overload */;
 extern PACKAGE unsigned __fastcall Utf8ToUnicode(WideChar * Dest, unsigned MaxDestChars, char * Source, unsigned SourceBytes)/* overload */;
 extern PACKAGE RawByteString __fastcall UTF8Encode(const WideString WS)/* overload */;
 extern PACKAGE RawByteString __fastcall UTF8Encode(const UnicodeString US)/* overload */;
@@ -817,7 +617,7 @@ extern PACKAGE RawByteString __fastcall UTF8Encode(const RawByteString A)/* over
 extern PACKAGE ShortString __fastcall UTF8EncodeToShortString(const WideString WS)/* overload */;
 extern PACKAGE ShortString __fastcall UTF8EncodeToShortString(const UnicodeString US)/* overload */;
 extern PACKAGE ShortString __fastcall UTF8EncodeToShortString(const RawByteString A)/* overload */;
-extern PACKAGE WideString __fastcall UTF8Decode [[deprecated("Use UTF8ToWideString or UTF8ToString")]](const RawByteString S);
+// extern PACKAGE WideString __fastcall UTF8Decode [[deprecated("Use UTF8ToWideString or UTF8ToString")]](const RawByteString S);
 extern PACKAGE WideString __fastcall UTF8ToWideString(const RawByteString S);
 extern PACKAGE UnicodeString __fastcall UTF8ToUnicodeString(const RawByteString S)/* overload */;
 extern PACKAGE UnicodeString __fastcall UTF8ToUnicodeString(const char * S)/* overload */;
@@ -828,19 +628,21 @@ extern PACKAGE UnicodeString __fastcall UTF8ToString(const char * S)/* overload 
 extern PACKAGE UnicodeString __fastcall UTF8ToString(char const *S, const int S_Size)/* overload */;
 extern PACKAGE RawByteString __fastcall AnsiToUtf8(const UnicodeString S);
 extern PACKAGE UnicodeString __fastcall Utf8ToAnsi(const RawByteString S);
-extern PACKAGE UnicodeString __fastcall LoadResString(PResStringRec ResStringRec);
-extern PACKAGE PUCS4Char __fastcall PUCS4Chars(const UCS4String S);
-extern PACKAGE UCS4String __fastcall WideStringToUCS4String(const WideString S);
-extern PACKAGE WideString __fastcall UCS4StringToWideString(const UCS4String S);
-extern PACKAGE void __fastcall SetMultiByteConversionCodePage(int CodePage);
-extern PACKAGE void __stdcall UnloadDelayLoadedDLL(char * szDll);
+// extern PACKAGE UnicodeString __fastcall LoadResString(PResStringRec ResStringRec);
+// extern PACKAGE PUCS4Char __fastcall PUCS4Chars(const UCS4String S);
+// extern PACKAGE UCS4String __fastcall WideStringToUCS4String(const WideString S);
+// extern PACKAGE WideString __fastcall UCS4StringToWideString(const UCS4String S);
+// extern PACKAGE void __fastcall SetMultiByteConversionCodePage(int CodePage);
+// extern PACKAGE void __stdcall UnloadDelayLoadedDLL(char * szDll);
 
 }	/* namespace System */
-using namespace System;
-#include <sysclass.h>	// system class definitions
-#pragma pack(pop)
-#pragma option pop
+// using namespace System;
+// #include <sysclass.h>	// system class definitions
+// #pragma pack(pop)
+// #pragma option pop
+#pragma warning(pop)
 
-#pragma delphiheader end.
+
+// #pragma delphiheader end.
 //-- end unit ----------------------------------------------------------------
 #endif	// SystemHPP

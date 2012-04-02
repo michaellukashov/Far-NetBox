@@ -5,10 +5,10 @@
 #ifndef DSTRING_H
 #define DSTRING_H
 
-#pragma delphiheader begin
+// #pragma delphiheader begin
 
-#include <sysmac.h>
-#include <stdarg.h>
+// #include <sysmac.h>
+// #include <stdarg.h>
 #include <StrHlpr.hpp>
 
 namespace System
@@ -364,14 +364,14 @@ namespace System
     AnsiStringT<CP>(const AnsiStringT<OTHER_CP>& src) : AnsiStringBase() {
       // Short-circuit case of LStrAddRef to preserve
       // payload as it could be in Unicode format
-      #pragma option push -w-8011
+      // #pragma option push -w-8011
       if (this == &src) {
         if (Data && reinterpret_cast<const StrRec*>(Data)[-1].refCnt > 0) {
           reinterpret_cast<StrRec*>(Data)[-1].refCnt++;
         }
         return;
       }
-      #pragma option pop
+      // #pragma option pop
 
       //  CodePage FFFF is a general receiver requiring no conversion
       if ((OTHER_CP == CP) || (CP == 0xFFFF)) {
@@ -685,7 +685,7 @@ namespace System
 #endif
 
 }
-using namespace System;
+// using namespace System;
 
 // The following is provided for backward compatibility.
 // Otherwise, the new IntToStr(__int64) causes ambiguity for old code
@@ -697,7 +697,8 @@ namespace Sysutils
   extern PACKAGE String __fastcall IntToStr(__int64 Value)/* overload */;
 }
 
-#pragma option push -w-inl
+// #pragma option push -w-inl
+#pragma warning(push, 1)
 
 #if !defined(_DELPHI_STRING_UNICODE)
 inline AnsiString __fastcall IntToStr(bool value)
@@ -718,9 +719,10 @@ inline AnsiString __fastcall IntToStr(unsigned long value)
 }
 #endif
 
-#pragma option pop
+// #pragma option pop
+#pragma warning(pop)
 
-#pragma delphiheader end.
+// #pragma delphiheader end.
 
 #endif  // DSTRING_H
 

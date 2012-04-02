@@ -6,9 +6,9 @@
 #ifndef WSTRING_H
 #define WSTRING_H
 
-#pragma delphiheader begin
+// #pragma delphiheader begin
 
-#include <sysmac.h>
+// #include <sysmac.h>
 #include <dstring.h>
 #include <StrHlpr.hpp>
 
@@ -66,7 +66,7 @@ namespace System
     __fastcall WideString(const WideChar* src, int len);
     __fastcall WideString(const char* src, int len);
     __fastcall WideString(const WideChar* src);
-    __fastcall WideString(const char16_t* src, int numChar16 = -1);
+    // __fastcall WideString(const char16_t* src, int numChar16 = -1);
     __fastcall WideString(const char32_t* src, int numChar32 = -1);
     __fastcall explicit WideString(const WideChar src);
 #if !defined(WIDECHAR_IS_WCHAR)
@@ -76,7 +76,7 @@ namespace System
 #endif
     __fastcall explicit WideString(char src);
     __fastcall explicit WideString(short src);
-    __fastcall explicit WideString(unsigned short);
+    // __fastcall explicit WideString(unsigned short);
     __fastcall explicit WideString(int src);
     __fastcall explicit WideString(unsigned int);
     __fastcall explicit WideString(long);
@@ -272,11 +272,7 @@ namespace System
 #endif
 
 }
-using namespace System;
-#pragma delphiheader end.
+// using namespace System;
+// #pragma delphiheader end.
 
 #endif
-
-
-
-
