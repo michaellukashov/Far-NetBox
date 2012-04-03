@@ -646,8 +646,8 @@ extern PACKAGE UnicodeString __fastcall Utf8ToAnsi(const RawByteString S);
 // #pragma option pop
 #pragma warning(pop)
 
-#define Sysconst_SRangeError System::LoadResourceString(&Sysconst::_SRangeError)
-#define Sysconst_SResultTooLong System::LoadResourceString(&Sysconst::_SResultTooLong)
+#define Sysconst_SRangeError System::LoadResourceString(&Sysconst_SRangeError)
+#define Sysconst_SResultTooLong System::LoadResourceString(&Sysconst_SResultTooLong)
 
 // #pragma delphiheader end.
 //-- end unit ----------------------------------------------------------------
