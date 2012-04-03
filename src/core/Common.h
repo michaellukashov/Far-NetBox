@@ -198,6 +198,11 @@ extern int Win32MinorVersion;
 extern int Win32BuildNumber;
 // extern int Win32CSDVersion;
 //---------------------------------------------------------------------------
+extern const int HoursPerDay;
+extern const int MinsPerDay;
+extern const int SecsPerDay;
+extern const int MSecsPerDay;
+//---------------------------------------------------------------------------
 void InitPlatformId();
 //---------------------------------------------------------------------------
 #include <assert.h>

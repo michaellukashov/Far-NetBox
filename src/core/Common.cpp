@@ -949,10 +949,10 @@ static const TDayTable MonthDays[] =
     { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
 };
 
-static const int HoursPerDay = 24;
-static const int MinsPerDay  = HoursPerDay * 60;
-static const int SecsPerDay  = MinsPerDay * 60;
-static const int MSecsPerDay = SecsPerDay * 1000;
+const int HoursPerDay = 24;
+const int MinsPerDay  = HoursPerDay * 60;
+const int SecsPerDay  = MinsPerDay * 60;
+const int MSecsPerDay = SecsPerDay * 1000;
 
 // Days between 1/1/0001 and 12/31/1899
 static const int DateDelta = 693594;
