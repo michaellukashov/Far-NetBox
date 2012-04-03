@@ -66,6 +66,7 @@ set ( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/
 include_directories (
     ${PROJECT_ROOT}/src/NetBox
     ${PROJECT_ROOT}/src/PluginSDK/${FAR_VERSION}
+    ${PROJECT_ROOT}/src/nbvcl
     ${PROJECT_ROOT}/src/core
     ${PROJECT_ROOT}/src/windows
     ${PROJECT_ROOT}/src/resource
@@ -132,9 +133,9 @@ set ( COMMON_SOURCES
     ${PROJECT_ROOT}/src/core/SynchronizeController.cpp
     ${PROJECT_ROOT}/src/core/Cryptography.cpp
     ${PROJECT_ROOT}/src/core/WinSCPSecurity.cpp
-    ${PROJECT_ROOT}/src/core/Classes.cpp
     ${PROJECT_ROOT}/src/core/Common.cpp
-    ${PROJECT_ROOT}/src/core/ustring.cpp
+    ${PROJECT_ROOT}/src/nbvcl/Classes.cpp
+    ${PROJECT_ROOT}/src/nbvcl/ustring.cpp
     ${PROJECT_ROOT}/src/windows/GUIConfiguration.cpp
     ${PROJECT_ROOT}/src/windows/GUITools.cpp
     ${PROJECT_ROOT}/src/NetBox/stdafx.cpp
@@ -332,7 +333,8 @@ add_dependencies ( NetBox
 set ( TESTNETBOX_01_DIR ${PROJECT_ROOT}/src/NetBox )
 
 set ( TESTNETBOX_01_SOURCES
-    ${PROJECT_ROOT}/src/core/Classes.cpp
+    ${PROJECT_ROOT}/src/nbvcl/Classes.cpp
+    ${PROJECT_ROOT}/src/nbvcl/ustring.cpp
     ${PROJECT_ROOT}/src/core/Common.cpp
     ${PROJECT_ROOT}/src/core/Exceptions.cpp
     ${PROJECT_ROOT}/src/core/FileBuffer.cpp
