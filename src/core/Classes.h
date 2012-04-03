@@ -6,6 +6,7 @@
 #include <CommCtrl.h>
 
 #pragma warning(push, 1)
+
 #include <string>
 #include <vector>
 #include <list>
@@ -21,6 +22,11 @@
 #include <boost/bind.hpp>
 
 #include <rtlconsts.h>
+#ifdef _MSC_VER
+#include <dstring.h>
+#include <wstring.h>
+#include <ustring.h>
+#endif
 
 #pragma warning(pop)
 

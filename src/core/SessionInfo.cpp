@@ -848,10 +848,15 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring Line)
             fprintf_s(static_cast<FILE *>(FFile), "%s", const_cast<char *>(nb::W2MB(Line.c_str()).c_str()));
             fputc('\n', static_cast<FILE *>(FFile));
 */
-            std::wstring Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", nb::Now());
-            // UTF8String UtfLine = UTF8String(std::wstring(LogLineMarks[Type]) + Timestamp + Line + L"\n");
-            // fwrite(UtfLine.c_str(), UtfLine.size(), 1, (FILE *)FFile);
-            nb::Error(SNotImplemented, 1490);
+            // std::wstring Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", nb::Now());
+            SYSTEMTIME t;
+            ::GetLocalTime(&t);
+            std::wstring Timestamp = FORMAT(L" %04d-%02d-%02d %02d:%02d:%02d.%03d ",
+                                            t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond, t.wMilliseconds);
+            // UTF8String UtfLine = UTF8String(UnicodeString(LogLineMarks[Type]) + Timestamp + Line + "\n");
+            System::UTF8String UtfLine = System::UTF8String(System::UnicodeString(LogLineMarks[Type]) + Timestamp + Line + L"\n");
+            fwrite(UtfLine.c_str(), UtfLine.Length(), 1, (FILE *)FFile);
+            // nb::Error(SNotImplemented, 1490);
         }
     }
 }
