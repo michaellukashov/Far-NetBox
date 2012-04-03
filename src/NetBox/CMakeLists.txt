@@ -378,3 +378,28 @@ add_dependencies ( testnetbox_02
 
 target_link_libraries ( testnetbox_02 ${NETBOX_LIBRARIES} )
 
+#-------------------------------------------------------
+# target testnetbox_03
+
+set ( TESTNETBOX_03_DIR ${PROJECT_ROOT}/src/NetBox )
+
+set ( TESTNETBOX_03_SOURCES
+    ${TESTNETBOX_03_DIR}/UnityBuildCore.cpp
+    ${TESTNETBOX_03_DIR}/UnityBuildMain.cpp
+    ${TESTNETBOX_03_DIR}/UnityBuildFilezilla.cpp
+    ${TESTNETBOX_03_DIR}/testnetbox_03.cpp
+)
+
+add_executable( testnetbox_03 ${TESTNETBOX_03_SOURCES} )
+set_target_properties( testnetbox_03
+    PROPERTIES
+    COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
+    LINK_FLAGS "${CMAKE_LINK_FLAGS} /NODEFAULTLIB:MSVCRTD.LIB"
+)
+add_dependencies ( testnetbox_03
+    libputty
+    libtinyxml
+)
+
+target_link_libraries ( testnetbox_03 ${NETBOX_LIBRARIES} )
+
