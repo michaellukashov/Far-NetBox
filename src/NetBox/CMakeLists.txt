@@ -239,7 +239,6 @@ add_library (libputty STATIC
     ${PROJECT_ROOT}/libs/Putty/WINDOWS/WINPROXY.C
     ${PROJECT_ROOT}/libs/Putty/WINDOWS/WINSTORE_.C
     ${PROJECT_ROOT}/libs/Putty/WINDOWS/WINTIME.C
-    ${PROJECT_ROOT}/libs/Putty/WINDOWS/strftime.c
     ${PROJECT_ROOT}/libs/Putty/X11FWD.C
 )
 
