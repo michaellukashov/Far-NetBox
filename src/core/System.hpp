@@ -1,6 +1,10 @@
 #ifndef SystemHPP
 #define SystemHPP
 
+#define WIN32_LEAN_AND_MEAN
+#define SECURITY_WIN32
+#include <WinDef.h>
+
 // #pragma delphiheader begin
 // #pragma option push
 #pragma warning(push, 1)
@@ -642,6 +646,8 @@ extern PACKAGE UnicodeString __fastcall Utf8ToAnsi(const RawByteString S);
 // #pragma option pop
 #pragma warning(pop)
 
+#define Sysconst_SRangeError System::LoadResourceString(&Sysconst::_SRangeError)
+#define Sysconst_SResultTooLong System::LoadResourceString(&Sysconst::_SResultTooLong)
 
 // #pragma delphiheader end.
 //-- end unit ----------------------------------------------------------------
