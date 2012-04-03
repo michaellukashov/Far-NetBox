@@ -164,10 +164,10 @@ namespace System
     typedef System::TDateTime TDate;
     typedef System::TDateTime TTime;
 }
-namespace System
-{
-    typedef struct PackageUnitEntry UnitEntryTable;
-}
+// namespace System
+// {
+    // typedef struct PackageUnitEntry UnitEntryTable;
+// }
 namespace System
 {
     extern PACKAGE HINSTANCE MainInstance;

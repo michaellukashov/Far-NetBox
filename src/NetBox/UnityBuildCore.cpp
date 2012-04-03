@@ -1,4 +1,5 @@
 #define PUTTY_DO_GLOBALS
+#include "..\core\ustring.cpp"
 #include "..\core\Common.cpp"
 #include "..\core\Classes.cpp"
 #include "..\core\RemoteFiles.cpp"
