@@ -23,6 +23,12 @@
 
 namespace System
 {
+  class ERangeError : public std::exception
+  {
+    public:
+        ERangeError(const char *str) : std::exception(str)
+        {}
+  };
 
   static int __fastcall wchar_tLen(const wchar_t* src)
   {

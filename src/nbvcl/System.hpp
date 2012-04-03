@@ -638,7 +638,12 @@ extern PACKAGE UnicodeString __fastcall Utf8ToAnsi(const RawByteString S);
 // extern PACKAGE WideString __fastcall UCS4StringToWideString(const UCS4String S);
 // extern PACKAGE void __fastcall SetMultiByteConversionCodePage(int CodePage);
 // extern PACKAGE void __stdcall UnloadDelayLoadedDLL(char * szDll);
-
+/*
+  String __fastcall LoadResourceString(ResourceString const * const rsrc)
+  {
+    return System::LoadResString(const_cast<TResStringRec*>(rsrc));
+  }
+*/
 }	/* namespace System */
 // using namespace System;
 // #include <sysclass.h>	// system class definitions
@@ -646,7 +651,8 @@ extern PACKAGE UnicodeString __fastcall Utf8ToAnsi(const RawByteString S);
 // #pragma option pop
 #pragma warning(pop)
 
-#define Sysconst_SRangeError System::LoadResourceString(&Sysconst_SRangeError)
+// #define Sysconst_SRangeError System::LoadResourceString(&Sysconst_SRangeError)
+#define Sysconst_SRangeError "Range check error"
 #define Sysconst_SResultTooLong System::LoadResourceString(&Sysconst_SResultTooLong)
 
 // #pragma delphiheader end.
