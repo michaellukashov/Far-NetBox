@@ -134,6 +134,7 @@ set ( COMMON_SOURCES
     ${PROJECT_ROOT}/src/core/WinSCPSecurity.cpp
     ${PROJECT_ROOT}/src/core/Classes.cpp
     ${PROJECT_ROOT}/src/core/Common.cpp
+    ${PROJECT_ROOT}/src/core/ustring.cpp
     ${PROJECT_ROOT}/src/windows/GUIConfiguration.cpp
     ${PROJECT_ROOT}/src/windows/GUITools.cpp
     ${PROJECT_ROOT}/src/NetBox/stdafx.cpp
