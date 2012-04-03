@@ -18,6 +18,7 @@
 
 #include "stdafx.h"
 #include "pathfunctions.h"
+#include "MFC64bitFix.h"
 
 void PathRemoveArgs(CString &path)
 {

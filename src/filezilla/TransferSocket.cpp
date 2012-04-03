@@ -26,6 +26,9 @@
 #include "TransferSocket.h"
 #include "mainthread.h"
 #include "AsyncProxySocketLayer.h"
+#include "Options.h"
+#include "TextsFileZilla.h"
+#include "Crypt.h"
 #ifndef MPEXT_NO_GSS
 #include "AsyncGssSocketLayer.h"
 #endif
