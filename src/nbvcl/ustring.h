@@ -144,21 +144,25 @@ namespace System
     // Concatenation
     UnicodeString __fastcall operator +(const UnicodeString& rhs) const;
 
-    wchar_t* __fastcall c_str() const   { return (Data)? Data: const_cast<wchar_t*>(L"");}
-    wchar_t* __fastcall w_str() const   { return (Data)? Data: const_cast<wchar_t*>(L"");}
+    // wchar_t* __fastcall c_str() const   { return (Data)? Data: const_cast<wchar_t*>(L"");}
+    wchar_t* __fastcall c_str() const   { return const_cast<wchar_t*>(Data.c_str()); }
+    // wchar_t* __fastcall w_str() const   { return (Data)? Data: const_cast<wchar_t*>(L"");}
+    wchar_t* __fastcall w_str() const   { return const_cast<wchar_t*>(Data.c_str()); }
 
 #if defined(UNICODE) || defined(_UNICODE)
-    wchar_t* __fastcall t_str() const   { return (Data)? Data: const_cast<wchar_t*>(L"");}
+    // wchar_t* __fastcall t_str() const   { return (Data)? Data: const_cast<wchar_t*>(L"");}
+    wchar_t* __fastcall t_str() const   { return const_cast<wchar_t*>(Data.c_str());}
 #else
     char*    __fastcall t_str();
 #endif
 
     // Read access to raw Data ptr.  Will be NULL for an empty string.
-    const void* __fastcall data() const   { return Data; }
+    const void* __fastcall data() const   { return Data.data(); }
+    void* __fastcall data() { return const_cast<void*>(data()); }
 
     // Query attributes of string
     int  __fastcall Length()  const;
-    bool __fastcall IsEmpty() const { return Data == NULL; }
+    bool __fastcall IsEmpty() const { return Data.empty(); }
 
     // Make string unique (refcnt == 1)
     UnicodeString&  __fastcall Unique();
@@ -198,16 +202,19 @@ namespace System
     // NOTE: Uses default TEncoding. For other encodings, use TEncoding->ByteOf(uStr) 
     DynamicArray<System::Byte> __fastcall BytesOf() const;
 
-    unsigned short ElementSize() const { return Data ? GetRec().elemSize : (unsigned short)2; }
-    int            RefCount()    const { return Data ? GetRec().refCnt   : 0; }
+    // unsigned short ElementSize() const { return Data ? GetRec().elemSize : (unsigned short)2; }
+    unsigned short ElementSize() const { return elemSize; }
+    // int            RefCount()    const { return Data ? GetRec().refCnt   : 0; }
+    int            RefCount()    const { return 1; }
 
-    unsigned short CodePage()    const { return Data ? GetRec().codePage : (unsigned short)System::DefaultUnicodeCodePage; }
+    // unsigned short CodePage()    const { return Data ? GetRec().codePage : (unsigned short)System::DefaultUnicodeCodePage; }
+    unsigned short CodePage()    const { return codePage; }
 
     UnicodeString& swap(UnicodeString& other); 
 
   protected:
     void  __cdecl ThrowIfOutOfRange(int idx) const;
-
+/*
     struct StrRec {
       unsigned short codePage;
       unsigned short elemSize;
@@ -217,9 +224,12 @@ namespace System
 
     const StrRec& GetRec() const;
     StrRec&       GetRec();
-
+*/
   private:
-    wchar_t *Data;
+    // wchar_t *Data;
+    unsigned short codePage;
+    unsigned short elemSize;
+    std::wstring Data;
   };
 
   extern UnicodeString __fastcall operator +(const char*, const UnicodeString&);
@@ -242,7 +252,7 @@ namespace System
   #if !defined(__USTRING_INLINE)
   #define __USTRING_INLINE inline
   #endif
-
+/*
   __USTRING_INLINE const UnicodeString::StrRec &UnicodeString::GetRec() const
   {
     return reinterpret_cast<const StrRec *>(Data)[-1];
@@ -252,10 +262,11 @@ namespace System
   {
     return reinterpret_cast<StrRec *>(Data)[-1];
   }
-
+*/
   __USTRING_INLINE int __fastcall UnicodeString::Length() const
   {
-    return (Data)? GetRec().length : 0;
+    // return (Data)? GetRec().length : 0;
+    return Data.size();
   }
 
 #undef __USTRING_INLINE
