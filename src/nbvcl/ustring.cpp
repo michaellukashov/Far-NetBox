@@ -1,7 +1,11 @@
 //  ustring.cpp - support for delphi Unicode strings in cpp
 //  Copyright (c) 2007 Codegear Software Corp
 
+#include "stdafx.h"
+
 #define __USTRING_INLINE
+#include <Windows.h>
+#include <WinNls.h>
 
 #include <System.hpp>
 #include <StrHlpr.hpp>
@@ -15,7 +19,6 @@
 
 #include <ustring.h>
 #include <dstring.h>
-// #include <WinNls.h>
 
 #if defined(INEFFICIENT_COPY_OF_CONST_DELPHIRETURN_TYPES)
 #define _STR_CAST(type, arg) const_cast<type>(arg)
@@ -263,8 +266,8 @@ namespace System
     if (!Data.c_str() || !rhs.Data.c_str()) {
       return Data.c_str() ? 1 : -1;
     }
-    return ::CompareStringW(LOCALE_USER_DEFAULT, 0, Data, Length(),
-                            rhs.Data, rhs.Length()) - CSTR_EQUAL;
+    return ::CompareStringW(LOCALE_USER_DEFAULT, 0, Data.c_str(), Length(),
+                            rhs.Data.c_str(), rhs.Length()) - CSTR_EQUAL;
   }
 
   int __fastcall UnicodeString::CompareIC(const UnicodeString& rhs) const
@@ -275,15 +278,15 @@ namespace System
     if (!Data.c_str() || !rhs.Data.c_str()) {
       return Data.c_str() ? 1 : -1;
     }
-    return ::CompareStringW(LOCALE_USER_DEFAULT, NORM_IGNORECASE, Data, Length(),
-                            rhs.Data, rhs.Length()) - CSTR_EQUAL;
+    return ::CompareStringW(LOCALE_USER_DEFAULT, NORM_IGNORECASE, Data.c_str(), Length(),
+                            rhs.Data.c_str(), rhs.Length()) - CSTR_EQUAL;
   }
 
   UnicodeString __fastcall UnicodeString::StringOfChar(wchar_t ch, int count)
   {
     UnicodeString tmp;
     tmp.SetLength(count);
-    wchar_t* p = tmp.Data.c_str();
+    wchar_t* p = (wchar_t*)tmp.Data.c_str();
     while (count--)
       *p++ = ch;
     return tmp;
