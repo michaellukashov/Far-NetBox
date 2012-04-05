@@ -973,6 +973,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 		}
 	}
 #endif
+    DEBUG_PRINTF(L"logontype = %d, m_Operation.nOpState = %d", logontype, m_Operation.nOpState);
 	switch(logonseq[logontype][m_Operation.nOpState])
 	{
 		case 0:
