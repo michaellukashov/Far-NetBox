@@ -14,6 +14,8 @@
 #include <limits.h>
 
 #include <ustring.h>
+#include <dstring.h>
+// #include <WinNls.h>
 
 #if defined(INEFFICIENT_COPY_OF_CONST_DELPHIRETURN_TYPES)
 #define _STR_CAST(type, arg) const_cast<type>(arg)
@@ -23,6 +25,12 @@
 
 namespace System
 {
+  class ERangeError : public std::exception
+  {
+    public:
+        ERangeError(const char *str) : std::exception(str)
+        {}
+  };
 
   static int __fastcall wchar_tLen(const wchar_t* src)
   {
@@ -76,8 +84,9 @@ namespace System
 
   __fastcall UnicodeString::UnicodeString(const UnicodeString& src) : Data(src.Data)
   {
-    if (Data && reinterpret_cast<const StrRec*>(Data)[-1].refCnt > 0) {
-      InterlockedIncrement((long*)&(reinterpret_cast<StrRec*>(Data)[-1].refCnt));
+    // if (Data && reinterpret_cast<const StrRec*>(Data)[-1].refCnt > 0) {
+    if (!Data.empty()) {
+      // InterlockedIncrement((long*)&(reinterpret_cast<StrRec*>(Data)[-1].refCnt));
 
       // Short-circuit case of UStrAddRef
       if (this == &src)
@@ -99,7 +108,7 @@ namespace System
     if (src && (len > 0))
     {
       SetLength(len);
-      memcpy(Data, src, len*sizeof(wchar_t));
+      memcpy(data(), src, len*sizeof(wchar_t));
     }
   }
 
@@ -109,7 +118,7 @@ namespace System
     {
       int len = wchar_tLen(src);
       SetLength(len);
-      memcpy(Data, src, len*sizeof(wchar_t));
+      memcpy(data(), src, len*sizeof(wchar_t));
     }
   }
 
@@ -119,7 +128,7 @@ namespace System
     {
       int len = (numChar16 == -1) ? wchar_tLen((wchar_t*)src) : numChar16;
       SetLength(len);
-      memcpy(Data, src, len*sizeof(char16_t));
+      memcpy(data(), src, len*sizeof(char16_t));
     }
   }
 
@@ -129,7 +138,7 @@ namespace System
     {
       int len = UTF32ToUTF16(src, 0, numChar32);
       SetLength(len);
-      UTF32ToUTF16(src, Data, numChar32);
+      UTF32ToUTF16(src, w_str(), numChar32);
     }
   }
 
@@ -185,12 +194,12 @@ namespace System
   {
     sprintf(L"%Lu", src);
   }
-#endif
 
   __fastcall UnicodeString::UnicodeString(double src) : Data(0)
   {
      *this = Sysutils::FloatToStr(src);
   }
+#endif
 
   __fastcall UnicodeString::~UnicodeString()
   {
@@ -251,8 +260,8 @@ namespace System
     if (rhs.Data == Data) {
       return 0;
     }
-    if (!Data || !rhs.Data) {
-      return Data ? 1 : -1;
+    if (!Data.c_str() || !rhs.Data.c_str()) {
+      return Data.c_str() ? 1 : -1;
     }
     return ::CompareStringW(LOCALE_USER_DEFAULT, 0, Data, Length(),
                             rhs.Data, rhs.Length()) - CSTR_EQUAL;
@@ -263,8 +272,8 @@ namespace System
     if (rhs.Data == Data) {
       return 0;
     }
-    if (!Data || !rhs.Data) {
-      return Data ? 1 : -1;
+    if (!Data.c_str() || !rhs.Data.c_str()) {
+      return Data.c_str() ? 1 : -1;
     }
     return ::CompareStringW(LOCALE_USER_DEFAULT, NORM_IGNORECASE, Data, Length(),
                             rhs.Data, rhs.Length()) - CSTR_EQUAL;
@@ -274,7 +283,7 @@ namespace System
   {
     UnicodeString tmp;
     tmp.SetLength(count);
-    wchar_t* p = tmp.Data;
+    wchar_t* p = tmp.Data.c_str();
     while (count--)
       *p++ = ch;
     return tmp;

@@ -66,6 +66,7 @@ set ( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/
 include_directories (
     ${PROJECT_ROOT}/src/NetBox
     ${PROJECT_ROOT}/src/PluginSDK/${FAR_VERSION}
+    ${PROJECT_ROOT}/src/nbvcl
     ${PROJECT_ROOT}/src/core
     ${PROJECT_ROOT}/src/windows
     ${PROJECT_ROOT}/src/resource
@@ -132,8 +133,9 @@ set ( COMMON_SOURCES
     ${PROJECT_ROOT}/src/core/SynchronizeController.cpp
     ${PROJECT_ROOT}/src/core/Cryptography.cpp
     ${PROJECT_ROOT}/src/core/WinSCPSecurity.cpp
-    ${PROJECT_ROOT}/src/core/Classes.cpp
     ${PROJECT_ROOT}/src/core/Common.cpp
+    ${PROJECT_ROOT}/src/nbvcl/Classes.cpp
+    ${PROJECT_ROOT}/src/nbvcl/ustring.cpp
     ${PROJECT_ROOT}/src/windows/GUIConfiguration.cpp
     ${PROJECT_ROOT}/src/windows/GUITools.cpp
     ${PROJECT_ROOT}/src/NetBox/stdafx.cpp
@@ -331,7 +333,8 @@ add_dependencies ( NetBox
 set ( TESTNETBOX_01_DIR ${PROJECT_ROOT}/src/NetBox )
 
 set ( TESTNETBOX_01_SOURCES
-    ${PROJECT_ROOT}/src/core/Classes.cpp
+    ${PROJECT_ROOT}/src/nbvcl/Classes.cpp
+    ${PROJECT_ROOT}/src/nbvcl/ustring.cpp
     ${PROJECT_ROOT}/src/core/Common.cpp
     ${PROJECT_ROOT}/src/core/Exceptions.cpp
     ${PROJECT_ROOT}/src/core/FileBuffer.cpp
@@ -376,4 +379,29 @@ add_dependencies ( testnetbox_02
 )
 
 target_link_libraries ( testnetbox_02 ${NETBOX_LIBRARIES} )
+
+#-------------------------------------------------------
+# target testnetbox_03
+
+set ( TESTNETBOX_03_DIR ${PROJECT_ROOT}/src/NetBox )
+
+set ( TESTNETBOX_03_SOURCES
+    ${TESTNETBOX_03_DIR}/UnityBuildCore.cpp
+    ${TESTNETBOX_03_DIR}/UnityBuildMain.cpp
+    ${TESTNETBOX_03_DIR}/UnityBuildFilezilla.cpp
+    ${TESTNETBOX_03_DIR}/testnetbox_03.cpp
+)
+
+add_executable( testnetbox_03 ${TESTNETBOX_03_SOURCES} )
+set_target_properties( testnetbox_03
+    PROPERTIES
+    COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
+    LINK_FLAGS "${CMAKE_LINK_FLAGS} /NODEFAULTLIB:MSVCRTD.LIB"
+)
+add_dependencies ( testnetbox_03
+    libputty
+    libtinyxml
+)
+
+target_link_libraries ( testnetbox_03 ${NETBOX_LIBRARIES} )
 
