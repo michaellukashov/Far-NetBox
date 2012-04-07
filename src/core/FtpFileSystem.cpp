@@ -334,7 +334,6 @@ void TFTPFileSystem::Open()
 
     std::wstring HostName = Data->GetHostName();
     std::wstring UserName = Data->GetUserName();
-    std::wstring Password = Data->GetPassword();
     std::wstring Account = Data->GetFtpAccount();
     std::wstring Path = Data->GetRemoteDirectory();
     int ServerType = 0;
@@ -380,6 +379,8 @@ void TFTPFileSystem::Open()
 
     do
     {
+        std::wstring Password = Data->GetPassword();
+
         FSystem = L"";
         FFeatures->Clear();
         FFileSystemInfoValid = false;
@@ -409,30 +410,6 @@ void TFTPFileSystem::Open()
             }
         }
 
-        // ask for password if it was not specified in advance,
-        // on retry ask always
-        // DEBUG_PRINTF(L"GetPasswordless = %d, GetFtpAllowEmptyPassword = %d", Data->GetPasswordless(), Data->GetFtpAllowEmptyPassword());
-#if 0
-        if ((Data->GetPassword().empty() && !Data->GetPasswordless() &&
-                !(Data->GetLoginType() == ltAnonymous) && !Data->GetFtpAllowEmptyPassword()) || FPasswordFailed)
-        {
-            FTerminal->LogEvent(L"Password prompt (no password provided or last login attempt failed)");
-
-            if (!FPasswordFailed && !PromptedForCredentials)
-            {
-                FTerminal->Information(LoadStr(FTP_CREDENTIAL_PROMPT), false);
-                PromptedForCredentials = true;
-            }
-
-            // on retry ask for new password
-            Password = L"";
-            if (!FTerminal->PromptUser(Data, pkPassword, LoadStr(PASSWORD_TITLE), L"",
-                                       LoadStr(PASSWORD_PROMPT), false, 0, Password))
-            {
-                FTerminal->FatalError(NULL, LoadStr(AUTHENTICATION_FAILED));
-            }
-        }
-#endif
         // DEBUG_PRINTF(L"Password = %s", Password.c_str());
         FActive = FFileZillaIntf->Connect(
                       nb::W2MB(HostName.c_str()).c_str(), Data->GetPortNumber(),
