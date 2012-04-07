@@ -8,7 +8,9 @@
 #ifndef NO_FILEZILLA
 //---------------------------------------------------------------------------
 #include <list>
+#ifndef MPEXT
 #define MPEXT
+#endif
 #include "FtpFileSystem.h"
 #include "FileZillaIntf.h"
 #include "AsyncProxySocketLayer.h"
@@ -332,7 +334,6 @@ void TFTPFileSystem::Open()
 
     std::wstring HostName = Data->GetHostName();
     std::wstring UserName = Data->GetUserName();
-    std::wstring Password = Data->GetPassword();
     std::wstring Account = Data->GetFtpAccount();
     std::wstring Path = Data->GetRemoteDirectory();
     int ServerType = 0;
@@ -378,6 +379,8 @@ void TFTPFileSystem::Open()
 
     do
     {
+        std::wstring Password = Data->GetPassword();
+
         FSystem = L"";
         FFeatures->Clear();
         FFileSystemInfoValid = false;
@@ -404,29 +407,6 @@ void TFTPFileSystem::Open()
             else
             {
                 FUserName = UserName;
-            }
-        }
-
-        // ask for password if it was not specified in advance,
-        // on retry ask always
-        // DEBUG_PRINTF(L"GetPasswordless = %d, GetFtpAllowEmptyPassword = %d", Data->GetPasswordless(), Data->GetFtpAllowEmptyPassword());
-        if ((Data->GetPassword().empty() && !Data->GetPasswordless() &&
-                !(Data->GetLoginType() == ltAnonymous) && !Data->GetFtpAllowEmptyPassword()) || FPasswordFailed)
-        {
-            FTerminal->LogEvent(L"Password prompt (no password provided or last login attempt failed)");
-
-            if (!FPasswordFailed && !PromptedForCredentials)
-            {
-                FTerminal->Information(LoadStr(FTP_CREDENTIAL_PROMPT), false);
-                PromptedForCredentials = true;
-            }
-
-            // on retry ask for new password
-            Password = L"";
-            if (!FTerminal->PromptUser(Data, pkPassword, LoadStr(PASSWORD_TITLE), L"",
-                                       LoadStr(PASSWORD_PROMPT), false, 0, Password))
-            {
-                FTerminal->FatalError(NULL, LoadStr(AUTHENTICATION_FAILED));
             }
         }
 
@@ -2697,11 +2677,18 @@ void TFTPFileSystem::HandleReplyStatus(const std::wstring Response)
         }
         else if (FLastCommand == PASS)
         {
-            // 530 = "Not logged in."
+            // 530 = "Login or password incorrect"
             if (FLastCode == 530)
             {
                 FPasswordFailed = true;
-            };
+                std::wstring Password = L"";
+                if (!FTerminal->PromptUser(FTerminal->GetSessionData(), pkPassword, LoadStr(PASSWORD_TITLE), L"",
+                                           LoadStr(PASSWORD_PROMPT), false, 0, Password))
+                {
+                    FTerminal->FatalError(NULL, LoadStr(AUTHENTICATION_FAILED));
+                }
+                FTerminal->GetSessionData()->SetPassword(Password);
+             };
         }
         else if (FLastCommand == SYST)
         {
