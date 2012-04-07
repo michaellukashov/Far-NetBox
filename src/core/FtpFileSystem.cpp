@@ -2698,7 +2698,7 @@ void TFTPFileSystem::HandleReplyStatus(const std::wstring Response)
         }
         else if (FLastCommand == PASS)
         {
-            // 530 = "Not logged in."
+            // 530 = "Login or password incorrect"
             if (FLastCode == 530)
             {
                 FPasswordFailed = true;
