@@ -2687,6 +2687,7 @@ void TFTPFileSystem::HandleReplyStatus(const std::wstring Response)
                 {
                     FTerminal->FatalError(NULL, LoadStr(AUTHENTICATION_FAILED));
                 }
+                FTerminal->GetSessionData()->SetPassword(Password);
              };
         }
         else if (FLastCommand == SYST)
