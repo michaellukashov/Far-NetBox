@@ -240,27 +240,54 @@ wchar_t *TCustomFarPlugin::DuplicateStr(const std::wstring Str, bool AllowEmpty)
     }
 }
 //---------------------------------------------------------------------------
+RECT TCustomFarPlugin::GetPanelBounds(int PanelType)
+{
+    PanelInfo Info;
+    FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<LONG_PTR>(&Info),
+        PanelType);
+    RECT Bounds;
+    memset(&Bounds, -1, sizeof(Bounds));
+    if (Info.Plugin)
+    {
+        Bounds = Info.PanelRect;
+    }
+    return Bounds;
+}
+
+//---------------------------------------------------------------------------
 TCustomFarFileSystem *TCustomFarPlugin::GetPanelFileSystem(bool Another,
         HANDLE Plugin)
 {
     // DEBUG_PRINTF(L"begin");
     TCustomFarFileSystem *Result = NULL;
-    PanelInfo Info;
-    FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<LONG_PTR>(&Info), Another ? PANEL_PASSIVE : PANEL_ACTIVE);
+    RECT ActivePanelBounds = GetPanelBounds(PANEL_ACTIVE);
+    RECT PassivePanelBounds = GetPanelBounds(PANEL_PASSIVE);
+    // PanelInfo Info;
+    // FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<LONG_PTR>(&Info),
+        // Plugin != INVALID_HANDLE_VALUE ? Plugin : Another ? PANEL_PASSIVE : PANEL_ACTIVE);
 
-    if (Info.Plugin)
+    // if (Info.Plugin)
     {
-        RECT Bounds = Info.PanelRect;
+        // RECT Bounds = Info.PanelRect;
         TCustomFarFileSystem *FileSystem;
         size_t Index = 0;
         while (!Result && (Index < FOpenedPlugins->GetCount()))
         {
             FileSystem = dynamic_cast<TCustomFarFileSystem *>(FOpenedPlugins->GetItem(Index));
             assert(FileSystem);
-            nb::TRect bounds = FileSystem->GetPanelInfo()->GetBounds();
-            if (bounds == Bounds)
+            if (!Another && (Plugin != INVALID_HANDLE_VALUE) && (Plugin == FileSystem))
             {
                 Result = FileSystem;
+                // break;
+            }
+            else
+            {
+                nb::TRect bounds = FileSystem->GetPanelInfo(Another)->GetBounds();
+                if (bounds == Bounds)
+                {
+                    Result = FileSystem;
+                    // break;
+                }
             }
             Index++;
         }
@@ -2108,7 +2135,7 @@ std::wstring TCustomFarFileSystem::GetMsg(int MsgId)
 //---------------------------------------------------------------------------
 TCustomFarFileSystem *TCustomFarFileSystem::GetOppositeFileSystem()
 {
-    return FPlugin->GetPanelFileSystem(true, this);
+    return FPlugin->GetPanelFileSystem(true, INVALID_HANDLE_VALUE);
 }
 //---------------------------------------------------------------------------
 bool TCustomFarFileSystem::IsActiveFileSystem()

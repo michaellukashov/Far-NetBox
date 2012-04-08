@@ -231,6 +231,7 @@ private:
     void UpdateConsoleTitle();
     std::wstring FormatConsoleTitle();
     HWND GetConsoleWindow();
+    RECT GetPanelBounds(int PanelType);
 };
 //---------------------------------------------------------------------------
 class TCustomFarFileSystem : public nb::TObject
