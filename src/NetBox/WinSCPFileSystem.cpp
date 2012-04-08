@@ -3029,6 +3029,11 @@ void TWinSCPFileSystem::Disconnect()
 {
     if (FTerminal && FTerminal->GetActive())
     {
+        if (!FTerminal->GetSessionData()->GetName().empty())
+        {
+            DEBUG_PRINTF(L"FTerminal->GetSessionData()->GetName = %s", FTerminal->GetSessionData()->GetName().c_str());
+            FPrevSessionName = FTerminal->GetSessionData()->GetName();
+        }
         SaveSession();
     }
     assert(FSynchronizeController == NULL);

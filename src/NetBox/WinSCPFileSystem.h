@@ -280,6 +280,7 @@ private:
     nb::TStrings *FPathHistory;
     std::wstring FSessionsFolder;
     std::wstring FNewSessionsFolder;
+    std::wstring FPrevSessionName;
 
     void TerminalClose(nb::TObject *Sender);
     void TerminalUpdateStatus(TTerminal *Terminal, bool Active);
