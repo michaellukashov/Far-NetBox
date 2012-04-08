@@ -557,8 +557,6 @@ bool TWinSCPFileSystem::GetFindDataEx(nb::TObjectList *PanelItems, int OpMode)
         if (!FPrevSessionName.empty())
         {
             TSessionData *PrevSession = StoredSessions->GetSessionByName(FPrevSessionName);
-            // DEBUG_PRINTF(L"PrevSession = %x", PrevSession);
-            // UpdatePanel(false, false);
             FPrevSessionName.clear();
             if (UpdatePanel())
             {
