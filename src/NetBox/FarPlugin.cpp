@@ -240,11 +240,11 @@ wchar_t *TCustomFarPlugin::DuplicateStr(const std::wstring Str, bool AllowEmpty)
     }
 }
 //---------------------------------------------------------------------------
-RECT TCustomFarPlugin::GetPanelBounds(int PanelType)
+RECT TCustomFarPlugin::GetPanelBounds(HANDLE PanelHandle)
 {
     PanelInfo Info;
     FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<LONG_PTR>(&Info),
-        PanelType);
+        PanelHandle);
     RECT Bounds;
     memset(&Bounds, -1, sizeof(Bounds));
     if (Info.Plugin)
@@ -262,35 +262,23 @@ TCustomFarFileSystem *TCustomFarPlugin::GetPanelFileSystem(bool Another,
     TCustomFarFileSystem *Result = NULL;
     RECT ActivePanelBounds = GetPanelBounds(PANEL_ACTIVE);
     RECT PassivePanelBounds = GetPanelBounds(PANEL_PASSIVE);
-    // PanelInfo Info;
-    // FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<LONG_PTR>(&Info),
-        // Plugin != INVALID_HANDLE_VALUE ? Plugin : Another ? PANEL_PASSIVE : PANEL_ACTIVE);
 
-    // if (Info.Plugin)
+    TCustomFarFileSystem *FileSystem = NULL;
+    size_t Index = 0;
+    while (!Result && (Index < FOpenedPlugins->GetCount()))
     {
-        // RECT Bounds = Info.PanelRect;
-        TCustomFarFileSystem *FileSystem;
-        size_t Index = 0;
-        while (!Result && (Index < FOpenedPlugins->GetCount()))
+        FileSystem = dynamic_cast<TCustomFarFileSystem *>(FOpenedPlugins->GetItem(Index));
+        assert(FileSystem);
+        RECT Bounds = GetPanelBounds(FileSystem);
+        if (Another && CompareRects(Bounds, PassivePanelBounds))
         {
-            FileSystem = dynamic_cast<TCustomFarFileSystem *>(FOpenedPlugins->GetItem(Index));
-            assert(FileSystem);
-            if (!Another && (Plugin != INVALID_HANDLE_VALUE) && (Plugin == FileSystem))
-            {
-                Result = FileSystem;
-                // break;
-            }
-            else
-            {
-                nb::TRect bounds = FileSystem->GetPanelInfo(Another)->GetBounds();
-                if (bounds == Bounds)
-                {
-                    Result = FileSystem;
-                    // break;
-                }
-            }
-            Index++;
+            Result = FileSystem;
         }
+        else if (!Another && CompareRects(Bounds, ActivePanelBounds))
+        {
+            Result = FileSystem;
+        }
+        Index++;
     }
     // DEBUG_PRINTF(L"end");
     return Result;
