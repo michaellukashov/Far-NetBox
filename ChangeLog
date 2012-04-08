@@ -1,4 +1,4 @@
-NetBox 2.0.18 ??.04.2012
+NetBox 2.0.18 08.04.2012
 ---------------------
   * Bugfix: Cannot edit file on another plugin panel, if two plugin panels opened
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=615#p93944)
