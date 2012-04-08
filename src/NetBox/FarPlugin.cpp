@@ -2114,7 +2114,7 @@ TCustomFarFileSystem *TCustomFarFileSystem::GetOppositeFileSystem()
 bool TCustomFarFileSystem::IsActiveFileSystem()
 {
     // Cannot use PanelInfo::Focus as it occasionally does not work from editor;
-    return (this == FPlugin->GetPanelFileSystem());
+    return (this == FPlugin->GetPanelFileSystem(false, this));
 }
 //---------------------------------------------------------------------------
 bool TCustomFarFileSystem::IsLeft()

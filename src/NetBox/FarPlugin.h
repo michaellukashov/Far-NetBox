@@ -164,8 +164,8 @@ public:
     unsigned int ConsoleWindowState();
     void ToggleVideoMode();
 
-    TCustomFarFileSystem *GetPanelFileSystem(bool Another = false,
-            HANDLE Plugin = INVALID_HANDLE_VALUE);
+    TCustomFarFileSystem *GetPanelFileSystem(bool Another,
+            HANDLE Plugin);
 
     std::wstring GetModuleName();
     TFarDialog *GetTopDialog() const { return FTopDialog; }

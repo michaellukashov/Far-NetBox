@@ -189,7 +189,7 @@ bool TWinSCPPlugin::ImportSessions()
     MoreMessageDialog(FORMAT(GetMsg(IMPORTED_SESSIONS_INFO).c_str(), all_imported),
                       /* MoreMessages */ NULL, qtInformation, qaOK);
     TWinSCPFileSystem *PanelSystem = NULL;
-    PanelSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem());
+    PanelSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem(false, INVALID_HANDLE_VALUE));
     if (PanelSystem && PanelSystem->SessionList())
     {
         // PanelSystem->RedrawPanel(/* Another */ false);
@@ -378,7 +378,7 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(int OpenFrom, LONG_PTR Item)
                     }
 
                     TWinSCPFileSystem *PanelSystem;
-                    PanelSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem());
+                    PanelSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem(false, INVALID_HANDLE_VALUE));
                     if (PanelSystem && PanelSystem->Connected() &&
                             PanelSystem->GetTerminal()->GetSessionData()->GetSessionUrl() == Name)
                     {
@@ -468,8 +468,8 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
         } BOOST_SCOPE_EXIT_END
         TWinSCPFileSystem *FileSystem;
         TWinSCPFileSystem *AnotherFileSystem;
-        FileSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem());
-        AnotherFileSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem(true));
+        FileSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem(false, INVALID_HANDLE_VALUE));
+        AnotherFileSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem(true, INVALID_HANDLE_VALUE));
         bool FSConnected = (FileSystem != NULL) && FileSystem->Connected();
         bool AnotherFSConnected = (AnotherFileSystem != NULL) && AnotherFileSystem->Connected();
         bool FSVisible = FSConnected && FromFileSystem;
