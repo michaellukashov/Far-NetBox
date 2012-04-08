@@ -94,6 +94,7 @@ public:
 
 protected:
     bool Connect(TSessionData *Data);
+    void Disconnect();
     void SaveSession();
 
     virtual void GetOpenPluginInfoEx(long unsigned &Flags,

@@ -342,29 +342,11 @@ void TWinSCPFileSystem::Init(TSecureShell * /* SecureShell */)
 TWinSCPFileSystem::~TWinSCPFileSystem()
 {
     // DEBUG_PRINTF(L"FTerminal = %x", FTerminal);
-    if (FTerminal && FTerminal->GetActive())
-    {
-        SaveSession();
-    }
-    assert(FSynchronizeController == NULL);
-    assert(!FAuthenticationSaveScreenHandle);
-    assert(!FProgressSaveScreenHandle);
-    assert(!FSynchronizationSaveScreenHandle);
-    assert(!FFileList);
-    assert(!FPanelItems);
-    delete FPathHistory;
-    FPathHistory = NULL;
-    delete FQueue;
-    FQueue = NULL;
-    delete FQueueStatus;
-    FQueueStatus = NULL;
+    Disconnect();
     delete FQueueStatusSection;
     FQueueStatusSection = NULL;
-    if (FTerminal != NULL)
-    {
-        GUIConfiguration->SetSynchronizeBrowsing(FSynchronisingBrowse);
-    }
-    SAFE_DESTROY(FTerminal);
+    delete FPathHistory;
+    FPathHistory = NULL;
     // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
@@ -2229,7 +2211,10 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring Dir, int OpMode)
             {
                 BOOST_SCOPE_EXIT ( (&Self) )
                 {
-                    Self->FTerminal->SetExceptionOnFail(false);
+                    if (Self->FTerminal)
+                    {
+                        Self->FTerminal->SetExceptionOnFail(false);
+                    }
                     if (!Self->FNoProgress)
                     {
                         Self->FPlugin->ClearConsoleTitle();
@@ -2243,7 +2228,8 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring Dir, int OpMode)
                 }
                 else if ((Dir == PARENTDIRECTORY) && (FTerminal->GetCurrentDirectory() == ROOTDIRECTORY))
                 {
-                    ClosePlugin();
+                    // ClosePlugin();
+                    Disconnect();
                 }
                 else
                 {
@@ -3049,6 +3035,29 @@ bool TWinSCPFileSystem::Connect(TSessionData *Data)
     FSynchronisingBrowse = GUIConfiguration->GetSynchronizeBrowsing();
 
     return Result;
+}
+//---------------------------------------------------------------------------
+void TWinSCPFileSystem::Disconnect()
+{
+    if (FTerminal && FTerminal->GetActive())
+    {
+        SaveSession();
+    }
+    assert(FSynchronizeController == NULL);
+    assert(!FAuthenticationSaveScreenHandle);
+    assert(!FProgressSaveScreenHandle);
+    assert(!FSynchronizationSaveScreenHandle);
+    assert(!FFileList);
+    assert(!FPanelItems);
+    delete FQueue;
+    FQueue = NULL;
+    delete FQueueStatus;
+    FQueueStatus = NULL;
+    if (FTerminal != NULL)
+    {
+        GUIConfiguration->SetSynchronizeBrowsing(FSynchronisingBrowse);
+    }
+    SAFE_DESTROY(FTerminal);
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::ConnectTerminal(TTerminal *Terminal)
