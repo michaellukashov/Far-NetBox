@@ -94,6 +94,7 @@ public:
 
 protected:
     bool Connect(TSessionData *Data);
+    void Disconnect();
     void SaveSession();
 
     virtual void GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
@@ -279,6 +280,7 @@ private:
     nb::TStrings *FPathHistory;
     std::wstring FSessionsFolder;
     std::wstring FNewSessionsFolder;
+    std::wstring FPrevSessionName;
 
     void TerminalClose(nb::TObject *Sender);
     void TerminalUpdateStatus(TTerminal *Terminal, bool Active);
