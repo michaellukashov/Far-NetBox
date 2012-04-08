@@ -456,6 +456,7 @@ public:
     TSessionData *ParseUrl(const std::wstring Url, TOptions *Options, bool &DefaultsOnly,
                            std::wstring *FileName = NULL, bool *ProtocolDefined = NULL);
     TSessionData *GetSession(size_t Index) { return static_cast<TSessionData *>(AtObject(Index)); }
+    TSessionData *GetSessionByName(const std::wstring SessionName);
     TSessionData *GetDefaultSettings() const { return FDefaultSettings; }
     void SetDefaultSettings(TSessionData *value);
 

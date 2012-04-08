@@ -2696,3 +2696,16 @@ TSessionData *TStoredSessionList::ParseUrl(const std::wstring Url,
 
     return Data;
 }
+//---------------------------------------------------------------------------
+TSessionData *TStoredSessionList::GetSessionByName(const std::wstring SessionName)
+{
+    for (size_t I = 0; I < GetCount(); I++)
+    {
+        TSessionData *SessionData = GetSession(I);
+        if (SessionData->GetName() == SessionName)
+        {
+            return SessionData;
+        }
+    }
+    return NULL;
+}
