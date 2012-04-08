@@ -342,29 +342,11 @@ void TWinSCPFileSystem::Init(TSecureShell * /* SecureShell */)
 TWinSCPFileSystem::~TWinSCPFileSystem()
 {
     // DEBUG_PRINTF(L"FTerminal = %x", FTerminal);
-    if (FTerminal && FTerminal->GetActive())
-    {
-        SaveSession();
-    }
-    assert(FSynchronizeController == NULL);
-    assert(!FAuthenticationSaveScreenHandle);
-    assert(!FProgressSaveScreenHandle);
-    assert(!FSynchronizationSaveScreenHandle);
-    assert(!FFileList);
-    assert(!FPanelItems);
-    delete FPathHistory;
-    FPathHistory = NULL;
-    delete FQueue;
-    FQueue = NULL;
-    delete FQueueStatus;
-    FQueueStatus = NULL;
+    Disconnect();
     delete FQueueStatusSection;
     FQueueStatusSection = NULL;
-    if (FTerminal != NULL)
-    {
-        GUIConfiguration->SetSynchronizeBrowsing(FSynchronisingBrowse);
-    }
-    SAFE_DESTROY(FTerminal);
+    delete FPathHistory;
+    FPathHistory = NULL;
     // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
@@ -572,6 +554,16 @@ bool TWinSCPFileSystem::GetFindDataEx(nb::TObjectList *PanelItems, int OpMode)
                 RedrawPanel(true);
             }
         }
+        if (!FPrevSessionName.empty())
+        {
+            TSessionData *PrevSession = StoredSessions->GetSessionByName(FPrevSessionName);
+            FPrevSessionName.clear();
+            if (UpdatePanel())
+            {
+                RedrawPanel();
+                FocusSession(PrevSession);
+            }
+        }
     }
     else
     {
@@ -709,7 +701,6 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData *Data, bool Edit)
                     {
                         if (SelectSession != NULL)
                         {
-                            // DEBUG_PRINTF(L"SelectSession = %x", SelectSession);
                             FocusSession(SelectSession);
                         }
                         // rarely we need to redraw even when new session is created
@@ -2229,7 +2220,10 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring Dir, int OpMode)
             {
                 BOOST_SCOPE_EXIT ( (&Self) )
                 {
-                    Self->FTerminal->SetExceptionOnFail(false);
+                    if (Self->FTerminal)
+                    {
+                        Self->FTerminal->SetExceptionOnFail(false);
+                    }
                     if (!Self->FNoProgress)
                     {
                         Self->FPlugin->ClearConsoleTitle();
@@ -2243,7 +2237,8 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring Dir, int OpMode)
                 }
                 else if ((Dir == PARENTDIRECTORY) && (FTerminal->GetCurrentDirectory() == ROOTDIRECTORY))
                 {
-                    ClosePlugin();
+                    // ClosePlugin();
+                    Disconnect();
                 }
                 else
                 {
@@ -2375,18 +2370,6 @@ int TWinSCPFileSystem::MakeDirectoryEx(std::wstring &Name, int OpMode)
         {
             TSessionData::ValidateName(Name);
             FNewSessionsFolder = Name;
-            /* TODO: set focus on created session directory
-            if (UpdatePanel())
-            {
-              if (SelectSession != NULL)
-              {
-                FocusSession(SelectSession);
-              }
-              // rarely we need to redraw even when new session is created
-              // (e.g. when there there were only the focused hint line before)
-              RedrawPanel();
-            }
-            */
             return 1;
         }
         else
@@ -3049,6 +3032,34 @@ bool TWinSCPFileSystem::Connect(TSessionData *Data)
     FSynchronisingBrowse = GUIConfiguration->GetSynchronizeBrowsing();
 
     return Result;
+}
+//---------------------------------------------------------------------------
+void TWinSCPFileSystem::Disconnect()
+{
+    if (FTerminal && FTerminal->GetActive())
+    {
+        if (!FTerminal->GetSessionData()->GetName().empty())
+        {
+            DEBUG_PRINTF(L"FTerminal->GetSessionData()->GetName = %s", FTerminal->GetSessionData()->GetName().c_str());
+            FPrevSessionName = FTerminal->GetSessionData()->GetName();
+        }
+        SaveSession();
+    }
+    assert(FSynchronizeController == NULL);
+    assert(!FAuthenticationSaveScreenHandle);
+    assert(!FProgressSaveScreenHandle);
+    assert(!FSynchronizationSaveScreenHandle);
+    assert(!FFileList);
+    assert(!FPanelItems);
+    delete FQueue;
+    FQueue = NULL;
+    delete FQueueStatus;
+    FQueueStatus = NULL;
+    if (FTerminal != NULL)
+    {
+        GUIConfiguration->SetSynchronizeBrowsing(FSynchronisingBrowse);
+    }
+    SAFE_DESTROY(FTerminal);
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::ConnectTerminal(TTerminal *Terminal)
