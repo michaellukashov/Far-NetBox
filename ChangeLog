@@ -1,5 +1,7 @@
 NetBox 2.0.18 ??.04.2012
 ---------------------
+  * Improvement: Return to sessons list when current session is closed
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=615#p93901)  
   * Bugfix: Cannot edit file on another plugin panel, if two plugin panels opened
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=615#p93944)
   * FTP: Ask for user password only if the server asks
