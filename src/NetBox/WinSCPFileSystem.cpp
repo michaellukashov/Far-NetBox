@@ -554,6 +554,18 @@ bool TWinSCPFileSystem::GetFindDataEx(nb::TObjectList *PanelItems, int OpMode)
                 RedrawPanel(true);
             }
         }
+        if (!FPrevSessionName.empty())
+        {
+            TSessionData *PrevSession = StoredSessions->GetSessionByName(FPrevSessionName);
+            // DEBUG_PRINTF(L"PrevSession = %x", PrevSession);
+            // UpdatePanel(false, false);
+            FPrevSessionName.clear();
+            if (UpdatePanel())
+            {
+                RedrawPanel();
+                FocusSession(PrevSession);
+            }
+        }
     }
     else
     {
@@ -691,7 +703,6 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData *Data, bool Edit)
                     {
                         if (SelectSession != NULL)
                         {
-                            // DEBUG_PRINTF(L"SelectSession = %x", SelectSession);
                             FocusSession(SelectSession);
                         }
                         // rarely we need to redraw even when new session is created
