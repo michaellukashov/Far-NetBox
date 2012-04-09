@@ -240,30 +240,45 @@ wchar_t *TCustomFarPlugin::DuplicateStr(const std::wstring Str, bool AllowEmpty)
     }
 }
 //---------------------------------------------------------------------------
+RECT TCustomFarPlugin::GetPanelBounds(HANDLE PanelHandle)
+{
+    PanelInfo Info;
+    FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<LONG_PTR>(&Info),
+        PanelHandle);
+    RECT Bounds;
+    memset(&Bounds, -1, sizeof(Bounds));
+    if (Info.Plugin)
+    {
+        Bounds = Info.PanelRect;
+    }
+    return Bounds;
+}
+
+//---------------------------------------------------------------------------
 TCustomFarFileSystem *TCustomFarPlugin::GetPanelFileSystem(bool Another,
         HANDLE Plugin)
 {
     // DEBUG_PRINTF(L"begin");
     TCustomFarFileSystem *Result = NULL;
-    PanelInfo Info;
-    FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<LONG_PTR>(&Info), Another ? PANEL_PASSIVE : PANEL_ACTIVE);
+    RECT ActivePanelBounds = GetPanelBounds(PANEL_ACTIVE);
+    RECT PassivePanelBounds = GetPanelBounds(PANEL_PASSIVE);
 
-    if (Info.Plugin)
+    TCustomFarFileSystem *FileSystem = NULL;
+    size_t Index = 0;
+    while (!Result && (Index < FOpenedPlugins->GetCount()))
     {
-        RECT Bounds = Info.PanelRect;
-        TCustomFarFileSystem *FileSystem;
-        size_t Index = 0;
-        while (!Result && (Index < FOpenedPlugins->GetCount()))
+        FileSystem = dynamic_cast<TCustomFarFileSystem *>(FOpenedPlugins->GetItem(Index));
+        assert(FileSystem);
+        RECT Bounds = GetPanelBounds(FileSystem);
+        if (Another && CompareRects(Bounds, PassivePanelBounds))
         {
-            FileSystem = dynamic_cast<TCustomFarFileSystem *>(FOpenedPlugins->GetItem(Index));
-            assert(FileSystem);
-            nb::TRect bounds = FileSystem->GetPanelInfo()->GetBounds();
-            if (bounds == Bounds)
-            {
-                Result = FileSystem;
-            }
-            Index++;
+            Result = FileSystem;
         }
+        else if (!Another && CompareRects(Bounds, ActivePanelBounds))
+        {
+            Result = FileSystem;
+        }
+        Index++;
     }
     // DEBUG_PRINTF(L"end");
     return Result;

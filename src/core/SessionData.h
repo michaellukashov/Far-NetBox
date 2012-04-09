@@ -472,6 +472,7 @@ public:
                            std::wstring *FileName = NULL, bool *ProtocolDefined = NULL);
     TSessionData * __fastcall GetSession(size_t Index) { return static_cast<TSessionData *>(AtObject(Index)); }
     TSessionData * __fastcall GetDefaultSettings() const { return FDefaultSettings; }
+    TSessionData * __fastcall GetSessionByName(const std::wstring SessionName);
     void __fastcall SetDefaultSettings(TSessionData *value);
 
     static void __fastcall ImportHostKeys(const std::wstring TargetKey,

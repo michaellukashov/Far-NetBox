@@ -232,6 +232,15 @@ private:
     void UpdateConsoleTitle();
     std::wstring FormatConsoleTitle();
     HWND GetConsoleWindow();
+    RECT GetPanelBounds(HANDLE PanelHandle);
+    bool CompareRects(const RECT &lhs, const RECT &rhs) const
+    {
+        return
+            lhs.left == rhs.left &&
+            lhs.top == rhs.top &&
+            lhs.right == rhs.right &&
+            lhs.bottom == rhs.bottom;
+    }
 };
 //---------------------------------------------------------------------------
 class TCustomFarFileSystem : public nb::TObject
