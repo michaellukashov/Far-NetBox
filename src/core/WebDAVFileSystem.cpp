@@ -2027,7 +2027,8 @@ bool TWebDAVFileSystem::SendPropFindRequest(const wchar_t *dir, std::wstring &re
         return false;
     }
 
-    if (!CheckResponseCode(HTTP_STATUS_WEBDAV_MULTI_STATUS, errInfo))
+    long responseCode = 0;
+    if (!CheckResponseCode(HTTP_STATUS_WEBDAV_MULTI_STATUS, responseCode, errInfo))
     {
         // DEBUG_PRINTF(L"errInfo = %s", errInfo.c_str());
         return false;
@@ -2042,14 +2043,13 @@ bool TWebDAVFileSystem::SendPropFindRequest(const wchar_t *dir, std::wstring &re
     return true;
 }
 
-bool TWebDAVFileSystem::CheckResponseCode(const long expect, std::wstring &errInfo)
+bool TWebDAVFileSystem::CheckResponseCode(const long expect, long &responseCode, std::wstring &errInfo)
 {
-    return CheckResponseCode(expect, -1, errInfo);
+    return CheckResponseCode(expect, -1, responseCode, errInfo);
 }
 
-bool TWebDAVFileSystem::CheckResponseCode(const long expect1, const long expect2, std::wstring &errInfo)
+bool TWebDAVFileSystem::CheckResponseCode(const long expect1, const long expect2, long &responseCode, std::wstring &errInfo)
 {
-    long responseCode = 0;
     if (curl_easy_getinfo(FCURLIntf->GetCURL(), CURLINFO_RESPONSE_CODE, &responseCode) == CURLE_OK)
     {
         if ((expect2 == -1) && (responseCode != expect1))
@@ -2367,7 +2367,8 @@ bool TWebDAVFileSystem::WebDAVMakeDirectory(const wchar_t *path, std::wstring &e
         return false;
     }
 
-    bool result = CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_CREATED, errorInfo);
+    long responseCode = 0;
+    bool result = CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_CREATED, responseCode, errorInfo);
     // DEBUG_PRINTF(L"WebDAVMakeDirectory: end: errorInfo = %s", errorInfo.c_str());
     return result;
 }
@@ -2606,7 +2607,8 @@ bool TWebDAVFileSystem::WebDAVGetFile(const wchar_t *remotePath, const wchar_t *
         return false;
     }
 
-    bool result = CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_NO_CONTENT, errorInfo);
+    long responseCode = 0;
+    bool result = CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_NO_CONTENT, responseCode, errorInfo);
     // DEBUG_PRINTF(L"TWebDAVFileSystem::WebDAVGetFile: result = %d, errorInfo = %s", result, errorInfo.c_str());
     return result;
 }
@@ -2641,7 +2643,8 @@ bool TWebDAVFileSystem::WebDAVPutFile(const wchar_t *remotePath, const wchar_t *
         return false;
     }
 
-    return CheckResponseCode(HTTP_STATUS_CREATED, HTTP_STATUS_NO_CONTENT, errorInfo);
+    long responseCode = 0;
+    return CheckResponseCode(HTTP_STATUS_CREATED, HTTP_STATUS_NO_CONTENT, responseCode, errorInfo);
 }
 
 bool TWebDAVFileSystem::WebDAVRename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType /*type*/, std::wstring &errorInfo)
@@ -2670,7 +2673,8 @@ bool TWebDAVFileSystem::WebDAVRename(const wchar_t *srcPath, const wchar_t *dstP
         return false;
     }
 
-    return CheckResponseCode(HTTP_STATUS_CREATED, HTTP_STATUS_NO_CONTENT, errorInfo);
+    long responseCode = 0;
+    return CheckResponseCode(HTTP_STATUS_CREATED, HTTP_STATUS_NO_CONTENT, responseCode, errorInfo);
 }
 
 bool TWebDAVFileSystem::WebDAVDelete(const wchar_t *path, const ItemType /*type*/, std::wstring &errorInfo)
@@ -2692,7 +2696,8 @@ bool TWebDAVFileSystem::WebDAVDelete(const wchar_t *path, const ItemType /*type*
         return false;
     }
 
-    return CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_NO_CONTENT, errorInfo);
+    long responseCode = 0;
+    return CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_NO_CONTENT, responseCode, errorInfo);
 }
 
 std::wstring TWebDAVFileSystem::FormatErrorDescription(const DWORD errCode, const wchar_t *info) const

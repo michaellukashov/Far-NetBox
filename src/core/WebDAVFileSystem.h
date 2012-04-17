@@ -229,19 +229,21 @@ private:
     /**
      * Check response for valid code
      * \param expect expected response code
+     * \param responseCode buffer to save error code
      * \param errInfo buffer to save error message
      * \return false if error (response unexpected)
      */
-    bool CheckResponseCode(const long expect, std::wstring &errInfo);
+    bool CheckResponseCode(const long expect, long &responseCode, std::wstring &errInfo);
 
     /**
      * Check response for valid code
      * \param expect1 expected response code
      * \param expect2 expected response code
+     * \param responseCode buffer to save error code
      * \param errInfo buffer to save error message
      * \return false if error (response unexpected)
      */
-    bool CheckResponseCode(const long expect1, const long expect2, std::wstring &errInfo);
+    bool CheckResponseCode(const long expect1, const long expect2, long &responseCode, std::wstring &errInfo);
 
     /**
      * Get incorrect response information
