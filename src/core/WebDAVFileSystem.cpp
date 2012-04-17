@@ -472,10 +472,10 @@ void TWebDAVFileSystem::ReadCurrentDirectory()
         {
             FCurrentDirectory = Path;
         }
-        else if (!errorInfo.empty() && !FCurrentDirectory.empty())
+        else if (!errorInfo.empty()) // && !FCurrentDirectory.empty())
         {
             FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, L"webdav#1",
-                                                std::wstring(L"Could'n read directory " + FCurrentDirectory).c_str()));
+                                                std::wstring(L"Couldn't read directory " + FCurrentDirectory).c_str()));
         }
         // FCurrentDirectory = Path;
     }
