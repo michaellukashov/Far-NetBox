@@ -2044,17 +2044,7 @@ bool TWebDAVFileSystem::SendPropFindRequest(const wchar_t *dir, std::wstring &re
 
 bool TWebDAVFileSystem::CheckResponseCode(const long expect, std::wstring &errInfo)
 {
-    long responseCode = 0;
-    if (curl_easy_getinfo(FCURLIntf->GetCURL(), CURLINFO_RESPONSE_CODE, &responseCode) == CURLE_OK)
-    {
-        if (responseCode != expect)
-        {
-            errInfo = GetBadResponseInfo(responseCode);
-            // DEBUG_PRINTF(L"errInfo = %s", errInfo.c_str());
-            return false;
-        }
-    }
-    return true;
+    return CheckResponseCode(expect, -1, errInfo);
 }
 
 bool TWebDAVFileSystem::CheckResponseCode(const long expect1, const long expect2, std::wstring &errInfo)
@@ -2062,7 +2052,12 @@ bool TWebDAVFileSystem::CheckResponseCode(const long expect1, const long expect2
     long responseCode = 0;
     if (curl_easy_getinfo(FCURLIntf->GetCURL(), CURLINFO_RESPONSE_CODE, &responseCode) == CURLE_OK)
     {
-        if (responseCode != expect1 && responseCode != expect2)
+        if ((expect2 == -1) && (responseCode != expect1))
+        {
+            errInfo = GetBadResponseInfo(responseCode);
+            return false;
+        }
+        else if ((expect2 != -1) && (responseCode != expect1) && (responseCode != expect2))
         {
             errInfo = GetBadResponseInfo(responseCode);
             return false;
