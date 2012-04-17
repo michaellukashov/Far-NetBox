@@ -444,13 +444,11 @@ std::wstring TWebDAVFileSystem::GetCurrentDirectory()
 void TWebDAVFileSystem::DoStartup()
 {
     DEBUG_PRINTF(L"begin");
-    // otherwise session is to be closed.
     FTerminal->SetExceptionOnFail(true);
-    FTerminal->SetExceptionOnFail(false);
-
     // retrieve initialize working directory to save it as home directory
     ReadCurrentDirectory();
     FHomeDirectory = FCurrentDirectory;
+    FTerminal->SetExceptionOnFail(false);
     DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
