@@ -97,6 +97,7 @@ bool CEasyURL::Close()
     if (FAbortEvent)
     {
         ::CloseHandle(FAbortEvent);
+        FAbortEvent = 0;
     }
     return true;
 }
@@ -116,6 +117,7 @@ CURLcode CEasyURL::Prepare(const char *path,
     if (FAbortEvent)
     {
         ::CloseHandle(FAbortEvent);
+        FAbortEvent = 0;
     }
     FAbortEvent = CreateEvent(NULL, true, false, NULL);
     SetAbortEvent(FAbortEvent);
