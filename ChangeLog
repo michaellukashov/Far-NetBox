@@ -1,3 +1,6 @@
+NetBox 2.0.19 ??.04.2012
+---------------------
+
 NetBox 2.0.18 08.04.2012
 ---------------------
   * Bugfix: Cannot edit file on another plugin panel, if two plugin panels opened
