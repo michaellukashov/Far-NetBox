@@ -496,8 +496,24 @@ void TWebDAVFileSystem::ReadCurrentDirectory()
         }
         else if (!errorInfo.empty()) // && !FCurrentDirectory.empty())
         {
-            FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, L"webdav#1",
-                                                std::wstring(L"Couldn't read directory " + FCurrentDirectory).c_str()));
+            if (responseCode == 401)
+            {
+                // Unauthorized
+                FPasswordFailed = true;
+                std::wstring Password = L"";
+                if (!FTerminal->PromptUser(FTerminal->GetSessionData(), pkPassword, LoadStr(PASSWORD_TITLE), L"",
+                                           LoadStr(PASSWORD_PROMPT), false, 0, Password))
+                {
+                    FTerminal->FatalError(NULL, LoadStr(AUTHENTICATION_FAILED));
+                }
+                FTerminal->GetSessionData()->SetPassword(Password);
+                throw ExtException(L"", NULL, true);
+            }
+            else
+            {
+                FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, L"webdav#1",
+                                      std::wstring(L"Couldn't read directory " + FCurrentDirectory).c_str()));
+            }
         }
         // FCurrentDirectory = Path;
     }
