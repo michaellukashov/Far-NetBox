@@ -216,7 +216,7 @@ void TWebDAVFileSystem::Open()
 
         // ask for username if it was not specified in advance, even on retry,
         // but keep previous one as default,
-        if (0) // Data->GetUserName().empty())
+        if (Data->GetUserName().empty())
         {
             FTerminal->LogEvent(L"Username prompt (no username provided)");
 
@@ -234,27 +234,6 @@ void TWebDAVFileSystem::Open()
             else
             {
                 FUserName = UserName;
-            }
-        }
-
-        // ask for password if it was not specified in advance,
-        // on retry ask always
-        if (0) // (Data->GetPassword().empty() && !Data->GetPasswordless()) || FPasswordFailed)
-        {
-            FTerminal->LogEvent(L"Password prompt (no password provided or last login attempt failed)");
-
-            if (!FPasswordFailed && !PromptedForCredentials)
-            {
-                FTerminal->Information(LoadStr(FTP_CREDENTIAL_PROMPT), false);
-                PromptedForCredentials = true;
-            }
-
-            // on retry ask for new password
-            Password = L"";
-            if (!FTerminal->PromptUser(Data, pkPassword, LoadStr(PASSWORD_TITLE), L"",
-                                       LoadStr(PASSWORD_PROMPT), false, 0, Password))
-            {
-                FTerminal->FatalError(NULL, LoadStr(AUTHENTICATION_FAILED));
             }
         }
 
