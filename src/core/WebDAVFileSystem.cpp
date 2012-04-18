@@ -250,7 +250,7 @@ void TWebDAVFileSystem::Open()
         {
             // retrieve working directory
             ReadCurrentDirectory();
-            // FPasswordFailed = false;
+            FPasswordFailed = false;
         }
         catch (...)
         {
