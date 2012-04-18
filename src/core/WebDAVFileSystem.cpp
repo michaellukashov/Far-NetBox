@@ -184,7 +184,6 @@ void TWebDAVFileSystem::Open()
     std::wstring ProtocolName = FTerminal->GetSessionData()->GetFSProtocol() == fsHTTP ?
                                 L"http" : L"https";
     std::wstring UserName = Data->GetUserName();
-    std::wstring Password = Data->GetPassword();
     std::wstring Path = Data->GetRemoteDirectory();
     std::wstring url = FORMAT(L"%s://%s:%d%s", ProtocolName.c_str(), HostName.c_str(), Port, Path.c_str());
     int ServerType = 0;
@@ -209,6 +208,8 @@ void TWebDAVFileSystem::Open()
 
     do
     {
+        std::wstring Password = Data->GetPassword();
+
         FSystem = L"";
 
         // TODO: the same for account? it ever used?
@@ -265,6 +266,26 @@ void TWebDAVFileSystem::Open()
         assert(FActive);
 
         FPasswordFailed = false;
+
+        try
+        {
+            // retrieve working directory
+            ReadCurrentDirectory();
+            // FPasswordFailed = false;
+        }
+        catch (...)
+        {
+            if (FPasswordFailed)
+            {
+                FTerminal->Information(LoadStr(AUTH_TRANSL_ACCESS_DENIED), false);
+                FCURLIntf->Close();
+            }
+            else
+            {
+                FTerminal->Closed();
+                throw;
+            }
+        }
     }
     while (FPasswordFailed);
     DEBUG_PRINTF(L"end");
