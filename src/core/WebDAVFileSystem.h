@@ -220,11 +220,12 @@ private:
     /**
      * Send PROPFIND request
      * \param dir directory to load
+     * \param responseCode response code
      * \param response response buffer
      * \param errInfo buffer to save error message
      * \return false if error
      */
-    bool SendPropFindRequest(const wchar_t *dir, std::wstring &response, std::wstring &errInfo);
+    bool SendPropFindRequest(const wchar_t *dir, long &responseCode, std::wstring &response, std::wstring &errInfo);
 
     /**
      * Check response for valid code

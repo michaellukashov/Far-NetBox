@@ -484,9 +484,10 @@ void TWebDAVFileSystem::ReadCurrentDirectory()
     if (FCachedDirectoryChange.empty())
     {
         std::wstring Path = FCurrentDirectory.empty() ? L"/" : FCurrentDirectory;
+        long responseCode = 0;
         std::wstring response;
         std::wstring errorInfo;
-        bool isExist = SendPropFindRequest(Path.c_str(), response, errorInfo);
+        bool isExist = SendPropFindRequest(Path.c_str(), responseCode, response, errorInfo);
         // DEBUG_PRINTF(L"responce = %s, errorInfo = %s", response.c_str(), errorInfo.c_str());
         // TODO: cache response
         if (isExist)
@@ -1997,7 +1998,7 @@ void TWebDAVFileSystem::FileTransfer(const std::wstring FileName,
 }
 
 // from WebDAV
-bool TWebDAVFileSystem::SendPropFindRequest(const wchar_t *dir, std::wstring &response, std::wstring &errInfo)
+bool TWebDAVFileSystem::SendPropFindRequest(const wchar_t *dir, long &responseCode, std::wstring &response, std::wstring &errInfo)
 {
     const std::string webDavPath = EscapeUTF8URL(dir);
     // DEBUG_PRINTF(L"TWebDAVFileSystem::SendPropFindRequest: webDavPath = %s", nb::MB2W(webDavPath.c_str()).c_str());
@@ -2046,7 +2047,6 @@ bool TWebDAVFileSystem::SendPropFindRequest(const wchar_t *dir, std::wstring &re
         return false;
     }
 
-    long responseCode = 0;
     if (!CheckResponseCode(HTTP_STATUS_WEBDAV_MULTI_STATUS, responseCode, errInfo))
     {
         // DEBUG_PRINTF(L"errInfo = %s", errInfo.c_str());
@@ -2361,7 +2361,8 @@ bool TWebDAVFileSystem::WebDAVCheckExisting(const wchar_t *path, const ItemType 
     assert(type == ItemDirectory);
 
     std::wstring responseDummy;
-    isExist = SendPropFindRequest(path, responseDummy, errorInfo);
+    long responseCode = 0;
+    isExist = SendPropFindRequest(path, responseCode, responseDummy, errorInfo);
     // DEBUG_PRINTF(L"TWebDAVFileSystem::WebDAVCheckExisting: path = %s, isExist = %d", path, isExist);
     return true;
 }
@@ -2396,8 +2397,9 @@ bool TWebDAVFileSystem::WebDAVGetList(const std::wstring Directory, std::wstring
 {
     std::vector<TListDataEntry> Entries;
 
+    long responseCode = 0;
     std::wstring response;
-    if (!SendPropFindRequest(Directory.c_str(), response, errorInfo))
+    if (!SendPropFindRequest(Directory.c_str(), responseCode, response, errorInfo))
     {
         return false;
     }
