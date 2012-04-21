@@ -183,7 +183,7 @@ std::wstring AbsolutePath(const std::wstring Base, const std::wstring Path)
     std::wstring Result;
     if (Path.empty())
     {
-        Result = Base;
+        Result = UnixIncludeTrailingBackslash(Base);
     }
     else if (Path[0] == '/')
     {
