@@ -20,6 +20,8 @@
 #include <ustring.h>
 #include <dstring.h>
 
+#include <Classes.h>
+
 #if defined(INEFFICIENT_COPY_OF_CONST_DELPHIRETURN_TYPES)
 #define _STR_CAST(type, arg) const_cast<type>(arg)
 #else
@@ -295,7 +297,9 @@ namespace System
   UnicodeString __fastcall UnicodeString::LoadStr(int ident)
   {
 #if defined(_DELPHI_STRING_UNICODE)
-    return Sysutils::LoadStr(ident);
+    // return Sysutils::LoadStr(ident);
+    nb::Error(SNotImplemented, 2000);
+    return "";
 #else
     // In ANSI mode VCL does not expose this
     // this functionality for UnicodeStrings.
@@ -328,7 +332,7 @@ namespace System
           if (len != 0)
           {
             SetLength(len);
-            wchar_t* p = Data;
+            wchar_t* p = (wchar_t *)Data.c_str();
             int i = len;
             while (i--)
               *p++ = *resData++;
@@ -348,35 +352,47 @@ namespace System
   UnicodeString __fastcall UnicodeString::FmtLoadStr(int ident, const TVarRec* args, int size)
   {
 #if defined(_DELPHI_STRING_UNICODE)
-    return Sysutils::FmtLoadStr(ident, args, size);
+    // return Sysutils::FmtLoadStr(ident, args, size);
+    nb::Error(SNotImplemented, 2001);
+    return "";
 #else
     // In ANSI mode VCL does not expose this
     // this functionality for UnicodeStrings.
     // Hence, potential data loss!
-    return Sysutils::FmtLoadStr(ident, args, size);
+    // return Sysutils::FmtLoadStr(ident, args, size);
+    nb::Error(SNotImplemented, 2002);
+    return "";
 #endif
   }
 
   UnicodeString __fastcall UnicodeString::Format(const UnicodeString& format, const TVarRec *args, int size)
   {
 #if defined(_DELPHI_STRING_UNICODE)
-    return Sysutils::Format(format, args, size);
+    // return Sysutils::Format(format, args, size);
+    nb::Error(SNotImplemented, 2003);
+    return "";
 #else
     // In ANSI mode VCL does not expose this
     // this functionality for UnicodeStrings.
     // We use WideFormat instead
-    return Sysutils::WideFormat(WideString(format), args, size);
+    // return Sysutils::WideFormat(WideString(format), args, size);
+    nb::Error(SNotImplemented, 2004);
+    return "";
 #endif
   }
 
   UnicodeString __fastcall UnicodeString::FormatFloat(const UnicodeString& format, const long double& value)
   {
 #if defined(_DELPHI_STRING_UNICODE)
-    return Sysutils::FormatFloat(format, value);
+    // return Sysutils::FormatFloat(format, value);
+    nb::Error(SNotImplemented, 2005);
+    return "";
 #else
     // In ANSI mode VCL does not expose this
     // this functionality for UnicodeStrings.
-    return Sysutils::FormatFloat(format, value);
+    // return Sysutils::FormatFloat(format, value);
+    nb::Error(SNotImplemented, 2006);
+    return "";
 #endif
   }
 
@@ -387,21 +403,21 @@ namespace System
 
   int __cdecl UnicodeString::vprintf(const wchar_t* format, va_list paramList)
   {
-    int size = vsnwprintf(NULL, 0, format, paramList);
+    int size = vswprintf_s(NULL, 0, format, paramList);
     SetLength(size);
-    return size ? vsnwprintf(Data, size + 1, format, paramList) : 0;
+    return size ? vswprintf_s((wchar_t *)Data.c_str(), size + 1, format, paramList) : 0;
   }
 
   int __cdecl UnicodeString::cat_vprintf(const wchar_t* format, va_list paramList)
   {
-    int size = vsnwprintf(NULL, 0, format, paramList);
+    int size = vswprintf_s(NULL, 0, format, paramList);
 
     if (!size)
       return 0;
 
     int len = Length();
     SetLength(len + size);
-    return vsnwprintf(Data + len, size + 1, format, paramList);
+    return vswprintf_s((wchar_t *)Data.c_str() + len, size + 1, format, paramList);
   }
 
   int __cdecl UnicodeString::printf(const wchar_t* format, ...)
@@ -445,27 +461,35 @@ namespace System
 
   UnicodeString __fastcall UnicodeString::FloatToStrF(long double value, TStringFloatFormat format, int precision, int digits)
   {
-    return Sysutils::FloatToStrF(value, TFloatFormat(format), precision, digits);
+    // return Sysutils::FloatToStrF(value, TFloatFormat(format), precision, digits);
+    nb::Error(SNotImplemented, 2007);
+    return "";
   }
 
   UnicodeString __fastcall UnicodeString::IntToHex(int value, int digits)
   {
-    return Sysutils::IntToHex(value, digits);
+    // return Sysutils::IntToHex(value, digits);
+    nb::Error(SNotImplemented, 2008);
+    return "";
   }
 
   UnicodeString __fastcall UnicodeString::CurrToStr(Currency value)
   {
-    return Sysutils::CurrToStr(value);
+    // return Sysutils::CurrToStr(value);
+    nb::Error(SNotImplemented, 2009);
+    return "";
   }
 
   UnicodeString __fastcall UnicodeString::CurrToStrF(Currency value, TStringFloatFormat format, int digits)
   {
-    return Sysutils::CurrToStrF(value, TFloatFormat(format), digits);
+    // return Sysutils::CurrToStrF(value, TFloatFormat(format), digits);
+    nb::Error(SNotImplemented, 2010);
+    return "";
   }
 
   UnicodeString& __fastcall UnicodeString::Unique()
   {
-    System::UniqueString(*this);
+    // System::UniqueString(*this);
     return *this;
   }
 

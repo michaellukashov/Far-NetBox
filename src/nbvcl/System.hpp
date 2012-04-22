@@ -39,7 +39,7 @@ enum TTextLineBreakStyle { tlbsLF, tlbsCRLF };
 
 #define RTL_DELPHIRETURN 
 #define PACKAGE 
-#define __fastcall 
+// #define __fastcall 
 
 #if defined(ANSISTRING_AS_TEMPLATE)
     class RTL_DELPHIRETURN AnsiStringBase;

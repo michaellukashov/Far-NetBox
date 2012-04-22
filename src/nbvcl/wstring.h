@@ -68,24 +68,24 @@ namespace System
     __fastcall WideString(const WideChar* src);
     // __fastcall WideString(const char16_t* src, int numChar16 = -1);
     __fastcall WideString(const char32_t* src, int numChar32 = -1);
-    __fastcall explicit WideString(const WideChar src);
+    explicit WideString(const WideChar src);
 #if !defined(WIDECHAR_IS_WCHAR)
     __fastcall WideString(const wchar_t* src, int len);
     __fastcall WideString(const wchar_t* src);
     __fastcall explicit WideString(const wchar_t  src);
 #endif
-    __fastcall explicit WideString(char src);
-    __fastcall explicit WideString(short src);
+    explicit WideString(char src);
+    explicit WideString(short src);
     // __fastcall explicit WideString(unsigned short);
-    __fastcall explicit WideString(int src);
-    __fastcall explicit WideString(unsigned int);
-    __fastcall explicit WideString(long);
-    __fastcall explicit WideString(unsigned long);
-    __fastcall explicit WideString(__int64);
-    __fastcall explicit WideString(unsigned __int64);
-    __fastcall explicit WideString(float src);
-    __fastcall explicit WideString(double src);
-    __fastcall explicit WideString(long double src);
+    explicit WideString(int src);
+    explicit WideString(unsigned int);
+    explicit WideString(long);
+    explicit WideString(unsigned long);
+    explicit WideString(__int64);
+    explicit WideString(unsigned __int64);
+    explicit WideString(float src);
+    explicit WideString(double src);
+    explicit WideString(long double src);
     __fastcall WideString(const UnicodeString& src);
 #if !defined(ANSISTRING_AS_TEMPLATE)
     __fastcall WideString(const AnsiString &src): Data(0) {
