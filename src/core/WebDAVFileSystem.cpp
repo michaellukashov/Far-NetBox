@@ -184,7 +184,6 @@ void __fastcall TWebDAVFileSystem::Open()
     std::wstring ProtocolName = FTerminal->GetSessionData()->GetFSProtocol() == fsHTTP ?
                                 L"http" : L"https";
     std::wstring UserName = Data->GetUserName();
-    std::wstring Password = Data->GetPassword();
     std::wstring Path = Data->GetRemoteDirectory();
     std::wstring url = FORMAT(L"%s://%s:%d%s", ProtocolName.c_str(), HostName.c_str(), Port, Path.c_str());
     int ServerType = 0;
@@ -209,13 +208,15 @@ void __fastcall TWebDAVFileSystem::Open()
 
     do
     {
+        std::wstring Password = Data->GetPassword();
+
         FSystem = L"";
 
         // TODO: the same for account? it ever used?
 
         // ask for username if it was not specified in advance, even on retry,
         // but keep previous one as default,
-        if (0) // Data->GetUserName().empty())
+        if (Data->GetUserName().empty())
         {
             FTerminal->LogEvent(L"Username prompt (no username provided)");
 
@@ -236,27 +237,6 @@ void __fastcall TWebDAVFileSystem::Open()
             }
         }
 
-        // ask for password if it was not specified in advance,
-        // on retry ask always
-        if (0) // (Data->GetPassword().empty() && !Data->GetPasswordless()) || FPasswordFailed)
-        {
-            FTerminal->LogEvent(L"Password prompt (no password provided or last login attempt failed)");
-
-            if (!FPasswordFailed && !PromptedForCredentials)
-            {
-                FTerminal->Information(LoadStr(FTP_CREDENTIAL_PROMPT), false);
-                PromptedForCredentials = true;
-            }
-
-            // on retry ask for new password
-            Password = L"";
-            if (!FTerminal->PromptUser(Data, pkPassword, LoadStr(PASSWORD_TITLE), L"",
-                                       LoadStr(PASSWORD_PROMPT), false, 0, Password))
-            {
-                FTerminal->FatalError(NULL, LoadStr(AUTHENTICATION_FAILED));
-            }
-        }
-
         DEBUG_PRINTF(L"url = %s", url.c_str());
         FActive = FCURLIntf->Initialize(
                       url.c_str(),
@@ -265,6 +245,26 @@ void __fastcall TWebDAVFileSystem::Open()
         assert(FActive);
 
         FPasswordFailed = false;
+
+        try
+        {
+            // retrieve working directory
+            ReadCurrentDirectory();
+            FPasswordFailed = false;
+        }
+        catch (...)
+        {
+            if (FPasswordFailed)
+            {
+                FTerminal->Information(LoadStr(AUTH_TRANSL_ACCESS_DENIED), false);
+                FCURLIntf->Close();
+            }
+            else
+            {
+                FTerminal->Closed();
+                throw;
+            }
+        }
     }
     while (FPasswordFailed);
     DEBUG_PRINTF(L"end");
@@ -444,13 +444,11 @@ std::wstring TWebDAVFileSystem::GetCurrentDirectory()
 void __fastcall TWebDAVFileSystem::DoStartup()
 {
     DEBUG_PRINTF(L"begin");
-    // otherwise session is to be closed.
     FTerminal->SetExceptionOnFail(true);
-    FTerminal->SetExceptionOnFail(false);
-
     // retrieve initialize working directory to save it as home directory
     ReadCurrentDirectory();
     FHomeDirectory = FCurrentDirectory;
+    FTerminal->SetExceptionOnFail(false);
     DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
@@ -465,19 +463,36 @@ void __fastcall TWebDAVFileSystem::ReadCurrentDirectory()
     if (FCachedDirectoryChange.empty())
     {
         std::wstring Path = FCurrentDirectory.empty() ? L"/" : FCurrentDirectory;
+        long responseCode = 0;
         std::wstring response;
         std::wstring errorInfo;
-        bool isExist = SendPropFindRequest(Path.c_str(), response, errorInfo);
+        bool isExist = SendPropFindRequest(Path.c_str(), responseCode, response, errorInfo);
         // DEBUG_PRINTF(L"responce = %s, errorInfo = %s", response.c_str(), errorInfo.c_str());
         // TODO: cache response
         if (isExist)
         {
             FCurrentDirectory = Path;
         }
-        else if (!errorInfo.empty() && !FCurrentDirectory.empty())
+        else if (!errorInfo.empty()) // && !FCurrentDirectory.empty())
         {
-            FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, L"webdav#1",
-                                                std::wstring(L"Could'n read directory " + FCurrentDirectory).c_str()));
+            if (responseCode == 401)
+            {
+                // Unauthorized
+                FPasswordFailed = true;
+                std::wstring Password = L"";
+                if (!FTerminal->PromptUser(FTerminal->GetSessionData(), pkPassword, LoadStr(PASSWORD_TITLE), L"",
+                                           LoadStr(PASSWORD_PROMPT), false, 0, Password))
+                {
+                    FTerminal->FatalError(NULL, LoadStr(AUTHENTICATION_FAILED));
+                }
+                FTerminal->GetSessionData()->SetPassword(Password);
+                throw ExtException(L"", NULL, true);
+            }
+            else
+            {
+                FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, L"webdav#1",
+                                      std::wstring(L"Couldn't read directory " + FCurrentDirectory).c_str()));
+            }
         }
         // FCurrentDirectory = Path;
     }
@@ -1978,7 +1993,7 @@ void __fastcall TWebDAVFileSystem::FileTransfer(const std::wstring FileName,
 }
 
 // from WebDAV
-bool TWebDAVFileSystem::SendPropFindRequest(const wchar_t *dir, std::wstring &response, std::wstring &errInfo)
+bool TWebDAVFileSystem::SendPropFindRequest(const wchar_t *dir, long &responseCode, std::wstring &response, std::wstring &errInfo)
 {
     const std::string webDavPath = EscapeUTF8URL(dir);
     // DEBUG_PRINTF(L"TWebDAVFileSystem::SendPropFindRequest: webDavPath = %s", nb::MB2W(webDavPath.c_str()).c_str());
@@ -2027,7 +2042,7 @@ bool TWebDAVFileSystem::SendPropFindRequest(const wchar_t *dir, std::wstring &re
         return false;
     }
 
-    if (!CheckResponseCode(HTTP_STATUS_WEBDAV_MULTI_STATUS, errInfo))
+    if (!CheckResponseCode(HTTP_STATUS_WEBDAV_MULTI_STATUS, responseCode, errInfo))
     {
         // DEBUG_PRINTF(L"errInfo = %s", errInfo.c_str());
         return false;
@@ -2042,27 +2057,21 @@ bool TWebDAVFileSystem::SendPropFindRequest(const wchar_t *dir, std::wstring &re
     return true;
 }
 
-bool TWebDAVFileSystem::CheckResponseCode(const long expect, std::wstring &errInfo)
+bool TWebDAVFileSystem::CheckResponseCode(const long expect, long &responseCode, std::wstring &errInfo)
 {
-    long responseCode = 0;
-    if (curl_easy_getinfo(FCURLIntf->GetCURL(), CURLINFO_RESPONSE_CODE, &responseCode) == CURLE_OK)
-    {
-        if (responseCode != expect)
-        {
-            errInfo = GetBadResponseInfo(responseCode);
-            // DEBUG_PRINTF(L"errInfo = %s", errInfo.c_str());
-            return false;
-        }
-    }
-    return true;
+    return CheckResponseCode(expect, -1, responseCode, errInfo);
 }
 
-bool TWebDAVFileSystem::CheckResponseCode(const long expect1, const long expect2, std::wstring &errInfo)
+bool TWebDAVFileSystem::CheckResponseCode(const long expect1, const long expect2, long &responseCode, std::wstring &errInfo)
 {
-    long responseCode = 0;
     if (curl_easy_getinfo(FCURLIntf->GetCURL(), CURLINFO_RESPONSE_CODE, &responseCode) == CURLE_OK)
     {
-        if (responseCode != expect1 && responseCode != expect2)
+        if ((expect2 == -1) && (responseCode != expect1))
+        {
+            errInfo = GetBadResponseInfo(responseCode);
+            return false;
+        }
+        else if ((expect2 != -1) && (responseCode != expect1) && (responseCode != expect2))
         {
             errInfo = GetBadResponseInfo(responseCode);
             return false;
@@ -2347,7 +2356,8 @@ bool TWebDAVFileSystem::WebDAVCheckExisting(const wchar_t *path, const ItemType 
     assert(type == ItemDirectory);
 
     std::wstring responseDummy;
-    isExist = SendPropFindRequest(path, responseDummy, errorInfo);
+    long responseCode = 0;
+    isExist = SendPropFindRequest(path, responseCode, responseDummy, errorInfo);
     // DEBUG_PRINTF(L"TWebDAVFileSystem::WebDAVCheckExisting: path = %s, isExist = %d", path, isExist);
     return true;
 }
@@ -2372,7 +2382,8 @@ bool TWebDAVFileSystem::WebDAVMakeDirectory(const wchar_t *path, std::wstring &e
         return false;
     }
 
-    bool result = CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_CREATED, errorInfo);
+    long responseCode = 0;
+    bool result = CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_CREATED, responseCode, errorInfo);
     // DEBUG_PRINTF(L"WebDAVMakeDirectory: end: errorInfo = %s", errorInfo.c_str());
     return result;
 }
@@ -2381,8 +2392,9 @@ bool TWebDAVFileSystem::WebDAVGetList(const std::wstring Directory, std::wstring
 {
     std::vector<TListDataEntry> Entries;
 
+    long responseCode = 0;
     std::wstring response;
-    if (!SendPropFindRequest(Directory.c_str(), response, errorInfo))
+    if (!SendPropFindRequest(Directory.c_str(), responseCode, response, errorInfo))
     {
         return false;
     }
@@ -2611,7 +2623,8 @@ bool TWebDAVFileSystem::WebDAVGetFile(const wchar_t *remotePath, const wchar_t *
         return false;
     }
 
-    bool result = CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_NO_CONTENT, errorInfo);
+    long responseCode = 0;
+    bool result = CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_NO_CONTENT, responseCode, errorInfo);
     // DEBUG_PRINTF(L"TWebDAVFileSystem::WebDAVGetFile: result = %d, errorInfo = %s", result, errorInfo.c_str());
     return result;
 }
@@ -2646,7 +2659,8 @@ bool TWebDAVFileSystem::WebDAVPutFile(const wchar_t *remotePath, const wchar_t *
         return false;
     }
 
-    return CheckResponseCode(HTTP_STATUS_CREATED, HTTP_STATUS_NO_CONTENT, errorInfo);
+    long responseCode = 0;
+    return CheckResponseCode(HTTP_STATUS_CREATED, HTTP_STATUS_NO_CONTENT, responseCode, errorInfo);
 }
 
 bool TWebDAVFileSystem::WebDAVRename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType /*type*/, std::wstring &errorInfo)
@@ -2675,7 +2689,8 @@ bool TWebDAVFileSystem::WebDAVRename(const wchar_t *srcPath, const wchar_t *dstP
         return false;
     }
 
-    return CheckResponseCode(HTTP_STATUS_CREATED, HTTP_STATUS_NO_CONTENT, errorInfo);
+    long responseCode = 0;
+    return CheckResponseCode(HTTP_STATUS_CREATED, HTTP_STATUS_NO_CONTENT, responseCode, errorInfo);
 }
 
 bool TWebDAVFileSystem::WebDAVDelete(const wchar_t *path, const ItemType /*type*/, std::wstring &errorInfo)
@@ -2697,7 +2712,8 @@ bool TWebDAVFileSystem::WebDAVDelete(const wchar_t *path, const ItemType /*type*
         return false;
     }
 
-    return CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_NO_CONTENT, errorInfo);
+    long responseCode = 0;
+    return CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_NO_CONTENT, responseCode, errorInfo);
 }
 
 std::wstring TWebDAVFileSystem::FormatErrorDescription(const DWORD errCode, const wchar_t *info) const
