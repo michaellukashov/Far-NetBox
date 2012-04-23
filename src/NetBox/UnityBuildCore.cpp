@@ -2,8 +2,9 @@
 // #include "..\nbvcl\ustring.cpp"
 // #include "..\nbvcl\Classes.cpp"
 
-#include "..\core\UnicodeString.cpp"
-#include "..\core\local.cpp"
+#include "..\far\UnicodeString.cpp"
+#include "..\far\local.cpp"
+#include "..\far\farrtl.cpp"
 
 #include "..\core\Common.cpp"
 #include "..\core\RemoteFiles.cpp"

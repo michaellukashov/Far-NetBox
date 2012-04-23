@@ -33,6 +33,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // #include "headers.hpp"
 #include "UnicodeString.hpp"
+#include "farrtl.hpp"
 #pragma hdrstop
 
 UnicodeStringData *eus()
