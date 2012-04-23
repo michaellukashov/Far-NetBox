@@ -1,4 +1,4 @@
-NetBox 2.0.19 ??.04.2012
+NetBox 2.0.19 23.04.2012
 ---------------------
   * WebDAV: bugfixes
   * Bugfix: Ask for user password if current password is empty or not accepted
