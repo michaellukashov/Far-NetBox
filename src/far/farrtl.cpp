@@ -1,7 +1,7 @@
 /*
 farrtl.cpp
 
-Переопределение различных CRT функций
+РџРµСЂРµРѕРїСЂРµРґРµР»РµРЅРёРµ СЂР°Р·Р»РёС‡РЅС‹С… CRT С„СѓРЅРєС†РёР№
 */
 
 // #include "headers.hpp"
@@ -270,7 +270,7 @@ wchar_t * __cdecl xf_wcsdup(const wchar_t * string)
 }
 
 
-// dest и src НЕ ДОЛЖНЫ пересекаться
+// dest Рё src РќР• Р”РћР›Р–РќР« РїРµСЂРµСЃРµРєР°С‚СЊСЃСЏ
 char * __cdecl xstrncpy(char * dest,const char * src,size_t DestSize)
 {
 	char *tmpsrc = dest;
