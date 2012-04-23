@@ -17,8 +17,8 @@ static std::wstring FileMasksDelimiterStr = std::wstring(1, FileMasksDelimiters[
 //---------------------------------------------------------------------------
 
 inline int IsSlash(wchar_t x) { return x==L'\\' || x==L'/'; }
-inline wchar_t __cdecl Upper(wchar_t Ch) { CharUpperBuff(&Ch, 1); return Ch; }
-inline wchar_t __cdecl Lower(wchar_t Ch) { CharLowerBuff(&Ch, 1); return Ch; }
+// inline wchar_t __cdecl Upper(wchar_t Ch) { CharUpperBuff(&Ch, 1); return Ch; }
+// inline wchar_t __cdecl Lower(wchar_t Ch) { CharLowerBuff(&Ch, 1); return Ch; }
 //---------------------------------------------------------------------------
 
 const wchar_t *PointToName(const wchar_t *lpwszPath,const wchar_t *lpwszEndPtr)

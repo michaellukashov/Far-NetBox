@@ -31,7 +31,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-// #include "headers.hpp"
+#include "headers.hpp"
 #pragma hdrstop
 
 #include "local.hpp"
@@ -41,7 +41,7 @@ const wchar_t UNIX_EOL_fmt[] = L"\n";
 const wchar_t MAC_EOL_fmt[]  = L"\r";
 const wchar_t WIN_EOL_fmt[]  = L"\r\r\n";
 
-const wchar_t * __cdecl StrStrI(const wchar_t *str1, const wchar_t *str2)
+const wchar_t * __cdecl FarStrStrI(const wchar_t *str1, const wchar_t *str2)
 {
 	const wchar_t *cp = str1;
 	const wchar_t *s1, *s2;
@@ -69,7 +69,7 @@ const wchar_t * __cdecl StrStrI(const wchar_t *str1, const wchar_t *str2)
 	return nullptr;
 }
 
-const wchar_t * __cdecl StrStr(const wchar_t *str1, const wchar_t *str2)
+const wchar_t * __cdecl FarStrStr(const wchar_t *str1, const wchar_t *str2)
 {
 	const wchar_t *cp = str1;
 	const wchar_t *s1, *s2;
@@ -211,7 +211,7 @@ int NumStrCmp(const wchar_t *s1, size_t n1, const wchar_t *s2, size_t n2, bool I
 		}
 		else
 		{
-			int res = IgnoreCase ? StrCmpNI(s1, s2, 1) : StrCmpN(s1, s2, 1);
+			int res = IgnoreCase ? FarStrCmpNI(s1, s2, 1) : FarStrCmpN(s1, s2, 1);
 			if (res)
 				return res;
 

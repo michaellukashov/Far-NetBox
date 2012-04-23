@@ -4,7 +4,7 @@ farrtl.cpp
 Переопределение различных CRT функций
 */
 
-// #include "headers.hpp"
+#include "headers.hpp"
 #pragma hdrstop
 
 // #include "console.hpp"
