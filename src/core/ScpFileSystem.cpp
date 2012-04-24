@@ -1525,7 +1525,7 @@ void __fastcall TSCPFileSystem::CopyToRemote(nb::TStrings *FilesToCopy,
                     int Answer;
                     if (File->GetIsDirectory())
                     {
-                        std::wstring Message = FMTLOAD(DIRECTORY_OVERWRITE, FileNameOnly.c_str());
+                        std::wstring Message = FMTLOAD(PROMPT_DIRECTORY_OVERWRITE, FileNameOnly.c_str());
                         TQueryParams QueryParams(qpNeverAskAgainCheck);
                         SUSPEND_OPERATION
                         (

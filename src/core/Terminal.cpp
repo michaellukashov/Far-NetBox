@@ -3231,11 +3231,11 @@ void TTerminal::RenameFile(const TRemoteFile *File,
             std::wstring QuestionFmt;
             if (DuplicateFile->GetIsDirectory())
             {
-                QuestionFmt = LoadStr(DIRECTORY_OVERWRITE);
+                QuestionFmt = LoadStr(PROMPT_DIRECTORY_OVERWRITE);
             }
             else
             {
-                QuestionFmt = LoadStr(FILE_OVERWRITE);
+                QuestionFmt = LoadStr(PROMPT_FILE_OVERWRITE);
             }
             int Result;
             TQueryParams Params(qpNeverAskAgainCheck);
