@@ -3,11 +3,11 @@
 /*
 UnicodeString.hpp
 
-Unicode строка
+Unicode СЃС‚СЂРѕРєР°
 */
 /*
-Copyright © 1996 Eugene Roshal
-Copyright © 2000 Far Group
+Copyright В© 1996 Eugene Roshal
+Copyright В© 2000 Far Group
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -74,14 +74,14 @@ class UnicodeStringData
 			m_nLength = 0;
 			m_nRefCount = 1;
 			m_pData = AllocData(nSize, m_nSize);
-			//Так как ни где выше в коде мы не готовы на случай что памяти не хватит
-			//то уж лучше и здесь не проверять а сразу падать
+			//РўР°Рє РєР°Рє РЅРё РіРґРµ РІС‹С€Рµ РІ РєРѕРґРµ РјС‹ РЅРµ РіРѕС‚РѕРІС‹ РЅР° СЃР»СѓС‡Р°Р№ С‡С‚Рѕ РїР°РјСЏС‚Рё РЅРµ С…РІР°С‚РёС‚
+			//С‚Рѕ СѓР¶ Р»СѓС‡С€Рµ Рё Р·РґРµСЃСЊ РЅРµ РїСЂРѕРІРµСЂСЏС‚СЊ Р° СЃСЂР°Р·Сѓ РїР°РґР°С‚СЊ
 			*m_pData = 0;
 		}
 
 		size_t SetLength(size_t nLength)
 		{
-			//if (nLength<m_nSize) //Эту проверку делает верхний класс, так что скажем что это оптимизация
+			//if (nLength<m_nSize) //Р­С‚Сѓ РїСЂРѕРІРµСЂРєСѓ РґРµР»Р°РµС‚ РІРµСЂС…РЅРёР№ РєР»Р°СЃСЃ, С‚Р°Рє С‡С‚Рѕ СЃРєР°Р¶РµРј С‡С‚Рѕ СЌС‚Рѕ РѕРїС‚РёРјРёР·Р°С†РёСЏ
 			{
 				m_nLength = nLength;
 				m_pData[m_nLength] = 0;
@@ -101,8 +101,8 @@ class UnicodeStringData
 
 			wchar_t *pOldData = m_pData;
 			m_pData = AllocData(nSize, m_nSize);
-			//Так как ни где выше в коде мы не готовы на случай что памяти не хватит
-			//то уж лучше и здесь не проверять а сразу падать
+			//РўР°Рє РєР°Рє РЅРё РіРґРµ РІС‹С€Рµ РІ РєРѕРґРµ РјС‹ РЅРµ РіРѕС‚РѕРІС‹ РЅР° СЃР»СѓС‡Р°Р№ С‡С‚Рѕ РїР°РјСЏС‚Рё РЅРµ С…РІР°С‚РёС‚
+			//С‚Рѕ СѓР¶ Р»СѓС‡С€Рµ Рё Р·РґРµСЃСЊ РЅРµ РїСЂРѕРІРµСЂСЏС‚СЊ Р° СЃСЂР°Р·Сѓ РїР°РґР°С‚СЊ
 			wmemcpy(m_pData,pOldData,m_nLength);
 			m_pData[m_nLength] = 0;
 			FreeData(pOldData);
@@ -142,7 +142,7 @@ typedef class UnicodeString
 		explicit UnicodeString(size_t nSize, size_t nDelta=0) { m_pData = new UnicodeStringData(nSize, nDelta); }
 		UnicodeString(const std::wstring &strCopy) { SetEUS(); Copy(strCopy.c_str(), strCopy.size()); }
 
-		~UnicodeString() { /*if (m_pData) он не должен быть nullptr*/ m_pData->DecRef(); }
+		~UnicodeString() { /*if (m_pData) РѕРЅ РЅРµ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ nullptr*/ m_pData->DecRef(); }
 
 		void Inflate(size_t nSize);
 		wchar_t *GetBuffer(size_t nSize = (size_t)-1);
