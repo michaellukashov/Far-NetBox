@@ -235,3 +235,38 @@ typedef class UnicodeString
 		bool ContainsAny(const wchar_t *Chars, size_t nStartPos=0) const { return wcspbrk(m_pData->GetData()+nStartPos,Chars) != nullptr; }
 		bool Contains(const wchar_t *lpwszFind, size_t nStartPos=0) const { return wcsstr(m_pData->GetData()+nStartPos,lpwszFind) != nullptr; }
 } string;
+
+class Utf8String
+{
+public:
+	Utf8String(const wchar_t* Str)
+	{
+		Init(Str, StrLength(Str));
+	}
+
+	Utf8String(const string& Str)
+	{
+		Init(Str, Str.GetLength());
+	}
+
+	~Utf8String()
+	{
+		delete[] Data;
+	}
+
+	operator const char*() const {return Data;}
+	size_t size() const {return Size;}
+
+
+private:
+	void Init(const wchar_t* Str, size_t Length)
+	{
+		Size = WideCharToMultiByte(CP_UTF8, 0, Str, static_cast<int>(Length), nullptr, 0, nullptr, nullptr) + 1;
+		Data = new char[Size];
+		WideCharToMultiByte(CP_UTF8, 0, Str, static_cast<int>(Length), Data, static_cast<int>(Size-1), nullptr, nullptr);
+		Data[Size-1] = 0;
+	}
+
+	char* Data;
+	size_t Size;
+};
