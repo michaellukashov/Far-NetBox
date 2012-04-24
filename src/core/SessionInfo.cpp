@@ -20,6 +20,7 @@
 #include "SessionInfo.h"
 #include "Exceptions.h"
 #include "TextsCore.h"
+#include "UnicodeString.hpp"
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
 #pragma package(smart_init)
