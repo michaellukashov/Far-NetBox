@@ -380,3 +380,9 @@ bool UnicodeString::RPos(size_t &nPos, wchar_t Ch, size_t nStartPos) const
 
 	return false;
 }
+
+void  __cdecl UnicodeString::ThrowIfOutOfRange(int idx) const
+{
+    if (idx < 1 || idx > Length())    // NOTE: UnicodeString is 1-based !!
+      throw std::runtime_error("Index is out of range"); // ERangeError(Sysconst_SRangeError);
+}

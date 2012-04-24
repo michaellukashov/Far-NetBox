@@ -140,11 +140,13 @@ typedef class UnicodeString
 		UnicodeString(const wchar_t *lpwszData, size_t nLength) { SetEUS(); Copy(lpwszData, nLength); }
 		UnicodeString(const char *lpszData, UINT CodePage=CP_OEMCP) { SetEUS(); Copy(lpszData, CodePage); }
 		explicit UnicodeString(size_t nSize, size_t nDelta=0) { m_pData = new UnicodeStringData(nSize, nDelta); }
+		UnicodeString(const std::wstring &strCopy) { SetEUS(); Copy(strCopy.c_str(), strCopy.size()); }
 
 		~UnicodeString() { /*if (m_pData) он не должен быть nullptr*/ m_pData->DecRef(); }
 
 		void Inflate(size_t nSize);
 		wchar_t *GetBuffer(size_t nSize = (size_t)-1);
+		const wchar_t *c_str() const { return m_pData->GetData(); }
 		void ReleaseBuffer(size_t nLength = (size_t)-1);
 
         size_t  __fastcall Length() const { return GetLength(); }
@@ -242,16 +244,18 @@ typedef class UnicodeString
 
         wchar_t __fastcall operator [](const int idx) const
         {
-          // ThrowIfOutOfRange(idx);   // Should Range-checking be optional to avoid overhead ??
+          ThrowIfOutOfRange(idx);   // Should Range-checking be optional to avoid overhead ??
           return m_pData->GetData()[idx-1];
         }
 
         wchar_t& __fastcall operator [](const int idx)
         {
-          // ThrowIfOutOfRange(idx);   // Should Range-checking be optional to avoid overhead ??
+          ThrowIfOutOfRange(idx);   // Should Range-checking be optional to avoid overhead ??
           // Unique();                 // Ensure we're not ref-counted (and Unicode)
           return m_pData->GetData()[idx-1];
         }
+protected:
+    void  __cdecl ThrowIfOutOfRange(int idx) const;
 } string;
 
 class UTF8String
