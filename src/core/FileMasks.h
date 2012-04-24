@@ -50,7 +50,7 @@ public:
             // Modification = rhs.Modification;
         // }
         __int64 Size;
-        nb::TDateTime Modification;
+        System::TDateTime Modification;
 
         std::wstring ToString() const;
     };
@@ -58,8 +58,8 @@ public:
     static bool __fastcall IsMask(const std::wstring Mask);
     static std::wstring __fastcall NormalizeMask(const std::wstring Mask, const std::wstring AnyMask = L"");
     static std::wstring __fastcall ComposeMaskStr(
-    nb::TStrings * IncludeFileMasksStr, nb::TStrings * ExcludeFileMasksStr,
-    nb::TStrings * IncludeDirectoryMasksStr, nb::TStrings * ExcludeDirectoryMasksStr);
+    System::TStrings * IncludeFileMasksStr, System::TStrings * ExcludeFileMasksStr,
+    System::TStrings * IncludeDirectoryMasksStr, System::TStrings * ExcludeDirectoryMasksStr);
 
     TFileMasks();
     TFileMasks(int ForceDirectoryMasks);
@@ -84,13 +84,13 @@ public:
     void __fastcall SetMasks(const std::wstring value);
 
   // __property TStrings * IncludeFileMasksStr = { read = GetMasksStr, index = MASK_INDEX(false, true) };
-  nb::TStrings * __fastcall GetIncludeFileMasksStr() { return GetMasksStr(MASK_INDEX(false, true)); };
+  System::TStrings * __fastcall GetIncludeFileMasksStr() { return GetMasksStr(MASK_INDEX(false, true)); };
   // __property TStrings * ExcludeFileMasksStr = { read = GetMasksStr, index = MASK_INDEX(false, false) };
-  nb::TStrings * __fastcall GetExcludeFileMasksStr() { return GetMasksStr(MASK_INDEX(false, false)); };
+  System::TStrings * __fastcall GetExcludeFileMasksStr() { return GetMasksStr(MASK_INDEX(false, false)); };
   // __property TStrings * IncludeDirectoryMasksStr = { read = GetMasksStr, index = MASK_INDEX(true, true) };
-  nb::TStrings * __fastcall GetIncludeDirectoryMasksStr() { return GetMasksStr(MASK_INDEX(true, true)); };
+  System::TStrings * __fastcall GetIncludeDirectoryMasksStr() { return GetMasksStr(MASK_INDEX(true, true)); };
   // __property TStrings * ExcludeDirectoryMasksStr = { read = GetMasksStr, index = MASK_INDEX(true, false) };
-  nb::TStrings * __fastcall GetExcludeDirectoryMasksStr() { return GetMasksStr(MASK_INDEX(true, false)); };
+  System::TStrings * __fastcall GetExcludeDirectoryMasksStr() { return GetMasksStr(MASK_INDEX(true, false)); };
 
 private:
   int FForceDirectoryMasks;
@@ -115,9 +115,9 @@ private:
         __int64 LowSize;
 
         TMaskBoundary HighModificationMask;
-        nb::TDateTime HighModification;
+        System::TDateTime HighModification;
         TMaskBoundary LowModificationMask;
-        nb::TDateTime LowModification;
+        System::TDateTime LowModification;
 
         std::wstring MaskStr;
         std::wstring UserStr;
@@ -125,14 +125,14 @@ private:
 
     typedef std::vector<TMask> TMasks;
   TMasks FMasks[4];
-  mutable nb::TStrings * FMasksStr[4];
+  mutable System::TStrings * FMasksStr[4];
 
     void __fastcall SetStr(const std::wstring value, bool SingleMask);
     void __fastcall CreateMaskMask(const std::wstring Mask, size_t Start, size_t End, bool Ex,
                         TMaskMask &MaskMask);
     void __fastcall CreateMask(const std::wstring & MaskStr, int MaskStart,
         int MaskEnd, bool Include);
-    nb::TStrings * __fastcall GetMasksStr(int Index) const;
+    System::TStrings * __fastcall GetMasksStr(int Index) const;
     static std::wstring __fastcall MakeDirectoryMask(std::wstring Str);
     static inline void __fastcall ReleaseMaskMask(TMaskMask &MaskMask);
     inline void __fastcall Init();
@@ -144,7 +144,7 @@ private:
                              const std::wstring Path, const TParams *Params, const TMasks &Masks, bool Recurse);
     static inline bool __fastcall MatchesMaskMask(const TMaskMask &MaskMask, const std::wstring Str);
     static inline bool __fastcall IsAnyMask(const std::wstring Mask);
-    static std::wstring __fastcall ComposeMaskStr(nb::TStrings * MasksStr, bool Directory);
+    static std::wstring __fastcall ComposeMaskStr(System::TStrings * MasksStr, bool Directory);
     void __fastcall ThrowError(size_t Start, size_t End);
 };
 //---------------------------------------------------------------------------
@@ -152,7 +152,7 @@ std::wstring __fastcall MaskFileName(const std::wstring FileName, const std::wst
 bool __fastcall IsFileNameMask(const std::wstring Mask);
 std::wstring __fastcall DelimitFileNameMask(const std::wstring Mask);
 //---------------------------------------------------------------------------
-typedef void (nb::TObject::*TCustomCommandPatternEvent)
+typedef void (System::TObject::*TCustomCommandPatternEvent)
 (int Index, const std::wstring Pattern, void *Arg, std::wstring &Replacement,
  bool &LastPass);
 //---------------------------------------------------------------------------

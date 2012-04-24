@@ -28,13 +28,13 @@ private:
     bool FActive;
     TSessionInfo FSessionInfo;
     bool FSessionInfoValid;
-    nb::TDateTime FLastDataSent;
+    System::TDateTime FLastDataSent;
     Backend *FBackend;
     void *FBackendHandle;
     const unsigned int *FMinPacketSize;
     const unsigned int *FMaxPacketSize;
     Config *FConfig;
-    nb::notify_signal_type FOnReceive;
+    System::notify_signal_type FOnReceive;
     bool FFrozen;
     bool FDataWhileFrozen;
     bool FStoredPasswordTried;
@@ -126,8 +126,8 @@ public:
     void ClearStdError();
     bool GetStoredCredentialsTried();
 
-    void RegisterReceiveHandler(const nb::notify_slot_type &Handler);
-    void UnregisterReceiveHandler(const nb::notify_slot_type &Handler);
+    void RegisterReceiveHandler(const System::notify_slot_type &Handler);
+    void UnregisterReceiveHandler(const System::notify_slot_type &Handler);
 
     // interface to PuTTY core
     void UpdateSocket(SOCKET value, bool Startup);
@@ -136,7 +136,7 @@ public:
     bool PromptUser(bool ToServer,
                     const std::wstring AName, bool NameRequired,
                     const std::wstring Instructions, bool InstructionsRequired,
-                    nb::TStrings *Prompts, nb::TStrings *Results);
+                    System::TStrings *Prompts, System::TStrings *Results);
     void FromBackend(bool IsStdErr, const char *Data, size_t Length);
     void CWrite(const char *Data, size_t Length);
     const std::wstring GetStdError();
@@ -152,7 +152,7 @@ public:
     bool GetReady();
     captureoutput_signal_type &GetOnCaptureOutput() { return FOnCaptureOutput; }
     void SetOnCaptureOutput(const captureoutput_slot_type &value) { FOnCaptureOutput.connect(value); }
-    nb::TDateTime GetLastDataSent() { return FLastDataSent; }
+    System::TDateTime GetLastDataSent() { return FLastDataSent; }
     std::wstring GetLastTunnelError() { return FLastTunnelError; }
     std::wstring GetUserName() { return FUserName; }
     bool GetSimple() { return FSimple; }

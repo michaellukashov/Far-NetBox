@@ -119,7 +119,7 @@ private:
     std::wstring FCustomParam1;
     std::wstring FCustomParam2;
     bool FResolveSymlinks;
-    nb::TDateTime FTimeDifference;
+    System::TDateTime FTimeDifference;
     size_t FSFTPDownloadQueue;
     size_t FSFTPUploadQueue;
     size_t FSFTPListingQueue;
@@ -186,7 +186,7 @@ public:
     void __fastcall RecryptPasswords();
     bool __fastcall HasAnyPassword();
     void __fastcall Remove();
-    virtual void __fastcall Assign(nb::TPersistent *Source);
+    virtual void __fastcall Assign(System::TPersistent *Source);
     bool __fastcall ParseUrl(const std::wstring Url, TOptions *Options,
                   TStoredSessionList *StoredSessions, bool &DefaultsOnly,
                   std::wstring *FileName, bool *AProtocolDefined);
@@ -236,9 +236,9 @@ public:
     void __fastcall SetModified(bool value) { FModified = value; }
     bool __fastcall GetCanLogin();
     bool GetClearAliases() const { return FClearAliases; }
-    void __fastcall SetPingIntervalDT(nb::TDateTime value);
-    nb::TDateTime __fastcall GetPingIntervalDT() const;
-    nb::TDateTime __fastcall GetTimeDifference() const { return FTimeDifference; }
+    void __fastcall SetPingIntervalDT(System::TDateTime value);
+    System::TDateTime __fastcall GetPingIntervalDT() const;
+    System::TDateTime __fastcall GetTimeDifference() const { return FTimeDifference; }
     TPingType GetPingType() const { return FPingType; }
     std::wstring __fastcall GetSessionName();
     bool __fastcall HasSessionName();
@@ -269,7 +269,7 @@ public:
     std::wstring GetShell() const { return FShell; }
     std::wstring GetSftpServer() const { return FSftpServer; }
     int GetTimeout() const { return FTimeout; }
-    nb::TDateTime __fastcall GetTimeoutDT();
+    System::TDateTime __fastcall GetTimeoutDT();
     bool GetUnsetNationalVars() const { return FUnsetNationalVars; }
     bool GetIgnoreLsWarnings() const { return FIgnoreLsWarnings; }
     bool GetTcpNoDelay() const { return FTcpNoDelay; }
@@ -343,7 +343,7 @@ public:
     bool __fastcall GetFtpForcePasvIp() const { return FFtpForcePasvIp; }
     std::wstring __fastcall GetFtpAccount() const { return FFtpAccount; }
     size_t __fastcall GetFtpPingInterval() const { return FFtpPingInterval; }
-    nb::TDateTime __fastcall GetFtpPingIntervalDT();
+    System::TDateTime __fastcall GetFtpPingIntervalDT();
     TPingType __fastcall GetFtpPingType() const { return FFtpPingType; }
     TFtps __fastcall GetFtps() const { return FFtps; }
     TAutoSwitch __fastcall GetNotUtf() const { return FNotUtf; }
@@ -375,7 +375,7 @@ public:
     void __fastcall SetSshNoUserAuth(bool value);
     void __fastcall SetPublicKeyFile(const std::wstring value);
 
-    void __fastcall SetTimeDifference(nb::TDateTime value);
+    void __fastcall SetTimeDifference(System::TDateTime value);
     void __fastcall SetPingType(TPingType value);
     void __fastcall SetProtocol(TProtocol value);
     void __fastcall SetFSProtocol(TFSProtocol value);

@@ -19,13 +19,13 @@ class TCriticalSection;
 enum TAutoSwitch { asOn, asOff, asAuto };
 enum TFtpEncryptionSwitch { fesPlainFTP, fesExplicitSSL, fesImplicit, fesExplicitTLS };
 //---------------------------------------------------------------------------
-class TConfiguration : public nb::TObject
+class TConfiguration : public System::TObject
 {
 private:
     bool FDontSave;
     bool FChanged;
     int FUpdating;
-    nb::notify_signal_type FOnChange;
+    System::notify_signal_type FOnChange;
 
     void *FApplicationInfo;
     bool FLogging;
@@ -126,8 +126,8 @@ public:
     size_t GetActualLogProtocol() { return FActualLogProtocol; }
     bool GetLogActions() { return FLogActions; }
     int GetLogWindowLines() { return FLogWindowLines; }
-    const nb::notify_signal_type &GetOnChange() const { return FOnChange; }
-    void SetOnChange(const nb::notify_slot_type &value) { FOnChange.connect(value); }
+    const System::notify_signal_type &GetOnChange() const { return FOnChange; }
+    void SetOnChange(const System::notify_slot_type &value) { FOnChange.connect(value); }
     int GetSessionReopenAuto() { return FSessionReopenAuto; }
     int GetSessionReopenAutoMaximumNumberOfRetries() { return FSessionReopenAutoMaximumNumberOfRetries; }
     void SetSessionReopenAutoMaximumNumberOfRetries(int value);
@@ -208,10 +208,10 @@ public:
 class TShortCuts
 {
 public:
-    void Add(nb::TShortCut ShortCut);
-    bool Has(nb::TShortCut ShortCut) const;
+    void Add(System::TShortCut ShortCut);
+    bool Has(System::TShortCut ShortCut) const;
 
 private:
-    std::set<nb::TShortCut> FShortCuts;
+    std::set<System::TShortCut> FShortCuts;
 };
 //---------------------------------------------------------------------------

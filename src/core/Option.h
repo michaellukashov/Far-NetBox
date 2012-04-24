@@ -15,7 +15,7 @@ public:
     bool __fastcall FindSwitch(const std::wstring Switch, std::wstring &Value);
     bool __fastcall FindSwitch(const std::wstring Switch, int &ParamsStart,
                     int &ParamsCount);
-    bool __fastcall FindSwitch(const std::wstring Switch, nb::TStrings *Params,
+    bool __fastcall FindSwitch(const std::wstring Switch, System::TStrings *Params,
                     int ParamsMax = -1);
     void __fastcall ParamsProcessed(int Position, int Count);
     std::wstring __fastcall SwitchValue(const std::wstring Switch, const std::wstring Default = L"");

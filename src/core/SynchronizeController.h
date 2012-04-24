@@ -19,14 +19,14 @@ struct TSynchronizeParamType
 class TSynchronizeController;
 struct TSynchronizeOptions;
 class TSynchronizeChecklist;
-typedef boost::signal2<void, nb::TObject *, bool> synchronizeabort_signal_type;
+typedef boost::signal2<void, System::TObject *, bool> synchronizeabort_signal_type;
 typedef synchronizeabort_signal_type::slot_type synchronizeabort_slot_type;
-typedef boost::signal2<void, nb::TObject *, const nb::threadmethod_slot_type &> synchronizethreads_signal_type;
+typedef boost::signal2<void, System::TObject *, const System::threadmethod_slot_type &> synchronizethreads_signal_type;
 typedef synchronizethreads_signal_type::slot_type synchronizethreads_slot_type;
 enum TSynchronizeLogEntry { slScan, slStart, slChange, slUpload, slDelete, slDirChange };
 typedef boost::signal3<void, TSynchronizeController *, TSynchronizeLogEntry, const std::wstring > synchronizelog_signal_type;
 typedef synchronizelog_signal_type::slot_type synchronizelog_slot_type;
-typedef boost::signal8<void, nb::TObject *, bool, const TSynchronizeParamType &,
+typedef boost::signal8<void, System::TObject *, bool, const TSynchronizeParamType &,
         const TCopyParamType &, TSynchronizeOptions *,
         const synchronizeabort_slot_type &, const synchronizethreads_slot_type &,
         const synchronizelog_slot_type &> synchronizestartstop_signal_type;
@@ -56,7 +56,7 @@ public:
                                     const synchronizetoomanydirectories_slot_type &AOnTooManyDirectories);
     ~TSynchronizeController();
 
-    void StartStop(nb::TObject *Sender, bool Start,
+    void StartStop(System::TObject *Sender, bool Start,
                    const TSynchronizeParamType &Params, const TCopyParamType &CopyParam,
                    TSynchronizeOptions *Options,
                    const synchronizeabort_slot_type &OnAbort, const synchronizethreads_slot_type &OnSynchronizeThreads,
@@ -75,16 +75,16 @@ private:
     synchronizelog_signal_type FSynchronizeLog;
     TCopyParamType FCopyParam;
 
-    void SynchronizeChange(nb::TObject *Sender, const std::wstring Directory,
+    void SynchronizeChange(System::TObject *Sender, const std::wstring Directory,
                            bool &SubdirsChanged);
     void SynchronizeAbort(bool Close);
     void SynchronizeLog(TSynchronizeLogEntry Entry, const std::wstring Message);
-    void SynchronizeInvalid(nb::TObject *Sender, const std::wstring Directory,
+    void SynchronizeInvalid(System::TObject *Sender, const std::wstring Directory,
                             const std::wstring ErrorStr);
-    void SynchronizeFilter(nb::TObject *Sender, const std::wstring DirectoryName,
+    void SynchronizeFilter(System::TObject *Sender, const std::wstring DirectoryName,
                            bool &Add);
-    void SynchronizeTooManyDirectories(nb::TObject *Sender, int &MaxDirectories);
-    void SynchronizeDirectoriesChange(nb::TObject *Sender, int Directories);
+    void SynchronizeTooManyDirectories(System::TObject *Sender, int &MaxDirectories);
+    void SynchronizeDirectoriesChange(System::TObject *Sender, int Directories);
 };
 //---------------------------------------------------------------------------
 #endif

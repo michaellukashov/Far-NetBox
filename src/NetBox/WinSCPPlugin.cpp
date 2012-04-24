@@ -82,14 +82,14 @@ void TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo *Info)
 }
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::GetPluginInfoEx(long unsigned &Flags,
-                                    nb::TStrings *DiskMenuStrings, nb::TStrings *PluginMenuStrings,
-                                    nb::TStrings *PluginConfigStrings, nb::TStrings *CommandPrefixes)
+                                    System::TStrings *DiskMenuStrings, System::TStrings *PluginMenuStrings,
+                                    System::TStrings *PluginConfigStrings, System::TStrings *CommandPrefixes)
 {
     Flags = PF_FULLCMDLINE;
     if (FarConfiguration->GetDisksMenu())
     {
         DiskMenuStrings->AddObject(GetMsg(PLUGIN_NAME),
-                                   (nb::TObject *)(size_t)FarConfiguration->GetDisksMenuHotKey());
+                                   (System::TObject *)(size_t)FarConfiguration->GetDisksMenuHotKey());
     }
     if (FarConfiguration->GetPluginsMenu())
     {
@@ -124,7 +124,7 @@ bool TWinSCPPlugin::ImportSessions(const std::wstring RegistryStorageKey,
             ExportStorage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), /* CanCreate */ true)
        )
     {
-        nb::TStrings *SubKeyNames = new nb::TStringList();
+        System::TStrings *SubKeyNames = new System::TStringList();
         BOOST_SCOPE_EXIT ( (&SubKeyNames) )
         {
             delete SubKeyNames;
@@ -387,7 +387,7 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(int OpenFrom, LONG_PTR Item)
                         {
                             PanelSystem->RedrawPanel();
                         }
-                        nb::Abort();
+                        System::Abort();
                     }
                     // directory will be set by FAR itself
                     Directory = L"";
@@ -397,12 +397,12 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(int OpenFrom, LONG_PTR Item)
                 TSessionData *Session = StoredSessions->ParseUrl(Name, NULL, DefaultsOnly);
                 if (DefaultsOnly)
                 {
-                    nb::Abort();
+                    System::Abort();
                 }
                 if (!Session->GetCanLogin())
                 {
                     assert(false);
-                    nb::Abort();
+                    System::Abort();
                 }
                 FileSystem->Connect(Session);
                 if (!Directory.empty())
@@ -429,7 +429,7 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(int OpenFrom, LONG_PTR Item)
                         ImportStorage->HasSubKeys()))
                     {
                         assert(false);
-                        nb::Abort();
+                        System::Abort();
                     }
                     std::wstring SessionName = ::PuttyUnMungeStr(ImportStorage->ReadStringRaw(L"Session", L""));
                     Session = new TSessionData(SessionName);
@@ -438,7 +438,7 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(int OpenFrom, LONG_PTR Item)
                     if (!Session->GetCanLogin())
                     {
                         assert(false);
-                        nb::Abort();
+                        System::Abort();
                     }
                     FileSystem->Connect(Session);
                 }
@@ -617,13 +617,13 @@ void TWinSCPPlugin::ShowExtendedException(const std::exception *E)
     {
         if (::InheritsFrom<std::exception, std::exception>(E))
         {
-            if (!::InheritsFrom<std::exception, nb::EAbort>(E))
+            if (!::InheritsFrom<std::exception, System::EAbort>(E))
             {
                 TQueryType Type;
                 Type = (::InheritsFrom<std::exception, ESshTerminate>(E)) ?
                        qtInformation : qtError;
 
-                nb::TStrings *MoreMessages = NULL;
+                System::TStrings *MoreMessages = NULL;
                 if (::InheritsFrom<std::exception, ExtException>(E))
                 {
                     MoreMessages = dynamic_cast<const ExtException *>(E)->GetMoreMessages();
@@ -684,12 +684,12 @@ void TWinSCPPlugin::MessageClick(void *Token, int Result, bool &Close)
 }
 //---------------------------------------------------------------------------
 int TWinSCPPlugin::MoreMessageDialog(const std::wstring Str,
-                                     nb::TStrings *MoreMessages, TQueryType Type, int Answers,
+                                     System::TStrings *MoreMessages, TQueryType Type, int Answers,
                                      const TMessageParams *Params)
 {
     int Result = 0;
     std::wstring str = Str;
-    nb::TStrings *ButtonLabels = new nb::TStringList();
+    System::TStrings *ButtonLabels = new System::TStringList();
     {
         BOOST_SCOPE_EXIT ( (&ButtonLabels) )
         {
@@ -756,7 +756,7 @@ int TWinSCPPlugin::MoreMessageDialog(const std::wstring Str,
         } \
         if (NeverAskAgainPending && CANNEVERASK) \
         { \
-          ButtonLabels->PutObject(ButtonLabels->GetCount() - 1, (nb::TObject *)true); \
+          ButtonLabels->PutObject(ButtonLabels->GetCount() - 1, (System::TObject *)true); \
           NeverAskAgainPending = false; \
         } \
       }

@@ -34,7 +34,7 @@ private:
     // when it was last time suspended (to calculate suspend time in Resume())
     unsigned int FSuspendTime;
     // when current file was started being transfered
-    nb::TDateTime FFileStartTime;
+    System::TDateTime FFileStartTime;
     size_t FFilesFinished;
     fileoperationprogress_signal_type FOnProgress;
     fileoperationfinished_signal_type FOnFinished;
@@ -71,7 +71,7 @@ public:
     TCancelStatus Cancel;
     size_t Count;
     // when operation started
-    nb::TDateTime StartTime;
+    System::TDateTime StartTime;
     // bytes transfered
     __int64 TotalTransfered;
     __int64 TotalSkipped;
@@ -122,11 +122,11 @@ public:
     void __fastcall Stop();
     void __fastcall Suspend();
     // whole operation
-    nb::TDateTime __fastcall TimeElapsed();
+    System::TDateTime __fastcall TimeElapsed();
     // only current file
-    nb::TDateTime __fastcall TimeExpected();
-    nb::TDateTime __fastcall TotalTimeExpected();
-    nb::TDateTime __fastcall TotalTimeLeft();
+    System::TDateTime __fastcall TimeExpected();
+    System::TDateTime __fastcall TotalTimeExpected();
+    System::TDateTime __fastcall TotalTimeLeft();
     size_t __fastcall TransferProgress();
     size_t __fastcall OverallProgress();
     size_t __fastcall TotalTransferProgress();

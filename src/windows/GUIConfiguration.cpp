@@ -233,9 +233,9 @@ TCopyParamList::TCopyParamList()
 //---------------------------------------------------------------------------
 void __fastcall TCopyParamList::Init()
 {
-    FCopyParams = new nb::TObjectList();
-    FRules = new nb::TObjectList();
-    FNames = new nb::TStringList();
+    FCopyParams = new System::TObjectList();
+    FRules = new System::TObjectList();
+    FNames = new System::TStringList();
     FNameList = NULL;
     FModified = false;
 }
@@ -347,8 +347,8 @@ void __fastcall TCopyParamList::Insert(size_t Index, const std::wstring Name,
     assert(FNames->IndexOf(Name) == NPOS);
     FNames->Insert(Index, Name);
     assert(CopyParam != NULL);
-    FCopyParams->Insert(Index, reinterpret_cast<nb::TObject *>(CopyParam));
-    FRules->Insert(Index, reinterpret_cast<nb::TObject *>(Rule));
+    FCopyParams->Insert(Index, reinterpret_cast<System::TObject *>(CopyParam));
+    FRules->Insert(Index, reinterpret_cast<System::TObject *>(Rule));
     Modify();
     // DEBUG_PRINTF(L"end");
 }
@@ -360,9 +360,9 @@ void __fastcall TCopyParamList::Change(size_t Index, const std::wstring Name,
     {
         FNames->PutString(Index, Name);
         delete GetCopyParam(Index);
-        FCopyParams->SetItem(Index, (reinterpret_cast<nb::TObject *>(CopyParam)));
+        FCopyParams->SetItem(Index, (reinterpret_cast<System::TObject *>(CopyParam)));
         delete GetRule(Index);
-        FRules->SetItem(Index, (reinterpret_cast<nb::TObject *>(Rule)));
+        FRules->SetItem(Index, (reinterpret_cast<System::TObject *>(Rule)));
         Modify();
     }
     else
@@ -446,8 +446,8 @@ void __fastcall TCopyParamList::Load(THierarchicalStorage *Storage, int ACount)
             throw;
         }
 
-        FCopyParams->Add(reinterpret_cast<nb::TObject *>(CopyParam));
-        FRules->Add(reinterpret_cast<nb::TObject *>(Rule));
+        FCopyParams->Add(reinterpret_cast<System::TObject *>(CopyParam));
+        FRules->Add(reinterpret_cast<System::TObject *>(Rule));
         FNames->Add(Name);
     }
     Reset();
@@ -500,11 +500,11 @@ std::wstring __fastcall TCopyParamList::GetName(size_t Index) const
     return FNames->GetString(Index);
 }
 //---------------------------------------------------------------------------
-nb::TStrings * __fastcall TCopyParamList::GetNameList() const
+System::TStrings * __fastcall TCopyParamList::GetNameList() const
 {
     if (FNameList == NULL)
     {
-        FNameList = new nb::TStringList();
+        FNameList = new System::TStringList();
 
         for (size_t i = 0; i < GetCount(); i++)
         {
@@ -549,10 +549,10 @@ TGUIConfiguration::TGUIConfiguration() : TConfiguration(),
     FLocale(0)
 {
     FLocale = 0;
-    FLocales = new nb::TStringList();
+    FLocales = new System::TStringList();
     FLastLocalesExts = L"*";
-    dynamic_cast<nb::TStringList *>(FLocales)->SetSorted(true);
-    dynamic_cast<nb::TStringList *>(FLocales)->SetCaseSensitive(false);
+    dynamic_cast<System::TStringList *>(FLocales)->SetSorted(true);
+    dynamic_cast<System::TStringList *>(FLocales)->SetCaseSensitive(false);
     FCopyParamList = new TCopyParamList();
     CoreSetResourceModule(0);
 }
@@ -574,7 +574,7 @@ void __fastcall TGUIConfiguration::Default()
     FCopyParamListDefaults = true;
     DefaultLocalized();
 
-    FIgnoreCancelBeforeFinish = nb::TDateTime(0, 0, 3, 0);
+    FIgnoreCancelBeforeFinish = System::TDateTime(0, 0, 3, 0);
     FContinueOnError = false;
     FConfirmCommandSession = true;
     FSynchronizeParams = TTerminal::spNoConfirmation | TTerminal::spPreviewChanges;
@@ -597,7 +597,7 @@ void __fastcall TGUIConfiguration::Default()
     FTelnetForFtpInPutty = true;
     FPuttySession = L"WinSCP temporary session";
     FBeepOnFinish = false;
-    FBeepOnFinishAfter = nb::TDateTime(0, 0, 30, 0);
+    FBeepOnFinishAfter = System::TDateTime(0, 0, 30, 0);
     FSynchronizeBrowsing = false;
     FCopyParamCurrent = L"";
     FKeepUpToDateChangeDelay = 500;
@@ -692,7 +692,7 @@ void __fastcall TGUIConfiguration::SaveData(THierarchicalStorage *Storage, bool 
 
     // duplicated from core\configuration.cpp
 #undef KEY
-#define KEY(TYPE, VAR) Storage->Write ## TYPE(PropertyToKey(nb::MB2W(#VAR)), Get##VAR())
+#define KEY(TYPE, VAR) Storage->Write ## TYPE(PropertyToKey(System::MB2W(#VAR)), Get##VAR())
     REGCONFIG(true);
 #undef KEY
 
@@ -732,7 +732,7 @@ void __fastcall TGUIConfiguration::LoadData(THierarchicalStorage *Storage)
 
     // duplicated from core\configuration.cpp
 #undef KEY
-#define KEY(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(PropertyToKey(nb::MB2W(#VAR)), Get##VAR()))
+#define KEY(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(PropertyToKey(System::MB2W(#VAR)), Get##VAR()))
     // #pragma warn -eas
     REGCONFIG(false);
     // #pragma warn +eas
@@ -846,7 +846,7 @@ HANDLE __fastcall TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
     {
         if (Internal)
         {
-            nb::Error(SNotImplemented, 90);
+            System::Error(SNotImplemented, 90);
             NewInstance = 0; // FIXME  HInstance;
         }
     }
@@ -924,11 +924,11 @@ void __fastcall TGUIConfiguration::SetLocaleSafe(LCID value)
     }
 }
 //---------------------------------------------------------------------------
-nb::TStrings * __fastcall TGUIConfiguration::GetLocales()
+System::TStrings * __fastcall TGUIConfiguration::GetLocales()
 {
-    nb::Error(SNotImplemented, 93);
+    System::Error(SNotImplemented, 93);
     std::wstring LocalesExts;
-    nb::TStringList *Exts = new nb::TStringList();
+    System::TStringList *Exts = new System::TStringList();
     {
         BOOST_SCOPE_EXIT ( (Exts) )
         {
@@ -991,7 +991,7 @@ nb::TStrings * __fastcall TGUIConfiguration::GetLocales()
 
                       if (Ext >= 0)
                       {
-                        Exts->SetObject(Ext, reinterpret_cast<nb::TObject*>(Locale));
+                        Exts->SetObject(Ext, reinterpret_cast<System::TObject*>(Locale));
                       }
                       else
                       {
@@ -1014,7 +1014,7 @@ nb::TStrings * __fastcall TGUIConfiguration::GetLocales()
                       GetLocaleInfo(Locale, LOCALE_SLANGUAGE,
                         LocaleStr, sizeof(LocaleStr));
                       Name += LocaleStr;
-                      FLocales->AddObject(Name, reinterpret_cast<nb::TObject*>(Locale));
+                      FLocales->AddObject(Name, reinterpret_cast<System::TObject*>(Locale));
                     }
                     Index++;
                   }
@@ -1029,7 +1029,7 @@ nb::TStrings * __fastcall TGUIConfiguration::GetLocales()
                                             ChangeFileExt(ModuleFileName(), std::wstring(L".") + Exts->GetString(Index)));
                     if (!LangName.empty())
                     {
-                        FLocales->AddObject(LangName, reinterpret_cast<nb::TObject *>(static_cast<size_t>(
+                        FLocales->AddObject(LangName, reinterpret_cast<System::TObject *>(static_cast<size_t>(
                                                 AdditionaLanguageMask + Exts->GetString(Index)[2])));
                     }
                 }

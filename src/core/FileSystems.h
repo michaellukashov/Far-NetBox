@@ -70,7 +70,7 @@ struct TClipboardHandler
 {
     std::wstring Text;
 
-    void Copy(nb::TObject * /*Sender*/)
+    void Copy(System::TObject * /*Sender*/)
     {
         CopyToClipboard(Text);
     }
@@ -141,15 +141,15 @@ public:
     virtual void __fastcall ChangeFileProperties(const std::wstring FileName,
                                       const TRemoteFile *File, const TRemoteProperties *Properties,
                                       TChmodSessionAction &Action) = 0;
-    virtual bool __fastcall LoadFilesProperties(nb::TStrings *FileList) = 0;
+    virtual bool __fastcall LoadFilesProperties(System::TStrings *FileList) = 0;
     virtual void __fastcall CalculateFilesChecksum(const std::wstring Alg,
-                                        nb::TStrings *FileList, nb::TStrings *Checksums,
+                                        System::TStrings *FileList, System::TStrings *Checksums,
                                         calculatedchecksum_slot_type *OnCalculatedChecksum) = 0;
-    virtual void __fastcall CopyToLocal(nb::TStrings *FilesToCopy,
+    virtual void __fastcall CopyToLocal(System::TStrings *FilesToCopy,
                              const std::wstring TargetDir, const TCopyParamType *CopyParam,
                              int Params, TFileOperationProgressType *OperationProgress,
                              TOnceDoneOperation &OnceDoneOperation) = 0;
-    virtual void __fastcall CopyToRemote(nb::TStrings *FilesToCopy,
+    virtual void __fastcall CopyToRemote(System::TStrings *FilesToCopy,
                               const std::wstring TargetDir, const TCopyParamType *CopyParam,
                               int Params, TFileOperationProgressType *OperationProgress,
                               TOnceDoneOperation &OnceDoneOperation) = 0;
@@ -175,7 +175,7 @@ public:
     virtual void __fastcall CopyFile(const std::wstring FileName,
                           const std::wstring NewName) = 0;
     virtual std::wstring __fastcall FileUrl(const std::wstring FileName) = 0;
-    virtual nb::TStrings * __fastcall GetFixedPaths() = 0;
+    virtual System::TStrings * __fastcall GetFixedPaths() = 0;
     virtual void __fastcall SpaceAvailable(const std::wstring Path,
                                 TSpaceAvailable &ASpaceAvailable) = 0;
     virtual const TSessionInfo & __fastcall GetSessionInfo() = 0;

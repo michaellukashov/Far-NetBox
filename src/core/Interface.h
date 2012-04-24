@@ -50,7 +50,7 @@ struct TQueryButtonAlias
 
     unsigned int Button;
     std::wstring Alias;
-    nb::notify_signal_type OnClick;
+    System::notify_signal_type OnClick;
 };
 
 typedef boost::signal1<void, size_t &> queryparamstimer_signal_type;

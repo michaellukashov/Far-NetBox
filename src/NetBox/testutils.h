@@ -29,8 +29,8 @@ public:
     }
 protected:
     virtual void GetPluginInfoEx(long unsigned &Flags,
-        nb::TStrings *DiskMenuStrings, nb::TStrings *PluginMenuStrings,
-        nb::TStrings *PluginConfigStrings, nb::TStrings *CommandPrefixes)
+        System::TStrings *DiskMenuStrings, System::TStrings *PluginMenuStrings,
+        System::TStrings *PluginConfigStrings, System::TStrings *CommandPrefixes)
     {
         DEBUG_PRINTF(L"call");
     }

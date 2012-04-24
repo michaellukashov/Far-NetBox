@@ -9,11 +9,11 @@
 bool __fastcall ExceptionMessage(const std::exception *E, std::wstring &Message)
 {
     bool Result = true;
-    if (dynamic_cast<const nb::EAbort *>(E) != NULL)
+    if (dynamic_cast<const System::EAbort *>(E) != NULL)
     {
         Result = false;
     }
-    else if (dynamic_cast<const nb::EAccessViolation *>(E) != NULL)
+    else if (dynamic_cast<const System::EAccessViolation *>(E) != NULL)
     {
         Message = LoadStr(ACCESS_VIOLATION_ERROR);
     }
@@ -23,18 +23,18 @@ bool __fastcall ExceptionMessage(const std::exception *E, std::wstring &Message)
     }
     else
     {
-        Message = nb::MB2W(E->what());
+        Message = System::MB2W(E->what());
     }
     return Result;
 }
 //---------------------------------------------------------------------------
-nb::TStrings * __fastcall ExceptionToMoreMessages(const std::exception *E)
+System::TStrings * __fastcall ExceptionToMoreMessages(const std::exception *E)
 {
-    nb::TStrings *Result = NULL;
+    System::TStrings *Result = NULL;
     std::wstring Message;
     if (ExceptionMessage(E, Message))
     {
-        Result = new nb::TStringList();
+        Result = new System::TStringList();
         Result->Add(Message);
         const ExtException *ExtE = dynamic_cast<const ExtException *>(E);
         if (ExtE != NULL)
@@ -54,7 +54,7 @@ ExtException::ExtException(const std::exception *E) :
 }
 //---------------------------------------------------------------------------
 ExtException::ExtException(const std::wstring Msg) :
-    parent(nb::W2MB(Msg.c_str()).c_str()),
+    parent(System::W2MB(Msg.c_str()).c_str()),
     FMoreMessages(NULL)
 {
     // append message to the end to more messages
@@ -69,7 +69,7 @@ ExtException::ExtException(const std::wstring Msg) :
         {
             if (FMoreMessages == NULL)
             {
-                FMoreMessages = new nb::TStringList();
+                FMoreMessages = new System::TStringList();
             }
             FMoreMessages->Append(Msg);
         }
@@ -79,7 +79,7 @@ ExtException::ExtException(const std::wstring Msg) :
 
 //---------------------------------------------------------------------------
 ExtException::ExtException(const std::wstring Msg, const std::exception *E) :
-    parent(nb::W2MB(Msg.c_str()).c_str()),
+    parent(System::W2MB(Msg.c_str()).c_str()),
     FMoreMessages(NULL)
 {
     DEBUG_PRINTF(L"Msg = %s, E = %x", Msg.c_str(), E);
@@ -96,7 +96,7 @@ ExtException::ExtException(const std::wstring Msg, const std::exception *E) :
         {
             if (FMoreMessages == NULL)
             {
-                FMoreMessages = new nb::TStringList();
+                FMoreMessages = new System::TStringList();
             }
             FMoreMessages->Append(GetMessage());
         }
@@ -104,9 +104,9 @@ ExtException::ExtException(const std::wstring Msg, const std::exception *E) :
     DEBUG_PRINTF(L"FMessage = %s", FMessage.c_str());
 }
 //---------------------------------------------------------------------------
-ExtException::ExtException(const std::wstring Msg, nb::TStrings *MoreMessages,
+ExtException::ExtException(const std::wstring Msg, System::TStrings *MoreMessages,
                            bool Own) :
-    parent(nb::W2MB(Msg.c_str()).c_str()),
+    parent(System::W2MB(Msg.c_str()).c_str()),
     FMoreMessages(NULL)
 {
     if (Own)
@@ -115,7 +115,7 @@ ExtException::ExtException(const std::wstring Msg, nb::TStrings *MoreMessages,
     }
     else
     {
-        FMoreMessages = new nb::TStringList();
+        FMoreMessages = new System::TStringList();
         FMoreMessages->Assign(MoreMessages);
     }
     DEBUG_PRINTF(L"FMessage = %s", FMessage.c_str());
@@ -141,7 +141,7 @@ void __fastcall ExtException::AddMoreMessages(const std::exception *E)
     {
         if (FMoreMessages == NULL)
         {
-            FMoreMessages = new nb::TStringList();
+            FMoreMessages = new System::TStringList();
         }
 
         const ExtException *ExtE = dynamic_cast<const ExtException *>(E);

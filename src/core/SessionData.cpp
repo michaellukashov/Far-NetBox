@@ -81,9 +81,9 @@ std::wstring GetCodePageAsString(unsigned int cp)
 }
 
 //---------------------------------------------------------------------
-nb::TDateTime __fastcall SecToDateTime(int Sec)
+System::TDateTime __fastcall SecToDateTime(int Sec)
 {
-    return nb::TDateTime(static_cast<unsigned short>(Sec/60/60),
+    return System::TDateTime(static_cast<unsigned short>(Sec/60/60),
                          static_cast<unsigned short>(Sec/60%60), static_cast<unsigned short>(Sec%60), 0);
 }
 //--- TSessionData ----------------------------------------------------
@@ -154,7 +154,7 @@ void __fastcall TSessionData::Default()
     SetAddressFamily(afAuto);
     SetCodePage(::GetCodePageAsString(CONST_DEFAULT_CODEPAGE));
     SetRekeyData(L"1G");
-    SetRekeyTime(nb::MinsPerHour);
+    SetRekeyTime(System::MinsPerHour);
 
     // FS common
     SetLocalDirectory(L"");
@@ -184,7 +184,7 @@ void __fastcall TSessionData::Default()
     SetListingCommand(L"ls -la");
     SetIgnoreLsWarnings(true);
     SetScp1Compatibility(false);
-    SetTimeDifference(nb::TDateTime(0));
+    SetTimeDifference(System::TDateTime(0));
     SetSCPLsFullTime(asAuto);
     SetNotUtf(asOff);
     SetFtpListAll(asAuto);
@@ -244,9 +244,9 @@ void __fastcall TSessionData::NonPersistant()
     SetPreserveDirectoryChanges(false);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::Assign(nb::TPersistent *Source)
+void __fastcall TSessionData::Assign(System::TPersistent *Source)
 {
-    if (Source && ::InheritsFrom<nb::TPersistent, TSessionData>(Source))
+    if (Source && ::InheritsFrom<System::TPersistent, TSessionData>(Source))
     {
 #define DUPL(P) Set##P(((TSessionData *)Source)->Get##P())
         DUPL(Name);
@@ -491,7 +491,7 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage *Storage, bool & Rewri
         SetSCPLsFullTime(static_cast<TAutoSwitch>(Storage->Readint(L"SCPLsFullTime", GetSCPLsFullTime())));
         SetFtpListAll(static_cast<TAutoSwitch>(Storage->Readint(L"FtpListAll", GetFtpListAll())));
         SetScp1Compatibility(Storage->Readbool(L"Scp1Compatibility", GetScp1Compatibility()));
-        SetTimeDifference(nb::TDateTime(Storage->ReadFloat(L"TimeDifference", GetTimeDifference())));
+        SetTimeDifference(System::TDateTime(Storage->ReadFloat(L"TimeDifference", GetTimeDifference())));
         SetDeleteToRecycleBin(Storage->Readbool(L"DeleteToRecycleBin", GetDeleteToRecycleBin()));
         SetOverwrittenToRecycleBin(Storage->Readbool(L"OverwrittenToRecycleBin", GetOverwrittenToRecycleBin()));
         SetRecycleBinPath(Storage->ReadString(L"RecycleBinPath", GetRecycleBinPath()));
@@ -554,7 +554,7 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage *Storage, bool & Rewri
         SetProxyLocalhost(Storage->Readbool(L"ProxyLocalhost", GetProxyLocalhost()));
 
 #define READ_BUG(BUG) \
-      SetBug(sb##BUG, TAutoSwitch(2 - Storage->Readint(L"Bug" + nb::MB2W(#BUG), \
+      SetBug(sb##BUG, TAutoSwitch(2 - Storage->Readint(L"Bug" + System::MB2W(#BUG), \
         2 - GetBug(sb##BUG))));
         READ_BUG(Ignore1);
         READ_BUG(PlainPW1);
@@ -576,7 +576,7 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage *Storage, bool & Rewri
 
         SetSftpServer(Storage->ReadString(L"SftpServer", GetSftpServer()));
 #define READ_SFTP_BUG(BUG) \
-      SetSFTPBug(sb##BUG, TAutoSwitch(Storage->Readint(L"SFTP" + nb::MB2W(#BUG) + L"Bug", GetSFTPBug(sb##BUG))));
+      SetSFTPBug(sb##BUG, TAutoSwitch(Storage->Readint(L"SFTP" + System::MB2W(#BUG) + L"Bug", GetSFTPBug(sb##BUG))));
         READ_SFTP_BUG(Symlink);
         READ_SFTP_BUG(SignedTS);
 #undef READ_SFTP_BUG
@@ -850,7 +850,7 @@ void __fastcall TSessionData::Save(THierarchicalStorage *Storage,
         WRITE_DATA_EX(bool, L"ProxyLocalhost", GetProxyLocalhost(), );
 
 #define WRITE_DATA_CONV_FUNC(X) (2 - (X))
-#define WRITE_BUG(BUG) WRITE_DATA_CONV(int, nb::MB2W("Bug" #BUG), GetBug(sb##BUG));
+#define WRITE_BUG(BUG) WRITE_DATA_CONV(int, System::MB2W("Bug" #BUG), GetBug(sb##BUG));
         WRITE_BUG(Ignore1);
         WRITE_BUG(PlainPW1);
         WRITE_BUG(RSA1);
@@ -876,7 +876,7 @@ void __fastcall TSessionData::Save(THierarchicalStorage *Storage,
         {
             WRITE_DATA_EX(String, L"SftpServer", GetSftpServer(), );
 
-#define WRITE_SFTP_BUG(BUG) WRITE_DATA_EX(int, nb::MB2W("SFTP" #BUG "Bug"), GetSFTPBug(sb##BUG), );
+#define WRITE_SFTP_BUG(BUG) WRITE_DATA_EX(int, System::MB2W("SFTP" #BUG "Bug"), GetSFTPBug(sb##BUG), );
             WRITE_SFTP_BUG(Symlink);
             WRITE_SFTP_BUG(SignedTS);
 #undef WRITE_SFTP_BUG
@@ -1276,14 +1276,14 @@ bool __fastcall TSessionData::ParseUrl(const std::wstring Url, TOptions *Options
         }
         if (Options->FindSwitch(L"rawsettings"))
         {
-            nb::TStrings * RawSettings = NULL;
+            System::TStrings * RawSettings = NULL;
             TOptionsStorage * OptionsStorage = NULL;
             BOOST_SCOPE_EXIT ( (&RawSettings) (&OptionsStorage) )
             {
                 delete RawSettings;
                 delete OptionsStorage;
             } BOOST_SCOPE_EXIT_END
-            RawSettings = new nb::TStringList();
+            RawSettings = new System::TStringList();
 
             if (Options->FindSwitch(L"rawsettings", RawSettings))
             {
@@ -1367,7 +1367,7 @@ std::wstring __fastcall TSessionData::DecryptPassword(const std::wstring Passwor
     {
         Result = Configuration->DecryptPassword(Password, Key);
     }
-    catch (nb::EAbort &)
+    catch (System::EAbort &)
     {
         // silently ignore aborted prompts for master password and return empty password
     }
@@ -1730,7 +1730,7 @@ void __fastcall TSessionData::SetEOLType(TEOLType value)
     SET_SESSION_PROPERTY(EOLType);
 }
 //---------------------------------------------------------------------------
-nb::TDateTime __fastcall TSessionData::GetTimeoutDT()
+System::TDateTime __fastcall TSessionData::GetTimeoutDT()
 {
     return SecToDateTime(GetTimeout());
 }
@@ -1800,7 +1800,7 @@ std::wstring __fastcall TSessionData::GetProtocolStr() const
     return ProtocolNames[GetProtocol()];
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetPingIntervalDT(nb::TDateTime value)
+void __fastcall TSessionData::SetPingIntervalDT(System::TDateTime value)
 {
     unsigned int hour, min, sec, msec;
 
@@ -1808,7 +1808,7 @@ void __fastcall TSessionData::SetPingIntervalDT(nb::TDateTime value)
     SetPingInterval((static_cast<size_t>(hour))*60*60 + (static_cast<int>(min))*60 + sec);
 }
 //---------------------------------------------------------------------------
-nb::TDateTime __fastcall TSessionData::GetPingIntervalDT() const
+System::TDateTime __fastcall TSessionData::GetPingIntervalDT() const
 {
     return SecToDateTime(GetPingInterval());
 }
@@ -1954,7 +1954,7 @@ std::wstring __fastcall TSessionData::GetSessionUrl()
     return Url;
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetTimeDifference(nb::TDateTime value)
+void __fastcall TSessionData::SetTimeDifference(System::TDateTime value)
 {
     SET_SESSION_PROPERTY(TimeDifference);
 }
@@ -2310,7 +2310,7 @@ void __fastcall TSessionData::SetFtpPingInterval(size_t value)
     SET_SESSION_PROPERTY(FtpPingInterval);
 }
 //---------------------------------------------------------------------------
-nb::TDateTime __fastcall TSessionData::GetFtpPingIntervalDT()
+System::TDateTime __fastcall TSessionData::GetFtpPingIntervalDT()
 {
     return SecToDateTime(GetFtpPingInterval());
 }
@@ -2392,8 +2392,8 @@ TStoredSessionList::~TStoredSessionList()
 void __fastcall TStoredSessionList::Load(THierarchicalStorage *Storage,
                               bool AsModified, bool UseDefaults)
 {
-    nb::TStringList *SubKeys = new nb::TStringList();
-    nb::TList *Loaded = new nb::TList;
+    System::TStringList *SubKeys = new System::TStringList();
+    System::TList *Loaded = new System::TList;
     {
         BOOST_SCOPE_EXIT ( (&SubKeys) (&Loaded) )
         {
@@ -2451,7 +2451,7 @@ void __fastcall TStoredSessionList::Load(THierarchicalStorage *Storage,
 
         if (!AsModified)
         {
-            for (size_t Index = 0; Index < nb::TObjectList::GetCount(); Index++)
+            for (size_t Index = 0; Index < System::TObjectList::GetCount(); Index++)
             {
                 if (Loaded->IndexOf(GetItem(Index)) == NPOS)
                 {
@@ -2570,7 +2570,7 @@ void __fastcall TStoredSessionList::Saved()
 //---------------------------------------------------------------------
 void __fastcall TStoredSessionList::Export(const std::wstring FileName)
 {
-    nb::Error(SNotImplemented, 3003);
+    System::Error(SNotImplemented, 3003);
     /*
     THierarchicalStorage * Storage = new TIniFileStorage(FileName);
     {
@@ -2705,7 +2705,7 @@ void __fastcall TStoredSessionList::ImportHostKeys(const std::wstring TargetKey,
 {
     TRegistryStorage *SourceStorage = NULL;
     TRegistryStorage *TargetStorage = NULL;
-    nb::TStringList *KeyList = NULL;
+    System::TStringList *KeyList = NULL;
     {
         BOOST_SCOPE_EXIT ( (&SourceStorage) (&TargetStorage) (&KeyList) )
         {
@@ -2716,7 +2716,7 @@ void __fastcall TStoredSessionList::ImportHostKeys(const std::wstring TargetKey,
         SourceStorage = new TRegistryStorage(SourceKey);
         TargetStorage = new TRegistryStorage(TargetKey);
         TargetStorage->SetAccessMode(smReadWrite);
-        KeyList = new nb::TStringList();
+        KeyList = new System::TStringList();
 
         if (SourceStorage->OpenRootKey(false) &&
                 TargetStorage->OpenRootKey(true))

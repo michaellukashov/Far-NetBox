@@ -102,14 +102,14 @@ protected:
                                      std::wstring &PanelTitle, TFarPanelModes *PanelModes, int &StartPanelMode,
                                      int &StartSortMode, bool &StartSortOrder, TFarKeyBarTitles *KeyBarTitles,
                                      std::wstring &ShortcutData);
-    virtual bool GetFindDataEx(nb::TObjectList *PanelItems, int OpMode);
+    virtual bool GetFindDataEx(System::TObjectList *PanelItems, int OpMode);
     virtual bool ProcessKeyEx(int Key, unsigned int ControlState);
     virtual bool SetDirectoryEx(const std::wstring Dir, int OpMode);
     virtual int MakeDirectoryEx(std::wstring &Name, int OpMode);
-    virtual bool DeleteFilesEx(nb::TObjectList *PanelItems, int OpMode);
-    virtual int GetFilesEx(nb::TObjectList *PanelItems, bool Move,
+    virtual bool DeleteFilesEx(System::TObjectList *PanelItems, int OpMode);
+    virtual int GetFilesEx(System::TObjectList *PanelItems, bool Move,
                            std::wstring &DestPath, int OpMode);
-    virtual int PutFilesEx(nb::TObjectList *PanelItems, bool Move, int OpMode);
+    virtual int PutFilesEx(System::TObjectList *PanelItems, bool Move, int OpMode);
     virtual bool ProcessEventEx(int Event, void *Param);
 
     void ProcessEditorEvent(int Event, void *Param);
@@ -128,10 +128,10 @@ protected:
                                 bool Duplicate);
     void FocusSession(TSessionData *Data);
     void DeleteSession(TSessionData *Data, void *Param);
-    void ProcessSessions(nb::TObjectList *PanelItems,
+    void ProcessSessions(System::TObjectList *PanelItems,
                          const processsession_slot_type &ProcessSession, void *Param);
     void ExportSession(TSessionData *Data, void *Param);
-    bool ImportSessions(nb::TObjectList *PanelItems, bool Move, int OpMode);
+    bool ImportSessions(System::TObjectList *PanelItems, bool Move, int OpMode);
     void FileProperties();
     void CreateLink();
     void TransferFiles(bool Move);
@@ -149,14 +149,14 @@ protected:
     void HomeDirectory();
     void ToggleSynchronizeBrowsing();
     bool IsSynchronizedBrowsing();
-    bool PropertiesDialog(nb::TStrings *FileList,
+    bool PropertiesDialog(System::TStrings *FileList,
                           const std::wstring Directory,
-                          // nb::TStrings * GroupList, nb::TStrings * UserList,
+                          // System::TStrings * GroupList, System::TStrings * UserList,
                           const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
                           TRemoteProperties *Properties, int AllowedChanges);
     bool ExecuteCommand(const std::wstring Command);
     void TerminalCaptureLog(const std::wstring AddedLine, bool StdError);
-    bool CopyDialog(bool ToRemote, bool Move, nb::TStrings *FileList,
+    bool CopyDialog(bool ToRemote, bool Move, System::TStrings *FileList,
                     std::wstring &TargetDirectory,
                     TGUICopyParamType *Params,
                     int Options,
@@ -176,14 +176,14 @@ protected:
     bool SynchronizeChecklistDialog(TSynchronizeChecklist *Checklist,
                                     TTerminal::TSynchronizeMode Mode, int Params,
                                     const std::wstring LocalDirectory, const std::wstring RemoteDirectory);
-    bool RemoteTransferDialog(nb::TStrings *FileList, std::wstring &Target,
+    bool RemoteTransferDialog(System::TStrings *FileList, std::wstring &Target,
                               std::wstring &FileMask, bool Move);
     bool RenameFileDialog(TRemoteFile *File, std::wstring &NewName);
-    int MoreMessageDialog(const std::wstring Str, nb::TStrings *MoreMessages,
+    int MoreMessageDialog(const std::wstring Str, System::TStrings *MoreMessages,
                           TQueryType Type, int Answers, const TMessageParams *Params = NULL);
     bool PasswordDialog(TSessionData *SessionData,
-                        TPromptKind Kind, const std::wstring Name, const std::wstring Instructions, nb::TStrings *Prompts,
-                        nb::TStrings *Results, bool StoredCredentialsTried);
+                        TPromptKind Kind, const std::wstring Name, const std::wstring Instructions, System::TStrings *Prompts,
+                        System::TStrings *Results, bool StoredCredentialsTried);
     bool BannerDialog(const std::wstring SessionName, const std::wstring Banner,
                       bool &NeverShowAgain, int Options);
     bool CreateDirectoryDialog(std::wstring &Directory,
@@ -216,7 +216,7 @@ protected:
     TTerminalQueueStatus *ProcessQueue(bool Hidden);
     bool EnsureCommandSessionFallback(TFSCapability Capability);
     void ConnectTerminal(TTerminal *Terminal);
-    void TemporarilyDownloadFiles(nb::TStrings *FileList,
+    void TemporarilyDownloadFiles(System::TStrings *FileList,
                                   TCopyParamType CopyParam, std::wstring &TempDir);
     int UploadFiles(bool Move, int OpMode, bool Edit, std::wstring DestPath);
     void UploadOnSave(bool NoReload);
@@ -249,10 +249,10 @@ private:
     HANDLE FProgressSaveScreenHandle;
     HANDLE FSynchronizationSaveScreenHandle;
     HANDLE FAuthenticationSaveScreenHandle;
-    nb::TDateTime FSynchronizationStart;
+    System::TDateTime FSynchronizationStart;
     bool FSynchronizationCompare;
-    nb::TStrings *FFileList;
-    nb::TList *FPanelItems;
+    System::TStrings *FFileList;
+    System::TList *FPanelItems;
     std::wstring FSavedFindFolder;
     std::wstring FOriginalEditFile;
     std::wstring FLastEditFile;
@@ -267,9 +267,9 @@ private:
     TKeepaliveThread *FKeepaliveThread;
     bool FSynchronisingBrowse;
     TSynchronizeController *FSynchronizeController;
-    nb::TStrings *FCapturedLog;
+    System::TStrings *FCapturedLog;
     bool FOutputLog;
-    nb::TStrings *FAuthenticationLog;
+    System::TStrings *FAuthenticationLog;
     TWinSCPFileSystem *Self;
     typedef std::map<int, TMultipleEdit> TMultipleEdits;
     TMultipleEdits FMultipleEdits;
@@ -277,26 +277,26 @@ private:
     typedef std::vector<TEditHistory> TEditHistories;
     TEditHistories FEditHistories;
     std::wstring FLastPath;
-    nb::TStrings *FPathHistory;
+    System::TStrings *FPathHistory;
     std::wstring FSessionsFolder;
     std::wstring FNewSessionsFolder;
     std::wstring FPrevSessionName;
 
-    void TerminalClose(nb::TObject *Sender);
+    void TerminalClose(System::TObject *Sender);
     void TerminalUpdateStatus(TTerminal *Terminal, bool Active);
-    void TerminalChangeDirectory(nb::TObject *Sender);
-    void TerminalReadDirectory(nb::TObject *Sender, bool ReloadOnly);
-    void TerminalStartReadDirectory(nb::TObject *Sender);
-    void TerminalReadDirectoryProgress(nb::TObject *Sender, int Progress,
+    void TerminalChangeDirectory(System::TObject *Sender);
+    void TerminalReadDirectory(System::TObject *Sender, bool ReloadOnly);
+    void TerminalStartReadDirectory(System::TObject *Sender);
+    void TerminalReadDirectoryProgress(System::TObject *Sender, int Progress,
                                        bool &Cancel);
     void TerminalInformation(TTerminal *Terminal,
                              const std::wstring Str, bool Status, bool Active);
-    void TerminalQueryUser(nb::TObject *Sender,
-                           const std::wstring Query, nb::TStrings *MoreMessages, int Answers,
+    void TerminalQueryUser(System::TObject *Sender,
+                           const std::wstring Query, System::TStrings *MoreMessages, int Answers,
                            const TQueryParams *Params, int &Answer, TQueryType Type, void *Arg);
     void TerminalPromptUser(TTerminal *Terminal,
                             TPromptKind Kind, std::wstring Name, std::wstring Instructions,
-                            nb::TStrings *Prompts, nb::TStrings *Results, bool &Result,
+                            System::TStrings *Prompts, System::TStrings *Results, bool &Result,
                             void *Arg);
     void TerminalDisplayBanner(TTerminal *Terminal,
                                std::wstring SessionName, const std::wstring Banner, bool &NeverShowAgain,
@@ -310,12 +310,12 @@ private:
                            TOperationSide Side, bool DragDrop, const std::wstring FileName, bool Success,
                            TOnceDoneOperation &DisconnectWhenComplete); // ??? bool & DisconnectWhenComplete);
     void CancelConfiguration(TFileOperationProgressType &ProgressData);
-    nb::TStrings *CreateFileList(nb::TObjectList *PanelItems,
+    System::TStrings *CreateFileList(System::TObjectList *PanelItems,
                                  TOperationSide Side, bool SelectedOnly = false, std::wstring Directory = L"",
-                                 bool FileNameOnly = false, nb::TStrings *AFileList = NULL);
-    nb::TStrings *CreateSelectedFileList(TOperationSide Side,
+                                 bool FileNameOnly = false, System::TStrings *AFileList = NULL);
+    System::TStrings *CreateSelectedFileList(TOperationSide Side,
                                          TFarPanelInfo *PanelInfo = NULL);
-    nb::TStrings *CreateFocusedFileList(TOperationSide Side,
+    System::TStrings *CreateFocusedFileList(TOperationSide Side,
                                         TFarPanelInfo *PanelInfo = NULL);
     void CustomCommandGetParamValue(
         const std::wstring AName, std::wstring &Value);
@@ -344,7 +344,7 @@ protected:
     virtual void GetData(
         unsigned long &Flags, std::wstring &FileName, __int64 &Size,
         unsigned long &FileAttributes,
-        nb::TDateTime &LastWriteTime, nb::TDateTime &LastAccess,
+        System::TDateTime &LastWriteTime, System::TDateTime &LastAccess,
         unsigned long &NumberOfLinks, std::wstring &Description,
         std::wstring &Owner, void *& UserData, int &CustomColumnNumber);
 };
@@ -360,7 +360,7 @@ protected:
     virtual void GetData(
         unsigned long &Flags, std::wstring &FileName, __int64 &Size,
         unsigned long &FileAttributes,
-        nb::TDateTime &LastWriteTime, nb::TDateTime &LastAccess,
+        System::TDateTime &LastWriteTime, System::TDateTime &LastAccess,
         unsigned long &NumberOfLinks, std::wstring &Description,
         std::wstring &Owner, void *& UserData, int &CustomColumnNumber);
 };
@@ -378,12 +378,12 @@ protected:
     virtual void GetData(
         unsigned long &Flags, std::wstring &FileName, __int64 &Size,
         unsigned long &FileAttributes,
-        nb::TDateTime &LastWriteTime, nb::TDateTime &LastAccess,
+        System::TDateTime &LastWriteTime, System::TDateTime &LastAccess,
         unsigned long &NumberOfLinks, std::wstring &Description,
         std::wstring &Owner, void *& UserData, int &CustomColumnNumber);
     virtual std::wstring GetCustomColumnData(int Column);
     static void TranslateColumnTypes(std::wstring &ColumnTypes,
-                                     nb::TStrings *ColumnTitles);
+                                     System::TStrings *ColumnTitles);
 };
 //---------------------------------------------------------------------------
 #endif

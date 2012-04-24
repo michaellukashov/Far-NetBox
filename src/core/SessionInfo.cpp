@@ -82,23 +82,23 @@ UnicodeString __fastcall XmlAttributeEscape(UnicodeString Str)
   return DoXmlEscape(Str, true);
 }
 //---------------------------------------------------------------------------
-std::wstring __fastcall XmlTimestamp(const nb::TDateTime DateTime)
+UnicodeString __fastcall XmlTimestamp(const System::TDateTime & DateTime)
 {
-    return FormatDateTime(L"yyyy'-'mm'-'dd'T'hh':'nn':'ss'.'zzz'Z'", ConvertTimestampToUTC(DateTime));
+  return FormatDateTime(L"yyyy'-'mm'-'dd'T'hh':'nn':'ss'.'zzz'Z'", ConvertTimestampToUTC(DateTime));
 }
 //---------------------------------------------------------------------------
-std::wstring __fastcall XmlTimestamp()
+UnicodeString __fastcall XmlTimestamp()
 {
-    return XmlTimestamp(nb::Now());
+  return XmlTimestamp(System::Now());
 }
 //---------------------------------------------------------------------------
-nb::TStrings * __fastcall ExceptionToMessages(const std::exception * E)
+System::TStrings * __fastcall ExceptionToMessages(const std::exception * E)
 {
-  nb::TStrings * Result = NULL;
+  System::TStrings * Result = NULL;
   std::wstring Message;
   if (ExceptionMessage(E, Message))
   {
-    Result = new nb::TStringList();
+    Result = new System::TStringList();
     Result->Add(Message);
     const ExtException * EE = dynamic_cast<const ExtException *>(E);
     if ((EE != NULL) && (EE->GetMoreMessages() != NULL))
@@ -122,8 +122,8 @@ public:
         FState(Opened),
         FRecursive(false),
         FErrorMessages(NULL),
-        FNames(new nb::TStringList()),
-        FValues(new nb::TStringList()),
+        FNames(new System::TStringList()),
+        FValues(new System::TStringList()),
         FFileList(NULL),
         FFile(NULL)
     {
@@ -248,7 +248,7 @@ public:
 /*
         if (E->what() && *E->what())
         {
-            FErrorMessages->Add(nb::MB2W(E->what()));
+            FErrorMessages->Add(System::MB2W(E->what()));
         }
         const ExtException *EE = dynamic_cast<const ExtException *>(E);
         if ((EE != NULL) && (EE->GetMoreMessages() != NULL))
@@ -284,7 +284,7 @@ public:
         Parameter(L"permissions", Rights.GetText());
     }
 
-    void __fastcall Modification(const nb::TDateTime DateTime)
+    void __fastcall Modification(const System::TDateTime DateTime)
     {
         Parameter(L"modification", XmlTimestamp(DateTime));
     }
@@ -370,9 +370,9 @@ private:
     TLogAction FAction;
     TState FState;
     bool FRecursive;
-    nb::TStrings *FErrorMessages;
-    nb::TStrings *FNames;
-    nb::TStrings *FValues;
+    System::TStrings *FErrorMessages;
+    System::TStrings *FNames;
+    System::TStrings *FValues;
     TRemoteFileList *FFileList;
   TRemoteFile * FFile;
 };
@@ -524,7 +524,7 @@ void __fastcall TChmodSessionAction::Rights(const TRights &Rights)
 }
 //---------------------------------------------------------------------------
 TTouchSessionAction::TTouchSessionAction(
-    TActionLog *Log, const std::wstring FileName, const nb::TDateTime &Modification) :
+    TActionLog *Log, const std::wstring FileName, const System::TDateTime &Modification) :
     TFileSessionAction(Log, laTouch, FileName)
 {
     if (FRecord != NULL)
@@ -614,7 +614,7 @@ void __fastcall TStatSessionAction::File(TRemoteFile * File)
 //---------------------------------------------------------------------------
 TSessionInfo::TSessionInfo()
 {
-    LoginTime = nb::Now();
+    LoginTime = System::Now();
 }
 //---------------------------------------------------------------------------
 TFileSystemInfo::TFileSystemInfo()
@@ -627,11 +627,11 @@ FILE * __fastcall OpenFile(std::wstring LogFileName, TSessionData * SessionData,
 {
   FILE * Result;
   std::wstring ANewFileName = StripPathQuotes(ExpandEnvironmentVariables(LogFileName));
-  nb::TDateTime N = nb::Now();
+  System::TDateTime N = System::Now();
 /*
         // FFile = _wfopen(NewFileName.c_str(),
         // FConfiguration->GetLogFileAppend() && !FLogging ? L"a" : L"w");
-        FFile = _fsopen(nb::W2MB(NewFileName.c_str()).c_str(),
+        FFile = _fsopen(System::W2MB(NewFileName.c_str()).c_str(),
                         FConfiguration->GetLogFileAppend() && !FLogging ? "a" : "w", SH_DENYWR);
         if (FFile)
         {
@@ -755,7 +755,7 @@ const wchar_t *LogLineMarks = L"<>!.*";
 
 TSessionLog::TSessionLog(TSessionUI *UI, TSessionData *SessionData,
                          TConfiguration *Configuration):
-    nb::TStringList()
+    System::TStringList()
 {
     FCriticalSection = new TCriticalSection;
     FConfiguration = Configuration;
@@ -819,7 +819,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring Line)
         FTopIndex = 0;
     }
 
-    nb::TStringList::AddObject(Line, static_cast<nb::TObject *>(reinterpret_cast<void *>(static_cast<size_t>(Type))));
+    System::TStringList::AddObject(Line, static_cast<System::TObject *>(reinterpret_cast<void *>(static_cast<size_t>(Type))));
 
     FLoggedLines++;
 
@@ -837,26 +837,26 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring Line)
             {
                 SYSTEMTIME t;
                 ::GetLocalTime(&t);
-                // std::wstring Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", nb::Now());
+                // std::wstring Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", System::Now());
                 std::wstring Timestamp = FORMAT(L" %04d-%02d-%02d %02d:%02d:%02d.%03d ",
                                                 t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond, t.wMilliseconds);
                 fputc(LogLineMarks[Type], static_cast<FILE *>(FFile));
                 // fwrite(Timestamp.c_str(), 1, Timestamp.size() * sizeof(wchar_t), (FILE *)FFile);
-                fprintf_s(static_cast<FILE *>(FFile), "%s", const_cast<char *>(nb::W2MB(Timestamp.c_str()).c_str()));
+                fprintf_s(static_cast<FILE *>(FFile), "%s", const_cast<char *>(System::W2MB(Timestamp.c_str()).c_str()));
             }
             // use fwrite instead of fprintf to make sure that even
             // non-ascii data (unicode) gets in.
-            fprintf_s(static_cast<FILE *>(FFile), "%s", const_cast<char *>(nb::W2MB(Line.c_str()).c_str()));
+            fprintf_s(static_cast<FILE *>(FFile), "%s", const_cast<char *>(System::W2MB(Line.c_str()).c_str()));
             fputc('\n', static_cast<FILE *>(FFile));
 */
-            // std::wstring Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", nb::Now());
+            // std::wstring Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", System::Now());
             SYSTEMTIME t;
             ::GetLocalTime(&t);
             std::wstring Timestamp = FORMAT(L" %04d-%02d-%02d %02d:%02d:%02d.%03d ",
                                             t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond, t.wMilliseconds);
             UTF8String UtfLine = UTF8String(UnicodeString(LogLineMarks[Type]) + Timestamp + Line + L"\n");
             fwrite(UtfLine.c_str(), UtfLine.Length(), 1, (FILE *)FFile);
-            // nb::Error(SNotImplemented, 1490);
+            // System::Error(SNotImplemented, 1490);
         }
     }
 }
@@ -1083,7 +1083,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData *Data)
             wcscpy(UserName, L"<Failed to retrieve username>");
         }
         ADF(L"Local account: %s", UserName);
-        ADF(L"Login time: %s", FormatDateTime(L"dddddd tt", nb::Now()).c_str());
+        ADF(L"Login time: %s", FormatDateTime(L"dddddd tt", System::Now()).c_str());
         AddSeparator();
         ADF(L"Session name: %s (%s)", Data->GetSessionName().c_str(), Data->GetSource().c_str());
         ADF(L"Host name: %s (Port: %d)", Data->GetHostNameExpanded().c_str(), Data->GetPortNumber());
@@ -1242,7 +1242,7 @@ void TSessionLog::Clear()
     TGuard Guard(FCriticalSection);
 
     FTopIndex += GetCount();
-    nb::TStringList::Clear();
+    System::TStringList::Clear();
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -1258,7 +1258,7 @@ TActionLog::TActionLog(TSessionUI* UI, TSessionData * SessionData,
   FCurrentFileName = L"";
   FLogging = false;
   FClosed = false;
-  FPendingActions = new nb::TList();
+  FPendingActions = new System::TList();
   FIndent = L"  ";
   FInGroup = false;
   FEnabled = true;
@@ -1292,7 +1292,7 @@ void __fastcall TActionLog::Add(const std::wstring & Line)
         // UTF8String UtfLine = UTF8String(Line);
         // fwrite(UtfLine.c_str(), UtfLine.Length(), 1, (FILE *)FFile);
         // fwrite("\n", 1, 1, (FILE *)FFile);
-        nb::Error(SNotImplemented, 1491);
+        System::Error(SNotImplemented, 1491);
       }
     }
     catch (const std::exception &E)
@@ -1316,7 +1316,7 @@ void __fastcall TActionLog::AddIndented(const std::wstring & Line)
   Add(FIndent + Line);
 }
 //---------------------------------------------------------------------------
-void __fastcall TActionLog::AddFailure(nb::TStrings * Messages)
+void __fastcall TActionLog::AddFailure(System::TStrings * Messages)
 {
   AddIndented(L"<failure>");
   AddMessages(L"  ", Messages);
@@ -1325,14 +1325,14 @@ void __fastcall TActionLog::AddFailure(nb::TStrings * Messages)
 //---------------------------------------------------------------------------
 void __fastcall TActionLog::AddFailure(const std::exception * E)
 {
-  nb::TStrings * Messages = ExceptionToMessages(E);
+  System::TStrings * Messages = ExceptionToMessages(E);
   if (Messages != NULL)
   {
     AddFailure(Messages);
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TActionLog::AddMessages(std::wstring Indent, nb::TStrings * Messages)
+void __fastcall TActionLog::AddMessages(std::wstring Indent, System::TStrings * Messages)
 {
   for (int Index = 0; Index < Messages->GetCount(); Index++)
   {

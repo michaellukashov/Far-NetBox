@@ -38,7 +38,7 @@ void __fastcall TFileOperationProgressType::Clear()
     ResumeStatus = rsNotAvailable;
     Count = 0;
     FFilesFinished = 0;
-    StartTime = nb::Now();
+    StartTime = System::Now();
     Suspended = false;
     FSuspendTime = 0;
     InProgress = false;
@@ -207,7 +207,7 @@ void __fastcall TFileOperationProgressType::SetFile(const std::wstring AFileName
     FileName = AFileName;
     FileInProgress = AFileInProgress;
     ClearTransfer();
-    FFileStartTime = nb::Now();
+    FFileStartTime = System::Now();
     DoProgress();
 }
 //---------------------------------------------------------------------------
@@ -407,9 +407,9 @@ void __fastcall TFileOperationProgressType::SetResumeStatus(TResumeStatus AResum
     DoProgress();
 }
 //---------------------------------------------------------------------------
-nb::TDateTime __fastcall TFileOperationProgressType::TimeElapsed()
+System::TDateTime __fastcall TFileOperationProgressType::TimeElapsed()
 {
-    return nb::Now() - StartTime;
+    return System::Now() - StartTime;
 }
 //---------------------------------------------------------------------------
 size_t __fastcall TFileOperationProgressType::CPS()
@@ -446,47 +446,47 @@ size_t __fastcall TFileOperationProgressType::CPS()
     return Result;
 }
 //---------------------------------------------------------------------------
-nb::TDateTime __fastcall TFileOperationProgressType::TimeExpected()
+System::TDateTime __fastcall TFileOperationProgressType::TimeExpected()
 {
     size_t CurCps = CPS();
     if (CurCps)
     {
-        return nb::TDateTime(static_cast<double>((static_cast<double>(TransferSize - TransferedSize)) / CurCps) / (24 * 60 * 60));
+        return System::TDateTime(static_cast<double>((static_cast<double>(TransferSize - TransferedSize)) / CurCps) / (24 * 60 * 60));
     }
     else
     {
-        return nb::TDateTime(0);
+        return System::TDateTime(0);
     }
 }
 //---------------------------------------------------------------------------
-nb::TDateTime __fastcall TFileOperationProgressType::TotalTimeExpected()
+System::TDateTime __fastcall TFileOperationProgressType::TotalTimeExpected()
 {
     assert(TotalSizeSet);
     size_t CurCps = CPS();
     // sanity check
     if ((CurCps > 0) && (TotalSize > TotalSkipped))
     {
-        return nb::TDateTime(static_cast<double>(static_cast<double>(TotalSize - TotalSkipped) / CurCps) /
+        return System::TDateTime(static_cast<double>(static_cast<double>(TotalSize - TotalSkipped) / CurCps) /
                              (24 * 60 * 60));
     }
     else
     {
-        return nb::TDateTime(0);
+        return System::TDateTime(0);
     }
 }
 //---------------------------------------------------------------------------
-nb::TDateTime __fastcall TFileOperationProgressType::TotalTimeLeft()
+System::TDateTime __fastcall TFileOperationProgressType::TotalTimeLeft()
 {
     assert(TotalSizeSet);
     size_t CurCps = CPS();
     // sanity check
     if ((CurCps > 0) && (TotalSize > TotalSkipped + TotalTransfered))
     {
-        return nb::TDateTime(static_cast<double>(static_cast<double>(TotalSize - TotalSkipped - TotalTransfered) / CurCps) /
+        return System::TDateTime(static_cast<double>(static_cast<double>(TotalSize - TotalSkipped - TotalTransfered) / CurCps) /
                              (24 * 60 * 60));
     }
     else
     {
-        return nb::TDateTime(0);
+        return System::TDateTime(0);
     }
 }

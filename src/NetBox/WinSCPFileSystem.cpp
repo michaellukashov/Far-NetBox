@@ -31,7 +31,7 @@ TSessionPanelItem::TSessionPanelItem(TSessionData *ASessionData):
 void TSessionPanelItem::SetPanelModes(TFarPanelModes *PanelModes)
 {
     assert(FarPlugin);
-    nb::TStrings *ColumnTitles = new nb::TStringList();
+    System::TStrings *ColumnTitles = new System::TStringList();
     {
         BOOST_SCOPE_EXIT ( (&ColumnTitles) )
         {
@@ -61,7 +61,7 @@ void TSessionPanelItem::SetKeyBarTitles(TFarKeyBarTitles *KeyBarTitles)
 void TSessionPanelItem::GetData(
     unsigned long & /*Flags*/, std::wstring &FileName, __int64 & /*Size*/,
     unsigned long & /*FileAttributes*/,
-    nb::TDateTime & /*LastWriteTime*/, nb::TDateTime & /*LastAccess*/,
+    System::TDateTime & /*LastWriteTime*/, System::TDateTime & /*LastAccess*/,
     unsigned long & /*NumberOfLinks*/, std::wstring & /*Description*/,
     std::wstring & /*Owner*/, void *& UserData, int & /*CustomColumnNumber*/)
 {
@@ -79,7 +79,7 @@ TSessionFolderPanelItem::TSessionFolderPanelItem(const std::wstring Folder):
 void TSessionFolderPanelItem::GetData(
     unsigned long & /*Flags*/, std::wstring &FileName, __int64 & /*Size*/,
     unsigned long &FileAttributes,
-    nb::TDateTime & /*LastWriteTime*/, nb::TDateTime & /*LastAccess*/,
+    System::TDateTime & /*LastWriteTime*/, System::TDateTime & /*LastAccess*/,
     unsigned long & /*NumberOfLinks*/, std::wstring & /*Description*/,
     std::wstring & /*Owner*/, void *& /*UserData*/, int & /*CustomColumnNumber*/)
 {
@@ -97,7 +97,7 @@ TRemoteFilePanelItem::TRemoteFilePanelItem(TRemoteFile *ARemoteFile):
 void TRemoteFilePanelItem::GetData(
     unsigned long & /*Flags*/, std::wstring &FileName, __int64 &Size,
     unsigned long &FileAttributes,
-    nb::TDateTime &LastWriteTime, nb::TDateTime &LastAccess,
+    System::TDateTime &LastWriteTime, System::TDateTime &LastAccess,
     unsigned long & /*NumberOfLinks*/, std::wstring & /*Description*/,
     std::wstring &Owner, void *& UserData, int &CustomColumnNumber)
 {
@@ -128,7 +128,7 @@ std::wstring TRemoteFilePanelItem::GetCustomColumnData(int Column)
 }
 //---------------------------------------------------------------------------
 void TRemoteFilePanelItem::TranslateColumnTypes(std::wstring &ColumnTypes,
-        nb::TStrings *ColumnTitles)
+        System::TStrings *ColumnTitles)
 {
     std::wstring AColumnTypes = ColumnTypes;
     ColumnTypes = L"";
@@ -172,7 +172,7 @@ void TRemoteFilePanelItem::TranslateColumnTypes(std::wstring &ColumnTypes,
 void TRemoteFilePanelItem::SetPanelModes(TFarPanelModes *PanelModes)
 {
     assert(FarPlugin);
-    nb::TStrings *ColumnTitles = new nb::TStringList();
+    System::TStrings *ColumnTitles = new System::TStringList();
     {
         BOOST_SCOPE_EXIT ( (&ColumnTitles) )
         {
@@ -239,7 +239,7 @@ void TFarInteractiveCustomCommand::Prompt(size_t /*Index*/,
     if (!FPlugin->InputBox(FPlugin->GetMsg(APPLY_COMMAND_PARAM_TITLE),
                            APrompt, Value, 0, APPLY_COMMAND_PARAM_HISTORY))
     {
-        nb::Abort();
+        System::Abort();
     }
 }
 //---------------------------------------------------------------------------
@@ -249,7 +249,7 @@ void TFarInteractiveCustomCommand::Prompt(size_t /*Index*/,
 class TKeepaliveThread : public TSimpleThread
 {
 public:
-    explicit TKeepaliveThread(TWinSCPFileSystem *FileSystem, nb::TDateTime Interval);
+    explicit TKeepaliveThread(TWinSCPFileSystem *FileSystem, System::TDateTime Interval);
     virtual ~TKeepaliveThread()
     {}
     virtual void __fastcall Init();
@@ -258,12 +258,12 @@ public:
 
 private:
     TWinSCPFileSystem *FFileSystem;
-    nb::TDateTime FInterval;
+    System::TDateTime FInterval;
     HANDLE FEvent;
 };
 //---------------------------------------------------------------------------
 TKeepaliveThread::TKeepaliveThread(TWinSCPFileSystem *FileSystem,
-                                   nb::TDateTime Interval) :
+                                   System::TDateTime Interval) :
     TSimpleThread(),
     FFileSystem(FileSystem),
     FInterval(Interval)
@@ -331,7 +331,7 @@ void TWinSCPFileSystem::Init(TSecureShell * /* SecureShell */)
     FAuthenticationLog = NULL;
     FLastEditorID = -1;
     FLoadingSessionList = false;
-    FPathHistory = new nb::TStringList;
+    FPathHistory = new System::TStringList;
 
     FLastMultipleEditReadOnly = false;
     FEditorPendingSave = false;
@@ -456,7 +456,7 @@ void TWinSCPFileSystem::GetOpenPluginInfoEx(long unsigned &Flags,
     }
 }
 //---------------------------------------------------------------------------
-bool TWinSCPFileSystem::GetFindDataEx(nb::TObjectList *PanelItems, int OpMode)
+bool TWinSCPFileSystem::GetFindDataEx(System::TObjectList *PanelItems, int OpMode)
 {
     bool Result;
     // DEBUG_PRINTF(L"begin: Connected = %d", Connected());
@@ -483,7 +483,7 @@ bool TWinSCPFileSystem::GetFindDataEx(nb::TObjectList *PanelItems, int OpMode)
             for (size_t Index = 0; Index < FTerminal->GetFiles()->GetCount(); Index++)
             {
                 File = FTerminal->GetFiles()->GetFile(Index);
-                PanelItems->Add(static_cast<nb::TObject *>(new TRemoteFilePanelItem(File)));
+                PanelItems->Add(static_cast<System::TObject *>(new TRemoteFilePanelItem(File)));
             }
         }
         Result = true;
@@ -499,7 +499,7 @@ bool TWinSCPFileSystem::GetFindDataEx(nb::TObjectList *PanelItems, int OpMode)
             Folder = UnixIncludeTrailingBackslash(FSessionsFolder);
         }
         TSessionData *Data;
-        nb::TStringList *ChildPaths = new nb::TStringList();
+        System::TStringList *ChildPaths = new System::TStringList();
         {
             BOOST_SCOPE_EXIT ( (&ChildPaths) )
             {
@@ -520,24 +520,24 @@ bool TWinSCPFileSystem::GetFindDataEx(nb::TObjectList *PanelItems, int OpMode)
                         Name.resize(Slash);
                         if (ChildPaths->IndexOf(Name.c_str()) == NPOS)
                         {
-                            PanelItems->Add(static_cast<nb::TObject *>(new TSessionFolderPanelItem(Name)));
+                            PanelItems->Add(static_cast<System::TObject *>(new TSessionFolderPanelItem(Name)));
                             ChildPaths->Add(Name);
                         }
                     }
                     else
                     {
-                        PanelItems->Add(static_cast<nb::TObject *>(new TSessionPanelItem(Data)));
+                        PanelItems->Add(static_cast<System::TObject *>(new TSessionPanelItem(Data)));
                     }
                 }
             }
         }
         if (!FNewSessionsFolder.empty())
         {
-            PanelItems->Add(static_cast<nb::TObject *>(new TSessionFolderPanelItem(FNewSessionsFolder)));
+            PanelItems->Add(static_cast<System::TObject *>(new TSessionFolderPanelItem(FNewSessionsFolder)));
         }
         if (PanelItems->GetCount() == 0)
         {
-            PanelItems->Add(static_cast<nb::TObject *>(new THintPanelItem(GetMsg(NEW_SESSION_HINT))));
+            PanelItems->Add(static_cast<System::TObject *>(new THintPanelItem(GetMsg(NEW_SESSION_HINT))));
         }
         TWinSCPFileSystem *OppositeFileSystem =
             dynamic_cast<TWinSCPFileSystem *>(GetOppositeFileSystem());
@@ -1086,7 +1086,7 @@ void TWinSCPFileSystem::CreateLink()
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::TemporarilyDownloadFiles(
-    nb::TStrings *FileList, TCopyParamType CopyParam, std::wstring &TempDir)
+    System::TStrings *FileList, TCopyParamType CopyParam, std::wstring &TempDir)
 {
     CopyParam.SetFileNameCase(ncNoChange);
     CopyParam.SetPreserveReadOnly(false);
@@ -1124,7 +1124,7 @@ void TWinSCPFileSystem::TemporarilyDownloadFiles(
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::ApplyCommand()
 {
-    nb::TStrings *FileList = CreateSelectedFileList(osRemote);
+    System::TStrings *FileList = CreateSelectedFileList(osRemote);
     if (FileList != NULL)
     {
         BOOST_SCOPE_EXIT ( (&FileList) )
@@ -1171,7 +1171,7 @@ void TWinSCPFileSystem::ApplyCommand()
                         if (FLAGSET(Params, ccCopyResults))
                         {
                             assert(FCapturedLog == NULL);
-                            FCapturedLog = new nb::TStringList();
+                            FCapturedLog = new System::TStringList();
                             OutputEvent.connect(boost::bind(&TWinSCPFileSystem::TerminalCaptureLog, this, _1, _2));
                         }
 
@@ -1210,8 +1210,8 @@ void TWinSCPFileSystem::ApplyCommand()
 
                 Command = InteractiveCustomCommand.Complete(Command, false);
 
-                nb::TStrings *LocalFileList = NULL;
-                nb::TStrings *RemoteFileList = NULL;
+                System::TStrings *LocalFileList = NULL;
+                System::TStrings *RemoteFileList = NULL;
                 {
                     BOOST_SCOPE_EXIT ( (&RemoteFileList) (&LocalFileList) )
                     {
@@ -1256,7 +1256,7 @@ void TWinSCPFileSystem::ApplyCommand()
                         {
                             RecursiveDeleteFile(ExcludeTrailingBackslash(TempDir), false);
                         } BOOST_SCOPE_EXIT_END
-                        RemoteFileList = new nb::TStringList();
+                        RemoteFileList = new System::TStringList();
 
                         TMakeLocalFileListParams MakeFileListParam;
                         MakeFileListParam.FileList = RemoteFileList;
@@ -1380,7 +1380,7 @@ void TWinSCPFileSystem::Synchronize(const std::wstring LocalDirectory,
         } BOOST_SCOPE_EXIT_END
         FPlugin->SaveScreen(FSynchronizationSaveScreenHandle);
         FPlugin->ShowConsoleTitle(GetMsg(SYNCHRONIZE_PROGRESS_COMPARE_TITLE));
-        FSynchronizationStart = nb::Now();
+        FSynchronizationStart = System::Now();
         FSynchronizationCompare = true;
         {
             BOOST_SCOPE_EXIT ( (&Self) )
@@ -1395,7 +1395,7 @@ void TWinSCPFileSystem::Synchronize(const std::wstring LocalDirectory,
 
         FPlugin->SaveScreen(FSynchronizationSaveScreenHandle);
         FPlugin->ShowConsoleTitle(GetMsg(SYNCHRONIZE_PROGRESS_TITLE));
-        FSynchronizationStart = nb::Now();
+        FSynchronizationStart = System::Now();
         FSynchronizationCompare = false;
         {
             BOOST_SCOPE_EXIT ( (&Self) )
@@ -1423,9 +1423,9 @@ void TWinSCPFileSystem::GetSynchronizeOptions(
     // DEBUG_PRINTF(L"begin");
     if (FLAGSET(Params, spSelectedOnly) && SynchronizeAllowSelectedOnly())
     {
-        Options.Filter = new nb::TStringList();
+        Options.Filter = new System::TStringList();
         Options.Filter->SetCaseSensitive(false);
-        Options.Filter->SetDuplicates(nb::dupAccept);
+        Options.Filter->SetDuplicates(System::dupAccept);
 
         if (GetPanelInfo()->GetSelectedCount() > 0)
         {
@@ -1487,7 +1487,7 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
             } BOOST_SCOPE_EXIT_END
             FPlugin->SaveScreen(FSynchronizationSaveScreenHandle);
             FPlugin->ShowConsoleTitle(GetMsg(SYNCHRONIZE_PROGRESS_COMPARE_TITLE));
-            FSynchronizationStart = nb::Now();
+            FSynchronizationStart = System::Now();
             FSynchronizationCompare = true;
             {
                 BOOST_SCOPE_EXIT ( (&Self) )
@@ -1511,11 +1511,11 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
             {
                 if (FLAGSET(Params, TTerminal::spPreviewChanges))
                 {
-                    FSynchronizationStart = nb::Now();
+                    FSynchronizationStart = System::Now();
                 }
                 FPlugin->SaveScreen(FSynchronizationSaveScreenHandle);
                 FPlugin->ShowConsoleTitle(GetMsg(SYNCHRONIZE_PROGRESS_TITLE));
-                FSynchronizationStart = nb::Now();
+                FSynchronizationStart = System::Now();
                 FSynchronizationCompare = false;
                 {
                     BOOST_SCOPE_EXIT ( (&Self) )
@@ -1569,7 +1569,7 @@ void TWinSCPFileSystem::TerminalSynchronizeDirectory(
                                               ProgressWidth - RemoteLabel.size(), true) + L"\n";
         Message += StartTimeLabel + FSynchronizationStart.TimeString() + L"\n";
         Message += TimeElapsedLabel +
-                   FormatDateTimeSpan(Configuration->GetTimeFormat(), nb::TDateTime(nb::Now() - FSynchronizationStart)) + L"\n";
+                   FormatDateTimeSpan(Configuration->GetTimeFormat(), System::TDateTime(System::Now() - FSynchronizationStart)) + L"\n";
 
         FPlugin->Message(0, (Collect ? ProgressTitleCompare : ProgressTitle), Message);
 
@@ -1709,7 +1709,7 @@ void TWinSCPFileSystem::DoSynchronizeTooManyDirectories(
         }
         else
         {
-            nb::Abort();
+            System::Abort();
         }
     }
 }
@@ -1725,7 +1725,7 @@ void TWinSCPFileSystem::CustomCommandGetParamValue(
     if (!FPlugin->InputBox(GetMsg(APPLY_COMMAND_PARAM_TITLE),
                            Name, Value, 0, APPLY_COMMAND_PARAM_HISTORY))
     {
-        nb::Abort();
+        System::Abort();
     }
 }
 //---------------------------------------------------------------------------
@@ -1739,7 +1739,7 @@ void TWinSCPFileSystem::TransferFiles(bool Move)
 
     if (Move || EnsureCommandSessionFallback(fcRemoteCopy))
     {
-        nb::TStrings *FileList = CreateSelectedFileList(osRemote);
+        System::TStrings *FileList = CreateSelectedFileList(osRemote);
         if (FileList)
         {
             assert(!FPanelItems);
@@ -1810,7 +1810,7 @@ void TWinSCPFileSystem::RenameFile()
 void TWinSCPFileSystem::FileProperties()
 {
     // DEBUG_PRINTF(L"begin");
-    nb::TStrings *FileList = CreateSelectedFileList(osRemote);
+    System::TStrings *FileList = CreateSelectedFileList(osRemote);
     if (FileList)
     {
         assert(!FPanelItems);
@@ -1949,8 +1949,8 @@ void TWinSCPFileSystem::InsertPathOnCommandLine()
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::CopyFullFileNamesToClipboard()
 {
-    nb::TStrings *FileList = CreateSelectedFileList(osRemote);
-    nb::TStrings *FileNames = new nb::TStringList();
+    System::TStrings *FileList = CreateSelectedFileList(osRemote);
+    System::TStrings *FileNames = new System::TStringList();
     {
         BOOST_SCOPE_EXIT ( (&FileList) (&FileNames) )
         {
@@ -2276,7 +2276,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring Dir, int OpMode)
                                 NewLocalPath = ExcludeTrailingBackslash(ExtractFileDir(ALocalPath));
                                 if (NewLocalPath == ALocalPath)
                                 {
-                                    nb::Abort();
+                                    System::Abort();
                                 }
                                 ALocalPath = NewLocalPath;
                                 FullPrevPath = UnixExtractFilePath(UnixExcludeTrailingBackslash(FullPrevPath));
@@ -2284,7 +2284,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring Dir, int OpMode)
                         }
                         else
                         {
-                            nb::Abort();
+                            System::Abort();
                         }
 
                         if (!SynchronizeBrowsing(ALocalPath))
@@ -2300,7 +2300,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring Dir, int OpMode)
                                 {
                                     if (!SynchronizeBrowsing(ALocalPath))
                                     {
-                                        nb::Abort();
+                                        System::Abort();
                                     }
                                 }
                             }
@@ -2391,7 +2391,7 @@ void TWinSCPFileSystem::DeleteSession(TSessionData *Data, void * /*Param*/)
     StoredSessions->Remove(Data);
 }
 //---------------------------------------------------------------------------
-void TWinSCPFileSystem::ProcessSessions(nb::TObjectList *PanelItems,
+void TWinSCPFileSystem::ProcessSessions(System::TObjectList *PanelItems,
                                         const processsession_slot_type &ProcessSession, void *Param)
 {
     processsession_signal_type sig;
@@ -2437,7 +2437,7 @@ void TWinSCPFileSystem::ProcessSessions(nb::TObjectList *PanelItems,
     }
 }
 //---------------------------------------------------------------------------
-bool TWinSCPFileSystem::DeleteFilesEx(nb::TObjectList *PanelItems, int OpMode)
+bool TWinSCPFileSystem::DeleteFilesEx(System::TObjectList *PanelItems, int OpMode)
 {
     if (Connected())
     {
@@ -2497,7 +2497,7 @@ struct TExportSessionParam
     std::wstring DestPath;
 };
 //---------------------------------------------------------------------------
-int TWinSCPFileSystem::GetFilesEx(nb::TObjectList *PanelItems, bool Move,
+int TWinSCPFileSystem::GetFilesEx(System::TObjectList *PanelItems, bool Move,
                                   std::wstring &DestPath, int OpMode)
 {
     int Result;
@@ -2723,7 +2723,7 @@ int TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
     return Result;
 }
 //---------------------------------------------------------------------------
-int TWinSCPFileSystem::PutFilesEx(nb::TObjectList *PanelItems, bool Move, int OpMode)
+int TWinSCPFileSystem::PutFilesEx(System::TObjectList *PanelItems, bool Move, int OpMode)
 {
     int Result;
     if (Connected())
@@ -2790,7 +2790,7 @@ int TWinSCPFileSystem::PutFilesEx(nb::TObjectList *PanelItems, bool Move, int Op
     return Result;
 }
 //---------------------------------------------------------------------------
-bool TWinSCPFileSystem::ImportSessions(nb::TObjectList *PanelItems, bool /*Move*/,
+bool TWinSCPFileSystem::ImportSessions(System::TObjectList *PanelItems, bool /*Move*/,
                                        int OpMode)
 {
     bool Result = (OpMode & OPM_SILENT) ||
@@ -2837,7 +2837,7 @@ bool TWinSCPFileSystem::ImportSessions(nb::TObjectList *PanelItems, bool /*Move*
     return Result;
 }
 //---------------------------------------------------------------------------
-nb::TStrings *TWinSCPFileSystem::CreateFocusedFileList(
+System::TStrings *TWinSCPFileSystem::CreateFocusedFileList(
     TOperationSide Side, TFarPanelInfo *PanelInfo)
 {
     if (PanelInfo == NULL)
@@ -2845,7 +2845,7 @@ nb::TStrings *TWinSCPFileSystem::CreateFocusedFileList(
         PanelInfo = this->GetPanelInfo();
     }
 
-    nb::TStrings *Result;
+    System::TStrings *Result;
     TFarPanelItem *PanelItem = GetPanelInfo()->GetFocusedItem();
     if (PanelItem->GetIsParentDirectory())
     {
@@ -2853,19 +2853,19 @@ nb::TStrings *TWinSCPFileSystem::CreateFocusedFileList(
     }
     else
     {
-        Result = new nb::TStringList();
+        Result = new System::TStringList();
         assert((Side == osLocal) || PanelItem->GetUserData());
         std::wstring FileName = PanelItem->GetFileName();
         if (Side == osLocal)
         {
             FileName = IncludeTrailingBackslash(GetPanelInfo()->GetCurrentDirectory()) + FileName;
         }
-        Result->AddObject(FileName, static_cast<nb::TObject *>(PanelItem->GetUserData()));
+        Result->AddObject(FileName, static_cast<System::TObject *>(PanelItem->GetUserData()));
     }
     return Result;
 }
 //---------------------------------------------------------------------------
-nb::TStrings *TWinSCPFileSystem::CreateSelectedFileList(
+System::TStrings *TWinSCPFileSystem::CreateSelectedFileList(
     TOperationSide Side, TFarPanelInfo *PanelInfo)
 {
     if (PanelInfo == NULL)
@@ -2873,7 +2873,7 @@ nb::TStrings *TWinSCPFileSystem::CreateSelectedFileList(
         PanelInfo = this->GetPanelInfo();
     }
 
-    nb::TStrings *Result;
+    System::TStrings *Result;
     if (GetPanelInfo()->GetSelectedCount() > 0)
     {
         Result = CreateFileList(GetPanelInfo()->GetItems(), Side, true,
@@ -2886,16 +2886,16 @@ nb::TStrings *TWinSCPFileSystem::CreateSelectedFileList(
     return Result;
 }
 //---------------------------------------------------------------------------
-nb::TStrings *TWinSCPFileSystem::CreateFileList(nb::TObjectList *PanelItems,
+System::TStrings *TWinSCPFileSystem::CreateFileList(System::TObjectList *PanelItems,
         TOperationSide Side, bool SelectedOnly, std::wstring Directory, bool FileNameOnly,
-        nb::TStrings *AFileList)
+        System::TStrings *AFileList)
 {
-    nb::TStrings *FileList = (AFileList == NULL ? new nb::TStringList() : AFileList);
+    System::TStrings *FileList = (AFileList == NULL ? new System::TStringList() : AFileList);
     try
     {
         std::wstring FileName;
         TFarPanelItem *PanelItem;
-        nb::TObject *Data = NULL;
+        System::TObject *Data = NULL;
         for (size_t Index = 0; Index < PanelItems->GetCount(); Index++)
         {
             PanelItem = static_cast<TFarPanelItem *>(PanelItems->GetItem(Index));
@@ -2936,7 +2936,7 @@ nb::TStrings *TWinSCPFileSystem::CreateFileList(nb::TObjectList *PanelItems,
 
         if (FileList->GetCount() == 0)
         {
-            nb::Abort();
+            System::Abort();
         }
     }
     catch (...)
@@ -3067,7 +3067,7 @@ void TWinSCPFileSystem::ConnectTerminal(TTerminal *Terminal)
     Terminal->Open();
 }
 //---------------------------------------------------------------------------
-void TWinSCPFileSystem::TerminalClose(nb::TObject * /*Sender*/)
+void TWinSCPFileSystem::TerminalClose(System::TObject * /*Sender*/)
 {
     // Plugin closure is now invoked from HandleException
 }
@@ -3077,7 +3077,7 @@ void TWinSCPFileSystem::LogAuthentication(
 {
     assert(FAuthenticationLog != NULL);
     FAuthenticationLog->Add(Msg);
-    nb::TStringList *AuthenticationLogLines = new nb::TStringList();
+    System::TStringList *AuthenticationLogLines = new System::TStringList();
     {
         BOOST_SCOPE_EXIT ( (&AuthenticationLogLines) )
         {
@@ -3120,7 +3120,7 @@ void TWinSCPFileSystem::TerminalInformation(
         {
             if (FAuthenticationLog == NULL)
             {
-                FAuthenticationLog = new nb::TStringList();
+                FAuthenticationLog = new System::TStringList();
                 FPlugin->SaveScreen(FAuthenticationSaveScreenHandle);
                 FPlugin->ShowConsoleTitle(GetTerminal()->GetSessionData()->GetSessionName());
             }
@@ -3140,7 +3140,7 @@ void TWinSCPFileSystem::TerminalInformation(
     }
 }
 //---------------------------------------------------------------------------
-void TWinSCPFileSystem::TerminalChangeDirectory(nb::TObject * /*Sender*/)
+void TWinSCPFileSystem::TerminalChangeDirectory(System::TObject * /*Sender*/)
 {
     if (!FNoProgress)
     {
@@ -3160,7 +3160,7 @@ void TWinSCPFileSystem::TerminalChangeDirectory(nb::TObject * /*Sender*/)
     }
 }
 //---------------------------------------------------------------------------
-void TWinSCPFileSystem::TerminalStartReadDirectory(nb::TObject * /*Sender*/)
+void TWinSCPFileSystem::TerminalStartReadDirectory(System::TObject * /*Sender*/)
 {
     if (!FNoProgress)
     {
@@ -3169,7 +3169,7 @@ void TWinSCPFileSystem::TerminalStartReadDirectory(nb::TObject * /*Sender*/)
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalReadDirectoryProgress(
-    nb::TObject * /*Sender*/, int Progress, bool &Cancel)
+    System::TObject * /*Sender*/, int Progress, bool &Cancel)
 {
     if (Progress < 0)
     {
@@ -3194,7 +3194,7 @@ void TWinSCPFileSystem::TerminalReadDirectoryProgress(
     }
 }
 //---------------------------------------------------------------------------
-void TWinSCPFileSystem::TerminalReadDirectory(nb::TObject * /*Sender*/,
+void TWinSCPFileSystem::TerminalReadDirectory(System::TObject * /*Sender*/,
         bool /*ReloadOnly*/)
 {
     if (!FNoProgress)
@@ -3214,7 +3214,7 @@ void TWinSCPFileSystem::TerminalDeleteLocalFile(const std::wstring FileName,
 }
 //---------------------------------------------------------------------------
 int TWinSCPFileSystem::MoreMessageDialog(const std::wstring Str,
-        nb::TStrings *MoreMessages, TQueryType Type, int Answers, const TMessageParams *Params)
+        System::TStrings *MoreMessages, TQueryType Type, int Answers, const TMessageParams *Params)
 {
     TMessageParams AParams;
 
@@ -3233,8 +3233,8 @@ int TWinSCPFileSystem::MoreMessageDialog(const std::wstring Str,
             Answers, Params);
 }
 //---------------------------------------------------------------------------
-void TWinSCPFileSystem::TerminalQueryUser(nb::TObject * /*Sender*/,
-        const std::wstring Query, nb::TStrings *MoreMessages, int Answers,
+void TWinSCPFileSystem::TerminalQueryUser(System::TObject * /*Sender*/,
+        const std::wstring Query, System::TStrings *MoreMessages, int Answers,
         const TQueryParams *Params, int &Answer, TQueryType Type, void * /*Arg*/)
 {
     TMessageParams AParams;
@@ -3263,7 +3263,7 @@ void TWinSCPFileSystem::TerminalQueryUser(nb::TObject * /*Sender*/,
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalPromptUser(TTerminal *Terminal,
         TPromptKind Kind, std::wstring Name, std::wstring Instructions,
-        nb::TStrings *Prompts, nb::TStrings *Results, bool &Result,
+        System::TStrings *Prompts, System::TStrings *Results, bool &Result,
         void * /*Arg*/)
 {
     if (Kind == pkPrompt)
@@ -3343,7 +3343,7 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
 
         if (!FPanelItems)
         {
-            nb::TObjectList *PanelItems = GetPanelInfo()->GetItems();
+            System::TObjectList *PanelItems = GetPanelInfo()->GetItems();
             for (size_t Index = 0; Index < PanelItems->GetCount(); Index++)
             {
                 if ((static_cast<TFarPanelItem *>(PanelItems->GetItem(Index)))->GetFileName() == FileName)
@@ -3708,7 +3708,7 @@ void TWinSCPFileSystem::UploadFromEditor(bool NoReload, const std::wstring FileN
         const std::wstring DestPath)
 {
     assert(FFileList == NULL);
-    FFileList = new nb::TStringList();
+    FFileList = new System::TStringList();
     assert(FTerminal->GetAutoReadDirectory());
     bool PrevAutoReadDirectory = FTerminal->GetAutoReadDirectory();
     if (NoReload)
@@ -3962,7 +3962,7 @@ void TWinSCPFileSystem::MultipleEdit()
             GetPanelInfo()->GetFocusedItem()->GetIsFile() &&
             (GetPanelInfo()->GetFocusedItem()->GetUserData() != NULL))
     {
-        nb::TStrings *FileList = CreateFocusedFileList(osRemote);
+        System::TStrings *FileList = CreateFocusedFileList(osRemote);
         assert((FileList == NULL) || (FileList->GetCount() == 1));
 
         if (FileList != NULL)
@@ -4040,7 +4040,7 @@ void TWinSCPFileSystem::MultipleEdit(const std::wstring Directory,
 
         case qaCancel:
         default:
-            nb::Abort();
+            System::Abort();
             break;
         }
     }
@@ -4051,7 +4051,7 @@ void TWinSCPFileSystem::MultipleEdit(const std::wstring Directory,
         TGUICopyParamType &CopyParam = GUIConfiguration->GetDefaultCopyParam();
         EditViewCopyParam(CopyParam);
 
-        nb::TStrings *FileList = new nb::TStringList;
+        System::TStrings *FileList = new System::TStringList;
         assert(!FNoProgressFinish);
         FNoProgressFinish = true;
         {

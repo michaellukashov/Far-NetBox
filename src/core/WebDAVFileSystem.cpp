@@ -89,8 +89,8 @@ TWebDAVFileSystem::TWebDAVFileSystem(TTerminal *ATerminal) :
     FFileTransferCPSLimit(0),
     FAwaitingProgress(false),
     FLastReadDirectoryProgress(0),
-    FLastResponse(new nb::TStringList()),
-    FLastError(new nb::TStringList()),
+    FLastResponse(new System::TStringList()),
+    FLastError(new System::TStringList()),
     FTransferStatusCriticalSection(new TCriticalSection()),
     m_ProgressPercent(0),
     FListAll(asAuto),
@@ -131,13 +131,13 @@ void __fastcall TWebDAVFileSystem::Open()
 
     TSessionData *Data = FTerminal->GetSessionData();
 
-    FSessionInfo.LoginTime = nb::Now();
+    FSessionInfo.LoginTime = System::Now();
     FSessionInfo.ProtocolBaseName =
         FTerminal->GetSessionData()->GetFSProtocol() == fsHTTP ?
         CONST_HTTP_PROTOCOL_BASE_NAME : CONST_HTTPS_PROTOCOL_BASE_NAME;
     FSessionInfo.ProtocolName = FSessionInfo.ProtocolBaseName;
 
-    FLastDataSent = nb::Now();
+    FLastDataSent = System::Now();
 
     // initialize FCURLIntf on the first connect only
     if (FCURLIntf == NULL)
@@ -505,7 +505,7 @@ void __fastcall TWebDAVFileSystem::ReadCurrentDirectory()
 //---------------------------------------------------------------------------
 void __fastcall TWebDAVFileSystem::HomeDirectory()
 {
-    nb::Error(SNotImplemented, 1009);
+    System::Error(SNotImplemented, 1009);
     // ExecCommand(fsHomeDirectory);
 }
 //---------------------------------------------------------------------------
@@ -583,7 +583,7 @@ void __fastcall TWebDAVFileSystem::DoReadDirectory(TRemoteFileList *FileList)
     std::wstring errorInfo;
     WebDAVGetList(Directory, errorInfo);
 
-    FLastDataSent = nb::Now();
+    FLastDataSent = System::Now();
 }
 //---------------------------------------------------------------------------
 void __fastcall TWebDAVFileSystem::ReadDirectory(TRemoteFileList *FileList)
@@ -746,7 +746,7 @@ void __fastcall TWebDAVFileSystem::RenameFile(const std::wstring FileName,
 void __fastcall TWebDAVFileSystem::CopyFile(const std::wstring FileName,
                                  const std::wstring NewName)
 {
-    nb::Error(SNotImplemented, 1012);
+    System::Error(SNotImplemented, 1012);
 }
 //---------------------------------------------------------------------------
 void __fastcall TWebDAVFileSystem::CreateDirectory(const std::wstring DirName)
@@ -780,25 +780,25 @@ void __fastcall TWebDAVFileSystem::CreateDirectory(const std::wstring DirName)
 void __fastcall TWebDAVFileSystem::CreateLink(const std::wstring FileName,
                                    const std::wstring PointTo, bool Symbolic)
 {
-    nb::Error(SNotImplemented, 1014);
+    System::Error(SNotImplemented, 1014);
 }
 //---------------------------------------------------------------------------
 void __fastcall TWebDAVFileSystem::ChangeFileProperties(const std::wstring FileName,
         const TRemoteFile *File, const TRemoteProperties *Properties,
         TChmodSessionAction &Action)
 {
-    nb::Error(SNotImplemented, 1006);
+    System::Error(SNotImplemented, 1006);
     assert(Properties);
 }
 //---------------------------------------------------------------------------
-bool TWebDAVFileSystem::LoadFilesProperties(nb::TStrings * /*FileList*/ )
+bool TWebDAVFileSystem::LoadFilesProperties(System::TStrings * /*FileList*/ )
 {
     assert(false);
     return false;
 }
 //---------------------------------------------------------------------------
 void __fastcall TWebDAVFileSystem::CalculateFilesChecksum(const std::wstring /*Alg*/,
-        nb::TStrings * /*FileList*/, nb::TStrings * /*Checksums*/,
+        System::TStrings * /*FileList*/, System::TStrings * /*Checksums*/,
         calculatedchecksum_slot_type * /*OnCalculatedChecksum*/)
 {
     assert(false);
@@ -949,7 +949,7 @@ void __fastcall TWebDAVFileSystem::CaptureOutput(const std::wstring AddedLine, b
 void __fastcall TWebDAVFileSystem::AnyCommand(const std::wstring Command,
                                    const captureoutput_slot_type *OutputEvent)
 {
-    nb::Error(SNotImplemented, 1008);
+    System::Error(SNotImplemented, 1008);
 }
 
 //---------------------------------------------------------------------------
@@ -959,7 +959,7 @@ std::wstring TWebDAVFileSystem::FileUrl(const std::wstring FileName)
                               L"http" : L"https", FileName);
 }
 //---------------------------------------------------------------------------
-nb::TStrings *TWebDAVFileSystem::GetFixedPaths()
+System::TStrings *TWebDAVFileSystem::GetFixedPaths()
 {
     return NULL;
 }
@@ -970,7 +970,7 @@ void __fastcall TWebDAVFileSystem::SpaceAvailable(const std::wstring Path,
     assert(false);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWebDAVFileSystem::CopyToRemote(nb::TStrings *FilesToCopy,
+void __fastcall TWebDAVFileSystem::CopyToRemote(System::TStrings *FilesToCopy,
                                      const std::wstring ATargetDir, const TCopyParamType *CopyParam,
                                      int Params, TFileOperationProgressType *OperationProgress,
                                      TOnceDoneOperation &OnceDoneOperation)
@@ -1007,7 +1007,7 @@ void __fastcall TWebDAVFileSystem::CopyToRemote(nb::TStrings *FilesToCopy,
                 WebDAVSourceRobust(FileName, FullTargetDir, CopyParam, Params, OperationProgress,
                              tfFirstLevel);
                 Success = true;
-                FLastDataSent = nb::Now();
+                FLastDataSent = System::Now();
             }
             catch (const EScpSkipFile &E)
             {
@@ -1302,7 +1302,7 @@ void __fastcall TWebDAVFileSystem::WebDAVDirectorySource(const std::wstring Dire
 }
 
 //---------------------------------------------------------------------------
-void __fastcall TWebDAVFileSystem::CopyToLocal(nb::TStrings *FilesToCopy,
+void __fastcall TWebDAVFileSystem::CopyToLocal(System::TStrings *FilesToCopy,
                                     const std::wstring TargetDir, const TCopyParamType *CopyParam,
                                     int Params, TFileOperationProgressType *OperationProgress,
                                     TOnceDoneOperation &OnceDoneOperation)
@@ -1328,7 +1328,7 @@ void __fastcall TWebDAVFileSystem::CopyToLocal(nb::TStrings *FilesToCopy,
                 SinkRobust(AbsolutePath(FileName, false), File, FullTargetDir, CopyParam, Params,
                            OperationProgress, tfFirstLevel);
                 Success = true;
-                FLastDataSent = nb::Now();
+                FLastDataSent = System::Now();
             }
             catch (const EScpSkipFile &E)
             {
@@ -1566,7 +1566,7 @@ void TWebDAVFileSystem::SinkFile(const std::wstring FileName,
 
         if (OperationProgress->Cancel)
         {
-            nb::Abort();
+            System::Abort();
         }
     }
 }
@@ -1800,7 +1800,7 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t *Path,
                 if (Entry->HasDate)
                 {
                     // should be the same as ConvertRemoteTimestamp
-                    nb::TDateTime Modification =
+                    System::TDateTime Modification =
                         EncodeDateVerbose(static_cast<unsigned short>(Entry->Year), static_cast<unsigned short>(Entry->Month),
                                           static_cast<unsigned short>(Entry->Day));
                     if (Entry->HasTime)
@@ -1820,7 +1820,7 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t *Path,
                 else
                 {
                     // We estimate date to be today, if we have at least time
-                    File->SetModification(nb::TDateTime(0.0));
+                    File->SetModification(System::TDateTime(0.0));
                     File->SetModificationFmt(mfNone);
                 }
                 File->SetLastAccess(File->GetModification());
@@ -1979,7 +1979,7 @@ void __fastcall TWebDAVFileSystem::FileTransfer(const std::wstring FileName,
         THROW_SKIP_FILE(errorInfo, NULL);
 
     case ftaCancel:
-        nb::Abort();
+        System::Abort();
         break;
     }
 
@@ -1996,7 +1996,7 @@ void __fastcall TWebDAVFileSystem::FileTransfer(const std::wstring FileName,
 bool TWebDAVFileSystem::SendPropFindRequest(const wchar_t *dir, long &responseCode, std::wstring &response, std::wstring &errInfo)
 {
     const std::string webDavPath = EscapeUTF8URL(dir);
-    // DEBUG_PRINTF(L"TWebDAVFileSystem::SendPropFindRequest: webDavPath = %s", nb::MB2W(webDavPath.c_str()).c_str());
+    // DEBUG_PRINTF(L"TWebDAVFileSystem::SendPropFindRequest: webDavPath = %s", System::MB2W(webDavPath.c_str()).c_str());
 
     response.clear();
     errInfo.clear();
@@ -2038,7 +2038,7 @@ bool TWebDAVFileSystem::SendPropFindRequest(const wchar_t *dir, long &responseCo
     // DEBUG_PRINTF(L"urlCode = %d", urlCode);
     if (urlCode != CURLE_OK)
     {
-        errInfo = nb::MB2W(curl_easy_strerror(urlCode));
+        errInfo = System::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
 
@@ -2047,7 +2047,7 @@ bool TWebDAVFileSystem::SendPropFindRequest(const wchar_t *dir, long &responseCo
         // DEBUG_PRINTF(L"errInfo = %s", errInfo.c_str());
         return false;
     }
-    response = nb::MB2W(resp.c_str());
+    response = System::MB2W(resp.c_str());
     if (response.empty())
     {
         errInfo = L"Server return empty response";
@@ -2257,7 +2257,7 @@ FILETIME TWebDAVFileSystem::ParseDateTime(const char *dt) const
     SYSTEMTIME st;
     ZeroMemory(&st, sizeof(st));
 
-    if (WinHttpTimeToSystemTime(nb::MB2W(dt).c_str(), &st))
+    if (WinHttpTimeToSystemTime(System::MB2W(dt).c_str(), &st))
     {
         SystemTimeToFileTime(&st, &ft);
     }
@@ -2306,7 +2306,7 @@ std::string TWebDAVFileSystem::EscapeUTF8URL(const wchar_t *src) const
 {
     assert(src && src[0] == L'/');
 
-    std::string plainText = nb::W2MB(src, CP_UTF8);
+    std::string plainText = System::W2MB(src, CP_UTF8);
     const size_t cntLength = plainText.length();
 
     std::string result;
@@ -2378,7 +2378,7 @@ bool TWebDAVFileSystem::WebDAVMakeDirectory(const wchar_t *path, std::wstring &e
     CHECK_CURL_CALL(urlCode, FCURLIntf->Perform());
     if (urlCode != CURLE_OK)
     {
-        errorInfo = nb::MB2W(curl_easy_strerror(urlCode));
+        errorInfo = System::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
 
@@ -2402,10 +2402,10 @@ bool TWebDAVFileSystem::WebDAVGetList(const std::wstring Directory, std::wstring
     // Erase slashes (to compare in xml parse)
     std::wstring currentPath = ::UnixExcludeLeadingBackslash(::ExcludeTrailingBackslash(Directory));
 
-    const std::string decodedResp = DecodeHex(nb::W2MB(response.c_str()));
+    const std::string decodedResp = DecodeHex(System::W2MB(response.c_str()));
 
 #ifdef _DEBUG
-    // CNBFile::SaveFile(L"c:\\webdav_response_raw.xml", nb::W2MB(response.c_str()).c_str());
+    // CNBFile::SaveFile(L"c:\\webdav_response_raw.xml", System::W2MB(response.c_str()).c_str());
     // CNBFile::SaveFile(L"c:\\webdav_response_decoded.xml", decodedResp.c_str());
 #endif
 
@@ -2432,7 +2432,7 @@ bool TWebDAVFileSystem::WebDAVGetList(const std::wstring Directory, std::wstring
         errorInfo = L"Error parsing response xml:\n[";
         errorInfo += ::NumberToWString(xmlDoc.ErrorId());
         errorInfo += L"]: ";
-        errorInfo += nb::MB2W(xmlDoc.ErrorDesc());
+        errorInfo += System::MB2W(xmlDoc.ErrorDesc());
         return false;
     }
 
@@ -2456,7 +2456,7 @@ bool TWebDAVFileSystem::WebDAVGetList(const std::wstring Directory, std::wstring
             continue;
         }
 
-        const std::wstring href = nb::MB2W(xmlHref->GetText(), CP_UTF8);
+        const std::wstring href = System::MB2W(xmlHref->GetText(), CP_UTF8);
         std::wstring path;
         ParseURL(href.c_str(), NULL, NULL, NULL, &path, NULL, NULL, NULL);
         if (path.empty())
@@ -2566,7 +2566,7 @@ bool TWebDAVFileSystem::WebDAVGetList(const std::wstring Directory, std::wstring
             FILETIME ft = item.Created;
             SYSTEMTIME st;
             ::FileTimeToSystemTime(&ft, &st);
-            nb::TDateTime dt = ::SystemTimeToDateTime(st);
+            System::TDateTime dt = ::SystemTimeToDateTime(st);
             unsigned int Y, M, D;
             unsigned int HH, MM, SS, MS;
             dt.DecodeDate(Y, M, D);
@@ -2601,7 +2601,7 @@ bool TWebDAVFileSystem::WebDAVGetFile(const wchar_t *remotePath, const wchar_t *
     }
 
     const std::string webDavPath = EscapeUTF8URL(remotePath);
-    // DEBUG_PRINTF(L"TWebDAVFileSystem::WebDAVGetFile: webDavPath = %s", nb::MB2W(webDavPath.c_str()).c_str());
+    // DEBUG_PRINTF(L"TWebDAVFileSystem::WebDAVGetFile: webDavPath = %s", System::MB2W(webDavPath.c_str()).c_str());
 
     CURLcode urlCode = CURLPrepare(webDavPath.c_str(), false);
     CSlistURL slist;
@@ -2618,7 +2618,7 @@ bool TWebDAVFileSystem::WebDAVGetFile(const wchar_t *remotePath, const wchar_t *
 
     if (urlCode != CURLE_OK)
     {
-        errorInfo = nb::MB2W(curl_easy_strerror(urlCode));
+        errorInfo = System::MB2W(curl_easy_strerror(urlCode));
         // DEBUG_PRINTF(L"TWebDAVFileSystem::WebDAVGetFile: errorInfo = %s", errorInfo.c_str());
         return false;
     }
@@ -2655,7 +2655,7 @@ bool TWebDAVFileSystem::WebDAVPutFile(const wchar_t *remotePath, const wchar_t *
 
     if (urlCode != CURLE_OK)
     {
-        errorInfo = nb::MB2W(curl_easy_strerror(urlCode));
+        errorInfo = System::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
 
@@ -2685,7 +2685,7 @@ bool TWebDAVFileSystem::WebDAVRename(const wchar_t *srcPath, const wchar_t *dstP
 
     if (urlCode != CURLE_OK)
     {
-        errorInfo = nb::MB2W(curl_easy_strerror(urlCode));
+        errorInfo = System::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
 
@@ -2708,7 +2708,7 @@ bool TWebDAVFileSystem::WebDAVDelete(const wchar_t *path, const ItemType /*type*
     CHECK_CURL_CALL(urlCode, FCURLIntf->Perform());
     if (urlCode != CURLE_OK)
     {
-        errorInfo = nb::MB2W(curl_easy_strerror(urlCode));
+        errorInfo = System::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
 

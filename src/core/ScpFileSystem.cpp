@@ -73,7 +73,7 @@ public:
     void CopyFrom(TCommandSet *Source);
     std::wstring Command(TFSCommand Cmd, ...);
     std::wstring Command(TFSCommand Cmd, va_list args);
-    nb::TStrings *CreateCommandList();
+    System::TStrings *CreateCommandList();
     std::wstring FullCommand(TFSCommand Cmd, ...);
     std::wstring FullCommand(TFSCommand Cmd, va_list args);
     static std::wstring ExtractCommand(const std::wstring Command);
@@ -304,9 +304,9 @@ std::wstring TCommandSet::ExtractCommand(const std::wstring Command)
     return command;
 }
 //---------------------------------------------------------------------------
-nb::TStrings *TCommandSet::CreateCommandList()
+System::TStrings *TCommandSet::CreateCommandList()
 {
-    nb::TStrings *CommandList = new nb::TStringList();
+    System::TStrings *CommandList = new System::TStringList();
     for (int Index = 0; Index < ShellCommandCount; Index++)
     {
         std::wstring Cmd = GetCommand(static_cast<TFSCommand>(Index));
@@ -333,7 +333,7 @@ void __fastcall TSCPFileSystem::Init(TSecureShell *SecureShell)
     FSecureShell = SecureShell;
     FCommandSet = new TCommandSet(FTerminal->GetSessionData());
     FLsFullTime = FTerminal->GetSessionData()->GetSCPLsFullTime();
-    FOutput = new nb::TStringList();
+    FOutput = new System::TStringList();
     FUtfStrings = false;
     FUtfNever = false;
     FProcessingCommand = false;
@@ -431,7 +431,7 @@ void __fastcall TSCPFileSystem::Idle()
 {
     // Keep session alive
     if ((FTerminal->GetSessionData()->GetPingType ()!= ptOff) &&
-            (nb::Now() - FSecureShell->GetLastDataSent()> FTerminal->GetSessionData()->GetPingIntervalDT()))
+            (System::Now() - FSecureShell->GetLastDataSent()> FTerminal->GetSessionData()->GetPingIntervalDT()))
     {
         if ((FTerminal->GetSessionData()->GetPingType() == ptDummyCommand) &&
                 FSecureShell->GetReady())
@@ -829,7 +829,7 @@ void __fastcall TSCPFileSystem::DetectReturnVar()
                 if ((GetOutput()->GetCount() != 1) || str.empty() || (val > 255))
                 {
                     FTerminal->LogEvent(L"The response is not numerical exit code");
-                    nb::Abort();
+                    System::Abort();
                 }
             }
             catch (const EFatal &E)
@@ -852,7 +852,7 @@ void __fastcall TSCPFileSystem::DetectReturnVar()
 
         if (NewReturnVar.empty())
         {
-            nb::Abort();
+            System::Abort();
         }
         else
         {
@@ -884,7 +884,7 @@ void __fastcall TSCPFileSystem::ClearAliases()
     {
         FTerminal->LogEvent(L"Clearing all aliases.");
         ClearAlias(TCommandSet::ExtractCommand(FTerminal->GetSessionData()->GetListingCommand()));
-        nb::TStrings *CommandList = FCommandSet->CreateCommandList();
+        System::TStrings *CommandList = FCommandSet->CreateCommandList();
         {
             BOOST_SCOPE_EXIT ( (&CommandList) )
             {
@@ -1005,7 +1005,7 @@ void __fastcall TSCPFileSystem::ReadDirectory(TRemoteFileList *FileList)
             {
                 // Copy LS command output, because eventual symlink analysis would
                 // modify FTerminal->Output
-                nb::TStringList *OutputCopy = new nb::TStringList();
+                System::TStringList *OutputCopy = new System::TStringList();
                 {
                     BOOST_SCOPE_EXIT ( (&OutputCopy) )
                     {
@@ -1259,14 +1259,14 @@ void __fastcall TSCPFileSystem::ChangeFileProperties(const std::wstring FileName
     assert(!Properties->Valid.Contains(vpModification));
 }
 //---------------------------------------------------------------------------
-bool TSCPFileSystem::LoadFilesProperties(nb::TStrings * /*FileList*/ )
+bool TSCPFileSystem::LoadFilesProperties(System::TStrings * /*FileList*/ )
 {
     assert(false);
     return false;
 }
 //---------------------------------------------------------------------------
 void __fastcall TSCPFileSystem::CalculateFilesChecksum(const std::wstring /*Alg*/,
-        nb::TStrings * /*FileList*/, nb::TStrings * /*Checksums*/,
+        System::TStrings * /*FileList*/, System::TStrings * /*Checksums*/,
         calculatedchecksum_slot_type * /*OnCalculatedChecksum*/)
 {
     assert(false);
@@ -1339,7 +1339,7 @@ std::wstring TSCPFileSystem::FileUrl(const std::wstring FileName)
     return FTerminal->FileUrl(L"scp", FileName);
 }
 //---------------------------------------------------------------------------
-nb::TStrings *TSCPFileSystem::GetFixedPaths()
+System::TStrings *TSCPFileSystem::GetFixedPaths()
 {
     return NULL;
 }
@@ -1370,9 +1370,9 @@ void __fastcall TSCPFileSystem::SCPResponse(bool *GotLastLine)
     case 2:     /* fatal error */
         // pscp adds 'Resp' to 'Msg', why?
         std::wstring MsgW = FSecureShell->ReceiveLine();
-        std::string Msg = nb::W2MB(MsgW.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber());
+        std::string Msg = System::W2MB(MsgW.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber());
         std::string Line = Resp + Msg;
-        std::wstring LineW = nb::MB2W(Line.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber());
+        std::wstring LineW = System::MB2W(Line.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber());
         if (IsLastLine(LineW))
         {
             if (GotLastLine != NULL)
@@ -1418,7 +1418,7 @@ void __fastcall TSCPFileSystem::SCPResponse(bool *GotLastLine)
     }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSCPFileSystem::CopyToRemote(nb::TStrings *FilesToCopy,
+void __fastcall TSCPFileSystem::CopyToRemote(System::TStrings *FilesToCopy,
                                   const std::wstring TargetDir, const TCopyParamType *CopyParam,
                                   int Params, TFileOperationProgressType *OperationProgress,
                                   TOnceDoneOperation &OnceDoneOperation)
@@ -1492,7 +1492,7 @@ void __fastcall TSCPFileSystem::CopyToRemote(nb::TStrings *FilesToCopy,
         }
         catch (const std::exception &E)
         {
-            // DEBUG_PRINTF(L"E.what = %s", nb::MB2W(E.what(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str());
+            // DEBUG_PRINTF(L"E.what = %s", System::MB2W(E.what(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str());
             if (GotLastLine && FTerminal->GetActive())
             {
                 FTerminal->TerminalError(&E, LoadStr(SCP_INIT_ERROR));
@@ -1747,7 +1747,7 @@ void __fastcall TSCPFileSystem::SCPSource(const std::wstring FileName,
                     {
                         BlockBuf.Convert(FTerminal->GetConfiguration()->GetLocalEOLType(),
                                          FTerminal->GetSessionData()->GetEOLType(), cpRemoveCtrlZ | cpRemoveBOM, ConvertToken);
-                        BlockBuf.GetMemory()->Seek(0, nb::soFromBeginning);
+                        BlockBuf.GetMemory()->Seek(0, System::soFromBeginning);
                         AsciiBuf.ReadStream(BlockBuf.GetMemory(), BlockBuf.GetSize(), true);
                         // We don't need it any more
                         BlockBuf.GetMemory()->Clear();
@@ -2057,7 +2057,7 @@ void __fastcall TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryN
     }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSCPFileSystem::CopyToLocal(nb::TStrings *FilesToCopy,
+void __fastcall TSCPFileSystem::CopyToLocal(System::TStrings *FilesToCopy,
                                  const std::wstring TargetDir, const TCopyParamType *CopyParam,
                                  int Params, TFileOperationProgressType *OperationProgress,
                                  TOnceDoneOperation &OnceDoneOperation)
@@ -2213,7 +2213,7 @@ void __fastcall TSCPFileSystem::SCPSink(const std::wstring TargetDir,
         int Attrs;
         bool Exists;
     } FileData;
-    nb::TDateTime SourceTimestamp;
+    System::TDateTime SourceTimestamp;
 
     bool SkipConfirmed = false;
     bool Initialized = (Level > 0);
@@ -2414,7 +2414,7 @@ void __fastcall TSCPFileSystem::SCPSink(const std::wstring TargetDir,
                     try
                     {
                         HANDLE File = 0;
-                        nb::TStream *FileStream = NULL;
+                        System::TStream *FileStream = NULL;
 
                         /* TODO 1 : Turn off read-only attr */
 
@@ -2477,7 +2477,7 @@ void __fastcall TSCPFileSystem::SCPSink(const std::wstring TargetDir,
                             catch (const std::exception &E)
                             {
                                 // In this step we can still cancel transfer, so we do it
-                                SCPError(nb::MB2W(E.what(), FTerminal->GetSessionData()->GetCodePageAsNumber()), false);
+                                SCPError(System::MB2W(E.what(), FTerminal->GetSessionData()->GetCodePageAsNumber()), false);
                                 throw;
                             }
 

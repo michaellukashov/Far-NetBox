@@ -8,7 +8,7 @@
 #include "Terminal.h"
 #include "FileOperationProgress.h"
 //---------------------------------------------------------------------------
-class TSimpleThread : public nb::TObject
+class TSimpleThread : public System::TObject
 {
 public:
     explicit TSimpleThread();
@@ -113,16 +113,16 @@ protected:
     TTerminal *FTerminal;
     TConfiguration *FConfiguration;
     TSessionData *FSessionData;
-    nb::TList *FItems;
+    System::TList *FItems;
     size_t FItemsInProcess;
     TCriticalSection *FItemsSection;
     size_t FFreeTerminals;
-    nb::TList *FTerminals;
+    System::TList *FTerminals;
     size_t FTemporaryTerminals;
     size_t FOverallTerminals;
     size_t FTransfersLimit;
-    nb::TDateTime FIdleInterval;
-    nb::TDateTime FLastIdle;
+    System::TDateTime FIdleInterval;
+    System::TDateTime FLastIdle;
     TTerminalQueue *Self;
 
     TQueueItem * __fastcall GetItem(size_t Index);
@@ -141,12 +141,12 @@ protected:
     void __fastcall TerminalFinished(TTerminalItem *TerminalItem);
     bool __fastcall TerminalFree(TTerminalItem *TerminalItem);
 
-    void __fastcall DoQueryUser(nb::TObject *Sender, const std::wstring Query,
-                     nb::TStrings *MoreMessages, int Answers, const TQueryParams *Params, int &Answer,
+    void __fastcall DoQueryUser(System::TObject *Sender, const std::wstring Query,
+                     System::TStrings *MoreMessages, int Answers, const TQueryParams *Params, int &Answer,
                      TQueryType Type, void *Arg);
     void __fastcall DoPromptUser(TTerminal *Terminal, TPromptKind Kind,
-                      const std::wstring Name, const std::wstring Instructions, nb::TStrings *Prompts,
-                      nb::TStrings *Results, bool &Result, void *Arg);
+                      const std::wstring Name, const std::wstring Instructions, System::TStrings *Prompts,
+                      System::TStrings *Results, bool &Result, void *Arg);
     void __fastcall DoShowExtendedException(TTerminal *Terminal,
                                  const std::exception *E, void *Arg);
     void __fastcall DoQueueItemUpdate(TQueueItem *Item);
@@ -154,7 +154,7 @@ protected:
     void __fastcall DoEvent(TQueueEvent Event);
 };
 //---------------------------------------------------------------------------
-class TQueueItem : public nb::TObject
+class TQueueItem : public System::TObject
 {
     friend class TTerminalQueue;
     friend class TTerminalItem;
@@ -268,7 +268,7 @@ protected:
     void __fastcall ResetStats();
 
 private:
-    nb::TList *FList;
+    System::TList *FList;
     size_t FActiveCount;
 
 };
@@ -291,12 +291,12 @@ class TTransferQueueItem : public TLocatedQueueItem
 {
 public:
     explicit TTransferQueueItem(TTerminal *Terminal,
-                                nb::TStrings *FilesToCopy, const std::wstring TargetDir,
+                                System::TStrings *FilesToCopy, const std::wstring TargetDir,
                                 const TCopyParamType *CopyParam, int Params, TOperationSide Side);
     virtual ~TTransferQueueItem();
 
 protected:
-    nb::TStrings *FFilesToCopy;
+    System::TStrings *FFilesToCopy;
     std::wstring FTargetDir;
     TCopyParamType *FCopyParam;
     int FParams;
@@ -306,7 +306,7 @@ class TUploadQueueItem : public TTransferQueueItem
 {
 public:
     explicit TUploadQueueItem(TTerminal *Terminal,
-                              nb::TStrings *FilesToCopy, const std::wstring TargetDir,
+                              System::TStrings *FilesToCopy, const std::wstring TargetDir,
                               const TCopyParamType *CopyParam, int Params);
     virtual ~TUploadQueueItem()
     {}
@@ -318,7 +318,7 @@ class TDownloadQueueItem : public TTransferQueueItem
 {
 public:
     explicit TDownloadQueueItem(TTerminal *Terminal,
-                                nb::TStrings *FilesToCopy, const std::wstring TargetDir,
+                                System::TStrings *FilesToCopy, const std::wstring TargetDir,
                                 const TCopyParamType *CopyParam, int Params);
     virtual ~TDownloadQueueItem()
     {}

@@ -22,8 +22,8 @@ std::wstring MungeStr(const std::wstring Str)
 {
     std::string Result2;
     Result2.resize(Str.size() * sizeof(wchar_t) * 3 + 1);
-    putty_mungestr(nb::W2MB(Str.c_str()).c_str(), const_cast<char *>(Result2.c_str()));
-    std::wstring Result = nb::MB2W(Result2.c_str());
+    putty_mungestr(System::W2MB(Str.c_str()).c_str(), const_cast<char *>(Result2.c_str()));
+    std::wstring Result = System::MB2W(Result2.c_str());
     PackStr(Result);
     // DEBUG_PRINTF(L"Str = %s, Result = %s", Str.c_str(), Result.c_str());
     return Result;
@@ -33,8 +33,8 @@ std::wstring UnMungeStr(const std::wstring Str)
 {
     std::string Result2;
     Result2.resize(Str.size() * sizeof(wchar_t) * 3 + 1);
-    putty_unmungestr(const_cast<char *>(nb::W2MB(Str.c_str()).c_str()), const_cast<char *>(Result2.c_str()), static_cast<int>(Result2.size()));
-    std::wstring Result = nb::MB2W(Result2.c_str());
+    putty_unmungestr(const_cast<char *>(System::W2MB(Str.c_str()).c_str()), const_cast<char *>(Result2.c_str()), static_cast<int>(Result2.size()));
+    std::wstring Result = System::MB2W(Result2.c_str());
     PackStr(Result);
     return Result;
 }
@@ -80,7 +80,7 @@ std::wstring UnMungeIniName(const std::wstring Str)
 THierarchicalStorage::THierarchicalStorage(const std::wstring AStorage)
 {
     FStorage = AStorage;
-    FKeyHistory = new nb::TStringList();
+    FKeyHistory = new System::TStringList();
     SetAccessMode(smRead);
     SetExplicit(false);
     SetMungeStringValues(true);
@@ -156,7 +156,7 @@ void THierarchicalStorage::CloseSubKey()
 //---------------------------------------------------------------------------
 void THierarchicalStorage::ClearSubKeys()
 {
-    nb::TStringList *SubKeys = new nb::TStringList();
+    System::TStringList *SubKeys = new System::TStringList();
     {
         BOOST_SCOPE_EXIT ( (&SubKeys) )
         {
@@ -183,7 +183,7 @@ void THierarchicalStorage::RecursiveDeleteSubKey(const std::wstring Key)
 bool THierarchicalStorage::HasSubKeys()
 {
     bool Result;
-    nb::TStrings *SubKeys = new nb::TStringList();
+    System::TStrings *SubKeys = new System::TStringList();
     {
         BOOST_SCOPE_EXIT ( (&SubKeys) )
         {
@@ -205,10 +205,10 @@ bool THierarchicalStorage::HasSubKey(const std::wstring SubKey)
     return Result;
 }
 //---------------------------------------------------------------------------
-void THierarchicalStorage::ReadValues(nb::TStrings *Strings,
+void THierarchicalStorage::ReadValues(System::TStrings *Strings,
                                       bool MaintainKeys)
 {
-    nb::TStrings *Names = new nb::TStringList();
+    System::TStrings *Names = new System::TStringList();
     {
         BOOST_SCOPE_EXIT ( (&Names) )
         {
@@ -232,7 +232,7 @@ void THierarchicalStorage::ReadValues(nb::TStrings *Strings,
 //---------------------------------------------------------------------------
 void THierarchicalStorage::ClearValues()
 {
-    nb::TStrings *Names = new nb::TStringList();
+    System::TStrings *Names = new System::TStringList();
     {
         BOOST_SCOPE_EXIT ( (&Names) )
         {
@@ -246,7 +246,7 @@ void THierarchicalStorage::ClearValues()
     }
 }
 //---------------------------------------------------------------------------
-void THierarchicalStorage::WriteValues(nb::TStrings *Strings,
+void THierarchicalStorage::WriteValues(System::TStrings *Strings,
                                        bool MaintainKeys)
 {
     ClearValues();
@@ -355,7 +355,7 @@ TRegistryStorage::TRegistryStorage(const std::wstring AStorage, HKEY ARootKey) :
 void TRegistryStorage::Init()
 {
     FFailed = 0;
-    FRegistry = new nb::TRegistry;
+    FRegistry = new System::TRegistry;
     FRegistry->SetAccess(KEY_READ);
 }
 //---------------------------------------------------------------------------
@@ -366,9 +366,9 @@ TRegistryStorage::~TRegistryStorage()
 //---------------------------------------------------------------------------
 bool TRegistryStorage::Copy(TRegistryStorage *Storage)
 {
-    nb::TRegistry *Registry = Storage->FRegistry;
+    System::TRegistry *Registry = Storage->FRegistry;
     bool Result = true;
-    nb::TStrings *Names = new nb::TStringList();
+    System::TStrings *Names = new System::TStringList();
     {
         BOOST_SCOPE_EXIT ( (&Names) )
         {
@@ -461,7 +461,7 @@ bool TRegistryStorage::DeleteSubKey(const std::wstring SubKey)
     return FRegistry->DeleteKey(K);
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::GetSubKeyNames(nb::TStrings *Strings)
+void TRegistryStorage::GetSubKeyNames(System::TStrings *Strings)
 {
     FRegistry->GetKeyNames(Strings);
     for (size_t Index = 0; Index < Strings->GetCount(); Index++)
@@ -470,7 +470,7 @@ void TRegistryStorage::GetSubKeyNames(nb::TStrings *Strings)
     }
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::GetValueNames(nb::TStrings *Strings)
+void TRegistryStorage::GetValueNames(System::TStrings *Strings)
 {
     FRegistry->GetValueNames(Strings);
 }
@@ -504,7 +504,7 @@ bool TRegistryStorage::Readbool(const std::wstring Name, bool Default)
     READ_REGISTRY(Readbool);
 }
 //---------------------------------------------------------------------------
-nb::TDateTime TRegistryStorage::ReadDateTime(const std::wstring Name, nb::TDateTime Default)
+System::TDateTime TRegistryStorage::ReadDateTime(const std::wstring Name, System::TDateTime Default)
 {
     READ_REGISTRY(ReadDateTime);
 }
@@ -569,7 +569,7 @@ void TRegistryStorage::Writebool(const std::wstring Name, bool Value)
     WRITE_REGISTRY(Writebool);
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::WriteDateTime(const std::wstring Name, nb::TDateTime Value)
+void TRegistryStorage::WriteDateTime(const std::wstring Name, System::TDateTime Value)
 {
     WRITE_REGISTRY(WriteDateTime);
 }
@@ -624,7 +624,7 @@ int TRegistryStorage::GetFailed()
 }
 
 //===========================================================================
-TOptionsStorage::TOptionsStorage(nb::TStrings * Options) :
+TOptionsStorage::TOptionsStorage(System::TStrings * Options) :
   TRegistryStorage(std::wstring(L"Command-line options")) // , new TOptionsIniFile(Options))
 {
 }

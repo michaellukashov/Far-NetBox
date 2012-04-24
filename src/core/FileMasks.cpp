@@ -259,7 +259,7 @@ bool TMask::GetMatches(const std::wstring Str)
 //---------------------------------------------------------------------------
 EFileMasksException::EFileMasksException(
     const std::wstring Message, size_t AErrorStart, size_t AErrorLen) :
-    std::exception(nb::W2MB(Message.c_str()).c_str())
+    std::exception(System::W2MB(Message.c_str()).c_str())
 {
     ErrorStart = AErrorStart;
     ErrorLen = AErrorLen;
@@ -404,7 +404,7 @@ std::wstring __fastcall TFileMasks::NormalizeMask(const std::wstring Mask, const
 }
 //---------------------------------------------------------------------------
 std::wstring __fastcall TFileMasks::ComposeMaskStr(
-  nb::TStrings * MasksStr, bool Directory)
+  System::TStrings * MasksStr, bool Directory)
 {
   std::wstring Result;
   for (size_t I = 0; I < MasksStr->GetCount(); I++)
@@ -440,8 +440,8 @@ std::wstring __fastcall TFileMasks::ComposeMaskStr(
 }
 //---------------------------------------------------------------------------
 std::wstring __fastcall TFileMasks::ComposeMaskStr(
-  nb::TStrings * IncludeFileMasksStr, nb::TStrings * ExcludeFileMasksStr,
-  nb::TStrings * IncludeDirectoryMasksStr, nb::TStrings * ExcludeDirectoryMasksStr)
+  System::TStrings * IncludeFileMasksStr, System::TStrings * ExcludeFileMasksStr,
+  System::TStrings * IncludeDirectoryMasksStr, System::TStrings * ExcludeDirectoryMasksStr)
 {
   std::wstring IncludeMasks = ComposeMaskStr(IncludeFileMasksStr, false);
   AddToList(IncludeMasks, ComposeMaskStr(IncludeDirectoryMasksStr, true), FileMasksDelimiterStr);
@@ -786,14 +786,14 @@ void __fastcall TFileMasks::CreateMask(
         Boundary = TMask::Open;
       }
 
-      nb::TFormatSettings FormatSettings;
-      GetLocaleFormatSettings(nb::GetDefaultLCID(), FormatSettings);
+      System::TFormatSettings FormatSettings;
+      GetLocaleFormatSettings(System::GetDefaultLCID(), FormatSettings);
       FormatSettings.DateSeparator = L'-';
       FormatSettings.TimeSeparator = L':';
       FormatSettings.ShortDateFormat = L"yyyy/mm/dd";
       FormatSettings.ShortTimeFormat = L"hh:nn:ss";
 
-      nb::TDateTime Modification;
+      System::TDateTime Modification;
       if (TryStrToDateTime(PartStr, Modification, FormatSettings) ||
           TryRelativeStrToDateTime(PartStr, Modification))
       {
@@ -876,11 +876,11 @@ void __fastcall TFileMasks::CreateMask(
   FMasks[MASK_INDEX(Directory, Include)].push_back(Mask);
 }
 //---------------------------------------------------------------------------
-nb::TStrings * __fastcall TFileMasks::GetMasksStr(int Index) const
+System::TStrings * __fastcall TFileMasks::GetMasksStr(int Index) const
 {
   if (FMasksStr[Index] == NULL)
   {
-    FMasksStr[Index] = new nb::TStringList();
+    FMasksStr[Index] = new System::TStringList();
     TMasks::const_iterator I = FMasks[Index].begin();
     while (I != FMasks[Index].end())
     {

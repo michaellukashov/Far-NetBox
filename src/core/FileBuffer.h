@@ -8,8 +8,8 @@ enum TEOLType { eolLF /* \n */, eolCRLF /* \r\n */, eolCR /* \r */ };
 const int cpRemoveCtrlZ = 0x01;
 const int cpRemoveBOM =   0x02;
 //---------------------------------------------------------------------------
-class nb::TStream;
-class nb::TMemoryStream;
+class System::TStream;
+class System::TMemoryStream;
 //---------------------------------------------------------------------------
 class TFileBuffer
 {
@@ -22,11 +22,11 @@ public:
     void __fastcall Convert(TEOLType Source, char *Dest, int Params, bool &Token);
     void __fastcall Insert(size_t Index, const char *Buf, size_t Len);
     void __fastcall Delete(size_t Index, size_t Len);
-    size_t __fastcall LoadStream(nb::TStream *Stream, size_t Len, bool ForceLen);
-    size_t __fastcall ReadStream(nb::TStream *Stream, size_t Len, bool ForceLen);
-    void __fastcall WriteToStream(nb::TStream *Stream, size_t  Len);
-    nb::TMemoryStream * __fastcall GetMemory() { return FMemory; }
-    void __fastcall SetMemory(nb::TMemoryStream *value);
+    size_t __fastcall LoadStream(System::TStream *Stream, size_t Len, bool ForceLen);
+    size_t __fastcall ReadStream(System::TStream *Stream, size_t Len, bool ForceLen);
+    void __fastcall WriteToStream(System::TStream *Stream, size_t  Len);
+    System::TMemoryStream * __fastcall GetMemory() { return FMemory; }
+    void __fastcall SetMemory(System::TMemoryStream *value);
     char * __fastcall GetData() const { return static_cast<char *>(FMemory->GetMemory()); }
     __int64 __fastcall GetSize() { return FSize; }
     void __fastcall SetSize(__int64 value);
@@ -34,13 +34,13 @@ public:
     void __fastcall SetPosition(__int64 value);
 
 private:
-    nb::TMemoryStream *FMemory;
+    System::TMemoryStream *FMemory;
     __int64 FSize;
 };
 
 //---------------------------------------------------------------------------
 
-class TSafeHandleStream : public nb::THandleStream
+class TSafeHandleStream : public System::THandleStream
 {
 public:
     explicit TSafeHandleStream(HANDLE AHandle);

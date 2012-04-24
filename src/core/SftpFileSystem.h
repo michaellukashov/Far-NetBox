@@ -38,15 +38,15 @@ public:
     virtual void __fastcall ChangeFileProperties(const std::wstring FileName,
                                       const TRemoteFile *File, const TRemoteProperties *Properties,
                                       TChmodSessionAction &Action);
-    virtual bool __fastcall LoadFilesProperties(nb::TStrings *FileList);
+    virtual bool __fastcall LoadFilesProperties(System::TStrings *FileList);
     virtual void __fastcall CalculateFilesChecksum(const std::wstring Alg,
-                                        nb::TStrings *FileList, nb::TStrings *Checksums,
+                                        System::TStrings *FileList, System::TStrings *Checksums,
                                         calculatedchecksum_slot_type *OnCalculatedChecksum);
-    virtual void __fastcall CopyToLocal(nb::TStrings *FilesToCopy,
+    virtual void __fastcall CopyToLocal(System::TStrings *FilesToCopy,
                              const std::wstring TargetDir, const TCopyParamType *CopyParam,
                              int Params, TFileOperationProgressType *OperationProgress,
                              TOnceDoneOperation &OnceDoneOperation);
-    virtual void __fastcall CopyToRemote(nb::TStrings *FilesToCopy,
+    virtual void __fastcall CopyToRemote(System::TStrings *FilesToCopy,
                               const std::wstring TargetDir, const TCopyParamType *CopyParam,
                               int Params, TFileOperationProgressType *OperationProgress,
                               TOnceDoneOperation &OnceDoneOperation);
@@ -71,7 +71,7 @@ public:
     virtual void __fastcall CopyFile(const std::wstring FileName,
                           const std::wstring NewName);
     virtual std::wstring __fastcall FileUrl(const std::wstring FileName);
-    virtual nb::TStrings * __fastcall GetFixedPaths();
+    virtual System::TStrings * __fastcall GetFixedPaths();
     virtual void __fastcall SpaceAvailable(const std::wstring Path,
                                 TSpaceAvailable &ASpaceAvailable);
     virtual const TSessionInfo & __fastcall GetSessionInfo();
@@ -89,19 +89,19 @@ protected:
     std::wstring FDirectoryToChangeTo;
     std::wstring FHomeDirectory;
     std::wstring FEOL;
-    nb::TList *FPacketReservations;
+    System::TList *FPacketReservations;
     std::vector<size_t> FPacketNumbers;
     char FPreviousLoggedPacket;
     int FNotLoggedPackets;
     int FBusy;
     bool FAvoidBusy;
-    nb::TStrings *FExtensions;
+    System::TStrings *FExtensions;
     TSFTPSupport *FSupport;
     bool FUtfStrings;
     bool FUtfNever;
     bool FSignedTS;
     bool FOpenSSH;
-    nb::TStrings *FFixedPaths;
+    System::TStrings *FFixedPaths;
     size_t FMaxPacketSize;
     TSFTPFileSystem *Self;
 
@@ -142,7 +142,7 @@ protected:
     bool __fastcall SupportsExtension(const std::wstring Extension) const;
     void __fastcall ResetConnection();
     void __fastcall DoCalculateFilesChecksum(const std::wstring Alg,
-                                  nb::TStrings *FileList, nb::TStrings *Checksums,
+                                  System::TStrings *FileList, System::TStrings *Checksums,
                                   calculatedchecksum_slot_type *OnCalculatedChecksum,
                                   TFileOperationProgressType *OperationProgress, bool FirstLevel);
     void __fastcall DoDeleteFile(const std::wstring FileName, char Type);

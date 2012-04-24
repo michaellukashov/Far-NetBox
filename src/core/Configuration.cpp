@@ -133,7 +133,7 @@ THierarchicalStorage *TConfiguration::CreateStorage()
     }
     else
     {
-        nb::Error(SNotImplemented, 3005);
+        System::Error(SNotImplemented, 3005);
         return NULL; // new TIniFileStorage(GetIniFileStorageName());
     }
 }
@@ -178,7 +178,7 @@ THierarchicalStorage *TConfiguration::CreateStorage()
 //---------------------------------------------------------------------------
 void TConfiguration::SaveData(THierarchicalStorage *Storage, bool /*All*/)
 {
-#define KEYEX(TYPE, VAR, NAME) Storage->Write ## TYPE(LASTELEM(nb::MB2W(#NAME)), Get##VAR())
+#define KEYEX(TYPE, VAR, NAME) Storage->Write ## TYPE(LASTELEM(System::MB2W(#NAME)), Get##VAR())
     REGCONFIG(true);
 #undef KEYEX
 }
@@ -217,7 +217,7 @@ void TConfiguration::Save(bool All, bool Explicit)
 //---------------------------------------------------------------------------
 void TConfiguration::Export(const std::wstring FileName)
 {
-    nb::Error(SNotImplemented, 3004);
+    System::Error(SNotImplemented, 3004);
     THierarchicalStorage *Storage = NULL;
     THierarchicalStorage *ExportStorage = NULL;
     {
@@ -246,7 +246,7 @@ void TConfiguration::Export(const std::wstring FileName)
 //---------------------------------------------------------------------------
 void TConfiguration::LoadData(THierarchicalStorage *Storage)
 {
-#define KEYEX(TYPE, VAR, NAME) Set##VAR(Storage->Read ## TYPE(LASTELEM(nb::MB2W(#NAME)), Get##VAR()))
+#define KEYEX(TYPE, VAR, NAME) Set##VAR(Storage->Read ## TYPE(LASTELEM(System::MB2W(#NAME)), Get##VAR()))
     // #pragma warn -eas
     REGCONFIG(false);
     // #pragma warn +eas
@@ -281,7 +281,7 @@ void TConfiguration::Load()
 void TConfiguration::CopyData(THierarchicalStorage *Source,
                               THierarchicalStorage *Target)
 {
-    nb::TStrings *Names = new nb::TStringList();
+    System::TStrings *Names = new System::TStringList();
     {
         BOOST_SCOPE_EXIT ( (&Names) )
         {
@@ -618,7 +618,7 @@ int TConfiguration::GetCompoundVersion()
 //---------------------------------------------------------------------------
 std::wstring TConfiguration::ModuleFileName()
 {
-    nb::Error(SNotImplemented, 204);
+    System::Error(SNotImplemented, 204);
     return L""; // FIXME ParamStr(0);
 }
 //---------------------------------------------------------------------------
@@ -747,7 +747,7 @@ std::wstring TConfiguration::GetFileFileInfoString(const std::wstring Key,
             }
             catch (const std::exception &e)
             {
-                DEBUG_PRINTF(L"Error: %s", nb::MB2W(e.what()).c_str());
+                DEBUG_PRINTF(L"Error: %s", System::MB2W(e.what()).c_str());
                 Result = L"";
             }
         }
@@ -771,7 +771,7 @@ std::wstring TConfiguration::GetRegistryStorageKey()
 //---------------------------------------------------------------------------
 void TConfiguration::SetIniFileStorageName(const std::wstring value)
 {
-    nb::Error(SNotImplemented, 3006);
+    System::Error(SNotImplemented, 3006);
     FIniFileStorageName = value;
     // FStorage = stIniFile;
 }
@@ -1095,12 +1095,12 @@ void TConfiguration::SetShowFtpWelcomeMessage(bool value)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-void TShortCuts::Add(nb::TShortCut ShortCut)
+void TShortCuts::Add(System::TShortCut ShortCut)
 {
     FShortCuts.insert(ShortCut);
 }
 //---------------------------------------------------------------------------
-bool TShortCuts::Has(nb::TShortCut ShortCut) const
+bool TShortCuts::Has(System::TShortCut ShortCut) const
 {
     return (FShortCuts.count(ShortCut) != 0);
 }

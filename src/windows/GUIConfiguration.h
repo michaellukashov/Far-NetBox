@@ -122,15 +122,15 @@ public:
     const TCopyParamRule * __fastcall GetRule(size_t Index) const;
     const TCopyParamType * __fastcall GetCopyParam(size_t Index) const;
     bool __fastcall GetModified() { return FModified; }
-    nb::TStrings * __fastcall GetNameList() const;
+    System::TStrings * __fastcall GetNameList() const;
     bool __fastcall GetAnyRule() const;
 
 private:
     static std::wstring FInvalidChars;
-    nb::TObjectList *FRules;
-    nb::TObjectList *FCopyParams;
-    nb::TStrings *FNames;
-    mutable nb::TStrings *FNameList;
+    System::TObjectList *FRules;
+    System::TObjectList *FCopyParams;
+    System::TStrings *FNames;
+    mutable System::TStrings *FNameList;
     bool FModified;
 
     void __fastcall Init();
@@ -143,7 +143,7 @@ private:
 class TGUIConfiguration : public TConfiguration
 {
 private:
-    nb::TStrings *FLocales;
+    System::TStrings *FLocales;
     std::wstring FLastLocalesExts;
     bool FContinueOnError;
     bool FConfirmCommandSession;
@@ -157,13 +157,13 @@ private:
     int FSynchronizeModeAuto;
     int FSynchronizeMode;
     int FMaxWatchDirectories;
-    nb::TDateTime FIgnoreCancelBeforeFinish;
+    System::TDateTime FIgnoreCancelBeforeFinish;
     bool FQueueAutoPopup;
     bool FQueueRememberPassword;
     size_t FQueueTransfersLimit;
     TGUICopyParamType FDefaultCopyParam;
     bool FBeepOnFinish;
-    nb::TDateTime FBeepOnFinishAfter;
+    System::TDateTime FBeepOnFinishAfter;
     std::wstring FDefaultPuttyPathOnly;
     std::wstring FDefaultPuttyPath;
     bool FSynchronizeBrowsing;
@@ -216,7 +216,7 @@ public:
     virtual LCID __fastcall GetLocale();
     void __fastcall SetLocale(LCID value);
     void __fastcall SetLocaleSafe(LCID value);
-    nb::TStrings * __fastcall GetLocales();
+    System::TStrings * __fastcall GetLocales();
     std::wstring __fastcall GetPuttyPath() { return FPuttyPath; }
     void __fastcall SetPuttyPath(const std::wstring value) { FPuttyPath = value; }
     std::wstring __fastcall GetDefaultPuttyPath() { return FDefaultPuttyPath; }
@@ -228,16 +228,16 @@ public:
     void __fastcall SetTelnetForFtpInPutty(bool value) { FTelnetForFtpInPutty = value; }
     std::wstring __fastcall GetPuttySession() { return FPuttySession; }
     void __fastcall SetPuttySession(std::wstring value) { FPuttySession = value; }
-    nb::TDateTime __fastcall GetIgnoreCancelBeforeFinish() { return FIgnoreCancelBeforeFinish; }
-    void __fastcall SetIgnoreCancelBeforeFinish(nb::TDateTime value) { FIgnoreCancelBeforeFinish = value; }
+    System::TDateTime __fastcall GetIgnoreCancelBeforeFinish() { return FIgnoreCancelBeforeFinish; }
+    void __fastcall SetIgnoreCancelBeforeFinish(System::TDateTime value) { FIgnoreCancelBeforeFinish = value; }
     TGUICopyParamType & __fastcall GetDefaultCopyParam() { return FDefaultCopyParam; }
     void __fastcall SetDefaultCopyParam(const TGUICopyParamType &value);
     bool __fastcall GetBeepOnFinish() { return FBeepOnFinish; }
     void __fastcall SetBeepOnFinish(bool value) { FBeepOnFinish = value; }
     bool __fastcall GetSynchronizeBrowsing() { return FSynchronizeBrowsing; }
     void __fastcall SetSynchronizeBrowsing(bool value) { FSynchronizeBrowsing = value; }
-    nb::TDateTime __fastcall GetBeepOnFinishAfter() { return FBeepOnFinishAfter; }
-    void __fastcall SetBeepOnFinishAfter(nb::TDateTime value) { FBeepOnFinishAfter = value; }
+    System::TDateTime __fastcall GetBeepOnFinishAfter() { return FBeepOnFinishAfter; }
+    void __fastcall SetBeepOnFinishAfter(System::TDateTime value) { FBeepOnFinishAfter = value; }
     const TCopyParamList * __fastcall GetCopyParamList();
     void __fastcall SetCopyParamList(const TCopyParamList *value);
     std::wstring __fastcall GetCopyParamCurrent() { return FCopyParamCurrent; }

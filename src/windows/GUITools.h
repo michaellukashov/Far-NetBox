@@ -36,14 +36,14 @@ bool SpecialFolderLocation(int PathID, std::wstring &Path);
 std::wstring ItemsFormatString(const std::wstring SingleItemFormat,
                                const std::wstring MultiItemsFormat, size_t Count, const std::wstring FirstItem);
 std::wstring ItemsFormatString(const std::wstring SingleItemFormat,
-                               const std::wstring MultiItemsFormat, nb::TStrings *Items);
+                               const std::wstring MultiItemsFormat, System::TStrings *Items);
 std::wstring FileNameFormatString(const std::wstring SingleFileFormat,
-                                  const std::wstring MultiFileFormat, nb::TStrings *Files, bool Remote);
+                                  const std::wstring MultiFileFormat, System::TStrings *Files, bool Remote);
 std::wstring FormatBytes(__int64 Bytes, bool UseOrders = true);
 std::wstring UniqTempDir(const std::wstring BaseDir,
                          const std::wstring Identity, bool Mask = false);
 bool DeleteDirectory(const std::wstring DirName);
-std::wstring FormatDateTimeSpan(const std::wstring TimeFormat, nb::TDateTime DateTime);
+std::wstring FormatDateTimeSpan(const std::wstring TimeFormat, System::TDateTime DateTime);
 //---------------------------------------------------------------------------
 class TLocalCustomCommand : public TFileCustomCommand
 {

@@ -13,7 +13,7 @@
 
 namespace alg = boost::algorithm;
 
-namespace nb {
+namespace System {
 
 size_t __cdecl debug_printf(const wchar_t *format, ...)
 {
@@ -52,7 +52,7 @@ size_t __cdecl debug_printf2(const char *format, ...)
 //---------------------------------------------------------------------------
 void Abort()
 {
-    throw nb::EAbort("");
+    throw System::EAbort("");
 }
 //---------------------------------------------------------------------------
 void Error(int ErrorID, size_t data)
@@ -120,7 +120,7 @@ void TList::SetCount(size_t NewCount)
 {
     if (NewCount == NPOS)
     {
-        nb::Error(SListCountError, NewCount);
+        System::Error(SListCountError, NewCount);
     }
     if (NewCount <= FList.size())
     {
@@ -145,7 +145,7 @@ void TList::SetItem(size_t Index, void *Item)
 {
     if ((Index == NPOS) || (Index >= FList.size()))
     {
-        nb::Error(SListIndexError, Index);
+        System::Error(SListIndexError, Index);
     }
     FList.insert(FList.begin() + Index, Item);
 }
@@ -182,7 +182,7 @@ void TList::Move(size_t CurIndex, size_t NewIndex)
     {
         if ((NewIndex == NPOS) || (NewIndex >= FList.size()))
         {
-            nb::Error(SListIndexError, NewIndex);
+            System::Error(SListIndexError, NewIndex);
         }
         void *Item = GetItem(CurIndex);
         FList[CurIndex] = NULL;
@@ -195,7 +195,7 @@ void TList::Delete(size_t Index)
 {
     if ((Index == NPOS) || (Index >= FList.size()))
     {
-        nb::Error(SListIndexError, Index);
+        System::Error(SListIndexError, Index);
     }
     void *Temp = GetItem(Index);
     FList.erase(FList.begin() + Index);
@@ -208,7 +208,7 @@ void TList::Insert(size_t Index, void *Item)
 {
     if ((Index == NPOS) || (Index > FList.size()))
     {
-        nb::Error(SListIndexError, Index);
+        System::Error(SListIndexError, Index);
     }
     if (Index <= FList.size())
     {
@@ -239,7 +239,7 @@ void TList::Clear()
 
 void TList::Sort(CompareFunc func)
 {
-    nb::Error(SNotImplemented, 1);
+    System::Error(SNotImplemented, 1);
 }
 void TList::Notify(void *Ptr, int Action)
 {
@@ -250,7 +250,7 @@ void TList::Sort()
 {
     // if (FList.size() > 1)
     // QuickSort(FList, 0, GetCount() - 1, Compare);
-    nb::Error(SNotImplemented, 15);
+    System::Error(SNotImplemented, 15);
 }
 //---------------------------------------------------------------------------
 TObjectList::TObjectList() :
@@ -690,7 +690,7 @@ void TStrings::Append(const std::wstring value)
 }
 void TStrings::SaveToStream(TStream *Stream)
 {
-    nb::Error(SNotImplemented, 12);
+    System::Error(SNotImplemented, 12);
 }
 
 //---------------------------------------------------------------------------
@@ -744,7 +744,7 @@ size_t TStringList::AddObject(const std::wstring S, TObject *AObject)
                 return Result;
                 break;
             case dupError:
-                nb::Error(SDuplicateString, 2);
+                System::Error(SDuplicateString, 2);
                 break;
             }
         }
@@ -803,11 +803,11 @@ void TStringList::PutString(size_t Index, const std::wstring S)
 {
     if (GetSorted())
     {
-        nb::Error(SSortedListError, 0);
+        System::Error(SSortedListError, 0);
     }
     if ((Index == NPOS) || (Index > FList.size()))
     {
-        nb::Error(SListIndexError, Index);
+        System::Error(SListIndexError, Index);
     }
     Changing();
     // DEBUG_PRINTF(L"Index = %d, size = %d", Index, FList.size());
@@ -829,7 +829,7 @@ void TStringList::Delete(size_t Index)
 {
     if ((Index == NPOS) || (Index >= FList.size()))
     {
-        nb::Error(SListIndexError, Index);
+        System::Error(SListIndexError, Index);
     }
     Changing();
     FList.erase(FList.begin() + Index);
@@ -839,7 +839,7 @@ TObject *TStringList::GetObject(size_t Index)
 {
     if ((Index == NPOS) || (Index >= FList.size()))
     {
-        nb::Error(SListIndexError, Index);
+        System::Error(SListIndexError, Index);
     }
     return FList[Index].FObject;
 }
@@ -847,11 +847,11 @@ void TStringList::InsertObject(size_t Index, const std::wstring Key, TObject *AO
 {
     if (GetSorted())
     {
-        nb::Error(SSortedListError, 0);
+        System::Error(SSortedListError, 0);
     }
     if ((Index == NPOS) || (Index > GetCount()))
     {
-        nb::Error(SListIndexError, Index);
+        System::Error(SListIndexError, Index);
     }
     InsertItem(Index, Key, AObject);
 }
@@ -859,7 +859,7 @@ void TStringList::InsertItem(size_t Index, const std::wstring S, TObject *AObjec
 {
     if ((Index == NPOS) || (Index > GetCount()))
     {
-        nb::Error(SListIndexError, Index);
+        System::Error(SListIndexError, Index);
     }
     Changing();
     // if (FCount == FCapacity) Grow();
@@ -874,7 +874,7 @@ std::wstring TStringList::GetString(size_t Index) const
     // DEBUG_PRINTF(L"Index = %d, FList.size = %d", Index, FList.size());
     if ((Index == NPOS) || (Index >= FList.size()))
     {
-        nb::Error(SListIndexError, Index);
+        System::Error(SListIndexError, Index);
     }
     std::wstring Result = FList[Index].FString;
     return Result;
@@ -911,14 +911,14 @@ void TStringList::SetSorted(bool value)
 }
 void TStringList::LoadFromFile(const std::wstring FileName)
 {
-    nb::Error(SNotImplemented, 14);
+    System::Error(SNotImplemented, 14);
 }
 
 void TStringList::PutObject(size_t Index, TObject *AObject)
 {
     if ((Index == NPOS) || (Index >= FList.size()))
     {
-        nb::Error(SListIndexError, Index);
+        System::Error(SListIndexError, Index);
     }
     Changing();
     TStringItem item;
@@ -956,7 +956,7 @@ void TStringList::Insert(size_t Index, const std::wstring S)
 {
     if ((Index == NPOS) || (Index > FList.size()))
     {
-        nb::Error(SListIndexError, Index);
+        System::Error(SListIndexError, Index);
     }
     TStringItem item;
     item.FString = S;
@@ -1220,7 +1220,7 @@ void TStream::ReadBuffer(void *Buffer, __int64 Count)
 {
     if ((Count != 0) && (Read(Buffer, Count) != Count))
     {
-        throw EReadError(nb::W2MB(FMTLOAD(SReadError).c_str()).c_str());
+        throw EReadError(System::W2MB(FMTLOAD(SReadError).c_str()).c_str());
     }
 }
 
@@ -1229,7 +1229,7 @@ void TStream::WriteBuffer(const void *Buffer, __int64 Count)
     // DEBUG_PRINTF(L"Count = %d", Count);
     if ((Count != 0) && (Write(Buffer, Count) != Count))
     {
-        throw EWriteError(nb::W2MB(FMTLOAD(SWriteError).c_str()).c_str());
+        throw EWriteError(System::W2MB(FMTLOAD(SWriteError).c_str()).c_str());
     }
 }
 
@@ -1279,13 +1279,13 @@ __int64 __fastcall THandleStream::Seek(__int64 Offset, __int64 Origin)
 }
 __int64 __fastcall THandleStream::Seek(const __int64 Offset, TSeekOrigin Origin)
 {
-    nb::Error(SNotImplemented, 1202);
+    System::Error(SNotImplemented, 1202);
     return 0;
 }
 
 void __fastcall THandleStream::SetSize(const __int64 NewSize)
 {
-    Seek(NewSize, nb::soFromBeginning);
+    Seek(NewSize, System::soFromBeginning);
     // LARGE_INTEGER li;
     // li.QuadPart = size;
     // if (SetFilePointer(fh.get(), li.LowPart, &li.HighPart, FILE_BEGIN) == -1)
@@ -1327,8 +1327,8 @@ __int64 __fastcall TMemoryStream::Read(void *Buffer, __int64 Count)
 
 __int64 __fastcall TMemoryStream::Seek(__int64 Offset, __int64 Origin)
 {
-    // return Seek(Offset, nb::soFromCurrent);
-    nb::Error(SNotImplemented, 1303);
+    // return Seek(Offset, System::soFromCurrent);
+    System::Error(SNotImplemented, 1303);
     return 0;
 }
 
@@ -1336,13 +1336,13 @@ __int64 __fastcall TMemoryStream::Seek(const __int64 Offset, TSeekOrigin Origin)
 {
     switch (Origin)
     {
-    case nb::soFromBeginning:
+    case System::soFromBeginning:
         FPosition = Offset;
         break;
-    case nb::soFromCurrent:
+    case System::soFromCurrent:
         FPosition += Offset;
         break;
-    case nb::soFromEnd:
+    case System::soFromEnd:
         FPosition = FSize + Offset;
         break;
     }
@@ -1359,7 +1359,7 @@ void __fastcall TMemoryStream::SaveToFile(const std::wstring FileName)
 {
     // TFileStream Stream(FileName, fmCreate);
     // SaveToStream(Stream);
-    nb::Error(SNotImplemented, 1203);
+    System::Error(SNotImplemented, 1203);
 }
 
 void __fastcall TMemoryStream::Clear()
@@ -1374,7 +1374,7 @@ void __fastcall TMemoryStream::SetSize(const __int64 NewSize)
     __int64 OldPosition = FPosition;
     SetCapacity(NewSize);
     FSize = NewSize;
-    if (OldPosition > NewSize) { Seek(0, nb::soFromEnd); }
+    if (OldPosition > NewSize) { Seek(0, System::soFromEnd); }
 }
 
 void __fastcall TMemoryStream::SetCapacity(__int64 NewCapacity)
@@ -1596,7 +1596,7 @@ bool TRegistry::OpenKey(const std::wstring Key, bool CanCreate)
     // DEBUG_PRINTF(L"key = %s, CanCreate = %d", Key.c_str(), CanCreate);
     bool Result = false;
     std::wstring S = Key;
-    bool Relative = nb::IsRelative(S);
+    bool Relative = System::IsRelative(S);
 
     // if (!Relative) S.erase(0, 1); // Delete(S, 1, 1);
     HKEY TempKey = 0;
@@ -1629,7 +1629,7 @@ bool TRegistry::DeleteKey(const std::wstring Key)
 {
     bool Result = false;
     std::wstring S = Key;
-    bool Relative = nb::IsRelative(S);
+    bool Relative = System::IsRelative(S);
     // if not Relative then Delete(S, 1, 1);
     HKEY OldKey = GetCurrentKey();
     HKEY DeleteKey = GetKey(Key);
@@ -1757,7 +1757,7 @@ double TRegistry::ReadFloat(const std::wstring Name)
     size_t Len = GetData(Name, &Result, sizeof(double), RegData);
     if ((RegData != rdBinary) || (Len != sizeof(double)))
     {
-        nb::ReadError(Name);
+        System::ReadError(Name);
     }
     return Result;
 }
@@ -1771,7 +1771,7 @@ int TRegistry::Readint(const std::wstring Name)
     // DEBUG_PRINTF(L"Result = %d, RegData = %d, rdInteger = %d", Result, RegData, rdInteger);
     if (RegData != rdInteger)
     {
-        nb::ReadError(Name);
+        System::ReadError(Name);
     }
     return Result;
 }
@@ -1854,7 +1854,7 @@ size_t TRegistry::GetData(const std::wstring Name, void *Buffer,
 void TRegistry::PutData(const std::wstring Name, const void *Buffer,
                         size_t BufSize, TRegDataType RegData)
 {
-    int DataType = nb::RegDataToDataType(RegData);
+    int DataType = System::RegDataToDataType(RegData);
     // DEBUG_PRINTF(L"GetCurrentKey = %d, Name = %s, REG_DWORD = %d, DataType = %d, BufSize = %d", GetCurrentKey(), Name.c_str(), REG_DWORD, DataType, BufSize);
     if (RegSetValueEx(GetCurrentKey(), Name.c_str(), 0, DataType,
                       reinterpret_cast<const BYTE *>(Buffer), static_cast<DWORD>(BufSize)) != ERROR_SUCCESS)
@@ -1926,7 +1926,7 @@ HKEY TRegistry::GetBaseKey(bool Relative)
 HKEY TRegistry::GetKey(const std::wstring Key)
 {
     std::wstring S = Key;
-    bool Relative = nb::IsRelative(S);
+    bool Relative = System::IsRelative(S);
     // if not Relative then Delete(S, 1, 1);
     HKEY Result = 0;
     RegOpenKeyEx(GetBaseKey(Relative), S.c_str(), 0, FAccess, &Result);
@@ -1969,14 +1969,14 @@ bool TShortCut::operator < (const TShortCut &rhs) const
 
 void __fastcall GetLocaleFormatSettings(int LCID, TFormatSettings &FormatSettings)
 {
-    nb::Error(SNotImplemented, 1204);
+    System::Error(SNotImplemented, 1204);
 }
 
 int __fastcall GetDefaultLCID()
 {
-    nb::Error(SNotImplemented, 1205);
+    System::Error(SNotImplemented, 1205);
     return 0;
 }
 
 
-} // namespace nb
+} // namespace System

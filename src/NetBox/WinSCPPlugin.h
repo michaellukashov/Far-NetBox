@@ -33,7 +33,7 @@ public:
     virtual int GetMinFarVersion();
 
     virtual void HandleException(const std::exception *E, int OpMode = 0);
-    int MoreMessageDialog(const std::wstring Str, nb::TStrings *MoreMessages,
+    int MoreMessageDialog(const std::wstring Str, System::TStrings *MoreMessages,
                           TQueryType Type, int Answers, const TMessageParams *Params = NULL);
     void ShowExtendedException(const std::exception *E);
     bool CopyParamCustomDialog(TCopyParamType &CopyParam,
@@ -42,9 +42,9 @@ public:
 
 protected:
     virtual bool HandlesFunction(THandlesFunction Function);
-    virtual void GetPluginInfoEx(long unsigned &Flags, nb::TStrings *DiskMenuStrings,
-                                 nb::TStrings *PluginMenuStrings, nb::TStrings *PluginConfigStrings,
-                                 nb::TStrings *CommandPrefixes);
+    virtual void GetPluginInfoEx(long unsigned &Flags, System::TStrings *DiskMenuStrings,
+                                 System::TStrings *PluginMenuStrings, System::TStrings *PluginConfigStrings,
+                                 System::TStrings *CommandPrefixes);
     virtual TCustomFarFileSystem *OpenPluginEx(int OpenFrom, LONG_PTR Item);
     virtual bool ImportSessions();
     virtual bool ConfigureEx(int Item);

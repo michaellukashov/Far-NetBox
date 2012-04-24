@@ -32,15 +32,15 @@ public:
     virtual void __fastcall ChangeFileProperties(const std::wstring FileName,
                                       const TRemoteFile *File, const TRemoteProperties *Properties,
                                       TChmodSessionAction &Action);
-    virtual bool __fastcall LoadFilesProperties(nb::TStrings *FileList);
+    virtual bool __fastcall LoadFilesProperties(System::TStrings *FileList);
     virtual void __fastcall CalculateFilesChecksum(const std::wstring Alg,
-                                        nb::TStrings *FileList, nb::TStrings *Checksums,
+                                        System::TStrings *FileList, System::TStrings *Checksums,
                                         calculatedchecksum_slot_type *OnCalculatedChecksum);
-    virtual void __fastcall CopyToLocal(nb::TStrings *FilesToCopy,
+    virtual void __fastcall CopyToLocal(System::TStrings *FilesToCopy,
                              const std::wstring TargetDir, const TCopyParamType *CopyParam,
                              int Params, TFileOperationProgressType *OperationProgress,
                              TOnceDoneOperation &OnceDoneOperation);
-    virtual void __fastcall CopyToRemote(nb::TStrings *FilesToCopy,
+    virtual void __fastcall CopyToRemote(System::TStrings *FilesToCopy,
                               const std::wstring TargetDir, const TCopyParamType *CopyParam,
                               int Params, TFileOperationProgressType *OperationProgress,
                               TOnceDoneOperation &OnceDoneOperation);
@@ -65,7 +65,7 @@ public:
     virtual void __fastcall CopyFile(const std::wstring FileName,
                           const std::wstring NewName);
     virtual std::wstring __fastcall FileUrl(const std::wstring FileName);
-    virtual nb::TStrings * __fastcall GetFixedPaths();
+    virtual System::TStrings * __fastcall GetFixedPaths();
     virtual void __fastcall __fastcall SpaceAvailable(const std::wstring Path,
                                 TSpaceAvailable &ASpaceAvailable);
     virtual const TSessionInfo & __fastcall GetSessionInfo();
@@ -149,7 +149,7 @@ private:
     captureoutput_signal_type FOnCaptureOutput;
     TSessionInfo FSessionInfo;
     std::wstring FUserName;
-    nb::TDateTime FLastDataSent;
+    System::TDateTime FLastDataSent;
     TCURLIntf *FCURLIntf;
     bool FPasswordFailed;
     std::wstring FSystem;
@@ -164,8 +164,8 @@ private:
     bool FAwaitingProgress;
     TCommand FLastCommand;
     size_t FLastReadDirectoryProgress;
-    nb::TStrings *FLastResponse;
-    nb::TStrings *FLastError;
+    System::TStrings *FLastResponse;
+    System::TStrings *FLastError;
     TCriticalSection *FTransferStatusCriticalSection;
     TAutoSwitch FListAll;
     bool FDoListAll;

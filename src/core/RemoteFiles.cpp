@@ -113,7 +113,7 @@ std::wstring ExtractFileName(const std::wstring Path, bool Unix)
     }
 }
 //---------------------------------------------------------------------------
-bool ExtractCommonPath(nb::TStrings *Files, std::wstring &Path)
+bool ExtractCommonPath(System::TStrings *Files, std::wstring &Path)
 {
     assert(Files->GetCount() > 0);
 
@@ -140,7 +140,7 @@ bool ExtractCommonPath(nb::TStrings *Files, std::wstring &Path)
     return Result;
 }
 //---------------------------------------------------------------------------
-bool UnixExtractCommonPath(nb::TStrings *Files, std::wstring &Path)
+bool UnixExtractCommonPath(System::TStrings *Files, std::wstring &Path)
 {
     assert(Files->GetCount() > 0);
 
@@ -316,7 +316,7 @@ std::wstring MinimizeName(const std::wstring FileName, size_t MaxLen, bool Unix)
     return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring MakeFileList(nb::TStrings *FileList)
+std::wstring MakeFileList(System::TStrings *FileList)
 {
     std::wstring Result;
     for (size_t Index = 0; Index < FileList->GetCount(); Index++)
@@ -341,7 +341,7 @@ std::wstring MakeFileList(nb::TStrings *FileList)
 }
 //---------------------------------------------------------------------------
 // copy from BaseUtils.pas
-nb::TDateTime ReduceDateTimePrecision(nb::TDateTime DateTime,
+System::TDateTime ReduceDateTimePrecision(System::TDateTime DateTime,
                                       TModificationFmt Precision)
 {
     if (Precision == mfNone)
@@ -383,7 +383,7 @@ TModificationFmt LessDateTimePrecision(
     return (Precision1 < Precision2) ? Precision1 : Precision2;
 }
 //---------------------------------------------------------------------------
-std::wstring UserModificationStr(nb::TDateTime DateTime,
+std::wstring UserModificationStr(System::TDateTime DateTime,
                                  TModificationFmt Precision)
 {
     switch (Precision)
@@ -405,7 +405,7 @@ int FakeFileImageIndex(const std::wstring FileName, unsigned long Attrs,
 {
     Attrs |= FILE_ATTRIBUTE_NORMAL;
     std::wstring fileName = FileName;
-    nb::TSHFileInfo SHFileInfo;
+    System::TSHFileInfo SHFileInfo;
     // On Win2k we get icon of "ZIP drive" for ".." (parent directory)
     if ((fileName == PARENTDIRECTORY) ||
             ((fileName.size() == 2) && (fileName[2] == ':') &&
@@ -715,7 +715,7 @@ const TRemoteToken *TRemoteTokenList::GetToken(size_t Index) const
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TRemoteFile::TRemoteFile(TRemoteFile *ALinkedByFile) :
-    nb::TPersistent(),
+    System::TPersistent(),
     FDirectory(NULL),
     FSize(0),
     FINodeBlocks(0),
@@ -916,7 +916,7 @@ bool __fastcall TRemoteFile::GetBrokenLink()
     // "!FLinkTo.empty()" removed because it does not work with SFTP
 }
 //---------------------------------------------------------------------------
-void __fastcall TRemoteFile::ShiftTime(const nb::TDateTime &Difference)
+void __fastcall TRemoteFile::ShiftTime(const System::TDateTime &Difference)
 {
     double D = static_cast<double>(Difference.operator double());
     if ((abs(D) > std::numeric_limits<double>::epsilon()) && (FModificationFmt != mfMDY))
@@ -928,7 +928,7 @@ void __fastcall TRemoteFile::ShiftTime(const nb::TDateTime &Difference)
     }
 }
 //---------------------------------------------------------------------------
-void __fastcall TRemoteFile::SetModification(const nb::TDateTime &value)
+void __fastcall TRemoteFile::SetModification(const System::TDateTime &value)
 {
     if (FModification != value)
     {
@@ -1080,7 +1080,7 @@ void __fastcall TRemoteFile::SetListingStr(const std::wstring value)
             Month = 0;
 #define COL2MONTH \
         for (unsigned int IMonth = 0; IMonth < 12; IMonth++) \
-          if (!AnsiCompareIC(Col, nb::MB2W(EngShortMonthNames[IMonth]))) { Month = IMonth; Month++; break; }
+          if (!AnsiCompareIC(Col, System::MB2W(EngShortMonthNames[IMonth]))) { Month = IMonth; Month++; break; }
             COL2MONTH;
             // if the column is not known month name, it may have been "yyyy-mm-dd"
             // for --full-time format
@@ -1108,7 +1108,7 @@ void __fastcall TRemoteFile::SetListingStr(const std::wstring value)
                     // neither standard, not --full-time format
                     if (Month == 0)
                     {
-                        nb::Abort();
+                        System::Abort();
                     }
                     else
                     {
@@ -1122,7 +1122,7 @@ void __fastcall TRemoteFile::SetListingStr(const std::wstring value)
                     GETNCOL;
                     Day = (unsigned int)StrToInt(Col);
                 }
-                if ((Day < 1) || (Day > 31)) { nb::Abort(); }
+                if ((Day < 1) || (Day > 31)) { System::Abort(); }
 
                 // second full-time format
                 // ddd mmm dd hh:nn:ss yyyy
@@ -1131,7 +1131,7 @@ void __fastcall TRemoteFile::SetListingStr(const std::wstring value)
                     GETCOL;
                     if (Col.size() != 8)
                     {
-                        nb::Abort();
+                        System::Abort();
                     }
                     Hour = (unsigned int)StrToInt(Col.substr(0, 2));
                     Min = (unsigned int)StrToInt(Col.substr(3, 2));
@@ -1167,7 +1167,7 @@ void __fastcall TRemoteFile::SetListingStr(const std::wstring value)
                         Hour = (unsigned int)StrToInt(Col.substr(0, P));
                         Min = (unsigned int)StrToInt(Col.substr(P + 1, Col.size() - P - 1));
                         // DEBUG_PRINTF(L"Hour = %d, Min = %d", Hour, Min);
-                        if (Hour > 23 || Hour > 59) { nb::Abort(); }
+                        if (Hour > 23 || Hour > 59) { System::Abort(); }
                         // When we don't got year, we assume current year
                         // with exception that the date would be in future
                         // in this case we assume last year.
@@ -1180,7 +1180,7 @@ void __fastcall TRemoteFile::SetListingStr(const std::wstring value)
                     else
                     {
                         Year = (unsigned int)StrToInt(Col);
-                        if (Year > 10000) { nb::Abort(); }
+                        if (Year > 10000) { System::Abort(); }
                         // When we don't got time we assume midnight
                         Hour = 0; Min = 0; Sec = 0;
                         FModificationFmt = mfMDY;
@@ -1220,7 +1220,7 @@ void __fastcall TRemoteFile::SetListingStr(const std::wstring value)
                     }
                     else
                     {
-                        nb::Abort();
+                        System::Abort();
                     }
                 }
                 FFileName = UnixExtractFileName(::Trim(Line));
@@ -1379,7 +1379,7 @@ void __fastcall TRemoteFile::SetTerminal(TTerminal *value)
 //---------------------------------------------------------------------------
 TRemoteDirectoryFile::TRemoteDirectoryFile() : TRemoteFile()
 {
-    SetModification(nb::TDateTime(0.0));
+    SetModification(System::TDateTime(0.0));
     SetModificationFmt(mfNone);
     SetLastAccess(GetModification());
     SetType('D');
@@ -1395,9 +1395,9 @@ TRemoteParentDirectory::TRemoteParentDirectory(TTerminal *ATerminal)
 }
 //=== TRemoteFileList ------------------------------------------------------
 TRemoteFileList::TRemoteFileList() :
-    nb::TObjectList()
+    System::TObjectList()
 {
-    FTimestamp = nb::Now();
+    FTimestamp = System::Now();
     SetOwnsObjects(true);
 }
 //---------------------------------------------------------------------------
@@ -1421,8 +1421,8 @@ void TRemoteFileList::DuplicateTo(TRemoteFileList *Copy)
 //---------------------------------------------------------------------------
 void TRemoteFileList::Clear()
 {
-    FTimestamp = nb::Now();
-    nb::TObjectList::Clear();
+    FTimestamp = System::Now();
+    System::TObjectList::Clear();
 }
 //---------------------------------------------------------------------------
 void TRemoteFileList::SetDirectory(const std::wstring value)
@@ -1536,11 +1536,11 @@ bool TRemoteDirectory::GetLoaded()
     return ((GetTerminal() != NULL) && GetTerminal()->GetActive() && !GetDirectory().empty());
 }
 //---------------------------------------------------------------------------
-nb::TStrings *TRemoteDirectory::GetSelectedFiles()
+System::TStrings *TRemoteDirectory::GetSelectedFiles()
 {
     if (!FSelectedFiles)
     {
-        FSelectedFiles = new nb::TStringList();
+        FSelectedFiles = new System::TStringList();
     }
     else
     {
@@ -1571,7 +1571,7 @@ void TRemoteDirectory::SetIncludeParentDirectory(bool value)
         else if (!value && GetParentDirectory())
         {
             assert(IndexOf(GetParentDirectory()) != NPOS);
-            nb::Error(SNotImplemented, 216);
+            System::Error(SNotImplemented, 216);
             // FIXME Extract(GetParentDirectory());
         }
     }
@@ -1590,18 +1590,18 @@ void TRemoteDirectory::SetIncludeThisDirectory(bool value)
         else if (!value && GetThisDirectory())
         {
             assert(IndexOf(GetThisDirectory()) != NPOS);
-            nb::Error(SNotImplemented, 217);
+            System::Error(SNotImplemented, 217);
             // FIXME Extract(GetThisDirectory());
         }
     }
 }
 //===========================================================================
-TRemoteDirectoryCache::TRemoteDirectoryCache() : nb::TStringList()
+TRemoteDirectoryCache::TRemoteDirectoryCache() : System::TStringList()
 {
     FSection = new TCriticalSection();
     Self = this;
     SetSorted(true);
-    SetDuplicates(nb::dupError);
+    SetDuplicates(System::dupError);
     SetCaseSensitive(true);
 }
 //---------------------------------------------------------------------------
@@ -1619,7 +1619,7 @@ void TRemoteDirectoryCache::Clear()
     {
         BOOST_SCOPE_EXIT ( (&Self) )
         {
-            Self->nb::TStringList::Clear();
+            Self->System::TStringList::Clear();
         } BOOST_SCOPE_EXIT_END
         for (size_t Index = 0; Index < GetCount(); Index++)
         {
@@ -1645,7 +1645,7 @@ bool TRemoteDirectoryCache::HasFileList(const std::wstring Directory)
 }
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryCache::HasNewerFileList(const std::wstring Directory,
-        nb::TDateTime Timestamp)
+        System::TDateTime Timestamp)
 {
     TGuard Guard(FSection);
 
@@ -1725,19 +1725,19 @@ void TRemoteDirectoryCache::DoClearFileList(const std::wstring Directory, bool S
 void TRemoteDirectoryCache::Delete(size_t Index)
 {
     delete (TRemoteFileList *)GetObject(Index);
-    nb::TStringList::Delete(Index);
+    System::TStringList::Delete(Index);
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TRemoteDirectoryChangesCache::TRemoteDirectoryChangesCache(int MaxSize) :
-    nb::TStringList(),
+    System::TStringList(),
     FMaxSize(MaxSize)
 {
 }
 //---------------------------------------------------------------------------
 void TRemoteDirectoryChangesCache::Clear()
 {
-    nb::TStringList::Clear();
+    System::TStringList::Clear();
 }
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryChangesCache::GetIsEmpty() const
@@ -1753,13 +1753,13 @@ void TRemoteDirectoryChangesCache::SetValue(const std::wstring Name,
     {
         Delete(Index);
     }
-    nb::TStringList::SetValue(Name, Value);
+    System::TStringList::SetValue(Name, Value);
 }
 //---------------------------------------------------------------------------
 std::wstring TRemoteDirectoryChangesCache::GetValue(const std::wstring Name)
 {
-    std::wstring Value = nb::TStringList::GetValue(Name);
-    nb::TStringList::SetValue(Name, Value);
+    std::wstring Value = System::TStringList::GetValue(Name);
+    System::TStringList::SetValue(Name, Value);
     return Value;
 }
 //---------------------------------------------------------------------------
@@ -1862,7 +1862,7 @@ void TRemoteDirectoryChangesCache::Serialize(std::wstring &Data)
     size_t ACount = GetCount();
     if (ACount > FMaxSize)
     {
-        nb::TStrings *Limited = new nb::TStringList();
+        System::TStrings *Limited = new System::TStringList();
         {
             BOOST_SCOPE_EXIT ( (&Limited) )
             {
@@ -2106,7 +2106,7 @@ void TRights::SetText(const std::wstring value)
         int Flag = 00001;
         int ExtendedFlag = 01000;
         bool KeepText = false;
-        std::string val = nb::W2MB(value.c_str());
+        std::string val = System::W2MB(value.c_str());
         for (int i = TextLen - 1; i >= 0; i--)
         {
             if (val[i] == UnsetSymbol)
@@ -2205,20 +2205,20 @@ std::wstring TRights::GetText() const
                 ExtendedFlag <<= 1;
             }
         }
-        // DEBUG_PRINTF(L"Result = %s", nb::MB2W(Result.c_str()).c_str());
-        return nb::MB2W(Result.c_str());
+        // DEBUG_PRINTF(L"Result = %s", System::MB2W(Result.c_str()).c_str());
+        return System::MB2W(Result.c_str());
     }
 }
 //---------------------------------------------------------------------------
 void TRights::SetOctal(const std::wstring value)
 {
-    std::string AValue(nb::W2MB(value.c_str()));
+    std::string AValue(System::W2MB(value.c_str()));
     if (AValue.size() == 3)
     {
         AValue = "0" + AValue;
     }
 
-    if (GetOctal() != nb::MB2W(AValue.c_str()))
+    if (GetOctal() != System::MB2W(AValue.c_str()))
     {
         bool Correct = (AValue.size() == 4);
         if (Correct)
@@ -2265,7 +2265,7 @@ std::wstring TRights::GetOctal() const
     Result[2] = static_cast<char>('0' + ((N & 00070) >> 3));
     Result[3] = static_cast<char>('0' + ((N & 00007) >> 0));
 
-    return nb::MB2W(Result.c_str());
+    return System::MB2W(Result.c_str());
 }
 //---------------------------------------------------------------------------
 void TRights::SetNumber(unsigned short value)
@@ -2526,7 +2526,7 @@ bool TRemoteProperties::operator !=(const TRemoteProperties &rhp) const
     return !(*this == rhp);
 }
 //---------------------------------------------------------------------------
-TRemoteProperties TRemoteProperties::CommonProperties(nb::TStrings *FileList)
+TRemoteProperties TRemoteProperties::CommonProperties(System::TStrings *FileList)
 {
     // TODO: Modification and LastAccess
     TRemoteProperties CommonProperties;

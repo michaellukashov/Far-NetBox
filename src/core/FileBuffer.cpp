@@ -20,7 +20,7 @@ char * __fastcall EOLToStr(TEOLType EOLType)
 //---------------------------------------------------------------------------
 TFileBuffer::TFileBuffer()
 {
-    FMemory = new nb::TMemoryStream();
+    FMemory = new System::TMemoryStream();
     FSize = 0;
 }
 //---------------------------------------------------------------------------
@@ -48,7 +48,7 @@ __int64 __fastcall TFileBuffer::GetPosition() const
     return FMemory->GetPosition();
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileBuffer::SetMemory(nb::TMemoryStream *value)
+void __fastcall TFileBuffer::SetMemory(System::TMemoryStream *value)
 {
     if (FMemory != value)
     {
@@ -57,7 +57,7 @@ void __fastcall TFileBuffer::SetMemory(nb::TMemoryStream *value)
     }
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TFileBuffer::ReadStream(nb::TStream *Stream, size_t  Len, bool ForceLen)
+size_t __fastcall TFileBuffer::ReadStream(System::TStream *Stream, size_t  Len, bool ForceLen)
 {
     size_t Result = 0;
     try
@@ -78,18 +78,18 @@ size_t __fastcall TFileBuffer::ReadStream(nb::TStream *Stream, size_t  Len, bool
         {
             SetSize(GetSize() - Len + Result);
         }
-        FMemory->Seek(Len, nb::soFromCurrent);
+        FMemory->Seek(Len, System::soFromCurrent);
     }
-    catch (const nb::EReadError &)
+    catch (const System::EReadError &)
     {
         ::RaiseLastOSError();
     }
     return Result;
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TFileBuffer::LoadStream(nb::TStream *Stream, size_t Len, bool ForceLen)
+size_t __fastcall TFileBuffer::LoadStream(System::TStream *Stream, size_t Len, bool ForceLen)
 {
-    FMemory->Seek(0, nb::soFromBeginning);
+    FMemory->Seek(0, System::soFromBeginning);
     return ReadStream(Stream, Len, ForceLen);
 }
 //---------------------------------------------------------------------------
@@ -223,21 +223,21 @@ void __fastcall TFileBuffer::Delete(size_t Index, size_t Len)
     SetSize(GetSize() - Len);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileBuffer::WriteToStream(nb::TStream *Stream, size_t Len)
+void __fastcall TFileBuffer::WriteToStream(System::TStream *Stream, size_t Len)
 {
     try
     {
         Stream->WriteBuffer(GetData() + GetPosition(), Len);
-        FMemory->Seek(Len, nb::soFromCurrent);
+        FMemory->Seek(Len, System::soFromCurrent);
     }
-    catch (const nb::EWriteError &)
+    catch (const System::EWriteError &)
     {
         ::RaiseLastOSError();
     }
 }
 //---------------------------------------------------------------------------
 TSafeHandleStream::TSafeHandleStream(HANDLE AHandle) :
-    nb::THandleStream(AHandle)
+    System::THandleStream(AHandle)
 {
 }
 

@@ -16,7 +16,7 @@ struct TSessionInfo
 {
     TSessionInfo();
 
-    nb::TDateTime LoginTime;
+    System::TDateTime LoginTime;
     std::wstring ProtocolBaseName;
     std::wstring ProtocolName;
     std::wstring SecurityProtocolName;
@@ -64,14 +64,14 @@ public:
     {}
     virtual void __fastcall Information(const std::wstring Str, bool Status) = 0;
     virtual int __fastcall QueryUser(const std::wstring Query,
-                          nb::TStrings *MoreMessages, int Answers, const TQueryParams *Params,
+                          System::TStrings *MoreMessages, int Answers, const TQueryParams *Params,
                           TQueryType QueryType = qtConfirmation) = 0;
     virtual int __fastcall QueryUserException(const std::wstring Query,
                                    const std::exception *E, int Answers, const TQueryParams *Params,
                                    TQueryType QueryType = qtConfirmation) = 0;
     virtual bool __fastcall PromptUser(TSessionData *Data, TPromptKind Kind,
-                            const std::wstring Name, const std::wstring Instructions, nb::TStrings *Prompts,
-                            nb::TStrings *Results) = 0;
+                            const std::wstring Name, const std::wstring Instructions, System::TStrings *Prompts,
+                            System::TStrings *Results) = 0;
     virtual void __fastcall DisplayBanner(const std::wstring Banner) = 0;
     virtual void __fastcall FatalError(const std::exception *E, const std::wstring Msg) = 0;
     virtual void __fastcall HandleExtendedException(const std::exception *E) = 0;
@@ -155,7 +155,7 @@ class TTouchSessionAction : public TFileSessionAction
 {
 public:
     explicit TTouchSessionAction(TActionLog *Log, const std::wstring FileName,
-                                 const nb::TDateTime &Modification);
+                                 const System::TDateTime &Modification);
 };
 //---------------------------------------------------------------------------
 class TMkdirSessionAction : public TFileSessionAction
@@ -207,7 +207,7 @@ public:
 typedef boost::signal2<void, TLogLineType, const std::wstring> doaddlog_signal_type;
 typedef doaddlog_signal_type::slot_type doaddlog_slot_type;
 //---------------------------------------------------------------------------
-class TSessionLog : protected nb::TStringList
+class TSessionLog : protected System::TStringList
 {
     friend class TSessionAction;
     friend class TSessionActionRecord;
@@ -231,8 +231,8 @@ public:
     size_t __fastcall GetBottomIndex();
     std::wstring __fastcall GetLine(size_t Index);
     TLogLineType __fastcall GetType(size_t Index);
-    const nb::notify_signal_type &GetOnStateChange() const { return FOnStateChange; }
-    void SetOnStateChange(const nb::notify_slot_type &value) { FOnStateChange.connect(value); }
+    const System::notify_signal_type &GetOnStateChange() const { return FOnStateChange; }
+    void SetOnStateChange(const System::notify_slot_type &value) { FOnStateChange.connect(value); }
     std::wstring __fastcall GetCurrentFileName() { return FCurrentFileName; }
     bool __fastcall GetLoggingToFile();
     size_t __fastcall GetTopIndex() { return FTopIndex; }
@@ -258,7 +258,7 @@ private:
     TSessionData *FSessionData;
     std::wstring FName;
     bool FClosed;
-    nb::notify_signal_type FOnStateChange;
+    System::notify_signal_type FOnStateChange;
     TSessionLog *Self;
 
     std::wstring __fastcall GetLine(int Index);
@@ -285,7 +285,7 @@ public:
 
   void __fastcall ReflectSettings();
   void __fastcall AddFailure(const std::exception * E);
-  void __fastcall AddFailure(nb::TStrings * Messages);
+  void __fastcall AddFailure(System::TStrings * Messages);
   void __fastcall BeginGroup(std::wstring Name);
   void __fastcall EndGroup();
 
@@ -299,7 +299,7 @@ protected:
   void __fastcall RecordPendingActions();
   void __fastcall Add(const std::wstring  & Line);
   void __fastcall AddIndented(const std::wstring  & Line);
-  void __fastcall AddMessages(std::wstring Indent, nb::TStrings * Messages);
+  void __fastcall AddMessages(std::wstring Indent, System::TStrings * Messages);
 
 private:
   TConfiguration * FConfiguration;
@@ -310,7 +310,7 @@ private:
   std::wstring  FCurrentFileName;
   TSessionUI * FUI;
   TSessionData * FSessionData;
-  nb::TList * FPendingActions;
+  System::TList * FPendingActions;
   bool FClosed;
   bool FInGroup;
   std::wstring FIndent;

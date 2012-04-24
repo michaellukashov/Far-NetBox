@@ -239,14 +239,14 @@ std::wstring ItemsFormatString(const std::wstring SingleItemFormat,
 }
 //---------------------------------------------------------------------------
 std::wstring ItemsFormatString(const std::wstring SingleItemFormat,
-                               const std::wstring MultiItemsFormat, nb::TStrings *Items)
+                               const std::wstring MultiItemsFormat, System::TStrings *Items)
 {
     return ItemsFormatString(SingleItemFormat, MultiItemsFormat,
                              Items->GetCount(), (Items->GetCount() > 0 ? Items->GetString(0) : std::wstring()));
 }
 //---------------------------------------------------------------------------
 std::wstring FileNameFormatString(const std::wstring SingleFileFormat,
-                                  const std::wstring MultiFilesFormat, nb::TStrings *Files, bool Remote)
+                                  const std::wstring MultiFilesFormat, System::TStrings *Files, bool Remote)
 {
     assert(Files != NULL);
     std::wstring Item;
@@ -295,7 +295,7 @@ std::wstring UniqTempDir(const std::wstring BaseDir, const std::wstring Identity
         }
         else
         {
-            TempDir += IncludeTrailingBackslash(FormatDateTime(L"nnzzz", nb::Now()));
+            TempDir += IncludeTrailingBackslash(FormatDateTime(L"nnzzz", System::Now()));
         };
     }
     while (!Mask && DirectoryExists(TempDir));
@@ -348,7 +348,7 @@ bool DeleteDirectory(const std::wstring DirName)
     return retval;
 }
 //---------------------------------------------------------------------------
-std::wstring FormatDateTimeSpan(const std::wstring TimeFormat, nb::TDateTime DateTime)
+std::wstring FormatDateTimeSpan(const std::wstring TimeFormat, System::TDateTime DateTime)
 {
     std::wstring Result;
     if (static_cast<int>(DateTime) > 0)
@@ -357,9 +357,9 @@ std::wstring FormatDateTimeSpan(const std::wstring TimeFormat, nb::TDateTime Dat
     }
     // days are decremented, because when there are to many of them,
     // "integer overflow" error occurs
-    // Result += FormatDateTime(TimeFormat, nb::TDateTime(DateTime - int(DateTime)));
+    // Result += FormatDateTime(TimeFormat, System::TDateTime(DateTime - int(DateTime)));
     // DEBUG_PRINTF(L"TimeFormat = %s", TimeFormat.c_str());
-    nb::TDateTime dt(DateTime - static_cast<int>(DateTime));
+    System::TDateTime dt(DateTime - static_cast<int>(DateTime));
     unsigned int H, M, S, MS;
     dt.DecodeTime(H, M, S, MS);
     Result += FORMAT(L"%d:%02d:%02d", H, M, S);

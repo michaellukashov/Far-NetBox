@@ -32,7 +32,7 @@
 
 #define NPOS static_cast<size_t>(-1)
 
-namespace nb {
+namespace System {
 
 //---------------------------------------------------------------------------
 extern const std::wstring sLineBreak;
@@ -45,8 +45,8 @@ size_t __cdecl debug_printf(const wchar_t *format, ...);
 size_t __cdecl debug_printf2(const char *format, ...);
 
 #ifdef NETBOX_DEBUG
-#define DEBUG_PRINTF(format, ...) nb::debug_printf(L"NetBox: [%s:%d] %s: "format L"\n", ExtractFilename(nb::MB2W(__FILE__).c_str(), L'\\').c_str(), __LINE__, nb::MB2W(__FUNCTION__).c_str(), __VA_ARGS__);
-#define DEBUG_PRINTF2(format, ...) nb::debug_printf2("NetBox: [%s:%d] %s: "format "\n", nb::W2MB(ExtractFilename(nb::MB2W(__FILE__).c_str(), '\\').c_str()).c_str(), __LINE__, __FUNCTION__, __VA_ARGS__);
+#define DEBUG_PRINTF(format, ...) System::debug_printf(L"NetBox: [%s:%d] %s: "format L"\n", ExtractFilename(System::MB2W(__FILE__).c_str(), L'\\').c_str(), __LINE__, System::MB2W(__FUNCTION__).c_str(), __VA_ARGS__);
+#define DEBUG_PRINTF2(format, ...) System::debug_printf2("NetBox: [%s:%d] %s: "format "\n", System::W2MB(ExtractFilename(System::MB2W(__FILE__).c_str(), '\\').c_str()).c_str(), __LINE__, __FUNCTION__, __VA_ARGS__);
 #else
 #define DEBUG_PRINTF(format, ...)
 #define DEBUG_PRINTF2(format, ...)
@@ -328,13 +328,13 @@ public:
     void __fastcall QuickSort(size_t L, size_t R, TStringListSortCompare SCompare);
 
     void __fastcall LoadFromFile(const std::wstring FileName);
-    const nb::notify_signal_type & __fastcall GetOnChange() const { return FOnChange; }
-    void __fastcall SetOnChange(const nb::notify_slot_type &onChange)
+    const System::notify_signal_type & __fastcall GetOnChange() const { return FOnChange; }
+    void __fastcall SetOnChange(const System::notify_slot_type &onChange)
     {
         FOnChange.connect(onChange);
     }
-    const nb::notify_signal_type & __fastcall GetOnChanging() const { return FOnChanging; }
-    void __fastcall SetOnChanging(const nb::notify_slot_type &onChanging)
+    const System::notify_signal_type & __fastcall GetOnChanging() const { return FOnChanging; }
+    void __fastcall SetOnChanging(const System::notify_slot_type &onChanging)
     {
         FOnChanging.connect(onChanging);
     }
@@ -350,8 +350,8 @@ private:
     void __fastcall ExchangeItems(size_t Index1, size_t Index2);
 
 private:
-    nb::notify_signal_type FOnChange;
-    nb::notify_signal_type FOnChanging;
+    System::notify_signal_type FOnChange;
+    System::notify_signal_type FOnChanging;
     TStringItemList FList;
     bool FSorted;
     bool FCaseSensitive;
@@ -473,19 +473,19 @@ public:
     void __fastcall WriteBuffer(const void *Buffer, __int64 Count);
     __int64 __fastcall CopyFrom(TStream *Source, __int64 Count);
 public:
-    __int64 __fastcall GetPosition() { return Seek(0, nb::soFromCurrent); }
+    __int64 __fastcall GetPosition() { return Seek(0, System::soFromCurrent); }
     __int64 __fastcall GetSize()
     {
-        __int64 Pos = Seek(0, nb::soFromCurrent);
-        __int64 Result = Seek(0, nb::soFromEnd);
-        Seek(Pos, nb::soFromBeginning);
+        __int64 Pos = Seek(0, System::soFromCurrent);
+        __int64 Result = Seek(0, System::soFromEnd);
+        Seek(Pos, System::soFromBeginning);
         return Result;
     }
 public:
     virtual void __fastcall SetSize(const __int64 NewSize) = 0;
     void __fastcall SetPosition(const __int64 Pos)
     {
-        Seek(Pos, nb::soFromBeginning);
+        Seek(Pos, System::soFromBeginning);
     }
 };
 
@@ -701,4 +701,4 @@ int __fastcall GetDefaultLCID();
 
 //---------------------------------------------------------------------------
 
-} // namespace nb
+} // namespace System
