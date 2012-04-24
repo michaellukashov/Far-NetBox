@@ -242,6 +242,7 @@ typedef class UnicodeString
 		bool ContainsAny(const wchar_t *Chars, size_t nStartPos=0) const { return wcspbrk(m_pData->GetData()+nStartPos,Chars) != nullptr; }
 		bool Contains(const wchar_t *lpwszFind, size_t nStartPos=0) const { return wcsstr(m_pData->GetData()+nStartPos,lpwszFind) != nullptr; }
 
+		operator std::wstring () const { return m_pData->GetData(); }
         wchar_t __fastcall operator [](const int idx) const
         {
           ThrowIfOutOfRange(idx);   // Should Range-checking be optional to avoid overhead ??

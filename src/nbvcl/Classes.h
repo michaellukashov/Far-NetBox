@@ -702,3 +702,5 @@ int __fastcall GetDefaultLCID();
 //---------------------------------------------------------------------------
 
 } // namespace System
+
+using namespace System;

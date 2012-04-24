@@ -6,7 +6,7 @@
 #include "Terminal.h"
 
 //---------------------------------------------------------------------------
-bool __fastcall ExceptionMessage(const std::exception *E, std::wstring &Message)
+bool __fastcall ExceptionMessage(const std::exception *E, UnicodeString &Message)
 {
     bool Result = true;
     if (dynamic_cast<const System::EAbort *>(E) != NULL)
@@ -45,8 +45,24 @@ System::TStrings * __fastcall ExceptionToMoreMessages(const std::exception *E)
     return Result;
 }
 //---------------------------------------------------------------------------
+Exception::Exception(const std::wstring Msg) :
+    parent(System::W2MB(Msg.c_str()).c_str())
+{
+}
+Exception::Exception(const Exception &E) throw() :
+    parent(E.what())
+{
+}
+// Exception::Exception(const std::exception *E) :
+    // parent(L""),
+    // FMoreMessages(NULL)
+// {
+    // AddMoreMessages(E);
+    // DEBUG_PRINTF(L"FMessage = %s", FMessage.c_str());
+// }
+//---------------------------------------------------------------------------
 ExtException::ExtException(const std::exception *E) :
-    parent(""),
+    parent(L""),
     FMoreMessages(NULL)
 {
     AddMoreMessages(E);
@@ -54,7 +70,7 @@ ExtException::ExtException(const std::exception *E) :
 }
 //---------------------------------------------------------------------------
 ExtException::ExtException(const std::wstring Msg) :
-    parent(System::W2MB(Msg.c_str()).c_str()),
+    parent(Msg),
     FMoreMessages(NULL)
 {
     // append message to the end to more messages
@@ -79,7 +95,7 @@ ExtException::ExtException(const std::wstring Msg) :
 
 //---------------------------------------------------------------------------
 ExtException::ExtException(const std::wstring Msg, const std::exception *E) :
-    parent(System::W2MB(Msg.c_str()).c_str()),
+    parent(Msg),
     FMoreMessages(NULL)
 {
     DEBUG_PRINTF(L"Msg = %s, E = %x", Msg.c_str(), E);
@@ -106,7 +122,7 @@ ExtException::ExtException(const std::wstring Msg, const std::exception *E) :
 //---------------------------------------------------------------------------
 ExtException::ExtException(const std::wstring Msg, System::TStrings *MoreMessages,
                            bool Own) :
-    parent(System::W2MB(Msg.c_str()).c_str()),
+    parent(Msg),
     FMoreMessages(NULL)
 {
     if (Own)
@@ -122,7 +138,7 @@ ExtException::ExtException(const std::wstring Msg, System::TStrings *MoreMessage
 }
 //---------------------------------------------------------------------------
 ExtException::ExtException(const ExtException &E) throw() :
-    parent(E.what()),
+    parent(E),
     FMoreMessages(NULL)
 {
     AddMoreMessages(&E);

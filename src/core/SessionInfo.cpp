@@ -82,25 +82,25 @@ UnicodeString __fastcall XmlAttributeEscape(UnicodeString Str)
   return DoXmlEscape(Str, true);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall XmlTimestamp(const System::TDateTime & DateTime)
+UnicodeString __fastcall XmlTimestamp(const TDateTime & DateTime)
 {
   return FormatDateTime(L"yyyy'-'mm'-'dd'T'hh':'nn':'ss'.'zzz'Z'", ConvertTimestampToUTC(DateTime));
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall XmlTimestamp()
 {
-  return XmlTimestamp(System::Now());
+  return XmlTimestamp(Now());
 }
 //---------------------------------------------------------------------------
-System::TStrings * __fastcall ExceptionToMessages(const std::exception * E)
+TStrings * __fastcall ExceptionToMessages(ExtException * E)
 {
-  System::TStrings * Result = NULL;
-  std::wstring Message;
+  TStrings * Result = NULL;
+  UnicodeString Message;
   if (ExceptionMessage(E, Message))
   {
-    Result = new System::TStringList();
+    Result = new TStringList();
     Result->Add(Message);
-    const ExtException * EE = dynamic_cast<const ExtException *>(E);
+    ExtException * EE = dynamic_cast<ExtException *>(E);
     if ((EE != NULL) && (EE->GetMoreMessages() != NULL))
     {
       Result->AddStrings(EE->GetMoreMessages());
@@ -116,42 +116,42 @@ System::TStrings * __fastcall ExceptionToMessages(const std::exception * E)
 class TSessionActionRecord
 {
 public:
-    TSessionActionRecord(TActionLog *Log, TLogAction Action) :
-        FLog(Log),
-        FAction(Action),
-        FState(Opened),
-        FRecursive(false),
-        FErrorMessages(NULL),
-        FNames(new System::TStringList()),
-        FValues(new System::TStringList()),
-        FFileList(NULL),
-        FFile(NULL)
-    {
-        FLog->AddPendingAction(this);
-    }
+  __fastcall TSessionActionRecord(TActionLog * Log, TLogAction Action) :
+    FLog(Log),
+    FAction(Action),
+    FState(Opened),
+    FRecursive(false),
+    FErrorMessages(NULL),
+    FNames(new TStringList()),
+    FValues(new TStringList()),
+    FFileList(NULL),
+    FFile(NULL)
+  {
+    FLog->AddPendingAction(this);
+  }
 
-    ~TSessionActionRecord()
-    {
-        delete FErrorMessages;
-        delete FNames;
-        delete FValues;
-        delete FFileList;
+  __fastcall ~TSessionActionRecord()
+  {
+    delete FErrorMessages;
+    delete FNames;
+    delete FValues;
+    delete FFileList;
     delete FFile;
-    }
+  }
 
-    void __fastcall Restart()
-    {
-        FState = Opened;
-        FRecursive = false;
-        delete FErrorMessages;
-        FErrorMessages = NULL;
-        delete FFileList;
-        FFileList = NULL;
-        delete FFile;
-        FFile = NULL;
-        FNames->Clear();
-        FValues->Clear();
-    }
+  void __fastcall Restart()
+  {
+    FState = Opened;
+    FRecursive = false;
+    delete FErrorMessages;
+    FErrorMessages = NULL;
+    delete FFileList;
+    FFileList = NULL;
+    delete FFile;
+    FFile = NULL;
+    FNames->Clear();
+    FValues->Clear();
+  }
 
     bool __fastcall Record()
     {
