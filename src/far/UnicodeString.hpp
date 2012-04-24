@@ -255,8 +255,8 @@ public:
 		delete[] Data;
 	}
 
-	operator const char*() const {return Data;}
-	size_t size() const {return Size;}
+	operator const char*() const { return Data; }
+	size_t size() const { return Size; }
     const char *c_str() const { return Data; }
     size_t Length() const { return Size; }
 
@@ -266,7 +266,7 @@ public:
     UTF8String __fastcall operator +(const std::wstring &rhs) const;
 
 private:
-	void Init(const wchar_t* Str, size_t Length)
+	void Init(const wchar_t *Str, size_t Length)
 	{
 		Size = WideCharToMultiByte(CP_UTF8, 0, Str, static_cast<int>(Length), nullptr, 0, nullptr, nullptr) + 1;
 		Data = new char[Size];
