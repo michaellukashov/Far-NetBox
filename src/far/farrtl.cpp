@@ -400,7 +400,7 @@ _maxspan (not less than 1) if a swap is very expensive such as when you have
 an array of large structures to be sorted, rather than an array of pointers to
 structures.  The default value is optimized for a high cost for compares. */
 
-#define SWAP(a,b) (*swap_fp)(a,b,n_to_swap)
+#define FARRTLSWAP(a,b) (*swap_fp)(a,b,n_to_swap)
 #define COMPEX(a,b,u) (*comp_fp)(a,b,u)
 #define COMP(a,b) (*comp_fp)(a,b)
 
@@ -435,19 +435,19 @@ void __cdecl qsortex(char *base, size_t nel, size_t width,
 		while ((size_t)(limit - base) > thresh) /* if more than _maxspan elements */
 		{
 			/*swap middle, base*/
-			SWAP(((size_t)(limit - base) >> 1) -
+			FARRTLSWAP(((size_t)(limit - base) >> 1) -
 			     ((((size_t)(limit - base) >> 1)) % width) + base, base);
 			i = base + width;                /* i scans from left to right     */
 			j = limit - width;               /* j scans from right to left     */
 
 			if (COMPEX(i, j,user) > 0)              /* Sedgewick's                    */
-				SWAP(i, j);                    /*    three-element sort          */
+				FARRTLSWAP(i, j);                    /*    three-element sort          */
 
 			if (COMPEX(base, j,user) > 0)           /*        sets things up          */
-				SWAP(base, j);                 /*            so that             */
+				FARRTLSWAP(base, j);                 /*            so that             */
 
 			if (COMPEX(i, base,user) > 0)           /*              *i <= *base <= *j */
-				SWAP(i, base);                 /* *base is the pivot element     */
+				FARRTLSWAP(i, base);                 /* *base is the pivot element     */
 
 			for (;;)
 			{
@@ -464,10 +464,10 @@ void __cdecl qsortex(char *base, size_t nel, size_t width,
 				if (i > j)                    /* break loop if pointers crossed */
 					break;
 
-				SWAP(i, j);                   /* else swap elements, keep scanning */
+				FARRTLSWAP(i, j);                   /* else swap elements, keep scanning */
 			}
 
-			SWAP(base, j);                   /* move pivot into correct place  */
+			FARRTLSWAP(base, j);                   /* move pivot into correct place  */
 
 			if (j - base > limit - i)        /* if left subfile is larger...   */
 			{
@@ -494,7 +494,7 @@ void __cdecl qsortex(char *base, size_t nel, size_t width,
 
 			while (j > base && COMPEX(j - width, j,user) > 0)
 			{
-				SWAP(j - width, j);
+				FARRTLSWAP(j - width, j);
 				j -= width;
 			}
 
