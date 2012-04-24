@@ -854,7 +854,6 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring Line)
             ::GetLocalTime(&t);
             std::wstring Timestamp = FORMAT(L" %04d-%02d-%02d %02d:%02d:%02d.%03d ",
                                             t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond, t.wMilliseconds);
-            // UTF8String UtfLine = UTF8String(UnicodeString(LogLineMarks[Type]) + Timestamp + Line + "\n");
             UTF8String UtfLine = UTF8String(UnicodeString(LogLineMarks[Type]) + Timestamp + Line + L"\n");
             fwrite(UtfLine.c_str(), UtfLine.Length(), 1, (FILE *)FFile);
             // nb::Error(SNotImplemented, 1490);
