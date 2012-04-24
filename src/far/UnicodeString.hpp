@@ -210,6 +210,7 @@ typedef class UnicodeString
 		friend const UnicodeString operator+(const UnicodeString &strSrc1, const UnicodeString &strSrc2);
 		friend const UnicodeString operator+(const UnicodeString &strSrc1, const char *lpszSrc2);
 		friend const UnicodeString operator+(const UnicodeString &strSrc1, const wchar_t *lpwszSrc2);
+		friend const UnicodeString operator+(const UnicodeString &strSrc1, const std::wstring &strSrc2);
 
 		bool IsSubStrAt(size_t Pos, size_t Len, const wchar_t* Data, size_t DataLen) const;
 		bool IsSubStrAt(size_t Pos, const wchar_t* Str, size_t StrLen) const { return IsSubStrAt(Pos, StrLen, Str, StrLen); }
@@ -236,27 +237,33 @@ typedef class UnicodeString
 		bool Contains(const wchar_t *lpwszFind, size_t nStartPos=0) const { return wcsstr(m_pData->GetData()+nStartPos,lpwszFind) != nullptr; }
 } string;
 
-class Utf8String
+class UTF8String
 {
 public:
-	Utf8String(const wchar_t* Str)
+	UTF8String(const wchar_t* Str)
 	{
 		Init(Str, StrLength(Str));
 	}
 
-	Utf8String(const string& Str)
+	UTF8String(const string& Str)
 	{
 		Init(Str, Str.GetLength());
 	}
 
-	~Utf8String()
+	~UTF8String()
 	{
 		delete[] Data;
 	}
 
 	operator const char*() const {return Data;}
 	size_t size() const {return Size;}
+    const char *c_str() const { return Data; }
+    size_t Length() const { return Size; }
 
+
+public:
+    UTF8String __fastcall operator +(const UTF8String &rhs) const;
+    UTF8String __fastcall operator +(const std::wstring &rhs) const;
 
 private:
 	void Init(const wchar_t* Str, size_t Length)
