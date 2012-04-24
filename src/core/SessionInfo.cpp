@@ -4,50 +4,50 @@
 #pragma hdrstop
 #endif
 
-#include "stdafx.h"
-
 #include <stdio.h>
 #include <lmcons.h>
 #define SECURITY_WIN32
 #include <sspi.h>
 #include <secext.h>
 
+#ifdef _MSC_VER
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
 #include <boost/bind.hpp>
+#include "UnicodeString.hpp"
+#endif
 
 #include "Common.h"
 #include "SessionInfo.h"
 #include "Exceptions.h"
 #include "TextsCore.h"
-#include "UnicodeString.hpp"
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
 #pragma package(smart_init)
 #endif
 //---------------------------------------------------------------------------
-std::wstring __fastcall DoXmlEscape(std::wstring Str, bool NewLine)
+UnicodeString __fastcall DoXmlEscape(UnicodeString Str, bool NewLine)
 {
-    for (size_t i = 0; i < Str.size(); i++)
+  for (int i = 1; i <= Str.Length(); i++)
+  {
+    const wchar_t * Repl = NULL;
+    switch (Str[i])
     {
-        const wchar_t *Repl = NULL;
-        switch (Str[i])
-        {
-        case L'&':
-            Repl = L"amp;";
-            break;
+      case L'&':
+        Repl = L"amp;";
+        break;
 
-        case L'>':
-            Repl = L"gt;";
-            break;
+      case L'>':
+        Repl = L"gt;";
+        break;
 
-        case L'<':
-            Repl = L"lt;";
-            break;
+      case L'<':
+        Repl = L"lt;";
+        break;
 
-        case L'"':
-            Repl = L"quot;";
-            break;
+      case L'"':
+        Repl = L"quot;";
+        break;
 
       case L'\n':
         if (NewLine)
@@ -56,28 +56,28 @@ std::wstring __fastcall DoXmlEscape(std::wstring Str, bool NewLine)
         }
         break;
 
-        case L'\r':
-            Str.erase(i, 1);
-            i--;
-            break;
-        }
-
-        if (Repl != NULL)
-        {
-            Str[i] = '&';
-            Str.insert(i + 1, std::wstring(Repl));
-            i += wcslen(Repl);
-        }
+      case L'\r':
+        Str.Delete(i, 1);
+        i--;
+        break;
     }
-    return Str;
+
+    if (Repl != NULL)
+    {
+      Str[i] = L'&';
+      Str.Insert(Repl, i + 1);
+      i += wcslen(Repl);
+    }
+  }
+  return Str;
 }
 //---------------------------------------------------------------------------
-std::wstring __fastcall XmlEscape(std::wstring Str)
+UnicodeString __fastcall XmlEscape(UnicodeString Str)
 {
-    return DoXmlEscape(Str, false);
+  return DoXmlEscape(Str, false);
 }
 //---------------------------------------------------------------------------
-std::wstring __fastcall XmlAttributeEscape(std::wstring Str)
+UnicodeString __fastcall XmlAttributeEscape(UnicodeString Str)
 {
   return DoXmlEscape(Str, true);
 }
