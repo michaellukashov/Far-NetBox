@@ -67,7 +67,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #undef WIN32_NO_STATUS
 #include <winioctl.h>
 #include <mmsystem.h>
-#include <wininet.h>
+// #include <wininet.h>
 #include <winspool.h>
 #include <setupapi.h>
 #include <aclapi.h>
@@ -82,7 +82,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <shellapi.h>
 
 #ifdef _MSC_VER
-# include <ntstatus.h>
+// # include <ntstatus.h>
 # include <shobjidl.h>
 # include <winternl.h>
 # include <cfgmgr32.h>
