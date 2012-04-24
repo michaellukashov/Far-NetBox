@@ -181,8 +181,8 @@ void __cdecl xf_free(void * block)
 
 	free(block);
 }
-
-void * __cdecl operator xf_new(size_t size) throw()
+/*
+void * __cdecl operator new(size_t size) throw()
 {
 	void * res = xf_malloc(size);
 
@@ -198,7 +198,7 @@ void * __cdecl operator xf_new(size_t size) throw()
 	return res;
 }
 
-void * __cdecl operator xf_new[] (size_t size) throw()
+void * __cdecl operator new[] (size_t size) throw()
 {
 	void * res = operator new(size);
 
@@ -210,7 +210,7 @@ void * __cdecl operator xf_new[] (size_t size) throw()
 	return res;
 }
 
-void operator xf_delete(void *ptr) throw()
+void operator delete(void *ptr) throw()
 {
 
 #ifdef MEMORY_CHECK
@@ -229,7 +229,7 @@ void operator xf_delete(void *ptr) throw()
 #endif
 }
 
-void __cdecl operator xf_delete[] (void *ptr) throw()
+void __cdecl operator delete[] (void *ptr) throw()
 {
 #ifdef MEMORY_CHECK
 	if(ptr)
@@ -242,7 +242,7 @@ void __cdecl operator xf_delete[] (void *ptr) throw()
 
 	operator delete(ptr);
 }
-
+*/
 char * __cdecl xf_strdup(const char * string)
 {
 	if (string)
