@@ -147,6 +147,7 @@ typedef class UnicodeString
 		wchar_t *GetBuffer(size_t nSize = (size_t)-1);
 		void ReleaseBuffer(size_t nLength = (size_t)-1);
 
+        size_t  __fastcall Length() const { return GetLength(); }
 		size_t GetLength() const { return m_pData->GetLength(); }
 		size_t SetLength(size_t nLength);
 
@@ -179,6 +180,8 @@ typedef class UnicodeString
 		UnicodeString& Insert(size_t Pos, const wchar_t* Str) { return Insert(Pos, Str, StrLength(NullToEmpty(Str))); }
 		UnicodeString& Insert(size_t Pos, wchar_t Ch) { return Insert(Pos, &Ch, 1); }
 
+		UnicodeString& Insert(const wchar_t *Str, size_t Pos) { return Insert(Pos, Str); }
+
 		UnicodeString& Copy(const wchar_t *Str, size_t StrLen) { return Replace(0, GetLength(), Str, StrLen); }
 		UnicodeString& Copy(const wchar_t *Str) { return Copy(Str, StrLength(NullToEmpty(Str))); }
 		UnicodeString& Copy(wchar_t Ch) { return Copy(&Ch, 1); }
@@ -186,6 +189,7 @@ typedef class UnicodeString
 		UnicodeString& Copy(const char *lpszData, UINT CodePage=CP_OEMCP);
 
 		UnicodeString& Remove(size_t Pos, size_t Len = 1) { return Replace(Pos, Len, nullptr, 0); }
+        UnicodeString& Delete(size_t index, size_t count) { return Remove(index, count); }
 		UnicodeString& LShift(size_t nShiftCount, size_t nStartPos=0) { return Remove(nStartPos, nShiftCount); }
 
 		UnicodeString& Clear();
@@ -235,6 +239,19 @@ typedef class UnicodeString
 		bool Contains(wchar_t Ch, size_t nStartPos=0) const { return wcschr(m_pData->GetData()+nStartPos,Ch) != nullptr; }
 		bool ContainsAny(const wchar_t *Chars, size_t nStartPos=0) const { return wcspbrk(m_pData->GetData()+nStartPos,Chars) != nullptr; }
 		bool Contains(const wchar_t *lpwszFind, size_t nStartPos=0) const { return wcsstr(m_pData->GetData()+nStartPos,lpwszFind) != nullptr; }
+
+        wchar_t __fastcall operator [](const int idx) const
+        {
+          // ThrowIfOutOfRange(idx);   // Should Range-checking be optional to avoid overhead ??
+          return m_pData->GetData()[idx-1];
+        }
+
+        wchar_t& __fastcall operator [](const int idx)
+        {
+          // ThrowIfOutOfRange(idx);   // Should Range-checking be optional to avoid overhead ??
+          // Unique();                 // Ensure we're not ref-counted (and Unicode)
+          return m_pData->GetData()[idx-1];
+        }
 } string;
 
 class UTF8String
