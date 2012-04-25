@@ -350,7 +350,7 @@ TWinSCPFileSystem::~TWinSCPFileSystem()
     // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-void TWinSCPFileSystem::HandleException(const std::exception *E, int OpMode)
+void TWinSCPFileSystem::HandleException(const Exception *E, int OpMode)
 {
     if ((GetTerminal() != NULL) && ::InheritsFrom<std::exception, EFatal>(E))
     {
