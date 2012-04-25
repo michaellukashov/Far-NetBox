@@ -126,8 +126,8 @@ public:
     void ClearStdError();
     bool GetStoredCredentialsTried();
 
-    void RegisterReceiveHandler(const System::notify_slot_type &Handler);
-    void UnregisterReceiveHandler(const System::notify_slot_type &Handler);
+    void RegisterReceiveHandler(const TNotifyEvent &Handler);
+    void UnregisterReceiveHandler(const TNotifyEvent &Handler);
 
     // interface to PuTTY core
     void UpdateSocket(SOCKET value, bool Startup);
@@ -151,7 +151,7 @@ public:
     void SetActive(bool value);
     bool GetReady();
     captureoutput_signal_type &GetOnCaptureOutput() { return FOnCaptureOutput; }
-    void SetOnCaptureOutput(const captureoutput_slot_type &value) { FOnCaptureOutput.connect(value); }
+    void SetOnCaptureOutput(const TCaptureOutputEvent &value) { FOnCaptureOutput.connect(value); }
     System::TDateTime GetLastDataSent() { return FLastDataSent; }
     std::wstring GetLastTunnelError() { return FLastTunnelError; }
     std::wstring GetUserName() { return FUserName; }

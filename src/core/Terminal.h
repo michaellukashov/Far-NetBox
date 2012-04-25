@@ -21,7 +21,7 @@
 class EFileNotFoundError : public Exception
 {
 public:
-    EFileNotFoundError() : Exception()
+    EFileNotFoundError() : Exception(L"")
     {
     }
 };
@@ -78,7 +78,7 @@ typedef void __fastcall (__closure *TInformationEvent)
   (TTerminal * Terminal, const UnicodeString & Str, bool Status, int Phase);
 #else
 typedef boost::signal8<void, TObject * /* Sender */, const UnicodeString /* Query */, TStrings * /* MoreMessages */ , unsigned int /* Answers */,
-        const TQueryParams * /* Params */, unsigned int & /* Answer */, TQueryType /* QueryType */, void * /* Arg */ > queryuser_signal_type;
+  const TQueryParams * /* Params */, unsigned int & /* Answer */, TQueryType /* QueryType */, void * /* Arg */ > queryuser_signal_type;
 typedef queryuser_signal_type::slot_type TQueryUserEvent;
 typedef boost::signal8<void, TTerminal * /* Terminal */, TPromptKind /* Kind */, UnicodeString /* Name */, UnicodeString /* Instructions */,
    TStrings * /* Prompts */, TStrings * /* Results */, bool & /* Result */, void * /* Arg */> promptuser_signal_type;
@@ -267,7 +267,6 @@ private:
   void AddCachedFileList(TRemoteFileList *FileList);
   inline bool InTransaction();
 
-  void DoProgress(TFileOperationProgressType &ProgressData, TCancelStatus &Cancel);
 protected:
   bool FReadCurrentDirectoryPending;
   bool FReadDirectoryPending;
@@ -488,12 +487,53 @@ public:
 
   const TSessionInfo & __fastcall GetSessionInfo();
   const TFileSystemInfo & __fastcall GetFileSystemInfo(bool Retrieve = false);
-  void __fastcall inline LogEvent(const UnicodeString & Str);
+  void __fastcall LogEvent(const UnicodeString & Str);
 
   static bool __fastcall IsAbsolutePath(const UnicodeString Path);
   static UnicodeString __fastcall ExpandFileName(UnicodeString Path,
     const UnicodeString BasePath);
 
+#ifndef _MSC_VER
+  __property TSessionData * SessionData = { read = FSessionData };
+  __property TSessionLog * Log = { read = FLog };
+  __property TActionLog * ActionLog = { read = FActionLog };
+  __property TConfiguration * Configuration = { read = FConfiguration };
+  __property bool Active = { read = GetActive };
+  __property TSessionStatus Status = { read = FStatus };
+  __property UnicodeString CurrentDirectory = { read = GetCurrentDirectory, write = SetCurrentDirectory };
+  __property bool ExceptionOnFail = { read = GetExceptionOnFail, write = SetExceptionOnFail };
+  __property TRemoteDirectory * Files = { read = FFiles };
+  __property TNotifyEvent OnChangeDirectory = { read = FOnChangeDirectory, write = FOnChangeDirectory };
+  __property TReadDirectoryEvent OnReadDirectory = { read = FOnReadDirectory, write = FOnReadDirectory };
+  __property TNotifyEvent OnStartReadDirectory = { read = FOnStartReadDirectory, write = FOnStartReadDirectory };
+  __property TReadDirectoryProgressEvent OnReadDirectoryProgress = { read = FOnReadDirectoryProgress, write = FOnReadDirectoryProgress };
+  __property TDeleteLocalFileEvent OnDeleteLocalFile = { read = FOnDeleteLocalFile, write = FOnDeleteLocalFile };
+  __property const TRemoteTokenList * Groups = { read = GetGroups };
+  __property const TRemoteTokenList * Users = { read = GetUsers };
+  __property const TRemoteTokenList * Membership = { read = GetMembership };
+  __property TFileOperationProgressEvent OnProgress  = { read=FOnProgress, write=FOnProgress };
+  __property TFileOperationFinished OnFinished  = { read=FOnFinished, write=FOnFinished };
+  __property TCurrentFSProtocol FSProtocol = { read = FFSProtocol };
+  __property bool UseBusyCursor = { read = FUseBusyCursor, write = FUseBusyCursor };
+  __property UnicodeString UserName = { read=GetUserName };
+  __property bool IsCapable[TFSCapability Capability] = { read = GetIsCapable };
+  __property bool AreCachesEmpty = { read = GetAreCachesEmpty };
+  __property bool CommandSessionOpened = { read = GetCommandSessionOpened };
+  __property TTerminal * CommandSession = { read = GetCommandSession };
+  __property bool AutoReadDirectory = { read = FAutoReadDirectory, write = FAutoReadDirectory };
+  __property TStrings * FixedPaths = { read = GetFixedPaths };
+  __property bool ResolvingSymlinks = { read = GetResolvingSymlinks };
+  __property UnicodeString Password = { read = GetPassword };
+  __property UnicodeString TunnelPassword = { read = GetTunnelPassword };
+  __property bool StoredCredentialsTried = { read = GetStoredCredentialsTried };
+  __property TQueryUserEvent OnQueryUser = { read = FOnQueryUser, write = FOnQueryUser };
+  __property TPromptUserEvent OnPromptUser = { read = FOnPromptUser, write = FOnPromptUser };
+  __property TDisplayBannerEvent OnDisplayBanner = { read = FOnDisplayBanner, write = FOnDisplayBanner };
+  __property TExtendedExceptionEvent OnShowExtendedException = { read = FOnShowExtendedException, write = FOnShowExtendedException };
+  __property TInformationEvent OnInformation = { read = FOnInformation, write = FOnInformation };
+  __property TNotifyEvent OnClose = { read = FOnClose, write = FOnClose };
+  __property int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber };
+#else
   TSessionData *__fastcall GetSessionData() { return FSessionData; }
   TSessionLog *__fastcall GetLog() { return FLog; }
   TActionLog * __fastcall GetActionLog() { return FActionLog; };
@@ -506,50 +546,49 @@ public:
   void SetExceptionOnFail(bool value);
   TRemoteDirectory *GetFiles() { return FFiles; }
   const notify_signal_type &GetOnChangeDirectory() const { return FOnChangeDirectory; }
-  void SetOnChangeDirectory(const notify_slot_type &value) { FOnChangeDirectory.connect(value); }
+  void SetOnChangeDirectory(const TNotifyEvent &value) { FOnChangeDirectory.connect(value); }
   readdirectory_signal_type &GetOnReadDirectory() { return FOnReadDirectory; }
-  void SetOnReadDirectory(const readdirectory_slot_type &value) { FOnReadDirectory.connect(value); }
+  void SetOnReadDirectory(const TReadDirectoryProgressEvent &value) { FOnReadDirectory.connect(value); }
   const notify_signal_type &GetOnStartReadDirectory() const { return FOnStartReadDirectory; }
-  void SetOnStartReadDirectory(const notify_slot_type &value) { FOnStartReadDirectory.connect(value); }
+  void SetOnStartReadDirectory(const TNotifyEvent &value) { FOnStartReadDirectory.connect(value); }
   readdirectoryprogress_signal_type &GetOnReadDirectoryProgress() { return FOnReadDirectoryProgress; }
-  void SetOnReadDirectoryProgress(const readdirectoryprogress_slot_type &value) { FOnReadDirectoryProgress.connect(value); }
+  void SetOnReadDirectoryProgress(const TReadDirectoryProgressEvent &value) { FOnReadDirectoryProgress.connect(value); }
   deletelocalfile_signal_type &GetOnDeleteLocalFile() { return FOnDeleteLocalFile; }
-  void SetOnDeleteLocalFile(const deletelocalfile_slot_type &value) { FOnDeleteLocalFile.connect(value); }
+  void SetOnDeleteLocalFile(const TDeleteLocalFileEvent &value) { FOnDeleteLocalFile.connect(value); }
   const TRemoteTokenList *GetGroups();
   const TRemoteTokenList *GetUsers();
   const TRemoteTokenList *GetMembership();
   const fileoperationprogress_signal_type &GetOnProgress() const { return FOnProgress; }
-  void SetOnProgress(const fileoperationprogress_slot_type &value) { FOnProgress.connect(value); }
+  void SetOnProgress(const TFileOperationProgressEvent &value) { FOnProgress.connect(value); }
   const fileoperationfinished_signal_type &GetOnFinished() const { return FOnFinished; }
-  void SetOnFinished(const fileoperationfinished_slot_type &value) { FOnFinished.connect(value); }
+  void SetOnFinished(const TFileOperationFinished &value) { FOnFinished.connect(value); }
   TCurrentFSProtocol GetFSProtocol() { return FFSProtocol; }
   bool GetUseBusyCursor() { return FUseBusyCursor; }
   void SetUseBusyCursor(bool value) { FUseBusyCursor = value; }
   UnicodeString GetUserName();
-  bool GetIsCapable(TFSCapability Capability) const;
   bool GetAreCachesEmpty() const;
   bool GetCommandSessionOpened();
   TTerminal *GetCommandSession();
   bool GetAutoReadDirectory() { return FAutoReadDirectory; }
   void SetAutoReadDirectory(bool value) { FAutoReadDirectory = value; }
-  TStrings *GetFixedPaths();
   bool GetResolvingSymlinks();
   UnicodeString GetPassword();
   UnicodeString GetTunnelPassword();
   bool GetStoredCredentialsTried();
   queryuser_signal_type &GetOnQueryUser() { return FOnQueryUser; }
-  void SetOnQueryUser(const queryuser_slot_type &value) { FOnQueryUser.connect(value); }
+  void SetOnQueryUser(const TQueryUserEvent &value) { FOnQueryUser.connect(value); }
   promptuser_signal_type &GetOnPromptUser() { return FOnPromptUser; }
-  void SetOnPromptUser(const promptuser_slot_type &value) { FOnPromptUser.connect(value); }
+  void SetOnPromptUser(const TPromptUserEvent &value) { FOnPromptUser.connect(value); }
   displaybanner_signal_type &GetOnDisplayBanner() { return FOnDisplayBanner; }
-  void SetOnDisplayBanner(const displaybanner_slot_type &value) { FOnDisplayBanner.connect(value); }
+  void SetOnDisplayBanner(const TDisplayBannerEvent &value) { FOnDisplayBanner.connect(value); }
   extendedexception_signal_type &GetOnShowExtendedException() { return FOnShowExtendedException; }
-  void SetOnShowExtendedException(const extendedexception_slot_type &value) { FOnShowExtendedException.connect(value); }
+  void SetOnShowExtendedException(const TExtendedExceptionEvent &value) { FOnShowExtendedException.connect(value); }
   informationevent_signal_type &GetOnInformation() { return FOnInformation; }
-  void SetOnInformation(const informationevent_slot_type &value) { FOnInformation.connect(value); }
+  void SetOnInformation(const TInformationEvent &value) { FOnInformation.connect(value); }
   const notify_signal_type &GetOnClose() const { return FOnClose; }
-  void SetOnClose(const notify_slot_type &value) { FOnClose.connect(value); }
+  void SetOnClose(const TNotifyEvent &value) { FOnClose.connect(value); }
   size_t GetTunnelLocalPortNumber() { return FTunnelLocalPortNumber; }
+#endif
 };
 //---------------------------------------------------------------------------
 class TSecondaryTerminal : public TTerminal
@@ -571,7 +610,7 @@ protected:
 private:
   bool FMasterPasswordTried;
   bool FMasterTunnelPasswordTried;
-  TTerminal *FMainTerminal;
+  TTerminal * FMainTerminal;
 };
 //---------------------------------------------------------------------------
 class TTerminalList : public TObjectList
@@ -586,15 +625,24 @@ public:
   virtual void __fastcall Idle();
   void __fastcall RecryptPasswords();
 
+#ifndef _MSC_VER
+  __property TTerminal * Terminals[int Index]  = { read=GetTerminal };
+  __property int ActiveCount = { read = GetActiveCount };
+#else
   TTerminal *GetTerminal(size_t Index);
   int GetActiveCount();
+#endif
 
 protected:
-  virtual TTerminal *CreateTerminal(TSessionData *Data);
+  virtual TTerminal *CreateTerminal(TSessionData * Data);
 
 private:
-  TConfiguration *FConfiguration;
+  TConfiguration * FConfiguration;
 
+#ifndef _MSC_VER
+  TTerminal * __fastcall GetTerminal(int Index);
+  int __fastcall GetActiveCount();
+#endif
 };
 //---------------------------------------------------------------------------
 struct TCustomCommandParams
@@ -602,7 +650,7 @@ struct TCustomCommandParams
   TCustomCommandParams(
     UnicodeString Command,
     int Params,
-    const captureoutput_slot_type &OutputEvent) :
+    const TCaptureOutputEvent &OutputEvent) :
     Command(Command),
     Params(Params),
     OutputEvent(OutputEvent)

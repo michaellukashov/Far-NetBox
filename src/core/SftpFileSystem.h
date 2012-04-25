@@ -31,7 +31,7 @@ public:
     virtual void __fastcall Idle();
     virtual std::wstring __fastcall AbsolutePath(const std::wstring Path, bool Local);
     virtual void __fastcall AnyCommand(const std::wstring Command,
-                            const captureoutput_slot_type *OutputEvent);
+                            const TCaptureOutputEvent *OutputEvent);
     virtual void __fastcall ChangeDirectory(const std::wstring Directory);
     virtual void __fastcall CachedChangeDirectory(const std::wstring Directory);
     virtual void __fastcall AnnounceFileListOperation();
@@ -55,7 +55,7 @@ public:
     virtual void __fastcall DeleteFile(const std::wstring FileName,
                             const TRemoteFile *File, int Params, TRmSessionAction &Action);
     virtual void __fastcall CustomCommandOnFile(const std::wstring FileName,
-                                     const TRemoteFile *File, const std::wstring Command, int Params, const captureoutput_slot_type &OutputEvent);
+                                     const TRemoteFile *File, const std::wstring Command, int Params, const TCaptureOutputEvent &OutputEvent);
     virtual void __fastcall DoStartup();
     virtual void __fastcall HomeDirectory();
     virtual bool __fastcall IsCapable(int Capability) const;

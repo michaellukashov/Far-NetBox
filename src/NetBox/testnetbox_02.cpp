@@ -129,7 +129,7 @@ public:
     {
     }
     const System::notify_signal_type &GetOnChange() const { return FOnChange; }
-    void SetOnChange(const System::notify_slot_type &Event) { FOnChange.connect(Event); }
+    void SetOnChange(const TNotifyEvent &Event) { FOnChange.connect(Event); }
     virtual void Changed()
     {
         if (FOnChange.num_slots() > 0)

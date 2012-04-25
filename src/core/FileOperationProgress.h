@@ -2,31 +2,38 @@
 #ifndef FileOperationProgressH
 #define FileOperationProgressH
 //---------------------------------------------------------------------------
-
-#include <vector>
-
-#include "boostdefines.hpp"
-#include <boost/signals/signal2.hpp>
-#include <boost/signals/signal6.hpp>
-
 #include "Configuration.h"
 #include "CopyParam.h"
 #include "Exceptions.h"
+#include <vector>
+
+#ifdef _MSC_VER
+#include "boostdefines.hpp"
+#include <boost/signals/signal2.hpp>
+#include <boost/signals/signal6.hpp>
+#endif
+
 //---------------------------------------------------------------------------
 class TFileOperationProgressType;
 enum TFileOperation { foNone, foCopy, foMove, foDelete, foSetProperties,
-                      foRename, foCustomCommand, foCalculateSize, foRemoteMove, foRemoteCopy,
-                      foGetProperties, foCalculateChecksum
-                    };
+  foRename, foCustomCommand, foCalculateSize, foRemoteMove, foRemoteCopy,
+  foGetProperties, foCalculateChecksum };
 enum TCancelStatus { csContinue = 0, csCancel, csCancelTransfer, csRemoteAbort };
 enum TResumeStatus { rsNotAvailable, rsEnabled, rsDisabled };
 enum TBatchOverwrite { boNo, boAll, boNone, boOlder, boAlternateResume, boAppend, boResume };
-typedef boost::signal2<void, TFileOperationProgressType &, TCancelStatus &> fileoperationprogress_signal_type;
-typedef fileoperationprogress_signal_type::slot_type fileoperationprogress_slot_type;
-
-typedef boost::signal6<void, TFileOperation, TOperationSide, bool,
-        const std::wstring, bool, TOnceDoneOperation &> fileoperationfinished_signal_type;
-typedef fileoperationfinished_signal_type::slot_type fileoperationfinished_slot_type;
+#ifndef _MSC_VER
+typedef void __fastcall (__closure *TFileOperationProgressEvent)
+  (TFileOperationProgressType & ProgressData, TCancelStatus & Cancel);
+typedef void __fastcall (__closure *TFileOperationFinished)
+  (TFileOperation Operation, TOperationSide Side, bool Temp,
+    const UnicodeString & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
+#else
+typedef boost::signal2<void, TFileOperationProgressType & /* ProgressData */, TCancelStatus & /* Cancel */> fileoperationprogress_signal_type;
+typedef fileoperationprogress_signal_type::slot_type TFileOperationProgressEvent;
+typedef boost::signal6<void, TFileOperation /* Operation */, TOperationSide /* Side */, bool /* Temp */,
+  const UnicodeString & /* FileName */, bool /* Success */, TOnceDoneOperation & /* OnceDoneOperation */> fileoperationfinished_signal_type;
+typedef fileoperationfinished_signal_type::slot_type TFileOperationFinished;
+#endif
 //---------------------------------------------------------------------------
 class TFileOperationProgressType
 {
@@ -36,8 +43,8 @@ private:
     // when current file was started being transfered
     System::TDateTime FFileStartTime;
     size_t FFilesFinished;
-    fileoperationprogress_signal_type FOnProgress;
-    fileoperationfinished_signal_type FOnFinished;
+    TFileOperationProgressEvent *FOnProgress;
+    TFileOperationProgressEvent *FOnFinished;
     bool FReset;
     size_t FLastSecond;
     size_t FRemainingCPS;
@@ -87,8 +94,8 @@ public:
 
     explicit TFileOperationProgressType();
     explicit TFileOperationProgressType(
-        const fileoperationprogress_slot_type &AOnProgress,
-        const fileoperationfinished_slot_type &AOnFinished);
+        const TFileOperationProgressEvent &AOnProgress,
+        const TFileOperationProgressEvent &AOnFinished);
     ~TFileOperationProgressType();
     void __fastcall AddLocallyUsed(__int64 ASize);
     void __fastcall AddTransfered(__int64 ASize, bool AddToTotals = true);

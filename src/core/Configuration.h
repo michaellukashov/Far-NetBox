@@ -127,7 +127,7 @@ public:
     bool GetLogActions() { return FLogActions; }
     int GetLogWindowLines() { return FLogWindowLines; }
     const System::notify_signal_type &GetOnChange() const { return FOnChange; }
-    void SetOnChange(const System::notify_slot_type &value) { FOnChange.connect(value); }
+    void SetOnChange(const TNotifyEvent &value) { FOnChange.connect(value); }
     int GetSessionReopenAuto() { return FSessionReopenAuto; }
     int GetSessionReopenAutoMaximumNumberOfRetries() { return FSessionReopenAutoMaximumNumberOfRetries; }
     void SetSessionReopenAutoMaximumNumberOfRetries(int value);

@@ -86,10 +86,17 @@ public:
 enum TLogLineType { llOutput, llInput, llStdError, llMessage, llException };
 enum TLogAction { laUpload, laDownload, laTouch, laChmod, laMkdir, laRm, laMv, laCall, laLs, laStat };
 //---------------------------------------------------------------------------
+#ifndef _MSC_VER
+typedef void __fastcall (__closure *TCaptureOutputEvent)(
+  const UnicodeString & Str, bool StdError);
+typedef void __fastcall (__closure *TCalculatedChecksumEvent)(
+  const UnicodeString & FileName, const UnicodeString & Alg, const UnicodeString & Hash);
+#else
 typedef boost::signal2<void, const UnicodeString & /* Str */, bool /* StdError */> captureoutput_signal_type;
-typedef captureoutput_signal_type::slot_type captureoutput_slot_type;
+typedef captureoutput_signal_type::slot_type TCaptureOutputEvent;
 typedef boost::signal3<void, const UnicodeString & /* FileName */, const UnicodeString & /* Alg */, const UnicodeString & /* Hash */> calculatedchecksum_signal_type;
-typedef calculatedchecksum_signal_type::slot_type calculatedchecksum_slot_type;
+typedef calculatedchecksum_signal_type::slot_type TCalculatedChecksumEvent;
+#endif
 //---------------------------------------------------------------------------
 // class TCriticalSection;
 class TSessionActionRecord;
@@ -251,7 +258,7 @@ public:
   UnicodeString __fastcall GetLine(size_t Index);
   TLogLineType __fastcall GetType(size_t Index);
   const System::notify_signal_type &GetOnStateChange() const { return FOnStateChange; }
-  void SetOnStateChange(const System::notify_slot_type &value) { FOnStateChange.connect(value); }
+  void SetOnStateChange(const TNotifyEvent &value) { FOnStateChange.connect(value); }
   UnicodeString __fastcall GetCurrentFileName() { return FCurrentFileName; }
   bool __fastcall GetLoggingToFile();
   size_t __fastcall GetTopIndex() { return FTopIndex; }

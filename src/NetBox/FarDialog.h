@@ -248,7 +248,7 @@ public:
     TFarDialog *GetDialog() { return FDialog; }
 
     const System::notify_signal_type &GetOnExit() const { return FOnExit; }
-    void SetOnExit(const System::notify_slot_type &value) { FOnExit.connect(value); }
+    void SetOnExit(const TNotifyEvent &value) { FOnExit.connect(value); }
     const mouse_click_signal_type &GetOnMouseClick() const { return FOnMouseClick; }
     void SetOnMouseClick(const mouse_click_slot_type &value) { FOnMouseClick.connect(value); }
 

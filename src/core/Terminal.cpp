@@ -2967,7 +2967,7 @@ void TTerminal::CustomCommandOnFile(const UnicodeString FileName,
 //---------------------------------------------------------------------------
 void TTerminal::DoCustomCommandOnFile(const UnicodeString FileName,
                                       const TRemoteFile *File, const UnicodeString Command, int Params,
-                                      const captureoutput_slot_type &OutputEvent)
+                                      const TCaptureOutputEvent &OutputEvent)
 {
     try
     {
@@ -2999,7 +2999,7 @@ void TTerminal::DoCustomCommandOnFile(const UnicodeString FileName,
 }
 //---------------------------------------------------------------------------
 void TTerminal::CustomCommandOnFiles(const UnicodeString Command,
-                                     int Params, TStrings *Files, const captureoutput_slot_type &OutputEvent)
+                                     int Params, TStrings *Files, const TCaptureOutputEvent &OutputEvent)
 {
     if (!TRemoteCustomCommand().IsFileListCommand(Command))
     {
@@ -3656,13 +3656,13 @@ TTerminal *TTerminal::GetCommandSession()
 }
 //---------------------------------------------------------------------------
 void TTerminal::AnyCommand(const UnicodeString Command,
-                           const captureoutput_slot_type *OutputEvent)
+                           const TCaptureOutputEvent *OutputEvent)
 {
 
     class TOutputProxy
     {
     public:
-        TOutputProxy(TCallSessionAction &Action, const captureoutput_slot_type *OutputEvent) :
+        TOutputProxy(TCallSessionAction &Action, const TCaptureOutputEvent *OutputEvent) :
             FAction(Action)
         {
             if (OutputEvent)
@@ -3698,7 +3698,7 @@ void TTerminal::AnyCommand(const UnicodeString Command,
 }
 //---------------------------------------------------------------------------
 void TTerminal::DoAnyCommand(const UnicodeString Command,
-                             const captureoutput_slot_type &OutputEvent, TCallSessionAction *Action)
+                             const TCaptureOutputEvent &OutputEvent, TCallSessionAction *Action)
 {
     assert(FFileSystem);
     try

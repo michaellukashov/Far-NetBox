@@ -1274,7 +1274,7 @@ void __fastcall TSCPFileSystem::CalculateFilesChecksum(const std::wstring /*Alg*
 //---------------------------------------------------------------------------
 void __fastcall TSCPFileSystem::CustomCommandOnFile(const std::wstring FileName,
         const TRemoteFile *File, const std::wstring Command, int Params,
-        const captureoutput_slot_type &OutputEvent)
+        const TCaptureOutputEvent &OutputEvent)
 {
     assert(File);
     bool Dir = File->GetIsDirectory() && !File->GetIsSymLink();
@@ -1314,7 +1314,7 @@ void TSCPFileSystem::CaptureOutput(const std::wstring AddedLine, bool StdError)
 }
 //---------------------------------------------------------------------------
 void __fastcall TSCPFileSystem::AnyCommand(const std::wstring Command,
-                                const captureoutput_slot_type *OutputEvent)
+                                const TCaptureOutputEvent *OutputEvent)
 {
     assert(FSecureShell->GetOnCaptureOutput().empty());
     if (OutputEvent)

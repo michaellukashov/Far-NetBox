@@ -86,11 +86,11 @@ public:
     size_t __fastcall GetTransfersLimit() { return FTransfersLimit; }
     void __fastcall SetTransfersLimit(size_t value);
     queryuser_signal_type & __fastcall GetOnQueryUser() { return FOnQueryUser; }
-    void __fastcall SetOnQueryUser(const queryuser_slot_type &value) { FOnQueryUser.connect(value); }
+    void __fastcall SetOnQueryUser(const TQueryUserEvent &value) { FOnQueryUser.connect(value); }
     promptuser_signal_type & __fastcall GetOnPromptUser() { return FOnPromptUser; }
     void __fastcall SetOnPromptUser(const promptuser_slot_type &value) { FOnPromptUser.connect(value); }
     extendedexception_signal_type & __fastcall GetOnShowExtendedException() { return FOnShowExtendedException; }
-    void __fastcall SetOnShowExtendedException(const extendedexception_slot_type &value) { FOnShowExtendedException.connect(value); }
+    void __fastcall SetOnShowExtendedException(const TExtendedExceptionEvent &value) { FOnShowExtendedException.connect(value); }
     queuelistupdate_signal_type & __fastcall GetOnListUpdate() { return FOnListUpdate; }
     void __fastcall SetOnListUpdate(const queuelistupdate_slot_type &value) { FOnListUpdate.connect(value); }
     queueitemupdate_signal_type & __fastcall GetOnQueueItemUpdate() { return FOnQueueItemUpdate; }

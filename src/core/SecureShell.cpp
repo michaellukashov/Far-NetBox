@@ -695,13 +695,13 @@ void TSecureShell::CWrite(const char *Data, size_t Length)
     }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::RegisterReceiveHandler(const System::notify_slot_type &Handler)
+void TSecureShell::RegisterReceiveHandler(const TNotifyEvent &Handler)
 {
     assert(FOnReceive.empty());
     FOnReceive.connect(Handler);
 }
 //---------------------------------------------------------------------------
-void TSecureShell::UnregisterReceiveHandler(const System::notify_slot_type &Handler)
+void TSecureShell::UnregisterReceiveHandler(const TNotifyEvent &Handler)
 {
     assert(!FOnReceive.empty());
     USEDPARAM(Handler);

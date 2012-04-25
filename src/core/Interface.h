@@ -1,28 +1,32 @@
 //---------------------------------------------------------------------------
-#pragma once
+#ifndef InterfaceH
+#define InterfaceH
+//---------------------------------------------------------------------------
+#include "Configuration.h"
+#include "SessionData.h"
+#define HELP_NONE L""
 
+#ifdef _MSC_VER
 #include "boostdefines.hpp"
 #include <boost/signals/signal1.hpp>
 #include <boost/signals/signal3.hpp>
 #include <boost/signals/signal4.hpp>
 
-#include "Configuration.h"
-#include "SessionData.h"
-#define HELP_NONE L""
-
+#include "Exceptions.h"
+#endif
 //---------------------------------------------------------------------------
-TConfiguration *CreateConfiguration();
+TConfiguration * __fastcall CreateConfiguration();
 
-void ShowExtendedException(const std::exception *E);
+void __fastcall ShowExtendedException(const Exception * E);
 
-std::wstring GetRegistryKey();
-void Busy(bool Start);
-std::wstring AppNameString();
-std::wstring SshVersionString();
-void CopyToClipboard(const std::wstring Text);
-size_t StartThread(void *SecurityAttributes, unsigned StackSize,
-                   void *Parameter, unsigned CreationFlags,
-                   DWORD &ThreadId);
+UnicodeString __fastcall GetRegistryKey();
+void __fastcall Busy(bool Start);
+UnicodeString __fastcall AppNameString();
+UnicodeString __fastcall SshVersionString();
+void __fastcall CopyToClipboard(const UnicodeString Text);
+size_t __fastcall StartThread(void * SecurityAttributes, unsigned StackSize,
+  void * Parameter, unsigned CreationFlags,
+  unsigned & ThreadId);
 
 const unsigned int qaYes =      0x00000001;
 const unsigned int qaNo =       0x00000002;
@@ -46,52 +50,66 @@ const int qpIgnoreAbort =          0x08;
 
 struct TQueryButtonAlias
 {
-    TQueryButtonAlias();
+  TQueryButtonAlias();
 
-    unsigned int Button;
-    std::wstring Alias;
-    System::notify_signal_type OnClick;
+  unsigned int Button;
+  UnicodeString Alias;
+  TNotifyEvent OnClick;
 };
 
-typedef boost::signal1<void, size_t &> queryparamstimer_signal_type;
-typedef queryparamstimer_signal_type::slot_type queryparamstimer_slot_type;
+#ifndef _MSC_VER
+typedef void __fastcall (__closure *TQueryParamsTimerEvent)(unsigned int & Result);
+#else
+typedef boost::signal1<void, size_t & /* Result */> queryparamstimer_signal_type;
+typedef queryparamstimer_signal_type::slot_type TQueryParamsTimerEvent;
+#endif
 
 struct TQueryParams
 {
-    explicit TQueryParams(unsigned int AParams = 0, std::wstring AHelpKeyword = HELP_NONE);
+  explicit TQueryParams(unsigned int AParams = 0, UnicodeString AHelpKeyword = HELP_NONE);
 
-    const TQueryButtonAlias *Aliases;
-    size_t AliasesCount;
-    unsigned int Params;
-    unsigned int Timer;
-    queryparamstimer_slot_type *TimerEvent;
-    std::wstring TimerMessage;
-    unsigned int TimerAnswers;
-    unsigned int Timeout;
-    unsigned int TimeoutAnswer;
-    unsigned int NoBatchAnswers;
-    std::wstring HelpKeyword;
+  const TQueryButtonAlias * Aliases;
+  unsigned int AliasesCount;
+  unsigned int Params;
+  unsigned int Timer;
+  TQueryParamsTimerEvent *TimerEvent;
+  UnicodeString TimerMessage;
+  unsigned int TimerAnswers;
+  unsigned int Timeout;
+  unsigned int TimeoutAnswer;
+  unsigned int NoBatchAnswers;
+  UnicodeString HelpKeyword;
 };
 
 enum TQueryType { qtConfirmation, qtWarning, qtError, qtInformation };
 
 enum TPromptKind
 {
-    pkPrompt,
-    pkFileName,
-    pkUserName,
-    pkPassphrase,
-    pkTIS,
-    pkCryptoCard,
-    pkKeybInteractive,
-    pkPassword,
-    pkNewPassword
+  pkPrompt,
+  pkFileName,
+  pkUserName,
+  pkPassphrase,
+  pkTIS,
+  pkCryptoCard,
+  pkKeybInteractive,
+  pkPassword,
+  pkNewPassword
 };
 
-bool IsAuthenticationPrompt(TPromptKind Kind);
+bool __fastcall IsAuthenticationPrompt(TPromptKind Kind);
 //---------------------------------------------------------------------------
-typedef boost::signal4<void, TTerminal *, const std::wstring, const TRemoteFile *, bool &> filefound_signal_type;
-typedef filefound_signal_type::slot_type filefound_slot_type;
-typedef boost::signal3<void, TTerminal *, const std::wstring, bool &> findingfile_signal_type;
-typedef findingfile_signal_type::slot_type findingfile_slot_type;
+#ifndef _MSC_VER
+typedef void __fastcall (__closure *TFileFoundEvent)
+  (TTerminal * Terminal, const UnicodeString FileName, const TRemoteFile * File,
+   bool & Cancel);
+typedef void __fastcall (__closure *TFindingFileEvent)
+  (TTerminal * Terminal, const UnicodeString Directory, bool & Cancel);
+#else
+typedef boost::signal4<void, TTerminal * /* Terminal */, const UnicodeString /* FileName */, const TRemoteFile * /* File */,
+   bool & /* Cancel */> filefound_signal_type;
+typedef filefound_signal_type::slot_type TFileFoundEvent;
+typedef boost::signal3<void, TTerminal * /* Terminal */, const UnicodeString /* Directory */, bool & /* Cancel */> findingfile_signal_type;
+typedef findingfile_signal_type::slot_type TFindingFileEvent;
+#endif
 //---------------------------------------------------------------------------
+#endif

@@ -300,3 +300,44 @@ private:
 	char* Data;
 	size_t Size;
 };
+
+class RawByteString
+{
+public:
+	RawByteString(const wchar_t* Str)
+	{
+		Init(Str, StrLength(Str));
+	}
+
+	RawByteString(const string& Str)
+	{
+		Init(Str, Str.GetLength());
+	}
+
+	~RawByteString()
+	{
+		delete[] Data;
+	}
+
+	operator const char*() const { return Data; }
+	size_t size() const { return Size; }
+    const char *c_str() const { return Data; }
+    size_t Length() const { return Size; }
+
+
+public:
+    RawByteString __fastcall operator +(const RawByteString &rhs) const;
+    RawByteString __fastcall operator +(const std::wstring &rhs) const;
+
+private:
+	void Init(const wchar_t *Str, size_t Length)
+	{
+		Size = WideCharToMultiByte(CP_UTF8, 0, Str, static_cast<int>(Length), nullptr, 0, nullptr, nullptr) + 1;
+		Data = new char[Size];
+		WideCharToMultiByte(CP_UTF8, 0, Str, static_cast<int>(Length), Data, static_cast<int>(Size-1), nullptr, nullptr);
+		Data[Size-1] = 0;
+	}
+
+	char* Data;
+	size_t Size;
+};

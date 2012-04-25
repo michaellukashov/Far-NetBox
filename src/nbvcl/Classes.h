@@ -57,8 +57,8 @@ class TObject;
 typedef boost::signal0<void> threadmethod_signal_type;
 typedef threadmethod_signal_type::slot_type threadmethod_slot_type;
 
-typedef boost::signal1<void, TObject *> notify_signal_type;
-typedef notify_signal_type::slot_type notify_slot_type;
+typedef boost::signal1<void, TObject * /* Sender */> notify_signal_type;
+typedef notify_signal_type::slot_type TNotifyEvent;
 //---------------------------------------------------------------------------
 void Abort();
 void Error(int ErrorID, size_t data);
@@ -329,12 +329,12 @@ public:
 
     void __fastcall LoadFromFile(const std::wstring FileName);
     const System::notify_signal_type & __fastcall GetOnChange() const { return FOnChange; }
-    void __fastcall SetOnChange(const System::notify_slot_type &onChange)
+    void __fastcall SetOnChange(const TNotifyEvent &onChange)
     {
         FOnChange.connect(onChange);
     }
     const System::notify_signal_type & __fastcall GetOnChanging() const { return FOnChanging; }
-    void __fastcall SetOnChanging(const System::notify_slot_type &onChanging)
+    void __fastcall SetOnChanging(const TNotifyEvent &onChanging)
     {
         FOnChanging.connect(onChanging);
     }

@@ -134,7 +134,7 @@ public:
     virtual void __fastcall Idle() = 0;
     virtual std::wstring __fastcall AbsolutePath(const std::wstring Path, bool Local) = 0;
     virtual void __fastcall AnyCommand(const std::wstring Command,
-                            const captureoutput_slot_type *OutputEvent) = 0;
+                            const TCaptureOutputEvent *OutputEvent) = 0;
     virtual void __fastcall ChangeDirectory(const std::wstring Directory) = 0;
     virtual void __fastcall CachedChangeDirectory(const std::wstring Directory) = 0;
     virtual void __fastcall AnnounceFileListOperation() = 0;
@@ -159,7 +159,7 @@ public:
                             const TRemoteFile *File, int Params,
                             TRmSessionAction &Action) = 0;
     virtual void __fastcall CustomCommandOnFile(const std::wstring FileName,
-                                     const TRemoteFile *File, const std::wstring Command, int Params, const captureoutput_slot_type &OutputEvent) = 0;
+                                     const TRemoteFile *File, const std::wstring Command, int Params, const TCaptureOutputEvent &OutputEvent) = 0;
     virtual void __fastcall DoStartup() = 0;
     virtual void __fastcall HomeDirectory() = 0;
     virtual bool __fastcall IsCapable(int Capability) const = 0;

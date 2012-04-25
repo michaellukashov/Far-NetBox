@@ -912,7 +912,7 @@ bool TWebDAVFileSystem::ConfirmOverwrite(std::wstring &FileName,
 //---------------------------------------------------------------------------
 void __fastcall TWebDAVFileSystem::CustomCommandOnFile(const std::wstring FileName,
         const TRemoteFile *File, const std::wstring Command, int Params,
-        const captureoutput_slot_type &OutputEvent)
+        const TCaptureOutputEvent &OutputEvent)
 {
     assert(File);
     bool Dir = File->GetIsDirectory() && !File->GetIsSymLink();
@@ -947,7 +947,7 @@ void __fastcall TWebDAVFileSystem::CaptureOutput(const std::wstring AddedLine, b
 }
 //---------------------------------------------------------------------------
 void __fastcall TWebDAVFileSystem::AnyCommand(const std::wstring Command,
-                                   const captureoutput_slot_type *OutputEvent)
+                                   const TCaptureOutputEvent *OutputEvent)
 {
     System::Error(SNotImplemented, 1008);
 }
