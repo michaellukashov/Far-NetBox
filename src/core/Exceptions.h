@@ -17,7 +17,7 @@ class Exception : public std::exception
 public:
     explicit Exception(const std::wstring Msg);
     explicit Exception(const Exception &E);
-    // explicit Exception(const std::exception *E);
+    explicit Exception(const std::exception *E);
 };
 //---------------------------------------------------------------------------
 class ExtException : public Exception

@@ -41,7 +41,7 @@ public:
     virtual bool __fastcall LoadFilesProperties(System::TStrings *FileList);
     virtual void __fastcall CalculateFilesChecksum(const std::wstring Alg,
                                         System::TStrings *FileList, System::TStrings *Checksums,
-                                        calculatedchecksum_slot_type *OnCalculatedChecksum);
+                                        TCalculatedChecksumEvent *OnCalculatedChecksum);
     virtual void __fastcall CopyToLocal(System::TStrings *FilesToCopy,
                              const std::wstring TargetDir, const TCopyParamType *CopyParam,
                              int Params, TFileOperationProgressType *OperationProgress,
@@ -143,7 +143,7 @@ protected:
     void __fastcall ResetConnection();
     void __fastcall DoCalculateFilesChecksum(const std::wstring Alg,
                                   System::TStrings *FileList, System::TStrings *Checksums,
-                                  calculatedchecksum_slot_type *OnCalculatedChecksum,
+                                  TCalculatedChecksumEvent *OnCalculatedChecksum,
                                   TFileOperationProgressType *OperationProgress, bool FirstLevel);
     void __fastcall DoDeleteFile(const std::wstring FileName, char Type);
 

@@ -88,7 +88,7 @@ public:
     queryuser_signal_type & __fastcall GetOnQueryUser() { return FOnQueryUser; }
     void __fastcall SetOnQueryUser(const TQueryUserEvent &value) { FOnQueryUser.connect(value); }
     promptuser_signal_type & __fastcall GetOnPromptUser() { return FOnPromptUser; }
-    void __fastcall SetOnPromptUser(const promptuser_slot_type &value) { FOnPromptUser.connect(value); }
+    void __fastcall SetOnPromptUser(const TPromptUserEvent &value) { FOnPromptUser.connect(value); }
     extendedexception_signal_type & __fastcall GetOnShowExtendedException() { return FOnShowExtendedException; }
     void __fastcall SetOnShowExtendedException(const TExtendedExceptionEvent &value) { FOnShowExtendedException.connect(value); }
     queuelistupdate_signal_type & __fastcall GetOnListUpdate() { return FOnListUpdate; }

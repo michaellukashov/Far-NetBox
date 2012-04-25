@@ -3456,7 +3456,7 @@ bool TSFTPFileSystem::LoadFilesProperties(System::TStrings *FileList)
 //---------------------------------------------------------------------------
 void __fastcall TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring Alg,
         System::TStrings *FileList, System::TStrings *Checksums,
-        calculatedchecksum_slot_type *OnCalculatedChecksum,
+        TCalculatedChecksumEvent *OnCalculatedChecksum,
         TFileOperationProgressType *OperationProgress, bool FirstLevel)
 {
     TOnceDoneOperation OnceDoneOperation; // not used
@@ -3585,7 +3585,7 @@ void __fastcall TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring Alg
 //---------------------------------------------------------------------------
 void __fastcall TSFTPFileSystem::CalculateFilesChecksum(const std::wstring Alg,
         System::TStrings *FileList, System::TStrings *Checksums,
-        calculatedchecksum_slot_type *OnCalculatedChecksum)
+        TCalculatedChecksumEvent *OnCalculatedChecksum)
 {
     TFileOperationProgressType *Progress = new TFileOperationProgressType(boost::bind(&TTerminal::DoProgress, FTerminal, _1, _2),
             boost::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6));

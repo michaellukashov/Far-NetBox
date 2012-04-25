@@ -53,13 +53,10 @@ Exception::Exception(const Exception &E) throw() :
     parent(E.what())
 {
 }
-// Exception::Exception(const std::exception *E) :
-    // parent(L""),
-    // FMoreMessages(NULL)
-// {
-    // AddMoreMessages(E);
-    // DEBUG_PRINTF(L"FMessage = %s", FMessage.c_str());
-// }
+Exception::Exception(const std::exception *E) :
+    parent(E->what())
+{
+}
 //---------------------------------------------------------------------------
 ExtException::ExtException(const std::exception *E) :
     parent(L""),

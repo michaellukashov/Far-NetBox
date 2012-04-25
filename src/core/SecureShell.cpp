@@ -913,7 +913,7 @@ void TSecureShell::SendEOF()
     SendSpecial(TS_EOF);
 }
 //---------------------------------------------------------------------------
-int TSecureShell::TimeoutPrompt(queryparamstimer_slot_type *PoolEvent)
+int TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent *PoolEvent)
 {
     FWaiting++;
 
@@ -979,7 +979,7 @@ void TSecureShell::DispatchSendBuffer(size_t BufSize)
         if (System::Now() - Start > FSessionData->GetTimeoutDT())
         {
             LogEvent(L"Waiting for dispatching send buffer timed out, asking user what to do.");
-            queryparamstimer_slot_type slot = boost::bind(&TSecureShell::SendBuffer, this, _1);
+            TQueryParamsTimerEvent slot = boost::bind(&TSecureShell::SendBuffer, this, _1);
             int Answer = TimeoutPrompt(&slot);
             switch (Answer)
             {
@@ -1437,7 +1437,7 @@ void TSecureShell::WaitForData()
             TPoolForDataEvent Event(this, Events);
 
             LogEvent(L"Waiting for data timed out, asking user what to do.");
-            queryparamstimer_slot_type slot = boost::bind(&TPoolForDataEvent::PoolForData, &Event, _1);
+            TQueryParamsTimerEvent slot = boost::bind(&TPoolForDataEvent::PoolForData, &Event, _1);
             int Answer = TimeoutPrompt(&slot);
             switch (Answer)
             {

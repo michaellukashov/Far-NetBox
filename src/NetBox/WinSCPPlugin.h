@@ -17,7 +17,7 @@ struct TMessageParams
     unsigned int Flags;
     unsigned int Params;
     unsigned int Timer;
-    queryparamstimer_slot_type *TimerEvent;
+    TQueryParamsTimerEvent *TimerEvent;
     std::wstring TimerMessage;
     unsigned int TimerAnswers;
     unsigned int Timeout;
