@@ -14,7 +14,6 @@
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
 #include <boost/bind.hpp>
-#include "UnicodeString.hpp"
 #endif
 
 #include "Common.h"
@@ -188,13 +187,13 @@ public:
             TRemoteFile * File = FFileList->GetFile(Index);
 
             FLog->AddIndented(L"    <file>");
-            FLog->AddIndented(FORMAT(L"      <filename value=\"%s\" />", XmlAttributeEscape(File->FileName).c_str()));
-            FLog->AddIndented(FORMAT(L"      <type value=\"%s\" />", XmlAttributeEscape(File->Type).c_str()));
+            FLog->AddIndented(FORMAT(L"      <filename value=\"%s\" />", XmlAttributeEscape(File->GetFileName()).c_str()));
+            FLog->AddIndented(FORMAT(L"      <type value=\"%s\" />", XmlAttributeEscape(File->GetType()).c_str()));
             if (!File->IsDirectory)
             {
-              FLog->AddIndented(FORMAT(L"      <size value=\"%s\" />", IntToStr(File->Size).c_str()));
+              FLog->AddIndented(FORMAT(L"      <size value=\"%s\" />", IntToStr(File->GetSize()).c_str()));
             }
-            FLog->AddIndented(FORMAT(L"      <modification value=\"%s\" />", XmlTimestamp(File->Modification).c_str()));
+            FLog->AddIndented(FORMAT(L"      <modification value=\"%s\" />", XmlTimestamp(File->GetModification()).c_str()));
             FLog->AddIndented(FORMAT(L"      <permissions value=\"%s\" />", XmlAttributeEscape(File->GetRights()->GetText()).c_str()));
             FLog->AddIndented(L"    </file>");
           }
@@ -206,7 +205,7 @@ public:
           FLog->AddIndented(FORMAT(L"    <type value=\"%s\" />", XmlAttributeEscape(FFile->GetType()).c_str()));
           if (!FFile->IsDirectory)
           {
-            FLog->AddIndented(FORMAT(L"    <size value=\"%s\" />", IntToStr(FFile->Size).c_str()));
+            FLog->AddIndented(FORMAT(L"    <size value=\"%s\" />", IntToStr(FFile->GetSize()).c_str()));
           }
           FLog->AddIndented(FORMAT(L"    <modification value=\"%s\" />", XmlTimestamp(FFile->GetModification()).c_str()));
           FLog->AddIndented(FORMAT(L"    <permissions value=\"%s\" />", XmlAttributeEscape(FFile->GetRights()->GetText()).c_str()));
@@ -229,7 +228,7 @@ public:
         {
           FLog->AddIndented(L"  <result success=\"true\" />");
         }
-        FLog->AddIndented(FORMAT(L"</%s>", Name.c_str()));
+        FLog->AddIndented(FORMAT(L"</%s>", Name));
       }
       delete this;
     }
@@ -265,7 +264,7 @@ public:
 
   void __fastcall Rights(const TRights & Rights)
   {
-    Parameter(L"permissions", Rights.Text);
+    Parameter(L"permissions", Rights.GetText());
   }
 
   void __fastcall Modification(const TDateTime & DateTime)
@@ -289,7 +288,7 @@ public:
     int Index = FNames->IndexOf(Name);
     if (Index >= 0)
     {
-      FValues->Strings[Index] = FValues->Strings[Index] + L"\r\n" + Output;
+      FValues->SetString(Index, FValues->GetString(Index) + L"\r\n" + Output);
     }
     else
     {

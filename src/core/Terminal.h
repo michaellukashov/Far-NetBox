@@ -343,8 +343,8 @@ protected:
     bool __fastcall IsListenerFree(size_t PortNumber);
     void DoFinished(TFileOperation Operation, TOperationSide Side, bool Temp,
                     const std::wstring FileName, bool Success, TOnceDoneOperation &OnceDoneOperation);
-    void RollbackAction(TSessionAction &Action,
-                        TFileOperationProgressType *OperationProgress, const std::exception *E = NULL);
+  void __fastcall RollbackAction(TSessionAction & Action,
+    TFileOperationProgressType * OperationProgress, Exception * E = NULL);
     void DoAnyCommand(const std::wstring Command, const captureoutput_slot_type &OutputEvent,
                       TCallSessionAction *Action);
     TRemoteFileList *DoReadDirectoryListing(const std::wstring Directory, bool UseCache);

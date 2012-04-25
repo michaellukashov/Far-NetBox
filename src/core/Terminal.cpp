@@ -1,11 +1,23 @@
 //---------------------------------------------------------------------------
-#include "stdafx.h"
+#ifndef _MSC_VER
+#include <vcl.h>
+#pragma hdrstop
+#endif
 
+#include "Terminal.h"
+
+#ifndef _MSC_VER
+#include <SysUtils.hpp>
+#include <FileCtrl.hpp>
+#else
+#include "stdafx.h"
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
 #include <boost/bind.hpp>
 
-#include "Terminal.h"
+#include "WebDAVFileSystem.h"
+#include "Common.h"
+#endif
 
 #include "Common.h"
 #include "PuttyTools.h"
@@ -18,42 +30,44 @@
 #ifndef NO_FILEZILLA
 #include "FtpFileSystem.h"
 #endif
-#include "WebDAVFileSystem.h"
 #include "TextsCore.h"
 #include "HelpCore.h"
 #include "CoreMain.h"
 #include "Queue.h"
-#include "Common.h"
 
 #ifndef AUTO_WINSOCK
 #include <winsock2.h>
 #endif
 //---------------------------------------------------------------------------
+#ifndef _MSC_VER
+#pragma package(smart_init)
+#endif
+//---------------------------------------------------------------------------
 #define COMMAND_ERROR_ARI(MESSAGE, REPEAT) \
   { \
-    int Result = CommandError(&E, MESSAGE, qaRetry | qaSkip | qaAbort); \
+    unsigned int Result = CommandError(&E, MESSAGE, qaRetry | qaSkip | qaAbort); \
     switch (Result) { \
       case qaRetry: { REPEAT; } break; \
-      case qaAbort: System::Abort(); \
+      case qaAbort: Abort(); \
     } \
   }
 //---------------------------------------------------------------------------
 // Note that the action may already be canceled when RollbackAction is called
 #define COMMAND_ERROR_ARI_ACTION(MESSAGE, REPEAT, ACTION) \
   { \
-    int Result; \
+    unsigned int Result; \
     try \
     { \
       Result = CommandError(&E, MESSAGE, qaRetry | qaSkip | qaAbort); \
     } \
-    catch (const std::exception & E2) \
+    catch(Exception & E2) \
     { \
       RollbackAction(ACTION, NULL, &E2); \
       throw; \
     } \
     switch (Result) { \
       case qaRetry: ACTION.Cancel(); { REPEAT; } break; \
-      case qaAbort: RollbackAction(ACTION, NULL, &E); System::Abort(); \
+      case qaAbort: RollbackAction(ACTION, NULL, &E); Abort(); \
       case qaSkip:  ACTION.Cancel(); break; \
       default: assert(false); \
     } \
@@ -64,39 +78,54 @@
 //---------------------------------------------------------------------------
 struct TMoveFileParams
 {
-    std::wstring Target;
-    std::wstring FileMask;
+  UnicodeString Target;
+  UnicodeString FileMask;
 };
 //---------------------------------------------------------------------------
 struct TFilesFindParams
 {
-    TFilesFindParams() :
-        OnFileFound(NULL),
-        OnFindingFile(NULL),
-        Cancel(false)
-    {
-    }
-    TFileMasks FileMask;
-    const filefound_slot_type *OnFileFound;
-    const findingfile_slot_type *OnFindingFile;
-    bool Cancel;
+  TFilesFindParams() :
+    OnFileFound(NULL),
+    OnFindingFile(NULL),
+    Cancel(false)
+  {
+  }
+  TFileMasks FileMask;
+  const filefound_slot_type *OnFileFound;
+  const findingfile_slot_type *OnFindingFile;
+  bool Cancel;
 };
 //---------------------------------------------------------------------------
 TCalculateSizeStats::TCalculateSizeStats() :
-    Files(0),
-    Directories(0),
-    SymLinks(0)
+  Files(0),
+  Directories(0),
+  SymLinks(0)
 {
 }
 //---------------------------------------------------------------------------
 TSynchronizeOptions::TSynchronizeOptions() :
-    Filter(0)
+  Filter(0)
 {
 }
 //---------------------------------------------------------------------------
 TSynchronizeOptions::~TSynchronizeOptions()
 {
-    delete Filter;
+  delete Filter;
+}
+//---------------------------------------------------------------------------
+bool __fastcall TSynchronizeOptions::MatchesFilter(const UnicodeString & FileName)
+{
+  int FoundIndex;
+  bool Result;
+  if (Filter == NULL)
+  {
+    Result = true;
+  }
+  else
+  {
+    Result = Filter->Find(FileName, FoundIndex);
+  }
+  return Result;
 }
 //---------------------------------------------------------------------------
 TSpaceAvailable::TSpaceAvailable() :
