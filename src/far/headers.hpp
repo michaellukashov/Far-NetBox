@@ -96,6 +96,19 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define NORM_STOP_ON_NULL 0x10000000
 #endif
 
+#ifndef True
+#define True true
+#endif
+#ifndef Integer
+#define Integer int
+#endif
+#ifndef Boolean
+#define Boolean bool
+#endif
+#ifndef HIDESBASE
+#define HIDESBASE 
+#endif
+
 #define NullToEmpty(s) (s?s:L"")
 
 template <class T>
