@@ -33,6 +33,12 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+// #include <stdio.h>
+// #include <lmcons.h>
+// #define SECURITY_WIN32
+// #include <sspi.h>
+// #include <secext.h>
+
 extern const wchar_t DOS_EOL_fmt[];
 extern const wchar_t UNIX_EOL_fmt[];
 extern const wchar_t MAC_EOL_fmt[];
