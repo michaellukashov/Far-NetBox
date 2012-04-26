@@ -1717,8 +1717,8 @@ std::wstring TCustomFarPlugin::FormatFarVersion(int Version)
 //---------------------------------------------------------------------------
 std::wstring TCustomFarPlugin::TemporaryDir()
 {
-    std::wstring Result;
-    Result.resize(MAX_PATH);
+    UnicodeString Result;
+    Result.SetLength(MAX_PATH);
     TFarEnvGuard Guard;
     FFarStandardFunctions.MkTemp(const_cast<wchar_t *>(Result.c_str()), Result.size(), NULL);
     PackStr(Result);

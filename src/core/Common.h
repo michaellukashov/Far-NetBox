@@ -20,11 +20,8 @@ namespace bg = boost::gregorian;
 //---------------------------------------------------------------------------
 #define EXCEPTION throw ExtException(L"", NULL)
 #define THROWOSIFFALSE(C) if (!(C)) RaiseLastOSError();
-#define SCOPY(dest, source) \
-  strncpy(dest, source, sizeof(dest)); \
-  dest[sizeof(dest)-1] = '\0'
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = NULL; delete PObj; }
-#define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(System::TObject, OBJ)
+#define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
 #define ASCOPY(dest, source) \
   { \
     AnsiString CopyBuf = source; \
@@ -116,46 +113,6 @@ TLibModule * __fastcall FindModule(void * Instance);
 __int64 __fastcall Round(double Number);
 bool __fastcall TryRelativeStrToDateTime(UnicodeString S, TDateTime & DateTime);
 LCID __fastcall GetDefaultLCID();
-
-std::wstring StripPathQuotes(const std::wstring Path);
-std::wstring AddPathQuotes(const std::wstring Path);
-void SplitCommand(const std::wstring Command, std::wstring &Program,
-                  std::wstring &Params, std::wstring &Dir);
-std::wstring ExtractProgram(const std::wstring Command);
-std::wstring FormatCommand(const std::wstring Program, const std::wstring Params);
-std::wstring ExpandFileNameCommand(const std::wstring Command,
-                                   const std::wstring FileName);
-void ReformatFileNameCommand(std::wstring &Command);
-std::wstring EscapePuttyCommandParam(const std::wstring Param);
-std::wstring ExpandEnvironmentVariables(const std::wstring Str);
-
-std::wstring ExtractShortPathName(const std::wstring Path1);
-std::wstring ExtractDirectory(const std::wstring path, wchar_t delimiter = '/');
-std::wstring ExtractFilename(const std::wstring path, wchar_t delimiter = '/');
-std::wstring ExtractFileExtension(const std::wstring path, wchar_t delimiter = '/');
-std::wstring ChangeFileExtension(const std::wstring path, const std::wstring ext, wchar_t delimiter = '/');
-
-std::wstring IncludeTrailingBackslash(const std::wstring Str);
-std::wstring ExcludeTrailingBackslash(const std::wstring Str);
-std::wstring ExtractFileDir(const std::wstring Str);
-std::wstring ExtractFilePath(const std::wstring Str);
-std::wstring GetCurrentDir();
-
-bool ComparePaths(const std::wstring Path1, const std::wstring Path2);
-bool CompareFileName(const std::wstring Path1, const std::wstring Path2);
-bool IsReservedName(const std::wstring FileName);
-std::wstring DisplayableStr(const std::wstring Str);
-std::wstring CharToHex(char Ch, bool UpperCase = true);
-std::wstring StrToHex(const std::wstring Str, bool UpperCase = true, char Separator = '\0');
-std::wstring HexToStr(const std::wstring Hex);
-unsigned int HexToInt(const std::wstring Hex, size_t MinChars = 0);
-std::wstring IntToHex(unsigned int Int, size_t MinChars = 0);
-char HexToChar(const std::wstring Hex, size_t MinChars = 0);
-
-#ifdef _MSC_VER
-std::wstring ReplaceStrAll(const std::wstring Str, const std::wstring What, const std::wstring ByWhat);
-std::wstring SysErrorMessage(int code);
-#endif
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
 typedef void __fastcall (__closure* TProcessLocalFileEvent)
@@ -192,34 +149,6 @@ __int64 __fastcall ConvertTimestampToUnixSafe(const FILETIME & FileTime,
   TDSTMode DSTMode);
 UnicodeString __fastcall FixedLenDateTimeFormat(const UnicodeString & Format);
 int __fastcall CompareFileTime(TDateTime T1, TDateTime T2);
-
-System::TDateTime EncodeDateVerbose(unsigned int Year, unsigned int Month, unsigned int Day);
-System::TDateTime EncodeTimeVerbose(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec);
-System::TDateTime StrToDateTime(const std::wstring Value);
-bool TryStrToDateTime(const std::wstring value, System::TDateTime &Value, System::TFormatSettings &FormatSettings);
-bool TryRelativeStrToDateTime(const std::wstring value, System::TDateTime &Value);
-std::wstring DateTimeToStr(std::wstring &Result, const std::wstring &Format,
-  System::TDateTime DateTime);
-std::wstring DateTimeToString(System::TDateTime DateTime);
-unsigned int DayOfWeek(const System::TDateTime &DateTime);
-FILETIME DateTimeToFileTime(const System::TDateTime &DateTime, TDSTMode DSTMode);
-System::TDateTime AdjustDateTimeFromUnix(System::TDateTime &DateTime, TDSTMode DSTMode);
-std::wstring FixedLenDateTimeFormat(const std::wstring Format);
-
-System::TDateTime Date();
-void DecodeDate(const System::TDateTime &DateTime, unsigned int &Y,
-                unsigned int &M, unsigned int &D);
-void DecodeTime(const System::TDateTime &DateTime, unsigned int &H,
-                unsigned int &N, unsigned int &S, unsigned int  &MS);
-System::TDateTime EncodeDateVerbose(unsigned int Y, unsigned int M, unsigned int D);
-System::TDateTime EncodeTimeVerbose(unsigned int H, unsigned int N, unsigned int S, unsigned int MS);
-
-std::wstring FormatDateTime(const std::wstring fmt, System::TDateTime DateTime);
-System::TDateTime SystemTimeToDateTime(const SYSTEMTIME &SystemTime);
-
-System::TDateTime EncodeDate(int Year, int Month, int Day);
-System::TDateTime EncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec);
-
 //---------------------------------------------------------------------------
 template<class MethodT>
 MethodT __fastcall MakeMethod(void * Data, void * Code)
@@ -250,18 +179,6 @@ private:
   TCriticalSection * FCriticalSection;
 };
 //---------------------------------------------------------------------------
-extern int Win32Platform;
-extern int Win32MajorVersion;
-extern int Win32MinorVersion;
-extern int Win32BuildNumber;
-// extern int Win32CSDVersion;
-//---------------------------------------------------------------------------
-extern const int HoursPerDay;
-extern const int MinsPerDay;
-extern const int SecsPerDay;
-extern const int MSecsPerDay;
-//---------------------------------------------------------------------------
-void InitPlatformId();
 //---------------------------------------------------------------------------
 #include <assert.h>
 #ifndef _DEBUG
@@ -278,6 +195,72 @@ void InitPlatformId();
 #endif
 
 //---------------------------------------------------------------------------
+
+std::wstring StripPathQuotes(const std::wstring Path);
+std::wstring AddPathQuotes(const std::wstring Path);
+void SplitCommand(const std::wstring Command, std::wstring &Program,
+                  std::wstring &Params, std::wstring &Dir);
+std::wstring ExtractProgram(const std::wstring Command);
+std::wstring FormatCommand(const std::wstring Program, const std::wstring Params);
+std::wstring ExpandFileNameCommand(const std::wstring Command,
+                                   const std::wstring FileName);
+void ReformatFileNameCommand(std::wstring &Command);
+std::wstring EscapePuttyCommandParam(const std::wstring Param);
+std::wstring ExpandEnvironmentVariables(const std::wstring Str);
+
+std::wstring ExtractShortPathName(const std::wstring Path1);
+std::wstring ExtractDirectory(const std::wstring path, wchar_t delimiter = '/');
+std::wstring ExtractFilename(const std::wstring path, wchar_t delimiter = '/');
+std::wstring ExtractFileExtension(const std::wstring path, wchar_t delimiter = '/');
+std::wstring ChangeFileExtension(const std::wstring path, const std::wstring ext, wchar_t delimiter = '/');
+
+std::wstring IncludeTrailingBackslash(const std::wstring Str);
+std::wstring ExcludeTrailingBackslash(const std::wstring Str);
+std::wstring ExtractFileDir(const std::wstring Str);
+std::wstring ExtractFilePath(const std::wstring Str);
+std::wstring GetCurrentDir();
+
+bool ComparePaths(const std::wstring Path1, const std::wstring Path2);
+bool CompareFileName(const std::wstring Path1, const std::wstring Path2);
+bool IsReservedName(const std::wstring FileName);
+std::wstring DisplayableStr(const std::wstring Str);
+std::wstring CharToHex(char Ch, bool UpperCase = true);
+std::wstring StrToHex(const std::wstring Str, bool UpperCase = true, char Separator = '\0');
+std::wstring HexToStr(const std::wstring Hex);
+unsigned int HexToInt(const std::wstring Hex, size_t MinChars = 0);
+std::wstring IntToHex(unsigned int Int, size_t MinChars = 0);
+char HexToChar(const std::wstring Hex, size_t MinChars = 0);
+
+std::wstring ReplaceStrAll(const std::wstring Str, const std::wstring What, const std::wstring ByWhat);
+std::wstring SysErrorMessage(int code);
+
+System::TDateTime EncodeDateVerbose(unsigned int Year, unsigned int Month, unsigned int Day);
+System::TDateTime EncodeTimeVerbose(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec);
+System::TDateTime StrToDateTime(const std::wstring Value);
+bool TryStrToDateTime(const std::wstring value, System::TDateTime &Value, System::TFormatSettings &FormatSettings);
+bool TryRelativeStrToDateTime(const std::wstring value, System::TDateTime &Value);
+std::wstring DateTimeToStr(std::wstring &Result, const std::wstring &Format,
+  System::TDateTime DateTime);
+std::wstring DateTimeToString(System::TDateTime DateTime);
+unsigned int DayOfWeek(const System::TDateTime &DateTime);
+FILETIME DateTimeToFileTime(const System::TDateTime &DateTime, TDSTMode DSTMode);
+System::TDateTime AdjustDateTimeFromUnix(System::TDateTime &DateTime, TDSTMode DSTMode);
+std::wstring FixedLenDateTimeFormat(const std::wstring Format);
+
+System::TDateTime Date();
+void DecodeDate(const System::TDateTime &DateTime, unsigned int &Y,
+                unsigned int &M, unsigned int &D);
+void DecodeTime(const System::TDateTime &DateTime, unsigned int &H,
+                unsigned int &N, unsigned int &S, unsigned int  &MS);
+System::TDateTime EncodeDateVerbose(unsigned int Y, unsigned int M, unsigned int D);
+System::TDateTime EncodeTimeVerbose(unsigned int H, unsigned int N, unsigned int S, unsigned int MS);
+
+std::wstring FormatDateTime(const std::wstring fmt, System::TDateTime DateTime);
+System::TDateTime SystemTimeToDateTime(const SYSTEMTIME &SystemTime);
+
+System::TDateTime EncodeDate(int Year, int Month, int Day);
+System::TDateTime EncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec);
+
 std::wstring Trim(const std::wstring str);
 std::wstring TrimLeft(const std::wstring str);
 std::wstring TrimRight(const std::wstring str);
