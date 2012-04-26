@@ -114,7 +114,7 @@ protected:
 
     void ProcessEditorEvent(int Event, void *Param);
 
-    virtual void HandleException(const HandleException *E, int OpMode = 0);
+    virtual void HandleException(const Exception *E, int OpMode = 0);
     void KeepaliveThreadCallback();
 
     inline bool SessionList();
