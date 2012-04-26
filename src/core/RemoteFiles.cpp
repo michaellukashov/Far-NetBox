@@ -1328,9 +1328,9 @@ std::wstring __fastcall TRemoteFile::GetListingStr()
     LinkPart.c_str());
 }
 //---------------------------------------------------------------------------
-std::wstring __fastcall TRemoteFile::GetFullFileName() const
+UnicodeString __fastcall TRemoteFile::GetFullFileName() const
 {
-  if (FFullFileName.empty())
+  if (FFullFileName.IsEmpty())
   {
     assert(GetTerminal());
     assert(GetDirectory() != NULL);
