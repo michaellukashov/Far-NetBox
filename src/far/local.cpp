@@ -41,6 +41,15 @@ const wchar_t UNIX_EOL_fmt[] = L"\n";
 const wchar_t MAC_EOL_fmt[]  = L"\r";
 const wchar_t WIN_EOL_fmt[]  = L"\r\r\n";
 
+//---------------------------------------------------------------------------
+int Win32Platform = 0;
+int Win32MajorVersion = 0;
+int Win32MinorVersion = 0;
+int Win32BuildNumber = 0;
+// int Win32CSDVersion = 0;
+
+//---------------------------------------------------------------------------
+
 const wchar_t * __cdecl FarStrStrI(const wchar_t *str1, const wchar_t *str2)
 {
 	const wchar_t *cp = str1;
