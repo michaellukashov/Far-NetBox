@@ -651,12 +651,12 @@ void __fastcall TSessionData::Load(THierarchicalStorage * Storage)
             if (Storage->OpenSubKey(GetInternalStorageKey(), true))
             {
                 Storage->DeleteValue(L"PasswordPlain");
-                if (!GetPassword().empty())
+                if (!GetPassword().IsEmpty())
                 {
                     Storage->WriteString(L"Password", FPassword);
                 }
                 Storage->DeleteValue(L"TunnelPasswordPlain");
-                if (!GetTunnelPassword().empty())
+                if (!GetTunnelPassword().IsEmpty())
                 {
                     Storage->WriteString(L"TunnelPassword", FTunnelPassword);
                 }
@@ -919,7 +919,7 @@ void __fastcall TSessionData::Save(THierarchicalStorage *Storage,
 //---------------------------------------------------------------------
 void __fastcall TSessionData::SavePasswords(THierarchicalStorage *Storage, bool PuttyExport)
 {
-    if (!Configuration->GetDisablePasswordStoring() && !PuttyExport && !FPassword.empty())
+    if (!Configuration->GetDisablePasswordStoring() && !PuttyExport && !FPassword.IsEmpty())
     {
         Storage->WriteString(L"Password", StronglyRecryptPassword(FPassword, GetUserName() + GetHostName()));
     }
@@ -937,7 +937,7 @@ void __fastcall TSessionData::SavePasswords(THierarchicalStorage *Storage, bool 
     else
     {
         // save password encrypted
-        if (!FProxyPassword.empty())
+        if (!FProxyPassword.IsEmpty())
         {
             Storage->WriteString(L"ProxyPasswordEnc", StronglyRecryptPassword(FProxyPassword, GetProxyUsername() + GetProxyHost()));
         }
@@ -947,7 +947,7 @@ void __fastcall TSessionData::SavePasswords(THierarchicalStorage *Storage, bool 
         }
         Storage->DeleteValue(L"ProxyPassword");
 
-        if (!Configuration->GetDisablePasswordStoring() && !FTunnelPassword.empty())
+        if (!Configuration->GetDisablePasswordStoring() && !FTunnelPassword.IsEmpty())
         {
             Storage->WriteString(L"TunnelPassword", StronglyRecryptPassword(FTunnelPassword, GetTunnelUserName() + GetTunnelHostName()));
         }
@@ -967,7 +967,7 @@ void __fastcall TSessionData::RecryptPasswords()
 //---------------------------------------------------------------------
 bool __fastcall TSessionData::HasAnyPassword()
 {
-    return !FPassword.empty() || !FProxyPassword.empty() || !FTunnelPassword.empty();
+    return !FPassword.IsEmpty() || !FProxyPassword.IsEmpty() || !FTunnelPassword.IsEmpty();
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionData::Modify()
@@ -1036,59 +1036,59 @@ bool __fastcall TSessionData::ParseUrl(const std::wstring Url, TOptions *Options
     int APortNumber = 0;
     TFtps AFtps = ftpsNone;
     std::wstring url = Url;
-    if (::LowerCase(url.substr(0, 7)) == L"netbox:")
+    if (::LowerCase(url.SubString(0, 7)) == L"netbox:")
     {
         // Remove "netbox:" prefix
-        url.erase(0, 7);
+        url.Delete(0, 7);
     }
-    if (::LowerCase(url.substr(0, 4)) == L"scp:")
+    if (::LowerCase(url.SubString(0, 4)) == L"scp:")
     {
         AFSProtocol = fsSCPonly;
         APortNumber = SshPortNumber;
-        url.erase(0, 4);
+        url.Delete(0, 4);
         ProtocolDefined = true;
     }
-    else if (::LowerCase(url.substr(0, 5)) == L"sftp:")
+    else if (::LowerCase(url.SubString(0, 5)) == L"sftp:")
     {
         AFSProtocol = fsSFTPonly;
         APortNumber = SshPortNumber;
-        url.erase(0, 5);
+        url.Delete(0, 5);
         ProtocolDefined = true;
     }
-    else if (::LowerCase(url.substr(0, 4)) == L"ftp:")
+    else if (::LowerCase(url.SubString(0, 4)) == L"ftp:")
     {
         AFSProtocol = fsFTP;
         SetFtps(ftpsNone);
         APortNumber = FtpPortNumber;
-        url.erase(0, 4);
+        url.Delete(0, 4);
         ProtocolDefined = true;
     }
-    else if (::LowerCase(url.substr(0, 5)) == L"ftps:")
+    else if (::LowerCase(url.SubString(0, 5)) == L"ftps:")
     {
         AFSProtocol = fsFTP;
         AFtps = ftpsImplicit;
         APortNumber = FtpsImplicitPortNumber;
-        url.erase(0, 5);
+        url.Delete(0, 5);
         ProtocolDefined = true;
     }
-    else if (::LowerCase(url.substr(0, 5)) == L"http:")
+    else if (::LowerCase(url.SubString(0, 5)) == L"http:")
     {
         AFSProtocol = fsHTTP;
         APortNumber = HTTPPortNumber;
-        url.erase(0, 5);
+        url.Delete(0, 5);
         ProtocolDefined = true;
     }
-    else if (::LowerCase(url.substr(0, 6)) == L"https:")
+    else if (::LowerCase(url.SubString(0, 6)) == L"https:")
     {
         AFSProtocol = fsHTTPS;
         APortNumber = HTTPSPortNumber;
-        url.erase(0, 6);
+        url.Delete(0, 6);
         ProtocolDefined = true;
     }
 
-    if (ProtocolDefined && (url.substr(0, 2) == L"//"))
+    if (ProtocolDefined && (url.SubString(0, 2) == L"//"))
     {
-        url.erase(0, 2);
+        url.Delete(0, 2);
     }
 
     if (AProtocolDefined != NULL)
@@ -1096,7 +1096,7 @@ bool __fastcall TSessionData::ParseUrl(const std::wstring Url, TOptions *Options
         *AProtocolDefined = ProtocolDefined;
     }
 
-    if (!url.empty())
+    if (!url.IsEmpty())
     {
         const std::wstring DecodedUrl = DecodeUrlChars(url);
         // lookup stored session even if protocol was defined
@@ -1107,7 +1107,7 @@ bool __fastcall TSessionData::ParseUrl(const std::wstring Url, TOptions *Options
         {
             TSessionData *AData = static_cast<TSessionData *>(StoredSessions->GetItem(Index));
             if (AnsiSameText(AData->GetName(), DecodedUrl) ||
-                    AnsiSameText(AData->GetName() + L"/", DecodedUrl.substr(0, AData->GetName().size() + 1)))
+                    AnsiSameText(AData->GetName() + L"/", DecodedUrl.SubString(0, AData->GetName().Length() + 1)))
             {
                 Data = AData;
                 break;
@@ -1121,13 +1121,13 @@ bool __fastcall TSessionData::ParseUrl(const std::wstring Url, TOptions *Options
             DefaultsOnly = false;
             Assign(Data);
             size_t P = 0;
-            while (!AnsiSameText(DecodeUrlChars(url.substr(0, P)), Data->GetName()))
+            while (!AnsiSameText(DecodeUrlChars(url.SubString(0, P)), Data->GetName()))
             {
-                assert(P < url.size());
+                assert(P < url.Length());
                 P++;
-                assert(P < Url.size());
+                assert(P < Url.Length());
             }
-            ARemoteDirectory = url.substr(P, url.size() - P);
+            ARemoteDirectory = url.SubString(P, url.Length() - P);
 
             if (Data->GetHidden())
             {
@@ -1147,10 +1147,10 @@ bool __fastcall TSessionData::ParseUrl(const std::wstring Url, TOptions *Options
             size_t PSlash = url.find_first_of(L"/");
             if (PSlash == std::wstring::npos)
             {
-                PSlash = url.size() + 1;
+                PSlash = url.Length() + 1;
             }
 
-            std::wstring ConnectInfo = url.substr(0, PSlash - 1);
+            std::wstring ConnectInfo = url.SubString(0, PSlash - 1);
 
             size_t P = ::LastDelimiter(ConnectInfo, L"@");
 
@@ -1159,21 +1159,21 @@ bool __fastcall TSessionData::ParseUrl(const std::wstring Url, TOptions *Options
 
             if (P != std::wstring::npos)
             {
-                UserInfo = ConnectInfo.substr(0, P);
-                HostInfo = ConnectInfo.substr(P + 1, ConnectInfo.size() - P);
+                UserInfo = ConnectInfo.SubString(0, P);
+                HostInfo = ConnectInfo.SubString(P + 1, ConnectInfo.Length() - P);
             }
             else
             {
                 HostInfo = ConnectInfo;
             }
             DEBUG_PRINTF(L"UserInfo = %s, HostInfo = %s", UserInfo.c_str(), HostInfo.c_str());
-            if ((HostInfo.size() >= 2) && (HostInfo[0] == '[') && ((P = HostInfo.find(L"]")) != std::wstring::npos))
+            if ((HostInfo.Length() >= 2) && (HostInfo[0] == '[') && ((P = HostInfo.Pos(L"]")) != std::wstring::npos))
             {
-                SetHostName(HostInfo.substr(1, P - 2));
-                HostInfo.erase(1, P);
-                if (!HostInfo.empty() && (HostInfo[0] == ':'))
+                SetHostName(HostInfo.SubString(1, P - 2));
+                HostInfo.Delete(1, P);
+                if (!HostInfo.IsEmpty() && (HostInfo[0] == ':'))
                 {
-                    HostInfo.erase(0, 1);
+                    HostInfo.Delete(0, 1);
                 }
             }
             else
@@ -1182,7 +1182,7 @@ bool __fastcall TSessionData::ParseUrl(const std::wstring Url, TOptions *Options
             }
 
             // expanded from ?: operator, as it caused strange "access violation" errors
-            if (!HostInfo.empty())
+            if (!HostInfo.IsEmpty())
             {
                 SetPortNumber(StrToIntDef(DecodeUrlChars(HostInfo), -1));
                 PortNumberDefined = true;
@@ -1200,17 +1200,17 @@ bool __fastcall TSessionData::ParseUrl(const std::wstring Url, TOptions *Options
             bool PasswordSeparator = (UserInfo.find_first_of(':') != std::wstring::npos);
             SetUserName(DecodeUrlChars(CutToChar(UserInfo, ':', false)));
             SetPassword(DecodeUrlChars(UserInfo));
-            SetPasswordless(GetPassword().empty() && PasswordSeparator);
+            SetPasswordless(GetPassword().IsEmpty() && PasswordSeparator);
 
-            if (PSlash < url.size())
+            if (PSlash < url.Length())
             {
-                ARemoteDirectory = url.substr(PSlash, url.size() - PSlash + 1);
+                ARemoteDirectory = url.SubString(PSlash, url.Length() - PSlash + 1);
             }
         }
 
-        if (!ARemoteDirectory.empty() && (ARemoteDirectory != L"/"))
+        if (!ARemoteDirectory.IsEmpty() && (ARemoteDirectory != L"/"))
         {
-            if ((ARemoteDirectory[ARemoteDirectory.size() - 1] != '/') &&
+            if ((ARemoteDirectory[ARemoteDirectory.Length() - 1] != '/') &&
                     (FileName != NULL))
             {
                 *FileName = DecodeUrlChars(UnixExtractFileName(ARemoteDirectory));
@@ -1376,7 +1376,7 @@ std::wstring __fastcall TSessionData::DecryptPassword(const std::wstring Passwor
 //---------------------------------------------------------------------
 bool __fastcall TSessionData::GetCanLogin()
 {
-    return !FHostName.empty();
+    return !FHostName.IsEmpty();
 }
 //---------------------------------------------------------------------------
 std::wstring __fastcall TSessionData::GetSessionKey()
@@ -1386,7 +1386,7 @@ std::wstring __fastcall TSessionData::GetSessionKey()
 //---------------------------------------------------------------------
 std::wstring __fastcall TSessionData::GetInternalStorageKey()
 {
-    if (GetName().empty())
+    if (GetName().IsEmpty())
     {
         return GetSessionKey();
     }
@@ -1413,16 +1413,16 @@ void __fastcall TSessionData::SetHostName(const std::wstring value)
         size_t P = ::LastDelimiter(val, L"@");
         if (P != std::wstring::npos)
         {
-            SetUserName(val.substr(0, P));
-            val = val.substr(P + 1, val.size() - P);
+            SetUserName(val.SubString(0, P));
+            val = val.SubString(P + 1, val.Length() - P);
         }
         FHostName = val;
         Modify();
 
         SetPassword(XPassword);
-        if (!XPassword.empty())
+        if (!XPassword.IsEmpty())
         {
-            memset(const_cast<wchar_t *>(XPassword.c_str()), 0, XPassword.size() * sizeof(wchar_t));
+            memset(const_cast<wchar_t *>(XPassword.c_str()), 0, XPassword.Length() * sizeof(wchar_t));
         }
     }
 }
@@ -1475,7 +1475,7 @@ std::wstring __fastcall TSessionData::GetUserNameExpanded()
 //---------------------------------------------------------------------
 TLoginType __fastcall TSessionData::GetLoginType() const
 {
-    return (GetUserName() == CONST_LOGIN_ANONYMOUS) && GetPassword().empty() ?
+    return (GetUserName() == CONST_LOGIN_ANONYMOUS) && GetPassword().IsEmpty() ?
            ltAnonymous : ltNormal;
 }
 //---------------------------------------------------------------------
@@ -1495,15 +1495,15 @@ void __fastcall TSessionData::SetUserName(const std::wstring value)
     std::wstring XPassword = GetPassword();
     SET_SESSION_PROPERTY(UserName);
     SetPassword(XPassword);
-    if (!XPassword.empty())
+    if (!XPassword.IsEmpty())
     {
-        memset(const_cast<wchar_t *>(XPassword.c_str()), 0, XPassword.size() * sizeof(wchar_t));
+        memset(const_cast<wchar_t *>(XPassword.c_str()), 0, XPassword.Length() * sizeof(wchar_t));
     }
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionData::SetPassword(const std::wstring val)
 {
-    if (!val.empty())
+    if (!val.IsEmpty())
     {
         SetPasswordless(false);
     }
@@ -1624,7 +1624,7 @@ void __fastcall TSessionData::SetCipherList(const std::wstring value)
     std::wstring CipherStr;
     size_t Index = 0;
     std::wstring val = value;
-    while (!val.empty() && (Index < CIPHER_COUNT))
+    while (!val.IsEmpty() && (Index < CIPHER_COUNT))
     {
         CipherStr = CutToChar(val, ',', true);
         for (size_t C = 0; C < CIPHER_COUNT; C++)
@@ -1675,7 +1675,7 @@ void __fastcall TSessionData::SetKexList(const std::wstring value)
     std::wstring KexStr;
     size_t Index = 0;
     std::wstring val = value;
-    while (!val.empty() && (Index < KEX_COUNT))
+    while (!val.IsEmpty() && (Index < KEX_COUNT))
     {
         KexStr = CutToChar(val, ',', true);
         for (int K = 0; K < KEX_COUNT; K++)
@@ -1766,7 +1766,7 @@ void __fastcall TSessionData::SetDetectReturnVar(bool value)
 //---------------------------------------------------------------------------
 bool __fastcall TSessionData::GetDetectReturnVar()
 {
-    return GetReturnVar().empty();
+    return GetReturnVar().IsEmpty();
 }
 //---------------------------------------------------------------------------
 void __fastcall TSessionData::SetDefaultShell(bool value)
@@ -1779,7 +1779,7 @@ void __fastcall TSessionData::SetDefaultShell(bool value)
 //---------------------------------------------------------------------------
 bool __fastcall TSessionData::GetDefaultShell()
 {
-    return GetShell().empty();
+    return GetShell().IsEmpty();
 }
 //---------------------------------------------------------------------------
 void __fastcall TSessionData::SetProtocolStr(const std::wstring value)
@@ -1840,9 +1840,9 @@ void __fastcall TSessionData::SetRekeyTime(unsigned int value)
 //---------------------------------------------------------------------
 void __fastcall TSessionData::AdjustHostName(std::wstring &hostName, const std::wstring prefix)
 {
-    if (::LowerCase(hostName.substr(0, prefix.size())) == prefix)
+    if (::LowerCase(hostName.SubString(0, prefix.Length())) == prefix)
     {
-        hostName.erase(0, prefix.size());
+        hostName.Delete(0, prefix.Length());
         hostName = ::ReplaceStrAll(hostName, L"/", L"_");
     }
 }
@@ -1864,11 +1864,11 @@ std::wstring __fastcall TSessionData::GetDefaultSessionName()
     std::wstring userName = GetUserName();
     // DEBUG_PRINTF(L"hostName = %s", hostName.c_str());
     RemoveProtocolPrefix(hostName);
-    if (!hostName.empty() && !userName.empty())
+    if (!hostName.IsEmpty() && !userName.IsEmpty())
     {
         return FORMAT(L"%s@%s", userName.c_str(), hostName.c_str());
     }
-    else if (!hostName.empty())
+    else if (!hostName.IsEmpty())
     {
         return hostName;
     }
@@ -1880,7 +1880,7 @@ std::wstring __fastcall TSessionData::GetDefaultSessionName()
 //---------------------------------------------------------------------
 bool __fastcall TSessionData::HasSessionName()
 {
-    return (!GetName().empty() && (GetName() != DefaultName));
+    return (!GetName().IsEmpty() && (GetName() != DefaultName));
 }
 //---------------------------------------------------------------------
 std::wstring __fastcall TSessionData::GetSessionName()
@@ -1891,7 +1891,7 @@ std::wstring __fastcall TSessionData::GetSessionName()
         Result = GetName();
         if (GetHidden())
         {
-            Result = Result.substr(TNamedObjectList::HiddenPrefix.size(), Result.size() - TNamedObjectList::HiddenPrefix.size());
+            Result = Result.SubString(TNamedObjectList::HiddenPrefix.Length(), Result.Length() - TNamedObjectList::HiddenPrefix.Length());
         }
     }
     else
@@ -1938,11 +1938,11 @@ std::wstring __fastcall TSessionData::GetSessionUrl()
             break;
         }
 
-        if (!GetHostName().empty() && !GetUserName().empty())
+        if (!GetHostName().IsEmpty() && !GetUserName().IsEmpty())
         {
             Url += FORMAT(L"%s@%s", GetUserName().c_str(), GetHostName().c_str());
         }
-        else if (!GetHostName().empty())
+        else if (!GetHostName().IsEmpty())
         {
             Url += GetHostName();
         }
@@ -2211,16 +2211,16 @@ void __fastcall TSessionData::SetTunnelHostName(const std::wstring val)
         size_t P = ::LastDelimiter(value, L"@");
         if (P != std::wstring::npos)
         {
-            SetTunnelUserName(value.substr(0, P));
-            value = value.substr(P + 1, value.size() - P);
+            SetTunnelUserName(value.SubString(0, P));
+            value = value.SubString(P + 1, value.Length() - P);
         }
         FTunnelHostName = value;
         Modify();
 
         SetTunnelPassword(XTunnelPassword);
-        if (!XTunnelPassword.empty())
+        if (!XTunnelPassword.IsEmpty())
         {
-            memset(const_cast<wchar_t *>(XTunnelPassword.c_str()), 0, XTunnelPassword.size() * sizeof(wchar_t));
+            memset(const_cast<wchar_t *>(XTunnelPassword.c_str()), 0, XTunnelPassword.Length() * sizeof(wchar_t));
         }
     }
 }
@@ -2237,9 +2237,9 @@ void __fastcall TSessionData::SetTunnelUserName(const std::wstring val)
     std::wstring XTunnelPassword = GetTunnelPassword();
     SET_SESSION_PROPERTY(TunnelUserName);
     SetTunnelPassword(XTunnelPassword);
-    if (!XTunnelPassword.empty())
+    if (!XTunnelPassword.IsEmpty())
     {
-        memset(const_cast<wchar_t *>(XTunnelPassword.c_str()), 0, XTunnelPassword.size() * sizeof(wchar_t));
+        memset(const_cast<wchar_t *>(XTunnelPassword.c_str()), 0, XTunnelPassword.Length() * sizeof(wchar_t));
     }
 }
 //---------------------------------------------------------------------
@@ -2341,7 +2341,7 @@ std::wstring __fastcall TSessionData::GetInfoTip()
     {
         return FMTLOAD(SESSION_INFO_TIP,
                        GetHostName().c_str(), GetUserName().c_str(),
-                       (GetPublicKeyFile().empty() ? LoadStr(NO_STR).c_str() : LoadStr(YES_STR).c_str()),
+                       (GetPublicKeyFile().IsEmpty() ? LoadStr(NO_STR).c_str() : LoadStr(YES_STR).c_str()),
                        GetSshProtStr().c_str(), GetFSProtocolStr().c_str());
     }
     else
@@ -2360,7 +2360,7 @@ std::wstring __fastcall TSessionData::GetLocalName()
         size_t P = ::LastDelimiter(Result, L"/");
         if (P != std::wstring::npos)
         {
-            Result.erase(0, P);
+            Result.Delete(0, P);
         }
     }
     else
@@ -2736,8 +2736,8 @@ void __fastcall TStoredSessionList::ImportHostKeys(const std::wstring TargetKey,
                     for (size_t KeyIndex = 0; KeyIndex < KeyList->GetCount(); KeyIndex++)
                     {
                         KeyName = KeyList->GetString(KeyIndex);
-                        size_t P = KeyName.find(HostKeyName);
-                        if ((P != std::wstring::npos) && (P == KeyName.size() - HostKeyName.size() + 1))
+                        size_t P = KeyName.Pos(HostKeyName);
+                        if ((P != std::wstring::npos) && (P == KeyName.Length() - HostKeyName.Length() + 1))
                         {
                             TargetStorage->WriteStringRaw(KeyName,
                                                           SourceStorage->ReadStringRaw(KeyName, L""));

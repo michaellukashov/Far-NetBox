@@ -241,7 +241,7 @@ public:
     explicit TSFTPPacket(const std::wstring Source, unsigned int codePage)
     {
         Init(codePage);
-        FLength = Source.size() * sizeof(wchar_t);
+        FLength = Source.Length() * sizeof(wchar_t);
         SetCapacity(FLength);
         memmove(GetData(), Source.c_str(), FLength);
     }
@@ -310,8 +310,8 @@ public:
     void __fastcall AddStringA(const std::string &ValueA)
     {
         // std::string ValueA = System::W2MB(Value.c_str(), FCodePage);
-        AddCardinal(ValueA.size());
-        Add(ValueA.c_str(), ValueA.size());
+        AddCardinal(ValueA.Length());
+        Add(ValueA.c_str(), ValueA.Length());
     }
 
     void __fastcall AddStringW(const std::wstring ValueW)
@@ -769,7 +769,7 @@ public:
         memset(Byte, '\0', sizeof(Byte));
         size_t Index = 0;
         size_t Length = 0;
-        while (Index < Dump.size())
+        while (Index < Dump.Length())
         {
             wchar_t C = Dump[Index];
             if (((C >= L'0') && (C <= L'9')) || ((C >= L'A') && (C <= L'Z')))
@@ -1717,7 +1717,7 @@ const TFileSystemInfo &TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
                 std::wstring Name = FExtensions->GetName(Index);
                 std::wstring Value = FExtensions->GetValue(Name);
                 std::wstring Line;
-                if (Value.empty())
+                if (Value.IsEmpty())
                 {
                     Line = Name;
                 }
@@ -1965,7 +1965,7 @@ size_t TSFTPFileSystem::UploadBlockSize(const std::string &Handle,
     // handle length + offset + data size
     const size_t UploadPacketOverhead =
         sizeof(size_t) + sizeof(__int64) + sizeof(size_t);
-    return TransferBlockSize(UploadPacketOverhead + Handle.size(), OperationProgress,
+    return TransferBlockSize(UploadPacketOverhead + Handle.Length(), OperationProgress,
                              GetSessionData()->GetSFTPMinPacketSize(),
                              GetSessionData()->GetSFTPMaxPacketSize());
 }
@@ -2091,7 +2091,7 @@ size_t TSFTPFileSystem::GotStatusPacket(TSFTPPacket *Packet,
                 std::wstring Principals;
                 while (Packet->GetNextData() != NULL)
                 {
-                    if (!Principals.empty())
+                    if (!Principals.IsEmpty())
                     {
                         Principals += L", ";
                     }
@@ -2109,7 +2109,7 @@ size_t TSFTPFileSystem::GotStatusPacket(TSFTPPacket *Packet,
             FTerminal->GetLog()->Add(llOutput, FORMAT(L"Status code: %d, Message: %d, Server: %s, Language: %s ",
                                      int(Code), (int)Packet->GetMessageNumber(), ServerMessage.c_str(), LanguageTag.c_str()));
         }
-        if (!LanguageTag.empty())
+        if (!LanguageTag.IsEmpty())
         {
             LanguageTag = FORMAT(L" (%s)", LanguageTag.c_str());
         }
@@ -2229,7 +2229,7 @@ size_t TSFTPFileSystem::ReceivePacket(TSFTPPacket *Packet,
             {
                 TSFTPPacket *ReservedPacket;
                 size_t MessageNumber;
-                for (size_t Index = 0; Index < FPacketNumbers.size(); Index++)
+                for (size_t Index = 0; Index < FPacketNumbers.Length(); Index++)
                 {
                     MessageNumber = FPacketNumbers[Index];
                     if (MessageNumber == Packet->GetMessageNumber())
@@ -2299,7 +2299,7 @@ void __fastcall TSFTPFileSystem::ReserveResponse(const TSFTPPacket *Packet,
         Response->SetReservedBy(this);
     }
     FPacketReservations->Add(reinterpret_cast<System::TObject *>(Response));
-    if (FPacketNumbers.size() <= FPacketReservations->GetCount())
+    if (FPacketNumbers.Length() <= FPacketReservations->GetCount())
     {
         FPacketNumbers.resize(FPacketReservations->GetCount() + 10);
     }
@@ -2412,17 +2412,17 @@ std::wstring TSFTPFileSystem::RealPath(const std::wstring Path,
     }
     else
     {
-        if (!Path.empty())
+        if (!Path.IsEmpty())
         {
             // this condition/block was outside (before) current block
             // but it dod not work when Path was empty
-            if (!BaseDir.empty())
+            if (!BaseDir.IsEmpty())
             {
                 APath = UnixIncludeTrailingBackslash(BaseDir);
             }
             APath = APath + Path;
         }
-        if (APath.empty()) { APath = UnixIncludeTrailingBackslash(L"."); }
+        if (APath.IsEmpty()) { APath = UnixIncludeTrailingBackslash(L"."); }
     }
     return RealPath(APath);
 }
@@ -2431,7 +2431,7 @@ std::wstring TSFTPFileSystem::LocalCanonify(const std::wstring Path)
 {
     // TODO: improve (handle .. etc.)
     if (TTerminal::IsAbsolutePath(Path) ||
-            (!FCurrentDirectory.empty() && UnixComparePaths(FCurrentDirectory, Path)))
+            (!FCurrentDirectory.IsEmpty() && UnixComparePaths(FCurrentDirectory, Path)))
     {
         return Path;
     }
@@ -2514,7 +2514,7 @@ std::wstring TSFTPFileSystem::AbsolutePath(const std::wstring Path, bool Local)
 //---------------------------------------------------------------------------
 std::wstring TSFTPFileSystem::GetHomeDirectory()
 {
-    if (FHomeDirectory.empty())
+    if (FHomeDirectory.IsEmpty())
     {
         FHomeDirectory = RealPath(THISDIRECTORY);
     }
@@ -2536,7 +2536,7 @@ TRemoteFile *TSFTPFileSystem::LoadFile(TSFTPPacket *Packet,
     try
     {
         File->SetTerminal(FTerminal);
-        if (!FileName.empty())
+        if (!FileName.IsEmpty())
         {
             File->SetFileName(FileName);
         }
@@ -2607,7 +2607,7 @@ void __fastcall TSFTPFileSystem::DoStartup()
                 FEOL = ExtensionData;
                 FTerminal->LogEvent(FORMAT(L"Server requests EOL sequence %s.",
                                            ExtensionDisplayData.c_str()));
-                if (FEOL.size() < 1 || FEOL.size() > 2)
+                if (FEOL.Length() < 1 || FEOL.Length() > 2)
                 {
                     FTerminal->FatalError(NULL, FMTLOAD(SFTP_INVALID_EOL, ExtensionDisplayData.c_str()));
                 }
@@ -2828,7 +2828,7 @@ char *TSFTPFileSystem::GetEOL() const
 {
     if (FVersion >= 4)
     {
-        assert(!FEOL.empty());
+        assert(!FEOL.IsEmpty());
         return const_cast<char *>(System::W2MB(FEOL.c_str()).c_str());
     }
     else
@@ -2889,12 +2889,12 @@ void __fastcall TSFTPFileSystem::LookupUsersGroups()
 //---------------------------------------------------------------------------
 void __fastcall TSFTPFileSystem::ReadCurrentDirectory()
 {
-    if (!FDirectoryToChangeTo.empty())
+    if (!FDirectoryToChangeTo.IsEmpty())
     {
         FCurrentDirectory = FDirectoryToChangeTo;
         FDirectoryToChangeTo = L"";
     }
-    else if (FCurrentDirectory.empty())
+    else if (FCurrentDirectory.IsEmpty())
     {
         // this happens only after startup when default remote directory is not specified
         FCurrentDirectory = GetHomeDirectory();
@@ -2939,7 +2939,7 @@ void __fastcall TSFTPFileSystem::ChangeDirectory(const std::wstring Directory)
 {
     std::wstring Path, Current;
 
-    Current = !FDirectoryToChangeTo.empty() ? FDirectoryToChangeTo : FCurrentDirectory;
+    Current = !FDirectoryToChangeTo.IsEmpty() ? FDirectoryToChangeTo : FCurrentDirectory;
     Path = RealPath(Directory, Current);
 
     // to verify existence of directory try to open it (SSH_FXP_REALPATH succeeds
@@ -2957,7 +2957,7 @@ void __fastcall TSFTPFileSystem::CachedChangeDirectory(const std::wstring Direct
 //---------------------------------------------------------------------------
 void __fastcall TSFTPFileSystem::ReadDirectory(TRemoteFileList *FileList)
 {
-    assert(FileList && !FileList->GetDirectory().empty());
+    assert(FileList && !FileList->GetDirectory().IsEmpty());
 
     std::wstring Directory;
     Directory = UnixExcludeTrailingBackslash(LocalCanonify(FileList->GetDirectory()));
@@ -3286,7 +3286,7 @@ void __fastcall TSFTPFileSystem::RenameFile(const std::wstring FileName,
     std::wstring RealName = LocalCanonify(FileName);
     Packet.AddPathString(RealName);
     std::wstring TargetName;
-    if (UnixExtractFilePath(NewName).empty())
+    if (UnixExtractFilePath(NewName).IsEmpty())
     {
         // rename case (TTerminal::RenameFile)
         TargetName = UnixExtractFilePath(RealName) + NewName;
@@ -4212,7 +4212,7 @@ void __fastcall TSFTPFileSystem::SFTPSource(const std::wstring FileName,
                     if (Self->FTerminal->GetActive())
                     {
                         // if file transfer was finished, the close request was already sent
-                        if (!OpenParams->RemoteFileHandle.empty())
+                        if (!OpenParams->RemoteFileHandle.IsEmpty())
                         {
                             Self->SFTPCloseRemote(OpenParams->RemoteFileHandle, DestFileName,
                                                   OperationProgress, TransferFinished, true, &CloseRequest);
@@ -4967,7 +4967,7 @@ void __fastcall TSFTPFileSystem::SFTPSink(const std::wstring FileName,
                 }
 
                 // if the transfer was finished, the file is closed already
-                if (Self->FTerminal->GetActive() && !RemoteHandle.empty())
+                if (Self->FTerminal->GetActive() && !RemoteHandle.IsEmpty())
                 {
                     // do not wait for response
                     Self->SFTPCloseRemote(RemoteHandle, DestFileName, OperationProgress,

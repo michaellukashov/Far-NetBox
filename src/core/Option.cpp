@@ -14,7 +14,7 @@ TOptions::TOptions()
 void __fastcall TOptions::Add(const std::wstring Value)
 {
     if (!FNoMoreSwitches &&
-            (Value.size() == 2) &&
+            (Value.Length() == 2) &&
             (Value[0] == Value[1]) &&
             (FSwitchMarks.find_first_of(Value[0]) != std::wstring::npos))
     {
@@ -25,12 +25,12 @@ void __fastcall TOptions::Add(const std::wstring Value)
         bool Switch = false;
         size_t Index = 0; // shut up
         if (!FNoMoreSwitches &&
-                (Value.size() >= 2) &&
+                (Value.Length() >= 2) &&
                 (FSwitchMarks.find_first_of(Value[0]) != std::wstring::npos))
         {
             Index = 2;
             Switch = true;
-            while (Switch && (Index < Value.size()))
+            while (Switch && (Index < Value.Length()))
             {
                 if (::IsDelimiter(Value, FSwitchValueDelimiters, Index))
                 {
@@ -50,8 +50,8 @@ void __fastcall TOptions::Add(const std::wstring Value)
         {
             TOption Option;
             Option.Type = otSwitch;
-            Option.Name = Value.substr(2, Index - 2);
-            Option.Value = Value.substr(Index + 1, Value.size());
+            Option.Name = Value.SubString(2, Index - 2);
+            Option.Value = Value.SubString(Index + 1, Value.Length());
             Option.Used = false;
             FOptions.push_back(Option);
         }
@@ -73,7 +73,7 @@ std::wstring __fastcall TOptions::GetParam(int Index)
 
     std::wstring Result;
     size_t I = 0;
-    while ((I < FOptions.size()) && (Index > 0))
+    while ((I < FOptions.Length()) && (Index > 0))
     {
         if (FOptions[I].Type == otParam)
         {
@@ -92,7 +92,7 @@ std::wstring __fastcall TOptions::GetParam(int Index)
 //---------------------------------------------------------------------------
 bool __fastcall TOptions::GetEmpty()
 {
-    return FOptions.empty();
+    return FOptions.IsEmpty();
 }
 //---------------------------------------------------------------------------
 bool __fastcall TOptions::FindSwitch(const std::wstring Switch,
@@ -101,7 +101,7 @@ bool __fastcall TOptions::FindSwitch(const std::wstring Switch,
     ParamsStart = 0;
     int Index = 0;
     bool Found = false;
-    while ((Index < static_cast<int>(FOptions.size())) && !Found)
+    while ((Index < static_cast<int>(FOptions.Length())) && !Found)
     {
         std::wstring S;
         if (FOptions[Index].Type == otParam)
@@ -124,7 +124,7 @@ bool __fastcall TOptions::FindSwitch(const std::wstring Switch,
     if (Found)
     {
         ParamsStart++;
-        while ((Index + ParamsCount < static_cast<int>(FOptions.size())) &&
+        while ((Index + ParamsCount < static_cast<int>(FOptions.Length())) &&
                 (FOptions[Index + ParamsCount].Type == otParam))
         {
             ParamsCount++;
@@ -183,7 +183,7 @@ std::wstring __fastcall TOptions::SwitchValue(const std::wstring Switch,
 {
     std::wstring Value;
     FindSwitch(Switch, Value);
-    if (Value.empty())
+    if (Value.IsEmpty())
     {
         Value = Default;
     }
@@ -194,7 +194,7 @@ bool __fastcall TOptions::UnusedSwitch(std::wstring &Switch)
 {
     bool Result = false;
     size_t Index = 0;
-    while (!Result && (Index < FOptions.size()))
+    while (!Result && (Index < FOptions.Length()))
     {
         if ((FOptions[Index].Type == otSwitch) &&
                 !FOptions[Index].Used)
@@ -215,7 +215,7 @@ void __fastcall TOptions::ParamsProcessed(int ParamsStart, int ParamsCount)
         assert((ParamsStart >= 0) && ((ParamsStart - ParamsCount + 1) <= FParamCount));
 
         size_t Index = 0;
-        while ((Index < FOptions.size()) && (ParamsStart > 0))
+        while ((Index < FOptions.Length()) && (ParamsStart > 0))
         {
             std::wstring S;
             if (FOptions[Index].Type == otParam)
@@ -226,9 +226,9 @@ void __fastcall TOptions::ParamsProcessed(int ParamsStart, int ParamsCount)
                 {
                     while (ParamsCount > 0)
                     {
-                        assert(Index < FOptions.size());
+                        assert(Index < FOptions.Length());
                         assert(FOptions[Index].Type == otParam);
-                        FOptions.erase(FOptions.begin() + Index);
+                        FOptions.Delete(FOptions.begin() + Index);
                         --FParamCount;
                         --ParamsCount;
                     }

@@ -105,6 +105,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef Boolean
 #define Boolean bool
 #endif
+#ifndef Word
+#define Word WORD
+#endif
+
 #ifndef HIDESBASE
 #define HIDESBASE 
 #endif

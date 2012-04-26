@@ -40,11 +40,11 @@ void TSynchronizeController::StartStop(System::TObject *Sender,
         try
         {
             FSynchronizeLog.connect(OnSynchronizeLog);
-            assert(!FSynchronizeLog.empty());
+            assert(!FSynchronizeLog.IsEmpty());
 
             FOptions = Options;
             if (FLAGSET(Params.Options, soSynchronize) &&
-                    (!FOnSynchronize.empty()))
+                    (!FOnSynchronize.IsEmpty()))
             {
                 FOnSynchronize(this, Params.LocalDirectory,
                                Params.RemoteDirectory, CopyParam,
@@ -117,16 +117,16 @@ void TSynchronizeController::SynchronizeChange(
 
         std::wstring LocalDirectory = IncludeTrailingBackslash(Directory);
 
-        assert(LocalDirectory.substr(0, RootLocalDirectory.size()) ==
+        assert(LocalDirectory.SubString(0, RootLocalDirectory.Length()) ==
                RootLocalDirectory);
         RemoteDirectory = RemoteDirectory +
-                          ToUnixPath(LocalDirectory.substr(RootLocalDirectory.size() + 1,
-                                     LocalDirectory.size() - RootLocalDirectory.size()));
+                          ToUnixPath(LocalDirectory.SubString(RootLocalDirectory.Length() + 1,
+                                     LocalDirectory.Length() - RootLocalDirectory.Length()));
 
         SynchronizeLog(slChange, FMTLOAD(SYNCHRONIZE_CHANGE,
                                          ExcludeTrailingBackslash(LocalDirectory).c_str()));
 
-        if (!FOnSynchronize.empty())
+        if (!FOnSynchronize.IsEmpty())
         {
             // this is completelly wrong as the options structure
             // can contain non-root specific options in future
@@ -187,7 +187,7 @@ void TSynchronizeController::SynchronizeAbort(bool Close)
         // FIXME FSynchronizeMonitor->Close();
         System::Error(SNotImplemented, 258);
     }
-    assert(!FSynchronizeAbort.empty());
+    assert(!FSynchronizeAbort.IsEmpty());
     FSynchronizeAbort(NULL, Close);
 }
 //---------------------------------------------------------------------------
@@ -218,7 +218,7 @@ void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
 void TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
         const std::wstring Message)
 {
-    if (!FSynchronizeLog.empty())
+    if (!FSynchronizeLog.IsEmpty())
     {
         FSynchronizeLog(this, Entry, Message);
     }
@@ -243,7 +243,7 @@ void TSynchronizeController::SynchronizeFilter(System::TObject * /*Sender*/,
 void TSynchronizeController::SynchronizeInvalid(
     System::TObject * /*Sender*/, const std::wstring Directory, const std::wstring ErrorStr)
 {
-    if (!FOnSynchronizeInvalid.empty())
+    if (!FOnSynchronizeInvalid.IsEmpty())
     {
         FOnSynchronizeInvalid(this, Directory, ErrorStr);
     }
@@ -254,7 +254,7 @@ void TSynchronizeController::SynchronizeInvalid(
 void TSynchronizeController::SynchronizeTooManyDirectories(
     System::TObject * /*Sender*/, int &MaxDirectories)
 {
-    if (!FOnTooManyDirectories.empty())
+    if (!FOnTooManyDirectories.IsEmpty())
     {
         FOnTooManyDirectories(this, MaxDirectories);
     }

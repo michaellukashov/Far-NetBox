@@ -194,7 +194,7 @@ bool TCommandSet::GetOneLineCommand(TFSCommand /*Cmd*/)
 void TCommandSet::SetCommand(TFSCommand Cmd, const std::wstring value)
 {
     CHECK_CMD;
-    wcscpy(const_cast<wchar_t *>(CommandSet[Cmd].Command), value.substr(0, MaxCommandLen - 1).c_str());
+    wcscpy(const_cast<wchar_t *>(CommandSet[Cmd].Command), value.SubString(0, MaxCommandLen - 1).c_str());
 }
 //---------------------------------------------------------------------------
 std::wstring TCommandSet::GetCommand(TFSCommand Cmd)
@@ -254,7 +254,7 @@ std::wstring TCommandSet::FullCommand(TFSCommand Cmd, va_list args)
     }
 
     std::wstring Result;
-    if (!Line.empty())
+    if (!Line.IsEmpty())
     {
         Result = FORMAT(L"%s%s%s%s", FirstLineCmd.c_str(), Line.c_str(), Separator.c_str(), LastLineCmd.c_str());
     }
@@ -279,7 +279,7 @@ std::wstring TCommandSet::GetLastLine()
 std::wstring TCommandSet::GetReturnVar()
 {
     assert(GetSessionData());
-    if (!FReturnVar.empty())
+    if (!FReturnVar.IsEmpty())
     {
         return std::wstring(L"$") + FReturnVar;
     }
@@ -310,7 +310,7 @@ System::TStrings *TCommandSet::CreateCommandList()
     for (int Index = 0; Index < ShellCommandCount; Index++)
     {
         std::wstring Cmd = GetCommand(static_cast<TFSCommand>(Index));
-        if (!Cmd.empty())
+        if (!Cmd.IsEmpty())
         {
             Cmd = ExtractCommand(Cmd);
             if ((Cmd != L"%s") && (CommandList->IndexOf(Cmd.c_str()) == NPOS))
@@ -376,7 +376,7 @@ const TSessionInfo &TSCPFileSystem::GetSessionInfo()
 //---------------------------------------------------------------------------
 const TFileSystemInfo &TSCPFileSystem::GetFileSystemInfo(bool Retrieve)
 {
-    if (FFileSystemInfo.AdditionalInfo.empty() && Retrieve)
+    if (FFileSystemInfo.AdditionalInfo.IsEmpty() && Retrieve)
     {
         std::wstring UName;
         FTerminal->SetExceptionOnFail(true);
@@ -506,7 +506,7 @@ bool TSCPFileSystem::IsCapable(int Capability) const
 std::wstring TSCPFileSystem::DelimitStr(const std::wstring Str)
 {
     std::wstring str = Str;
-    if (!str.empty())
+    if (!str.IsEmpty())
     {
         str = ::DelimitStr(str, L"\\`$\"");
         if (str[0] == L'-') { str = L"./" + str; }
@@ -516,7 +516,7 @@ std::wstring TSCPFileSystem::DelimitStr(const std::wstring Str)
 //---------------------------------------------------------------------------
 void __fastcall TSCPFileSystem::EnsureLocation()
 {
-    if (!FCachedDirectoryChange.empty())
+    if (!FCachedDirectoryChange.IsEmpty())
     {
         FTerminal->LogEvent(FORMAT(L"Locating to cached directory \"%s\".",
                                    FCachedDirectoryChange.c_str()));
@@ -561,25 +561,25 @@ bool TSCPFileSystem::IsTotalListingLine(const std::wstring Line)
 {
     // On some hosts there is not "total" but "totalt". What's the reason??
     // see mail from "Jan Wiklund (SysOp)" <jan@park.se>
-    return !::AnsiCompareIC(Line.substr(0, 5), L"total");
+    return !::AnsiCompareIC(Line.SubString(0, 5), L"total");
 }
 //---------------------------------------------------------------------------
 bool TSCPFileSystem::RemoveLastLine(std::wstring &Line,
                                     int &ReturnCode, std::wstring LastLine)
 {
     bool IsLastLine = false;
-    if (LastLine.empty()) { LastLine = LAST_LINE; }
+    if (LastLine.IsEmpty()) { LastLine = LAST_LINE; }
     // #55: fixed so, even when last line of command output does not
     // contain CR/LF, we can recognize last line
-    size_t Pos = Line.find(LastLine);
+    size_t Pos = Line.Pos(LastLine);
     // DEBUG_PRINTF(L"Line = %s, LastLine = %s, Pos = %d", Line.c_str(), LastLine.c_str(), Pos);
     if (Pos != std::wstring::npos)
     {
         // 2003-07-14: There must be nothing after return code number to
         // consider string as last line. This fixes bug with 'set' command
         // in console window
-        std::wstring ReturnCodeStr = ::TrimRight(Line.substr(Pos + LastLine.size() + 1,
-                                     Line.size() - Pos + LastLine.size()));
+        std::wstring ReturnCodeStr = ::TrimRight(Line.SubString(Pos + LastLine.Length() + 1,
+                                     Line.Length() - Pos + LastLine.Length()));
         // DEBUG_PRINTF(L"ReturnCodeStr = '%s'", ReturnCodeStr.c_str());
         if (TryStrToInt(ReturnCodeStr, ReturnCode) || (ReturnCodeStr == L"0"))
         {
@@ -637,7 +637,7 @@ void __fastcall TSCPFileSystem::ReadCommandOutput(int Params, const std::wstring
                 Line = FSecureShell->ReceiveLine();
                 // DEBUG_PRINTF(L"Line = %s", Line.c_str());
                 IsLast = IsLastLine(Line);
-                if (!IsLast || !Line.empty())
+                if (!IsLast || !Line.IsEmpty())
                 {
                     FOutput->Add(Line);
                     if (FLAGSET(Params, coReadProgress))
@@ -659,12 +659,12 @@ void __fastcall TSCPFileSystem::ReadCommandOutput(int Params, const std::wstring
             std::wstring Message = FSecureShell->GetStdError();
             if ((Params & coExpectNoOutput) && FOutput->GetCount())
             {
-                if (!Message.empty()) { Message += L"\n"; }
+                if (!Message.IsEmpty()) { Message += L"\n"; }
                 Message += FOutput->GetText();
             }
-            while (!Message.empty() && (::LastDelimiter(Message, L"\n\r") == Message.size() - 1))
+            while (!Message.IsEmpty() && (::LastDelimiter(Message, L"\n\r") == Message.Length() - 1))
             {
-                Message.resize(Message.size() - 1);
+                Message.resize(Message.Length() - 1);
             }
 
             bool WrongReturnCode =
@@ -675,7 +675,7 @@ void __fastcall TSCPFileSystem::ReadCommandOutput(int Params, const std::wstring
                 FTerminal->TerminalError(FMTLOAD(COMMAND_FAILED_CODEONLY, GetReturnCode()));
             }
             else if (!(Params & coOnlyReturnCode) &&
-                     ((!Message.empty() && ((FOutput->GetCount() == 0) || !(Params & coIgnoreWarnings))) ||
+                     ((!Message.IsEmpty() && ((FOutput->GetCount() == 0) || !(Params & coIgnoreWarnings))) ||
                       WrongReturnCode))
             {
                 assert(Cmd != NULL);
@@ -795,7 +795,7 @@ void __fastcall TSCPFileSystem::LookupUsersGroups()
     if (FOutput->GetCount() > 0)
     {
         std::wstring Groups = FOutput->GetString(0);
-        while (!Groups.empty())
+        while (!Groups.IsEmpty())
         {
             std::wstring NewGroup = CutToChar(Groups, ' ', false);
             FTerminal->FGroups.Add(TRemoteToken(NewGroup));
@@ -826,7 +826,7 @@ void __fastcall TSCPFileSystem::DetectReturnVar()
                 // DEBUG_PRINTF(L"GetOutput()->GetCount = %d, GetOutput()->GetString(0) = %s", GetOutput()->GetCount(), GetOutput()->GetString(0).c_str());
                 std::wstring str = GetOutput()->GetCount() > 0 ? GetOutput()->GetString(0) : L"";
                 int val = StrToIntDef(str, 256);
-                if ((GetOutput()->GetCount() != 1) || str.empty() || (val > 255))
+                if ((GetOutput()->GetCount() != 1) || str.IsEmpty() || (val > 255))
                 {
                     FTerminal->LogEvent(L"The response is not numerical exit code");
                     System::Abort();
@@ -850,7 +850,7 @@ void __fastcall TSCPFileSystem::DetectReturnVar()
             }
         }
 
-        if (NewReturnVar.empty())
+        if (NewReturnVar.IsEmpty())
         {
             System::Abort();
         }
@@ -869,7 +869,7 @@ void __fastcall TSCPFileSystem::DetectReturnVar()
 //---------------------------------------------------------------------------
 void __fastcall TSCPFileSystem::ClearAlias(const std::wstring Alias)
 {
-    if (!Alias.empty())
+    if (!Alias.IsEmpty())
     {
         // this command usually fails, because there will never be
         // aliases on all commands -> see last false parametr
@@ -920,7 +920,7 @@ void __fastcall TSCPFileSystem::UnsetNationalVars()
 //---------------------------------------------------------------------------
 void __fastcall TSCPFileSystem::ReadCurrentDirectory()
 {
-    if (FCachedDirectoryChange.empty())
+    if (FCachedDirectoryChange.IsEmpty())
     {
         ExecCommand(fsCurrentDirectory);
         FCurrentDirectory = UnixExcludeTrailingBackslash(FOutput->GetString(0));
@@ -944,8 +944,8 @@ void __fastcall TSCPFileSystem::AnnounceFileListOperation()
 void __fastcall TSCPFileSystem::ChangeDirectory(const std::wstring Directory)
 {
     std::wstring ToDir;
-    if (!Directory.empty() &&
-            ((Directory[0] != L'~') || (Directory.substr(0, 2) == L"~ ")))
+    if (!Directory.IsEmpty() &&
+            ((Directory[0] != L'~') || (Directory.SubString(0, 2) == L"~ ")))
     {
         ToDir = L"\"" + DelimitStr(Directory) + L"\"";
     }
@@ -1194,7 +1194,7 @@ void __fastcall TSCPFileSystem::ChangeFileToken(const std::wstring DelimitedName
         Str = Token.GetName();
     }
 
-    if (!Str.empty())
+    if (!Str.IsEmpty())
     {
         ExecCommand(Cmd, 0, RecursiveStr.c_str(), Str.c_str(), DelimitedName.c_str());
     }
@@ -1306,9 +1306,9 @@ void TSCPFileSystem::CaptureOutput(const std::wstring AddedLine, bool StdError)
     // DEBUG_PRINTF(L"Line = %s", Line.c_str());
     if (StdError ||
             !RemoveLastLine(Line, ReturnCode) ||
-            !Line.empty())
+            !Line.IsEmpty())
     {
-        assert(!FOnCaptureOutput.empty());
+        assert(!FOnCaptureOutput.IsEmpty());
         FOnCaptureOutput(Line, StdError);
     }
 }
@@ -1316,7 +1316,7 @@ void TSCPFileSystem::CaptureOutput(const std::wstring AddedLine, bool StdError)
 void __fastcall TSCPFileSystem::AnyCommand(const std::wstring Command,
                                 const TCaptureOutputEvent *OutputEvent)
 {
-    assert(FSecureShell->GetOnCaptureOutput().empty());
+    assert(FSecureShell->GetOnCaptureOutput().IsEmpty());
     if (OutputEvent)
     {
         FSecureShell->SetOnCaptureOutput(boost::bind(&TSCPFileSystem::CaptureOutput, this, _1, _2));
@@ -1782,7 +1782,7 @@ void __fastcall TSCPFileSystem::SCPSource(const std::wstring FileName,
                         {
                             Buf.resize(40, 0);
                             // Send last file access and modification time
-                            swprintf_s(const_cast<wchar_t *>(Buf.c_str()), Buf.size(), L"T%lu 0 %lu 0", static_cast<unsigned long>(MTime),
+                            swprintf_s(const_cast<wchar_t *>(Buf.c_str()), Buf.Length(), L"T%lu 0 %lu 0", static_cast<unsigned long>(MTime),
                                        static_cast<unsigned long>(ATime));
                             FSecureShell->SendLine(Buf.c_str());
                             SCPResponse();
@@ -1792,7 +1792,7 @@ void __fastcall TSCPFileSystem::SCPSource(const std::wstring FileName,
                         Buf.clear();
                         Buf.resize(MAX_PATH * 2, 0);
                         // TODO: use boost::format
-                        swprintf_s(const_cast<wchar_t *>(Buf.c_str()), Buf.size(), L"C%s %ld %s",
+                        swprintf_s(const_cast<wchar_t *>(Buf.c_str()), Buf.Length(), L"C%s %ld %s",
                                    Rights.GetOctal().c_str(),
                                    static_cast<int>(OperationProgress->AsciiTransfer ? AsciiBuf.GetSize() :
                                                     OperationProgress->LocalSize),
@@ -2238,7 +2238,7 @@ void __fastcall TSCPFileSystem::SCPSink(const std::wstring TargetDir,
             // Receive control record
             std::wstring Line = FSecureShell->ReceiveLine();
 
-            if (Line.size() == 0) { FTerminal->FatalError(NULL, LoadStr(SCP_EMPTY_LINE)); }
+            if (Line.Length() == 0) { FTerminal->FatalError(NULL, LoadStr(SCP_EMPTY_LINE)); }
 
             if (IsLastLine(Line))
             {
@@ -2278,7 +2278,7 @@ void __fastcall TSCPFileSystem::SCPSink(const std::wstring TargetDir,
 
                 // First characted distinguish type of control record
                 char Ctrl = static_cast<char>(Line[0]);
-                Line.erase(0, 1);
+                Line.Delete(0, 1);
                 // DEBUG_PRINTF(L"Line ='%s', Ctrl = '%c'", Line.c_str(), Ctrl);
 
                 switch (Ctrl)

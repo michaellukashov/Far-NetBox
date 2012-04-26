@@ -397,7 +397,7 @@ void __fastcall TFTPFileSystem::Open()
 
         // ask for username if it was not specified in advance, even on retry,
         // but keep previous one as default,
-        if (Data->GetUserNameExpanded().empty())
+        if (Data->GetUserNameExpanded().IsEmpty())
         {
             FTerminal->LogEvent(L"Username prompt (no username provided)");
 
@@ -554,7 +554,7 @@ std::wstring __fastcall TFTPFileSystem::ActualCurrentDirectory()
     wchar_t CurrentPath[1024];
     FFileZillaIntf->GetCurrentPath(CurrentPath, LENOF(CurrentPath));
     std::wstring fn = UnixExcludeTrailingBackslash(CurrentPath);
-    if (fn.empty())
+    if (fn.IsEmpty())
     {
         fn = L"/";
     }
@@ -564,7 +564,7 @@ std::wstring __fastcall TFTPFileSystem::ActualCurrentDirectory()
 void __fastcall TFTPFileSystem::EnsureLocation()
 {
     // if we do not know what's the current directory, do nothing
-    if (!FCurrentDirectory.empty())
+    if (!FCurrentDirectory.IsEmpty())
     {
         // Make sure that the FZAPI current working directory,
         // is actually our working directory.
@@ -590,7 +590,7 @@ void __fastcall TFTPFileSystem::AnyCommand(const std::wstring Command,
     // current directory for the server
     EnsureLocation();
 
-    assert(FOnCaptureOutput.empty());
+    assert(FOnCaptureOutput.IsEmpty());
     if (OutputEvent)
     {
         FOnCaptureOutput.connect(*OutputEvent);
@@ -660,7 +660,7 @@ void __fastcall TFTPFileSystem::ChangeDirectory(const std::wstring ADirectory)
 void __fastcall TFTPFileSystem::CachedChangeDirectory(const std::wstring Directory)
 {
     FCurrentDirectory = UnixExcludeTrailingBackslash(Directory);
-    if (FCurrentDirectory.empty())
+    if (FCurrentDirectory.IsEmpty())
     {
         FCurrentDirectory = L"/";
     }
@@ -1148,7 +1148,7 @@ void __fastcall TFTPFileSystem::Sink(const std::wstring FileName,
         TFileTransferData UserData;
 
         std::wstring FilePath = UnixExtractFilePath(FileName);
-        if (FilePath.empty())
+        if (FilePath.IsEmpty())
         {
             FilePath = L"/";
         }
@@ -1559,7 +1559,7 @@ void __fastcall TFTPFileSystem::DirectorySource(const std::wstring DirectoryName
             TRemoteFile *File = NULL;
             // ignore non-fatal error when the directory already exists
             std::wstring fn = UnixExcludeTrailingBackslash(DestFullName);
-            if (fn.empty())
+            if (fn.IsEmpty())
             {
                 fn = L"/";
             }
@@ -1684,7 +1684,7 @@ void __fastcall TFTPFileSystem::DoStartup()
         for (size_t Index = 0; Index < PostLoginCommands->GetCount(); Index++)
         {
             std::wstring Command = PostLoginCommands->GetString(Index);
-            if (!Command.empty())
+            if (!Command.IsEmpty())
             {
                 FFileZillaIntf->CustomCommand(Command.c_str());
 
@@ -1760,7 +1760,7 @@ void __fastcall TFTPFileSystem::ReadCurrentDirectory()
     // and immediatelly after call to CWD,
     // later our current directory may be not synchronized with FZAPI current
     // directory anyway, see comments in EnsureLocation
-    if (FCurrentDirectory.empty())
+    if (FCurrentDirectory.IsEmpty())
     {
         FFileZillaIntf->CustomCommand(L"PWD");
 
@@ -1790,12 +1790,12 @@ void __fastcall TFTPFileSystem::ReadCurrentDirectory()
                 }
                 if (P != std::wstring::npos)
                 {
-                    Path.erase(0, P);
+                    Path.Delete(0, P);
 
                     if (Unquote(Path))
                     {
                         FCurrentDirectory = UnixExcludeTrailingBackslash(Path);
-                        if (FCurrentDirectory.empty())
+                        if (FCurrentDirectory.IsEmpty())
                         {
                             FCurrentDirectory = L"/";
                         }
@@ -2079,7 +2079,7 @@ bool __fastcall TFTPFileSystem::TemporaryTransferFile(const std::wstring /*FileN
 //---------------------------------------------------------------------------
 bool __fastcall TFTPFileSystem::GetStoredCredentialsTried()
 {
-    return !FTerminal->GetSessionData()->GetPassword().empty();
+    return !FTerminal->GetSessionData()->GetPassword().IsEmpty();
 }
 //---------------------------------------------------------------------------
 std::wstring __fastcall TFTPFileSystem::GetUserName()
@@ -2170,7 +2170,7 @@ int __fastcall TFTPFileSystem::GetOptionVal(int OptionID) const
         break;
 
     case OPTION_PROXYUSELOGON:
-        Result = !Data->GetProxyUsername().empty();
+        Result = !Data->GetProxyUsername().IsEmpty();
         break;
 
     case OPTION_LOGONTYPE:
@@ -2591,7 +2591,7 @@ void __fastcall TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
                 throw;
             }
 
-            if (Error.empty() && (MoreMessages != NULL))
+            if (Error.IsEmpty() && (MoreMessages != NULL))
             {
                 assert(MoreMessages->GetCount() > 0);
                 Error = MoreMessages->GetString(0);
@@ -2601,7 +2601,7 @@ void __fastcall TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
             if (Disconnected)
             {
                 // for fatal error, it is essential that there is some message
-                assert(!Error.empty());
+                assert(!Error.IsEmpty());
                 ExtException *E = new ExtException(Error, MoreMessages, true);
                 {
                     BOOST_SCOPE_EXIT ( (&E) )
@@ -2640,7 +2640,7 @@ void __fastcall TFTPFileSystem::HandleReplyStatus(const std::wstring Response)
 {
     int Code = 0;
 
-    if (!FOnCaptureOutput.empty())
+    if (!FOnCaptureOutput.IsEmpty())
     {
         FOnCaptureOutput(Response, false);
     }
@@ -2664,18 +2664,18 @@ void __fastcall TFTPFileSystem::HandleReplyStatus(const std::wstring Response)
     // 211 End
 
     bool HasCodePrefix =
-        (Response.size() >= 3) &&
-        TryStrToInt(Response.substr(0, 3), Code) &&
+        (Response.Length() >= 3) &&
+        TryStrToInt(Response.SubString(0, 3), Code) &&
         (Code >= 100) && (Code <= 599) &&
-        ((Response.size() == 3) || (Response[3] == L' ') || (Response[3] == L'-'));
+        ((Response.Length() == 3) || (Response[3] == L' ') || (Response[3] == L'-'));
 
     if (HasCodePrefix && !FMultineResponse)
     {
-        FMultineResponse = (Response.size() >= 4) && (Response[3] == L'-');
+        FMultineResponse = (Response.Length() >= 4) && (Response[3] == L'-');
         FLastResponse->Clear();
-        if (Response.size() >= 5)
+        if (Response.Length() >= 5)
         {
-            FLastResponse->Add(Response.substr(4, Response.size() - 4));
+            FLastResponse->Add(Response.SubString(4, Response.Length() - 4));
         }
         SetLastCode(Code);
     }
@@ -2686,7 +2686,7 @@ void __fastcall TFTPFileSystem::HandleReplyStatus(const std::wstring Response)
         if (HasCodePrefix && (FLastCode == Code))
         {
             // End of multiline response?
-            if ((Response.size() <= 3) || (Response[3] == L' '))
+            if ((Response.Length() <= 3) || (Response[3] == L' '))
             {
                 FMultineResponse = false;
             }
@@ -2694,13 +2694,13 @@ void __fastcall TFTPFileSystem::HandleReplyStatus(const std::wstring Response)
         }
         else
         {
-            Start = (((Response.size() >= 1) && (Response[0] == L' ')) ? 1 : 0);
+            Start = (((Response.Length() >= 1) && (Response[0] == L' ')) ? 1 : 0);
         }
 
         // Intermediate empty lines are being added
-        if (FMultineResponse || (Response.size() >= Start))
+        if (FMultineResponse || (Response.Length() >= Start))
         {
-            FLastResponse->Add(Response.substr(Start, Response.size() - Start + 1));
+            FLastResponse->Add(Response.SubString(Start, Response.Length() - Start + 1));
         }
     }
 
@@ -2730,7 +2730,7 @@ void __fastcall TFTPFileSystem::HandleReplyStatus(const std::wstring Response)
         }
         else if (FLastCommand == SYST)
         {
-            assert(FSystem.empty());
+            assert(FSystem.IsEmpty());
             // Possitive reply to "SYST" must be 215, see RFC 959
             if (FLastCode == 215)
             {
@@ -2779,7 +2779,7 @@ std::wstring __fastcall TFTPFileSystem::ExtractStatusMessage(std::wstring &Statu
             size_t P3 = ::Pos(Status, L"   caller=0x");
             if ((P3 != std::wstring::npos) && (P3 > P1))
             {
-                Status = Status.substr(P1 + 3, P3 - P1 - 3);
+                Status = Status.SubString(P1 + 3, P3 - P1 - 3);
             }
         }
     }
@@ -2807,7 +2807,7 @@ bool __fastcall TFTPFileSystem::HandleStatus(const wchar_t *AStatus, int Type)
         {
             FLastCommand = FEAT;
         }
-        else if (Status.substr(0, 5) == L"PASS ")
+        else if (Status.SubString(0, 5) == L"PASS ")
         {
             FLastCommand = PASS;
         }
@@ -3035,7 +3035,7 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestOverwrite(
 //---------------------------------------------------------------------------
 std::wstring __fastcall FormatContactList(const std::wstring Entry1, const std::wstring Entry2)
 {
-    if (!Entry1.empty() && !Entry2.empty())
+    if (!Entry1.IsEmpty() && !Entry2.IsEmpty())
     {
         return FORMAT(L"%s, %s", Entry1.c_str(), Entry2.c_str());
     }
@@ -3203,7 +3203,7 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
         if (RequestResult == 0)
         {
             std::wstring Buf = FTerminal->GetSessionData()->GetHostKey();
-            while ((RequestResult == 0) && !Buf.empty())
+            while ((RequestResult == 0) && !Buf.IsEmpty())
             {
                 std::wstring ExpectedKey = CutToChar(Buf, L';', false);
                 if (ExpectedKey == FSessionInfo.CertificateFingerprint)
@@ -3500,11 +3500,11 @@ bool __fastcall TFTPFileSystem::Unquote(std::wstring &Str)
     } State;
 
     State = INIT;
-    assert((Str.size() > 0) && ((Str[0] == '"') || (Str[0] == '\'')));
+    assert((Str.Length() > 0) && ((Str[0] == '"') || (Str[0] == '\'')));
 
     size_t Index = 0;
     wchar_t Quote = 0;
-    while (Index < Str.size())
+    while (Index < Str.Length())
     {
         switch (State)
         {
@@ -3513,7 +3513,7 @@ bool __fastcall TFTPFileSystem::Unquote(std::wstring &Str)
             {
                 Quote = Str[Index];
                 State = QUOTED;
-                Str.erase(Index, 1);
+                Str.Delete(Index, 1);
             }
             else
             {
@@ -3527,7 +3527,7 @@ bool __fastcall TFTPFileSystem::Unquote(std::wstring &Str)
             if (Str[Index] == Quote)
             {
                 State = QUOTE;
-                Str.erase(Index, 1);
+                Str.Delete(Index, 1);
             }
             else
             {

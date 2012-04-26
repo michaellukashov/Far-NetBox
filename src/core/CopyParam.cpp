@@ -57,7 +57,7 @@ std::wstring TCopyParamType::GetInfoStr(const std::wstring Separator, int Option
 #define ADD(STR, EXCEPT) \
     if (FLAGCLEAR(Options, EXCEPT)) \
     { \
-      Result += (Result.empty() ? std::wstring() : Separator) + (STR); \
+      Result += (Result.IsEmpty() ? std::wstring() : Separator) + (STR); \
     } \
     else \
     { \
@@ -174,11 +174,11 @@ std::wstring TCopyParamType::GetInfoStr(const std::wstring Separator, int Option
 
     if (SomeAttrExcluded)
     {
-        Result += (Result.empty() ? std::wstring() : Separator) +
+        Result += (Result.IsEmpty() ? std::wstring() : Separator) +
                   FORMAT(LoadStrPart(COPY_INFO_NOT_USABLE, 1).c_str(),
-                         (LoadStrPart(COPY_INFO_NOT_USABLE, (Result.empty() ? 3 : 2)).c_str()));
+                         (LoadStrPart(COPY_INFO_NOT_USABLE, (Result.IsEmpty() ? 3 : 2)).c_str()));
     }
-    else if (Result.empty())
+    else if (Result.IsEmpty())
     {
         Result = LoadStr(COPY_INFO_DEFAULT);
     }
@@ -274,8 +274,8 @@ std::wstring TCopyParamType::ValidLocalFileName(const std::wstring FileName) con
             char Char;
             if ((GetInvalidCharsReplacement() == TokenReplacement) &&
                     (*InvalidChar == TokenPrefix) &&
-                    (((fileName.size() - Pos) <= 1) ||
-                     (((Char = HexToChar(fileName.substr(Pos + 1, 2))) == '\0') ||
+                    (((fileName.Length() - Pos) <= 1) ||
+                     (((Char = HexToChar(fileName.SubString(Pos + 1, 2))) == '\0') ||
                       (FTokenizibleChars.find_first_of(Char) == std::wstring::npos))))
             {
                 InvalidChar++;
@@ -287,11 +287,11 @@ std::wstring TCopyParamType::ValidLocalFileName(const std::wstring FileName) con
         }
 
         // Windows trim trailing space or dot, hence we must encode it to preserve it
-        if (!fileName.empty() &&
-                ((fileName[fileName.size() - 1] == ' ') ||
-                 (fileName[fileName.size() - 1] == '.')))
+        if (!fileName.IsEmpty() &&
+                ((fileName[fileName.Length() - 1] == ' ') ||
+                 (fileName[fileName.Length() - 1] == '.')))
         {
-            ReplaceChar(fileName, const_cast<wchar_t *>(fileName.c_str() + fileName.size() - 1));
+            ReplaceChar(fileName, const_cast<wchar_t *>(fileName.c_str() + fileName.Length() - 1));
         }
 
         if (IsReservedName(fileName))
@@ -299,7 +299,7 @@ std::wstring TCopyParamType::ValidLocalFileName(const std::wstring FileName) con
             size_t P = fileName.find_first_of(L".");
             if (P == std::wstring::npos)
             {
-                P = fileName.size();
+                P = fileName.Length();
             }
             fileName.insert(P, L"%00");
         }
@@ -317,27 +317,27 @@ std::wstring TCopyParamType::RestoreChars(const std::wstring FileName) const
         {
             size_t Index = InvalidChar - fileName.c_str() + 1;
             System::Error(SNotImplemented, 206);
-            if ((fileName.size() >= Index + 2) &&
+            if ((fileName.Length() >= Index + 2) &&
                     false // FIXME (fileName.ByteType(Index) == mbSingleByte) &&
                     // (fileName.ByteType(Index + 1) == mbSingleByte) &&
                     // (fileName.ByteType(Index + 2) == mbSingleByte)
                )
             {
-                std::wstring Hex = fileName.substr(Index + 1, 2);
+                std::wstring Hex = fileName.SubString(Index + 1, 2);
                 char Char = HexToChar(Hex);
                 if ((Char != '\0') &&
-                        ((FTokenizibleChars.find(Char) != std::wstring::npos) ||
-                         (((Char == ' ') || (Char == '.')) && (Index == fileName.size() - 2))))
+                        ((FTokenizibleChars.Pos(Char) != std::wstring::npos) ||
+                         (((Char == ' ') || (Char == '.')) && (Index == fileName.Length() - 2))))
                 {
                     fileName[Index] = Char;
-                    fileName.erase(Index + 1, 2);
+                    fileName.Delete(Index + 1, 2);
                     InvalidChar = const_cast<wchar_t *>(fileName.c_str() + Index);
                 }
                 else if ((Hex == L"00") &&
-                         ((Index == fileName.size() - 2) || (fileName[Index + 3] == '.')) &&
-                         IsReservedName(fileName.substr(0, Index - 1) + fileName.substr(Index + 3, fileName.size() - Index - 3 + 1)))
+                         ((Index == fileName.Length() - 2) || (fileName[Index + 3] == '.')) &&
+                         IsReservedName(fileName.SubString(0, Index - 1) + fileName.SubString(Index + 3, fileName.Length() - Index - 3 + 1)))
                 {
-                    fileName.erase(Index, 3);
+                    fileName.Delete(Index, 3);
                     InvalidChar = const_cast<wchar_t *>(fileName.c_str() + Index - 1);
                 }
                 else
@@ -358,9 +358,9 @@ std::wstring TCopyParamType::ValidLocalPath(const std::wstring Path) const
 {
     std::wstring Result;
     std::wstring path = Path;
-    while (!path.empty())
+    while (!path.IsEmpty())
     {
-        if (!Result.empty())
+        if (!Result.IsEmpty())
         {
             Result += L"\\";
         }
@@ -377,15 +377,15 @@ std::wstring TCopyParamType::Untokenize(const std::wstring FileName)
     while ((Token = AnsiStrScan(Result.c_str(), TokenPrefix)) != NULL)
     {
         size_t Index = Token - Result.c_str() + 1;
-        if (Index > Result.size() - 2)
+        if (Index > Result.Length() - 2)
         {
             Result = FileName;
             break;
         }
         else
         {
-            // wchar_t Ch = static_cast<wchar_t>(HexToInt(Result.substr(Index + 1, 2), -1));
-            wchar_t Ch = static_cast<wchar_t>(HexToInt(Result.substr(Index + 1, 2), -1));
+            // wchar_t Ch = static_cast<wchar_t>(HexToInt(Result.SubString(Index + 1, 2), -1));
+            wchar_t Ch = static_cast<wchar_t>(HexToInt(Result.SubString(Index + 1, 2), -1));
             if (Ch == '\0')
             {
                 Result = FileName;
@@ -394,7 +394,7 @@ std::wstring TCopyParamType::Untokenize(const std::wstring FileName)
             else
             {
                 Result[Index] = Ch;
-                Result.erase(Index + 1, 2);
+                Result.Delete(Index + 1, 2);
             }
         }
     }
@@ -415,10 +415,10 @@ std::wstring TCopyParamType::ChangeFileName(const std::wstring FileName,
     {
     case ncUpperCase: fileName = ::UpperCase(fileName); break;
     case ncLowerCase: fileName = ::LowerCase(fileName); break;
-    case ncFirstUpperCase: fileName = ::UpperCase(fileName.substr(0, 1)) +
-                                          ::LowerCase(fileName.substr(1, fileName.size() - 1)); break;
+    case ncFirstUpperCase: fileName = ::UpperCase(fileName.SubString(0, 1)) +
+                                          ::LowerCase(fileName.SubString(1, fileName.Length() - 1)); break;
     case ncLowerCaseShort:
-        if ((fileName.size() <= 12) && (fileName.find_first_of(L".") <= 9) &&
+        if ((fileName.Length() <= 12) && (fileName.find_first_of(L".") <= 9) &&
                 (fileName == ::UpperCase(fileName)))
         {
             fileName = ::LowerCase(fileName);
@@ -516,14 +516,14 @@ bool TCopyParamType::AllowResume(__int64 Size) const
 //---------------------------------------------------------------------------
 bool TCopyParamType::AllowAnyTransfer() const
 {
-    return GetExcludeFileMask().GetMasks().empty();
+    return GetExcludeFileMask().GetMasks().IsEmpty();
 }
 //---------------------------------------------------------------------------
 bool TCopyParamType::AllowTransfer(const std::wstring FileName,
                                    TOperationSide Side, bool Directory, const TFileMasks::TParams &Params) const
 {
     bool Result = true;
-    if (!GetExcludeFileMask().GetMasks().empty())
+    if (!GetExcludeFileMask().GetMasks().IsEmpty())
     {
         Result = (GetExcludeFileMask().Matches(FileName, (Side == osLocal),
                                                Directory, &Params) == GetNegativeExclude());

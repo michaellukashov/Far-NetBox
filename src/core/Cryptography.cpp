@@ -399,7 +399,7 @@ static std::wstring __fastcall AES256Salt()
 {
     std::wstring Result;
     Result.resize(SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
-    FillBufferWithRandomData((char *)Result.c_str(), Result.size());
+    FillBufferWithRandomData((char *)Result.c_str(), Result.Length());
     return Result;
 }
 //---------------------------------------------------------------------------
@@ -407,16 +407,16 @@ void __fastcall AES256EncyptWithMAC(const std::wstring Input, const std::wstring
                          std::wstring Salt, std::wstring &Output, std::wstring Mac)
 {
     fcrypt_ctx aes;
-    if (Salt.empty())
+    if (Salt.IsEmpty())
     {
         Salt = AES256Salt();
     }
-    assert(Salt.size() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
+    assert(Salt.Length() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
     fcrypt_init(PASSWORD_MANAGER_AES_MODE,
-                reinterpret_cast<const unsigned char *>(Password.c_str()), Password.size(),
+                reinterpret_cast<const unsigned char *>(Password.c_str()), Password.Length(),
                 reinterpret_cast<const unsigned char *>(Salt.c_str()), NULL, &aes);
     Output = Input;
-    fcrypt_encrypt((unsigned char *)(Output.c_str()), Output.size(), &aes);
+    fcrypt_encrypt((unsigned char *)(Output.c_str()), Output.Length(), &aes);
     Mac.resize(MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
     fcrypt_end((unsigned char *)(Mac.c_str()), &aes);
 }
@@ -435,15 +435,15 @@ bool __fastcall AES256DecryptWithMAC(const std::wstring Input, const std::wstrin
                           std::wstring Salt, std::wstring &Output, std::wstring Mac)
 {
     fcrypt_ctx aes;
-    assert(Salt.size() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
+    assert(Salt.Length() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
     fcrypt_init(PASSWORD_MANAGER_AES_MODE,
-                reinterpret_cast<const unsigned char *>(Password.c_str()), Password.size(),
+                reinterpret_cast<const unsigned char *>(Password.c_str()), Password.Length(),
                 reinterpret_cast<const unsigned char *>(Salt.c_str()), NULL, &aes);
     Output = Input;
-    fcrypt_decrypt((unsigned char *)(Output.c_str()), Output.size(), &aes);
+    fcrypt_decrypt((unsigned char *)(Output.c_str()), Output.Length(), &aes);
     std::wstring Mac2;
     Mac2.resize(MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
-    assert(Mac.size() == Mac2.size());
+    assert(Mac.Length() == Mac2.Length());
     fcrypt_end((unsigned char *)(Mac2.c_str()), &aes);
     return (Mac2 == Mac);
 }
@@ -452,15 +452,15 @@ bool __fastcall AES256DecryptWithMAC(const std::wstring Input, const std::wstrin
                           std::wstring &Output)
 {
     bool Result =
-        Input.size() > SALT_LENGTH(PASSWORD_MANAGER_AES_MODE) + MAC_LENGTH(PASSWORD_MANAGER_AES_MODE);
+        Input.Length() > SALT_LENGTH(PASSWORD_MANAGER_AES_MODE) + MAC_LENGTH(PASSWORD_MANAGER_AES_MODE);
     if (Result)
     {
-        std::wstring Salt = Input.substr(0, SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
+        std::wstring Salt = Input.SubString(0, SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
         std::wstring Encrypted =
-            Input.substr(SALT_LENGTH(PASSWORD_MANAGER_AES_MODE) + 1,
-                         Input.size() - SALT_LENGTH(PASSWORD_MANAGER_AES_MODE) - MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
+            Input.SubString(SALT_LENGTH(PASSWORD_MANAGER_AES_MODE) + 1,
+                         Input.Length() - SALT_LENGTH(PASSWORD_MANAGER_AES_MODE) - MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
         std::wstring Mac =
-            Input.substr(Input.size() - MAC_LENGTH(PASSWORD_MANAGER_AES_MODE) + 1,
+            Input.SubString(Input.Length() - MAC_LENGTH(PASSWORD_MANAGER_AES_MODE) + 1,
                          MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
         Result = AES256DecryptWithMAC(Encrypted, Password, Salt, Output, Mac);
     }
@@ -482,15 +482,15 @@ void __fastcall AES256CreateVerifier(const std::wstring Input, std::wstring &Ver
 bool __fastcall AES256Verify(const std::wstring Input, const std::wstring Verifier)
 {
     int SaltLength = SALT_LENGTH(PASSWORD_MANAGER_AES_MODE);
-    std::wstring Salt = Verifier.substr(0, SaltLength);
-    std::wstring Dummy = Verifier.substr(SaltLength + 1, SaltLength);
-    std::wstring Mac = Verifier.substr(SaltLength + SaltLength + 1, MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
+    std::wstring Salt = Verifier.SubString(0, SaltLength);
+    std::wstring Dummy = Verifier.SubString(SaltLength + 1, SaltLength);
+    std::wstring Mac = Verifier.SubString(SaltLength + SaltLength + 1, MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
 
     std::wstring Encrypted;
     std::wstring Mac2;
     AES256EncyptWithMAC(Dummy, Input, Salt, Encrypted, Mac2);
 
-    assert(Mac2.size() == Mac.size());
+    assert(Mac2.Length() == Mac.Length());
 
     return (Mac == Mac2);
 }
@@ -521,7 +521,7 @@ unsigned char *UnscrambleTable;
 void __fastcall ScramblePassword(std::wstring &Password)
 {
 #define SCRAMBLE_LENGTH_EXTENSION 50
-    int Len = Password.size();
+    int Len = Password.Length();
     char *Buf = new char[Len + SCRAMBLE_LENGTH_EXTENSION];
     int Padding = (((Len + 3) / 17) * 17 + 17) - 3 - Len;
     for (int Index = 0; Index < Padding; Index++)
@@ -577,9 +577,9 @@ bool __fastcall UnscramblePassword(std::wstring &Password)
     {
         int Len = (S[0] - '0') + 10 * (S[1] - '0') + 100 * (S[2] - '0');
         size_t Total = (((Len + 3) / 17) * 17 + 17);
-        if ((Len >= 0) && (Total == Password.size()) && (Total - (S - (char *)Password.c_str()) - 3 == static_cast<size_t>(Len)))
+        if ((Len >= 0) && (Total == Password.Length()) && (Total - (S - (char *)Password.c_str()) - 3 == static_cast<size_t>(Len)))
         {
-            Password.erase(Password.size() - Len, 1);
+            Password.Delete(Password.Length() - Len, 1);
             Result = true;
         }
     }
@@ -615,7 +615,7 @@ size_t __fastcall PasswordMaxLength()
 //---------------------------------------------------------------------------
 int __fastcall IsValidPassword(const std::wstring Password)
 {
-    if (Password.empty() || (Password.size() > PasswordMaxLength()))
+    if (Password.IsEmpty() || (Password.Length() > PasswordMaxLength()))
     {
         return -1;
     }
@@ -625,7 +625,7 @@ int __fastcall IsValidPassword(const std::wstring Password)
         int B = 0;
         int C = 0;
         int D = 0;
-        for (size_t Index = 0; Index < Password.size(); Index++)
+        for (size_t Index = 0; Index < Password.Length(); Index++)
         {
             if ((Password[Index] >= 'a') && (Password[Index] <= 'z'))
             {
@@ -644,6 +644,6 @@ int __fastcall IsValidPassword(const std::wstring Password)
                 D = 1;
             }
         }
-        return (Password.size() >= 6) && ((A + B + C + D) >= 2);
+        return (Password.Length() >= 6) && ((A + B + C + D) >= 2);
     }
 }

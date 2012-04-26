@@ -113,7 +113,7 @@ void TBookmarks::LoadLevel(THierarchicalStorage *Storage, const std::wstring Key
                 assert(IsDirectory); // unless malformed
                 Name = Directory;
             }
-            if (!Name.empty())
+            if (!Name.IsEmpty())
             {
                 Bookmark = BookmarkList->FindByName(Key, Name);
                 bool New;
@@ -151,7 +151,7 @@ void TBookmarks::LoadLevel(THierarchicalStorage *Storage, const std::wstring Key
             Name = Names->GetString(i);
             if (Storage->OpenSubKey(Name, false))
             {
-                LoadLevel(Storage, Key + (Key.empty() ? L"" : L"/") + Name, Index, BookmarkList);
+                LoadLevel(Storage, Key + (Key.IsEmpty() ? L"" : L"/") + Name, Index, BookmarkList);
                 Storage->CloseSubKey();
             }
         }
@@ -183,7 +183,7 @@ void TBookmarks::Save(THierarchicalStorage *Storage, bool All)
                                 if ((i == 0) || (i == 1) ||
                                         ((i == 2) && (Bookmark->GetShortCut() != 0)))
                                 {
-                                    bool HasNode = !Bookmark->GetNode().empty();
+                                    bool HasNode = !Bookmark->GetNode().IsEmpty();
                                     if (!HasNode || Storage->OpenSubKey(Bookmark->GetNode(), true))
                                     {
                                         switch (i)
@@ -376,7 +376,7 @@ void TBookmarkList::Insert(size_t Index, TBookmark *Bookmark)
 {
     assert(Bookmark);
     assert(!Bookmark->FOwner);
-    assert(!Bookmark->GetName().empty());
+    assert(!Bookmark->GetName().IsEmpty());
 
     FModified = true;
     Bookmark->FOwner = this;

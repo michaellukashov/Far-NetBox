@@ -186,7 +186,7 @@ void TSecureShell::StoreToConfig(TSessionData *Data, Config *cfg, bool Simple)
     }
 
     std::wstring SPublicKeyFile = Data->GetPublicKeyFile();
-    if (SPublicKeyFile.empty()) { SPublicKeyFile = Configuration->GetDefaultKeyFile(); }
+    if (SPublicKeyFile.IsEmpty()) { SPublicKeyFile = Configuration->GetDefaultKeyFile(); }
     SPublicKeyFile = StripPathQuotes(ExpandEnvironmentVariables(SPublicKeyFile));
     ASCOPY(cfg->keyfile.path, System::W2MB(SPublicKeyFile.c_str(), Data->GetCodePageAsNumber()));
     // cfg->keyfile.path = ::StrNew(System::W2MB(SPublicKeyFile.c_str(), Data->GetCodePageAsNumber())).c_str();
@@ -236,7 +236,7 @@ void TSecureShell::StoreToConfig(TSessionData *Data, Config *cfg, bool Simple)
     cfg->sshbug_ignore2 = asAuto;
     // #pragma option pop
 
-    if (!Data->GetTunnelPortFwd().empty())
+    if (!Data->GetTunnelPortFwd().IsEmpty())
     {
         assert(!Simple);
         // DEBUG_PRINTF(L"Data->GetTunnelPortFwd = %s", Data->GetTunnelPortFwd().c_str());
@@ -253,7 +253,7 @@ void TSecureShell::StoreToConfig(TSessionData *Data, Config *cfg, bool Simple)
         if (Data->GetFSProtocol() == fsSCPonly)
         {
             cfg->ssh_subsys = FALSE;
-            if (Data->GetShell().empty())
+            if (Data->GetShell().IsEmpty())
             {
                 // Following forces Putty to open default shell
                 // see ssh.c: do_ssh2_authconn() and ssh1_protocol()
@@ -267,7 +267,7 @@ void TSecureShell::StoreToConfig(TSessionData *Data, Config *cfg, bool Simple)
         }
         else
         {
-            if (Data->GetSftpServer().empty())
+            if (Data->GetSftpServer().IsEmpty())
             {
                 cfg->ssh_subsys = TRUE;
                 strcpy_s(cfg->remote_cmd, sizeof(cfg->remote_cmd), "sftp");
@@ -282,7 +282,7 @@ void TSecureShell::StoreToConfig(TSessionData *Data, Config *cfg, bool Simple)
             if (Data->GetFSProtocol() != fsSFTPonly)
             {
                 cfg->ssh_subsys2 = FALSE;
-                if (Data->GetShell().empty())
+                if (Data->GetShell().IsEmpty())
                 {
                     // Following forces Putty to open default shell
                     // see ssh.c: do_ssh2_authconn() and ssh1_protocol()
@@ -294,7 +294,7 @@ void TSecureShell::StoreToConfig(TSessionData *Data, Config *cfg, bool Simple)
                 }
             }
 
-            if ((Data->GetFSProtocol() == fsSFTPonly) && Data->GetSftpServer().empty())
+            if ((Data->GetFSProtocol() == fsSFTPonly) && Data->GetSftpServer().IsEmpty())
             {
                 // see psftp_connect() from psftp.c
                 cfg->ssh_subsys2 = FALSE;
@@ -356,7 +356,7 @@ void TSecureShell::Open()
 
     ResetSessionInfo();
 
-    assert(!FSessionInfo.SshImplementation.empty());
+    assert(!FSessionInfo.SshImplementation.IsEmpty());
     FOpened = true;
 }
 //---------------------------------------------------------------------------
@@ -380,11 +380,11 @@ void TSecureShell::Init()
             }
 
             // unless this is tunnel session, it must be safe to send now
-            assert(FBackend->sendok(FBackendHandle) || !FSessionData->GetTunnelPortFwd().empty());
+            assert(FBackend->sendok(FBackendHandle) || !FSessionData->GetTunnelPortFwd().IsEmpty());
         }
         catch (const std::exception &E)
         {
-            if (FAuthenticating && !FAuthenticationLog.empty())
+            if (FAuthenticating && !FAuthenticationLog.IsEmpty())
             {
                 FUI->FatalError(&E, FMTLOAD(AUTHENTICATION_LOG, FAuthenticationLog.c_str()));
             }
@@ -412,14 +412,14 @@ void TSecureShell::PuttyLogEvent(const std::wstring Str)
     // DEBUG_PRINTF(L"Str = %s", Str.c_str());
 #define SERVER_VERSION_MSG L"Server version: "
     // Gross hack
-    if (Str.find(std::wstring(SERVER_VERSION_MSG)) == 0)
+    if (Str.Pos(std::wstring(SERVER_VERSION_MSG)) == 0)
     {
-        FSessionInfo.SshVersionString = Str.substr(std::wstring(SERVER_VERSION_MSG).size() + 1,
-                                        Str.size() - std::wstring(SERVER_VERSION_MSG).size());
+        FSessionInfo.SshVersionString = Str.SubString(std::wstring(SERVER_VERSION_MSG).Length() + 1,
+                                        Str.Length() - std::wstring(SERVER_VERSION_MSG).Length());
 
         const wchar_t *Ptr = wcschr(FSessionInfo.SshVersionString.c_str(), '-');
         // const wchar_t * Ptr = NULL;
-        // int pos = FSessionInfo.SshVersionString.find('-');
+        // int pos = FSessionInfo.SshVersionString.Pos('-');
         // if (pos >= 0)
         // Ptr = &FSessionInfo.SshVersionString[pos];
         if (Ptr != NULL)
@@ -430,10 +430,10 @@ void TSecureShell::PuttyLogEvent(const std::wstring Str)
         // DEBUG_PRINTF(L"FSessionInfo.SshImplementation = %s", FSessionInfo.SshImplementation.c_str());
     }
 #define FORWARDING_FAILURE_MSG L"Forwarded connection refused by server: "
-    else if (Str.find(std::wstring(FORWARDING_FAILURE_MSG)) == 0)
+    else if (Str.Pos(std::wstring(FORWARDING_FAILURE_MSG)) == 0)
     {
-        FLastTunnelError = Str.substr(std::wstring(FORWARDING_FAILURE_MSG).size(),
-                                      Str.size() - std::wstring(FORWARDING_FAILURE_MSG).size());
+        FLastTunnelError = Str.SubString(std::wstring(FORWARDING_FAILURE_MSG).Length(),
+                                      Str.Length() - std::wstring(FORWARDING_FAILURE_MSG).Length());
         // DEBUG_PRINTF(L"FLastTunnelError = %s", FLastTunnelError.c_str());
         static const TPuttyTranslation Translation[] =
         {
@@ -611,7 +611,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     else if ((PromptKind == pkTIS) || (PromptKind == pkCryptoCard) ||
              (PromptKind == pkKeybInteractive))
     {
-        if (FSessionData->GetAuthKIPassword() && !FSessionData->GetPassword().empty() &&
+        if (FSessionData->GetAuthKIPassword() && !FSessionData->GetPassword().IsEmpty() &&
                 !FStoredPasswordTriedForKI && (Prompts->GetCount() == 1) &&
                 !(Prompts->GetObject(0) != NULL))
         {
@@ -621,7 +621,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
             Results->PutString(0, FSessionData->GetPassword());
             FStoredPasswordTriedForKI = true;
         }
-        else if (instructions.empty() && !InstructionsRequired && (Prompts->GetCount() == 0))
+        else if (instructions.IsEmpty() && !InstructionsRequired && (Prompts->GetCount() == 0))
         {
             LogEvent(L"Ignoring empty SSH server authentication request");
             Result = true;
@@ -629,7 +629,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     }
     else if (PromptKind == pkPassword)
     {
-        if (!FSessionData->GetPassword().empty() && !FStoredPasswordTried)
+        if (!FSessionData->GetPassword().IsEmpty() && !FStoredPasswordTried)
         {
             LogEvent(L"Using stored password.");
             FUI->Information(LoadStr(AUTH_PASSWORD), false);
@@ -688,7 +688,7 @@ void TSecureShell::CWrite(const char *Data, size_t Length)
         if (FAuthenticating)
         {
             TranslateAuthenticationMessage(Line);
-            FAuthenticationLog += (FAuthenticationLog.empty() ? L"" : L"\n") + Line;
+            FAuthenticationLog += (FAuthenticationLog.IsEmpty() ? L"" : L"\n") + Line;
         }
 
         FUI->Information(Line, false);
@@ -697,13 +697,13 @@ void TSecureShell::CWrite(const char *Data, size_t Length)
 //---------------------------------------------------------------------------
 void TSecureShell::RegisterReceiveHandler(const TNotifyEvent &Handler)
 {
-    assert(FOnReceive.empty());
+    assert(FOnReceive.IsEmpty());
     FOnReceive.connect(Handler);
 }
 //---------------------------------------------------------------------------
 void TSecureShell::UnregisterReceiveHandler(const TNotifyEvent &Handler)
 {
-    assert(!FOnReceive.empty());
+    assert(!FOnReceive.IsEmpty());
     USEDPARAM(Handler);
     FOnReceive.disconnect_all_slots();
 }
@@ -755,7 +755,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const char *Data, size_t Length)
             // DEBUG_PRINTF(L"PendLen = %d", PendLen);
         }
 
-        if (!FOnReceive.empty())
+        if (!FOnReceive.IsEmpty())
         {
             if (!FFrozen)
             {
@@ -876,7 +876,7 @@ std::wstring TSecureShell::ReceiveLine()
             }
             EOL = static_cast<bool>(Index && (Pending[Index-1] == '\n'));
             // DEBUG_PRINTF(L"PendLen = %d, Index = %d, EOL = %d, Pending = %s", PendLen, Index, EOL, System::MB2W(Pending, FSessionData->GetCodePageAsNumber()).c_str());
-            size_t PrevLen = Line.size();
+            size_t PrevLen = Line.Length();
             Line.resize(PrevLen + Index);
             Receive(const_cast<char *>(Line.c_str()) + PrevLen, Index);
         }
@@ -1034,7 +1034,7 @@ void TSecureShell::SendStr(const std::wstring Str)
 {
     CheckConnection();
     std::string str = System::W2MB(Str.c_str(), FSessionData->GetCodePageAsNumber());
-    Send(str.c_str(), str.size());
+    Send(str.c_str(), str.Length());
 }
 //---------------------------------------------------------------------------
 void TSecureShell::SendLine(const std::wstring Line)
@@ -1068,12 +1068,12 @@ int TSecureShell::TranslatePuttyMessage(
             size_t OriginalLen = strlen(Original);
             size_t PrefixLen = Div - Original;
             size_t SuffixLen = OriginalLen - PrefixLen - 1;
-            if ((static_cast<size_t>(Message.size()) >= OriginalLen - 1) &&
+            if ((static_cast<size_t>(Message.Length()) >= OriginalLen - 1) &&
                     (strncmp(System::W2MB(Message.c_str(), FSessionData->GetCodePageAsNumber()).c_str(), Original, PrefixLen) == 0) &&
-                    (strncmp(System::W2MB(Message.c_str(), FSessionData->GetCodePageAsNumber()).c_str() + Message.size() - SuffixLen, Div + 1, SuffixLen) == 0))
+                    (strncmp(System::W2MB(Message.c_str(), FSessionData->GetCodePageAsNumber()).c_str() + Message.Length() - SuffixLen, Div + 1, SuffixLen) == 0))
             {
                 Message = FMTLOAD(Translation[Index].Translation,
-                                  ::TrimRight(Message.substr(PrefixLen, Message.size() - PrefixLen - SuffixLen)).c_str());
+                                  ::TrimRight(Message.SubString(PrefixLen, Message.Length() - PrefixLen - SuffixLen)).c_str());
                 // DEBUG_PRINTF(L"Message = %s", Message.c_str());
                 Result = static_cast<int>(Index);
                 break;
@@ -1116,8 +1116,8 @@ void TSecureShell::AddStdError(const std::wstring Str)
     // Do we have at least one complete line in std error cache?
     while ((P = FStdErrorTemp.find_first_of(L"\n")) != std::wstring::npos)
     {
-        Line = ::TrimRight(FStdErrorTemp.substr(0, P));
-        FStdErrorTemp.erase(0, P + 1);
+        Line = ::TrimRight(FStdErrorTemp.SubString(0, P));
+        FStdErrorTemp.Delete(0, P + 1);
         // DEBUG_PRINTF(L"P = %d, Line = '%s', FStdErrorTemp = '%s'", P, Line.c_str(), FStdErrorTemp.c_str());
         AddStdErrorLine(Line);
     }
@@ -1127,9 +1127,9 @@ void TSecureShell::AddStdErrorLine(const std::wstring Str)
 {
     if (FAuthenticating)
     {
-        FAuthenticationLog += (FAuthenticationLog.empty() ? L"" : L"\n") + Str;
+        FAuthenticationLog += (FAuthenticationLog.IsEmpty() ? L"" : L"\n") + Str;
     }
-    if (!::Trim(Str).empty())
+    if (!::Trim(Str).IsEmpty())
     {
         // DEBUG_PRINTF(L"Str = %s", ::Trim(Str).c_str());
         CaptureOutput(llStdError, Str);
@@ -1144,12 +1144,12 @@ const std::wstring TSecureShell::GetStdError()
 void TSecureShell::ClearStdError()
 {
     // Flush std error cache
-    if (!FStdErrorTemp.empty())
+    if (!FStdErrorTemp.IsEmpty())
     {
         if (FAuthenticating)
         {
             FAuthenticationLog +=
-                (FAuthenticationLog.empty() ? L"" : L"\n") + FStdErrorTemp;
+                (FAuthenticationLog.IsEmpty() ? L"" : L"\n") + FStdErrorTemp;
         }
         CaptureOutput(llStdError, FStdErrorTemp);
         FStdErrorTemp = L"";
@@ -1160,7 +1160,7 @@ void TSecureShell::ClearStdError()
 void TSecureShell::CaptureOutput(TLogLineType Type,
                                  const std::wstring Line)
 {
-    if (!FOnCaptureOutput.empty())
+    if (!FOnCaptureOutput.IsEmpty())
     {
         FOnCaptureOutput(Line, (Type == llStdError));
     }
@@ -1285,14 +1285,14 @@ void TSecureShell::UpdatePortFwdSocket(SOCKET value, bool Startup)
     }
 
     SocketEventSelect(value, FSocketEvent, Startup);
-    // DEBUG_PRINTF(L"Startup = %d, FPortFwdSockets.size = %d", Startup, FPortFwdSockets.size());
+    // DEBUG_PRINTF(L"Startup = %d, FPortFwdSockets.size = %d", Startup, FPortFwdSockets.Length());
     if (Startup)
     {
         FPortFwdSockets.insert(value);
     }
     else
     {
-        FPortFwdSockets.erase(value);
+        FPortFwdSockets.Delete(value);
     }
 }
 //---------------------------------------------------------------------------
@@ -1810,7 +1810,7 @@ void TSecureShell::VerifyHostKey(const std::wstring Host, int Port,
     bool Result = false;
 
     std::wstring Buf = FSessionData->GetHostKey();
-    while (!Result && !Buf.empty())
+    while (!Result && !Buf.IsEmpty())
     {
         std::wstring ExpectedKey = CutToChar(Buf, Delimiter, false);
         if (ExpectedKey == Fingerprint)
@@ -1825,7 +1825,7 @@ void TSecureShell::VerifyHostKey(const std::wstring Host, int Port,
         std::string StoredKeys2(10240, 0);
 #ifdef MPEXT
         if (retrieve_host_key(System::W2MB(host.c_str(), FSessionData->GetCodePageAsNumber()).c_str(), Port, System::W2MB(KeyType.c_str(), FSessionData->GetCodePageAsNumber()).c_str(),
-                              const_cast<char *>(StoredKeys2.c_str()), static_cast<int>(StoredKeys2.size())) == 0)
+                              const_cast<char *>(StoredKeys2.c_str()), static_cast<int>(StoredKeys2.Length())) == 0)
 #else
         if (verify_host_key(System::W2MB(host.c_str(), FSessionData->GetCodePageAsNumber()).c_str(), Port, System::W2MB(KeyType.c_str(), FSessionData->GetCodePageAsNumber()).c_str(),
                             (char *)StoredKeys2.c_str()))
@@ -1834,7 +1834,7 @@ void TSecureShell::VerifyHostKey(const std::wstring Host, int Port,
         {
             StoredKeys = System::MB2W(StoredKeys2.c_str(), FSessionData->GetCodePageAsNumber()); // PackStr(StoredKeys);
             std::wstring buf = StoredKeys;
-            while (!Result && !buf.empty())
+            while (!Result && !buf.IsEmpty())
             {
                 std::wstring StoredKey = ::CutToChar(buf, Delimiter, false);
                 if (StoredKey == keyStr)
@@ -1860,7 +1860,7 @@ void TSecureShell::VerifyHostKey(const std::wstring Host, int Port,
             TClipboardHandler ClipboardHandler;
             ClipboardHandler.Text = Fingerprint;
 
-            bool Unknown = StoredKeys.empty();
+            bool Unknown = StoredKeys.IsEmpty();
 
             int Answers;
             int AliasesCount;

@@ -792,7 +792,7 @@ void __fastcall TTerminalQueue::ProcessEvent()
 //---------------------------------------------------------------------------
 void __fastcall TTerminalQueue::DoQueueItemUpdate(TQueueItem *Item)
 {
-    if (!GetOnQueueItemUpdate().empty())
+    if (!GetOnQueueItemUpdate().IsEmpty())
     {
         GetOnQueueItemUpdate()(this, Item);
     }
@@ -800,7 +800,7 @@ void __fastcall TTerminalQueue::DoQueueItemUpdate(TQueueItem *Item)
 //---------------------------------------------------------------------------
 void __fastcall TTerminalQueue::DoListUpdate()
 {
-    if (!GetOnListUpdate().empty())
+    if (!GetOnListUpdate().IsEmpty())
     {
         GetOnListUpdate()(this);
     }
@@ -808,7 +808,7 @@ void __fastcall TTerminalQueue::DoListUpdate()
 //---------------------------------------------------------------------------
 void __fastcall TTerminalQueue::DoEvent(TQueueEvent Event)
 {
-    if (!GetOnEvent().empty())
+    if (!GetOnEvent().IsEmpty())
     {
         GetOnEvent()(this, Event);
     }
@@ -818,7 +818,7 @@ void __fastcall TTerminalQueue::DoQueryUser(System::TObject *Sender,
                                  const std::wstring Query, System::TStrings *MoreMessages, int Answers,
                                  const TQueryParams *Params, int &Answer, TQueryType Type, void *Arg)
 {
-    if (!GetOnQueryUser().empty())
+    if (!GetOnQueryUser().IsEmpty())
     {
         GetOnQueryUser()(Sender, Query, MoreMessages, Answers, Params, Answer, Type, Arg);
     }
@@ -828,7 +828,7 @@ void __fastcall TTerminalQueue::DoPromptUser(TTerminal *Terminal,
                                   TPromptKind Kind, const std::wstring Name, const std::wstring Instructions,
                                   System::TStrings *Prompts, System::TStrings *Results, bool &Result, void *Arg)
 {
-    if (!GetOnPromptUser().empty())
+    if (!GetOnPromptUser().IsEmpty())
     {
         GetOnPromptUser()(Terminal, Kind, Name, Instructions, Prompts, Results, Result, Arg);
     }
@@ -837,7 +837,7 @@ void __fastcall TTerminalQueue::DoPromptUser(TTerminal *Terminal,
 void __fastcall TTerminalQueue::DoShowExtendedException(
     TTerminal *Terminal, const std::exception *E, void *Arg)
 {
-    if (!GetOnShowExtendedException().empty())
+    if (!GetOnShowExtendedException().IsEmpty())
     {
         GetOnShowExtendedException()(Terminal, E, Arg);
     }
@@ -1755,7 +1755,7 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal *Terminal,
     {
         assert(FilesToCopy->GetCount() > 0);
         FInfo->Source = FilesToCopy->GetString(0);
-        if (UnixExtractFilePath(FInfo->Source).empty())
+        if (UnixExtractFilePath(FInfo->Source).IsEmpty())
         {
             FInfo->Source = UnixIncludeTrailingBackslash(Terminal->GetCurrentDirectory()) +
                             FInfo->Source;

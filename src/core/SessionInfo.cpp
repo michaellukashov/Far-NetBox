@@ -896,7 +896,7 @@ void __fastcall TSessionLog::OpenLogFile()
 //---------------------------------------------------------------------------
 void __fastcall TSessionLog::StateChange()
 {
-  if (!FOnStateChange.empty())
+  if (!FOnStateChange.IsEmpty())
   {
     FOnStateChange(this);
   }

@@ -21,7 +21,7 @@
 std::wstring MungeStr(const std::wstring Str)
 {
     std::string Result2;
-    Result2.resize(Str.size() * sizeof(wchar_t) * 3 + 1);
+    Result2.resize(Str.Length() * sizeof(wchar_t) * 3 + 1);
     putty_mungestr(System::W2MB(Str.c_str()).c_str(), const_cast<char *>(Result2.c_str()));
     std::wstring Result = System::MB2W(Result2.c_str());
     PackStr(Result);
@@ -32,8 +32,8 @@ std::wstring MungeStr(const std::wstring Str)
 std::wstring UnMungeStr(const std::wstring Str)
 {
     std::string Result2;
-    Result2.resize(Str.size() * sizeof(wchar_t) * 3 + 1);
-    putty_unmungestr(const_cast<char *>(System::W2MB(Str.c_str()).c_str()), const_cast<char *>(Result2.c_str()), static_cast<int>(Result2.size()));
+    Result2.resize(Str.Length() * sizeof(wchar_t) * 3 + 1);
+    putty_unmungestr(const_cast<char *>(System::W2MB(Str.c_str()).c_str()), const_cast<char *>(Result2.c_str()), static_cast<int>(Result2.Length()));
     std::wstring Result = System::MB2W(Result2.c_str());
     PackStr(Result);
     return Result;
@@ -65,7 +65,7 @@ std::wstring MungeIniName(const std::wstring Str)
 //---------------------------------------------------------------------------
 std::wstring UnMungeIniName(const std::wstring Str)
 {
-    size_t P = Str.find(L"%3D");
+    size_t P = Str.Pos(L"%3D");
     // make this fast for now
     if (P != std::wstring::npos)
     {
@@ -119,10 +119,10 @@ std::wstring THierarchicalStorage::MungeSubKey(const std::wstring Key, bool Path
     std::wstring key = Key;
     if (Path)
     {
-        assert(key.empty() || (key[key.size() - 1] != '\\'));
-        while (!key.empty())
+        assert(key.IsEmpty() || (key[key.Length() - 1] != '\\'));
+        while (!key.IsEmpty())
         {
-            if (!Result.empty())
+            if (!Result.IsEmpty())
             {
                 Result += '\\';
             }
@@ -308,13 +308,13 @@ void THierarchicalStorage::WriteString(const std::wstring Name, const std::wstri
 void THierarchicalStorage::WriteBinaryData(const std::wstring Name,
         const std::wstring Value)
 {
-    WriteBinaryData(Name, Value.c_str(), Value.size());
+    WriteBinaryData(Name, Value.c_str(), Value.Length());
 }
 //---------------------------------------------------------------------------
 std::wstring THierarchicalStorage::IncludeTrailingBackslash(const std::wstring S)
 {
     // expanded from ?: as it caused memory leaks
-    if (S.empty())
+    if (S.IsEmpty())
     {
         return S;
     }
@@ -327,7 +327,7 @@ std::wstring THierarchicalStorage::IncludeTrailingBackslash(const std::wstring S
 std::wstring THierarchicalStorage::ExcludeTrailingBackslash(const std::wstring S)
 {
     // expanded from ?: as it caused memory leaks
-    if (S.empty())
+    if (S.IsEmpty())
     {
         return S;
     }
@@ -380,7 +380,7 @@ bool TRegistryStorage::Copy(TRegistryStorage *Storage)
         while ((Index < Names->GetCount()) && Result)
         {
             std::wstring Name = MungeStr(Names->GetString(Index));
-            DWORD Size = static_cast<DWORD>(Buffer.size());
+            DWORD Size = static_cast<DWORD>(Buffer.Length());
             unsigned long Type;
             int RegResult;
             do

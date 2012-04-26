@@ -164,13 +164,13 @@ TSynchronizeChecklist::TItem::~TItem()
 //---------------------------------------------------------------------------
 const UnicodeString TSynchronizeChecklist::TItem::GetFileName() const
 {
-    if (!Remote.FileName.empty())
+    if (!Remote.FileName.IsEmpty())
     {
         return Remote.FileName;
     }
     else
     {
-        assert(!Local.FileName.empty());
+        assert(!Local.FileName.IsEmpty());
         return Local.FileName;
     }
 }
@@ -201,13 +201,13 @@ int TSynchronizeChecklist::Compare(void *AItem1, void *AItem2)
     TItem *Item2 = reinterpret_cast<TItem *>(AItem2);
 
     int Result;
-    if (!Item1->Local.Directory.empty())
+    if (!Item1->Local.Directory.IsEmpty())
     {
         Result = CompareText(Item1->Local.Directory, Item2->Local.Directory);
     }
     else
     {
-        assert(!Item1->Remote.Directory.empty());
+        assert(!Item1->Remote.Directory.IsEmpty());
         Result = CompareText(Item1->Remote.Directory, Item2->Remote.Directory);
     }
 
@@ -388,7 +388,7 @@ bool __fastcall TTunnelUI::PromptUser(TSessionData *Data, TPromptKind Kind,
         if (IsAuthenticationPrompt(Kind))
         {
             instructions = LoadStr(TUNNEL_INSTRUCTION) +
-                           (instructions.empty() ? L"" : L"\n") + instructions;
+                           (instructions.IsEmpty() ? L"" : L"\n") + instructions;
         }
 
         Result = FTerminal->PromptUser(Data, Kind, Name, instructions, Prompts, Results);
@@ -658,14 +658,14 @@ void __fastcall TTerminal::RecryptPasswords()
 //---------------------------------------------------------------------------
 bool TTerminal::IsAbsolutePath(const UnicodeString Path)
 {
-    return !Path.empty() && Path[0] == '/';
+    return !Path.IsEmpty() && Path[0] == '/';
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TTerminal::ExpandFileName(const UnicodeString Path,
                                        const UnicodeString BasePath)
 {
     UnicodeString path = UnixExcludeTrailingBackslash(Path);
-    if (!IsAbsolutePath(path) && !BasePath.empty())
+    if (!IsAbsolutePath(path) && !BasePath.IsEmpty())
     {
         // TODO: Handle more complicated cases like "../../xxx"
         if (path == PARENTDIRECTORY)
@@ -839,7 +839,7 @@ void __fastcall TTerminal::Open()
                                     catch (const Exception &E)
                                     {
                                         assert(!FSecureShell->GetActive());
-                                        if (!FSecureShell->GetActive() && !FTunnelError.empty())
+                                        if (!FSecureShell->GetActive() && !FTunnelError.IsEmpty())
                                         {
                                             // the only case where we expect this to happen
                                             assert(E.what() == W2MB(LoadStr(UNEXPECTED_CLOSE_ERROR).c_str()).c_str());
@@ -1045,7 +1045,7 @@ void TTerminal::Closed()
         CloseTunnel();
     }
 
-    if (!GetOnClose().empty())
+    if (!GetOnClose().IsEmpty())
     {
         TCallbackGuard Guard(this);
         GetOnClose()(this);
@@ -1095,7 +1095,7 @@ void TTerminal::Reopen(int Params)
         // so make sure we do not try retrieving current directory from the server
         // (particularly with FTP)
         UnicodeString ACurrentDirectory = PeekCurrentDirectory();
-        if (!ACurrentDirectory.empty())
+        if (!ACurrentDirectory.IsEmpty())
         {
             GetSessionData()->SetRemoteDirectory(ACurrentDirectory);
         }
@@ -1145,7 +1145,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
 {
     bool AResult = false;
 
-    if (!GetOnPromptUser().empty())
+    if (!GetOnPromptUser().IsEmpty())
     {
         TCallbackGuard Guard(this);
         GetOnPromptUser()(this, Kind, Name, Instructions, Prompts, Results, AResult, NULL);
@@ -1177,7 +1177,7 @@ int TTerminal::QueryUser(const UnicodeString Query,
 {
     LogEvent(FORMAT(L"Asking user:\n%s (%s)", Query.c_str(), MoreMessages ? MoreMessages->GetCommaText().c_str() : L""));
     int Answer = AbortAnswer(Answers);
-    if (!FOnQueryUser.empty())
+    if (!FOnQueryUser.IsEmpty())
     {
         TCallbackGuard Guard(this);
         FOnQueryUser(this, Query, MoreMessages, Answers, Params, Answer, QueryType, NULL);
@@ -1194,7 +1194,7 @@ int TTerminal::QueryUserException(const UnicodeString Query,
     TStringList MoreMessages;
     // DEBUG_PRINTF(L"E->what = %s", MB2W(E->what()).c_str());
 
-    if ((E != NULL) && !std::string(E->what()).empty() && !Query.empty())
+    if ((E != NULL) && !std::string(E->what()).IsEmpty() && !Query.IsEmpty())
     {
         MoreMessages.Add(UnicodeString(MB2W(E->what())));
     }
@@ -1203,7 +1203,7 @@ int TTerminal::QueryUserException(const UnicodeString Query,
     {
         MoreMessages.AddStrings(EE->GetMoreMessages());
     }
-    Result = QueryUser(!Query.empty() ? Query : UnicodeString(MB2W(E->what())),
+    Result = QueryUser(!Query.IsEmpty() ? Query : UnicodeString(MB2W(E->what())),
                        MoreMessages.GetCount() ? &MoreMessages : NULL,
                        Answers, Params, QueryType);
     return Result;
@@ -1221,12 +1221,12 @@ int TTerminal::QueryUserException(const UnicodeString Query,
         {
             MoreMessages.AddStrings(E->GetMoreMessages());
         }
-        else if (!std::string(E->what()).empty() && !Query.empty())
+        else if (!std::string(E->what()).IsEmpty() && !Query.IsEmpty())
         {
             MoreMessages.Add(UnicodeString(MB2W(E->what())));
         }
     }
-    Result = QueryUser(!Query.empty() ? Query : UnicodeString(MB2W(E->what())),
+    Result = QueryUser(!Query.IsEmpty() ? Query : UnicodeString(MB2W(E->what())),
                        MoreMessages.GetCount() ? &MoreMessages : NULL,
                        Answers, Params, QueryType);
     return Result;
@@ -1234,7 +1234,7 @@ int TTerminal::QueryUserException(const UnicodeString Query,
 //---------------------------------------------------------------------------
 void TTerminal::DisplayBanner(const UnicodeString Banner)
 {
-    if (!GetOnDisplayBanner().empty())
+    if (!GetOnDisplayBanner().IsEmpty())
     {
         if (Configuration->GetForceBanners() ||
                 Configuration->ShowBanner(GetSessionData()->GetSessionKey(), Banner))
@@ -1257,7 +1257,7 @@ void TTerminal::DisplayBanner(const UnicodeString Banner)
 void TTerminal::HandleExtendedException(const Exception *E)
 {
     GetLog()->AddException(E);
-    if (!GetOnShowExtendedException().empty())
+    if (!GetOnShowExtendedException().IsEmpty())
     {
         TCallbackGuard Guard(this);
         // the event handler may destroy 'this' ...
@@ -1270,7 +1270,7 @@ void TTerminal::HandleExtendedException(const Exception *E)
 void TTerminal::ShowExtendedException(const Exception *E)
 {
     GetLog()->AddException(E);
-    if (!GetOnShowExtendedException().empty())
+    if (!GetOnShowExtendedException().IsEmpty())
     {
         GetOnShowExtendedException()(this, E, NULL);
     }
@@ -1284,7 +1284,7 @@ void TTerminal::DoInformation(const UnicodeString Str, bool Status,
         FAnyInformation = true;
     }
 
-    if (!GetOnInformation().empty())
+    if (!GetOnInformation().IsEmpty())
     {
         TCallbackGuard Guard(this);
         GetOnInformation()(this, Str, Status, Active);
@@ -1300,7 +1300,7 @@ void TTerminal::Information(const UnicodeString Str, bool Status)
 void TTerminal::DoProgress(TFileOperationProgressType &ProgressData,
                            TCancelStatus &Cancel)
 {
-    if (!GetOnProgress().empty())
+    if (!GetOnProgress().IsEmpty())
     {
         TCallbackGuard Guard(this);
         GetOnProgress()(ProgressData, Cancel);
@@ -1311,7 +1311,7 @@ void TTerminal::DoProgress(TFileOperationProgressType &ProgressData,
 void TTerminal::DoFinished(TFileOperation Operation, TOperationSide Side, bool Temp,
                            const UnicodeString FileName, bool Success, TOnceDoneOperation &OnceDoneOperation)
 {
-    if (!GetOnFinished().empty())
+    if (!GetOnFinished().IsEmpty())
     {
         TCallbackGuard Guard(this);
         GetOnFinished()(Operation, Side, Temp, FileName, Success, OnceDoneOperation);
@@ -1490,7 +1490,7 @@ bool TTerminal::FileOperationLoopQuery(const Exception &E,
     {
         int Answers = qaRetry | qaAbort |
                       FLAGMASK(AllowSkip, (qaSkip | qaAll)) |
-                      FLAGMASK(!SpecialRetry.empty(), qaYes);
+                      FLAGMASK(!SpecialRetry.IsEmpty(), qaYes);
         TQueryParams Params(qpAllowContinueOnError | FLAGMASK(!AllowSkip, qpFatalAbort));
         TQueryButtonAlias Aliases[2];
         int AliasCount = 0;
@@ -1571,17 +1571,17 @@ int TTerminal::FileOperationLoop(const fileoperation_slot_type &CallBackFunc,
 UnicodeString TTerminal::TranslateLockedPath(const UnicodeString Path, bool Lock)
 {
     UnicodeString path = Path;
-    if (!GetSessionData()->GetLockInHome() || path.empty() || (path[0] != '/'))
+    if (!GetSessionData()->GetLockInHome() || path.IsEmpty() || (path[0] != '/'))
     {
         return path;
     }
 
     if (Lock)
     {
-        if (path.substr(0, FLockDirectory.size()) == FLockDirectory)
+        if (path.SubString(0, FLockDirectory.Length()) == FLockDirectory)
         {
-            path.erase(0, FLockDirectory.size());
-            if (path.empty()) { path = L"/"; }
+            path.Delete(0, FLockDirectory.Length());
+            if (path.IsEmpty()) { path = L"/"; }
         }
     }
     else
@@ -1693,7 +1693,7 @@ UnicodeString __fastcall TTerminal::GetCurrentDirectory()
         if (FCurrentDirectory != currentDirectory)
         {
             FCurrentDirectory = currentDirectory;
-            if (FCurrentDirectory.empty())
+            if (FCurrentDirectory.IsEmpty())
             {
                 ReadCurrentDirectory();
             }
@@ -1742,7 +1742,7 @@ UnicodeString TTerminal::GetUserName()
     assert(FFileSystem != NULL);
     UnicodeString Result = FFileSystem->GetUserName();
     // Is empty also when stored username was used
-    if (Result.empty())
+    if (Result.IsEmpty())
     {
         Result = GetSessionData()->GetUserName();
     }
@@ -1757,7 +1757,7 @@ bool TTerminal::GetAreCachesEmpty() const
 //---------------------------------------------------------------------------
 void TTerminal::DoChangeDirectory()
 {
-    if (!FOnChangeDirectory.empty())
+    if (!FOnChangeDirectory.IsEmpty())
     {
         TCallbackGuard Guard(this);
         FOnChangeDirectory(this);
@@ -1767,7 +1767,7 @@ void TTerminal::DoChangeDirectory()
 //---------------------------------------------------------------------------
 void TTerminal::DoReadDirectory(bool ReloadOnly)
 {
-    if (!FOnReadDirectory.empty())
+    if (!FOnReadDirectory.IsEmpty())
     {
         TCallbackGuard Guard(this);
         FOnReadDirectory(this, ReloadOnly);
@@ -1777,7 +1777,7 @@ void TTerminal::DoReadDirectory(bool ReloadOnly)
 //---------------------------------------------------------------------------
 void TTerminal::DoStartReadDirectory()
 {
-    if (!FOnStartReadDirectory.empty())
+    if (!FOnStartReadDirectory.IsEmpty())
     {
         TCallbackGuard Guard(this);
         FOnStartReadDirectory(this);
@@ -1787,13 +1787,13 @@ void TTerminal::DoStartReadDirectory()
 //---------------------------------------------------------------------------
 void TTerminal::DoReadDirectoryProgress(size_t Progress, bool &Cancel)
 {
-    if (FReadingCurrentDirectory && (!FOnReadDirectoryProgress.empty()))
+    if (FReadingCurrentDirectory && (!FOnReadDirectoryProgress.IsEmpty()))
     {
         TCallbackGuard Guard(this);
         FOnReadDirectoryProgress(this, Progress, Cancel);
         Guard.Verify();
     }
-    if (!FOnFindingFile.empty())
+    if (!FOnFindingFile.IsEmpty())
     {
         TCallbackGuard Guard(this);
         FOnFindingFile(this, L"", Cancel);
@@ -2000,7 +2000,7 @@ void TTerminal::CloseOnCompletion(TOnceDoneOperation Operation, const UnicodeStr
     LogEvent(L"Closing session after completed operation (as requested by user)");
     Close();
     throw ESshTerminate(
-        Message.empty() ? LoadStr(CLOSED_ON_COMPLETION) : Message,
+        Message.IsEmpty() ? LoadStr(CLOSED_ON_COMPLETION) : Message,
         NULL,
         Operation);
 }
@@ -2082,7 +2082,7 @@ int TTerminal::ConfirmFileOverwrite(const UnicodeString FileName,
 
     if (BatchOverwrite == boNo)
     {
-        if (Message.empty())
+        if (Message.IsEmpty())
         {
             Message = FMTLOAD((Side == osLocal ? LOCAL_FILE_OVERWRITE :
                                REMOTE_FILE_OVERWRITE), FileName.c_str());
@@ -2183,10 +2183,10 @@ void TTerminal::FileModified(const TRemoteFile *File,
             }
             ParentDirectory = File->GetDirectory()->GetDirectory();
         }
-        else if (!FileName.empty())
+        else if (!FileName.IsEmpty())
         {
             ParentDirectory = UnixExtractFilePath(FileName);
-            if (ParentDirectory.empty())
+            if (ParentDirectory.IsEmpty())
             {
                 ParentDirectory = GetCurrentDirectory();
             }
@@ -2202,11 +2202,11 @@ void TTerminal::FileModified(const TRemoteFile *File,
 
     if (GetSessionData()->GetCacheDirectories())
     {
-        if (!Directory.empty())
+        if (!Directory.IsEmpty())
         {
             DirectoryModified(Directory, true);
         }
-        if (!ParentDirectory.empty())
+        if (!ParentDirectory.IsEmpty())
         {
             DirectoryModified(ParentDirectory, false);
         }
@@ -2214,7 +2214,7 @@ void TTerminal::FileModified(const TRemoteFile *File,
 
     if (GetSessionData()->GetCacheDirectoryChanges() && ClearDirectoryChange)
     {
-        if (!Directory.empty())
+        if (!Directory.IsEmpty())
         {
             FDirectoryChangesCache->ClearDirectoryChange(Directory);
             FDirectoryChangesCache->ClearDirectoryChangeTarget(Directory);
@@ -2224,7 +2224,7 @@ void TTerminal::FileModified(const TRemoteFile *File,
 //---------------------------------------------------------------------------
 void TTerminal::DirectoryModified(const UnicodeString Path, bool SubDirs)
 {
-    if (Path.empty())
+    if (Path.IsEmpty())
     {
         ClearCachedFileList(GetCurrentDirectory(), SubDirs);
     }
@@ -2273,7 +2273,7 @@ void TTerminal::RefreshDirectory()
 void TTerminal::EnsureNonExistence(const UnicodeString FileName)
 {
     // if filename doesn't contain path, we check for existence of file
-    if ((UnixExtractFileDir(FileName).empty()) &&
+    if ((UnixExtractFileDir(FileName).IsEmpty()) &&
             UnixComparePaths(GetCurrentDirectory(), FFiles->GetDirectory()))
     {
         TRemoteFile *File = FFiles->FindFile(FileName);
@@ -2332,7 +2332,7 @@ void TTerminal::DoStartup()
         LookupUsersGroups();
 
         DoInformation(LoadStr(STATUS_OPEN_DIRECTORY), true);
-        if (!GetSessionData()->GetRemoteDirectory().empty())
+        if (!GetSessionData()->GetRemoteDirectory().IsEmpty())
         {
             ChangeDirectory(GetSessionData()->GetRemoteDirectory());
         }
@@ -2362,7 +2362,7 @@ void TTerminal::ReadCurrentDirectory()
         {
             assert(FDirectoryChangesCache != NULL);
             UnicodeString currentDirectory = GetCurrentDirectory();
-            if (!currentDirectory.empty() && !FLastDirectoryChange.empty() && (currentDirectory != OldDirectory))
+            if (!currentDirectory.IsEmpty() && !FLastDirectoryChange.IsEmpty() && (currentDirectory != OldDirectory))
             {
                 FDirectoryChangesCache->AddDirectoryChange(OldDirectory,
                         FLastDirectoryChange, currentDirectory);
@@ -2373,7 +2373,7 @@ void TTerminal::ReadCurrentDirectory()
             FLastDirectoryChange = L"";
         }
 
-        if (OldDirectory.empty())
+        if (OldDirectory.IsEmpty())
         {
             FLockDirectory = (GetSessionData()->GetLockInHome() ?
                               FFileSystem->GetCurrentDirectory() : UnicodeString(L""));
@@ -2833,7 +2833,7 @@ TUsableCopyParamAttrs TTerminal::UsableCopyParamAttrs(int Params)
 bool TTerminal::IsRecycledFile(const UnicodeString FileName)
 {
     UnicodeString Path = UnixExtractFilePath(FileName);
-    if (Path.empty())
+    if (Path.IsEmpty())
     {
         Path = GetCurrentDirectory();
     }
@@ -2844,7 +2844,7 @@ void TTerminal::RecycleFile(const UnicodeString FileName,
                             const TRemoteFile *File)
 {
     UnicodeString fileName = FileName;
-    if (fileName.empty())
+    if (fileName.IsEmpty())
     {
         assert(File != NULL);
         fileName = File->GetFileName();
@@ -2867,7 +2867,7 @@ void TTerminal::DeleteFile(const UnicodeString FileName,
                            const TRemoteFile *File, void *AParams)
 {
     UnicodeString fileName = FileName;
-    if (fileName.empty() && File)
+    if (fileName.IsEmpty() && File)
     {
         fileName = File->GetFileName();
     }
@@ -2925,7 +2925,7 @@ bool TTerminal::DeleteFiles(TStrings *FilesToDelete, int Params)
 void TTerminal::DeleteLocalFile(const UnicodeString FileName,
                                 const TRemoteFile * /*File*/, void *Params)
 {
-    if (!GetOnDeleteLocalFile().empty())
+    if (!GetOnDeleteLocalFile().IsEmpty())
     {
         if (!RecursiveDeleteFile(FileName, false))
         {
@@ -2948,7 +2948,7 @@ void TTerminal::CustomCommandOnFile(const UnicodeString FileName,
 {
     TCustomCommandParams *Params = (static_cast<TCustomCommandParams *>(AParams));
     UnicodeString fileName = FileName;
-    if (fileName.empty() && File)
+    if (fileName.IsEmpty() && File)
     {
         fileName = File->GetFileName();
     }
@@ -3020,7 +3020,7 @@ void TTerminal::CustomCommandOnFiles(const UnicodeString Command,
 
             if (!Dir || FLAGSET(Params, ccApplyToDirectories))
             {
-                if (!FileList.empty())
+                if (!FileList.IsEmpty())
                 {
                     FileList += L" ";
                 }
@@ -3041,10 +3041,10 @@ void TTerminal::ChangeFileProperties(const UnicodeString FileName,
                                      const TRemoteFile *File, /*const TRemoteProperties*/ void *Properties)
 {
     const TRemoteProperties *RProperties = static_cast<const TRemoteProperties *>(Properties);
-    assert(RProperties && !RProperties->Valid.Empty());
+    assert(RProperties && !RProperties->Valid.IsEmpty());
     UnicodeString fileName = FileName;
 
-    if (fileName.empty() && File)
+    if (fileName.IsEmpty() && File)
     {
         fileName = File->GetFileName();
     }
@@ -3137,7 +3137,7 @@ void TTerminal::CalculateFileSize(const UnicodeString FileName,
     TCalculateSizeParams *AParams = static_cast<TCalculateSizeParams *>(Param);
     UnicodeString fileName = FileName;
 
-    if (fileName.empty())
+    if (fileName.IsEmpty())
     {
         fileName = File->GetFileName();
     }
@@ -3359,9 +3359,9 @@ bool TTerminal::MoveFiles(TStrings *FileList, const UnicodeString Target,
                     // current directory
                     if ((File != NULL) &&
                             File->GetIsDirectory() &&
-                            ((curDirectory.substr(0, FileList->GetString(Index).size()) == FileList->GetString(Index)) &&
-                             ((FileList->GetString(Index).size() == curDirectory.size()) ||
-                              (curDirectory[FileList->GetString(Index).size() + 1] == '/'))))
+                            ((curDirectory.SubString(0, FileList->GetString(Index).Length()) == FileList->GetString(Index)) &&
+                             ((FileList->GetString(Index).Length() == curDirectory.Length()) ||
+                              (curDirectory[FileList->GetString(Index).Length() + 1] == '/'))))
                     {
                         PossiblyMoved = true;
                     }
@@ -3453,7 +3453,7 @@ void TTerminal::CreateDirectory(const UnicodeString DirName,
     LogEvent(FORMAT(L"Creating directory \"%s\".", DirName.c_str()));
     DoCreateDirectory(DirName);
 
-    if ((Properties != NULL) && !Properties->Valid.Empty())
+    if ((Properties != NULL) && !Properties->Valid.IsEmpty())
     {
         DoChangeFileProperties(DirName, NULL, Properties);
     }
@@ -3597,7 +3597,7 @@ void TTerminal::LookupUsersGroups()
 //---------------------------------------------------------------------------
 bool TTerminal::AllowedAnyCommand(const UnicodeString Command)
 {
-    return !::Trim(Command).empty();
+    return !::Trim(Command).IsEmpty();
 }
 //---------------------------------------------------------------------------
 bool TTerminal::GetCommandSessionOpened()
@@ -3674,7 +3674,7 @@ void TTerminal::AnyCommand(const UnicodeString Command,
         void Output(const UnicodeString Str, bool StdError)
         {
             FAction.AddOutput(Str, StdError);
-            if (!FOutputEvent.empty())
+            if (!FOutputEvent.IsEmpty())
             {
                 FOutputEvent(Str, StdError);
             }
@@ -3955,7 +3955,7 @@ bool TTerminal::AllowLocalFileTransfer(const UnicodeString FileName,
 UnicodeString TTerminal::FileUrl(const UnicodeString Protocol,
                                 const UnicodeString FileName)
 {
-    assert(FileName.size() > 0);
+    assert(FileName.Length() > 0);
     return Protocol + L"://" + EncodeUrlChars(GetSessionData()->GetSessionName()) +
            (FileName[0] == '/' ? L"" : L"/") + EncodeUrlChars(FileName, L"/");
 }
@@ -4256,7 +4256,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString LocalDirectory
 
                         if (Modified)
                         {
-                            assert(!FileData->MatchingRemoteFile.Directory.empty());
+                            assert(!FileData->MatchingRemoteFile.Directory.IsEmpty());
                             ChecklistItem->Remote = FileData->MatchingRemoteFile;
                             ChecklistItem->ImageIndex = FileData->MatchingRemoteFileImageIndex;
                             ChecklistItem->RemoteFile = FileData->MatchingRemoteFileFile;
@@ -4727,7 +4727,7 @@ void TTerminal::FileFind(const UnicodeString FileName,
     if (!AParams->Cancel)
     {
         UnicodeString fileName = FileName;
-        if (fileName.empty())
+        if (fileName.IsEmpty())
         {
             fileName = File->GetFileName();
         }
@@ -4764,7 +4764,7 @@ void TTerminal::DoFilesFind(const UnicodeString Directory, TFilesFindParams &Par
     sig(this, Directory, Params.Cancel);
     if (!Params.Cancel)
     {
-        assert(FOnFindingFile.empty());
+        assert(FOnFindingFile.IsEmpty());
         // ideally we should set the handler only around actually reading
         // of the directory listing, so we at least reset the handler in
         // FileFind
@@ -4822,7 +4822,7 @@ UnicodeString TTerminal::GetPassword()
 {
     UnicodeString Result;
     // FPassword is empty also when stored password was used
-    if (FPassword.empty())
+    if (FPassword.IsEmpty())
     {
         Result = GetSessionData()->GetPassword();
     }
@@ -4837,7 +4837,7 @@ UnicodeString TTerminal::GetTunnelPassword()
 {
     UnicodeString Result;
     // FTunnelPassword is empty also when stored password was used
-    if (FTunnelPassword.empty())
+    if (FTunnelPassword.IsEmpty())
     {
         Result = GetSessionData()->GetTunnelPassword();
     }
@@ -5069,7 +5069,7 @@ void TSecondaryTerminal::Init(TSessionData *SessionData, TConfiguration *configu
     GetLog()->SetParent(FMainTerminal->GetLog());
     GetLog()->SetName(Name);
     GetSessionData()->NonPersistant();
-    if (!FMainTerminal->GetUserName().empty())
+    if (!FMainTerminal->GetUserName().IsEmpty())
     {
         GetSessionData()->SetUserName(FMainTerminal->GetUserName());
     }
@@ -5115,7 +5115,7 @@ bool TSecondaryTerminal::DoPromptUser(TSessionData *Data,
                 Password = FMainTerminal->GetPassword();
             }
             Results->PutString(0, Password);
-            if (!Results->GetString(0).empty())
+            if (!Results->GetString(0).IsEmpty())
             {
                 LogEvent(L"Using remembered password of the main session.");
                 AResult = true;
