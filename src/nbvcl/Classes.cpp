@@ -1790,7 +1790,7 @@ UnicodeString TRegistry::ReadString(const UnicodeString Name)
     size_t Len = GetDataSize(Name);
     if (Len > 0)
     {
-        Result.resize(Len);
+        Result.SetLength(Len);
         GetData(Name, static_cast<void *>(const_cast<wchar_t *>(Result.c_str())), static_cast<DWORD>(Len), RegData);
         if ((RegData == rdString) || (RegData == rdExpandString))
         {

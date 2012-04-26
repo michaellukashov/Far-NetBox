@@ -27,6 +27,7 @@
 // #include <wstring.h>
 // #include <ustring.h>
 // #endif
+#include "UnicodeString.hpp"
 
 #pragma warning(pop)
 
