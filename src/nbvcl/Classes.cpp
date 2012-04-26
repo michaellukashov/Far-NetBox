@@ -1783,14 +1783,14 @@ __int64 TRegistry::ReadInt64(const std::wstring Name)
     return Result;
 }
 
-std::wstring TRegistry::ReadString(const std::wstring Name)
+UnicodeString TRegistry::ReadString(const UnicodeString Name)
 {
-    std::wstring Result = L"";
+    UnicodeString Result = L"";
     TRegDataType RegData = rdUnknown;
     size_t Len = GetDataSize(Name);
     if (Len > 0)
     {
-        Result.resize(Len);
+        Result.SetLength(Len);
         GetData(Name, static_cast<void *>(const_cast<wchar_t *>(Result.c_str())), static_cast<DWORD>(Len), RegData);
         if ((RegData == rdString) || (RegData == rdExpandString))
         {
@@ -1805,9 +1805,9 @@ std::wstring TRegistry::ReadString(const std::wstring Name)
     return Result;
 }
 
-std::wstring TRegistry::ReadStringRaw(const std::wstring Name)
+UnicodeString TRegistry::ReadStringRaw(const UnicodeString Name)
 {
-    std::wstring Result = ReadString(Name);
+    UnicodeString Result = ReadString(Name);
     return Result;
 }
 

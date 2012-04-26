@@ -32,9 +32,9 @@ static const std::wstring CONST_HTTPS_PROTOCOL_BASE_NAME = L"WebDAV - HTTPS";
 static std::wstring UnixExcludeLeadingBackslash(const std::wstring str)
 {
     std::wstring path = str;
-    while (!path.empty() && path[0] == L'/')
+    while (!path.IsEmpty() && path[0] == L'/')
     {
-        path.erase(0, 1);
+        path.Delete(0, 1);
     }
     return path;
 }
@@ -172,13 +172,13 @@ void __fastcall TWebDAVFileSystem::Open()
     }
 
     std::wstring HostName = Data->GetHostName();
-    if (::LowerCase(HostName.substr(0, 7)) == L"http://")
+    if (::LowerCase(HostName.SubString(0, 7)) == L"http://")
     {
-        HostName.erase(0, 7);
+        HostName.Delete(0, 7);
     }
-    else if (LowerCase(HostName.substr(0, 8)) == L"https://")
+    else if (LowerCase(HostName.SubString(0, 8)) == L"https://")
     {
-        HostName.erase(0, 8);
+        HostName.Delete(0, 8);
     }
     size_t Port = Data->GetPortNumber();
     std::wstring ProtocolName = FTerminal->GetSessionData()->GetFSProtocol() == fsHTTP ?
@@ -216,7 +216,7 @@ void __fastcall TWebDAVFileSystem::Open()
 
         // ask for username if it was not specified in advance, even on retry,
         // but keep previous one as default,
-        if (Data->GetUserName().empty())
+        if (Data->GetUserName().IsEmpty())
         {
             FTerminal->LogEvent(L"Username prompt (no username provided)");
 
@@ -371,7 +371,7 @@ bool TWebDAVFileSystem::IsCapable(int Capability) const
 std::wstring TWebDAVFileSystem::DelimitStr(const std::wstring Str)
 {
     std::wstring str = Str;
-    if (!str.empty())
+    if (!str.IsEmpty())
     {
         str = ::DelimitStr(str, L"\\`$\"");
         if (str[0] == L'-') { str = L"./" + str; }
@@ -389,7 +389,7 @@ void __fastcall TWebDAVFileSystem::EnsureLocation()
 {
     // if we do not know what's the current directory, do nothing
     /*
-    if (!FCurrentDirectory.empty())
+    if (!FCurrentDirectory.IsEmpty())
     {
       if (!UnixComparePaths(ActualCurrentDirectory(), FCurrentDirectory))
       {
@@ -399,7 +399,7 @@ void __fastcall TWebDAVFileSystem::EnsureLocation()
       }
     }
     */
-    if (!FCachedDirectoryChange.empty())
+    if (!FCachedDirectoryChange.IsEmpty())
     {
         FTerminal->LogEvent(FORMAT(L"Locating to cached directory \"%s\".",
                                    FCachedDirectoryChange.c_str()));
@@ -460,9 +460,9 @@ void __fastcall TWebDAVFileSystem::LookupUsersGroups()
 void __fastcall TWebDAVFileSystem::ReadCurrentDirectory()
 {
     DEBUG_PRINTF(L"begin, FCurrentDirectory = %s", FCurrentDirectory.c_str());
-    if (FCachedDirectoryChange.empty())
+    if (FCachedDirectoryChange.IsEmpty())
     {
-        std::wstring Path = FCurrentDirectory.empty() ? L"/" : FCurrentDirectory;
+        std::wstring Path = FCurrentDirectory.IsEmpty() ? L"/" : FCurrentDirectory;
         long responseCode = 0;
         std::wstring response;
         std::wstring errorInfo;
@@ -473,7 +473,7 @@ void __fastcall TWebDAVFileSystem::ReadCurrentDirectory()
         {
             FCurrentDirectory = Path;
         }
-        else if (!errorInfo.empty()) // && !FCurrentDirectory.empty())
+        else if (!errorInfo.IsEmpty()) // && !FCurrentDirectory.IsEmpty())
         {
             if (responseCode == 401)
             {
@@ -557,7 +557,7 @@ void __fastcall TWebDAVFileSystem::CachedChangeDirectory(const std::wstring Dire
     FCachedDirectoryChange = UnixExcludeTrailingBackslash(Directory);
     /*
     FCurrentDirectory = UnixExcludeTrailingBackslash(Directory);
-    if (FCurrentDirectory.empty())
+    if (FCurrentDirectory.IsEmpty())
     {
         FCurrentDirectory = L"/";
     }
@@ -717,7 +717,7 @@ void __fastcall TWebDAVFileSystem::DeleteFile(const std::wstring FileName,
     ItemType type = File->GetIsDirectory() ? ItemDirectory : ItemFile;
     std::wstring errorInfo;
     bool res = WebDAVDelete(FullFileName.c_str(), type, errorInfo);
-    if (!res && !errorInfo.empty())
+    if (!res && !errorInfo.IsEmpty())
     {
         THROW_SKIP_FILE(errorInfo, NULL);
     }
@@ -736,7 +736,7 @@ void __fastcall TWebDAVFileSystem::RenameFile(const std::wstring FileName,
     {
         ItemType type = ItemDirectory;
         bool res = WebDAVRename(FullFileName.c_str(), NewName.c_str(), type, errorInfo);
-        if (!res && !errorInfo.empty())
+        if (!res && !errorInfo.IsEmpty())
         {
             THROW_SKIP_FILE(errorInfo, NULL);
         }
@@ -763,7 +763,7 @@ void __fastcall TWebDAVFileSystem::CreateDirectory(const std::wstring DirName)
         std::wstring dir;
         BOOST_FOREACH(dir, dirnames)
         {
-            if (dir.empty())
+            if (dir.IsEmpty())
             {
                 continue;
             }
@@ -939,9 +939,9 @@ void __fastcall TWebDAVFileSystem::CaptureOutput(const std::wstring AddedLine, b
     std::wstring Line = AddedLine;
     // DEBUG_PRINTF(L"Line = %s", Line.c_str());
     if (StdError ||
-            !Line.empty())
+            !Line.IsEmpty())
     {
-        assert(!FOnCaptureOutput.empty());
+        assert(!FOnCaptureOutput.IsEmpty());
         FOnCaptureOutput(Line, StdError);
     }
 }
@@ -1268,7 +1268,7 @@ void __fastcall TWebDAVFileSystem::WebDAVDirectorySource(const std::wstring Dire
             TRemoteFile *File = NULL;
             // ignore non-fatal error when the directory already exists
             std::wstring fn = UnixExcludeTrailingBackslash(DestFullName);
-            if (fn.empty())
+            if (fn.IsEmpty())
             {
                 fn = L"/";
             }
@@ -1489,7 +1489,7 @@ void __fastcall TWebDAVFileSystem::Sink(const std::wstring FileName,
         TFileTransferData UserData;
 
         std::wstring FilePath = UnixExtractFilePath(FileName);
-        if (FilePath.empty())
+        if (FilePath.IsEmpty())
         {
             FilePath = L"/";
         }
@@ -1649,7 +1649,7 @@ int TWebDAVFileSystem::GetOptionVal(int OptionID) const
         break;
 
     case OPTION_PROXYUSELOGON:
-        Result = !Data->GetProxyUsername().empty();
+        Result = !Data->GetProxyUsername().IsEmpty();
         break;
 
     case OPTION_LOGONTYPE:
@@ -2048,7 +2048,7 @@ bool TWebDAVFileSystem::SendPropFindRequest(const wchar_t *dir, long &responseCo
         return false;
     }
     response = System::MB2W(resp.c_str());
-    if (response.empty())
+    if (response.IsEmpty())
     {
         errInfo = L"Server return empty response";
         return false;
@@ -2239,7 +2239,7 @@ std::string TWebDAVFileSystem::GetNamespace(const TiXmlElement *element, const c
         if (strncmp(attr->Name(), "xmlns:", 6) == 0 && strcmp(attr->Value(), name) == 0)
         {
             ns = attr->Name();
-            ns.erase(0, ns.find(':') + 1);
+            ns.Delete(0, ns.Pos(':') + 1);
             ns += ':';
             break;
         }
@@ -2459,7 +2459,7 @@ bool TWebDAVFileSystem::WebDAVGetList(const std::wstring Directory, std::wstring
         const std::wstring href = System::MB2W(xmlHref->GetText(), CP_UTF8);
         std::wstring path;
         ParseURL(href.c_str(), NULL, NULL, NULL, &path, NULL, NULL, NULL);
-        if (path.empty())
+        if (path.IsEmpty())
         {
             path = href;
         }
@@ -2477,7 +2477,7 @@ bool TWebDAVFileSystem::WebDAVGetList(const std::wstring Directory, std::wstring
         const size_t nameDelim = item.Name.rfind(L'/'); //Save only name without full path
         if (nameDelim != std::wstring::npos)
         {
-            item.Name.erase(0, nameDelim + 1);
+            item.Name.Delete(0, nameDelim + 1);
         }
 
         //Find correct 'propstat' node (with HTTP 200 OK status)
@@ -2547,7 +2547,7 @@ bool TWebDAVFileSystem::WebDAVGetList(const std::wstring Directory, std::wstring
         wdavItems.push_back(item);
     }
 
-    size_t Count = wdavItems.size();
+    size_t Count = wdavItems.Length();
     if (Count)
     {
         Entries.resize(Count);
@@ -2582,8 +2582,8 @@ bool TWebDAVFileSystem::WebDAVGetList(const std::wstring Directory, std::wstring
         }
     }
     // DEBUG_PRINTF(L"Count = %d", Count);
-    TListDataEntry *pEntries = Entries.size() > 0 ? &Entries[0] : NULL;
-    HandleListData(Directory.c_str(), pEntries, Entries.size());
+    TListDataEntry *pEntries = Entries.Length() > 0 ? &Entries[0] : NULL;
+    HandleListData(Directory.c_str(), pEntries, Entries.Length());
     return true;
 }
 
@@ -2727,7 +2727,7 @@ std::wstring TWebDAVFileSystem::FormatErrorDescription(const DWORD errCode, cons
     }
     if (errCode)
     {
-        if (!errDescr.empty())
+        if (!errDescr.IsEmpty())
         {
             errDescr += L'\n';
         }

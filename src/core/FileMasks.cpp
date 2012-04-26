@@ -67,7 +67,7 @@ const wchar_t *PointToName(const wchar_t *lpwszPath)
 const wchar_t *PointToName(std::wstring &strPath)
 {
     const wchar_t *lpwszPath = strPath.c_str();
-    const wchar_t *lpwszEndPtr = lpwszPath + strPath.size();
+    const wchar_t *lpwszEndPtr = lpwszPath + strPath.Length();
     return PointToName(lpwszPath, lpwszEndPtr);
 }
 
@@ -270,7 +270,7 @@ std::wstring __fastcall MaskFilePart(const std::wstring Part, const std::wstring
     std::wstring Result;
     size_t RestStart = 0;
     bool Delim = false;
-    for (size_t Index = 0; Index < Mask.size(); Index++)
+    for (size_t Index = 0; Index < Mask.Length(); Index++)
     {
         switch (Mask[Index])
         {
@@ -285,8 +285,8 @@ std::wstring __fastcall MaskFilePart(const std::wstring Part, const std::wstring
         case L'*':
             if (!Delim)
             {
-                Result += Part.substr(RestStart, Part.size() - RestStart + 1);
-                RestStart = Part.size() + 1;
+                Result += Part.SubString(RestStart, Part.Length() - RestStart + 1);
+                RestStart = Part.Length() + 1;
                 Masked = true;
                 break;
             }
@@ -294,7 +294,7 @@ std::wstring __fastcall MaskFilePart(const std::wstring Part, const std::wstring
         case L'?':
             if (!Delim)
             {
-                if (RestStart < Part.size())
+                if (RestStart < Part.Length())
                 {
                     Result += Part[RestStart];
                     RestStart++;
@@ -316,7 +316,7 @@ std::wstring __fastcall MaskFilePart(const std::wstring Part, const std::wstring
 std::wstring __fastcall MaskFileName(const std::wstring FileName, const std::wstring Mask)
 {
     std::wstring fileName = FileName;
-    if (!Mask.empty() && (Mask != L"*") && (Mask != L"*.*"))
+    if (!Mask.IsEmpty() && (Mask != L"*") && (Mask != L"*.*"))
     {
         bool Masked = false;
         size_t P = ::LastDelimiter(Mask, L".");
@@ -327,14 +327,14 @@ std::wstring __fastcall MaskFileName(const std::wstring FileName, const std::wst
             // name/ext separator
             bool hasFileExt = (P2 != std::wstring::npos) && (P2 > 0);
             std::wstring FileExt = hasFileExt ?
-                                   fileName.substr(P2, fileName.size() - P2) : std::wstring();
-            FileExt = MaskFilePart(FileExt, Mask.substr(P + 1, Mask.size() - P), Masked);
+                                   fileName.SubString(P2, fileName.Length() - P2) : std::wstring();
+            FileExt = MaskFilePart(FileExt, Mask.SubString(P + 1, Mask.Length() - P), Masked);
             if (hasFileExt)
             {
                 fileName.resize(P2);
             }
-            fileName = MaskFilePart(fileName, Mask.substr(0, P), Masked);
-            if (!FileExt.empty())
+            fileName = MaskFilePart(fileName, Mask.SubString(0, P), Masked);
+            if (!FileExt.IsEmpty())
             {
                 fileName += L"." + FileExt;
             }
@@ -357,7 +357,7 @@ bool __fastcall IsFileNameMask(const std::wstring Mask)
 std::wstring __fastcall DelimitFileNameMask(const std::wstring Mask)
 {
     std::wstring mask = Mask;
-    for (size_t i = 0; i <= mask.size(); i++)
+    for (size_t i = 0; i <= mask.Length(); i++)
     {
         if (wcschr(L"\\*?", mask[i]) != NULL)
         {
@@ -388,7 +388,7 @@ bool __fastcall TFileMasks::IsMask(const std::wstring Mask)
 //---------------------------------------------------------------------------
 bool __fastcall TFileMasks::IsAnyMask(const std::wstring Mask)
 {
-    return Mask.empty() || (Mask == L"*.*") || (Mask == L"*");
+    return Mask.IsEmpty() || (Mask == L"*.*") || (Mask == L"*");
 }
 //---------------------------------------------------------------------------
 std::wstring __fastcall TFileMasks::NormalizeMask(const std::wstring Mask, const std::wstring AnyMask)
@@ -410,9 +410,9 @@ std::wstring __fastcall TFileMasks::ComposeMaskStr(
   for (size_t I = 0; I < MasksStr->GetCount(); I++)
   {
     std::wstring Str = ::Trim(MasksStr->GetString(I));
-    if (!Str.empty())
+    if (!Str.IsEmpty())
     {
-      for (size_t P = 0; P < Str.size(); P++)
+      for (size_t P = 0; P < Str.Length(); P++)
       {
         if (::IsDelimiter(Str, AllFileMasksDelimiters, P))
         {
@@ -427,9 +427,9 @@ std::wstring __fastcall TFileMasks::ComposeMaskStr(
       }
       else
       {
-        while (::IsDelimiter(Str, DirectoryMaskDelimiters, Str.size()))
+        while (::IsDelimiter(Str, DirectoryMaskDelimiters, Str.Length()))
         {
-          Str.resize(Str.size() - 1);
+          Str.resize(Str.Length() - 1);
         }
       }
 
@@ -632,7 +632,7 @@ bool __fastcall TFileMasks::Matches(const std::wstring FileName, bool Directory,
                          const std::wstring Path, const TParams *Params) const
 {
     bool Result =
-    (FMasks[MASK_INDEX(Directory, true)].empty() || MatchesMasks(FileName, Directory, Path, Params, FMasks[MASK_INDEX(Directory, true)], true)) &&
+    (FMasks[MASK_INDEX(Directory, true)].IsEmpty() || MatchesMasks(FileName, Directory, Path, Params, FMasks[MASK_INDEX(Directory, true)], true)) &&
     !MatchesMasks(FileName, Directory, Path, Params, FMasks[MASK_INDEX(Directory, false)], false);
     return Result;
 }
@@ -644,7 +644,7 @@ bool __fastcall TFileMasks::Matches(const std::wstring FileName, bool Local,
     if (Local)
     {
         std::wstring Path = ExtractFilePath(FileName);
-        if (!Path.empty())
+        if (!Path.IsEmpty())
         {
             Path = ToUnixPath(ExcludeTrailingBackslash(Path));
         }
@@ -660,10 +660,10 @@ bool __fastcall TFileMasks::Matches(const std::wstring FileName, bool Local,
 //---------------------------------------------------------------------------
 bool TFileMasks::GetIsValid(size_t &Start, size_t &Length) const
 {
-    if (IsMask(FStr) || FStr.empty())
+    if (IsMask(FStr) || FStr.IsEmpty())
     {
         Start = 0;
-        Length = FStr.size();
+        Length = FStr.Length();
         return true;
     }
     else
@@ -700,7 +700,7 @@ bool __fastcall TFileMasks::operator ==(const std::wstring rhs) const
 void __fastcall TFileMasks::ThrowError(size_t Start, size_t End)
 {
     throw EFileMasksException(
-        FMTLOAD(MASK_ERROR, GetMasks().substr(Start, End - Start + 1).c_str()),
+        FMTLOAD(MASK_ERROR, GetMasks().SubString(Start, End - Start + 1).c_str()),
         Start, End - Start + 1);
 }
 //---------------------------------------------------------------------------
@@ -729,8 +729,8 @@ void __fastcall TFileMasks::CreateMaskMask(const std::wstring Mask, size_t Start
 //---------------------------------------------------------------------------
 std::wstring __fastcall TFileMasks::MakeDirectoryMask(std::wstring Str)
 {
-  assert(!Str.empty());
-  if (Str.empty() || !(::IsDelimiter(Str, DirectoryMaskDelimiters, Str.size())))
+  assert(!Str.IsEmpty());
+  if (Str.IsEmpty() || !(::IsDelimiter(Str, DirectoryMaskDelimiters, Str.Length())))
   {
     size_t D = ::LastDelimiter(Str, DirectoryMaskDelimiters);
     // if there's any [back]slash anywhere in str,
@@ -760,7 +760,7 @@ void __fastcall TFileMasks::CreateMask(
 
   wchar_t NextPartDelimiter = L'\0';
   size_t NextPartFrom = 0;
-  while (NextPartFrom < MaskStr.size())
+  while (NextPartFrom < MaskStr.Length())
   {
     wchar_t PartDelimiter = NextPartDelimiter;
     size_t PartFrom = NextPartFrom;
@@ -776,10 +776,10 @@ void __fastcall TFileMasks::CreateMask(
       bool Low = (PartDelimiter == L'>');
 
       TMask::TMaskBoundary Boundary;
-      if ((PartStr.size() >= 1) && (PartStr[0] == L'='))
+      if ((PartStr.Length() >= 1) && (PartStr[0] == L'='))
       {
         Boundary = TMask::Close;
-        PartStr.erase(0, 1);
+        PartStr.Delete(0, 1);
       }
       else
       {
@@ -824,21 +824,21 @@ void __fastcall TFileMasks::CreateMask(
         Size = ParseSize(PartStr);
       }
     }
-    else if (!PartStr.empty())
+    else if (!PartStr.IsEmpty())
     {
       int D = ::LastDelimiter(PartStr, DirectoryMaskDelimiters);
 
-      Directory = (D > 0) && (D == PartStr.size());
+      Directory = (D > 0) && (D == PartStr.Length());
 
       if (Directory)
       {
         do
         {
-          PartStr.resize(PartStr.size() - 1);
-          Mask.UserStr.erase(PartStart - MaskStart + D, 1);
+          PartStr.resize(PartStr.Length() - 1);
+          Mask.UserStr.Delete(PartStart - MaskStart + D, 1);
           D--;
         }
-        while (::IsDelimiter(PartStr, DirectoryMaskDelimiters, PartStr.size()));
+        while (::IsDelimiter(PartStr, DirectoryMaskDelimiters, PartStr.Length()));
 
         D = ::LastDelimiter(PartStr, DirectoryMaskDelimiters);
 
@@ -851,18 +851,18 @@ void __fastcall TFileMasks::CreateMask(
       else if (FForceDirectoryMasks > 0)
       {
         Directory = true;
-        Mask.MaskStr.insert(PartStart - MaskStart + PartStr.size(), std::wstring(1, DirectoryMaskDelimiters[1]));
+        Mask.MaskStr.insert(PartStart - MaskStart + PartStr.Length(), std::wstring(1, DirectoryMaskDelimiters[1]));
       }
 
       if (D != NPOS)
       {
         // make sure sole "/" (root dir) is preserved as is
         CreateMaskMask(
-          UnixExcludeTrailingBackslash(ToUnixPath(PartStr.substr(1, D))),
+          UnixExcludeTrailingBackslash(ToUnixPath(PartStr.SubString(1, D))),
           PartStart, PartStart + D - 1, false,
           Mask.DirectoryMask);
         CreateMaskMask(
-          PartStr.substr(D + 1, PartStr.size() - D),
+          PartStr.SubString(D + 1, PartStr.Length() - D),
           PartStart + D, PartEnd, true,
           Mask.FileNameMask);
       }
@@ -900,9 +900,9 @@ void __fastcall TFileMasks::ReleaseMaskMask(TMaskMask & MaskMask)
 void __fastcall TFileMasks::TrimEx(std::wstring &Str, size_t &Start, size_t &End)
 {
     std::wstring Buf = TrimLeft(Str);
-    Start += Str.size() - Buf.size();
+    Start += Str.Length() - Buf.Length();
     Str = ::TrimRight(Buf);
-    End -= Buf.size() - Str.size();
+    End -= Buf.Length() - Str.Length();
 }
 //---------------------------------------------------------------------------
 bool __fastcall TFileMasks::MatchesMaskMask(const TMaskMask &MaskMask, const std::wstring Str)
@@ -946,7 +946,7 @@ void __fastcall TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
 
         size_t NextMaskFrom = 0;
         bool Include = true;
-        while (NextMaskFrom < Str.size())
+        while (NextMaskFrom < Str.Length())
         {
             size_t MaskStart = NextMaskFrom;
             wchar_t NextMaskDelimiter;
@@ -954,7 +954,7 @@ void __fastcall TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
             if (SingleMask)
             {
                 MaskStr = Str;
-                NextMaskFrom = Str.size() + 1;
+                NextMaskFrom = Str.Length() + 1;
                 NextMaskDelimiter = L'\0';
             }
             else
@@ -965,7 +965,7 @@ void __fastcall TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
 
             TrimEx(MaskStr, MaskStart, MaskEnd);
 
-            if (!MaskStr.empty())
+            if (!MaskStr.IsEmpty())
             {
                 CreateMask(MaskStr, MaskStart, MaskEnd, Include);
             }
@@ -978,7 +978,7 @@ void __fastcall TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
                 }
                 else
                 {
-                    ThrowError(NextMaskFrom - 1, Str.size());
+                    ThrowError(NextMaskFrom - 1, Str.Length());
                 }
             }
         }
@@ -1006,7 +1006,7 @@ TCustomCommand::TCustomCommand()
 void __fastcall TCustomCommand::GetToken(
     const std::wstring Command, size_t Index, size_t &Len, wchar_t &PatternCmd)
 {
-    assert(Index < Command.size());
+    assert(Index < Command.Length());
     const wchar_t *Ptr = Command.c_str() + Index;
 
     if (Ptr[0] == L'!')
@@ -1027,7 +1027,7 @@ void __fastcall TCustomCommand::GetToken(
         }
         else if (Len > 0)
         {
-            if ((Command.size() - Index + 1) < Len)
+            if ((Command.Length() - Index + 1) < Len)
             {
                 throw ExtException(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, PatternCmd, Index));
             }
@@ -1048,7 +1048,7 @@ void __fastcall TCustomCommand::GetToken(
         const wchar_t *NextPattern = wcschr(Ptr, L'!');
         if (NextPattern == NULL)
         {
-            Len = Command.size() - Index + 1;
+            Len = Command.Length() - Index + 1;
         }
         else
         {
@@ -1063,7 +1063,7 @@ std::wstring __fastcall TCustomCommand::Complete(const std::wstring Command,
     std::wstring Result;
     size_t Index = 0;
 
-    while (Index < Command.size())
+    while (Index < Command.Length())
     {
         size_t Len = 0;
         wchar_t PatternCmd = L'\0';
@@ -1071,7 +1071,7 @@ std::wstring __fastcall TCustomCommand::Complete(const std::wstring Command,
 
         if (PatternCmd == TEXT_TOKEN)
         {
-            Result += Command.substr(Index, Len);
+            Result += Command.SubString(Index, Len);
         }
         else if (PatternCmd == L'!')
         {
@@ -1081,20 +1081,20 @@ std::wstring __fastcall TCustomCommand::Complete(const std::wstring Command,
             }
             else
             {
-                Result += Command.substr(Index, Len);
+                Result += Command.SubString(Index, Len);
             }
         }
         else
         {
             wchar_t Quote = NoQuote;
-            if ((Index > 0) && (Index + Len - 1 < Command.size()) &&
+            if ((Index > 0) && (Index + Len - 1 < Command.Length()) &&
                     ::IsDelimiter(Command, Quotes, Index - 1) &&
                     ::IsDelimiter(Command, Quotes, Index + Len) &&
                     (Command[Index - 1] == Command[Index + Len]))
             {
                 Quote = static_cast<char>(Command[Index - 1]);
             }
-            std::wstring Pattern = Command.substr(Index, Len);
+            std::wstring Pattern = Command.SubString(Index, Len);
             std::wstring Replacement;
             bool Delimit = true;
             if (PatternReplacement(Index, Pattern, Replacement, Delimit))
@@ -1136,7 +1136,7 @@ void __fastcall TCustomCommand::CustomValidate(const std::wstring Command,
 {
     size_t Index = 0;
 
-    while (Index < Command.size())
+    while (Index < Command.Length())
     {
         size_t Len;
         wchar_t PatternCmd;
@@ -1153,7 +1153,7 @@ bool __fastcall TCustomCommand::FindPattern(const std::wstring Command,
     bool Result = false;
     size_t Index = 0;
 
-    while (!Result && (Index < Command.size()))
+    while (!Result && (Index < Command.Length()))
     {
         size_t Len;
         wchar_t APatternCmd;
@@ -1208,23 +1208,23 @@ bool __fastcall TInteractiveCustomCommand::PatternReplacement(size_t Index, cons
         std::wstring &Replacement, bool &Delimit)
 {
     bool Result;
-    if ((Pattern.size() >= 3) && (Pattern[1] == L'?'))
+    if ((Pattern.Length() >= 3) && (Pattern[1] == L'?'))
     {
         std::wstring PromptStr;
-        size_t Pos = Pattern.substr(2, Pattern.size() - 2).find_first_of(L"?");
+        size_t Pos = Pattern.SubString(2, Pattern.Length() - 2).find_first_of(L"?");
         if (Pos != std::wstring::npos)
         {
-            Replacement = Pattern.substr(2 + Pos, Pattern.size() - 3 - Pos);
+            Replacement = Pattern.SubString(2 + Pos, Pattern.Length() - 3 - Pos);
             if ((Pos > 0) && (Pattern[2 + Pos - 2] == L'\\'))
             {
                 Delimit = false;
                 Pos--;
             }
-            PromptStr = Pattern.substr(2, Pos - 1);
+            PromptStr = Pattern.SubString(2, Pos - 1);
         }
         else
         {
-            PromptStr = Pattern.substr(2, Pattern.size() - 3);
+            PromptStr = Pattern.SubString(2, Pattern.Length() - 3);
         }
 
         Prompt(Index, PromptStr, Replacement);
@@ -1323,7 +1323,7 @@ bool __fastcall TFileCustomCommand::PatternReplacement(size_t /*Index*/,
     }
     else
     {
-        assert(Pattern.size() == 1);
+        assert(Pattern.Length() == 1);
         Replacement = FFileName;
     }
 

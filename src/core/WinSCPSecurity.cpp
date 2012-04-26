@@ -17,18 +17,18 @@ std::string SimpleEncryptChar(unsigned char Ch)
 {
     Ch = (unsigned char)((~Ch) ^ PWALG_SIMPLE_MAGIC);
     return
-        PWALG_SIMPLE_STRING.substr(((Ch & 0xF0) >> 4), 1) +
-        PWALG_SIMPLE_STRING.substr(((Ch & 0x0F) >> 0), 1);
+        PWALG_SIMPLE_STRING.SubString(((Ch & 0xF0) >> 4), 1) +
+        PWALG_SIMPLE_STRING.SubString(((Ch & 0x0F) >> 0), 1);
 }
 //---------------------------------------------------------------------------
 unsigned char SimpleDecryptNextChar(std::string &Str)
 {
-    if (Str.size() > 0)
+    if (Str.Length() > 0)
     {
         unsigned char Result = (unsigned char)
                                ~((((PWALG_SIMPLE_STRING.find_first_of(Str.c_str()[0])) << 4) +
                                   ((PWALG_SIMPLE_STRING.find_first_of(Str.c_str()[1])) << 0)) ^ PWALG_SIMPLE_MAGIC);
-        Str.erase(0, 2);
+        Str.Delete(0, 2);
         return Result;
     }
     else { return 0x00; }
@@ -42,22 +42,22 @@ std::wstring EncryptPassword(const std::wstring Password, const std::wstring Key
 
     // if (!RandSeed) Randomize();
     std::string Password2 = System::W2MB((Key + Password).c_str());
-    Shift = (Password2.size() < PWALG_SIMPLE_MAXLEN) ?
-            static_cast<unsigned char>(random(PWALG_SIMPLE_MAXLEN - Password2.size())) : 0;
+    Shift = (Password2.Length() < PWALG_SIMPLE_MAXLEN) ?
+            static_cast<unsigned char>(random(PWALG_SIMPLE_MAXLEN - Password2.Length())) : 0;
     // DEBUG_PRINTF(L"Shift = %d", Shift);
     Result += SimpleEncryptChar(static_cast<unsigned char>(PWALG_SIMPLE_FLAG)); // Flag
     Result += SimpleEncryptChar(static_cast<unsigned char>(PWALG_SIMPLE_INTERNAL)); // Dummy
-    Result += SimpleEncryptChar(static_cast<unsigned char>(Password2.size()));
+    Result += SimpleEncryptChar(static_cast<unsigned char>(Password2.Length()));
     Result += SimpleEncryptChar(static_cast<unsigned char>(Shift));
     for (Index = 0; Index < Shift; Index++)
     {
         Result += SimpleEncryptChar(static_cast<unsigned char>(random(256)));
     }
-    for (Index = 0; Index < Password2.size(); Index++)
+    for (Index = 0; Index < Password2.Length(); Index++)
     {
         Result += SimpleEncryptChar(Password2.c_str()[Index]);
     }
-    while (Result.size() < PWALG_SIMPLE_MAXLEN * 2)
+    while (Result.Length() < PWALG_SIMPLE_MAXLEN * 2)
     {
         Result += SimpleEncryptChar(static_cast<unsigned char>(random(256)));
     }
@@ -81,15 +81,15 @@ std::wstring DecryptPassword(const std::wstring Password, const std::wstring Key
     }
     else { Length = PWALG_SIMPLE_FLAG; }
     // DEBUG_PRINTF(L"Length = %d", Length);
-    Password2.erase(0, (static_cast<int>(SimpleDecryptNextChar(Password2))*2));
+    Password2.Delete(0, (static_cast<int>(SimpleDecryptNextChar(Password2))*2));
     for (Index = 0; Index < Length; Index++)
     {
         Result += static_cast<char>(SimpleDecryptNextChar(Password2));
     }
     if (Flag == PWALG_SIMPLE_FLAG)
     {
-        if (Result.substr(0, Key.size()) != Key2) { Result = ""; }
-        else { Result.erase(0, Key2.size()); }
+        if (Result.SubString(0, Key.Length()) != Key2) { Result = ""; }
+        else { Result.Delete(0, Key2.Length()); }
     }
     return System::MB2W(Result.c_str());
 }

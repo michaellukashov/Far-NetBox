@@ -129,7 +129,7 @@ void __fastcall TFileOperationProgressType::Resume()
     // by the time the progress was suspended
     unsigned long Stopped = (GetTickCount() - FSuspendTime);
     size_t i = 0;
-    while (i < FTicks.size())
+    while (i < FTicks.Length())
     {
         FTicks[i] += Stopped;
         ++i;
@@ -182,7 +182,7 @@ size_t __fastcall TFileOperationProgressType::OverallProgress()
 void __fastcall TFileOperationProgressType::DoProgress()
 {
     SetThreadExecutionState(ES_SYSTEM_REQUIRED);
-    if (!FOnProgress.empty())
+    if (!FOnProgress.IsEmpty())
     {
         FOnProgress(*this, Cancel);
     }
@@ -192,7 +192,7 @@ void __fastcall TFileOperationProgressType::Finish(const std::wstring FileName,
                                         bool Success, TOnceDoneOperation &OnceDoneOperation)
 {
     assert(InProgress);
-    if (!FOnFinished.empty())
+    if (!FOnFinished.IsEmpty())
     {
         FOnFinished(Operation, Side, Temp, FileName,
                     // TODO : There wasn't 'Success' condition, was it by mistake or by purpose?
@@ -348,7 +348,7 @@ void __fastcall TFileOperationProgressType::AddTransfered(__int64 ASize,
     {
         TotalTransfered += ASize;
         size_t Ticks = static_cast<size_t>(GetTickCount());
-        if (FTicks.empty() ||
+        if (FTicks.IsEmpty() ||
                 (FTicks.back() > Ticks) || // ticks wrap after 49.7 days
                 ((Ticks - FTicks.back()) >= 1000))
         {
@@ -356,10 +356,10 @@ void __fastcall TFileOperationProgressType::AddTransfered(__int64 ASize,
             FTotalTransferredThen.push_back(TotalTransfered);
         }
 
-        if (FTicks.size() > 10)
+        if (FTicks.Length() > 10)
         {
-            FTicks.erase(FTicks.begin());
-            FTotalTransferredThen.erase(FTotalTransferredThen.begin());
+            FTicks.Delete(FTicks.begin());
+            FTotalTransferredThen.Delete(FTotalTransferredThen.begin());
         }
     }
     DoProgress();
@@ -415,7 +415,7 @@ System::TDateTime __fastcall TFileOperationProgressType::TimeElapsed()
 size_t __fastcall TFileOperationProgressType::CPS()
 {
     size_t Result;
-    if (FTicks.empty())
+    if (FTicks.IsEmpty())
     {
         Result = 0;
     }

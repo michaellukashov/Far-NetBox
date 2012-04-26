@@ -17,7 +17,7 @@ bool __fastcall ExceptionMessage(const std::exception *E, UnicodeString &Message
     {
         Message = LoadStr(ACCESS_VIOLATION_ERROR);
     }
-    else if (std::string(E->what()).empty())
+    else if (std::string(E->what()).IsEmpty())
     {
         Result = false;
     }
@@ -72,9 +72,9 @@ ExtException::ExtException(const std::wstring Msg) :
 {
     // append message to the end to more messages
     // DEBUG_PRINTF(L"begin");
-    if (!Msg.empty())
+    if (!Msg.IsEmpty())
     {
-        if (GetMessage().empty())
+        if (GetMessage().IsEmpty())
         {
             SetMessage(Msg);
         }
@@ -99,9 +99,9 @@ ExtException::ExtException(const std::wstring Msg, const std::exception *E) :
     // "copy std::exception"
     AddMoreMessages(E);
     // and append message to the end to more messages
-    if (!Msg.empty())
+    if (!Msg.IsEmpty())
     {
-        if (GetMessage().empty())
+        if (GetMessage().IsEmpty())
         {
             SetMessage(Msg);
         }
@@ -160,10 +160,10 @@ void __fastcall ExtException::AddMoreMessages(const std::exception *E)
         const ExtException *ExtE = dynamic_cast<const ExtException *>(E);
         if (ExtE != NULL)
         {
-            if (!ExtE->GetHelpKeyword().empty())
+            if (!ExtE->GetHelpKeyword().IsEmpty())
             {
                 // we have to yet decide what to do now
-                assert(GetHelpKeyword().empty());
+                assert(GetHelpKeyword().IsEmpty());
 
                 FHelpKeyword = ExtE->GetHelpKeyword();
             }
@@ -179,11 +179,11 @@ void __fastcall ExtException::AddMoreMessages(const std::exception *E)
 
         // new std::exception does not have own message, this is in fact duplication of
         // the std::exception data, but the std::exception class may being changed
-        if (GetMessage().empty())
+        if (GetMessage().IsEmpty())
         {
             SetMessage(Msg);
         }
-        else if (!Msg.empty())
+        else if (!Msg.IsEmpty())
         {
             FMoreMessages->Insert(0, Msg);
         }

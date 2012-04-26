@@ -100,11 +100,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define True true
 #endif
 #ifndef Integer
-#define Integer int
+typedef int Integer;
 #endif
 #ifndef Boolean
-#define Boolean bool
+typedef bool Boolean;
 #endif
+#ifndef Word
+typedef WORD Word;
+#endif
+
 #ifndef HIDESBASE
 #define HIDESBASE 
 #endif
@@ -180,3 +184,20 @@ bool CheckStructSize(const T* s) {return s && (s->StructSize >= sizeof(T));}
 #else
 #define SELF_TEST(code)
 #endif
+
+class TCriticalSection
+{
+public:
+  TCriticalSection();
+  ~TCriticalSection();
+
+  void Enter();
+  void Leave();
+
+  int GetAcquired() { return FAcquired; }
+
+private:
+  CRITICAL_SECTION FSection;
+  int FAcquired;
+};
+

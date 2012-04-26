@@ -59,7 +59,7 @@ TConfiguration::TConfiguration() :
     else
     {
         RandomSeedPath = GetShellFolderPath(CSIDL_LOCAL_APPDATA);
-        if (RandomSeedPath.empty())
+        if (RandomSeedPath.IsEmpty())
         {
             RandomSeedPath = GetShellFolderPath(CSIDL_APPDATA);
         }
@@ -139,7 +139,7 @@ THierarchicalStorage *TConfiguration::CreateStorage()
 }
 //---------------------------------------------------------------------------
 #define LASTELEM(ELEM) \
-  ELEM.substr(::LastDelimiter(ELEM, L".>") + 1, ELEM.size() - ::LastDelimiter(ELEM, L".>"))
+  ELEM.SubString(::LastDelimiter(ELEM, L".>") + 1, ELEM.Length() - ::LastDelimiter(ELEM, L".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
   { \
@@ -394,7 +394,7 @@ void TConfiguration::SaveDirectoryChangesCache(const std::wstring SessionKey,
 std::wstring TConfiguration::BannerHash(const std::wstring Banner)
 {
     std::wstring Result(16, 0);
-    md5checksum(static_cast<const char *>(static_cast<const void *>(Banner.c_str())), Banner.size() * sizeof(wchar_t),
+    md5checksum(static_cast<const char *>(static_cast<const void *>(Banner.c_str())), Banner.Length() * sizeof(wchar_t),
                 reinterpret_cast<unsigned char *>(const_cast<wchar_t *>(Result.c_str())));
     return Result;
 }
@@ -443,7 +443,7 @@ void TConfiguration::Changed()
 {
     if (FUpdating== 0)
     {
-        if (!GetOnChange().empty())
+        if (!GetOnChange().IsEmpty())
         {
             GetOnChange()(this);
         }
@@ -561,7 +561,7 @@ void TConfiguration::CleanupIniFile()
 //---------------------------------------------------------------------------
 std::wstring TConfiguration::EncryptPassword(const std::wstring Password, const std::wstring Key)
 {
-    if (Password.empty())
+    if (Password.IsEmpty())
     {
         return std::wstring();
     }
@@ -573,7 +573,7 @@ std::wstring TConfiguration::EncryptPassword(const std::wstring Password, const 
 //---------------------------------------------------------------------------
 std::wstring TConfiguration::DecryptPassword(const std::wstring Password, const std::wstring Key)
 {
-    if (Password.empty())
+    if (Password.IsEmpty())
     {
         return std::wstring();
     }
@@ -625,7 +625,7 @@ std::wstring TConfiguration::ModuleFileName()
 void *TConfiguration::GetFileApplicationInfo(const std::wstring FileName)
 {
     void *Result;
-    if (FileName.empty())
+    if (FileName.IsEmpty())
     {
         if (!FApplicationInfo)
         {
@@ -679,9 +679,9 @@ std::wstring TConfiguration::TrimVersion(const std::wstring Version)
 {
     std::wstring version = Version;
     while ((version.find_first_of(L".") != ::LastDelimiter(version, L".")) &&
-            (version.substr(version.size() - 1, 2) == L".0"))
+            (version.SubString(version.Length() - 1, 2) == L".0"))
     {
-        version.resize(version.size() - 2);
+        version.resize(version.Length() - 2);
     }
     return version;
 }
@@ -732,7 +732,7 @@ std::wstring TConfiguration::GetFileFileInfoString(const std::wstring Key,
     {
         BOOST_SCOPE_EXIT ( (&FileName) (&Info) )
         {
-            if (!FileName.empty())
+            if (!FileName.IsEmpty())
             {
                 FreeFileInfo(Info);
             }
@@ -753,7 +753,7 @@ std::wstring TConfiguration::GetFileFileInfoString(const std::wstring Key,
         }
         else
         {
-            assert(!FileName.empty());
+            assert(!FileName.IsEmpty());
         }
     }
     return Result;
@@ -778,7 +778,7 @@ void TConfiguration::SetIniFileStorageName(const std::wstring value)
 //---------------------------------------------------------------------------
 std::wstring TConfiguration::GetIniFileStorageName()
 {
-    if (FIniFileStorageName.empty())
+    if (FIniFileStorageName.IsEmpty())
     {
         return ChangeFileExt(L"" /*ParamStr(0)*/, L".ini");
     }
@@ -875,12 +875,12 @@ void TConfiguration::SetRandomSeedFile(const std::wstring value)
         FRandomSeedFile = value;
 
         // never allow empty seed file to avoid Putty trying to reinitialize the path
-        if (GetRandomSeedFileName().empty())
+        if (GetRandomSeedFileName().IsEmpty())
         {
             FRandomSeedFile = FDefaultRandomSeedFile;
         }
 
-        if (!PrevRandomSeedFileName.empty() &&
+        if (!PrevRandomSeedFileName.IsEmpty() &&
                 (PrevRandomSeedFileName != GetRandomSeedFileName()) &&
                 FileExists(PrevRandomSeedFileName))
         {
@@ -945,7 +945,7 @@ void TConfiguration::SetLogToFile(bool value)
 //---------------------------------------------------------------------
 bool TConfiguration::GetLogToFile()
 {
-    return !GetLogFileName().empty();
+    return !GetLogFileName().IsEmpty();
 }
 //---------------------------------------------------------------------
 void TConfiguration::UpdateActualLogProtocol()

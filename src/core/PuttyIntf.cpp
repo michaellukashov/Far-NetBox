@@ -34,11 +34,11 @@ void PuttyInitialize()
     sk_init();
 
     std::wstring VersionString = SshVersionString();
-    assert(!VersionString.empty() && (VersionString.size() < sizeof(sshver)));
+    assert(!VersionString.IsEmpty() && (VersionString.Length() < sizeof(sshver)));
     std::string vs = System::W2MB(VersionString.c_str());
     strcpy_s(sshver, sizeof(sshver), vs.c_str());
     std::wstring AppName = AppNameString();
-    assert(!AppName.empty() && (AppName.size() < sizeof(appname_)));
+    assert(!AppName.IsEmpty() && (AppName.Length() < sizeof(appname_)));
     std::string _appname = System::W2MB(AppName.c_str());
     strcpy_s(appname_, sizeof(appname_), _appname.c_str());
 }
@@ -146,7 +146,7 @@ int get_userpass_input(prompts_t *p, unsigned char * /*in*/, int /*inlen*/)
                 prompt_t *Prompt = p->prompts[Index];
                 std::string Str = System::W2MB(Results.GetString(Index).c_str());
                 Prompt->result = _strdup(Str.c_str());
-                Prompt->result_len = Str.size();
+                Prompt->result_len = Str.Length();
                 Prompt->result[Prompt->result_len] = '\0';
                 // DEBUG_PRINTF(L"Prompt->result = %s", System::MB2W(Prompt->result).c_str());
             }
@@ -349,16 +349,16 @@ static long OpenWinSCPKey(HKEY Key, const char *SubKey, HKEY *Result, bool CanCr
     USEDPARAM(Key);
 
     std::wstring RegKey = System::MB2W(SubKey);
-    size_t PuttyKeyLen = Configuration->GetPuttyRegistryStorageKey().size();
-    assert(RegKey.substr(0, PuttyKeyLen) == Configuration->GetPuttyRegistryStorageKey());
-    RegKey = RegKey.substr(PuttyKeyLen, RegKey.size() - PuttyKeyLen);
+    size_t PuttyKeyLen = Configuration->GetPuttyRegistryStorageKey().Length();
+    assert(RegKey.SubString(0, PuttyKeyLen) == Configuration->GetPuttyRegistryStorageKey());
+    RegKey = RegKey.SubString(PuttyKeyLen, RegKey.Length() - PuttyKeyLen);
     // DEBUG_PRINTF(L"RegKey = %s", RegKey.c_str());
-    if (!RegKey.empty())
+    if (!RegKey.IsEmpty())
     {
         assert(RegKey[0] == '\\');
-        RegKey.erase(0, 1);
+        RegKey.Delete(0, 1);
     }
-    if (RegKey.empty())
+    if (RegKey.IsEmpty())
     {
         *Result = static_cast<HKEY>(NULL);
         R = ERROR_SUCCESS;

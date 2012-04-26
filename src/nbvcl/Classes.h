@@ -27,6 +27,7 @@
 // #include <wstring.h>
 // #include <ustring.h>
 // #endif
+#include "UnicodeString.hpp"
 
 #pragma warning(pop)
 
@@ -181,10 +182,10 @@ public:
     void Delete(size_t Index);
     virtual void Insert(size_t Index, void *Item);
     size_t IndexOf(void *value) const;
-    virtual void Clear();
-    virtual void Sort(CompareFunc func);
-    virtual void Notify(void *Ptr, int Action);
-    virtual void Sort();
+    virtual void __fastcall Clear();
+    virtual void __fastcall Sort(CompareFunc func);
+    virtual void __fastcall Notify(void *Ptr, int Action);
+    virtual void __fastcall Sort();
 private:
     std::vector<void *> FList;
 };
@@ -203,13 +204,13 @@ public:
     void Extract(TObject *value);
     void Move(size_t Index, size_t To);
     void Delete(size_t Index);
-    virtual void Insert(size_t Index, TObject *value);
+    virtual void __fastcall Insert(size_t Index, TObject *value);
     size_t IndexOf(TObject *value) const;
-    virtual void Clear();
+    virtual void __fastcall Clear();
     bool GetOwnsObjects();
     void SetOwnsObjects(bool value);
-    virtual void Sort(CompareFunc func);
-    virtual void Notify(void *Ptr, int Action);
+    virtual void __fastcall Sort(CompareFunc func);
+    virtual void __fastcall Notify(void *Ptr, int Action);
 private:
     bool FOwnsObjects;
 };
@@ -609,8 +610,8 @@ public:
     double ReadFloat(const std::wstring Name);
     int Readint(const std::wstring Name);
     __int64 ReadInt64(const std::wstring Name);
-    std::wstring ReadString(const std::wstring Name);
-    std::wstring ReadStringRaw(const std::wstring Name);
+    UnicodeString ReadString(const UnicodeString Name);
+    UnicodeString ReadStringRaw(const UnicodeString Name);
     size_t ReadBinaryData(const std::wstring Name,
                        void *Buffer, size_t Size);
 
