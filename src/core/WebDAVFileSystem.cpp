@@ -2550,7 +2550,7 @@ bool TWebDAVFileSystem::WebDAVGetList(const UnicodeString Directory, UnicodeStri
     size_t Count = wdavItems.Length();
     if (Count)
     {
-        Entries.resize(Count);
+        Entries.SetLength(Count);
         for (size_t i = 0; i < Count; ++i)
         {
             TListDataEntry &Dest = Entries[i];

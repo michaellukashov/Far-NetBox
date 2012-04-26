@@ -58,7 +58,7 @@ void Abort()
 void Error(int ErrorID, size_t data)
 {
     DEBUG_PRINTF(L"begin: ErrorID = %d, data = %d", ErrorID, data);
-    std::wstring Msg = FMTLOAD(ErrorID, data);
+    UnicodeString Msg = FMTLOAD(ErrorID, data);
     // DEBUG_PRINTF(L"Msg = %s", Msg.c_str());
     throw ExtException(Msg);
 }
@@ -130,7 +130,7 @@ void TList::SetCount(size_t NewCount)
             Delete(I);
         }
     }
-    FList.resize(NewCount);
+    FList.SetLength(NewCount);
 }
 
 void *TList::operator [](size_t Index) const
@@ -359,7 +359,7 @@ void TStrings::SetTextStr(const UnicodeString Text)
                 P++;
             }
             UnicodeString S;
-            S.resize(P - Start);
+            S.SetLength(P - Start);
             memmove(const_cast<wchar_t *>(S.c_str()), Start, (P - Start) * sizeof(wchar_t));
             Add(S);
             if (*P == 0x0D) { P++; }
@@ -400,7 +400,7 @@ UnicodeString TStrings::GetDelimitedText() const
             Result += GetQuoteChar() + line + GetQuoteChar() + GetDelimiter();
         }
         if (Result.size() > 0)
-            Result.resize(Result.size() - 1);
+            Result.SetLength(Result.size() - 1);
     }
     return Result;
 }
@@ -477,7 +477,7 @@ UnicodeString TStrings::GetTextStr()
     {
         Size += GetString(I).size() + LB.size();
     }
-    Result.resize(Size);
+    Result.SetLength(Size);
     P = const_cast<wchar_t *>(Result.c_str());
     for (I = 0; I < Count; I++)
     {
@@ -632,11 +632,11 @@ UnicodeString TStrings::ExtractName(const UnicodeString S)
     size_t P = ::AnsiPos(Result, L'=');
     if (P != UnicodeString::npos)
     {
-        Result.resize(P);
+        Result.SetLength(P);
     }
     else
     {
-        Result.resize(0);
+        Result.SetLength(0);
     }
     return Result;
 }
@@ -1056,7 +1056,7 @@ UnicodeString MB2W(const char *src, const UINT cp)
     const int reqLength = MultiByteToWideChar(cp, 0, src, -1, NULL, 0);
     if (reqLength)
     {
-        wide.resize(static_cast<size_t>(reqLength));
+        wide.SetLength(static_cast<size_t>(reqLength));
         MultiByteToWideChar(cp, 0, src, -1, &wide[0], reqLength);
         wide.erase(wide.length() - 1);  //remove NULL character
     }
@@ -1081,7 +1081,7 @@ std::string W2MB(const wchar_t *src, const UINT cp)
     const int reqLength = WideCharToMultiByte(cp, 0, src, -1, 0, 0, NULL, NULL);
     if (reqLength)
     {
-        mb.resize(static_cast<size_t>(reqLength));
+        mb.SetLength(static_cast<size_t>(reqLength));
         WideCharToMultiByte(cp, 0, src, -1, &mb[0], reqLength, NULL, NULL);
         mb.erase(mb.length() - 1);  //remove NULL character
     }
@@ -1550,7 +1550,7 @@ void TRegistry::GetValueNames(TStrings *Strings)
     UnicodeString S;
     if (GetKeyInfo(Info))
     {
-        S.resize(Info.MaxValueLen + 1);
+        S.SetLength(Info.MaxValueLen + 1);
         for (size_t I = 0; I < Info.NumSubKeys; I++)
         {
             DWORD Len = Info.MaxValueLen + 1;
@@ -1567,7 +1567,7 @@ void TRegistry::GetKeyNames(TStrings *Strings)
     UnicodeString S;
     if (GetKeyInfo(Info))
     {
-        S.resize(Info.MaxSubKeyLen + 1);
+        S.SetLength(Info.MaxSubKeyLen + 1);
         for (size_t I = 0; I < Info.NumSubKeys; I++)
         {
             DWORD Len = Info.MaxSubKeyLen + 1;
@@ -1646,7 +1646,7 @@ bool TRegistry::DeleteKey(const UnicodeString Key)
         if (GetKeyInfo(Info))
         {
             UnicodeString KeyName;
-            KeyName.resize(Info.MaxSubKeyLen + 1);
+            KeyName.SetLength(Info.MaxSubKeyLen + 1);
             for (int I = Info.NumSubKeys - 1; I >= 0; I--)
             {
                 DWORD Len = Info.MaxSubKeyLen + 1;

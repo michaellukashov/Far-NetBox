@@ -374,7 +374,7 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(int OpenFrom, LONG_PTR Item)
                     if (P != UnicodeString::npos)
                     {
                         Directory = Name.substr(P + 1, Name.size() - P);
-                        Name.resize(P);
+                        Name.SetLength(P);
                     }
 
                     TWinSCPFileSystem *PanelSystem;

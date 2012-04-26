@@ -1542,7 +1542,7 @@ UnicodeString __fastcall LoadStr(int Ident, unsigned int MaxLength)
   // DEBUG_PRINTF(L"hInstance = %u", hInstance);
   assert(hInstance != 0);
 
-  Result.resize(MaxLength > 0 ? MaxLength : 255);
+  Result.SetLength(MaxLength > 0 ? MaxLength : 255);
   size_t Length = ::LoadString(hInstance, Ident, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Result.c_str())),
                                static_cast<int>(Result.Length()));
 #endif
@@ -1930,7 +1930,7 @@ UnicodeString TrimRight(const UnicodeString str)
   while (result.Length() > 0 &&
          ((result[result.Length() - 1] == ' ') || (result[result.Length() - 1] == '\n')))
   {
-    result.resize(result.Length() - 1);
+    result.SetLength(result.Length() - 1);
   }
   return result;
 }
@@ -1938,7 +1938,7 @@ UnicodeString TrimRight(const UnicodeString str)
 UnicodeString UpperCase(const UnicodeString str)
 {
   UnicodeString result;
-  result.resize(str.Length());
+  result.SetLength(str.Length());
   std::transform(str.begin(), str.end(), result.begin(), ::toupper);
   return result;
 }
@@ -1946,7 +1946,7 @@ UnicodeString UpperCase(const UnicodeString str)
 UnicodeString LowerCase(const UnicodeString str)
 {
   UnicodeString result;
-  result.resize(str.Length());
+  result.SetLength(str.Length());
   std::transform(str.begin(), str.end(), result.begin(), ::tolower);
   return result;
 }
@@ -2319,7 +2319,7 @@ UnicodeString Format(const wchar_t * format, va_list args)
   if (format && *format)
   {
     size_t len = _vscwprintf(format, args);
-    result.resize(len + 1);
+    result.SetLength(len + 1);
     vswprintf_s(&result[0], len + 1, format, args);
   }
   return result.c_str();
@@ -2333,9 +2333,9 @@ UnicodeString FmtLoadStr(int id, ...)
   UnicodeString format;
   HINSTANCE hInstance = FarPlugin ? FarPlugin->GetHandle() : GetModuleHandle(0);
   // DEBUG_PRINTF(L"hInstance = %u", hInstance);
-  format.resize(255);
+  format.SetLength(255);
   size_t Length = ::LoadString(hInstance, id, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(format.c_str())), static_cast<int>(format.Length()));
-  format.resize(Length);
+  format.SetLength(Length);
   // DEBUG_PRINTF(L"format = %s", format.c_str());
   if (!Length)
   {
@@ -2506,7 +2506,7 @@ UnicodeString StringOfChar(const wchar_t c, size_t len)
 {
   UnicodeString result;
   if (int(len) < 0) len = 0;
-  result.resize(len, c);
+  result.SetLength(len, c);
   return result;
 }
 
@@ -2548,7 +2548,7 @@ UnicodeString get_full_path_name(const UnicodeString path)
                                  reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(buf.c_str())), NULL);
   if (size > buf.Length())
   {
-    buf.resize(size);
+    buf.SetLength(size);
     size = GetFullPathNameW(path.c_str(), static_cast<DWORD>(buf.Length() - 1), reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(buf.c_str())), NULL);
   }
   return UnicodeString(buf.c_str(), size);
@@ -2707,7 +2707,7 @@ UnicodeString ExcludeTrailingBackslash(const UnicodeString str)
   if ((str.Length() > 0) && ((str[str.Length() - 1] == L'/') ||
                              (str[str.Length() - 1] == L'\\')))
   {
-    result.resize(result.Length() - 1);
+    result.SetLength(result.Length() - 1);
   }
   return result;
 }

@@ -782,7 +782,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
             while (MoreMessages[MoreMessages.size() - 1] == L'\n' ||
                     MoreMessages[MoreMessages.size() - 1] == L'\r')
             {
-                MoreMessages.resize(MoreMessages.size() - 1);
+                MoreMessages.SetLength(MoreMessages.size() - 1);
             }
             FarWrapText(MoreMessages, MoreMessageLines, MaxMessageWidth);
             size_t MoreMaxLen = GetFarPlugin()->MaxLength(MoreMessageLines);
@@ -1062,7 +1062,7 @@ int TCustomFarPlugin::FarMessage(unsigned int Flags,
             while (FullMessage[FullMessage.size() - 1] == L'\n' ||
                     FullMessage[FullMessage.size() - 1] == L'\r')
             {
-                FullMessage.resize(FullMessage.size() - 1);
+                FullMessage.SetLength(FullMessage.size() - 1);
             }
             FullMessage += L"\n\x01\n";
         }
@@ -1223,7 +1223,7 @@ bool TCustomFarPlugin::InputBox(const UnicodeString Title,
     do
     {
         UnicodeString DestText;
-        DestText.resize(MaxLen + 1);
+        DestText.SetLength(MaxLen + 1);
         HANDLE ScreenHandle = 0;
         SaveScreen(ScreenHandle);
         UnicodeString AText = Text;
@@ -1423,7 +1423,7 @@ void TCustomFarPlugin::ShowTerminalScreen()
     TerminalInfo(&Size, &Cursor);
 
     UnicodeString Blank = ::StringOfChar(L' ', Size.x);
-    // Blank.resize(static_cast<size_t>(Size.x));
+    // Blank.SetLength(static_cast<size_t>(Size.x));
     for (int Y = 0; Y < Size.y; Y++)
     {
         Text(0, Y, 7/* LIGHTGRAY */, Blank);
@@ -2739,7 +2739,7 @@ UnicodeString TFarPanelInfo::GetCurrentDirectory()
     size_t Size = FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(0, NULL);
     if (Size)
     {
-        Result.resize(Size);
+        Result.SetLength(Size);
         FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(Size,
             const_cast<wchar_t *>(Result.c_str()));
     }
@@ -2751,7 +2751,7 @@ UnicodeString TFarPanelInfo::GetCurrentDirectory()
                                         FOwner != NULL ? PANEL_ACTIVE : PANEL_PASSIVE);
     if (Size)
     {
-        Result.resize(Size);
+        Result.SetLength(Size);
         FarPlugin->FarControl(FCTL_GETPANELDIR,
                               static_cast<int>(Size),
                               reinterpret_cast<LONG_PTR>(Result.c_str()),
@@ -2877,7 +2877,7 @@ UnicodeString TFarEditorInfo::GetFileName()
     size_t buffLen = FarPlugin->FarEditorControl(ECTL_GETFILENAME, NULL);
     if (buffLen)
     {
-        Result.resize(buffLen + 1, 0);
+        Result.SetLength(buffLen + 1, 0);
         FarPlugin->FarEditorControl(ECTL_GETFILENAME, &Result[0]);
     }
     return Result;
@@ -2963,7 +2963,7 @@ void FarWrapText(const UnicodeString Text, System::TStrings *Result, size_t MaxW
                         Line.insert(P, ::StringOfChar(' ',
                                                       ((P / TabSize) + ((P % TabSize) > 0 ? 1 : 0)) * TabSize - P + 1));
                         UnicodeString s;
-                        s.resize(((P / TabSize) + ((P % TabSize) > 0 ? 1 : 0)) * TabSize - P + 1);
+                        s.SetLength(((P / TabSize) + ((P % TabSize) > 0 ? 1 : 0)) * TabSize - P + 1);
                         Line.append(s.c_str(), P);
                     }
                     // DEBUG_PRINTF(L"Line = %s", Line.c_str());

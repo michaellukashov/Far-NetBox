@@ -299,7 +299,7 @@ UnicodeString TCommandSet::ExtractCommand(const UnicodeString Command)
     size_t P = command.find_first_of(L" ");
     if (P != UnicodeString::npos)
     {
-        command.resize(P);
+        command.SetLength(P);
     }
     return command;
 }
@@ -587,7 +587,7 @@ bool TSCPFileSystem::RemoveLastLine(UnicodeString &Line,
             // DEBUG_PRINTF(L"Line1 = %s", Line.c_str());
             // if ((Pos != UnicodeString::npos) && (Pos != 0))
             {
-                Line.resize(Pos);
+                Line.SetLength(Pos);
             }
             // DEBUG_PRINTF(L"Line2 = %s", Line.c_str());
         }
@@ -664,7 +664,7 @@ void __fastcall TSCPFileSystem::ReadCommandOutput(int Params, const UnicodeStrin
             }
             while (!Message.IsEmpty() && (::LastDelimiter(Message, L"\n\r") == Message.Length() - 1))
             {
-                Message.resize(Message.Length() - 1);
+                Message.SetLength(Message.Length() - 1);
             }
 
             bool WrongReturnCode =
@@ -1780,7 +1780,7 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString FileName,
 
                         if (CopyParam->GetPreserveTime())
                         {
-                            Buf.resize(40, 0);
+                            Buf.SetLength(40, 0);
                             // Send last file access and modification time
                             swprintf_s(const_cast<wchar_t *>(Buf.c_str()), Buf.Length(), L"T%lu 0 %lu 0", static_cast<unsigned long>(MTime),
                                        static_cast<unsigned long>(ATime));
@@ -1790,7 +1790,7 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString FileName,
 
                         // Send file modes (rights), filesize and file name
                         Buf.clear();
-                        Buf.resize(MAX_PATH * 2, 0);
+                        Buf.SetLength(MAX_PATH * 2, 0);
                         // TODO: use boost::format
                         swprintf_s(const_cast<wchar_t *>(Buf.c_str()), Buf.Length(), L"C%s %ld %s",
                                    Rights.GetOctal().c_str(),

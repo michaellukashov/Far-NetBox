@@ -3519,7 +3519,7 @@ bool __fastcall TFTPFileSystem::Unquote(UnicodeString &Str)
             {
                 assert(false);
                 // no quoted string
-                Str.resize(0);
+                Str.SetLength(0);
             }
             break;
 
@@ -3543,7 +3543,7 @@ bool __fastcall TFTPFileSystem::Unquote(UnicodeString &Str)
             else
             {
                 // end of quoted string, trim the rest
-                Str.resize(Index);
+                Str.SetLength(Index);
                 State = DONE;
             }
             break;

@@ -877,7 +877,7 @@ UnicodeString TSecureShell::ReceiveLine()
             EOL = static_cast<bool>(Index && (Pending[Index-1] == '\n'));
             // DEBUG_PRINTF(L"PendLen = %d, Index = %d, EOL = %d, Pending = %s", PendLen, Index, EOL, System::MB2W(Pending, FSessionData->GetCodePageAsNumber()).c_str());
             size_t PrevLen = Line.Length();
-            Line.resize(PrevLen + Index);
+            Line.SetLength(PrevLen + Index);
             Receive(const_cast<char *>(Line.c_str()) + PrevLen, Index);
         }
 

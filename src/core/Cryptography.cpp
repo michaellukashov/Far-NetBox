@@ -398,7 +398,7 @@ static void __fastcall FillBufferWithRandomData(char *Buf, size_t Len)
 static UnicodeString __fastcall AES256Salt()
 {
     UnicodeString Result;
-    Result.resize(SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
+    Result.SetLength(SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
     FillBufferWithRandomData((char *)Result.c_str(), Result.Length());
     return Result;
 }
@@ -417,7 +417,7 @@ void __fastcall AES256EncyptWithMAC(const UnicodeString Input, const UnicodeStri
                 reinterpret_cast<const unsigned char *>(Salt.c_str()), NULL, &aes);
     Output = Input;
     fcrypt_encrypt((unsigned char *)(Output.c_str()), Output.Length(), &aes);
-    Mac.resize(MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
+    Mac.SetLength(MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
     fcrypt_end((unsigned char *)(Mac.c_str()), &aes);
 }
 //---------------------------------------------------------------------------
@@ -442,7 +442,7 @@ bool __fastcall AES256DecryptWithMAC(const UnicodeString Input, const UnicodeStr
     Output = Input;
     fcrypt_decrypt((unsigned char *)(Output.c_str()), Output.Length(), &aes);
     UnicodeString Mac2;
-    Mac2.resize(MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
+    Mac2.SetLength(MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
     assert(Mac.Length() == Mac2.Length());
     fcrypt_end((unsigned char *)(Mac2.c_str()), &aes);
     return (Mac2 == Mac);

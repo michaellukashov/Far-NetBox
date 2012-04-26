@@ -517,7 +517,7 @@ bool TWinSCPFileSystem::GetFindDataEx(System::TObjectList *PanelItems, int OpMod
                     size_t Slash = Name.find_first_of(L'/');
                     if (Slash != UnicodeString::npos)
                     {
-                        Name.resize(Slash);
+                        Name.SetLength(Slash);
                         if (ChildPaths->IndexOf(Name.c_str()) == NPOS)
                         {
                             PanelItems->Add(static_cast<System::TObject *>(new TSessionFolderPanelItem(Name)));

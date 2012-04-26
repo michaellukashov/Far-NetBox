@@ -825,7 +825,7 @@ HANDLE __fastcall TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
         if (!NewInstance)
         {
             // Finally look for a language only translation
-            Module.resize(Module.size() - 1);
+            Module.SetLength(Module.size() - 1);
             NewInstance = LoadLibraryEx(Module.c_str(), 0, LOAD_LIBRARY_AS_DATAFILE);
             if (NewInstance)
             {

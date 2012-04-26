@@ -531,7 +531,7 @@ public:
         Need(Len);
         // cannot happen anyway as Need() would raise exception
         assert(Len < SFTP_MAX_PACKET_LEN);
-        ResultA.resize(Len);
+        ResultA.SetLength(Len);
         memmove(const_cast<char *>(ResultA.c_str()), FData + FPosition, Len);
         FPosition += Len;
         // DEBUG_PRINTF(L"Result = %s", System::MB2W(ResultA.c_str(), FCodePage).c_str());
@@ -2301,7 +2301,7 @@ void __fastcall TSFTPFileSystem::ReserveResponse(const TSFTPPacket *Packet,
     FPacketReservations->Add(reinterpret_cast<System::TObject *>(Response));
     if (FPacketNumbers.Length() <= FPacketReservations->GetCount())
     {
-        FPacketNumbers.resize(FPacketReservations->GetCount() + 10);
+        FPacketNumbers.SetLength(FPacketReservations->GetCount() + 10);
     }
     // DEBUG_PRINTF(L"Packet->GetMessageNumber = %d", Packet->GetMessageNumber());
     FPacketNumbers[FPacketReservations->GetCount() - 1] = Packet->GetMessageNumber();

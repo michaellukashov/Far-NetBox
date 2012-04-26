@@ -331,7 +331,7 @@ UnicodeString __fastcall MaskFileName(const UnicodeString FileName, const Unicod
             FileExt = MaskFilePart(FileExt, Mask.SubString(P + 1, Mask.Length() - P), Masked);
             if (hasFileExt)
             {
-                fileName.resize(P2);
+                fileName.SetLength(P2);
             }
             fileName = MaskFilePart(fileName, Mask.SubString(0, P), Masked);
             if (!FileExt.IsEmpty())
@@ -429,7 +429,7 @@ UnicodeString __fastcall TFileMasks::ComposeMaskStr(
       {
         while (::IsDelimiter(Str, DirectoryMaskDelimiters, Str.Length()))
         {
-          Str.resize(Str.Length() - 1);
+          Str.SetLength(Str.Length() - 1);
         }
       }
 
@@ -834,7 +834,7 @@ void __fastcall TFileMasks::CreateMask(
       {
         do
         {
-          PartStr.resize(PartStr.Length() - 1);
+          PartStr.SetLength(PartStr.Length() - 1);
           Mask.UserStr.Delete(PartStart - MaskStart + D, 1);
           D--;
         }

@@ -681,7 +681,7 @@ UnicodeString TConfiguration::TrimVersion(const UnicodeString Version)
     while ((version.find_first_of(L".") != ::LastDelimiter(version, L".")) &&
             (version.SubString(version.Length() - 1, 2) == L".0"))
     {
-        version.resize(version.Length() - 2);
+        version.SetLength(version.Length() - 2);
     }
     return version;
 }

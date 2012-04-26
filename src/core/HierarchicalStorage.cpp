@@ -21,7 +21,7 @@
 UnicodeString MungeStr(const UnicodeString Str)
 {
     std::string Result2;
-    Result2.resize(Str.Length() * sizeof(wchar_t) * 3 + 1);
+    Result2.SetLength(Str.Length() * sizeof(wchar_t) * 3 + 1);
     putty_mungestr(System::W2MB(Str.c_str()).c_str(), const_cast<char *>(Result2.c_str()));
     UnicodeString Result = System::MB2W(Result2.c_str());
     PackStr(Result);
@@ -32,7 +32,7 @@ UnicodeString MungeStr(const UnicodeString Str)
 UnicodeString UnMungeStr(const UnicodeString Str)
 {
     std::string Result2;
-    Result2.resize(Str.Length() * sizeof(wchar_t) * 3 + 1);
+    Result2.SetLength(Str.Length() * sizeof(wchar_t) * 3 + 1);
     putty_unmungestr(const_cast<char *>(System::W2MB(Str.c_str()).c_str()), const_cast<char *>(Result2.c_str()), static_cast<int>(Result2.Length()));
     UnicodeString Result = System::MB2W(Result2.c_str());
     PackStr(Result);
@@ -389,7 +389,7 @@ bool TRegistryStorage::Copy(TRegistryStorage *Storage)
                                             &Type, &Buffer[0], &Size);
                 if (RegResult == ERROR_MORE_DATA)
                 {
-                    Buffer.resize(static_cast<size_t>(Size));
+                    Buffer.SetLength(static_cast<size_t>(Size));
                 }
             }
             while (RegResult == ERROR_MORE_DATA);

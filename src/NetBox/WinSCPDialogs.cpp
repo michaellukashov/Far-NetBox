@@ -1367,7 +1367,7 @@ void TPasswordDialog::GenerateLabel(const UnicodeString Caption,
 
     if (GetSize().x - 10 < static_cast<int>(caption.size()))
     {
-        caption.resize(GetSize().x - 10 - 4);
+        caption.SetLength(GetSize().x - 10 - 4);
         caption += L" ...";
         Truncated = true;
     }
@@ -2864,7 +2864,7 @@ void AdjustRemoteDir(TFarEdit *HostNameEdit,
     if (P != UnicodeString::npos)
     {
         dir = hostName.substr(P, hostName.size() - P);
-        hostName.resize(hostName.size() - dir.size());
+        hostName.SetLength(hostName.size() - dir.size());
     }
     UnicodeString remotedir = RemoteDirectoryEdit->GetText();
     if (remotedir.empty() && !dir.empty())
@@ -5996,12 +5996,12 @@ void TFileSystemInfoDialog::ClipboardAddItem(System::TObject *AControl,
 
             if (!LabelStr.empty() && (LabelStr[LabelStr.size() - 1] == ':'))
             {
-                LabelStr.resize(LabelStr.size() - 1);
+                LabelStr.SetLength(LabelStr.size() - 1);
             }
 
             if ((Value.size() >= 2) && (Value.substr(Value.size() - 1, 2) == L"\r\n"))
             {
-                Value.resize(Value.size() - 2);
+                Value.SetLength(Value.size() - 2);
             }
 
             FClipboard += FORMAT(L"%s\r\n%s\r\n", LabelStr.c_str(), Value.c_str());
@@ -6012,7 +6012,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(System::TObject *AControl,
             UnicodeString LabelStr = GetMsg(Label);
             if (!LabelStr.empty() && (LabelStr[LabelStr.size() - 1] == ':'))
             {
-                LabelStr.resize(LabelStr.size() - 1);
+                LabelStr.SetLength(LabelStr.size() - 1);
             }
             FClipboard += FORMAT(L"%s = %s\r\n", LabelStr.c_str(), Value.c_str());
         }

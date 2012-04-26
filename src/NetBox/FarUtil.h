@@ -208,7 +208,7 @@ public:
                 return ERROR_SUCCESS;
             }
             size_t s = static_cast<size_t>(fs);
-            fileContent.resize(s);
+            fileContent.SetLength(s);
             f.Read(&fileContent[0], s);
         }
         return f.LastError();

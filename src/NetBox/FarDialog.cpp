@@ -2626,7 +2626,7 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
                 Buf += value;
             }
             UnicodeString value = ::StringOfChar(' ', DisplayWidth - Buf.size());
-            value.resize(DisplayWidth - Buf.size());
+            value.SetLength(DisplayWidth - Buf.size());
             Buf += value;
             if (AScrollBar)
             {
