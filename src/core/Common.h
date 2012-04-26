@@ -1,6 +1,8 @@
 //---------------------------------------------------------------------------
-#pragma once
+#ifndef CommonH
+#define CommonH
 
+#ifdef _MSC_VER
 #include <WinBase.h>
 
 #include "boostdefines.hpp"
@@ -10,11 +12,9 @@
 
 #include "Classes.h"
 
-//---------------------------------------------------------------------------
-
 namespace dt = boost::date_time;
 namespace bg = boost::gregorian;
-
+#endif
 //---------------------------------------------------------------------------
 #define EXCEPTION throw ExtException(L"", NULL)
 #define THROWOSIFFALSE(C) if (!(C)) RaiseLastOSError();
@@ -23,40 +23,98 @@ namespace bg = boost::gregorian;
   dest[sizeof(dest)-1] = '\0'
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = NULL; delete PObj; }
 #define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(System::TObject, OBJ)
-#define ASCOPY(dest, source) SCOPY(dest, source.c_str())
+#define ASCOPY(dest, source) \
+  { \
+    AnsiString CopyBuf = source; \
+    strncpy(dest, CopyBuf.c_str(), LENOF(dest)); \
+    dest[LENOF(dest)-1] = '\0'; \
+  }
+#ifndef _MSC_VER
+#define FORMAT(S, F) Format(S, ARRAYOFCONST(F))
+#define FMTLOAD(I, F) FmtLoadStr(I, ARRAYOFCONST(F))
+#else
 #define FORMAT(S, ...) ::Format(S, __VA_ARGS__)
 #define FMTLOAD(I, ...) ::FmtLoadStr(I, __VA_ARGS__)
+#endif
 #define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))
 #define FLAGSET(SET, FLAG) (((SET) & (FLAG)) == (FLAG))
 #define FLAGCLEAR(SET, FLAG) (((SET) & (FLAG)) == 0)
 #define FLAGMASK(ENABLE, FLAG) ((ENABLE) ? (FLAG) : 0)
 #define SWAP(TYPE, FIRST, SECOND) \
   { TYPE __Backup = FIRST; FIRST = SECOND; SECOND = __Backup; }
+//---------------------------------------------------------------------------
+extern const wchar_t EngShortMonthNames[12][4];
+extern const char Bom[3];
+extern const wchar_t TokenPrefix;
+extern const wchar_t NoReplacement;
+extern const wchar_t TokenReplacement;
+extern const UnicodeString LocalInvalidChars;
+//---------------------------------------------------------------------------
+UnicodeString ReplaceChar(UnicodeString Str, wchar_t A, wchar_t B);
+UnicodeString DeleteChar(UnicodeString Str, wchar_t C);
+void PackStr(UnicodeString &Str);
+void PackStr(RawByteString &Str);
+UnicodeString MakeValidFileName(UnicodeString FileName);
+UnicodeString RootKeyToStr(HKEY RootKey);
+UnicodeString BooleanToStr(bool B);
+UnicodeString BooleanToEngStr(bool B);
+UnicodeString DefaultStr(const UnicodeString & Str, const UnicodeString & Default);
+UnicodeString CutToChar(UnicodeString &Str, wchar_t Ch, bool Trim);
+UnicodeString CopyToChars(const UnicodeString & Str, int & From, UnicodeString Chs, bool Trim,
+  wchar_t * Delimiter = NULL, bool DoubleDelimiterEscapes = false);
+UnicodeString DelimitStr(UnicodeString Str, UnicodeString Chars);
+UnicodeString ShellDelimitStr(UnicodeString Str, wchar_t Quote);
+UnicodeString ExceptionLogString(Exception *E);
+bool IsNumber(const UnicodeString Str);
+UnicodeString __fastcall SystemTemporaryDirectory();
+UnicodeString __fastcall GetShellFolderPath(int CSIdl);
+UnicodeString __fastcall StripPathQuotes(const UnicodeString Path);
+UnicodeString __fastcall AddPathQuotes(UnicodeString Path);
+void __fastcall SplitCommand(UnicodeString Command, UnicodeString &Program,
+  UnicodeString & Params, UnicodeString & Dir);
+UnicodeString __fastcall ValidLocalFileName(UnicodeString FileName);
+UnicodeString __fastcall ValidLocalFileName(
+  UnicodeString FileName, wchar_t InvalidCharsReplacement,
+  const UnicodeString & TokenizibleChars, const UnicodeString & LocalInvalidChars);
+UnicodeString __fastcall ExtractProgram(UnicodeString Command);
+UnicodeString __fastcall FormatCommand(UnicodeString Program, UnicodeString Params);
+UnicodeString __fastcall ExpandFileNameCommand(const UnicodeString Command,
+  const UnicodeString FileName);
+void __fastcall ReformatFileNameCommand(UnicodeString & Command);
+UnicodeString __fastcall EscapePuttyCommandParam(UnicodeString Param);
+UnicodeString __fastcall ExpandEnvironmentVariables(const UnicodeString & Str);
+bool __fastcall ComparePaths(const UnicodeString & Path1, const UnicodeString & Path2);
+bool __fastcall CompareFileName(const UnicodeString & Path1, const UnicodeString & Path2);
+bool __fastcall IsReservedName(UnicodeString FileName);
+UnicodeString __fastcall DisplayableStr(const RawByteString & Str);
+UnicodeString __fastcall ByteToHex(unsigned char B, bool UpperCase = true);
+UnicodeString __fastcall BytesToHex(const unsigned char * B, size_t Length, bool UpperCase = true, wchar_t Separator = L'\0');
+UnicodeString __fastcall BytesToHex(RawByteString Str, bool UpperCase = true, wchar_t Separator = L'\0');
+UnicodeString __fastcall CharToHex(wchar_t Ch, bool UpperCase = true);
+RawByteString __fastcall HexToBytes(const UnicodeString Hex);
+unsigned char __fastcall HexToByte(const UnicodeString Hex);
+UnicodeString __fastcall DecodeUrlChars(UnicodeString S);
+UnicodeString __fastcall EncodeUrlChars(UnicodeString S, UnicodeString Ignore = L"");
+UnicodeString __fastcall EncodeUrlString(UnicodeString S);
+bool __fastcall RecursiveDeleteFile(const UnicodeString FileName, bool ToRecycleBin);
+unsigned int __fastcall CancelAnswer(unsigned int Answers);
+unsigned int __fastcall AbortAnswer(unsigned int Answers);
+unsigned int __fastcall ContinueAnswer(unsigned int Answers);
+UnicodeString __fastcall LoadStr(int Ident, unsigned int MaxLength);
+UnicodeString __fastcall LoadStrPart(int Ident, int Part);
+UnicodeString __fastcall EscapeHotkey(const UnicodeString & Caption);
+bool __fastcall CutToken(UnicodeString & Str, UnicodeString & Token);
+void __fastcall AddToList(UnicodeString & List, const UnicodeString & Value, const UnicodeString & Delimiter);
+bool __fastcall Is2000();
+bool __fastcall IsWin7();
+bool __fastcall IsExactly2008R2();
+TLibModule * __fastcall FindModule(void * Instance);
+__int64 __fastcall Round(double Number);
+bool __fastcall TryRelativeStrToDateTime(UnicodeString S, TDateTime & DateTime);
+LCID __fastcall GetDefaultLCID();
 
-//---------------------------------------------------------------------------
-extern const char EngShortMonthNames[12][4];
-//---------------------------------------------------------------------------
-std::wstring ReplaceChar(const std::wstring Str, wchar_t A, wchar_t B);
-std::wstring DeleteChar(const std::wstring Str, wchar_t C);
-void PackStr(std::wstring &Str);
-std::wstring MakeValidFileName(const std::wstring FileName);
-std::wstring RootKeyToStr(HKEY RootKey);
-std::wstring BooleanToStr(bool B);
-std::wstring BooleanToEngStr(bool B);
-std::wstring DefaultStr(const std::wstring Str, const std::wstring Default);
-std::wstring CutToChar(std::wstring &Str, wchar_t Ch, bool Trim);
-std::wstring CopyToChars(const std::wstring Str, size_t &From, const std::wstring Chs, bool Trim,
-                         wchar_t *Delimiter = NULL, bool DoubleDelimiterEscapes = false);
-std::wstring DelimitStr(const std::wstring Str, const std::wstring Chars);
-std::wstring ShellDelimitStr(const std::wstring Str, char Quote);
-std::wstring ExceptionLogString(const std::exception *E);
-bool IsNumber(const std::wstring Str);
-std::wstring SystemTemporaryDirectory();
-std::wstring SysErrorMessage(int code);
-std::wstring GetShellFolderPath(int CSIdl);
 std::wstring StripPathQuotes(const std::wstring Path);
 std::wstring AddPathQuotes(const std::wstring Path);
-std::wstring ReplaceStrAll(const std::wstring Str, const std::wstring What, const std::wstring ByWhat);
 void SplitCommand(const std::wstring Command, std::wstring &Program,
                   std::wstring &Params, std::wstring &Dir);
 std::wstring ExtractProgram(const std::wstring Command);
@@ -105,19 +163,48 @@ bool Is2000();
 bool IsWin7();
 bool IsExactly2008R2();
 __int64 Round(double Number);
+
+#ifdef _MSC_VER
+std::wstring ReplaceStrAll(const std::wstring Str, const std::wstring What, const std::wstring ByWhat);
+std::wstring SysErrorMessage(int code);
+#endif
 //---------------------------------------------------------------------------
-typedef boost::signal3<void, const std::wstring, const WIN32_FIND_DATA, void *> processlocalfile_signal_type;
-typedef processlocalfile_signal_type::slot_type processlocalfile_slot_type;
-bool FileSearchRec(const std::wstring FileName, WIN32_FIND_DATA &Rec);
+#ifndef _MSC_VER
+typedef void __fastcall (__closure* TProcessLocalFileEvent)
+  (const UnicodeString FileName, const TSearchRec Rec, void * Param);
+bool __fastcall FileSearchRec(const UnicodeString FileName, TSearchRec & Rec);
+void __fastcall ProcessLocalDirectory(UnicodeString DirName,
+  TProcessLocalFileEvent CallBackFunc, void * Param = NULL, int FindAttrs = -1);
+#else
+typedef boost::signal3<void, const std::wstring, const WIN32_FIND_DATA /* Rec */, void * /* Param */ > processlocalfile_signal_type;
+typedef processlocalfile_signal_type::slot_type TProcessLocalFileEvent;
+bool FileSearchRec(const UnicodeString FileName, WIN32_FIND_DATA & Rec);
 void ProcessLocalDirectory(const std::wstring DirName,
-                           const processlocalfile_slot_type &CallBackFunc, void *Param = NULL, int FindAttrs = -1);
+                           const TProcessLocalFileEvent &CallBackFunc, void * Param = NULL, int FindAttrs = -1);
+#endif
 //---------------------------------------------------------------------------
 enum TDSTMode
 {
-    dstmWin =  0, //
-    dstmUnix = 1, // adjust UTC time to Windows "bug"
-    dstmKeep = 2
+  dstmWin =  0, //
+  dstmUnix = 1, // adjust UTC time to Windows "bug"
+  dstmKeep = 2
 };
+bool __fastcall UsesDaylightHack();
+TDateTime __fastcall EncodeDateVerbose(Word Year, Word Month, Word Day);
+TDateTime __fastcall EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec);
+TDateTime __fastcall UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode);
+FILETIME __fastcall DateTimeToFileTime(const TDateTime DateTime, TDSTMode DSTMode);
+TDateTime __fastcall AdjustDateTimeFromUnix(TDateTime DateTime, TDSTMode DSTMode);
+void __fastcall UnifyDateTimePrecision(TDateTime & DateTime1, TDateTime & DateTime2);
+TDateTime __fastcall FileTimeToDateTime(const FILETIME & FileTime);
+__int64 __fastcall ConvertTimestampToUnix(const FILETIME & FileTime,
+  TDSTMode DSTMode);
+TDateTime __fastcall ConvertTimestampToUTC(TDateTime DateTime);
+__int64 __fastcall ConvertTimestampToUnixSafe(const FILETIME & FileTime,
+  TDSTMode DSTMode);
+UnicodeString __fastcall FixedLenDateTimeFormat(const UnicodeString & Format);
+int __fastcall CompareFileTime(TDateTime T1, TDateTime T2);
+
 bool UsesDaylightHack();
 System::TDateTime EncodeDateVerbose(unsigned int Year, unsigned int Month, unsigned int Day);
 System::TDateTime EncodeTimeVerbose(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec);
@@ -156,40 +243,33 @@ System::TDateTime EncodeDate(int Year, int Month, int Day);
 System::TDateTime EncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec);
 
 //---------------------------------------------------------------------------
-class TCriticalSection
+template<class MethodT>
+MethodT __fastcall MakeMethod(void * Data, void * Code)
 {
-public:
-    TCriticalSection();
-    ~TCriticalSection();
-
-    void Enter();
-    void Leave();
-
-    int GetAcquired() { return FAcquired; }
-
-private:
-    CRITICAL_SECTION FSection;
-    int FAcquired;
-};
+  MethodT Method;
+  ((TMethod*)&Method)->Data = Data;
+  ((TMethod*)&Method)->Code = Code;
+  return Method;
+}
 //---------------------------------------------------------------------------
 class TGuard
 {
 public:
-    explicit TGuard(TCriticalSection *ACriticalSection);
-    ~TGuard();
+  explicit TGuard(TCriticalSection * ACriticalSection);
+  ~TGuard();
 
 private:
-    TCriticalSection *FCriticalSection;
+  TCriticalSection * FCriticalSection;
 };
 //---------------------------------------------------------------------------
 class TUnguard
 {
 public:
-    explicit TUnguard(TCriticalSection *ACriticalSection);
-    ~TUnguard();
+  explicit TUnguard(TCriticalSection * ACriticalSection);
+  ~TUnguard();
 
 private:
-    TCriticalSection *FCriticalSection;
+  TCriticalSection * FCriticalSection;
 };
 //---------------------------------------------------------------------------
 extern int Win32Platform;
@@ -210,11 +290,13 @@ void InitPlatformId();
 #undef assert
 #define assert(p)   ((void)0)
 #define CHECK(p) p
+#define FAIL
 #else
 #define CHECK(p) { bool __CHECK_RESULT__ = (p); assert(__CHECK_RESULT__); }
+#define FAIL assert(false)
 #endif
 #ifndef USEDPARAM
-#define USEDPARAM(p) ((void)p)
+#define USEDPARAM(p) ((&p) == (&p))
 #endif
 
 //---------------------------------------------------------------------------
@@ -349,3 +431,4 @@ __int64 FileSeek(HANDLE file, __int64 offset, int Origin);
 //---------------------------------------------------------------------------
 bool Win32Check(bool RetVal);
 //---------------------------------------------------------------------------
+#endif

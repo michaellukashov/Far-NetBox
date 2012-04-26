@@ -701,6 +701,26 @@ int __fastcall GetDefaultLCID();
 
 //---------------------------------------------------------------------------
 
+class TCriticalSection
+{
+public:
+  TCriticalSection();
+  ~TCriticalSection();
+
+  void Enter();
+  void Leave();
+
+  int GetAcquired() { return FAcquired; }
+
+private:
+  CRITICAL_SECTION FSection;
+  int FAcquired;
+};
+
+//---------------------------------------------------------------------------
+#define USEDPARAM(p) ((void)p)
+//---------------------------------------------------------------------------
+
 } // namespace System
 
 using namespace System;
