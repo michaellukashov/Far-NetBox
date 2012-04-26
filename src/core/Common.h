@@ -11,6 +11,8 @@
 #include "boost/date_time/year_month_day.hpp"
 
 #include "Classes.h"
+#include "UnicodeString.hpp"
+#include "Exceptions.h"
 
 namespace dt = boost::date_time;
 namespace bg = boost::gregorian;
@@ -108,7 +110,9 @@ void __fastcall AddToList(UnicodeString & List, const UnicodeString & Value, con
 bool __fastcall Is2000();
 bool __fastcall IsWin7();
 bool __fastcall IsExactly2008R2();
+#ifndef _MSC_VER
 TLibModule * __fastcall FindModule(void * Instance);
+#endif
 __int64 __fastcall Round(double Number);
 bool __fastcall TryRelativeStrToDateTime(UnicodeString S, TDateTime & DateTime);
 LCID __fastcall GetDefaultLCID();
@@ -147,22 +151,6 @@ std::wstring HexToStr(const std::wstring Hex);
 unsigned int HexToInt(const std::wstring Hex, size_t MinChars = 0);
 std::wstring IntToHex(unsigned int Int, size_t MinChars = 0);
 char HexToChar(const std::wstring Hex, size_t MinChars = 0);
-std::wstring DecodeUrlChars(const std::wstring S);
-std::wstring EncodeUrlChars(const std::wstring S, const std::wstring Ignore = L"");
-std::wstring EncodeUrlString(const std::wstring S);
-bool RecursiveDeleteFile(const std::wstring FileName, bool ToRecycleBin);
-int CancelAnswer(int Answers);
-int AbortAnswer(int Answers);
-int ContinueAnswer(int Answers);
-std::wstring LoadStr(int Ident, unsigned int MaxLength = 0);
-std::wstring LoadStrPart(int Ident, int Part);
-std::wstring EscapeHotkey(const std::wstring Caption);
-bool CutToken(std::wstring &Str, std::wstring &Token);
-void AddToList(std::wstring &List, const std::wstring Value, const std::wstring &Delimiter);
-bool Is2000();
-bool IsWin7();
-bool IsExactly2008R2();
-__int64 Round(double Number);
 
 #ifdef _MSC_VER
 std::wstring ReplaceStrAll(const std::wstring Str, const std::wstring What, const std::wstring ByWhat);
@@ -205,7 +193,6 @@ __int64 __fastcall ConvertTimestampToUnixSafe(const FILETIME & FileTime,
 UnicodeString __fastcall FixedLenDateTimeFormat(const UnicodeString & Format);
 int __fastcall CompareFileTime(TDateTime T1, TDateTime T2);
 
-bool UsesDaylightHack();
 System::TDateTime EncodeDateVerbose(unsigned int Year, unsigned int Month, unsigned int Day);
 System::TDateTime EncodeTimeVerbose(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec);
 System::TDateTime StrToDateTime(const std::wstring Value);
@@ -215,18 +202,9 @@ std::wstring DateTimeToStr(std::wstring &Result, const std::wstring &Format,
   System::TDateTime DateTime);
 std::wstring DateTimeToString(System::TDateTime DateTime);
 unsigned int DayOfWeek(const System::TDateTime &DateTime);
-System::TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode);
 FILETIME DateTimeToFileTime(const System::TDateTime &DateTime, TDSTMode DSTMode);
 System::TDateTime AdjustDateTimeFromUnix(System::TDateTime &DateTime, TDSTMode DSTMode);
-void UnifyDateTimePrecision(System::TDateTime &DateTime1, System::TDateTime &DateTime2);
-System::TDateTime FileTimeToDateTime(const FILETIME &FileTime);
-__int64 ConvertTimestampToUnix(const FILETIME &FileTime,
-                               TDSTMode DSTMode);
-System::TDateTime ConvertTimestampToUTC(System::TDateTime DateTime);
-__int64 ConvertTimestampToUnixSafe(const FILETIME &FileTime,
-                                   TDSTMode DSTMode);
 std::wstring FixedLenDateTimeFormat(const std::wstring Format);
-int CompareFileTime(System::TDateTime T1, System::TDateTime T2);
 
 System::TDateTime Date();
 void DecodeDate(const System::TDateTime &DateTime, unsigned int &Y,

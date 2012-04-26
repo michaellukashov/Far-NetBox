@@ -609,8 +609,8 @@ public:
     double ReadFloat(const std::wstring Name);
     int Readint(const std::wstring Name);
     __int64 ReadInt64(const std::wstring Name);
-    std::wstring ReadString(const std::wstring Name);
-    std::wstring ReadStringRaw(const std::wstring Name);
+    UnicodeString ReadString(const UnicodeString Name);
+    UnicodeString ReadStringRaw(const UnicodeString Name);
     size_t ReadBinaryData(const std::wstring Name,
                        void *Buffer, size_t Size);
 
@@ -699,26 +699,6 @@ public:
 void __fastcall GetLocaleFormatSettings(int LCID, TFormatSettings &FormatSettings);
 int __fastcall GetDefaultLCID();
 
-//---------------------------------------------------------------------------
-
-class TCriticalSection
-{
-public:
-  TCriticalSection();
-  ~TCriticalSection();
-
-  void Enter();
-  void Leave();
-
-  int GetAcquired() { return FAcquired; }
-
-private:
-  CRITICAL_SECTION FSection;
-  int FAcquired;
-};
-
-//---------------------------------------------------------------------------
-#define USEDPARAM(p) ((void)p)
 //---------------------------------------------------------------------------
 
 } // namespace System
