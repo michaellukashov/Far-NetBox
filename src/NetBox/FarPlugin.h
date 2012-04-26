@@ -46,7 +46,7 @@ enum TFarShiftStatus { fsNone, fsCtrl, fsAlt, fsShift, fsCtrlShift,
                        fsAltShift, fsCtrlAlt
                      };
 enum THandlesFunction { hfProcessKey, hfProcessHostFile, hfProcessEvent };
-typedef boost::signal1<void, std::wstring &> farinputboxvalidate_signal_type;
+typedef boost::signal1<void, UnicodeString &> farinputboxvalidate_signal_type;
 typedef farinputboxvalidate_signal_type::slot_type farinputboxvalidate_slot_type;
 //---------------------------------------------------------------------------
 typedef boost::signal1<void, size_t &> farmessagetimer_signal_type;
@@ -60,14 +60,14 @@ struct TFarMessageParams
     TFarMessageParams();
 
     System::TStrings *MoreMessages;
-    std::wstring CheckBoxLabel;
+    UnicodeString CheckBoxLabel;
     bool CheckBox;
     size_t Timer;
     size_t TimerAnswer;
     farmessagetimer_slot_type *TimerEvent;
     size_t Timeout;
     size_t TimeoutButton;
-    std::wstring TimeoutStr;
+    UnicodeString TimeoutStr;
     farmessageclick_slot_type *ClickEvent;
     void *Token;
 };
@@ -113,50 +113,50 @@ public:
 
     virtual void HandleException(const std::exception *E, int OpMode = 0);
 
-    static wchar_t *DuplicateStr(const std::wstring Str, bool AllowEmpty = false);
-    int Message(unsigned int Flags, const std::wstring Title,
-                const std::wstring Message, System::TStrings *Buttons = NULL,
+    static wchar_t *DuplicateStr(const UnicodeString Str, bool AllowEmpty = false);
+    int Message(unsigned int Flags, const UnicodeString Title,
+                const UnicodeString Message, System::TStrings *Buttons = NULL,
                 TFarMessageParams *Params = NULL);
     int MaxMessageLines();
     size_t MaxMenuItemLength();
-    size_t Menu(unsigned int Flags, const std::wstring Title,
-             const std::wstring Bottom, System::TStrings *Items, const int *BreakKeys,
+    size_t Menu(unsigned int Flags, const UnicodeString Title,
+             const UnicodeString Bottom, System::TStrings *Items, const int *BreakKeys,
              int &BreakCode);
-    size_t Menu(unsigned int Flags, const std::wstring Title,
-             const std::wstring Bottom, System::TStrings *Items);
-    size_t Menu(unsigned int Flags, const std::wstring Title,
-             const std::wstring Bottom, const FarMenuItem *Items, int Count,
+    size_t Menu(unsigned int Flags, const UnicodeString Title,
+             const UnicodeString Bottom, System::TStrings *Items);
+    size_t Menu(unsigned int Flags, const UnicodeString Title,
+             const UnicodeString Bottom, const FarMenuItem *Items, int Count,
              const int *BreakKeys, int &BreakCode);
-    bool InputBox(const std::wstring Title, const std::wstring Prompt,
-                  std::wstring &Text, unsigned long Flags, const std::wstring HistoryName = L"",
+    bool InputBox(const UnicodeString Title, const UnicodeString Prompt,
+                  UnicodeString &Text, unsigned long Flags, const UnicodeString HistoryName = L"",
                   size_t MaxLen = 255, farinputboxvalidate_slot_type *OnValidate = NULL);
-    std::wstring GetMsg(int MsgId);
+    UnicodeString GetMsg(int MsgId);
     void SaveScreen(HANDLE &Screen);
     void RestoreScreen(HANDLE &Screen);
     bool CheckForEsc();
-    bool Viewer(const std::wstring FileName, unsigned int Flags,
-                std::wstring Title = L"");
-    bool Editor(const std::wstring FileName, unsigned int Flags,
-                std::wstring Title = L"");
+    bool Viewer(const UnicodeString FileName, unsigned int Flags,
+                UnicodeString Title = L"");
+    bool Editor(const UnicodeString FileName, unsigned int Flags,
+                UnicodeString Title = L"");
 
     INT_PTR FarAdvControl(int Command, void *Param = NULL);
     DWORD FarControl(int Command, int Param1, LONG_PTR Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
     int FarEditorControl(int Command, void *Param);
     INT_PTR FarSystemSettings();
-    void Text(int X, int Y, int Color, const std::wstring Str);
+    void Text(int X, int Y, int Color, const UnicodeString Str);
     void FlushText();
-    void WriteConsole(const std::wstring Str);
-    void FarCopyToClipboard(const std::wstring Str);
+    void WriteConsole(const UnicodeString Str);
+    void FarCopyToClipboard(const UnicodeString Str);
     void FarCopyToClipboard(System::TStrings *Strings);
     int FarVersion();
-    std::wstring FormatFarVersion(int Version);
-    std::wstring TemporaryDir();
+    UnicodeString FormatFarVersion(int Version);
+    UnicodeString TemporaryDir();
     int InputRecordToKey(const INPUT_RECORD *Rec);
     TFarEditorInfo *EditorInfo();
 
-    void ShowConsoleTitle(const std::wstring Title);
+    void ShowConsoleTitle(const UnicodeString Title);
     void ClearConsoleTitle();
-    void UpdateConsoleTitle(const std::wstring Title);
+    void UpdateConsoleTitle(const UnicodeString Title);
     void UpdateConsoleTitleProgress(short Progress);
     void ShowTerminalScreen();
     void SaveTerminalScreen();
@@ -168,7 +168,7 @@ public:
     TCustomFarFileSystem *GetPanelFileSystem(bool Another = false,
             HANDLE Plugin = INVALID_HANDLE_VALUE);
 
-    std::wstring GetModuleName();
+    UnicodeString GetModuleName();
     TFarDialog *GetTopDialog() const { return FTopDialog; }
     HINSTANCE GetHandle() const { return FHandle; };
     bool GetANSIApis() const { return FANSIApis; };
@@ -206,10 +206,10 @@ protected:
     void ResetCachedInfo();
     size_t MaxLength(System::TStrings *Strings);
     int FarMessage(unsigned int Flags,
-                   const std::wstring Title, const std::wstring Message, System::TStrings *Buttons,
+                   const UnicodeString Title, const UnicodeString Message, System::TStrings *Buttons,
                    TFarMessageParams *Params);
     int DialogMessage(unsigned int Flags,
-                      const std::wstring Title, const std::wstring Message, System::TStrings *Buttons,
+                      const UnicodeString Title, const UnicodeString Message, System::TStrings *Buttons,
                       TFarMessageParams *Params);
     void InvalidateOpenPluginInfo();
 
@@ -225,12 +225,12 @@ private:
 private:
     PluginInfo FPluginInfo;
     System::TStringList *FSavedTitles;
-    std::wstring FCurrentTitle;
+    UnicodeString FCurrentTitle;
     short FCurrentProgress;
 
     void ClearPluginInfo(PluginInfo &Info);
     void UpdateConsoleTitle();
-    std::wstring FormatConsoleTitle();
+    UnicodeString FormatConsoleTitle();
     HWND GetConsoleWindow();
     RECT GetPanelBounds(HANDLE PanelHandle);
     bool CompareRects(const RECT &lhs, const RECT &rhs) const
@@ -275,19 +275,19 @@ protected:
     bool FClosed;
 
     virtual void GetOpenPluginInfoEx(long unsigned &Flags,
-                                     std::wstring &HostFile, std::wstring &CurDir, std::wstring &Format,
-                                     std::wstring &PanelTitle, TFarPanelModes *PanelModes, int &StartPanelMode,
+                                     UnicodeString &HostFile, UnicodeString &CurDir, UnicodeString &Format,
+                                     UnicodeString &PanelTitle, TFarPanelModes *PanelModes, int &StartPanelMode,
                                      int &StartSortMode, bool &StartSortOrder, TFarKeyBarTitles *KeyBarTitles,
-                                     std::wstring &ShortcutData) = 0;
+                                     UnicodeString &ShortcutData) = 0;
     virtual bool GetFindDataEx(System::TObjectList *PanelItems, int OpMode) = 0;
     virtual bool ProcessHostFileEx(System::TObjectList *PanelItems, int OpMode);
     virtual bool ProcessKeyEx(int Key, unsigned int ControlState);
     virtual bool ProcessEventEx(int Event, void *Param);
-    virtual bool SetDirectoryEx(const std::wstring Dir, int OpMode);
-    virtual int MakeDirectoryEx(std::wstring &Name, int OpMode);
+    virtual bool SetDirectoryEx(const UnicodeString Dir, int OpMode);
+    virtual int MakeDirectoryEx(UnicodeString &Name, int OpMode);
     virtual bool DeleteFilesEx(System::TObjectList *PanelItems, int OpMode);
     virtual int GetFilesEx(System::TObjectList *PanelItems, bool Move,
-                           std::wstring &DestPath, int OpMode);
+                           UnicodeString &DestPath, int OpMode);
     virtual int PutFilesEx(System::TObjectList *PanelItems, bool Move, int OpMode);
 
     void ResetCachedInfo();
@@ -296,7 +296,7 @@ protected:
     bool UpdatePanel(bool ClearSelection = false, bool Another = false);
     void RedrawPanel(bool Another = false);
     void ClosePlugin();
-    std::wstring GetMsg(int MsgId);
+    UnicodeString GetMsg(int MsgId);
     TCustomFarFileSystem *GetOppositeFileSystem();
     bool IsActiveFileSystem();
     bool IsLeft();
@@ -329,11 +329,11 @@ class TFarPanelModes : public System::TObject
 {
     friend class TCustomFarFileSystem;
 public:
-    void SetPanelMode(size_t Mode, const std::wstring ColumnTypes = L"",
-                      const std::wstring ColumnWidths = L"", System::TStrings *ColumnTitles = NULL,
+    void SetPanelMode(size_t Mode, const UnicodeString ColumnTypes = L"",
+                      const UnicodeString ColumnWidths = L"", System::TStrings *ColumnTitles = NULL,
                       bool FullScreen = false, bool DetailedStatus = true, bool AlignExtensions = true,
-                      bool CaseConversion = true, const std::wstring StatusColumnTypes = L"",
-                      const std::wstring StatusColumnWidths = L"");
+                      bool CaseConversion = true, const UnicodeString StatusColumnTypes = L"",
+                      const UnicodeString StatusColumnWidths = L"");
 
 private:
     PanelMode FPanelModes[PANEL_MODES_COUNT];
@@ -344,7 +344,7 @@ private:
 
     void FillOpenPluginInfo(struct OpenPluginInfo *Info);
     static void ClearPanelMode(PanelMode &Mode);
-    static size_t CommaCount(const std::wstring ColumnTypes);
+    static size_t CommaCount(const UnicodeString ColumnTypes);
 };
 //---------------------------------------------------------------------------
 class TFarKeyBarTitles : public System::TObject
@@ -355,7 +355,7 @@ public:
     void ClearKeyBarTitle(TFarShiftStatus ShiftStatus,
                           int FunctionKeyStart, int FunctionKeyEnd = 0);
     void SetKeyBarTitle(TFarShiftStatus ShiftStatus, int FunctionKey,
-                        const std::wstring Title);
+                        const UnicodeString Title);
 
 private:
     KeyBarTitles FKeyBarTitles;
@@ -377,12 +377,12 @@ protected:
     virtual ~TCustomFarPanelItem()
     {}
     virtual void GetData(
-        unsigned long &Flags, std::wstring &FileName, __int64 &Size,
+        unsigned long &Flags, UnicodeString &FileName, __int64 &Size,
         unsigned long &FileAttributes,
         System::TDateTime &LastWriteTime, System::TDateTime &LastAccess,
-        unsigned long &NumberOfLinks, std::wstring &Description,
-        std::wstring &Owner, void *& UserData, int &CustomColumnNumber) = 0;
-    virtual std::wstring GetCustomColumnData(int Column);
+        unsigned long &NumberOfLinks, UnicodeString &Description,
+        UnicodeString &Owner, void *& UserData, int &CustomColumnNumber) = 0;
+    virtual UnicodeString GetCustomColumnData(int Column);
 
     void FillPanelItem(struct PluginPanelItem *PanelItem);
 };
@@ -394,7 +394,7 @@ public:
     virtual ~TFarPanelItem();
     unsigned long GetFlags();
     unsigned long GetFileAttributes();
-    std::wstring GetFileName();
+    UnicodeString GetFileName();
     void *GetUserData();
     bool GetSelected();
     void SetSelected(bool value);
@@ -405,12 +405,12 @@ protected:
     PluginPanelItem *FPanelItem;
 
     virtual void GetData(
-        unsigned long &Flags, std::wstring &FileName, __int64 &Size,
+        unsigned long &Flags, UnicodeString &FileName, __int64 &Size,
         unsigned long &FileAttributes,
         System::TDateTime &LastWriteTime, System::TDateTime &LastAccess,
-        unsigned long &NumberOfLinks, std::wstring &Description,
-        std::wstring &Owner, void *& UserData, int &CustomColumnNumber);
-    virtual std::wstring GetCustomColumnData(int Column);
+        unsigned long &NumberOfLinks, UnicodeString &Description,
+        UnicodeString &Owner, void *& UserData, int &CustomColumnNumber);
+    virtual UnicodeString GetCustomColumnData(int Column);
 
 private:
 };
@@ -418,20 +418,20 @@ private:
 class THintPanelItem : public TCustomFarPanelItem
 {
 public:
-    explicit THintPanelItem(const std::wstring AHint);
+    explicit THintPanelItem(const UnicodeString AHint);
     virtual ~THintPanelItem()
     {}
 
 protected:
     virtual void GetData(
-        unsigned long &Flags, std::wstring &FileName, __int64 &Size,
+        unsigned long &Flags, UnicodeString &FileName, __int64 &Size,
         unsigned long &FileAttributes,
         System::TDateTime &LastWriteTime, System::TDateTime &LastAccess,
-        unsigned long &NumberOfLinks, std::wstring &Description,
-        std::wstring &Owner, void *& UserData, int &CustomColumnNumber);
+        unsigned long &NumberOfLinks, UnicodeString &Description,
+        UnicodeString &Owner, void *& UserData, int &CustomColumnNumber);
 
 private:
-    std::wstring FHint;
+    UnicodeString FHint;
 };
 //---------------------------------------------------------------------------
 enum TFarPanelType { ptFile, ptTree, ptQuickView, ptInfo };
@@ -452,10 +452,10 @@ public:
     System::TRect GetBounds();
     TFarPanelType GetType();
     bool GetIsPlugin();
-    std::wstring GetCurrentDirectory();
+    UnicodeString GetCurrentDirectory();
 
     void ApplySelection();
-    TFarPanelItem *FindFileName(const std::wstring FileName);
+    TFarPanelItem *FindFileName(const UnicodeString FileName);
     TFarPanelItem *FindUserData(void *UserData);
 
 private:
@@ -476,7 +476,7 @@ public:
     virtual ~TFarMenuItems()
     {}
     void __fastcall AddSeparator(bool Visible = true);
-    virtual size_t __fastcall Add(const std::wstring Text, bool Visible = true);
+    virtual size_t __fastcall Add(const UnicodeString Text, bool Visible = true);
 
     virtual void __fastcall Clear();
     virtual void __fastcall Delete(size_t Index);
@@ -506,7 +506,7 @@ public:
     ~TFarEditorInfo();
 
     int GetEditorID();
-    std::wstring GetFileName();
+    UnicodeString GetFileName();
 
 private:
     EditorInfo *FEditorInfo;
@@ -530,6 +530,6 @@ private:
     bool FANSIApis;
 };
 //---------------------------------------------------------------------------
-void FarWrapText(const std::wstring Text, System::TStrings *Result, size_t MaxWidth);
+void FarWrapText(const UnicodeString Text, System::TStrings *Result, size_t MaxWidth);
 //---------------------------------------------------------------------------
 extern TCustomFarPlugin *FarPlugin;

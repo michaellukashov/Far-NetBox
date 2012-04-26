@@ -22,11 +22,11 @@
 #include "FarUtil.h"
 #include "FarTexts.h"
 
-std::wstring GetSystemErrorMessage(const DWORD errCode)
+UnicodeString GetSystemErrorMessage(const DWORD errCode)
 {
     assert(errCode);
 
-    std::wstring errorMsg;
+    UnicodeString errorMsg;
 
     wchar_t codeNum[16];
     swprintf_s(codeNum, L"[0x%08X]", errCode);
@@ -57,15 +57,15 @@ std::wstring GetSystemErrorMessage(const DWORD errCode)
 }
 
 
-void ParseURL(const wchar_t *url, std::wstring *scheme, std::wstring *hostName, unsigned short *port, std::wstring *path, std::wstring *query, std::wstring *userName, std::wstring *password)
+void ParseURL(const wchar_t *url, UnicodeString *scheme, UnicodeString *hostName, unsigned short *port, UnicodeString *path, UnicodeString *query, UnicodeString *userName, UnicodeString *password)
 {
     assert(url);
 
-    std::wstring urlParse(url);
+    UnicodeString urlParse(url);
 
     //Parse scheme name
     const size_t delimScheme = urlParse.find(L"://");
-    if (delimScheme != std::wstring::npos)
+    if (delimScheme != UnicodeString::npos)
     {
         if (scheme)
         {
@@ -77,13 +77,13 @@ void ParseURL(const wchar_t *url, std::wstring *scheme, std::wstring *hostName, 
 
     //Parse path
     const size_t delimPath = urlParse.find(L'/');
-    if (delimPath != std::wstring::npos)
+    if (delimPath != UnicodeString::npos)
     {
-        std::wstring parsePath = urlParse.substr(delimPath);
+        UnicodeString parsePath = urlParse.substr(delimPath);
         urlParse.erase(delimPath);
         //Parse query
         const size_t delimQuery = parsePath.rfind(L'?');
-        if (delimQuery != std::wstring::npos)
+        if (delimQuery != UnicodeString::npos)
         {
             if (query)
             {
@@ -103,9 +103,9 @@ void ParseURL(const wchar_t *url, std::wstring *scheme, std::wstring *hostName, 
 
     //Parse user name/password
     const size_t delimLogin = urlParse.rfind(L'@');
-    if (delimLogin != std::wstring::npos)
+    if (delimLogin != UnicodeString::npos)
     {
-        std::wstring parseLogin = urlParse.substr(0, delimLogin);
+        UnicodeString parseLogin = urlParse.substr(0, delimLogin);
         const size_t delimPwd = parseLogin.rfind(L':');
         if (delimPwd != std::string::npos)
         {
@@ -129,11 +129,11 @@ void ParseURL(const wchar_t *url, std::wstring *scheme, std::wstring *hostName, 
     }
 
     const size_t delimPort = urlParse.rfind(L':');
-    if (delimPort != std::wstring::npos)
+    if (delimPort != UnicodeString::npos)
     {
         if (port)
         {
-            const std::wstring portNum = urlParse.substr(delimPort + 1);
+            const UnicodeString portNum = urlParse.substr(delimPort + 1);
             *port = static_cast<unsigned short>(_wtoi(portNum.c_str()));
         }
         urlParse.erase(delimPort);
@@ -155,7 +155,7 @@ FILETIME UnixTimeToFileTime(const time_t t)
     return ft;
 }
 
-unsigned long TextToNumber(const std::wstring text)
+unsigned long TextToNumber(const UnicodeString text)
 {
     return static_cast<unsigned long>(_wtoi(text.c_str()));
 }
@@ -167,11 +167,11 @@ std::string NumberToText(int number)
     return std::string(codeText);
 }
 
-std::wstring NumberToWString(unsigned long number)
+UnicodeString NumberToWString(unsigned long number)
 {
     wchar_t toText[16];
     _itow_s(number, toText, 10);
-    return std::wstring(toText);
+    return UnicodeString(toText);
 }
 
 void CheckAbortEvent(HANDLE *AbortEvent)

@@ -33,11 +33,11 @@ void PuttyInitialize()
 
     sk_init();
 
-    std::wstring VersionString = SshVersionString();
+    UnicodeString VersionString = SshVersionString();
     assert(!VersionString.IsEmpty() && (VersionString.Length() < sizeof(sshver)));
     std::string vs = System::W2MB(VersionString.c_str());
     strcpy_s(sshver, sizeof(sshver), vs.c_str());
-    std::wstring AppName = AppNameString();
+    UnicodeString AppName = AppNameString();
     assert(!AppName.IsEmpty() && (AppName.Length() < sizeof(appname_)));
     std::string _appname = System::W2MB(AppName.c_str());
     strcpy_s(appname_, sizeof(appname_), _appname.c_str());
@@ -219,7 +219,7 @@ void old_keyfile_warning(void)
 void display_banner(void *frontend, const char *banner, int size)
 {
     assert(frontend);
-    std::wstring Banner(System::MB2W(std::string(banner, size).c_str()).c_str());
+    UnicodeString Banner(System::MB2W(std::string(banner, size).c_str()).c_str());
     (static_cast<TSecureShell *>(frontend))->DisplayBanner(Banner);
 }
 //---------------------------------------------------------------------------
@@ -348,7 +348,7 @@ static long OpenWinSCPKey(HKEY Key, const char *SubKey, HKEY *Result, bool CanCr
     assert(Key == HKEY_CURRENT_USER);
     USEDPARAM(Key);
 
-    std::wstring RegKey = System::MB2W(SubKey);
+    UnicodeString RegKey = System::MB2W(SubKey);
     size_t PuttyKeyLen = Configuration->GetPuttyRegistryStorageKey().Length();
     assert(RegKey.SubString(0, PuttyKeyLen) == Configuration->GetPuttyRegistryStorageKey());
     RegKey = RegKey.SubString(PuttyKeyLen, RegKey.Length() - PuttyKeyLen);
@@ -401,10 +401,10 @@ long reg_query_winscp_value_ex(HKEY Key, const char *ValueName, unsigned long * 
     assert(Configuration != NULL);
 
     THierarchicalStorage *Storage = reinterpret_cast<THierarchicalStorage *>(Key);
-    std::wstring Value;
+    UnicodeString Value;
     if (Storage == NULL)
     {
-        if (std::wstring(System::MB2W(ValueName)) == L"RandSeedFile")
+        if (UnicodeString(System::MB2W(ValueName)) == L"RandSeedFile")
         {
             Value = Configuration->GetRandomSeedFileName();
             R = ERROR_SUCCESS;
@@ -472,7 +472,7 @@ long reg_close_winscp_key(HKEY Key)
     return ERROR_SUCCESS;
 }
 //---------------------------------------------------------------------------
-TKeyType KeyType(const std::wstring FileName)
+TKeyType KeyType(const UnicodeString FileName)
 {
     assert(ktUnopenable == SSH_KEYTYPE_UNOPENABLE);
     assert(ktSSHCom == SSH_KEYTYPE_SSHCOM);
@@ -481,12 +481,12 @@ TKeyType KeyType(const std::wstring FileName)
     return static_cast<TKeyType>(key_type(&KeyFile));
 }
 //---------------------------------------------------------------------------
-std::wstring KeyTypeName(TKeyType KeyType)
+UnicodeString KeyTypeName(TKeyType KeyType)
 {
     return System::MB2W(key_type_to_str(KeyType));
 }
 //---------------------------------------------------------------------------
-__int64 ParseSize(const std::wstring SizeStr)
+__int64 ParseSize(const UnicodeString SizeStr)
 {
     return parse_blocksize(System::W2MB(SizeStr.c_str()).c_str());
 }

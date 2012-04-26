@@ -56,10 +56,10 @@ private:
 //---------------------------------------------------------------------------
 struct TCopyParamRuleData
 {
-    std::wstring HostName;
-    std::wstring UserName;
-    std::wstring RemoteDirectory;
-    std::wstring LocalDirectory;
+    UnicodeString HostName;
+    UnicodeString UserName;
+    UnicodeString RemoteDirectory;
+    UnicodeString LocalDirectory;
 
     void Default();
 };
@@ -75,7 +75,7 @@ public:
     void __fastcall Load(THierarchicalStorage *Storage);
     void __fastcall Save(THierarchicalStorage *Storage) const;
 
-    std::wstring __fastcall GetInfoStr(const std::wstring Separator) const;
+    UnicodeString __fastcall GetInfoStr(const UnicodeString Separator) const;
 
     bool __fastcall operator ==(const TCopyParamRule &rhp) const;
 
@@ -86,8 +86,8 @@ public:
 private:
     TCopyParamRuleData FData;
 
-    inline bool __fastcall Match(const std::wstring Mask,
-                      const std::wstring Value, bool Path, bool Local = true) const;
+    inline bool __fastcall Match(const UnicodeString Mask,
+                      const UnicodeString Value, bool Path, bool Local = true) const;
 };
 //---------------------------------------------------------------------------
 class TCopyParamList
@@ -101,24 +101,24 @@ public:
     void __fastcall Load(THierarchicalStorage *Storage, int Count);
     void __fastcall Save(THierarchicalStorage *Storage) const;
 
-    static void __fastcall ValidateName(const std::wstring Name);
+    static void __fastcall ValidateName(const UnicodeString Name);
 
     void __fastcall operator=(const TCopyParamList &rhl);
     bool __fastcall operator==(const TCopyParamList &rhl) const;
 
     void __fastcall Clear();
-    void __fastcall Add(const std::wstring Name,
+    void __fastcall Add(const UnicodeString Name,
              TCopyParamType *CopyParam, TCopyParamRule *Rule);
-    void __fastcall Insert(size_t Index, const std::wstring Name,
+    void __fastcall Insert(size_t Index, const UnicodeString Name,
                 TCopyParamType *CopyParam, TCopyParamRule *Rule);
-    void __fastcall Change(size_t Index, const std::wstring Name,
+    void __fastcall Change(size_t Index, const UnicodeString Name,
                 TCopyParamType *CopyParam, TCopyParamRule *Rule);
     void __fastcall Move(size_t CurIndex, size_t NewIndex);
     void __fastcall Delete(size_t Index);
-    size_t __fastcall IndexOfName(const std::wstring Name) const;
+    size_t __fastcall IndexOfName(const UnicodeString Name) const;
 
     size_t __fastcall GetCount() const;
-    std::wstring __fastcall GetName(size_t Index) const;
+    UnicodeString __fastcall GetName(size_t Index) const;
     const TCopyParamRule * __fastcall GetRule(size_t Index) const;
     const TCopyParamType * __fastcall GetCopyParam(size_t Index) const;
     bool __fastcall GetModified() { return FModified; }
@@ -126,7 +126,7 @@ public:
     bool __fastcall GetAnyRule() const;
 
 private:
-    static std::wstring FInvalidChars;
+    static UnicodeString FInvalidChars;
     System::TObjectList *FRules;
     System::TObjectList *FCopyParams;
     System::TStrings *FNames;
@@ -144,14 +144,14 @@ class TGUIConfiguration : public TConfiguration
 {
 private:
     System::TStrings *FLocales;
-    std::wstring FLastLocalesExts;
+    UnicodeString FLastLocalesExts;
     bool FContinueOnError;
     bool FConfirmCommandSession;
-    std::wstring FPuttyPath;
-    std::wstring FPSftpPath;
+    UnicodeString FPuttyPath;
+    UnicodeString FPSftpPath;
     bool FPuttyPassword;
     bool FTelnetForFtpInPutty;
-    std::wstring FPuttySession;
+    UnicodeString FPuttySession;
     int FSynchronizeParams;
     int FSynchronizeOptions;
     int FSynchronizeModeAuto;
@@ -164,15 +164,15 @@ private:
     TGUICopyParamType FDefaultCopyParam;
     bool FBeepOnFinish;
     System::TDateTime FBeepOnFinishAfter;
-    std::wstring FDefaultPuttyPathOnly;
-    std::wstring FDefaultPuttyPath;
+    UnicodeString FDefaultPuttyPathOnly;
+    UnicodeString FDefaultPuttyPath;
     bool FSynchronizeBrowsing;
     TCopyParamList *FCopyParamList;
     bool FCopyParamListDefaults;
-    std::wstring FCopyParamCurrent;
+    UnicodeString FCopyParamCurrent;
     TRemoteProperties FNewDirectoryProperties;
     int FKeepUpToDateChangeDelay;
-    std::wstring FChecksumAlg;
+    UnicodeString FChecksumAlg;
     int FSessionReopenAutoIdle;
 
 protected:
@@ -181,10 +181,10 @@ protected:
     virtual void __fastcall SaveData(THierarchicalStorage *Storage, bool All);
     virtual void __fastcall LoadData(THierarchicalStorage *Storage);
     virtual HANDLE __fastcall LoadNewResourceModule(LCID Locale,
-                                         std::wstring *FileName = NULL);
+                                         UnicodeString *FileName = NULL);
     LCID __fastcall InternalLocale();
     virtual bool __fastcall GetRememberPassword();
-    static std::wstring __fastcall PropertyToKey(const std::wstring Property);
+    static UnicodeString __fastcall PropertyToKey(const UnicodeString Property);
     virtual void __fastcall DefaultLocalized();
     virtual void __fastcall Saved();
 
@@ -217,17 +217,17 @@ public:
     void __fastcall SetLocale(LCID value);
     void __fastcall SetLocaleSafe(LCID value);
     System::TStrings * __fastcall GetLocales();
-    std::wstring __fastcall GetPuttyPath() { return FPuttyPath; }
-    void __fastcall SetPuttyPath(const std::wstring value) { FPuttyPath = value; }
-    std::wstring __fastcall GetDefaultPuttyPath() { return FDefaultPuttyPath; }
-    std::wstring __fastcall GetPSftpPath() { return FPSftpPath; }
-    void __fastcall SetPSftpPath(const std::wstring value) { FPSftpPath = value; }
+    UnicodeString __fastcall GetPuttyPath() { return FPuttyPath; }
+    void __fastcall SetPuttyPath(const UnicodeString value) { FPuttyPath = value; }
+    UnicodeString __fastcall GetDefaultPuttyPath() { return FDefaultPuttyPath; }
+    UnicodeString __fastcall GetPSftpPath() { return FPSftpPath; }
+    void __fastcall SetPSftpPath(const UnicodeString value) { FPSftpPath = value; }
     bool __fastcall GetPuttyPassword() { return FPuttyPassword; }
     void __fastcall SetPuttyPassword(bool value) { FPuttyPassword = value; }
     bool __fastcall GetTelnetForFtpInPutty() { return FTelnetForFtpInPutty; }
     void __fastcall SetTelnetForFtpInPutty(bool value) { FTelnetForFtpInPutty = value; }
-    std::wstring __fastcall GetPuttySession() { return FPuttySession; }
-    void __fastcall SetPuttySession(std::wstring value) { FPuttySession = value; }
+    UnicodeString __fastcall GetPuttySession() { return FPuttySession; }
+    void __fastcall SetPuttySession(UnicodeString value) { FPuttySession = value; }
     System::TDateTime __fastcall GetIgnoreCancelBeforeFinish() { return FIgnoreCancelBeforeFinish; }
     void __fastcall SetIgnoreCancelBeforeFinish(System::TDateTime value) { FIgnoreCancelBeforeFinish = value; }
     TGUICopyParamType & __fastcall GetDefaultCopyParam() { return FDefaultCopyParam; }
@@ -240,18 +240,18 @@ public:
     void __fastcall SetBeepOnFinishAfter(System::TDateTime value) { FBeepOnFinishAfter = value; }
     const TCopyParamList * __fastcall GetCopyParamList();
     void __fastcall SetCopyParamList(const TCopyParamList *value);
-    std::wstring __fastcall GetCopyParamCurrent() { return FCopyParamCurrent; }
-    void __fastcall SetCopyParamCurrent(const std::wstring value);
+    UnicodeString __fastcall GetCopyParamCurrent() { return FCopyParamCurrent; }
+    void __fastcall SetCopyParamCurrent(const UnicodeString value);
     size_t __fastcall GetCopyParamIndex();
     void __fastcall SetCopyParamIndex(size_t value);
     TGUICopyParamType __fastcall GetCurrentCopyParam();
-    TGUICopyParamType __fastcall GetCopyParamPreset(const std::wstring Name);
+    TGUICopyParamType __fastcall GetCopyParamPreset(const UnicodeString Name);
     TRemoteProperties __fastcall GetNewDirectoryProperties() { return FNewDirectoryProperties; }
     void __fastcall SetNewDirectoryProperties(const TRemoteProperties &value);
     int __fastcall GetKeepUpToDateChangeDelay() { return FKeepUpToDateChangeDelay; }
     void __fastcall SetKeepUpToDateChangeDelay(int value) { FKeepUpToDateChangeDelay = value; }
-    std::wstring __fastcall GetChecksumAlg() { return FChecksumAlg; }
-    void __fastcall SetChecksumAlg(const std::wstring value) { FChecksumAlg = value; }
+    UnicodeString __fastcall GetChecksumAlg() { return FChecksumAlg; }
+    void __fastcall SetChecksumAlg(const UnicodeString value) { FChecksumAlg = value; }
     int __fastcall GetSessionReopenAutoIdle() { return FSessionReopenAutoIdle; }
     void __fastcall SetSessionReopenAutoIdle(int value) { FSessionReopenAutoIdle = value; }
 };

@@ -62,8 +62,8 @@ bool CEasyURL::Initialize(const wchar_t *url, const wchar_t *userName,
         return false;
     }
 
-    std::wstring scheme;
-    std::wstring hostName;
+    UnicodeString scheme;
+    UnicodeString hostName;
     unsigned short port = 0;
     ParseURL(url, &scheme, &hostName, &port, NULL, NULL, NULL, NULL);
 
@@ -378,7 +378,7 @@ int CEasyURL::DebugOutput(TLogLineType type, const char *data, size_t size)
 {
     std::string str(data, size);
     // DEBUG_PRINTF(L"data = %s", System::MB2W(str.c_str()).c_str());
-    std::wstring strw = System::MB2W(str.c_str());
+    UnicodeString strw = System::MB2W(str.c_str());
     // PASS *****
     if (m_regex != INVALID_HANDLE_VALUE && m_match != NULL)
     {

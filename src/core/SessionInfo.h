@@ -215,7 +215,7 @@ public:
   void __fastcall File(TRemoteFile * File);
 };
 //---------------------------------------------------------------------------
-typedef boost::signal2<void, TLogLineType, const std::wstring> doaddlog_signal_type;
+typedef boost::signal2<void, TLogLineType, const UnicodeString> doaddlog_signal_type;
 typedef doaddlog_signal_type::slot_type doaddlog_slot_type;
 //---------------------------------------------------------------------------
 class TSessionLog : protected TStringList

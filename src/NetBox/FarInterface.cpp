@@ -20,13 +20,13 @@ void ShowExtendedException(const std::exception *E)
     assert(WinSCPPlugin != NULL);
     WinSCPPlugin->ShowExtendedException(E);
 }
-std::wstring AppNameString()
+UnicodeString AppNameString()
 {
     return L"NetBox";
 }
 
 //---------------------------------------------------------------------------
-std::wstring GetRegistryKey()
+UnicodeString GetRegistryKey()
 {
     // return L"Software\\Michael Lukashov\\FarNetBox";
     return L"Software\\Far2\\Plugins\\NetBox 2";
@@ -37,7 +37,7 @@ void Busy(bool /*Start*/)
     // nothing
 }
 //---------------------------------------------------------------------------
-std::wstring SshVersionString()
+UnicodeString SshVersionString()
 {
     return FORMAT(L"NetBox-FAR-release-%s", Configuration->GetVersion().c_str());
 }
@@ -76,7 +76,7 @@ size_t StartThread(void *SecurityAttributes, unsigned StackSize,
         CreationFlags, ThreadId);
 }
 //---------------------------------------------------------------------------
-void CopyToClipboard(const std::wstring Text)
+void CopyToClipboard(const UnicodeString Text)
 {
     assert(FarPlugin != NULL);
     FarPlugin->FarCopyToClipboard(Text);

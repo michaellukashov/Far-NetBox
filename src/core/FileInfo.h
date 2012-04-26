@@ -9,7 +9,7 @@ struct TTranslation
 };
 
 // Return pointer to file version info block
-void * __fastcall CreateFileInfo(const std::wstring FileName);
+void * __fastcall CreateFileInfo(const UnicodeString FileName);
 
 // Free file version info block memory
 void __fastcall FreeFileInfo(void *FileInfo);
@@ -24,12 +24,12 @@ unsigned __fastcall GetTranslationCount(void *FileInfo);
 TTranslation __fastcall GetTranslation(void *FileInfo, unsigned i);
 
 // Return the name of the specified language
-std::wstring __fastcall GetLanguage(unsigned int Language);
+UnicodeString __fastcall GetLanguage(unsigned int Language);
 
 // Return the value of the specified file version info string using the
 // specified translation
-std::wstring __fastcall GetFileInfoString(void *FileInfo,
-                               TTranslation Translation, std::wstring StringName);
+UnicodeString __fastcall GetFileInfoString(void *FileInfo,
+                               TTranslation Translation, UnicodeString StringName);
 
 int __fastcall CalculateCompoundVersion(int MajorVer,
                              int MinorVer, int Release, int Build);

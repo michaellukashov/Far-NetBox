@@ -12,114 +12,114 @@ enum TStorageAccessMode { smRead, smReadWrite };
 class THierarchicalStorage
 {
 public:
-    explicit THierarchicalStorage(const std::wstring AStorage);
+    explicit THierarchicalStorage(const UnicodeString AStorage);
     virtual ~THierarchicalStorage();
 
     virtual void Init() {}
     bool OpenRootKey(bool CanCreate);
-    virtual bool OpenSubKey(const std::wstring SubKey, bool CanCreate, bool Path = false);
+    virtual bool OpenSubKey(const UnicodeString SubKey, bool CanCreate, bool Path = false);
     virtual void CloseSubKey();
-    virtual bool DeleteSubKey(const std::wstring SubKey) = 0;
+    virtual bool DeleteSubKey(const UnicodeString SubKey) = 0;
     virtual void GetSubKeyNames(System::TStrings *Strings) = 0;
     virtual void GetValueNames(System::TStrings *Strings) = 0;
     bool HasSubKeys();
-    bool HasSubKey(const std::wstring SubKey);
-    virtual bool KeyExists(const std::wstring SubKey) = 0;
-    virtual bool ValueExists(const std::wstring Value) = 0;
-    virtual void RecursiveDeleteSubKey(const std::wstring Key);
+    bool HasSubKey(const UnicodeString SubKey);
+    virtual bool KeyExists(const UnicodeString SubKey) = 0;
+    virtual bool ValueExists(const UnicodeString Value) = 0;
+    virtual void RecursiveDeleteSubKey(const UnicodeString Key);
     virtual void ClearSubKeys();
     virtual void ReadValues(System::TStrings *Strings, bool MaintainKeys = false);
     virtual void WriteValues(System::TStrings *Strings, bool MaintainKeys = false);
     virtual void ClearValues();
-    virtual bool DeleteValue(const std::wstring Name) = 0;
+    virtual bool DeleteValue(const UnicodeString Name) = 0;
 
-    virtual int BinaryDataSize(const std::wstring Name) = 0;
+    virtual int BinaryDataSize(const UnicodeString Name) = 0;
 
-    virtual bool Readbool(const std::wstring Name, bool Default) = 0;
-    virtual int Readint(const std::wstring Name, int Default) = 0;
-    virtual __int64 ReadInt64(const std::wstring Name, __int64 Default) = 0;
-    virtual System::TDateTime ReadDateTime(const std::wstring Name, System::TDateTime Default) = 0;
-    virtual double ReadFloat(const std::wstring Name, double Default) = 0;
-    virtual std::wstring ReadStringRaw(const std::wstring Name, const std::wstring Default) = 0;
-    virtual size_t ReadBinaryData(const std::wstring Name, void *Buffer, size_t Size) = 0;
+    virtual bool Readbool(const UnicodeString Name, bool Default) = 0;
+    virtual int Readint(const UnicodeString Name, int Default) = 0;
+    virtual __int64 ReadInt64(const UnicodeString Name, __int64 Default) = 0;
+    virtual System::TDateTime ReadDateTime(const UnicodeString Name, System::TDateTime Default) = 0;
+    virtual double ReadFloat(const UnicodeString Name, double Default) = 0;
+    virtual UnicodeString ReadStringRaw(const UnicodeString Name, const UnicodeString Default) = 0;
+    virtual size_t ReadBinaryData(const UnicodeString Name, void *Buffer, size_t Size) = 0;
 
-    virtual std::wstring ReadString(const std::wstring Name, const std::wstring Default);
-    std::wstring ReadBinaryData(const std::wstring Name);
+    virtual UnicodeString ReadString(const UnicodeString Name, const UnicodeString Default);
+    UnicodeString ReadBinaryData(const UnicodeString Name);
 
-    virtual void Writebool(const std::wstring Name, bool Value) = 0;
-    virtual void WriteStringRaw(const std::wstring Name, const std::wstring Value) = 0;
-    virtual void Writeint(const std::wstring Name, int Value) = 0;
-    virtual void WriteInt64(const std::wstring Name, __int64 Value) = 0;
-    virtual void WriteDateTime(const std::wstring Name, System::TDateTime Value) = 0;
-    virtual void WriteFloat(const std::wstring Name, double Value) = 0;
-    virtual void WriteBinaryData(const std::wstring Name, const void *Buffer, size_t Size) = 0;
+    virtual void Writebool(const UnicodeString Name, bool Value) = 0;
+    virtual void WriteStringRaw(const UnicodeString Name, const UnicodeString Value) = 0;
+    virtual void Writeint(const UnicodeString Name, int Value) = 0;
+    virtual void WriteInt64(const UnicodeString Name, __int64 Value) = 0;
+    virtual void WriteDateTime(const UnicodeString Name, System::TDateTime Value) = 0;
+    virtual void WriteFloat(const UnicodeString Name, double Value) = 0;
+    virtual void WriteBinaryData(const UnicodeString Name, const void *Buffer, size_t Size) = 0;
 
-    virtual void WriteString(const std::wstring Name, const std::wstring Value);
-    void WriteBinaryData(const std::wstring Name, const std::wstring Value);
+    virtual void WriteString(const UnicodeString Name, const UnicodeString Value);
+    void WriteBinaryData(const UnicodeString Name, const UnicodeString Value);
 
-    std::wstring GetStorage() { return FStorage; }
-    std::wstring GetCurrentSubKey();
+    UnicodeString GetStorage() { return FStorage; }
+    UnicodeString GetCurrentSubKey();
     TStorageAccessMode GetAccessMode() { return FAccessMode; }
     virtual void SetAccessMode(TStorageAccessMode value);
     bool GetExplicit() { return FExplicit; }
     void SetExplicit(bool value) { FExplicit = value; }
     bool GetMungeStringValues() { return FMungeStringValues; }
     void SetMungeStringValues(bool value) { FMungeStringValues = value; }
-    virtual std::wstring GetSource() = 0;
+    virtual UnicodeString GetSource() = 0;
 
 protected:
-    std::wstring FStorage;
+    UnicodeString FStorage;
     System::TStrings *FKeyHistory;
     TStorageAccessMode FAccessMode;
     bool FExplicit;
     bool FMungeStringValues;
 
-    std::wstring GetCurrentSubKeyMunged();
-    static std::wstring IncludeTrailingBackslash(const std::wstring S);
-    static std::wstring ExcludeTrailingBackslash(const std::wstring S);
-    std::wstring MungeSubKey(const std::wstring Key, bool Path);
+    UnicodeString GetCurrentSubKeyMunged();
+    static UnicodeString IncludeTrailingBackslash(const UnicodeString S);
+    static UnicodeString ExcludeTrailingBackslash(const UnicodeString S);
+    UnicodeString MungeSubKey(const UnicodeString Key, bool Path);
 };
 //---------------------------------------------------------------------------
 class TRegistryStorage : public THierarchicalStorage
 {
 public:
-    explicit TRegistryStorage(const std::wstring AStorage, HKEY ARootKey);
-    explicit TRegistryStorage(const std::wstring AStorage);
+    explicit TRegistryStorage(const UnicodeString AStorage, HKEY ARootKey);
+    explicit TRegistryStorage(const UnicodeString AStorage);
     virtual ~TRegistryStorage();
 
     bool Copy(TRegistryStorage *Storage);
 
-    virtual bool OpenSubKey(const std::wstring SubKey, bool CanCreate, bool Path = false);
+    virtual bool OpenSubKey(const UnicodeString SubKey, bool CanCreate, bool Path = false);
     virtual void CloseSubKey();
-    virtual bool DeleteSubKey(const std::wstring SubKey);
-    virtual bool DeleteValue(const std::wstring Name);
+    virtual bool DeleteSubKey(const UnicodeString SubKey);
+    virtual bool DeleteValue(const UnicodeString Name);
     virtual void GetSubKeyNames(System::TStrings *Strings);
-    virtual bool KeyExists(const std::wstring SubKey);
-    virtual bool ValueExists(const std::wstring Value);
+    virtual bool KeyExists(const UnicodeString SubKey);
+    virtual bool ValueExists(const UnicodeString Value);
 
-    virtual int BinaryDataSize(const std::wstring Name);
+    virtual int BinaryDataSize(const UnicodeString Name);
 
-    virtual bool Readbool(const std::wstring Name, bool Default);
-    virtual int Readint(const std::wstring Name, int Default);
-    virtual __int64 ReadInt64(const std::wstring Name, __int64 Default);
-    virtual System::TDateTime ReadDateTime(const std::wstring Name, System::TDateTime Default);
-    virtual double ReadFloat(const std::wstring Name, double Default);
-    virtual std::wstring ReadStringRaw(const std::wstring Name, const std::wstring Default);
-    virtual size_t ReadBinaryData(const std::wstring Name, void *Buffer, size_t Size);
+    virtual bool Readbool(const UnicodeString Name, bool Default);
+    virtual int Readint(const UnicodeString Name, int Default);
+    virtual __int64 ReadInt64(const UnicodeString Name, __int64 Default);
+    virtual System::TDateTime ReadDateTime(const UnicodeString Name, System::TDateTime Default);
+    virtual double ReadFloat(const UnicodeString Name, double Default);
+    virtual UnicodeString ReadStringRaw(const UnicodeString Name, const UnicodeString Default);
+    virtual size_t ReadBinaryData(const UnicodeString Name, void *Buffer, size_t Size);
 
-    virtual void Writebool(const std::wstring Name, bool Value);
-    virtual void Writeint(const std::wstring Name, int Value);
-    virtual void WriteInt64(const std::wstring Name, __int64 Value);
-    virtual void WriteDateTime(const std::wstring Name, System::TDateTime Value);
-    virtual void WriteFloat(const std::wstring Name, double Value);
-    virtual void WriteStringRaw(const std::wstring Name, const std::wstring Value);
-    virtual void WriteBinaryData(const std::wstring Name, const void *Buffer, size_t Size);
+    virtual void Writebool(const UnicodeString Name, bool Value);
+    virtual void Writeint(const UnicodeString Name, int Value);
+    virtual void WriteInt64(const UnicodeString Name, __int64 Value);
+    virtual void WriteDateTime(const UnicodeString Name, System::TDateTime Value);
+    virtual void WriteFloat(const UnicodeString Name, double Value);
+    virtual void WriteStringRaw(const UnicodeString Name, const UnicodeString Value);
+    virtual void WriteBinaryData(const UnicodeString Name, const void *Buffer, size_t Size);
 
     virtual void GetValueNames(System::TStrings *Strings);
 
     virtual void SetAccessMode(TStorageAccessMode value);
 protected:
-    virtual std::wstring GetSource();
+    virtual UnicodeString GetSource();
 
     int GetFailed();
     void SetFailed(int value) { FFailed = value; }
@@ -137,7 +137,7 @@ public:
   explicit TOptionsStorage(System::TStrings * Options);
 };
 //---------------------------------------------------------------------------
-std::wstring PuttyMungeStr(const std::wstring Str);
-std::wstring PuttyUnMungeStr(const std::wstring Str);
+UnicodeString PuttyMungeStr(const UnicodeString Str);
+UnicodeString PuttyUnMungeStr(const UnicodeString Str);
 //---------------------------------------------------------------------------
 #endif

@@ -31,7 +31,7 @@ bool __fastcall ExceptionMessage(const std::exception *E, UnicodeString &Message
 System::TStrings * __fastcall ExceptionToMoreMessages(const std::exception *E)
 {
     System::TStrings *Result = NULL;
-    std::wstring Message;
+    UnicodeString Message;
     if (ExceptionMessage(E, Message))
     {
         Result = new System::TStringList();
@@ -45,7 +45,7 @@ System::TStrings * __fastcall ExceptionToMoreMessages(const std::exception *E)
     return Result;
 }
 //---------------------------------------------------------------------------
-Exception::Exception(const std::wstring Msg) :
+Exception::Exception(const UnicodeString Msg) :
     parent(System::W2MB(Msg.c_str()).c_str())
 {
 }
@@ -66,7 +66,7 @@ ExtException::ExtException(const std::exception *E) :
     DEBUG_PRINTF(L"FMessage = %s", FMessage.c_str());
 }
 //---------------------------------------------------------------------------
-ExtException::ExtException(const std::wstring Msg) :
+ExtException::ExtException(const UnicodeString Msg) :
     parent(Msg),
     FMoreMessages(NULL)
 {
@@ -91,7 +91,7 @@ ExtException::ExtException(const std::wstring Msg) :
 }
 
 //---------------------------------------------------------------------------
-ExtException::ExtException(const std::wstring Msg, const std::exception *E) :
+ExtException::ExtException(const UnicodeString Msg, const std::exception *E) :
     parent(Msg),
     FMoreMessages(NULL)
 {
@@ -117,7 +117,7 @@ ExtException::ExtException(const std::wstring Msg, const std::exception *E) :
     DEBUG_PRINTF(L"FMessage = %s", FMessage.c_str());
 }
 //---------------------------------------------------------------------------
-ExtException::ExtException(const std::wstring Msg, System::TStrings *MoreMessages,
+ExtException::ExtException(const UnicodeString Msg, System::TStrings *MoreMessages,
                            bool Own) :
     parent(Msg),
     FMoreMessages(NULL)
@@ -174,7 +174,7 @@ void __fastcall ExtException::AddMoreMessages(const std::exception *E)
             }
         }
 
-        std::wstring Msg;
+        UnicodeString Msg;
         ExceptionMessage(E, Msg);
 
         // new std::exception does not have own message, this is in fact duplication of
@@ -203,10 +203,10 @@ ExtException::~ExtException()
     FMoreMessages = NULL;
 }
 //---------------------------------------------------------------------------
-std::wstring __fastcall LastSysErrorMessage()
+UnicodeString __fastcall LastSysErrorMessage()
 {
     int LastError = GetLastError();
-    std::wstring Result;
+    UnicodeString Result;
     if (LastError != 0)
     {
         Result = FORMAT(L"System Error.  Code: %d.\r\n%s", LastError, SysErrorMessage(LastError).c_str());
@@ -215,14 +215,14 @@ std::wstring __fastcall LastSysErrorMessage()
 }
 //---------------------------------------------------------------------------
 /*
-EOSExtException::EOSExtException(const std::wstring Msg) :
+EOSExtException::EOSExtException(const UnicodeString Msg) :
   parent(Msg, LastSysErrorMessage())
 {
 }
 */
 
 //---------------------------------------------------------------------------
-EFatal::EFatal(const std::wstring Msg, const std::exception *E) :
+EFatal::EFatal(const UnicodeString Msg, const std::exception *E) :
     parent(Msg, E),
     FReopenQueried(false)
 {

@@ -60,8 +60,8 @@ public:
     TFileOperation Operation;
     // on what side if operation being processed (local/remote), source of copy
     TOperationSide Side;
-    std::wstring FileName;
-    std::wstring Directory;
+    UnicodeString FileName;
+    UnicodeString Directory;
     bool AsciiTransfer;
     bool TransferingFile;
     bool Temp;
@@ -102,12 +102,12 @@ public:
     void __fastcall AddResumed(__int64 ASize);
     void __fastcall Clear();
     size_t __fastcall CPS();
-    void __fastcall Finish(const std::wstring FileName, bool Success,
+    void __fastcall Finish(const UnicodeString FileName, bool Success,
                 TOnceDoneOperation &OnceDoneOperation);
     size_t __fastcall LocalBlockSize();
     bool __fastcall IsLocallyDone();
     bool __fastcall IsTransferDone();
-    void __fastcall SetFile(const std::wstring AFileName, bool AFileInProgress = true);
+    void __fastcall SetFile(const UnicodeString AFileName, bool AFileInProgress = true);
     void __fastcall SetFileInProgress();
     size_t __fastcall OperationProgress();
     size_t __fastcall TransferBlockSize();
@@ -124,7 +124,7 @@ public:
     void __fastcall SetTotalSize(__int64 ASize);
     void __fastcall Start(TFileOperation AOperation, TOperationSide ASide, size_t ACount);
     void __fastcall Start(TFileOperation AOperation,
-               TOperationSide ASide, size_t ACount, bool ATemp, const std::wstring ADirectory,
+               TOperationSide ASide, size_t ACount, bool ATemp, const UnicodeString ADirectory,
                size_t ACPSLimit);
     void __fastcall Stop();
     void __fastcall Suspend();

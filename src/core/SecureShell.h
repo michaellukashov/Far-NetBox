@@ -53,17 +53,17 @@ private:
     TConfiguration *FConfiguration;
     bool FAuthenticating;
     bool FAuthenticated;
-    std::wstring FStdErrorTemp;
-    std::wstring FStdError;
-    std::wstring FCWriteTemp;
-    std::wstring FAuthenticationLog;
-    std::wstring FLastTunnelError;
-    std::wstring FUserName;
+    UnicodeString FStdErrorTemp;
+    UnicodeString FStdError;
+    UnicodeString FCWriteTemp;
+    UnicodeString FAuthenticationLog;
+    UnicodeString FLastTunnelError;
+    UnicodeString FUserName;
     TSecureShell *Self;
 
     static TCipher FuncToSsh1Cipher(const void *Cipher);
     static TCipher FuncToSsh2Cipher(const void *Cipher);
-    std::wstring FuncToCompression(int SshVersion, const void *Compress) const;
+    UnicodeString FuncToCompression(int SshVersion, const void *Compress) const;
     void Init();
     void inline CheckConnection(int Message = -1);
     void WaitForData();
@@ -71,7 +71,7 @@ private:
     void FreeBackend();
     void PoolForData(WSANETWORKEVENTS &Events, size_t &Result);
     inline void CaptureOutput(TLogLineType Type,
-                              const std::wstring Line);
+                              const UnicodeString Line);
     void ResetConnection();
     void ResetSessionInfo();
     void SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup);
@@ -90,14 +90,14 @@ protected:
 
     void GotHostKey();
     int TranslatePuttyMessage(const TPuttyTranslation *Translation,
-                              size_t Count, std::wstring &Message);
-    int TranslateAuthenticationMessage(std::wstring &Message);
-    int TranslateErrorMessage(std::wstring &Message);
-    void AddStdError(const std::wstring Str);
-    void AddStdErrorLine(const std::wstring Str);
-    void FatalError(const std::exception *E, const std::wstring Msg);
-    void inline LogEvent(const std::wstring Str);
-    void FatalError(const std::wstring Error);
+                              size_t Count, UnicodeString &Message);
+    int TranslateAuthenticationMessage(UnicodeString &Message);
+    int TranslateErrorMessage(UnicodeString &Message);
+    void AddStdError(const UnicodeString Str);
+    void AddStdErrorLine(const UnicodeString Str);
+    void FatalError(const std::exception *E, const UnicodeString Msg);
+    void inline LogEvent(const UnicodeString Str);
+    void FatalError(const UnicodeString Error);
     static void ClearConfig(Config *cfg);
     static void StoreToConfig(TSessionData *Data, Config *cfg, bool Simple);
 
@@ -110,13 +110,13 @@ public:
     void KeepAlive();
     size_t Receive(char *Buf, size_t Len);
     bool Peek(char *& Buf, size_t Len);
-    std::wstring ReceiveLine();
+    UnicodeString ReceiveLine();
     void Send(const char *Buf, size_t Len);
-    void SendStr(const std::wstring Str);
+    void SendStr(const UnicodeString Str);
     void SendSpecial(int Code);
     void Idle(unsigned int MSec = 0);
     void SendEOF();
-    void SendLine(const std::wstring Line);
+    void SendLine(const UnicodeString Line);
     void SendNull();
 
     const TSessionInfo &GetSessionInfo();
@@ -132,20 +132,20 @@ public:
     // interface to PuTTY core
     void UpdateSocket(SOCKET value, bool Startup);
     void UpdatePortFwdSocket(SOCKET value, bool Startup);
-    void PuttyFatalError(const std::wstring Error);
+    void PuttyFatalError(const UnicodeString Error);
     bool PromptUser(bool ToServer,
-                    const std::wstring AName, bool NameRequired,
-                    const std::wstring Instructions, bool InstructionsRequired,
+                    const UnicodeString AName, bool NameRequired,
+                    const UnicodeString Instructions, bool InstructionsRequired,
                     System::TStrings *Prompts, System::TStrings *Results);
     void FromBackend(bool IsStdErr, const char *Data, size_t Length);
     void CWrite(const char *Data, size_t Length);
-    const std::wstring GetStdError();
-    void VerifyHostKey(const std::wstring Host, int Port,
-                       const std::wstring KeyType, const std::wstring KeyStr, const std::wstring Fingerprint);
-    void AskAlg(const std::wstring AlgType, const std::wstring AlgName);
-    void DisplayBanner(const std::wstring Banner);
+    const UnicodeString GetStdError();
+    void VerifyHostKey(const UnicodeString Host, int Port,
+                       const UnicodeString KeyType, const UnicodeString KeyStr, const UnicodeString Fingerprint);
+    void AskAlg(const UnicodeString AlgType, const UnicodeString AlgName);
+    void DisplayBanner(const UnicodeString Banner);
     void OldKeyfileWarning();
-    void PuttyLogEvent(const std::wstring Str);
+    void PuttyLogEvent(const UnicodeString Str);
 
     bool GetActive() { return FActive; }
     void SetActive(bool value);
@@ -153,8 +153,8 @@ public:
     captureoutput_signal_type &GetOnCaptureOutput() { return FOnCaptureOutput; }
     void SetOnCaptureOutput(const TCaptureOutputEvent &value) { FOnCaptureOutput.connect(value); }
     System::TDateTime GetLastDataSent() { return FLastDataSent; }
-    std::wstring GetLastTunnelError() { return FLastTunnelError; }
-    std::wstring GetUserName() { return FUserName; }
+    UnicodeString GetLastTunnelError() { return FLastTunnelError; }
+    UnicodeString GetUserName() { return FUserName; }
     bool GetSimple() { return FSimple; }
     void SetSimple(bool value) { FSimple = value; }
 private:

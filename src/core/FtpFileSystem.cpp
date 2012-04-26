@@ -340,10 +340,10 @@ void __fastcall TFTPFileSystem::Open()
         }
     }
 
-    std::wstring HostName = Data->GetHostNameExpanded();
-    std::wstring UserName = Data->GetUserNameExpanded();
-    std::wstring Account = Data->GetFtpAccount();
-    std::wstring Path = Data->GetRemoteDirectory();
+    UnicodeString HostName = Data->GetHostNameExpanded();
+    UnicodeString UserName = Data->GetUserNameExpanded();
+    UnicodeString Account = Data->GetFtpAccount();
+    UnicodeString Path = Data->GetRemoteDirectory();
     int ServerType = 0;
     switch (Data->GetFtps())
     {
@@ -387,7 +387,7 @@ void __fastcall TFTPFileSystem::Open()
 
     do
     {
-        std::wstring Password = Data->GetPassword();
+        UnicodeString Password = Data->GetPassword();
 
         FSystem = L"";
         FFeatures->Clear();
@@ -536,7 +536,7 @@ void __fastcall TFTPFileSystem::Discard()
     FActive = false;
 }
 //---------------------------------------------------------------------------
-std::wstring __fastcall TFTPFileSystem::AbsolutePath(const std::wstring Path, bool /*Local*/)
+UnicodeString __fastcall TFTPFileSystem::AbsolutePath(const UnicodeString Path, bool /*Local*/)
 {
     // TODO: improve (handle .. etc.)
     if (TTerminal::IsAbsolutePath(Path))
@@ -549,11 +549,11 @@ std::wstring __fastcall TFTPFileSystem::AbsolutePath(const std::wstring Path, bo
     }
 }
 //---------------------------------------------------------------------------
-std::wstring __fastcall TFTPFileSystem::ActualCurrentDirectory()
+UnicodeString __fastcall TFTPFileSystem::ActualCurrentDirectory()
 {
     wchar_t CurrentPath[1024];
     FFileZillaIntf->GetCurrentPath(CurrentPath, LENOF(CurrentPath));
-    std::wstring fn = UnixExcludeTrailingBackslash(CurrentPath);
+    UnicodeString fn = UnixExcludeTrailingBackslash(CurrentPath);
     if (fn.IsEmpty())
     {
         fn = L"/";
@@ -583,7 +583,7 @@ void __fastcall TFTPFileSystem::EnsureLocation()
     }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFTPFileSystem::AnyCommand(const std::wstring Command,
+void __fastcall TFTPFileSystem::AnyCommand(const UnicodeString Command,
                                 const TCaptureOutputEvent *OutputEvent)
 {
     // end-user has right to expect that client current directory is really
@@ -617,17 +617,17 @@ void __fastcall TFTPFileSystem::AnnounceFileListOperation()
     ResetCaches();
 }
 //---------------------------------------------------------------------------
-void __fastcall TFTPFileSystem::DoChangeDirectory(const std::wstring Directory)
+void __fastcall TFTPFileSystem::DoChangeDirectory(const UnicodeString Directory)
 {
-    std::wstring Command = FORMAT(L"CWD %s", Directory.c_str());
+    UnicodeString Command = FORMAT(L"CWD %s", Directory.c_str());
     FFileZillaIntf->CustomCommand(Command.c_str());
 
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFTPFileSystem::ChangeDirectory(const std::wstring ADirectory)
+void __fastcall TFTPFileSystem::ChangeDirectory(const UnicodeString ADirectory)
 {
-    std::wstring Directory = ADirectory;
+    UnicodeString Directory = ADirectory;
     try
     {
         // For changing directory, we do not make paths absolute, instead we
@@ -657,7 +657,7 @@ void __fastcall TFTPFileSystem::ChangeDirectory(const std::wstring ADirectory)
     FCurrentDirectory = L"";
 }
 //---------------------------------------------------------------------------
-void __fastcall TFTPFileSystem::CachedChangeDirectory(const std::wstring Directory)
+void __fastcall TFTPFileSystem::CachedChangeDirectory(const UnicodeString Directory)
 {
     FCurrentDirectory = UnixExcludeTrailingBackslash(Directory);
     if (FCurrentDirectory.IsEmpty())
@@ -666,7 +666,7 @@ void __fastcall TFTPFileSystem::CachedChangeDirectory(const std::wstring Directo
     }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFTPFileSystem::ChangeFileProperties(const std::wstring AFileName,
+void __fastcall TFTPFileSystem::ChangeFileProperties(const UnicodeString AFileName,
         const TRemoteFile *File, const TRemoteProperties *Properties,
         TChmodSessionAction &Action)
 {
@@ -687,7 +687,7 @@ void __fastcall TFTPFileSystem::ChangeFileProperties(const std::wstring AFileNam
             {
                 delete OwnedFile;
             } BOOST_SCOPE_EXIT_END
-            std::wstring FileName = AbsolutePath(AFileName, false);
+            UnicodeString FileName = AbsolutePath(AFileName, false);
 
             if (File == NULL)
             {
@@ -723,8 +723,8 @@ void __fastcall TFTPFileSystem::ChangeFileProperties(const std::wstring AFileNam
 
             Action.Rights(Rights);
 
-            std::wstring FileNameOnly = UnixExtractFileName(FileName);
-            std::wstring FilePath = UnixExtractFilePath(FileName);
+            UnicodeString FileNameOnly = UnixExtractFileName(FileName);
+            UnicodeString FilePath = UnixExtractFilePath(FileName);
             // FZAPI wants octal number represented as decadic
             FFileZillaIntf->Chmod(Rights.GetNumberDecadic(),
                                   FileNameOnly.c_str(),
@@ -745,14 +745,14 @@ bool __fastcall TFTPFileSystem::LoadFilesProperties(System::TStrings * /*FileLis
     return false;
 }
 //---------------------------------------------------------------------------
-void __fastcall TFTPFileSystem::CalculateFilesChecksum(const std::wstring /*Alg*/,
+void __fastcall TFTPFileSystem::CalculateFilesChecksum(const UnicodeString /*Alg*/,
         System::TStrings * /*FileList*/, System::TStrings * /*Checksums*/,
         TCalculatedChecksumEvent * /*OnCalculatedChecksum*/)
 {
     assert(false);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFTPFileSystem::ConfirmOverwrite(std::wstring &FileName,
+bool __fastcall TFTPFileSystem::ConfirmOverwrite(UnicodeString &FileName,
     int Params, TFileOperationProgressType *OperationProgress,
     TOverwriteMode &OverwriteMode,
     bool AutoResume,
@@ -926,9 +926,9 @@ void __fastcall TFTPFileSystem::FileTransferProgress(__int64 TransferSize,
     DoFileTransferProgress(TransferSize, Bytes);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFTPFileSystem::FileTransfer(const std::wstring FileName,
-                                  const std::wstring LocalFile, const std::wstring RemoteFile,
-                                  const std::wstring RemotePath, bool Get, __int64 Size, int Type,
+void __fastcall TFTPFileSystem::FileTransfer(const UnicodeString FileName,
+                                  const UnicodeString LocalFile, const UnicodeString RemoteFile,
+                                  const UnicodeString RemotePath, bool Get, __int64 Size, int Type,
                                   TFileTransferData &UserData, TFileOperationProgressType *OperationProgress)
 {
     FILE_OPERATION_LOOP(FMTLOAD(TRANSFER_ERROR, FileName.c_str()),
@@ -963,17 +963,17 @@ void __fastcall TFTPFileSystem::FileTransfer(const std::wstring FileName,
 }
 //---------------------------------------------------------------------------
 void __fastcall TFTPFileSystem::CopyToLocal(System::TStrings *FilesToCopy,
-                                 const std::wstring TargetDir, const TCopyParamType *CopyParam,
+                                 const UnicodeString TargetDir, const TCopyParamType *CopyParam,
                                  int Params, TFileOperationProgressType *OperationProgress,
                                  TOnceDoneOperation &OnceDoneOperation)
 {
     Params &= ~cpAppend;
-    std::wstring FullTargetDir = IncludeTrailingBackslash(TargetDir);
+    UnicodeString FullTargetDir = IncludeTrailingBackslash(TargetDir);
 
     size_t Index = 0;
     while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
     {
-        std::wstring FileName = FilesToCopy->GetString(Index);
+        UnicodeString FileName = FilesToCopy->GetString(Index);
         const TRemoteFile *File = dynamic_cast<const TRemoteFile *>(FilesToCopy->GetObject(Index));
         bool Success = false;
 
@@ -1000,8 +1000,8 @@ void __fastcall TFTPFileSystem::CopyToLocal(System::TStrings *FilesToCopy,
     }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFTPFileSystem::SinkRobust(const std::wstring FileName,
-                                const TRemoteFile *File, const std::wstring TargetDir,
+void __fastcall TFTPFileSystem::SinkRobust(const UnicodeString FileName,
+                                const TRemoteFile *File, const UnicodeString TargetDir,
                                 const TCopyParamType *CopyParam, int Params,
                                 TFileOperationProgressType *OperationProgress, unsigned int Flags)
 {
@@ -1045,13 +1045,13 @@ void __fastcall TFTPFileSystem::SinkRobust(const std::wstring FileName,
     while (Retry);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFTPFileSystem::Sink(const std::wstring FileName,
-                          const TRemoteFile *File, const std::wstring TargetDir,
+void __fastcall TFTPFileSystem::Sink(const UnicodeString FileName,
+                          const TRemoteFile *File, const UnicodeString TargetDir,
                           const TCopyParamType *CopyParam, int Params,
                           TFileOperationProgressType *OperationProgress, unsigned int Flags,
                           TDownloadSessionAction &Action)
 {
-    std::wstring OnlyFileName = UnixExtractFileName(FileName);
+    UnicodeString OnlyFileName = UnixExtractFileName(FileName);
 
     Action.FileName(FileName);
 
@@ -1070,9 +1070,9 @@ void __fastcall TFTPFileSystem::Sink(const std::wstring FileName,
 
     OperationProgress->SetFile(OnlyFileName);
 
-    std::wstring DestFileName = CopyParam->ChangeFileName(OnlyFileName,
+    UnicodeString DestFileName = CopyParam->ChangeFileName(OnlyFileName,
                                 osRemote, FLAGSET(Flags, tfFirstLevel));
-    std::wstring DestFullName = TargetDir + DestFileName;
+    UnicodeString DestFullName = TargetDir + DestFileName;
 
     if (File->GetIsDirectory())
     {
@@ -1125,7 +1125,7 @@ void __fastcall TFTPFileSystem::Sink(const std::wstring FileName,
         // Will we use ASCII of BINARY file tranfer?
         OperationProgress->SetAsciiTransfer(
             CopyParam->UseAsciiTransfer(FileName, osRemote, MaskParams));
-        FTerminal->LogEvent(std::wstring((OperationProgress->AsciiTransfer ? L"Ascii" : L"Binary")) +
+        FTerminal->LogEvent(UnicodeString((OperationProgress->AsciiTransfer ? L"Ascii" : L"Binary")) +
                             L" transfer mode selected.");
 
         // Suppose same data size to transfer as to write
@@ -1147,7 +1147,7 @@ void __fastcall TFTPFileSystem::Sink(const std::wstring FileName,
 
         TFileTransferData UserData;
 
-        std::wstring FilePath = UnixExtractFilePath(FileName);
+        UnicodeString FilePath = UnixExtractFilePath(FileName);
         if (FilePath.IsEmpty())
         {
             FilePath = L"/";
@@ -1200,7 +1200,7 @@ void __fastcall TFTPFileSystem::Sink(const std::wstring FileName,
     }
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::SinkFile(const std::wstring FileName,
+void TFTPFileSystem::SinkFile(const UnicodeString FileName,
                               const TRemoteFile *File, void *Param)
 {
     TSinkFileParams *Params = static_cast<TSinkFileParams *>(Param);
@@ -1230,16 +1230,16 @@ void TFTPFileSystem::SinkFile(const std::wstring FileName,
 }
 //---------------------------------------------------------------------------
 void __fastcall TFTPFileSystem::CopyToRemote(System::TStrings *FilesToCopy,
-                                  const std::wstring ATargetDir, const TCopyParamType *CopyParam,
+                                  const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
                                   int Params, TFileOperationProgressType *OperationProgress,
                                   TOnceDoneOperation &OnceDoneOperation)
 {
     assert((FilesToCopy != NULL) && (OperationProgress != NULL));
 
     Params &= ~cpAppend;
-    std::wstring FileName, FileNameOnly;
-    std::wstring TargetDir = AbsolutePath(ATargetDir, false);
-    std::wstring FullTargetDir = UnixIncludeTrailingBackslash(TargetDir);
+    UnicodeString FileName, FileNameOnly;
+    UnicodeString TargetDir = AbsolutePath(ATargetDir, false);
+    UnicodeString FullTargetDir = UnixIncludeTrailingBackslash(TargetDir);
     size_t Index = 0;
     while ((Index < FilesToCopy->GetCount()) && !OperationProgress->Cancel)
     {
@@ -1279,8 +1279,8 @@ void __fastcall TFTPFileSystem::CopyToRemote(System::TStrings *FilesToCopy,
     }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFTPFileSystem::SourceRobust(const std::wstring FileName,
-                                  const std::wstring TargetDir, const TCopyParamType *CopyParam, int Params,
+void __fastcall TFTPFileSystem::SourceRobust(const UnicodeString FileName,
+                                  const UnicodeString TargetDir, const TCopyParamType *CopyParam, int Params,
                                   TFileOperationProgressType *OperationProgress, unsigned int Flags)
 {
     // the same in TSFTPFileSystem
@@ -1325,8 +1325,8 @@ void __fastcall TFTPFileSystem::SourceRobust(const std::wstring FileName,
 }
 //---------------------------------------------------------------------------
 // Copy file to remote host
-void __fastcall TFTPFileSystem::Source(const std::wstring FileName,
-                            const std::wstring TargetDir, const TCopyParamType *CopyParam, int Params,
+void __fastcall TFTPFileSystem::Source(const UnicodeString FileName,
+                            const UnicodeString TargetDir, const TCopyParamType *CopyParam, int Params,
                             TOpenRemoteFileParams *OpenParams,
                             TOverwriteFileParams *FileParams,
                             TFileOperationProgressType *OperationProgress, unsigned int Flags,
@@ -1362,7 +1362,7 @@ void __fastcall TFTPFileSystem::Source(const std::wstring FileName,
     }
     else
     {
-        std::wstring DestFileName = CopyParam->ChangeFileName(ExtractFileName(FileName, false),
+        UnicodeString DestFileName = CopyParam->ChangeFileName(ExtractFileName(FileName, false),
                                     osLocal, FLAGSET(Flags, tfFirstLevel));
 
         FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", FileName.c_str()));
@@ -1394,7 +1394,7 @@ void __fastcall TFTPFileSystem::Source(const std::wstring FileName,
         OperationProgress->SetAsciiTransfer(
             CopyParam->UseAsciiTransfer(FileName, osLocal, MaskParams));
         FTerminal->LogEvent(
-            std::wstring((OperationProgress->AsciiTransfer ? L"Ascii" : L"Binary")) +
+            UnicodeString((OperationProgress->AsciiTransfer ? L"Ascii" : L"Binary")) +
             L" transfer mode selected.");
 
         ResetFileTransfer();
@@ -1429,7 +1429,7 @@ void __fastcall TFTPFileSystem::Source(const std::wstring FileName,
                          TargetDir, false, Size, TransferType, UserData, OperationProgress);
         }
 
-        std::wstring DestFullName = TargetDir + UserData.FileName;
+        UnicodeString DestFullName = TargetDir + UserData.FileName;
         // only now, we know the final destination
         Action.Destination(DestFullName);
 
@@ -1472,14 +1472,14 @@ void __fastcall TFTPFileSystem::Source(const std::wstring FileName,
     }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFTPFileSystem::DirectorySource(const std::wstring DirectoryName,
-                                     const std::wstring TargetDir, int Attrs, const TCopyParamType *CopyParam,
+void __fastcall TFTPFileSystem::DirectorySource(const UnicodeString DirectoryName,
+                                     const UnicodeString TargetDir, int Attrs, const TCopyParamType *CopyParam,
                                      int Params, TFileOperationProgressType *OperationProgress, unsigned int Flags)
 {
-    std::wstring DestDirectoryName = CopyParam->ChangeFileName(
+    UnicodeString DestDirectoryName = CopyParam->ChangeFileName(
                                          ExtractFileName(ExcludeTrailingBackslash(DirectoryName), false), osLocal,
                                          FLAGSET(Flags, tfFirstLevel));
-    std::wstring DestFullName = UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
+    UnicodeString DestFullName = UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
 
     OperationProgress->SetFile(DirectoryName);
 
@@ -1488,7 +1488,7 @@ void __fastcall TFTPFileSystem::DirectorySource(const std::wstring DirectoryName
     HANDLE findHandle = 0;
 
     FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-        std::wstring path = DirectoryName + L"*.*";
+        UnicodeString path = DirectoryName + L"*.*";
         findHandle = FindFirstFile(path.c_str(), &SearchRec);
         FindOK = (findHandle != 0);
     );
@@ -1502,7 +1502,7 @@ void __fastcall TFTPFileSystem::DirectorySource(const std::wstring DirectoryName
         } BOOST_SCOPE_EXIT_END
         while (FindOK && !OperationProgress->Cancel)
         {
-            std::wstring FileName = DirectoryName + SearchRec.cFileName;
+            UnicodeString FileName = DirectoryName + SearchRec.cFileName;
             try
             {
                 if ((wcscmp(SearchRec.cFileName, THISDIRECTORY) != 0) && (wcscmp(SearchRec.cFileName, PARENTDIRECTORY) != 0))
@@ -1558,7 +1558,7 @@ void __fastcall TFTPFileSystem::DirectorySource(const std::wstring DirectoryName
         {
             TRemoteFile *File = NULL;
             // ignore non-fatal error when the directory already exists
-            std::wstring fn = UnixExcludeTrailingBackslash(DestFullName);
+            UnicodeString fn = UnixExcludeTrailingBackslash(DestFullName);
             if (fn.IsEmpty())
             {
                 fn = L"/";
@@ -1592,9 +1592,9 @@ void __fastcall TFTPFileSystem::DirectorySource(const std::wstring DirectoryName
     }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFTPFileSystem::CreateDirectory(const std::wstring ADirName)
+void __fastcall TFTPFileSystem::CreateDirectory(const UnicodeString ADirName)
 {
-    std::wstring DirName = AbsolutePath(ADirName, false);
+    UnicodeString DirName = AbsolutePath(ADirName, false);
 
     {
         // ignore file list
@@ -1606,18 +1606,18 @@ void __fastcall TFTPFileSystem::CreateDirectory(const std::wstring ADirName)
     }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFTPFileSystem::CreateLink(const std::wstring /*FileName*/,
-                                const std::wstring /*PointTo*/, bool /*Symbolic*/)
+void __fastcall TFTPFileSystem::CreateLink(const UnicodeString /*FileName*/,
+                                const UnicodeString /*PointTo*/, bool /*Symbolic*/)
 {
     assert(false);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFTPFileSystem::DeleteFile(const std::wstring AFileName,
+void __fastcall TFTPFileSystem::DeleteFile(const UnicodeString AFileName,
                                 const TRemoteFile *File, int Params, TRmSessionAction &Action)
 {
-    std::wstring FileName = AbsolutePath(AFileName, false);
-    std::wstring FileNameOnly = UnixExtractFileName(FileName);
-    std::wstring FilePath = UnixExtractFilePath(FileName);
+    UnicodeString FileName = AbsolutePath(AFileName, false);
+    UnicodeString FileNameOnly = UnixExtractFileName(FileName);
+    UnicodeString FilePath = UnixExtractFilePath(FileName);
 
     bool Dir = (File != NULL) && File->GetIsDirectory() && !File->GetIsSymLink();
 
@@ -1663,8 +1663,8 @@ void __fastcall TFTPFileSystem::DeleteFile(const std::wstring AFileName,
     }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFTPFileSystem::CustomCommandOnFile(const std::wstring /*FileName*/,
-        const TRemoteFile * /*File*/, const std::wstring /*Command*/, int /*Params*/,
+void __fastcall TFTPFileSystem::CustomCommandOnFile(const UnicodeString /*FileName*/,
+        const TRemoteFile * /*File*/, const UnicodeString /*Command*/, int /*Params*/,
         const TCaptureOutputEvent & /*OutputEvent*/)
 {
     // if ever implemented, do not forget to add EnsureLocation,
@@ -1683,7 +1683,7 @@ void __fastcall TFTPFileSystem::DoStartup()
         PostLoginCommands->SetText(FTerminal->GetSessionData()->GetPostLoginCommands());
         for (size_t Index = 0; Index < PostLoginCommands->GetCount(); Index++)
         {
-            std::wstring Command = PostLoginCommands->GetString(Index);
+            UnicodeString Command = PostLoginCommands->GetString(Index);
             if (!Command.IsEmpty())
             {
                 FFileZillaIntf->CustomCommand(Command.c_str());
@@ -1780,15 +1780,15 @@ void __fastcall TFTPFileSystem::ReadCurrentDirectory()
             if ((Code == 257) &&
                     (Response->GetCount() == 1))
             {
-                std::wstring Path = Response->GetText();
+                UnicodeString Path = Response->GetText();
 
                 size_t P = ::Pos(Path, L"\"");
-                if (P == std::wstring::npos)
+                if (P == UnicodeString::npos)
                 {
                     // some systems use single quotes, be tolerant
                     P = ::Pos(Path, L"'");
                 }
-                if (P != std::wstring::npos)
+                if (P != UnicodeString::npos)
                 {
                     Path.Delete(0, P);
 
@@ -1829,7 +1829,7 @@ void __fastcall TFTPFileSystem::DoReadDirectory(TRemoteFileList *FileList)
     // always specify path to list, do not attempt to list "current" dir as:
     // 1) List() lists again the last listed directory, not the current working directory
     // 2) we handle this way the cached directory change
-    std::wstring Directory = AbsolutePath(FileList->GetDirectory(), false);
+    UnicodeString Directory = AbsolutePath(FileList->GetDirectory(), false);
     FFileZillaIntf->List(Directory.c_str());
 
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_ALLOW_CANCEL);
@@ -1904,7 +1904,7 @@ void __fastcall TFTPFileSystem::ReadDirectory(TRemoteFileList *FileList)
     while (Repeat);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFTPFileSystem::DoReadFile(const std::wstring FileName, TRemoteFile *& AFile)
+void __fastcall TFTPFileSystem::DoReadFile(const UnicodeString FileName, TRemoteFile *& AFile)
 {
     TRemoteFileList *FileList = new TRemoteFileList();
     {
@@ -1924,11 +1924,11 @@ void __fastcall TFTPFileSystem::DoReadFile(const std::wstring FileName, TRemoteF
     }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFTPFileSystem::ReadFile(const std::wstring FileName,
+void __fastcall TFTPFileSystem::ReadFile(const UnicodeString FileName,
                               TRemoteFile *& File)
 {
-    std::wstring Path = UnixExtractFilePath(FileName);
-    std::wstring NameOnly = UnixExtractFileName(FileName);
+    UnicodeString Path = UnixExtractFilePath(FileName);
+    UnicodeString NameOnly = UnixExtractFileName(FileName);
     TRemoteFile *AFile = NULL;
     if (FServerCapabilities->GetCapability(mlsd_command) == yes)
     {
@@ -1991,16 +1991,16 @@ void __fastcall TFTPFileSystem::ReadSymlink(TRemoteFile *SymlinkFile,
     }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFTPFileSystem::RenameFile(const std::wstring AFileName,
-                                const std::wstring ANewName)
+void __fastcall TFTPFileSystem::RenameFile(const UnicodeString AFileName,
+                                const UnicodeString ANewName)
 {
-    std::wstring FileName = AbsolutePath(AFileName, false);
-    std::wstring NewName = AbsolutePath(ANewName, false);
+    UnicodeString FileName = AbsolutePath(AFileName, false);
+    UnicodeString NewName = AbsolutePath(ANewName, false);
 
-    std::wstring FileNameOnly = UnixExtractFileName(FileName);
-    std::wstring FilePathOnly = UnixExtractFilePath(FileName);
-    std::wstring NewNameOnly = UnixExtractFileName(NewName);
-    std::wstring NewPathOnly = UnixExtractFilePath(NewName);
+    UnicodeString FileNameOnly = UnixExtractFileName(FileName);
+    UnicodeString FilePathOnly = UnixExtractFilePath(FileName);
+    UnicodeString NewNameOnly = UnixExtractFileName(NewName);
+    UnicodeString NewPathOnly = UnixExtractFilePath(NewName);
 
     {
         // ignore file list
@@ -2015,13 +2015,13 @@ void __fastcall TFTPFileSystem::RenameFile(const std::wstring AFileName,
     }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFTPFileSystem::CopyFile(const std::wstring FileName,
-                              const std::wstring NewName)
+void __fastcall TFTPFileSystem::CopyFile(const UnicodeString FileName,
+                              const UnicodeString NewName)
 {
     assert(false);
 }
 //---------------------------------------------------------------------------
-std::wstring __fastcall TFTPFileSystem::FileUrl(const std::wstring FileName)
+UnicodeString __fastcall TFTPFileSystem::FileUrl(const UnicodeString FileName)
 {
     return FTerminal->FileUrl(L"ftp", FileName);
 }
@@ -2031,7 +2031,7 @@ System::TStrings * __fastcall TFTPFileSystem::GetFixedPaths()
     return NULL;
 }
 //---------------------------------------------------------------------------
-void __fastcall TFTPFileSystem::SpaceAvailable(const std::wstring /*Path*/,
+void __fastcall TFTPFileSystem::SpaceAvailable(const UnicodeString /*Path*/,
                                     TSpaceAvailable & /*ASpaceAvailable*/)
 {
     assert(false);
@@ -2072,7 +2072,7 @@ const TFileSystemInfo & __fastcall TFTPFileSystem::GetFileSystemInfo(bool /*Retr
     return FFileSystemInfo;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFTPFileSystem::TemporaryTransferFile(const std::wstring /*FileName*/)
+bool __fastcall TFTPFileSystem::TemporaryTransferFile(const UnicodeString /*FileName*/)
 {
     return false;
 }
@@ -2082,12 +2082,12 @@ bool __fastcall TFTPFileSystem::GetStoredCredentialsTried()
     return !FTerminal->GetSessionData()->GetPassword().IsEmpty();
 }
 //---------------------------------------------------------------------------
-std::wstring __fastcall TFTPFileSystem::GetUserName()
+UnicodeString __fastcall TFTPFileSystem::GetUserName()
 {
     return FUserName;
 }
 //---------------------------------------------------------------------------
-std::wstring __fastcall TFTPFileSystem::GetCurrentDirectory()
+UnicodeString __fastcall TFTPFileSystem::GetCurrentDirectory()
 {
     return FCurrentDirectory;
 }
@@ -2462,7 +2462,7 @@ void __fastcall TFTPFileSystem::GotNonCommandReply(unsigned int Reply)
 }
 //---------------------------------------------------------------------------
 void __fastcall TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
-                              std::wstring Error, unsigned int *Code, System::TStrings **Response)
+                              UnicodeString Error, unsigned int *Code, System::TStrings **Response)
 {
     {
         BOOST_SCOPE_EXIT ( (&Self) )
@@ -2512,7 +2512,7 @@ void __fastcall TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
                 FLAGSET(Reply, TFileZillaIntf::REPLY_DISCONNECTED) ||
                 FLAGSET(Reply, TFileZillaIntf::REPLY_NOTCONNECTED);
 
-            std::wstring HelpKeyword;
+            UnicodeString HelpKeyword;
             System::TStrings *MoreMessages = new System::TStringList();
             try
             {
@@ -2636,7 +2636,7 @@ void __fastcall TFTPFileSystem::SetLastCode(int Code)
     FLastCodeClass = (Code / 100);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFTPFileSystem::HandleReplyStatus(const std::wstring Response)
+void __fastcall TFTPFileSystem::HandleReplyStatus(const UnicodeString Response)
 {
     int Code = 0;
 
@@ -2719,7 +2719,7 @@ void __fastcall TFTPFileSystem::HandleReplyStatus(const std::wstring Response)
             if (FLastCode == 530)
             {
                 FPasswordFailed = true;
-                std::wstring Password = L"";
+                UnicodeString Password = L"";
                 if (!FTerminal->PromptUser(FTerminal->GetSessionData(), pkPassword, LoadStr(PASSWORD_TITLE), L"",
                                            LoadStr(PASSWORD_PROMPT), false, 0, Password))
                 {
@@ -2737,7 +2737,7 @@ void __fastcall TFTPFileSystem::HandleReplyStatus(const std::wstring Response)
                 FSystem = ::TrimRight(FLastResponse->GetText());
                 // full name is "Personal FTP Server PRO K6.0"
                 if ((FListAll == asAuto) &&
-                        (::Pos(FSystem, L"Personal FTP Server") != std::wstring::npos))
+                        (::Pos(FSystem, L"Personal FTP Server") != UnicodeString::npos))
                 {
                     FTerminal->LogEvent(L"Server is known not to support LIST -a");
                     FListAll = asOff;
@@ -2766,18 +2766,18 @@ void __fastcall TFTPFileSystem::HandleReplyStatus(const std::wstring Response)
     }
 }
 //---------------------------------------------------------------------------
-std::wstring __fastcall TFTPFileSystem::ExtractStatusMessage(std::wstring &Status)
+UnicodeString __fastcall TFTPFileSystem::ExtractStatusMessage(UnicodeString &Status)
 {
     // CApiLog::LogMessage
     // (note that the formatting may not be present when LogMessageRaw is used)
     size_t P1 = ::Pos(Status, L"): ");
-    if (P1 != std::wstring::npos)
+    if (P1 != UnicodeString::npos)
     {
         size_t P2 = ::Pos(Status, L".cpp(");
-        if ((P2 != std::wstring::npos) && (P2 < P1))
+        if ((P2 != UnicodeString::npos) && (P2 < P1))
         {
             size_t P3 = ::Pos(Status, L"   caller=0x");
-            if ((P3 != std::wstring::npos) && (P3 > P1))
+            if ((P3 != UnicodeString::npos) && (P3 > P1))
             {
                 Status = Status.SubString(P1 + 3, P3 - P1 - 3);
             }
@@ -2789,7 +2789,7 @@ std::wstring __fastcall TFTPFileSystem::ExtractStatusMessage(std::wstring &Statu
 bool __fastcall TFTPFileSystem::HandleStatus(const wchar_t *AStatus, int Type)
 {
     TLogLineType LogType = static_cast<TLogLineType>(-1);
-    std::wstring Status(AStatus);
+    UnicodeString Status(AStatus);
 
     switch (Type)
     {
@@ -2956,7 +2956,7 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestOverwrite(
         else
         {
             TFileOperationProgressType *OperationProgress = FTerminal->GetOperationProgress();
-            std::wstring FileName = FileName1;
+            UnicodeString FileName = FileName1;
             assert(!wcscmp(UserData.FileName.c_str(), FileName.c_str()));
             TOverwriteMode OverwriteMode = omOverwrite;
             TOverwriteFileParams FileParams;
@@ -3033,7 +3033,7 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestOverwrite(
     }
 }
 //---------------------------------------------------------------------------
-std::wstring __fastcall FormatContactList(const std::wstring Entry1, const std::wstring Entry2)
+UnicodeString __fastcall FormatContactList(const UnicodeString Entry1, const UnicodeString Entry2)
 {
     if (!Entry1.IsEmpty() && !Entry2.IsEmpty())
     {
@@ -3045,9 +3045,9 @@ std::wstring __fastcall FormatContactList(const std::wstring Entry1, const std::
     }
 }
 //---------------------------------------------------------------------------
-std::wstring __fastcall FormatContact(const TFtpsCertificateData::TContact &Contact)
+UnicodeString __fastcall FormatContact(const TFtpsCertificateData::TContact &Contact)
 {
-    std::wstring Result =
+    UnicodeString Result =
         FORMAT(::LoadStrPart(VERIFY_CERT_CONTACT, 1).c_str(),
                FormatContactList(FormatContactList(FormatContactList(
                                      Contact.Organization,
@@ -3075,7 +3075,7 @@ std::wstring __fastcall FormatContact(const TFtpsCertificateData::TContact &Cont
     return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring __fastcall FormatValidityTime(const TFtpsCertificateData::TValidityTime &ValidityTime)
+UnicodeString __fastcall FormatValidityTime(const TFtpsCertificateData::TValidityTime &ValidityTime)
 {
     return FormatDateTime(L"ddddd tt",
                           EncodeDateVerbose(
@@ -3167,7 +3167,7 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
             break;
         }
 
-        std::wstring Summary = LoadStr(VerificationResultStr);
+        UnicodeString Summary = LoadStr(VerificationResultStr);
         if (Data.VerificationResult != X509_V_OK)
         {
             Summary += L" " + FMTLOAD(CERT_ERRDEPTH, Data.VerificationDepth + 1);
@@ -3202,10 +3202,10 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 
         if (RequestResult == 0)
         {
-            std::wstring Buf = FTerminal->GetSessionData()->GetHostKey();
+            UnicodeString Buf = FTerminal->GetSessionData()->GetHostKey();
             while ((RequestResult == 0) && !Buf.IsEmpty())
             {
-                std::wstring ExpectedKey = CutToChar(Buf, L';', false);
+                UnicodeString ExpectedKey = CutToChar(Buf, L';', false);
                 if (ExpectedKey == FSessionInfo.CertificateFingerprint)
                 {
                     RequestResult = 1;
@@ -3306,7 +3306,7 @@ bool __fastcall TFTPFileSystem::HandleListData(const wchar_t *Path,
             {
                 File->SetTerminal(FTerminal);
 
-                File->SetFileName(std::wstring(Entry->Name));
+                File->SetFileName(UnicodeString(Entry->Name));
                 if (wcslen(Entry->Permissions) >= 10)
                 {
                     try
@@ -3318,11 +3318,11 @@ bool __fastcall TFTPFileSystem::HandleListData(const wchar_t *Path,
                         // ignore permissions errors with FTP
                     }
                 }
-                std::wstring own = Entry->OwnerGroup;
+                UnicodeString own = Entry->OwnerGroup;
                 const wchar_t *Space = wcschr(own.c_str(), L' ');
                 if (Space != NULL)
                 {
-                    File->GetOwner().SetName(std::wstring(own.c_str(), Space - own.c_str()));
+                    File->GetOwner().SetName(UnicodeString(own.c_str(), Space - own.c_str()));
                     File->GetGroup().SetName(Space + 1);
                 }
                 else
@@ -3382,7 +3382,7 @@ bool __fastcall TFTPFileSystem::HandleListData(const wchar_t *Path,
             catch (const std::exception &E)
             {
                 delete File;
-                std::wstring EntryData =
+                UnicodeString EntryData =
                     FORMAT(L"%s/%s/%s/%s/%d/%d/%d/%d/%d/%d/%d/%d/%d",
                            Entry->Name,
                            Entry->Permissions,
@@ -3489,7 +3489,7 @@ bool __fastcall TFTPFileSystem::CheckError(int ReturnCode, const wchar_t *Contex
     return false;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFTPFileSystem::Unquote(std::wstring &Str)
+bool __fastcall TFTPFileSystem::Unquote(UnicodeString &Str)
 {
     enum
     {

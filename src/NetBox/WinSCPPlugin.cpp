@@ -103,7 +103,7 @@ void TWinSCPPlugin::GetPluginInfoEx(long unsigned &Flags,
     CommandPrefixes->SetCommaText(FarConfiguration->GetCommandPrefixes());
 }
 //---------------------------------------------------------------------------
-bool TWinSCPPlugin::ImportSessions(const std::wstring RegistryStorageKey,
+bool TWinSCPPlugin::ImportSessions(const UnicodeString RegistryStorageKey,
                                    int &imported)
 {
     // DEBUG_PRINTF(L"begin");
@@ -164,7 +164,7 @@ bool TWinSCPPlugin::ImportSessions(const std::wstring RegistryStorageKey,
 bool TWinSCPPlugin::ImportSessions()
 {
     // DEBUG_PRINTF(L"begin");
-    const std::wstring SessionsKeys[] =
+    const UnicodeString SessionsKeys[] =
     {
         L"Software\\Martin Prikryl\\WinSCP 2", // WinSCP 1.6.2 sessions
         L"Software\\Michael Lukashov\\FarNetBox", // NetBox 2.0.0 sessions
@@ -173,7 +173,7 @@ bool TWinSCPPlugin::ImportSessions()
     int all_imported = 0;
     for (int i = 0; !SessionsKeys[i].empty(); i++)
     {
-        std::wstring RegistryStorageKey = SessionsKeys[i];
+        UnicodeString RegistryStorageKey = SessionsKeys[i];
         // DEBUG_PRINTF(L"RegistryStorageKey = %s", RegistryStorageKey.c_str());
         try
         {
@@ -366,12 +366,12 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(int OpenFrom, LONG_PTR Item)
             }
             else if (OpenFrom == OPEN_SHORTCUT || OpenFrom == OPEN_COMMANDLINE)
             {
-                std::wstring Directory;
-                std::wstring Name = reinterpret_cast<wchar_t *>(Item);
+                UnicodeString Directory;
+                UnicodeString Name = reinterpret_cast<wchar_t *>(Item);
                 if (OpenFrom == OPEN_SHORTCUT)
                 {
                     size_t P = Name.find(L"\1");
-                    if (P != std::wstring::npos)
+                    if (P != UnicodeString::npos)
                     {
                         Directory = Name.substr(P + 1, Name.size() - P);
                         Name.resize(P);
@@ -431,7 +431,7 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(int OpenFrom, LONG_PTR Item)
                         assert(false);
                         System::Abort();
                     }
-                    std::wstring SessionName = ::PuttyUnMungeStr(ImportStorage->ReadStringRaw(L"Session", L""));
+                    UnicodeString SessionName = ::PuttyUnMungeStr(ImportStorage->ReadStringRaw(L"Session", L""));
                     Session = new TSessionData(SessionName);
                     Session->Load(ImportStorage);
                     Session->SetModified(true);
@@ -585,9 +585,9 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
             }
             else if (Result == MPageant || Result == MPuttygen)
             {
-                std::wstring Path = (Result == MPageant) ?
+                UnicodeString Path = (Result == MPageant) ?
                                     FarConfiguration->GetPageantPath() : FarConfiguration->GetPuttygenPath();
-                std::wstring Program, Params, Dir;
+                UnicodeString Program, Params, Dir;
                 SplitCommand(Path, Program, Params, Dir);
                 ExecuteShell(Program, Params);
             }
@@ -629,7 +629,7 @@ void TWinSCPPlugin::ShowExtendedException(const std::exception *E)
                     MoreMessages = dynamic_cast<const ExtException *>(E)->GetMoreMessages();
                 }
 
-                std::wstring Message = ::TranslateExceptionMessage(E);
+                UnicodeString Message = ::TranslateExceptionMessage(E);
                 MoreMessageDialog(Message, MoreMessages, Type, qaOK);
             }
         }
@@ -683,12 +683,12 @@ void TWinSCPPlugin::MessageClick(void *Token, int Result, bool &Close)
     }
 }
 //---------------------------------------------------------------------------
-int TWinSCPPlugin::MoreMessageDialog(const std::wstring Str,
+int TWinSCPPlugin::MoreMessageDialog(const UnicodeString Str,
                                      System::TStrings *MoreMessages, TQueryType Type, int Answers,
                                      const TMessageParams *Params)
 {
     int Result = 0;
-    std::wstring str = Str;
+    UnicodeString str = Str;
     System::TStrings *ButtonLabels = new System::TStringList();
     {
         BOOST_SCOPE_EXIT ( (&ButtonLabels) )
@@ -829,7 +829,7 @@ int TWinSCPPlugin::MoreMessageDialog(const std::wstring Str,
         farmessageclick_slot_type slot = boost::bind(&TWinSCPPlugin::MessageClick, this, _1, _2, _3);
         FarParams.ClickEvent = &slot;
 
-        std::wstring DialogStr = str;
+        UnicodeString DialogStr = str;
         if (MoreMessages && (MoreMessages->GetCount() > 0))
         {
             FarParams.MoreMessages = MoreMessages;

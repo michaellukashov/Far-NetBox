@@ -150,7 +150,7 @@ typedef class UnicodeString
 		const wchar_t *c_str() const { return m_pData->GetData(); }
 		void ReleaseBuffer(size_t nLength = (size_t)-1);
 
-        size_t  __fastcall Length() const { return GetLength(); }
+    size_t  __fastcall Length() const { return GetLength(); }
 		size_t GetLength() const { return m_pData->GetLength(); }
 		size_t SetLength(size_t nLength);
 
@@ -234,6 +234,7 @@ typedef class UnicodeString
 		UnicodeString& Lower(size_t nStartPos=0, size_t nLength=(size_t)-1);
 		UnicodeString& Upper(size_t nStartPos=0, size_t nLength=(size_t)-1);
 
+		int Pos(wchar_t Ch) const;
 		bool Pos(size_t &nPos, wchar_t Ch, size_t nStartPos=0) const;
 		bool Pos(size_t &nPos, const wchar_t *lpwszFind, size_t nStartPos=0) const;
 		bool PosI(size_t &nPos, const wchar_t *lpwszFind, size_t nStartPos=0) const;

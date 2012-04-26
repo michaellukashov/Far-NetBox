@@ -36,7 +36,7 @@ void TBookmarks::Clear()
     FBookmarkLists->Clear();
 }
 //---------------------------------------------------------------------------
-std::wstring TBookmarks::Keys[] = { L"Local", L"Remote", L"ShortCuts", L"Options" };
+UnicodeString TBookmarks::Keys[] = { L"Local", L"Remote", L"ShortCuts", L"Options" };
 //---------------------------------------------------------------------------
 void TBookmarks::Load(THierarchicalStorage *Storage)
 {
@@ -53,7 +53,7 @@ void TBookmarks::Load(THierarchicalStorage *Storage)
                 Storage->GetSubKeyNames(BookmarkKeys);
                 for (size_t Index = 0; Index < BookmarkKeys->GetCount(); Index++)
                 {
-                    std::wstring Key = BookmarkKeys->GetString(Index);
+                    UnicodeString Key = BookmarkKeys->GetString(Index);
                     if (Storage->OpenSubKey(Key, false))
                     {
                         TBookmarkList *BookmarkList = GetBookmark(Key);
@@ -81,7 +81,7 @@ void TBookmarks::Load(THierarchicalStorage *Storage)
     ModifyAll(false);
 }
 //---------------------------------------------------------------------------
-void TBookmarks::LoadLevel(THierarchicalStorage *Storage, const std::wstring Key,
+void TBookmarks::LoadLevel(THierarchicalStorage *Storage, const UnicodeString Key,
                            int Index, TBookmarkList *BookmarkList)
 {
     System::TStrings *Names = new System::TStringList();
@@ -91,8 +91,8 @@ void TBookmarks::LoadLevel(THierarchicalStorage *Storage, const std::wstring Key
             delete Names;
         } BOOST_SCOPE_EXIT_END
         Storage->GetValueNames(Names);
-        std::wstring Name;
-        std::wstring Directory;
+        UnicodeString Name;
+        UnicodeString Directory;
         System::TShortCut ShortCut(0);
         for (size_t i = 0; i < Names->GetCount(); i++)
         {
@@ -169,7 +169,7 @@ void TBookmarks::Save(THierarchicalStorage *Storage, bool All)
                 TBookmarkList *BookmarkList = reinterpret_cast<TBookmarkList *>(FBookmarkLists->GetObject(Index));
                 if (All || BookmarkList->GetModified())
                 {
-                    std::wstring Key;
+                    UnicodeString Key;
                     Key = FBookmarkLists->GetString(Index);
                     Storage->RecursiveDeleteSubKey(Key);
                     if (Storage->OpenSubKey(Key, true))
@@ -239,7 +239,7 @@ void TBookmarks::ModifyAll(bool Modify)
     }
 }
 //---------------------------------------------------------------------------
-TBookmarkList *TBookmarks::GetBookmark(const std::wstring Index)
+TBookmarkList *TBookmarks::GetBookmark(const UnicodeString Index)
 {
     size_t I = FBookmarkLists->IndexOf(Index.c_str());
     if (I != NPOS)
@@ -252,7 +252,7 @@ TBookmarkList *TBookmarks::GetBookmark(const std::wstring Index)
     }
 }
 //---------------------------------------------------------------------------
-void TBookmarks::SetBookmark(const std::wstring Index, TBookmarkList *value)
+void TBookmarks::SetBookmark(const UnicodeString Index, TBookmarkList *value)
 {
     size_t I = FBookmarkLists->IndexOf(Index.c_str());
     if (I != NPOS)
@@ -416,7 +416,7 @@ void TBookmarkList::KeyChanged(size_t Index)
     FBookmarks->PutString(Index, Bookmark->GetKey());
 }
 //---------------------------------------------------------------------------
-TBookmark *TBookmarkList::FindByName(const std::wstring Node, const std::wstring Name)
+TBookmark *TBookmarkList::FindByName(const UnicodeString Node, const UnicodeString Name)
 {
     size_t I = FBookmarks->IndexOf(TBookmark::BookmarkKey(Node, Name).c_str());
     TBookmark *Bookmark = ((I != NPOS) ? reinterpret_cast<TBookmark *>(FBookmarks->GetObject(I)) : NULL);
@@ -448,12 +448,12 @@ TBookmark *TBookmarkList::GetBookmark(size_t Index)
     return Bookmark;
 }
 //---------------------------------------------------------------------------
-bool TBookmarkList::GetNodeOpened(const std::wstring Index)
+bool TBookmarkList::GetNodeOpened(const UnicodeString Index)
 {
     return (FOpenedNodes->IndexOf(Index.c_str()) != NPOS);
 }
 //---------------------------------------------------------------------------
-void TBookmarkList::SetNodeOpened(const std::wstring Index, bool value)
+void TBookmarkList::SetNodeOpened(const UnicodeString Index, bool value)
 {
     size_t I = FOpenedNodes->IndexOf(Index.c_str());
     if ((I != NPOS) != value)
@@ -506,12 +506,12 @@ void TBookmark::Assign(System::TPersistent *Source)
     }
 }
 //---------------------------------------------------------------------------
-void TBookmark::SetName(const std::wstring value)
+void TBookmark::SetName(const UnicodeString value)
 {
     if (GetName() != value)
     {
         size_t OldIndex = FOwner ? FOwner->IndexOf(this) : -1;
-        std::wstring OldName = FName;
+        UnicodeString OldName = FName;
         FName = value;
         try
         {
@@ -525,7 +525,7 @@ void TBookmark::SetName(const std::wstring value)
     }
 }
 //---------------------------------------------------------------------------
-void TBookmark::SetLocal(const std::wstring value)
+void TBookmark::SetLocal(const UnicodeString value)
 {
     if (GetLocal() != value)
     {
@@ -534,7 +534,7 @@ void TBookmark::SetLocal(const std::wstring value)
     }
 }
 //---------------------------------------------------------------------------
-void TBookmark::SetRemote(const std::wstring value)
+void TBookmark::SetRemote(const UnicodeString value)
 {
     if (GetRemote() != value)
     {
@@ -543,7 +543,7 @@ void TBookmark::SetRemote(const std::wstring value)
     }
 }
 //---------------------------------------------------------------------------
-void TBookmark::SetNode(const std::wstring value)
+void TBookmark::SetNode(const UnicodeString value)
 {
     if (GetNode() != value)
     {
@@ -574,12 +574,12 @@ void TBookmark::Modify(size_t OldIndex)
     }
 }
 //---------------------------------------------------------------------------
-std::wstring TBookmark::BookmarkKey(const std::wstring Node, const std::wstring Name)
+UnicodeString TBookmark::BookmarkKey(const UnicodeString Node, const UnicodeString Name)
 {
     return FORMAT(L"%s\1%s", Node.c_str(), Name.c_str());
 }
 //---------------------------------------------------------------------------
-std::wstring TBookmark::GetKey()
+UnicodeString TBookmark::GetKey()
 {
     return BookmarkKey(GetNode(), GetName());
 }

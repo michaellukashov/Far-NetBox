@@ -237,20 +237,20 @@ bool TFarConfiguration::GetConfirmDeleting()
     return (FarConfirmations() & FCS_DELETE) != 0;
 }
 //---------------------------------------------------------------------------
-std::wstring TFarConfiguration::ModuleFileName()
+UnicodeString TFarConfiguration::ModuleFileName()
 {
     assert(GetPlugin());
     return GetPlugin()->GetModuleName();
 }
 //---------------------------------------------------------------------------
-void TFarConfiguration::SetBookmark(const std::wstring Key,
+void TFarConfiguration::SetBookmark(const UnicodeString Key,
                                     TBookmarkList *value)
 {
     FBookmarks->SetBookmark(Key, value);
     Changed();
 }
 //---------------------------------------------------------------------------
-TBookmarkList *TFarConfiguration::GetBookmark(const std::wstring Key)
+TBookmarkList *TFarConfiguration::GetBookmark(const UnicodeString Key)
 {
     return FBookmarks->GetBookmark(Key);
 }

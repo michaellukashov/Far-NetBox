@@ -159,7 +159,7 @@ bool __fastcall GetFileVersionInfoFix(const wchar_t *FileName, unsigned long Han
 }
 //---------------------------------------------------------------------------
 // Return pointer to file version info block
-void * __fastcall CreateFileInfo(const std::wstring FileName)
+void * __fastcall CreateFileInfo(const UnicodeString FileName)
 {
     unsigned long Handle;
     unsigned int Size;
@@ -239,7 +239,7 @@ TTranslation __fastcall GetTranslation(void *FileInfo, unsigned i)
 };
 //---------------------------------------------------------------------------
 // Return the name of the specified language
-std::wstring __fastcall GetLanguage(unsigned int Language)
+UnicodeString __fastcall GetLanguage(unsigned int Language)
 {
     UINT Len;
     wchar_t P[512];
@@ -249,21 +249,21 @@ std::wstring __fastcall GetLanguage(unsigned int Language)
     {
         throw std::exception("Language not available");
     }
-    return std::wstring(P, Len);
+    return UnicodeString(P, Len);
 };
 //---------------------------------------------------------------------------
 // Return the value of the specified file version info string using the
 // specified translation
-std::wstring __fastcall GetFileInfoString(void *FileInfo,
-                               TTranslation Translation, std::wstring StringName)
+UnicodeString __fastcall GetFileInfoString(void *FileInfo,
+                               TTranslation Translation, UnicodeString StringName)
 {
-    std::wstring Result;
+    UnicodeString Result;
     wchar_t *P = NULL;
     UINT Len;
-    std::wstring subBlock = std::wstring((L"\\StringFileInfo\\000004E4") +
+    UnicodeString subBlock = UnicodeString((L"\\StringFileInfo\\000004E4") +
                                          // IntToHex(Translation.Language, 4) +
                                          // IntToHex(Translation.CharSet, 4) +
-                                         std::wstring(L"\\") + StringName);
+                                         UnicodeString(L"\\") + StringName);
     // 4e40409 58324546\Comments
     if (!VerQueryValue(FileInfo, subBlock.c_str(), reinterpret_cast<void **>(&P), &Len))
     {
@@ -272,7 +272,7 @@ std::wstring __fastcall GetFileInfoString(void *FileInfo,
     // c_str() makes sure that returned string has only necessary bytes allocated
     if (P)
     {
-        Result = std::wstring(P, Len).c_str();
+        Result = UnicodeString(P, Len).c_str();
     }
     // DEBUG_PRINTF(L"Result = %s", Result.c_str());
     return Result;

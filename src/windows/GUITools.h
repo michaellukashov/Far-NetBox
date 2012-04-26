@@ -21,50 +21,50 @@ class TSessionData;
 typedef boost::signal0<void> processmessages_signal_type;
 typedef processmessages_signal_type::slot_type processmessages_slot_type;
 //---------------------------------------------------------------------------
-bool FindFile(std::wstring &Path);
-bool FileExistsEx(const std::wstring Path);
-bool ExecuteShell(const std::wstring Path, const std::wstring Params);
-bool ExecuteShell(const std::wstring Path, const std::wstring Params,
+bool FindFile(UnicodeString &Path);
+bool FileExistsEx(const UnicodeString Path);
+bool ExecuteShell(const UnicodeString Path, const UnicodeString Params);
+bool ExecuteShell(const UnicodeString Path, const UnicodeString Params,
                   HANDLE &Handle);
-bool ExecuteShellAndWait(HINSTANCE Handle, const std::wstring Path,
-                         const std::wstring Params, const processmessages_signal_type &ProcessMessages);
-bool ExecuteShellAndWait(HINSTANCE Handle, const std::wstring Command,
+bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString Path,
+                         const UnicodeString Params, const processmessages_signal_type &ProcessMessages);
+bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString Command,
                          const processmessages_signal_type &ProcessMessages);
-void OpenSessionInPutty(const std::wstring PuttyPath,
-                        TSessionData *SessionData, const std::wstring Password);
-bool SpecialFolderLocation(int PathID, std::wstring &Path);
-std::wstring ItemsFormatString(const std::wstring SingleItemFormat,
-                               const std::wstring MultiItemsFormat, size_t Count, const std::wstring FirstItem);
-std::wstring ItemsFormatString(const std::wstring SingleItemFormat,
-                               const std::wstring MultiItemsFormat, System::TStrings *Items);
-std::wstring FileNameFormatString(const std::wstring SingleFileFormat,
-                                  const std::wstring MultiFileFormat, System::TStrings *Files, bool Remote);
-std::wstring FormatBytes(__int64 Bytes, bool UseOrders = true);
-std::wstring UniqTempDir(const std::wstring BaseDir,
-                         const std::wstring Identity, bool Mask = false);
-bool DeleteDirectory(const std::wstring DirName);
-std::wstring FormatDateTimeSpan(const std::wstring TimeFormat, System::TDateTime DateTime);
+void OpenSessionInPutty(const UnicodeString PuttyPath,
+                        TSessionData *SessionData, const UnicodeString Password);
+bool SpecialFolderLocation(int PathID, UnicodeString &Path);
+UnicodeString ItemsFormatString(const UnicodeString SingleItemFormat,
+                               const UnicodeString MultiItemsFormat, size_t Count, const UnicodeString FirstItem);
+UnicodeString ItemsFormatString(const UnicodeString SingleItemFormat,
+                               const UnicodeString MultiItemsFormat, System::TStrings *Items);
+UnicodeString FileNameFormatString(const UnicodeString SingleFileFormat,
+                                  const UnicodeString MultiFileFormat, System::TStrings *Files, bool Remote);
+UnicodeString FormatBytes(__int64 Bytes, bool UseOrders = true);
+UnicodeString UniqTempDir(const UnicodeString BaseDir,
+                         const UnicodeString Identity, bool Mask = false);
+bool DeleteDirectory(const UnicodeString DirName);
+UnicodeString FormatDateTimeSpan(const UnicodeString TimeFormat, System::TDateTime DateTime);
 //---------------------------------------------------------------------------
 class TLocalCustomCommand : public TFileCustomCommand
 {
 public:
     TLocalCustomCommand();
-    TLocalCustomCommand(const TCustomCommandData &Data, const std::wstring Path);
-    TLocalCustomCommand(const TCustomCommandData &Data, const std::wstring Path,
-                        const std::wstring FileName, const std::wstring LocalFileName,
-                        const std::wstring FileList);
+    TLocalCustomCommand(const TCustomCommandData &Data, const UnicodeString Path);
+    TLocalCustomCommand(const TCustomCommandData &Data, const UnicodeString Path,
+                        const UnicodeString FileName, const UnicodeString LocalFileName,
+                        const UnicodeString FileList);
 
-    virtual bool __fastcall IsFileCommand(const std::wstring Command);
-    bool HasLocalFileName(const std::wstring Command);
+    virtual bool __fastcall IsFileCommand(const UnicodeString Command);
+    bool HasLocalFileName(const UnicodeString Command);
 
 protected:
     virtual size_t __fastcall PatternLen(size_t Index, char PatternCmd);
-    virtual bool __fastcall PatternReplacement(size_t Index, const std::wstring Pattern,
-                                    std::wstring &Replacement, bool &Delimit);
-    virtual void __fastcall DelimitReplacement(const std::wstring Replacement, char Quote);
+    virtual bool __fastcall PatternReplacement(size_t Index, const UnicodeString Pattern,
+                                    UnicodeString &Replacement, bool &Delimit);
+    virtual void __fastcall DelimitReplacement(const UnicodeString Replacement, char Quote);
 
 private:
-    std::wstring FLocalFileName;
+    UnicodeString FLocalFileName;
 };
 //---------------------------------------------------------------------------
 #endif

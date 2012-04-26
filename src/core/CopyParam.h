@@ -43,18 +43,18 @@ private:
     TResumeSupport FResumeSupport;
     __int64 FResumeThreshold;
     char FInvalidCharsReplacement;
-    std::wstring FLocalInvalidChars;
-    std::wstring FTokenizibleChars;
+    UnicodeString FLocalInvalidChars;
+    UnicodeString FTokenizibleChars;
     bool FCalculateSize;
-    std::wstring FFileMask;
+    UnicodeString FFileMask;
     TFileMasks FExcludeFileMask;
     bool FNegativeExclude;
     bool FClearArchive;
     size_t FCPSLimit;
 
-    static std::wstring Untokenize(const std::wstring FileName);
-    wchar_t *ReplaceChar(std::wstring &FileName, wchar_t *InvalidChar) const;
-    std::wstring RestoreChars(const std::wstring FileName) const;
+    static UnicodeString Untokenize(const UnicodeString FileName);
+    wchar_t *ReplaceChar(UnicodeString &FileName, wchar_t *InvalidChar) const;
+    UnicodeString RestoreChars(const UnicodeString FileName) const;
 
 public:
     static const wchar_t TokenPrefix = L'%';
@@ -67,22 +67,22 @@ public:
     TCopyParamType & __fastcall operator =(const TCopyParamType &rhp);
     virtual void __fastcall Assign(const TCopyParamType *Source);
     virtual void __fastcall Default();
-    std::wstring ChangeFileName(const std::wstring FileName,
+    UnicodeString ChangeFileName(const UnicodeString FileName,
                                 TOperationSide Side, bool FirstLevel) const;
     int LocalFileAttrs(const TRights &Rights) const;
     TRights RemoteFileRights(int Attrs) const;
-    bool UseAsciiTransfer(const std::wstring FileName, TOperationSide Side,
+    bool UseAsciiTransfer(const UnicodeString FileName, TOperationSide Side,
                           const TFileMasks::TParams &Params) const;
     bool AllowResume(__int64 Size) const;
-    std::wstring ValidLocalFileName(const std::wstring FileName) const;
-    std::wstring ValidLocalPath(const std::wstring Path) const;
+    UnicodeString ValidLocalFileName(const UnicodeString FileName) const;
+    UnicodeString ValidLocalPath(const UnicodeString Path) const;
     bool AllowAnyTransfer() const;
-    bool AllowTransfer(const std::wstring FileName, TOperationSide Side,
+    bool AllowTransfer(const UnicodeString FileName, TOperationSide Side,
                        bool Directory, const TFileMasks::TParams &Params) const;
 
     void Load(THierarchicalStorage *Storage);
     void Save(THierarchicalStorage *Storage) const;
-    std::wstring GetInfoStr(const std::wstring Separator, int Attrs) const;
+    UnicodeString GetInfoStr(const UnicodeString Separator, int Attrs) const;
 
     bool operator==(const TCopyParamType &rhp) const;
 
@@ -98,7 +98,7 @@ public:
     void SetRights(const TRights &value) { FRights.Assign(&value); }
     TTransferMode GetTransferMode() const { return FTransferMode; }
     void SetTransferMode(TTransferMode value) { FTransferMode = value; }
-    std::wstring GetLogStr() const;
+    UnicodeString GetLogStr() const;
     bool GetAddXToDirectories() const { return FAddXToDirectories; }
     void SetAddXToDirectories(bool value) { FAddXToDirectories = value; }
     bool GetPreserveRights() const { return FPreserveRights; }
@@ -113,12 +113,12 @@ public:
     void SetInvalidCharsReplacement(char value) { FInvalidCharsReplacement = value; }
     bool GetReplaceInvalidChars() const;
     void SetReplaceInvalidChars(bool value);
-    std::wstring GetLocalInvalidChars() const { return FLocalInvalidChars; }
-    void SetLocalInvalidChars(const std::wstring value);
+    UnicodeString GetLocalInvalidChars() const { return FLocalInvalidChars; }
+    void SetLocalInvalidChars(const UnicodeString value);
     bool GetCalculateSize() const { return FCalculateSize; }
     void SetCalculateSize(bool value) { FCalculateSize = value; }
-    std::wstring GetFileMask() const { return FFileMask; }
-    void SetFileMask(const std::wstring value) { FFileMask = value; }
+    UnicodeString GetFileMask() const { return FFileMask; }
+    void SetFileMask(const UnicodeString value) { FFileMask = value; }
     TFileMasks GetExcludeFileMask() const { return FExcludeFileMask; }
     void SetExcludeFileMask(TFileMasks value) { FExcludeFileMask = value; }
     bool GetNegativeExclude() const { return FNegativeExclude; }
@@ -129,7 +129,7 @@ public:
     void SetCPSLimit(size_t value) { FCPSLimit = value; }
 };
 //---------------------------------------------------------------------------
-unsigned long GetSpeedLimit(const std::wstring Text);
-std::wstring SetSpeedLimit(size_t Limit);
+unsigned long GetSpeedLimit(const UnicodeString Text);
+UnicodeString SetSpeedLimit(size_t Limit);
 //---------------------------------------------------------------------------
 #endif

@@ -84,7 +84,7 @@ void __fastcall TFileOperationProgressType::Start(TFileOperation AOperation,
 //---------------------------------------------------------------------------
 void __fastcall TFileOperationProgressType::Start(TFileOperation AOperation,
                                        TOperationSide ASide, size_t ACount, bool ATemp,
-                                       const std::wstring ADirectory, size_t ACPSLimit)
+                                       const UnicodeString ADirectory, size_t ACPSLimit)
 {
     Clear();
     Operation = AOperation;
@@ -188,7 +188,7 @@ void __fastcall TFileOperationProgressType::DoProgress()
     }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileOperationProgressType::Finish(const std::wstring FileName,
+void __fastcall TFileOperationProgressType::Finish(const UnicodeString FileName,
                                         bool Success, TOnceDoneOperation &OnceDoneOperation)
 {
     assert(InProgress);
@@ -202,7 +202,7 @@ void __fastcall TFileOperationProgressType::Finish(const std::wstring FileName,
     DoProgress();
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileOperationProgressType::SetFile(const std::wstring AFileName, bool AFileInProgress)
+void __fastcall TFileOperationProgressType::SetFile(const UnicodeString AFileName, bool AFileInProgress)
 {
     FileName = AFileName;
     FileInProgress = AFileInProgress;

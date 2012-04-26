@@ -36,10 +36,10 @@
 namespace System {
 
 //---------------------------------------------------------------------------
-extern const std::wstring sLineBreak;
+extern const UnicodeString sLineBreak;
 extern const int MinsPerHour;
 //---------------------------------------------------------------------------
-std::wstring MB2W(const char *src, const UINT cp = CP_ACP);
+UnicodeString MB2W(const char *src, const UINT cp = CP_ACP);
 std::string W2MB(const wchar_t *src, const UINT cp = CP_ACP);
 //---------------------------------------------------------------------------
 size_t __cdecl debug_printf(const wchar_t *format, ...);
@@ -236,37 +236,37 @@ public:
     }
     virtual ~TStrings()
     {}
-    size_t __fastcall Add(const std::wstring S);
+    size_t __fastcall Add(const UnicodeString S);
     virtual size_t __fastcall GetCount() const = 0;
     virtual void __fastcall Delete(size_t Index) = 0;
-    virtual std::wstring __fastcall GetString(size_t Index) const = 0;
-    virtual std::wstring __fastcall GetText();
-    virtual std::wstring __fastcall GetTextStr();
-    virtual void __fastcall SetText(const std::wstring Text);
-    virtual void __fastcall SetTextStr(const std::wstring Text);
-    void __fastcall SetCommaText(const std::wstring Value);
+    virtual UnicodeString __fastcall GetString(size_t Index) const = 0;
+    virtual UnicodeString __fastcall GetText();
+    virtual UnicodeString __fastcall GetTextStr();
+    virtual void __fastcall SetText(const UnicodeString Text);
+    virtual void __fastcall SetTextStr(const UnicodeString Text);
+    void __fastcall SetCommaText(const UnicodeString Value);
     virtual void __fastcall BeginUpdate();
     virtual void __fastcall EndUpdate();
     virtual void __fastcall SetUpdateState(bool Updating);
     virtual TObject * __fastcall GetObject(size_t Index);
-    size_t __fastcall AddObject(const std::wstring S, TObject *AObject);
-    virtual void __fastcall InsertObject(size_t Index, const std::wstring Key, TObject *AObject);
+    size_t __fastcall AddObject(const UnicodeString S, TObject *AObject);
+    virtual void __fastcall InsertObject(size_t Index, const UnicodeString Key, TObject *AObject);
     bool __fastcall Equals(TStrings *value);
     virtual void __fastcall Clear() = 0;
     virtual void __fastcall PutObject(size_t Index, TObject *AObject);
-    virtual void __fastcall PutString(size_t Index, const std::wstring S);
+    virtual void __fastcall PutString(size_t Index, const UnicodeString S);
     void __fastcall SetDuplicates(TDuplicatesEnum value);
     void __fastcall Move(size_t CurIndex, size_t NewIndex);
-    size_t __fastcall IndexOf(const std::wstring S);
-    virtual size_t __fastcall IndexOfName(const std::wstring Name);
-    const std::wstring __fastcall GetName(size_t Index);
-    std::wstring __fastcall ExtractName(const std::wstring S);
-    const std::wstring __fastcall GetValue(const std::wstring Name);
-    void __fastcall SetValue(const std::wstring Name, const std::wstring Value);
-    std::wstring __fastcall GetCommaText();
+    size_t __fastcall IndexOf(const UnicodeString S);
+    virtual size_t __fastcall IndexOfName(const UnicodeString Name);
+    const UnicodeString __fastcall GetName(size_t Index);
+    UnicodeString __fastcall ExtractName(const UnicodeString S);
+    const UnicodeString __fastcall GetValue(const UnicodeString Name);
+    void __fastcall SetValue(const UnicodeString Name, const UnicodeString Value);
+    UnicodeString __fastcall GetCommaText();
     void __fastcall AddStrings(TStrings *Strings);
-    void __fastcall Append(const std::wstring value);
-    virtual void __fastcall Insert(size_t Index, const std::wstring AString) = 0;
+    void __fastcall Append(const UnicodeString value);
+    virtual void __fastcall Insert(size_t Index, const UnicodeString AString) = 0;
     void __fastcall SaveToStream(TStream *Stream);
     wchar_t __fastcall GetDelimiter() const { return FDelimiter; }
     void __fastcall SetDelimiter(wchar_t value)
@@ -278,9 +278,9 @@ public:
     {
         FQuoteChar = value;
     }
-    std::wstring __fastcall GetDelimitedText() const;
-    void __fastcall SetDelimitedText(const std::wstring Value);
-    virtual int __fastcall CompareStrings(const std::wstring S1, const std::wstring S2);
+    UnicodeString __fastcall GetDelimitedText() const;
+    void __fastcall SetDelimitedText(const UnicodeString Value);
+    virtual int __fastcall CompareStrings(const UnicodeString S1, const UnicodeString S2);
     int __fastcall GetUpdateCount() const { return FUpdateCount; }
     virtual void __fastcall Assign(TPersistent *Source);
 protected:
@@ -292,7 +292,7 @@ protected:
 
 struct TStringItem
 {
-    std::wstring FString;
+    UnicodeString FString;
     TObject *FObject;
 };
 
@@ -310,16 +310,16 @@ public:
     virtual void __fastcall Assign(TPersistent *Source);
     virtual size_t __fastcall GetCount() const;
     virtual void __fastcall Clear();
-    size_t __fastcall Add(const std::wstring S);
-    size_t __fastcall AddObject(const std::wstring S, TObject *AObject);
-    virtual bool __fastcall Find(const std::wstring S, size_t &Index);
-    virtual size_t __fastcall IndexOf(const std::wstring S);
-    virtual void __fastcall PutString(size_t Index, const std::wstring S);
+    size_t __fastcall Add(const UnicodeString S);
+    size_t __fastcall AddObject(const UnicodeString S, TObject *AObject);
+    virtual bool __fastcall Find(const UnicodeString S, size_t &Index);
+    virtual size_t __fastcall IndexOf(const UnicodeString S);
+    virtual void __fastcall PutString(size_t Index, const UnicodeString S);
     virtual void __fastcall Delete(size_t Index);
     virtual TObject * __fastcall GetObject(size_t Index);
-    virtual void __fastcall InsertObject(size_t Index, const std::wstring Key, TObject *AObject);
-    void __fastcall InsertItem(size_t Index, const std::wstring S, TObject *AObject);
-    virtual std::wstring __fastcall GetString(size_t Index) const;
+    virtual void __fastcall InsertObject(size_t Index, const UnicodeString Key, TObject *AObject);
+    void __fastcall InsertItem(size_t Index, const UnicodeString S, TObject *AObject);
+    virtual UnicodeString __fastcall GetString(size_t Index) const;
     bool __fastcall GetCaseSensitive() const;
     void __fastcall SetCaseSensitive(bool value);
     bool __fastcall GetSorted() const;
@@ -328,7 +328,7 @@ public:
     virtual void __fastcall CustomSort(TStringListSortCompare CompareFunc);
     void __fastcall QuickSort(size_t L, size_t R, TStringListSortCompare SCompare);
 
-    void __fastcall LoadFromFile(const std::wstring FileName);
+    void __fastcall LoadFromFile(const UnicodeString FileName);
     const System::notify_signal_type & __fastcall GetOnChange() const { return FOnChange; }
     void __fastcall SetOnChange(const TNotifyEvent &onChange)
     {
@@ -344,8 +344,8 @@ public:
     virtual void __fastcall SetUpdateState(bool Updating);
     virtual void __fastcall Changing();
     virtual void __fastcall Changed();
-    virtual void __fastcall Insert(size_t Index, const std::wstring S);
-    virtual int __fastcall CompareStrings(const std::wstring S1, const std::wstring S2);
+    virtual void __fastcall Insert(size_t Index, const UnicodeString S);
+    virtual int __fastcall CompareStrings(const UnicodeString S1, const UnicodeString S2);
 
 private:
     void __fastcall ExchangeItems(size_t Index1, size_t Index2);
@@ -406,9 +406,9 @@ public:
     {
         return !(operator == (rhs));
     }
-    std::wstring TimeString() const
+    UnicodeString TimeString() const
     {
-        return std::wstring();
+        return UnicodeString();
     }
     void DecodeDate(unsigned int &Y,
                     unsigned int &M, unsigned int &D);
@@ -429,11 +429,11 @@ public:
     virtual ~TSHFileInfo();
 
     //get the image's index in the system's image list
-    int GetFileIconIndex( std::wstring strFileName, BOOL bSmallIcon);
+    int GetFileIconIndex( UnicodeString strFileName, BOOL bSmallIcon);
     int GetDirIconIndex(BOOL bSmallIcon);
 
     //get file type
-    std::wstring GetFileType(const std::wstring strFileName);
+    UnicodeString GetFileType(const UnicodeString strFileName);
 };
 
 class EAbort : public std::exception
@@ -537,11 +537,11 @@ public:
     virtual __int64 __fastcall Seek(__int64 Offset, __int64 Origin);
     virtual __int64 __fastcall Seek(const __int64 Offset, TSeekOrigin Origin);
     void __fastcall SaveToStream(TStream *Stream);
-    void __fastcall SaveToFile(const std::wstring FileName);
+    void __fastcall SaveToFile(const UnicodeString FileName);
 
     void __fastcall Clear();
     void __fastcall LoadFromStream(TStream *Stream);
-    void __fastcall LoadFromFile(const std::wstring FileName);
+    void __fastcall LoadFromFile(const UnicodeString FileName);
     virtual void __fastcall SetSize(const __int64 NewSize);
     virtual __int64 __fastcall Write(const void *Buffer, __int64 Count);
 
@@ -597,48 +597,48 @@ public:
     HKEY GetCurrentKey() const;
     HKEY GetRootKey() const;
     void CloseKey();
-    bool OpenKey(const std::wstring key, bool CanCreate);
-    bool DeleteKey(const std::wstring key);
-    bool DeleteValue(const std::wstring value);
-    bool KeyExists(const std::wstring SubKey);
-    bool ValueExists(const std::wstring Value);
-    bool GetDataInfo(const std::wstring ValueName, TRegDataInfo &Value);
-    TRegDataType GetDataType(const std::wstring ValueName);
-    int GetDataSize(const std::wstring Name);
-    bool Readbool(const std::wstring Name);
-    TDateTime ReadDateTime(const std::wstring Name);
-    double ReadFloat(const std::wstring Name);
-    int Readint(const std::wstring Name);
-    __int64 ReadInt64(const std::wstring Name);
+    bool OpenKey(const UnicodeString key, bool CanCreate);
+    bool DeleteKey(const UnicodeString key);
+    bool DeleteValue(const UnicodeString value);
+    bool KeyExists(const UnicodeString SubKey);
+    bool ValueExists(const UnicodeString Value);
+    bool GetDataInfo(const UnicodeString ValueName, TRegDataInfo &Value);
+    TRegDataType GetDataType(const UnicodeString ValueName);
+    int GetDataSize(const UnicodeString Name);
+    bool Readbool(const UnicodeString Name);
+    TDateTime ReadDateTime(const UnicodeString Name);
+    double ReadFloat(const UnicodeString Name);
+    int Readint(const UnicodeString Name);
+    __int64 ReadInt64(const UnicodeString Name);
     UnicodeString ReadString(const UnicodeString Name);
     UnicodeString ReadStringRaw(const UnicodeString Name);
-    size_t ReadBinaryData(const std::wstring Name,
+    size_t ReadBinaryData(const UnicodeString Name,
                        void *Buffer, size_t Size);
 
-    void Writebool(const std::wstring Name, bool Value);
-    void WriteDateTime(const std::wstring Name, TDateTime &Value);
-    void WriteFloat(const std::wstring Name, double Value);
-    void WriteString(const std::wstring Name, const std::wstring Value);
-    void WriteStringRaw(const std::wstring Name, const std::wstring Value);
-    void Writeint(const std::wstring Name, int Value);
-    void WriteInt64(const std::wstring Name, __int64 Value);
-    void WriteBinaryData(const std::wstring Name,
+    void Writebool(const UnicodeString Name, bool Value);
+    void WriteDateTime(const UnicodeString Name, TDateTime &Value);
+    void WriteFloat(const UnicodeString Name, double Value);
+    void WriteString(const UnicodeString Name, const UnicodeString Value);
+    void WriteStringRaw(const UnicodeString Name, const UnicodeString Value);
+    void Writeint(const UnicodeString Name, int Value);
+    void WriteInt64(const UnicodeString Name, __int64 Value);
+    void WriteBinaryData(const UnicodeString Name,
                          const void *Buffer, size_t Size);
 private:
-    void ChangeKey(HKEY Value, const std::wstring Path);
+    void ChangeKey(HKEY Value, const UnicodeString Path);
     HKEY GetBaseKey(bool Relative);
-    HKEY GetKey(const std::wstring Key);
+    HKEY GetKey(const UnicodeString Key);
     void SetCurrentKey(HKEY Value) { FCurrentKey = Value; }
     bool GetKeyInfo(TRegKeyInfo &Value);
-    size_t GetData(const std::wstring Name, void *Buffer,
+    size_t GetData(const UnicodeString Name, void *Buffer,
                    DWORD BufSize, TRegDataType &RegData);
-    void PutData(const std::wstring Name, const void *Buffer,
+    void PutData(const UnicodeString Name, const void *Buffer,
                  size_t BufSize, TRegDataType RegData);
 private:
     HKEY FCurrentKey;
     HKEY FRootKey;
     // bool FLazyWrite;
-    std::wstring FCurrentPath;
+    UnicodeString FCurrentPath;
     bool FCloseRootKey;
     unsigned FAccess;
 };
@@ -683,13 +683,13 @@ public:
     wchar_t DateSeparator;
     wchar_t TimeSeparator;
     wchar_t ListSeparator;
-    std::wstring CurrencyString;
-    std::wstring ShortDateFormat;
-    std::wstring LongDateFormat;
-    std::wstring TimeAMString;
-    std::wstring TimePMString;
-    std::wstring ShortTimeFormat;
-    std::wstring LongTimeFormat;
+    UnicodeString CurrencyString;
+    UnicodeString ShortDateFormat;
+    UnicodeString LongDateFormat;
+    UnicodeString TimeAMString;
+    UnicodeString TimePMString;
+    UnicodeString ShortTimeFormat;
+    UnicodeString LongTimeFormat;
     // _TFormatSettings__1 ShortMonthNames;
     // _TFormatSettings__2 LongMonthNames;
     // _TFormatSettings__3 ShortDayNames;

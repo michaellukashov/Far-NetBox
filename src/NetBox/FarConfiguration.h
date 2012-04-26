@@ -29,8 +29,8 @@ public:
     void SetPluginsMenu(bool value) { FPluginsMenu = value; }
     bool GetPluginsMenuCommands() { return FPluginsMenuCommands; }
     void SetPluginsMenuCommands(bool value) { FPluginsMenuCommands = value; }
-    std::wstring GetCommandPrefixes() { return FCommandPrefixes; }
-    void SetCommandPrefixes(const std::wstring value) { FCommandPrefixes = value; }
+    UnicodeString GetCommandPrefixes() { return FCommandPrefixes; }
+    void SetCommandPrefixes(const UnicodeString value) { FCommandPrefixes = value; }
     bool GetHostNameInTitle() { return FHostNameInTitle; }
     void SetHostNameInTitle(bool value) { FHostNameInTitle = value; }
 
@@ -38,14 +38,14 @@ public:
     void SetCustomPanelModeDetailed(bool value) { FCustomPanelModeDetailed = value; }
     bool GetFullScreenDetailed() { return FFullScreenDetailed; }
     void SetFullScreenDetailed(bool value) { FFullScreenDetailed = value; }
-    std::wstring GetColumnTypesDetailed() { return FColumnTypesDetailed; }
-    void SetColumnTypesDetailed(const std::wstring value) { FColumnTypesDetailed = value; }
-    std::wstring GetColumnWidthsDetailed() { return FColumnWidthsDetailed; }
-    void SetColumnWidthsDetailed(const std::wstring value) { FColumnWidthsDetailed = value; }
-    std::wstring GetStatusColumnTypesDetailed() { return FStatusColumnTypesDetailed; }
-    void SetStatusColumnTypesDetailed(const std::wstring value) { FStatusColumnTypesDetailed = value; }
-    std::wstring GetStatusColumnWidthsDetailed() { return FStatusColumnWidthsDetailed; }
-    void SetStatusColumnWidthsDetailed(const std::wstring value) { FStatusColumnWidthsDetailed = value; }
+    UnicodeString GetColumnTypesDetailed() { return FColumnTypesDetailed; }
+    void SetColumnTypesDetailed(const UnicodeString value) { FColumnTypesDetailed = value; }
+    UnicodeString GetColumnWidthsDetailed() { return FColumnWidthsDetailed; }
+    void SetColumnWidthsDetailed(const UnicodeString value) { FColumnWidthsDetailed = value; }
+    UnicodeString GetStatusColumnTypesDetailed() { return FStatusColumnTypesDetailed; }
+    void SetStatusColumnTypesDetailed(const UnicodeString value) { FStatusColumnTypesDetailed = value; }
+    UnicodeString GetStatusColumnWidthsDetailed() { return FStatusColumnWidthsDetailed; }
+    void SetStatusColumnWidthsDetailed(const UnicodeString value) { FStatusColumnWidthsDetailed = value; }
     bool GetEditorDownloadDefaultMode() { return FEditorDownloadDefaultMode; }
     void SetEditorDownloadDefaultMode(bool value) { FEditorDownloadDefaultMode = value; }
     bool GetEditorUploadSameOptions() { return FEditorUploadSameOptions; }
@@ -57,17 +57,17 @@ public:
     bool GetQueueBeep() { return FQueueBeep; }
     void SetQueueBeep(bool value) { FQueueBeep = value; }
 
-    std::wstring GetApplyCommandCommand() { return FApplyCommandCommand; }
-    void SetApplyCommandCommand(const std::wstring value) { FApplyCommandCommand = value; }
+    UnicodeString GetApplyCommandCommand() { return FApplyCommandCommand; }
+    void SetApplyCommandCommand(const UnicodeString value) { FApplyCommandCommand = value; }
     int GetApplyCommandParams() { return FApplyCommandParams; }
     void SetApplyCommandParams(int value) { FApplyCommandParams = value; }
 
-    std::wstring GetPageantPath() const { return FPageantPath; }
-    void SetPageantPath(const std::wstring value) { FPageantPath = value; }
-    std::wstring GetPuttygenPath() const { return FPuttygenPath; }
-    void SetPuttygenPath(const std::wstring value) { FPuttygenPath = value; }
-    TBookmarkList *GetBookmark(const std::wstring Key);
-    void SetBookmark(const std::wstring Key, TBookmarkList *value);
+    UnicodeString GetPageantPath() const { return FPageantPath; }
+    void SetPageantPath(const UnicodeString value) { FPageantPath = value; }
+    UnicodeString GetPuttygenPath() const { return FPuttygenPath; }
+    void SetPuttygenPath(const UnicodeString value) { FPuttygenPath = value; }
+    TBookmarkList *GetBookmark(const UnicodeString Key);
+    void SetBookmark(const UnicodeString Key, TBookmarkList *value);
 
     virtual void __fastcall Load();
     virtual void __fastcall Save(bool All, bool Explicit);
@@ -82,7 +82,7 @@ protected:
     virtual void __fastcall SaveData(THierarchicalStorage *Storage, bool All);
     virtual void __fastcall LoadData(THierarchicalStorage *Storage);
 
-    virtual std::wstring __fastcall ModuleFileName();
+    virtual UnicodeString __fastcall ModuleFileName();
     virtual void __fastcall Saved();
 
 private:
@@ -95,24 +95,24 @@ private:
     int FDisksMenuHotKey;
     bool FPluginsMenu;
     bool FPluginsMenuCommands;
-    std::wstring FCommandPrefixes;
+    UnicodeString FCommandPrefixes;
     bool FHostNameInTitle;
     bool FEditorDownloadDefaultMode;
     bool FEditorUploadSameOptions;
     bool FEditorUploadOnSave;
     bool FEditorMultiple;
     bool FQueueBeep;
-    std::wstring FPageantPath;
-    std::wstring FPuttygenPath;
-    std::wstring FApplyCommandCommand;
+    UnicodeString FPageantPath;
+    UnicodeString FPuttygenPath;
+    UnicodeString FApplyCommandCommand;
     int FApplyCommandParams;
 
     bool FCustomPanelModeDetailed;
     bool FFullScreenDetailed;
-    std::wstring FColumnTypesDetailed;
-    std::wstring FColumnWidthsDetailed;
-    std::wstring FStatusColumnTypesDetailed;
-    std::wstring FStatusColumnWidthsDetailed;
+    UnicodeString FColumnTypesDetailed;
+    UnicodeString FColumnWidthsDetailed;
+    UnicodeString FStatusColumnTypesDetailed;
+    UnicodeString FStatusColumnWidthsDetailed;
 
     TBookmarks *FBookmarks;
     TFarConfiguration *Self;

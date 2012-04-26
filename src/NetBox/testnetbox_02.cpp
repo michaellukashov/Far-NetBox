@@ -104,12 +104,12 @@ BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
 {
     if (1)
     {
-        std::wstring Text = ::StringOfChar(' ', 4);
+        UnicodeString Text = ::StringOfChar(' ', 4);
         BOOST_CHECK_EQUAL("    ", System::W2MB(Text.c_str()).c_str());
     }
     if (1)
     {
-        std::wstring Message = L"long long long long long long long long long text";
+        UnicodeString Message = L"long long long long long long long long long text";
         System::TStringList MessageLines;
         int MaxMessageWidth = 20;
         FarWrapText(Message, &MessageLines, MaxMessageWidth);
@@ -138,7 +138,7 @@ public:
             OnChangeNotifyEventTriggered = true;
         }
     }
-    void Change(const std::wstring str)
+    void Change(const UnicodeString str)
     {
         Changed();
     }
@@ -287,11 +287,11 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
 
 BOOST_FIXTURE_TEST_CASE(test8, base_fixture_t)
 {
-   std::wstring RootKey = L"Software\\Michael Lukashov\\TestNetBox";
+   UnicodeString RootKey = L"Software\\Michael Lukashov\\TestNetBox";
    TRegistryStorage Storage(RootKey);
    Storage.SetAccessMode(smReadWrite);
    BOOST_CHECK(Storage.OpenRootKey(true));
-   std::wstring SubKey = L"SubKey1";
+   UnicodeString SubKey = L"SubKey1";
    Storage.DeleteSubKey(SubKey);
    BOOST_CHECK(!Storage.KeyExists(SubKey));
    BOOST_CHECK(Storage.OpenSubKey(SubKey, true));
@@ -308,7 +308,7 @@ BOOST_FIXTURE_TEST_CASE(test8, base_fixture_t)
 
 BOOST_FIXTURE_TEST_CASE(test9, base_fixture_t)
 {
-    std::wstring path = L"C:\\test";
+    UnicodeString path = L"C:\\test";
     AppendPathDelimiterW(path);
     BOOST_CHECK(path == L"C:\\test\\");
 }
@@ -342,83 +342,83 @@ BOOST_FIXTURE_TEST_CASE(test11, base_fixture_t)
 {
     // Тесты на ::FmtLoadStr FMTLOAD ::Format ::LoadStr ::LoadStrPart ::CutToChar ::TrimLeft ::TrimRight
     {
-        std::wstring str = ::FmtLoadStr(CONST_TEST_STRING, L"lalala", 42);
+        UnicodeString str = ::FmtLoadStr(CONST_TEST_STRING, L"lalala", 42);
         // BOOST_TEST_MESSAGE("str = " << System::W2MB(str.c_str()));
         // BOOST_TEST_MESSAGE("length = " << str.size());
         BOOST_CHECK(System::W2MB(str.c_str()) == "test string: \"lalala\" 42");
     }
     {
-        std::wstring str2 = FMTLOAD(CONST_TEST_STRING, L"lalala", 42);
+        UnicodeString str2 = FMTLOAD(CONST_TEST_STRING, L"lalala", 42);
         // BOOST_TEST_MESSAGE("str2 = " << System::W2MB(str2.c_str()));
         BOOST_CHECK(System::W2MB(str2.c_str()) == "test string: \"lalala\" 42");
     }
     {
-        std::wstring str2 = ::Format(L"test: %s %d", L"lalala", 42);
+        UnicodeString str2 = ::Format(L"test: %s %d", L"lalala", 42);
         BOOST_TEST_MESSAGE("str2 = " << System::W2MB(str2.c_str()));
         BOOST_CHECK_EQUAL(System::W2MB(str2.c_str()), std::string("test: lalala 42"));
     }
     {
-        std::wstring str3 = FORMAT(L"test: %s %d", L"lalala", 42);
+        UnicodeString str3 = FORMAT(L"test: %s %d", L"lalala", 42);
         BOOST_TEST_MESSAGE("str3 = " << System::W2MB(str3.c_str()));
         BOOST_CHECK_EQUAL(System::W2MB(str3.c_str()), std::string("test: lalala 42"));
     }
     {
-        std::wstring str = ::TrimLeft(L"");
+        UnicodeString str = ::TrimLeft(L"");
         BOOST_TEST_MESSAGE("str = " << System::W2MB(str.c_str()));
         BOOST_CHECK_EQUAL(System::W2MB(str.c_str()), std::string(""));
     }
     {
-        std::wstring str = ::TrimLeft(L"1");
+        UnicodeString str = ::TrimLeft(L"1");
         BOOST_TEST_MESSAGE("str = " << System::W2MB(str.c_str()));
         BOOST_CHECK_EQUAL(System::W2MB(str.c_str()), std::string("1"));
     }
     {
-        std::wstring str = ::TrimLeft(L" 1");
+        UnicodeString str = ::TrimLeft(L" 1");
         BOOST_TEST_MESSAGE("str = " << System::W2MB(str.c_str()));
         BOOST_CHECK_EQUAL(System::W2MB(str.c_str()), std::string("1"));
     }
     {
-        std::wstring str = ::TrimRight(L"");
+        UnicodeString str = ::TrimRight(L"");
         BOOST_TEST_MESSAGE("str = " << System::W2MB(str.c_str()));
         BOOST_CHECK_EQUAL(System::W2MB(str.c_str()), std::string(""));
     }
     {
-        std::wstring str = ::TrimRight(L"1");
+        UnicodeString str = ::TrimRight(L"1");
         BOOST_TEST_MESSAGE("str = " << System::W2MB(str.c_str()));
         BOOST_CHECK_EQUAL(System::W2MB(str.c_str()), std::string("1"));
     }
     {
-        std::wstring str = ::TrimRight(L"1 ");
+        UnicodeString str = ::TrimRight(L"1 ");
         BOOST_TEST_MESSAGE("str = " << System::W2MB(str.c_str()));
         BOOST_CHECK_EQUAL(System::W2MB(str.c_str()), std::string("1"));
     }
     {
-        // std::wstring CutToChar(std::wstring &Str, char Ch, bool Trim)
-        std::wstring Str1 = L" part 1 | part 2 ";
-        std::wstring str1 = ::CutToChar(Str1, '|', false);
+        // UnicodeString CutToChar(UnicodeString &Str, char Ch, bool Trim)
+        UnicodeString Str1 = L" part 1 | part 2 ";
+        UnicodeString str1 = ::CutToChar(Str1, '|', false);
         BOOST_TEST_MESSAGE("str1 = \"" << System::W2MB(str1.c_str()) << "\"");
         BOOST_TEST_MESSAGE("Str1 = \"" << System::W2MB(Str1.c_str()) << "\"");
         // BOOST_TEST_MESSAGE("Str1 = \"" << System::W2MB(Str1.c_str()) << "\"");
         // DEBUG_PRINTF(L"str1 = \"%s\"", str1.c_str());
         BOOST_CHECK_EQUAL(System::W2MB(str1.c_str()), std::string(" part 1 "));
 
-        std::wstring str2 = ::CutToChar(Str1, '|', true);
+        UnicodeString str2 = ::CutToChar(Str1, '|', true);
         BOOST_TEST_MESSAGE("str2 = \"" << System::W2MB(str2.c_str()) << "\"");
         BOOST_TEST_MESSAGE("Str1 = \"" << System::W2MB(Str1.c_str()) << "\"");
         BOOST_CHECK_EQUAL(System::W2MB(str2.c_str()), std::string("part 2"));
     }
     {
-        std::wstring str = ::LoadStr(CONST_TEST_STRING);
+        UnicodeString str = ::LoadStr(CONST_TEST_STRING);
         BOOST_TEST_MESSAGE("str = " << System::W2MB(str.c_str()));
         BOOST_CHECK_EQUAL(System::W2MB(str.c_str()), std::string("test string: \"%s\" %d"));
     }
     {
-        std::wstring str = ::LoadStrPart(CONST_TEST_STRING2, 1);
+        UnicodeString str = ::LoadStrPart(CONST_TEST_STRING2, 1);
         BOOST_TEST_MESSAGE("str = " << System::W2MB(str.c_str()));
         BOOST_CHECK_EQUAL(System::W2MB(str.c_str()), std::string("test string part 1"));
     }
     {
-        std::wstring str = ::LoadStrPart(CONST_TEST_STRING2, 2);
+        UnicodeString str = ::LoadStrPart(CONST_TEST_STRING2, 2);
         BOOST_TEST_MESSAGE("str = " << System::W2MB(str.c_str()));
         BOOST_CHECK_EQUAL(System::W2MB(str.c_str()), std::string("part 2"));
     }
@@ -467,15 +467,15 @@ BOOST_FIXTURE_TEST_CASE(test13, base_fixture_t)
 BOOST_FIXTURE_TEST_CASE(test14, base_fixture_t)
 {
     {
-        std::wstring str = ::StringReplace(L"AA", L"A", L"B");
+        UnicodeString str = ::StringReplace(L"AA", L"A", L"B");
         BOOST_CHECK_EQUAL(System::W2MB(str.c_str()).c_str(), "BB");
     }
     {
-        std::wstring str = ::AnsiReplaceStr(L"AA", L"A", L"B");
+        UnicodeString str = ::AnsiReplaceStr(L"AA", L"A", L"B");
         BOOST_CHECK_EQUAL(System::W2MB(str.c_str()).c_str(), "BB");
     }
     {
-        std::wstring str = L"ABC";
+        UnicodeString str = L"ABC";
         BOOST_CHECK_EQUAL(::Pos(str, L"DEF"), -1);
         BOOST_CHECK_EQUAL(::Pos(str, L"AB"), 0);
         BOOST_CHECK_EQUAL(::Pos(str, L"BC"), 1);
@@ -484,15 +484,15 @@ BOOST_FIXTURE_TEST_CASE(test14, base_fixture_t)
         BOOST_CHECK_EQUAL(::AnsiPos(str, 'B'), 1);
     }
     {
-        std::wstring str = ::LowerCase(L"AA");
+        UnicodeString str = ::LowerCase(L"AA");
         BOOST_CHECK_EQUAL(System::W2MB(str.c_str()).c_str(), "aa");
     }
     {
-        std::wstring str = ::UpperCase(L"aa");
+        UnicodeString str = ::UpperCase(L"aa");
         BOOST_CHECK_EQUAL(System::W2MB(str.c_str()).c_str(), "AA");
     }
     {
-        std::wstring str = ::Trim(L" aa ");
+        UnicodeString str = ::Trim(L" aa ");
         BOOST_CHECK_EQUAL(System::W2MB(str.c_str()).c_str(), "aa");
     }
 }
@@ -569,7 +569,7 @@ BOOST_FIXTURE_TEST_CASE(test18, base_fixture_t)
 
 BOOST_FIXTURE_TEST_CASE(test19, base_fixture_t)
 {
-    std::wstring ProgramsFolder;
+    UnicodeString ProgramsFolder;
     ::SpecialFolderLocation(CSIDL_PROGRAM_FILES, ProgramsFolder);
     BOOST_TEST_MESSAGE("ProgramsFolder = " << System::W2MB(ProgramsFolder.c_str()).c_str());
     BOOST_CHECK(ProgramsFolder.size() > 0);
@@ -589,9 +589,9 @@ BOOST_FIXTURE_TEST_CASE(test21, base_fixture_t)
         BOOST_TEST_MESSAGE("rand() = " << rand());
         BOOST_TEST_MESSAGE("random(256) = " << random(256));
     }
-    std::wstring enc = ::EncryptPassword(L"1234ABC", L"234556");
+    UnicodeString enc = ::EncryptPassword(L"1234ABC", L"234556");
     BOOST_TEST_MESSAGE("enc = " << System::W2MB(enc.c_str()).c_str());
-    std::wstring dec = ::DecryptPassword(enc, L"234556");
+    UnicodeString dec = ::DecryptPassword(enc, L"234556");
     BOOST_TEST_MESSAGE("dec = " << System::W2MB(dec.c_str()).c_str());
     BOOST_CHECK(dec == L"1234ABC");
 }

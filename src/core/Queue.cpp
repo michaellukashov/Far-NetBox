@@ -28,7 +28,7 @@ public:
     }
 
     System::TObject *Sender;
-    std::wstring Query;
+    UnicodeString Query;
     System::TStrings *MoreMessages;
     int Answers;
     const TQueryParams *Params;
@@ -56,8 +56,8 @@ public:
 
     TTerminal *Terminal;
     TPromptKind Kind;
-    std::wstring Name;
-    std::wstring Instructions;
+    UnicodeString Name;
+    UnicodeString Instructions;
     System::TStrings *Prompts;
     System::TStrings *Results;
     bool Result;
@@ -109,15 +109,15 @@ protected:
     bool __fastcall OverrideItemStatus(TQueueItem::TStatus &ItemStatus);
 
     void TerminalQueryUser(System::TObject *Sender,
-                           const std::wstring Query, System::TStrings *MoreMessages, int Answers,
+                           const UnicodeString Query, System::TStrings *MoreMessages, int Answers,
                            const TQueryParams *Params, int &Answer, TQueryType Type, void *Arg);
     void TerminalPromptUser(TTerminal *Terminal, TPromptKind Kind,
-                            std::wstring Name, std::wstring Instructions,
+                            UnicodeString Name, UnicodeString Instructions,
                             System::TStrings *Prompts, System::TStrings *Results, bool &Result, void *Arg);
     void TerminalShowExtendedException(TTerminal *Terminal,
                                        const std::exception *E, void *Arg);
     void OperationFinished(TFileOperation Operation, TOperationSide Side,
-                           bool Temp, const std::wstring FileName, bool Success,
+                           bool Temp, const UnicodeString FileName, bool Success,
                            TOnceDoneOperation &OnceDoneOperation);
     void OperationProgress(TFileOperationProgressType &ProgressData,
                            TCancelStatus &Cancel);
@@ -815,7 +815,7 @@ void __fastcall TTerminalQueue::DoEvent(TQueueEvent Event)
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminalQueue::DoQueryUser(System::TObject *Sender,
-                                 const std::wstring Query, System::TStrings *MoreMessages, int Answers,
+                                 const UnicodeString Query, System::TStrings *MoreMessages, int Answers,
                                  const TQueryParams *Params, int &Answer, TQueryType Type, void *Arg)
 {
     if (!GetOnQueryUser().IsEmpty())
@@ -825,7 +825,7 @@ void __fastcall TTerminalQueue::DoQueryUser(System::TObject *Sender,
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminalQueue::DoPromptUser(TTerminal *Terminal,
-                                  TPromptKind Kind, const std::wstring Name, const std::wstring Instructions,
+                                  TPromptKind Kind, const UnicodeString Name, const UnicodeString Instructions,
                                   System::TStrings *Prompts, System::TStrings *Results, bool &Result, void *Arg)
 {
     if (!GetOnPromptUser().IsEmpty())
@@ -880,7 +880,7 @@ public:
     explicit TBackgroundTerminal(TTerminal *MainTerminal,
                                  TTerminalItem *Item);
     virtual void __fastcall Init(TSessionData *SessionData, TConfiguration *Configuration,
-                      const std::wstring Name);
+                      const UnicodeString Name);
     virtual ~TBackgroundTerminal()
     {}
 protected:
@@ -897,7 +897,7 @@ TBackgroundTerminal::TBackgroundTerminal(TTerminal *MainTerminal,
 {
 }
 void __fastcall TBackgroundTerminal::Init(TSessionData *SessionData, TConfiguration *configuration,
-                               const std::wstring Name)
+                               const UnicodeString Name)
 {
     TSecondaryTerminal::Init(SessionData, configuration, Name);
 }
@@ -1019,7 +1019,7 @@ void __fastcall TTerminalItem::ProcessEvent()
     }
     catch (const std::exception &E)
     {
-        std::wstring Message;
+        UnicodeString Message;
         if (ExceptionMessage(&E, Message))
         {
             // do not show error messages, if task was canceled anyway
@@ -1162,7 +1162,7 @@ void __fastcall TTerminalItem::Finished()
 }
 //---------------------------------------------------------------------------
 void TTerminalItem::TerminalQueryUser(System::TObject *Sender,
-                                      const std::wstring Query, System::TStrings *MoreMessages, int Answers,
+                                      const UnicodeString Query, System::TStrings *MoreMessages, int Answers,
                                       const TQueryParams *Params, int &Answer, TQueryType Type, void *Arg)
 {
     // so far query without queue item can occur only for key cofirmation
@@ -1195,7 +1195,7 @@ void TTerminalItem::TerminalQueryUser(System::TObject *Sender,
 }
 //---------------------------------------------------------------------------
 void TTerminalItem::TerminalPromptUser(TTerminal *Terminal,
-                                       TPromptKind Kind, std::wstring Name, std::wstring Instructions, System::TStrings *Prompts,
+                                       TPromptKind Kind, UnicodeString Name, UnicodeString Instructions, System::TStrings *Prompts,
                                        System::TStrings *Results, bool &Result, void *Arg)
 {
     if (FItem == NULL)
@@ -1232,7 +1232,7 @@ void TTerminalItem::TerminalShowExtendedException(
     USEDPARAM(Arg);
     assert(Arg == NULL);
 
-    std::wstring Message; // not used
+    UnicodeString Message; // not used
     if ((FItem != NULL) &&
             ExceptionMessage(E, Message))
     {
@@ -1245,7 +1245,7 @@ void TTerminalItem::TerminalShowExtendedException(
 }
 //---------------------------------------------------------------------------
 void TTerminalItem::OperationFinished(TFileOperation /*Operation*/,
-                                      TOperationSide /*Side*/, bool /*Temp*/, const std::wstring /*FileName*/,
+                                      TOperationSide /*Side*/, bool /*Temp*/, const UnicodeString /*FileName*/,
                                       bool /*Success*/, TOnceDoneOperation & /*OnceDoneOperation*/)
 {
     // nothing
@@ -1634,7 +1634,7 @@ TLocatedQueueItem::TLocatedQueueItem(TTerminal *Terminal) :
     FCurrentDir = Terminal->GetCurrentDirectory();
 }
 //---------------------------------------------------------------------------
-std::wstring __fastcall TLocatedQueueItem::StartupDirectory()
+UnicodeString __fastcall TLocatedQueueItem::StartupDirectory()
 {
     return FCurrentDir;
 }
@@ -1648,7 +1648,7 @@ void __fastcall TLocatedQueueItem::DoExecute(TTerminal *Terminal)
 // TTransferQueueItem
 //---------------------------------------------------------------------------
 TTransferQueueItem::TTransferQueueItem(TTerminal *Terminal,
-                                       System::TStrings *FilesToCopy, const std::wstring TargetDir,
+                                       System::TStrings *FilesToCopy, const UnicodeString TargetDir,
                                        const TCopyParamType *CopyParam, int Params, TOperationSide Side) :
     TLocatedQueueItem(Terminal), FFilesToCopy(NULL), FCopyParam(NULL)
 {
@@ -1685,7 +1685,7 @@ TTransferQueueItem::~TTransferQueueItem()
 // TUploadQueueItem
 //---------------------------------------------------------------------------
 TUploadQueueItem::TUploadQueueItem(TTerminal *Terminal,
-                                   System::TStrings *FilesToCopy, const std::wstring TargetDir,
+                                   System::TStrings *FilesToCopy, const UnicodeString TargetDir,
                                    const TCopyParamType *CopyParam, int Params) :
     TTransferQueueItem(Terminal, FilesToCopy, TargetDir, CopyParam, Params, osLocal)
 {
@@ -1701,7 +1701,7 @@ TUploadQueueItem::TUploadQueueItem(TTerminal *Terminal,
             ExtractCommonPath(FilesToCopy, FInfo->Source);
             // this way the trailing backslash is preserved for root directories like D:
             FInfo->Source = ExtractFileDir(IncludeTrailingBackslash(FInfo->Source));
-            FInfo->ModifiedLocal = FLAGCLEAR(Params, cpDelete) ? std::wstring() :
+            FInfo->ModifiedLocal = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
                                    IncludeTrailingBackslash(FInfo->Source);
         }
     }
@@ -1716,7 +1716,7 @@ TUploadQueueItem::TUploadQueueItem(TTerminal *Terminal,
         {
             assert(FilesToCopy->GetCount() > 0);
             FInfo->Source = FilesToCopy->GetString(0);
-            FInfo->ModifiedLocal = FLAGCLEAR(Params, cpDelete) ? std::wstring() :
+            FInfo->ModifiedLocal = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
                                    IncludeTrailingBackslash(ExtractFilePath(FInfo->Source));
         }
     }
@@ -1737,7 +1737,7 @@ void TUploadQueueItem::DoExecute(TTerminal *Terminal)
 // TDownloadQueueItem
 //---------------------------------------------------------------------------
 TDownloadQueueItem::TDownloadQueueItem(TTerminal *Terminal,
-                                       System::TStrings *FilesToCopy, const std::wstring TargetDir,
+                                       System::TStrings *FilesToCopy, const UnicodeString TargetDir,
                                        const TCopyParamType *CopyParam, int Params) :
     TTransferQueueItem(Terminal, FilesToCopy, TargetDir, CopyParam, Params, osRemote)
 {
@@ -1748,7 +1748,7 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal *Terminal,
             FInfo->Source = Terminal->GetCurrentDirectory();
         }
         FInfo->Source = UnixExcludeTrailingBackslash(FInfo->Source);
-        FInfo->ModifiedRemote = FLAGCLEAR(Params, cpDelete) ? std::wstring() :
+        FInfo->ModifiedRemote = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
                                 UnixIncludeTrailingBackslash(FInfo->Source);
     }
     else
@@ -1759,12 +1759,12 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal *Terminal,
         {
             FInfo->Source = UnixIncludeTrailingBackslash(Terminal->GetCurrentDirectory()) +
                             FInfo->Source;
-            FInfo->ModifiedRemote = FLAGCLEAR(Params, cpDelete) ? std::wstring() :
+            FInfo->ModifiedRemote = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
                                     UnixIncludeTrailingBackslash(Terminal->GetCurrentDirectory());
         }
         else
         {
-            FInfo->ModifiedRemote = FLAGCLEAR(Params, cpDelete) ? std::wstring() :
+            FInfo->ModifiedRemote = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
                                     UnixExtractFilePath(FInfo->Source);
         }
     }

@@ -141,11 +141,11 @@ protected:
     void __fastcall TerminalFinished(TTerminalItem *TerminalItem);
     bool __fastcall TerminalFree(TTerminalItem *TerminalItem);
 
-    void __fastcall DoQueryUser(System::TObject *Sender, const std::wstring Query,
+    void __fastcall DoQueryUser(System::TObject *Sender, const UnicodeString Query,
                      System::TStrings *MoreMessages, int Answers, const TQueryParams *Params, int &Answer,
                      TQueryType Type, void *Arg);
     void __fastcall DoPromptUser(TTerminal *Terminal, TPromptKind Kind,
-                      const std::wstring Name, const std::wstring Instructions, System::TStrings *Prompts,
+                      const UnicodeString Name, const UnicodeString Instructions, System::TStrings *Prompts,
                       System::TStrings *Results, bool &Result, void *Arg);
     void __fastcall DoShowExtendedException(TTerminal *Terminal,
                                  const std::exception *E, void *Arg);
@@ -169,10 +169,10 @@ public:
     {
         TFileOperation Operation;
         TOperationSide Side;
-        std::wstring Source;
-        std::wstring Destination;
-        std::wstring ModifiedLocal;
-        std::wstring ModifiedRemote;
+        UnicodeString Source;
+        UnicodeString Destination;
+        UnicodeString ModifiedLocal;
+        UnicodeString ModifiedRemote;
     };
 
     static bool __fastcall IsUserActionStatus(TStatus Status);
@@ -202,7 +202,7 @@ protected:
     void __fastcall SetProgress(TFileOperationProgressType &ProgressData);
     void __fastcall GetData(TQueueItemProxy *Proxy);
     void __fastcall SetCPSLimit(unsigned long CPSLimit);
-    virtual std::wstring __fastcall StartupDirectory() = 0;
+    virtual UnicodeString __fastcall StartupDirectory() = 0;
 };
 //---------------------------------------------------------------------------
 class TQueueItemProxy
@@ -281,23 +281,23 @@ protected:
     {}
 
     virtual void __fastcall DoExecute(TTerminal *Terminal);
-    virtual std::wstring __fastcall StartupDirectory();
+    virtual UnicodeString __fastcall StartupDirectory();
 
 private:
-    std::wstring FCurrentDir;
+    UnicodeString FCurrentDir;
 };
 //---------------------------------------------------------------------------
 class TTransferQueueItem : public TLocatedQueueItem
 {
 public:
     explicit TTransferQueueItem(TTerminal *Terminal,
-                                System::TStrings *FilesToCopy, const std::wstring TargetDir,
+                                System::TStrings *FilesToCopy, const UnicodeString TargetDir,
                                 const TCopyParamType *CopyParam, int Params, TOperationSide Side);
     virtual ~TTransferQueueItem();
 
 protected:
     System::TStrings *FFilesToCopy;
-    std::wstring FTargetDir;
+    UnicodeString FTargetDir;
     TCopyParamType *FCopyParam;
     int FParams;
 };
@@ -306,7 +306,7 @@ class TUploadQueueItem : public TTransferQueueItem
 {
 public:
     explicit TUploadQueueItem(TTerminal *Terminal,
-                              System::TStrings *FilesToCopy, const std::wstring TargetDir,
+                              System::TStrings *FilesToCopy, const UnicodeString TargetDir,
                               const TCopyParamType *CopyParam, int Params);
     virtual ~TUploadQueueItem()
     {}
@@ -318,7 +318,7 @@ class TDownloadQueueItem : public TTransferQueueItem
 {
 public:
     explicit TDownloadQueueItem(TTerminal *Terminal,
-                                System::TStrings *FilesToCopy, const std::wstring TargetDir,
+                                System::TStrings *FilesToCopy, const UnicodeString TargetDir,
                                 const TCopyParamType *CopyParam, int Params);
     virtual ~TDownloadQueueItem()
     {}

@@ -106,16 +106,16 @@ void TSynchronizeController::StartStop(System::TObject *Sender,
 }
 //---------------------------------------------------------------------------
 void TSynchronizeController::SynchronizeChange(
-    System::TObject * /*Sender*/, const std::wstring Directory, bool &SubdirsChanged)
+    System::TObject * /*Sender*/, const UnicodeString Directory, bool &SubdirsChanged)
 {
     try
     {
-        std::wstring RemoteDirectory;
-        std::wstring RootLocalDirectory;
+        UnicodeString RemoteDirectory;
+        UnicodeString RootLocalDirectory;
         RootLocalDirectory = IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory);
         RemoteDirectory = UnixIncludeTrailingBackslash(FSynchronizeParams.RemoteDirectory);
 
-        std::wstring LocalDirectory = IncludeTrailingBackslash(Directory);
+        UnicodeString LocalDirectory = IncludeTrailingBackslash(Directory);
 
         assert(LocalDirectory.SubString(0, RootLocalDirectory.Length()) ==
                RootLocalDirectory);
@@ -192,10 +192,10 @@ void TSynchronizeController::SynchronizeAbort(bool Close)
 }
 //---------------------------------------------------------------------------
 void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
-        const std::wstring FileName)
+        const UnicodeString FileName)
 {
     TSynchronizeLogEntry Entry;
-    std::wstring Message;
+    UnicodeString Message;
     switch (Operation)
     {
     case soDelete:
@@ -216,7 +216,7 @@ void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
 }
 //---------------------------------------------------------------------------
 void TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
-        const std::wstring Message)
+        const UnicodeString Message)
 {
     if (!FSynchronizeLog.IsEmpty())
     {
@@ -225,7 +225,7 @@ void TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
 }
 //---------------------------------------------------------------------------
 void TSynchronizeController::SynchronizeFilter(System::TObject * /*Sender*/,
-        const std::wstring DirectoryName, bool &Add)
+        const UnicodeString DirectoryName, bool &Add)
 {
     if ((FOptions != NULL) && (FOptions->Filter != NULL))
     {
@@ -241,7 +241,7 @@ void TSynchronizeController::SynchronizeFilter(System::TObject * /*Sender*/,
 }
 //---------------------------------------------------------------------------
 void TSynchronizeController::SynchronizeInvalid(
-    System::TObject * /*Sender*/, const std::wstring Directory, const std::wstring ErrorStr)
+    System::TObject * /*Sender*/, const UnicodeString Directory, const UnicodeString ErrorStr)
 {
     if (!FOnSynchronizeInvalid.IsEmpty())
     {

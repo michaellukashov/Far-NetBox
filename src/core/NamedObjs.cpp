@@ -16,19 +16,19 @@ int NamedObjectSortProc(void *Item1, void *Item2)
     }
 }
 //--- TNamedObject ----------------------------------------------------------
-TNamedObject::TNamedObject(const std::wstring AName) :
+TNamedObject::TNamedObject(const UnicodeString AName) :
     System::TPersistent()
 {
     SetName(AName);
 }
 //---------------------------------------------------------------------------
-void TNamedObject::SetName(const std::wstring value)
+void TNamedObject::SetName(const UnicodeString value)
 {
     FHidden = (value.SubString(0, TNamedObjectList::HiddenPrefix.Length()) == TNamedObjectList::HiddenPrefix);
     FName = value;
 }
 
-int TNamedObject::CompareName(const std::wstring aName,
+int TNamedObject::CompareName(const UnicodeString aName,
                               bool CaseSensitive)
 {
     // DEBUG_PRINTF(L"CaseSensitive = %d, Name = %s, aName = %s", CaseSensitive, Name.c_str(), aName.c_str());
@@ -50,8 +50,8 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList *List)
         {
             size_t N = 0, P = 0;
             // If name already contains number parenthesis remove it (and remember it)
-            std::wstring Name = GetName();
-            if ((Name[Name.Length() - 1] == L')') && ((P = ::LastDelimiter(Name, L"(")) != std::wstring::npos))
+            UnicodeString Name = GetName();
+            if ((Name[Name.Length() - 1] == L')') && ((P = ::LastDelimiter(Name, L"(")) != UnicodeString::npos))
                 try
                 {
                     N = StrToInt(Name.SubString(P + 1, Name.Length() - P - 1));
@@ -66,7 +66,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList *List)
         }
 }
 //--- TNamedObjectList ------------------------------------------------------
-const std::wstring TNamedObjectList::HiddenPrefix = L"_!_";
+const UnicodeString TNamedObjectList::HiddenPrefix = L"_!_";
 //---------------------------------------------------------------------------
 TNamedObjectList::TNamedObjectList() :
     System::TObjectList(),
@@ -101,7 +101,7 @@ void TNamedObjectList::Notify(void *Ptr, System::TListNotification Action)
     Recount();
 }
 //---------------------------------------------------------------------------
-TNamedObject *TNamedObjectList::FindByName(const std::wstring Name,
+TNamedObject *TNamedObjectList::FindByName(const UnicodeString Name,
         bool CaseSensitive)
 {
     for (size_t Index = 0; Index < System::TObjectList::GetCount(); Index++)

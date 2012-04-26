@@ -11,35 +11,35 @@ class TOptions
 public:
     TOptions();
 
-    bool __fastcall FindSwitch(const std::wstring Switch);
-    bool __fastcall FindSwitch(const std::wstring Switch, std::wstring &Value);
-    bool __fastcall FindSwitch(const std::wstring Switch, int &ParamsStart,
+    bool __fastcall FindSwitch(const UnicodeString Switch);
+    bool __fastcall FindSwitch(const UnicodeString Switch, UnicodeString &Value);
+    bool __fastcall FindSwitch(const UnicodeString Switch, int &ParamsStart,
                     int &ParamsCount);
-    bool __fastcall FindSwitch(const std::wstring Switch, System::TStrings *Params,
+    bool __fastcall FindSwitch(const UnicodeString Switch, System::TStrings *Params,
                     int ParamsMax = -1);
     void __fastcall ParamsProcessed(int Position, int Count);
-    std::wstring __fastcall SwitchValue(const std::wstring Switch, const std::wstring Default = L"");
-    bool __fastcall UnusedSwitch(std::wstring &Switch);
+    UnicodeString __fastcall SwitchValue(const UnicodeString Switch, const UnicodeString Default = L"");
+    bool __fastcall UnusedSwitch(UnicodeString &Switch);
 
     int __fastcall GetParamCount() { return FParamCount; }
-    std::wstring __fastcall GetParam(int Index);
+    UnicodeString __fastcall GetParam(int Index);
     bool __fastcall GetEmpty();
 
 protected:
-    std::wstring FSwitchMarks;
-    std::wstring FSwitchValueDelimiters;
+    UnicodeString FSwitchMarks;
+    UnicodeString FSwitchValueDelimiters;
 
-    void __fastcall Add(const std::wstring Option);
+    void __fastcall Add(const UnicodeString Option);
 
-    bool __fastcall FindSwitch(const std::wstring Switch,
-                    std::wstring &Value, int &ParamsStart, int &ParamsCount);
+    bool __fastcall FindSwitch(const UnicodeString Switch,
+                    UnicodeString &Value, int &ParamsStart, int &ParamsCount);
 
 private:
     struct TOption
     {
         TOptionType Type;
-        std::wstring Name;
-        std::wstring Value;
+        UnicodeString Name;
+        UnicodeString Value;
         bool Used;
     };
 

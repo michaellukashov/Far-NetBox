@@ -386,3 +386,14 @@ void  __cdecl UnicodeString::ThrowIfOutOfRange(int idx) const
     if (idx < 1 || idx > Length())    // NOTE: UnicodeString is 1-based !!
       throw std::runtime_error("Index is out of range"); // ERangeError(Sysconst_SRangeError);
 }
+
+int UnicodeString::Pos(wchar_t Ch) const
+{
+  // bool Pos(size_t &nPos, wchar_t Ch, size_t nStartPos=0) const;
+  size_t nPos = 0;
+  if (Pos(nPos, Ch))
+  {
+    return nPos;
+  }
+  return 0;
+}

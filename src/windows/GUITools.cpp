@@ -14,7 +14,7 @@
 #include <SessionData.h>
 #include <Exceptions.h>
 //---------------------------------------------------------------------------
-bool FindFile(std::wstring &Path)
+bool FindFile(UnicodeString &Path)
 {
     bool Result = FileExists(Path);
     if (!Result)
@@ -23,12 +23,12 @@ bool FindFile(std::wstring &Path)
         if (Len > 0)
         {
             // DEBUG_PRINTF(L"Len = %d", Len);
-            std::wstring Paths;
+            UnicodeString Paths;
             Paths.resize(Len - 1);
             GetEnvironmentVariable(L"PATH", reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Paths.c_str())), static_cast<DWORD>(Len));
             // DEBUG_PRINTF(L"Paths = %s", Paths.c_str());
 
-            std::wstring NewPath = FileSearch(ExtractFileName(Path, true), Paths);
+            UnicodeString NewPath = FileSearch(ExtractFileName(Path, true), Paths);
             Result = !NewPath.empty();
             if (Result)
             {
@@ -40,22 +40,22 @@ bool FindFile(std::wstring &Path)
     return Result;
 }
 //---------------------------------------------------------------------------
-bool FileExistsEx(const std::wstring Path)
+bool FileExistsEx(const UnicodeString Path)
 {
-    std::wstring path = Path;
+    UnicodeString path = Path;
     return FindFile(path);
 }
 //---------------------------------------------------------------------------
-void OpenSessionInPutty(const std::wstring PuttyPath,
-                        TSessionData *SessionData, const std::wstring Password)
+void OpenSessionInPutty(const UnicodeString PuttyPath,
+                        TSessionData *SessionData, const UnicodeString Password)
 {
-    std::wstring Program, Params, Dir;
+    UnicodeString Program, Params, Dir;
     SplitCommand(PuttyPath, Program, Params, Dir);
     Program = ExpandEnvironmentVariables(Program);
-    std::wstring password = Password;
+    UnicodeString password = Password;
     if (FindFile(Program))
     {
-        std::wstring SessionName;
+        UnicodeString SessionName;
         TRegistryStorage *Storage = NULL;
         TSessionData *ExportData = NULL;
         TRegistryStorage *SourceStorage = NULL;
@@ -136,13 +136,13 @@ void OpenSessionInPutty(const std::wstring PuttyPath,
     }
 }
 //---------------------------------------------------------------------------
-bool ExecuteShell(const std::wstring Path, const std::wstring Params)
+bool ExecuteShell(const UnicodeString Path, const UnicodeString Params)
 {
     return ((int)::ShellExecute(NULL, L"open", const_cast<wchar_t *>(Path.data()),
                                 const_cast<wchar_t *>(Params.data()), NULL, SW_SHOWNORMAL) > 32);
 }
 //---------------------------------------------------------------------------
-bool ExecuteShell(const std::wstring Path, const std::wstring Params,
+bool ExecuteShell(const UnicodeString Path, const UnicodeString Params,
                   HANDLE &Handle)
 {
     // DEBUG_PRINTF(L"Path = %s, Params = %s", Path.c_str(), Params.c_str());
@@ -164,8 +164,8 @@ bool ExecuteShell(const std::wstring Path, const std::wstring Params,
     return Result;
 }
 //---------------------------------------------------------------------------
-bool ExecuteShellAndWait(HINSTANCE Handle, const std::wstring Path,
-                         const std::wstring Params, const processmessages_signal_type &ProcessMessages)
+bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString Path,
+                         const UnicodeString Params, const processmessages_signal_type &ProcessMessages)
 {
     bool Result = false;
     _SHELLEXECUTEINFOW ExecuteInfo;
@@ -202,31 +202,31 @@ bool ExecuteShellAndWait(HINSTANCE Handle, const std::wstring Path,
     return Result;
 }
 //---------------------------------------------------------------------------
-bool ExecuteShellAndWait(HINSTANCE Handle, const std::wstring Command,
+bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString Command,
                          const processmessages_signal_type &ProcessMessages)
 {
-    std::wstring Program, Params, Dir;
+    UnicodeString Program, Params, Dir;
     SplitCommand(Command, Program, Params, Dir);
     return ExecuteShellAndWait(Handle, Program, Params, ProcessMessages);
 }
 //---------------------------------------------------------------------------
-bool SpecialFolderLocation(int PathID, std::wstring &Path)
+bool SpecialFolderLocation(int PathID, UnicodeString &Path)
 {
     LPITEMIDLIST Pidl;
     wchar_t Buf[260];
     if (SHGetSpecialFolderLocation(NULL, PathID, &Pidl) == NO_ERROR &&
             SHGetPathFromIDList(Pidl, Buf))
     {
-        Path = std::wstring(Buf);
+        Path = UnicodeString(Buf);
         return true;
     }
     return false;
 }
 //---------------------------------------------------------------------------
-std::wstring ItemsFormatString(const std::wstring SingleItemFormat,
-                               const std::wstring MultiItemsFormat, size_t Count, const std::wstring FirstItem)
+UnicodeString ItemsFormatString(const UnicodeString SingleItemFormat,
+                               const UnicodeString MultiItemsFormat, size_t Count, const UnicodeString FirstItem)
 {
-    std::wstring Result;
+    UnicodeString Result;
     if (Count == 1)
     {
         Result = FORMAT(SingleItemFormat.c_str(), FirstItem.c_str());
@@ -238,18 +238,18 @@ std::wstring ItemsFormatString(const std::wstring SingleItemFormat,
     return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring ItemsFormatString(const std::wstring SingleItemFormat,
-                               const std::wstring MultiItemsFormat, System::TStrings *Items)
+UnicodeString ItemsFormatString(const UnicodeString SingleItemFormat,
+                               const UnicodeString MultiItemsFormat, System::TStrings *Items)
 {
     return ItemsFormatString(SingleItemFormat, MultiItemsFormat,
-                             Items->GetCount(), (Items->GetCount() > 0 ? Items->GetString(0) : std::wstring()));
+                             Items->GetCount(), (Items->GetCount() > 0 ? Items->GetString(0) : UnicodeString()));
 }
 //---------------------------------------------------------------------------
-std::wstring FileNameFormatString(const std::wstring SingleFileFormat,
-                                  const std::wstring MultiFilesFormat, System::TStrings *Files, bool Remote)
+UnicodeString FileNameFormatString(const UnicodeString SingleFileFormat,
+                                  const UnicodeString MultiFilesFormat, System::TStrings *Files, bool Remote)
 {
     assert(Files != NULL);
-    std::wstring Item;
+    UnicodeString Item;
     if (Files->GetCount() > 0)
     {
         Item = Remote ? UnixExtractFileName(Files->GetString(0)) :
@@ -259,9 +259,9 @@ std::wstring FileNameFormatString(const std::wstring SingleFileFormat,
                              Files->GetCount(), Item);
 }
 //---------------------------------------------------------------------
-std::wstring FormatBytes(__int64 Bytes, bool UseOrders)
+UnicodeString FormatBytes(__int64 Bytes, bool UseOrders)
 {
-    std::wstring Result;
+    UnicodeString Result;
 
     if (!UseOrders || (Bytes < static_cast<__int64>(100*1024)))
     {
@@ -281,10 +281,10 @@ std::wstring FormatBytes(__int64 Bytes, bool UseOrders)
     return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring UniqTempDir(const std::wstring BaseDir, const std::wstring Identity,
+UnicodeString UniqTempDir(const UnicodeString BaseDir, const UnicodeString Identity,
                          bool Mask)
 {
-    std::wstring TempDir;
+    UnicodeString TempDir;
     do
     {
         TempDir = BaseDir.empty() ? SystemTemporaryDirectory() : BaseDir;
@@ -303,7 +303,7 @@ std::wstring UniqTempDir(const std::wstring BaseDir, const std::wstring Identity
     return TempDir;
 }
 //---------------------------------------------------------------------------
-bool DeleteDirectory(const std::wstring DirName)
+bool DeleteDirectory(const UnicodeString DirName)
 {
     bool retval = true;
     WIN32_FIND_DATA sr;
@@ -348,9 +348,9 @@ bool DeleteDirectory(const std::wstring DirName)
     return retval;
 }
 //---------------------------------------------------------------------------
-std::wstring FormatDateTimeSpan(const std::wstring TimeFormat, System::TDateTime DateTime)
+UnicodeString FormatDateTimeSpan(const UnicodeString TimeFormat, System::TDateTime DateTime)
 {
-    std::wstring Result;
+    UnicodeString Result;
     if (static_cast<int>(DateTime) > 0)
     {
         Result = IntToStr(static_cast<int>(DateTime)) + L", ";
@@ -371,14 +371,14 @@ TLocalCustomCommand::TLocalCustomCommand()
 }
 //---------------------------------------------------------------------------
 TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData &Data,
-        const std::wstring Path) :
+        const UnicodeString Path) :
     TFileCustomCommand(Data, Path)
 {
 }
 //---------------------------------------------------------------------------
 TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData &Data,
-        const std::wstring Path, const std::wstring FileName,
-        const std::wstring LocalFileName, const std::wstring FileList) :
+        const UnicodeString Path, const UnicodeString FileName,
+        const UnicodeString LocalFileName, const UnicodeString FileList) :
     TFileCustomCommand(Data, Path, FileName, FileList)
 {
     FLocalFileName = LocalFileName;
@@ -399,7 +399,7 @@ size_t TLocalCustomCommand::PatternLen(size_t Index, char PatternCmd)
 }
 //---------------------------------------------------------------------------
 bool TLocalCustomCommand::PatternReplacement(size_t Index,
-        const std::wstring Pattern, std::wstring &Replacement, bool &Delimit)
+        const UnicodeString Pattern, UnicodeString &Replacement, bool &Delimit)
 {
     bool Result = false;
     if (Pattern == L"!^!")
@@ -415,17 +415,17 @@ bool TLocalCustomCommand::PatternReplacement(size_t Index,
 }
 //---------------------------------------------------------------------------
 void TLocalCustomCommand::DelimitReplacement(
-    const std::wstring /*Replacement*/, char /*Quote*/)
+    const UnicodeString /*Replacement*/, char /*Quote*/)
 {
     // never delimit local commands
 }
 //---------------------------------------------------------------------------
-bool TLocalCustomCommand::HasLocalFileName(const std::wstring Command)
+bool TLocalCustomCommand::HasLocalFileName(const UnicodeString Command)
 {
     return FindPattern(Command, '^');
 }
 //---------------------------------------------------------------------------
-bool TLocalCustomCommand::IsFileCommand(const std::wstring Command)
+bool TLocalCustomCommand::IsFileCommand(const UnicodeString Command)
 {
     return TFileCustomCommand::IsFileCommand(Command) || HasLocalFileName(Command);
 }

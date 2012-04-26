@@ -21,7 +21,7 @@ TQueryButtonAlias::TQueryButtonAlias() :
     OnClick.disconnect_all_slots();
 }
 //---------------------------------------------------------------------------
-TQueryParams::TQueryParams(unsigned int AParams, std::wstring AHelpKeyword)
+TQueryParams::TQueryParams(unsigned int AParams, UnicodeString AHelpKeyword)
 {
     Params = AParams;
     Aliases = NULL;

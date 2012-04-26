@@ -10,14 +10,14 @@ class TNamedObject : public System::TPersistent
 {
 public:
     TNamedObject() : System::TPersistent() {};
-    explicit TNamedObject(const std::wstring aName);
+    explicit TNamedObject(const UnicodeString aName);
     bool __fastcall GetHidden() { return FHidden; }
-    std::wstring __fastcall GetName() { return FName; }
-    void __fastcall SetName(const std::wstring value);
-    int __fastcall CompareName(const std::wstring aName, bool CaseSensitive = false);
+    UnicodeString __fastcall GetName() { return FName; }
+    void __fastcall SetName(const UnicodeString value);
+    int __fastcall CompareName(const UnicodeString aName, bool CaseSensitive = false);
     void __fastcall MakeUniqueIn(TNamedObjectList *List);
 private:
-    std::wstring FName;
+    UnicodeString FName;
     bool FHidden;
 };
 
@@ -32,14 +32,14 @@ protected:
 public:
     TNamedObjectList();
 
-    static const std::wstring HiddenPrefix;
+    static const UnicodeString HiddenPrefix;
     static bool IsHidden(TNamedObject *Object);
 
     bool AutoSort;
 
     void AlphaSort();
     virtual TNamedObject *AtObject(size_t Index);
-    TNamedObject *FindByName(const std::wstring Name, bool CaseSensitive = false);
+    TNamedObject *FindByName(const UnicodeString Name, bool CaseSensitive = false);
     size_t GetCount();
     void SetCount(size_t value);
     size_t GetHiddenCount() { return FHiddenCount; }

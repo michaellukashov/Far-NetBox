@@ -68,7 +68,7 @@ TUnguard::~TUnguard()
 const wchar_t EngShortMonthNames[12][4] =
   {L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun",
    L"Jul", L"Aug", L"Sep", L"Oct", L"Nov", L"Dec"};
-const char Bom[3] = "\xEF\xBB\xBF";
+const char Bom[4] = "\xEF\xBB\xBF";
 const wchar_t TokenPrefix = L'%';
 const wchar_t NoReplacement = wchar_t(false);
 const wchar_t TokenReplacement = wchar_t(true);
@@ -3001,7 +3001,7 @@ UnicodeString FormatDateTime(const UnicodeString fmt, System::TDateTime DateTime
   UnicodeString Result;
   // DateTimeToStr(Result, fmt, DateTime);
   boost::local_time::local_time_facet * output_facet = new boost::local_time::local_time_facet();
-  std::wstringstream ss;
+  UnicodeStringstream ss;
   ss.imbue(std::locale(std::locale::classic(), output_facet));
   output_facet->format(System::W2MB(fmt.c_str()).c_str());
   // boost::local_time::local_date_time ldt;

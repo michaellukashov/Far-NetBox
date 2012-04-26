@@ -30,16 +30,16 @@ private:
     void *FApplicationInfo;
     bool FLogging;
     bool FPermanentLogging;
-    std::wstring FLogFileName;
-    std::wstring FPermanentLogFileName;
+    UnicodeString FLogFileName;
+    UnicodeString FPermanentLogFileName;
     int FLogWindowLines;
     bool FLogFileAppend;
     size_t FLogProtocol;
     size_t FActualLogProtocol;
     bool FLogActions;
     bool FPermanentLogActions;
-    std::wstring FActionsLogFileName;
-    std::wstring FPermanentActionsLogFileName;
+    UnicodeString FActionsLogFileName;
+    UnicodeString FPermanentActionsLogFileName;
     bool FConfirmOverwriting;
     bool FConfirmResume;
     bool FAutoReadDirectoryAfterOp;
@@ -48,15 +48,15 @@ private:
     int FSessionReopenBackground;
     size_t FSessionReopenTimeout;
     int FSessionReopenAutoStall;
-    std::wstring FIniFileStorageName;
+    UnicodeString FIniFileStorageName;
     size_t FTunnelLocalPortNumberLow;
     size_t FTunnelLocalPortNumberHigh;
     int FCacheDirectoryChangesMaxSize;
     bool FShowFtpWelcomeMessage;
-    std::wstring FDefaultRandomSeedFile;
-    std::wstring FRandomSeedFile;
-    std::wstring FPuttyRegistryStorageKey;
-    std::wstring FExternalIpAddress;
+    UnicodeString FDefaultRandomSeedFile;
+    UnicodeString FRandomSeedFile;
+    UnicodeString FPuttyRegistryStorageKey;
+    UnicodeString FExternalIpAddress;
 
     bool FDisablePasswordStoring;
     bool FForceBanners;
@@ -72,22 +72,22 @@ protected:
     virtual void __fastcall CopyData(THierarchicalStorage *Source, THierarchicalStorage *Target);
     virtual void __fastcall LoadAdmin(THierarchicalStorage *Storage);
     virtual void __fastcall Saved();
-    void CleanupRegistry(const std::wstring CleanupSubKey);
-    std::wstring BannerHash(const std::wstring Banner);
+    void CleanupRegistry(const UnicodeString CleanupSubKey);
+    UnicodeString BannerHash(const UnicodeString Banner);
 
-    virtual std::wstring __fastcall ModuleFileName();
+    virtual UnicodeString __fastcall ModuleFileName();
 
-    std::wstring GetFileFileInfoString(const std::wstring Key,
-                                       const std::wstring FileName);
-    void *GetFileApplicationInfo(const std::wstring FileName);
-    std::wstring GetFileProductVersion(const std::wstring FileName);
-    std::wstring GetFileProductName(const std::wstring FileName);
-    std::wstring GetFileCompanyName(const std::wstring FileName);
+    UnicodeString GetFileFileInfoString(const UnicodeString Key,
+                                       const UnicodeString FileName);
+    void *GetFileApplicationInfo(const UnicodeString FileName);
+    UnicodeString GetFileProductVersion(const UnicodeString FileName);
+    UnicodeString GetFileProductName(const UnicodeString FileName);
+    UnicodeString GetFileCompanyName(const UnicodeString FileName);
 
     bool GetPermanentLogging() { return FPermanentLogging; }
     void SetPermanentLogging(bool value) { FPermanentLogging = value; }
-    std::wstring GetPermanentLogFileName() { return FPermanentLogFileName; }
-    void SetPermanentLogFileName(const std::wstring value) { FPermanentLogFileName = value; }
+    UnicodeString GetPermanentLogFileName() { return FPermanentLogFileName; }
+    void SetPermanentLogFileName(const UnicodeString value) { FPermanentLogFileName = value; }
     bool GetPermanentLogActions() { return FPermanentLogActions; }
     void SetPermanentLogActions(bool value) { FPermanentLogActions = value; }
 
@@ -97,28 +97,28 @@ public:
     virtual void __fastcall Default();
     virtual void __fastcall Load();
     virtual void __fastcall Save(bool All, bool Explicit);
-    void Export(const std::wstring FileName);
+    void Export(const UnicodeString FileName);
     void CleanupConfiguration();
     void CleanupIniFile();
     void CleanupHostKeys();
     void CleanupRandomSeedFile();
     void BeginUpdate();
     void EndUpdate();
-    void LoadDirectoryChangesCache(const std::wstring SessionKey,
+    void LoadDirectoryChangesCache(const UnicodeString SessionKey,
                                    TRemoteDirectoryChangesCache *DirectoryChangesCache);
-    void SaveDirectoryChangesCache(const std::wstring SessionKey,
+    void SaveDirectoryChangesCache(const UnicodeString SessionKey,
                                    TRemoteDirectoryChangesCache *DirectoryChangesCache);
-    bool ShowBanner(const std::wstring SessionKey, const std::wstring Banner);
-    void NeverShowBanner(const std::wstring SessionKey, const std::wstring Banner);
+    bool ShowBanner(const UnicodeString SessionKey, const UnicodeString Banner);
+    void NeverShowBanner(const UnicodeString SessionKey, const UnicodeString Banner);
     virtual THierarchicalStorage * __fastcall CreateStorage();
-    void TemporaryLogging(const std::wstring ALogFileName);
-    virtual std::wstring __fastcall EncryptPassword(const std::wstring Password, const std::wstring Key);
-    virtual std::wstring __fastcall DecryptPassword(const std::wstring Password, const std::wstring Key);
-    virtual std::wstring __fastcall StronglyRecryptPassword(const std::wstring Password, const std::wstring Key);
+    void TemporaryLogging(const UnicodeString ALogFileName);
+    virtual UnicodeString __fastcall EncryptPassword(const UnicodeString Password, const UnicodeString Key);
+    virtual UnicodeString __fastcall DecryptPassword(const UnicodeString Password, const UnicodeString Key);
+    virtual UnicodeString __fastcall StronglyRecryptPassword(const UnicodeString Password, const UnicodeString Key);
 
-    std::wstring GetPuttyRegistryStorageKey() { return FPuttyRegistryStorageKey; }
+    UnicodeString GetPuttyRegistryStorageKey() { return FPuttyRegistryStorageKey; }
     bool GetLogging() { return FLogging; }
-    std::wstring GetLogFileName() { return FLogFileName; }
+    UnicodeString GetLogFileName() { return FLogFileName; }
     void SetLogToFile(bool value);
     bool GetLogFileAppend() { return FLogFileAppend; }
     size_t GetLogProtocol() { return FLogProtocol; }
@@ -139,37 +139,37 @@ public:
     void SetCacheDirectoryChangesMaxSize(int value);
     bool GetShowFtpWelcomeMessage() { return FShowFtpWelcomeMessage; }
 
-    std::wstring GetTimeFormat();
+    UnicodeString GetTimeFormat();
 
     bool GetDisablePasswordStoring() { return FDisablePasswordStoring; }
     bool GetForceBanners() { return FForceBanners; }
     bool GetDisableAcceptingHostKeys() { return FDisableAcceptingHostKeys; }
-    std::wstring __fastcall GetStoredSessionsSubKey();
+    UnicodeString __fastcall GetStoredSessionsSubKey();
     virtual bool __fastcall GetRememberPassword();
     virtual bool __fastcall GetConfirmOverwriting();
     virtual void __fastcall SetConfirmOverwriting(bool value);
     bool __fastcall GetAutoReadDirectoryAfterOp();
     void __fastcall SetAutoReadDirectoryAfterOp(bool value);
-    virtual std::wstring __fastcall GetDefaultKeyFile();
+    virtual UnicodeString __fastcall GetDefaultKeyFile();
     void __fastcall SetLogging(bool value);
-    void __fastcall SetLogFileName(std::wstring value);
-    std::wstring __fastcall GetOSVersionStr();
+    void __fastcall SetLogFileName(UnicodeString value);
+    UnicodeString __fastcall GetOSVersionStr();
     VS_FIXEDFILEINFO GetFixedApplicationInfo();
     void * __fastcall GetApplicationInfo();
-    virtual std::wstring __fastcall GetVersionStr();
-    virtual std::wstring __fastcall GetVersion();
-    std::wstring __fastcall GetProductVersion();
-    std::wstring __fastcall GetProductName();
-    std::wstring __fastcall GetCompanyName();
-    std::wstring __fastcall TrimVersion(std::wstring Version);
-    std::wstring __fastcall GetPuttySessionsKey();
-    std::wstring __fastcall GetRandomSeedFile() const { return FRandomSeedFile; }
-    void __fastcall SetRandomSeedFile(std::wstring value);
-    std::wstring __fastcall GetRandomSeedFileName();
-    void __fastcall SetPuttyRegistryStorageKey(std::wstring value);
-    std::wstring __fastcall GetSshHostKeysSubKey();
-    std::wstring __fastcall GetRootKeyStr();
-    std::wstring __fastcall GetConfigurationSubKey();
+    virtual UnicodeString __fastcall GetVersionStr();
+    virtual UnicodeString __fastcall GetVersion();
+    UnicodeString __fastcall GetProductVersion();
+    UnicodeString __fastcall GetProductName();
+    UnicodeString __fastcall GetCompanyName();
+    UnicodeString __fastcall TrimVersion(UnicodeString Version);
+    UnicodeString __fastcall GetPuttySessionsKey();
+    UnicodeString __fastcall GetRandomSeedFile() const { return FRandomSeedFile; }
+    void __fastcall SetRandomSeedFile(UnicodeString value);
+    UnicodeString __fastcall GetRandomSeedFileName();
+    void __fastcall SetPuttyRegistryStorageKey(UnicodeString value);
+    UnicodeString __fastcall GetSshHostKeysSubKey();
+    UnicodeString __fastcall GetRootKeyStr();
+    UnicodeString __fastcall GetConfigurationSubKey();
     TEOLType __fastcall GetLocalEOLType();
     bool __fastcall GetLogToFile();
     void __fastcall SetLogWindowLines(int value);
@@ -177,15 +177,15 @@ public:
     bool __fastcall GetLogWindowComplete();
     void __fastcall SetLogFileAppend(bool value);
     void __fastcall SetLogActions(bool value);
-    std::wstring GetActionsLogFileName() const { return FActionsLogFileName; }
-    void __fastcall SetActionsLogFileName(std::wstring value);
-    std::wstring __fastcall GetDefaultLogFileName();
+    UnicodeString GetActionsLogFileName() const { return FActionsLogFileName; }
+    void __fastcall SetActionsLogFileName(UnicodeString value);
+    UnicodeString __fastcall GetDefaultLogFileName();
     void __fastcall SetStorage(TStorage value);
-    std::wstring __fastcall GetRegistryStorageKey();
-    std::wstring __fastcall GetIniFileStorageName();
-    void __fastcall SetIniFileStorageName(std::wstring value);
-    std::wstring __fastcall GetPartialExt() const;
-    std::wstring __fastcall GetFileInfoString(const std::wstring Key);
+    UnicodeString __fastcall GetRegistryStorageKey();
+    UnicodeString __fastcall GetIniFileStorageName();
+    void __fastcall SetIniFileStorageName(UnicodeString value);
+    UnicodeString __fastcall GetPartialExt() const;
+    UnicodeString __fastcall GetFileInfoString(const UnicodeString Key);
     bool __fastcall GetGSSAPIInstalled();
     void __fastcall SetSessionReopenAuto(size_t value);
     void __fastcall SetSessionReopenBackground(size_t value);
@@ -197,8 +197,8 @@ public:
     void __fastcall SetShowFtpWelcomeMessage(bool value);
     int __fastcall GetCompoundVersion();
     void __fastcall UpdateActualLogProtocol();
-    std::wstring  __fastcall GetExternalIpAddress() const { return FExternalIpAddress; }
-    void __fastcall SetExternalIpAddress(std::wstring value);
+    UnicodeString  __fastcall GetExternalIpAddress() const { return FExternalIpAddress; }
+    void __fastcall SetExternalIpAddress(UnicodeString value);
     bool __fastcall GetConfirmResume();
     void __fastcall SetConfirmResume(bool value);
     virtual TStorage __fastcall GetStorage();
