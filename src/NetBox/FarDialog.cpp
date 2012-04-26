@@ -14,13 +14,13 @@
 UnicodeString StripHotKey(const UnicodeString Text)
 {
     UnicodeString Result = Text;
-    size_t Len = Result.size();
+    size_t Len = Result.Length();
     size_t Pos = 0;
     while (Pos < Len)
     {
         if (Result[Pos] == '&')
         {
-            Result.erase(Pos, 1);
+            Result.Delete(Pos, 1);
             Len--;
         }
         else

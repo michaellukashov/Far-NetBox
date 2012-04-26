@@ -130,7 +130,7 @@ void TList::SetCount(size_t NewCount)
             Delete(I);
         }
     }
-    FList.SetLength(NewCount);
+    FList.resize(NewCount);
 }
 
 void *TList::operator [](size_t Index) const
@@ -388,7 +388,7 @@ UnicodeString TStrings::GetDelimitedText() const
 {
     UnicodeString Result;
     size_t Count = GetCount();
-    if ((Count == 1) && GetString(0).empty())
+    if ((Count == 1) && GetString(0).IsEmpty())
     {
         Result = GetQuoteChar() + GetQuoteChar();
     }
@@ -399,8 +399,8 @@ UnicodeString TStrings::GetDelimitedText() const
             UnicodeString line = GetString(i);
             Result += GetQuoteChar() + line + GetQuoteChar() + GetDelimiter();
         }
-        if (Result.size() > 0)
-            Result.SetLength(Result.size() - 1);
+        if (Result.Length() > 0)
+            Result.SetLength(Result.Length() - 1);
     }
     return Result;
 }
@@ -413,9 +413,9 @@ void TStrings::SetDelimitedText(const UnicodeString Value)
         Self->EndUpdate();
     } BOOST_SCOPE_EXIT_END
     Clear();
-    std::vector<UnicodeString> lines;
+    std::vector<std::wstring> lines;
     UnicodeString delim = UnicodeString(1, GetDelimiter());
-    delim.append(1, L'\n');
+    delim.Append(1, L'\n');
     alg::split(lines, Value, alg::is_any_of(delim), alg::token_compress_on);
     UnicodeString line;
     // for (std::vector<UnicodeString>::const_iterator it = lines.begin(); it != lines.end(); ++it)
