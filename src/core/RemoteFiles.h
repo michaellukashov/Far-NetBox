@@ -2,7 +2,6 @@
 #ifndef RemoteFilesH
 #define RemoteFilesH
 //---------------------------------------------------------------------------
-
 #include <vector>
 #include <map>
 
@@ -22,21 +21,20 @@ class TTerminal;
 class TRights;
 class TRemoteFileList;
 class THierarchicalStorage;
-
 //---------------------------------------------------------------------------
 class TRemoteToken
 {
 public:
   TRemoteToken();
-  explicit TRemoteToken(const std::wstring Name);
+  explicit TRemoteToken(const UnicodeString & Name);
 
-  void Clear();
+  void __fastcall Clear();
 
-  bool operator ==(const TRemoteToken & rht) const;
-  bool operator !=(const TRemoteToken & rht) const;
-  TRemoteToken & operator =(const TRemoteToken & rht);
+  bool __fastcall operator ==(const TRemoteToken & rht) const;
+  bool __fastcall operator !=(const TRemoteToken & rht) const;
+  TRemoteToken & __fastcall operator =(const TRemoteToken & rht);
 
-  int Compare(const TRemoteToken & rht) const;
+  int __fastcall Compare(const TRemoteToken & rht) const;
 
   std::wstring GetName() const { return FName; }
   void SetName(const std::wstring value) { FName = value; }

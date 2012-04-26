@@ -116,7 +116,7 @@ bool __fastcall ExtractCommonPath(TStrings * Files, UnicodeString & Path)
 {
   assert(Files->GetCount() > 0);
 
-  Path = ExtractFilePath(Files->GetString(0));
+  Path = ExtractFilePath(Files->GetStrings(0));
   bool Result = !Path.IsEmpty();
   if (Result)
   {
@@ -143,7 +143,7 @@ bool __fastcall UnixExtractCommonPath(TStrings * Files, UnicodeString & Path)
 {
   assert(Files->GetCount() > 0);
 
-  Path = UnixExtractFilePath(Files->GetString(0));
+  Path = UnixExtractFilePath(Files->GetStrings(0));
   bool Result = !Path.IsEmpty();
   if (Result)
   {
@@ -706,7 +706,7 @@ int __fastcall TRemoteTokenList::Count() const
   return (int)FTokens.size();
 }
 //---------------------------------------------------------------------------
-const TRemoteToken * TRemoteTokenList::GetToken(size_t Index) const
+const TRemoteToken * __fastcall TRemoteTokenList::Token(int Index) const
 {
   return &FTokens[Index];
 }
@@ -875,14 +875,14 @@ Boolean __fastcall TRemoteFile::GetIsInaccesibleDirectory() const
         ((GetRights()->GetRight(TRights::rrUserExec) != TRights::rsNo) &&
          (AnsiCompareText(GetTerminal()->GetUserName(), GetOwner().GetName()) == 0)));
   }
-  else { Result = False; }
+    else { Result = False; }
   return Result;
 }
 //---------------------------------------------------------------------------
 wchar_t __fastcall TRemoteFile::GetType() const
 {
   if (GetIsSymLink() && FLinkedFile) { return FLinkedFile->GetType(); }
-  else { return FType; }
+    else { return FType; }
 }
 //---------------------------------------------------------------------------
 void __fastcall TRemoteFile::SetType(wchar_t AType)
@@ -985,7 +985,6 @@ UnicodeString __fastcall TRemoteFile::GetRightsStr()
 //---------------------------------------------------------------------------
 void __fastcall TRemoteFile::SetListingStr(UnicodeString value)
 {
-  // DEBUG_PRINTF(L"begin, value = %s", value.c_str());
   // Value stored in 'value' can be used for error message
   UnicodeString Line = value;
   FIconIndex = -1;
@@ -1058,7 +1057,7 @@ void __fastcall TRemoteFile::SetListingStr(UnicodeString value)
 
       bool FullTime = false;
       bool DayMonthFormat = false;
-      Word Day, Month, Year, Hour, Min, Sec;
+      Word Day, Month, Year, Hour, Min, Sec, P;
 
       GETCOL;
       // format dd mmm or mmm dd ?
@@ -1166,7 +1165,7 @@ void __fastcall TRemoteFile::SetListingStr(UnicodeString value)
             Sec = 0;
             FModificationFmt = mfMDHM;
           }
-          else
+            else
           {
             Year = (Word)StrToInt(Col);
             if (Year > 10000) Abort();
@@ -1213,7 +1212,6 @@ void __fastcall TRemoteFile::SetListingStr(UnicodeString value)
           }
         }
         FFileName = UnixExtractFileName(::Trim(Line));
-        // DEBUG_PRINTF(L"Line = %s, FFileName = '%s'", Line.c_str(), FFileName.c_str());
       }
     }
 
@@ -1224,7 +1222,6 @@ void __fastcall TRemoteFile::SetListingStr(UnicodeString value)
   {
     throw ETerminal(FmtLoadStr(LIST_LINE_ERROR, value.c_str()), &E);
   }
-  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void __fastcall TRemoteFile::Complete()
@@ -1372,13 +1369,13 @@ TRemoteParentDirectory::TRemoteParentDirectory(TTerminal * ATerminal)
 }
 //=== TRemoteFileList ------------------------------------------------------
 TRemoteFileList::TRemoteFileList() :
-  System::TObjectList()
+  TObjectList()
 {
   FTimestamp = Now();
   SetOwnsObjects(true);
 }
 //---------------------------------------------------------------------------
-void TRemoteFileList::AddFile(TRemoteFile * File)
+void __fastcall TRemoteFileList::AddFile(TRemoteFile * File)
 {
   Add(File);
   File->SetDirectory(this);
@@ -1697,45 +1694,45 @@ void __fastcall TRemoteDirectoryCache::DoClearFileList(UnicodeString Directory, 
 void __fastcall TRemoteDirectoryCache::Delete(int Index)
 {
   delete (TRemoteFileList *)GetObjects(Index);
-  System::TStringList::Delete(Index);
+  TStringList::Delete(Index);
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TRemoteDirectoryChangesCache::TRemoteDirectoryChangesCache(int MaxSize) :
-  System::TStringList(),
+  TStringList(),
   FMaxSize(MaxSize)
 {
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectoryChangesCache::Clear()
+void __fastcall TRemoteDirectoryChangesCache::Clear()
 {
-  System::TStringList::Clear();
+  TStringList::Clear();
 }
 //---------------------------------------------------------------------------
-bool TRemoteDirectoryChangesCache::GetIsEmpty() const
+bool __fastcall TRemoteDirectoryChangesCache::GetIsEmpty() const
 {
-  return (const_cast<TRemoteDirectoryChangesCache *>(this)->GetCount() == 0);
+  return (const_cast<TRemoteDirectoryChangesCache*>(this)->GetCount() == 0);
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectoryChangesCache::SetValue(const UnicodeString Name,
-    const UnicodeString Value)
+void __fastcall TRemoteDirectoryChangesCache::SetValue(const UnicodeString & Name,
+  const UnicodeString & Value)
 {
-  size_t Index = IndexOfName(Name.c_str());
-  if (Index != NPOS)
+  int Index = IndexOfName(Name);
+  if (Index > 0)
   {
     Delete(Index);
   }
-  System::TStringList::SetValue(Name, Value);
+  SetValue(Name, Value);
 }
 //---------------------------------------------------------------------------
-UnicodeString TRemoteDirectoryChangesCache::GetValue(const UnicodeString Name)
+UnicodeString __fastcall TRemoteDirectoryChangesCache::GetValue(const UnicodeString & Name)
 {
-  UnicodeString Value = System::TStringList::GetValue(Name);
-  System::TStringList::SetValue(Name, Value);
+  UnicodeString Value = TStringList::GetValue(Name);
+  SetValue(Name, Value);
   return Value;
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectoryChangesCache::AddDirectoryChange(
+void __fastcall TRemoteDirectoryChangesCache::AddDirectoryChange(
   const UnicodeString SourceDir, const UnicodeString Change,
   const UnicodeString TargetDir)
 {
@@ -1751,12 +1748,12 @@ void TRemoteDirectoryChangesCache::AddDirectoryChange(
   }
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectoryChangesCache::ClearDirectoryChange(
-  const UnicodeString SourceDir)
+void __fastcall TRemoteDirectoryChangesCache::ClearDirectoryChange(
+  UnicodeString SourceDir)
 {
-  for (size_t Index = 0; Index < GetCount(); Index++)
+  for (int Index = 0; Index < Count; Index++)
   {
-    if (GetName(Index).SubString(0, SourceDir.Length()) == SourceDir)
+    if (GetName(Index).SubString(1, SourceDir.Length()) == SourceDir)
     {
       Delete(Index);
       Index--;
@@ -1764,19 +1761,19 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChange(
   }
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
-  const UnicodeString TargetDir)
+void __fastcall TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
+  UnicodeString TargetDir)
 {
   UnicodeString Key;
   // hack to clear at least local sym-link change in case symlink is deleted
   DirectoryChangeKey(UnixExcludeTrailingBackslash(UnixExtractFilePath(TargetDir)),
-                     UnixExtractFileName(TargetDir), Key);
+    UnixExtractFileName(TargetDir), Key);
 
   for (size_t Index = 0; Index < GetCount(); Index++)
   {
     UnicodeString Name = GetName(Index);
-    if ((Name.SubString(0, TargetDir.Length()) == TargetDir) ||
-        (GetValue(Name).SubString(0, TargetDir.Length()) == TargetDir) ||
+    if ((Name.SubString(1, TargetDir.Length()) == TargetDir) ||
+        (GetValue(Name).SubString(1, TargetDir.Length()) == TargetDir) ||
         (!Key.IsEmpty() && (Name == Key)))
     {
       Delete(Index);
@@ -1785,10 +1782,9 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
   }
 }
 //---------------------------------------------------------------------------
-bool TRemoteDirectoryChangesCache::GetDirectoryChange(
+bool __fastcall TRemoteDirectoryChangesCache::GetDirectoryChange(
   const UnicodeString SourceDir, const UnicodeString Change, UnicodeString & TargetDir)
 {
-  // DEBUG_PRINTF(L"begin, SourceDir = %s, Change = %s", SourceDir.c_str(), Change.c_str());
   UnicodeString Key;
   bool Result;
   Key = TTerminal::ExpandFileName(Change, SourceDir);
@@ -1796,19 +1792,15 @@ bool TRemoteDirectoryChangesCache::GetDirectoryChange(
   {
     Key = L"/";
   }
-  // DEBUG_PRINTF(L"Key = %s", Key.c_str());
-  Result = (IndexOfName(Key.c_str()) != NPOS);
-  // DEBUG_PRINTF(L"Result = %d", Result);
+  Result = (IndexOfName(Key.c_str()) >= 0);
   if (Result)
   {
     TargetDir = GetValue(Key);
     // TargetDir is not "//" here only when Change is full path to symbolic link
-    // DEBUG_PRINTF(L"TargetDir = %s", TargetDir.c_str());
     if (TargetDir == L"//")
     {
       TargetDir = Key;
     }
-    // DEBUG_PRINTF(L"TargetDir = %s", TargetDir.c_str());
   }
   else
   {
@@ -1820,21 +1812,19 @@ bool TRemoteDirectoryChangesCache::GetDirectoryChange(
       if (Result)
       {
         TargetDir = Directory;
-        // DEBUG_PRINTF(L"TargetDir = %s", TargetDir.c_str());
       }
     }
   }
-  // DEBUG_PRINTF(L"end, Result = %d, TargetDir = %s", Result, TargetDir.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data)
+void __fastcall TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data)
 {
   Data = L"A";
-  size_t ACount = GetCount();
+  int ACount = GetCount();
   if (ACount > FMaxSize)
   {
-    System::TStrings * Limited = new System::TStringList();
+    TStrings * Limited = new TStringList();
     {
       BOOST_SCOPE_EXIT ( (&Limited) )
       {
@@ -1843,7 +1833,7 @@ void TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data)
       size_t Index = ACount - FMaxSize;
       while (Index < ACount)
       {
-        Limited->Add(GetString(Index));
+        Limited->Add(GetStrings(Index));
         Index++;
       }
       Data += Limited->GetText();
@@ -1855,9 +1845,8 @@ void TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data)
   }
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectoryChangesCache::Deserialize(const UnicodeString Data)
+void __fastcall TRemoteDirectoryChangesCache::Deserialize(const UnicodeString Data)
 {
-  // DEBUG_PRINTF(L"Data = %s", Data.c_str());
   if (Data.IsEmpty())
   {
     SetText(L"");
@@ -1868,7 +1857,7 @@ void TRemoteDirectoryChangesCache::Deserialize(const UnicodeString Data)
   }
 }
 //---------------------------------------------------------------------------
-bool TRemoteDirectoryChangesCache::DirectoryChangeKey(
+bool __fastcall TRemoteDirectoryChangesCache::DirectoryChangeKey(
   const UnicodeString SourceDir, const UnicodeString Change, UnicodeString & Key)
 {
   bool Result = !Change.IsEmpty();
@@ -1892,59 +1881,55 @@ bool TRemoteDirectoryChangesCache::DirectoryChangeKey(
   return Result;
 }
 //=== TRights ---------------------------------------------------------------
-const char TRights::BasicSymbols[] = "rwxrwxrwx";
-const char TRights::CombinedSymbols[] = "--s--s--t";
-const char TRights::ExtendedSymbols[] = "--S--S--T";
-const char TRights::ModeGroups[] = "ugo";
+const wchar_t TRights::BasicSymbols[] = L"rwxrwxrwx";
+const wchar_t TRights::CombinedSymbols[] = L"--s--s--t";
+const wchar_t TRights::ExtendedSymbols[] = L"--S--S--T";
+const wchar_t TRights::ModeGroups[] = L"ugo";
 //---------------------------------------------------------------------------
 TRights::TRights()
 {
   FAllowUndef = false;
   FSet = 0;
-  // DEBUG_PRINTF(L"FSet = %o", FSet);
   FUnset = 0;
   SetNumber(0);
   FUnknown = true;
 }
 //---------------------------------------------------------------------------
-TRights::TRights(unsigned short ANumber)
+__fastcall TRights::TRights(unsigned short ANumber)
 {
   FAllowUndef = false;
   FSet = 0;
-  // DEBUG_PRINTF(L"FSet = %o", FSet);
   FUnset = 0;
   SetNumber(ANumber);
 }
 //---------------------------------------------------------------------------
-TRights::TRights(const TRights & Source)
+__fastcall TRights::TRights(const TRights & Source)
 {
   Assign(&Source);
 }
 //---------------------------------------------------------------------------
-void TRights::Assign(const TRights * Source)
+void __fastcall TRights::Assign(const TRights * Source)
 {
-  assert(Source);
   FAllowUndef = Source->GetAllowUndef();
-  // DEBUG_PRINTF(L"FSet = %o, Source->FSet = %o", FSet, Source->FSet);
   FSet = Source->FSet;
   FUnset = Source->FUnset;
   FText = Source->FText;
   FUnknown = Source->FUnknown;
 }
 //---------------------------------------------------------------------------
-TRights::TFlag TRights::RightToFlag(TRights::TRight Right)
+TRights::TFlag __fastcall TRights::RightToFlag(TRights::TRight Right)
 {
   return static_cast<TFlag>(1 << (rrLast - Right));
 }
 //---------------------------------------------------------------------------
-bool TRights::operator ==(const TRights & rhr) const
+bool __fastcall TRights::operator ==(const TRights & rhr) const
 {
   if (GetAllowUndef() || rhr.GetAllowUndef())
   {
     for (int Right = rrFirst; Right <= rrLast; Right++)
     {
       if (GetRightUndef(static_cast<TRight>(Right)) !=
-          rhr.GetRightUndef(static_cast<TRight>(Right)))
+            rhr.GetRightUndef(static_cast<TRight>(Right)))
       {
         return false;
       }
@@ -1957,56 +1942,56 @@ bool TRights::operator ==(const TRights & rhr) const
   }
 }
 //---------------------------------------------------------------------------
-bool TRights::operator ==(unsigned short rhr) const
+bool __fastcall TRights::operator ==(unsigned short rhr) const
 {
   return (GetNumber() == rhr);
 }
 //---------------------------------------------------------------------------
-bool TRights::operator !=(const TRights & rhr) const
+bool __fastcall TRights::operator !=(const TRights & rhr) const
 {
   return !(*this == rhr);
 }
 //---------------------------------------------------------------------------
-TRights & TRights::operator =(unsigned short rhr)
+TRights & __fastcall TRights::operator =(unsigned short rhr)
 {
   SetNumber(rhr);
   return *this;
 }
 //---------------------------------------------------------------------------
-TRights & TRights::operator =(const TRights & rhr)
+TRights & __fastcall TRights::operator =(const TRights & rhr)
 {
   Assign(&rhr);
   return *this;
 }
 //---------------------------------------------------------------------------
-TRights TRights::operator ~() const
+TRights __fastcall TRights::operator ~() const
 {
   TRights Result(static_cast<unsigned short>(~GetNumber()));
   return Result;
 }
 //---------------------------------------------------------------------------
-TRights TRights::operator &(const TRights & rhr) const
+TRights __fastcall TRights::operator &(const TRights & rhr) const
 {
   TRights Result(*this);
   Result &= rhr;
   return Result;
 }
 //---------------------------------------------------------------------------
-TRights TRights::operator &(unsigned short rhr) const
+TRights __fastcall TRights::operator &(unsigned short rhr) const
 {
   TRights Result(*this);
   Result &= rhr;
   return Result;
 }
 //---------------------------------------------------------------------------
-TRights & TRights::operator &=(const TRights & rhr)
+TRights & __fastcall TRights::operator &=(const TRights & rhr)
 {
   if (GetAllowUndef() || rhr.GetAllowUndef())
   {
     for (int Right = rrFirst; Right <= rrLast; Right++)
     {
       if (GetRightUndef(static_cast<TRight>(Right)) !=
-          rhr.GetRightUndef(static_cast<TRight>(Right)))
+            rhr.GetRightUndef(static_cast<TRight>(Right)))
       {
         SetRightUndef(static_cast<TRight>(Right), rsUndef);
       }
@@ -2019,39 +2004,39 @@ TRights & TRights::operator &=(const TRights & rhr)
   return *this;
 }
 //---------------------------------------------------------------------------
-TRights & TRights::operator &=(unsigned short rhr)
+TRights & __fastcall TRights::operator &=(unsigned short rhr)
 {
   SetNumber(GetNumber() & rhr);
   return *this;
 }
 //---------------------------------------------------------------------------
-TRights TRights::operator |(const TRights & rhr) const
+TRights __fastcall TRights::operator |(const TRights & rhr) const
 {
   TRights Result(*this);
   Result |= rhr;
   return Result;
 }
 //---------------------------------------------------------------------------
-TRights TRights::operator |(unsigned short rhr) const
+TRights __fastcall TRights::operator |(unsigned short rhr) const
 {
   TRights Result(*this);
   Result |= rhr;
   return Result;
 }
 //---------------------------------------------------------------------------
-TRights & TRights::operator |=(const TRights & rhr)
+TRights & __fastcall TRights::operator |=(const TRights & rhr)
 {
   SetNumber(GetNumber() | rhr.GetNumber());
   return *this;
 }
 //---------------------------------------------------------------------------
-TRights & TRights::operator |=(unsigned short rhr)
+TRights & __fastcall TRights::operator |=(unsigned short rhr)
 {
   SetNumber(GetNumber() | rhr);
   return *this;
 }
 //---------------------------------------------------------------------------
-void TRights::SetAllowUndef(bool value)
+void __fastcall TRights::SetAllowUndef(bool value)
 {
   if (FAllowUndef != value)
   {
@@ -2060,59 +2045,56 @@ void TRights::SetAllowUndef(bool value)
   }
 }
 //---------------------------------------------------------------------------
-void TRights::SetText(const UnicodeString value)
+void __fastcall TRights::SetText(const UnicodeString & value)
 {
   if (value != GetText())
   {
-    // DEBUG_PRINTF(L"value = %s, GetText = %s", value.c_str(), GetText().c_str());
     if ((value.Length() != TextLen) ||
-        (!GetAllowUndef() && (value.Pos(UndefSymbol) != UnicodeString::npos)) ||
-        (value.Pos(L" ") != UnicodeString::npos))
+        (!GetAllowUndef() && (value.Pos(UndefSymbol) > 0)) ||
+        (value.Pos(L" ") > 0))
     {
-      throw ExtException(FMTLOAD(RIGHTS_ERROR, value.c_str()));
+      throw Exception(FMTLOAD(RIGHTS_ERROR, value.c_str()));
     }
 
     FSet = 0;
-    // DEBUG_PRINTF(L"FSet = %o", FSet);
     FUnset = 0;
     int Flag = 00001;
     int ExtendedFlag = 01000;
     bool KeepText = false;
-    std::string val = System::W2MB(value.c_str());
-    for (int i = TextLen - 1; i >= 0; i--)
+    for (int i = TextLen; i >= 1; i--)
     {
-      if (val[i] == UnsetSymbol)
+      if (value[i] == UnsetSymbol)
       {
         FUnset |= static_cast<unsigned short>(Flag | ExtendedFlag);
       }
-      else if (val[i] == UndefSymbol)
+      else if (value[i] == UndefSymbol)
       {
         // do nothing
       }
-      else if (val[i] == CombinedSymbols[i])
+      else if (value[i] == CombinedSymbols[i - 1])
       {
         FSet |= static_cast<unsigned short>(Flag | ExtendedFlag);
       }
-      else if (val[i] == ExtendedSymbols[i])
+      else if (value[i] == ExtendedSymbols[i - 1])
       {
         FSet |= static_cast<unsigned short>(ExtendedFlag);
         FUnset |= static_cast<unsigned short>(Flag);
       }
       else
       {
-        if (val[i] != BasicSymbols[i])
+        if (value[i] != BasicSymbols[i - 1])
         {
           KeepText = true;
         }
         FSet |= static_cast<unsigned short>(Flag);
-        if ((i + 1) % 3 == 0)
+        if (i % 3 == 0)
         {
           FUnset |= static_cast<unsigned short>(ExtendedFlag);
         }
       }
 
       Flag <<= 1;
-      if ((i + 1) % 3 == 1)
+      if (i % 3 == 1)
       {
         ExtendedFlag <<= 1;
       }
@@ -2123,41 +2105,39 @@ void TRights::SetText(const UnicodeString value)
   FUnknown = false;
 }
 //---------------------------------------------------------------------------
-UnicodeString TRights::GetText() const
+UnicodeString __fastcall TRights::GetText() const
 {
-  // DEBUG_PRINTF(L"FSet = %o, FText = %s", FSet, FText.c_str());
   if (!FText.IsEmpty())
   {
     return FText;
   }
   else
   {
-    std::string Result;
-    Result.resize(TextLen);
+    UnicodeString Result;
+    Result.SetLength(TextLen);
 
     int Flag = 00001;
     int ExtendedFlag = 01000;
     bool ExtendedPos = true;
-    char Symbol;
-    int i = TextLen - 1;
-    while (i >= 0)
+    wchar_t Symbol;
+    int i = TextLen;
+    while (i >= 1)
     {
-      // DEBUG_PRINTF(L"FSet = %o, Flag = %o", FSet, Flag);
       if (ExtendedPos &&
           ((FSet & (Flag | ExtendedFlag)) == (Flag | ExtendedFlag)))
       {
-        Symbol = CombinedSymbols[i];
+        Symbol = CombinedSymbols[i - 1];
       }
       else if ((FSet & Flag) != 0)
       {
-        Symbol = BasicSymbols[i];
+        Symbol = BasicSymbols[i - 1];
       }
       else if (ExtendedPos && ((FSet & ExtendedFlag) != 0))
       {
-        Symbol = ExtendedSymbols[i];
+        Symbol = ExtendedSymbols[i - 1];
       }
       else if ((!ExtendedPos && ((FUnset & Flag) == Flag)) ||
-               (ExtendedPos && ((FUnset & (Flag | ExtendedFlag)) == (Flag | ExtendedFlag))))
+        (ExtendedPos && ((FUnset & (Flag | ExtendedFlag)) == (Flag | ExtendedFlag))))
       {
         Symbol = UnsetSymbol;
       }
@@ -2166,81 +2146,79 @@ UnicodeString TRights::GetText() const
         Symbol = UndefSymbol;
       }
 
-      // DEBUG_PRINTF(L"Symbol = %c", Symbol);
       Result[i] = Symbol;
 
       Flag <<= 1;
       i--;
-      ExtendedPos = (((i + 1) % 3) == 0);
+      ExtendedPos = ((i % 3) == 0);
       if (ExtendedPos)
       {
         ExtendedFlag <<= 1;
       }
     }
-    // DEBUG_PRINTF(L"Result = %s", System::MB2W(Result.c_str()).c_str());
-    return System::MB2W(Result.c_str());
+    return Result;
   }
 }
 //---------------------------------------------------------------------------
-void TRights::SetOctal(const UnicodeString value)
+void __fastcall TRights::SetOctal(UnicodeString value)
 {
-  std::string AValue(System::W2MB(value.c_str()));
+  UnicodeString AValue(value);
   if (AValue.Length() == 3)
   {
-    AValue = "0" + AValue;
+    AValue = L"0" + AValue;
   }
 
-  if (GetOctal() != System::MB2W(AValue.c_str()))
+  if (GetOctal() != AValue.c_str())
   {
     bool Correct = (AValue.Length() == 4);
     if (Correct)
     {
-      for (size_t i = 0; (i < AValue.Length()) && Correct; i++)
+      for (int i = 1; (i <= AValue.Length()) && Correct; i++)
       {
-        Correct = (AValue[i] >= '0') && (AValue[i] <= '7');
+        Correct = (AValue[i] >= L'0') && (AValue[i] <= L'7');
       }
     }
 
     if (!Correct)
     {
-      throw ExtException(FMTLOAD(INVALID_OCTAL_PERMISSIONS, value.c_str()));
+      throw Exception(FMTLOAD(INVALID_OCTAL_PERMISSIONS, value.c_str()));
     }
 
-    SetNumber(static_cast<unsigned short>(
-                ((AValue[0] - '0') << 9) +
-                ((AValue[1] - '0') << 6) +
-                ((AValue[2] - '0') << 3) +
-                ((AValue[3] - '0') << 0)));
+    Number = static_cast<unsigned short>(
+      ((AValue[1] - L'0') << 9) +
+      ((AValue[2] - L'0') << 6) +
+      ((AValue[3] - L'0') << 3) +
+      ((AValue[4] - L'0') << 0));
   }
   FUnknown = false;
 }
 //---------------------------------------------------------------------------
-unsigned long TRights::GetNumberDecadic() const
+unsigned long __fastcall TRights::GetNumberDecadic() const
 {
   unsigned long N = GetNumberSet(); // used to be "Number"
   unsigned long Result =
-    ((N & 07000) / 01000 * 1000) +
-    ((N & 00700) /  0100 *  100) +
-    ((N & 00070) /   010 *   10) +
-    ((N & 00007) /    01 *    1);
+      ((N & 07000) / 01000 * 1000) +
+      ((N & 00700) /  0100 *  100) +
+      ((N & 00070) /   010 *   10) +
+      ((N & 00007) /    01 *    1);
 
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString TRights::GetOctal() const
+UnicodeString __fastcall TRights::GetOctal() const
 {
-  std::string Result;
-  unsigned short N = GetNumberSet(); // used to be "Number"
-  Result.resize(4);
-  Result[0] = static_cast<char>('0' + ((N & 07000) >> 9));
-  Result[1] = static_cast<char>('0' + ((N & 00700) >> 6));
-  Result[2] = static_cast<char>('0' + ((N & 00070) >> 3));
-  Result[3] = static_cast<char>('0' + ((N & 00007) >> 0));
+  UnicodeString Result;
+  unsigned short N = NumberSet; // used to be "Number"
+  Result.SetLength(4);
+  Result[1] = static_cast<wchar_t>(L'0' + ((N & 07000) >> 9));
+  Result[2] = static_cast<wchar_t>(L'0' + ((N & 00700) >> 6));
+  Result[3] = static_cast<wchar_t>(L'0' + ((N & 00070) >> 3));
+  Result[4] = static_cast<wchar_t>(L'0' + ((N & 00007) >> 0));
 
-  return System::MB2W(Result.c_str());
+  return Result;
 }
 //---------------------------------------------------------------------------
-void TRights::SetNumber(unsigned short value)
+void __fastcall TRights::SetNumber(unsigned short value)
 {
   if ((FSet != value) || ((FSet | FUnset) != rfAllSpecials))
   {
@@ -2248,29 +2226,28 @@ void TRights::SetNumber(unsigned short value)
     FUnset = static_cast<unsigned short>(rfAllSpecials & ~FSet);
     FText = L"";
   }
-  // DEBUG_PRINTF(L"FSet = %o, value = %o", FSet, value);
   FUnknown = false;
 }
 //---------------------------------------------------------------------------
-unsigned short TRights::GetNumber() const
+unsigned short __fastcall TRights::GetNumber() const
 {
   assert(!GetIsUndef());
   return FSet;
 }
 //---------------------------------------------------------------------------
-void TRights::SetRight(TRight Right, bool value)
+void __fastcall TRights::SetRight(TRight Right, bool value)
 {
   SetRightUndef(Right, (value ? rsYes : rsNo));
 }
 //---------------------------------------------------------------------------
-bool TRights::GetRight(TRight Right) const
+bool __fastcall TRights::GetRight(TRight Right) const
 {
   TState State = GetRightUndef(Right);
   assert(State != rsUndef);
   return (State == rsYes);
 }
 //---------------------------------------------------------------------------
-void TRights::SetRightUndef(TRight Right, TState value)
+void __fastcall TRights::SetRightUndef(TRight Right, TState value)
 {
   if (value != GetRightUndef(Right))
   {
@@ -2280,21 +2257,21 @@ void TRights::SetRightUndef(TRight Right, TState value)
 
     switch (value)
     {
-    case rsYes:
-      FSet |= Flag;
-      FUnset &= ~Flag;
-      break;
+      case rsYes:
+        FSet |= static_cast<unsigned short>(Flag);
+        FUnset &= static_cast<unsigned short>(~Flag);
+        break;
 
-    case rsNo:
-      FSet &= ~Flag;
-      FUnset |= Flag;
-      break;
+      case rsNo:
+        FSet &= static_cast<unsigned short>(~Flag);
+        FUnset |= static_cast<unsigned short>(Flag);
+        break;
 
-    case rsUndef:
-    default:
-      FSet &= ~Flag;
-      FUnset &= ~Flag;
-      break;
+      case rsUndef:
+      default:
+        FSet &= static_cast<unsigned short>(~Flag);
+        FUnset &= static_cast<unsigned short>(~Flag);
+        break;
     }
 
     FText = L"";
@@ -2302,7 +2279,7 @@ void TRights::SetRightUndef(TRight Right, TState value)
   FUnknown = false;
 }
 //---------------------------------------------------------------------------
-TRights::TState TRights::GetRightUndef(TRight Right) const
+TRights::TState __fastcall TRights::GetRightUndef(TRight Right) const
 {
   TFlag Flag = RightToFlag(Right);
   TState Result;
@@ -2322,19 +2299,19 @@ TRights::TState TRights::GetRightUndef(TRight Right) const
   return Result;
 }
 //---------------------------------------------------------------------------
-void TRights::SetReadOnly(bool value)
+void __fastcall TRights::SetReadOnly(bool value)
 {
   SetRight(rrUserWrite, !value);
   SetRight(rrGroupWrite, !value);
   SetRight(rrOtherWrite, !value);
 }
 //---------------------------------------------------------------------------
-bool  TRights::GetReadOnly()
+bool  __fastcall TRights::GetReadOnly()
 {
   return GetRight(rrUserWrite) && GetRight(rrGroupWrite) && GetRight(rrOtherWrite);
 }
 //---------------------------------------------------------------------------
-UnicodeString TRights::GetSimplestStr() const
+UnicodeString __fastcall TRights::GetSimplestStr() const
 {
   if (GetIsUndef())
   {
@@ -2346,12 +2323,12 @@ UnicodeString TRights::GetSimplestStr() const
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString TRights::GetModeStr() const
+UnicodeString __fastcall TRights::GetModeStr() const
 {
   UnicodeString Result;
   UnicodeString SetModeStr, UnsetModeStr;
   TRight Right;
-  size_t Index;
+  int Index;
 
   for (int Group = 0; Group < 3; Group++)
   {
@@ -2363,13 +2340,13 @@ UnicodeString TRights::GetModeStr() const
       Right = static_cast<TRight>(rrUserRead + Index);
       switch (GetRightUndef(Right))
       {
-      case rsYes:
-        SetModeStr += BasicSymbols[Index];
-        break;
+        case rsYes:
+          SetModeStr += BasicSymbols[Index];
+          break;
 
-      case rsNo:
-        UnsetModeStr += BasicSymbols[Index];
-        break;
+        case rsNo:
+          UnsetModeStr += BasicSymbols[Index];
+          break;
       }
     }
 
@@ -2377,20 +2354,20 @@ UnicodeString TRights::GetModeStr() const
     Index = (Group * 3) + 2;
     switch (GetRightUndef(Right))
     {
-    case rsYes:
-      SetModeStr += CombinedSymbols[Index];
-      break;
+      case rsYes:
+        SetModeStr += CombinedSymbols[Index];
+        break;
 
-    case rsNo:
-      UnsetModeStr += CombinedSymbols[Index];
-      break;
+      case rsNo:
+        UnsetModeStr += CombinedSymbols[Index];
+        break;
     }
 
     if (!SetModeStr.IsEmpty() || !UnsetModeStr.IsEmpty())
     {
       if (!Result.IsEmpty())
       {
-        Result += ',';
+        Result += L',';
       }
       Result += ModeGroups[Group];
       if (!SetModeStr.IsEmpty())
@@ -2406,7 +2383,7 @@ UnicodeString TRights::GetModeStr() const
   return Result;
 }
 //---------------------------------------------------------------------------
-void TRights::AddExecute()
+void __fastcall TRights::AddExecute()
 {
   for (int Group = 0; Group < 3; Group++)
   {
@@ -2419,29 +2396,28 @@ void TRights::AddExecute()
   FUnknown = false;
 }
 //---------------------------------------------------------------------------
-void TRights::AllUndef()
+void __fastcall TRights::AllUndef()
 {
   if ((FSet != 0) || (FUnset != 0))
   {
     FSet = 0;
-    // DEBUG_PRINTF(L"FSet = %o", FSet);
     FUnset = 0;
     FText = L"";
   }
   FUnknown = false;
 }
 //---------------------------------------------------------------------------
-bool TRights::GetIsUndef() const
+bool __fastcall TRights::GetIsUndef() const
 {
   return ((FSet | FUnset) != rfAllSpecials);
 }
 //---------------------------------------------------------------------------
-TRights::operator unsigned short() const
+__fastcall TRights::operator unsigned short() const
 {
   return GetNumber();
 }
 //---------------------------------------------------------------------------
-TRights::operator unsigned long() const
+__fastcall TRights::operator unsigned long() const
 {
   return GetNumber();
 }
@@ -2463,7 +2439,7 @@ TRemoteProperties::TRemoteProperties(const TRemoteProperties & rhp) :
 {
 }
 //---------------------------------------------------------------------------
-void TRemoteProperties::Default()
+void __fastcall TRemoteProperties::Default()
 {
   Valid.Clear();
   AddXToDirectories = false;
@@ -2474,14 +2450,14 @@ void TRemoteProperties::Default()
   Recursive = false;
 }
 //---------------------------------------------------------------------------
-bool TRemoteProperties::operator ==(const TRemoteProperties & rhp) const
+bool __fastcall TRemoteProperties::operator ==(const TRemoteProperties & rhp) const
 {
   bool Result = (Valid == rhp.Valid && Recursive == rhp.Recursive);
 
   if (Result)
   {
     if ((Valid.Contains(vpRights) &&
-         (Rights != rhp.Rights || AddXToDirectories != rhp.AddXToDirectories)) ||
+          (Rights != rhp.Rights || AddXToDirectories != rhp.AddXToDirectories)) ||
         (Valid.Contains(vpOwner) && (Owner != rhp.Owner)) ||
         (Valid.Contains(vpGroup) && (Group != rhp.Group)) ||
         (Valid.Contains(vpModification) && (Modification != rhp.Modification)) ||
@@ -2493,12 +2469,12 @@ bool TRemoteProperties::operator ==(const TRemoteProperties & rhp) const
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TRemoteProperties::operator !=(const TRemoteProperties & rhp) const
+bool __fastcall TRemoteProperties::operator !=(const TRemoteProperties & rhp) const
 {
   return !(*this == rhp);
 }
 //---------------------------------------------------------------------------
-TRemoteProperties TRemoteProperties::CommonProperties(System::TStrings * FileList)
+TRemoteProperties __fastcall TRemoteProperties::CommonProperties(TStrings * FileList)
 {
   // TODO: Modification and LastAccess
   TRemoteProperties CommonProperties;
@@ -2527,7 +2503,7 @@ TRemoteProperties TRemoteProperties::CommonProperties(System::TStrings * FileLis
     }
     else
     {
-      CommonProperties.Rights.SetAllowUndef(true);
+      CommonProperties.Rights.SetAllowUndef(True);
       CommonProperties.Rights &= *File->GetRights();
       if (CommonProperties.Owner != File->GetOwner())
       {
@@ -2544,7 +2520,7 @@ TRemoteProperties TRemoteProperties::CommonProperties(System::TStrings * FileLis
   return CommonProperties;
 }
 //---------------------------------------------------------------------------
-TRemoteProperties TRemoteProperties::ChangedProperties(
+TRemoteProperties __fastcall TRemoteProperties::ChangedProperties(
   const TRemoteProperties & OriginalProperties, TRemoteProperties NewProperties)
 {
   // TODO: Modification and LastAccess
@@ -2569,10 +2545,10 @@ TRemoteProperties TRemoteProperties::ChangedProperties(
   return NewProperties;
 }
 //---------------------------------------------------------------------------
-void TRemoteProperties::Load(THierarchicalStorage * Storage)
+void __fastcall TRemoteProperties::Load(THierarchicalStorage * Storage)
 {
   unsigned char Buf[sizeof(Valid)];
-  if (Storage->ReadBinaryData(L"Valid", &Buf, sizeof(Buf)) == sizeof(Buf))
+  if (static_cast<size_t>(Storage->ReadBinaryData(L"Valid", &Buf, sizeof(Buf))) == sizeof(Buf))
   {
     memmove(&Valid, Buf, sizeof(Valid));
   }
@@ -2585,10 +2561,10 @@ void TRemoteProperties::Load(THierarchicalStorage * Storage)
   // TODO
 }
 //---------------------------------------------------------------------------
-void TRemoteProperties::Save(THierarchicalStorage * Storage) const
+void __fastcall TRemoteProperties::Save(THierarchicalStorage * Storage) const
 {
   Storage->WriteBinaryData(UnicodeString(L"Valid"),
-                           static_cast<const void *>(&Valid), sizeof(Valid));
+    static_cast<const void *>(&Valid), sizeof(Valid));
 
   if (Valid.Contains(vpRights))
   {
