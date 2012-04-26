@@ -100,13 +100,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define True true
 #endif
 #ifndef Integer
-#define Integer int
+typedef int Integer;
 #endif
 #ifndef Boolean
-#define Boolean bool
+typedef bool Boolean;
 #endif
 #ifndef Word
-#define Word WORD
+typedef WORD Word;
 #endif
 
 #ifndef HIDESBASE
