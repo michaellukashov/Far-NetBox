@@ -184,20 +184,3 @@ bool CheckStructSize(const T* s) {return s && (s->StructSize >= sizeof(T));}
 #else
 #define SELF_TEST(code)
 #endif
-
-class TCriticalSection
-{
-public:
-  TCriticalSection();
-  ~TCriticalSection();
-
-  void Enter();
-  void Leave();
-
-  int GetAcquired() { return FAcquired; }
-
-private:
-  CRITICAL_SECTION FSection;
-  int FAcquired;
-};
-

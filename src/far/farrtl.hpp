@@ -43,3 +43,22 @@ __int64 ftell64(FILE *fp);
 int fseek64(FILE *fp, __int64 offset, int whence);
 
 #define ALIGN(value) ((value+(sizeof(void*)-1))&~(sizeof(void*)-1))
+
+//---------------------------------------------------------------------------
+
+class TCriticalSection
+{
+public:
+  TCriticalSection();
+  ~TCriticalSection();
+
+  void Enter();
+  void Leave();
+
+  int GetAcquired() { return FAcquired; }
+
+private:
+  CRITICAL_SECTION FSection;
+  int FAcquired;
+};
+
