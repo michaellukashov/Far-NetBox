@@ -1720,7 +1720,7 @@ std::wstring TCustomFarPlugin::TemporaryDir()
     UnicodeString Result;
     Result.SetLength(MAX_PATH);
     TFarEnvGuard Guard;
-    FFarStandardFunctions.MkTemp(const_cast<wchar_t *>(Result.c_str()), Result.size(), NULL);
+    FFarStandardFunctions.MkTemp(const_cast<wchar_t *>(Result.c_str()), Result.Length(), NULL);
     PackStr(Result);
     return Result;
 }
@@ -2936,8 +2936,8 @@ void FarWrapText(const std::wstring Text, System::TStrings *Result, size_t MaxWi
     System::TStringList WrappedLines;
     for (size_t Index = 0; Index < Lines.GetCount(); Index++)
     {
-        std::wstring WrappedLine = Lines.GetString(Index);
-        if (!WrappedLine.empty())
+        UnicodeString WrappedLine = Lines.GetString(Index);
+        if (!WrappedLine.IsEmpty())
         {
             WrappedLine = ::ReplaceChar(WrappedLine, '\'', '\3');
             WrappedLine = ::ReplaceChar(WrappedLine, '\"', '\4');

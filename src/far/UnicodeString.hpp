@@ -243,19 +243,19 @@ typedef class UnicodeString
 		bool ContainsAny(const wchar_t *Chars, size_t nStartPos=0) const { return wcspbrk(m_pData->GetData()+nStartPos,Chars) != nullptr; }
 		bool Contains(const wchar_t *lpwszFind, size_t nStartPos=0) const { return wcsstr(m_pData->GetData()+nStartPos,lpwszFind) != nullptr; }
 
-		operator std::wstring () const { return m_pData->GetData(); }
-        wchar_t __fastcall operator [](const int idx) const
-        {
-          ThrowIfOutOfRange(idx);   // Should Range-checking be optional to avoid overhead ??
-          return m_pData->GetData()[idx-1];
-        }
+		operator std::wstring () const { return std::wstring(m_pData->GetData(), m_pData->GetLength()); }
+    wchar_t __fastcall operator [](const int idx) const
+    {
+      ThrowIfOutOfRange(idx);   // Should Range-checking be optional to avoid overhead ??
+      return m_pData->GetData()[idx-1];
+    }
 
-        wchar_t& __fastcall operator [](const int idx)
-        {
-          ThrowIfOutOfRange(idx);   // Should Range-checking be optional to avoid overhead ??
-          // Unique();                 // Ensure we're not ref-counted (and Unicode)
-          return m_pData->GetData()[idx-1];
-        }
+    wchar_t& __fastcall operator [](const int idx)
+    {
+      ThrowIfOutOfRange(idx);   // Should Range-checking be optional to avoid overhead ??
+      // Unique();                 // Ensure we're not ref-counted (and Unicode)
+      return m_pData->GetData()[idx-1];
+    }
 protected:
     void  __cdecl ThrowIfOutOfRange(int idx) const;
 } string;

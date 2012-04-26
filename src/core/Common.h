@@ -196,18 +196,6 @@ private:
 
 //---------------------------------------------------------------------------
 
-std::wstring StripPathQuotes(const std::wstring Path);
-std::wstring AddPathQuotes(const std::wstring Path);
-void SplitCommand(const std::wstring Command, std::wstring &Program,
-                  std::wstring &Params, std::wstring &Dir);
-std::wstring ExtractProgram(const std::wstring Command);
-std::wstring FormatCommand(const std::wstring Program, const std::wstring Params);
-std::wstring ExpandFileNameCommand(const std::wstring Command,
-                                   const std::wstring FileName);
-void ReformatFileNameCommand(std::wstring &Command);
-std::wstring EscapePuttyCommandParam(const std::wstring Param);
-std::wstring ExpandEnvironmentVariables(const std::wstring Str);
-
 std::wstring ExtractShortPathName(const std::wstring Path1);
 std::wstring ExtractDirectory(const std::wstring path, wchar_t delimiter = '/');
 std::wstring ExtractFilename(const std::wstring path, wchar_t delimiter = '/');
@@ -220,11 +208,6 @@ std::wstring ExtractFileDir(const std::wstring Str);
 std::wstring ExtractFilePath(const std::wstring Str);
 std::wstring GetCurrentDir();
 
-bool ComparePaths(const std::wstring Path1, const std::wstring Path2);
-bool CompareFileName(const std::wstring Path1, const std::wstring Path2);
-bool IsReservedName(const std::wstring FileName);
-std::wstring DisplayableStr(const std::wstring Str);
-std::wstring CharToHex(char Ch, bool UpperCase = true);
 std::wstring StrToHex(const std::wstring Str, bool UpperCase = true, char Separator = '\0');
 std::wstring HexToStr(const std::wstring Hex);
 unsigned int HexToInt(const std::wstring Hex, size_t MinChars = 0);
@@ -234,26 +217,17 @@ char HexToChar(const std::wstring Hex, size_t MinChars = 0);
 std::wstring ReplaceStrAll(const std::wstring Str, const std::wstring What, const std::wstring ByWhat);
 std::wstring SysErrorMessage(int code);
 
-System::TDateTime EncodeDateVerbose(unsigned int Year, unsigned int Month, unsigned int Day);
-System::TDateTime EncodeTimeVerbose(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec);
-System::TDateTime StrToDateTime(const std::wstring Value);
 bool TryStrToDateTime(const std::wstring value, System::TDateTime &Value, System::TFormatSettings &FormatSettings);
-bool TryRelativeStrToDateTime(const std::wstring value, System::TDateTime &Value);
 std::wstring DateTimeToStr(std::wstring &Result, const std::wstring &Format,
   System::TDateTime DateTime);
 std::wstring DateTimeToString(System::TDateTime DateTime);
 unsigned int DayOfWeek(const System::TDateTime &DateTime);
-FILETIME DateTimeToFileTime(const System::TDateTime &DateTime, TDSTMode DSTMode);
-System::TDateTime AdjustDateTimeFromUnix(System::TDateTime &DateTime, TDSTMode DSTMode);
-std::wstring FixedLenDateTimeFormat(const std::wstring Format);
 
 System::TDateTime Date();
 void DecodeDate(const System::TDateTime &DateTime, unsigned int &Y,
                 unsigned int &M, unsigned int &D);
 void DecodeTime(const System::TDateTime &DateTime, unsigned int &H,
                 unsigned int &N, unsigned int &S, unsigned int  &MS);
-System::TDateTime EncodeDateVerbose(unsigned int Y, unsigned int M, unsigned int D);
-System::TDateTime EncodeTimeVerbose(unsigned int H, unsigned int N, unsigned int S, unsigned int MS);
 
 std::wstring FormatDateTime(const std::wstring fmt, System::TDateTime DateTime);
 System::TDateTime SystemTimeToDateTime(const SYSTEMTIME &SystemTime);
@@ -390,6 +364,7 @@ std::wstring ExpandUNCFileName(const std::wstring FileName);
 __int64 FileSeek(HANDLE file, __int64 offset, int Origin);
 
 //---------------------------------------------------------------------------
+void InitPlatformId();
 bool Win32Check(bool RetVal);
 //---------------------------------------------------------------------------
 #endif
