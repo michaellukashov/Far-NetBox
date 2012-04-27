@@ -641,7 +641,7 @@ bool TFarDialog::MouseEvent(MOUSE_EVENT_RECORD *Event)
 bool TFarDialog::Key(TFarDialogItem *Item, long KeyCode)
 {
     bool Result = false;
-    if (!FOnKey.empty()())
+    if (!FOnKey.empty())
     {
         FOnKey(this, Item, KeyCode, Result);
     }
@@ -1393,7 +1393,7 @@ void TFarDialogItem::DoFocus()
 //---------------------------------------------------------------------------
 void TFarDialogItem::DoExit()
 {
-    if (!FOnExit.IsEmpty())
+    if (!FOnExit.empty())
     {
         FOnExit(this);
     }
@@ -1669,7 +1669,7 @@ System::TPoint TFarDialogItem::MouseClientPosition(MOUSE_EVENT_RECORD *Event)
 //---------------------------------------------------------------------------
 bool TFarDialogItem::MouseClick(MOUSE_EVENT_RECORD *Event)
 {
-    if (!FOnMouseClick.IsEmpty())
+    if (!FOnMouseClick.empty())
     {
         FOnMouseClick(this, Event);
     }
@@ -1842,7 +1842,7 @@ LONG_PTR TFarButton::ItemProc(int Msg, LONG_PTR Param)
         else
         {
             bool Close = (GetResult() != 0);
-            if (!FOnClick.IsEmpty())
+            if (!FOnClick.empty())
             {
                 FOnClick(this, Close);
             }
@@ -1857,7 +1857,7 @@ LONG_PTR TFarButton::ItemProc(int Msg, LONG_PTR Param)
 //---------------------------------------------------------------------------
 bool TFarButton::HotKey(char HotKey)
 {
-    int P = GetCaption().Pos(L"&");
+    int P = GetCaption().Pos(L'&');
     bool Result =
         GetVisible() && GetEnabled() &&
         (P > 0) && (P < GetCaption().Length()) &&
@@ -1865,7 +1865,7 @@ bool TFarButton::HotKey(char HotKey)
     if (Result)
     {
         bool Close = (GetResult() != 0);
-        if (!FOnClick.IsEmpty())
+        if (!FOnClick.empty())
         {
             FOnClick(this, Close);
         }
@@ -1889,7 +1889,7 @@ LONG_PTR TFarCheckBox::ItemProc(int Msg, LONG_PTR Param)
     if (Msg == DN_BTNCLICK)
     {
         bool Allow = true;
-        if (!FOnAllowChange.IsEmpty())
+        if (!FOnAllowChange.empty())
         {
             FOnAllowChange(this, Param, Allow);
         }
@@ -1930,7 +1930,7 @@ LONG_PTR TFarRadioButton::ItemProc(int Msg, LONG_PTR Param)
     if (Msg == DN_BTNCLICK)
     {
         bool Allow = true;
-        if (!FOnAllowChange.IsEmpty())
+        if (!FOnAllowChange.empty())
         {
             FOnAllowChange(this, Param, Allow);
         }
@@ -2622,7 +2622,7 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
             Buf = L" ";
             if (Index < GetItems()->GetCount())
             {
-                UnicodeString value = GetItems()->GetString(Index).substr(0, DisplayWidth - 1);
+                UnicodeString value = GetItems()->GetString(Index).SubStr(1, DisplayWidth - 1);
                 Buf += value;
             }
             UnicodeString value = ::StringOfChar(' ', DisplayWidth - Buf.Length());

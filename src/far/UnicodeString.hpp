@@ -203,6 +203,11 @@ typedef class UnicodeString
 		operator const wchar_t *() const { return m_pData->GetData(); }
 
 		UnicodeString SubStr(size_t Pos, size_t Len = -1) const;
+		UnicodeString SubString(size_t Pos, size_t Len = -1) const { return SubStr(Pos, Len); }
+
+		UnicodeString Trim(size_t Pos, size_t Len = -1) const;
+		UnicodeString TrimRight(size_t Pos, size_t Len = -1) const;
+		UnicodeString TrimLeft(size_t Pos, size_t Len = -1) const;
 
 		const UnicodeString& operator=(const UnicodeString &strCopy) { return Copy(strCopy); }
 		const UnicodeString& operator=(const char *lpszData) { return Copy(lpszData); }
@@ -310,6 +315,11 @@ public:
 		Init(Str, StrLength(Str));
 	}
 
+	RawByteString(const char* Str)
+	{
+		Init(Str, strlen(Str));
+	}
+
 	RawByteString(const string& Str)
 	{
 		Init(Str, Str.GetLength());
@@ -337,6 +347,12 @@ private:
 		Data = new char[Size];
 		WideCharToMultiByte(CP_UTF8, 0, Str, static_cast<int>(Length), Data, static_cast<int>(Size-1), nullptr, nullptr);
 		Data[Size-1] = 0;
+	}
+	void Init(const char *Str, size_t Length)
+	{
+		Data = new char[Length];
+		memmove(Data, Str, Length);
+		Data[Length-1] = 0;
 	}
 
 	char* Data;

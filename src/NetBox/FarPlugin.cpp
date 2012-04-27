@@ -179,7 +179,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo *Info)
         UnicodeString CommandPrefix;
         for (size_t Index = 0; Index < CommandPrefixes.GetCount(); Index++)
         {
-            CommandPrefix = CommandPrefix + (CommandPrefix.empty() ? L"" : L":") +
+            CommandPrefix = CommandPrefix + (CommandPrefix.IsEmpty() ? L"" : L":") +
                             CommandPrefixes.GetString(Index);
         }
         // DEBUG_PRINTF(L"CommandPrefix = %s", CommandPrefix.c_str());
@@ -226,14 +226,14 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo &Info)
 //---------------------------------------------------------------------------
 wchar_t *TCustomFarPlugin::DuplicateStr(const UnicodeString Str, bool AllowEmpty)
 {
-    if (Str.empty() && !AllowEmpty)
+    if (Str.IsEmpty() && !AllowEmpty)
     {
         return NULL;
     }
     else
     {
         // DEBUG_PRINTF(L"Str = %s", Str.c_str());
-        const size_t sz = Str.size() + 1;
+        const size_t sz = Str.Length() + 1;
         wchar_t *Result = new wchar_t[sz];
         wcscpy_s(Result, sz, Str.c_str());
         return Result;
@@ -711,9 +711,9 @@ size_t TCustomFarPlugin::MaxLength(System::TStrings *Strings)
     size_t Result = 0;
     for (size_t Index = 0; Index < Strings->GetCount(); Index++)
     {
-        if (Result < Strings->GetString(Index).size())
+        if (Result < Strings->GetString(Index).Length())
         {
-            Result = Strings->GetString(Index).size();
+            Result = Strings->GetString(Index).Length();
         }
     }
     return Result;
@@ -779,10 +779,10 @@ void TFarMessageDialog::Init(unsigned int AFlags,
         {
             MoreMessageLines = new System::TStringList();
             UnicodeString MoreMessages = FParams->MoreMessages->GetText();
-            while (MoreMessages[MoreMessages.size() - 1] == L'\n' ||
-                    MoreMessages[MoreMessages.size() - 1] == L'\r')
+            while (MoreMessages[MoreMessages.Length() - 1] == L'\n' ||
+                    MoreMessages[MoreMessages.Length() - 1] == L'\r')
             {
-                MoreMessages.SetLength(MoreMessages.size() - 1);
+                MoreMessages.SetLength(MoreMessages.Length() - 1);
             }
             FarWrapText(MoreMessages, MoreMessageLines, MaxMessageWidth);
             size_t MoreMaxLen = GetFarPlugin()->MaxLength(MoreMessageLines);
@@ -819,7 +819,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
             MoreMessagesSeparator = new TFarSeparator(this);
         }
 
-        int ButtonOffset = (FParams->CheckBoxLabel.empty() ? -1 : -2);
+        int ButtonOffset = (FParams->CheckBoxLabel.IsEmpty() ? -1 : -2);
         int ButtonLines = 1;
         TFarButton *Button = NULL;
         FTimeoutButton = NULL;
@@ -874,7 +874,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
         }
 
         // DEBUG_PRINTF(L"FParams->CheckBoxLabel = %s", FParams->CheckBoxLabel.c_str());
-        if (!FParams->CheckBoxLabel.empty())
+        if (!FParams->CheckBoxLabel.IsEmpty())
         {
             SetNextItemPosition(ipNewLine);
             FCheckBox = new TFarCheckBox(this);
@@ -897,7 +897,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
             rect.Left + MaxLen - rect.Right,
             rect.Top + MessageLines->GetCount() +
             (FParams->MoreMessages != NULL ? 1 : 0) + ButtonLines +
-            (!FParams->CheckBoxLabel.empty() ? 1 : 0) +
+            (!FParams->CheckBoxLabel.IsEmpty() ? 1 : 0) +
             (-(rect.Bottom + 1)));
 
         if (FParams->MoreMessages != NULL)
@@ -961,7 +961,7 @@ void TFarMessageDialog::Idle()
             UnicodeString Caption =
                 FORMAT(L" %s ", FORMAT(FParams->TimeoutStr.c_str(),
                                        FTimeoutButtonCaption.c_str(), static_cast<int>((FParams->Timeout - Running) / 1000)).c_str()).c_str();
-            size_t sz = FTimeoutButton->GetCaption().size() > Caption.size() ? FTimeoutButton->GetCaption().size() - Caption.size() : 0;
+            size_t sz = FTimeoutButton->GetCaption().Length() > Caption.Length() ? FTimeoutButton->GetCaption().Length() - Caption.Length() : 0;
             Caption += ::StringOfChar(L' ', sz);
             FTimeoutButton->SetCaption(Caption);
         }
@@ -1059,10 +1059,10 @@ int TCustomFarPlugin::FarMessage(unsigned int Flags,
         if (Params->MoreMessages != NULL)
         {
             FullMessage += UnicodeString(L"\n\x01\n") + Params->MoreMessages->GetText();
-            while (FullMessage[FullMessage.size() - 1] == L'\n' ||
-                    FullMessage[FullMessage.size() - 1] == L'\r')
+            while (FullMessage[FullMessage.Length() - 1] == L'\n' ||
+                    FullMessage[FullMessage.Length() - 1] == L'\r')
             {
-                FullMessage.SetLength(FullMessage.size() - 1);
+                FullMessage.SetLength(FullMessage.Length() - 1);
             }
             FullMessage += L"\n\x01\n";
         }
@@ -1279,7 +1279,7 @@ void TCustomFarPlugin::FlushText()
 void TCustomFarPlugin::WriteConsole(const UnicodeString Str)
 {
     unsigned long Written;
-    ::WriteConsole(FConsoleOutput, Str.c_str(), static_cast<DWORD>(Str.size()), &Written, NULL);
+    ::WriteConsole(FConsoleOutput, Str.c_str(), static_cast<DWORD>(Str.Length()), &Written, NULL);
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::FarCopyToClipboard(const UnicodeString Str)
@@ -1455,7 +1455,7 @@ void TCustomFarPlugin::ShowConsoleTitle(const UnicodeString Title)
     GetConsoleTitle(SaveTitle, sizeof(SaveTitle));
     TConsoleTitleParam Param;
     Param.Progress = FCurrentProgress;
-    Param.Own = !FCurrentTitle.empty() && (FormatConsoleTitle() == SaveTitle);
+    Param.Own = !FCurrentTitle.IsEmpty() && (FormatConsoleTitle() == SaveTitle);
     assert(sizeof(Param) == sizeof(System::TObject *));
     if (Param.Own)
     {
@@ -1494,14 +1494,14 @@ void TCustomFarPlugin::ClearConsoleTitle()
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::UpdateConsoleTitle(const UnicodeString Title)
 {
-    // assert(!FCurrentTitle.empty());
+    // assert(!FCurrentTitle.IsEmpty());
     FCurrentTitle = Title;
     UpdateConsoleTitle();
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::UpdateConsoleTitleProgress(short Progress)
 {
-    // assert(!FCurrentTitle.empty());
+    // assert(!FCurrentTitle.IsEmpty());
     FCurrentProgress = Progress;
     UpdateConsoleTitle();
 }
@@ -2229,7 +2229,7 @@ void TFarPanelModes::SetPanelMode(size_t Mode, const UnicodeString ColumnTypes,
                                   bool CaseConversion, const UnicodeString StatusColumnTypes,
                                   const UnicodeString StatusColumnWidths)
 {
-    size_t ColumnTypesCount = !ColumnTypes.empty() ? CommaCount(ColumnTypes) + 1 : 0;
+    size_t ColumnTypesCount = !ColumnTypes.IsEmpty() ? CommaCount(ColumnTypes) + 1 : 0;
     assert(Mode != NPOS && Mode < LENOF(FPanelModes));
     assert(!ColumnTitles || (ColumnTitles->GetCount() == ColumnTypesCount));
 
@@ -2297,7 +2297,7 @@ void TFarPanelModes::FillOpenPluginInfo(struct OpenPluginInfo *Info)
 size_t TFarPanelModes::CommaCount(const UnicodeString ColumnTypes)
 {
     size_t Count = 0;
-    for (size_t Index = 0; Index < ColumnTypes.size(); Index++)
+    for (size_t Index = 0; Index < ColumnTypes.Length(); Index++)
     {
         if (ColumnTypes[Index] == ',')
         {
@@ -2877,7 +2877,7 @@ UnicodeString TFarEditorInfo::GetFileName()
     size_t buffLen = FarPlugin->FarEditorControl(ECTL_GETFILENAME, NULL);
     if (buffLen)
     {
-        Result.SetLength(buffLen + 1, 0);
+        Result.SetLength(buffLen + 1);
         FarPlugin->FarEditorControl(ECTL_GETFILENAME, &Result[0]);
     }
     return Result;
@@ -2953,11 +2953,11 @@ void FarWrapText(const UnicodeString Text, System::TStrings *Result, size_t MaxW
                     // WrapText does not wrap when not possible, enforce it
                     // (it also does not wrap when the line is longer than maximum only
                     // because of trailing dot or similar)
-                    UnicodeString Line = FullLine.substr(0, MaxWidth);
-                    FullLine.erase(0, MaxWidth);
+                    UnicodeString Line = FullLine.SubString(1, MaxWidth);
+                    FullLine.Delete(1, MaxWidth);
 
                     size_t P;
-                    while ((P = Line.find_first_of(L"\t")) != UnicodeString::npos)
+                    while ((P = Line.Pos(L'\t')) > 0)
                     {
                         Line.erase(P, 1);
                         Line.insert(P, ::StringOfChar(' ',
@@ -2969,7 +2969,7 @@ void FarWrapText(const UnicodeString Text, System::TStrings *Result, size_t MaxW
                     // DEBUG_PRINTF(L"Line = %s", Line.c_str());
                     Result->Add(Line);
                 }
-                while (!FullLine.empty());
+                while (!FullLine.IsEmpty());
             }
         }
         else
