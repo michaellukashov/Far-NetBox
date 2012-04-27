@@ -414,8 +414,8 @@ void TStrings::SetDelimitedText(const UnicodeString Value)
     } BOOST_SCOPE_EXIT_END
     Clear();
     std::vector<std::wstring> lines;
-    UnicodeString delim = UnicodeString(1, GetDelimiter());
-    delim.Append(1, L'\n');
+    std::wstring delim = std::wstring(1, GetDelimiter());
+    delim.append(1, L'\n');
     alg::split(lines, Value, alg::is_any_of(delim), alg::token_compress_on);
     UnicodeString line;
     // for (std::vector<UnicodeString>::const_iterator it = lines.begin(); it != lines.end(); ++it)
@@ -475,7 +475,7 @@ UnicodeString TStrings::GetTextStr()
     LB = sLineBreak;
     for (I = 0; I < Count; I++)
     {
-        Size += GetString(I).size() + LB.size();
+        Size += GetString(I).Length() + LB.Length();
     }
     Result.SetLength(Size);
     P = const_cast<wchar_t *>(Result.c_str());
@@ -483,17 +483,17 @@ UnicodeString TStrings::GetTextStr()
     {
         S = GetString(I);
         // DEBUG_PRINTF(L"  S = %s", S.c_str());
-        L = S.size() * sizeof(wchar_t);
+        L = S.Length() * sizeof(wchar_t);
         if (L != 0)
         {
             memmove(P, S.c_str(), L);
-            P += S.size();
+            P += S.Length();
         };
-        L = LB.size() * sizeof(wchar_t);
+        L = LB.Length() * sizeof(wchar_t);
         if (L != 0)
         {
             memmove(P, LB.c_str(), L);
-            P += LB.size();
+            P += LB.Length();
         };
     }
     return Result;
@@ -615,7 +615,7 @@ size_t TStrings::IndexOfName(const UnicodeString Name)
     {
         UnicodeString S = GetString(Index);
         size_t P = ::AnsiPos(S, L'=');
-        if ((P != UnicodeString::npos) && (CompareStrings(S.substr(0, P), Name) == 0))
+        if ((P > 0) && (CompareStrings(S.SubStr(1, P), Name) == 0))
         {
             return Index;
         }
@@ -630,7 +630,7 @@ UnicodeString TStrings::ExtractName(const UnicodeString S)
 {
     UnicodeString Result = S;
     size_t P = ::AnsiPos(Result, L'=');
-    if (P != UnicodeString::npos)
+    if (P > 0)
     {
         Result.SetLength(P);
     }
@@ -644,18 +644,18 @@ const UnicodeString TStrings::GetValue(const UnicodeString Name)
 {
     UnicodeString Result;
     size_t I = IndexOfName(Name);
-    if (I != UnicodeString::npos)
+    if (I > 0)
     {
-        Result = GetString(I).substr(Name.size() + 1, static_cast<size_t>(-1));
+        Result = GetString(I).SubStr(Name.Length() + 1, static_cast<size_t>(-1));
     }
     return Result;
 }
 void TStrings::SetValue(const UnicodeString Name, const UnicodeString Value)
 {
     size_t I = IndexOfName(Name);
-    if (!Value.empty())
+    if (!Value.IsEmpty())
     {
-        if (I == UnicodeString::npos)
+        if (I == 0)
         {
             I = Add(L"");
         }
@@ -663,7 +663,7 @@ void TStrings::SetValue(const UnicodeString Name, const UnicodeString Value)
     }
     else
     {
-        if (I != UnicodeString::npos)
+        if (I > 0)
         {
             Delete(I);
         }
@@ -1058,7 +1058,7 @@ UnicodeString MB2W(const char *src, const UINT cp)
     {
         wide.SetLength(static_cast<size_t>(reqLength));
         MultiByteToWideChar(cp, 0, src, -1, &wide[0], reqLength);
-        wide.erase(wide.length() - 1);  //remove NULL character
+        wide.Remove(wide.Length() - 1);  //remove NULL character
     }
     return wide;
 }
@@ -1081,7 +1081,7 @@ std::string W2MB(const wchar_t *src, const UINT cp)
     const int reqLength = WideCharToMultiByte(cp, 0, src, -1, 0, 0, NULL, NULL);
     if (reqLength)
     {
-        mb.SetLength(static_cast<size_t>(reqLength));
+        mb.resize(static_cast<size_t>(reqLength));
         WideCharToMultiByte(cp, 0, src, -1, &mb[0], reqLength, NULL, NULL);
         mb.erase(mb.length() - 1);  //remove NULL character
     }
@@ -1451,7 +1451,7 @@ __int64 __fastcall TMemoryStream::Write(const void *Buffer, __int64 Count)
 
 bool IsRelative(const UnicodeString Value)
 {
-    return  !(!Value.empty() && (Value[0] == L'\\'));
+    return  !(!Value.IsEmpty() && (Value[0] == L'\\'));
 }
 
 TRegDataType DataTypeToRegData(DWORD Value)
@@ -1600,7 +1600,7 @@ bool TRegistry::OpenKey(const UnicodeString Key, bool CanCreate)
 
     // if (!Relative) S.erase(0, 1); // Delete(S, 1, 1);
     HKEY TempKey = 0;
-    if (!CanCreate || S.empty())
+    if (!CanCreate || S.IsEmpty())
     {
         // DEBUG_PRINTF(L"RegOpenKeyEx");
         Result = RegOpenKeyEx(GetBaseKey(Relative), S.c_str(), 0,
@@ -1879,11 +1879,11 @@ void TRegistry::WriteFloat(const UnicodeString Name, double Value)
 void TRegistry::WriteString(const UnicodeString Name, const UnicodeString Value)
 {
     // DEBUG_PRINTF(L"Value = %s, Value.size = %d", Value.c_str(), Value.size());
-    PutData(Name, static_cast<const void *>(Value.c_str()), Value.size() * sizeof(wchar_t) + 1, rdString);
+    PutData(Name, static_cast<const void *>(Value.c_str()), Value.Length() * sizeof(wchar_t) + 1, rdString);
 }
 void TRegistry::WriteStringRaw(const UnicodeString Name, const UnicodeString Value)
 {
-    PutData(Name, Value.c_str(), Value.size() * sizeof(wchar_t) + 1, rdString);
+    PutData(Name, Value.c_str(), Value.Length() * sizeof(wchar_t) + 1, rdString);
 }
 void TRegistry::Writeint(const UnicodeString Name, int Value)
 {

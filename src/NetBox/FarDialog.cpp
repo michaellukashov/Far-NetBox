@@ -641,7 +641,7 @@ bool TFarDialog::MouseEvent(MOUSE_EVENT_RECORD *Event)
 bool TFarDialog::Key(TFarDialogItem *Item, long KeyCode)
 {
     bool Result = false;
-    if (!FOnKey.empty())
+    if (!FOnKey.empty()())
     {
         FOnKey(this, Item, KeyCode, Result);
     }
@@ -1180,7 +1180,7 @@ void TFarDialogItem::SetDataInternal(const UnicodeString value)
         SendMessage(DM_SETTEXTPTR, reinterpret_cast<LONG_PTR>(FarData.c_str()));
     }
     GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(FarData, true);
-    // GetDialogItem()->MaxLen = FarData.size();
+    // GetDialogItem()->MaxLen = FarData.Length();
     // DEBUG_PRINTF(L"GetDialogItem()->PtrData = %s", GetDialogItem()->PtrData);
     DialogChange();
 }
@@ -1197,7 +1197,7 @@ void TFarDialogItem::UpdateData(const UnicodeString value)
 {
     UnicodeString FarData = value.c_str();
     GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(FarData, true);
-    // GetDialogItem()->MaxLen = FarData.size();
+    // GetDialogItem()->MaxLen = FarData.Length();
 }
 //---------------------------------------------------------------------------
 UnicodeString TFarDialogItem::GetData()
@@ -1330,7 +1330,7 @@ void TFarDialogItem::SetEnabledDependencyNegative(TFarDialogItem *value)
 //---------------------------------------------------------------------------
 bool TFarDialogItem::GetIsEmpty()
 {
-    return GetData().empty();
+    return GetData().IsEmpty();
 }
 //---------------------------------------------------------------------------
 LONG_PTR TFarDialogItem::FailItemProc(int Msg, LONG_PTR Param)
@@ -1393,7 +1393,7 @@ void TFarDialogItem::DoFocus()
 //---------------------------------------------------------------------------
 void TFarDialogItem::DoExit()
 {
-    if (!FOnExit.empty())
+    if (!FOnExit.IsEmpty())
     {
         FOnExit(this);
     }
@@ -1669,7 +1669,7 @@ System::TPoint TFarDialogItem::MouseClientPosition(MOUSE_EVENT_RECORD *Event)
 //---------------------------------------------------------------------------
 bool TFarDialogItem::MouseClick(MOUSE_EVENT_RECORD *Event)
 {
-    if (!FOnMouseClick.empty())
+    if (!FOnMouseClick.IsEmpty())
     {
         FOnMouseClick(this, Event);
     }
@@ -1772,7 +1772,7 @@ void TFarButton::SetDataInternal(const UnicodeString value)
             Margin = 2;
             break;
         }
-        SetWidth(static_cast<int>(Margin + StripHotKey(AValue).size() + Margin));
+        SetWidth(static_cast<int>(Margin + StripHotKey(AValue).Length() + Margin));
     }
 }
 //---------------------------------------------------------------------------
@@ -1781,13 +1781,13 @@ UnicodeString TFarButton::GetData()
     UnicodeString Result = TFarDialogItem::GetData();
     if ((FBrackets == brTight) || (FBrackets == brSpace))
     {
-        bool HasBrackets = (Result.size() >= 2) &&
-                           (Result[0] == ((FBrackets == brSpace) ? L' ' : L'[')) &&
-                           (Result[Result.size() - 1] == ((FBrackets == brSpace) ? L' ' : L']'));
+        bool HasBrackets = (Result.Length() >= 2) &&
+                           (Result[1] == ((FBrackets == brSpace) ? L' ' : L'[')) &&
+                           (Result[Result.Length() - 1] == ((FBrackets == brSpace) ? L' ' : L']'));
         assert(HasBrackets);
         if (HasBrackets)
         {
-            Result = Result.substr(1, Result.size() - 2);
+            Result = Result.SubStr(2, Result.Length() - 2);
         }
     }
     return Result;
@@ -1842,7 +1842,7 @@ LONG_PTR TFarButton::ItemProc(int Msg, LONG_PTR Param)
         else
         {
             bool Close = (GetResult() != 0);
-            if (!FOnClick.empty())
+            if (!FOnClick.IsEmpty())
             {
                 FOnClick(this, Close);
             }
@@ -1857,15 +1857,15 @@ LONG_PTR TFarButton::ItemProc(int Msg, LONG_PTR Param)
 //---------------------------------------------------------------------------
 bool TFarButton::HotKey(char HotKey)
 {
-    size_t P = GetCaption().find_first_of(L"&");
+    int P = GetCaption().Pos(L"&");
     bool Result =
         GetVisible() && GetEnabled() &&
-        (P != UnicodeString::npos) && (P < GetCaption().size()) &&
+        (P > 0) && (P < GetCaption().Length()) &&
         (GetCaption()[P + 1] == HotKey);
     if (Result)
     {
         bool Close = (GetResult() != 0);
-        if (!FOnClick.empty())
+        if (!FOnClick.IsEmpty())
         {
             FOnClick(this, Close);
         }
@@ -1889,7 +1889,7 @@ LONG_PTR TFarCheckBox::ItemProc(int Msg, LONG_PTR Param)
     if (Msg == DN_BTNCLICK)
     {
         bool Allow = true;
-        if (!FOnAllowChange.empty())
+        if (!FOnAllowChange.IsEmpty())
         {
             FOnAllowChange(this, Param, Allow);
         }
@@ -1915,7 +1915,7 @@ void TFarCheckBox::SetData(const UnicodeString value)
     TFarDialogItem::SetData(value);
     if (GetLeft() >= 0 || GetRight() >= 0)
     {
-        SetWidth(4 + StripHotKey(value).size());
+        SetWidth(4 + StripHotKey(value).Length());
     }
 }
 //---------------------------------------------------------------------------
@@ -1930,7 +1930,7 @@ LONG_PTR TFarRadioButton::ItemProc(int Msg, LONG_PTR Param)
     if (Msg == DN_BTNCLICK)
     {
         bool Allow = true;
-        if (!FOnAllowChange.empty())
+        if (!FOnAllowChange.IsEmpty())
         {
             FOnAllowChange(this, Param, Allow);
         }
@@ -1959,7 +1959,7 @@ void TFarRadioButton::SetData(const UnicodeString value)
     TFarDialogItem::SetData(value);
     if (GetLeft() >= 0 || GetRight() >= 0)
     {
-        SetWidth(4 + StripHotKey(value).size());
+        SetWidth(4 + StripHotKey(value).Length());
     }
 }
 //---------------------------------------------------------------------------
@@ -1982,7 +1982,7 @@ LONG_PTR TFarEdit::ItemProc(int Msg, LONG_PTR Param)
     {
         UnicodeString Data = (reinterpret_cast<FarDialogItem *>(Param))->PtrData;
         GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(Data, true);
-        // GetDialogItem()->MaxLen = Data.size();
+        // GetDialogItem()->MaxLen = Data.Length();
     }
     return TFarDialogItem::ItemProc(Msg, Param);
 }
@@ -2003,7 +2003,7 @@ void TFarEdit::SetHistoryMask(size_t Index, const UnicodeString value)
         assert(&GetDialogItem()->Mask == &GetDialogItem()->History);
 
         delete[] GetDialogItem()->Mask;
-        if (value.empty())
+        if (value.IsEmpty())
         {
             GetDialogItem()->Mask = NULL;
         }
@@ -2011,15 +2011,15 @@ void TFarEdit::SetHistoryMask(size_t Index, const UnicodeString value)
         {
             GetDialogItem()->Mask = TCustomFarPlugin::DuplicateStr(value);
         }
-        bool PrevHistory = !GetHistory().empty();
-        SetFlag(DIF_HISTORY, (Index == 0) && !value.empty());
-        bool Masked = (Index == 1) && !value.empty();
+        bool PrevHistory = !GetHistory().IsEmpty();
+        SetFlag(DIF_HISTORY, (Index == 0) && !value.IsEmpty());
+        bool Masked = (Index == 1) && !value.IsEmpty();
         SetFlag(DIF_MASKEDIT, Masked);
         if (Masked)
         {
             SetFixed(true);
         }
-        bool CurrHistory = !GetHistory().empty();
+        bool CurrHistory = !GetHistory().IsEmpty();
         if (PrevHistory != CurrHistory)
         {
             // add/remove space for history arrow
@@ -2102,7 +2102,7 @@ void TFarText::SetData(const UnicodeString value)
     TFarDialogItem::SetData(value);
     if (GetLeft() >= 0 || GetRight() >= 0)
     {
-        SetWidth(StripHotKey(value).size());
+        SetWidth(StripHotKey(value).Length());
     }
 }
 //---------------------------------------------------------------------------
@@ -2322,9 +2322,9 @@ size_t TFarList::GetMaxLength()
     size_t Result = 0;
     for (size_t i = 0; i < GetCount(); i++)
     {
-        if (Result < GetString(i).size())
+        if (Result < GetString(i).Length())
         {
-            Result = GetString(i).size();
+            Result = GetString(i).Length();
         }
     }
     return Result;
@@ -2525,7 +2525,7 @@ LONG_PTR TFarComboBox::ItemProc(int Msg, LONG_PTR Param)
     {
         UnicodeString Data = (reinterpret_cast<FarDialogItem *>(Param))->PtrData;
         GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(Data, true);
-        // GetDialogItem()->MaxLen = Data.size();
+        // GetDialogItem()->MaxLen = Data.Length();
     }
 
     if (FList->ItemProc(Msg, Param))
@@ -2625,8 +2625,8 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
                 UnicodeString value = GetItems()->GetString(Index).substr(0, DisplayWidth - 1);
                 Buf += value;
             }
-            UnicodeString value = ::StringOfChar(' ', DisplayWidth - Buf.size());
-            value.SetLength(DisplayWidth - Buf.size());
+            UnicodeString value = ::StringOfChar(' ', DisplayWidth - Buf.Length());
+            value.SetLength(DisplayWidth - Buf.Length());
             Buf += value;
             if (AScrollBar)
             {
