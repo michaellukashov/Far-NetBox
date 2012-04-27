@@ -18,6 +18,8 @@ public:
     explicit Exception(const UnicodeString Msg);
     explicit Exception(const Exception &E);
     explicit Exception(const std::exception *E);
+    template<typename T>
+    bool InheritsFrom() const { return dynamic_cast<const T *>(this) != NULL; }
 };
 //---------------------------------------------------------------------------
 class ExtException : public Exception

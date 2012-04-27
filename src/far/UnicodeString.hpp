@@ -192,7 +192,7 @@ typedef class UnicodeString
 		UnicodeString& Copy(const char *lpszData, UINT CodePage=CP_OEMCP);
 
 		UnicodeString& Remove(size_t Pos, size_t Len = 1) { return Replace(Pos, Len, nullptr, 0); }
-        UnicodeString& Delete(size_t index, size_t count) { return Remove(index, count); }
+    UnicodeString& Delete(size_t Index, size_t Count) { return Remove(Index, Count); }
 		UnicodeString& LShift(size_t nShiftCount, size_t nStartPos=0) { return Remove(nStartPos, nShiftCount); }
 
 		UnicodeString& Clear();
