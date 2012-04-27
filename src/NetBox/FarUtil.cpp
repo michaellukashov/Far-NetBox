@@ -83,7 +83,7 @@ void ParseURL(const wchar_t * url, UnicodeString * scheme, UnicodeString * hostN
     UnicodeString parsePath = urlParse.SubString(delimPath);
     urlParse.Delete(1, delimPath);
     //Parse query
-    const size_t delimQuery = 0;
+    size_t delimQuery = 0;
     if (parsePath.RPos(delimQuery, L'?'))
     {
       if (query)
@@ -103,11 +103,11 @@ void ParseURL(const wchar_t * url, UnicodeString * scheme, UnicodeString * hostN
   }
 
   //Parse user name/password
-  const size_t delimLogin = 0
-                            if (urlParse.RPos(delimLogin, L'@'))
+  size_t delimLogin = 0;
+  if (urlParse.RPos(delimLogin, L'@'))
   {
     UnicodeString parseLogin = urlParse.SubString(0, delimLogin);
-    const size_t delimPwd = 0;
+    size_t delimPwd = 0;
     if (parseLogin.RPos(delimPwd, L':'))
     {
       if (password)
@@ -129,8 +129,8 @@ void ParseURL(const wchar_t * url, UnicodeString * scheme, UnicodeString * hostN
     *port = 0;
   }
 
-  const size_t delimPort = 0;
-  if (urlParse.rfind(delimPort, L':'))
+  size_t delimPort = 0;
+  if (urlParse.RPos(delimPort, L':'))
   {
     if (port)
     {

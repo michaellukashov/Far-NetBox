@@ -285,7 +285,7 @@ UnicodeString ExceptionLogString(Exception *E)
       if (MoreMessages)
       {
         Msg += L"\n" +
-          StringReplace(MoreMessages->GetText(), L"\r", L"", TReplaceFlags() << rfReplaceAll);
+          StringReplace(MoreMessages->GetText(), L"\r", L"", TReplaceFlags::Init(rfReplaceAll));
       }
     }
     return Msg;
@@ -312,7 +312,7 @@ UnicodeString __fastcall SystemTemporaryDirectory()
 {
   UnicodeString TempDir;
   TempDir.SetLength(MAX_PATH);
-  TempDir.SetLength(GetTempPath(MAX_PATH, TempDir.c_str()));
+  TempDir.SetLength(GetTempPath(MAX_PATH, (LPWSTR)TempDir.c_str()));
   return TempDir;
 }
 //---------------------------------------------------------------------------
@@ -382,7 +382,7 @@ static wchar_t * __fastcall ReplaceChar(
 
     FileName.Insert(ByteToHex(static_cast<unsigned char>(FileName[Index])), Index + 1);
     FileName[Index] = TokenPrefix;
-    InvalidChar = FileName.c_str() + Index + 2;
+    InvalidChar = (wchar_t *)FileName.c_str() + Index + 2;
   }
   else
   {
@@ -406,7 +406,7 @@ UnicodeString __fastcall ValidLocalFileName(
     bool ATokenReplacement = (InvalidCharsReplacement == TokenReplacement);
     const wchar_t * Chars =
       (ATokenReplacement ? TokenizibleChars : LocalInvalidChars).c_str();
-    wchar_t * InvalidChar = FileName.c_str();
+    wchar_t * InvalidChar = (wchar_t *)FileName.c_str();
     while ((InvalidChar = wcspbrk(InvalidChar, Chars)) != NULL)
     {
       int Pos = (InvalidChar - FileName.c_str() + 1);
@@ -430,12 +430,12 @@ UnicodeString __fastcall ValidLocalFileName(
         ((FileName[FileName.Length()] == L' ') ||
          (FileName[FileName.Length()] == L'.')))
     {
-      ReplaceChar(FileName, FileName.c_str() + FileName.Length() - 1, InvalidCharsReplacement);
+      ReplaceChar(FileName, (wchar_t *)FileName.c_str() + FileName.Length() - 1, InvalidCharsReplacement);
     }
 
     if (IsReservedName(FileName))
     {
-      int P = FileName.Pos(".");
+      int P = FileName.Pos(L'.');
       if (P == 0)
       {
         P = FileName.Length() + 1;
@@ -514,7 +514,8 @@ void __fastcall ReformatFileNameCommand(UnicodeString & Command)
   {
     UnicodeString Program, Params, Dir;
     SplitCommand(Command, Program, Params, Dir);
-    if (Params.Pos(ShellCommandFileNamePattern) == 0)
+    size_t nPos = 0;
+    if (!Params.Pos(nPos, ShellCommandFileNamePattern))
     {
       Params = Params + (Params.IsEmpty() ? L"" : L" ") + ShellCommandFileNamePattern;
     }
@@ -1655,7 +1656,7 @@ UnicodeString __fastcall EncodeUrlString(UnicodeString S)
 //---------------------------------------------------------------------------
 UnicodeString __fastcall EscapeHotkey(const UnicodeString & Caption)
 {
-  return StringReplace(Caption, L"&", L"&&", TReplaceFlags() << rfReplaceAll);
+  return StringReplace(Caption, L"&", L"&&", TReplaceFlags::Init(rfReplaceAll));
 }
 //---------------------------------------------------------------------------
 // duplicated in console's Main.cpp
@@ -1988,7 +1989,7 @@ size_t Pos(const UnicodeString str, const UnicodeString substr)
   return result;
 }
 
-UnicodeString StringReplace(const UnicodeString str, const UnicodeString from, const UnicodeString to)
+UnicodeString StringReplace(const UnicodeString str, const UnicodeString from, const UnicodeString to, TReplaceFlags Flags)
 {
   return AnsiReplaceStr(str, from, to);
 }

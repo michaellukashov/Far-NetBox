@@ -302,6 +302,7 @@ public:
 #else
   UnicodeString GetDirectory() const { return FDirectory; }
   TDateTime GetTimestamp() const { return FTimestamp; }
+  TRemoteFile * __fastcall GetFile(Integer Index);
 #endif
 };
 //---------------------------------------------------------------------------

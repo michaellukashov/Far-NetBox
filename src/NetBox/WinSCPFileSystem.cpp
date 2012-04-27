@@ -134,7 +134,7 @@ void TRemoteFilePanelItem::TranslateColumnTypes(UnicodeString &ColumnTypes,
     ColumnTypes = L"";
     UnicodeString Column;
     UnicodeString Title;
-    while (!AColumnTypes.empty())
+    while (!AColumnTypes.IsEmpty())
     {
         Column = CutToChar(AColumnTypes, ',', false);
         if (Column == L"G")
@@ -161,7 +161,7 @@ void TRemoteFilePanelItem::TranslateColumnTypes(UnicodeString &ColumnTypes,
         {
             Title = L"";
         }
-        ColumnTypes += (ColumnTypes.empty() ? L"" : L",") + Column;
+        ColumnTypes += (ColumnTypes.IsEmpty() ? L"" : L",") + Column;
         if (ColumnTitles)
         {
             ColumnTitles->Add(Title);
@@ -232,7 +232,7 @@ void TFarInteractiveCustomCommand::Prompt(size_t /*Index*/,
         const UnicodeString Prompt, UnicodeString &Value)
 {
     UnicodeString APrompt = Prompt;
-    if (APrompt.empty())
+    if (APrompt.IsEmpty())
     {
         APrompt = FPlugin->GetMsg(APPLY_COMMAND_PARAM_PROMPT);
     }
@@ -494,7 +494,7 @@ bool TWinSCPFileSystem::GetFindDataEx(System::TObjectList *PanelItems, int OpMod
         assert(StoredSessions);
         StoredSessions->Load();
         UnicodeString Folder = FSessionsFolder;
-        if (!FSessionsFolder.empty())
+        if (!FSessionsFolder.IsEmpty())
         {
             Folder = UnixIncludeTrailingBackslash(FSessionsFolder);
         }
@@ -510,12 +510,12 @@ bool TWinSCPFileSystem::GetFindDataEx(System::TObjectList *PanelItems, int OpMod
             for (size_t Index = 0; Index < StoredSessions->GetCount(); Index++)
             {
                 Data = StoredSessions->GetSession(Index);
-                if (Data->GetName().substr(0, Folder.size()) == Folder)
+                if (Data->GetName().SubString(1, Folder.Length()) == Folder)
                 {
-                    UnicodeString Name = Data->GetName().substr(
-                                            Folder.size(), Data->GetName().size() - Folder.size());
-                    size_t Slash = Name.find_first_of(L'/');
-                    if (Slash != UnicodeString::npos)
+                    UnicodeString Name = Data->GetName().SubString(
+                                            Folder.Length(), Data->GetName().Length() - Folder.Length());
+                    size_t Slash = Name.Pos(L'/');
+                    if (Slash > 0)
                     {
                         Name.SetLength(Slash);
                         if (ChildPaths->IndexOf(Name.c_str()) == NPOS)
@@ -531,7 +531,7 @@ bool TWinSCPFileSystem::GetFindDataEx(System::TObjectList *PanelItems, int OpMod
                 }
             }
         }
-        if (!FNewSessionsFolder.empty())
+        if (!FNewSessionsFolder.IsEmpty())
         {
             PanelItems->Add(static_cast<System::TObject *>(new TSessionFolderPanelItem(FNewSessionsFolder)));
         }
@@ -554,7 +554,7 @@ bool TWinSCPFileSystem::GetFindDataEx(System::TObjectList *PanelItems, int OpMod
                 RedrawPanel(true);
             }
         }
-        if (!FPrevSessionName.empty())
+        if (!FPrevSessionName.IsEmpty())
         {
             TSessionData *PrevSession = StoredSessions->GetSessionByName(FPrevSessionName);
             FPrevSessionName.clear();
@@ -581,7 +581,7 @@ void TWinSCPFileSystem::DuplicateRenameSession(TSessionData *Data,
     if (FPlugin->InputBox(GetMsg(Duplicate ? DUPLICATE_SESSION_TITLE : RENAME_SESSION_TITLE),
                           GetMsg(Duplicate ? DUPLICATE_SESSION_PROMPT : RENAME_SESSION_PROMPT),
                           Name, NULL) &&
-            !Name.empty() && (Name != Data->GetName()))
+            !Name.IsEmpty() && (Name != Data->GetName()))
     {
         TNamedObject *EData = StoredSessions->FindByName(Name);
         if ((EData != NULL) && (EData != Data))
@@ -667,7 +667,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData *Data, bool Edit)
                         // UnicodeString Name =
                         //    IncludeTrailingBackslash(FSessionsFolder) + Data->GetSessionName();
                         UnicodeString Name;
-                        if (!FSessionsFolder.empty())
+                        if (!FSessionsFolder.IsEmpty())
                         {
                             Name = UnixIncludeTrailingBackslash(FSessionsFolder);
                         }
@@ -675,7 +675,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData *Data, bool Edit)
                         // DEBUG_PRINTF(L"Name = %s", Name.c_str());
                         if (FPlugin->InputBox(GetMsg(NEW_SESSION_NAME_TITLE),
                                               GetMsg(NEW_SESSION_NAME_PROMPT), Name, 0) &&
-                                !Name.empty())
+                                !Name.IsEmpty())
                         {
                             if (StoredSessions->FindByName(Name))
                             {
@@ -738,7 +738,7 @@ bool TWinSCPFileSystem::ProcessEventEx(int Event, void *Param)
         if (Event == FE_COMMAND)
         {
             UnicodeString Command = static_cast<wchar_t *>(Param);
-            if (!::Trim(Command).empty() &&
+            if (!::Trim(Command).IsEmpty() &&
                     (::LowerCase(Command.substr(0, 3)) != L"cd "))
             {
                 Result = ExecuteCommand(Command);
@@ -1093,7 +1093,7 @@ void TWinSCPFileSystem::TemporarilyDownloadFiles(
     CopyParam.SetResumeSupport(rsOff);
 
     TempDir = FPlugin->TemporaryDir();
-    if (TempDir.empty() || !ForceDirectories(TempDir))
+    if (TempDir.IsEmpty() || !ForceDirectories(TempDir))
     {
         throw ExtException(FMTLOAD(CREATE_TEMP_DIR_ERROR, TempDir.c_str()));
     }
@@ -1550,7 +1550,7 @@ void TWinSCPFileSystem::TerminalSynchronizeDirectory(
         static UnicodeString StartTimeLabel;
         static UnicodeString TimeElapsedLabel;
 
-        if (ProgressTitle.empty())
+        if (ProgressTitle.IsEmpty())
         {
             ProgressTitle = GetMsg(SYNCHRONIZE_PROGRESS_TITLE);
             ProgressTitleCompare = GetMsg(SYNCHRONIZE_PROGRESS_COMPARE_TITLE);
@@ -1672,7 +1672,7 @@ void TWinSCPFileSystem::DoSynchronizeInvalid(
     const UnicodeString ErrorStr)
 {
     UnicodeString Message;
-    if (!Directory.empty())
+    if (!Directory.IsEmpty())
     {
         Message = FORMAT(GetMsg(WATCH_ERROR_DIRECTORY).c_str(), Directory.c_str());
     }
@@ -1718,7 +1718,7 @@ void TWinSCPFileSystem::CustomCommandGetParamValue(
     const UnicodeString AName, UnicodeString &Value)
 {
     UnicodeString Name = AName;
-    if (Name.empty())
+    if (Name.IsEmpty())
     {
         Name = GetMsg(APPLY_COMMAND_PARAM_PROMPT);
     }
@@ -1873,7 +1873,7 @@ void TWinSCPFileSystem::FileProperties()
 void TWinSCPFileSystem::InsertTokenOnCommandLine(const UnicodeString Token, bool Separate)
 {
     UnicodeString token = Token;
-    if (!token.empty())
+    if (!token.IsEmpty())
     {
         if (token.find_first_of(L" ") != UnicodeString::npos)
         {
@@ -2174,7 +2174,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString Dir, int OpMode)
     // when plugin uses UNIX style paths
     else if ((OpMode & OPM_FIND) && (OpMode & OPM_SILENT) && (Dir == L"\\"))
     {
-        if (FSavedFindFolder.empty())
+        if (FSavedFindFolder.IsEmpty())
         {
             return true;
         }
@@ -2193,7 +2193,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString Dir, int OpMode)
     }
     else
     {
-        if ((OpMode & OPM_FIND) && FSavedFindFolder.empty())
+        if ((OpMode & OPM_FIND) && FSavedFindFolder.IsEmpty())
         {
             FSavedFindFolder = FTerminal->GetCurrentDirectory();
         }
@@ -2329,7 +2329,7 @@ int TWinSCPFileSystem::MakeDirectoryEx(UnicodeString &Name, int OpMode)
 {
     if (Connected())
     {
-        assert(!(OpMode & OPM_SILENT) || !Name.empty());
+        assert(!(OpMode & OPM_SILENT) || !Name.IsEmpty());
 
         TRemoteProperties Properties = GUIConfiguration->GetNewDirectoryProperties();
         bool SaveSettings = false;
@@ -2360,13 +2360,13 @@ int TWinSCPFileSystem::MakeDirectoryEx(UnicodeString &Name, int OpMode)
     }
     else if (SessionList())
     {
-        assert(!(OpMode & OPM_SILENT) || !Name.empty());
+        assert(!(OpMode & OPM_SILENT) || !Name.IsEmpty());
 
         if (((OpMode & OPM_SILENT) ||
                 FPlugin->InputBox(GetMsg(CREATE_FOLDER_TITLE),
                                   StripHotKey(GetMsg(CREATE_FOLDER_PROMPT)),
                                   Name, 0, MAKE_SESSION_FOLDER_HISTORY)) &&
-                !Name.empty())
+                !Name.IsEmpty())
         {
             TSessionData::ValidateName(Name);
             FNewSessionsFolder = Name;
@@ -2911,11 +2911,11 @@ System::TStrings *TWinSCPFileSystem::CreateFileList(System::TObjectList *PanelIt
                 }
                 if (Side == osLocal)
                 {
-                    if (ExtractFilePath(FileName).empty())
+                    if (ExtractFilePath(FileName).IsEmpty())
                     {
                         if (!FileNameOnly)
                         {
-                            if (Directory.empty())
+                            if (Directory.IsEmpty())
                             {
                                 Directory = GetCurrentDir();
                             }
@@ -2953,7 +2953,7 @@ System::TStrings *TWinSCPFileSystem::CreateFileList(System::TObjectList *PanelIt
 void TWinSCPFileSystem::SaveSession()
 {
     // DEBUG_PRINTF(L"FTerminal->GetSessionData()->Name = %s", FTerminal->GetSessionData()->Name.c_str());
-    if (FTerminal->GetActive() && !FTerminal->GetSessionData()->GetName().empty())
+    if (FTerminal->GetActive() && !FTerminal->GetSessionData()->GetName().IsEmpty())
     {
         // DEBUG_PRINTF(L"FTerminal->GetCurrentDirectory = %s", FTerminal->GetCurrentDirectory().c_str());
         FTerminal->GetSessionData()->SetRemoteDirectory(FTerminal->GetCurrentDirectory());
@@ -3038,7 +3038,7 @@ void TWinSCPFileSystem::Disconnect()
 {
     if (FTerminal && FTerminal->GetActive())
     {
-        if (!FTerminal->GetSessionData()->GetName().empty())
+        if (!FTerminal->GetSessionData()->GetName().IsEmpty())
         {
             DEBUG_PRINTF(L"FTerminal->GetSessionData()->GetName = %s", FTerminal->GetSessionData()->GetName().c_str());
             FPrevSessionName = FTerminal->GetSessionData()->GetName();
@@ -3151,7 +3151,7 @@ void TWinSCPFileSystem::TerminalChangeDirectory(System::TObject * /*Sender*/)
             FPathHistory->Delete(Index);
         }
 
-        if (!FLastPath.empty())
+        if (!FLastPath.IsEmpty())
         {
             FPathHistory->Add(FLastPath);
         }
@@ -3268,7 +3268,7 @@ void TWinSCPFileSystem::TerminalPromptUser(TTerminal *Terminal,
 {
     if (Kind == pkPrompt)
     {
-        assert(Instructions.empty());
+        assert(Instructions.IsEmpty());
         assert(Prompts->GetCount() == 1);
         assert((Prompts->GetObject(0)) != NULL);
         UnicodeString AResult = Results->GetString(0);
@@ -3410,7 +3410,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
         static UnicodeString CPSLabel;
         static UnicodeString TimeLeftLabel;
 
-        if (ProgressFileLabel.empty())
+        if (ProgressFileLabel.IsEmpty())
         {
             ProgressFileLabel = GetMsg(PROGRESS_FILE_LABEL);
             TargetDirLabel = GetMsg(TARGET_DIR_LABEL);
@@ -3637,9 +3637,9 @@ void TWinSCPFileSystem::QueueItemUpdate(TTerminalQueue *Queue,
         if ((Item->GetStatus() == TQueueItem::qsDone) && (GetTerminal() != NULL))
         {
             FRefreshLocalDirectory = (QueueItem == NULL) ||
-                                     (!QueueItem->GetInfo()->ModifiedLocal.empty());
+                                     (!QueueItem->GetInfo()->ModifiedLocal.IsEmpty());
             FRefreshRemoteDirectory = (QueueItem == NULL) ||
-                                      (!QueueItem->GetInfo()->ModifiedRemote.empty());
+                                      (!QueueItem->GetInfo()->ModifiedRemote.IsEmpty());
         }
 
         if (QueueItem != NULL)
@@ -3743,7 +3743,7 @@ void TWinSCPFileSystem::UploadOnSave(bool NoReload)
         bool NativeEdit =
             (FLastEditorID >= 0) &&
             (FLastEditorID == Info->GetEditorID()) &&
-            !FLastEditFile.empty();
+            !FLastEditFile.IsEmpty();
 
         TMultipleEdits::iterator I = FMultipleEdits.find(Info->GetEditorID());
         bool MultipleEdit = (I != FMultipleEdits.end());
@@ -3819,14 +3819,14 @@ void TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
                 {
                     delete Info;
                 } BOOST_SCOPE_EXIT_END
-                if (!FLastEditFile.empty() &&
+                if (!FLastEditFile.IsEmpty() &&
                         AnsiSameText(FLastEditFile, Info->GetFileName()))
                 {
                     FLastEditorID = Info->GetEditorID();
                     FEditorPendingSave = false;
                 }
 
-                if (!FLastMultipleEditFile.empty())
+                if (!FLastMultipleEditFile.IsEmpty())
                 {
                     bool IsLastMultipleEditFile = AnsiSameText(FLastMultipleEditFile, Info->GetFileName());
                     assert(IsLastMultipleEditFile);
@@ -4101,7 +4101,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString Directory,
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::IsEditHistoryEmpty()
 {
-    return FEditHistories.empty();
+    return FEditHistories.IsEmpty();
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::EditHistory()

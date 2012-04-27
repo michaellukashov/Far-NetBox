@@ -1409,7 +1409,7 @@ UnicodeString __fastcall TRemoteFileList::GetFullDirectory()
   return UnixIncludeTrailingBackslash(GetDirectory());
 }
 //---------------------------------------------------------------------------
-TRemoteFile * __fastcall TRemoteFileList::GetFiles(Integer Index)
+TRemoteFile * __fastcall TRemoteFileList::GetFile(Integer Index)
 {
   return static_cast<TRemoteFile *>(GetItem(Index));
 }

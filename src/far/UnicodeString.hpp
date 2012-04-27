@@ -252,6 +252,8 @@ typedef class UnicodeString
 		bool ContainsAny(const wchar_t *Chars, size_t nStartPos=0) const { return wcspbrk(m_pData->GetData()+nStartPos,Chars) != nullptr; }
 		bool Contains(const wchar_t *lpwszFind, size_t nStartPos=0) const { return wcsstr(m_pData->GetData()+nStartPos,lpwszFind) != nullptr; }
 
+    int LastDelimiter(const UnicodeString& delimiters) const;
+
 		operator std::wstring () const { return std::wstring(m_pData->GetData(), m_pData->GetLength()); }
     wchar_t __fastcall operator [](const int idx) const
     {
