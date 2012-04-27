@@ -1,13 +1,19 @@
 //---------------------------------------------------------------------------
+#ifndef _MSC_VER
+#include <vcl.h>
+#pragma hdrstop
+#else
 #include "nbafx.h"
 
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
 #include <boost/bind.hpp>
+#endif
 
 #include "FarPlugin.h"
 #include "FarDialog.h"
-#include "Common.h"
+#include <Common.h>
+// FAR WORKAROUND
 #include "Exceptions.h"
 #include "TextsCore.h"
 #include "FileMasks.h"
@@ -17,6 +23,10 @@
 //---------------------------------------------------------------------------
 TCustomFarPlugin * FarPlugin = NULL;
 #define FAR_TITLE_SUFFIX L" - Far"
+//---------------------------------------------------------------------------
+#ifndef _MSC_VER
+#pragma package(smart_init)
+#endif
 //---------------------------------------------------------------------------
 TFarMessageParams::TFarMessageParams()
 {
@@ -2950,23 +2960,22 @@ void FarWrapText(const UnicodeString Text, System::TStrings * Result, size_t Max
         UnicodeString FullLine = WrappedLines.GetString(WrappedIndex);
         do
         {
-          // WrapText does not wrap when not possible, enforce it
-          // (it also does not wrap when the line is longer than maximum only
-          // because of trailing dot or similar)
-          UnicodeString Line = FullLine.SubString(1, MaxWidth);
-          FullLine.Delete(1, MaxWidth);
+            // WrapText does not wrap when not possible, enforce it
+            // (it also does not wrap when the line is longer than maximum only
+            // because of trailing dot or similar)
+            UnicodeString Line = FullLine.SubString(1, MaxWidth);
+            FullLine.Delete(1, MaxWidth);
 
-          size_t P;
-          while ((P = Line.Pos(L'\t')) > 0)
-          {
-            Line.erase(P, 1);
-            Line.insert(P, ::StringOfChar(' ',
-                                          ((P / TabSize) + ((P % TabSize) > 0 ? 1 : 0)) * TabSize - P + 1));
-            UnicodeString s;
-            s.SetLength(((P / TabSize) + ((P % TabSize) > 0 ? 1 : 0)) * TabSize - P + 1);
-            Line.append(s.c_str(), P);
+            size_t P;
+            while ((P = Line.Pos(L'\t')) > 0)
+            {
+              Line.Delete(P, 1);
+              Line.Insert(P, ::StringOfChar(' ',
+                  ((P / TabSize) + ((P % TabSize) > 0 ? 1 : 0)) * TabSize - P + 1));
+              // UnicodeString s;
+              // s.SetLength(((P / TabSize) + ((P % TabSize) > 0 ? 1 : 0)) * TabSize - P + 1);
+              // Line.append(s.c_str(), P);
           }
-          // DEBUG_PRINTF(L"Line = %s", Line.c_str());
           Result->Add(Line);
         }
         while (!FullLine.IsEmpty());

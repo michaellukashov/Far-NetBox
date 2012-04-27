@@ -274,14 +274,18 @@ UnicodeString ExceptionLogString(Exception *E)
   if (E->InheritsFrom<Exception>())
   {
     UnicodeString Msg;
+#ifndef _MSC_VER
     Msg = FORMAT(L"(%s) %s", (E->ClassName(), E->GetMessage().c_str()));
+#else
+    Msg = FORMAT(L"%s", ::MB2W(E->what()).c_str());
+#endif
     if (E->InheritsFrom<ExtException>())
     {
       TStrings * MoreMessages = dynamic_cast<ExtException *>(E)->GetMoreMessages();
       if (MoreMessages)
       {
         Msg += L"\n" +
-          StringReplace(MoreMessages->Text, L"\r", L"", TReplaceFlags() << rfReplaceAll);
+          StringReplace(MoreMessages->GetText(), L"\r", L"", TReplaceFlags() << rfReplaceAll);
       }
     }
     return Msg;

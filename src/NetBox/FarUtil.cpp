@@ -64,62 +64,64 @@ void ParseURL(const wchar_t *url, UnicodeString *scheme, UnicodeString *hostName
     UnicodeString urlParse(url);
 
     //Parse scheme name
-    const size_t delimScheme = urlParse.find(L"://");
-    if (delimScheme != UnicodeString::npos)
+    size_t delimScheme = urlParse.Pos(L"://");
+    if (delimScheme > 0)
     {
         if (scheme)
         {
-            *scheme = urlParse.substr(0, delimScheme);
-            transform(scheme->begin(), scheme->end(), scheme->begin(), tolower);
+            *scheme = urlParse.SubString(1, delimScheme);
+            // transform(scheme->begin(), scheme->end(), scheme->begin(), tolower);
+            scheme->Lower();
         }
-        urlParse.erase(0, delimScheme + sizeof(L"://") / sizeof(wchar_t) - 1);
+        urlParse.Delete(1, delimScheme + sizeof(L"://") / sizeof(wchar_t) - 1);
     }
 
     //Parse path
-    const size_t delimPath = urlParse.find(L'/');
-    if (delimPath != UnicodeString::npos)
+    const size_t delimPath = urlParse.Pos(L'/');
+    if (delimPath > 0)
     {
-        UnicodeString parsePath = urlParse.substr(delimPath);
+        UnicodeString parsePath = urlParse.SubString(delimPath);
         urlParse.erase(delimPath);
         //Parse query
-        const size_t delimQuery = parsePath.rfind(L'?');
-        if (delimQuery != UnicodeString::npos)
+        const size_t delimQuery = 0;
+        parsePath.rfind(L'?');
+        if (parsePath.RPos(delimQuery, L'?'))
         {
             if (query)
             {
-                *query = parsePath.substr(delimQuery);
+                *query = parsePath.SubString(delimQuery);
             }
-            parsePath.erase(delimQuery);
+            parsePath.Delete(delimQuery);
         }
         if (path)
         {
             *path = parsePath;
         }
     }
-    if (path && path->empty())
+    if (path && path->IsEmpty())
     {
         *path = L'/';
     }
 
     //Parse user name/password
-    const size_t delimLogin = urlParse.rfind(L'@');
-    if (delimLogin != UnicodeString::npos)
+    const size_t delimLogin = 0
+    if (urlParse.RPos(delimLogin, L'@'))
     {
-        UnicodeString parseLogin = urlParse.substr(0, delimLogin);
-        const size_t delimPwd = parseLogin.rfind(L':');
-        if (delimPwd != std::string::npos)
+        UnicodeString parseLogin = urlParse.SubString(0, delimLogin);
+        const size_t delimPwd = 0;
+        if (parseLogin.RPos(delimPwd, L':'))
         {
             if (password)
             {
-                *password = parseLogin.substr(delimPwd + 1);
+                *password = parseLogin.SubString(delimPwd + 1);
             }
-            parseLogin.erase(delimPwd);
+            parseLogin.Delete(delimPwd);
         }
         if (userName)
         {
             *userName = parseLogin;
         }
-        urlParse.erase(0, delimLogin + 1);
+        urlParse.Delete(0, delimLogin + 1);
     }
 
     //Parse port
@@ -128,15 +130,15 @@ void ParseURL(const wchar_t *url, UnicodeString *scheme, UnicodeString *hostName
         *port = 0;
     }
 
-    const size_t delimPort = urlParse.rfind(L':');
-    if (delimPort != UnicodeString::npos)
+    const size_t delimPort = 0;
+    if (urlParse.rfind(delimPort, L':'))
     {
         if (port)
         {
-            const UnicodeString portNum = urlParse.substr(delimPort + 1);
+            const UnicodeString portNum = urlParse.SubString(delimPort + 1);
             *port = static_cast<unsigned short>(_wtoi(portNum.c_str()));
         }
-        urlParse.erase(delimPort);
+        urlParse.Delete(delimPort);
     }
 
     if (hostName)

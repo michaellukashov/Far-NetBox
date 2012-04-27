@@ -205,9 +205,11 @@ typedef class UnicodeString
 		UnicodeString SubStr(size_t Pos, size_t Len = -1) const;
 		UnicodeString SubString(size_t Pos, size_t Len = -1) const { return SubStr(Pos, Len); }
 
-		UnicodeString Trim(size_t Pos, size_t Len = -1) const;
-		UnicodeString TrimRight(size_t Pos, size_t Len = -1) const;
-		UnicodeString TrimLeft(size_t Pos, size_t Len = -1) const;
+		UnicodeString Trim() const;
+		UnicodeString TrimRight() const;
+		UnicodeString TrimLeft() const;
+
+		bool IsDelimiter(UnicodeString Chars, int Pos) const;
 
 		const UnicodeString& operator=(const UnicodeString &strCopy) { return Copy(strCopy); }
 		const UnicodeString& operator=(const char *lpszData) { return Copy(lpszData); }
@@ -240,6 +242,7 @@ typedef class UnicodeString
 		UnicodeString& Upper(size_t nStartPos=0, size_t nLength=(size_t)-1);
 
 		int Pos(wchar_t Ch) const;
+		int Pos(wchar_t *Str) const;
 		bool Pos(size_t &nPos, wchar_t Ch, size_t nStartPos=0) const;
 		bool Pos(size_t &nPos, const wchar_t *lpwszFind, size_t nStartPos=0) const;
 		bool PosI(size_t &nPos, const wchar_t *lpwszFind, size_t nStartPos=0) const;
