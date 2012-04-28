@@ -350,6 +350,7 @@ public:
 public:
     RawByteString __fastcall operator +(const RawByteString &rhs) const;
     RawByteString __fastcall operator +(const std::wstring &rhs) const;
+    RawByteString __fastcall operator +=(const char rhs) const;
 
 private:
 	void Init(const wchar_t *Str, size_t Length)
