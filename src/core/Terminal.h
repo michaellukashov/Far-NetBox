@@ -293,7 +293,9 @@ protected:
   int FileOperationLoop(const TFileOperationEvent &CallBackFunc,
     TFileOperationProgressType * OperationProgress, bool AllowSkip,
     const UnicodeString Message, void * Param1 = NULL, void * Param2 = NULL);
+#ifndef _MSC_VER
   bool __fastcall GetIsCapable(TFSCapability Capability) const;
+#endif
   bool ProcessFiles(TStrings * FileList, TFileOperation Operation,
     const TProcessFileEvent &ProcessFile, void * Param = NULL, TOperationSide Side = osRemote,
     bool Ex = false);
@@ -473,7 +475,7 @@ public:
   void __fastcall SpaceAvailable(const UnicodeString Path, TSpaceAvailable & ASpaceAvailable);
   bool __fastcall DirectoryFileList(const UnicodeString Path,
     TRemoteFileList *& FileList, bool CanLoad);
-  void __fastcall MakeLocalFileList(const UnicodeString FileName,
+  void MakeLocalFileList(const UnicodeString FileName,
     const WIN32_FIND_DATA &Rec, void * Param);
   UnicodeString __fastcall FileUrl(const UnicodeString FileName);
   bool __fastcall FileOperationLoopQuery(const Exception & E,
@@ -534,6 +536,7 @@ public:
   __property TNotifyEvent OnClose = { read = FOnClose, write = FOnClose };
   __property int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber };
 #else
+  bool __fastcall GetIsCapable(TFSCapability Capability) const;
   TSessionData *__fastcall GetSessionData() { return FSessionData; }
   TSessionLog *__fastcall GetLog() { return FLog; }
   TActionLog * __fastcall GetActionLog() { return FActionLog; };

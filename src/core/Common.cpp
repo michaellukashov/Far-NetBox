@@ -581,13 +581,13 @@ UnicodeString __fastcall ExpandEnvironmentVariables(const UnicodeString & Str)
 
   Buf.SetLength(Size);
   Buf.Unique();
-  unsigned int Len = ExpandEnvironmentStrings(Str.c_str(), Buf.c_str(), Size);
+  unsigned int Len = ExpandEnvironmentStrings(Str.c_str(), (LPWSTR)Buf.c_str(), Size);
 
   if (Len > Size)
   {
     Buf.SetLength(Len);
     Buf.Unique();
-    ExpandEnvironmentStrings(Str.c_str(), Buf.c_str(), Len);
+    ExpandEnvironmentStrings(Str.c_str(), (LPWSTR)Buf.c_str(), Len);
   }
 
   PackStr(Buf);

@@ -557,7 +557,7 @@ bool TWinSCPFileSystem::GetFindDataEx(System::TObjectList *PanelItems, int OpMod
         if (!FPrevSessionName.IsEmpty())
         {
             TSessionData *PrevSession = StoredSessions->GetSessionByName(FPrevSessionName);
-            FPrevSessionName.clear();
+            FPrevSessionName.Clear();
             if (UpdatePanel())
             {
                 RedrawPanel();
@@ -739,7 +739,7 @@ bool TWinSCPFileSystem::ProcessEventEx(int Event, void *Param)
         {
             UnicodeString Command = static_cast<wchar_t *>(Param);
             if (!::Trim(Command).IsEmpty() &&
-                    (::LowerCase(Command.substr(0, 3)) != L"cd "))
+                    (::LowerCase(Command.SubString(1, 3)) != L"cd "))
             {
                 Result = ExecuteCommand(Command);
             }

@@ -267,6 +267,7 @@ typedef class UnicodeString
       // Unique();                 // Ensure we're not ref-counted (and Unicode)
       return m_pData->GetData()[idx-1];
     }
+    void Unique() {}
 protected:
     void  __cdecl ThrowIfOutOfRange(int idx) const;
 } string;
@@ -315,6 +316,11 @@ private:
 class RawByteString
 {
 public:
+	RawByteString() :
+   Data(NULL),
+   Size(0)
+  {
+  }
 	RawByteString(const wchar_t* Str)
 	{
 		Init(Str, StrLength(Str));
