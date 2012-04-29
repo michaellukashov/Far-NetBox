@@ -123,7 +123,7 @@ void __fastcall ProcessLocalDirectory(UnicodeString DirName,
 #else
 typedef boost::signal3<void, const UnicodeString, const WIN32_FIND_DATA /* Rec */, void * /* Param */ > processlocalfile_signal_type;
 typedef processlocalfile_signal_type::slot_type TProcessLocalFileEvent;
-bool FileSearchRec(const UnicodeString FileName, WIN32_FIND_DATA & Rec);
+bool __fastcall FileSearchRec(const UnicodeString FileName, WIN32_FIND_DATA & Rec);
 void ProcessLocalDirectory(const UnicodeString DirName,
                            const TProcessLocalFileEvent &CallBackFunc, void * Param = NULL, int FindAttrs = -1);
 #endif

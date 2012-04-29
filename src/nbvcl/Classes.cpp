@@ -1979,38 +1979,40 @@ int __fastcall GetDefaultLCID()
 }
 
 //---------------------------------------------------------------------------
-function FindMatchingFile(var F: TSearchRec): Integer;
-{$IFDEF MSWINDOWS}
-var
-  LocalFileTime: TFileTime;
+int FindMatchingFile(TSearchRec & Rec)
 {
+  TFileTime LocalFileTime = {0};
+  int Result = 0;
+  while ((Rec.FindData.dwFileAttributes && Rec.ExcludeAttr) != 0)
   {
-    while FindData.dwFileAttributes and ExcludeAttr <> 0 do
-      if not FindNextFile(FindHandle, FindData) then
-      {
-        Result = GetLastError;
-        Exit;
-      }
-    FileTimeToLocalFileTime(FindData.ftLastWriteTime, LocalFileTime);
-    FileTimeToDosDateTime(LocalFileTime, LongRec(Time).Hi,
-      LongRec(Time).Lo);
-    Size = FindData.nFileSizeLow or Int64(FindData.nFileSizeHigh) shl 32;
-    Attr = FindData.dwFileAttributes;
-    Name = FindData.cFileName;
+    if (!FindNextFileW(Rec.FindHandle, &Rec.FindData))
+    {
+      Result = GetLastError();
+      return Result;
+    }
   }
+  FileTimeToLocalFileTime(&Rec.FindData.ftLastWriteTime, (LPFILETIME)&LocalFileTime);
+  WORD Hi = (Rec.Time & 0xFFFF0000) >> 16;
+  WORD Lo = Rec.Time & 0xFFFF;
+  FileTimeToDosDateTime((LPFILETIME)&LocalFileTime, &Hi, &Lo);
+  Rec.Time = (Hi << 16) + Lo;
+  Rec.Size = Rec.FindData.nFileSizeLow || Int64(Rec.FindData.nFileSizeHigh) << 32;
+  Rec.Attr = Rec.FindData.dwFileAttributes;
+  Rec.Name = Rec.FindData.cFileName;
   Result = 0;
+  return Result;
 }
 
 //---------------------------------------------------------------------------
-int FindFirst(const UnicodeString FileName, int FindAttrs, WIN32_FIND_DATA & Rec)
+int FindFirst(const UnicodeString FileName, int Attr, TSearchRec & Rec)
 {
   const int faSpecial = faHidden || faSysFile || faDirectory;
   // HANDLE hFind = FindFirstFileW(FileName.c_str(), &Rec);
   // bool Result = (hFind != INVALID_HANDLE_VALUE);
   // if (Result) System::FindClose(Rec);
   // return Result;
-  Rec.ExcludeAttr = !Attr && faSpecial;
-  Rec.FindHandle = FindFirstFileW(FileName.c_str(), Rec.FindData);
+  Rec.ExcludeAttr = !Attr & faSpecial;
+  Rec.FindHandle = FindFirstFileW(FileName.c_str(), &Rec.FindData);
   int Result = 0;
   if (Rec.FindHandle != INVALID_HANDLE_VALUE)
   {
@@ -2021,11 +2023,11 @@ int FindFirst(const UnicodeString FileName, int FindAttrs, WIN32_FIND_DATA & Rec
     Result = GetLastError();
 }
 
-int FindNext(WIN32_FIND_DATA & Rec)
+int FindNext(TSearchRec & Rec)
 {
 }
 
-int FindClose(WIN32_FIND_DATA & Rec)
+int FindClose(TSearchRec & Rec)
 {
 }
 

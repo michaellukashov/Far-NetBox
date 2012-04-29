@@ -102,6 +102,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef Integer
 typedef int Integer;
 #endif
+#ifndef Int64
+typedef __int64 Int64;
+#endif
 #ifndef Boolean
 typedef bool Boolean;
 #endif

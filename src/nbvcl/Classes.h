@@ -932,6 +932,23 @@ typedef HANDLE THandle;
 typedef WIN32_FIND_DATA TWin32FindData;
 typedef UnicodeString TFileName;
 
+struct TSystemTime
+{
+    Word wYear;
+    Word wMonth;
+    Word wDayOfWeek;
+    Word wDay;
+    Word wHour;
+    Word wMinute;
+    Word wSecond;
+    Word wMilliseconds;
+};
+struct TFileTime
+{
+  Integer LowTime;
+  Integer HighTime;
+};
+
 struct TSearchRec
 {
     Integer Time;

@@ -778,7 +778,7 @@ unsigned char __fastcall HexToByte(const UnicodeString Hex)
     static_cast<unsigned char>(((P1 <= 0) || (P2 <= 0)) ? 0 : (((P1 - 1) << 4) + (P2 - 1)));
 }
 //---------------------------------------------------------------------------
-bool __fastcall FileSearchRec(const UnicodeString FileName, TSearchRec & Rec)
+bool __fastcall FileSearchRec(const UnicodeString FileName, WIN32_FIND_DATA & Rec)
 {
   int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   bool Result = (FindFirst(FileName, FindAttrs, Rec) == 0);
