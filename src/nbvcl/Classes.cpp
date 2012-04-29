@@ -1978,5 +1978,55 @@ int __fastcall GetDefaultLCID()
     return 0;
 }
 
+//---------------------------------------------------------------------------
+function FindMatchingFile(var F: TSearchRec): Integer;
+{$IFDEF MSWINDOWS}
+var
+  LocalFileTime: TFileTime;
+{
+  {
+    while FindData.dwFileAttributes and ExcludeAttr <> 0 do
+      if not FindNextFile(FindHandle, FindData) then
+      {
+        Result = GetLastError;
+        Exit;
+      }
+    FileTimeToLocalFileTime(FindData.ftLastWriteTime, LocalFileTime);
+    FileTimeToDosDateTime(LocalFileTime, LongRec(Time).Hi,
+      LongRec(Time).Lo);
+    Size = FindData.nFileSizeLow or Int64(FindData.nFileSizeHigh) shl 32;
+    Attr = FindData.dwFileAttributes;
+    Name = FindData.cFileName;
+  }
+  Result = 0;
+}
+
+//---------------------------------------------------------------------------
+int FindFirst(const UnicodeString FileName, int FindAttrs, WIN32_FIND_DATA & Rec)
+{
+  const int faSpecial = faHidden || faSysFile || faDirectory;
+  // HANDLE hFind = FindFirstFileW(FileName.c_str(), &Rec);
+  // bool Result = (hFind != INVALID_HANDLE_VALUE);
+  // if (Result) System::FindClose(Rec);
+  // return Result;
+  Rec.ExcludeAttr = !Attr && faSpecial;
+  Rec.FindHandle = FindFirstFileW(FileName.c_str(), Rec.FindData);
+  int Result = 0;
+  if (Rec.FindHandle != INVALID_HANDLE_VALUE)
+  {
+    Result = FindMatchingFile(Rec);
+    if (Result != 0) FindClose(Rec);
+  }
+  else
+    Result = GetLastError();
+}
+
+int FindNext(WIN32_FIND_DATA & Rec)
+{
+}
+
+int FindClose(WIN32_FIND_DATA & Rec)
+{
+}
 
 } // namespace System

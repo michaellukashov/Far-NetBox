@@ -927,6 +927,28 @@ class DelphiSet
 enum TReplaceFlag { rfReplaceAll, rfIgnoreCase };
 typedef DelphiSet<TReplaceFlag> TReplaceFlags;
 
+//---------------------------------------------------------------------------
+typedef HANDLE THandle;
+typedef WIN32_FIND_DATA TWin32FindData;
+typedef UnicodeString TFileName;
+
+struct TSearchRec
+{
+    Integer Time;
+    Int64 Size;
+    Integer Attr;
+    TFileName Name;
+    Integer ExcludeAttr;
+    THandle FindHandle;
+    TWin32FindData FindData;
+};
+
+//---------------------------------------------------------------------------
+
+int FindFirst(const UnicodeString FileName, int FindAttrs, TSearchRec & Rec);
+int FindNext(TSearchRec & Rec);
+int FindClose(TSearchRec & Rec);
+
 } // namespace System
 
 using namespace System;
