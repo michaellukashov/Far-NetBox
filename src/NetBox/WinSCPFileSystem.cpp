@@ -1422,14 +1422,14 @@ void TWinSCPFileSystem::Synchronize(const UnicodeString LocalDirectory,
   }
 }
 //---------------------------------------------------------------------------
-bool TWinSCPFileSynchronizeAllowSelectedOnly()
+bool TWinSCPFileSystem::SynchronizeAllowSelectedOnly()
 {
   return
     (GetPanelInfo()->GetSelectedCount() > 0) ||
     (GetAnotherPanelInfo()->GetSelectedCount() > 0);
 }
 //---------------------------------------------------------------------------
-void TWinSCPFileGetSynchronizeOptions(
+void TWinSCPFileSystem::GetSynchronizeOptions(
   int Params, TSynchronizeOptions & Options)
 {
   // DEBUG_PRINTF(L"begin");
@@ -1575,10 +1575,10 @@ void TWinSCPFileSystem::TerminalSynchronizeDirectory(
     UnicodeString Message;
 
     Message = LocalLabel + MinimizeName(LocalDirectory,
-      ProgressWidth - LocalLabel.size(), false);
-    Message += ::StringOfChar(L' ', ProgressWidth - Message.size()) + L"\n";
+      ProgressWidth - LocalLabel.Length(), false);
+    Message += ::StringOfChar(L' ', ProgressWidth - Message.Length()) + L"\n";
     Message += RemoteLabel + MinimizeName(RemoteDirectory,
-      ProgressWidth - RemoteLabel.size(), true) + L"\n";
+      ProgressWidth - RemoteLabel.Length(), true) + L"\n";
     Message += StartTimeLabel + FSynchronizationStart.TimeString() + L"\n";
     Message += TimeElapsedLabel +
       FormatDateTimeSpan(Configuration->GetTimeFormat(), TDateTime(Now() - FSynchronizationStart)) + L"\n";
@@ -1595,7 +1595,7 @@ void TWinSCPFileSystem::TerminalSynchronizeDirectory(
   }
 }
 //---------------------------------------------------------------------------
-void TWinSCPFileSynchronize()
+void TWinSCPFileSystem::Synchronize()
 {
   TFarPanelInfo * AnotherPanel = GetAnotherPanelInfo();
   RequireLocalPanel(AnotherPanel, GetMsg(SYNCHRONIZE_LOCAL_PATH_REQUIRED));
@@ -1645,7 +1645,7 @@ void TWinSCPFileSynchronize()
   }
 }
 //---------------------------------------------------------------------------
-void TWinSCPFileDoSynchronize(
+void TWinSCPFileSystem::DoSynchronize(
   TSynchronizeController * /*Sender*/, const UnicodeString LocalDirectory,
   const UnicodeString RemoteDirectory, const TCopyParamType & CopyParam,
   const TSynchronizeParamType & Params, TSynchronizeChecklist ** Checklist,
@@ -1671,7 +1671,7 @@ void TWinSCPFileDoSynchronize(
     Synchronize(LocalDirectory, RemoteDirectory, TTerminal::smRemote, CopyParam,
       PParams, Checklist, Options);
   }
-  catch(const std::exception & E)
+  catch(Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -1887,7 +1887,7 @@ void TWinSCPFileSystem::InsertTokenOnCommandLine(const UnicodeString Token, bool
   UnicodeString token = Token;
   if (!token.IsEmpty())
   {
-    if (token.find_first_of(L" ") != UnicodeString::npos)
+    if (token.Pos(L' ') > 0)
     {
       token = FORMAT(L"\"%s\"", token.c_str());
     }
@@ -2007,7 +2007,7 @@ void TWinSCPFileSystem::GetSpaceAvailable(const UnicodeString Path,
     {
       GetTerminal()->SpaceAvailable(Path, ASpaceAvailable);
     }
-    catch (const std::exception & E)
+    catch (Exception & E)
     {
       if (!GetTerminal()->GetActive())
       {
