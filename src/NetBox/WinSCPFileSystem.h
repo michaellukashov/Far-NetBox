@@ -2,12 +2,14 @@
 #ifndef WinSCPFileSystemH
 #define WinSCPFileSystemH
 //---------------------------------------------------------------------------
+#ifdef _MSC_VER
 #include "boostdefines.hpp"
 #include <boost/signals/signal3.hpp>
+#endif
 
-#include "Interface.h"
+#include <Interface.h>
 #include "FarPlugin.h"
-#include "FileOperationProgress.h"
+#include <FileOperationProgress.h>
 #include <Terminal.h>
 #include <GUIConfiguration.h>
 #include <SynchronizeController.h>
@@ -59,9 +61,9 @@ const int fsoAllowSelectedOnly = 0x02;
 enum TSessionActionEnum { saAdd, saEdit, saConnect };
 //---------------------------------------------------------------------------
 typedef boost::signal2<void, int, TSynchronizeOptions &> getsynchronizeoptions_signal_type;
-typedef getsynchronizeoptions_signal_type::slot_type getsynchronizeoptions_slot_type;
+typedef getsynchronizeoptions_signal_type::slot_type TGetSynchronizeOptionsEvent;
 typedef boost::signal3<void, const UnicodeString, TSpaceAvailable &, bool &> getspaceavailable_signal_type;
-typedef getspaceavailable_signal_type::slot_type getspaceavailable_slot_type;
+typedef getspaceavailable_signal_type::slot_type TGetSpaceAvailableEvent;
 struct TMultipleEdit
 {
   UnicodeString FileName;
@@ -77,7 +79,7 @@ struct TEditHistory
 };
 //---------------------------------------------------------------------------
 typedef boost::signal2<void, TSessionData *, void *> processsession_signal_type;
-typedef processsession_signal_type::slot_type processsession_slot_type;
+typedef processsession_signal_type::slot_type TProcessSessionEvent;
 //---------------------------------------------------------------------------
 class TWinSCPFileSystem : public TCustomFarFileSystem
 {
@@ -102,14 +104,14 @@ protected:
                                    UnicodeString & PanelTitle, TFarPanelModes * PanelModes, int & StartPanelMode,
                                    int & StartSortMode, bool & StartSortOrder, TFarKeyBarTitles * KeyBarTitles,
                                    UnicodeString & ShortcutData);
-  virtual bool GetFindDataEx(System::TObjectList * PanelItems, int OpMode);
+  virtual bool GetFindDataEx(TObjectList * PanelItems, int OpMode);
   virtual bool ProcessKeyEx(int Key, unsigned int ControlState);
   virtual bool SetDirectoryEx(const UnicodeString Dir, int OpMode);
   virtual int MakeDirectoryEx(UnicodeString & Name, int OpMode);
-  virtual bool DeleteFilesEx(System::TObjectList * PanelItems, int OpMode);
-  virtual int GetFilesEx(System::TObjectList * PanelItems, bool Move,
+  virtual bool DeleteFilesEx(TObjectList * PanelItems, int OpMode);
+  virtual int GetFilesEx(TObjectList * PanelItems, bool Move,
                          UnicodeString & DestPath, int OpMode);
-  virtual int PutFilesEx(System::TObjectList * PanelItems, bool Move, int OpMode);
+  virtual int PutFilesEx(TObjectList * PanelItems, bool Move, int OpMode);
   virtual bool ProcessEventEx(int Event, void * Param);
 
   void ProcessEditorEvent(int Event, void * Param);
@@ -128,10 +130,10 @@ protected:
                               bool Duplicate);
   void FocusSession(TSessionData * Data);
   void DeleteSession(TSessionData * Data, void * Param);
-  void ProcessSessions(System::TObjectList * PanelItems,
-                       const processsession_slot_type & ProcessSession, void * Param);
+  void ProcessSessions(TObjectList * PanelItems,
+                       const TProcessSessionEvent & ProcessSession, void * Param);
   void ExportSession(TSessionData * Data, void * Param);
-  bool ImportSessions(System::TObjectList * PanelItems, bool Move, int OpMode);
+  bool ImportSessions(TObjectList * PanelItems, bool Move, int OpMode);
   void FileProperties();
   void CreateLink();
   void TransferFiles(bool Move);
@@ -149,14 +151,14 @@ protected:
   void HomeDirectory();
   void ToggleSynchronizeBrowsing();
   bool IsSynchronizedBrowsing();
-  bool PropertiesDialog(System::TStrings * FileList,
+  bool PropertiesDialog(TStrings * FileList,
                         const UnicodeString Directory,
-                        // System::TStrings * GroupList, System::TStrings * UserList,
+                        // TStrings * GroupList, TStrings * UserList,
                         const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
                         TRemoteProperties * Properties, int AllowedChanges);
   bool ExecuteCommand(const UnicodeString Command);
   void TerminalCaptureLog(const UnicodeString AddedLine, bool StdError);
-  bool CopyDialog(bool ToRemote, bool Move, System::TStrings * FileList,
+  bool CopyDialog(bool ToRemote, bool Move, TStrings * FileList,
                   UnicodeString & TargetDirectory,
                   TGUICopyParamType * Params,
                   int Options,
@@ -165,7 +167,7 @@ protected:
                   bool Edit, bool AllowSymbolic);
   void FileSystemInfoDialog(const TSessionInfo & SessionInfo,
                             const TFileSystemInfo & FileSystemInfo, UnicodeString SpaceAvailablePath,
-                            const getspaceavailable_slot_type & OnGetSpaceAvailable);
+                            const TGetSpaceAvailableEvent & OnGetSpaceAvailable);
   bool OpenDirectoryDialog(bool Add, UnicodeString & Directory,
                            TBookmarkList * BookmarkList);
   bool ApplyCommandDialog(UnicodeString & Command, int & Params);
@@ -176,14 +178,14 @@ protected:
   bool SynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
                                   TTerminal::TSynchronizeMode Mode, int Params,
                                   const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory);
-  bool RemoteTransferDialog(System::TStrings * FileList, UnicodeString & Target,
+  bool RemoteTransferDialog(TStrings * FileList, UnicodeString & Target,
                             UnicodeString & FileMask, bool Move);
   bool RenameFileDialog(TRemoteFile * File, UnicodeString & NewName);
-  int MoreMessageDialog(const UnicodeString Str, System::TStrings * MoreMessages,
+  int MoreMessageDialog(const UnicodeString Str, TStrings * MoreMessages,
                         TQueryType Type, int Answers, const TMessageParams * Params = NULL);
   bool PasswordDialog(TSessionData * SessionData,
-                      TPromptKind Kind, const UnicodeString Name, const UnicodeString Instructions, System::TStrings * Prompts,
-                      System::TStrings * Results, bool StoredCredentialsTried);
+                      TPromptKind Kind, const UnicodeString Name, const UnicodeString Instructions, TStrings * Prompts,
+                      TStrings * Results, bool StoredCredentialsTried);
   bool BannerDialog(const UnicodeString SessionName, const UnicodeString Banner,
                     bool & NeverShowAgain, int Options);
   bool CreateDirectoryDialog(UnicodeString & Directory,
@@ -192,7 +194,7 @@ protected:
   bool SynchronizeDialog(TSynchronizeParamType & Params,
                          const TCopyParamType * CopyParams, const synchronizestartstop_slot_type & OnStartStop,
                          bool & SaveSettings, int Options, int CopyParamAttrs,
-                         const getsynchronizeoptions_slot_type & OnGetOptions);
+                         const TGetSynchronizeOptionsEvent & OnGetOptions);
   void DoSynchronize(TSynchronizeController * Sender,
                      const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
                      const TCopyParamType & CopyParam, const TSynchronizeParamType & Params,
@@ -216,7 +218,7 @@ protected:
   TTerminalQueueStatus * ProcessQueue(bool Hidden);
   bool EnsureCommandSessionFallback(TFSCapability Capability);
   void ConnectTerminal(TTerminal * Terminal);
-  void TemporarilyDownloadFiles(System::TStrings * FileList,
+  void TemporarilyDownloadFiles(TStrings * FileList,
                                 TCopyParamType CopyParam, UnicodeString & TempDir);
   int UploadFiles(bool Move, int OpMode, bool Edit, UnicodeString DestPath);
   void UploadOnSave(bool NoReload);
@@ -249,10 +251,10 @@ private:
   HANDLE FProgressSaveScreenHandle;
   HANDLE FSynchronizationSaveScreenHandle;
   HANDLE FAuthenticationSaveScreenHandle;
-  System::TDateTime FSynchronizationStart;
+  TDateTime FSynchronizationStart;
   bool FSynchronizationCompare;
-  System::TStrings * FFileList;
-  System::TList * FPanelItems;
+  TStrings * FFileList;
+  TList * FPanelItems;
   UnicodeString FSavedFindFolder;
   UnicodeString FOriginalEditFile;
   UnicodeString FLastEditFile;
@@ -267,9 +269,9 @@ private:
   TKeepaliveThread * FKeepaliveThread;
   bool FSynchronisingBrowse;
   TSynchronizeController * FSynchronizeController;
-  System::TStrings * FCapturedLog;
+  TStrings * FCapturedLog;
   bool FOutputLog;
-  System::TStrings * FAuthenticationLog;
+  TStrings * FAuthenticationLog;
   TWinSCPFileSystem * Self;
   typedef std::map<int, TMultipleEdit> TMultipleEdits;
   TMultipleEdits FMultipleEdits;
@@ -277,26 +279,26 @@ private:
   typedef std::vector<TEditHistory> TEditHistories;
   TEditHistories FEditHistories;
   UnicodeString FLastPath;
-  System::TStrings * FPathHistory;
+  TStrings * FPathHistory;
   UnicodeString FSessionsFolder;
   UnicodeString FNewSessionsFolder;
   UnicodeString FPrevSessionName;
 
-  void TerminalClose(System::TObject * Sender);
+  void TerminalClose(TObject * Sender);
   void TerminalUpdateStatus(TTerminal * Terminal, bool Active);
-  void TerminalChangeDirectory(System::TObject * Sender);
-  void TerminalReadDirectory(System::TObject * Sender, bool ReloadOnly);
-  void TerminalStartReadDirectory(System::TObject * Sender);
-  void TerminalReadDirectoryProgress(System::TObject * Sender, int Progress,
+  void TerminalChangeDirectory(TObject * Sender);
+  void TerminalReadDirectory(TObject * Sender, bool ReloadOnly);
+  void TerminalStartReadDirectory(TObject * Sender);
+  void TerminalReadDirectoryProgress(TObject * Sender, int Progress,
                                      bool & Cancel);
   void TerminalInformation(TTerminal * Terminal,
                            const UnicodeString Str, bool Status, bool Active);
-  void TerminalQueryUser(System::TObject * Sender,
-                         const UnicodeString Query, System::TStrings * MoreMessages, int Answers,
+  void TerminalQueryUser(TObject * Sender,
+                         const UnicodeString Query, TStrings * MoreMessages, int Answers,
                          const TQueryParams * Params, int & Answer, TQueryType Type, void * Arg);
   void TerminalPromptUser(TTerminal * Terminal,
                           TPromptKind Kind, UnicodeString Name, UnicodeString Instructions,
-                          System::TStrings * Prompts, System::TStrings * Results, bool & Result,
+                          TStrings * Prompts, TStrings * Results, bool & Result,
                           void * Arg);
   void TerminalDisplayBanner(TTerminal * Terminal,
                              UnicodeString SessionName, const UnicodeString Banner, bool & NeverShowAgain,
@@ -310,12 +312,12 @@ private:
                          TOperationSide Side, bool DragDrop, const UnicodeString FileName, bool Success,
                          TOnceDoneOperation & DisconnectWhenComplete); // ??? bool & DisconnectWhenComplete);
   void CancelConfiguration(TFileOperationProgressType & ProgressData);
-  System::TStrings * CreateFileList(System::TObjectList * PanelItems,
+  TStrings * CreateFileList(TObjectList * PanelItems,
                                     TOperationSide Side, bool SelectedOnly = false, UnicodeString Directory = L"",
-                                    bool FileNameOnly = false, System::TStrings * AFileList = NULL);
-  System::TStrings * CreateSelectedFileList(TOperationSide Side,
+                                    bool FileNameOnly = false, TStrings * AFileList = NULL);
+  TStrings * CreateSelectedFileList(TOperationSide Side,
       TFarPanelInfo * PanelInfo = NULL);
-  System::TStrings * CreateFocusedFileList(TOperationSide Side,
+  TStrings * CreateFocusedFileList(TOperationSide Side,
       TFarPanelInfo * PanelInfo = NULL);
   void CustomCommandGetParamValue(
     const UnicodeString AName, UnicodeString & Value);
@@ -344,7 +346,7 @@ protected:
   virtual void GetData(
     unsigned long & Flags, UnicodeString & FileName, __int64 & Size,
     unsigned long & FileAttributes,
-    System::TDateTime & LastWriteTime, System::TDateTime & LastAccess,
+    TDateTime & LastWriteTime, TDateTime & LastAccess,
     unsigned long & NumberOfLinks, UnicodeString & Description,
     UnicodeString & Owner, void *& UserData, int & CustomColumnNumber);
 };
@@ -360,7 +362,7 @@ protected:
   virtual void GetData(
     unsigned long & Flags, UnicodeString & FileName, __int64 & Size,
     unsigned long & FileAttributes,
-    System::TDateTime & LastWriteTime, System::TDateTime & LastAccess,
+    TDateTime & LastWriteTime, TDateTime & LastAccess,
     unsigned long & NumberOfLinks, UnicodeString & Description,
     UnicodeString & Owner, void *& UserData, int & CustomColumnNumber);
 };
@@ -378,12 +380,12 @@ protected:
   virtual void GetData(
     unsigned long & Flags, UnicodeString & FileName, __int64 & Size,
     unsigned long & FileAttributes,
-    System::TDateTime & LastWriteTime, System::TDateTime & LastAccess,
+    TDateTime & LastWriteTime, TDateTime & LastAccess,
     unsigned long & NumberOfLinks, UnicodeString & Description,
     UnicodeString & Owner, void *& UserData, int & CustomColumnNumber);
   virtual UnicodeString GetCustomColumnData(int Column);
   static void TranslateColumnTypes(UnicodeString & ColumnTypes,
-                                   System::TStrings * ColumnTitles);
+    TStrings * ColumnTitles);
 };
 //---------------------------------------------------------------------------
 #endif

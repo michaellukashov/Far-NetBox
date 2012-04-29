@@ -1186,9 +1186,9 @@ int TTerminal::QueryUser(const UnicodeString Query,
     return Answer;
 }
 //---------------------------------------------------------------------------
-int TTerminal::QueryUserException(const UnicodeString Query,
-                                  const Exception *E, int Answers, const TQueryParams *Params,
-                                  TQueryType QueryType)
+int __fastcall TTerminal::QueryUserException(const UnicodeString Query,
+  const Exception *E, int Answers, const TQueryParams *Params,
+  TQueryType QueryType)
 {
     int Result;
     TStringList MoreMessages;

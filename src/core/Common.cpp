@@ -778,7 +778,7 @@ unsigned char __fastcall HexToByte(const UnicodeString Hex)
     static_cast<unsigned char>(((P1 <= 0) || (P2 <= 0)) ? 0 : (((P1 - 1) << 4) + (P2 - 1)));
 }
 //---------------------------------------------------------------------------
-bool __fastcall FileSearchRec(const UnicodeString FileName, WIN32_FIND_DATA & Rec)
+bool __fastcall FileSearchRec(const UnicodeString FileName, TSearchRec & Rec)
 {
   int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   bool Result = (FindFirst(FileName, FindAttrs, Rec) == 0);
@@ -793,18 +793,26 @@ void __fastcall ProcessLocalDirectory(UnicodeString DirName,
   const TProcessLocalFileEvent & CallBackFunc, void * Param,
   int FindAttrs)
 {
-  assert(CallBackFunc);
+  // assert(CallBackFunc);
   if (FindAttrs < 0)
   {
     FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   }
-  TSearchRec SearchRec;
+  TSearchRec SearchRec = {0};
 
   DirName = IncludeTrailingBackslash(DirName);
   if (FindFirst(DirName + L"*.*", FindAttrs, SearchRec) == 0)
   {
+#ifndef _MSC_VER
     try
+#endif
     {
+#ifdef _MSC_VER
+      BOOST_SCOPE_EXIT ( (&SearchRec) )
+      {
+        FindClose(SearchRec);
+      } BOOST_SCOPE_EXIT_END
+#endif
       do
       {
         if ((SearchRec.Name != L".") && (SearchRec.Name != L".."))
@@ -814,10 +822,12 @@ void __fastcall ProcessLocalDirectory(UnicodeString DirName,
 
       } while (FindNext(SearchRec) == 0);
     }
+#ifndef _MSC_VER
     __finally
     {
       FindClose(SearchRec);
     }
+#endif
   }
 /*
   WIN32_FIND_DATA SearchRec;

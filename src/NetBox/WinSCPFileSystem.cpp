@@ -2115,7 +2115,7 @@ bool TWinSCPFileSystem::IsSynchronizedBrowsing()
   return FSynchronisingBrowse;
 }
 //---------------------------------------------------------------------------
-void TWinSCPFileToggleSynchronizeBrowsing()
+void TWinSCPFileSystem::ToggleSynchronizeBrowsing()
 {
   FSynchronisingBrowse = !FSynchronisingBrowse;
 
@@ -2214,8 +2214,8 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString Dir, int OpMode)
     {
       FSessionsFolder = AbsolutePath(L"/" + FSessionsFolder, Dir);
       // DEBUG_PRINTF(L"FSessionsFolder = %s", FSessionsFolder.c_str());
-      assert(FSessionsFolder[0] == L'/');
-      FSessionsFolder.erase(0, 1);
+      assert(FSessionsFolder[1] == L'/');
+      FSessionsFolder.Delete(1, 1);
       FNewSessionsFolder = L"";
     }
     else
@@ -2273,13 +2273,13 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString Dir, int OpMode)
             UnicodeString RemotePath = UnixIncludeTrailingBackslash(FTerminal->GetCurrentDirectory());
             UnicodeString FullPrevPath = UnixIncludeTrailingBackslash(PrevPath);
             UnicodeString ALocalPath;
-            if (RemotePath.substr(0, FullPrevPath.size()) == FullPrevPath)
+            if (RemotePath.SubString(1, FullPrevPath.Length()) == FullPrevPath)
             {
               ALocalPath = IncludeTrailingBackslash(AnotherPanel->GetCurrentDirectory()) +
-                FromUnixPath(RemotePath.substr(FullPrevPath.size(),
-                  RemotePath.size() - FullPrevPath.size()));
+                FromUnixPath(RemotePath.SubString(FullPrevPath.Length(),
+                  RemotePath.Length() - FullPrevPath.Length()));
             }
-            else if (FullPrevPath.substr(0, RemotePath.size()) == RemotePath)
+            else if (FullPrevPath.SubString(1, RemotePath.Length()) == RemotePath)
             {
               UnicodeString NewLocalPath;
               ALocalPath = ExcludeTrailingBackslash(AnotherPanel->GetCurrentDirectory());
@@ -2404,7 +2404,7 @@ void TWinSCPFileSystem::DeleteSession(TSessionData * Data, void * /*Param*/)
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
-                                        const processsession_slot_type & ProcessSession, void * Param)
+  const TProcessSessionEvent & ProcessSession, void * Param)
 {
   processsession_signal_type sig;
   sig.connect(ProcessSession);
@@ -2433,7 +2433,7 @@ void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
       while (Index < StoredSessions->GetCount())
       {
         TSessionData * Data = StoredSessions->GetSession(Index);
-        if (Data->GetName().substr(0, Folder.size()) == Folder)
+        if (Data->GetName().SubString(1, Folder.Length()) == Folder)
         {
           if (StoredSessions->GetSession(Index) != Data)
           {
@@ -3033,7 +3033,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
 
     Result = true;
   }
-  catch (const std::exception & E)
+  catch (Exception & E)
   {
     FTerminal->ShowExtendedException(&E);
     SAFE_DESTROY(FTerminal);
@@ -3112,7 +3112,7 @@ void TWinSCPFileSystem::LogAuthentication(
         AuthenticationLogLines->Delete(0);
       }
       AuthenticationLogLines->PutString(0, AuthenticationLogLines->GetString(0) +
-                                        ::StringOfChar(' ', Width - AuthenticationLogLines->GetString(0).size()));
+        ::StringOfChar(' ', Width - AuthenticationLogLines->GetString(0).Length()));
       Message = AnsiReplaceStr(AuthenticationLogLines->GetText(), L"\r", L"");
       Count = AuthenticationLogLines->GetCount();
     }
@@ -3215,7 +3215,7 @@ void TWinSCPFileSystem::TerminalReadDirectory(TObject * /*Sender*/,
   }
 }
 //---------------------------------------------------------------------------
-void TWinSCPFilSystem::TerminalDeleteLocalFile(const UnicodeString FileName,
+void TWinSCPFileSystem::TerminalDeleteLocalFile(const UnicodeString FileName,
     bool Alternative)
 {
   if (!RecursiveDeleteFile(FileName,
@@ -3449,13 +3449,13 @@ void TWinSCPFileSystem::ShowOperationProgress(
       FileName = ExtractFileName(FileName, false);
     }
     Message1 = ProgressFileLabel + MinimizeName(FileName,
-               ProgressWidth - ProgressFileLabel.size(), ProgressData.Side == osRemote) + L"\n";
+      ProgressWidth - ProgressFileLabel.Length(), ProgressData.Side == osRemote) + L"\n";
     // for downloads to temporary directory,
     // do not show target directory
     if (TransferOperation && !((ProgressData.Side == osRemote) && ProgressData.Temp))
     {
       Message1 += TargetDirLabel + MinimizeName(ProgressData.Directory,
-                  ProgressWidth - TargetDirLabel.size(), ProgressData.Side == osLocal) + L"\n";
+                  ProgressWidth - TargetDirLabel.Length(), ProgressData.Side == osLocal) + L"\n";
     }
     ProgressBar1 = ProgressBar(ProgressData.OverallProgress(), ProgressWidth) + L"\n";
     if (TransferOperation)
@@ -3466,7 +3466,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
 
       Value = FormatDateTimeSpan(Configuration->GetTimeFormat(), ProgressData.TimeElapsed());
       StatusLine = TimeElapsedLabel +
-                   ::StringOfChar(L' ', ProgressWidth / 2 - 1 - TimeElapsedLabel.size() - Value.size()) +
+                   ::StringOfChar(L' ', ProgressWidth / 2 - 1 - TimeElapsedLabel.Length() - Value.Length()) +
                    Value + L"  ";
 
       UnicodeString LabelText;
@@ -3482,19 +3482,19 @@ void TWinSCPFileSystem::ShowOperationProgress(
         LabelText = StartTimeLabel;
       }
       StatusLine = StatusLine + LabelText +
-                   ::StringOfChar(' ', ProgressWidth - StatusLine.size() -
-                                  LabelText.size() - Value.size()) +
+                   ::StringOfChar(' ', ProgressWidth - StatusLine.Length() -
+                                  LabelText.Length() - Value.Length()) +
                    Value;
       Message2 += StatusLine + L"\n";
 
       Value = FormatBytes(ProgressData.TotalTransfered);
       StatusLine = BytesTransferedLabel +
-                   ::StringOfChar(' ', ProgressWidth / 2 - 1 - BytesTransferedLabel.size() - Value.size()) +
+                   ::StringOfChar(' ', ProgressWidth / 2 - 1 - BytesTransferedLabel.Length() - Value.Length()) +
                    Value + L"  ";
       Value = FORMAT(L"%s/s", FormatBytes(ProgressData.CPS()).c_str());
       StatusLine = StatusLine + CPSLabel +
-                   ::StringOfChar(' ', ProgressWidth - StatusLine.size() -
-                                  CPSLabel.size() - Value.size()) +
+                   ::StringOfChar(' ', ProgressWidth - StatusLine.Length() -
+                                  CPSLabel.Length() - Value.Length()) +
                    Value;
       Message2 += StatusLine + L"\n";
       ProgressBar2 += ProgressBar(ProgressData.TransferProgress(), ProgressWidth) + L"\n";
@@ -3526,7 +3526,7 @@ UnicodeString TWinSCPFileSystem::ProgressBar(size_t Percentage, size_t Width)
   // 0xB0 - 0x2591
   // 0xDB - 0x2588
   Result = ::StringOfChar(0x2588, (Width - 5) * (Percentage > 100 ? 100 : Percentage) / 100);
-  Result += ::StringOfChar(0x2591, (Width - 5) - Result.size());
+  Result += ::StringOfChar(0x2591, (Width - 5) - Result.Length());
   Result += FORMAT(L"%4d%%", Percentage);
   return Result;
 }
@@ -4113,7 +4113,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString Directory,
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::IsEditHistoryEmpty()
 {
-  return FEditHistories.IsEmpty();
+  return FEditHistories.empty();
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::EditHistory()
@@ -4141,7 +4141,7 @@ void TWinSCPFileSystem::EditHistory()
     int Result = FPlugin->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
                                GetMsg(MENU_EDIT_HISTORY), L"", MenuItems, BreakKeys, BreakCode);
 
-    if ((Result >= 0) && (Result < static_cast<int>(FEditHistories.size())))
+    if ((Result >= 0) && (Result < static_cast<int>(FEditHistories.Length())))
     {
       TRemoteFile * File;
       UnicodeString FullFileName =
