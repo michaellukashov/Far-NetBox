@@ -78,7 +78,7 @@ void TFarConfiguration::Saved()
 //---------------------------------------------------------------------------
 // duplicated from core\configuration.cpp
 #define LASTELEM(ELEM) \
-  ELEM.substr(::LastDelimiter(ELEM, L".>") + 1, ELEM.size() - ::LastDelimiter(ELEM, L".>"))
+  ELEM.SubString(::LastDelimiter(ELEM, L".>") + 1, ELEM.Length() - ::LastDelimiter(ELEM, L".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
   { \

@@ -4141,7 +4141,7 @@ void TWinSCPFileSystem::EditHistory()
     int Result = FPlugin->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
                                GetMsg(MENU_EDIT_HISTORY), L"", MenuItems, BreakKeys, BreakCode);
 
-    if ((Result >= 0) && (Result < static_cast<int>(FEditHistories.Length())))
+    if ((Result >= 0) && (Result < static_cast<int>(FEditHistories.size())))
     {
       TRemoteFile * File;
       UnicodeString FullFileName =

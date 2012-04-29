@@ -192,7 +192,7 @@ void TTabbedDialog::SelectTab(int Tab)
         }
     }
 
-    if (FOrigCaption.empty())
+    if (FOrigCaption.IsEmpty())
     {
         FOrigCaption = GetCaption();
     }
@@ -273,8 +273,8 @@ void TTabButton::SetTabName(const UnicodeString Value)
         size_t P = ::Pos(value, L"|");
         if (P > 0)
         {
-            C = value.substr(0, P);
-            value.erase(0, P + 1);
+            C = value.SubString(1, P);
+            value.Delete(1, P + 1);
         }
         else
         {
@@ -573,7 +573,7 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
         LogProtocolCombo->GetItems()->SetSelected(Configuration->GetLogProtocol());
         LogToFileCheck->SetChecked(Configuration->GetLogToFile());
         LogFileNameEdit->SetText(
-            (!Configuration->GetLogToFile() && Configuration->GetLogFileName().empty()) ?
+            (!Configuration->GetLogToFile() && Configuration->GetLogFileName().IsEmpty()) ?
             IncludeTrailingBackslash(SystemTemporaryDirectory()) + L"&s.log" :
             Configuration->GetLogFileName());
         LogFileAppendButton->SetChecked(Configuration->GetLogFileAppend());
@@ -1087,7 +1087,7 @@ private:
 //---------------------------------------------------------------------------
 UnicodeString ReplaceCopyright(const UnicodeString S)
 {
-    return ::StringReplace(S, L"�", L"(c)");
+    return ::StringReplace(S, L"�", L"(c)", TReplaceFlags::Init(rfReplaceAll));
 }
 //---------------------------------------------------------------------------
 TAboutDialog::TAboutDialog(TCustomFarPlugin *AFarPlugin) :
@@ -1113,15 +1113,15 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin *AFarPlugin) :
 #ifndef NO_FILEZILLA
     Height += 2;
 #endif
-    if (!ProductName.empty())
+    if (!ProductName.IsEmpty())
     {
         Height++;
     }
-    if (!Comments.empty())
+    if (!Comments.IsEmpty())
     {
         Height++;
     }
-    if (!LegalCopyright.empty())
+    if (!LegalCopyright.IsEmpty())
     {
         Height++;
     }
@@ -1147,7 +1147,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin *AFarPlugin) :
     Text->SetCaption(FMTLOAD(WINSCPFAR_BASED_VERSION, LoadStr(WINSCPFAR_VERSION).c_str()));
     Text->SetCenterGroup(true);
 
-    if (!ProductName.empty())
+    if (!ProductName.IsEmpty())
     {
         Text = new TFarText(this);
         Text->SetCaption(FORMAT(GetMsg(ABOUT_PRODUCT_VERSION).c_str(),
@@ -1160,10 +1160,10 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin *AFarPlugin) :
     Text->SetCaption(LoadStr(WINSCPFAR_BASED_COPYRIGHT));
     Text->SetCenterGroup(true);
 
-    if (!Comments.empty())
+    if (!Comments.IsEmpty())
     {
         Text = new TFarText(this);
-        if (ProductName.empty())
+        if (ProductName.IsEmpty())
         {
             Text->Move(0, 1);
         }
@@ -1171,7 +1171,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin *AFarPlugin) :
         Text->SetCenterGroup(true);
     }
 #if 0
-    if (!LegalCopyright.empty())
+    if (!LegalCopyright.IsEmpty())
     {
         Text = new TFarText(this);
         Text->Move(0, 1);
@@ -1179,7 +1179,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin *AFarPlugin) :
         Text->SetCenterGroup(true);
     }
     Text = new TFarText(this);
-    if (LegalCopyright.empty())
+    if (LegalCopyright.IsEmpty())
     {
         Text->Move(0, 1);
     }
@@ -1307,11 +1307,11 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin *AFarPlugin,
     if (((Kind == pkPassword) || (Kind == pkTIS) || (Kind == pkCryptoCard) ||
             (Kind == pkKeybInteractive)) &&
             (Prompts->GetCount() == 1) && !(Prompts->GetObject(0) != NULL) &&
-            !SessionName.empty() &&
+            !SessionName.IsEmpty() &&
             StoredCredentialsTried)
     {
         FSessionData = dynamic_cast<TSessionData *>(StoredSessions->FindByName(SessionName));
-        ShowSavePassword = (FSessionData != NULL) && !FSessionData->GetPassword().empty();
+        ShowSavePassword = (FSessionData != NULL) && !FSessionData->GetPassword().IsEmpty();
     }
 
     bool Truncated = false;
@@ -1359,13 +1359,13 @@ void TPasswordDialog::GenerateLabel(const UnicodeString Caption,
     UnicodeString caption = Caption;
     TFarText *Result = new TFarText(this);
 
-    if (!FPrompt.empty())
+    if (!FPrompt.IsEmpty())
     {
         FPrompt += L"\n\n";
     }
     FPrompt += caption;
 
-    if (GetSize().x - 10 < static_cast<int>(caption.size()))
+    if (GetSize().x - 10 < static_cast<int>(caption.Length()))
     {
         caption.SetLength(GetSize().x - 10 - 4);
         caption += L" ...";
@@ -1389,19 +1389,19 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
 
     System::TPoint S = System::TPoint(40, ShowSavePassword ? 1 : 0);
 
-    int x = static_cast<int>(Instructions.size());
+    int x = static_cast<int>(Instructions.Length());
     if (S.x < x)
     {
         S.x = x;
     }
-    if (!Instructions.empty())
+    if (!Instructions.IsEmpty())
     {
         S.y += 2;
     }
 
     for (size_t Index = 0; Index < Prompts->GetCount(); Index++)
     {
-        int x = static_cast<int>(Prompts->GetString(Index).size());
+        int x = static_cast<int>(Prompts->GetString(Index).Length());
         if (S.x < x)
         {
             S.x = x;
@@ -1416,7 +1416,7 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
 
     SetSize(System::TPoint(S.x + 10, S.y + 6));
 
-    if (!Instructions.empty())
+    if (!Instructions.IsEmpty())
     {
         GenerateLabel(Instructions, Truncated);
         // dumb way to add empty line
@@ -2851,23 +2851,23 @@ void AdjustRemoteDir(TFarEdit *HostNameEdit,
                      TFarCheckBox *UpdateDirectoriesCheck)
 {
     UnicodeString hostName = HostNameEdit->GetText();
-    if (LowerCase(hostName.substr(0, 7)) == L"http://")
+    if (LowerCase(hostName.SubString(1, 7)) == L"http://")
     {
-        hostName.erase(0, 7);
+        hostName.Delete(1, 7);
     }
-    else if (LowerCase(hostName.substr(0, 7)) == L"https://")
+    else if (LowerCase(hostName.SubString(1, 7)) == L"https://")
     {
-        hostName.erase(0, 8);
+        hostName.Delete(1, 8);
     }
     UnicodeString dir;
-    size_t P = hostName.find_first_of(L'/');
-    if (P != UnicodeString::npos)
+    size_t P = hostName.Pos(L'/');
+    if (P > 0)
     {
-        dir = hostName.substr(P, hostName.size() - P);
-        hostName.SetLength(hostName.size() - dir.size());
+        dir = hostName.SubString(P, hostName.Length() - P);
+        hostName.SetLength(hostName.Length() - dir.Length());
     }
     UnicodeString remotedir = RemoteDirectoryEdit->GetText();
-    if (remotedir.empty() && !dir.empty())
+    if (remotedir.IsEmpty() && !dir.IsEmpty())
     {
         // UpdateDirectoriesCheck->SetChecked(true);
         RemoteDirectoryEdit->SetText(dir);
@@ -3237,7 +3237,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
 
     // DEBUG_PRINTF(L"SessionData->GetSftpServer = %s", SessionData->GetSftpServer().c_str());
     // DEBUG_PRINTF(L"SftpServerEdit->GetText = %s", SftpServerEdit->GetText().c_str());
-    if (SessionData->GetSftpServer().empty())
+    if (SessionData->GetSftpServer().IsEmpty())
     {
         // DEBUG_PRINTF(L"SftpServerEdit->GetItems()->GetString(0) = %s", SftpServerEdit->GetItems()->GetString(0).c_str());
         SftpServerEdit->SetText(SftpServerEdit->GetItems()->GetString(0));
@@ -3312,7 +3312,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
         break;
     }
 
-    if (SessionData->GetCodePage().empty())
+    if (SessionData->GetCodePage().IsEmpty())
     {
         CodePageEdit->SetText(CodePageEdit->GetItems()->GetString(0));
     }
@@ -3552,7 +3552,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
             for (size_t Index = 0; Index < LENOF(PostLoginCommandsEdits); Index++)
             {
                 UnicodeString Text = PostLoginCommandsEdits[Index]->GetText();
-                if (!Text.empty())
+                if (!Text.IsEmpty())
                 {
                     PostLoginCommands->Add(PostLoginCommandsEdits[Index]->GetText());
                 }
@@ -3870,7 +3870,7 @@ bool TSessionDialog::VerifyKey(UnicodeString FileName, bool TypeOnly)
 {
     bool Result = true;
 
-    if (!::Trim(FileName).empty())
+    if (!::Trim(FileName).IsEmpty())
     {
         TKeyType Type = KeyType(FileName);
         UnicodeString Message;
@@ -3906,7 +3906,7 @@ bool TSessionDialog::VerifyKey(UnicodeString FileName, bool TypeOnly)
             break;
         }
 
-        if (!Message.empty())
+        if (!Message.IsEmpty())
         {
             TWinSCPPlugin *WinSCPPlugin = dynamic_cast<TWinSCPPlugin *>(FarPlugin);
             Result = (WinSCPPlugin->MoreMessageDialog(Message, NULL, qtWarning,
@@ -3929,7 +3929,7 @@ bool TSessionDialog::CloseQuery()
             VerifyKey(TunnelPrivateKeyEdit->GetText(), true);
     }
 
-    if (CanClose && !PasswordEdit->GetText().empty() &&
+    if (CanClose && !PasswordEdit->GetText().IsEmpty() &&
             !Configuration->GetDisablePasswordStoring() &&
             (PasswordEdit->GetText() != FSessionData->GetPassword()) &&
             (((GetResult() == brOK)) ||
@@ -4202,7 +4202,7 @@ void TRightsContainer::RightsButtonClick(TFarButton *Sender,
 //---------------------------------------------------------------------------
 void TRightsContainer::OctalEditExit(System::TObject * /*Sender*/)
 {
-    if (!::Trim(OctalEdit->GetText()).empty())
+    if (!::Trim(OctalEdit->GetText()).IsEmpty())
     {
         TRights R = GetRights();
         R.SetOctal(::Trim(OctalEdit->GetText()));
@@ -4226,7 +4226,7 @@ void TRightsContainer::UpdateControls()
         {
             OctalEdit->SetText(R.GetIsUndef() ? UnicodeString() : R.GetOctal());
         }
-        else if (::Trim(OctalEdit->GetText()).size() >= 3)
+        else if (::Trim(OctalEdit->GetText()).Length() >= 3)
         {
             try
             {
@@ -4416,13 +4416,13 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin *AFarPlugin,
             delete UsedUserList;
             delete UsedGroupList;
         } BOOST_SCOPE_EXIT_END
-        if ((GroupList == NULL) || (GroupList->GetCount() == 0))
+        if ((GroupList == NULL) || (GroupList->Count() == 0))
         {
             UsedGroupList = new System::TStringList();
             UsedGroupList->SetDuplicates(System::dupIgnore);
             UsedGroupList->SetSorted(true);
         }
-        if ((UserList == NULL) || (UserList->GetCount() == 0))
+        if ((UserList == NULL) || (UserList->Count() == 0))
         {
             UsedUserList = new System::TStringList();
             UsedUserList->SetDuplicates(System::dupIgnore);
@@ -4433,11 +4433,11 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin *AFarPlugin,
         {
             File = reinterpret_cast<TRemoteFile *>(FileList->GetObject(Index));
             assert(File);
-            if (UsedGroupList && !File->GetGroup().GetName().empty())
+            if (UsedGroupList && !File->GetGroup().GetName().IsEmpty())
             {
                 UsedGroupList->Add(File->GetGroup().GetName());
             }
-            if (UsedUserList && !File->GetOwner().GetName().empty())
+            if (UsedUserList && !File->GetOwner().GetName().IsEmpty())
             {
                 UsedUserList->Add(File->GetOwner().GetName());
             }
@@ -4491,11 +4491,11 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin *AFarPlugin,
         }
         else if (UserList)
         {
-            DEBUG_PRINTF(L"UserList->GetCount = %d", UserList->GetCount());
-            for (size_t Index = 0; Index < UserList->GetCount(); Index++)
+            DEBUG_PRINTF(L"UserList->GetCount = %d", UserList->Count());
+            for (size_t Index = 0; Index < UserList->Count(); Index++)
             {
-                DEBUG_PRINTF(L"user = %s", UserList->GetToken(Index)->GetName().c_str());
-                GroupComboBox->GetItems()->Add(UserList->GetToken(Index)->GetName());
+                DEBUG_PRINTF(L"user = %s", UserList->Token(Index)->GetName().c_str());
+                GroupComboBox->GetItems()->Add(UserList->Token(Index)->GetName());
             }
         }
 
@@ -4516,10 +4516,10 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin *AFarPlugin,
         }
         else if (GroupList)
         {
-            for (size_t Index = 0; Index < GroupList->GetCount(); Index++)
+            for (size_t Index = 0; Index < GroupList->Count(); Index++)
             {
-                DEBUG_PRINTF(L"group = %s", GroupList->GetToken(Index)->GetName().c_str());
-                GroupComboBox->GetItems()->Add(GroupList->GetToken(Index)->GetName());
+                DEBUG_PRINTF(L"group = %s", GroupList->Token(Index)->GetName().c_str());
+                GroupComboBox->GetItems()->Add(GroupList->Token(Index)->GetName());
             }
         }
 
@@ -4594,11 +4594,11 @@ void TPropertiesDialog::Change()
         OkButton->SetEnabled(
             // group name is specified or we set multiple-file properties and
             // no valid group was specified (there are at least two different groups)
-            (!GroupComboBox->GetText().empty() ||
+            (!GroupComboBox->GetText().IsEmpty() ||
              (FMultiple && !FOrigProperties.Valid.Contains(vpGroup)) ||
              (FOrigProperties.Group.GetName() == GroupComboBox->GetText())) &&
             // same but with owner
-            (!OwnerComboBox->GetText().empty() ||
+            (!OwnerComboBox->GetText().IsEmpty() ||
              (FMultiple && !FOrigProperties.Valid.Contains(vpOwner)) ||
              (FOrigProperties.Owner.GetName() == OwnerComboBox->GetText())) &&
             ((FileProperties != FOrigProperties) || (RecursiveCheck && RecursiveCheck->GetChecked())));
@@ -4615,7 +4615,7 @@ void TPropertiesDialog::UpdateProperties(TRemoteProperties &Properties)
     }
 
 #define STORE_NAME(PROPERTY) \
-    if (!PROPERTY ## ComboBox->GetText().empty() && \
+    if (!PROPERTY ## ComboBox->GetText().IsEmpty() && \
         FAllowedChanges & cp ## PROPERTY) \
     { \
       Properties.Valid << vp ## PROPERTY; \
@@ -5570,8 +5570,8 @@ void TLinkDialog::Change()
 
     if (GetHandle())
     {
-        OkButton->SetEnabled(!FileNameEdit->GetText().empty() &&
-                             !PointToEdit->GetText().empty());
+        OkButton->SetEnabled(!FileNameEdit->GetText().IsEmpty() &&
+                             !PointToEdit->GetText().IsEmpty());
     }
 }
 //---------------------------------------------------------------------------
@@ -5619,7 +5619,7 @@ public:
     enum { tabProtocol = 1, tabCapabilities, tabSpaceAvailable, tabCount };
 
     explicit TFileSystemInfoDialog(TCustomFarPlugin *AFarPlugin,
-                                   const getspaceavailable_slot_type &OnGetSpaceAvailable);
+      const TGetSpaceAvailableEvent &OnGetSpaceAvailable);
 
     void Execute(const TSessionInfo &SessionInfo,
                  const TFileSystemInfo &FileSystemInfo, UnicodeString SpaceAvailablePath);
@@ -5680,7 +5680,7 @@ public:
 };
 //---------------------------------------------------------------------------
 TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin *AFarPlugin,
-        const getspaceavailable_slot_type &OnGetSpaceAvailable) : TTabbedDialog(AFarPlugin, tabCount),
+        const TGetSpaceAvailableEvent &OnGetSpaceAvailable) : TTabbedDialog(AFarPlugin, tabCount),
     FSpaceAvailableLoaded(false)
 {
     FOnGetSpaceAvailable.connect(OnGetSpaceAvailable);
@@ -5758,7 +5758,7 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin *AFarPlugin,
 
     SpaceAvailablePathEdit = new TFarEdit(this);
     SpaceAvailablePathEdit->SetRight(
-        - (static_cast<int>(GetMsg(SPACE_AVAILABLE_CHECK_SPACE).size() + 11)));
+        - (static_cast<int>(GetMsg(SPACE_AVAILABLE_CHECK_SPACE).Length() + 11)));
 
     Button = new TFarButton(this);
     Button->SetCaption(GetMsg(SPACE_AVAILABLE_CHECK_SPACE));
@@ -5909,7 +5909,7 @@ void TFileSystemInfoDialog::ControlsAddItem(System::TObject *Control,
     if (Control == HostKeyFingerprintEdit)
     {
         HostKeyFingerprintEdit->SetText(Value);
-        HostKeyFingerprintEdit->SetEnabled(!Value.empty());
+        HostKeyFingerprintEdit->SetEnabled(!Value.IsEmpty());
         if (!HostKeyFingerprintEdit->GetEnabled())
         {
             HostKeyFingerprintEdit->SetVisible(false);
@@ -5921,7 +5921,7 @@ void TFileSystemInfoDialog::ControlsAddItem(System::TObject *Control,
     else if (Control == InfoLister)
     {
         InfoLister->GetItems()->SetText(Value);
-        InfoLister->SetEnabled(!Value.empty());
+        InfoLister->SetEnabled(!Value.IsEmpty());
         if (!InfoLister->GetEnabled())
         {
             InfoLister->SetVisible(false);
@@ -5934,7 +5934,7 @@ void TFileSystemInfoDialog::ControlsAddItem(System::TObject *Control,
     {
         TLabelList *List = dynamic_cast<TLabelList *>(Control);
         assert(List != NULL);
-        if (!Value.empty())
+        if (!Value.IsEmpty())
         {
             TFarText *Text = reinterpret_cast<TFarText *>(List->GetItem(FLastListItem));
             FLastListItem++;
@@ -5951,9 +5951,9 @@ void TFileSystemInfoDialog::CalculateMaxLenAddItem(System::TObject *Control,
     if (List != NULL)
     {
         UnicodeString S = GetMsg(Label);
-        if (List->MaxLen < S.size())
+        if (List->MaxLen < S.Length())
         {
-            List->MaxLen = S.size();
+            List->MaxLen = S.Length();
         }
     }
 }
@@ -5964,7 +5964,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(System::TObject *AControl,
     TFarDialogItem *Control = dynamic_cast<TFarDialogItem *>(AControl);
     // check for Enabled instead of Visible, as Visible is false
     // when control is on non-active tab
-    if (!Value.empty() &&
+    if (!Value.IsEmpty() &&
             ((Control == NULL) || Control->GetEnabled()) &&
             (AControl != SpaceAvailableLabels) ||
             SpaceAvailableSupported())
@@ -5994,14 +5994,14 @@ void TFileSystemInfoDialog::ClipboardAddItem(System::TObject *AControl,
                 assert(false);
             }
 
-            if (!LabelStr.empty() && (LabelStr[LabelStr.size() - 1] == ':'))
+            if (!LabelStr.IsEmpty() && (LabelStr[LabelStr.Length() - 1] == ':'))
             {
-                LabelStr.SetLength(LabelStr.size() - 1);
+                LabelStr.SetLength(LabelStr.Length() - 1);
             }
 
-            if ((Value.size() >= 2) && (Value.substr(Value.size() - 1, 2) == L"\r\n"))
+            if ((Value.Length() >= 2) && (Value.SubString(Value.Length() - 1, 2) == L"\r\n"))
             {
-                Value.SetLength(Value.size() - 2);
+                Value.SetLength(Value.Length() - 2);
             }
 
             FClipboard += FORMAT(L"%s\r\n%s\r\n", LabelStr.c_str(), Value.c_str());
@@ -6010,9 +6010,9 @@ void TFileSystemInfoDialog::ClipboardAddItem(System::TObject *AControl,
         {
             assert(dynamic_cast<TLabelList *>(AControl) != NULL);
             UnicodeString LabelStr = GetMsg(Label);
-            if (!LabelStr.empty() && (LabelStr[LabelStr.size() - 1] == ':'))
+            if (!LabelStr.IsEmpty() && (LabelStr[LabelStr.Length() - 1] == ':'))
             {
-                LabelStr.SetLength(LabelStr.size() - 1);
+                LabelStr.SetLength(LabelStr.Length() - 1);
             }
             FClipboard += FORMAT(L"%s = %s\r\n", LabelStr.c_str(), Value.c_str());
         }
@@ -6109,7 +6109,7 @@ void TFileSystemInfoDialog::SpaceAvailableButtonClick(
 void TFileSystemInfoDialog::CheckSpaceAvailable()
 {
     assert(!FOnGetSpaceAvailable.empty());
-    assert(!SpaceAvailablePathEdit->GetText().empty());
+    assert(!SpaceAvailablePathEdit->GetText().IsEmpty());
 
     FSpaceAvailableLoaded = true;
 
@@ -6139,7 +6139,7 @@ bool TFileSystemInfoDialog::SpaceAvailableSupported()
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::FileSystemInfoDialog(
     const TSessionInfo &SessionInfo, const TFileSystemInfo &FileSystemInfo,
-    UnicodeString SpaceAvailablePath, const getspaceavailable_slot_type &OnGetSpaceAvailable)
+    UnicodeString SpaceAvailablePath, const TGetSpaceAvailableEvent &OnGetSpaceAvailable)
 {
     TFileSystemInfoDialog *Dialog = new TFileSystemInfoDialog(FPlugin, OnGetSpaceAvailable);
     {
@@ -6202,7 +6202,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
                 {
                     TBookmark *Bookmark = BookmarkList->GetBookmark(i);
                     UnicodeString RemoteDirectory = Bookmark->GetRemote();
-                    if (!RemoteDirectory.empty() && (BookmarkDirectories->IndexOf(RemoteDirectory.c_str()) == NPOS))
+                    if (!RemoteDirectory.IsEmpty() && (BookmarkDirectories->IndexOf(RemoteDirectory.c_str()) == NPOS))
                     {
                         size_t Pos;
                         Pos = BookmarkDirectories->Add(RemoteDirectory);
@@ -6307,7 +6307,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
             else if (ItemFocused != NPOS)
             {
                 Directory = BookmarkPaths->GetString(ItemFocused);
-                if (Directory.empty())
+                if (Directory.IsEmpty())
                 {
                     // empty trailing line in no-bookmark mode selected
                     ItemFocused = NPOS;
@@ -7008,7 +7008,7 @@ TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
 
     UnicodeString Actions = GetMsg(CHECKLIST_ACTIONS);
     int Action = 0;
-    while (!Actions.empty() && (Action < LENOF(FActions)))
+    while (!Actions.IsEmpty() && (Action < LENOF(FActions)))
     {
         FActions[Action] = CutToChar(Actions, '|', false);
         Action++;
@@ -7046,7 +7046,7 @@ void TSynchronizeChecklistDialog::AddColumn(UnicodeString &List,
         UnicodeString Value, size_t Column, bool Header)
 {
     char Separator = '\xB3';
-    size_t Len = Value.size();
+    size_t Len = Value.Length();
     size_t Width = static_cast<size_t>(FWidths[Column]);
     bool Right = (Column == 2) || (Column == 3) || (Column == 6) || (Column == 7);
     bool LastCol = (Column == FColumns - 1);
@@ -7062,7 +7062,7 @@ void TSynchronizeChecklistDialog::AddColumn(UnicodeString &List,
             Added += Width - Len;
         }
         List += ::StringOfChar(' ', Added) + Value;
-        Added += Value.size();
+        Added += Value.Length();
         if (Width > Added)
         {
             List += ::StringOfChar(' ', Width - Added);
@@ -7077,7 +7077,7 @@ void TSynchronizeChecklistDialog::AddColumn(UnicodeString &List,
         size_t Scroll = FScroll;
         if ((Scroll > 0) && !Header)
         {
-            if (List.empty())
+            if (List.IsEmpty())
             {
                 List += '{';
                 Width--;
@@ -7085,7 +7085,7 @@ void TSynchronizeChecklistDialog::AddColumn(UnicodeString &List,
             }
             else
             {
-                List[List.size() - 1] = '{';
+                List[List.Length() - 1] = '{';
             }
         }
         if (Scroll > Len - Width)
@@ -7096,7 +7096,7 @@ void TSynchronizeChecklistDialog::AddColumn(UnicodeString &List,
         {
             Width--;
         }
-        List += Value.substr(Scroll + 1, Width);
+        List += Value.SubString(Scroll + 1, Width);
         if (!Header && (Len - Scroll > Width))
         {
             List += '}';
@@ -7183,16 +7183,16 @@ UnicodeString TSynchronizeChecklistDialog::FormatSize(
     size_t Width = FWidths[Column];
     UnicodeString Result = FORMAT(L"%lu", Size);
 
-    if (Result.size() > Width)
+    if (Result.Length() > Width)
     {
         Result = FORMAT(L"%.2f 'K'", Size / 1024.0);
-        if (Result.size() > Width)
+        if (Result.Length() > Width)
         {
             Result = FORMAT(L"%.2f 'M'", Size / (1024.0 * 1024));
-            if (Result.size() > Width)
+            if (Result.Length() > Width)
             {
                 Result = FORMAT(L"%.2f 'G'", Size / (1024.0 * 1024 * 1024));
-                if (Result.size() > Width)
+                if (Result.Length() > Width)
                 {
                     // back to default
                     Result = FORMAT(L"%lu", Size);
@@ -7226,10 +7226,10 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(
     else
     {
         S = ChecklistItem->Local.Directory;
-        if (AnsiSameText(FLocalDirectory, S.substr(0, FLocalDirectory.size())))
+        if (AnsiSameText(FLocalDirectory, S.SubString(1, FLocalDirectory.Length())))
         {
             S[0] = '.';
-            S.erase(1, FLocalDirectory.size() - 1);
+            S.Delete(1, FLocalDirectory.Length() - 1);
         }
         else
         {
@@ -7269,10 +7269,10 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(
     else
     {
         S = ChecklistItem->Remote.Directory;
-        if (AnsiSameText(FRemoteDirectory, S.substr(0, FRemoteDirectory.size())))
+        if (AnsiSameText(FRemoteDirectory, S.SubString(1, FRemoteDirectory.Length())))
         {
-            S[0] = '.';
-            S.erase(1, FRemoteDirectory.size() - 1);
+            S[1] = '.';
+            S.Delete(2, FRemoteDirectory.Length() - 1);
         }
         else
         {
@@ -7360,7 +7360,7 @@ void TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
         } BOOST_SCOPE_EXIT_END
         for (size_t Index = 0; Index < List->GetCount(); Index++)
         {
-            if (!Scroll || (::LastDelimiter(List->GetString(Index), L"{}") != UnicodeString::npos))
+            if (!Scroll || (::LastDelimiter(List->GetString(Index), L"{}") > 0))
             {
                 const TSynchronizeChecklist::TItem *ChecklistItem =
                     reinterpret_cast<TSynchronizeChecklist::TItem *>(List->GetObject(Index));
@@ -7559,7 +7559,7 @@ class TSynchronizeDialog : TFarDialog
 public:
     TSynchronizeDialog(TCustomFarPlugin *AFarPlugin,
                        const synchronizestartstop_slot_type &OnStartStop,
-                       int Options, int CopyParamAttrs, const getsynchronizeoptions_slot_type &OnGetOptions);
+                       int Options, int CopyParamAttrs, const TGetSynchronizeOptionsEvent &OnGetOptions);
     virtual ~TSynchronizeDialog();
 
     bool Execute(TSynchronizeParamType &Params,
@@ -7614,9 +7614,9 @@ private:
 };
 //---------------------------------------------------------------------------
 TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin *AFarPlugin,
-                                       const synchronizestartstop_slot_type &OnStartStop,
-                                       int Options, int CopyParamAttrs, const getsynchronizeoptions_slot_type &OnGetOptions) :
-    TFarDialog(AFarPlugin)
+  const synchronizestartstop_slot_type &OnStartStop,
+  int Options, int CopyParamAttrs, const TGetSynchronizeOptionsEvent &OnGetOptions)
+  : TFarDialog(AFarPlugin)
 {
     TFarText *Text;
     TFarSeparator *Separator;
@@ -8008,7 +8008,7 @@ int TSynchronizeDialog::ActualCopyParamAttrs()
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::SynchronizeDialog(TSynchronizeParamType &Params,
         const TCopyParamType *CopyParams, const synchronizestartstop_slot_type &OnStartStop,
-        bool &SaveSettings, int Options, int CopyParamAttrs, const getsynchronizeoptions_slot_type &OnGetOptions)
+        bool &SaveSettings, int Options, int CopyParamAttrs, const TGetSynchronizeOptionsEvent &OnGetOptions)
 {
     bool Result;
     TSynchronizeDialog *Dialog = new TSynchronizeDialog(FPlugin, OnStartStop,
@@ -8034,7 +8034,7 @@ bool TWinSCPFileSystem::RemoteTransferDialog(System::TStrings *FileList,
     UnicodeString Value = UnixIncludeTrailingBackslash(Target) + FileMask;
     bool Result = FPlugin->InputBox(
                       GetMsg(Move ? REMOTE_MOVE_TITLE : REMOTE_COPY_TITLE), Prompt,
-                      Value, 0, MOVE_TO_HISTORY) && !Value.empty();
+                      Value, 0, MOVE_TO_HISTORY) && !Value.IsEmpty();
     if (Result)
     {
         Target = UnixExtractFilePath(Value);
@@ -8049,7 +8049,7 @@ bool TWinSCPFileSystem::RenameFileDialog(TRemoteFile *File,
 {
     return FPlugin->InputBox(GetMsg(RENAME_FILE_TITLE).c_str(),
                              FORMAT(GetMsg(RENAME_FILE).c_str(), File->GetFileName().c_str()), NewName, 0) &&
-           !NewName.empty();
+           !NewName.IsEmpty();
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -8498,7 +8498,7 @@ bool TQueueDialog::FillQueueItemLine(UnicodeString &Line,
     {
         Values[0] = MinimizeName(Info->Destination, PathMaxLen, (Info->Side == osLocal));
 
-        if (ProgressStr.empty())
+        if (ProgressStr.IsEmpty())
         {
             if (ProgressData != NULL)
             {

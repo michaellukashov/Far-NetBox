@@ -141,9 +141,9 @@ bool TXmlStorage::OpenSubKey(const UnicodeString SubKey, bool CanCreate, bool Pa
     if (Path)
     {
         UnicodeString subKey = SubKey;
-        assert(subKey.empty() || (subKey[subKey.size() - 1] != '\\'));
+        assert(subKey.IsEmpty() || (subKey[subKey.Length() - 1] != '\\'));
         bool Result = true;
-        while (!subKey.empty())
+        while (!subKey.IsEmpty())
         {
             Result &= OpenSubKey(CutToChar(subKey, L'\\', false), CanCreate, false);
             // DEBUG_PRINTF(L"SubKey = %s, Result = %d", SubKey.c_str(), Result);

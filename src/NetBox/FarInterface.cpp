@@ -8,7 +8,7 @@
 #include "Queue.h"
 //---------------------------------------------------------------------------
 
-TConfiguration *CreateConfiguration()
+TConfiguration * __fastcall CreateConfiguration()
 {
     return new TFarConfiguration(FarPlugin);
 }
@@ -20,24 +20,24 @@ void ShowExtendedException(const std::exception *E)
     assert(WinSCPPlugin != NULL);
     WinSCPPlugin->ShowExtendedException(E);
 }
-UnicodeString AppNameString()
+UnicodeString __fastcall AppNameString()
 {
     return L"NetBox";
 }
 
 //---------------------------------------------------------------------------
-UnicodeString GetRegistryKey()
+UnicodeString __fastcall GetRegistryKey()
 {
     // return L"Software\\Michael Lukashov\\FarNetBox";
     return L"Software\\Far2\\Plugins\\NetBox 2";
 }
 //---------------------------------------------------------------------------
-void Busy(bool /*Start*/)
+void __fastcall Busy(bool /*Start*/)
 {
     // nothing
 }
 //---------------------------------------------------------------------------
-UnicodeString SshVersionString()
+UnicodeString __fastcall SshVersionString()
 {
     return FORMAT(L"NetBox-FAR-release-%s", Configuration->GetVersion().c_str());
 }
@@ -76,7 +76,7 @@ size_t StartThread(void *SecurityAttributes, unsigned StackSize,
         CreationFlags, ThreadId);
 }
 //---------------------------------------------------------------------------
-void CopyToClipboard(const UnicodeString Text)
+void __fastcall CopyToClipboard(const UnicodeString Text)
 {
     assert(FarPlugin != NULL);
     FarPlugin->FarCopyToClipboard(Text);

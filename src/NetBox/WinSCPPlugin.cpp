@@ -171,7 +171,7 @@ bool TWinSCPPlugin::ImportSessions()
         L"",
     };
     int all_imported = 0;
-    for (int i = 0; !SessionsKeys[i].empty(); i++)
+    for (int i = 0; !SessionsKeys[i].IsEmpty(); i++)
     {
         UnicodeString RegistryStorageKey = SessionsKeys[i];
         // DEBUG_PRINTF(L"RegistryStorageKey = %s", RegistryStorageKey.c_str());
@@ -370,10 +370,10 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(int OpenFrom, LONG_PTR Item)
                 UnicodeString Name = reinterpret_cast<wchar_t *>(Item);
                 if (OpenFrom == OPEN_SHORTCUT)
                 {
-                    size_t P = Name.find(L"\1");
-                    if (P != UnicodeString::npos)
+                    size_t P = Name.Pos(L"\1");
+                    if (P > 0)
                     {
-                        Directory = Name.substr(P + 1, Name.size() - P);
+                        Directory = Name.SubString(P + 1, Name.Length() - P);
                         Name.SetLength(P);
                     }
 
@@ -405,7 +405,7 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(int OpenFrom, LONG_PTR Item)
                     System::Abort();
                 }
                 FileSystem->Connect(Session);
-                if (!Directory.empty())
+                if (!Directory.IsEmpty())
                 {
                     FileSystem->SetDirectoryEx(Directory, OPM_SILENT);
                 }
@@ -730,7 +730,7 @@ int TWinSCPPlugin::MoreMessageDialog(const UnicodeString Str,
                 {
                     Answers = Params->TimerAnswers;
                 }
-                if (!Params->TimerMessage.empty())
+                if (!Params->TimerMessage.IsEmpty())
                 {
                     str = Params->TimerMessage;
                 }

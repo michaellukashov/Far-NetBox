@@ -336,6 +336,7 @@ void TObjectList::Notify(void *Ptr, int Action)
 //---------------------------------------------------------------------------
 const UnicodeString sLineBreak = L"\r\n";
 const int MinsPerHour = 60;
+const UnicodeString kernel32 = L"kernel32";
 static const int MemoryDelta = 0x2000;
 //---------------------------------------------------------------------------
 
@@ -1090,18 +1091,18 @@ std::string W2MB(const wchar_t *src, const UINT cp)
 
 //---------------------------------------------------------------------------
 
-TDateTime::TDateTime(unsigned int Hour,
-                     unsigned int Min, unsigned int Sec, unsigned int MSec)
+TDateTime::TDateTime(unsigned short Hour,
+  unsigned short Min, unsigned short Sec, unsigned short MSec)
 {
     FValue = ::EncodeTimeVerbose(Hour, Min, Sec, MSec);
 }
-void TDateTime::DecodeDate(unsigned int &Y,
-                           unsigned int &M, unsigned int &D)
+void TDateTime::DecodeDate(unsigned short &Y,
+  unsigned short &M, unsigned short &D)
 {
     ::DecodeDate(*this, Y, M, D);
 }
-void TDateTime::DecodeTime(unsigned int &H,
-                           unsigned int &N, unsigned int &S, unsigned int &MS)
+void TDateTime::DecodeTime(unsigned short &H,
+  unsigned short &N, unsigned short &S, unsigned short &MS)
 {
     ::DecodeTime(*this, H, N, S, MS);
 }

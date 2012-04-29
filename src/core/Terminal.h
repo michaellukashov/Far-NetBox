@@ -350,7 +350,7 @@ protected:
   TStrings * __fastcall GetFixedPaths();
   void DoStartup();
   virtual bool __fastcall DoQueryReopen(Exception * E);
-  virtual void __fastcall FatalError(const Exception * E, const UnicodeString Msg);
+  virtual void __fastcall FatalError(Exception * E, UnicodeString Msg);
   void __fastcall ResetConnection();
   virtual bool __fastcall DoPromptUser(TSessionData * Data, TPromptKind Kind,
     const UnicodeString Name, const UnicodeString Instructions, TStrings * Prompts,
@@ -373,13 +373,13 @@ protected:
     TStrings * MoreMessages, unsigned int Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation);
   virtual unsigned int __fastcall QueryUserException(const UnicodeString Query,
-    const Exception * E, unsigned int Answers, const TQueryParams * Params,
+    Exception * E, unsigned int Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation);
   virtual bool __fastcall PromptUser(TSessionData * Data, TPromptKind Kind,
     const UnicodeString Name, const UnicodeString Instructions, TStrings * Prompts, TStrings * Results);
   virtual void __fastcall DisplayBanner(const UnicodeString & Banner);
   virtual void __fastcall Closed();
-  virtual void __fastcall HandleExtendedException(const Exception * E);
+  virtual void __fastcall HandleExtendedException(Exception * E);
   bool __fastcall IsListenerFree(size_t PortNumber);
   void __fastcall DoProgress(TFileOperationProgressType & ProgressData, TCancelStatus & Cancel);
   void DoFinished(TFileOperation Operation, TOperationSide Side, bool Temp,

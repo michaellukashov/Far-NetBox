@@ -314,17 +314,17 @@ public:
     {}
     virtual void __fastcall Information(const UnicodeString Str, bool Status);
     virtual int __fastcall QueryUser(const UnicodeString Query,
-                          TStrings *MoreMessages, int Answers, const TQueryParams *Params,
-                          TQueryType QueryType);
+      TStrings *MoreMessages, int Answers, const TQueryParams *Params,
+      TQueryType QueryType);
     virtual int __fastcall QueryUserException(const UnicodeString Query,
-                                   const Exception *E, int Answers, const TQueryParams *Params,
-                                   TQueryType QueryType);
+      Exception *E, int Answers, const TQueryParams *Params,
+      TQueryType QueryType);
     virtual bool __fastcall PromptUser(TSessionData *Data, TPromptKind Kind,
-                            const UnicodeString Name, const UnicodeString Instructions, TStrings *Prompts,
-                            TStrings *Results);
+      const UnicodeString Name, const UnicodeString Instructions, TStrings *Prompts,
+      TStrings *Results);
     virtual void __fastcall DisplayBanner(const UnicodeString Banner);
     virtual void __fastcall FatalError(const Exception *E, const UnicodeString Msg);
-    virtual void __fastcall HandleExtendedException(const Exception *E);
+    virtual void __fastcall HandleExtendedException(Exception *E);
     virtual void __fastcall Closed();
 
 private:
@@ -408,7 +408,7 @@ void __fastcall TTunnelUI::DisplayBanner(const UnicodeString Banner)
     }
 }
 //---------------------------------------------------------------------------
-void __fastcall TTunnelUI::FatalError(const Exception *E, const UnicodeString Msg)
+void __fastcall TTunnelUI::FatalError(Exception *E, UnicodeString Msg)
 {
     throw ESshFatal(Msg, E);
 }
@@ -1254,7 +1254,7 @@ void TTerminal::DisplayBanner(const UnicodeString Banner)
     }
 }
 //---------------------------------------------------------------------------
-void TTerminal::HandleExtendedException(const Exception *E)
+void TTerminal::HandleExtendedException(Exception *E)
 {
     GetLog()->AddException(E);
     if (!GetOnShowExtendedException().IsEmpty())

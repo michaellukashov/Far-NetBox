@@ -813,11 +813,13 @@ void __fastcall ProcessLocalDirectory(UnicodeString DirName,
         FindClose(SearchRec);
       } BOOST_SCOPE_EXIT_END
 #endif
+      processlocalfile_signal_type sig;
+      sig.connect(CallBackFunc);
       do
       {
         if ((SearchRec.Name != L".") && (SearchRec.Name != L".."))
         {
-          CallBackFunc(DirName + SearchRec.Name, SearchRec, Param);
+          sig(DirName + SearchRec.Name, SearchRec, Param);
         }
 
       } while (FindNext(SearchRec) == 0);
@@ -2519,10 +2521,11 @@ UnicodeString ExpandEnvVars(const UnicodeString & str)
 
 UnicodeString StringOfChar(const wchar_t c, size_t len)
 {
-  UnicodeString result;
+  UnicodeString Result;
   if (int(len) < 0) len = 0;
-  result.SetLength(len, c);
-  return result;
+  Result.SetLength(len);
+  for (int i = 0; i < len; i++) Result[i] = c;
+  return Result;
 }
 
 // void RaiseLastOSError()
@@ -2647,8 +2650,8 @@ UnicodeString SysErrorMessage(int ErrorCode)
 UnicodeString ReplaceStrAll(const UnicodeString Str, const UnicodeString What, const UnicodeString ByWhat)
 {
   UnicodeString result = Str;
-  size_t pos = result.Pos(What);
-  while (pos != UnicodeString::npos)
+  size_t pos = result.Pos(What.c_str());
+  while (pos > 0)
   {
     result.replace(pos, What.Length(), ByWhat);
     pos = result.Pos(What);
@@ -2778,16 +2781,6 @@ UnicodeString GetCurrentDir()
   result = path;
   return result;
 }
-
-//---------------------------------------------------------------------------
-class EConvertError : public ExtException
-{
-  typedef ExtException parent;
-public:
-  EConvertError(const UnicodeString Msg) :
-    parent(Msg, NULL)
-  {}
-};
 
 //---------------------------------------------------------------------------
 void ConvertError(int ErrorID)

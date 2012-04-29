@@ -224,10 +224,10 @@ UnicodeString DateTimeToString(System::TDateTime DateTime);
 unsigned int DayOfWeek(const System::TDateTime &DateTime);
 
 System::TDateTime Date();
-void DecodeDate(const System::TDateTime &DateTime, unsigned int &Y,
-                unsigned int &M, unsigned int &D);
-void DecodeTime(const System::TDateTime &DateTime, unsigned int &H,
-                unsigned int &N, unsigned int &S, unsigned int  &MS);
+void DecodeDate(const TDateTime &DateTime, unsigned short &Y,
+  unsigned short &M, unsigned short &D);
+void DecodeTime(const TDateTime &DateTime, unsigned short &H,
+  unsigned short &N, unsigned short &S, unsigned short &MS);
 
 UnicodeString FormatDateTime(const UnicodeString fmt, System::TDateTime DateTime);
 System::TDateTime SystemTimeToDateTime(const SYSTEMTIME &SystemTime);
@@ -366,5 +366,14 @@ __int64 FileSeek(HANDLE file, __int64 offset, int Origin);
 //---------------------------------------------------------------------------
 void InitPlatformId();
 bool Win32Check(bool RetVal);
+//---------------------------------------------------------------------------
+class EConvertError : public ExtException
+{
+  typedef ExtException parent;
+public:
+  EConvertError(const UnicodeString Msg) :
+    parent(Msg, NULL)
+  {}
+};
 //---------------------------------------------------------------------------
 #endif

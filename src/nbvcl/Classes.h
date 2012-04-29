@@ -38,6 +38,7 @@ namespace System {
 //---------------------------------------------------------------------------
 extern const UnicodeString sLineBreak;
 extern const int MinsPerHour;
+extern const UnicodeString kernel32;
 //---------------------------------------------------------------------------
 UnicodeString MB2W(const char *src, const UINT cp = CP_ACP);
 std::string W2MB(const wchar_t *src, const UINT cp = CP_ACP);
@@ -404,16 +405,16 @@ public:
     }
     bool operator != (const TDateTime &rhs)
     {
-        return !(operator == (rhs));
+      return !(operator == (rhs));
     }
     UnicodeString TimeString() const
     {
-        return UnicodeString();
+      return UnicodeString();
     }
-    void DecodeDate(unsigned int &Y,
-                    unsigned int &M, unsigned int &D);
-    void DecodeTime(unsigned int &H,
-                    unsigned int &N, unsigned int &S, unsigned int &MS);
+    void DecodeDate(unsigned short &Y,
+      unsigned short &M, unsigned short &D);
+    void DecodeTime(unsigned short &H,
+      unsigned short &N, unsigned short &S, unsigned short &MS);
 private:
     double FValue;
 };
