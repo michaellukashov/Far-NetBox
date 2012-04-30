@@ -1306,7 +1306,7 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin *AFarPlugin,
     FSessionData = NULL;
     if (((Kind == pkPassword) || (Kind == pkTIS) || (Kind == pkCryptoCard) ||
             (Kind == pkKeybInteractive)) &&
-            (Prompts->GetCount() == 1) && !(Prompts->GetObject(0) != NULL) &&
+            (Prompts->GetCount() == 1) && !(Prompts->GetObjects(0) != NULL) &&
             !SessionName.IsEmpty() &&
             StoredCredentialsTried)
     {
@@ -1427,7 +1427,7 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
     {
         GenerateLabel(Prompts->GetString(Index), Truncated);
 
-        FEdits->Add(GenerateEdit((Prompts->GetObject(Index)) != NULL));
+        FEdits->Add(GenerateEdit((Prompts->GetObjects(Index)) != NULL));
     }
 }
 //---------------------------------------------------------------------------
@@ -3698,7 +3698,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
 
         for (size_t Index = 0; Index < CIPHER_COUNT; Index++)
         {
-            System::TObject *Obj = static_cast<System::TObject *>(CipherListBox->GetItems()->GetObject(Index));
+            System::TObject *Obj = static_cast<System::TObject *>(CipherListBox->GetItems()->GetObjects(Index));
             SessionData->SetCipher(Index, static_cast<TCipher>(reinterpret_cast<size_t>(Obj)));
         }
 
@@ -3709,7 +3709,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
 
         for (size_t Index = 0; Index < KEX_COUNT; Index++)
         {
-            SessionData->SetKex(Index, (TKex)(int)KexListBox->GetItems()->GetObject(Index));
+            SessionData->SetKex(Index, (TKex)(int)KexListBox->GetItems()->GetObjects(Index));
         }
 
         // Authentication tab
@@ -4400,7 +4400,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin *AFarPlugin,
     FAllowedChanges = AAllowedChanges;
 
     assert(FileList->GetCount() > 0);
-    TRemoteFile *OnlyFile = reinterpret_cast<TRemoteFile *>(FileList->GetObject(0));
+    TRemoteFile *OnlyFile = reinterpret_cast<TRemoteFile *>(FileList->GetObjects(0));
     USEDPARAM(OnlyFile);
     assert(OnlyFile);
     FMultiple = (FileList->GetCount() > 1);
@@ -4431,7 +4431,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin *AFarPlugin,
 
         for (size_t Index = 0; Index < FileList->GetCount(); Index++)
         {
-            File = reinterpret_cast<TRemoteFile *>(FileList->GetObject(Index));
+            File = reinterpret_cast<TRemoteFile *>(FileList->GetObjects(Index));
             assert(File);
             if (UsedGroupList && !File->GetGroup().GetName().IsEmpty())
             {
@@ -7363,7 +7363,7 @@ void TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
             if (!Scroll || (::LastDelimiter(List->GetString(Index), L"{}") > 0))
             {
                 const TSynchronizeChecklist::TItem *ChecklistItem =
-                    reinterpret_cast<TSynchronizeChecklist::TItem *>(List->GetObject(Index));
+                    reinterpret_cast<TSynchronizeChecklist::TItem *>(List->GetObjects(Index));
 
                 List->PutString(Index, ItemLine(ChecklistItem));
             }
@@ -7528,7 +7528,7 @@ bool TSynchronizeChecklistDialog::Execute(TSynchronizeChecklist *Checklist)
         for (size_t Index = 0; Index < Count; Index++)
         {
             TSynchronizeChecklist::TItem *ChecklistItem =
-                reinterpret_cast<TSynchronizeChecklist::TItem *>(List->GetObject(Index));
+                reinterpret_cast<TSynchronizeChecklist::TItem *>(List->GetObjects(Index));
             ChecklistItem->Checked = List->GetChecked(Index);
         }
     }
@@ -8167,7 +8167,7 @@ void TQueueDialog::OperationButtonClick(TFarButton *Sender,
     if (QueueListBox->GetItems()->GetSelected() != NPOS)
     {
         QueueItem = reinterpret_cast<TQueueItemProxy *>(
-                        QueueListBox->GetItems()->GetObject(QueueListBox->GetItems()->GetSelected()));
+          QueueListBox->GetItems()->GetObjects(QueueListBox->GetItems()->GetSelected()));
 
         if (Sender == ExecuteButton)
         {
@@ -8257,7 +8257,7 @@ void TQueueDialog::UpdateControls()
     if (QueueListBox->GetItems()->GetSelected() != NPOS)
     {
         QueueItem = reinterpret_cast<TQueueItemProxy *>(
-                        QueueListBox->GetItems()->GetObject(QueueListBox->GetItems()->GetSelected()));
+                        QueueListBox->GetItems()->GetObjects(QueueListBox->GetItems()->GetSelected()));
     }
 
     if ((QueueItem != NULL) && (QueueItem->GetStatus() == TQueueItem::qsProcessing))
@@ -8351,8 +8351,8 @@ void TQueueDialog::RefreshQueue()
 
         size_t ILine = 0;
         while ((Index > ILine) &&
-                (QueueListBox->GetItems()->GetObject(Index) ==
-                 QueueListBox->GetItems()->GetObject(Index - ILine - 1)))
+                (QueueListBox->GetItems()->GetObjects(Index) ==
+                 QueueListBox->GetItems()->GetObjects(Index - ILine - 1)))
         {
             ILine++;
         }

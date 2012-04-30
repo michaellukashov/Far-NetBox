@@ -148,8 +148,8 @@ private:
   bool __fastcall GetIsInaccesibleDirectory() const;
   UnicodeString __fastcall GetExtension();
   UnicodeString __fastcall GetUserModificationStr();
-  void __fastcall LoadTypeInfo();
 #endif
+  void __fastcall LoadTypeInfo();
 
 protected:
   void __fastcall FindLinkedFile();
@@ -273,6 +273,7 @@ friend class TWebDAVFileSystem;
 protected:
   UnicodeString FDirectory;
   TDateTime FTimestamp;
+#ifndef _MSC_VER
   TRemoteFile * __fastcall GetFiles(Integer Index);
   virtual void __fastcall SetDirectory(UnicodeString value);
   UnicodeString __fastcall GetFullDirectory();
@@ -280,6 +281,7 @@ protected:
   TRemoteFile * __fastcall GetParentDirectory();
   UnicodeString __fastcall GetParentPath();
   __int64 __fastcall GetTotalSize();
+#endif
 
   virtual void __fastcall Clear();
 public:
@@ -302,7 +304,13 @@ public:
 #else
   UnicodeString GetDirectory() const { return FDirectory; }
   TDateTime GetTimestamp() const { return FTimestamp; }
-  TRemoteFile * __fastcall GetFile(Integer Index);
+  TRemoteFile * __fastcall GetFiles(Integer Index);
+  virtual void __fastcall SetDirectory(UnicodeString value);
+  UnicodeString __fastcall GetFullDirectory();
+  Boolean __fastcall GetIsRoot();
+  TRemoteFile * __fastcall GetParentDirectory();
+  UnicodeString __fastcall GetParentPath();
+  __int64 __fastcall GetTotalSize();
 #endif
 };
 //---------------------------------------------------------------------------
@@ -367,17 +375,17 @@ public:
 #ifndef _MSC_VER
   __property bool IsEmpty = { read = GetIsEmpty };
 #else
-  bool GetIsEmpty() const;
+  bool __fastcall GetIsEmpty() const;
 #endif
 protected:
   virtual void __fastcall Delete(size_t Index);
 private:
   TCriticalSection * FSection;
   TRemoteDirectoryCache * Self;
-  void DoClearFileList(UnicodeString Directory, bool SubDirs);
+  void __fastcall DoClearFileList(UnicodeString Directory, bool SubDirs);
 };
 //---------------------------------------------------------------------------
-class TRemoteDirectoryChangesCache : private System::TStringList
+class TRemoteDirectoryChangesCache : private TStringList
 {
 public:
   explicit TRemoteDirectoryChangesCache(int MaxSize);
@@ -396,7 +404,7 @@ public:
   void __fastcall Deserialize(const UnicodeString Data);
 
 #ifdef _MSC_VER
-  bool GetIsEmpty() const;
+  bool __fastcall GetIsEmpty() const;
 #endif
 
 private:
@@ -483,27 +491,27 @@ public:
   __property UnicodeString Text = { read = GetText, write = SetText };
   __property bool Unknown = { read = FUnknown };
 #else
-  bool GetAllowUndef() const { return FAllowUndef; }
-  void SetAllowUndef(bool value);
-  bool GetIsUndef() const;
-  UnicodeString GetModeStr() const;
-  UnicodeString GetSimplestStr() const;
-  UnicodeString GetOctal() const;
-  void SetOctal(const UnicodeString value);
-  unsigned short GetNumber() const;
-  void SetNumber(unsigned short value);
-  unsigned short GetNumberSet() const { return FSet; }
-  unsigned short GetNumberUnset() const { return FUnset; }
-  unsigned long GetNumberDecadic() const;
-  bool GetReadOnly();
-  void SetReadOnly(bool value);
-  bool GetRight(TRight Right) const;
-  void SetRight(TRight Right, bool value);
-  TState GetRightUndef(TRight Right) const;
-  void SetRightUndef(TRight Right, TState value);
-  UnicodeString GetText() const;
-  void SetText(const UnicodeString value);
-  bool GetUnknown() { return FUnknown; }
+  bool __fastcall GetAllowUndef() const { return FAllowUndef; }
+  void __fastcall SetAllowUndef(bool value);
+  bool __fastcall GetIsUndef() const;
+  UnicodeString __fastcall GetModeStr() const;
+  UnicodeString __fastcall GetSimplestStr() const;
+  UnicodeString __fastcall GetOctal() const;
+  void __fastcall SetOctal(const UnicodeString value);
+  unsigned short __fastcall GetNumber() const;
+  void __fastcall SetNumber(unsigned short value);
+  unsigned short __fastcall GetNumberSet() const { return FSet; }
+  unsigned short __fastcall GetNumberUnset() const { return FUnset; }
+  unsigned long __fastcall GetNumberDecadic() const;
+  bool __fastcall GetReadOnly();
+  void __fastcall SetReadOnly(bool value);
+  bool __fastcall GetRight(TRight Right) const;
+  void __fastcall SetRight(TRight Right, bool value);
+  TState __fastcall GetRightUndef(TRight Right) const;
+  void __fastcall SetRightUndef(TRight Right, TState value);
+  UnicodeString __fastcall GetText() const;
+  void __fastcall SetText(const UnicodeString value);
+  bool __fastcall GetUnknown() { return FUnknown; }
 #endif
 
 private:

@@ -494,7 +494,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
       TRemoteFile * File;
       for (size_t Index = 0; Index < FTerminal->GetFiles()->GetCount(); Index++)
       {
-        File = FTerminal->GetFiles()->GetFile(Index);
+        File = FTerminal->GetFiles()->GetFiles(Index);
         PanelItems->Add(static_cast<TObject *>(new TRemoteFilePanelItem(File)));
       }
     }
@@ -1295,7 +1295,7 @@ void TWinSCPFileSystem::ApplyCommand()
                 if (LocalFileCommand)
                 {
                   assert(LocalFileList->GetCount() == 1);
-                  LocalFile = LocalFileList->GetString(0);
+                  LocalFile = LocalFileList->GetStrings(0);
                 }
 
                 TCustomCommandData Data(FTerminal);
@@ -1308,11 +1308,11 @@ void TWinSCPFileSystem::ApplyCommand()
               {
                 if (LocalFileList->GetCount() == 1)
                 {
-                  UnicodeString LocalFile = LocalFileList->GetString(0);
+                  UnicodeString LocalFile = LocalFileList->GetStrings(0);
 
                   for (size_t Index = 0; Index < RemoteFileList->GetCount(); Index++)
                   {
-                    UnicodeString FileName = RemoteFileList->GetString(Index);
+                    UnicodeString FileName = RemoteFileList->GetStrings(Index);
                     TCustomCommandData Data(FTerminal);
                     TLocalCustomCommand CustomCommand(Data,
                                                       GetTerminal()->GetCurrentDirectory(), FileName, LocalFile, L"");
@@ -1322,14 +1322,14 @@ void TWinSCPFileSystem::ApplyCommand()
                 }
                 else if (RemoteFileList->GetCount() == 1)
                 {
-                  UnicodeString FileName = RemoteFileList->GetString(0);
+                  UnicodeString FileName = RemoteFileList->GetStrings(0);
 
                   for (size_t Index = 0; Index < LocalFileList->GetCount(); Index++)
                   {
                     TCustomCommandData Data(FTerminal);
                     TLocalCustomCommand CustomCommand(
                       Data, GetTerminal()->GetCurrentDirectory(),
-                      FileName, LocalFileList->GetString(Index), L"");
+                      FileName, LocalFileList->GetStrings(Index), L"");
                     ExecuteShellAndWait(FPlugin->GetHandle(),
                                         CustomCommand.Complete(Command, true), processmessages_signal_type());
                   }
@@ -1343,11 +1343,11 @@ void TWinSCPFileSystem::ApplyCommand()
 
                   for (size_t Index = 0; Index < LocalFileList->GetCount(); Index++)
                   {
-                    UnicodeString FileName = RemoteFileList->GetString(Index);
+                    UnicodeString FileName = RemoteFileList->GetStrings(Index);
                     TCustomCommandData Data(FTerminal);
                     TLocalCustomCommand CustomCommand(
                       Data, GetTerminal()->GetCurrentDirectory(),
-                      FileName, LocalFileList->GetString(Index), L"");
+                      FileName, LocalFileList->GetStrings(Index), L"");
                     ExecuteShellAndWait(FPlugin->GetHandle(),
                                         CustomCommand.Complete(Command, true), processmessages_signal_type());
                   }
@@ -1359,7 +1359,7 @@ void TWinSCPFileSystem::ApplyCommand()
                 {
                   TCustomCommandData Data(FTerminal);
                   TLocalCustomCommand CustomCommand(Data,
-                                                    GetTerminal()->GetCurrentDirectory(), RemoteFileList->GetString(Index), L"", L"");
+                                                    GetTerminal()->GetCurrentDirectory(), RemoteFileList->GetStrings(Index), L"", L"");
                   ExecuteShellAndWait(FPlugin->GetHandle(),
                                       CustomCommand.Complete(Command, true), processmessages_signal_type());
                 }
@@ -1973,7 +1973,7 @@ void TWinSCPFileSystem::CopyFullFileNamesToClipboard()
     {
       for (size_t Index = 0; Index < FileList->GetCount(); Index++)
       {
-        TRemoteFile * File = reinterpret_cast<TRemoteFile *>(FileList->GetObject(Index));
+        TRemoteFile * File = reinterpret_cast<TRemoteFile *>(FileList->GetObjects(Index));
         if (File != NULL)
         {
           FileNames->Add(File->GetFullFileName());
@@ -2463,7 +2463,7 @@ bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, int OpMode)
       } BOOST_SCOPE_EXIT_END
       UnicodeString Query;
       bool Recycle = FTerminal->GetSessionData()->GetDeleteToRecycleBin() &&
-                     !FTerminal->IsRecycledFile(FFileList->GetString(0));
+                     !FTerminal->IsRecycledFile(FFileList->GetStrings(0));
       if (PanelItems->GetCount() > 1)
       {
         Query = FORMAT(GetMsg(Recycle ? RECYCLE_FILES_CONFIRM : DELETE_FILES_CONFIRM).c_str(),
@@ -2565,7 +2565,7 @@ int TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
         if ((FFileList->GetCount() == 1) && (OpMode & OPM_EDIT))
         {
           FOriginalEditFile = IncludeTrailingBackslash(DestPath) +
-                              UnixExtractFileName(FFileList->GetString(0));
+                              UnixExtractFileName(FFileList->GetStrings(0));
           FLastEditFile = FOriginalEditFile;
           FLastEditCopyParam = CopyParam;
           FLastEditorID = -1;
@@ -2756,8 +2756,8 @@ int TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, int OpMod
       // (since 1.70 alpha 6, DestPath in GetFiles is short path,
       // while current path in PutFiles is long path)
       if (FLAGCLEAR(OpMode, OPM_SILENT) && (FFileList->GetCount() == 1) &&
-          (CompareFileName(FFileList->GetString(0), FOriginalEditFile) ||
-           CompareFileName(FFileList->GetString(0), FLastEditFile)))
+          (CompareFileName(FFileList->GetStrings(0), FOriginalEditFile) ||
+           CompareFileName(FFileList->GetStrings(0), FLastEditFile)))
       {
         // editor should be closed already
         assert(FLastEditorID < 0);
@@ -3111,8 +3111,8 @@ void TWinSCPFileSystem::LogAuthentication(
       {
         AuthenticationLogLines->Delete(0);
       }
-      AuthenticationLogLines->PutString(0, AuthenticationLogLines->GetString(0) +
-        ::StringOfChar(' ', Width - AuthenticationLogLines->GetString(0).Length()));
+      AuthenticationLogLines->PutString(0, AuthenticationLogLines->GetStrings(0) +
+        ::StringOfChar(' ', Width - AuthenticationLogLines->GetStrings(0).Length()));
       Message = AnsiReplaceStr(AuthenticationLogLines->GetText(), L"\r", L"");
       Count = AuthenticationLogLines->GetCount();
     }
@@ -3282,10 +3282,10 @@ void TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal,
   {
     assert(Instructions.IsEmpty());
     assert(Prompts->GetCount() == 1);
-    assert((Prompts->GetObject(0)) != NULL);
-    UnicodeString AResult = Results->GetString(0);
+    assert((Prompts->GetObjects(0)) != NULL);
+    UnicodeString AResult = Results->GetStrings(0);
 
-    Result = FPlugin->InputBox(Name, StripHotKey(Prompts->GetString(0)), AResult, FIB_NOUSELASTHISTORY);
+    Result = FPlugin->InputBox(Name, StripHotKey(Prompts->GetStrings(0)), AResult, FIB_NOUSELASTHISTORY);
     if (Result)
     {
       Results->PutString(0, AResult);
@@ -3986,8 +3986,8 @@ void TWinSCPFileSystem::MultipleEdit()
         } BOOST_SCOPE_EXIT_END
         if (FileList->GetCount() == 1)
         {
-          MultipleEdit(FTerminal->GetCurrentDirectory(), FileList->GetString(0),
-            (TRemoteFile *)FileList->GetObject(0));
+          MultipleEdit(FTerminal->GetCurrentDirectory(), FileList->GetStrings(0),
+            (TRemoteFile *)FileList->GetObjects(0));
         }
       }
     }

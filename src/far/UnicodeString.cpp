@@ -418,3 +418,12 @@ int UnicodeString::RPos(wchar_t Ch) const
   return 0;
 }
 
+int UnicodeString::CompareIC(const UnicodeString str) const
+{
+  return ::AnsiCompareIC(*this, str);
+}
+
+int UnicodeString::ToInt() const
+{
+  return ::StrToIntDef(*this, 0);
+}

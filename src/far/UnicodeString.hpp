@@ -271,6 +271,8 @@ typedef class UnicodeString
     void Unique() {}
     UnicodeString& UpperCase() { return Upper(); }
     UnicodeString& LowerCase() { return Lower(); }
+    int CompareIC(const UnicodeString str) const;
+    int ToInt() const;
 
 protected:
     void  __cdecl ThrowIfOutOfRange(int idx) const;

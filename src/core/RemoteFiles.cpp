@@ -116,14 +116,14 @@ bool __fastcall ExtractCommonPath(TStrings * Files, UnicodeString & Path)
 {
   assert(Files->GetCount() > 0);
 
-  Path = ExtractFilePath(Files->GetString(0));
+  Path = ExtractFilePath(Files->GetStrings(0));
   bool Result = !Path.IsEmpty();
   if (Result)
   {
     for (size_t Index = 1; Index < Files->GetCount(); Index++)
     {
       while (!Path.IsEmpty() &&
-        (Files->GetString(Index).SubString(1, Path.Length()) != Path))
+        (Files->GetStrings(Index).SubString(1, Path.Length()) != Path))
       {
         int PrevLen = Path.Length();
         Path = ExtractFilePath(ExcludeTrailingBackslash(Path));
@@ -143,14 +143,14 @@ bool __fastcall UnixExtractCommonPath(TStrings * Files, UnicodeString & Path)
 {
   assert(Files->GetCount() > 0);
 
-  Path = UnixExtractFilePath(Files->GetString(0));
+  Path = UnixExtractFilePath(Files->GetStrings(0));
   bool Result = !Path.IsEmpty();
   if (Result)
   {
     for (size_t Index = 1; Index < Files->GetCount(); Index++)
     {
       while (!Path.IsEmpty() &&
-        (Files->GetString(Index).SubString(1, Path.Length()) != Path))
+        (Files->GetStrings(Index).SubString(1, Path.Length()) != Path))
       {
         size_t PrevLen = Path.Length();
         Path = UnixExtractFilePath(UnixExcludeTrailingBackslash(Path));
@@ -325,7 +325,7 @@ UnicodeString __fastcall MakeFileList(TStrings * FileList)
       Result += L" ";
     }
 
-    UnicodeString FileName = FileList->GetString(Index);
+    UnicodeString FileName = FileList->GetStrings(Index);
     // currently this is used for local file only, so no delimiting is done
     if (FileName.Pos(L" ") > 0)
     {
@@ -404,7 +404,8 @@ int __fastcall FakeFileImageIndex(UnicodeString FileName, unsigned long Attrs,
 {
   Attrs |= FILE_ATTRIBUTE_NORMAL;
 
-  TSHFileInfoW SHFileInfo;
+  // TSHFileInfo SHFileInfo;
+  SHFILEINFOW SHFileInfo = {0};
   // On Win2k we get icon of "ZIP drive" for ".." (parent directory)
   if ((FileName == L"..") ||
       ((FileName.Length() == 2) && (FileName[2] == L':') &&
@@ -607,7 +608,7 @@ void __fastcall TRemoteTokenList::Add(const TRemoteToken & Token)
   if (Token.GetIDValid())
   {
     std::pair<TIDMap::iterator, bool> Position =
-      FIDMap.insert(TIDMap::value_type(Token.ID, FTokens.size() - 1));
+      FIDMap.insert(TIDMap::value_type(Token.GetID(), FTokens.size() - 1));
   }
   if (Token.GetNameValid())
   {
@@ -835,7 +836,7 @@ Boolean __fastcall TRemoteFile::GetIsHidden()
       break;
 
     default:
-      Result = IsUnixHiddenFile(FileName);
+      Result = IsUnixHiddenFile(GetFileName());
       break;
   }
 
@@ -943,9 +944,9 @@ UnicodeString __fastcall TRemoteFile::GetUserModificationStr()
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TRemoteFile::GetModificationStr()
 {
-  Word Year, Month, Day, Hour, Min, Sec, MSec;
-  GetModification().DecodeDate(&Year, &Month, &Day);
-  GetModification().DecodeTime(&Hour, &Min, &Sec, &MSec);
+  unsigned short Year, Month, Day, Hour, Min, Sec, MSec;
+  GetModification().DecodeDate(Year, Month, Day);
+  GetModification().DecodeTime(Hour, Min, Sec, MSec);
   switch (FModificationFmt)
   {
     case mfNone:
@@ -1061,7 +1062,7 @@ void __fastcall TRemoteFile::SetListingStr(UnicodeString value)
 
       GETCOL;
       // format dd mmm or mmm dd ?
-      Day = static_cast<unsigned Word>(StrToIntDef(Col, 0));
+      Day = static_cast<Word>(StrToIntDef(Col, 0));
       if (Day > 0)
       {
         DayMonthFormat = true;
@@ -1081,7 +1082,7 @@ void __fastcall TRemoteFile::SetListingStr(UnicodeString value)
         Day = static_cast<Word>(Col.SubString(8, 2).ToInt());
         GETCOL;
         Hour = static_cast<Word>(Col.SubString(1, 2).ToInt());
-        Min = static_cast<Word>(Col.SubString(4, 2)).ToInt();
+        Min = static_cast<Word>(Col.SubString(4, 2).ToInt());
         Sec = static_cast<Word>(Col.SubString(7, 2).ToInt());
         FModificationFmt = mfFull;
         // skip TZ (TODO)
@@ -1386,7 +1387,7 @@ void __fastcall TRemoteFileList::DuplicateTo(TRemoteFileList * Copy)
   Copy->Clear();
   for (size_t Index = 0; Index < GetCount(); Index++)
   {
-    TRemoteFile * File = GetFile(Index);
+    TRemoteFile * File = GetFiles(Index);
     Copy->AddFile(File->Duplicate(false));
   }
   Copy->FDirectory = GetDirectory();
@@ -1409,7 +1410,7 @@ UnicodeString __fastcall TRemoteFileList::GetFullDirectory()
   return UnixIncludeTrailingBackslash(GetDirectory());
 }
 //---------------------------------------------------------------------------
-TRemoteFile * __fastcall TRemoteFileList::GetFile(Integer Index)
+TRemoteFile * __fastcall TRemoteFileList::GetFiles(Integer Index)
 {
   return static_cast<TRemoteFile *>(GetItem(Index));
 }
@@ -1428,7 +1429,7 @@ __int64 __fastcall TRemoteFileList::GetTotalSize()
 {
   __int64 Result = 0;
   for (size_t Index = 0; Index < GetCount(); Index++)
-    if (!GetFile(Index)->GetIsDirectory()) { Result += GetFiles(Index)->GetSize(); }
+    if (!GetFiles(Index)->GetIsDirectory()) { Result += GetFiles(Index)->GetSize(); }
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1594,7 +1595,7 @@ void __fastcall TRemoteDirectoryCache::Clear()
   } BOOST_SCOPE_EXIT_END
   for (size_t Index = 0; Index < GetCount(); Index++)
   {
-    delete (TRemoteFileList *)GetObject(Index);
+    delete (TRemoteFileList *)GetObjects(Index);
     PutObject(Index, NULL);
   }
 }
@@ -1679,7 +1680,7 @@ void __fastcall TRemoteDirectoryCache::DoClearFileList(UnicodeString Directory, 
   if (SubDirs)
   {
     Directory = UnixIncludeTrailingBackslash(Directory);
-    Index = Count-1;
+    Index = GetCount()-1;
     while (Index >= 0)
     {
       if (GetStrings(Index).SubString(1, Directory.Length()) == Directory)
@@ -1691,7 +1692,7 @@ void __fastcall TRemoteDirectoryCache::DoClearFileList(UnicodeString Directory, 
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TRemoteDirectoryCache::Delete(int Index)
+void __fastcall TRemoteDirectoryCache::Delete(size_t Index)
 {
   delete (TRemoteFileList *)GetObjects(Index);
   TStringList::Delete(Index);
@@ -1751,7 +1752,7 @@ void __fastcall TRemoteDirectoryChangesCache::AddDirectoryChange(
 void __fastcall TRemoteDirectoryChangesCache::ClearDirectoryChange(
   UnicodeString SourceDir)
 {
-  for (int Index = 0; Index < Count; Index++)
+  for (int Index = 0; Index < GetCount(); Index++)
   {
     if (GetName(Index).SubString(1, SourceDir.Length()) == SourceDir)
     {
@@ -2045,7 +2046,7 @@ void __fastcall TRights::SetAllowUndef(bool value)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TRights::SetText(const UnicodeString & value)
+void __fastcall TRights::SetText(const UnicodeString value)
 {
   if (value != GetText())
   {
@@ -2184,11 +2185,11 @@ void __fastcall TRights::SetOctal(UnicodeString value)
       throw Exception(FMTLOAD(INVALID_OCTAL_PERMISSIONS, value.c_str()));
     }
 
-    Number = static_cast<unsigned short>(
+    SetNumber(static_cast<unsigned short>(
       ((AValue[1] - L'0') << 9) +
       ((AValue[2] - L'0') << 6) +
       ((AValue[3] - L'0') << 3) +
-      ((AValue[4] - L'0') << 0));
+      ((AValue[4] - L'0') << 0)));
   }
   FUnknown = false;
 }

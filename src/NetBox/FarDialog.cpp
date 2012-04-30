@@ -2123,7 +2123,7 @@ TFarList::~TFarList()
 {
     for (size_t i = 0; i < GetCount(); i++)
     {
-        UnicodeString value = GetString(i);
+        UnicodeString value = GetStrings(i);
         delete[] FListItems->Items[i].Text;
     }
     delete[] FListItems->Items;
@@ -2147,7 +2147,7 @@ void __fastcall TFarList::Assign(System::TPersistent *Source)
 void TFarList::UpdateItem(size_t Index)
 {
     FarListItem *ListItem = &FListItems->Items[Index];
-    UnicodeString value = GetString(Index).c_str();
+    UnicodeString value = GetStrings(Index).c_str();
     ListItem->Text = TCustomFarPlugin::DuplicateStr(value, true);
 
     FarListUpdate ListUpdate;
@@ -2217,7 +2217,7 @@ void TFarList::Changed()
         }
         for (size_t i = 0; i < GetCount(); i++)
         {
-            UnicodeString value = GetString(i);
+            UnicodeString value = GetStrings(i);
             delete[] FListItems->Items[i].Text;
             FListItems->Items[i].Text = TCustomFarPlugin::DuplicateStr(value);
         }
@@ -2253,7 +2253,7 @@ void TFarList::SetSelected(size_t value)
         }
         else
         {
-            GetDialogItem()->SetData(GetString(value));
+            GetDialogItem()->SetData(GetStrings(value));
         }
     }
 }
@@ -2322,9 +2322,9 @@ size_t TFarList::GetMaxLength()
     size_t Result = 0;
     for (size_t i = 0; i < GetCount(); i++)
     {
-        if (Result < GetString(i).Length())
+        if (Result < GetStrings(i).Length())
         {
-            Result = GetString(i).Length();
+            Result = GetStrings(i).Length();
         }
     }
     return Result;
@@ -2421,7 +2421,7 @@ LONG_PTR TFarList::ItemProc(int Msg, LONG_PTR Param)
         else
         {
             assert(Param >= 0 && Param < GetCount());
-            GetDialogItem()->UpdateData(GetString(Param));
+            GetDialogItem()->UpdateData(GetStrings(Param));
         }
     }
     return static_cast<LONG_PTR>(false);
@@ -2622,7 +2622,7 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
             Buf = L" ";
             if (Index < GetItems()->GetCount())
             {
-                UnicodeString value = GetItems()->GetString(Index).SubStr(1, DisplayWidth - 1);
+                UnicodeString value = GetItems()->GetStrings(Index).SubString(1, DisplayWidth - 1);
                 Buf += value;
             }
             UnicodeString value = ::StringOfChar(' ', DisplayWidth - Buf.Length());

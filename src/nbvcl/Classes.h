@@ -249,7 +249,7 @@ public:
     size_t __fastcall Add(const UnicodeString S);
     virtual size_t __fastcall GetCount() const = 0;
     virtual void __fastcall Delete(size_t Index) = 0;
-    virtual UnicodeString __fastcall GetString(size_t Index) const = 0;
+    virtual UnicodeString __fastcall GetStrings(size_t Index) const = 0;
     virtual UnicodeString __fastcall GetText();
     virtual UnicodeString __fastcall GetTextStr();
     virtual void __fastcall SetText(const UnicodeString Text);
@@ -258,7 +258,7 @@ public:
     virtual void __fastcall BeginUpdate();
     virtual void __fastcall EndUpdate();
     virtual void __fastcall SetUpdateState(bool Updating);
-    virtual TObject * __fastcall GetObject(size_t Index);
+    virtual TObject * __fastcall GetObjects(size_t Index);
     size_t __fastcall AddObject(const UnicodeString S, TObject *AObject);
     virtual void __fastcall InsertObject(size_t Index, const UnicodeString Key, TObject *AObject);
     bool __fastcall Equals(TStrings *value);
@@ -326,10 +326,10 @@ public:
     virtual size_t __fastcall IndexOf(const UnicodeString S);
     virtual void __fastcall PutString(size_t Index, const UnicodeString S);
     virtual void __fastcall Delete(size_t Index);
-    virtual TObject * __fastcall GetObject(size_t Index);
+    virtual TObject * __fastcall GetObjects(size_t Index);
     virtual void __fastcall InsertObject(size_t Index, const UnicodeString Key, TObject *AObject);
     void __fastcall InsertItem(size_t Index, const UnicodeString S, TObject *AObject);
-    virtual UnicodeString __fastcall GetString(size_t Index) const;
+    virtual UnicodeString __fastcall GetStrings(size_t Index) const;
     bool __fastcall GetCaseSensitive() const;
     void __fastcall SetCaseSensitive(bool value);
     bool __fastcall GetSorted() const;

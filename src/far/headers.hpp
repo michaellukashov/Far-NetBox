@@ -99,6 +99,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef True
 #define True true
 #endif
+#ifndef False
+#define False false
+#endif
 #ifndef Integer
 typedef int Integer;
 #endif

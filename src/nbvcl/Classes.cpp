@@ -407,7 +407,7 @@ UnicodeString TStrings::GetDelimitedText() const
 {
     UnicodeString Result;
     size_t Count = GetCount();
-    if ((Count == 1) && GetString(0).IsEmpty())
+    if ((Count == 1) && GetStrings(0).IsEmpty())
     {
         Result = GetQuoteChar() + GetQuoteChar();
     }
@@ -415,7 +415,7 @@ UnicodeString TStrings::GetDelimitedText() const
     {
         for (size_t i = 0; i < GetCount(); i++)
         {
-            UnicodeString line = GetString(i);
+            UnicodeString line = GetStrings(i);
             Result += GetQuoteChar() + line + GetQuoteChar() + GetDelimiter();
         }
         if (Result.Length() > 0)
@@ -494,13 +494,13 @@ UnicodeString TStrings::GetTextStr()
     LB = sLineBreak;
     for (I = 0; I < Count; I++)
     {
-        Size += GetString(I).Length() + LB.Length();
+        Size += GetStrings(I).Length() + LB.Length();
     }
     Result.SetLength(Size);
     P = const_cast<wchar_t *>(Result.c_str());
     for (I = 0; I < Count; I++)
     {
-        S = GetString(I);
+        S = GetStrings(I);
         // DEBUG_PRINTF(L"  S = %s", S.c_str());
         L = S.Length() * sizeof(wchar_t);
         if (L != 0)
@@ -547,7 +547,7 @@ void TStrings::SetUpdateState(bool Updating)
 {
     (void)Updating;
 }
-TObject *TStrings::GetObject(size_t Index)
+TObject *TStrings::GetObjects(size_t Index)
 {
     (void)Index;
     return NULL;
@@ -574,7 +574,7 @@ bool TStrings::Equals(TStrings *Strings)
     }
     for (size_t I = 0; I < Count; I++)
     {
-        if (GetString(I) != Strings->GetString(I))
+        if (GetStrings(I) != Strings->GetStrings(I))
         {
             return false;
         }
@@ -589,7 +589,7 @@ void TStrings::PutObject(size_t Index, TObject *AObject)
 }
 void TStrings::PutString(size_t Index, const UnicodeString S)
 {
-    TObject *TempObject = GetObject(Index);
+    TObject *TempObject = GetObjects(Index);
     Delete(Index);
     InsertObject(Index, S, TempObject);
 }
@@ -608,8 +608,8 @@ void TStrings::Move(size_t CurIndex, size_t NewIndex)
             {
                 Self->EndUpdate();
             } BOOST_SCOPE_EXIT_END
-            UnicodeString TempString = GetString(CurIndex);
-            TObject *TempObject = GetObject(CurIndex);
+            UnicodeString TempString = GetStrings(CurIndex);
+            TObject *TempObject = GetObjects(CurIndex);
             Delete(CurIndex);
             InsertObject(NewIndex, TempString, TempObject);
         }
@@ -620,7 +620,7 @@ size_t TStrings::IndexOf(const UnicodeString S)
     // DEBUG_PRINTF(L"begin");
     for (size_t Result = 0; Result < GetCount(); Result++)
     {
-        if (CompareStrings(GetString(Result), S) == 0)
+        if (CompareStrings(GetStrings(Result), S) == 0)
         {
             return Result;
         }
@@ -632,7 +632,7 @@ size_t TStrings::IndexOfName(const UnicodeString Name)
 {
     for (size_t Index = 0; Index < GetCount(); Index++)
     {
-        UnicodeString S = GetString(Index);
+        UnicodeString S = GetStrings(Index);
         size_t P = ::AnsiPos(S, L'=');
         if ((P > 0) && (CompareStrings(S.SubStr(1, P), Name) == 0))
         {
@@ -643,7 +643,7 @@ size_t TStrings::IndexOfName(const UnicodeString Name)
 }
 const UnicodeString TStrings::GetName(size_t Index)
 {
-    return ExtractName(GetString(Index));
+    return ExtractName(GetStrings(Index));
 }
 UnicodeString TStrings::ExtractName(const UnicodeString S)
 {
@@ -665,7 +665,7 @@ const UnicodeString TStrings::GetValue(const UnicodeString Name)
     size_t I = IndexOfName(Name);
     if (I > 0)
     {
-        Result = GetString(I).SubStr(Name.Length() + 1, static_cast<size_t>(-1));
+        Result = GetStrings(I).SubStr(Name.Length() + 1, static_cast<size_t>(-1));
     }
     return Result;
 }
@@ -699,7 +699,7 @@ void TStrings::AddStrings(TStrings *Strings)
         } BOOST_SCOPE_EXIT_END
         for (size_t I = 0; I < Strings->GetCount(); I++)
         {
-            AddObject(Strings->GetString(I), Strings->GetObject(I));
+            AddObject(Strings->GetStrings(I), Strings->GetObjects(I));
         }
     }
 }
@@ -832,7 +832,7 @@ void TStringList::PutString(size_t Index, const UnicodeString S)
     // DEBUG_PRINTF(L"Index = %d, size = %d", Index, FList.size());
     if (Index < FList.size())
     {
-        TObject *Temp = GetObject(Index);
+        TObject *Temp = GetObjects(Index);
         TStringItem item;
         item.FString = S;
         item.FObject = Temp;
@@ -854,7 +854,7 @@ void TStringList::Delete(size_t Index)
     FList.erase(FList.begin() + Index);
     Changed();
 }
-TObject *TStringList::GetObject(size_t Index)
+TObject *TStringList::GetObjects(size_t Index)
 {
     if ((Index == NPOS) || (Index >= FList.size()))
     {
@@ -888,7 +888,7 @@ void TStringList::InsertItem(size_t Index, const UnicodeString S, TObject *AObje
     FList.insert(FList.begin() + Index, item);
     Changed();
 }
-UnicodeString TStringList::GetString(size_t Index) const
+UnicodeString TStringList::GetStrings(size_t Index) const
 {
     // DEBUG_PRINTF(L"Index = %d, FList.size = %d", Index, FList.size());
     if ((Index == NPOS) || (Index >= FList.size()))
