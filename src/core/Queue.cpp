@@ -164,7 +164,7 @@ TSimpleThread::~TSimpleThread()
 
 void __fastcall TSimpleThread::Init()
 {
-    DWORD ThreadID;
+    unsigned int ThreadID;
     FThread = reinterpret_cast<HANDLE>(StartThread(NULL, 0, this, CREATE_SUSPENDED, ThreadID));
 }
 
@@ -792,7 +792,7 @@ void __fastcall TTerminalQueue::ProcessEvent()
 //---------------------------------------------------------------------------
 void __fastcall TTerminalQueue::DoQueueItemUpdate(TQueueItem *Item)
 {
-    if (!GetOnQueueItemUpdate().IsEmpty())
+    if (!GetOnQueueItemUpdate().empty())
     {
         GetOnQueueItemUpdate()(this, Item);
     }
@@ -800,7 +800,7 @@ void __fastcall TTerminalQueue::DoQueueItemUpdate(TQueueItem *Item)
 //---------------------------------------------------------------------------
 void __fastcall TTerminalQueue::DoListUpdate()
 {
-    if (!GetOnListUpdate().IsEmpty())
+    if (!GetOnListUpdate().empty())
     {
         GetOnListUpdate()(this);
     }
@@ -808,7 +808,7 @@ void __fastcall TTerminalQueue::DoListUpdate()
 //---------------------------------------------------------------------------
 void __fastcall TTerminalQueue::DoEvent(TQueueEvent Event)
 {
-    if (!GetOnEvent().IsEmpty())
+    if (!GetOnEvent().empty())
     {
         GetOnEvent()(this, Event);
     }
@@ -816,9 +816,9 @@ void __fastcall TTerminalQueue::DoEvent(TQueueEvent Event)
 //---------------------------------------------------------------------------
 void __fastcall TTerminalQueue::DoQueryUser(System::TObject *Sender,
                                  const UnicodeString Query, System::TStrings *MoreMessages, int Answers,
-                                 const TQueryParams *Params, int &Answer, TQueryType Type, void *Arg)
+                                 const TQueryParams *Params, unsigned int &Answer, TQueryType Type, void *Arg)
 {
-    if (!GetOnQueryUser().IsEmpty())
+    if (!GetOnQueryUser().empty())
     {
         GetOnQueryUser()(Sender, Query, MoreMessages, Answers, Params, Answer, Type, Arg);
     }
@@ -828,7 +828,7 @@ void __fastcall TTerminalQueue::DoPromptUser(TTerminal *Terminal,
                                   TPromptKind Kind, const UnicodeString Name, const UnicodeString Instructions,
                                   System::TStrings *Prompts, System::TStrings *Results, bool &Result, void *Arg)
 {
-    if (!GetOnPromptUser().IsEmpty())
+    if (!GetOnPromptUser().empty())
     {
         GetOnPromptUser()(Terminal, Kind, Name, Instructions, Prompts, Results, Result, Arg);
     }
@@ -837,7 +837,7 @@ void __fastcall TTerminalQueue::DoPromptUser(TTerminal *Terminal,
 void __fastcall TTerminalQueue::DoShowExtendedException(
     TTerminal *Terminal, const std::exception *E, void *Arg)
 {
-    if (!GetOnShowExtendedException().IsEmpty())
+    if (!GetOnShowExtendedException().empty())
     {
         GetOnShowExtendedException()(Terminal, E, Arg);
     }
@@ -1017,7 +1017,7 @@ void __fastcall TTerminalItem::ProcessEvent()
             FItem->Execute(this);
         }
     }
-    catch (const std::exception &E)
+    catch (Exception &E)
     {
         UnicodeString Message;
         if (ExceptionMessage(&E, Message))

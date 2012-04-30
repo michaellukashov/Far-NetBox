@@ -12,6 +12,8 @@
 //---------------------------------------------------------------------------
 TFileOperationProgressType::TFileOperationProgressType()
 {
+  FOnProgress.disconnect_all_slots();
+  FOnFinished.disconnect_all_slots();
   Clear();
 }
 //---------------------------------------------------------------------------
@@ -38,7 +40,7 @@ void __fastcall TFileOperationProgressType::Clear()
   ResumeStatus = rsNotAvailable;
   Count = 0;
   FFilesFinished = 0;
-  StartTime = System::Now();
+  StartTime = Now();
   Suspended = false;
   FSuspendTime = 0;
   InProgress = false;
@@ -77,14 +79,14 @@ void __fastcall TFileOperationProgressType::ClearTransfer()
 }
 //---------------------------------------------------------------------------
 void __fastcall TFileOperationProgressType::Start(TFileOperation AOperation,
-    TOperationSide ASide, size_t ACount)
+  TOperationSide ASide, int ACount)
 {
   Start(AOperation, ASide, ACount, false, L"", 0);
 }
 //---------------------------------------------------------------------------
 void __fastcall TFileOperationProgressType::Start(TFileOperation AOperation,
-    TOperationSide ASide, size_t ACount, bool ATemp,
-    const UnicodeString ADirectory, size_t ACPSLimit)
+  TOperationSide ASide, int ACount, bool ATemp,
+  const UnicodeString ADirectory, unsigned long ACPSLimit)
 {
   Clear();
   Operation = AOperation;
@@ -138,19 +140,19 @@ void __fastcall TFileOperationProgressType::Resume()
   DoProgress();
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TFileOperationProgressType::OperationProgress()
+int __fastcall TFileOperationProgressType::OperationProgress()
 {
   assert(Count);
-  size_t Result = (FFilesFinished * 100) / Count;
+  int Result = (FFilesFinished * 100)/Count;
   return Result;
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TFileOperationProgressType::TransferProgress()
+int __fastcall TFileOperationProgressType::TransferProgress()
 {
-  size_t Result;
+  int Result;
   if (TransferSize)
   {
-    Result = static_cast<size_t>((TransferedSize * 100) / TransferSize);
+    Result = static_cast<int>((TransferedSize * 100) / TransferSize);
   }
   else
   {
@@ -159,14 +161,14 @@ size_t __fastcall TFileOperationProgressType::TransferProgress()
   return Result;
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TFileOperationProgressType::TotalTransferProgress()
+int __fastcall TFileOperationProgressType::TotalTransferProgress()
 {
   assert(TotalSizeSet);
-  size_t Result = TotalSize > 0 ? static_cast<int>(((TotalTransfered + TotalSkipped) * 100) / TotalSize) : 0;
+  int Result = TotalSize > 0 ? static_cast<int>(((TotalTransfered + TotalSkipped) * 100) / TotalSize) : 0;
   return Result < 100 ? Result : 100;
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TFileOperationProgressType::OverallProgress()
+int __fastcall TFileOperationProgressType::OverallProgress()
 {
   if (TotalSizeSet)
   {
@@ -182,21 +184,21 @@ size_t __fastcall TFileOperationProgressType::OverallProgress()
 void __fastcall TFileOperationProgressType::DoProgress()
 {
   SetThreadExecutionState(ES_SYSTEM_REQUIRED);
-  if (!FOnProgress.IsEmpty())
+  if (!FOnProgress.empty())
   {
     FOnProgress(*this, Cancel);
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileOperationProgressType::Finish(const UnicodeString FileName,
-    bool Success, TOnceDoneOperation & OnceDoneOperation)
+void __fastcall TFileOperationProgressType::Finish(UnicodeString FileName,
+  bool Success, TOnceDoneOperation & OnceDoneOperation)
 {
   assert(InProgress);
-  if (!FOnFinished.IsEmpty())
+  if (!FOnFinished.empty())
   {
     FOnFinished(Operation, Side, Temp, FileName,
-                // TODO : There wasn't 'Success' condition, was it by mistake or by purpose?
-                Success && (Cancel == csContinue), OnceDoneOperation);
+      // TODO : There wasn't 'Success' condition, was it by mistake or by purpose?
+      Success && (Cancel == csContinue), OnceDoneOperation);
   }
   FFilesFinished++;
   DoProgress();
@@ -207,7 +209,7 @@ void __fastcall TFileOperationProgressType::SetFile(const UnicodeString AFileNam
   FileName = AFileName;
   FileInProgress = AFileInProgress;
   ClearTransfer();
-  FFileStartTime = System::Now();
+  FFileStartTime = Now();
   DoProgress();
 }
 //---------------------------------------------------------------------------
@@ -240,8 +242,8 @@ bool __fastcall TFileOperationProgressType::IsLocallyDone()
   return (LocallyUsed == LocalSize);
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TFileOperationProgressType::AdjustToCPSLimit(
-  size_t Size)
+unsigned long __fastcall TFileOperationProgressType::AdjustToCPSLimit(
+  unsigned long Size)
 {
   if (CPSLimit > 0)
   {
@@ -249,7 +251,7 @@ size_t __fastcall TFileOperationProgressType::AdjustToCPSLimit(
     // we wait until the next second
     do
     {
-      size_t Second = (GetTickCount() / 1000);
+      unsigned int Second = (GetTickCount() / MSecsPerSec);
 
       if (Second != FLastSecond)
       {
@@ -279,12 +281,12 @@ size_t __fastcall TFileOperationProgressType::AdjustToCPSLimit(
   return Size;
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TFileOperationProgressType::LocalBlockSize()
+unsigned long __fastcall TFileOperationProgressType::LocalBlockSize()
 {
-  size_t Result = TRANSFER_BUF_SIZE;
+  unsigned long Result = TRANSFER_BUF_SIZE;
   if (LocallyUsed + Result > LocalSize)
   {
-    Result = static_cast<size_t>(LocalSize - LocallyUsed);
+    Result = static_cast<unsigned long>(LocalSize - LocallyUsed);
   }
   Result = AdjustToCPSLimit(Result);
   return Result;
@@ -331,7 +333,7 @@ void __fastcall TFileOperationProgressType::RollbackTransfer()
 }
 //---------------------------------------------------------------------------
 void __fastcall TFileOperationProgressType::AddTransfered(__int64 ASize,
-    bool AddToTotals)
+  bool AddToTotals)
 {
   TransferedSize += ASize;
   if (TransferedSize > TransferSize)
@@ -347,19 +349,19 @@ void __fastcall TFileOperationProgressType::AddTransfered(__int64 ASize,
   if (AddToTotals)
   {
     TotalTransfered += ASize;
-    size_t Ticks = static_cast<size_t>(GetTickCount());
-    if (FTicks.IsEmpty() ||
+    unsigned long Ticks = static_cast<unsigned long>(GetTickCount());
+    if (FTicks.empty() ||
         (FTicks.back() > Ticks) || // ticks wrap after 49.7 days
-        ((Ticks - FTicks.back()) >= 1000))
+        ((Ticks - FTicks.back()) >= MSecsPerSec))
     {
       FTicks.push_back(Ticks);
       FTotalTransferredThen.push_back(TotalTransfered);
     }
 
-    if (FTicks.Length() > 10)
+    if (FTicks.size() > 10)
     {
-      FTicks.Delete(FTicks.begin());
-      FTotalTransferredThen.Delete(FTotalTransferredThen.begin());
+      FTicks.erase(FTicks.begin());
+      FTotalTransferredThen.erase(FTotalTransferredThen.begin());
     }
   }
   DoProgress();
@@ -373,18 +375,18 @@ void __fastcall TFileOperationProgressType::AddResumed(__int64 ASize)
   AddLocallyUsed(ASize);
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TFileOperationProgressType::TransferBlockSize()
+unsigned long __fastcall TFileOperationProgressType::TransferBlockSize()
 {
-  size_t Result = TRANSFER_BUF_SIZE;
+  unsigned long Result = TRANSFER_BUF_SIZE;
   if (TransferedSize + Result > TransferSize)
   {
-    Result = (TransferSize - TransferedSize);
+    Result = static_cast<unsigned long>(TransferSize - TransferedSize);
   }
   Result = AdjustToCPSLimit(Result);
   return Result;
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TFileOperationProgressType::StaticBlockSize()
+unsigned long __fastcall TFileOperationProgressType::StaticBlockSize()
 {
   return TRANSFER_BUF_SIZE;
 }
@@ -407,22 +409,22 @@ void __fastcall TFileOperationProgressType::SetResumeStatus(TResumeStatus AResum
   DoProgress();
 }
 //---------------------------------------------------------------------------
-System::TDateTime __fastcall TFileOperationProgressType::TimeElapsed()
+TDateTime __fastcall TFileOperationProgressType::TimeElapsed()
 {
-  return System::Now() - StartTime;
+  return Now() - StartTime;
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TFileOperationProgressType::CPS()
+unsigned int __fastcall TFileOperationProgressType::CPS()
 {
-  size_t Result;
-  if (FTicks.IsEmpty())
+  unsigned int Result;
+  if (FTicks.empty())
   {
     Result = 0;
   }
   else
   {
-    size_t Ticks = (Suspended ? FSuspendTime : GetTickCount());
-    size_t TimeSpan;
+    unsigned long Ticks = (Suspended ? FSuspendTime : GetTickCount());
+    unsigned long TimeSpan;
     if (Ticks < FTicks.front())
     {
       // clocks has wrapped, guess 10 seconds difference
@@ -440,53 +442,53 @@ size_t __fastcall TFileOperationProgressType::CPS()
     else
     {
       __int64 Transferred = (TotalTransfered - FTotalTransferredThen.front());
-      Result = static_cast<size_t>(Transferred * 1000 / TimeSpan);
+      Result = static_cast<unsigned int>(Transferred * MSecsPerSec / TimeSpan);
     }
   }
   return Result;
 }
 //---------------------------------------------------------------------------
-System::TDateTime __fastcall TFileOperationProgressType::TimeExpected()
+TDateTime __fastcall TFileOperationProgressType::TimeExpected()
 {
-  size_t CurCps = CPS();
+  unsigned int CurCps = CPS();
   if (CurCps)
   {
-    return System::TDateTime(static_cast<double>((static_cast<double>(TransferSize - TransferedSize)) / CurCps) / (24 * 60 * 60));
+    return TDateTime(static_cast<double>((static_cast<double>(TransferSize - TransferedSize)) / CurCps) / SecsPerDay);
   }
   else
   {
-    return System::TDateTime(0);
+    return TDateTime(0);
   }
 }
 //---------------------------------------------------------------------------
-System::TDateTime __fastcall TFileOperationProgressType::TotalTimeExpected()
+TDateTime __fastcall TFileOperationProgressType::TotalTimeExpected()
 {
   assert(TotalSizeSet);
-  size_t CurCps = CPS();
+  unsigned int CurCps = CPS();
   // sanity check
   if ((CurCps > 0) && (TotalSize > TotalSkipped))
   {
-    return System::TDateTime(static_cast<double>(static_cast<double>(TotalSize - TotalSkipped) / CurCps) /
-                             (24 * 60 * 60));
+    return TDateTime(static_cast<double>(static_cast<double>(TotalSize - TotalSkipped) / CurCps) /
+     SecsPerDay);
   }
   else
   {
-    return System::TDateTime(0);
+    return TDateTime(0);
   }
 }
 //---------------------------------------------------------------------------
-System::TDateTime __fastcall TFileOperationProgressType::TotalTimeLeft()
+TDateTime __fastcall TFileOperationProgressType::TotalTimeLeft()
 {
   assert(TotalSizeSet);
-  size_t CurCps = CPS();
+  unsigned int CurCps = CPS();
   // sanity check
   if ((CurCps > 0) && (TotalSize > TotalSkipped + TotalTransfered))
   {
-    return System::TDateTime(static_cast<double>(static_cast<double>(TotalSize - TotalSkipped - TotalTransfered) / CurCps) /
-                             (24 * 60 * 60));
+    return TDateTime(static_cast<double>(static_cast<double>(TotalSize - TotalSkipped - TotalTransfered) / CurCps) /
+      SecsPerDay);
   }
   else
   {
-    return System::TDateTime(0);
+    return TDateTime(0);
   }
 }
