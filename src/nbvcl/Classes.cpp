@@ -335,9 +335,26 @@ void TObjectList::Notify(void *Ptr, int Action)
 }
 //---------------------------------------------------------------------------
 const UnicodeString sLineBreak = L"\r\n";
+const int MonthsPerYear = 12;
+const int DaysPerWeek = 7;
 const int MinsPerHour = 60;
+const int SecsPerMin = 60;
+const int HoursPerDay = 24;
+const int MinsPerDay  = HoursPerDay * 60;
+const int SecsPerDay  = MinsPerDay * 60;
+const int MSecsPerDay = SecsPerDay * 1000;
+const int DateDelta = 693594;
+const int UnixDateDelta = 25569;
 const UnicodeString kernel32 = L"kernel32";
 static const int MemoryDelta = 0x2000;
+//---------------------------------------------------------------------------
+typedef int TDayTable[12];
+static const TDayTable MonthDays[] =
+{
+  { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 },
+  { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
+};
+
 //---------------------------------------------------------------------------
 
 void TStrings::SetTextStr(const UnicodeString Text)
@@ -2031,5 +2048,114 @@ int FindNext(TSearchRec & Rec)
 int FindClose(TSearchRec & Rec)
 {
 }
+
+//---------------------------------------------------------------------------
+
+void IncAMonth(Word & Year, Word & Month, Word & Day, Integer NumberOfMonths = 1)
+{
+  Integer Sign;
+  if (NumberOfMonths >= 0)
+    Sign = 1;
+  else
+    Sign = -1;
+  Year = Year + (NumberOfMonths % 12);
+  NumberOfMonths = NumberOfMonths / 12;
+  Month += NumberOfMonths;
+  if (Word(Month-1) > 11) // if Month <= 0, word(Month-1) > 11)
+  {
+    Year += Sign;
+    Month += -12 * Sign;
+  }
+  const TDayTable * DayTable = &MonthDays[IsLeapYear(Year)];
+  if (Day > (*DayTable)[Month]) Day = (*DayTable)[Month];
+}
+
+void ReplaceTime(TDateTime &DateTime, const TDateTime NewTime)
+{
+  DateTime = Trunc(DateTime);
+  if (DateTime >= 0)
+    DateTime = DateTime + Abs(Frac(NewTime));
+  else
+    DateTime = DateTime - Abs(Frac(NewTime));
+}
+
+TDateTime IncYear(const TDateTime AValue, const Int64 ANumberOfYears)
+{
+  TDateTime Result;
+  Result = IncMonth(AValue, ANumberOfYears * MonthsPerYear);
+  return Result;
+}
+
+TDateTime IncMonth(const TDateTime AValue, const Int64 NumberOfMonths)
+{
+  TDateTime Result;
+  Word Year, Month, Day;
+  DecodeDate(AValue, Year, Month, Day);
+  IncAMonth(Year, Month, Day, NumberOfMonths);
+  Result = EncodeDate(Year, Month, Day);
+  ReplaceTime(Result, AValue);
+  return Result;
+}
+
+TDateTime IncWeek(const TDateTime AValue, const Int64 ANumberOfWeeks)
+{
+  TDateTime Result;
+  Result = AValue + ANumberOfWeeks * DaysPerWeek;
+  return Result;
+}
+
+TDateTime IncDay(const TDateTime AValue, const Int64 ANumberOfDays)
+{
+  TDateTime Result;
+  Result = AValue + ANumberOfDays;
+  return Result;
+}
+
+TDateTime IncHour(const TDateTime AValue, const Int64 ANumberOfHours)
+{
+  TDateTime Result;
+  if (AValue > 0)
+    Result = ((AValue * HoursPerDay) + ANumberOfHours) / HoursPerDay;
+  else
+    Result = ((AValue * HoursPerDay) - ANumberOfHours) / HoursPerDay;
+  return Result;
+}
+
+TDateTime IncMinute(const TDateTime AValue, const Int64 ANumberOfMinutes)
+{
+  TDateTime Result;
+  if (AValue > 0)
+    Result = ((AValue * MinsPerDay) + ANumberOfMinutes) / MinsPerDay;
+  else
+    Result = ((AValue * MinsPerDay) - ANumberOfMinutes) / MinsPerDay;
+  return Result;
+}
+
+TDateTime IncSecond(const TDateTime AValue, const Int64 ANumberOfSeconds)
+{
+  TDateTime Result;
+  if (AValue > 0)
+    Result = ((AValue * SecsPerDay) + ANumberOfSeconds) / SecsPerDay;
+  else
+    Result = ((AValue * SecsPerDay) - ANumberOfSeconds) / SecsPerDay;
+  return Result;
+}
+
+TDateTime IncMilliSecond(const TDateTime AValue, const Int64 ANumberOfMilliSeconds)
+{
+  TDateTime Result;
+  if (AValue > 0)
+    Result = ((AValue * MSecsPerDay) + ANumberOfMilliSeconds) / MSecsPerDay;
+  else
+    Result = ((AValue * MSecsPerDay) - ANumberOfMilliSeconds) / MSecsPerDay;
+  return Result;
+}
+
+Boolean IsLeapYear(Word Year)
+{
+  return (Year / 4 == 0) && ((Year / 100 != 0) || (Year / 400 == 0));
+}
+
+//---------------------------------------------------------------------------
 
 } // namespace System

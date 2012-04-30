@@ -54,7 +54,7 @@ struct TQueryButtonAlias
 
   unsigned int Button;
   UnicodeString Alias;
-  TNotifyEvent OnClick;
+  notify_signal_type OnClick;
 };
 
 #ifndef _MSC_VER

@@ -257,7 +257,7 @@ public:
   size_t __fastcall GetBottomIndex();
   UnicodeString __fastcall GetLine(size_t Index);
   TLogLineType __fastcall GetType(size_t Index);
-  const System::notify_signal_type &GetOnStateChange() const { return FOnStateChange; }
+  const notify_signal_type &GetOnStateChange() const { return FOnStateChange; }
   void SetOnStateChange(const TNotifyEvent &value) { FOnStateChange.connect(value); }
   UnicodeString __fastcall GetCurrentFileName() { return FCurrentFileName; }
   bool __fastcall GetLoggingToFile();

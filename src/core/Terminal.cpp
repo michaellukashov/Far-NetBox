@@ -3966,7 +3966,7 @@ UnicodeString TTerminal::FileUrl(const UnicodeString FileName)
 }
 //---------------------------------------------------------------------------
 void TTerminal::MakeLocalFileList(const UnicodeString FileName,
-                                  const WIN32_FIND_DATA &Rec, void *Param)
+  const TSearchRec &Rec, void *Param)
 {
     TMakeLocalFileListParams &Params = *static_cast<TMakeLocalFileListParams *>(Param);
 

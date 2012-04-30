@@ -37,7 +37,16 @@ namespace System {
 
 //---------------------------------------------------------------------------
 extern const UnicodeString sLineBreak;
+extern const int MonthsPerYear;
+extern const int DaysPerWeek;
 extern const int MinsPerHour;
+extern const int MinsPerDay;
+extern const int SecsPerMin;
+extern const int HoursPerDay;
+extern const int SecsPerDay;
+extern const int MSecsPerDay;
+extern const int DateDelta;
+extern const int UnixDateDelta;
 extern const UnicodeString kernel32;
 //---------------------------------------------------------------------------
 UnicodeString MB2W(const char *src, const UINT cp = CP_ACP);
@@ -370,8 +379,8 @@ public:
     {
         FValue = value;
     }
-    explicit TDateTime(unsigned int Hour,
-                       unsigned int Min, unsigned int Sec, unsigned int MSec);
+    explicit TDateTime(unsigned short Hour,
+      unsigned short Min, unsigned short Sec, unsigned short MSec);
     TDateTime(const TDateTime &rhs)
     {
         FValue = rhs.FValue;
@@ -967,6 +976,22 @@ int FindFirst(const UnicodeString FileName, int FindAttrs, TSearchRec & Rec);
 int FindNext(TSearchRec & Rec);
 int FindClose(TSearchRec & Rec);
 
+//---------------------------------------------------------------------------
+TDateTime IncYear(const TDateTime AValue, const Int64 ANumberOfYears = 1);
+TDateTime IncMonth(const TDateTime AValue, const Int64 NumberOfMonths = 1);
+TDateTime IncWeek(const TDateTime AValue, const Int64 ANumberOfWeeks = 1);
+TDateTime IncDay(const TDateTime AValue, const Int64 ANumberOfDays = 1);
+TDateTime IncHour(const TDateTime AValue, const Int64 ANumberOfHours = 1);
+TDateTime IncMinute(const TDateTime AValue, const Int64 ANumberOfMinutes = 1);
+TDateTime IncSecond(const TDateTime AValue, const Int64 ANumberOfSeconds = 1);
+TDateTime IncMilliSecond(const TDateTime AValue, const Int64 ANumberOfMilliSeconds = 1);
+
+Boolean IsLeapYear(Word Year);
+//---------------------------------------------------------------------------
+double Trunc(double value) { double intpart; modf(value, &intpart); return intpart; }
+double Frac(double value) { double intpart; return modf(value, &intpart); }
+double Abs(double value) { return fabs(value); }
+//---------------------------------------------------------------------------
 } // namespace System
 
 using namespace System;

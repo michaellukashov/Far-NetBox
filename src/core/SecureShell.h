@@ -34,7 +34,7 @@ private:
     const unsigned int *FMinPacketSize;
     const unsigned int *FMaxPacketSize;
     Config *FConfig;
-    System::notify_signal_type FOnReceive;
+    notify_signal_type FOnReceive;
     bool FFrozen;
     bool FDataWhileFrozen;
     bool FStoredPasswordTried;

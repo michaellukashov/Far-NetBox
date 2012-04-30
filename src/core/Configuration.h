@@ -25,7 +25,7 @@ private:
     bool FDontSave;
     bool FChanged;
     int FUpdating;
-    System::notify_signal_type FOnChange;
+    notify_signal_type FOnChange;
 
     void *FApplicationInfo;
     bool FLogging;
@@ -126,7 +126,7 @@ public:
     size_t GetActualLogProtocol() { return FActualLogProtocol; }
     bool GetLogActions() { return FLogActions; }
     int GetLogWindowLines() { return FLogWindowLines; }
-    const System::notify_signal_type &GetOnChange() const { return FOnChange; }
+    const notify_signal_type &GetOnChange() const { return FOnChange; }
     void SetOnChange(const TNotifyEvent &value) { FOnChange.connect(value); }
     int GetSessionReopenAuto() { return FSessionReopenAuto; }
     int GetSessionReopenAutoMaximumNumberOfRetries() { return FSessionReopenAutoMaximumNumberOfRetries; }

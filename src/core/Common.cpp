@@ -942,7 +942,7 @@ static const TDateTimeParams * __fastcall GetDateTimeParams(unsigned short Year)
     unsigned long GTZI;
 
     HINSTANCE Kernel32 = GetModuleHandle(kernel32);
-    typedef BOOL WINAPI (* TGetTimeZoneInformationForYear)(USHORT wYear, PDYNAMIC_TIME_ZONE_INFORMATION pdtzi, LPTIME_ZONE_INFORMATION ptzi);
+    typedef BOOL (WINAPI * TGetTimeZoneInformationForYear)(USHORT wYear, PDYNAMIC_TIME_ZONE_INFORMATION pdtzi, LPTIME_ZONE_INFORMATION ptzi);
     TGetTimeZoneInformationForYear GetTimeZoneInformationForYear =
       (TGetTimeZoneInformationForYear)GetProcAddress(Kernel32, "GetTimeZoneInformationForYear");
 
@@ -972,7 +972,7 @@ static const TDateTimeParams * __fastcall GetDateTimeParams(unsigned short Year)
 
       case TIME_ZONE_ID_INVALID:
       default:
-        throw Exception(TIMEZONE_ERROR);
+        throw Exception(FMTLOAD(TIMEZONE_ERROR));
     }
 
     Result->BaseDifferenceSec = TZI.Bias;
@@ -1033,7 +1033,7 @@ static void __fastcall EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Y
 
       if (Result >= EncodeDateVerbose(Year, Month, 1))
       {
-        Result -= 7;
+        Result = Result - 7;
       }
     }
     Result = Result + EncodeTimeVerbose(Date.wHour, Date.wMinute, Date.wSecond,
@@ -1090,7 +1090,7 @@ TDateTime __fastcall UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode)
 {
   assert(int(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
 
-  TDateTime Result = UnixDateDelta + (double(TimeStamp) / SecsPerDay);
+  TDateTime Result = TDateTime(UnixDateDelta + (double(TimeStamp) / SecsPerDay));
 
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(Result));
 
@@ -1270,10 +1270,10 @@ TDateTime __fastcall ConvertTimestampToUTC(TDateTime DateTime)
 {
 
   const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
-  DateTime += CurrentParams->CurrentDifference;
+  DateTime = DateTime + CurrentParams->CurrentDifference;
 
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
-  DateTime +=
+  DateTime = DateTime +
     (IsDateInDST(DateTime) ?
       Params->DaylightDifference : Params->StandardDifference);
 
@@ -1547,12 +1547,11 @@ TLibModule * __fastcall FindModule(void * Instance)
 //---------------------------------------------------------------------------
 UnicodeString __fastcall LoadStr(int Ident, unsigned int MaxLength)
 {
-  TLibModule * MainModule = FindModule(HInstance);
-  assert(MainModule != NULL);
-
   UnicodeString Result;
   Result.SetLength(MaxLength);
 #ifndef _MSC_VER
+  TLibModule * MainModule = FindModule(HInstance);
+  assert(MainModule != NULL);
   int Length = LoadString((HINSTANCE)MainModule->resinstance, Ident, Result.c_str(), MaxLength);
 #else
   HINSTANCE hInstance = FarPlugin ? FarPlugin->GetHandle() : GetModuleHandle(0);
@@ -1761,7 +1760,7 @@ bool __fastcall IsWin7()
 bool __fastcall IsExactly2008R2()
 {
   HINSTANCE Kernel32 = GetModuleHandle(kernel32);
-  typedef BOOL WINAPI (* TGetProductInfo)(DWORD, DWORD, DWORD, DWORD, PDWORD);
+  typedef BOOL (WINAPI * TGetProductInfo)(DWORD, DWORD, DWORD, DWORD, PDWORD);
   TGetProductInfo GetProductInfo =
       (TGetProductInfo)GetProcAddress(Kernel32, "GetProductInfo");
   bool Result;
@@ -1951,7 +1950,7 @@ UnicodeString TrimRight(const UnicodeString str)
   }
   return result;
 }
-
+/*
 UnicodeString UpperCase(const UnicodeString str)
 {
   UnicodeString result;
@@ -1967,7 +1966,7 @@ UnicodeString LowerCase(const UnicodeString str)
   std::transform(str.begin(), str.end(), result.begin(), ::tolower);
   return result;
 }
-
+*/
 //---------------------------------------------------------------------------
 
 wchar_t UpCase(const wchar_t c)
@@ -2788,19 +2787,6 @@ void ConvertError(int ErrorID)
   UnicodeString Msg = FMTLOAD(ErrorID, 0);
   throw EConvertError(Msg);
 }
-
-//---------------------------------------------------------------------------
-typedef int TDayTable[12];
-static const TDayTable MonthDays[] =
-{
-  { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 },
-  { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
-};
-
-const int HoursPerDay = 24;
-const int MinsPerDay  = HoursPerDay * 60;
-const int SecsPerDay  = MinsPerDay * 60;
-const int MSecsPerDay = SecsPerDay * 1000;
 
 // Days between 1/1/0001 and 12/31/1899
 static const int DateDelta = 693594;

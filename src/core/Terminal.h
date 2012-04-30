@@ -476,7 +476,7 @@ public:
   bool __fastcall DirectoryFileList(const UnicodeString Path,
     TRemoteFileList *& FileList, bool CanLoad);
   void MakeLocalFileList(const UnicodeString FileName,
-    const WIN32_FIND_DATA &Rec, void * Param);
+    const TSearchRec &Rec, void * Param);
   UnicodeString __fastcall FileUrl(const UnicodeString FileName);
   bool __fastcall FileOperationLoopQuery(const Exception & E,
     TFileOperationProgressType *OperationProgress, const UnicodeString Message,
@@ -514,7 +514,7 @@ public:
   __property const TRemoteTokenList * Users = { read = GetUsers };
   __property const TRemoteTokenList * Membership = { read = GetMembership };
   __property TFileOperationProgressEvent OnProgress  = { read=FOnProgress, write=FOnProgress };
-  __property TFileOperationFinished OnFinished  = { read=FOnFinished, write=FOnFinished };
+  __property TFileOperationFinishedEvent OnFinished  = { read=FOnFinished, write=FOnFinished };
   __property TCurrentFSProtocol FSProtocol = { read = FFSProtocol };
   __property bool UseBusyCursor = { read = FUseBusyCursor, write = FUseBusyCursor };
   __property UnicodeString UserName = { read=GetUserName };
@@ -551,7 +551,7 @@ public:
   const notify_signal_type &GetOnChangeDirectory() const { return FOnChangeDirectory; }
   void SetOnChangeDirectory(const TNotifyEvent &value) { FOnChangeDirectory.connect(value); }
   readdirectory_signal_type &GetOnReadDirectory() { return FOnReadDirectory; }
-  void SetOnReadDirectory(const TReadDirectoryProgressEvent &value) { FOnReadDirectory.connect(value); }
+  void SetOnReadDirectory(const TReadDirectoryEvent &value) { FOnReadDirectory.connect(value); }
   const notify_signal_type &GetOnStartReadDirectory() const { return FOnStartReadDirectory; }
   void SetOnStartReadDirectory(const TNotifyEvent &value) { FOnStartReadDirectory.connect(value); }
   readdirectoryprogress_signal_type &GetOnReadDirectoryProgress() { return FOnReadDirectoryProgress; }
@@ -564,7 +564,7 @@ public:
   const fileoperationprogress_signal_type &GetOnProgress() const { return FOnProgress; }
   void SetOnProgress(const TFileOperationProgressEvent &value) { FOnProgress.connect(value); }
   const fileoperationfinished_signal_type &GetOnFinished() const { return FOnFinished; }
-  void SetOnFinished(const TFileOperationFinished &value) { FOnFinished.connect(value); }
+  void SetOnFinished(const TFileOperationFinishedEvent &value) { FOnFinished.connect(value); }
   TCurrentFSProtocol GetFSProtocol() { return FFSProtocol; }
   bool GetUseBusyCursor() { return FUseBusyCursor; }
   void SetUseBusyCursor(bool value) { FUseBusyCursor = value; }

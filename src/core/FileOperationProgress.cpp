@@ -16,7 +16,7 @@ TFileOperationProgressType::TFileOperationProgressType()
 }
 //---------------------------------------------------------------------------
 TFileOperationProgressType::TFileOperationProgressType(
-    const fileoperationprogress_slot_type &AOnProgress,
+    const TFileOperationProgressEvent &AOnProgress,
     const fileoperationfinished_slot_type &AOnFinished)
 {
     FOnProgress.connect(AOnProgress);

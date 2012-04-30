@@ -3246,7 +3246,7 @@ int TWinSCPFileSystem::MoreMessageDialog(const UnicodeString Str,
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalQueryUser(TObject * /*Sender*/,
-    const UnicodeString Query, TStrings * MoreMessages, int Answers,
+    const UnicodeString Query, TStrings * MoreMessages, unsigned int Answers,
     const TQueryParams * Params, int & Answer, TQueryType Type, void * /*Arg*/)
 {
   TMessageParams AParams;

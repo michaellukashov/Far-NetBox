@@ -32,7 +32,7 @@ typedef boost::signal2<void, TFileOperationProgressType & /* ProgressData */, TC
 typedef fileoperationprogress_signal_type::slot_type TFileOperationProgressEvent;
 typedef boost::signal6<void, TFileOperation /* Operation */, TOperationSide /* Side */, bool /* Temp */,
   const UnicodeString & /* FileName */, bool /* Success */, TOnceDoneOperation & /* OnceDoneOperation */> fileoperationfinished_signal_type;
-typedef fileoperationfinished_signal_type::slot_type TFileOperationFinished;
+typedef fileoperationfinished_signal_type::slot_type TFileOperationFinishedEvent;
 #endif
 //---------------------------------------------------------------------------
 class TFileOperationProgressType
@@ -44,7 +44,7 @@ private:
     System::TDateTime FFileStartTime;
     size_t FFilesFinished;
     TFileOperationProgressEvent *FOnProgress;
-    TFileOperationProgressEvent *FOnFinished;
+    TFileOperationFinishedEvent *FOnFinished;
     bool FReset;
     size_t FLastSecond;
     size_t FRemainingCPS;
@@ -95,7 +95,7 @@ public:
     explicit TFileOperationProgressType();
     explicit TFileOperationProgressType(
         const TFileOperationProgressEvent &AOnProgress,
-        const TFileOperationProgressEvent &AOnFinished);
+        const TFileOperationFinishedEvent &AOnFinished);
     ~TFileOperationProgressType();
     void __fastcall AddLocallyUsed(__int64 ASize);
     void __fastcall AddTransfered(__int64 ASize, bool AddToTotals = true);

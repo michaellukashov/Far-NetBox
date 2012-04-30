@@ -268,6 +268,9 @@ typedef class UnicodeString
       return m_pData->GetData()[idx-1];
     }
     void Unique() {}
+    UnicodeString& UpperCase() { return Upper(); }
+    UnicodeString& LowerCase() { return Lower(); }
+
 protected:
     void  __cdecl ThrowIfOutOfRange(int idx) const;
 } string;

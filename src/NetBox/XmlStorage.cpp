@@ -353,7 +353,7 @@ int TXmlStorage::BinaryDataSize(const UnicodeString Name)
 bool TXmlStorage::Readbool(const UnicodeString Name, bool Default)
 {
     UnicodeString res = ReadString(Name, L"");
-    if (res.empty())
+    if (res.IsEmpty())
     {
         return Default;
     }
@@ -387,7 +387,7 @@ __int64 TXmlStorage::ReadInt64(const UnicodeString Name, __int64 Default)
 UnicodeString TXmlStorage::ReadStringRaw(const UnicodeString Name, const UnicodeString Default)
 {
     UnicodeString result = GetSubKeyText(Name);
-    return result.empty() ? Default : result;
+    return result.IsEmpty() ? Default : result;
 }
 //---------------------------------------------------------------------------
 size_t TXmlStorage::ReadBinaryData(const UnicodeString Name,
