@@ -142,13 +142,13 @@ protected:
   bool __fastcall TerminalFree(TTerminalItem * TerminalItem);
 
   void __fastcall DoQueryUser(System::TObject * Sender, const UnicodeString Query,
-                              System::TStrings * MoreMessages, int Answers, const TQueryParams * Params, int & Answer,
-                              TQueryType Type, void * Arg);
+    System::TStrings * MoreMessages, int Answers, const TQueryParams * Params, unsigned int & Answer,
+    TQueryType Type, void * Arg);
   void __fastcall DoPromptUser(TTerminal * Terminal, TPromptKind Kind,
-                               const UnicodeString Name, const UnicodeString Instructions, System::TStrings * Prompts,
-                               System::TStrings * Results, bool & Result, void * Arg);
+    const UnicodeString Name, const UnicodeString Instructions, System::TStrings * Prompts,
+    System::TStrings * Results, bool & Result, void * Arg);
   void __fastcall DoShowExtendedException(TTerminal * Terminal,
-                                          const std::exception * E, void * Arg);
+    Exception * E, void * Arg);
   void __fastcall DoQueueItemUpdate(TQueueItem * Item);
   void __fastcall DoListUpdate();
   void __fastcall DoEvent(TQueueEvent Event);
@@ -291,8 +291,8 @@ class TTransferQueueItem : public TLocatedQueueItem
 {
 public:
   explicit TTransferQueueItem(TTerminal * Terminal,
-                              System::TStrings * FilesToCopy, const UnicodeString TargetDir,
-                              const TCopyParamType * CopyParam, int Params, TOperationSide Side);
+    System::TStrings * FilesToCopy, const UnicodeString TargetDir,
+    const TCopyParamType * CopyParam, int Params, TOperationSide Side);
   virtual ~TTransferQueueItem();
 
 protected:
@@ -306,8 +306,8 @@ class TUploadQueueItem : public TTransferQueueItem
 {
 public:
   explicit TUploadQueueItem(TTerminal * Terminal,
-                            System::TStrings * FilesToCopy, const UnicodeString TargetDir,
-                            const TCopyParamType * CopyParam, int Params);
+    System::TStrings * FilesToCopy, const UnicodeString TargetDir,
+    const TCopyParamType * CopyParam, int Params);
   virtual ~TUploadQueueItem()
   {}
 protected:
@@ -318,8 +318,8 @@ class TDownloadQueueItem : public TTransferQueueItem
 {
 public:
   explicit TDownloadQueueItem(TTerminal * Terminal,
-                              System::TStrings * FilesToCopy, const UnicodeString TargetDir,
-                              const TCopyParamType * CopyParam, int Params);
+    System::TStrings * FilesToCopy, const UnicodeString TargetDir,
+    const TCopyParamType * CopyParam, int Params);
   virtual ~TDownloadQueueItem()
   {}
 protected:

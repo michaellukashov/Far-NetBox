@@ -44,7 +44,7 @@ private:
   TDateTime FFileStartTime;
   int FFilesFinished;
   fileoperationprogress_signal_type FOnProgress;
-  fileoperationprogress_signal_type FOnFinished;
+  fileoperationfinished_signal_type FOnFinished;
   bool FReset;
   unsigned int FLastSecond;
   unsigned long FRemainingCPS;

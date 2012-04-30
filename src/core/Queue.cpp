@@ -835,7 +835,7 @@ void __fastcall TTerminalQueue::DoPromptUser(TTerminal * Terminal,
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminalQueue::DoShowExtendedException(
-  TTerminal * Terminal, const std::exception * E, void * Arg)
+  TTerminal * Terminal, Exception * E, void * Arg)
 {
   if (!GetOnShowExtendedException().empty())
   {
