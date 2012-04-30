@@ -58,7 +58,7 @@ bool __fastcall UnixIsChildPath(UnicodeString Parent, UnicodeString Child)
 //---------------------------------------------------------------------------
 UnicodeString __fastcall UnixExtractFileDir(const UnicodeString Path)
 {
-  int Pos = Path.LastDelimiter(L'/');
+  int Pos = Path.LastDelimiter(L"/");
   // it used to return Path when no slash was found
   if (Pos > 1)
   {
@@ -73,14 +73,14 @@ UnicodeString __fastcall UnixExtractFileDir(const UnicodeString Path)
 // must return trailing backslash
 UnicodeString __fastcall UnixExtractFilePath(const UnicodeString Path)
 {
-  int Pos = Path.LastDelimiter(L'/');
+  int Pos = Path.LastDelimiter(L"/");
   // it used to return Path when no slash was found
   return (Pos > 0) ? Path.SubString(1, Pos) : UnicodeString();
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall UnixExtractFileName(const UnicodeString Path)
 {
-  int Pos = Path.LastDelimiter(L'/');
+  int Pos = Path.LastDelimiter(L"/");
   UnicodeString Result;
   if (Pos > 0)
   {
@@ -108,7 +108,7 @@ UnicodeString __fastcall ExtractFileName(const UnicodeString & Path, bool Unix)
   }
   else
   {
-    return ExtractFileName(Path);
+    return ExtractFilename(Path, L'/');
   }
 }
 //---------------------------------------------------------------------------
@@ -116,14 +116,14 @@ bool __fastcall ExtractCommonPath(TStrings * Files, UnicodeString & Path)
 {
   assert(Files->GetCount() > 0);
 
-  Path = ExtractFilePath(Files->GetStrings(0));
+  Path = ExtractFilePath(Files->GetString(0));
   bool Result = !Path.IsEmpty();
   if (Result)
   {
     for (size_t Index = 1; Index < Files->GetCount(); Index++)
     {
       while (!Path.IsEmpty() &&
-        (Files->Strings[Index].SubString(1, Path.Length()) != Path))
+        (Files->GetString(Index).SubString(1, Path.Length()) != Path))
       {
         int PrevLen = Path.Length();
         Path = ExtractFilePath(ExcludeTrailingBackslash(Path));
@@ -143,14 +143,14 @@ bool __fastcall UnixExtractCommonPath(TStrings * Files, UnicodeString & Path)
 {
   assert(Files->GetCount() > 0);
 
-  Path = UnixExtractFilePath(Files->GetStrings(0));
+  Path = UnixExtractFilePath(Files->GetString(0));
   bool Result = !Path.IsEmpty();
   if (Result)
   {
     for (size_t Index = 1; Index < Files->GetCount(); Index++)
     {
       while (!Path.IsEmpty() &&
-        (Files->Strings[Index].SubString(1, Path.Length()) != Path))
+        (Files->GetString(Index).SubString(1, Path.Length()) != Path))
       {
         size_t PrevLen = Path.Length();
         Path = UnixExtractFilePath(UnixExcludeTrailingBackslash(Path));
@@ -210,12 +210,12 @@ UnicodeString __fastcall AbsolutePath(const UnicodeString & Base, const UnicodeS
 //---------------------------------------------------------------------------
 UnicodeString __fastcall FromUnixPath(const UnicodeString Path)
 {
-  return StringReplace(Path, L"/", L"\\");
+  return StringReplace(Path, L"/", L"\\", TReplaceFlags::Init(rfReplaceAll));
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall ToUnixPath(const UnicodeString Path)
 {
-  return StringReplace(Path, L"\\", L"/");
+  return StringReplace(Path, L"\\", L"/", TReplaceFlags::Init(rfReplaceAll));
 }
 //---------------------------------------------------------------------------
 static void __fastcall CutFirstDirectory(UnicodeString & S, bool Unix)

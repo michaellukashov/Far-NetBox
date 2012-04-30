@@ -55,7 +55,7 @@ UnicodeString MungeIniName(const UnicodeString Str)
     // make this fast for now
     if (P > 0)
     {
-        return ::StringReplace(Str, L"=", L"%3D");
+        return ::StringReplace(Str, L"=", L"%3D", TReplaceFlags::Init(rfReplaceAll));
     }
     else
     {
@@ -69,7 +69,7 @@ UnicodeString UnMungeIniName(const UnicodeString Str)
     // make this fast for now
     if (P != UnicodeString::npos)
     {
-        return ::StringReplace(Str, L"%3D", L"=");
+        return ::StringReplace(Str, L"%3D", L"=", TReplaceFlags::Init(rfReplaceAll));
     }
     else
     {

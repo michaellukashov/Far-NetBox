@@ -397,3 +397,24 @@ int UnicodeString::Pos(wchar_t Ch) const
   }
   return 0;
 }
+
+int UnicodeString::Pos(const wchar_t *str) const
+{
+  size_t nPos = 0;
+  if (Pos(nPos, str))
+  {
+    return nPos;
+  }
+  return 0;
+}
+
+int UnicodeString::RPos(wchar_t Ch) const
+{
+  size_t nPos = 0;
+  if (RPos(nPos, Ch))
+  {
+    return nPos;
+  }
+  return 0;
+}
+

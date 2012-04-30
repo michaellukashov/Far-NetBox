@@ -242,10 +242,11 @@ typedef class UnicodeString
 		UnicodeString& Upper(size_t nStartPos=0, size_t nLength=(size_t)-1);
 
 		int Pos(wchar_t Ch) const;
-		int Pos(wchar_t *Str) const;
+		int Pos(const wchar_t *Str) const;
 		bool Pos(size_t &nPos, wchar_t Ch, size_t nStartPos=0) const;
 		bool Pos(size_t &nPos, const wchar_t *lpwszFind, size_t nStartPos=0) const;
 		bool PosI(size_t &nPos, const wchar_t *lpwszFind, size_t nStartPos=0) const;
+		int RPos(wchar_t Ch) const;
 		bool RPos(size_t &nPos, wchar_t Ch, size_t nStartPos=0) const;
 
 		bool Contains(wchar_t Ch, size_t nStartPos=0) const { return wcschr(m_pData->GetData()+nStartPos,Ch) != nullptr; }

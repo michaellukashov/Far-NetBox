@@ -343,6 +343,7 @@ const int HoursPerDay = 24;
 const int MinsPerDay  = HoursPerDay * 60;
 const int SecsPerDay  = MinsPerDay * 60;
 const int MSecsPerDay = SecsPerDay * 1000;
+// Days between 1/1/0001 and 12/31/1899
 const int DateDelta = 693594;
 const int UnixDateDelta = 25569;
 const UnicodeString kernel32 = L"kernel32";

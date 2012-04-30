@@ -1990,13 +1990,13 @@ UnicodeString AnsiReplaceStr(const UnicodeString str, const UnicodeString from, 
 
 size_t AnsiPos(const UnicodeString str, wchar_t c)
 {
-  size_t result = str.find_first_of(c);
+  size_t result = str.Pos(c);
   return result;
 }
 
 size_t Pos(const UnicodeString str, const UnicodeString substr)
 {
-  size_t result = str.Pos(substr);
+  size_t result = str.Pos(substr.c_str());
   return result;
 }
 
@@ -2025,7 +2025,7 @@ size_t LastDelimiter(const UnicodeString str, const UnicodeString delim)
 {
   if (str.Length())
   {
-    for (size_t i = str.Length() - 1; i != UnicodeString::npos; --i)
+    for (size_t i = str.Length() - 1; i > 0; --i)
     {
       if (::IsDelimiter(str, delim, i))
       {
@@ -2033,7 +2033,7 @@ size_t LastDelimiter(const UnicodeString str, const UnicodeString delim)
       }
     }
   }
-  return UnicodeString::npos;
+  return 0;
 }
 
 //---------------------------------------------------------------------------
@@ -2231,10 +2231,10 @@ UnicodeString FileSearch(const UnicodeString FileName, const UnicodeString Direc
       i = ::Pos(Temp, PathSeparators);
     }
     i = ::Pos(Temp, PathSeparators);
-    if (i != UnicodeString::npos)
+    if (i > 0)
     {
-      Result = Temp.SubString(0, i - 1);
-      Temp.Delete(0, i);
+      Result = Temp.SubString(1, i - 1);
+      Temp.Delete(1, i);
       // DEBUG_PRINTF(L"Result = %s, Temp = %s", Result.c_str(), Temp.c_str());
     }
     else
@@ -2477,7 +2477,7 @@ UnicodeString TranslateExceptionMessage(const std::exception * E)
 //---------------------------------------------------------------------------
 void AppendWChar(UnicodeString & str, const wchar_t ch)
 {
-  if (!str.IsEmpty() && str[str.length() - 1] != ch)
+  if (!str.IsEmpty() && str[str.Length() - 1] != ch)
   {
     str += ch;
   }
@@ -2485,7 +2485,7 @@ void AppendWChar(UnicodeString & str, const wchar_t ch)
 
 void AppendChar(std::string & str, const char ch)
 {
-  if (!str.IsEmpty() && str[str.length() - 1] != ch)
+  if (!str.empty() && str[str.length() - 1] != ch)
   {
     str += ch;
   }
@@ -2493,7 +2493,7 @@ void AppendChar(std::string & str, const char ch)
 
 void AppendPathDelimiterW(UnicodeString & str)
 {
-  if (!str.IsEmpty() && str[str.length() - 1] != L'/' && str[str.length() - 1] != L'\\')
+  if (!str.IsEmpty() && str[str.Length() - 1] != L'/' && str[str.Length() - 1] != L'\\')
   {
     str += L"\\";;
   }
@@ -2501,7 +2501,7 @@ void AppendPathDelimiterW(UnicodeString & str)
 
 void AppendPathDelimiterA(std::string & str)
 {
-  if (!str.IsEmpty() && str[str.length() - 1] != '/' && str[str.length() - 1] != '\\')
+  if (!str.empty() && str[str.length() - 1] != '/' && str[str.length() - 1] != '\\')
   {
     str += "\\";;
   }
@@ -2637,7 +2637,7 @@ UnicodeString SysErrorMessage(int ErrorCode)
                             static_cast<LPTSTR>(Buffer),
                             sizeof(Buffer), NULL);
   while ((Len > 0) && ((Buffer[Len - 1] != 0) &&
-                       (Buffer[Len - 1] <= 32) || (Buffer[Len - 1] == '.')))
+    (Buffer[Len - 1] <= 32) || (Buffer[Len - 1] == '.')))
   {
     Len--;
   }
@@ -2652,8 +2652,8 @@ UnicodeString ReplaceStrAll(const UnicodeString Str, const UnicodeString What, c
   size_t pos = result.Pos(What.c_str());
   while (pos > 0)
   {
-    result.replace(pos, What.Length(), ByWhat);
-    pos = result.Pos(What);
+    result.Replace(pos, What.Length(), ByWhat.c_str(), ByWhat.Length());
+    pos = result.Pos(What.c_str());
   }
   return result;
 }
@@ -2671,7 +2671,7 @@ UnicodeString ExtractShortPathName(const UnicodeString Path1)
 // "/foo/bar/baz.txt" --> "/foo/bar/"
 UnicodeString ExtractDirectory(const UnicodeString path, wchar_t delimiter)
 {
-  return path.SubString(0,path.find_last_of(delimiter) + 1);
+  return path.SubString(0, path.RPos(delimiter) + 1);
 }
 
 //
@@ -2680,7 +2680,7 @@ UnicodeString ExtractDirectory(const UnicodeString path, wchar_t delimiter)
 // "/foo/bar/baz.txt" --> "baz.txt"
 UnicodeString ExtractFilename(const UnicodeString path, wchar_t delimiter)
 {
-  return path.SubString(path.find_last_of(delimiter) + 1);
+  return path.SubString(path.RPos(delimiter) + 1);
 }
 
 //
@@ -2692,8 +2692,8 @@ UnicodeString ExtractFilename(const UnicodeString path, wchar_t delimiter)
 UnicodeString ExtractFileExtension(const UnicodeString path, wchar_t delimiter)
 {
   UnicodeString filename = ExtractFilename(path, delimiter);
-  UnicodeString::size_type n = filename.find_last_of('.');
-  if (n != UnicodeString::npos)
+  int n = filename.RPos(L'.');
+  if (n > 0)
   {
     return filename.SubString(n);
   }
@@ -2712,7 +2712,7 @@ UnicodeString ChangeFileExtension(const UnicodeString path, const UnicodeString 
 {
   UnicodeString filename = ExtractFilename(path, delimiter);
   return ExtractDirectory(path, delimiter)
-         + filename.SubString(0, filename.find_last_of('.'))
+         + filename.SubString(0, filename.RPos(L'.'))
          + ext;
 }
 
@@ -2746,9 +2746,9 @@ UnicodeString ExtractFileDir(const UnicodeString str)
   size_t Pos = ::LastDelimiter(str, L"/\\");
   // DEBUG_PRINTF(L"Pos = %d", Pos);
   // it used to return Path when no slash was found
-  if (Pos != UnicodeString::npos)
+  if (Pos > 0)
   {
-    result = str.SubString(0, Pos + 1);
+    result = str.SubString(1, Pos + 1);
   }
   else
   {
@@ -2787,9 +2787,6 @@ void ConvertError(int ErrorID)
   UnicodeString Msg = FMTLOAD(ErrorID, 0);
   throw EConvertError(Msg);
 }
-
-// Days between 1/1/0001 and 12/31/1899
-static const int DateDelta = 693594;
 
 //---------------------------------------------------------------------------
 bool TryEncodeDate(int Year, int Month, int Day, System::TDateTime & Date)
@@ -2853,12 +2850,6 @@ System::TDateTime StrToDateTime(const UnicodeString Value)
 bool TryStrToDateTime(const UnicodeString value, System::TDateTime & Value, System::TFormatSettings & FormatSettings)
 {
   System::Error(SNotImplemented, 147);
-  return false;
-}
-
-bool TryRelativeStrToDateTime(const UnicodeString value, System::TDateTime & Value)
-{
-  System::Error(SNotImplemented, 149);
   return false;
 }
 
@@ -2995,11 +2986,11 @@ UnicodeString FormatDateTime(const UnicodeString fmt, System::TDateTime DateTime
   UnicodeString Result;
   // DateTimeToStr(Result, fmt, DateTime);
   boost::local_time::local_time_facet * output_facet = new boost::local_time::local_time_facet();
-  UnicodeStringstream ss;
+  std::wstringstream ss;
   ss.imbue(std::locale(std::locale::classic(), output_facet));
   output_facet->format(System::W2MB(fmt.c_str()).c_str());
   // boost::local_time::local_date_time ldt;
-  unsigned int Y, M, D;
+  unsigned short Y, M, D;
   DateTime.DecodeDate(Y, M, D);
   bg::date d(Y, M, D);
   ss << d;
