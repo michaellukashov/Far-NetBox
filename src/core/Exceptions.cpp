@@ -17,7 +17,7 @@ bool __fastcall ExceptionMessage(const std::exception *E, UnicodeString &Message
     {
         Message = LoadStr(ACCESS_VIOLATION_ERROR);
     }
-    else if (std::string(E->what()).IsEmpty())
+    else if (std::string(E->what()).empty())
     {
         Result = false;
     }

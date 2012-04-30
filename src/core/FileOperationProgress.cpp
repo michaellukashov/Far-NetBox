@@ -17,7 +17,7 @@ TFileOperationProgressType::TFileOperationProgressType()
 //---------------------------------------------------------------------------
 TFileOperationProgressType::TFileOperationProgressType(
     const TFileOperationProgressEvent &AOnProgress,
-    const fileoperationfinished_slot_type &AOnFinished)
+    const TFileOperationFinishedEvent &AOnFinished)
 {
     FOnProgress.connect(AOnProgress);
     FOnFinished.connect(AOnFinished);
@@ -129,7 +129,7 @@ void __fastcall TFileOperationProgressType::Resume()
     // by the time the progress was suspended
     unsigned long Stopped = (GetTickCount() - FSuspendTime);
     size_t i = 0;
-    while (i < FTicks.Length())
+    while (i < FTicks.size())
     {
         FTicks[i] += Stopped;
         ++i;

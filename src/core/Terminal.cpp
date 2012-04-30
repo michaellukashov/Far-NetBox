@@ -4186,7 +4186,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString LocalDirectory
       {
         BOOST_SCOPE_EXIT ( (&SearchRec) )
         {
-          ::FindClose(SearchRec);
+          FindClose(SearchRec);
         } BOOST_SCOPE_EXIT_END
         UnicodeString FileName;
         while (Found)
@@ -4328,7 +4328,7 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString FileName,
 
   TFileMasks::TParams MaskParams;
   MaskParams.Size = File->GetSize();
-  MaskParams.Modification = File->Modification;
+  MaskParams.Modification = File->GetModification();
   UnicodeString LocalFileName =
     Data->CopyParam->ChangeFileName(File->GetFileName(), osRemote, false);
   if (Data->CopyParam->AllowTransfer(
@@ -4807,7 +4807,7 @@ void TTerminal::DoFilesFind(UnicodeString Directory, TFilesFindParams & Params)
   }
 }
 //---------------------------------------------------------------------------
-void TTerminal::FilesFind(UnicodeString Directory, const TFileMasks & FileMask,
+void __fastcall TTerminal::FilesFind(UnicodeString Directory, const TFileMasks & FileMask,
   const TFileFoundEvent * OnFileFound, const TFindingFileEvent * OnFindingFile)
 {
   TFilesFindParams Params;
@@ -4827,7 +4827,7 @@ void TTerminal::SpaceAvailable(const UnicodeString Path,
   {
     FFileSystem->SpaceAvailable(Path, ASpaceAvailable);
   }
-  catch (const Exception & E)
+  catch (Exception & E)
   {
     CommandError(&E, FMTLOAD(SPACE_AVAILABLE_ERROR, Path.c_str()));
   }
@@ -4988,7 +4988,7 @@ bool TTerminal::CopyToLocal(TStrings * FilesToCopy,
   bool OwnsFileList = (FilesToCopy == NULL);
   TOnceDoneOperation OnceDoneOperation = odoIdle;
 
-  try
+  // try
   {
     BOOST_SCOPE_EXIT( (&OwnsFileList) (&FilesToCopy) )
     {
@@ -5094,7 +5094,7 @@ TSecondaryTerminal::TSecondaryTerminal(TTerminal * MainTerminal) :
 void TSecondaryTerminal::Init(
   TSessionData * ASessionData, TConfiguration * Configuration, const UnicodeString & Name)
 {
-  TTerminal::Init(SessionData, Configuration);
+  TTerminal::Init(ASessionData, Configuration);
   GetLog()->SetParent(FMainTerminal->GetLog());
   GetLog()->SetName(Name);
   GetActionLog()->SetEnabled(false);
