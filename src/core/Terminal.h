@@ -240,17 +240,50 @@ private:
   TTunnelUI * FTunnelUI;
   size_t FTunnelLocalPortNumber;
   UnicodeString FTunnelError;
+#ifndef _MSC_VER
+  TQueryUserEvent FOnQueryUser;
+  TPromptUserEvent FOnPromptUser;
+  TDisplayBannerEvent FOnDisplayBanner;
+  TExtendedExceptionEvent FOnShowExtendedException;
+  TInformationEvent FOnInformation;
+  TNotifyEvent FOnClose;
+  TCallbackGuard * FCallbackGuard;
+  TFindingFileEvent FOnFindingFile;
+
+  void __fastcall CommandError(Exception * E, const UnicodeString Msg);
+  unsigned int __fastcall CommandError(Exception * E, const UnicodeString Msg, unsigned int Answers);
+  UnicodeString __fastcall GetCurrentDirectory();
+  bool __fastcall GetExceptionOnFail() const;
+  const TRemoteTokenList * __fastcall GetGroups();
+  const TRemoteTokenList * __fastcall GetUsers();
+  const TRemoteTokenList * __fastcall GetMembership();
+  void __fastcall SetCurrentDirectory(UnicodeString value);
+  void __fastcall SetExceptionOnFail(bool value);
+  void __fastcall ReactOnCommand(int /*TFSCommand*/ Cmd);
+  UnicodeString __fastcall GetUserName() const;
+  bool __fastcall GetAreCachesEmpty() const;
+  void __fastcall ClearCachedFileList(const UnicodeString Path, bool SubDirs);
+  void __fastcall AddCachedFileList(TRemoteFileList * FileList);
+  bool __fastcall GetCommandSessionOpened();
+  TTerminal * __fastcall GetCommandSession();
+  bool __fastcall GetResolvingSymlinks();
+  bool __fastcall GetActive();
+  UnicodeString __fastcall GetPassword();
+  UnicodeString __fastcall GetTunnelPassword();
+  bool __fastcall GetStoredCredentialsTried();
+  inline bool __fastcall InTransaction();
+#else
   queryuser_signal_type FOnQueryUser;
   promptuser_signal_type FOnPromptUser;
   displaybanner_signal_type FOnDisplayBanner;
   extendedexception_signal_type FOnShowExtendedException;
   informationevent_signal_type FOnInformation;
   notify_signal_type FOnClose;
-  bool FAnyInformation;
   TCallbackGuard * FCallbackGuard;
   findingfile_signal_type FOnFindingFile;
+  bool FAnyInformation;
   TTerminal *Self;
-
+#endif
   void CommandError(Exception * E, const UnicodeString Msg);
   int CommandError(Exception * E, const UnicodeString Msg, int Answers);
   void ReactOnCommand(int /*TFSCommand*/ Cmd);
@@ -350,7 +383,7 @@ protected:
   void __fastcall CloseTunnel();
   void DoInformation(const UnicodeString & Str, bool Status, int Phase = -1);
   UnicodeString __fastcall FileUrl(const UnicodeString Protocol, const UnicodeString FileName);
-  bool PromptUser(TSessionData * Data, TPromptKind Kind,
+  bool __fastcall PromptUser(TSessionData * Data, TPromptKind Kind,
     UnicodeString Name, UnicodeString Instructions, UnicodeString Prompt, bool Echo,
     int MaxLen, UnicodeString & Result);
   void FileFind(UnicodeString FileName, const TRemoteFile * File, void * Param);
