@@ -290,7 +290,7 @@ void __fastcall TTunnelThread::Execute()
   }
   catch(...)
   {
-    if (FSecureShell->Active)
+    if (FSecureShell->GetActive())
     {
       FSecureShell->Close();
     }
@@ -461,7 +461,7 @@ TCallbackGuard::~TCallbackGuard()
 class ECallbackGuardAbort : public EAbort
 {
 public:
-  ECallbackGuardAbort() : EAbort(L"")
+  ECallbackGuardAbort() : EAbort("")
   {
   }
 };
@@ -1184,7 +1184,7 @@ unsigned int TTerminal::QueryUser(const UnicodeString Query,
   TQueryType QueryType)
 {
   LogEvent(FORMAT(L"Asking user:\n%s (%s)", Query.c_str(), MoreMessages ? MoreMessages->GetCommaText().c_str() : L""));
-  int Answer = AbortAnswer(Answers);
+  unsigned int Answer = AbortAnswer(Answers);
   if (!FOnQueryUser.empty())
   {
     TCallbackGuard Guard(this);
@@ -1215,8 +1215,8 @@ unsigned int __fastcall TTerminal::QueryUserException(const UnicodeString Query,
         MoreMessages.AddStrings(EE->GetMoreMessages());
       }
     }
-    Result = QueryUser(!Query.IsEmpty() ? Query : UnicodeString(E->Message),
-      MoreMessages->Count ? &MoreMessages : NULL,
+    Result = QueryUser(!Query.IsEmpty() ? Query : UnicodeString(E->GetMessage()),
+      MoreMessages.GetCount() ? &MoreMessages : NULL,
       Answers, Params, QueryType);
   }
 #ifndef _MSC_VER
@@ -1910,12 +1910,12 @@ void TTerminal::FatalError(Exception * E, UnicodeString Msg)
   }
 }
 //---------------------------------------------------------------------------
-void TTerminal::CommandError(Exception * E, const UnicodeString Msg)
+void __fastcall TTerminal::CommandError(Exception * E, const UnicodeString Msg)
 {
   CommandError(E, Msg, 0);
 }
 //---------------------------------------------------------------------------
-int TTerminal::CommandError(Exception * E, const UnicodeString Msg,
+unsigned int __fastcall TTerminal::CommandError(Exception * E, const UnicodeString Msg,
   unsigned int Answers)
 {
   // may not be, particularly when TTerminal::Reopen is being called
@@ -2500,7 +2500,7 @@ TRemoteFileList * TTerminal::ReadDirectoryListing(UnicodeString Directory, const
 //---------------------------------------------------------------------------
 TRemoteFile * __fastcall TTerminal::ReadFileListing(UnicodeString Path)
 {
-  TStatSessionAction Action(ActionLog, AbsolutePath(Path, true));
+  TStatSessionAction Action(GetActionLog(), AbsolutePath(Path, true));
   TRemoteFile * File = NULL;
   try
   {
@@ -2771,7 +2771,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
         bool Success;
         processfile_signal_type sig;
         sig.connect(ProcessFile);
-        while ((Index < FileList->GetCount()) && (Progress->Cancel == csContinue))
+        while ((Index < FileList->GetCount()) && (Progress.Cancel == csContinue))
         {
           FileName = FileList->GetStrings(Index);
           try
@@ -2791,8 +2791,8 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
               else
               {
                 // not used anymore
-                TProcessFileEventEx ProcessFileEx = (TProcessFileEventEx)ProcessFile;
-                ProcessFileEx(FileName, (TRemoteFile *)FileList->Objects[Index], Param, Index);
+                // TProcessFileEventEx ProcessFileEx = (TProcessFileEventEx)ProcessFile;
+                // ProcessFileEx(FileName, (TRemoteFile *)FileList->GetObjects(Index), Param, Index);
               }
               Success = true;
             }
@@ -2908,7 +2908,7 @@ void TTerminal::DeleteFile(UnicodeString FileName,
   if (GetOperationProgress() && GetOperationProgress()->Operation == foDelete)
   {
     if (GetOperationProgress()->Cancel != csContinue) { Abort(); }
-    GetOperationProgress()->SetFile(fileName);
+    GetOperationProgress()->SetFile(FileName);
   }
   int Params = (AParams != NULL) ? *(static_cast<int*>(AParams)) : 0;
   bool Recycle =
@@ -2981,7 +2981,7 @@ void TTerminal::CustomCommandOnFile(UnicodeString FileName,
   const TRemoteFile * File, void * AParams)
 {
   TCustomCommandParams * Params = (static_cast<TCustomCommandParams *>(AParams));
-  if (fileName.IsEmpty() && File)
+  if (FileName.IsEmpty() && File)
   {
     FileName = File->GetFileName();
   }
@@ -3297,7 +3297,6 @@ void TTerminal::RenameFile(const TRemoteFile * File,
       {
         QuestionFmt = LoadStr(PROMPT_FILE_OVERWRITE);
       }
-      int Result;
       TQueryParams Params(qpNeverAskAgainCheck);
       unsigned int Result = QueryUser(FORMAT(QuestionFmt.c_str(), NewName.c_str()), NULL,
         qaYes | qaNo, &Params);
@@ -3555,7 +3554,7 @@ void TTerminal::HomeDirectory()
     FFileSystem->HomeDirectory();
     ReactOnCommand(fsHomeDirectory);
   }
-  catch (const Exception & E)
+  catch (Exception & E)
   {
     CommandError(&E, LoadStr(CHANGE_HOMEDIR_ERROR));
   }
@@ -4000,7 +3999,7 @@ void TTerminal::MakeLocalFileList(const UnicodeString FileName,
 }
 //---------------------------------------------------------------------------
 void TTerminal::CalculateLocalFileSize(const UnicodeString FileName,
-  const TSearchRec Rec, /*TCalculateSizeParams*/ void * Params)
+  const TSearchRec Rec, /*__int64*/  void * Params)
 {
   TCalculateSizeParams * AParams = static_cast<TCalculateSizeParams*>(Params);
 
@@ -4097,7 +4096,7 @@ struct TSynchronizeData
   UnicodeString RemoteDirectory;
   TTerminal::TSynchronizeMode Mode;
   int Params;
-  const synchronizedirectory_slot_type * OnSynchronizeDirectory;
+  const TSynchronizeDirectory * OnSynchronizeDirectory;
   TSynchronizeOptions * Options;
   int Flags;
   TStringList * LocalFileList;
@@ -4108,7 +4107,7 @@ struct TSynchronizeData
 TSynchronizeChecklist * TTerminal::SynchronizeCollect(const UnicodeString LocalDirectory,
   const UnicodeString RemoteDirectory, TSynchronizeMode Mode,
   const TCopyParamType * CopyParam, int Params,
-  const synchronizedirectory_slot_type & OnSynchronizeDirectory,
+  const TSynchronizeDirectory & OnSynchronizeDirectory,
   TSynchronizeOptions * Options)
 {
   TSynchronizeChecklist * Checklist = new TSynchronizeChecklist();
@@ -4130,7 +4129,7 @@ TSynchronizeChecklist * TTerminal::SynchronizeCollect(const UnicodeString LocalD
 void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString LocalDirectory,
   const UnicodeString RemoteDirectory, TSynchronizeMode Mode,
   const TCopyParamType * CopyParam, int Params,
-  const synchronizedirectory_slot_type & OnSynchronizeDirectory, TSynchronizeOptions * Options,
+  const TSynchronizeDirectory & OnSynchronizeDirectory, TSynchronizeOptions * Options,
   int Flags, TSynchronizeChecklist * Checklist)
 {
   TSynchronizeData Data;
@@ -4496,7 +4495,7 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString FileName,
 void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
   const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
   const TCopyParamType * CopyParam, int Params,
-  const synchronizedirectory_slot_type & OnSynchronizeDirectory)
+  const TSynchronizeDirectory & OnSynchronizeDirectory)
 {
   TSynchronizeData Data;
 

@@ -20,6 +20,13 @@ public:
     explicit Exception(const std::exception *E);
     template<typename T>
     bool InheritsFrom() const { return dynamic_cast<const T *>(this) != NULL; }
+
+    UnicodeString GetHelpKeyword() const { return FHelpKeyword; }
+    const UnicodeString GetMessage() const { return FMessage; }
+    void SetMessage(const UnicodeString value) { FMessage = value; }
+protected:
+    UnicodeString FMessage;
+    UnicodeString FHelpKeyword;
 };
 //---------------------------------------------------------------------------
 class ExtException : public Exception
@@ -37,16 +44,11 @@ public:
     virtual ~ExtException(void) throw();
 
     System::TStrings *GetMoreMessages() const { return FMoreMessages; }
-    UnicodeString GetHelpKeyword() const { return FHelpKeyword; }
-    const UnicodeString GetMessage() const { return FMessage; }
-    void SetMessage(const UnicodeString value) { FMessage = value; }
 protected:
     void __fastcall AddMoreMessages(const std::exception *E);
 
 private:
     System::TStrings *FMoreMessages;
-    UnicodeString FHelpKeyword;
-    UnicodeString FMessage;
 };
 //---------------------------------------------------------------------------
 #define DERIVE_EXT_EXCEPTION(NAME, BASE) \
