@@ -1401,7 +1401,7 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
 
     for (size_t Index = 0; Index < Prompts->GetCount(); Index++)
     {
-        int x = static_cast<int>(Prompts->GetString(Index).Length());
+        int x = static_cast<int>(Prompts->GetStrings(Index).Length());
         if (S.x < x)
         {
             S.x = x;
@@ -1425,7 +1425,7 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
 
     for (size_t Index = 0; Index < Prompts->GetCount(); Index++)
     {
-        GenerateLabel(Prompts->GetString(Index), Truncated);
+        GenerateLabel(Prompts->GetStrings(Index), Truncated);
 
         FEdits->Add(GenerateEdit((Prompts->GetObjects(Index)) != NULL));
     }
@@ -1443,7 +1443,7 @@ bool TPasswordDialog::Execute(System::TStrings *Results)
 {
     for (size_t Index = 0; Index < FEdits->GetCount(); Index++)
     {
-        reinterpret_cast<TFarEdit *>(FEdits->GetItem(Index))->SetText(Results->GetString(Index));
+        reinterpret_cast<TFarEdit *>(FEdits->GetItem(Index))->SetText(Results->GetStrings(Index));
     }
 
     bool Result = (ShowModal() != brCancel);
@@ -1458,7 +1458,7 @@ bool TPasswordDialog::Execute(System::TStrings *Results)
         if ((SavePasswordCheck != NULL) && SavePasswordCheck->GetChecked())
         {
             assert(FSessionData != NULL);
-            FSessionData->SetPassword(Results->GetString(0));
+            FSessionData->SetPassword(Results->GetStrings(0));
             // modified only, explicit
             StoredSessions->Save(false, true);
         }
@@ -3200,7 +3200,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
     // Shell tab
     if (SessionData->GetDefaultShell())
     {
-        ShellEdit->SetText(ShellEdit->GetItems()->GetString(0));
+        ShellEdit->SetText(ShellEdit->GetItems()->GetStrings(0));
     }
     else
     {
@@ -3208,7 +3208,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
     }
     if (SessionData->GetDetectReturnVar())
     {
-        ReturnVarEdit->SetText(ReturnVarEdit->GetItems()->GetString(0));
+        ReturnVarEdit->SetText(ReturnVarEdit->GetItems()->GetStrings(0));
     }
     else
     {
@@ -3239,8 +3239,8 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
     // DEBUG_PRINTF(L"SftpServerEdit->GetText = %s", SftpServerEdit->GetText().c_str());
     if (SessionData->GetSftpServer().IsEmpty())
     {
-        // DEBUG_PRINTF(L"SftpServerEdit->GetItems()->GetString(0) = %s", SftpServerEdit->GetItems()->GetString(0).c_str());
-        SftpServerEdit->SetText(SftpServerEdit->GetItems()->GetString(0));
+        // DEBUG_PRINTF(L"SftpServerEdit->GetItems()->GetStrings(0) = %s", SftpServerEdit->GetItems()->GetStrings(0).c_str());
+        SftpServerEdit->SetText(SftpServerEdit->GetItems()->GetStrings(0));
     }
     else
     {
@@ -3262,7 +3262,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
         for (size_t Index = 0; (Index < PostLoginCommands->GetCount()) &&
                 (Index < LENOF(PostLoginCommandsEdits)); Index++)
         {
-            PostLoginCommandsEdits[Index]->SetText(PostLoginCommands->GetString(Index));
+            PostLoginCommandsEdits[Index]->SetText(PostLoginCommands->GetStrings(Index));
         }
     }
     SslSessionReuseCheck->SetChecked(SessionData->GetSslSessionReuse());
@@ -3314,7 +3314,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
 
     if (SessionData->GetCodePage().IsEmpty())
     {
-        CodePageEdit->SetText(CodePageEdit->GetItems()->GetString(0));
+        CodePageEdit->SetText(CodePageEdit->GetItems()->GetStrings(0));
     }
     else
     {
@@ -3354,7 +3354,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
     TunnelPrivateKeyEdit->SetText(SessionData->GetTunnelPublicKeyFile());
     if (SessionData->GetTunnelAutoassignLocalPortNumber())
     {
-        TunnelLocalPortNumberEdit->SetText(TunnelLocalPortNumberEdit->GetItems()->GetString(0));
+        TunnelLocalPortNumberEdit->SetText(TunnelLocalPortNumberEdit->GetItems()->GetStrings(0));
     }
     else
     {
@@ -3511,9 +3511,9 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
         SessionData->SetRecycleBinPath(RecycleBinPathEdit->GetText());
 
         // SCP tab
-        SessionData->SetDefaultShell(ShellEdit->GetText() == ShellEdit->GetItems()->GetString(0));
+        SessionData->SetDefaultShell(ShellEdit->GetText() == ShellEdit->GetItems()->GetStrings(0));
         SessionData->SetShell((SessionData->GetDefaultShell() ? UnicodeString() : ShellEdit->GetText()));
-        SessionData->SetDetectReturnVar(ReturnVarEdit->GetText() == ReturnVarEdit->GetItems()->GetString(0));
+        SessionData->SetDetectReturnVar(ReturnVarEdit->GetText() == ReturnVarEdit->GetItems()->GetStrings(0));
         SessionData->SetReturnVar((SessionData->GetDetectReturnVar() ? UnicodeString() : ReturnVarEdit->GetText()));
         SessionData->SetLookupUserGroups((TAutoSwitch)LookupUserGroupsCheck->GetChecked());
         SessionData->SetClearAliases(ClearAliasesCheck->GetChecked());
@@ -3534,7 +3534,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
         SessionData->SetSFTPBug(sbSignedTS, static_cast<TAutoSwitch>(2 - SFTPBugSignedTSCombo->GetItems()->GetSelected()));
 
         SessionData->SetSftpServer(
-            (SftpServerEdit->GetText() == SftpServerEdit->GetItems()->GetString(0)) ?
+            (SftpServerEdit->GetText() == SftpServerEdit->GetItems()->GetStrings(0)) ?
             UnicodeString() : SftpServerEdit->GetText());
         SessionData->SetSFTPMaxVersion(SFTPMaxVersionCombo->GetItems()->GetSelected());
         SessionData->SetSFTPMinPacketSize(SFTPMinPacketSizeEdit->GetAsInteger());
@@ -3642,7 +3642,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
             SessionData->SetAddressFamily(afAuto);
         }
         SessionData->SetCodePage(
-            (CodePageEdit->GetText() == CodePageEdit->GetItems()->GetString(0)) ?
+            (CodePageEdit->GetText() == CodePageEdit->GetItems()->GetStrings(0)) ?
             UnicodeString() : CodePageEdit->GetText());
 
         // Proxy tab
@@ -3675,7 +3675,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
         SessionData->SetTunnelHostName(TunnelHostNameEdit->GetText());
         SessionData->SetTunnelPassword(TunnelPasswordEdit->GetText());
         SessionData->SetTunnelPublicKeyFile(TunnelPrivateKeyEdit->GetText());
-        if (TunnelLocalPortNumberEdit->GetText() == TunnelLocalPortNumberEdit->GetItems()->GetString(0))
+        if (TunnelLocalPortNumberEdit->GetText() == TunnelLocalPortNumberEdit->GetItems()->GetStrings(0))
         {
             SessionData->SetTunnelLocalPortNumber(0);
         }
@@ -4471,7 +4471,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin *AFarPlugin,
         }
         else
         {
-            Text->SetCaption(MinimizeName(FileList->GetString(0), GetClientSize().x, true));
+            Text->SetCaption(MinimizeName(FileList->GetStrings(0), GetClientSize().x, true));
         }
 
         new TFarSeparator(this);
@@ -5228,8 +5228,8 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin *AFarPlugin,
         else
         {
             Prompt = FORMAT(GetMsg(Move ? MOVE_FILE_PROMPT : COPY_FILE_PROMPT).c_str(),
-                            ToRemote ? ExtractFileName(FileList->GetString(0), true).c_str() :
-                            UnixExtractFileName(FileList->GetString(0)).c_str());
+                            ToRemote ? ExtractFileName(FileList->GetStrings(0), true).c_str() :
+                            UnixExtractFileName(FileList->GetStrings(0)).c_str());
         }
 
         Text = new TFarText(this);
@@ -6185,7 +6185,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
 
             for (size_t i = FirstHistory; i < FPathHistory->GetCount(); i++)
             {
-                UnicodeString Path = FPathHistory->GetString(i);
+                UnicodeString Path = FPathHistory->GetStrings(i);
                 BookmarkPaths->Add(Path);
                 BookmarkItems->Add(MinimizeName(Path, MaxLength, true));
             }
@@ -6245,7 +6245,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
 
                     for (size_t ii = 0; ii < BookmarkDirectories->GetCount(); ii++)
                     {
-                        UnicodeString Path = BookmarkDirectories->GetString(ii);
+                        UnicodeString Path = BookmarkDirectories->GetStrings(ii);
                         BookmarkItems->Add(Path);
                         BookmarkPaths->Add(MinimizeName(Path, MaxLength, true));
                     }
@@ -6296,17 +6296,17 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
                 }
                 else if (BreakCode == 2)
                 {
-                    FarControl(FCTL_INSERTCMDLINE, 0, reinterpret_cast<LONG_PTR>(BookmarkPaths->GetString(ItemFocused).c_str()));
+                    FarControl(FCTL_INSERTCMDLINE, 0, reinterpret_cast<LONG_PTR>(BookmarkPaths->GetStrings(ItemFocused).c_str()));
                 }
                 else if (BreakCode == 3 || BreakCode == 4)
                 {
-                    FPlugin->FarCopyToClipboard(BookmarkPaths->GetString(ItemFocused));
+                    FPlugin->FarCopyToClipboard(BookmarkPaths->GetStrings(ItemFocused));
                     Repeat = true;
                 }
             }
             else if (ItemFocused != NPOS)
             {
-                Directory = BookmarkPaths->GetString(ItemFocused);
+                Directory = BookmarkPaths->GetStrings(ItemFocused);
                 if (Directory.IsEmpty())
                 {
                     // empty trailing line in no-bookmark mode selected
@@ -7360,7 +7360,7 @@ void TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
         } BOOST_SCOPE_EXIT_END
         for (size_t Index = 0; Index < List->GetCount(); Index++)
         {
-            if (!Scroll || (::LastDelimiter(List->GetString(Index), L"{}") > 0))
+            if (!Scroll || (::LastDelimiter(List->GetStrings(Index), L"{}") > 0))
             {
                 const TSynchronizeChecklist::TItem *ChecklistItem =
                     reinterpret_cast<TSynchronizeChecklist::TItem *>(List->GetObjects(Index));
@@ -8364,7 +8364,7 @@ void TQueueDialog::RefreshQueue()
                 (Index < TopIndex + QueueListBox->GetHeight()))
         {
             QueueItem = reinterpret_cast<TQueueItemProxy *>(
-                            QueueListBox->GetItems()->GetObject(Index));
+                            QueueListBox->GetItems()->GetObjects(Index));
             assert(QueueItem != NULL);
             if ((PrevQueueItem != NULL) && (QueueItem != PrevQueueItem))
             {
@@ -8375,7 +8375,7 @@ void TQueueDialog::RefreshQueue()
                     !QueueItem->GetProcessingUserAction())
             {
                 FillQueueItemLine(Line, QueueItem, ILine);
-                if (QueueListBox->GetItems()->GetString(Index) != Line)
+                if (QueueListBox->GetItems()->GetStrings(Index) != Line)
                 {
                     Change = true;
                     QueueListBox->GetItems()->PutString(Index, Line);

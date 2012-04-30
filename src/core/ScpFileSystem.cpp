@@ -394,7 +394,7 @@ const TFileSystemInfo &TSCPFileSystem::GetFileSystemInfo(bool Retrieve)
                     {
                         UName += L"; ";
                     }
-                    UName += GetOutput()->GetString(Index);
+                    UName += GetOutput()->GetStrings(Index);
                 }
             }
             catch (...)
@@ -794,7 +794,7 @@ void __fastcall TSCPFileSystem::LookupUsersGroups()
     FTerminal->FGroups.Clear();
     if (FOutput->GetCount() > 0)
     {
-        UnicodeString Groups = FOutput->GetString(0);
+        UnicodeString Groups = FOutput->GetStrings(0);
         while (!Groups.IsEmpty())
         {
             UnicodeString NewGroup = CutToChar(Groups, ' ', false);
@@ -823,8 +823,8 @@ void __fastcall TSCPFileSystem::DetectReturnVar()
             {
                 FTerminal->LogEvent(FORMAT(L"Trying \"$%s\".", ReturnVars[Index].c_str()));
                 ExecCommand(fsVarValue, 0, ReturnVars[Index].c_str());
-                // DEBUG_PRINTF(L"GetOutput()->GetCount = %d, GetOutput()->GetString(0) = %s", GetOutput()->GetCount(), GetOutput()->GetString(0).c_str());
-                UnicodeString str = GetOutput()->GetCount() > 0 ? GetOutput()->GetString(0) : L"";
+                // DEBUG_PRINTF(L"GetOutput()->GetCount = %d, GetOutput()->GetStrings(0) = %s", GetOutput()->GetCount(), GetOutput()->GetStrings(0).c_str());
+                UnicodeString str = GetOutput()->GetCount() > 0 ? GetOutput()->GetStrings(0) : L"";
                 int val = StrToIntDef(str, 256);
                 if ((GetOutput()->GetCount() != 1) || str.IsEmpty() || (val > 255))
                 {
@@ -892,7 +892,7 @@ void __fastcall TSCPFileSystem::ClearAliases()
             } BOOST_SCOPE_EXIT_END
             for (size_t Index = 0; Index < CommandList->GetCount(); Index++)
             {
-                ClearAlias(CommandList->GetString(Index));
+                ClearAlias(CommandList->GetStrings(Index));
             }
         }
     }
@@ -923,7 +923,7 @@ void __fastcall TSCPFileSystem::ReadCurrentDirectory()
     if (FCachedDirectoryChange.IsEmpty())
     {
         ExecCommand(fsCurrentDirectory);
-        FCurrentDirectory = UnixExcludeTrailingBackslash(FOutput->GetString(0));
+        FCurrentDirectory = UnixExcludeTrailingBackslash(FOutput->GetStrings(0));
     }
     else
     {
@@ -1016,14 +1016,14 @@ void __fastcall TSCPFileSystem::ReadDirectory(TRemoteFileList *FileList)
                     // delete leading "total xxx" line
                     // On some hosts there is not "total" but "totalt". What's the reason??
                     // see mail from "Jan Wiklund (SysOp)" <jan@park.se>
-                    if (IsTotalListingLine(OutputCopy->GetString(0)))
+                    if (IsTotalListingLine(OutputCopy->GetStrings(0)))
                     {
                         OutputCopy->Delete(0);
                     }
 
                     for (size_t Index = 0; Index < OutputCopy->GetCount(); Index++)
                     {
-                        File = CreateRemoteFile(OutputCopy->GetString(Index));
+                        File = CreateRemoteFile(OutputCopy->GetStrings(Index));
                         FileList->AddFile(File);
                     }
                 }
@@ -1138,12 +1138,12 @@ void __fastcall TSCPFileSystem::CustomReadFile(const UnicodeString FileName,
     if (FOutput->GetCount())
     {
         size_t LineIndex = 0;
-        if (IsTotalListingLine(FOutput->GetString(LineIndex)) && FOutput->GetCount() > 1)
+        if (IsTotalListingLine(FOutput->GetStrings(LineIndex)) && FOutput->GetCount() > 1)
         {
             LineIndex++;
         }
 
-        File = CreateRemoteFile(FOutput->GetString(LineIndex), ALinkedByFile);
+        File = CreateRemoteFile(FOutput->GetStrings(LineIndex), ALinkedByFile);
     }
 }
 //---------------------------------------------------------------------------
@@ -1507,7 +1507,7 @@ void __fastcall TSCPFileSystem::CopyToRemote(System::TStrings *FilesToCopy,
         for (size_t IFile = 0; (IFile < FilesToCopy->GetCount()) &&
                 !OperationProgress->Cancel; IFile++)
         {
-            UnicodeString FileName = FilesToCopy->GetString(IFile);
+            UnicodeString FileName = FilesToCopy->GetStrings(IFile);
             bool CanProceed = false;
 
             UnicodeString FileNameOnly =
@@ -2104,8 +2104,8 @@ void __fastcall TSCPFileSystem::CopyToLocal(System::TStrings *FilesToCopy,
         for (size_t IFile = 0; (IFile < FilesToCopy->GetCount()) &&
                 !OperationProgress->Cancel; IFile++)
         {
-            UnicodeString FileName = FilesToCopy->GetString(IFile);
-            TRemoteFile *File = (TRemoteFile *)FilesToCopy->GetObject(IFile);
+            UnicodeString FileName = FilesToCopy->GetStrings(IFile);
+            TRemoteFile *File = (TRemoteFile *)FilesToCopy->GetObjects(IFile);
             assert(File);
 
             try

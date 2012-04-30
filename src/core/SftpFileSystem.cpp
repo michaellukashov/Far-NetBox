@@ -1486,7 +1486,7 @@ protected:
         bool Result = false;
         while (!Result && (FIndex < FFileList->GetCount()))
         {
-            TRemoteFile *File = reinterpret_cast<TRemoteFile *>(FFileList->GetObject(FIndex));
+            TRemoteFile *File = reinterpret_cast<TRemoteFile *>(FFileList->GetObjects(FIndex));
             FIndex++;
 
             bool MissingRights =
@@ -1571,7 +1571,7 @@ protected:
         bool Result = false;
         while (!Result && (FIndex < FFileList->GetCount()))
         {
-            TRemoteFile *File = static_cast<TRemoteFile *>(FFileList->GetObject(FIndex));
+            TRemoteFile *File = static_cast<TRemoteFile *>(FFileList->GetObjects(FIndex));
             assert(File != NULL);
             FIndex++;
 
@@ -2665,13 +2665,13 @@ void __fastcall TSFTPFileSystem::DoStartup()
                     for (size_t Index = 0; Index < FSupport->AttribExtensions->GetCount(); Index++)
                     {
                         FTerminal->LogEvent(
-                            FORMAT(L"    %s", FSupport->AttribExtensions->GetString(Index).c_str()));
+                            FORMAT(L"    %s", FSupport->AttribExtensions->GetStrings(Index).c_str()));
                     }
                     FTerminal->LogEvent(FORMAT(   L"  Extensions (%d)\n", FSupport->Extensions->GetCount()));
                     for (size_t Index = 0; Index < FSupport->Extensions->GetCount(); Index++)
                     {
                         FTerminal->LogEvent(
-                            FORMAT(L"    %s", FSupport->Extensions->GetString(Index).c_str()));
+                            FORMAT(L"    %s", FSupport->Extensions->GetStrings(Index).c_str()));
                     }
                 }
             }
@@ -3466,7 +3466,7 @@ void __fastcall TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString Al
     {
         for (size_t Index = 0; Index < FileList->GetCount(); Index++)
         {
-            TRemoteFile *File = static_cast<TRemoteFile *>(FileList->GetObject(Index));
+            TRemoteFile *File = static_cast<TRemoteFile *>(FileList->GetObjects(Index));
             assert(File != NULL);
             if (File->GetIsDirectory() && !File->GetIsSymLink() &&
                     !File->GetIsParentDirectory() && !File->GetIsThisDirectory())
@@ -3657,7 +3657,7 @@ void __fastcall TSFTPFileSystem::CopyToRemote(System::TStrings *FilesToCopy,
     while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
     {
         bool Success = false;
-        FileName = FilesToCopy->GetString(Index);
+        FileName = FilesToCopy->GetStrings(Index);
         FileNameOnly = ExtractFileName(FileName, false);
         // DEBUG_PRINTF(L"FileName = %s, FileNameOnly = %s", FileName.c_str(), FileNameOnly.c_str());
         assert(!FAvoidBusy);
@@ -4749,8 +4749,8 @@ void __fastcall TSFTPFileSystem::CopyToLocal(System::TStrings *FilesToCopy,
     while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
     {
         Success = false;
-        FileName = FilesToCopy->GetString(Index);
-        File = static_cast<TRemoteFile *>(FilesToCopy->GetObject(Index));
+        FileName = FilesToCopy->GetStrings(Index);
+        File = static_cast<TRemoteFile *>(FilesToCopy->GetObjects(Index));
 
         assert(!FAvoidBusy);
         FAvoidBusy = true;

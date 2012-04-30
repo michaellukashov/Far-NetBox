@@ -409,7 +409,7 @@ UnicodeString __fastcall TFileMasks::ComposeMaskStr(
   UnicodeString Result;
   for (size_t I = 0; I < MasksStr->GetCount(); I++)
   {
-    UnicodeString Str = ::Trim(MasksStr->GetString(I));
+    UnicodeString Str = ::Trim(MasksStr->GetStrings(I));
     if (!Str.IsEmpty())
     {
       for (size_t P = 0; P < Str.Length(); P++)

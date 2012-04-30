@@ -497,7 +497,7 @@ const TCopyParamType * __fastcall TCopyParamList::GetCopyParam(size_t Index) con
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TCopyParamList::GetName(size_t Index) const
 {
-    return FNames->GetString(Index);
+    return FNames->GetStrings(Index);
 }
 //---------------------------------------------------------------------------
 System::TStrings * __fastcall TCopyParamList::GetNameList() const
@@ -508,7 +508,7 @@ System::TStrings * __fastcall TCopyParamList::GetNameList() const
 
         for (size_t i = 0; i < GetCount(); i++)
         {
-            FNameList->Add(FNames->GetString(i));
+            FNameList->Add(FNames->GetStrings(i));
         }
     }
     return FNameList;
@@ -1021,16 +1021,16 @@ System::TStrings * __fastcall TGUIConfiguration::GetLocales()
             */
             for (size_t Index = 0; Index < Exts->GetCount(); Index++)
             {
-                if ((Exts->GetObject(Index) == NULL) &&
-                        (Exts->GetString(Index).size() == 3) &&
-                        SameText(Exts->GetString(Index).substr(0, 2), AdditionaLanguagePrefix))
+                if ((Exts->GetObjects(Index) == NULL) &&
+                        (Exts->GetStrings(Index).size() == 3) &&
+                        SameText(Exts->GetStrings(Index).substr(0, 2), AdditionaLanguagePrefix))
                 {
                     UnicodeString LangName = GetFileFileInfoString(L"LangName",
-                                            ChangeFileExt(ModuleFileName(), UnicodeString(L".") + Exts->GetString(Index)));
+                                            ChangeFileExt(ModuleFileName(), UnicodeString(L".") + Exts->GetStrings(Index)));
                     if (!LangName.empty())
                     {
                         FLocales->AddObject(LangName, reinterpret_cast<System::TObject *>(static_cast<size_t>(
-                                                AdditionaLanguageMask + Exts->GetString(Index)[2])));
+                                                AdditionaLanguageMask + Exts->GetStrings(Index)[2])));
                     }
                 }
             }

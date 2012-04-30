@@ -168,15 +168,15 @@ public:
         FLog->AddIndented(FORMAT(L"<%s%s>", Name,  Attrs.c_str()));
         for (int Index = 0; Index < FNames->GetCount(); Index++)
         {
-          UnicodeString Value = FValues->GetString(Index);
+          UnicodeString Value = FValues->GetStrings(Index);
           if (Value.IsEmpty())
           {
-            FLog->AddIndented(FORMAT(L"  <%s />", FNames->GetString(Index).c_str()));
+            FLog->AddIndented(FORMAT(L"  <%s />", FNames->GetStrings(Index).c_str()));
           }
           else
           {
             FLog->AddIndented(FORMAT(L"  <%s value=\"%s\" />",
-              FNames->GetString(Index).c_str(), XmlAttributeEscape(Value).c_str()));
+              FNames->GetStrings(Index).c_str(), XmlAttributeEscape(Value).c_str()));
           }
         }
         if (FFileList != NULL)
@@ -288,7 +288,7 @@ public:
     int Index = FNames->IndexOf(Name);
     if (Index >= 0)
     {
-      FValues->SetString(Index, FValues->GetString(Index) + L"\r\n" + Output);
+      FValues->SetString(Index, FValues->GetStrings(Index) + L"\r\n" + Output);
     }
     else
     {
@@ -1238,7 +1238,7 @@ void __fastcall TActionLog::AddMessages(UnicodeString Indent, TStrings * Message
   for (int Index = 0; Index < Messages->GetCount(); Index++)
   {
     AddIndented(
-      FORMAT((Indent + L"<message>%s</message>").c_str(), XmlEscape(Messages->GetString(Index)).c_str()));
+      FORMAT((Indent + L"<message>%s</message>").c_str(), XmlEscape(Messages->GetStrings(Index)).c_str()));
   }
 }
 //---------------------------------------------------------------------------

@@ -67,7 +67,7 @@ public:
   explicit TSessionUI(){}
   virtual ~TSessionUI(){}
   virtual void __fastcall Information(const UnicodeString & Str, bool Status) = 0;
-  virtual unsigned int __fastcall QueryUser(const UnicodeString Query,
+  virtual unsigned unsigned int __fastcall QueryUser(const UnicodeString Query,
     TStrings * MoreMessages, unsigned int Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation) = 0;
   virtual unsigned int __fastcall QueryUserException(const UnicodeString Query,

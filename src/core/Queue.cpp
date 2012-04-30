@@ -1659,9 +1659,9 @@ TTransferQueueItem::TTransferQueueItem(TTerminal *Terminal,
     FFilesToCopy = new System::TStringList();
     for (size_t Index = 0; Index < FilesToCopy->GetCount(); Index++)
     {
-        FFilesToCopy->AddObject(FilesToCopy->GetString(Index),
-                                ((FilesToCopy->GetObject(Index) == NULL) || (Side == osLocal)) ? NULL :
-                                reinterpret_cast<TRemoteFile *>(FilesToCopy->GetObject(Index))->Duplicate());
+        FFilesToCopy->AddObject(FilesToCopy->GetStrings(Index),
+                                ((FilesToCopy->GetObjects(Index) == NULL) || (Side == osLocal)) ? NULL :
+                                reinterpret_cast<TRemoteFile *>(FilesToCopy->GetObjects(Index))->Duplicate());
     }
 
     FTargetDir = TargetDir;
@@ -1676,7 +1676,7 @@ TTransferQueueItem::~TTransferQueueItem()
 {
     for (size_t Index = 0; Index < FFilesToCopy->GetCount(); Index++)
     {
-        delete FFilesToCopy->GetObject(Index);
+        delete FFilesToCopy->GetObjects(Index);
     }
     delete FFilesToCopy;
     delete FCopyParam;
@@ -1709,13 +1709,13 @@ TUploadQueueItem::TUploadQueueItem(TTerminal *Terminal,
     {
         if (FLAGSET(Params, cpTemporary))
         {
-            FInfo->Source = ::ExtractFileName(FilesToCopy->GetString(0), true);
+            FInfo->Source = ::ExtractFileName(FilesToCopy->GetStrings(0), true);
             FInfo->ModifiedLocal = L"";
         }
         else
         {
             assert(FilesToCopy->GetCount() > 0);
-            FInfo->Source = FilesToCopy->GetString(0);
+            FInfo->Source = FilesToCopy->GetStrings(0);
             FInfo->ModifiedLocal = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
                                    IncludeTrailingBackslash(ExtractFilePath(FInfo->Source));
         }
@@ -1754,7 +1754,7 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal *Terminal,
     else
     {
         assert(FilesToCopy->GetCount() > 0);
-        FInfo->Source = FilesToCopy->GetString(0);
+        FInfo->Source = FilesToCopy->GetStrings(0);
         if (UnixExtractFilePath(FInfo->Source).IsEmpty())
         {
             FInfo->Source = UnixIncludeTrailingBackslash(Terminal->GetCurrentDirectory()) +

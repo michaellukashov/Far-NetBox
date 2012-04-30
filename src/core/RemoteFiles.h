@@ -326,11 +326,13 @@ private:
   TStrings * FSelectedFiles;
   TRemoteFile * FParentDirectory;
   TRemoteFile * FThisDirectory;
+#ifndef _MSC_VER
   virtual void __fastcall SetDirectory(UnicodeString value);
   TStrings * __fastcall GetSelectedFiles();
   Boolean __fastcall GetLoaded();
   void __fastcall SetIncludeParentDirectory(Boolean value);
   void __fastcall SetIncludeThisDirectory(Boolean value);
+#endif
 protected:
   virtual void __fastcall Clear();
 public:
@@ -350,6 +352,11 @@ public:
   __property TRemoteFile * ParentDirectory = { read = FParentDirectory };
   __property TRemoteFile * ThisDirectory = { read = FThisDirectory };
 #else
+  virtual void __fastcall SetDirectory(UnicodeString value);
+  TStrings * __fastcall GetSelectedFiles();
+  Boolean __fastcall GetLoaded();
+  void __fastcall SetIncludeParentDirectory(Boolean value);
+  void __fastcall SetIncludeThisDirectory(Boolean value);
   TTerminal * GetTerminal() { return FTerminal; }
   void SetTerminal(TTerminal * value) { FTerminal = value; }
   bool GetIncludeParentDirectory() { return FIncludeParentDirectory; }

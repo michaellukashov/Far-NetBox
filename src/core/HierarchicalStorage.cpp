@@ -98,7 +98,7 @@ void THierarchicalStorage::SetAccessMode(TStorageAccessMode value)
 //---------------------------------------------------------------------------
 UnicodeString THierarchicalStorage::GetCurrentSubKeyMunged()
 {
-    if (FKeyHistory->GetCount()) { return FKeyHistory->GetString(FKeyHistory->GetCount()-1); }
+    if (FKeyHistory->GetCount()) { return FKeyHistory->GetStrings(FKeyHistory->GetCount()-1); }
     else { return L""; }
 }
 //---------------------------------------------------------------------------
@@ -165,7 +165,7 @@ void THierarchicalStorage::ClearSubKeys()
         GetSubKeyNames(SubKeys);
         for (size_t Index = 0; Index < SubKeys->GetCount(); Index++)
         {
-            RecursiveDeleteSubKey(SubKeys->GetString(Index));
+            RecursiveDeleteSubKey(SubKeys->GetStrings(Index));
         }
     }
 }
@@ -219,12 +219,12 @@ void THierarchicalStorage::ReadValues(System::TStrings *Strings,
         {
             if (MaintainKeys)
             {
-                Strings->Add(FORMAT(L"%s=%s", Names->GetString(Index).c_str(),
-                                    ReadString(Names->GetString(Index), L"").c_str()));
+                Strings->Add(FORMAT(L"%s=%s", Names->GetStrings(Index).c_str(),
+                                    ReadString(Names->GetStrings(Index), L"").c_str()));
             }
             else
             {
-                Strings->Add(ReadString(Names->GetString(Index), L""));
+                Strings->Add(ReadString(Names->GetStrings(Index), L""));
             }
         }
     }
@@ -241,7 +241,7 @@ void THierarchicalStorage::ClearValues()
         GetValueNames(Names);
         for (size_t Index = 0; Index < Names->GetCount(); Index++)
         {
-            DeleteValue(Names->GetString(Index));
+            DeleteValue(Names->GetStrings(Index));
         }
     }
 }
@@ -257,12 +257,12 @@ void THierarchicalStorage::WriteValues(System::TStrings *Strings,
         {
             if (MaintainKeys)
             {
-                assert(Strings->GetString(Index).find_first_of(L"=") > 1);
+                assert(Strings->GetStrings(Index).find_first_of(L"=") > 1);
                 WriteString(Strings->GetName(Index), Strings->GetValue(Strings->GetName(Index)));
             }
             else
             {
-                WriteString(IntToStr(static_cast<int>(Index)), Strings->GetString(Index));
+                WriteString(IntToStr(static_cast<int>(Index)), Strings->GetStrings(Index));
             }
         }
     }
@@ -379,7 +379,7 @@ bool TRegistryStorage::Copy(TRegistryStorage *Storage)
         size_t Index = 0;
         while ((Index < Names->GetCount()) && Result)
         {
-            UnicodeString Name = MungeStr(Names->GetString(Index));
+            UnicodeString Name = MungeStr(Names->GetStrings(Index));
             DWORD Size = static_cast<DWORD>(Buffer.Length());
             unsigned long Type;
             int RegResult;
@@ -466,7 +466,7 @@ void TRegistryStorage::GetSubKeyNames(System::TStrings *Strings)
     FRegistry->GetKeyNames(Strings);
     for (size_t Index = 0; Index < Strings->GetCount(); Index++)
     {
-        Strings->PutString(Index, UnMungeStr(Strings->GetString(Index)));
+        Strings->PutString(Index, UnMungeStr(Strings->GetStrings(Index)));
     }
 }
 //---------------------------------------------------------------------------

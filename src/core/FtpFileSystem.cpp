@@ -973,8 +973,8 @@ void __fastcall TFTPFileSystem::CopyToLocal(System::TStrings *FilesToCopy,
     size_t Index = 0;
     while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
     {
-        UnicodeString FileName = FilesToCopy->GetString(Index);
-        const TRemoteFile *File = dynamic_cast<const TRemoteFile *>(FilesToCopy->GetObject(Index));
+        UnicodeString FileName = FilesToCopy->GetStrings(Index);
+        const TRemoteFile *File = dynamic_cast<const TRemoteFile *>(FilesToCopy->GetObjects(Index));
         bool Success = false;
 
         {
@@ -1244,7 +1244,7 @@ void __fastcall TFTPFileSystem::CopyToRemote(System::TStrings *FilesToCopy,
     while ((Index < FilesToCopy->GetCount()) && !OperationProgress->Cancel)
     {
         bool Success = false;
-        FileName = FilesToCopy->GetString(Index);
+        FileName = FilesToCopy->GetStrings(Index);
         FileNameOnly = ExtractFileName(FileName, false);
 
         {
@@ -1683,7 +1683,7 @@ void __fastcall TFTPFileSystem::DoStartup()
         PostLoginCommands->SetText(FTerminal->GetSessionData()->GetPostLoginCommands());
         for (size_t Index = 0; Index < PostLoginCommands->GetCount(); Index++)
         {
-            UnicodeString Command = PostLoginCommands->GetString(Index);
+            UnicodeString Command = PostLoginCommands->GetStrings(Index);
             if (!Command.IsEmpty())
             {
                 FFileZillaIntf->CustomCommand(Command.c_str());
@@ -2058,7 +2058,7 @@ const TFileSystemInfo & __fastcall TFTPFileSystem::GetFileSystemInfo(bool /*Retr
                 FORMAT(L"%s\r\n", LoadStr(FTP_FEATURE_INFO).c_str());
             for (size_t Index = 0; Index < FFeatures->GetCount(); Index++)
             {
-                FFileSystemInfo.AdditionalInfo += FORMAT(L"  %s\r\n", FFeatures->GetString(Index).c_str());
+                FFileSystemInfo.AdditionalInfo += FORMAT(L"  %s\r\n", FFeatures->GetStrings(Index).c_str());
             }
         }
 
@@ -2594,7 +2594,7 @@ void __fastcall TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
             if (Error.IsEmpty() && (MoreMessages != NULL))
             {
                 assert(MoreMessages->GetCount() > 0);
-                Error = MoreMessages->GetString(0);
+                Error = MoreMessages->GetStrings(0);
                 MoreMessages->Delete(0);
             }
 

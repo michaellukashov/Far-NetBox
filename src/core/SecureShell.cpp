@@ -561,7 +561,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     }
 
     LogEvent(FORMAT(L"Prompt (%d, %s, %s, %s)", PromptKind, AName.c_str(),
-                    instructions.c_str(), (Prompts->GetCount() > 0 ? Prompts->GetString(0).c_str() : UnicodeString(L"<no prompt>").c_str())).c_str());
+                    instructions.c_str(), (Prompts->GetCount() > 0 ? Prompts->GetStrings(0).c_str() : UnicodeString(L"<no prompt>").c_str())).c_str());
 
     Name = ::Trim(Name);
     if (0)
@@ -585,7 +585,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
 
     for (size_t Index = 0; Index < Prompts->GetCount(); Index++)
     {
-        UnicodeString Prompt = Prompts->GetString(Index);
+        UnicodeString Prompt = Prompts->GetStrings(Index);
         // DEBUG_PRINTF(L"Prompt = %s", Prompt.c_str());
         if (PromptTranslation != NULL)
         {
@@ -613,7 +613,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     {
         if (FSessionData->GetAuthKIPassword() && !FSessionData->GetPassword().IsEmpty() &&
                 !FStoredPasswordTriedForKI && (Prompts->GetCount() == 1) &&
-                !(Prompts->GetObject(0) != NULL))
+                !(Prompts->GetObjects(0) != NULL))
         {
             LogEvent(L"Using stored password.");
             FUI->Information(LoadStr(AUTH_PASSWORD), false);
@@ -650,7 +650,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
         {
             if ((PromptKind == pkUserName) && (Prompts->GetCount() == 1))
             {
-                FUserName = Results->GetString(0);
+                FUserName = Results->GetStrings(0);
             }
         }
     }

@@ -771,7 +771,7 @@ size_t TStringList::AddObject(const UnicodeString S, TObject *AObject)
     InsertItem(Result, S, AObject);
     return Result;
 }
-bool TStringList::Find(const UnicodeString S, size_t &Index)
+bool TStringList::Find(const UnicodeString S, int &Index)
 {
     bool Result = false;
     size_t L = 0;

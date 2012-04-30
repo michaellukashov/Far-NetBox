@@ -2405,7 +2405,7 @@ void __fastcall TStoredSessionList::Load(THierarchicalStorage *Storage,
         for (size_t Index = 0; Index < SubKeys->GetCount(); Index++)
         {
             TSessionData *SessionData;
-            const UnicodeString SessionName = SubKeys->GetString(Index);
+            const UnicodeString SessionName = SubKeys->GetStrings(Index);
             // DEBUG_PRINTF(L"SessionName = %s", SessionName.c_str());
             bool ValidName = true;
             try
@@ -2735,7 +2735,7 @@ void __fastcall TStoredSessionList::ImportHostKeys(const UnicodeString TargetKey
                     UnicodeString KeyName;
                     for (size_t KeyIndex = 0; KeyIndex < KeyList->GetCount(); KeyIndex++)
                     {
-                        KeyName = KeyList->GetString(KeyIndex);
+                        KeyName = KeyList->GetStrings(KeyIndex);
                         size_t P = KeyName.Pos(HostKeyName);
                         if ((P != UnicodeString::npos) && (P == KeyName.Length() - HostKeyName.Length() + 1))
                         {

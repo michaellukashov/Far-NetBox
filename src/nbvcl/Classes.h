@@ -322,7 +322,7 @@ public:
     virtual void __fastcall Clear();
     size_t __fastcall Add(const UnicodeString S);
     size_t __fastcall AddObject(const UnicodeString S, TObject *AObject);
-    virtual bool __fastcall Find(const UnicodeString S, size_t &Index);
+    virtual bool __fastcall Find(const UnicodeString S, int &Index);
     virtual size_t __fastcall IndexOf(const UnicodeString S);
     virtual void __fastcall PutString(size_t Index, const UnicodeString S);
     virtual void __fastcall Delete(size_t Index);
@@ -459,6 +459,14 @@ public:
     EAccessViolation(std::string what) : std::exception(what.c_str())
     {}
 
+};
+
+class EFileNotFoundError : public std::exception
+{
+public:
+    EFileNotFoundError() : std::exception("")
+    {
+    }
 };
 
 //---------------------------------------------------------------------------

@@ -2209,7 +2209,7 @@ unsigned long __fastcall TRights::GetNumberDecadic() const
 UnicodeString __fastcall TRights::GetOctal() const
 {
   UnicodeString Result;
-  unsigned short N = NumberSet; // used to be "Number"
+  unsigned short N = GetNumberSet(); // used to be "Number"
   Result.SetLength(4);
   Result[1] = static_cast<wchar_t>(L'0' + ((N & 07000) >> 9));
   Result[2] = static_cast<wchar_t>(L'0' + ((N & 00700) >> 6));
@@ -2481,7 +2481,7 @@ TRemoteProperties __fastcall TRemoteProperties::CommonProperties(TStrings * File
   TRemoteProperties CommonProperties;
   for (size_t Index = 0; Index < FileList->GetCount(); Index++)
   {
-    TRemoteFile * File = static_cast<TRemoteFile *>(FileList->GetObject(Index));
+    TRemoteFile * File = static_cast<TRemoteFile *>(FileList->GetObjects(Index));
     assert(File);
     if (!Index)
     {
