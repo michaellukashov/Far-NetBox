@@ -81,10 +81,10 @@ UnicodeString GetCodePageAsString(unsigned int cp)
 }
 
 //---------------------------------------------------------------------
-System::TDateTime __fastcall SecToDateTime(int Sec)
+TDateTime __fastcall SecToDateTime(int Sec)
 {
-  return System::TDateTime(static_cast<unsigned short>(Sec/60/60),
-                           static_cast<unsigned short>(Sec/60%60), static_cast<unsigned short>(Sec%60), 0);
+  return TDateTime(static_cast<unsigned short>(Sec/60/60),
+    static_cast<unsigned short>(Sec/60%60), static_cast<unsigned short>(Sec%60), 0);
 }
 //--- TSessionData ----------------------------------------------------
 TSessionData::TSessionData(const UnicodeString aName):
@@ -154,7 +154,7 @@ void __fastcall TSessionData::Default()
   SetAddressFamily(afAuto);
   SetCodePage(::GetCodePageAsString(CONST_DEFAULT_CODEPAGE));
   SetRekeyData(L"1G");
-  SetRekeyTime(System::MinsPerHour);
+  SetRekeyTime(MinsPerHour);
 
   // FS common
   SetLocalDirectory(L"");
@@ -184,7 +184,7 @@ void __fastcall TSessionData::Default()
   SetListingCommand(L"ls -la");
   SetIgnoreLsWarnings(true);
   SetScp1Compatibility(false);
-  SetTimeDifference(System::TDateTime(0));
+  SetTimeDifference(TDateTime(0));
   SetSCPLsFullTime(asAuto);
   SetNotUtf(asOff);
   SetFtpListAll(asAuto);
@@ -244,9 +244,9 @@ void __fastcall TSessionData::NonPersistant()
   SetPreserveDirectoryChanges(false);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::Assign(System::TPersistent * Source)
+void __fastcall TSessionData::Assign(TPersistent * Source)
 {
-  if (Source && ::InheritsFrom<System::TPersistent, TSessionData>(Source))
+  if (Source && ::InheritsFrom<TPersistent, TSessionData>(Source))
   {
 #define DUPL(P) Set##P(((TSessionData *)Source)->Get##P())
     DUPL(Name);
@@ -464,7 +464,7 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
     SetKexList(Storage->ReadString(L"KEX", GetKexList()));
     SetPublicKeyFile(Storage->ReadString(L"PublicKeyFile", GetPublicKeyFile()));
     SetAddressFamily(static_cast<TAddressFamily>
-                     (Storage->Readint(L"AddressFamily", GetAddressFamily())));
+      (Storage->Readint(L"AddressFamily", GetAddressFamily())));
     SetCodePage(Storage->ReadString(L"CodePage", GetCodePage()));
     SetRekeyData(Storage->ReadString(L"RekeyBytes", GetRekeyData()));
     SetRekeyTime(Storage->Readint(L"RekeyTime", GetRekeyTime()));
@@ -486,12 +486,12 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
     SetClearAliases(Storage->Readbool(L"ClearAliases", GetClearAliases()));
     SetUnsetNationalVars(Storage->Readbool(L"UnsetNationalVars", GetUnsetNationalVars()));
     SetListingCommand(Storage->ReadString(L"ListingCommand",
-                                          Storage->Readbool(L"AliasGroupList", false) ? UnicodeString(L"ls -gla") : GetListingCommand()));
+      Storage->Readbool(L"AliasGroupList", false) ? UnicodeString(L"ls -gla") : GetListingCommand()));
     SetIgnoreLsWarnings(Storage->Readbool(L"IgnoreLsWarnings", GetIgnoreLsWarnings()));
     SetSCPLsFullTime(static_cast<TAutoSwitch>(Storage->Readint(L"SCPLsFullTime", GetSCPLsFullTime())));
     SetFtpListAll(static_cast<TAutoSwitch>(Storage->Readint(L"FtpListAll", GetFtpListAll())));
     SetScp1Compatibility(Storage->Readbool(L"Scp1Compatibility", GetScp1Compatibility()));
-    SetTimeDifference(System::TDateTime(Storage->ReadFloat(L"TimeDifference", GetTimeDifference())));
+    SetTimeDifference(TDateTime(Storage->ReadFloat(L"TimeDifference", GetTimeDifference())));
     SetDeleteToRecycleBin(Storage->Readbool(L"DeleteToRecycleBin", GetDeleteToRecycleBin()));
     SetOverwrittenToRecycleBin(Storage->Readbool(L"OverwrittenToRecycleBin", GetOverwrittenToRecycleBin()));
     SetRecycleBinPath(Storage->ReadString(L"RecycleBinPath", GetRecycleBinPath()));
@@ -554,7 +554,7 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
     SetProxyLocalhost(Storage->Readbool(L"ProxyLocalhost", GetProxyLocalhost()));
 
 #define READ_BUG(BUG) \
-      SetBug(sb##BUG, TAutoSwitch(2 - Storage->Readint(L"Bug" + System::MB2W(#BUG), \
+      SetBug(sb##BUG, TAutoSwitch(2 - Storage->Readint(L"Bug" + MB2W(#BUG), \
         2 - GetBug(sb##BUG))));
     READ_BUG(Ignore1);
     READ_BUG(PlainPW1);
@@ -576,7 +576,7 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
 
     SetSftpServer(Storage->ReadString(L"SftpServer", GetSftpServer()));
 #define READ_SFTP_BUG(BUG) \
-      SetSFTPBug(sb##BUG, TAutoSwitch(Storage->Readint(L"SFTP" + System::MB2W(#BUG) + L"Bug", GetSFTPBug(sb##BUG))));
+      SetSFTPBug(sb##BUG, TAutoSwitch(Storage->Readint(L"SFTP" + MB2W(#BUG) + L"Bug", GetSFTPBug(sb##BUG))));
     READ_SFTP_BUG(Symlink);
     READ_SFTP_BUG(SignedTS);
 #undef READ_SFTP_BUG
@@ -677,7 +677,7 @@ void __fastcall TSessionData::Load(THierarchicalStorage * Storage)
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
-                                   bool PuttyExport, const TSessionData * Default)
+  bool PuttyExport, const TSessionData * Default)
 {
   if (Storage->OpenSubKey(GetInternalStorageKey(), true))
   {
@@ -850,7 +850,7 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
     WRITE_DATA_EX(bool, L"ProxyLocalhost", GetProxyLocalhost(), );
 
 #define WRITE_DATA_CONV_FUNC(X) (2 - (X))
-#define WRITE_BUG(BUG) WRITE_DATA_CONV(int, System::MB2W("Bug" #BUG), GetBug(sb##BUG));
+#define WRITE_BUG(BUG) WRITE_DATA_CONV(int, MB2W("Bug" #BUG), GetBug(sb##BUG));
     WRITE_BUG(Ignore1);
     WRITE_BUG(PlainPW1);
     WRITE_BUG(RSA1);
@@ -876,7 +876,7 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
     {
       WRITE_DATA_EX(String, L"SftpServer", GetSftpServer(), );
 
-#define WRITE_SFTP_BUG(BUG) WRITE_DATA_EX(int, System::MB2W("SFTP" #BUG "Bug"), GetSFTPBug(sb##BUG), );
+#define WRITE_SFTP_BUG(BUG) WRITE_DATA_EX(int, MB2W("SFTP" #BUG "Bug"), GetSFTPBug(sb##BUG), );
       WRITE_SFTP_BUG(Symlink);
       WRITE_SFTP_BUG(SignedTS);
 #undef WRITE_SFTP_BUG
@@ -1027,8 +1027,8 @@ void __fastcall TSessionData::Remove()
 }
 //---------------------------------------------------------------------
 bool __fastcall TSessionData::ParseUrl(const UnicodeString Url, TOptions * Options,
-                                       TStoredSessionList * StoredSessions, bool & DefaultsOnly, UnicodeString * FileName,
-                                       bool * AProtocolDefined)
+  TStoredSessionList * StoredSessions, bool & DefaultsOnly, UnicodeString * FileName,
+  bool * AProtocolDefined)
 {
   bool ProtocolDefined = false;
   bool PortNumberDefined = false;
@@ -1276,14 +1276,14 @@ bool __fastcall TSessionData::ParseUrl(const UnicodeString Url, TOptions * Optio
     }
     if (Options->FindSwitch(L"rawsettings"))
     {
-      System::TStrings * RawSettings = NULL;
+      TStrings * RawSettings = NULL;
       TOptionsStorage * OptionsStorage = NULL;
       BOOST_SCOPE_EXIT ( (&RawSettings) (&OptionsStorage) )
       {
         delete RawSettings;
         delete OptionsStorage;
       } BOOST_SCOPE_EXIT_END
-      RawSettings = new System::TStringList();
+      RawSettings = new TStringList();
 
       if (Options->FindSwitch(L"rawsettings", RawSettings))
       {
@@ -1367,7 +1367,7 @@ UnicodeString __fastcall TSessionData::DecryptPassword(const UnicodeString Passw
   {
     Result = Configuration->DecryptPassword(Password, Key);
   }
-  catch (System::EAbort &)
+  catch (EAbort &)
   {
     // silently ignore aborted prompts for master password and return empty password
   }
@@ -1730,7 +1730,7 @@ void __fastcall TSessionData::SetEOLType(TEOLType value)
   SET_SESSION_PROPERTY(EOLType);
 }
 //---------------------------------------------------------------------------
-System::TDateTime __fastcall TSessionData::GetTimeoutDT()
+TDateTime __fastcall TSessionData::GetTimeoutDT()
 {
   return SecToDateTime(GetTimeout());
 }
@@ -1800,7 +1800,7 @@ UnicodeString __fastcall TSessionData::GetProtocolStr() const
   return ProtocolNames[GetProtocol()];
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetPingIntervalDT(System::TDateTime value)
+void __fastcall TSessionData::SetPingIntervalDT(TDateTime value)
 {
   unsigned short hour, min, sec, msec;
 
@@ -1808,7 +1808,7 @@ void __fastcall TSessionData::SetPingIntervalDT(System::TDateTime value)
   SetPingInterval((static_cast<size_t>(hour))*60*60 + (static_cast<int>(min))*60 + sec);
 }
 //---------------------------------------------------------------------------
-System::TDateTime __fastcall TSessionData::GetPingIntervalDT() const
+TDateTime __fastcall TSessionData::GetPingIntervalDT() const
 {
   return SecToDateTime(GetPingInterval());
 }
@@ -1954,7 +1954,7 @@ UnicodeString __fastcall TSessionData::GetSessionUrl()
   return Url;
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetTimeDifference(System::TDateTime value)
+void __fastcall TSessionData::SetTimeDifference(TDateTime value)
 {
   SET_SESSION_PROPERTY(TimeDifference);
 }
@@ -2310,7 +2310,7 @@ void __fastcall TSessionData::SetFtpPingInterval(size_t value)
   SET_SESSION_PROPERTY(FtpPingInterval);
 }
 //---------------------------------------------------------------------------
-System::TDateTime __fastcall TSessionData::GetFtpPingIntervalDT()
+TDateTime __fastcall TSessionData::GetFtpPingIntervalDT()
 {
   return SecToDateTime(GetFtpPingInterval());
 }
@@ -2340,14 +2340,14 @@ UnicodeString __fastcall TSessionData::GetInfoTip()
   if (GetUsesSsh())
   {
     return FMTLOAD(SESSION_INFO_TIP,
-                   GetHostName().c_str(), GetUserName().c_str(),
-                   (GetPublicKeyFile().IsEmpty() ? LoadStr(NO_STR).c_str() : LoadStr(YES_STR).c_str()),
-                   GetSshProtStr().c_str(), GetFSProtocolStr().c_str());
+      GetHostName().c_str(), GetUserName().c_str(),
+      (GetPublicKeyFile().IsEmpty() ? LoadStr(NO_STR).c_str() : LoadStr(YES_STR).c_str()),
+      GetSshProtStr().c_str(), GetFSProtocolStr().c_str());
   }
   else
   {
     return FMTLOAD(SESSION_INFO_TIP_NO_SSH,
-                   GetHostName().c_str(), GetUserName().c_str(), GetFSProtocolStr().c_str());
+      GetHostName().c_str(), GetUserName().c_str(), GetFSProtocolStr().c_str());
   }
 }
 //---------------------------------------------------------------------
@@ -2392,8 +2392,8 @@ TStoredSessionList::~TStoredSessionList()
 void __fastcall TStoredSessionList::Load(THierarchicalStorage * Storage,
     bool AsModified, bool UseDefaults)
 {
-  System::TStringList * SubKeys = new System::TStringList();
-  System::TList * Loaded = new System::TList;
+  TStringList * SubKeys = new TStringList();
+  TList * Loaded = new TList;
   {
     BOOST_SCOPE_EXIT ( (&SubKeys) (&Loaded) )
     {
@@ -2451,7 +2451,7 @@ void __fastcall TStoredSessionList::Load(THierarchicalStorage * Storage,
 
     if (!AsModified)
     {
-      for (size_t Index = 0; Index < System::TObjectList::GetCount(); Index++)
+      for (size_t Index = 0; Index < TObjectList::GetCount(); Index++)
       {
         if (Loaded->IndexOf(GetItem(Index)) < 0)
         {
@@ -2570,7 +2570,7 @@ void __fastcall TStoredSessionList::Saved()
 //---------------------------------------------------------------------
 void __fastcall TStoredSessionList::Export(const UnicodeString FileName)
 {
-  System::Error(SNotImplemented, 3003);
+  Error(SNotImplemented, 3003);
   /*
   THierarchicalStorage * Storage = new TIniFileStorage(FileName);
   {
@@ -2705,7 +2705,7 @@ void __fastcall TStoredSessionList::ImportHostKeys(const UnicodeString TargetKey
 {
   TRegistryStorage * SourceStorage = NULL;
   TRegistryStorage * TargetStorage = NULL;
-  System::TStringList * KeyList = NULL;
+  TStringList * KeyList = NULL;
   {
     BOOST_SCOPE_EXIT ( (&SourceStorage) (&TargetStorage) (&KeyList) )
     {
@@ -2716,7 +2716,7 @@ void __fastcall TStoredSessionList::ImportHostKeys(const UnicodeString TargetKey
     SourceStorage = new TRegistryStorage(SourceKey);
     TargetStorage = new TRegistryStorage(TargetKey);
     TargetStorage->SetAccessMode(smReadWrite);
-    KeyList = new System::TStringList();
+    KeyList = new TStringList();
 
     if (SourceStorage->OpenRootKey(false) &&
         TargetStorage->OpenRootKey(true))
@@ -2740,7 +2740,7 @@ void __fastcall TStoredSessionList::ImportHostKeys(const UnicodeString TargetKey
             if ((P >= 0) && (P == KeyName.Length() - HostKeyName.Length() + 1))
             {
               TargetStorage->WriteStringRaw(KeyName,
-                                            SourceStorage->ReadStringRaw(KeyName, L""));
+                SourceStorage->ReadStringRaw(KeyName, L""));
             }
           }
         }
