@@ -42,6 +42,7 @@ extern const int DaysPerWeek;
 extern const int MinsPerHour;
 extern const int MinsPerDay;
 extern const int SecsPerMin;
+extern const int SecsPerHour;
 extern const int HoursPerDay;
 extern const int SecsPerDay;
 extern const int MSecsPerDay;

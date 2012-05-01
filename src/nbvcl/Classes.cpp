@@ -339,6 +339,7 @@ const int MonthsPerYear = 12;
 const int DaysPerWeek = 7;
 const int MinsPerHour = 60;
 const int SecsPerMin = 60;
+const int SecsPerHour = MinsPerHour * SecsPerMin;
 const int HoursPerDay = 24;
 const int MinsPerDay  = HoursPerDay * MinsPerHour;
 const int SecsPerDay  = MinsPerDay * SecsPerMin;
