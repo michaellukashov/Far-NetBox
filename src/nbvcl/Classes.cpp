@@ -1992,11 +1992,11 @@ void __fastcall GetLocaleFormatSettings(int LCID, TFormatSettings &FormatSetting
     System::Error(SNotImplemented, 1204);
 }
 
-int __fastcall GetDefaultLCID()
-{
-    System::Error(SNotImplemented, 1205);
-    return 0;
-}
+// int __fastcall GetDefaultLCID()
+// {
+    // System::Error(SNotImplemented, 1205);
+    // return 0;
+// }
 
 //---------------------------------------------------------------------------
 int FindMatchingFile(TSearchRec & Rec)

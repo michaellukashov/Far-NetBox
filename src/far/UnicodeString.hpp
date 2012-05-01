@@ -357,6 +357,7 @@ public:
   const char *c_str() const { return Data; }
   size_t Length() const { return Size; }
   bool IsEmpty() const { return Length() == 0; }
+  size_t SetLength(size_t nLength);
 
 public:
   RawByteString __fastcall operator +(const RawByteString &rhs) const;

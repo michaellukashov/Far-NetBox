@@ -5,16 +5,20 @@
 #include <vector>
 #ifndef  _MSC_VER
 #include <Masks.hpp>
-#endif
+#else
+#include "boostdefines.hpp"
+#include <boost/signals/signal5.hpp>
+
 #include "Classes.h"
 #include "Common.h"
+#endif
 //---------------------------------------------------------------------------
-class EFileMasksException : public std::exception
+class EFileMasksException : public Exception
 {
 public:
-  explicit EFileMasksException(const UnicodeString Message, size_t ErrorStart, size_t ErrorLen);
-  size_t ErrorStart;
-  size_t ErrorLen;
+  explicit EFileMasksException(UnicodeString Message, int ErrorStart, int ErrorLen);
+  int ErrorStart;
+  int ErrorLen;
 };
 //---------------------------------------------------------------------------
 extern const wchar_t IncludeExcludeFileMasksDelimiter;
@@ -50,47 +54,51 @@ public:
     // Modification = rhs.Modification;
     // }
     __int64 Size;
-    System::TDateTime Modification;
+    TDateTime Modification;
 
     UnicodeString ToString() const;
   };
 
   static bool __fastcall IsMask(const UnicodeString Mask);
-  static UnicodeString __fastcall NormalizeMask(const UnicodeString Mask, const UnicodeString AnyMask = L"");
+  static UnicodeString __fastcall NormalizeMask(const UnicodeString & Mask, const UnicodeString & AnyMask = L"");
   static UnicodeString __fastcall ComposeMaskStr(
-    System::TStrings * IncludeFileMasksStr, System::TStrings * ExcludeFileMasksStr,
-    System::TStrings * IncludeDirectoryMasksStr, System::TStrings * ExcludeDirectoryMasksStr);
+    TStrings * IncludeFileMasksStr, TStrings * ExcludeFileMasksStr,
+    TStrings * IncludeDirectoryMasksStr, TStrings * ExcludeDirectoryMasksStr);
 
   TFileMasks();
-  TFileMasks(int ForceDirectoryMasks);
+  explicit TFileMasks(int ForceDirectoryMasks);
   TFileMasks(const TFileMasks & Source);
-  explicit TFileMasks(const UnicodeString AMasks);
+  explicit TFileMasks(const UnicodeString & AMasks);
   virtual ~TFileMasks();
   TFileMasks & __fastcall operator =(const TFileMasks & rhm);
-  TFileMasks & __fastcall operator =(const UnicodeString rhs);
+  TFileMasks & __fastcall operator =(const UnicodeString & rhs);
   bool __fastcall operator ==(const TFileMasks & rhm) const;
-  bool __fastcall operator ==(const UnicodeString rhs) const;
+  bool __fastcall operator ==(const UnicodeString & rhs) const;
 
-  void __fastcall SetMask(const UnicodeString Mask);
+  void __fastcall SetMask(const UnicodeString & Mask);
 
   bool __fastcall Matches(const UnicodeString FileName, bool Directory = false,
-                          const UnicodeString Path = L"", const TParams * Params = NULL) const;
+    const UnicodeString Path = L"", const TParams * Params = NULL) const;
   bool __fastcall Matches(const UnicodeString FileName, bool Local, bool Directory,
-                          const TParams * Params = NULL) const;
+    const TParams * Params = NULL) const;
 
-  bool GetIsValid(size_t & Start, size_t & Length) const;
+#ifndef  _MSC_VER
+  __property UnicodeString Masks = { read = FStr, write = SetMasks };
+
+  __property TStrings * IncludeFileMasksStr = { read = GetMasksStr, index = MASK_INDEX(false, true) };
+  __property TStrings * ExcludeFileMasksStr = { read = GetMasksStr, index = MASK_INDEX(false, false) };
+  __property TStrings * IncludeDirectoryMasksStr = { read = GetMasksStr, index = MASK_INDEX(true, true) };
+  __property TStrings * ExcludeDirectoryMasksStr = { read = GetMasksStr, index = MASK_INDEX(true, false) };
+#else
 
   UnicodeString __fastcall GetMasks() const { return FStr; }
   void __fastcall SetMasks(const UnicodeString value);
 
-  // __property TStrings * IncludeFileMasksStr = { read = GetMasksStr, index = MASK_INDEX(false, true) };
-  System::TStrings * __fastcall GetIncludeFileMasksStr() { return GetMasksStr(MASK_INDEX(false, true)); };
-  // __property TStrings * ExcludeFileMasksStr = { read = GetMasksStr, index = MASK_INDEX(false, false) };
-  System::TStrings * __fastcall GetExcludeFileMasksStr() { return GetMasksStr(MASK_INDEX(false, false)); };
-  // __property TStrings * IncludeDirectoryMasksStr = { read = GetMasksStr, index = MASK_INDEX(true, true) };
-  System::TStrings * __fastcall GetIncludeDirectoryMasksStr() { return GetMasksStr(MASK_INDEX(true, true)); };
-  // __property TStrings * ExcludeDirectoryMasksStr = { read = GetMasksStr, index = MASK_INDEX(true, false) };
-  System::TStrings * __fastcall GetExcludeDirectoryMasksStr() { return GetMasksStr(MASK_INDEX(true, false)); };
+  TStrings * __fastcall GetIncludeFileMasksStr() { return GetMasksStr(MASK_INDEX(false, true)); };
+  TStrings * __fastcall GetExcludeFileMasksStr() { return GetMasksStr(MASK_INDEX(false, false)); };
+  TStrings * __fastcall GetIncludeDirectoryMasksStr() { return GetMasksStr(MASK_INDEX(true, true)); };
+  TStrings * __fastcall GetExcludeDirectoryMasksStr() { return GetMasksStr(MASK_INDEX(true, false)); };
+#endif
 
 private:
   int FForceDirectoryMasks;
@@ -115,9 +123,9 @@ private:
     __int64 LowSize;
 
     TMaskBoundary HighModificationMask;
-    System::TDateTime HighModification;
+    TDateTime HighModification;
     TMaskBoundary LowModificationMask;
-    System::TDateTime LowModification;
+    TDateTime LowModification;
 
     UnicodeString MaskStr;
     UnicodeString UserStr;
@@ -125,64 +133,69 @@ private:
 
   typedef std::vector<TMask> TMasks;
   TMasks FMasks[4];
-  mutable System::TStrings * FMasksStr[4];
+  mutable TStrings * FMasksStr[4];
 
   void __fastcall SetStr(const UnicodeString value, bool SingleMask);
-  void __fastcall CreateMaskMask(const UnicodeString Mask, size_t Start, size_t End, bool Ex,
-                                 TMaskMask & MaskMask);
+  // void __fastcall SetMasks(const UnicodeString value);
+  void __fastcall CreateMaskMask(const UnicodeString & Mask, int Start, int End,
+    bool Ex, TMaskMask & MaskMask);
   void __fastcall CreateMask(const UnicodeString & MaskStr, int MaskStart,
-                             int MaskEnd, bool Include);
-  System::TStrings * __fastcall GetMasksStr(int Index) const;
+    int MaskEnd, bool Include);
+  TStrings * __fastcall GetMasksStr(int Index) const;
   static UnicodeString __fastcall MakeDirectoryMask(UnicodeString Str);
   static inline void __fastcall ReleaseMaskMask(TMaskMask & MaskMask);
   inline void __fastcall Init();
   void __fastcall DoInit(bool Delete);
-  inline void __fastcall Clear();
+  void __fastcall Clear();
   static void __fastcall Clear(TMasks & Masks);
   static void __fastcall TrimEx(UnicodeString & Str, int & Start, int & End);
   static bool __fastcall MatchesMasks(const UnicodeString FileName, bool Directory,
-                                      const UnicodeString Path, const TParams * Params, const TMasks & Masks, bool Recurse);
-  static inline bool __fastcall MatchesMaskMask(const TMaskMask & MaskMask, const UnicodeString Str);
-  static inline bool __fastcall IsAnyMask(const UnicodeString Mask);
-  static UnicodeString __fastcall ComposeMaskStr(System::TStrings * MasksStr, bool Directory);
-  void __fastcall ThrowError(size_t Start, size_t End);
+    const UnicodeString Path, const TParams * Params, const TMasks & Masks, bool Recurse);
+  static inline bool __fastcall MatchesMaskMask(const TMaskMask & MaskMask, const UnicodeString & Str);
+  static inline bool __fastcall IsAnyMask(const UnicodeString & Mask);
+  static UnicodeString __fastcall ComposeMaskStr(TStrings * MasksStr, bool Directory);
+  void __fastcall ThrowError(int Start, int End);
 };
 //---------------------------------------------------------------------------
-UnicodeString __fastcall MaskFileName(const UnicodeString FileName, const UnicodeString Mask);
+UnicodeString __fastcall MaskFileName(UnicodeString FileName, const UnicodeString Mask);
 bool __fastcall IsFileNameMask(const UnicodeString Mask);
-UnicodeString __fastcall DelimitFileNameMask(const UnicodeString Mask);
+UnicodeString __fastcall DelimitFileNameMask(UnicodeString Mask);
 //---------------------------------------------------------------------------
-typedef void (System::TObject::*TCustomCommandPatternEvent)
-(int Index, const UnicodeString Pattern, void * Arg, UnicodeString & Replacement,
- bool & LastPass);
+#ifndef  _MSC_VER
+typedef void __fastcall (__closure * TCustomCommandPatternEvent)
+  (int Index, const UnicodeString Pattern, void * Arg, UnicodeString & Replacement,
+   bool & LastPass);
+#else
+typedef boost::signal5<void, int /* Index */, const UnicodeString /* Pattern */, void * /* Arg */, UnicodeString & /* Replacement */,
+   bool & /* LastPass */ > customcommandpattern_signal_type;
+typedef customcommandpattern_signal_type::slot_type TCustomCommandPatternEvent;
+#endif
 //---------------------------------------------------------------------------
 class TCustomCommand
 {
-  friend class TInteractiveCustomCommand;
+friend class TInteractiveCustomCommand;
 
 public:
   TCustomCommand();
-  virtual ~TCustomCommand()
-  {
-  }
+  virtual ~TCustomCommand() {}
 
-  UnicodeString __fastcall Complete(const UnicodeString Command, bool LastPass);
-  virtual void __fastcall Validate(const UnicodeString Command);
+  UnicodeString __fastcall Complete(const UnicodeString & Command, bool LastPass);
+  virtual void __fastcall Validate(const UnicodeString & Command);
 
 protected:
   static const wchar_t NoQuote;
   static const UnicodeString Quotes;
-  void __fastcall GetToken(const UnicodeString Command,
-                           size_t Index, size_t & Len, wchar_t & PatternCmd);
-  void __fastcall CustomValidate(const UnicodeString Command, void * Arg);
-  virtual bool __fastcall FindPattern(const UnicodeString Command, wchar_t PatternCmd);
+  void __fastcall GetToken(const UnicodeString & Command,
+    int Index, int & Len, wchar_t & PatternCmd);
+  void __fastcall CustomValidate(const UnicodeString & Command, void * Arg);
+  bool __fastcall FindPattern(const UnicodeString & Command, wchar_t PatternCmd);
 
-  virtual void __fastcall ValidatePattern(const UnicodeString Command,
-                                          size_t Index, size_t Len, wchar_t PatternCmd, void * Arg);
+  virtual void __fastcall ValidatePattern(const UnicodeString & Command,
+    int Index, int Len, wchar_t PatternCmd, void * Arg);
 
-  virtual size_t __fastcall PatternLen(size_t Index, wchar_t PatternCmd) = 0;
-  virtual bool __fastcall PatternReplacement(size_t Index, const UnicodeString Pattern,
-      UnicodeString & Replacement, bool & Delimit) = 0;
+  virtual int __fastcall PatternLen(int Index, wchar_t PatternCmd) = 0;
+  virtual bool __fastcall PatternReplacement(int Index, const UnicodeString & Pattern,
+    UnicodeString & Replacement, bool & Delimit) = 0;
   virtual void __fastcall DelimitReplacement(UnicodeString & Replacement, wchar_t Quote);
 };
 //---------------------------------------------------------------------------
@@ -192,11 +205,11 @@ public:
   explicit TInteractiveCustomCommand(TCustomCommand * ChildCustomCommand);
 
 protected:
-  virtual void __fastcall Prompt(size_t Index, const UnicodeString Prompt,
-                                 UnicodeString & Value);
-  virtual size_t __fastcall PatternLen(size_t Index, wchar_t PatternCmd);
-  virtual bool __fastcall PatternReplacement(size_t Index, const UnicodeString Pattern,
-      UnicodeString & Replacement, bool & Delimit);
+  virtual void __fastcall Prompt(int Index, const UnicodeString & Prompt,
+    UnicodeString & Value);
+  virtual int __fastcall PatternLen(int Index, wchar_t PatternCmd);
+  virtual bool __fastcall PatternReplacement(int Index, const UnicodeString & Pattern,
+    UnicodeString & Replacement, bool & Delimit);
 
 private:
   TCustomCommand * FChildCustomCommand;
@@ -217,21 +230,21 @@ class TFileCustomCommand : public TCustomCommand
 {
 public:
   TFileCustomCommand();
-  explicit TFileCustomCommand(const TCustomCommandData & Data, const UnicodeString Path);
-  explicit TFileCustomCommand(const TCustomCommandData & Data, const UnicodeString Path,
-                              const UnicodeString FileName, const UnicodeString FileList);
+  explicit TFileCustomCommand(const TCustomCommandData & Data, const UnicodeString & Path);
+  explicit TFileCustomCommand(const TCustomCommandData & Data, const UnicodeString & Path,
+    const UnicodeString & FileName, const UnicodeString & FileList);
 
-  virtual void __fastcall Validate(const UnicodeString Command);
-  virtual void __fastcall ValidatePattern(const UnicodeString Command,
-                                          size_t Index, size_t Len, wchar_t PatternCmd, void * Arg);
+  virtual void __fastcall Validate(const UnicodeString & Command);
+  virtual void __fastcall ValidatePattern(const UnicodeString & Command,
+    int Index, int Len, wchar_t PatternCmd, void * Arg);
 
-  bool __fastcall IsFileListCommand(const UnicodeString Command);
-  virtual bool __fastcall IsFileCommand(const UnicodeString Command);
+  bool __fastcall IsFileListCommand(const UnicodeString & Command);
+  virtual bool __fastcall IsFileCommand(const UnicodeString & Command);
 
 protected:
-  virtual size_t __fastcall PatternLen(size_t Index, wchar_t PatternCmd);
-  virtual bool __fastcall PatternReplacement(size_t Index, const UnicodeString Pattern,
-      UnicodeString & Replacement, bool & Delimit);
+  virtual int __fastcall PatternLen(int Index, wchar_t PatternCmd);
+  virtual bool __fastcall PatternReplacement(int Index, const UnicodeString & Pattern,
+    UnicodeString & Replacement, bool & Delimit);
 
 private:
   TCustomCommandData FData;

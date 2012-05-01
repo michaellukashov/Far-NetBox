@@ -2854,7 +2854,7 @@ bool TryStrToDateTime(const UnicodeString value, System::TDateTime & Value, Syst
 }
 
 UnicodeString DateTimeToStr(UnicodeString & Result, const UnicodeString & Format,
-                           System::TDateTime DateTime)
+  System::TDateTime DateTime)
 {
   System::Error(SNotImplemented, 148);
   return L"";

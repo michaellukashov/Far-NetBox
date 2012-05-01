@@ -717,7 +717,7 @@ public:
 };
 
 void __fastcall GetLocaleFormatSettings(int LCID, TFormatSettings &FormatSettings);
-int __fastcall GetDefaultLCID();
+// int __fastcall GetDefaultLCID();
 
 //---------------------------------------------------------------------------
 // from wxvcl\sysset.h

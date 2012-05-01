@@ -1,5 +1,10 @@
 //---------------------------------------------------------------------------
+#ifndef  _MSC_VER
+#include <vcl.h>
+#pragma hdrstop
+#else
 #include "stdafx.h"
+#endif
 #include "FileMasks.h"
 
 #include "Common.h"
@@ -8,343 +13,111 @@
 #include "PuttyTools.h"
 #include "Terminal.h"
 //---------------------------------------------------------------------------
-const wchar_t IncludeExcludeFileMasksDelimiter = L'|';
-static UnicodeString IncludeExcludeFileMasksDelimiterStr = UnicodeString(1, L' ') + IncludeExcludeFileMasksDelimiter + L' ';
+extern const wchar_t IncludeExcludeFileMasksDelimiter = L'|';
+static UnicodeString IncludeExcludeFileMasksDelimiterStr = UnicodeString(L' ') + IncludeExcludeFileMasksDelimiter + L' ';
 static UnicodeString FileMasksDelimiters = L";,";
 static UnicodeString AllFileMasksDelimiters = FileMasksDelimiters + IncludeExcludeFileMasksDelimiter;
 static UnicodeString DirectoryMaskDelimiters = L"/\\";
-static UnicodeString FileMasksDelimiterStr = UnicodeString(1, FileMasksDelimiters[1]) + L' ';
+static UnicodeString FileMasksDelimiterStr = UnicodeString(FileMasksDelimiters[1]) + L' ';
 //---------------------------------------------------------------------------
-
-inline int IsSlash(wchar_t x) { return x==L'\\' || x==L'/'; }
-// inline wchar_t __cdecl Upper(wchar_t Ch) { CharUpperBuff(&Ch, 1); return Ch; }
-// inline wchar_t __cdecl Lower(wchar_t Ch) { CharLowerBuff(&Ch, 1); return Ch; }
-//---------------------------------------------------------------------------
-
-const wchar_t * PointToName(const wchar_t * lpwszPath,const wchar_t * lpwszEndPtr)
-{
-  if (!lpwszPath)
-  {
-    return NULL;
-  }
-
-  if (*lpwszPath && *(lpwszPath+1)==L':') { lpwszPath+=2; }
-
-  const wchar_t * lpwszNamePtr = lpwszEndPtr;
-
-  if (!lpwszNamePtr)
-  {
-    lpwszNamePtr=lpwszPath;
-
-    while (*lpwszNamePtr) { lpwszNamePtr++; }
-  }
-
-  while (lpwszNamePtr != lpwszPath)
-  {
-    if (IsSlash(*lpwszNamePtr))
-    {
-      return lpwszNamePtr+1;
-    }
-
-    lpwszNamePtr--;
-  }
-
-  if (IsSlash(*lpwszPath))
-  {
-    return lpwszPath+1;
-  }
-  else
-  {
-    return lpwszPath;
-  }
-}
-
-const wchar_t * PointToName(const wchar_t * lpwszPath)
-{
-  return PointToName(lpwszPath, NULL);
-}
-
-const wchar_t * PointToName(UnicodeString & strPath)
-{
-  const wchar_t * lpwszPath = strPath.c_str();
-  const wchar_t * lpwszEndPtr = lpwszPath + strPath.Length();
-  return PointToName(lpwszPath, lpwszEndPtr);
-}
-
-static int CmpName(const wchar_t * pattern,const wchar_t * str, bool skippath, bool CmpNameSearchMode);
-
-static int CmpName_Body(const wchar_t * pattern,const wchar_t * str, bool CmpNameSearchMode)
-{
-  wchar_t stringc,patternc,rangec;
-  int match;
-
-  for (;; ++str)
-  {
-    /* $ 01.05.2001 DJ
-       используем инлайновые версии
-    */
-    stringc=Upper(*str);
-    patternc=Upper(*pattern++);
-
-    switch (patternc)
-    {
-    case 0:
-      return !stringc;
-    case L'?':
-
-      if (!stringc)
-      {
-        return FALSE;
-      }
-
-      break;
-    case L'*':
-
-      if (!*pattern)
-      {
-        return TRUE;
-      }
-
-      /* $ 01.05.2001 DJ
-         оптимизированная ветка работает и для имен с несколькими
-         точками
-      */
-      if (*pattern==L'.')
-      {
-        if (pattern[1]==L'*' && !pattern[2])
-        {
-          return TRUE;
-        }
-
-        if (!wcspbrk(pattern, L"*?["))
-        {
-          const wchar_t * dot = wcsrchr(str, L'.');
-
-          if (!pattern[1])
-          {
-            return (!dot || !dot[1]);
-          }
-
-          const wchar_t * patdot = wcschr(pattern+1, L'.');
-
-          if (patdot  && !dot)
-          {
-            return FALSE;
-          }
-
-          if (!patdot && dot )
-          {
-            return !StringCmpI(pattern+1,dot+1);
-          }
-        }
-      }
-
-      do
-      {
-        if(CmpName(pattern,str,false,CmpNameSearchMode))
-        {
-          return TRUE;
-        }
-      }
-      while (*str++);
-
-      return FALSE;
-    case L'[':
-
-      if (!wcschr(pattern,L']'))
-      {
-        if (patternc != stringc)
-        {
-          return (FALSE);
-        }
-
-        break;
-      }
-
-      if (*pattern && *(pattern+1)==L']')
-      {
-        if (*pattern!=*str)
-        {
-          return FALSE;
-        }
-
-        pattern+=2;
-        break;
-      }
-
-      match = 0;
-
-      while ((rangec = Upper(*pattern++)) != 0)
-      {
-        if (rangec == L']')
-        {
-          if (match)
-          {
-            break;
-          }
-          else
-          {
-            return FALSE;
-          }
-        }
-
-        if (match)
-        {
-          continue;
-        }
-
-        if (rangec == L'-' && *(pattern - 2) != L'[' && *pattern != L']')
-        {
-          match = (stringc <= Upper(*pattern) &&
-                   Upper(*(pattern - 2)) <= stringc);
-          pattern++;
-        }
-        else
-        {
-          match = (stringc == rangec);
-        }
-      }
-
-      if (!rangec)
-      {
-        return FALSE;
-      }
-
-      break;
-    default:
-
-      if (patternc != stringc)
-      {
-        if (patternc==L'.' && !stringc && !CmpNameSearchMode)
-        {
-          return(*pattern!=L'.' && CmpName(pattern,str,true,CmpNameSearchMode));
-        }
-        else
-        {
-          return FALSE;
-        }
-      }
-
-      break;
-    }
-  }
-}
-
-int CmpName(const wchar_t * pattern,const wchar_t * str, bool skippath, bool CmpNameSearchMode)
-{
-  if (!pattern || !str)
-  {
-    return FALSE;
-  }
-
-  if (skippath)
-  {
-    str = PointToName(str);
-  }
-
-  return CmpName_Body(pattern,str,CmpNameSearchMode);
-}
 
 namespace Masks
 {
 
 bool TMask::GetMatches(const UnicodeString Str)
 {
-  // DEBUG_PRINTF(L"GetMatches: FMask = %s, Str = %s", FMask.c_str(), Str.c_str());
-  return CmpName(FMask.c_str(), Str.c_str(), true, true) == TRUE;
+  return AnsiCompareIC(FMask, Str) == 0;
 }
 
 } // namespace Masks
 
 //---------------------------------------------------------------------------
 EFileMasksException::EFileMasksException(
-  const UnicodeString Message, size_t AErrorStart, size_t AErrorLen) :
-  std::exception(System::W2MB(Message.c_str()).c_str())
+    UnicodeString Message, int AErrorStart, int AErrorLen) :
+  Exception(Message)
 {
   ErrorStart = AErrorStart;
   ErrorLen = AErrorLen;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall MaskFilePart(const UnicodeString Part, const UnicodeString Mask, bool & Masked)
+UnicodeString __fastcall MaskFilePart(const UnicodeString Part, const UnicodeString Mask, bool& Masked)
 {
   UnicodeString Result;
-  size_t RestStart = 0;
+  int RestStart = 1;
   bool Delim = false;
-  for (size_t Index = 0; Index < Mask.Length(); Index++)
+  for (int Index = 1; Index <= Mask.Length(); Index++)
   {
     switch (Mask[Index])
     {
-    case L'\\':
-      if (!Delim)
-      {
-        Delim = true;
-        Masked = true;
-        break;
-      }
-
-    case L'*':
-      if (!Delim)
-      {
-        Result += Part.SubString(RestStart, Part.Length() - RestStart + 1);
-        RestStart = Part.Length() + 1;
-        Masked = true;
-        break;
-      }
-
-    case L'?':
-      if (!Delim)
-      {
-        if (RestStart < Part.Length())
+      case L'\\':
+        if (!Delim)
         {
-          Result += Part[RestStart];
-          RestStart++;
+          Delim = true;
+          Masked = true;
+          break;
         }
-        Masked = true;
-        break;
-      }
 
-    default:
-      Result += Mask[Index];
-      RestStart++;
-      Delim = false;
-      break;
+      case L'*':
+        if (!Delim)
+        {
+          Result += Part.SubString(RestStart, Part.Length() - RestStart + 1);
+          RestStart = Part.Length() + 1;
+          Masked = true;
+          break;
+        }
+
+      case L'?':
+        if (!Delim)
+        {
+          if (RestStart <= Part.Length())
+          {
+            Result += Part[RestStart];
+            RestStart++;
+          }
+          Masked = true;
+          break;
+        }
+
+      default:
+        Result += Mask[Index];
+        RestStart++;
+        Delim = false;
+        break;
     }
   }
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall MaskFileName(const UnicodeString FileName, const UnicodeString Mask)
+UnicodeString __fastcall MaskFileName(UnicodeString FileName, const UnicodeString Mask)
 {
-  UnicodeString fileName = FileName;
   if (!Mask.IsEmpty() && (Mask != L"*") && (Mask != L"*.*"))
   {
-    bool Masked = false;
-    size_t P = ::LastDelimiter(Mask, L".");
-    if (P >= 0)
+    bool Masked;
+    int P = Mask.LastDelimiter(L".");
+    if (P > 0)
     {
-      size_t P2 = ::LastDelimiter(fileName, L".");
+      int P2 = FileName.LastDelimiter(".");
       // only dot at beginning of file name is not considered as
       // name/ext separator
-      bool hasFileExt = (P2 >= 0) && (P2 > 0);
-      UnicodeString FileExt = hasFileExt ?
-                              fileName.SubString(P2, fileName.Length() - P2) : UnicodeString();
+      UnicodeString FileExt = P2 > 1 ?
+        FileName.SubString(P2 + 1, FileName.Length() - P2) : UnicodeString();
       FileExt = MaskFilePart(FileExt, Mask.SubString(P + 1, Mask.Length() - P), Masked);
-      if (hasFileExt)
+      if (P2 > 1)
       {
-        fileName.SetLength(P2);
+        FileName.SetLength(P2 - 1);
       }
-      fileName = MaskFilePart(fileName, Mask.SubString(0, P), Masked);
+      FileName = MaskFilePart(FileName, Mask.SubString(1, P - 1), Masked);
       if (!FileExt.IsEmpty())
       {
-        fileName += L"." + FileExt;
+        FileName += L"." + FileExt;
       }
     }
     else
     {
-      fileName = MaskFilePart(fileName, Mask, Masked);
+      FileName = MaskFilePart(FileName, Mask, Masked);
     }
   }
-  return fileName;
+  return FileName;
 }
 //---------------------------------------------------------------------------
 bool __fastcall IsFileNameMask(const UnicodeString Mask)
@@ -354,18 +127,17 @@ bool __fastcall IsFileNameMask(const UnicodeString Mask)
   return Masked;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall DelimitFileNameMask(const UnicodeString Mask)
+UnicodeString __fastcall DelimitFileNameMask(UnicodeString Mask)
 {
-  UnicodeString mask = Mask;
-  for (size_t i = 0; i <= mask.Length(); i++)
+  for (int i = 1; i <= Mask.Length(); i++)
   {
-    if (wcschr(L"\\*?", mask[i]) != NULL)
+    if (wcschr(L"\\*?", Mask[i]) != NULL)
     {
-      mask.Insert(i, L"\\");
+      Mask.Insert(L"\\", i);
       i++;
     }
   }
-  return mask;
+  return Mask;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -376,22 +148,21 @@ TFileMasks::TParams::TParams() :
 //---------------------------------------------------------------------------
 UnicodeString TFileMasks::TParams::ToString() const
 {
-  return UnicodeString(L"[") + Int64ToStr(Size) + L"/" + ::DateTimeToString(Modification) + L"]";
+  return UnicodeString(L"[") + Int64ToStr(Size) + L"/" + DateTimeToString(Modification) + L"]";
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 bool __fastcall TFileMasks::IsMask(const UnicodeString Mask)
 {
-  size_t result = ::LastDelimiter(Mask, L"?*[");
-  return result >= 0;
+  return (Mask.LastDelimiter(L"?*[") > 0);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileMasks::IsAnyMask(const UnicodeString Mask)
+bool __fastcall TFileMasks::IsAnyMask(const UnicodeString & Mask)
 {
   return Mask.IsEmpty() || (Mask == L"*.*") || (Mask == L"*");
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TFileMasks::NormalizeMask(const UnicodeString Mask, const UnicodeString AnyMask)
+UnicodeString __fastcall TFileMasks::NormalizeMask(const UnicodeString & Mask, const UnicodeString & AnyMask)
 {
   if (IsAnyMask(Mask))
   {
@@ -404,19 +175,19 @@ UnicodeString __fastcall TFileMasks::NormalizeMask(const UnicodeString Mask, con
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TFileMasks::ComposeMaskStr(
-  System::TStrings * MasksStr, bool Directory)
+  TStrings * MasksStr, bool Directory)
 {
   UnicodeString Result;
-  for (size_t I = 0; I < MasksStr->GetCount(); I++)
+  for (int I = 0; I < MasksStr->GetCount(); I++)
   {
-    UnicodeString Str = ::Trim(MasksStr->GetStrings(I));
+    UnicodeString Str = MasksStr->GetStrings(I).Trim();
     if (!Str.IsEmpty())
     {
-      for (size_t P = 0; P < Str.Length(); P++)
+      for (int P = 1; P <= Str.Length(); P++)
       {
-        if (::IsDelimiter(Str, AllFileMasksDelimiters, P))
+        if (Str.IsDelimiter(AllFileMasksDelimiters, P))
         {
-          Str.Insert(P, UnicodeString(1, Str[P]));
+          Str.Insert(Str[P], P);
           P++;
         }
       }
@@ -427,7 +198,7 @@ UnicodeString __fastcall TFileMasks::ComposeMaskStr(
       }
       else
       {
-        while (::IsDelimiter(Str, DirectoryMaskDelimiters, Str.Length()))
+        while (Str.IsDelimiter(DirectoryMaskDelimiters, Str.Length()))
         {
           Str.SetLength(Str.Length() - 1);
         }
@@ -440,8 +211,8 @@ UnicodeString __fastcall TFileMasks::ComposeMaskStr(
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TFileMasks::ComposeMaskStr(
-  System::TStrings * IncludeFileMasksStr, System::TStrings * ExcludeFileMasksStr,
-  System::TStrings * IncludeDirectoryMasksStr, System::TStrings * ExcludeDirectoryMasksStr)
+  TStrings * IncludeFileMasksStr, TStrings * ExcludeFileMasksStr,
+  TStrings * IncludeDirectoryMasksStr, TStrings * ExcludeDirectoryMasksStr)
 {
   UnicodeString IncludeMasks = ComposeMaskStr(IncludeFileMasksStr, false);
   AddToList(IncludeMasks, ComposeMaskStr(IncludeDirectoryMasksStr, true), FileMasksDelimiterStr);
@@ -470,7 +241,7 @@ TFileMasks::TFileMasks(const TFileMasks & Source)
   SetStr(Source.GetMasks(), false);
 }
 //---------------------------------------------------------------------------
-TFileMasks::TFileMasks(const UnicodeString AMasks)
+TFileMasks::TFileMasks(const UnicodeString & AMasks)
 {
   Init();
   SetStr(AMasks, false);
@@ -517,13 +288,13 @@ void __fastcall TFileMasks::Clear(TMasks & Masks)
   {
     ReleaseMaskMask((*I).FileNameMask);
     ReleaseMaskMask((*I).DirectoryMask);
-    ++I;
+    I++;
   }
   Masks.clear();
 }
 //---------------------------------------------------------------------------
 bool __fastcall TFileMasks::MatchesMasks(const UnicodeString FileName, bool Directory,
-    const UnicodeString Path, const TParams * Params, const TMasks & Masks, bool Recurse)
+  const UnicodeString Path, const TParams * Params, const TMasks & Masks, bool Recurse)
 {
   bool Result = false;
 
@@ -541,34 +312,34 @@ bool __fastcall TFileMasks::MatchesMasks(const UnicodeString FileName, bool Dire
 
       switch (Mask.HighSizeMask)
       {
-      case TMask::None:
-        Result = true;
-        break;
+        case TMask::None:
+          Result = true;
+          break;
 
-      case TMask::Open:
-        Result = HasSize && (Params->Size < Mask.HighSize);
-        break;
+        case TMask::Open:
+          Result = HasSize && (Params->Size < Mask.HighSize);
+          break;
 
-      case TMask::Close:
-        Result = HasSize && (Params->Size <= Mask.HighSize);
-        break;
+        case TMask::Close:
+          Result = HasSize && (Params->Size <= Mask.HighSize);
+          break;
       }
 
       if (Result)
       {
         switch (Mask.LowSizeMask)
         {
-        case TMask::None:
-          Result = true;
-          break;
+          case TMask::None:
+            Result = true;
+            break;
 
-        case TMask::Open:
-          Result = HasSize && (Params->Size > Mask.LowSize);
-          break;
+          case TMask::Open:
+            Result = HasSize && (Params->Size > Mask.LowSize);
+            break;
 
-        case TMask::Close:
-          Result = HasSize && (Params->Size >= Mask.LowSize);
-          break;
+          case TMask::Close:
+            Result = HasSize && (Params->Size >= Mask.LowSize);
+            break;
         }
       }
 
@@ -578,17 +349,17 @@ bool __fastcall TFileMasks::MatchesMasks(const UnicodeString FileName, bool Dire
       {
         switch (Mask.HighModificationMask)
         {
-        case TMask::None:
-          Result = true;
-          break;
+          case TMask::None:
+            Result = true;
+            break;
 
-        case TMask::Open:
-          Result = HasModification && (Params->Modification < Mask.HighModification);
-          break;
+          case TMask::Open:
+            Result = HasModification && (Params->Modification < Mask.HighModification);
+            break;
 
-        case TMask::Close:
-          Result = HasModification && (Params->Modification <= Mask.HighModification);
-          break;
+          case TMask::Close:
+            Result = HasModification && (Params->Modification <= Mask.HighModification);
+            break;
         }
       }
 
@@ -596,17 +367,17 @@ bool __fastcall TFileMasks::MatchesMasks(const UnicodeString FileName, bool Dire
       {
         switch (Mask.LowModificationMask)
         {
-        case TMask::None:
-          Result = true;
-          break;
+          case TMask::None:
+            Result = true;
+            break;
 
-        case TMask::Open:
-          Result = HasModification && (Params->Modification > Mask.LowModification);
-          break;
+          case TMask::Open:
+            Result = HasModification && (Params->Modification > Mask.LowModification);
+            break;
 
-        case TMask::Close:
-          Result = HasModification && (Params->Modification >= Mask.LowModification);
-          break;
+          case TMask::Close:
+            Result = HasModification && (Params->Modification >= Mask.LowModification);
+            break;
         }
       }
     }
@@ -629,7 +400,7 @@ bool __fastcall TFileMasks::MatchesMasks(const UnicodeString FileName, bool Dire
 }
 //---------------------------------------------------------------------------
 bool __fastcall TFileMasks::Matches(const UnicodeString FileName, bool Directory,
-                                    const UnicodeString Path, const TParams * Params) const
+  const UnicodeString Path, const TParams * Params) const
 {
   bool Result =
     (FMasks[MASK_INDEX(Directory, true)].empty() || MatchesMasks(FileName, Directory, Path, Params, FMasks[MASK_INDEX(Directory, true)], true)) &&
@@ -638,7 +409,7 @@ bool __fastcall TFileMasks::Matches(const UnicodeString FileName, bool Directory
 }
 //---------------------------------------------------------------------------
 bool __fastcall TFileMasks::Matches(const UnicodeString FileName, bool Local,
-                                    bool Directory, const TParams * Params) const
+  bool Directory, const TParams * Params) const
 {
   bool Result;
   if (Local)
@@ -653,34 +424,17 @@ bool __fastcall TFileMasks::Matches(const UnicodeString FileName, bool Local,
   else
   {
     Result = Matches(UnixExtractFileName(FileName), Directory,
-                     UnixExcludeTrailingBackslash(UnixExtractFilePath(FileName)), Params);
+      UnixExcludeTrailingBackslash(UnixExtractFilePath(FileName)), Params);
   }
   return Result;
 }
-//---------------------------------------------------------------------------
-bool TFileMasks::GetIsValid(size_t & Start, size_t & Length) const
-{
-  if (IsMask(FStr) || FStr.IsEmpty())
-  {
-    Start = 0;
-    Length = FStr.Length();
-    return true;
-  }
-  else
-  {
-    Start = 0;
-    Length = 0;
-    return false;
-  }
-}
-
 //---------------------------------------------------------------------------
 bool __fastcall TFileMasks::operator ==(const TFileMasks & rhm) const
 {
   return (GetMasks() == rhm.GetMasks());
 }
 //---------------------------------------------------------------------------
-TFileMasks & __fastcall TFileMasks::operator =(const UnicodeString rhs)
+TFileMasks & __fastcall TFileMasks::operator =(const UnicodeString & rhs)
 {
   SetMasks(rhs);
   return *this;
@@ -692,20 +446,20 @@ TFileMasks & __fastcall TFileMasks::operator =(const TFileMasks & rhm)
   return *this;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileMasks::operator ==(const UnicodeString rhs) const
+bool __fastcall TFileMasks::operator ==(const UnicodeString & rhs) const
 {
   return (GetMasks() == rhs);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileMasks::ThrowError(size_t Start, size_t End)
+void __fastcall TFileMasks::ThrowError(int Start, int End)
 {
   throw EFileMasksException(
-    FMTLOAD(MASK_ERROR, GetMasks().SubString(Start, End - Start + 1).c_str()),
+    FMTLOAD(MASK_ERROR, GetMasks().SubString(Start, End - Start + 1)),
     Start, End - Start + 1);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileMasks::CreateMaskMask(const UnicodeString Mask, size_t Start, size_t End,
-    bool Ex, TMaskMask & MaskMask)
+void __fastcall TFileMasks::CreateMaskMask(const UnicodeString & Mask, int Start, int End,
+  bool Ex, TMaskMask & MaskMask)
 {
   try
   {
@@ -730,12 +484,12 @@ void __fastcall TFileMasks::CreateMaskMask(const UnicodeString Mask, size_t Star
 UnicodeString __fastcall TFileMasks::MakeDirectoryMask(UnicodeString Str)
 {
   assert(!Str.IsEmpty());
-  if (Str.IsEmpty() || !(::IsDelimiter(Str, DirectoryMaskDelimiters, Str.Length())))
+  if (Str.IsEmpty() || !Str.IsDelimiter(DirectoryMaskDelimiters, Str.Length()))
   {
-    size_t D = ::LastDelimiter(Str, DirectoryMaskDelimiters);
+    int D = Str.LastDelimiter(DirectoryMaskDelimiters);
     // if there's any [back]slash anywhere in str,
     // add the same [back]slash at the end, otherwise add slash
-    wchar_t Delimiter = (D >= 0) ? Str[D] : DirectoryMaskDelimiters[1];
+    wchar_t Delimiter = (D > 0) ? Str[D] : DirectoryMaskDelimiters[1];
     Str += Delimiter;
   }
   return Str;
@@ -759,8 +513,8 @@ void __fastcall TFileMasks::CreateMask(
   Mask.LowModificationMask = TMask::None;
 
   wchar_t NextPartDelimiter = L'\0';
-  int NextPartFrom = 0;
-  int (NextPartFrom < MaskStr.Length())
+  int NextPartFrom = 1;
+  while (NextPartFrom <= MaskStr.Length())
   {
     wchar_t PartDelimiter = NextPartDelimiter;
     int PartFrom = NextPartFrom;
@@ -776,24 +530,24 @@ void __fastcall TFileMasks::CreateMask(
       bool Low = (PartDelimiter == L'>');
 
       TMask::TMaskBoundary Boundary;
-      if ((PartStr.Length() >= 1) && (PartStr[0] == L'='))
+      if ((PartStr.Length() >= 1) && (PartStr[1] == L'='))
       {
         Boundary = TMask::Close;
-        PartStr.Delete(0, 1);
+        PartStr.Delete(1, 1);
       }
       else
       {
         Boundary = TMask::Open;
       }
 
-      System::TFormatSettings FormatSettings;
-      GetLocaleFormatSettings(System::GetDefaultLCID(), FormatSettings);
+      TFormatSettings FormatSettings;
+      GetLocaleFormatSettings(GetDefaultLCID(), FormatSettings);
       FormatSettings.DateSeparator = L'-';
       FormatSettings.TimeSeparator = L':';
       FormatSettings.ShortDateFormat = L"yyyy/mm/dd";
       FormatSettings.ShortTimeFormat = L"hh:nn:ss";
 
-      System::TDateTime Modification;
+      TDateTime Modification;
       if (TryStrToDateTime(PartStr, Modification, FormatSettings) ||
           TryRelativeStrToDateTime(PartStr, Modification))
       {
@@ -826,7 +580,7 @@ void __fastcall TFileMasks::CreateMask(
     }
     else if (!PartStr.IsEmpty())
     {
-      int D = ::LastDelimiter(PartStr, DirectoryMaskDelimiters);
+      int D = PartStr.LastDelimiter(DirectoryMaskDelimiters);
 
       Directory = (D > 0) && (D == PartStr.Length());
 
@@ -838,9 +592,9 @@ void __fastcall TFileMasks::CreateMask(
           Mask.UserStr.Delete(PartStart - MaskStart + D, 1);
           D--;
         }
-        while (::IsDelimiter(PartStr, DirectoryMaskDelimiters, PartStr.Length()));
+        while (PartStr.IsDelimiter(DirectoryMaskDelimiters, PartStr.Length()));
 
-        D = ::LastDelimiter(PartStr, DirectoryMaskDelimiters);
+        D = PartStr.LastDelimiter(DirectoryMaskDelimiters);
 
         if (FForceDirectoryMasks == 0)
         {
@@ -851,10 +605,10 @@ void __fastcall TFileMasks::CreateMask(
       else if (FForceDirectoryMasks > 0)
       {
         Directory = true;
-        Mask.MaskStr.Insert(PartStart - MaskStart + PartStr.Length(), UnicodeString(1, DirectoryMaskDelimiters[1]));
+        Mask.MaskStr.Insert(DirectoryMaskDelimiters[1], PartStart - MaskStart + PartStr.Length());
       }
 
-      if (D >= 0)
+      if (D > 0)
       {
         // make sure sole "/" (root dir) is preserved as is
         CreateMaskMask(
@@ -876,11 +630,11 @@ void __fastcall TFileMasks::CreateMask(
   FMasks[MASK_INDEX(Directory, Include)].push_back(Mask);
 }
 //---------------------------------------------------------------------------
-System::TStrings * __fastcall TFileMasks::GetMasksStr(int Index) const
+TStrings * __fastcall TFileMasks::GetMasksStr(int Index) const
 {
   if (FMasksStr[Index] == NULL)
   {
-    FMasksStr[Index] = new System::TStringList();
+    FMasksStr[Index] = new TStringList();
     TMasks::const_iterator I = FMasks[Index].begin();
     while (I != FMasks[Index].end())
     {
@@ -901,11 +655,11 @@ void __fastcall TFileMasks::TrimEx(UnicodeString & Str, int & Start, int & End)
 {
   UnicodeString Buf = TrimLeft(Str);
   Start += Str.Length() - Buf.Length();
-  Str = ::TrimRight(Buf);
+  Str = TrimRight(Buf);
   End -= Buf.Length() - Str.Length();
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileMasks::MatchesMaskMask(const TMaskMask & MaskMask, const UnicodeString Str)
+bool __fastcall TFileMasks::MatchesMaskMask(const TMaskMask & MaskMask, const UnicodeString & Str)
 {
   bool Result;
   if (MaskMask.Kind == TMaskMask::Any)
@@ -931,7 +685,7 @@ void __fastcall TFileMasks::SetMasks(const UnicodeString value)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileMasks::SetMask(const UnicodeString Mask)
+void __fastcall TFileMasks::SetMask(const UnicodeString & Mask)
 {
   SetStr(Mask, true);
 }
@@ -944,9 +698,9 @@ void __fastcall TFileMasks::SetStr(const UnicodeString Str, bool SingleMask)
     FStr = Str;
     Clear();
 
-    int NextMaskFrom = 0;
+    int NextMaskFrom = 1;
     bool Include = true;
-    while (NextMaskFrom < Str.Length())
+    while (NextMaskFrom <= Str.Length())
     {
       int MaskStart = NextMaskFrom;
       wchar_t NextMaskDelimiter;
@@ -959,7 +713,7 @@ void __fastcall TFileMasks::SetStr(const UnicodeString Str, bool SingleMask)
       }
       else
       {
-        MaskStr = ::CopyToChars(Str, NextMaskFrom, AllFileMasksDelimiters, false, &NextMaskDelimiter, true);
+        MaskStr = CopyToChars(Str, NextMaskFrom, AllFileMasksDelimiters, false, &NextMaskDelimiter, true);
       }
       int MaskEnd = NextMaskFrom - 2;
 
@@ -1004,10 +758,10 @@ TCustomCommand::TCustomCommand()
 }
 //---------------------------------------------------------------------------
 void __fastcall TCustomCommand::GetToken(
-  const UnicodeString Command, size_t Index, size_t & Len, wchar_t & PatternCmd)
+  const UnicodeString & Command, int Index, int & Len, wchar_t & PatternCmd)
 {
-  assert(Index < Command.Length());
-  const wchar_t * Ptr = Command.c_str() + Index;
+  assert(Index <= Command.Length());
+  const wchar_t * Ptr = Command.c_str() + Index - 1;
 
   if (Ptr[0] == L'!')
   {
@@ -1023,13 +777,13 @@ void __fastcall TCustomCommand::GetToken(
 
     if (Len < 0)
     {
-      throw ExtException(FMTLOAD(CUSTOM_COMMAND_UNKNOWN, PatternCmd, Index));
+      throw Exception(FMTLOAD(CUSTOM_COMMAND_UNKNOWN, PatternCmd, Index));
     }
     else if (Len > 0)
     {
       if ((Command.Length() - Index + 1) < Len)
       {
-        throw ExtException(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, PatternCmd, Index));
+        throw Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, PatternCmd, Index));
       }
     }
     else if (Len == 0)
@@ -1037,7 +791,7 @@ void __fastcall TCustomCommand::GetToken(
       const wchar_t * PatternEnd = wcschr(Ptr + 1, L'!');
       if (PatternEnd == NULL)
       {
-        throw ExtException(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, PatternCmd, Index));
+        throw Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, PatternCmd, Index));
       }
       Len = PatternEnd - Ptr + 1;
     }
@@ -1057,16 +811,16 @@ void __fastcall TCustomCommand::GetToken(
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TCustomCommand::Complete(const UnicodeString Command,
-    bool LastPass)
+UnicodeString __fastcall TCustomCommand::Complete(const UnicodeString & Command,
+  bool LastPass)
 {
   UnicodeString Result;
-  size_t Index = 0;
+  int Index = 1;
 
-  while (Index < Command.Length())
+  while (Index <= Command.Length())
   {
-    size_t Len = 0;
-    wchar_t PatternCmd = L'\0';
+    int Len;
+    wchar_t PatternCmd;
     GetToken(Command, Index, Len, PatternCmd);
 
     if (PatternCmd == TEXT_TOKEN)
@@ -1087,12 +841,12 @@ UnicodeString __fastcall TCustomCommand::Complete(const UnicodeString Command,
     else
     {
       wchar_t Quote = NoQuote;
-      if ((Index > 0) && (Index + Len - 1 < Command.Length()) &&
-          ::IsDelimiter(Command, Quotes, Index - 1) &&
-          ::IsDelimiter(Command, Quotes, Index + Len) &&
+      if ((Index > 1) && (Index + Len - 1 < Command.Length()) &&
+          Command.IsDelimiter(Quotes, Index - 1) &&
+          Command.IsDelimiter(Quotes, Index + Len) &&
           (Command[Index - 1] == Command[Index + Len]))
       {
-        Quote = static_cast<char>(Command[Index - 1]);
+        Quote = Command[Index - 1];
       }
       UnicodeString Pattern = Command.SubString(Index, Len);
       UnicodeString Replacement;
@@ -1101,7 +855,8 @@ UnicodeString __fastcall TCustomCommand::Complete(const UnicodeString Command,
       {
         if (!LastPass)
         {
-          Replacement = ::StringReplace(Replacement, L"!", L"!!", TReplaceFlags::Init(rfReplaceAll));
+          Replacement = StringReplace(Replacement, L"!", L"!!",
+            TReplaceFlags::Init(rfReplaceAll));
         }
         if (Delimit)
         {
@@ -1126,19 +881,19 @@ void __fastcall TCustomCommand::DelimitReplacement(UnicodeString & Replacement, 
   Replacement = ShellDelimitStr(Replacement, Quote);
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomCommand::Validate(const UnicodeString Command)
+void __fastcall TCustomCommand::Validate(const UnicodeString & Command)
 {
   CustomValidate(Command, NULL);
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomCommand::CustomValidate(const UnicodeString Command,
-    void * Arg)
+void __fastcall TCustomCommand::CustomValidate(const UnicodeString & Command,
+  void * Arg)
 {
-  size_t Index = 0;
+  int Index = 1;
 
-  while (Index < Command.Length())
+  while (Index <= Command.Length())
   {
-    size_t Len;
+    int Len;
     wchar_t PatternCmd;
     GetToken(Command, Index, Len, PatternCmd);
     ValidatePattern(Command, Index, Len, PatternCmd, Arg);
@@ -1147,15 +902,15 @@ void __fastcall TCustomCommand::CustomValidate(const UnicodeString Command,
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCustomCommand::FindPattern(const UnicodeString Command,
-    wchar_t PatternCmd)
+bool __fastcall TCustomCommand::FindPattern(const UnicodeString & Command,
+  wchar_t PatternCmd)
 {
   bool Result = false;
-  size_t Index = 0;
+  int Index = 1;
 
-  while (!Result && (Index < Command.Length()))
+  while (!Result && (Index <= Command.Length()))
   {
-    size_t Len;
+    int Len;
     wchar_t APatternCmd;
     GetToken(Command, Index, Len, APatternCmd);
     if (((PatternCmd != L'!') && (PatternCmd == APatternCmd)) ||
@@ -1170,8 +925,8 @@ bool __fastcall TCustomCommand::FindPattern(const UnicodeString Command,
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomCommand::ValidatePattern(const UnicodeString /*Command*/,
-    size_t /*Index*/, size_t /*Len*/, wchar_t /*PatternCmd*/, void * /*Arg*/)
+void __fastcall TCustomCommand::ValidatePattern(const UnicodeString & /*Command*/,
+  int /*Index*/, int /*Len*/, wchar_t /*PatternCmd*/, void * /*Arg*/)
 {
 }
 //---------------------------------------------------------------------------
@@ -1182,49 +937,49 @@ TInteractiveCustomCommand::TInteractiveCustomCommand(
   FChildCustomCommand = ChildCustomCommand;
 }
 //---------------------------------------------------------------------------
-void __fastcall TInteractiveCustomCommand::Prompt(size_t /*Index*/,
-    const UnicodeString /*Prompt*/, UnicodeString & Value)
+void __fastcall TInteractiveCustomCommand::Prompt(int /*Index*/,
+  const UnicodeString & /*Prompt*/, UnicodeString & Value)
 {
   Value = L"";
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TInteractiveCustomCommand::PatternLen(size_t Index, wchar_t PatternCmd)
+int __fastcall TInteractiveCustomCommand::PatternLen(int Index, wchar_t PatternCmd)
 {
-  size_t Len = 0;
+  int Len;
   switch (PatternCmd)
   {
-  case '?':
-    Len = 0;
-    break;
+    case L'?':
+      Len = 0;
+      break;
 
-  default:
-    Len = FChildCustomCommand->PatternLen(Index, PatternCmd);
-    break;
+    default:
+      Len = FChildCustomCommand->PatternLen(Index, PatternCmd);
+      break;
   }
   return Len;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TInteractiveCustomCommand::PatternReplacement(size_t Index, const UnicodeString Pattern,
-    UnicodeString & Replacement, bool & Delimit)
+bool __fastcall TInteractiveCustomCommand::PatternReplacement(int Index, const UnicodeString & Pattern,
+  UnicodeString & Replacement, bool & Delimit)
 {
   bool Result;
-  if ((Pattern.Length() >= 3) && (Pattern[1] == L'?'))
+  if ((Pattern.Length() >= 3) && (Pattern[2] == L'?'))
   {
     UnicodeString PromptStr;
-    size_t Pos = Pattern.SubString(2, Pattern.Length() - 2).Pos(L'?');
-    if (Pos >= 0)
+    int Pos = Pattern.SubString(3, Pattern.Length() - 2).Pos(L"?");
+    if (Pos > 0)
     {
-      Replacement = Pattern.SubString(2 + Pos, Pattern.Length() - 3 - Pos);
-      if ((Pos > 0) && (Pattern[2 + Pos - 2] == L'\\'))
+      Replacement = Pattern.SubString(3 + Pos, Pattern.Length() - 3 - Pos);
+      if ((Pos > 1) && (Pattern[3 + Pos - 2] == L'\\'))
       {
         Delimit = false;
         Pos--;
       }
-      PromptStr = Pattern.SubString(2, Pos - 1);
+      PromptStr = Pattern.SubString(3, Pos - 1);
     }
     else
     {
-      PromptStr = Pattern.SubString(2, Pattern.Length() - 3);
+      PromptStr = Pattern.SubString(3, Pattern.Length() - 3);
     }
 
     Prompt(Index, PromptStr, Replacement);
@@ -1257,15 +1012,15 @@ TFileCustomCommand::TFileCustomCommand()
 }
 //---------------------------------------------------------------------------
 TFileCustomCommand::TFileCustomCommand(const TCustomCommandData & Data,
-                                       const UnicodeString Path)
+  const UnicodeString & Path)
 {
   FData = Data;
   FPath = Path;
 }
 //---------------------------------------------------------------------------
 TFileCustomCommand::TFileCustomCommand(const TCustomCommandData & Data,
-                                       const UnicodeString Path, const UnicodeString FileName,
-                                       const UnicodeString FileList) :
+    const UnicodeString & Path, const UnicodeString & FileName,
+    const UnicodeString & FileList) :
   TCustomCommand()
 {
   FData = Data;
@@ -1274,28 +1029,28 @@ TFileCustomCommand::TFileCustomCommand(const TCustomCommandData & Data,
   FFileList = FileList;
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TFileCustomCommand::PatternLen(size_t /*Index*/, wchar_t PatternCmd)
+int __fastcall TFileCustomCommand::PatternLen(int /*Index*/, wchar_t PatternCmd)
 {
-  size_t Len = 0;
+  int Len;
   switch (toupper(PatternCmd))
   {
-  case L'@':
-  case L'U':
-  case L'P':
-  case L'/':
-  case L'&':
-    Len = 2;
-    break;
+    case L'@':
+    case L'U':
+    case L'P':
+    case L'/':
+    case L'&':
+      Len = 2;
+      break;
 
-  default:
-    Len = 1;
-    break;
+    default:
+      Len = 1;
+      break;
   }
   return Len;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileCustomCommand::PatternReplacement(size_t /*Index*/,
-    const UnicodeString Pattern, UnicodeString & Replacement, bool & Delimit)
+bool __fastcall TFileCustomCommand::PatternReplacement(int /*Index*/,
+  const UnicodeString & Pattern, UnicodeString & Replacement, bool & Delimit)
 {
   // keep consistent with TSessionLog::OpenLogFile
 
@@ -1330,19 +1085,19 @@ bool __fastcall TFileCustomCommand::PatternReplacement(size_t /*Index*/,
   return true;
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileCustomCommand::Validate(const UnicodeString Command)
+void __fastcall TFileCustomCommand::Validate(const UnicodeString & Command)
 {
   int Found[2] = { 0, 0 };
   CustomValidate(Command, &Found);
   if ((Found[0] > 0) && (Found[1] > 0))
   {
-    throw ExtException(FMTLOAD(CUSTOM_COMMAND_FILELIST_ERROR,
-                               Found[1], Found[0]));
+    throw Exception(FMTLOAD(CUSTOM_COMMAND_FILELIST_ERROR,
+      Found[1], Found[0]));
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileCustomCommand::ValidatePattern(const UnicodeString /*Command*/,
-    size_t Index, size_t /*Len*/, wchar_t PatternCmd, void * Arg)
+void __fastcall TFileCustomCommand::ValidatePattern(const UnicodeString & /*Command*/,
+  int Index, int /*Len*/, wchar_t PatternCmd, void * Arg)
 {
   int * Found = static_cast<int *>(Arg);
 
@@ -1354,16 +1109,16 @@ void __fastcall TFileCustomCommand::ValidatePattern(const UnicodeString /*Comman
   }
   else if ((PatternCmd != TEXT_TOKEN) && (PatternLen(Index, PatternCmd) == 1))
   {
-    Found[1] = static_cast<int>(Index);
+    Found[1] = Index;
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileCustomCommand::IsFileListCommand(const UnicodeString Command)
+bool __fastcall TFileCustomCommand::IsFileListCommand(const UnicodeString & Command)
 {
   return FindPattern(Command, L'&');
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileCustomCommand::IsFileCommand(const UnicodeString Command)
+bool __fastcall TFileCustomCommand::IsFileCommand(const UnicodeString & Command)
 {
   return FindPattern(Command, L'!') || FindPattern(Command, L'&');
 }
