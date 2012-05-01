@@ -51,7 +51,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList *List)
             size_t N = 0, P = 0;
             // If name already contains number parenthesis remove it (and remember it)
             UnicodeString Name = GetName();
-            if ((Name[Name.Length() - 1] == L')') && ((P = ::LastDelimiter(Name, L"(")) != UnicodeString::npos))
+            if ((Name[Name.Length() - 1] == L')') && ((P = ::LastDelimiter(Name, L"(")) >= 0))
                 try
                 {
                     N = StrToInt(Name.SubString(P + 1, Name.Length() - P - 1));

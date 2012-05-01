@@ -265,7 +265,7 @@ void __fastcall TCopyParamList::Modify()
 //---------------------------------------------------------------------
 void __fastcall TCopyParamList::ValidateName(const UnicodeString Name)
 {
-    if (::LastDelimiter(Name, FInvalidChars) != UnicodeString::npos)
+    if (::LastDelimiter(Name, FInvalidChars) >= 0)
     {
         throw ExtException(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), FInvalidChars.c_str()));
     }

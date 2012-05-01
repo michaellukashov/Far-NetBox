@@ -16,7 +16,7 @@ void __fastcall TOptions::Add(const UnicodeString Value)
     if (!FNoMoreSwitches &&
             (Value.Length() == 2) &&
             (Value[0] == Value[1]) &&
-            (FSwitchMarks.find_first_of(Value[0]) != UnicodeString::npos))
+            (FSwitchMarks.find_first_of(Value[0]) >= 0))
     {
         FNoMoreSwitches = true;
     }
@@ -26,7 +26,7 @@ void __fastcall TOptions::Add(const UnicodeString Value)
         size_t Index = 0; // shut up
         if (!FNoMoreSwitches &&
                 (Value.Length() >= 2) &&
-                (FSwitchMarks.find_first_of(Value[0]) != UnicodeString::npos))
+                (FSwitchMarks.find_first_of(Value[0]) >= 0))
         {
             Index = 2;
             Switch = true;

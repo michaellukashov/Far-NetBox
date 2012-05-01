@@ -1145,7 +1145,7 @@ bool __fastcall TSessionData::ParseUrl(const UnicodeString Url, TOptions *Option
             SetName(L"");
 
             size_t PSlash = url.find_first_of(L"/");
-            if (PSlash == UnicodeString::npos)
+            if (PSlash < 0)
             {
                 PSlash = url.Length() + 1;
             }
@@ -1157,7 +1157,7 @@ bool __fastcall TSessionData::ParseUrl(const UnicodeString Url, TOptions *Option
             UnicodeString UserInfo;
             UnicodeString HostInfo;
 
-            if (P != UnicodeString::npos)
+            if (P >= 0)
             {
                 UserInfo = ConnectInfo.SubString(0, P);
                 HostInfo = ConnectInfo.SubString(P + 1, ConnectInfo.Length() - P);
@@ -1167,7 +1167,7 @@ bool __fastcall TSessionData::ParseUrl(const UnicodeString Url, TOptions *Option
                 HostInfo = ConnectInfo;
             }
             DEBUG_PRINTF(L"UserInfo = %s, HostInfo = %s", UserInfo.c_str(), HostInfo.c_str());
-            if ((HostInfo.Length() >= 2) && (HostInfo[0] == '[') && ((P = HostInfo.Pos(L"]")) != UnicodeString::npos))
+            if ((HostInfo.Length() >= 2) && (HostInfo[0] == '[') && ((P = HostInfo.Pos(L"]")) >= 0))
             {
                 SetHostName(HostInfo.SubString(1, P - 2));
                 HostInfo.Delete(1, P);
@@ -1197,7 +1197,7 @@ bool __fastcall TSessionData::ParseUrl(const UnicodeString Url, TOptions *Option
                 SetFtps(AFtps);
             }
 
-            bool PasswordSeparator = (UserInfo.find_first_of(':') != UnicodeString::npos);
+            bool PasswordSeparator = (UserInfo.find_first_of(':') >= 0);
             SetUserName(DecodeUrlChars(CutToChar(UserInfo, ':', false)));
             SetPassword(DecodeUrlChars(UserInfo));
             SetPasswordless(GetPassword().IsEmpty() && PasswordSeparator);
@@ -1344,7 +1344,7 @@ void __fastcall TSessionData::ValidatePath(const UnicodeString Path)
 //---------------------------------------------------------------------
 void __fastcall TSessionData::ValidateName(const UnicodeString Name)
 {
-    if (::LastDelimiter(Name, L"/") != UnicodeString::npos)
+    if (::LastDelimiter(Name, L"/") >= 0)
     {
         throw ExtException(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), L"/"));
     }
@@ -1411,7 +1411,7 @@ void __fastcall TSessionData::SetHostName(const UnicodeString value)
         UnicodeString XPassword = GetPassword();
 
         size_t P = ::LastDelimiter(val, L"@");
-        if (P != UnicodeString::npos)
+        if (P >= 0)
         {
             SetUserName(val.SubString(0, P));
             val = val.SubString(P + 1, val.Length() - P);
@@ -1603,13 +1603,13 @@ bool __fastcall TSessionData::GetUsesSsh()
 //---------------------------------------------------------------------
 void __fastcall TSessionData::SetCipher(size_t Index, TCipher value)
 {
-    assert(Index != NPOS && Index < CIPHER_COUNT);
+    assert(Index >= 0 && Index < CIPHER_COUNT);
     SET_SESSION_PROPERTY(Ciphers[Index]);
 }
 //---------------------------------------------------------------------
 TCipher __fastcall TSessionData::GetCipher(size_t Index) const
 {
-    assert(Index != NPOS && Index < CIPHER_COUNT);
+    assert(Index >= 0 && Index < CIPHER_COUNT);
     return FCiphers[Index];
 }
 //---------------------------------------------------------------------
@@ -1657,13 +1657,13 @@ UnicodeString __fastcall TSessionData::GetCipherList() const
 //---------------------------------------------------------------------
 void __fastcall TSessionData::SetKex(size_t Index, TKex value)
 {
-    assert(Index != NPOS && Index < KEX_COUNT);
+    assert(Index >= 0 && Index < KEX_COUNT);
     SET_SESSION_PROPERTY(Kex[Index]);
 }
 //---------------------------------------------------------------------
 TKex __fastcall TSessionData::GetKex(size_t Index) const
 {
-    assert(Index != NPOS && Index < KEX_COUNT);
+    assert(Index >= 0 && Index < KEX_COUNT);
     return FKex[Index];
 }
 //---------------------------------------------------------------------
@@ -2209,7 +2209,7 @@ void __fastcall TSessionData::SetTunnelHostName(const UnicodeString val)
         const UnicodeString XTunnelPassword = GetTunnelPassword();
 
         size_t P = ::LastDelimiter(value, L"@");
-        if (P != UnicodeString::npos)
+        if (P >= 0)
         {
             SetTunnelUserName(value.SubString(0, P));
             value = value.SubString(P + 1, value.Length() - P);
@@ -2358,7 +2358,7 @@ UnicodeString __fastcall TSessionData::GetLocalName()
     {
         Result = GetName();
         size_t P = ::LastDelimiter(Result, L"/");
-        if (P != UnicodeString::npos)
+        if (P >= 0)
         {
             Result.Delete(0, P);
         }
@@ -2453,7 +2453,7 @@ void __fastcall TStoredSessionList::Load(THierarchicalStorage *Storage,
         {
             for (size_t Index = 0; Index < System::TObjectList::GetCount(); Index++)
             {
-                if (Loaded->IndexOf(GetItem(Index)) == NPOS)
+                if (Loaded->IndexOf(GetItem(Index)) < 0)
                 {
                     Delete(Index);
                     Index--;
@@ -2657,7 +2657,7 @@ size_t __fastcall TStoredSessionList::IndexOf(TSessionData *Data)
             return Index;
         }
     }
-    return NPOS;
+    return -1;
 }
 //---------------------------------------------------------------------------
 TSessionData * __fastcall TStoredSessionList::NewSession(
@@ -2737,7 +2737,7 @@ void __fastcall TStoredSessionList::ImportHostKeys(const UnicodeString TargetKey
                     {
                         KeyName = KeyList->GetStrings(KeyIndex);
                         size_t P = KeyName.Pos(HostKeyName);
-                        if ((P != UnicodeString::npos) && (P == KeyName.Length() - HostKeyName.Length() + 1))
+                        if ((P >= 0) && (P == KeyName.Length() - HostKeyName.Length() + 1))
                         {
                             TargetStorage->WriteStringRaw(KeyName,
                                                           SourceStorage->ReadStringRaw(KeyName, L""));

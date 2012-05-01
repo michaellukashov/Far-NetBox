@@ -2815,7 +2815,7 @@ void __fastcall TSFTPFileSystem::DoStartup()
         }
         // full string is "1.77 sshlib: Momentum SSH Server",
         // possibly it is sshlib-related
-        else if (::Pos(GetSessionInfo().SshImplementation, L"Momentum SSH Server") != UnicodeString::npos)
+        else if (::Pos(GetSessionInfo().SshImplementation, L"Momentum SSH Server") >= 0)
         {
             FMaxPacketSize = 4 + (32 * 1024);
             FTerminal->LogEvent(FORMAT(L"Limiting packet size to Momentum sftp-server limit of %d bytes",

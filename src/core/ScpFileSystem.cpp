@@ -297,7 +297,7 @@ UnicodeString TCommandSet::ExtractCommand(const UnicodeString Command)
 {
     UnicodeString command = Command;
     size_t P = command.find_first_of(L" ");
-    if (P != UnicodeString::npos)
+    if (P >= 0)
     {
         command.SetLength(P);
     }
@@ -573,7 +573,7 @@ bool TSCPFileSystem::RemoveLastLine(UnicodeString &Line,
     // contain CR/LF, we can recognize last line
     size_t Pos = Line.Pos(LastLine);
     // DEBUG_PRINTF(L"Line = %s, LastLine = %s, Pos = %d", Line.c_str(), LastLine.c_str(), Pos);
-    if (Pos != UnicodeString::npos)
+    if (Pos >= 0)
     {
         // 2003-07-14: There must be nothing after return code number to
         // consider string as last line. This fixes bug with 'set' command
@@ -585,7 +585,7 @@ bool TSCPFileSystem::RemoveLastLine(UnicodeString &Line,
         {
             IsLastLine = true;
             // DEBUG_PRINTF(L"Line1 = %s", Line.c_str());
-            // if ((Pos != UnicodeString::npos) && (Pos != 0))
+            // if ((Pos >= 0) && (Pos != 0))
             {
                 Line.SetLength(Pos);
             }

@@ -1212,7 +1212,7 @@ bool __fastcall TInteractiveCustomCommand::PatternReplacement(size_t Index, cons
     {
         UnicodeString PromptStr;
         size_t Pos = Pattern.SubString(2, Pattern.Length() - 2).find_first_of(L"?");
-        if (Pos != UnicodeString::npos)
+        if (Pos >= 0)
         {
             Replacement = Pattern.SubString(2 + Pos, Pattern.Length() - 3 - Pos);
             if ((Pos > 0) && (Pattern[2 + Pos - 2] == L'\\'))

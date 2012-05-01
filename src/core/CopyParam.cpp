@@ -276,7 +276,7 @@ UnicodeString TCopyParamType::ValidLocalFileName(const UnicodeString FileName) c
                     (*InvalidChar == TokenPrefix) &&
                     (((fileName.Length() - Pos) <= 1) ||
                      (((Char = HexToChar(fileName.SubString(Pos + 1, 2))) == '\0') ||
-                      (FTokenizibleChars.find_first_of(Char) == UnicodeString::npos))))
+                      (FTokenizibleChars.find_first_of(Char) < 0))))
             {
                 InvalidChar++;
             }
@@ -297,7 +297,7 @@ UnicodeString TCopyParamType::ValidLocalFileName(const UnicodeString FileName) c
         if (IsReservedName(fileName))
         {
             size_t P = fileName.find_first_of(L".");
-            if (P == UnicodeString::npos)
+            if (P < 0)
             {
                 P = fileName.Length();
             }
@@ -326,7 +326,7 @@ UnicodeString TCopyParamType::RestoreChars(const UnicodeString FileName) const
                 UnicodeString Hex = fileName.SubString(Index + 1, 2);
                 char Char = HexToChar(Hex);
                 if ((Char != '\0') &&
-                        ((FTokenizibleChars.Pos(Char) != UnicodeString::npos) ||
+                        ((FTokenizibleChars.Pos(Char) >= 0) ||
                          (((Char == ' ') || (Char == '.')) && (Index == fileName.Length() - 2))))
                 {
                     fileName[Index] = Char;

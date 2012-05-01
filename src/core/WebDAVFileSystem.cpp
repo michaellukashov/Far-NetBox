@@ -2475,7 +2475,7 @@ bool TWebDAVFileSystem::WebDAVGetList(const UnicodeString Directory, UnicodeStri
         //name
         item.Name = path;
         const size_t nameDelim = item.Name.rfind(L'/'); //Save only name without full path
-        if (nameDelim != UnicodeString::npos)
+        if (nameDelim >= 0)
         {
             item.Name.Delete(0, nameDelim + 1);
         }

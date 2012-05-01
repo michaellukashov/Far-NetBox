@@ -1783,12 +1783,12 @@ void __fastcall TFTPFileSystem::ReadCurrentDirectory()
                 UnicodeString Path = Response->GetText();
 
                 size_t P = ::Pos(Path, L"\"");
-                if (P == UnicodeString::npos)
+                if (P < 0)
                 {
                     // some systems use single quotes, be tolerant
                     P = ::Pos(Path, L"'");
                 }
-                if (P != UnicodeString::npos)
+                if (P >= 0)
                 {
                     Path.Delete(0, P);
 
@@ -2737,7 +2737,7 @@ void __fastcall TFTPFileSystem::HandleReplyStatus(const UnicodeString Response)
                 FSystem = ::TrimRight(FLastResponse->GetText());
                 // full name is "Personal FTP Server PRO K6.0"
                 if ((FListAll == asAuto) &&
-                        (::Pos(FSystem, L"Personal FTP Server") != UnicodeString::npos))
+                        (::Pos(FSystem, L"Personal FTP Server") >= 0))
                 {
                     FTerminal->LogEvent(L"Server is known not to support LIST -a");
                     FListAll = asOff;
@@ -2771,13 +2771,13 @@ UnicodeString __fastcall TFTPFileSystem::ExtractStatusMessage(UnicodeString &Sta
     // CApiLog::LogMessage
     // (note that the formatting may not be present when LogMessageRaw is used)
     size_t P1 = ::Pos(Status, L"): ");
-    if (P1 != UnicodeString::npos)
+    if (P1 >= 0)
     {
         size_t P2 = ::Pos(Status, L".cpp(");
-        if ((P2 != UnicodeString::npos) && (P2 < P1))
+        if ((P2 >= 0) && (P2 < P1))
         {
             size_t P3 = ::Pos(Status, L"   caller=0x");
-            if ((P3 != UnicodeString::npos) && (P3 > P1))
+            if ((P3 >= 0) && (P3 > P1))
             {
                 Status = Status.SubString(P1 + 3, P3 - P1 - 3);
             }
