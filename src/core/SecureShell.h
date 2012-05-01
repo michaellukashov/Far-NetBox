@@ -9,6 +9,11 @@
 #include "SessionData.h"
 #include "SessionInfo.h"
 //---------------------------------------------------------------------------
+#ifndef PuttyIntfH
+struct Backend;
+struct Config;
+#endif
+//---------------------------------------------------------------------------
 struct _WSANETWORKEVENTS;
 typedef struct _WSANETWORKEVENTS WSANETWORKEVENTS;
 typedef UINT_PTR SOCKET;
@@ -17,7 +22,7 @@ struct TPuttyTranslation;
 //---------------------------------------------------------------------------
 class TSecureShell
 {
-  friend class TPoolForDataEvent;
+friend class TPoolForDataEvent;
 
 private:
   SOCKET FSocket;
@@ -44,11 +49,11 @@ private:
   int FWaiting;
   bool FSimple;
 
-  size_t PendLen;
-  size_t PendSize;
-  size_t OutLen;
-  char * OutPtr;
-  char * Pending;
+  unsigned PendLen;
+  unsigned PendSize;
+  unsigned OutLen;
+  unsigned char * OutPtr;
+  unsigned char * Pending;
   TSessionLog * FLog;
   TConfiguration * FConfiguration;
   bool FAuthenticating;
@@ -65,13 +70,14 @@ private:
   static TCipher FuncToSsh2Cipher(const void * Cipher);
   UnicodeString FuncToCompression(int SshVersion, const void * Compress) const;
   void Init();
+  void __fastcall SetActive(bool value);
   void inline CheckConnection(int Message = -1);
   void WaitForData();
   void Discard();
   void FreeBackend();
-  void PoolForData(WSANETWORKEVENTS & Events, size_t & Result);
+  void PoolForData(WSANETWORKEVENTS & Events, unsigned int & Result);
   inline void CaptureOutput(TLogLineType Type,
-                            const UnicodeString Line);
+    const UnicodeString & Line);
   void ResetConnection();
   void ResetSessionInfo();
   void SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup);
@@ -79,44 +85,45 @@ private:
   void HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events);
   bool ProcessNetworkEvents(SOCKET Socket);
   bool EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
-                       WSANETWORKEVENTS * Events);
+    WSANETWORKEVENTS * Events);
   void UpdateSessionInfo();
-  void DispatchSendBuffer(size_t BufSize);
-  void SendBuffer(size_t & Result);
-  int TimeoutPrompt(TQueryParamsTimerEvent * PoolEvent);
+  bool __fastcall GetReady();
+  void DispatchSendBuffer(int BufSize);
+  void SendBuffer(unsigned int & Result);
+  unsigned int TimeoutPrompt(const TQueryParamsTimerEvent & PoolEvent);
 
 protected:
   captureoutput_signal_type FOnCaptureOutput;
 
   void GotHostKey();
   int TranslatePuttyMessage(const TPuttyTranslation * Translation,
-                            size_t Count, UnicodeString & Message);
+    size_t Count, UnicodeString & Message);
   int TranslateAuthenticationMessage(UnicodeString & Message);
   int TranslateErrorMessage(UnicodeString & Message);
-  void AddStdError(const UnicodeString Str);
-  void AddStdErrorLine(const UnicodeString Str);
-  void FatalError(const std::exception * E, const UnicodeString Msg);
-  void inline LogEvent(const UnicodeString Str);
-  void FatalError(const UnicodeString Error);
+  void AddStdError(UnicodeString Str);
+  void AddStdErrorLine(const UnicodeString & Str);
+  void FatalError(Exception * E, UnicodeString Msg);
+  void inline LogEvent(const UnicodeString & Str);
+  void FatalError(UnicodeString Error);
   static void ClearConfig(Config * cfg);
   static void StoreToConfig(TSessionData * Data, Config * cfg, bool Simple);
 
 public:
   explicit TSecureShell(TSessionUI * UI, TSessionData * SessionData,
-                        TSessionLog * Log, TConfiguration * Configuration);
+    TSessionLog * Log, TConfiguration * Configuration);
   virtual ~TSecureShell();
   void Open();
   void Close();
   void KeepAlive();
-  size_t Receive(char * Buf, size_t Len);
-  bool Peek(char *& Buf, size_t Len);
+  int Receive(unsigned char * Buf, int Len);
+  bool Peek(unsigned char *& Buf, int Len);
   UnicodeString ReceiveLine();
-  void Send(const char * Buf, size_t Len);
-  void SendStr(const UnicodeString Str);
+  void Send(const unsigned char * Buf, int Len);
+  void SendStr(UnicodeString Str);
   void SendSpecial(int Code);
   void Idle(unsigned int MSec = 0);
   void SendEOF();
-  void SendLine(const UnicodeString Line);
+  void SendLine(UnicodeString Line);
   void SendNull();
 
   const TSessionInfo & GetSessionInfo();
@@ -132,21 +139,30 @@ public:
   // interface to PuTTY core
   void UpdateSocket(SOCKET value, bool Startup);
   void UpdatePortFwdSocket(SOCKET value, bool Startup);
-  void PuttyFatalError(const UnicodeString Error);
+  void PuttyFatalError(UnicodeString Error);
   bool PromptUser(bool ToServer,
-                  const UnicodeString AName, bool NameRequired,
-                  const UnicodeString Instructions, bool InstructionsRequired,
-                  TStrings * Prompts, TStrings * Results);
-  void FromBackend(bool IsStdErr, const char * Data, size_t Length);
-  void CWrite(const char * Data, size_t Length);
+    UnicodeString AName, bool NameRequired,
+    UnicodeString Instructions, bool InstructionsRequired,
+    TStrings * Prompts, TStrings * Results);
+  void FromBackend(bool IsStdErr, const unsigned char * Data, int Length);
+  void CWrite(const char * Data, int Length);
   const UnicodeString GetStdError();
-  void VerifyHostKey(const UnicodeString Host, int Port,
-                     const UnicodeString KeyType, const UnicodeString KeyStr, const UnicodeString Fingerprint);
+  void VerifyHostKey(UnicodeString Host, int Port,
+    const UnicodeString KeyType, UnicodeString KeyStr, const UnicodeString Fingerprint);
   void AskAlg(const UnicodeString AlgType, const UnicodeString AlgName);
-  void DisplayBanner(const UnicodeString Banner);
+  void DisplayBanner(const UnicodeString & Banner);
   void OldKeyfileWarning();
-  void PuttyLogEvent(const UnicodeString Str);
+  void PuttyLogEvent(const UnicodeString & Str);
 
+#ifndef _MSC_VER
+  __property bool Active = { read = FActive, write = SetActive };
+  __property bool Ready = { read = GetReady };
+  __property TCaptureOutputEvent OnCaptureOutput = { read = FOnCaptureOutput, write = FOnCaptureOutput };
+  __property TDateTime LastDataSent = { read = FLastDataSent };
+  __property UnicodeString LastTunnelError = { read = FLastTunnelError };
+  __property UnicodeString UserName = { read = FUserName };
+  __property bool Simple = { read = FSimple, write = FSimple };
+#else
   bool GetActive() { return FActive; }
   void SetActive(bool value);
   bool GetReady();
@@ -157,6 +173,7 @@ public:
   UnicodeString GetUserName() { return FUserName; }
   bool GetSimple() { return FSimple; }
   void SetSimple(bool value) { FSimple = value; }
+#endif
 private:
   TSecureShell(const TSecureShell &);
   void operator=(const TSecureShell &);
