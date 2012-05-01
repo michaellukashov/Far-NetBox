@@ -429,6 +429,28 @@ bool __fastcall TFileMasks::Matches(const UnicodeString FileName, bool Local,
   return Result;
 }
 //---------------------------------------------------------------------------
+bool __fastcall TFileMasks::GetIsValid()
+{
+  int Start, Length;
+  return GetIsValid(Start, Length);
+}
+//---------------------------------------------------------------------------
+bool __fastcall TFileMasks::GetIsValid(int & Start, int & Length) const
+{
+  if (IsMask(FStr) || FStr.IsEmpty())
+  {
+    Start = 0;
+    Length = FStr.Length();
+    return true;
+  }
+  else
+  {
+    Start = 0;
+    Length = 0;
+    return false;
+  }
+}
+//---------------------------------------------------------------------------
 bool __fastcall TFileMasks::operator ==(const TFileMasks & rhm) const
 {
   return (GetMasks() == rhm.GetMasks());

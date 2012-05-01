@@ -81,6 +81,8 @@ public:
     const UnicodeString Path = L"", const TParams * Params = NULL) const;
   bool __fastcall Matches(const UnicodeString FileName, bool Local, bool Directory,
     const TParams * Params = NULL) const;
+  bool __fastcall GetIsValid();
+  bool __fastcall GetIsValid(int & Start, int & Length) const;
 
 #ifndef  _MSC_VER
   __property UnicodeString Masks = { read = FStr, write = SetMasks };
