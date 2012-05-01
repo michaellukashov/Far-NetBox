@@ -22,8 +22,8 @@ UnicodeString MungeStr(const UnicodeString Str)
 {
   std::string Result2;
   Result2.SetLength(Str.Length() * sizeof(wchar_t) * 3 + 1);
-  putty_mungestr(System::W2MB(Str.c_str()).c_str(), const_cast<char *>(Result2.c_str()));
-  UnicodeString Result = System::MB2W(Result2.c_str());
+  putty_mungestr(W2MB(Str.c_str()).c_str(), const_cast<char *>(Result2.c_str()));
+  UnicodeString Result = MB2W(Result2.c_str());
   PackStr(Result);
   // DEBUG_PRINTF(L"Str = %s, Result = %s", Str.c_str(), Result.c_str());
   return Result;
@@ -33,8 +33,8 @@ UnicodeString UnMungeStr(const UnicodeString Str)
 {
   std::string Result2;
   Result2.SetLength(Str.Length() * sizeof(wchar_t) * 3 + 1);
-  putty_unmungestr(const_cast<char *>(System::W2MB(Str.c_str()).c_str()), const_cast<char *>(Result2.c_str()), static_cast<int>(Result2.Length()));
-  UnicodeString Result = System::MB2W(Result2.c_str());
+  putty_unmungestr(const_cast<char *>(W2MB(Str.c_str()).c_str()), const_cast<char *>(Result2.c_str()), static_cast<int>(Result2.Length()));
+  UnicodeString Result = MB2W(Result2.c_str());
   PackStr(Result);
   return Result;
 }
@@ -80,7 +80,7 @@ UnicodeString UnMungeIniName(const UnicodeString Str)
 THierarchicalStorage::THierarchicalStorage(const UnicodeString AStorage)
 {
   FStorage = AStorage;
-  FKeyHistory = new System::TStringList();
+  FKeyHistory = new TStringList();
   SetAccessMode(smRead);
   SetExplicit(false);
   SetMungeStringValues(true);
@@ -156,7 +156,7 @@ void THierarchicalStorage::CloseSubKey()
 //---------------------------------------------------------------------------
 void THierarchicalStorage::ClearSubKeys()
 {
-  System::TStringList * SubKeys = new System::TStringList();
+  TStringList * SubKeys = new TStringList();
   {
     BOOST_SCOPE_EXIT ( (&SubKeys) )
     {
@@ -183,7 +183,7 @@ void THierarchicalStorage::RecursiveDeleteSubKey(const UnicodeString Key)
 bool THierarchicalStorage::HasSubKeys()
 {
   bool Result;
-  System::TStrings * SubKeys = new System::TStringList();
+  TStrings * SubKeys = new TStringList();
   {
     BOOST_SCOPE_EXIT ( (&SubKeys) )
     {
@@ -205,10 +205,10 @@ bool THierarchicalStorage::HasSubKey(const UnicodeString SubKey)
   return Result;
 }
 //---------------------------------------------------------------------------
-void THierarchicalStorage::ReadValues(System::TStrings * Strings,
+void THierarchicalStorage::ReadValues(TStrings * Strings,
                                       bool MaintainKeys)
 {
-  System::TStrings * Names = new System::TStringList();
+  TStrings * Names = new TStringList();
   {
     BOOST_SCOPE_EXIT ( (&Names) )
     {
@@ -232,7 +232,7 @@ void THierarchicalStorage::ReadValues(System::TStrings * Strings,
 //---------------------------------------------------------------------------
 void THierarchicalStorage::ClearValues()
 {
-  System::TStrings * Names = new System::TStringList();
+  TStrings * Names = new TStringList();
   {
     BOOST_SCOPE_EXIT ( (&Names) )
     {
@@ -246,7 +246,7 @@ void THierarchicalStorage::ClearValues()
   }
 }
 //---------------------------------------------------------------------------
-void THierarchicalStorage::WriteValues(System::TStrings * Strings,
+void THierarchicalStorage::WriteValues(TStrings * Strings,
                                        bool MaintainKeys)
 {
   ClearValues();
@@ -355,7 +355,7 @@ TRegistryStorage::TRegistryStorage(const UnicodeString AStorage, HKEY ARootKey) 
 void TRegistryStorage::Init()
 {
   FFailed = 0;
-  FRegistry = new System::TRegistry;
+  FRegistry = new TRegistry;
   FRegistry->SetAccess(KEY_READ);
 }
 //---------------------------------------------------------------------------
@@ -366,9 +366,9 @@ TRegistryStorage::~TRegistryStorage()
 //---------------------------------------------------------------------------
 bool TRegistryStorage::Copy(TRegistryStorage * Storage)
 {
-  System::TRegistry * Registry = Storage->FRegistry;
+  TRegistry * Registry = Storage->FRegistry;
   bool Result = true;
-  System::TStrings * Names = new System::TStringList();
+  TStrings * Names = new TStringList();
   {
     BOOST_SCOPE_EXIT ( (&Names) )
     {
@@ -461,7 +461,7 @@ bool TRegistryStorage::DeleteSubKey(const UnicodeString SubKey)
   return FRegistry->DeleteKey(K);
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::GetSubKeyNames(System::TStrings * Strings)
+void TRegistryStorage::GetSubKeyNames(TStrings * Strings)
 {
   FRegistry->GetKeyNames(Strings);
   for (size_t Index = 0; Index < Strings->GetCount(); Index++)
@@ -470,7 +470,7 @@ void TRegistryStorage::GetSubKeyNames(System::TStrings * Strings)
   }
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::GetValueNames(System::TStrings * Strings)
+void TRegistryStorage::GetValueNames(TStrings * Strings)
 {
   FRegistry->GetValueNames(Strings);
 }
@@ -504,7 +504,7 @@ bool TRegistryStorage::Readbool(const UnicodeString Name, bool Default)
   READ_REGISTRY(Readbool);
 }
 //---------------------------------------------------------------------------
-System::TDateTime TRegistryStorage::ReadDateTime(const UnicodeString Name, System::TDateTime Default)
+TDateTime TRegistryStorage::ReadDateTime(const UnicodeString Name, TDateTime Default)
 {
   READ_REGISTRY(ReadDateTime);
 }
@@ -569,7 +569,7 @@ void TRegistryStorage::Writebool(const UnicodeString Name, bool Value)
   WRITE_REGISTRY(Writebool);
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::WriteDateTime(const UnicodeString Name, System::TDateTime Value)
+void TRegistryStorage::WriteDateTime(const UnicodeString Name, TDateTime Value)
 {
   WRITE_REGISTRY(WriteDateTime);
 }
@@ -624,7 +624,7 @@ int TRegistryStorage::GetFailed()
 }
 
 //===========================================================================
-TOptionsStorage::TOptionsStorage(System::TStrings * Options) :
+TOptionsStorage::TOptionsStorage(TStrings * Options) :
   TRegistryStorage(UnicodeString(L"Command-line options")) // , new TOptionsIniFile(Options))
 {
 }
