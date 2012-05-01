@@ -13,7 +13,7 @@ class TSimpleThread : public TObject
 public:
   explicit TSimpleThread();
   virtual ~TSimpleThread();
-  virtual void __fastcall Init();
+  virtual void __fastcall Init(bool LowPriority);
 
   virtual void __fastcall Start();
   void __fastcall WaitFor(unsigned int Milliseconds = INFINITE);
@@ -37,7 +37,7 @@ private:
 class TSignalThread : public TSimpleThread
 {
 public:
-  virtual void __fastcall Init();
+  virtual void __fastcall Init(bool LowPriority);
   virtual void __fastcall Start();
   virtual void __fastcall Terminate();
   void __fastcall TriggerEvent();
@@ -377,7 +377,7 @@ class TTerminalThread : public TSignalThread
 public:
   explicit TTerminalThread(TTerminal * Terminal);
   virtual ~TTerminalThread();
-  virtual void __fastcall Init();
+  virtual void __fastcall Init(bool LowPriority);
 
   void __fastcall TerminalOpen();
   void __fastcall TerminalReopen();

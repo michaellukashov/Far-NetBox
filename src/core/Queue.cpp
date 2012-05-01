@@ -344,10 +344,24 @@ void __fastcall TSimpleThread::WaitFor(unsigned int Milliseconds)
 //---------------------------------------------------------------------------
 // TSignalThread
 //---------------------------------------------------------------------------
-TSignalThread::TSignalThread(bool LowPriority) :
+TSignalThread::TSignalThread() :
   TSimpleThread(),
   FTerminated(true), FEvent(NULL)
 {
+#ifndef _MSC_VER
+  FEvent = CreateEvent(NULL, false, false, NULL);
+  assert(FEvent != NULL);
+
+  if (LowPriority)
+  {
+    ::SetThreadPriority(FThread, THREAD_PRIORITY_BELOW_NORMAL);
+  }
+#endif
+}
+//---------------------------------------------------------------------------
+void __fastcall TSignalThread::Init(bool LowPriority)
+{
+  TSimpleThread::Init();
   FEvent = CreateEvent(NULL, false, false, NULL);
   assert(FEvent != NULL);
 
@@ -366,18 +380,6 @@ TSignalThread::~TSignalThread()
   if (FEvent)
   {
     CloseHandle(FEvent);
-  }
-}
-//---------------------------------------------------------------------------
-void __fastcall TSignalThread::Init()
-{
-  TSimpleThread::Init();
-  FEvent = CreateEvent(NULL, false, false, NULL);
-  assert(FEvent != NULL);
-
-  if (LowPriority)
-  {
-    ::SetThreadPriority(FThread, THREAD_PRIORITY_BELOW_NORMAL);
   }
 }
 //---------------------------------------------------------------------------
@@ -419,7 +421,7 @@ void __fastcall TSignalThread::Terminate()
 //---------------------------------------------------------------------------
 TTerminalQueue::TTerminalQueue(TTerminal * Terminal,
   TConfiguration * Configuration) :
-  TSignalThread(true),
+  TSignalThread(),
   FTerminal(Terminal), FTransfersLimit(2), FEnabled(true),
   FConfiguration(Configuration), FSessionData(NULL), FItems(NULL),
   FTerminals(NULL), FItemsSection(NULL), FFreeTerminals(0),
@@ -447,6 +449,32 @@ TTerminalQueue::TTerminalQueue(TTerminal * Terminal,
 
   Start();
 #endif
+}
+//---------------------------------------------------------------------------
+void __fastcall TTerminalQueue::Init()
+{
+  TSignalThread::Init(true);
+
+  FOnQueryUser = NULL;
+  FOnPromptUser = NULL;
+  FOnShowExtendedException = NULL;
+  FOnQueueItemUpdate = NULL;
+  FOnListUpdate = NULL;
+  FOnEvent = NULL;
+  FLastIdle = Now();
+  FIdleInterval = EncodeTimeVerbose(0, 0, 2, 0);
+
+  assert(Terminal != NULL);
+  FSessionData = new TSessionData(L"");
+  FSessionData->Assign(Terminal->SessionData);
+
+  FItems = new TList();
+  FTerminals = new TList();
+  FForcedItems = new TList();
+
+  FItemsSection = new TCriticalSection();
+
+  Start();
 }
 //---------------------------------------------------------------------------
 TTerminalQueue::~TTerminalQueue()
@@ -477,32 +505,6 @@ TTerminalQueue::~TTerminalQueue()
 
   delete FItemsSection;
   delete FSessionData;
-}
-//---------------------------------------------------------------------------
-void __fastcall TTerminalQueue::Init()
-{
-  TSignalThread::Init();
-
-  FOnQueryUser = NULL;
-  FOnPromptUser = NULL;
-  FOnShowExtendedException = NULL;
-  FOnQueueItemUpdate = NULL;
-  FOnListUpdate = NULL;
-  FOnEvent = NULL;
-  FLastIdle = Now();
-  FIdleInterval = EncodeTimeVerbose(0, 0, 2, 0);
-
-  assert(Terminal != NULL);
-  FSessionData = new TSessionData(L"");
-  FSessionData->Assign(Terminal->SessionData);
-
-  FItems = new TList();
-  FTerminals = new TList();
-  FForcedItems = new TList();
-
-  FItemsSection = new TCriticalSection();
-
-  Start();
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminalQueue::TerminalFinished(TTerminalItem * TerminalItem)
@@ -1111,14 +1113,14 @@ bool __fastcall TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
 // TTerminalItem
 //---------------------------------------------------------------------------
 TTerminalItem::TTerminalItem(TTerminalQueue * Queue) :
-  TSignalThread(true), FQueue(Queue), FTerminal(NULL), FItem(NULL),
+  TSignalThread(), FQueue(Queue), FTerminal(NULL), FItem(NULL),
   FCriticalSection(NULL), FUserAction(NULL)
 {
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminalItem::Init(int Index)
 {
-  TSignalThread::Init();
+  TSignalThread::Init(true);
 
   FCriticalSection = new TCriticalSection();
   Self = this;
