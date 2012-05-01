@@ -2095,7 +2095,7 @@ void __fastcall TTerminalThread::Init()
   Start();
 }
 //---------------------------------------------------------------------------
-__fastcall TTerminalThread::~TTerminalThread()
+TTerminalThread::~TTerminalThread()
 {
   Close();
 

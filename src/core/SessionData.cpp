@@ -1144,7 +1144,7 @@ bool __fastcall TSessionData::ParseUrl(const UnicodeString Url, TOptions *Option
             Assign(StoredSessions->GetDefaultSettings());
             SetName(L"");
 
-            size_t PSlash = url.find_first_of(L"/");
+            size_t PSlash = url.Pos(L'/');
             if (PSlash < 0)
             {
                 PSlash = url.Length() + 1;
@@ -1197,7 +1197,7 @@ bool __fastcall TSessionData::ParseUrl(const UnicodeString Url, TOptions *Option
                 SetFtps(AFtps);
             }
 
-            bool PasswordSeparator = (UserInfo.find_first_of(':') >= 0);
+            bool PasswordSeparator = (UserInfo.Pos(L':') >= 0);
             SetUserName(DecodeUrlChars(CutToChar(UserInfo, ':', false)));
             SetPassword(DecodeUrlChars(UserInfo));
             SetPasswordless(GetPassword().IsEmpty() && PasswordSeparator);
@@ -1802,7 +1802,7 @@ UnicodeString __fastcall TSessionData::GetProtocolStr() const
 //---------------------------------------------------------------------
 void __fastcall TSessionData::SetPingIntervalDT(System::TDateTime value)
 {
-    unsigned int hour, min, sec, msec;
+    unsigned short hour, min, sec, msec;
 
     value.DecodeTime(hour, min, sec, msec);
     SetPingInterval((static_cast<size_t>(hour))*60*60 + (static_cast<int>(min))*60 + sec);

@@ -73,24 +73,24 @@ protected:
   virtual void __fastcall CopyData(THierarchicalStorage * Source, THierarchicalStorage * Target);
   virtual void __fastcall LoadAdmin(THierarchicalStorage * Storage);
   virtual void __fastcall Saved();
-  void CleanupRegistry(const UnicodeString CleanupSubKey);
-  UnicodeString BannerHash(const UnicodeString Banner);
+  void __fastcall CleanupRegistry(UnicodeString CleanupSubKey);
+  UnicodeString __fastcall BannerHash(const UnicodeString & Banner);
 
   virtual UnicodeString __fastcall ModuleFileName();
 
-  UnicodeString GetFileFileInfoString(const UnicodeString Key,
+  UnicodeString __fastcall GetFileFileInfoString(const UnicodeString Key,
     const UnicodeString FileName);
-  void * GetFileApplicationInfo(const UnicodeString FileName);
-  UnicodeString GetFileProductVersion(const UnicodeString FileName);
-  UnicodeString GetFileProductName(const UnicodeString FileName);
-  UnicodeString GetFileCompanyName(const UnicodeString FileName);
+  void * __fastcall __fastcall GetFileApplicationInfo(const UnicodeString FileName);
+  UnicodeString __fastcall GetFileProductVersion(const UnicodeString FileName);
+  UnicodeString __fastcall GetFileProductName(const UnicodeString FileName);
+  UnicodeString __fastcall GetFileCompanyName(const UnicodeString FileName);
 
-  bool GetPermanentLogging() { return FPermanentLogging; }
-  void SetPermanentLogging(bool value) { FPermanentLogging = value; }
-  UnicodeString GetPermanentLogFileName() { return FPermanentLogFileName; }
-  void SetPermanentLogFileName(const UnicodeString value) { FPermanentLogFileName = value; }
-  bool GetPermanentLogActions() { return FPermanentLogActions; }
-  void SetPermanentLogActions(bool value) { FPermanentLogActions = value; }
+  bool __fastcall GetPermanentLogging() { return FPermanentLogging; }
+  void __fastcall SetPermanentLogging(bool value) { FPermanentLogging = value; }
+  UnicodeString __fastcall GetPermanentLogFileName() { return FPermanentLogFileName; }
+  void __fastcall SetPermanentLogFileName(const UnicodeString value) { FPermanentLogFileName = value; }
+  bool __fastcall GetPermanentLogActions() { return FPermanentLogActions; }
+  void __fastcall SetPermanentLogActions(bool value) { FPermanentLogActions = value; }
 
 public:
   // TConfiguration();
@@ -152,11 +152,11 @@ public:
   void __fastcall SetConfirmResume(bool value);
   bool __fastcall GetAutoReadDirectoryAfterOp();
   void __fastcall SetAutoReadDirectoryAfterOp(bool value);
-  // virtual UnicodeString __fastcall GetDefaultKeyFile();
+  virtual UnicodeString __fastcall GetDefaultKeyFile();
   // void __fastcall SetLogging(bool value);
   // void __fastcall SetLogFileName(UnicodeString value);
   UnicodeString __fastcall GetOSVersionStr();
-  VS_FIXEDFILEINFO GetFixedApplicationInfo();
+  VS_FIXEDFILEINFO __fastcall GetFixedApplicationInfo();
   void * __fastcall GetApplicationInfo();
   virtual UnicodeString __fastcall GetVersionStr();
   virtual UnicodeString __fastcall GetVersion();
@@ -182,6 +182,7 @@ public:
   void __fastcall SetLogFileAppend(bool value);
   void __fastcall SetLogProtocol(int value);
   void __fastcall SetLogActions(bool value);
+  UnicodeString __fastcall GetActionsLogFileName() const { return FActionsLogFileName; }
   void __fastcall SetActionsLogFileName(UnicodeString value);
   UnicodeString __fastcall GetDefaultLogFileName();
   UnicodeString __fastcall GetTimeFormat();
@@ -195,6 +196,7 @@ public:
   void __fastcall SetSessionReopenAuto(int value);
   void __fastcall SetSessionReopenBackground(int value);
   void __fastcall SetSessionReopenTimeout(int value);
+  int __fastcall GetSessionReopenAutoStall() { return FSessionReopenAutoStall; }
   void __fastcall SetSessionReopenAutoStall(int value);
   void __fastcall SetTunnelLocalPortNumberLow(int value);
   void __fastcall SetTunnelLocalPortNumberHigh(int value);
@@ -207,8 +209,9 @@ public:
 protected:
   TStorage FStorage;
   TCriticalSection * FCriticalSection;
-  virtual TStorage __fastcall GetStorage();
+
 #ifndef _MSC_VER
+  virtual TStorage __fastcall GetStorage();
   virtual void __fastcall Changed();
   virtual void __fastcall SaveData(THierarchicalStorage * Storage, bool All);
   virtual void __fastcall LoadData(THierarchicalStorage * Storage);
@@ -245,6 +248,8 @@ protected:
 public:
   TConfiguration();
   virtual ~TConfiguration();
+
+  virtual TStorage __fastcall GetStorage();
   virtual void __fastcall Default();
   virtual void __fastcall Load();
   virtual void __fastcall Save(bool All, bool Explicit);

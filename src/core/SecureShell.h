@@ -148,7 +148,7 @@ public:
   void VerifyHostKey(UnicodeString Host, int Port,
     const UnicodeString KeyType, UnicodeString KeyStr, const UnicodeString Fingerprint);
   void AskAlg(const UnicodeString AlgType, const UnicodeString AlgName);
-  void DisplayBanner(const UnicodeString & Banner);
+  void __fastcall DisplayBanner(const UnicodeString & Banner);
   void OldKeyfileWarning();
   void PuttyLogEvent(const UnicodeString & Str);
 

@@ -139,7 +139,7 @@ private:
     void __fastcall DoInit(bool Delete);
     inline void __fastcall Clear();
     static void __fastcall Clear(TMasks &Masks);
-    static void __fastcall TrimEx(UnicodeString &Str, size_t &Start, size_t &End);
+    static void __fastcall TrimEx(UnicodeString &Str, int &Start, int &End);
     static bool __fastcall MatchesMasks(const UnicodeString FileName, bool Directory,
                              const UnicodeString Path, const TParams *Params, const TMasks &Masks, bool Recurse);
     static inline bool __fastcall MatchesMaskMask(const TMaskMask &MaskMask, const UnicodeString Str);

@@ -493,7 +493,7 @@ public:
     const TCopyParamType * CopyParam, int Params,
     const TSynchronizeDirectory &OnSynchronizeDirectory);
   void __fastcall FilesFind(UnicodeString Directory, const TFileMasks & FileMask,
-    const TFileFoundEvent * OnFileFound, TFindingFileEvent * OnFindingFile);
+    const TFileFoundEvent * OnFileFound, const TFindingFileEvent * OnFindingFile);
   void __fastcall SpaceAvailable(const UnicodeString Path, TSpaceAvailable & ASpaceAvailable);
   bool __fastcall DirectoryFileList(const UnicodeString Path,
     TRemoteFileList *& FileList, bool CanLoad);
@@ -802,7 +802,7 @@ protected:
 private:
   TList * FList;
 
-  static int __fastcall Compare(void * Item1, void * Item2);
+  static int Compare(void * Item1, void * Item2);
 };
 //---------------------------------------------------------------------------
 struct TSpaceAvailable

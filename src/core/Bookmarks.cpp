@@ -242,7 +242,7 @@ void TBookmarks::ModifyAll(bool Modify)
 TBookmarkList *TBookmarks::GetBookmark(const UnicodeString Index)
 {
     size_t I = FBookmarkLists->IndexOf(Index.c_str());
-    if (I != NPOS)
+    if (I >= 0)
     {
         return reinterpret_cast<TBookmarkList *>(FBookmarkLists->GetObjects(I));
     }
@@ -255,7 +255,7 @@ TBookmarkList *TBookmarks::GetBookmark(const UnicodeString Index)
 void TBookmarks::SetBookmark(const UnicodeString Index, TBookmarkList *value)
 {
     size_t I = FBookmarkLists->IndexOf(Index.c_str());
-    if (I != NPOS)
+    if (I >= 0)
     {
         TBookmarkList *BookmarkList;
         BookmarkList = reinterpret_cast<TBookmarkList *>(FBookmarkLists->GetObjects(I));
@@ -348,7 +348,7 @@ void TBookmarkList::InsertBefore(TBookmark *BeforeBookmark, TBookmark *Bookmark)
 {
     assert(BeforeBookmark);
     size_t I = FBookmarks->IndexOf(BeforeBookmark->GetKey().c_str());
-    assert(I != NPOS);
+    assert(I >= 0);
     Insert(I, Bookmark);
 }
 //---------------------------------------------------------------------------
@@ -380,7 +380,7 @@ void TBookmarkList::Insert(size_t Index, TBookmark *Bookmark)
 
     FModified = true;
     Bookmark->FOwner = this;
-    if (FBookmarks->IndexOf(Bookmark->GetKey().c_str()) != NPOS)
+    if (FBookmarks->IndexOf(Bookmark->GetKey().c_str()) >= 0)
     {
         throw ExtException(FMTLOAD(DUPLICATE_BOOKMARK, Bookmark->GetName().c_str()));
     }
@@ -392,7 +392,7 @@ void TBookmarkList::Delete(TBookmark *Bookmark)
     assert(Bookmark);
     assert(Bookmark->FOwner == this);
     size_t I = IndexOf(Bookmark);
-    assert(I != NPOS);
+    assert(I >= 0);
     FModified = true;
     Bookmark->FOwner = NULL;
     FBookmarks->Delete(I);
@@ -409,7 +409,7 @@ void TBookmarkList::KeyChanged(size_t Index)
     assert(Index < GetCount());
     TBookmark *Bookmark = reinterpret_cast<TBookmark *>(FBookmarks->GetObjects(Index));
     assert(FBookmarks->GetStrings(Index) != Bookmark->GetKey());
-    if (FBookmarks->IndexOf(Bookmark->GetKey().c_str()) != NPOS)
+    if (FBookmarks->IndexOf(Bookmark->GetKey().c_str()) >= 0)
     {
         throw ExtException(FMTLOAD(DUPLICATE_BOOKMARK, Bookmark->GetName().c_str()));
     }
@@ -419,7 +419,7 @@ void TBookmarkList::KeyChanged(size_t Index)
 TBookmark *TBookmarkList::FindByName(const UnicodeString Node, const UnicodeString Name)
 {
     size_t I = FBookmarks->IndexOf(TBookmark::BookmarkKey(Node, Name).c_str());
-    TBookmark *Bookmark = ((I != NPOS) ? reinterpret_cast<TBookmark *>(FBookmarks->GetObjects(I)) : NULL);
+    TBookmark *Bookmark = ((I >= 0) ? reinterpret_cast<TBookmark *>(FBookmarks->GetObjects(I)) : NULL);
     assert(!Bookmark || (Bookmark->GetNode() == Node && Bookmark->GetName() == Name));
     return Bookmark;
 }
@@ -450,13 +450,13 @@ TBookmark *TBookmarkList::GetBookmark(size_t Index)
 //---------------------------------------------------------------------------
 bool TBookmarkList::GetNodeOpened(const UnicodeString Index)
 {
-    return (FOpenedNodes->IndexOf(Index.c_str()) != NPOS);
+    return (FOpenedNodes->IndexOf(Index.c_str()) >= 0);
 }
 //---------------------------------------------------------------------------
 void TBookmarkList::SetNodeOpened(const UnicodeString Index, bool value)
 {
     size_t I = FOpenedNodes->IndexOf(Index.c_str());
-    if ((I != NPOS) != value)
+    if ((I >= 0) != value)
     {
         if (value)
         {
@@ -567,7 +567,7 @@ void TBookmark::Modify(size_t OldIndex)
     if (FOwner)
     {
         FOwner->SetModified(true);
-        if (OldIndex != NPOS)
+        if (OldIndex >= 0)
         {
             FOwner->KeyChanged(OldIndex);
         }

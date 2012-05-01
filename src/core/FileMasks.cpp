@@ -735,7 +735,7 @@ UnicodeString __fastcall TFileMasks::MakeDirectoryMask(UnicodeString Str)
     size_t D = ::LastDelimiter(Str, DirectoryMaskDelimiters);
     // if there's any [back]slash anywhere in str,
     // add the same [back]slash at the end, otherwise add slash
-    wchar_t Delimiter = (D != NPOS) ? Str[D] : DirectoryMaskDelimiters[1];
+    wchar_t Delimiter = (D >= 0) ? Str[D] : DirectoryMaskDelimiters[1];
     Str += Delimiter;
   }
   return Str;
@@ -759,15 +759,15 @@ void __fastcall TFileMasks::CreateMask(
   Mask.LowModificationMask = TMask::None;
 
   wchar_t NextPartDelimiter = L'\0';
-  size_t NextPartFrom = 0;
-  while (NextPartFrom < MaskStr.Length())
+  int NextPartFrom = 0;
+  int (NextPartFrom < MaskStr.Length())
   {
     wchar_t PartDelimiter = NextPartDelimiter;
-    size_t PartFrom = NextPartFrom;
+    int PartFrom = NextPartFrom;
     UnicodeString PartStr = CopyToChars(MaskStr, NextPartFrom, L"<>", false, &NextPartDelimiter, true);
 
-    size_t PartStart = MaskStart + PartFrom - 1;
-    size_t PartEnd = MaskStart + NextPartFrom - 1 - 2;
+    int PartStart = MaskStart + PartFrom - 1;
+    int PartEnd = MaskStart + NextPartFrom - 1 - 2;
 
     TrimEx(PartStr, PartStart, PartEnd);
 
@@ -851,10 +851,10 @@ void __fastcall TFileMasks::CreateMask(
       else if (FForceDirectoryMasks > 0)
       {
         Directory = true;
-        Mask.MaskStr.insert(PartStart - MaskStart + PartStr.Length(), UnicodeString(1, DirectoryMaskDelimiters[1]));
+        Mask.MaskStr.Insert(PartStart - MaskStart + PartStr.Length(), UnicodeString(1, DirectoryMaskDelimiters[1]));
       }
 
-      if (D != NPOS)
+      if (D >= 0)
       {
         // make sure sole "/" (root dir) is preserved as is
         CreateMaskMask(
@@ -897,7 +897,7 @@ void __fastcall TFileMasks::ReleaseMaskMask(TMaskMask & MaskMask)
   delete MaskMask.Mask;
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileMasks::TrimEx(UnicodeString &Str, size_t &Start, size_t &End)
+void __fastcall TFileMasks::TrimEx(UnicodeString &Str, int &Start, int &End)
 {
     UnicodeString Buf = TrimLeft(Str);
     Start += Str.Length() - Buf.Length();
@@ -912,7 +912,7 @@ bool __fastcall TFileMasks::MatchesMaskMask(const TMaskMask &MaskMask, const Uni
     {
         Result = true;
     }
-    else if ((MaskMask.Kind == TMaskMask::NoExt) && (Str.find_first_of(L".") == NPOS))
+    else if ((MaskMask.Kind == TMaskMask::NoExt) && (Str.Pos(L'.') < 0))
     {
         Result = true;
     }
@@ -944,11 +944,11 @@ void __fastcall TFileMasks::SetStr(const UnicodeString Str, bool SingleMask)
         FStr = Str;
         Clear();
 
-        size_t NextMaskFrom = 0;
+        int NextMaskFrom = 0;
         bool Include = true;
         while (NextMaskFrom < Str.Length())
         {
-            size_t MaskStart = NextMaskFrom;
+            int MaskStart = NextMaskFrom;
             wchar_t NextMaskDelimiter;
             UnicodeString MaskStr;
             if (SingleMask)
@@ -961,7 +961,7 @@ void __fastcall TFileMasks::SetStr(const UnicodeString Str, bool SingleMask)
             {
                 MaskStr = ::CopyToChars(Str, NextMaskFrom, AllFileMasksDelimiters, false, &NextMaskDelimiter, true);
             }
-            size_t MaskEnd = NextMaskFrom - 2;
+            int MaskEnd = NextMaskFrom - 2;
 
             TrimEx(MaskStr, MaskStart, MaskEnd);
 
@@ -1021,7 +1021,7 @@ void __fastcall TCustomCommand::GetToken(
             Len = PatternLen(Index, PatternCmd);
         }
 
-        if (Len == NPOS)
+        if (Len < 0)
         {
             throw ExtException(FMTLOAD(CUSTOM_COMMAND_UNKNOWN, PatternCmd, Index));
         }
@@ -1211,7 +1211,7 @@ bool __fastcall TInteractiveCustomCommand::PatternReplacement(size_t Index, cons
     if ((Pattern.Length() >= 3) && (Pattern[1] == L'?'))
     {
         UnicodeString PromptStr;
-        size_t Pos = Pattern.SubString(2, Pattern.Length() - 2).find_first_of(L"?");
+        size_t Pos = Pattern.SubString(2, Pattern.Length() - 2).Pos(L'?');
         if (Pos >= 0)
         {
             Replacement = Pattern.SubString(2 + Pos, Pattern.Length() - 3 - Pos);

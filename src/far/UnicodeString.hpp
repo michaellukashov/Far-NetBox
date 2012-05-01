@@ -226,7 +226,8 @@ typedef class UnicodeString
     friend const UnicodeString operator+(const UnicodeString &strSrc1, const char *lpszSrc2);
     friend const UnicodeString operator+(const UnicodeString &strSrc1, const wchar_t *lpwszSrc2);
     friend const UnicodeString operator+(const UnicodeString &strSrc1, const std::wstring &strSrc2);
-    friend const UnicodeString operator+(const UnicodeString &strSrc1, const wchar_t ch);
+    friend const UnicodeString operator+(const UnicodeString &strSrc1, wchar_t ch);
+    friend const UnicodeString operator+(wchar_t ch, const UnicodeString &strSrc1);
 
     bool IsSubStrAt(size_t Pos, size_t Len, const wchar_t* Data, size_t DataLen) const;
     bool IsSubStrAt(size_t Pos, const wchar_t* Str, size_t StrLen) const { return IsSubStrAt(Pos, StrLen, Str, StrLen); }

@@ -313,7 +313,7 @@ System::TStrings *TCommandSet::CreateCommandList()
         if (!Cmd.IsEmpty())
         {
             Cmd = ExtractCommand(Cmd);
-            if ((Cmd != L"%s") && (CommandList->IndexOf(Cmd.c_str()) == NPOS))
+            if ((Cmd != L"%s") && (CommandList->IndexOf(Cmd.c_str()) < 0))
             {
                 CommandList->Add(Cmd);
             }

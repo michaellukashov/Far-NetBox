@@ -428,7 +428,7 @@ TFileSessionAction::TFileSessionAction(TActionLog * Log, TLogAction Action) :
 {
 };
 //---------------------------------------------------------------------------
-__fastcall TFileSessionAction::TFileSessionAction(
+TFileSessionAction::TFileSessionAction(
     TActionLog * Log, TLogAction Action, const UnicodeString & AFileName) :
   TSessionAction(Log, Action)
 {

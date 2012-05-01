@@ -247,7 +247,7 @@ wchar_t *TCopyParamType::ReplaceChar(UnicodeString &FileName, wchar_t *InvalidCh
     DEBUG_PRINTF(L"FileName = %s, InvalidChar = %s", FileName.c_str(), InvalidChar);
     if (GetInvalidCharsReplacement() == TokenReplacement)
     {
-        FileName.insert(Index + 1, CharToHex(FileName[Index]));
+        FileName.Insert(Index + 1, CharToHex(FileName[Index]));
         FileName[Index] = TokenPrefix;
         InvalidChar = const_cast<wchar_t *>(FileName.c_str() + Index + 3);
     }
@@ -276,7 +276,7 @@ UnicodeString TCopyParamType::ValidLocalFileName(const UnicodeString FileName) c
                     (*InvalidChar == TokenPrefix) &&
                     (((fileName.Length() - Pos) <= 1) ||
                      (((Char = HexToChar(fileName.SubString(Pos + 1, 2))) == '\0') ||
-                      (FTokenizibleChars.find_first_of(Char) < 0))))
+                      (FTokenizibleChars.Pos(Char) < 0))))
             {
                 InvalidChar++;
             }
@@ -296,12 +296,12 @@ UnicodeString TCopyParamType::ValidLocalFileName(const UnicodeString FileName) c
 
         if (IsReservedName(fileName))
         {
-            size_t P = fileName.find_first_of(L".");
+            size_t P = fileName.Pos(L'.');
             if (P < 0)
             {
                 P = fileName.Length();
             }
-            fileName.insert(P, L"%00");
+            fileName.Insert(P, L"%00");
         }
     }
     return fileName;
@@ -416,10 +416,10 @@ UnicodeString TCopyParamType::ChangeFileName(const UnicodeString FileName,
     case ncUpperCase: fileName = ::UpperCase(fileName); break;
     case ncLowerCase: fileName = ::LowerCase(fileName); break;
     case ncFirstUpperCase: fileName = ::UpperCase(fileName.SubString(0, 1)) +
-                                          ::LowerCase(fileName.SubString(1, fileName.Length() - 1)); break;
+      ::LowerCase(fileName.SubString(1, fileName.Length() - 1)); break;
     case ncLowerCaseShort:
-        if ((fileName.Length() <= 12) && (fileName.find_first_of(L".") <= 9) &&
-                (fileName == ::UpperCase(fileName)))
+        if ((fileName.Length() <= 12) && (fileName.Pos(L'.') <= 9) &&
+            (fileName == ::UpperCase(fileName)))
         {
             fileName = ::LowerCase(fileName);
         }

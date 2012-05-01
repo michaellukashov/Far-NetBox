@@ -181,7 +181,6 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
 #undef REGCONFIG
 #define REGCONFIG(CANCREATE) \
   BLOCK(L"Interface", CANCREATE, \
-    KEY(String,   RandomSeedFile); \
     KEY(String,   PuttyRegistryStorageKey); \
     KEY(bool,     ConfirmOverwriting); \
     KEY(bool,     ConfirmResume); \
@@ -194,7 +193,6 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
     KEY(int,      TunnelLocalPortNumberHigh); \
     KEY(int,      CacheDirectoryChangesMaxSize); \
     KEY(bool,     ShowFtpWelcomeMessage); \
-    KEY(String,   ExternalIpAddress); \
     KEY(int,      SessionReopenAutoMaximumNumberOfRetries); \
   ); \
   BLOCK(L"Logging", CANCREATE, \
@@ -203,10 +201,13 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
     KEY(bool,    LogFileAppend); \
     KEY(int,     LogWindowLines); \
     KEY(int,     LogProtocol); \
-    KEYEX(Bool,  PermanentLogActions, LogActions); \
-    KEYEX(String,PermanentActionsLogFileName, ActionsLogFileName); \
+    KEYEX(bool,  PermanentLogActions, LogActions); \
     KEYEX(bool,  LogActions, LogActions); \
   );
+    // KEY(String,   RandomSeedFile); \
+    // KEY(String,   ExternalIpAddress); \
+    // KEYEX(String,PermanentActionsLogFileName, ActionsLogFileName); \
+    
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::SaveData(THierarchicalStorage * Storage, bool /*All*/)
 {
@@ -220,7 +221,7 @@ void __fastcall TConfiguration::Save(bool All, bool Explicit)
 {
   if (FDontSave) { return; }
 
-  THierarchicalStorage * AStorage = CreateScptorage();
+  THierarchicalStorage * AStorage = CreateScpStorage(false);
   // try
   {
     BOOST_SCOPE_EXIT ( (&AStorage) )
@@ -271,7 +272,7 @@ void __fastcall TConfiguration::Export(const UnicodeString FileName)
     ExportStorage->SetAccessMode(smReadWrite);
     ExportStorage->SetExplicit(true);
 
-    Storage = CreateScptorage(false);
+    Storage = CreateScpStorage(false);
     Storage->SetAccessMode(smRead);
 
     CopyData(Storage, ExportStorage);
@@ -320,7 +321,7 @@ void __fastcall TConfiguration::Load()
 {
   TGuard Guard(FCriticalSection);
 
-  THierarchicalStorage * Storage = CreateScptorage();
+  THierarchicalStorage * Storage = CreateScpStorage(false);
   // try
   {
     BOOST_SCOPE_EXIT ( (&Storage) )
@@ -403,7 +404,7 @@ void __fastcall TConfiguration::CopyData(THierarchicalStorage * Source,
         Names->Clear();
         Source->GetValueNames(Names);
 
-        for (int Index = 0; Index < Names->Count; Index++)
+        for (int Index = 0; Index < Names->GetCount(); Index++)
         {
           Target->WriteStringRaw(Names->GetStrings(Index),
             Source->ReadStringRaw(Names->GetStrings(Index), L""));
@@ -425,7 +426,7 @@ void __fastcall TConfiguration::CopyData(THierarchicalStorage * Source,
 void __fastcall TConfiguration::LoadDirectoryChangesCache(const UnicodeString SessionKey,
   TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
-  THierarchicalStorage * Storage = CreateScptorage(false);
+  THierarchicalStorage * Storage = CreateScpStorage(false);
   // try
   {
     BOOST_SCOPE_EXIT ( (&Storage) )
@@ -704,7 +705,7 @@ UnicodeString __fastcall TConfiguration::GetOSVersionStr()
   {
     Result = FORMAT(L"%d.%d.%d %s", int(OSVersionInfo.dwMajorVersion),
       int(OSVersionInfo.dwMinorVersion), int(OSVersionInfo.dwBuildNumber),
-      OSVersionInfo.szCSDVersion)).Trim();
+      OSVersionInfo.szCSDVersion).Trim();
   }
   return Result;
 }

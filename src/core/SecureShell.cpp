@@ -1985,7 +1985,7 @@ void TSecureShell::AskAlg(const UnicodeString AlgType,
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::DisplayBanner(UnicodeString & Banner)
+void __fastcall TSecureShell::DisplayBanner(const UnicodeString & Banner)
 {
   FUI->DisplayBanner(Banner);
 }
