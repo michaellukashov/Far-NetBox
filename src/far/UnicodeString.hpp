@@ -354,15 +354,16 @@ public:
 
   operator const char*() const { return Data; }
   size_t size() const { return Size; }
-    const char *c_str() const { return Data; }
-    size_t Length() const { return Size; }
-
+  const char *c_str() const { return Data; }
+  size_t Length() const { return Size; }
+  bool IsEmpty() const { return Length() == 0; }
 
 public:
-    RawByteString __fastcall operator +(const RawByteString &rhs) const;
-    RawByteString __fastcall operator +(const std::wstring &rhs) const;
-    RawByteString __fastcall operator +=(const char rhs) const;
+  RawByteString __fastcall operator +(const RawByteString &rhs) const;
+  RawByteString __fastcall operator +(const std::wstring &rhs) const;
+  RawByteString __fastcall operator +=(const char rhs) const;
 
+    
 private:
   void Init(const wchar_t *Str, size_t Length)
   {
