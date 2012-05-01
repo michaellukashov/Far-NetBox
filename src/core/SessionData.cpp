@@ -30,9 +30,9 @@ const wchar_t ProtocolNames[PROTOCOL_COUNT][10] = { L"raw", L"telnet", L"rlogin"
 const wchar_t SshProtList[][10] = {L"1 only", L"1", L"2", L"2 only"};
 const wchar_t ProxyMethodList[][10] = {L"none", L"SOCKS4", L"SOCKS5", L"HTTP", L"Telnet", L"Cmd" };
 const TCipher DefaultCipherList[CIPHER_COUNT] =
-{ cipAES, cipBlowfish, cip3DES, cipWarn, cipArcfour, cipDES };
+  { cipAES, cipBlowfish, cip3DES, cipWarn, cipArcfour, cipDES };
 const TKex DefaultKexList[KEX_COUNT] =
-{ kexDHGEx, kexDHGroup14, kexDHGroup1, kexRSA, kexWarn };
+  { kexDHGEx, kexDHGroup14, kexDHGroup1, kexRSA, kexWarn };
 const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][15] = { L"SCP", L"SFTP (SCP)", L"SFTP", L"", L"", L"FTP", L"FTPS", L"WebDAV - HTTP", L"WebDAV - HTTPS" };
 const UnicodeString CONST_LOGIN_ANONYMOUS = L"anonymous";
 const int SshPortNumber = 22;
@@ -45,49 +45,13 @@ const UnicodeString AnonymousUserName(L"anonymous");
 const UnicodeString AnonymousPassword(L"anonymous@example.com");
 const unsigned int CONST_DEFAULT_CODEPAGE = CP_ACP;
 //---------------------------------------------------------------------
-bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx)
-{
-  if (!GetCPInfoEx(CodePage, 0, &CodePageInfoEx))
-  {
-    CPINFO CodePageInfo;
-
-    if (!GetCPInfo(CodePage, &CodePageInfo))
-      return false;
-
-    CodePageInfoEx.MaxCharSize = CodePageInfo.MaxCharSize;
-    CodePageInfoEx.CodePageName[0] = L'\0';
-  }
-
-  if (CodePageInfoEx.MaxCharSize != 1)
-    return false;
-
-  return true;
-}
-//---------------------------------------------------------------------
-unsigned int GetCodePageAsNumber(const UnicodeString CodePage)
-{
-  unsigned int codePage = _wtoi(CodePage.c_str());
-  return codePage == 0 ? CONST_DEFAULT_CODEPAGE : codePage;
-}
-//---------------------------------------------------------------------
-UnicodeString GetCodePageAsString(unsigned int cp)
-{
-  CPINFOEX cpInfoEx;
-  if (::GetCodePageInfo(cp, cpInfoEx))
-  {
-    return UnicodeString(cpInfoEx.CodePageName);
-  }
-  return IntToStr(CONST_DEFAULT_CODEPAGE);
-}
-
-//---------------------------------------------------------------------
 TDateTime __fastcall SecToDateTime(int Sec)
 {
-  return TDateTime(static_cast<unsigned short>(Sec/60/60),
-    static_cast<unsigned short>(Sec/60%60), static_cast<unsigned short>(Sec%60), 0);
+  return TDateTime(static_cast<unsigned short>(Sec/SecsPerHour),
+    static_cast<unsigned short>(Sec/SecsPerMin%MinsPerHour), static_cast<unsigned short>(Sec%SecsPerMin), 0);
 }
 //--- TSessionData ----------------------------------------------------
-TSessionData::TSessionData(const UnicodeString aName):
+TSessionData::TSessionData(UnicodeString aName):
   TNamedObject(aName)
 {
   Default();
@@ -134,7 +98,7 @@ void __fastcall TSessionData::Default()
   SetSshSimple(true);
   SetHostKey(L"");
 
-  SetProxyMethod(pmNone);
+  SetProxyMethod(::pmNone);
   SetProxyHost(L"proxy");
   SetProxyPort(80);
   SetProxyUsername(L"");
@@ -144,7 +108,7 @@ void __fastcall TSessionData::Default()
   SetProxyDNS(asAuto);
   SetProxyLocalhost(false);
 
-  for (size_t Index = 0; Index < LENOF(FBugs); Index++)
+  for (unsigned int Index = 0; Index < LENOF(FBugs); Index++)
   {
     SetBug(static_cast<TSshBug>(Index), asAuto);
   }
@@ -198,7 +162,7 @@ void __fastcall TSessionData::Default()
   SetSFTPMinPacketSize(0);
   SetSFTPMaxPacketSize(0);
 
-  for (size_t Index = 0; Index < LENOF(FSFTPBugs); Index++)
+  for (unsigned int Index = 0; Index < LENOF(FSFTPBugs); Index++)
   {
     SetSFTPBug(static_cast<TSftpBug>(Index), asAuto);
   }
@@ -251,12 +215,10 @@ void __fastcall TSessionData::Assign(TPersistent * Source)
 #define DUPL(P) Set##P(((TSessionData *)Source)->Get##P())
     DUPL(Name);
     DUPL(HostName);
-    // DEBUG_PRINTF(L"HostName = %s, Source->HostName = %s", GetHostName().c_str(), ((TSessionData *)Source)->GetHostName().c_str());
     DUPL(PortNumber);
     DUPL(LoginType);
     DUPL(UserName);
     DUPL(Password);
-    // SetPassword(Source->GetPassword());
     DUPL(Passwordless);
     DUPL(PingInterval);
     DUPL(PingType);
@@ -330,7 +292,7 @@ void __fastcall TSessionData::Assign(TPersistent * Source)
     DUPL(ProxyDNS);
     DUPL(ProxyLocalhost);
 
-    for (size_t Index = 0; Index < LENOF(FBugs); Index++)
+    for (unsigned int Index = 0; Index < LENOF(FBugs); Index++)
     {
       // DUPL(Bug[(TSshBug)Index]);
       (static_cast<TSessionData *>(Source))->SetBug(static_cast<TSshBug>(Index),
@@ -346,7 +308,7 @@ void __fastcall TSessionData::Assign(TPersistent * Source)
     DUPL(SFTPMinPacketSize);
     DUPL(SFTPMaxPacketSize);
 
-    for (size_t Index = 0; Index < LENOF(FSFTPBugs); Index++)
+    for (unsigned int Index = 0; Index < LENOF(FSFTPBugs); Index++)
     {
       // DUPL(SFTPBug[(TSftpBug)Index]);
       (static_cast<TSessionData *>(Source))->SetSFTPBug(static_cast<TSftpBug>(Index),
@@ -379,11 +341,11 @@ void __fastcall TSessionData::Assign(TPersistent * Source)
     DUPL(CustomParam2);
     DUPL(SslSessionReuse);
 
-#undef DUPL
-    FNumberOfRetries = (static_cast<TSessionData *>(Source))->GetNumberOfRetries();
-
+    #undef DUPL
     FModified = (static_cast<TSessionData *>(Source))->GetModified();
     FSource = (static_cast<TSessionData *>(Source))->FSource;
+
+    FNumberOfRetries = (static_cast<TSessionData *>(Source))->GetNumberOfRetries();
   }
   else
   {
@@ -393,126 +355,123 @@ void __fastcall TSessionData::Assign(TPersistent * Source)
 //---------------------------------------------------------------------
 void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword)
 {
-  if (Storage->OpenSubKey(GetInternalStorageKey(), false))
-  {
-    SetPortNumber(Storage->Readint(L"PortNumber", GetPortNumber()));
-    SetUserName(Storage->ReadString(L"UserName", GetUserName()));
-    // must be loaded after UserName, because HostName may be in format user@host
-    SetHostName(Storage->ReadString(L"HostName", GetHostName()));
+  SetPortNumber(Storage->Readint(L"PortNumber", GetPortNumber()));
+  SetUserName(Storage->ReadString(L"UserName", GetUserName()));
+  // must be loaded after UserName, because HostName may be in format user@host
+  SetHostName(Storage->ReadString(L"HostName", GetHostName()));
 
-    if (!Configuration->GetDisablePasswordStoring())
+  if (!Configuration->GetDisablePasswordStoring())
+  {
+    if (Storage->ValueExists(L"PasswordPlain"))
     {
-      if (Storage->ValueExists(L"PasswordPlain"))
-      {
-        SetPassword(Storage->ReadString(L"PasswordPlain", GetPassword()));
-        RewritePassword = true;
-      }
-      else
-      {
-        FPassword = Storage->ReadString(L"Password", FPassword);
-      }
-    }
-    SetLoginType(static_cast<TLoginType>(Storage->Readint(L"LoginType", GetLoginType())));
-    SetPasswordless(Storage->Readbool(L"Passwordless", GetPasswordless()));
-    // Putty uses PingIntervalSecs
-    int PingIntervalSecs = Storage->Readint(L"PingIntervalSecs", -1);
-    if (PingIntervalSecs < 0)
-    {
-      PingIntervalSecs = Storage->Readint(L"PingIntervalSec", GetPingInterval()%60);
-    }
-    SetPingInterval(
-      Storage->Readint(L"PingInterval", GetPingInterval()/60)*60 +
-      PingIntervalSecs);
-    if (GetPingInterval()== 0)
-    {
-      SetPingInterval(30);
-    }
-    // PingType has not existed before 3.5, where PingInterval > 0 meant today's ptNullPacket
-    // Since 3.5, until 4.1 PingType was stored unconditionally.
-    // Since 4.1 PingType is stored when it is not ptOff (default) or
-    // when PingInterval is stored.
-    if (!Storage->ValueExists(L"PingType"))
-    {
-      if (Storage->Readint(L"PingInterval", 0) > 0)
-      {
-        SetPingType(ptNullPacket);
-      }
+      SetPassword(Storage->ReadString(L"PasswordPlain", GetPassword()));
+      RewritePassword = true;
     }
     else
     {
-      SetPingType(static_cast<TPingType>(Storage->Readint(L"PingType", ptOff)));
+      FPassword = Storage->ReadStringAsBinaryData(L"Password", FPassword);
     }
-    SetTimeout(Storage->Readint(L"Timeout", GetTimeout()));
-    SetTryAgent(Storage->Readbool(L"TryAgent", GetTryAgent()));
-    SetAgentFwd(Storage->Readbool(L"AgentFwd", GetAgentFwd()));
-    SetAuthTIS(Storage->Readbool(L"AuthTIS", GetAuthTIS()));
-    SetAuthKI(Storage->Readbool(L"AuthKI", GetAuthKI()));
-    SetAuthKIPassword(Storage->Readbool(L"AuthKIPassword", GetAuthKIPassword()));
-    // Continue to use setting keys of previous kerberos implementation (vaclav tomec),
-    // but fallback to keys of other implementations (official putty and vintela quest putty),
-    // to allow imports from all putty versions.
-    // Both vaclav tomec and official putty use AuthGSSAPI
-    SetAuthGSSAPI(Storage->Readbool(L"AuthGSSAPI", Storage->Readbool(L"AuthSSPI", GetAuthGSSAPI())));
-    SetGSSAPIFwdTGT(Storage->Readbool(L"GSSAPIFwdTGT", Storage->Readbool(L"GssapiFwd", Storage->Readbool(L"SSPIFwdTGT", GetGSSAPIFwdTGT()))));
-    SetGSSAPIServerRealm(Storage->ReadString(L"GSSAPIServerRealm", Storage->ReadString(L"KerbPrincipal", GetGSSAPIServerRealm())));
-    SetChangeUsername(Storage->Readbool(L"ChangeUsername", GetChangeUsername()));
-    SetCompression(Storage->Readbool(L"Compression", GetCompression()));
-    SetSshProt(static_cast<TSshProt>(Storage->Readint(L"SshProt", GetSshProt())));
-    SetSsh2DES(Storage->Readbool(L"Ssh2DES", GetSsh2DES()));
-    SetSshNoUserAuth(Storage->Readbool(L"SshNoUserAuth", GetSshNoUserAuth()));
-    SetCipherList(Storage->ReadString(L"Cipher", GetCipherList()));
-    SetKexList(Storage->ReadString(L"KEX", GetKexList()));
-    SetPublicKeyFile(Storage->ReadString(L"PublicKeyFile", GetPublicKeyFile()));
-    SetAddressFamily(static_cast<TAddressFamily>
-      (Storage->Readint(L"AddressFamily", GetAddressFamily())));
-    SetCodePage(Storage->ReadString(L"CodePage", GetCodePage()));
-    SetRekeyData(Storage->ReadString(L"RekeyBytes", GetRekeyData()));
-    SetRekeyTime(Storage->Readint(L"RekeyTime", GetRekeyTime()));
-
-    SetFSProtocol(static_cast<TFSProtocol>(Storage->Readint(L"FSProtocol", GetFSProtocol())));
-    SetLocalDirectory(Storage->ReadString(L"LocalDirectory", GetLocalDirectory()));
-    SetRemoteDirectory(Storage->ReadString(L"RemoteDirectory", GetRemoteDirectory()));
-    SetSynchronizeBrowsing(Storage->Readbool(L"SynchronizeBrowsing", GetSynchronizeBrowsing()));
-    SetUpdateDirectories(Storage->Readbool(L"UpdateDirectories", GetUpdateDirectories()));
-    SetCacheDirectories(Storage->Readbool(L"CacheDirectories", GetCacheDirectories()));
-    SetCacheDirectoryChanges(Storage->Readbool(L"CacheDirectoryChanges", GetCacheDirectoryChanges()));
-    SetPreserveDirectoryChanges(Storage->Readbool(L"PreserveDirectoryChanges", GetPreserveDirectoryChanges()));
-
-    SetResolveSymlinks(Storage->Readbool(L"ResolveSymlinks", GetResolveSymlinks()));
-    SetDSTMode(static_cast<TDSTMode>(Storage->Readint(L"ConsiderDST", GetDSTMode())));
-    SetLockInHome(Storage->Readbool(L"LockInHome", GetLockInHome()));
-    SetSpecial(Storage->Readbool(L"Special", GetSpecial()));
-    SetShell(Storage->ReadString(L"Shell", GetShell()));
-    SetClearAliases(Storage->Readbool(L"ClearAliases", GetClearAliases()));
-    SetUnsetNationalVars(Storage->Readbool(L"UnsetNationalVars", GetUnsetNationalVars()));
-    SetListingCommand(Storage->ReadString(L"ListingCommand",
-      Storage->Readbool(L"AliasGroupList", false) ? UnicodeString(L"ls -gla") : GetListingCommand()));
-    SetIgnoreLsWarnings(Storage->Readbool(L"IgnoreLsWarnings", GetIgnoreLsWarnings()));
-    SetSCPLsFullTime(static_cast<TAutoSwitch>(Storage->Readint(L"SCPLsFullTime", GetSCPLsFullTime())));
-    SetFtpListAll(static_cast<TAutoSwitch>(Storage->Readint(L"FtpListAll", GetFtpListAll())));
-    SetScp1Compatibility(Storage->Readbool(L"Scp1Compatibility", GetScp1Compatibility()));
-    SetTimeDifference(TDateTime(Storage->ReadFloat(L"TimeDifference", GetTimeDifference())));
-    SetDeleteToRecycleBin(Storage->Readbool(L"DeleteToRecycleBin", GetDeleteToRecycleBin()));
-    SetOverwrittenToRecycleBin(Storage->Readbool(L"OverwrittenToRecycleBin", GetOverwrittenToRecycleBin()));
-    SetRecycleBinPath(Storage->ReadString(L"RecycleBinPath", GetRecycleBinPath()));
-    SetPostLoginCommands(Storage->ReadString(L"PostLoginCommands", GetPostLoginCommands()));
-
-    SetReturnVar(Storage->ReadString(L"ReturnVar", GetReturnVar()));
-    SetLookupUserGroups(TAutoSwitch(Storage->Readint(L"LookupUserGroups", GetLookupUserGroups())));
-    SetEOLType(static_cast<TEOLType>(Storage->Readint(L"EOLType", GetEOLType())));
-    SetNotUtf(static_cast<TAutoSwitch>(Storage->Readint(L"Utf", Storage->Readint(L"SFTPUtfBug", GetNotUtf()))));
-
-    SetTcpNoDelay(Storage->Readbool(L"TcpNoDelay", GetTcpNoDelay()));
-    SetSendBuf(Storage->Readint(L"SendBuf", Storage->Readint(L"SshSendBuf", GetSendBuf())));
-    SetSshSimple(Storage->Readbool(L"SshSimple", GetSshSimple()));
-
-    SetProxyMethod(static_cast<TProxyMethod>(Storage->Readint(L"ProxyMethod", -1)));
-    if (GetProxyMethod() < 0)
+  }
+  SetLoginType(static_cast<TLoginType>(Storage->Readint(L"LoginType", GetLoginType())));
+  SetPasswordless(Storage->Readbool(L"Passwordless", GetPasswordless()));
+  // Putty uses PingIntervalSecs
+  int PingIntervalSecs = Storage->Readint(L"PingIntervalSecs", -1);
+  if (PingIntervalSecs < 0)
+  {
+    PingIntervalSecs = Storage->Readint(L"PingIntervalSec", GetPingInterval()%60);
+  }
+  SetPingInterval(
+    Storage->Readint(L"PingInterval", GetPingInterval()/SecsPerMin)*SecsPerMin +
+    PingIntervalSecs);
+  if (GetPingInterval()== 0)
+  {
+    SetPingInterval(30);
+  }
+  // PingType has not existed before 3.5, where PingInterval > 0 meant today's ptNullPacket
+  // Since 3.5, until 4.1 PingType was stored unconditionally.
+  // Since 4.1 PingType is stored when it is not ptOff (default) or
+  // when PingInterval is stored.
+  if (!Storage->ValueExists(L"PingType"))
+  {
+    if (Storage->Readint(L"PingInterval", 0) > 0)
     {
-      int ProxyType = Storage->Readint(L"ProxyType", pxNone);
-      int ProxySOCKSVersion;
-      switch (ProxyType)
-      {
+      SetPingType(ptNullPacket);
+    }
+  }
+  else
+  {
+    SetPingType(static_cast<TPingType>(Storage->Readint(L"PingType", ptOff)));
+  }
+  SetTimeout(Storage->Readint(L"Timeout", GetTimeout()));
+  SetTryAgent(Storage->Readbool(L"TryAgent", GetTryAgent()));
+  SetAgentFwd(Storage->Readbool(L"AgentFwd", GetAgentFwd()));
+  SetAuthTIS(Storage->Readbool(L"AuthTIS", GetAuthTIS()));
+  SetAuthKI(Storage->Readbool(L"AuthKI", GetAuthKI()));
+  SetAuthKIPassword(Storage->Readbool(L"AuthKIPassword", GetAuthKIPassword()));
+  // Continue to use setting keys of previous kerberos implementation (vaclav tomec),
+  // but fallback to keys of other implementations (official putty and vintela quest putty),
+  // to allow imports from all putty versions.
+  // Both vaclav tomec and official putty use AuthGSSAPI
+  SetAuthGSSAPI(Storage->Readbool(L"AuthGSSAPI", Storage->Readbool(L"AuthSSPI", GetAuthGSSAPI())));
+  SetGSSAPIFwdTGT(Storage->Readbool(L"GSSAPIFwdTGT", Storage->Readbool(L"GssapiFwd", Storage->Readbool(L"SSPIFwdTGT", GetGSSAPIFwdTGT()))));
+  SetGSSAPIServerRealm(Storage->ReadString(L"GSSAPIServerRealm", Storage->ReadString(L"KerbPrincipal", GetGSSAPIServerRealm())));
+  SetChangeUsername(Storage->Readbool(L"ChangeUsername", GetChangeUsername()));
+  SetCompression(Storage->Readbool(L"Compression", GetCompression()));
+  SetSshProt(static_cast<TSshProt>(Storage->Readint(L"SshProt", GetSshProt())));
+  SetSsh2DES(Storage->Readbool(L"Ssh2DES", GetSsh2DES()));
+  SetSshNoUserAuth(Storage->Readbool(L"SshNoUserAuth", GetSshNoUserAuth()));
+  SetCipherList(Storage->ReadString(L"Cipher", GetCipherList()));
+  SetKexList(Storage->ReadString(L"KEX", GetKexList()));
+  SetPublicKeyFile(Storage->ReadString(L"PublicKeyFile", GetPublicKeyFile()));
+  SetAddressFamily(static_cast<TAddressFamily>
+    (Storage->Readint(L"AddressFamily", GetAddressFamily())));
+  SetCodePage(Storage->ReadString(L"CodePage", GetCodePage()));
+  SetRekeyData(Storage->ReadString(L"RekeyBytes", GetRekeyData()));
+  SetRekeyTime(Storage->Readint(L"RekeyTime", GetRekeyTime()));
+
+  SetFSProtocol(static_cast<TFSProtocol>(Storage->Readint(L"FSProtocol", GetFSProtocol())));
+  SetLocalDirectory(Storage->ReadString(L"LocalDirectory", GetLocalDirectory()));
+  SetRemoteDirectory(Storage->ReadString(L"RemoteDirectory", GetRemoteDirectory()));
+  SetSynchronizeBrowsing(Storage->Readbool(L"SynchronizeBrowsing", GetSynchronizeBrowsing()));
+  SetUpdateDirectories(Storage->Readbool(L"UpdateDirectories", GetUpdateDirectories()));
+  SetCacheDirectories(Storage->Readbool(L"CacheDirectories", GetCacheDirectories()));
+  SetCacheDirectoryChanges(Storage->Readbool(L"CacheDirectoryChanges", GetCacheDirectoryChanges()));
+  SetPreserveDirectoryChanges(Storage->Readbool(L"PreserveDirectoryChanges", GetPreserveDirectoryChanges()));
+
+  SetResolveSymlinks(Storage->Readbool(L"ResolveSymlinks", GetResolveSymlinks()));
+  SetDSTMode(static_cast<TDSTMode>(Storage->Readint(L"ConsiderDST", GetDSTMode())));
+  SetLockInHome(Storage->Readbool(L"LockInHome", GetLockInHome()));
+  SetSpecial(Storage->Readbool(L"Special", GetSpecial()));
+  SetShell(Storage->ReadString(L"Shell", GetShell()));
+  SetClearAliases(Storage->Readbool(L"ClearAliases", GetClearAliases()));
+  SetUnsetNationalVars(Storage->Readbool(L"UnsetNationalVars", GetUnsetNationalVars()));
+  SetListingCommand(Storage->ReadString(L"ListingCommand",
+    Storage->Readbool(L"AliasGroupList", false) ? UnicodeString(L"ls -gla") : GetListingCommand()));
+  SetIgnoreLsWarnings(Storage->Readbool(L"IgnoreLsWarnings", GetIgnoreLsWarnings()));
+  SetSCPLsFullTime(static_cast<TAutoSwitch>(Storage->Readint(L"SCPLsFullTime", GetSCPLsFullTime())));
+  SetFtpListAll(static_cast<TAutoSwitch>(Storage->Readint(L"FtpListAll", GetFtpListAll())));
+  SetScp1Compatibility(Storage->Readbool(L"Scp1Compatibility", GetScp1Compatibility()));
+  SetTimeDifference(TDateTime(Storage->ReadFloat(L"TimeDifference", GetTimeDifference())));
+  SetDeleteToRecycleBin(Storage->Readbool(L"DeleteToRecycleBin", GetDeleteToRecycleBin()));
+  SetOverwrittenToRecycleBin(Storage->Readbool(L"OverwrittenToRecycleBin", GetOverwrittenToRecycleBin()));
+  SetRecycleBinPath(Storage->ReadString(L"RecycleBinPath", GetRecycleBinPath()));
+  SetPostLoginCommands(Storage->ReadString(L"PostLoginCommands", GetPostLoginCommands()));
+
+  SetReturnVar(Storage->ReadString(L"ReturnVar", GetReturnVar()));
+  SetLookupUserGroups(TAutoSwitch(Storage->Readint(L"LookupUserGroups", GetLookupUserGroups())));
+  SetEOLType(static_cast<TEOLType>(Storage->Readint(L"EOLType", GetEOLType())));
+  SetNotUtf(static_cast<TAutoSwitch>(Storage->Readint(L"Utf", Storage->Readint(L"SFTPUtfBug", GetNotUtf()))));
+
+  SetTcpNoDelay(Storage->Readbool(L"TcpNoDelay", GetTcpNoDelay()));
+  SetSendBuf(Storage->Readint(L"SendBuf", Storage->Readint(L"SshSendBuf", GetSendBuf())));
+  SetSshSimple(Storage->Readbool(L"SshSimple", GetSshSimple()));
+
+  SetProxyMethod(static_cast<TProxyMethod>(Storage->Readint(L"ProxyMethod", -1)));
+  if (GetProxyMethod() < 0)
+  {
+    int ProxyType = Storage->Readint(L"ProxyType", pxNone);
+    int ProxySOCKSVersion;
+    switch (ProxyType) {
       case pxHTTP:
         SetProxyMethod(pmHTTP);
         break;
@@ -527,114 +486,113 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
       case pxNone:
         SetProxyMethod(pmNone);
         break;
-      }
     }
-    SetProxyHost(Storage->ReadString(L"ProxyHost", GetProxyHost()));
-    SetProxyPort(Storage->Readint(L"ProxyPort", GetProxyPort()));
-    SetProxyUsername(Storage->ReadString(L"ProxyUsername", GetProxyUsername()));
-    if (Storage->ValueExists(L"ProxyPassword"))
+  }
+  SetProxyHost(Storage->ReadString(L"ProxyHost", GetProxyHost()));
+  SetProxyPort(Storage->Readint(L"ProxyPort", GetProxyPort()));
+  SetProxyUsername(Storage->ReadString(L"ProxyUsername", GetProxyUsername()));
+  if (Storage->ValueExists(L"ProxyPassword"))
+  {
+    // encrypt unencrypted password
+    SetProxyPassword(Storage->ReadString(L"ProxyPassword", L""));
+  }
+  else
+  {
+    // load encrypted password
+    FProxyPassword = Storage->ReadStringAsBinaryData(L"ProxyPasswordEnc", FProxyPassword);
+  }
+  if (GetProxyMethod() == pmCmd)
+  {
+    SetProxyLocalCommand(Storage->ReadStringRaw(L"ProxyTelnetCommand", GetProxyLocalCommand()));
+  }
+  else
+  {
+    SetProxyTelnetCommand(Storage->ReadStringRaw(L"ProxyTelnetCommand", GetProxyTelnetCommand()));
+  }
+  SetProxyDNS(static_cast<TAutoSwitch>((Storage->Readint(L"ProxyDNS", (GetProxyDNS() + 2) % 3) + 1) % 3));
+  SetProxyLocalhost(Storage->Readbool(L"ProxyLocalhost", GetProxyLocalhost()));
+
+  #define READ_BUG(BUG) \
+    SetBug(sb##BUG, TAutoSwitch(2 - Storage->Readint(L"Bug" + MB2W(#BUG), \
+      2 - GetBug(sb##BUG))));
+  READ_BUG(Ignore1);
+  READ_BUG(PlainPW1);
+  READ_BUG(RSA1);
+  READ_BUG(HMAC2);
+  READ_BUG(DeriveKey2);
+  READ_BUG(RSAPad2);
+  READ_BUG(PKSessID2);
+  READ_BUG(Rekey2);
+  READ_BUG(MaxPkt2);
+  READ_BUG(Ignore2);
+  #undef READ_BUG
+
+  if ((GetBug(sbHMAC2) == asAuto) &&
+      Storage->Readbool(L"BuggyMAC", false))
+  {
+    SetBug(sbHMAC2, asOn);
+  }
+
+  SetSftpServer(Storage->ReadString(L"SftpServer", GetSftpServer()));
+  #define READ_SFTP_BUG(BUG) \
+    SetSFTPBug(sb##BUG, TAutoSwitch(Storage->Readint(L"SFTP" + MB2W(#BUG) + L"Bug", GetSFTPBug(sb##BUG))));
+  READ_SFTP_BUG(Symlink);
+  READ_SFTP_BUG(SignedTS);
+  #undef READ_SFTP_BUG
+
+  SetSFTPMaxVersion(static_cast<size_t>(Storage->Readint(L"SFTPMaxVersion", GetSFTPMaxVersion())));
+  SetSFTPMinPacketSize(static_cast<size_t>(Storage->Readint(L"SFTPMinPacketSize", GetSFTPMinPacketSize())));
+  SetSFTPMaxPacketSize(static_cast<size_t>(Storage->Readint(L"SFTPMaxPacketSize", GetSFTPMaxPacketSize())));
+
+  SetColor(Storage->Readint(L"Color", GetColor()));
+
+  SetProtocolStr(Storage->ReadString(L"Protocol", GetProtocolStr()));
+
+  SetTunnel(Storage->Readbool(L"Tunnel", GetTunnel()));
+  SetTunnelPortNumber(static_cast<size_t>(Storage->Readint(L"TunnelPortNumber", GetTunnelPortNumber())));
+  SetTunnelUserName(Storage->ReadString(L"TunnelUserName", GetTunnelUserName()));
+  // must be loaded after TunnelUserName,
+  // because TunnelHostName may be in format user@host
+  SetTunnelHostName(Storage->ReadString(L"TunnelHostName", GetTunnelHostName()));
+  if (!Configuration->GetDisablePasswordStoring())
+  {
+    if (Storage->ValueExists(L"TunnelPasswordPlain"))
     {
-      // encrypt unencrypted password
-      SetProxyPassword(Storage->ReadString(L"ProxyPassword", L""));
+      SetTunnelPassword(Storage->ReadString(L"TunnelPasswordPlain", GetTunnelPassword()));
+      RewritePassword = true;
     }
     else
     {
-      // load encrypted password
-      FProxyPassword = Storage->ReadString(L"ProxyPasswordEnc", FProxyPassword);
+      FTunnelPassword = Storage->ReadStringAsBinaryData(L"TunnelPassword", FTunnelPassword);
     }
-    if (GetProxyMethod() == pmCmd)
-    {
-      SetProxyLocalCommand(Storage->ReadStringRaw(L"ProxyTelnetCommand", GetProxyLocalCommand()));
-    }
-    else
-    {
-      SetProxyTelnetCommand(Storage->ReadStringRaw(L"ProxyTelnetCommand", GetProxyTelnetCommand()));
-    }
-    SetProxyDNS(static_cast<TAutoSwitch>((Storage->Readint(L"ProxyDNS", (GetProxyDNS() + 2) % 3) + 1) % 3));
-    SetProxyLocalhost(Storage->Readbool(L"ProxyLocalhost", GetProxyLocalhost()));
+  }
+  SetTunnelPublicKeyFile(Storage->ReadString(L"TunnelPublicKeyFile", GetTunnelPublicKeyFile()));
+  SetTunnelLocalPortNumber(static_cast<size_t>(Storage->Readint(L"TunnelLocalPortNumber", GetTunnelLocalPortNumber())));
 
-#define READ_BUG(BUG) \
-      SetBug(sb##BUG, TAutoSwitch(2 - Storage->Readint(L"Bug" + MB2W(#BUG), \
-        2 - GetBug(sb##BUG))));
-    READ_BUG(Ignore1);
-    READ_BUG(PlainPW1);
-    READ_BUG(RSA1);
-    READ_BUG(HMAC2);
-    READ_BUG(DeriveKey2);
-    READ_BUG(RSAPad2);
-    READ_BUG(PKSessID2);
-    READ_BUG(Rekey2);
-    READ_BUG(MaxPkt2);
-    READ_BUG(Ignore2);
-#undef READ_BUG
+  // Ftp prefix
+  SetFtpPasvMode(Storage->Readbool(L"FtpPasvMode", GetFtpPasvMode()));
+  SetFtpForcePasvIp(Storage->Readbool(L"FtpForcePasvIp", GetFtpForcePasvIp()));
+  SetFtpAllowEmptyPassword(Storage->Readbool(L"FtpAllowEmptyPassword", GetFtpAllowEmptyPassword()));
+  SetFtpEncryption(static_cast<TFtpEncryptionSwitch>(Storage->Readint(L"FtpEncryption", GetFtpEncryption())));
+  SetFtpAccount(Storage->ReadString(L"FtpAccount", GetFtpAccount()));
+  SetFtpPingInterval(Storage->Readint(L"FtpPingInterval", GetFtpPingInterval()));
+  SetFtpPingType(static_cast<TPingType>(Storage->Readint(L"FtpPingType", GetFtpPingType())));
+  SetFtps(static_cast<TFtps>(Storage->Readint(L"Ftps", GetFtps())));
 
-    if ((GetBug(sbHMAC2) == asAuto) &&
-        Storage->Readbool(L"BuggyMAC", false))
-    {
-      SetBug(sbHMAC2, asOn);
-    }
+  SetFtpProxyLogonType(static_cast<size_t>(Storage->Readint(L"FtpProxyLogonType", GetFtpProxyLogonType())));
 
-    SetSftpServer(Storage->ReadString(L"SftpServer", GetSftpServer()));
-#define READ_SFTP_BUG(BUG) \
-      SetSFTPBug(sb##BUG, TAutoSwitch(Storage->Readint(L"SFTP" + MB2W(#BUG) + L"Bug", GetSFTPBug(sb##BUG))));
-    READ_SFTP_BUG(Symlink);
-    READ_SFTP_BUG(SignedTS);
-#undef READ_SFTP_BUG
+  SetCustomParam1(Storage->ReadString(L"CustomParam1", GetCustomParam1()));
+  SetCustomParam2(Storage->ReadString(L"CustomParam2", GetCustomParam2()));
 
-    SetSFTPMaxVersion(static_cast<size_t>(Storage->Readint(L"SFTPMaxVersion", GetSFTPMaxVersion())));
-    SetSFTPMinPacketSize(static_cast<size_t>(Storage->Readint(L"SFTPMinPacketSize", GetSFTPMinPacketSize())));
-    SetSFTPMaxPacketSize(static_cast<size_t>(Storage->Readint(L"SFTPMaxPacketSize", GetSFTPMaxPacketSize())));
+  SetSslSessionReuse(Storage->Readbool(L"SslSessionReuse", GetSslSessionReuse()));
 
-    SetColor(Storage->Readint(L"Color", GetColor()));
-
-    SetProtocolStr(Storage->ReadString(L"Protocol", GetProtocolStr()));
-
-    SetTunnel(Storage->Readbool(L"Tunnel", GetTunnel()));
-    SetTunnelPortNumber(static_cast<size_t>(Storage->Readint(L"TunnelPortNumber", GetTunnelPortNumber())));
-    SetTunnelUserName(Storage->ReadString(L"TunnelUserName", GetTunnelUserName()));
-    // must be loaded after TunnelUserName,
-    // because TunnelHostName may be in format user@host
-    SetTunnelHostName(Storage->ReadString(L"TunnelHostName", GetTunnelHostName()));
-    if (!Configuration->GetDisablePasswordStoring())
-    {
-      if (Storage->ValueExists(L"TunnelPasswordPlain"))
-      {
-        SetTunnelPassword(Storage->ReadString(L"TunnelPasswordPlain", GetTunnelPassword()));
-        RewritePassword = true;
-      }
-      else
-      {
-        FTunnelPassword = Storage->ReadString(L"TunnelPassword", FTunnelPassword);
-      }
-    }
-    SetTunnelPublicKeyFile(Storage->ReadString(L"TunnelPublicKeyFile", GetTunnelPublicKeyFile()));
-    SetTunnelLocalPortNumber(static_cast<size_t>(Storage->Readint(L"TunnelLocalPortNumber", GetTunnelLocalPortNumber())));
-
-    // Ftp prefix
-    SetFtpPasvMode(Storage->Readbool(L"FtpPasvMode", GetFtpPasvMode()));
-    SetFtpForcePasvIp(Storage->Readbool(L"FtpForcePasvIp", GetFtpForcePasvIp()));
-    SetFtpAllowEmptyPassword(Storage->Readbool(L"FtpAllowEmptyPassword", GetFtpAllowEmptyPassword()));
-    SetFtpEncryption(static_cast<TFtpEncryptionSwitch>(Storage->Readint(L"FtpEncryption", GetFtpEncryption())));
-    SetFtpAccount(Storage->ReadString(L"FtpAccount", GetFtpAccount()));
-    SetFtpPingInterval(Storage->Readint(L"FtpPingInterval", GetFtpPingInterval()));
-    SetFtpPingType(static_cast<TPingType>(Storage->Readint(L"FtpPingType", GetFtpPingType())));
-    SetFtps(static_cast<TFtps>(Storage->Readint(L"Ftps", GetFtps())));
-
-    SetFtpProxyLogonType(static_cast<size_t>(Storage->Readint(L"FtpProxyLogonType", GetFtpProxyLogonType())));
-
-    SetCustomParam1(Storage->ReadString(L"CustomParam1", GetCustomParam1()));
-    SetCustomParam2(Storage->ReadString(L"CustomParam2", GetCustomParam2()));
-
-    SetSslSessionReuse(Storage->Readbool(L"SslSessionReuse", GetSslSessionReuse()));
-
-    Storage->CloseSubKey();
-  };
+  Storage->CloseSubKey();
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionData::Load(THierarchicalStorage * Storage)
 {
   bool RewritePassword = false;
-  if (Storage->OpenSubKey(GetInternalStorageKey(), false))
+  if (Storage->OpenSubKey(GetInternalStorageKey(), False))
   {
     DoLoad(Storage, RewritePassword);
 
@@ -653,17 +611,17 @@ void __fastcall TSessionData::Load(THierarchicalStorage * Storage)
         Storage->DeleteValue(L"PasswordPlain");
         if (!GetPassword().IsEmpty())
         {
-          Storage->WriteString(L"Password", FPassword);
+          Storage->WriteBinaryDataAsString(L"Password", FPassword);
         }
         Storage->DeleteValue(L"TunnelPasswordPlain");
         if (!GetTunnelPassword().IsEmpty())
         {
-          Storage->WriteString(L"TunnelPassword", FTunnelPassword);
+          Storage->WriteBinaryDataAsString(L"TunnelPassword", FTunnelPassword);
         }
         Storage->CloseSubKey();
       }
     }
-    catch (...)
+    catch(...)
     {
       // ignore errors (like read-only INI file)
     }
@@ -681,23 +639,23 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
 {
   if (Storage->OpenSubKey(GetInternalStorageKey(), true))
   {
-#define WRITE_DATA_EX(TYPE, NAME, PROPERTY, CONV) \
+    #define WRITE_DATA_EX(TYPE, NAME, PROPERTY, CONV) \
       if ((Default != NULL) && (CONV(Default->PROPERTY) == CONV(PROPERTY))) \
       { \
-        Storage->DeleteValue(UnicodeString(NAME)); \
+        Storage->DeleteValue(NAME); \
       } \
       else \
       { \
-        Storage->Write##TYPE(UnicodeString(NAME), CONV(PROPERTY)); \
+        Storage->Write ## TYPE(NAME, CONV(PROPERTY)); \
       }
-#define WRITE_DATA_CONV(TYPE, NAME, PROPERTY) WRITE_DATA_EX(TYPE, NAME, PROPERTY, WRITE_DATA_CONV_FUNC)
-#define WRITE_DATA(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, #PROPERTY, PROPERTY, )
+    #define WRITE_DATA_CONV(TYPE, NAME, PROPERTY) WRITE_DATA_EX(TYPE, NAME, PROPERTY, WRITE_DATA_CONV_FUNC)
+    #define WRITE_DATA(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, TEXT(#PROPERTY), PROPERTY, )
 
-    WRITE_DATA_EX(String, L"HostName", GetHostName(), );
-    WRITE_DATA_EX(int, L"PortNumber", GetPortNumber(), );
-    WRITE_DATA_EX(bool, L"Passwordless", GetPasswordless(), );
-    WRITE_DATA_EX(int, L"PingInterval", GetPingInterval() / 60, );
-    WRITE_DATA_EX(int, L"PingIntervalSecs", GetPingInterval() % 60, );
+    WRITE_DATA(String, L"HostName", GetHostName());
+    WRITE_DATA(int, L"PortNumber", GetPortNumber());
+    WRITE_DATA(bool, L"Passwordless", GetPasswordless());
+    WRITE_DATA_EX(int, L"PingInterval", GetPingInterval() / SecsPerMin, );
+    WRITE_DATA_EX(int, L"PingIntervalSecs", GetPingInterval() % SecsPerMin, );
     Storage->DeleteValue(L"PingIntervalSec"); // obsolete
     // when PingInterval is stored always store PingType not to attempt to
     // deduce PingType from PingInterval (backward compatibility with pre 3.5)
@@ -710,16 +668,16 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
     {
       Storage->DeleteValue(L"PingType");
     }
-    WRITE_DATA_EX(int, L"Timeout", GetTimeout(), );
-    WRITE_DATA_EX(bool, L"TryAgent", GetTryAgent(), );
-    WRITE_DATA_EX(bool, L"AgentFwd", GetAgentFwd(), );
-    WRITE_DATA_EX(bool, L"AuthTIS", GetAuthTIS(), );
-    WRITE_DATA_EX(bool, L"AuthKI", GetAuthKI(), );
-    WRITE_DATA_EX(bool, L"AuthKIPassword", GetAuthKIPassword(), );
+    WRITE_DATA(int, L"Timeout", GetTimeout());
+    WRITE_DATA(bool, L"TryAgent", GetTryAgent());
+    WRITE_DATA(bool, L"AgentFwd", GetAgentFwd());
+    WRITE_DATA(bool, L"AuthTIS", GetAuthTIS());
+    WRITE_DATA(bool, L"AuthKI", GetAuthKI());
+    WRITE_DATA(bool, L"AuthKIPassword", GetAuthKIPassword());
 
-    WRITE_DATA_EX(bool, L"AuthGSSAPI", GetAuthGSSAPI(), );
-    WRITE_DATA_EX(bool, L"GSSAPIFwdTGT", GetGSSAPIFwdTGT(), );
-    WRITE_DATA_EX(String, L"GSSAPIServerRealm", GetGSSAPIServerRealm(), );
+    WRITE_DATA(bool, L"AuthGSSAPI", GetAuthGSSAPI());
+    WRITE_DATA(bool, L"GSSAPIFwdTGT", GetGSSAPIFwdTGT());
+    WRITE_DATA(String, L"GSSAPIServerRealm", GetGSSAPIServerRealm());
     Storage->DeleteValue(L"TryGSSKEX");
     Storage->DeleteValue(L"UserNameFromEnvironment");
     Storage->DeleteValue(L"GSSAPIServerChoosesUserName");
@@ -734,96 +692,95 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
       WRITE_DATA_EX(bool, L"GssapiFwd", GetGSSAPIFwdTGT(), );
     }
 
-    WRITE_DATA_EX(bool, L"ChangeUsername", GetChangeUsername(), );
-    WRITE_DATA_EX(bool, L"Compression", GetCompression(), );
-    WRITE_DATA_EX(int, L"SshProt", GetSshProt(), );
-    WRITE_DATA_EX(bool, L"Ssh2DES", GetSsh2DES(), );
-    WRITE_DATA_EX(bool, L"SshNoUserAuth", GetSshNoUserAuth(), );
-    WRITE_DATA_EX(String, L"Cipher", GetCipherList(), );
-    WRITE_DATA_EX(String, L"KEX", GetKexList(), );
+    WRITE_DATA(bool, L"ChangeUsername", GetChangeUsername());
+    WRITE_DATA(bool, L"Compression", GetCompression());
+    WRITE_DATA(int, L"SshProt", GetSshProt());
+    WRITE_DATA(bool, L"Ssh2DES", GetSsh2DES());
+    WRITE_DATA(bool, L"SshNoUserAuth", GetSshNoUserAuth());
+    WRITE_DATA(String, L"Cipher", GetCipherList());
+    WRITE_DATA_EX(String, L"KEX", GetKexList());
     WRITE_DATA_EX(int, L"AddressFamily", GetAddressFamily(), );
-    WRITE_DATA_EX(String, L"CodePage", GetCodePage(), );
+    WRITE_DATA(String, L"CodePage", GetCodePage());
     WRITE_DATA_EX(String, L"RekeyBytes", GetRekeyData(), );
-    WRITE_DATA_EX(int, L"RekeyTime", GetRekeyTime(), );
+    WRITE_DATA(int, L"RekeyTime", GetRekeyTime());
 
-    WRITE_DATA_EX(bool, L"TcpNoDelay", GetTcpNoDelay(), );
+    WRITE_DATA(bool, L"TcpNoDelay", GetTcpNoDelay());
 
     if (PuttyExport)
     {
-      WRITE_DATA_EX(String, L"UserName", GetUserName(), );
-      WRITE_DATA_EX(String, L"PublicKeyFile", GetPublicKeyFile(), );
+      WRITE_DATA(String, L"UserName", GetUserName());
+      WRITE_DATA(String, L"PublicKeyFile", GetPublicKeyFile());
     }
     else
     {
-      WRITE_DATA_EX(int, L"LoginType", GetLoginType(), );
-      WRITE_DATA_EX(String, L"UserName", GetUserName(), );
-      WRITE_DATA_EX(int, L"LoginType", GetLoginType(), );
-      WRITE_DATA_EX(String, L"PublicKeyFile", GetPublicKeyFile(), );
-      WRITE_DATA_EX(int, L"FSProtocol", GetFSProtocol(), );
-      WRITE_DATA_EX(String, L"LocalDirectory", GetLocalDirectory(), );
-      WRITE_DATA_EX(String, L"RemoteDirectory", GetRemoteDirectory(), );
-      WRITE_DATA_EX(bool, L"SynchronizeBrowsing", GetSynchronizeBrowsing(), );
-      WRITE_DATA_EX(bool, L"UpdateDirectories", GetUpdateDirectories(), );
-      WRITE_DATA_EX(bool, L"CacheDirectories", GetCacheDirectories(), );
-      WRITE_DATA_EX(bool, L"CacheDirectoryChanges", GetCacheDirectoryChanges(), );
-      WRITE_DATA_EX(bool, L"PreserveDirectoryChanges", GetPreserveDirectoryChanges(), );
+      WRITE_DATA(int, L"LoginType", GetLoginType());
+      WRITE_DATA(String, L"UserName", GetUserName());
+      WRITE_DATA(int, L"LoginType", GetLoginType());
+      WRITE_DATA(String, L"PublicKeyFile", GetPublicKeyFile());
+      WRITE_DATA(int, L"FSProtocol", GetFSProtocol());
+      WRITE_DATA(String, L"LocalDirectory", GetLocalDirectory());
+      WRITE_DATA(String, L"RemoteDirectory", GetRemoteDirectory());
+      WRITE_DATA(bool, L"SynchronizeBrowsing", GetSynchronizeBrowsing());
+      WRITE_DATA(bool, L"UpdateDirectories", GetUpdateDirectories());
+      WRITE_DATA(bool, L"CacheDirectories", GetCacheDirectories());
+      WRITE_DATA(bool, L"CacheDirectoryChanges", GetCacheDirectoryChanges());
+      WRITE_DATA(bool, L"PreserveDirectoryChanges", GetPreserveDirectoryChanges());
 
-      WRITE_DATA_EX(bool, L"ResolveSymlinks", GetResolveSymlinks(), );
+      WRITE_DATA(bool, L"ResolveSymlinks", GetResolveSymlinks());
       WRITE_DATA_EX(int, L"ConsiderDST", GetDSTMode(), );
-      WRITE_DATA_EX(bool, L"LockInHome", GetLockInHome(), );
+      WRITE_DATA(bool, L"LockInHome", GetLockInHome());
       // Special is never stored (if it would, login dialog must be modified not to
       // duplicate Special parameter when Special session is loaded and then stored
       // under different name)
-      // WRITE_DATA_EX(bool, L"Special", GetSpecial(), );
-      WRITE_DATA_EX(String, L"Shell", GetShell(), );
-      WRITE_DATA_EX(bool, L"ClearAliases", GetClearAliases(), );
-      WRITE_DATA_EX(bool, L"UnsetNationalVars", GetUnsetNationalVars(), );
-      WRITE_DATA_EX(String, L"ListingCommand", GetListingCommand(), );
-      WRITE_DATA_EX(bool, L"IgnoreLsWarnings", GetIgnoreLsWarnings(), );
-      WRITE_DATA_EX(int, L"SCPLsFullTime", GetSCPLsFullTime(), );
-      WRITE_DATA_EX(int, L"FtpListAll", GetFtpListAll(), );
-      WRITE_DATA_EX(bool, L"Scp1Compatibility", GetScp1Compatibility(), );
-      WRITE_DATA_EX(Float, L"TimeDifference", GetTimeDifference(), );
-      WRITE_DATA_EX(bool, L"DeleteToRecycleBin", GetDeleteToRecycleBin(), );
-      WRITE_DATA_EX(bool, L"OverwrittenToRecycleBin", GetOverwrittenToRecycleBin(), );
-      WRITE_DATA_EX(String, L"RecycleBinPath", GetRecycleBinPath(), );
-      WRITE_DATA_EX(String, L"PostLoginCommands", GetPostLoginCommands(), );
+      // WRITE_DATA(bool, L"Special", GetSpecial());
+      WRITE_DATA(String, L"Shell", GetShell());
+      WRITE_DATA(bool, L"ClearAliases", GetClearAliases());
+      WRITE_DATA(bool, L"UnsetNationalVars", GetUnsetNationalVars());
+      WRITE_DATA(String, L"ListingCommand", GetListingCommand());
+      WRITE_DATA(bool, L"IgnoreLsWarnings", GetIgnoreLsWarnings());
+      WRITE_DATA(int, L"SCPLsFullTime", GetSCPLsFullTime());
+      WRITE_DATA(int, L"FtpListAll", GetFtpListAll());
+      WRITE_DATA(bool, L"Scp1Compatibility", GetScp1Compatibility());
+      WRITE_DATA(Float, L"TimeDifference", GetTimeDifference());
+      WRITE_DATA(bool, L"DeleteToRecycleBin", GetDeleteToRecycleBin());
+      WRITE_DATA(bool, L"OverwrittenToRecycleBin", GetOverwrittenToRecycleBin());
+      WRITE_DATA(String, L"RecycleBinPath", GetRecycleBinPath());
+      WRITE_DATA(String, L"PostLoginCommands", GetPostLoginCommands());
 
-      WRITE_DATA_EX(String, L"ReturnVar", GetReturnVar(), );
+      WRITE_DATA(String, L"ReturnVar", GetReturnVar());
       WRITE_DATA_EX(bool, L"LookupUserGroups", GetLookupUserGroups(), );
-      WRITE_DATA_EX(int, L"EOLType", GetEOLType(), );
+      WRITE_DATA(int, L"EOLType", GetEOLType());
       Storage->DeleteValue(L"SFTPUtfBug");
       WRITE_DATA_EX(int, L"Utf", GetNotUtf(), );
-      WRITE_DATA_EX(int, L"SendBuf", GetSendBuf(), );
-      WRITE_DATA_EX(bool, L"SshSimple", GetSshSimple(), );
+      WRITE_DATA(int, L"SendBuf", GetSendBuf());
+      WRITE_DATA(bool, L"SshSimple", GetSshSimple());
     }
 
-    WRITE_DATA_EX(int, L"ProxyMethod", GetProxyMethod(), );
+    WRITE_DATA(int, L"ProxyMethod", GetProxyMethod());
     if (PuttyExport)
     {
       // support for Putty 0.53b and older
       int ProxyType;
       int ProxySOCKSVersion = 5;
-      switch (GetProxyMethod())
-      {
-      case pmHTTP:
-        ProxyType = pxHTTP;
-        break;
-      case pmTelnet:
-        ProxyType = pxTelnet;
-        break;
-      case pmSocks5:
-        ProxyType = pxSocks;
-        ProxySOCKSVersion = 5;
-        break;
-      case pmSocks4:
-        ProxyType = pxSocks;
-        ProxySOCKSVersion = 4;
-        break;
-      default:
-      case pmNone:
-        ProxyType = pxNone;
-        break;
+      switch (GetProxyMethod()) {
+        case pmHTTP:
+          ProxyType = pxHTTP;
+          break;
+        case pmTelnet:
+          ProxyType = pxTelnet;
+          break;
+        case pmSocks5:
+          ProxyType = pxSocks;
+          ProxySOCKSVersion = 5;
+          break;
+        case pmSocks4:
+          ProxyType = pxSocks;
+          ProxySOCKSVersion = 4;
+          break;
+        default:
+        case ::pmNone:
+          ProxyType = pxNone;
+          break;
       }
       Storage->Writeint(L"ProxyType", ProxyType);
       Storage->Writeint(L"ProxySOCKSVersion", ProxySOCKSVersion);
@@ -833,24 +790,24 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
       Storage->DeleteValue(L"ProxyType");
       Storage->DeleteValue(L"ProxySOCKSVersion");
     }
-    WRITE_DATA_EX(String, L"ProxyHost", GetProxyHost(), );
-    WRITE_DATA_EX(int, L"ProxyPort", GetProxyPort(), );
-    WRITE_DATA_EX(String, L"ProxyUsername", GetProxyUsername(), );
+    WRITE_DATA(String, L"ProxyHost", GetProxyHost());
+    WRITE_DATA(int, L"ProxyPort", GetProxyPort());
+    WRITE_DATA(String, L"ProxyUsername", GetProxyUsername());
     if (GetProxyMethod() == pmCmd)
     {
       WRITE_DATA_EX(String, L"ProxyTelnetCommand", GetProxyLocalCommand(), );
     }
     else
     {
-      WRITE_DATA_EX(String, L"ProxyTelnetCommand", GetProxyTelnetCommand(), );
+      WRITE_DATA(String, L"ProxyTelnetCommand", GetProxyTelnetCommand());
     }
-#define WRITE_DATA_CONV_FUNC(X) (((X) + 2) % 3)
+    #define WRITE_DATA_CONV_FUNC(X) (((X) + 2) % 3)
     WRITE_DATA_CONV(int, L"ProxyDNS", GetProxyDNS());
-#undef WRITE_DATA_CONV_FUNC
-    WRITE_DATA_EX(bool, L"ProxyLocalhost", GetProxyLocalhost(), );
+    #undef WRITE_DATA_CONV_FUNC
+    WRITE_DATA(bool, L"ProxyLocalhost", GetProxyLocalhost());
 
-#define WRITE_DATA_CONV_FUNC(X) (2 - (X))
-#define WRITE_BUG(BUG) WRITE_DATA_CONV(int, MB2W("Bug" #BUG), GetBug(sb##BUG));
+   #define WRITE_DATA_CONV_FUNC(X) (2 - (X))
+    #define WRITE_BUG(BUG) WRITE_DATA_CONV(int, MB2W("Bug" #BUG), GetBug(sb##BUG));
     WRITE_BUG(Ignore1);
     WRITE_BUG(PlainPW1);
     WRITE_BUG(RSA1);
@@ -861,8 +818,8 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
     WRITE_BUG(Rekey2);
     WRITE_BUG(MaxPkt2);
     WRITE_BUG(Ignore2);
-#undef WRITE_BUG
-#undef WRITE_DATA_CONV_FUNC
+    #undef WRITE_BUG
+    #undef WRITE_DATA_CONV_FUNC
 
     Storage->DeleteValue(L"BuggyMAC");
     Storage->DeleteValue(L"AliasGroupList");
@@ -874,39 +831,39 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
 
     if (!PuttyExport)
     {
-      WRITE_DATA_EX(String, L"SftpServer", GetSftpServer(), );
+      WRITE_DATA(String, L"SftpServer", GetSftpServer());
 
 #define WRITE_SFTP_BUG(BUG) WRITE_DATA_EX(int, MB2W("SFTP" #BUG "Bug"), GetSFTPBug(sb##BUG), );
       WRITE_SFTP_BUG(Symlink);
       WRITE_SFTP_BUG(SignedTS);
 #undef WRITE_SFTP_BUG
 
-      WRITE_DATA_EX(int, L"SFTPMaxVersion", GetSFTPMaxVersion(), );
-      WRITE_DATA_EX(int, L"SFTPMinPacketSize", GetSFTPMinPacketSize(), );
-      WRITE_DATA_EX(int, L"SFTPMaxPacketSize", GetSFTPMaxPacketSize(), );
+      WRITE_DATA(int, L"SFTPMaxVersion", GetSFTPMaxVersion());
+      WRITE_DATA(int, L"SFTPMinPacketSize", GetSFTPMinPacketSize());
+      WRITE_DATA(int, L"SFTPMaxPacketSize", GetSFTPMaxPacketSize());
 
-      WRITE_DATA_EX(int, L"Color", GetColor(), );
+      WRITE_DATA(int, L"Color", GetColor());
 
-      WRITE_DATA_EX(bool, L"Tunnel", GetTunnel(), );
-      WRITE_DATA_EX(String, L"TunnelHostName", GetTunnelHostName(), );
-      WRITE_DATA_EX(int, L"TunnelPortNumber", GetTunnelPortNumber(), );
-      WRITE_DATA_EX(String, L"TunnelUserName", GetTunnelUserName(), );
-      WRITE_DATA_EX(String, L"TunnelPublicKeyFile", GetTunnelPublicKeyFile(), );
-      WRITE_DATA_EX(int, L"TunnelLocalPortNumber", GetTunnelLocalPortNumber(), );
+      WRITE_DATA(bool, L"Tunnel", GetTunnel());
+      WRITE_DATA(String, L"TunnelHostName", GetTunnelHostName());
+      WRITE_DATA(int, L"TunnelPortNumber", GetTunnelPortNumber());
+      WRITE_DATA(String, L"TunnelUserName", GetTunnelUserName());
+      WRITE_DATA(String, L"TunnelPublicKeyFile", GetTunnelPublicKeyFile());
+      WRITE_DATA(int, L"TunnelLocalPortNumber", GetTunnelLocalPortNumber());
 
-      WRITE_DATA_EX(bool, L"FtpPasvMode", GetFtpPasvMode(), );
-      WRITE_DATA_EX(bool, L"FtpForcePasvIp", GetFtpForcePasvIp(), );
-      WRITE_DATA_EX(bool, L"FtpAllowEmptyPassword", GetFtpAllowEmptyPassword(), );
-      WRITE_DATA_EX(int, L"FtpEncryption", GetFtpEncryption(), );
-      WRITE_DATA_EX(String, L"FtpAccount", GetFtpAccount(), );
-      WRITE_DATA_EX(int, L"FtpPingInterval", GetFtpPingInterval(), );
-      WRITE_DATA_EX(int, L"FtpPingType", GetFtpPingType(), );
-      WRITE_DATA_EX(int, L"Ftps", GetFtps(), );
+      WRITE_DATA(bool, L"FtpPasvMode", GetFtpPasvMode());
+      WRITE_DATA(bool, L"FtpForcePasvIp", GetFtpForcePasvIp());
+      WRITE_DATA(bool, L"FtpAllowEmptyPassword", GetFtpAllowEmptyPassword());
+      WRITE_DATA(int, L"FtpEncryption", GetFtpEncryption());
+      WRITE_DATA(String, L"FtpAccount", GetFtpAccount());
+      WRITE_DATA(int, L"FtpPingInterval", GetFtpPingInterval());
+      WRITE_DATA(int, L"FtpPingType", GetFtpPingType());
+      WRITE_DATA(int, L"Ftps", GetFtps());
 
-      WRITE_DATA_EX(int, L"FtpProxyLogonType", GetFtpProxyLogonType(), );
+      WRITE_DATA(int, L"FtpProxyLogonType", GetFtpProxyLogonType());
 
-      WRITE_DATA_EX(String, L"CustomParam1", GetCustomParam1(), );
-      WRITE_DATA_EX(String, L"CustomParam2", GetCustomParam2(), );
+      WRITE_DATA(String, L"CustomParam1", GetCustomParam1());
+      WRITE_DATA(String, L"CustomParam2", GetCustomParam2());
 
       WRITE_DATA_EX(bool, L"SslSessionReuse", GetSslSessionReuse(), );
     }
@@ -921,7 +878,7 @@ void __fastcall TSessionData::SavePasswords(THierarchicalStorage * Storage, bool
 {
   if (!Configuration->GetDisablePasswordStoring() && !PuttyExport && !FPassword.IsEmpty())
   {
-    Storage->WriteString(L"Password", StronglyRecryptPassword(FPassword, GetUserName() + GetHostName()));
+    Storage->WriteBinaryDataAsString(L"Password", StronglyRecryptPassword(FPassword, GetUserName() + GetHostName()));
   }
   else
   {
@@ -939,7 +896,7 @@ void __fastcall TSessionData::SavePasswords(THierarchicalStorage * Storage, bool
     // save password encrypted
     if (!FProxyPassword.IsEmpty())
     {
-      Storage->WriteString(L"ProxyPasswordEnc", StronglyRecryptPassword(FProxyPassword, GetProxyUsername() + GetProxyHost()));
+      Storage->WriteBinaryDataAsString(L"ProxyPasswordEnc", StronglyRecryptPassword(FProxyPassword, GetProxyUsername() + GetProxyHost()));
     }
     else
     {
@@ -949,7 +906,7 @@ void __fastcall TSessionData::SavePasswords(THierarchicalStorage * Storage, bool
 
     if (!Configuration->GetDisablePasswordStoring() && !FTunnelPassword.IsEmpty())
     {
-      Storage->WriteString(L"TunnelPassword", StronglyRecryptPassword(FTunnelPassword, GetTunnelUserName() + GetTunnelHostName()));
+      Storage->WriteBinaryDataAsString(L"TunnelPassword", StronglyRecryptPassword(FTunnelPassword, GetTunnelUserName() + GetTunnelHostName()));
     }
     else
     {
@@ -983,18 +940,18 @@ UnicodeString __fastcall TSessionData::GetSource()
 {
   switch (FSource)
   {
-  case ::ssNone:
-    return L"Ad-Hoc session";
+    case ::ssNone:
+      return L"Ad-Hoc session";
 
-  case ssStored:
-    return L"Stored session";
+    case ssStored:
+      return L"Stored session";
 
-  case ssStoredModified:
-    return L"Modified stored session";
+    case ssStoredModified:
+      return L"Modified stored session";
 
-  default:
-    assert(false);
-    return L"";
+    default:
+      assert(false);
+      return L"";
   }
 }
 //---------------------------------------------------------------------
@@ -1012,7 +969,8 @@ void __fastcall TSessionData::SaveRecryptedPasswords(THierarchicalStorage * Stor
 //---------------------------------------------------------------------
 void __fastcall TSessionData::Remove()
 {
-  THierarchicalStorage * Storage = Configuration->CreateStorage();
+  THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
+  // try
   {
     BOOST_SCOPE_EXIT ( (&Storage) )
     {
@@ -1024,9 +982,15 @@ void __fastcall TSessionData::Remove()
       Storage->RecursiveDeleteSubKey(GetInternalStorageKey());
     }
   }
+#ifndef _MSC_VER
+  __finally
+  {
+    delete Storage;
+  }
+#endif
 }
 //---------------------------------------------------------------------
-bool __fastcall TSessionData::ParseUrl(const UnicodeString Url, TOptions * Options,
+bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
   TStoredSessionList * StoredSessions, bool & DefaultsOnly, UnicodeString * FileName,
   bool * AProtocolDefined)
 {
@@ -1035,60 +999,59 @@ bool __fastcall TSessionData::ParseUrl(const UnicodeString Url, TOptions * Optio
   TFSProtocol AFSProtocol = fsSCPonly;
   int APortNumber = 0;
   TFtps AFtps = ftpsNone;
-  UnicodeString url = Url;
-  if (::LowerCase(url.SubString(0, 7)) == L"netbox:")
+  if (Url.SubString(1, 7).LowerCase() == L"netbox:")
   {
     // Remove "netbox:" prefix
-    url.Delete(0, 7);
+    Url.Delete(1, 7);
   }
-  if (::LowerCase(url.SubString(0, 4)) == L"scp:")
+  if (Url.SubString(1, 4).LowerCase() == L"scp:")
   {
     AFSProtocol = fsSCPonly;
     APortNumber = SshPortNumber;
-    url.Delete(0, 4);
+    Url.Delete(1, 4);
     ProtocolDefined = true;
   }
-  else if (::LowerCase(url.SubString(0, 5)) == L"sftp:")
+  else if (Url.SubString(1, 5).LowerCase() == L"sftp:")
   {
     AFSProtocol = fsSFTPonly;
     APortNumber = SshPortNumber;
-    url.Delete(0, 5);
+    Url.Delete(1, 5);
     ProtocolDefined = true;
   }
-  else if (::LowerCase(url.SubString(0, 4)) == L"ftp:")
+  else if (Url.SubString(1, 4).LowerCase() == L"ftp:")
   {
     AFSProtocol = fsFTP;
-    SetFtps(ftpsNone);
+    Ftps = ftpsNone;
     APortNumber = FtpPortNumber;
-    url.Delete(0, 4);
+    Url.Delete(1, 4);
     ProtocolDefined = true;
   }
-  else if (::LowerCase(url.SubString(0, 5)) == L"ftps:")
+  else if (Url.SubString(1, 5).LowerCase() == L"ftps:")
   {
     AFSProtocol = fsFTP;
     AFtps = ftpsImplicit;
     APortNumber = FtpsImplicitPortNumber;
-    url.Delete(0, 5);
+    Url.Delete(1, 5);
     ProtocolDefined = true;
   }
-  else if (::LowerCase(url.SubString(0, 5)) == L"http:")
+  else if (Url.SubString(1, 5).LowerCase() == L"http:")
   {
     AFSProtocol = fsHTTP;
     APortNumber = HTTPPortNumber;
-    url.Delete(0, 5);
+    Url.Delete(1, 5);
     ProtocolDefined = true;
   }
-  else if (::LowerCase(url.SubString(0, 6)) == L"https:")
+  else if (Url.SubString(1, 6).LowerCase() == L"https:")
   {
     AFSProtocol = fsHTTPS;
     APortNumber = HTTPSPortNumber;
-    url.Delete(0, 6);
+    Url.Delete(1, 6);
     ProtocolDefined = true;
   }
 
-  if (ProtocolDefined && (url.SubString(0, 2) == L"//"))
+  if (ProtocolDefined && (Url.SubString(1, 2) == L"//"))
   {
-    url.Delete(0, 2);
+    Url.Delete(1, 2);
   }
 
   if (AProtocolDefined != NULL)
@@ -1096,18 +1059,18 @@ bool __fastcall TSessionData::ParseUrl(const UnicodeString Url, TOptions * Optio
     *AProtocolDefined = ProtocolDefined;
   }
 
-  if (!url.IsEmpty())
+  if (!Url.IsEmpty())
   {
-    const UnicodeString DecodedUrl = DecodeUrlChars(url);
+    UnicodeString DecodedUrl = DecodeUrlChars(Url);
     // lookup stored session even if protocol was defined
     // (this allows setting for example default username for host
     // by creating stored session named by host)
     TSessionData * Data = NULL;
-    for (size_t Index = 0; Index < StoredSessions->GetCount() + StoredSessions->GetHiddenCount(); Index++)
+    for (Integer Index = 0; Index < StoredSessions->Count + StoredSessions->HiddenCount; Index++)
     {
       TSessionData * AData = static_cast<TSessionData *>(StoredSessions->GetItem(Index));
       if (AnsiSameText(AData->GetName(), DecodedUrl) ||
-          AnsiSameText(AData->GetName() + L"/", DecodedUrl.SubString(0, AData->GetName().Length() + 1)))
+          AnsiSameText(AData->GetName() + L"/", DecodedUrl.SubString(1, AData->GetName().Length() + 1)))
       {
         Data = AData;
         break;
@@ -1120,21 +1083,18 @@ bool __fastcall TSessionData::ParseUrl(const UnicodeString Url, TOptions * Optio
     {
       DefaultsOnly = false;
       Assign(Data);
-      size_t P = 0;
-      while (!AnsiSameText(DecodeUrlChars(url.SubString(0, P)), Data->GetName()))
+      int P = 1;
+      while (!AnsiSameText(DecodeUrlChars(Url.SubString(1, P)), Data->Name))
       {
-        assert(P < url.Length());
         P++;
-        assert(P < Url.Length());
+        assert(P <= Url.Length());
       }
-      ARemoteDirectory = url.SubString(P, url.Length() - P);
+      ARemoteDirectory = Url.SubString(P + 1, Url.Length() - P);
 
       if (Data->GetHidden())
       {
-        // DEBUG_PRINTF(L"StoredSessions->IsHidden(Data) = %d", StoredSessions->IsHidden(Data));
         Data->Remove();
         StoredSessions->Remove(Data);
-        // DEBUG_PRINTF(L"StoredSessions->Count = %d", StoredSessions->GetCount());
         // only modified, implicit
         StoredSessions->Save(false, false);
       }
@@ -1144,41 +1104,41 @@ bool __fastcall TSessionData::ParseUrl(const UnicodeString Url, TOptions * Optio
       Assign(StoredSessions->GetDefaultSettings());
       SetName(L"");
 
-      size_t PSlash = url.Pos(L'/');
-      if (PSlash < 0)
+      int PSlash = Url.Pos(L"/");
+      if (PSlash == 0)
       {
-        PSlash = url.Length() + 1;
+        PSlash = Url.Length() + 1;
       }
 
-      UnicodeString ConnectInfo = url.SubString(0, PSlash - 1);
+      UnicodeString ConnectInfo = Url.SubString(1, PSlash - 1);
 
-      size_t P = ::LastDelimiter(ConnectInfo, L"@");
+      int P = ConnectInfo.LastDelimiter(L"@");
 
       UnicodeString UserInfo;
       UnicodeString HostInfo;
 
-      if (P >= 0)
+      if (P > 0)
       {
-        UserInfo = ConnectInfo.SubString(0, P);
+        UserInfo = ConnectInfo.SubString(1, P - 1);
         HostInfo = ConnectInfo.SubString(P + 1, ConnectInfo.Length() - P);
       }
       else
       {
         HostInfo = ConnectInfo;
       }
-      DEBUG_PRINTF(L"UserInfo = %s, HostInfo = %s", UserInfo.c_str(), HostInfo.c_str());
-      if ((HostInfo.Length() >= 2) && (HostInfo[0] == '[') && ((P = HostInfo.Pos(L"]")) >= 0))
+
+      if ((HostInfo.Length() >= 2) && (HostInfo[1] == L'[') && ((P = HostInfo.Pos(L"]")) > 0))
       {
-        SetHostName(HostInfo.SubString(1, P - 2));
+        SetHostName(HostInfo.SubString(2, P - 2));
         HostInfo.Delete(1, P);
-        if (!HostInfo.IsEmpty() && (HostInfo[0] == ':'))
+        if (!HostInfo.IsEmpty() && (HostInfo[1] == ':'))
         {
-          HostInfo.Delete(0, 1);
+          HostInfo.Delete(1, 1);
         }
       }
       else
       {
-        SetHostName(DecodeUrlChars(CutToChar(HostInfo, ':', true)));
+        SetHostName(DecodeUrlChars(CutToChar(HostInfo, L':', true)));
       }
 
       // expanded from ?: operator, as it caused strange "access violation" errors
@@ -1197,20 +1157,20 @@ bool __fastcall TSessionData::ParseUrl(const UnicodeString Url, TOptions * Optio
         SetFtps(AFtps);
       }
 
-      bool PasswordSeparator = (UserInfo.Pos(L':') >= 0);
-      SetUserName(DecodeUrlChars(CutToChar(UserInfo, ':', false)));
+      bool PasswordSeparator = (UserInfo.Pos(L':') != 0);
+      SetUserName(DecodeUrlChars(CutToChar(UserInfo, L':', false)));
       SetPassword(DecodeUrlChars(UserInfo));
       SetPasswordless(GetPassword().IsEmpty() && PasswordSeparator);
 
-      if (PSlash < url.Length())
+      if (PSlash < Url.Length())
       {
-        ARemoteDirectory = url.SubString(PSlash, url.Length() - PSlash + 1);
+        ARemoteDirectory = Url.SubString(PSlash, Url.Length() - PSlash + 1);
       }
     }
 
     if (!ARemoteDirectory.IsEmpty() && (ARemoteDirectory != L"/"))
     {
-      if ((ARemoteDirectory[ARemoteDirectory.Length() - 1] != '/') &&
+      if ((ARemoteDirectory[ARemoteDirectory.Length()] != L'/') &&
           (FileName != NULL))
       {
         *FileName = DecodeUrlChars(UnixExtractFileName(ARemoteDirectory));
@@ -1235,7 +1195,7 @@ bool __fastcall TSessionData::ParseUrl(const UnicodeString Url, TOptions * Optio
 
   if (Options != NULL)
   {
-    // we deliberatelly do keep defaultonly to false, in presence of any option,
+    // we deliberately do keep defaultonly to false, in presence of any option,
     // as the option should not make session "connectable"
 
     UnicodeString Value;
@@ -1256,18 +1216,28 @@ bool __fastcall TSessionData::ParseUrl(const UnicodeString Url, TOptions * Optio
     {
       SetFtpPasvMode((StrToIntDef(Value, 1) != 0));
     }
-    if (Options->FindSwitch(L"implicit", Value))
+    FtpPasvMode = Options->SwitchValue(L"passive", FtpPasvMode);
+    if (Options->FindSwitch(L"implicit"))
     {
-      bool Enabled = (StrToIntDef(Value, 1) != 0);
+      bool Enabled = Options->SwitchValue(L"implicit", true);
       SetFtps(Enabled ? ftpsImplicit : ftpsNone);
       if (!PortNumberDefined && Enabled)
       {
         SetPortNumber(FtpsImplicitPortNumber);
       }
     }
+    if (Options->FindSwitch(L"explicit", Value))
+    {
+      bool Enabled = Options->SwitchValue(L"explicitssl", true);
+      SetFtps(Enabled ? ftpsExplicitSsl : ftpsNone);
+      if (!PortNumberDefined && Enabled)
+      {
+        SetPortNumber(FtpPortNumber);
+      }
+    }
     if (Options->FindSwitch(L"explicittls", Value))
     {
-      bool Enabled = (StrToIntDef(Value, 1) != 0);
+      bool Enabled = Options->SwitchValue(L"explicittls", true);
       SetFtps(Enabled ? ftpsExplicitTls : ftpsNone);
       if (!PortNumberDefined && Enabled)
       {
@@ -1278,20 +1248,30 @@ bool __fastcall TSessionData::ParseUrl(const UnicodeString Url, TOptions * Optio
     {
       TStrings * RawSettings = NULL;
       TOptionsStorage * OptionsStorage = NULL;
-      BOOST_SCOPE_EXIT ( (&RawSettings) (&OptionsStorage) )
+      // try
+      {
+        BOOST_SCOPE_EXIT ( (&RawSettings) (&OptionsStorage) )
+        {
+          delete RawSettings;
+          delete OptionsStorage;
+        } BOOST_SCOPE_EXIT_END
+        RawSettings = new TStringList();
+
+        if (Options->FindSwitch(L"rawsettings", RawSettings))
+        {
+          OptionsStorage = new TOptionsStorage(RawSettings);
+
+          bool Dummy;
+          DoLoad(OptionsStorage, Dummy);
+        }
+      }
+#ifndef _MSC_VER
+      __finally
       {
         delete RawSettings;
         delete OptionsStorage;
-      } BOOST_SCOPE_EXIT_END
-      RawSettings = new TStringList();
-
-      if (Options->FindSwitch(L"rawsettings", RawSettings))
-      {
-        OptionsStorage = new TOptionsStorage(RawSettings);
-
-        bool Dummy;
-        DoLoad(OptionsStorage, Dummy);
       }
+#endif
     }
     if (Options->FindSwitch(L"allowemptypassword", Value))
     {
@@ -1311,7 +1291,7 @@ bool __fastcall TSessionData::ParseUrl(const UnicodeString Url, TOptions * Optio
   return true;
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::ConfigureTunnel(size_t APortNumber)
+void __fastcall TSessionData::ConfigureTunnel(int APortNumber)
 {
   FOrigHostName = GetHostName();
   FOrigPortNumber = GetPortNumber();
@@ -1320,7 +1300,7 @@ void __fastcall TSessionData::ConfigureTunnel(size_t APortNumber)
   SetHostName(L"127.0.0.1");
   SetPortNumber(APortNumber);
   // proxy settings is used for tunnel
-  SetProxyMethod(pmNone);
+  SetProxyMethod(::pmNone);
 }
 //---------------------------------------------------------------------
 void TSessionData::RollbackTunnel()
@@ -1344,30 +1324,30 @@ void __fastcall TSessionData::ValidatePath(const UnicodeString Path)
 //---------------------------------------------------------------------
 void __fastcall TSessionData::ValidateName(const UnicodeString Name)
 {
-  if (::LastDelimiter(Name, L"/") >= 0)
+  if (Name.LastDelimiter(L"/") > 0)
   {
     throw ExtException(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), L"/"));
   }
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall TSessionData::EncryptPassword(const UnicodeString  Password, const UnicodeString Key)
+RawByteString __fastcall TSessionData::EncryptPassword(const UnicodeString & Password, UnicodeString Key)
 {
   return Configuration->EncryptPassword(Password, Key);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall TSessionData::StronglyRecryptPassword(const UnicodeString Password, const UnicodeString Key)
+RawByteString __fastcall TSessionData::StronglyRecryptPassword(const RawByteString & Password, UnicodeString Key)
 {
   return Configuration->StronglyRecryptPassword(Password, Key);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall TSessionData::DecryptPassword(const UnicodeString Password, const UnicodeString Key)
+UnicodeString __fastcall TSessionData::DecryptPassword(const RawByteString & Password, UnicodeString Key)
 {
   UnicodeString Result;
   try
   {
     Result = Configuration->DecryptPassword(Password, Key);
   }
-  catch (EAbort &)
+  catch(EAbort &)
   {
     // silently ignore aborted prompts for master password and return empty password
   }
@@ -1401,49 +1381,48 @@ UnicodeString __fastcall TSessionData::GetStorageKey()
   return GetSessionName();
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetHostName(const UnicodeString value)
+void __fastcall TSessionData::SetHostName(UnicodeString value)
 {
-  UnicodeString val = value;
-  if (FHostName != val)
+  if (FHostName != value)
   {
-    RemoveProtocolPrefix(val);
+    RemoveProtocolPrefix(value);
     // HostName is key for password encryption
     UnicodeString XPassword = GetPassword();
 
-    size_t P = ::LastDelimiter(val, L"@");
-    if (P >= 0)
+    int P = value.LastDelimiter(L"@");
+    if (P > 0)
     {
-      SetUserName(val.SubString(0, P));
-      val = val.SubString(P + 1, val.Length() - P);
+      UserName = value.SubString(1, P - 1);
+      value = value.SubString(P + 1, value.Length() - P);
     }
-    FHostName = val;
+    FHostName = value;
     Modify();
 
     SetPassword(XPassword);
     if (!XPassword.IsEmpty())
     {
-      memset(const_cast<wchar_t *>(XPassword.c_str()), 0, XPassword.Length() * sizeof(wchar_t));
+      XPassword.Unique();
+      memset(XPassword.c_str(), 0, XPassword.Length() * sizeof(*XPassword.c_str()));
     }
   }
 }
-
 //---------------------------------------------------------------------
 UnicodeString __fastcall TSessionData::GetHostNameExpanded()
 {
   return ::ExpandEnvironmentVariables(GetHostName());
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetPortNumber(size_t value)
+void __fastcall TSessionData::SetPortNumber(int value)
 {
   SET_SESSION_PROPERTY(PortNumber);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetShell(const UnicodeString value)
+void __fastcall TSessionData::SetShell(UnicodeString value)
 {
   SET_SESSION_PROPERTY(Shell);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetSftpServer(const UnicodeString value)
+void __fastcall TSessionData::SetSftpServer(UnicodeString value)
 {
   SET_SESSION_PROPERTY(SftpServer);
 }
@@ -1453,7 +1432,7 @@ void __fastcall TSessionData::SetClearAliases(bool value)
   SET_SESSION_PROPERTY(ClearAliases);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetListingCommand(const UnicodeString value)
+void __fastcall TSessionData::SetListingCommand(UnicodeString value)
 {
   SET_SESSION_PROPERTY(ListingCommand);
 }
@@ -1468,28 +1447,7 @@ void __fastcall TSessionData::SetUnsetNationalVars(bool value)
   SET_SESSION_PROPERTY(UnsetNationalVars);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall TSessionData::GetUserNameExpanded()
-{
-  return ::ExpandEnvironmentVariables(GetUserName());
-}
-//---------------------------------------------------------------------
-TLoginType __fastcall TSessionData::GetLoginType() const
-{
-  return (GetUserName() == CONST_LOGIN_ANONYMOUS) && GetPassword().IsEmpty() ?
-         ltAnonymous : ltNormal;
-}
-//---------------------------------------------------------------------
-void __fastcall TSessionData::SetLoginType(TLoginType value)
-{
-  SET_SESSION_PROPERTY(LoginType);
-  if (GetLoginType() == ltAnonymous)
-  {
-    SetPassword(L"");
-    SetUserName(CONST_LOGIN_ANONYMOUS);
-  }
-}
-//---------------------------------------------------------------------
-void __fastcall TSessionData::SetUserName(const UnicodeString value)
+void __fastcall TSessionData::SetUserName(UnicodeString value)
 {
   // UserName is key for password encryption
   UnicodeString XPassword = GetPassword();
@@ -1497,21 +1455,27 @@ void __fastcall TSessionData::SetUserName(const UnicodeString value)
   SetPassword(XPassword);
   if (!XPassword.IsEmpty())
   {
-    memset(const_cast<wchar_t *>(XPassword.c_str()), 0, XPassword.Length() * sizeof(wchar_t));
+    XPassword.Unique();
+    memset(XPassword.c_str(), 0, XPassword.Length() * sizeof(*XPassword.c_str()));
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetPassword(const UnicodeString val)
+UnicodeString __fastcall TSessionData::GetUserNameExpanded()
 {
-  if (!val.IsEmpty())
+  return ::ExpandEnvironmentVariables(GetUserName());
+}
+//---------------------------------------------------------------------
+void __fastcall TSessionData::SetPassword(UnicodeString avalue)
+{
+  if (!avalue.IsEmpty())
   {
     SetPasswordless(false);
   }
-  UnicodeString value = EncryptPassword(val, GetUserName() + GetHostName());
+  RawByteString value = EncryptPassword(avalue, GetUserName() + GetHostName());
   SET_SESSION_PROPERTY(Password);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall TSessionData::GetPassword() const
+UnicodeString __fastcall TSessionData::GetPassword()
 {
   return DecryptPassword(FPassword, GetUserName() + GetHostName());
 }
@@ -1521,7 +1485,7 @@ void __fastcall TSessionData::SetPasswordless(bool value)
   SET_SESSION_PROPERTY(Passwordless);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetPingInterval(size_t value)
+void __fastcall TSessionData::SetPingInterval(int value)
 {
   SET_SESSION_PROPERTY(PingInterval);
 }
@@ -1561,7 +1525,7 @@ void __fastcall TSessionData::SetGSSAPIFwdTGT(bool value)
   SET_SESSION_PROPERTY(GSSAPIFwdTGT);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetGSSAPIServerRealm(const UnicodeString value)
+void __fastcall TSessionData::SetGSSAPIServerRealm(UnicodeString value)
 {
   SET_SESSION_PROPERTY(GSSAPIServerRealm);
 }
@@ -1601,35 +1565,31 @@ bool __fastcall TSessionData::GetUsesSsh()
   return (GetFSProtocol() < fsFTP);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetCipher(size_t Index, TCipher value)
+void __fastcall TSessionData::SetCipher(int Index, TCipher value)
 {
   assert(Index >= 0 && Index < CIPHER_COUNT);
   SET_SESSION_PROPERTY(Ciphers[Index]);
 }
 //---------------------------------------------------------------------
-TCipher __fastcall TSessionData::GetCipher(size_t Index) const
+TCipher __fastcall TSessionData::GetCipher(int Index) const
 {
   assert(Index >= 0 && Index < CIPHER_COUNT);
   return FCiphers[Index];
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetCipherList(const UnicodeString value)
+void __fastcall TSessionData::SetCipherList(UnicodeString value)
 {
   bool Used[CIPHER_COUNT];
-  for (size_t C = 0; C < CIPHER_COUNT; C++)
-  {
-    Used[C] = false;
-  }
+  for (int C = 0; C < CIPHER_COUNT; C++) { Used[C] = false; }
 
   UnicodeString CipherStr;
-  size_t Index = 0;
-  UnicodeString val = value;
-  while (!val.IsEmpty() && (Index < CIPHER_COUNT))
+  int Index = 0;
+  while (!value.IsEmpty() && (Index < CIPHER_COUNT))
   {
-    CipherStr = CutToChar(val, ',', true);
-    for (size_t C = 0; C < CIPHER_COUNT; C++)
+    CipherStr = CutToChar(value, L',', true);
+    for (int C = 0; C < CIPHER_COUNT; C++)
     {
-      if (!::AnsiCompareIC(CipherStr, CipherNames[C]))
+      if (!CipherStr.CompareIC(CipherNames[C]))
       {
         SetCipher(Index, static_cast<TCipher>(C));
         Used[C] = true;
@@ -1639,7 +1599,7 @@ void __fastcall TSessionData::SetCipherList(const UnicodeString value)
     }
   }
 
-  for (size_t C = 0; C < CIPHER_COUNT && Index < CIPHER_COUNT; C++)
+  for (int C = 0; C < CIPHER_COUNT && Index < CIPHER_COUNT; C++)
   {
     if (!Used[DefaultCipherList[C]]) { SetCipher(Index++, DefaultCipherList[C]); }
   }
@@ -1648,39 +1608,38 @@ void __fastcall TSessionData::SetCipherList(const UnicodeString value)
 UnicodeString __fastcall TSessionData::GetCipherList() const
 {
   UnicodeString Result;
-  for (size_t Index = 0; Index < CIPHER_COUNT; Index++)
+  for (int Index = 0; Index < CIPHER_COUNT; Index++)
   {
     Result += UnicodeString(Index ? L"," : L"") + CipherNames[GetCipher(Index)];
   }
   return Result;
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetKex(size_t Index, TKex value)
+void __fastcall TSessionData::SetKex(int Index, TKex value)
 {
   assert(Index >= 0 && Index < KEX_COUNT);
   SET_SESSION_PROPERTY(Kex[Index]);
 }
 //---------------------------------------------------------------------
-TKex __fastcall TSessionData::GetKex(size_t Index) const
+TKex __fastcall TSessionData::GetKex(int Index) const
 {
   assert(Index >= 0 && Index < KEX_COUNT);
   return FKex[Index];
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetKexList(const UnicodeString value)
+void __fastcall TSessionData::SetKexList(UnicodeString value)
 {
   bool Used[KEX_COUNT];
   for (int K = 0; K < KEX_COUNT; K++) { Used[K] = false; }
 
   UnicodeString KexStr;
-  size_t Index = 0;
-  UnicodeString val = value;
-  while (!val.IsEmpty() && (Index < KEX_COUNT))
+  int Index = 0;
+  while (!value.IsEmpty() && (Index < KEX_COUNT))
   {
-    KexStr = CutToChar(val, ',', true);
+    KexStr = CutToChar(value, L',', true);
     for (int K = 0; K < KEX_COUNT; K++)
     {
-      if (!::AnsiCompareIC(KexStr, KexNames[K]))
+      if (!KexStr.CompareIC(KexNames[K]))
       {
         SetKex(Index, static_cast<TKex>(K));
         Used[K] = true;
@@ -1699,14 +1658,14 @@ void __fastcall TSessionData::SetKexList(const UnicodeString value)
 UnicodeString __fastcall TSessionData::GetKexList() const
 {
   UnicodeString Result;
-  for (size_t Index = 0; Index < KEX_COUNT; Index++)
+  for (int Index = 0; Index < KEX_COUNT; Index++)
   {
     Result += UnicodeString(Index ? L"," : L"") + KexNames[GetKex(Index)];
   }
   return Result;
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetPublicKeyFile(const UnicodeString value)
+void __fastcall TSessionData::SetPublicKeyFile(UnicodeString value)
 {
   if (FPublicKeyFile != value)
   {
@@ -1715,7 +1674,7 @@ void __fastcall TSessionData::SetPublicKeyFile(const UnicodeString value)
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetReturnVar(const UnicodeString value)
+void __fastcall TSessionData::SetReturnVar(UnicodeString value)
 {
   SET_SESSION_PROPERTY(ReturnVar);
 }
@@ -1752,7 +1711,7 @@ void __fastcall TSessionData::SetFSProtocol(TFSProtocol value)
 //---------------------------------------------------------------------
 UnicodeString __fastcall TSessionData::GetFSProtocolStr()
 {
-  assert(GetFSProtocol() != -1 && GetFSProtocol() < FSPROTOCOL_COUNT);
+  assert(GetFSProtocol() >= 0 && GetFSProtocol() < FSPROTOCOL_COUNT);
   return FSProtocolNames[GetFSProtocol()];
 }
 //---------------------------------------------------------------------------
@@ -1782,12 +1741,12 @@ bool __fastcall TSessionData::GetDefaultShell()
   return GetShell().IsEmpty();
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetProtocolStr(const UnicodeString value)
+void __fastcall TSessionData::SetProtocolStr(UnicodeString value)
 {
   FProtocol = ptRaw;
-  for (size_t Index = 0; Index < PROTOCOL_COUNT; Index++)
+  for (int Index = 0; Index < PROTOCOL_COUNT; Index++)
   {
-    if (::AnsiCompareIC(value, ProtocolNames[Index]) == 0)
+    if (value.CompareIC(ProtocolNames[Index]) == 0)
     {
       FProtocol = static_cast<TProtocol>(Index);
       break;
@@ -1805,10 +1764,10 @@ void __fastcall TSessionData::SetPingIntervalDT(TDateTime value)
   unsigned short hour, min, sec, msec;
 
   value.DecodeTime(hour, min, sec, msec);
-  SetPingInterval((static_cast<size_t>(hour))*60*60 + (static_cast<int>(min))*60 + sec);
+  SetPingInterval((static_cast<int>(hour))*SecsPerHour + (static_cast<int>(min))*SecsPerMin + sec);
 }
 //---------------------------------------------------------------------------
-TDateTime __fastcall TSessionData::GetPingIntervalDT() const
+TDateTime __fastcall TSessionData::GetPingIntervalDT()
 {
   return SecToDateTime(GetPingInterval());
 }
@@ -1823,12 +1782,7 @@ void __fastcall TSessionData::SetAddressFamily(TAddressFamily value)
   SET_SESSION_PROPERTY(AddressFamily);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetCodePage(const UnicodeString value)
-{
-  SET_SESSION_PROPERTY(CodePage);
-}
-//---------------------------------------------------------------------------
-void __fastcall TSessionData::SetRekeyData(const UnicodeString value)
+void __fastcall TSessionData::SetRekeyData(UnicodeString value)
 {
   SET_SESSION_PROPERTY(RekeyData);
 }
@@ -1838,31 +1792,10 @@ void __fastcall TSessionData::SetRekeyTime(unsigned int value)
   SET_SESSION_PROPERTY(RekeyTime);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::AdjustHostName(UnicodeString & hostName, const UnicodeString prefix)
-{
-  if (::LowerCase(hostName.SubString(0, prefix.Length())) == prefix)
-  {
-    hostName.Delete(0, prefix.Length());
-    hostName = ::ReplaceStrAll(hostName, L"/", L"_");
-  }
-}
-//---------------------------------------------------------------------
-void __fastcall TSessionData::RemoveProtocolPrefix(UnicodeString & hostName)
-{
-  AdjustHostName(hostName, L"scp://");
-  AdjustHostName(hostName, L"sftp://");
-  AdjustHostName(hostName, L"ftp://");
-  AdjustHostName(hostName, L"ftps://");
-  AdjustHostName(hostName, L"http://");
-  AdjustHostName(hostName, L"https://");
-}
-
-//---------------------------------------------------------------------
 UnicodeString __fastcall TSessionData::GetDefaultSessionName()
 {
   UnicodeString hostName = GetHostName();
   UnicodeString userName = GetUserName();
-  // DEBUG_PRINTF(L"hostName = %s", hostName.c_str());
   RemoveProtocolPrefix(hostName);
   if (!hostName.IsEmpty() && !userName.IsEmpty())
   {
@@ -1912,30 +1845,30 @@ UnicodeString __fastcall TSessionData::GetSessionUrl()
   {
     switch (GetFSProtocol())
     {
-    case fsSCPonly:
-      Url = L"scp://";
-      break;
+      case fsSCPonly:
+        Url = L"scp://";
+        break;
 
-    default:
-      assert(false);
-      // fallback
-    case fsSFTP:
-    case fsSFTPonly:
-      Url = L"sftp://";
-      break;
+      default:
+        assert(false);
+        // fallback
+      case fsSFTP:
+      case fsSFTPonly:
+        Url = L"sftp://";
+        break;
 
-    case fsFTP:
-      Url = L"ftp://";
-      break;
-    case fsFTPS:
-      Url = L"ftps://";
-      break;
-    case fsHTTP:
-      Url = L"http://";
-      break;
-    case fsHTTPS:
-      Url = L"https://";
-      break;
+      case fsFTP:
+        Url = L"ftp://";
+        break;
+      case fsFTPS:
+        Url = L"ftps://";
+        break;
+      case fsHTTP:
+        Url = L"http://";
+        break;
+      case fsHTTPS:
+        Url = L"https://";
+        break;
     }
 
     if (!GetHostName().IsEmpty() && !GetUserName().IsEmpty())
@@ -1959,12 +1892,12 @@ void __fastcall TSessionData::SetTimeDifference(TDateTime value)
   SET_SESSION_PROPERTY(TimeDifference);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetLocalDirectory(const UnicodeString value)
+void __fastcall TSessionData::SetLocalDirectory(UnicodeString value)
 {
   SET_SESSION_PROPERTY(LocalDirectory);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetRemoteDirectory(const UnicodeString value)
+void __fastcall TSessionData::SetRemoteDirectory(UnicodeString value)
 {
   SET_SESSION_PROPERTY(RemoteDirectory);
 }
@@ -2014,12 +1947,12 @@ void __fastcall TSessionData::SetOverwrittenToRecycleBin(bool value)
   SET_SESSION_PROPERTY(OverwrittenToRecycleBin);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetRecycleBinPath(const UnicodeString value)
+void __fastcall TSessionData::SetRecycleBinPath(UnicodeString value)
 {
   SET_SESSION_PROPERTY(RecycleBinPath);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetPostLoginCommands(const UnicodeString value)
+void __fastcall TSessionData::SetPostLoginCommands(UnicodeString value)
 {
   SET_SESSION_PROPERTY(PostLoginCommands);
 }
@@ -2059,7 +1992,7 @@ void __fastcall TSessionData::SetProxyMethod(TProxyMethod value)
   SET_SESSION_PROPERTY(ProxyMethod);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetProxyHost(const UnicodeString value)
+void __fastcall TSessionData::SetProxyHost(UnicodeString value)
 {
   SET_SESSION_PROPERTY(ProxyHost);
 }
@@ -2069,15 +2002,14 @@ void __fastcall TSessionData::SetProxyPort(int value)
   SET_SESSION_PROPERTY(ProxyPort);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetProxyUsername(const UnicodeString value)
+void __fastcall TSessionData::SetProxyUsername(UnicodeString value)
 {
   SET_SESSION_PROPERTY(ProxyUsername);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetProxyPassword(const UnicodeString val)
+void __fastcall TSessionData::SetProxyPassword(UnicodeString avalue)
 {
-  UnicodeString value = val;
-  value = EncryptPassword(value, GetProxyUsername() + GetProxyHost());
+  RawByteString value = EncryptPassword(avalue, GetProxyUsername() + GetProxyHost());
   SET_SESSION_PROPERTY(ProxyPassword);
 }
 //---------------------------------------------------------------------
@@ -2086,12 +2018,12 @@ UnicodeString __fastcall TSessionData::GetProxyPassword() const
   return DecryptPassword(FProxyPassword, GetProxyUsername() + GetProxyHost());
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetProxyTelnetCommand(const UnicodeString value)
+void __fastcall TSessionData::SetProxyTelnetCommand(UnicodeString value)
 {
   SET_SESSION_PROPERTY(ProxyTelnetCommand);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetProxyLocalCommand(const UnicodeString value)
+void __fastcall TSessionData::SetProxyLocalCommand(UnicodeString value)
 {
   SET_SESSION_PROPERTY(ProxyLocalCommand);
 }
@@ -2106,77 +2038,72 @@ void __fastcall TSessionData::SetProxyLocalhost(bool value)
   SET_SESSION_PROPERTY(ProxyLocalhost);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetFtpProxyLogonType(size_t value)
+void __fastcall TSessionData::SetFtpProxyLogonType(int value)
 {
   SET_SESSION_PROPERTY(FtpProxyLogonType);
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionData::SetBug(TSshBug Bug, TAutoSwitch value)
 {
-  assert(Bug != -1 && Bug < LENOF(FBugs));
+  assert(Bug >= 0 && static_cast<unsigned int>(Bug) < LENOF(FBugs));
   SET_SESSION_PROPERTY(Bugs[Bug]);
 }
 //---------------------------------------------------------------------
 TAutoSwitch __fastcall TSessionData::GetBug(TSshBug Bug) const
 {
-  assert(Bug != -1 && Bug < LENOF(FBugs));
+  assert(Bug >= 0 && static_cast<unsigned int>(Bug) < LENOF(FBugs));
   return FBugs[Bug];
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetCustomParam1(const UnicodeString value)
+void __fastcall TSessionData::SetCustomParam1(UnicodeString value)
 {
   SET_SESSION_PROPERTY(CustomParam1);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetCustomParam2(const UnicodeString value)
+void __fastcall TSessionData::SetCustomParam2(UnicodeString value)
 {
   SET_SESSION_PROPERTY(CustomParam2);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetSslSessionReuse(bool value)
-{
-  SET_SESSION_PROPERTY(SslSessionReuse);
-}
-//---------------------------------------------------------------------
-void __fastcall TSessionData::SetSFTPDownloadQueue(size_t value)
+void __fastcall TSessionData::SetSFTPDownloadQueue(int value)
 {
   SET_SESSION_PROPERTY(SFTPDownloadQueue);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetSFTPUploadQueue(size_t value)
+void __fastcall TSessionData::SetSFTPUploadQueue(int value)
 {
   SET_SESSION_PROPERTY(SFTPUploadQueue);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetSFTPListingQueue(size_t value)
+void __fastcall TSessionData::SetSFTPListingQueue(int value)
 {
   SET_SESSION_PROPERTY(SFTPListingQueue);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetSFTPMaxVersion(size_t value)
+void __fastcall TSessionData::SetSFTPMaxVersion(int value)
 {
   SET_SESSION_PROPERTY(SFTPMaxVersion);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetSFTPMinPacketSize(size_t value)
+void __fastcall TSessionData::SetSFTPMinPacketSize(unsigned int value)
 {
   SET_SESSION_PROPERTY(SFTPMinPacketSize);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetSFTPMaxPacketSize(size_t value)
+void __fastcall TSessionData::SetSFTPMaxPacketSize(unsigned int value)
 {
   SET_SESSION_PROPERTY(SFTPMaxPacketSize);
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionData::SetSFTPBug(TSftpBug Bug, TAutoSwitch value)
 {
-  assert(Bug != -1 && Bug < LENOF(FSFTPBugs));
+  assert(Bug >= 0 && static_cast<unsigned int>(Bug) < LENOF(FSFTPBugs));
   SET_SESSION_PROPERTY(SFTPBugs[Bug]);
 }
 //---------------------------------------------------------------------
 TAutoSwitch __fastcall TSessionData::GetSFTPBug(TSftpBug Bug) const
 {
-  assert(Bug != -1 && Bug < LENOF(FSFTPBugs));
+  assert(Bug >= 0 && static_cast<unsigned int>(Bug) < LENOF(FSFTPBugs));
   return FSFTPBugs[Bug];
 }
 //---------------------------------------------------------------------
@@ -2200,16 +2127,15 @@ void __fastcall TSessionData::SetTunnel(bool value)
   SET_SESSION_PROPERTY(Tunnel);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetTunnelHostName(const UnicodeString val)
+void __fastcall TSessionData::SetTunnelHostName(UnicodeString value)
 {
-  UnicodeString value = val;
   if (FTunnelHostName != value)
   {
     // HostName is key for password encryption
-    const UnicodeString XTunnelPassword = GetTunnelPassword();
+    UnicodeString XTunnelPassword = GetTunnelPassword();
 
-    size_t P = ::LastDelimiter(value, L"@");
-    if (P >= 0)
+    int P = value.LastDelimiter(L"@");
+    if (P > 0)
     {
       SetTunnelUserName(value.SubString(0, P));
       value = value.SubString(P + 1, value.Length() - P);
@@ -2220,33 +2146,33 @@ void __fastcall TSessionData::SetTunnelHostName(const UnicodeString val)
     SetTunnelPassword(XTunnelPassword);
     if (!XTunnelPassword.IsEmpty())
     {
-      memset(const_cast<wchar_t *>(XTunnelPassword.c_str()), 0, XTunnelPassword.Length() * sizeof(wchar_t));
+      XTunnelPassword.Unique();
+      memset(const_cast<wchar_t *>(XTunnelPassword.c_str()), 0, XTunnelPassword.Length() * sizeof(*XTunnelPassword.c_str());
     }
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetTunnelPortNumber(size_t value)
+void __fastcall TSessionData::SetTunnelPortNumber(int value)
 {
   SET_SESSION_PROPERTY(TunnelPortNumber);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetTunnelUserName(const UnicodeString val)
+void __fastcall TSessionData::SetTunnelUserName(UnicodeString value)
 {
   // TunnelUserName is key for password encryption
-  UnicodeString value = val;
   UnicodeString XTunnelPassword = GetTunnelPassword();
   SET_SESSION_PROPERTY(TunnelUserName);
   SetTunnelPassword(XTunnelPassword);
   if (!XTunnelPassword.IsEmpty())
   {
-    memset(const_cast<wchar_t *>(XTunnelPassword.c_str()), 0, XTunnelPassword.Length() * sizeof(wchar_t));
+    XTunnelPassword.Unique();
+    memset(const_cast<wchar_t *>(XTunnelPassword.c_str()), 0, XTunnelPassword.Length() * sizeof(*XTunnelPassword.c_str());
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetTunnelPassword(const UnicodeString val)
+void __fastcall TSessionData::SetTunnelPassword(UnicodeString avalue)
 {
-  UnicodeString value = val;
-  value = EncryptPassword(value, GetTunnelUserName() + GetTunnelHostName());
+  RawByteString value = EncryptPassword(value, GetTunnelUserName() + GetTunnelHostName());
   SET_SESSION_PROPERTY(TunnelPassword);
 }
 //---------------------------------------------------------------------
@@ -2255,17 +2181,16 @@ UnicodeString __fastcall TSessionData::GetTunnelPassword()
   return DecryptPassword(FTunnelPassword, GetTunnelUserName() + GetTunnelHostName());
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetTunnelPublicKeyFile(const UnicodeString val)
+void __fastcall TSessionData::SetTunnelPublicKeyFile(UnicodeString value)
 {
-  UnicodeString value = val;
-  if (FTunnelPublicKeyFile != val)
+  if (FTunnelPublicKeyFile != value)
   {
-    FTunnelPublicKeyFile = StripPathQuotes(val);
+    FTunnelPublicKeyFile = StripPathQuotes(value);
     Modify();
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetTunnelLocalPortNumber(size_t value)
+void __fastcall TSessionData::SetTunnelLocalPortNumber(int value)
 {
   SET_SESSION_PROPERTY(TunnelLocalPortNumber);
 }
@@ -2275,7 +2200,7 @@ bool __fastcall TSessionData::GetTunnelAutoassignLocalPortNumber()
   return (FTunnelLocalPortNumber <= 0);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetTunnelPortFwd(const UnicodeString value)
+void __fastcall TSessionData::SetTunnelPortFwd(UnicodeString value)
 {
   SET_SESSION_PROPERTY(TunnelPortFwd);
 }
@@ -2300,12 +2225,12 @@ void __fastcall TSessionData::SetFtpForcePasvIp(bool value)
   SET_SESSION_PROPERTY(FtpForcePasvIp);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetFtpAccount(const UnicodeString value)
+void __fastcall TSessionData::SetFtpAccount(UnicodeString value)
 {
   SET_SESSION_PROPERTY(FtpAccount);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetFtpPingInterval(size_t value)
+void __fastcall TSessionData::SetFtpPingInterval(int value)
 {
   SET_SESSION_PROPERTY(FtpPingInterval);
 }
@@ -2330,7 +2255,7 @@ void __fastcall TSessionData::SetNotUtf(TAutoSwitch value)
   SET_SESSION_PROPERTY(NotUtf);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetHostKey(const UnicodeString value)
+void __fastcall TSessionData::SetHostKey(UnicodeString value)
 {
   SET_SESSION_PROPERTY(HostKey);
 }
@@ -2340,9 +2265,9 @@ UnicodeString __fastcall TSessionData::GetInfoTip()
   if (GetUsesSsh())
   {
     return FMTLOAD(SESSION_INFO_TIP,
-      GetHostName().c_str(), GetUserName().c_str(),
-      (GetPublicKeyFile().IsEmpty() ? LoadStr(NO_STR).c_str() : LoadStr(YES_STR).c_str()),
-      GetSshProtStr().c_str(), GetFSProtocolStr().c_str());
+        GetHostName().c_str(), GetUserName().c_str(),
+         (GetPublicKeyFile().IsEmpty() ? LoadStr(NO_STR).c_str() : LoadStr(YES_STR).c_str()),
+         GetSshProtStr().c_str(), GetFSProtocolStr().c_str());
   }
   else
   {
@@ -2357,10 +2282,10 @@ UnicodeString __fastcall TSessionData::GetLocalName()
   if (HasSessionName())
   {
     Result = GetName();
-    size_t P = ::LastDelimiter(Result, L"/");
-    if (P >= 0)
+    int P = Result.LastDelimiter(L"/");
+    if (P > 0)
     {
-      Result.Delete(0, P);
+      Result.Delete(1, P);
     }
   }
   else
@@ -2370,11 +2295,57 @@ UnicodeString __fastcall TSessionData::GetLocalName()
   return Result;
 }
 //---------------------------------------------------------------------
+TLoginType __fastcall TSessionData::GetLoginType() const
+{
+  return (GetUserName() == CONST_LOGIN_ANONYMOUS) && GetPassword().IsEmpty() ?
+         ltAnonymous : ltNormal;
+}
+//---------------------------------------------------------------------
+void __fastcall TSessionData::SetLoginType(TLoginType value)
+{
+  SET_SESSION_PROPERTY(LoginType);
+  if (GetLoginType() == ltAnonymous)
+  {
+    SetPassword(L"");
+    SetUserName(CONST_LOGIN_ANONYMOUS);
+  }
+}
+//---------------------------------------------------------------------
 unsigned int __fastcall TSessionData::GetCodePageAsNumber() const
 {
   return ::GetCodePageAsNumber(GetCodePage());
 }
 
+//---------------------------------------------------------------------------
+void __fastcall TSessionData::SetCodePage(const UnicodeString value)
+{
+  SET_SESSION_PROPERTY(CodePage);
+}
+//---------------------------------------------------------------------
+void __fastcall TSessionData::AdjustHostName(UnicodeString & hostName, const UnicodeString prefix)
+{
+  if (::LowerCase(hostName.SubString(0, prefix.Length())) == prefix)
+  {
+    hostName.Delete(0, prefix.Length());
+    hostName = ::ReplaceStrAll(hostName, L"/", L"_");
+  }
+}
+//---------------------------------------------------------------------
+void __fastcall TSessionData::RemoveProtocolPrefix(UnicodeString & hostName)
+{
+  AdjustHostName(hostName, L"scp://");
+  AdjustHostName(hostName, L"sftp://");
+  AdjustHostName(hostName, L"ftp://");
+  AdjustHostName(hostName, L"ftps://");
+  AdjustHostName(hostName, L"http://");
+  AdjustHostName(hostName, L"https://");
+}
+
+//---------------------------------------------------------------------
+void __fastcall TSessionData::SetSslSessionReuse(bool value)
+{
+  SET_SESSION_PROPERTY(SslSessionReuse);
+}
 //=== TStoredSessionList ----------------------------------------------
 TStoredSessionList::TStoredSessionList(bool aReadOnly):
   TNamedObjectList(), FReadOnly(aReadOnly)
@@ -2390,10 +2361,11 @@ TStoredSessionList::~TStoredSessionList()
 }
 //---------------------------------------------------------------------
 void __fastcall TStoredSessionList::Load(THierarchicalStorage * Storage,
-    bool AsModified, bool UseDefaults)
+  bool AsModified, bool UseDefaults)
 {
-  TStringList * SubKeys = new TStringList();
+  TStringList *SubKeys = new TStringList();
   TList * Loaded = new TList;
+  // try
   {
     BOOST_SCOPE_EXIT ( (&SubKeys) (&Loaded) )
     {
@@ -2401,12 +2373,10 @@ void __fastcall TStoredSessionList::Load(THierarchicalStorage * Storage,
       delete Loaded;
     } BOOST_SCOPE_EXIT_END
     Storage->GetSubKeyNames(SubKeys);
-    // DEBUG_PRINTF(L"SubKeys->GetCount = %d", SubKeys->GetCount());
-    for (size_t Index = 0; Index < SubKeys->GetCount(); Index++)
+    for (int Index = 0; Index < SubKeys->GetCount(); Index++)
     {
       TSessionData * SessionData;
-      const UnicodeString SessionName = SubKeys->GetStrings(Index);
-      // DEBUG_PRINTF(L"SessionName = %s", SessionName.c_str());
+      UnicodeString SessionName = SubKeys->GetStrings(Index);
       bool ValidName = true;
       try
       {
@@ -2418,14 +2388,8 @@ void __fastcall TStoredSessionList::Load(THierarchicalStorage * Storage,
       }
       if (ValidName)
       {
-        if (SessionName == FDefaultSettings->GetName())
-        {
-          SessionData = FDefaultSettings;
-        }
-        else
-        {
-          SessionData = static_cast<TSessionData *>(FindByName(SessionName));
-        }
+        if (SessionName == FDefaultSettings->GetName()) { SessionData = FDefaultSettings; }
+        else { SessionData = static_cast<TSessionData*>(FindByName(SessionName)); }
 
         if ((SessionData != FDefaultSettings) || !UseDefaults)
         {
@@ -2451,7 +2415,7 @@ void __fastcall TStoredSessionList::Load(THierarchicalStorage * Storage,
 
     if (!AsModified)
     {
-      for (size_t Index = 0; Index < TObjectList::GetCount(); Index++)
+      for (int Index = 0; Index < TObjectList::GetCount(); Index++)
       {
         if (Loaded->IndexOf(GetItem(Index)) < 0)
         {
@@ -2461,23 +2425,19 @@ void __fastcall TStoredSessionList::Load(THierarchicalStorage * Storage,
       }
     }
   }
-}
-//---------------------------------------------------------------------
-void __fastcall TStoredSessionList::Load(const UnicodeString aKey, bool UseDefaults)
-{
-  TRegistryStorage * Storage = new TRegistryStorage(aKey);
+#ifndef _MSC_VER
+  __finally
   {
-    BOOST_SCOPE_EXIT ( (&Storage) )
-    {
-      delete Storage;
-    } BOOST_SCOPE_EXIT_END
-    if (Storage->OpenRootKey(false)) { Load(Storage, false, UseDefaults); }
+    delete SubKeys;
+    delete Loaded;
   }
+#endif
 }
 //---------------------------------------------------------------------
 void __fastcall TStoredSessionList::Load()
 {
-  THierarchicalStorage * Storage = Configuration->CreateStorage();
+  THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
+  // try
   {
     BOOST_SCOPE_EXIT ( (&Storage) )
     {
@@ -2488,11 +2448,17 @@ void __fastcall TStoredSessionList::Load()
       Load(Storage);
     }
   }
+#ifndef _MSC_VER
+  __finally
+  {
+    delete Storage;
+  }
+#endif
 }
 //---------------------------------------------------------------------
 void __fastcall TStoredSessionList::DoSave(THierarchicalStorage * Storage,
-    TSessionData * Data, bool All, bool RecryptPasswordOnly,
-    TSessionData * FactoryDefaults)
+  TSessionData * Data, bool All, bool RecryptPasswordOnly,
+  TSessionData * FactoryDefaults)
 {
   if (All || Data->GetModified())
   {
@@ -2508,21 +2474,28 @@ void __fastcall TStoredSessionList::DoSave(THierarchicalStorage * Storage,
 }
 //---------------------------------------------------------------------
 void __fastcall TStoredSessionList::DoSave(THierarchicalStorage * Storage,
-    bool All, bool RecryptPasswordOnly)
+  bool All, bool RecryptPasswordOnly)
 {
   TSessionData * FactoryDefaults = new TSessionData(L"");
+  // try
   {
     BOOST_SCOPE_EXIT ( (&FactoryDefaults) )
     {
       delete FactoryDefaults;
     } BOOST_SCOPE_EXIT_END
     DoSave(Storage, FDefaultSettings, All, RecryptPasswordOnly, FactoryDefaults);
-    for (size_t Index = 0; Index < GetCount() + GetHiddenCount(); Index++)
+    for (int Index = 0; Index < GetCount() + GetHiddenCount(); Index++)
     {
       TSessionData * SessionData = static_cast<TSessionData *>(GetItem(Index));
       DoSave(Storage, SessionData, All, RecryptPasswordOnly, FactoryDefaults);
     }
   }
+#ifndef _MSC_VER
+  __finally
+  {
+    delete FactoryDefaults;
+  }
+#endif
 }
 //---------------------------------------------------------------------
 void __fastcall TStoredSessionList::Save(THierarchicalStorage * Storage, bool All)
@@ -2532,7 +2505,8 @@ void __fastcall TStoredSessionList::Save(THierarchicalStorage * Storage, bool Al
 //---------------------------------------------------------------------
 void __fastcall TStoredSessionList::DoSave(bool All, bool Explicit, bool RecryptPasswordOnly)
 {
-  THierarchicalStorage * Storage = Configuration->CreateStorage();
+  THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
+  // try
   {
     BOOST_SCOPE_EXIT ( (&Storage) )
     {
@@ -2540,12 +2514,18 @@ void __fastcall TStoredSessionList::DoSave(bool All, bool Explicit, bool Recrypt
     } BOOST_SCOPE_EXIT_END
     Storage->SetAccessMode(smReadWrite);
     Storage->SetExplicit(Explicit);
-    // DEBUG_PRINTF(L"Configuration->GetStoredSessionsSubKey = %s", Configuration->GetStoredSessionsSubKey().c_str());
     if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), true))
     {
       DoSave(Storage, All, RecryptPasswordOnly);
     }
   }
+#ifndef _MSC_VER
+  __finally
+  {
+    delete Storage;
+  }
+#endif
+
   Saved();
 }
 //---------------------------------------------------------------------
@@ -2562,7 +2542,7 @@ void __fastcall TStoredSessionList::RecryptPasswords()
 void __fastcall TStoredSessionList::Saved()
 {
   FDefaultSettings->SetModified(false);
-  for (size_t Index = 0; Index < GetCount() + GetHiddenCount(); Index++)
+  for (int Index = 0; Index < GetCount() + GetHiddenCount(); Index++)
   {
     (static_cast<TSessionData *>(GetItem(Index))->SetModified(false));
   }
@@ -2571,8 +2551,9 @@ void __fastcall TStoredSessionList::Saved()
 void __fastcall TStoredSessionList::Export(const UnicodeString FileName)
 {
   Error(SNotImplemented, 3003);
-  /*
+/*
   THierarchicalStorage * Storage = new TIniFileStorage(FileName);
+  // try
   {
     BOOST_SCOPE_EXIT ( (&Storage) )
     {
@@ -2584,25 +2565,29 @@ void __fastcall TStoredSessionList::Export(const UnicodeString FileName)
       Save(Storage, true);
     }
   }
-  */
+  __finally
+  {
+    delete Storage;
+  }
+*/
 }
 //---------------------------------------------------------------------
 void __fastcall TStoredSessionList::SelectAll(bool Select)
 {
-  for (size_t Index = 0; Index < GetCount(); Index++)
+  for (int Index = 0; Index < GetCount(); Index++)
   {
     GetSession(Index)->SetSelected(Select);
   }
 }
 //---------------------------------------------------------------------
 void __fastcall TStoredSessionList::Import(TStoredSessionList * From,
-    bool OnlySelected)
+  bool OnlySelected)
 {
-  for (size_t Index = 0; Index < From->GetCount(); Index++)
+  for (int Index = 0; Index < From->GetCount(); Index++)
   {
     if (!OnlySelected || From->GetSession(Index)->GetSelected())
     {
-      TSessionData * Session = new TSessionData(L"");
+      TSessionData *Session = new TSessionData(L"");
       Session->Assign(From->GetSession(Index));
       Session->SetModified(true);
       Session->MakeUniqueIn(this);
@@ -2614,9 +2599,9 @@ void __fastcall TStoredSessionList::Import(TStoredSessionList * From,
 }
 //---------------------------------------------------------------------
 void __fastcall TStoredSessionList::SelectSessionsToImport
-(TStoredSessionList * Dest, bool SSHOnly)
+  (TStoredSessionList * Dest, bool SSHOnly)
 {
-  for (size_t Index = 0; Index < GetCount(); Index++)
+  for (int Index = 0; Index < GetCount(); Index++)
   {
     GetSession(Index)->SetSelected(
       (!SSHOnly || (GetSession(Index)->GetProtocol() == ptSSH)) &&
@@ -2630,6 +2615,7 @@ void __fastcall TStoredSessionList::Cleanup()
   {
     if (Configuration->GetStorage() == stRegistry) { Clear(); }
     TRegistryStorage * Storage = new TRegistryStorage(Configuration->GetRegistryStorageKey());
+    // try
     {
       BOOST_SCOPE_EXIT ( (&Storage) )
       {
@@ -2641,16 +2627,22 @@ void __fastcall TStoredSessionList::Cleanup()
         Storage->RecursiveDeleteSubKey(Configuration->GetStoredSessionsSubKey());
       }
     }
+#ifndef _MSC_VER
+    __finally
+    {
+      delete Storage;
+    }
+#endif
   }
-  catch (const std::exception & E)
+  catch (Exception & E)
   {
     throw ExtException(FMTLOAD(CLEANUP_SESSIONS_ERROR), &E);
   }
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TStoredSessionList::IndexOf(TSessionData * Data)
+int __fastcall TStoredSessionList::IndexOf(TSessionData * Data)
 {
-  for (size_t Index = 0; Index < GetCount(); Index++)
+  for (int Index = 0; Index < GetCount(); Index++)
   {
     if (Data == GetSession(Index))
     {
@@ -2661,9 +2653,9 @@ size_t __fastcall TStoredSessionList::IndexOf(TSessionData * Data)
 }
 //---------------------------------------------------------------------------
 TSessionData * __fastcall TStoredSessionList::NewSession(
-  const UnicodeString SessionName, TSessionData * Session)
+  UnicodeString SessionName, TSessionData * Session)
 {
-  TSessionData * DuplicateSession = static_cast<TSessionData *>(FindByName(SessionName));
+  TSessionData * DuplicateSession = static_cast<TSessionData*>(FindByName(SessionName));
   if (!DuplicateSession)
   {
     DuplicateSession = new TSessionData(L"");
@@ -2700,12 +2692,13 @@ void __fastcall TStoredSessionList::SetDefaultSettings(TSessionData * value)
 }
 //---------------------------------------------------------------------------
 void __fastcall TStoredSessionList::ImportHostKeys(const UnicodeString TargetKey,
-    const UnicodeString SourceKey, TStoredSessionList * Sessions,
-    bool OnlySelected)
+  const UnicodeString SourceKey, TStoredSessionList * Sessions,
+  bool OnlySelected)
 {
   TRegistryStorage * SourceStorage = NULL;
   TRegistryStorage * TargetStorage = NULL;
   TStringList * KeyList = NULL;
+  // try
   {
     BOOST_SCOPE_EXIT ( (&SourceStorage) (&TargetStorage) (&KeyList) )
     {
@@ -2726,18 +2719,18 @@ void __fastcall TStoredSessionList::ImportHostKeys(const UnicodeString TargetKey
       TSessionData * Session;
       UnicodeString HostKeyName;
       assert(Sessions != NULL);
-      for (size_t Index = 0; Index < Sessions->GetCount(); Index++)
+      for (int Index = 0; Index < Sessions->GetCount(); Index++)
       {
         Session = Sessions->GetSession(Index);
         if (!OnlySelected || Session->GetSelected())
         {
           HostKeyName = PuttyMungeStr(FORMAT(L"@%d:%s", Session->GetPortNumber(), Session->GetHostName().c_str()));
           UnicodeString KeyName;
-          for (size_t KeyIndex = 0; KeyIndex < KeyList->GetCount(); KeyIndex++)
+          for (int KeyIndex = 0; KeyIndex < KeyList->GetCount(); KeyIndex++)
           {
             KeyName = KeyList->GetStrings(KeyIndex);
-            size_t P = KeyName.Pos(HostKeyName);
-            if ((P >= 0) && (P == KeyName.Length() - HostKeyName.Length() + 1))
+            int P = KeyName.Pos(HostKeyName);
+            if ((P > 0) && (P == KeyName.Length() - HostKeyName.Length() + 1))
             {
               TargetStorage->WriteStringRaw(KeyName,
                 SourceStorage->ReadStringRaw(KeyName, L""));
@@ -2747,11 +2740,19 @@ void __fastcall TStoredSessionList::ImportHostKeys(const UnicodeString TargetKey
       }
     }
   }
+#ifndef _MSC_VER
+  __finally
+  {
+    delete SourceStorage;
+    delete TargetStorage;
+    delete KeyList;
+  }
+#endif
 }
 //---------------------------------------------------------------------------
-TSessionData * __fastcall TStoredSessionList::ParseUrl(const UnicodeString Url,
-    TOptions * Options, bool & DefaultsOnly, UnicodeString * FileName,
-    bool * AProtocolDefined)
+TSessionData * __fastcall TStoredSessionList::ParseUrl(UnicodeString Url,
+  TOptions * Options, bool & DefaultsOnly, UnicodeString * FileName,
+  bool * AProtocolDefined)
 {
   TSessionData * Data = new TSessionData(L"");
   try
@@ -2779,3 +2780,54 @@ TSessionData * TStoredSessionList::GetSessionByName(const UnicodeString SessionN
   }
   return NULL;
 }
+
+//---------------------------------------------------------------------
+void __fastcall TStoredSessionList::Load(const UnicodeString aKey, bool UseDefaults)
+{
+  TRegistryStorage * Storage = new TRegistryStorage(aKey);
+  {
+    BOOST_SCOPE_EXIT ( (&Storage) )
+    {
+      delete Storage;
+    } BOOST_SCOPE_EXIT_END
+    if (Storage->OpenRootKey(false)) { Load(Storage, false, UseDefaults); }
+  }
+}
+//---------------------------------------------------------------------
+//---------------------------------------------------------------------
+bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx)
+{
+  if (!GetCPInfoEx(CodePage, 0, &CodePageInfoEx))
+  {
+    CPINFO CodePageInfo;
+
+    if (!GetCPInfo(CodePage, &CodePageInfo))
+      return false;
+
+    CodePageInfoEx.MaxCharSize = CodePageInfo.MaxCharSize;
+    CodePageInfoEx.CodePageName[0] = L'\0';
+  }
+
+  if (CodePageInfoEx.MaxCharSize != 1)
+    return false;
+
+  return true;
+}
+//---------------------------------------------------------------------
+unsigned int GetCodePageAsNumber(const UnicodeString CodePage)
+{
+  unsigned int codePage = _wtoi(CodePage.c_str());
+  return codePage == 0 ? CONST_DEFAULT_CODEPAGE : codePage;
+}
+//---------------------------------------------------------------------
+UnicodeString GetCodePageAsString(unsigned int cp)
+{
+  CPINFOEX cpInfoEx;
+  if (::GetCodePageInfo(cp, cpInfoEx))
+  {
+    return UnicodeString(cpInfoEx.CodePageName);
+  }
+  return IntToStr(CONST_DEFAULT_CODEPAGE);
+}
+
+//---------------------------------------------------------------------
