@@ -13,7 +13,7 @@ class TSimpleThread : public TObject
 public:
   explicit TSimpleThread();
   virtual ~TSimpleThread();
-  virtual void __fastcall Init(bool LowPriority);
+  virtual void __fastcall Init();
 
   virtual void __fastcall Start();
   void __fastcall WaitFor(unsigned int Milliseconds = INFINITE);
@@ -46,7 +46,7 @@ protected:
   HANDLE FEvent;
   bool FTerminated;
 
-  explicit TSignalThread(bool LowPriority);
+  explicit TSignalThread();
   virtual ~TSignalThread();
 
   bool __fastcall WaitForEvent();
@@ -377,7 +377,7 @@ class TTerminalThread : public TSignalThread
 public:
   explicit TTerminalThread(TTerminal * Terminal);
   virtual ~TTerminalThread();
-  virtual void __fastcall Init(bool LowPriority);
+  virtual void __fastcall Init();
 
   void __fastcall TerminalOpen();
   void __fastcall TerminalReopen();
@@ -388,7 +388,7 @@ public:
   __property TNotifyEvent OnIdle = { read = FOnIdle, write = FOnIdle };
   __property bool Cancelling = { read = FCancel };
 #else
-  const TNotifyEvent &GetOnIdle() const { return FOnIdle; }
+  const notify_signal_type &GetOnIdle() const { return FOnIdle; }
   void SetOnIdle(const TNotifyEvent & Value) { FOnIdle.connect(Value); }
   bool GetCancelling() const { return FCancel; };
 #endif
@@ -399,15 +399,15 @@ protected:
 private:
   TTerminal * FTerminal;
 
-  TInformationEvent FOnInformation;
-  TQueryUserEvent FOnQueryUser;
-  TPromptUserEvent FOnPromptUser;
-  TExtendedExceptionEvent FOnShowExtendedException;
-  TDisplayBannerEvent FOnDisplayBanner;
+  informationevent_signal_type FOnInformation;
+  queryuser_signal_type FOnQueryUser;
+  promptuser_signal_type FOnPromptUser;
+  extendedexception_signal_type FOnShowExtendedException;
+  displaybanner_signal_type FOnDisplayBanner;
   notify_signal_type FOnChangeDirectory;
-  TReadDirectoryEvent FOnReadDirectory;
+  readdirectory_signal_type FOnReadDirectory;
   notify_signal_type FOnStartReadDirectory;
-  TReadDirectoryProgressEvent FOnReadDirectoryProgress;
+  readdirectoryprogress_signal_type FOnReadDirectoryProgress;
 
   notify_signal_type FOnIdle;
 

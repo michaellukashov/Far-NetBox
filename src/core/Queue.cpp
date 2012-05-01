@@ -24,6 +24,7 @@ class TBackgroundTerminal;
 class TUserAction
 {
 public:
+  explicit TUserAction() {}
   virtual ~TUserAction() {}
   virtual void __fastcall Execute(void * Arg) = 0;
 };
@@ -31,40 +32,44 @@ public:
 class TNotifyAction : public TUserAction
 {
 public:
-  TNotifyAction(TNotifyEvent AOnNotify) :
-    OnNotify(AOnNotify)
+  explicit TNotifyAction(TNotifyEvent AOnNotify) :
+    Sender(NULL)
   {
+    OnNotify.connect(AOnNotify);
   }
 
   virtual void __fastcall Execute(void * Arg)
   {
-    if (!GetOnNotify().empty())
+    if (!OnNotify.empty())
     {
-      GetOnNotify(Sender);
+      OnNotify(Sender);
     }
   }
 
-  TNotifyEvent OnNotify;
+  notify_signal_type OnNotify;
   TObject * Sender;
 };
 //---------------------------------------------------------------------------
 class TInformationUserAction : public TUserAction
 {
 public:
-  TInformationUserAction(TInformationEvent AOnInformation) :
-    OnInformation(AOnInformation)
+  explicit TInformationUserAction(TInformationEvent AOnInformation) :
+    Terminal(NULL),
+    Status(false),
+    Phase(0)
   {
+    OnInformation.connect(AOnInformation);
   }
 
   virtual void __fastcall Execute(void * Arg)
   {
-    if (!GetOnInformation().empty())
+    if (!OnInformation.empty())
     {
-      GetOnInformation(Terminal, Str, Status, Phase);
+      OnInformation(Terminal, Str, Status, Phase);
     }
   }
 
-  TInformationEvent OnInformation;
+  informationevent_signal_type OnInformation;
   TTerminal * Terminal;
   UnicodeString Str;
   bool Status;
@@ -74,20 +79,25 @@ public:
 class TQueryUserAction : public TUserAction
 {
 public:
-  TQueryUserAction(TQueryUserEvent AOnQueryUser) :
-    OnQueryUser(AOnQueryUser)
+  explicit TQueryUserAction(TQueryUserEvent AOnQueryUser) :
+    Sender(NULL),
+    MoreMessages(NULL),
+    Params(NULL),
+    Answer(0),
+    Type(qtConfirmation)
   {
+    OnQueryUser.connect(AOnQueryUser);
   }
 
   virtual void __fastcall Execute(void * Arg)
   {
-    if (!GetOnQueryUser().empty())
+    if (!OnQueryUser.empty())
     {
-      GetOnQueryUser(Sender, Query, MoreMessages, Answers, Params, Answer, Type, Arg);
+      OnQueryUser(Sender, Query, MoreMessages, Answers, Params, Answer, Type, Arg);
     }
   }
 
-  TQueryUserEvent OnQueryUser;
+  queryuser_signal_type OnQueryUser;
   TObject * Sender;
   UnicodeString Query;
   TStrings * MoreMessages;
@@ -101,8 +111,12 @@ class TPromptUserAction : public TUserAction
 {
 public:
   explicit TPromptUserAction(TPromptUserEvent AOnPromptUser) :
-    OnPromptUser(AOnPromptUser), Results(new TStringList())
+    Terminal(NULL),
+    Kind(pkPrompt),
+    Prompts(NULL),
+    Results(new TStringList())
   {
+    OnPromptUser.connect(AOnPromptUser);
   }
 
   virtual ~TPromptUserAction()
@@ -112,13 +126,13 @@ public:
 
   virtual void __fastcall Execute(void * Arg)
   {
-    if (!GetOnPromptUser().empty())
+    if (!OnPromptUser.empty())
     {
-      GetOnPromptUser(Terminal, Kind, Name, Instructions, Prompts, Results, Result, Arg);
+      OnPromptUser(Terminal, Kind, Name, Instructions, Prompts, Results, Result, Arg);
     }
   }
 
-  TPromptUserEvent OnPromptUser;
+  promptuser_signal_type OnPromptUser;
   TTerminal * Terminal;
   TPromptKind Kind;
   UnicodeString Name;
@@ -131,20 +145,22 @@ public:
 class TShowExtendedExceptionAction : public TUserAction
 {
 public:
-  __fastcall TShowExtendedExceptionAction(TExtendedExceptionEvent AOnShowExtendedException) :
-    OnShowExtendedException(AOnShowExtendedException)
+  explicit TShowExtendedExceptionAction(TExtendedExceptionEvent AOnShowExtendedException) :
+    Terminal(NULL),
+    E(NULL)
   {
+    OnShowExtendedException.connect(AOnShowExtendedException);
   }
 
   virtual void __fastcall Execute(void * Arg)
   {
-    if (!GetOnShowExtendedException().empty())
+    if (!OnShowExtendedException.empty())
     {
-      GetOnShowExtendedException(Terminal, E, Arg);
+      OnShowExtendedException(Terminal, E, Arg);
     }
   }
 
-  TExtendedExceptionEvent OnShowExtendedException;
+  extendedexception_signal_type OnShowExtendedException;
   TTerminal * Terminal;
   Exception * E;
 };
@@ -152,20 +168,23 @@ public:
 class TDisplayBannerAction : public TUserAction
 {
 public:
-  __fastcall TDisplayBannerAction (TDisplayBannerEvent AOnDisplayBanner) :
-    OnDisplayBanner(AOnDisplayBanner)
+  explicit TDisplayBannerAction(TDisplayBannerEvent AOnDisplayBanner) :
+    Terminal(NULL),
+    NeverShowAgain(false),
+    Options(0)
   {
+    OnDisplayBanner.connect(AOnDisplayBanner);
   }
 
   virtual void __fastcall Execute(void * Arg)
   {
-    if (!GetOnDisplayBanner().empty())
+    if (!OnDisplayBanner.empty())
     {
-      GetOnDisplayBanner(Terminal, SessionName, Banner, NeverShowAgain, Options);
+      OnDisplayBanner(Terminal, SessionName, Banner, NeverShowAgain, Options);
     }
   }
 
-  TDisplayBannerEvent OnDisplayBanner;
+  displaybanner_signal_type OnDisplayBanner;
   TTerminal * Terminal;
   UnicodeString SessionName;
   UnicodeString Banner;
@@ -176,20 +195,22 @@ public:
 class TReadDirectoryAction : public TUserAction
 {
 public:
-  TReadDirectoryAction(TReadDirectoryEvent AOnReadDirectory) :
-    OnReadDirectory(AOnReadDirectory)
+  explicit TReadDirectoryAction(TReadDirectoryEvent AOnReadDirectory) :
+    Sender(NULL),
+    ReloadOnly(false)
   {
+    OnReadDirectory.connect(AOnReadDirectory);
   }
 
   virtual void __fastcall Execute(void * Arg)
   {
-    if (!GetOnReadDirectory().empty())
+    if (!OnReadDirectory.empty())
     {
-      GetOnReadDirectory(Sender, ReloadOnly);
+      OnReadDirectory(Sender, ReloadOnly);
     }
   }
 
-  TReadDirectoryEvent OnReadDirectory;
+  readdirectory_signal_type OnReadDirectory;
   TObject * Sender;
   bool ReloadOnly;
 };
@@ -198,19 +219,22 @@ class TReadDirectoryProgressAction : public TUserAction
 {
 public:
   TReadDirectoryProgressAction(TReadDirectoryProgressEvent AOnReadDirectoryProgress) :
-    OnReadDirectoryProgress(AOnReadDirectoryProgress)
+    Sender(NULL),
+    Progress(0),
+    Cancel(false)
   {
+    OnReadDirectoryProgress.connect(AOnReadDirectoryProgress);
   }
 
   virtual void __fastcall Execute(void * Arg)
   {
-    if (!GetOnReadDirectoryProgress().empty())
+    if (!OnReadDirectoryProgress.empty())
     {
-      GetOnReadDirectoryProgress(Sender, Progress, Cancel);
+      OnReadDirectoryProgress(Sender, Progress, Cancel);
     }
   }
 
-  TReadDirectoryProgressEvent OnReadDirectoryProgress;
+  readdirectoryprogress_signal_type OnReadDirectoryProgress;
   TObject * Sender;
   int Progress;
   bool Cancel;
@@ -256,11 +280,11 @@ protected:
     TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
   void TerminalShowExtendedException(TTerminal * Terminal,
     Exception * E, void * Arg);
-  void __fastcall OperationFinished(TFileOperation Operation, TOperationSide Side,
-    bool Temp, const UnicodeString & FileName, bool Success,
-    TOnceDoneOperation & OnceDoneOperation);
   void OperationProgress(TFileOperationProgressType & ProgressData,
     TCancelStatus & Cancel);
+  void OperationFinished(TFileOperation Operation, TOperationSide Side,
+    bool Temp, const UnicodeString & FileName, bool Success,
+    TOnceDoneOperation & OnceDoneOperation);
 };
 //---------------------------------------------------------------------------
 // TSignalThread
@@ -454,19 +478,20 @@ TTerminalQueue::TTerminalQueue(TTerminal * Terminal,
 void __fastcall TTerminalQueue::Init()
 {
   TSignalThread::Init(true);
-
+#ifndef _MSC_VER
   FOnQueryUser = NULL;
   FOnPromptUser = NULL;
   FOnShowExtendedException = NULL;
   FOnQueueItemUpdate = NULL;
   FOnListUpdate = NULL;
   FOnEvent = NULL;
+#endif
   FLastIdle = Now();
   FIdleInterval = EncodeTimeVerbose(0, 0, 2, 0);
 
-  assert(Terminal != NULL);
+  assert(FTerminal != NULL);
   FSessionData = new TSessionData(L"");
-  FSessionData->Assign(Terminal->SessionData);
+  FSessionData->Assign(FTerminal->GetSessionData());
 
   FItems = new TList();
   FTerminals = new TList();
@@ -804,7 +829,7 @@ bool __fastcall TTerminalQueue::ItemExecuteNow(TQueueItem * Item)
           FItems->Move(Index, FItemsInProcess);
         }
 
-        if ((FTransfersLimit >= 0) && (FTerminals->GetCount() >= FTransfersLimit)) &&
+        if ((FTransfersLimit >= 0) && (FTerminals->GetCount() >= FTransfersLimit) &&
             // when queue is disabled, we may have idle terminals,
             // even when there are pending queue items
             (FFreeTerminals == 0))
@@ -970,12 +995,13 @@ void __fastcall TTerminalQueue::ProcessEvent()
              (FTerminals->GetCount() < FTransfersLimit + FTemporaryTerminals)))
         {
           FOverallTerminals++;
-          TerminalItem = new TTerminalItem(this, FOverallTerminals);
+          TerminalItem = new TTerminalItem(this);
+          TerminalItem->Init(FOverallTerminals);
           FTerminals->Add(TerminalItem);
         }
         else if (FFreeTerminals > 0)
         {
-          TerminalItem = reinterpret_cast<TTerminalItem*>(FTerminals->Items[0]);
+          TerminalItem = reinterpret_cast<TTerminalItem*>(FTerminals->GetItem(0));
           FTerminals->Move(0, FTerminals->GetCount() - 1);
           FFreeTerminals--;
         }
@@ -1362,7 +1388,7 @@ void TTerminalItem::TerminalQueryUser(TObject * Sender,
     USEDPARAM(Arg);
     assert(Arg == NULL);
 
-    TQueryUserAction Action(FQueue->OnQueryUser);
+    TQueryUserAction Action(FQueue->GetOnQueryUser());
     Action.Sender = Sender;
     Action.Query = Query;
     Action.MoreMessages = MoreMessages;
@@ -1399,7 +1425,7 @@ void TTerminalItem::TerminalPromptUser(TTerminal * Terminal,
     USEDPARAM(Arg);
     assert(Arg == NULL);
 
-    TPromptUserAction Action(FQueue->OnPromptUser);
+    TPromptUserAction Action(FQueue->GetOnPromptUser());
     Action.Terminal = Terminal;
     Action.Kind = Kind;
     Action.Name = Name;
@@ -1426,7 +1452,7 @@ void TTerminalItem::TerminalShowExtendedException(
   if ((FItem != NULL) &&
       ExceptionMessage(E, Message))
   {
-    TShowExtendedExceptionAction Action(FQueue->OnShowExtendedException);
+    TShowExtendedExceptionAction Action(FQueue->GetOnShowExtendedException());
     Action.Terminal = Terminal;
     Action.E = E;
 
@@ -1991,3 +2017,448 @@ void __fastcall TDownloadQueueItem::DoExecute(TTerminal * Terminal)
   assert(Terminal != NULL);
   Terminal->CopyToLocal(FFilesToCopy, FTargetDir, FCopyParam, FParams);
 }
+
+//---------------------------------------------------------------------------
+// TTerminalThread
+//---------------------------------------------------------------------------
+TTerminalThread::TTerminalThread(TTerminal * Terminal) :
+  TSignalThread(), FTerminal(Terminal)
+{
+#ifndef _MSC_VER
+  FAction = NULL;
+  FActionEvent = CreateEvent(NULL, false, false, NULL);
+  FException = NULL;
+  FOnIdle = NULL;
+  FUserAction = NULL;
+  FCancel = false;
+
+  FOnInformation = FTerminal->OnInformation;
+  FOnQueryUser = FTerminal->OnQueryUser;
+  FOnPromptUser = FTerminal->OnPromptUser;
+  FOnShowExtendedException = FTerminal->OnShowExtendedException;
+  FOnDisplayBanner = FTerminal->OnDisplayBanner;
+  FOnChangeDirectory = FTerminal->OnChangeDirectory;
+  FOnReadDirectory = FTerminal->OnReadDirectory;
+  FOnStartReadDirectory = FTerminal->OnStartReadDirectory;
+  FOnReadDirectoryProgress = FTerminal->OnReadDirectoryProgress;
+
+  FTerminal->OnInformation = TerminalInformation;
+  FTerminal->OnQueryUser = TerminalQueryUser;
+  FTerminal->OnPromptUser = TerminalPromptUser;
+  FTerminal->OnShowExtendedException = TerminalShowExtendedException;
+  FTerminal->OnDisplayBanner = TerminalDisplayBanner;
+  FTerminal->OnChangeDirectory = TerminalChangeDirectory;
+  FTerminal->OnReadDirectory = TerminalReadDirectory;
+  FTerminal->OnStartReadDirectory = TerminalStartReadDirectory;
+  FTerminal->OnReadDirectoryProgress = TerminalReadDirectoryProgress;
+
+  Start();
+#endif
+}
+
+void __fastcall TTerminalThread::Init()
+{
+  TSignalThread::Init(false);
+
+  FAction = NULL;
+  FActionEvent = CreateEvent(NULL, false, false, NULL);
+  FException = NULL;
+  FOnIdle = NULL;
+  FUserAction = NULL;
+  FCancel = false;
+
+  FOnInformation = FTerminal->GetOnInformation();
+  FOnQueryUser = FTerminal->GetOnQueryUser();
+  FOnPromptUser = FTerminal->GetOnPromptUser();
+  FOnShowExtendedException = FTerminal->GetOnShowExtendedException();
+  FOnDisplayBanner = FTerminal->GetOnDisplayBanner();
+  FOnChangeDirectory = FTerminal->GetOnChangeDirectory();
+  FOnReadDirectory = FTerminal->GetOnReadDirectory();
+  FOnStartReadDirectory = FTerminal->GetOnStartReadDirectory();
+  FOnReadDirectoryProgress = FTerminal->GetOnReadDirectoryProgress();
+
+  FTerminal->SetOnInformation(boost::bind(&TTerminalThread::TerminalInformation, this, _1, _2, _3, _4));
+  FTerminal->SetOnQueryUser(boost::bind(&TTerminalThread::TerminalQueryUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
+  FTerminal->SetOnPromptUser(boost::bind(&TTerminalThread::TerminalPromptUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
+  FTerminal->SetOnShowExtendedException(boost::bind(&TTerminalThread::TerminalShowExtendedException, this, _1, _2, _3));
+  FTerminal->SetOnDisplayBanner(boost::bind(&TTerminalThread::TerminalDisplayBanner, this, _1, _2, _3, _4, _5));
+  FTerminal->SetOnChangeDirectory(boost::bind(&TTerminalThread::TerminalChangeDirectory, this, _1));
+  FTerminal->SetOnReadDirectory(boost::bind(&TTerminalThread::TerminalReadDirectory, this, _1, _2));
+  FTerminal->SetOnStartReadDirectory(boost::bind(&TTerminalThread::TerminalStartReadDirectory, this, _1));
+  FTerminal->SetOnReadDirectoryProgress(boost::bind(&TTerminalThread::TerminalReadDirectoryProgress, this, _1, _2, _3));
+
+  Start();
+}
+//---------------------------------------------------------------------------
+__fastcall TTerminalThread::~TTerminalThread()
+{
+  Close();
+
+  CloseHandle(FActionEvent);
+
+#ifndef _MSC_VER
+  assert(FTerminal->OnInformation == TerminalInformation);
+  assert(FTerminal->OnQueryUser == TerminalQueryUser);
+  assert(FTerminal->OnPromptUser == TerminalPromptUser);
+  assert(FTerminal->OnShowExtendedException == TerminalShowExtendedException);
+  assert(FTerminal->OnDisplayBanner == TerminalDisplayBanner);
+  assert(FTerminal->OnChangeDirectory == TerminalChangeDirectory);
+  assert(FTerminal->OnReadDirectory == TerminalReadDirectory);
+  assert(FTerminal->OnStartReadDirectory == TerminalStartReadDirectory);
+  assert(FTerminal->OnReadDirectoryProgress == TerminalReadDirectoryProgress);
+
+  FTerminal->OnInformation = FOnInformation;
+  FTerminal->OnQueryUser = FOnQueryUser;
+  FTerminal->OnPromptUser = FOnPromptUser;
+  FTerminal->OnShowExtendedException = FOnShowExtendedException;
+  FTerminal->OnDisplayBanner = FOnDisplayBanner;
+  FTerminal->OnChangeDirectory = FOnChangeDirectory;
+  FTerminal->OnReadDirectory = FOnReadDirectory;
+  FTerminal->OnStartReadDirectory = FOnStartReadDirectory;
+  FTerminal->OnReadDirectoryProgress = FOnReadDirectoryProgress;
+#else
+  FTerminal->SetOnInformation(FOnInformation);
+  FTerminal->SetOnQueryUser(FOnQueryUser);
+  FTerminal->SetOnPromptUser(FOnPromptUser);
+  FTerminal->SetOnShowExtendedException(FOnShowExtendedException);
+  FTerminal->SetOnDisplayBanner(FOnDisplayBanner);
+  FTerminal->SetOnChangeDirectory(FOnChangeDirectory);
+  FTerminal->SetOnReadDirectory(FOnReadDirectory);
+  FTerminal->SetOnStartReadDirectory(FOnStartReadDirectory);
+  FTerminal->SetOnReadDirectoryProgress(FOnReadDirectoryProgress);
+#endif
+}
+//---------------------------------------------------------------------------
+void __fastcall TTerminalThread::Cancel()
+{
+  FCancel = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TTerminalThread::TerminalOpen()
+{
+  RunAction(TerminalOpenEvent);
+}
+//---------------------------------------------------------------------------
+void __fastcall TTerminalThread::TerminalReopen()
+{
+  RunAction(TerminalReopenEvent);
+}
+//---------------------------------------------------------------------------
+void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
+{
+  assert(FAction == NULL);
+  assert(FException == NULL);
+  assert(FOnIdle != NULL);
+
+  FCancelled = false;
+  FAction = Action;
+  try
+  {
+    try
+    {
+      TriggerEvent();
+
+      bool Done = false;
+
+      do
+      {
+        switch (WaitForSingleObject(FActionEvent, 50))
+        {
+          case WAIT_OBJECT_0:
+            Done = true;
+            break;
+
+          case WAIT_TIMEOUT:
+            if (FUserAction != NULL)
+            {
+              try
+              {
+                FUserAction->Execute(NULL);
+              }
+              catch (Exception & E)
+              {
+                SaveException(E);
+              }
+
+              FUserAction = NULL;
+              TriggerEvent();
+            }
+            else
+            {
+              if (FOnIdle != NULL)
+              {
+                FOnIdle(NULL);
+              }
+            }
+            break;
+
+          default:
+            throw Exception(L"Error waiting for background session task to complete");
+        }
+      }
+      while (!Done);
+
+
+      Rethrow();
+    }
+    __finally
+    {
+      FAction = NULL;
+      SAFE_DESTROY(FException);
+    }
+  }
+  catch(...)
+  {
+    if (FCancelled)
+    {
+      // even if the abort thrown as result of Cancel() was wrapper into
+      // some higher-level exception, normalize back to message-less fatal
+      // exception here
+      FatalAbort();
+    }
+    else
+    {
+      throw;
+    }
+  }
+}
+//---------------------------------------------------------------------------
+void __fastcall TTerminalThread::TerminalOpenEvent(TObject * /*Sender*/)
+{
+  FTerminal->Open();
+}
+//---------------------------------------------------------------------------
+void __fastcall TTerminalThread::TerminalReopenEvent(TObject * /*Sender*/)
+{
+  FTerminal->Reopen(0);
+}
+//---------------------------------------------------------------------------
+void __fastcall TTerminalThread::ProcessEvent()
+{
+  assert(FEvent != NULL);
+  assert(FException == NULL);
+
+  try
+  {
+    FAction(NULL);
+  }
+  catch(Exception & E)
+  {
+    SaveException(E);
+  }
+
+  SetEvent(FActionEvent);
+}
+//---------------------------------------------------------------------------
+void __fastcall TTerminalThread::Rethrow()
+{
+  if (FException != NULL)
+  {
+    try
+    {
+      if (dynamic_cast<EFatal *>(FException) != NULL)
+      {
+        throw EFatal(FException, L"");
+      }
+      else
+      {
+        throw ExtException(FException, L"");
+      }
+    }
+    __finally
+    {
+      SAFE_DESTROY(FException);
+    }
+  }
+}
+//---------------------------------------------------------------------------
+void __fastcall TTerminalThread::SaveException(Exception & E)
+{
+  assert(FException == NULL);
+
+  // should not happen
+  assert(dynamic_cast<ESshTerminate *>(&E) == NULL);
+
+  if (dynamic_cast<EFatal *>(&E) != NULL)
+  {
+    FException = new EFatal(&E, L"");
+  }
+  else
+  {
+    FException = new ExtException(&E, L"");
+  }
+}
+//---------------------------------------------------------------------------
+void __fastcall TTerminalThread::FatalAbort()
+{
+  FTerminal->FatalAbort();
+}
+//---------------------------------------------------------------------------
+void __fastcall TTerminalThread::CheckCancel()
+{
+  if (FCancel && !FCancelled)
+  {
+    FCancelled = true;
+    FatalAbort();
+  }
+}
+//---------------------------------------------------------------------------
+void __fastcall TTerminalThread::WaitForUserAction(TUserAction * UserAction)
+{
+  CheckCancel();
+
+  // have to save it as we can go recursive via TQueryParams::TimerEvent,
+  // see TTerminalThread::TerminalQueryUser
+  TUserAction * PrevUserAction = FUserAction;
+  try
+  {
+    FUserAction = UserAction;
+
+    if (!WaitForEvent())
+    {
+      FatalAbort();
+    }
+
+
+    Rethrow();
+  }
+  __finally
+  {
+    FUserAction = PrevUserAction;
+    SAFE_DESTROY(FException);
+  }
+
+  CheckCancel();
+}
+//---------------------------------------------------------------------------
+void __fastcall TTerminalThread::TerminalInformation(
+  TTerminal * Terminal, const UnicodeString & Str, bool Status, int Phase)
+{
+  TInformationUserAction Action(FOnInformation);
+  Action.Terminal = Terminal;
+  Action.Str = Str;
+  Action.Status = Status;
+  Action.Phase = Phase;
+
+  WaitForUserAction(&Action);
+}
+//---------------------------------------------------------------------------
+void __fastcall TTerminalThread::TerminalQueryUser(TObject * Sender,
+  const UnicodeString Query, TStrings * MoreMessages, unsigned int Answers,
+  const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * Arg)
+{
+  USEDPARAM(Arg);
+  assert(Arg == NULL);
+
+  // note about TQueryParams::TimerEvent
+  // So far there is only one use for this, the TSecureShell::SendBuffer,
+  // which should be thread-safe, as long as the terminal thread,
+  // is stopped waiting for OnQueryUser to finish.
+
+  // note about TQueryButtonAlias::OnClick
+  // So far there is only one use for this, the TClipboardHandler,
+  // which is thread-safe.
+
+  TQueryUserAction Action(FOnQueryUser);
+  Action.Sender = Sender;
+  Action.Query = Query;
+  Action.MoreMessages = MoreMessages;
+  Action.Answers = Answers;
+  Action.Params = Params;
+  Action.Answer = Answer;
+  Action.Type = Type;
+
+  WaitForUserAction(&Action);
+
+  Answer = Action.Answer;
+}
+//---------------------------------------------------------------------------
+void __fastcall TTerminalThread::TerminalPromptUser(TTerminal * Terminal,
+  TPromptKind Kind, UnicodeString Name, UnicodeString Instructions, TStrings * Prompts,
+  TStrings * Results, bool & Result, void * Arg)
+{
+  USEDPARAM(Arg);
+  assert(Arg == NULL);
+
+  TPromptUserAction Action(FOnPromptUser);
+  Action.Terminal = Terminal;
+  Action.Kind = Kind;
+  Action.Name = Name;
+  Action.Instructions = Instructions;
+  Action.Prompts = Prompts;
+  Action.Results->AddStrings(Results);
+
+  WaitForUserAction(&Action);
+
+  Results->Clear();
+  Results->AddStrings(Action.Results);
+  Result = Action.Result;
+}
+//---------------------------------------------------------------------------
+void __fastcall TTerminalThread::TerminalShowExtendedException(
+  TTerminal * Terminal, Exception * E, void * Arg)
+{
+  USEDPARAM(Arg);
+  assert(Arg == NULL);
+
+  TShowExtendedExceptionAction Action(FOnShowExtendedException);
+  Action.Terminal = Terminal;
+  Action.E = E;
+
+  WaitForUserAction(&Action);
+}
+//---------------------------------------------------------------------------
+void __fastcall TTerminalThread::TerminalDisplayBanner(TTerminal * Terminal,
+  UnicodeString SessionName, const UnicodeString & Banner,
+  bool & NeverShowAgain, int Options)
+{
+  TDisplayBannerAction Action(FOnDisplayBanner);
+  Action.Terminal = Terminal;
+  Action.SessionName = SessionName;
+  Action.Banner = Banner;
+  Action.NeverShowAgain = NeverShowAgain;
+  Action.Options = Options;
+
+  WaitForUserAction(&Action);
+
+  NeverShowAgain = Action.NeverShowAgain;
+}
+//---------------------------------------------------------------------------
+void __fastcall TTerminalThread::TerminalChangeDirectory(TObject * Sender)
+{
+  TNotifyAction Action(FOnChangeDirectory);
+  Action.Sender = Sender;
+
+  WaitForUserAction(&Action);
+}
+//---------------------------------------------------------------------------
+void __fastcall TTerminalThread::TerminalReadDirectory(TObject * Sender, Boolean ReloadOnly)
+{
+  TReadDirectoryAction Action(FOnReadDirectory);
+  Action.Sender = Sender;
+  Action.ReloadOnly = ReloadOnly;
+
+  WaitForUserAction(&Action);
+}
+//---------------------------------------------------------------------------
+void __fastcall TTerminalThread::TerminalStartReadDirectory(TObject * Sender)
+{
+  TNotifyAction Action(FOnStartReadDirectory);
+  Action.Sender = Sender;
+
+  WaitForUserAction(&Action);
+}
+//---------------------------------------------------------------------------
+void __fastcall TTerminalThread::TerminalReadDirectoryProgress(
+  TObject * Sender, int Progress, bool & Cancel)
+{
+  TReadDirectoryProgressAction Action(FOnReadDirectoryProgress);
+  Action.Sender = Sender;
+  Action.Progress = Progress;
+  Action.Cancel = Cancel;
+
+  WaitForUserAction(&Action);
+
+  Cancel = Action.Cancel;
+}
+//---------------------------------------------------------------------------

@@ -1896,7 +1896,7 @@ TRights::TRights()
   FUnknown = true;
 }
 //---------------------------------------------------------------------------
-__fastcall TRights::TRights(unsigned short ANumber)
+TRights::TRights(unsigned short ANumber)
 {
   FAllowUndef = false;
   FSet = 0;
@@ -1904,7 +1904,7 @@ __fastcall TRights::TRights(unsigned short ANumber)
   SetNumber(ANumber);
 }
 //---------------------------------------------------------------------------
-__fastcall TRights::TRights(const TRights & Source)
+TRights::TRights(const TRights & Source)
 {
   Assign(&Source);
 }

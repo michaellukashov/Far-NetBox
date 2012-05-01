@@ -493,7 +493,7 @@ public:
     const TCopyParamType * CopyParam, int Params,
     const TSynchronizeDirectory &OnSynchronizeDirectory);
   void __fastcall FilesFind(UnicodeString Directory, const TFileMasks & FileMask,
-    const TFileFoundEvent *OnFileFound, TFindingFileEvent *OnFindingFile);
+    const TFileFoundEvent * OnFileFound, TFindingFileEvent * OnFindingFile);
   void __fastcall SpaceAvailable(const UnicodeString Path, TSpaceAvailable & ASpaceAvailable);
   bool __fastcall DirectoryFileList(const UnicodeString Path,
     TRemoteFileList *& FileList, bool CanLoad);
