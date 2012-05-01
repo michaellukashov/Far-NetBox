@@ -115,7 +115,7 @@ TStrings * __fastcall ExceptionToMessages(Exception * E)
 class TSessionActionRecord
 {
 public:
-  __fastcall TSessionActionRecord(TActionLog * Log, TLogAction Action) :
+  explicit TSessionActionRecord(TActionLog * Log, TLogAction Action) :
     FLog(Log),
     FAction(Action),
     FState(Opened),
@@ -129,7 +129,7 @@ public:
     FLog->AddPendingAction(this);
   }
 
-  __fastcall ~TSessionActionRecord()
+  ~TSessionActionRecord()
   {
     delete FErrorMessages;
     delete FNames;
@@ -184,12 +184,12 @@ public:
           FLog->AddIndented(L"  <files>");
           for (int Index = 0; Index < FFileList->GetCount(); Index++)
           {
-            TRemoteFile * File = FFileList->GetFile(Index);
+            TRemoteFile * File = FFileList->GetFiles(Index);
 
             FLog->AddIndented(L"    <file>");
             FLog->AddIndented(FORMAT(L"      <filename value=\"%s\" />", XmlAttributeEscape(File->GetFileName()).c_str()));
             FLog->AddIndented(FORMAT(L"      <type value=\"%s\" />", XmlAttributeEscape(File->GetType()).c_str()));
-            if (!File->IsDirectory)
+            if (!File->GetIsDirectory())
             {
               FLog->AddIndented(FORMAT(L"      <size value=\"%s\" />", IntToStr(File->GetSize()).c_str()));
             }
@@ -203,7 +203,7 @@ public:
         {
           FLog->AddIndented(L"  <file>");
           FLog->AddIndented(FORMAT(L"    <type value=\"%s\" />", XmlAttributeEscape(FFile->GetType()).c_str()));
-          if (!FFile->IsDirectory)
+          if (!FFile->GetIsDirectory())
           {
             FLog->AddIndented(FORMAT(L"    <size value=\"%s\" />", IntToStr(FFile->GetSize()).c_str()));
           }
@@ -288,7 +288,7 @@ public:
     int Index = FNames->IndexOf(Name);
     if (Index >= 0)
     {
-      FValues->SetString(Index, FValues->GetStrings(Index) + L"\r\n" + Output);
+      FValues->PutString(Index, FValues->GetStrings(Index) + L"\r\n" + Output);
     }
     else
     {
@@ -709,26 +709,26 @@ void __fastcall TSessionLog::Unlock()
 UnicodeString __fastcall TSessionLog::GetSessionName()
 {
   assert(FSessionData != NULL);
-  return FSessionData->SessionName;
+  return FSessionData->GetSessionName();
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TSessionLog::GetLine(Integer Index)
 {
-  return Strings[Index - FTopIndex];
+  return GetStrings(Index - FTopIndex);
 }
 //---------------------------------------------------------------------------
 TLogLineType __fastcall TSessionLog::GetType(size_t Index)
 {
-    return static_cast<TLogLineType>(reinterpret_cast<size_t>(GetObject(Index - FTopIndex)));
+    return static_cast<TLogLineType>(reinterpret_cast<size_t>(GetObjects(Index - FTopIndex)));
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionLog::DoAddToParent(TLogLineType Type, const UnicodeString & Line)
+void TSessionLog::DoAddToParent(TLogLineType Type, const UnicodeString & Line)
 {
   assert(FParent != NULL);
   FParent->Add(Type, Line);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString & Line)
+void TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString & Line)
 {
   if (static_cast<int>(FTopIndex) < 0)
   {
@@ -896,7 +896,7 @@ void __fastcall TSessionLog::OpenLogFile()
 //---------------------------------------------------------------------------
 void __fastcall TSessionLog::StateChange()
 {
-  if (!FOnStateChange.IsEmpty())
+  if (!FOnStateChange.empty())
   {
     FOnStateChange(this);
   }
@@ -941,7 +941,7 @@ void __fastcall TSessionLog::AddStartupInfo()
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionLog::DoAddStartupInfo(TSessionData * Data)
+void TSessionLog::DoAddStartupInfo(TSessionData * Data)
 {
   TGuard Guard(FCriticalSection);
 
@@ -962,9 +962,9 @@ void __fastcall TSessionLog::DoAddStartupInfo(TSessionData * Data)
     AddSeparator();
     ADF(L"NetBox %s (OS %s)", FConfiguration->GetVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
     THierarchicalStorage * Storage = FConfiguration->CreateScpStorage(false);
-// #ifndef _MSC_VER
+#ifndef _MSC_VER
     try
-// #endif
+#endif
     {
 #ifdef _MSC_VER
       BOOST_SCOPE_EXIT ( (&Storage) )
@@ -974,12 +974,14 @@ void __fastcall TSessionLog::DoAddStartupInfo(TSessionData * Data)
 #endif
       ADF(L"Configuration: %s", Storage->GetSource().c_str());
     }
+#ifndef _MSC_VER
     __finally
     {
       delete Storage;
     }
+#endif
 
-    typedef BOOL WINAPI (* TGetUserNameEx)(EXTENDED_NAME_FORMAT NameFormat, LPWSTR lpNameBuffer, PULONG nSize);
+    typedef BOOL (WINAPI * TGetUserNameEx)(EXTENDED_NAME_FORMAT NameFormat, LPWSTR lpNameBuffer, PULONG nSize);
     HINSTANCE Secur32 = LoadLibrary(L"secur32.dll");
     TGetUserNameEx GetUserNameEx =
       (Secur32 != NULL) ? reinterpret_cast<TGetUserNameEx>(GetProcAddress(Secur32, "GetUserNameExW")) : NULL;
@@ -1040,7 +1042,7 @@ void __fastcall TSessionLog::DoAddStartupInfo(TSessionData * Data)
     }
     if (Data->GetUsesSsh())
     {
-      DF(L"SSH protocol version: %s; Compression: %s",
+      ADF(L"SSH protocol version: %s; Compression: %s",
         Data->GetSshProtStr().c_str(), BooleanToEngStr(Data->GetCompression()).c_str());
       ADF(L"Bypass authentication: %s",
        BooleanToEngStr(Data->GetSshNoUserAuth()).c_str());
@@ -1058,7 +1060,7 @@ void __fastcall TSessionLog::DoAddStartupInfo(TSessionData * Data)
       wchar_t const * BugFlags = L"A+-";
       for (int Index = 0; Index < BUG_COUNT; Index++)
       {
-        Bugs += UnicodeString(BugFlags[Data->GetBug(static_cast<TSshBug>(Index))]+(Index<BUG_COUNT-1?L",":L"");
+        Bugs += UnicodeString(BugFlags[Data->GetBug(static_cast<TSshBug>(Index))])+(Index<BUG_COUNT-1?L",":L"");
       }
       ADF(L"SSH Bugs: %s", Bugs.c_str());
       Bugs = L"";
@@ -1069,7 +1071,7 @@ void __fastcall TSessionLog::DoAddStartupInfo(TSessionData * Data)
       ADF(L"SFTP Bugs: %s", Bugs.c_str());
       ADF(L"Return code variable: %s; Lookup user groups: %s",
          Data->GetDetectReturnVar() ? UnicodeString(L"Autodetect").c_str() : Data->GetReturnVar().c_str(),
-         BugFlags[Data->LookupUserGroups]);
+         BugFlags[Data->GetLookupUserGroups()]);
       ADF(L"Shell: %s", Data->GetShell().IsEmpty() ? UnicodeString(L"default").c_str() : Data->GetShell().c_str());
       ADF(L"EOL: %d, UTF: %d", Data->GetEOLType(), Data->GetNotUtf());
       ADF(L"Clear aliases: %s, Unset nat.vars: %s, Resolve symlinks: %s",

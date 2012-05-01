@@ -320,12 +320,12 @@ UnicodeString __fastcall MaskFileName(const UnicodeString FileName, const Unicod
     {
         bool Masked = false;
         size_t P = ::LastDelimiter(Mask, L".");
-        if (P != UnicodeString::npos)
+        if (P >= 0)
         {
             size_t P2 = ::LastDelimiter(fileName, L".");
             // only dot at beginning of file name is not considered as
             // name/ext separator
-            bool hasFileExt = (P2 != UnicodeString::npos) && (P2 > 0);
+            bool hasFileExt = (P2 >= 0) && (P2 > 0);
             UnicodeString FileExt = hasFileExt ?
                                    fileName.SubString(P2, fileName.Length() - P2) : UnicodeString();
             FileExt = MaskFilePart(FileExt, Mask.SubString(P + 1, Mask.Length() - P), Masked);
@@ -361,7 +361,7 @@ UnicodeString __fastcall DelimitFileNameMask(const UnicodeString Mask)
     {
         if (wcschr(L"\\*?", mask[i]) != NULL)
         {
-            mask.insert(i, L"\\");
+            mask.Insert(i, L"\\");
             i++;
         }
     }
@@ -383,7 +383,7 @@ UnicodeString TFileMasks::TParams::ToString() const
 bool __fastcall TFileMasks::IsMask(const UnicodeString Mask)
 {
     size_t result = ::LastDelimiter(Mask, L"?*[");
-    return result != UnicodeString::npos;
+    return result >= 0;
 }
 //---------------------------------------------------------------------------
 bool __fastcall TFileMasks::IsAnyMask(const UnicodeString Mask)
@@ -416,7 +416,7 @@ UnicodeString __fastcall TFileMasks::ComposeMaskStr(
       {
         if (::IsDelimiter(Str, AllFileMasksDelimiters, P))
         {
-          Str.insert(P, UnicodeString(1, Str[P]));
+          Str.Insert(P, UnicodeString(1, Str[P]));
           P++;
         }
       }
@@ -632,7 +632,7 @@ bool __fastcall TFileMasks::Matches(const UnicodeString FileName, bool Directory
                          const UnicodeString Path, const TParams *Params) const
 {
     bool Result =
-    (FMasks[MASK_INDEX(Directory, true)].IsEmpty() || MatchesMasks(FileName, Directory, Path, Params, FMasks[MASK_INDEX(Directory, true)], true)) &&
+    (FMasks[MASK_INDEX(Directory, true)].empty() || MatchesMasks(FileName, Directory, Path, Params, FMasks[MASK_INDEX(Directory, true)], true)) &&
     !MatchesMasks(FileName, Directory, Path, Params, FMasks[MASK_INDEX(Directory, false)], false);
     return Result;
 }

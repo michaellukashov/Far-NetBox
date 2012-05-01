@@ -60,7 +60,7 @@ struct TQueryButtonAlias
 #ifndef _MSC_VER
 typedef void __fastcall (__closure *TQueryParamsTimerEvent)(unsigned int & Result);
 #else
-typedef boost::signal1<void, size_t & /* Result */> queryparamstimer_signal_type;
+typedef boost::signal1<void, unsigned int & /* Result */> queryparamstimer_signal_type;
 typedef queryparamstimer_signal_type::slot_type TQueryParamsTimerEvent;
 #endif
 

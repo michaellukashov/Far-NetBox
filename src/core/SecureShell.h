@@ -70,7 +70,6 @@ private:
   static TCipher FuncToSsh2Cipher(const void * Cipher);
   UnicodeString FuncToCompression(int SshVersion, const void * Compress) const;
   void Init();
-  void __fastcall SetActive(bool value);
   void inline CheckConnection(int Message = -1);
   void WaitForData();
   void Discard();
@@ -87,10 +86,9 @@ private:
   bool EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
     WSANETWORKEVENTS * Events);
   void UpdateSessionInfo();
-  bool __fastcall GetReady();
   void DispatchSendBuffer(int BufSize);
   void SendBuffer(unsigned int & Result);
-  unsigned int TimeoutPrompt(const TQueryParamsTimerEvent & PoolEvent);
+  unsigned int TimeoutPrompt(TQueryParamsTimerEvent * PoolEvent);
 
 protected:
   captureoutput_signal_type FOnCaptureOutput;
@@ -128,8 +126,8 @@ public:
 
   const TSessionInfo & GetSessionInfo();
   bool SshFallbackCmd() const;
-  unsigned long MinPacketSize();
-  unsigned long MaxPacketSize();
+  unsigned int MinPacketSize();
+  unsigned int MaxPacketSize();
   void ClearStdError();
   bool GetStoredCredentialsTried();
 
@@ -163,9 +161,9 @@ public:
   __property UnicodeString UserName = { read = FUserName };
   __property bool Simple = { read = FSimple, write = FSimple };
 #else
-  bool GetActive() { return FActive; }
-  void SetActive(bool value);
-  bool GetReady();
+  void __fastcall SetActive(bool value);
+  bool __fastcall GetActive() { return FActive; }
+  bool __fastcall GetReady();
   captureoutput_signal_type & GetOnCaptureOutput() { return FOnCaptureOutput; }
   void SetOnCaptureOutput(const TCaptureOutputEvent & value) { FOnCaptureOutput.connect(value); }
   TDateTime GetLastDataSent() { return FLastDataSent; }

@@ -36,7 +36,7 @@ TQueryParams::TQueryParams(unsigned int AParams, UnicodeString AHelpKeyword)
     HelpKeyword = AHelpKeyword;
 }
 //---------------------------------------------------------------------------
-bool IsAuthenticationPrompt(TPromptKind Kind)
+bool __fastcall IsAuthenticationPrompt(TPromptKind Kind)
 {
     return
         (Kind == pkUserName) || (Kind == pkPassphrase) || (Kind == pkTIS) ||
@@ -58,7 +58,7 @@ void CoreInitialize()
     {
         Configuration->Load();
     }
-    catch (const std::exception &E)
+    catch (Exception &E)
     {
         ShowExtendedException(&E);
     }
@@ -74,7 +74,7 @@ void CoreInitialize()
     {
         StoredSessions->Load();
     }
-    catch (const std::exception &E)
+    catch (Exception &E)
     {
         ShowExtendedException(&E);
     }
@@ -87,7 +87,7 @@ void CoreFinalize()
         // only modified, implicit
         Configuration->Save(false, false);
     }
-    catch (const std::exception &E)
+    catch (Exception &E)
     {
         ShowExtendedException(&E);
     }

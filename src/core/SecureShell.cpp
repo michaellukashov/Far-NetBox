@@ -38,7 +38,7 @@ struct TPuttyTranslation
 //---------------------------------------------------------------------------
 char * __fastcall AnsiStrNew(const wchar_t * S)
 {
-  std::wstring Buf = S;
+  AnsiString Buf = S;
   char * Result = new char[Buf.Length() + 1];
   memcpy(Result, Buf.c_str(), Buf.Length() + 1);
   return Result;
@@ -163,8 +163,8 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
   ClearConfig(cfg);
 
   // user-configurable settings
-  ASCOPY(cfg->host, W2MB(Data->GetHostNameExpanded(), Data->GetCodePageAsNumber());
-  ASCOPY(cfg->username, W2MB(Data->GetUserNameExpanded(), Data->GetCodePageAsNumber()).c_str());
+  ASCOPY(cfg->host, W2MB(Data->GetHostNameExpanded(), Data->GetCodePageAsNumber()));
+  ASCOPY(cfg->username, W2MB(Data->GetUserNameExpanded(), Data->GetCodePageAsNumber()));
   cfg->port = Data->GetPortNumber();
   cfg->protocol = PROT_SSH;
   // always set 0, as we will handle keepalives ourselves to avoid
@@ -250,7 +250,7 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
   // new after 0.53b
   cfg->sshbug_pksessid2 = Data->GetBug(sbPKSessID2);
   cfg->sshbug_maxpkt2 = Data->GetBug(sbMaxPkt2);
-  cfg->sshbug_ignore2 = Data->Bug[sbIgnore2];
+  cfg->sshbug_ignore2 = Data->GetBug(sbIgnore2);
 #ifndef _MSC_VER
   #pragma option pop
 #endif
@@ -315,14 +315,14 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
         cfg->ssh_subsys2 = FALSE;
         cfg->remote_cmd_ptr2 = AnsiStrNew(
           L"test -x /usr/lib/sftp-server && exec /usr/lib/sftp-server\n"
-           "test -x /usr/local/lib/sftp-server && exec /usr/local/lib/sftp-server\n"
-           "exec sftp-server");
+          L"test -x /usr/local/lib/sftp-server && exec /usr/local/lib/sftp-server\n"
+          L"exec sftp-server");
       }
     }
   }
 
   cfg->connect_timeout = Data->GetTimeout() * MSecsPerSec;
-  cfg->sndbuf = Data->SendBuf;
+  cfg->sndbuf = Data->GetSendBuf();
 
   // permanent settings
   cfg->nopty = TRUE;
@@ -402,7 +402,7 @@ void TSecureShell::Init()
     {
       if (FAuthenticating && !FAuthenticationLog.IsEmpty())
       {
-        FUI->FatalError(FMTLOAD(AUTHENTICATION_LOG, FAuthenticationLog.c_str()), &E);
+        FUI->FatalError(&E, FMTLOAD(AUTHENTICATION_LOG, FAuthenticationLog.c_str()));
       }
       else
       {
@@ -414,7 +414,7 @@ void TSecureShell::Init()
   {
     if (FAuthenticating)
     {
-      FUI->FatalError(LoadStr(AUTHENTICATION_FAILED), &E);
+      FUI->FatalError(&E, LoadStr(AUTHENTICATION_FAILED));
     }
     else
     {
@@ -572,7 +572,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   // on terminal console
   Instructions = Instructions.Trim();
 
-  for (int Index = 0; Index < Prompts->Count; Index++)
+  for (int Index = 0; Index < Prompts->GetCount(); Index++)
   {
     UnicodeString Prompt = Prompts->GetStrings(Index);
     if (PromptTranslation != NULL)
@@ -711,7 +711,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, int Le
   }
   else
   {
-    const unsigned char *p = reinterpret_cast<const unsigned char *>(const_cast<char *>(Data));
+    const unsigned char *p = Data;
     unsigned Len = (unsigned)Length;
 
     // with event-select mechanism we can now receive data even before we
@@ -870,9 +870,9 @@ UnicodeString TSecureShell::ReceiveLine()
         Index++;
       }
       EOL = static_cast<Boolean>(Index && (Pending[Index-1] == '\n'));
-      Integer PrevLen = Line.Length();
-      Line.SetLength(PrevLen + Index);
-      Receive(reinterpret_cast<unsigned char *>(Line.c_str()) + PrevLen, Index);
+      Integer PrevLen = Line.size();
+      Line.resize(PrevLen + Index);
+      Receive(reinterpret_cast<unsigned char *>(const_cast<char *>(Line.c_str())) + PrevLen, Index);
     }
 
     // If buffer don't contain end-of-line character
@@ -888,7 +888,7 @@ UnicodeString TSecureShell::ReceiveLine()
   while (!EOL);
 
   // We don't want end-of-line character
-  Line.SetLength(Line.Length()-1);
+  Line.resize(Line.size()-1);
 
   // UnicodeString UnicodeLine = Line;
   UnicodeString UnicodeLine = ::TrimRight(MB2W(Line.c_str(), FSessionData->GetCodePageAsNumber()));
@@ -910,7 +910,7 @@ void TSecureShell::SendEOF()
   SendSpecial(TS_EOF);
 }
 //---------------------------------------------------------------------------
-int TSecureShell::TimeoutPrompt(const TQueryParamsTimerEvent & PoolEvent)
+unsigned int TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent * PoolEvent)
 {
   FWaiting++;
 
@@ -989,7 +989,8 @@ void TSecureShell::DispatchSendBuffer(int BufSize)
     if (Now() - Start > FSessionData->GetTimeoutDT())
     {
       LogEvent(L"Waiting for dispatching send buffer timed out, asking user what to do.");
-      unsigned int Answer = TimeoutPrompt(boost::bind(&TSecureShell::SendBuffer, this, _1));
+      TQueryParamsTimerEvent slot = boost::bind(&TSecureShell::SendBuffer, this, _1);
+      unsigned int Answer = TimeoutPrompt(&slot);
       switch (Answer)
       {
         case qaRetry:
@@ -1044,7 +1045,7 @@ void TSecureShell::SendStr(UnicodeString Str)
 {
   CheckConnection();
   std::string AnsiStr = W2MB(Str.c_str(), FSessionData->GetCodePageAsNumber());
-  Send(reinterpret_cast<const unsigned char *>(AnsiStr.c_str()), AnsiStr.Length());
+  Send(reinterpret_cast<const unsigned char *>(AnsiStr.c_str()), AnsiStr.size());
 }
 //---------------------------------------------------------------------------
 void TSecureShell::SendLine(UnicodeString Line)
@@ -1081,7 +1082,7 @@ int TSecureShell::TranslatePuttyMessage(
           (wcsncmp(Message.c_str() + Message.Length() - SuffixLen, Div + 1, SuffixLen) == 0))
       {
         Message = FMTLOAD(Translation[Index].Translation,
-          Message.SubString(PrefixLen + 1, Message.Length() - PrefixLen - SuffixLen).TrimRight()));
+          Message.SubString(PrefixLen + 1, Message.Length() - PrefixLen - SuffixLen).TrimRight());
         Result = static_cast<int>(Index);
         break;
       }
@@ -1128,7 +1129,7 @@ void TSecureShell::AddStdError(UnicodeString Str)
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::AddStdErrorLine(const UnicodeString Str)
+void TSecureShell::AddStdErrorLine(const UnicodeString & Str)
 {
   if (FAuthenticating)
   {
@@ -1434,7 +1435,8 @@ void TSecureShell::WaitForData()
       TPoolForDataEvent Event(this, Events);
 
       LogEvent(L"Waiting for data timed out, asking user what to do.");
-      unsigned int Answer = TimeoutPrompt(boost::bind(&TPoolForDataEvent::PoolForData, &Event, _1));
+      TQueryParamsTimerEvent slot = boost::bind(&TPoolForDataEvent::PoolForData, &Event, _1);
+      unsigned int Answer = TimeoutPrompt(&slot);
       switch (Answer)
       {
         case qaRetry:
@@ -1686,9 +1688,9 @@ void TSecureShell::KeepAlive()
   }
 }
 //---------------------------------------------------------------------------
-static unsigned long minPacketSize = 0;
+static unsigned int minPacketSize = 0;
 
-unsigned long TSecureShell::MinPacketSize()
+unsigned int TSecureShell::MinPacketSize()
 {
   if (!FSessionInfoValid)
   {
@@ -1709,7 +1711,7 @@ unsigned long TSecureShell::MinPacketSize()
   }
 }
 //---------------------------------------------------------------------------
-unsigned long TSecureShell::MaxPacketSize()
+unsigned int TSecureShell::MaxPacketSize()
 {
   if (!FSessionInfoValid)
   {
@@ -1787,15 +1789,17 @@ TCipher TSecureShell::FuncToSsh2Cipher(const void * Cipher)
   return Result;
 }
 //---------------------------------------------------------------------------
+/*
 struct TClipboardHandler
 {
   UnicodeString Text;
 
-  void __fastcall Copy(TObject * /*Sender*/)
+  void __fastcall Copy(TObject * )
   {
     CopyToClipboard(Text);
   }
 };
+*/
 //---------------------------------------------------------------------------
 void TSecureShell::VerifyHostKey(UnicodeString Host, int Port,
   const UnicodeString KeyType, UnicodeString KeyStr, const UnicodeString Fingerprint)
@@ -1809,7 +1813,7 @@ void TSecureShell::VerifyHostKey(UnicodeString Host, int Port,
 
   if (FSessionData->GetTunnel())
   {
-    Ðost = FSessionData->GetOrigHostName();
+    Host = FSessionData->GetOrigHostName();
     Port = FSessionData->GetOrigPortNumber();
   }
 
@@ -1932,7 +1936,7 @@ void TSecureShell::VerifyHostKey(UnicodeString Host, int Port,
         {
           delete E;
         } BOOST_SCOPE_EXIT_END
-        FUI->FatalError(FMTLOAD(HOSTKEY, Fingerprint.c_str()), E);
+        FUI->FatalError(E, FMTLOAD(HOSTKEY, Fingerprint.c_str()));
       }
 #ifndef _MSC_VER
       __finally
@@ -1981,7 +1985,7 @@ void TSecureShell::AskAlg(const UnicodeString AlgType,
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::DisplayBanner(const UnicodeString Banner)
+void TSecureShell::DisplayBanner(UnicodeString & Banner)
 {
   FUI->DisplayBanner(Banner);
 }

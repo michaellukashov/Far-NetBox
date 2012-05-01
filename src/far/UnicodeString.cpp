@@ -223,6 +223,11 @@ const UnicodeString operator+(const UnicodeString &strSrc1, const std::wstring &
 	return UnicodeString(strSrc1).Append(strSrc2.c_str());
 }
 
+const UnicodeString operator+(const UnicodeString &strSrc1, const wchar_t ch)
+{
+	return UnicodeString(strSrc1).Append(&ch, 1);
+}
+
 wchar_t *UnicodeString::GetBuffer(size_t nSize)
 {
 	Inflate(nSize == (size_t)-1?m_pData->GetSize():nSize);

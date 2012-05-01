@@ -139,6 +139,7 @@ typedef class UnicodeString
     UnicodeString(const UnicodeString &strCopy) { SetEUS(); Copy(strCopy); }
     UnicodeString(const wchar_t *lpwszData) { SetEUS(); Copy(lpwszData); }
     UnicodeString(const wchar_t *lpwszData, size_t nLength) { SetEUS(); Copy(lpwszData, nLength); }
+    UnicodeString(const wchar_t src) { SetEUS(); Copy(&src, 1); }
     UnicodeString(const char *lpszData, UINT CodePage=CP_OEMCP) { SetEUS(); Copy(lpszData, CodePage); }
     explicit UnicodeString(size_t nSize, size_t nDelta=0) { m_pData = new UnicodeStringData(nSize, nDelta); }
     UnicodeString(const std::wstring &strCopy) { SetEUS(); Copy(strCopy.c_str(), strCopy.size()); }
@@ -175,7 +176,7 @@ typedef class UnicodeString
     UnicodeString& Append(const wchar_t* Str, size_t StrLen) { return Replace(GetLength(), 0, Str, StrLen); }
     UnicodeString& Append(const UnicodeString& Str) { return Append(Str.CPtr(), Str.GetLength()); }
     UnicodeString& Append(const wchar_t* Str) { return Append(Str, StrLength(NullToEmpty(Str))); }
-    UnicodeString& Append(wchar_t Ch) { return Append(&Ch, 1); }
+    UnicodeString& Append(const wchar_t Ch) { return Append(&Ch, 1); }
     UnicodeString& Append(const char *lpszAdd, UINT CodePage=CP_OEMCP);
 
     UnicodeString& Insert(size_t Pos, const wchar_t* Str, size_t StrLen) { return Replace(Pos, 0, Str, StrLen); }
@@ -219,12 +220,13 @@ typedef class UnicodeString
     const UnicodeString& operator+=(const UnicodeString &strAdd) { return Append(strAdd); }
     const UnicodeString& operator+=(const char *lpszAdd) { return Append(lpszAdd); }
     const UnicodeString& operator+=(const wchar_t *lpwszAdd) { return Append(lpwszAdd); }
-    const UnicodeString& operator+=(wchar_t chAdd) { return Append(chAdd); }
+    const UnicodeString& operator+=(const wchar_t chAdd) { return Append(chAdd); }
 
     friend const UnicodeString operator+(const UnicodeString &strSrc1, const UnicodeString &strSrc2);
     friend const UnicodeString operator+(const UnicodeString &strSrc1, const char *lpszSrc2);
     friend const UnicodeString operator+(const UnicodeString &strSrc1, const wchar_t *lpwszSrc2);
     friend const UnicodeString operator+(const UnicodeString &strSrc1, const std::wstring &strSrc2);
+    friend const UnicodeString operator+(const UnicodeString &strSrc1, const wchar_t ch);
 
     bool IsSubStrAt(size_t Pos, size_t Len, const wchar_t* Data, size_t DataLen) const;
     bool IsSubStrAt(size_t Pos, const wchar_t* Str, size_t StrLen) const { return IsSubStrAt(Pos, StrLen, Str, StrLen); }
@@ -318,6 +320,8 @@ private:
   char* Data;
   size_t Size;
 };
+
+typedef UTF8String AnsiString;
 
 class RawByteString
 {
