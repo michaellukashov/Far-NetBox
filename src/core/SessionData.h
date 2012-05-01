@@ -165,13 +165,6 @@ private:
   int FNumberOfRetries;
   bool FSslSessionReuse;
 
-  void __fastcall SavePasswords(THierarchicalStorage * Storage, bool PuttyExport);
-  void __fastcall Modify();
-  void __fastcall DoLoad(THierarchicalStorage * Storage, bool & RewritePassword);
-  static UnicodeString __fastcall EncryptPassword(const UnicodeString Password, const UnicodeString Key);
-  static UnicodeString __fastcall DecryptPassword(const UnicodeString Password, const UnicodeString Key);
-  static UnicodeString __fastcall StronglyRecryptPassword(const UnicodeString Password, const UnicodeString Key);
-
 public:
 
   void __fastcall SetHostName(UnicodeString value);
@@ -516,13 +509,11 @@ public:
   UnicodeString GetShell() const { return FShell; }
   UnicodeString GetSftpServer() const { return FSftpServer; }
   int GetTimeout() const { return FTimeout; }
-  TDateTime __fastcall GetTimeoutDT();
   bool GetUnsetNationalVars() const { return FUnsetNationalVars; }
   bool GetIgnoreLsWarnings() const { return FIgnoreLsWarnings; }
   bool GetTcpNoDelay() const { return FTcpNoDelay; }
   int __fastcall GetSendBuf() const { return FSendBuf; }
   bool __fastcall GetSshSimple() const { return FSshSimple; }
-  void __fastcall SetCipherList(const UnicodeString value);
   TProxyMethod __fastcall GetProxyMethod() const { return FProxyMethod; }
   UnicodeString __fastcall GetProxyHost() const { return FProxyHost; }
   int __fastcall GetProxyPort() const { return FProxyPort; }
@@ -558,7 +549,6 @@ public:
   unsigned int __fastcall GetRekeyTime() const { return FRekeyTime; }
   int __fastcall GetColor() const { return FColor; }
   bool __fastcall GetTunnel() const { return FTunnel; }
-  void __fastcall SetTunnel(bool value);
   UnicodeString __fastcall GetTunnelHostName() const { return FTunnelHostName; }
   size_t __fastcall GetTunnelPortNumber() const { return FTunnelPortNumber; }
   UnicodeString __fastcall GetTunnelUserName() const { return FTunnelUserName; }
@@ -579,8 +569,6 @@ public:
   UnicodeString __fastcall GetHostKey() const { return FHostKey; }
   UnicodeString __fastcall GetOrigHostName() const { return FOrigHostName; }
   int __fastcall GetOrigPortNumber() const { return FOrigPortNumber; }
-  UnicodeString __fastcall GetLocalName();
-  UnicodeString __fastcall GetSource();
 
   int __fastcall GetNumberOfRetries() const { return FNumberOfRetries; }
   void __fastcall SetNumberOfRetries(int value) { FNumberOfRetries = value; }
@@ -624,7 +612,6 @@ public:
   TSessionData * __fastcall GetSession(size_t Index) { return static_cast<TSessionData *>(AtObject(Index)); }
   TSessionData * __fastcall GetDefaultSettings() const { return FDefaultSettings; }
   TSessionData * __fastcall GetSessionByName(const UnicodeString SessionName);
-  void __fastcall SetDefaultSettings(TSessionData * value);
 #endif
 
   static void __fastcall ImportHostKeys(const UnicodeString TargetKey,
