@@ -2334,7 +2334,7 @@ void __fastcall TTerminalThread::WaitForUserAction(TUserAction * UserAction)
   TUserAction * PrevUserAction = FUserAction;
   // try
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (&Self) (&PrevUserAction) )
     {
       Self->FUserAction = PrevUserAction;
       SAFE_DESTROY(Self->FException);

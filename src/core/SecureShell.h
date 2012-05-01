@@ -28,7 +28,7 @@ private:
     bool FActive;
     TSessionInfo FSessionInfo;
     bool FSessionInfoValid;
-    System::TDateTime FLastDataSent;
+    TDateTime FLastDataSent;
     Backend *FBackend;
     void *FBackendHandle;
     const unsigned int *FMinPacketSize;
@@ -136,7 +136,7 @@ public:
     bool PromptUser(bool ToServer,
                     const UnicodeString AName, bool NameRequired,
                     const UnicodeString Instructions, bool InstructionsRequired,
-                    System::TStrings *Prompts, System::TStrings *Results);
+                    TStrings *Prompts, TStrings *Results);
     void FromBackend(bool IsStdErr, const char *Data, size_t Length);
     void CWrite(const char *Data, size_t Length);
     const UnicodeString GetStdError();
@@ -152,7 +152,7 @@ public:
     bool GetReady();
     captureoutput_signal_type &GetOnCaptureOutput() { return FOnCaptureOutput; }
     void SetOnCaptureOutput(const TCaptureOutputEvent &value) { FOnCaptureOutput.connect(value); }
-    System::TDateTime GetLastDataSent() { return FLastDataSent; }
+    TDateTime GetLastDataSent() { return FLastDataSent; }
     UnicodeString GetLastTunnelError() { return FLastTunnelError; }
     UnicodeString GetUserName() { return FUserName; }
     bool GetSimple() { return FSimple; }
