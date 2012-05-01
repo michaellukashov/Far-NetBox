@@ -130,8 +130,8 @@ public:
   const notify_signal_type & GetOnChange() const { return FOnChange; }
   void SetOnChange(const TNotifyEvent & value) { FOnChange.connect(value); }
   int GetSessionReopenAuto() { return FSessionReopenAuto; }
-  int GetSessionReopenAutoMaximumNumberOfRetries() { return FSessionReopenAutoMaximumNumberOfRetries; }
-  void SetSessionReopenAutoMaximumNumberOfRetries(int value);
+  int __fastcall GetSessionReopenAutoMaximumNumberOfRetries() const { return FSessionReopenAutoMaximumNumberOfRetries; }
+  void __fastcall SetSessionReopenAutoMaximumNumberOfRetries(int value);
   int GetSessionReopenBackground() { return FSessionReopenBackground; }
   size_t GetSessionReopenTimeout() { return FSessionReopenTimeout; }
   size_t GetTunnelLocalPortNumberLow() { return FTunnelLocalPortNumberLow; }
@@ -139,6 +139,8 @@ public:
   int GetCacheDirectoryChangesMaxSize() { return FCacheDirectoryChangesMaxSize; }
   // void SetCacheDirectoryChangesMaxSize(int value);
   bool GetShowFtpWelcomeMessage() { return FShowFtpWelcomeMessage; }
+  UnicodeString GetExternalIpAddress() const { return FExternalIpAddress; }
+  // void SetExternalIpAddress(const UnicodeString value) { FExternalIpAddress = value; }
 
   // UnicodeString GetTimeFormat();
 

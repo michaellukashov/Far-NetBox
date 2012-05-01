@@ -2640,7 +2640,7 @@ void __fastcall TFTPFileSystem::HandleReplyStatus(const UnicodeString Response)
 {
     int Code = 0;
 
-    if (!FOnCaptureOutput.IsEmpty())
+    if (!FOnCaptureOutput.empty())
     {
         FOnCaptureOutput(Response, false);
     }

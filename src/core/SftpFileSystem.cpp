@@ -310,8 +310,8 @@ public:
     void __fastcall AddStringA(const std::string &ValueA)
     {
         // std::string ValueA = System::W2MB(Value.c_str(), FCodePage);
-        AddCardinal(ValueA.Length());
-        Add(ValueA.c_str(), ValueA.Length());
+        AddCardinal(ValueA.size());
+        Add(ValueA.c_str(), ValueA.size());
     }
 
     void __fastcall AddStringW(const UnicodeString ValueW)
@@ -531,7 +531,7 @@ public:
         Need(Len);
         // cannot happen anyway as Need() would raise exception
         assert(Len < SFTP_MAX_PACKET_LEN);
-        ResultA.SetLength(Len);
+        ResultA.resize(Len);
         memmove(const_cast<char *>(ResultA.c_str()), FData + FPosition, Len);
         FPosition += Len;
         // DEBUG_PRINTF(L"Result = %s", System::MB2W(ResultA.c_str(), FCodePage).c_str());
@@ -1032,7 +1032,7 @@ public:
             {
                 FFileSystem->ReceiveResponse(Request, Response);
             }
-            catch (const std::exception &E)
+            catch (Exception &E)
             {
                 if (FFileSystem->FTerminal->GetActive())
                 {

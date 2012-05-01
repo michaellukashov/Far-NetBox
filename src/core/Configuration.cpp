@@ -1101,7 +1101,7 @@ void __fastcall TConfiguration::SetLogFileName(UnicodeString value)
 //---------------------------------------------------------------------
 void __fastcall TConfiguration::SetActionsLogFileName(UnicodeString value)
 {
-  if (ActionsLogFileName != value)
+  if (GetActionsLogFileName() != value)
   {
     FPermanentActionsLogFileName = value;
     FActionsLogFileName = value;

@@ -296,7 +296,7 @@ UnicodeString TCommandSet::GetReturnVar()
 UnicodeString TCommandSet::ExtractCommand(const UnicodeString Command)
 {
     UnicodeString command = Command;
-    size_t P = command.find_first_of(L" ");
+    int P = command.Pos(L' ');
     if (P >= 0)
     {
         command.SetLength(P);
@@ -602,7 +602,7 @@ bool TSCPFileSystem::IsLastLine(UnicodeString &Line)
     {
         Result = RemoveLastLine(Line, FReturnCode, FCommandSet->GetLastLine());
     }
-    catch (const std::exception &E)
+    catch (Exception &E)
     {
         FTerminal->TerminalError(&E, LoadStr(CANT_DETECT_RETURN_CODE));
     }
@@ -781,7 +781,7 @@ void __fastcall TSCPFileSystem::SkipStartupMessage()
         FTerminal->LogEvent(L"Skipping host startup message (if any).");
         ExecCommand(fsNull, 0, NULL);
     }
-    catch (const std::exception &E)
+    catch (Exception &E)
     {
         FTerminal->CommandError(&E, LoadStr(SKIP_STARTUP_MESSAGE_ERROR));
     }
@@ -861,7 +861,7 @@ void __fastcall TSCPFileSystem::DetectReturnVar()
                                        FCommandSet->GetReturnVar().c_str()));
         }
     }
-    catch (const std::exception &E)
+    catch (Exception &E)
     {
         FTerminal->CommandError(&E, LoadStr(DETECT_RETURNVAR_ERROR));
     }
@@ -896,7 +896,7 @@ void __fastcall TSCPFileSystem::ClearAliases()
             }
         }
     }
-    catch (const std::exception &E)
+    catch (Exception &E)
     {
         FTerminal->CommandError(&E, LoadStr(UNALIAS_ALL_ERROR));
     }
@@ -912,7 +912,7 @@ void __fastcall TSCPFileSystem::UnsetNationalVars()
             ExecCommand(fsUnset, 0, NationalVars[Index], false);
         }
     }
-    catch (const std::exception &E)
+    catch (Exception &E)
     {
         FTerminal->CommandError(&E, LoadStr(UNSET_NATIONAL_ERROR));
     }
@@ -1065,7 +1065,7 @@ void __fastcall TSCPFileSystem::ReadDirectory(TRemoteFileList *FileList)
                 FLsFullTime = asOn;
             }
         }
-        catch (const std::exception &E)
+        catch (Exception &E)
         {
             if (FTerminal->GetActive())
             {
@@ -1308,7 +1308,7 @@ void TSCPFileSystem::CaptureOutput(const UnicodeString AddedLine, bool StdError)
             !RemoveLastLine(Line, ReturnCode) ||
             !Line.IsEmpty())
     {
-        assert(!FOnCaptureOutput.IsEmpty());
+        assert(!FOnCaptureOutput.empty());
         FOnCaptureOutput(Line, StdError);
     }
 }
@@ -1316,7 +1316,7 @@ void TSCPFileSystem::CaptureOutput(const UnicodeString AddedLine, bool StdError)
 void __fastcall TSCPFileSystem::AnyCommand(const UnicodeString Command,
                                 const TCaptureOutputEvent *OutputEvent)
 {
-    assert(FSecureShell->GetOnCaptureOutput().IsEmpty());
+    assert(FSecureShell->GetOnCaptureOutput().empty());
     if (OutputEvent)
     {
         FSecureShell->SetOnCaptureOutput(boost::bind(&TSCPFileSystem::CaptureOutput, this, _1, _2));
@@ -1490,7 +1490,7 @@ void __fastcall TSCPFileSystem::CopyToRemote(System::TStrings *FilesToCopy,
                 throw std::exception("");
             }
         }
-        catch (const std::exception &E)
+        catch (Exception &E)
         {
             // DEBUG_PRINTF(L"E.what = %s", System::MB2W(E.what(), FTerminal->GetSessionData()->GetCodePageAsNumber()).c_str());
             if (GotLastLine && FTerminal->GetActive())
@@ -1610,7 +1610,7 @@ void __fastcall TSCPFileSystem::CopyToRemote(System::TStrings *FilesToCopy,
                               CopyParam, Params, OperationProgress, 0);
                     OperationProgress->Finish(FileName, true, OnceDoneOperation);
                 }
-                catch (const EScpFileSkipped &E)
+                catch (EScpFileSkipped &E)
                 {
                     TQueryParams params(qpAllowContinueOnError);
                     DEBUG_PRINTF(L"before FTerminal->QueryUserException");
@@ -1625,7 +1625,7 @@ void __fastcall TSCPFileSystem::CopyToRemote(System::TStrings *FilesToCopy,
                         if (!FTerminal->HandleException(&E)) throw;
                     );
                 }
-                catch (const EScpSkipFile &E)
+                catch (EScpSkipFile &E)
                 {
                     DEBUG_PRINTF(L"before FTerminal->HandleException");
                     OperationProgress->Finish(FileName, false, OnceDoneOperation);
@@ -1789,8 +1789,8 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString FileName,
                         }
 
                         // Send file modes (rights), filesize and file name
-                        Buf.clear();
-                        Buf.SetLength(MAX_PATH * 2, 0);
+                        Buf.Clear();
+                        Buf.SetLength(MAX_PATH * 2);
                         // TODO: use boost::format
                         swprintf_s(const_cast<wchar_t *>(Buf.c_str()), Buf.Length(), L"C%s %ld %s",
                                    Rights.GetOctal().c_str(),
