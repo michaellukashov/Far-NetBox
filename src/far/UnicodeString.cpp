@@ -1,11 +1,11 @@
 /*
 UnicodeString.hpp
 
-Unicode строки
+Unicode СЃС‚СЂРѕРєРё
 */
 /*
-Copyright © 1996 Eugene Roshal
-Copyright © 2000 Far Group
+Copyright В© 1996 Eugene Roshal
+Copyright В© 2000 Far Group
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 UnicodeStringData *eus()
 {
-  //для оптимизации создания пустых UnicodeString
+  //РґР»СЏ РѕРїС‚РёРјРёР·Р°С†РёРё СЃРѕР·РґР°РЅРёСЏ РїСѓСЃС‚С‹С… UnicodeString
   static UnicodeStringData *EmptyUnicodeStringData = new UnicodeStringData(1,1);
   return EmptyUnicodeStringData;
 }
@@ -305,8 +305,8 @@ int CDECL UnicodeString::Format(const wchar_t * format, ...)
     }
 
     buffer = tmpbuffer;
-    //_vsnwprintf не всегда ставит '\0' вконце.
-    //Поэтому надо обнулить и передать в _vsnwprintf размер-1.
+    //_vsnwprintf РЅРµ РІСЃРµРіРґР° СЃС‚Р°РІРёС‚ '\0' РІРєРѕРЅС†Рµ.
+    //РџРѕСЌС‚РѕРјСѓ РЅР°РґРѕ РѕР±РЅСѓР»РёС‚СЊ Рё РїРµСЂРµРґР°С‚СЊ РІ _vsnwprintf СЂР°Р·РјРµСЂ-1.
     buffer[Size-1] = 0;
     retValue = _vsnwprintf(buffer, Size-1, format, argptr);
   }
