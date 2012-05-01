@@ -11,7 +11,7 @@ System::TStrings * __fastcall ExceptionToMoreMessages(const std::exception *E);
 //---------------------------------------------------------------------------
 enum TOnceDoneOperation { odoIdle, odoDisconnect, odoShutDown };
 //---------------------------------------------------------------------------
-class Exception : public std::exception
+class Exception : public std::exception, public System::TObject
 {
     typedef std::exception parent;
 public:

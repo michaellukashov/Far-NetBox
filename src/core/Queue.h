@@ -256,7 +256,7 @@ public:
   TQueueItem::TInfo * __fastcall GetInfo() { return FInfo; }
   TQueueItem::TStatus __fastcall GetStatus() { return FStatus; }
   bool __fastcall GetProcessingUserAction() { return FProcessingUserAction; }
-  size_t __fastcall GetIndex();
+  int __fastcall GetIndex();
   void * __fastcall GetUserData() { return FUserData; }
   void __fastcall SetUserData(void * value) { FUserData = value; }
 #endif
@@ -295,9 +295,9 @@ public:
   __property int ActiveCount = { read = GetActiveCount };
   __property TQueueItemProxy * Items[int Index] = { read = GetItem };
 #else
-  size_t __fastcall GetCount();
-  size_t __fastcall GetActiveCount();
-  TQueueItemProxy * __fastcall GetItem(size_t Index);
+  int __fastcall GetCount();
+  int __fastcall GetActiveCount();
+  TQueueItemProxy * __fastcall GetItem(int Index);
 #endif
 
 protected:
@@ -418,35 +418,36 @@ private:
   Exception * FException;
   bool FCancel;
   bool FCancelled;
+  TTerminalThread * Self;
 
   void __fastcall WaitForUserAction(TUserAction * UserAction);
-  void __fastcall RunAction(TNotifyEvent Action);
+  void __fastcall RunAction(const TNotifyEvent & Action);
 
   void __fastcall SaveException(Exception & E);
   void __fastcall Rethrow();
   void __fastcall FatalAbort();
   void __fastcall CheckCancel();
 
-  void __fastcall TerminalOpenEvent(TObject * Sender);
-  void __fastcall TerminalReopenEvent(TObject * Sender);
+  void TerminalOpenEvent(TObject * Sender);
+  void TerminalReopenEvent(TObject * Sender);
 
-  void __fastcall TerminalInformation(
+  void TerminalInformation(
     TTerminal * Terminal, const UnicodeString & Str, bool Status, int Phase);
-  void __fastcall TerminalQueryUser(TObject * Sender,
+  void TerminalQueryUser(TObject * Sender,
     const UnicodeString Query, TStrings * MoreMessages, unsigned int Answers,
     const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * Arg);
-  void __fastcall TerminalPromptUser(TTerminal * Terminal, TPromptKind Kind,
+  void TerminalPromptUser(TTerminal * Terminal, TPromptKind Kind,
     UnicodeString Name, UnicodeString Instructions,
     TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
-  void __fastcall TerminalShowExtendedException(TTerminal * Terminal,
+  void TerminalShowExtendedException(TTerminal * Terminal,
     Exception * E, void * Arg);
-  void __fastcall TerminalDisplayBanner(TTerminal * Terminal,
+  void TerminalDisplayBanner(TTerminal * Terminal,
     UnicodeString SessionName, const UnicodeString & Banner,
     bool & NeverShowAgain, int Options);
-  void __fastcall TerminalChangeDirectory(TObject * Sender);
-  void __fastcall TerminalReadDirectory(TObject * Sender, Boolean ReloadOnly);
-  void __fastcall TerminalStartReadDirectory(TObject * Sender);
-  void __fastcall TerminalReadDirectoryProgress(TObject * Sender, int Progress, bool & Cancel);
+  void TerminalChangeDirectory(TObject * Sender);
+  void TerminalReadDirectory(TObject * Sender, Boolean ReloadOnly);
+  void TerminalStartReadDirectory(TObject * Sender);
+  void TerminalReadDirectoryProgress(TObject * Sender, int Progress, bool & Cancel);
 };
 //---------------------------------------------------------------------------
 #endif

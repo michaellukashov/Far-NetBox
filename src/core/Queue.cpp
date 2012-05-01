@@ -521,7 +521,7 @@ TTerminalQueue::~TTerminalQueue()
     delete FTerminals;
     delete FForcedItems;
 
-    for (size_t Index = 0; Index < FItems->GetCount(); Index++)
+    for (int Index = 0; Index < FItems->GetCount(); Index++)
     {
       delete GetItem(Index);
     }
@@ -2058,12 +2058,17 @@ TTerminalThread::TTerminalThread(TTerminal * Terminal) :
 
 void __fastcall TTerminalThread::Init()
 {
+  Self = this;
   TSignalThread::Init(false);
 
+#ifndef _MSC_VER
   FAction = NULL;
+#endif
   FActionEvent = CreateEvent(NULL, false, false, NULL);
   FException = NULL;
+#ifndef _MSC_VER
   FOnIdle = NULL;
+#endif
   FUserAction = NULL;
   FCancel = false;
 
@@ -2136,26 +2141,35 @@ void __fastcall TTerminalThread::Cancel()
 //---------------------------------------------------------------------------
 void __fastcall TTerminalThread::TerminalOpen()
 {
-  RunAction(TerminalOpenEvent);
+  RunAction(boost::bind(&TTerminalThread::TerminalOpenEvent, this, _1));
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminalThread::TerminalReopen()
 {
-  RunAction(TerminalReopenEvent);
+  RunAction(boost::bind(&TTerminalThread::TerminalReopenEvent, this, _1));
 }
 //---------------------------------------------------------------------------
-void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
+void __fastcall TTerminalThread::RunAction(const TNotifyEvent & Action)
 {
+#ifndef _MSC_VER
   assert(FAction == NULL);
+#endif
   assert(FException == NULL);
+#ifndef _MSC_VER
   assert(FOnIdle != NULL);
+#endif
 
   FCancelled = false;
-  FAction = Action;
+  FAction.connect(Action);
   try
   {
-    try
+    // try
     {
+      BOOST_SCOPE_EXIT ( (&Self) )
+      {
+        Self->FAction.disconnect_all_slots();
+        SAFE_DESTROY(Self->FException);
+      } BOOST_SCOPE_EXIT_END
       TriggerEvent();
 
       bool Done = false;
@@ -2185,7 +2199,7 @@ void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
             }
             else
             {
-              if (FOnIdle != NULL)
+              if (!FOnIdle.empty())
               {
                 FOnIdle(NULL);
               }
@@ -2201,11 +2215,13 @@ void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
 
       Rethrow();
     }
+#ifndef _MSC_VER
     __finally
     {
       FAction = NULL;
       SAFE_DESTROY(FException);
     }
+#endif
   }
   catch(...)
   {
@@ -2223,12 +2239,12 @@ void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TTerminalThread::TerminalOpenEvent(TObject * /*Sender*/)
+void TTerminalThread::TerminalOpenEvent(TObject * /*Sender*/)
 {
   FTerminal->Open();
 }
 //---------------------------------------------------------------------------
-void __fastcall TTerminalThread::TerminalReopenEvent(TObject * /*Sender*/)
+void TTerminalThread::TerminalReopenEvent(TObject * /*Sender*/)
 {
   FTerminal->Reopen(0);
 }
@@ -2254,21 +2270,27 @@ void __fastcall TTerminalThread::Rethrow()
 {
   if (FException != NULL)
   {
-    try
+    // try
     {
+      BOOST_SCOPE_EXIT ( (&Self) )
+      {
+        SAFE_DESTROY(Self->FException);
+      } BOOST_SCOPE_EXIT_END
       if (dynamic_cast<EFatal *>(FException) != NULL)
       {
-        throw EFatal(FException, L"");
+        throw EFatal(L"", FException);
       }
       else
       {
-        throw ExtException(FException, L"");
+        throw ExtException(L"", FException);
       }
     }
+#ifndef _MSC_VER
     __finally
     {
       SAFE_DESTROY(FException);
     }
+#endif
   }
 }
 //---------------------------------------------------------------------------
@@ -2281,11 +2303,11 @@ void __fastcall TTerminalThread::SaveException(Exception & E)
 
   if (dynamic_cast<EFatal *>(&E) != NULL)
   {
-    FException = new EFatal(&E, L"");
+    FException = new EFatal(L"", &E);
   }
   else
   {
-    FException = new ExtException(&E, L"");
+    FException = new ExtException(L"", &E);
   }
 }
 //---------------------------------------------------------------------------
@@ -2310,8 +2332,13 @@ void __fastcall TTerminalThread::WaitForUserAction(TUserAction * UserAction)
   // have to save it as we can go recursive via TQueryParams::TimerEvent,
   // see TTerminalThread::TerminalQueryUser
   TUserAction * PrevUserAction = FUserAction;
-  try
+  // try
   {
+    BOOST_SCOPE_EXIT ( (&Self) )
+    {
+      Self->FUserAction = PrevUserAction;
+      SAFE_DESTROY(Self->FException);
+    } BOOST_SCOPE_EXIT_END
     FUserAction = UserAction;
 
     if (!WaitForEvent())
@@ -2322,16 +2349,18 @@ void __fastcall TTerminalThread::WaitForUserAction(TUserAction * UserAction)
 
     Rethrow();
   }
+#ifndef _MSC_VER
   __finally
   {
     FUserAction = PrevUserAction;
     SAFE_DESTROY(FException);
   }
+#endif
 
   CheckCancel();
 }
 //---------------------------------------------------------------------------
-void __fastcall TTerminalThread::TerminalInformation(
+void  TTerminalThread::TerminalInformation(
   TTerminal * Terminal, const UnicodeString & Str, bool Status, int Phase)
 {
   TInformationUserAction Action(FOnInformation);
@@ -2343,7 +2372,7 @@ void __fastcall TTerminalThread::TerminalInformation(
   WaitForUserAction(&Action);
 }
 //---------------------------------------------------------------------------
-void __fastcall TTerminalThread::TerminalQueryUser(TObject * Sender,
+void TTerminalThread::TerminalQueryUser(TObject * Sender,
   const UnicodeString Query, TStrings * MoreMessages, unsigned int Answers,
   const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * Arg)
 {
@@ -2373,7 +2402,7 @@ void __fastcall TTerminalThread::TerminalQueryUser(TObject * Sender,
   Answer = Action.Answer;
 }
 //---------------------------------------------------------------------------
-void __fastcall TTerminalThread::TerminalPromptUser(TTerminal * Terminal,
+void TTerminalThread::TerminalPromptUser(TTerminal * Terminal,
   TPromptKind Kind, UnicodeString Name, UnicodeString Instructions, TStrings * Prompts,
   TStrings * Results, bool & Result, void * Arg)
 {
@@ -2395,7 +2424,7 @@ void __fastcall TTerminalThread::TerminalPromptUser(TTerminal * Terminal,
   Result = Action.Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TTerminalThread::TerminalShowExtendedException(
+void TTerminalThread::TerminalShowExtendedException(
   TTerminal * Terminal, Exception * E, void * Arg)
 {
   USEDPARAM(Arg);
@@ -2408,7 +2437,7 @@ void __fastcall TTerminalThread::TerminalShowExtendedException(
   WaitForUserAction(&Action);
 }
 //---------------------------------------------------------------------------
-void __fastcall TTerminalThread::TerminalDisplayBanner(TTerminal * Terminal,
+void TTerminalThread::TerminalDisplayBanner(TTerminal * Terminal,
   UnicodeString SessionName, const UnicodeString & Banner,
   bool & NeverShowAgain, int Options)
 {
@@ -2424,7 +2453,7 @@ void __fastcall TTerminalThread::TerminalDisplayBanner(TTerminal * Terminal,
   NeverShowAgain = Action.NeverShowAgain;
 }
 //---------------------------------------------------------------------------
-void __fastcall TTerminalThread::TerminalChangeDirectory(TObject * Sender)
+void TTerminalThread::TerminalChangeDirectory(TObject * Sender)
 {
   TNotifyAction Action(FOnChangeDirectory);
   Action.Sender = Sender;
@@ -2432,7 +2461,7 @@ void __fastcall TTerminalThread::TerminalChangeDirectory(TObject * Sender)
   WaitForUserAction(&Action);
 }
 //---------------------------------------------------------------------------
-void __fastcall TTerminalThread::TerminalReadDirectory(TObject * Sender, Boolean ReloadOnly)
+void TTerminalThread::TerminalReadDirectory(TObject * Sender, Boolean ReloadOnly)
 {
   TReadDirectoryAction Action(FOnReadDirectory);
   Action.Sender = Sender;
@@ -2441,7 +2470,7 @@ void __fastcall TTerminalThread::TerminalReadDirectory(TObject * Sender, Boolean
   WaitForUserAction(&Action);
 }
 //---------------------------------------------------------------------------
-void __fastcall TTerminalThread::TerminalStartReadDirectory(TObject * Sender)
+void TTerminalThread::TerminalStartReadDirectory(TObject * Sender)
 {
   TNotifyAction Action(FOnStartReadDirectory);
   Action.Sender = Sender;
@@ -2449,7 +2478,7 @@ void __fastcall TTerminalThread::TerminalStartReadDirectory(TObject * Sender)
   WaitForUserAction(&Action);
 }
 //---------------------------------------------------------------------------
-void __fastcall TTerminalThread::TerminalReadDirectoryProgress(
+void TTerminalThread::TerminalReadDirectoryProgress(
   TObject * Sender, int Progress, bool & Cancel)
 {
   TReadDirectoryProgressAction Action(FOnReadDirectoryProgress);
