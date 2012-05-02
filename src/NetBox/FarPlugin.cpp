@@ -1766,15 +1766,15 @@ void TCustomFarPlugin::RunTests()
 }
 #endif
 //---------------------------------------------------------------------------
-unsigned int TCustomFarFileFInstances = 0;
+unsigned int TCustomFarFileSystem::FInstances = 0;
 //---------------------------------------------------------------------------
-TCustomFarFileTCustomFarFileSystem(TCustomFarPlugin * APlugin) :
+TCustomFarFileSystem::TCustomFarFileSystem(TCustomFarPlugin * APlugin) :
   TObject(),
   FPlugin(APlugin)
 {
 };
 
-void TCustomFarFileInit()
+void TCustomFarFileSystem::Init()
 {
   FCriticalSection = new TCriticalSection;
   FPanelInfo[0] = NULL;
@@ -1788,7 +1788,7 @@ void TCustomFarFileInit()
 }
 
 //---------------------------------------------------------------------------
-TCustomFarFile~TCustomFarFileSystem()
+TCustomFarFileSystem::~TCustomFarFileSystem()
 {
   FInstances--;
   // DEBUG_PRINTF(L"FInstances = %d", FInstances);
@@ -1797,23 +1797,23 @@ TCustomFarFile~TCustomFarFileSystem()
   delete FCriticalSection;
 }
 //---------------------------------------------------------------------------
-void TCustomFarFileHandleException(const std::exception * E, int OpMode)
+void TCustomFarFileSystem::HandleException(const std::exception * E, int OpMode)
 {
   DEBUG_PRINTF(L"before FPlugin->HandleException");
   FPlugin->HandleException(E, OpMode);
 }
 //---------------------------------------------------------------------------
-void TCustomFarFileClose()
+void TCustomFarFileSystem::Close()
 {
   FClosed = true;
 }
 //---------------------------------------------------------------------------
-void TCustomFarFileInvalidateOpenPluginInfo()
+void TCustomFarFileSystem::InvalidateOpenPluginInfo()
 {
   FOpenPluginInfoValid = false;
 }
 //---------------------------------------------------------------------------
-void TCustomFarFileClearOpenPluginInfo(OpenPluginInfo & Info)
+void TCustomFarFileSystem::ClearOpenPluginInfo(OpenPluginInfo & Info)
 {
   if (Info.StructSize)
   {
@@ -1845,7 +1845,7 @@ void TCustomFarFileClearOpenPluginInfo(OpenPluginInfo & Info)
   InvalidateOpenPluginInfo();
 }
 //---------------------------------------------------------------------------
-void TCustomFarFileGetOpenPluginInfo(struct OpenPluginInfo * Info)
+void TCustomFarFileSystem::GetOpenPluginInfo(struct OpenPluginInfo * Info)
 {
   ResetCachedInfo();
   if (FClosed)
@@ -1895,7 +1895,7 @@ void TCustomFarFileGetOpenPluginInfo(struct OpenPluginInfo * Info)
   }
 }
 //---------------------------------------------------------------------------
-int TCustomFarFileGetFindData(
+int TCustomFarFileSystem::GetFindData(
   struct PluginPanelItem ** PanelItem, int * ItemsNumber, int OpMode)
 {
   // DEBUG_PRINTF(L"begin");
@@ -1930,7 +1930,7 @@ int TCustomFarFileGetFindData(
   return Result;
 }
 //---------------------------------------------------------------------------
-void TCustomFarFileFreeFindData(
+void TCustomFarFileSystem::FreeFindData(
   struct PluginPanelItem * PanelItem, int ItemsNumber)
 {
   ResetCachedInfo();
@@ -1952,7 +1952,7 @@ void TCustomFarFileFreeFindData(
   }
 }
 //---------------------------------------------------------------------------
-int TCustomFarFileProcessHostFile(struct PluginPanelItem * PanelItem,
+int TCustomFarFileSystem::ProcessHostFile(struct PluginPanelItem * PanelItem,
     int ItemsNumber, int OpMode)
 {
   ResetCachedInfo();
@@ -1968,19 +1968,19 @@ int TCustomFarFileProcessHostFile(struct PluginPanelItem * PanelItem,
   return Result;
 }
 //---------------------------------------------------------------------------
-int TCustomFarFileProcessKey(int Key, unsigned int ControlState)
+int TCustomFarFileSystem::ProcessKey(int Key, unsigned int ControlState)
 {
   ResetCachedInfo();
   return ProcessKeyEx(Key, ControlState);
 }
 //---------------------------------------------------------------------------
-int TCustomFarFileProcessEvent(int Event, void * Param)
+int TCustomFarFileSystem::ProcessEvent(int Event, void * Param)
 {
   ResetCachedInfo();
   return ProcessEventEx(Event, Param);
 }
 //---------------------------------------------------------------------------
-int TCustomFarFileSetDirectory(const wchar_t * Dir, int OpMode)
+int TCustomFarFileSystem::SetDirectory(const wchar_t * Dir, int OpMode)
 {
   ResetCachedInfo();
   InvalidateOpenPluginInfo();
@@ -1989,7 +1989,7 @@ int TCustomFarFileSetDirectory(const wchar_t * Dir, int OpMode)
   return Result;
 }
 //---------------------------------------------------------------------------
-int TCustomFarFileMakeDirectory(const wchar_t ** Name, int OpMode)
+int TCustomFarFileSystem::MakeDirectory(const wchar_t ** Name, int OpMode)
 {
   ResetCachedInfo();
   UnicodeString NameStr = *Name;
@@ -2008,7 +2008,7 @@ int TCustomFarFileMakeDirectory(const wchar_t ** Name, int OpMode)
   return Result;
 }
 //---------------------------------------------------------------------------
-int TCustomFarFileDeleteFiles(struct PluginPanelItem * PanelItem,
+int TCustomFarFileSystem::DeleteFiles(struct PluginPanelItem * PanelItem,
                                       int ItemsNumber, int OpMode)
 {
   ResetCachedInfo();
@@ -2024,7 +2024,7 @@ int TCustomFarFileDeleteFiles(struct PluginPanelItem * PanelItem,
   return Result;
 }
 //---------------------------------------------------------------------------
-int TCustomFarFileGetFiles(struct PluginPanelItem * PanelItem,
+int TCustomFarFileSystem::GetFiles(struct PluginPanelItem * PanelItem,
                                    int ItemsNumber, int Move, const wchar_t ** DestPath, int OpMode)
 {
   ResetCachedInfo();
@@ -2047,7 +2047,7 @@ int TCustomFarFileGetFiles(struct PluginPanelItem * PanelItem,
   return Result;
 }
 //---------------------------------------------------------------------------
-int TCustomFarFilePutFiles(struct PluginPanelItem * PanelItem,
+int TCustomFarFileSystem::PutFiles(struct PluginPanelItem * PanelItem,
                                    int ItemsNumber, int Move, int OpMode)
 {
   ResetCachedInfo();
@@ -2064,7 +2064,7 @@ int TCustomFarFilePutFiles(struct PluginPanelItem * PanelItem,
   return Result;
 }
 //---------------------------------------------------------------------------
-void TCustomFarFileResetCachedInfo()
+void TCustomFarFileSystem::ResetCachedInfo()
 {
   if (FPanelInfo[0])
   {
@@ -2076,7 +2076,7 @@ void TCustomFarFileResetCachedInfo()
   }
 }
 //---------------------------------------------------------------------------
-TFarPanelInfo * TCustomFarFileGetPanelInfo(int Another)
+TFarPanelInfo * TCustomFarFileSystem::GetPanelInfo(int Another)
 {
   // DEBUG_PRINTF(L"Another = %d", Another);
   bool another = Another != 0;
@@ -2097,17 +2097,17 @@ TFarPanelInfo * TCustomFarFileGetPanelInfo(int Another)
   return FPanelInfo[another];
 }
 //---------------------------------------------------------------------------
-DWORD TCustomFarFileFarControl(int Command, int Param1, LONG_PTR Param2)
+DWORD TCustomFarFileSystem::FarControl(int Command, int Param1, LONG_PTR Param2)
 {
   return FPlugin->FarControl(Command, Param1, Param2, this);
 }
 //---------------------------------------------------------------------------
-DWORD TCustomFarFileFarControl(int Command, int Param1, LONG_PTR Param2, HANDLE Plugin)
+DWORD TCustomFarFileSystem::FarControl(int Command, int Param1, LONG_PTR Param2, HANDLE Plugin)
 {
   return FPlugin->FarControl(Command, Param1, Param2, Plugin);
 }
 //---------------------------------------------------------------------------
-bool TCustomFarFileUpdatePanel(bool ClearSelection, bool Another)
+bool TCustomFarFileSystem::UpdatePanel(bool ClearSelection, bool Another)
 {
   unsigned int PrevInstances = FInstances;
   InvalidateOpenPluginInfo();
@@ -2115,87 +2115,87 @@ bool TCustomFarFileUpdatePanel(bool ClearSelection, bool Another)
   return (FInstances >= PrevInstances);
 }
 //---------------------------------------------------------------------------
-void TCustomFarFileRedrawPanel(bool Another)
+void TCustomFarFileSystem::RedrawPanel(bool Another)
 {
   FPlugin->FarControl(FCTL_REDRAWPANEL, 0, reinterpret_cast<LONG_PTR>(static_cast<void *>(0)), Another ? PANEL_PASSIVE : PANEL_ACTIVE);
 }
 //---------------------------------------------------------------------------
-void TCustomFarFileClosePlugin()
+void TCustomFarFileSystem::ClosePlugin()
 {
   FClosed = true;
   FarControl(FCTL_CLOSEPLUGIN, 0, NULL);
 }
 //---------------------------------------------------------------------------
-UnicodeString TCustomFarFileGetMsg(int MsgId)
+UnicodeString TCustomFarFileSystem::GetMsg(int MsgId)
 {
   return FPlugin->GetMsg(MsgId);
 }
 //---------------------------------------------------------------------------
-TCustomFarFileSystem * TCustomFarFileGetOppositeFileSystem()
+TCustomFarFileSystem * TCustomFarFileSystem::GetOppositeFileSystem()
 {
   return FPlugin->GetPanelFileSystem(true, this);
 }
 //---------------------------------------------------------------------------
-bool TCustomFarFileIsActiveFileSystem()
+bool TCustomFarFileSystem::IsActiveFileSystem()
 {
   // Cannot use PanelInfo::Focus as it occasionally does not work from editor;
   return (this == FPlugin->GetPanelFileSystem());
 }
 //---------------------------------------------------------------------------
-bool TCustomFarFileIsLeft()
+bool TCustomFarFileSystem::IsLeft()
 {
   DEBUG_PRINTF(L"IsLeft");
   return (GetPanelInfo(0)->GetBounds().Left <= 0);
 }
 //---------------------------------------------------------------------------
-bool TCustomFarFileIsRight()
+bool TCustomFarFileSystem::IsRight()
 {
   return !IsLeft();
 }
 //---------------------------------------------------------------------------
-bool TCustomFarFileProcessHostFileEx(TObjectList * /*PanelItems*/, int /*OpMode*/)
+bool TCustomFarFileSystem::ProcessHostFileEx(TObjectList * /*PanelItems*/, int /*OpMode*/)
 {
   return false;
 }
 //---------------------------------------------------------------------------
-bool TCustomFarFileProcessKeyEx(int /*Key*/, unsigned int /*ControlState*/)
+bool TCustomFarFileSystem::ProcessKeyEx(int /*Key*/, unsigned int /*ControlState*/)
 {
   return false;
 }
 //---------------------------------------------------------------------------
-bool TCustomFarFileProcessEventEx(int /*Event*/, void * /*Param*/)
+bool TCustomFarFileSystem::ProcessEventEx(int /*Event*/, void * /*Param*/)
 {
   return false;
 }
 //---------------------------------------------------------------------------
-bool TCustomFarFileSetDirectoryEx(const UnicodeString /*Dir*/, int /*OpMode*/)
+bool TCustomFarFileSystem::SetDirectoryEx(const UnicodeString /*Dir*/, int /*OpMode*/)
 {
   return false;
 }
 //---------------------------------------------------------------------------
-int TCustomFarFileMakeDirectoryEx(UnicodeString & /*Name*/, int /*OpMode*/)
+int TCustomFarFileSystem::MakeDirectoryEx(UnicodeString & /*Name*/, int /*OpMode*/)
 {
   return -1;
 }
 //---------------------------------------------------------------------------
-bool TCustomFarFileDeleteFilesEx(TObjectList * /*PanelItems*/, int /*OpMode*/)
+bool TCustomFarFileSystem::DeleteFilesEx(TObjectList * /*PanelItems*/, int /*OpMode*/)
 {
   return false;
 }
 //---------------------------------------------------------------------------
-int TCustomFarFileGetFilesEx(TObjectList * /*PanelItems*/, bool /*Move*/,
+int TCustomFarFileSystem::GetFilesEx(TObjectList * /*PanelItems*/, bool /*Move*/,
                                      UnicodeString & /*DestPath*/, int /*OpMode*/)
 {
   return 0;
 }
 //---------------------------------------------------------------------------
-int TCustomFarFilePutFilesEx(TObjectList * /*PanelItems*/,
+int TCustomFarFileSystem::PutFilesEx(TObjectList * /*PanelItems*/,
                                      bool /*Move*/, int /*OpMode*/)
 {
   return 0;
 }
 //---------------------------------------------------------------------------
-TObjectList * TCustomFarFileCreatePanelItemList(
+TObjectList * TCustomFarFileSystem::CreatePanelItemList(
   struct PluginPanelItem * PanelItem, size_t ItemsNumber)
 {
   // DEBUG_PRINTF(L"ItemsNumber = %d", ItemsNumber);

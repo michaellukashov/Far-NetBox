@@ -11,7 +11,7 @@ public:
     explicit TXmlStorage(const UnicodeString AStorage, const UnicodeString StoredSessionsSubKey);
     virtual ~TXmlStorage();
 
-    virtual void Init();
+    virtual void __fastcall Init();
     bool Copy(TXmlStorage *Storage);
 
     virtual bool __fastcall OpenSubKey(const UnicodeString SubKey, bool CanCreate, bool Path = false);
