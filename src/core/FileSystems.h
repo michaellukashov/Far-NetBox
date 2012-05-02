@@ -194,7 +194,9 @@ protected:
 
   explicit /* __fastcall */ TCustomFileSystem(TTerminal * ATerminal);
   virtual void __fastcall Init() {}
+#ifndef _MSC_VER
   virtual UnicodeString __fastcall GetCurrentDirectory() = 0;
+#endif
 
   static void __fastcall FindCustomCommandPattern(
     const UnicodeString Command, int Index, int &Len, char &PatternCmd);

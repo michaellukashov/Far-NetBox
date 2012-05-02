@@ -584,7 +584,7 @@ void __fastcall TFTPFileEnsureLocation()
 }
 //---------------------------------------------------------------------------
 void __fastcall TFTPFileAnyCommand(const UnicodeString Command,
-                                const TCaptureOutputEvent *OutputEvent)
+                                TCaptureOutputEvent OutputEvent)
 {
     // end-user has right to expect that client current directory is really
     // current directory for the server
@@ -2072,7 +2072,7 @@ const TFileSystemInfo & __fastcall TFTPFileGetFileSystemInfo(bool /*Retrieve*/)
     return FFileSystemInfo;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFTPFileTemporaryTransferFile(const UnicodeString /*FileName*/)
+bool __fastcall TFTPFileTemporaryTransferFile(const UnicodeString & /*FileName*/)
 {
     return false;
 }

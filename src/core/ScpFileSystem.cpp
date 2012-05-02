@@ -898,7 +898,7 @@ void __fastcall TSCPFileSystem::SkipStartupMessage()
 //---------------------------------------------------------------------------
 void __fastcall TSCPFileSystem::LookupUsersGroups()
 {
-  ExecCommand(fsLookupUsersGroups);
+  ExecCommand(fsLookupUsersGroups, 0);
   FTerminal->FUsers.Clear();
   FTerminal->FGroups.Clear();
   if (FOutput->GetCount() > 0)
@@ -1415,7 +1415,7 @@ void __fastcall TSCPFileSystem::CustomCommandOnFile(const UnicodeString FileName
       Data, FTerminal->GetCurrentDirectory(), FileName, L"").
       Complete(Command, true);
 
-    AnyCommand(Cmd, &OutputEvent);
+    AnyCommand(Cmd, OutputEvent);
   }
 }
 //---------------------------------------------------------------------------
@@ -1433,7 +1433,7 @@ void __fastcall TSCPFileSystem::CaptureOutput(const UnicodeString & AddedLine, b
 }
 //---------------------------------------------------------------------------
 void __fastcall TSCPFileSystem::AnyCommand(const UnicodeString Command,
-    const TCaptureOutputEvent * OutputEvent)
+  TCaptureOutputEvent OutputEvent)
 {
   assert(FSecureShell->GetOnCaptureOutput().empty());
   if (OutputEvent != NULL)

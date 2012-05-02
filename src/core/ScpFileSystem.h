@@ -20,7 +20,7 @@ public:
   virtual void __fastcall Idle();
   virtual UnicodeString __fastcall AbsolutePath(UnicodeString Path, bool Local);
   virtual void __fastcall AnyCommand(const UnicodeString Command,
-    const TCaptureOutputEvent * OutputEvent);
+    TCaptureOutputEvent OutputEvent);
   virtual void __fastcall ChangeDirectory(const UnicodeString Directory);
   virtual void __fastcall CachedChangeDirectory(const UnicodeString Directory);
   virtual void __fastcall AnnounceFileListOperation();
@@ -110,7 +110,7 @@ private:
   void __fastcall ExecCommand(TFSCommand Cmd, const TVarRec * args = NULL,
     int size = 0, int Params = -1);
 #else
-  void __fastcall ExecCommand(TFSCommand Cmd, int Params = -1, ...);
+  void __fastcall ExecCommand(TFSCommand Cmd, int Params, ...);
 #endif
   void __fastcall ReadCommandOutput(int Params, const UnicodeString * Cmd = NULL);
   void __fastcall SCPResponse(bool * GotLastLine = NULL);

@@ -300,7 +300,7 @@ const TFileSystemInfo &TWebDAVFileSystem::GetFileSystemInfo(bool Retrieve)
     return FFileSystemInfo;
 }
 //---------------------------------------------------------------------------
-bool TWebDAVFileSystem::TemporaryTransferFile(const UnicodeString /*FileName*/)
+bool TWebDAVFileSystem::TemporaryTransferFile(const UnicodeString & /*FileName*/)
 {
     return false;
 }
@@ -946,7 +946,7 @@ void __fastcall TWebDAVFileSystem::CaptureOutput(const UnicodeString AddedLine, 
 }
 //---------------------------------------------------------------------------
 void __fastcall TWebDAVFileSystem::AnyCommand(const UnicodeString Command,
-                                   const TCaptureOutputEvent *OutputEvent)
+                                   TCaptureOutputEvent OutputEvent)
 {
     Error(SNotImplemented, 1008);
 }

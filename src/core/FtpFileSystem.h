@@ -32,7 +32,7 @@ public:
     virtual void __fastcall Idle();
     virtual UnicodeString __fastcall AbsolutePath(const UnicodeString Path, bool Local);
     virtual void __fastcall AnyCommand(const UnicodeString Command,
-                            const TCaptureOutputEvent *OutputEvent);
+                            TCaptureOutputEvent OutputEvent);
     virtual void __fastcall ChangeDirectory(const UnicodeString Directory);
     virtual void __fastcall CachedChangeDirectory(const UnicodeString Directory);
     virtual void __fastcall AnnounceFileListOperation();
@@ -77,7 +77,7 @@ public:
                                 TSpaceAvailable &ASpaceAvailable);
     virtual const TSessionInfo & __fastcall GetSessionInfo();
     virtual const TFileSystemInfo & __fastcall GetFileSystemInfo(bool Retrieve);
-    virtual bool __fastcall TemporaryTransferFile(const UnicodeString FileName);
+    virtual bool __fastcall TemporaryTransferFile(const UnicodeString & FileName);
     virtual bool __fastcall GetStoredCredentialsTried();
     virtual UnicodeString __fastcall GetUserName();
 
