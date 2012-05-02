@@ -36,14 +36,14 @@ bool SpecialFolderLocation(int PathID, UnicodeString &Path);
 UnicodeString ItemsFormatString(const UnicodeString SingleItemFormat,
                                const UnicodeString MultiItemsFormat, size_t Count, const UnicodeString FirstItem);
 UnicodeString ItemsFormatString(const UnicodeString SingleItemFormat,
-                               const UnicodeString MultiItemsFormat, System::TStrings *Items);
+                               const UnicodeString MultiItemsFormat, TStrings *Items);
 UnicodeString FileNameFormatString(const UnicodeString SingleFileFormat,
-                                  const UnicodeString MultiFileFormat, System::TStrings *Files, bool Remote);
+                                  const UnicodeString MultiFileFormat, TStrings *Files, bool Remote);
 UnicodeString FormatBytes(__int64 Bytes, bool UseOrders = true);
 UnicodeString UniqTempDir(const UnicodeString BaseDir,
                          const UnicodeString Identity, bool Mask = false);
 bool DeleteDirectory(const UnicodeString DirName);
-UnicodeString FormatDateTimeSpan(const UnicodeString TimeFormat, System::TDateTime DateTime);
+UnicodeString FormatDateTimeSpan(const UnicodeString TimeFormat, TDateTime DateTime);
 //---------------------------------------------------------------------------
 class TLocalCustomCommand : public TFileCustomCommand
 {

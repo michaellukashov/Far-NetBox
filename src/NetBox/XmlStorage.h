@@ -22,7 +22,7 @@ public:
     virtual bool __fastcall KeyExists(const UnicodeString SubKey);
     virtual bool __fastcall ValueExists(const UnicodeString Value);
 
-    virtual int __fastcall BinaryDataSize(const UnicodeString Name);
+    virtual size_t __fastcall BinaryDataSize(const UnicodeString Name);
 
     virtual bool __fastcall Readbool(const UnicodeString Name, bool Default);
     virtual int __fastcall Readint(const UnicodeString Name, int Default);

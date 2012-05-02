@@ -343,10 +343,10 @@ bool TXmlStorage::ValueExists(const UnicodeString Value)
     return result;
 }
 //---------------------------------------------------------------------------
-int TXmlStorage::BinaryDataSize(const UnicodeString Name)
+size_t TXmlStorage::BinaryDataSize(const UnicodeString Name)
 {
     Error(SNotImplemented, 3026);
-    int Result = 0; // FRegistry->GetDataSize(Name);
+    size_t Result = 0; // FRegistry->GetDataSize(Name);
     return Result;
 }
 //---------------------------------------------------------------------------
