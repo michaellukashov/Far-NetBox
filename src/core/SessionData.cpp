@@ -649,11 +649,11 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
         Storage->Write ## TYPE(NAME, CONV(PROPERTY)); \
       }
     #define WRITE_DATA_CONV(TYPE, NAME, PROPERTY) WRITE_DATA_EX(TYPE, NAME, PROPERTY, WRITE_DATA_CONV_FUNC)
-    #define WRITE_DATA(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, TEXT(#PROPERTY), PROPERTY, )
+    #define WRITE_DATA(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, #PROPERTY, PROPERTY, )
 
     WRITE_DATA_EX(String, L"HostName", GetHostName(), );
     WRITE_DATA_EX(int, L"PortNumber", GetPortNumber(), );
-    WRITE_DATA_EX(bool, L"Passwordless", GetPasswordless(), 0);
+    WRITE_DATA_EX(bool, L"Passwordless", GetPasswordless(), );
     WRITE_DATA_EX(int, L"PingInterval", GetPingInterval() / SecsPerMin, );
     WRITE_DATA_EX(int, L"PingIntervalSecs", GetPingInterval() % SecsPerMin, );
     Storage->DeleteValue(L"PingIntervalSec"); // obsolete
@@ -715,7 +715,6 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
     {
       WRITE_DATA_EX(int, L"LoginType", GetLoginType(), );
       WRITE_DATA_EX(String, L"UserName", GetUserName(), );
-      WRITE_DATA_EX(int, L"LoginType", GetLoginType(), );
       WRITE_DATA_EX(String, L"PublicKeyFile", GetPublicKeyFile(), );
       WRITE_DATA_EX(int, L"FSProtocol", GetFSProtocol(), );
       WRITE_DATA_EX(String, L"LocalDirectory", GetLocalDirectory(), );
@@ -1475,7 +1474,7 @@ void __fastcall TSessionData::SetPassword(UnicodeString avalue)
   SET_SESSION_PROPERTY(Password);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall TSessionData::GetPassword()
+UnicodeString __fastcall TSessionData::GetPassword() const
 {
   return DecryptPassword(FPassword, GetUserName() + GetHostName());
 }
@@ -2295,7 +2294,7 @@ UnicodeString __fastcall TSessionData::GetLocalName()
   return Result;
 }
 //---------------------------------------------------------------------
-TLoginType __fastcall TSessionData::GetLoginType()
+TLoginType __fastcall TSessionData::GetLoginType() const
 {
   return (GetUserName() == CONST_LOGIN_ANONYMOUS) && GetPassword().IsEmpty() ?
          ltAnonymous : ltNormal;

@@ -173,7 +173,7 @@ public:
   void __fastcall SetUserName(UnicodeString value);
   UnicodeString __fastcall GetUserNameExpanded();
   void __fastcall SetPassword(UnicodeString value);
-  UnicodeString __fastcall GetPassword();
+  UnicodeString __fastcall GetPassword() const;
   void __fastcall SetPasswordless(bool value);
   void __fastcall SetPingInterval(int value);
   void __fastcall SetTryAgent(bool value);
@@ -464,7 +464,7 @@ public:
 #else
   UnicodeString GetHostName() const { return FHostName; }
   size_t GetPortNumber() const { return FPortNumber; }
-  TLoginType __fastcall GetLoginType();
+  TLoginType __fastcall GetLoginType() const;
   void __fastcall SetLoginType(TLoginType value);
   UnicodeString GetUserName() const { return FUserName; }
   bool GetPasswordless() const { return FPasswordless; }
