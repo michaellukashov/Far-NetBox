@@ -141,7 +141,7 @@ typedef class UnicodeString
     UnicodeString(const wchar_t *lpwszData, size_t nLength) { SetEUS(); Copy(lpwszData, nLength); }
     UnicodeString(const wchar_t src) { SetEUS(); Copy(&src, 1); }
     UnicodeString(const char *lpszData, UINT CodePage=CP_OEMCP) { SetEUS(); Copy(lpszData, CodePage); }
-    explicit UnicodeString(size_t nSize, size_t nDelta=0) { m_pData = new UnicodeStringData(nSize, nDelta); }
+    explicit UnicodeString(size_t nSize, size_t nDelta) { m_pData = new UnicodeStringData(nSize, nDelta); }
     UnicodeString(const std::wstring &strCopy) { SetEUS(); Copy(strCopy.c_str(), strCopy.size()); }
 
     ~UnicodeString() { /*if (m_pData) он не должен быть nullptr*/ m_pData->DecRef(); }
