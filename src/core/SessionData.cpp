@@ -51,7 +51,7 @@ TDateTime __fastcall SecToDateTime(int Sec)
     static_cast<unsigned short>(Sec/SecsPerMin%MinsPerHour), static_cast<unsigned short>(Sec%SecsPerMin), 0);
 }
 //--- TSessionData ----------------------------------------------------
-TSessionData::TSessionData(UnicodeString aName):
+/* __fastcall */ TSessionData::TSessionData(UnicodeString aName):
   TNamedObject(aName)
 {
   Default();
@@ -212,7 +212,7 @@ void __fastcall TSessionData::Assign(TPersistent * Source)
 {
   if (Source && ::InheritsFrom<TPersistent, TSessionData>(Source))
   {
-#define DUPL(P) Set##P(((TSessionData *)Source)->Get##P())
+    #define DUPL(P) Set##P(((TSessionData *)Source)->Get##P())
     DUPL(Name);
     DUPL(HostName);
     DUPL(PortNumber);
@@ -1211,10 +1211,6 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
     {
       SetHostKey(Value);
     }
-    if (Options->FindSwitch(L"passive", Value))
-    {
-      SetFtpPasvMode((StrToIntDef(Value, 1) != 0));
-    }
     SetFtpPasvMode(Options->SwitchValue(L"passive", GetFtpPasvMode()));
     if (Options->FindSwitch(L"implicit"))
     {
@@ -1225,7 +1221,7 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
         SetPortNumber(FtpsImplicitPortNumber);
       }
     }
-    if (Options->FindSwitch(L"explicit", Value))
+    if (Options->FindSwitch(L"explicitssl", Value))
     {
       bool Enabled = Options->SwitchValue(L"explicitssl", true);
       SetFtps(Enabled ? ftpsExplicitSsl : ftpsNone);
@@ -1302,7 +1298,7 @@ void __fastcall TSessionData::ConfigureTunnel(int APortNumber)
   SetProxyMethod(::pmNone);
 }
 //---------------------------------------------------------------------
-void TSessionData::RollbackTunnel()
+void __fastcall TSessionData::RollbackTunnel()
 {
   SetHostName(FOrigHostName);
   SetPortNumber(FOrigPortNumber);
@@ -1793,16 +1789,16 @@ void __fastcall TSessionData::SetRekeyTime(unsigned int value)
 //---------------------------------------------------------------------
 UnicodeString __fastcall TSessionData::GetDefaultSessionName()
 {
-  UnicodeString hostName = GetHostName();
-  UnicodeString userName = GetUserName();
-  RemoveProtocolPrefix(hostName);
-  if (!hostName.IsEmpty() && !userName.IsEmpty())
+  UnicodeString HostName = GetHostName();
+  UnicodeString UserName = GetUserName();
+  RemoveProtocolPrefix(HostName);
+  if (!HostName.IsEmpty() && !UserName.IsEmpty())
   {
-    return FORMAT(L"%s@%s", userName.c_str(), hostName.c_str());
+    return FORMAT(L"%s@%s", UserName.c_str(), HostName.c_str());
   }
-  else if (!hostName.IsEmpty())
+  else if (!HostName.IsEmpty())
   {
-    return hostName;
+    return HostName;
   }
   else
   {
@@ -2171,7 +2167,7 @@ void __fastcall TSessionData::SetTunnelUserName(UnicodeString value)
 //---------------------------------------------------------------------
 void __fastcall TSessionData::SetTunnelPassword(UnicodeString avalue)
 {
-  RawByteString value = EncryptPassword(value, GetTunnelUserName() + GetTunnelHostName());
+  RawByteString value = EncryptPassword(avalue, GetTunnelUserName() + GetTunnelHostName());
   SET_SESSION_PROPERTY(TunnelPassword);
 }
 //---------------------------------------------------------------------
@@ -2346,14 +2342,14 @@ void __fastcall TSessionData::SetSslSessionReuse(bool value)
   SET_SESSION_PROPERTY(SslSessionReuse);
 }
 //=== TStoredSessionList ----------------------------------------------
-TStoredSessionList::TStoredSessionList(bool aReadOnly):
+/* __fastcall */ TStoredSessionList::TStoredSessionList(bool aReadOnly):
   TNamedObjectList(), FReadOnly(aReadOnly)
 {
   assert(Configuration);
   FDefaultSettings = new TSessionData(DefaultName);
 }
 //---------------------------------------------------------------------
-TStoredSessionList::~TStoredSessionList()
+/* __fastcall */ TStoredSessionList::~TStoredSessionList()
 {
   assert(Configuration);
   delete FDefaultSettings;
@@ -2388,7 +2384,7 @@ void __fastcall TStoredSessionList::Load(THierarchicalStorage * Storage,
       if (ValidName)
       {
         if (SessionName == FDefaultSettings->GetName()) { SessionData = FDefaultSettings; }
-        else { SessionData = static_cast<TSessionData*>(FindByName(SessionName)); }
+          else { SessionData = static_cast<TSessionData*>(FindByName(SessionName)); }
 
         if ((SessionData != FDefaultSettings) || !UseDefaults)
         {

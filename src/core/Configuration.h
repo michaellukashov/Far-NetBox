@@ -168,6 +168,7 @@ public:
   UnicodeString __fastcall TrimVersion(UnicodeString Version);
   UnicodeString __fastcall GetStoredSessionsSubKey();
   UnicodeString __fastcall GetPuttySessionsKey();
+  UnicodeString __fastcall GetRandomSeedFile() const { return FRandomSeedFile; }
   void __fastcall SetRandomSeedFile(UnicodeString value);
   UnicodeString __fastcall GetRandomSeedFileName();
   void __fastcall SetPuttyRegistryStorageKey(UnicodeString value);

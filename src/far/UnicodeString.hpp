@@ -353,6 +353,7 @@ public:
   }
 
   operator const char*() const { return Data; }
+  operator UnicodeString() const { return UnicodeString(Data, Size); }
   size_t size() const { return Size; }
   const char *c_str() const { return Data; }
   size_t Length() const { return Size; }
