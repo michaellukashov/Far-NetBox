@@ -38,7 +38,7 @@ public:
     virtual void __fastcall WriteDateTime(const UnicodeString Name, TDateTime Value);
     virtual void __fastcall WriteFloat(const UnicodeString Name, double Value);
     virtual void __fastcall WriteStringRaw(const UnicodeString Name, const UnicodeString Value);
-    virtual void __fastcall WriteBinaryData(const UnicodeString Name, const void *Buffer, size_t Size);
+    virtual void __fastcall WriteBinaryData(const UnicodeString Name, const void *Buffer, int Size);
 
     virtual void __fastcall GetValueNames(TStrings *Strings);
 

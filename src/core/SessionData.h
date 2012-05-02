@@ -464,7 +464,7 @@ public:
 #else
   UnicodeString GetHostName() const { return FHostName; }
   size_t GetPortNumber() const { return FPortNumber; }
-  TLoginType __fastcall GetLoginType() const;
+  TLoginType __fastcall GetLoginType();
   void __fastcall SetLoginType(TLoginType value);
   UnicodeString GetUserName() const { return FUserName; }
   bool GetPasswordless() const { return FPasswordless; }
