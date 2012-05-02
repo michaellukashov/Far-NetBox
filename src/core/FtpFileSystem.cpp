@@ -745,9 +745,9 @@ bool __fastcall TFTPFileLoadFilesProperties(TStrings * /*FileList*/)
     return false;
 }
 //---------------------------------------------------------------------------
-void __fastcall TFTPFileCalculateFilesChecksum(const UnicodeString /*Alg*/,
+void __fastcall TFTPFileCalculateFilesChecksum(const UnicodeString & /*Alg*/,
         TStrings * /*FileList*/, TStrings * /*Checksums*/,
-        TCalculatedChecksumEvent * /*OnCalculatedChecksum*/)
+        TCalculatedChecksumEvent /*OnCalculatedChecksum*/)
 {
     assert(false);
 }

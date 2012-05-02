@@ -3262,7 +3262,7 @@ void TTerminal::CalculateFilesSize(TStrings * FileList,
 //---------------------------------------------------------------------------
 void TTerminal::CalculateFilesChecksum(const UnicodeString & Alg,
   TStrings * FileList, TStrings * Checksums,
-  TCalculatedChecksumEvent * OnCalculatedChecksum)
+  TCalculatedChecksumEvent OnCalculatedChecksum)
 {
   FFileSystem->CalculateFilesChecksum(Alg, FileList, Checksums, OnCalculatedChecksum);
 }

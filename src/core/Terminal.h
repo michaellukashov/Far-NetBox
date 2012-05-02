@@ -482,7 +482,7 @@ public:
   void CalculateFilesSize(TStrings * FileList, __int64 & Size,
     int Params, const TCopyParamType * CopyParam = NULL, TCalculateSizeStats * Stats = NULL);
   void CalculateFilesChecksum(const UnicodeString & Alg, TStrings * FileList,
-    TStrings * Checksums, TCalculatedChecksumEvent *OnCalculatedChecksum);
+    TStrings * Checksums, TCalculatedChecksumEvent OnCalculatedChecksum);
   void ClearCaches();
   TSynchronizeChecklist * SynchronizeCollect(const UnicodeString LocalDirectory,
     const UnicodeString RemoteDirectory, TSynchronizeMode Mode,

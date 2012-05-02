@@ -33,9 +33,9 @@ public:
                                       const TRemoteFile *File, const TRemoteProperties *Properties,
                                       TChmodSessionAction &Action);
     virtual bool __fastcall LoadFilesProperties(TStrings *FileList);
-    virtual void __fastcall CalculateFilesChecksum(const UnicodeString Alg,
+    virtual void __fastcall CalculateFilesChecksum(const UnicodeString & Alg,
                                         TStrings *FileList, TStrings *Checksums,
-                                        TCalculatedChecksumEvent *OnCalculatedChecksum);
+                                        TCalculatedChecksumEvent OnCalculatedChecksum);
     virtual void __fastcall CopyToLocal(TStrings *FilesToCopy,
                              const UnicodeString TargetDir, const TCopyParamType *CopyParam,
                              int Params, TFileOperationProgressType *OperationProgress,
@@ -49,7 +49,7 @@ public:
     virtual void __fastcall DeleteFile(const UnicodeString FileName,
                             const TRemoteFile *File, int Params, TRmSessionAction &Action);
     virtual void __fastcall CustomCommandOnFile(const UnicodeString FileName,
-                                     const TRemoteFile *File, const UnicodeString Command, int Params, const TCaptureOutputEvent &OutputEvent);
+    const TRemoteFile * File, UnicodeString Command, int Params, TCaptureOutputEvent OutputEvent);
     virtual void __fastcall DoStartup();
     virtual void __fastcall HomeDirectory();
     virtual bool __fastcall IsCapable(int Capability) const;
