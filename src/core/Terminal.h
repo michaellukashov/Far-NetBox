@@ -49,9 +49,9 @@ typedef void __fastcall (__closure *TDisplayBannerEvent)
    bool & NeverShowAgain, int Options);
 typedef void __fastcall (__closure *TExtendedExceptionEvent)
   (TTerminal * Terminal, Exception * E, void * Arg);
-typedef void __fastcall (__closure *TReadDirectoryEvent)(System::TObject * Sender, Boolean ReloadOnly);
+typedef void __fastcall (__closure *TReadDirectoryEvent)(TObject * Sender, Boolean ReloadOnly);
 typedef void __fastcall (__closure *TReadDirectoryProgressEvent)(
-  System::TObject* Sender, int Progress, bool & Cancel);
+  TObject* Sender, int Progress, bool & Cancel);
 typedef void __fastcall (__closure *TProcessFileEvent)
   (const UnicodeString FileName, const TRemoteFile * File, void * Param);
 typedef void __fastcall (__closure *TProcessFileEventEx)

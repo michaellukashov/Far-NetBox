@@ -41,7 +41,7 @@ UnicodeString EncryptPassword(const UnicodeString Password, const UnicodeString 
     size_t Index = 0;
 
     // if (!RandSeed) Randomize();
-    std::string Password2 = System::W2MB((Key + Password).c_str());
+    std::string Password2 = W2MB((Key + Password).c_str());
     Shift = (Password2.Length() < PWALG_SIMPLE_MAXLEN) ?
             static_cast<unsigned char>(random(PWALG_SIMPLE_MAXLEN - Password2.Length())) : 0;
     // DEBUG_PRINTF(L"Shift = %d", Shift);
@@ -61,7 +61,7 @@ UnicodeString EncryptPassword(const UnicodeString Password, const UnicodeString 
     {
         Result += SimpleEncryptChar(static_cast<unsigned char>(random(256)));
     }
-    return System::MB2W(Result.c_str());
+    return MB2W(Result.c_str());
 }
 //---------------------------------------------------------------------------
 UnicodeString DecryptPassword(const UnicodeString Password, const UnicodeString Key, int /* Algorithm */)
@@ -69,8 +69,8 @@ UnicodeString DecryptPassword(const UnicodeString Password, const UnicodeString 
     std::string Result("");
     int Index;
     unsigned char Length, Flag;
-    std::string Password2 = System::W2MB(Password.c_str());
-    std::string Key2 = System::W2MB(Key.c_str());
+    std::string Password2 = W2MB(Password.c_str());
+    std::string Key2 = W2MB(Key.c_str());
     Flag = SimpleDecryptNextChar(Password2);
     // DEBUG_PRINTF(L"Flag = %x, PWALG_SIMPLE_FLAG = %x", Flag, PWALG_SIMPLE_FLAG);
     if (Flag == (unsigned char)PWALG_SIMPLE_FLAG)
@@ -91,7 +91,7 @@ UnicodeString DecryptPassword(const UnicodeString Password, const UnicodeString 
         if (Result.SubString(0, Key.Length()) != Key2) { Result = ""; }
         else { Result.Delete(0, Key2.Length()); }
     }
-    return System::MB2W(Result.c_str());
+    return MB2W(Result.c_str());
 }
 //---------------------------------------------------------------------------
 UnicodeString SetExternalEncryptedPassword(const UnicodeString Password)
@@ -99,19 +99,19 @@ UnicodeString SetExternalEncryptedPassword(const UnicodeString Password)
     std::string Result;
     Result += SimpleEncryptChar(static_cast<unsigned char>(PWALG_SIMPLE_FLAG));
     Result += SimpleEncryptChar(static_cast<unsigned char>(PWALG_SIMPLE_EXTERNAL));
-    Result += System::W2MB(StrToHex(Password).c_str());
-    return System::MB2W(Result.c_str());
+    Result += W2MB(StrToHex(Password).c_str());
+    return MB2W(Result.c_str());
 }
 //---------------------------------------------------------------------------
 bool GetExternalEncryptedPassword(const UnicodeString Encrypted, UnicodeString &Password)
 {
-    std::string Encrypted2 = System::W2MB(Encrypted.c_str());
+    std::string Encrypted2 = W2MB(Encrypted.c_str());
     bool Result =
         (SimpleDecryptNextChar(Encrypted2) == PWALG_SIMPLE_FLAG) &&
         (SimpleDecryptNextChar(Encrypted2) == PWALG_SIMPLE_EXTERNAL);
     if (Result)
     {
-        Password = ::HexToStr(System::MB2W(Encrypted2.c_str()));
+        Password = ::HexToStr(MB2W(Encrypted2.c_str()));
     }
     return Result;
 }

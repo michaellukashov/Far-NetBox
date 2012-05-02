@@ -2048,7 +2048,7 @@ unsigned int TTerminal::ConfirmFileOverwrite(const UnicodeString FileName,
   UnicodeString Message)
 {
   unsigned int Result = 0;
-  // duplicated in TSFTPFileSystem::SFTPConfirmOverwrite
+  // duplicated in TSFTPFileSFTPConfirmOverwrite
   bool CanAlternateResume =
     (FileParams != NULL) &&
     (FileParams->DestSize < FileParams->SourceSize) &&

@@ -9,11 +9,11 @@
 bool __fastcall ExceptionMessage(const std::exception *E, UnicodeString &Message)
 {
     bool Result = true;
-    if (dynamic_cast<const System::EAbort *>(E) != NULL)
+    if (dynamic_cast<const EAbort *>(E) != NULL)
     {
         Result = false;
     }
-    else if (dynamic_cast<const System::EAccessViolation *>(E) != NULL)
+    else if (dynamic_cast<const EAccessViolation *>(E) != NULL)
     {
         Message = LoadStr(ACCESS_VIOLATION_ERROR);
     }
@@ -23,18 +23,18 @@ bool __fastcall ExceptionMessage(const std::exception *E, UnicodeString &Message
     }
     else
     {
-        Message = System::MB2W(E->what());
+        Message = MB2W(E->what());
     }
     return Result;
 }
 //---------------------------------------------------------------------------
-System::TStrings * __fastcall ExceptionToMoreMessages(const std::exception *E)
+TStrings * __fastcall ExceptionToMoreMessages(const std::exception *E)
 {
-    System::TStrings *Result = NULL;
+    TStrings *Result = NULL;
     UnicodeString Message;
     if (ExceptionMessage(E, Message))
     {
-        Result = new System::TStringList();
+        Result = new TStringList();
         Result->Add(Message);
         const ExtException *ExtE = dynamic_cast<const ExtException *>(E);
         if (ExtE != NULL)
@@ -46,7 +46,7 @@ System::TStrings * __fastcall ExceptionToMoreMessages(const std::exception *E)
 }
 //---------------------------------------------------------------------------
 Exception::Exception(const UnicodeString Msg) :
-    parent(System::W2MB(Msg.c_str()).c_str())
+    parent(W2MB(Msg.c_str()).c_str())
 {
 }
 Exception::Exception(const Exception &E) throw() :
@@ -82,7 +82,7 @@ ExtException::ExtException(const UnicodeString Msg) :
         {
             if (FMoreMessages == NULL)
             {
-                FMoreMessages = new System::TStringList();
+                FMoreMessages = new TStringList();
             }
             FMoreMessages->Append(Msg);
         }
@@ -109,7 +109,7 @@ ExtException::ExtException(const UnicodeString Msg, const std::exception *E) :
         {
             if (FMoreMessages == NULL)
             {
-                FMoreMessages = new System::TStringList();
+                FMoreMessages = new TStringList();
             }
             FMoreMessages->Append(GetMessage());
         }
@@ -117,7 +117,7 @@ ExtException::ExtException(const UnicodeString Msg, const std::exception *E) :
     DEBUG_PRINTF(L"FMessage = %s", FMessage.c_str());
 }
 //---------------------------------------------------------------------------
-ExtException::ExtException(const UnicodeString Msg, System::TStrings *MoreMessages,
+ExtException::ExtException(const UnicodeString Msg, TStrings *MoreMessages,
                            bool Own) :
     parent(Msg),
     FMoreMessages(NULL)
@@ -128,7 +128,7 @@ ExtException::ExtException(const UnicodeString Msg, System::TStrings *MoreMessag
     }
     else
     {
-        FMoreMessages = new System::TStringList();
+        FMoreMessages = new TStringList();
         FMoreMessages->Assign(MoreMessages);
     }
     DEBUG_PRINTF(L"FMessage = %s", FMessage.c_str());
@@ -154,7 +154,7 @@ void __fastcall ExtException::AddMoreMessages(const std::exception *E)
     {
         if (FMoreMessages == NULL)
         {
-            FMoreMessages = new System::TStringList();
+            FMoreMessages = new TStringList();
         }
 
         const ExtException *ExtE = dynamic_cast<const ExtException *>(E);

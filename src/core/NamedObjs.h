@@ -6,10 +6,10 @@
 
 //---------------------------------------------------------------------------
 class TNamedObjectList;
-class TNamedObject : public System::TPersistent
+class TNamedObject : public TPersistent
 {
 public:
-    TNamedObject() : System::TPersistent() {};
+    TNamedObject() : TPersistent() {};
     explicit TNamedObject(const UnicodeString aName);
     bool __fastcall GetHidden() { return FHidden; }
     UnicodeString __fastcall GetName() { return FName; }
@@ -22,11 +22,11 @@ private:
 };
 
 //---------------------------------------------------------------------------
-class TNamedObjectList : public System::TObjectList
+class TNamedObjectList : public TObjectList
 {
 private:
     size_t FHiddenCount;
-    virtual void Notify(void *Ptr, System::TListNotification Action);
+    virtual void Notify(void *Ptr, TListNotification Action);
 protected:
     void Recount();
 public:

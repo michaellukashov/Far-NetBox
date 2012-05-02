@@ -9,7 +9,7 @@ class THierarchicalStorage;
 class TBookmarkList;
 class TShortCuts;
 //---------------------------------------------------------------------------
-class TBookmarks : public System::TObject
+class TBookmarks : public TObject
 {
 public:
     TBookmarks();
@@ -26,7 +26,7 @@ public:
     void SetSharedBookmarks(TBookmarkList *value);
 
 private:
-    System::TStringList *FBookmarkLists;
+    TStringList *FBookmarkLists;
     UnicodeString FSharedKey;
     static UnicodeString Keys[];
 
@@ -34,7 +34,7 @@ private:
                    int Index, TBookmarkList *BookmarkList);
 };
 //---------------------------------------------------------------------------
-class TBookmarkList : public System::TPersistent
+class TBookmarkList : public TPersistent
 {
     friend class TBookmarks;
     friend class TBookmark;
@@ -49,8 +49,8 @@ public:
     void MoveTo(TBookmark *ToBookmark, TBookmark *Bookmark, bool Before);
     void Delete(TBookmark *Bookmark);
     TBookmark *FindByName(const UnicodeString Node, const UnicodeString Name);
-    TBookmark *FindByShortCut(System::TShortCut ShortCut);
-    virtual void __fastcall Assign(System::TPersistent *Source);
+    TBookmark *FindByShortCut(TShortCut ShortCut);
+    virtual void __fastcall Assign(TPersistent *Source);
     void LoadOptions(THierarchicalStorage *Storage);
     void SaveOptions(THierarchicalStorage *Storage);
     void ShortCuts(TShortCuts &ShortCuts);
@@ -68,18 +68,18 @@ protected:
     void SetModified(bool value) { FModified = value; }
 
 private:
-    System::TStringList *FBookmarks;
-    System::TStringList *FOpenedNodes;
+    TStringList *FBookmarks;
+    TStringList *FOpenedNodes;
     bool FModified;
 };
 //---------------------------------------------------------------------------
-class TBookmark : public System::TPersistent
+class TBookmark : public TPersistent
 {
     friend class TBookmarkList;
 public:
     TBookmark();
 
-    virtual void __fastcall Assign(System::TPersistent *Source);
+    virtual void __fastcall Assign(TPersistent *Source);
 
     UnicodeString GetName() { return FName; }
     void SetName(const UnicodeString value);
@@ -89,8 +89,8 @@ public:
     void SetRemote(const UnicodeString value);
     UnicodeString GetNode() { return FNode; }
     void SetNode(const UnicodeString value);
-    System::TShortCut GetShortCut() { return FShortCut; }
-    void SetShortCut(System::TShortCut value);
+    TShortCut GetShortCut() { return FShortCut; }
+    void SetShortCut(TShortCut value);
 
 protected:
     TBookmarkList *FOwner;
@@ -103,7 +103,7 @@ private:
     UnicodeString FLocal;
     UnicodeString FRemote;
     UnicodeString FNode;
-    System::TShortCut FShortCut;
+    TShortCut FShortCut;
 
     void Modify(size_t OldIndex);
 };

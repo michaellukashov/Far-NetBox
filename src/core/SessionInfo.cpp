@@ -735,7 +735,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString & Line)
     FTopIndex = 0;
   }
 
-  TStringList::AddObject(Line, static_cast<System::TObject *>(reinterpret_cast<void *>(static_cast<size_t>(Type))));
+  TStringList::AddObject(Line, static_cast<TObject *>(reinterpret_cast<void *>(static_cast<size_t>(Type))));
 
   FLoggedLines++;
 
@@ -1195,7 +1195,7 @@ void __fastcall TActionLog::Add(const UnicodeString & Line)
         UTF8String UtfLine = UTF8String(Line);
         fwrite(UtfLine.c_str(), UtfLine.Length(), 1, (FILE *)FFile);
         fwrite("\n", 1, 1, (FILE *)FFile);
-        // System::Error(SNotImplemented, 1491);
+        // Error(SNotImplemented, 1491);
       }
     }
     catch (Exception &E)

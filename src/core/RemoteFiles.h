@@ -96,7 +96,7 @@ private:
   TIDMap FIDMap;
 };
 //---------------------------------------------------------------------------
-class TRemoteFile : public System::TPersistent
+class TRemoteFile : public TPersistent
 {
 private:
   TRemoteFileList * FDirectory;

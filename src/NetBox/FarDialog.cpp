@@ -32,15 +32,15 @@ UnicodeString StripHotKey(const UnicodeString Text)
 }
 
 //---------------------------------------------------------------------------
-System::TRect Rect(int Left, int Top, int Right, int Bottom)
+TRect Rect(int Left, int Top, int Right, int Bottom)
 {
-    System::TRect result = System::TRect(Left, Top, Right, Bottom);
+    TRect result = TRect(Left, Top, Right, Bottom);
     return result;
 }
 
 //---------------------------------------------------------------------------
 TFarDialog::TFarDialog(TCustomFarPlugin *AFarPlugin) :
-    System::TObject(),
+    TObject(),
     FFarPlugin(NULL),
     FBounds(-1, -1, 40, 10),
     FFlags(0),
@@ -67,8 +67,8 @@ TFarDialog::TFarDialog(TCustomFarPlugin *AFarPlugin) :
 {
     assert(AFarPlugin);
     Self = this;
-    FItems = new System::TObjectList();
-    FContainers = new System::TObjectList();
+    FItems = new TObjectList();
+    FContainers = new TObjectList();
     FFarPlugin = AFarPlugin;
     FFlags = 0;
     FHandle = 0;
@@ -85,7 +85,7 @@ TFarDialog::TFarDialog(TCustomFarPlugin *AFarPlugin) :
     FSynchronizeObjects[1] = INVALID_HANDLE_VALUE;
 
     FBorderBox = new TFarBox(this);
-    FBorderBox->SetBounds(System::TRect(3, 1, -4, -2));
+    FBorderBox->SetBounds(TRect(3, 1, -4, -2));
     FBorderBox->SetDouble(true);
 }
 //---------------------------------------------------------------------------
@@ -109,7 +109,7 @@ TFarDialog::~TFarDialog()
     }
 }
 //---------------------------------------------------------------------------
-void TFarDialog::SetBounds(const System::TRect &value)
+void TFarDialog::SetBounds(const TRect &value)
 {
     if (GetBounds() != value)
     {
@@ -138,9 +138,9 @@ void TFarDialog::SetBounds(const System::TRect &value)
     }
 }
 //---------------------------------------------------------------------------
-System::TRect TFarDialog::GetClientRect() const
+TRect TFarDialog::GetClientRect() const
 {
-    System::TRect R;
+    TRect R;
     if (FBorderBox)
     {
         R = FBorderBox->GetBounds();
@@ -159,12 +159,12 @@ System::TRect TFarDialog::GetClientRect() const
     return R;
 }
 //---------------------------------------------------------------------------
-System::TPoint TFarDialog::GetClientSize() const
+TPoint TFarDialog::GetClientSize() const
 {
-    System::TPoint S;
+    TPoint S;
     if (FBorderBox)
     {
-        System::TRect R = FBorderBox->GetActualBounds();
+        TRect R = FBorderBox->GetActualBounds();
         S.x = R.Width() + 1;
         S.y = R.Height() + 1;
         S.x -= S.x > 4 ? 4 : S.x;
@@ -177,9 +177,9 @@ System::TPoint TFarDialog::GetClientSize() const
     return S;
 }
 //---------------------------------------------------------------------------
-System::TPoint TFarDialog::GetMaxSize()
+TPoint TFarDialog::GetMaxSize()
 {
-    System::TPoint P = GetFarPlugin()->TerminalInfo();
+    TPoint P = GetFarPlugin()->TerminalInfo();
     P.x -= 2;
     P.y -= 3;
     return P;
@@ -208,7 +208,7 @@ void TFarDialog::SetCentered(const bool &value)
     if (GetCentered() != value)
     {
         assert(!GetHandle());
-        System::TRect B = GetBounds();
+        TRect B = GetBounds();
         B.Left = value ? -1 : 0;
         B.Top = value ? -1 : 0;
         SetBounds(B);
@@ -220,21 +220,21 @@ bool TFarDialog::GetCentered() const
     return (GetBounds().Left < 0) && (GetBounds().Top < 0);
 }
 //---------------------------------------------------------------------------
-System::TPoint TFarDialog::GetSize() const
+TPoint TFarDialog::GetSize() const
 {
     if (GetCentered())
     {
-        return System::TPoint(GetBounds().Right, GetBounds().Bottom);
+        return TPoint(GetBounds().Right, GetBounds().Bottom);
     }
     else
     {
-        return System::TPoint(GetBounds().Width() + 1, GetBounds().Height() + 1);
+        return TPoint(GetBounds().Width() + 1, GetBounds().Height() + 1);
     }
 }
 //---------------------------------------------------------------------------
-void TFarDialog::SetSize(const System::TPoint &value)
+void TFarDialog::SetSize(const TPoint &value)
 {
-    System::TRect B = GetBounds();
+    TRect B = GetBounds();
     if (GetCentered())
     {
         B.Right = value.x;
@@ -250,7 +250,7 @@ void TFarDialog::SetSize(const System::TPoint &value)
 //---------------------------------------------------------------------------
 void TFarDialog::SetWidth(const int &value)
 {
-    SetSize(System::TPoint(value, static_cast<int>(GetHeight())));
+    SetSize(TPoint(value, static_cast<int>(GetHeight())));
 }
 //---------------------------------------------------------------------------
 int TFarDialog::GetWidth() const
@@ -260,7 +260,7 @@ int TFarDialog::GetWidth() const
 //---------------------------------------------------------------------------
 void TFarDialog::SetHeight(const size_t &value)
 {
-    SetSize(System::TPoint(static_cast<int>(GetWidth()), static_cast<int>(value)));
+    SetSize(TPoint(static_cast<int>(GetWidth()), static_cast<int>(value)));
 }
 //---------------------------------------------------------------------------
 size_t TFarDialog::GetHeight() const
@@ -304,7 +304,7 @@ TFarDialogItem *TFarDialog::GetItem(size_t Index)
 //---------------------------------------------------------------------------
 void TFarDialog::Add(TFarDialogItem *DialogItem)
 {
-    System::TRect R = GetClientRect();
+    TRect R = GetClientRect();
     int Left, Top;
     GetNextItemPosition(Left, Top);
     R.Left = Left;
@@ -341,7 +341,7 @@ void TFarDialog::Add(TFarDialogContainer *Container)
 //---------------------------------------------------------------------------
 void TFarDialog::GetNextItemPosition(int &Left, int &Top)
 {
-    System::TRect R = GetClientRect();
+    TRect R = GetClientRect();
     Left = R.Left;
     Top = R.Top;
 
@@ -678,7 +678,7 @@ TFarDialogItem *TFarDialog::ItemAt(int X, int Y)
     TFarDialogItem *Result = NULL;
     for (size_t i = 0; i < GetItemCount(); i++)
     {
-        System::TRect Bounds = GetItem(i)->GetActualBounds();
+        TRect Bounds = GetItem(i)->GetActualBounds();
         if ((Bounds.Left <= X) && (X <= Bounds.Right) &&
                 (Bounds.Top <= Y) && (Y <= Bounds.Bottom))
         {
@@ -746,7 +746,7 @@ int TFarDialog::ShowModal()
 
         {
             TFarEnvGuard Guard;
-            System::TRect Bounds = GetBounds();
+            TRect Bounds = GetBounds();
             dlg = GetFarPlugin()->GetStartupInfo()->DialogInit(
                              GetFarPlugin()->GetStartupInfo()->ModuleNumber,
                              Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom,
@@ -780,7 +780,7 @@ void TFarDialog::BreakSynchronize()
     SetEvent(FSynchronizeObjects[1]);
 }
 //---------------------------------------------------------------------------
-void TFarDialog::Synchronize(const System::threadmethod_slot_type &slot)
+void TFarDialog::Synchronize(const threadmethod_slot_type &slot)
 {
     if (FSynchronizeObjects[0] == INVALID_HANDLE_VALUE)
     {
@@ -808,7 +808,7 @@ void TFarDialog::Change()
     }
     else
     {
-        System::TList *NotifiedContainers = new System::TList();
+        TList *NotifiedContainers = new TList();
         {
             BOOST_SCOPE_EXIT ( (&NotifiedContainers) )
             {
@@ -948,7 +948,7 @@ bool TFarDialog::ChangesLocked()
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TFarDialogContainer::TFarDialogContainer(TFarDialog *ADialog) :
-    System::TObject(),
+    TObject(),
     FLeft(0),
     FTop(0),
     FItems(NULL),
@@ -957,7 +957,7 @@ TFarDialogContainer::TFarDialogContainer(TFarDialog *ADialog) :
 {
     assert(ADialog);
 
-    FItems = new System::TObjectList();
+    FItems = new TObjectList();
     FItems->SetOwnsObjects(false);
     FDialog = ADialog;
     FEnabled = true;
@@ -1030,7 +1030,7 @@ size_t TFarDialogContainer::GetItemCount() const
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TFarDialogItem::TFarDialogItem(TFarDialog *ADialog, int AType) :
-    System::TObject(),
+    TObject(),
     FDefaultType(0),
     FGroup(0),
     FTag(0),
@@ -1076,7 +1076,7 @@ FarDialogItem *TFarDialogItem::GetDialogItem()
     return &GetDialog()->FDialogItems[GetItem()];
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::SetBounds(System::TRect value)
+void TFarDialogItem::SetBounds(TRect value)
 {
     if (FBounds != value)
     {
@@ -1097,7 +1097,7 @@ void TFarDialogItem::DialogResized()
 //---------------------------------------------------------------------------
 void TFarDialogItem::ResetBounds()
 {
-    System::TRect B = FBounds;
+    TRect B = FBounds;
     FarDialogItem *DItem = GetDialogItem();
     // DEBUG_PRINTF(L"this = %x, DItem = %x, GetContainer = %x", this, DItem, GetContainer());
 #define BOUND(DIB, BB, DB, CB) DItem->DIB = B.BB >= 0 ? \
@@ -1115,7 +1115,7 @@ void TFarDialogItem::UpdateBounds()
 
     if (GetDialog()->GetHandle())
     {
-        System::TRect B = GetActualBounds();
+        TRect B = GetActualBounds();
         SMALL_RECT Rect;
         Rect.Left = static_cast<short int>(B.Left);
         Rect.Top = static_cast<short int>(B.Top);
@@ -1157,9 +1157,9 @@ void TFarDialogItem::UpdateFlags(size_t value)
     }
 }
 //---------------------------------------------------------------------------
-System::TRect TFarDialogItem::GetActualBounds()
+TRect TFarDialogItem::GetActualBounds()
 {
-    return System::TRect(GetDialogItem()->X1, GetDialogItem()->Y1,
+    return TRect(GetDialogItem()->X1, GetDialogItem()->Y1,
                      GetDialogItem()->X2, GetDialogItem()->Y2);
 }
 //---------------------------------------------------------------------------
@@ -1510,7 +1510,7 @@ void TFarDialogItem::SetChecked(bool value)
 //---------------------------------------------------------------------------
 void TFarDialogItem::Move(int DeltaX, int DeltaY)
 {
-    System::TRect R = GetBounds();
+    TRect R = GetBounds();
 
     R.Left += DeltaX;
     R.Right += DeltaX;
@@ -1527,8 +1527,8 @@ void TFarDialogItem::MoveAt(int X, int Y)
 //---------------------------------------------------------------------------
 void TFarDialogItem::SetCoordinate(size_t Index, int value)
 {
-    assert(sizeof(System::TRect) == sizeof(long) * 4);
-    System::TRect R = GetBounds();
+    assert(sizeof(TRect) == sizeof(long) * 4);
+    TRect R = GetBounds();
     long *D = reinterpret_cast<long *>(&R);
     D += Index;
     *D = value;
@@ -1537,8 +1537,8 @@ void TFarDialogItem::SetCoordinate(size_t Index, int value)
 //---------------------------------------------------------------------------
 int TFarDialogItem::GetCoordinate(size_t Index)
 {
-    assert(sizeof(System::TRect) == sizeof(long) * 4);
-    System::TRect R = GetBounds();
+    assert(sizeof(TRect) == sizeof(long) * 4);
+    TRect R = GetBounds();
     long *D = reinterpret_cast<long *>(&R);
     D += Index;
     return *D;
@@ -1546,7 +1546,7 @@ int TFarDialogItem::GetCoordinate(size_t Index)
 //---------------------------------------------------------------------------
 void TFarDialogItem::SetWidth(int value)
 {
-    System::TRect R = GetBounds();
+    TRect R = GetBounds();
     if (R.Left >= 0)
     {
         R.Right = R.Left + value - 1;
@@ -1566,7 +1566,7 @@ int TFarDialogItem::GetWidth()
 //---------------------------------------------------------------------------
 void TFarDialogItem::SetHeight(int value)
 {
-    System::TRect R = GetBounds();
+    TRect R = GetBounds();
     if (R.Top >= 0)
     {
         R.Bottom = R.Top + value - 1;
@@ -1635,7 +1635,7 @@ void TFarDialogItem::Init()
         // at least for "text" item, returned item size is not correct (on 1.70 final)
         SendMessage(DM_GETITEMPOSITION, reinterpret_cast<LONG_PTR>(&Rect));
 
-        System::TRect B = GetBounds();
+        TRect B = GetBounds();
         B.Left = Rect.Left;
         B.Right = Rect.Right;
         SetBounds(B);
@@ -1651,16 +1651,16 @@ bool TFarDialogItem::CloseQuery()
     return true;
 }
 //---------------------------------------------------------------------------
-System::TPoint TFarDialogItem::MouseClientPosition(MOUSE_EVENT_RECORD *Event)
+TPoint TFarDialogItem::MouseClientPosition(MOUSE_EVENT_RECORD *Event)
 {
-    System::TPoint Result;
+    TPoint Result;
     if (GetType() == DI_USERCONTROL)
     {
-        Result = System::TPoint(Event->dwMousePosition.X, Event->dwMousePosition.Y);
+        Result = TPoint(Event->dwMousePosition.X, Event->dwMousePosition.Y);
     }
     else
     {
-        Result = System::TPoint(
+        Result = TPoint(
                      Event->dwMousePosition.X - GetDialog()->GetBounds().Left - GetLeft(),
                      Event->dwMousePosition.Y - GetDialog()->GetBounds().Top - GetTop());
     }
@@ -2080,7 +2080,7 @@ bool TFarSeparator::GetDouble()
 //---------------------------------------------------------------------------
 void TFarSeparator::SetPosition(int value)
 {
-    System::TRect R = GetBounds();
+    TRect R = GetBounds();
     R.Top = value;
     R.Bottom = value;
     SetBounds(R);
@@ -2108,7 +2108,7 @@ void TFarText::SetData(const UnicodeString value)
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TFarList::TFarList(TFarDialogItem *ADialogItem) :
-    System::TStringList()
+    TStringList()
 {
     assert((ADialogItem == NULL) ||
            (ADialogItem->GetType() == DI_COMBOBOX) || (ADialogItem->GetType() == DI_LISTBOX));
@@ -2130,9 +2130,9 @@ TFarList::~TFarList()
     delete FListItems;
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarList::Assign(System::TPersistent *Source)
+void __fastcall TFarList::Assign(TPersistent *Source)
 {
-    System::TStringList::Assign(Source);
+    TStringList::Assign(Source);
 
     TFarList *FarList = dynamic_cast<TFarList *>(Source);
     if (FarList != NULL)
@@ -2167,7 +2167,7 @@ void TFarList::Put(size_t Index, const UnicodeString S)
             {
                 Self->FNoDialogUpdate = false;
             } BOOST_SCOPE_EXIT_END
-            System::TStringList::PutString(Index, S);
+            TStringList::PutString(Index, S);
             if (GetUpdateCount() == 0)
             {
                 UpdateItem(Index);
@@ -2176,13 +2176,13 @@ void TFarList::Put(size_t Index, const UnicodeString S)
     }
     else
     {
-        System::TStringList::PutString(Index, S);
+        TStringList::PutString(Index, S);
     }
 }
 //---------------------------------------------------------------------------
 void TFarList::Changed()
 {
-    System::TStringList::Changed();
+    TStringList::Changed();
 
     if ((GetUpdateCount() == 0) && !FNoDialogUpdate)
     {
@@ -2486,7 +2486,7 @@ void TFarListBox::UpdateMouseReaction()
     SendMessage(DM_LISTSETMOUSEREACTION, GetAutoSelect());
 }
 //---------------------------------------------------------------------------
-void TFarListBox::SetItems(System::TStrings *value)
+void TFarListBox::SetItems(TStrings *value)
 {
     FList->Assign(value);
 }
@@ -2547,7 +2547,7 @@ void TFarComboBox::Init()
 //---------------------------------------------------------------------------
 TFarLister::TFarLister(TFarDialog *ADialog) :
     TFarDialogItem(ADialog, DI_USERCONTROL),
-    FItems(new System::TStringList()),
+    FItems(new TStringList()),
     FTopIndex(0)
 {
     FItems->SetOnChange(boost::bind(&TFarLister::ItemsChange, this, _1));
@@ -2558,7 +2558,7 @@ TFarLister::~TFarLister()
     delete FItems;
 }
 //---------------------------------------------------------------------------
-void TFarLister::ItemsChange(System::TObject * /*Sender*/)
+void TFarLister::ItemsChange(TObject * /*Sender*/)
 {
     FTopIndex = 0;
     if (GetDialog()->GetHandle())
@@ -2581,12 +2581,12 @@ void TFarLister::SetTopIndex(size_t value)
     }
 }
 //---------------------------------------------------------------------------
-System::TStrings *TFarLister::GetItems()
+TStrings *TFarLister::GetItems()
 {
     return FItems;
 }
 //---------------------------------------------------------------------------
-void TFarLister::SetItems(System::TStrings *value)
+void TFarLister::SetItems(TStrings *value)
 {
     if (!FItems->Equals(value))
     {
@@ -2724,7 +2724,7 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
         }
 
         MOUSE_EVENT_RECORD *Event = reinterpret_cast<MOUSE_EVENT_RECORD *>(Param);
-        System::TPoint P = MouseClientPosition(Event);
+        TPoint P = MouseClientPosition(Event);
 
         if (FLAGSET(Event->dwEventFlags, DOUBLE_CLICK) &&
                 (P.x < GetWidth() - 1))

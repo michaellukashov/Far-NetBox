@@ -154,7 +154,7 @@ bool __fastcall TOptions::FindSwitch(const UnicodeString Switch)
 }
 //---------------------------------------------------------------------------
 bool __fastcall TOptions::FindSwitch(const UnicodeString Switch,
-                          System::TStrings *Params, int ParamsMax)
+                          TStrings *Params, int ParamsMax)
 {
     UnicodeString Value;
     int ParamsStart;

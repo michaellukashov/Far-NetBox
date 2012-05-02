@@ -32,15 +32,15 @@ public:
     virtual void __fastcall ChangeFileProperties(const UnicodeString FileName,
                                       const TRemoteFile *File, const TRemoteProperties *Properties,
                                       TChmodSessionAction &Action);
-    virtual bool __fastcall LoadFilesProperties(System::TStrings *FileList);
+    virtual bool __fastcall LoadFilesProperties(TStrings *FileList);
     virtual void __fastcall CalculateFilesChecksum(const UnicodeString Alg,
-                                        System::TStrings *FileList, System::TStrings *Checksums,
+                                        TStrings *FileList, TStrings *Checksums,
                                         TCalculatedChecksumEvent *OnCalculatedChecksum);
-    virtual void __fastcall CopyToLocal(System::TStrings *FilesToCopy,
+    virtual void __fastcall CopyToLocal(TStrings *FilesToCopy,
                              const UnicodeString TargetDir, const TCopyParamType *CopyParam,
                              int Params, TFileOperationProgressType *OperationProgress,
                              TOnceDoneOperation &OnceDoneOperation);
-    virtual void __fastcall CopyToRemote(System::TStrings *FilesToCopy,
+    virtual void __fastcall CopyToRemote(TStrings *FilesToCopy,
                               const UnicodeString TargetDir, const TCopyParamType *CopyParam,
                               int Params, TFileOperationProgressType *OperationProgress,
                               TOnceDoneOperation &OnceDoneOperation);
@@ -65,7 +65,7 @@ public:
     virtual void __fastcall CopyFile(const UnicodeString FileName,
                           const UnicodeString NewName);
     virtual UnicodeString __fastcall FileUrl(const UnicodeString FileName);
-    virtual System::TStrings * __fastcall GetFixedPaths();
+    virtual TStrings * __fastcall GetFixedPaths();
     virtual void __fastcall __fastcall SpaceAvailable(const UnicodeString Path,
                                 TSpaceAvailable &ASpaceAvailable);
     virtual const TSessionInfo & __fastcall GetSessionInfo();
@@ -149,7 +149,7 @@ private:
     captureoutput_signal_type FOnCaptureOutput;
     TSessionInfo FSessionInfo;
     UnicodeString FUserName;
-    System::TDateTime FLastDataSent;
+    TDateTime FLastDataSent;
     TCURLIntf *FCURLIntf;
     bool FPasswordFailed;
     UnicodeString FSystem;
@@ -164,8 +164,8 @@ private:
     bool FAwaitingProgress;
     TCommand FLastCommand;
     size_t FLastReadDirectoryProgress;
-    System::TStrings *FLastResponse;
-    System::TStrings *FLastError;
+    TStrings *FLastResponse;
+    TStrings *FLastError;
     TCriticalSection *FTransferStatusCriticalSection;
     TAutoSwitch FListAll;
     bool FDoListAll;

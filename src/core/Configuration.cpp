@@ -258,7 +258,7 @@ void __fastcall TConfiguration::Save(bool All, bool Explicit)
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::Export(const UnicodeString FileName)
 {
-  System::Error(SNotImplemented, 3004);
+  Error(SNotImplemented, 3004);
   THierarchicalStorage * Storage = NULL;
   THierarchicalStorage * ExportStorage = NULL;
   // try
@@ -295,7 +295,7 @@ void __fastcall TConfiguration::Export(const UnicodeString FileName)
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::LoadData(THierarchicalStorage * Storage)
 {
-  #define KEYEX(TYPE, VAR, NAME) Set##VAR(Storage->Read ## TYPE(LASTELEM(System::MB2W(#NAME)), Get##VAR()))
+  #define KEYEX(TYPE, VAR, NAME) Set##VAR(Storage->Read ## TYPE(LASTELEM(MB2W(#NAME)), Get##VAR()))
   // #pragma warn -eas
   REGCONFIG(false);
   // #pragma warn +eas
@@ -725,7 +725,7 @@ int __fastcall TConfiguration::GetCompoundVersion()
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TConfiguration::ModuleFileName()
 {
-  System::Error(SNotImplemented, 204);
+  Error(SNotImplemented, 204);
   return L""; // FIXME ParamStr(0);
 }
 //---------------------------------------------------------------------------
@@ -898,7 +898,7 @@ void __fastcall TConfiguration::SetDefaultStorage()
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::SetIniFileStorageName(UnicodeString value)
 {
-  System::Error(SNotImplemented, 3006);
+  Error(SNotImplemented, 3006);
   FIniFileStorageName = value;
   // FStorage = stIniFile;
 }

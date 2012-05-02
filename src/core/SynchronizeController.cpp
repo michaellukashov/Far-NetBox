@@ -29,7 +29,7 @@ TSynchronizeController::~TSynchronizeController()
     assert(FSynchronizeMonitor == NULL);
 }
 //---------------------------------------------------------------------------
-void TSynchronizeController::StartStop(System::TObject *Sender,
+void TSynchronizeController::StartStop(TObject *Sender,
                                        bool Start, const TSynchronizeParamType &Params, const TCopyParamType &CopyParam,
                                        TSynchronizeOptions *Options,
                                        const synchronizeabort_slot_type &OnAbort, const synchronizethreads_slot_type &OnSynchronizeThreads,
@@ -63,7 +63,7 @@ void TSynchronizeController::StartStop(System::TObject *Sender,
                                FMTLOAD(SYNCHRONIZE_SCAN, FSynchronizeParams.LocalDirectory.c_str()));
             }
             int Directories = 0;
-            System::Error(SNotImplemented, 256);
+            Error(SNotImplemented, 256);
             /*
                   // FIXME
                   FSynchronizeMonitor = new TDiscMonitor(dynamic_cast<TComponent*>(Sender));
@@ -93,20 +93,20 @@ void TSynchronizeController::StartStop(System::TObject *Sender,
         }
         catch(...)
         {
-            // FIXME SAFE_DESTROY((System::TObject *)FSynchronizeMonitor);
-            System::Error(SNotImplemented, 257);
+            // FIXME SAFE_DESTROY((TObject *)FSynchronizeMonitor);
+            Error(SNotImplemented, 257);
             throw;
         }
     }
     else
     {
         FOptions = NULL;
-        // SAFE_DESTROY((System::TObject *)FSynchronizeMonitor);
+        // SAFE_DESTROY((TObject *)FSynchronizeMonitor);
     }
 }
 //---------------------------------------------------------------------------
 void TSynchronizeController::SynchronizeChange(
-    System::TObject * /*Sender*/, const UnicodeString Directory, bool &SubdirsChanged)
+    TObject * /*Sender*/, const UnicodeString Directory, bool &SubdirsChanged)
 {
     try
     {
@@ -185,7 +185,7 @@ void TSynchronizeController::SynchronizeAbort(bool Close)
     if (FSynchronizeMonitor != NULL)
     {
         // FIXME FSynchronizeMonitor->Close();
-        System::Error(SNotImplemented, 258);
+        Error(SNotImplemented, 258);
     }
     assert(!FSynchronizeAbort.IsEmpty());
     FSynchronizeAbort(NULL, Close);
@@ -224,7 +224,7 @@ void TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
     }
 }
 //---------------------------------------------------------------------------
-void TSynchronizeController::SynchronizeFilter(System::TObject * /*Sender*/,
+void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
         const UnicodeString DirectoryName, bool &Add)
 {
     if ((FOptions != NULL) && (FOptions->Filter != NULL))
@@ -241,7 +241,7 @@ void TSynchronizeController::SynchronizeFilter(System::TObject * /*Sender*/,
 }
 //---------------------------------------------------------------------------
 void TSynchronizeController::SynchronizeInvalid(
-    System::TObject * /*Sender*/, const UnicodeString Directory, const UnicodeString ErrorStr)
+    TObject * /*Sender*/, const UnicodeString Directory, const UnicodeString ErrorStr)
 {
     if (!FOnSynchronizeInvalid.IsEmpty())
     {
@@ -252,7 +252,7 @@ void TSynchronizeController::SynchronizeInvalid(
 }
 //---------------------------------------------------------------------------
 void TSynchronizeController::SynchronizeTooManyDirectories(
-    System::TObject * /*Sender*/, int &MaxDirectories)
+    TObject * /*Sender*/, int &MaxDirectories)
 {
     if (!FOnTooManyDirectories.IsEmpty())
     {
@@ -261,7 +261,7 @@ void TSynchronizeController::SynchronizeTooManyDirectories(
 }
 //---------------------------------------------------------------------------
 void TSynchronizeController::SynchronizeDirectoriesChange(
-    System::TObject * /*Sender*/, int Directories)
+    TObject * /*Sender*/, int Directories)
 {
     SynchronizeLog(slDirChange, FMTLOAD(SYNCHRONIZE_START, Directories));
 }

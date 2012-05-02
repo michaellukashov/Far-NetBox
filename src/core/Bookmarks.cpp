@@ -12,13 +12,13 @@
 #include "TextsCore.h"
 #include "Exceptions.h"
 //---------------------------------------------------------------------------
-TBookmarks::TBookmarks() : System::TObject()
+TBookmarks::TBookmarks() : TObject()
 {
     FSharedKey = TNamedObjectList::HiddenPrefix + L"shared";
-    FBookmarkLists = new System::TStringList();
+    FBookmarkLists = new TStringList();
     FBookmarkLists->SetSorted(true);
     FBookmarkLists->SetCaseSensitive(false);
-    FBookmarkLists->SetDuplicates(System::dupError);
+    FBookmarkLists->SetDuplicates(dupError);
 }
 //---------------------------------------------------------------------------
 TBookmarks::~TBookmarks()
@@ -44,7 +44,7 @@ void TBookmarks::Load(THierarchicalStorage *Storage)
     {
         if (Storage->OpenSubKey(Keys[i], false))
         {
-            System::TStrings *BookmarkKeys = new System::TStringList();
+            TStrings *BookmarkKeys = new TStringList();
             {
                 BOOST_SCOPE_EXIT ( (&BookmarkKeys) )
                 {
@@ -84,7 +84,7 @@ void TBookmarks::Load(THierarchicalStorage *Storage)
 void TBookmarks::LoadLevel(THierarchicalStorage *Storage, const UnicodeString Key,
                            int Index, TBookmarkList *BookmarkList)
 {
-    System::TStrings *Names = new System::TStringList();
+    TStrings *Names = new TStringList();
     {
         BOOST_SCOPE_EXIT ( (&Names) )
         {
@@ -93,7 +93,7 @@ void TBookmarks::LoadLevel(THierarchicalStorage *Storage, const UnicodeString Ke
         Storage->GetValueNames(Names);
         UnicodeString Name;
         UnicodeString Directory;
-        System::TShortCut ShortCut(0);
+        TShortCut ShortCut(0);
         for (size_t i = 0; i < Names->GetCount(); i++)
         {
             Name = Names->GetStrings(i);
@@ -105,7 +105,7 @@ void TBookmarks::LoadLevel(THierarchicalStorage *Storage, const UnicodeString Ke
             else
             {
                 Directory = L""; // use only in cased of malformed config
-                ShortCut = System::TShortCut(Storage->Readint(Name, 0));
+                ShortCut = TShortCut(Storage->Readint(Name, 0));
             }
             TBookmark *Bookmark;
             if (IsNumber(Name))
@@ -280,12 +280,12 @@ void TBookmarks::SetSharedBookmarks(TBookmarkList *value)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TBookmarkList::TBookmarkList(): System::TPersistent()
+TBookmarkList::TBookmarkList(): TPersistent()
 {
     FModified = false;
-    FBookmarks = new System::TStringList();
+    FBookmarks = new TStringList();
     FBookmarks->SetCaseSensitive(false);
-    FOpenedNodes = new System::TStringList();
+    FOpenedNodes = new TStringList();
     FOpenedNodes->SetCaseSensitive(false);
     FOpenedNodes->SetSorted(true);
 }
@@ -307,7 +307,7 @@ void TBookmarkList::Clear()
     FOpenedNodes->Clear();
 }
 //---------------------------------------------------------------------------
-void TBookmarkList::Assign(System::TPersistent *Source)
+void TBookmarkList::Assign(TPersistent *Source)
 {
     TBookmarkList *SourceList;
     SourceList = reinterpret_cast<TBookmarkList *>(Source);
@@ -325,7 +325,7 @@ void TBookmarkList::Assign(System::TPersistent *Source)
     }
     else
     {
-        System::TPersistent::Assign(Source);
+        TPersistent::Assign(Source);
     }
 }
 //---------------------------------------------------------------------------
@@ -424,7 +424,7 @@ TBookmark *TBookmarkList::FindByName(const UnicodeString Node, const UnicodeStri
     return Bookmark;
 }
 //---------------------------------------------------------------------------
-TBookmark *TBookmarkList::FindByShortCut(System::TShortCut ShortCut)
+TBookmark *TBookmarkList::FindByShortCut(TShortCut ShortCut)
 {
     for (size_t Index = 0; Index < FBookmarks->GetCount(); Index++)
     {
@@ -488,7 +488,7 @@ TBookmark::TBookmark()
     FOwner = NULL;
 }
 //---------------------------------------------------------------------------
-void TBookmark::Assign(System::TPersistent *Source)
+void TBookmark::Assign(TPersistent *Source)
 {
     TBookmark *SourceBookmark;
     SourceBookmark = reinterpret_cast<TBookmark *>(Source);
@@ -502,7 +502,7 @@ void TBookmark::Assign(System::TPersistent *Source)
     }
     else
     {
-        System::TPersistent::Assign(Source);
+        TPersistent::Assign(Source);
     }
 }
 //---------------------------------------------------------------------------
@@ -553,7 +553,7 @@ void TBookmark::SetNode(const UnicodeString value)
     }
 }
 //---------------------------------------------------------------------------
-void TBookmark::SetShortCut(System::TShortCut value)
+void TBookmark::SetShortCut(TShortCut value)
 {
     if (GetShortCut() != value)
     {

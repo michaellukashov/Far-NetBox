@@ -15,7 +15,7 @@ public:
     bool __fastcall FindSwitch(const UnicodeString Switch, UnicodeString &Value);
     bool __fastcall FindSwitch(const UnicodeString Switch, int &ParamsStart,
                     int &ParamsCount);
-    bool __fastcall FindSwitch(const UnicodeString Switch, System::TStrings *Params,
+    bool __fastcall FindSwitch(const UnicodeString Switch, TStrings *Params,
                     int ParamsMax = -1);
     void __fastcall ParamsProcessed(int Position, int Count);
     UnicodeString __fastcall SwitchValue(const UnicodeString Switch, const UnicodeString Default = L"");

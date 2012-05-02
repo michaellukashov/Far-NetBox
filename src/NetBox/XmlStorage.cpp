@@ -103,7 +103,7 @@ bool TXmlStorage::WriteXml()
 //---------------------------------------------------------------------------
 bool TXmlStorage::Copy(TXmlStorage *Storage)
 {
-    System::Error(SNotImplemented, 3020);
+    Error(SNotImplemented, 3020);
     bool Result = false;
     return Result;
 }
@@ -224,7 +224,7 @@ void TXmlStorage::GetSubKeyNames(TStrings *Strings)
 //---------------------------------------------------------------------------
 void TXmlStorage::GetValueNames(TStrings *Strings)
 {
-    System::Error(SNotImplemented, 3022);
+    Error(SNotImplemented, 3022);
     // FRegistry->GetValueNames(Strings);
 }
 //---------------------------------------------------------------------------
@@ -242,7 +242,7 @@ bool TXmlStorage::DeleteValue(const UnicodeString Name)
 //---------------------------------------------------------------------------
 bool TXmlStorage::KeyExists(const UnicodeString SubKey)
 {
-    System::Error(SNotImplemented, 3024);
+    Error(SNotImplemented, 3024);
     UnicodeString K = PuttyMungeStr(SubKey);
     bool Result = false; // FRegistry->KeyExists(K);
     return Result;
@@ -345,7 +345,7 @@ bool TXmlStorage::ValueExists(const UnicodeString Value)
 //---------------------------------------------------------------------------
 int TXmlStorage::BinaryDataSize(const UnicodeString Name)
 {
-    System::Error(SNotImplemented, 3026);
+    Error(SNotImplemented, 3026);
     int Result = 0; // FRegistry->GetDataSize(Name);
     return Result;
 }
@@ -393,7 +393,7 @@ UnicodeString TXmlStorage::ReadStringRaw(const UnicodeString Name, const Unicode
 size_t TXmlStorage::ReadBinaryData(const UnicodeString Name,
                                 void *Buffer, size_t Size)
 {
-    System::Error(SNotImplemented, 3028);
+    Error(SNotImplemented, 3028);
     size_t Result = 0;
     return Result;
 }

@@ -316,7 +316,7 @@ UnicodeString TCopyParamType::RestoreChars(const UnicodeString FileName) const
         while ((InvalidChar = wcschr(InvalidChar, TokenPrefix)) != NULL)
         {
             size_t Index = InvalidChar - fileName.c_str() + 1;
-            System::Error(SNotImplemented, 206);
+            Error(SNotImplemented, 206);
             if ((fileName.Length() >= Index + 2) &&
                     false // FIXME (fileName.ByteType(Index) == mbSingleByte) &&
                     // (fileName.ByteType(Index + 1) == mbSingleByte) &&

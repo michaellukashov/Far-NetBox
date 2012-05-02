@@ -70,7 +70,7 @@ struct TClipboardHandler
 {
   UnicodeString Text;
 
-  void Copy(System::TObject * /*Sender*/)
+  void Copy(TObject * /*Sender*/)
   {
       CopyToClipboard(Text);
   }
@@ -141,15 +141,15 @@ public:
   virtual void __fastcall ChangeFileProperties(const UnicodeString FileName,
     const TRemoteFile *File, const TRemoteProperties *Properties,
     TChmodSessionAction &Action) = 0;
-  virtual bool __fastcall LoadFilesProperties(System::TStrings *FileList) = 0;
+  virtual bool __fastcall LoadFilesProperties(TStrings *FileList) = 0;
   virtual void __fastcall CalculateFilesChecksum(const UnicodeString Alg,
-    System::TStrings *FileList, System::TStrings *Checksums,
+    TStrings *FileList, TStrings *Checksums,
     TCalculatedChecksumEvent *OnCalculatedChecksum) = 0;
-  virtual void __fastcall CopyToLocal(System::TStrings *FilesToCopy,
+  virtual void __fastcall CopyToLocal(TStrings *FilesToCopy,
     const UnicodeString TargetDir, const TCopyParamType *CopyParam,
     int Params, TFileOperationProgressType *OperationProgress,
     TOnceDoneOperation &OnceDoneOperation) = 0;
-  virtual void __fastcall CopyToRemote(System::TStrings *FilesToCopy,
+  virtual void __fastcall CopyToRemote(TStrings *FilesToCopy,
     const UnicodeString TargetDir, const TCopyParamType *CopyParam,
     int Params, TFileOperationProgressType *OperationProgress,
     TOnceDoneOperation &OnceDoneOperation) = 0;
@@ -175,7 +175,7 @@ public:
   virtual void __fastcall CopyFile(const UnicodeString FileName,
     const UnicodeString NewName) = 0;
   virtual UnicodeString __fastcall FileUrl(const UnicodeString FileName) = 0;
-  virtual System::TStrings * __fastcall GetFixedPaths() = 0;
+  virtual TStrings * __fastcall GetFixedPaths() = 0;
   virtual void __fastcall SpaceAvailable(const UnicodeString Path,
     TSpaceAvailable &ASpaceAvailable) = 0;
   virtual const TSessionInfo & __fastcall GetSessionInfo() = 0;

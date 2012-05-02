@@ -38,15 +38,15 @@ public:
     virtual void __fastcall ChangeFileProperties(const UnicodeString FileName,
                                       const TRemoteFile *File, const TRemoteProperties *Properties,
                                       TChmodSessionAction &Action);
-    virtual bool __fastcall LoadFilesProperties(System::TStrings *FileList);
+    virtual bool __fastcall LoadFilesProperties(TStrings *FileList);
     virtual void __fastcall CalculateFilesChecksum(const UnicodeString Alg,
-                                        System::TStrings *FileList, System::TStrings *Checksums,
+                                        TStrings *FileList, TStrings *Checksums,
                                         TCalculatedChecksumEvent *OnCalculatedChecksum);
-    virtual void __fastcall CopyToLocal(System::TStrings *FilesToCopy,
+    virtual void __fastcall CopyToLocal(TStrings *FilesToCopy,
                              const UnicodeString TargetDir, const TCopyParamType *CopyParam,
                              int Params, TFileOperationProgressType *OperationProgress,
                              TOnceDoneOperation &OnceDoneOperation);
-    virtual void __fastcall CopyToRemote(System::TStrings *FilesToCopy,
+    virtual void __fastcall CopyToRemote(TStrings *FilesToCopy,
                               const UnicodeString TargetDir, const TCopyParamType *CopyParam,
                               int Params, TFileOperationProgressType *OperationProgress,
                               TOnceDoneOperation &OnceDoneOperation);
@@ -71,7 +71,7 @@ public:
     virtual void __fastcall CopyFile(const UnicodeString FileName,
                           const UnicodeString NewName);
     virtual UnicodeString __fastcall FileUrl(const UnicodeString FileName);
-    virtual System::TStrings * __fastcall GetFixedPaths();
+    virtual TStrings * __fastcall GetFixedPaths();
     virtual void __fastcall SpaceAvailable(const UnicodeString Path,
                                 TSpaceAvailable &ASpaceAvailable);
     virtual const TSessionInfo & __fastcall GetSessionInfo();
@@ -89,19 +89,19 @@ protected:
     UnicodeString FDirectoryToChangeTo;
     UnicodeString FHomeDirectory;
     UnicodeString FEOL;
-    System::TList *FPacketReservations;
+    TList *FPacketReservations;
     std::vector<size_t> FPacketNumbers;
     char FPreviousLoggedPacket;
     int FNotLoggedPackets;
     int FBusy;
     bool FAvoidBusy;
-    System::TStrings *FExtensions;
+    TStrings *FExtensions;
     TSFTPSupport *FSupport;
     bool FUtfStrings;
     bool FUtfNever;
     bool FSignedTS;
     bool FOpenSSH;
-    System::TStrings *FFixedPaths;
+    TStrings *FFixedPaths;
     size_t FMaxPacketSize;
     TSFTPFileSystem *Self;
 
@@ -142,7 +142,7 @@ protected:
     bool __fastcall SupportsExtension(const UnicodeString Extension) const;
     void __fastcall ResetConnection();
     void __fastcall DoCalculateFilesChecksum(const UnicodeString Alg,
-                                  System::TStrings *FileList, System::TStrings *Checksums,
+                                  TStrings *FileList, TStrings *Checksums,
                                   TCalculatedChecksumEvent *OnCalculatedChecksum,
                                   TFileOperationProgressType *OperationProgress, bool FirstLevel);
     void __fastcall DoDeleteFile(const UnicodeString FileName, char Type);

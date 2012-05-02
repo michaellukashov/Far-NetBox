@@ -883,7 +883,7 @@ TDateTime __fastcall EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec)
   {
     throw EConvertError(FORMAT(L"%s [%02u:%02u:%02u.%04u]", E.GetMessage().c_str(), int(Hour), int(Min), int(Sec), int(MSec)));
   }
-  return System::TDateTime();
+  return TDateTime();
 }
 
 //---------------------------------------------------------------------------
@@ -1826,13 +1826,13 @@ LCID __fastcall GetDefaultLCID()
 UnicodeString IntToStr(int value)
 {
   std::string result = boost::lexical_cast<std::string>(value);
-  return System::MB2W(result.c_str());
+  return MB2W(result.c_str());
 }
 //---------------------------------------------------------------------------
 UnicodeString Int64ToStr(__int64 value)
 {
   std::string result = boost::lexical_cast<std::string>(value);
-  return System::MB2W(result.c_str());
+  return MB2W(result.c_str());
 }
 //---------------------------------------------------------------------------
 int StrToInt(const UnicodeString value)
@@ -2117,7 +2117,7 @@ double StrToFloatDef(const UnicodeString Value, double defval)
   double result = 0.0;
   try
   {
-    result = boost::lexical_cast<double>(System::W2MB(Value.c_str()));
+    result = boost::lexical_cast<double>(W2MB(Value.c_str()));
   }
   catch (const boost::bad_lexical_cast &)
   {
@@ -2136,9 +2136,9 @@ UnicodeString FormatFloat(const UnicodeString Format, double value)
 }
 
 //---------------------------------------------------------------------------
-System::TTimeStamp DateTimeToTimeStamp(System::TDateTime DateTime)
+TTimeStamp DateTimeToTimeStamp(TDateTime DateTime)
 {
-  System::TTimeStamp result = {0, 0};
+  TTimeStamp result = {0, 0};
   double fractpart, intpart;
   fractpart = modf(DateTime, &intpart);
   result.Time = static_cast<int>(fractpart * MSecsPerDay);
@@ -2467,7 +2467,7 @@ UnicodeString TranslateExceptionMessage(const std::exception * E)
 {
   if (E)
   {
-    return System::MB2W(E->what());
+    return MB2W(E->what());
   }
   else
   {
@@ -2541,7 +2541,7 @@ char * StrNew(const char * str)
 
 wchar_t * AnsiStrScan(const wchar_t * Str, const wchar_t TokenPrefix)
 {
-  System::Error(SNotImplemented, 31);
+  Error(SNotImplemented, 31);
   wchar_t * result = NULL;
   return result;
 }
@@ -2789,7 +2789,7 @@ void ConvertError(int ErrorID)
 }
 
 //---------------------------------------------------------------------------
-bool TryEncodeDate(int Year, int Month, int Day, System::TDateTime & Date)
+bool TryEncodeDate(int Year, int Month, int Day, TDateTime & Date)
 {
   const TDayTable * DayTable = &MonthDays[bg::gregorian_calendar::is_leap_year(Year)];
   if ((Year >= 1) && (Year <= 9999) && (Month >= 1) && (Month <= 12) &&
@@ -2800,16 +2800,16 @@ bool TryEncodeDate(int Year, int Month, int Day, System::TDateTime & Date)
       Day += (*DayTable)[I - 1];
     }
     int I = Year - 1;
-    Date = System::TDateTime(I * 365 + I / 4 - I / 100 + I / 400 + Day - DateDelta);
+    Date = TDateTime(I * 365 + I / 4 - I / 100 + I / 400 + Day - DateDelta);
     // DEBUG_PRINTF(L"Year = %d, Month = %d, Day = %d, Date = %f", Year, Month, Day, Date);
     return true;
   }
   return false;
 }
 
-System::TDateTime EncodeDate(int Year, int Month, int Day)
+TDateTime EncodeDate(int Year, int Month, int Day)
 {
-  System::TDateTime Result;
+  TDateTime Result;
   if (!TryEncodeDate(Year, Month, Day, Result))
   {
     ::ConvertError(SDateEncodeError);
@@ -2818,7 +2818,7 @@ System::TDateTime EncodeDate(int Year, int Month, int Day)
 }
 
 //---------------------------------------------------------------------------
-bool TryEncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec, System::TDateTime & Time)
+bool TryEncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec, TDateTime & Time)
 {
   bool Result = false;
   // DEBUG_PRINTF(L"Hour = %d, Min = %d, Sec = %d, MSec = %d", Hour, Min, Sec, MSec);
@@ -2831,9 +2831,9 @@ bool TryEncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsign
   return Result;
 }
 
-System::TDateTime EncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec)
+TDateTime EncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec)
 {
-  System::TDateTime Result;
+  TDateTime Result;
   if (!TryEncodeTime(Hour, Min, Sec, MSec, Result))
   {
     ::ConvertError(STimeEncodeError);
@@ -2841,28 +2841,28 @@ System::TDateTime EncodeTime(unsigned int Hour, unsigned int Min, unsigned int S
   // DEBUG_PRINTF(L"Result = %f", Result);
   return Result;
 }
-System::TDateTime StrToDateTime(const UnicodeString Value)
+TDateTime StrToDateTime(const UnicodeString Value)
 {
-  System::Error(SNotImplemented, 145);
-  return System::TDateTime();
+  Error(SNotImplemented, 145);
+  return TDateTime();
 }
 
-bool TryStrToDateTime(const UnicodeString value, System::TDateTime & Value, System::TFormatSettings & FormatSettings)
+bool TryStrToDateTime(const UnicodeString value, TDateTime & Value, TFormatSettings & FormatSettings)
 {
-  System::Error(SNotImplemented, 147);
+  Error(SNotImplemented, 147);
   return false;
 }
 
 UnicodeString DateTimeToStr(UnicodeString & Result, const UnicodeString & Format,
-  System::TDateTime DateTime)
+  TDateTime DateTime)
 {
-  System::Error(SNotImplemented, 148);
+  Error(SNotImplemented, 148);
   return L"";
 }
 
-UnicodeString DateTimeToString(System::TDateTime DateTime)
+UnicodeString DateTimeToString(TDateTime DateTime)
 {
-  System::Error(SNotImplemented, 146);
+  Error(SNotImplemented, 146);
   return L"";
 }
 
@@ -2871,17 +2871,17 @@ UnicodeString DateTimeToString(System::TDateTime DateTime)
 // DayOfWeek returns the day of the week of the given date. The result is an
 // integer between 1 and 7, corresponding to Sunday through Saturday.
 // This function is not ISO 8601 compliant, for that see the DateUtils unit.
-unsigned int DayOfWeek(const System::TDateTime & DateTime)
+unsigned int DayOfWeek(const TDateTime & DateTime)
 {
   return ::DateTimeToTimeStamp(DateTime).Date % 7 + 1;
 }
 
 
-System::TDateTime Date()
+TDateTime Date()
 {
   SYSTEMTIME t;
   ::GetLocalTime(&t);
-  System::TDateTime result = ::EncodeDate(t.wYear, t.wMonth, t.wDay);
+  TDateTime result = ::EncodeDate(t.wYear, t.wMonth, t.wDay);
   return result;
 }
 
@@ -2892,7 +2892,7 @@ void DivMod(const int Dividend, const unsigned int Divisor,
   Remainder = Dividend % Divisor;
 }
 
-bool DecodeDateFully(const System::TDateTime & DateTime,
+bool DecodeDateFully(const TDateTime & DateTime,
                      unsigned int & Year, unsigned int & Month, unsigned int & Day, unsigned int & DOW)
 {
   static const int D1 = 365;
@@ -2964,14 +2964,14 @@ bool DecodeDateFully(const System::TDateTime & DateTime,
   return Result;
 }
 
-void DecodeDate(const System::TDateTime & DateTime, unsigned int & Year,
+void DecodeDate(const TDateTime & DateTime, unsigned int & Year,
                 unsigned int & Month, unsigned int & Day)
 {
   unsigned int Dummy = 0;
   DecodeDateFully(DateTime, Year, Month, Day, Dummy);
 }
 
-void DecodeTime(const System::TDateTime & DateTime, unsigned int & Hour,
+void DecodeTime(const TDateTime & DateTime, unsigned int & Hour,
                 unsigned int & Min, unsigned int & Sec, unsigned int & MSec)
 {
   unsigned int MinCount, MSecCount;
@@ -2980,7 +2980,7 @@ void DecodeTime(const System::TDateTime & DateTime, unsigned int & Hour,
   DivMod(MSecCount, 1000, Sec, MSec);
 }
 
-UnicodeString FormatDateTime(const UnicodeString fmt, System::TDateTime DateTime)
+UnicodeString FormatDateTime(const UnicodeString fmt, TDateTime DateTime)
 {
   // DEBUG_PRINTF(L"fmt = %s", fmt.c_str());
   UnicodeString Result;
@@ -2988,7 +2988,7 @@ UnicodeString FormatDateTime(const UnicodeString fmt, System::TDateTime DateTime
   boost::local_time::local_time_facet * output_facet = new boost::local_time::local_time_facet();
   std::wstringstream ss;
   ss.imbue(std::locale(std::locale::classic(), output_facet));
-  output_facet->format(System::W2MB(fmt.c_str()).c_str());
+  output_facet->format(W2MB(fmt.c_str()).c_str());
   // boost::local_time::local_date_time ldt;
   unsigned short Y, M, D;
   DateTime.DecodeDate(Y, M, D);
@@ -2998,17 +2998,17 @@ UnicodeString FormatDateTime(const UnicodeString fmt, System::TDateTime DateTime
   return Result;
 }
 /*
-System::TDateTime ComposeDateTime(System::TDateTime Date, System::TDateTime Time)
+TDateTime ComposeDateTime(TDateTime Date, TDateTime Time)
 {
-  System::TDateTime Result = Trunc(Date);
+  TDateTime Result = Trunc(Date);
   Result.Set(Time.GetHour(), Time.GetMinute(), Time.GetSecond(), Time.GetMillisecond());
   return Result;
 }
 */
 
-System::TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime)
+TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime)
 {
-  System::TDateTime Result(0.0);
+  TDateTime Result(0.0);
   // ComposeDateTime(DoEncodeDate(SystemTime.Year, SystemTime.Month, SystemTime.Day), DoEncodeTime(SystemTime.Hour, SystemTime.Minute, SystemTime.Second, SystemTime.MilliSecond));
   ::TryEncodeDate(SystemTime.wYear, SystemTime.wMonth, SystemTime.wDay, Result);
   return Result;

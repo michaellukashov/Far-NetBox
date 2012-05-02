@@ -714,7 +714,7 @@ const TRemoteToken * __fastcall TRemoteTokenList::Token(int Index) const
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile):
-  System::TPersistent(),
+  TPersistent(),
   FDirectory(NULL),
   FSize(0),
   FINodeBlocks(0),
@@ -1573,7 +1573,7 @@ TRemoteDirectoryCache::TRemoteDirectoryCache(): TStringList()
 {
   FSection = new TCriticalSection();
   SetSorted(true);
-  SetDuplicates(System::dupError);
+  SetDuplicates(dupError);
   SetCaseSensitive(true);
   Self = this;
 }
