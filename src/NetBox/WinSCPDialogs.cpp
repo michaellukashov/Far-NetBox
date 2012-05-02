@@ -1466,9 +1466,9 @@ bool TPasswordDialog::Execute(TStrings *Results)
     return Result;
 }
 //---------------------------------------------------------------------------
-bool TWinSCPFilePasswordDialog(TSessionData *SessionData,
-                                       TPromptKind Kind, const UnicodeString Name, const UnicodeString Instructions, TStrings *Prompts,
-                                       TStrings *Results, bool StoredCredentialsTried)
+bool TWinSCPFileSystem::PasswordDialog(TSessionData *SessionData,
+  TPromptKind Kind, const UnicodeString Name, const UnicodeString Instructions, TStrings *Prompts,
+  TStrings *Results, bool StoredCredentialsTried)
 {
     bool Result = false;
     TPasswordDialog *Dialog = new TPasswordDialog(FPlugin, SessionData->GetName(),
@@ -1484,8 +1484,8 @@ bool TWinSCPFilePasswordDialog(TSessionData *SessionData,
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-bool TWinSCPFileBannerDialog(const UnicodeString SessionName,
-                                     const UnicodeString Banner, bool &NeverShowAgain, int Options)
+bool TWinSCPFileSystem::BannerDialog(const UnicodeString SessionName,
+  const UnicodeString Banner, bool &NeverShowAgain, int Options)
 {
     bool Result;
     TWinSCPDialog *Dialog = new TWinSCPDialog(FPlugin);
@@ -4019,8 +4019,8 @@ void TSessionDialog::CodePageEditAdd(unsigned int cp)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-bool TWinSCPFileSessionDialog(TSessionData *SessionData,
-                                      TSessionActionEnum &Action)
+bool TWinSCPFileSystem::SessionDialog(TSessionData *SessionData,
+  TSessionActionEnum &Action)
 {
     bool Result;
     TSessionDialog *Dialog = new TSessionDialog(FPlugin, Action);
@@ -4667,11 +4667,11 @@ bool TPropertiesDialog::Execute(TRemoteProperties *Properties)
 }
 
 //---------------------------------------------------------------------------
-bool TWinSCPFilePropertiesDialog(TStrings *FileList,
-        const UnicodeString Directory,
-        const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
-        // TStrings * GroupList, TStrings * UserList,
-        TRemoteProperties *Properties, int AllowedChanges)
+bool TWinSCPFileSystem::PropertiesDialog(TStrings *FileList,
+  const UnicodeString Directory,
+  const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
+  // TStrings * GroupList, TStrings * UserList,
+  TRemoteProperties *Properties, int AllowedChanges)
 {
     bool Result = false;
     TPropertiesDialog *Dialog = new TPropertiesDialog(FPlugin, FileList,
@@ -5433,12 +5433,12 @@ void TCopyDialog::CustomCopyParam()
     }
 }
 //---------------------------------------------------------------------------
-bool TWinSCPFileCopyDialog(bool ToRemote,
-                                   bool Move, TStrings *FileList,
-                                   UnicodeString &TargetDirectory,
-                                   TGUICopyParamType *Params,
-                                   int Options,
-                                   int CopyParamAttrs)
+bool TWinSCPFileSystem::CopyDialog(bool ToRemote,
+  bool Move, TStrings *FileList,
+  UnicodeString &TargetDirectory,
+  TGUICopyParamType *Params,
+  int Options,
+  int CopyParamAttrs)
 {
     bool Result;
     TCopyDialog *Dialog = new TCopyDialog(FPlugin, ToRemote,
@@ -5593,8 +5593,8 @@ bool TLinkDialog::Execute(UnicodeString &FileName, UnicodeString &PointTo,
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-bool TWinSCPFileLinkDialog(UnicodeString &FileName,
-                                   UnicodeString &PointTo, bool &Symbolic, bool Edit, bool AllowSymbolic)
+bool TWinSCPFileSystem::LinkDialog(UnicodeString &FileName,
+  UnicodeString &PointTo, bool &Symbolic, bool Edit, bool AllowSymbolic)
 {
     bool Result;
     TLinkDialog *Dialog = new TLinkDialog(FPlugin, Edit, AllowSymbolic);
@@ -6137,9 +6137,9 @@ bool TFileSystemInfoDialog::SpaceAvailableSupported()
     return (!FOnGetSpaceAvailable.empty());
 }
 //---------------------------------------------------------------------------
-void TWinSCPFileFileSystemInfoDialog(
-    const TSessionInfo &SessionInfo, const TFileSystemInfo &FileSystemInfo,
-    UnicodeString SpaceAvailablePath, const TGetSpaceAvailableEvent &OnGetSpaceAvailable)
+void TWinSCPFileSystem::FileSystemInfoDialog(
+  const TSessionInfo &SessionInfo, const TFileSystemInfo &FileSystemInfo,
+  UnicodeString SpaceAvailablePath, const TGetSpaceAvailableEvent &OnGetSpaceAvailable)
 {
     TFileSystemInfoDialog *Dialog = new TFileSystemInfoDialog(FPlugin, OnGetSpaceAvailable);
     {
@@ -6152,8 +6152,8 @@ void TWinSCPFileFileSystemInfoDialog(
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-bool TWinSCPFileOpenDirectoryDialog(
-    bool Add, UnicodeString &Directory, TBookmarkList *BookmarkList)
+bool TWinSCPFileSystem::OpenDirectoryDialog(
+  bool Add, UnicodeString &Directory, TBookmarkList *BookmarkList)
 {
     bool Result;
     bool Repeat;
@@ -6479,8 +6479,8 @@ bool TApplyCommandDialog::Execute(UnicodeString &Command, int &Params)
     return Result;
 }
 //---------------------------------------------------------------------------
-bool TWinSCPFileApplyCommandDialog(UnicodeString &Command,
-        int &Params)
+bool TWinSCPFileSystem::ApplyCommandDialog(UnicodeString &Command,
+  int &Params)
 {
     bool Result;
     TApplyCommandDialog *Dialog = new TApplyCommandDialog(FPlugin);
@@ -6921,10 +6921,10 @@ bool TFullSynchronizeDialog::Execute(TTerminal::TSynchronizeMode &Mode,
     return Result;
 }
 //---------------------------------------------------------------------------
-bool TWinSCPFileFullSynchronizeDialog(TTerminal::TSynchronizeMode &Mode,
-        int &Params, UnicodeString &LocalDirectory, UnicodeString &RemoteDirectory,
-        TCopyParamType *CopyParams, bool &SaveSettings, bool &SaveMode, int Options,
-        const TUsableCopyParamAttrs &CopyParamAttrs)
+bool TWinSCPFileSystem::FullSynchronizeDialog(TTerminal::TSynchronizeMode &Mode,
+  int &Params, UnicodeString &LocalDirectory, UnicodeString &RemoteDirectory,
+  TCopyParamType *CopyParams, bool &SaveSettings, bool &SaveMode, int Options,
+  const TUsableCopyParamAttrs &CopyParamAttrs)
 {
     bool Result;
     TFullSynchronizeDialog *Dialog = new TFullSynchronizeDialog(
@@ -7536,9 +7536,9 @@ bool TSynchronizeChecklistDialog::Execute(TSynchronizeChecklist *Checklist)
     return Result;
 }
 //---------------------------------------------------------------------------
-bool TWinSCPFileSynchronizeChecklistDialog(
-    TSynchronizeChecklist *Checklist, TTerminal::TSynchronizeMode Mode, int Params,
-    const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory)
+bool TWinSCPFileSystem::SynchronizeChecklistDialog(
+  TSynchronizeChecklist *Checklist, TTerminal::TSynchronizeMode Mode, int Params,
+  const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory)
 {
     bool Result;
     TSynchronizeChecklistDialog *Dialog = new TSynchronizeChecklistDialog(
@@ -8006,9 +8006,9 @@ int TSynchronizeDialog::ActualCopyParamAttrs()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-bool TWinSCPFileSynchronizeDialog(TSynchronizeParamType &Params,
-        const TCopyParamType *CopyParams, const synchronizestartstop_slot_type &OnStartStop,
-        bool &SaveSettings, int Options, int CopyParamAttrs, const TGetSynchronizeOptionsEvent &OnGetOptions)
+bool TWinSCPFileSystem::SynchronizeDialog(TSynchronizeParamType &Params,
+  const TCopyParamType *CopyParams, const synchronizestartstop_slot_type &OnStartStop,
+  bool &SaveSettings, int Options, int CopyParamAttrs, const TGetSynchronizeOptionsEvent &OnGetOptions)
 {
     bool Result;
     TSynchronizeDialog *Dialog = new TSynchronizeDialog(FPlugin, OnStartStop,
@@ -8024,12 +8024,12 @@ bool TWinSCPFileSynchronizeDialog(TSynchronizeParamType &Params,
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-bool TWinSCPFileRemoteTransferDialog(TStrings *FileList,
-        UnicodeString &Target, UnicodeString &FileMask, bool Move)
+bool TWinSCPFileSystem::RemoteTransferDialog(TStrings *FileList,
+  UnicodeString &Target, UnicodeString &FileMask, bool Move)
 {
     UnicodeString Prompt = FileNameFormatString(
-                              GetMsg(Move ? REMOTE_MOVE_FILE : REMOTE_COPY_FILE),
-                              GetMsg(Move ? REMOTE_MOVE_FILES : REMOTE_COPY_FILES), FileList, true);
+      GetMsg(Move ? REMOTE_MOVE_FILE : REMOTE_COPY_FILE),
+      GetMsg(Move ? REMOTE_MOVE_FILES : REMOTE_COPY_FILES), FileList, true);
 
     UnicodeString Value = UnixIncludeTrailingBackslash(Target) + FileMask;
     bool Result = FPlugin->InputBox(
@@ -8044,12 +8044,12 @@ bool TWinSCPFileRemoteTransferDialog(TStrings *FileList,
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-bool TWinSCPFileRenameFileDialog(TRemoteFile *File,
-        UnicodeString &NewName)
+bool TWinSCPFileSystem::RenameFileDialog(TRemoteFile *File,
+  UnicodeString &NewName)
 {
     return FPlugin->InputBox(GetMsg(RENAME_FILE_TITLE).c_str(),
-                             FORMAT(GetMsg(RENAME_FILE).c_str(), File->GetFileName().c_str()), NewName, 0) &&
-           !NewName.IsEmpty();
+      FORMAT(GetMsg(RENAME_FILE).c_str(), File->GetFileName().c_str()), NewName, 0) &&
+      !NewName.IsEmpty();
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -8057,7 +8057,7 @@ class TQueueDialog : TFarDialog
 {
 public:
     explicit TQueueDialog(TCustomFarPlugin *AFarPlugin,
-                          TWinSCPFileSystem *AFileSystem, bool ClosingPlugin);
+      TWinSCPFileSystem *AFileSystem, bool ClosingPlugin);
 
     bool Execute(TTerminalQueueStatus *Status);
 
@@ -8091,7 +8091,7 @@ private:
 };
 //---------------------------------------------------------------------------
 TQueueDialog::TQueueDialog(TCustomFarPlugin *AFarPlugin,
-                           TWinSCPFileSystem *AFileSystem, bool ClosingPlugin) :
+  TWinSCPFileSystem *AFileSystem, bool ClosingPlugin) :
     TFarDialog(AFarPlugin),
     FStatus(NULL),
     QueueListBox(NULL),
@@ -8562,7 +8562,7 @@ bool TQueueDialog::Execute(TTerminalQueueStatus *Status)
     return Result;
 }
 //---------------------------------------------------------------------------
-bool TWinSCPFileQueueDialog(
+bool TWinSCPFileSystem::QueueDialog(
     TTerminalQueueStatus *Status, bool ClosingPlugin)
 {
     bool Result;
@@ -8577,8 +8577,8 @@ bool TWinSCPFileQueueDialog(
     return Result;
 }
 //---------------------------------------------------------------------------
-bool TWinSCPFileCreateDirectoryDialog(UnicodeString &Directory,
-        TRemoteProperties *Properties, bool &SaveSettings)
+bool TWinSCPFileSystem::CreateDirectoryDialog(UnicodeString &Directory,
+  TRemoteProperties *Properties, bool &SaveSettings)
 {
     bool Result;
     TWinSCPDialog *Dialog = new TWinSCPDialog(FPlugin);
