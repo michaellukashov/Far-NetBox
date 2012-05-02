@@ -352,7 +352,7 @@ TRegistryStorage::TRegistryStorage(const UnicodeString AStorage, HKEY ARootKey) 
   FRegistry->SetRootKey(ARootKey);
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::Init()
+void __fastcall TRegistryStorage::Init()
 {
   FFailed = 0;
   FRegistry = new TRegistry;

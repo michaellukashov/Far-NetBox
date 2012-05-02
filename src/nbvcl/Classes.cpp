@@ -13,7 +13,7 @@
 
 namespace alg = boost::algorithm;
 
-namespace System {
+namespace Classes {
 
 int __cdecl debug_printf(const wchar_t *format, ...)
 {
@@ -2161,4 +2161,4 @@ Boolean IsLeapYear(Word Year)
 
 //---------------------------------------------------------------------------
 
-} // namespace System
+} // namespace Classes

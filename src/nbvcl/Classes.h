@@ -33,7 +33,7 @@
 
 #define NPOS static_cast<int>(-1)
 
-namespace System {
+namespace Classes {
 
 //---------------------------------------------------------------------------
 extern const UnicodeString sLineBreak;
@@ -58,8 +58,8 @@ int __cdecl debug_printf(const wchar_t *format, ...);
 int __cdecl debug_printf2(const char *format, ...);
 
 #ifdef NETBOX_DEBUG
-#define DEBUG_PRINTF(format, ...) System::debug_printf(L"NetBox: [%s:%d] %s: "format L"\n", ExtractFilename(System::MB2W(__FILE__).c_str(), L'\\').c_str(), __LINE__, System::MB2W(__FUNCTION__).c_str(), __VA_ARGS__);
-#define DEBUG_PRINTF2(format, ...) System::debug_printf2("NetBox: [%s:%d] %s: "format "\n", System::W2MB(ExtractFilename(System::MB2W(__FILE__).c_str(), '\\').c_str()).c_str(), __LINE__, __FUNCTION__, __VA_ARGS__);
+#define DEBUG_PRINTF(format, ...) debug_printf(L"NetBox: [%s:%d] %s: "format L"\n", ExtractFilename(MB2W(__FILE__).c_str(), L'\\').c_str(), __LINE__, MB2W(__FUNCTION__).c_str(), __VA_ARGS__);
+#define DEBUG_PRINTF2(format, ...) debug_printf2("NetBox: [%s:%d] %s: "format "\n", W2MB(ExtractFilename(MB2W(__FILE__).c_str(), '\\').c_str()).c_str(), __LINE__, __FUNCTION__, __VA_ARGS__);
 #else
 #define DEBUG_PRINTF(format, ...)
 #define DEBUG_PRINTF2(format, ...)
@@ -341,12 +341,12 @@ public:
     void __fastcall QuickSort(int L, int R, TStringListSortCompare SCompare);
 
     void __fastcall LoadFromFile(const UnicodeString FileName);
-    const System::notify_signal_type & __fastcall GetOnChange() const { return FOnChange; }
+    const notify_signal_type & __fastcall GetOnChange() const { return FOnChange; }
     void __fastcall SetOnChange(const TNotifyEvent &onChange)
     {
         FOnChange.connect(onChange);
     }
-    const System::notify_signal_type & __fastcall GetOnChanging() const { return FOnChanging; }
+    const notify_signal_type & __fastcall GetOnChanging() const { return FOnChanging; }
     void __fastcall SetOnChanging(const TNotifyEvent &onChanging)
     {
         FOnChanging.connect(onChanging);
@@ -363,8 +363,8 @@ private:
     void __fastcall ExchangeItems(int Index1, int Index2);
 
 private:
-    System::notify_signal_type FOnChange;
-    System::notify_signal_type FOnChanging;
+    notify_signal_type FOnChange;
+    notify_signal_type FOnChanging;
     TStringItemList FList;
     bool FSorted;
     bool FCaseSensitive;
@@ -494,19 +494,19 @@ public:
     void __fastcall WriteBuffer(const void *Buffer, __int64 Count);
     __int64 __fastcall CopyFrom(TStream *Source, __int64 Count);
 public:
-    __int64 __fastcall GetPosition() { return Seek(0, System::soFromCurrent); }
+    __int64 __fastcall GetPosition() { return Seek(0, soFromCurrent); }
     __int64 __fastcall GetSize()
     {
-        __int64 Pos = Seek(0, System::soFromCurrent);
-        __int64 Result = Seek(0, System::soFromEnd);
-        Seek(Pos, System::soFromBeginning);
+        __int64 Pos = Seek(0, soFromCurrent);
+        __int64 Result = Seek(0, soFromEnd);
+        Seek(Pos, soFromBeginning);
         return Result;
     }
 public:
     virtual void __fastcall SetSize(const __int64 NewSize) = 0;
     void __fastcall SetPosition(const __int64 Pos)
     {
-        Seek(Pos, System::soFromBeginning);
+        Seek(Pos, soFromBeginning);
     }
 };
 
@@ -687,13 +687,13 @@ public:
 struct TFormatSettings
 {
 private:
-    // typedef StaticArray<System::UnicodeString, 12> _TFormatSettings__1;
+    // typedef StaticArray<UnicodeString, 12> _TFormatSettings__1;
 
-    // typedef StaticArray<System::UnicodeString, 12> _TFormatSettings__2;
+    // typedef StaticArray<UnicodeString, 12> _TFormatSettings__2;
 
-    // typedef StaticArray<System::UnicodeString, 7> _TFormatSettings__3;
+    // typedef StaticArray<UnicodeString, 7> _TFormatSettings__3;
 
-    // typedef StaticArray<System::UnicodeString, 7> _TFormatSettings__4;
+    // typedef StaticArray<UnicodeString, 7> _TFormatSettings__4;
 public:
     unsigned char CurrencyFormat;
     unsigned char NegCurrFormat;
@@ -1002,6 +1002,14 @@ double Trunc(double value) { double intpart; modf(value, &intpart); return intpa
 double Frac(double value) { double intpart; return modf(value, &intpart); }
 double Abs(double value) { return fabs(value); }
 //---------------------------------------------------------------------------
-} // namespace System
+class TCustomIniFile
+{
+public:
+  TCustomIniFile() {}
+  virtual ~TCustomIniFile() {}
+};
 
-using namespace System;
+//---------------------------------------------------------------------------
+} // namespace Classes
+
+using namespace Classes;

@@ -20,7 +20,7 @@ class THierarchicalStorage
 public:
   explicit THierarchicalStorage(const UnicodeString AStorage);
   virtual ~THierarchicalStorage();
-  virtual void Init() {}
+  virtual void __fastcall Init() {}
   bool __fastcall OpenRootKey(bool CanCreate);
   virtual bool __fastcall OpenSubKey(UnicodeString SubKey, bool CanCreate, bool Path = false);
   virtual void __fastcall CloseSubKey();
@@ -75,18 +75,13 @@ public:
   __property bool MungeStringValues = { read = FMungeStringValues, write = FMungeStringValues };
   __property UnicodeString Source = { read = GetSource };
 #else
-  virtual void __fastcall WriteString(const UnicodeString Name, const UnicodeString Value);
-  void __fastcall WriteBinaryData(const UnicodeString Name, const UnicodeString Value);
 
   UnicodeString __fastcall GetStorage() { return FStorage; }
-  UnicodeString __fastcall GetCurrentSubKey();
   TStorageAccessMode __fastcall GetAccessMode() { return FAccessMode; }
-  virtual void __fastcall SetAccessMode(TStorageAccessMode value);
   bool __fastcall GetExplicit() { return FExplicit; }
   void __fastcall SetExplicit(bool value) { FExplicit = value; }
   bool __fastcall GetMungeStringValues() { return FMungeStringValues; }
   void __fastcall SetMungeStringValues(bool value) { FMungeStringValues = value; }
-  virtual UnicodeString __fastcall GetSource() = 0;
 #endif
 
 protected:
@@ -106,8 +101,6 @@ protected:
   virtual bool __fastcall DoOpenSubKey(const UnicodeString SubKey, bool CanCreate) = 0;
   UnicodeString __fastcall MungeKeyName(UnicodeString Key);
   virtual UnicodeString __fastcall GetSource() = 0;
-  static UnicodeString __fastcall IncludeTrailingBackslash(const UnicodeString S);
-  static UnicodeString __fastcall ExcludeTrailingBackslash(const UnicodeString S);
   UnicodeString __fastcall MungeSubKey(const UnicodeString Key, bool Path);
 };
 //---------------------------------------------------------------------------
@@ -128,7 +121,7 @@ public:
   virtual bool __fastcall KeyExists(const UnicodeString SubKey);
   virtual bool __fastcall ValueExists(const UnicodeString Value);
 
-  virtual int __fastcall BinaryDataSize(const UnicodeString Name);
+  virtual size_t __fastcall BinaryDataSize(const UnicodeString Name);
 
   virtual bool __fastcall Readbool(const UnicodeString Name, bool Default);
   virtual int __fastcall Readint(const UnicodeString Name, int Default);
@@ -158,7 +151,6 @@ protected:
 #ifndef _MSC_VER
   __property int Failed  = { read=GetFailed, write=FFailed };
 #else
-  int GetFailed();
   void SetFailed(int value) { FFailed = value; }
 #endif
 
@@ -166,13 +158,13 @@ private:
   TRegistry * FRegistry;
   int FFailed;
 
-  void __fastcall Init();
+  virtual void __fastcall Init();
 };
 //---------------------------------------------------------------------------
 class TCustomIniFileStorage : public THierarchicalStorage
 {
 public:
-  explicit  TCustomIniFileStorage(const UnicodeString Storage, TCustomIniFile * IniFile);
+  explicit TCustomIniFileStorage(const UnicodeString Storage, TCustomIniFile * IniFile);
   virtual ~TCustomIniFileStorage();
 
   virtual bool __fastcall DeleteSubKey(const UnicodeString SubKey);

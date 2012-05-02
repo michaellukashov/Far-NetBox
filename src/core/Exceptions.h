@@ -7,11 +7,11 @@
 //---------------------------------------------------------------------------
 bool __fastcall ExceptionMessage(const std::exception *E, UnicodeString &Message);
 UnicodeString __fastcall LastSysErrorMessage();
-System::TStrings * __fastcall ExceptionToMoreMessages(const std::exception *E);
+TStrings * __fastcall ExceptionToMoreMessages(const std::exception *E);
 //---------------------------------------------------------------------------
 enum TOnceDoneOperation { odoIdle, odoDisconnect, odoShutDown };
 //---------------------------------------------------------------------------
-class Exception : public std::exception, public System::TObject
+class Exception : public std::exception, public TObject
 {
     typedef std::exception parent;
 public:
@@ -38,17 +38,17 @@ public:
     // "copy the std::exception", just append message to the end
     explicit ExtException(const UnicodeString Msg, const std::exception *E);
     // explicit ExtException(const UnicodeString Msg, const UnicodeString MoreMessages, const UnicodeString HelpKeyword = L"");
-    explicit ExtException(const UnicodeString Msg, System::TStrings *MoreMessages, bool Own);
+    explicit ExtException(const UnicodeString Msg, TStrings *MoreMessages, bool Own);
     explicit ExtException(const ExtException &) throw();
     ExtException &operator =(const ExtException &) throw();
     virtual ~ExtException(void) throw();
 
-    System::TStrings *GetMoreMessages() const { return FMoreMessages; }
+    TStrings *GetMoreMessages() const { return FMoreMessages; }
 protected:
     void __fastcall AddMoreMessages(const std::exception *E);
 
 private:
-    System::TStrings *FMoreMessages;
+    TStrings *FMoreMessages;
 };
 //---------------------------------------------------------------------------
 #define DERIVE_EXT_EXCEPTION(NAME, BASE) \

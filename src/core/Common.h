@@ -217,23 +217,23 @@ char HexToChar(const UnicodeString Hex, size_t MinChars = 0);
 UnicodeString ReplaceStrAll(const UnicodeString Str, const UnicodeString What, const UnicodeString ByWhat);
 UnicodeString SysErrorMessage(int code);
 
-bool TryStrToDateTime(const UnicodeString value, System::TDateTime &Value, System::TFormatSettings &FormatSettings);
+bool TryStrToDateTime(const UnicodeString value, TDateTime &Value, TFormatSettings &FormatSettings);
 UnicodeString DateTimeToStr(UnicodeString &Result, const UnicodeString &Format,
-  System::TDateTime DateTime);
-UnicodeString DateTimeToString(System::TDateTime DateTime);
-unsigned int DayOfWeek(const System::TDateTime &DateTime);
+  TDateTime DateTime);
+UnicodeString DateTimeToString(TDateTime DateTime);
+unsigned int DayOfWeek(const TDateTime &DateTime);
 
-System::TDateTime Date();
+TDateTime Date();
 void DecodeDate(const TDateTime &DateTime, unsigned short &Y,
   unsigned short &M, unsigned short &D);
 void DecodeTime(const TDateTime &DateTime, unsigned short &H,
   unsigned short &N, unsigned short &S, unsigned short &MS);
 
-UnicodeString FormatDateTime(const UnicodeString fmt, System::TDateTime DateTime);
-System::TDateTime SystemTimeToDateTime(const SYSTEMTIME &SystemTime);
+UnicodeString FormatDateTime(const UnicodeString fmt, TDateTime DateTime);
+TDateTime SystemTimeToDateTime(const SYSTEMTIME &SystemTime);
 
-System::TDateTime EncodeDate(int Year, int Month, int Day);
-System::TDateTime EncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec);
+TDateTime EncodeDate(int Year, int Month, int Day);
+TDateTime EncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec);
 
 UnicodeString Trim(const UnicodeString str);
 UnicodeString TrimLeft(const UnicodeString str);
@@ -266,7 +266,7 @@ int StringCmpI(const wchar_t *s1, const wchar_t *s2);
 class EOSError : public std::exception
 {
 public:
-    EOSError(const UnicodeString msg, DWORD code) : std::exception(System::W2MB(msg.c_str()).c_str()),
+    EOSError(const UnicodeString msg, DWORD code) : std::exception(W2MB(msg.c_str()).c_str()),
         ErrorCode(code)
     {
     }
@@ -291,7 +291,7 @@ double StrToFloat(const UnicodeString Value);
 double StrToFloatDef(const UnicodeString Value, double defval);
 UnicodeString FormatFloat(const UnicodeString Format, double value);
 //---------------------------------------------------------------------------
-System::TTimeStamp DateTimeToTimeStamp(System::TDateTime DateTime);
+TTimeStamp DateTimeToTimeStamp(TDateTime DateTime);
 //---------------------------------------------------------------------------
 
 __int64 FileRead(HANDLE Handle, void *Buffer, __int64 Count);
