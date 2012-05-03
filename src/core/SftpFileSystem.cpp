@@ -20,6 +20,7 @@
 #include "TextsCore.h"
 #include "HelpCore.h"
 #include "SecureShell.h"
+#include "Sysutils.h"
 
 #include <memory>
 //---------------------------------------------------------------------------
@@ -2926,7 +2927,7 @@ void __fastcall TSFTPFileSystem::DoStartup()
 
     if (SupportsExtension(SFTP_EXT_VENDOR_ID))
     {
-      TSFTPPacket Packet(SSH_FXP_EXTENDED, GetSessionData()->GetCodePageAsNumber());
+      TSFTPPacket Packet(char(SSH_FXP_EXTENDED), GetSessionData()->GetCodePageAsNumber());
       Packet.AddString(RawByteString(SFTP_EXT_VENDOR_ID));
       Packet.AddString(FTerminal->GetConfiguration()->GetCompanyName());
       Packet.AddString(FTerminal->GetConfiguration()->GetProductName());
@@ -3017,8 +3018,8 @@ void __fastcall TSFTPFileSystem::LookupUsersGroups()
 {
   assert(SupportsExtension(SFTP_EXT_OWNER_GROUP));
 
-  TSFTPPacket PacketOwners(SSH_FXP_EXTENDED, GetSessionData()->GetCodePageAsNumber());
-  TSFTPPacket PacketGroups(SSH_FXP_EXTENDED, GetSessionData()->GetCodePageAsNumber());
+  TSFTPPacket PacketOwners(char(SSH_FXP_EXTENDED), GetSessionData()->GetCodePageAsNumber());
+  TSFTPPacket PacketGroups(char(SSH_FXP_EXTENDED), GetSessionData()->GetCodePageAsNumber());
 
   TSFTPPacket * Packets[] = { &PacketOwners, &PacketGroups };
   TRemoteTokenList * Lists[] = { &FTerminal->FUsers, &FTerminal->FGroups };
@@ -3863,7 +3864,7 @@ TStrings * __fastcall TSFTPFileSystem::GetFixedPaths()
 void __fastcall TSFTPFileSystem::SpaceAvailable(const UnicodeString Path,
   TSpaceAvailable & ASpaceAvailable)
 {
-  TSFTPPacket Packet(SSH_FXP_EXTENDED, GetSessionData()->GetCodePageAsNumber());
+  TSFTPPacket Packet(char(SSH_FXP_EXTENDED), GetSessionData()->GetCodePageAsNumber());
   Packet.AddString(RawByteString(SFTP_EXT_SPACE_AVAILABLE));
   Packet.AddPathString(LocalCanonify(Path), FUtfStrings);
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_EXTENDED_REPLY);
@@ -4995,7 +4996,7 @@ void __fastcall TSFTPFileSystem::SFTPDirectorySource(const UnicodeString Directo
         );
       }
       FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-        FindOK = (FindNextFile(SearchRec) == 0);
+        FindOK = (FindNext(SearchRec) == 0);
       );
     };
   }
@@ -5143,7 +5144,7 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
   assert(File);
   TFileMasks::TParams MaskParams;
   MaskParams.Size = File->GetSize();
-  MaskParams.Modification = File->Modification;
+  MaskParams.Modification = File->GetModification();
 
   if (!CopyParam->AllowTransfer(FileName, osRemote, File->GetIsDirectory(), MaskParams))
   {
@@ -5303,8 +5304,8 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
 
       if ((Attrs >= 0) && !ResumeTransfer)
       {
-        int64 DestFileSize = 0;
-        int64 MTime = 0;
+        __int64 DestFileSize = 0;
+        __int64 MTime = 0;
         try
         {
 

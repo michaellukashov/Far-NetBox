@@ -7,6 +7,7 @@
 #include "EasyURL.h"
 #include "resource.h"
 #include "Common.h"
+#include "Sysutils.h"
 
 //---------------------------------------------------------------------------
 extern TCustomFarPlugin *CreateFarPlugin(HINSTANCE HInst);

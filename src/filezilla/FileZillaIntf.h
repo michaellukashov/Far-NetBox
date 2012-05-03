@@ -8,6 +8,7 @@
 #include <FileZillaOpt.h>
 #ifdef _MSC_VER
 #include "Classes.h"
+#include "Sysutils.h"
 #endif
 //---------------------------------------------------------------------------
 class CFileZillaApi;

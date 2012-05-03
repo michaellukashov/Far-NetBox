@@ -3,7 +3,6 @@
 #define SysutilsH
 
 #ifdef _MSC_VER
-#ifdef _MSC_VER
 #include <WinBase.h>
 
 #include "boostdefines.hpp"
@@ -203,62 +202,6 @@ public:
   {}
 };
 
-bool ForceDirectories(const UnicodeString Dir);
-bool DeleteFile(const UnicodeString File);
-bool CreateDir(const UnicodeString Dir);
-bool RemoveDir(const UnicodeString Dir);
-
-//---------------------------------------------------------------------------
-template <class Base, class Derived>
-bool InheritsFrom(const Base *t)
-{
-    return dynamic_cast<const Derived *>(t) != NULL;
-}
-
-//---------------------------------------------------------------------------
-UnicodeString Format(const wchar_t *format, ...);
-UnicodeString Format(const wchar_t *format, va_list args);
-UnicodeString FmtLoadStr(int id, ...);
-//---------------------------------------------------------------------------
-UnicodeString WrapText(const UnicodeString Line, int MaxCol = 40);
-//---------------------------------------------------------------------------
-UnicodeString TranslateExceptionMessage(const std::exception *E);
-//---------------------------------------------------------------------------
-
-void AppendWChar(UnicodeString &str, const wchar_t ch);
-void AppendChar(std::string &str, const char ch);
-
-void AppendPathDelimiterW(UnicodeString &str);
-void AppendPathDelimiterA(std::string &str);
-
-UnicodeString ExpandEnvVars(const UnicodeString str);
-
-//---------------------------------------------------------------------------
-
-UnicodeString StringOfChar(const wchar_t c, size_t len);
-
-char *StrNew(const char *str);
-
-wchar_t *AnsiStrScan(const wchar_t *Str, const wchar_t TokenPrefix);
-
-UnicodeString ChangeFileExt(const UnicodeString FileName, const UnicodeString ext);
-UnicodeString ExtractFileExt(const UnicodeString FileName);
-UnicodeString ExpandUNCFileName(const UnicodeString FileName);
-
-__int64 FileSeek(HANDLE file, __int64 offset, int Origin);
-
-//---------------------------------------------------------------------------
-void InitPlatformId();
-bool Win32Check(bool RetVal);
-//---------------------------------------------------------------------------
-class EConvertError : public ExtException
-{
-  typedef ExtException parent;
-public:
-  EConvertError(const UnicodeString Msg) :
-    parent(Msg, NULL)
-  {}
-};
 //---------------------------------------------------------------------------
 
 } // namespace Sysutils

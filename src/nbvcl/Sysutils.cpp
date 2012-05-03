@@ -14,6 +14,7 @@
 #include "boost/date_time/local_time/local_time.hpp"
 #include "Classes.h"
 #include "FarPlugin.h"
+#include "RemoteFiles.h"
 #endif
 
 #ifdef _MSC_VER
@@ -1084,14 +1085,14 @@ TDateTime Date()
 }
 
 void DivMod(const int Dividend, const unsigned int Divisor,
-            unsigned int & Result, unsigned int & Remainder)
+  unsigned int & Result, unsigned int & Remainder)
 {
   Result = Dividend / Divisor;
   Remainder = Dividend % Divisor;
 }
 
 bool DecodeDateFully(const TDateTime & DateTime,
-                     unsigned int & Year, unsigned int & Month, unsigned int & Day, unsigned int & DOW)
+  unsigned int & Year, unsigned int & Month, unsigned int & Day, unsigned int & DOW)
 {
   static const int D1 = 365;
   static const int D4 = D1 * 4 + 1;
@@ -1163,14 +1164,14 @@ bool DecodeDateFully(const TDateTime & DateTime,
 }
 
 void DecodeDate(const TDateTime & DateTime, unsigned int & Year,
-                unsigned int & Month, unsigned int & Day)
+  unsigned int & Month, unsigned int & Day)
 {
   unsigned int Dummy = 0;
   DecodeDateFully(DateTime, Year, Month, Day, Dummy);
 }
 
 void DecodeTime(const TDateTime & DateTime, unsigned int & Hour,
-                unsigned int & Min, unsigned int & Sec, unsigned int & MSec)
+  unsigned int & Min, unsigned int & Sec, unsigned int & MSec)
 {
   unsigned int MinCount, MSecCount;
   DivMod(DateTimeToTimeStamp(DateTime).Time, 60000, MinCount, MSecCount);

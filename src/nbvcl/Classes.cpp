@@ -10,6 +10,7 @@
 #include "Classes.h"
 #include "Common.h"
 #include "Exceptions.h"
+#include "Sysutils.h"
 
 namespace alg = boost::algorithm;
 

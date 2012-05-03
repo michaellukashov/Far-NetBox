@@ -40,11 +40,11 @@ void TSynchronizeController::StartStop(TObject *Sender,
         try
         {
             FSynchronizeLog.connect(OnSynchronizeLog);
-            assert(!FSynchronizeLog.IsEmpty());
+            assert(!FSynchronizeLog.empty());
 
             FOptions = Options;
             if (FLAGSET(Params.Options, soSynchronize) &&
-                    (!FOnSynchronize.IsEmpty()))
+                    (!FOnSynchronize.empty()))
             {
                 FOnSynchronize(this, Params.LocalDirectory,
                                Params.RemoteDirectory, CopyParam,
@@ -126,7 +126,7 @@ void TSynchronizeController::SynchronizeChange(
         SynchronizeLog(slChange, FMTLOAD(SYNCHRONIZE_CHANGE,
                                          ExcludeTrailingBackslash(LocalDirectory).c_str()));
 
-        if (!FOnSynchronize.IsEmpty())
+        if (!FOnSynchronize.empty())
         {
             // this is completelly wrong as the options structure
             // can contain non-root specific options in future
@@ -187,7 +187,7 @@ void TSynchronizeController::SynchronizeAbort(bool Close)
         // FIXME FSynchronizeMonitor->Close();
         Error(SNotImplemented, 258);
     }
-    assert(!FSynchronizeAbort.IsEmpty());
+    assert(!FSynchronizeAbort.empty());
     FSynchronizeAbort(NULL, Close);
 }
 //---------------------------------------------------------------------------
@@ -218,7 +218,7 @@ void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
 void TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
         const UnicodeString Message)
 {
-    if (!FSynchronizeLog.IsEmpty())
+    if (!FSynchronizeLog.empty())
     {
         FSynchronizeLog(this, Entry, Message);
     }
@@ -243,7 +243,7 @@ void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
 void TSynchronizeController::SynchronizeInvalid(
     TObject * /*Sender*/, const UnicodeString Directory, const UnicodeString ErrorStr)
 {
-    if (!FOnSynchronizeInvalid.IsEmpty())
+    if (!FOnSynchronizeInvalid.empty())
     {
         FOnSynchronizeInvalid(this, Directory, ErrorStr);
     }
@@ -254,7 +254,7 @@ void TSynchronizeController::SynchronizeInvalid(
 void TSynchronizeController::SynchronizeTooManyDirectories(
     TObject * /*Sender*/, int &MaxDirectories)
 {
-    if (!FOnTooManyDirectories.IsEmpty())
+    if (!FOnTooManyDirectories.empty())
     {
         FOnTooManyDirectories(this, MaxDirectories);
     }

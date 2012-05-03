@@ -178,7 +178,7 @@ bool __fastcall TOptions::FindSwitch(const UnicodeString Switch,
     int Index = 0;
     while (Index < ParamsCount)
     {
-      Params->Add(Param[ParamsStart + Index]);
+      Params->Add(GetParam(ParamsStart + Index));
       Index++;
     }
     ParamsProcessed(ParamsStart, ParamsCount);

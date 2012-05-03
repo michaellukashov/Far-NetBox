@@ -284,6 +284,11 @@ protected:
 class UTF8String
 {
 public:
+  UTF8String() :
+    Data(NULL),
+    Size(0)
+  {
+  }
   UTF8String(const wchar_t* Str)
   {
     Init(Str, StrLength(Str));

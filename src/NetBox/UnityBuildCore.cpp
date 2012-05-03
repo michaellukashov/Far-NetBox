@@ -1,6 +1,7 @@
 #define PUTTY_DO_GLOBALS
 // #include "..\nbvcl\ustring.cpp"
 #include "..\nbvcl\Classes.cpp"
+#include "..\nbvcl\Sysutils.cpp"
 
 #include "..\far\UnicodeString.cpp"
 #include "..\far\local.cpp"

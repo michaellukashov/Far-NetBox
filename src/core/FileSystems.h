@@ -78,29 +78,29 @@ struct TClipboardHandler
 struct TOpenRemoteFileParams
 {
   TOpenRemoteFileParams() :
+    LocalFileAttrs(0),
     OperationProgress(NULL),
     CopyParam(NULL),
-    FileParams(NULL),
-    DestFileSize(0),
-    LocalFileAttrs(0),
     Params(0),
-    OverwriteMode(omOverwrite),
     Resume(false),
     Resuming(false),
+    OverwriteMode(omOverwrite),
+    DestFileSize(0),
+    FileParams(NULL),
     Confirmed(false)
   {
   }
-  TFileOperationProgressType *OperationProgress;
-  const TCopyParamType *CopyParam;
-  TOverwriteFileParams *FileParams;
-  __int64 DestFileSize; // output
   int LocalFileAttrs;
-  int Params;
-  TOverwriteMode OverwriteMode;
   UnicodeString RemoteFileName;
-  std::string RemoteFileHandle; // output
+  TFileOperationProgressType * OperationProgress;
+  const TCopyParamType * CopyParam;
+  int Params;
   bool Resume;
   bool Resuming;
+  TOverwriteMode OverwriteMode;
+  __int64 DestFileSize; // output
+  RawByteString RemoteFileHandle; // output
+  TOverwriteFileParams *FileParams;
   bool Confirmed;
 };
 //---------------------------------------------------------------------------

@@ -27,8 +27,8 @@ class THierarchicalStorage;
 class TRemoteToken
 {
 public:
-  TRemoteToken();
-  explicit TRemoteToken(const UnicodeString & Name);
+  /* __fastcall */ TRemoteToken();
+  explicit /* __fastcall */ TRemoteToken(const UnicodeString & Name);
 
   void __fastcall Clear();
 
@@ -155,8 +155,8 @@ protected:
   void __fastcall FindLinkedFile();
 
 public:
-  explicit TRemoteFile(TRemoteFile * ALinkedByFile = NULL);
-  virtual ~TRemoteFile();
+  explicit /* __fastcall */ TRemoteFile(TRemoteFile * ALinkedByFile = NULL);
+  virtual /* __fastcall */ ~TRemoteFile();
   TRemoteFile * __fastcall Duplicate(bool Standalone = true) const;
 
   void __fastcall ShiftTime(const TDateTime & Difference);
@@ -251,16 +251,16 @@ public:
 class TRemoteDirectoryFile : public TRemoteFile
 {
 public:
-  TRemoteDirectoryFile();
-  virtual ~TRemoteDirectoryFile()
+  /* __fastcall */ TRemoteDirectoryFile();
+  virtual /* __fastcall */ ~TRemoteDirectoryFile()
   {}
 };
 //---------------------------------------------------------------------------
 class TRemoteParentDirectory : public TRemoteDirectoryFile
 {
 public:
-  explicit TRemoteParentDirectory(TTerminal * Terminal);
-  virtual ~TRemoteParentDirectory()
+  explicit /* __fastcall */ TRemoteParentDirectory(TTerminal * Terminal);
+  virtual /* __fastcall */ ~TRemoteParentDirectory()
   {}
 };
 //---------------------------------------------------------------------------
@@ -285,7 +285,7 @@ protected:
 
   virtual void __fastcall Clear();
 public:
-  TRemoteFileList();
+  /* __fastcall */ TRemoteFileList();
   virtual ~TRemoteFileList()
   {
     Clear();
@@ -336,8 +336,8 @@ private:
 protected:
   virtual void __fastcall Clear();
 public:
-  explicit TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template = NULL);
-  virtual ~TRemoteDirectory()
+  explicit /* __fastcall */ TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template = NULL);
+  virtual /* __fastcall */ ~TRemoteDirectory()
   {
     Clear();
   }
@@ -369,8 +369,8 @@ public:
 class TRemoteDirectoryCache : private TStringList
 {
 public:
-  TRemoteDirectoryCache();
-  virtual ~TRemoteDirectoryCache();
+  /* __fastcall */ TRemoteDirectoryCache();
+  virtual /* __fastcall */ ~TRemoteDirectoryCache();
   bool __fastcall HasFileList(const UnicodeString Directory);
   bool __fastcall HasNewerFileList(const UnicodeString Directory, TDateTime Timestamp);
   bool __fastcall GetFileList(const UnicodeString Directory,
@@ -395,8 +395,8 @@ private:
 class TRemoteDirectoryChangesCache : private TStringList
 {
 public:
-  explicit TRemoteDirectoryChangesCache(int MaxSize);
-  virtual ~TRemoteDirectoryChangesCache()
+  explicit /* __fastcall */ TRemoteDirectoryChangesCache(int MaxSize);
+  virtual /* __fastcall */ ~TRemoteDirectoryChangesCache()
   {}
 
   void __fastcall AddDirectoryChange(const UnicodeString SourceDir,
@@ -457,9 +457,9 @@ public:
 public:
   static TFlag __fastcall RightToFlag(TRight Right);
 
-  TRights();
-  TRights(const TRights & Source);
-  explicit TRights(unsigned short Number);
+  /* __fastcall */ TRights();
+  /* __fastcall */ TRights(const TRights & Source);
+  explicit /* __fastcall */ TRights(unsigned short Number);
 
   void __fastcall Assign(const TRights * Source);
   void __fastcall AddExecute();
@@ -619,8 +619,8 @@ public:
   __int64 Modification; // unix time
   __int64 LastAccess; // unix time
 
-  TRemoteProperties();
-  TRemoteProperties(const TRemoteProperties & rhp);
+  /* __fastcall */ TRemoteProperties();
+  /* __fastcall */ TRemoteProperties(const TRemoteProperties & rhp);
   bool __fastcall operator ==(const TRemoteProperties & rhp) const;
   bool __fastcall operator !=(const TRemoteProperties & rhp) const;
   void __fastcall Default();
