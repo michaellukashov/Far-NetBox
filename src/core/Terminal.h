@@ -784,8 +784,8 @@ public:
   __property int Count = { read = GetCount };
   __property const TItem * Item[int Index] = { read = GetItem };
 #else
-  size_t GetCount() const;
-  const TItem *GetItem(size_t Index) const;
+  int GetCount() const;
+  const TItem *GetItem(int Index) const;
 #endif
 
 protected:
