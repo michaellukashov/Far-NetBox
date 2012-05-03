@@ -2658,7 +2658,7 @@ TRemoteFileList * /* __fastcall */ TTerminal::DoReadDirectoryListing(UnicodeStri
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::ProcessDirectory(const UnicodeString DirName,
-  const TProcessFileEvent & CallBackFunc, void * Param, bool UseCache, bool IgnoreErrors)
+  TProcessFileEvent CallBackFunc, void * Param, bool UseCache, bool IgnoreErrors)
 {
   TRemoteFileList * FileList = NULL;
   if (IgnoreErrors)

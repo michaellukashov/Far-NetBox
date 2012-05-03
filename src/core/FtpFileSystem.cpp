@@ -1567,7 +1567,7 @@ void __fastcall TFTPFileSystem::DirectorySource(const UnicodeString DirectoryNam
       UnicodeString FileName = DirectoryName + SearchRec.Name;
       try
       {
-        if ((wcscmp(SearchRec.cFileName, THISDIRECTORY) != 0) && (wcscmp(SearchRec.cFileName, PARENTDIRECTORY) != 0))
+        if ((wcscmp(SearchRec.Name, THISDIRECTORY) != 0) && (wcscmp(SearchRec.Name, PARENTDIRECTORY) != 0))
         {
           SourceRobust(FileName, DestFullName, CopyParam, Params, OperationProgress,
             Flags & ~(tfFirstLevel | tfAutoResume));
@@ -2572,7 +2572,7 @@ void __fastcall TFTPFileSystem::GotNonCommandReply(unsigned int Reply)
 void __fastcall TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
   UnicodeString Error, unsigned int * Code, TStrings ** Response)
 {
-  try
+  // try
   {
     BOOST_SCOPE_EXIT ( (&Self) )
     {
@@ -2729,7 +2729,7 @@ void __fastcall TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
       }
       else
       {
-        throw ExtException(Error, MoreMessages, true, HelpKeyword);
+        throw ExtException(Error, MoreMessages, true); //, HelpKeyword);
       }
     }
 
@@ -2857,7 +2857,7 @@ void __fastcall TFTPFileSystem::HandleReplyStatus(UnicodeString Response)
       // Possitive reply to "SYST" must be 215, see RFC 959
       if (FLastCode == 215)
       {
-        FSystem = FLastResponse->Text.TrimRight();
+        FSystem = FLastResponse->GetText().TrimRight();
         // full name is "Personal FTP Server PRO K6.0"
         if ((FListAll == asAuto) &&
             (FSystem.Pos(L"Personal FTP Server") > 0))
@@ -3463,10 +3463,10 @@ bool __fastcall TFTPFileSystem::HandleListData(const wchar_t * Path,
             // ignore permissions errors with FTP
           }
         }
-        const wchar_t * Space = wcschr(Entry->OwnerGroup.c_str(), L' ');
+        const wchar_t * Space = wcschr(Entry->OwnerGroup, L' ');
         if (Space != NULL)
         {
-          File->GetOwner().SetName(UnicodeString(Entry->OwnerGroup.c_str(), Space - Entry->OwnerGroup.c_str()));
+          File->GetOwner().SetName(UnicodeString(Entry->OwnerGroup, Space - Entry->OwnerGroup));
           File->GetGroup().SetName(Space + 1);
         }
         else

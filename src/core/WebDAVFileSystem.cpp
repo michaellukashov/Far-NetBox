@@ -614,7 +614,7 @@ void __fastcall TWebDAVFileSystem::ReadDirectory(TRemoteFileList *FileList)
                 // (note that it's actually never empty here, there's always at least parent directory,
                 // added explicitly by DoReadDirectory)
                 if ((FileList->GetCount() == 0) ||
-                        ((FileList->GetCount() == 1) && FileList->GetFile(0)->GetIsParentDirectory()))
+                        ((FileList->GetCount() == 1) && FileList->GetFiles(0)->GetIsParentDirectory()))
                 {
                     Repeat = true;
                     FListAll = asOff;
@@ -699,7 +699,7 @@ void __fastcall TWebDAVFileSystem::CustomReadFile(const UnicodeString FileName,
     else
     {
         isExist = false;
-        errorInfo.clear();
+        errorInfo.Clear();
         bool res = WebDAVCheckExisting(FileName.c_str(), ItemFile, isExist, errorInfo);
         if (res && isExist)
         {
@@ -940,7 +940,7 @@ void __fastcall TWebDAVFileSystem::CaptureOutput(const UnicodeString AddedLine, 
     if (StdError ||
             !Line.IsEmpty())
     {
-        assert(!FOnCaptureOutput.IsEmpty());
+        assert(!FOnCaptureOutput.empty());
         FOnCaptureOutput(Line, StdError);
     }
 }
@@ -1008,7 +1008,7 @@ void __fastcall TWebDAVFileSystem::CopyToRemote(TStrings *FilesToCopy,
                 Success = true;
                 FLastDataSent = Now();
             }
-            catch (const EScpSkipFile &E)
+            catch (EScpSkipFile &E)
             {
                 DEBUG_PRINTF(L"before FTerminal->HandleException");
                 SUSPEND_OPERATION (
@@ -1037,7 +1037,7 @@ void __fastcall TWebDAVFileSystem::WebDAVSourceRobust(const UnicodeString FileNa
             WebDAVSource(FileName, TargetDir, CopyParam, Params, OperationProgress,
                    Flags, Action);
         }
-        catch (std::exception &E)
+        catch (Exception &E)
         {
             Retry = true;
             if (FTerminal->GetActive() ||
@@ -1224,7 +1224,7 @@ void __fastcall TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString Dir
                     CreateDir = false;
                 }
             }
-            catch (const EScpSkipFile &E)
+            catch (EScpSkipFile &E)
             {
                 // If ESkipFile occurs, just log it and continue with next file
                 DEBUG_PRINTF(L"before FTerminal->HandleException");
@@ -1329,7 +1329,7 @@ void __fastcall TWebDAVFileSystem::CopyToLocal(TStrings *FilesToCopy,
                 Success = true;
                 FLastDataSent = Now();
             }
-            catch (const EScpSkipFile &E)
+            catch (EScpSkipFile &E)
             {
                 DEBUG_PRINTF(L"before FTerminal->HandleException");
                 SUSPEND_OPERATION (
@@ -1359,7 +1359,7 @@ void __fastcall TWebDAVFileSystem::SinkRobust(const UnicodeString FileName,
             Sink(FileName, File, TargetDir, CopyParam, Params, OperationProgress,
                  Flags, Action);
         }
-        catch (std::exception &E)
+        catch (Exception &E)
         {
             Retry = true;
             if (FTerminal->GetActive() ||
@@ -1997,8 +1997,8 @@ bool TWebDAVFileSystem::SendPropFindRequest(const wchar_t *dir, long &responseCo
     const std::string webDavPath = EscapeUTF8URL(dir);
     // DEBUG_PRINTF(L"TWebDAVFileSystem::SendPropFindRequest: webDavPath = %s", MB2W(webDavPath.c_str()).c_str());
 
-    response.clear();
-    errInfo.clear();
+    response.Clear();
+    errInfo.Clear();
 
     const char *requestData =
         "<?xml version=\"1.0\" encoding=\"utf-8\"?>"

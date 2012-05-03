@@ -336,10 +336,19 @@ public:
   {
     Init(Str, StrLength(Str));
   }
+  RawByteString(const wchar_t* Str, int sz)
+  {
+    Init(Str, sz);
+  }
 
   RawByteString(const char* Str)
   {
     Init(Str, strlen(Str));
+  }
+
+  RawByteString(const char* Str, int sz)
+  {
+    Init(Str, sz);
   }
 
   RawByteString(const string& Str)

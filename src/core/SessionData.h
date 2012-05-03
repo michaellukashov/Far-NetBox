@@ -199,7 +199,7 @@ public:
   UnicodeString __fastcall GetProtocolStr() const;
   bool __fastcall GetCanLogin();
   void __fastcall SetPingIntervalDT(TDateTime value);
-  TDateTime __fastcall GetPingIntervalDT();
+  TDateTime __fastcall GetPingIntervalDT() const;
   TDateTime __fastcall GetFtpPingIntervalDT();
   void __fastcall SetTimeDifference(TDateTime value);
   void __fastcall SetPingType(TPingType value);
