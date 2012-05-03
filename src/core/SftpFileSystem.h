@@ -10,7 +10,9 @@ struct TOverwriteFileParams;
 struct TSFTPSupport;
 class TSecureShell;
 //---------------------------------------------------------------------------
+#ifndef _MSC_VER
 enum TSFTPOverwriteMode { omOverwrite, omAppend, omResume };
+#endif
 //---------------------------------------------------------------------------
 class TSFTPFileSystem : public TCustomFileSystem
 {
@@ -108,7 +110,6 @@ protected:
   TSFTPFileSystem * Self;
 
   void __fastcall SendCustomReadFile(TSFTPPacket * Packet, TSFTPPacket * Response,
-    const UnicodeString FileName,
     unsigned long Flags);
   void __fastcall CustomReadFile(const UnicodeString FileName,
     TRemoteFile *& File, unsigned char Type, TRemoteFile * ALinkedByFile = NULL,
@@ -116,7 +117,7 @@ protected:
   virtual UnicodeString __fastcall GetCurrentDirectory();
   UnicodeString __fastcall GetHomeDirectory();
   unsigned long __fastcall GotStatusPacket(TSFTPPacket * Packet, int AllowStatus);
-  bool __fastcall inline IsAbsolutePath(const UnicodeString Path);
+  bool __fastcall /* inline */ IsAbsolutePath(const UnicodeString Path);
   bool __fastcall RemoteFileExists(const UnicodeString FullPath, TRemoteFile ** File = NULL);
   TRemoteFile * __fastcall LoadFile(TSFTPPacket * Packet,
     TRemoteFile * ALinkedByFile, const UnicodeString FileName,
@@ -153,6 +154,8 @@ protected:
     TFileOperationProgressType * OperationProgress, unsigned int Flags);
   void __fastcall SFTPSource(const UnicodeString FileName,
     const UnicodeString TargetDir, const TCopyParamType * CopyParam, int Params,
+    TOpenRemoteFileParams & OpenParams,
+    TOverwriteFileParams & FileParams,
     TFileOperationProgressType * OperationProgress, unsigned int Flags,
     TUploadSessionAction & Action, bool & ChildError);
   RawByteString __fastcall SFTPOpenRemoteFile(const UnicodeString & FileName,
@@ -166,7 +169,7 @@ protected:
     int Params, TFileOperationProgressType * OperationProgress, unsigned int Flags);
   void __fastcall SFTPConfirmOverwrite(UnicodeString & FileName,
     int Params, TFileOperationProgressType * OperationProgress,
-    TSFTPOverwriteMode & Mode, const TOverwriteFileParams * FileParams);
+    TOverwriteMode & Mode, const TOverwriteFileParams * FileParams);
   bool SFTPConfirmResume(const UnicodeString DestFileName, bool PartialBiggerThanSource,
     TFileOperationProgressType * OperationProgress);
   void __fastcall SFTPSinkRobust(const UnicodeString FileName,
@@ -184,7 +187,9 @@ protected:
   inline void __fastcall BusyStart();
   inline void __fastcall BusyEnd();
   inline unsigned long __fastcall TransferBlockSize(unsigned long Overhead,
-    TFileOperationProgressType * OperationProgress, unsigned long MaxPacketSize = 0);
+    TFileOperationProgressType * OperationProgress,
+    unsigned long MinPacketSize = 0,
+    unsigned long MaxPacketSize = 0);
   inline unsigned long __fastcall UploadBlockSize(const RawByteString & Handle,
     TFileOperationProgressType * OperationProgress);
   inline unsigned long __fastcall DownloadBlockSize(
