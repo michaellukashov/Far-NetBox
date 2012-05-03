@@ -1855,7 +1855,7 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString FileName,
       OperationProgress->SetTransferSize(OperationProgress->LocalSize);
       OperationProgress->TransferingFile = false;
 
-      TDateTime Modification = UnixToDateTime(MTime, FTerminal->SessionData->DSTMode);
+      TDateTime Modification = UnixToDateTime(MTime, FTerminal->GetSessionData()->GetDSTMode());
 
       // Will we use ASCII of BINARY file tranfer?
       TFileMasks::TParams MaskParams;
@@ -1934,7 +1934,7 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString FileName,
 
             if (CopyParam->GetPreserveTime())
             {
-              Buf.SetLength(40, 0);
+              Buf.SetLength(40);
               // Send last file access and modification time
               // TVarRec don't understand 'unsigned int' -> we use sprintf()
               swprintf_s(const_cast<wchar_t *>(Buf.c_str()), Buf.Length(), L"T%lu 0 %lu 0", static_cast<unsigned long>(MTime),
@@ -2089,7 +2089,7 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString FileName,
     if (!Dir)
     {
       FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, FileName.c_str()),
-        THROWOSIFFALSE(Sysutils::DeleteFile(FileName));
+        THROWOSIFFALSE(::DeleteFile(FileName));
       )
     }
   }
@@ -2152,7 +2152,7 @@ void __fastcall TSCPFileSystem::SCPDirectorySource(const UnicodeString Directory
     FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
       UnicodeString path = IncludeTrailingBackslash(DirectoryName) + L"*.*";
       FindOK = FindFirst(path.c_str(),
-        FindAttrs, &SearchRec) == 0);
+        FindAttrs, SearchRec) == 0;
     );
 
     // try
@@ -2247,7 +2247,7 @@ void __fastcall TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
   if (FTerminal->GetSessionData()->GetScp1Compatibility()) { Options += L" -1"; }
 
   FTerminal->LogEvent(FORMAT(L"Copying %d files/directories to local directory "
-    L\"%s\"", FilesToCopy->GetCount(), TargetDir.c_str()));
+    L"\"%s\"", FilesToCopy->GetCount(), TargetDir.c_str()));
   FTerminal->LogEvent(CopyParam->GetLogStr());
 
   // try
@@ -2682,7 +2682,7 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
               catch (Exception &E)
               {
                 // In this step we can still cancel transfer, so we do it
-                SCPError(E.Message, false);
+                SCPError(E.GetMessage(), false);
                 throw;
               }
 

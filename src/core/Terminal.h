@@ -102,7 +102,7 @@ typedef informationevent_signal_type::slot_type TInformationEvent;
 //---------------------------------------------------------------------------
 #define SUSPEND_OPERATION(Command)                            \
   {                                                           \
-    TSuspendFileOperationProgress Suspend(GetOperationProgress()); \
+    TSuspendFileOperationProgress Suspend(OperationProgress); \
     Command                                                   \
   }
 
@@ -140,7 +140,7 @@ typedef informationevent_signal_type::slot_type TInformationEvent;
     }                                                                       \
     catch (Exception & E)                                                   \
     {                                                                       \
-      TERMINAL->FileOperationLoopQuery(E, GetOperationProgress(), MESSAGE, ALLOW_SKIP); \
+      TERMINAL->FileOperationLoopQuery(E, OperationProgress, MESSAGE, ALLOW_SKIP); \
       DoRepeat = true;                                                      \
     } \
   } while (DoRepeat); }

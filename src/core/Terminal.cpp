@@ -2836,16 +2836,18 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
 
   try
   {
-    TFileOperationProgressType Progress(boost::bind(&TTerminal::DoProgress, this, _1, _2), boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
-    Progress.Start(Operation, Side, FileList->GetCount());
+    TFileOperationProgressType * OperationProgress = new TFileOperationProgressType(boost::bind(&TTerminal::DoProgress, this, _1, _2), boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
+    OperationProgress->Start(Operation, Side, FileList->GetCount());
 
-    FOperationProgress = &Progress;
+    FOperationProgress = OperationProgress;
     // try
     {
-      BOOST_SCOPE_EXIT ( (&Self) (&Progress) )
+      BOOST_SCOPE_EXIT ( (&Self) (&OperationProgress) )
       {
         Self->FOperationProgress = NULL;
-        Progress.Stop();
+        OperationProgress->Stop();
+        delete OperationProgress;
+        OperationProgress = NULL;
       }
       BOOST_SCOPE_EXIT_END
       if (Side == osRemote)
@@ -2867,16 +2869,16 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
         bool Success;
         processfile_signal_type sig;
         sig.connect(ProcessFile);
-        while ((Index < FileList->GetCount()) && (Progress.Cancel == csContinue))
+        while ((Index < FileList->GetCount()) && (OperationProgress->Cancel == csContinue))
         {
           FileName = FileList->GetStrings(Index);
           try
           {
             // try
             {
-              BOOST_SCOPE_EXIT ( (&Progress) (&FileName) (&Success) (&OnceDoneOperation) )
+              BOOST_SCOPE_EXIT ( (&OperationProgress) (&FileName) (&Success) (&OnceDoneOperation) )
               {
-                Progress.Finish(FileName, Success, OnceDoneOperation);
+                OperationProgress->Finish(FileName, Success, OnceDoneOperation);
               } BOOST_SCOPE_EXIT_END
               Success = false;
               if (!Ex)
@@ -2895,7 +2897,7 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
 #ifndef _MSC_VER
             __finally
             {
-              Progress.Finish(FileName, Success, OnceDoneOperation);
+              OperationProgress->Finish(FileName, Success, OnceDoneOperation);
             }
 #endif
           }
@@ -2919,7 +2921,7 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
       }
 #endif
 
-      if (Progress.Cancel == csContinue)
+      if (OperationProgress->Cancel == csContinue)
       {
         Result = true;
       }
@@ -2928,7 +2930,9 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
     __finally
     {
       FOperationProgress = NULL;
-      Progress.Stop();
+      OperationProgress->Stop();
+      delete OperationProgress;
+      OperationProgress = NULL;
     }
 #endif
   }
@@ -4021,6 +4025,7 @@ void /* __fastcall */ TTerminal::OpenLocalFile(const UnicodeString FileName,
 {
   int Attrs = 0;
   HANDLE Handle = 0;
+  TFileOperationProgressType * OperationProgress = GetOperationProgress();
   FILE_OPERATION_LOOP (FMTLOAD(FILE_NOT_EXISTS, FileName.c_str()),
     Attrs = FileGetAttr(FileName);
     // if ((Attrs == -1) && (Access != GENERIC_WRITE)) RaiseLastOSError();
@@ -4106,6 +4111,7 @@ bool /* __fastcall */ TTerminal::AllowLocalFileTransfer(UnicodeString FileName,
   const TCopyParamType * CopyParam)
 {
   bool Result = true;
+  TFileOperationProgressType * OperationProgress = GetOperationProgress();
   if (!CopyParam->AllowAnyTransfer())
   {
     WIN32_FIND_DATA FindData = {0};
@@ -4313,6 +4319,7 @@ void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeStri
   Data.Flags = Flags;
   Data.Checklist = Checklist;
 
+  TFileOperationProgressType * OperationProgress = GetOperationProgress();
   LogEvent(FORMAT(L"Collecting synchronization list for local directory '%s' and remote directory '%s', "
     L"mode = %d, params = %d", LocalDirectory.c_str(), RemoteDirectory.c_str(),
     int(Mode), int(Params)));
@@ -4912,6 +4919,7 @@ void /* __fastcall */ TTerminal::DoSynchronizeProgress(const TSynchronizeData & 
 void /* __fastcall */ TTerminal::SynchronizeLocalTimestamp(const UnicodeString /*FileName*/,
   const TRemoteFile * File, void * /*Param*/)
 {
+  TFileOperationProgressType * OperationProgress = GetOperationProgress();
   const TSynchronizeChecklist::TItem * ChecklistItem =
     reinterpret_cast<const TSynchronizeChecklist::TItem *>(File);
 

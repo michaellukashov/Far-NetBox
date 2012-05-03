@@ -1634,7 +1634,7 @@ private:
 };
 
 //===========================================================================
-TSFTPFileTSFTPFileSystem(TTerminal *ATerminal) :
+TSFTPFileSystem::TSFTPFileSystem(TTerminal *ATerminal) :
     TCustomFileSystem(ATerminal)
 {
     Self = this;
@@ -1659,7 +1659,7 @@ void __fastcall TSFTPFileSystem::Init(TSecureShell *SecureShell)
     Self = this;
 }
 //---------------------------------------------------------------------------
-TSFTPFile~TSFTPFileSystem()
+TSFTPFileSystem::~TSFTPFileSystem()
 {
     delete FSupport;
     ResetConnection();
@@ -1685,17 +1685,17 @@ bool TSFTPFileSystem::GetActive()
     return FSecureShell->GetActive();
 }
 //---------------------------------------------------------------------------
-const TSessionInfo &TSFTPFileGetSessionInfo()
+const TSessionInfo &TSFTPFileSystem::GetSessionInfo()
 {
     return FSecureShell->GetSessionInfo();
 }
 //---------------------------------------------------------------------------
-const TSessionData *TSFTPFileGetSessionData() const
+const TSessionData *TSFTPFileSystem::GetSessionData() const
 {
     return FTerminal->GetSessionData();
 }
 //---------------------------------------------------------------------------
-const TFileSystemInfo &TSFTPFileGetFileSystemInfo(bool /*Retrieve*/)
+const TFileSystemInfo &TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
 {
     if (!FFileSystemInfoValid)
     {
@@ -2528,7 +2528,7 @@ void __fastcall TSFTPFileSystem::LoadFile(TRemoteFile *File, TSFTPPacket *Packet
                     FSignedTS, Complete);
 }
 //---------------------------------------------------------------------------
-TRemoteFile *TSFTPFileLoadFile(TSFTPPacket *Packet,
+TRemoteFile *TSFTPFileSystem::LoadFile(TSFTPPacket *Packet,
                                        TRemoteFile *ALinkedByFile, const UnicodeString FileName,
                                        TRemoteFileList *TempFileList, bool Complete)
 {
@@ -2824,7 +2824,7 @@ void __fastcall TSFTPFileSystem::DoStartup()
     }
 }
 //---------------------------------------------------------------------------
-char *TSFTPFileGetEOL() const
+char *TSFTPFileSystem::GetEOL() const
 {
     if (FVersion >= 4)
     {
@@ -4157,7 +4157,7 @@ void __fastcall TSFTPFileSystem::SFTPSource(const UnicodeString FileName,
             OpenParams->Confirmed = false;
 
             FTerminal->LogEvent(L"Opening remote file.");
-            FTerminal->FileOperationLoop(boost::bind(&TSFTPFileSFTPOpenRemote, this, _1, _2), OperationProgress, true,
+            FTerminal->FileOperationLoop(boost::bind(&TSFTPFileSystem::SFTPOpenRemote, this, _1, _2), OperationProgress, true,
                                          FMTLOAD(SFTP_CREATE_FILE_ERROR, OpenParams->RemoteFileName.c_str()),
                                          OpenParams);
 
@@ -4891,7 +4891,7 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
             SinkFileParams.Skipped = false;
             SinkFileParams.Flags = Flags & ~tfFirstLevel;
 
-            FTerminal->ProcessDirectory(FileName, boost::bind(&TSFTPFileSFTPSinkFile, this, _1, _2, _3), &SinkFileParams);
+            FTerminal->ProcessDirectory(FileName, boost::bind(&TSFTPFileSystem::SFTPSinkFile, this, _1, _2, _3), &SinkFileParams);
 
             // Do not delete directory if some of its files were skip.
             // Throw "skip file" for the directory to avoid __fastcall attempt to deletion
