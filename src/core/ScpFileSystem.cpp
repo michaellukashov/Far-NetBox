@@ -518,7 +518,7 @@ void __fastcall TSCPFileSystem::Idle()
     {
       if (!FProcessingCommand)
       {
-        ExecCommand(fsNull);
+        ExecCommand2(fsNull);
       }
       else
       {
@@ -821,16 +821,15 @@ void __fastcall TSCPFileSystem::ExecCommand(TFSCommand Cmd, const TVarRec * args
 }
 #endif
 //---------------------------------------------------------------------------
-void __fastcall TSCPFileSystem::ExecCommand(TFSCommand Cmd, int Params, ...)
+void __fastcall TSCPFileSystem::ExecCommand2(TFSCommand Cmd, ...)
 {
-  if (Params < 0) { Params = ecDefault; }
   va_list args;
   va_start(args, Cmd);
-  UnicodeString FullCommand = FCommandSet->FullCommand(Params, args);
+  UnicodeString FullCommand = FCommandSet->FullCommand(Cmd, args);
   UnicodeString Command = FCommandSet->Command(Cmd, args);
-  ExecCommand(FullCommand, Params, Command);
+  ExecCommand(FullCommand, -1, Command);
   va_end(args);
-  if (Params & ecRaiseExcept)
+  if (true) // Params & ecRaiseExcept)
   {
     int MinL = FCommandSet->GetMinLines(Cmd);
     int MaxL = FCommandSet->GetMaxLines(Cmd);
@@ -838,7 +837,7 @@ void __fastcall TSCPFileSystem::ExecCommand(TFSCommand Cmd, int Params, ...)
         ((MaxL >= 0) && (MaxL > static_cast<int>(FOutput->GetCount()))))
     {
       FTerminal->TerminalError(::FmtLoadStr(INVALID_OUTPUT_ERROR,
-                                            FullCommand.c_str(), GetOutput()->GetText().c_str()));
+        FullCommand.c_str(), GetOutput()->GetText().c_str()));
     }
   }
 }
@@ -888,7 +887,7 @@ void __fastcall TSCPFileSystem::SkipStartupMessage()
   try
   {
     FTerminal->LogEvent(L"Skipping host startup message (if any).");
-    ExecCommand(fsNull);
+    ExecCommand2(fsNull);
   }
   catch (Exception & E)
   {
@@ -898,7 +897,7 @@ void __fastcall TSCPFileSystem::SkipStartupMessage()
 //---------------------------------------------------------------------------
 void __fastcall TSCPFileSystem::LookupUsersGroups()
 {
-  ExecCommand(fsLookupUsersGroups);
+  ExecCommand2(fsLookupUsersGroups);
   FTerminal->FUsers.Clear();
   FTerminal->FGroups.Clear();
   if (FOutput->GetCount() > 0)
@@ -931,7 +930,7 @@ void __fastcall TSCPFileSystem::DetectReturnVar()
       try
       {
         FTerminal->LogEvent(FORMAT(L"Trying \"$%s\".", ReturnVars[Index].c_str()));
-        ExecCommand(fsVarValue, -1, ReturnVars[Index].c_str());
+        ExecCommand2(fsVarValue, ReturnVars[Index].c_str());
         UnicodeString str = GetOutput()->GetCount() > 0 ? GetOutput()->GetStrings(0) : L"";
         int val = StrToIntDef(str, 256);
         if ((GetOutput()->GetCount() != 1) || str.IsEmpty() || (val > 255))
@@ -981,7 +980,7 @@ void __fastcall TSCPFileSystem::ClearAlias(UnicodeString Alias)
   {
     // this command usually fails, because there will never be
     // aliases on all commands -> see last False parametr
-    ExecCommand(fsUnalias, -1, Alias.c_str(), false);
+    ExecCommand2(fsUnalias, Alias.c_str(), false);
   }
 }
 //---------------------------------------------------------------------------
@@ -1023,7 +1022,7 @@ void __fastcall TSCPFileSystem::UnsetNationalVars()
     FTerminal->LogEvent(L"Clearing national user variables.");
     for (int Index = 0; Index < NationalVarCount; Index++)
     {
-      ExecCommand(fsUnset, -1, NationalVars[Index], false);
+      ExecCommand2(fsUnset, NationalVars[Index], false);
     }
   }
   catch (Exception &E)
@@ -1036,7 +1035,7 @@ void __fastcall TSCPFileSystem::ReadCurrentDirectory()
 {
   if (FCachedDirectoryChange.IsEmpty())
   {
-    ExecCommand(fsCurrentDirectory);
+    ExecCommand2(fsCurrentDirectory);
     FCurrentDirectory = UnixExcludeTrailingBackslash(FOutput->GetStrings(0));
   }
   else
@@ -1047,7 +1046,7 @@ void __fastcall TSCPFileSystem::ReadCurrentDirectory()
 //---------------------------------------------------------------------------
 void __fastcall TSCPFileSystem::HomeDirectory()
 {
-  ExecCommand(fsHomeDirectory);
+  ExecCommand2(fsHomeDirectory);
 }
 //---------------------------------------------------------------------------
 void __fastcall TSCPFileSystem::AnnounceFileListOperation()
@@ -1067,7 +1066,7 @@ void __fastcall TSCPFileSystem::ChangeDirectory(const UnicodeString Directory)
   {
     ToDir = DelimitStr(Directory);
   }
-  ExecCommand(fsChangeDirectory, -1, ToDir.c_str());
+  ExecCommand2(fsChangeDirectory, ToDir.c_str());
   FCachedDirectoryChange = L"";
 }
 //---------------------------------------------------------------------------
@@ -1097,14 +1096,14 @@ void __fastcall TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       if (ListCurrentDirectory)
       {
         FTerminal->LogEvent(L"Listing current directory.");
-        ExecCommand(fsListCurrentDirectory, -1,
+        ExecCommand2(fsListCurrentDirectory,
           FTerminal->GetSessionData()->GetListingCommand().c_str(), Options, Params);
       }
       else
       {
         FTerminal->LogEvent(FORMAT(L"Listing directory \"%s\".",
           FileList->GetDirectory().c_str()));
-        ExecCommand(fsListDirectory, -1,
+        ExecCommand2(fsListDirectory,
           FTerminal->GetSessionData()->GetListingCommand().c_str(), Options,
             DelimitStr(FileList->GetDirectory().c_str()).c_str(),
           Params);
@@ -1254,7 +1253,7 @@ void __fastcall TSCPFileSystem::CustomReadFile(const UnicodeString FileName,
   // the auto-detection of --full-time support is not implemented for fsListFile,
   // so we use it only if we already know that it is supported (asOn).
   const wchar_t * Options = (FLsFullTime == asOn) ? FullTimeOption : L"";
-  ExecCommand(fsListFile, -1,
+  ExecCommand2(fsListFile,
     FTerminal->GetSessionData()->GetListingCommand().c_str(), Options, DelimitStr(FileName).c_str(),
     Params);
   if (FOutput->GetCount())
@@ -1276,35 +1275,35 @@ void __fastcall TSCPFileSystem::DeleteFile(const UnicodeString FileName,
   USEDPARAM(Params);
   Action.Recursive();
   assert(FLAGCLEAR(Params, dfNoRecursive) || (File && File->GetIsSymLink()));
-  ExecCommand(fsDeleteFile, -1, DelimitStr(FileName).c_str());
+  ExecCommand2(fsDeleteFile, DelimitStr(FileName).c_str());
 }
 //---------------------------------------------------------------------------
 void __fastcall TSCPFileSystem::RenameFile(const UnicodeString FileName,
   const UnicodeString NewName)
 {
-  ExecCommand(fsRenameFile, -1, DelimitStr(FileName).c_str(), DelimitStr(NewName).c_str());
+  ExecCommand2(fsRenameFile, DelimitStr(FileName).c_str(), DelimitStr(NewName).c_str());
 }
 //---------------------------------------------------------------------------
 void __fastcall TSCPFileSystem::CopyFile(const UnicodeString FileName,
   const UnicodeString NewName)
 {
-  ExecCommand(fsCopyFile, -1, DelimitStr(FileName).c_str(), DelimitStr(NewName).c_str());
+  ExecCommand2(fsCopyFile, DelimitStr(FileName).c_str(), DelimitStr(NewName).c_str());
 }
 //---------------------------------------------------------------------------
 void __fastcall TSCPFileSystem::CreateDirectory(const UnicodeString DirName)
 {
-  ExecCommand(fsCreateDirectory, -1, DelimitStr(DirName).c_str());
+  ExecCommand2(fsCreateDirectory, DelimitStr(DirName).c_str());
 }
 //---------------------------------------------------------------------------
 void __fastcall TSCPFileSystem::CreateLink(const UnicodeString FileName,
   const UnicodeString PointTo, bool Symbolic)
 {
-  ExecCommand(fsCreateLink, -1,
+  ExecCommand2(fsCreateLink,
     Symbolic ? L"-s" : L"", DelimitStr(PointTo).c_str(), DelimitStr(FileName).c_str());
 }
 //---------------------------------------------------------------------------
-void __fastcall TSCPFileSystem::ChangeFileToken(const UnicodeString DelimitedName,
-  const TRemoteToken & Token, TFSCommand Cmd, const UnicodeString RecursiveStr)
+void __fastcall TSCPFileSystem::ChangeFileToken(const UnicodeString & DelimitedName,
+  const TRemoteToken & Token, TFSCommand Cmd, const UnicodeString & RecursiveStr)
 {
   UnicodeString Str;
   if (Token.GetIDValid())
@@ -1358,7 +1357,7 @@ void __fastcall TSCPFileSystem::ChangeFileProperties(const UnicodeString FileNam
 
     if ((Rights.GetNumberSet() | Rights.GetNumberUnset()) != TRights::rfNo)
     {
-      ExecCommand(fsChangeMode, -1,
+      ExecCommand2(fsChangeMode,
         RecursiveStr.c_str(), Rights.GetSimplestStr().c_str(), DelimitedName.c_str());
     }
 
@@ -1367,7 +1366,7 @@ void __fastcall TSCPFileSystem::ChangeFileProperties(const UnicodeString FileNam
     if (Recursive && IsDirectory && Properties->AddXToDirectories)
     {
       Rights.AddExecute();
-      ExecCommand(fsChangeMode, -1,
+      ExecCommand2(fsChangeMode,
         L"", Rights.GetSimplestStr().c_str(), DelimitedName.c_str());
     }
   }
@@ -1448,7 +1447,7 @@ void __fastcall TSCPFileSystem::AnyCommand(const UnicodeString Command,
       Self->FOnCaptureOutput.disconnect_all_slots();
       Self->FSecureShell->GetOnCaptureOutput().disconnect_all_slots();
     } BOOST_SCOPE_EXIT_END
-    ExecCommand(fsAnyCommand, -1, Command.c_str(),
+    ExecCommand2(fsAnyCommand, Command.c_str(),
       ecDefault | ecIgnoreWarnings);
   }
 #ifndef _MSC_VER

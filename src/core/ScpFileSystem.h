@@ -110,7 +110,7 @@ private:
   void __fastcall ExecCommand(TFSCommand Cmd, const TVarRec * args = NULL,
     int size = 0, int Params = -1);
 #else
-  void __fastcall ExecCommand(TFSCommand Cmd, int Params = -1, ...);
+  void __fastcall ExecCommand2(TFSCommand Cmd, ...);
 #endif
   void __fastcall ReadCommandOutput(int Params, const UnicodeString * Cmd = NULL);
   void __fastcall SCPResponse(bool * GotLastLine = NULL);
