@@ -4,13 +4,13 @@
 //---------------------------------------------------------------------------
 #define PWALG_SIMPLE 1
 #define PWALG_SIMPLE_MAGIC 0xA3
-#define PWALG_SIMPLE_STRING ((std::string)"0123456789ABCDEF")
+#define PWALG_SIMPLE_STRING ((RawByteString)"0123456789ABCDEF")
 #define PWALG_SIMPLE_MAXLEN 50
 #define PWALG_SIMPLE_FLAG 0xFF
 int random(int range);
-UnicodeString EncryptPassword(const UnicodeString Password, const UnicodeString Key, int Algorithm = PWALG_SIMPLE);
-UnicodeString DecryptPassword(const UnicodeString Password, const UnicodeString Key, int Algorithm = PWALG_SIMPLE);
-UnicodeString SetExternalEncryptedPassword(const UnicodeString Password);
-bool GetExternalEncryptedPassword(const UnicodeString Encrypted, UnicodeString & Password);
+RawByteString EncryptPassword(UnicodeString Password, UnicodeString Key, Integer Algorithm = PWALG_SIMPLE);
+UnicodeString DecryptPassword(RawByteString Password, UnicodeString Key, Integer Algorithm = PWALG_SIMPLE);
+RawByteString SetExternalEncryptedPassword(RawByteString Password);
+bool GetExternalEncryptedPassword(RawByteString Encrypted, RawByteString & Password);
 //---------------------------------------------------------------------------
 #endif

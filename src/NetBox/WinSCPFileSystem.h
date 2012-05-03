@@ -192,7 +192,7 @@ protected:
     TRemoteProperties * Properties, bool & SaveSettings);
   bool QueueDialog(TTerminalQueueStatus * Status, bool ClosingPlugin);
   bool SynchronizeDialog(TSynchronizeParamType & Params,
-    const TCopyParamType * CopyParams, const synchronizestartstop_slot_type & OnStartStop,
+    const TCopyParamType * CopyParams, const TSynchronizeStartStopEvent & OnStartStop,
     bool & SaveSettings, int Options, int CopyParamAttrs,
     const TGetSynchronizeOptionsEvent & OnGetOptions);
   void DoSynchronize(TSynchronizeController * Sender,

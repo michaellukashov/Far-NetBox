@@ -7558,7 +7558,7 @@ class TSynchronizeDialog : TFarDialog
 {
 public:
     TSynchronizeDialog(TCustomFarPlugin *AFarPlugin,
-                       const synchronizestartstop_slot_type &OnStartStop,
+                       const TSynchronizeStartStopEvent &OnStartStop,
                        int Options, int CopyParamAttrs, const TGetSynchronizeOptionsEvent &OnGetOptions);
     virtual ~TSynchronizeDialog();
 
@@ -7578,7 +7578,7 @@ protected:
     void DoAbort(TObject *Sender, bool Close);
     void DoLog(TSynchronizeController *Controller,
                TSynchronizeLogEntry Entry, const UnicodeString Message);
-    void DoSynchronizeThreads(TObject *Sender, const threadmethod_slot_type &slot);
+    void DoSynchronizeThreads(TObject *Sender, const TThreadMethod &slot);
     virtual LONG_PTR DialogProc(int Msg, int Param1, LONG_PTR Param2);
     virtual bool CloseQuery();
     virtual bool Key(TFarDialogItem *Item, long KeyCode);
@@ -7614,7 +7614,7 @@ private:
 };
 //---------------------------------------------------------------------------
 TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin *AFarPlugin,
-  const synchronizestartstop_slot_type &OnStartStop,
+  const TSynchronizeStartStopEvent &OnStartStop,
   int Options, int CopyParamAttrs, const TGetSynchronizeOptionsEvent &OnGetOptions)
   : TFarDialog(AFarPlugin)
 {
@@ -7826,7 +7826,7 @@ void TSynchronizeDialog::DoStartStop(bool Start, bool Synchronize)
 }
 //---------------------------------------------------------------------------
 void TSynchronizeDialog::DoSynchronizeThreads(TObject * /*Sender*/,
-        const threadmethod_slot_type &slot)
+  const TThreadMethod &slot)
 {
     if (FStarted)
     {
@@ -8007,7 +8007,7 @@ int TSynchronizeDialog::ActualCopyParamAttrs()
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::SynchronizeDialog(TSynchronizeParamType &Params,
-  const TCopyParamType *CopyParams, const synchronizestartstop_slot_type &OnStartStop,
+  const TCopyParamType *CopyParams, const TSynchronizeStartStopEvent &OnStartStop,
   bool &SaveSettings, int Options, int CopyParamAttrs, const TGetSynchronizeOptionsEvent &OnGetOptions)
 {
     bool Result;

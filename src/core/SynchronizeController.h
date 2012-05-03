@@ -41,7 +41,7 @@ typedef void __fastcall (__closure * TSynchronizeInvalidEvent)
   (TSynchronizeController * Sender, const UnicodeString Directory, const UnicodeString ErrorStr);
 typedef void __fastcall (__closure * TSynchronizeTooManyDirectories)
   (TSynchronizeController * Sender, int & MaxDirectories);
-#endif
+#else
 typedef boost::signal2<void, TObject * /* Sender */, bool /* Close */> synchronizeabort_signal_type;
 typedef synchronizeabort_signal_type::slot_type TSynchronizeAbortEvent;
 typedef boost::signal2<void, TObject* /* Sender */, TThreadMethod /* Method */ > synchronizethreads_signal_type;

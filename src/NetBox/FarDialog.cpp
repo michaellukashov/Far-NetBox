@@ -780,7 +780,7 @@ void TFarDialog::BreakSynchronize()
     SetEvent(FSynchronizeObjects[1]);
 }
 //---------------------------------------------------------------------------
-void TFarDialog::Synchronize(const threadmethod_slot_type &slot)
+void TFarDialog::Synchronize(const TThreadMethod &slot)
 {
     if (FSynchronizeObjects[0] == INVALID_HANDLE_VALUE)
     {

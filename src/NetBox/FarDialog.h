@@ -130,7 +130,7 @@ protected:
     void RefreshBounds();
     virtual void Idle();
     void BreakSynchronize();
-    void Synchronize(const threadmethod_slot_type &slot);
+    void Synchronize(const TThreadMethod &slot);
     void Close(TFarButton *Button);
     void ProcessGroup(int Group, const processgroupevent_slot_type &Callback, void *Arg);
     void ShowItem(TFarDialogItem *Item, void *Arg);
