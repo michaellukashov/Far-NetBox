@@ -158,9 +158,9 @@ protected:
     TOverwriteFileParams & FileParams,
     TFileOperationProgressType * OperationProgress, unsigned int Flags,
     TUploadSessionAction & Action, bool & ChildError);
-  RawByteString __fastcall SFTPOpenRemoteFile(const UnicodeString & FileName,
+  RawByteString /* __fastcall */ SFTPOpenRemoteFile(const UnicodeString & FileName,
     unsigned int OpenType, __int64 Size = -1);
-  int __fastcall SFTPOpenRemote(void * AOpenParams, void * Param2);
+  int /* __fastcall */ SFTPOpenRemote(void * AOpenParams, void * Param2);
   void __fastcall SFTPCloseRemote(const RawByteString Handle,
     const UnicodeString FileName, TFileOperationProgressType * OperationProgress,
     bool TransferFinished, bool Request, TSFTPPacket * Packet);
@@ -181,7 +181,7 @@ protected:
     const TCopyParamType * CopyParam, int Params,
     TFileOperationProgressType * OperationProgress, unsigned int Flags,
     TDownloadSessionAction & Action, bool & ChildError);
-  void __fastcall SFTPSinkFile(UnicodeString FileName,
+  void /* __fastcall */ SFTPSinkFile(UnicodeString FileName,
     const TRemoteFile * File, void * Param);
   char * __fastcall GetEOL() const;
   inline void __fastcall BusyStart();
