@@ -5,14 +5,16 @@
 #include <Commdlg.h>
 
 //---------------------------------------------------------------------------
-void PuttyInitialize();
-void PuttyFinalize();
+void __fastcall PuttyInitialize();
+void __fastcall PuttyFinalize();
 //---------------------------------------------------------------------------
-void DontSaveRandomSeed();
+void __fastcall DontSaveRandomSeed();
 //---------------------------------------------------------------------------
 #include "PuttyTools.h"
 //---------------------------------------------------------------------------
-// #define MPEXT
+#ifndef MPEXT
+#define MPEXT
+#endif
 extern "C"
 {
 #include <putty.h>
