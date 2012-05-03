@@ -1317,7 +1317,7 @@ void __fastcall TSCPFileSystem::ChangeFileToken(const UnicodeString & DelimitedN
 
   if (!Str.IsEmpty())
   {
-    ExecCommand(Cmd, RecursiveStr.c_str(), Str.c_str(), DelimitedName.c_str());
+    ExecCommand2(Cmd, RecursiveStr.c_str(), Str.c_str(), DelimitedName.c_str());
   }
 }
 //---------------------------------------------------------------------------
@@ -1399,10 +1399,11 @@ void __fastcall TSCPFileSystem::CustomCommandOnFile(const UnicodeString FileName
   bool Dir = File->GetIsDirectory() && !File->GetIsSymLink();
   if (Dir && (Params & ccRecursive))
   {
-    TCustomCommandParams AParams; // (Command, Params, OutputEvent);
-    AParams.Command = Command;
-    AParams.Params = Params;
-    AParams.OutputEvent.connect(OutputEvent);
+    TCustomCommandParams AParams(Command, Params, OutputEvent);
+    // AParams.Command = Command;
+    // AParams.Params = Params;
+    // AParams.OutputEvent.connect(OutputEvent);
+    // AParams.OutputEvent = OutputEvent;
     FTerminal->ProcessDirectory(FileName, boost::bind(&TTerminal::CustomCommandOnFile, FTerminal, _1, _2, _3),
       &AParams);
   }
@@ -1418,7 +1419,7 @@ void __fastcall TSCPFileSystem::CustomCommandOnFile(const UnicodeString FileName
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSCPFileSystem::CaptureOutput(const UnicodeString & AddedLine, bool StdError)
+void /* __fastcall */ TSCPFileSystem::CaptureOutput(const UnicodeString & AddedLine, bool StdError)
 {
   int ReturnCode;
   UnicodeString Line = AddedLine;
@@ -1435,10 +1436,10 @@ void __fastcall TSCPFileSystem::AnyCommand(const UnicodeString Command,
   TCaptureOutputEvent OutputEvent)
 {
   assert(FSecureShell->GetOnCaptureOutput().empty());
-  if (OutputEvent != NULL)
+  // if (OutputEvent != NULL)
   {
     FSecureShell->SetOnCaptureOutput(boost::bind(&TSCPFileSystem::CaptureOutput, this, _1, _2));
-    FOnCaptureOutput.connect(*OutputEvent);
+    FOnCaptureOutput.connect(OutputEvent);
   }
   // try
   {
@@ -1535,11 +1536,11 @@ void __fastcall TSCPFileSystem::SCPResponse(bool * GotLastLine)
 
       if (Resp == 1)
       {
-        THROW_FILE_SKIPPED(NULL, Msg);
+        THROW_FILE_SKIPPED(Msg, NULL);
       }
         else
       {
-        THROW_SCP_ERROR(NULL, Msg);
+        THROW_SCP_ERROR(Msg, NULL);
       }
   }
 }

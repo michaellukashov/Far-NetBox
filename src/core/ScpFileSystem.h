@@ -132,7 +132,7 @@ private:
   void __fastcall UnsetNationalVars();
   TRemoteFile * __fastcall CreateRemoteFile(const UnicodeString & ListingStr,
     TRemoteFile * LinkedByFile = NULL);
-  void __fastcall CaptureOutput(const UnicodeString & AddedLine, bool StdError);
+  void /* __fastcall */ CaptureOutput(const UnicodeString & AddedLine, bool StdError);
   void __fastcall ChangeFileToken(const UnicodeString & DelimitedName,
     const TRemoteToken & Token, TFSCommand Cmd, const UnicodeString & RecursiveStr);
 
