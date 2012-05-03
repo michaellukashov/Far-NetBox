@@ -19,8 +19,8 @@ class THierarchicalStorage
 {
 public:
   explicit /* __fastcall */ THierarchicalStorage(const UnicodeString AStorage);
-  virtual /* __fastcall */ ~THierarchicalStorage();
   virtual void __fastcall Init() {}
+  virtual /* __fastcall */ ~THierarchicalStorage();
   bool __fastcall OpenRootKey(bool CanCreate);
   virtual bool __fastcall OpenSubKey(UnicodeString SubKey, bool CanCreate, bool Path = false);
   virtual void __fastcall CloseSubKey();
@@ -117,6 +117,7 @@ class TRegistryStorage : public THierarchicalStorage
 public:
   explicit /* __fastcall */ TRegistryStorage(const UnicodeString AStorage, HKEY ARootKey);
   explicit /* __fastcall */ TRegistryStorage(const UnicodeString AStorage);
+  virtual void __fastcall Init();
   virtual /* __fastcall */ ~TRegistryStorage();
 
   bool __fastcall Copy(TRegistryStorage * Storage);
@@ -166,13 +167,17 @@ private:
   TRegistry * FRegistry;
   int FFailed;
 
-  virtual void __fastcall Init();
+#ifndef _MSC_VER
+  void __fastcall Init();
+#endif
 };
+#ifndef _MSC_VER
 //---------------------------------------------------------------------------
 class TCustomIniFileStorage : public THierarchicalStorage
 {
 public:
   explicit /* __fastcall */ TCustomIniFileStorage(const UnicodeString Storage, TCustomIniFile * IniFile);
+  virtual void __fastcall Init() {}
   virtual /* __fastcall */ ~TCustomIniFileStorage();
 
   virtual bool __fastcall DeleteSubKey(const UnicodeString SubKey);
@@ -231,6 +236,7 @@ class TOptionsStorage : public TCustomIniFileStorage
 public:
   explicit /* __fastcall */ TOptionsStorage(TStrings * Options);
 };
+#endif
 //---------------------------------------------------------------------------
 UnicodeString __fastcall PuttyMungeStr(const UnicodeString Str);
 UnicodeString __fastcall PuttyUnMungeStr(const UnicodeString Str);

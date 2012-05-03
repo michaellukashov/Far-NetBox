@@ -453,7 +453,7 @@ UnicodeString __fastcall THierarchicalStorage::MungeSubKey(UnicodeString Key, bo
       {
         Result += '\\';
       }
-      Result += MungeStr(CutToChar(key, L'\\', GetForceAnsi()));
+      Result += MungeStr(CutToChar(key, L'\\', false), GetForceAnsi());
     }
   }
   else
@@ -567,7 +567,7 @@ void __fastcall TRegistryStorage::SetAccessMode(TStorageAccessMode value)
 bool __fastcall TRegistryStorage::DoOpenSubKey(const UnicodeString SubKey, bool CanCreate)
 {
   if (FKeyHistory->GetCount() > 0) { FRegistry->CloseKey(); }
-  UnicodeString K = ExcludeTrailingBackslash(GetStorage() + GetCurrentSubKey() + MungeSubKey(SubKey, Path));
+  UnicodeString K = ExcludeTrailingBackslash(GetStorage() + GetCurrentSubKey() + SubKey);
   return FRegistry->OpenKey(K, CanCreate);
 }
 //---------------------------------------------------------------------------
@@ -748,6 +748,7 @@ int __fastcall TRegistryStorage::GetFailed()
   FFailed = 0;
   return Result;
 }
+#ifndef _MSC_VER
 //===========================================================================
 __fastcall TCustomIniFileStorage::TCustomIniFileStorage(const UnicodeString Storage, TCustomIniFile * IniFile) :
   THierarchicalStorage(Storage),
@@ -949,7 +950,7 @@ TDateTime __fastcall TCustomIniFileStorage::ReadDateTime(const UnicodeString Nam
 double __fastcall TCustomIniFileStorage::ReadFloat(const UnicodeString Name, double Default)
 {
   double Result;
-  UnicodeString Value = FIniFile->ReadString(CurrentSection, MungeIniName(Name), L"");
+  UnicodeString Value = FIniFile->ReadString(GetCurrentSection(), MungeIniName(Name), L"");
   if (Value.IsEmpty())
   {
     Result = Default;
@@ -1272,3 +1273,4 @@ void __fastcall TOptionsIniFile::ReadSections(const UnicodeString Section, TStri
   TCustomIniFileStorage(UnicodeString(L"Command-line options")) // , new TOptionsIniFile(Options))
 {
 }
+#endif

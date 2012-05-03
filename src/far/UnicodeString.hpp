@@ -292,6 +292,10 @@ public:
   {
     Init(Str, Size);
   }
+  UTF8String(const char* Str, int Size)
+  {
+    Init(Str, Size);
+  }
 
   UTF8String(const string& Str)
   {
@@ -306,14 +310,14 @@ public:
   operator const char*() const { return Data; }
   size_t size() const { return Size; }
   const char *c_str() const { return Data; }
-  size_t Length() const { return Size; }
-  size_t GetLength() const { return Length(); }
+  int Length() const { return Size; }
+  int GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
-  size_t SetLength(size_t nLength);
+  void SetLength(int nLength);
   UTF8String& Delete(size_t Index, size_t Count); // { return Remove(Index, Count); }
 
   UTF8String& Insert(size_t Pos, const wchar_t* Str, size_t StrLen); // { return Replace(Pos, 0, Str, StrLen); }
-  UTF8String& Insert(const wchar_t *Str, size_t Pos) { return Insert(Pos, Str); }
+  UTF8String& Insert(const wchar_t *Str, size_t Pos) { return Insert(Pos, Str, wcslen(Str)); }
 
   UTF8String SubString(size_t Pos, size_t Len = -1) const; // { return SubStr(Pos, Len); }
 
@@ -323,12 +327,18 @@ public:
   UTF8String __fastcall operator +(const std::wstring &rhs) const;
 
 private:
-  void Init(const wchar_t *Str, size_t Length)
+  void Init(const wchar_t *Str, int Length)
   {
     Size = WideCharToMultiByte(CP_UTF8, 0, Str, static_cast<int>(Length), nullptr, 0, nullptr, nullptr) + 1;
     Data = new char[Size];
     WideCharToMultiByte(CP_UTF8, 0, Str, static_cast<int>(Length), Data, static_cast<int>(Size-1), nullptr, nullptr);
     Data[Size-1] = 0;
+  }
+  void Init(const char *Str, int Length)
+  {
+    Data = new char[Length];
+    memmove(Data, Str, Length);
+    Data[Length-1] = 0;
   }
 
   char* Data;
@@ -383,13 +393,14 @@ public:
   operator UnicodeString() const { return UnicodeString(Data, Size); }
   size_t size() const { return Size; }
   const char *c_str() const { return Data; }
-  size_t Length() const { return Size; }
+  int Length() const { return Size; }
   bool IsEmpty() const { return Length() == 0; }
-  size_t SetLength(size_t nLength);
+  void SetLength(int nLength);
   RawByteString& Delete(size_t Index, size_t Count); // { return Remove(Index, Count); }
 
   RawByteString& Insert(size_t Pos, const wchar_t* Str, size_t StrLen); // { return Replace(Pos, 0, Str, StrLen); }
   RawByteString& Insert(const wchar_t *Str, size_t Pos) { return Insert(Pos, Str, wcslen(Str)); }
+  RawByteString& Insert(const char *Str, size_t Pos); // { return Insert(Pos, Str, wcslen(Str)); }
 
   RawByteString SubString(size_t Pos, size_t Len = -1) const; // { return SubStr(Pos, Len); }
 
@@ -400,14 +411,14 @@ public:
 
     
 private:
-  void Init(const wchar_t *Str, size_t Length)
+  void Init(const wchar_t *Str, int Length)
   {
     Size = WideCharToMultiByte(CP_UTF8, 0, Str, static_cast<int>(Length), nullptr, 0, nullptr, nullptr) + 1;
     Data = new char[Size];
     WideCharToMultiByte(CP_UTF8, 0, Str, static_cast<int>(Length), Data, static_cast<int>(Size-1), nullptr, nullptr);
     Data[Size-1] = 0;
   }
-  void Init(const char *Str, size_t Length)
+  void Init(const char *Str, int Length)
   {
     Data = new char[Length];
     memmove(Data, Str, Length);
