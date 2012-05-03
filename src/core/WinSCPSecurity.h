@@ -11,6 +11,6 @@ int random(int range);
 UnicodeString EncryptPassword(const UnicodeString Password, const UnicodeString Key, int Algorithm = PWALG_SIMPLE);
 UnicodeString DecryptPassword(const UnicodeString Password, const UnicodeString Key, int Algorithm = PWALG_SIMPLE);
 UnicodeString SetExternalEncryptedPassword(const UnicodeString Password);
-bool GetExternalEncryptedPassword(const UnicodeString Encrypted, UnicodeString &Password);
+bool GetExternalEncryptedPassword(const UnicodeString Encrypted, UnicodeString & Password);
 //---------------------------------------------------------------------------
 #endif
