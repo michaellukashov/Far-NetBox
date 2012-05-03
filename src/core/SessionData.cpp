@@ -1242,7 +1242,8 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
     if (Options->FindSwitch(L"rawsettings"))
     {
       TStrings * RawSettings = NULL;
-      TOptionsStorage * OptionsStorage = NULL;
+      // TOptionsStorage * OptionsStorage = NULL;
+      TRegistryStorage * OptionsStorage = NULL;
       // try
       {
         BOOST_SCOPE_EXIT ( (&RawSettings) (&OptionsStorage) )
@@ -1254,7 +1255,8 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
 
         if (Options->FindSwitch(L"rawsettings", RawSettings))
         {
-          OptionsStorage = new TOptionsStorage(RawSettings);
+          // OptionsStorage = new TOptionsStorage(RawSettings);
+          OptionsStorage = new TRegistryStorage(Configuration->GetRegistryStorageKey());
 
           bool Dummy;
           DoLoad(OptionsStorage, Dummy);
