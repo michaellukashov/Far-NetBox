@@ -324,7 +324,7 @@ protected:
   bool __fastcall ProcessFilesEx(TStrings * FileList, TFileOperation Operation,
     TProcessFileEventEx ProcessFile, void * Param = NULL, TOperationSide Side = osRemote);
   void /* __fastcall */ ProcessDirectory(const UnicodeString DirName,
-    const TProcessFileEvent &CallBackFunc, void * Param = NULL, bool UseCache = false,
+    TProcessFileEvent CallBackFunc, void * Param = NULL, bool UseCache = false,
     bool IgnoreErrors = false);
   void /* __fastcall */ AnnounceFileListOperation();
   UnicodeString /* __fastcall */ TranslateLockedPath(UnicodeString Path, bool Lock);
