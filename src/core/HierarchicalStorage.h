@@ -81,6 +81,8 @@ public:
   virtual void __fastcall SetAccessMode(TStorageAccessMode value);
   bool __fastcall GetExplicit() { return FExplicit; }
   void __fastcall SetExplicit(bool value) { FExplicit = value; }
+  bool __fastcall GetForceAnsi() { return FForceAnsi; }
+  void __fastcall SetForceAnsi(bool value) { FForceAnsi = value; }
   bool __fastcall GetMungeStringValues() { return FMungeStringValues; }
   void __fastcall SetMungeStringValues(bool value) { FMungeStringValues = value; }
   virtual UnicodeString __fastcall GetSource() = 0;

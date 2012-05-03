@@ -3,14 +3,14 @@
 #define PuttyToolsH
 //---------------------------------------------------------------------------
 enum TKeyType { ktUnopenable, ktUnknown, ktSSH1, ktSSH2, ktOpenSSH, ktSSHCom };
-TKeyType KeyType(const UnicodeString FileName);
+TKeyType KeyType(UnicodeString FileName);
 UnicodeString KeyTypeName(TKeyType KeyType);
 //---------------------------------------------------------------------------
-__int64 ParseSize(const UnicodeString SizeStr);
+__int64 __fastcall ParseSize(UnicodeString SizeStr);
 //---------------------------------------------------------------------------
-bool HasGSSAPI();
+bool __fastcall HasGSSAPI();
 //---------------------------------------------------------------------------
-void AES256EncodeWithMAC(char *Data, size_t Len, const char *Password,
-                         size_t PasswordLen, const char *Salt);
+void __fastcall AES256EncodeWithMAC(char * Data, size_t Len, const char * Password,
+  size_t PasswordLen, const char * Salt);
 //---------------------------------------------------------------------------
 #endif

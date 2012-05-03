@@ -1,8 +1,13 @@
 //---------------------------------------------------------------------------
+#ifndef _MSC_VER
+#include <vcl.h>
+#pragma hdrstop
+#else
 #include "stdafx.h"
 
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
+#endif
 
 #define PUTTY_DO_GLOBALS
 #include "PuttyIntf.h"
@@ -17,9 +22,9 @@ const int platform_uses_x11_unix_by_default = TRUE;
 CRITICAL_SECTION noise_section;
 bool SaveRandomSeed;
 char appname_[50];
-const char * const appname = appname_;
+const char *const appname = appname_;
 //---------------------------------------------------------------------------
-void PuttyInitialize()
+void __fastcall PuttyInitialize()
 {
   SaveRandomSeed = true;
 
@@ -33,17 +38,15 @@ void PuttyInitialize()
 
   sk_init();
 
-  UnicodeString VersionString = SshVersionString();
-  assert(!VersionString.IsEmpty() && (VersionString.Length() < sizeof(sshver)));
-  std::string vs = W2MB(VersionString.c_str());
-  strcpy_s(sshver, sizeof(sshver), vs.c_str());
-  UnicodeString AppName = AppNameString();
-  assert(!AppName.IsEmpty() && (AppName.Length() < sizeof(appname_)));
-  std::string _appname = W2MB(AppName.c_str());
-  strcpy_s(appname_, sizeof(appname_), _appname.c_str());
+  AnsiString VersionString = SshVersionString();
+  assert(!VersionString.IsEmpty() && (static_cast<size_t>(VersionString.Length()) < LENOF(sshver)));
+  strcpy_s(sshver, sizeof(sshver), VersionString.c_str());
+  AnsiString AppName = AppNameString();
+  assert(!AppName.IsEmpty() && (static_cast<size_t>(AppName.Length()) < LENOF(appname_)));
+  strcpy_s(appname_, sizeof(appname), AppName.c_str());
 }
 //---------------------------------------------------------------------------
-void PuttyFinalize()
+void __fastcall PuttyFinalize()
 {
   if (SaveRandomSeed)
   {
@@ -58,7 +61,7 @@ void PuttyFinalize()
   DeleteCriticalSection(&noise_section);
 }
 //---------------------------------------------------------------------------
-void DontSaveRandomSeed()
+void __fastcall DontSaveRandomSeed()
 {
   SaveRandomSeed = false;
 }
@@ -66,7 +69,6 @@ void DontSaveRandomSeed()
 extern "C" char * do_select(Plug plug, SOCKET skt, int startup)
 {
   void * frontend = NULL;
-  // DEBUG_PRINTF(L"is_ssh(plug) = %d, is_pfwd(plug) = %d, skt = %d, startup = %d", is_ssh(plug), is_pfwd(plug), skt, startup);
   if (!is_ssh(plug) && !is_pfwd(plug))
   {
     // If it is not SSH/PFwd plug, then it must be Proxy plug.
@@ -75,8 +77,7 @@ extern "C" char * do_select(Plug plug, SOCKET skt, int startup)
     plug = ProxySocket->plug;
   }
 
-  bool pfwd = is_pfwd(plug) > 0;
-  // DEBUG_PRINTF(L"pfwd = %d", pfwd);
+  bool pfwd = is_pfwd(plug);
   if (pfwd)
   {
     plug = static_cast<Plug>(get_pfwd_backend(plug));
@@ -88,11 +89,11 @@ extern "C" char * do_select(Plug plug, SOCKET skt, int startup)
   TSecureShell * SecureShell = reinterpret_cast<TSecureShell *>(frontend);
   if (!pfwd)
   {
-    SecureShell->UpdateSocket(skt, startup > 0);
+    SecureShell->UpdateSocket(skt, startup);
   }
   else
   {
-    SecureShell->UpdatePortFwdSocket(skt, startup > 0);
+    SecureShell->UpdatePortFwdSocket(skt, startup);
   }
 
   return NULL;
@@ -104,12 +105,12 @@ int from_backend(void * frontend, int is_stderr, const char * data, int datalen)
   if (is_stderr >= 0)
   {
     assert((is_stderr == 0) || (is_stderr == 1));
-    (static_cast<TSecureShell *>(frontend))->FromBackend((is_stderr == 1), data, static_cast<size_t>(datalen));
+    (static_cast<TSecureShell *>(frontend))->FromBackend((is_stderr == 1), reinterpret_cast<const unsigned char *>(data), datalen);
   }
   else
   {
     assert(is_stderr == -1);
-    (static_cast<TSecureShell *>(frontend))->CWrite(data, static_cast<size_t>(datalen));
+    (static_cast<TSecureShell *>(frontend))->CWrite(data, datalen);
   }
   return 0;
 }
@@ -134,21 +135,20 @@ int get_userpass_input(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
     for (int Index = 0; Index < static_cast<int>(p->n_prompts); Index++)
     {
       prompt_t * Prompt = p->prompts[Index];
-      Prompts.AddObject(MB2W(Prompt->prompt), reinterpret_cast<TObject *>(static_cast<size_t>(Prompt->echo)));
+      Prompts.AddObject(Prompt->prompt, reinterpret_cast<TObject *>(static_cast<size_t>(Prompt->echo)));
       Results.AddObject(L"", reinterpret_cast<TObject *>(Prompt->result_len));
     }
 
-    if (SecureShell->PromptUser(p->to_server, MB2W(p->name), p->name_reqd,
-                                MB2W(p->instruction), p->instr_reqd, &Prompts, &Results))
+    if (SecureShell->PromptUser(p->to_server, p->name, p->name_reqd,
+          p->instruction, p->instr_reqd, &Prompts, &Results))
     {
-      for (size_t Index = 0; Index < p->n_prompts; Index++)
+      for (int Index = 0; Index < int(p->n_prompts); Index++)
       {
         prompt_t * Prompt = p->prompts[Index];
-        std::string Str = W2MB(Results.GetString(Index).c_str());
-        Prompt->result = _strdup(Str.c_str());
-        Prompt->result_len = Str.Length();
-        Prompt->result[Prompt->result_len] = '\0';
-        // DEBUG_PRINTF(L"Prompt->result = %s", MB2W(Prompt->result).c_str());
+        std::string Str = W2MB(Results.GetStrings(Index).c_str());
+        Prompt->result = _strdup(Str.c_str()); // TODO: memleaks
+        Prompt->result_len = Str.size();
+        Prompt->result[Prompt->result_len - 1] = '\0';
       }
       Result = 1;
     }
@@ -157,6 +157,13 @@ int get_userpass_input(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
       Result = 0;
     }
   }
+#ifndef _MSC_VER
+  __finally
+  {
+    delete Prompts;
+    delete Results;
+  }
+#endif
 
   return Result;
 }
@@ -191,8 +198,8 @@ void connection_fatal(void * frontend, char * fmt, ...)
 }
 //---------------------------------------------------------------------------
 int verify_ssh_host_key(void * frontend, char * host, int port, char * keytype,
-                        char * keystr, char * fingerprint, void (* /*callback*/)(void * ctx, int result),
-                        void * /*ctx*/)
+  char * keystr, char * fingerprint, void (* /*callback*/)(void * ctx, int result),
+  void * /*ctx*/)
 {
   assert(frontend != NULL);
   (static_cast<TSecureShell *>(frontend))->VerifyHostKey(MB2W(host), port, MB2W(keytype), MB2W(keystr), MB2W(fingerprint));
@@ -202,7 +209,7 @@ int verify_ssh_host_key(void * frontend, char * host, int port, char * keytype,
 }
 //---------------------------------------------------------------------------
 int askalg(void * frontend, const char * algtype, const char * algname,
-           void (* /*callback*/)(void * ctx, int result), void * /*ctx*/)
+  void (* /*callback*/)(void * ctx, int result), void * /*ctx*/)
 {
   assert(frontend != NULL);
   (static_cast<TSecureShell *>(frontend))->AskAlg(MB2W(algtype), MB2W(algname));
@@ -257,7 +264,7 @@ void cleanup_exit(int /*code*/)
 }
 //---------------------------------------------------------------------------
 int askappend(void * /*frontend*/, Filename /*filename*/,
-              void (* /*callback*/)(void * ctx, int result), void * /*ctx*/)
+  void (* /*callback*/)(void * ctx, int result), void * /*ctx*/)
 {
   // this is called from logging.c of putty, which is never used with WinSCP
   assert(false);
@@ -275,7 +282,7 @@ void ldisc_send(void * /*handle*/, char * /*buf*/, int len, int /*interactive*/)
 }
 //---------------------------------------------------------------------------
 void agent_schedule_callback(void (* /*callback*/)(void *, void *, int),
-                             void * /*callback_ctx*/, void * /*data*/, int /*len*/)
+  void * /*callback_ctx*/, void * /*data*/, int /*len*/)
 {
   assert(false);
 }
@@ -290,7 +297,7 @@ void update_specials_menu(void * /*frontend*/)
   // nothing
 }
 //---------------------------------------------------------------------------
-typedef void (*timer_fn_t)(void * ctx, long now);
+typedef void (*timer_fn_t)(void *ctx, long now);
 long schedule_timer(int ticks, timer_fn_t /*fn*/, void * /*ctx*/)
 {
   return ticks + GetTickCount();
@@ -326,7 +333,7 @@ void platform_get_x11_auth(struct X11Display * /*display*/, const Config * /*cfg
   // nothing, therefore no auth.
 }
 //---------------------------------------------------------------------------
-int get_remote_username(Config * cfg, char * user, size_t len)
+int get_remote_username(Config * cfg, char *user, size_t len)
 {
   if (*cfg->username)
   {
@@ -349,15 +356,15 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
   USEDPARAM(Key);
 
   UnicodeString RegKey = MB2W(SubKey);
-  size_t PuttyKeyLen = Configuration->GetPuttyRegistryStorageKey().Length();
-  assert(RegKey.SubString(0, PuttyKeyLen) == Configuration->GetPuttyRegistryStorageKey());
-  RegKey = RegKey.SubString(PuttyKeyLen, RegKey.Length() - PuttyKeyLen);
-  // DEBUG_PRINTF(L"RegKey = %s", RegKey.c_str());
+  int PuttyKeyLen = Configuration->GetPuttyRegistryStorageKey().Length();
+  assert(RegKey.SubString(1, PuttyKeyLen) == Configuration->GetPuttyRegistryStorageKey());
+  RegKey = RegKey.SubString(PuttyKeyLen + 1, RegKey.Length() - PuttyKeyLen);
   if (!RegKey.IsEmpty())
   {
-    assert(RegKey[0] == '\\');
-    RegKey.Delete(0, 1);
+    assert(RegKey[1] == L'\\');
+    RegKey.Delete(1, 1);
   }
+
   if (RegKey.IsEmpty())
   {
     *Result = static_cast<HKEY>(NULL);
@@ -368,7 +375,7 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
     // we expect this to be called only from verify_host_key() or store_host_key()
     assert(RegKey == L"SshHostKeys");
 
-    THierarchicalStorage * Storage = Configuration->CreateStorage();
+    THierarchicalStorage * Storage = Configuration->CreateScpStorage(false);
     Storage->SetAccessMode((CanCreate ? smReadWrite : smRead));
     if (Storage->OpenSubKey(RegKey, CanCreate))
     {
@@ -381,6 +388,7 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
       R = ERROR_CANTOPEN;
     }
   }
+
   return R;
 }
 //---------------------------------------------------------------------------
@@ -395,7 +403,7 @@ long reg_create_winscp_key(HKEY Key, const char * SubKey, HKEY * Result)
 }
 //---------------------------------------------------------------------------
 long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long * /*Reserved*/,
-                               unsigned long * Type, unsigned char * Data, unsigned long * DataSize)
+  unsigned long * Type, unsigned char * Data, unsigned long * DataSize)
 {
   long R;
   assert(Configuration != NULL);
@@ -442,7 +450,7 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
 }
 //---------------------------------------------------------------------------
 long reg_set_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long /*Reserved*/,
-                             unsigned long Type, const unsigned char * Data, unsigned long DataSize)
+  unsigned long Type, const unsigned char * Data, unsigned long DataSize)
 {
   assert(Configuration != NULL);
 
@@ -452,7 +460,7 @@ long reg_set_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long /*R
   assert(Storage != NULL);
   if (Storage != NULL)
   {
-    std::string Value(reinterpret_cast<const char *>(Data), DataSize - 1);
+    std::string Value(reinterpret_cast<const char*>(Data), DataSize - 1);
     Storage->WriteStringRaw(MB2W(ValueName), MB2W(Value.c_str()));
   }
 
@@ -472,7 +480,7 @@ long reg_close_winscp_key(HKEY Key)
   return ERROR_SUCCESS;
 }
 //---------------------------------------------------------------------------
-TKeyType KeyType(const UnicodeString FileName)
+TKeyType KeyType(UnicodeString FileName)
 {
   assert(ktUnopenable == SSH_KEYTYPE_UNOPENABLE);
   assert(ktSSHCom == SSH_KEYTYPE_SSHCOM);
@@ -486,12 +494,13 @@ UnicodeString KeyTypeName(TKeyType KeyType)
   return MB2W(key_type_to_str(KeyType));
 }
 //---------------------------------------------------------------------------
-__int64 ParseSize(const UnicodeString SizeStr)
+__int64 __fastcall ParseSize(UnicodeString SizeStr)
 {
+  // AnsiString AnsiSizeStr = SizeStr;
   return parse_blocksize(W2MB(SizeStr.c_str()).c_str());
 }
 //---------------------------------------------------------------------------
-bool HasGSSAPI()
+bool __fastcall HasGSSAPI()
 {
   static int has = -1;
   if (has < 0)
@@ -499,12 +508,13 @@ bool HasGSSAPI()
     Config cfg;
     memset(&cfg, 0, sizeof(cfg));
     ssh_gss_liblist * List = ssh_gss_setup(&cfg);
+    // try
     {
       BOOST_SCOPE_EXIT ( (&List) )
       {
         ssh_gss_cleanup(List);
       } BOOST_SCOPE_EXIT_END
-      for (size_t Index = 0; (has <= 0) && (Index < static_cast<size_t>(List->nlibraries)); Index++)
+      for (int Index = 0; (has <= 0) && (Index < List->nlibraries); Index++)
       {
         ssh_gss_library * library = &List->libraries[Index];
         Ssh_gss_ctx ctx;
@@ -514,6 +524,12 @@ bool HasGSSAPI()
            (library->release_cred(library, &ctx) == SSH_GSS_OK)) ? 1 : 0;
       }
     }
+#ifndef _MSC_VER
+    __finally
+    {
+      ssh_gss_cleanup(List);
+    }
+#endif
 
     if (has < 0)
     {

@@ -288,6 +288,10 @@ public:
   {
     Init(Str, StrLength(Str));
   }
+  UTF8String(const wchar_t* Str, int Size)
+  {
+    Init(Str, Size);
+  }
 
   UTF8String(const string& Str)
   {
@@ -303,11 +307,20 @@ public:
   size_t size() const { return Size; }
   const char *c_str() const { return Data; }
   size_t Length() const { return Size; }
+  size_t GetLength() const { return Length(); }
+  bool IsEmpty() const { return Length() == 0; }
+  size_t SetLength(size_t nLength);
+  UTF8String& Delete(size_t Index, size_t Count); // { return Remove(Index, Count); }
+
+  UTF8String& Insert(size_t Pos, const wchar_t* Str, size_t StrLen); // { return Replace(Pos, 0, Str, StrLen); }
+  UTF8String& Insert(const wchar_t *Str, size_t Pos) { return Insert(Pos, Str); }
+
+  UTF8String SubString(size_t Pos, size_t Len = -1) const; // { return SubStr(Pos, Len); }
 
 
 public:
-    UTF8String __fastcall operator +(const UTF8String &rhs) const;
-    UTF8String __fastcall operator +(const std::wstring &rhs) const;
+  UTF8String __fastcall operator +(const UTF8String &rhs) const;
+  UTF8String __fastcall operator +(const std::wstring &rhs) const;
 
 private:
   void Init(const wchar_t *Str, size_t Length)
@@ -336,9 +349,9 @@ public:
   {
     Init(Str, StrLength(Str));
   }
-  RawByteString(const wchar_t* Str, int sz)
+  RawByteString(const wchar_t* Str, int Size)
   {
-    Init(Str, sz);
+    Init(Str, Size);
   }
 
   RawByteString(const char* Str)
@@ -356,6 +369,11 @@ public:
     Init(Str, Str.GetLength());
   }
 
+  RawByteString(const UTF8String& Str)
+  {
+    Init(Str, Str.GetLength());
+  }
+
   ~RawByteString()
   {
     delete[] Data;
@@ -368,6 +386,12 @@ public:
   size_t Length() const { return Size; }
   bool IsEmpty() const { return Length() == 0; }
   size_t SetLength(size_t nLength);
+  RawByteString& Delete(size_t Index, size_t Count); // { return Remove(Index, Count); }
+
+  RawByteString& Insert(size_t Pos, const wchar_t* Str, size_t StrLen); // { return Replace(Pos, 0, Str, StrLen); }
+  RawByteString& Insert(const wchar_t *Str, size_t Pos) { return Insert(Pos, Str, wcslen(Str)); }
+
+  RawByteString SubString(size_t Pos, size_t Len = -1) const; // { return SubStr(Pos, Len); }
 
 public:
   RawByteString __fastcall operator +(const RawByteString &rhs) const;
