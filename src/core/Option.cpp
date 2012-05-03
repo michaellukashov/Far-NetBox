@@ -1,9 +1,18 @@
 //---------------------------------------------------------------------------
+#ifndef _MSC_VER
+#include <vcl.h>
+#pragma hdrstop
+#else
 #include "stdafx.h"
 #include "Common.h"
 #include "Option.h"
+#endif
 //---------------------------------------------------------------------------
-TOptions::TOptions()
+#ifndef _MSC_VER
+#pragma package(smart_init)
+#endif
+//---------------------------------------------------------------------------
+/* __fastcall */ TOptions::TOptions()
 {
   FSwitchMarks = L"-/";
   FSwitchValueDelimiters = L":=";
@@ -11,33 +20,33 @@ TOptions::TOptions()
   FParamCount = 0;
 }
 //---------------------------------------------------------------------------
-void __fastcall TOptions::Add(const UnicodeString Value)
+void __fastcall TOptions::Add(UnicodeString Value)
 {
   if (!FNoMoreSwitches &&
       (Value.Length() == 2) &&
-      (Value[0] == Value[1]) &&
-      (FSwitchMarks.find_first_of(Value[0]) >= 0))
+      (Value[1] == Value[2]) &&
+      (FSwitchMarks.Pos(Value[1]) > 0))
   {
     FNoMoreSwitches = true;
   }
   else
   {
     bool Switch = false;
-    size_t Index = 0; // shut up
+    int Index = 0; // shut up
     if (!FNoMoreSwitches &&
         (Value.Length() >= 2) &&
-        (FSwitchMarks.find_first_of(Value[0]) >= 0))
+        (FSwitchMarks.Pos(Value[1]) > 0))
     {
       Index = 2;
       Switch = true;
-      while (Switch && (Index < Value.Length()))
+      while (Switch && (Index <= Value.Length()))
       {
-        if (::IsDelimiter(Value, FSwitchValueDelimiters, Index))
+        if (Value.IsDelimiter(FSwitchValueDelimiters, Index))
         {
           break;
         }
         // this is to treat /home/martin as parameter, not as switch
-        else if ((Value[Index] != '?') && ((::UpCase(Value[Index]) < 'A') || (UpCase(Value[Index]) > 'Z')))
+        else if ((Value[Index] != L'?') && ((UpCase(Value[Index]) < L'A') || (UpCase(Value[Index]) > L'Z')))
         {
           Switch = false;
           break;
@@ -73,7 +82,7 @@ UnicodeString __fastcall TOptions::GetParam(int Index)
 
   UnicodeString Result;
   size_t I = 0;
-  while ((I < FOptions.Length()) && (Index > 0))
+  while ((I < FOptions.size()) && (Index > 0))
   {
     if (FOptions[I].Type == otParam)
     {
@@ -92,18 +101,17 @@ UnicodeString __fastcall TOptions::GetParam(int Index)
 //---------------------------------------------------------------------------
 bool __fastcall TOptions::GetEmpty()
 {
-  return FOptions.IsEmpty();
+  return FOptions.empty();
 }
 //---------------------------------------------------------------------------
 bool __fastcall TOptions::FindSwitch(const UnicodeString Switch,
-                                     UnicodeString & Value, int & ParamsStart, int & ParamsCount)
+  UnicodeString & Value, int & ParamsStart, int & ParamsCount)
 {
   ParamsStart = 0;
   int Index = 0;
   bool Found = false;
-  while ((Index < static_cast<int>(FOptions.Length())) && !Found)
+  while ((Index < int(FOptions.size())) && !Found)
   {
-    UnicodeString S;
     if (FOptions[Index].Type == otParam)
     {
       ParamsStart++;
@@ -124,7 +132,7 @@ bool __fastcall TOptions::FindSwitch(const UnicodeString Switch,
   if (Found)
   {
     ParamsStart++;
-    while ((Index + ParamsCount < static_cast<int>(FOptions.Length())) &&
+    while ((Index + ParamsCount < int(FOptions.size())) &&
            (FOptions[Index + ParamsCount].Type == otParam))
     {
       ParamsCount++;
@@ -154,7 +162,7 @@ bool __fastcall TOptions::FindSwitch(const UnicodeString Switch)
 }
 //---------------------------------------------------------------------------
 bool __fastcall TOptions::FindSwitch(const UnicodeString Switch,
-                                     TStrings * Params, int ParamsMax)
+  TStrings * Params, int ParamsMax)
 {
   UnicodeString Value;
   int ParamsStart;
@@ -170,7 +178,7 @@ bool __fastcall TOptions::FindSwitch(const UnicodeString Switch,
     int Index = 0;
     while (Index < ParamsCount)
     {
-      Params->Add(GetParam(ParamsStart + Index));
+      Params->Add(Param[ParamsStart + Index]);
       Index++;
     }
     ParamsProcessed(ParamsStart, ParamsCount);
@@ -179,7 +187,7 @@ bool __fastcall TOptions::FindSwitch(const UnicodeString Switch,
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TOptions::SwitchValue(const UnicodeString Switch,
-    const UnicodeString Default)
+  const UnicodeString Default)
 {
   UnicodeString Value;
   FindSwitch(Switch, Value);
@@ -190,11 +198,48 @@ UnicodeString __fastcall TOptions::SwitchValue(const UnicodeString Switch,
   return Value;
 }
 //---------------------------------------------------------------------------
+bool __fastcall TOptions::SwitchValue(const UnicodeString Switch, bool Default, bool DefaultOnNonExistence)
+{
+  bool Result;
+  int IntValue;
+  UnicodeString Value;
+  if (!FindSwitch(Switch, Value))
+  {
+    Result = DefaultOnNonExistence;
+  }
+  else if (Value.IsEmpty())
+  {
+    Result = Default;
+  }
+  else if (SameText(Value, "on"))
+  {
+    Result = true;
+  }
+  else if (SameText(Value, "off"))
+  {
+    Result = false;
+  }
+  else if (TryStrToInt(Value, IntValue))
+  {
+    Result = (IntValue != 0);
+  }
+  else
+  {
+    throw Exception(FMTLOAD(URL_OPTION_BOOL_VALUE_ERROR, (Value)));
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+bool __fastcall TOptions::SwitchValue(const UnicodeString Switch, bool Default)
+{
+  return SwitchValue(Switch, Default, Default);
+}
+//---------------------------------------------------------------------------
 bool __fastcall TOptions::UnusedSwitch(UnicodeString & Switch)
 {
   bool Result = false;
   size_t Index = 0;
-  while (!Result && (Index < FOptions.Length()))
+  while (!Result && (Index < FOptions.size()))
   {
     if ((FOptions[Index].Type == otSwitch) &&
         !FOptions[Index].Used)
@@ -215,9 +260,8 @@ void __fastcall TOptions::ParamsProcessed(int ParamsStart, int ParamsCount)
     assert((ParamsStart >= 0) && ((ParamsStart - ParamsCount + 1) <= FParamCount));
 
     size_t Index = 0;
-    while ((Index < FOptions.Length()) && (ParamsStart > 0))
+    while ((Index < FOptions.size()) && (ParamsStart > 0))
     {
-      UnicodeString S;
       if (FOptions[Index].Type == otParam)
       {
         --ParamsStart;
@@ -226,9 +270,9 @@ void __fastcall TOptions::ParamsProcessed(int ParamsStart, int ParamsCount)
         {
           while (ParamsCount > 0)
           {
-            assert(Index < FOptions.Length());
+            assert(Index < FOptions.size());
             assert(FOptions[Index].Type == otParam);
-            FOptions.Delete(FOptions.begin() + Index);
+            FOptions.erase(FOptions.begin() + Index);
             --FParamCount;
             --ParamsCount;
           }
