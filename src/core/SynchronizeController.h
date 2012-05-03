@@ -19,27 +19,51 @@ struct TSynchronizeParamType
 class TSynchronizeController;
 struct TSynchronizeOptions;
 class TSynchronizeChecklist;
-typedef boost::signal2<void, TObject *, bool> synchronizeabort_signal_type;
-typedef synchronizeabort_signal_type::slot_type synchronizeabort_slot_type;
-typedef boost::signal2<void, TObject *, const threadmethod_slot_type &> synchronizethreads_signal_type;
-typedef synchronizethreads_signal_type::slot_type synchronizethreads_slot_type;
+#ifndef _MSC_VER
+typedef void __fastcall (__closure * TSynchronizeAbortEvent)
+  (System::TObject * Sender, bool Close);
+typedef void __fastcall (__closure * TSynchronizeThreadsEvent)
+  (TObject* Sender, TThreadMethod Method);
 enum TSynchronizeLogEntry { slScan, slStart, slChange, slUpload, slDelete, slDirChange };
-typedef boost::signal3<void, TSynchronizeController *, TSynchronizeLogEntry, const UnicodeString > synchronizelog_signal_type;
-typedef synchronizelog_signal_type::slot_type synchronizelog_slot_type;
-typedef boost::signal8<void, TObject *, bool, const TSynchronizeParamType &,
-        const TCopyParamType &, TSynchronizeOptions *,
-        const synchronizeabort_slot_type &, const synchronizethreads_slot_type &,
-        const synchronizelog_slot_type &> synchronizestartstop_signal_type;
-typedef synchronizestartstop_signal_type::slot_type synchronizestartstop_slot_type;
-typedef boost::signal8<void, TSynchronizeController *, const UnicodeString,
-        const UnicodeString, const TCopyParamType &,
-        const TSynchronizeParamType &, TSynchronizeChecklist **,
-        TSynchronizeOptions *, bool> synchronize_signal_type;
-typedef synchronize_signal_type::slot_type synchronize_slot_type;
-typedef boost::signal3<void, TSynchronizeController *, const UnicodeString, const UnicodeString > synchronizeinvalid_signal_type;
-typedef synchronizeinvalid_signal_type::slot_type synchronizeinvalid_slot_type;
-typedef boost::signal2<void, TSynchronizeController *, int &> synchronizetoomanydirectories_signal_type;
-typedef synchronizetoomanydirectories_signal_type::slot_type synchronizetoomanydirectories_slot_type;
+typedef void __fastcall (__closure * TSynchronizeLog)
+  (TSynchronizeController * Controller, TSynchronizeLogEntry Entry, const UnicodeString Message);
+typedef void __fastcall (__closure * TSynchronizeStartStopEvent)
+  (System::TObject * Sender, bool Start, const TSynchronizeParamType & Params,
+   const TCopyParamType & CopyParam, TSynchronizeOptions * Options,
+   TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
+   TSynchronizeLog OnSynchronizeLog);
+typedef void __fastcall (__closure * TSynchronizeEvent)
+  (TSynchronizeController * Sender, const UnicodeString LocalDirectory,
+   const UnicodeString RemoteDirectory, const TCopyParamType & CopyParam,
+   const TSynchronizeParamType & Params, TSynchronizeChecklist ** Checklist,
+   TSynchronizeOptions * Options, bool Full);
+typedef void __fastcall (__closure * TSynchronizeInvalidEvent)
+  (TSynchronizeController * Sender, const UnicodeString Directory, const UnicodeString ErrorStr);
+typedef void __fastcall (__closure * TSynchronizeTooManyDirectories)
+  (TSynchronizeController * Sender, int & MaxDirectories);
+#endif
+typedef boost::signal2<void, TObject * /* Sender */, bool /* Close */> synchronizeabort_signal_type;
+typedef synchronizeabort_signal_type::slot_type TSynchronizeAbortEvent;
+typedef boost::signal2<void, TObject* /* Sender */, TThreadMethod /* Method */ > synchronizethreads_signal_type;
+typedef synchronizethreads_signal_type::slot_type TSynchronizeThreadsEvent;
+enum TSynchronizeLogEntry { slScan, slStart, slChange, slUpload, slDelete, slDirChange };
+typedef boost::signal3<void, TSynchronizeController * /* Controller */, TSynchronizeLogEntry /* Entry */, const UnicodeString /* Message */ > synchronizelog_signal_type;
+typedef synchronizelog_signal_type::slot_type TSynchronizeLog;
+typedef boost::signal8<void, TObject * /* Sender */, bool /* Start */, const TSynchronizeParamType & /* Params */,
+   const TCopyParamType & /* CopyParam */, TSynchronizeOptions * /* Options */,
+   TSynchronizeAbortEvent /* OnAbort */, TSynchronizeThreadsEvent /* OnSynchronizeThreads */,
+   TSynchronizeLog /* OnSynchronizeLog */ > synchronizestartstop_signal_type;
+typedef synchronizestartstop_signal_type::slot_type TSynchronizeStartStopEvent;
+typedef boost::signal8<void, TSynchronizeController * /* Sender */, const UnicodeString /* LocalDirectory */,
+   const UnicodeString /* RemoteDirectory */, const TCopyParamType & /* CopyParam */,
+   const TSynchronizeParamType & /* Params */, TSynchronizeChecklist ** /* Checklist */,
+   TSynchronizeOptions * /* Options */, bool /* Full */ > synchronize_signal_type;
+typedef synchronize_signal_type::slot_type TSynchronizeEvent;
+typedef boost::signal3<void, TSynchronizeController * /* Sender */, const UnicodeString /* Directory */, const UnicodeString /* ErrorStr */ > synchronizeinvalid_signal_type;
+typedef synchronizeinvalid_signal_type::slot_type TSynchronizeInvalidEvent;
+typedef boost::signal2<void, TSynchronizeController * /* Sender */, int & /* MaxDirectories */ > synchronizetoomanydirectories_signal_type;
+typedef synchronizetoomanydirectories_signal_type::slot_type TSynchronizeTooManyDirectories;
+#endif
 //---------------------------------------------------------------------------
 namespace Discmon
 {
@@ -51,17 +75,17 @@ enum TSynchronizeOperation { soUpload, soDelete };
 class TSynchronizeController
 {
 public:
-  explicit TSynchronizeController(const synchronize_slot_type & AOnSynchronize,
-                                  const synchronizeinvalid_slot_type & AOnSynchronizeInvalid,
-                                  const synchronizetoomanydirectories_slot_type & AOnTooManyDirectories);
-  ~TSynchronizeController();
+  explicit /* __fastcall */ TSynchronizeController(TSynchronizeEvent AOnSynchronize,
+    TSynchronizeInvalidEvent AOnSynchronizeInvalid,
+    TSynchronizeTooManyDirectories AOnTooManyDirectories);
+  /* __fastcall */ ~TSynchronizeController();
 
-  void StartStop(TObject * Sender, bool Start,
-                 const TSynchronizeParamType & Params, const TCopyParamType & CopyParam,
-                 TSynchronizeOptions * Options,
-                 const synchronizeabort_slot_type & OnAbort, const synchronizethreads_slot_type & OnSynchronizeThreads,
-                 const synchronizelog_slot_type & OnSynchronizeLog);
-  void LogOperation(TSynchronizeOperation Operation, const UnicodeString FileName);
+  void __fastcall StartStop(TObject * Sender, bool Start,
+    const TSynchronizeParamType & Params, const TCopyParamType & CopyParam,
+    TSynchronizeOptions * Options,
+    TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
+    TSynchronizeLog OnSynchronizeLog);
+  void __fastcall LogOperation(TSynchronizeOperation Operation, const UnicodeString FileName);
 
 private:
   synchronize_signal_type FOnSynchronize;
@@ -75,16 +99,16 @@ private:
   synchronizelog_signal_type FSynchronizeLog;
   TCopyParamType FCopyParam;
 
-  void SynchronizeChange(TObject * Sender, const UnicodeString Directory,
-                         bool & SubdirsChanged);
-  void SynchronizeAbort(bool Close);
-  void SynchronizeLog(TSynchronizeLogEntry Entry, const UnicodeString Message);
-  void SynchronizeInvalid(TObject * Sender, const UnicodeString Directory,
-                          const UnicodeString ErrorStr);
-  void SynchronizeFilter(TObject * Sender, const UnicodeString DirectoryName,
-                         bool & Add);
-  void SynchronizeTooManyDirectories(TObject * Sender, int & MaxDirectories);
-  void SynchronizeDirectoriesChange(TObject * Sender, int Directories);
+  void __fastcall SynchronizeChange(TObject * Sender, const UnicodeString Directory,
+    bool & SubdirsChanged);
+  void __fastcall SynchronizeAbort(bool Close);
+  void __fastcall SynchronizeLog(TSynchronizeLogEntry Entry, const UnicodeString Message);
+  void __fastcall SynchronizeInvalid(TObject * Sender, const UnicodeString Directory,
+    const UnicodeString ErrorStr);
+  void __fastcall SynchronizeFilter(TObject * Sender, const UnicodeString DirectoryName,
+    bool & Add);
+  void __fastcall SynchronizeTooManyDirectories(TObject * Sender, int & MaxDirectories);
+  void __fastcall SynchronizeDirectoriesChange(TObject * Sender, int Directories);
 };
 //---------------------------------------------------------------------------
 #endif
