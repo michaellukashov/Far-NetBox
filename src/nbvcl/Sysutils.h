@@ -64,8 +64,8 @@ TDateTime EncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsi
 UnicodeString Trim(const UnicodeString str);
 UnicodeString TrimLeft(const UnicodeString str);
 UnicodeString TrimRight(const UnicodeString str);
-UnicodeString UpperCase(const UnicodeString str);
-UnicodeString LowerCase(const UnicodeString str);
+UnicodeString UpperCase(UnicodeString str);
+UnicodeString LowerCase(UnicodeString str);
 wchar_t UpCase(const wchar_t c);
 wchar_t LowCase(const wchar_t c);
 UnicodeString AnsiReplaceStr(const UnicodeString str, const UnicodeString from, const UnicodeString to);

@@ -1002,9 +1002,9 @@ TDateTime IncMilliSecond(const TDateTime AValue, const Int64 ANumberOfMilliSecon
 
 Boolean IsLeapYear(Word Year);
 //---------------------------------------------------------------------------
-double Trunc(double value) { double intpart; modf(value, &intpart); return intpart; }
-double Frac(double value) { double intpart; return modf(value, &intpart); }
-double Abs(double value) { return fabs(value); }
+inline double Trunc(double value) { double intpart; modf(value, &intpart); return intpart; }
+inline double Frac(double value) { double intpart; return modf(value, &intpart); }
+inline double Abs(double value) { return fabs(value); }
 //---------------------------------------------------------------------------
 class TCustomIniFile
 {

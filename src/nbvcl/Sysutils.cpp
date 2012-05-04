@@ -150,29 +150,28 @@ UnicodeString TrimRight(const UnicodeString str)
 {
   UnicodeString result = str;
   while (result.Length() > 0 &&
-         ((result[result.Length() - 1] == ' ') || (result[result.Length() - 1] == '\n')))
+    ((result[result.Length() - 1] == ' ') || (result[result.Length() - 1] == '\n')))
   {
     result.SetLength(result.Length() - 1);
   }
   return result;
 }
-/*
-UnicodeString UpperCase(const UnicodeString str)
+
+UnicodeString UpperCase(UnicodeString str)
 {
-  UnicodeString result;
-  result.SetLength(str.Length());
-  std::transform(str.begin(), str.end(), result.begin(), ::toupper);
+  UnicodeString result = str.UpperCase();
+  // result.SetLength(str.Length());
+  // std::transform(str.begin(), str.end(), result.begin(), ::toupper);
   return result;
 }
 
-UnicodeString LowerCase(const UnicodeString str)
+UnicodeString LowerCase(UnicodeString str)
 {
-  UnicodeString result;
-  result.SetLength(str.Length());
-  std::transform(str.begin(), str.end(), result.begin(), ::tolower);
+  UnicodeString result = str.LowerCase();
+  // result.SetLength(str.Length());
+  // std::transform(str.begin(), str.end(), result.begin(), ::tolower);
   return result;
 }
-*/
 //---------------------------------------------------------------------------
 
 wchar_t UpCase(const wchar_t c)
