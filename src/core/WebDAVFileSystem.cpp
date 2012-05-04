@@ -1,14 +1,16 @@
 //---------------------------------------------------------------------------
+#ifndef _MSC_VER
+#include <vcl.h>
+#pragma hdrstop
+#else
 #include "stdafx.h"
-
-#include <stdio.h>
-#include <winhttp.h>
 
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
 #include <boost/bind.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
+#endif
 
 #include "WebDAVFileSystem.h"
 
@@ -25,19 +27,15 @@
 
 namespace alg = boost::algorithm;
 
+#include <stdio.h>
+#include <winhttp.h>
+//---------------------------------------------------------------------------
+#ifndef _MSC_VER
+#pragma package(smart_init)
+#endif
 //---------------------------------------------------------------------------
 static const UnicodeString CONST_HTTP_PROTOCOL_BASE_NAME = L"WebDAV - HTTP";
 static const UnicodeString CONST_HTTPS_PROTOCOL_BASE_NAME = L"WebDAV - HTTPS";
-//---------------------------------------------------------------------------
-static UnicodeString UnixExcludeLeadingBackslash(const UnicodeString str)
-{
-  UnicodeString path = str;
-  while (!path.IsEmpty() && path[0] == L'/')
-  {
-    path.Delete(0, 1);
-  }
-  return path;
-}
 
 //---------------------------------------------------------------------------
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
@@ -51,7 +49,7 @@ class TWebDAVFileListHelper
 {
 public:
   explicit TWebDAVFileListHelper(TWebDAVFileSystem * FileSystem, TRemoteFileList * FileList,
-                                 bool IgnoreFileList) :
+    bool IgnoreFileList) :
     FFileSystem(FileSystem),
     FFileList(FFileSystem->FFileList),
     FIgnoreFileList(FFileSystem->FIgnoreFileList)

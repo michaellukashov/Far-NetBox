@@ -1213,4 +1213,16 @@ TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime)
   return Result;
 }
 
+//---------------------------------------------------------------------------
+UnicodeString UnixExcludeLeadingBackslash(UnicodeString Path)
+{
+  while (!Path.IsEmpty() && Path[1] == L'/')
+  {
+    Path.Delete(1, 1);
+  }
+  return Path;
+}
+
+//---------------------------------------------------------------------------
+
 } // namespace Sysutils

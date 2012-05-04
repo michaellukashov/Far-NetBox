@@ -203,6 +203,8 @@ public:
 };
 
 //---------------------------------------------------------------------------
+UnicodeString UnixExcludeLeadingBackslash(UnicodeString Path);
+//---------------------------------------------------------------------------
 
 } // namespace Sysutils
 
