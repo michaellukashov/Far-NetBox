@@ -754,14 +754,14 @@ void __fastcall TWebDAVFileSystem::CreateDirectory(const UnicodeString DirName)
   bool res = WebDAVMakeDirectory(DirName.c_str(), errorInfo);
   if (!res)
   {
-    std::vector<UnicodeString> dirnames;
+    std::vector<std::wtring> dirnames;
     UnicodeString delim = L"/";
-    alg::split(dirnames, DirName, alg::is_any_of(delim), alg::token_compress_on);
+    alg::split(dirnames, std::wstring(DirName.c_str(), alg::is_any_of(delim), alg::token_compress_on);
     UnicodeString curdir;
-    UnicodeString dir;
+    std::wstring dir;
     BOOST_FOREACH(dir, dirnames)
     {
-      if (dir.IsEmpty())
+      if (dir.empty())
       {
         continue;
       }
