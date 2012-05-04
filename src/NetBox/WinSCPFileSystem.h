@@ -321,7 +321,7 @@ private:
     TFileOperationProgressType & ProgressData, TCancelStatus & Cancel);
   void /* __fastcall */ OperationFinished(TFileOperation Operation,
     TOperationSide Side, bool DragDrop, const UnicodeString FileName, bool Success,
-    TOnceDoneOperation & DisconnectWhenComplete); // ??? bool & DisconnectWhenComplete);
+    TOnceDoneOperation & DisconnectWhenComplete);
   void /* __fastcall */ CancelConfiguration(TFileOperationProgressType & ProgressData);
   TStrings * /* __fastcall */ CreateFileList(TObjectList * PanelItems,
     TOperationSide Side, bool SelectedOnly = false, UnicodeString Directory = L"",

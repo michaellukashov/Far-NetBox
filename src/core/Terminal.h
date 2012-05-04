@@ -301,7 +301,7 @@ protected:
   void /* __fastcall */ DoDeleteFile(const UnicodeString FileName, const TRemoteFile * File,
     int Params);
   void /* __fastcall */ DoCustomCommandOnFile(UnicodeString FileName,
-    const TRemoteFile * File, UnicodeString Command, int Params, const TCaptureOutputEvent &OutputEvent);
+    const TRemoteFile * File, UnicodeString Command, int Params, const TCaptureOutputEvent & OutputEvent);
   void /* __fastcall */ DoRenameFile(const UnicodeString FileName,
     const UnicodeString NewName, bool Move);
   void /* __fastcall */ DoCopyFile(const UnicodeString FileName, const UnicodeString NewName);
@@ -357,7 +357,7 @@ protected:
   void /* __fastcall */ DoSynchronizeCollectDirectory(const UnicodeString LocalDirectory,
     const UnicodeString RemoteDirectory, TSynchronizeMode Mode,
     const TCopyParamType * CopyParam, int Params,
-    const TSynchronizeDirectory &OnSynchronizeDirectory,
+    const TSynchronizeDirectory & OnSynchronizeDirectory,
     TSynchronizeOptions * Options, int Level, TSynchronizeChecklist * Checklist);
   void SynchronizeCollectFile(const UnicodeString FileName,
     const TRemoteFile * File, /*TSynchronizeData*/ void * Param);
@@ -408,7 +408,7 @@ protected:
     const UnicodeString & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
   void __fastcall RollbackAction(TSessionAction & Action,
     TFileOperationProgressType * OperationProgress, Exception * E = NULL);
-  void /* __fastcall */ DoAnyCommand(const UnicodeString Command, const TCaptureOutputEvent &OutputEvent,
+  void /* __fastcall */ DoAnyCommand(const UnicodeString Command, const TCaptureOutputEvent & OutputEvent,
     TCallSessionAction * Action);
   TRemoteFileList * /* __fastcall */ DoReadDirectoryListing(UnicodeString Directory, bool UseCache);
   RawByteString __fastcall EncryptPassword(const UnicodeString & Password);
@@ -456,7 +456,7 @@ public:
   void CustomCommandOnFile(UnicodeString FileName,
     const TRemoteFile * File, void * AParams);
   void CustomCommandOnFiles(UnicodeString Command, int Params,
-    TStrings *Files, const TCaptureOutputEvent &OutputEvent);
+    TStrings *Files, const TCaptureOutputEvent & OutputEvent);
   void ChangeDirectory(const UnicodeString Directory);
   void EndTransaction();
   void HomeDirectory();
@@ -487,11 +487,11 @@ public:
   TSynchronizeChecklist * SynchronizeCollect(const UnicodeString LocalDirectory,
     const UnicodeString RemoteDirectory, TSynchronizeMode Mode,
     const TCopyParamType * CopyParam, int Params,
-    const TSynchronizeDirectory &OnSynchronizeDirectory, TSynchronizeOptions * Options);
+    const TSynchronizeDirectory & OnSynchronizeDirectory, TSynchronizeOptions * Options);
   void SynchronizeApply(TSynchronizeChecklist * Checklist,
     const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
     const TCopyParamType * CopyParam, int Params,
-    const TSynchronizeDirectory &OnSynchronizeDirectory);
+    const TSynchronizeDirectory & OnSynchronizeDirectory);
   void __fastcall FilesFind(UnicodeString Directory, const TFileMasks & FileMask,
     const TFileFoundEvent * OnFileFound, const TFindingFileEvent * OnFindingFile);
   void __fastcall SpaceAvailable(const UnicodeString Path, TSpaceAvailable & ASpaceAvailable);
@@ -559,9 +559,9 @@ public:
   __property int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber };
 #else
   bool __fastcall GetIsCapable(TFSCapability Capability) const;
-  TSessionData *__fastcall GetSessionData() { return FSessionData; }
-  TSessionData *__fastcall GetSessionData() const { return FSessionData; }
-  TSessionLog *__fastcall GetLog() { return FLog; }
+  TSessionData * __fastcall GetSessionData() { return FSessionData; }
+  TSessionData * __fastcall GetSessionData() const { return FSessionData; }
+  TSessionLog * __fastcall GetLog() { return FLog; }
   TActionLog * __fastcall GetActionLog() { return FActionLog; };
   TConfiguration *__fastcall GetConfiguration() { return FConfiguration; }
   bool __fastcall GetActive();
@@ -570,24 +570,24 @@ public:
   void SetCurrentDirectory(const UnicodeString value);
   bool GetExceptionOnFail() const;
   void SetExceptionOnFail(bool value);
-  TRemoteDirectory *GetFiles() { return FFiles; }
-  const notify_signal_type &GetOnChangeDirectory() const { return FOnChangeDirectory; }
+  TRemoteDirectory * GetFiles() { return FFiles; }
+  notify_signal_type & GetOnChangeDirectory() const { return FOnChangeDirectory; }
   void SetOnChangeDirectory(const TNotifyEvent &value) { FOnChangeDirectory.connect(value); }
-  readdirectory_signal_type &GetOnReadDirectory() { return FOnReadDirectory; }
+  readdirectory_signal_type & GetOnReadDirectory() { return FOnReadDirectory; }
   void SetOnReadDirectory(const TReadDirectoryEvent &value) { FOnReadDirectory.connect(value); }
-  const notify_signal_type &GetOnStartReadDirectory() const { return FOnStartReadDirectory; }
+  notify_signal_type & GetOnStartReadDirectory() const { return FOnStartReadDirectory; }
   void SetOnStartReadDirectory(const TNotifyEvent &value) { FOnStartReadDirectory.connect(value); }
-  readdirectoryprogress_signal_type &GetOnReadDirectoryProgress() { return FOnReadDirectoryProgress; }
+  readdirectoryprogress_signal_type & GetOnReadDirectoryProgress() { return FOnReadDirectoryProgress; }
   void SetOnReadDirectoryProgress(const TReadDirectoryProgressEvent &value) { FOnReadDirectoryProgress.connect(value); }
-  deletelocalfile_signal_type &GetOnDeleteLocalFile() { return FOnDeleteLocalFile; }
-  void SetOnDeleteLocalFile(const TDeleteLocalFileEvent &value) { FOnDeleteLocalFile.connect(value); }
-  const TRemoteTokenList *GetGroups();
-  const TRemoteTokenList *GetUsers();
-  const TRemoteTokenList *GetMembership();
-  const fileoperationprogress_signal_type &GetOnProgress() const { return FOnProgress; }
-  void SetOnProgress(const TFileOperationProgressEvent &value) { FOnProgress.connect(value); }
-  const fileoperationfinished_signal_type &GetOnFinished() const { return FOnFinished; }
-  void SetOnFinished(const TFileOperationFinishedEvent &value) { FOnFinished.connect(value); }
+  deletelocalfile_signal_type & GetOnDeleteLocalFile() { return FOnDeleteLocalFile; }
+  void SetOnDeleteLocalFile(const TDeleteLocalFileEvent & value) { FOnDeleteLocalFile.connect(value); }
+  const TRemoteTokenList * GetGroups();
+  const TRemoteTokenList * GetUsers();
+  const TRemoteTokenList * GetMembership();
+  fileoperationprogress_signal_type & GetOnProgress() const { return FOnProgress; }
+  void SetOnProgress(const TFileOperationProgressEvent & value) { FOnProgress.connect(value); }
+  fileoperationfinished_signal_type & GetOnFinished() const { return FOnFinished; }
+  void SetOnFinished(const TFileOperationFinishedEvent & value) { FOnFinished.connect(value); }
   TCurrentFSProtocol GetFSProtocol() { return FFSProtocol; }
   bool GetUseBusyCursor() { return FUseBusyCursor; }
   void SetUseBusyCursor(bool value) { FUseBusyCursor = value; }
@@ -601,18 +601,18 @@ public:
   UnicodeString GetPassword();
   UnicodeString GetTunnelPassword();
   bool GetStoredCredentialsTried();
-  queryuser_signal_type &GetOnQueryUser() { return FOnQueryUser; }
-  void SetOnQueryUser(const TQueryUserEvent &value) { FOnQueryUser.connect(value); }
-  promptuser_signal_type &GetOnPromptUser() { return FOnPromptUser; }
-  void SetOnPromptUser(const TPromptUserEvent &value) { FOnPromptUser.connect(value); }
-  displaybanner_signal_type &GetOnDisplayBanner() { return FOnDisplayBanner; }
-  void SetOnDisplayBanner(const TDisplayBannerEvent &value) { FOnDisplayBanner.connect(value); }
-  extendedexception_signal_type &GetOnShowExtendedException() { return FOnShowExtendedException; }
-  void SetOnShowExtendedException(const TExtendedExceptionEvent &value) { FOnShowExtendedException.connect(value); }
-  informationevent_signal_type &GetOnInformation() { return FOnInformation; }
-  void SetOnInformation(const TInformationEvent &value) { FOnInformation.connect(value); }
-  const notify_signal_type &GetOnClose() const { return FOnClose; }
-  void SetOnClose(const TNotifyEvent &value) { FOnClose.connect(value); }
+  queryuser_signal_type & GetOnQueryUser() { return FOnQueryUser; }
+  void SetOnQueryUser(const TQueryUserEvent & value) { FOnQueryUser.connect(value); }
+  promptuser_signal_type & GetOnPromptUser() { return FOnPromptUser; }
+  void SetOnPromptUser(const TPromptUserEvent & value) { FOnPromptUser.connect(value); }
+  displaybanner_signal_type & GetOnDisplayBanner() { return FOnDisplayBanner; }
+  void SetOnDisplayBanner(const TDisplayBannerEvent & value) { FOnDisplayBanner.connect(value); }
+  extendedexception_signal_type & GetOnShowExtendedException() { return FOnShowExtendedException; }
+  void SetOnShowExtendedException(const TExtendedExceptionEvent & value) { FOnShowExtendedException.connect(value); }
+  informationevent_signal_type & GetOnInformation() { return FOnInformation; }
+  void SetOnInformation(const TInformationEvent & value) { FOnInformation.connect(value); }
+  notify_signal_type & GetOnClose() const { return FOnClose; }
+  void SetOnClose(const TNotifyEvent & value) { FOnClose.connect(value); }
   size_t GetTunnelLocalPortNumber() { return FTunnelLocalPortNumber; }
 #endif
 };
@@ -676,7 +676,7 @@ struct TCustomCommandParams
   TCustomCommandParams(
     UnicodeString Command,
     int Params,
-    const TCaptureOutputEvent &OutputEvent) :
+    const TCaptureOutputEvent & OutputEvent) :
     Command(Command),
     Params(Params),
     OutputEvent(OutputEvent)
