@@ -105,8 +105,8 @@ public:
   __property TQueueEventEvent OnEvent = { read = FOnEvent, write = FOnEvent };
 #else
   bool __fastcall GetIsEmpty();
-  size_t __fastcall GetTransfersLimit() { return FTransfersLimit; }
-  void __fastcall SetTransfersLimit(size_t value);
+  int __fastcall GetTransfersLimit() { return FTransfersLimit; }
+  // void __fastcall SetTransfersLimit(int value);
   queryuser_signal_type & __fastcall GetOnQueryUser() { return FOnQueryUser; }
   void __fastcall SetOnQueryUser(const TQueryUserEvent & value) { FOnQueryUser.connect(value); }
   promptuser_signal_type & __fastcall GetOnPromptUser() { return FOnPromptUser; }
@@ -150,6 +150,7 @@ protected:
   TDateTime FLastIdle;
   TTerminalQueue * Self;
 
+public:
   TQueueItem * __fastcall GetItem(int Index);
   bool __fastcall ItemGetData(TQueueItem * Item, TQueueItemProxy * Proxy);
   bool __fastcall ItemProcessUserAction(TQueueItem * Item, void * Arg);

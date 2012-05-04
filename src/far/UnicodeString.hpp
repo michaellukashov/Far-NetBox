@@ -126,7 +126,7 @@ class UnicodeStringData
     ~UnicodeStringData() { FreeData(m_pData); }
 };
 
-typedef class UnicodeString
+class UnicodeString
 {
   private:
     UnicodeStringData *m_pData;
@@ -280,8 +280,10 @@ typedef class UnicodeString
 
 protected:
     void  __cdecl ThrowIfOutOfRange(int idx) const;
-} string;
+};
+typedef UnicodeString string;
 
+class RawByteString;
 class UTF8String
 {
 public:
@@ -303,7 +305,7 @@ public:
     Init(Str, Size);
   }
 
-  UTF8String(const string& Str)
+  UTF8String(const UnicodeString & Str)
   {
     Init(Str, Str.GetLength());
   }
@@ -322,15 +324,26 @@ public:
   void SetLength(int nLength);
   UTF8String& Delete(size_t Index, size_t Count); // { return Remove(Index, Count); }
 
-  UTF8String& Insert(size_t Pos, const wchar_t* Str, size_t StrLen); // { return Replace(Pos, 0, Str, StrLen); }
-  UTF8String& Insert(const wchar_t *Str, size_t Pos) { return Insert(Pos, Str, wcslen(Str)); }
+  UTF8String & Insert(size_t Pos, const wchar_t* Str, size_t StrLen); // { return Replace(Pos, 0, Str, StrLen); }
+  UTF8String & Insert(const wchar_t *Str, size_t Pos) { return Insert(Pos, Str, wcslen(Str)); }
 
   UTF8String SubString(size_t Pos, size_t Len = -1) const; // { return SubStr(Pos, Len); }
 
 
 public:
+  const UTF8String & operator=(const UnicodeString &strCopy); // { return Copy(strCopy); }
+  const UTF8String & operator=(const UTF8String &strCopy); // { return Copy(strCopy); }
+  const UTF8String & operator=(const char *lpszData); // { return Copy(lpszData); }
+  const UTF8String & operator=(const wchar_t *lpwszData); // { return Copy(lpwszData); }
+  const UTF8String & operator=(wchar_t chData); // { return Copy(chData); }
+
   UTF8String __fastcall operator +(const UTF8String &rhs) const;
   UTF8String __fastcall operator +(const std::wstring &rhs) const;
+  UTF8String __fastcall operator +(const RawByteString &rhs) const;
+  const UTF8String & __fastcall operator +=(const UTF8String &rhs);
+  const UTF8String & __fastcall operator +=(const RawByteString &rhs);
+  const UTF8String & __fastcall operator +=(const char rhs);
+  const UTF8String & __fastcall operator +=(const char *rhs);
 
 private:
   void Init(const wchar_t *Str, int Length)
@@ -404,16 +417,29 @@ public:
   void SetLength(int nLength);
   RawByteString& Delete(size_t Index, size_t Count); // { return Remove(Index, Count); }
 
-  RawByteString& Insert(size_t Pos, const wchar_t* Str, size_t StrLen); // { return Replace(Pos, 0, Str, StrLen); }
-  RawByteString& Insert(const wchar_t *Str, size_t Pos) { return Insert(Pos, Str, wcslen(Str)); }
-  RawByteString& Insert(const char *Str, size_t Pos); // { return Insert(Pos, Str, wcslen(Str)); }
+  RawByteString & Insert(size_t Pos, const wchar_t* Str, size_t StrLen); // { return Replace(Pos, 0, Str, StrLen); }
+  RawByteString & Insert(const wchar_t *Str, size_t Pos) { return Insert(Pos, Str, wcslen(Str)); }
+  RawByteString & Insert(const char *Str, size_t Pos); // { return Insert(Pos, Str, wcslen(Str)); }
 
   RawByteString SubString(size_t Pos, size_t Len = -1) const; // { return SubStr(Pos, Len); }
 
+  int Pos(wchar_t Ch) const;
+  int Pos(const wchar_t *Str) const;
 public:
+  const RawByteString & operator=(const UnicodeString &strCopy); // { return Copy(strCopy); }
+  const RawByteString & operator=(const RawByteString &strCopy); // { return Copy(strCopy); }
+  const RawByteString & operator=(const UTF8String &strCopy); // { return Copy(strCopy); }
+  const RawByteString & operator=(const char *lpszData); // { return Copy(lpszData); }
+  const RawByteString & operator=(const wchar_t *lpwszData); // { return Copy(lpwszData); }
+  const RawByteString & operator=(wchar_t chData); // { return Copy(chData); }
+
   RawByteString __fastcall operator +(const RawByteString &rhs) const;
+  RawByteString __fastcall operator +(const UTF8String &rhs) const;
   RawByteString __fastcall operator +(const std::wstring &rhs) const;
-  RawByteString __fastcall operator +=(const char rhs) const;
+  const RawByteString & __fastcall operator +=(const RawByteString &rhs);
+  const RawByteString & __fastcall operator +=(const UTF8String &rhs);
+  const RawByteString & __fastcall operator +=(const char rhs);
+  const RawByteString & __fastcall operator +=(const char *rhs);
 
     
 private:
