@@ -205,6 +205,9 @@ public:
 //---------------------------------------------------------------------------
 UnicodeString UnixExcludeLeadingBackslash(UnicodeString Path);
 //---------------------------------------------------------------------------
+extern int RandSeed;
+extern void __fastcall Randomize();
+//---------------------------------------------------------------------------
 
 } // namespace Sysutils
 

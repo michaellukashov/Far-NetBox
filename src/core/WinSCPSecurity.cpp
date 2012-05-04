@@ -51,7 +51,7 @@ RawByteString EncryptPassword(UnicodeString UnicodePassword, UnicodeString Unico
   RawByteString Result("");
   int Shift, Index;
 
-  // if (!RandSeed) Randomize();
+  if (!RandSeed) Randomize();
   Password = Key + Password;
   Shift = (Password.Length() < PWALG_SIMPLE_MAXLEN) ?
     (unsigned char)random(PWALG_SIMPLE_MAXLEN - Password.Length()) : 0;

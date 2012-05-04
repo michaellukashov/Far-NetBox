@@ -27,6 +27,7 @@ namespace alg = boost::algorithm;
 
 namespace Sysutils {
 //---------------------------------------------------------------------------
+int RandSeed;
 //---------------------------------------------------------------------------
 UnicodeString IntToStr(int value)
 {
@@ -1223,6 +1224,11 @@ UnicodeString UnixExcludeLeadingBackslash(UnicodeString Path)
   return Path;
 }
 
+//---------------------------------------------------------------------------
+void __fastcall Randomize()
+{
+  srand(static_cast<unsigned int>(time(NULL)));
+}
 //---------------------------------------------------------------------------
 
 } // namespace Sysutils
