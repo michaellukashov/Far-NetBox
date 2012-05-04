@@ -231,10 +231,11 @@ struct TCustomCommandData
 class TFileCustomCommand : public TCustomCommand
 {
 public:
-  TFileCustomCommand();
-  explicit TFileCustomCommand(const TCustomCommandData & Data, const UnicodeString & Path);
-  explicit TFileCustomCommand(const TCustomCommandData & Data, const UnicodeString & Path,
+  /* __fastcall */ TFileCustomCommand();
+  explicit /* __fastcall */ TFileCustomCommand(const TCustomCommandData & Data, const UnicodeString & Path);
+  explicit /* __fastcall */ TFileCustomCommand(const TCustomCommandData & Data, const UnicodeString & Path,
     const UnicodeString & FileName, const UnicodeString & FileList);
+  virtual /* __fastcall */ ~TFileCustomCommand() {}
 
   virtual void __fastcall Validate(const UnicodeString & Command);
   virtual void __fastcall ValidatePattern(const UnicodeString & Command,
