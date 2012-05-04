@@ -4,19 +4,15 @@
 //---------------------------------------------------------------------------
 void __fastcall CryptographyInitialize();
 void __fastcall CryptographyFinalize();
-void __fastcall ScramblePassword(UnicodeString &Password);
-bool __fastcall UnscramblePassword(UnicodeString &Password);
-void __fastcall AES256EncyptWithMAC(const UnicodeString Input, const UnicodeString Password,
-                         UnicodeString Salt, UnicodeString &Output, UnicodeString Mac);
-void __fastcall AES256EncyptWithMAC(const UnicodeString Input, const UnicodeString Password,
-                         UnicodeString &Output);
-bool __fastcall AES256DecryptWithMAC(const UnicodeString Input, const UnicodeString Password,
-                          UnicodeString Salt, UnicodeString &Output, UnicodeString Mac);
-bool __fastcall AES256DecryptWithMAC(const UnicodeString Input, const UnicodeString Password,
-                          UnicodeString &Output);
-void __fastcall AES256CreateVerifier(const UnicodeString Input, UnicodeString &Verifier);
-bool __fastcall AES256Verify(const UnicodeString Input, UnicodeString Verifier);
-int __fastcall IsValidPassword(const UnicodeString Password);
-size_t __fastcall PasswordMaxLength();
+RawByteString __fastcall ScramblePassword(UnicodeString Password);
+bool __fastcall UnscramblePassword(RawByteString Scrambled, UnicodeString & Password);
+void __fastcall AES256EncyptWithMAC(RawByteString Input, UnicodeString Password,
+  RawByteString & Output);
+bool __fastcall AES256DecryptWithMAC(RawByteString Input, UnicodeString Password,
+  RawByteString & Output);
+void __fastcall AES256CreateVerifier(UnicodeString Input, RawByteString & Verifier);
+bool __fastcall AES256Verify(UnicodeString Input, RawByteString Verifier);
+int __fastcall IsValidPassword(UnicodeString Password);
+int __fastcall PasswordMaxLength();
 //---------------------------------------------------------------------------
 #endif
