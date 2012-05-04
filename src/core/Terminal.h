@@ -92,7 +92,7 @@ typedef boost::signal2<int, void * /* Param1 */, void * /* Param2 */> fileoperat
 typedef fileoperation_signal_type::slot_type TFileOperationEvent;
 typedef boost::signal4<void, const UnicodeString /* LocalDirectory */, const UnicodeString /* RemoteDirectory */,
    bool & /* Continue */, bool /* Collect */> synchronizedirectory_signal_type;
-typedef synchronizedirectory_signal_type::slot_type TSynchronizeDirectory;
+typedef synchronizedirectory_signal_type::slot_type TSynchronizeDirectoryEvent;
 typedef boost::signal2<void, const UnicodeString /* FileName */, bool /* Alternative */> deletelocalfile_signal_type;
 typedef deletelocalfile_signal_type::slot_type TDeleteLocalFileEvent;
 typedef boost::signal3<int, TTerminal * /* Terminal */, const UnicodeString /* Directory */, bool /* SubDirs */> directorymodified_signal_type;
@@ -358,7 +358,7 @@ protected:
   void /* __fastcall */ DoSynchronizeCollectDirectory(const UnicodeString LocalDirectory,
     const UnicodeString RemoteDirectory, TSynchronizeMode Mode,
     const TCopyParamType * CopyParam, int Params,
-    const TSynchronizeDirectory & OnSynchronizeDirectory,
+    const TSynchronizeDirectoryEvent & OnSynchronizeDirectory,
     TSynchronizeOptions * Options, int Level, TSynchronizeChecklist * Checklist);
   void SynchronizeCollectFile(const UnicodeString FileName,
     const TRemoteFile * File, /*TSynchronizeData*/ void * Param);
@@ -488,11 +488,11 @@ public:
   TSynchronizeChecklist * SynchronizeCollect(const UnicodeString LocalDirectory,
     const UnicodeString RemoteDirectory, TSynchronizeMode Mode,
     const TCopyParamType * CopyParam, int Params,
-    const TSynchronizeDirectory & OnSynchronizeDirectory, TSynchronizeOptions * Options);
+    const TSynchronizeDirectoryEvent & OnSynchronizeDirectory, TSynchronizeOptions * Options);
   void SynchronizeApply(TSynchronizeChecklist * Checklist,
     const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
     const TCopyParamType * CopyParam, int Params,
-    const TSynchronizeDirectory & OnSynchronizeDirectory);
+    const TSynchronizeDirectoryEvent & OnSynchronizeDirectory);
   void __fastcall FilesFind(UnicodeString Directory, const TFileMasks & FileMask,
     const TFileFoundEvent * OnFileFound, const TFindingFileEvent * OnFindingFile);
   void __fastcall SpaceAvailable(const UnicodeString Path, TSpaceAvailable & ASpaceAvailable);
