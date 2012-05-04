@@ -438,9 +438,8 @@ void TStrings::SetDelimitedText(const UnicodeString Value)
     std::vector<std::wstring> lines;
     std::wstring delim = std::wstring(1, GetDelimiter());
     delim.append(1, L'\n');
-    alg::split(lines, Value, alg::is_any_of(delim), alg::token_compress_on);
+    alg::split(lines, std::wstring(Value.c_str()), alg::is_any_of(delim), alg::token_compress_on);
     UnicodeString line;
-    // for (std::vector<UnicodeString>::const_iterator it = lines.begin(); it != lines.end(); ++it)
     BOOST_FOREACH(line, lines)
     {
         Add(line);
@@ -2043,14 +2042,19 @@ int FindFirst(const UnicodeString FileName, int Attr, TSearchRec & Rec)
   }
   else
     Result = GetLastError();
+  return Result;
 }
 
 int FindNext(TSearchRec & Rec)
 {
+  int Result = 0;
+  return Result;
 }
 
 int FindClose(TSearchRec & Rec)
 {
+  int Result = 0;
+  return Result;
 }
 
 //---------------------------------------------------------------------------

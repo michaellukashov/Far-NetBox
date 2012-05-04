@@ -188,8 +188,8 @@ wchar_t LowCase(const wchar_t c)
 
 UnicodeString AnsiReplaceStr(const UnicodeString str, const UnicodeString from, const UnicodeString to)
 {
-  UnicodeString result = str;
-  alg::replace_all(result, from, to);
+  std::wstring result = str;
+  alg::replace_all(result, std::wstring(from.c_str()), std::wstring(to.c_str()));
   return result;
 }
 
