@@ -1,4 +1,8 @@
 //---------------------------------------------------------------------------
+#ifndef _MSC_VER
+#include <vcl.h>
+#pragma hdrstop
+#endif
 #include "stdafx.h"
 
 #include "CoreMain.h"
@@ -10,6 +14,10 @@
 #include "Cryptography.h"
 #ifndef NO_FILEZILLA
 #include "FileZillaIntf.h"
+#endif
+//---------------------------------------------------------------------------
+#ifndef _MSC_VER
+#pragma package(smart_init)
 #endif
 //---------------------------------------------------------------------------
 TConfiguration * Configuration = NULL;
@@ -46,8 +54,7 @@ bool __fastcall IsAuthenticationPrompt(TPromptKind Kind)
 //---------------------------------------------------------------------------
 void CoreInitialize()
 {
-  // Randomize();
-  srand(static_cast<unsigned int>(time(NULL)));
+  Randomize();
   CryptographyInitialize();
 
   // configuration needs to be created and loaded before putty is initialized,
@@ -64,9 +71,9 @@ void CoreInitialize()
   }
 
   PuttyInitialize();
-#ifndef NO_FILEZILLA
+  #ifndef NO_FILEZILLA
   TFileZillaIntf::Initialize();
-#endif
+  #endif
 
   StoredSessions = new TStoredSessionList();
 
@@ -87,14 +94,14 @@ void CoreFinalize()
     // only modified, implicit
     Configuration->Save(false, false);
   }
-  catch (Exception & E)
+  catch(Exception & E)
   {
     ShowExtendedException(&E);
   }
 
-#ifndef NO_FILEZILLA
+  #ifndef NO_FILEZILLA
   TFileZillaIntf::Finalize();
-#endif
+  #endif
   PuttyFinalize();
 
   delete StoredSessions;
@@ -107,10 +114,10 @@ void CoreFinalize()
 //---------------------------------------------------------------------------
 void CoreSetResourceModule(void * ResourceHandle)
 {
-#ifndef NO_FILEZILLA
+  #ifndef NO_FILEZILLA
   TFileZillaIntf::SetResourceModule(ResourceHandle);
-#else
+  #else
   USEDPARAM(ResourceHandle);
-#endif
+  #endif
 }
 //---------------------------------------------------------------------------

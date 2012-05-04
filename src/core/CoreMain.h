@@ -5,9 +5,9 @@
 #include "Common.h"
 //---------------------------------------------------------------------------
 class TConfiguration;
-extern TConfiguration * Configuration;
+extern TConfiguration *Configuration;
 class TStoredSessionList;
-extern TStoredSessionList * StoredSessions;
+extern TStoredSessionList *StoredSessions;
 //---------------------------------------------------------------------------
 void CoreInitialize();
 void CoreFinalize();
