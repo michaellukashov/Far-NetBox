@@ -1814,7 +1814,7 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
 
         File->Complete();
       }
-      catch (const std::exception & E)
+      catch (Exception & E)
       {
         delete File;
         UnicodeString EntryData =

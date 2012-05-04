@@ -113,6 +113,32 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   }
 }
 //---------------------------------------------------------------------------
+/*
+__fastcall ExtException::ExtException(UnicodeString Msg, std::exception * E) :
+  parent(Msg),
+  FMoreMessages(NULL)
+{
+  // "copy std::exception"
+  // AddMoreMessages(E);
+  // and append message to the end to more messages
+  if (!Msg.IsEmpty())
+  {
+    if (GetMessage().IsEmpty())
+    {
+      SetMessage(Msg);
+    }
+    else
+    {
+      if (FMoreMessages == NULL)
+      {
+        FMoreMessages = new TStringList();
+      }
+      FMoreMessages->Append(GetMessage());
+    }
+  }
+}
+*/
+//---------------------------------------------------------------------------
 /* __fastcall */ ExtException::ExtException(UnicodeString Msg, TStrings * MoreMessages,
   bool Own) :
   parent(Msg),
@@ -191,7 +217,7 @@ void __fastcall ExtException::AddMoreMessages(const Exception* E)
   }
 }
 //---------------------------------------------------------------------------
-__fastcall ExtException::~ExtException()
+/* __fastcall */ ExtException::~ExtException()
 {
   delete FMoreMessages;
   FMoreMessages = NULL;
@@ -228,21 +254,23 @@ __fastcall EOSExtException::EOSExtException(UnicodeString Msg) :
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-Exception::Exception(Exception * E) :
-  Exception(L"")
+/* __fastcall */ Exception::Exception(Exception * E) :
+  parent("")
 {
   // AddMoreMessages(E);
 }
 //---------------------------------------------------------------------------
-Exception::Exception(UnicodeString Msg) :
-  parent(W2MB(Msg.c_str()).c_str())
-{
-}
-Exception::Exception(Exception & E) throw() :
+/* __fastcall */ Exception::Exception(Exception & E) throw() :
   parent(E.what())
 {
 }
-Exception::Exception(const std::exception * E) :
+//---------------------------------------------------------------------------
+/* __fastcall */ Exception::Exception(UnicodeString Msg) :
+  parent(W2MB(Msg.c_str()).c_str())
+{
+}
+//---------------------------------------------------------------------------
+/* __fastcall */ Exception::Exception(std::exception * E) :
   parent(E->what())
 {
 }

@@ -24,9 +24,10 @@ class Exception : public std::exception, public TObject
 {
   typedef std::exception parent;
 public:
-  explicit /* __fastcall */ Exception(const UnicodeString Msg);
-  explicit /* __fastcall */ Exception(const Exception & E);
-  explicit /* __fastcall */ Exception(const std::exception * E);
+  explicit /* __fastcall */ Exception(Exception * E);
+  explicit /* __fastcall */ Exception(Exception & E);
+  explicit /* __fastcall */ Exception(UnicodeString Msg);
+  explicit /* __fastcall */ Exception(std::exception * E);
   template<typename T>
   bool InheritsFrom() const { return dynamic_cast<const T *>(this) != NULL; }
 
@@ -48,6 +49,7 @@ public:
   explicit /* __fastcall */ ExtException(UnicodeString Msg);
   // "copy the exception", just append message to the end
   explicit /* __fastcall */ ExtException(UnicodeString Msg, Exception * E);
+  // explicit /* __fastcall */ ExtException(UnicodeString Msg, std::exception * E);
   // explicit /* __fastcall */ ExtException(UnicodeString Msg, UnicodeString MoreMessages, UnicodeString HelpKeyword = L"");
   explicit /* __fastcall */ ExtException(UnicodeString Msg, TStrings * MoreMessages, bool Own);
   explicit /* __fastcall */ ExtException(ExtException &) throw();
