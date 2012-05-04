@@ -5,50 +5,50 @@
 #include "Classes.h"
 
 //---------------------------------------------------------------------------
-bool __fastcall ExceptionMessage(const std::exception *E, UnicodeString &Message);
+bool __fastcall ExceptionMessage(const std::exception * E, UnicodeString & Message);
 UnicodeString __fastcall LastSysErrorMessage();
-TStrings * __fastcall ExceptionToMoreMessages(const std::exception *E);
+TStrings * __fastcall ExceptionToMoreMessages(const std::exception * E);
 //---------------------------------------------------------------------------
 enum TOnceDoneOperation { odoIdle, odoDisconnect, odoShutDown };
 //---------------------------------------------------------------------------
 class Exception : public std::exception, public TObject
 {
-    typedef std::exception parent;
+  typedef std::exception parent;
 public:
-    explicit Exception(const UnicodeString Msg);
-    explicit Exception(const Exception &E);
-    explicit Exception(const std::exception *E);
-    template<typename T>
-    bool InheritsFrom() const { return dynamic_cast<const T *>(this) != NULL; }
+  explicit Exception(const UnicodeString Msg);
+  explicit Exception(const Exception & E);
+  explicit Exception(const std::exception * E);
+  template<typename T>
+  bool InheritsFrom() const { return dynamic_cast<const T *>(this) != NULL; }
 
-    UnicodeString GetHelpKeyword() const { return FHelpKeyword; }
-    const UnicodeString GetMessage() const { return FMessage; }
-    void SetMessage(const UnicodeString value) { FMessage = value; }
+  UnicodeString GetHelpKeyword() const { return FHelpKeyword; }
+  const UnicodeString GetMessage() const { return FMessage; }
+  void SetMessage(const UnicodeString value) { FMessage = value; }
 protected:
-    UnicodeString FMessage;
-    UnicodeString FHelpKeyword;
+  UnicodeString FMessage;
+  UnicodeString FHelpKeyword;
 };
 //---------------------------------------------------------------------------
 class ExtException : public Exception
 {
-    typedef Exception parent;
+  typedef Exception parent;
 public:
-    explicit ExtException(const UnicodeString Msg);
-    explicit ExtException(const std::exception *E);
-    // "copy the std::exception", just append message to the end
-    explicit ExtException(const UnicodeString Msg, const std::exception *E);
-    // explicit ExtException(const UnicodeString Msg, const UnicodeString MoreMessages, const UnicodeString HelpKeyword = L"");
-    explicit ExtException(const UnicodeString Msg, TStrings *MoreMessages, bool Own);
-    explicit ExtException(const ExtException &) throw();
-    ExtException &operator =(const ExtException &) throw();
-    virtual ~ExtException(void) throw();
+  explicit ExtException(const UnicodeString Msg);
+  explicit ExtException(const std::exception * E);
+  // "copy the std::exception", just append message to the end
+  explicit ExtException(const UnicodeString Msg, const std::exception * E);
+  // explicit ExtException(const UnicodeString Msg, const UnicodeString MoreMessages, const UnicodeString HelpKeyword = L"");
+  explicit ExtException(const UnicodeString Msg, TStrings * MoreMessages, bool Own);
+  explicit ExtException(const ExtException &) throw();
+  ExtException & operator =(const ExtException &) throw();
+  virtual ~ExtException(void) throw();
 
-    TStrings *GetMoreMessages() const { return FMoreMessages; }
+  TStrings * GetMoreMessages() const { return FMoreMessages; }
 protected:
-    void __fastcall AddMoreMessages(const std::exception *E);
+  void __fastcall AddMoreMessages(const std::exception * E);
 
 private:
-    TStrings *FMoreMessages;
+  TStrings * FMoreMessages;
 };
 //---------------------------------------------------------------------------
 #define DERIVE_EXT_EXCEPTION(NAME, BASE) \
@@ -80,15 +80,15 @@ public:
 //---------------------------------------------------------------------------
 class EFatal : public ExtException
 {
-    typedef ExtException parent;
+  typedef ExtException parent;
 public:
-    // fatal errors are always copied, new message is only appended
-    explicit EFatal(const UnicodeString Msg, const std::exception *E);
-    bool GetReopenQueried() { return FReopenQueried; }
-    void SetReopenQueried(bool value) { FReopenQueried = value; }
+  // fatal errors are always copied, new message is only appended
+  explicit EFatal(const UnicodeString Msg, const std::exception * E);
+  bool GetReopenQueried() { return FReopenQueried; }
+  void SetReopenQueried(bool value) { FReopenQueried = value; }
 
 private:
-    bool FReopenQueried;
+  bool FReopenQueried;
 };
 //---------------------------------------------------------------------------
 #define DERIVE_FATAL_EXCEPTION(NAME, BASE) \
@@ -105,13 +105,13 @@ DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal);
 // = close on completion
 class ESshTerminate : public EFatal
 {
-    typedef EFatal parent;
+  typedef EFatal parent;
 public:
-    explicit ESshTerminate(const UnicodeString Msg, const std::exception *E, TOnceDoneOperation AOperation) :
-        parent(Msg, E),
-        Operation(AOperation)
-    {}
+  explicit ESshTerminate(const UnicodeString Msg, const std::exception * E, TOnceDoneOperation AOperation) :
+    parent(Msg, E),
+    Operation(AOperation)
+  {}
 
-    TOnceDoneOperation Operation;
+  TOnceDoneOperation Operation;
 };
 //---------------------------------------------------------------------------
