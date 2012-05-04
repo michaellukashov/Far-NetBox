@@ -389,7 +389,7 @@ public:
   __property TNotifyEvent OnIdle = { read = FOnIdle, write = FOnIdle };
   __property bool Cancelling = { read = FCancel };
 #else
-  notify_signal_type & GetOnIdle() const { return FOnIdle; }
+  notify_signal_type & GetOnIdle() { return FOnIdle; }
   void SetOnIdle(const TNotifyEvent & Value) { FOnIdle.connect(Value); }
   bool GetCancelling() const { return FCancel; };
 #endif

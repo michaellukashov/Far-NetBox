@@ -571,11 +571,11 @@ public:
   bool GetExceptionOnFail() const;
   void SetExceptionOnFail(bool value);
   TRemoteDirectory * GetFiles() { return FFiles; }
-  notify_signal_type & GetOnChangeDirectory() const { return FOnChangeDirectory; }
+  notify_signal_type & GetOnChangeDirectory() { return FOnChangeDirectory; }
   void SetOnChangeDirectory(const TNotifyEvent &value) { FOnChangeDirectory.connect(value); }
   readdirectory_signal_type & GetOnReadDirectory() { return FOnReadDirectory; }
   void SetOnReadDirectory(const TReadDirectoryEvent &value) { FOnReadDirectory.connect(value); }
-  notify_signal_type & GetOnStartReadDirectory() const { return FOnStartReadDirectory; }
+  notify_signal_type & GetOnStartReadDirectory() { return FOnStartReadDirectory; }
   void SetOnStartReadDirectory(const TNotifyEvent &value) { FOnStartReadDirectory.connect(value); }
   readdirectoryprogress_signal_type & GetOnReadDirectoryProgress() { return FOnReadDirectoryProgress; }
   void SetOnReadDirectoryProgress(const TReadDirectoryProgressEvent &value) { FOnReadDirectoryProgress.connect(value); }
@@ -584,9 +584,9 @@ public:
   const TRemoteTokenList * GetGroups();
   const TRemoteTokenList * GetUsers();
   const TRemoteTokenList * GetMembership();
-  fileoperationprogress_signal_type & GetOnProgress() const { return FOnProgress; }
+  fileoperationprogress_signal_type & GetOnProgress() { return FOnProgress; }
   void SetOnProgress(const TFileOperationProgressEvent & value) { FOnProgress.connect(value); }
-  fileoperationfinished_signal_type & GetOnFinished() const { return FOnFinished; }
+  fileoperationfinished_signal_type & GetOnFinished() { return FOnFinished; }
   void SetOnFinished(const TFileOperationFinishedEvent & value) { FOnFinished.connect(value); }
   TCurrentFSProtocol GetFSProtocol() { return FFSProtocol; }
   bool GetUseBusyCursor() { return FUseBusyCursor; }
@@ -611,7 +611,7 @@ public:
   void SetOnShowExtendedException(const TExtendedExceptionEvent & value) { FOnShowExtendedException.connect(value); }
   informationevent_signal_type & GetOnInformation() { return FOnInformation; }
   void SetOnInformation(const TInformationEvent & value) { FOnInformation.connect(value); }
-  notify_signal_type & GetOnClose() const { return FOnClose; }
+  notify_signal_type & GetOnClose() { return FOnClose; }
   void SetOnClose(const TNotifyEvent & value) { FOnClose.connect(value); }
   size_t GetTunnelLocalPortNumber() { return FTunnelLocalPortNumber; }
 #endif
