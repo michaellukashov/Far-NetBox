@@ -499,25 +499,6 @@ public:
   __property bool Unknown = { read = FUnknown };
 #else
   bool __fastcall GetAllowUndef() const { return FAllowUndef; }
-  void __fastcall SetAllowUndef(bool value);
-  bool __fastcall GetIsUndef() const;
-  UnicodeString __fastcall GetModeStr() const;
-  UnicodeString __fastcall GetSimplestStr() const;
-  UnicodeString __fastcall GetOctal() const;
-  void __fastcall SetOctal(const UnicodeString value);
-  unsigned short __fastcall GetNumber() const;
-  void __fastcall SetNumber(unsigned short value);
-  unsigned short __fastcall GetNumberSet() const { return FSet; }
-  unsigned short __fastcall GetNumberUnset() const { return FUnset; }
-  unsigned long __fastcall GetNumberDecadic() const;
-  bool __fastcall GetReadOnly();
-  void __fastcall SetReadOnly(bool value);
-  bool __fastcall GetRight(TRight Right) const;
-  void __fastcall SetRight(TRight Right, bool value);
-  TState __fastcall GetRightUndef(TRight Right) const;
-  void __fastcall SetRightUndef(TRight Right, TState value);
-  UnicodeString __fastcall GetText() const;
-  void __fastcall SetText(const UnicodeString value);
   bool __fastcall GetUnknown() { return FUnknown; }
 #endif
 
@@ -528,7 +509,7 @@ private:
   UnicodeString FText;
   bool FUnknown;
 
-#ifndef _MSC_VER
+public:
   bool __fastcall GetIsUndef() const;
   UnicodeString __fastcall GetModeStr() const;
   UnicodeString __fastcall GetSimplestStr() const;
@@ -548,7 +529,6 @@ private:
   void __fastcall SetReadOnly(bool value);
   void __fastcall SetRight(TRight Right, bool value);
   void __fastcall SetRightUndef(TRight Right, TState value);
-#endif
 };
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
