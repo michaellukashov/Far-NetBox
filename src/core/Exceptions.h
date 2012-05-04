@@ -14,7 +14,7 @@
 
 class Exception;
 //---------------------------------------------------------------------------
-bool __fastcall ExceptionMessage(Exception * E, UnicodeString & Message);
+bool __fastcall ExceptionMessage(const Exception * E, UnicodeString & Message);
 UnicodeString __fastcall LastSysErrorMessage();
 TStrings * ExceptionToMoreMessages(Exception * E);
 //---------------------------------------------------------------------------
@@ -30,12 +30,12 @@ public:
   template<typename T>
   bool InheritsFrom() const { return dynamic_cast<const T *>(this) != NULL; }
 
-  UnicodeString GetHelpKeyword() const { return FHelpKeyword; }
+  // UnicodeString GetHelpKeyword() const { return FHelpKeyword; }
   const UnicodeString GetMessage() const { return FMessage; }
   void SetMessage(const UnicodeString value) { FMessage = value; }
 protected:
   UnicodeString FMessage;
-  UnicodeString FHelpKeyword;
+  // UnicodeString FHelpKeyword;
 };
 //---------------------------------------------------------------------------
 class ExtException : public Exception
@@ -59,7 +59,7 @@ public:
 #endif
 
   TStrings * /* __fastcall */ GetMoreMessages() const { return FMoreMessages; }
-  UnicodeString /* __fastcall */ GetHelpKeyword() { return FHelpKeyword; }
+  UnicodeString /* __fastcall */ GetHelpKeyword() const { return FHelpKeyword; }
 protected:
   void __fastcall AddMoreMessages(const Exception* E);
 

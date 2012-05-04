@@ -17,14 +17,14 @@
 #pragma package(smart_init)
 #endif
 //---------------------------------------------------------------------------
-bool __fastcall ExceptionMessage(Exception * E, UnicodeString & Message)
+bool __fastcall ExceptionMessage(const Exception * E, UnicodeString & Message)
 {
   bool Result = true;
-  if (dynamic_cast<EAbort *>(E) != NULL)
+  if (dynamic_cast<const EAbort *>(E) != NULL)
   {
     Result = false;
   }
-  else if (dynamic_cast<EAccessViolation*>(E) != NULL)
+  else if (dynamic_cast<const EAccessViolation*>(E) != NULL)
   {
     Message = LoadStr(ACCESS_VIOLATION_ERROR);
   }
@@ -152,7 +152,7 @@ void __fastcall ExtException::AddMoreMessages(const Exception* E)
       FMoreMessages = new TStringList();
     }
 
-    ExtException * ExtE = dynamic_cast<ExtException *>(E);
+    const ExtException * ExtE = dynamic_cast<const ExtException *>(E);
     if (ExtE != NULL)
     {
       if (!ExtE->GetHelpKeyword().IsEmpty())
