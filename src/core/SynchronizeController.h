@@ -80,7 +80,7 @@ public:
     TSynchronizeTooManyDirectories AOnTooManyDirectories);
   /* __fastcall */ ~TSynchronizeController();
 
-  void __fastcall StartStop(TObject * Sender, bool Start,
+  void /* __fastcall */ StartStop(TObject * Sender, bool Start,
     const TSynchronizeParamType & Params, const TCopyParamType & CopyParam,
     TSynchronizeOptions * Options,
     TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,

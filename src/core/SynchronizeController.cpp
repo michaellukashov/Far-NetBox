@@ -12,7 +12,7 @@
 #include <Common.h>
 #include <RemoteFiles.h>
 #include <Terminal.h>
-#include <DiscMon.hpp>
+// #include <DiscMon.hpp>
 // #include <Exceptions.h>
 #include "GUIConfiguration.h"
 #include "CoreMain.h"
@@ -41,7 +41,7 @@
   assert(FSynchronizeMonitor == NULL);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSynchronizeController::StartStop(TObject * Sender,
+void /* __fastcall */ TSynchronizeController::StartStop(TObject * Sender,
   bool Start, const TSynchronizeParamType & Params, const TCopyParamType & CopyParam,
   TSynchronizeOptions * Options,
   TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
