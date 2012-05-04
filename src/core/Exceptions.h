@@ -47,10 +47,10 @@ public:
   explicit /* __fastcall */ ExtException(Exception* E, UnicodeString Msg);
   explicit /* __fastcall */ ExtException(UnicodeString Msg);
   // "copy the exception", just append message to the end
-  explicit /* __fastcall */ ExtException(UnicodeString Msg, std::exception * E);
+  explicit /* __fastcall */ ExtException(UnicodeString Msg, Exception * E);
   // explicit /* __fastcall */ ExtException(UnicodeString Msg, UnicodeString MoreMessages, UnicodeString HelpKeyword = L"");
   explicit /* __fastcall */ ExtException(UnicodeString Msg, TStrings * MoreMessages, bool Own);
-  explicit /* __fastcall */ ExtException(const ExtException &) throw();
+  explicit /* __fastcall */ ExtException(ExtException &) throw();
   ExtException  & /* __fastcall */ operator =(const ExtException &) throw();
   virtual /* __fastcall */ ~ExtException(void) throw();
 #ifndef _MSC_VER
@@ -58,10 +58,10 @@ public:
   __property UnicodeString HelpKeyword = {read=FHelpKeyword};
 #endif
 
-  TStrings * GetMoreMessages() const { return FMoreMessages; }
-  UnicodeString GetHelpKeyword() { return FHelpKeyword; }
+  TStrings * /* __fastcall */ GetMoreMessages() const { return FMoreMessages; }
+  UnicodeString /* __fastcall */ GetHelpKeyword() { return FHelpKeyword; }
 protected:
-  void __fastcall AddMoreMessages(Exception* E);
+  void __fastcall AddMoreMessages(const Exception* E);
 
 private:
   TStrings* FMoreMessages;
@@ -105,8 +105,8 @@ public:
 #ifndef _MSC_VER
   __property bool ReopenQueried = { read = FReopenQueried, write = FReopenQueried };
 #else
-  bool GetReopenQueried() { return FReopenQueried; }
-  void SetReopenQueried(bool value) { FReopenQueried = value; }
+  bool /* __fastcall */ GetReopenQueried() { return FReopenQueried; }
+  void /* __fastcall */ SetReopenQueried(bool value) { FReopenQueried = value; }
 #endif
 
 private:

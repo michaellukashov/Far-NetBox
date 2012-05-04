@@ -89,7 +89,7 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   }
 }
 //---------------------------------------------------------------------------
-ExtException::ExtException(UnicodeString Msg, Exception * E) :
+/* __fastcall */ ExtException::ExtException(UnicodeString Msg, Exception * E) :
   parent(Msg),
   FMoreMessages(NULL)
 {
@@ -113,7 +113,7 @@ ExtException::ExtException(UnicodeString Msg, Exception * E) :
   }
 }
 //---------------------------------------------------------------------------
-ExtException::ExtException(UnicodeString Msg, TStrings * MoreMessages,
+/* __fastcall */ ExtException::ExtException(UnicodeString Msg, TStrings * MoreMessages,
   bool Own) :
   parent(Msg),
   FMoreMessages(NULL)
@@ -129,21 +129,21 @@ ExtException::ExtException(UnicodeString Msg, TStrings * MoreMessages,
   }
 }
 //---------------------------------------------------------------------------
-ExtException::ExtException(const ExtException & E) throw() :
+/* __fastcall */ ExtException::ExtException(ExtException & E) throw() :
   parent(E),
   FMoreMessages(NULL)
 {
   AddMoreMessages(&E);
 }
 
-ExtException & ExtException::operator =(const ExtException & E) throw()
+ExtException & /* __fastcall */ ExtException::operator =(const ExtException & E) throw()
 {
   AddMoreMessages(&E);
   return *this;
 }
 
 //---------------------------------------------------------------------------
-void __fastcall ExtException::AddMoreMessages(Exception* E)
+void __fastcall ExtException::AddMoreMessages(const Exception* E)
 {
   if (E != NULL)
   {
