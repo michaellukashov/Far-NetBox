@@ -163,9 +163,9 @@ UnicodeString __fastcall TCopyParamType::GetInfoStr(UnicodeString Separator, int
     }
   }
 
-  if (((GetIncludeFileMask() == Defaults.GetIncludeFileMask())
+  if (GetIncludeFileMask() == Defaults.GetIncludeFileMask())
   {
-    ADD(FORMAT(LoadStr(COPY_INFO_FILE_MASK), GetIncludeFileMask().GetMasks())),
+    ADD(FORMAT(LoadStr(COPY_INFO_FILE_MASK), GetIncludeFileMask().GetMasks()),
       cpaNoIncludeMask);
   }
 
@@ -244,7 +244,7 @@ void __fastcall TCopyParamType::SetReplaceInvalidChars(bool value)
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TCopyParamType::ValidLocalFileName(UnicodeString FileName) const
 {
-  return ::ValidLocalFileName(FileName, InvalidCharsReplacement, FTokenizibleChars, LocalInvalidChars);
+  return ::ValidLocalFileName(FileName, GetInvalidCharsReplacement(), FTokenizibleChars, LocalInvalidChars);
 }
 //---------------------------------------------------------------------------
 wchar_t * TCopyParamType::ReplaceChar(UnicodeString & FileName, wchar_t * InvalidChar) const
@@ -263,54 +263,6 @@ wchar_t * TCopyParamType::ReplaceChar(UnicodeString & FileName, wchar_t * Invali
     InvalidChar++;
   }
   return InvalidChar;
-}
-//---------------------------------------------------------------------------
-UnicodeString TCopyParamType::ValidLocalFileName(const UnicodeString FileName) const
-{
-  UnicodeString fileName = FileName;
-  if (GetInvalidCharsReplacement() != NoReplacement)
-  {
-    bool ATokenReplacement = (GetInvalidCharsReplacement() == TokenReplacement);
-    UnicodeString chars = ATokenReplacement ? FTokenizibleChars : GetLocalInvalidChars();
-    const wchar_t * Chars = chars.c_str();
-    wchar_t * InvalidChar = const_cast<wchar_t *>(fileName.c_str());
-    while ((InvalidChar = wcspbrk(InvalidChar, Chars)) != NULL)
-    {
-      size_t Pos = (InvalidChar - fileName.c_str());
-      char Char;
-      if ((GetInvalidCharsReplacement() == TokenReplacement) &&
-          (*InvalidChar == TokenPrefix) &&
-          (((fileName.Length() - Pos) <= 1) ||
-           (((Char = HexToChar(fileName.SubString(Pos + 1, 2))) == '\0') ||
-            (FTokenizibleChars.Pos(Char) < 0))))
-      {
-        InvalidChar++;
-      }
-      else
-      {
-        InvalidChar = ReplaceChar(fileName, InvalidChar);
-      }
-    }
-
-    // Windows trim trailing space or dot, hence we must encode it to preserve it
-    if (!fileName.IsEmpty() &&
-        ((fileName[fileName.Length() - 1] == ' ') ||
-         (fileName[fileName.Length() - 1] == '.')))
-    {
-      ReplaceChar(fileName, const_cast<wchar_t *>(fileName.c_str() + fileName.Length() - 1));
-    }
-
-    if (IsReservedName(fileName))
-    {
-      size_t P = fileName.Pos(L'.');
-      if (P < 0)
-      {
-        P = fileName.Length();
-      }
-      fileName.Insert(P, L"%00");
-    }
-  }
-  return fileName;
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TCopyParamType::RestoreChars(UnicodeString FileName) const
@@ -332,14 +284,14 @@ UnicodeString __fastcall TCopyParamType::RestoreChars(UnicodeString FileName) co
         {
           FileName[Index] = Char;
           FileName.Delete(Index + 1, 2);
-          InvalidChar = FileName.c_str() + Index;
+          InvalidChar = const_cast<wchar_t *>(FileName.c_str() + Index);
         }
         else if ((Hex == L"00") &&
                  ((Index == FileName.Length() - 2) || (FileName[Index + 3] == L'.')) &&
                  IsReservedName(FileName.SubString(1, Index - 1) + FileName.SubString(Index + 3, FileName.Length() - Index - 3 + 1)))
         {
           FileName.Delete(Index, 3);
-          InvalidChar = FileName.c_str() + Index - 1;
+          InvalidChar = const_cast<wchar_t *>(FileName.c_str() + Index - 1);
         }
         else
         {
@@ -406,9 +358,9 @@ UnicodeString __fastcall TCopyParamType::ChangeFileName(UnicodeString FileName,
 {
   if (FirstLevel)
   {
-    FileName = MaskFileName(FileName, FileMask);
+    FileName = MaskFileName(FileName, GetFileMask());
   }
-  switch (FileNameCase) {
+  switch (GetFileNameCase()) {
     case ncUpperCase: FileName = FileName.UpperCase(); break;
     case ncLowerCase: FileName = FileName.LowerCase(); break;
     case ncFirstUpperCase: FileName = FileName.SubString(1, 1).UpperCase() +
@@ -439,10 +391,10 @@ UnicodeString __fastcall TCopyParamType::ChangeFileName(UnicodeString FileName,
 bool __fastcall TCopyParamType::UseAsciiTransfer(UnicodeString FileName,
   TOperationSide Side, const TFileMasks::TParams & Params) const
 {
-  switch (TransferMode) {
+  switch (GetTransferMode()) {
     case tmBinary: return false;
     case tmAscii: return true;
-    case tmAutomatic: return AsciiFileMask.Matches(FileName, (Side == osLocal),
+    case tmAutomatic: return GetAsciiFileMask().Matches(FileName, (Side == osLocal),
       false, &Params);
     default: assert(false); return false;
   }
@@ -450,8 +402,8 @@ bool __fastcall TCopyParamType::UseAsciiTransfer(UnicodeString FileName,
 //---------------------------------------------------------------------------
 TRights __fastcall TCopyParamType::RemoteFileRights(Integer Attrs) const
 {
-  TRights R = Rights;
-  if ((Attrs & faDirectory) && AddXToDirectories)
+  TRights R = GetRights();
+  if ((Attrs & faDirectory) && GetAddXToDirectories())
     R.AddExecute();
   return R;
 }
@@ -541,22 +493,22 @@ void __fastcall TCopyParamType::Load(THierarchicalStorage * Storage)
   SetCalculateSize(Storage->Readbool(L"CalculateSize", GetCalculateSize()));
   if (Storage->ValueExists(L"IncludeFileMask"))
   {
-    IncludeFileMask.Masks = Storage->ReadString(L"IncludeFileMask", IncludeFileMask.Masks);
+    GetIncludeFileMask().SetMasks(Storage->ReadString(L"IncludeFileMask", GetIncludeFileMask().GetMasks()));
   }
   else if (Storage->ValueExists(L"ExcludeFileMask"))
   {
     UnicodeString ExcludeFileMask = Storage->ReadString(L"ExcludeFileMask", L"");
     if (!ExcludeFileMask.IsEmpty())
     {
-      bool NegativeExclude = Storage->ReadBool(L"NegativeExclude", NegativeExclude);
+      bool NegativeExclude = Storage->Readbool(L"NegativeExclude", GetNegativeExclude());
       if (NegativeExclude)
       {
-        IncludeFileMask.Masks = ExcludeFileMask;
+        GetIncludeFileMask().SetMasks(ExcludeFileMask);
       }
       // convert at least simple cases to new format
       else if (ExcludeFileMask.Pos(IncludeExcludeFileMasksDelimiter) == 0)
       {
-        IncludeFileMask.Masks = UnicodeString(IncludeExcludeFileMasksDelimiter) + ExcludeFileMask;
+        GetIncludeFileMask().SetMasks(UnicodeString(IncludeExcludeFileMasksDelimiter) + ExcludeFileMask);
       }
     }
   }

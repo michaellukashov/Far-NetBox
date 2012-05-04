@@ -12,6 +12,7 @@ enum TFileNameCase { ncNoChange, ncUpperCase, ncLowerCase, ncFirstUpperCase, ncL
 enum TTransferMode { tmBinary, tmAscii, tmAutomatic };
 enum TResumeSupport { rsOn, rsSmart, rsOff };
 class THierarchicalStorage;
+const int cpaIncludeMaskOnly = 0x01;
 const int cpaExcludeMaskOnly = 0x01;
 const int cpaNoTransferMode =  0x02;
 const int cpaNoExcludeMask =   0x04;
@@ -152,6 +153,8 @@ public:
   void SetCalculateSize(bool value) { FCalculateSize = value; }
   UnicodeString GetFileMask() const { return FFileMask; }
   void SetFileMask(const UnicodeString value) { FFileMask = value; }
+  TFileMasks GetIncludeFileMask() const { return FIncludeFileMask; }
+  void SetIncludeFileMask(TFileMasks value) { FIncludeFileMask = value; }
   TFileMasks GetExcludeFileMask() const { return FExcludeFileMask; }
   void SetExcludeFileMask(TFileMasks value) { FExcludeFileMask = value; }
   bool GetNegativeExclude() const { return FNegativeExclude; }
