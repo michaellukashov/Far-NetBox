@@ -23,7 +23,7 @@ public:
   virtual void __fastcall Close();
   virtual bool __fastcall GetActive();
   virtual void __fastcall Idle();
-  virtual UnicodeString __fastcall AbsolutePath(const UnicodeString Path, bool Local);
+  virtual UnicodeString __fastcall AbsolutePath(UnicodeString Path, bool Local);
   virtual void __fastcall AnyCommand(const UnicodeString Command,
     TCaptureOutputEvent OutputEvent);
   virtual void __fastcall ChangeDirectory(const UnicodeString Directory);
@@ -66,7 +66,7 @@ public:
     const UnicodeString NewName);
   virtual UnicodeString __fastcall FileUrl(const UnicodeString FileName);
   virtual TStrings * __fastcall GetFixedPaths();
-  virtual void __fastcall __fastcall SpaceAvailable(const UnicodeString Path,
+  virtual void __fastcall SpaceAvailable(const UnicodeString Path,
     TSpaceAvailable & ASpaceAvailable);
   virtual const TSessionInfo & __fastcall GetSessionInfo();
   virtual const TFileSystemInfo & __fastcall GetFileSystemInfo(bool Retrieve);
@@ -78,6 +78,10 @@ public:
   virtual void __fastcall __fastcall FileTransferProgress(__int64 TransferSize, __int64 Bytes);
 
 protected:
+#ifndef _MSC_VER
+  __property TStrings * Output = { read = FOutput };
+  __property int ReturnCode = { read = FReturnCode };
+#endif
   virtual UnicodeString __fastcall GetCurrentDirectory();
 
   bool __fastcall HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
@@ -208,89 +212,79 @@ private:
   }
 
 private:
-  /**
-   * Format error description
-   * \param errCode system error code
-   * \param info additional info
-   * \return error description
-   */
+  /** @brief Format error description
+    * @param errCode system error code
+    * @param info additional info
+    * @return error description
+    */
   UnicodeString FormatErrorDescription(const DWORD errCode, const wchar_t * info = NULL) const;
 
 private:
-  /**
-   * Send PROPFIND request
-   * \param dir directory to load
-   * \param responseCode response code
-   * \param response response buffer
-   * \param errInfo buffer to save error message
-   * \return false if error
-   */
+  /** @brief Send PROPFIND request
+    * @param dir directory to load
+    * @param responseCode response code
+    * @param response response buffer
+    * @param errInfo buffer to save error message
+    * @return false if error
+    */
   bool SendPropFindRequest(const wchar_t * dir, long & responseCode, UnicodeString & response, UnicodeString & errInfo);
 
-  /**
-   * Check response for valid code
-   * \param expect expected response code
-   * \param responseCode buffer to save error code
-   * \param errInfo buffer to save error message
-   * \return false if error (response unexpected)
-   */
+  /** @brief Check response for valid code
+    * @param expect expected response code
+    * @param responseCode buffer to save error code
+    * @param errInfo buffer to save error message
+    * @return false if error (response unexpected)
+    */
   bool CheckResponseCode(const long expect, long & responseCode, UnicodeString & errInfo);
 
-  /**
-   * Check response for valid code
-   * \param expect1 expected response code
-   * \param expect2 expected response code
-   * \param responseCode buffer to save error code
-   * \param errInfo buffer to save error message
-   * \return false if error (response unexpected)
-   */
+  /** @brief response for valid code
+    * @param expect1 expected response code
+    * @param expect2 expected response code
+    * @param responseCode buffer to save error code
+    * @param errInfo buffer to save error message
+    * @return false if error (response unexpected)
+    */
   bool CheckResponseCode(const long expect1, const long expect2, long & responseCode, UnicodeString & errInfo);
 
-  /**
-   * Get incorrect response information
-   * \param code response code
-   * \return response information
-   */
+  /** @brief Get incorrect response information
+    * @param code response code
+    * @return response information
+    */
   UnicodeString GetBadResponseInfo(const int code) const;
 
-  /**
-   * Get xml namespace
-   * \param element xml element
-   * \param name namespace name (URI)
-   * \param defaultVal default namespace id
-   * \return namespace id
-   */
+  /** @brief Get xml namespace
+    * @param element xml element
+    * @param name namespace name (URI)
+    * @param defaultVal default namespace id
+    * @return namespace id
+    */
   std::string GetNamespace(const TiXmlElement * element, const char * name, const char * defaultVal) const;
 
-  /**
-   * Parse internet datetime
-   * \param dt internet datetime
-   * \return corresponding FILETIME (filled zero if error)
-   */
+  /** @brief Parse internet datetime
+    * @param dt internet datetime
+    * @return corresponding FILETIME (filled zero if error)
+    */
   FILETIME ParseDateTime(const char * dt) const;
 
-  /**
-   * Check for hexadecimal char (0123456789abcdefABCDEF)
-   * \param ch checked char
-   * \return true if cahr is a hexadecimal
-   */
+  /** @brief Check for hexadecimal char (0123456789abcdefABCDEF)
+    * @param ch checked char
+    * @return true if cahr is a hexadecimal
+    */
   inline bool IsHexadecimal(const char ch) const
   {
     return ((ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'f') || (ch >= 'A' && ch <= 'F'));
   }
 
-  /**
-   * Decode content with safe symbols wrapper (%XX)
-   * \param src source std::string
-   * \return decoded content
-   */
+  /** @brief Decode content with safe symbols wrapper (%XX)
+    * @param src source std::string
+    * @return decoded content
+    */
   std::string DecodeHex(const std::string & src) const;
 
-  /**
-   * Encode URL to UTF8 format with unsafe symbols wrapper (%XX)
-   * \param src source std::string
-   * \return encoded URL
-   */
+  /** @brief Encode URL to UTF8 format with unsafe symbols wrapper (%XX)
+    * @param src source std::string
+    * @return encoded URL
+    */
   std::string EscapeUTF8URL(const wchar_t * src) const;
 
 protected:
