@@ -8,6 +8,7 @@
 #include "boostdefines.hpp"
 #include <boost/signals/signal5.hpp>
 #include <boost/signals/signal8.hpp>
+#include <boost/noncopyable.hpp>
 
 #include "Classes.h"
 #endif
@@ -167,7 +168,7 @@ const int ropNoReadDirectory = 0x02;
 //---------------------------------------------------------------------------
 const int boDisableNeverShowAgain = 0x01;
 //---------------------------------------------------------------------------
-class TTerminal : public TObject, public TSessionUI
+class TTerminal : public TObject, public TSessionUI //, private boost::noncopyable
 {
 public:
   // TScript::SynchronizeProc relies on the order
@@ -615,6 +616,9 @@ public:
   void SetOnClose(const TNotifyEvent & value) { FOnClose.connect(value); }
   size_t GetTunnelLocalPortNumber() { return FTunnelLocalPortNumber; }
 #endif
+private:
+  TTerminal(const TTerminal &);
+  TTerminal & operator = (const TTerminal &);
 };
 //---------------------------------------------------------------------------
 class TSecondaryTerminal : public TTerminal
@@ -623,8 +627,7 @@ public:
   explicit /* __fastcall */ TSecondaryTerminal(TTerminal * MainTerminal);
   virtual void __fastcall Init(TSessionData * SessionData, TConfiguration * Configuration,
     const UnicodeString & Name);
-  virtual ~TSecondaryTerminal()
-  {}
+  virtual /* __fastcall */ ~TSecondaryTerminal() {}
 
 protected:
   virtual void __fastcall DirectoryLoaded(TRemoteFileList * FileList);

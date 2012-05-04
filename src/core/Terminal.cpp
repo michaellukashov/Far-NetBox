@@ -5367,12 +5367,13 @@ bool /* __fastcall */ TTerminal::CopyToLocal(TStrings * FilesToCopy,
 //---------------------------------------------------------------------------
 /* __fastcall */ TSecondaryTerminal::TSecondaryTerminal(TTerminal * MainTerminal) :
   TTerminal(),
-  FMainTerminal(MainTerminal), FMasterPasswordTried(false),
+  FMainTerminal(MainTerminal),
+  FMasterPasswordTried(false),
   FMasterTunnelPasswordTried(false)
 {
 }
 
-void /* __fastcall */ TSecondaryTerminal::Init(
+void __fastcall TSecondaryTerminal::Init(
   TSessionData * ASessionData, TConfiguration * Configuration, const UnicodeString & Name)
 {
   TTerminal::Init(ASessionData, Configuration);
@@ -5445,7 +5446,8 @@ bool /* __fastcall */ TSecondaryTerminal::DoPromptUser(TSessionData * Data,
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TTerminalList::TTerminalList(TConfiguration * AConfiguration) :
-  TObjectList()
+  TObjectList(),
+  FConfiguration(NULL)
 {
   assert(AConfiguration);
   FConfiguration = AConfiguration;

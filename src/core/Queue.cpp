@@ -10,6 +10,7 @@
 #include <boost/noncopyable.hpp>
 #endif
 
+#include "Sysutils.h"
 #include "Common.h"
 #include "Terminal.h"
 #include "Queue.h"
@@ -1146,7 +1147,8 @@ private:
 };
 //---------------------------------------------------------------------------
 /* __fastcall */ TBackgroundTerminal::TBackgroundTerminal(TTerminal * MainTerminal) :
-  TSecondaryTerminal(MainTerminal)
+  TSecondaryTerminal(MainTerminal),
+  FItem(NULL)
 {
 }
 void __fastcall TBackgroundTerminal::Init(TSessionData * SessionData, TConfiguration * Configuration, TTerminalItem * Item,

@@ -20,6 +20,7 @@
 #include <boost/signals/signal0.hpp>
 #include <boost/signals/signal1.hpp>
 #include <boost/bind.hpp>
+#include <boost/noncopyable.hpp>
 
 #include <rtlconsts.h>
 // #ifdef _MSC_VER
@@ -312,13 +313,13 @@ class TStringList;
 typedef std::vector<TStringItem> TStringItemList;
 typedef int (TStringListSortCompare)(TStringList *List, int Index1, int Index2);
 
-class TStringList : public TStrings
+class TStringList : public TStrings // , private boost::noncopyable
 {
     typedef TStrings parent;
     friend int StringListCompareStrings(TStringList *List, int Index1, int Index2);
 public:
-    TStringList();
-    virtual ~TStringList();
+    /* __fastcall */ TStringList();
+    virtual /* __fastcall */ ~TStringList();
     virtual void __fastcall Assign(TPersistent *Source);
     virtual int __fastcall GetCount() const;
     virtual void __fastcall Clear();
@@ -368,6 +369,9 @@ private:
     TStringItemList FList;
     bool FSorted;
     bool FCaseSensitive;
+private:
+  TStringList(const TStringList &);
+  void operator=(const TStringList &);
 };
 
 /// TDateTime: number of days since 12/30/1899
