@@ -3122,7 +3122,7 @@ void /* __fastcall */ TTerminal::CustomCommandOnFile(UnicodeString FileName,
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::DoCustomCommandOnFile(UnicodeString FileName,
   const TRemoteFile * File, UnicodeString Command, int Params,
-  const TCaptureOutputEvent & OutputEvent)
+  TCaptureOutputEvent * OutputEvent)
 {
   try
   {
@@ -3154,7 +3154,7 @@ void /* __fastcall */ TTerminal::DoCustomCommandOnFile(UnicodeString FileName,
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::CustomCommandOnFiles(UnicodeString Command,
-  int Params, TStrings * Files, const TCaptureOutputEvent & OutputEvent)
+  int Params, TStrings * Files, TCaptureOutputEvent * OutputEvent)
 {
   if (!TRemoteCustomCommand().IsFileListCommand(Command))
   {
@@ -3850,7 +3850,7 @@ TTerminal * /* __fastcall */ TTerminal::GetCommandSession()
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::AnyCommand(const UnicodeString Command,
-  const TCaptureOutputEvent * OutputEvent)
+  TCaptureOutputEvent * OutputEvent)
 {
 
   class TOutputProxy
@@ -3891,7 +3891,7 @@ void /* __fastcall */ TTerminal::AnyCommand(const UnicodeString Command,
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::DoAnyCommand(const UnicodeString Command,
-  const TCaptureOutputEvent & OutputEvent, TCallSessionAction * Action)
+  TCaptureOutputEvent * OutputEvent, TCallSessionAction * Action)
 {
   assert(FFileSystem);
   try

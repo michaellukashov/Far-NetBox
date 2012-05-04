@@ -25,7 +25,7 @@ public:
   virtual void __fastcall Idle();
   virtual UnicodeString __fastcall AbsolutePath(UnicodeString Path, bool Local);
   virtual void __fastcall AnyCommand(const UnicodeString Command,
-    TCaptureOutputEvent OutputEvent);
+    TCaptureOutputEvent * OutputEvent);
   virtual void __fastcall ChangeDirectory(const UnicodeString Directory);
   virtual void __fastcall CachedChangeDirectory(const UnicodeString Directory);
   virtual void __fastcall AnnounceFileListOperation();

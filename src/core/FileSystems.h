@@ -130,7 +130,7 @@ public:
   virtual void __fastcall Idle() = 0;
   virtual UnicodeString __fastcall AbsolutePath(UnicodeString Path, bool Local) = 0;
   virtual void __fastcall AnyCommand(const UnicodeString Command,
-    TCaptureOutputEvent OutputEvent) = 0;
+    TCaptureOutputEvent * OutputEvent) = 0;
   virtual void __fastcall ChangeDirectory(const UnicodeString Directory) = 0;
   virtual void __fastcall CachedChangeDirectory(const UnicodeString Directory) = 0;
   virtual void __fastcall AnnounceFileListOperation() = 0;

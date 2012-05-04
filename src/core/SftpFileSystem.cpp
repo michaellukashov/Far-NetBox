@@ -3846,7 +3846,7 @@ void /* __fastcall */ TSFTPFileSystem::CustomCommandOnFile(const UnicodeString /
 }
 //---------------------------------------------------------------------------
 void __fastcall TSFTPFileSystem::AnyCommand(const UnicodeString /*Command*/,
-  TCaptureOutputEvent /*OutputEvent*/)
+  TCaptureOutputEvent * /*OutputEvent*/)
 {
   assert(false);
 }

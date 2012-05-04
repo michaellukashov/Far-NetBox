@@ -944,7 +944,7 @@ void __fastcall TWebDAVFileSystem::CaptureOutput(const UnicodeString AddedLine, 
 }
 //---------------------------------------------------------------------------
 void __fastcall TWebDAVFileSystem::AnyCommand(const UnicodeString Command,
-  TCaptureOutputEvent OutputEvent)
+  TCaptureOutputEvent * OutputEvent)
 {
   Error(SNotImplemented, 1008);
 }
