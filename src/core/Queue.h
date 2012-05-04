@@ -404,15 +404,15 @@ protected:
 private:
   TTerminal * FTerminal;
 
-  informationevent_signal_type FOnInformation;
-  queryuser_signal_type FOnQueryUser;
-  promptuser_signal_type FOnPromptUser;
-  extendedexception_signal_type FOnShowExtendedException;
-  displaybanner_signal_type FOnDisplayBanner;
-  notify_signal_type FOnChangeDirectory;
-  readdirectory_signal_type FOnReadDirectory;
-  notify_signal_type FOnStartReadDirectory;
-  readdirectoryprogress_signal_type FOnReadDirectoryProgress;
+  informationevent_signal_type * FOnInformation;
+  queryuser_signal_type * FOnQueryUser;
+  promptuser_signal_type * FOnPromptUser;
+  extendedexception_signal_type * FOnShowExtendedException;
+  displaybanner_signal_type * FOnDisplayBanner;
+  notify_signal_type * FOnChangeDirectory;
+  readdirectory_signal_type * FOnReadDirectory;
+  notify_signal_type * FOnStartReadDirectory;
+  readdirectoryprogress_signal_type * FOnReadDirectoryProgress;
 
   notify_signal_type FOnIdle;
 

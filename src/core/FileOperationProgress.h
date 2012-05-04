@@ -11,6 +11,7 @@
 #include "boostdefines.hpp"
 #include <boost/signals/signal2.hpp>
 #include <boost/signals/signal6.hpp>
+#include <boost/noncopyable.hpp>
 #endif
 
 //---------------------------------------------------------------------------
@@ -43,8 +44,8 @@ private:
   // when current file was started being transfered
   TDateTime FFileStartTime;
   int FFilesFinished;
-  fileoperationprogress_signal_type FOnProgress;
-  fileoperationfinished_signal_type FOnFinished;
+  const TFileOperationProgressEvent * FOnProgress;
+  const TFileOperationFinishedEvent * FOnFinished;
   bool FReset;
   unsigned int FLastSecond;
   unsigned long FRemainingCPS;
@@ -92,17 +93,17 @@ public:
 
   bool Suspended;
 
-  explicit TFileOperationProgressType();
-  explicit TFileOperationProgressType(
+  explicit /* __fastcall */ TFileOperationProgressType();
+  explicit /* __fastcall */ TFileOperationProgressType(
     const TFileOperationProgressEvent & AOnProgress, const TFileOperationFinishedEvent & AOnFinished);
-  virtual ~TFileOperationProgressType();
+  virtual /* __fastcall */ ~TFileOperationProgressType();
   void __fastcall AddLocallyUsed(__int64 ASize);
   void __fastcall AddTransfered(__int64 ASize, bool AddToTotals = true);
   void __fastcall AddResumed(__int64 ASize);
   void __fastcall Clear();
   unsigned int __fastcall CPS();
   void __fastcall Finish(UnicodeString FileName, bool Success,
-   TOnceDoneOperation & OnceDoneOperation);
+    TOnceDoneOperation & OnceDoneOperation);
   unsigned long __fastcall LocalBlockSize();
   bool __fastcall IsLocallyDone();
   bool __fastcall IsTransferDone();
@@ -137,7 +138,7 @@ public:
   int __fastcall OverallProgress();
   int __fastcall TotalTransferProgress();
 private:
-  TFileOperationProgressType(const TFileOperationProgressType & rhs);
+  // TFileOperationProgressType(const TFileOperationProgressType & rhs);
   // void operator=(const TFileOperationProgressType & rhs);
 };
 //---------------------------------------------------------------------------

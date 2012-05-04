@@ -10,19 +10,89 @@
 //---------------------------------------------------------------------------
 #define TRANSFER_BUF_SIZE 4096
 //---------------------------------------------------------------------------
-TFileOperationProgressType::TFileOperationProgressType()
+TFileOperationProgressType::TFileOperationProgressType() :
+  FSuspendTime(NULL),
+  // TDateTime FFileStartTime;
+  FFilesFinished(0),
+  FOnProgress(NULL),
+  FOnFinished(NULL),
+  FReset(false),
+  FLastSecond(0),
+  FRemainingCPS(0),
+  // std::vector<unsigned long> FTicks;
+  // std::vector<__int64> FTotalTransferredThen;
+  Operation(foNone),
+  Side(osLocal),
+  // UnicodeString FileName;
+  // UnicodeString Directory;
+  AsciiTransfer(false),
+  TransferingFile(false),
+  Temp(false),
+  LocalSize(0),
+  LocallyUsed(0),
+  TransferSize(0),
+  TransferedSize(0),
+  SkippedSize(0),
+  ResumeStatus(rsNotAvailable),
+  InProgress(false),
+  FileInProgress(false),
+  Cancel(csContinue),
+  Count(0),
+  // TDateTime StartTime;
+  TotalTransfered(0),
+  TotalSkipped(0),
+  TotalSize(0),
+  BatchOverwrite(boNo),
+  SkipToAll(false),
+  CPSLimit(0),
+  TotalSizeSet(false),
+  Suspended(false)
 {
-  FOnProgress.disconnect_all_slots();
-  FOnFinished.disconnect_all_slots();
   Clear();
 }
 //---------------------------------------------------------------------------
 TFileOperationProgressType::TFileOperationProgressType(
   const TFileOperationProgressEvent & AOnProgress,
-  const TFileOperationFinishedEvent & AOnFinished)
+  const TFileOperationFinishedEvent & AOnFinished) :
+  FSuspendTime(NULL),
+  // TDateTime FFileStartTime;
+  FFilesFinished(0),
+  FOnProgress(&AOnProgress),
+  FOnFinished(&AOnFinished),
+  FReset(false),
+  FLastSecond(0),
+  FRemainingCPS(0),
+  // std::vector<unsigned long> FTicks;
+  // std::vector<__int64> FTotalTransferredThen;
+  Operation(foNone),
+  Side(osLocal),
+  // UnicodeString FileName;
+  // UnicodeString Directory;
+  AsciiTransfer(false),
+  TransferingFile(false),
+  Temp(false),
+  LocalSize(0),
+  LocallyUsed(0),
+  TransferSize(0),
+  TransferedSize(0),
+  SkippedSize(0),
+  ResumeStatus(rsNotAvailable),
+  InProgress(false),
+  FileInProgress(false),
+  Cancel(csContinue),
+  Count(0),
+  // TDateTime StartTime;
+  TotalTransfered(0),
+  TotalSkipped(0),
+  TotalSize(0),
+  BatchOverwrite(boNo),
+  SkipToAll(false),
+  CPSLimit(0),
+  TotalSizeSet(false),
+  Suspended(false)
 {
-  FOnProgress.connect(AOnProgress);
-  FOnFinished.connect(AOnFinished);
+  // FOnProgress.connect(AOnProgress);
+  // FOnFinished.connect(AOnFinished);
   FReset = false;
   Clear();
 }
@@ -184,9 +254,11 @@ int __fastcall TFileOperationProgressType::OverallProgress()
 void __fastcall TFileOperationProgressType::DoProgress()
 {
   SetThreadExecutionState(ES_SYSTEM_REQUIRED);
-  if (!FOnProgress.empty())
+  if (FOnProgress != NULL)
   {
-    FOnProgress(*this, Cancel);
+    fileoperationprogress_signal_type sig;
+    sig.connect(*FOnProgress);
+    sig(*this, Cancel);
   }
 }
 //---------------------------------------------------------------------------
@@ -194,9 +266,11 @@ void __fastcall TFileOperationProgressType::Finish(UnicodeString FileName,
   bool Success, TOnceDoneOperation & OnceDoneOperation)
 {
   assert(InProgress);
-  if (!FOnFinished.empty())
+  if (FOnFinished != NULL)
   {
-    FOnFinished(Operation, Side, Temp, FileName,
+    fileoperationfinished_signal_type sig;
+    sig.connect(*FOnFinished);
+    sig(Operation, Side, Temp, FileName,
       // TODO : There wasn't 'Success' condition, was it by mistake or by purpose?
       Success && (Cancel == csContinue), OnceDoneOperation);
   }
