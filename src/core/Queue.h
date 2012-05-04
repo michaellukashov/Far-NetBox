@@ -4,11 +4,12 @@
 //---------------------------------------------------------------------------
 #include "boostdefines.hpp"
 #include <boost/signals/signal2.hpp>
+#include <boost/noncopyable.hpp>
 
 #include "Terminal.h"
 #include "FileOperationProgress.h"
 //---------------------------------------------------------------------------
-class TSimpleThread : public TObject
+class TSimpleThread : public TObject, private boost::noncopyable
 {
 public:
   explicit /* __fastcall */ TSimpleThread();
@@ -73,7 +74,7 @@ typedef void __fastcall (__closure * TQueueEventEvent)
   (TTerminalQueue * Queue, TQueueEvent Event);
 #else
 typedef boost::signal1<void, TTerminalQueue *> queuelistupdate_signal_type;
-typedef queuelistupdate_signal_type::slot_type TQueueListUpdate;
+typedef queuelistupdate_signal_type::slot_type TQueueListUpdateEvent;
 typedef boost::signal2<void, TTerminalQueue *, TQueueItem *> queueitemupdate_signal_type;
 typedef queueitemupdate_signal_type::slot_type TQueueItemUpdateEvent;
 enum TQueueEvent { qeEmpty, qePendingUserAction };
@@ -115,7 +116,7 @@ public:
   extendedexception_signal_type & __fastcall GetOnShowExtendedException() { return FOnShowExtendedException; }
   void __fastcall SetOnShowExtendedException(const TExtendedExceptionEvent & value) { FOnShowExtendedException.connect(value); }
   queuelistupdate_signal_type & __fastcall GetOnListUpdate() { return FOnListUpdate; }
-  void __fastcall SetOnListUpdate(const TQueueListUpdate & value) { FOnListUpdate.connect(value); }
+  void __fastcall SetOnListUpdate(const TQueueListUpdateEvent & value) { FOnListUpdate.connect(value); }
   queueitemupdate_signal_type & __fastcall GetOnQueueItemUpdate() { return FOnQueueItemUpdate; }
   void __fastcall SetOnQueueItemUpdate(const TQueueItemUpdateEvent & value) { FOnQueueItemUpdate.connect(value); }
   queueevent_signal_type & __fastcall GetOnEvent() { return FOnEvent; }

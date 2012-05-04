@@ -22,21 +22,25 @@
 //---------------------------------------------------------------------------
 class TBackgroundTerminal;
 //---------------------------------------------------------------------------
-class TUserAction : private boost::noncopyable
+class TUserAction : public TObject, private boost::noncopyable
 {
 public:
   explicit /* __fastcall */ TUserAction() {}
   virtual /* __fastcall */ ~TUserAction() {}
   virtual void __fastcall Execute(void * Arg) = 0;
+private:
+  TUserAction(const TUserAction &);
+  TUserAction & operator = (const TUserAction &);
 };
 //---------------------------------------------------------------------------
 class TNotifyAction : public TUserAction
 {
 public:
-  explicit /* __fastcall */ TNotifyAction(TNotifyEvent AOnNotify) :
+  explicit /* __fastcall */ TNotifyAction(const notify_signal_type & AOnNotify) :
+    OnNotify(AOnNotify),
     Sender(NULL)
   {
-    OnNotify.connect(AOnNotify);
+    // OnNotify.connect(AOnNotify);
   }
 
   virtual void __fastcall Execute(void * Arg)
@@ -47,7 +51,7 @@ public:
     }
   }
 
-  notify_signal_type OnNotify;
+  const notify_signal_type & OnNotify;
   TObject * Sender;
 private:
   TNotifyAction(const TNotifyAction &);
@@ -57,12 +61,13 @@ private:
 class TInformationUserAction : public TUserAction
 {
 public:
-  explicit /* __fastcall */ TInformationUserAction(TInformationEvent AOnInformation) :
+  explicit /* __fastcall */ TInformationUserAction(const informationevent_signal_type & AOnInformation) :
+    OnInformation(AOnInformation),
     Terminal(NULL),
     Status(false),
     Phase(0)
   {
-    OnInformation.connect(AOnInformation);
+    // OnInformation.connect(AOnInformation);
   }
 
   virtual void __fastcall Execute(void * Arg)
@@ -73,7 +78,7 @@ public:
     }
   }
 
-  informationevent_signal_type OnInformation;
+  const informationevent_signal_type & OnInformation;
   TTerminal * Terminal;
   UnicodeString Str;
   bool Status;
@@ -86,14 +91,15 @@ private:
 class TQueryUserAction : public TUserAction
 {
 public:
-  explicit /* __fastcall */ TQueryUserAction(TQueryUserEvent AOnQueryUser) :
+  explicit /* __fastcall */ TQueryUserAction(const queryuser_signal_type & AOnQueryUser) :
+    OnQueryUser(AOnQueryUser),
     Sender(NULL),
     MoreMessages(NULL),
     Params(NULL),
     Answer(0),
     Type(qtConfirmation)
   {
-    OnQueryUser.connect(AOnQueryUser);
+    // OnQueryUser.connect(AOnQueryUser);
   }
 
   virtual void __fastcall Execute(void * Arg)
@@ -104,7 +110,7 @@ public:
     }
   }
 
-  queryuser_signal_type OnQueryUser;
+  const queryuser_signal_type & OnQueryUser;
   TObject * Sender;
   UnicodeString Query;
   TStrings * MoreMessages;
@@ -120,13 +126,14 @@ private:
 class TPromptUserAction : public TUserAction
 {
 public:
-  explicit /* __fastcall */ TPromptUserAction(TPromptUserEvent AOnPromptUser) :
+  explicit /* __fastcall */ TPromptUserAction(const promptuser_signal_type & AOnPromptUser) :
+    OnPromptUser(AOnPromptUser),
     Terminal(NULL),
     Kind(pkPrompt),
     Prompts(NULL),
     Results(new TStringList())
   {
-    OnPromptUser.connect(AOnPromptUser);
+    // OnPromptUser.connect(AOnPromptUser);
   }
 
   virtual /* __fastcall */ ~TPromptUserAction()
@@ -142,7 +149,7 @@ public:
     }
   }
 
-  promptuser_signal_type OnPromptUser;
+  const promptuser_signal_type & OnPromptUser;
   TTerminal * Terminal;
   TPromptKind Kind;
   UnicodeString Name;
@@ -158,11 +165,12 @@ private:
 class TShowExtendedExceptionAction : public TUserAction
 {
 public:
-  explicit /* __fastcall */ TShowExtendedExceptionAction(TExtendedExceptionEvent AOnShowExtendedException) :
+  explicit /* __fastcall */ TShowExtendedExceptionAction(const extendedexception_signal_type & AOnShowExtendedException) :
+    OnShowExtendedException(AOnShowExtendedException),
     Terminal(NULL),
     E(NULL)
   {
-    OnShowExtendedException.connect(AOnShowExtendedException);
+    // OnShowExtendedException.connect(AOnShowExtendedException);
   }
 
   virtual void __fastcall Execute(void * Arg)
@@ -173,7 +181,7 @@ public:
     }
   }
 
-  extendedexception_signal_type OnShowExtendedException;
+  const extendedexception_signal_type & OnShowExtendedException;
   TTerminal * Terminal;
   Exception * E;
 private:
@@ -184,12 +192,13 @@ private:
 class TDisplayBannerAction : public TUserAction
 {
 public:
-  explicit /* __fastcall */ TDisplayBannerAction(TDisplayBannerEvent AOnDisplayBanner) :
+  explicit /* __fastcall */ TDisplayBannerAction(const displaybanner_signal_type & AOnDisplayBanner) :
+    OnDisplayBanner(AOnDisplayBanner),
     Terminal(NULL),
     NeverShowAgain(false),
     Options(0)
   {
-    OnDisplayBanner.connect(AOnDisplayBanner);
+    // OnDisplayBanner.connect(AOnDisplayBanner);
   }
 
   virtual void __fastcall Execute(void * Arg)
@@ -200,7 +209,7 @@ public:
     }
   }
 
-  displaybanner_signal_type OnDisplayBanner;
+  const displaybanner_signal_type & OnDisplayBanner;
   TTerminal * Terminal;
   UnicodeString SessionName;
   UnicodeString Banner;
@@ -214,11 +223,12 @@ private:
 class TReadDirectoryAction : public TUserAction
 {
 public:
-  explicit /* __fastcall */ TReadDirectoryAction(TReadDirectoryEvent AOnReadDirectory) :
+  explicit /* __fastcall */ TReadDirectoryAction(const readdirectory_signal_type & AOnReadDirectory) :
+    OnReadDirectory(AOnReadDirectory),
     Sender(NULL),
     ReloadOnly(false)
   {
-    OnReadDirectory.connect(AOnReadDirectory);
+    // OnReadDirectory.connect(AOnReadDirectory);
   }
 
   virtual void __fastcall Execute(void * Arg)
@@ -229,7 +239,7 @@ public:
     }
   }
 
-  readdirectory_signal_type OnReadDirectory;
+  const readdirectory_signal_type & OnReadDirectory;
   TObject * Sender;
   bool ReloadOnly;
 private:
@@ -240,12 +250,13 @@ private:
 class TReadDirectoryProgressAction : public TUserAction
 {
 public:
-  /* __fastcall */ TReadDirectoryProgressAction(TReadDirectoryProgressEvent AOnReadDirectoryProgress) :
+  explicit /* __fastcall */ TReadDirectoryProgressAction(const readdirectoryprogress_signal_type & AOnReadDirectoryProgress) :
+    OnReadDirectoryProgress(AOnReadDirectoryProgress),
     Sender(NULL),
     Progress(0),
     Cancel(false)
   {
-    OnReadDirectoryProgress.connect(AOnReadDirectoryProgress);
+    // OnReadDirectoryProgress.connect(AOnReadDirectoryProgress);
   }
 
   virtual void __fastcall Execute(void * Arg)
@@ -256,7 +267,7 @@ public:
     }
   }
 
-  readdirectoryprogress_signal_type OnReadDirectoryProgress;
+  const readdirectoryprogress_signal_type & OnReadDirectoryProgress;
   TObject * Sender;
   int Progress;
   bool Cancel;
