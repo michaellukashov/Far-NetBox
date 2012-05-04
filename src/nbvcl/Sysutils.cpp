@@ -157,20 +157,20 @@ UnicodeString TrimRight(const UnicodeString str)
   return result;
 }
 
-UnicodeString UpperCase(UnicodeString str)
+UnicodeString UpperCase(const UnicodeString str)
 {
-  UnicodeString result = str.UpperCase();
+  UnicodeString result = str;
   // result.SetLength(str.Length());
   // std::transform(str.begin(), str.end(), result.begin(), ::toupper);
-  return result;
+  return result.UpperCase();
 }
 
-UnicodeString LowerCase(UnicodeString str)
+UnicodeString LowerCase(const UnicodeString str)
 {
-  UnicodeString result = str.LowerCase();
+  UnicodeString result = str;
   // result.SetLength(str.Length());
   // std::transform(str.begin(), str.end(), result.begin(), ::tolower);
-  return result;
+  return result.LowerCase();
 }
 //---------------------------------------------------------------------------
 
