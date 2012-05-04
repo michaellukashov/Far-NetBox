@@ -54,7 +54,7 @@ UnicodeString TCopyParamType::GetInfoStr(const UnicodeString Separator, int Opti
   UnicodeString Result;
 
   bool SomeAttrExcluded = false;
-#define ADD(STR, EXCEPT) \
+  #define ADD(STR, EXCEPT) \
     if (FLAGCLEAR(Options, EXCEPT)) \
     { \
       Result += (Result.IsEmpty() ? UnicodeString() : Separator) + (STR); \
@@ -190,7 +190,7 @@ UnicodeString TCopyParamType::GetInfoStr(const UnicodeString Separator, int Opti
 void TCopyParamType::Assign(const TCopyParamType * Source)
 {
   assert(Source != NULL);
-#define COPY(Prop) Set##Prop(Source->Get##Prop())
+  #define COPY(Prop) Set##Prop(Source->Get##Prop())
   COPY(FileNameCase);
   COPY(PreserveReadOnly);
   COPY(PreserveTime);
@@ -307,7 +307,7 @@ UnicodeString TCopyParamType::ValidLocalFileName(const UnicodeString FileName) c
   return fileName;
 }
 //---------------------------------------------------------------------------
-UnicodeString TCopyParamType::RestoreChars(const UnicodeString FileName) const
+UnicodeString __fastcall TCopyParamType::RestoreChars(UnicodeString FileName) const
 {
   UnicodeString fileName = FileName;
   if (GetInvalidCharsReplacement() == TokenReplacement)
@@ -442,7 +442,7 @@ UnicodeString TCopyParamType::ChangeFileName(const UnicodeString FileName,
 }
 //---------------------------------------------------------------------------
 bool TCopyParamType::UseAsciiTransfer(const UnicodeString FileName,
-                                      TOperationSide Side, const TFileMasks::TParams & Params) const
+  TOperationSide Side, const TFileMasks::TParams & Params) const
 {
   switch (GetTransferMode())
   {
@@ -470,27 +470,27 @@ UnicodeString TCopyParamType::GetLogStr() const
   static wchar_t ModeC[] = L"BAM";
   static wchar_t ResumeC[] = L"YSN";
   return FORMAT(
-           L"  PrTime: %s; PrRO: %s; Rght: %s; PrR: %s (%s); FnCs: %c; RIC: %s; "
-           L"Resume: %c (%d); CalcS: %s; Mask: %s\n"
-           L"  TM: %c; ClAr: %s; CPS: %u; ExclM(%s): %s\n"
-           L"  AscM: %s\n",
-           BooleanToEngStr(GetPreserveTime()).c_str(),
-           BooleanToEngStr(GetPreserveReadOnly()).c_str(),
-           GetRights().GetText().c_str(),
-           BooleanToEngStr(GetPreserveRights()).c_str(),
-           BooleanToEngStr(GetIgnorePermErrors()).c_str(),
-           CaseC[GetFileNameCase()],
-           CharToHex(GetInvalidCharsReplacement()).c_str(),
-           ResumeC[GetResumeSupport()],
-           (int)GetResumeThreshold(),
-           BooleanToEngStr(GetCalculateSize()).c_str(),
-           GetFileMask().c_str(),
-           ModeC[GetTransferMode()],
-           BooleanToEngStr(GetClearArchive()).c_str(),
-           int(GetCPSLimit()),
-           BooleanToEngStr(GetNegativeExclude()).c_str(),
-           GetExcludeFileMask().GetMasks().c_str(),
-           GetAsciiFileMask().GetMasks().c_str());
+    L"  PrTime: %s; PrRO: %s; Rght: %s; PrR: %s (%s); FnCs: %c; RIC: %s; "
+    L"Resume: %c (%d); CalcS: %s; Mask: %s\n"
+    L"  TM: %c; ClAr: %s; CPS: %u; ExclM(%s): %s\n"
+    L"  AscM: %s\n",
+    BooleanToEngStr(GetPreserveTime()).c_str(),
+    BooleanToEngStr(GetPreserveReadOnly()).c_str(),
+    GetRights().GetText().c_str(),
+    BooleanToEngStr(GetPreserveRights()).c_str(),
+    BooleanToEngStr(GetIgnorePermErrors()).c_str(),
+    CaseC[GetFileNameCase()],
+    CharToHex(GetInvalidCharsReplacement()).c_str(),
+    ResumeC[GetResumeSupport()],
+    (int)GetResumeThreshold(),
+    BooleanToEngStr(GetCalculateSize()).c_str(),
+    GetFileMask().c_str(),
+    ModeC[GetTransferMode()],
+    BooleanToEngStr(GetClearArchive()).c_str(),
+    int(GetCPSLimit()),
+    BooleanToEngStr(GetNegativeExclude()).c_str(),
+    GetExcludeFileMask().GetMasks().c_str(),
+    GetAsciiFileMask().GetMasks().c_str());
 }
 //---------------------------------------------------------------------------
 int TCopyParamType::LocalFileAttrs(const TRights & Rights) const
@@ -520,7 +520,7 @@ bool TCopyParamType::AllowAnyTransfer() const
 }
 //---------------------------------------------------------------------------
 bool TCopyParamType::AllowTransfer(const UnicodeString FileName,
-                                   TOperationSide Side, bool Directory, const TFileMasks::TParams & Params) const
+  TOperationSide Side, bool Directory, const TFileMasks::TParams & Params) const
 {
   bool Result = true;
   if (!GetExcludeFileMask().GetMasks().IsEmpty())
