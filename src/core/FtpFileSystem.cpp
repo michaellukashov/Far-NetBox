@@ -272,7 +272,6 @@ void __fastcall TFTPFileSystem::Init()
   FDisconnectStatus = LoadStr(IDS_STATUSMSG_DISCONNECTED);
   FServerCapabilities = new TFTPServerCapabilities();
 }
-
 //---------------------------------------------------------------------------
 /* __fastcall */ TFTPFileSystem::~TFTPFileSystem()
 {
@@ -744,7 +743,7 @@ void __fastcall TFTPFileSystem::ChangeFileProperties(const UnicodeString AFileNa
           FTerminal->ProcessDirectory(AFileName, boost::bind(&TTerminal::ChangeFileProperties, FTerminal, _1, _2, _3),
             static_cast<void *>(const_cast<TRemoteProperties *>(Properties)));
         }
-        catch (...)
+        catch(...)
         {
           Action.Cancel();
           throw;
@@ -799,10 +798,10 @@ void __fastcall TFTPFileSystem::CalculateFilesChecksum(const UnicodeString & /*A
 }
 //---------------------------------------------------------------------------
 bool __fastcall TFTPFileSystem::ConfirmOverwrite(UnicodeString & FileName,
-    int Params, TFileOperationProgressType * OperationProgress,
-    TOverwriteMode & OverwriteMode,
-    bool AutoResume,
-    const TOverwriteFileParams * FileParams)
+  int Params, TFileOperationProgressType * OperationProgress,
+  TOverwriteMode & OverwriteMode,
+  bool AutoResume,
+  const TOverwriteFileParams * FileParams)
 {
   bool Result;
   bool CanAutoResume = FLAGSET(Params, cpNoConfirmation) && AutoResume;
@@ -1310,7 +1309,7 @@ void __fastcall TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
         {
           FTerminal->DirectoryModified(TargetDir, false);
 
-          if (::DirectoryExists(::ExtractFilePath(FileName)))
+          if (DirectoryExists(ExtractFilePath(FileName)))
           {
             FTerminal->DirectoryModified(FullTargetDir + FileNameOnly, true);
           }
@@ -1496,17 +1495,17 @@ void __fastcall TFTPFileSystem::Source(const UnicodeString FileName,
     if (FFileTransferPreserveTime && (FServerCapabilities->GetCapability(mfmt_command) == yes))
     {
       /*
-                  // Inspired by SysUtils::FileAge
-                  WIN32_FIND_DATA FindData;
-                  HANDLE Handle = FindFirstFile(FileName.c_str(), &FindData);
-                  if (Handle != INVALID_HANDLE_VALUE)
-                  {
-                      TTouchSessionAction TouchAction(FTerminal->GetLog(), DestFullName,
-                                                      UnixToDateTime(
-                                                          ConvertTimestampToUnixSafe(FindData.ftLastWriteTime, dstmUnix),
-                                                          dstmUnix));
-                      FindClose(Handle);
-                  }
+       // Inspired by SysUtils::FileAge
+       WIN32_FIND_DATA FindData;
+       HANDLE Handle = FindFirstFile(FileName.c_str(), &FindData);
+       if (Handle != INVALID_HANDLE_VALUE)
+       {
+          TTouchSessionAction TouchAction(FTerminal->GetLog(), DestFullName,
+              UnixToDateTime(
+              ConvertTimestampToUnixSafe(FindData.ftLastWriteTime, dstmUnix),
+              dstmUnix));
+              FindClose(Handle);
+        }
       */
       TTouchSessionAction TouchAction(FTerminal->GetActionLog(), DestFullName, Modification);
     }
@@ -1518,7 +1517,7 @@ void __fastcall TFTPFileSystem::Source(const UnicodeString FileName,
     if (!Dir)
     {
       FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, FileName.c_str()),
-        THROWOSIFFALSE(::DeleteFile(FileName));
+        THROWOSIFFALSE(Sysutils::DeleteFile(FileName));
       )
     }
   }
@@ -1544,13 +1543,9 @@ void __fastcall TFTPFileSystem::DirectorySource(const UnicodeString DirectoryNam
   int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   TSearchRec SearchRec;
   bool FindOK = false;
-  HANDLE findHandle = 0;
 
   FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-    UnicodeString path = DirectoryName + L"*.*";
-    // findHandle = FindFirstFile(path.c_str(), &SearchRec);
-    // FindOK = (findHandle != 0);
-    FindOK = (bool)(FindFirst(path.c_str(),
+    FindOK = (bool)(FindFirst((DirectoryName + L"*.*").c_str(),
       FindAttrs, SearchRec) == 0);
   );
 
@@ -1558,16 +1553,16 @@ void __fastcall TFTPFileSystem::DirectorySource(const UnicodeString DirectoryNam
 
   // try
   {
-    BOOST_SCOPE_EXIT ( (&SearchRec) (&findHandle) )
+    BOOST_SCOPE_EXIT ( (&SearchRec) )
     {
-      ::FindClose(findHandle);
+      FindClose(SearchRec);
     } BOOST_SCOPE_EXIT_END
     while (FindOK && !OperationProgress->Cancel)
     {
       UnicodeString FileName = DirectoryName + SearchRec.Name;
       try
       {
-        if ((wcscmp(SearchRec.Name, THISDIRECTORY) != 0) && (wcscmp(SearchRec.Name, PARENTDIRECTORY) != 0))
+        if ((SearchRec.Name != THISDIRECTORY) && (SearchRec.Name != PARENTDIRECTORY))
         {
           SourceRobust(FileName, DestFullName, CopyParam, Params, OperationProgress,
             Flags & ~(tfFirstLevel | tfAutoResume));
@@ -1590,7 +1585,6 @@ void __fastcall TFTPFileSystem::DirectorySource(const UnicodeString DirectoryNam
       }
 
       FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-        // FindOK = (::FindNextFile(findHandle, &SearchRec) != 0);
         FindOK = (FindNext(SearchRec) == 0);
       );
     };
@@ -1754,6 +1748,7 @@ void __fastcall TFTPFileSystem::DoStartup()
     {
       delete PostLoginCommands;
     } BOOST_SCOPE_EXIT_END
+
     PostLoginCommands->SetText(FTerminal->GetSessionData()->GetPostLoginCommands());
     for (int Index = 0; Index < PostLoginCommands->GetCount(); Index++)
     {
@@ -2694,7 +2689,7 @@ void __fastcall TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
           MoreMessages = NULL;
         }
       }
-      catch (...)
+      catch(...)
       {
         delete MoreMessages;
         throw;
@@ -3080,7 +3075,7 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestOverwrite(
     {
       TFileOperationProgressType * OperationProgress = FTerminal->GetOperationProgress();
       UnicodeString FileName = FileName1;
-      assert(wcscmp(UserData.FileName.c_str(), FileName.c_str()) == 0);
+      assert(UserData.FileName == FileName);
       TOverwriteMode OverwriteMode = omOverwrite;
       TOverwriteFileParams FileParams;
       bool NoFileParams =
@@ -3183,7 +3178,7 @@ UnicodeString __fastcall FormatContactList(UnicodeString Entry1, UnicodeString E
 UnicodeString __fastcall FormatContact(const TFtpsCertificateData::TContact & Contact)
 {
   UnicodeString Result =
-    FORMAT(::LoadStrPart(VERIFY_CERT_CONTACT, 1).c_str(),
+    FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 1).c_str(),
       FormatContactList(FormatContactList(FormatContactList(
        Contact.Organization, Contact.Unit).c_str(), Contact.CommonName).c_str(), Contact.Mail).c_str());
 
@@ -3192,14 +3187,14 @@ UnicodeString __fastcall FormatContact(const TFtpsCertificateData::TContact & Co
       (wcslen(Contact.Town) > 0))
   {
     Result +=
-      FORMAT(::LoadStrPart(VERIFY_CERT_CONTACT, 2).c_str(),
+      FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 2).c_str(),
         FormatContactList(FormatContactList(
           Contact.Country, Contact.StateProvince).c_str(), Contact.Town).c_str());
   }
 
   if (wcslen(Contact.Other) > 0)
   {
-    Result += FORMAT(::LoadStrPart(VERIFY_CERT_CONTACT, 3).c_str(), Contact.Other);
+    Result += FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 3).c_str(), Contact.Other);
   }
 
   return Result;
@@ -3225,9 +3220,7 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
   }
   else
   {
-    // std::string str(reinterpret_cast<const char *>(Data.Hash), Data.HashLen);
     FSessionInfo.CertificateFingerprint =
-      // StrToHex(MB2W(str.c_str()), false, L':');
       BytesToHex(RawByteString(reinterpret_cast<const char *>(Data.Hash), Data.HashLen), false, L':');
 
     int VerificationResultStr;
@@ -3463,6 +3456,7 @@ bool __fastcall TFTPFileSystem::HandleListData(const wchar_t * Path,
             // ignore permissions errors with FTP
           }
         }
+
         const wchar_t * Space = wcschr(Entry->OwnerGroup, L' ');
         if (Space != NULL)
         {
