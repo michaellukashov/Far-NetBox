@@ -754,9 +754,9 @@ void __fastcall TWebDAVFileSystem::CreateDirectory(const UnicodeString DirName)
   bool res = WebDAVMakeDirectory(DirName.c_str(), errorInfo);
   if (!res)
   {
-    std::vector<std::wtring> dirnames;
-    UnicodeString delim = L"/";
-    alg::split(dirnames, std::wstring(DirName.c_str(), alg::is_any_of(delim), alg::token_compress_on);
+    std::vector<std::wstring> dirnames;
+    std::wstring delim = L"/";
+    alg::split(dirnames, std::wstring(DirName.c_str()), alg::is_any_of(delim), alg::token_compress_on);
     UnicodeString curdir;
     std::wstring dir;
     BOOST_FOREACH(dir, dirnames)
@@ -2230,7 +2230,7 @@ std::string TWebDAVFileSystem::GetNamespace(const TiXmlElement * element, const 
     }
     attr = attr->Next();
   }
-  return ns;
+  return std::string((char *)ns.CPtr());
 }
 
 FILETIME TWebDAVFileSystem::ParseDateTime(const char * dt) const
