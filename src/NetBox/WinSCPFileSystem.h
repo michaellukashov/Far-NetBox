@@ -168,7 +168,7 @@ protected:
     const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
     TRemoteProperties * Properties, int AllowedChanges);
   bool /* __fastcall */ ExecuteCommand(const UnicodeString Command);
-  void /* __fastcall */ TerminalCaptureLog(const UnicodeString AddedLine, bool StdError);
+  void /* __fastcall */ TerminalCaptureLog(const UnicodeString & AddedLine, bool StdError);
   bool /* __fastcall */ CopyDialog(bool ToRemote, bool Move, TStrings * FileList,
     UnicodeString & TargetDirectory,
     TGUICopyParamType * Params,

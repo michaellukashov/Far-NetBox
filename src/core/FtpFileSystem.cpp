@@ -627,7 +627,7 @@ void __fastcall TFTPFileSystem::AnyCommand(const UnicodeString Command,
   EnsureLocation();
 
   assert(FOnCaptureOutput.empty());
-  FOnCaptureOutput.connect(OutputEvent);
+  FOnCaptureOutput.connect(*OutputEvent);
   // try
   {
     BOOST_SCOPE_EXIT ( (&Self) )

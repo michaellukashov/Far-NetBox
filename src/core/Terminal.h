@@ -456,7 +456,7 @@ public:
   void CustomCommandOnFile(UnicodeString FileName,
     const TRemoteFile * File, void * AParams);
   void CustomCommandOnFiles(UnicodeString Command, int Params,
-    TStrings *Files, const TCaptureOutputEvent & OutputEvent);
+    TStrings *Files, TCaptureOutputEvent * OutputEvent);
   void ChangeDirectory(const UnicodeString Directory);
   void EndTransaction();
   void HomeDirectory();

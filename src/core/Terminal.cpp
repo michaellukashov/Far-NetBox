@@ -2956,8 +2956,8 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
 bool __fastcall TTerminal::ProcessFilesEx(TStrings * FileList, TFileOperation Operation,
   TProcessFileEventEx ProcessFile, void * Param, TOperationSide Side)
 {
-  return ProcessFiles(FileList, Operation, TProcessFileEvent(ProcessFile),
-    Param, Side, true);
+  return false; // ProcessFiles(FileList, Operation, TProcessFileEvent(ProcessFile),
+    // Param, Side, true);
 }
 //---------------------------------------------------------------------------
 TStrings * /* __fastcall */ TTerminal::GetFixedPaths()
@@ -3116,7 +3116,7 @@ void /* __fastcall */ TTerminal::CustomCommandOnFile(UnicodeString FileName,
     Params->Command.c_str(), Params->Params, FileName.c_str()));
   if (File) { FileModified(File, FileName); }
   DoCustomCommandOnFile(FileName, File, Params->Command, Params->Params,
-    *Params->OutputEvent);
+    Params->OutputEvent);
   ReactOnCommand(fsAnyCommand);
 }
 //---------------------------------------------------------------------------
@@ -3887,7 +3887,8 @@ void /* __fastcall */ TTerminal::AnyCommand(const UnicodeString Command,
 
   TCallSessionAction Action(GetActionLog(), Command, GetCurrentDirectory());
   TOutputProxy ProxyOutputEvent(Action, OutputEvent);
-  DoAnyCommand(Command, boost::bind(&TOutputProxy::Output, &ProxyOutputEvent, _1, _2), &Action);
+  TCaptureOutputEvent * outputEvent = reinterpret_cast<TCaptureOutputEvent *>(&boost::bind(&TOutputProxy::Output, &ProxyOutputEvent, _1, _2));
+  DoAnyCommand(Command, outputEvent, &Action);
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::DoAnyCommand(const UnicodeString Command,
@@ -3900,7 +3901,7 @@ void /* __fastcall */ TTerminal::DoAnyCommand(const UnicodeString Command,
     if (GetIsCapable(fcAnyCommand))
     {
       LogEvent(L"Executing user defined command.");
-      FFileSystem->AnyCommand(Command, &OutputEvent);
+      FFileSystem->AnyCommand(Command, OutputEvent);
     }
     else
     {
@@ -3909,7 +3910,7 @@ void /* __fastcall */ TTerminal::DoAnyCommand(const UnicodeString Command,
       LogEvent(L"Executing user defined command on command session.");
 
       FCommandSession->SetCurrentDirectory(GetCurrentDirectory());
-      FCommandSession->FFileSystem->AnyCommand(Command, &OutputEvent);
+      FCommandSession->FFileSystem->AnyCommand(Command, OutputEvent);
 
       FCommandSession->FFileSystem->ReadCurrentDirectory();
 

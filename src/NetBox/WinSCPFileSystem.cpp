@@ -773,8 +773,8 @@ bool TWinSCPFileSystem::ProcessEventEx(int Event, void * Param)
   return Result;
 }
 //---------------------------------------------------------------------------
-void TWinSCPFileSystem::TerminalCaptureLog(
-  const UnicodeString AddedLine, bool /*StdError*/)
+void /* __fastcall */ TWinSCPFileSystem::TerminalCaptureLog(
+  const UnicodeString & AddedLine, bool /*StdError*/)
 {
   if (FOutputLog)
   {
@@ -1170,21 +1170,21 @@ void TWinSCPFileSystem::ApplyCommand()
                 Self->RedrawPanel();
               }
             } BOOST_SCOPE_EXIT_END
-            captureoutput_signal_type OutputEvent;
+            TCaptureOutputEvent * OutputEvent = NULL;
             FOutputLog = false;
             if (FLAGSET(Params, ccShowResults))
             {
               assert(!FNoProgress);
               FNoProgress = true;
               FOutputLog = true;
-              OutputEvent.connect(boost::bind(&TWinSCPFileSystem::TerminalCaptureLog, this, _1, _2));
+              OutputEvent = reinterpret_cast<TCaptureOutputEvent *>(&boost::bind(&TWinSCPFileSystem::TerminalCaptureLog, this, _1, _2));
             }
 
             if (FLAGSET(Params, ccCopyResults))
             {
               assert(FCapturedLog == NULL);
               FCapturedLog = new TStringList();
-              OutputEvent.connect(boost::bind(&TWinSCPFileSystem::TerminalCaptureLog, this, _1, _2));
+              OutputEvent = reinterpret_cast<TCaptureOutputEvent *>(&boost::bind(&TWinSCPFileSystem::TerminalCaptureLog, this, _1, _2));
             }
 
             {
