@@ -1,7 +1,12 @@
 //---------------------------------------------------------------------------
 #include "nbafx.h"
 #define NO_WIN32_LEAN_AND_MEAN
+#ifndef _MSC_VER
+#include <vcl.h>
+#pragma hdrstop
+#endif
 
+#include <shlobj.h>
 #include <Common.h>
 
 #include "boostdefines.hpp"
@@ -14,51 +19,51 @@
 #include <SessionData.h>
 #include <Exceptions.h>
 //---------------------------------------------------------------------------
-bool FindFile(UnicodeString & Path)
+#ifndef _MSC_VER
+#pragma package(smart_init)
+#endif
+//---------------------------------------------------------------------------
+bool __fastcall FindFile(UnicodeString & Path)
 {
   bool Result = FileExists(Path);
   if (!Result)
   {
-    size_t Len = GetEnvironmentVariable(L"PATH", NULL, 0);
+    int Len = GetEnvironmentVariable(L"PATH", NULL, 0);
     if (Len > 0)
     {
-      // DEBUG_PRINTF(L"Len = %d", Len);
       UnicodeString Paths;
       Paths.SetLength(Len - 1);
       GetEnvironmentVariable(L"PATH", reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Paths.c_str())), static_cast<DWORD>(Len));
-      // DEBUG_PRINTF(L"Paths = %s", Paths.c_str());
 
       UnicodeString NewPath = FileSearch(ExtractFileName(Path, true), Paths);
-      Result = !NewPath.empty();
+      Result = !NewPath.IsEmpty();
       if (Result)
       {
         Path = NewPath;
       }
     }
   }
-  // DEBUG_PRINTF(L"Result = %d", Result);
   return Result;
 }
 //---------------------------------------------------------------------------
-bool FileExistsEx(const UnicodeString Path)
+bool __fastcall FileExistsEx(UnicodeString Path)
 {
-  UnicodeString path = Path;
-  return FindFile(path);
+  return FindFile(Path);
 }
 //---------------------------------------------------------------------------
-void OpenSessionInPutty(const UnicodeString PuttyPath,
-  TSessionData * SessionData, const UnicodeString Password)
+void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
+  TSessionData * SessionData, UnicodeString Password)
 {
   UnicodeString Program, Params, Dir;
   SplitCommand(PuttyPath, Program, Params, Dir);
   Program = ExpandEnvironmentVariables(Program);
-  UnicodeString password = Password;
   if (FindFile(Program))
   {
     UnicodeString SessionName;
     TRegistryStorage * Storage = NULL;
     TSessionData * ExportData = NULL;
     TRegistryStorage * SourceStorage = NULL;
+    // try
     {
       BOOST_SCOPE_EXIT ( (&Storage) (&ExportData) (&SourceStorage) )
       {
@@ -70,6 +75,7 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
       Storage->SetAccessMode(smReadWrite);
       // make it compatible with putty
       Storage->SetMungeStringValues(false);
+      Storage->SetForceAnsi(true);
       if (Storage->OpenRootKey(true))
       {
         if (Storage->KeyExists(SessionData->GetStorageKey()))
@@ -80,6 +86,7 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
         {
           SourceStorage = new TRegistryStorage(Configuration->GetPuttySessionsKey());
           SourceStorage->SetMungeStringValues(false);
+          SourceStorage->SetForceAnsi(true);
           if (SourceStorage->OpenSubKey(StoredSessions->GetDefaultSettings()->GetName(), false) &&
               Storage->OpenSubKey(GUIConfiguration->GetPuttySession(), true))
           {
@@ -100,7 +107,7 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
               ExportData->SetProtocol(ptTelnet);
               ExportData->SetPortNumber(23);
               // PuTTY  does not allow -pw for telnet
-              password = L"";
+              Password = L"";
             }
             else
             {
@@ -114,39 +121,47 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
         }
       }
     }
+#ifndef _MSC_VER
+    __finally
+    {
+      delete Storage;
+      delete ExportData;
+      delete SourceStorage;
+    }
+#endif
 
-    if (!Params.empty())
+    if (!Params.IsEmpty())
     {
       Params += L" ";
     }
-    if (!password.empty())
+    if (!Password.IsEmpty())
     {
-      Params += FORMAT(L"-pw %s ", EscapePuttyCommandParam(password).c_str());
+      Params += FORMAT(L"-pw %s ", EscapePuttyCommandParam(Password).c_str());
     }
     Params += FORMAT(L"-load %s", EscapePuttyCommandParam(SessionName).c_str());
 
     if (!ExecuteShell(Program, Params))
     {
-      throw ExtException(FMTLOAD(EXECUTE_APP_ERROR, Program.c_str()));
+      throw Exception(FMTLOAD(EXECUTE_APP_ERROR, Program.c_str()));
     }
   }
   else
   {
-    throw ExtException(FMTLOAD(FILE_NOT_FOUND, Program.c_str()));
+    throw Exception(FMTLOAD(FILE_NOT_FOUND, Program.c_str()));
   }
 }
 //---------------------------------------------------------------------------
-bool ExecuteShell(const UnicodeString Path, const UnicodeString Params)
+bool __fastcall ExecuteShell(const UnicodeString Path, const UnicodeString Params)
 {
-  return ((int)::ShellExecute(NULL, L"open", const_cast<wchar_t *>(Path.data()),
-    const_cast<wchar_t *>(Params.data()), NULL, SW_SHOWNORMAL) > 32);
+  return ((int)::ShellExecute(NULL, L"open", const_cast<wchar_t*>(Path.data()),
+    const_cast<wchar_t*>(Params.data()), NULL, SW_SHOWNORMAL) > 32);
 }
 //---------------------------------------------------------------------------
-bool ExecuteShell(const UnicodeString Path, const UnicodeString Params,
+bool __fastcall ExecuteShell(const UnicodeString Path, const UnicodeString Params,
   HANDLE & Handle)
 {
-  // DEBUG_PRINTF(L"Path = %s, Params = %s", Path.c_str(), Params.c_str());
   bool Result = false;
+
   _SHELLEXECUTEINFOW ExecuteInfo;
   memset(&ExecuteInfo, 0, sizeof(ExecuteInfo));
   ExecuteInfo.cbSize = sizeof(ExecuteInfo);
@@ -164,8 +179,8 @@ bool ExecuteShell(const UnicodeString Path, const UnicodeString Params,
   return Result;
 }
 //---------------------------------------------------------------------------
-bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString Path,
-  const UnicodeString Params, const processmessages_signal_type & ProcessMessages)
+bool __fastcall ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString Path,
+  const UnicodeString Params, TProcessMessagesEvent ProcessMessages)
 {
   bool Result = false;
   _SHELLEXECUTEINFOW ExecuteInfo;
@@ -180,17 +195,19 @@ bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString Path,
   Result = (ShellExecuteEx(&ExecuteInfo) != 0);
   if (Result)
   {
-    if (!ProcessMessages.empty())
+    if (true) // (ProcessMessages != NULL)
     {
+      processmessages_signal_type sig;
+      sig.connect(ProcessMessages);
       unsigned long WaitResult;
       do
       {
         WaitResult = WaitForSingleObject(ExecuteInfo.hProcess, 200);
         if (WaitResult == WAIT_FAILED)
         {
-          throw ExtException(LoadStr(DOCUMENT_WAIT_ERROR));
+          throw Exception(LoadStr(DOCUMENT_WAIT_ERROR));
         }
-        ProcessMessages();
+        sig();
       }
       while (WaitResult == WAIT_TIMEOUT);
     }
@@ -202,18 +219,18 @@ bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString Path,
   return Result;
 }
 //---------------------------------------------------------------------------
-bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString Command,
-  const processmessages_signal_type & ProcessMessages)
+bool __fastcall ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString Command,
+  TProcessMessagesEvent ProcessMessages)
 {
   UnicodeString Program, Params, Dir;
   SplitCommand(Command, Program, Params, Dir);
   return ExecuteShellAndWait(Handle, Program, Params, ProcessMessages);
 }
 //---------------------------------------------------------------------------
-bool SpecialFolderLocation(int PathID, UnicodeString & Path)
+bool __fastcall SpecialFolderLocation(int PathID, UnicodeString & Path)
 {
   LPITEMIDLIST Pidl;
-  wchar_t Buf[260];
+  wchar_t Buf[256];
   if (SHGetSpecialFolderLocation(NULL, PathID, &Pidl) == NO_ERROR &&
       SHGetPathFromIDList(Pidl, Buf))
   {
@@ -223,8 +240,8 @@ bool SpecialFolderLocation(int PathID, UnicodeString & Path)
   return false;
 }
 //---------------------------------------------------------------------------
-UnicodeString ItemsFormatString(const UnicodeString SingleItemFormat,
-  const UnicodeString MultiItemsFormat, size_t Count, const UnicodeString FirstItem)
+UnicodeString __fastcall ItemsFormatString(const UnicodeString SingleItemFormat,
+  const UnicodeString MultiItemsFormat, int Count, const UnicodeString FirstItem)
 {
   UnicodeString Result;
   if (Count == 1)
@@ -238,15 +255,15 @@ UnicodeString ItemsFormatString(const UnicodeString SingleItemFormat,
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString ItemsFormatString(const UnicodeString SingleItemFormat,
-  const UnicodeString MultiItemsFormat, System::TStrings * Items)
+UnicodeString __fastcall ItemsFormatString(const UnicodeString SingleItemFormat,
+  const UnicodeString MultiItemsFormat, TStrings * Items)
 {
   return ItemsFormatString(SingleItemFormat, MultiItemsFormat,
     Items->GetCount(), (Items->GetCount() > 0 ? Items->GetStrings(0) : UnicodeString()));
 }
 //---------------------------------------------------------------------------
-UnicodeString FileNameFormatString(const UnicodeString SingleFileFormat,
-  const UnicodeString MultiFilesFormat, System::TStrings * Files, bool Remote)
+UnicodeString __fastcall FileNameFormatString(const UnicodeString SingleFileFormat,
+  const UnicodeString MultiFilesFormat, TStrings * Files, bool Remote)
 {
   assert(Files != NULL);
   UnicodeString Item;
@@ -258,8 +275,157 @@ UnicodeString FileNameFormatString(const UnicodeString SingleFileFormat,
   return ItemsFormatString(SingleFileFormat, MultiFilesFormat,
     Files->GetCount(), Item);
 }
+//---------------------------------------------------------------------------
+UnicodeString __fastcall UniqTempDir(const UnicodeString BaseDir, const UnicodeString Identity,
+  bool Mask)
+{
+  UnicodeString TempDir;
+  do
+  {
+    TempDir = BaseDir.IsEmpty() ? SystemTemporaryDirectory() : BaseDir;
+    TempDir = IncludeTrailingBackslash(TempDir) + Identity;
+    if (Mask)
+    {
+      TempDir += L"?????";
+    }
+    else
+    {
+      TempDir += IncludeTrailingBackslash(FormatDateTime(L"nnzzz", Now()));
+    };
+  }
+  while (!Mask && DirectoryExists(TempDir));
+
+  return TempDir;
+}
+//---------------------------------------------------------------------------
+bool __fastcall DeleteDirectory(const UnicodeString DirName)
+{
+  TSearchRec sr = {0};
+  // sr.dwFileAttributes = faAnyFile;
+  bool retval = true;
+  // HANDLE h = ::FindFirstFileW(DirName.c_str(), &sr);
+  // if (h != INVALID_HANDLE_VALUE)
+  if (FindFirst(DirName + L"\\*", faAnyFile, sr) == 0) // VCL Function
+  {
+    if (FLAGSET(sr.Attr, faDirectory))
+    {
+      if ((sr.Name != THISDIRECTORY) && (sr.Name != PARENTDIRECTORY))
+      {
+        retval = DeleteDirectory(DirName + L"\\" + sr.Name);
+      }
+    }
+    else
+    {
+      retval = DeleteFile(DirName + L"\\" + sr.Name);
+    }
+
+    if (retval)
+    {
+      while (FindNext(sr) == 0)
+      { // VCL Function
+        if (FLAGSET(sr.Attr, faDirectory))
+        {
+          if ((sr.Name != THISDIRECTORY) && (sr.Name != PARENTDIRECTORY))
+          {
+            retval = DeleteDirectory(DirName + L"\\" + sr.Name);
+          }
+        }
+        else
+        {
+          retval = DeleteFile(DirName + L"\\" + sr.Name);
+        }
+
+        if (!retval) { break; }
+      }
+    }
+  }
+  FindClose(sr);
+  if (retval) { retval = RemoveDir(DirName); } // VCL function
+  return retval;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall FormatDateTimeSpan(const UnicodeString TimeFormat, TDateTime DateTime)
+{
+  UnicodeString Result;
+  if (static_cast<int>(DateTime) > 0)
+  {
+    Result = IntToStr(static_cast<int>(DateTime)) + L", ";
+  }
+  // days are decremented, because when there are to many of them,
+  // "integer overflow" error occurs
+  // Result += FormatDateTime(TimeFormat, System::TDateTime(DateTime - int(DateTime)));
+  TDateTime dt(DateTime - static_cast<int>(DateTime));
+  unsigned short H, M, S, MS;
+  dt.DecodeTime(H, M, S, MS);
+  Result += FORMAT(L"%d:%02d:%02d", H, M, S);
+  return Result;
+}
+//---------------------------------------------------------------------------
+TLocalCustomCommand::TLocalCustomCommand()
+{
+}
+//---------------------------------------------------------------------------
+TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
+    const UnicodeString & Path) :
+  TFileCustomCommand(Data, Path)
+{
+}
+//---------------------------------------------------------------------------
+TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
+  const UnicodeString & Path, const UnicodeString & FileName,
+  const UnicodeString & LocalFileName, const UnicodeString & FileList) :
+  TFileCustomCommand(Data, Path, FileName, FileList)
+{
+  FLocalFileName = LocalFileName;
+}
+//---------------------------------------------------------------------------
+int __fastcall TLocalCustomCommand::PatternLen(int Index, wchar_t PatternCmd)
+{
+  int Len = 0;
+  if (PatternCmd == L'^')
+  {
+    Len = 3;
+  }
+  else
+  {
+    Len = TFileCustomCommand::PatternLen(Index, PatternCmd);
+  }
+  return Len;
+}
+//---------------------------------------------------------------------------
+bool __fastcall TLocalCustomCommand::PatternReplacement(int Index,
+  const UnicodeString & Pattern, UnicodeString & Replacement, bool & Delimit)
+{
+  bool Result = false;
+  if (Pattern == L"!^!")
+  {
+    Replacement = FLocalFileName;
+    Result = true;
+  }
+  else
+  {
+    Result = TFileCustomCommand::PatternReplacement(Index, Pattern, Replacement, Delimit);
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+void __fastcall TLocalCustomCommand::DelimitReplacement(
+  UnicodeString & /*Replacement*/, wchar_t /*Quote*/)
+{
+  // never delimit local commands
+}
+//---------------------------------------------------------------------------
+bool __fastcall TLocalCustomCommand::HasLocalFileName(const UnicodeString & Command)
+{
+  return FindPattern(Command, L'^');
+}
+//---------------------------------------------------------------------------
+bool __fastcall TLocalCustomCommand::IsFileCommand(const UnicodeString & Command)
+{
+  return TFileCustomCommand::IsFileCommand(Command) || HasLocalFileName(Command);
+}
 //---------------------------------------------------------------------
-UnicodeString FormatBytes(__int64 Bytes, bool UseOrders)
+UnicodeString __fastcall FormatBytes(__int64 Bytes, bool UseOrders)
 {
   UnicodeString Result;
 
@@ -280,152 +446,4 @@ UnicodeString FormatBytes(__int64 Bytes, bool UseOrders)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
-UnicodeString UniqTempDir(const UnicodeString BaseDir, const UnicodeString Identity,
-  bool Mask)
-{
-  UnicodeString TempDir;
-  do
-  {
-    TempDir = BaseDir.empty() ? SystemTemporaryDirectory() : BaseDir;
-    TempDir = IncludeTrailingBackslash(TempDir) + Identity;
-    if (Mask)
-    {
-      TempDir += L"?????";
-    }
-    else
-    {
-      TempDir += IncludeTrailingBackslash(FormatDateTime(L"nnzzz", System::Now()));
-    };
-  }
-  while (!Mask && DirectoryExists(TempDir));
-
-  return TempDir;
-}
-//---------------------------------------------------------------------------
-bool DeleteDirectory(const UnicodeString DirName)
-{
-  bool retval = true;
-  WIN32_FIND_DATA sr;
-  // sr.dwFileAttributes = faAnyFile;
-  HANDLE h = ::FindFirstFileW(DirName.c_str(), &sr);
-  if (h != INVALID_HANDLE_VALUE)
-  {
-    if (FLAGSET(sr.dwFileAttributes, faDirectory))
-    {
-      if ((wcscmp(sr.cFileName, THISDIRECTORY) != 0) && (wcscmp(sr.cFileName, PARENTDIRECTORY) != 0))
-      {
-        retval = ::DeleteDirectory(DirName + L"\\" + sr.cFileName);
-      }
-    }
-    else
-    {
-      retval = ::DeleteFile(DirName + L"\\" + sr.cFileName);
-    }
-
-    if (retval)
-    {
-      while (::FindNextFile(h, &sr) == 0)
-      {
-        if (FLAGSET(sr.dwFileAttributes, faDirectory))
-        {
-          if ((wcscmp(sr.cFileName, THISDIRECTORY) != 0) && (wcscmp(sr.cFileName, PARENTDIRECTORY) != 0))
-          {
-            retval = ::DeleteDirectory(DirName + L"\\" + sr.cFileName);
-          }
-        }
-        else
-        {
-          retval = ::DeleteFile(DirName + L"\\" + sr.cFileName);
-        }
-
-        if (!retval) { break; }
-      }
-    }
-  }
-  ::FindClose(h);
-  if (retval) { retval = ::RemoveDir(DirName); }
-  return retval;
-}
-//---------------------------------------------------------------------------
-UnicodeString FormatDateTimeSpan(const UnicodeString TimeFormat, System::TDateTime DateTime)
-{
-  UnicodeString Result;
-  if (static_cast<int>(DateTime) > 0)
-  {
-    Result = IntToStr(static_cast<int>(DateTime)) + L", ";
-  }
-  // days are decremented, because when there are to many of them,
-  // "integer overflow" error occurs
-  // Result += FormatDateTime(TimeFormat, System::TDateTime(DateTime - int(DateTime)));
-  // DEBUG_PRINTF(L"TimeFormat = %s", TimeFormat.c_str());
-  System::TDateTime dt(DateTime - static_cast<int>(DateTime));
-  unsigned int H, M, S, MS;
-  dt.DecodeTime(H, M, S, MS);
-  Result += FORMAT(L"%d:%02d:%02d", H, M, S);
-  return Result;
-}
-//---------------------------------------------------------------------------
-TLocalCustomCommand::TLocalCustomCommand()
-{
-}
-//---------------------------------------------------------------------------
-TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
-  const UnicodeString Path) :
-  TFileCustomCommand(Data, Path)
-{
-}
-//---------------------------------------------------------------------------
-TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
-  const UnicodeString Path, const UnicodeString FileName,
-  const UnicodeString LocalFileName, const UnicodeString FileList) :
-  TFileCustomCommand(Data, Path, FileName, FileList)
-{
-  FLocalFileName = LocalFileName;
-}
-//---------------------------------------------------------------------------
-size_t TLocalCustomCommand::PatternLen(size_t Index, char PatternCmd)
-{
-  size_t Len = 0;
-  if (PatternCmd == '^')
-  {
-    Len = 3;
-  }
-  else
-  {
-    Len = TFileCustomCommand::PatternLen(Index, PatternCmd);
-  }
-  return Len;
-}
-//---------------------------------------------------------------------------
-bool TLocalCustomCommand::PatternReplacement(size_t Index,
-  const UnicodeString Pattern, UnicodeString & Replacement, bool & Delimit)
-{
-  bool Result = false;
-  if (Pattern == L"!^!")
-  {
-    Replacement = FLocalFileName;
-    Result = true;
-  }
-  else
-  {
-    Result = TFileCustomCommand::PatternReplacement(Index, Pattern, Replacement, Delimit);
-  }
-  return Result;
-}
-//---------------------------------------------------------------------------
-void TLocalCustomCommand::DelimitReplacement(
-  const UnicodeString /*Replacement*/, char /*Quote*/)
-{
-  // never delimit local commands
-}
-//---------------------------------------------------------------------------
-bool TLocalCustomCommand::HasLocalFileName(const UnicodeString Command)
-{
-  return FindPattern(Command, '^');
-}
-//---------------------------------------------------------------------------
-bool TLocalCustomCommand::IsFileCommand(const UnicodeString Command)
-{
-  return TFileCustomCommand::IsFileCommand(Command) || HasLocalFileName(Command);
-}
+//---------------------------------------------------------------------

@@ -287,11 +287,11 @@ void __fastcall TCopyParamList::operator=(const TCopyParamList & rhl)
   {
     TCopyParamType * CopyParam = new TCopyParamType(*rhl.GetCopyParam(Index));
     TCopyParamRule * Rule = NULL;
-    if (rhl.GetRules(Index) != NULL)
+    if (rhl.GetRule(Index) != NULL)
     {
-      Rule = new TCopyParamRule(*rhl.GetRules(Index));
+      Rule = new TCopyParamRule(*rhl.GetRule(Index));
     }
-    Add(rhl.GetNames(Index), CopyParam, Rule);
+    Add(rhl.GetName(Index), CopyParam, Rule);
   }
   // there should be comparison of with the assigned list, but we rely on caller
   // to do it instead (TGUIConfiguration::SetCopyParamList)
@@ -307,8 +307,8 @@ bool __fastcall TCopyParamList::operator==(const TCopyParamList & rhl) const
     while ((i < GetCount()) && Result)
     {
       Result =
-        (GetNames(i) == rhl.GetNames(i)) &&
-        CompareItem(i, rhl.GetCopyParams(i), rhl.GetRules(i));
+        (GetName(i) == rhl.GetName(i)) &&
+        CompareItem(i, rhl.GetCopyParam(i), rhl.GetRule(i));
       i++;
     }
   }
@@ -324,10 +324,10 @@ bool __fastcall TCopyParamList::CompareItem(int Index,
   const TCopyParamType * CopyParam, const TCopyParamRule * Rule) const
 {
   return
-    ((*GetCopyParams(Index)) == *CopyParam) &&
-    ((GetRules(Index) == NULL) ?
+    ((*GetCopyParam(Index)) == *CopyParam) &&
+    ((GetRule(Index) == NULL) ?
       (Rule == NULL) :
-      ((Rule != NULL) && (*GetRules(Index)) == (*Rule)));
+      ((Rule != NULL) && (*GetRule(Index)) == (*Rule)));
 }
 //---------------------------------------------------------------------------
 void __fastcall TCopyParamList::Clear()
@@ -362,12 +362,12 @@ void __fastcall TCopyParamList::Insert(int Index, const UnicodeString Name,
 void __fastcall TCopyParamList::Change(int Index, const UnicodeString Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
-  if ((Name != GetNames(Index)) || !CompareItem(Index, CopyParam, Rule))
+  if ((Name != GetName(Index)) || !CompareItem(Index, CopyParam, Rule))
   {
     FNames->PutString(Index, Name);
     delete GetCopyParam(Index);
-    FCopyParams->SetItems(Index, (reinterpret_cast<TObject *>(CopyParam)));
-    delete GetRules(Index);
+    FCopyParams->SetItem(Index, (reinterpret_cast<TObject *>(CopyParam)));
+    delete GetRule(Index);
     FRules->SetItem(Index, (reinterpret_cast<TObject *>(Rule)));
     Modify();
   }
@@ -393,9 +393,9 @@ void __fastcall TCopyParamList::Delete(int Index)
 {
   assert((Index >= 0) && (Index < GetCount()));
   FNames->Delete(Index);
-  delete GetCopyParams(Index);
+  delete GetCopyParam(Index);
   FCopyParams->Delete(Index);
-  delete GetRules(Index);
+  delete GetRule(Index);
   FRules->Delete(Index);
   Modify();
 }
@@ -406,9 +406,9 @@ int __fastcall TCopyParamList::Find(const TCopyParamRuleData & Value) const
   int i = 0;
   while ((i < FRules->GetCount()) && (Result < 0))
   {
-    if (FRules->GetItems(i) != NULL)
+    if (FRules->GetItem(i) != NULL)
     {
-      if (GetRules(i)->Matches(Value))
+      if (GetRule(i)->Matches(Value))
       {
         Result = i;
       }
@@ -473,16 +473,16 @@ void __fastcall TCopyParamList::Save(THierarchicalStorage * Storage) const
   {
     if (Storage->OpenSubKey(IntToStr(Index), true))
     {
-      try
+      // try
       {
         BOOST_SCOPE_EXIT ( (&Storage) )
         {
           Storage->CloseSubKey();
         } BOOST_SCOPE_EXIT_END
-        const TCopyParamType * CopyParam = GetCopyParams(Index);
-        const TCopyParamRule * Rule = GetRules(Index);
+        const TCopyParamType * CopyParam = GetCopyParam(Index);
+        const TCopyParamRule * Rule = GetRule(Index);
 
-        Storage->WriteString(L"Name", GetNames(Index));
+        Storage->WriteString(L"Name", GetName(Index));
         CopyParam->Save(Storage);
         Storage->Writebool(L"HasRule", (Rule != NULL));
         if (Rule != NULL)
@@ -507,12 +507,12 @@ int __fastcall TCopyParamList::GetCount() const
 //---------------------------------------------------------------------------
 const TCopyParamRule * __fastcall TCopyParamList::GetRule(int Index) const
 {
-  return reinterpret_cast<TCopyParamRule *>(FRules->GetItems(Index));
+  return reinterpret_cast<TCopyParamRule *>(FRules->GetItem(Index));
 }
 //---------------------------------------------------------------------------
 const TCopyParamType * __fastcall TCopyParamList::GetCopyParam(int Index) const
 {
-  return reinterpret_cast<TCopyParamType *>(FCopyParams->GetItems(Index));
+  return reinterpret_cast<TCopyParamType *>(FCopyParams->GetItem(Index));
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TCopyParamList::GetName(int Index) const
@@ -540,7 +540,7 @@ bool __fastcall TCopyParamList::GetAnyRule() const
   int i = 0;
   while ((i < GetCount()) && !Result)
   {
-    Result = (GetRules(i) != NULL);
+    Result = (GetRule(i) != NULL);
     i++;
   }
   return Result;
@@ -853,14 +853,14 @@ HANDLE __fastcall TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
     if ((ALocale & AdditionaLanguageMask) != AdditionaLanguageMask)
     {
       LOCALESIGNATURE LocSig;
-      GetLocaleInfo(ALocale, LOCALE_SABBREVLANGNAME, (LPWSTR)&LocSig, LENOF(LocSig));
+      GetLocaleInfo(ALocale, LOCALE_SABBREVLANGNAME, (LPWSTR)&LocSig, LENOF(&LocSig));
       LocaleName = *(LPWSTR)&LocSig;
       assert(!LocaleName.IsEmpty());
     }
     else
     {
       LocaleName = AdditionaLanguagePrefix +
-        char(ALocale & ~AdditionaLanguageMask);
+        static_cast<wchar_t>(ALocale & ~AdditionaLanguageMask);
     }
 
     Module = ChangeFileExt(Module, UnicodeString(L".") + LocaleName);
@@ -890,7 +890,7 @@ HANDLE __fastcall TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
   {
     if (Internal)
     {
-      System::Error(SNotImplemented, 90);
+      Error(SNotImplemented, 90);
       NewInstance = 0; // FIXME  HInstance;
     }
   }
@@ -937,7 +937,7 @@ void __fastcall TGUIConfiguration::SetLocale(LCID value)
     if (Module != NULL)
     {
       FLocale = value;
-      SetResourceModule(Module);
+      // SetResourceModule(Module);
     }
     else
     {
@@ -965,10 +965,11 @@ void __fastcall TGUIConfiguration::SetLocaleSafe(LCID value)
     if (Module != NULL)
     {
       FLocale = value;
-      SetResourceModule(Module);
+      // SetResourceModule(Module);
     }
   }
 }
+#ifndef _MSC_VER
 //---------------------------------------------------------------------------
 void __fastcall TGUIConfiguration::FreeResourceModule(HANDLE Instance)
 {
@@ -1004,10 +1005,11 @@ void __fastcall TGUIConfiguration::SetResourceModule(HINSTANCE Instance)
 
   DefaultLocalized();
 }
+#endif
 //---------------------------------------------------------------------------
 TStrings * __fastcall TGUIConfiguration::GetLocales()
 {
-  System::Error(SNotImplemented, 93);
+  Error(SNotImplemented, 93);
   UnicodeString LocalesExts;
   TStringList * Exts = new TStringList();
   // try
@@ -1027,9 +1029,9 @@ TStrings * __fastcall TGUIConfiguration::GetLocales()
       FindAttrs, SearchRec) == 0);
     // try
     {
-      BOOST_SCOPE_EXIT ( (findHandle) )
+      BOOST_SCOPE_EXIT ( (&SearchRec) )
       {
-        ::FindClose(findHandle);
+        FindClose(SearchRec);
       } BOOST_SCOPE_EXIT_END
       UnicodeString Ext;
       while (Found)
@@ -1112,12 +1114,12 @@ TStrings * __fastcall TGUIConfiguration::GetLocales()
       for (size_t Index = 0; Index < Exts->GetCount(); Index++)
       {
         if ((Exts->GetObjects(Index) == NULL) &&
-            (Exts->GetStrings(Index).size() == 3) &&
-            SameText(Exts->GetStrings(Index).substr(0, 2), AdditionaLanguagePrefix))
+            (Exts->GetStrings(Index).Length() == 3) &&
+            SameText(Exts->GetStrings(Index).SubString(1, 2), AdditionaLanguagePrefix))
         {
           UnicodeString LangName = GetFileFileInfoString(L"LangName",
                                    ChangeFileExt(ModuleFileName(), UnicodeString(L".") + Exts->GetStrings(Index)));
-          if (!LangName.empty())
+          if (!LangName.IsEmpty())
           {
             FLocales->AddObject(LangName, reinterpret_cast<TObject *>(static_cast<size_t>(
                                   AdditionaLanguageMask + Exts->GetStrings(Index)[2])));
@@ -1185,7 +1187,7 @@ void __fastcall TGUIConfiguration::SetCopyParamIndex(int value)
   }
   else
   {
-    Name = FCopyParamList->GetNames(value);
+    Name = FCopyParamList->GetName(value);
   }
   SetCopyParamCurrent(Name);
 }

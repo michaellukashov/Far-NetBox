@@ -47,6 +47,8 @@ UnicodeString __fastcall UniqTempDir(const UnicodeString BaseDir,
   const UnicodeString Identity, bool Mask = false);
 bool __fastcall DeleteDirectory(const UnicodeString DirName);
 UnicodeString __fastcall FormatDateTimeSpan(const UnicodeString TimeFormat, TDateTime DateTime);
+
+UnicodeString __fastcall FormatBytes(__int64 Bytes, bool UseOrders = true);
 //---------------------------------------------------------------------------
 class TLocalCustomCommand : public TFileCustomCommand
 {

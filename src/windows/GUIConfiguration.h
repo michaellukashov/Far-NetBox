@@ -138,10 +138,10 @@ public:
   __property TStrings * NameList = { read = GetNameList };
   __property bool AnyRule = { read = GetAnyRule };
 #else
-  size_t __fastcall GetCount() const;
-  UnicodeString __fastcall GetName(size_t Index) const;
-  const TCopyParamRule * __fastcall GetRule(size_t Index) const;
-  const TCopyParamType * __fastcall GetCopyParam(size_t Index) const;
+  int __fastcall GetCount() const;
+  UnicodeString __fastcall GetName(int Index) const;
+  const TCopyParamRule * __fastcall GetRule(int Index) const;
+  const TCopyParamType * __fastcall GetCopyParam(int Index) const;
   bool __fastcall GetModified() { return FModified; }
   TStrings * __fastcall GetNameList() const;
   bool __fastcall GetAnyRule() const;
@@ -222,7 +222,6 @@ protected:
   HANDLE __fastcall GetResourceModule();
   virtual void __fastcall SetResourceModule(HINSTANCE Instance);
   TStrings * __fastcall GetLocales();
-#endif
   LCID __fastcall InternalLocale();
   void __fastcall FreeResourceModule(HANDLE Instance);
   void __fastcall SetDefaultCopyParam(const TGUICopyParamType & value);
@@ -238,6 +237,13 @@ protected:
   void __fastcall SetCopyParamCurrent(UnicodeString value);
   void __fastcall SetNewDirectoryProperties(const TRemoteProperties & value);
   virtual void __fastcall Saved();
+#else
+  virtual bool __fastcall GetRememberPassword();
+  LCID __fastcall InternalLocale();
+  static UnicodeString __fastcall PropertyToKey(const UnicodeString Property);
+  virtual void __fastcall DefaultLocalized();
+  virtual void __fastcall Saved();
+#endif
 
 public:
   /* __fastcall */ TGUIConfiguration();
@@ -294,8 +300,8 @@ public:
   void __fastcall SetSynchronizeMode(int value) { FSynchronizeMode = value; }
   int __fastcall GetMaxWatchDirectories() { return FMaxWatchDirectories; }
   void __fastcall SetMaxWatchDirectories(int value) { FMaxWatchDirectories = value; }
-  size_t __fastcall GetQueueTransfersLimit() { return FQueueTransfersLimit; }
-  void __fastcall SetQueueTransfersLimit(size_t value) { FQueueTransfersLimit = value; }
+  int __fastcall GetQueueTransfersLimit() { return FQueueTransfersLimit; }
+  void __fastcall SetQueueTransfersLimit(int value) { FQueueTransfersLimit = value; }
   bool __fastcall GetQueueAutoPopup() { return FQueueAutoPopup; }
   void __fastcall SetQueueAutoPopup(bool value) { FQueueAutoPopup = value; }
   bool __fastcall GetQueueRememberPassword() { return FQueueRememberPassword; }
@@ -329,8 +335,8 @@ public:
   void __fastcall SetCopyParamList(const TCopyParamList * value);
   UnicodeString __fastcall GetCopyParamCurrent() { return FCopyParamCurrent; }
   void __fastcall SetCopyParamCurrent(const UnicodeString value);
-  size_t __fastcall GetCopyParamIndex();
-  void __fastcall SetCopyParamIndex(size_t value);
+  int __fastcall GetCopyParamIndex();
+  void __fastcall SetCopyParamIndex(int value);
   TGUICopyParamType __fastcall GetCurrentCopyParam();
   TGUICopyParamType __fastcall GetCopyParamPreset(const UnicodeString Name);
   TRemoteProperties __fastcall GetNewDirectoryProperties() { return FNewDirectoryProperties; }

@@ -1550,7 +1550,7 @@ void TWebDAVFileSystem::SinkFile(const UnicodeString FileName,
         SinkRobust(FileName, File, Params->TargetDir, Params->CopyParam,
                    Params->Params, Params->OperationProgress, Params->Flags);
     }
-    catch (const EScpSkipFile &E)
+    catch (EScpSkipFile &E)
     {
         TFileOperationProgressType *OperationProgress = Params->OperationProgress;
 
@@ -2231,7 +2231,7 @@ std::string TWebDAVFileSystem::GetNamespace(const TiXmlElement *element, const c
     assert(name);
     assert(defaultVal);
 
-    std::string ns = defaultVal;
+    UnicodeString ns = defaultVal;
     const TiXmlAttribute *attr = element->FirstAttribute();
     while (attr)
     {
@@ -2473,7 +2473,7 @@ bool TWebDAVFileSystem::WebDAVGetList(const UnicodeString Directory, UnicodeStri
 
         //name
         item.Name = path;
-        const size_t nameDelim = item.Name.rfind(L'/'); //Save only name without full path
+        const size_t nameDelim = item.Name.RPos(L'/'); //Save only name without full path
         if (nameDelim >= 0)
         {
             item.Name.Delete(0, nameDelim + 1);
@@ -2546,10 +2546,10 @@ bool TWebDAVFileSystem::WebDAVGetList(const UnicodeString Directory, UnicodeStri
         wdavItems.push_back(item);
     }
 
-    size_t Count = wdavItems.Length();
+    size_t Count = wdavItems.size();
     if (Count)
     {
-        Entries.SetLength(Count);
+        Entries.resize(Count);
         for (size_t i = 0; i < Count; ++i)
         {
             TListDataEntry &Dest = Entries[i];
@@ -2566,8 +2566,8 @@ bool TWebDAVFileSystem::WebDAVGetList(const UnicodeString Directory, UnicodeStri
             SYSTEMTIME st;
             ::FileTimeToSystemTime(&ft, &st);
             TDateTime dt = ::SystemTimeToDateTime(st);
-            unsigned int Y, M, D;
-            unsigned int HH, MM, SS, MS;
+            unsigned short Y, M, D;
+            unsigned short HH, MM, SS, MS;
             dt.DecodeDate(Y, M, D);
             dt.DecodeTime(HH, MM, SS, MS);
             Dest.Year = Y;
@@ -2581,8 +2581,8 @@ bool TWebDAVFileSystem::WebDAVGetList(const UnicodeString Directory, UnicodeStri
         }
     }
     // DEBUG_PRINTF(L"Count = %d", Count);
-    TListDataEntry *pEntries = Entries.Length() > 0 ? &Entries[0] : NULL;
-    HandleListData(Directory.c_str(), pEntries, Entries.Length());
+    TListDataEntry *pEntries = Entries.size() > 0 ? &Entries[0] : NULL;
+    HandleListData(Directory.c_str(), pEntries, Entries.size());
     return true;
 }
 

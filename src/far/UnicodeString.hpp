@@ -149,6 +149,7 @@ typedef class UnicodeString
     void Inflate(size_t nSize);
     wchar_t *GetBuffer(size_t nSize = (size_t)-1);
     const wchar_t *c_str() const { return m_pData->GetData(); }
+    const wchar_t *data() const { return c_str(); }
     void ReleaseBuffer(size_t nLength = (size_t)-1);
 
     size_t  __fastcall Length() const { return GetLength(); }
