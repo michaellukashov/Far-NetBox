@@ -441,7 +441,8 @@ public:
   const RawByteString & __fastcall operator +=(const char rhs);
   const RawByteString & __fastcall operator +=(const char *rhs);
 
-    
+  void Unique() {}
+
 private:
   void Init(const wchar_t *Str, int Length)
   {
