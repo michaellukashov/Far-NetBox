@@ -12,6 +12,7 @@
 #include "Classes.h"
 #endif
 
+class Exception;
 //---------------------------------------------------------------------------
 bool __fastcall ExceptionMessage(Exception * E, UnicodeString & Message);
 UnicodeString __fastcall LastSysErrorMessage();
@@ -89,8 +90,8 @@ class EOSExtException : public ExtException
 {
   typedef ExtException parent;
 public:
-  /* __fastcall */ EOSExtException();
-  /* __fastcall */ EOSExtException(UnicodeString Msg);
+  __fastcall EOSExtException();
+  __fastcall EOSExtException(UnicodeString Msg);
 };
 */
 //---------------------------------------------------------------------------
