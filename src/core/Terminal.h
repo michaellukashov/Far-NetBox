@@ -676,7 +676,7 @@ struct TCustomCommandParams
   TCustomCommandParams(
     UnicodeString Command,
     int Params,
-    const TCaptureOutputEvent & OutputEvent) :
+    TCaptureOutputEvent * OutputEvent) :
     Command(Command),
     Params(Params),
     OutputEvent(OutputEvent)
@@ -684,7 +684,7 @@ struct TCustomCommandParams
   }
   UnicodeString Command;
   int Params;
-  TCaptureOutputEvent OutputEvent;
+  TCaptureOutputEvent * OutputEvent;
 private:
   TCustomCommandParams(const TCustomCommandParams &);
   void operator=(const TCustomCommandParams &);

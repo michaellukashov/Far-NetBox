@@ -3116,7 +3116,7 @@ void /* __fastcall */ TTerminal::CustomCommandOnFile(UnicodeString FileName,
     Params->Command.c_str(), Params->Params, FileName.c_str()));
   if (File) { FileModified(File, FileName); }
   DoCustomCommandOnFile(FileName, File, Params->Command, Params->Params,
-    Params->OutputEvent);
+    *Params->OutputEvent);
   ReactOnCommand(fsAnyCommand);
 }
 //---------------------------------------------------------------------------

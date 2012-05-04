@@ -48,8 +48,8 @@ public:
   virtual void __fastcall CreateLink(const UnicodeString FileName, const UnicodeString PointTo, bool Symbolic);
   virtual void __fastcall DeleteFile(const UnicodeString FileName,
     const TRemoteFile * File, int Params, TRmSessionAction & Action);
-  virtual void __fastcall CustomCommandOnFile(const UnicodeString FileName,
-    const TRemoteFile * File, UnicodeString Command, int Params, TCaptureOutputEvent OutputEvent);
+  virtual void /* __fastcall */ CustomCommandOnFile(const UnicodeString FileName,
+    const TRemoteFile * File, UnicodeString Command, int Params, TCaptureOutputEvent * OutputEvent);
   virtual void __fastcall DoStartup();
   virtual void __fastcall HomeDirectory();
   virtual bool __fastcall IsCapable(int Capability) const;

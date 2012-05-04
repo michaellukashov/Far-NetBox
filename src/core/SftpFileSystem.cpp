@@ -3838,9 +3838,9 @@ void __fastcall TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Al
 #endif
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::CustomCommandOnFile(const UnicodeString /*FileName*/,
-    const TRemoteFile * /*File*/, UnicodeString /*Command*/, int /*Params*/,
-    TCaptureOutputEvent /*OutputEvent*/)
+void /* __fastcall */ TSFTPFileSystem::CustomCommandOnFile(const UnicodeString /* FileName */,
+    const TRemoteFile * /* File */, UnicodeString /* Command */, int /* Params */,
+    TCaptureOutputEvent * /* OutputEvent */)
 {
   assert(false);
 }

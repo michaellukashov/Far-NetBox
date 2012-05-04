@@ -1730,9 +1730,9 @@ void __fastcall TFTPFileSystem::DeleteFile(const UnicodeString AFileName,
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFTPFileSystem::CustomCommandOnFile(const UnicodeString /*FileName*/,
+void /* __fastcall */ TFTPFileSystem::CustomCommandOnFile(const UnicodeString /*FileName*/,
   const TRemoteFile * /*File*/, UnicodeString /*Command*/, int /*Params*/,
-  TCaptureOutputEvent /*OutputEvent*/)
+  TCaptureOutputEvent * /*OutputEvent*/)
 {
   // if ever implemented, do not forget to add EnsureLocation,
   // see AnyCommand for a reason why

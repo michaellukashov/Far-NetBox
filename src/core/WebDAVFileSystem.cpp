@@ -908,8 +908,8 @@ bool TWebDAVFileSystem::ConfirmOverwrite(UnicodeString & FileName,
 }
 
 //---------------------------------------------------------------------------
-void __fastcall TWebDAVFileSystem::CustomCommandOnFile(const UnicodeString FileName,
-  const TRemoteFile * File, UnicodeString Command, int Params, TCaptureOutputEvent OutputEvent)
+void /* __fastcall */ TWebDAVFileSystem::CustomCommandOnFile(const UnicodeString FileName,
+  const TRemoteFile * File, UnicodeString Command, int Params, TCaptureOutputEvent * OutputEvent)
 {
   assert(File);
   bool Dir = File->GetIsDirectory() && !File->GetIsSymLink();
