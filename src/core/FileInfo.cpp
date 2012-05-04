@@ -1,12 +1,18 @@
 //---------------------------------------------------------------------------
+#ifndef _MSC_VER
+#include <vcl.h>
+#pragma hdrstop
+#else
 #include "stdafx.h"
 #include <Windows.h>
 
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
+#endif
 
 #include <Common.h>
 #include <Exceptions.h>
+#include <Windows.h>
 #include "FileInfo.h"
 #include "FileBuffer.h"
 //---------------------------------------------------------------------------
@@ -26,11 +32,10 @@ struct VS_VERSION_INFO_STRUCT32
 //---------------------------------------------------------------------------
 unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, unsigned int DataSize, void * Data)
 {
-  size_t Len = 0;
+  unsigned int Len;
 
   bool NeedFree = false;
   HMODULE Module = GetModuleHandle(FileName);
-  // DEBUG_PRINTF(L"Module = %d", Module);
   if (Module == NULL)
   {
     Module = LoadLibraryEx(FileName, 0, LOAD_LIBRARY_AS_DATAFILE);
@@ -41,6 +46,7 @@ unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, unsigned in
   }
   else
   {
+    // try
     {
       BOOST_SCOPE_EXIT ( (&NeedFree) (&Module) )
       {
@@ -50,7 +56,7 @@ unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, unsigned in
         }
       } BOOST_SCOPE_EXIT_END
       HANDLE Rsrc = FindResource(Module, MAKEINTRESOURCE(VS_VERSION_INFO),
-                                 MAKEINTRESOURCE(VS_FILE_INFO));
+        MAKEINTRESOURCE(VS_FILE_INFO));
       if (Rsrc == NULL)
       {
       }
@@ -63,6 +69,7 @@ unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, unsigned in
         }
         else
         {
+          // try
           {
             BOOST_SCOPE_EXIT ( (&Mem) )
             {
@@ -91,22 +98,36 @@ unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, unsigned in
               }
             }
           }
+#ifndef _MSC_VER
+          __finally
+          {
+            FreeResource(Mem);
+          }
+#endif
         }
       }
     }
+#ifndef _MSC_VER
+    __finally
+    {
+      if (NeedFree)
+      {
+        FreeLibrary(Module);
+      }
+    }
+#endif
   }
 
   return Len;
 }
 //---------------------------------------------------------------------------
-unsigned int __fastcall GetFileVersionInfoSizeFix(const wchar_t * FileName, unsigned long * Handle)
+unsigned int GetFileVersionInfoSizeFix(const wchar_t * FileName, unsigned long * Handle)
 {
   unsigned int Len;
   if (IsWin7())
   {
     *Handle = 0;
     Len = VERSION_GetFileVersionInfo_PE(FileName, 0, NULL);
-    // DEBUG_PRINTF(L"Len = %d", Len);
 
     if (Len != 0)
     {
@@ -121,32 +142,28 @@ unsigned int __fastcall GetFileVersionInfoSizeFix(const wchar_t * FileName, unsi
   return Len;
 }
 //---------------------------------------------------------------------------
-bool __fastcall GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Handle,
-                                      unsigned int DataSize, void * Data)
+bool GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Handle,
+  unsigned int DataSize, void * Data)
 {
-  bool Result = false;
-  // DEBUG_PRINTF(L"IsWin7 = %d, Handle = %d, DataSize = %d", IsWin7(), Handle, DataSize);
+  bool Result;
+
   if (IsWin7())
   {
     VS_VERSION_INFO_STRUCT32 * VersionInfo = static_cast<VS_VERSION_INFO_STRUCT32 *>(Data);
 
     unsigned int Len = VERSION_GetFileVersionInfo_PE(FileName, DataSize, Data);
-    // DEBUG_PRINTF(L"Len = %d, VersionInfo->wLength = %d", Len, VersionInfo->wLength);
 
     Result = (Len != 0);
     if (Result)
     {
       static const char Signature[] = "FE2X";
-      size_t BufSize = VersionInfo->wLength + strlen(Signature);
+      unsigned int BufSize = VersionInfo->wLength + strlen(Signature);
       unsigned int ConvBuf;
-      // DEBUG_PRINTF(L"DataSize = %d, BufSize = %d", DataSize, BufSize);
 
       if (DataSize >= BufSize)
       {
         ConvBuf = DataSize - VersionInfo->wLength;
-        // DEBUG_PRINTF(L"ConvBuf = %d", ConvBuf);
-        memmove((static_cast<char *>(Data)) + VersionInfo->wLength, Signature, ConvBuf > 4 * sizeof(char) ? 4 * sizeof(char) : ConvBuf );
-        // DEBUG_PRINTF(L"Data = %s", Data);
+        memmove(((char*)(Data)) + VersionInfo->wLength, Signature, ConvBuf > 4 ? 4 : ConvBuf );
       }
     }
   }
@@ -159,7 +176,7 @@ bool __fastcall GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Ha
 }
 //---------------------------------------------------------------------------
 // Return pointer to file version info block
-void * __fastcall CreateFileInfo(const UnicodeString FileName)
+void * __fastcall CreateFileInfo(UnicodeString FileName)
 {
   unsigned long Handle;
   unsigned int Size;
@@ -169,7 +186,6 @@ void * __fastcall CreateFileInfo(const UnicodeString FileName)
   // Get file version info block size
   Size = GetFileVersionInfoSizeFix(FileName.c_str(), &Handle);
   // If size is valid
-  // DEBUG_PRINTF(L"FileName = %s, Size = %d, Handle = %u", FileName.c_str(), Size, Handle);
   if (Size > 0)
   {
     Result = new char[Size];
@@ -193,7 +209,7 @@ void __fastcall FreeFileInfo(void * FileInfo)
 }
 //---------------------------------------------------------------------------
 typedef TTranslation TTranslations[65536];
-typedef TTranslation * PTranslations;
+typedef TTranslation *PTranslations;
 //---------------------------------------------------------------------------
 // Return pointer to fixed file version info
 VS_FIXEDFILEINFO __fastcall GetFixedFileInfo(void * FileInfo)
@@ -202,11 +218,10 @@ VS_FIXEDFILEINFO __fastcall GetFixedFileInfo(void * FileInfo)
   VS_FIXEDFILEINFO * pResult = NULL;
   if (!VerQueryValue(FileInfo, L"\\", reinterpret_cast<void **>(&pResult), &Len))
   {
-    throw std::exception("Fixed file info not available");
+    throw Exception(L"Fixed file info not available");
   }
   return *pResult;
 };
-
 //---------------------------------------------------------------------------
 // Return number of available file version info translations
 unsigned __fastcall GetTranslationCount(void * FileInfo)
@@ -215,7 +230,7 @@ unsigned __fastcall GetTranslationCount(void * FileInfo)
   UINT Len;
   if (!VerQueryValue(FileInfo, L"\\VarFileInfo\\Translation", reinterpret_cast<void **>(&P), &Len))
   {
-    throw std::exception("File info translations not available");
+    throw Exception(L"File info translations not available");
   }
   return Len / 4;
 }
@@ -228,26 +243,25 @@ TTranslation __fastcall GetTranslation(void * FileInfo, unsigned i)
 
   if (!VerQueryValue(FileInfo, L"\\VarFileInfo\\Translation", reinterpret_cast<void **>(&P), &Len))
   {
-    throw std::exception("File info translations not available");
+    throw Exception(L"File info translations not available");
   }
-  // DEBUG_PRINTF(L"Len = %d, Language = %x", Len, P[i].Language);
   if (i * sizeof(TTranslation) >= Len)
   {
-    throw std::exception("Specified translation not available");
+    throw Exception(L"Specified translation not available");
   }
   return P[i];
 };
 //---------------------------------------------------------------------------
 // Return the name of the specified language
-UnicodeString __fastcall GetLanguage(unsigned int Language)
+UnicodeString __fastcall GetLanguage(Word Language)
 {
   UINT Len;
-  wchar_t P[512];
+  wchar_t P[256];
 
-  Len = VerLanguageName(Language, P, sizeof(P));
-  if (Len > sizeof(P))
+  Len = VerLanguageName(Language, P, LENOF(P));
+  if (Len > LENOF(P))
   {
-    throw std::exception("Language not available");
+    throw Exception(L"Language not available");
   }
   return UnicodeString(P, Len);
 };
@@ -255,33 +269,27 @@ UnicodeString __fastcall GetLanguage(unsigned int Language)
 // Return the value of the specified file version info string using the
 // specified translation
 UnicodeString __fastcall GetFileInfoString(void * FileInfo,
-    TTranslation Translation, UnicodeString StringName)
+  TTranslation Translation, UnicodeString StringName)
 {
-  UnicodeString Result;
-  wchar_t * P = NULL;
+  wchar_t * P;
   UINT Len;
-  UnicodeString subBlock = UnicodeString((L"\\StringFileInfo\\000004E4") +
-                                         // IntToHex(Translation.Language, 4) +
-                                         // IntToHex(Translation.CharSet, 4) +
-                                         UnicodeString(L"\\") + StringName);
-  // 4e40409 58324546\Comments
-  if (!VerQueryValue(FileInfo, subBlock.c_str(), reinterpret_cast<void **>(&P), &Len))
+
+  if (!VerQueryValue(FileInfo, (UnicodeString(L"\\StringFileInfo\\") +
+    IntToHex(Translation.Language, 4) +
+    IntToHex(Translation.CharSet, 4) +
+    L"\\" + StringName).c_str(), (void**)&P, &Len))
   {
-    throw std::exception("Specified file info string not available");
+    throw Exception("Specified file info string not available");
   }
-  // c_str() makes sure that returned string has only necessary bytes allocated
-  if (P)
-  {
-    Result = UnicodeString(P, Len).c_str();
-  }
-  // DEBUG_PRINTF(L"Result = %s", Result.c_str());
+  UnicodeString Result = UnicodeString(P, Len);
+  PackStr(Result);
   return Result;
 };
 //---------------------------------------------------------------------------
 int __fastcall CalculateCompoundVersion(int MajorVer,
-                                        int MinorVer, int Release, int Build)
+  int MinorVer, int Release, int Build)
 {
   int CompoundVer = Build + 10000 * (Release + 100 * (MinorVer +
-                                     100 * MajorVer));
+    100 * MajorVer));
   return CompoundVer;
 }
