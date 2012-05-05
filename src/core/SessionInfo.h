@@ -106,8 +106,8 @@ class TActionLog;
 class TSessionAction
 {
 public:
-  explicit TSessionAction(TActionLog * Log, TLogAction Action);
-  ~TSessionAction();
+  explicit /* __fastcall */ TSessionAction(TActionLog * Log, TLogAction Action);
+  virtual /* __fastcall */ ~TSessionAction();
 
   void __fastcall Restart();
 
@@ -122,8 +122,8 @@ protected:
 class TFileSessionAction : public TSessionAction
 {
 public:
-    explicit TFileSessionAction(TActionLog * Log, TLogAction Action);
-    explicit TFileSessionAction(TActionLog * Log, TLogAction Action, const UnicodeString & FileName);
+    explicit /* __fastcall */ TFileSessionAction(TActionLog * Log, TLogAction Action);
+    explicit /* __fastcall */ TFileSessionAction(TActionLog * Log, TLogAction Action, const UnicodeString & FileName);
 
   void __fastcall FileName(const UnicodeString & FileName);
 };
@@ -131,8 +131,8 @@ public:
 class TFileLocationSessionAction : public TFileSessionAction
 {
 public:
-    explicit TFileLocationSessionAction(TActionLog * Log, TLogAction Action);
-    explicit TFileLocationSessionAction(TActionLog * Log, TLogAction Action, const UnicodeString & FileName);
+    explicit /* __fastcall */ TFileLocationSessionAction(TActionLog * Log, TLogAction Action);
+    explicit /* __fastcall */ TFileLocationSessionAction(TActionLog * Log, TLogAction Action, const UnicodeString & FileName);
 
   void __fastcall Destination(const UnicodeString & Destination);
 };
@@ -140,13 +140,13 @@ public:
 class TUploadSessionAction : public TFileLocationSessionAction
 {
 public:
-  explicit TUploadSessionAction(TActionLog * Log);
+  explicit /* __fastcall */ TUploadSessionAction(TActionLog * Log);
 };
 //---------------------------------------------------------------------------
 class TDownloadSessionAction : public TFileLocationSessionAction
 {
 public:
-  explicit TDownloadSessionAction(TActionLog * Log);
+  explicit /* __fastcall */ TDownloadSessionAction(TActionLog * Log);
 };
 //---------------------------------------------------------------------------
 class TRights;
@@ -154,8 +154,8 @@ class TRights;
 class TChmodSessionAction : public TFileSessionAction
 {
 public:
-  explicit TChmodSessionAction(TActionLog * Log, const UnicodeString & FileName);
-  explicit TChmodSessionAction(TActionLog * Log, const UnicodeString & FileName,
+  explicit /* __fastcall */ TChmodSessionAction(TActionLog * Log, const UnicodeString & FileName);
+  explicit /* __fastcall */ TChmodSessionAction(TActionLog * Log, const UnicodeString & FileName,
     const TRights & Rights);
 
   void __fastcall Rights(const TRights & Rights);
@@ -165,20 +165,20 @@ public:
 class TTouchSessionAction : public TFileSessionAction
 {
 public:
-  explicit TTouchSessionAction(TActionLog * Log, const UnicodeString & FileName,
+  explicit /* __fastcall */ TTouchSessionAction(TActionLog * Log, const UnicodeString & FileName,
     const TDateTime & Modification);
 };
 //---------------------------------------------------------------------------
 class TMkdirSessionAction : public TFileSessionAction
 {
 public:
-    explicit TMkdirSessionAction(TActionLog * Log, const UnicodeString & FileName);
+  explicit /* __fastcall */ TMkdirSessionAction(TActionLog * Log, const UnicodeString & FileName);
 };
 //---------------------------------------------------------------------------
 class TRmSessionAction : public TFileSessionAction
 {
 public:
-  explicit TRmSessionAction(TActionLog * Log, const UnicodeString & FileName);
+  explicit /* __fastcall */ TRmSessionAction(TActionLog * Log, const UnicodeString & FileName);
 
   void __fastcall Recursive();
 };
@@ -186,14 +186,14 @@ public:
 class TMvSessionAction : public TFileLocationSessionAction
 {
 public:
-  explicit TMvSessionAction(TActionLog * Log, const UnicodeString & FileName,
+  explicit /* __fastcall */ TMvSessionAction(TActionLog * Log, const UnicodeString & FileName,
     const UnicodeString & Destination);
 };
 //---------------------------------------------------------------------------
 class TCallSessionAction : public TSessionAction
 {
 public:
-  explicit TCallSessionAction(TActionLog * Log, const UnicodeString & Command,
+  explicit /* __fastcall */ TCallSessionAction(TActionLog * Log, const UnicodeString & Command,
     const UnicodeString & Destination);
 
   void __fastcall AddOutput(const UnicodeString & Output, bool StdError);
@@ -202,7 +202,7 @@ public:
 class TLsSessionAction : public TSessionAction
 {
 public:
-  explicit TLsSessionAction(TActionLog * Log, const UnicodeString & Destination);
+  explicit /* __fastcall */ TLsSessionAction(TActionLog * Log, const UnicodeString & Destination);
 
   void __fastcall FileList(TRemoteFileList * FileList);
 };
@@ -210,7 +210,7 @@ public:
 class TStatSessionAction : public TFileSessionAction
 {
 public:
-  explicit TStatSessionAction(TActionLog * Log, const UnicodeString & FileName);
+  explicit /* __fastcall */ TStatSessionAction(TActionLog * Log, const UnicodeString & FileName);
 
   void __fastcall File(TRemoteFile * File);
 };
@@ -220,13 +220,13 @@ typedef doaddlog_signal_type::slot_type doaddlog_slot_type;
 //---------------------------------------------------------------------------
 class TSessionLog : protected TStringList
 {
-    friend class TSessionAction;
-    friend class TSessionActionRecord;
+friend class TSessionAction;
+friend class TSessionActionRecord;
 public:
-  explicit TSessionLog(TSessionUI* UI, TSessionData * SessionData,
+  explicit /* __fastcall */ TSessionLog(TSessionUI* UI, TSessionData * SessionData,
     TConfiguration *Configuration);
-  virtual ~TSessionLog();
-  virtual HIDESBASE  void __fastcall Add(TLogLineType Type, const UnicodeString & Line);
+  virtual /* __fastcall */ ~TSessionLog();
+  HIDESBASE  void __fastcall Add(TLogLineType Type, const UnicodeString & Line);
   void __fastcall AddStartupInfo();
   void __fastcall AddException(Exception *E);
   void __fastcall AddSeparator();
@@ -254,15 +254,10 @@ public:
   TSessionLog * __fastcall GetParent() { return FParent; }
   void __fastcall SetParent(TSessionLog *value) { FParent = value; }
   bool __fastcall GetLogging() { return FLogging; }
-  size_t __fastcall GetBottomIndex();
-  UnicodeString __fastcall GetLine(size_t Index);
-  TLogLineType __fastcall GetType(size_t Index);
   notify_signal_type & GetOnStateChange() { return FOnStateChange; }
   void SetOnStateChange(const TNotifyEvent & value) { FOnStateChange.connect(value); }
   UnicodeString __fastcall GetCurrentFileName() { return FCurrentFileName; }
-  bool __fastcall GetLoggingToFile();
   size_t __fastcall GetTopIndex() { return FTopIndex; }
-  UnicodeString __fastcall GetSessionName();
   UnicodeString __fastcall GetName() { return FName; }
   void __fastcall SetName(const UnicodeString value) { FName = value; }
 #endif
@@ -280,7 +275,7 @@ private:
   UnicodeString FCurrentLogFileName;
   UnicodeString FCurrentFileName;
   int FLoggedLines;
-  size_t FTopIndex;
+  int FTopIndex;
   TSessionUI * FUI;
   TSessionData * FSessionData;
   UnicodeString FName;
@@ -288,17 +283,22 @@ private:
   notify_signal_type FOnStateChange;
   TSessionLog *Self;
 
+public:
   UnicodeString __fastcall GetLine(int Index);
   TLogLineType __fastcall GetType(int Index);
   void __fastcall DeleteUnnecessary();
   void __fastcall StateChange();
   void __fastcall OpenLogFile();
+  int __fastcall GetBottomIndex();
   UnicodeString __fastcall GetLogFileName();
+  bool __fastcall GetLoggingToFile();
+  UnicodeString __fastcall GetSessionName();
   void __fastcall DoAdd(TLogLineType Type, UnicodeString Line,
-             const doaddlog_slot_type &func);
-  void DoAddToParent(TLogLineType aType, const UnicodeString & aLine);
-  void DoAddToSelf(TLogLineType aType, const UnicodeString & aLine);
-  void DoAddStartupInfo(TSessionData * Data);
+    // void __fastcall (__closure *f)(TLogLineType Type, const UnicodeString & Line));
+    const doaddlog_slot_type &func);
+  void /* __fastcall */ DoAddToParent(TLogLineType aType, const UnicodeString & aLine);
+  void /* __fastcall */ DoAddToSelf(TLogLineType aType, const UnicodeString & aLine);
+  void /* __fastcall */ DoAddStartupInfo(TSessionData * Data);
 };
 //---------------------------------------------------------------------------
 class TActionLog
@@ -306,9 +306,9 @@ class TActionLog
 friend class TSessionAction;
 friend class TSessionActionRecord;
 public:
-  explicit TActionLog(TSessionUI* UI, TSessionData * SessionData,
+  explicit /* __fastcall */ TActionLog(TSessionUI* UI, TSessionData * SessionData,
     TConfiguration * Configuration);
-  virtual ~TActionLog();
+  virtual /* __fastcall */ ~TActionLog();
 
   void __fastcall ReflectSettings();
   void __fastcall AddFailure(Exception * E);
@@ -322,7 +322,6 @@ public:
 #else
   UnicodeString __fastcall GetCurrentFileName() const { return FCurrentFileName; };
   bool __fastcall GetEnabled() const { return FEnabled; }
-  void __fastcall SetEnabled(bool value);
 #endif
 
 protected:
@@ -348,12 +347,10 @@ private:
   UnicodeString FIndent;
   bool FEnabled;
 
+public:
   void __fastcall OpenLogFile();
   UnicodeString __fastcall GetLogFileName();
-#ifndef _MSC_VER
   void __fastcall SetEnabled(bool value);
-#endif
-
 };
 //---------------------------------------------------------------------------
 #endif

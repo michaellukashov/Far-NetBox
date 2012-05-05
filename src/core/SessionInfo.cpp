@@ -115,7 +115,7 @@ TStrings * __fastcall ExceptionToMessages(Exception * E)
 class TSessionActionRecord
 {
 public:
-  explicit TSessionActionRecord(TActionLog * Log, TLogAction Action) :
+  explicit /* __fastcall */ TSessionActionRecord(TActionLog * Log, TLogAction Action) :
     FLog(Log),
     FAction(Action),
     FState(Opened),
@@ -129,7 +129,7 @@ public:
     FLog->AddPendingAction(this);
   }
 
-  ~TSessionActionRecord()
+  /* __fastcall */ ~TSessionActionRecord()
   {
     delete FErrorMessages;
     delete FNames;
@@ -364,7 +364,7 @@ private:
 #endif
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TSessionAction::TSessionAction(TActionLog *Log, TLogAction Action)
+/* __fastcall */ TSessionAction::TSessionAction(TActionLog *Log, TLogAction Action)
 {
   if (Log->FLogging)
   {
@@ -376,7 +376,7 @@ TSessionAction::TSessionAction(TActionLog *Log, TLogAction Action)
   }
 }
 //---------------------------------------------------------------------------
-TSessionAction::~TSessionAction()
+/* __fastcall */ TSessionAction::~TSessionAction()
 {
   if (FRecord != NULL)
   {
@@ -423,12 +423,12 @@ void __fastcall TSessionAction::Cancel()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TFileSessionAction::TFileSessionAction(TActionLog * Log, TLogAction Action) :
-    TSessionAction(Log, Action)
+/* __fastcall */ TFileSessionAction::TFileSessionAction(TActionLog * Log, TLogAction Action) :
+  TSessionAction(Log, Action)
 {
 };
 //---------------------------------------------------------------------------
-TFileSessionAction::TFileSessionAction(
+/* __fastcall */ TFileSessionAction::TFileSessionAction(
     TActionLog * Log, TLogAction Action, const UnicodeString & AFileName) :
   TSessionAction(Log, Action)
 {
@@ -444,13 +444,13 @@ void __fastcall TFileSessionAction::FileName(const UnicodeString & FileName)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TFileLocationSessionAction::TFileLocationSessionAction(
+/* __fastcall */ TFileLocationSessionAction::TFileLocationSessionAction(
     TActionLog * Log, TLogAction Action) :
   TFileSessionAction(Log, Action)
 {
 };
 //---------------------------------------------------------------------------
-TFileLocationSessionAction::TFileLocationSessionAction(
+/* __fastcall */ TFileLocationSessionAction::TFileLocationSessionAction(
     TActionLog * Log, TLogAction Action, const UnicodeString & FileName) :
   TFileSessionAction(Log, Action, FileName)
 {
@@ -465,19 +465,19 @@ void __fastcall TFileLocationSessionAction::Destination(const UnicodeString & De
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TUploadSessionAction::TUploadSessionAction(TActionLog * Log) :
+/* __fastcall */ TUploadSessionAction::TUploadSessionAction(TActionLog * Log) :
   TFileLocationSessionAction(Log, laUpload)
 {
 };
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TDownloadSessionAction::TDownloadSessionAction(TActionLog * Log) :
+/* __fastcall */ TDownloadSessionAction::TDownloadSessionAction(TActionLog * Log) :
   TFileLocationSessionAction(Log, laDownload)
 {
 };
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TChmodSessionAction::TChmodSessionAction(
+/* __fastcall */ TChmodSessionAction::TChmodSessionAction(
     TActionLog * Log, const UnicodeString & FileName) :
   TFileSessionAction(Log, laChmod, FileName)
 {
@@ -491,7 +491,7 @@ void __fastcall TChmodSessionAction::Recursive()
   }
 }
 //---------------------------------------------------------------------------
-TChmodSessionAction::TChmodSessionAction(
+/* __fastcall */ TChmodSessionAction::TChmodSessionAction(
     TActionLog * Log, const UnicodeString & FileName, const TRights & ARights) :
   TFileSessionAction(Log, laChmod, FileName)
 {
@@ -506,7 +506,7 @@ void __fastcall TChmodSessionAction::Rights(const TRights & Rights)
   }
 }
 //---------------------------------------------------------------------------
-TTouchSessionAction::TTouchSessionAction(
+/* __fastcall */ TTouchSessionAction::TTouchSessionAction(
     TActionLog * Log, const UnicodeString & FileName, const TDateTime & Modification) :
   TFileSessionAction(Log, laTouch, FileName)
 {
@@ -516,13 +516,13 @@ TTouchSessionAction::TTouchSessionAction(
   }
 }
 //---------------------------------------------------------------------------
-TMkdirSessionAction::TMkdirSessionAction(
+/* __fastcall */ TMkdirSessionAction::TMkdirSessionAction(
     TActionLog * Log, const UnicodeString & FileName) :
   TFileSessionAction(Log, laMkdir, FileName)
 {
 }
 //---------------------------------------------------------------------------
-TRmSessionAction::TRmSessionAction(
+/* __fastcall */ TRmSessionAction::TRmSessionAction(
     TActionLog * Log, const UnicodeString & FileName) :
   TFileSessionAction(Log, laRm, FileName)
 {
@@ -536,14 +536,14 @@ void __fastcall TRmSessionAction::Recursive()
   }
 }
 //---------------------------------------------------------------------------
-TMvSessionAction::TMvSessionAction(TActionLog * Log,
+/* __fastcall */ TMvSessionAction::TMvSessionAction(TActionLog * Log,
     const UnicodeString & FileName, const UnicodeString & ADestination) :
   TFileLocationSessionAction(Log, laMv, FileName)
 {
   Destination(ADestination);
 }
 //---------------------------------------------------------------------------
-TCallSessionAction::TCallSessionAction(TActionLog * Log,
+/* __fastcall */ TCallSessionAction::TCallSessionAction(TActionLog * Log,
     const UnicodeString & Command, const UnicodeString & Destination) :
   TSessionAction(Log, laCall)
 {
@@ -581,7 +581,7 @@ void __fastcall TLsSessionAction::FileList(TRemoteFileList * FileList)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TStatSessionAction::TStatSessionAction(TActionLog * Log, const UnicodeString & FileName) :
+/* __fastcall */ TStatSessionAction::TStatSessionAction(TActionLog * Log, const UnicodeString & FileName) :
   TFileSessionAction(Log, laStat, FileName)
 {
 }
@@ -671,7 +671,7 @@ FILE * __fastcall OpenFile(UnicodeString LogFileName, TSessionData * SessionData
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 const wchar_t *LogLineMarks = L"<>!.*";
-TSessionLog::TSessionLog(TSessionUI* UI, TSessionData * SessionData,
+/* __fastcall */ TSessionLog::TSessionLog(TSessionUI* UI, TSessionData * SessionData,
   TConfiguration * Configuration):
   TStringList()
 {
@@ -688,7 +688,7 @@ TSessionLog::TSessionLog(TSessionUI* UI, TSessionData * SessionData,
   FClosed = false;
 }
 //---------------------------------------------------------------------------
-TSessionLog::~TSessionLog()
+/* __fastcall */ TSessionLog::~TSessionLog()
 {
   FClosed = true;
   ReflectSettings();
@@ -717,18 +717,18 @@ UnicodeString __fastcall TSessionLog::GetLine(Integer Index)
   return GetStrings(Index - FTopIndex);
 }
 //---------------------------------------------------------------------------
-TLogLineType __fastcall TSessionLog::GetType(size_t Index)
+TLogLineType __fastcall TSessionLog::GetType(int Index)
 {
-    return static_cast<TLogLineType>(reinterpret_cast<size_t>(GetObjects(Index - FTopIndex)));
+  return static_cast<TLogLineType>(reinterpret_cast<size_t>(GetObjects(Index - FTopIndex)));
 }
 //---------------------------------------------------------------------------
-void TSessionLog::DoAddToParent(TLogLineType Type, const UnicodeString & Line)
+void /* __fastcall */ TSessionLog::DoAddToParent(TLogLineType Type, const UnicodeString & Line)
 {
   assert(FParent != NULL);
   FParent->Add(Type, Line);
 }
 //---------------------------------------------------------------------------
-void TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString & Line)
+void /* __fastcall */ TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString & Line)
 {
   if (static_cast<int>(FTopIndex) < 0)
   {
@@ -756,6 +756,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString & Line)
 }
 //---------------------------------------------------------------------------
 void __fastcall TSessionLog::DoAdd(TLogLineType Type, UnicodeString Line,
+  // void __fastcall (__closure *f)(TLogLineType Type, const UnicodeString & Line))
   const doaddlog_slot_type &func)
 {
   UnicodeString Prefix;
@@ -789,7 +790,7 @@ void __fastcall TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
         TGuard Guard(FCriticalSection);
 
         BeginUpdate();
-
+        // try
         {
           BOOST_SCOPE_EXIT ( (&Self) )
           {
@@ -798,6 +799,14 @@ void __fastcall TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
           } BOOST_SCOPE_EXIT_END
           DoAdd(Type, Line, boost::bind(&TSessionLog::DoAddToSelf, this, _1, _2));
         }
+#ifndef _MSC_VER
+        __finally
+        {
+          DeleteUnnecessary();
+
+          EndUpdate();
+        }
+#endif
       }
     }
     catch (Exception &E)
@@ -905,6 +914,7 @@ void __fastcall TSessionLog::StateChange()
 void __fastcall TSessionLog::DeleteUnnecessary()
 {
   BeginUpdate();
+  // try
   {
     BOOST_SCOPE_EXIT ( (&Self) )
     {
@@ -923,6 +933,12 @@ void __fastcall TSessionLog::DeleteUnnecessary()
       }
     }
   }
+#ifndef _MSC_VER
+  __finally
+  {
+    EndUpdate();
+  }
+#endif
 }
 //---------------------------------------------------------------------------
 void __fastcall TSessionLog::AddStartupInfo()
@@ -941,14 +957,12 @@ void __fastcall TSessionLog::AddStartupInfo()
   }
 }
 //---------------------------------------------------------------------------
-void TSessionLog::DoAddStartupInfo(TSessionData * Data)
+void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
 {
   TGuard Guard(FCriticalSection);
 
   BeginUpdate();
-#ifndef _MSC_VER
-  try
-#endif
+  // try
   {
 #ifdef _MSC_VER
     BOOST_SCOPE_EXIT ( (&Self) )
@@ -958,13 +972,12 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       Self->EndUpdate();
     } BOOST_SCOPE_EXIT_END
 #endif
+    // #define ADF(S, F) DoAdd(llMessage, FORMAT(S, F), DoAddToSelf);
     #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), boost::bind(&TSessionLog::DoAddToSelf, this, _1, _2));
     AddSeparator();
     ADF(L"NetBox %s (OS %s)", FConfiguration->GetVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
     THierarchicalStorage * Storage = FConfiguration->CreateScpStorage(false);
-#ifndef _MSC_VER
-    try
-#endif
+    // try
     {
 #ifdef _MSC_VER
       BOOST_SCOPE_EXIT ( (&Storage) )
@@ -1120,8 +1133,16 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
 
     AddSeparator();
 
-#undef ADF
+    #undef ADF
   }
+#ifndef _MSC_VER
+  __finally
+  {
+    DeleteUnnecessary();
+
+    EndUpdate();
+  }
+#endif
 }
 //---------------------------------------------------------------------------
 void __fastcall TSessionLog::AddSeparator()
@@ -1129,7 +1150,7 @@ void __fastcall TSessionLog::AddSeparator()
   Add(llMessage, L"--------------------------------------------------------------------------");
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TSessionLog::GetBottomIndex()
+int __fastcall TSessionLog::GetBottomIndex()
 {
   return (GetCount() > 0 ? (GetTopIndex() + GetCount() - 1) : -1);
 }
@@ -1149,7 +1170,7 @@ void __fastcall TSessionLog::Clear()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TActionLog::TActionLog(TSessionUI* UI, TSessionData * SessionData,
+/* __fastcall */ TActionLog::TActionLog(TSessionUI* UI, TSessionData * SessionData,
   TConfiguration * Configuration)
 {
   FCriticalSection = new TCriticalSection;
@@ -1167,7 +1188,7 @@ TActionLog::TActionLog(TSessionUI* UI, TSessionData * SessionData,
   FEnabled = true;
 }
 //---------------------------------------------------------------------------
-TActionLog::~TActionLog()
+/* __fastcall */ TActionLog::~TActionLog()
 {
   assert(FPendingActions->GetCount() == 0);
   delete FPendingActions;
@@ -1195,7 +1216,6 @@ void __fastcall TActionLog::Add(const UnicodeString & Line)
         UTF8String UtfLine = UTF8String(Line);
         fwrite(UtfLine.c_str(), UtfLine.Length(), 1, (FILE *)FFile);
         fwrite("\n", 1, 1, (FILE *)FFile);
-        // Error(SNotImplemented, 1491);
       }
     }
     catch (Exception &E)
