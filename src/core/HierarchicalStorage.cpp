@@ -509,7 +509,7 @@ bool __fastcall TRegistryStorage::Copy(TRegistryStorage * Storage)
       UnicodeString Name = MungeStr(Names->GetStrings(Index), GetForceAnsi());
       unsigned long Size = Buffer.size();
       unsigned long Type;
-      int RegResult;
+      int RegResult = 0;
       do
       {
         RegResult = RegQueryValueEx(Registry->GetCurrentKey(), Name.c_str(), NULL,
