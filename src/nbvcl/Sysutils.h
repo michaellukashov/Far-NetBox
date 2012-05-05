@@ -7,15 +7,11 @@
 
 #include "boostdefines.hpp"
 #include <boost/signals/signal3.hpp>
-// #include "boost/date_time/gregorian/gregorian.hpp"
-// #include "boost/date_time/year_month_day.hpp"
 
 #include "Classes.h"
 #include "UnicodeString.hpp"
 #include "Exceptions.h"
 
-// namespace dt = boost::date_time;
-// namespace bg = boost::gregorian;
 #endif
 
 namespace Sysutils {
