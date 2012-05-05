@@ -32,7 +32,7 @@ bool TMask::GetMatches(const UnicodeString Str)
 } // namespace Masks
 
 //---------------------------------------------------------------------------
-EFileMasksException::EFileMasksException(
+/* __fastcall */ EFileMasksException::EFileMasksException(
     UnicodeString Message, int AErrorStart, int AErrorLen) :
   Exception(Message)
 {
@@ -224,30 +224,30 @@ UnicodeString __fastcall TFileMasks::ComposeMaskStr(
   return Result;
 }
 //---------------------------------------------------------------------------
-TFileMasks::TFileMasks()
+/* __fastcall */ TFileMasks::TFileMasks()
 {
   Init();
 }
 //---------------------------------------------------------------------------
-TFileMasks::TFileMasks(int ForceDirectoryMasks)
+/* __fastcall */ TFileMasks::TFileMasks(int ForceDirectoryMasks)
 {
   Init();
   FForceDirectoryMasks = ForceDirectoryMasks;
 }
 //---------------------------------------------------------------------------
-TFileMasks::TFileMasks(const TFileMasks & Source)
+/* __fastcall */ TFileMasks::TFileMasks(const TFileMasks & Source)
 {
   Init();
   SetStr(Source.GetMasks(), false);
 }
 //---------------------------------------------------------------------------
-TFileMasks::TFileMasks(const UnicodeString & AMasks)
+/* __fastcall */ TFileMasks::TFileMasks(const UnicodeString & AMasks)
 {
   Init();
   SetStr(AMasks, false);
 }
 //---------------------------------------------------------------------------
-TFileMasks::~TFileMasks()
+/* __fastcall */ TFileMasks::~TFileMasks()
 {
   Clear();
 }
@@ -688,7 +688,7 @@ bool __fastcall TFileMasks::MatchesMaskMask(const TMaskMask & MaskMask, const Un
   {
     Result = true;
   }
-  else if ((MaskMask.Kind == TMaskMask::NoExt) && (Str.Pos(L'.') < 0))
+  else if ((MaskMask.Kind == TMaskMask::NoExt) && (Str.Pos(L".") == 0))
   {
     Result = true;
   }
@@ -1017,11 +1017,11 @@ bool __fastcall TInteractiveCustomCommand::PatternReplacement(int Index, const U
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TCustomCommandData::TCustomCommandData()
+/* __fastcall */ TCustomCommandData::TCustomCommandData()
 {
 }
 //---------------------------------------------------------------------------
-TCustomCommandData::TCustomCommandData(TTerminal * Terminal)
+/* __fastcall */ TCustomCommandData::TCustomCommandData(TTerminal * Terminal)
 {
   HostName = Terminal->GetSessionData()->GetHostNameExpanded();
   UserName = Terminal->GetSessionData()->GetUserNameExpanded();

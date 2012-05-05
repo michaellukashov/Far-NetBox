@@ -16,7 +16,7 @@
 class EFileMasksException : public Exception
 {
 public:
-  explicit EFileMasksException(UnicodeString Message, int ErrorStart, int ErrorLen);
+  explicit /* __fastcall */ EFileMasksException(UnicodeString Message, int ErrorStart, int ErrorLen);
   int ErrorStart;
   int ErrorLen;
 };
@@ -30,7 +30,7 @@ namespace Masks
 class TMask
 {
 public:
-  TMask(const UnicodeString Mask) :
+  explicit TMask(const UnicodeString Mask) :
     FMask(Mask)
   {
   }
@@ -65,11 +65,11 @@ public:
     TStrings * IncludeFileMasksStr, TStrings * ExcludeFileMasksStr,
     TStrings * IncludeDirectoryMasksStr, TStrings * ExcludeDirectoryMasksStr);
 
-  TFileMasks();
-  explicit TFileMasks(int ForceDirectoryMasks);
-  TFileMasks(const TFileMasks & Source);
-  explicit TFileMasks(const UnicodeString & AMasks);
-  virtual ~TFileMasks();
+  /* __fastcall */ TFileMasks();
+  explicit /* __fastcall */ TFileMasks(int ForceDirectoryMasks);
+  /* __fastcall */ TFileMasks(const TFileMasks & Source);
+  explicit /* __fastcall */ TFileMasks(const UnicodeString & AMasks);
+  virtual /* __fastcall */ ~TFileMasks();
   TFileMasks & __fastcall operator =(const TFileMasks & rhm);
   TFileMasks & __fastcall operator =(const UnicodeString & rhs);
   bool __fastcall operator ==(const TFileMasks & rhm) const;
@@ -92,7 +92,6 @@ public:
   __property TStrings * IncludeDirectoryMasksStr = { read = GetMasksStr, index = MASK_INDEX(true, true) };
   __property TStrings * ExcludeDirectoryMasksStr = { read = GetMasksStr, index = MASK_INDEX(true, false) };
 #else
-
   UnicodeString __fastcall GetMasks() const { return FStr; }
   void __fastcall SetMasks(const UnicodeString value);
 
@@ -204,7 +203,7 @@ protected:
 class TInteractiveCustomCommand : public TCustomCommand
 {
 public:
-  explicit TInteractiveCustomCommand(TCustomCommand * ChildCustomCommand);
+  explicit /* __fastcall */ TInteractiveCustomCommand(TCustomCommand * ChildCustomCommand);
 
 protected:
   virtual void __fastcall Prompt(int Index, const UnicodeString & Prompt,
@@ -220,8 +219,8 @@ private:
 class TTerminal;
 struct TCustomCommandData
 {
-  TCustomCommandData();
-  explicit TCustomCommandData(TTerminal * Terminal);
+  /* __fastcall */ TCustomCommandData();
+  explicit /* __fastcall */ TCustomCommandData(TTerminal * Terminal);
 
   UnicodeString HostName;
   UnicodeString UserName;
