@@ -1077,9 +1077,9 @@ UnicodeString MB2W(const char *src, const UINT cp)
   const int reqLength = MultiByteToWideChar(cp, 0, src, -1, NULL, 0);
   if (reqLength)
   {
-      wide.SetLength(static_cast<int>(reqLength));
+      wide.resize(static_cast<int>(reqLength));
       MultiByteToWideChar(cp, 0, src, -1, &wide[0], reqLength);
-      wide.Remove(wide.Length() - 1);  //remove NULL character
+      wide.resize(wide.size() - 1);  //remove NULL character
   }
   return wide;
 }
