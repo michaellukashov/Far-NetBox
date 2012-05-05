@@ -4,14 +4,17 @@
 #include <vcl.h>
 #pragma hdrstop
 #else
+#include <iostream>
+#include <iomanip>
 
 #include "stdafx.h"
 
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
 #include <boost/algorithm/string.hpp>
-#include "boost/date_time.hpp"
-#include "boost/date_time/local_time/local_time.hpp"
+// #include "boost/date_time.hpp"
+// #include "boost/date_time/local_time/local_time.hpp"
+#include <boost/lexical_cast.hpp>
 #include "Classes.h"
 #include "FarPlugin.h"
 #include "RemoteFiles.h"
@@ -1080,7 +1083,6 @@ static bool DecodeDateFully(const TDateTime & DateTime,
   static const int D400 = D100 * 4 + 1;
   bool Result = false;
   int T = DateTimeToTimeStamp(DateTime).Date;
-  // DEBUG_PRINTF(L"DateTime = %f, T = %d", DateTime, T);
   unsigned int Y = 0;
   unsigned int M = 0;
   unsigned int D = 0;
@@ -1122,13 +1124,12 @@ static bool DecodeDateFully(const TDateTime & DateTime,
       D += D1;
     }
     Y += I;
-    Result = bg::gregorian_calendar::is_leap_year(Y);
+    Result = IsLeapYear(Y);
     const TDayTable * DayTable = &MonthDays[Result];
     M = 1;
     while (true)
     {
       I = (*DayTable)[M - 1];
-      // DEBUG_PRINTF(L"I = %u, D = %u", I, D);
       if (D < I)
       {
         break;
@@ -1167,7 +1168,7 @@ void DecodeTime(const TDateTime &DateTime, unsigned short &Hour,
 //---------------------------------------------------------------------------
 bool TryEncodeDate(int Year, int Month, int Day, TDateTime & Date)
 {
-  const TDayTable * DayTable = &MonthDays[bg::gregorian_calendar::is_leap_year(Year)];
+  const TDayTable * DayTable = &MonthDays[IsLeapYear(Year)];
   if ((Year >= 1) && (Year <= 9999) && (Month >= 1) && (Month <= 12) &&
       (Day >= 1) && (Day <= (*DayTable)[Month - 1]))
   {
@@ -1177,7 +1178,6 @@ bool TryEncodeDate(int Year, int Month, int Day, TDateTime & Date)
     }
     int I = Year - 1;
     Date = TDateTime(I * 365 + I / 4 - I / 100 + I / 400 + Day - DateDelta);
-    // DEBUG_PRINTF(L"Year = %d, Month = %d, Day = %d, Date = %f", Year, Month, Day, Date);
     return true;
   }
   return false;
@@ -1263,19 +1263,8 @@ TDateTime Date()
 
 UnicodeString FormatDateTime(const UnicodeString fmt, TDateTime DateTime)
 {
-  // DEBUG_PRINTF(L"fmt = %s", fmt.c_str());
   UnicodeString Result;
-  // DateTimeToStr(Result, fmt, DateTime);
-  boost::local_time::local_time_facet * output_facet = new boost::local_time::local_time_facet();
-  std::wstringstream ss;
-  ss.imbue(std::locale(std::locale::classic(), output_facet));
-  output_facet->format(W2MB(fmt.c_str()).c_str());
-  // boost::local_time::local_date_time ldt;
-  unsigned short Y, M, D;
-  DateTime.DecodeDate(Y, M, D);
-  bg::date d(Y, M, D);
-  ss << d;
-  Result = ss.str();
+  Error(SNotImplemented, 150);
   return Result;
 }
 /*
