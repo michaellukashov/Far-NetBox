@@ -255,6 +255,10 @@ UnicodeString __fastcall TFileMasks::ComposeMaskStr(
 void __fastcall TFileMasks::Init()
 {
   FForceDirectoryMasks = -1;
+  for (int Index = 0; Index < 4; Index++)
+  {
+    FMasksStr[Index] = NULL;
+  }
 
   DoInit(false);
 }

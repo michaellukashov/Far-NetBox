@@ -48,11 +48,6 @@ public:
   struct TParams
   {
     TParams();
-    // TParams(const TParams &rhs)
-    // {
-    // Size = rhs.Size;
-    // Modification = rhs.Modification;
-    // }
     __int64 Size;
     TDateTime Modification;
 
@@ -107,12 +102,30 @@ private:
 
   struct TMaskMask
   {
+    TMaskMask() :
+      Kind(Any),
+      Mask(NULL)
+    {}
     enum { Any, NoExt, Regular } Kind;
     Masks::TMask * Mask;
   };
 
   struct TMask
   {
+    TMask() :
+      // FileNameMask
+      // DirectoryMask
+      HighSizeMask(None),
+      HighSize(0),
+      LowSizeMask(None),
+      LowSize(0),
+      HighModificationMask(None),
+      // HighModification
+      LowModificationMask(None)
+      // LowModification
+      // MaskStr
+      // UserStr
+    {}
     TMaskMask FileNameMask;
     TMaskMask DirectoryMask;
 
