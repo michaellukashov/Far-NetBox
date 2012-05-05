@@ -385,17 +385,23 @@ TModificationFmt __fastcall LessDateTimePrecision(
 UnicodeString __fastcall UserModificationStr(TDateTime DateTime,
   TModificationFmt Precision)
 {
+  unsigned short Y, M, D, H, N, S, MS;
+  DateTime.DecodeDate(Y, M, D);
+  DateTime.DecodeTime(H, N, S, MS);
   switch (Precision)
   {
     case mfNone:
       return L"";
     case mfMDY:
-      return FormatDateTime(L"ddddd", DateTime);
+      // return FormatDateTime(L"ddddd", DateTime);
+      return FORMAT(L"%02d.%02d.%04d", D, M, Y);
     case mfMDHM:
-      return FormatDateTime(L"ddddd t", DateTime);
+      // return FormatDateTime(L"ddddd t", DateTime);
+      return FORMAT(L"%02d.%02d.%04d %02d:%02d", D, M, Y, H, N);
     case mfFull:
     default:
       return FormatDateTime(L"ddddd tt", DateTime);
+      return FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d", D, M, Y, H, N, S);
   }
 }
 //---------------------------------------------------------------------------

@@ -83,7 +83,12 @@ UnicodeString __fastcall XmlAttributeEscape(UnicodeString Str)
 //---------------------------------------------------------------------------
 UnicodeString __fastcall XmlTimestamp(const TDateTime & DateTime)
 {
-  return FormatDateTime(L"yyyy'-'mm'-'dd'T'hh':'nn':'ss'.'zzz'Z'", ConvertTimestampToUTC(DateTime));
+  // return FormatDateTime(L"yyyy'-'mm'-'dd'T'hh':'nn':'ss'.'zzz'Z'", ConvertTimestampToUTC(DateTime));
+  unsigned short Y, M, D, H, N, S, MS;
+  DateTime.DecodeDate(Y, M, D);
+  DateTime.DecodeTime(H, N, S, MS);
+  UnicodeString dt = FORMAT(L"%04d-%02d-%02dT%02d:%02d:%02d.%03dZ", Y, M, D, H, N, S, MS);
+  return dt;
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall XmlTimestamp()
@@ -617,22 +622,30 @@ FILE * __fastcall OpenFile(UnicodeString LogFileName, TSessionData * SessionData
     {
       UnicodeString Replacement;
       // keep consistent with TFileCustomCommand::PatternReplacement
+      unsigned short Y, M, D, H, NN, S, MS;
+      TDateTime DateTime = N;
+      DateTime.DecodeDate(Y, M, D);
+      DateTime.DecodeTime(H, NN, S, MS);
       switch (tolower(ANewFileName[Index + 1]))
       {
         case L'y':
-          Replacement = FormatDateTime(L"yyyy", N);
+          // Replacement = FormatDateTime(L"yyyy", N);
+          Replacement = FORMAT(L"%04d", Y);
           break;
 
         case L'm':
-          Replacement = FormatDateTime(L"mm", N);
+          // Replacement = FormatDateTime(L"mm", N);
+          Replacement = FORMAT(L"%02d", M);
           break;
 
         case L'd':
-          Replacement = FormatDateTime(L"dd", N);
+          // Replacement = FormatDateTime(L"dd", N);
+          Replacement = FORMAT(L"%02d", D);
           break;
 
         case L't':
-          Replacement = FormatDateTime(L"hhnnss", N);
+          // Replacement = FormatDateTime(L"hhnnss", N);
+          Replacement = FORMAT(L"%02d%02d%02d", H, NN, S);
           break;
 
         case L'@':
@@ -748,7 +761,13 @@ void /* __fastcall */ TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeS
 
     if (FFile != NULL)
     {
-      UnicodeString Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", Now());
+      unsigned short Y, M, D, H, N, S, MS;
+      TDateTime DateTime = Now();
+      DateTime.DecodeDate(Y, M, D);
+      DateTime.DecodeTime(H, N, S, MS);
+      UnicodeString dt = FORMAT(L" %04d-%02d-%02d %02d:%02d:%02d.%03d ", Y, M, D, H, N, S, MS);
+      // UnicodeString Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", Now());
+      UnicodeString Timestamp = dt;
       UTF8String UtfLine = UTF8String(UnicodeString(LogLineMarks[Type]) + Timestamp + Line + "\n");
       fwrite(UtfLine.c_str(), UtfLine.Length(), 1, (FILE *)FFile);
     }
@@ -1005,7 +1024,13 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
       wcscpy(UserName, L"<Failed to retrieve username>");
     }
     ADF(L"Local account: %s", UserName);
-    ADF(L"Login time: %s", FormatDateTime(L"dddddd tt", Now()).c_str());
+    unsigned short Y, M, D, H, N, S, MS;
+    TDateTime DateTime = Now();
+    DateTime.DecodeDate(Y, M, D);
+    DateTime.DecodeTime(H, N, S, MS);
+    UnicodeString dt = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d", D, M, Y, H, N, S);
+    // ADF(L"Login time: %s", FormatDateTime(L"dddddd tt", Now()).c_str());
+    ADF(L"Login time: %s", dt.c_str());
     AddSeparator();
     ADF(L"Session name: %s (%s)", Data->GetSessionName().c_str(), Data->GetSource().c_str());
     ADF(L"Host name: %s (Port: %d)", Data->GetHostNameExpanded().c_str(), Data->GetPortNumber());

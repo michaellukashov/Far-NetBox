@@ -3014,7 +3014,13 @@ void /* __fastcall */ TTerminal::RecycleFile(UnicodeString FileName,
 
     TMoveFileParams Params;
     Params.Target = GetSessionData()->GetRecycleBinPath();
-    Params.FileMask = FORMAT(L"*-%s.*", FormatDateTime(L"yyyymmdd-hhnnss", Now()).c_str());
+    unsigned short Y, M, D, H, N, S, MS;
+    TDateTime DateTime = Now();
+    DateTime.DecodeDate(Y, M, D);
+    DateTime.DecodeTime(H, N, S, MS);
+    UnicodeString dt = FORMAT(L"%04d%02d%02d-%02d%02d%02d", Y, M, D, H, N, S);
+    // Params.FileMask = FORMAT(L"*-%s.*", FormatDateTime(L"yyyymmdd-hhnnss", Now()).c_str());
+    Params.FileMask = FORMAT(L"*-%s.*", dt.c_str());
 
     MoveFile(FileName, File, &Params);
   }
@@ -3225,15 +3231,27 @@ void /* __fastcall */ TTerminal::ChangeFileProperties(UnicodeString FileName,
     }
     if (RProperties->Valid.Contains(vpModification))
     {
+      unsigned short Y, M, D, H, N, S, MS;
+      TDateTime DateTime = UnixToDateTime(RProperties->Modification, GetSessionData()->GetDSTMode());
+      DateTime.DecodeDate(Y, M, D);
+      DateTime.DecodeTime(H, N, S, MS);
+      UnicodeString dt = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, N, S);
       LogEvent(FORMAT(L" - modification: \"%s\"",
-        FormatDateTime(L"dddddd tt",
-           UnixToDateTime(RProperties->Modification, GetSessionData()->GetDSTMode())).c_str()));
+        // FormatDateTime(L"dddddd tt",
+           // UnixToDateTime(RProperties->Modification, GetSessionData()->GetDSTMode())).c_str()));
+           dt.c_str()));
     }
     if (RProperties->Valid.Contains(vpLastAccess))
     {
+      unsigned short Y, M, D, H, N, S, MS;
+      TDateTime DateTime = UnixToDateTime(RProperties->LastAccess, GetSessionData()->GetDSTMode());
+      DateTime.DecodeDate(Y, M, D);
+      DateTime.DecodeTime(H, N, S, MS);
+      UnicodeString dt = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, N, S);
       LogEvent(FORMAT(L" - last access: \"%s\"",
-        FormatDateTime(L"dddddd tt",
-           UnixToDateTime(RProperties->LastAccess, GetSessionData()->GetDSTMode())).c_str()));
+        // FormatDateTime(L"dddddd tt",
+           // UnixToDateTime(RProperties->LastAccess, GetSessionData()->GetDSTMode())).c_str()));
+           dt.c_str()));
     }
   }
   FileModified(File, FileName);

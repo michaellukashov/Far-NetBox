@@ -1117,12 +1117,12 @@ TDateTime::TDateTime(unsigned short Hour,
     FValue = ::EncodeTimeVerbose(Hour, Min, Sec, MSec);
 }
 void TDateTime::DecodeDate(unsigned short &Y,
-  unsigned short &M, unsigned short &D)
+  unsigned short &M, unsigned short &D) const
 {
     ::DecodeDate(*this, Y, M, D);
 }
 void TDateTime::DecodeTime(unsigned short &H,
-  unsigned short &N, unsigned short &S, unsigned short &MS)
+  unsigned short &N, unsigned short &S, unsigned short &MS) const
 {
     ::DecodeTime(*this, H, N, S, MS);
 }

@@ -427,9 +427,9 @@ public:
       return UnicodeString();
     }
     void DecodeDate(unsigned short &Y,
-      unsigned short &M, unsigned short &D);
+      unsigned short &M, unsigned short &D) const;
     void DecodeTime(unsigned short &H,
-      unsigned short &N, unsigned short &S, unsigned short &MS);
+      unsigned short &N, unsigned short &S, unsigned short &MS) const;
 private:
     double FValue;
 };

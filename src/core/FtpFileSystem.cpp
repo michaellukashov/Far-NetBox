@@ -3202,6 +3202,7 @@ UnicodeString __fastcall FormatContact(const TFtpsCertificateData::TContact & Co
 //---------------------------------------------------------------------------
 UnicodeString __fastcall FormatValidityTime(const TFtpsCertificateData::TValidityTime & ValidityTime)
 {
+  /*
   return FormatDateTime(L"ddddd tt",
     EncodeDateVerbose(
       static_cast<unsigned short>(ValidityTime.Year), static_cast<unsigned short>(ValidityTime.Month),
@@ -3209,6 +3210,19 @@ UnicodeString __fastcall FormatValidityTime(const TFtpsCertificateData::TValidit
     EncodeTimeVerbose(
       static_cast<unsigned short>(ValidityTime.Hour), static_cast<unsigned short>(ValidityTime.Min),
       static_cast<unsigned short>(ValidityTime.Sec), 0));
+  */
+  unsigned short Y, M, D, H, N, S, MS;
+  TDateTime DateTime =
+    EncodeDateVerbose(
+      static_cast<unsigned short>(ValidityTime.Year), static_cast<unsigned short>(ValidityTime.Month),
+      static_cast<unsigned short>(ValidityTime.Day)) +
+    EncodeTimeVerbose(
+      static_cast<unsigned short>(ValidityTime.Hour), static_cast<unsigned short>(ValidityTime.Min),
+      static_cast<unsigned short>(ValidityTime.Sec), 0);
+  DateTime.DecodeDate(Y, M, D);
+  DateTime.DecodeTime(H, N, S, MS);
+  UnicodeString dt = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, N, S);
+  return dt;
 }
 //---------------------------------------------------------------------------
 bool __fastcall TFTPFileSystem::HandleAsynchRequestVerifyCertificate(

@@ -290,7 +290,11 @@ UnicodeString __fastcall UniqTempDir(const UnicodeString BaseDir, const UnicodeS
     }
     else
     {
-      TempDir += IncludeTrailingBackslash(FormatDateTime(L"nnzzz", Now()));
+      // TempDir += IncludeTrailingBackslash(FormatDateTime(L"nnzzz", Now()));
+      TDateTime dt = Now();
+      unsigned short H, M, S, MS;
+      dt.DecodeTime(H, M, S, MS);
+      TempDir += IncludeTrailingBackslash(FORMAT(L"%02d%03d", M, MS));
     };
   }
   while (!Mask && DirectoryExists(TempDir));
@@ -350,7 +354,7 @@ UnicodeString __fastcall FormatDateTimeSpan(const UnicodeString TimeFormat, TDat
   TDateTime dt(DateTime - static_cast<int>(DateTime));
   unsigned short H, M, S, MS;
   dt.DecodeTime(H, M, S, MS);
-  Result += FORMAT(L"%d:%02d:%02d", H, M, S);
+  Result += FORMAT(L"%02d:%02d:%02d", H, M, S);
   return Result;
 }
 //---------------------------------------------------------------------------

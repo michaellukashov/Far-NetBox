@@ -473,7 +473,10 @@ BOOST_FIXTURE_TEST_CASE(test19, base_fixture_t)
 BOOST_FIXTURE_TEST_CASE(test20, base_fixture_t)
 {
     TDateTime DateTime = Now();
-    UnicodeString str = ::FormatDateTime(L"HH:MM:SS", DateTime);
+    unsigned short H, M, S, MS;
+    DateTime.DecodeTime(H, M, S, MS);
+    // UnicodeString str = ::FormatDateTime(L"HH:MM:SS", DateTime);
+    UnicodeString str = FORMAT(L"%02d:%02d:%02d", H, M, S);
     BOOST_TEST_MESSAGE("str = " << W2MB(str.c_str()));
     // BOOST_CHECK(str == L"20:20:20");
 }
