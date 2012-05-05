@@ -1,5 +1,10 @@
 //---------------------------------------------------------------------------
+#ifndef _MSC_VER
+#include <vcl.h>
+#pragma hdrstop
+#else
 #include "stdafx.h"
+#endif
 #include "Common.h"
 #include "FileBuffer.h"
 //---------------------------------------------------------------------------
@@ -9,8 +14,7 @@
 //---------------------------------------------------------------------------
 char * __fastcall EOLToStr(TEOLType EOLType)
 {
-  switch (EOLType)
-  {
+  switch (EOLType) {
     case eolLF: return "\n";
     case eolCRLF: return "\r\n";
     case eolCR: return "\r";
@@ -18,13 +22,13 @@ char * __fastcall EOLToStr(TEOLType EOLType)
   }
 }
 //---------------------------------------------------------------------------
-TFileBuffer::TFileBuffer()
+/* __fastcall */ TFileBuffer::TFileBuffer()
 {
   FMemory = new TMemoryStream();
   FSize = 0;
 }
 //---------------------------------------------------------------------------
-TFileBuffer::~TFileBuffer()
+/* __fastcall */ TFileBuffer::~TFileBuffer()
 {
   delete FMemory;
 }
@@ -57,9 +61,9 @@ void __fastcall TFileBuffer::SetMemory(TMemoryStream * value)
   }
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TFileBuffer::ReadStream(TStream * Stream, size_t  Len, bool ForceLen)
+DWORD __fastcall TFileBuffer::ReadStream(TStream * Stream, const DWORD Len, bool ForceLen)
 {
-  size_t Result = 0;
+  DWORD Result;
   try
   {
     SetSize(GetPosition() + Len);
@@ -80,27 +84,27 @@ size_t __fastcall TFileBuffer::ReadStream(TStream * Stream, size_t  Len, bool Fo
     }
     FMemory->Seek(Len, soFromCurrent);
   }
-  catch (const EReadError &)
+  catch(EReadError &)
   {
-    ::RaiseLastOSError();
+    RaiseLastOSError();
   }
   return Result;
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TFileBuffer::LoadStream(TStream * Stream, size_t Len, bool ForceLen)
+DWORD __fastcall TFileBuffer::LoadStream(TStream * Stream, const DWORD Len, bool ForceLen)
 {
   FMemory->Seek(0, soFromBeginning);
   return ReadStream(Stream, Len, ForceLen);
 }
 //---------------------------------------------------------------------------
 void __fastcall TFileBuffer::Convert(char * Source, char * Dest, int Params,
-                                     bool & /*Token*/)
+  bool & /*Token*/)
 {
   assert(strlen(Source) <= 2);
   assert(strlen(Dest) <= 2);
 
   if (FLAGSET(Params, cpRemoveBOM) && (GetSize() >= 3) &&
-      (memcmp(GetData(), "\xEF\xBB\xBF", 3) == 0))
+      (memcmp(GetData(), Bom, sizeof(Bom)) == 0))
   {
     Delete(0, 3);
   }
@@ -121,12 +125,12 @@ void __fastcall TFileBuffer::Convert(char * Source, char * Dest, int Params,
   if (!Source[1])
   {
     // Disabled, not worth risking it is not safe enough, for the bugfix release
-#if 0
+    #if 0
     bool PrevToken = Token;
     Token = false;
-#endif
+    #endif
 
-    for (size_t Index = 0; Index < GetSize(); Index++)
+    for (int Index = 0; Index < GetSize(); Index++)
     {
       // EOL already in wanted format, make sure to pass unmodified
       if ((Index < GetSize() - 1) && (*Ptr == Dest[0]) && (*(Ptr+1) == Dest[1]))
@@ -134,7 +138,7 @@ void __fastcall TFileBuffer::Convert(char * Source, char * Dest, int Params,
         Index++;
         Ptr++;
       }
-#if 0
+      #if 0
       // last buffer ended with the first char of wanted EOL format,
       // which got expanded to wanted format.
       // now we got the second char, so get rid of it.
@@ -142,15 +146,15 @@ void __fastcall TFileBuffer::Convert(char * Source, char * Dest, int Params,
       {
         Delete(Index, 1);
       }
-#endif
+      #endif
       else if (*Ptr == Source[0])
       {
-#if 0
+        #if 0
         if ((*Ptr == Dest[0]) && (Index == GetSize() - 1))
         {
           Token = true;
         }
-#endif
+        #endif
 
         *Ptr = Dest[0];
         if (Dest[1])
@@ -166,7 +170,7 @@ void __fastcall TFileBuffer::Convert(char * Source, char * Dest, int Params,
   // two character source EOL
   else
   {
-    size_t Index;
+    int Index;
     for (Index = 0; Index < GetSize() - 1; Index++)
     {
       if ((*Ptr == Source[0]) && (*(Ptr+1) == Source[1]))
@@ -193,65 +197,61 @@ void __fastcall TFileBuffer::Convert(char * Source, char * Dest, int Params,
 }
 //---------------------------------------------------------------------------
 void __fastcall TFileBuffer::Convert(TEOLType Source, TEOLType Dest, int Params,
-                                     bool & Token)
+  bool & Token)
 {
   Convert(EOLToStr(Source), EOLToStr(Dest), Params, Token);
 }
 //---------------------------------------------------------------------------
 void __fastcall TFileBuffer::Convert(char * Source, TEOLType Dest, int Params,
-                                     bool & Token)
+  bool & Token)
 {
   Convert(Source, EOLToStr(Dest), Params, Token);
 }
 //---------------------------------------------------------------------------
 void __fastcall TFileBuffer::Convert(TEOLType Source, char * Dest, int Params,
-                                     bool & Token)
+  bool & Token)
 {
   Convert(EOLToStr(Source), Dest, Params, Token);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileBuffer::Insert(size_t Index, const char * Buf, size_t Len)
+void __fastcall TFileBuffer::Insert(int Index, const char * Buf, int Len)
 {
   SetSize(GetSize() + Len);
   memmove(GetData() + Index + Len, GetData() + Index, GetSize() - Index - Len);
   memmove(GetData() + Index, Buf, Len);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileBuffer::Delete(size_t Index, size_t Len)
+void __fastcall TFileBuffer::Delete(int Index, int Len)
 {
   memmove(GetData() + Index, GetData() + Index + Len, GetSize() - Index - Len);
   SetSize(GetSize() - Len);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileBuffer::WriteToStream(TStream * Stream, size_t Len)
+void __fastcall TFileBuffer::WriteToStream(TStream * Stream, const DWORD Len)
 {
   try
   {
     Stream->WriteBuffer(GetData() + GetPosition(), Len);
     FMemory->Seek(Len, soFromCurrent);
   }
-  catch (const EWriteError &)
+  catch(EWriteError &)
   {
-    ::RaiseLastOSError();
+    RaiseLastOSError();
   }
 }
 //---------------------------------------------------------------------------
-TSafeHandleStream::TSafeHandleStream(HANDLE AHandle) :
+//---------------------------------------------------------------------------
+/* __fastcall */ TSafeHandleStream::TSafeHandleStream(HANDLE AHandle) :
   THandleStream(AHandle)
 {
 }
-
-TSafeHandleStream::~TSafeHandleStream()
-{
-}
-
 //---------------------------------------------------------------------------
 __int64 __fastcall TSafeHandleStream::Read(void * Buffer, __int64 Count)
 {
   __int64 Result = ::FileRead(FHandle, Buffer, Count);
   if (Result == static_cast<__int64>(-1))
   {
-    ::RaiseLastOSError();
+    RaiseLastOSError();
   }
   return Result;
 }
@@ -261,7 +261,7 @@ __int64 __fastcall TSafeHandleStream::Write(const void * Buffer, __int64 Count)
   __int64 Result = ::FileWrite(FHandle, Buffer, Count);
   if (Result == -1)
   {
-    ::RaiseLastOSError();
+    RaiseLastOSError();
   }
   return Result;
 };
