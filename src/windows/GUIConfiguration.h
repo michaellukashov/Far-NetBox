@@ -211,7 +211,7 @@ public:
   virtual HANDLE __fastcall LoadNewResourceModule(LCID Locale,
     UnicodeString * FileName = NULL);
   HANDLE __fastcall GetResourceModule();
-  virtual void __fastcall SetResourceModule(HINSTANCE Instance);
+  // virtual void __fastcall SetResourceModule(HINSTANCE Instance);
   TStrings * __fastcall GetLocales();
   LCID __fastcall InternalLocale();
   void __fastcall FreeResourceModule(HANDLE Instance);
