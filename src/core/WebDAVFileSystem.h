@@ -85,7 +85,7 @@ protected:
   virtual UnicodeString __fastcall GetCurrentDirectory();
 
   bool __fastcall HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
-    size_t Count);
+    unsigned int Count);
   bool __fastcall HandleTransferStatus(bool Valid, __int64 TransferSize,
     __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
     bool FileTransfer);

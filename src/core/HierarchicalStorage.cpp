@@ -460,7 +460,6 @@ UnicodeString __fastcall THierarchicalStorage::MungeSubKey(UnicodeString Key, bo
   {
     Result = MungeStr(key, GetForceAnsi());
   }
-  // DEBUG_PRINTF(L"Result = %s", Result.c_str());
   return Result;
 }
 //===========================================================================

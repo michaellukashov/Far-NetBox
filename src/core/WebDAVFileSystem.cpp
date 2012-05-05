@@ -1713,7 +1713,7 @@ int TWebDAVFileSystem::GetOptionVal(int OptionID) const
 }
 //---------------------------------------------------------------------------
 bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
-  const TListDataEntry * Entries, size_t Count)
+  const TListDataEntry * Entries, unsigned int Count)
 {
   if (!FActive)
   {

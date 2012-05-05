@@ -1250,7 +1250,7 @@ void CFtpControlSocket::OnConnect(int nErrorCode)
 			int Len = FormatMessage(
 				FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY,
 				NULL, nErrorCode, 0, Buffer, LENOF(Buffer), NULL);
-			while ((Len > 0) && (((int)(Buffer[Len - 1]) >= 0) && (Buffer[Len - 1] <= 32)))
+			while ((Len > 0) && ((Buffer[Len - 1] >= 0) && (Buffer[Len - 1] <= 32)))
 			{
 				--Len;
 			}
@@ -1281,7 +1281,7 @@ BOOL CFtpControlSocket::Send(CString str, BOOL bUpdateRecvTime)
 		char* utf8 = new char[len + 1];
 		WideCharToMultiByte(CP_UTF8, 0, unicode, -1, utf8, len + 1, 0, 0);
 
-		size_t sendLen = strlen(utf8);
+		int sendLen = strlen(utf8);
 		if (!m_awaitsReply && !m_sendBuffer)
 			res = CAsyncSocketEx::Send(utf8, strlen(utf8));
 		else
@@ -1293,7 +1293,7 @@ BOOL CFtpControlSocket::Send(CString str, BOOL bUpdateRecvTime)
 			DoClose();
 			return FALSE;
 		}
-		if (res != static_cast<int>(sendLen))
+		if (res != sendLen)
 		{
 			if (res == -2)
 				res = 0;
@@ -6084,8 +6084,7 @@ bool CFtpControlSocket::NeedModeCommand()
 	return false;
 #else
 	bool useZlib;
-	if (m_Operation.nOpMode == CSMODE_LIST || m_Operation.nOpMode == CSMODE_LISTFILE ||
-		(m_Operation.nOpMode == CSMODE_TRANSFER && m_Operation.nOpMode <= FILETRANSFER_TYPE))
+	if (m_Operation.nOpMode == CSMODE_LIST || m_Operation.nOpMode == CSMODE_LISTFILE || (m_Operation.nOpMode == CSMODE_TRANSFER && m_Operation.nOpMode <= FILETRANSFER_TYPE))
 		useZlib = COptions::GetOptionVal(OPTION_MODEZ_USE) != 0;
 	else
 		useZlib = COptions::GetOptionVal(OPTION_MODEZ_USE) > 1;
