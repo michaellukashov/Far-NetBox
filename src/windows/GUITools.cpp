@@ -301,18 +301,13 @@ UnicodeString __fastcall UniqTempDir(const UnicodeString BaseDir, const UnicodeS
 bool __fastcall DeleteDirectory(const UnicodeString DirName)
 {
   TSearchRec sr = {0};
-  // sr.dwFileAttributes = faAnyFile;
   bool retval = true;
-  // HANDLE h = ::FindFirstFileW(DirName.c_str(), &sr);
-  // if (h != INVALID_HANDLE_VALUE)
   if (FindFirst(DirName + L"\\*", faAnyFile, sr) == 0) // VCL Function
   {
     if (FLAGSET(sr.Attr, faDirectory))
     {
       if ((sr.Name != THISDIRECTORY) && (sr.Name != PARENTDIRECTORY))
-      {
         retval = DeleteDirectory(DirName + L"\\" + sr.Name);
-      }
     }
     else
     {
@@ -326,9 +321,7 @@ bool __fastcall DeleteDirectory(const UnicodeString DirName)
         if (FLAGSET(sr.Attr, faDirectory))
         {
           if ((sr.Name != THISDIRECTORY) && (sr.Name != PARENTDIRECTORY))
-          {
             retval = DeleteDirectory(DirName + L"\\" + sr.Name);
-          }
         }
         else
         {
