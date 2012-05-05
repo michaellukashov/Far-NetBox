@@ -348,7 +348,7 @@ int __fastcall TSimpleThread::ThreadProc(void * Thread)
   FThread(NULL), FFinished(true)
 {
 #ifndef _MSC_VER
-  unsigned ThreadID;
+  DWORD ThreadID;
   FThread = reinterpret_cast<HANDLE>(
     StartThread(NULL, 0, ThreadProc, this, CREATE_SUSPENDED, ThreadID));
 #endif
@@ -356,7 +356,7 @@ int __fastcall TSimpleThread::ThreadProc(void * Thread)
 //---------------------------------------------------------------------------
 void __fastcall TSimpleThread::Init()
 {
-  unsigned int ThreadID;
+  DWORD ThreadID;
   FThread = reinterpret_cast<HANDLE>(
     StartThread(NULL, 0, this, CREATE_SUSPENDED, ThreadID));
 }

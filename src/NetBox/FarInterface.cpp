@@ -13,13 +13,14 @@ TConfiguration * __fastcall CreateConfiguration()
     return new TFarConfiguration(FarPlugin);
 }
 //---------------------------------------------------------------------------
-void ShowExtendedException(const std::exception *E)
+void __fastcall ShowExtendedException(Exception * E)
 {
     assert(FarPlugin != NULL);
     TWinSCPPlugin *WinSCPPlugin = dynamic_cast<TWinSCPPlugin *>(FarPlugin);
     assert(WinSCPPlugin != NULL);
     WinSCPPlugin->ShowExtendedException(E);
 }
+//---------------------------------------------------------------------------
 UnicodeString __fastcall AppNameString()
 {
     return L"NetBox";
@@ -68,12 +69,12 @@ void EndThread(int ExitCode)
 }
 
 //---------------------------------------------------------------------------
-size_t StartThread(void *SecurityAttributes, unsigned StackSize,
-    void *Parameter, unsigned CreationFlags,
-    DWORD &ThreadId)
+int __fastcall StartThread(void *SecurityAttributes, unsigned int StackSize,
+  void * Parameter, unsigned int CreationFlags,
+  DWORD & ThreadId)
 {
-    return BeginThread(SecurityAttributes, StackSize, Parameter,
-        CreationFlags, ThreadId);
+  return BeginThread(SecurityAttributes, StackSize, Parameter,
+    CreationFlags, ThreadId);
 }
 //---------------------------------------------------------------------------
 void __fastcall CopyToClipboard(const UnicodeString Text)

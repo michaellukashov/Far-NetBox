@@ -122,12 +122,12 @@ public:
 
   bool __fastcall Copy(TRegistryStorage * Storage);
 
-  virtual bool __fastcall OpenSubKey(const UnicodeString SubKey, bool CanCreate, bool Path = false);
+  // virtual bool __fastcall OpenSubKey(const UnicodeString SubKey, bool CanCreate, bool Path = false);
   virtual void __fastcall CloseSubKey();
   virtual bool __fastcall DeleteSubKey(const UnicodeString SubKey);
   virtual bool __fastcall DeleteValue(const UnicodeString Name);
   virtual void __fastcall GetSubKeyNames(TStrings* Strings);
-  virtual bool __fastcall KeyExists(const UnicodeString SubKey);
+  // virtual bool __fastcall KeyExists(const UnicodeString SubKey);
   virtual bool __fastcall ValueExists(const UnicodeString Value);
 
   virtual size_t __fastcall BinaryDataSize(const UnicodeString Name);

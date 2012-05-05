@@ -17,16 +17,16 @@
 //---------------------------------------------------------------------------
 TConfiguration * __fastcall CreateConfiguration();
 
-void __fastcall ShowExtendedException(const Exception * E);
+void __fastcall ShowExtendedException(Exception * E);
 
 UnicodeString __fastcall GetRegistryKey();
 void __fastcall Busy(bool Start);
 UnicodeString __fastcall AppNameString();
 UnicodeString __fastcall SshVersionString();
 void __fastcall CopyToClipboard(const UnicodeString Text);
-size_t __fastcall StartThread(void * SecurityAttributes, unsigned StackSize,
-  void * Parameter, unsigned CreationFlags,
-  unsigned & ThreadId);
+int __fastcall StartThread(void * SecurityAttributes, unsigned int StackSize,
+  void * Parameter, unsigned int CreationFlags,
+  DWORD & ThreadId);
 
 const unsigned int qaYes =      0x00000001;
 const unsigned int qaNo =       0x00000002;
