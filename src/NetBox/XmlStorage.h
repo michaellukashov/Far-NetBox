@@ -24,16 +24,16 @@ public:
 
     virtual size_t __fastcall BinaryDataSize(const UnicodeString Name);
 
-    virtual bool __fastcall Readbool(const UnicodeString Name, bool Default);
-    virtual int __fastcall Readint(const UnicodeString Name, int Default);
+    virtual bool __fastcall ReadBool(const UnicodeString Name, bool Default);
+    virtual int __fastcall ReadInteger(const UnicodeString Name, int Default);
     virtual __int64 __fastcall ReadInt64(const UnicodeString Name, __int64 Default);
     virtual TDateTime __fastcall ReadDateTime(const UnicodeString Name, TDateTime Default);
     virtual double __fastcall ReadFloat(const UnicodeString Name, double Default);
     virtual UnicodeString __fastcall ReadStringRaw(const UnicodeString Name, const UnicodeString Default);
     virtual size_t __fastcall ReadBinaryData(const UnicodeString Name, void *Buffer, size_t Size);
 
-    virtual void __fastcall Writebool(const UnicodeString Name, bool Value);
-    virtual void __fastcall Writeint(const UnicodeString Name, int Value);
+    virtual void __fastcall WriteBool(const UnicodeString Name, bool Value);
+    virtual void __fastcall WriteInteger(const UnicodeString Name, int Value);
     virtual void __fastcall WriteInt64(const UnicodeString Name, __int64 Value);
     virtual void __fastcall WriteDateTime(const UnicodeString Name, TDateTime Value);
     virtual void __fastcall WriteFloat(const UnicodeString Name, double Value);

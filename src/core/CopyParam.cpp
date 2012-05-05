@@ -476,21 +476,21 @@ bool __fastcall TCopyParamType::AllowTransfer(UnicodeString FileName,
 //---------------------------------------------------------------------------
 void __fastcall TCopyParamType::Load(THierarchicalStorage * Storage)
 {
-  SetAddXToDirectories(Storage->Readbool(L"AddXToDirectories", GetAddXToDirectories()));
+  SetAddXToDirectories(Storage->ReadBool(L"AddXToDirectories", GetAddXToDirectories()));
   GetAsciiFileMask().SetMasks(Storage->ReadString(L"Masks", GetAsciiFileMask().GetMasks()));
-  SetFileNameCase(static_cast<TFileNameCase>(Storage->Readint(L"FileNameCase", GetFileNameCase())));
-  SetPreserveReadOnly(Storage->Readbool(L"PreserveReadOnly", GetPreserveReadOnly()));
-  SetPreserveTime(Storage->Readbool(L"PreserveTime", GetPreserveTime()));
-  SetPreserveRights(Storage->Readbool(L"PreserveRights", GetPreserveRights()));
-  SetIgnorePermErrors(Storage->Readbool(L"IgnorePermErrors", GetIgnorePermErrors()));
+  SetFileNameCase(static_cast<TFileNameCase>(Storage->ReadInteger(L"FileNameCase", GetFileNameCase())));
+  SetPreserveReadOnly(Storage->ReadBool(L"PreserveReadOnly", GetPreserveReadOnly()));
+  SetPreserveTime(Storage->ReadBool(L"PreserveTime", GetPreserveTime()));
+  SetPreserveRights(Storage->ReadBool(L"PreserveRights", GetPreserveRights()));
+  SetIgnorePermErrors(Storage->ReadBool(L"IgnorePermErrors", GetIgnorePermErrors()));
   FRights.SetText(Storage->ReadString(L"Text", GetRights().GetText()));
-  SetTransferMode(static_cast<TTransferMode>(Storage->Readint(L"TransferMode", GetTransferMode())));
-  SetResumeSupport(static_cast<TResumeSupport>(Storage->Readint(L"ResumeSupport", GetResumeSupport())));
+  SetTransferMode(static_cast<TTransferMode>(Storage->ReadInteger(L"TransferMode", GetTransferMode())));
+  SetResumeSupport(static_cast<TResumeSupport>(Storage->ReadInteger(L"ResumeSupport", GetResumeSupport())));
   SetResumeThreshold(Storage->ReadInt64(L"ResumeThreshold", GetResumeThreshold()));
-  SetInvalidCharsReplacement(static_cast<wchar_t>(Storage->Readint(L"ReplaceInvalidChars",
+  SetInvalidCharsReplacement(static_cast<wchar_t>(Storage->ReadInteger(L"ReplaceInvalidChars",
     static_cast<unsigned int>(GetInvalidCharsReplacement()))));
   SetLocalInvalidChars(Storage->ReadString(L"LocalInvalidChars", GetLocalInvalidChars()));
-  SetCalculateSize(Storage->Readbool(L"CalculateSize", GetCalculateSize()));
+  SetCalculateSize(Storage->ReadBool(L"CalculateSize", GetCalculateSize()));
   if (Storage->ValueExists(L"IncludeFileMask"))
   {
     GetIncludeFileMask().SetMasks(Storage->ReadString(L"IncludeFileMask", GetIncludeFileMask().GetMasks()));
@@ -500,7 +500,7 @@ void __fastcall TCopyParamType::Load(THierarchicalStorage * Storage)
     UnicodeString ExcludeFileMask = Storage->ReadString(L"ExcludeFileMask", L"");
     if (!ExcludeFileMask.IsEmpty())
     {
-      bool NegativeExclude = Storage->Readbool(L"NegativeExclude", GetNegativeExclude());
+      bool NegativeExclude = Storage->ReadBool(L"NegativeExclude", GetNegativeExclude());
       if (NegativeExclude)
       {
         GetIncludeFileMask().SetMasks(ExcludeFileMask);
@@ -512,32 +512,32 @@ void __fastcall TCopyParamType::Load(THierarchicalStorage * Storage)
       }
     }
   }
-  SetClearArchive(Storage->Readbool(L"ClearArchive", GetClearArchive()));
-  SetCPSLimit(Storage->Readint(L"CPSLimit", GetCPSLimit()));
+  SetClearArchive(Storage->ReadBool(L"ClearArchive", GetClearArchive()));
+  SetCPSLimit(Storage->ReadInteger(L"CPSLimit", GetCPSLimit()));
 }
 //---------------------------------------------------------------------------
 void __fastcall TCopyParamType::Save(THierarchicalStorage * Storage) const
 {
-  Storage->Writebool(L"AddXToDirectories", GetAddXToDirectories());
+  Storage->WriteBool(L"AddXToDirectories", GetAddXToDirectories());
   Storage->WriteString(L"Masks", GetAsciiFileMask().GetMasks());
-  Storage->Writeint(L"FileNameCase", GetFileNameCase());
-  Storage->Writebool(L"PreserveReadOnly", GetPreserveReadOnly());
-  Storage->Writebool(L"PreserveTime", GetPreserveTime());
-  Storage->Writebool(L"PreserveRights", GetPreserveRights());
-  Storage->Writebool(L"IgnorePermErrors", GetIgnorePermErrors());
+  Storage->WriteInteger(L"FileNameCase", GetFileNameCase());
+  Storage->WriteBool(L"PreserveReadOnly", GetPreserveReadOnly());
+  Storage->WriteBool(L"PreserveTime", GetPreserveTime());
+  Storage->WriteBool(L"PreserveRights", GetPreserveRights());
+  Storage->WriteBool(L"IgnorePermErrors", GetIgnorePermErrors());
   Storage->WriteString(L"Text", GetRights().GetText());
-  Storage->Writeint(L"TransferMode", GetTransferMode());
-  Storage->Writeint(L"ResumeSupport", GetResumeSupport());
+  Storage->WriteInteger(L"TransferMode", GetTransferMode());
+  Storage->WriteInteger(L"ResumeSupport", GetResumeSupport());
 
   Storage->WriteInt64(L"ResumeThreshold", GetResumeThreshold());
-  Storage->Writeint(L"ReplaceInvalidChars", static_cast<unsigned int>(GetInvalidCharsReplacement()));
+  Storage->WriteInteger(L"ReplaceInvalidChars", static_cast<unsigned int>(GetInvalidCharsReplacement()));
   Storage->WriteString(L"LocalInvalidChars", GetLocalInvalidChars());
-  Storage->Writebool(L"CalculateSize", GetCalculateSize());
+  Storage->WriteBool(L"CalculateSize", GetCalculateSize());
   Storage->WriteString(L"IncludeFileMask", GetIncludeFileMask().GetMasks());
   Storage->DeleteValue(L"ExcludeFileMask"); // obsolete
   Storage->DeleteValue(L"NegativeExclude"); // obsolete
-  Storage->Writebool(L"ClearArchive", GetClearArchive());
-  Storage->Writeint(L"CPSLimit", GetCPSLimit());
+  Storage->WriteBool(L"ClearArchive", GetClearArchive());
+  Storage->WriteInteger(L"CPSLimit", GetCPSLimit());
 }
 //---------------------------------------------------------------------------
 #define C(Property) (Get##Property() == rhp.Get##Property())

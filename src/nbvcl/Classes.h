@@ -629,22 +629,22 @@ public:
     bool GetDataInfo(const UnicodeString ValueName, TRegDataInfo &Value);
     TRegDataType GetDataType(const UnicodeString ValueName);
     int GetDataSize(const UnicodeString Name);
-    bool Readbool(const UnicodeString Name);
+    bool ReadBool(const UnicodeString Name);
     TDateTime ReadDateTime(const UnicodeString Name);
     double ReadFloat(const UnicodeString Name);
-    int Readint(const UnicodeString Name);
+    int ReadInteger(const UnicodeString Name);
     __int64 ReadInt64(const UnicodeString Name);
     UnicodeString ReadString(const UnicodeString Name);
     UnicodeString ReadStringRaw(const UnicodeString Name);
     int ReadBinaryData(const UnicodeString Name,
                        void *Buffer, int Size);
 
-    void Writebool(const UnicodeString Name, bool Value);
+    void WriteBool(const UnicodeString Name, bool Value);
     void WriteDateTime(const UnicodeString Name, TDateTime &Value);
     void WriteFloat(const UnicodeString Name, double Value);
     void WriteString(const UnicodeString Name, const UnicodeString Value);
     void WriteStringRaw(const UnicodeString Name, const UnicodeString Value);
-    void Writeint(const UnicodeString Name, int Value);
+    void WriteInteger(const UnicodeString Name, int Value);
     void WriteInt64(const UnicodeString Name, __int64 Value);
     void WriteBinaryData(const UnicodeString Name,
                          const void *Buffer, int Size);

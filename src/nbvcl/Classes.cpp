@@ -1759,9 +1759,9 @@ int TRegistry::GetDataSize(const UnicodeString ValueName)
     return Result;
 }
 
-bool TRegistry::Readbool(const UnicodeString Name)
+bool TRegistry::ReadBool(const UnicodeString Name)
 {
-    bool Result = Readint(Name) != 0;
+    bool Result = ReadInteger(Name) != 0;
     return Result;
 }
 
@@ -1783,7 +1783,7 @@ double TRegistry::ReadFloat(const UnicodeString Name)
     return Result;
 }
 
-int TRegistry::Readint(const UnicodeString Name)
+int TRegistry::ReadInteger(const UnicodeString Name)
 {
     DWORD Result = 0;
     TRegDataType RegData = rdUnknown;
@@ -1884,9 +1884,9 @@ void TRegistry::PutData(const UnicodeString Name, const void *Buffer,
     }
 }
 
-void TRegistry::Writebool(const UnicodeString Name, bool Value)
+void TRegistry::WriteBool(const UnicodeString Name, bool Value)
 {
-    Writeint(Name, Value);
+    WriteInteger(Name, Value);
 }
 void TRegistry::WriteDateTime(const UnicodeString Name, TDateTime &Value)
 {
@@ -1906,7 +1906,7 @@ void TRegistry::WriteStringRaw(const UnicodeString Name, const UnicodeString Val
 {
     PutData(Name, Value.c_str(), Value.Length() * sizeof(wchar_t) + 1, rdString);
 }
-void TRegistry::Writeint(const UnicodeString Name, int Value)
+void TRegistry::WriteInteger(const UnicodeString Name, int Value)
 {
     DWORD Val = Value;
     PutData(Name, &Val, sizeof(DWORD), rdInteger);

@@ -182,27 +182,27 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
 #define REGCONFIG(CANCREATE) \
   BLOCK(L"Interface", CANCREATE, \
     KEY(String,   PuttyRegistryStorageKey); \
-    KEY(bool,     ConfirmOverwriting); \
-    KEY(bool,     ConfirmResume); \
-    KEY(bool,     AutoReadDirectoryAfterOp); \
-    KEY(int,      SessionReopenAuto); \
-    KEY(int,      SessionReopenBackground); \
-    KEY(int,      SessionReopenTimeout); \
-    KEY(int,      SessionReopenAutoStall); \
-    KEY(int,      TunnelLocalPortNumberLow); \
-    KEY(int,      TunnelLocalPortNumberHigh); \
-    KEY(int,      CacheDirectoryChangesMaxSize); \
-    KEY(bool,     ShowFtpWelcomeMessage); \
-    KEY(int,      SessionReopenAutoMaximumNumberOfRetries); \
+    KEY(Bool,     ConfirmOverwriting); \
+    KEY(Bool,     ConfirmResume); \
+    KEY(Bool,     AutoReadDirectoryAfterOp); \
+    KEY(Integer,      SessionReopenAuto); \
+    KEY(Integer,      SessionReopenBackground); \
+    KEY(Integer,      SessionReopenTimeout); \
+    KEY(Integer,      SessionReopenAutoStall); \
+    KEY(Integer,      TunnelLocalPortNumberLow); \
+    KEY(Integer,      TunnelLocalPortNumberHigh); \
+    KEY(Integer,      CacheDirectoryChangesMaxSize); \
+    KEY(Bool,     ShowFtpWelcomeMessage); \
+    KEY(Integer,      SessionReopenAutoMaximumNumberOfRetries); \
   ); \
   BLOCK(L"Logging", CANCREATE, \
-    KEYEX(bool,  Logging, Logging); \
+    KEYEX(Bool,  Logging, Logging); \
     KEYEX(String,LogFileName, LogFileName); \
-    KEY(bool,    LogFileAppend); \
-    KEY(int,     LogWindowLines); \
-    KEY(int,     LogProtocol); \
-    KEYEX(bool,  PermanentLogActions, LogActions); \
-    KEYEX(bool,  LogActions, LogActions); \
+    KEY(Bool,    LogFileAppend); \
+    KEY(Integer,     LogWindowLines); \
+    KEY(Integer,     LogProtocol); \
+    KEYEX(Bool,  PermanentLogActions, LogActions); \
+    KEYEX(Bool,  LogActions, LogActions); \
   );
     // KEY(String,   RandomSeedFile); \
     // KEY(String,   ExternalIpAddress); \
@@ -312,9 +312,9 @@ void __fastcall TConfiguration::LoadData(THierarchicalStorage * Storage)
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::LoadAdmin(THierarchicalStorage * Storage)
 {
-  FDisablePasswordStoring = Storage->Readbool(L"DisablePasswordStoring", FDisablePasswordStoring);
-  FForceBanners = Storage->Readbool(L"ForceBanners", FForceBanners);
-  FDisableAcceptingHostKeys = Storage->Readbool(L"DisableAcceptingHostKeys", FDisableAcceptingHostKeys);
+  FDisablePasswordStoring = Storage->ReadBool(L"DisablePasswordStoring", FDisablePasswordStoring);
+  FForceBanners = Storage->ReadBool(L"ForceBanners", FForceBanners);
+  FDisableAcceptingHostKeys = Storage->ReadBool(L"DisableAcceptingHostKeys", FDisableAcceptingHostKeys);
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::Load()

@@ -93,20 +93,20 @@ void __fastcall TGUICopyParamType::Load(THierarchicalStorage * Storage)
 {
   TCopyParamType::Load(Storage);
 
-  SetQueue(Storage->Readbool(L"Queue", GetQueue()));
-  SetQueueNoConfirmation(Storage->Readbool(L"QueueNoConfirmation", GetQueueNoConfirmation()));
-  SetQueueIndividually(Storage->Readbool(L"QueueIndividually", GetQueueIndividually()));
-  SetNewerOnly(Storage->Readbool(L"NewerOnly", GetNewerOnly()));
+  SetQueue(Storage->ReadBool(L"Queue", GetQueue()));
+  SetQueueNoConfirmation(Storage->ReadBool(L"QueueNoConfirmation", GetQueueNoConfirmation()));
+  SetQueueIndividually(Storage->ReadBool(L"QueueIndividually", GetQueueIndividually()));
+  SetNewerOnly(Storage->ReadBool(L"NewerOnly", GetNewerOnly()));
 }
 //---------------------------------------------------------------------------
 void __fastcall TGUICopyParamType::Save(THierarchicalStorage * Storage)
 {
   TCopyParamType::Save(Storage);
 
-  Storage->Writebool(L"Queue", GetQueue());
-  Storage->Writebool(L"QueueNoConfirmation", GetQueueNoConfirmation());
-  Storage->Writebool(L"QueueIndividually", GetQueueIndividually());
-  Storage->Writebool(L"NewerOnly", GetNewerOnly());
+  Storage->WriteBool(L"Queue", GetQueue());
+  Storage->WriteBool(L"QueueNoConfirmation", GetQueueNoConfirmation());
+  Storage->WriteBool(L"QueueIndividually", GetQueueIndividually());
+  Storage->WriteBool(L"NewerOnly", GetNewerOnly());
 }
 //---------------------------------------------------------------------------
 TGUICopyParamType & __fastcall TGUICopyParamType::operator =(const TCopyParamType & rhp)
@@ -436,7 +436,7 @@ void __fastcall TCopyParamList::Load(THierarchicalStorage * Storage, int ACount)
           Name = Storage->ReadString(L"Name", Name);
           CopyParam->Load(Storage);
 
-          if (Storage->Readbool(L"HasRule", false))
+          if (Storage->ReadBool(L"HasRule", false))
           {
             Rule = new TCopyParamRule();
             Rule->Load(Storage);
@@ -482,7 +482,7 @@ void __fastcall TCopyParamList::Save(THierarchicalStorage * Storage) const
 
         Storage->WriteString(L"Name", GetName(Index));
         CopyParam->Save(Storage);
-        Storage->Writebool(L"HasRule", (Rule != NULL));
+        Storage->WriteBool(L"HasRule", (Rule != NULL));
         if (Rule != NULL)
         {
           Rule->Save(Storage);
@@ -676,27 +676,27 @@ UnicodeString __fastcall TGUIConfiguration::PropertyToKey(const UnicodeString Pr
 #undef REGCONFIG
 #define REGCONFIG(CANCREATE) \
   BLOCK(L"Interface", CANCREATE, \
-    KEY(bool,     ContinueOnError); \
-    KEY(bool,     ConfirmCommandSession); \
-    KEY(int,  SynchronizeParams); \
-    KEY(int,  SynchronizeOptions); \
-    KEY(int,  SynchronizeModeAuto); \
-    KEY(int,  SynchronizeMode); \
-    KEY(int,  MaxWatchDirectories); \
-    KEY(int,  QueueTransfersLimit); \
-    KEY(bool,     QueueAutoPopup); \
-    KEY(bool,     QueueRememberPassword); \
+    KEY(Bool,     ContinueOnError); \
+    KEY(Bool,     ConfirmCommandSession); \
+    KEY(Integer,  SynchronizeParams); \
+    KEY(Integer,  SynchronizeOptions); \
+    KEY(Integer,  SynchronizeModeAuto); \
+    KEY(Integer,  SynchronizeMode); \
+    KEY(Integer,  MaxWatchDirectories); \
+    KEY(Integer,  QueueTransfersLimit); \
+    KEY(Bool,     QueueAutoPopup); \
+    KEY(Bool,     QueueRememberPassword); \
     KEY(String,   PuttySession); \
     KEY(String,   PuttyPath); \
-    KEY(bool,     PuttyPassword); \
-    KEY(bool,     TelnetForFtpInPutty); \
+    KEY(Bool,     PuttyPassword); \
+    KEY(Bool,     TelnetForFtpInPutty); \
     KEY(DateTime, IgnoreCancelBeforeFinish); \
-    KEY(bool,     BeepOnFinish); \
+    KEY(Bool,     BeepOnFinish); \
     KEY(DateTime, BeepOnFinishAfter); \
-    KEY(int,  KeepUpToDateChangeDelay); \
+    KEY(Integer,  KeepUpToDateChangeDelay); \
     KEY(String,   ChecksumAlg); \
-    KEY(int,  SessionReopenAutoIdle); \
-    KEY(bool,     SynchronizeBrowsing); \
+    KEY(Integer,  SessionReopenAutoIdle); \
+    KEY(Bool,     SynchronizeBrowsing); \
   ); \
 //---------------------------------------------------------------------------
 void __fastcall TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
@@ -721,11 +721,11 @@ void __fastcall TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool
     if (FCopyParamListDefaults)
     {
       assert(!FCopyParamList->GetModified());
-      Storage->Writeint(L"CopyParamList", -1);
+      Storage->WriteInteger(L"CopyParamList", -1);
     }
     else if (All || FCopyParamList->GetModified())
     {
-      Storage->Writeint(L"CopyParamList", static_cast<int>(FCopyParamList->GetCount()));
+      Storage->WriteInteger(L"CopyParamList", static_cast<int>(FCopyParamList->GetCount()));
       FCopyParamList->Save(Storage);
     }
   }
@@ -775,7 +775,7 @@ void __fastcall TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
     // must be loaded before eventual setting defaults for CopyParamList
     FDefaultCopyParam.Load(Storage);
 
-    int CopyParamListCount = Storage->Readint(L"CopyParamList", -1);
+    int CopyParamListCount = Storage->ReadInteger(L"CopyParamList", -1);
     FCopyParamListDefaults = (CopyParamListCount < 0);
     if (!FCopyParamListDefaults)
     {

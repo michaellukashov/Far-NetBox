@@ -121,7 +121,7 @@ void __fastcall TBookmarks::LoadLevel(THierarchicalStorage * Storage, const Unic
       else
       {
         Directory = L""; // use only in cased of malformed config
-        ShortCut = TShortCut(Storage->Readint(Name, 0));
+        ShortCut = TShortCut(Storage->ReadInteger(Name, 0));
       }
       TBookmark * Bookmark;
       if (IsNumber(Name))
@@ -220,7 +220,7 @@ void __fastcall TBookmarks::Save(THierarchicalStorage * Storage, bool All)
 
                       case 2:
                         assert(Bookmark->GetShortCut() != 0);
-                        Storage->Writeint(Bookmark->GetName(), Bookmark->GetShortCut());
+                        Storage->WriteInteger(Bookmark->GetName(), Bookmark->GetShortCut());
                         break;
                     }
 

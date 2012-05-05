@@ -404,7 +404,7 @@ size_t TXmlStorage::BinaryDataSize(const UnicodeString Name)
     return Result;
 }
 //---------------------------------------------------------------------------
-bool TXmlStorage::Readbool(const UnicodeString Name, bool Default)
+bool TXmlStorage::ReadBool(const UnicodeString Name, bool Default)
 {
     UnicodeString res = ReadString(Name, L"");
     if (res.IsEmpty())
@@ -428,7 +428,7 @@ double TXmlStorage::ReadFloat(const UnicodeString Name, double Default)
     return StrToFloatDef(GetSubKeyText(Name), Default);
 }
 //---------------------------------------------------------------------------
-int TXmlStorage::Readint(const UnicodeString Name, int Default)
+int TXmlStorage::ReadInteger(const UnicodeString Name, int Default)
 {
     return StrToIntDef(GetSubKeyText(Name), Default);
 }
@@ -452,7 +452,7 @@ size_t TXmlStorage::ReadBinaryData(const UnicodeString Name,
     return Result;
 }
 //---------------------------------------------------------------------------
-void TXmlStorage::Writebool(const UnicodeString Name, bool Value)
+void TXmlStorage::WriteBool(const UnicodeString Name, bool Value)
 {
     WriteString(Name, ::BooleanToEngStr(Value));
 }
@@ -474,7 +474,7 @@ void TXmlStorage::WriteStringRaw(const UnicodeString Name, const UnicodeString V
     AddNewElement(Name, Value);
 }
 //---------------------------------------------------------------------------
-void TXmlStorage::Writeint(const UnicodeString Name, int Value)
+void TXmlStorage::WriteInteger(const UnicodeString Name, int Value)
 {
     RemoveIfExists(Name);
     AddNewElement(Name, ::IntToStr(Value));

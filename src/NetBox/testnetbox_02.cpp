@@ -296,12 +296,12 @@ BOOST_FIXTURE_TEST_CASE(test8, base_fixture_t)
    BOOST_CHECK(!Storage.KeyExists(SubKey));
    BOOST_CHECK(Storage.OpenSubKey(SubKey, true));
    Storage.SetAccessMode(smReadWrite);
-   Storage.Writeint(L"IntVal", 1234);
+   Storage.WriteInteger(L"IntVal", 1234);
    // BOOST_TEST_MESSAGE("Storage.GetFailed = " << Storage.GetFailed());
    Storage.CloseSubKey();
    BOOST_CHECK(Storage.KeyExists(SubKey));
    BOOST_CHECK(Storage.OpenSubKey(SubKey, false));
-   int res = Storage.Readint(L"IntVal", -1);
+   int res = Storage.ReadInteger(L"IntVal", -1);
    BOOST_TEST_MESSAGE("res = " << res);
    BOOST_CHECK(1234 == res);
 }

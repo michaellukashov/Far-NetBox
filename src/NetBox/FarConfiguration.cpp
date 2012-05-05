@@ -94,29 +94,29 @@ void __fastcall TFarConfiguration::Saved()
   }
 #define REGCONFIG(CANCREATE) \
   BLOCK(L"Far", CANCREATE, \
-    KEY(bool,     DisksMenu); \
-    KEY(int,  DisksMenuHotKey); \
-    KEY(bool,     PluginsMenu); \
-    KEY(bool,     PluginsMenuCommands); \
+    KEY(Bool,     DisksMenu); \
+    KEY(Integer,  DisksMenuHotKey); \
+    KEY(Bool,     PluginsMenu); \
+    KEY(Bool,     PluginsMenuCommands); \
     KEY(String,   CommandPrefixes); \
-    KEY(bool,     CustomPanelModeDetailed); \
-    KEY(bool,     FullScreenDetailed); \
+    KEY(Bool,     CustomPanelModeDetailed); \
+    KEY(Bool,     FullScreenDetailed); \
     KEY(String,   ColumnTypesDetailed); \
     KEY(String,   ColumnWidthsDetailed); \
     KEY(String,   StatusColumnTypesDetailed); \
     KEY(String,   StatusColumnWidthsDetailed); \
-    KEY(bool,     HostNameInTitle); \
-    KEY(bool,     ConfirmOverwritingOverride); \
-    KEY(bool,     EditorDownloadDefaultMode); \
-    KEY(bool,     EditorUploadSameOptions); \
-    KEY(bool,     EditorUploadOnSave); \
-    KEY(bool,     EditorMultiple); \
-    KEY(bool,     QueueBeep); \
+    KEY(Bool,     HostNameInTitle); \
+    KEY(Bool,     ConfirmOverwritingOverride); \
+    KEY(Bool,     EditorDownloadDefaultMode); \
+    KEY(Bool,     EditorUploadSameOptions); \
+    KEY(Bool,     EditorUploadOnSave); \
+    KEY(Bool,     EditorMultiple); \
+    KEY(Bool,     QueueBeep); \
     KEY(String,   PuttygenPath); \
     KEY(String,   PageantPath); \
     KEY(String,   ApplyCommandCommand); \
-    KEY(int,  ApplyCommandParams); \
-    KEY(bool,     ConfirmSynchronizedBrowsing); \
+    KEY(Integer,  ApplyCommandParams); \
+    KEY(Bool,     ConfirmSynchronizedBrowsing); \
   );
 //---------------------------------------------------------------------------
 void __fastcall TFarConfiguration::SaveData(THierarchicalStorage * Storage,

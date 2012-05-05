@@ -626,9 +626,9 @@ size_t __fastcall TRegistryStorage::BinaryDataSize(const UnicodeString Name)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TRegistryStorage::Readbool(const UnicodeString Name, bool Default)
+bool __fastcall TRegistryStorage::ReadBool(const UnicodeString Name, bool Default)
 {
-  READ_REGISTRY(Readbool);
+  READ_REGISTRY(ReadBool);
 }
 //---------------------------------------------------------------------------
 TDateTime __fastcall TRegistryStorage::ReadDateTime(const UnicodeString Name, TDateTime Default)
@@ -641,9 +641,9 @@ double __fastcall TRegistryStorage::ReadFloat(const UnicodeString Name, double D
   READ_REGISTRY(ReadFloat);
 }
 //---------------------------------------------------------------------------
-int __fastcall TRegistryStorage::Readint(const UnicodeString Name, int Default)
+int __fastcall TRegistryStorage::ReadInteger(const UnicodeString Name, int Default)
 {
-  READ_REGISTRY(Readint);
+  READ_REGISTRY(ReadInteger);
 }
 //---------------------------------------------------------------------------
 __int64 __fastcall TRegistryStorage::ReadInt64(const UnicodeString Name, __int64 Default)
@@ -691,9 +691,9 @@ size_t __fastcall TRegistryStorage::ReadBinaryData(const UnicodeString Name,
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TRegistryStorage::Writebool(const UnicodeString Name, bool Value)
+void __fastcall TRegistryStorage::WriteBool(const UnicodeString Name, bool Value)
 {
-  WRITE_REGISTRY(Writebool);
+  WRITE_REGISTRY(WriteBool);
 }
 //---------------------------------------------------------------------------
 void __fastcall TRegistryStorage::WriteDateTime(const UnicodeString Name, TDateTime Value)
@@ -711,9 +711,9 @@ void __fastcall TRegistryStorage::WriteStringRaw(const UnicodeString Name, const
   WRITE_REGISTRY(WriteString);
 }
 //---------------------------------------------------------------------------
-void __fastcall TRegistryStorage::Writeint(const UnicodeString Name, int Value)
+void __fastcall TRegistryStorage::WriteInteger(const UnicodeString Name, int Value)
 {
-  WRITE_REGISTRY(Writeint);
+  WRITE_REGISTRY(WriteInteger);
 }
 //---------------------------------------------------------------------------
 void __fastcall TRegistryStorage::WriteInt64(const UnicodeString Name, __int64 Value)
