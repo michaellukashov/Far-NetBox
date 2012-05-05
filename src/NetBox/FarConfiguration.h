@@ -11,14 +11,43 @@ class TBookmarkList;
 class TFarConfiguration : public TGUIConfiguration
 {
 public:
-  explicit TFarConfiguration(TCustomFarPlugin * APlugin);
-  virtual ~TFarConfiguration();
+  explicit /* __fastcall */ TFarConfiguration(TCustomFarPlugin * APlugin);
+  virtual /* __fastcall */ ~TFarConfiguration();
 
+#ifndef _MSC_VER
+  __property TCustomFarPlugin * Plugin = { read = FPlugin, write = SetPlugin };
+  __property bool ConfirmOverwritingOverride = { read = FConfirmOverwritingOverride, write = FConfirmOverwritingOverride };
+  __property bool ConfirmDeleting = { read = GetConfirmDeleting };
+  __property bool ConfirmSynchronizedBrowsing = { read = FConfirmSynchronizedBrowsing, write = FConfirmSynchronizedBrowsing };
+  __property bool DisksMenu = { read = FDisksMenu, write = FDisksMenu };
+  __property int DisksMenuHotKey = { read = FDisksMenuHotKey, write = FDisksMenuHotKey };
+  __property bool PluginsMenu = { read = FPluginsMenu, write = FPluginsMenu };
+  __property bool PluginsMenuCommands = { read = FPluginsMenuCommands, write = FPluginsMenuCommands };
+  __property AnsiString CommandPrefixes = { read = FCommandPrefixes, write = FCommandPrefixes };
+  __property bool HostNameInTitle = { read = FHostNameInTitle, write = FHostNameInTitle };
+
+  __property bool CustomPanelModeDetailed = { read = FCustomPanelModeDetailed, write = FCustomPanelModeDetailed };
+  __property bool FullScreenDetailed = { read = FFullScreenDetailed, write = FFullScreenDetailed };
+  __property AnsiString ColumnTypesDetailed = { read = FColumnTypesDetailed, write = FColumnTypesDetailed };
+  __property AnsiString ColumnWidthsDetailed = { read = FColumnWidthsDetailed, write = FColumnWidthsDetailed };
+  __property AnsiString StatusColumnTypesDetailed = { read = FStatusColumnTypesDetailed, write = FStatusColumnTypesDetailed };
+  __property AnsiString StatusColumnWidthsDetailed = { read = FStatusColumnWidthsDetailed, write = FStatusColumnWidthsDetailed };
+  __property bool EditorDownloadDefaultMode = { read = FEditorDownloadDefaultMode, write = FEditorDownloadDefaultMode };
+  __property bool EditorUploadSameOptions = { read = FEditorUploadSameOptions, write = FEditorUploadSameOptions };
+  __property bool EditorUploadOnSave = { read = FEditorUploadOnSave, write = FEditorUploadOnSave };
+  __property bool EditorMultiple = { read = FEditorMultiple, write = FEditorMultiple };
+  __property bool QueueBeep = { read = FQueueBeep, write = FQueueBeep };
+
+  __property AnsiString ApplyCommandCommand = { read = FApplyCommandCommand, write = FApplyCommandCommand };
+  __property int ApplyCommandParams = { read = FApplyCommandParams, write = FApplyCommandParams };
+
+  __property AnsiString PageantPath = { read = FPageantPath, write = FPageantPath };
+  __property AnsiString PuttygenPath = { read = FPuttygenPath, write = FPuttygenPath };
+  __property TBookmarkList * Bookmarks[AnsiString Key] = { read = GetBookmarks, write = SetBookmarks };
+#else
   TCustomFarPlugin * GetPlugin() { return FFarPlugin; }
-  void SetPlugin(TCustomFarPlugin * value);
   bool GetConfirmOverwritingOverride() { return FConfirmOverwritingOverride; }
   void SetConfirmOverwritingOverride(bool value) { FConfirmOverwritingOverride = value; }
-  bool GetConfirmDeleting();
   bool GetConfirmSynchronizedBrowsing() { return FConfirmSynchronizedBrowsing; }
   void SetConfirmSynchronizedBrowsing(bool value) { FConfirmSynchronizedBrowsing = value; }
   bool GetDisksMenu() { return FDisksMenu; }
@@ -62,18 +91,15 @@ public:
   int GetApplyCommandParams() { return FApplyCommandParams; }
   void SetApplyCommandParams(int value) { FApplyCommandParams = value; }
 
-  UnicodeString GetPageantPath() const { return FPageantPath; }
   void SetPageantPath(const UnicodeString value) { FPageantPath = value; }
-  UnicodeString GetPuttygenPath() const { return FPuttygenPath; }
   void SetPuttygenPath(const UnicodeString value) { FPuttygenPath = value; }
-  TBookmarkList * GetBookmark(const UnicodeString Key);
-  void SetBookmark(const UnicodeString Key, TBookmarkList * value);
+#endif
 
   virtual void __fastcall Load();
   virtual void __fastcall Save(bool All, bool Explicit);
   virtual void __fastcall Default();
   virtual THierarchicalStorage * __fastcall CreateScpStorage(bool SessionList);
-  void CacheFarSettings();
+  void __fastcall CacheFarSettings();
 
 protected:
   virtual bool __fastcall GetConfirmOverwriting();
@@ -117,7 +143,15 @@ private:
   TBookmarks * FBookmarks;
   TFarConfiguration * Self;
 
-  int FarConfirmations();
+public:
+  void __fastcall SetPlugin(TCustomFarPlugin * value);
+  bool __fastcall GetConfirmDeleting();
+  void __fastcall SetBookmarks(UnicodeString Key, TBookmarkList * value);
+  TBookmarkList * __fastcall GetBookmarks(UnicodeString Key);
+  int __fastcall FarConfirmations();
+
+  UnicodeString __fastcall GetPageantPath() const { return FPageantPath; }
+  UnicodeString __fastcall GetPuttygenPath() const { return FPuttygenPath; }
 };
 //---------------------------------------------------------------------------
 #define FarConfiguration ((TFarConfiguration *) Configuration)

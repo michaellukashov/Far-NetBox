@@ -2071,7 +2071,7 @@ void TWinSCPFileSystem::OpenDirectory(bool Add)
     UnicodeString SessionKey = FTerminal->GetSessionData()->GetSessionKey();
     TBookmarkList * CurrentBookmarkList;
 
-    CurrentBookmarkList = FarConfiguration->GetBookmark(SessionKey);
+    CurrentBookmarkList = FarConfiguration->GetBookmarks(SessionKey);
     if (CurrentBookmarkList != NULL)
     {
       BookmarkList->Assign(CurrentBookmarkList);
@@ -2083,12 +2083,12 @@ void TWinSCPFileSystem::OpenDirectory(bool Add)
       Bookmark->SetRemote(Directory);
       Bookmark->SetName(Directory);
       BookmarkList->Add(Bookmark);
-      FarConfiguration->SetBookmark(SessionKey, BookmarkList);
+      FarConfiguration->SetBookmarks(SessionKey, BookmarkList);
     }
 
     bool Result = OpenDirectoryDialog(Add, Directory, BookmarkList);
 
-    FarConfiguration->SetBookmark(SessionKey, BookmarkList);
+    FarConfiguration->SetBookmarks(SessionKey, BookmarkList);
 
     if (Result)
     {
