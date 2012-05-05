@@ -83,11 +83,11 @@ void __fastcall TSessionData::Default()
   SetSshProt(ssh2);
   SetSsh2DES(false);
   SetSshNoUserAuth(false);
-  for (size_t Index = 0; Index < CIPHER_COUNT; Index++)
+  for (int Index = 0; Index < CIPHER_COUNT; Index++)
   {
     SetCipher(Index, DefaultCipherList[Index]);
   }
-  for (size_t Index = 0; Index < KEX_COUNT; Index++)
+  for (int Index = 0; Index < KEX_COUNT; Index++)
   {
     SetKex(Index, DefaultKexList[Index]);
   }
@@ -579,7 +579,7 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
   SetFtpPingType(static_cast<TPingType>(Storage->Readint(L"FtpPingType", GetFtpPingType())));
   SetFtps(static_cast<TFtps>(Storage->Readint(L"Ftps", GetFtps())));
 
-  SetFtpProxyLogonType(static_cast<size_t>(Storage->Readint(L"FtpProxyLogonType", GetFtpProxyLogonType())));
+  SetFtpProxyLogonType(Storage->Readint(L"FtpProxyLogonType", GetFtpProxyLogonType()));
 
   SetCustomParam1(Storage->ReadString(L"CustomParam1", GetCustomParam1()));
   SetCustomParam2(Storage->ReadString(L"CustomParam2", GetCustomParam2()));
@@ -794,11 +794,11 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
     WRITE_DATA_EX(String, L"ProxyUsername", GetProxyUsername(), );
     if (GetProxyMethod() == pmCmd)
     {
-      WRITE_DATA_EX(String, L"ProxyTelnetCommand", GetProxyLocalCommand(), );
+      WRITE_DATA_EX(StringRaw, L"ProxyTelnetCommand", GetProxyLocalCommand(), );
     }
     else
     {
-      WRITE_DATA_EX(String, L"ProxyTelnetCommand", GetProxyTelnetCommand(), );
+      WRITE_DATA_EX(StringRaw, L"ProxyTelnetCommand", GetProxyTelnetCommand(), );
     }
     #define WRITE_DATA_CONV_FUNC(X) (((X) + 2) % 3)
     WRITE_DATA_CONV(int, L"ProxyDNS", GetProxyDNS());
@@ -832,10 +832,10 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
     {
       WRITE_DATA_EX(String, L"SftpServer", GetSftpServer(), );
 
-#define WRITE_SFTP_BUG(BUG) WRITE_DATA_EX(int, MB2W("SFTP" #BUG "Bug"), GetSFTPBug(sb##BUG), );
+      #define WRITE_SFTP_BUG(BUG) WRITE_DATA_EX(int, MB2W("SFTP" #BUG "Bug"), GetSFTPBug(sb##BUG), );
       WRITE_SFTP_BUG(Symlink);
       WRITE_SFTP_BUG(SignedTS);
-#undef WRITE_SFTP_BUG
+      #undef WRITE_SFTP_BUG
 
       WRITE_DATA_EX(int, L"SFTPMaxVersion", GetSFTPMaxVersion(), );
       WRITE_DATA_EX(int, L"SFTPMinPacketSize", GetSFTPMinPacketSize(), );
@@ -1323,7 +1323,7 @@ void __fastcall TSessionData::ValidateName(const UnicodeString Name)
 {
   if (Name.LastDelimiter(L"/") > 0)
   {
-    throw ExtException(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), L"/"));
+    throw Exception(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), L"/"));
   }
 }
 //---------------------------------------------------------------------
@@ -2134,7 +2134,7 @@ void __fastcall TSessionData::SetTunnelHostName(UnicodeString value)
     int P = value.LastDelimiter(L"@");
     if (P > 0)
     {
-      SetTunnelUserName(value.SubString(0, P));
+      SetTunnelUserName(value.SubString(1, P - 1));
       value = value.SubString(P + 1, value.Length() - P);
     }
     FTunnelHostName = value;
@@ -2767,7 +2767,7 @@ TSessionData * __fastcall TStoredSessionList::ParseUrl(UnicodeString Url,
 //---------------------------------------------------------------------------
 TSessionData * TStoredSessionList::GetSessionByName(const UnicodeString SessionName)
 {
-  for (size_t I = 0; I < GetCount(); I++)
+  for (int I = 0; I < GetCount(); I++)
   {
     TSessionData * SessionData = GetSession(I);
     if (SessionData->GetName() == SessionName)
