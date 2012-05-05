@@ -438,9 +438,29 @@ int UnicodeString::ToInt() const
   return ::StrToIntDef(*this, 0);
 }
 
+bool UnicodeString::IsDelimiter(UnicodeString Chars, int Pos) const
+{
+  return Sysutils::IsDelimiter(*this, Chars, Pos);
+}
+
 int UnicodeString::LastDelimiter(const UnicodeString & delimiters) const
 {
   return Sysutils::LastDelimiter(*this, delimiters);
+}
+
+UnicodeString UnicodeString::Trim() const
+{
+  return Sysutils::Trim(*this);
+}
+
+UnicodeString UnicodeString::TrimLeft() const
+{
+  return Sysutils::TrimLeft(*this);
+}
+
+UnicodeString UnicodeString::TrimRight() const
+{
+  return Sysutils::TrimRight(*this);
 }
 
 //------------------------------------------------------------------------------

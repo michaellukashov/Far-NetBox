@@ -207,12 +207,6 @@ public:
   UnicodeString SubStr(size_t Pos, size_t Len = -1) const;
   UnicodeString SubString(size_t Pos, size_t Len = -1) const { return SubStr(Pos, Len); }
 
-  UnicodeString Trim() const;
-  UnicodeString TrimRight() const;
-  UnicodeString TrimLeft() const;
-
-  bool IsDelimiter(UnicodeString Chars, int Pos) const;
-
   const UnicodeString & operator=(const UnicodeString & strCopy) { return Copy(strCopy); }
   const UnicodeString & operator=(const char * lpszData) { return Copy(lpszData); }
   const UnicodeString & operator=(const wchar_t * lpwszData) { return Copy(lpwszData); }
@@ -257,7 +251,12 @@ public:
   bool ContainsAny(const wchar_t * Chars, size_t nStartPos=0) const { return wcspbrk(m_pData->GetData()+nStartPos,Chars) != nullptr; }
   bool Contains(const wchar_t * lpwszFind, size_t nStartPos=0) const { return wcsstr(m_pData->GetData()+nStartPos,lpwszFind) != nullptr; }
 
+  bool IsDelimiter(UnicodeString Chars, int Pos) const;
   int LastDelimiter(const UnicodeString & delimiters) const;
+
+  UnicodeString Trim() const;
+  UnicodeString TrimLeft() const;
+  UnicodeString TrimRight() const;
 
   operator std::wstring () const { return std::wstring(m_pData->GetData(), m_pData->GetLength()); }
   wchar_t __fastcall operator [](const int idx) const

@@ -210,14 +210,14 @@ UnicodeString StringReplace(const UnicodeString str, const UnicodeString from, c
   return AnsiReplaceStr(str, from, to);
 }
 
-bool IsDelimiter(const UnicodeString str, const UnicodeString delim, size_t index)
+bool IsDelimiter(const UnicodeString str, const UnicodeString delimiters, int index)
 {
   if (index < str.Length())
   {
     wchar_t c = str[index];
-    for (size_t i = 0; i < delim.Length(); i++)
+    for (int  i = 1; i <= delimiters.Length(); i++)
     {
-      if (delim[i] == c)
+      if (delimiters[i] == c)
       {
         return true;
       }
@@ -226,13 +226,13 @@ bool IsDelimiter(const UnicodeString str, const UnicodeString delim, size_t inde
   return false;
 }
 
-int LastDelimiter(const UnicodeString str, const UnicodeString delim)
+int LastDelimiter(const UnicodeString str, const UnicodeString delimiters)
 {
   if (str.Length())
   {
-    for (size_t i = str.Length() - 1; i > 0; --i)
+    for (int i = str.Length(); i >= 0; --i)
     {
-      if (::IsDelimiter(str, delim, i))
+      if (::IsDelimiter(str, delimiters, i))
       {
         return i;
       }

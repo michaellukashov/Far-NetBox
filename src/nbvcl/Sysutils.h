@@ -72,8 +72,8 @@ UnicodeString AnsiReplaceStr(const UnicodeString str, const UnicodeString from, 
 size_t AnsiPos(const UnicodeString str, wchar_t c);
 size_t Pos(const UnicodeString str, const UnicodeString substr);
 UnicodeString StringReplace(const UnicodeString str, const UnicodeString from, const UnicodeString to, TReplaceFlags Flags);
-bool IsDelimiter(const UnicodeString str, const UnicodeString delim, size_t index);
-int LastDelimiter(const UnicodeString str, const UnicodeString delim);
+bool IsDelimiter(const UnicodeString str, const UnicodeString delimiters, int index);
+int LastDelimiter(const UnicodeString str, const UnicodeString delimiters);
 //---------------------------------------------------------------------------
 
 int CompareText(const UnicodeString str1, const UnicodeString str2);
