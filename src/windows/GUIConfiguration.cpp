@@ -250,13 +250,11 @@ void __fastcall TCopyParamList::Init()
 //---------------------------------------------------------------------------
 /* __fastcall */ TCopyParamList::~TCopyParamList()
 {
-  // DEBUG_PRINTF(L"begin");
   Clear();
   delete FCopyParams;
   delete FRules;
   delete FNames;
   delete FNameList;
-  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void __fastcall TCopyParamList::Reset()
@@ -628,7 +626,6 @@ void __fastcall TGUIConfiguration::Default()
 //---------------------------------------------------------------------------
 void __fastcall TGUIConfiguration::DefaultLocalized()
 {
-  // DEBUG_PRINTF(L"begin: FCopyParamListDefaults = %d", FCopyParamListDefaults);
   if (FCopyParamListDefaults)
   {
     FCopyParamList->Clear();
@@ -649,8 +646,8 @@ void __fastcall TGUIConfiguration::DefaultLocalized()
       FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_BINARY), CopyParam, NULL);
 
       CopyParam = new TCopyParamType(FDefaultCopyParam);
-      CopyParam->GetExcludeFileMask().SetMasks(L"*.bak; *.tmp; ~$*; *.wbk; *~; #*; .#*");
-      CopyParam->SetNegativeExclude(false); // just for sure
+      CopyParam->GetIncludeFileMask().SetMasks(L"|*.bak; *.tmp; ~$*; *.wbk; *~; #*; .#*");
+      // CopyParam->SetNegativeExclude(false); // just for sure
       FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_EXCLUDE), CopyParam, NULL);
     }
 
@@ -1111,18 +1108,18 @@ TStrings * __fastcall TGUIConfiguration::GetLocales()
               Index++;
             }
       */
-      for (size_t Index = 0; Index < Exts->GetCount(); Index++)
+      for (int Index = 0; Index < Exts->GetCount(); Index++)
       {
         if ((Exts->GetObjects(Index) == NULL) &&
             (Exts->GetStrings(Index).Length() == 3) &&
             SameText(Exts->GetStrings(Index).SubString(1, 2), AdditionaLanguagePrefix))
         {
           UnicodeString LangName = GetFileFileInfoString(L"LangName",
-                                   ChangeFileExt(ModuleFileName(), UnicodeString(L".") + Exts->GetStrings(Index)));
+            ChangeFileExt(ModuleFileName(), UnicodeString(L".") + Exts->GetStrings(Index)));
           if (!LangName.IsEmpty())
           {
             FLocales->AddObject(LangName, reinterpret_cast<TObject *>(static_cast<size_t>(
-                                  AdditionaLanguageMask + Exts->GetStrings(Index)[2])));
+              AdditionaLanguageMask + Exts->GetStrings(Index)[2])));
           }
         }
       }

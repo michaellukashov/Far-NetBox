@@ -92,7 +92,6 @@ public:
 #else
   TCopyParamRuleData __fastcall GetData() { return FData; }
   void __fastcall SetData(TCopyParamRuleData value) { FData = value; }
-  bool __fastcall GetEmpty() const;
 #endif
 
 private:
@@ -100,6 +99,8 @@ private:
 
   inline bool __fastcall Match(const UnicodeString & Mask,
     const UnicodeString & Value, bool Path, bool Local = true) const;
+public:
+  bool __fastcall GetEmpty() const;
 };
 //---------------------------------------------------------------------------
 class TCopyParamList
@@ -138,13 +139,7 @@ public:
   __property TStrings * NameList = { read = GetNameList };
   __property bool AnyRule = { read = GetAnyRule };
 #else
-  int __fastcall GetCount() const;
-  UnicodeString __fastcall GetName(int Index) const;
-  const TCopyParamRule * __fastcall GetRule(int Index) const;
-  const TCopyParamType * __fastcall GetCopyParam(int Index) const;
   bool __fastcall GetModified() { return FModified; }
-  TStrings * __fastcall GetNameList() const;
-  bool __fastcall GetAnyRule() const;
 #endif
 
 private:
@@ -155,14 +150,13 @@ private:
   mutable TStrings * FNameList;
   bool FModified;
 
-#ifndef _MSC_VER
+public:
   int __fastcall GetCount() const;
   const TCopyParamRule * __fastcall GetRule(int Index) const;
   const TCopyParamType * __fastcall GetCopyParam(int Index) const;
   UnicodeString __fastcall GetName(int Index) const;
   TStrings * __fastcall GetNameList() const;
   bool __fastcall GetAnyRule() const;
-#endif
 
   void __fastcall Init();
   void __fastcall Reset();
@@ -208,16 +202,13 @@ private:
 
 protected:
   LCID FLocale;
-
+public:
   virtual void __fastcall SaveData(THierarchicalStorage * Storage, bool All);
   virtual void __fastcall LoadData(THierarchicalStorage * Storage);
-  virtual HANDLE __fastcall LoadNewResourceModule(LCID Locale,
-    UnicodeString * FileName = NULL);
-#ifndef _MSC_VER
   virtual LCID __fastcall GetLocale();
   void __fastcall SetLocale(LCID value);
   void __fastcall SetLocaleSafe(LCID value);
-  virtual HINSTANCE __fastcall LoadNewResourceModule(LCID Locale,
+  virtual HANDLE __fastcall LoadNewResourceModule(LCID Locale,
     UnicodeString * FileName = NULL);
   HANDLE __fastcall GetResourceModule();
   virtual void __fastcall SetResourceModule(HINSTANCE Instance);
@@ -237,13 +228,6 @@ protected:
   void __fastcall SetCopyParamCurrent(UnicodeString value);
   void __fastcall SetNewDirectoryProperties(const TRemoteProperties & value);
   virtual void __fastcall Saved();
-#else
-  virtual bool __fastcall GetRememberPassword();
-  LCID __fastcall InternalLocale();
-  static UnicodeString __fastcall PropertyToKey(const UnicodeString Property);
-  virtual void __fastcall DefaultLocalized();
-  virtual void __fastcall Saved();
-#endif
 
 public:
   /* __fastcall */ TGUIConfiguration();
@@ -306,10 +290,6 @@ public:
   void __fastcall SetQueueAutoPopup(bool value) { FQueueAutoPopup = value; }
   bool __fastcall GetQueueRememberPassword() { return FQueueRememberPassword; }
   void __fastcall SetQueueRememberPassword(bool value) { FQueueRememberPassword = value; }
-  virtual LCID __fastcall GetLocale();
-  void __fastcall SetLocale(LCID value);
-  void __fastcall SetLocaleSafe(LCID value);
-  TStrings * __fastcall GetLocales();
   UnicodeString __fastcall GetPuttyPath() { return FPuttyPath; }
   void __fastcall SetPuttyPath(const UnicodeString value) { FPuttyPath = value; }
   UnicodeString __fastcall GetDefaultPuttyPath() { return FDefaultPuttyPath; }
@@ -324,23 +304,14 @@ public:
   TDateTime __fastcall GetIgnoreCancelBeforeFinish() { return FIgnoreCancelBeforeFinish; }
   void __fastcall SetIgnoreCancelBeforeFinish(TDateTime value) { FIgnoreCancelBeforeFinish = value; }
   TGUICopyParamType & __fastcall GetDefaultCopyParam() { return FDefaultCopyParam; }
-  void __fastcall SetDefaultCopyParam(const TGUICopyParamType & value);
   bool __fastcall GetBeepOnFinish() { return FBeepOnFinish; }
   void __fastcall SetBeepOnFinish(bool value) { FBeepOnFinish = value; }
   bool __fastcall GetSynchronizeBrowsing() { return FSynchronizeBrowsing; }
   void __fastcall SetSynchronizeBrowsing(bool value) { FSynchronizeBrowsing = value; }
   TDateTime __fastcall GetBeepOnFinishAfter() { return FBeepOnFinishAfter; }
   void __fastcall SetBeepOnFinishAfter(TDateTime value) { FBeepOnFinishAfter = value; }
-  const TCopyParamList * __fastcall GetCopyParamList();
-  void __fastcall SetCopyParamList(const TCopyParamList * value);
   UnicodeString __fastcall GetCopyParamCurrent() { return FCopyParamCurrent; }
-  void __fastcall SetCopyParamCurrent(const UnicodeString value);
-  int __fastcall GetCopyParamIndex();
-  void __fastcall SetCopyParamIndex(int value);
-  TGUICopyParamType __fastcall GetCurrentCopyParam();
-  TGUICopyParamType __fastcall GetCopyParamPreset(const UnicodeString Name);
   TRemoteProperties __fastcall GetNewDirectoryProperties() { return FNewDirectoryProperties; }
-  void __fastcall SetNewDirectoryProperties(const TRemoteProperties & value);
   int __fastcall GetKeepUpToDateChangeDelay() { return FKeepUpToDateChangeDelay; }
   void __fastcall SetKeepUpToDateChangeDelay(int value) { FKeepUpToDateChangeDelay = value; }
   UnicodeString __fastcall GetChecksumAlg() { return FChecksumAlg; }
