@@ -246,11 +246,11 @@ UnicodeString TFarConfiguration::ModuleFileName()
 void TFarConfiguration::SetBookmark(const UnicodeString Key,
                                     TBookmarkList *value)
 {
-    FBookmarks->SetBookmark(Key, value);
+    FBookmarks->SetBookmarks(Key, value);
     Changed();
 }
 //---------------------------------------------------------------------------
 TBookmarkList *TFarConfiguration::GetBookmark(const UnicodeString Key)
 {
-    return FBookmarks->GetBookmark(Key);
+    return FBookmarks->GetBookmarks(Key);
 }

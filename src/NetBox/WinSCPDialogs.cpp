@@ -6200,7 +6200,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
                 BookmarkDirectories->SetSorted(true);
                 for (size_t i = 0; i < BookmarkList->GetCount(); i++)
                 {
-                    TBookmark *Bookmark = BookmarkList->GetBookmark(i);
+                    TBookmark *Bookmark = BookmarkList->GetBookmarks(i);
                     UnicodeString RemoteDirectory = Bookmark->GetRemote();
                     if (!RemoteDirectory.IsEmpty() && (BookmarkDirectories->IndexOf(RemoteDirectory.c_str()) == NPOS))
                     {
