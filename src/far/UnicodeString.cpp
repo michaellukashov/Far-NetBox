@@ -437,3 +437,10 @@ int UnicodeString::ToInt() const
 {
   return ::StrToIntDef(*this, 0);
 }
+
+int UnicodeString::LastDelimiter(const UnicodeString & delimiters) const
+{
+  return Sysutils::LastDelimiter(*this, delimiters);
+}
+
+//------------------------------------------------------------------------------

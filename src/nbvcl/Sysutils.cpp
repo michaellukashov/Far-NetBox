@@ -226,7 +226,7 @@ bool IsDelimiter(const UnicodeString str, const UnicodeString delim, size_t inde
   return false;
 }
 
-size_t LastDelimiter(const UnicodeString str, const UnicodeString delim)
+int LastDelimiter(const UnicodeString str, const UnicodeString delim)
 {
   if (str.Length())
   {

@@ -283,6 +283,8 @@ protected:
 };
 typedef UnicodeString string;
 
+//------------------------------------------------------------------------------
+
 class RawByteString;
 class UTF8String
 {
@@ -365,6 +367,8 @@ private:
 };
 
 typedef UTF8String AnsiString;
+
+//------------------------------------------------------------------------------
 
 class RawByteString
 {
@@ -461,3 +465,6 @@ private:
   char * Data;
   size_t Size;
 };
+
+//------------------------------------------------------------------------------
+
