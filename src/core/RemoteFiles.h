@@ -518,8 +518,8 @@ public:
   void __fastcall SetText(const UnicodeString & value);
   void __fastcall SetOctal(UnicodeString value);
   unsigned short __fastcall GetNumber() const;
-  unsigned short __fastcall GetNumberSet() const;
-  unsigned short __fastcall GetNumberUnset() const;
+  unsigned short __fastcall GetNumberSet() const { return FSet; }
+  unsigned short __fastcall GetNumberUnset() const { return FUnset; }
   unsigned long __fastcall GetNumberDecadic() const;
   UnicodeString __fastcall GetOctal() const;
   bool __fastcall GetReadOnly();

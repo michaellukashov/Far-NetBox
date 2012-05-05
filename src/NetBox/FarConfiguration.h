@@ -72,7 +72,7 @@ public:
     virtual void __fastcall Load();
     virtual void __fastcall Save(bool All, bool Explicit);
     virtual void __fastcall Default();
-    virtual THierarchicalStorage * __fastcall CreateStorage();
+    virtual THierarchicalStorage * __fastcall CreateScpStorage(bool SessionList);
     void CacheFarSettings();
 
 protected:

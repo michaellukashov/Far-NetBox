@@ -981,10 +981,187 @@ UnicodeString GetCurrentDir()
 }
 
 //---------------------------------------------------------------------------
+UnicodeString StrToHex(const UnicodeString Str, bool UpperCase, char Separator)
+{
+  UnicodeString Result;
+  for (size_t i = 0; i <= Str.Length(); i++)
+  {
+    Result += CharToHex(static_cast<char>(Str[i]), UpperCase);
+    if ((Separator != L'\0') && (i <= Str.Length()))
+    {
+      Result += Separator;
+    }
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+UnicodeString HexToStr(const UnicodeString Hex)
+{
+  static std::wstring Digits = L"0123456789ABCDEF";
+  std::wstring Result;
+  size_t L, P1, P2;
+  L = Hex.Length() - 1;
+  if (L % 2 == 0)
+  {
+    for (size_t i = 0; i <= Hex.Length(); i += 2)
+    {
+      P1 = Digits.find_first_of(static_cast<char>(toupper(Hex[i])));
+      P2 = Digits.find_first_of(static_cast<char>(toupper(Hex[i + 1])));
+      if ((P1 == std::wstring::npos) || (P2 == std::wstring::npos))
+      {
+        Result = L"";
+        break;
+      }
+      else
+      {
+        Result += static_cast<wchar_t>((P1 - 1) * 16 + P2 - 1);
+      }
+    }
+  }
+  return UnicodeString(Result);
+}
+//---------------------------------------------------------------------------
+unsigned int HexToInt(const UnicodeString Hex, size_t MinChars)
+{
+  static std::wstring Digits = L"0123456789ABCDEF";
+  int Result = 0;
+  size_t I = 0;
+  while (I < Hex.Length())
+  {
+    size_t A = Digits.find_first_of(static_cast<wchar_t>(toupper(Hex[I])));
+    if (A == std::wstring::npos)
+    {
+      if ((MinChars == NPOS) || (I <= MinChars))
+      {
+          Result = 0;
+      }
+      break;
+    }
+
+    Result = (Result * 16) + (static_cast<int>(A) - 1);
+
+    I++;
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+UnicodeString IntToHex(unsigned int Int, size_t MinChars)
+{
+  std::wstringstream ss;
+  ss << std::setfill(L'0') << std::setw(MinChars) << std::hex << Int;
+  return ss.str();
+}
+//---------------------------------------------------------------------------
+char HexToChar(const UnicodeString Hex, size_t MinChars)
+{
+  return static_cast<char>(HexToInt(Hex, MinChars));
+}
+//---------------------------------------------------------------------------
 void ConvertError(int ErrorID)
 {
   UnicodeString Msg = FMTLOAD(ErrorID, 0);
   throw EConvertError(Msg);
+}
+//---------------------------------------------------------------------------
+static void DivMod(const int Dividend, const unsigned int Divisor,
+  unsigned int & Result, unsigned int & Remainder)
+{
+    Result = Dividend / Divisor;
+    Remainder = Dividend % Divisor;
+}
+
+//---------------------------------------------------------------------------
+static bool DecodeDateFully(const TDateTime & DateTime,
+  unsigned short & Year, unsigned short & Month, unsigned short & Day, unsigned short & DOW)
+{
+  static const int D1 = 365;
+  static const int D4 = D1 * 4 + 1;
+  static const int D100 = D4 * 25 - 1;
+  static const int D400 = D100 * 4 + 1;
+  bool Result = false;
+  int T = DateTimeToTimeStamp(DateTime).Date;
+  // DEBUG_PRINTF(L"DateTime = %f, T = %d", DateTime, T);
+  unsigned int Y = 0;
+  unsigned int M = 0;
+  unsigned int D = 0;
+  unsigned int I = 0;
+  if (T <= 0)
+  {
+    Year = 0;
+    Month = 0;
+    Day = 0;
+    DOW = 0;
+    return false;
+  }
+  else
+  {
+    DOW = T % 7 + 1;
+    T--;
+    Y = 1;
+    while (T >= D400)
+    {
+      T -= D400;
+      Y += 400;
+    }
+    DivMod(T, D100, I, D);
+    // DEBUG_PRINTF(L"T = %u, D100 = %u, I = %u, D = %u", T, D100, I, D);
+    if (I == 4)
+    {
+      I--;
+      D += D100;
+    }
+    Y += I * 100;
+    DivMod(D, D4, I, D);
+    // DEBUG_PRINTF(L"D4 = %u, I = %u, D = %u", D4, I, D);
+    Y += I * 4;
+    DivMod(D, D1, I, D);
+    // DEBUG_PRINTF(L"D1 = %u, I = %u, D = %u", D1, I, D);
+    if (I == 4)
+    {
+      I--;
+      D += D1;
+    }
+    Y += I;
+    Result = bg::gregorian_calendar::is_leap_year(Y);
+    const TDayTable * DayTable = &MonthDays[Result];
+    M = 1;
+    while (true)
+    {
+      I = (*DayTable)[M - 1];
+      // DEBUG_PRINTF(L"I = %u, D = %u", I, D);
+      if (D < I)
+      {
+        break;
+      }
+      D -= I;
+      M++;
+    }
+    Year = Y;
+    Month = M;
+    Day = D + 1;
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+void DecodeDate(const TDateTime &DateTime, unsigned short &Year,
+  unsigned short &Month, unsigned short &Day)
+{
+  unsigned short Dummy = 0;
+  DecodeDateFully(DateTime, Year, Month, Day, Dummy);
+}
+
+void DecodeTime(const TDateTime &DateTime, unsigned short &Hour,
+  unsigned short &Min, unsigned short &Sec, unsigned short &MSec)
+{
+  unsigned int MinCount, MSecCount;
+  DivMod(DateTimeToTimeStamp(DateTime).Time, 60000, MinCount, MSecCount);
+  unsigned int H, M, S, MS;
+  DivMod(MinCount, 60, H, M);
+  DivMod(MSecCount, 1000, S, MS);
+  Hour = H;
+  Min = M;
+  Sec = S;
+  MSec = MS;
 }
 
 //---------------------------------------------------------------------------
@@ -1082,101 +1259,6 @@ TDateTime Date()
   ::GetLocalTime(&t);
   TDateTime result = ::EncodeDate(t.wYear, t.wMonth, t.wDay);
   return result;
-}
-
-void DivMod(const int Dividend, const unsigned int Divisor,
-  unsigned int & Result, unsigned int & Remainder)
-{
-  Result = Dividend / Divisor;
-  Remainder = Dividend % Divisor;
-}
-
-bool DecodeDateFully(const TDateTime & DateTime,
-  unsigned int & Year, unsigned int & Month, unsigned int & Day, unsigned int & DOW)
-{
-  static const int D1 = 365;
-  static const int D4 = D1 * 4 + 1;
-  static const int D100 = D4 * 25 - 1;
-  static const int D400 = D100 * 4 + 1;
-  bool Result = false;
-  int T = DateTimeToTimeStamp(DateTime).Date;
-  // DEBUG_PRINTF(L"DateTime = %f, T = %d", DateTime, T);
-  unsigned int Y = 0;
-  unsigned int M = 0;
-  unsigned int D = 0;
-  unsigned int I = 0;
-  if (T <= 0)
-  {
-    Year = 0;
-    Month = 0;
-    Day = 0;
-    DOW = 0;
-    return false;
-  }
-  else
-  {
-    DOW = T % 7 + 1;
-    T--;
-    Y = 1;
-    while (T >= D400)
-    {
-      T -= D400;
-      Y += 400;
-    }
-    DivMod(T, D100, I, D);
-    // DEBUG_PRINTF(L"T = %u, D100 = %u, I = %u, D = %u", T, D100, I, D);
-    if (I == 4)
-    {
-      I--;
-      D += D100;
-    }
-    Y += I * 100;
-    DivMod(D, D4, I, D);
-    // DEBUG_PRINTF(L"D4 = %u, I = %u, D = %u", D4, I, D);
-    Y += I * 4;
-    DivMod(D, D1, I, D);
-    // DEBUG_PRINTF(L"D1 = %u, I = %u, D = %u", D1, I, D);
-    if (I == 4)
-    {
-      I--;
-      D += D1;
-    }
-    Y += I;
-    Result = bg::gregorian_calendar::is_leap_year(Y);
-    const TDayTable * DayTable = &MonthDays[Result];
-    M = 1;
-    while (true)
-    {
-      I = (*DayTable)[M - 1];
-      // DEBUG_PRINTF(L"I = %u, D = %u", I, D);
-      if (D < I)
-      {
-        break;
-      }
-      D -= I;
-      M++;
-    }
-    Year = Y;
-    Month = M;
-    Day = D + 1;
-  }
-  return Result;
-}
-
-void DecodeDate(const TDateTime & DateTime, unsigned int & Year,
-  unsigned int & Month, unsigned int & Day)
-{
-  unsigned int Dummy = 0;
-  DecodeDateFully(DateTime, Year, Month, Day, Dummy);
-}
-
-void DecodeTime(const TDateTime & DateTime, unsigned int & Hour,
-  unsigned int & Min, unsigned int & Sec, unsigned int & MSec)
-{
-  unsigned int MinCount, MSecCount;
-  DivMod(DateTimeToTimeStamp(DateTime).Time, 60000, MinCount, MSecCount);
-  DivMod(MinCount, 60, Hour, Min);
-  DivMod(MSecCount, 1000, Sec, MSec);
 }
 
 UnicodeString FormatDateTime(const UnicodeString fmt, TDateTime DateTime)

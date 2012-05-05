@@ -111,7 +111,7 @@ public:
     // TRemoteDirectoryChangesCache * DirectoryChangesCache);
   // bool ShowBanner(const UnicodeString SessionKey, const UnicodeString Banner);
   // void NeverShowBanner(const UnicodeString SessionKey, const UnicodeString Banner);
-  virtual THierarchicalStorage * __fastcall CreateStorage();
+  // virtual THierarchicalStorage * __fastcall CreateScpStorage(bool SessionList);
   // void TemporaryLogging(const UnicodeString ALogFileName);
   // virtual UnicodeString __fastcall EncryptPassword(const UnicodeString Password, const UnicodeString Key);
   // virtual UnicodeString __fastcall DecryptPassword(const UnicodeString Password, const UnicodeString Key);
@@ -119,8 +119,8 @@ public:
 
   UnicodeString GetPuttyRegistryStorageKey() { return FPuttyRegistryStorageKey; }
   bool GetLogging() { return FLogging; }
-  UnicodeString GetLogFileName() { return FLogFileName; }
-  void SetLogToFile(bool value);
+  UnicodeString __fastcall GetLogFileName() { return FLogFileName; }
+  void __fastcall SetLogToFile(bool value);
   bool GetLogFileAppend() { return FLogFileAppend; }
   size_t GetLogProtocol() { return FLogProtocol; }
   // void SetLogProtocol(size_t value);
@@ -271,7 +271,7 @@ public:
     TRemoteDirectoryChangesCache * DirectoryChangesCache);
   bool __fastcall ShowBanner(const UnicodeString SessionKey, const UnicodeString & Banner);
   void __fastcall NeverShowBanner(const UnicodeString SessionKey, const UnicodeString & Banner);
-  virtual THierarchicalStorage * CreateScpStorage(bool SessionList);
+  virtual THierarchicalStorage * __fastcall CreateScpStorage(bool SessionList);
   void __fastcall TemporaryLogging(const UnicodeString ALogFileName);
   void __fastcall TemporaryActionsLogging(const UnicodeString ALogFileName);
   virtual RawByteString __fastcall EncryptPassword(UnicodeString Password, UnicodeString Key);

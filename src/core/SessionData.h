@@ -123,8 +123,8 @@ private:
   int FSFTPUploadQueue;
   int FSFTPListingQueue;
   int FSFTPMaxVersion;
-  size_t FSFTPMinPacketSize;
-  size_t FSFTPMaxPacketSize;
+  int FSFTPMinPacketSize;
+  int FSFTPMaxPacketSize;
   TDSTMode FDSTMode;
   TAutoSwitch FSFTPBugs[SFTP_BUG_COUNT];
   bool FDeleteToRecycleBin;
@@ -166,7 +166,6 @@ private:
   bool FSslSessionReuse;
 
 public:
-
   void __fastcall SetHostName(UnicodeString value);
   UnicodeString __fastcall GetHostNameExpanded();
   void __fastcall SetPortNumber(int value);
@@ -261,9 +260,9 @@ public:
   void __fastcall SetCustomParam1(UnicodeString value);
   void __fastcall SetCustomParam2(UnicodeString value);
   void __fastcall SetResolveSymlinks(bool value);
-  void __fastcall SetSFTPDownloadQueue(int value);
-  void __fastcall SetSFTPUploadQueue(int value);
-  void __fastcall SetSFTPListingQueue(int value);
+  // void __fastcall SetSFTPDownloadQueue(int value);
+  // void __fastcall SetSFTPUploadQueue(int value);
+  // void __fastcall SetSFTPListingQueue(int value);
   void __fastcall SetSFTPMaxVersion(int value);
   void __fastcall SetSFTPMinPacketSize(int value);
   void __fastcall SetSFTPMaxPacketSize(int value);
@@ -522,19 +521,19 @@ public:
   UnicodeString __fastcall GetProxyLocalCommand() const { return FProxyLocalCommand; }
   TAutoSwitch __fastcall GetProxyDNS() const { return FProxyDNS; }
   bool __fastcall GetProxyLocalhost() const { return FProxyLocalhost; }
-  size_t __fastcall GetFtpProxyLogonType() const { return FFtpProxyLogonType; }
+  int __fastcall GetFtpProxyLogonType() const { return FFtpProxyLogonType; }
   UnicodeString __fastcall GetCustomParam1() const { return FCustomParam1; }
   UnicodeString __fastcall GetCustomParam2() const { return FCustomParam2; }
   bool __fastcall GetResolveSymlinks() const { return FResolveSymlinks; }
-  size_t __fastcall GetSFTPDownloadQueue() const { return FSFTPDownloadQueue; }
-  void __fastcall SetSFTPDownloadQueue(size_t value);
-  size_t __fastcall GetSFTPUploadQueue() const { return FSFTPUploadQueue; }
-  void __fastcall SetSFTPUploadQueue(size_t value);
-  size_t __fastcall GetSFTPListingQueue() const { return FSFTPListingQueue; }
-  void __fastcall SetSFTPListingQueue(size_t value);
-  size_t __fastcall GetSFTPMaxVersion() const { return FSFTPMaxVersion; }
-  size_t __fastcall GetSFTPMinPacketSize() const { return FSFTPMinPacketSize; }
-  size_t __fastcall GetSFTPMaxPacketSize() const { return FSFTPMaxPacketSize; }
+  int __fastcall GetSFTPDownloadQueue() const { return FSFTPDownloadQueue; }
+  void __fastcall SetSFTPDownloadQueue(int value);
+  int __fastcall GetSFTPUploadQueue() const { return FSFTPUploadQueue; }
+  void __fastcall SetSFTPUploadQueue(int value);
+  int __fastcall GetSFTPListingQueue() const { return FSFTPListingQueue; }
+  void __fastcall SetSFTPListingQueue(int value);
+  int __fastcall GetSFTPMaxVersion() const { return FSFTPMaxVersion; }
+  int __fastcall GetSFTPMinPacketSize() const { return FSFTPMinPacketSize; }
+  int __fastcall GetSFTPMaxPacketSize() const { return FSFTPMaxPacketSize; }
   TAutoSwitch __fastcall GetSCPLsFullTime() const { return FSCPLsFullTime; }
   TAutoSwitch __fastcall GetFtpListAll() const { return FFtpListAll; }
   TDSTMode __fastcall GetDSTMode() const { return FDSTMode; }

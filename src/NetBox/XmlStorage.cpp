@@ -133,9 +133,67 @@ void TXmlStorage::SetAccessMode(TStorageAccessMode value)
     }
 }
 //---------------------------------------------------------------------------
+bool __fastcall TXmlStorage::DoKeyExists(const UnicodeString SubKey, bool ForceAnsi)
+{
+  Error(SNotImplemented, 3024);
+  UnicodeString K = PuttyMungeStr(SubKey);
+  bool Result = false; // FRegistry->KeyExists(K);
+  return Result;
+}
+//---------------------------------------------------------------------------
+bool __fastcall TXmlStorage::DoOpenSubKey(const UnicodeString SubKey, bool CanCreate)
+{
+    TiXmlElement *OldCurrentElement = FCurrentElement;
+    TiXmlElement *Element = NULL;
+    // if (Path)
+    // {
+        // UnicodeString subKey = SubKey;
+        // assert(subKey.IsEmpty() || (subKey[subKey.Length() - 1] != '\\'));
+        // bool Result = true;
+        // while (!subKey.IsEmpty())
+        // {
+            // Result &= OpenSubKey(CutToChar(subKey, L'\\', false), CanCreate, false);
+            // DEBUG_PRINTF(L"SubKey = %s, Result = %d", SubKey.c_str(), Result);
+        // }
+        // return Result;
+    // }
+    // else
+    {
+        std::string subKey = ToStdString(PuttyMungeStr(SubKey));
+        if (CanCreate)
+        {
+            if (FStoredSessionsOpened)
+            {
+                Element = new TiXmlElement(CONST_SESSION_NODE);
+                Element->SetAttribute(CONST_NAME_ATTR, subKey);
+            }
+            else
+            {
+                Element = new TiXmlElement(subKey);
+            }
+            FCurrentElement->LinkEndChild(Element);
+        }
+        else
+        {
+            Element = FindChildElement(subKey);
+        }
+    }
+    bool Result = Element != NULL;
+    if (Result)
+    {
+        Result = THierarchicalStorage::OpenSubKey(SubKey, CanCreate, false);
+        if (Result)
+        {
+            FSubElements.push_back(OldCurrentElement);
+            FCurrentElement = Element;
+            FStoredSessionsOpened = (SubKey == FStoredSessionsSubKey);
+        }
+    }
+    return Result;
+}
+//---------------------------------------------------------------------------
 bool TXmlStorage::OpenSubKey(const UnicodeString SubKey, bool CanCreate, bool Path)
 {
-    // DEBUG_PRINTF(L"SubKey = %s, CanCreate = %d, Path = %d", SubKey.c_str(), CanCreate, Path);
     TiXmlElement *OldCurrentElement = FCurrentElement;
     TiXmlElement *Element = NULL;
     if (Path)
@@ -182,7 +240,6 @@ bool TXmlStorage::OpenSubKey(const UnicodeString SubKey, bool CanCreate, bool Pa
             FStoredSessionsOpened = (SubKey == FStoredSessionsSubKey);
         }
     }
-    // DEBUG_PRINTF(L"end, Result = %d", Result);
     return Result;
 }
 //---------------------------------------------------------------------------
@@ -242,10 +299,7 @@ bool TXmlStorage::DeleteValue(const UnicodeString Name)
 //---------------------------------------------------------------------------
 bool TXmlStorage::KeyExists(const UnicodeString SubKey)
 {
-    Error(SNotImplemented, 3024);
-    UnicodeString K = PuttyMungeStr(SubKey);
-    bool Result = false; // FRegistry->KeyExists(K);
-    return Result;
+  return DoKeyExists(SubKey, GetForceAnsi());
 }
 //---------------------------------------------------------------------------
 void TXmlStorage::RemoveIfExists(const UnicodeString Name)
@@ -433,7 +487,7 @@ void TXmlStorage::WriteInt64(const UnicodeString Name, __int64 Value)
 }
 //---------------------------------------------------------------------------
 void TXmlStorage::WriteBinaryData(const UnicodeString Name,
-                                  const void *Buffer, int Size)
+  const void *Buffer, int Size)
 {
     RemoveIfExists(Name);
     AddNewElement(Name, ::StrToHex(UnicodeString(reinterpret_cast<const wchar_t *>(Buffer), Size), true));

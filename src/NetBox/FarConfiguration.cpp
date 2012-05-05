@@ -64,10 +64,10 @@ void TFarConfiguration::Default()
     // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-THierarchicalStorage *TFarConfiguration::CreateStorage()
+THierarchicalStorage *TFarConfiguration::CreateScpStorage(bool SessionList)
 {
     // DEBUG_PRINTF(L"GetStorage = %d", GetStorage());
-    return TGUIConfiguration::CreateStorage();
+    return TGUIConfiguration::CreateScpStorage(SessionList);
 }
 //---------------------------------------------------------------------------
 void TFarConfiguration::Saved()

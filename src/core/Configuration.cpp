@@ -25,7 +25,7 @@
 #pragma package(smart_init)
 #endif
 //---------------------------------------------------------------------------
-TConfiguration::TConfiguration() :
+/* __fastcall */ TConfiguration::TConfiguration() :
   FDontSave(false),
   FChanged(false),
   FUpdating(0),
@@ -140,7 +140,7 @@ void __fastcall TConfiguration::Default()
   Changed();
 }
 //---------------------------------------------------------------------------
-TConfiguration::~TConfiguration()
+/* __fastcall */ TConfiguration::~TConfiguration()
 {
   assert(!FUpdating);
   if (FApplicationInfo) { FreeFileInfo(FApplicationInfo); }
@@ -1109,7 +1109,6 @@ void __fastcall TConfiguration::SetActionsLogFileName(UnicodeString value)
   }
 }
 //---------------------------------------------------------------------
-/*
 void __fastcall TConfiguration::SetLogToFile(bool value)
 {
   if (value != GetLogToFile())
@@ -1118,7 +1117,6 @@ void __fastcall TConfiguration::SetLogToFile(bool value)
     Changed();
   }
 }
-*/
 //---------------------------------------------------------------------
 bool __fastcall TConfiguration::GetLogToFile()
 {
