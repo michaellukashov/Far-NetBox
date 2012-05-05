@@ -347,15 +347,21 @@ private:
   void Init(const wchar_t * Str, int Length)
   {
     Data.resize(Length);
-    memmove(reinterpret_cast<unsigned char *>(const_cast<wchar_t *>(Data.c_str())), Str, Length);
-    Data[Length-1] = 0;
+    if (Length > 0)
+    {
+        memmove(reinterpret_cast<unsigned char *>(const_cast<wchar_t *>(Data.c_str())), Str, Length);
+        Data[Length-1] = 0;
+    }
   }
   void Init(const char * Str, int Length)
   {
     int Size = MultiByteToWideChar(CP_UTF8, 0, Str, -1, NULL, 0) + 1;
     Data.resize(Size);
-    MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), Size);
-    Data[Size-1] = 0;
+    if (Length > 0)
+    {
+      MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), Size);
+      Data[Size-1] = 0;
+    }
   }
 
   typedef std::basic_string<wchar_t> wstring_t;
@@ -422,21 +428,30 @@ private:
   {
     int Size = WideCharToMultiByte(CP_UTF8, 0, Str, Length, nullptr, 0, nullptr, nullptr) + 1;
     Data.resize(Size);
-    WideCharToMultiByte(CP_UTF8, 0, Str, Length,
-      reinterpret_cast<LPSTR>(const_cast<unsigned char *>(Data.c_str())), Size-1, nullptr, nullptr);
-    Data[Size-1] = 0;
+    if (Length > 0)
+    {
+      WideCharToMultiByte(CP_UTF8, 0, Str, Length,
+        reinterpret_cast<LPSTR>(const_cast<unsigned char *>(Data.c_str())), Size-1, nullptr, nullptr);
+      Data[Size-1] = 0;
+    }
   }
   void Init(const char * Str, int Length)
   {
     Data.resize(Length);
-    memmove(const_cast<unsigned char *>(Data.c_str()), Str, Length);
-    Data[Length-1] = 0;
+    if (Length > 0)
+    {
+      memmove(const_cast<unsigned char *>(Data.c_str()), Str, Length);
+      Data[Length-1] = 0;
+    }
   }
   void Init(const unsigned char * Str, int Length)
   {
     Data.resize(Length);
-    memmove(const_cast<unsigned char *>(Data.c_str()), Str, Length);
-    Data[Length-1] = 0;
+    if (Length > 0)
+    {
+      memmove(const_cast<unsigned char *>(Data.c_str()), Str, Length);
+      Data[Length-1] = 0;
+    }
   }
 
   typedef std::basic_string<unsigned char> rawstring_t;
