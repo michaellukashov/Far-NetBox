@@ -24,7 +24,7 @@ public:
   /* __fastcall */ TGUICopyParamType();
   /* __fastcall */ TGUICopyParamType(const TCopyParamType & Source);
   /* __fastcall */ TGUICopyParamType(const TGUICopyParamType & Source);
-  virtual /* __fastcall */ ~TGUICopyParamType();
+  virtual /* __fastcall */ ~TGUICopyParamType() {}
 
   void __fastcall Load(THierarchicalStorage * Storage);
   void __fastcall Save(THierarchicalStorage * Storage);
@@ -68,7 +68,7 @@ struct TCopyParamRuleData
   UnicodeString RemoteDirectory;
   UnicodeString LocalDirectory;
 
-  void /* __fastcall */ Default();
+  void __fastcall Default();
 };
 //---------------------------------------------------------------------------
 class TCopyParamRule

@@ -46,13 +46,6 @@ static const UnicodeString AdditionaLanguagePrefix(L"XX");
 {
   GUIAssign(&Source);
 }
-
-//---------------------------------------------------------------------------
-TGUICopyParamType::~TGUICopyParamType()
-{
-  // DEBUG_PRINTF(L"begin");
-  // DEBUG_PRINTF(L"end");
-}
 //---------------------------------------------------------------------------
 void __fastcall TGUICopyParamType::Assign(const TCopyParamType * Source)
 {
@@ -122,7 +115,7 @@ TGUICopyParamType & __fastcall TGUICopyParamType::operator =(const TGUICopyParam
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-void /* __fastcall */ TCopyParamRuleData::Default()
+void __fastcall TCopyParamRuleData::Default()
 {
   HostName = L"";
   UserName = L"";
@@ -647,7 +640,6 @@ void __fastcall TGUIConfiguration::DefaultLocalized()
 
       CopyParam = new TCopyParamType(FDefaultCopyParam);
       CopyParam->GetIncludeFileMask().SetMasks(L"|*.bak; *.tmp; ~$*; *.wbk; *~; #*; .#*");
-      // CopyParam->SetNegativeExclude(false); // just for sure
       FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_EXCLUDE), CopyParam, NULL);
     }
 
