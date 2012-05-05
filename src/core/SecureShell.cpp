@@ -910,7 +910,7 @@ void __fastcall TSecureShell::SendEOF()
   SendSpecial(TS_EOF);
 }
 //---------------------------------------------------------------------------
-unsigned int__fastcall  TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent * PoolEvent)
+unsigned int __fastcall TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent * PoolEvent)
 {
   FWaiting++;
 
@@ -944,7 +944,7 @@ unsigned int__fastcall  TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent * Poo
   return Answer;
 }
 //---------------------------------------------------------------------------
-void __fastcall TSecureShell::SendBuffer(unsigned int & Result)
+void /* __fastcall */ TSecureShell::SendBuffer(unsigned int & Result)
 {
   // for comments see PoolForData
   if (!GetActive())
@@ -1020,7 +1020,7 @@ void __fastcall TSecureShell::Send(const unsigned char * Buf, Integer Len)
   int BufSize = FBackend->send(FBackendHandle, const_cast<char *>(reinterpret_cast<const char *>(Buf)), Len);
   if (Configuration->GetActualLogProtocol() >= 1)
   {
-    LogEvent(FORMAT(L"Sent %u bytes", (static_cast<int>(Len)));
+    LogEvent(FORMAT(L"Sent %u bytes", (static_cast<int>(Len))));
     LogEvent(FORMAT(L"There are %u bytes remaining in the send buffer", BufSize));
   }
   FLastDataSent = Now();
@@ -1196,7 +1196,7 @@ void __fastcall TSecureShell::FatalError(UnicodeString Error)
   FUI->FatalError(NULL, Error);
 }
 //---------------------------------------------------------------------------
-void __fastcall inline TSecureShell::LogEvent(const UnicodeString & Str)
+void __fastcall /* inline */ TSecureShell::LogEvent(const UnicodeString & Str)
 {
   if (FLog->GetLogging())
   {
@@ -1405,7 +1405,7 @@ public:
   {
   }
 
-  void __fastcall PoolForData(unsigned int & Result)
+  void /* __fastcall */ PoolForData(unsigned int & Result)
   {
     FSecureShell->PoolForData(FEvents, Result);
   }

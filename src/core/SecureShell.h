@@ -66,6 +66,7 @@ private:
   UnicodeString FUserName;
   TSecureShell * Self;
 
+public:
   static TCipher __fastcall FuncToSsh1Cipher(const void * Cipher);
   static TCipher __fastcall FuncToSsh2Cipher(const void * Cipher);
   UnicodeString __fastcall FuncToCompression(int SshVersion, const void * Compress) const;
@@ -89,7 +90,7 @@ private:
   void __fastcall UpdateSessionInfo();
   bool __fastcall GetReady();
   void __fastcall DispatchSendBuffer(int BufSize);
-  void __fastcall SendBuffer(unsigned int & Result);
+  void /* __fastcall */ SendBuffer(unsigned int & Result);
   unsigned int __fastcall TimeoutPrompt(TQueryParamsTimerEvent * PoolEvent);
 
 protected:
@@ -103,7 +104,7 @@ protected:
   void __fastcall AddStdError(UnicodeString Str);
   void __fastcall AddStdErrorLine(const UnicodeString & Str);
   void __fastcall FatalError(Exception * E, UnicodeString Msg);
-  void __fastcall inline LogEvent(const UnicodeString & Str);
+  void __fastcall /* inline */ LogEvent(const UnicodeString & Str);
   void __fastcall FatalError(UnicodeString Error);
   static void __fastcall ClearConfig(Config * cfg);
   static void __fastcall StoreToConfig(TSessionData * Data, Config * cfg, bool Simple);
@@ -163,9 +164,7 @@ public:
   __property UnicodeString UserName = { read = FUserName };
   __property bool Simple = { read = FSimple, write = FSimple };
 #else
-  void __fastcall SetActive(bool value);
   bool __fastcall GetActive() { return FActive; }
-  bool __fastcall GetReady();
   captureoutput_signal_type & GetOnCaptureOutput() { return FOnCaptureOutput; }
   void SetOnCaptureOutput(const TCaptureOutputEvent & value) { FOnCaptureOutput.connect(value); }
   TDateTime GetLastDataSent() { return FLastDataSent; }
