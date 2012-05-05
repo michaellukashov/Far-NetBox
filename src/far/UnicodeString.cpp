@@ -477,6 +477,14 @@ RawByteString & RawByteString::Insert(const char * Str, int Pos)
   return *this;
 }
 
+RawByteString RawByteString::SubString(int Pos, int Len) const
+{
+  rawstring_t s = Data.substr(Pos - 1, Len);
+  RawByteString Result(s.c_str(), s.size());
+  // return RawByteString(reinterpret_cast<const char *>(s).c_str(), Len));
+  return Result;
+}
+
 const RawByteString & RawByteString::operator=(const UnicodeString & strCopy)
 {
   Init(strCopy.c_str(), strCopy.Length());

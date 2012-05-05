@@ -400,7 +400,7 @@ public:
   RawByteString & Insert(const wchar_t * Str, int Pos) { return Insert(Pos, Str, wcslen(Str)); }
   RawByteString & Insert(const char * Str, int Pos);
 
-  RawByteString SubString(int Pos, int Len = -1) const { return RawByteString(reinterpret_cast<const char *>(Data.substr(Pos - 1, Len).c_str(), Len)); }
+  RawByteString SubString(int Pos, int Len = -1) const;
 
   int Pos(wchar_t Ch) const;
   int Pos(const wchar_t * Str) const;
