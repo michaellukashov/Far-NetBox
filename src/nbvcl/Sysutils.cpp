@@ -141,7 +141,7 @@ UnicodeString Trim(const UnicodeString str)
 UnicodeString TrimLeft(const UnicodeString str)
 {
   UnicodeString result = str;
-  while (result.Length() > 0 && result[0] == ' ')
+  while (result.Length() > 0 && result[1] == ' ')
   {
     result = result.SubString(1, result.Length() - 1);
   }
@@ -232,7 +232,7 @@ int LastDelimiter(const UnicodeString str, const UnicodeString delimiters)
 {
   if (str.Length())
   {
-    for (int i = str.Length(); i >= 0; --i)
+    for (int i = str.Length(); i >= 1; --i)
     {
       if (::IsDelimiter(str, delimiters, i))
       {
@@ -338,7 +338,7 @@ UnicodeString FormatFloat(const UnicodeString Format, double value)
   // DEBUG_PRINTF(L"Format = %s", Format.c_str());
   // #,##0 "B"
   UnicodeString result(20, 0);
-  swprintf_s(&result[0], result.Length(), L"%.2f", value);
+  swprintf_s(&result[1], result.Length(), L"%.2f", value);
   return result.c_str();
 }
 
@@ -537,7 +537,7 @@ UnicodeString Format(const wchar_t * format, va_list args)
   {
     size_t len = _vscwprintf(format, args);
     result.SetLength(len + 1);
-    vswprintf_s(&result[0], len + 1, format, args);
+    vswprintf_s(&result[1], len + 1, format, args);
   }
   return result.c_str();
 }
@@ -578,7 +578,7 @@ UnicodeString FmtLoadStr(int id, ...)
     */
     size_t len = _vscwprintf(format.c_str(), args);
     UnicodeString buf(len + sizeof(wchar_t), 0);
-    vswprintf_s(&buf[0], buf.Length(), format.c_str(), args);
+    vswprintf_s(&buf[1], buf.Length(), format.c_str(), args);
     va_end(args);
     result = buf;
   }
@@ -788,8 +788,8 @@ UnicodeString GetUniversalName(UnicodeString & FileName)
 UnicodeString ExpandUNCFileName(const UnicodeString FileName)
 {
   UnicodeString Result = ExpandFileName(FileName);
-  if ((Result.Length() >= 3) && (Result[1] == L':') && (::UpCase(Result[0]) >= 'A')
-      && (::UpCase(Result[0]) <= 'Z'))
+  if ((Result.Length() >= 3) && (Result[1] == L':') && (::UpCase(Result[1]) >= 'A')
+      && (::UpCase(Result[1]) <= 'Z'))
   {
     Result = GetUniversalName(Result);
   }
@@ -834,9 +834,9 @@ UnicodeString SysErrorMessage(int ErrorCode)
   UnicodeString Result;
   wchar_t Buffer[255];
   int Len = ::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM |
-                            FORMAT_MESSAGE_ARGUMENT_ARRAY, NULL, ErrorCode, 0,
-                            static_cast<LPTSTR>(Buffer),
-                            sizeof(Buffer), NULL);
+    FORMAT_MESSAGE_ARGUMENT_ARRAY, NULL, ErrorCode, 0,
+    static_cast<LPTSTR>(Buffer),
+    sizeof(Buffer), NULL);
   while ((Len > 0) && ((Buffer[Len - 1] != 0) &&
     (Buffer[Len - 1] <= 32) || (Buffer[Len - 1] == '.')))
   {
@@ -933,8 +933,8 @@ UnicodeString ExcludeTrailingBackslash(const UnicodeString str)
 UnicodeString IncludeTrailingBackslash(const UnicodeString str)
 {
   UnicodeString result = str;
-  if ((str.Length() == 0) || ((str[str.Length() - 1] != L'/') &&
-                              (str[str.Length() - 1] != L'\\')))
+  if ((str.Length() == 0) || ((str[str.Length()] != L'/') &&
+    (str[str.Length()] != L'\\')))
   {
     result += L'\\';
   }
@@ -986,7 +986,7 @@ UnicodeString GetCurrentDir()
 UnicodeString StrToHex(const UnicodeString Str, bool UpperCase, char Separator)
 {
   UnicodeString Result;
-  for (size_t i = 0; i <= Str.Length(); i++)
+  for (size_t i = 1; i <= Str.Length(); i++)
   {
     Result += CharToHex(static_cast<char>(Str[i]), UpperCase);
     if ((Separator != L'\0') && (i <= Str.Length()))
@@ -1005,7 +1005,7 @@ UnicodeString HexToStr(const UnicodeString Hex)
   L = Hex.Length() - 1;
   if (L % 2 == 0)
   {
-    for (size_t i = 0; i <= Hex.Length(); i += 2)
+    for (size_t i = 1; i <= Hex.Length(); i += 2)
     {
       P1 = Digits.find_first_of(static_cast<char>(toupper(Hex[i])));
       P2 = Digits.find_first_of(static_cast<char>(toupper(Hex[i + 1])));
@@ -1027,7 +1027,7 @@ unsigned int HexToInt(const UnicodeString Hex, size_t MinChars)
 {
   static std::wstring Digits = L"0123456789ABCDEF";
   int Result = 0;
-  size_t I = 0;
+  size_t I = 1;
   while (I < Hex.Length())
   {
     size_t A = Digits.find_first_of(static_cast<wchar_t>(toupper(Hex[I])));
