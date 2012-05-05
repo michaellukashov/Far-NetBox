@@ -33,7 +33,7 @@
 #include "..\core\FileInfo.cpp"
 #include "..\core\FileSystems.cpp"
 #include "..\core\Bookmarks.cpp"
-#include "..\core\SynchronizeController.cpp"
 #include "..\core\WinSCPSecurity.cpp"
+#include "..\windows\SynchronizeController.cpp"
 #include "..\windows\GUIConfiguration.cpp"
 #include "..\windows\GUITools.cpp"
