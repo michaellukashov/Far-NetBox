@@ -44,8 +44,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <cmath>
 #include <cfloat>
 
-// #include <string.h>
-
 #include <process.h>
 #include <search.h>
 #include <share.h>

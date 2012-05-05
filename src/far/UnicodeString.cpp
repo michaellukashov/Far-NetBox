@@ -464,3 +464,139 @@ UnicodeString UnicodeString::TrimRight() const
 }
 
 //------------------------------------------------------------------------------
+int RawByteString::Pos(wchar_t Ch) const
+{
+  // rawstring_t s(&Ch, 1);
+  RawByteString s(&Ch, 1);
+  return Data.find(reinterpret_cast<const unsigned char *>(s.c_str()), 0, 1);
+}
+
+RawByteString & RawByteString::Insert(const char * Str, int Pos)
+{
+  Data.insert(Pos - 1, reinterpret_cast<const unsigned char *>(Str));
+  return *this;
+}
+
+const RawByteString & RawByteString::operator=(const UnicodeString & strCopy)
+{
+  Init(strCopy.c_str(), strCopy.Length());
+  return *this;
+}
+
+const RawByteString & RawByteString::operator=(const RawByteString & strCopy)
+{
+  Init(strCopy.c_str(), strCopy.Length());
+  return *this;
+}
+
+const RawByteString & RawByteString::operator=(const UTF8String & strCopy)
+{
+  Init(strCopy.c_str(), strCopy.Length());
+  return *this;
+}
+
+const RawByteString & RawByteString::operator=(const char * lpszData)
+{
+  Init(lpszData, strlen(lpszData));
+  return *this;
+}
+
+const RawByteString & RawByteString::operator=(const wchar_t * lpszData)
+{
+  Init(lpszData, wcslen(lpszData));
+  return *this;
+}
+
+RawByteString __fastcall RawByteString::operator +(const RawByteString & rhs) const
+{
+  rawstring_t Result = Data + rhs.Data;
+  return RawByteString(reinterpret_cast<const char *>(Result.c_str()), Result.size());
+}
+
+const RawByteString & __fastcall RawByteString::operator +=(const RawByteString & rhs)
+{
+  Data.append(reinterpret_cast<const unsigned char *>(rhs.c_str()), rhs.size());
+  return *this;
+}
+const RawByteString & __fastcall RawByteString::operator +=(const UTF8String & rhs)
+{
+  Data.append(reinterpret_cast<const unsigned char *>(rhs.c_str()), rhs.size());
+  return *this;
+}
+
+const RawByteString & __fastcall RawByteString::operator +=(const char Ch)
+{
+  unsigned char ch(static_cast<unsigned char>(Ch));
+  Data.append(1, ch);
+  return *this;
+}
+
+//------------------------------------------------------------------------------
+int UTF8String::Pos(wchar_t Ch) const
+{
+  wstring_t s(&Ch, 1);
+  return Data.find(s.c_str(), 0, 1);
+}
+
+UTF8String & UTF8String::Insert(const wchar_t * Str, int Pos)
+{
+  Data.insert(Pos - 1, Str);
+  return *this;
+}
+
+const UTF8String & UTF8String::operator=(const UnicodeString & strCopy)
+{
+  Init(strCopy.c_str(), strCopy.Length());
+  return *this;
+}
+
+const UTF8String & UTF8String::operator=(const UTF8String & strCopy)
+{
+  Init(strCopy.c_str(), strCopy.Length());
+  return *this;
+}
+
+const UTF8String & UTF8String::operator=(const RawByteString & strCopy)
+{
+  Init(strCopy.c_str(), strCopy.Length());
+  return *this;
+}
+
+const UTF8String & UTF8String::operator=(const char * lpszData)
+{
+  Init(lpszData, strlen(lpszData));
+  return *this;
+}
+
+const UTF8String & UTF8String::operator=(const wchar_t * lpszData)
+{
+  Init(lpszData, wcslen(lpszData));
+  return *this;
+}
+
+UTF8String __fastcall UTF8String::operator +(const UTF8String & rhs) const
+{
+  wstring_t Result = Data + rhs.Data;
+  return RawByteString(reinterpret_cast<const char *>(Result.c_str()), Result.size());
+}
+
+const UTF8String & __fastcall UTF8String::operator +=(const UTF8String & rhs)
+{
+  Data.append(rhs.Data.c_str(), rhs.size());
+  return *this;
+}
+const UTF8String & __fastcall UTF8String::operator +=(const RawByteString & rhs)
+{
+  UTF8String s(rhs.c_str(), rhs.size());
+  Data.append(s.Data.c_str(), s.size());
+  return *this;
+}
+
+const UTF8String & __fastcall UTF8String::operator +=(const char Ch)
+{
+  unsigned char ch(static_cast<unsigned char>(Ch));
+  Data.append(1, ch);
+  return *this;
+}
+
+//------------------------------------------------------------------------------
