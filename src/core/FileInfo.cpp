@@ -279,7 +279,7 @@ UnicodeString __fastcall GetFileInfoString(void * FileInfo,
     IntToHex(Translation.CharSet, 4) +
     L"\\" + StringName).c_str(), (void**)&P, &Len))
   {
-    throw Exception("Specified file info string not available");
+    throw Exception(L"Specified file info string not available");
   }
   UnicodeString Result = UnicodeString(P, Len);
   PackStr(Result);
