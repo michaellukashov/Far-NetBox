@@ -1067,21 +1067,21 @@ int TStringList::CompareStrings(const UnicodeString S1, const UnicodeString S2)
  */
 UnicodeString MB2W(const char *src, const UINT cp)
 {
-    // assert(src);
-    if (!src || !*src)
-    {
-        return UnicodeString(L"");
-    }
+  // assert(src);
+  if (!src || !*src)
+  {
+      return UnicodeString(L"");
+  }
 
-    UnicodeString wide;
-    const int reqLength = MultiByteToWideChar(cp, 0, src, -1, NULL, 0);
-    if (reqLength)
-    {
-        wide.SetLength(static_cast<int>(reqLength));
-        MultiByteToWideChar(cp, 0, src, -1, &wide[0], reqLength);
-        wide.Remove(wide.Length() - 1);  //remove NULL character
-    }
-    return wide;
+  std::wstring wide;
+  const int reqLength = MultiByteToWideChar(cp, 0, src, -1, NULL, 0);
+  if (reqLength)
+  {
+      wide.SetLength(static_cast<int>(reqLength));
+      MultiByteToWideChar(cp, 0, src, -1, &wide[0], reqLength);
+      wide.Remove(wide.Length() - 1);  //remove NULL character
+  }
+  return wide;
 }
 
 /**
@@ -1092,21 +1092,21 @@ UnicodeString MB2W(const char *src, const UINT cp)
  */
 std::string W2MB(const wchar_t *src, const UINT cp)
 {
-    // assert(src);
-    if (!src || !*src)
-    {
-        return std::string("");
-    }
+  // assert(src);
+  if (!src || !*src)
+  {
+      return std::string("");
+  }
 
-    std::string mb;
-    const int reqLength = WideCharToMultiByte(cp, 0, src, -1, 0, 0, NULL, NULL);
-    if (reqLength)
-    {
-        mb.resize(static_cast<int>(reqLength));
-        WideCharToMultiByte(cp, 0, src, -1, &mb[0], reqLength, NULL, NULL);
-        mb.erase(mb.length() - 1);  //remove NULL character
-    }
-    return mb;
+  std::string mb;
+  const int reqLength = WideCharToMultiByte(cp, 0, src, -1, 0, 0, NULL, NULL);
+  if (reqLength)
+  {
+      mb.resize(static_cast<int>(reqLength));
+      WideCharToMultiByte(cp, 0, src, -1, &mb[0], reqLength, NULL, NULL);
+      mb.erase(mb.length() - 1);  //remove NULL character
+  }
+  return mb;
 }
 
 //---------------------------------------------------------------------------
@@ -1472,7 +1472,7 @@ __int64 __fastcall TMemoryStream::Write(const void *Buffer, __int64 Count)
 
 bool IsRelative(const UnicodeString Value)
 {
-    return  !(!Value.IsEmpty() && (Value[0] == L'\\'));
+    return  !(!Value.IsEmpty() && (Value[1] == L'\\'));
 }
 
 TRegDataType DataTypeToRegData(DWORD Value)
@@ -1575,7 +1575,7 @@ void TRegistry::GetValueNames(TStrings *Strings)
         for (int I = 0; I < Info.NumSubKeys; I++)
         {
             DWORD Len = Info.MaxValueLen + 1;
-            RegEnumValue(GetCurrentKey(), static_cast<DWORD>(I), &S[0], &Len, NULL, NULL, NULL, NULL);
+            RegEnumValue(GetCurrentKey(), static_cast<DWORD>(I), &S[1], &Len, NULL, NULL, NULL, NULL);
             Strings->Add(S.c_str());
         }
     }
@@ -1592,7 +1592,7 @@ void TRegistry::GetKeyNames(TStrings *Strings)
         for (int I = 0; I < Info.NumSubKeys; I++)
         {
             DWORD Len = Info.MaxSubKeyLen + 1;
-            RegEnumKeyEx(GetCurrentKey(), static_cast<DWORD>(I), &S[0], &Len, NULL, NULL, NULL, NULL);
+            RegEnumKeyEx(GetCurrentKey(), static_cast<DWORD>(I), &S[1], &Len, NULL, NULL, NULL, NULL);
             Strings->Add(S.c_str());
         }
     }
@@ -1671,7 +1671,7 @@ bool TRegistry::DeleteKey(const UnicodeString Key)
             for (int I = Info.NumSubKeys - 1; I >= 0; I--)
             {
                 DWORD Len = Info.MaxSubKeyLen + 1;
-                if (RegEnumKeyEx(DeleteKey, static_cast<DWORD>(I), &KeyName[0], &Len,
+                if (RegEnumKeyEx(DeleteKey, static_cast<DWORD>(I), &KeyName[1], &Len,
                                  NULL, NULL, NULL, NULL) == ERROR_SUCCESS)
                 {
                     this->DeleteKey(KeyName);
