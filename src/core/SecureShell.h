@@ -66,91 +66,93 @@ private:
   UnicodeString FUserName;
   TSecureShell * Self;
 
-  static TCipher FuncToSsh1Cipher(const void * Cipher);
-  static TCipher FuncToSsh2Cipher(const void * Cipher);
-  UnicodeString FuncToCompression(int SshVersion, const void * Compress) const;
-  void Init();
-  void inline CheckConnection(int Message = -1);
-  void WaitForData();
-  void Discard();
-  void FreeBackend();
-  void PoolForData(WSANETWORKEVENTS & Events, unsigned int & Result);
-  inline void CaptureOutput(TLogLineType Type,
+  static TCipher __fastcall FuncToSsh1Cipher(const void * Cipher);
+  static TCipher __fastcall FuncToSsh2Cipher(const void * Cipher);
+  UnicodeString __fastcall FuncToCompression(int SshVersion, const void * Compress) const;
+  void __fastcall Init();
+  void __fastcall SetActive(bool value);
+  void inline __fastcall CheckConnection(int Message = -1);
+  void __fastcall WaitForData();
+  void __fastcall Discard();
+  void __fastcall FreeBackend();
+  void __fastcall PoolForData(WSANETWORKEVENTS & Events, unsigned int & Result);
+  inline void __fastcall CaptureOutput(TLogLineType Type,
     const UnicodeString & Line);
-  void ResetConnection();
-  void ResetSessionInfo();
-  void SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup);
-  bool EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events);
-  void HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events);
-  bool ProcessNetworkEvents(SOCKET Socket);
-  bool EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
+  void __fastcall ResetConnection();
+  void __fastcall ResetSessionInfo();
+  void __fastcall SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup);
+  bool __fastcall EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events);
+  void __fastcall HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events);
+  bool __fastcall ProcessNetworkEvents(SOCKET Socket);
+  bool __fastcall EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
     WSANETWORKEVENTS * Events);
-  void UpdateSessionInfo();
-  void DispatchSendBuffer(int BufSize);
-  void SendBuffer(unsigned int & Result);
-  unsigned int TimeoutPrompt(TQueryParamsTimerEvent * PoolEvent);
+  void __fastcall UpdateSessionInfo();
+  bool __fastcall GetReady();
+  void __fastcall DispatchSendBuffer(int BufSize);
+  void __fastcall SendBuffer(unsigned int & Result);
+  unsigned int __fastcall TimeoutPrompt(TQueryParamsTimerEvent * PoolEvent);
 
 protected:
   captureoutput_signal_type FOnCaptureOutput;
 
-  void GotHostKey();
-  int TranslatePuttyMessage(const TPuttyTranslation * Translation,
+  void __fastcall GotHostKey();
+  int __fastcall TranslatePuttyMessage(const TPuttyTranslation * Translation,
     size_t Count, UnicodeString & Message);
-  int TranslateAuthenticationMessage(UnicodeString & Message);
-  int TranslateErrorMessage(UnicodeString & Message);
-  void AddStdError(UnicodeString Str);
-  void AddStdErrorLine(const UnicodeString & Str);
-  void FatalError(Exception * E, UnicodeString Msg);
-  void inline LogEvent(const UnicodeString & Str);
-  void FatalError(UnicodeString Error);
-  static void ClearConfig(Config * cfg);
-  static void StoreToConfig(TSessionData * Data, Config * cfg, bool Simple);
+  int __fastcall TranslateAuthenticationMessage(UnicodeString & Message);
+  int __fastcall TranslateErrorMessage(UnicodeString & Message);
+  void __fastcall AddStdError(UnicodeString Str);
+  void __fastcall AddStdErrorLine(const UnicodeString & Str);
+  void __fastcall FatalError(Exception * E, UnicodeString Msg);
+  void __fastcall inline LogEvent(const UnicodeString & Str);
+  void __fastcall FatalError(UnicodeString Error);
+  static void __fastcall ClearConfig(Config * cfg);
+  static void __fastcall StoreToConfig(TSessionData * Data, Config * cfg, bool Simple);
 
 public:
-  explicit TSecureShell(TSessionUI * UI, TSessionData * SessionData,
+  explicit /* __fastcall */ TSecureShell(TSessionUI * UI, TSessionData * SessionData,
     TSessionLog * Log, TConfiguration * Configuration);
-  virtual ~TSecureShell();
-  void Open();
-  void Close();
-  void KeepAlive();
-  int Receive(unsigned char * Buf, int Len);
-  bool Peek(unsigned char *& Buf, int Len);
-  UnicodeString ReceiveLine();
-  void Send(const unsigned char * Buf, int Len);
-  void SendStr(UnicodeString Str);
-  void SendSpecial(int Code);
-  void Idle(unsigned int MSec = 0);
-  void SendEOF();
-  void SendLine(UnicodeString Line);
-  void SendNull();
+  virtual /* __fastcall */ ~TSecureShell();
+  void __fastcall Open();
+  void __fastcall Close();
+  void __fastcall KeepAlive();
+  int __fastcall Receive(unsigned char * Buf, int Len);
+  bool __fastcall Peek(unsigned char *& Buf, int Len);
+  UnicodeString __fastcall ReceiveLine();
+  void __fastcall Send(const unsigned char * Buf, int Len);
+  void __fastcall SendStr(UnicodeString Str);
+  void __fastcall SendSpecial(int Code);
+  void __fastcall Idle(unsigned int MSec = 0);
+  void __fastcall SendEOF();
+  void __fastcall SendLine(UnicodeString Line);
+  void __fastcall SendNull();
 
-  const TSessionInfo & GetSessionInfo();
-  bool SshFallbackCmd() const;
-  unsigned int MinPacketSize();
-  unsigned int MaxPacketSize();
-  void ClearStdError();
-  bool GetStoredCredentialsTried();
+  const TSessionInfo & __fastcall GetSessionInfo();
+  bool __fastcall SshFallbackCmd() const;
+  unsigned int __fastcall MinPacketSize();
+  unsigned int __fastcall MaxPacketSize();
+  void __fastcall ClearStdError();
+  bool __fastcall GetStoredCredentialsTried();
 
-  void RegisterReceiveHandler(const TNotifyEvent & Handler);
-  void UnregisterReceiveHandler(const TNotifyEvent & Handler);
+  void __fastcall RegisterReceiveHandler(const TNotifyEvent & Handler);
+  void __fastcall UnregisterReceiveHandler(const TNotifyEvent & Handler);
 
   // interface to PuTTY core
-  void UpdateSocket(SOCKET value, bool Startup);
-  void UpdatePortFwdSocket(SOCKET value, bool Startup);
-  void PuttyFatalError(UnicodeString Error);
-  bool PromptUser(bool ToServer,
+  void __fastcall UpdateSocket(SOCKET value, bool Startup);
+  void __fastcall UpdatePortFwdSocket(SOCKET value, bool Startup);
+  void __fastcall PuttyFatalError(UnicodeString Error);
+  bool __fastcall PromptUser(bool ToServer,
     UnicodeString AName, bool NameRequired,
     UnicodeString Instructions, bool InstructionsRequired,
     TStrings * Prompts, TStrings * Results);
-  void FromBackend(bool IsStdErr, const unsigned char * Data, int Length);
-  void CWrite(const char * Data, int Length);
-  const UnicodeString GetStdError();
-  void VerifyHostKey(UnicodeString Host, int Port,
+  void __fastcall FromBackend(bool IsStdErr, const unsigned char * Data, int Length);
+  void __fastcall CWrite(const char * Data, int Length);
+  const UnicodeString & __fastcall GetStdError();
+  void __fastcall VerifyHostKey(UnicodeString Host, int Port,
     const UnicodeString KeyType, UnicodeString KeyStr, const UnicodeString Fingerprint);
-  void AskAlg(const UnicodeString AlgType, const UnicodeString AlgName);
+  void __fastcall AskAlg(const UnicodeString AlgType, const UnicodeString AlgName);
   void __fastcall DisplayBanner(const UnicodeString & Banner);
-  void OldKeyfileWarning();
-  void PuttyLogEvent(const UnicodeString & Str);
+  void __fastcall OldKeyfileWarning();
+  void __fastcall PuttyLogEvent(const UnicodeString & Str);
 
 #ifndef _MSC_VER
   __property bool Active = { read = FActive, write = SetActive };

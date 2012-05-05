@@ -49,7 +49,7 @@ void __fastcall AnsiStrDispose(char * S)
   delete [] S;
 }
 //---------------------------------------------------------------------------
-TSecureShell::TSecureShell(TSessionUI* UI,
+/* __fastcall */ TSecureShell::TSecureShell(TSessionUI* UI,
   TSessionData * SessionData, TSessionLog * Log, TConfiguration * Configuration) :
   PendLen(0)
 {
@@ -77,7 +77,7 @@ TSecureShell::TSecureShell(TSessionUI* UI,
   Self = this;
 }
 //---------------------------------------------------------------------------
-TSecureShell::~TSecureShell()
+/* __fastcall */ TSecureShell::~TSecureShell()
 {
   assert(FWaiting == 0);
   SetActive(false);
@@ -88,7 +88,7 @@ TSecureShell::~TSecureShell()
   FConfig = NULL;
 }
 //---------------------------------------------------------------------------
-void TSecureShell::ResetConnection()
+void __fastcall TSecureShell::ResetConnection()
 {
   FreeBackend();
   ClearStdError();
@@ -104,14 +104,14 @@ void TSecureShell::ResetConnection()
   FStoredPasswordTriedForKI = false;
 }
 //---------------------------------------------------------------------------
-void TSecureShell::ResetSessionInfo()
+void __fastcall TSecureShell::ResetSessionInfo()
 {
   FSessionInfoValid = false;
   FMinPacketSize = NULL;
   FMaxPacketSize = NULL;
 }
 //---------------------------------------------------------------------------
-inline void TSecureShell::UpdateSessionInfo()
+inline void __fastcall TSecureShell::UpdateSessionInfo()
 {
   if (!FSessionInfoValid)
   {
@@ -141,7 +141,7 @@ inline void TSecureShell::UpdateSessionInfo()
   }
 }
 //---------------------------------------------------------------------------
-const TSessionInfo & TSecureShell::GetSessionInfo()
+const TSessionInfo & __fastcall TSecureShell::GetSessionInfo()
 {
   if (!FSessionInfoValid)
   {
@@ -150,7 +150,7 @@ const TSessionInfo & TSecureShell::GetSessionInfo()
   return FSessionInfo;
 }
 //---------------------------------------------------------------------
-void TSecureShell::ClearConfig(Config * cfg)
+void __fastcall TSecureShell::ClearConfig(Config * cfg)
 {
   AnsiStrDispose(cfg->remote_cmd_ptr);
   AnsiStrDispose(cfg->remote_cmd_ptr2);
@@ -158,7 +158,7 @@ void TSecureShell::ClearConfig(Config * cfg)
   memset(cfg, 0, sizeof(*cfg));
 }
 //---------------------------------------------------------------------
-void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
+void __fastcall TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
 {
   ClearConfig(cfg);
 
@@ -274,7 +274,7 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
       {
         // Following forces Putty to open default shell
         // see ssh.c: do_ssh2_authconn() and ssh1_protocol()
-        cfg->remote_cmd[0] = '\0';
+        cfg->remote_cmd[0] = L'\0';
       }
       else
       {
@@ -334,7 +334,7 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::Open()
+void __fastcall TSecureShell::Open()
 {
   FBackend = &ssh_backend;
   ResetConnection();
@@ -376,7 +376,7 @@ void TSecureShell::Open()
   FOpened = true;
 }
 //---------------------------------------------------------------------------
-void TSecureShell::Init()
+void __fastcall TSecureShell::Init()
 {
   try
   {
@@ -423,9 +423,9 @@ void TSecureShell::Init()
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::PuttyLogEvent(const UnicodeString & Str)
+void __fastcall TSecureShell::PuttyLogEvent(const UnicodeString & Str)
 {
-#define SERVER_VERSION_MSG L"Server version: "
+  #define SERVER_VERSION_MSG L"Server version: "
   // Gross hack
   if (Str.Pos(SERVER_VERSION_MSG) == 1)
   {
@@ -454,7 +454,7 @@ void TSecureShell::PuttyLogEvent(const UnicodeString & Str)
   LogEvent(Str);
 }
 //---------------------------------------------------------------------------
-bool TSecureShell::PromptUser(bool /*ToServer*/,
+bool __fastcall TSecureShell::PromptUser(bool /*ToServer*/,
   UnicodeString AName, bool /*NameRequired*/,
   UnicodeString Instructions, bool InstructionsRequired,
   TStrings * Prompts, TStrings * Results)
@@ -644,7 +644,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   return Result;
 }
 //---------------------------------------------------------------------------
-void TSecureShell::GotHostKey()
+void __fastcall TSecureShell::GotHostKey()
 {
   // due to re-key GotHostKey() may be called again later during session
   if (!FAuthenticating && !FAuthenticated)
@@ -654,7 +654,7 @@ void TSecureShell::GotHostKey()
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::CWrite(const char * Data, int Length)
+void __fastcall TSecureShell::CWrite(const char * Data, int Length)
 {
   // some messages to stderr may indicate that something has changed with the
   // session, so reset the session info
@@ -681,20 +681,20 @@ void TSecureShell::CWrite(const char * Data, int Length)
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::RegisterReceiveHandler(const TNotifyEvent & Handler)
+void __fastcall TSecureShell::RegisterReceiveHandler(const TNotifyEvent & Handler)
 {
   assert(FOnReceive.empty());
   FOnReceive.connect(Handler);
 }
 //---------------------------------------------------------------------------
-void TSecureShell::UnregisterReceiveHandler(const TNotifyEvent & Handler)
+void __fastcall TSecureShell::UnregisterReceiveHandler(const TNotifyEvent & Handler)
 {
   assert(!FOnReceive.empty());
   USEDPARAM(Handler);
   FOnReceive.disconnect_all_slots();
 }
 //---------------------------------------------------------------------------
-void TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, int Length)
+void __fastcall TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, int Length)
 {
   CheckConnection();
 
@@ -772,7 +772,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, int Le
   }
 }
 //---------------------------------------------------------------------------
-bool TSecureShell::Peek(unsigned char *& Buf, int Len)
+bool __fastcall TSecureShell::Peek(unsigned char *& Buf, int Len)
 {
   bool Result = (int(PendLen) >= Len);
 
@@ -784,7 +784,7 @@ bool TSecureShell::Peek(unsigned char *& Buf, int Len)
   return Result;
 }
 //---------------------------------------------------------------------------
-Integer TSecureShell::Receive(unsigned char * Buf, Integer Len)
+Integer __fastcall TSecureShell::Receive(unsigned char * Buf, Integer Len)
 {
   CheckConnection();
 
@@ -852,7 +852,7 @@ Integer TSecureShell::Receive(unsigned char * Buf, Integer Len)
   return Len;
 }
 //---------------------------------------------------------------------------
-UnicodeString TSecureShell::ReceiveLine()
+UnicodeString __fastcall TSecureShell::ReceiveLine()
 {
   unsigned Index = 0;
   std::string Line;
@@ -896,7 +896,7 @@ UnicodeString TSecureShell::ReceiveLine()
   return UnicodeLine;
 }
 //---------------------------------------------------------------------------
-void TSecureShell::SendSpecial(int Code)
+void __fastcall TSecureShell::SendSpecial(int Code)
 {
   LogEvent(FORMAT(L"Sending special code: %d", (Code)));
   CheckConnection();
@@ -905,12 +905,12 @@ void TSecureShell::SendSpecial(int Code)
   FLastDataSent = Now();
 }
 //---------------------------------------------------------------------------
-void TSecureShell::SendEOF()
+void __fastcall TSecureShell::SendEOF()
 {
   SendSpecial(TS_EOF);
 }
 //---------------------------------------------------------------------------
-unsigned int TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent * PoolEvent)
+unsigned int__fastcall  TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent * PoolEvent)
 {
   FWaiting++;
 
@@ -944,7 +944,7 @@ unsigned int TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent * PoolEvent)
   return Answer;
 }
 //---------------------------------------------------------------------------
-void TSecureShell::SendBuffer(unsigned int & Result)
+void __fastcall TSecureShell::SendBuffer(unsigned int & Result)
 {
   // for comments see PoolForData
   if (!GetActive())
@@ -967,7 +967,7 @@ void TSecureShell::SendBuffer(unsigned int & Result)
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::DispatchSendBuffer(int BufSize)
+void __fastcall TSecureShell::DispatchSendBuffer(int BufSize)
 {
   TDateTime Start = Now();
   do
@@ -1014,13 +1014,13 @@ void TSecureShell::DispatchSendBuffer(int BufSize)
   while (BufSize > MAX_BUFSIZE);
 }
 //---------------------------------------------------------------------------
-void TSecureShell::Send(const unsigned char * Buf, Integer Len)
+void __fastcall TSecureShell::Send(const unsigned char * Buf, Integer Len)
 {
   CheckConnection();
   int BufSize = FBackend->send(FBackendHandle, const_cast<char *>(reinterpret_cast<const char *>(Buf)), Len);
   if (Configuration->GetActualLogProtocol() >= 1)
   {
-    LogEvent(FORMAT(L"Sent %u bytes", Len));
+    LogEvent(FORMAT(L"Sent %u bytes", (static_cast<int>(Len)));
     LogEvent(FORMAT(L"There are %u bytes remaining in the send buffer", BufSize));
   }
   FLastDataSent = Now();
@@ -1034,28 +1034,28 @@ void TSecureShell::Send(const unsigned char * Buf, Integer Len)
   CheckConnection();
 }
 //---------------------------------------------------------------------------
-void TSecureShell::SendNull()
+void __fastcall TSecureShell::SendNull()
 {
   LogEvent(L"Sending NULL.");
   unsigned char Null = 0;
   Send(&Null, 1);
 }
 //---------------------------------------------------------------------------
-void TSecureShell::SendStr(UnicodeString Str)
+void __fastcall TSecureShell::SendStr(UnicodeString Str)
 {
   CheckConnection();
   std::string AnsiStr = W2MB(Str.c_str(), FSessionData->GetCodePageAsNumber());
   Send(reinterpret_cast<const unsigned char *>(AnsiStr.c_str()), AnsiStr.size());
 }
 //---------------------------------------------------------------------------
-void TSecureShell::SendLine(UnicodeString Line)
+void __fastcall TSecureShell::SendLine(UnicodeString Line)
 {
   SendStr(Line);
   Send(reinterpret_cast<const unsigned char *>("\n"), 1);
   FLog->Add(llInput, Line);
 }
 //---------------------------------------------------------------------------
-int TSecureShell::TranslatePuttyMessage(
+int __fastcall TSecureShell::TranslatePuttyMessage(
   const TPuttyTranslation * Translation, size_t Count, UnicodeString & Message)
 {
   int Result = -1;
@@ -1091,7 +1091,7 @@ int TSecureShell::TranslatePuttyMessage(
   return Result;
 }
 //---------------------------------------------------------------------------
-int TSecureShell::TranslateAuthenticationMessage(UnicodeString & Message)
+int __fastcall TSecureShell::TranslateAuthenticationMessage(UnicodeString & Message)
 {
   static const TPuttyTranslation Translation[] = {
     { L"Using username \"%\".", AUTH_TRANSL_USERNAME },
@@ -1110,7 +1110,7 @@ int TSecureShell::TranslateAuthenticationMessage(UnicodeString & Message)
   return TranslatePuttyMessage(Translation, LENOF(Translation), Message);
 }
 //---------------------------------------------------------------------------
-void TSecureShell::AddStdError(UnicodeString Str)
+void __fastcall TSecureShell::AddStdError(UnicodeString Str)
 {
   FStdError += Str;
 
@@ -1129,7 +1129,7 @@ void TSecureShell::AddStdError(UnicodeString Str)
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::AddStdErrorLine(const UnicodeString & Str)
+void __fastcall TSecureShell::AddStdErrorLine(const UnicodeString & Str)
 {
   if (FAuthenticating)
   {
@@ -1141,12 +1141,12 @@ void TSecureShell::AddStdErrorLine(const UnicodeString & Str)
   }
 }
 //---------------------------------------------------------------------------
-const UnicodeString TSecureShell::GetStdError()
+const UnicodeString & __fastcall TSecureShell::GetStdError()
 {
   return FStdError;
 }
 //---------------------------------------------------------------------------
-void TSecureShell::ClearStdError()
+void __fastcall TSecureShell::ClearStdError()
 {
   // Flush std error cache
   if (!FStdErrorTemp.IsEmpty())
@@ -1162,7 +1162,7 @@ void TSecureShell::ClearStdError()
   FStdError = L"";
 }
 //---------------------------------------------------------------------------
-void TSecureShell::CaptureOutput(TLogLineType Type,
+void __fastcall TSecureShell::CaptureOutput(TLogLineType Type,
   const UnicodeString & Line)
 {
   if (!FOnCaptureOutput.empty())
@@ -1172,7 +1172,7 @@ void TSecureShell::CaptureOutput(TLogLineType Type,
   FLog->Add(Type, Line);
 }
 //---------------------------------------------------------------------------
-int TSecureShell::TranslateErrorMessage(UnicodeString & Message)
+int __fastcall TSecureShell::TranslateErrorMessage(UnicodeString & Message)
 {
   static const TPuttyTranslation Translation[] = {
     { L"Server unexpectedly closed network connection", UNEXPECTED_CLOSE_ERROR },
@@ -1184,19 +1184,19 @@ int TSecureShell::TranslateErrorMessage(UnicodeString & Message)
   return TranslatePuttyMessage(Translation, LENOF(Translation), Message);
 }
 //---------------------------------------------------------------------------
-void TSecureShell::PuttyFatalError(UnicodeString Error)
+void __fastcall TSecureShell::PuttyFatalError(UnicodeString Error)
 {
   TranslateErrorMessage(Error);
 
   FatalError(Error);
 }
 //---------------------------------------------------------------------------
-void TSecureShell::FatalError(UnicodeString Error)
+void __fastcall TSecureShell::FatalError(UnicodeString Error)
 {
   FUI->FatalError(NULL, Error);
 }
 //---------------------------------------------------------------------------
-void inline TSecureShell::LogEvent(const UnicodeString & Str)
+void __fastcall inline TSecureShell::LogEvent(const UnicodeString & Str)
 {
   if (FLog->GetLogging())
   {
@@ -1204,7 +1204,7 @@ void inline TSecureShell::LogEvent(const UnicodeString & Str)
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup)
+void __fastcall TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup)
 {
   int Events;
 
@@ -1236,7 +1236,7 @@ void TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup)
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::UpdateSocket(SOCKET value, bool Startup)
+void __fastcall TSecureShell::UpdateSocket(SOCKET value, bool Startup)
 {
   if (!FActive && !Startup)
   {
@@ -1275,7 +1275,7 @@ void TSecureShell::UpdateSocket(SOCKET value, bool Startup)
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::UpdatePortFwdSocket(SOCKET value, bool Startup)
+void __fastcall TSecureShell::UpdatePortFwdSocket(SOCKET value, bool Startup)
 {
   if (Configuration->GetActualLogProtocol() >= 2)
   {
@@ -1294,7 +1294,7 @@ void TSecureShell::UpdatePortFwdSocket(SOCKET value, bool Startup)
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::SetActive(bool value)
+void __fastcall TSecureShell::SetActive(bool value)
 {
   if (FActive != value)
   {
@@ -1309,7 +1309,7 @@ void TSecureShell::SetActive(bool value)
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::FreeBackend()
+void __fastcall TSecureShell::FreeBackend()
 {
   if (FBackendHandle != NULL)
   {
@@ -1318,7 +1318,7 @@ void TSecureShell::FreeBackend()
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::Discard()
+void __fastcall TSecureShell::Discard()
 {
   bool WasActive = FActive;
   FActive = false;
@@ -1330,7 +1330,7 @@ void TSecureShell::Discard()
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::Close()
+void __fastcall TSecureShell::Close()
 {
   LogEvent(L"Closing connection.");
   assert(FActive);
@@ -1344,7 +1344,7 @@ void TSecureShell::Close()
   Discard();
 }
 //---------------------------------------------------------------------------
-void inline TSecureShell::CheckConnection(int Message)
+void inline __fastcall TSecureShell::CheckConnection(int Message)
 {
   if (!FActive || get_ssh_state_closed(FBackendHandle))
   {
@@ -1358,7 +1358,7 @@ void inline TSecureShell::CheckConnection(int Message)
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, unsigned int & Result)
+void __fastcall TSecureShell::PoolForData(WSANETWORKEVENTS & Events, unsigned int & Result)
 {
   if (!GetActive())
   {
@@ -1399,13 +1399,13 @@ void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, unsigned int & Result)
 class TPoolForDataEvent
 {
 public:
-  TPoolForDataEvent(TSecureShell * SecureShell, WSANETWORKEVENTS & Events) :
+  /* __fastcall */ TPoolForDataEvent(TSecureShell * SecureShell, WSANETWORKEVENTS & Events) :
     FSecureShell(SecureShell),
     FEvents(Events)
   {
   }
 
-  void PoolForData(unsigned int & Result)
+  void __fastcall PoolForData(unsigned int & Result)
   {
     FSecureShell->PoolForData(FEvents, Result);
   }
@@ -1415,7 +1415,7 @@ private:
   WSANETWORKEVENTS & FEvents;
 };
 //---------------------------------------------------------------------------
-void TSecureShell::WaitForData()
+void __fastcall TSecureShell::WaitForData()
 {
   // see winsftp.c
   bool IncomingData;
@@ -1464,12 +1464,12 @@ void TSecureShell::WaitForData()
   while (!IncomingData);
 }
 //---------------------------------------------------------------------------
-bool TSecureShell::SshFallbackCmd() const
+bool __fastcall TSecureShell::SshFallbackCmd() const
 {
   return ssh_fallback_cmd(FBackendHandle) != 0;
 }
 //---------------------------------------------------------------------------
-bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
+bool __fastcall TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 {
   if (Configuration->GetActualLogProtocol() >= 2)
   {
@@ -1511,7 +1511,7 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
     FLAGSET(Events.lNetworkEvents, FD_CLOSE);
 }
 //---------------------------------------------------------------------------
-void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
+void __fastcall TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 {
   static const struct { int Bit, Mask; const wchar_t * Desc; } EventTypes[] =
   {
@@ -1546,7 +1546,7 @@ void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
   }
 }
 //---------------------------------------------------------------------------
-bool TSecureShell::ProcessNetworkEvents(SOCKET Socket)
+bool __fastcall TSecureShell::ProcessNetworkEvents(SOCKET Socket)
 {
   WSANETWORKEVENTS Events;
   memset(&Events, 0, sizeof(Events));
@@ -1555,7 +1555,7 @@ bool TSecureShell::ProcessNetworkEvents(SOCKET Socket)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
+bool __fastcall TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
   WSANETWORKEVENTS * Events)
 {
   CheckConnection();
@@ -1665,7 +1665,7 @@ bool TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
   return Result;
 }
 //---------------------------------------------------------------------------
-void TSecureShell::Idle(unsigned int MSec)
+void __fastcall TSecureShell::Idle(unsigned int MSec)
 {
   noise_regular();
 
@@ -1674,7 +1674,7 @@ void TSecureShell::Idle(unsigned int MSec)
   EventSelectLoop(MSec, false, NULL);
 }
 //---------------------------------------------------------------------------
-void TSecureShell::KeepAlive()
+void __fastcall TSecureShell::KeepAlive()
 {
   if (FActive && (FWaiting == 0))
   {
@@ -1690,7 +1690,7 @@ void TSecureShell::KeepAlive()
 //---------------------------------------------------------------------------
 static unsigned int minPacketSize = 0;
 
-unsigned int TSecureShell::MinPacketSize()
+unsigned int __fastcall TSecureShell::MinPacketSize()
 {
   if (!FSessionInfoValid)
   {
@@ -1711,7 +1711,7 @@ unsigned int TSecureShell::MinPacketSize()
   }
 }
 //---------------------------------------------------------------------------
-unsigned int TSecureShell::MaxPacketSize()
+unsigned int __fastcall TSecureShell::MaxPacketSize()
 {
   if (!FSessionInfoValid)
   {
@@ -1732,7 +1732,7 @@ unsigned int TSecureShell::MaxPacketSize()
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString TSecureShell::FuncToCompression(
+UnicodeString __fastcall TSecureShell::FuncToCompression(
   int SshVersion, const void * Compress) const
 {
   enum TCompressionType { ctNone, ctZLib };
@@ -1746,7 +1746,7 @@ UnicodeString TSecureShell::FuncToCompression(
   }
 }
 //---------------------------------------------------------------------------
-TCipher TSecureShell::FuncToSsh1Cipher(const void * Cipher)
+TCipher __fastcall TSecureShell::FuncToSsh1Cipher(const void * Cipher)
 {
   const ssh_cipher *CipherFuncs[] =
     {&ssh_3des, &ssh_des, &ssh_blowfish_ssh1};
@@ -1766,7 +1766,7 @@ TCipher TSecureShell::FuncToSsh1Cipher(const void * Cipher)
   return Result;
 }
 //---------------------------------------------------------------------------
-TCipher TSecureShell::FuncToSsh2Cipher(const void * Cipher)
+TCipher __fastcall TSecureShell::FuncToSsh2Cipher(const void * Cipher)
 {
   const ssh2_ciphers *CipherFuncs[] =
     {&ssh2_3des, &ssh2_des, &ssh2_aes, &ssh2_blowfish, &ssh2_arcfour};
@@ -1789,7 +1789,7 @@ TCipher TSecureShell::FuncToSsh2Cipher(const void * Cipher)
   return Result;
 }
 //---------------------------------------------------------------------------
-/*
+#ifndef _MSC_VER
 struct TClipboardHandler
 {
   UnicodeString Text;
@@ -1799,9 +1799,9 @@ struct TClipboardHandler
     CopyToClipboard(Text);
   }
 };
-*/
+#endif
 //---------------------------------------------------------------------------
-void TSecureShell::VerifyHostKey(UnicodeString Host, int Port,
+void __fastcall TSecureShell::VerifyHostKey(UnicodeString Host, int Port,
   const UnicodeString KeyType, UnicodeString KeyStr, const UnicodeString Fingerprint)
 {
   LogEvent(FORMAT(L"Verifying host key %s %s with fingerprint %s", KeyType, KeyStr.c_str(), Fingerprint.c_str()));
@@ -1948,7 +1948,7 @@ void TSecureShell::VerifyHostKey(UnicodeString Host, int Port,
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::AskAlg(const UnicodeString AlgType,
+void __fastcall TSecureShell::AskAlg(const UnicodeString AlgType,
   const UnicodeString AlgName)
 {
   UnicodeString Msg;
@@ -1990,18 +1990,18 @@ void __fastcall TSecureShell::DisplayBanner(const UnicodeString & Banner)
   FUI->DisplayBanner(Banner);
 }
 //---------------------------------------------------------------------------
-void TSecureShell::OldKeyfileWarning()
+void __fastcall TSecureShell::OldKeyfileWarning()
 {
   // actually never called, see Net.cpp
   FUI->QueryUser(LoadStr(OLD_KEY), NULL, qaOK, NULL, qtWarning);
 }
 //---------------------------------------------------------------------------
-bool TSecureShell::GetStoredCredentialsTried()
+bool __fastcall TSecureShell::GetStoredCredentialsTried()
 {
   return FStoredPasswordTried || FStoredPasswordTriedForKI;
 }
 //---------------------------------------------------------------------------
-bool TSecureShell::GetReady()
+bool __fastcall TSecureShell::GetReady()
 {
   return FOpened && (FWaiting == 0);
 }
