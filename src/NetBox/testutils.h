@@ -6,6 +6,7 @@
 #include <fstream>
 
 #include "FarPlugin.h"
+#include "SysUtils.h"
 #include "Cryptography.h"
 #include "WinSCPSecurity.h"
 

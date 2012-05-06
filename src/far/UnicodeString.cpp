@@ -33,6 +33,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "headers.hpp"
 #include "UnicodeString.hpp"
+#include "Sysutils.h"
 #pragma hdrstop
 
 UnicodeStringData * eus()
@@ -430,12 +431,12 @@ int UnicodeString::RPos(wchar_t Ch) const
 
 int UnicodeString::CompareIC(const UnicodeString str) const
 {
-  return ::AnsiCompareIC(*this, str);
+  return Sysutils::AnsiCompareIC(*this, str);
 }
 
 int UnicodeString::ToInt() const
 {
-  return ::StrToIntDef(*this, 0);
+  return Sysutils::StrToIntDef(*this, 0);
 }
 
 bool UnicodeString::IsDelimiter(UnicodeString Chars, int Pos) const

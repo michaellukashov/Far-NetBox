@@ -6,6 +6,7 @@
 #include "stdafx.h"
 #endif
 #include "Common.h"
+#include "SysUtils.h"
 #include "FileBuffer.h"
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER

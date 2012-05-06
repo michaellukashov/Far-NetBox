@@ -352,14 +352,6 @@ const int UnixDateDelta = 25569;
 const UnicodeString kernel32 = L"kernel32";
 static const int MemoryDelta = 0x2000;
 //---------------------------------------------------------------------------
-typedef int TDayTable[12];
-static const TDayTable MonthDays[] =
-{
-  { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 },
-  { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
-};
-
-//---------------------------------------------------------------------------
 
 void TStrings::SetTextStr(const UnicodeString Text)
 {

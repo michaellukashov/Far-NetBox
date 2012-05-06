@@ -12,6 +12,7 @@
 #include <boost/algorithm/string.hpp>
 
 #include "Classes.h"
+#include "Sysutils.h"
 #include "FarPlugin.h"
 #endif
 

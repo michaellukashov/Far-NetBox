@@ -16,6 +16,8 @@
 
 namespace Sysutils {
 //---------------------------------------------------------------------------
+typedef int TDayTable[12];
+extern const TDayTable MonthDays[];
 //---------------------------------------------------------------------------
 
 UnicodeString ExtractShortPathName(const UnicodeString Path1);

@@ -17,6 +17,7 @@
 #include "Classes.h"
 #include "FarPlugin.h"
 #include "RemoteFiles.h"
+#include "Sysutils.h"
 #endif
 
 #ifdef _MSC_VER
@@ -30,6 +31,12 @@ namespace alg = boost::algorithm;
 namespace Sysutils {
 //---------------------------------------------------------------------------
 int RandSeed;
+const TDayTable MonthDays[] =
+{
+  { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 },
+  { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
+};
+
 //---------------------------------------------------------------------------
 UnicodeString IntToStr(int value)
 {

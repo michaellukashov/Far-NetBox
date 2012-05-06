@@ -11,6 +11,7 @@
 #include "Common.h"
 #include "TextsCore.h"
 #include "Terminal.h"
+#include "SysUtils.h"
 
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
