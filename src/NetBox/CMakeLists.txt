@@ -67,6 +67,7 @@ include_directories (
     ${PROJECT_ROOT}/src/NetBox
     ${PROJECT_ROOT}/src/PluginSDK/${FAR_VERSION}
     ${PROJECT_ROOT}/src/nbvcl
+    ${PROJECT_ROOT}/src/far
     ${PROJECT_ROOT}/src/core
     ${PROJECT_ROOT}/src/windows
     ${PROJECT_ROOT}/src/resource
@@ -106,6 +107,12 @@ set ( NETBOX_ALL_HEADERS
 )
 
 set ( COMMON_SOURCES
+    ${PROJECT_ROOT}/src/nbvcl/Classes.cpp
+    ${PROJECT_ROOT}/src/nbvcl/Sysutils.cpp
+    # ${PROJECT_ROOT}/src/nbvcl/ustring.cpp
+    ${PROJECT_ROOT}/src/far/UnicodeString.cpp
+    ${PROJECT_ROOT}/src/far/farrtl.cpp
+    ${PROJECT_ROOT}/src/far/local.cpp
     ${PROJECT_ROOT}/src/core/RemoteFiles.cpp
     ${PROJECT_ROOT}/src/core/Terminal.cpp
     ${PROJECT_ROOT}/src/core/Exceptions.cpp
@@ -133,8 +140,6 @@ set ( COMMON_SOURCES
     ${PROJECT_ROOT}/src/core/Cryptography.cpp
     ${PROJECT_ROOT}/src/core/WinSCPSecurity.cpp
     ${PROJECT_ROOT}/src/core/Common.cpp
-    ${PROJECT_ROOT}/src/nbvcl/Classes.cpp
-    ${PROJECT_ROOT}/src/nbvcl/ustring.cpp
     ${PROJECT_ROOT}/src/windows/SynchronizeController.cpp
     ${PROJECT_ROOT}/src/windows/GUIConfiguration.cpp
     ${PROJECT_ROOT}/src/windows/GUITools.cpp
@@ -334,7 +339,11 @@ set ( TESTNETBOX_01_DIR ${PROJECT_ROOT}/src/NetBox )
 
 set ( TESTNETBOX_01_SOURCES
     ${PROJECT_ROOT}/src/nbvcl/Classes.cpp
-    ${PROJECT_ROOT}/src/nbvcl/ustring.cpp
+    ${PROJECT_ROOT}/src/nbvcl/Sysutils.cpp
+    # ${PROJECT_ROOT}/src/nbvcl/ustring.cpp
+    ${PROJECT_ROOT}/src/far/UnicodeString.cpp
+    ${PROJECT_ROOT}/src/far/farrtl.cpp
+    ${PROJECT_ROOT}/src/far/local.cpp
     ${PROJECT_ROOT}/src/core/Common.cpp
     ${PROJECT_ROOT}/src/core/Exceptions.cpp
     ${PROJECT_ROOT}/src/core/FileBuffer.cpp
