@@ -5,7 +5,7 @@ string(REPLACE "\\" "/" PROJECT_ROOT ${PROJECT_ROOT})
 #-------------------------------------------------------------------------------
 
 set ( CMAKE_CXX_FLAGS
-    "-DWIN32;_WINDOWS /EHsc /MP2 -D_SCL_SECURE_NO_WARNINGS; -D_UNICODE;UNICODE" )
+    "-DWIN32;_WINDOWS /EHsc /MP2 -D_SCL_SECURE_NO_WARNINGS; -D_UNICODE;UNICODE /MTd" )
 set ( CMAKE_CXX_FLAGS_DEBUG "-D_DEBUG;_WINDOWS;_WINDLL;_USRDLL;NETBOX_DEBUG;MPEXT;NO_STRICT;"
      " /Gm- /EHsc /MTd /GS" )
 set ( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG;BOOST_DISABLE_ASSERTS" )
@@ -19,7 +19,6 @@ ADD_DEFINITIONS("-DNETBOX_DEBUG")
 ADD_DEFINITIONS("-DUSE_FASTFLOW
                 -D_FF_WIN_XP;CURL_STATICLIB;MPEXT;NO_SECURITY
 ")
-# ADD_DEFINITIONS("-D_USRDLL;_AFXDLL;_AFXEXT;_DLL")
 
 include ( ${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake )
 # message ( "system: ${CMAKE_SYSTEM_NAME}" )
@@ -304,7 +303,7 @@ set ( NETBOX_LIBRARIES
 add_library ( NetBox SHARED ${NETBOX_HEADERS} ${NETBOX_SOURCES} )
 set_target_properties( NetBox
     PROPERTIES
-    COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -D_UNICODE;UNICODE /MTd"
+    COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
     LINK_FLAGS ${CMAKE_LINK_FLAGS}
 )
 
@@ -353,7 +352,7 @@ set ( TESTNETBOX_01_SOURCES
 add_executable( testnetbox_01 ${TESTNETBOX_01_SOURCES} )
 set_target_properties( testnetbox_01
     PROPERTIES
-    COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -D_UNICODE;UNICODE /MTd"
+    COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
     LINK_FLAGS "${CMAKE_LINK_FLAGS}"
 )
 
@@ -369,7 +368,10 @@ target_link_libraries ( testnetbox_01 )
 
 set ( TESTNETBOX_02_DIR ${PROJECT_ROOT}/src/NetBox )
 
-set ( TESTNETBOX_02_SOURCES ${COMMON_SOURCES}
+set ( TESTNETBOX_02_SOURCES # ${COMMON_SOURCES}
+    ${TESTNETBOX_02_DIR}/UnityBuildCore.cpp
+    ${TESTNETBOX_02_DIR}/UnityBuildMain.cpp
+    ${TESTNETBOX_02_DIR}/UnityBuildFilezilla.cpp
     ${PROJECT_ROOT}/src/resource/testnetbox_02.rc
     ${TESTNETBOX_02_DIR}/testnetbox_02.cpp
 )
@@ -377,12 +379,34 @@ set ( TESTNETBOX_02_SOURCES ${COMMON_SOURCES}
 add_executable( testnetbox_02 ${TESTNETBOX_02_SOURCES} )
 set_target_properties( testnetbox_02
     PROPERTIES
-    COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
-    LINK_FLAGS "${CMAKE_LINK_FLAGS} /NODEFAULTLIB:MSVCRTD.LIB"
+    COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -D_AFX"
+    LINK_FLAGS "${CMAKE_LINK_FLAGS} /NODEFAULTLIB:UAFXCWD.LIB,Atls.lib,MFC100UD.LIB,msvcrtd.lib" # MFC100UD.LIB /NODEFAULTLIB:MSVCRTD.LIB" # /NODEFAULTLIB:UAFXCWD.LIB" #
+    # ,UAFXCWD.LIB,MFCS100UD.LIB,ATLS.LIB,COMCTL32.LIB,MSVCRTD.LIB,MSVCURTD.LIB,MSVCPRTD.LIB,LIBC.LIB,LIBCMT.LIB,MSVCRT.LIB,LIBCMTD.LIB"
+    # /NODEFAULTLIB:MSVCRTD.LIB"
 )
 add_dependencies ( testnetbox_02
     libputty
     libtinyxml
+    mfcs100ud.lib
+    # Atlsd.lib
+    # uafxcwd.lib
+    # libcmtd.lib
+    # libcpmtd.lib
+    # Windowscodecs.lib
+    # delayimp.lib
+    # libeay32.lib
+    # ssleay32.lib
+    # libputty.lib
+    # Ws2_32.lib
+    # kernel32.lib
+    # user32.lib
+    # gdi32.lib
+    # comdlg32.lib
+    # advapi32.lib
+    # Version.lib
+    # winhttp.lib
+    # winspool.lib
+    # comctl32.lib
 )
 
 target_link_libraries ( testnetbox_02 ${NETBOX_LIBRARIES} )
