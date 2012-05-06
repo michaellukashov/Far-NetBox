@@ -130,12 +130,12 @@ set ( COMMON_SOURCES
     ${PROJECT_ROOT}/src/core/FileInfo.cpp
     ${PROJECT_ROOT}/src/core/FileSystems.cpp
     ${PROJECT_ROOT}/src/core/Bookmarks.cpp
-    ${PROJECT_ROOT}/src/core/SynchronizeController.cpp
     ${PROJECT_ROOT}/src/core/Cryptography.cpp
     ${PROJECT_ROOT}/src/core/WinSCPSecurity.cpp
     ${PROJECT_ROOT}/src/core/Common.cpp
     ${PROJECT_ROOT}/src/nbvcl/Classes.cpp
     ${PROJECT_ROOT}/src/nbvcl/ustring.cpp
+    ${PROJECT_ROOT}/src/windows/SynchronizeController.cpp
     ${PROJECT_ROOT}/src/windows/GUIConfiguration.cpp
     ${PROJECT_ROOT}/src/windows/GUITools.cpp
     ${PROJECT_ROOT}/src/NetBox/stdafx.cpp
