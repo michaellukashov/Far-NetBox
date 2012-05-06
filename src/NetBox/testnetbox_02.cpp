@@ -115,9 +115,9 @@ BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
         FarWrapText(Message, &MessageLines, MaxMessageWidth);
         BOOST_TEST_MESSAGE("MessageLines = " << W2MB(MessageLines.GetText().c_str()));
         BOOST_CHECK_EQUAL(3, MessageLines.GetCount());
-        BOOST_CHECK_EQUAL("long long long long ", W2MB(MessageLines.GetString(0).c_str()).c_str());
-        BOOST_CHECK_EQUAL("long long long long ", W2MB(MessageLines.GetString(1).c_str()).c_str());
-        BOOST_CHECK_EQUAL("long text", W2MB(MessageLines.GetString(2).c_str()).c_str());
+        BOOST_CHECK_EQUAL("long long long long ", W2MB(MessageLines.GetStrings(0).c_str()).c_str());
+        BOOST_CHECK_EQUAL("long long long long ", W2MB(MessageLines.GetStrings(1).c_str()).c_str());
+        BOOST_CHECK_EQUAL("long text", W2MB(MessageLines.GetStrings(2).c_str()).c_str());
     }
 }
 
@@ -326,7 +326,7 @@ BOOST_FIXTURE_TEST_CASE(test10, base_fixture_t)
     char buf[256];
     struct tm tm = ltime();
     time_t t = time(0);
-
+#if 0
     char buf2[256];
     _snprintf(buf2, sizeof(buf2) - 1, "%04d.%02d.%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
     strftime2(buf, sizeof(buf) - 1, "%Y.%m.%d %H:%M:%S", &tm);
@@ -336,6 +336,7 @@ BOOST_FIXTURE_TEST_CASE(test10, base_fixture_t)
     log_eventlog(ctx, "test2: end");
     logfclose(ctx);
     log_free(ctx);
+#endif
 }
 
 BOOST_FIXTURE_TEST_CASE(test11, base_fixture_t)
@@ -515,7 +516,7 @@ BOOST_FIXTURE_TEST_CASE(test15, base_fixture_t)
         TFileMasks m(L"*.txt;*.log");
         BOOST_CHECK_EQUAL(true, m.Matches(L"test.log"));
 
-        size_t Start, Length;
+        int Start, Length;
         BOOST_CHECK_EQUAL(true, m.GetIsValid(Start, Length));
         m.SetMask(L"*.exe");
         BOOST_CHECK_EQUAL(true, m.Matches(L"test.exe"));
@@ -572,7 +573,7 @@ BOOST_FIXTURE_TEST_CASE(test19, base_fixture_t)
     UnicodeString ProgramsFolder;
     ::SpecialFolderLocation(CSIDL_PROGRAM_FILES, ProgramsFolder);
     BOOST_TEST_MESSAGE("ProgramsFolder = " << W2MB(ProgramsFolder.c_str()).c_str());
-    BOOST_CHECK(ProgramsFolder.size() > 0);
+    BOOST_CHECK(ProgramsFolder.Length() > 0);
 }
 
 // BOOST_FIXTURE_TEST_CASE(test20, base_fixture_t)
