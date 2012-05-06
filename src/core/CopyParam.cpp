@@ -11,6 +11,7 @@
 #include "HierarchicalStorage.h"
 #include "TextsCore.h"
 #include "Exceptions.h"
+#include "SysUtils.h"
 //---------------------------------------------------------------------------
 /* __fastcall */ TCopyParamType::TCopyParamType()
 {

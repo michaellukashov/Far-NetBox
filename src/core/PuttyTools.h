@@ -1,6 +1,9 @@
 //---------------------------------------------------------------------------
 #ifndef PuttyToolsH
 #define PuttyToolsH
+
+#include "SysUtils.h"
+
 //---------------------------------------------------------------------------
 enum TKeyType { ktUnopenable, ktUnknown, ktSSH1, ktSSH2, ktOpenSSH, ktSSHCom };
 TKeyType KeyType(UnicodeString FileName);

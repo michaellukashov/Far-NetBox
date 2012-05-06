@@ -8,6 +8,7 @@
 
 #include "NamedObjs.h"
 #include "Common.h"
+#include "SysUtils.h"
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
 #pragma package(smart_init)

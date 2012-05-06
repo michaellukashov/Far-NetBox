@@ -11,6 +11,7 @@
 #include "Classes.h"
 #include "UnicodeString.hpp"
 #include "Exceptions.h"
+#include "SysUtils.h"
 
 #endif
 //---------------------------------------------------------------------------

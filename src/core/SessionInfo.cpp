@@ -2,6 +2,12 @@
 #ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
+#else
+#include "stdafx.h"
+
+#include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
+#include <boost/bind.hpp>
 #endif
 
 #include <stdio.h>
@@ -9,12 +15,6 @@
 #define SECURITY_WIN32
 #include <sspi.h>
 #include <secext.h>
-
-#ifdef _MSC_VER
-#include "boostdefines.hpp"
-#include <boost/scope_exit.hpp>
-#include <boost/bind.hpp>
-#endif
 
 #include "Common.h"
 #include "SessionInfo.h"

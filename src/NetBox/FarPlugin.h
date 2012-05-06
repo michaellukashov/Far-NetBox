@@ -23,6 +23,7 @@
 
 #pragma warning(push, 1)
 #include "Classes.h"
+#include "SysUtils.h"
 #pragma warning(pop)
 #include "Common.h"
 #include "plugin.hpp"

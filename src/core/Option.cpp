@@ -6,6 +6,8 @@
 #include "stdafx.h"
 #include "Common.h"
 #include "Option.h"
+#include "SysUtils.h"
+#include "TextsCore.h"
 #endif
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
