@@ -45,24 +45,6 @@ include ( ${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake )
 
 #-------------------------------------------------------------------------------
 
-macro ( use_precompiled_header SRC_LIST_VAR HDR_FILE SRC_FILE PCHNAME )
-    get_filename_component ( PCH_HEADER ${HDR_FILE} NAME )
-    set ( PCH_BINARY ${PCHNAME} )
-    set ( PCH_BINARY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${PCH_BINARY}.pch" )
-    if (MSVC)
-        set ( SRC_LIST ${${SRC_LIST_VAR}} )
-        set_source_files_properties ( ${SRC_LIST} PROPERTIES
-            COMPILE_FLAGS "/Yu${PCH_HEADER} /Fp${PCH_BINARY}"
-            OBJECT_DEPENDS "${PCH_BINARY}" )
-        set_source_files_properties ( ${SRC_FILE} PROPERTIES
-            COMPILE_FLAGS "/Yc${PCH_HEADER} /Fp${PCH_BINARY}"
-            OBJECT_OUTPUTS "${PCH_BINARY}"
-            OBJECT_DEPENDS "" )
-    endif (MSVC)
-endmacro ( use_precompiled_header )
-
-#-------------------------------------------------------
-
 project ( NetBox )
 
 set ( CMAKE_BUILD_TYPE Debug )
