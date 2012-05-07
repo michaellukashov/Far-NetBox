@@ -380,33 +380,11 @@ add_executable( testnetbox_02 ${TESTNETBOX_02_SOURCES} )
 set_target_properties( testnetbox_02
     PROPERTIES
     COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -D_AFX"
-    LINK_FLAGS "${CMAKE_LINK_FLAGS} /NODEFAULTLIB:UAFXCWD.LIB,Atls.lib,MFC100UD.LIB,msvcrtd.lib" # MFC100UD.LIB /NODEFAULTLIB:MSVCRTD.LIB" # /NODEFAULTLIB:UAFXCWD.LIB" #
-    # ,UAFXCWD.LIB,MFCS100UD.LIB,ATLS.LIB,COMCTL32.LIB,MSVCRTD.LIB,MSVCURTD.LIB,MSVCPRTD.LIB,LIBC.LIB,LIBCMT.LIB,MSVCRT.LIB,LIBCMTD.LIB"
-    # /NODEFAULTLIB:MSVCRTD.LIB"
+    LINK_FLAGS "${CMAKE_LINK_FLAGS} /NODEFAULTLIB:UAFXCWD.LIB"
 )
 add_dependencies ( testnetbox_02
     libputty
     libtinyxml
-    mfcs100ud.lib
-    # Atlsd.lib
-    # uafxcwd.lib
-    # libcmtd.lib
-    # libcpmtd.lib
-    # Windowscodecs.lib
-    # delayimp.lib
-    # libeay32.lib
-    # ssleay32.lib
-    # libputty.lib
-    # Ws2_32.lib
-    # kernel32.lib
-    # user32.lib
-    # gdi32.lib
-    # comdlg32.lib
-    # advapi32.lib
-    # Version.lib
-    # winhttp.lib
-    # winspool.lib
-    # comctl32.lib
 )
 
 target_link_libraries ( testnetbox_02 ${NETBOX_LIBRARIES} )
