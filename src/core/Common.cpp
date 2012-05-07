@@ -1428,7 +1428,7 @@ bool __fastcall RecursiveDeleteFile(const UnicodeString FileName, bool ToRecycle
   FileList[FileList.Length() - 1] = L'\0';
   FileList[FileList.Length()] = L'\0';
   Data.pFrom = FileList.c_str();
-  Data.pTo = L"";
+  Data.pTo = NULL;
   Data.fFlags = FOF_NOCONFIRMATION | FOF_RENAMEONCOLLISION | FOF_NOCONFIRMMKDIR |
     FOF_NOERRORUI | FOF_SILENT;
   if (ToRecycleBin)

@@ -2459,10 +2459,10 @@ bool TWebDAVFileSystem::WebDAVGetList(const UnicodeString Directory, UnicodeStri
 
     //name
     item.Name = path;
-    const size_t nameDelim = item.Name.RPos(L'/'); //Save only name without full path
+    const int nameDelim = item.Name.RPos(L'/'); //Save only name without full path
     if (nameDelim >= 0)
     {
-      item.Name.Delete(0, nameDelim + 1);
+      item.Name.Delete(1, nameDelim + 1);
     }
 
     //Find correct 'propstat' node (with HTTP 200 OK status)

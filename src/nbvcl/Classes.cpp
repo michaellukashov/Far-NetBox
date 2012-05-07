@@ -2019,12 +2019,12 @@ int FindMatchingFile(TSearchRec & Rec)
 //---------------------------------------------------------------------------
 int FindFirst(const UnicodeString FileName, int Attr, TSearchRec & Rec)
 {
-  const int faSpecial = faHidden || faSysFile || faDirectory;
+  const int faSpecial = faHidden | faSysFile | faDirectory;
   // HANDLE hFind = FindFirstFileW(FileName.c_str(), &Rec);
   // bool Result = (hFind != INVALID_HANDLE_VALUE);
   // if (Result) Classes::FindClose(Rec);
   // return Result;
-  Rec.ExcludeAttr = !Attr & faSpecial;
+  Rec.ExcludeAttr = (~Attr) & faSpecial;
   Rec.FindHandle = FindFirstFileW(FileName.c_str(), &Rec.FindData);
   int Result = 0;
   if (Rec.FindHandle != INVALID_HANDLE_VALUE)

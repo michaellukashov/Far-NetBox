@@ -202,15 +202,15 @@ UnicodeString AnsiReplaceStr(const UnicodeString str, const UnicodeString from, 
   return result;
 }
 
-size_t AnsiPos(const UnicodeString str, wchar_t c)
+int AnsiPos(const UnicodeString str, wchar_t c)
 {
-  size_t result = str.Pos(c);
+  int result = str.Pos(c);
   return result;
 }
 
-size_t Pos(const UnicodeString str, const UnicodeString substr)
+int Pos(const UnicodeString str, const UnicodeString substr)
 {
-  size_t result = str.Pos(substr.c_str());
+  int result = str.Pos(substr.c_str());
   return result;
 }
 
