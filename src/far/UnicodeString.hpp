@@ -79,7 +79,7 @@ public:
     //Так как ни где выше в коде мы не готовы на случай что памяти не хватит
     //то уж лучше и здесь не проверять а сразу падать
     *m_pData = 0;
-    SetLength(nSize);
+    // SetLength(nSize);
   }
 
   size_t SetLength(size_t nLength)
