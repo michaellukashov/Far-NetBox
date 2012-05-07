@@ -1941,9 +1941,9 @@ void __fastcall TWebDAVFileSystem::FileTransfer(const UnicodeString FileName,
         {
           FFileTransferAbort = ftaSkip;
           // FFileTransferAbort = ftaCancel;
-          if (::FileExists(LocalFile))
+          if (Sysutils::FileExists(LocalFile))
           {
-            ::DeleteFile(LocalFile);
+            Sysutils::DeleteFile(LocalFile);
           }
         }
     }
@@ -2230,7 +2230,7 @@ std::string TWebDAVFileSystem::GetNamespace(const TiXmlElement * element, const 
     }
     attr = attr->Next();
   }
-  return std::string((char *)ns.CPtr());
+  return std::string((char *)ns.c_str());
 }
 
 FILETIME TWebDAVFileSystem::ParseDateTime(const char * dt) const

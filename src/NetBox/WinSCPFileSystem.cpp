@@ -3896,7 +3896,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
           UpdatePanel();
         }
 
-        if (::DeleteFile(Info->GetFileName()))
+        if (Sysutils::DeleteFile(Info->GetFileName()))
         {
           // remove directory only if it is empty
           // (to avoid deleting another directory if user uses "save as")
