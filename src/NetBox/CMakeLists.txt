@@ -407,7 +407,6 @@ add_dependencies ( testnetbox_01
     libtinyxml
 )
 
-# target_link_libraries ( testnetbox_01 )
 target_link_libraries ( testnetbox_01 ${NETBOX_LIBRARIES} )
 
 #-------------------------------------------------------
@@ -415,7 +414,7 @@ target_link_libraries ( testnetbox_01 ${NETBOX_LIBRARIES} )
 
 set ( TESTNETBOX_02_DIR ${PROJECT_ROOT}/src/NetBox )
 
-set ( TESTNETBOX_02_SOURCES # ${COMMON_SOURCES}
+set ( TESTNETBOX_02_SOURCES
     ${TESTNETBOX_02_DIR}/UnityBuildCore.cpp
     ${TESTNETBOX_02_DIR}/UnityBuildMain.cpp
     ${TESTNETBOX_02_DIR}/UnityBuildFilezilla.cpp
