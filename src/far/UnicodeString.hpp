@@ -417,7 +417,7 @@ public:
 
   UnicodeString & Insert(int Pos, const wchar_t * Str, int StrLen);
   UnicodeString & Insert(int Pos, const UnicodeString Str) { return Insert(Pos, Str.c_str(), Str.Length()); }
-  // UnicodeString & Insert(const wchar_t * Str, int Pos);
+  UnicodeString & Insert(const wchar_t * Str, int Pos) { return Insert(Pos, Str, wcslen(Str)); }
 
   int Pos(wchar_t Ch) const { return (int)Data.find(Ch) + 1; }
   int Pos(UnicodeString Str) const { return (int)Data.find(Str.Data) + 1; }
@@ -430,6 +430,10 @@ public:
 
   bool IsDelimiter(UnicodeString Chars, int Pos) const;
   int LastDelimiter(const UnicodeString & delimiters) const;
+
+  UnicodeString Trim() const;
+  UnicodeString TrimLeft() const;
+  UnicodeString TrimRight() const;
 
 public:
   operator std::wstring () const { return Data; }

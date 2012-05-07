@@ -703,6 +703,21 @@ int UnicodeString::LastDelimiter(const UnicodeString & delimiters) const
   return Sysutils::LastDelimiter(*this, delimiters);
 }
 
+UnicodeString UnicodeString::Trim() const
+{
+  return Sysutils::Trim(*this);
+}
+
+UnicodeString UnicodeString::TrimLeft() const
+{
+  return Sysutils::TrimLeft(*this);
+}
+
+UnicodeString UnicodeString::TrimRight() const
+{
+  return Sysutils::TrimRight(*this);
+}
+
 const UnicodeString & UnicodeString::operator=(const UnicodeString & strCopy)
 {
   Init(strCopy.c_str(), strCopy.Length());
