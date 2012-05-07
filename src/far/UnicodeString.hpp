@@ -395,6 +395,7 @@ public:
   // operator const char * () const { return c_str(); }
   int size() const { return Length(); }
   const wchar_t * c_str() const { return Data.c_str(); }
+  const wchar_t * data() const { return Data.c_str(); }
   int Length() const { return Data.size(); }
   int GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
@@ -457,7 +458,7 @@ public:
   const UnicodeString & operator=(const std::wstring & strCopy);
   const UnicodeString & operator=(const wchar_t * lpwszData);
   const UnicodeString & operator=(const char * lpszData);
-  const UnicodeString & operator=(wchar_t chData);
+  const UnicodeString & operator=(const wchar_t Ch);
 
   UnicodeString __fastcall operator +(const UnicodeString & rhs) const;
   UnicodeString __fastcall operator +(const UTF8String & rhs) const;
@@ -541,6 +542,7 @@ public:
   RawByteString(const unsigned char * Str, int sz) { Init(Str, sz); }
   RawByteString(const UnicodeString & Str) { Init(Str.c_str(), Str.GetLength()); }
   RawByteString(const UTF8String & Str) { Init(Str.c_str(), Str.GetLength()); }
+  // RawByteString(const AnsiString & Str) { Init(Str.c_str(), Str.GetLength()); }
   ~RawByteString() {}
 
   operator const char * () const { return reinterpret_cast<const char *>(Data.c_str()); }

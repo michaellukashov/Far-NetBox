@@ -759,6 +759,12 @@ const UnicodeString & UnicodeString::operator=(const wchar_t * Str)
   return *this;
 }
 
+const UnicodeString & UnicodeString::operator=(const wchar_t Ch)
+{
+  Init(&Ch, 1);
+  return *this;
+}
+
 const UnicodeString & UnicodeString::operator=(const char * lpszData)
 {
   Init(lpszData, strlen(lpszData));
@@ -787,6 +793,12 @@ const UnicodeString & __fastcall UnicodeString::operator +=(const RawByteString 
 {
   UnicodeString s(rhs.c_str(), rhs.size());
   Data.append(s.Data.c_str(), s.size());
+  return *this;
+}
+
+const UnicodeString & __fastcall UnicodeString::operator +=(const std::wstring & rhs)
+{
+  Data.append(rhs.c_str(), rhs.size());
   return *this;
 }
 
