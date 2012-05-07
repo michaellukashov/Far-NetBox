@@ -6269,13 +6269,13 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
 
             Repeat = false;
             UnicodeString Caption = GetMsg(Add ? OPEN_DIRECTORY_ADD_BOOMARK_ACTION :
-                                          OPEN_DIRECTORY_BROWSE_CAPTION);
+              OPEN_DIRECTORY_BROWSE_CAPTION);
             const int BreakKeys[] = { VK_DELETE, VK_F8, VK_RETURN + (PKF_CONTROL << 16),
-                                      'C' + (PKF_CONTROL << 16), VK_INSERT + (PKF_CONTROL << 16), 0
-                                    };
+              'C' + (PKF_CONTROL << 16), VK_INSERT + (PKF_CONTROL << 16), 0
+            };
 
             ItemFocused = FPlugin->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
-                                        Caption, GetMsg(OPEN_DIRECTORY_HELP), BookmarkItems, BreakKeys, BreakCode);
+              Caption, GetMsg(OPEN_DIRECTORY_HELP), BookmarkItems, BreakKeys, BreakCode);
             if (BreakCode >= 0)
             {
                 assert(BreakCode >= 0 && BreakCode <= 4);
