@@ -474,13 +474,6 @@ UnicodeString UnicodeString::TrimRight() const
 
 //------------------------------------------------------------------------------
 
-UTF8String::UTF8String(const UnicodeString & Str)
-{
-  Init(Str, Str.GetLength());
-}
-
-//------------------------------------------------------------------------------
-
 RawByteString::operator UnicodeString() const
 {
   return UnicodeString(reinterpret_cast<const char *>(Data.c_str()), Data.size());
@@ -562,6 +555,7 @@ const RawByteString & __fastcall RawByteString::operator +=(const char Ch)
 }
 
 //------------------------------------------------------------------------------
+
 int UTF8String::Pos(wchar_t Ch) const
 {
   wstring_t s(&Ch, 1);
@@ -629,4 +623,99 @@ const UTF8String & __fastcall UTF8String::operator +=(const char Ch)
   return *this;
 }
 
+UTF8String::UTF8String(const UnicodeString & Str)
+{
+  Init(Str, Str.GetLength());
+}
+
 //------------------------------------------------------------------------------
+
+UnicodeString::UnicodeString(const UnicodeString & Str)
+{
+  Init(Str, Str.GetLength());
+}
+
+UnicodeString::UnicodeString(const UTF8String & Str)
+{
+  Init(Str, Str.GetLength());
+}
+
+UnicodeString::UnicodeString(const RawByteString & Str)
+{
+  Init(Str, Str.GetLength());
+}
+
+int UnicodeString::Pos(wchar_t Ch) const
+{
+  wstring_t s(&Ch, 1);
+  return Data.find(s.c_str(), 0, 1);
+}
+
+UnicodeString & UnicodeString::Insert(const wchar_t * Str, int Pos)
+{
+  Data.insert(Pos - 1, Str);
+  return *this;
+}
+
+const UnicodeString & UnicodeString::operator=(const UnicodeString & strCopy)
+{
+  Init(strCopy.c_str(), strCopy.Length());
+  return *this;
+}
+
+const UnicodeString & UnicodeString::operator=(const UnicodeString & strCopy)
+{
+  Init(strCopy.c_str(), strCopy.Length());
+  return *this;
+}
+
+const UnicodeString & UnicodeString::operator=(const RawByteString & strCopy)
+{
+  Init(strCopy.c_str(), strCopy.Length());
+  return *this;
+}
+
+const UnicodeString & UnicodeString::operator=(const char * lpszData)
+{
+  Init(lpszData, strlen(lpszData));
+  return *this;
+}
+
+const UnicodeString & UnicodeString::operator=(const wchar_t * lpszData)
+{
+  Init(lpszData, wcslen(lpszData));
+  return *this;
+}
+
+UnicodeString __fastcall UnicodeString::operator +(const UnicodeString & rhs) const
+{
+  wstring_t Result = Data + rhs.Data;
+  return RawByteString(reinterpret_cast<const char *>(Result.c_str()), Result.size());
+}
+
+const UnicodeString & __fastcall UnicodeString::operator +=(const UnicodeString & rhs)
+{
+  Data.append(rhs.Data.c_str(), rhs.size());
+  return *this;
+}
+const UnicodeString & __fastcall UnicodeString::operator +=(const RawByteString & rhs)
+{
+  UnicodeString s(rhs.c_str(), rhs.size());
+  Data.append(s.Data.c_str(), s.size());
+  return *this;
+}
+
+const UnicodeString & __fastcall UnicodeString::operator +=(const char Ch)
+{
+  unsigned char ch(static_cast<unsigned char>(Ch));
+  Data.append(1, ch);
+  return *this;
+}
+
+UnicodeString::UnicodeString(const UnicodeString & Str)
+{
+  Init(Str, Str.GetLength());
+}
+
+//------------------------------------------------------------------------------
+

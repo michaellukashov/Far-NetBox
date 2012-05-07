@@ -364,23 +364,91 @@ private:
     }
   }
 
-protected:
   typedef std::basic_string<wchar_t> wstring_t;
   wstring_t Data;
 };
 
 typedef UTF8String AnsiString;
 
-class UnicodeString : public UTF8String
+class UnicodeString
 {
 public:
   UnicodeString() {}
-  explicit UnicodeString(const wchar_t * Str) : UTF8String(Str) {}
-  explicit UnicodeString(const wchar_t * Str, int Size) : UTF8String(Str, Size) {}
-  explicit UnicodeString(const char * Str, int Size) : UTF8String(Str, Size) {}
-  UnicodeString(const UnicodeString & Str) : UTF8String(Str) {}
+  UnicodeString(const wchar_t * Str)
+  {
+    Init(Str, StrLength(Str));
+  }
+  UnicodeString(const wchar_t * Str, int Size)
+  {
+    Init(Str, Size);
+  }
+  UnicodeString(const char * Str, int Size)
+  {
+    Init(Str, Size);
+  }
 
-  operator const wchar_t * () const { return Data.c_str(); }
+  UnicodeString(const UnicodeString & Str);
+
+  ~UnicodeString() {}
+
+  operator const char * () const { return c_str(); }
+  size_t size() const { return Length(); }
+  const char * c_str() const { return reinterpret_cast<const char *>(Data.c_str()); }
+  int Length() const { return Data.size(); }
+  int GetLength() const { return Length(); }
+  bool IsEmpty() const { return Length() == 0; }
+  void SetLength(int nLength) { Data.resize(nLength); }
+  UnicodeString & Delete(int Index, int Count) { Data.erase(Index - 1, Count); return *this; }
+
+  UnicodeString & Insert(int Pos, const wchar_t * Str, int StrLen) { return Insert(Str, Pos); }
+  UnicodeString & Insert(const wchar_t * Str, int Pos);
+
+  UnicodeString SubString(int Pos, int Len = -1) const { return UnicodeString(Data.substr(Pos - 1, Len).c_str(), Len); }
+
+  int Pos(wchar_t Ch) const;
+
+public:
+  const UnicodeString & operator=(const UnicodeString & strCopy);
+  const UnicodeString & operator=(const UTF8String & strCopy);
+  const UnicodeString & operator=(const RawByteString & strCopy);
+  const UnicodeString & operator=(const wchar_t * lpwszData);
+  const UnicodeString & operator=(const char * lpszData);
+  const UnicodeString & operator=(wchar_t chData);
+
+  UnicodeString __fastcall operator +(const UnicodeString & rhs) const;
+  UnicodeString __fastcall operator +(const UTF8String & rhs) const;
+  UnicodeString __fastcall operator +(const RawByteString & rhs) const;
+  UnicodeString __fastcall operator +(const std::wstring & rhs) const;
+  const UnicodeString & __fastcall operator +=(const UnicodeString & rhs);
+  const UnicodeString & __fastcall operator +=(const UTF8String & rhs);
+  const UnicodeString & __fastcall operator +=(const RawByteString & rhs);
+  UnicodeString __fastcall operator +(const std::wstring & rhs) const;
+  const UnicodeString & __fastcall operator +=(const char rhs);
+  const UnicodeString & __fastcall operator +=(const char * rhs);
+
+private:
+  void Init(const wchar_t * Str, int Length)
+  {
+    Data.resize(Length);
+    if (Length > 0)
+    {
+        memmove(reinterpret_cast<unsigned char *>(const_cast<wchar_t *>(Data.c_str())), Str, Length);
+        Data[Length-1] = 0;
+    }
+  }
+  void Init(const char * Str, int Length)
+  {
+    int Size = MultiByteToWideChar(CP_UTF8, 0, Str, -1, NULL, 0) + 1;
+    Data.resize(Size);
+    if (Length > 0)
+    {
+      MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), Size);
+      Data[Size-1] = 0;
+    }
+  }
+
+  typedef std::basic_string<wchar_t> wstring_t;
+  wstring_t Data;
 };
 
 //------------------------------------------------------------------------------
