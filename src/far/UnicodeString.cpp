@@ -471,7 +471,21 @@ UnicodeString UnicodeString::TrimRight() const
   return Sysutils::TrimRight(*this);
 }
 #endif
+
 //------------------------------------------------------------------------------
+
+UTF8String::UTF8String(const UnicodeString & Str)
+{
+  Init(Str, Str.GetLength());
+}
+
+//------------------------------------------------------------------------------
+
+RawByteString::operator UnicodeString() const
+{
+  return UnicodeString(reinterpret_cast<const char *>(Data.c_str()), Data.size());
+}
+
 int RawByteString::Pos(wchar_t Ch) const
 {
   // rawstring_t s(&Ch, 1);

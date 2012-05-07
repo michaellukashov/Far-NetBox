@@ -307,10 +307,7 @@ public:
     Init(Str, Size);
   }
 
-  UTF8String(const UnicodeString & Str)
-  {
-    Init(Str, Str.GetLength());
-  }
+  UTF8String(const UnicodeString & Str);
 
   ~UTF8String() {}
 
@@ -367,12 +364,24 @@ private:
     }
   }
 
+protected:
   typedef std::basic_string<wchar_t> wstring_t;
   wstring_t Data;
 };
 
 typedef UTF8String AnsiString;
-typedef UTF8String UnicodeString;
+
+class UnicodeString : public UTF8String
+{
+public:
+  UnicodeString() {}
+  explicit UnicodeString(const wchar_t * Str) : UTF8String(Str) {}
+  explicit UnicodeString(const wchar_t * Str, int Size) : UTF8String(Str, Size) {}
+  explicit UnicodeString(const char * Str, int Size) : UTF8String(Str, Size) {}
+  UnicodeString(const UnicodeString & Str) : UTF8String(Str) {}
+
+  operator const wchar_t * () const { return Data.c_str(); }
+};
 
 //------------------------------------------------------------------------------
 
@@ -391,7 +400,7 @@ public:
   ~RawByteString() {}
 
   operator const char * () const { return reinterpret_cast<const char *>(Data.c_str()); }
-  operator UnicodeString() const { return UnicodeString(reinterpret_cast<const char *>(Data.c_str()), Data.size()); }
+  operator UnicodeString() const;
   int size() const { return Data.size(); }
   const char * c_str() const { return reinterpret_cast<const char *>(Data.c_str()); }
   // const unsigned char * c_str() const { return Data.c_str(); }
