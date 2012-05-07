@@ -438,7 +438,7 @@ void __fastcall TConfiguration::LoadDirectoryChangesCache(const UnicodeString Se
         Storage->OpenSubKey(L"CDCache", false) &&
         Storage->ValueExists(SessionKey))
     {
-      DirectoryChangesCache->Deserialize(Storage->ReadBinaryData(SessionKey));
+      DirectoryChangesCache->Deserialize(UnicodeString(Storage->ReadBinaryData(SessionKey)));
     }
   }
 #ifndef _MSC_VER
