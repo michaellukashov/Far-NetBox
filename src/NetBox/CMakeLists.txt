@@ -313,38 +313,6 @@ set ( NETBOX_LIBRARIES
     winspool.lib
     comctl32.lib
 )
-    # mfc100ud.lib
-    # Atl.lib
-    # uafxcwd.lib
-    # comctl32.lib
-    # msvcrtd.lib
-    # msvcprtd.lib
-    # msvcmrtd.lib
-    # msvcurtd.lib
-    # libputty
-    # libtinyxml
-    # libcurl
-    # libeay32
-    # ssleay32
-    # libssh2.lib
-    # zlib.lib
-    # ws2_32.lib
-    # winhttp.lib
-    # kernel32.lib
-    # user32.lib
-    # gdi32.lib
-    # winspool.lib
-    # comdlg32.lib
-    # advapi32.lib
-    # shell32.lib
-    # ole32.lib
-    # oleaut32.lib
-    # uuid.lib
-    # odbc32.lib
-    # odbccp32.lib
-    # Version.lib
-    # windowscodecs.lib
-# )
 
 add_library ( NetBox SHARED ${NETBOX_HEADERS} ${NETBOX_SOURCES} )
 set_target_properties( NetBox
