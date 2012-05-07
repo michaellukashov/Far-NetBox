@@ -210,19 +210,20 @@ set ( NETBOX_SOURCES # ${COMMON_SOURCES}
     ${PROJECT_ROOT}/src/NetBox/UnityBuildCore.cpp
     ${PROJECT_ROOT}/src/NetBox/UnityBuildMain.cpp
     ${PROJECT_ROOT}/src/NetBox/UnityBuildFilezilla.cpp
-    ${PROJECT_ROOT}/src/NetBox/NetBox.cpp
+    # ${PROJECT_ROOT}/src/NetBox/NetBox.cpp
     ${PROJECT_ROOT}/src/NetBox/NetBox.def
 )
 
 add_library (libcurl STATIC IMPORTED)
 set_property (TARGET libcurl
     PROPERTY IMPORTED_LOCATION ${PROJECT_ROOT}/Temp/NetBox/${CMAKE_BUILD_TYPE}/${PLATFORM}/libcurl/libcurl.lib)
-add_library (libeay32 SHARED IMPORTED)
+add_library (libeay32 STATIC IMPORTED)
 set_property (TARGET libeay32
-    PROPERTY IMPORTED_IMPLIB ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/libeay32.lib )
-add_library (ssleay32 SHARED IMPORTED)
+    # PROPERTY IMPORTED_IMPLIB ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/libeay32.lib )
+    PROPERTY IMPORTED_LOCATION ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/libeay32.lib )
+add_library (ssleay32 STATIC IMPORTED)
 set_property (TARGET ssleay32
-    PROPERTY IMPORTED_IMPLIB ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/ssleay32.lib )
+    PROPERTY IMPORTED_LOCATION ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/ssleay32.lib )
 
 #-------------------------------------------------------------------------------
 
