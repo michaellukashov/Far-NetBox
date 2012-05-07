@@ -248,7 +248,7 @@ add_library (libputty STATIC
 
 set_target_properties( libputty
     PROPERTIES
-    COMPILE_FLAGS "/TC -D_CRTIMP= -DLibrary;SECURITY_WIN32;_WINDOWS;NET_SETUP_DIAGNOSTICS"
+    COMPILE_FLAGS "/TC -D_CRTIMP= -DLibrary;SECURITY_WIN32;_WINDOWS;NET_SETUP_DIAGNOSTICS;NO_SECURITY"
 )
 
 #-------------------------------------------------------------------------------
@@ -268,37 +268,63 @@ set_target_properties( libtinyxml
 #-------------------------------------------------------------------------------
 
 set ( NETBOX_LIBRARIES
-    mfc100ud.lib
-    Atl.lib
+    mfcs100ud.lib
+    Atlsd.lib
     uafxcwd.lib
-    comctl32.lib
-    msvcrtd.lib
-    msvcprtd.lib
-    msvcmrtd.lib
-    msvcurtd.lib
+    libcmtd.lib
+    libcpmtd.lib
+    windowscodecs.lib
+    delayimp.lib
     libputty
-    libtinyxml
     libcurl
+    zlib
+    libssh2
+    libtinyxml
     libeay32
     ssleay32
-    libssh2.lib
-    zlib.lib
-    ws2_32.lib
-    winhttp.lib
+    Ws2_32.lib
     kernel32.lib
     user32.lib
     gdi32.lib
-    winspool.lib
     comdlg32.lib
     advapi32.lib
-    shell32.lib
-    ole32.lib
-    oleaut32.lib
-    uuid.lib
-    odbc32.lib
-    odbccp32.lib
     Version.lib
+    winhttp.lib
+    winspool.lib
+    comctl32.lib
 )
+    # mfc100ud.lib
+    # Atl.lib
+    # uafxcwd.lib
+    # comctl32.lib
+    # msvcrtd.lib
+    # msvcprtd.lib
+    # msvcmrtd.lib
+    # msvcurtd.lib
+    # libputty
+    # libtinyxml
+    # libcurl
+    # libeay32
+    # ssleay32
+    # libssh2.lib
+    # zlib.lib
+    # ws2_32.lib
+    # winhttp.lib
+    # kernel32.lib
+    # user32.lib
+    # gdi32.lib
+    # winspool.lib
+    # comdlg32.lib
+    # advapi32.lib
+    # shell32.lib
+    # ole32.lib
+    # oleaut32.lib
+    # uuid.lib
+    # odbc32.lib
+    # odbccp32.lib
+    # Version.lib
+    # windowscodecs.lib
+# )
 
 add_library ( NetBox SHARED ${NETBOX_HEADERS} ${NETBOX_SOURCES} )
 set_target_properties( NetBox
@@ -379,8 +405,29 @@ set ( TESTNETBOX_02_SOURCES # ${COMMON_SOURCES}
 add_executable( testnetbox_02 ${TESTNETBOX_02_SOURCES} )
 set_target_properties( testnetbox_02
     PROPERTIES
-    COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -D_AFX"
-    LINK_FLAGS "${CMAKE_LINK_FLAGS} /NODEFAULTLIB:UAFXCWD.LIB"
+    COMPILE_FLAGS "${CMAKE_CXX_FLAGS}" # -D_AFX"
+        # /NODEFAULTLIB:NAFXCWD.LIB
+    LINK_FLAGS "${CMAKE_LINK_FLAGS} /verbose:lib
+        /NODEFAULTLIB:MFCS100UD.LIB
+        /NODEFAULTLIB:ATLSD.LIB
+        /NODEFAULTLIB:UAFXCWD.LIB
+        /NODEFAULTLIB:LIBCMTD.LIB
+        /NODEFAULTLIB:LIBCPMTD.LIB
+        /NODEFAULTLIB:WINDOWSCODECS.LIB
+        /NODEFAULTLIB:DELAYIMP.LIB
+        /NODEFAULTLIB:LIBEAY32.LIB
+        /NODEFAULTLIB:SSLEAY32.LIB
+        /NODEFAULTLIB:LIBPUTTY.LIB
+        /NODEFAULTLIB:WS2_32.LIB
+        /NODEFAULTLIB:KERNEL32.LIB
+        /NODEFAULTLIB:USER32.LIB
+        /NODEFAULTLIB:GDI32.LIB
+        /NODEFAULTLIB:COMDLG32.LIB
+        /NODEFAULTLIB:ADVAPI32.LIB
+        /NODEFAULTLIB:VERSION.LIB
+        /NODEFAULTLIB:WINHTTP.LIB
+        /NODEFAULTLIB:WINSPOOL.LIB
+        /NODEFAULTLIB:COMCTL32.LIB"
 )
 add_dependencies ( testnetbox_02
     libputty
