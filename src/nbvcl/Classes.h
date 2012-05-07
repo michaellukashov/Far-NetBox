@@ -864,7 +864,7 @@ class DelphiSet
 
     void Empty() const
     {
-      FSet.empty();
+      FSet.Clear();
     }
 
     bool operator == ( const DelphiSet<T>& rhs ) const
