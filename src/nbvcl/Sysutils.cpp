@@ -168,18 +168,17 @@ UnicodeString TrimRight(const UnicodeString str)
 
 UnicodeString UpperCase(const UnicodeString str)
 {
-  UnicodeString result = str;
+  std::wstring Result(str.c_str(), str.Length());
   // result.SetLength(str.Length());
-  // std::transform(str.begin(), str.end(), result.begin(), ::toupper);
-  return result.UpperCase();
+  std::transform(Result.begin(), Result.end(), Result.begin(), ::toupper);
+  return Result;
 }
 
 UnicodeString LowerCase(const UnicodeString str)
 {
-  UnicodeString result = str;
-  // result.SetLength(str.Length());
-  // std::transform(str.begin(), str.end(), result.begin(), ::tolower);
-  return result.LowerCase();
+  std::wstring Result(str.c_str(), str.Length());
+  std::transform(Result.begin(), Result.end(), Result.begin(), ::tolower);
+  return Result;
 }
 //---------------------------------------------------------------------------
 
