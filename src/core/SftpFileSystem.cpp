@@ -5397,7 +5397,7 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
       // first open source file, not to loose the destination file,
       // if we cannot open the source one in the first place
       FTerminal->LogEvent(L"Opening remote file.");
-      FILE_OPERATION_LOOP (FMTLOAD(SFTP_OPEN_FILE_ERROR, (FileName)),
+      FILE_OPERATION_LOOP (FMTLOAD(SFTP_OPEN_FILE_ERROR, (FileName.c_str())),
         int OpenType = SSH_FXF_READ;
         if ((FVersion >= 4) && OperationProgress->AsciiTransfer)
         {

@@ -1082,7 +1082,7 @@ int __fastcall TSecureShell::TranslatePuttyMessage(
           (wcsncmp(Message.c_str() + Message.Length() - SuffixLen, Div + 1, SuffixLen) == 0))
       {
         Message = FMTLOAD(Translation[Index].Translation,
-          Message.SubString(PrefixLen + 1, Message.Length() - PrefixLen - SuffixLen).TrimRight());
+          Message.SubString(PrefixLen + 1, Message.Length() - PrefixLen - SuffixLen).TrimRight().c_str());
         Result = static_cast<int>(Index);
         break;
       }
@@ -1804,7 +1804,7 @@ struct TClipboardHandler
 void __fastcall TSecureShell::VerifyHostKey(UnicodeString Host, int Port,
   const UnicodeString KeyType, UnicodeString KeyStr, const UnicodeString Fingerprint)
 {
-  LogEvent(FORMAT(L"Verifying host key %s %s with fingerprint %s", KeyType, KeyStr.c_str(), Fingerprint.c_str()));
+  LogEvent(FORMAT(L"Verifying host key %s %s with fingerprint %s", KeyType.c_str(), KeyStr.c_str(), Fingerprint.c_str()));
 
   GotHostKey();
 

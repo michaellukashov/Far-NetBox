@@ -291,7 +291,7 @@ void __fastcall THierarchicalStorage::ReadValues(Classes::TStrings* Strings,
       if (MaintainKeys)
       {
         Strings->Add(FORMAT(L"%s=%s", Names->GetStrings(Index).c_str(),
-          ReadString(Names->GetStrings(Index), L"")));
+          ReadString(Names->GetStrings(Index), L"").c_str()));
       }
       else
       {
