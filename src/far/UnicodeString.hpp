@@ -37,6 +37,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "headers.hpp"
 #include "local.hpp"
 
+#if 0
 const size_t __US_DELTA = 20;
 
 class UnicodeStringData
@@ -283,10 +284,11 @@ protected:
   void  __cdecl ThrowIfOutOfRange(int idx) const;
 };
 // typedef UnicodeString string;
-
+#endif
 //------------------------------------------------------------------------------
 
 class RawByteString;
+class UnicodeString;
 
 class UTF8String
 {
@@ -370,6 +372,7 @@ private:
 };
 
 typedef UTF8String AnsiString;
+typedef UTF8String UnicodeString;
 
 //------------------------------------------------------------------------------
 

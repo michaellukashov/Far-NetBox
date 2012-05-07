@@ -36,6 +36,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Sysutils.h"
 #pragma hdrstop
 
+#if 0
 UnicodeStringData * eus()
 {
   //для оптимизации создания пустых UnicodeString
@@ -469,7 +470,7 @@ UnicodeString UnicodeString::TrimRight() const
 {
   return Sysutils::TrimRight(*this);
 }
-
+#endif
 //------------------------------------------------------------------------------
 int RawByteString::Pos(wchar_t Ch) const
 {
