@@ -313,7 +313,7 @@ public:
   ~UTF8String() {}
 
   operator const char * () const { return c_str(); }
-  size_t size() const { return Length(); }
+  int size() const { return Length(); }
   const char * c_str() const { return reinterpret_cast<const char *>(Data.c_str()); }
   int Length() const { return Data.size(); }
   int GetLength() const { return Length(); }
@@ -403,7 +403,7 @@ public:
   UnicodeString & Lower(int nStartPos = 0, int nLength = -1);
   UnicodeString & Upper(int nStartPos = 0, int nLength = -1);
 
-  UnicodeString & Replace(int Pos, int Len, const wchar_t * Data, int DataLen);
+  UnicodeString & Replace(int Pos, int Len, const wchar_t * Str, int DataLen);
   UnicodeString & Replace(int Pos, int Len, const UnicodeString & Str) { return Replace(Pos, Len, Str.c_str(), Str.GetLength()); }
   UnicodeString & Replace(int Pos, int Len, const wchar_t * Str) { return Replace(Pos, Len, Str, StrLength(NullToEmpty(Str))); }
   UnicodeString & Replace(int Pos, int Len, wchar_t Ch) { return Replace(Pos, Len, &Ch, 1); }
@@ -448,7 +448,7 @@ public:
   UnicodeString __fastcall operator +(const std::wstring & rhs) const;
 
   friend UnicodeString __fastcall operator +(const wchar_t lhs, const UnicodeString & rhs);
-  friend UnicodeString __fastcall operator +(const const UnicodeString & lhs, wchar_t rhs);
+  friend UnicodeString __fastcall operator +(const UnicodeString & lhs, wchar_t rhs);
   friend UnicodeString __fastcall operator +(const wchar_t * lhs, const UnicodeString & rhs);
   friend UnicodeString __fastcall operator +(const UnicodeString & lhs, const wchar_t * rhs);
 
@@ -535,7 +535,7 @@ public:
   RawByteString & Delete(int Index, int Count) { Data.erase(Index - 1, Count); return *this; }
 
   // RawByteString & Insert(int Pos, const wchar_t * Str, int StrLen);
-  RawByteString & Insert(const wchar_t * Str, int Pos) { return Insert(Pos, Str, wcslen(Str)); }
+  // RawByteString & Insert(const wchar_t * Str, int Pos) { return Insert(Pos, Str, wcslen(Str)); }
   RawByteString & Insert(const char * Str, int Pos);
 
   RawByteString SubString(int Pos, int Len = -1) const;

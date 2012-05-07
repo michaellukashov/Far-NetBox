@@ -601,7 +601,7 @@ const UTF8String & UTF8String::operator=(const wchar_t * lpszData)
 UTF8String __fastcall UTF8String::operator +(const UTF8String & rhs) const
 {
   wstring_t Result = Data + rhs.Data;
-  return RawByteString(reinterpret_cast<const char *>(Result.c_str()), Result.size());
+  return UTF8String(Result.c_str(), Result.size());
 }
 
 const UTF8String & __fastcall UTF8String::operator +=(const UTF8String & rhs)
@@ -625,29 +625,29 @@ const UTF8String & __fastcall UTF8String::operator +=(const char Ch)
 
 UTF8String::UTF8String(const UnicodeString & Str)
 {
-  Init(Str, Str.GetLength());
+  Init(Str.c_str(), Str.GetLength());
 }
 
 //------------------------------------------------------------------------------
 
 UnicodeString::UnicodeString(const UnicodeString & Str)
 {
-  Init(Str, Str.GetLength());
+  Init(Str.c_str(), Str.GetLength());
 }
 
 UnicodeString::UnicodeString(const UTF8String & Str)
 {
-  Init(Str, Str.GetLength());
+  Init(Str.c_str(), Str.GetLength());
 }
 
 UnicodeString::UnicodeString(const RawByteString & Str)
 {
-  Init(Str, Str.GetLength());
+  Init(Str.c_str(), Str.GetLength());
 }
 
 UnicodeString::UnicodeString(const std::wstring & Str)
 {
-  Init(Str, Str.size());
+  Init(Str.c_str(), Str.size());
 }
 
 UnicodeString & UnicodeString::Lower(int nStartPos, int nLength)
@@ -662,9 +662,9 @@ UnicodeString & UnicodeString::Upper(int nStartPos, int nLength)
   Data = ::UpperCase(SubString(nStartPos, nLength));
 }
 
-UnicodeString & UnicodeString::Replace(int Pos, int Len, const wchar_t * Data, int DataLen)
+UnicodeString & UnicodeString::Replace(int Pos, int Len, const wchar_t * Str, int DataLen)
 {
-  Data.replace(Pos, Len, std::wstring(Data, DataLen));
+  Data.replace(Pos, Len, std::wstring(Str, DataLen));
   return *this;
 }
 
@@ -679,18 +679,18 @@ UnicodeString & UnicodeString::Insert(int Pos, const wchar_t * Str, int StrLen)
   Data.insert(Pos - 1, Str, StrLen);
   return *this;
 }
-
-UnicodeString & UnicodeString::Insert(const wchar_t * Str, int Pos)
+/*
+UnicodeString & UnicodeString::Insert(int Pos, const wchar_t * Str, int StrLen)
 {
-  Data.insert(Pos - 1, Str);
+  Data.insert(Pos - 1, Str, StrLen);
   return *this;
 }
-
-bool UnicodeString::RPos(int & nPos, wchar_t Ch, int nStartPos = 0) const
+*/
+bool UnicodeString::RPos(int & nPos, wchar_t Ch, int nStartPos) const
 {
   int pos = (int)Data.find_last_of(Ch, nStartPos);
   nPos = pos + 1;
-  return pos != std::wstrong::npos;
+  return pos != std::wstring::npos;
 }
 
 bool UnicodeString::IsDelimiter(UnicodeString Chars, int Pos) const
@@ -709,7 +709,7 @@ const UnicodeString & UnicodeString::operator=(const UnicodeString & strCopy)
   return *this;
 }
 
-const UnicodeString & UnicodeString::operator=(const UnicodeString & strCopy)
+const UnicodeString & UnicodeString::operator=(const UTF8String & strCopy)
 {
   Init(strCopy.c_str(), strCopy.Length());
   return *this;
@@ -727,15 +727,15 @@ const UnicodeString & UnicodeString::operator=(const std::wstring & strCopy)
   return *this;
 }
 
-const UnicodeString & UnicodeString::operator=(const char * lpszData)
+const UnicodeString & UnicodeString::operator=(const wchar_t * Str)
 {
-  Init(lpszData, strlen(lpszData));
+  Init(Str, wcslen(Str));
   return *this;
 }
 
-const UnicodeString & UnicodeString::operator=(const wchar_t * lpszData)
+const UnicodeString & UnicodeString::operator=(const char * lpszData)
 {
-  Init(lpszData, wcslen(lpszData));
+  Init(lpszData, strlen(lpszData));
   return *this;
 }
 
