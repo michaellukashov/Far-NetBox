@@ -3530,7 +3530,7 @@ bool /* __fastcall */ TTerminal::MoveFiles(TStrings * FileList, const UnicodeStr
           // current directory
           if ((File != NULL) &&
               File->GetIsDirectory() &&
-              ((curDirectory.SubString(0, FileList->GetStrings(Index).Length()) == FileList->GetStrings(Index)) &&
+              ((curDirectory.SubString(1, FileList->GetStrings(Index).Length()) == FileList->GetStrings(Index)) &&
                ((FileList->GetStrings(Index).Length() == curDirectory.Length()) ||
                 (curDirectory[FileList->GetStrings(Index).Length() + 1] == '/'))))
           {

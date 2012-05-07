@@ -2321,9 +2321,9 @@ void __fastcall TSessionData::SetCodePage(const UnicodeString value)
 //---------------------------------------------------------------------
 void __fastcall TSessionData::AdjustHostName(UnicodeString & hostName, const UnicodeString prefix)
 {
-  if (::LowerCase(hostName.SubString(0, prefix.Length())) == prefix)
+  if (::LowerCase(hostName.SubString(1, prefix.Length())) == prefix)
   {
-    hostName.Delete(0, prefix.Length());
+    hostName.Delete(1, prefix.Length());
     hostName = ::ReplaceStrAll(hostName, L"/", L"_");
   }
 }

@@ -170,13 +170,13 @@ void __fastcall TWebDAVFileSystem::Open()
   }
 
   UnicodeString HostName = Data->GetHostName();
-  if (::LowerCase(HostName.SubString(0, 7)) == L"http://")
+  if (::LowerCase(HostName.SubString(1, 7)) == L"http://")
   {
-    HostName.Delete(0, 7);
+    HostName.Delete(1, 7);
   }
-  else if (LowerCase(HostName.SubString(0, 8)) == L"https://")
+  else if (LowerCase(HostName.SubString(1, 8)) == L"https://")
   {
-    HostName.Delete(0, 8);
+    HostName.Delete(1, 8);
   }
   size_t Port = Data->GetPortNumber();
   UnicodeString ProtocolName = FTerminal->GetSessionData()->GetFSProtocol() == fsHTTP ?
@@ -2224,7 +2224,7 @@ std::string TWebDAVFileSystem::GetNamespace(const TiXmlElement * element, const 
     if (strncmp(attr->Name(), "xmlns:", 6) == 0 && strcmp(attr->Value(), name) == 0)
     {
       ns = attr->Name();
-      ns.Delete(0, ns.Pos(':') + 1);
+      ns.Delete(1, ns.Pos(':') + 1);
       ns += ':';
       break;
     }

@@ -106,7 +106,7 @@ void ParseURL(const wchar_t * url, UnicodeString * scheme, UnicodeString * hostN
   int delimLogin = 0;
   if (urlParse.RPos(delimLogin, L'@'))
   {
-    UnicodeString parseLogin = urlParse.SubString(0, delimLogin);
+    UnicodeString parseLogin = urlParse.SubString(1, delimLogin);
     int delimPwd = 0;
     if (parseLogin.RPos(delimPwd, L':'))
     {

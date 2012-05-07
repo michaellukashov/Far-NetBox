@@ -440,7 +440,7 @@ UnicodeString FileSearch(const UnicodeString FileName, const UnicodeString Direc
     i = ::Pos(Temp, PathSeparators);
     while ((Temp.Length() > 0) && (i == 0))
     {
-      Temp.Delete(0, 1);
+      Temp.Delete(1, 1);
       i = ::Pos(Temp, PathSeparators);
     }
     i = ::Pos(Temp, PathSeparators);
@@ -878,7 +878,7 @@ UnicodeString ExtractShortPathName(const UnicodeString Path1)
 // "/foo/bar/baz.txt" --> "/foo/bar/"
 UnicodeString ExtractDirectory(const UnicodeString path, wchar_t delimiter)
 {
-  return path.SubString(0, path.RPos(delimiter) + 1);
+  return path.SubString(1, path.RPos(delimiter) + 1);
 }
 
 //
@@ -919,7 +919,7 @@ UnicodeString ChangeFileExtension(const UnicodeString path, const UnicodeString 
 {
   UnicodeString filename = ExtractFilename(path, delimiter);
   return ExtractDirectory(path, delimiter)
-         + filename.SubString(0, filename.RPos(L'.'))
+         + filename.SubString(1, filename.RPos(L'.'))
          + ext;
 }
 
