@@ -5395,11 +5395,11 @@ void __fastcall TSecondaryTerminal::Init(
   TSessionData * ASessionData, TConfiguration * Configuration, const UnicodeString & Name)
 {
   TTerminal::Init(ASessionData, Configuration);
+  assert(FMainTerminal != NULL);
   GetLog()->SetParent(FMainTerminal->GetLog());
   GetLog()->SetName(Name);
   GetActionLog()->SetEnabled(false);
   GetSessionData()->NonPersistant();
-  assert(FMainTerminal != NULL);
   if (!FMainTerminal->GetUserName().IsEmpty())
   {
     GetSessionData()->SetUserName(FMainTerminal->GetUserName());
