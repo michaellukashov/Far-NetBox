@@ -282,7 +282,7 @@ public:
 protected:
   void  __cdecl ThrowIfOutOfRange(int idx) const;
 };
-typedef UnicodeString string;
+// typedef UnicodeString string;
 
 //------------------------------------------------------------------------------
 
@@ -383,7 +383,7 @@ public:
   RawByteString(const unsigned char * Str) { Init(Str, strlen(reinterpret_cast<const char *>(Str))); }
   RawByteString(const char * Str, int sz) { Init(Str, sz); }
   RawByteString(const unsigned char * Str, int sz) { Init(Str, sz); }
-  RawByteString(const string & Str) { Init(Str.c_str(), Str.GetLength()); }
+  RawByteString(const UnicodeString & Str) { Init(Str.c_str(), Str.GetLength()); }
   RawByteString(const UTF8String & Str) { Init(Str.c_str(), Str.GetLength()); }
   ~RawByteString() {}
 
