@@ -402,12 +402,13 @@ set_target_properties( testnetbox_01
     LINK_FLAGS "${CMAKE_LINK_FLAGS}"
 )
 
-add_dependencies ( testnetbox_01 ${NETBOX_LIBRARIES}
+add_dependencies ( testnetbox_01
     libputty
     libtinyxml
 )
 
-target_link_libraries ( testnetbox_01 )
+# target_link_libraries ( testnetbox_01 )
+target_link_libraries ( testnetbox_01 ${NETBOX_LIBRARIES} )
 
 #-------------------------------------------------------
 # target testnetbox_02
