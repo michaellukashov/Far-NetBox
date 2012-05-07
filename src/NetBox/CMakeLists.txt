@@ -31,13 +31,14 @@ set ( CMAKE_LINK_FLAGS
     /NODEFAULTLIB:VERSION.LIB
     /NODEFAULTLIB:WINHTTP.LIB
     /NODEFAULTLIB:WINSPOOL.LIB
-    /NODEFAULTLIB:COMCTL32.LIB"
+    /NODEFAULTLIB:COMCTL32.LIB
+"
 )
 
 # definitions
 ADD_DEFINITIONS("-DNETBOX_DEBUG")
 ADD_DEFINITIONS("-DUSE_FASTFLOW
-                -D_FF_WIN_XP;CURL_STATICLIB;MPEXT;NO_SECURITY
+    -D_FF_WIN_XP;CURL_STATICLIB;MPEXT;NO_SECURITY
 ")
 
 include ( ${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake )
@@ -185,9 +186,6 @@ set ( COMMON_SOURCES
 #-------------------------------------------------------------------------------
 # target NetBox
 
-set ( NETBOX_HEADERS ${NETBOX_ALL_HEADERS}
-)
-
 set ( NETBOX_SOURCES # ${COMMON_SOURCES}
     ${PROJECT_ROOT}/src/NetBox/UnityBuildCore.cpp
     ${PROJECT_ROOT}/src/NetBox/UnityBuildMain.cpp
@@ -300,7 +298,7 @@ set ( NETBOX_LIBRARIES
     comctl32.lib
 )
 
-add_library ( NetBox SHARED ${NETBOX_HEADERS} ${NETBOX_SOURCES} )
+add_library ( NetBox SHARED ${NETBOX_SOURCES} )
 set_target_properties( NetBox
     PROPERTIES
     COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
