@@ -650,16 +650,28 @@ UnicodeString::UnicodeString(const std::wstring & Str)
   Init(Str, Str.size());
 }
 
-UnicodeString & UnicodeString::Lower(size_t nStartPos, int nLength)
+UnicodeString & UnicodeString::Lower(int nStartPos, int nLength)
 {
   // std::transform(Data.begin(), Data.end(), Data.begin(), ::toupper);
   Data = ::LowerCase(SubString(nStartPos, nLength));
   return *this;
 }
 
-UnicodeString & UnicodeString::Upper(size_t nStartPos, int nLength)
+UnicodeString & UnicodeString::Upper(int nStartPos, int nLength)
 {
   Data = ::UpperCase(SubString(nStartPos, nLength));
+}
+
+UnicodeString & UnicodeString::Replace(int Pos, int Len, const wchar_t * Data, int DataLen)
+{
+  Data.replace(Pos, Len, std::wstring(Data, DataLen));
+  return *this;
+}
+
+UnicodeString & UnicodeString::Append(const char * lpszAdd, UINT CodePage)
+{
+  // Data.append();
+  return *this;
 }
 
 UnicodeString & UnicodeString::Insert(int Pos, const wchar_t * Str, int StrLen)

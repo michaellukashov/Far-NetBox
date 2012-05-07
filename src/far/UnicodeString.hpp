@@ -403,6 +403,18 @@ public:
   UnicodeString & Lower(int nStartPos = 0, int nLength = -1);
   UnicodeString & Upper(int nStartPos = 0, int nLength = -1);
 
+  UnicodeString & Replace(int Pos, int Len, const wchar_t * Data, int DataLen);
+  UnicodeString & Replace(int Pos, int Len, const UnicodeString & Str) { return Replace(Pos, Len, Str.c_str(), Str.GetLength()); }
+  UnicodeString & Replace(int Pos, int Len, const wchar_t * Str) { return Replace(Pos, Len, Str, StrLength(NullToEmpty(Str))); }
+  UnicodeString & Replace(int Pos, int Len, wchar_t Ch) { return Replace(Pos, Len, &Ch, 1); }
+  UnicodeString & Replace(int Pos, wchar_t Ch) { return Replace(Pos, 1, &Ch, 1); }
+
+  UnicodeString & Append(const wchar_t * Str, int StrLen) { return Replace(GetLength(), 0, Str, StrLen); }
+  UnicodeString & Append(const UnicodeString & Str) { return Append(Str.c_str(), Str.GetLength()); }
+  UnicodeString & Append(const wchar_t * Str) { return Append(Str, StrLength(NullToEmpty(Str))); }
+  UnicodeString & Append(const wchar_t Ch) { return Append(&Ch, 1); }
+  UnicodeString & Append(const char * lpszAdd, UINT CodePage=CP_OEMCP);
+
   UnicodeString & Insert(int Pos, const wchar_t * Str, int StrLen);
   UnicodeString & Insert(int Pos, const UnicodeString Str) { return Insert(Pos, Str.c_str(), Str.Length()); }
   // UnicodeString & Insert(const wchar_t * Str, int Pos);
@@ -517,11 +529,12 @@ public:
   const char * c_str() const { return reinterpret_cast<const char *>(Data.c_str()); }
   // const unsigned char * c_str() const { return Data.c_str(); }
   int Length() const { return Data.size(); }
+  int GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
   void SetLength(int nLength) { Data.resize(nLength); }
   RawByteString & Delete(int Index, int Count) { Data.erase(Index - 1, Count); return *this; }
 
-  RawByteString & Insert(int Pos, const wchar_t * Str, int StrLen);
+  // RawByteString & Insert(int Pos, const wchar_t * Str, int StrLen);
   RawByteString & Insert(const wchar_t * Str, int Pos) { return Insert(Pos, Str, wcslen(Str)); }
   RawByteString & Insert(const char * Str, int Pos);
 
