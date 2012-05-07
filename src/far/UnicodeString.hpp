@@ -377,25 +377,19 @@ class UnicodeString
 {
 public:
   UnicodeString() {}
-  UnicodeString(const wchar_t * Str)
-  {
-    Init(Str, StrLength(Str));
-  }
-  UnicodeString(const wchar_t * Str, int Size)
-  {
-    Init(Str, Size);
-  }
-  UnicodeString(const char * Str, int Size)
-  {
-    Init(Str, Size);
-  }
+  UnicodeString(const wchar_t * Str) { Init(Str, StrLength(Str)); }
+  UnicodeString(const wchar_t * Str, int Size) { Init(Str, Size); }
+  UnicodeString(const char * Str, int Size) { Init(Str, Size); }
 
-  UnicodeString(const UnicodeString & Str);
+  UnicodeString(const UnicodeString & Str) { Init(Str.c_str(), Str.size()); }
+  UnicodeString(const UTF8String & Str) { Init(Str.c_str(), Str.size()); }
+  UnicodeString(const RawByteString & Str) { Init(Str.c_str(), Str.size()); }
+  UnicodeString(const std::wstring & Str) { Init(Str.c_str(), Str.size()); }
 
   ~UnicodeString() {}
 
   // operator const char * () const { return c_str(); }
-  size_t size() const { return Length(); }
+  int size() const { return Length(); }
   const wchar_t * c_str() const { return Data.c_str(); }
   int Length() const { return Data.size(); }
   int GetLength() const { return Length(); }
@@ -427,6 +421,7 @@ public:
   const UnicodeString & operator=(const UnicodeString & strCopy);
   const UnicodeString & operator=(const UTF8String & strCopy);
   const UnicodeString & operator=(const RawByteString & strCopy);
+  const UnicodeString & operator=(const std::wstring & strCopy);
   const UnicodeString & operator=(const wchar_t * lpwszData);
   const UnicodeString & operator=(const char * lpszData);
   const UnicodeString & operator=(wchar_t chData);
@@ -437,6 +432,7 @@ public:
   UnicodeString __fastcall operator +(const std::wstring & rhs) const;
 
   friend UnicodeString __fastcall operator +(const wchar_t lhs, const UnicodeString & rhs);
+  friend UnicodeString __fastcall operator +(const const UnicodeString & lhs, wchar_t rhs);
   friend UnicodeString __fastcall operator +(const wchar_t * lhs, const UnicodeString & rhs);
   friend UnicodeString __fastcall operator +(const UnicodeString & lhs, const wchar_t * rhs);
 

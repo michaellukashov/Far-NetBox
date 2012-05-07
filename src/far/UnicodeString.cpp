@@ -704,6 +704,12 @@ const UnicodeString & UnicodeString::operator=(const RawByteString & strCopy)
   return *this;
 }
 
+const UnicodeString & UnicodeString::operator=(const std::wstring & strCopy)
+{
+  Init(strCopy.c_str(), strCopy.size());
+  return *this;
+}
+
 const UnicodeString & UnicodeString::operator=(const char * lpszData)
 {
   Init(lpszData, strlen(lpszData));
@@ -759,6 +765,11 @@ void  __cdecl UnicodeString::ThrowIfOutOfRange(int idx) const
 UnicodeString __fastcall operator +(const wchar_t lhs, const UnicodeString & rhs)
 {
   return UnicodeString(&lhs, 1) + rhs;
+}
+
+UnicodeString __fastcall operator +(const UnicodeString & lhs, const wchar_t rhs)
+{
+  return lhs + UnicodeString(&rhs);
 }
 
 UnicodeString __fastcall operator +(const wchar_t * lhs, const UnicodeString & rhs)
