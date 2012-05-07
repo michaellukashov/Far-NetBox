@@ -4128,7 +4128,7 @@ void TWinSCPFileSystem::EditHistory()
     while (i != FEditHistories.end())
     {
       MenuItems->Add(MinimizeName(UnixIncludeTrailingBackslash((*i).Directory) + (*i).FileName,
-                                  FPlugin->MaxMenuItemLength(), true));
+        FPlugin->MaxMenuItemLength(), true));
       ++i;
     }
 
@@ -4139,7 +4139,7 @@ void TWinSCPFileSystem::EditHistory()
 
     int BreakCode = 0;
     int Result = FPlugin->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
-                               GetMsg(MENU_EDIT_HISTORY), L"", MenuItems, BreakKeys, BreakCode);
+      GetMsg(MENU_EDIT_HISTORY), L"", MenuItems, BreakKeys, BreakCode);
 
     if ((Result >= 0) && (Result < static_cast<int>(FEditHistories.size())))
     {
@@ -4157,7 +4157,7 @@ void TWinSCPFileSystem::EditHistory()
           File->SetFullFileName(FullFileName);
         }
         MultipleEdit(FEditHistories[Result].Directory,
-                     FEditHistories[Result].FileName, File);
+          FEditHistories[Result].FileName, File);
       }
     }
   }
