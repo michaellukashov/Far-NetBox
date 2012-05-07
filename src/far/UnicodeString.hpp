@@ -380,8 +380,10 @@ public:
   UnicodeString() {}
   UnicodeString(const wchar_t * Str) { Init(Str, StrLength(Str)); }
   UnicodeString(const wchar_t * Str, int Size) { Init(Str, Size); }
+  UnicodeString(const wchar_t Src) { Init(&Src, 1); }
   UnicodeString(const char * Str, int Size) { Init(Str, Size); }
-  UnicodeString(int Size, wchar_t c) : Data(Size, c) {}
+  UnicodeString(const char * Str) { Init(Str, strlen(Str)); }
+  UnicodeString(int Size, wchar_t Ch) : Data(Size, Ch) {}
 
   UnicodeString(const UnicodeString & Str);
   UnicodeString(const UTF8String & Str);
@@ -403,6 +405,12 @@ public:
   UnicodeString & Lower(int nStartPos = 0, int nLength = -1);
   UnicodeString & Upper(int nStartPos = 0, int nLength = -1);
 
+  UnicodeString & LowerCase() { return Lower(); }
+  UnicodeString & UpperCase() { return Upper(); }
+
+  int CompareIC(const UnicodeString str) const;
+  int ToInt() const;
+
   UnicodeString & Replace(int Pos, int Len, const wchar_t * Str, int DataLen);
   UnicodeString & Replace(int Pos, int Len, const UnicodeString & Str) { return Replace(Pos, Len, Str.c_str(), Str.GetLength()); }
   UnicodeString & Replace(int Pos, int Len, const wchar_t * Str) { return Replace(Pos, Len, Str, StrLength(NullToEmpty(Str))); }
@@ -418,6 +426,8 @@ public:
   UnicodeString & Insert(int Pos, const wchar_t * Str, int StrLen);
   UnicodeString & Insert(int Pos, const UnicodeString Str) { return Insert(Pos, Str.c_str(), Str.Length()); }
   UnicodeString & Insert(const wchar_t * Str, int Pos) { return Insert(Pos, Str, wcslen(Str)); }
+  UnicodeString & Insert(const wchar_t Ch, int Pos) { return Insert(Pos, &Ch, 1); }
+  UnicodeString & Insert(const UnicodeString Str, int Pos) { return Insert(Pos, Str); }
 
   int Pos(wchar_t Ch) const { return (int)Data.find(Ch) + 1; }
   int Pos(UnicodeString Str) const { return (int)Data.find(Str.Data) + 1; }
@@ -435,8 +445,11 @@ public:
   UnicodeString TrimLeft() const;
   UnicodeString TrimRight() const;
 
+  void Unique() {}
+
 public:
   operator std::wstring () const { return Data; }
+  operator LPCWSTR () const { return Data.c_str(); }
 
   const UnicodeString & operator=(const UnicodeString & strCopy);
   const UnicodeString & operator=(const UTF8String & strCopy);
@@ -455,6 +468,7 @@ public:
   friend UnicodeString __fastcall operator +(const UnicodeString & lhs, wchar_t rhs);
   friend UnicodeString __fastcall operator +(const wchar_t * lhs, const UnicodeString & rhs);
   friend UnicodeString __fastcall operator +(const UnicodeString & lhs, const wchar_t * rhs);
+  friend UnicodeString __fastcall operator +(const UnicodeString & lhs, const char * rhs);
 
   const UnicodeString & __fastcall operator +=(const UnicodeString & rhs);
   const UnicodeString & __fastcall operator +=(const wchar_t * rhs);
@@ -463,6 +477,8 @@ public:
   const UnicodeString & __fastcall operator +=(const std::wstring & rhs);
   const UnicodeString & __fastcall operator +=(const char rhs);
   const UnicodeString & __fastcall operator +=(const char * rhs);
+
+  // friend bool __fastcall operator ==(const UnicodeString & Str, const wchar_t * Str);
 
   bool operator ==(const UnicodeString & Str) const { return Data == Str.Data; }
   bool operator ==(const wchar_t * Str) const { return wcscmp(Data.c_str(), Str) == 0; }

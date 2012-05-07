@@ -653,13 +653,24 @@ UnicodeString::UnicodeString(const std::wstring & Str)
 UnicodeString & UnicodeString::Lower(int nStartPos, int nLength)
 {
   // std::transform(Data.begin(), Data.end(), Data.begin(), ::toupper);
-  Data = ::LowerCase(SubString(nStartPos, nLength));
+  Data = Sysutils::LowerCase(SubString(nStartPos, nLength)).c_str();
   return *this;
 }
 
 UnicodeString & UnicodeString::Upper(int nStartPos, int nLength)
 {
-  Data = ::UpperCase(SubString(nStartPos, nLength));
+  Data = Sysutils::UpperCase(SubString(nStartPos, nLength)).c_str();
+  return *this;
+}
+
+int UnicodeString::CompareIC(const UnicodeString str) const
+{
+  return Sysutils::AnsiCompareIC(*this, str);
+}
+
+int UnicodeString::ToInt() const
+{
+  return Sysutils::StrToIntDef(*this, 0);
 }
 
 UnicodeString & UnicodeString::Replace(int Pos, int Len, const wchar_t * Str, int DataLen)
@@ -809,9 +820,14 @@ UnicodeString __fastcall operator +(const wchar_t * lhs, const UnicodeString & r
   return UnicodeString(lhs) + rhs;
 }
 
-UnicodeString __fastcall operator +(const UnicodeString & rhs, const wchar_t * lhs)
+UnicodeString __fastcall operator +(const UnicodeString & lhs, const wchar_t * rhs)
 {
-  return rhs + UnicodeString(rhs);
+  return lhs + UnicodeString(rhs);
+}
+
+UnicodeString __fastcall operator +(const UnicodeString & lhs, const char * rhs)
+{
+  return lhs + UnicodeString(rhs);
 }
 
 //------------------------------------------------------------------------------
