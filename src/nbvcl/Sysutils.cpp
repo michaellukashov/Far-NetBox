@@ -159,7 +159,7 @@ UnicodeString TrimRight(const UnicodeString str)
 {
   UnicodeString result = str;
   while (result.Length() > 0 &&
-    ((result[result.Length() - 1] == ' ') || (result[result.Length() - 1] == '\n')))
+    ((result[result.Length()] == ' ') || (result[result.Length()] == '\n')))
   {
     result.SetLength(result.Length() - 1);
   }
