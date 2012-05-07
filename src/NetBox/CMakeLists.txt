@@ -405,8 +405,7 @@ set ( TESTNETBOX_02_SOURCES # ${COMMON_SOURCES}
 add_executable( testnetbox_02 ${TESTNETBOX_02_SOURCES} )
 set_target_properties( testnetbox_02
     PROPERTIES
-    COMPILE_FLAGS "${CMAKE_CXX_FLAGS}" # -D_AFX"
-        # /NODEFAULTLIB:NAFXCWD.LIB
+    COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
     LINK_FLAGS "${CMAKE_LINK_FLAGS} /verbose:lib
         /NODEFAULTLIB:MFCS100UD.LIB
         /NODEFAULTLIB:ATLSD.LIB
@@ -452,7 +451,7 @@ add_executable( testnetbox_03 ${TESTNETBOX_03_SOURCES} )
 set_target_properties( testnetbox_03
     PROPERTIES
     COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
-    LINK_FLAGS "${CMAKE_LINK_FLAGS} /NODEFAULTLIB:MSVCRTD.LIB"
+    LINK_FLAGS "${CMAKE_LINK_FLAGS}"
 )
 add_dependencies ( testnetbox_03
     libputty
