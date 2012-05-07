@@ -338,11 +338,11 @@ bool __fastcall TFileMasks::MatchesMasks(const UnicodeString FileName, bool Dire
             break;
 
           case TMask::Open:
-            Result = HasSize && (Params->Size > Mask.LowSize);
+            Result = HasSize && (Params && (Params->Size > Mask.LowSize));
             break;
 
           case TMask::Close:
-            Result = HasSize && (Params->Size >= Mask.LowSize);
+            Result = HasSize && (Params && (Params->Size >= Mask.LowSize);
             break;
         }
       }

@@ -716,7 +716,7 @@ void __fastcall TFTPFileSystem::ChangeFileProperties(const UnicodeString AFileNa
   assert(!Properties->Valid.Contains(vpLastAccess));
   assert(!Properties->Valid.Contains(vpModification));
 
-  if (Properties->Valid.Contains(vpRights))
+  if (Properties && Properties->Valid.Contains(vpRights))
   {
     assert(Properties);
 
