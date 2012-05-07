@@ -372,6 +372,7 @@ private:
 typedef UTF8String AnsiString;
 
 //------------------------------------------------------------------------------
+class RawByteString;
 
 class UnicodeString
 {
@@ -380,11 +381,12 @@ public:
   UnicodeString(const wchar_t * Str) { Init(Str, StrLength(Str)); }
   UnicodeString(const wchar_t * Str, int Size) { Init(Str, Size); }
   UnicodeString(const char * Str, int Size) { Init(Str, Size); }
+  UnicodeString(int Size, wchar_t c) : Data(Size, c) {}
 
-  UnicodeString(const UnicodeString & Str) { Init(Str.c_str(), Str.size()); }
-  UnicodeString(const UTF8String & Str) { Init(Str.c_str(), Str.size()); }
-  UnicodeString(const RawByteString & Str) { Init(Str.c_str(), Str.size()); }
-  UnicodeString(const std::wstring & Str) { Init(Str.c_str(), Str.size()); }
+  UnicodeString(const UnicodeString & Str);
+  UnicodeString(const UTF8String & Str);
+  UnicodeString(const RawByteString & Str);
+  UnicodeString(const std::wstring & Str);
 
   ~UnicodeString() {}
 
@@ -418,6 +420,8 @@ public:
   int LastDelimiter(const UnicodeString & delimiters) const;
 
 public:
+  operator std::wstring () const { return Data; }
+
   const UnicodeString & operator=(const UnicodeString & strCopy);
   const UnicodeString & operator=(const UTF8String & strCopy);
   const UnicodeString & operator=(const RawByteString & strCopy);

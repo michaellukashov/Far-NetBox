@@ -645,6 +645,11 @@ UnicodeString::UnicodeString(const RawByteString & Str)
   Init(Str, Str.GetLength());
 }
 
+UnicodeString::UnicodeString(const std::wstring & Str)
+{
+  Init(Str, Str.size());
+}
+
 UnicodeString & UnicodeString::Lower(size_t nStartPos, int nLength)
 {
   // std::transform(Data.begin(), Data.end(), Data.begin(), ::toupper);
