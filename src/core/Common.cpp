@@ -1143,23 +1143,23 @@ bool __fastcall TryRelativeStrToDateTime(UnicodeString S, TDateTime & DateTime)
     S = S.Trim().UpperCase();
     DateTime = Now();
     // These may not overlap with ParseSize (K, M and G)
-    if (S == "S")
+    if (S == L"S")
     {
       DateTime = IncSecond(DateTime, -Number);
     }
-    else if (S == "N")
+    else if (S == L"N")
     {
       DateTime = IncMinute(DateTime, -Number);
     }
-    else if (S == "H")
+    else if (S == L"H")
     {
       DateTime = IncHour(DateTime, -Number);
     }
-    else if (S == "D")
+    else if (S == L"D")
     {
       DateTime = IncDay(DateTime, -Number);
     }
-    else if (S == "Y")
+    else if (S == L"Y")
     {
       DateTime = IncYear(DateTime, -Number);
     }
