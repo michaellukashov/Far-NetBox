@@ -436,7 +436,7 @@ public:
   int RPos(wchar_t Ch) const { return (int)Data.find_last_of(Ch) + 1; }
   bool RPos(int & nPos, wchar_t Ch, int nStartPos = 0) const;
 
-  UnicodeString SubStr(int Pos, int Len = -1) const { return UnicodeString(Data.substr(Pos, Len).c_str(), Len); }
+  UnicodeString SubStr(int Pos, int Len = -1) const { return UnicodeString(Data.substr(Pos - 1, Len).c_str(), Len); }
   UnicodeString SubString(int Pos, int Len = -1) const { return SubStr(Pos, Len); }
 
   bool IsDelimiter(UnicodeString Chars, int Pos) const;
@@ -507,8 +507,8 @@ private:
     Data.resize(Length);
     if (Length > 0)
     {
-        memmove(reinterpret_cast<unsigned char *>(const_cast<wchar_t *>(Data.c_str())), Str, Length);
-        Data[Length-1] = 0;
+        memmove(reinterpret_cast<unsigned char *>(const_cast<wchar_t *>(Data.c_str())), Str, Length * sizeof(wchar_t));
+        // Data[Length - 1] = 0;
     }
   }
   void Init(const char * Str, int Length)
@@ -518,7 +518,7 @@ private:
     if (Length > 0)
     {
       MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), Size);
-      Data[Size-1] = 0;
+      // Data[Size - 1] = 0;
     }
   }
 
