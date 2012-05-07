@@ -645,16 +645,45 @@ UnicodeString::UnicodeString(const RawByteString & Str)
   Init(Str, Str.GetLength());
 }
 
-int UnicodeString::Pos(wchar_t Ch) const
+UnicodeString & UnicodeString::Lower(size_t nStartPos, int nLength)
 {
-  wstring_t s(&Ch, 1);
-  return Data.find(s.c_str(), 0, 1);
+  // std::transform(Data.begin(), Data.end(), Data.begin(), ::toupper);
+  Data = ::LowerCase(SubString(nStartPos, nLength));
+  return *this;
+}
+
+UnicodeString & UnicodeString::Upper(size_t nStartPos, int nLength)
+{
+  Data = ::UpperCase(SubString(nStartPos, nLength));
+}
+
+UnicodeString & UnicodeString::Insert(int Pos, const wchar_t * Str, int StrLen)
+{
+  Data.insert(Pos - 1, Str, StrLen);
+  return *this;
 }
 
 UnicodeString & UnicodeString::Insert(const wchar_t * Str, int Pos)
 {
   Data.insert(Pos - 1, Str);
   return *this;
+}
+
+bool UnicodeString::RPos(int & nPos, wchar_t Ch, int nStartPos = 0) const
+{
+  int pos = (int)Data.find_last_of(Ch, nStartPos);
+  nPos = pos + 1;
+  return pos != std::wstrong::npos;
+}
+
+bool UnicodeString::IsDelimiter(UnicodeString Chars, int Pos) const
+{
+  return Sysutils::IsDelimiter(*this, Chars, Pos);
+}
+
+int UnicodeString::LastDelimiter(const UnicodeString & delimiters) const
+{
+  return Sysutils::LastDelimiter(*this, delimiters);
 }
 
 const UnicodeString & UnicodeString::operator=(const UnicodeString & strCopy)
@@ -689,7 +718,7 @@ const UnicodeString & UnicodeString::operator=(const wchar_t * lpszData)
 
 UnicodeString __fastcall UnicodeString::operator +(const UnicodeString & rhs) const
 {
-  wstring_t Result = Data + rhs.Data;
+  std::wstring Result = Data + rhs.Data;
   return RawByteString(reinterpret_cast<const char *>(Result.c_str()), Result.size());
 }
 
@@ -698,6 +727,13 @@ const UnicodeString & __fastcall UnicodeString::operator +=(const UnicodeString 
   Data.append(rhs.Data.c_str(), rhs.size());
   return *this;
 }
+
+const UnicodeString & __fastcall UnicodeString::operator +=(const wchar_t * rhs)
+{
+  Data.append(rhs);
+  return *this;
+}
+
 const UnicodeString & __fastcall UnicodeString::operator +=(const RawByteString & rhs)
 {
   UnicodeString s(rhs.c_str(), rhs.size());
@@ -712,10 +748,22 @@ const UnicodeString & __fastcall UnicodeString::operator +=(const char Ch)
   return *this;
 }
 
-UnicodeString::UnicodeString(const UnicodeString & Str)
+void  __cdecl UnicodeString::ThrowIfOutOfRange(int idx) const
 {
-  Init(Str, Str.GetLength());
+  if (idx < 1 || idx > Length()) // NOTE: UnicodeString is 1-based !!
+    throw std::runtime_error("Index is out of range"); // ERangeError(Sysconst_SRangeError);
 }
 
 //------------------------------------------------------------------------------
 
+UnicodeString __fastcall operator +(const wchar_t * lhs, const UnicodeString & rhs)
+{
+  return UnicodeString(lhs) + rhs;
+}
+
+UnicodeString __fastcall operator +(const UnicodeString & rhs, const wchar_t * lhs)
+{
+  return rhs + UnicodeString(rhs);
+}
+
+//------------------------------------------------------------------------------
