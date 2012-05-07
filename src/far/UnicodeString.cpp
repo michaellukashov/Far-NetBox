@@ -266,6 +266,12 @@ size_t UnicodeString::SetLength(size_t nLength)
       return m_pData->SetLength(nLength);
     }
   }
+  else
+  {
+    // size_t nNewSize = 0;
+    Inflate(nLength+1); //, nNewSize);
+    return m_pData->SetLength(nLength);
+  }
 
   return m_pData->GetLength();
 }
