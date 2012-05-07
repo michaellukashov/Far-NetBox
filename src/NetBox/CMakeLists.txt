@@ -206,7 +206,10 @@ set ( COMMON_SOURCES
 set ( NETBOX_HEADERS ${NETBOX_ALL_HEADERS}
 )
 
-set ( NETBOX_SOURCES ${COMMON_SOURCES}
+set ( NETBOX_SOURCES # ${COMMON_SOURCES}
+    ${PROJECT_ROOT}/src/NetBox/UnityBuildCore.cpp
+    ${PROJECT_ROOT}/src/NetBox/UnityBuildMain.cpp
+    ${PROJECT_ROOT}/src/NetBox/UnityBuildFilezilla.cpp
     ${PROJECT_ROOT}/src/NetBox/NetBox.cpp
     ${PROJECT_ROOT}/src/NetBox/NetBox.def
 )
