@@ -756,6 +756,11 @@ void  __cdecl UnicodeString::ThrowIfOutOfRange(int idx) const
 
 //------------------------------------------------------------------------------
 
+UnicodeString __fastcall operator +(const wchar_t lhs, const UnicodeString & rhs)
+{
+  return UnicodeString(&lhs, 1) + rhs;
+}
+
 UnicodeString __fastcall operator +(const wchar_t * lhs, const UnicodeString & rhs)
 {
   return UnicodeString(lhs) + rhs;

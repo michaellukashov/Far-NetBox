@@ -436,6 +436,7 @@ public:
   UnicodeString __fastcall operator +(const RawByteString & rhs) const;
   UnicodeString __fastcall operator +(const std::wstring & rhs) const;
 
+  friend UnicodeString __fastcall operator +(const wchar_t lhs, const UnicodeString & rhs);
   friend UnicodeString __fastcall operator +(const wchar_t * lhs, const UnicodeString & rhs);
   friend UnicodeString __fastcall operator +(const UnicodeString & lhs, const wchar_t * rhs);
 
