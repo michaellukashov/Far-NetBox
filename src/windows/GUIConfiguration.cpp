@@ -842,7 +842,7 @@ HANDLE __fastcall TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
     if ((ALocale & AdditionaLanguageMask) != AdditionaLanguageMask)
     {
       LOCALESIGNATURE LocSig;
-      GetLocaleInfo(ALocale, LOCALE_SABBREVLANGNAME, (LPWSTR)&LocSig, LENOF(LocSig));
+      GetLocaleInfo(ALocale, LOCALE_SABBREVLANGNAME, (LPWSTR)&LocSig, sizeof(LocSig) / sizeof(TCHAR));
       LocaleName = *(LPWSTR)&LocSig;
       assert(!LocaleName.IsEmpty());
     }
