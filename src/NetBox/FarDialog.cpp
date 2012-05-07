@@ -18,7 +18,7 @@ UnicodeString StripHotKey(const UnicodeString Text)
     size_t Pos = 0;
     while (Pos < Len)
     {
-        if (Result[Pos] == '&')
+        if (Result[Pos] == L'&')
         {
             Result.Delete(Pos, 1);
             Len--;
