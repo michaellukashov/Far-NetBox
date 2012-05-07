@@ -2307,7 +2307,7 @@ void TFarPanelModes::FillOpenPluginInfo(struct OpenPluginInfo * Info)
 size_t TFarPanelModes::CommaCount(const UnicodeString ColumnTypes)
 {
   size_t Count = 0;
-  for (size_t Index = 0; Index < ColumnTypes.Length(); Index++)
+  for (int Index = 1; Index <= ColumnTypes.Length(); Index++)
   {
     if (ColumnTypes[Index] == ',')
     {
