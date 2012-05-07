@@ -333,7 +333,7 @@ public:
 
   /* inline */ void AddUtfString(const UTF8String & Value)
   {
-    AddString(Value);
+    AddString(UnicodeString(Value));
   }
 
   /* inline */ void AddUtfString(const UnicodeString & Value)
@@ -349,7 +349,8 @@ public:
     }
     else
     {
-      AddString(AnsiString(Value));
+      // AddString(AnsiString(Value));
+      AddString(RawByteString(Value));
     }
   }
 
