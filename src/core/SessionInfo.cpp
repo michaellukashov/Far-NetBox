@@ -699,6 +699,7 @@ const wchar_t *LogLineMarks = L"<>!.*";
   FCurrentLogFileName = L"";
   FCurrentFileName = L"";
   FClosed = false;
+  Self = this;
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TSessionLog::~TSessionLog()
@@ -1107,7 +1108,7 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
         Bugs += UnicodeString(BugFlags[Data->GetSFTPBug(static_cast<TSftpBug>(Index))])+(Index<SFTP_BUG_COUNT-1 ? L"," : L"");
       }
       ADF(L"SFTP Bugs: %s", Bugs.c_str());
-      ADF(L"Return code variable: %s; Lookup user groups: %s",
+      ADF(L"Return code variable: %s; Lookup user groups: %c",
          Data->GetDetectReturnVar() ? UnicodeString(L"Autodetect").c_str() : Data->GetReturnVar().c_str(),
          BugFlags[Data->GetLookupUserGroups()]);
       ADF(L"Shell: %s", Data->GetShell().IsEmpty() ? UnicodeString(L"default").c_str() : Data->GetShell().c_str());
