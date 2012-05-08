@@ -370,11 +370,11 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(int OpenFrom, LONG_PTR Item)
                 UnicodeString Name = reinterpret_cast<wchar_t *>(Item);
                 if (OpenFrom == OPEN_SHORTCUT)
                 {
-                    size_t P = Name.Pos(L"\1");
+                    int P = Name.Pos(L"\1");
                     if (P > 0)
                     {
                         Directory = Name.SubString(P + 1, Name.Length() - P);
-                        Name.SetLength(P);
+                        Name.SetLength(P - 1);
                     }
 
                     TWinSCPFileSystem *PanelSystem;

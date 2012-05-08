@@ -2966,7 +2966,7 @@ void FarWrapText(const UnicodeString Text, TStrings * Result, size_t MaxWidth)
             UnicodeString Line = FullLine.SubString(1, MaxWidth);
             FullLine.Delete(1, MaxWidth);
 
-            size_t P;
+            int P = 0;
             while ((P = Line.Pos(L'\t')) > 0)
             {
               Line.Delete(P, 1);

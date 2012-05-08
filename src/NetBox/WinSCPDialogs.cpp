@@ -270,10 +270,10 @@ void TTabButton::SetTabName(const UnicodeString Value)
     if (FTabName != value)
     {
         UnicodeString C;
-        size_t P = ::Pos(value, L"|");
+        int P = ::Pos(value, L"|");
         if (P > 0)
         {
-            C = value.SubString(1, P);
+            C = value.SubString(1, P - 1);
             value.Delete(1, P + 1);
         }
         else
