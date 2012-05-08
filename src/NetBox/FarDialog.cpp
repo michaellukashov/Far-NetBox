@@ -39,7 +39,7 @@ TRect Rect(int Left, int Top, int Right, int Bottom)
 }
 
 //---------------------------------------------------------------------------
-TFarDialog::TFarDialog(TCustomFarPlugin *AFarPlugin) :
+/* __fastcall */ TFarDialog::TFarDialog(TCustomFarPlugin *AFarPlugin) :
     TObject(),
     FFarPlugin(NULL),
     FBounds(-1, -1, 40, 10),
@@ -89,7 +89,7 @@ TFarDialog::TFarDialog(TCustomFarPlugin *AFarPlugin) :
     FBorderBox->SetDouble(true);
 }
 //---------------------------------------------------------------------------
-TFarDialog::~TFarDialog()
+/* __fastcall */ TFarDialog::~TFarDialog()
 {
     for (size_t i = 0; i < GetItemCount(); i++)
     {
@@ -457,7 +457,7 @@ LONG_PTR TFarDialog::DialogProc(int Msg, int Param1, LONG_PTR Param2)
                 {
                     Result = I->ItemProc(Msg, Param2);
                 }
-                catch (const std::exception &E)
+                catch (Exception &E)
                 {
                     Handled = true;
                     DEBUG_PRINTF(L"before GetFarPlugin()->HandleException");
@@ -571,7 +571,7 @@ LONG_PTR TFarDialog::DialogProc(int Msg, int Param1, LONG_PTR Param2)
             Change();
         }
     }
-    catch (const std::exception &E)
+    catch (Exception &E)
     {
         DEBUG_PRINTF(L"before GetFarPlugin()->HandleException");
         GetFarPlugin()->HandleException(&E);
@@ -688,7 +688,7 @@ TFarDialogItem *TFarDialog::ItemAt(int X, int Y)
     return Result;
 }
 //---------------------------------------------------------------------------
-bool TFarDialog::CloseQuery()
+bool __fastcall TFarDialog::CloseQuery()
 {
     bool Result = true;
     for (size_t i = 0; i < GetItemCount() && Result; i++)
@@ -1642,7 +1642,7 @@ void TFarDialogItem::Init()
     }
 }
 //---------------------------------------------------------------------------
-bool TFarDialogItem::CloseQuery()
+bool __fastcall TFarDialogItem::CloseQuery()
 {
     if (Focused() && (GetDialog()->GetResult() >= 0))
     {
@@ -2496,7 +2496,7 @@ void TFarListBox::SetList(TFarList *value)
     SetItems(value);
 }
 //---------------------------------------------------------------------------
-bool TFarListBox::CloseQuery()
+bool __fastcall TFarListBox::CloseQuery()
 {
     return true;
 }

@@ -52,7 +52,7 @@ protected:
   virtual int __fastcall ProcessEditorInputEx(const INPUT_RECORD * Rec);
   bool __fastcall CopyParamDialog(UnicodeString Caption, TCopyParamType & CopyParam,
     int CopyParamAttrs);
-  void __fastcall MessageClick(void * Token, int Result, bool & Close);
+  void /* __fastcall */ MessageClick(void * Token, int Result, bool & Close);
 
   void __fastcall CommandsMenu(bool FromFileSystem);
   bool __fastcall ConfigurationDialog();
@@ -65,6 +65,9 @@ protected:
   bool __fastcall ConfirmationsConfigurationDialog();
   bool __fastcall IntegrationConfigurationDialog();
   void __fastcall AboutDialog();
+
+private:
+    bool __fastcall ImportSessions(const UnicodeString RegistryStorageKey, int & imported);
 
 private:
   bool FInitialized;

@@ -80,12 +80,9 @@ void Error(int ErrorID, int data);
 class TObject
 {
 public:
-    TObject()
-    {}
-    virtual ~TObject()
-    {}
-    virtual void Change()
-    {}
+    TObject() {}
+    virtual ~TObject() {}
+    virtual void Change() {}
 };
 
 //---------------------------------------------------------------------------

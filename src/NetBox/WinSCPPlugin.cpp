@@ -111,8 +111,8 @@ void __fastcall TWinSCPPlugin::GetPluginInfoEx(long unsigned & Flags,
   CommandPrefixes->SetCommaText(FarConfiguration->GetCommandPrefixes());
 }
 //---------------------------------------------------------------------------
-bool TWinSCPPlugin::ImportSessions(const UnicodeString RegistryStorageKey,
-                                   int & imported)
+bool __fastcall TWinSCPPlugin::ImportSessions(const UnicodeString RegistryStorageKey,
+  int & imported)
 {
   // DEBUG_PRINTF(L"begin");
   imported = 0;
@@ -169,7 +169,7 @@ bool TWinSCPPlugin::ImportSessions(const UnicodeString RegistryStorageKey,
   return true;
 }
 //---------------------------------------------------------------------------
-bool TWinSCPPlugin::ImportSessions()
+bool __fastcall TWinSCPPlugin::ImportSessions()
 {
   // DEBUG_PRINTF(L"begin");
   const UnicodeString SessionsKeys[] =
@@ -189,7 +189,7 @@ bool TWinSCPPlugin::ImportSessions()
       ImportSessions(RegistryStorageKey, imported);
       all_imported += imported;
     }
-    catch (const std::exception & E)
+    catch (Exception & E)
     {
       ShowExtendedException(&E);
     }
@@ -359,7 +359,7 @@ int __fastcall TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
   return Result;
 }
 //---------------------------------------------------------------------------
-TCustomFarFileSystem * __fastcall TWinSCPPlugin::OpenPluginEx(int OpenFrom, int Item)
+TCustomFarFileSystem * __fastcall TWinSCPPlugin::OpenPluginEx(int OpenFrom, LONG_PTR Item)
 {
   TWinSCPFileSystem * FileSystem = NULL;
   try
@@ -674,7 +674,7 @@ void __fastcall TWinSCPPlugin::ShowExtendedException(Exception * E)
   }
 }
 //---------------------------------------------------------------------------
-void TWinSCPPlugin::HandleException(const std::exception * E, int OpMode)
+void __fastcall TWinSCPPlugin::HandleException(Exception * E, int OpMode)
 {
   if (((OpMode & OPM_FIND) == 0) || ::InheritsFrom<std::exception, EFatal>(E))
   {
@@ -695,7 +695,7 @@ struct TFarMessageData
   size_t ButtonCount;
 };
 //---------------------------------------------------------------------------
-void __fastcall TWinSCPPlugin::MessageClick(void * Token, int Result, bool & Close)
+void /* __fastcall */ TWinSCPPlugin::MessageClick(void * Token, int Result, bool & Close)
 {
   TFarMessageData & Data = *static_cast<TFarMessageData *>(Token);
 
@@ -716,7 +716,7 @@ void __fastcall TWinSCPPlugin::MessageClick(void * Token, int Result, bool & Clo
   }
 }
 //---------------------------------------------------------------------------
-int __fastcall TWinSCPPlugin::MoreMessageDialog(AnsiString Str,
+int __fastcall TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
   TStrings * MoreMessages, TQueryType Type, int Answers,
   const TMessageParams * Params)
 {
@@ -859,7 +859,7 @@ int __fastcall TWinSCPPlugin::MoreMessageDialog(AnsiString Str,
     }
 
     FarParams.Token = &Data;
-    farmessageclick_slot_type slot = boost::bind(&TWinSCPPlugin::MessageClick, this, _1, _2, _3);
+    TFarMessageClickEvent slot = boost::bind(&TWinSCPPlugin::MessageClick, this, _1, _2, _3);
     FarParams.ClickEvent = &slot;
 
     UnicodeString DialogStr = Str;

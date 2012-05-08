@@ -167,6 +167,7 @@ public:
   __property bool ANSIApis = { read = FANSIApis };
   __property unsigned int FarThread = { read = FFarThread };
 #else
+  UnicodeString __fastcall GetModuleName();
   TFarDialog * __fastcall GetTopDialog() const { return FTopDialog; }
   HINSTANCE GetHandle() const { return FHandle; };
   bool GetANSIApis() const { return FANSIApis; };
@@ -235,7 +236,7 @@ private:
   short FCurrentProgress;
 
   void __fastcall ClearPluginInfo(PluginInfo & Info);
-  UnicodeString __fastcall GetModuleName();
+  // UnicodeString __fastcall GetModuleName();
   void __fastcall UpdateConsoleTitle();
   UnicodeString __fastcall FormatConsoleTitle();
   HWND __fastcall GetConsoleWindow();
@@ -495,7 +496,7 @@ public:
   TRect __fastcall GetBounds();
   TFarPanelType __fastcall GetType();
   bool __fastcall GetIsPlugin();
-  AnsiString __fastcall GetCurrentDirectory();
+  UnicodeString __fastcall GetCurrentDirectory();
 };
 //---------------------------------------------------------------------------
 enum MENUITEMFLAGS_EX
@@ -556,7 +557,7 @@ private:
 
 public:
   int __fastcall GetEditorID();
-  AnsiString __fastcall GetFileName();
+  UnicodeString __fastcall GetFileName();
 };
 //---------------------------------------------------------------------------
 class TFarEnvGuard

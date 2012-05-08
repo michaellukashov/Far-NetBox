@@ -103,31 +103,31 @@ public:
   virtual void Init(TSecureShell * SecureShell);
   virtual /* __fastcall */ ~TWinSCPFileSystem();
 
-  virtual void /* __fastcall */ Close();
+  virtual void __fastcall Close();
 
 protected:
   bool /* __fastcall */ Connect(TSessionData * Data);
   void /* __fastcall */ Disconnect();
   void /* __fastcall */ SaveSession();
 
-  virtual void /* __fastcall */ GetOpenPluginInfoEx(long unsigned & Flags,
+  virtual void __fastcall GetOpenPluginInfoEx(long unsigned & Flags,
     UnicodeString & HostFile, UnicodeString & CurDir, UnicodeString & Format,
     UnicodeString & PanelTitle, TFarPanelModes * PanelModes, int & StartPanelMode,
     int & StartSortMode, bool & StartSortOrder, TFarKeyBarTitles * KeyBarTitles,
     UnicodeString & ShortcutData);
-  virtual bool /* __fastcall */ GetFindDataEx(TObjectList * PanelItems, int OpMode);
-  virtual bool /* __fastcall */ ProcessKeyEx(int Key, unsigned int ControlState);
-  virtual bool /* __fastcall */ SetDirectoryEx(const UnicodeString Dir, int OpMode);
-  virtual int /* __fastcall */ MakeDirectoryEx(UnicodeString & Name, int OpMode);
-  virtual bool /* __fastcall */ DeleteFilesEx(TObjectList * PanelItems, int OpMode);
-  virtual int /* __fastcall */ GetFilesEx(TObjectList * PanelItems, bool Move,
+  virtual bool __fastcall GetFindDataEx(TObjectList * PanelItems, int OpMode);
+  virtual bool __fastcall ProcessKeyEx(int Key, unsigned int ControlState);
+  virtual bool __fastcall SetDirectoryEx(const UnicodeString Dir, int OpMode);
+  virtual int __fastcall MakeDirectoryEx(UnicodeString & Name, int OpMode);
+  virtual bool __fastcall DeleteFilesEx(TObjectList * PanelItems, int OpMode);
+  virtual int __fastcall GetFilesEx(TObjectList * PanelItems, bool Move,
     UnicodeString & DestPath, int OpMode);
-  virtual int /* __fastcall */ PutFilesEx(TObjectList * PanelItems, bool Move, int OpMode);
-  virtual bool /* __fastcall */ ProcessEventEx(int Event, void * Param);
+  virtual int __fastcall PutFilesEx(TObjectList * PanelItems, bool Move, int OpMode);
+  virtual bool __fastcall ProcessEventEx(int Event, void * Param);
 
   void /* __fastcall */ ProcessEditorEvent(int Event, void * Param);
 
-  virtual void /* __fastcall */ HandleException(Exception * E, int OpMode = 0);
+  virtual void __fastcall HandleException(Exception * E, int OpMode = 0);
   void /* __fastcall */ KeepaliveThreadCallback();
 
   inline bool /* __fastcall */ SessionList();
@@ -144,7 +144,7 @@ protected:
   void /* __fastcall */ ProcessSessions(TObjectList * PanelItems,
     const TProcessSessionEvent & ProcessSession, void * Param);
   void /* __fastcall */ ExportSession(TSessionData * Data, void * Param);
-  bool /* __fastcall */ ImportSessions(TObjectList * PanelItems, bool Move, int OpMode);
+  bool __fastcall ImportSessions(TObjectList * PanelItems, bool Move, int OpMode);
   void /* __fastcall */ FileProperties();
   void /* __fastcall */ CreateLink();
   void /* __fastcall */ TransferFiles(bool Move);
@@ -315,7 +315,7 @@ private:
     UnicodeString SessionName, const UnicodeString Banner, bool & NeverShowAgain,
     int Options);
   void /* __fastcall */ TerminalShowExtendedException(TTerminal * Terminal,
-    const std::exception * E, void * Arg);
+    Exception * E, void * Arg);
   void /* __fastcall */ TerminalDeleteLocalFile(const UnicodeString FileName, bool Alternative);
   void /* __fastcall */ OperationProgress(
     TFileOperationProgressType & ProgressData, TCancelStatus & Cancel);
@@ -347,14 +347,14 @@ class TSessionPanelItem : public TCustomFarPanelItem
 public:
   explicit /* __fastcall */ TSessionPanelItem(const UnicodeString Path);
   explicit /* __fastcall */ TSessionPanelItem(TSessionData * ASessionData);
-  static void /* __fastcall */ SetPanelModes(TFarPanelModes * PanelModes);
-  static void /* __fastcall */ SetKeyBarTitles(TFarKeyBarTitles * KeyBarTitles);
+  static void __fastcall SetPanelModes(TFarPanelModes * PanelModes);
+  static void __fastcall SetKeyBarTitles(TFarKeyBarTitles * KeyBarTitles);
 
 protected:
   UnicodeString FPath;
   TSessionData * FSessionData;
 
-  virtual void /* __fastcall */ GetData(
+  virtual void __fastcall GetData(
     unsigned long & Flags, UnicodeString & FileName, __int64 & Size,
     unsigned long & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
@@ -370,7 +370,7 @@ public:
 protected:
   UnicodeString FFolder;
 
-  virtual void /* __fastcall */ GetData(
+  virtual void __fastcall GetData(
     unsigned long & Flags, UnicodeString & FileName, __int64 & Size,
     unsigned long & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
@@ -382,20 +382,20 @@ class TRemoteFilePanelItem : public TCustomFarPanelItem
 {
 public:
   explicit /* __fastcall */ TRemoteFilePanelItem(TRemoteFile * ARemoteFile);
-  static void /* __fastcall */ SetPanelModes(TFarPanelModes * PanelModes);
-  static void /* __fastcall */ SetKeyBarTitles(TFarKeyBarTitles * KeyBarTitles);
+  static void __fastcall SetPanelModes(TFarPanelModes * PanelModes);
+  static void __fastcall SetKeyBarTitles(TFarKeyBarTitles * KeyBarTitles);
 
 protected:
   TRemoteFile * FRemoteFile;
 
-  virtual void /* __fastcall */ GetData(
+  virtual void __fastcall GetData(
     unsigned long & Flags, UnicodeString & FileName, __int64 & Size,
     unsigned long & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     unsigned long & NumberOfLinks, UnicodeString & Description,
     UnicodeString & Owner, void *& UserData, int & CustomColumnNumber);
-  virtual UnicodeString /* __fastcall */ GetCustomColumnData(int Column);
-  static void /* __fastcall */ TranslateColumnTypes(UnicodeString & ColumnTypes,
+  virtual UnicodeString __fastcall GetCustomColumnData(int Column);
+  static void __fastcall TranslateColumnTypes(UnicodeString & ColumnTypes,
     TStrings * ColumnTitles);
 };
 //---------------------------------------------------------------------------

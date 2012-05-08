@@ -59,8 +59,8 @@ class TFarDialog : public TObject
     friend class TFarListBox;
     typedef TFarDialog self;
 public:
-    explicit TFarDialog(TCustomFarPlugin *AFarPlugin);
-    virtual ~TFarDialog();
+    explicit /* __fastcall */ TFarDialog(TCustomFarPlugin *AFarPlugin);
+    virtual /* __fastcall */ ~TFarDialog();
 
     int ShowModal();
     void ShowGroup(int Group, bool Show);
@@ -121,22 +121,22 @@ protected:
     virtual LONG_PTR DialogProc(int Msg, int Param1, LONG_PTR Param2);
     virtual LONG_PTR FailDialogProc(int Msg, int Param1, LONG_PTR Param2);
     LONG_PTR DefaultDialogProc(int Msg, int Param1, LONG_PTR Param2);
-    virtual bool MouseEvent(MOUSE_EVENT_RECORD *Event);
-    virtual bool Key(TFarDialogItem *Item, long KeyCode);
+    virtual bool __fastcall MouseEvent(MOUSE_EVENT_RECORD *Event);
+    virtual bool __fastcall Key(TFarDialogItem *Item, long KeyCode);
     virtual void Change();
-    virtual void Init();
-    virtual bool CloseQuery();
-    UnicodeString GetMsg(int MsgId);
-    void RefreshBounds();
-    virtual void Idle();
-    void BreakSynchronize();
-    void Synchronize(const TThreadMethod &slot);
-    void Close(TFarButton *Button);
-    void ProcessGroup(int Group, const processgroupevent_slot_type &Callback, void *Arg);
+    virtual void __fastcall Init();
+    virtual bool __fastcall CloseQuery();
+    UnicodeString __fastcall GetMsg(int MsgId);
+    void __fastcall RefreshBounds();
+    virtual void __fastcall Idle();
+    void __fastcall BreakSynchronize();
+    void __fastcall Synchronize(const TThreadMethod &slot);
+    void __fastcall Close(TFarButton *Button);
+    void __fastcall ProcessGroup(int Group, const processgroupevent_slot_type &Callback, void *Arg);
     void ShowItem(TFarDialogItem *Item, void *Arg);
-    void EnableItem(TFarDialogItem *Item, void *Arg);
-    bool ChangesLocked();
-    TFarDialogItem *ItemAt(int X, int Y);
+    void /* __fastcall */ EnableItem(TFarDialogItem *Item, void *Arg);
+    bool __fastcall ChangesLocked();
+    TFarDialogItem * __fastcall ItemAt(int X, int Y);
 
     static LONG_PTR WINAPI DialogProcGeneral(HANDLE Handle, int Msg, int Param1, LONG_PTR Param2);
 
@@ -301,7 +301,7 @@ protected:
     virtual void UpdateBounds();
     virtual void ResetBounds();
     virtual void Init();
-    virtual bool CloseQuery();
+    virtual bool __fastcall CloseQuery();
     virtual bool MouseMove(int X, int Y, MOUSE_EVENT_RECORD *Event);
     virtual bool MouseClick(MOUSE_EVENT_RECORD *Event);
     TPoint MouseClientPosition(MOUSE_EVENT_RECORD *Event);
@@ -583,7 +583,7 @@ public:
 protected:
     virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
     virtual void Init();
-    virtual bool CloseQuery();
+    virtual bool __fastcall CloseQuery();
 
 private:
     TFarList *FList;

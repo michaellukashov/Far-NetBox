@@ -116,7 +116,7 @@ protected:
     void HideTabs();
     virtual void SelectTab(int Tab);
     void TabButtonClick(TFarButton *Sender, bool &Close);
-    virtual bool Key(TFarDialogItem *Item, long KeyCode);
+    virtual bool __fastcall Key(TFarDialogItem *Item, long KeyCode);
     virtual UnicodeString TabName(int Tab);
     TTabButton *TabButton(int Tab);
 
@@ -1556,7 +1556,7 @@ public:
 
 protected:
     virtual void Change();
-    virtual bool CloseQuery();
+    virtual bool __fastcall CloseQuery();
 
 private:
     TSessionActionEnum FAction;
@@ -5179,7 +5179,7 @@ public:
     bool Execute(UnicodeString &TargetDirectory, TGUICopyParamType *Params);
 
 protected:
-    virtual bool CloseQuery();
+    virtual bool __fastcall CloseQuery();
     virtual void Change();
     void CustomCopyParam();
 
@@ -5355,7 +5355,7 @@ bool TCopyDialog::Execute(UnicodeString &TargetDirectory,
     return Result;
 }
 //---------------------------------------------------------------------------
-bool TCopyDialog::CloseQuery()
+bool __fastcall TCopyDialog::CloseQuery()
 {
     bool CanClose = TFarDialog::CloseQuery();
 
@@ -5643,7 +5643,7 @@ protected:
     void CheckSpaceAvailable();
     void NeedSpaceAvailable();
     bool SpaceAvailableSupported();
-    virtual bool Key(TFarDialogItem *Item, long KeyCode);
+    virtual bool __fastcall Key(TFarDialogItem *Item, long KeyCode);
 
 private:
     getspaceavailable_signal_type FOnGetSpaceAvailable;
@@ -6506,7 +6506,7 @@ public:
                  TCopyParamType *CopyParams, bool &SaveSettings, bool &SaveMode);
 
 protected:
-    virtual bool CloseQuery();
+    virtual bool __fastcall CloseQuery();
     virtual void Change();
     virtual LONG_PTR DialogProc(int Msg, int Param1, LONG_PTR Param2);
 
@@ -6822,7 +6822,7 @@ int TFullSynchronizeDialog::ActualCopyParamAttrs()
     return Result | cpaNoPreserveTime;
 }
 //---------------------------------------------------------------------------
-bool TFullSynchronizeDialog::CloseQuery()
+bool __fastcall TFullSynchronizeDialog::CloseQuery()
 {
     bool CanClose = TWinSCPDialog::CloseQuery();
 
@@ -6952,7 +6952,7 @@ public:
 
 protected:
     virtual LONG_PTR DialogProc(int Msg, int Param1, LONG_PTR Param2);
-    virtual bool Key(TFarDialogItem *Item, long KeyCode);
+    virtual bool __fastcall Key(TFarDialogItem *Item, long KeyCode);
     void CheckAllButtonClick(TFarButton *Sender, bool &Close);
     void VideoModeButtonClick(TFarButton *Sender, bool &Close);
     void ListBoxClick(TFarDialogItem *Item, MOUSE_EVENT_RECORD *Event);
@@ -7580,8 +7580,8 @@ protected:
                TSynchronizeLogEntry Entry, const UnicodeString Message);
     void DoSynchronizeThreads(TObject *Sender, const TThreadMethod &slot);
     virtual LONG_PTR DialogProc(int Msg, int Param1, LONG_PTR Param2);
-    virtual bool CloseQuery();
-    virtual bool Key(TFarDialogItem *Item, long KeyCode);
+    virtual bool __fastcall CloseQuery();
+    virtual bool __fastcall Key(TFarDialogItem *Item, long KeyCode);
     TCopyParamType GetCopyParams();
     int ActualCopyParamAttrs();
     void CustomCopyParam();
@@ -7855,7 +7855,7 @@ LONG_PTR TSynchronizeDialog::DialogProc(int Msg, int Param1, LONG_PTR Param2)
     return TFarDialog::DialogProc(Msg, Param1, Param2);
 }
 //---------------------------------------------------------------------------
-bool TSynchronizeDialog::CloseQuery()
+bool __fastcall TSynchronizeDialog::CloseQuery()
 {
     return TFarDialog::CloseQuery() && !FSynchronizing;
 }
@@ -8056,14 +8056,14 @@ bool TWinSCPFileSystem::RenameFileDialog(TRemoteFile *File,
 class TQueueDialog : TFarDialog
 {
 public:
-    explicit TQueueDialog(TCustomFarPlugin *AFarPlugin,
+    explicit /* __fastcall */ TQueueDialog(TCustomFarPlugin *AFarPlugin,
       TWinSCPFileSystem *AFileSystem, bool ClosingPlugin);
-
+    virtual /* __fastcall */ ~TQueueDialog() {}
     bool Execute(TTerminalQueueStatus *Status);
 
 protected:
     virtual void Change();
-    virtual void Idle();
+    virtual void __fastcall Idle();
     bool UpdateQueue();
     void LoadQueue();
     void RefreshQueue();
@@ -8071,8 +8071,8 @@ protected:
                            TQueueItemProxy *QueueItem, size_t Index);
     bool QueueItemNeedsFrequentRefresh(TQueueItemProxy *QueueItem);
     void UpdateControls();
-    virtual bool Key(TFarDialogItem *Item, long KeyCode);
-    virtual bool CloseQuery();
+    virtual bool __fastcall Key(TFarDialogItem *Item, long KeyCode);
+    virtual bool __fastcall CloseQuery();
 
 private:
     TTerminalQueueStatus *FStatus;
@@ -8306,7 +8306,7 @@ void TQueueDialog::Idle()
     }
 }
 //---------------------------------------------------------------------------
-bool TQueueDialog::CloseQuery()
+bool __fastcall TQueueDialog::CloseQuery()
 {
     bool Result = TFarDialog::CloseQuery();
     if (Result)

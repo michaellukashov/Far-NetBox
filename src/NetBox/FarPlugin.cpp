@@ -995,7 +995,7 @@ void __fastcall TFarMessageDialog::Idle()
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarMessageDialog::Change()
+void /* __fastcall */ TFarMessageDialog::Change()
 {
   TFarDialog::Change();
 
@@ -1298,7 +1298,7 @@ bool __fastcall TCustomFarPlugin::InputBox(const UnicodeString Title,
         {
           sig(Text);
         }
-        catch (const std::exception & E)
+        catch (Exception & E)
         {
           DEBUG_PRINTF(L"before HandleException");
           HandleException(&E);
@@ -2799,7 +2799,7 @@ int __fastcall TFarPanelInfo::GetFocusedIndex()
   return static_cast<size_t>(FPanelInfo->CurrentItem);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarPanelInfo::SetFocusedIndex(size_t value)
+void __fastcall TFarPanelInfo::SetFocusedIndex(int value)
 {
   // for "another panel info", there's no owner
   assert(FOwner != NULL);

@@ -10,7 +10,7 @@
 #include "Sysutils.h"
 
 //---------------------------------------------------------------------------
-extern TCustomFarPlugin *CreateFarPlugin(HINSTANCE HInst);
+extern TCustomFarPlugin * __fastcall CreateFarPlugin(HINSTANCE HInst);
 
 //---------------------------------------------------------------------------
 class TFarPluginGuard : public TFarPluginEnvGuard, public TGuard
