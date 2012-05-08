@@ -353,6 +353,7 @@ private:
     {
         memmove(const_cast<wchar_t *>(Data.c_str()), Str, Length * sizeof(wchar_t));
         // Data[Length-1] = 0;
+        Data = Data.c_str();
     }
   }
   void Init(const char * Str, int Length)
@@ -509,6 +510,7 @@ private:
     {
         memmove(const_cast<wchar_t *>(Data.c_str()), Str, Length * sizeof(wchar_t));
         // Data[Length - 1] = 0;
+        Data = Data.c_str();
     }
   }
   void Init(const char * Str, int Length)
@@ -519,6 +521,7 @@ private:
     {
       MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), Size);
       // Data[Size - 1] = 0;
+      Data = Data.c_str();
     }
   }
 
@@ -611,6 +614,7 @@ private:
     {
       memmove(const_cast<char *>(Data.c_str()), Str, Length);
       // Data[Length-1] = 0;
+      Data = Data.c_str();
     }
   }
   void Init(const unsigned char * Str, int Length)
@@ -620,6 +624,7 @@ private:
     {
       memmove(const_cast<char *>(Data.c_str()), Str, Length);
       // Data[Length-1] = 0;
+      Data = Data.c_str();
     }
   }
 
@@ -710,6 +715,7 @@ private:
     {
       memmove(const_cast<unsigned char *>(Data.c_str()), Str, Length);
       // Data[Length-1] = 0;
+      Data = Data.c_str();
     }
   }
   void Init(const unsigned char * Str, int Length)
@@ -719,6 +725,7 @@ private:
     {
       memmove(const_cast<unsigned char *>(Data.c_str()), Str, Length);
       // Data[Length-1] = 0;
+      Data = Data.c_str();
     }
   }
 
