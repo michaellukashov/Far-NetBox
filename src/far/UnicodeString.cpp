@@ -774,7 +774,7 @@ const UnicodeString & UnicodeString::operator=(const char * lpszData)
 UnicodeString __fastcall UnicodeString::operator +(const UnicodeString & rhs) const
 {
   std::wstring Result = Data + rhs.Data;
-  return RawByteString(reinterpret_cast<const char *>(Result.c_str()), Result.size());
+  return UnicodeString(Result.c_str(), Result.size());
 }
 
 const UnicodeString & __fastcall UnicodeString::operator +=(const UnicodeString & rhs)
