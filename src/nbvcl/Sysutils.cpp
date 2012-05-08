@@ -950,12 +950,12 @@ UnicodeString IncludeTrailingBackslash(const UnicodeString str)
 UnicodeString ExtractFileDir(const UnicodeString str)
 {
   UnicodeString result;
-  size_t Pos = ::LastDelimiter(str, L"/\\");
+  int Pos = ::LastDelimiter(str, L"/\\");
   // DEBUG_PRINTF(L"Pos = %d", Pos);
   // it used to return Path when no slash was found
   if (Pos > 0)
   {
-    result = str.SubString(1, Pos + 1);
+    result = str.SubString(1, Pos);
   }
   else
   {
@@ -992,7 +992,7 @@ UnicodeString GetCurrentDir()
 UnicodeString StrToHex(const UnicodeString Str, bool UpperCase, char Separator)
 {
   UnicodeString Result;
-  for (size_t i = 1; i <= Str.Length(); i++)
+  for (int i = 1; i <= Str.Length(); i++)
   {
     Result += CharToHex(static_cast<char>(Str[i]), UpperCase);
     if ((Separator != L'\0') && (i <= Str.Length()))
@@ -1011,7 +1011,7 @@ UnicodeString HexToStr(const UnicodeString Hex)
   L = Hex.Length() - 1;
   if (L % 2 == 0)
   {
-    for (size_t i = 1; i <= Hex.Length(); i += 2)
+    for (int i = 1; i <= Hex.Length(); i += 2)
     {
       P1 = Digits.find_first_of(static_cast<char>(toupper(Hex[i])));
       P2 = Digits.find_first_of(static_cast<char>(toupper(Hex[i + 1])));
@@ -1033,8 +1033,8 @@ unsigned int HexToInt(const UnicodeString Hex, size_t MinChars)
 {
   static std::wstring Digits = L"0123456789ABCDEF";
   int Result = 0;
-  size_t I = 1;
-  while (I < Hex.Length())
+  int I = 1;
+  while (I <= Hex.Length())
   {
     size_t A = Digits.find_first_of(static_cast<wchar_t>(toupper(Hex[I])));
     if (A == std::wstring::npos)
