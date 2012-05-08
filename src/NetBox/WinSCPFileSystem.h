@@ -151,7 +151,7 @@ protected:
   void /* __fastcall */ RenameFile();
   void /* __fastcall */ ApplyCommand();
   void /* __fastcall */ ShowInformation();
-  void /* __fastcall */ InsertTokenOnCommandLine(const UnicodeString Token, bool Separate);
+  void /* __fastcall */ InsertTokenOnCommandLine(UnicodeString Token, bool Separate);
   void /* __fastcall */ InsertSessionNameOnCommandLine();
   void /* __fastcall */ InsertFileNameOnCommandLine(bool Full);
   void /* __fastcall */ InsertPathOnCommandLine();
