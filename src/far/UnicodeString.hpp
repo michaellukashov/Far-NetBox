@@ -538,8 +538,8 @@ public:
   RawByteString(const wchar_t * Str, int Size) { Init(Str, Size); }
   RawByteString(const char * Str) { Init(Str, strlen(Str)); }
   RawByteString(const unsigned char * Str) { Init(Str, strlen(reinterpret_cast<const char *>(Str))); }
-  RawByteString(const char * Str, int sz) { Init(Str, sz); }
-  RawByteString(const unsigned char * Str, int sz) { Init(Str, sz); }
+  RawByteString(const char * Str, int Size) { Init(Str, Size); }
+  RawByteString(const unsigned char * Str, int Size) { Init(Str, Size); }
   RawByteString(const UnicodeString & Str) { Init(Str.c_str(), Str.GetLength()); }
   RawByteString(const UTF8String & Str) { Init(Str.c_str(), Str.GetLength()); }
   // RawByteString(const AnsiString & Str) { Init(Str.c_str(), Str.GetLength()); }
