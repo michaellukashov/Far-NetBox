@@ -205,7 +205,7 @@ void __fastcall TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
   }
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall TCustomFarPlugin::GetModuleName()
+UnicodeString __fastcall TCustomFarPlugin::GetModuleName()
 {
   return FStartupInfo.ModuleName;
 }
@@ -315,7 +315,7 @@ int __fastcall TCustomFarPlugin::Configure(int Item)
 
     return Result;
   }
-  catch (const std::exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -445,7 +445,7 @@ int __fastcall TCustomFarPlugin::GetFindData(HANDLE Plugin,
       return FileSystem->GetFindData(PanelItem, ItemsNumber, OpMode);
     }
   }
-  catch (const std::exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FileSystem, &E, OpMode);
@@ -569,7 +569,7 @@ int __fastcall TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void * P
   }
 }
 //---------------------------------------------------------------------------
-int __fastcall TCustomFarPlugin::SetDirectory(HANDLE Plugin, const char * Dir, int OpMode)
+int __fastcall TCustomFarPlugin::SetDirectory(HANDLE Plugin, const wchar_t * Dir, int OpMode)
 {
   TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Plugin);
   try
@@ -625,7 +625,7 @@ int __fastcall TCustomFarPlugin::DeleteFiles(HANDLE Plugin,
       return FileSystem->DeleteFiles(PanelItem, ItemsNumber, OpMode);
     }
   }
-  catch (const std::exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FileSystem, &E, OpMode);
@@ -748,7 +748,7 @@ public:
   int __fastcall Execute(bool & ACheckBox);
 
 protected:
-  virtual void __fastcall Change();
+  virtual void Change();
   virtual void __fastcall Idle();
 
 private:
@@ -1039,7 +1039,7 @@ int __fastcall TFarMessageDialog::Execute(bool & ACheckBox)
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarMessageDialog::ButtonClick(TFarButton * Sender, bool & Close)
+void /* __fastcall */ TFarMessageDialog::ButtonClick(TFarButton * Sender, bool & Close)
 {
   if (FParams->ClickEvent != NULL)
   {
@@ -1259,7 +1259,7 @@ int __fastcall TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeString Ti
 //---------------------------------------------------------------------------
 bool __fastcall TCustomFarPlugin::InputBox(const UnicodeString Title,
   const UnicodeString Prompt, UnicodeString & Text, unsigned long Flags,
-  const UnicodeString HistoryName, size_t MaxLen, farinputboxvalidate_slot_type * OnValidate)
+  const UnicodeString HistoryName, size_t MaxLen, TFarInputBoxValidateEvent * OnValidate)
 {
   bool Repeat = false;
   int Result = 0;
@@ -1605,7 +1605,7 @@ void __fastcall TCustomFarPlugin::RestoreScreen(HANDLE & Screen)
   Screen = 0;
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomFarPlugin::HandleException(const std::exception * E, int /*OpMode*/)
+void __fastcall TCustomFarPlugin::HandleException(Exception * E, int /*OpMode*/)
 {
   assert(E);
   Message(FMSG_WARNING | FMSG_MB_OK, L"", MB2W(E->what()));
@@ -1836,7 +1836,7 @@ void __fastcall TCustomFarFileSystem::Init()
   delete FCriticalSection;
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomFarFileSystem::HandleException(const std::exception * E, int OpMode)
+void __fastcall TCustomFarFileSystem::HandleException(Exception * E, int OpMode)
 {
   DEBUG_PRINTF(L"before FPlugin->HandleException");
   FPlugin->HandleException(E, OpMode);
@@ -2296,7 +2296,7 @@ int __fastcall TCustomFarFileSystem::PutFilesEx(TObjectList * /*PanelItems*/,
 }
 //---------------------------------------------------------------------------
 TObjectList * __fastcall TCustomFarFileSystem::CreatePanelItemList(
-  struct PluginPanelItem * PanelItem, size_t ItemsNumber)
+  struct PluginPanelItem * PanelItem, int ItemsNumber)
 {
   // DEBUG_PRINTF(L"ItemsNumber = %d", ItemsNumber);
   TObjectList * PanelItems = new TObjectList();

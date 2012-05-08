@@ -226,7 +226,7 @@ public:
   void RunTests();
 #endif
 private:
-  void UpdateProgress(int state, int progress);
+  void __fastcall UpdateProgress(int state, int progress);
 
 private:
   PluginInfo FPluginInfo;
@@ -428,7 +428,7 @@ protected:
 
 public:
   unsigned long __fastcall GetFlags();
-  AnsiString __fastcall GetFileName();
+  UnicodeString __fastcall GetFileName();
   void * __fastcall GetUserData();
   bool __fastcall GetSelected();
   void __fastcall SetSelected(bool value);
@@ -485,7 +485,7 @@ private:
   TCustomFarFileSystem * FOwner;
 
 public:
-  TList * __fastcall GetItems();
+  TObjectList * __fastcall GetItems();
   TFarPanelItem * __fastcall GetFocusedItem();
   void __fastcall SetFocusedItem(TFarPanelItem * value);
   int __fastcall GetFocusedIndex();
