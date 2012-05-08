@@ -181,8 +181,8 @@ bool __fastcall TXmlStorage::DoOpenSubKey(const UnicodeString SubKey, bool CanCr
     bool Result = Element != NULL;
     if (Result)
     {
-        Result = THierarchicalStorage::OpenSubKey(SubKey, CanCreate, false);
-        if (Result)
+        // Result = THierarchicalStorage::DoOpenSubKey(SubKey, CanCreate);
+        // if (Result)
         {
             FSubElements.push_back(OldCurrentElement);
             FCurrentElement = Element;
