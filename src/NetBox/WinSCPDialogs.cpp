@@ -5994,7 +5994,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject *AControl,
                 assert(false);
             }
 
-            if (!LabelStr.IsEmpty() && (LabelStr[LabelStr.Length() - 1] == ':'))
+            if (!LabelStr.IsEmpty() && (LabelStr[LabelStr.Length()] == ':'))
             {
                 LabelStr.SetLength(LabelStr.Length() - 1);
             }
@@ -6010,7 +6010,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject *AControl,
         {
             assert(dynamic_cast<TLabelList *>(AControl) != NULL);
             UnicodeString LabelStr = GetMsg(Label);
-            if (!LabelStr.IsEmpty() && (LabelStr[LabelStr.Length() - 1] == ':'))
+            if (!LabelStr.IsEmpty() && (LabelStr[LabelStr.Length()] == ':'))
             {
                 LabelStr.SetLength(LabelStr.Length() - 1);
             }
@@ -7085,7 +7085,7 @@ void TSynchronizeChecklistDialog::AddColumn(UnicodeString &List,
             }
             else
             {
-                List[List.Length() - 1] = '{';
+                List[List.Length()] = '{';
             }
         }
         if (Scroll > Len - Width)

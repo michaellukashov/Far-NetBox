@@ -684,7 +684,7 @@ UnicodeString TranslateExceptionMessage(const std::exception * E)
 //---------------------------------------------------------------------------
 void AppendWChar(UnicodeString & str, const wchar_t ch)
 {
-  if (!str.IsEmpty() && str[str.Length() - 1] != ch)
+  if (!str.IsEmpty() && str[str.Length()] != ch)
   {
     str += ch;
   }
@@ -700,7 +700,7 @@ void AppendChar(std::string & str, const char ch)
 
 void AppendPathDelimiterW(UnicodeString & str)
 {
-  if (!str.IsEmpty() && str[str.Length() - 1] != L'/' && str[str.Length() - 1] != L'\\')
+  if (!str.IsEmpty() && str[str.Length()] != L'/' && str[str.Length()] != L'\\')
   {
     str += L"\\";;
   }
@@ -928,8 +928,8 @@ UnicodeString ChangeFileExtension(const UnicodeString path, const UnicodeString 
 UnicodeString ExcludeTrailingBackslash(const UnicodeString str)
 {
   UnicodeString result = str;
-  if ((str.Length() > 0) && ((str[str.Length() - 1] == L'/') ||
-                             (str[str.Length() - 1] == L'\\')))
+  if ((str.Length() > 0) && ((str[str.Length()] == L'/') ||
+      (str[str.Length()] == L'\\')))
   {
     result.SetLength(result.Length() - 1);
   }

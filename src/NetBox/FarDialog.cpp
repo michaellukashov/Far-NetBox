@@ -1782,12 +1782,12 @@ UnicodeString TFarButton::GetData()
     if ((FBrackets == brTight) || (FBrackets == brSpace))
     {
         bool HasBrackets = (Result.Length() >= 2) &&
-                           (Result[1] == ((FBrackets == brSpace) ? L' ' : L'[')) &&
-                           (Result[Result.Length() - 1] == ((FBrackets == brSpace) ? L' ' : L']'));
+          (Result[1] == ((FBrackets == brSpace) ? L' ' : L'[')) &&
+          (Result[Result.Length()] == ((FBrackets == brSpace) ? L' ' : L']'));
         assert(HasBrackets);
         if (HasBrackets)
         {
-            Result = Result.SubStr(2, Result.Length() - 2);
+            Result = Result.SubString(2, Result.Length() - 2);
         }
     }
     return Result;
@@ -2121,7 +2121,7 @@ TFarList::TFarList(TFarDialogItem *ADialogItem) :
 //---------------------------------------------------------------------------
 TFarList::~TFarList()
 {
-    for (size_t i = 0; i < GetCount(); i++)
+    for (int i = 0; i < GetCount(); i++)
     {
         UnicodeString value = GetStrings(i);
         delete[] FListItems->Items[i].Text;
@@ -2215,7 +2215,7 @@ void TFarList::Changed()
             delete[] Items;
             FListItems->ItemsNumber = static_cast<int>(GetCount());
         }
-        for (size_t i = 0; i < GetCount(); i++)
+        for (int i = 0; i < GetCount(); i++)
         {
             UnicodeString value = GetStrings(i);
             delete[] FListItems->Items[i].Text;
@@ -2320,7 +2320,7 @@ int TFarList::GetTopIndex()
 size_t TFarList::GetMaxLength()
 {
     size_t Result = 0;
-    for (size_t i = 0; i < GetCount(); i++)
+    for (int i = 0; i < GetCount(); i++)
     {
         if (Result < GetStrings(i).Length())
         {

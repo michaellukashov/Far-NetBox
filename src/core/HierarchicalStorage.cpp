@@ -446,7 +446,7 @@ UnicodeString __fastcall THierarchicalStorage::MungeSubKey(UnicodeString Key, bo
   UnicodeString key = Key;
   if (Path)
   {
-    assert(key.IsEmpty() || (key[key.Length() - 1] != '\\'));
+    assert(key.IsEmpty() || (key[key.Length()] != '\\'));
     while (!key.IsEmpty())
     {
       if (!Result.IsEmpty())
