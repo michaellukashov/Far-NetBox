@@ -532,7 +532,7 @@ const AnsiString & AnsiString::operator=(const wchar_t * lpszData)
 
 AnsiString __fastcall AnsiString::operator +(const RawByteString & rhs) const
 {
-  std::string Result = Data + rhs.Data;
+  std::string Result = Data + rhs.c_str();
   return AnsiString(Result.c_str(), Result.size());
 }
 
@@ -556,7 +556,7 @@ const AnsiString & __fastcall AnsiString::operator +=(const UTF8String & rhs)
 
 const AnsiString & __fastcall AnsiString::operator +=(const char Ch)
 {
-  Data.append(1, ch);
+  Data.append(1, Ch);
   return *this;
 }
 
@@ -600,9 +600,21 @@ const RawByteString & RawByteString::operator=(const RawByteString & strCopy)
   return *this;
 }
 
+const RawByteString & RawByteString::operator=(const AnsiString & strCopy)
+{
+  Init(strCopy.c_str(), strCopy.Length());
+  return *this;
+}
+
 const RawByteString & RawByteString::operator=(const UTF8String & strCopy)
 {
   Init(strCopy.c_str(), strCopy.Length());
+  return *this;
+}
+
+const RawByteString & RawByteString::operator=(const std::wstring & strCopy)
+{
+  Init(strCopy.c_str(), strCopy.size());
   return *this;
 }
 
@@ -823,13 +835,19 @@ const UnicodeString & UnicodeString::operator=(const UnicodeString & strCopy)
   return *this;
 }
 
-const UnicodeString & UnicodeString::operator=(const UTF8String & strCopy)
+const UnicodeString & UnicodeString::operator=(const RawByteString & strCopy)
 {
   Init(strCopy.c_str(), strCopy.Length());
   return *this;
 }
 
-const UnicodeString & UnicodeString::operator=(const RawByteString & strCopy)
+const UnicodeString & UnicodeString::operator=(const AnsiString & strCopy)
+{
+  Init(strCopy.c_str(), strCopy.Length());
+  return *this;
+}
+
+const UnicodeString & UnicodeString::operator=(const UTF8String & strCopy)
 {
   Init(strCopy.c_str(), strCopy.Length());
   return *this;
