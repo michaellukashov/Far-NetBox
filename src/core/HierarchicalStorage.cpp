@@ -463,13 +463,6 @@ UnicodeString __fastcall THierarchicalStorage::MungeSubKey(UnicodeString Key, bo
   return Result;
 }
 //===========================================================================
-/* __fastcall */ TRegistryStorage::TRegistryStorage(const UnicodeString AStorage):
-  THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
-  FRegistry(NULL)
-{
-  Init();
-};
-//---------------------------------------------------------------------------
 /* __fastcall */ TRegistryStorage::TRegistryStorage(const UnicodeString AStorage, HKEY ARootKey):
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
   FRegistry(NULL)
@@ -477,6 +470,13 @@ UnicodeString __fastcall THierarchicalStorage::MungeSubKey(UnicodeString Key, bo
   Init();
   FRegistry->SetRootKey(ARootKey);
 }
+//---------------------------------------------------------------------------
+/* __fastcall */ TRegistryStorage::TRegistryStorage(const UnicodeString AStorage):
+  THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
+  FRegistry(NULL)
+{
+  Init();
+};
 //---------------------------------------------------------------------------
 void __fastcall TRegistryStorage::Init()
 {
