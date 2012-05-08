@@ -21,7 +21,7 @@ class THierarchicalStorage : private boost::noncopyable
 {
 public:
   explicit /* __fastcall */ THierarchicalStorage(const UnicodeString AStorage);
-  void __fastcall Init() {}
+  virtual void __fastcall Init() {}
   virtual /* __fastcall */ ~THierarchicalStorage();
   bool __fastcall OpenRootKey(bool CanCreate);
   virtual bool __fastcall OpenSubKey(UnicodeString SubKey, bool CanCreate, bool Path = false);
@@ -118,7 +118,7 @@ class TRegistryStorage : public THierarchicalStorage
 public:
   explicit /* __fastcall */ TRegistryStorage(const UnicodeString AStorage, HKEY ARootKey);
   explicit /* __fastcall */ TRegistryStorage(const UnicodeString AStorage);
-  void __fastcall Init();
+  virtual void __fastcall Init();
   virtual /* __fastcall */ ~TRegistryStorage();
 
   bool __fastcall Copy(TRegistryStorage * Storage);
