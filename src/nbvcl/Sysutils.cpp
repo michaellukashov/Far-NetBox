@@ -220,7 +220,7 @@ UnicodeString StringReplace(const UnicodeString str, const UnicodeString from, c
 
 bool IsDelimiter(const UnicodeString str, const UnicodeString delimiters, int index)
 {
-  if (index < str.Length())
+  if (index <= str.Length())
   {
     wchar_t c = str[index];
     for (int  i = 1; i <= delimiters.Length(); i++)
@@ -725,12 +725,12 @@ UnicodeString ExpandEnvVars(const UnicodeString & str)
   return result;
 }
 
-UnicodeString StringOfChar(const wchar_t c, size_t len)
+UnicodeString StringOfChar(const wchar_t c, int len)
 {
   UnicodeString Result;
   if (int(len) < 0) len = 0;
   Result.SetLength(len);
-  for (int i = 0; i < len; i++) Result[i] = c;
+  for (int i = 1; i <= len; i++) Result[i] = c;
   return Result;
 }
 
