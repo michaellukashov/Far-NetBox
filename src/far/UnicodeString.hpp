@@ -369,10 +369,7 @@ private:
   wstring_t Data;
 };
 
-typedef UTF8String AnsiString;
-
 //------------------------------------------------------------------------------
-class RawByteString;
 
 class UnicodeString
 {
@@ -529,6 +526,105 @@ private:
 };
 
 //------------------------------------------------------------------------------
+// typedef UTF8String AnsiString;
+//------------------------------------------------------------------------------
+class RawByteString;
+
+class AnsiString
+{
+public:
+  AnsiString() {}
+  AnsiString(const wchar_t * Str) { Init(Str, StrLength(Str)); }
+  AnsiString(const wchar_t * Str, int Size) { Init(Str, Size); }
+  AnsiString(const char * Str) { Init(Str, strlen(Str)); }
+  AnsiString(const char * Str, int Size) { Init(Str, Size); }
+  AnsiString(const unsigned char * Str) { Init(Str, strlen(reinterpret_cast<const char *>(Str))); }
+  AnsiString(const unsigned char * Str, int Size) { Init(Str, Size); }
+  AnsiString(const UnicodeString & Str) { Init(Str.c_str(), Str.GetLength()); }
+  AnsiString(const UTF8String & Str) { Init(Str.c_str(), Str.GetLength()); }
+  // AnsiString(const AnsiString & Str) { Init(Str.c_str(), Str.GetLength()); }
+  ~AnsiString() {}
+
+  operator const char * () const { return Data.c_str(); }
+  operator UnicodeString() const;
+  int size() const { return Data.size(); }
+  const char * c_str() const { Data.c_str(); }
+  // const unsigned char * c_str() const { return Data.c_str(); }
+  int Length() const { return Data.size(); }
+  int GetLength() const { return Length(); }
+  bool IsEmpty() const { return Length() == 0; }
+  void SetLength(int nLength) { Data.resize(nLength); }
+  AnsiString & Delete(int Index, int Count) { Data.erase(Index - 1, Count); return *this; }
+
+  // AnsiString & Insert(int Pos, const wchar_t * Str, int StrLen);
+  // AnsiString & Insert(const wchar_t * Str, int Pos) { return Insert(Pos, Str, wcslen(Str)); }
+  AnsiString & Insert(const char * Str, int Pos);
+
+  AnsiString SubString(int Pos, int Len = -1) const;
+
+  int Pos(wchar_t Ch) const;
+  int Pos(const wchar_t * Str) const;
+public:
+  const AnsiString & operator=(const UnicodeString & strCopy);
+  const AnsiString & operator=(const RawByteString & strCopy);
+  const AnsiString & operator=(const AnsiString & strCopy);
+  const AnsiString & operator=(const UTF8String & strCopy);
+  const AnsiString & operator=(const std::wstring & strCopy);
+  const AnsiString & operator=(const char * lpszData);
+  const AnsiString & operator=(const wchar_t * lpwszData);
+  const AnsiString & operator=(wchar_t chData);
+
+  AnsiString __fastcall operator +(const UnicodeString & rhs) const;
+  AnsiString __fastcall operator +(const RawByteString & rhs) const;
+  AnsiString __fastcall operator +(const AnsiString & rhs) const;
+  AnsiString __fastcall operator +(const UTF8String & rhs) const;
+  AnsiString __fastcall operator +(const std::wstring & rhs) const;
+
+  const AnsiString & __fastcall operator +=(const UnicodeString & rhs);
+  const AnsiString & __fastcall operator +=(const RawByteString & rhs);
+  const AnsiString & __fastcall operator +=(const AnsiString & rhs);
+  const AnsiString & __fastcall operator +=(const UTF8String & rhs);
+  const AnsiString & __fastcall operator +=(const char Ch);
+  const AnsiString & __fastcall operator +=(const char * rhs);
+
+  void Unique() {}
+
+private:
+  void Init(const wchar_t * Str, int Length)
+  {
+    int Size = WideCharToMultiByte(CP_UTF8, 0, Str, Length, nullptr, 0, nullptr, nullptr) + 1;
+    Data.resize(Size);
+    if (Length > 0)
+    {
+      WideCharToMultiByte(CP_UTF8, 0, Str, Length,
+        reinterpret_cast<LPSTR>(const_cast<char *>(Data.c_str())), Size-1, nullptr, nullptr);
+      Data[Size-1] = 0;
+    }
+  }
+  void Init(const char * Str, int Length)
+  {
+    Data.resize(Length);
+    if (Length > 0)
+    {
+      memmove(const_cast<char *>(Data.c_str()), Str, Length);
+      // Data[Length-1] = 0;
+    }
+  }
+  void Init(const unsigned char * Str, int Length)
+  {
+    Data.resize(Length);
+    if (Length > 0)
+    {
+      memmove(const_cast<char *>(Data.c_str()), Str, Length);
+      // Data[Length-1] = 0;
+    }
+  }
+
+  // typedef std::basic_string<char> string_t;
+  std::string Data;
+};
+
+//------------------------------------------------------------------------------
 
 class RawByteString
 {
@@ -537,8 +633,8 @@ public:
   RawByteString(const wchar_t * Str) { Init(Str, StrLength(Str)); }
   RawByteString(const wchar_t * Str, int Size) { Init(Str, Size); }
   RawByteString(const char * Str) { Init(Str, strlen(Str)); }
-  RawByteString(const unsigned char * Str) { Init(Str, strlen(reinterpret_cast<const char *>(Str))); }
   RawByteString(const char * Str, int Size) { Init(Str, Size); }
+  RawByteString(const unsigned char * Str) { Init(Str, strlen(reinterpret_cast<const char *>(Str))); }
   RawByteString(const unsigned char * Str, int Size) { Init(Str, Size); }
   RawByteString(const UnicodeString & Str) { Init(Str.c_str(), Str.GetLength()); }
   RawByteString(const UTF8String & Str) { Init(Str.c_str(), Str.GetLength()); }

@@ -472,6 +472,94 @@ UnicodeString UnicodeString::TrimRight() const
 }
 #endif
 
+
+//------------------------------------------------------------------------------
+
+AnsiString::operator UnicodeString() const
+{
+  return UnicodeString(Data.c_str(), Data.size());
+}
+
+int AnsiString::Pos(wchar_t Ch) const
+{
+  AnsiString s(&Ch, 1);
+  return Data.find(s.c_str(), 0, 1);
+}
+
+AnsiString & AnsiString::Insert(const char * Str, int Pos)
+{
+  Data.insert(Pos - 1, Str);
+  return *this;
+}
+
+AnsiString AnsiString::SubString(int Pos, int Len) const
+{
+  std::string s = Data.substr(Pos - 1, Len);
+  AnsiString Result(s.c_str(), s.size());
+  // return AnsiString(reinterpret_cast<const char *>(s).c_str(), Len));
+  return Result;
+}
+
+const AnsiString & AnsiString::operator=(const UnicodeString & strCopy)
+{
+  Init(strCopy.c_str(), strCopy.Length());
+  return *this;
+}
+
+const AnsiString & AnsiString::operator=(const AnsiString & strCopy)
+{
+  Init(strCopy.c_str(), strCopy.Length());
+  return *this;
+}
+
+const AnsiString & AnsiString::operator=(const UTF8String & strCopy)
+{
+  Init(strCopy.c_str(), strCopy.Length());
+  return *this;
+}
+
+const AnsiString & AnsiString::operator=(const char * lpszData)
+{
+  Init(lpszData, strlen(lpszData));
+  return *this;
+}
+
+const AnsiString & AnsiString::operator=(const wchar_t * lpszData)
+{
+  Init(lpszData, wcslen(lpszData));
+  return *this;
+}
+
+AnsiString __fastcall AnsiString::operator +(const RawByteString & rhs) const
+{
+  std::string Result = Data + rhs.Data;
+  return AnsiString(Result.c_str(), Result.size());
+}
+
+const AnsiString & __fastcall AnsiString::operator +=(const RawByteString & rhs)
+{
+  Data.append(reinterpret_cast<const char *>(rhs.c_str()), rhs.size());
+  return *this;
+}
+
+const AnsiString & __fastcall AnsiString::operator +=(const AnsiString & rhs)
+{
+  Data.append(rhs.c_str(), rhs.size());
+  return *this;
+}
+
+const AnsiString & __fastcall AnsiString::operator +=(const UTF8String & rhs)
+{
+  Data.append(reinterpret_cast<const char *>(rhs.c_str()), rhs.size());
+  return *this;
+}
+
+const AnsiString & __fastcall AnsiString::operator +=(const char Ch)
+{
+  Data.append(1, ch);
+  return *this;
+}
+
 //------------------------------------------------------------------------------
 
 RawByteString::operator UnicodeString() const
