@@ -353,18 +353,19 @@ private:
     {
         memmove(const_cast<wchar_t *>(Data.c_str()), Str, Length * sizeof(wchar_t));
         // Data[Length-1] = 0;
-        Data = Data.c_str();
     }
+    Data = Data.c_str();
   }
   void Init(const char * Str, int Length)
   {
     int Size = MultiByteToWideChar(CP_UTF8, 0, Str, -1, NULL, 0) + 1;
     Data.resize(Size);
-    if (Length > 0)
+    if (Size > 0)
     {
       MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), Size);
       Data[Size-1] = 0;
     }
+    Data = Data.c_str();
   }
 
   typedef std::basic_string<wchar_t> wstring_t;
@@ -510,19 +511,19 @@ private:
     {
         memmove(const_cast<wchar_t *>(Data.c_str()), Str, Length * sizeof(wchar_t));
         // Data[Length - 1] = 0;
-        Data = Data.c_str();
     }
+    Data = Data.c_str();
   }
   void Init(const char * Str, int Length)
   {
     int Size = MultiByteToWideChar(CP_UTF8, 0, Str, -1, NULL, 0) + 1;
     Data.resize(Size);
-    if (Length > 0)
+    if (Size > 0)
     {
       MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), Size);
       // Data[Size - 1] = 0;
-      Data = Data.c_str();
     }
+    Data = Data.c_str();
   }
 
   void  __cdecl ThrowIfOutOfRange(int idx) const;
@@ -600,12 +601,13 @@ private:
   {
     int Size = WideCharToMultiByte(CP_UTF8, 0, Str, Length, nullptr, 0, nullptr, nullptr) + 1;
     Data.resize(Size);
-    if (Length > 0)
+    if (Size > 0)
     {
       WideCharToMultiByte(CP_UTF8, 0, Str, Length,
         reinterpret_cast<LPSTR>(const_cast<char *>(Data.c_str())), Size-1, nullptr, nullptr);
       Data[Size-1] = 0;
     }
+    Data = Data.c_str();
   }
   void Init(const char * Str, int Length)
   {
@@ -614,8 +616,8 @@ private:
     {
       memmove(const_cast<char *>(Data.c_str()), Str, Length);
       // Data[Length-1] = 0;
-      Data = Data.c_str();
     }
+    Data = Data.c_str();
   }
   void Init(const unsigned char * Str, int Length)
   {
@@ -624,8 +626,8 @@ private:
     {
       memmove(const_cast<char *>(Data.c_str()), Str, Length);
       // Data[Length-1] = 0;
-      Data = Data.c_str();
     }
+    Data = Data.c_str();
   }
 
   // typedef std::basic_string<char> string_t;
@@ -701,12 +703,13 @@ private:
   {
     int Size = WideCharToMultiByte(CP_UTF8, 0, Str, Length, nullptr, 0, nullptr, nullptr) + 1;
     Data.resize(Size);
-    if (Length > 0)
+    if (Size > 0)
     {
       WideCharToMultiByte(CP_UTF8, 0, Str, Length,
         reinterpret_cast<LPSTR>(const_cast<unsigned char *>(Data.c_str())), Size-1, nullptr, nullptr);
       Data[Size-1] = 0;
     }
+    Data = Data.c_str();
   }
   void Init(const char * Str, int Length)
   {
@@ -715,8 +718,8 @@ private:
     {
       memmove(const_cast<unsigned char *>(Data.c_str()), Str, Length);
       // Data[Length-1] = 0;
-      Data = Data.c_str();
     }
+    Data = Data.c_str();
   }
   void Init(const unsigned char * Str, int Length)
   {
@@ -725,8 +728,8 @@ private:
     {
       memmove(const_cast<unsigned char *>(Data.c_str()), Str, Length);
       // Data[Length-1] = 0;
-      Data = Data.c_str();
     }
+    Data = Data.c_str();
   }
 
   typedef std::basic_string<unsigned char> rawstring_t;
