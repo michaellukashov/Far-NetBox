@@ -100,15 +100,15 @@ class TWinSCPFileSystem : public TCustomFarFileSystem
   friend class TQueueDialog;
 public:
   explicit /* __fastcall */ TWinSCPFileSystem(TCustomFarPlugin * APlugin);
-  virtual void Init(TSecureShell * SecureShell);
+  virtual void __fastcall Init(TSecureShell * SecureShell);
   virtual /* __fastcall */ ~TWinSCPFileSystem();
 
   virtual void __fastcall Close();
 
 protected:
-  bool /* __fastcall */ Connect(TSessionData * Data);
-  void /* __fastcall */ Disconnect();
-  void /* __fastcall */ SaveSession();
+  bool __fastcall Connect(TSessionData * Data);
+  void __fastcall Disconnect();
+  void __fastcall SaveSession();
 
   virtual void __fastcall GetOpenPluginInfoEx(long unsigned & Flags,
     UnicodeString & HostFile, UnicodeString & CurDir, UnicodeString & Format,
@@ -125,84 +125,84 @@ protected:
   virtual int __fastcall PutFilesEx(TObjectList * PanelItems, bool Move, int OpMode);
   virtual bool __fastcall ProcessEventEx(int Event, void * Param);
 
-  void /* __fastcall */ ProcessEditorEvent(int Event, void * Param);
+  void __fastcall ProcessEditorEvent(int Event, void * Param);
 
   virtual void __fastcall HandleException(Exception * E, int OpMode = 0);
   void /* __fastcall */ KeepaliveThreadCallback();
 
-  inline bool /* __fastcall */ SessionList();
-  inline bool /* __fastcall */ Connected();
-  TWinSCPPlugin * /* __fastcall */ WinSCPPlugin();
-  void /* __fastcall */ ShowOperationProgress(TFileOperationProgressType & ProgressData,
+  inline bool __fastcall SessionList();
+  inline bool __fastcall Connected();
+  TWinSCPPlugin * __fastcall WinSCPPlugin();
+  void __fastcall ShowOperationProgress(TFileOperationProgressType & ProgressData,
     bool Force);
-  bool /* __fastcall */ SessionDialog(TSessionData * Data, TSessionActionEnum & Action);
-  void /* __fastcall */ EditConnectSession(TSessionData * Data, bool Edit);
-  void /* __fastcall */ DuplicateRenameSession(TSessionData * Data,
+  bool __fastcall SessionDialog(TSessionData * Data, TSessionActionEnum & Action);
+  void __fastcall EditConnectSession(TSessionData * Data, bool Edit);
+  void __fastcall DuplicateRenameSession(TSessionData * Data,
     bool Duplicate);
-  void /* __fastcall */ FocusSession(TSessionData * Data);
+  void __fastcall FocusSession(TSessionData * Data);
   void /* __fastcall */ DeleteSession(TSessionData * Data, void * Param);
-  void /* __fastcall */ ProcessSessions(TObjectList * PanelItems,
+  void __fastcall ProcessSessions(TObjectList * PanelItems,
     const TProcessSessionEvent & ProcessSession, void * Param);
   void /* __fastcall */ ExportSession(TSessionData * Data, void * Param);
   bool __fastcall ImportSessions(TObjectList * PanelItems, bool Move, int OpMode);
-  void /* __fastcall */ FileProperties();
-  void /* __fastcall */ CreateLink();
-  void /* __fastcall */ TransferFiles(bool Move);
-  void /* __fastcall */ RenameFile();
-  void /* __fastcall */ ApplyCommand();
-  void /* __fastcall */ ShowInformation();
-  void /* __fastcall */ InsertTokenOnCommandLine(UnicodeString Token, bool Separate);
-  void /* __fastcall */ InsertSessionNameOnCommandLine();
-  void /* __fastcall */ InsertFileNameOnCommandLine(bool Full);
-  void /* __fastcall */ InsertPathOnCommandLine();
-  void /* __fastcall */ CopyFullFileNamesToClipboard();
-  void /* __fastcall */ FullSynchronize(bool Source);
-  void /* __fastcall */ Synchronize();
-  void /* __fastcall */ OpenDirectory(bool Add);
-  void /* __fastcall */ HomeDirectory();
-  void /* __fastcall */ ToggleSynchronizeBrowsing();
-  bool /* __fastcall */ IsSynchronizedBrowsing();
-  bool /* __fastcall */ PropertiesDialog(TStrings * FileList,
+  void __fastcall FileProperties();
+  void __fastcall CreateLink();
+  void __fastcall TransferFiles(bool Move);
+  void __fastcall RenameFile();
+  void __fastcall ApplyCommand();
+  void __fastcall ShowInformation();
+  void __fastcall InsertTokenOnCommandLine(UnicodeString Token, bool Separate);
+  void __fastcall InsertSessionNameOnCommandLine();
+  void __fastcall InsertFileNameOnCommandLine(bool Full);
+  void __fastcall InsertPathOnCommandLine();
+  void __fastcall CopyFullFileNamesToClipboard();
+  void __fastcall FullSynchronize(bool Source);
+  void __fastcall Synchronize();
+  void __fastcall OpenDirectory(bool Add);
+  void __fastcall HomeDirectory();
+  void __fastcall ToggleSynchronizeBrowsing();
+  bool __fastcall IsSynchronizedBrowsing();
+  bool __fastcall PropertiesDialog(TStrings * FileList,
     const UnicodeString Directory,
     // TStrings * GroupList, TStrings * UserList,
     const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
     TRemoteProperties * Properties, int AllowedChanges);
-  bool /* __fastcall */ ExecuteCommand(const UnicodeString Command);
+  bool __fastcall ExecuteCommand(const UnicodeString Command);
   void /* __fastcall */ TerminalCaptureLog(const UnicodeString & AddedLine, bool StdError);
-  bool /* __fastcall */ CopyDialog(bool ToRemote, bool Move, TStrings * FileList,
+  bool __fastcall CopyDialog(bool ToRemote, bool Move, TStrings * FileList,
     UnicodeString & TargetDirectory,
     TGUICopyParamType * Params,
     int Options,
     int CopyParamAttrs);
-  bool /* __fastcall */ LinkDialog(UnicodeString & FileName, UnicodeString & PointTo, bool & Symbolic,
+  bool __fastcall LinkDialog(UnicodeString & FileName, UnicodeString & PointTo, bool & Symbolic,
     bool Edit, bool AllowSymbolic);
-  void /* __fastcall */ FileSystemInfoDialog(const TSessionInfo & SessionInfo,
+  void __fastcall FileSystemInfoDialog(const TSessionInfo & SessionInfo,
     const TFileSystemInfo & FileSystemInfo, UnicodeString SpaceAvailablePath,
     const TGetSpaceAvailableEvent & OnGetSpaceAvailable);
-  bool /* __fastcall */ OpenDirectoryDialog(bool Add, UnicodeString & Directory,
+  bool __fastcall OpenDirectoryDialog(bool Add, UnicodeString & Directory,
     TBookmarkList * BookmarkList);
-  bool /* __fastcall */ ApplyCommandDialog(UnicodeString & Command, int & Params);
-  bool /* __fastcall */ FullSynchronizeDialog(TTerminal::TSynchronizeMode & Mode,
+  bool __fastcall ApplyCommandDialog(UnicodeString & Command, int & Params);
+  bool __fastcall FullSynchronizeDialog(TTerminal::TSynchronizeMode & Mode,
     int & Params, UnicodeString & LocalDirectory, UnicodeString & RemoteDirectory,
     TCopyParamType * CopyParams, bool & SaveSettings, bool & SaveMode, int Options,
     const TUsableCopyParamAttrs & CopyParamAttrs);
-  bool /* __fastcall */ SynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
+  bool __fastcall SynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
     TTerminal::TSynchronizeMode Mode, int Params,
     const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory);
-  bool /* __fastcall */ RemoteTransferDialog(TStrings * FileList, UnicodeString & Target,
+  bool __fastcall RemoteTransferDialog(TStrings * FileList, UnicodeString & Target,
     UnicodeString & FileMask, bool Move);
-  bool /* __fastcall */ RenameFileDialog(TRemoteFile * File, UnicodeString & NewName);
-  int /* __fastcall */ MoreMessageDialog(const UnicodeString Str, TStrings * MoreMessages,
+  bool __fastcall RenameFileDialog(TRemoteFile * File, UnicodeString & NewName);
+  int __fastcall MoreMessageDialog(const UnicodeString Str, TStrings * MoreMessages,
     TQueryType Type, int Answers, const TMessageParams * Params = NULL);
-  bool /* __fastcall */ PasswordDialog(TSessionData * SessionData,
+  bool __fastcall PasswordDialog(TSessionData * SessionData,
     TPromptKind Kind, const UnicodeString Name, const UnicodeString Instructions, TStrings * Prompts,
     TStrings * Results, bool StoredCredentialsTried);
-  bool /* __fastcall */ BannerDialog(const UnicodeString SessionName, const UnicodeString Banner,
+  bool __fastcall BannerDialog(const UnicodeString SessionName, const UnicodeString Banner,
     bool & NeverShowAgain, int Options);
-  bool /* __fastcall */ CreateDirectoryDialog(UnicodeString & Directory,
+  bool __fastcall CreateDirectoryDialog(UnicodeString & Directory,
     TRemoteProperties * Properties, bool & SaveSettings);
-  bool /* __fastcall */ QueueDialog(TTerminalQueueStatus * Status, bool ClosingPlugin);
-  bool /* __fastcall */ SynchronizeDialog(TSynchronizeParamType & Params,
+  bool __fastcall QueueDialog(TTerminalQueueStatus * Status, bool ClosingPlugin);
+  bool __fastcall SynchronizeDialog(TSynchronizeParamType & Params,
     const TCopyParamType * CopyParams, const TSynchronizeStartStopEvent & OnStartStop,
     bool & SaveSettings, int Options, int CopyParamAttrs,
     const TGetSynchronizeOptionsEvent & OnGetOptions);
@@ -214,36 +214,36 @@ protected:
     const UnicodeString Directory, const UnicodeString ErrorStr);
   void /* __fastcall */ DoSynchronizeTooManyDirectories(TSynchronizeController * Sender,
     int & MaxDirectories);
-  void /* __fastcall */ Synchronize(const UnicodeString LocalDirectory,
+  void __fastcall Synchronize(const UnicodeString LocalDirectory,
     const UnicodeString RemoteDirectory, TTerminal::TSynchronizeMode Mode,
     const TCopyParamType & CopyParam, int Params, TSynchronizeChecklist ** Checklist,
     TSynchronizeOptions * Options);
-  bool /* __fastcall */ SynchronizeAllowSelectedOnly();
+  bool __fastcall SynchronizeAllowSelectedOnly();
   void /* __fastcall */ GetSynchronizeOptions(int Params, TSynchronizeOptions & Options);
-  void /* __fastcall */ RequireCapability(int Capability);
-  void /* __fastcall */ RequireLocalPanel(TFarPanelInfo * Panel, const UnicodeString Message);
-  bool /* __fastcall */ AreCachesEmpty();
-  void /* __fastcall */ ClearCaches();
-  void /* __fastcall */ OpenSessionInPutty();
-  void /* __fastcall */ QueueShow(bool ClosingPlugin);
-  TTerminalQueueStatus * /* __fastcall */ ProcessQueue(bool Hidden);
-  bool /* __fastcall */ EnsureCommandSessionFallback(TFSCapability Capability);
-  void /* __fastcall */ ConnectTerminal(TTerminal * Terminal);
-  void /* __fastcall */ TemporarilyDownloadFiles(TStrings * FileList,
+  void __fastcall RequireCapability(int Capability);
+  void __fastcall RequireLocalPanel(TFarPanelInfo * Panel, const UnicodeString Message);
+  bool __fastcall AreCachesEmpty();
+  void __fastcall ClearCaches();
+  void __fastcall OpenSessionInPutty();
+  void __fastcall QueueShow(bool ClosingPlugin);
+  TTerminalQueueStatus * __fastcall ProcessQueue(bool Hidden);
+  bool __fastcall EnsureCommandSessionFallback(TFSCapability Capability);
+  void __fastcall ConnectTerminal(TTerminal * Terminal);
+  void __fastcall TemporarilyDownloadFiles(TStrings * FileList,
     TCopyParamType CopyParam, UnicodeString & TempDir);
-  int /* __fastcall */ UploadFiles(bool Move, int OpMode, bool Edit, UnicodeString DestPath);
-  void /* __fastcall */ UploadOnSave(bool NoReload);
-  void /* __fastcall */ UploadFromEditor(bool NoReload, const UnicodeString FileName, const UnicodeString DestPath);
-  void /* __fastcall */ LogAuthentication(TTerminal * Terminal, const UnicodeString Msg);
-  void /* __fastcall */ MultipleEdit();
-  void /* __fastcall */ MultipleEdit(const UnicodeString Directory, const UnicodeString FileName, TRemoteFile * File);
-  void /* __fastcall */ EditViewCopyParam(TCopyParamType & CopyParam);
-  bool /* __fastcall */ SynchronizeBrowsing(const UnicodeString NewPath);
-  bool /* __fastcall */ IsEditHistoryEmpty();
-  void /* __fastcall */ EditHistory();
-  UnicodeString /* __fastcall */ ProgressBar(size_t Percentage, size_t Width);
-  bool /* __fastcall */ IsLogging();
-  void /* __fastcall */ ShowLog();
+  int __fastcall UploadFiles(bool Move, int OpMode, bool Edit, UnicodeString DestPath);
+  void __fastcall UploadOnSave(bool NoReload);
+  void __fastcall UploadFromEditor(bool NoReload, const UnicodeString FileName, const UnicodeString DestPath);
+  void __fastcall LogAuthentication(TTerminal * Terminal, const UnicodeString Msg);
+  void __fastcall MultipleEdit();
+  void __fastcall MultipleEdit(const UnicodeString Directory, const UnicodeString FileName, TRemoteFile * File);
+  void __fastcall EditViewCopyParam(TCopyParamType & CopyParam);
+  bool __fastcall SynchronizeBrowsing(const UnicodeString NewPath);
+  bool __fastcall IsEditHistoryEmpty();
+  void __fastcall EditHistory();
+  UnicodeString __fastcall ProgressBar(size_t Percentage, size_t Width);
+  bool __fastcall IsLogging();
+  void __fastcall ShowLog();
 
   TTerminal * GetTerminal() { return FTerminal; }
 
@@ -322,13 +322,13 @@ private:
   void /* __fastcall */ OperationFinished(TFileOperation Operation,
     TOperationSide Side, bool DragDrop, const UnicodeString FileName, bool Success,
     TOnceDoneOperation & DisconnectWhenComplete);
-  void /* __fastcall */ CancelConfiguration(TFileOperationProgressType & ProgressData);
-  TStrings * /* __fastcall */ CreateFileList(TObjectList * PanelItems,
+  void __fastcall CancelConfiguration(TFileOperationProgressType & ProgressData);
+  TStrings * __fastcall CreateFileList(TObjectList * PanelItems,
     TOperationSide Side, bool SelectedOnly = false, UnicodeString Directory = L"",
     bool FileNameOnly = false, TStrings * AFileList = NULL);
-  TStrings * /* __fastcall */ CreateSelectedFileList(TOperationSide Side,
+  TStrings * __fastcall CreateSelectedFileList(TOperationSide Side,
     TFarPanelInfo * PanelInfo = NULL);
-  TStrings * /* __fastcall */ CreateFocusedFileList(TOperationSide Side,
+  TStrings * __fastcall CreateFocusedFileList(TOperationSide Side,
     TFarPanelInfo * PanelInfo = NULL);
   void /* __fastcall */ CustomCommandGetParamValue(
     const UnicodeString AName, UnicodeString & Value);
@@ -339,7 +339,7 @@ private:
   void /* __fastcall */ QueueEvent(TTerminalQueue * Queue, TQueueEvent Event);
   void /* __fastcall */ GetSpaceAvailable(const UnicodeString Path,
     TSpaceAvailable & ASpaceAvailable, bool & Close);
-  void /* __fastcall */ QueueAddItem(TQueueItem * Item);
+  void __fastcall QueueAddItem(TQueueItem * Item);
 };
 //---------------------------------------------------------------------------
 class TSessionPanelItem : public TCustomFarPanelItem
