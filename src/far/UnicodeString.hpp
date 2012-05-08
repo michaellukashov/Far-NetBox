@@ -325,7 +325,7 @@ public:
   UTF8String & Insert(int Pos, const wchar_t * Str, int StrLen) { return Insert(Str, Pos); }
   UTF8String & Insert(const wchar_t * Str, int Pos);
 
-  UTF8String SubString(int Pos, int Len = -1) const { return UTF8String(Data.substr(Pos - 1, Len).c_str(), Len); }
+  UTF8String SubString(int Pos, int Len = -1) const { return UTF8String(Data.substr(Pos - 1, Len)); }
 
   int Pos(wchar_t Ch) const;
 
@@ -436,7 +436,7 @@ public:
   int RPos(wchar_t Ch) const { return (int)Data.find_last_of(Ch) + 1; }
   bool RPos(int & nPos, wchar_t Ch, int nStartPos = 0) const;
 
-  UnicodeString SubStr(int Pos, int Len = -1) const { return UnicodeString(Data.substr(Pos - 1, Len).c_str(), Len); }
+  UnicodeString SubStr(int Pos, int Len = -1) const;
   UnicodeString SubString(int Pos, int Len = -1) const { return SubStr(Pos, Len); }
 
   bool IsDelimiter(UnicodeString Chars, int Pos) const;

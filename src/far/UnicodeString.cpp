@@ -804,6 +804,12 @@ bool UnicodeString::RPos(int & nPos, wchar_t Ch, int nStartPos) const
   return pos != std::wstring::npos;
 }
 
+UnicodeString UnicodeString::SubStr(int Pos, int Len = -1) const
+{
+  std::wstring S(Data.substr(Pos - 1, Len);
+  return UnicodeString(S);
+}
+
 bool UnicodeString::IsDelimiter(UnicodeString Chars, int Pos) const
 {
   return Sysutils::IsDelimiter(*this, Chars, Pos);
