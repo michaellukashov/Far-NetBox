@@ -350,8 +350,8 @@ private:
     Data.resize(Length);
     if (Length > 0)
     {
-        memmove(reinterpret_cast<unsigned char *>(const_cast<wchar_t *>(Data.c_str())), Str, Length);
-        Data[Length-1] = 0;
+        memmove(const_cast<wchar_t *>(Data.c_str()), Str, Length * sizeof(wchar_t));
+        // Data[Length-1] = 0;
     }
   }
   void Init(const char * Str, int Length)
@@ -507,7 +507,7 @@ private:
     Data.resize(Length);
     if (Length > 0)
     {
-        memmove(reinterpret_cast<unsigned char *>(const_cast<wchar_t *>(Data.c_str())), Str, Length * sizeof(wchar_t));
+        memmove(const_cast<wchar_t *>(Data.c_str()), Str, Length * sizeof(wchar_t));
         // Data[Length - 1] = 0;
     }
   }
@@ -601,7 +601,7 @@ private:
     if (Length > 0)
     {
       memmove(const_cast<unsigned char *>(Data.c_str()), Str, Length);
-      Data[Length-1] = 0;
+      // Data[Length-1] = 0;
     }
   }
   void Init(const unsigned char * Str, int Length)
@@ -610,7 +610,7 @@ private:
     if (Length > 0)
     {
       memmove(const_cast<unsigned char *>(Data.c_str()), Str, Length);
-      Data[Length-1] = 0;
+      // Data[Length-1] = 0;
     }
   }
 
