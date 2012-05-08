@@ -296,20 +296,11 @@ class UTF8String
 {
 public:
   UTF8String() {}
-  UTF8String(const wchar_t * Str)
-  {
-    Init(Str, StrLength(Str));
-  }
-  UTF8String(const wchar_t * Str, int Size)
-  {
-    Init(Str, Size);
-  }
-  UTF8String(const char * Str, int Size)
-  {
-    Init(Str, Size);
-  }
-
+  UTF8String(const wchar_t * Str) { Init(Str, StrLength(Str)); }
+  UTF8String(const wchar_t * Str, int Size) { Init(Str, Size); }
+  UTF8String(const char * Str, int Size) { Init(Str, Size); }
   UTF8String(const UnicodeString & Str);
+  UTF8String(const std::wstring & Str) { Init(Str.c_str(), Str.size()); }
 
   ~UTF8String() {}
 
@@ -325,7 +316,7 @@ public:
   UTF8String & Insert(int Pos, const wchar_t * Str, int StrLen) { return Insert(Str, Pos); }
   UTF8String & Insert(const wchar_t * Str, int Pos);
 
-  UTF8String SubString(int Pos, int Len = -1) const { return UTF8String(Data.substr(Pos - 1, Len)); }
+  UTF8String SubString(int Pos, int Len = -1) const { return std::wstring(Data.substr(Pos - 1, Len)); }
 
   int Pos(wchar_t Ch) const;
 

@@ -656,6 +656,11 @@ const RawByteString & __fastcall RawByteString::operator +=(const char Ch)
 
 //------------------------------------------------------------------------------
 
+UTF8String::UTF8String(const UnicodeString & Str)
+{
+  Init(Str.c_str(), Str.GetLength());
+}
+
 int UTF8String::Pos(wchar_t Ch) const
 {
   wstring_t s(&Ch, 1);
@@ -721,11 +726,6 @@ const UTF8String & __fastcall UTF8String::operator +=(const char Ch)
   unsigned char ch(static_cast<unsigned char>(Ch));
   Data.append(1, ch);
   return *this;
-}
-
-UTF8String::UTF8String(const UnicodeString & Str)
-{
-  Init(Str.c_str(), Str.GetLength());
 }
 
 //------------------------------------------------------------------------------
@@ -804,9 +804,9 @@ bool UnicodeString::RPos(int & nPos, wchar_t Ch, int nStartPos) const
   return pos != std::wstring::npos;
 }
 
-UnicodeString UnicodeString::SubStr(int Pos, int Len = -1) const
+UnicodeString UnicodeString::SubStr(int Pos, int Len) const
 {
-  std::wstring S(Data.substr(Pos - 1, Len);
+  std::wstring S(Data.substr(Pos - 1, Len));
   return UnicodeString(S);
 }
 
