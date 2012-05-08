@@ -2417,13 +2417,13 @@ int __fastcall TFarPanelModes::CommaCount(const UnicodeString ColumnTypes)
   return Count;
 }
 //---------------------------------------------------------------------------
-__fastcall TFarKeyBarTitles::TFarKeyBarTitles()
+/* __fastcall */ TFarKeyBarTitles::TFarKeyBarTitles()
 {
   memset(&FKeyBarTitles, 0, sizeof(FKeyBarTitles));
   FReferenced = false;
 }
 //---------------------------------------------------------------------------
-__fastcall TFarKeyBarTitles::~TFarKeyBarTitles()
+/* __fastcall */ TFarKeyBarTitles::~TFarKeyBarTitles()
 {
   if (!FReferenced)
   {
