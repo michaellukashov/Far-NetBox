@@ -130,7 +130,7 @@ void __fastcall TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo 
               sizeof(FFarStandardFunctions) : Info->FSF->StructSize);
     }
   }
-  catch (const std::exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -198,7 +198,7 @@ void __fastcall TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
 
     memmove(Info, &FPluginInfo, sizeof(FPluginInfo));
   }
-  catch (const std::exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);

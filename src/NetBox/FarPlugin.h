@@ -56,7 +56,7 @@ struct TFarMessageParams
   bool CheckBox;
   size_t Timer;
   size_t TimerAnswer;
-  farmessagetimer_slot_type * TimerEvent;
+  TFarMessageTimerEvent * TimerEvent;
   size_t Timeout;
   size_t TimeoutButton;
   UnicodeString TimeoutStr;
@@ -167,8 +167,7 @@ public:
   __property bool ANSIApis = { read = FANSIApis };
   __property unsigned int FarThread = { read = FFarThread };
 #else
-  UnicodeString GetModuleName();
-  TFarDialog * GetTopDialog() const { return FTopDialog; }
+  TFarDialog * __fastcall GetTopDialog() const { return FTopDialog; }
   HINSTANCE GetHandle() const { return FHandle; };
   bool GetANSIApis() const { return FANSIApis; };
   unsigned int GetFarThread() const { return FFarThread; };
@@ -236,11 +235,11 @@ private:
   short FCurrentProgress;
 
   void __fastcall ClearPluginInfo(PluginInfo & Info);
-  // AnsiString __fastcall GetModuleName();
+  UnicodeString __fastcall GetModuleName();
   void __fastcall UpdateConsoleTitle();
   UnicodeString __fastcall FormatConsoleTitle();
   HWND __fastcall GetConsoleWindow();
-  RECT GetPanelBounds(HANDLE PanelHandle);
+  RECT __fastcall GetPanelBounds(HANDLE PanelHandle);
   bool CompareRects(const RECT & lhs, const RECT & rhs) const
   {
     return
@@ -257,7 +256,7 @@ friend TFarPanelInfo;
 friend TCustomFarPlugin;
 public:
   /* __fastcall */ TCustomFarFileSystem(TCustomFarPlugin * APlugin);
-  virtual __fastcall void Init();
+  virtual void __fastcall Init();
   virtual /* __fastcall */ ~TCustomFarFileSystem();
 
   void __fastcall GetOpenPluginInfo(struct OpenPluginInfo * Info);
