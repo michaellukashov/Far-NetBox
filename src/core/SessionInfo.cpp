@@ -618,7 +618,7 @@ FILE * __fastcall OpenFile(UnicodeString LogFileName, TSessionData * SessionData
   TDateTime N = Now();
   for (int Index = 1; Index < ANewFileName.Length(); Index++)
   {
-    if (ANewFileName[Index] == L'!')
+    if (ANewFileName[Index] == L'&')
     {
       UnicodeString Replacement;
       // keep consistent with TFileCustomCommand::PatternReplacement
@@ -656,12 +656,12 @@ FILE * __fastcall OpenFile(UnicodeString LogFileName, TSessionData * SessionData
           Replacement = MakeValidFileName(SessionData->GetSessionName());
           break;
 
-        case L'!':
-          Replacement = L"!";
+        case L'&':
+          Replacement = L"&";
           break;
 
         default:
-          Replacement = UnicodeString(L"!") + ANewFileName[Index + 1];
+          Replacement = UnicodeString(L"&") + ANewFileName[Index + 1];
           break;
       }
       ANewFileName.Delete(Index, 2);
@@ -669,7 +669,9 @@ FILE * __fastcall OpenFile(UnicodeString LogFileName, TSessionData * SessionData
       Index += Replacement.Length() - 1;
     }
   }
-  Result = _wfopen(ANewFileName.c_str(), (Append ? L"a" : L"w"));
+  // Result = _wfopen(ANewFileName.c_str(), (Append ? L"a" : L"w"));
+  Result = _fsopen(W2MB(ANewFileName.c_str()).c_str(),
+    Append ? "a" : "w", SH_DENYWR);
   if (Result != NULL)
   {
     setvbuf(Result, NULL, _IONBF, BUFSIZ);
