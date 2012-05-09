@@ -8,18 +8,17 @@
 class TXmlStorage : public THierarchicalStorage
 {
 public:
-  explicit TXmlStorage(const UnicodeString AStorage, const UnicodeString StoredSessionsSubKey);
-  virtual ~TXmlStorage();
-
+  explicit /* __fastcall */ TXmlStorage(const UnicodeString AStorage, const UnicodeString StoredSessionsSubKey);
   virtual void __fastcall Init();
+  virtual /* __fastcall */ ~TXmlStorage();
+
   bool Copy(TXmlStorage * Storage);
 
-  virtual bool __fastcall OpenSubKey(const UnicodeString SubKey, bool CanCreate, bool Path = false);
   virtual void __fastcall CloseSubKey();
   virtual bool __fastcall DeleteSubKey(const UnicodeString SubKey);
   virtual bool __fastcall DeleteValue(const UnicodeString Name);
   virtual void __fastcall GetSubKeyNames(TStrings * Strings);
-  virtual bool __fastcall KeyExists(const UnicodeString SubKey);
+  // bool __fastcall KeyExists(const UnicodeString SubKey);
   virtual bool __fastcall ValueExists(const UnicodeString Value);
 
   virtual size_t __fastcall BinaryDataSize(const UnicodeString Name);
@@ -56,7 +55,7 @@ private:
   UnicodeString GetSubKeyText(const UnicodeString Name);
   TiXmlElement * FindElement(const UnicodeString Value);
   std::string ToStdString(const UnicodeString String) { return W2MB(String.c_str()); }
-  UnicodeString ToStdWString(const std::string & String) { return MB2W(String.c_str()); }
+  UnicodeString ToUnicodeString(const std::string & String) { return MB2W(String.c_str()); }
   void RemoveIfExists(const UnicodeString Name);
   void AddNewElement(const UnicodeString Name, const UnicodeString Value);
   TiXmlElement * FindChildElement(const std::string & subKey);

@@ -192,6 +192,7 @@ bool __fastcall TXmlStorage::DoOpenSubKey(const UnicodeString SubKey, bool CanCr
   return Result;
 }
 //---------------------------------------------------------------------------
+/*
 bool TXmlStorage::OpenSubKey(const UnicodeString SubKey, bool CanCreate, bool Path)
 {
   TiXmlElement * OldCurrentElement = FCurrentElement;
@@ -242,6 +243,7 @@ bool TXmlStorage::OpenSubKey(const UnicodeString SubKey, bool CanCreate, bool Pa
   }
   return Result;
 }
+*/
 //---------------------------------------------------------------------------
 void TXmlStorage::CloseSubKey()
 {
@@ -297,10 +299,10 @@ bool TXmlStorage::DeleteValue(const UnicodeString Name)
   return result;
 }
 //---------------------------------------------------------------------------
-bool TXmlStorage::KeyExists(const UnicodeString SubKey)
-{
-  return DoKeyExists(SubKey, GetForceAnsi());
-}
+// bool TXmlStorage::KeyExists(const UnicodeString SubKey)
+// {
+  // return DoKeyExists(SubKey, GetForceAnsi());
+// }
 //---------------------------------------------------------------------------
 void TXmlStorage::RemoveIfExists(const UnicodeString Name)
 {
@@ -327,13 +329,13 @@ UnicodeString TXmlStorage::GetSubKeyText(const UnicodeString Name)
   {
     return UnicodeString();
   }
-  if (ToStdWString(CONST_SESSION_NODE) == Name)
+  if (ToUnicodeString(CONST_SESSION_NODE) == Name)
   {
-    return ToStdWString(std::string(Element->Attribute(CONST_NAME_ATTR)));
+    return ToUnicodeString(std::string(Element->Attribute(CONST_NAME_ATTR)));
   }
   else
   {
-    return ToStdWString(Element->GetText() ? std::string(Element->GetText()) : std::string());
+    return ToUnicodeString(Element->GetText() ? std::string(Element->GetText()) : std::string());
   }
 }
 //---------------------------------------------------------------------------
@@ -342,7 +344,7 @@ TiXmlElement * TXmlStorage::FindElement(const UnicodeString Name)
   for (const TiXmlElement * Element = FCurrentElement->FirstChildElement();
        Element != NULL; Element = Element->NextSiblingElement())
   {
-    UnicodeString name = ToStdWString(Element->ValueStr());
+    UnicodeString name = ToUnicodeString(Element->ValueStr());
     // DEBUG_PRINTF(L"name = %s", name.c_str());
     if (name == Name)
     {
@@ -377,11 +379,11 @@ UnicodeString TXmlStorage::GetValue(TiXmlElement * Element)
   UnicodeString result;
   if (FStoredSessionsOpened && Element->Attribute(CONST_NAME_ATTR))
   {
-    result = ToStdWString(Element->Attribute(CONST_NAME_ATTR));
+    result = ToUnicodeString(Element->Attribute(CONST_NAME_ATTR));
   }
   else
   {
-    result = ToStdWString(Element->ValueStr());
+    result = ToUnicodeString(Element->ValueStr());
   }
   return result;
 }
