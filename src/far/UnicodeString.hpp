@@ -239,8 +239,8 @@ public:
   bool operator!=(const wchar_t * Str) const { return !IsSubStrAt(0, GetLength(), Str, StrLength(Str)); }
   bool operator!=(wchar_t Ch) const { return !IsSubStrAt(0, GetLength(), &Ch, 1); }
 
-  UnicodeString & Lower(size_t nStartPos=0, size_t nLength=(size_t)-1);
-  UnicodeString & Upper(size_t nStartPos=0, size_t nLength=(size_t)-1);
+  UnicodeString & Lower(size_t nStartPos=1, size_t nLength=(size_t)-1);
+  UnicodeString & Upper(size_t nStartPos=1, size_t nLength=(size_t)-1);
 
   int Pos(wchar_t Ch) const;
   int Pos(const wchar_t * Str) const;
@@ -397,8 +397,8 @@ public:
   UnicodeString & Delete(int Index, int Count) { Data.erase(Index - 1, Count); return *this; }
   UnicodeString & Clear() { Data.clear(); return *this; }
 
-  UnicodeString & Lower(int nStartPos = 0, int nLength = -1);
-  UnicodeString & Upper(int nStartPos = 0, int nLength = -1);
+  UnicodeString & Lower(int nStartPos = 1, int nLength = -1);
+  UnicodeString & Upper(int nStartPos = 1, int nLength = -1);
 
   UnicodeString & LowerCase() { return Lower(); }
   UnicodeString & UpperCase() { return Upper(); }
