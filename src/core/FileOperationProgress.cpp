@@ -11,84 +11,16 @@
 #define TRANSFER_BUF_SIZE 4096
 //---------------------------------------------------------------------------
 /* __fastcall */ TFileOperationProgressType::TFileOperationProgressType() :
-  FSuspendTime(NULL),
-  // TDateTime FFileStartTime;
-  FFilesFinished(0),
   FOnProgress(NULL),
-  FOnFinished(NULL),
-  FReset(false),
-  FLastSecond(0),
-  FRemainingCPS(0),
-  // std::vector<unsigned long> FTicks;
-  // std::vector<__int64> FTotalTransferredThen;
-  Operation(foNone),
-  Side(osLocal),
-  // UnicodeString FileName;
-  // UnicodeString Directory;
-  AsciiTransfer(false),
-  TransferingFile(false),
-  Temp(false),
-  LocalSize(0),
-  LocallyUsed(0),
-  TransferSize(0),
-  TransferedSize(0),
-  SkippedSize(0),
-  ResumeStatus(rsNotAvailable),
-  InProgress(false),
-  FileInProgress(false),
-  Cancel(csContinue),
-  Count(0),
-  // TDateTime StartTime;
-  TotalTransfered(0),
-  TotalSkipped(0),
-  TotalSize(0),
-  BatchOverwrite(boNo),
-  SkipToAll(false),
-  CPSLimit(0),
-  TotalSizeSet(false),
-  Suspended(false)
+  FOnFinished(NULL)
 {
   Clear();
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TFileOperationProgressType::TFileOperationProgressType(
   fileoperationprogress_signal_type * AOnProgress, fileoperationfinished_signal_type * AOnFinished) :
-  FSuspendTime(NULL),
-  // TDateTime FFileStartTime;
-  FFilesFinished(0),
   FOnProgress(AOnProgress),
-  FOnFinished(AOnFinished),
-  FReset(false),
-  FLastSecond(0),
-  FRemainingCPS(0),
-  // std::vector<unsigned long> FTicks;
-  // std::vector<__int64> FTotalTransferredThen;
-  Operation(foNone),
-  Side(osLocal),
-  // UnicodeString FileName;
-  // UnicodeString Directory;
-  AsciiTransfer(false),
-  TransferingFile(false),
-  Temp(false),
-  LocalSize(0),
-  LocallyUsed(0),
-  TransferSize(0),
-  TransferedSize(0),
-  SkippedSize(0),
-  ResumeStatus(rsNotAvailable),
-  InProgress(false),
-  FileInProgress(false),
-  Cancel(csContinue),
-  Count(0),
-  // TDateTime StartTime;
-  TotalTransfered(0),
-  TotalSkipped(0),
-  TotalSize(0),
-  BatchOverwrite(boNo),
-  SkipToAll(false),
-  CPSLimit(0),
-  TotalSizeSet(false),
-  Suspended(false)
+  FOnFinished(AOnFinished)
 {
   FReset = false;
   Clear();
@@ -102,30 +34,42 @@
 //---------------------------------------------------------------------------
 void __fastcall TFileOperationProgressType::Clear()
 {
-  FileName = L"";
-  AsciiTransfer = false;
-  ResumeStatus = rsNotAvailable;
-  Count = 0;
+  FSuspendTime = 0,
+  FFileStartTime = 0.0;
   FFilesFinished = 0;
-  StartTime = Now();
-  Suspended = false;
-  FSuspendTime = 0;
+  FReset = false;
+  FLastSecond = 0;
+  FRemainingCPS = 0;
+  FTicks.clear();
+  FTotalTransferredThen.clear();
+  Operation = foNone;
+  Side = osLocal;
+  FileName.Clear();
+  Directory.Clear();
+  AsciiTransfer = false;
+  TransferingFile = false;
+  Temp = false;
+  LocalSize = 0;
+  LocallyUsed = 0;
+  // to bypass check in ClearTransfer()
+  TransferSize = 0;
+  TransferedSize = 0;
+  SkippedSize = 0;
+  ResumeStatus = rsNotAvailable;
   InProgress = false;
   FileInProgress = false;
+  Cancel = csContinue;
+  Count = 0;
+  StartTime = Now();
   TotalTransfered = 0;
   TotalSkipped = 0;
   TotalSize = 0;
-  SkippedSize = 0;
-  TotalSizeSet = false;
-  Operation = foNone;
-  Temp = false;
-  SkipToAll = false;
   BatchOverwrite = boNo;
-  // to bypass check in ClearTransfer()
-  TransferSize = 0;
+  SkipToAll = false;
   CPSLimit = 0;
-  FTicks.clear();
-  FTotalTransferredThen.clear();
+  TotalSizeSet = false;
+  Suspended = false;
+
   ClearTransfer();
 }
 //---------------------------------------------------------------------------
