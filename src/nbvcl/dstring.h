@@ -31,9 +31,9 @@ namespace System
     static AnsiStringBase __fastcall LoadStr(int ident, int codePage);
     static AnsiStringBase __fastcall LoadStr(HINSTANCE hInstance, int ident, int codePage);
     static AnsiStringBase __fastcall FmtLoadStr(int ident, const TVarRec *args,
-                        int size, int codePage);
+      int size, int codePage);
 
-    AnsiStringBase& __fastcall       LoadString(HINSTANCE hInstance, int ident, int codePage);
+    AnsiStringBase& __fastcall LoadString(HINSTANCE hInstance, int ident, int codePage);
 
     // String of specified character
     static AnsiStringBase __fastcall StringOfChar(char ch, int count);
@@ -41,24 +41,24 @@ namespace System
     // Delphi style 'Format'
     //
     static AnsiStringBase __fastcall Format(const AnsiStringBase& format,
-                                            const TVarRec *args, int size,
-                                            int codePage);
+      const TVarRec *args, int size,
+      int codePage);
 
     int         __cdecl         vprintf(int codePage, const char* format, va_list); // Returns formatted length
     int         __cdecl     cat_vprintf(int codePage, const char* format, va_list); // Returns formatted length
 
     static AnsiStringBase __fastcall FormatFloat(const AnsiStringBase& format,
-                                                 const long double& value,
-                                                 int codePage);
+      const long double& value,
+      int codePage);
     static AnsiStringBase __fastcall FloatToStrF(long double value,
-                                                 TStringFloatFormat format,
-                                                 int precision, int digits,
-                                                 int codePage);
+      TStringFloatFormat format,
+      int precision, int digits,
+      int codePage);
     static AnsiStringBase __fastcall IntToHex(int value, int digits, int codePage);
     static AnsiStringBase __fastcall CurrToStr(Currency value, int codePage);
     static AnsiStringBase __fastcall CurrToStrF(Currency value,
-                                                TStringFloatFormat format,
-                                                int digits, int codePage);
+      TStringFloatFormat format,
+      int digits, int codePage);
     // Constructors
   protected:
     __fastcall AnsiStringBase(): Data(0) {}
@@ -347,8 +347,9 @@ namespace System
     }
 
     static AnsiStringT __fastcall CurrToStrF(Currency value,
-                                             TStringFloatFormat format,
-                                             int digits) {
+      TStringFloatFormat format,
+      int digits)
+    {
       return AnsiStringBase::CurrToStrF(value, format, digits, CP);
     }
 

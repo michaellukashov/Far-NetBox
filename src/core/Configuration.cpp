@@ -87,7 +87,7 @@ void __fastcall TConfiguration::Default()
   FForceBanners = false;
   FDisableAcceptingHostKeys = false;
 
-  TRegistryStorage * AdminStorage;
+  TRegistryStorage * AdminStorage = NULL;
   AdminStorage = new TRegistryStorage(GetRegistryStorageKey(), HKEY_LOCAL_MACHINE);
   // try
   {
@@ -438,7 +438,7 @@ void __fastcall TConfiguration::LoadDirectoryChangesCache(const UnicodeString Se
         Storage->OpenSubKey(L"CDCache", false) &&
         Storage->ValueExists(SessionKey))
     {
-      DirectoryChangesCache->Deserialize(Storage->ReadBinaryData(SessionKey));
+      DirectoryChangesCache->Deserialize(UnicodeString(Storage->ReadBinaryData(SessionKey)));
     }
   }
 #ifndef _MSC_VER

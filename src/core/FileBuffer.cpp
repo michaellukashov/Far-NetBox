@@ -107,7 +107,7 @@ void __fastcall TFileBuffer::Convert(char * Source, char * Dest, int Params,
   if (FLAGSET(Params, cpRemoveBOM) && (GetSize() >= 3) &&
       (memcmp(GetData(), Bom, sizeof(Bom)) == 0))
   {
-    Delete(0, 3);
+    Delete(1, 3);
   }
 
   if (FLAGSET(Params, cpRemoveCtrlZ) && (GetSize() > 0) && ((*(GetData() + GetSize() - 1)) == '\x1A'))

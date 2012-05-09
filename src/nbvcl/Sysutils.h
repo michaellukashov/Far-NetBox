@@ -175,7 +175,7 @@ UnicodeString ExpandEnvVars(const UnicodeString str);
 
 //---------------------------------------------------------------------------
 
-UnicodeString StringOfChar(const wchar_t c, size_t len);
+UnicodeString StringOfChar(const wchar_t c, int len);
 
 char *StrNew(const char *str);
 

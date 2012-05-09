@@ -471,10 +471,12 @@ int TStrings::Add(const UnicodeString S)
     Insert(Result, S);
     return Result;
 }
+
 UnicodeString TStrings::GetText()
 {
     return GetTextStr();
 }
+
 UnicodeString TStrings::GetTextStr()
 {
     UnicodeString Result;
@@ -511,16 +513,19 @@ UnicodeString TStrings::GetTextStr()
     }
     return Result;
 }
+
 void TStrings::SetText(const UnicodeString Text)
 {
     SetTextStr(Text);
 }
+
 void TStrings::SetCommaText(const UnicodeString Value)
 {
     SetDelimiter(L',');
     SetQuoteChar(L'"');
     SetDelimitedText(Value);
 }
+
 void TStrings::BeginUpdate()
 {
     if (FUpdateCount == 0)
@@ -529,6 +534,7 @@ void TStrings::BeginUpdate()
     }
     FUpdateCount++;
 }
+
 void TStrings::EndUpdate()
 {
     FUpdateCount--;
@@ -537,21 +543,25 @@ void TStrings::EndUpdate()
         SetUpdateState(false);
     }
 }
+
 void TStrings::SetUpdateState(bool Updating)
 {
     (void)Updating;
 }
+
 TObject *TStrings::GetObjects(int Index)
 {
     (void)Index;
     return NULL;
 }
+
 int TStrings::AddObject(const UnicodeString S, TObject *AObject)
 {
     int Result = Add(S);
     PutObject(Result, AObject);
     return Result;
 }
+
 void TStrings::InsertObject(int Index, const UnicodeString Key, TObject *AObject)
 {
     Insert(Index, Key);
@@ -576,21 +586,25 @@ bool TStrings::Equals(TStrings *Strings)
     Result = true;
     return Result;
 }
+
 void TStrings::PutObject(int Index, TObject *AObject)
 {
     (void)Index;
     (void)AObject;
 }
+
 void TStrings::PutString(int Index, const UnicodeString S)
 {
     TObject *TempObject = GetObjects(Index);
     Delete(Index);
     InsertObject(Index, S, TempObject);
 }
+
 void TStrings::SetDuplicates(TDuplicatesEnum value)
 {
     FDuplicates = value;
 }
+
 void TStrings::Move(int CurIndex, int NewIndex)
 {
     if (CurIndex != NewIndex)
@@ -609,6 +623,7 @@ void TStrings::Move(int CurIndex, int NewIndex)
         }
     }
 }
+
 int TStrings::IndexOf(const UnicodeString S)
 {
     // DEBUG_PRINTF(L"begin");
@@ -635,10 +650,12 @@ int TStrings::IndexOfName(const UnicodeString Name)
     }
     return NPOS;
 }
+
 const UnicodeString TStrings::GetName(int Index)
 {
     return ExtractName(GetStrings(Index));
 }
+
 UnicodeString TStrings::ExtractName(const UnicodeString S)
 {
     UnicodeString Result = S;
@@ -653,6 +670,7 @@ UnicodeString TStrings::ExtractName(const UnicodeString S)
     }
     return Result;
 }
+
 const UnicodeString TStrings::GetValue(const UnicodeString Name)
 {
     UnicodeString Result;
@@ -663,6 +681,7 @@ const UnicodeString TStrings::GetValue(const UnicodeString Name)
     }
     return Result;
 }
+
 void TStrings::SetValue(const UnicodeString Name, const UnicodeString Value)
 {
     int I = IndexOfName(Name);
@@ -682,6 +701,7 @@ void TStrings::SetValue(const UnicodeString Name, const UnicodeString Value)
         }
     }
 }
+
 void TStrings::AddStrings(TStrings *Strings)
 {
     BeginUpdate();
@@ -697,10 +717,12 @@ void TStrings::AddStrings(TStrings *Strings)
         }
     }
 }
+
 void TStrings::Append(const UnicodeString value)
 {
     Insert(GetCount(), value);
 }
+
 void TStrings::SaveToStream(TStream *Stream)
 {
     Classes::Error(SNotImplemented, 12);
@@ -719,26 +741,32 @@ TStringList::TStringList() :
     FCaseSensitive(false)
 {
 }
+
 TStringList::~TStringList()
 {}
+
 void TStringList::Assign(TPersistent *Source)
 {
     parent::Assign(Source);
 }
+
 int TStringList::GetCount() const
 {
     return FList.size();
 }
+
 void TStringList::Clear()
 {
     FList.clear();
     // SetCount(0);
     // SetCapacity(0);
 }
+
 int TStringList::Add(const UnicodeString S)
 {
     return AddObject(S, NULL);
 }
+
 int TStringList::AddObject(const UnicodeString S, TObject *AObject)
 {
     // DEBUG_PRINTF(L"S = %s, Duplicates = %d", S.c_str(), FDuplicates);
@@ -765,6 +793,7 @@ int TStringList::AddObject(const UnicodeString S, TObject *AObject)
     InsertItem(Result, S, AObject);
     return Result;
 }
+
 bool TStringList::Find(const UnicodeString S, int &Index)
 {
     bool Result = false;

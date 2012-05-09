@@ -585,8 +585,6 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
   SetCustomParam2(Storage->ReadString(L"CustomParam2", GetCustomParam2()));
 
   SetSslSessionReuse(Storage->ReadBool(L"SslSessionReuse", GetSslSessionReuse()));
-
-  Storage->CloseSubKey();
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionData::Load(THierarchicalStorage * Storage)
@@ -2321,9 +2319,9 @@ void __fastcall TSessionData::SetCodePage(const UnicodeString value)
 //---------------------------------------------------------------------
 void __fastcall TSessionData::AdjustHostName(UnicodeString & hostName, const UnicodeString prefix)
 {
-  if (::LowerCase(hostName.SubString(0, prefix.Length())) == prefix)
+  if (::LowerCase(hostName.SubString(1, prefix.Length())) == prefix)
   {
-    hostName.Delete(0, prefix.Length());
+    hostName.Delete(1, prefix.Length());
     hostName = ::ReplaceStrAll(hostName, L"/", L"_");
   }
 }
@@ -2372,7 +2370,7 @@ void __fastcall TStoredSessionList::Load(THierarchicalStorage * Storage,
     Storage->GetSubKeyNames(SubKeys);
     for (int Index = 0; Index < SubKeys->GetCount(); Index++)
     {
-      TSessionData * SessionData;
+      TSessionData * SessionData = NULL;
       UnicodeString SessionName = SubKeys->GetStrings(Index);
       bool ValidName = true;
       try

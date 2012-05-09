@@ -63,100 +63,7 @@ private:
   bool FForceBanners;
   bool FDisableAcceptingHostKeys;
 
-protected:
-  // TStorage FStorage;
-  // TCriticalSection * FCriticalSection;
-
-  virtual void __fastcall Changed();
-  virtual void __fastcall SaveData(THierarchicalStorage * Storage, bool All);
-  virtual void __fastcall LoadData(THierarchicalStorage * Storage);
-  virtual void __fastcall CopyData(THierarchicalStorage * Source, THierarchicalStorage * Target);
-  virtual void __fastcall LoadAdmin(THierarchicalStorage * Storage);
-  virtual void __fastcall Saved();
-  void __fastcall CleanupRegistry(UnicodeString CleanupSubKey);
-  UnicodeString __fastcall BannerHash(const UnicodeString & Banner);
-
-  virtual UnicodeString __fastcall ModuleFileName();
-
-  UnicodeString __fastcall GetFileFileInfoString(const UnicodeString Key,
-    const UnicodeString FileName);
-  void * __fastcall __fastcall GetFileApplicationInfo(const UnicodeString FileName);
-  UnicodeString __fastcall GetFileProductVersion(const UnicodeString FileName);
-  UnicodeString __fastcall GetFileProductName(const UnicodeString FileName);
-  UnicodeString __fastcall GetFileCompanyName(const UnicodeString FileName);
-
-  bool __fastcall GetPermanentLogging() { return FPermanentLogging; }
-  void __fastcall SetPermanentLogging(bool value) { FPermanentLogging = value; }
-  UnicodeString __fastcall GetPermanentLogFileName() { return FPermanentLogFileName; }
-  void __fastcall SetPermanentLogFileName(const UnicodeString value) { FPermanentLogFileName = value; }
-  bool __fastcall GetPermanentLogActions() { return FPermanentLogActions; }
-  void __fastcall SetPermanentLogActions(bool value) { FPermanentLogActions = value; }
-
 public:
-  // TConfiguration();
-  // virtual ~TConfiguration();
-  // virtual void __fastcall Default();
-  // virtual void __fastcall Load();
-  // virtual void __fastcall Save(bool All, bool Explicit);
-  // void Export(const UnicodeString FileName);
-  // void CleanupConfiguration();
-  // void CleanupIniFile();
-  // void CleanupHostKeys();
-  // void CleanupRandomSeedFile();
-  // void BeginUpdate();
-  // void EndUpdate();
-  // void LoadDirectoryChangesCache(const UnicodeString SessionKey,
-    // TRemoteDirectoryChangesCache * DirectoryChangesCache);
-  // void SaveDirectoryChangesCache(const UnicodeString SessionKey,
-    // TRemoteDirectoryChangesCache * DirectoryChangesCache);
-  // bool ShowBanner(const UnicodeString SessionKey, const UnicodeString Banner);
-  // void NeverShowBanner(const UnicodeString SessionKey, const UnicodeString Banner);
-  // virtual THierarchicalStorage * __fastcall CreateScpStorage(bool SessionList);
-  // void TemporaryLogging(const UnicodeString ALogFileName);
-  // virtual UnicodeString __fastcall EncryptPassword(const UnicodeString Password, const UnicodeString Key);
-  // virtual UnicodeString __fastcall DecryptPassword(const UnicodeString Password, const UnicodeString Key);
-  // virtual UnicodeString __fastcall StronglyRecryptPassword(const UnicodeString Password, const UnicodeString Key);
-
-  UnicodeString GetPuttyRegistryStorageKey() { return FPuttyRegistryStorageKey; }
-  bool GetLogging() { return FLogging; }
-  UnicodeString __fastcall GetLogFileName() { return FLogFileName; }
-  void __fastcall SetLogToFile(bool value);
-  bool GetLogFileAppend() { return FLogFileAppend; }
-  size_t GetLogProtocol() { return FLogProtocol; }
-  // void SetLogProtocol(size_t value);
-  size_t GetActualLogProtocol() { return FActualLogProtocol; }
-  bool GetLogActions() { return FLogActions; }
-  int GetLogWindowLines() { return FLogWindowLines; }
-  notify_signal_type & GetOnChange() { return FOnChange; }
-  void SetOnChange(const TNotifyEvent & value) { FOnChange.connect(value); }
-  int GetSessionReopenAuto() { return FSessionReopenAuto; }
-  int __fastcall GetSessionReopenAutoMaximumNumberOfRetries() const { return FSessionReopenAutoMaximumNumberOfRetries; }
-  void __fastcall SetSessionReopenAutoMaximumNumberOfRetries(int value);
-  int GetSessionReopenBackground() { return FSessionReopenBackground; }
-  size_t GetSessionReopenTimeout() { return FSessionReopenTimeout; }
-  size_t GetTunnelLocalPortNumberLow() { return FTunnelLocalPortNumberLow; }
-  size_t GetTunnelLocalPortNumberHigh() { return FTunnelLocalPortNumberHigh; }
-  int GetCacheDirectoryChangesMaxSize() { return FCacheDirectoryChangesMaxSize; }
-  // void SetCacheDirectoryChangesMaxSize(int value);
-  bool GetShowFtpWelcomeMessage() { return FShowFtpWelcomeMessage; }
-  UnicodeString GetExternalIpAddress() const { return FExternalIpAddress; }
-  // void SetExternalIpAddress(const UnicodeString value) { FExternalIpAddress = value; }
-
-  // UnicodeString GetTimeFormat();
-
-  bool GetDisablePasswordStoring() { return FDisablePasswordStoring; }
-  bool GetForceBanners() { return FForceBanners; }
-  bool GetDisableAcceptingHostKeys() { return FDisableAcceptingHostKeys; }
-  virtual bool __fastcall GetRememberPassword();
-  virtual bool __fastcall GetConfirmOverwriting();
-  virtual void __fastcall SetConfirmOverwriting(bool value);
-  bool __fastcall GetConfirmResume();
-  void __fastcall SetConfirmResume(bool value);
-  bool __fastcall GetAutoReadDirectoryAfterOp();
-  void __fastcall SetAutoReadDirectoryAfterOp(bool value);
-  virtual UnicodeString __fastcall GetDefaultKeyFile();
-  // void __fastcall SetLogging(bool value);
-  // void __fastcall SetLogFileName(UnicodeString value);
   UnicodeString __fastcall GetOSVersionStr();
   VS_FIXEDFILEINFO __fastcall GetFixedApplicationInfo();
   void * __fastcall GetApplicationInfo();
@@ -168,7 +75,6 @@ public:
   UnicodeString __fastcall TrimVersion(UnicodeString Version);
   UnicodeString __fastcall GetStoredSessionsSubKey();
   UnicodeString __fastcall GetPuttySessionsKey();
-  UnicodeString __fastcall GetRandomSeedFile() const { return FRandomSeedFile; }
   void __fastcall SetRandomSeedFile(UnicodeString value);
   UnicodeString __fastcall GetRandomSeedFileName();
   void __fastcall SetPuttyRegistryStorageKey(UnicodeString value);
@@ -185,7 +91,6 @@ public:
   void __fastcall SetLogFileAppend(bool value);
   void __fastcall SetLogProtocol(int value);
   void __fastcall SetLogActions(bool value);
-  UnicodeString __fastcall GetActionsLogFileName() const { return FActionsLogFileName; }
   void __fastcall SetActionsLogFileName(UnicodeString value);
   UnicodeString __fastcall GetDefaultLogFileName();
   UnicodeString __fastcall GetTimeFormat();
@@ -199,7 +104,6 @@ public:
   void __fastcall SetSessionReopenAuto(int value);
   void __fastcall SetSessionReopenBackground(int value);
   void __fastcall SetSessionReopenTimeout(int value);
-  int __fastcall GetSessionReopenAutoStall() { return FSessionReopenAutoStall; }
   void __fastcall SetSessionReopenAutoStall(int value);
   void __fastcall SetTunnelLocalPortNumberLow(int value);
   void __fastcall SetTunnelLocalPortNumberHigh(int value);
@@ -213,7 +117,7 @@ protected:
   TStorage FStorage;
   TCriticalSection * FCriticalSection;
 
-#ifndef _MSC_VER
+public:
   virtual TStorage __fastcall GetStorage();
   virtual void __fastcall Changed();
   virtual void __fastcall SaveData(THierarchicalStorage * Storage, bool All);
@@ -242,17 +146,26 @@ protected:
   UnicodeString __fastcall GetFileProductName(const UnicodeString FileName);
   UnicodeString __fastcall GetFileCompanyName(const UnicodeString FileName);
 
+#ifndef _MSC_VER
   __property bool PermanentLogging  = { read=FPermanentLogging, write=SetLogging };
   __property UnicodeString PermanentLogFileName  = { read=FPermanentLogFileName, write=SetLogFileName };
   __property bool PermanentLogActions  = { read=FPermanentLogActions, write=SetLogActions };
   __property UnicodeString PermanentActionsLogFileName  = { read=FPermanentActionsLogFileName, write=SetActionsLogFileName };
+#else
+  bool __fastcall GetPermanentLogging() { return FPermanentLogging; }
+  void __fastcall SetPermanentLogging(bool value) { FPermanentLogging = value; }
+  bool __fastcall GetPermanentLogActions() { return FPermanentLogActions; }
+  void __fastcall SetPermanentLogActions(bool value) { FPermanentLogActions = value; }
+  UnicodeString __fastcall GetPermanentLogFileName() { return FPermanentLogFileName; }
+  void __fastcall SetPermanentLogFileName(const UnicodeString value) { FPermanentLogFileName = value; }
+  UnicodeString __fastcall GetPermanentActionsLogFileName() { return FPermanentActionsLogFileName; }
+  void __fastcall SetPermanentActionsLogFileName(const UnicodeString value) { FPermanentActionsLogFileName = value; }
 #endif
 
 public:
   /* __fastcall */ TConfiguration();
   virtual /* __fastcall */ ~TConfiguration();
 
-  virtual TStorage __fastcall GetStorage();
   virtual void __fastcall Default();
   virtual void __fastcall Load();
   virtual void __fastcall Save(bool All, bool Explicit);
@@ -335,6 +248,36 @@ public:
   __property bool ForceBanners = { read = FForceBanners };
   __property bool DisableAcceptingHostKeys = { read = FDisableAcceptingHostKeys };
   __property bool GSSAPIInstalled = { read = GetGSSAPIInstalled };
+#else
+  UnicodeString __fastcall GetActionsLogFileName() const { return FActionsLogFileName; }
+  UnicodeString __fastcall GetRandomSeedFile() const { return FRandomSeedFile; }
+  int __fastcall GetSessionReopenAutoStall() { return FSessionReopenAutoStall; }
+
+  UnicodeString GetPuttyRegistryStorageKey() { return FPuttyRegistryStorageKey; }
+  bool GetLogging() { return FLogging; }
+  UnicodeString __fastcall GetLogFileName() { return FLogFileName; }
+  void __fastcall SetLogToFile(bool value);
+  bool GetLogFileAppend() { return FLogFileAppend; }
+  size_t GetLogProtocol() { return FLogProtocol; }
+  size_t GetActualLogProtocol() { return FActualLogProtocol; }
+  bool GetLogActions() { return FLogActions; }
+  int GetLogWindowLines() { return FLogWindowLines; }
+  notify_signal_type & GetOnChange() { return FOnChange; }
+  void SetOnChange(const TNotifyEvent & value) { FOnChange.connect(value); }
+  int GetSessionReopenAuto() { return FSessionReopenAuto; }
+  int __fastcall GetSessionReopenAutoMaximumNumberOfRetries() const { return FSessionReopenAutoMaximumNumberOfRetries; }
+  void __fastcall SetSessionReopenAutoMaximumNumberOfRetries(int value);
+  int GetSessionReopenBackground() { return FSessionReopenBackground; }
+  size_t GetSessionReopenTimeout() { return FSessionReopenTimeout; }
+  size_t GetTunnelLocalPortNumberLow() { return FTunnelLocalPortNumberLow; }
+  size_t GetTunnelLocalPortNumberHigh() { return FTunnelLocalPortNumberHigh; }
+  int GetCacheDirectoryChangesMaxSize() { return FCacheDirectoryChangesMaxSize; }
+  bool GetShowFtpWelcomeMessage() { return FShowFtpWelcomeMessage; }
+  UnicodeString GetExternalIpAddress() const { return FExternalIpAddress; }
+
+  bool GetDisablePasswordStoring() { return FDisablePasswordStoring; }
+  bool GetForceBanners() { return FForceBanners; }
+  bool GetDisableAcceptingHostKeys() { return FDisableAcceptingHostKeys; }
 #endif
 };
 //---------------------------------------------------------------------------

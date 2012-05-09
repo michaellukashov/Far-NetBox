@@ -618,7 +618,7 @@ FILE * __fastcall OpenFile(UnicodeString LogFileName, TSessionData * SessionData
   TDateTime N = Now();
   for (int Index = 1; Index < ANewFileName.Length(); Index++)
   {
-    if (ANewFileName[Index] == L'!')
+    if (ANewFileName[Index] == L'&')
     {
       UnicodeString Replacement;
       // keep consistent with TFileCustomCommand::PatternReplacement
@@ -656,12 +656,12 @@ FILE * __fastcall OpenFile(UnicodeString LogFileName, TSessionData * SessionData
           Replacement = MakeValidFileName(SessionData->GetSessionName());
           break;
 
-        case L'!':
-          Replacement = L"!";
+        case L'&':
+          Replacement = L"&";
           break;
 
         default:
-          Replacement = UnicodeString(L"!") + ANewFileName[Index + 1];
+          Replacement = UnicodeString(L"&") + ANewFileName[Index + 1];
           break;
       }
       ANewFileName.Delete(Index, 2);
@@ -669,7 +669,9 @@ FILE * __fastcall OpenFile(UnicodeString LogFileName, TSessionData * SessionData
       Index += Replacement.Length() - 1;
     }
   }
-  Result = _wfopen(ANewFileName.c_str(), (Append ? L"a" : L"w"));
+  // Result = _wfopen(ANewFileName.c_str(), (Append ? L"a" : L"w"));
+  Result = _fsopen(W2MB(ANewFileName.c_str()).c_str(),
+    Append ? "a" : "w", SH_DENYWR);
   if (Result != NULL)
   {
     setvbuf(Result, NULL, _IONBF, BUFSIZ);
@@ -699,6 +701,7 @@ const wchar_t *LogLineMarks = L"<>!.*";
   FCurrentLogFileName = L"";
   FCurrentFileName = L"";
   FClosed = false;
+  Self = this;
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TSessionLog::~TSessionLog()
@@ -769,7 +772,8 @@ void /* __fastcall */ TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeS
       // UnicodeString Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", Now());
       UnicodeString Timestamp = dt;
       UTF8String UtfLine = UTF8String(UnicodeString(LogLineMarks[Type]) + Timestamp + Line + "\n");
-      fwrite(UtfLine.c_str(), UtfLine.Length(), 1, (FILE *)FFile);
+      // fwrite(UtfLine.c_str(), UtfLine.Length(), 1, (FILE *)FFile);
+      fprintf_s(static_cast<FILE *>(FFile), "%s", const_cast<char *>(AnsiString(UtfLine).c_str()));
     }
   }
 }
@@ -1107,7 +1111,7 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
         Bugs += UnicodeString(BugFlags[Data->GetSFTPBug(static_cast<TSftpBug>(Index))])+(Index<SFTP_BUG_COUNT-1 ? L"," : L"");
       }
       ADF(L"SFTP Bugs: %s", Bugs.c_str());
-      ADF(L"Return code variable: %s; Lookup user groups: %s",
+      ADF(L"Return code variable: %s; Lookup user groups: %c",
          Data->GetDetectReturnVar() ? UnicodeString(L"Autodetect").c_str() : Data->GetReturnVar().c_str(),
          BugFlags[Data->GetLookupUserGroups()]);
       ADF(L"Shell: %s", Data->GetShell().IsEmpty() ? UnicodeString(L"default").c_str() : Data->GetShell().c_str());

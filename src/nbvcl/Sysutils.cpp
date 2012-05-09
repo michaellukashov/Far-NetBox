@@ -168,18 +168,17 @@ UnicodeString TrimRight(const UnicodeString str)
 
 UnicodeString UpperCase(const UnicodeString str)
 {
-  UnicodeString result = str;
+  std::wstring Result(str.c_str(), str.Length());
   // result.SetLength(str.Length());
-  // std::transform(str.begin(), str.end(), result.begin(), ::toupper);
-  return result.UpperCase();
+  std::transform(Result.begin(), Result.end(), Result.begin(), ::toupper);
+  return Result;
 }
 
 UnicodeString LowerCase(const UnicodeString str)
 {
-  UnicodeString result = str;
-  // result.SetLength(str.Length());
-  // std::transform(str.begin(), str.end(), result.begin(), ::tolower);
-  return result.LowerCase();
+  std::wstring Result(str.c_str(), str.Length());
+  std::transform(Result.begin(), Result.end(), Result.begin(), ::tolower);
+  return Result;
 }
 //---------------------------------------------------------------------------
 
@@ -221,7 +220,7 @@ UnicodeString StringReplace(const UnicodeString str, const UnicodeString from, c
 
 bool IsDelimiter(const UnicodeString str, const UnicodeString delimiters, int index)
 {
-  if (index < str.Length())
+  if (index <= str.Length())
   {
     wchar_t c = str[index];
     for (int  i = 1; i <= delimiters.Length(); i++)
@@ -441,7 +440,7 @@ UnicodeString FileSearch(const UnicodeString FileName, const UnicodeString Direc
     i = ::Pos(Temp, PathSeparators);
     while ((Temp.Length() > 0) && (i == 0))
     {
-      Temp.Delete(0, 1);
+      Temp.Delete(1, 1);
       i = ::Pos(Temp, PathSeparators);
     }
     i = ::Pos(Temp, PathSeparators);
@@ -685,7 +684,7 @@ UnicodeString TranslateExceptionMessage(const std::exception * E)
 //---------------------------------------------------------------------------
 void AppendWChar(UnicodeString & str, const wchar_t ch)
 {
-  if (!str.IsEmpty() && str[str.Length() - 1] != ch)
+  if (!str.IsEmpty() && str[str.Length()] != ch)
   {
     str += ch;
   }
@@ -701,7 +700,7 @@ void AppendChar(std::string & str, const char ch)
 
 void AppendPathDelimiterW(UnicodeString & str)
 {
-  if (!str.IsEmpty() && str[str.Length() - 1] != L'/' && str[str.Length() - 1] != L'\\')
+  if (!str.IsEmpty() && str[str.Length()] != L'/' && str[str.Length()] != L'\\')
   {
     str += L"\\";;
   }
@@ -726,12 +725,12 @@ UnicodeString ExpandEnvVars(const UnicodeString & str)
   return result;
 }
 
-UnicodeString StringOfChar(const wchar_t c, size_t len)
+UnicodeString StringOfChar(const wchar_t c, int len)
 {
   UnicodeString Result;
   if (int(len) < 0) len = 0;
   Result.SetLength(len);
-  for (int i = 0; i < len; i++) Result[i] = c;
+  for (int i = 1; i <= len; i++) Result[i] = c;
   return Result;
 }
 
@@ -879,7 +878,7 @@ UnicodeString ExtractShortPathName(const UnicodeString Path1)
 // "/foo/bar/baz.txt" --> "/foo/bar/"
 UnicodeString ExtractDirectory(const UnicodeString path, wchar_t delimiter)
 {
-  return path.SubString(0, path.RPos(delimiter) + 1);
+  return path.SubString(1, path.RPos(delimiter) + 1);
 }
 
 //
@@ -920,7 +919,7 @@ UnicodeString ChangeFileExtension(const UnicodeString path, const UnicodeString 
 {
   UnicodeString filename = ExtractFilename(path, delimiter);
   return ExtractDirectory(path, delimiter)
-         + filename.SubString(0, filename.RPos(L'.'))
+         + filename.SubString(1, filename.RPos(L'.'))
          + ext;
 }
 
@@ -929,8 +928,8 @@ UnicodeString ChangeFileExtension(const UnicodeString path, const UnicodeString 
 UnicodeString ExcludeTrailingBackslash(const UnicodeString str)
 {
   UnicodeString result = str;
-  if ((str.Length() > 0) && ((str[str.Length() - 1] == L'/') ||
-                             (str[str.Length() - 1] == L'\\')))
+  if ((str.Length() > 0) && ((str[str.Length()] == L'/') ||
+      (str[str.Length()] == L'\\')))
   {
     result.SetLength(result.Length() - 1);
   }
@@ -951,12 +950,12 @@ UnicodeString IncludeTrailingBackslash(const UnicodeString str)
 UnicodeString ExtractFileDir(const UnicodeString str)
 {
   UnicodeString result;
-  size_t Pos = ::LastDelimiter(str, L"/\\");
+  int Pos = ::LastDelimiter(str, L"/\\");
   // DEBUG_PRINTF(L"Pos = %d", Pos);
   // it used to return Path when no slash was found
   if (Pos > 0)
   {
-    result = str.SubString(1, Pos + 1);
+    result = str.SubString(1, Pos);
   }
   else
   {
@@ -993,7 +992,7 @@ UnicodeString GetCurrentDir()
 UnicodeString StrToHex(const UnicodeString Str, bool UpperCase, char Separator)
 {
   UnicodeString Result;
-  for (size_t i = 1; i <= Str.Length(); i++)
+  for (int i = 1; i <= Str.Length(); i++)
   {
     Result += CharToHex(static_cast<char>(Str[i]), UpperCase);
     if ((Separator != L'\0') && (i <= Str.Length()))
@@ -1012,7 +1011,7 @@ UnicodeString HexToStr(const UnicodeString Hex)
   L = Hex.Length() - 1;
   if (L % 2 == 0)
   {
-    for (size_t i = 1; i <= Hex.Length(); i += 2)
+    for (int i = 1; i <= Hex.Length(); i += 2)
     {
       P1 = Digits.find_first_of(static_cast<char>(toupper(Hex[i])));
       P2 = Digits.find_first_of(static_cast<char>(toupper(Hex[i + 1])));
@@ -1034,8 +1033,8 @@ unsigned int HexToInt(const UnicodeString Hex, size_t MinChars)
 {
   static std::wstring Digits = L"0123456789ABCDEF";
   int Result = 0;
-  size_t I = 1;
-  while (I < Hex.Length())
+  int I = 1;
+  while (I <= Hex.Length())
   {
     size_t A = Digits.find_first_of(static_cast<wchar_t>(toupper(Hex[I])));
     if (A == std::wstring::npos)

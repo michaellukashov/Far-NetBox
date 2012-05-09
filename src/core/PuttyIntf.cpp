@@ -43,7 +43,7 @@ void __fastcall PuttyInitialize()
   strcpy_s(sshver, sizeof(sshver), VersionString.c_str());
   AnsiString AppName = AppNameString();
   assert(!AppName.IsEmpty() && (static_cast<size_t>(AppName.Length()) < LENOF(appname_)));
-  strcpy_s(appname_, sizeof(appname), AppName.c_str());
+  strcpy_s(appname_, sizeof(appname_), AppName.c_str());
 }
 //---------------------------------------------------------------------------
 void __fastcall PuttyFinalize()
