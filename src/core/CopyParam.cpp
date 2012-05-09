@@ -166,7 +166,7 @@ UnicodeString __fastcall TCopyParamType::GetInfoStr(UnicodeString Separator, int
 
   if (GetIncludeFileMask() == Defaults.GetIncludeFileMask())
   {
-    ADD(FORMAT(LoadStr(COPY_INFO_FILE_MASK), GetIncludeFileMask().GetMasks()),
+    ADD(FORMAT(LoadStr(COPY_INFO_FILE_MASK), GetIncludeFileMask().GetMasks().c_str()),
       cpaNoIncludeMask);
   }
 
