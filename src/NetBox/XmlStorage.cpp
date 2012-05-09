@@ -141,11 +141,11 @@ bool __fastcall TXmlStorage::DoKeyExists(const UnicodeString SubKey, bool ForceA
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TXmlStorage::DoOpenSubKey(const UnicodeString SubKey, bool CanCreate)
+bool __fastcall TXmlStorage::DoOpenSubKey(const UnicodeString MungedSubKey, bool CanCreate)
 {
   TiXmlElement * OldCurrentElement = FCurrentElement;
   TiXmlElement * Element = NULL;
-  std::string subKey = ToStdString(PuttyMungeStr(SubKey));
+  std::string subKey = ToStdString(MungedSubKey);
   if (CanCreate)
   {
     if (FStoredSessionsOpened)
@@ -171,7 +171,7 @@ bool __fastcall TXmlStorage::DoOpenSubKey(const UnicodeString SubKey, bool CanCr
     {
       FSubElements.push_back(OldCurrentElement);
       FCurrentElement = Element;
-      FStoredSessionsOpened = (SubKey == FStoredSessionsSubKey);
+      FStoredSessionsOpened = (MungedSubKey == FStoredSessionsSubKey);
     }
   }
   return Result;
@@ -341,21 +341,21 @@ TiXmlElement * TXmlStorage::FindElement(const UnicodeString Name)
 //---------------------------------------------------------------------------
 TiXmlElement * TXmlStorage::FindChildElement(const std::string & subKey)
 {
-  TiXmlElement * result = NULL;
-  assert(FCurrentElement);
+  TiXmlElement * Result = NULL;
+  // assert(FCurrentElement);
   if (FStoredSessionsOpened)
   {
     TiXmlElement * Element = FCurrentElement->FirstChildElement(CONST_SESSION_NODE);
     if (Element && !strcmp(Element->Attribute(CONST_NAME_ATTR), subKey.c_str()))
     {
-      result = Element;
+      Result = Element;
     }
   }
-  else
+  else if (FCurrentElement)
   {
-    result = FCurrentElement->FirstChildElement(subKey.c_str());
+    Result = FCurrentElement->FirstChildElement(subKey.c_str());
   }
-  return result;
+  return Result;
 }
 //---------------------------------------------------------------------------
 UnicodeString TXmlStorage::GetValue(TiXmlElement * Element)
@@ -427,8 +427,9 @@ __int64 TXmlStorage::ReadInt64(const UnicodeString Name, __int64 Default)
 //---------------------------------------------------------------------------
 UnicodeString TXmlStorage::ReadStringRaw(const UnicodeString Name, const UnicodeString Default)
 {
-  UnicodeString result = GetSubKeyText(Name);
-  return result.IsEmpty() ? Default : result;
+  UnicodeString Result = GetSubKeyText(Name);
+  DEBUG_PRINTF(L"Name = %s, Result = %s", Name.c_str(), Result.c_str());
+  return Result.IsEmpty() ? Default : Result;
 }
 //---------------------------------------------------------------------------
 size_t TXmlStorage::ReadBinaryData(const UnicodeString Name,

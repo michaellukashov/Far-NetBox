@@ -43,7 +43,7 @@ public:
 
   virtual void __fastcall SetAccessMode(TStorageAccessMode value);
   virtual bool __fastcall DoKeyExists(const UnicodeString SubKey, bool ForceAnsi);
-  virtual bool __fastcall DoOpenSubKey(const UnicodeString SubKey, bool CanCreate);
+  virtual bool __fastcall DoOpenSubKey(const UnicodeString MungedSubKey, bool CanCreate);
 
 protected:
   virtual UnicodeString __fastcall GetSource();
