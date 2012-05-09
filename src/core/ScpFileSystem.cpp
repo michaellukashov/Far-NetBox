@@ -823,13 +823,14 @@ void __fastcall TSCPFileSystem::ExecCommand(TFSCommand Cmd, const TVarRec * args
 //---------------------------------------------------------------------------
 void __fastcall TSCPFileSystem::ExecCommand2(TFSCommand Cmd, ...)
 {
+  int Params = 0;
   va_list args;
   va_start(args, Cmd);
   UnicodeString FullCommand = FCommandSet->FullCommand(Cmd, args);
   UnicodeString Command = FCommandSet->Command(Cmd, args);
-  ExecCommand(FullCommand, -1, Command);
+  ExecCommand(FullCommand, Params, Command);
   va_end(args);
-  if (true) // Params & ecRaiseExcept)
+  if (Params & ecRaiseExcept)
   {
     int MinL = FCommandSet->GetMinLines(Cmd);
     int MaxL = FCommandSet->GetMaxLines(Cmd);
