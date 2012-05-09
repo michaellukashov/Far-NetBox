@@ -2988,9 +2988,9 @@ UnicodeString __fastcall TFarEditorInfo::GetFileName()
   if (buffLen)
   {
     Result.SetLength(buffLen + 1);
-    FarPlugin->FarEditorControl(ECTL_GETFILENAME, &Result[0]);
+    FarPlugin->FarEditorControl(ECTL_GETFILENAME, (wchar_t *)Result.c_str());
   }
-  return Result;
+  return Result.c_str();
 };
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
