@@ -400,7 +400,7 @@ UnicodeString __fastcall UserModificationStr(TDateTime DateTime,
       return FORMAT(L"%02d.%02d.%04d %02d:%02d", D, M, Y, H, N);
     case mfFull:
     default:
-      return FormatDateTime(L"ddddd tt", DateTime);
+      // return FormatDateTime(L"ddddd tt", DateTime);
       return FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d", D, M, Y, H, N, S);
   }
 }
