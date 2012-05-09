@@ -145,38 +145,23 @@ bool __fastcall TXmlStorage::DoOpenSubKey(const UnicodeString SubKey, bool CanCr
 {
   TiXmlElement * OldCurrentElement = FCurrentElement;
   TiXmlElement * Element = NULL;
-  // if (Path)
-  // {
-  // UnicodeString subKey = SubKey;
-  // assert(subKey.IsEmpty() || (subKey[subKey.Length() - 1] != '\\'));
-  // bool Result = true;
-  // while (!subKey.IsEmpty())
-  // {
-  // Result &= OpenSubKey(CutToChar(subKey, L'\\', false), CanCreate, false);
-  // DEBUG_PRINTF(L"SubKey = %s, Result = %d", SubKey.c_str(), Result);
-  // }
-  // return Result;
-  // }
-  // else
+  std::string subKey = ToStdString(PuttyMungeStr(SubKey));
+  if (CanCreate)
   {
-    std::string subKey = ToStdString(PuttyMungeStr(SubKey));
-    if (CanCreate)
+    if (FStoredSessionsOpened)
     {
-      if (FStoredSessionsOpened)
-      {
-        Element = new TiXmlElement(CONST_SESSION_NODE);
-        Element->SetAttribute(CONST_NAME_ATTR, subKey);
-      }
-      else
-      {
-        Element = new TiXmlElement(subKey);
-      }
-      FCurrentElement->LinkEndChild(Element);
+      Element = new TiXmlElement(CONST_SESSION_NODE);
+      Element->SetAttribute(CONST_NAME_ATTR, subKey);
     }
     else
     {
-      Element = FindChildElement(subKey);
+      Element = new TiXmlElement(subKey);
     }
+    FCurrentElement->LinkEndChild(Element);
+  }
+  else
+  {
+    Element = FindChildElement(subKey);
   }
   bool Result = Element != NULL;
   if (Result)
