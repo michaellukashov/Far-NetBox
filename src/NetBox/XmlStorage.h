@@ -18,7 +18,6 @@ public:
   virtual bool __fastcall DeleteSubKey(const UnicodeString SubKey);
   virtual bool __fastcall DeleteValue(const UnicodeString Name);
   virtual void __fastcall GetSubKeyNames(TStrings * Strings);
-  // bool __fastcall KeyExists(const UnicodeString SubKey);
   virtual bool __fastcall ValueExists(const UnicodeString Value);
 
   virtual size_t __fastcall BinaryDataSize(const UnicodeString Name);

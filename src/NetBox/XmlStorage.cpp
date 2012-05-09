@@ -166,69 +166,12 @@ bool __fastcall TXmlStorage::DoOpenSubKey(const UnicodeString MungedSubKey, bool
   bool Result = Element != NULL;
   if (Result)
   {
-    // Result = THierarchicalStorage::DoOpenSubKey(SubKey, CanCreate);
-    // if (Result)
-    {
-      FSubElements.push_back(OldCurrentElement);
-      FCurrentElement = Element;
-      FStoredSessionsOpened = (MungedSubKey == FStoredSessionsSubKey);
-    }
+    FSubElements.push_back(OldCurrentElement);
+    FCurrentElement = Element;
+    FStoredSessionsOpened = (MungedSubKey == FStoredSessionsSubKey);
   }
   return Result;
 }
-//---------------------------------------------------------------------------
-/*
-bool TXmlStorage::OpenSubKey(const UnicodeString SubKey, bool CanCreate, bool Path)
-{
-  TiXmlElement * OldCurrentElement = FCurrentElement;
-  TiXmlElement * Element = NULL;
-  if (Path)
-  {
-    UnicodeString subKey = SubKey;
-    assert(subKey.IsEmpty() || (subKey[subKey.Length() - 1] != '\\'));
-    bool Result = true;
-    while (!subKey.IsEmpty())
-    {
-      Result &= OpenSubKey(CutToChar(subKey, L'\\', false), CanCreate, false);
-      // DEBUG_PRINTF(L"SubKey = %s, Result = %d", SubKey.c_str(), Result);
-    }
-    return Result;
-  }
-  else
-  {
-    std::string subKey = ToStdString(PuttyMungeStr(SubKey));
-    if (CanCreate)
-    {
-      if (FStoredSessionsOpened)
-      {
-        Element = new TiXmlElement(CONST_SESSION_NODE);
-        Element->SetAttribute(CONST_NAME_ATTR, subKey);
-      }
-      else
-      {
-        Element = new TiXmlElement(subKey);
-      }
-      FCurrentElement->LinkEndChild(Element);
-    }
-    else
-    {
-      Element = FindChildElement(subKey);
-    }
-  }
-  bool Result = Element != NULL;
-  if (Result)
-  {
-    Result = THierarchicalStorage::OpenSubKey(SubKey, CanCreate, Path);
-    if (Result)
-    {
-      FSubElements.push_back(OldCurrentElement);
-      FCurrentElement = Element;
-      FStoredSessionsOpened = (SubKey == FStoredSessionsSubKey);
-    }
-  }
-  return Result;
-}
-*/
 //---------------------------------------------------------------------------
 void TXmlStorage::CloseSubKey()
 {
@@ -283,11 +226,6 @@ bool TXmlStorage::DeleteValue(const UnicodeString Name)
   }
   return result;
 }
-//---------------------------------------------------------------------------
-// bool TXmlStorage::KeyExists(const UnicodeString SubKey)
-// {
-  // return DoKeyExists(SubKey, GetForceAnsi());
-// }
 //---------------------------------------------------------------------------
 void TXmlStorage::RemoveIfExists(const UnicodeString Name)
 {
