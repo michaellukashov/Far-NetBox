@@ -93,30 +93,6 @@ protected:
   void __fastcall SetPermanentLogActions(bool value) { FPermanentLogActions = value; }
 
 public:
-  // TConfiguration();
-  // virtual ~TConfiguration();
-  // virtual void __fastcall Default();
-  // virtual void __fastcall Load();
-  // virtual void __fastcall Save(bool All, bool Explicit);
-  // void Export(const UnicodeString FileName);
-  // void CleanupConfiguration();
-  // void CleanupIniFile();
-  // void CleanupHostKeys();
-  // void CleanupRandomSeedFile();
-  // void BeginUpdate();
-  // void EndUpdate();
-  // void LoadDirectoryChangesCache(const UnicodeString SessionKey,
-    // TRemoteDirectoryChangesCache * DirectoryChangesCache);
-  // void SaveDirectoryChangesCache(const UnicodeString SessionKey,
-    // TRemoteDirectoryChangesCache * DirectoryChangesCache);
-  // bool ShowBanner(const UnicodeString SessionKey, const UnicodeString Banner);
-  // void NeverShowBanner(const UnicodeString SessionKey, const UnicodeString Banner);
-  // virtual THierarchicalStorage * __fastcall CreateScpStorage(bool SessionList);
-  // void TemporaryLogging(const UnicodeString ALogFileName);
-  // virtual UnicodeString __fastcall EncryptPassword(const UnicodeString Password, const UnicodeString Key);
-  // virtual UnicodeString __fastcall DecryptPassword(const UnicodeString Password, const UnicodeString Key);
-  // virtual UnicodeString __fastcall StronglyRecryptPassword(const UnicodeString Password, const UnicodeString Key);
-
   UnicodeString GetPuttyRegistryStorageKey() { return FPuttyRegistryStorageKey; }
   bool GetLogging() { return FLogging; }
   UnicodeString __fastcall GetLogFileName() { return FLogFileName; }
