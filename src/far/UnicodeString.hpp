@@ -338,6 +338,7 @@ public:
 
   friend bool __fastcall operator ==(const UTF8String & lhs, const UTF8String & rhs);
   friend bool __fastcall operator !=(const UTF8String & lhs, const UTF8String & rhs);
+
 private:
   void Init(const wchar_t * Str, int Length)
   {
@@ -588,6 +589,11 @@ public:
   const AnsiString & __fastcall operator +=(const char Ch);
   const AnsiString & __fastcall operator +=(const char * rhs);
 
+  friend bool __fastcall operator ==(const AnsiString & lhs, const AnsiString & rhs)
+  { return lhs.Data == rhs.Data; }
+  friend bool __fastcall operator !=(const AnsiString & lhs, const AnsiString & rhs)
+  { return lhs.Data != rhs.Data; }
+
   void Unique() {}
 
 private:
@@ -690,6 +696,13 @@ public:
   const RawByteString & __fastcall operator +=(const std::wstring & rhs);
   const RawByteString & __fastcall operator +=(const char Ch);
   const RawByteString & __fastcall operator +=(const char * rhs);
+
+  bool __fastcall operator ==(char * rhs)
+  { return (char *)Data.c_str() == rhs; }
+  friend bool __fastcall operator ==(RawByteString & lhs, RawByteString & rhs)
+  { return lhs.Data == rhs.Data; }
+  friend bool __fastcall operator !=(RawByteString & lhs, RawByteString & rhs)
+  { return lhs.Data != rhs.Data; }
 
   void Unique() {}
 
