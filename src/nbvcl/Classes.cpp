@@ -675,7 +675,7 @@ const UnicodeString TStrings::GetValue(const UnicodeString Name)
 {
     UnicodeString Result;
     int I = IndexOfName(Name);
-    if (I > 0)
+    if (I >= 0)
     {
         Result = GetStrings(I).SubStr(Name.Length() + 1, static_cast<int>(-1));
     }
@@ -687,7 +687,7 @@ void TStrings::SetValue(const UnicodeString Name, const UnicodeString Value)
     int I = IndexOfName(Name);
     if (!Value.IsEmpty())
     {
-        if (I == 0)
+        if (I < 0)
         {
             I = Add(L"");
         }
@@ -695,7 +695,7 @@ void TStrings::SetValue(const UnicodeString Name, const UnicodeString Value)
     }
     else
     {
-        if (I > 0)
+        if (I >= 0)
         {
             Delete(I);
         }
