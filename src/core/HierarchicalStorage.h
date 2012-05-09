@@ -10,11 +10,7 @@
 #include <boost/noncopyable.hpp>
 #endif
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
-enum TStorage { stDetect, stRegistry, stIniFile, stNul };
-#else
-enum TStorage { stRegistry, stXmlFile, stDetect, stIniFile, stNul };
-#endif
+enum TStorage { stDetect, stRegistry, stIniFile, stNul, stXmlFile };
 enum TStorageAccessMode { smRead, smReadWrite };
 //---------------------------------------------------------------------------
 class THierarchicalStorage : private boost::noncopyable
@@ -24,19 +20,19 @@ public:
   virtual void __fastcall Init() {}
   virtual /* __fastcall */ ~THierarchicalStorage();
   bool __fastcall OpenRootKey(bool CanCreate);
-  virtual bool __fastcall OpenSubKey(UnicodeString SubKey, bool CanCreate, bool Path = false);
+  bool __fastcall OpenSubKey(UnicodeString SubKey, bool CanCreate, bool Path = false);
   virtual void __fastcall CloseSubKey();
   virtual bool __fastcall DeleteSubKey(const UnicodeString SubKey) = 0;
-  virtual void __fastcall GetSubKeyNames(TStrings* Strings) = 0;
-  virtual void __fastcall GetValueNames(TStrings* Strings) = 0;
+  virtual void __fastcall GetSubKeyNames(Classes::TStrings* Strings) = 0;
+  virtual void __fastcall GetValueNames(Classes::TStrings* Strings) = 0;
   bool __fastcall HasSubKeys();
   bool __fastcall HasSubKey(const UnicodeString SubKey);
   bool __fastcall KeyExists(const UnicodeString SubKey);
   virtual bool __fastcall ValueExists(const UnicodeString Value) = 0;
   virtual void __fastcall RecursiveDeleteSubKey(const UnicodeString Key);
   virtual void __fastcall ClearSubKeys();
-  virtual void __fastcall ReadValues(TStrings* Strings, bool MaintainKeys = false);
-  virtual void __fastcall WriteValues(TStrings* Strings, bool MaintainKeys = false);
+  virtual void __fastcall ReadValues(Classes::TStrings* Strings, bool MaintainKeys = false);
+  virtual void __fastcall WriteValues(Classes::TStrings* Strings, bool MaintainKeys = false);
   virtual void __fastcall ClearValues();
   virtual bool __fastcall DeleteValue(const UnicodeString Name) = 0;
 
@@ -123,12 +119,10 @@ public:
 
   bool __fastcall Copy(TRegistryStorage * Storage);
 
-  // virtual bool __fastcall OpenSubKey(const UnicodeString SubKey, bool CanCreate, bool Path = false);
   virtual void __fastcall CloseSubKey();
   virtual bool __fastcall DeleteSubKey(const UnicodeString SubKey);
   virtual bool __fastcall DeleteValue(const UnicodeString Name);
-  virtual void __fastcall GetSubKeyNames(TStrings* Strings);
-  // virtual bool __fastcall KeyExists(const UnicodeString SubKey);
+  virtual void __fastcall GetSubKeyNames(Classes::TStrings* Strings);
   virtual bool __fastcall ValueExists(const UnicodeString Value);
 
   virtual size_t __fastcall BinaryDataSize(const UnicodeString Name);
@@ -149,7 +143,7 @@ public:
   virtual void __fastcall WriteStringRaw(const UnicodeString Name, const UnicodeString Value);
   virtual void __fastcall WriteBinaryData(const UnicodeString Name, const void * Buffer, int Size);
 
-  virtual void __fastcall GetValueNames(TStrings* Strings);
+  virtual void __fastcall GetValueNames(Classes::TStrings* Strings);
 
 // protected:
   int __fastcall GetFailed();
