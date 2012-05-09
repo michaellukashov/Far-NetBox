@@ -765,6 +765,7 @@ void __fastcall TSCPFileSystem::ReadCommandOutput(int Params, const UnicodeStrin
 void __fastcall TSCPFileSystem::ExecCommand(const UnicodeString & Cmd, int Params,
   const UnicodeString & CmdString)
 {
+  DEBUG_PRINTF(L"Cmd = %s", Cmd.c_str());
   if (Params < 0) { Params = ecDefault; }
   if (FTerminal->GetUseBusyCursor())
   {
