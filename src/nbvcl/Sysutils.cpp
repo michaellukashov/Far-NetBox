@@ -301,7 +301,7 @@ int AnsiCompareIC(const UnicodeString str1, const UnicodeString str2)
 
 bool AnsiContainsText(const UnicodeString str1, const UnicodeString str2)
 {
-  return ::Pos(str1, str2) >= 0;
+  return ::Pos(str1, str2) > 0;
 }
 
 void RaiseLastOSError()
