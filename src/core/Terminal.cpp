@@ -2836,7 +2836,12 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
 
   try
   {
-    TFileOperationProgressType Progress(boost::bind(&TTerminal::DoProgress, this, _1, _2), boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
+    fileoperationprogress_signal_type sig1;
+    fileoperationfinished_signal_type sig2;
+    sig1.connect(boost::bind(&TTerminal::DoProgress, this, _1, _2));
+    sig2.connect(boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
+    TFileOperationProgressType Progress(&sig1, &sig2);
+    // TFileOperationProgressType Progress(boost::bind(&TTerminal::DoProgress, this, _1, _2), boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
     TFileOperationProgressType * OperationProgress(&Progress);
     Progress.Start(Operation, Side, FileList->GetCount());
 
@@ -4223,7 +4228,12 @@ void /* __fastcall */ TTerminal::CalculateLocalFileSize(const UnicodeString File
 void /* __fastcall */ TTerminal::CalculateLocalFilesSize(TStrings * FileList,
   __int64 & Size, const TCopyParamType * CopyParam)
 {
-  TFileOperationProgressType OperationProgress(boost::bind(&TTerminal::DoProgress, this, _1, _2), boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
+  fileoperationprogress_signal_type sig1;
+  fileoperationfinished_signal_type sig2;
+  sig1.connect(boost::bind(&TTerminal::DoProgress, this, _1, _2));
+  sig2.connect(boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
+  TFileOperationProgressType OperationProgress(&sig1, &sig2);
+  // TFileOperationProgressType OperationProgress(boost::bind(&TTerminal::DoProgress, this, _1, _2), boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
   TOnceDoneOperation OnceDoneOperation = odoIdle;
   OperationProgress.Start(foCalculateSize, osLocal, FileList->GetCount());
   // try
@@ -5145,7 +5155,12 @@ bool /* __fastcall */ TTerminal::CopyToRemote(TStrings * FilesToCopy,
   bool Result = false;
   TOnceDoneOperation OnceDoneOperation = odoIdle;
 
-  TFileOperationProgressType OperationProgress(boost::bind(&TTerminal::DoProgress, this, _1, _2), boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
+  fileoperationprogress_signal_type sig1;
+  fileoperationfinished_signal_type sig2;
+  sig1.connect(boost::bind(&TTerminal::DoProgress, this, _1, _2));
+  sig2.connect(boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
+  TFileOperationProgressType OperationProgress(&sig1, &sig2);
+  // TFileOperationProgressType OperationProgress(boost::bind(&TTerminal::DoProgress, this, _1, _2), boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
   try
   {
 
@@ -5270,7 +5285,12 @@ bool /* __fastcall */ TTerminal::CopyToLocal(TStrings * FilesToCopy,
       } BOOST_SCOPE_EXIT_END
       __int64 TotalSize = 0;
       bool TotalSizeKnown = false;
-      TFileOperationProgressType OperationProgress(boost::bind(&TTerminal::DoProgress, this, _1, _2), boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
+      fileoperationprogress_signal_type sig1;
+      fileoperationfinished_signal_type sig2;
+      sig1.connect(boost::bind(&TTerminal::DoProgress, this, _1, _2));
+      sig2.connect(boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
+      TFileOperationProgressType OperationProgress(&sig1, &sig2);
+      // TFileOperationProgressType OperationProgress(boost::bind(&TTerminal::DoProgress, this, _1, _2), boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
 
       if (CopyParam->GetCalculateSize())
       {

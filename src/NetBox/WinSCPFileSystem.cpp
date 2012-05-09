@@ -1406,8 +1406,12 @@ void __fastcall TWinSCPFileSystem::ApplyCommand()
                 FLAGSET(Params, ccRecursive) && !FileListCommand;
 
               ProcessLocalDirectory(TempDir, boost::bind(&TTerminal::MakeLocalFileList, FTerminal, _1, _2, _3), &MakeFileListParam);
-
-              TFileOperationProgressType Progress(boost::bind(&TWinSCPFileSystem::OperationProgress, this, _1, _2), boost::bind(&TWinSCPFileSystem::OperationFinished, this, _1, _2, _3, _4, _5, _6));
+              fileoperationprogress_signal_type sig1;
+              fileoperationfinished_signal_type sig2;
+              sig1.connect(boost::bind(&TWinSCPFileSystem::OperationProgress, this, _1, _2));
+              sig2.connect(boost::bind(&TWinSCPFileSystem::OperationFinished, this, _1, _2, _3, _4, _5, _6));
+              TFileOperationProgressType Progress(&sig1, &sig2);
+              // TFileOperationProgressType Progress(boost::bind(&TWinSCPFileSystem::OperationProgress, this, _1, _2), boost::bind(&TWinSCPFileSystem::OperationFinished, this, _1, _2, _3, _4, _5, _6));
 
               Progress.Start(foCustomCommand, osRemote, FileListCommand ? 1 : FileList->GetCount());
               // try
