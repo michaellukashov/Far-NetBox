@@ -181,7 +181,7 @@ private:
   TFarDialog * FDialog;
   bool FEnabled;
 
-  void SetPosition(size_t Index, int value);
+  void SetPosition(int Index, int value);
 };
 //---------------------------------------------------------------------------
 #define DIF_INVERSE 0x00000001UL
@@ -301,8 +301,8 @@ protected:
   virtual void DoFocus();
   virtual void DoExit();
 
-  char GetColor(size_t Index);
-  void SetColor(size_t Index, char value);
+  char GetColor(int Index);
+  void SetColor(int Index, char value);
 
 private:
   TFarDialog * FDialog;
@@ -519,9 +519,9 @@ protected:
   virtual void __fastcall Init();
   void UpdatePosition(int Position);
   int GetPosition();
-  virtual void __fastcall Put(size_t Index, const UnicodeString S);
+  virtual void __fastcall Put(int Index, const UnicodeString S);
   void SetCurPos(size_t Position, size_t TopIndex);
-  void UpdateItem(size_t Index);
+  void UpdateItem(int Index);
 
   FarList * GetListItems() { return FListItems; }
   // void SetListItems(FarList *value) { FListItems = value; }

@@ -91,7 +91,7 @@ TRect Rect(int Left, int Top, int Right, int Bottom)
 //---------------------------------------------------------------------------
 /* __fastcall */ TFarDialog::~TFarDialog()
 {
-  for (size_t i = 0; i < GetItemCount(); i++)
+  for (int i = 0; i < GetItemCount(); i++)
   {
     GetItem(i)->Detach();
   }
@@ -130,7 +130,7 @@ void TFarDialog::SetBounds(const TRect & value)
         Coord.Y = static_cast<short int>(FBounds.Top);
         SendMessage(DM_MOVEDIALOG, true, reinterpret_cast<LONG_PTR>(&Coord));
       }
-      for (size_t i = 0; i < GetItemCount(); i++)
+      for (int  i = 0; i < GetItemCount(); i++)
       {
         GetItem(i)->DialogResized();
       }
@@ -321,7 +321,7 @@ void TFarDialog::Add(TFarDialogItem * DialogItem)
       delete[] FDialogItems;
     }
     memset(NewDialogItems + FDialogItemsCapacity, 0,
-           DialogItemsDelta * sizeof(FarDialogItem));
+      DialogItemsDelta * sizeof(FarDialogItem));
     FDialogItems = NewDialogItems;
     FDialogItemsCapacity += DialogItemsDelta;
   }
@@ -661,7 +661,7 @@ bool TFarDialog::HotKey(unsigned long Key)
   if (Result)
   {
     Result = false;
-    for (size_t i = 0; i < GetItemCount(); i++)
+    for (int i = 0; i < GetItemCount(); i++)
     {
       if (GetItem(i)->HotKey(HotKey))
       {
@@ -676,7 +676,7 @@ bool TFarDialog::HotKey(unsigned long Key)
 TFarDialogItem * TFarDialog::ItemAt(int X, int Y)
 {
   TFarDialogItem * Result = NULL;
-  for (size_t i = 0; i < GetItemCount(); i++)
+  for (int  i = 0; i < GetItemCount(); i++)
   {
     TRect Bounds = GetItem(i)->GetActualBounds();
     if ((Bounds.Left <= X) && (X <= Bounds.Right) &&
@@ -691,7 +691,7 @@ TFarDialogItem * TFarDialog::ItemAt(int X, int Y)
 bool __fastcall TFarDialog::CloseQuery()
 {
   bool Result = true;
-  for (size_t i = 0; i < GetItemCount() && Result; i++)
+  for (int  i = 0; i < GetItemCount() && Result; i++)
   {
     if (!GetItem(i)->CloseQuery())
     {
@@ -713,7 +713,7 @@ void TFarDialog::RefreshBounds()
 //---------------------------------------------------------------------------
 void TFarDialog::Init()
 {
-  for (size_t i = 0; i < GetItemCount(); i++)
+  for (int  i = 0; i < GetItemCount(); i++)
   {
     GetItem(i)->Init();
   }
@@ -815,7 +815,7 @@ void TFarDialog::Change()
         delete NotifiedContainers;
       } BOOST_SCOPE_EXIT_END
       TFarDialogItem * DItem;
-      for (size_t i = 0; i < GetItemCount(); i++)
+      for (int i = 0; i < GetItemCount(); i++)
       {
         DItem = GetItem(i);
         DItem->Change();
@@ -825,7 +825,7 @@ void TFarDialog::Change()
         }
       }
 
-      for (size_t Index = 0; Index < NotifiedContainers->GetCount(); Index++)
+      for (int Index = 0; Index < NotifiedContainers->GetCount(); Index++)
       {
         (static_cast<TFarDialogContainer *>((*NotifiedContainers)[Index]))->Change();
       }
@@ -871,7 +871,7 @@ void TFarDialog::ProcessGroup(int Group, const processgroupevent_slot_type & Cal
     } BOOST_SCOPE_EXIT_END
     processgroupevent_signal_type processgroupevent;
     processgroupevent.connect(Callback);
-    for (size_t i = 0; i < GetItemCount(); i++)
+    for (int i = 0; i < GetItemCount(); i++)
     {
       TFarDialogItem * I = GetItem(i);
       if (I->GetGroup() == Group)
@@ -994,13 +994,13 @@ void TFarDialogContainer::Remove(TFarDialogItem * Item)
   }
 }
 //---------------------------------------------------------------------------
-void TFarDialogContainer::SetPosition(size_t Index, int value)
+void TFarDialogContainer::SetPosition(int Index, int value)
 {
   int & Position = Index ? FTop : FLeft;
   if (Position != value)
   {
     Position = value;
-    for (size_t Index = 0; Index < GetItemCount(); Index++)
+    for (int Index = 0; Index < GetItemCount(); Index++)
     {
       dynamic_cast<TFarDialogItem *>((*FItems)[Index])->DialogResized();
     }
@@ -1016,7 +1016,7 @@ void TFarDialogContainer::SetEnabled(bool value)
   if (FEnabled != value)
   {
     FEnabled = true;
-    for (size_t Index = 0; Index < GetItemCount(); Index++)
+    for (int Index = 0; Index < GetItemCount(); Index++)
     {
       dynamic_cast<TFarDialogItem *>((*FItems)[Index])->UpdateEnabled();
     }
@@ -1125,12 +1125,12 @@ void TFarDialogItem::UpdateBounds()
   }
 }
 //---------------------------------------------------------------------------
-char TFarDialogItem::GetColor(size_t Index)
+char TFarDialogItem::GetColor(int Index)
 {
   return *((reinterpret_cast<char *>(&FColors)) + Index);
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::SetColor(size_t Index, char value)
+void TFarDialogItem::SetColor(int Index, char value)
 {
   if (GetColor(Index) != value)
   {
@@ -2137,14 +2137,14 @@ void __fastcall TFarList::Assign(TPersistent * Source)
   TFarList * FarList = dynamic_cast<TFarList *>(Source);
   if (FarList != NULL)
   {
-    for (size_t Index = 0; Index < FarList->GetCount(); Index++)
+    for (int Index = 0; Index < FarList->GetCount(); Index++)
     {
       SetFlags(Index, FarList->GetFlags(Index));
     }
   }
 }
 //---------------------------------------------------------------------------
-void TFarList::UpdateItem(size_t Index)
+void TFarList::UpdateItem(int Index)
 {
   FarListItem * ListItem = &FListItems->Items[Index];
   UnicodeString value = GetStrings(Index).c_str();
@@ -2157,7 +2157,7 @@ void TFarList::UpdateItem(size_t Index)
   GetDialogItem()->SendMessage(DM_LISTUPDATE, reinterpret_cast<LONG_PTR>(&ListUpdate));
 }
 //---------------------------------------------------------------------------
-void TFarList::Put(size_t Index, const UnicodeString S)
+void TFarList::Put(int Index, const UnicodeString S)
 {
   if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle())
   {
@@ -2186,8 +2186,8 @@ void TFarList::Changed()
 
   if ((GetUpdateCount() == 0) && !FNoDialogUpdate)
   {
-    size_t PrevSelected = 0;
-    size_t PrevTopIndex = 0;
+    int PrevSelected = 0;
+    int PrevTopIndex = 0;
     if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle())
     {
       PrevSelected = GetSelected();
@@ -2199,10 +2199,10 @@ void TFarList::Changed()
       if (GetCount())
       {
         FListItems->Items = new FarListItem[GetCount()];
-        for (size_t Index = 0; Index < GetCount(); Index++)
+        for (int Index = 0; Index < GetCount(); Index++)
         {
           memset(&FListItems->Items[Index], 0, sizeof(FListItems->Items[Index]));
-          if (Index < static_cast<size_t>(FListItems->ItemsNumber))
+          if (Index < FListItems->ItemsNumber)
           {
             FListItems->Items[Index].Flags = Items[Index].Flags;
           }
@@ -2340,7 +2340,6 @@ size_t TFarList::GetSelectedInt(bool Init)
 {
   size_t Result = NPOS;
   assert(GetDialogItem() != NULL);
-  // DEBUG_PRINTF(L"GetCount = %d, Init = %d", GetCount(), Init);
   if (GetCount() == 0)
   {
     Result = NPOS;
@@ -2363,9 +2362,7 @@ size_t TFarList::GetSelectedInt(bool Init)
 //---------------------------------------------------------------------------
 size_t TFarList::GetSelected()
 {
-  // DEBUG_PRINTF(L"begin");
   size_t Result = GetSelectedInt(false);
-  // DEBUG_PRINTF(L"Result = %d", Result);
 
   if ((Result == NPOS) && (GetCount() > 0))
   {
@@ -2404,9 +2401,7 @@ void TFarList::SetFlag(size_t Index, size_t Flag, bool value)
 //---------------------------------------------------------------------------
 void TFarList::Init()
 {
-  // DEBUG_PRINTF(L"begin");
   UpdatePosition(GetSelectedInt(true));
-  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 LONG_PTR TFarList::ItemProc(int Msg, LONG_PTR Param)
@@ -2607,16 +2602,16 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
   if (Msg == DN_DRAWDLGITEM)
   {
     bool AScrollBar = GetScrollBar();
-    size_t ScrollBarPos = 0;
+    int ScrollBarPos = 0;
     if (GetItems()->GetCount() > GetHeight())
     {
-      ScrollBarPos = static_cast<size_t>((static_cast<float>(GetHeight() - 3) * (static_cast<float>(FTopIndex) / (GetItems()->GetCount() - GetHeight())))) + 1;
+      ScrollBarPos = static_cast<int>((static_cast<float>(GetHeight() - 3) * (static_cast<float>(FTopIndex) / (GetItems()->GetCount() - GetHeight())))) + 1;
     }
     int DisplayWidth = GetWidth() - (AScrollBar ? 1 : 0);
     int Color = GetDialog()->GetSystemColor(
-                  FLAGSET(GetDialog()->GetFlags(), FDLG_WARNING) ? COL_WARNDIALOGLISTTEXT : COL_DIALOGLISTTEXT);
+      FLAGSET(GetDialog()->GetFlags(), FDLG_WARNING) ? COL_WARNDIALOGLISTTEXT : COL_DIALOGLISTTEXT);
     UnicodeString Buf;
-    for (size_t Row = 0; Row < GetHeight(); Row++)
+    for (int Row = 0; Row < GetHeight(); Row++)
     {
       size_t Index = GetTopIndex() + Row;
       Buf = L" ";
@@ -2654,7 +2649,7 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
   {
     Result = true;
 
-    size_t NewTopIndex = GetTopIndex();
+    int NewTopIndex = GetTopIndex();
     if ((Param == KEY_UP) || (Param == KEY_LEFT))
     {
       if (NewTopIndex > 0)
@@ -2733,7 +2728,7 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
     }
     else
     {
-      size_t NewTopIndex = GetTopIndex();
+      int NewTopIndex = GetTopIndex();
 
       if (((P.x == static_cast<int>(GetWidth()) - 1) && (P.y == 0)) ||
           ((P.x < static_cast<int>(GetWidth() - 1)) && (P.y < static_cast<int>(GetHeight() / 2))))
@@ -2744,7 +2739,7 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
         }
       }
       else if (((P.x == GetWidth() - 1) && (P.y == static_cast<int>(GetHeight() - 1))) ||
-               ((P.x < GetWidth() - 1) && (P.y >= static_cast<int>(GetHeight() / 2))))
+          ((P.x < GetWidth() - 1) && (P.y >= static_cast<int>(GetHeight() / 2))))
       {
         if (NewTopIndex < GetItems()->GetCount() - GetHeight())
         {
@@ -2755,7 +2750,7 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
       {
         assert(P.x == GetWidth() - 1);
         assert((P.y > 0) && (P.y < static_cast<int>(GetHeight() - 1)));
-        NewTopIndex = static_cast<size_t>(ceil(static_cast<float>(P.y - 1) / (GetHeight() - 2) * (GetItems()->GetCount() - GetHeight() + 1)));
+        NewTopIndex = static_cast<int>(ceil(static_cast<float>(P.y - 1) / (GetHeight() - 2) * (GetItems()->GetCount() - GetHeight() + 1)));
       }
 
       Result = true;
