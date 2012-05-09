@@ -896,8 +896,13 @@ const UnicodeString & __fastcall UnicodeString::operator +=(const std::wstring &
 
 const UnicodeString & __fastcall UnicodeString::operator +=(const char Ch)
 {
-  unsigned char ch(static_cast<unsigned char>(Ch));
-  Data.append(1, ch);
+  Data.append(1, Ch);
+  return *this;
+}
+
+const UnicodeString & __fastcall UnicodeString::operator +=(const wchar_t Ch)
+{
+  Data += Ch;
   return *this;
 }
 

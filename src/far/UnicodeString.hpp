@@ -471,6 +471,7 @@ public:
   const UnicodeString & __fastcall operator +=(const std::wstring & rhs);
   const UnicodeString & __fastcall operator +=(const char rhs);
   const UnicodeString & __fastcall operator +=(const char * rhs);
+  const UnicodeString & __fastcall operator +=(const wchar_t rhs);
 
   // friend bool __fastcall operator ==(const UnicodeString & Str, const wchar_t * Str);
 
