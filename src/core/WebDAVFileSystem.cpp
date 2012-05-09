@@ -247,6 +247,7 @@ void __fastcall TWebDAVFileSystem::Open()
     try
     {
       // retrieve working directory
+      FCurrentDirectory = Path;
       ReadCurrentDirectory();
       FPasswordFailed = false;
     }
