@@ -83,7 +83,6 @@ public:
   bool __fastcall GetMungeStringValues() { return FMungeStringValues; }
   void __fastcall SetMungeStringValues(bool value) { FMungeStringValues = value; }
   virtual UnicodeString __fastcall GetSource() = 0;
-  UnicodeString __fastcall MungeSubKey(UnicodeString Key, bool Path);
 #endif
 
 protected:

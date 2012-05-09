@@ -156,7 +156,6 @@ UnicodeString __fastcall THierarchicalStorage::MungeKeyName(UnicodeString Key)
   {
     Result = MungeStr(Key, true);
   }
-  // FKeyHistory->Add(IncludeTrailingBackslash(GetCurrentSubKey() + MungeSubKey(SubKey, Path)));
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -439,30 +438,14 @@ UnicodeString __fastcall THierarchicalStorage::ExcludeTrailingBackslash(const Un
     return ::ExcludeTrailingBackslash(S);
   }
 }
-//---------------------------------------------------------------------------
-UnicodeString __fastcall THierarchicalStorage::MungeSubKey(UnicodeString Key, bool Path)
-{
-  UnicodeString Result;
-  UnicodeString key = Key;
-  if (Path)
-  {
-    assert(key.IsEmpty() || (key[key.Length()] != '\\'));
-    while (!key.IsEmpty())
-    {
-      if (!Result.IsEmpty())
-      {
-        Result += '\\';
-      }
-      Result += MungeStr(CutToChar(key, L'\\', false), GetForceAnsi());
-    }
-  }
-  else
-  {
-    Result = MungeStr(key, GetForceAnsi());
-  }
-  return Result;
-}
 //===========================================================================
+/* __fastcall */ TRegistryStorage::TRegistryStorage(const UnicodeString AStorage):
+  THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
+  FRegistry(NULL)
+{
+  Init();
+}
+//---------------------------------------------------------------------------
 /* __fastcall */ TRegistryStorage::TRegistryStorage(const UnicodeString AStorage, HKEY ARootKey):
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
   FRegistry(NULL)
@@ -470,13 +453,6 @@ UnicodeString __fastcall THierarchicalStorage::MungeSubKey(UnicodeString Key, bo
   Init();
   FRegistry->SetRootKey(ARootKey);
 }
-//---------------------------------------------------------------------------
-/* __fastcall */ TRegistryStorage::TRegistryStorage(const UnicodeString AStorage):
-  THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
-  FRegistry(NULL)
-{
-  Init();
-};
 //---------------------------------------------------------------------------
 void __fastcall TRegistryStorage::Init()
 {
