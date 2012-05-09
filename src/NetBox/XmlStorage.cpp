@@ -425,7 +425,7 @@ __int64 TXmlStorage::ReadInt64(const UnicodeString Name, __int64 Default)
   return StrToInt64Def(GetSubKeyText(Name), Default);
 }
 //---------------------------------------------------------------------------
-UnicodeString TXmlStorage::ReadStringRaw(const UnicodeString Name, const UnicodeString Default)
+UnicodeString TXmlStorage::ReadStringRaw(const UnicodeString & Name, const UnicodeString & Default)
 {
   UnicodeString Result = GetSubKeyText(Name);
   DEBUG_PRINTF(L"Name = %s, Result = %s", Name.c_str(), Result.c_str());

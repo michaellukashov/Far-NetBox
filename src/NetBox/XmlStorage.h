@@ -28,7 +28,7 @@ public:
   virtual __int64 __fastcall ReadInt64(const UnicodeString Name, __int64 Default);
   virtual TDateTime __fastcall ReadDateTime(const UnicodeString Name, TDateTime Default);
   virtual double __fastcall ReadFloat(const UnicodeString Name, double Default);
-  virtual UnicodeString __fastcall ReadStringRaw(const UnicodeString Name, const UnicodeString Default);
+  virtual UnicodeString __fastcall ReadStringRaw(const UnicodeString & Name, const UnicodeString & Default);
   virtual size_t __fastcall ReadBinaryData(const UnicodeString Name, void * Buffer, size_t Size);
 
   virtual void __fastcall WriteBool(const UnicodeString Name, bool Value);

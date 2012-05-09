@@ -250,7 +250,7 @@ public:
   virtual THierarchicalStorage * __fastcall CreateScpStorage(bool SessionList);
   void __fastcall TemporaryLogging(const UnicodeString ALogFileName);
   void __fastcall TemporaryActionsLogging(const UnicodeString ALogFileName);
-  virtual RawByteString __fastcall EncryptPassword(UnicodeString Password, UnicodeString Key);
+  virtual RawByteString __fastcall EncryptPassword(const UnicodeString & Password, const UnicodeString & Key);
   virtual UnicodeString __fastcall DecryptPassword(RawByteString Password, UnicodeString Key);
   virtual RawByteString __fastcall StronglyRecryptPassword(RawByteString Password, UnicodeString Key);
 

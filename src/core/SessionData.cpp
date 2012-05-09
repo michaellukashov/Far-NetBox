@@ -1445,7 +1445,7 @@ void __fastcall TSessionData::SetUnsetNationalVars(bool value)
 void __fastcall TSessionData::SetUserName(UnicodeString value)
 {
   // UserName is key for password encryption
-  UnicodeString XPassword = GetPassword();
+  UnicodeString & XPassword = GetPassword();
   SET_SESSION_PROPERTY(UserName);
   SetPassword(XPassword);
   if (!XPassword.IsEmpty())
@@ -1460,7 +1460,7 @@ UnicodeString __fastcall TSessionData::GetUserNameExpanded()
   return ::ExpandEnvironmentVariables(GetUserName());
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetPassword(UnicodeString avalue)
+void __fastcall TSessionData::SetPassword(const UnicodeString & avalue)
 {
   if (!avalue.IsEmpty())
   {
@@ -1470,7 +1470,7 @@ void __fastcall TSessionData::SetPassword(UnicodeString avalue)
   SET_SESSION_PROPERTY(Password);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall TSessionData::GetPassword() const
+UnicodeString & __fastcall TSessionData::GetPassword() const
 {
   return DecryptPassword(FPassword, GetUserName() + GetHostName());
 }
