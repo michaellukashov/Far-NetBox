@@ -148,9 +148,9 @@ UnicodeString Trim(const UnicodeString str)
 UnicodeString TrimLeft(const UnicodeString str)
 {
   UnicodeString result = str;
-  while (result.Length() > 0 && result[1] == ' ')
+  while (result.Length() > 0 && result[1] == L' ')
   {
-    result = result.SubString(1, result.Length() - 1);
+    result = result.SubString(2, result.Length() - 1);
   }
   return result;
 }
@@ -159,7 +159,7 @@ UnicodeString TrimRight(const UnicodeString str)
 {
   UnicodeString result = str;
   while (result.Length() > 0 &&
-    ((result[result.Length()] == ' ') || (result[result.Length()] == '\n')))
+    ((result[result.Length()] == L' ') || (result[result.Length()] == L'\n')))
   {
     result.SetLength(result.Length() - 1);
   }
