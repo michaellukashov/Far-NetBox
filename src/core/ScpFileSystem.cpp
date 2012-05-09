@@ -699,7 +699,7 @@ void __fastcall TSCPFileSystem::ReadCommandOutput(int Params, const UnicodeStrin
     if (Params & coWaitForLastLine)
     {
       UnicodeString Line;
-      bool IsLast;
+      bool IsLast = true;
       unsigned int Total = 0;
       // #55: fixed so, even when last line of command output does not
       // contain CR/LF, we can recognize last line
@@ -946,7 +946,7 @@ void __fastcall TSCPFileSystem::DetectReturnVar()
         // if fatal error occurs, we need to exit ...
         throw;
       }
-      catch (Exception &E)
+      catch (std::exception &E)
       {
         // ...otherwise, we will try next variable (if any)
         Success = false;
