@@ -64,24 +64,24 @@ void ParseURL(const wchar_t * url, UnicodeString * scheme, UnicodeString * hostN
   UnicodeString urlParse(url);
 
   //Parse scheme name
-  size_t delimScheme = urlParse.Pos(L"://");
+  int delimScheme = urlParse.Pos(L"://");
   if (delimScheme > 0)
   {
     if (scheme)
     {
-      *scheme = urlParse.SubString(1, delimScheme);
+      *scheme = urlParse.SubString(1, delimScheme - 1);
       // transform(scheme->begin(), scheme->end(), scheme->begin(), tolower);
       scheme->Lower();
     }
-    urlParse.Delete(1, delimScheme + sizeof(L"://") / sizeof(wchar_t) - 1);
+    urlParse.Delete(1, delimScheme + 2);
   }
 
   //Parse path
-  const size_t delimPath = urlParse.Pos(L'/');
+  int delimPath = urlParse.Pos(L'/');
   if (delimPath > 0)
   {
     UnicodeString parsePath = urlParse.SubString(delimPath);
-    urlParse.Delete(1, delimPath);
+    urlParse.Delete(delimPath, -1);
     //Parse query
     int delimQuery = 0;
     if (parsePath.RPos(delimQuery, L'?'))
@@ -114,7 +114,7 @@ void ParseURL(const wchar_t * url, UnicodeString * scheme, UnicodeString * hostN
       {
         *password = parseLogin.SubString(delimPwd + 1);
       }
-      parseLogin.Delete(1, delimPwd);
+      parseLogin.Delete(delimPwd, -1);
     }
     if (userName)
     {
@@ -137,7 +137,7 @@ void ParseURL(const wchar_t * url, UnicodeString * scheme, UnicodeString * hostN
       const UnicodeString portNum = urlParse.SubString(delimPort + 1);
       *port = static_cast<unsigned short>(_wtoi(portNum.c_str()));
     }
-    urlParse.Delete(1, delimPort);
+    urlParse.Delete(delimPort, - 1);
   }
 
   if (hostName)
