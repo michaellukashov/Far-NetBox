@@ -1,6 +1,11 @@
 #define PUTTY_DO_GLOBALS
-#include "..\nbvcl\ustring.cpp"
+// #include "..\nbvcl\ustring.cpp"
 #include "..\nbvcl\Classes.cpp"
+#include "..\nbvcl\Sysutils.cpp"
+
+#include "..\far\UnicodeString.cpp"
+#include "..\far\local.cpp"
+#include "..\far\farrtl.cpp"
 
 #include "..\core\Common.cpp"
 #include "..\core\RemoteFiles.cpp"
@@ -28,7 +33,7 @@
 #include "..\core\FileInfo.cpp"
 #include "..\core\FileSystems.cpp"
 #include "..\core\Bookmarks.cpp"
-#include "..\core\SynchronizeController.cpp"
 #include "..\core\WinSCPSecurity.cpp"
+#include "..\windows\SynchronizeController.cpp"
 #include "..\windows\GUIConfiguration.cpp"
 #include "..\windows\GUITools.cpp"

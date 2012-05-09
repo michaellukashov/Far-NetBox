@@ -59,14 +59,6 @@ Create 'boost/stage' directory:
 
     mkdir libs/boost/stage
 
-Compile 'boost.date_time' library:
-
-    cd libs/boost/libs/date_time/build
-
-    call bjam variant=debug link=static threading=multi runtime-debugging=on runtime-link=static stage -j3  
-    cp -R libs/boost/libs/date_time/build/stage/* libs/boost/stage/
-    call bjam architecture=x86 address-model=64 variant=debug link=static threading=multi runtime-debugging=on runtime-link=static stage -j3  
-    cp -R libs/boost/libs/date_time/build/stage/* libs/boost/stage/x64
 
 Compile 'boost.signals' library:
 

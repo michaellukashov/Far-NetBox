@@ -298,7 +298,7 @@ namespace System
   {
 #if defined(_DELPHI_STRING_UNICODE)
     // return Sysutils::LoadStr(ident);
-    nb::Error(SNotImplemented, 2000);
+    System::Error(SNotImplemented, 2000);
     return "";
 #else
     // In ANSI mode VCL does not expose this
@@ -353,14 +353,14 @@ namespace System
   {
 #if defined(_DELPHI_STRING_UNICODE)
     // return Sysutils::FmtLoadStr(ident, args, size);
-    nb::Error(SNotImplemented, 2001);
+    System::Error(SNotImplemented, 2001);
     return "";
 #else
     // In ANSI mode VCL does not expose this
     // this functionality for UnicodeStrings.
     // Hence, potential data loss!
     // return Sysutils::FmtLoadStr(ident, args, size);
-    nb::Error(SNotImplemented, 2002);
+    System::Error(SNotImplemented, 2002);
     return "";
 #endif
   }
@@ -369,14 +369,14 @@ namespace System
   {
 #if defined(_DELPHI_STRING_UNICODE)
     // return Sysutils::Format(format, args, size);
-    nb::Error(SNotImplemented, 2003);
+    System::Error(SNotImplemented, 2003);
     return "";
 #else
     // In ANSI mode VCL does not expose this
     // this functionality for UnicodeStrings.
     // We use WideFormat instead
     // return Sysutils::WideFormat(WideString(format), args, size);
-    nb::Error(SNotImplemented, 2004);
+    System::Error(SNotImplemented, 2004);
     return "";
 #endif
   }
@@ -385,13 +385,13 @@ namespace System
   {
 #if defined(_DELPHI_STRING_UNICODE)
     // return Sysutils::FormatFloat(format, value);
-    nb::Error(SNotImplemented, 2005);
+    System::Error(SNotImplemented, 2005);
     return "";
 #else
     // In ANSI mode VCL does not expose this
     // this functionality for UnicodeStrings.
     // return Sysutils::FormatFloat(format, value);
-    nb::Error(SNotImplemented, 2006);
+    System::Error(SNotImplemented, 2006);
     return "";
 #endif
   }
@@ -462,28 +462,28 @@ namespace System
   UnicodeString __fastcall UnicodeString::FloatToStrF(long double value, TStringFloatFormat format, int precision, int digits)
   {
     // return Sysutils::FloatToStrF(value, TFloatFormat(format), precision, digits);
-    nb::Error(SNotImplemented, 2007);
+    System::Error(SNotImplemented, 2007);
     return "";
   }
 
   UnicodeString __fastcall UnicodeString::IntToHex(int value, int digits)
   {
     // return Sysutils::IntToHex(value, digits);
-    nb::Error(SNotImplemented, 2008);
+    System::Error(SNotImplemented, 2008);
     return "";
   }
 
   UnicodeString __fastcall UnicodeString::CurrToStr(Currency value)
   {
     // return Sysutils::CurrToStr(value);
-    nb::Error(SNotImplemented, 2009);
+    System::Error(SNotImplemented, 2009);
     return "";
   }
 
   UnicodeString __fastcall UnicodeString::CurrToStrF(Currency value, TStringFloatFormat format, int digits)
   {
     // return Sysutils::CurrToStrF(value, TFloatFormat(format), digits);
-    nb::Error(SNotImplemented, 2010);
+    System::Error(SNotImplemented, 2010);
     return "";
   }
 

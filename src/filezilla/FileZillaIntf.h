@@ -8,6 +8,7 @@
 #include <FileZillaOpt.h>
 #ifdef _MSC_VER
 #include "Classes.h"
+#include "Sysutils.h"
 #endif
 //---------------------------------------------------------------------------
 class CFileZillaApi;
@@ -15,11 +16,12 @@ class TFileZillaIntern;
 //---------------------------------------------------------------------------
 struct TListDataEntry
 {
-  const wchar_t *Name;
-  const wchar_t *Permissions;
-  const wchar_t *OwnerGroup;
-  const wchar_t *LinkTarget;
+  const wchar_t * Name;
+  const wchar_t * Permissions;
+  const wchar_t * OwnerGroup;
   __int64 Size;
+  bool Dir;
+  bool Link;
   int Year;
   int Month;
   int Day;
@@ -28,8 +30,7 @@ struct TListDataEntry
   int Second;
   bool HasTime;
   bool HasDate;
-  bool Dir;
-  bool Link;
+  const wchar_t * LinkTarget;
 };
 //---------------------------------------------------------------------------
 struct TFtpsCertificateData
@@ -137,8 +138,8 @@ public:
   static void __fastcall Finalize();
   static void __fastcall SetResourceModule(void * ResourceHandle);
 
-  explicit TFileZillaIntf();
-  virtual ~TFileZillaIntf();
+  explicit /* __fastcall */ TFileZillaIntf();
+  virtual /* __fastcall */ ~TFileZillaIntf();
 
   bool __fastcall Init();
   void __fastcall Destroying();
@@ -191,7 +192,7 @@ protected:
   virtual bool __fastcall HandleAsynchRequestVerifyCertificate(
     const TFtpsCertificateData & Data, int & RequestResult) = 0;
   virtual bool __fastcall HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
-    size_t Count) = 0;
+    unsigned int Count) = 0;
   virtual bool __fastcall HandleTransferStatus(bool Valid, __int64 TransferSize,
     __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
     bool FileTransfer) = 0;

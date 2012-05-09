@@ -5,46 +5,46 @@ string(REPLACE "\\" "/" PROJECT_ROOT ${PROJECT_ROOT})
 #-------------------------------------------------------------------------------
 
 set ( CMAKE_CXX_FLAGS
-    "-DWIN32;_WINDOWS /EHsc /MP2 -D_SCL_SECURE_NO_WARNINGS; -D_UNICODE;UNICODE" )
+    "-DWIN32;_WINDOWS /EHsc /MP2 -D_SCL_SECURE_NO_WARNINGS; -D_UNICODE;UNICODE /MTd" )
 set ( CMAKE_CXX_FLAGS_DEBUG "-D_DEBUG;_WINDOWS;_WINDLL;_USRDLL;NETBOX_DEBUG;MPEXT;NO_STRICT;"
      " /Gm- /EHsc /MTd /GS" )
 set ( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG;BOOST_DISABLE_ASSERTS" )
 
 set ( CMAKE_LINK_FLAGS
-    "/INCREMENTAL:NO /NODEFAULTLIB:LIBCMT.LIB /NODEFAULTLIB:MSVCRT.LIB /NODEFAULTLIB:LIBCMTD.LIB"
-    #/NODEFAULTLIB:LIBCPMTD.LIB"
-    # /NODEFAULTLIB:MSVCPRTD.LIB"
+    "/INCREMENTAL:NO /NODEFAULTLIB:LIBCMT.LIB /NODEFAULTLIB:MSVCRT.LIB
+    /NODEFAULTLIB:MFCS100UD.LIB
+    /NODEFAULTLIB:ATLSD.LIB
+    /NODEFAULTLIB:UAFXCWD.LIB
+    /NODEFAULTLIB:LIBCMTD.LIB
+    /NODEFAULTLIB:LIBCPMTD.LIB
+    /NODEFAULTLIB:WINDOWSCODECS.LIB
+    /NODEFAULTLIB:DELAYIMP.LIB
+    /NODEFAULTLIB:LIBEAY32.LIB
+    /NODEFAULTLIB:SSLEAY32.LIB
+    /NODEFAULTLIB:LIBPUTTY.LIB
+    /NODEFAULTLIB:WS2_32.LIB
+    /NODEFAULTLIB:KERNEL32.LIB
+    /NODEFAULTLIB:USER32.LIB
+    /NODEFAULTLIB:GDI32.LIB
+    /NODEFAULTLIB:COMDLG32.LIB
+    /NODEFAULTLIB:ADVAPI32.LIB
+    /NODEFAULTLIB:VERSION.LIB
+    /NODEFAULTLIB:WINHTTP.LIB
+    /NODEFAULTLIB:WINSPOOL.LIB
+    /NODEFAULTLIB:COMCTL32.LIB
+"
 )
 
 # definitions
 ADD_DEFINITIONS("-DNETBOX_DEBUG")
 ADD_DEFINITIONS("-DUSE_FASTFLOW
-                -D_FF_WIN_XP;CURL_STATICLIB;MPEXT;NO_SECURITY
+    -D_FF_WIN_XP;CURL_STATICLIB;MPEXT;NO_SECURITY
 ")
-# ADD_DEFINITIONS("-D_USRDLL;_AFXDLL;_AFXEXT;_DLL")
 
 include ( ${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake )
 # message ( "system: ${CMAKE_SYSTEM_NAME}" )
 
 #-------------------------------------------------------------------------------
-
-macro ( use_precompiled_header SRC_LIST_VAR HDR_FILE SRC_FILE PCHNAME )
-    get_filename_component ( PCH_HEADER ${HDR_FILE} NAME )
-    set ( PCH_BINARY ${PCHNAME} )
-    set ( PCH_BINARY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${PCH_BINARY}.pch" )
-    if (MSVC)
-        set ( SRC_LIST ${${SRC_LIST_VAR}} )
-        set_source_files_properties ( ${SRC_LIST} PROPERTIES
-            COMPILE_FLAGS "/Yu${PCH_HEADER} /Fp${PCH_BINARY}"
-            OBJECT_DEPENDS "${PCH_BINARY}" )
-        set_source_files_properties ( ${SRC_FILE} PROPERTIES
-            COMPILE_FLAGS "/Yc${PCH_HEADER} /Fp${PCH_BINARY}"
-            OBJECT_OUTPUTS "${PCH_BINARY}"
-            OBJECT_DEPENDS "" )
-    endif (MSVC)
-endmacro ( use_precompiled_header )
-
-#-------------------------------------------------------
 
 project ( NetBox )
 
@@ -67,6 +67,7 @@ include_directories (
     ${PROJECT_ROOT}/src/NetBox
     ${PROJECT_ROOT}/src/PluginSDK/${FAR_VERSION}
     ${PROJECT_ROOT}/src/nbvcl
+    ${PROJECT_ROOT}/src/far
     ${PROJECT_ROOT}/src/core
     ${PROJECT_ROOT}/src/windows
     ${PROJECT_ROOT}/src/resource
@@ -106,6 +107,12 @@ set ( NETBOX_ALL_HEADERS
 )
 
 set ( COMMON_SOURCES
+    ${PROJECT_ROOT}/src/nbvcl/Classes.cpp
+    ${PROJECT_ROOT}/src/nbvcl/Sysutils.cpp
+    # ${PROJECT_ROOT}/src/nbvcl/ustring.cpp
+    ${PROJECT_ROOT}/src/far/UnicodeString.cpp
+    ${PROJECT_ROOT}/src/far/farrtl.cpp
+    ${PROJECT_ROOT}/src/far/local.cpp
     ${PROJECT_ROOT}/src/core/RemoteFiles.cpp
     ${PROJECT_ROOT}/src/core/Terminal.cpp
     ${PROJECT_ROOT}/src/core/Exceptions.cpp
@@ -130,12 +137,10 @@ set ( COMMON_SOURCES
     ${PROJECT_ROOT}/src/core/FileInfo.cpp
     ${PROJECT_ROOT}/src/core/FileSystems.cpp
     ${PROJECT_ROOT}/src/core/Bookmarks.cpp
-    ${PROJECT_ROOT}/src/core/SynchronizeController.cpp
     ${PROJECT_ROOT}/src/core/Cryptography.cpp
     ${PROJECT_ROOT}/src/core/WinSCPSecurity.cpp
     ${PROJECT_ROOT}/src/core/Common.cpp
-    ${PROJECT_ROOT}/src/nbvcl/Classes.cpp
-    ${PROJECT_ROOT}/src/nbvcl/ustring.cpp
+    ${PROJECT_ROOT}/src/windows/SynchronizeController.cpp
     ${PROJECT_ROOT}/src/windows/GUIConfiguration.cpp
     ${PROJECT_ROOT}/src/windows/GUITools.cpp
     ${PROJECT_ROOT}/src/NetBox/stdafx.cpp
@@ -181,23 +186,24 @@ set ( COMMON_SOURCES
 #-------------------------------------------------------------------------------
 # target NetBox
 
-set ( NETBOX_HEADERS ${NETBOX_ALL_HEADERS}
-)
-
-set ( NETBOX_SOURCES ${COMMON_SOURCES}
-    ${PROJECT_ROOT}/src/NetBox/NetBox.cpp
+set ( NETBOX_SOURCES # ${COMMON_SOURCES}
+    ${PROJECT_ROOT}/src/NetBox/UnityBuildCore.cpp
+    ${PROJECT_ROOT}/src/NetBox/UnityBuildMain.cpp
+    ${PROJECT_ROOT}/src/NetBox/UnityBuildFilezilla.cpp
+    # ${PROJECT_ROOT}/src/NetBox/NetBox.cpp
     ${PROJECT_ROOT}/src/NetBox/NetBox.def
 )
 
 add_library (libcurl STATIC IMPORTED)
 set_property (TARGET libcurl
     PROPERTY IMPORTED_LOCATION ${PROJECT_ROOT}/Temp/NetBox/${CMAKE_BUILD_TYPE}/${PLATFORM}/libcurl/libcurl.lib)
-add_library (libeay32 SHARED IMPORTED)
+add_library (libeay32 STATIC IMPORTED)
 set_property (TARGET libeay32
-    PROPERTY IMPORTED_IMPLIB ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/libeay32.lib )
-add_library (ssleay32 SHARED IMPORTED)
+    # PROPERTY IMPORTED_IMPLIB ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/libeay32.lib )
+    PROPERTY IMPORTED_LOCATION ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/libeay32.lib )
+add_library (ssleay32 STATIC IMPORTED)
 set_property (TARGET ssleay32
-    PROPERTY IMPORTED_IMPLIB ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/ssleay32.lib )
+    PROPERTY IMPORTED_LOCATION ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/ssleay32.lib )
 
 #-------------------------------------------------------------------------------
 
@@ -246,7 +252,7 @@ add_library (libputty STATIC
 
 set_target_properties( libputty
     PROPERTIES
-    COMPILE_FLAGS "/TC -D_CRTIMP= -DLibrary;SECURITY_WIN32;_WINDOWS;NET_SETUP_DIAGNOSTICS"
+    COMPILE_FLAGS "/TC -D_CRTIMP= -DLibrary;SECURITY_WIN32;_WINDOWS;NET_SETUP_DIAGNOSTICS;NO_SECURITY"
 )
 
 #-------------------------------------------------------------------------------
@@ -266,42 +272,36 @@ set_target_properties( libtinyxml
 #-------------------------------------------------------------------------------
 
 set ( NETBOX_LIBRARIES
-    mfc100ud.lib
-    Atl.lib
+    mfcs100ud.lib
+    Atlsd.lib
     uafxcwd.lib
-    comctl32.lib
-    msvcrtd.lib
-    msvcprtd.lib
-    msvcmrtd.lib
-    msvcurtd.lib
+    libcmtd.lib
+    libcpmtd.lib
+    windowscodecs.lib
+    delayimp.lib
     libputty
-    libtinyxml
     libcurl
+    zlib
+    libssh2
+    libtinyxml
     libeay32
     ssleay32
-    libssh2.lib
-    zlib.lib
-    ws2_32.lib
-    winhttp.lib
+    Ws2_32.lib
     kernel32.lib
     user32.lib
     gdi32.lib
-    winspool.lib
     comdlg32.lib
     advapi32.lib
-    shell32.lib
-    ole32.lib
-    oleaut32.lib
-    uuid.lib
-    odbc32.lib
-    odbccp32.lib
     Version.lib
+    winhttp.lib
+    winspool.lib
+    comctl32.lib
 )
 
-add_library ( NetBox SHARED ${NETBOX_HEADERS} ${NETBOX_SOURCES} )
+add_library ( NetBox SHARED ${NETBOX_SOURCES} )
 set_target_properties( NetBox
     PROPERTIES
-    COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -D_UNICODE;UNICODE /MTd"
+    COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
     LINK_FLAGS ${CMAKE_LINK_FLAGS}
 )
 
@@ -334,7 +334,11 @@ set ( TESTNETBOX_01_DIR ${PROJECT_ROOT}/src/NetBox )
 
 set ( TESTNETBOX_01_SOURCES
     ${PROJECT_ROOT}/src/nbvcl/Classes.cpp
-    ${PROJECT_ROOT}/src/nbvcl/ustring.cpp
+    ${PROJECT_ROOT}/src/nbvcl/Sysutils.cpp
+    # ${PROJECT_ROOT}/src/nbvcl/ustring.cpp
+    ${PROJECT_ROOT}/src/far/UnicodeString.cpp
+    ${PROJECT_ROOT}/src/far/farrtl.cpp
+    ${PROJECT_ROOT}/src/far/local.cpp
     ${PROJECT_ROOT}/src/core/Common.cpp
     ${PROJECT_ROOT}/src/core/Exceptions.cpp
     ${PROJECT_ROOT}/src/core/FileBuffer.cpp
@@ -346,23 +350,26 @@ set ( TESTNETBOX_01_SOURCES
 add_executable( testnetbox_01 ${TESTNETBOX_01_SOURCES} )
 set_target_properties( testnetbox_01
     PROPERTIES
-    COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -D_UNICODE;UNICODE /MTd"
+    COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
     LINK_FLAGS "${CMAKE_LINK_FLAGS}"
 )
 
-add_dependencies ( testnetbox_01 ${NETBOX_LIBRARIES}
+add_dependencies ( testnetbox_01
     libputty
     libtinyxml
 )
 
-target_link_libraries ( testnetbox_01 )
+target_link_libraries ( testnetbox_01 ${NETBOX_LIBRARIES} )
 
 #-------------------------------------------------------
 # target testnetbox_02
 
 set ( TESTNETBOX_02_DIR ${PROJECT_ROOT}/src/NetBox )
 
-set ( TESTNETBOX_02_SOURCES ${COMMON_SOURCES}
+set ( TESTNETBOX_02_SOURCES
+    ${TESTNETBOX_02_DIR}/UnityBuildCore.cpp
+    ${TESTNETBOX_02_DIR}/UnityBuildMain.cpp
+    ${TESTNETBOX_02_DIR}/UnityBuildFilezilla.cpp
     ${PROJECT_ROOT}/src/resource/testnetbox_02.rc
     ${TESTNETBOX_02_DIR}/testnetbox_02.cpp
 )
@@ -371,7 +378,7 @@ add_executable( testnetbox_02 ${TESTNETBOX_02_SOURCES} )
 set_target_properties( testnetbox_02
     PROPERTIES
     COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
-    LINK_FLAGS "${CMAKE_LINK_FLAGS} /NODEFAULTLIB:MSVCRTD.LIB"
+    LINK_FLAGS "${CMAKE_LINK_FLAGS} /verbose:lib"
 )
 add_dependencies ( testnetbox_02
     libputty
@@ -396,7 +403,7 @@ add_executable( testnetbox_03 ${TESTNETBOX_03_SOURCES} )
 set_target_properties( testnetbox_03
     PROPERTIES
     COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
-    LINK_FLAGS "${CMAKE_LINK_FLAGS} /NODEFAULTLIB:MSVCRTD.LIB"
+    LINK_FLAGS "${CMAKE_LINK_FLAGS}"
 )
 add_dependencies ( testnetbox_03
     libputty

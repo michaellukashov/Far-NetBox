@@ -1,10 +1,14 @@
 //---------------------------------------------------------------------------
+#ifndef _MSC_VER
+#include <vcl.h>
+#pragma hdrstop
+#include <LanguagesDEPfix.hpp>
+#else
 #include "nbafx.h"
 
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
-
-// #include <LanguagesDEPfix.hpp>
+#endif
 #include "GUIConfiguration.h"
 #include "GUITools.h"
 #include <Common.h>
@@ -13,640 +17,641 @@
 #include <Terminal.h>
 #include <CoreMain.h>
 //---------------------------------------------------------------------------
+#ifndef _MSC_VER
+#pragma package(smart_init)
+#endif
+//---------------------------------------------------------------------------
 const int ccLocal = ccUser;
 const int ccShowResults = ccUser << 1;
 const int ccCopyResults = ccUser << 2;
 const int ccSet = 0x80000000;
 //---------------------------------------------------------------------------
 static const unsigned int AdditionaLanguageMask = 0xFFFFFF00;
-static const std::wstring AdditionaLanguagePrefix(L"XX");
+static const UnicodeString AdditionaLanguagePrefix(L"XX");
 //---------------------------------------------------------------------------
-TGUICopyParamType::TGUICopyParamType()
-    : TCopyParamType()
+/* __fastcall */ TGUICopyParamType::TGUICopyParamType()
+  : TCopyParamType()
 {
-    GUIDefault();
+  GUIDefault();
 }
 //---------------------------------------------------------------------------
-TGUICopyParamType::TGUICopyParamType(const TCopyParamType &Source)
-    : TCopyParamType(Source)
+/* __fastcall */ TGUICopyParamType::TGUICopyParamType(const TCopyParamType & Source)
+  : TCopyParamType(Source)
 {
-    GUIDefault();
+  GUIDefault();
 }
 //---------------------------------------------------------------------------
-TGUICopyParamType::TGUICopyParamType(const TGUICopyParamType &Source)
-    : TCopyParamType(Source)
+/* __fastcall */ TGUICopyParamType::TGUICopyParamType(const TGUICopyParamType & Source)
+  : TCopyParamType(Source)
 {
-    GUIAssign(&Source);
+  GUIAssign(&Source);
 }
+//---------------------------------------------------------------------------
+void __fastcall TGUICopyParamType::Assign(const TCopyParamType * Source)
+{
+  TCopyParamType::Assign(Source);
 
-//---------------------------------------------------------------------------
-TGUICopyParamType::~TGUICopyParamType()
-{
-    // DEBUG_PRINTF(L"begin");
-    // DEBUG_PRINTF(L"end");
+  const TGUICopyParamType * GUISource;
+  GUISource = dynamic_cast<const TGUICopyParamType *>(Source);
+  if (GUISource != NULL)
+  {
+    GUIAssign(GUISource);
+  }
 }
 //---------------------------------------------------------------------------
-void __fastcall TGUICopyParamType::Assign(const TCopyParamType *Source)
+void __fastcall TGUICopyParamType::GUIAssign(const TGUICopyParamType * Source)
 {
-    TCopyParamType::Assign(Source);
-
-    const TGUICopyParamType *GUISource;
-    GUISource = dynamic_cast<const TGUICopyParamType *>(Source);
-    if (GUISource != NULL)
-    {
-        GUIAssign(GUISource);
-    }
-}
-//---------------------------------------------------------------------------
-void __fastcall TGUICopyParamType::GUIAssign(const TGUICopyParamType *Source)
-{
-    SetQueue(Source->GetQueue());
-    SetQueueNoConfirmation(Source->GetQueueNoConfirmation());
-    SetQueueIndividually(Source->GetQueueIndividually());
-    SetNewerOnly(Source->GetNewerOnly());
+  SetQueue(Source->GetQueue());
+  SetQueueNoConfirmation(Source->GetQueueNoConfirmation());
+  SetQueueIndividually(Source->GetQueueIndividually());
+  SetNewerOnly(Source->GetNewerOnly());
 }
 //---------------------------------------------------------------------------
 void __fastcall TGUICopyParamType::Default()
 {
-    TCopyParamType::Default();
+  TCopyParamType::Default();
 
-    GUIDefault();
+  GUIDefault();
 }
 //---------------------------------------------------------------------------
 void __fastcall TGUICopyParamType::GUIDefault()
 {
-    SetQueue(false);
-    SetQueueNoConfirmation(true);
-    SetQueueIndividually(false);
-    SetNewerOnly(false);
+  SetQueue(false);
+  SetQueueNoConfirmation(true);
+  SetQueueIndividually(false);
+  SetNewerOnly(false);
 }
 //---------------------------------------------------------------------------
-void __fastcall TGUICopyParamType::Load(THierarchicalStorage *Storage)
+void __fastcall TGUICopyParamType::Load(THierarchicalStorage * Storage)
 {
-    TCopyParamType::Load(Storage);
+  TCopyParamType::Load(Storage);
 
-    SetQueue(Storage->Readbool(L"Queue", GetQueue()));
-    SetQueueNoConfirmation(Storage->Readbool(L"QueueNoConfirmation", GetQueueNoConfirmation()));
-    SetQueueIndividually(Storage->Readbool(L"QueueIndividually", GetQueueIndividually()));
-    SetNewerOnly(Storage->Readbool(L"NewerOnly", GetNewerOnly()));
+  SetQueue(Storage->ReadBool(L"Queue", GetQueue()));
+  SetQueueNoConfirmation(Storage->ReadBool(L"QueueNoConfirmation", GetQueueNoConfirmation()));
+  SetQueueIndividually(Storage->ReadBool(L"QueueIndividually", GetQueueIndividually()));
+  SetNewerOnly(Storage->ReadBool(L"NewerOnly", GetNewerOnly()));
 }
 //---------------------------------------------------------------------------
-void __fastcall TGUICopyParamType::Save(THierarchicalStorage *Storage)
+void __fastcall TGUICopyParamType::Save(THierarchicalStorage * Storage)
 {
-    TCopyParamType::Save(Storage);
+  TCopyParamType::Save(Storage);
 
-    Storage->Writebool(L"Queue", GetQueue());
-    Storage->Writebool(L"QueueNoConfirmation", GetQueueNoConfirmation());
-    Storage->Writebool(L"QueueIndividually", GetQueueIndividually());
-    Storage->Writebool(L"NewerOnly", GetNewerOnly());
+  Storage->WriteBool(L"Queue", GetQueue());
+  Storage->WriteBool(L"QueueNoConfirmation", GetQueueNoConfirmation());
+  Storage->WriteBool(L"QueueIndividually", GetQueueIndividually());
+  Storage->WriteBool(L"NewerOnly", GetNewerOnly());
 }
 //---------------------------------------------------------------------------
-TGUICopyParamType & __fastcall TGUICopyParamType::operator =(const TCopyParamType &rhp)
+TGUICopyParamType & __fastcall TGUICopyParamType::operator =(const TCopyParamType & rhp)
 {
-    Assign(&rhp);
-    return *this;
+  Assign(&rhp);
+  return *this;
 }
 //---------------------------------------------------------------------------
-TGUICopyParamType & __fastcall TGUICopyParamType::operator =(const TGUICopyParamType &rhp)
+TGUICopyParamType & __fastcall TGUICopyParamType::operator =(const TGUICopyParamType & rhp)
 {
-    Assign(&rhp);
-    return *this;
-}
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
-void TCopyParamRuleData::Default()
-{
-    HostName = L"";
-    UserName = L"";
-    RemoteDirectory = L"";
-    LocalDirectory = L"";
+  Assign(&rhp);
+  return *this;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TCopyParamRule::TCopyParamRule()
+void __fastcall TCopyParamRuleData::Default()
+{
+  HostName = L"";
+  UserName = L"";
+  RemoteDirectory = L"";
+  LocalDirectory = L"";
+}
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+/* __fastcall */ TCopyParamRule::TCopyParamRule()
 {
 }
 //---------------------------------------------------------------------------
-TCopyParamRule::TCopyParamRule(const TCopyParamRuleData &Data)
+/* __fastcall */ TCopyParamRule::TCopyParamRule(const TCopyParamRuleData & Data)
 {
-    FData = Data;
+  FData = Data;
 }
 //---------------------------------------------------------------------------
-TCopyParamRule::TCopyParamRule(const TCopyParamRule &Source)
+/* __fastcall */ TCopyParamRule::TCopyParamRule(const TCopyParamRule & Source)
 {
-    FData.HostName = Source.FData.HostName;
-    FData.UserName = Source.FData.UserName;
-    FData.RemoteDirectory = Source.FData.RemoteDirectory;
-    FData.LocalDirectory = Source.FData.LocalDirectory;
+  FData.HostName = Source.FData.HostName;
+  FData.UserName = Source.FData.UserName;
+  FData.RemoteDirectory = Source.FData.RemoteDirectory;
+  FData.LocalDirectory = Source.FData.LocalDirectory;
 }
 //---------------------------------------------------------------------------
 #define C(Property) (Property == rhp.Property)
-bool __fastcall TCopyParamRule::operator==(const TCopyParamRule &rhp) const
+bool __fastcall TCopyParamRule::operator==(const TCopyParamRule & rhp) const
 {
-    return
-        C(FData.HostName) &&
-        C(FData.UserName) &&
-        C(FData.RemoteDirectory) &&
-        C(FData.LocalDirectory) &&
-        true;
+  return
+    C(FData.HostName) &&
+    C(FData.UserName) &&
+    C(FData.RemoteDirectory) &&
+    C(FData.LocalDirectory) &&
+    true;
 }
 #undef C
 //---------------------------------------------------------------------------
-bool __fastcall TCopyParamRule::Match(const std::wstring Mask,
-                           const std::wstring Value, bool Path, bool Local) const
+bool __fastcall TCopyParamRule::Match(const UnicodeString & Mask,
+  const UnicodeString & Value, bool Path, bool Local) const
 {
-    bool Result;
-    if (Mask.empty())
+  bool Result;
+  if (Mask.IsEmpty())
+  {
+    Result = true;
+  }
+  else
+  {
+    TFileMasks M(Mask);
+    if (Path)
     {
-        Result = true;
+      Result = M.Matches(Value, Local, true);
     }
     else
     {
-        TFileMasks M(Mask);
-        if (Path)
-        {
-            Result = M.Matches(Value, Local, true);
-        }
-        else
-        {
-            Result = M.Matches(Value, false);
-        }
+      Result = M.Matches(Value, false);
     }
-    return Result;
+  }
+  return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCopyParamRule::Matches(const TCopyParamRuleData &Value) const
+bool __fastcall TCopyParamRule::Matches(const TCopyParamRuleData & Value) const
 {
-    return
-        Match(FData.HostName, Value.HostName, false) &&
-        Match(FData.UserName, Value.UserName, false) &&
-        Match(FData.RemoteDirectory, Value.RemoteDirectory, true, false) &&
-        Match(FData.LocalDirectory, Value.LocalDirectory, true, true);
+  return
+    Match(FData.HostName, Value.HostName, false) &&
+    Match(FData.UserName, Value.UserName, false) &&
+    Match(FData.RemoteDirectory, Value.RemoteDirectory, true, false) &&
+    Match(FData.LocalDirectory, Value.LocalDirectory, true, true);
 }
 //---------------------------------------------------------------------------
-void __fastcall TCopyParamRule::Load(THierarchicalStorage *Storage)
+void __fastcall TCopyParamRule::Load(THierarchicalStorage * Storage)
 {
-    FData.HostName = Storage->ReadString(L"HostName", FData.HostName);
-    FData.UserName = Storage->ReadString(L"UserName", FData.UserName);
-    FData.RemoteDirectory = Storage->ReadString(L"RemoteDirectory", FData.RemoteDirectory);
-    FData.LocalDirectory = Storage->ReadString(L"LocalDirectory", FData.LocalDirectory);
+  FData.HostName = Storage->ReadString(L"HostName", FData.HostName);
+  FData.UserName = Storage->ReadString(L"UserName", FData.UserName);
+  FData.RemoteDirectory = Storage->ReadString(L"RemoteDirectory", FData.RemoteDirectory);
+  FData.LocalDirectory = Storage->ReadString(L"LocalDirectory", FData.LocalDirectory);
 }
 //---------------------------------------------------------------------------
-void __fastcall TCopyParamRule::Save(THierarchicalStorage *Storage) const
+void __fastcall TCopyParamRule::Save(THierarchicalStorage * Storage) const
 {
-    Storage->WriteString(L"HostName", FData.HostName);
-    Storage->WriteString(L"UserName", FData.UserName);
-    Storage->WriteString(L"RemoteDirectory", FData.RemoteDirectory);
-    Storage->WriteString(L"LocalDirectory", FData.LocalDirectory);
+  Storage->WriteString(L"HostName", FData.HostName);
+  Storage->WriteString(L"UserName", FData.UserName);
+  Storage->WriteString(L"RemoteDirectory", FData.RemoteDirectory);
+  Storage->WriteString(L"LocalDirectory", FData.LocalDirectory);
 }
 //---------------------------------------------------------------------------
 bool __fastcall TCopyParamRule::GetEmpty() const
 {
-    return
-        FData.HostName.empty() &&
-        FData.UserName.empty() &&
-        FData.RemoteDirectory.empty() &&
-        FData.LocalDirectory.empty();
+  return
+    FData.HostName.IsEmpty() &&
+    FData.UserName.IsEmpty() &&
+    FData.RemoteDirectory.IsEmpty() &&
+    FData.LocalDirectory.IsEmpty();
 }
 //---------------------------------------------------------------------------
-std::wstring __fastcall TCopyParamRule::GetInfoStr(const std::wstring Separator) const
+UnicodeString __fastcall TCopyParamRule::GetInfoStr(UnicodeString Separator) const
 {
-    std::wstring Result;
-#define ADD(FMT, ELEM) \
-    if (!FData.ELEM.empty()) \
-      Result += (Result.empty() ? std::wstring() : Separator) + FMTLOAD(FMT, FData.ELEM.c_str());
-    ADD(COPY_RULE_HOSTNAME, HostName);
-    ADD(COPY_RULE_USERNAME, UserName);
-    ADD(COPY_RULE_REMOTE_DIR, RemoteDirectory);
-    ADD(COPY_RULE_LOCAL_DIR, LocalDirectory);
-#undef ADD
-    return Result;
+  UnicodeString Result;
+  #define ADD(FMT, ELEM) \
+    if (!FData.ELEM.IsEmpty()) \
+      Result += (Result.IsEmpty() ? UnicodeString() : Separator) + FMTLOAD(FMT, FData.ELEM.c_str());
+  ADD(COPY_RULE_HOSTNAME, HostName);
+  ADD(COPY_RULE_USERNAME, UserName);
+  ADD(COPY_RULE_REMOTE_DIR, RemoteDirectory);
+  ADD(COPY_RULE_LOCAL_DIR, LocalDirectory);
+  #undef ADD
+  return Result;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-std::wstring TCopyParamList::FInvalidChars(L"/\\[]");
+UnicodeString TCopyParamList::FInvalidChars(L"/\\[]");
 //---------------------------------------------------------------------------
-TCopyParamList::TCopyParamList()
+/* __fastcall */ TCopyParamList::TCopyParamList()
 {
-    Init();
+  Init();
 }
 //---------------------------------------------------------------------------
 void __fastcall TCopyParamList::Init()
 {
-    FCopyParams = new nb::TObjectList();
-    FRules = new nb::TObjectList();
-    FNames = new nb::TStringList();
-    FNameList = NULL;
-    FModified = false;
+  FCopyParams = new TObjectList();
+  FRules = new TObjectList();
+  FNames = new TStringList();
+  FNameList = NULL;
+  FModified = false;
 }
 //---------------------------------------------------------------------------
-TCopyParamList::~TCopyParamList()
+/* __fastcall */ TCopyParamList::~TCopyParamList()
 {
-    // DEBUG_PRINTF(L"begin");
-    Clear();
-    delete FCopyParams;
-    delete FRules;
-    delete FNames;
-    delete FNameList;
-    // DEBUG_PRINTF(L"end");
+  Clear();
+  delete FCopyParams;
+  delete FRules;
+  delete FNames;
+  delete FNameList;
 }
 //---------------------------------------------------------------------------
 void __fastcall TCopyParamList::Reset()
 {
-    SAFE_DESTROY(FNameList);
-    FModified = false;
+  SAFE_DESTROY(FNameList);
+  FModified = false;
 }
 //---------------------------------------------------------------------
 void __fastcall TCopyParamList::Modify()
 {
-    SAFE_DESTROY(FNameList);
-    FModified = true;
+  SAFE_DESTROY(FNameList);
+  FModified = true;
 }
 //---------------------------------------------------------------------
-void __fastcall TCopyParamList::ValidateName(const std::wstring Name)
+void __fastcall TCopyParamList::ValidateName(const UnicodeString Name)
 {
-    if (::LastDelimiter(Name, FInvalidChars) != std::wstring::npos)
-    {
-        throw ExtException(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), FInvalidChars.c_str()));
-    }
+  if (Name.LastDelimiter(FInvalidChars) > 0)
+  {
+    throw Exception(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), FInvalidChars.c_str()));
+  }
 }
 //---------------------------------------------------------------------------
-void __fastcall TCopyParamList::operator=(const TCopyParamList &rhl)
+void __fastcall TCopyParamList::operator=(const TCopyParamList & rhl)
 {
-    Clear();
+  Clear();
 
-    for (size_t Index = 0; Index < rhl.GetCount(); Index++)
+  for (int Index = 0; Index < rhl.GetCount(); Index++)
+  {
+    TCopyParamType * CopyParam = new TCopyParamType(*rhl.GetCopyParam(Index));
+    TCopyParamRule * Rule = NULL;
+    if (rhl.GetRule(Index) != NULL)
     {
-        TCopyParamType *CopyParam = new TCopyParamType(*rhl.GetCopyParam(Index));
-        TCopyParamRule *Rule = NULL;
-        if (rhl.GetRule(Index) != NULL)
-        {
-            Rule = new TCopyParamRule(*rhl.GetRule(Index));
-        }
-        Add(rhl.GetName(Index), CopyParam, Rule);
+      Rule = new TCopyParamRule(*rhl.GetRule(Index));
     }
-    // there should be comparison of with the assigned list, be we rely on caller
-    // to do it instead (TGUIConfiguration::SetCopyParamList)
-    Modify();
+    Add(rhl.GetName(Index), CopyParam, Rule);
+  }
+  // there should be comparison of with the assigned list, but we rely on caller
+  // to do it instead (TGUIConfiguration::SetCopyParamList)
+  Modify();
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCopyParamList::operator==(const TCopyParamList &rhl) const
+bool __fastcall TCopyParamList::operator==(const TCopyParamList & rhl) const
 {
-    bool Result = (GetCount() == rhl.GetCount());
-    if (Result)
+  bool Result = (GetCount() == rhl.GetCount());
+  if (Result)
+  {
+    int i = 0;
+    while ((i < GetCount()) && Result)
     {
-        size_t i = 0;
-        while ((i < GetCount()) && Result)
-        {
-            Result =
-                (GetName(i) == rhl.GetName(i)) &&
-                CompareItem(i, rhl.GetCopyParam(i), rhl.GetRule(i));
-            i++;
-        }
+      Result =
+        (GetName(i) == rhl.GetName(i)) &&
+        CompareItem(i, rhl.GetCopyParam(i), rhl.GetRule(i));
+      i++;
     }
-    return Result;
+  }
+  return Result;
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TCopyParamList::IndexOfName(const std::wstring Name) const
+int __fastcall TCopyParamList::IndexOfName(const UnicodeString Name) const
 {
-    return FNames->IndexOf(Name.c_str());
+  return FNames->IndexOf(Name.c_str());
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCopyParamList::CompareItem(size_t Index,
-                                 const TCopyParamType *CopyParam, const TCopyParamRule *Rule) const
+bool __fastcall TCopyParamList::CompareItem(int Index,
+  const TCopyParamType * CopyParam, const TCopyParamRule * Rule) const
 {
-    return
-        ((*GetCopyParam(Index)) == *CopyParam) &&
-        ((GetRule(Index) == NULL) ?
-         (Rule == NULL) :
-         ((Rule != NULL) && (*GetRule(Index)) == (*Rule)));
+  return
+    ((*GetCopyParam(Index)) == *CopyParam) &&
+    ((GetRule(Index) == NULL) ?
+      (Rule == NULL) :
+      ((Rule != NULL) && (*GetRule(Index)) == (*Rule)));
 }
 //---------------------------------------------------------------------------
 void __fastcall TCopyParamList::Clear()
 {
-    for (size_t i = GetCount() - 1; i != NPOS; i--)
-    {
-        FCopyParams->Delete(i);
-        FRules->Delete(i);
-    }
-    FCopyParams->Clear();
-    FRules->Clear();
-    FNames->Clear();
+  for (int i = GetCount() - 1; i != -1; i--)
+  {
+    FCopyParams->Delete(i);
+    FRules->Delete(i);
+  }
+  FCopyParams->Clear();
+  FRules->Clear();
+  FNames->Clear();
 }
 //---------------------------------------------------------------------------
-void __fastcall TCopyParamList::Add(const std::wstring Name,
-                         TCopyParamType *CopyParam, TCopyParamRule *Rule)
+void __fastcall TCopyParamList::Add(const UnicodeString Name,
+  TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
-    Insert(GetCount(), Name, CopyParam, Rule);
+  Insert(GetCount(), Name, CopyParam, Rule);
 }
 //---------------------------------------------------------------------------
-void __fastcall TCopyParamList::Insert(size_t Index, const std::wstring Name,
-                            TCopyParamType *CopyParam, TCopyParamRule *Rule)
+void __fastcall TCopyParamList::Insert(int Index, const UnicodeString Name,
+  TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
-    // DEBUG_PRINTF(L"begin");
-    assert(FNames->IndexOf(Name) == NPOS);
-    FNames->Insert(Index, Name);
-    assert(CopyParam != NULL);
-    FCopyParams->Insert(Index, reinterpret_cast<nb::TObject *>(CopyParam));
-    FRules->Insert(Index, reinterpret_cast<nb::TObject *>(Rule));
-    Modify();
-    // DEBUG_PRINTF(L"end");
+  assert(FNames->IndexOf(Name) < 0);
+  FNames->Insert(Index, Name);
+  assert(CopyParam != NULL);
+  FCopyParams->Insert(Index, reinterpret_cast<TObject *>(CopyParam));
+  FRules->Insert(Index, reinterpret_cast<TObject *>(Rule));
+  Modify();
 }
 //---------------------------------------------------------------------------
-void __fastcall TCopyParamList::Change(size_t Index, const std::wstring Name,
-                            TCopyParamType *CopyParam, TCopyParamRule *Rule)
+void __fastcall TCopyParamList::Change(int Index, const UnicodeString Name,
+  TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
-    if ((Name != GetName(Index)) || !CompareItem(Index, CopyParam, Rule))
-    {
-        FNames->PutString(Index, Name);
-        delete GetCopyParam(Index);
-        FCopyParams->SetItem(Index, (reinterpret_cast<nb::TObject *>(CopyParam)));
-        delete GetRule(Index);
-        FRules->SetItem(Index, (reinterpret_cast<nb::TObject *>(Rule)));
-        Modify();
-    }
-    else
-    {
-        delete CopyParam;
-        delete Rule;
-    }
-}
-//---------------------------------------------------------------------------
-void __fastcall TCopyParamList::Move(size_t CurIndex, size_t NewIndex)
-{
-    if (CurIndex != NewIndex)
-    {
-        FNames->Move(CurIndex, NewIndex);
-        FCopyParams->Move(CurIndex, NewIndex);
-        FRules->Move(CurIndex, NewIndex);
-        Modify();
-    }
-}
-//---------------------------------------------------------------------------
-void __fastcall TCopyParamList::Delete(size_t Index)
-{
-    assert((Index != NPOS) && (Index < GetCount()));
-    FNames->Delete(Index);
+  if ((Name != GetName(Index)) || !CompareItem(Index, CopyParam, Rule))
+  {
+    FNames->PutString(Index, Name);
     delete GetCopyParam(Index);
-    FCopyParams->Delete(Index);
+    FCopyParams->SetItem(Index, (reinterpret_cast<TObject *>(CopyParam)));
     delete GetRule(Index);
-    FRules->Delete(Index);
+    FRules->SetItem(Index, (reinterpret_cast<TObject *>(Rule)));
     Modify();
+  }
+  else
+  {
+    delete CopyParam;
+    delete Rule;
+  }
 }
 //---------------------------------------------------------------------------
-int __fastcall TCopyParamList::Find(const TCopyParamRuleData &Value) const
+void __fastcall TCopyParamList::Move(int CurIndex, int NewIndex)
 {
-    int Result = -1;
-    size_t i = 0;
-    while ((i < FRules->GetCount()) && (Result < 0))
+  if (CurIndex != NewIndex)
+  {
+    FNames->Move(CurIndex, NewIndex);
+    FCopyParams->Move(CurIndex, NewIndex);
+    FRules->Move(CurIndex, NewIndex);
+    Modify();
+  }
+}
+//---------------------------------------------------------------------------
+void __fastcall TCopyParamList::Delete(int Index)
+{
+  assert((Index >= 0) && (Index < GetCount()));
+  FNames->Delete(Index);
+  delete GetCopyParam(Index);
+  FCopyParams->Delete(Index);
+  delete GetRule(Index);
+  FRules->Delete(Index);
+  Modify();
+}
+//---------------------------------------------------------------------------
+int __fastcall TCopyParamList::Find(const TCopyParamRuleData & Value) const
+{
+  int Result = -1;
+  int i = 0;
+  while ((i < FRules->GetCount()) && (Result < 0))
+  {
+    if (FRules->GetItem(i) != NULL)
     {
-        if (FRules->GetItem(i) != NULL)
-        {
-            if (GetRule(i)->Matches(Value))
-            {
-                Result = static_cast<int>(i);
-            }
-        }
-        i++;
+      if (GetRule(i)->Matches(Value))
+      {
+        Result = i;
+      }
     }
-    return Result;
+    i++;
+  }
+  return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TCopyParamList::Load(THierarchicalStorage *Storage, int ACount)
+void __fastcall TCopyParamList::Load(THierarchicalStorage * Storage, int ACount)
 {
-    for (int Index = 0; Index < ACount; Index++)
+  for (int Index = 0; Index < ACount; Index++)
+  {
+    UnicodeString Name = IntToStr(Index);
+    TCopyParamRule * Rule = NULL;
+    TCopyParamType * CopyParam = new TCopyParamType();
+    try
     {
-        std::wstring Name = IntToStr(Index);
-        TCopyParamRule *Rule = NULL;
-        TCopyParamType *CopyParam = new TCopyParamType();
-        try
+      if (Storage->OpenSubKey(Name, false))
+      {
+        // try
         {
-            if (Storage->OpenSubKey(Name, false))
-            {
-                {
-                    BOOST_SCOPE_EXIT ( (Storage) )
-                    {
-                        Storage->CloseSubKey();
-                    } BOOST_SCOPE_EXIT_END
-                    Name = Storage->ReadString(L"Name", Name);
-                    CopyParam->Load(Storage);
+          BOOST_SCOPE_EXIT ( (Storage) )
+          {
+            Storage->CloseSubKey();
+          } BOOST_SCOPE_EXIT_END
+          Name = Storage->ReadString(L"Name", Name);
+          CopyParam->Load(Storage);
 
-                    if (Storage->Readbool(L"HasRule", false))
-                    {
-                        Rule = new TCopyParamRule();
-                        Rule->Load(Storage);
-                    }
-                }
-            }
+          if (Storage->ReadBool(L"HasRule", false))
+          {
+            Rule = new TCopyParamRule();
+            Rule->Load(Storage);
+          }
         }
-        catch(...)
+#ifndef _MSC_VER
+        __finally
         {
-            delete CopyParam;
-            delete Rule;
-            throw;
+          Storage->CloseSubKey();
         }
-
-        FCopyParams->Add(reinterpret_cast<nb::TObject *>(CopyParam));
-        FRules->Add(reinterpret_cast<nb::TObject *>(Rule));
-        FNames->Add(Name);
+#endif
+      }
     }
-    Reset();
-}
-//---------------------------------------------------------------------------
-void __fastcall TCopyParamList::Save(THierarchicalStorage *Storage) const
-{
-    Storage->ClearSubKeys();
-    for (size_t Index = 0; Index < GetCount(); Index++)
+    catch(...)
     {
-        if (Storage->OpenSubKey(IntToStr(static_cast<int>(Index)), true))
-        {
-            {
-                BOOST_SCOPE_EXIT ( (Storage) )
-                {
-                    Storage->CloseSubKey();
-                } BOOST_SCOPE_EXIT_END
-                const TCopyParamType *CopyParam = GetCopyParam(Index);
-                const TCopyParamRule *Rule = GetRule(Index);
-
-                Storage->WriteString(L"Name", GetName(Index));
-                CopyParam->Save(Storage);
-                Storage->Writebool(L"HasRule", (Rule != NULL));
-                if (Rule != NULL)
-                {
-                    Rule->Save(Storage);
-                }
-            }
-        }
+      delete CopyParam;
+      delete Rule;
+      throw;
     }
+
+    FCopyParams->Add(reinterpret_cast<TObject *>(CopyParam));
+    FRules->Add(reinterpret_cast<TObject *>(Rule));
+    FNames->Add(Name);
+  }
+  Reset();
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TCopyParamList::GetCount() const
+void __fastcall TCopyParamList::Save(THierarchicalStorage * Storage) const
 {
-    return FCopyParams->GetCount();
-}
-//---------------------------------------------------------------------------
-const TCopyParamRule * __fastcall TCopyParamList::GetRule(size_t Index) const
-{
-    return reinterpret_cast<TCopyParamRule *>(FRules->GetItem(Index));
-}
-//---------------------------------------------------------------------------
-const TCopyParamType * __fastcall TCopyParamList::GetCopyParam(size_t Index) const
-{
-    return reinterpret_cast<TCopyParamType *>(FCopyParams->GetItem(Index));
-}
-//---------------------------------------------------------------------------
-std::wstring __fastcall TCopyParamList::GetName(size_t Index) const
-{
-    return FNames->GetString(Index);
-}
-//---------------------------------------------------------------------------
-nb::TStrings * __fastcall TCopyParamList::GetNameList() const
-{
-    if (FNameList == NULL)
+  Storage->ClearSubKeys();
+  for (int Index = 0; Index < GetCount(); Index++)
+  {
+    if (Storage->OpenSubKey(IntToStr(Index), true))
     {
-        FNameList = new nb::TStringList();
-
-        for (size_t i = 0; i < GetCount(); i++)
+      // try
+      {
+        BOOST_SCOPE_EXIT ( (&Storage) )
         {
-            FNameList->Add(FNames->GetString(i));
+          Storage->CloseSubKey();
+        } BOOST_SCOPE_EXIT_END
+        const TCopyParamType * CopyParam = GetCopyParam(Index);
+        const TCopyParamRule * Rule = GetRule(Index);
+
+        Storage->WriteString(L"Name", GetName(Index));
+        CopyParam->Save(Storage);
+        Storage->WriteBool(L"HasRule", (Rule != NULL));
+        if (Rule != NULL)
+        {
+          Rule->Save(Storage);
         }
+      }
+#ifndef _MSC_VER
+      __finally
+      {
+        Storage->CloseSubKey();
+      }
+#endif
     }
-    return FNameList;
+  }
+}
+//---------------------------------------------------------------------------
+int __fastcall TCopyParamList::GetCount() const
+{
+  return FCopyParams->GetCount();
+}
+//---------------------------------------------------------------------------
+const TCopyParamRule * __fastcall TCopyParamList::GetRule(int Index) const
+{
+  return reinterpret_cast<TCopyParamRule *>(FRules->GetItem(Index));
+}
+//---------------------------------------------------------------------------
+const TCopyParamType * __fastcall TCopyParamList::GetCopyParam(int Index) const
+{
+  return reinterpret_cast<TCopyParamType *>(FCopyParams->GetItem(Index));
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TCopyParamList::GetName(int Index) const
+{
+  return FNames->GetStrings(Index);
+}
+//---------------------------------------------------------------------------
+TStrings * __fastcall TCopyParamList::GetNameList() const
+{
+  if (FNameList == NULL)
+  {
+    FNameList = new TStringList();
+
+    for (int i = 0; i < GetCount(); i++)
+    {
+      FNameList->Add(FNames->GetStrings(i));
+    }
+  }
+  return FNameList;
 }
 //---------------------------------------------------------------------------
 bool __fastcall TCopyParamList::GetAnyRule() const
 {
-    bool Result = false;
-    size_t i = 0;
-    while ((i < GetCount()) && !Result)
-    {
-        Result = (GetRule(i) != NULL);
-        i++;
-    }
-    return Result;
+  bool Result = false;
+  int i = 0;
+  while ((i < GetCount()) && !Result)
+  {
+    Result = (GetRule(i) != NULL);
+    i++;
+  }
+  return Result;
 }
 //---------------------------------------------------------------------------
-TGUIConfiguration::TGUIConfiguration() : TConfiguration(),
-    FLocales(NULL),
-    FContinueOnError(false),
-    FConfirmCommandSession(false),
-    FPuttyPassword(false),
-    FTelnetForFtpInPutty(false),
-    FSynchronizeParams(0),
-    FSynchronizeOptions(0),
-    FSynchronizeModeAuto(0),
-    FSynchronizeMode(0),
-    FMaxWatchDirectories(0),
-    FQueueAutoPopup(false),
-    FQueueRememberPassword(false),
-    FQueueTransfersLimit(0),
-    FBeepOnFinish(false),
-    FSynchronizeBrowsing(false),
-    FCopyParamList(NULL),
-    FCopyParamListDefaults(false),
-    FKeepUpToDateChangeDelay(0),
-    FSessionReopenAutoIdle(0),
-    FLocale(0)
+//---------------------------------------------------------------------------
+/* __fastcall */ TGUIConfiguration::TGUIConfiguration(): TConfiguration(),
+  FLocales(NULL),
+  FContinueOnError(false),
+  FConfirmCommandSession(false),
+  FPuttyPassword(false),
+  FTelnetForFtpInPutty(false),
+  FSynchronizeParams(0),
+  FSynchronizeOptions(0),
+  FSynchronizeModeAuto(0),
+  FSynchronizeMode(0),
+  FMaxWatchDirectories(0),
+  FQueueAutoPopup(false),
+  FQueueRememberPassword(false),
+  FQueueTransfersLimit(0),
+  FBeepOnFinish(false),
+  FSynchronizeBrowsing(false),
+  FCopyParamList(NULL),
+  FCopyParamListDefaults(false),
+  FKeepUpToDateChangeDelay(0),
+  FSessionReopenAutoIdle(0),
+  FLocale(0)
 {
-    FLocale = 0;
-    FLocales = new nb::TStringList();
-    FLastLocalesExts = L"*";
-    dynamic_cast<nb::TStringList *>(FLocales)->SetSorted(true);
-    dynamic_cast<nb::TStringList *>(FLocales)->SetCaseSensitive(false);
-    FCopyParamList = new TCopyParamList();
-    CoreSetResourceModule(0);
+  FLocale = 0;
+  FLocales = new TStringList();
+  FLastLocalesExts = L"*";
+  dynamic_cast<TStringList *>(FLocales)->SetSorted(true);
+  dynamic_cast<TStringList *>(FLocales)->SetCaseSensitive(false);
+  FCopyParamList = new TCopyParamList();
+  CoreSetResourceModule(0);
 }
 //---------------------------------------------------------------------------
-TGUIConfiguration::~TGUIConfiguration()
+/* __fastcall */ TGUIConfiguration::~TGUIConfiguration()
 {
-    delete FLocales;
-    delete FCopyParamList;
+  delete FLocales;
+  delete FCopyParamList;
 }
 //---------------------------------------------------------------------------
 void __fastcall TGUIConfiguration::Default()
 {
-    // DEBUG_PRINTF(L"begin");
-    TConfiguration::Default();
+  TConfiguration::Default();
 
-    // reset before call to DefaultLocalized()
-    FDefaultCopyParam.Default();
+  // reset before call to DefaultLocalized()
+  FDefaultCopyParam.Default();
 
-    FCopyParamListDefaults = true;
-    DefaultLocalized();
+  FCopyParamListDefaults = true;
+  DefaultLocalized();
 
-    FIgnoreCancelBeforeFinish = nb::TDateTime(0, 0, 3, 0);
-    FContinueOnError = false;
-    FConfirmCommandSession = true;
-    FSynchronizeParams = TTerminal::spNoConfirmation | TTerminal::spPreviewChanges;
-    FSynchronizeModeAuto = -1;
-    FSynchronizeMode = TTerminal::smRemote;
-    FMaxWatchDirectories = 500;
-    FSynchronizeOptions = soRecurse | soSynchronizeAsk;
-    FQueueTransfersLimit = 2;
-    FQueueAutoPopup = true;
-    FQueueRememberPassword = false;
-    std::wstring ProgramsFolder;
-    SpecialFolderLocation(CSIDL_PROGRAM_FILES, ProgramsFolder);
-    // DEBUG_PRINTF(L"ProgramsFolder = %s", ProgramsFolder.c_str());
-    FDefaultPuttyPathOnly = IncludeTrailingBackslash(ProgramsFolder) + L"PuTTY\\putty.exe";
-    // DEBUG_PRINTF(L"FDefaultPuttyPathOnly = %s", FDefaultPuttyPathOnly.c_str());
-    FDefaultPuttyPath = FormatCommand(L"%PROGRAMFILES%\\PuTTY\\putty.exe", L"");
-    FPuttyPath = FDefaultPuttyPath;
-    SetPSftpPath(FormatCommand(L"%PROGRAMFILES%\\PuTTY\\psftp.exe", L""));
-    FPuttyPassword = false;
-    FTelnetForFtpInPutty = true;
-    FPuttySession = L"WinSCP temporary session";
-    FBeepOnFinish = false;
-    FBeepOnFinishAfter = nb::TDateTime(0, 0, 30, 0);
-    FSynchronizeBrowsing = false;
-    FCopyParamCurrent = L"";
-    FKeepUpToDateChangeDelay = 500;
-    FChecksumAlg = L"md5";
-    FSessionReopenAutoIdle = 5000;
+  FIgnoreCancelBeforeFinish = TDateTime(0, 0, 3, 0);
+  FContinueOnError = false;
+  FConfirmCommandSession = true;
+  FSynchronizeParams = TTerminal::spNoConfirmation | TTerminal::spPreviewChanges;
+  FSynchronizeModeAuto = -1;
+  FSynchronizeMode = TTerminal::smRemote;
+  FMaxWatchDirectories = 500;
+  FSynchronizeOptions = soRecurse | soSynchronizeAsk;
+  FQueueTransfersLimit = 2;
+  FQueueAutoPopup = true;
+  FQueueRememberPassword = false;
+  UnicodeString ProgramsFolder;
+  SpecialFolderLocation(CSIDL_PROGRAM_FILES, ProgramsFolder);
+  FDefaultPuttyPathOnly = IncludeTrailingBackslash(ProgramsFolder) + L"PuTTY\\putty.exe";
+  FDefaultPuttyPath = FormatCommand(L"%PROGRAMFILES%\\PuTTY\\putty.exe", L"");
+  FPuttyPath = FDefaultPuttyPath;
+  SetPSftpPath(FormatCommand(L"%PROGRAMFILES%\\PuTTY\\psftp.exe", L""));
+  FPuttyPassword = false;
+  FTelnetForFtpInPutty = true;
+  FPuttySession = L"WinSCP temporary session";
+  FBeepOnFinish = false;
+  FBeepOnFinishAfter = TDateTime(0, 0, 30, 0);
+  FCopyParamCurrent = L"";
+  FKeepUpToDateChangeDelay = 500;
+  FChecksumAlg = L"md5";
+  FSessionReopenAutoIdle = 5000;
+  FSynchronizeBrowsing = false;
 
-    FNewDirectoryProperties.Default();
-    FNewDirectoryProperties.Rights = TRights::rfDefault | TRights::rfExec;
-    // DEBUG_PRINTF(L"end");
+  FNewDirectoryProperties.Default();
+  FNewDirectoryProperties.Rights = TRights::rfDefault | TRights::rfExec;
 }
 //---------------------------------------------------------------------------
 void __fastcall TGUIConfiguration::DefaultLocalized()
 {
-    // DEBUG_PRINTF(L"begin: FCopyParamListDefaults = %d", FCopyParamListDefaults);
-    if (FCopyParamListDefaults)
+  if (FCopyParamListDefaults)
+  {
+    FCopyParamList->Clear();
+
+    // guard against "empty resource string" from obsolete traslations
+    // (DefaultLocalized is called for the first time before detection of
+    // obsolete translations)
+    if (!LoadStr(COPY_PARAM_PRESET_ASCII).IsEmpty())
     {
-        FCopyParamList->Clear();
+      TCopyParamType * CopyParam;
 
-        // guard against "empty resourse string" from obsolete traslations
-        // (DefaultLocalized is called for the first time before detection of
-        // obsolete translations)
-        if (!LoadStr(COPY_PARAM_PRESET_ASCII).empty())
-        {
-            TCopyParamType *CopyParam;
+      CopyParam = new TCopyParamType(FDefaultCopyParam);
+      CopyParam->SetTransferMode(tmAscii);
+      FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_ASCII), CopyParam, NULL);
 
-            CopyParam = new TCopyParamType(FDefaultCopyParam);
-            CopyParam->SetTransferMode(tmAscii);
-            FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_ASCII), CopyParam, NULL);
+      CopyParam = new TCopyParamType(FDefaultCopyParam);
+      CopyParam->SetTransferMode(tmBinary);
+      FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_BINARY), CopyParam, NULL);
 
-            CopyParam = new TCopyParamType(FDefaultCopyParam);
-            CopyParam->SetTransferMode(tmBinary);
-            FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_BINARY), CopyParam, NULL);
-
-            CopyParam = new TCopyParamType(FDefaultCopyParam);
-            CopyParam->GetExcludeFileMask().SetMasks(L"*.bak; *.tmp; ~$*; *.wbk; *~; #*; .#*");
-            CopyParam->SetNegativeExclude(false); // just for sure
-            FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_EXCLUDE), CopyParam, NULL);
-        }
-
-        FCopyParamList->Reset();
+      CopyParam = new TCopyParamType(FDefaultCopyParam);
+      CopyParam->GetIncludeFileMask().SetMasks(L"|*.bak; *.tmp; ~$*; *.wbk; *~; #*; .#*");
+      FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_EXCLUDE), CopyParam, NULL);
     }
-    // DEBUG_PRINTF(L"end");
+
+    FCopyParamList->Reset();
+  }
 }
 //---------------------------------------------------------------------------
-std::wstring __fastcall TGUIConfiguration::PropertyToKey(const std::wstring Property)
+UnicodeString __fastcall TGUIConfiguration::PropertyToKey(const UnicodeString Property)
 {
-    // no longer useful
-    size_t P = ::LastDelimiter(Property, L".>");
-    return Property.substr(P + 1, Property.size() - P);
+  // no longer useful
+  int P = Property.LastDelimiter(L".>");
+  return Property.SubString(P + 1, Property.Length() - P);
 }
 //---------------------------------------------------------------------------
 // duplicated from core\configuration.cpp
@@ -663,472 +668,554 @@ std::wstring __fastcall TGUIConfiguration::PropertyToKey(const std::wstring Prop
 #undef REGCONFIG
 #define REGCONFIG(CANCREATE) \
   BLOCK(L"Interface", CANCREATE, \
-    KEY(bool,     ContinueOnError); \
-    KEY(bool,     ConfirmCommandSession); \
-    KEY(int,  SynchronizeParams); \
-    KEY(int,  SynchronizeOptions); \
-    KEY(int,  SynchronizeModeAuto); \
-    KEY(int,  SynchronizeMode); \
-    KEY(int,  MaxWatchDirectories); \
-    KEY(int,  QueueTransfersLimit); \
-    KEY(bool,     QueueAutoPopup); \
-    KEY(bool,     QueueRememberPassword); \
+    KEY(Bool,     ContinueOnError); \
+    KEY(Bool,     ConfirmCommandSession); \
+    KEY(Integer,  SynchronizeParams); \
+    KEY(Integer,  SynchronizeOptions); \
+    KEY(Integer,  SynchronizeModeAuto); \
+    KEY(Integer,  SynchronizeMode); \
+    KEY(Integer,  MaxWatchDirectories); \
+    KEY(Integer,  QueueTransfersLimit); \
+    KEY(Bool,     QueueAutoPopup); \
+    KEY(Bool,     QueueRememberPassword); \
     KEY(String,   PuttySession); \
     KEY(String,   PuttyPath); \
-    KEY(bool,     PuttyPassword); \
-    KEY(bool,     TelnetForFtpInPutty); \
+    KEY(Bool,     PuttyPassword); \
+    KEY(Bool,     TelnetForFtpInPutty); \
     KEY(DateTime, IgnoreCancelBeforeFinish); \
-    KEY(bool,     BeepOnFinish); \
+    KEY(Bool,     BeepOnFinish); \
     KEY(DateTime, BeepOnFinishAfter); \
-    KEY(bool,     SynchronizeBrowsing); \
-    KEY(int,  KeepUpToDateChangeDelay); \
+    KEY(Integer,  KeepUpToDateChangeDelay); \
     KEY(String,   ChecksumAlg); \
-    KEY(int,  SessionReopenAutoIdle); \
+    KEY(Integer,  SessionReopenAutoIdle); \
+    KEY(Bool,     SynchronizeBrowsing); \
   ); \
 //---------------------------------------------------------------------------
-void __fastcall TGUIConfiguration::SaveData(THierarchicalStorage *Storage, bool All)
+void __fastcall TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 {
-    TConfiguration::SaveData(Storage, All);
+  TConfiguration::SaveData(Storage, All);
 
-    // duplicated from core\configuration.cpp
-#undef KEY
-#define KEY(TYPE, VAR) Storage->Write ## TYPE(PropertyToKey(nb::MB2W(#VAR)), Get##VAR())
-    REGCONFIG(true);
-#undef KEY
+  // duplicated from core\configuration.cpp
+  #undef KEY
+  #define KEY(TYPE, VAR) Storage->Write ## TYPE(PropertyToKey(MB2W(#VAR)), Get##VAR())
+  REGCONFIG(true);
+  #undef KEY
 
-    if (Storage->OpenSubKey(L"Interface\\CopyParam", true, true))
+  if (Storage->OpenSubKey(L"Interface\\CopyParam", true, true))
+  // try
+  {
+    BOOST_SCOPE_EXIT ( (Storage) )
     {
-        BOOST_SCOPE_EXIT ( (Storage) )
-        {
-            Storage->CloseSubKey();
-        } BOOST_SCOPE_EXIT_END
-        FDefaultCopyParam.Save(Storage);
+      Storage->CloseSubKey();
+    } BOOST_SCOPE_EXIT_END
+    FDefaultCopyParam.Save(Storage);
 
-        if (FCopyParamListDefaults)
-        {
-            assert(!FCopyParamList->GetModified());
-            Storage->Writeint(L"CopyParamList", -1);
-        }
-        else if (All || FCopyParamList->GetModified())
-        {
-            Storage->Writeint(L"CopyParamList", static_cast<int>(FCopyParamList->GetCount()));
-            FCopyParamList->Save(Storage);
-        }
-    }
-
-    if (Storage->OpenSubKey(L"Interface\\NewDirectory", true, true))
+    if (FCopyParamListDefaults)
     {
-        BOOST_SCOPE_EXIT ( (Storage) )
-        {
-            Storage->CloseSubKey();
-        } BOOST_SCOPE_EXIT_END
-        FNewDirectoryProperties.Save(Storage);
+      assert(!FCopyParamList->GetModified());
+      Storage->WriteInteger(L"CopyParamList", -1);
     }
+    else if (All || FCopyParamList->GetModified())
+    {
+      Storage->WriteInteger(L"CopyParamList", static_cast<int>(FCopyParamList->GetCount()));
+      FCopyParamList->Save(Storage);
+    }
+  }
+#ifndef _MSC_VER
+  __finally
+  {
+    Storage->CloseSubKey();
+  }
+#endif
+
+  if (Storage->OpenSubKey(L"Interface\\NewDirectory", true, true))
+  // try
+  {
+    BOOST_SCOPE_EXIT ( (Storage) )
+    {
+      Storage->CloseSubKey();
+    } BOOST_SCOPE_EXIT_END
+    FNewDirectoryProperties.Save(Storage);
+  }
+#ifndef _MSC_VER
+  __finally
+  {
+    Storage->CloseSubKey();
+  }
+#endif
 }
 //---------------------------------------------------------------------------
-void __fastcall TGUIConfiguration::LoadData(THierarchicalStorage *Storage)
+void __fastcall TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
 {
-    TConfiguration::LoadData(Storage);
+  TConfiguration::LoadData(Storage);
 
-    // duplicated from core\configuration.cpp
-#undef KEY
-#define KEY(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(PropertyToKey(nb::MB2W(#VAR)), Get##VAR()))
-    // #pragma warn -eas
-    REGCONFIG(false);
-    // #pragma warn +eas
-#undef KEY
+  // duplicated from core\configuration.cpp
+  #undef KEY
+  #define KEY(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(PropertyToKey(MB2W(#VAR)), Get##VAR()))
+  // #pragma warn -eas
+  REGCONFIG(false);
+  // #pragma warn +eas
+  #undef KEY
 
-    if (Storage->OpenSubKey(L"Interface\\CopyParam", false, true))
+  if (Storage->OpenSubKey(L"Interface\\CopyParam", false, true))
+  // try
+  {
+    BOOST_SCOPE_EXIT ( (Storage) )
     {
-        BOOST_SCOPE_EXIT ( (Storage) )
-        {
-            Storage->CloseSubKey();
-        } BOOST_SCOPE_EXIT_END
-        // must be loaded before eventual setting defaults for CopyParamList
-        FDefaultCopyParam.Load(Storage);
+      Storage->CloseSubKey();
+    } BOOST_SCOPE_EXIT_END
+    // must be loaded before eventual setting defaults for CopyParamList
+    FDefaultCopyParam.Load(Storage);
 
-        int CopyParamListCount = Storage->Readint(L"CopyParamList", -1);
-        FCopyParamListDefaults = (CopyParamListCount < 0);
-        if (!FCopyParamListDefaults)
-        {
-            FCopyParamList->Clear();
-            FCopyParamList->Load(Storage, CopyParamListCount);
-        }
-        else if (FCopyParamList->GetModified())
-        {
-            FCopyParamList->Clear();
-            FCopyParamListDefaults = false;
-        }
-        FCopyParamList->Reset();
-    }
-
-    // Make it compatible with versions prior to 3.7.1 that have not saved PuttyPath
-    // with quotes. First check for absence of quotes.
-    // Add quotes either if the path is set to default putty path (even if it does
-    // not exists) or when the path points to existing file (so there are no parameters
-    // yet in the string). Note that FileExists may display error dialog, but as
-    // it should be called only for custom users path, let's expect that the user
-    // can take care of it.
-    if ((FPuttyPath.substr(0, 1) != L"\"") &&
-            (CompareFileName(ExpandEnvironmentVariables(FPuttyPath), FDefaultPuttyPathOnly) ||
-             FileExists(ExpandEnvironmentVariables(FPuttyPath))))
+    int CopyParamListCount = Storage->ReadInteger(L"CopyParamList", -1);
+    FCopyParamListDefaults = (CopyParamListCount < 0);
+    if (!FCopyParamListDefaults)
     {
-        FPuttyPath = FormatCommand(FPuttyPath, L"");
+      FCopyParamList->Clear();
+      FCopyParamList->Load(Storage, CopyParamListCount);
     }
-
-    if (Storage->OpenSubKey(L"Interface\\NewDirectory", false, true))
+    else if (FCopyParamList->GetModified())
     {
-        BOOST_SCOPE_EXIT ( (Storage) )
-        {
-            Storage->CloseSubKey();
-        } BOOST_SCOPE_EXIT_END
-        FNewDirectoryProperties.Load(Storage);
+      FCopyParamList->Clear();
+      FCopyParamListDefaults = false;
     }
+    FCopyParamList->Reset();
+  }
+#ifndef _MSC_VER
+  __finally
+  {
+    Storage->CloseSubKey();
+  }
+#endif
+
+  // Make it compatible with versions prior to 3.7.1 that have not saved PuttyPath
+  // with quotes. First check for absence of quotes.
+  // Add quotes either if the path is set to default putty path (even if it does
+  // not exists) or when the path points to existing file (so there are no parameters
+  // yet in the string). Note that FileExists may display error dialog, but as
+  // it should be called only for custom users path, let's expect that the user
+  // can take care of it.
+  if ((FPuttyPath.SubString(1, 1) != L"\"") &&
+      (CompareFileName(ExpandEnvironmentVariables(FPuttyPath), FDefaultPuttyPathOnly) ||
+       FileExists(ExpandEnvironmentVariables(FPuttyPath))))
+  {
+    FPuttyPath = FormatCommand(FPuttyPath, L"");
+  }
+
+  if (Storage->OpenSubKey(L"Interface\\NewDirectory", false, true))
+  // try
+  {
+    BOOST_SCOPE_EXIT ( (Storage) )
+    {
+      Storage->CloseSubKey();
+    } BOOST_SCOPE_EXIT_END
+    FNewDirectoryProperties.Load(Storage);
+  }
+#ifndef _MSC_VER
+  __finally
+  {
+    Storage->CloseSubKey();
+  }
+#endif
 }
 //---------------------------------------------------------------------------
 void __fastcall TGUIConfiguration::Saved()
 {
-    TConfiguration::Saved();
+  TConfiguration::Saved();
 
-    FCopyParamList->Reset();
+  FCopyParamList->Reset();
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 HANDLE __fastcall TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
-        std::wstring *FileName)
+  UnicodeString * FileName)
 {
-    std::wstring LibraryFileName;
-    HANDLE NewInstance = 0;
-    bool Internal = (ALocale == InternalLocale());
-    if (!Internal)
+  UnicodeString LibraryFileName;
+  HANDLE NewInstance = 0;
+  bool Internal = (ALocale == InternalLocale());
+  if (!Internal)
+  {
+    UnicodeString Module;
+    UnicodeString LocaleName;
+
+    Module = ModuleFileName();
+    if ((ALocale & AdditionaLanguageMask) != AdditionaLanguageMask)
     {
-        std::wstring Module;
-        std::wstring LocaleName;
-
-        Module = ModuleFileName();
-        if ((ALocale & AdditionaLanguageMask) != AdditionaLanguageMask)
-        {
-            LOCALESIGNATURE LocSig;
-            GetLocaleInfo(ALocale, LOCALE_SABBREVLANGNAME, (LPWSTR)&LocSig, sizeof(LocSig) / sizeof(wchar_t));
-            LocaleName = *(LPWSTR)&LocSig;
-            assert(!LocaleName.empty());
-        }
-        else
-        {
-            LocaleName = AdditionaLanguagePrefix +
-                         static_cast<wchar_t>(ALocale & ~AdditionaLanguageMask);
-        }
-
-        Module = ChangeFileExt(Module, std::wstring(L".") + LocaleName);
-        // Look for a potential language/country translation
-        NewInstance = LoadLibraryEx(Module.c_str(), 0, LOAD_LIBRARY_AS_DATAFILE);
-        if (!NewInstance)
-        {
-            // Finally look for a language only translation
-            Module.resize(Module.size() - 1);
-            NewInstance = LoadLibraryEx(Module.c_str(), 0, LOAD_LIBRARY_AS_DATAFILE);
-            if (NewInstance)
-            {
-                LibraryFileName = Module;
-            }
-        }
-        else
-        {
-            LibraryFileName = Module;
-        }
-    }
-
-    if (!NewInstance && !Internal)
-    {
-        throw ExtException(FMTLOAD(LOCALE_LOAD_ERROR, static_cast<int>(ALocale)));
+      LOCALESIGNATURE LocSig;
+      GetLocaleInfo(ALocale, LOCALE_SABBREVLANGNAME, (LPWSTR)&LocSig, sizeof(LocSig) / sizeof(TCHAR));
+      LocaleName = *(LPWSTR)&LocSig;
+      assert(!LocaleName.IsEmpty());
     }
     else
     {
-        if (Internal)
-        {
-            nb::Error(SNotImplemented, 90);
-            NewInstance = 0; // FIXME  HInstance;
-        }
+      LocaleName = AdditionaLanguagePrefix +
+        static_cast<wchar_t>(ALocale & ~AdditionaLanguageMask);
     }
 
-    if (FileName != NULL)
+    Module = ChangeFileExt(Module, UnicodeString(L".") + LocaleName);
+    // Look for a potential language/country translation
+    NewInstance = LoadLibraryEx(Module.c_str(), 0, LOAD_LIBRARY_AS_DATAFILE);
+    if (!NewInstance)
     {
-        *FileName = LibraryFileName;
+      // Finally look for a language only translation
+      Module.SetLength(Module.Length() - 1);
+      NewInstance = LoadLibraryEx(Module.c_str(), 0, LOAD_LIBRARY_AS_DATAFILE);
+      if (NewInstance)
+      {
+        LibraryFileName = Module;
+      }
     }
+    else
+    {
+      LibraryFileName = Module;
+    }
+  }
 
-    return NewInstance;
+  if (!NewInstance && !Internal)
+  {
+    throw Exception(FMTLOAD(LOCALE_LOAD_ERROR, static_cast<int>(ALocale)));
+  }
+  else
+  {
+    if (Internal)
+    {
+      Error(SNotImplemented, 90);
+      NewInstance = 0; // FIXME  HInstance;
+    }
+  }
+
+  if (FileName != NULL)
+  {
+    *FileName = LibraryFileName;
+  }
+
+  return NewInstance;
 }
 //---------------------------------------------------------------------------
 LCID __fastcall TGUIConfiguration::InternalLocale()
 {
-    LCID Result;
-    if (GetTranslationCount(GetApplicationInfo()) > 0)
-    {
-        TTranslation Translation;
-        Translation = GetTranslation(GetApplicationInfo(), 0);
-        Result = MAKELANGID(PRIMARYLANGID(Translation.Language), SUBLANG_DEFAULT);
-    }
-    else
-    {
-        assert(false);
-        Result = 0;
-    }
-    return Result;
+  LCID Result;
+  if (GetTranslationCount(GetApplicationInfo()) > 0)
+  {
+    TTranslation Translation;
+    Translation = GetTranslation(GetApplicationInfo(), 0);
+    Result = MAKELANGID(PRIMARYLANGID(Translation.Language), SUBLANG_DEFAULT);
+  }
+  else
+  {
+    assert(false);
+    Result = 0;
+  }
+  return Result;
 }
 //---------------------------------------------------------------------------
-LCID TGUIConfiguration::GetLocale()
+LCID __fastcall TGUIConfiguration::GetLocale()
 {
-    if (!FLocale)
-    {
-        FLocale = InternalLocale();
-    }
-    return FLocale;
+  if (!FLocale)
+  {
+    FLocale = InternalLocale();
+  }
+  return FLocale;
 }
 //---------------------------------------------------------------------------
 void __fastcall TGUIConfiguration::SetLocale(LCID value)
 {
-    if (GetLocale() != value)
+  if (GetLocale() != value)
+  {
+    HANDLE Module = LoadNewResourceModule(value);
+    if (Module != NULL)
     {
-        HANDLE Module = LoadNewResourceModule(value);
-        if (Module != NULL)
-        {
-            FLocale = value;
-        }
-        else
-        {
-            assert(false);
-        }
+      FLocale = value;
+      // SetResourceModule(Module);
     }
+    else
+    {
+      assert(false);
+    }
+  }
 }
 //---------------------------------------------------------------------------
 void __fastcall TGUIConfiguration::SetLocaleSafe(LCID value)
 {
-    if (GetLocale() != value)
+  if (GetLocale() != value)
+  {
+    HANDLE Module;
+
+    try
     {
-        HANDLE Module;
-
-        try
-        {
-            Module = LoadNewResourceModule(value);
-        }
-        catch(...)
-        {
-            // ignore any exception while loading locale
-            Module = NULL;
-        }
-
-        if (Module != NULL)
-        {
-            FLocale = value;
-        }
+      Module = LoadNewResourceModule(value);
     }
+    catch(...)
+    {
+      // ignore any exception while loading locale
+      Module = NULL;
+    }
+
+    if (Module != NULL)
+    {
+      FLocale = value;
+      // SetResourceModule(Module);
+    }
+  }
+}
+#ifndef _MSC_VER
+//---------------------------------------------------------------------------
+void __fastcall TGUIConfiguration::FreeResourceModule(HANDLE Instance)
+{
+  TLibModule * MainModule = FindModule(HInstance);
+  if ((long)Instance != MainModule->instance)
+  {
+    FreeLibrary(static_cast<HMODULE>(Instance));
+  }
 }
 //---------------------------------------------------------------------------
-nb::TStrings * __fastcall TGUIConfiguration::GetLocales()
+HANDLE __fastcall TGUIConfiguration::ChangeResourceModule(HANDLE Instance)
 {
-    nb::Error(SNotImplemented, 93);
-    std::wstring LocalesExts;
-    nb::TStringList *Exts = new nb::TStringList();
+  if (Instance == NULL)
+  {
+    Instance = HInstance;
+  }
+  TLibModule * MainModule = FindModule(HInstance);
+  HANDLE Result = (HANDLE)MainModule->resinstance;
+  MainModule->resinstance = (long)Instance;
+  CoreSetResourceModule(Instance);
+  return Result;
+}
+//---------------------------------------------------------------------------
+HANDLE __fastcall TGUIConfiguration::GetResourceModule()
+{
+  return (HANDLE)FindModule(HInstance)->resinstance;
+}
+//---------------------------------------------------------------------------
+void __fastcall TGUIConfiguration::SetResourceModule(HINSTANCE Instance)
+{
+  HANDLE PrevHandle = ChangeResourceModule(Instance);
+  FreeResourceModule(PrevHandle);
+
+  DefaultLocalized();
+}
+#endif
+//---------------------------------------------------------------------------
+TStrings * __fastcall TGUIConfiguration::GetLocales()
+{
+  Error(SNotImplemented, 93);
+  UnicodeString LocalesExts;
+  TStringList * Exts = new TStringList();
+  // try
+  {
+    BOOST_SCOPE_EXIT ( (Exts) )
     {
-        BOOST_SCOPE_EXIT ( (Exts) )
-        {
-            delete Exts;
-        } BOOST_SCOPE_EXIT_END
-        Exts->SetSorted(true);
-        Exts->SetCaseSensitive(false);
+      delete Exts;
+    } BOOST_SCOPE_EXIT_END
+    Exts->SetSorted(true);
+    Exts->SetCaseSensitive(false);
 
-        int FindAttrs = faReadOnly | faArchive;
-        WIN32_FIND_DATA SearchRec;
-        bool Found;
-        HANDLE findHandle = FindFirstFile(::ChangeFileExt(ModuleFileName(), L".*").c_str(), &SearchRec);
-        Found = (findHandle != 0) && ((SearchRec.dwFileAttributes & FindAttrs) != 0);
+    int FindAttrs = faReadOnly | faArchive;
+    TSearchRec SearchRec;
+    bool Found;
+
+    Found = (bool)(FindFirst(ChangeFileExt(ModuleFileName(), L".*"),
+      FindAttrs, SearchRec) == 0);
+    // try
+    {
+      BOOST_SCOPE_EXIT ( (&SearchRec) )
+      {
+        FindClose(SearchRec);
+      } BOOST_SCOPE_EXIT_END
+      UnicodeString Ext;
+      while (Found)
+      {
+        Ext = ExtractFileExt(SearchRec.Name).UpperCase();
+        if ((Ext.Length() >= 3) && (Ext != L".EXE") && (Ext != L".COM") &&
+            (Ext != L".DLL") && (Ext != L".INI"))
         {
-            BOOST_SCOPE_EXIT ( (findHandle) )
-            {
-                ::FindClose(findHandle);
-            } BOOST_SCOPE_EXIT_END
-            std::wstring Ext;
-            while (Found)
-            {
-                Ext = ::UpperCase(ExtractFileExt(SearchRec.cFileName));
-                if ((Ext.size() >= 3) && (Ext != L".EXE") && (Ext != L".COM") &&
-                        (Ext != L".DLL") && (Ext != L".INI"))
-                {
-                    Ext = Ext.substr(2, Ext.size() - 1);
-                    LocalesExts += Ext;
-                    Exts->Add(Ext);
-                }
-                Found = (::FindNextFile(findHandle, &SearchRec) != 0) && ((SearchRec.dwFileAttributes & FindAttrs) != 0);
-            }
+          Ext = Ext.SubString(2, Ext.Length() - 1);
+          LocalesExts += Ext;
+          Exts->Add(Ext);
         }
+        Found = (FindNext(SearchRec) == 0);
+      }
+    }
+#ifndef _MSC_VER
+    __finally
+    {
+      FindClose(SearchRec);
+    }
+#endif
 
-        if (FLastLocalesExts != LocalesExts)
-        {
-            FLastLocalesExts = LocalesExts;
-            FLocales->Clear();
-            /* // FIXME
-                  TLanguages * Langs = NULL; // FIXME LanguagesDEPF();
-                  int Ext, Index, Count;
-                  char LocaleStr[255];
-                  LCID Locale;
+    if (FLastLocalesExts != LocalesExts)
+    {
+      FLastLocalesExts = LocalesExts;
+      FLocales->Clear();
+      /* // FIXME
+            TLanguages * Langs = NULL; // FIXME LanguagesDEPF();
+            int Ext, Index, Count;
+            char LocaleStr[255];
+            LCID Locale;
 
-                  Count = Langs->GetCount();
-                  Index = -1;
-                  while (Index < Count)
+            Count = Langs->GetCount();
+            Index = -1;
+            while (Index < Count)
+            {
+              if (Index >= 0)
+              {
+                Locale = Langs->LocaleID[Index];
+                Ext = Exts->IndexOf(Langs->Ext[Index]);
+                if (Ext < 0)
+                {
+                  Ext = Exts->IndexOf(Langs->Ext[Index].substr(0, 2));
+                  if (Ext >= 0)
                   {
-                    if (Index >= 0)
-                    {
-                      Locale = Langs->LocaleID[Index];
-                      Ext = Exts->IndexOf(Langs->Ext[Index]);
-                      if (Ext < 0)
-                      {
-                        Ext = Exts->IndexOf(Langs->Ext[Index].substr(0, 2));
-                        if (Ext >= 0)
-                        {
-                          Locale = MAKELANGID(PRIMARYLANGID(Locale), SUBLANG_DEFAULT);
-                        }
-                      }
-
-                      if (Ext >= 0)
-                      {
-                        Exts->SetObject(Ext, reinterpret_cast<nb::TObject*>(Locale));
-                      }
-                      else
-                      {
-                        Locale = 0;
-                      }
-                    }
-                    else
-                    {
-                      Locale = InternalLocale();
-                    }
-
-                    if (Locale)
-                    {
-                      std::wstring Name;
-                      GetLocaleInfo(Locale, LOCALE_SENGLANGUAGE,
-                        LocaleStr, sizeof(LocaleStr));
-                      Name = LocaleStr;
-                      Name += " - ";
-                      // LOCALE_SNATIVELANGNAME
-                      GetLocaleInfo(Locale, LOCALE_SLANGUAGE,
-                        LocaleStr, sizeof(LocaleStr));
-                      Name += LocaleStr;
-                      FLocales->AddObject(Name, reinterpret_cast<nb::TObject*>(Locale));
-                    }
-                    Index++;
+                    Locale = MAKELANGID(PRIMARYLANGID(Locale), SUBLANG_DEFAULT);
                   }
-            */
-            for (size_t Index = 0; Index < Exts->GetCount(); Index++)
-            {
-                if ((Exts->GetObject(Index) == NULL) &&
-                        (Exts->GetString(Index).size() == 3) &&
-                        SameText(Exts->GetString(Index).substr(0, 2), AdditionaLanguagePrefix))
-                {
-                    std::wstring LangName = GetFileFileInfoString(L"LangName",
-                                            ChangeFileExt(ModuleFileName(), std::wstring(L".") + Exts->GetString(Index)));
-                    if (!LangName.empty())
-                    {
-                        FLocales->AddObject(LangName, reinterpret_cast<nb::TObject *>(static_cast<size_t>(
-                                                AdditionaLanguageMask + Exts->GetString(Index)[2])));
-                    }
                 }
-            }
-        }
-    }
 
-    return FLocales;
+                if (Ext >= 0)
+                {
+                  Exts->SetObject(Ext, reinterpret_cast<TObject*>(Locale));
+                }
+                else
+                {
+                  Locale = 0;
+                }
+              }
+              else
+              {
+                Locale = InternalLocale();
+              }
+
+              if (Locale)
+              {
+                UnicodeString Name;
+                GetLocaleInfo(Locale, LOCALE_SENGLANGUAGE,
+                  LocaleStr, sizeof(LocaleStr));
+                Name = LocaleStr;
+                Name += " - ";
+                // LOCALE_SNATIVELANGNAME
+                GetLocaleInfo(Locale, LOCALE_SLANGUAGE,
+                  LocaleStr, sizeof(LocaleStr));
+                Name += LocaleStr;
+                FLocales->AddObject(Name, reinterpret_cast<TObject*>(Locale));
+              }
+              Index++;
+            }
+      */
+      for (int Index = 0; Index < Exts->GetCount(); Index++)
+      {
+        if ((Exts->GetObjects(Index) == NULL) &&
+            (Exts->GetStrings(Index).Length() == 3) &&
+            SameText(Exts->GetStrings(Index).SubString(1, 2), AdditionaLanguagePrefix))
+        {
+          UnicodeString LangName = GetFileFileInfoString(L"LangName",
+            ChangeFileExt(ModuleFileName(), UnicodeString(L".") + Exts->GetStrings(Index)));
+          if (!LangName.IsEmpty())
+          {
+            FLocales->AddObject(LangName, reinterpret_cast<TObject *>(static_cast<size_t>(
+              AdditionaLanguageMask + Exts->GetStrings(Index)[2])));
+          }
+        }
+      }
+    }
+  }
+#ifndef _MSC_VER
+  __finally
+  {
+    delete Exts;
+  }
+#endif
+
+  return FLocales;
 }
 //---------------------------------------------------------------------------
-void __fastcall TGUIConfiguration::SetDefaultCopyParam(const TGUICopyParamType &value)
+void __fastcall TGUIConfiguration::SetDefaultCopyParam(const TGUICopyParamType & value)
 {
-    FDefaultCopyParam.Assign(&value);
-    Changed();
+  FDefaultCopyParam.Assign(&value);
+  Changed();
 }
 //---------------------------------------------------------------------------
 bool __fastcall TGUIConfiguration::GetRememberPassword()
 {
-    return GetQueueRememberPassword() || GetPuttyPassword();
+  return GetQueueRememberPassword() || GetPuttyPassword();
 }
 //---------------------------------------------------------------------------
 const TCopyParamList * __fastcall TGUIConfiguration::GetCopyParamList()
 {
-    return FCopyParamList;
+  return FCopyParamList;
 }
 //---------------------------------------------------------------------------
-void __fastcall TGUIConfiguration::SetCopyParamList(const TCopyParamList *value)
+void __fastcall TGUIConfiguration::SetCopyParamList(const TCopyParamList * value)
 {
-    if (!(*FCopyParamList == *value))
-    {
-        *FCopyParamList = *value;
-        FCopyParamListDefaults = false;
-        Changed();
-    }
+  if (!(*FCopyParamList == *value))
+  {
+    *FCopyParamList = *value;
+    FCopyParamListDefaults = false;
+    Changed();
+  }
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TGUIConfiguration::GetCopyParamIndex()
+int __fastcall TGUIConfiguration::GetCopyParamIndex()
 {
-    size_t Result;
-    if (FCopyParamCurrent.empty())
-    {
-        Result = NPOS;
-    }
-    else
-    {
-        Result = FCopyParamList->IndexOfName(FCopyParamCurrent);
-    }
-    return Result;
+  int Result;
+  if (FCopyParamCurrent.IsEmpty())
+  {
+    Result = -1;
+  }
+  else
+  {
+    Result = FCopyParamList->IndexOfName(FCopyParamCurrent);
+  }
+  return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TGUIConfiguration::SetCopyParamIndex(size_t value)
+void __fastcall TGUIConfiguration::SetCopyParamIndex(int value)
 {
-    std::wstring Name;
-    if (value == NPOS)
-    {
-        Name = L"";
-    }
-    else
-    {
-        Name = FCopyParamList->GetName(value);
-    }
-    SetCopyParamCurrent(Name);
+  UnicodeString Name;
+  if (value < 0)
+  {
+    Name = L"";
+  }
+  else
+  {
+    Name = FCopyParamList->GetName(value);
+  }
+  SetCopyParamCurrent(Name);
 }
 //---------------------------------------------------------------------------
-void __fastcall TGUIConfiguration::SetCopyParamCurrent(const std::wstring value)
+void __fastcall TGUIConfiguration::SetCopyParamCurrent(UnicodeString value)
 {
-    SET_CONFIG_PROPERTY(CopyParamCurrent);
+  SET_CONFIG_PROPERTY(CopyParamCurrent);
 }
 //---------------------------------------------------------------------------
 TGUICopyParamType __fastcall TGUIConfiguration::GetCurrentCopyParam()
 {
-    return GetCopyParamPreset(GetCopyParamCurrent());
+  return GetCopyParamPreset(GetCopyParamCurrent());
 }
 //---------------------------------------------------------------------------
-TGUICopyParamType __fastcall TGUIConfiguration::GetCopyParamPreset(const std::wstring Name)
+TGUICopyParamType __fastcall TGUIConfiguration::GetCopyParamPreset(UnicodeString Name)
 {
-    TGUICopyParamType Result = FDefaultCopyParam;
-    if (!Name.empty())
+  TGUICopyParamType Result = FDefaultCopyParam;
+  if (!Name.IsEmpty())
+  {
+    int Index = FCopyParamList->IndexOfName(Name);
+    assert(Index >= 0);
+    if (Index >= 0)
     {
-        size_t Index = FCopyParamList->IndexOfName(Name);
-        assert(Index != NPOS);
-        if (Index != NPOS)
-        {
-            const TCopyParamType *Preset = FCopyParamList->GetCopyParam(Index);
-            assert(Preset != NULL);
-            Result.Assign(Preset); // overwrite all but GUI options
-            // reset all options known not to be configurable per-preset
-            // kind of hack
-            Result.SetResumeSupport(FDefaultCopyParam.GetResumeSupport());
-            Result.SetResumeThreshold(FDefaultCopyParam.GetResumeThreshold());
-            Result.SetLocalInvalidChars(FDefaultCopyParam.GetLocalInvalidChars());
-        }
+      const TCopyParamType * Preset = FCopyParamList->GetCopyParam(Index);
+      assert(Preset != NULL);
+      Result.Assign(Preset); // overwrite all but GUI options
+      // reset all options known not to be configurable per-preset
+      // kind of hack
+      Result.SetResumeSupport(FDefaultCopyParam.GetResumeSupport());
+      Result.SetResumeThreshold(FDefaultCopyParam.GetResumeThreshold());
+      Result.SetLocalInvalidChars(FDefaultCopyParam.GetLocalInvalidChars());
     }
-    return Result;
+  }
+  return Result;
 }
 //---------------------------------------------------------------------------
 void __fastcall TGUIConfiguration::SetNewDirectoryProperties(
-    const TRemoteProperties &value)
+  const TRemoteProperties & value)
 {
-    SET_CONFIG_PROPERTY(NewDirectoryProperties);
+  SET_CONFIG_PROPERTY(NewDirectoryProperties);
 }
 //---------------------------------------------------------------------------

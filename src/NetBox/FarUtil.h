@@ -282,7 +282,7 @@ private:
  * \param errCode system error code
  * \return error message
  */
-std::wstring GetSystemErrorMessage(const DWORD errCode);
+UnicodeString GetSystemErrorMessage(const DWORD errCode);
 
 /**
  * Parse URL
@@ -295,7 +295,7 @@ std::wstring GetSystemErrorMessage(const DWORD errCode);
  * \param userName user name
  * \param password password
  */
-void ParseURL(const wchar_t *url, std::wstring *scheme, std::wstring *hostName, unsigned short *port, std::wstring *path, std::wstring *query, std::wstring *userName, std::wstring *password);
+void ParseURL(const wchar_t *url, UnicodeString *scheme, UnicodeString *hostName, unsigned short *port, UnicodeString *path, UnicodeString *query, UnicodeString *userName, UnicodeString *password);
 
 /**
  * Convert unix time to file time
@@ -304,7 +304,7 @@ void ParseURL(const wchar_t *url, std::wstring *scheme, std::wstring *hostName, 
  */
 FILETIME UnixTimeToFileTime(const time_t t);
 
-unsigned long TextToNumber(const std::wstring text);
+unsigned long TextToNumber(const UnicodeString text);
 
 /**
  * Convert int to std::string
@@ -313,7 +313,7 @@ unsigned long TextToNumber(const std::wstring text);
  */
 std::string NumberToText(int number);
 
-std::wstring NumberToWString(unsigned long number);
+UnicodeString NumberToWString(unsigned long number);
 
 //---------------------------------------------------------------------------
 
