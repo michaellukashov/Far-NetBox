@@ -352,7 +352,7 @@ private:
   }
   void Init(const char * Str, int Length)
   {
-    int Size = MultiByteToWideChar(CP_UTF8, 0, Str, -1, NULL, 0) + 1;
+    int Size = MultiByteToWideChar(CP_UTF8, 0, Str, Length > 0 ? Length : -1, NULL, 0);
     Data.resize(Size);
     if (Size > 0)
     {
@@ -511,7 +511,7 @@ private:
   }
   void Init(const char * Str, int Length)
   {
-    int Size = MultiByteToWideChar(CP_UTF8, 0, Str, -1, NULL, 0) + 1;
+    int Size = MultiByteToWideChar(CP_UTF8, 0, Str, Length > 0 ? Length : -1, NULL, 0);
     Data.resize(Size);
     if (Size > 0)
     {
