@@ -10,7 +10,7 @@
 //---------------------------------------------------------------------------
 #define TRANSFER_BUF_SIZE 4096
 //---------------------------------------------------------------------------
-TFileOperationProgressType::TFileOperationProgressType() :
+/* __fastcall */ TFileOperationProgressType::TFileOperationProgressType() :
   FSuspendTime(NULL),
   // TDateTime FFileStartTime;
   FFilesFinished(0),
@@ -97,7 +97,7 @@ TFileOperationProgressType::TFileOperationProgressType(
   Clear();
 }
 //---------------------------------------------------------------------------
-TFileOperationProgressType::~TFileOperationProgressType()
+/* __fastcall */ TFileOperationProgressType::~TFileOperationProgressType()
 {
   assert(!InProgress || FReset);
   assert(!Suspended || FReset);
@@ -278,7 +278,7 @@ void __fastcall TFileOperationProgressType::Finish(UnicodeString FileName,
   DoProgress();
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileOperationProgressType::SetFile(const UnicodeString AFileName, bool AFileInProgress)
+void __fastcall TFileOperationProgressType::SetFile(UnicodeString AFileName, bool AFileInProgress)
 {
   FileName = AFileName;
   FileInProgress = AFileInProgress;

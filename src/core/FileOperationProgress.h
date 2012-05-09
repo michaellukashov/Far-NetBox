@@ -138,14 +138,14 @@ public:
   int __fastcall OverallProgress();
   int __fastcall TotalTransferProgress();
 private:
-  // TFileOperationProgressType(const TFileOperationProgressType & rhs);
-  // void operator=(const TFileOperationProgressType & rhs);
+  TFileOperationProgressType(const TFileOperationProgressType & rhs);
+  void operator=(const TFileOperationProgressType & rhs);
 };
 //---------------------------------------------------------------------------
 class TSuspendFileOperationProgress
 {
 public:
-  explicit TSuspendFileOperationProgress(TFileOperationProgressType * OperationProgress)
+  explicit /* __fastcall */ TSuspendFileOperationProgress(TFileOperationProgressType * OperationProgress)
   {
     FOperationProgress = OperationProgress;
     if (FOperationProgress != NULL)
@@ -154,7 +154,7 @@ public:
     }
   }
 
-  virtual ~TSuspendFileOperationProgress()
+  virtual /* __fastcall */ ~TSuspendFileOperationProgress()
   {
     if (FOperationProgress != NULL)
     {
