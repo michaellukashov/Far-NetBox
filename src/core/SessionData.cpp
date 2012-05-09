@@ -585,8 +585,6 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
   SetCustomParam2(Storage->ReadString(L"CustomParam2", GetCustomParam2()));
 
   SetSslSessionReuse(Storage->ReadBool(L"SslSessionReuse", GetSslSessionReuse()));
-
-  Storage->CloseSubKey();
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionData::Load(THierarchicalStorage * Storage)
@@ -2372,7 +2370,7 @@ void __fastcall TStoredSessionList::Load(THierarchicalStorage * Storage,
     Storage->GetSubKeyNames(SubKeys);
     for (int Index = 0; Index < SubKeys->GetCount(); Index++)
     {
-      TSessionData * SessionData;
+      TSessionData * SessionData = NULL;
       UnicodeString SessionName = SubKeys->GetStrings(Index);
       bool ValidName = true;
       try
