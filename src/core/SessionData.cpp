@@ -1472,7 +1472,13 @@ void __fastcall TSessionData::SetPassword(UnicodeString avalue)
 //---------------------------------------------------------------------
 UnicodeString __fastcall TSessionData::GetPassword() const
 {
+#ifdef NETBOX_DEBUG
+  UnicodeString Pass = DecryptPassword(FPassword, GetUserName() + GetHostName());
+  DEBUG_PRINTF(L"Pass = %s", Pass.c_str());
+  return Pass;
+#else
   return DecryptPassword(FPassword, GetUserName() + GetHostName());
+#endif
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionData::SetPasswordless(bool value)
