@@ -304,9 +304,9 @@ public:
 
   ~UTF8String() {}
 
-  operator const char * () const { return c_str(); }
+  operator const wchar_t * () const { return c_str(); }
   int size() const { return Length(); }
-  const char * c_str() const { return reinterpret_cast<const char *>(Data.c_str()); }
+  const wchar_t * c_str() const { return Data.c_str(); }
   int Length() const { return Data.size(); }
   int GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
