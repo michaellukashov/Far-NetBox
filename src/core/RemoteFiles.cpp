@@ -1085,7 +1085,7 @@ void __fastcall TRemoteFile::SetListingStr(UnicodeString value)
       {
         Year = static_cast<Word>(Col.SubString(1, 4).ToInt());
         Month = static_cast<Word>(Col.SubString(6, 2).ToInt());
-        Day = static_cast<Word>(Col.SubString(8, 2).ToInt());
+        Day = static_cast<Word>(Col.SubString(9, 2).ToInt());
         GETCOL;
         Hour = static_cast<Word>(Col.SubString(1, 2).ToInt());
         Min = static_cast<Word>(Col.SubString(4, 2).ToInt());
