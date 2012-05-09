@@ -376,10 +376,10 @@ public:
   UnicodeString(const char * Str) { Init(Str, strlen(Str)); }
   UnicodeString(int Size, wchar_t Ch) : Data(Size, Ch) {}
 
-  UnicodeString(const UnicodeString & Str);
-  UnicodeString(const UTF8String & Str);
-  UnicodeString(const RawByteString & Str);
-  UnicodeString(const std::wstring & Str);
+  UnicodeString(const UnicodeString & Str) { Init(Str.c_str(), Str.GetLength()); }
+  UnicodeString(const UTF8String & Str) { Init(Str.c_str(), Str.GetLength()); }
+  // UnicodeString(const RawByteString & Str) { Init(Str.c_str(), Str.GetLength()); }
+  UnicodeString(const std::wstring & Str) { Init(Str.c_str(), Str.size()); }
 
   ~UnicodeString() {}
 
