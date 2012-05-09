@@ -336,6 +336,8 @@ public:
   const UTF8String & __fastcall operator +=(const char rhs);
   const UTF8String & __fastcall operator +=(const char * rhs);
 
+  friend bool __fastcall operator ==(const UTF8String & lhs, const UTF8String & rhs);
+  friend bool __fastcall operator !=(const UTF8String & lhs, const UTF8String & rhs);
 private:
   void Init(const wchar_t * Str, int Length)
   {

@@ -734,6 +734,16 @@ const UTF8String & __fastcall UTF8String::operator +=(const char Ch)
   return *this;
 }
 
+bool __fastcall operator ==(const UTF8String & lhs, const UTF8String & rhs)
+{
+  return lhs.Data == rhs.Data;
+}
+
+bool __fastcall operator !=(const UTF8String & lhs, const UTF8String & rhs)
+{
+  return lhs.Data != rhs.Data;
+}
+
 //------------------------------------------------------------------------------
 
 UnicodeString & UnicodeString::Lower(int nStartPos, int nLength)
