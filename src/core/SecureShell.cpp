@@ -665,7 +665,7 @@ void __fastcall TSecureShell::CWrite(const char * Data, int Length)
 
   UnicodeString Line;
   // Do we have at least one complete line in std error cache?
-  while (FCWriteTemp.Pos(L'\n') >= 0)
+  while (FCWriteTemp.Pos(L'\n') > 0)
   {
     UnicodeString Line = CutToChar(FCWriteTemp, L'\n', false);
 
