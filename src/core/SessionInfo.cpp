@@ -772,7 +772,8 @@ void /* __fastcall */ TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeS
       // UnicodeString Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", Now());
       UnicodeString Timestamp = dt;
       UTF8String UtfLine = UTF8String(UnicodeString(LogLineMarks[Type]) + Timestamp + Line + "\n");
-      fwrite(UtfLine.c_str(), UtfLine.Length(), 1, (FILE *)FFile);
+      // fwrite(UtfLine.c_str(), UtfLine.Length(), 1, (FILE *)FFile);
+      fprintf_s(static_cast<FILE *>(FFile), "%s", const_cast<char *>(AnsiString(UtfLine).c_str()));
     }
   }
 }
