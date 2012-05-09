@@ -64,9 +64,6 @@ private:
   bool FDisableAcceptingHostKeys;
 
 protected:
-  // TStorage FStorage;
-  // TCriticalSection * FCriticalSection;
-
   virtual void __fastcall Changed();
   virtual void __fastcall SaveData(THierarchicalStorage * Storage, bool All);
   virtual void __fastcall LoadData(THierarchicalStorage * Storage);
@@ -113,12 +110,8 @@ public:
   size_t GetTunnelLocalPortNumberLow() { return FTunnelLocalPortNumberLow; }
   size_t GetTunnelLocalPortNumberHigh() { return FTunnelLocalPortNumberHigh; }
   int GetCacheDirectoryChangesMaxSize() { return FCacheDirectoryChangesMaxSize; }
-  // void SetCacheDirectoryChangesMaxSize(int value);
   bool GetShowFtpWelcomeMessage() { return FShowFtpWelcomeMessage; }
   UnicodeString GetExternalIpAddress() const { return FExternalIpAddress; }
-  // void SetExternalIpAddress(const UnicodeString value) { FExternalIpAddress = value; }
-
-  // UnicodeString GetTimeFormat();
 
   bool GetDisablePasswordStoring() { return FDisablePasswordStoring; }
   bool GetForceBanners() { return FForceBanners; }
@@ -131,8 +124,6 @@ public:
   bool __fastcall GetAutoReadDirectoryAfterOp();
   void __fastcall SetAutoReadDirectoryAfterOp(bool value);
   virtual UnicodeString __fastcall GetDefaultKeyFile();
-  // void __fastcall SetLogging(bool value);
-  // void __fastcall SetLogFileName(UnicodeString value);
   UnicodeString __fastcall GetOSVersionStr();
   VS_FIXEDFILEINFO __fastcall GetFixedApplicationInfo();
   void * __fastcall GetApplicationInfo();
