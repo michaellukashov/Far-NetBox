@@ -137,7 +137,7 @@ void ParseURL(const wchar_t * url, UnicodeString * scheme, UnicodeString * hostN
       const UnicodeString portNum = urlParse.SubString(delimPort + 1);
       *port = static_cast<unsigned short>(_wtoi(portNum.c_str()));
     }
-    urlParse.Delete(delimPort, - 1);
+    urlParse.Delete(delimPort, -1);
   }
 
   if (hostName)
@@ -145,7 +145,6 @@ void ParseURL(const wchar_t * url, UnicodeString * scheme, UnicodeString * hostN
     *hostName = urlParse;
   }
 }
-
 
 FILETIME UnixTimeToFileTime(const time_t t)
 {
