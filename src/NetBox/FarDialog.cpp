@@ -2632,19 +2632,19 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
       {
         if (Row == 0)
         {
-          Buf += L'\x1E';
+          Buf += wchar_t(0x25B2); // L'\x1E'; // ucUpScroll
         }
         else if (Row == ScrollBarPos)
         {
-          Buf += 0x2593; // L'\xB2';
+          Buf += wchar_t(0x2592); // L'\xB2'; // ucBox50
         }
         else if (Row == GetHeight() - 1)
         {
-          Buf += L'\x1F';
+          Buf += wchar_t(0x25BC); // L'\x1F'; // ucDnScroll
         }
         else
         {
-          Buf += 0x2591; // '\xB0';
+          Buf += wchar_t(0x2591); // '\xB0'; // ucBox25
         }
       }
       Text(0, Row, Color, Buf);
