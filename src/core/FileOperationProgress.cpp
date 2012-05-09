@@ -51,14 +51,13 @@
   Clear();
 }
 //---------------------------------------------------------------------------
-TFileOperationProgressType::TFileOperationProgressType(
-  const TFileOperationProgressEvent & AOnProgress,
-  const TFileOperationFinishedEvent & AOnFinished) :
+/* __fastcall */ TFileOperationProgressType::TFileOperationProgressType(
+  fileoperationprogress_signal_type * AOnProgress, fileoperationfinished_signal_type * AOnFinished) :
   FSuspendTime(NULL),
   // TDateTime FFileStartTime;
   FFilesFinished(0),
-  FOnProgress(&AOnProgress),
-  FOnFinished(&AOnFinished),
+  FOnProgress(AOnProgress),
+  FOnFinished(AOnFinished),
   FReset(false),
   FLastSecond(0),
   FRemainingCPS(0),
@@ -91,8 +90,6 @@ TFileOperationProgressType::TFileOperationProgressType(
   TotalSizeSet(false),
   Suspended(false)
 {
-  // FOnProgress.connect(AOnProgress);
-  // FOnFinished.connect(AOnFinished);
   FReset = false;
   Clear();
 }
@@ -256,9 +253,7 @@ void __fastcall TFileOperationProgressType::DoProgress()
   SetThreadExecutionState(ES_SYSTEM_REQUIRED);
   if (FOnProgress != NULL)
   {
-    fileoperationprogress_signal_type sig;
-    sig.connect(*FOnProgress);
-    sig(*this, Cancel);
+    (*FOnProgress)(*this, Cancel);
   }
 }
 //---------------------------------------------------------------------------
@@ -268,9 +263,7 @@ void __fastcall TFileOperationProgressType::Finish(UnicodeString FileName,
   assert(InProgress);
   if (FOnFinished != NULL)
   {
-    fileoperationfinished_signal_type sig;
-    sig.connect(*FOnFinished);
-    sig(Operation, Side, Temp, FileName,
+    (*FOnFinished)(Operation, Side, Temp, FileName,
       // TODO : There wasn't 'Success' condition, was it by mistake or by purpose?
       Success && (Cancel == csContinue), OnceDoneOperation);
   }

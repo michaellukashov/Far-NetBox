@@ -44,8 +44,8 @@ private:
   // when current file was started being transfered
   TDateTime FFileStartTime;
   int FFilesFinished;
-  const TFileOperationProgressEvent * FOnProgress;
-  const TFileOperationFinishedEvent * FOnFinished;
+  fileoperationprogress_signal_type * FOnProgress;
+  fileoperationfinished_signal_type * FOnFinished;
   bool FReset;
   unsigned int FLastSecond;
   unsigned long FRemainingCPS;
@@ -95,7 +95,7 @@ public:
 
   explicit /* __fastcall */ TFileOperationProgressType();
   explicit /* __fastcall */ TFileOperationProgressType(
-    const TFileOperationProgressEvent & AOnProgress, const TFileOperationFinishedEvent & AOnFinished);
+    fileoperationprogress_signal_type * AOnProgress, fileoperationfinished_signal_type * AOnFinished);
   virtual /* __fastcall */ ~TFileOperationProgressType();
   void __fastcall AddLocallyUsed(__int64 ASize);
   void __fastcall AddTransfered(__int64 ASize, bool AddToTotals = true);
@@ -137,9 +137,10 @@ public:
   int __fastcall TransferProgress();
   int __fastcall OverallProgress();
   int __fastcall TotalTransferProgress();
+
 private:
-  TFileOperationProgressType(const TFileOperationProgressType & rhs);
-  void operator=(const TFileOperationProgressType & rhs);
+  // TFileOperationProgressType(const TFileOperationProgressType & rhs);
+  // void operator=(const TFileOperationProgressType & rhs);
 };
 //---------------------------------------------------------------------------
 class TSuspendFileOperationProgress
