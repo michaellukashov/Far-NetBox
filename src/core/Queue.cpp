@@ -41,7 +41,6 @@ public:
     OnNotify(AOnNotify),
     Sender(NULL)
   {
-    // OnNotify.connect(AOnNotify);
   }
 
   virtual void __fastcall Execute(void * Arg)
@@ -68,7 +67,6 @@ public:
     Status(false),
     Phase(0)
   {
-    // OnInformation.connect(AOnInformation);
   }
 
   virtual void __fastcall Execute(void * Arg)
@@ -100,7 +98,6 @@ public:
     Answer(0),
     Type(qtConfirmation)
   {
-    // OnQueryUser.connect(AOnQueryUser);
   }
 
   virtual void __fastcall Execute(void * Arg)
@@ -134,7 +131,6 @@ public:
     Prompts(NULL),
     Results(new TStringList())
   {
-    // OnPromptUser.connect(AOnPromptUser);
   }
 
   virtual /* __fastcall */ ~TPromptUserAction()
@@ -171,7 +167,6 @@ public:
     Terminal(NULL),
     E(NULL)
   {
-    // OnShowExtendedException.connect(AOnShowExtendedException);
   }
 
   virtual void __fastcall Execute(void * Arg)
@@ -199,7 +194,6 @@ public:
     NeverShowAgain(false),
     Options(0)
   {
-    // OnDisplayBanner.connect(AOnDisplayBanner);
   }
 
   virtual void __fastcall Execute(void * Arg)
@@ -229,7 +223,6 @@ public:
     Sender(NULL),
     ReloadOnly(false)
   {
-    // OnReadDirectory.connect(AOnReadDirectory);
   }
 
   virtual void __fastcall Execute(void * Arg)
@@ -257,7 +250,6 @@ public:
     Progress(0),
     Cancel(false)
   {
-    // OnReadDirectoryProgress.connect(AOnReadDirectoryProgress);
   }
 
   virtual void __fastcall Execute(void * Arg)
@@ -705,7 +697,7 @@ void __fastcall TTerminalQueue::DeleteItem(TQueueItem * Item)
 //---------------------------------------------------------------------------
 TQueueItem * __fastcall TTerminalQueue::GetItem(int Index)
 {
-  return reinterpret_cast<TQueueItem *>(FItems->GetItem(Index));
+  return reinterpret_cast<TQueueItem*>(FItems->GetItem(Index));
 }
 //---------------------------------------------------------------------------
 TTerminalQueueStatus * __fastcall TTerminalQueue::CreateStatus(TTerminalQueueStatus * Current)
@@ -1162,7 +1154,6 @@ bool __fastcall TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
   bool Result;
   if (FItem->FTerminated || FItem->FCancel)
   {
-    // avoid reconnection if we are closing
     Result = false;
   }
   else
@@ -2054,7 +2045,6 @@ void __fastcall TDownloadQueueItem::DoExecute(TTerminal * Terminal)
   assert(Terminal != NULL);
   Terminal->CopyToLocal(FFilesToCopy, FTargetDir, FCopyParam, FParams);
 }
-
 //---------------------------------------------------------------------------
 // TTerminalThread
 //---------------------------------------------------------------------------
