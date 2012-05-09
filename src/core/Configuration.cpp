@@ -667,7 +667,7 @@ void __fastcall TConfiguration::CleanupIniFile()
   }
 }
 //---------------------------------------------------------------------------
-RawByteString __fastcall TConfiguration::EncryptPassword(UnicodeString Password, UnicodeString Key)
+RawByteString __fastcall TConfiguration::EncryptPassword(const UnicodeString & Password, const UnicodeString & Key)
 {
   if (Password.IsEmpty())
   {

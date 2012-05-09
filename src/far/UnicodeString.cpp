@@ -730,26 +730,6 @@ const UTF8String & __fastcall UTF8String::operator +=(const char Ch)
 
 //------------------------------------------------------------------------------
 
-UnicodeString::UnicodeString(const UnicodeString & Str)
-{
-  Init(Str.c_str(), Str.GetLength());
-}
-
-UnicodeString::UnicodeString(const UTF8String & Str)
-{
-  Init(Str.c_str(), Str.GetLength());
-}
-
-UnicodeString::UnicodeString(const RawByteString & Str)
-{
-  Init(Str.c_str(), Str.GetLength());
-}
-
-UnicodeString::UnicodeString(const std::wstring & Str)
-{
-  Init(Str.c_str(), Str.size());
-}
-
 UnicodeString & UnicodeString::Lower(int nStartPos, int nLength)
 {
   // std::transform(Data.begin(), Data.end(), Data.begin(), ::toupper);

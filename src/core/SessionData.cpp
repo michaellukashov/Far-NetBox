@@ -585,8 +585,6 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
   SetCustomParam2(Storage->ReadString(L"CustomParam2", GetCustomParam2()));
 
   SetSslSessionReuse(Storage->ReadBool(L"SslSessionReuse", GetSslSessionReuse()));
-
-  Storage->CloseSubKey();
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionData::Load(THierarchicalStorage * Storage)
@@ -1447,7 +1445,7 @@ void __fastcall TSessionData::SetUnsetNationalVars(bool value)
 void __fastcall TSessionData::SetUserName(UnicodeString value)
 {
   // UserName is key for password encryption
-  UnicodeString XPassword = GetPassword();
+  UnicodeString & XPassword = GetPassword();
   SET_SESSION_PROPERTY(UserName);
   SetPassword(XPassword);
   if (!XPassword.IsEmpty())
@@ -1462,7 +1460,7 @@ UnicodeString __fastcall TSessionData::GetUserNameExpanded()
   return ::ExpandEnvironmentVariables(GetUserName());
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetPassword(UnicodeString avalue)
+void __fastcall TSessionData::SetPassword(const UnicodeString & avalue)
 {
   if (!avalue.IsEmpty())
   {
@@ -1472,7 +1470,7 @@ void __fastcall TSessionData::SetPassword(UnicodeString avalue)
   SET_SESSION_PROPERTY(Password);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall TSessionData::GetPassword() const
+UnicodeString & __fastcall TSessionData::GetPassword() const
 {
   return DecryptPassword(FPassword, GetUserName() + GetHostName());
 }
@@ -2372,7 +2370,7 @@ void __fastcall TStoredSessionList::Load(THierarchicalStorage * Storage,
     Storage->GetSubKeyNames(SubKeys);
     for (int Index = 0; Index < SubKeys->GetCount(); Index++)
     {
-      TSessionData * SessionData;
+      TSessionData * SessionData = NULL;
       UnicodeString SessionName = SubKeys->GetStrings(Index);
       bool ValidName = true;
       try

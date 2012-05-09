@@ -171,8 +171,8 @@ public:
   void __fastcall SetPortNumber(int value);
   void __fastcall SetUserName(UnicodeString value);
   UnicodeString __fastcall GetUserNameExpanded();
-  void __fastcall SetPassword(UnicodeString value);
-  UnicodeString __fastcall GetPassword() const;
+  void __fastcall SetPassword(const UnicodeString & value);
+  UnicodeString & __fastcall GetPassword() const;
   void __fastcall SetPasswordless(bool value);
   void __fastcall SetPingInterval(int value);
   void __fastcall SetTryAgent(bool value);

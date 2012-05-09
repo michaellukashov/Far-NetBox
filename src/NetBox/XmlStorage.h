@@ -8,18 +8,17 @@
 class TXmlStorage : public THierarchicalStorage
 {
 public:
-  explicit TXmlStorage(const UnicodeString AStorage, const UnicodeString StoredSessionsSubKey);
-  virtual ~TXmlStorage();
-
+  explicit /* __fastcall */ TXmlStorage(const UnicodeString AStorage, const UnicodeString StoredSessionsSubKey);
   virtual void __fastcall Init();
+  virtual /* __fastcall */ ~TXmlStorage();
+
   bool Copy(TXmlStorage * Storage);
 
-  virtual bool __fastcall OpenSubKey(const UnicodeString SubKey, bool CanCreate, bool Path = false);
   virtual void __fastcall CloseSubKey();
   virtual bool __fastcall DeleteSubKey(const UnicodeString SubKey);
   virtual bool __fastcall DeleteValue(const UnicodeString Name);
   virtual void __fastcall GetSubKeyNames(TStrings * Strings);
-  virtual bool __fastcall KeyExists(const UnicodeString SubKey);
+  // bool __fastcall KeyExists(const UnicodeString SubKey);
   virtual bool __fastcall ValueExists(const UnicodeString Value);
 
   virtual size_t __fastcall BinaryDataSize(const UnicodeString Name);
@@ -29,7 +28,7 @@ public:
   virtual __int64 __fastcall ReadInt64(const UnicodeString Name, __int64 Default);
   virtual TDateTime __fastcall ReadDateTime(const UnicodeString Name, TDateTime Default);
   virtual double __fastcall ReadFloat(const UnicodeString Name, double Default);
-  virtual UnicodeString __fastcall ReadStringRaw(const UnicodeString Name, const UnicodeString Default);
+  virtual UnicodeString __fastcall ReadStringRaw(const UnicodeString & Name, const UnicodeString & Default);
   virtual size_t __fastcall ReadBinaryData(const UnicodeString Name, void * Buffer, size_t Size);
 
   virtual void __fastcall WriteBool(const UnicodeString Name, bool Value);
@@ -44,7 +43,7 @@ public:
 
   virtual void __fastcall SetAccessMode(TStorageAccessMode value);
   virtual bool __fastcall DoKeyExists(const UnicodeString SubKey, bool ForceAnsi);
-  virtual bool __fastcall DoOpenSubKey(const UnicodeString SubKey, bool CanCreate);
+  virtual bool __fastcall DoOpenSubKey(const UnicodeString MungedSubKey, bool CanCreate);
 
 protected:
   virtual UnicodeString __fastcall GetSource();
@@ -56,7 +55,7 @@ private:
   UnicodeString GetSubKeyText(const UnicodeString Name);
   TiXmlElement * FindElement(const UnicodeString Value);
   std::string ToStdString(const UnicodeString String) { return W2MB(String.c_str()); }
-  UnicodeString ToStdWString(const std::string & String) { return MB2W(String.c_str()); }
+  UnicodeString ToUnicodeString(const std::string & String) { return MB2W(String.c_str()); }
   void RemoveIfExists(const UnicodeString Name);
   void AddNewElement(const UnicodeString Name, const UnicodeString Value);
   TiXmlElement * FindChildElement(const std::string & subKey);
