@@ -217,7 +217,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN64;CURL_STATICLIB;_DEBUG;_WINDOWS;_WINDLL;_USRDLL;MPEXT;NETBOX_DEBUG;MPEXT;NO_STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN64;CURL_STATICLIB;_DEBUG;_WINDOWS;_WINDLL;_USRDLL;NETBOX_DEBUG;MPEXT;NO_STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\core;..\nbvcl;..\far;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x64\inc32;..\..\libs\boost;..\filezilla;..\filezilla\misc;..\..\libs\tinyXML;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MinimalRebuild>false</MinimalRebuild>
@@ -239,7 +239,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN64;CURL_STATICLIB;_DEBUG;_WINDOWS;_WINDLL;_USRDLL;MPEXT;NETBOX_DEBUG;MPEXT;NO_STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN64;CURL_STATICLIB;_DEBUG;_WINDOWS;_WINDLL;_USRDLL;NETBOX_DEBUG;MPEXT;NO_STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\core;..\nbvcl;..\far;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x64\inc32;..\..\libs\boost;..\filezilla;..\filezilla\misc;..\..\libs\tinyXML;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MinimalRebuild>false</MinimalRebuild>
