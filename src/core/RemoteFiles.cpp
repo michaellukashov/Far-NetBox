@@ -108,7 +108,7 @@ UnicodeString __fastcall ExtractFileName(const UnicodeString & Path, bool Unix)
   }
   else
   {
-    return ExtractFilename(Path, L'/');
+    return ExtractFilename(Path, L'\\');
   }
 }
 //---------------------------------------------------------------------------
