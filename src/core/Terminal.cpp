@@ -2836,18 +2836,17 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
 
   try
   {
-    TFileOperationProgressType * OperationProgress = new TFileOperationProgressType(boost::bind(&TTerminal::DoProgress, this, _1, _2), boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
-    OperationProgress->Start(Operation, Side, FileList->GetCount());
+    TFileOperationProgressType Progress(boost::bind(&TTerminal::DoProgress, this, _1, _2), boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
+    TFileOperationProgressType * OperationProgress(&Progress);
+    Progress.Start(Operation, Side, FileList->GetCount());
 
-    FOperationProgress = OperationProgress;
+    FOperationProgress = &Progress;
     // try
     {
-      BOOST_SCOPE_EXIT ( (&Self) (&OperationProgress) )
+      BOOST_SCOPE_EXIT ( (&Self) (&Progress) )
       {
         Self->FOperationProgress = NULL;
-        OperationProgress->Stop();
-        delete OperationProgress;
-        OperationProgress = NULL;
+        Progress.Stop();
       }
       BOOST_SCOPE_EXIT_END
       if (Side == osRemote)
@@ -2864,21 +2863,21 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
             Self->EndTransaction();
           }
         } BOOST_SCOPE_EXIT_END
-        size_t Index = 0;
+        int Index = 0;
         UnicodeString FileName;
         bool Success;
         processfile_signal_type sig;
         sig.connect(ProcessFile);
-        while ((Index < FileList->GetCount()) && (OperationProgress->Cancel == csContinue))
+        while ((Index < FileList->GetCount()) && (Progress.Cancel == csContinue))
         {
           FileName = FileList->GetStrings(Index);
           try
           {
             // try
             {
-              BOOST_SCOPE_EXIT ( (&OperationProgress) (&FileName) (&Success) (&OnceDoneOperation) )
+              BOOST_SCOPE_EXIT ( (&Progress) (&FileName) (&Success) (&OnceDoneOperation) )
               {
-                OperationProgress->Finish(FileName, Success, OnceDoneOperation);
+                Progress.Finish(FileName, Success, OnceDoneOperation);
               } BOOST_SCOPE_EXIT_END
               Success = false;
               if (!Ex)
@@ -2897,7 +2896,7 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
 #ifndef _MSC_VER
             __finally
             {
-              OperationProgress->Finish(FileName, Success, OnceDoneOperation);
+              Progress.Finish(FileName, Success, OnceDoneOperation);
             }
 #endif
           }
@@ -2921,7 +2920,7 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
       }
 #endif
 
-      if (OperationProgress->Cancel == csContinue)
+      if (Progress.Cancel == csContinue)
       {
         Result = true;
       }
@@ -2930,9 +2929,7 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
     __finally
     {
       FOperationProgress = NULL;
-      OperationProgress->Stop();
-      delete OperationProgress;
-      OperationProgress = NULL;
+      Progress.Stop();
     }
 #endif
   }
