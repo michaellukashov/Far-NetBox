@@ -75,15 +75,16 @@ public:
 #else
   UnicodeString __fastcall GetStorage() { return FStorage; }
   TStorageAccessMode __fastcall GetAccessMode() { return FAccessMode; }
-  virtual void __fastcall SetAccessMode(TStorageAccessMode value);
   bool __fastcall GetExplicit() { return FExplicit; }
   void __fastcall SetExplicit(bool value) { FExplicit = value; }
   bool __fastcall GetForceAnsi() { return FForceAnsi; }
   void __fastcall SetForceAnsi(bool value) { FForceAnsi = value; }
   bool __fastcall GetMungeStringValues() { return FMungeStringValues; }
   void __fastcall SetMungeStringValues(bool value) { FMungeStringValues = value; }
-  virtual UnicodeString __fastcall GetSource() = 0;
 #endif
+
+  virtual void __fastcall SetAccessMode(TStorageAccessMode value);
+  virtual UnicodeString __fastcall GetSource() = 0;
 
 protected:
   UnicodeString FStorage;
@@ -95,17 +96,11 @@ protected:
 
   UnicodeString __fastcall GetCurrentSubKey();
   UnicodeString __fastcall GetCurrentSubKeyMunged();
-#ifndef _MSC_VER
-  virtual void __fastcall SetAccessMode(TStorageAccessMode value);
-#endif
   virtual bool __fastcall DoKeyExists(const UnicodeString SubKey, bool ForceAnsi) = 0;
   static UnicodeString __fastcall IncludeTrailingBackslash(const UnicodeString & S);
   static UnicodeString __fastcall ExcludeTrailingBackslash(const UnicodeString & S);
   virtual bool __fastcall DoOpenSubKey(const UnicodeString SubKey, bool CanCreate) = 0;
   UnicodeString __fastcall MungeKeyName(UnicodeString Key);
-#ifndef _MSC_VER
-  virtual UnicodeString __fastcall GetSource() = 0;
-#endif
 };
 //---------------------------------------------------------------------------
 class TRegistryStorage : public THierarchicalStorage
