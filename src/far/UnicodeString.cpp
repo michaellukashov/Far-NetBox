@@ -483,7 +483,7 @@ AnsiString::operator UnicodeString() const
 int AnsiString::Pos(wchar_t Ch) const
 {
   AnsiString s(&Ch, 1);
-  return Data.find(s.c_str(), 0, 1);
+  return Data.find(s.c_str(), 0, 1) + 1;
 }
 
 AnsiString & AnsiString::Insert(const char * Str, int Pos)
@@ -570,8 +570,14 @@ RawByteString::operator UnicodeString() const
 int RawByteString::Pos(wchar_t Ch) const
 {
   // rawstring_t s(&Ch, 1);
-  RawByteString s(&Ch, 1);
-  return Data.find(reinterpret_cast<const unsigned char *>(s.c_str()), 0, 1);
+  // RawByteString s(&Ch, 1);
+  // return Data.find(reinterpret_cast<const unsigned char *>(s.c_str()), 0, 1);
+  return Data.find(Ch) + 1;
+}
+
+int RawByteString::Pos(const char Ch) const
+{
+  return Data.find((unsigned char)Ch) + 1;
 }
 
 RawByteString & RawByteString::Insert(const char * Str, int Pos)
@@ -663,8 +669,8 @@ UTF8String::UTF8String(const UnicodeString & Str)
 
 int UTF8String::Pos(wchar_t Ch) const
 {
-  wstring_t s(&Ch, 1);
-  return Data.find(s.c_str(), 0, 1);
+  // wstring_t s(&Ch, 1);
+  return Data.find(Ch) + 1; // s.c_str(), 0, 1);
 }
 
 UTF8String & UTF8String::Insert(const wchar_t * Str, int Pos)
