@@ -11,7 +11,6 @@
 #include "Classes.h"
 #include "UnicodeString.hpp"
 #include "Exceptions.h"
-
 #endif
 
 namespace Sysutils {
@@ -186,6 +185,12 @@ UnicodeString ExtractFileExt(const UnicodeString FileName);
 UnicodeString ExpandUNCFileName(const UnicodeString FileName);
 
 __int64 FileSeek(HANDLE file, __int64 offset, int Origin);
+
+//---------------------------------------------------------------------------
+
+int FindFirst(const UnicodeString FileName, int FindAttrs, TSearchRec & Rec);
+int FindNext(TSearchRec & Rec);
+int FindClose(TSearchRec & Rec);
 
 //---------------------------------------------------------------------------
 void InitPlatformId();

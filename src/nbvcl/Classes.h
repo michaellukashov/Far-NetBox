@@ -982,12 +982,6 @@ struct TSearchRec
 };
 
 //---------------------------------------------------------------------------
-
-int FindFirst(const UnicodeString FileName, int FindAttrs, TSearchRec & Rec);
-int FindNext(TSearchRec & Rec);
-int FindClose(TSearchRec & Rec);
-
-//---------------------------------------------------------------------------
 TDateTime IncYear(const TDateTime AValue, const Int64 ANumberOfYears = 1);
 TDateTime IncMonth(const TDateTime AValue, const Int64 NumberOfMonths = 1);
 TDateTime IncWeek(const TDateTime AValue, const Int64 ANumberOfWeeks = 1);

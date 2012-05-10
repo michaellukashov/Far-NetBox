@@ -2021,64 +2021,6 @@ void __fastcall GetLocaleFormatSettings(int LCID, TFormatSettings &FormatSetting
 // }
 
 //---------------------------------------------------------------------------
-int FindMatchingFile(TSearchRec & Rec)
-{
-  TFileTime LocalFileTime = {0};
-  int Result = 0;
-  while ((Rec.FindData.dwFileAttributes && Rec.ExcludeAttr) != 0)
-  {
-    if (!FindNextFileW(Rec.FindHandle, &Rec.FindData))
-    {
-      Result = GetLastError();
-      return Result;
-    }
-  }
-  FileTimeToLocalFileTime(&Rec.FindData.ftLastWriteTime, (LPFILETIME)&LocalFileTime);
-  WORD Hi = (Rec.Time & 0xFFFF0000) >> 16;
-  WORD Lo = Rec.Time & 0xFFFF;
-  FileTimeToDosDateTime((LPFILETIME)&LocalFileTime, &Hi, &Lo);
-  Rec.Time = (Hi << 16) + Lo;
-  Rec.Size = Rec.FindData.nFileSizeLow || Int64(Rec.FindData.nFileSizeHigh) << 32;
-  Rec.Attr = Rec.FindData.dwFileAttributes;
-  Rec.Name = Rec.FindData.cFileName;
-  Result = 0;
-  return Result;
-}
-
-//---------------------------------------------------------------------------
-int FindFirst(const UnicodeString FileName, int Attr, TSearchRec & Rec)
-{
-  const int faSpecial = faHidden | faSysFile | faDirectory;
-  // HANDLE hFind = FindFirstFileW(FileName.c_str(), &Rec);
-  // bool Result = (hFind != INVALID_HANDLE_VALUE);
-  // if (Result) Classes::FindClose(Rec);
-  // return Result;
-  Rec.ExcludeAttr = (~Attr) & faSpecial;
-  Rec.FindHandle = FindFirstFileW(FileName.c_str(), &Rec.FindData);
-  int Result = 0;
-  if (Rec.FindHandle != INVALID_HANDLE_VALUE)
-  {
-    Result = FindMatchingFile(Rec);
-    if (Result != 0) FindClose(Rec);
-  }
-  else
-    Result = GetLastError();
-  return Result;
-}
-
-int FindNext(TSearchRec & Rec)
-{
-  int Result = 0;
-  return Result;
-}
-
-int FindClose(TSearchRec & Rec)
-{
-  int Result = 0;
-  return Result;
-}
-
-//---------------------------------------------------------------------------
 
 void IncAMonth(Word & Year, Word & Month, Word & Day, Integer NumberOfMonths = 1)
 {
