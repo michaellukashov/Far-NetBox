@@ -4187,7 +4187,7 @@ void /* __fastcall */ TTerminal::MakeLocalFileList(const UnicodeString FileName,
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::CalculateLocalFileSize(const UnicodeString FileName,
-  const TSearchRec Rec, /*__int64*/  void * Params)
+  const TSearchRec Rec, /*__int64*/ void * Params)
 {
   TCalculateSizeParams * AParams = static_cast<TCalculateSizeParams*>(Params);
 
