@@ -40,14 +40,14 @@ void __fastcall TFileZillaIntf::SetResourceModule(void * ResourceHandle)
   ModuleState->m_hCurrentResourceHandle = static_cast<HINSTANCE>(ResourceHandle);
 }
 //---------------------------------------------------------------------------
-TFileZillaIntf::TFileZillaIntf() :
+/* __fastcall */ TFileZillaIntf::TFileZillaIntf() :
   FFileZillaApi(NULL),
   FIntern(new TFileZillaIntern(this)),
   FServer(new t_server())
 {
 }
 //---------------------------------------------------------------------------
-TFileZillaIntf::~TFileZillaIntf()
+/* __fastcall */ TFileZillaIntf::~TFileZillaIntf()
 {
   ASSERT(FFileZillaApi == NULL);
 
@@ -417,10 +417,11 @@ bool __fastcall TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
           Dest.LinkTarget = Source.linkTarget;
         }
 
+        // Result = HandleListData(Path, &Entries[0], Num);
         int Num = Directory->num;
+        TListDataEntry * pEntries = Num > 0 ? &Entries[0] : NULL;
+        Result = HandleListData(Path, pEntries, Num);
         delete Directory;
-
-        Result = HandleListData(Path, &Entries[0], Num);
       }
       break;
 

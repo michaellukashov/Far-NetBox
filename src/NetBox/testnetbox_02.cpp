@@ -41,11 +41,11 @@ using namespace boost::unit_test;
             test suite
 *******************************************************************************/
 
-class base_fixture_t : nb::TObject
+class base_fixture_t : TObject
 {
 public:
     base_fixture_t() :
-        nb::TObject(),
+        TObject(),
         OnChangeNotifyEventTriggered(false),
         ClickEventHandlerTriggered(false),
         onStringListChangeTriggered(false)
@@ -64,17 +64,17 @@ public:
 
     bool scp_test(std::string host, int port, std::string user, std::string password);
 public:
-    void OnChangeNotifyEvent(nb::TObject *Sender)
+    void OnChangeNotifyEvent(TObject *Sender)
     {
         BOOST_TEST_MESSAGE("OnChangeNotifyEvent triggered");
         OnChangeNotifyEventTriggered = true;
     }
-    void ClickEventHandler(nb::TObject *Sender)
+    void ClickEventHandler(TObject *Sender)
     {
         BOOST_TEST_MESSAGE("ClickEventHandler triggered");
         ClickEventHandlerTriggered = true;
     }
-    void onStringListChange(nb::TObject *Sender)
+    void onStringListChange(TObject *Sender)
     {
         BOOST_TEST_MESSAGE("onStringListChange triggered");
         onStringListChangeTriggered = true;
@@ -94,7 +94,7 @@ bool base_fixture_t::scp_test(std::string host, int port, std::string user, std:
 
 //------------------------------------------------------------------------------
 
-TCustomFarPlugin *CreateFarPlugin(HINSTANCE HInst);
+TCustomFarPlugin * __fastcall CreateFarPlugin(HINSTANCE HInst);
 
 //------------------------------------------------------------------------------
 
@@ -104,32 +104,32 @@ BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
 {
     if (1)
     {
-        std::wstring Text = ::StringOfChar(' ', 4);
-        BOOST_CHECK_EQUAL("    ", nb::W2MB(Text.c_str()).c_str());
+        UnicodeString Text = ::StringOfChar(' ', 4);
+        BOOST_CHECK_EQUAL("    ", W2MB(Text.c_str()).c_str());
     }
     if (1)
     {
-        std::wstring Message = L"long long long long long long long long long text";
-        nb::TStringList MessageLines;
+        UnicodeString Message = L"long long long long long long long long long text";
+        TStringList MessageLines;
         int MaxMessageWidth = 20;
         FarWrapText(Message, &MessageLines, MaxMessageWidth);
-        BOOST_TEST_MESSAGE("MessageLines = " << nb::W2MB(MessageLines.GetText().c_str()));
+        BOOST_TEST_MESSAGE("MessageLines = " << W2MB(MessageLines.GetText().c_str()));
         BOOST_CHECK_EQUAL(3, MessageLines.GetCount());
-        BOOST_CHECK_EQUAL("long long long long ", nb::W2MB(MessageLines.GetString(0).c_str()).c_str());
-        BOOST_CHECK_EQUAL("long long long long ", nb::W2MB(MessageLines.GetString(1).c_str()).c_str());
-        BOOST_CHECK_EQUAL("long text", nb::W2MB(MessageLines.GetString(2).c_str()).c_str());
+        BOOST_CHECK_EQUAL("long long long long ", W2MB(MessageLines.GetStrings(0).c_str()).c_str());
+        BOOST_CHECK_EQUAL("long long long long ", W2MB(MessageLines.GetStrings(1).c_str()).c_str());
+        BOOST_CHECK_EQUAL("long text", W2MB(MessageLines.GetStrings(2).c_str()).c_str());
     }
 }
 
-class TClass1 : nb::TObject
+class TClass1 : TObject
 {
 public:
     TClass1() :
         OnChangeNotifyEventTriggered(false)
     {
     }
-    const nb::notify_signal_type &GetOnChange() const { return FOnChange; }
-    void SetOnChange(const nb::notify_slot_type &Event) { FOnChange.connect(Event); }
+    const notify_signal_type &GetOnChange() const { return FOnChange; }
+    void SetOnChange(const TNotifyEvent &Event) { FOnChange.connect(Event); }
     virtual void Changed()
     {
         if (FOnChange.num_slots() > 0)
@@ -138,14 +138,14 @@ public:
             OnChangeNotifyEventTriggered = true;
         }
     }
-    void Change(const std::wstring str)
+    void Change(const UnicodeString str)
     {
         Changed();
     }
 
     bool OnChangeNotifyEventTriggered;
 private:
-    nb::notify_signal_type FOnChange;
+    notify_signal_type FOnChange;
 };
 
 class TClass2 // : public boost::signals::trackable
@@ -230,7 +230,7 @@ BOOST_FIXTURE_TEST_CASE(test4, base_fixture_t)
 {
     if (1)
     {
-        nb::TStringList strings;
+        TStringList strings;
         strings.SetOnChange(boost::bind(&base_fixture_t::onStringListChange, this, _1));
         strings.Add(L"line 1");
         // BOOST_CHECK_EQUAL(true, OnChangeNotifyEventTriggered);
@@ -248,16 +248,16 @@ BOOST_FIXTURE_TEST_CASE(test5, base_fixture_t)
 
 BOOST_FIXTURE_TEST_CASE(test6, base_fixture_t)
 {
-    BOOST_CHECK_THROW(nb::Error(SListIndexError, 0), ExtException);
+    BOOST_CHECK_THROW(Error(SListIndexError, 0), ExtException);
 }
 
 BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
 {
-    nb::TStringList Lines;
+    TStringList Lines;
     Lines.SetSorted(true);
     if (1)
     {
-        Lines.SetDuplicates(nb::dupAccept);
+        Lines.SetDuplicates(dupAccept);
         Lines.Add(L"aaa");
         Lines.Add(L"aaa");
         Lines.Add(L"bbb");
@@ -268,7 +268,7 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
     Lines.Clear();
     if (1)
     {
-        Lines.SetDuplicates(nb::dupIgnore);
+        Lines.SetDuplicates(dupIgnore);
         Lines.Add(L"aaa");
         Lines.Add(L"aaa");
         Lines.Add(L"bbb");
@@ -278,7 +278,7 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
     Lines.Clear();
     if (1)
     {
-        Lines.SetDuplicates(nb::dupError);
+        Lines.SetDuplicates(dupError);
         Lines.Add(L"aaa");
         Lines.Add(L"bbb");
         BOOST_CHECK_THROW(Lines.Add(L"aaa"), std::exception);
@@ -287,28 +287,28 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
 
 BOOST_FIXTURE_TEST_CASE(test8, base_fixture_t)
 {
-   std::wstring RootKey = L"Software\\Michael Lukashov\\TestNetBox";
+   UnicodeString RootKey = L"Software\\Michael Lukashov\\TestNetBox";
    TRegistryStorage Storage(RootKey);
    Storage.SetAccessMode(smReadWrite);
    BOOST_CHECK(Storage.OpenRootKey(true));
-   std::wstring SubKey = L"SubKey1";
+   UnicodeString SubKey = L"SubKey1";
    Storage.DeleteSubKey(SubKey);
    BOOST_CHECK(!Storage.KeyExists(SubKey));
    BOOST_CHECK(Storage.OpenSubKey(SubKey, true));
    Storage.SetAccessMode(smReadWrite);
-   Storage.Writeint(L"IntVal", 1234);
+   Storage.WriteInteger(L"IntVal", 1234);
    // BOOST_TEST_MESSAGE("Storage.GetFailed = " << Storage.GetFailed());
    Storage.CloseSubKey();
    BOOST_CHECK(Storage.KeyExists(SubKey));
    BOOST_CHECK(Storage.OpenSubKey(SubKey, false));
-   int res = Storage.Readint(L"IntVal", -1);
+   int res = Storage.ReadInteger(L"IntVal", -1);
    BOOST_TEST_MESSAGE("res = " << res);
    BOOST_CHECK(1234 == res);
 }
 
 BOOST_FIXTURE_TEST_CASE(test9, base_fixture_t)
 {
-    std::wstring path = L"C:\\test";
+    UnicodeString path = L"C:\\test";
     AppendPathDelimiterW(path);
     BOOST_CHECK(path == L"C:\\test\\");
 }
@@ -326,7 +326,7 @@ BOOST_FIXTURE_TEST_CASE(test10, base_fixture_t)
     char buf[256];
     struct tm tm = ltime();
     time_t t = time(0);
-
+#if 0
     char buf2[256];
     _snprintf(buf2, sizeof(buf2) - 1, "%04d.%02d.%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
     strftime2(buf, sizeof(buf) - 1, "%Y.%m.%d %H:%M:%S", &tm);
@@ -336,91 +336,92 @@ BOOST_FIXTURE_TEST_CASE(test10, base_fixture_t)
     log_eventlog(ctx, "test2: end");
     logfclose(ctx);
     log_free(ctx);
+#endif
 }
 
 BOOST_FIXTURE_TEST_CASE(test11, base_fixture_t)
 {
     // Тесты на ::FmtLoadStr FMTLOAD ::Format ::LoadStr ::LoadStrPart ::CutToChar ::TrimLeft ::TrimRight
     {
-        std::wstring str = ::FmtLoadStr(CONST_TEST_STRING, L"lalala", 42);
-        // BOOST_TEST_MESSAGE("str = " << nb::W2MB(str.c_str()));
+        UnicodeString str = ::FmtLoadStr(CONST_TEST_STRING, L"lalala", 42);
+        // BOOST_TEST_MESSAGE("str = " << W2MB(str.c_str()));
         // BOOST_TEST_MESSAGE("length = " << str.size());
-        BOOST_CHECK(nb::W2MB(str.c_str()) == "test string: \"lalala\" 42");
+        BOOST_CHECK(W2MB(str.c_str()) == "test string: \"lalala\" 42");
     }
     {
-        std::wstring str2 = FMTLOAD(CONST_TEST_STRING, L"lalala", 42);
-        // BOOST_TEST_MESSAGE("str2 = " << nb::W2MB(str2.c_str()));
-        BOOST_CHECK(nb::W2MB(str2.c_str()) == "test string: \"lalala\" 42");
+        UnicodeString str2 = FMTLOAD(CONST_TEST_STRING, L"lalala", 42);
+        // BOOST_TEST_MESSAGE("str2 = " << W2MB(str2.c_str()));
+        BOOST_CHECK(W2MB(str2.c_str()) == "test string: \"lalala\" 42");
     }
     {
-        std::wstring str2 = ::Format(L"test: %s %d", L"lalala", 42);
-        BOOST_TEST_MESSAGE("str2 = " << nb::W2MB(str2.c_str()));
-        BOOST_CHECK_EQUAL(nb::W2MB(str2.c_str()), std::string("test: lalala 42"));
+        UnicodeString str2 = ::Format(L"test: %s %d", L"lalala", 42);
+        BOOST_TEST_MESSAGE("str2 = " << W2MB(str2.c_str()));
+        BOOST_CHECK_EQUAL(W2MB(str2.c_str()), std::string("test: lalala 42"));
     }
     {
-        std::wstring str3 = FORMAT(L"test: %s %d", L"lalala", 42);
-        BOOST_TEST_MESSAGE("str3 = " << nb::W2MB(str3.c_str()));
-        BOOST_CHECK_EQUAL(nb::W2MB(str3.c_str()), std::string("test: lalala 42"));
+        UnicodeString str3 = FORMAT(L"test: %s %d", L"lalala", 42);
+        BOOST_TEST_MESSAGE("str3 = " << W2MB(str3.c_str()));
+        BOOST_CHECK_EQUAL(W2MB(str3.c_str()), std::string("test: lalala 42"));
     }
     {
-        std::wstring str = ::TrimLeft(L"");
-        BOOST_TEST_MESSAGE("str = " << nb::W2MB(str.c_str()));
-        BOOST_CHECK_EQUAL(nb::W2MB(str.c_str()), std::string(""));
+        UnicodeString str = ::TrimLeft(L"");
+        BOOST_TEST_MESSAGE("str = " << W2MB(str.c_str()));
+        BOOST_CHECK_EQUAL(W2MB(str.c_str()), std::string(""));
     }
     {
-        std::wstring str = ::TrimLeft(L"1");
-        BOOST_TEST_MESSAGE("str = " << nb::W2MB(str.c_str()));
-        BOOST_CHECK_EQUAL(nb::W2MB(str.c_str()), std::string("1"));
+        UnicodeString str = ::TrimLeft(L"1");
+        BOOST_TEST_MESSAGE("str = " << W2MB(str.c_str()));
+        BOOST_CHECK_EQUAL(W2MB(str.c_str()), std::string("1"));
     }
     {
-        std::wstring str = ::TrimLeft(L" 1");
-        BOOST_TEST_MESSAGE("str = " << nb::W2MB(str.c_str()));
-        BOOST_CHECK_EQUAL(nb::W2MB(str.c_str()), std::string("1"));
+        UnicodeString str = ::TrimLeft(L" 1");
+        BOOST_TEST_MESSAGE("str = " << W2MB(str.c_str()));
+        BOOST_CHECK_EQUAL(W2MB(str.c_str()), std::string("1"));
     }
     {
-        std::wstring str = ::TrimRight(L"");
-        BOOST_TEST_MESSAGE("str = " << nb::W2MB(str.c_str()));
-        BOOST_CHECK_EQUAL(nb::W2MB(str.c_str()), std::string(""));
+        UnicodeString str = ::TrimRight(L"");
+        BOOST_TEST_MESSAGE("str = " << W2MB(str.c_str()));
+        BOOST_CHECK_EQUAL(W2MB(str.c_str()), std::string(""));
     }
     {
-        std::wstring str = ::TrimRight(L"1");
-        BOOST_TEST_MESSAGE("str = " << nb::W2MB(str.c_str()));
-        BOOST_CHECK_EQUAL(nb::W2MB(str.c_str()), std::string("1"));
+        UnicodeString str = ::TrimRight(L"1");
+        BOOST_TEST_MESSAGE("str = " << W2MB(str.c_str()));
+        BOOST_CHECK_EQUAL(W2MB(str.c_str()), std::string("1"));
     }
     {
-        std::wstring str = ::TrimRight(L"1 ");
-        BOOST_TEST_MESSAGE("str = " << nb::W2MB(str.c_str()));
-        BOOST_CHECK_EQUAL(nb::W2MB(str.c_str()), std::string("1"));
+        UnicodeString str = ::TrimRight(L"1 ");
+        BOOST_TEST_MESSAGE("str = " << W2MB(str.c_str()));
+        BOOST_CHECK_EQUAL(W2MB(str.c_str()), std::string("1"));
     }
     {
-        // std::wstring CutToChar(std::wstring &Str, char Ch, bool Trim)
-        std::wstring Str1 = L" part 1 | part 2 ";
-        std::wstring str1 = ::CutToChar(Str1, '|', false);
-        BOOST_TEST_MESSAGE("str1 = \"" << nb::W2MB(str1.c_str()) << "\"");
-        BOOST_TEST_MESSAGE("Str1 = \"" << nb::W2MB(Str1.c_str()) << "\"");
-        // BOOST_TEST_MESSAGE("Str1 = \"" << nb::W2MB(Str1.c_str()) << "\"");
+        // UnicodeString CutToChar(UnicodeString &Str, char Ch, bool Trim)
+        UnicodeString Str1 = L" part 1 | part 2 ";
+        UnicodeString str1 = ::CutToChar(Str1, '|', false);
+        BOOST_TEST_MESSAGE("str1 = \"" << W2MB(str1.c_str()) << "\"");
+        BOOST_TEST_MESSAGE("Str1 = \"" << W2MB(Str1.c_str()) << "\"");
+        // BOOST_TEST_MESSAGE("Str1 = \"" << W2MB(Str1.c_str()) << "\"");
         // DEBUG_PRINTF(L"str1 = \"%s\"", str1.c_str());
-        BOOST_CHECK_EQUAL(nb::W2MB(str1.c_str()), std::string(" part 1 "));
+        BOOST_CHECK_EQUAL(W2MB(str1.c_str()), std::string(" part 1 "));
 
-        std::wstring str2 = ::CutToChar(Str1, '|', true);
-        BOOST_TEST_MESSAGE("str2 = \"" << nb::W2MB(str2.c_str()) << "\"");
-        BOOST_TEST_MESSAGE("Str1 = \"" << nb::W2MB(Str1.c_str()) << "\"");
-        BOOST_CHECK_EQUAL(nb::W2MB(str2.c_str()), std::string("part 2"));
+        UnicodeString str2 = ::CutToChar(Str1, '|', true);
+        BOOST_TEST_MESSAGE("str2 = \"" << W2MB(str2.c_str()) << "\"");
+        BOOST_TEST_MESSAGE("Str1 = \"" << W2MB(Str1.c_str()) << "\"");
+        BOOST_CHECK_EQUAL(W2MB(str2.c_str()), std::string("part 2"));
     }
     {
-        std::wstring str = ::LoadStr(CONST_TEST_STRING);
-        BOOST_TEST_MESSAGE("str = " << nb::W2MB(str.c_str()));
-        BOOST_CHECK_EQUAL(nb::W2MB(str.c_str()), std::string("test string: \"%s\" %d"));
+        UnicodeString str = ::LoadStr(CONST_TEST_STRING);
+        BOOST_TEST_MESSAGE("str = " << W2MB(str.c_str()));
+        BOOST_CHECK_EQUAL(W2MB(str.c_str()), std::string("test string: \"%s\" %d"));
     }
     {
-        std::wstring str = ::LoadStrPart(CONST_TEST_STRING2, 1);
-        BOOST_TEST_MESSAGE("str = " << nb::W2MB(str.c_str()));
-        BOOST_CHECK_EQUAL(nb::W2MB(str.c_str()), std::string("test string part 1"));
+        UnicodeString str = ::LoadStrPart(CONST_TEST_STRING2, 1);
+        BOOST_TEST_MESSAGE("str = " << W2MB(str.c_str()));
+        BOOST_CHECK_EQUAL(W2MB(str.c_str()), std::string("test string part 1"));
     }
     {
-        std::wstring str = ::LoadStrPart(CONST_TEST_STRING2, 2);
-        BOOST_TEST_MESSAGE("str = " << nb::W2MB(str.c_str()));
-        BOOST_CHECK_EQUAL(nb::W2MB(str.c_str()), std::string("part 2"));
+        UnicodeString str = ::LoadStrPart(CONST_TEST_STRING2, 2);
+        BOOST_TEST_MESSAGE("str = " << W2MB(str.c_str()));
+        BOOST_CHECK_EQUAL(W2MB(str.c_str()), std::string("part 2"));
     }
 }
 
@@ -467,15 +468,15 @@ BOOST_FIXTURE_TEST_CASE(test13, base_fixture_t)
 BOOST_FIXTURE_TEST_CASE(test14, base_fixture_t)
 {
     {
-        std::wstring str = ::StringReplace(L"AA", L"A", L"B");
-        BOOST_CHECK_EQUAL(nb::W2MB(str.c_str()).c_str(), "BB");
+        UnicodeString str = ::StringReplace(L"AA", L"A", L"B", TReplaceFlags::Init(rfReplaceAll));
+        BOOST_CHECK_EQUAL(W2MB(str.c_str()).c_str(), "BB");
     }
     {
-        std::wstring str = ::AnsiReplaceStr(L"AA", L"A", L"B");
-        BOOST_CHECK_EQUAL(nb::W2MB(str.c_str()).c_str(), "BB");
+        UnicodeString str = ::AnsiReplaceStr(L"AA", L"A", L"B");
+        BOOST_CHECK_EQUAL(W2MB(str.c_str()).c_str(), "BB");
     }
     {
-        std::wstring str = L"ABC";
+        UnicodeString str = L"ABC";
         BOOST_CHECK_EQUAL(::Pos(str, L"DEF"), -1);
         BOOST_CHECK_EQUAL(::Pos(str, L"AB"), 0);
         BOOST_CHECK_EQUAL(::Pos(str, L"BC"), 1);
@@ -484,16 +485,16 @@ BOOST_FIXTURE_TEST_CASE(test14, base_fixture_t)
         BOOST_CHECK_EQUAL(::AnsiPos(str, 'B'), 1);
     }
     {
-        std::wstring str = ::LowerCase(L"AA");
-        BOOST_CHECK_EQUAL(nb::W2MB(str.c_str()).c_str(), "aa");
+        UnicodeString str = ::LowerCase(L"AA");
+        BOOST_CHECK_EQUAL(W2MB(str.c_str()).c_str(), "aa");
     }
     {
-        std::wstring str = ::UpperCase(L"aa");
-        BOOST_CHECK_EQUAL(nb::W2MB(str.c_str()).c_str(), "AA");
+        UnicodeString str = ::UpperCase(L"aa");
+        BOOST_CHECK_EQUAL(W2MB(str.c_str()).c_str(), "AA");
     }
     {
-        std::wstring str = ::Trim(L" aa ");
-        BOOST_CHECK_EQUAL(nb::W2MB(str.c_str()).c_str(), "aa");
+        UnicodeString str = ::Trim(L" aa ");
+        BOOST_CHECK_EQUAL(W2MB(str.c_str()).c_str(), "aa");
     }
 }
 
@@ -515,7 +516,7 @@ BOOST_FIXTURE_TEST_CASE(test15, base_fixture_t)
         TFileMasks m(L"*.txt;*.log");
         BOOST_CHECK_EQUAL(true, m.Matches(L"test.log"));
 
-        size_t Start, Length;
+        int Start, Length;
         BOOST_CHECK_EQUAL(true, m.GetIsValid(Start, Length));
         m.SetMask(L"*.exe");
         BOOST_CHECK_EQUAL(true, m.Matches(L"test.exe"));
@@ -569,10 +570,10 @@ BOOST_FIXTURE_TEST_CASE(test18, base_fixture_t)
 
 BOOST_FIXTURE_TEST_CASE(test19, base_fixture_t)
 {
-    std::wstring ProgramsFolder;
+    UnicodeString ProgramsFolder;
     ::SpecialFolderLocation(CSIDL_PROGRAM_FILES, ProgramsFolder);
-    BOOST_TEST_MESSAGE("ProgramsFolder = " << nb::W2MB(ProgramsFolder.c_str()).c_str());
-    BOOST_CHECK(ProgramsFolder.size() > 0);
+    BOOST_TEST_MESSAGE("ProgramsFolder = " << W2MB(ProgramsFolder.c_str()).c_str());
+    BOOST_CHECK(ProgramsFolder.Length() > 0);
 }
 
 // BOOST_FIXTURE_TEST_CASE(test20, base_fixture_t)
@@ -589,10 +590,10 @@ BOOST_FIXTURE_TEST_CASE(test21, base_fixture_t)
         BOOST_TEST_MESSAGE("rand() = " << rand());
         BOOST_TEST_MESSAGE("random(256) = " << random(256));
     }
-    std::wstring enc = ::EncryptPassword(L"1234ABC", L"234556");
-    BOOST_TEST_MESSAGE("enc = " << nb::W2MB(enc.c_str()).c_str());
-    std::wstring dec = ::DecryptPassword(enc, L"234556");
-    BOOST_TEST_MESSAGE("dec = " << nb::W2MB(dec.c_str()).c_str());
+    UnicodeString enc = ::EncryptPassword(L"1234ABC", L"234556");
+    BOOST_TEST_MESSAGE("enc = " << W2MB(enc.c_str()).c_str());
+    UnicodeString dec = ::DecryptPassword(enc, L"234556");
+    BOOST_TEST_MESSAGE("dec = " << W2MB(dec.c_str()).c_str());
     BOOST_CHECK(dec == L"1234ABC");
 }
 

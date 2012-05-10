@@ -1,240 +1,286 @@
 //---------------------------------------------------------------------------
+#ifndef _MSC_VER
+#include <vcl.h>
+#pragma hdrstop
+#else
 #include "stdafx.h"
 #include "Common.h"
 #include "Option.h"
+#include "SysUtils.h"
+#include "TextsCore.h"
+#endif
 //---------------------------------------------------------------------------
-TOptions::TOptions()
+#ifndef _MSC_VER
+#pragma package(smart_init)
+#endif
+//---------------------------------------------------------------------------
+/* __fastcall */ TOptions::TOptions()
 {
-    FSwitchMarks = L"-/";
-    FSwitchValueDelimiters = L":=";
-    FNoMoreSwitches = false;
-    FParamCount = 0;
+  FSwitchMarks = L"-/";
+  FSwitchValueDelimiters = L":=";
+  FNoMoreSwitches = false;
+  FParamCount = 0;
 }
 //---------------------------------------------------------------------------
-void __fastcall TOptions::Add(const std::wstring Value)
+void __fastcall TOptions::Add(UnicodeString Value)
 {
+  if (!FNoMoreSwitches &&
+      (Value.Length() == 2) &&
+      (Value[1] == Value[2]) &&
+      (FSwitchMarks.Pos(Value[1]) > 0))
+  {
+    FNoMoreSwitches = true;
+  }
+  else
+  {
+    bool Switch = false;
+    int Index = 0; // shut up
     if (!FNoMoreSwitches &&
-            (Value.size() == 2) &&
-            (Value[0] == Value[1]) &&
-            (FSwitchMarks.find_first_of(Value[0]) != std::wstring::npos))
+        (Value.Length() >= 2) &&
+        (FSwitchMarks.Pos(Value[1]) > 0))
     {
-        FNoMoreSwitches = true;
+      Index = 2;
+      Switch = true;
+      while (Switch && (Index <= Value.Length()))
+      {
+        if (Value.IsDelimiter(FSwitchValueDelimiters, Index))
+        {
+          break;
+        }
+        // this is to treat /home/martin as parameter, not as switch
+        else if ((Value[Index] != L'?') && ((UpCase(Value[Index]) < L'A') || (UpCase(Value[Index]) > L'Z')))
+        {
+          Switch = false;
+          break;
+        }
+        ++Index;
+      }
+    }
+
+    if (Switch)
+    {
+      TOption Option;
+      Option.Type = otSwitch;
+      Option.Name = Value.SubString(2, Index - 2);
+      Option.Value = Value.SubString(Index + 1, Value.Length());
+      Option.Used = false;
+      FOptions.push_back(Option);
     }
     else
     {
-        bool Switch = false;
-        size_t Index = 0; // shut up
-        if (!FNoMoreSwitches &&
-                (Value.size() >= 2) &&
-                (FSwitchMarks.find_first_of(Value[0]) != std::wstring::npos))
-        {
-            Index = 2;
-            Switch = true;
-            while (Switch && (Index < Value.size()))
-            {
-                if (::IsDelimiter(Value, FSwitchValueDelimiters, Index))
-                {
-                    break;
-                }
-                // this is to treat /home/martin as parameter, not as switch
-                else if ((Value[Index] != '?') && ((::UpCase(Value[Index]) < 'A') || (UpCase(Value[Index]) > 'Z')))
-                {
-                    Switch = false;
-                    break;
-                }
-                ++Index;
-            }
-        }
-
-        if (Switch)
-        {
-            TOption Option;
-            Option.Type = otSwitch;
-            Option.Name = Value.substr(2, Index - 2);
-            Option.Value = Value.substr(Index + 1, Value.size());
-            Option.Used = false;
-            FOptions.push_back(Option);
-        }
-        else
-        {
-            TOption Option;
-            Option.Type = otParam;
-            Option.Value = Value;
-            Option.Used = false;
-            FOptions.push_back(Option);
-            ++FParamCount;
-        }
+      TOption Option;
+      Option.Type = otParam;
+      Option.Value = Value;
+      Option.Used = false;
+      FOptions.push_back(Option);
+      ++FParamCount;
     }
+  }
 }
 //---------------------------------------------------------------------------
-std::wstring __fastcall TOptions::GetParam(int Index)
+UnicodeString __fastcall TOptions::GetParam(int Index)
 {
-    assert((Index >= 1) && (Index <= FParamCount));
+  assert((Index >= 1) && (Index <= FParamCount));
 
-    std::wstring Result;
-    size_t I = 0;
-    while ((I < FOptions.size()) && (Index > 0))
+  UnicodeString Result;
+  size_t I = 0;
+  while ((I < FOptions.size()) && (Index > 0))
+  {
+    if (FOptions[I].Type == otParam)
     {
-        if (FOptions[I].Type == otParam)
-        {
-            --Index;
-            if (Index == 0)
-            {
-                Result = FOptions[I].Value;
-                FOptions[I].Used = true;
-            }
-        }
-        ++I;
+      --Index;
+      if (Index == 0)
+      {
+        Result = FOptions[I].Value;
+        FOptions[I].Used = true;
+      }
     }
+    ++I;
+  }
 
-    return Result;
+  return Result;
 }
 //---------------------------------------------------------------------------
 bool __fastcall TOptions::GetEmpty()
 {
-    return FOptions.empty();
+  return FOptions.empty();
 }
 //---------------------------------------------------------------------------
-bool __fastcall TOptions::FindSwitch(const std::wstring Switch,
-                          std::wstring &Value, int &ParamsStart, int &ParamsCount)
+bool __fastcall TOptions::FindSwitch(const UnicodeString Switch,
+  UnicodeString & Value, int & ParamsStart, int & ParamsCount)
 {
+  ParamsStart = 0;
+  int Index = 0;
+  bool Found = false;
+  while ((Index < int(FOptions.size())) && !Found)
+  {
+    if (FOptions[Index].Type == otParam)
+    {
+      ParamsStart++;
+    }
+    else if (FOptions[Index].Type == otSwitch)
+    {
+      if (AnsiSameText(FOptions[Index].Name, Switch))
+      {
+        Found = true;
+        Value = FOptions[Index].Value;
+        FOptions[Index].Used = true;
+      }
+    }
+    Index++;
+  }
+
+  ParamsCount = 0;
+  if (Found)
+  {
+    ParamsStart++;
+    while ((Index + ParamsCount < int(FOptions.size())) &&
+           (FOptions[Index + ParamsCount].Type == otParam))
+    {
+      ParamsCount++;
+    }
+  }
+  else
+  {
     ParamsStart = 0;
+  }
+
+  return Found;
+}
+//---------------------------------------------------------------------------
+bool __fastcall TOptions::FindSwitch(const UnicodeString Switch, UnicodeString & Value)
+{
+  int ParamsStart;
+  int ParamsCount;
+  return FindSwitch(Switch, Value, ParamsStart, ParamsCount);
+}
+//---------------------------------------------------------------------------
+bool __fastcall TOptions::FindSwitch(const UnicodeString Switch)
+{
+  UnicodeString Value;
+  int ParamsStart;
+  int ParamsCount;
+  return FindSwitch(Switch, Value, ParamsStart, ParamsCount);
+}
+//---------------------------------------------------------------------------
+bool __fastcall TOptions::FindSwitch(const UnicodeString Switch,
+  TStrings * Params, int ParamsMax)
+{
+  UnicodeString Value;
+  int ParamsStart;
+  int ParamsCount;
+  bool Result = FindSwitch(Switch, Value, ParamsStart, ParamsCount);
+  if (Result)
+  {
+    if ((ParamsMax >= 0) && (ParamsCount > ParamsMax))
+    {
+      ParamsCount = ParamsMax;
+    }
+
     int Index = 0;
-    bool Found = false;
-    while ((Index < static_cast<int>(FOptions.size())) && !Found)
+    while (Index < ParamsCount)
     {
-        std::wstring S;
-        if (FOptions[Index].Type == otParam)
-        {
-            ParamsStart++;
-        }
-        else if (FOptions[Index].Type == otSwitch)
-        {
-            if (AnsiSameText(FOptions[Index].Name, Switch))
-            {
-                Found = true;
-                Value = FOptions[Index].Value;
-                FOptions[Index].Used = true;
-            }
-        }
-        Index++;
+      Params->Add(GetParam(ParamsStart + Index));
+      Index++;
     }
+    ParamsProcessed(ParamsStart, ParamsCount);
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TOptions::SwitchValue(const UnicodeString Switch,
+  const UnicodeString Default)
+{
+  UnicodeString Value;
+  FindSwitch(Switch, Value);
+  if (Value.IsEmpty())
+  {
+    Value = Default;
+  }
+  return Value;
+}
+//---------------------------------------------------------------------------
+bool __fastcall TOptions::SwitchValue(const UnicodeString Switch, bool Default, bool DefaultOnNonExistence)
+{
+  bool Result;
+  int IntValue;
+  UnicodeString Value;
+  if (!FindSwitch(Switch, Value))
+  {
+    Result = DefaultOnNonExistence;
+  }
+  else if (Value.IsEmpty())
+  {
+    Result = Default;
+  }
+  else if (SameText(Value, "on"))
+  {
+    Result = true;
+  }
+  else if (SameText(Value, "off"))
+  {
+    Result = false;
+  }
+  else if (TryStrToInt(Value, IntValue))
+  {
+    Result = (IntValue != 0);
+  }
+  else
+  {
+    throw Exception(FMTLOAD(URL_OPTION_BOOL_VALUE_ERROR, (Value.c_str())));
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+bool __fastcall TOptions::SwitchValue(const UnicodeString Switch, bool Default)
+{
+  return SwitchValue(Switch, Default, Default);
+}
+//---------------------------------------------------------------------------
+bool __fastcall TOptions::UnusedSwitch(UnicodeString & Switch)
+{
+  bool Result = false;
+  size_t Index = 0;
+  while (!Result && (Index < FOptions.size()))
+  {
+    if ((FOptions[Index].Type == otSwitch) &&
+        !FOptions[Index].Used)
+    {
+      Switch = FOptions[Index].Name;
+      Result = true;
+    }
+    ++Index;
+  }
 
-    ParamsCount = 0;
-    if (Found)
-    {
-        ParamsStart++;
-        while ((Index + ParamsCount < static_cast<int>(FOptions.size())) &&
-                (FOptions[Index + ParamsCount].Type == otParam))
-        {
-            ParamsCount++;
-        }
-    }
-    else
-    {
-        ParamsStart = 0;
-    }
-
-    return Found;
-}
-//---------------------------------------------------------------------------
-bool __fastcall TOptions::FindSwitch(const std::wstring Switch, std::wstring &Value)
-{
-    int ParamsStart;
-    int ParamsCount;
-    return FindSwitch(Switch, Value, ParamsStart, ParamsCount);
-}
-//---------------------------------------------------------------------------
-bool __fastcall TOptions::FindSwitch(const std::wstring Switch)
-{
-    std::wstring Value;
-    int ParamsStart;
-    int ParamsCount;
-    return FindSwitch(Switch, Value, ParamsStart, ParamsCount);
-}
-//---------------------------------------------------------------------------
-bool __fastcall TOptions::FindSwitch(const std::wstring Switch,
-                          nb::TStrings *Params, int ParamsMax)
-{
-    std::wstring Value;
-    int ParamsStart;
-    int ParamsCount;
-    bool Result = FindSwitch(Switch, Value, ParamsStart, ParamsCount);
-    if (Result)
-    {
-        if ((ParamsMax >= 0) && (ParamsCount > ParamsMax))
-        {
-            ParamsCount = ParamsMax;
-        }
-
-        int Index = 0;
-        while (Index < ParamsCount)
-        {
-            Params->Add(GetParam(ParamsStart + Index));
-            Index++;
-        }
-        ParamsProcessed(ParamsStart, ParamsCount);
-    }
-    return Result;
-}
-//---------------------------------------------------------------------------
-std::wstring __fastcall TOptions::SwitchValue(const std::wstring Switch,
-                                   const std::wstring Default)
-{
-    std::wstring Value;
-    FindSwitch(Switch, Value);
-    if (Value.empty())
-    {
-        Value = Default;
-    }
-    return Value;
-}
-//---------------------------------------------------------------------------
-bool __fastcall TOptions::UnusedSwitch(std::wstring &Switch)
-{
-    bool Result = false;
-    size_t Index = 0;
-    while (!Result && (Index < FOptions.size()))
-    {
-        if ((FOptions[Index].Type == otSwitch) &&
-                !FOptions[Index].Used)
-        {
-            Switch = FOptions[Index].Name;
-            Result = true;
-        }
-        ++Index;
-    }
-
-    return Result;
+  return Result;
 }
 //---------------------------------------------------------------------------
 void __fastcall TOptions::ParamsProcessed(int ParamsStart, int ParamsCount)
 {
-    if (ParamsCount > 0)
+  if (ParamsCount > 0)
+  {
+    assert((ParamsStart >= 0) && ((ParamsStart - ParamsCount + 1) <= FParamCount));
+
+    size_t Index = 0;
+    while ((Index < FOptions.size()) && (ParamsStart > 0))
     {
-        assert((ParamsStart >= 0) && ((ParamsStart - ParamsCount + 1) <= FParamCount));
+      if (FOptions[Index].Type == otParam)
+      {
+        --ParamsStart;
 
-        size_t Index = 0;
-        while ((Index < FOptions.size()) && (ParamsStart > 0))
+        if (ParamsStart == 0)
         {
-            std::wstring S;
-            if (FOptions[Index].Type == otParam)
-            {
-                --ParamsStart;
-
-                if (ParamsStart == 0)
-                {
-                    while (ParamsCount > 0)
-                    {
-                        assert(Index < FOptions.size());
-                        assert(FOptions[Index].Type == otParam);
-                        FOptions.erase(FOptions.begin() + Index);
-                        --FParamCount;
-                        --ParamsCount;
-                    }
-                }
-            }
-            Index++;
+          while (ParamsCount > 0)
+          {
+            assert(Index < FOptions.size());
+            assert(FOptions[Index].Type == otParam);
+            FOptions.erase(FOptions.begin() + Index);
+            --FParamCount;
+            --ParamsCount;
+          }
         }
+      }
+      Index++;
     }
+  }
 }

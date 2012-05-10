@@ -6,6 +6,7 @@
 #include <fstream>
 
 #include "FarPlugin.h"
+#include "SysUtils.h"
 #include "Cryptography.h"
 #include "WinSCPSecurity.h"
 
@@ -28,33 +29,33 @@ public:
         CryptographyFinalize();
     }
 protected:
-    virtual void GetPluginInfoEx(long unsigned &Flags,
-        nb::TStrings *DiskMenuStrings, nb::TStrings *PluginMenuStrings,
-        nb::TStrings *PluginConfigStrings, nb::TStrings *CommandPrefixes)
+    virtual void __fastcall GetPluginInfoEx(long unsigned &Flags,
+        TStrings *DiskMenuStrings, TStrings *PluginMenuStrings,
+        TStrings *PluginConfigStrings, TStrings *CommandPrefixes)
     {
         DEBUG_PRINTF(L"call");
     }
-    virtual TCustomFarFileSystem *OpenPluginEx(int OpenFrom, LONG_PTR Item)
+    virtual TCustomFarFileSystem * __fastcall OpenPluginEx(int OpenFrom, LONG_PTR Item)
     {
         DEBUG_PRINTF(L"call");
         return NULL;
     }
-    virtual bool ConfigureEx(int Item)
+    virtual bool __fastcall ConfigureEx(int Item)
     {
         DEBUG_PRINTF(L"call");
         return false;
     }
-    virtual int ProcessEditorEventEx(int Event, void *Param)
+    virtual int __fastcall ProcessEditorEventEx(int Event, void *Param)
     {
         DEBUG_PRINTF(L"call");
         return -1;
     }
-    virtual int ProcessEditorInputEx(const INPUT_RECORD *Rec)
+    virtual int __fastcall ProcessEditorInputEx(const INPUT_RECORD *Rec)
     {
         DEBUG_PRINTF(L"call");
         return -1;
     }
-    virtual bool ImportSessions()
+    virtual bool __fastcall ImportSessions()
     {
         return false;
     }

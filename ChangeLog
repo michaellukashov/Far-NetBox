@@ -1,5 +1,14 @@
-NetBox 2.0.18 ??.04.2012
+NetBox 2.0.19 ??.04.2012
 ---------------------
+  * WebDAV: bugfixes
+  * Bugfix: Ask for user password if current password is empty or not accepted
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=645#p94910)
+
+NetBox 2.0.18 08.04.2012
+---------------------
+  * Bugfix: Cannot edit file on another plugin panel, if two plugin panels opened
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=615#p93944)
+  * FTP: Ask for user password only if the server asks
   * FTP: Use MLSD/MLST to list file in directory with FTP protocol
     - When copying files from/to server, seconds are preserved
     - Use MLST to get file properties

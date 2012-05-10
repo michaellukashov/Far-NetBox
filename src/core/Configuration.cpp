@@ -1,8 +1,13 @@
 //---------------------------------------------------------------------------
+#ifndef _MSC_VER
+#include <vcl.h>
+#pragma hdrstop
+#else
 #include "stdafx.h"
 
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
+#endif
 
 #include <FileInfo.h>
 
@@ -14,132 +19,155 @@
 #include "Interface.h"
 #include "CoreMain.h"
 #include "WinSCPSecurity.h"
+#include <shlobj.h>
 //---------------------------------------------------------------------------
-TConfiguration::TConfiguration() :
-    FDontSave(false),
-    FChanged(false),
-    FUpdating(0),
-    FApplicationInfo(NULL),
-    FLogging(false),
-    FPermanentLogging(false),
-    FLogWindowLines(0),
-    FLogFileAppend(false),
-    FLogProtocol(0),
-    FActualLogProtocol(0),
-    FLogActions(false),
-    FPermanentLogActions(false),
-    FConfirmOverwriting(false),
-    FConfirmResume(false),
-    FAutoReadDirectoryAfterOp(false),
-    FSessionReopenAuto(0),
-    FSessionReopenAutoMaximumNumberOfRetries(0),
-    FSessionReopenBackground(0),
-    FSessionReopenTimeout(0),
-    FSessionReopenAutoStall(0),
-    FTunnelLocalPortNumberLow(0),
-    FTunnelLocalPortNumberHigh(0),
-    FCacheDirectoryChangesMaxSize(0),
-    FShowFtpWelcomeMessage(false),
-    FDisablePasswordStoring(false),
-    FForceBanners(false),
-    FDisableAcceptingHostKeys(false),
-    FCriticalSection(NULL)
+#ifndef _MSC_VER
+#pragma package(smart_init)
+#endif
+//---------------------------------------------------------------------------
+/* __fastcall */ TConfiguration::TConfiguration() :
+  FDontSave(false),
+  FChanged(false),
+  FUpdating(0),
+  FApplicationInfo(NULL),
+  FLogging(false),
+  FPermanentLogging(false),
+  FLogWindowLines(0),
+  FLogFileAppend(false),
+  FLogProtocol(0),
+  FActualLogProtocol(0),
+  FLogActions(false),
+  FPermanentLogActions(false),
+  FConfirmOverwriting(false),
+  FConfirmResume(false),
+  FAutoReadDirectoryAfterOp(false),
+  FSessionReopenAuto(0),
+  FSessionReopenAutoMaximumNumberOfRetries(0),
+  FSessionReopenBackground(0),
+  FSessionReopenTimeout(0),
+  FSessionReopenAutoStall(0),
+  FTunnelLocalPortNumberLow(0),
+  FTunnelLocalPortNumberHigh(0),
+  FCacheDirectoryChangesMaxSize(0),
+  FShowFtpWelcomeMessage(false),
+  FDisablePasswordStoring(false),
+  FForceBanners(false),
+  FDisableAcceptingHostKeys(false),
+  FCriticalSection(NULL)
 {
-    FCriticalSection = new TCriticalSection();
-    FUpdating = 0;
-    FStorage = stRegistry;
-    FDontSave = false;
-    FApplicationInfo = NULL;
+  FCriticalSection = new TCriticalSection();
+  FUpdating = 0;
+  FStorage = stRegistry;
+  FDontSave = false;
+  FApplicationInfo = NULL;
 
-    std::wstring RandomSeedPath;
-    if (GetEnvironmentVariable(L"APPDATA", NULL, 0) > 0)
+  wchar_t Buf[10];
+  UnicodeString RandomSeedPath;
+  if (GetEnvironmentVariable(L"APPDATA", Buf, LENOF(Buf)) > 0)
+  {
+    RandomSeedPath = L"%APPDATA%";
+  }
+  else
+  {
+    RandomSeedPath = GetShellFolderPath(CSIDL_LOCAL_APPDATA);
+    if (RandomSeedPath.IsEmpty())
     {
-        RandomSeedPath = L"%APPDATA%";
+      RandomSeedPath = GetShellFolderPath(CSIDL_APPDATA);
     }
-    else
-    {
-        RandomSeedPath = GetShellFolderPath(CSIDL_LOCAL_APPDATA);
-        if (RandomSeedPath.empty())
-        {
-            RandomSeedPath = GetShellFolderPath(CSIDL_APPDATA);
-        }
-    }
+  }
 
-    FDefaultRandomSeedFile = IncludeTrailingBackslash(RandomSeedPath) + L"winscp.rnd";
+  FDefaultRandomSeedFile = IncludeTrailingBackslash(RandomSeedPath) + L"winscp.rnd";
 }
 //---------------------------------------------------------------------------
-void TConfiguration::Default()
+void __fastcall TConfiguration::Default()
 {
-    TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection);
 
-    FDisablePasswordStoring = false;
-    FForceBanners = false;
-    FDisableAcceptingHostKeys = false;
+  FDisablePasswordStoring = false;
+  FForceBanners = false;
+  FDisableAcceptingHostKeys = false;
 
-    TRegistryStorage *AdminStorage;
-    AdminStorage = new TRegistryStorage(GetRegistryStorageKey(), HKEY_LOCAL_MACHINE);
+  TRegistryStorage * AdminStorage = NULL;
+  AdminStorage = new TRegistryStorage(GetRegistryStorageKey(), HKEY_LOCAL_MACHINE);
+  // try
+  {
+    BOOST_SCOPE_EXIT ( (&AdminStorage) )
     {
-        BOOST_SCOPE_EXIT ( (&AdminStorage) )
-        {
-            delete AdminStorage;
-        } BOOST_SCOPE_EXIT_END
-        if (AdminStorage->OpenRootKey(false))
-        {
-            LoadAdmin(AdminStorage);
-            AdminStorage->CloseSubKey();
-        }
+      delete AdminStorage;
+    } BOOST_SCOPE_EXIT_END
+    if (AdminStorage->OpenRootKey(false))
+    {
+      LoadAdmin(AdminStorage);
+      AdminStorage->CloseSubKey();
     }
+  }
+#ifndef _MSC_VER
+  __finally
+  {
+    delete AdminStorage;
+  }
+#endif
 
-    SetRandomSeedFile(FDefaultRandomSeedFile);
-    SetPuttyRegistryStorageKey(L"Software\\SimonTatham\\PuTTY");
-    FConfirmOverwriting = true;
-    FConfirmResume = true;
-    FAutoReadDirectoryAfterOp = true;
-    FSessionReopenAuto = 5000;
-    FSessionReopenAutoMaximumNumberOfRetries = CONST_DEFAULT_NUMBER_OF_RETRIES;
-    FSessionReopenBackground = 10000;
-    FSessionReopenTimeout = 0;
-    FTunnelLocalPortNumberLow = 50000;
-    FTunnelLocalPortNumberHigh = 50099;
-    FCacheDirectoryChangesMaxSize = 100;
-    FShowFtpWelcomeMessage = false;
+  SetRandomSeedFile(FDefaultRandomSeedFile);
+  SetPuttyRegistryStorageKey(L"Software\\SimonTatham\\PuTTY");
+  FConfirmOverwriting = true;
+  FConfirmResume = true;
+  FAutoReadDirectoryAfterOp = true;
+  FSessionReopenAuto = 5000;
+  FSessionReopenAutoMaximumNumberOfRetries = CONST_DEFAULT_NUMBER_OF_RETRIES;
+  FSessionReopenBackground = 2000;
+  FSessionReopenTimeout = 0;
+  FSessionReopenAutoStall = 60000;
+  FTunnelLocalPortNumberLow = 50000;
+  FTunnelLocalPortNumberHigh = 50099;
+  FCacheDirectoryChangesMaxSize = 100;
+  FShowFtpWelcomeMessage = false;
+  FExternalIpAddress = L"";
 
-    FLogging = false;
-    FPermanentLogging = false;
-    FLogFileName = L"";
-    FPermanentLogFileName = L"";
-    FLogFileAppend = true;
-    FLogWindowLines = 100;
-    FLogProtocol = 0;
-    FLogActions = false;
-    FPermanentLogActions = false;
-    UpdateActualLogProtocol();
+  FLogging = false;
+  FPermanentLogging = false;
+  FLogFileName = GetDefaultLogFileName();
+  FPermanentLogFileName = FLogFileName;
+  FLogFileAppend = true;
+  FLogWindowLines = 100;
+  FLogProtocol = 0;
+  UpdateActualLogProtocol();
+  FLogActions = false;
+  FPermanentLogActions = false;
+  FActionsLogFileName = L"%TEMP%\\!S.xml";
+  FPermanentActionsLogFileName = FActionsLogFileName;
 
-    Changed();
+  Changed();
 }
 //---------------------------------------------------------------------------
-TConfiguration::~TConfiguration()
+/* __fastcall */ TConfiguration::~TConfiguration()
 {
-    assert(!FUpdating);
-    if (FApplicationInfo) { FreeFileInfo(FApplicationInfo); }
-    delete FCriticalSection;
+  assert(!FUpdating);
+  if (FApplicationInfo) { FreeFileInfo(FApplicationInfo); }
+  delete FCriticalSection;
 }
 //---------------------------------------------------------------------------
-THierarchicalStorage *TConfiguration::CreateStorage()
+THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
 {
-    if (GetStorage() == stRegistry)
-    {
-        return new TRegistryStorage(GetRegistryStorageKey());
-    }
-    else
-    {
-        nb::Error(SNotImplemented, 3005);
-        return NULL; // new TIniFileStorage(GetIniFileStorageName());
-    }
+  if (GetStorage() == stRegistry)
+  {
+    return new TRegistryStorage(GetRegistryStorageKey());
+  }
+#ifndef _MSC_VER
+  else if (Storage == stNul)
+  {
+    return new TIniFileStorage(L"nul");
+  }
+#endif
+  else
+  {
+    Error(SNotImplemented, 3005);
+    return NULL; // new TIniFileStorage(GetIniFileStorageName());
+  }
 }
 //---------------------------------------------------------------------------
 #define LASTELEM(ELEM) \
-  ELEM.substr(::LastDelimiter(ELEM, L".>") + 1, ELEM.size() - ::LastDelimiter(ELEM, L".>"))
+  ELEM.SubString(::LastDelimiter(ELEM, L".>") + 1, ELEM.Length() - ::LastDelimiter(ELEM, L".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
   { \
@@ -153,954 +181,1107 @@ THierarchicalStorage *TConfiguration::CreateStorage()
 #undef REGCONFIG
 #define REGCONFIG(CANCREATE) \
   BLOCK(L"Interface", CANCREATE, \
-    KEY(String,   RandomSeedFile); \
     KEY(String,   PuttyRegistryStorageKey); \
-    KEY(bool,     ConfirmOverwriting); \
-    KEY(bool,     ConfirmResume); \
-    KEY(bool,     AutoReadDirectoryAfterOp); \
-    KEY(int,  SessionReopenAuto); \
-    KEY(int,  SessionReopenAutoMaximumNumberOfRetries); \
-    KEY(int,  SessionReopenBackground); \
-    KEY(int,  SessionReopenTimeout); \
-    KEY(int,  TunnelLocalPortNumberLow); \
-    KEY(int,  TunnelLocalPortNumberHigh); \
-    KEY(int,  CacheDirectoryChangesMaxSize); \
-    KEY(bool, ShowFtpWelcomeMessage); \
+    KEY(Bool,     ConfirmOverwriting); \
+    KEY(Bool,     ConfirmResume); \
+    KEY(Bool,     AutoReadDirectoryAfterOp); \
+    KEY(Integer,      SessionReopenAuto); \
+    KEY(Integer,      SessionReopenBackground); \
+    KEY(Integer,      SessionReopenTimeout); \
+    KEY(Integer,      SessionReopenAutoStall); \
+    KEY(Integer,      TunnelLocalPortNumberLow); \
+    KEY(Integer,      TunnelLocalPortNumberHigh); \
+    KEY(Integer,      CacheDirectoryChangesMaxSize); \
+    KEY(Bool,     ShowFtpWelcomeMessage); \
+    KEY(Integer,      SessionReopenAutoMaximumNumberOfRetries); \
   ); \
   BLOCK(L"Logging", CANCREATE, \
-    KEYEX(bool, Logging, Logging); \
-    KEYEX(String, LogFileName, LogFileName); \
-    KEY(bool, LogFileAppend); \
-    KEY(int, LogWindowLines); \
-    KEY(int, LogProtocol); \
-    KEYEX(bool, LogActions, LogActions); \
+    KEYEX(Bool,  Logging, Logging); \
+    KEYEX(String,LogFileName, LogFileName); \
+    KEY(Bool,    LogFileAppend); \
+    KEY(Integer,     LogWindowLines); \
+    KEY(Integer,     LogProtocol); \
+    KEYEX(Bool,  PermanentLogActions, LogActions); \
+    KEYEX(Bool,  LogActions, LogActions); \
   );
+    // KEY(String,   RandomSeedFile); \
+    // KEY(String,   ExternalIpAddress); \
+    // KEYEX(String,PermanentActionsLogFileName, ActionsLogFileName); \
+    
 //---------------------------------------------------------------------------
-void TConfiguration::SaveData(THierarchicalStorage *Storage, bool /*All*/)
+void __fastcall TConfiguration::SaveData(THierarchicalStorage * Storage, bool /*All*/)
 {
-#define KEYEX(TYPE, VAR, NAME) Storage->Write ## TYPE(LASTELEM(nb::MB2W(#NAME)), Get##VAR())
-    REGCONFIG(true);
-#undef KEYEX
+  // #define KEYEX(TYPE, VAR, NAME) Storage->Write ## TYPE(LASTELEM(UnicodeString(TEXT(#NAME))), VAR)
+  #define KEYEX(TYPE, VAR, NAME) Storage->Write ## TYPE(LASTELEM(MB2W(#NAME)), Get##VAR())
+  REGCONFIG(true);
+  #undef KEYEX
 }
 //---------------------------------------------------------------------------
-void TConfiguration::Save(bool All, bool Explicit)
+void __fastcall TConfiguration::Save(bool All, bool Explicit)
 {
-    if (FDontSave) { return; }
+  if (FDontSave) { return; }
 
-    THierarchicalStorage *AStorage = CreateStorage();
+  THierarchicalStorage * AStorage = CreateScpStorage(false);
+  // try
+  {
+    BOOST_SCOPE_EXIT ( (&AStorage) )
     {
-        BOOST_SCOPE_EXIT ( (&AStorage) )
+      delete AStorage;
+    } BOOST_SCOPE_EXIT_END
+    AStorage->SetAccessMode(smReadWrite);
+    AStorage->SetExplicit(Explicit);
+    if (AStorage->OpenSubKey(GetConfigurationSubKey(), true))
+    {
+      SaveData(AStorage, All);
+    }
+  }
+#ifndef _MSC_VER
+  __finally
+  {
+    delete AStorage;
+  }
+#endif
+
+  Saved();
+
+  if (All)
+  {
+    StoredSessions->Save(true, Explicit);
+  }
+
+  // clean up as last, so that if it fails (read only INI), the saving can proceed
+  if (GetStorage() == stRegistry)
+  {
+    CleanupIniFile();
+  }
+}
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::Export(const UnicodeString FileName)
+{
+  Error(SNotImplemented, 3004);
+  THierarchicalStorage * Storage = NULL;
+  THierarchicalStorage * ExportStorage = NULL;
+  // try
+  {
+    BOOST_SCOPE_EXIT ( (&ExportStorage) (&Storage) )
+    {
+      delete ExportStorage;
+      delete Storage;
+    } BOOST_SCOPE_EXIT_END
+    ExportStorage = NULL; // new TIniFileStorage(FileName);
+    ExportStorage->SetAccessMode(smReadWrite);
+    ExportStorage->SetExplicit(true);
+
+    Storage = CreateScpStorage(false);
+    Storage->SetAccessMode(smRead);
+
+    CopyData(Storage, ExportStorage);
+
+    if (ExportStorage->OpenSubKey(GetConfigurationSubKey(), true))
+    {
+      SaveData(ExportStorage, true);
+    }
+  }
+#ifndef _MSC_VER
+  __finally
+  {
+    delete ExportStorage;
+    delete Storage;
+  }
+#endif
+
+  StoredSessions->Export(FileName);
+}
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::LoadData(THierarchicalStorage * Storage)
+{
+  #define KEYEX(TYPE, VAR, NAME) Set##VAR(Storage->Read ## TYPE(LASTELEM(MB2W(#NAME)), Get##VAR()))
+  // #pragma warn -eas
+  REGCONFIG(false);
+  // #pragma warn +eas
+  #undef KEYEX
+
+  if (FPermanentLogActions && FPermanentActionsLogFileName.IsEmpty() &&
+      FPermanentLogging && !FPermanentLogFileName.IsEmpty())
+  {
+     FPermanentActionsLogFileName = FPermanentLogFileName;
+     FPermanentLogging = false;
+     FPermanentLogFileName = L"";
+  }
+}
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::LoadAdmin(THierarchicalStorage * Storage)
+{
+  FDisablePasswordStoring = Storage->ReadBool(L"DisablePasswordStoring", FDisablePasswordStoring);
+  FForceBanners = Storage->ReadBool(L"ForceBanners", FForceBanners);
+  FDisableAcceptingHostKeys = Storage->ReadBool(L"DisableAcceptingHostKeys", FDisableAcceptingHostKeys);
+}
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::Load()
+{
+  TGuard Guard(FCriticalSection);
+
+  THierarchicalStorage * Storage = CreateScpStorage(false);
+  // try
+  {
+    BOOST_SCOPE_EXIT ( (&Storage) )
+    {
+      delete Storage;
+    } BOOST_SCOPE_EXIT_END
+    Storage->SetAccessMode(smRead);
+    if (Storage->OpenSubKey(GetConfigurationSubKey(), false))
+    {
+      LoadData(Storage);
+    }
+  }
+#ifndef _MSC_VER
+  __finally
+  {
+    delete Storage;
+  }
+#endif
+}
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::CopyData(THierarchicalStorage * Source,
+  THierarchicalStorage * Target)
+{
+  TStrings * Names = new TStringList();
+  // try
+  {
+    BOOST_SCOPE_EXIT ( (&Names) )
+    {
+      delete Names;
+    } BOOST_SCOPE_EXIT_END
+    if (Source->OpenSubKey(GetConfigurationSubKey(), false))
+    {
+      if (Target->OpenSubKey(GetConfigurationSubKey(), true))
+      {
+        if (Source->OpenSubKey(L"CDCache", false))
         {
-            delete AStorage;
-        } BOOST_SCOPE_EXIT_END
-        AStorage->SetAccessMode(smReadWrite);
-        AStorage->SetExplicit(Explicit);
-        if (AStorage->OpenSubKey(GetConfigurationSubKey(), true))
-        {
-            SaveData(AStorage, All);
+          if (Target->OpenSubKey(L"CDCache", true))
+          {
+            Names->Clear();
+            Source->GetValueNames(Names);
+
+            for (int Index = 0; Index < Names->GetCount(); Index++)
+            {
+              Target->WriteBinaryData(Names->GetStrings(Index),
+                Source->ReadBinaryData(Names->GetStrings(Index)));
+            }
+
+            Target->CloseSubKey();
+          }
+          Source->CloseSubKey();
         }
+
+        if (Source->OpenSubKey(L"Banners", false))
+        {
+          if (Target->OpenSubKey(L"Banners", true))
+          {
+            Names->Clear();
+            Source->GetValueNames(Names);
+
+            for (int Index = 0; Index < Names->GetCount(); Index++)
+            {
+              Target->WriteString(Names->GetStrings(Index),
+                Source->ReadString(Names->GetStrings(Index), L""));
+            }
+
+            Target->CloseSubKey();
+          }
+          Source->CloseSubKey();
+        }
+
+        Target->CloseSubKey();
+      }
+      Source->CloseSubKey();
     }
 
-    Saved();
-
-    if (All)
+    if (Source->OpenSubKey(GetSshHostKeysSubKey(), false))
     {
-        StoredSessions->Save(true, Explicit);
-    }
+      if (Target->OpenSubKey(GetSshHostKeysSubKey(), true))
+      {
+        Names->Clear();
+        Source->GetValueNames(Names);
 
-    // clean up as last, so that if it fails (read only INI), the saving can proceed
+        for (int Index = 0; Index < Names->GetCount(); Index++)
+        {
+          Target->WriteStringRaw(Names->GetStrings(Index),
+            Source->ReadStringRaw(Names->GetStrings(Index), L""));
+        }
+
+        Target->CloseSubKey();
+      }
+      Source->CloseSubKey();
+    }
+  }
+#ifndef _MSC_VER
+  __finally
+  {
+    delete Names;
+  }
+#endif
+}
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::LoadDirectoryChangesCache(const UnicodeString SessionKey,
+  TRemoteDirectoryChangesCache * DirectoryChangesCache)
+{
+  THierarchicalStorage * Storage = CreateScpStorage(false);
+  // try
+  {
+    BOOST_SCOPE_EXIT ( (&Storage) )
+    {
+      delete Storage;
+    } BOOST_SCOPE_EXIT_END
+    Storage->SetAccessMode(smRead);
+    if (Storage->OpenSubKey(GetConfigurationSubKey(), false) &&
+        Storage->OpenSubKey(L"CDCache", false) &&
+        Storage->ValueExists(SessionKey))
+    {
+      DirectoryChangesCache->Deserialize(UnicodeString(Storage->ReadBinaryData(SessionKey)));
+    }
+  }
+#ifndef _MSC_VER
+  __finally
+  {
+    delete Storage;
+  }
+#endif
+}
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SaveDirectoryChangesCache(const UnicodeString SessionKey,
+  TRemoteDirectoryChangesCache * DirectoryChangesCache)
+{
+  THierarchicalStorage * Storage = CreateScpStorage(false);
+  // try
+  {
+    BOOST_SCOPE_EXIT ( (&Storage) )
+    {
+      delete Storage;
+    } BOOST_SCOPE_EXIT_END
+    Storage->SetAccessMode(smReadWrite);
+    if (Storage->OpenSubKey(GetConfigurationSubKey(), true) &&
+        Storage->OpenSubKey(L"CDCache", true))
+    {
+      UnicodeString Data;
+      DirectoryChangesCache->Serialize(Data);
+      Storage->WriteBinaryData(SessionKey, Data);
+    }
+  }
+#ifndef _MSC_VER
+  __finally
+  {
+    delete Storage;
+  }
+#endif
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::BannerHash(const UnicodeString & Banner)
+{
+  RawByteString Result;
+  Result.SetLength(16);
+  md5checksum(
+    reinterpret_cast<const char*>(Banner.c_str()), Banner.Length() * sizeof(wchar_t),
+    (unsigned char*)Result.c_str());
+  return BytesToHex(Result);
+}
+//---------------------------------------------------------------------------
+bool __fastcall TConfiguration::ShowBanner(const UnicodeString SessionKey,
+  const UnicodeString & Banner)
+{
+  bool Result;
+  THierarchicalStorage * Storage = CreateScpStorage(false);
+  // try
+  {
+    BOOST_SCOPE_EXIT ( (&Storage) )
+    {
+      delete Storage;
+    } BOOST_SCOPE_EXIT_END
+    Storage->SetAccessMode(smRead);
+    Result =
+      !Storage->OpenSubKey(GetConfigurationSubKey(), false) ||
+      !Storage->OpenSubKey(L"Banners", false) ||
+      !Storage->ValueExists(SessionKey) ||
+      (Storage->ReadString(SessionKey, L"") != BannerHash(Banner));
+  }
+#ifndef _MSC_VER
+  __finally
+  {
+    delete Storage;
+  }
+#endif
+
+  return Result;
+}
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::NeverShowBanner(const UnicodeString SessionKey,
+  const UnicodeString & Banner)
+{
+  THierarchicalStorage * Storage = CreateScpStorage(false);
+  // try
+  {
+    BOOST_SCOPE_EXIT ( (&Storage) )
+    {
+      delete Storage;
+    } BOOST_SCOPE_EXIT_END
+    Storage->SetAccessMode(smReadWrite);
+
+    if (Storage->OpenSubKey(GetConfigurationSubKey(), true) &&
+        Storage->OpenSubKey(L"Banners", true))
+    {
+      Storage->WriteString(SessionKey, BannerHash(Banner));
+    }
+  }
+#ifndef _MSC_VER
+  __finally
+  {
+    delete Storage;
+  }
+#endif
+}
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::Changed()
+{
+  if (FUpdating == 0)
+  {
+    if (!GetOnChange().empty())
+    {
+      GetOnChange()(this);
+    }
+  }
+  else
+  {
+    FChanged = true;
+  }
+}
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::BeginUpdate()
+{
+  if (FUpdating == 0)
+  {
+    FChanged = false;
+  }
+  FUpdating++;
+  // Greater value would probably indicate some nesting problem in code
+  assert(FUpdating < 6);
+}
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::EndUpdate()
+{
+  assert(FUpdating > 0);
+  FUpdating--;
+  if ((FUpdating == 0) && FChanged)
+  {
+    FChanged = false;
+    Changed();
+  }
+}
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::CleanupConfiguration()
+{
+  try
+  {
+    CleanupRegistry(GetConfigurationSubKey());
     if (GetStorage() == stRegistry)
     {
-        CleanupIniFile();
+      FDontSave = true;
     }
+  }
+  catch (Exception &E)
+  {
+    throw ExtException(FMTLOAD(CLEANUP_CONFIG_ERROR), &E);
+  }
 }
 //---------------------------------------------------------------------------
-void TConfiguration::Export(const std::wstring FileName)
+void __fastcall TConfiguration::CleanupRegistry(UnicodeString CleanupSubKey)
 {
-    nb::Error(SNotImplemented, 3004);
-    THierarchicalStorage *Storage = NULL;
-    THierarchicalStorage *ExportStorage = NULL;
+  TRegistryStorage *Registry = new TRegistryStorage(GetRegistryStorageKey());
+  // try
+  {
+    BOOST_SCOPE_EXIT ( (&Registry) )
     {
-        BOOST_SCOPE_EXIT ( (&ExportStorage) (&Storage) )
-        {
-            delete ExportStorage;
-            delete Storage;
-        } BOOST_SCOPE_EXIT_END
-        ExportStorage = NULL; // new TIniFileStorage(FileName);
-        ExportStorage->SetAccessMode(smReadWrite);
-        ExportStorage->SetExplicit(true);
-
-        Storage = CreateStorage();
-        Storage->SetAccessMode(smRead);
-
-        CopyData(Storage, ExportStorage);
-
-        if (ExportStorage->OpenSubKey(GetConfigurationSubKey(), true))
-        {
-            SaveData(ExportStorage, true);
-        }
-    }
-
-    StoredSessions->Export(FileName);
-}
-//---------------------------------------------------------------------------
-void TConfiguration::LoadData(THierarchicalStorage *Storage)
-{
-#define KEYEX(TYPE, VAR, NAME) Set##VAR(Storage->Read ## TYPE(LASTELEM(nb::MB2W(#NAME)), Get##VAR()))
-    // #pragma warn -eas
-    REGCONFIG(false);
-    // #pragma warn +eas
-#undef KEYEX
-}
-//---------------------------------------------------------------------------
-void TConfiguration::LoadAdmin(THierarchicalStorage *Storage)
-{
-    FDisablePasswordStoring = Storage->Readbool(L"DisablePasswordStoring", FDisablePasswordStoring);
-    FForceBanners = Storage->Readbool(L"ForceBanners", FForceBanners);
-    FDisableAcceptingHostKeys = Storage->Readbool(L"DisableAcceptingHostKeys", FDisableAcceptingHostKeys);
-}
-//---------------------------------------------------------------------------
-void TConfiguration::Load()
-{
-    TGuard Guard(FCriticalSection);
-
-    THierarchicalStorage *Storage = CreateStorage();
-    {
-        BOOST_SCOPE_EXIT ( (&Storage) )
-        {
-            delete Storage;
-        } BOOST_SCOPE_EXIT_END
-        Storage->SetAccessMode(smRead);
-        if (Storage->OpenSubKey(GetConfigurationSubKey(), false))
-        {
-            LoadData(Storage);
-        }
-    }
-}
-//---------------------------------------------------------------------------
-void TConfiguration::CopyData(THierarchicalStorage *Source,
-                              THierarchicalStorage *Target)
-{
-    nb::TStrings *Names = new nb::TStringList();
-    {
-        BOOST_SCOPE_EXIT ( (&Names) )
-        {
-            delete Names;
-        } BOOST_SCOPE_EXIT_END
-        if (Source->OpenSubKey(GetConfigurationSubKey(), false))
-        {
-            if (Target->OpenSubKey(GetConfigurationSubKey(), true))
-            {
-                if (Source->OpenSubKey(L"CDCache", false))
-                {
-                    if (Target->OpenSubKey(L"CDCache", true))
-                    {
-                        Names->Clear();
-                        Source->GetValueNames(Names);
-
-                        for (size_t Index = 0; Index < Names->GetCount(); Index++)
-                        {
-                            Target->WriteBinaryData(Names->GetString(Index),
-                                                    Source->ReadBinaryData(Names->GetString(Index)));
-                        }
-
-                        Target->CloseSubKey();
-                    }
-                    Source->CloseSubKey();
-                }
-
-                if (Source->OpenSubKey(L"Banners", false))
-                {
-                    if (Target->OpenSubKey(L"Banners", true))
-                    {
-                        Names->Clear();
-                        Source->GetValueNames(Names);
-
-                        for (size_t Index = 0; Index < Names->GetCount(); Index++)
-                        {
-                            Target->WriteString(Names->GetString(Index),
-                                                Source->ReadString(Names->GetString(Index), L""));
-                        }
-
-                        Target->CloseSubKey();
-                    }
-                    Source->CloseSubKey();
-                }
-
-                Target->CloseSubKey();
-            }
-            Source->CloseSubKey();
-        }
-
-        if (Source->OpenSubKey(GetSshHostKeysSubKey(), false))
-        {
-            if (Target->OpenSubKey(GetSshHostKeysSubKey(), true))
-            {
-                Names->Clear();
-                Source->GetValueNames(Names);
-
-                for (size_t Index = 0; Index < Names->GetCount(); Index++)
-                {
-                    Target->WriteStringRaw(Names->GetString(Index),
-                                           Source->ReadStringRaw(Names->GetString(Index), L""));
-                }
-
-                Target->CloseSubKey();
-            }
-            Source->CloseSubKey();
-        }
-    }
-}
-//---------------------------------------------------------------------------
-void TConfiguration::LoadDirectoryChangesCache(const std::wstring SessionKey,
-        TRemoteDirectoryChangesCache *DirectoryChangesCache)
-{
-    THierarchicalStorage *Storage = CreateStorage();
-    {
-        BOOST_SCOPE_EXIT ( (&Storage) )
-        {
-            delete Storage;
-        } BOOST_SCOPE_EXIT_END
-        Storage->SetAccessMode(smRead);
-        if (Storage->OpenSubKey(GetConfigurationSubKey(), false) &&
-                Storage->OpenSubKey(L"CDCache", false) &&
-                Storage->ValueExists(SessionKey))
-        {
-            DirectoryChangesCache->Deserialize(Storage->ReadBinaryData(SessionKey));
-        }
-    }
-}
-//---------------------------------------------------------------------------
-void TConfiguration::SaveDirectoryChangesCache(const std::wstring SessionKey,
-        TRemoteDirectoryChangesCache *DirectoryChangesCache)
-{
-    THierarchicalStorage *Storage = CreateStorage();
-    {
-        BOOST_SCOPE_EXIT ( (&Storage) )
-        {
-            delete Storage;
-        } BOOST_SCOPE_EXIT_END
-        Storage->SetAccessMode(smReadWrite);
-        if (Storage->OpenSubKey(GetConfigurationSubKey(), true) &&
-                Storage->OpenSubKey(L"CDCache", true))
-        {
-            std::wstring Data;
-            DirectoryChangesCache->Serialize(Data);
-            Storage->WriteBinaryData(SessionKey, Data);
-        }
-    }
-}
-//---------------------------------------------------------------------------
-std::wstring TConfiguration::BannerHash(const std::wstring Banner)
-{
-    std::wstring Result(16, 0);
-    md5checksum(static_cast<const char *>(static_cast<const void *>(Banner.c_str())), Banner.size() * sizeof(wchar_t),
-                reinterpret_cast<unsigned char *>(const_cast<wchar_t *>(Result.c_str())));
-    return Result;
-}
-//---------------------------------------------------------------------------
-bool TConfiguration::ShowBanner(const std::wstring SessionKey,
-                                const std::wstring Banner)
-{
-    bool Result;
-    THierarchicalStorage *Storage = CreateStorage();
-    {
-        BOOST_SCOPE_EXIT ( (&Storage) )
-        {
-            delete Storage;
-        } BOOST_SCOPE_EXIT_END
-        Storage->SetAccessMode(smRead);
-        Result =
-            !Storage->OpenSubKey(GetConfigurationSubKey(), false) ||
-            !Storage->OpenSubKey(L"Banners", false) ||
-            !Storage->ValueExists(SessionKey) ||
-            (Storage->ReadString(SessionKey, L"") != StrToHex(BannerHash(Banner)));
-    }
-
-    return Result;
-}
-//---------------------------------------------------------------------------
-void TConfiguration::NeverShowBanner(const std::wstring SessionKey,
-                                     const std::wstring Banner)
-{
-    THierarchicalStorage *Storage = CreateStorage();
-    {
-        BOOST_SCOPE_EXIT ( (&Storage) )
-        {
-            delete Storage;
-        } BOOST_SCOPE_EXIT_END
-        Storage->SetAccessMode(smReadWrite);
-
-        if (Storage->OpenSubKey(GetConfigurationSubKey(), true) &&
-                Storage->OpenSubKey(L"Banners", true))
-        {
-            Storage->WriteString(SessionKey, StrToHex(BannerHash(Banner)));
-        }
-    }
-}
-//---------------------------------------------------------------------------
-void TConfiguration::Changed()
-{
-    if (FUpdating== 0)
-    {
-        if (!GetOnChange().empty())
-        {
-            GetOnChange()(this);
-        }
-    }
-    else
-    {
-        FChanged = true;
-    }
-}
-//---------------------------------------------------------------------------
-void TConfiguration::BeginUpdate()
-{
-    if (FUpdating == 0)
-    {
-        FChanged = false;
-    }
-    FUpdating++;
-    // Greater value would probably indicate some nesting problem in code
-    assert(FUpdating < 6);
-}
-//---------------------------------------------------------------------------
-void TConfiguration::EndUpdate()
-{
-    assert(FUpdating > 0);
-    FUpdating--;
-    if ((FUpdating == 0) && FChanged)
-    {
-        FChanged = false;
-        Changed();
-    }
-}
-//---------------------------------------------------------------------------
-void TConfiguration::CleanupConfiguration()
-{
-    try
-    {
-        CleanupRegistry(GetConfigurationSubKey());
-        if (GetStorage() == stRegistry)
-        {
-            FDontSave = true;
-        }
-    }
-    catch (const std::exception &E)
-    {
-        throw ExtException(FMTLOAD(CLEANUP_CONFIG_ERROR), &E);
-    }
-}
-//---------------------------------------------------------------------------
-void TConfiguration::CleanupRegistry(const std::wstring CleanupSubKey)
-{
-    TRegistryStorage *Registry = new TRegistryStorage(GetRegistryStorageKey());
-    {
-        BOOST_SCOPE_EXIT ( (&Registry) )
-        {
-            delete Registry;
-        } BOOST_SCOPE_EXIT_END
-        Registry->RecursiveDeleteSubKey(CleanupSubKey);
-    }
-}
-//---------------------------------------------------------------------------
-void TConfiguration::CleanupHostKeys()
-{
-    try
-    {
-        CleanupRegistry(GetSshHostKeysSubKey());
-    }
-    catch (const std::exception &E)
-    {
-        throw ExtException(FMTLOAD(CLEANUP_HOSTKEYS_ERROR), &E);
-    }
-}
-//---------------------------------------------------------------------------
-void TConfiguration::CleanupRandomSeedFile()
-{
-    try
-    {
-        DontSaveRandomSeed();
-        if (FileExists(GetRandomSeedFileName()))
-        {
-            if (!DeleteFile(GetRandomSeedFileName()))
-            {
-                RaiseLastOSError();
-            }
-        }
-    }
-    catch (const std::exception &E)
-    {
-        throw ExtException(FMTLOAD(CLEANUP_SEEDFILE_ERROR), &E);
-    }
-}
-//---------------------------------------------------------------------------
-void TConfiguration::CleanupIniFile()
-{
-    try
-    {
-        if (FileExists(GetIniFileStorageName()))
-        {
-            if (!DeleteFile(GetIniFileStorageName()))
-            {
-                RaiseLastOSError();
-            }
-        }
-#if 0
-        if (GetStorage() == stIniFile)
-        {
-            FDontSave = true;
-        }
+      delete Registry;
+    } BOOST_SCOPE_EXIT_END
+    Registry->RecursiveDeleteSubKey(CleanupSubKey);
+  }
+#ifndef _MSC_VER
+  __finally
+  {
+    delete Registry;
+  }
 #endif
-    }
-    catch (const std::exception &E)
-    {
-        throw ExtException(FMTLOAD(CLEANUP_INIFILE_ERROR), &E);
-    }
 }
 //---------------------------------------------------------------------------
-std::wstring TConfiguration::EncryptPassword(const std::wstring Password, const std::wstring Key)
+void __fastcall TConfiguration::CleanupHostKeys()
 {
-    if (Password.empty())
-    {
-        return std::wstring();
-    }
-    else
-    {
-        return ::EncryptPassword(Password, Key);
-    }
+  try
+  {
+    CleanupRegistry(GetSshHostKeysSubKey());
+  }
+  catch (Exception &E)
+  {
+    throw ExtException(FMTLOAD(CLEANUP_HOSTKEYS_ERROR), &E);
+  }
 }
 //---------------------------------------------------------------------------
-std::wstring TConfiguration::DecryptPassword(const std::wstring Password, const std::wstring Key)
+void __fastcall TConfiguration::CleanupRandomSeedFile()
 {
-    if (Password.empty())
+  try
+  {
+    DontSaveRandomSeed();
+    if (FileExists(GetRandomSeedFileName()))
     {
-        return std::wstring();
+      if (!DeleteFile(GetRandomSeedFileName()))
+      {
+        RaiseLastOSError();
+      }
     }
-    else
-    {
-        return ::DecryptPassword(Password, Key);
-    }
+  }
+  catch (Exception &E)
+  {
+    throw ExtException(FMTLOAD(CLEANUP_SEEDFILE_ERROR), &E);
+  }
 }
 //---------------------------------------------------------------------------
-std::wstring TConfiguration::StronglyRecryptPassword(const std::wstring Password, const std::wstring /*Key*/)
+void __fastcall TConfiguration::CleanupIniFile()
 {
-    return Password;
+  try
+  {
+    if (FileExists(GetIniFileStorageName()))
+    {
+      if (!DeleteFile(GetIniFileStorageName()))
+      {
+        RaiseLastOSError();
+      }
+    }
+#if 0
+    if (GetStorage() == stIniFile)
+    {
+      FDontSave = true;
+    }
+#endif
+  }
+  catch (Exception &E)
+  {
+    throw ExtException(FMTLOAD(CLEANUP_INIFILE_ERROR), &E);
+  }
 }
 //---------------------------------------------------------------------------
-std::wstring TConfiguration::GetOSVersionStr()
+RawByteString __fastcall TConfiguration::EncryptPassword(UnicodeString Password, UnicodeString Key)
 {
-    std::wstring Result;
-    OSVERSIONINFO OSVersionInfo;
-    OSVersionInfo.dwOSVersionInfoSize = sizeof(OSVersionInfo);
-    if (GetVersionEx(&OSVersionInfo) != 0)
+  if (Password.IsEmpty())
+  {
+    return RawByteString();
+  }
+  else
+  {
+    return ::EncryptPassword(Password, Key);
+  }
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::DecryptPassword(RawByteString Password, UnicodeString Key)
+{
+  if (Password.IsEmpty())
+  {
+    return UnicodeString();
+  }
+  else
+  {
+    return ::DecryptPassword(Password, Key);
+  }
+}
+//---------------------------------------------------------------------------
+RawByteString __fastcall TConfiguration::StronglyRecryptPassword(RawByteString Password, UnicodeString /*Key*/)
+{
+  return Password;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetOSVersionStr()
+{
+  UnicodeString Result;
+  OSVERSIONINFO OSVersionInfo;
+  OSVersionInfo.dwOSVersionInfoSize = sizeof(OSVersionInfo);
+  if (GetVersionEx(&OSVersionInfo) != 0)
+  {
+    Result = FORMAT(L"%d.%d.%d %s", int(OSVersionInfo.dwMajorVersion),
+      int(OSVersionInfo.dwMinorVersion), int(OSVersionInfo.dwBuildNumber),
+      OSVersionInfo.szCSDVersion).Trim();
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+VS_FIXEDFILEINFO __fastcall TConfiguration::GetFixedApplicationInfo()
+{
+  return GetFixedFileInfo(GetApplicationInfo());
+}
+//---------------------------------------------------------------------------
+int __fastcall TConfiguration::GetCompoundVersion()
+{
+  VS_FIXEDFILEINFO FileInfo = GetFixedApplicationInfo();
+  return CalculateCompoundVersion(
+    HIWORD(FileInfo.dwFileVersionMS), LOWORD(FileInfo.dwFileVersionMS),
+    HIWORD(FileInfo.dwFileVersionLS), LOWORD(FileInfo.dwFileVersionLS));
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::ModuleFileName()
+{
+  Error(SNotImplemented, 204);
+  return L""; // FIXME ParamStr(0);
+}
+//---------------------------------------------------------------------------
+void * __fastcall TConfiguration::GetFileApplicationInfo(const UnicodeString FileName)
+{
+  void * Result;
+  if (FileName.IsEmpty())
+  {
+    if (!FApplicationInfo)
     {
-        Result = ::Trim(FORMAT(L"%u.%u.%u %s", OSVersionInfo.dwMajorVersion,
-                               OSVersionInfo.dwMinorVersion, OSVersionInfo.dwBuildNumber,
-                               OSVersionInfo.szCSDVersion));
+      FApplicationInfo = CreateFileInfo(ModuleFileName());
     }
+    Result = FApplicationInfo;
+  }
+  else
+  {
+    Result = CreateFileInfo(FileName);
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+void * __fastcall TConfiguration::GetApplicationInfo()
+{
+  return GetFileApplicationInfo(L"");
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetFileProductName(const UnicodeString FileName)
+{
+  return GetFileFileInfoString(L"ProductName", FileName);
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetFileCompanyName(const UnicodeString FileName)
+{
+  return GetFileFileInfoString(L"CompanyName", FileName);
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetProductName()
+{
+  return GetFileProductName(L"");
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetCompanyName()
+{
+  return GetFileCompanyName(L"");
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetFileProductVersion(const UnicodeString FileName)
+{
+  return TrimVersion(GetFileFileInfoString(L"ProductVersion", FileName));
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetProductVersion()
+{
+  return GetFileProductVersion(L"");
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::TrimVersion(UnicodeString Version)
+{
+  while ((Version.Pos(L".") != Version.LastDelimiter(L".")) &&
+    (Version.SubString(Version.Length() - 1, 2) == L".0"))
+  {
+    Version.SetLength(Version.Length() - 2);
+  }
+  return Version;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetVersionStr()
+{
+  TGuard Guard(FCriticalSection);
+  try
+  {
+    VS_FIXEDFILEINFO Info = GetFixedApplicationInfo();
+    return FMTLOAD(VERSION,
+      HIWORD(Info.dwFileVersionMS),
+      LOWORD(Info.dwFileVersionMS),
+      HIWORD(Info.dwFileVersionLS),
+      LOWORD(Info.dwFileVersionLS));
+  }
+  catch (Exception &E)
+  {
+    throw ExtException(L"Can't get application version", &E);
+  }
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetVersion()
+{
+  TGuard Guard(FCriticalSection);
+  try
+  {
+    UnicodeString Result;
+    VS_FIXEDFILEINFO Info = GetFixedApplicationInfo();
+    Result = TrimVersion(FORMAT(L"%d.%d.%d",
+      HIWORD(Info.dwFileVersionMS),
+      LOWORD(Info.dwFileVersionMS),
+      HIWORD(Info.dwFileVersionLS)));
     return Result;
+  }
+  catch (Exception &E)
+  {
+    throw ExtException(L"Can't get application version", &E);
+  }
 }
 //---------------------------------------------------------------------------
-VS_FIXEDFILEINFO TConfiguration::GetFixedApplicationInfo()
+UnicodeString __fastcall TConfiguration::GetFileFileInfoString(const UnicodeString Key,
+  const UnicodeString FileName)
 {
-    return GetFixedFileInfo(GetApplicationInfo());
-}
-//---------------------------------------------------------------------------
-int TConfiguration::GetCompoundVersion()
-{
-    VS_FIXEDFILEINFO FileInfo = GetFixedApplicationInfo();
-    return CalculateCompoundVersion(
-               HIWORD(FileInfo.dwFileVersionMS), LOWORD(FileInfo.dwFileVersionMS),
-               HIWORD(FileInfo.dwFileVersionLS), LOWORD(FileInfo.dwFileVersionLS));
-    return 0;
-}
-//---------------------------------------------------------------------------
-std::wstring TConfiguration::ModuleFileName()
-{
-    nb::Error(SNotImplemented, 204);
-    return L""; // FIXME ParamStr(0);
-}
-//---------------------------------------------------------------------------
-void *TConfiguration::GetFileApplicationInfo(const std::wstring FileName)
-{
-    void *Result;
-    if (FileName.empty())
+  TGuard Guard(FCriticalSection);
+
+  UnicodeString Result;
+  void * Info = GetFileApplicationInfo(FileName);
+  // try
+  {
+    BOOST_SCOPE_EXIT ( (&FileName) (&Info) )
     {
-        if (!FApplicationInfo)
-        {
-            FApplicationInfo = CreateFileInfo(ModuleFileName());
-        }
-        Result = FApplicationInfo;
+      if (!FileName.IsEmpty())
+      {
+        FreeFileInfo(Info);
+      }
+    } BOOST_SCOPE_EXIT_END
+    if ((Info != NULL) && (GetTranslationCount(Info) > 0))
+    {
+      TTranslation Translation;
+      Translation = GetTranslation(Info, 0);
+      try
+      {
+        Result = ::GetFileInfoString(Info, Translation, Key);
+      }
+      catch (const std::exception & e)
+      {
+        DEBUG_PRINTF(L"Error: %s", MB2W(e.what()).c_str());
+        Result = L"";
+      }
     }
     else
     {
-        Result = CreateFileInfo(FileName);
+      assert(!FileName.IsEmpty());
     }
-    return Result;
-}
-//---------------------------------------------------------------------------
-void *TConfiguration::GetApplicationInfo()
-{
-    return GetFileApplicationInfo(L"");
-}
-//---------------------------------------------------------------------------
-std::wstring TConfiguration::GetFileProductName(const std::wstring FileName)
-{
-    return GetFileFileInfoString(L"ProductName", FileName);
-}
-//---------------------------------------------------------------------------
-std::wstring TConfiguration::GetFileCompanyName(const std::wstring FileName)
-{
-    return GetFileFileInfoString(L"CompanyName", FileName);
-}
-//---------------------------------------------------------------------------
-std::wstring TConfiguration::GetProductName()
-{
-    return GetFileProductName(L"");
-}
-//---------------------------------------------------------------------------
-std::wstring TConfiguration::GetCompanyName()
-{
-    return GetFileCompanyName(L"");
-}
-//---------------------------------------------------------------------------
-std::wstring TConfiguration::GetFileProductVersion(const std::wstring FileName)
-{
-    return TrimVersion(GetFileFileInfoString(L"ProductVersion", FileName));
-}
-//---------------------------------------------------------------------------
-std::wstring TConfiguration::GetProductVersion()
-{
-    return GetFileProductVersion(L"");
-}
-//---------------------------------------------------------------------------
-std::wstring TConfiguration::TrimVersion(const std::wstring Version)
-{
-    std::wstring version = Version;
-    while ((version.find_first_of(L".") != ::LastDelimiter(version, L".")) &&
-            (version.substr(version.size() - 1, 2) == L".0"))
+  }
+#ifndef _MSC_VER
+  __finally
+  {
+    if (!FileName.IsEmpty())
     {
-        version.resize(version.size() - 2);
+      FreeFileInfo(Info);
     }
-    return version;
+  }
+#endif
+  return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring TConfiguration::GetVersionStr()
+UnicodeString __fastcall TConfiguration::GetFileInfoString(const UnicodeString Key)
 {
-    TGuard Guard(FCriticalSection);
-    try
-    {
-        VS_FIXEDFILEINFO Info = GetFixedApplicationInfo();
-        return FMTLOAD(VERSION,
-                       HIWORD(Info.dwFileVersionMS),
-                       LOWORD(Info.dwFileVersionMS),
-                       HIWORD(Info.dwFileVersionLS));
-    }
-    catch (const std::exception &E)
-    {
-        throw ExtException(L"Can't get application version", &E);
-    }
+  return GetFileFileInfoString(Key, L"");
 }
 //---------------------------------------------------------------------------
-std::wstring TConfiguration::GetVersion()
+UnicodeString __fastcall TConfiguration::GetRegistryStorageKey()
 {
-    TGuard Guard(FCriticalSection);
-    try
-    {
-        std::wstring Result;
-        VS_FIXEDFILEINFO Info = GetFixedApplicationInfo();
-        Result = TrimVersion(FORMAT(L"%d.%d.%d",
-                                    HIWORD(Info.dwFileVersionMS),
-                                    LOWORD(Info.dwFileVersionMS),
-                                    HIWORD(Info.dwFileVersionLS)));
-        return Result;
-    }
-    catch (const std::exception &E)
-    {
-        throw ExtException(L"Can't get application version", &E);
-    }
+  return GetRegistryKey();
 }
 //---------------------------------------------------------------------------
-std::wstring TConfiguration::GetFileFileInfoString(const std::wstring Key,
-        const std::wstring FileName)
+void __fastcall TConfiguration::SetNulStorage()
 {
-    TGuard Guard(FCriticalSection);
+  FStorage = stNul;
+}
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SetDefaultStorage()
+{
+  FStorage = stDetect;
+}
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SetIniFileStorageName(UnicodeString value)
+{
+  Error(SNotImplemented, 3006);
+  FIniFileStorageName = value;
+  // FStorage = stIniFile;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetIniFileStorageName()
+{
+  if (FIniFileStorageName.IsEmpty())
+  {
+    return ChangeFileExt(L"" /*ParamStr(0)*/, L".ini");
+  }
+  else
+  {
+    return FIniFileStorageName;
+  }
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetPuttySessionsKey()
+{
+  return GetPuttyRegistryStorageKey() + L"\\Sessions";
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetStoredSessionsSubKey()
+{
+  return L"Sessions";
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetSshHostKeysSubKey()
+{
+  return L"SshHostKeys";
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetConfigurationSubKey()
+{
+  return L"Configuration";
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetRootKeyStr()
+{
+  return RootKeyToStr(HKEY_CURRENT_USER);
+}
+//---------------------------------------------------------------------------
+bool __fastcall TConfiguration::GetGSSAPIInstalled()
+{
+  return HasGSSAPI();
+}
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SetStorage(TStorage value)
+{
+  if (FStorage != value)
+  {
+    THierarchicalStorage * SourceStorage = NULL;
+    THierarchicalStorage * TargetStorage = NULL;
 
-    std::wstring Result;
-    void *Info = GetFileApplicationInfo(FileName);
+    // try
     {
-        BOOST_SCOPE_EXIT ( (&FileName) (&Info) )
-        {
-            if (!FileName.empty())
-            {
-                FreeFileInfo(Info);
-            }
-        } BOOST_SCOPE_EXIT_END
-        if ((Info != NULL) && (GetTranslationCount(Info) > 0))
-        {
-            TTranslation Translation;
-            Translation = GetTranslation(Info, 0);
-            try
-            {
-                Result = ::GetFileInfoString(Info, Translation, Key);
-            }
-            catch (const std::exception &e)
-            {
-                DEBUG_PRINTF(L"Error: %s", nb::MB2W(e.what()).c_str());
-                Result = L"";
-            }
-        }
-        else
-        {
-            assert(!FileName.empty());
-        }
+      BOOST_SCOPE_EXIT ( (&SourceStorage) (&TargetStorage) )
+      {
+        delete SourceStorage;
+        delete TargetStorage;
+      } BOOST_SCOPE_EXIT_END
+      SourceStorage = CreateScpStorage(false);
+      SourceStorage->SetAccessMode(smRead);
+
+      FStorage = value;
+
+      TargetStorage = CreateScpStorage(false);
+      TargetStorage->SetAccessMode(smReadWrite);
+      TargetStorage->SetExplicit(true);
+
+      // copy before save as it removes the ini file,
+      // when switching from ini to registry
+      CopyData(SourceStorage, TargetStorage);
     }
-    return Result;
-}
-//---------------------------------------------------------------------------
-std::wstring TConfiguration::GetFileInfoString(const std::wstring Key)
-{
-    return GetFileFileInfoString(Key, L"");
-}
-//---------------------------------------------------------------------------
-std::wstring TConfiguration::GetRegistryStorageKey()
-{
-    return ::GetRegistryKey();
-}
-//---------------------------------------------------------------------------
-void TConfiguration::SetIniFileStorageName(const std::wstring value)
-{
-    nb::Error(SNotImplemented, 3006);
-    FIniFileStorageName = value;
-    // FStorage = stIniFile;
-}
-//---------------------------------------------------------------------------
-std::wstring TConfiguration::GetIniFileStorageName()
-{
-    if (FIniFileStorageName.empty())
+#ifndef _MSC_VER
+    __finally
     {
-        return ChangeFileExt(L"" /*ParamStr(0)*/, L".ini");
+      delete SourceStorage;
+      delete TargetStorage;
+    }
+#endif
+
+    // save all and explicit
+    Save(true, true);
+  }
+}
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::Saved()
+{
+  // nothing
+}
+//---------------------------------------------------------------------------
+TStorage __fastcall TConfiguration::GetStorage()
+{
+  /*
+  if (FStorage == stDetect)
+  {
+    if (FileExists(IniFileStorageName))
+    {
+      FStorage = stIniFile;
     }
     else
     {
-        return FIniFileStorageName;
+      FStorage = stRegistry;
     }
+  }
+  */
+  return FStorage;
 }
 //---------------------------------------------------------------------------
-std::wstring TConfiguration::GetPuttySessionsKey()
+void __fastcall TConfiguration::SetRandomSeedFile(UnicodeString value)
 {
-    return GetPuttyRegistryStorageKey() + L"\\Sessions";
-}
-//---------------------------------------------------------------------------
-std::wstring TConfiguration::GetStoredSessionsSubKey()
-{
-    return L"Sessions";
-}
-//---------------------------------------------------------------------------
-std::wstring TConfiguration::GetSshHostKeysSubKey()
-{
-    return L"SshHostKeys";
-}
-//---------------------------------------------------------------------------
-std::wstring TConfiguration::GetConfigurationSubKey()
-{
-    return L"Configuration";
-}
-//---------------------------------------------------------------------------
-std::wstring TConfiguration::GetRootKeyStr()
-{
-    return RootKeyToStr(HKEY_CURRENT_USER);
-}
-//---------------------------------------------------------------------------
-bool TConfiguration::GetGSSAPIInstalled()
-{
-    return HasGSSAPI();
-}
-//---------------------------------------------------------------------------
-void TConfiguration::SetStorage(TStorage value)
-{
-    if (FStorage != value)
+  if (GetRandomSeedFile() != value)
+  {
+    UnicodeString PrevRandomSeedFileName = GetRandomSeedFileName();
+
+    FRandomSeedFile = value;
+
+    // never allow empty seed file to avoid Putty trying to reinitialize the path
+    if (GetRandomSeedFileName().IsEmpty())
     {
-        THierarchicalStorage *SourceStorage = NULL;
-        THierarchicalStorage *TargetStorage = NULL;
-
-        {
-            BOOST_SCOPE_EXIT ( (&SourceStorage) (&TargetStorage) )
-            {
-                delete SourceStorage;
-                delete TargetStorage;
-            } BOOST_SCOPE_EXIT_END
-            SourceStorage = CreateStorage();
-            SourceStorage->SetAccessMode(smRead);
-
-            FStorage = value;
-
-            TargetStorage = CreateStorage();
-            TargetStorage->SetAccessMode(smReadWrite);
-            TargetStorage->SetExplicit(true);
-
-            // copy before save as it removes the ini file,
-            // when switching from ini to registry
-            CopyData(SourceStorage, TargetStorage);
-        }
-
-        // save all and explicit
-        Save(true, true);
+      FRandomSeedFile = FDefaultRandomSeedFile;
     }
-}
-//---------------------------------------------------------------------------
-void TConfiguration::Saved()
-{
-    // nothing
-}
-//---------------------------------------------------------------------------
-TStorage TConfiguration::GetStorage()
-{
-    /*
-    if (FStorage == stDetect)
+
+    if (!PrevRandomSeedFileName.IsEmpty() &&
+        (PrevRandomSeedFileName != GetRandomSeedFileName()) &&
+        FileExists(PrevRandomSeedFileName))
     {
-      FStorage = FileExists(GetIniFileStorageName()) ? stIniFile : stRegistry;
+      // ignore any error
+      DeleteFile(PrevRandomSeedFileName);
     }
-    */
-    return FStorage;
-}
-//---------------------------------------------------------------------------
-void TConfiguration::SetRandomSeedFile(const std::wstring value)
-{
-    if (GetRandomSeedFile() != value)
-    {
-        std::wstring PrevRandomSeedFileName = GetRandomSeedFileName();
-
-        FRandomSeedFile = value;
-
-        // never allow empty seed file to avoid Putty trying to reinitialize the path
-        if (GetRandomSeedFileName().empty())
-        {
-            FRandomSeedFile = FDefaultRandomSeedFile;
-        }
-
-        if (!PrevRandomSeedFileName.empty() &&
-                (PrevRandomSeedFileName != GetRandomSeedFileName()) &&
-                FileExists(PrevRandomSeedFileName))
-        {
-            // ignore any error
-            DeleteFile(PrevRandomSeedFileName);
-        }
-    }
+  }
 }
 //---------------------------------------------------------------------
-std::wstring TConfiguration::GetRandomSeedFileName()
+UnicodeString __fastcall TConfiguration::GetRandomSeedFileName()
 {
-    return StripPathQuotes(::Trim(ExpandEnvironmentVariables(FRandomSeedFile)));
+  return StripPathQuotes(ExpandEnvironmentVariables(FRandomSeedFile)).Trim();
 }
 //---------------------------------------------------------------------
-void TConfiguration::SetPuttyRegistryStorageKey(const std::wstring value)
+void __fastcall TConfiguration::SetExternalIpAddress(UnicodeString value)
 {
-    SET_CONFIG_PROPERTY(PuttyRegistryStorageKey);
+  SET_CONFIG_PROPERTY(ExternalIpAddress);
+}
+//---------------------------------------------------------------------
+void __fastcall TConfiguration::SetPuttyRegistryStorageKey(UnicodeString value)
+{
+  SET_CONFIG_PROPERTY(PuttyRegistryStorageKey);
 }
 //---------------------------------------------------------------------------
-TEOLType TConfiguration::GetLocalEOLType()
+TEOLType __fastcall TConfiguration::GetLocalEOLType()
 {
-    return eolCRLF;
+  return eolCRLF;
 }
 //---------------------------------------------------------------------
-void TConfiguration::TemporaryLogging(const std::wstring ALogFileName)
+void __fastcall TConfiguration::TemporaryLogging(const UnicodeString ALogFileName)
 {
+/*
+  FLogging = true;
+  FLogFileName = ALogFileName;
+  FLogActions = AnsiSameText(ExtractFileExt(FLogFileName), L".xml");
+  UpdateActualLogProtocol();
+*/
+  if (SameText(ExtractFileExt(ALogFileName), L".xml"))
+  {
+    TemporaryActionsLogging(ALogFileName);
+  }
+  else
+  {
     FLogging = true;
     FLogFileName = ALogFileName;
-    FLogActions = AnsiSameText(ExtractFileExt(FLogFileName), L".xml");
     UpdateActualLogProtocol();
+  }
 }
 //---------------------------------------------------------------------
-void TConfiguration::SetLogging(bool value)
+void __fastcall TConfiguration::TemporaryActionsLogging(const UnicodeString ALogFileName)
 {
-    if (GetLogging() != value)
-    {
-        FPermanentLogging = value;
-        FLogging = value;
-        UpdateActualLogProtocol();
-        Changed();
-    }
+  FLogActions = true;
+  FActionsLogFileName = ALogFileName;
 }
 //---------------------------------------------------------------------
-void TConfiguration::SetLogFileName(const std::wstring value)
+void __fastcall TConfiguration::SetLogging(bool value)
 {
-    if (GetLogFileName() != value)
-    {
-        FPermanentLogFileName = value;
-        FLogFileName = value;
-        Changed();
-    }
-}
-//---------------------------------------------------------------------
-void TConfiguration::SetLogToFile(bool value)
-{
-    if (value != GetLogToFile())
-    {
-        SetLogFileName(value ? GetDefaultLogFileName() : std::wstring(L""));
-        Changed();
-    }
-}
-//---------------------------------------------------------------------
-bool TConfiguration::GetLogToFile()
-{
-    return !GetLogFileName().empty();
-}
-//---------------------------------------------------------------------
-void TConfiguration::UpdateActualLogProtocol()
-{
-    FActualLogProtocol = FLogging ? FLogProtocol : 0;
-}
-//---------------------------------------------------------------------
-void TConfiguration::SetLogProtocol(size_t value)
-{
-    SET_CONFIG_PROPERTY(LogProtocol);
+  if (GetLogging() != value)
+  {
+    FPermanentLogging = value;
+    FLogging = value;
     UpdateActualLogProtocol();
+    Changed();
+  }
 }
 //---------------------------------------------------------------------
-void TConfiguration::SetLogActions(bool value)
+void __fastcall TConfiguration::SetLogFileName(UnicodeString value)
 {
-    if (GetLogActions() != value)
-    {
-        FPermanentLogActions = value;
-        FLogActions = value;
-        Changed();
-    }
+  if (GetLogFileName() != value)
+  {
+    FPermanentLogFileName = value;
+    FLogFileName = value;
+    Changed();
+  }
 }
 //---------------------------------------------------------------------
-void TConfiguration::SetLogFileAppend(bool value)
+void __fastcall TConfiguration::SetActionsLogFileName(UnicodeString value)
 {
-    SET_CONFIG_PROPERTY(LogFileAppend);
+  if (GetActionsLogFileName() != value)
+  {
+    FPermanentActionsLogFileName = value;
+    FActionsLogFileName = value;
+    Changed();
+  }
 }
 //---------------------------------------------------------------------
-void TConfiguration::SetLogWindowLines(int value)
+void __fastcall TConfiguration::SetLogToFile(bool value)
 {
-    SET_CONFIG_PROPERTY(LogWindowLines);
+  if (value != GetLogToFile())
+  {
+    SetLogFileName(value ? GetDefaultLogFileName() : UnicodeString(L""));
+    Changed();
+  }
 }
 //---------------------------------------------------------------------
-void TConfiguration::SetLogWindowComplete(bool value)
+bool __fastcall TConfiguration::GetLogToFile()
 {
-    if (value != GetLogWindowComplete())
-    {
-        SetLogWindowLines(value ? 0 : 50);
-        Changed();
-    }
+  return !GetLogFileName().IsEmpty();
 }
 //---------------------------------------------------------------------
-bool TConfiguration::GetLogWindowComplete()
+void __fastcall TConfiguration::UpdateActualLogProtocol()
 {
-    return static_cast<bool>(GetLogWindowLines() == 0);
+  FActualLogProtocol = FLogging ? FLogProtocol : 0;
 }
 //---------------------------------------------------------------------
-std::wstring TConfiguration::GetDefaultLogFileName()
+void __fastcall TConfiguration::SetLogProtocol(int value)
 {
-    return IncludeTrailingBackslash(SystemTemporaryDirectory()) + L"winscp.log";
+  SET_CONFIG_PROPERTY(LogProtocol);
+  UpdateActualLogProtocol();
+}
+//---------------------------------------------------------------------
+void __fastcall TConfiguration::SetLogActions(bool value)
+{
+  if (GetLogActions() != value)
+  {
+    FPermanentLogActions = value;
+    FLogActions = value;
+    Changed();
+  }
+}
+//---------------------------------------------------------------------
+void __fastcall TConfiguration::SetLogFileAppend(bool value)
+{
+  SET_CONFIG_PROPERTY(LogFileAppend);
+}
+//---------------------------------------------------------------------
+void __fastcall TConfiguration::SetLogWindowLines(int value)
+{
+  SET_CONFIG_PROPERTY(LogWindowLines);
+}
+//---------------------------------------------------------------------
+void __fastcall TConfiguration::SetLogWindowComplete(bool value)
+{
+  if (value != GetLogWindowComplete())
+  {
+    SetLogWindowLines(value ? 0 : 50);
+    Changed();
+  }
+}
+//---------------------------------------------------------------------
+bool __fastcall TConfiguration::GetLogWindowComplete()
+{
+  return static_cast<bool>(GetLogWindowLines() == 0);
+}
+//---------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetDefaultLogFileName()
+{
+  // return IncludeTrailingBackslash(SystemTemporaryDirectory()) + L"winscp.log";
+  return L"%TEMP%\\!S.log";
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetConfirmOverwriting(bool value)
+void __fastcall TConfiguration::SetConfirmOverwriting(bool value)
 {
-    TGuard Guard(FCriticalSection);
-    SET_CONFIG_PROPERTY(ConfirmOverwriting);
+  TGuard Guard(FCriticalSection);
+  SET_CONFIG_PROPERTY(ConfirmOverwriting);
 }
 //---------------------------------------------------------------------------
-bool TConfiguration::GetConfirmOverwriting()
+bool __fastcall TConfiguration::GetConfirmOverwriting()
 {
-    TGuard Guard(FCriticalSection);
-    return FConfirmOverwriting;
+  TGuard Guard(FCriticalSection);
+  return FConfirmOverwriting;
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetConfirmResume(bool value)
+void __fastcall TConfiguration::SetConfirmResume(bool value)
 {
-    TGuard Guard(FCriticalSection);
-    SET_CONFIG_PROPERTY(ConfirmResume);
+  TGuard Guard(FCriticalSection);
+  SET_CONFIG_PROPERTY(ConfirmResume);
 }
 //---------------------------------------------------------------------------
-bool TConfiguration::GetConfirmResume()
+bool __fastcall TConfiguration::GetConfirmResume()
 {
-    TGuard Guard(FCriticalSection);
-    return FConfirmResume;
+  TGuard Guard(FCriticalSection);
+  return FConfirmResume;
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetAutoReadDirectoryAfterOp(bool value)
+void __fastcall TConfiguration::SetAutoReadDirectoryAfterOp(bool value)
 {
-    TGuard Guard(FCriticalSection);
-    SET_CONFIG_PROPERTY(AutoReadDirectoryAfterOp);
+  TGuard Guard(FCriticalSection);
+  SET_CONFIG_PROPERTY(AutoReadDirectoryAfterOp);
 }
 //---------------------------------------------------------------------------
-bool TConfiguration::GetAutoReadDirectoryAfterOp()
+bool __fastcall TConfiguration::GetAutoReadDirectoryAfterOp()
 {
-    TGuard Guard(FCriticalSection);
-    return FAutoReadDirectoryAfterOp;
+  TGuard Guard(FCriticalSection);
+  return FAutoReadDirectoryAfterOp;
 }
 //---------------------------------------------------------------------------
-std::wstring TConfiguration::GetTimeFormat()
+UnicodeString __fastcall TConfiguration::GetTimeFormat()
 {
-    return L"h:nn:ss";
+  return L"h:nn:ss";
 }
 //---------------------------------------------------------------------------
-std::wstring TConfiguration::GetPartialExt() const
+UnicodeString __fastcall TConfiguration::GetPartialExt() const
 {
-    return PARTIAL_EXT;
+  return PARTIAL_EXT;
 }
 //---------------------------------------------------------------------------
-std::wstring TConfiguration::GetDefaultKeyFile()
+UnicodeString __fastcall TConfiguration::GetDefaultKeyFile()
 {
-    return L"";
+  return L"";
 }
 //---------------------------------------------------------------------------
-bool TConfiguration::GetRememberPassword()
+bool __fastcall TConfiguration::GetRememberPassword()
 {
-    return false;
+  return false;
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetSessionReopenAuto(size_t value)
+void __fastcall TConfiguration::SetSessionReopenAuto(int value)
 {
-    SET_CONFIG_PROPERTY(SessionReopenAuto);
+  SET_CONFIG_PROPERTY(SessionReopenAuto);
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetSessionReopenAutoMaximumNumberOfRetries(int value)
+void __fastcall TConfiguration::SetSessionReopenAutoMaximumNumberOfRetries(int value)
 {
-    SET_CONFIG_PROPERTY(SessionReopenAutoMaximumNumberOfRetries);
+  SET_CONFIG_PROPERTY(SessionReopenAutoMaximumNumberOfRetries);
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetSessionReopenBackground(size_t value)
+void __fastcall TConfiguration::SetSessionReopenBackground(int value)
 {
-    SET_CONFIG_PROPERTY(SessionReopenBackground);
+  SET_CONFIG_PROPERTY(SessionReopenBackground);
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetSessionReopenTimeout(size_t value)
+void __fastcall TConfiguration::SetSessionReopenTimeout(int value)
 {
-    SET_CONFIG_PROPERTY(SessionReopenTimeout);
+  SET_CONFIG_PROPERTY(SessionReopenTimeout);
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetTunnelLocalPortNumberLow(size_t value)
+void __fastcall TConfiguration::SetSessionReopenAutoStall(int value)
 {
-    SET_CONFIG_PROPERTY(TunnelLocalPortNumberLow);
+  SET_CONFIG_PROPERTY(SessionReopenAutoStall);
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetTunnelLocalPortNumberHigh(size_t value)
+void __fastcall TConfiguration::SetTunnelLocalPortNumberLow(int value)
 {
-    SET_CONFIG_PROPERTY(TunnelLocalPortNumberHigh);
+  SET_CONFIG_PROPERTY(TunnelLocalPortNumberLow);
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetCacheDirectoryChangesMaxSize(int value)
+void __fastcall TConfiguration::SetTunnelLocalPortNumberHigh(int value)
 {
-    SET_CONFIG_PROPERTY(CacheDirectoryChangesMaxSize);
+  SET_CONFIG_PROPERTY(TunnelLocalPortNumberHigh);
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetShowFtpWelcomeMessage(bool value)
+void __fastcall TConfiguration::SetCacheDirectoryChangesMaxSize(int value)
 {
-    SET_CONFIG_PROPERTY(ShowFtpWelcomeMessage);
+  SET_CONFIG_PROPERTY(CacheDirectoryChangesMaxSize);
+}
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SetShowFtpWelcomeMessage(bool value)
+{
+  SET_CONFIG_PROPERTY(ShowFtpWelcomeMessage);
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-void TShortCuts::Add(nb::TShortCut ShortCut)
+void __fastcall TShortCuts::Add(TShortCut ShortCut)
 {
-    FShortCuts.insert(ShortCut);
+  FShortCuts.insert(ShortCut);
 }
 //---------------------------------------------------------------------------
-bool TShortCuts::Has(nb::TShortCut ShortCut) const
+bool __fastcall TShortCuts::Has(TShortCut ShortCut) const
 {
-    return (FShortCuts.count(ShortCut) != 0);
+  return (FShortCuts.count(ShortCut) != 0);
 }

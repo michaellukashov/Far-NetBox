@@ -9,43 +9,56 @@ enum TOptionType { otParam, otSwitch };
 class TOptions
 {
 public:
-    TOptions();
+  /* __fastcall */ TOptions();
 
-    bool __fastcall FindSwitch(const std::wstring Switch);
-    bool __fastcall FindSwitch(const std::wstring Switch, std::wstring &Value);
-    bool __fastcall FindSwitch(const std::wstring Switch, int &ParamsStart,
-                    int &ParamsCount);
-    bool __fastcall FindSwitch(const std::wstring Switch, nb::TStrings *Params,
-                    int ParamsMax = -1);
-    void __fastcall ParamsProcessed(int Position, int Count);
-    std::wstring __fastcall SwitchValue(const std::wstring Switch, const std::wstring Default = L"");
-    bool __fastcall UnusedSwitch(std::wstring &Switch);
+  bool __fastcall FindSwitch(const UnicodeString Switch);
+  bool __fastcall FindSwitch(const UnicodeString Switch, UnicodeString & Value);
+  bool __fastcall FindSwitch(const UnicodeString Switch, int & ParamsStart,
+    int & ParamsCount);
+  bool __fastcall FindSwitch(const UnicodeString Switch, TStrings * Params,
+    int ParamsMax = -1);
+  void __fastcall ParamsProcessed(int Position, int Count);
+  UnicodeString __fastcall SwitchValue(const UnicodeString Switch, const UnicodeString Default = L"");
+  bool __fastcall SwitchValue(const UnicodeString Switch, bool Default);
+  bool __fastcall SwitchValue(const UnicodeString Switch, bool Default, bool DefaultOnNonExistence);
+  bool __fastcall UnusedSwitch(UnicodeString & Switch);
 
-    int __fastcall GetParamCount() { return FParamCount; }
-    std::wstring __fastcall GetParam(int Index);
-    bool __fastcall GetEmpty();
+#ifndef _MSC_VER
+  __property int ParamCount = { read = FParamCount };
+  __property UnicodeString Param[int Index] = { read = GetParam };
+  __property bool Empty = { read = GetEmpty };
+#else
+  int __fastcall GetParamCount() { return FParamCount; }
+  UnicodeString __fastcall GetParam(int Index);
+  bool __fastcall GetEmpty();
+#endif
 
 protected:
-    std::wstring FSwitchMarks;
-    std::wstring FSwitchValueDelimiters;
+  UnicodeString FSwitchMarks;
+  UnicodeString FSwitchValueDelimiters;
 
-    void __fastcall Add(const std::wstring Option);
+  void __fastcall Add(UnicodeString Option);
 
-    bool __fastcall FindSwitch(const std::wstring Switch,
-                    std::wstring &Value, int &ParamsStart, int &ParamsCount);
+  bool __fastcall FindSwitch(const UnicodeString Switch,
+    UnicodeString & Value, int & ParamsStart, int & ParamsCount);
 
 private:
-    struct TOption
-    {
-        TOptionType Type;
-        std::wstring Name;
-        std::wstring Value;
-        bool Used;
-    };
+  struct TOption
+  {
+    TOptionType Type;
+    UnicodeString Name;
+    UnicodeString Value;
+    bool Used;
+  };
 
-    std::vector<TOption> FOptions;
-    bool FNoMoreSwitches;
-    int FParamCount;
+  std::vector<TOption> FOptions;
+  bool FNoMoreSwitches;
+  int FParamCount;
+
+#ifndef _MSC_VER
+  UnicodeString __fastcall GetParam(int Index);
+  bool __fastcall GetEmpty();
+#endif
 };
 //---------------------------------------------------------------------------
 #endif

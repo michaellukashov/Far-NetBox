@@ -1,8 +1,13 @@
 //---------------------------------------------------------------------------
+#ifndef _MSC_VER
+#include <vcl.h>
+#pragma hdrstop
+#else
 #include "stdafx.h"
 
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
+#endif
 
 #include "Common.h"
 #include "Exceptions.h"
@@ -11,6 +16,10 @@
 #include <TextsCore.h>
 #include <vector>
 //---------------------------------------------------------------------------
+#ifndef _MSC_VER
+#pragma package(smart_init)
+#endif
+//---------------------------------------------------------------------------
 #define READ_REGISTRY(Method) \
   if (FRegistry->ValueExists(Name)) \
   try { return FRegistry->Method(Name); } catch(...) { FFailed++; return Default; } \
@@ -18,613 +27,1225 @@
 #define WRITE_REGISTRY(Method) \
   try { FRegistry->Method(Name, Value); } catch(...) { FFailed++; }
 //---------------------------------------------------------------------------
-std::wstring MungeStr(const std::wstring Str)
+UnicodeString __fastcall MungeStr(const UnicodeString Str, bool ForceAnsi)
 {
-    std::string Result2;
-    Result2.resize(Str.size() * sizeof(wchar_t) * 3 + 1);
-    putty_mungestr(nb::W2MB(Str.c_str()).c_str(), const_cast<char *>(Result2.c_str()));
-    std::wstring Result = nb::MB2W(Result2.c_str());
-    PackStr(Result);
-    // DEBUG_PRINTF(L"Str = %s, Result = %s", Str.c_str(), Result.c_str());
-    return Result;
-}
-//---------------------------------------------------------------------------
-std::wstring UnMungeStr(const std::wstring Str)
-{
-    std::string Result2;
-    Result2.resize(Str.size() * sizeof(wchar_t) * 3 + 1);
-    putty_unmungestr(const_cast<char *>(nb::W2MB(Str.c_str()).c_str()), const_cast<char *>(Result2.c_str()), static_cast<int>(Result2.size()));
-    std::wstring Result = nb::MB2W(Result2.c_str());
-    PackStr(Result);
-    return Result;
-}
-//---------------------------------------------------------------------------
-std::wstring PuttyMungeStr(const std::wstring Str)
-{
-    return MungeStr(Str);
-}
-//---------------------------------------------------------------------------
-std::wstring PuttyUnMungeStr(const std::wstring Str)
-{
-    return UnMungeStr(Str);
-}
-//---------------------------------------------------------------------------
-std::wstring MungeIniName(const std::wstring Str)
-{
-    size_t P = Str.find_first_of(L"=");
-    // make this fast for now
-    if (P > 0)
+  RawByteString Source;
+  if (ForceAnsi)
+  {
+    Source = AnsiString(Str);
+  }
+  else
+  {
+    Source = UTF8String(Str);
+    if (Source.Length() > Str.Length())
     {
-        return ::StringReplace(Str, L"=", L"%3D");
+      Source.Insert(Bom, 1);
     }
-    else
-    {
-        return Str;
-    }
+  }
+  // should contain ASCII characters only
+  RawByteString Dest;
+  Dest.SetLength(Source.Length() * 3 + 1);
+  putty_mungestr(Source.c_str(), (char *)Dest.c_str());
+  PackStr(Dest);
+  return UnicodeString(Dest.c_str(), Dest.Length());
 }
 //---------------------------------------------------------------------------
-std::wstring UnMungeIniName(const std::wstring Str)
+UnicodeString __fastcall UnMungeStr(const UnicodeString Str)
 {
-    size_t P = Str.find(L"%3D");
-    // make this fast for now
-    if (P != std::wstring::npos)
-    {
-        return ::StringReplace(Str, L"%3D", L"=");
-    }
-    else
-    {
-        return Str;
-    }
+  // Str should contain ASCII characters only
+  RawByteString Source = AnsiString(Str);
+  RawByteString Dest;
+  Dest.SetLength(Source.Length() + 1);
+  putty_unmungestr(Source.c_str(), (char *)Dest.c_str(), Dest.Length());
+  UnicodeString Result;
+  if (Dest.SubString(1, LENOF(Bom)) == Bom)
+  {
+    Dest.Delete(1, LENOF(Bom));
+    Result = UTF8String(Dest.c_str());
+  }
+  else
+  {
+    Result = AnsiString(Dest.c_str());
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall PuttyMungeStr(const UnicodeString Str)
+{
+  return MungeStr(Str, false);
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall PuttyUnMungeStr(const UnicodeString Str)
+{
+  return UnMungeStr(Str);
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall MungeIniName(const UnicodeString Str)
+{
+  int P = Str.Pos(L"=");
+  // make this fast for now
+  if (P > 0)
+  {
+    return StringReplace(Str, L"=", L"%3D", TReplaceFlags::Init(rfReplaceAll));
+  }
+  else
+  {
+    return Str;
+  }
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall UnMungeIniName(const UnicodeString Str)
+{
+  int P = Str.Pos(L"%3D");
+  // make this fast for now
+  if (P > 0)
+  {
+    return StringReplace(Str, L"%3D", L"=", TReplaceFlags::Init(rfReplaceAll));
+  }
+  else
+  {
+    return Str;
+  }
 }
 //===========================================================================
-THierarchicalStorage::THierarchicalStorage(const std::wstring AStorage)
+/* __fastcall */ THierarchicalStorage::THierarchicalStorage(const UnicodeString AStorage)
 {
-    FStorage = AStorage;
-    FKeyHistory = new nb::TStringList();
-    SetAccessMode(smRead);
-    SetExplicit(false);
-    SetMungeStringValues(true);
+  FStorage = AStorage;
+  FKeyHistory = new TStringList();
+  SetAccessMode(smRead);
+  SetExplicit(false);
+  SetForceAnsi(true);
+  SetMungeStringValues(true);
 }
 //---------------------------------------------------------------------------
-THierarchicalStorage::~THierarchicalStorage()
+/* __fastcall */ THierarchicalStorage::~THierarchicalStorage()
 {
-    delete FKeyHistory;
+  delete FKeyHistory;
 }
 //---------------------------------------------------------------------------
-void THierarchicalStorage::SetAccessMode(TStorageAccessMode value)
+void __fastcall THierarchicalStorage::Flush()
 {
-    FAccessMode = value;
 }
 //---------------------------------------------------------------------------
-std::wstring THierarchicalStorage::GetCurrentSubKeyMunged()
+void __fastcall THierarchicalStorage::SetAccessMode(TStorageAccessMode value)
 {
-    if (FKeyHistory->GetCount()) { return FKeyHistory->GetString(FKeyHistory->GetCount()-1); }
+  FAccessMode = value;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall THierarchicalStorage::GetCurrentSubKeyMunged()
+{
+  if (FKeyHistory->GetCount()) { return FKeyHistory->GetStrings(FKeyHistory->GetCount()-1); }
     else { return L""; }
 }
 //---------------------------------------------------------------------------
-std::wstring THierarchicalStorage::GetCurrentSubKey()
+UnicodeString __fastcall THierarchicalStorage::GetCurrentSubKey()
 {
-    return UnMungeStr(GetCurrentSubKeyMunged());
+  return UnMungeStr(GetCurrentSubKeyMunged());
 }
 //---------------------------------------------------------------------------
-bool THierarchicalStorage::OpenRootKey(bool CanCreate)
+bool __fastcall THierarchicalStorage::OpenRootKey(bool CanCreate)
 {
-    return OpenSubKey(L"", CanCreate);
+  return OpenSubKey(L"", CanCreate);
 }
 //---------------------------------------------------------------------------
-std::wstring THierarchicalStorage::MungeSubKey(const std::wstring Key, bool Path)
+UnicodeString __fastcall THierarchicalStorage::MungeKeyName(UnicodeString Key)
 {
-    std::wstring Result;
-    // DEBUG_PRINTF(L"Key = %s, Path = %d", Key.c_str(), Path);
-    std::wstring key = Key;
-    if (Path)
+  UnicodeString Result = MungeStr(Key, GetForceAnsi());
+  // if there's already ANSI-munged subkey, keep ANSI munging
+  if ((Result != Key) && !GetForceAnsi() && DoKeyExists(Key, true))
+  {
+    Result = MungeStr(Key, true);
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+bool __fastcall THierarchicalStorage::OpenSubKey(UnicodeString Key, bool CanCreate, bool Path)
+{
+  bool Result;
+  UnicodeString MungedKey;
+  if (Path)
+  {
+    assert(Key.IsEmpty() || (Key[Key.Length()] != L'\\'));
+    Result = true;
+    while (!Key.IsEmpty() && Result)
     {
-        assert(key.empty() || (key[key.size() - 1] != '\\'));
-        while (!key.empty())
-        {
-            if (!Result.empty())
-            {
-                Result += '\\';
-            }
-            Result += MungeStr(CutToChar(key, L'\\', false));
-            // DEBUG_PRINTF(L"key = %s, Result = %s", key.c_str(), Result.c_str());
-        }
+      if (!MungedKey.IsEmpty())
+      {
+        MungedKey += L'\\';
+      }
+      MungedKey += MungeKeyName(CutToChar(Key, L'\\', false));
+      Result = DoOpenSubKey(MungedKey, CanCreate);
     }
-    else
-    {
-        Result = MungeStr(key);
-    }
-    // DEBUG_PRINTF(L"Result = %s", Result.c_str());
-    return Result;
-}
-//---------------------------------------------------------------------------
-bool THierarchicalStorage::OpenSubKey(const std::wstring SubKey, bool /*CanCreate*/, bool Path)
-{
-    // DEBUG_PRINTF(L"SubKey = %s", SubKey.c_str());
-    FKeyHistory->Add(IncludeTrailingBackslash(GetCurrentSubKey() + MungeSubKey(SubKey, Path)));
-    return true;
-}
-//---------------------------------------------------------------------------
-void THierarchicalStorage::CloseSubKey()
-{
-    if (FKeyHistory->GetCount() == 0)
-    {
-        throw std::exception("");
-    }
-    else { FKeyHistory->Delete(FKeyHistory->GetCount()-1); }
-}
-//---------------------------------------------------------------------------
-void THierarchicalStorage::ClearSubKeys()
-{
-    nb::TStringList *SubKeys = new nb::TStringList();
-    {
-        BOOST_SCOPE_EXIT ( (&SubKeys) )
-        {
-            delete SubKeys;
-        } BOOST_SCOPE_EXIT_END
-        GetSubKeyNames(SubKeys);
-        for (size_t Index = 0; Index < SubKeys->GetCount(); Index++)
-        {
-            RecursiveDeleteSubKey(SubKeys->GetString(Index));
-        }
-    }
-}
-//---------------------------------------------------------------------------
-void THierarchicalStorage::RecursiveDeleteSubKey(const std::wstring Key)
-{
-    if (OpenSubKey(Key, false))
-    {
-        ClearSubKeys();
-        CloseSubKey();
-    }
-    DeleteSubKey(Key);
-}
-//---------------------------------------------------------------------------
-bool THierarchicalStorage::HasSubKeys()
-{
-    bool Result;
-    nb::TStrings *SubKeys = new nb::TStringList();
-    {
-        BOOST_SCOPE_EXIT ( (&SubKeys) )
-        {
-            delete SubKeys;
-        } BOOST_SCOPE_EXIT_END
-        GetSubKeyNames(SubKeys);
-        Result = (SubKeys->GetCount() > 0);
-    }
-    return Result;
-}
-//---------------------------------------------------------------------------
-bool THierarchicalStorage::HasSubKey(const std::wstring SubKey)
-{
-    bool Result = OpenSubKey(SubKey, false);
-    if (Result)
-    {
-        CloseSubKey();
-    }
-    return Result;
-}
-//---------------------------------------------------------------------------
-void THierarchicalStorage::ReadValues(nb::TStrings *Strings,
-                                      bool MaintainKeys)
-{
-    nb::TStrings *Names = new nb::TStringList();
-    {
-        BOOST_SCOPE_EXIT ( (&Names) )
-        {
-            delete Names;
-        } BOOST_SCOPE_EXIT_END
-        GetValueNames(Names);
-        for (size_t Index = 0; Index < Names->GetCount(); Index++)
-        {
-            if (MaintainKeys)
-            {
-                Strings->Add(FORMAT(L"%s=%s", Names->GetString(Index).c_str(),
-                                    ReadString(Names->GetString(Index), L"").c_str()));
-            }
-            else
-            {
-                Strings->Add(ReadString(Names->GetString(Index), L""));
-            }
-        }
-    }
-}
-//---------------------------------------------------------------------------
-void THierarchicalStorage::ClearValues()
-{
-    nb::TStrings *Names = new nb::TStringList();
-    {
-        BOOST_SCOPE_EXIT ( (&Names) )
-        {
-            delete Names;
-        } BOOST_SCOPE_EXIT_END
-        GetValueNames(Names);
-        for (size_t Index = 0; Index < Names->GetCount(); Index++)
-        {
-            DeleteValue(Names->GetString(Index));
-        }
-    }
-}
-//---------------------------------------------------------------------------
-void THierarchicalStorage::WriteValues(nb::TStrings *Strings,
-                                       bool MaintainKeys)
-{
-    ClearValues();
 
-    if (Strings)
+    // hack to restore last opened key for registry storage
+    if (!Result)
     {
-        for (size_t Index = 0; Index < Strings->GetCount(); Index++)
-        {
-            if (MaintainKeys)
-            {
-                assert(Strings->GetString(Index).find_first_of(L"=") > 1);
-                WriteString(Strings->GetName(Index), Strings->GetValue(Strings->GetName(Index)));
-            }
-            else
-            {
-                WriteString(IntToStr(static_cast<int>(Index)), Strings->GetString(Index));
-            }
-        }
+      FKeyHistory->Add(IncludeTrailingBackslash(GetCurrentSubKey()+MungedKey));
+      CloseSubKey();
     }
+  }
+  else
+  {
+    MungedKey = MungeKeyName(Key);
+    Result = DoOpenSubKey(MungedKey, CanCreate);
+  }
+
+  if (Result)
+  {
+    FKeyHistory->Add(IncludeTrailingBackslash(GetCurrentSubKey()+MungedKey));
+  }
+
+  return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring THierarchicalStorage::ReadString(const std::wstring Name, const std::wstring Default)
+void __fastcall THierarchicalStorage::CloseSubKey()
 {
-    std::wstring Result;
-    if (GetMungeStringValues())
-    {
-        Result = UnMungeStr(ReadStringRaw(Name, MungeStr(Default)));
-    }
-    else
-    {
-        Result = ReadStringRaw(Name, Default);
-    }
-    return Result;
+  if (FKeyHistory->GetCount() == 0) throw Exception(L"");
+    else FKeyHistory->Delete(FKeyHistory->GetCount()-1);
 }
 //---------------------------------------------------------------------------
-std::wstring THierarchicalStorage::ReadBinaryData(const std::wstring Name)
+void __fastcall THierarchicalStorage::ClearSubKeys()
 {
-    size_t Size = static_cast<size_t>(BinaryDataSize(Name));
-    std::wstring Value(Size, 0);
-    ReadBinaryData(Name, const_cast<wchar_t *>(Value.c_str()), Size);
-    return Value;
+  TStringList *SubKeys = new TStringList();
+  // try
+  {
+    BOOST_SCOPE_EXIT ( (&SubKeys) )
+    {
+      delete SubKeys;
+    } BOOST_SCOPE_EXIT_END
+    GetSubKeyNames(SubKeys);
+    for (int Index = 0; Index < SubKeys->GetCount(); Index++)
+    {
+      RecursiveDeleteSubKey(SubKeys->GetStrings(Index));
+    }
+  }
+#ifndef _MSC_VER
+  __finally
+  {
+    delete SubKeys;
+  }
+#endif
 }
 //---------------------------------------------------------------------------
-void THierarchicalStorage::WriteString(const std::wstring Name, const std::wstring Value)
+void __fastcall THierarchicalStorage::RecursiveDeleteSubKey(const UnicodeString Key)
 {
-    // DEBUG_PRINTF(L"GetMungeStringValues = %d", GetMungeStringValues());
-    if (GetMungeStringValues())
-    {
-        // DEBUG_PRINTF(L"Name = %s, Value = %s, MungeStr(Value) = %s", Name.c_str(), Value.c_str(), MungeStr(Value).c_str());
-        WriteStringRaw(Name, MungeStr(Value));
-    }
-    else
-    {
-        // DEBUG_PRINTF(L"Value = %s", Value.c_str());
-        WriteStringRaw(Name, Value);
-    }
+  if (OpenSubKey(Key, false))
+  {
+    ClearSubKeys();
+    CloseSubKey();
+  }
+  DeleteSubKey(Key);
 }
 //---------------------------------------------------------------------------
-void THierarchicalStorage::WriteBinaryData(const std::wstring Name,
-        const std::wstring Value)
+bool __fastcall THierarchicalStorage::HasSubKeys()
 {
-    WriteBinaryData(Name, Value.c_str(), Value.size());
+  bool Result;
+  TStrings * SubKeys = new TStringList();
+  // try
+  {
+    BOOST_SCOPE_EXIT ( (&SubKeys) )
+    {
+      delete SubKeys;
+    } BOOST_SCOPE_EXIT_END
+    GetSubKeyNames(SubKeys);
+    Result = (SubKeys->GetCount() > 0);
+  }
+#ifndef _MSC_VER
+  __finally
+  {
+    delete SubKeys;
+  }
+#endif
+  return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring THierarchicalStorage::IncludeTrailingBackslash(const std::wstring S)
+bool __fastcall THierarchicalStorage::HasSubKey(const UnicodeString SubKey)
 {
-    // expanded from ?: as it caused memory leaks
-    if (S.empty())
-    {
-        return S;
-    }
-    else
-    {
-        return ::IncludeTrailingBackslash(S);
-    }
+  bool Result = OpenSubKey(SubKey, false);
+  if (Result)
+  {
+    CloseSubKey();
+  }
+  return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring THierarchicalStorage::ExcludeTrailingBackslash(const std::wstring S)
+bool __fastcall THierarchicalStorage::KeyExists(const UnicodeString SubKey)
 {
-    // expanded from ?: as it caused memory leaks
-    if (S.empty())
+  return DoKeyExists(SubKey, GetForceAnsi());
+}
+//---------------------------------------------------------------------------
+void __fastcall THierarchicalStorage::ReadValues(Classes::TStrings* Strings,
+  bool MaintainKeys)
+{
+  TStrings * Names = new TStringList();
+  // try
+  {
+    BOOST_SCOPE_EXIT ( (&Names) )
     {
-        return S;
-    }
-    else
+      delete Names;
+    } BOOST_SCOPE_EXIT_END
+    GetValueNames(Names);
+    for (int Index = 0; Index < Names->GetCount(); Index++)
     {
-        return ::ExcludeTrailingBackslash(S);
+      if (MaintainKeys)
+      {
+        Strings->Add(FORMAT(L"%s=%s", Names->GetStrings(Index).c_str(),
+          ReadString(Names->GetStrings(Index), L"").c_str()));
+      }
+      else
+      {
+        Strings->Add(ReadString(Names->GetStrings(Index), L""));
+      }
     }
+  }
+#ifndef _MSC_VER
+  __finally
+  {
+    delete Names;
+  }
+#endif
+}
+//---------------------------------------------------------------------------
+void __fastcall THierarchicalStorage::ClearValues()
+{
+  TStrings * Names = new TStringList();
+  // try
+  {
+    BOOST_SCOPE_EXIT ( (&Names) )
+    {
+      delete Names;
+    } BOOST_SCOPE_EXIT_END
+    GetValueNames(Names);
+    for (int Index = 0; Index < Names->GetCount(); Index++)
+    {
+      DeleteValue(Names->GetStrings(Index));
+    }
+  }
+#ifndef _MSC_VER
+  __finally
+  {
+    delete Names;
+  }
+#endif
+}
+//---------------------------------------------------------------------------
+void __fastcall THierarchicalStorage::WriteValues(Classes::TStrings * Strings,
+  bool MaintainKeys)
+{
+  ClearValues();
+
+  if (Strings)
+  {
+    for (int Index = 0; Index < Strings->GetCount(); Index++)
+    {
+      if (MaintainKeys)
+      {
+        assert(Strings->GetStrings(Index).Pos(L"=") > 1);
+        WriteString(Strings->GetName(Index), Strings->GetValue(Strings->GetName(Index)));
+      }
+      else
+      {
+        WriteString(IntToStr(Index), Strings->GetStrings(Index));
+      }
+    }
+  }
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall THierarchicalStorage::ReadString(const UnicodeString Name, const UnicodeString Default)
+{
+  UnicodeString Result;
+  if (GetMungeStringValues())
+  {
+    Result = UnMungeStr(ReadStringRaw(Name, MungeStr(Default, GetForceAnsi())));
+  }
+  else
+  {
+    Result = ReadStringRaw(Name, Default);
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+RawByteString __fastcall THierarchicalStorage::ReadBinaryData(const UnicodeString Name)
+{
+  size_t Size = BinaryDataSize(Name);
+  RawByteString Value;
+  Value.SetLength(Size);
+  ReadBinaryData(Name, (void *)Value.c_str(), Size);
+  return Value;
+}
+//---------------------------------------------------------------------------
+RawByteString __fastcall THierarchicalStorage::ReadStringAsBinaryData(const UnicodeString Name, const RawByteString Default)
+{
+  UnicodeString UnicodeDefault = UnicodeString(AnsiString(Default.c_str(), Default.Length()));
+  // This should be exactly the same operation as calling ReadString in
+  // C++Builder 6 (non-Unicode) on Unicode-based OS
+  // (conversion is done by Ansi layer of the OS)
+  UnicodeString String = ReadString(Name, UnicodeDefault);
+  AnsiString Ansi = AnsiString(String);
+  RawByteString Result = RawByteString(Ansi.c_str(), Ansi.Length());
+  return Result;
+}
+//---------------------------------------------------------------------------
+void __fastcall THierarchicalStorage::WriteString(const UnicodeString Name, const UnicodeString Value)
+{
+  if (GetMungeStringValues())
+  {
+    WriteStringRaw(Name, MungeStr(Value, GetForceAnsi()));
+  }
+  else
+  {
+    WriteStringRaw(Name, Value);
+  }
+}
+//---------------------------------------------------------------------------
+void __fastcall THierarchicalStorage::WriteBinaryData(const UnicodeString Name,
+  const RawByteString Value)
+{
+  WriteBinaryData(Name, Value.c_str(), Value.Length());
+}
+//---------------------------------------------------------------------------
+void __fastcall THierarchicalStorage::WriteBinaryDataAsString(const UnicodeString Name, const RawByteString Value)
+{
+  // This should be exactly the same operation as calling WriteString in
+  // C++Builder 6 (non-Unicode) on Unicode-based OS
+  // (conversion is done by Ansi layer of the OS)
+  AnsiString Ansi = AnsiString(Value.c_str(), Value.Length());
+  WriteString(Name, UnicodeString(Ansi));
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall THierarchicalStorage::IncludeTrailingBackslash(const UnicodeString & S)
+{
+  // expanded from ?: as it caused memory leaks
+  if (S.IsEmpty())
+  {
+    return S;
+  }
+  else
+  {
+    return ::IncludeTrailingBackslash(S);
+  }
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall THierarchicalStorage::ExcludeTrailingBackslash(const UnicodeString & S)
+{
+  // expanded from ?: as it caused memory leaks
+  if (S.IsEmpty())
+  {
+    return S;
+  }
+  else
+  {
+    return ::ExcludeTrailingBackslash(S);
+  }
 }
 //===========================================================================
-TRegistryStorage::TRegistryStorage(const std::wstring AStorage) :
-    THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
-    FRegistry(NULL)
+/* __fastcall */ TRegistryStorage::TRegistryStorage(const UnicodeString AStorage):
+  THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
+  FRegistry(NULL)
 {
-    Init();
+  Init();
+}
+//---------------------------------------------------------------------------
+/* __fastcall */ TRegistryStorage::TRegistryStorage(const UnicodeString AStorage, HKEY ARootKey):
+  THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
+  FRegistry(NULL)
+{
+  Init();
+  FRegistry->SetRootKey(ARootKey);
+}
+//---------------------------------------------------------------------------
+void __fastcall TRegistryStorage::Init()
+{
+  FFailed = 0;
+  FRegistry = new TRegistry;
+  FRegistry->SetAccess(KEY_READ);
+}
+//---------------------------------------------------------------------------
+/* __fastcall */ TRegistryStorage::~TRegistryStorage()
+{
+  delete FRegistry;
 };
 //---------------------------------------------------------------------------
-TRegistryStorage::TRegistryStorage(const std::wstring AStorage, HKEY ARootKey) :
-    THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
-    FRegistry(NULL)
+bool __fastcall TRegistryStorage::Copy(TRegistryStorage * Storage)
 {
-    Init();
-    FRegistry->SetRootKey(ARootKey);
-}
-//---------------------------------------------------------------------------
-void TRegistryStorage::Init()
-{
-    FFailed = 0;
-    FRegistry = new nb::TRegistry;
-    FRegistry->SetAccess(KEY_READ);
-}
-//---------------------------------------------------------------------------
-TRegistryStorage::~TRegistryStorage()
-{
-    delete FRegistry;
-};
-//---------------------------------------------------------------------------
-bool TRegistryStorage::Copy(TRegistryStorage *Storage)
-{
-    nb::TRegistry *Registry = Storage->FRegistry;
-    bool Result = true;
-    nb::TStrings *Names = new nb::TStringList();
+  TRegistry * Registry = Storage->FRegistry;
+  bool Result = true;
+  TStrings * Names = new TStringList();
+  // try
+  {
+    BOOST_SCOPE_EXIT ( (&Names) )
     {
-        BOOST_SCOPE_EXIT ( (&Names) )
+      delete Names;
+    } BOOST_SCOPE_EXIT_END
+    Registry->GetValueNames(Names);
+    std::vector<unsigned char> Buffer(1024, 0);
+    int Index = 0;
+    while ((Index < Names->GetCount()) && Result)
+    {
+      UnicodeString Name = MungeStr(Names->GetStrings(Index), GetForceAnsi());
+      unsigned long Size = Buffer.size();
+      unsigned long Type;
+      int RegResult = 0;
+      do
+      {
+        RegResult = RegQueryValueEx(Registry->GetCurrentKey(), Name.c_str(), NULL,
+          &Type, &Buffer[0], &Size);
+        if (RegResult == ERROR_MORE_DATA)
         {
-            delete Names;
-        } BOOST_SCOPE_EXIT_END
-        Registry->GetValueNames(Names);
-        std::vector<unsigned char> Buffer(1024, 0);
-        size_t Index = 0;
-        while ((Index < Names->GetCount()) && Result)
-        {
-            std::wstring Name = MungeStr(Names->GetString(Index));
-            DWORD Size = static_cast<DWORD>(Buffer.size());
-            unsigned long Type;
-            int RegResult;
-            do
-            {
-                RegResult = RegQueryValueEx(Registry->GetCurrentKey(), Name.c_str(), NULL,
-                                            &Type, &Buffer[0], &Size);
-                if (RegResult == ERROR_MORE_DATA)
-                {
-                    Buffer.resize(static_cast<size_t>(Size));
-                }
-            }
-            while (RegResult == ERROR_MORE_DATA);
+          Buffer.resize(Size);
+        }
+      } while (RegResult == ERROR_MORE_DATA);
 
-            Result = (RegResult == ERROR_SUCCESS);
-            if (Result)
-            {
-                RegResult = RegSetValueEx(FRegistry->GetCurrentKey(), Name.c_str(), NULL, Type,
-                                          &Buffer[0], Size);
-                Result = (RegResult == ERROR_SUCCESS);
-            }
+      Result = (RegResult == ERROR_SUCCESS);
+      if (Result)
+      {
+        RegResult = RegSetValueEx(FRegistry->GetCurrentKey(), Name.c_str(), NULL, Type,
+          &Buffer[0], Size);
+        Result = (RegResult == ERROR_SUCCESS);
+      }
 
-            ++Index;
-        }
+      ++Index;
     }
-    return Result;
+  }
+#ifndef _MSC_VER
+  __finally
+  {
+    delete Names;
+  }
+#endif
+  return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring TRegistryStorage::GetSource()
+UnicodeString __fastcall TRegistryStorage::GetSource()
 {
-    return RootKeyToStr(FRegistry->GetRootKey()) + L"\\" + GetStorage();
+  return RootKeyToStr(FRegistry->GetRootKey()) + L"\\" + GetStorage();
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::SetAccessMode(TStorageAccessMode value)
+void __fastcall TRegistryStorage::SetAccessMode(TStorageAccessMode value)
 {
-    THierarchicalStorage::SetAccessMode(value);
-    if (FRegistry)
-    {
-        switch (GetAccessMode())
-        {
-        case smRead:
-            FRegistry->SetAccess(KEY_READ);
-            break;
+  THierarchicalStorage::SetAccessMode(value);
+  if (FRegistry)
+  {
+    switch (GetAccessMode()) {
+      case smRead:
+        FRegistry->SetAccess(KEY_READ);
+        break;
 
-        case smReadWrite:
-        default:
-            FRegistry->SetAccess(KEY_READ | KEY_WRITE);
-            break;
-        }
+      case smReadWrite:
+      default:
+        FRegistry->SetAccess(KEY_READ | KEY_WRITE);
+        break;
     }
+  }
 }
 //---------------------------------------------------------------------------
-bool TRegistryStorage::OpenSubKey(const std::wstring SubKey, bool CanCreate, bool Path)
+bool __fastcall TRegistryStorage::DoOpenSubKey(const UnicodeString SubKey, bool CanCreate)
 {
-    // DEBUG_PRINTF(L"SubKey = %s", SubKey.c_str());
-    if (FKeyHistory->GetCount() > 0) { FRegistry->CloseKey(); }
-    std::wstring K = ExcludeTrailingBackslash(GetStorage() + GetCurrentSubKey() + MungeSubKey(SubKey, Path));
-    bool Result = FRegistry->OpenKey(K, CanCreate);
-    if (Result) { Result = THierarchicalStorage::OpenSubKey(SubKey, CanCreate, Path); }
-    // DEBUG_PRINTF(L"K = %s, Result = %d", K.c_str(), Result);
-    return Result;
+  if (FKeyHistory->GetCount() > 0) { FRegistry->CloseKey(); }
+  UnicodeString K = ExcludeTrailingBackslash(GetStorage() + GetCurrentSubKey() + SubKey);
+  return FRegistry->OpenKey(K, CanCreate);
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::CloseSubKey()
+void __fastcall TRegistryStorage::CloseSubKey()
 {
-    FRegistry->CloseKey();
-    THierarchicalStorage::CloseSubKey();
-    if (FKeyHistory->GetCount())
-    {
-        FRegistry->OpenKey(GetStorage() + GetCurrentSubKey(), true);
-    }
+  FRegistry->CloseKey();
+  THierarchicalStorage::CloseSubKey();
+  if (FKeyHistory->GetCount())
+  {
+    FRegistry->OpenKey(GetStorage() + GetCurrentSubKeyMunged(), True);
+  }
 }
 //---------------------------------------------------------------------------
-bool TRegistryStorage::DeleteSubKey(const std::wstring SubKey)
+bool __fastcall TRegistryStorage::DeleteSubKey(const UnicodeString SubKey)
 {
-    std::wstring K;
-    if (FKeyHistory->GetCount() == 0) { K = GetStorage() + GetCurrentSubKey(); }
-    K += MungeStr(SubKey);
-    return FRegistry->DeleteKey(K);
+  UnicodeString K;
+  if (FKeyHistory->GetCount() == 0) { K = GetStorage() + GetCurrentSubKey(); }
+  K += MungeKeyName(SubKey);
+  return FRegistry->DeleteKey(K);
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::GetSubKeyNames(nb::TStrings *Strings)
+void __fastcall TRegistryStorage::GetSubKeyNames(Classes::TStrings* Strings)
 {
-    FRegistry->GetKeyNames(Strings);
-    for (size_t Index = 0; Index < Strings->GetCount(); Index++)
-    {
-        Strings->PutString(Index, UnMungeStr(Strings->GetString(Index)));
-    }
+  FRegistry->GetKeyNames(Strings);
+  for (int Index = 0; Index < Strings->GetCount(); Index++)
+  {
+    Strings->PutString(Index, UnMungeStr(Strings->GetStrings(Index)));
+  }
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::GetValueNames(nb::TStrings *Strings)
+void __fastcall TRegistryStorage::GetValueNames(Classes::TStrings* Strings)
 {
-    FRegistry->GetValueNames(Strings);
+  FRegistry->GetValueNames(Strings);
 }
 //---------------------------------------------------------------------------
-bool TRegistryStorage::DeleteValue(const std::wstring Name)
+bool __fastcall TRegistryStorage::DeleteValue(const UnicodeString Name)
 {
-    return FRegistry->DeleteValue(Name);
+  return FRegistry->DeleteValue(Name);
 }
 //---------------------------------------------------------------------------
-bool TRegistryStorage::KeyExists(const std::wstring SubKey)
+bool __fastcall TRegistryStorage::DoKeyExists(const UnicodeString SubKey, bool AForceAnsi)
 {
-    std::wstring K = MungeStr(SubKey);
-    bool Result = FRegistry->KeyExists(K);
-    return Result;
+  UnicodeString K = MungeStr(SubKey, AForceAnsi);
+  bool Result = FRegistry->KeyExists(K);
+  return Result;
 }
 //---------------------------------------------------------------------------
-bool TRegistryStorage::ValueExists(const std::wstring Value)
+bool __fastcall TRegistryStorage::ValueExists(const UnicodeString Value)
 {
-    bool Result = FRegistry->ValueExists(Value);
-    return Result;
+  bool Result = FRegistry->ValueExists(Value);
+  return Result;
 }
 //---------------------------------------------------------------------------
-int TRegistryStorage::BinaryDataSize(const std::wstring Name)
+size_t __fastcall TRegistryStorage::BinaryDataSize(const UnicodeString Name)
 {
-    int Result = FRegistry->GetDataSize(Name);
-    return Result;
+  size_t Result = FRegistry->GetDataSize(Name);
+  return Result;
 }
 //---------------------------------------------------------------------------
-bool TRegistryStorage::Readbool(const std::wstring Name, bool Default)
+bool __fastcall TRegistryStorage::ReadBool(const UnicodeString Name, bool Default)
 {
-    READ_REGISTRY(Readbool);
+  READ_REGISTRY(ReadBool);
 }
 //---------------------------------------------------------------------------
-nb::TDateTime TRegistryStorage::ReadDateTime(const std::wstring Name, nb::TDateTime Default)
+TDateTime __fastcall TRegistryStorage::ReadDateTime(const UnicodeString Name, TDateTime Default)
 {
-    READ_REGISTRY(ReadDateTime);
+  READ_REGISTRY(ReadDateTime);
 }
 //---------------------------------------------------------------------------
-double TRegistryStorage::ReadFloat(const std::wstring Name, double Default)
+double __fastcall TRegistryStorage::ReadFloat(const UnicodeString Name, double Default)
 {
-    READ_REGISTRY(ReadFloat);
+  READ_REGISTRY(ReadFloat);
 }
 //---------------------------------------------------------------------------
-int TRegistryStorage::Readint(const std::wstring Name, int Default)
+int __fastcall TRegistryStorage::ReadInteger(const UnicodeString Name, int Default)
 {
-    READ_REGISTRY(Readint);
+  READ_REGISTRY(ReadInteger);
 }
 //---------------------------------------------------------------------------
-__int64 TRegistryStorage::ReadInt64(const std::wstring Name, __int64 Default)
+__int64 __fastcall TRegistryStorage::ReadInt64(const UnicodeString Name, __int64 Default)
 {
-    __int64 Result = Default;
-    if (FRegistry->ValueExists(Name))
-    {
-        try
-        {
-            FRegistry->ReadBinaryData(Name, &Result, sizeof(Result));
-        }
-        catch(...)
-        {
-            FFailed++;
-        }
-    }
-    return Result;
-}
-//---------------------------------------------------------------------------
-std::wstring TRegistryStorage::ReadStringRaw(const std::wstring Name, const std::wstring Default)
-{
-    READ_REGISTRY(ReadString);
-}
-//---------------------------------------------------------------------------
-size_t TRegistryStorage::ReadBinaryData(const std::wstring Name,
-                                     void *Buffer, size_t Size)
-{
-    size_t Result;
-    if (FRegistry->ValueExists(Name))
-    {
-        try
-        {
-            Result = FRegistry->ReadBinaryData(Name, Buffer, Size);
-        }
-        catch(...)
-        {
-            Result = 0;
-            FFailed++;
-        }
-    }
-    else
-    {
-        Result = 0;
-    }
-    return Result;
-}
-//---------------------------------------------------------------------------
-void TRegistryStorage::Writebool(const std::wstring Name, bool Value)
-{
-    WRITE_REGISTRY(Writebool);
-}
-//---------------------------------------------------------------------------
-void TRegistryStorage::WriteDateTime(const std::wstring Name, nb::TDateTime Value)
-{
-    WRITE_REGISTRY(WriteDateTime);
-}
-//---------------------------------------------------------------------------
-void TRegistryStorage::WriteFloat(const std::wstring Name, double Value)
-{
-    WRITE_REGISTRY(WriteFloat);
-}
-//---------------------------------------------------------------------------
-void TRegistryStorage::WriteStringRaw(const std::wstring Name, const std::wstring Value)
-{
-    WRITE_REGISTRY(WriteString);
-}
-//---------------------------------------------------------------------------
-void TRegistryStorage::Writeint(const std::wstring Name, int Value)
-{
-    // DEBUG_PRINTF(L"GetFailed = %d", GetFailed());
-    WRITE_REGISTRY(Writeint);
-    // DEBUG_PRINTF(L"GetFailed = %d", GetFailed());
-}
-//---------------------------------------------------------------------------
-void TRegistryStorage::WriteInt64(const std::wstring Name, __int64 Value)
-{
+  __int64 Result = Default;
+  if (FRegistry->ValueExists(Name))
+  {
     try
     {
-        FRegistry->WriteBinaryData(Name, &Value, sizeof(Value));
+      FRegistry->ReadBinaryData(Name, &Result, sizeof(Result));
     }
     catch(...)
     {
-        FFailed++;
+      FFailed++;
     }
+  }
+  return Result;
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::WriteBinaryData(const std::wstring Name,
-                                       const void *Buffer, size_t Size)
+UnicodeString __fastcall TRegistryStorage::ReadStringRaw(const UnicodeString Name, const UnicodeString Default)
 {
+  READ_REGISTRY(ReadString);
+}
+//---------------------------------------------------------------------------
+size_t __fastcall TRegistryStorage::ReadBinaryData(const UnicodeString Name,
+  void * Buffer, size_t Size)
+{
+  size_t Result;
+  if (FRegistry->ValueExists(Name))
+  {
     try
     {
-        FRegistry->WriteBinaryData(Name, const_cast<void *>(Buffer), Size);
+      Result = FRegistry->ReadBinaryData(Name, Buffer, Size);
     }
     catch(...)
     {
-        FFailed++;
+      Result = 0;
+      FFailed++;
     }
+  }
+  else
+  {
+    Result = 0;
+  }
+  return Result;
 }
 //---------------------------------------------------------------------------
-int TRegistryStorage::GetFailed()
+void __fastcall TRegistryStorage::WriteBool(const UnicodeString Name, bool Value)
 {
-    int Result = FFailed;
-    FFailed = 0;
-    return Result;
+  WRITE_REGISTRY(WriteBool);
 }
-
+//---------------------------------------------------------------------------
+void __fastcall TRegistryStorage::WriteDateTime(const UnicodeString Name, TDateTime Value)
+{
+  WRITE_REGISTRY(WriteDateTime);
+}
+//---------------------------------------------------------------------------
+void __fastcall TRegistryStorage::WriteFloat(const UnicodeString Name, double Value)
+{
+  WRITE_REGISTRY(WriteFloat);
+}
+//---------------------------------------------------------------------------
+void __fastcall TRegistryStorage::WriteStringRaw(const UnicodeString Name, const UnicodeString Value)
+{
+  WRITE_REGISTRY(WriteString);
+}
+//---------------------------------------------------------------------------
+void __fastcall TRegistryStorage::WriteInteger(const UnicodeString Name, int Value)
+{
+  WRITE_REGISTRY(WriteInteger);
+}
+//---------------------------------------------------------------------------
+void __fastcall TRegistryStorage::WriteInt64(const UnicodeString Name, __int64 Value)
+{
+  try
+  {
+    FRegistry->WriteBinaryData(Name, &Value, sizeof(Value));
+  }
+  catch(...)
+  {
+    FFailed++;
+  }
+}
+//---------------------------------------------------------------------------
+void __fastcall TRegistryStorage::WriteBinaryData(const UnicodeString Name,
+  const void * Buffer, int Size)
+{
+  try
+  {
+    FRegistry->WriteBinaryData(Name, const_cast<void *>(Buffer), Size);
+  }
+  catch(...)
+  {
+    FFailed++;
+  }
+}
+//---------------------------------------------------------------------------
+int __fastcall TRegistryStorage::GetFailed()
+{
+  int Result = FFailed;
+  FFailed = 0;
+  return Result;
+}
+#ifndef _MSC_VER
 //===========================================================================
-TOptionsStorage::TOptionsStorage(nb::TStrings * Options) :
-  TRegistryStorage(std::wstring(L"Command-line options")) // , new TOptionsIniFile(Options))
+__fastcall TCustomIniFileStorage::TCustomIniFileStorage(const UnicodeString Storage, TCustomIniFile * IniFile) :
+  THierarchicalStorage(Storage),
+  FIniFile(IniFile)
 {
 }
+//---------------------------------------------------------------------------
+__fastcall TCustomIniFileStorage::~TCustomIniFileStorage()
+{
+  delete FIniFile;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TCustomIniFileStorage::GetSource()
+{
+  return GetStorage();
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TCustomIniFileStorage::GetCurrentSection()
+{
+  return ExcludeTrailingBackslash(GetCurrentSubKeyMunged());
+}
+//---------------------------------------------------------------------------
+bool __fastcall TCustomIniFileStorage::DoOpenSubKey(const UnicodeString SubKey, bool CanCreate)
+{
+  bool Result = CanCreate;
+
+  if (!Result)
+  {
+    TStringList * Sections = new TStringList();
+    // try
+    {
+      BOOST_SCOPE_EXIT ( (&Sections) )
+      {
+        delete Sections;
+      } BOOST_SCOPE_EXIT_END
+      Sections->SetSorted(true);
+      FIniFile->ReadSections(Sections);
+      UnicodeString NewKey = ExcludeTrailingBackslash(GetCurrentSubKey()+SubKey);
+      if (Sections->GetCount())
+      {
+        int Index = -1;
+        Result = Sections->Find(NewKey, Index);
+        if (!Result && Index < Sections->GetCount() &&
+            Sections->GetStrings(Index).SubString(1, NewKey.Length()+1) == NewKey + L"\\")
+        {
+          Result = true;
+        }
+      }
+    }
+#ifndef _MSC_VER
+    __finally
+    {
+      delete Sections;
+    }
+#endif
+  }
+
+  return Result;
+}
+//---------------------------------------------------------------------------
+bool __fastcall TCustomIniFileStorage::DeleteSubKey(const UnicodeString SubKey)
+{
+  bool Result;
+  try
+  {
+    FIniFile->EraseSection(GetCurrentSubKey() + MungeKeyName(SubKey));
+    Result = true;
+  }
+  catch (...)
+  {
+    Result = false;
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+void __fastcall TCustomIniFileStorage::GetSubKeyNames(Classes::TStrings* Strings)
+{
+  TStrings * Sections = new TStringList();
+  // try
+  {
+    BOOST_SCOPE_EXIT ( (&Sections) )
+    {
+      delete Sections;
+    } BOOST_SCOPE_EXIT_END
+    Strings->Clear();
+    FIniFile->ReadSections(Sections);
+    for (int i = 0; i < Sections->GetCount(); i++)
+    {
+      UnicodeString Section = Sections->GetStrings(i);
+      if (AnsiCompareText(GetCurrentSubKey(),
+          Section.SubString(1, GetCurrentSubKey().Length())) == 0)
+      {
+        UnicodeString SubSection = Section.SubString(GetCurrentSubKey().Length() + 1,
+          Section.Length() - GetCurrentSubKey().Length());
+        int P = SubSection.Pos(L"\\");
+        if (P)
+        {
+          SubSection.SetLength(P - 1);
+        }
+        if (Strings->IndexOf(SubSection) < 0)
+        {
+          Strings->Add(UnMungeStr(SubSection));
+        }
+      }
+    }
+  }
+#ifndef _MSC_VER
+  __finally
+  {
+    delete Sections;
+  }
+#endif
+}
+//---------------------------------------------------------------------------
+void __fastcall TCustomIniFileStorage::GetValueNames(Classes::TStrings* Strings)
+{
+  FIniFile->ReadSection(GetCurrentSection(), Strings);
+  for (int Index = 0; Index < Strings->GetCount(); Index++)
+  {
+    Strings->PutString(Index, UnMungeIniName(Strings->GetStrings(Index)));
+  }
+}
+//---------------------------------------------------------------------------
+bool __fastcall TCustomIniFileStorage::DoKeyExists(const UnicodeString SubKey, bool AForceAnsi)
+{
+  return FIniFile->SectionExists(GetCurrentSubKey() + MungeStr(SubKey, AForceAnsi));
+}
+//---------------------------------------------------------------------------
+bool __fastcall TCustomIniFileStorage::ValueExists(const UnicodeString Value)
+{
+  return FIniFile->ValueExists(GetCurrentSection(), MungeIniName(Value));
+}
+//---------------------------------------------------------------------------
+bool __fastcall TCustomIniFileStorage::DeleteValue(const UnicodeString Name)
+{
+  FIniFile->DeleteKey(GetCurrentSection(), MungeIniName(Name));
+  return true;
+}
+//---------------------------------------------------------------------------
+size_t __fastcall TCustomIniFileStorage::BinaryDataSize(const UnicodeString Name)
+{
+  return ReadStringRaw(Name, L"").Length() / 2;
+}
+//---------------------------------------------------------------------------
+bool __fastcall TCustomIniFileStorage::ReadBool(const UnicodeString Name, bool Default)
+{
+  return FIniFile->ReadBool(GetCurrentSection(), MungeIniName(Name), Default);
+}
+//---------------------------------------------------------------------------
+int __fastcall TCustomIniFileStorage::ReadInteger(const UnicodeString Name, int Default)
+{
+  int Result = FIniFile->ReadInteger(GetCurrentSection(), MungeIniName(Name), Default);
+  return Result;
+}
+//---------------------------------------------------------------------------
+__int64 __fastcall TCustomIniFileStorage::ReadInt64(const UnicodeString Name, __int64 Default)
+{
+  __int64 Result = Default;
+  UnicodeString Str;
+  Str = ReadStringRaw(Name, L"");
+  if (!Str.IsEmpty())
+  {
+    Result = StrToInt64Def(Str, Default);
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+TDateTime __fastcall TCustomIniFileStorage::ReadDateTime(const UnicodeString Name, TDateTime Default)
+{
+  TDateTime Result;
+  UnicodeString Value = FIniFile->ReadString(GetCurrentSection(), MungeIniName(Name), L"");
+  if (Value.IsEmpty())
+  {
+    Result = Default;
+  }
+  else
+  {
+    try
+    {
+      RawByteString Raw = HexToBytes(Value);
+      if (static_cast<size_t>(Raw.Length()) == sizeof(Result))
+      {
+        memcpy(&Result, Raw.c_str(), sizeof(Result));
+      }
+      else
+      {
+        Result = StrToDateTime(Value);
+      }
+    }
+    catch(...)
+    {
+      Result = Default;
+    }
+  }
+
+  return Result;
+}
+//---------------------------------------------------------------------------
+double __fastcall TCustomIniFileStorage::ReadFloat(const UnicodeString Name, double Default)
+{
+  double Result;
+  UnicodeString Value = FIniFile->ReadString(GetCurrentSection(), MungeIniName(Name), L"");
+  if (Value.IsEmpty())
+  {
+    Result = Default;
+  }
+  else
+  {
+    try
+    {
+      RawByteString Raw = HexToBytes(Value);
+      if (static_cast<size_t>(Raw.Length()) == sizeof(Result))
+      {
+        memcpy(&Result, Raw.c_str(), sizeof(Result));
+      }
+      else
+      {
+        Result = static_cast<double>(StrToFloat(Value));
+      }
+    }
+    catch(...)
+    {
+      Result = Default;
+    }
+  }
+
+  return Result;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TCustomIniFileStorage::ReadStringRaw(const UnicodeString Name, UnicodeString Default)
+{
+  AnsiString Result = FIniFile->ReadString(GetCurrentSection(), MungeIniName(Name), Default);
+  return Result;
+}
+//---------------------------------------------------------------------------
+size_t __fastcall TCustomIniFileStorage::ReadBinaryData(const UnicodeString Name,
+  void * Buffer, size_t Size)
+{
+  RawByteString Value = HexToBytes(ReadStringRaw(Name, L""));
+  size_t Len = Value.Length();
+  if (Size > Len)
+  {
+    Size = Len;
+  }
+  assert(Buffer);
+  memcpy(Buffer, Value.c_str(), Size);
+  return Size;
+}
+//---------------------------------------------------------------------------
+void __fastcall TCustomIniFileStorage::WriteBool(const UnicodeString Name, bool Value)
+{
+  FIniFile->WriteBool(GetCurrentSection(), MungeIniName(Name), Value);
+}
+//---------------------------------------------------------------------------
+void __fastcall TCustomIniFileStorage::WriteInteger(const UnicodeString Name, int Value)
+{
+  FIniFile->WriteInteger(GetCurrentSection(), MungeIniName(Name), Value);
+}
+//---------------------------------------------------------------------------
+void __fastcall TCustomIniFileStorage::WriteInt64(const UnicodeString Name, __int64 Value)
+{
+  WriteStringRaw(Name, IntToStr(Value));
+}
+//---------------------------------------------------------------------------
+void __fastcall TCustomIniFileStorage::WriteDateTime(const UnicodeString Name, TDateTime Value)
+{
+  WriteBinaryData(Name, &Value, sizeof(Value));
+}
+//---------------------------------------------------------------------------
+void __fastcall TCustomIniFileStorage::WriteFloat(const UnicodeString Name, double Value)
+{
+  WriteBinaryData(Name, &Value, sizeof(Value));
+}
+//---------------------------------------------------------------------------
+void __fastcall TCustomIniFileStorage::WriteStringRaw(const UnicodeString Name, const UnicodeString Value)
+{
+  FIniFile->WriteString(GetCurrentSection(), MungeIniName(Name), Value);
+}
+//---------------------------------------------------------------------------
+void __fastcall TCustomIniFileStorage::WriteBinaryData(const UnicodeString Name,
+  const void * Buffer, int Size)
+{
+  WriteStringRaw(Name, BytesToHex(RawByteString(static_cast<const char*>(Buffer), Size)));
+}
+//===========================================================================
+/* __fastcall */ TIniFileStorage::TIniFileStorage(const UnicodeString AStorage):
+  TCustomIniFileStorage(AStorage, new TMemIniFile(AStorage))
+{
+  FOriginal = new TStringList();
+  dynamic_cast<TMemIniFile *>(FIniFile)->GetStrings(FOriginal);
+  ApplyOverrides();
+}
+//---------------------------------------------------------------------------
+void __fastcall TIniFileStorage::Flush()
+{
+  if (FOriginal != NULL)
+  {
+    TStrings * Strings = new TStringList;
+    try
+    {
+      dynamic_cast<TMemIniFile *>(FIniFile)->GetStrings(Strings);
+      if (!Strings->Equals(FOriginal))
+      {
+        int Attr;
+        // preserve attributes (especially hidden)
+        bool Exists = FileExists(Storage);
+        if (Exists)
+        {
+          Attr = GetFileAttributes(UnicodeString(Storage).c_str());
+        }
+        else
+        {
+          Attr = FILE_ATTRIBUTE_NORMAL;
+        }
+
+        HANDLE Handle = CreateFile(UnicodeString(Storage).c_str(), GENERIC_READ | GENERIC_WRITE,
+          0, NULL, CREATE_ALWAYS, Attr, 0);
+
+        if (Handle == INVALID_HANDLE_VALUE)
+        {
+          // "access denied" errors upon implicit saves to existing file are ignored
+          if (Explicit || !Exists || (GetLastError() != ERROR_ACCESS_DENIED))
+          {
+            try
+            {
+              RaiseLastOSError();
+            }
+            catch(Exception & E)
+            {
+              throw ExtException(&E, FMTLOAD(CREATE_FILE_ERROR, (Storage)));
+            }
+          }
+        }
+        else
+        {
+          TStream * Stream = new THandleStream(int(Handle));
+          try
+          {
+            Strings->SaveToStream(Stream);
+          }
+          __finally
+          {
+            CloseHandle(Handle);
+            delete Stream;
+          }
+        }
+      }
+    }
+    __finally
+    {
+      delete FOriginal;
+      FOriginal = NULL;
+      delete Strings;
+    }
+  }
+}
+//---------------------------------------------------------------------------
+/* __fastcall */ TIniFileStorage::~TIniFileStorage()
+{
+  Flush();
+}
+//---------------------------------------------------------------------------
+void __fastcall TIniFileStorage::ApplyOverrides()
+{
+  UnicodeString OverridesKey = IncludeTrailingBackslash(L"Override");
+
+  TStrings * Sections = new TStringList();
+  // try
+  {
+    BOOST_SCOPE_EXIT ( (&Sections) )
+    {
+      delete Sections;
+    } BOOST_SCOPE_EXIT_END
+    Sections->Clear();
+    FIniFile->ReadSections(Sections);
+    for (int i = 0; i < Sections->Count; i++)
+    {
+      UnicodeString Section = Sections->Strings[i];
+
+      if (AnsiSameText(OverridesKey,
+            Section.SubString(1, OverridesKey.Length())))
+      {
+        UnicodeString SubKey = Section.SubString(OverridesKey.Length() + 1,
+          Section.Length() - OverridesKey.Length());
+
+        // this all uses raw names (munged)
+        TStrings * Names = new TStringList;
+        // try
+        {
+          BOOST_SCOPE_EXIT ( (&Names) )
+          {
+            delete Names;
+          } BOOST_SCOPE_EXIT_END
+          FIniFile->ReadSection(Section, Names);
+
+          for (int ii = 0; ii < Names->Count; ii++)
+          {
+            UnicodeString Name = Names->Strings[ii];
+            UnicodeString Value = FIniFile->ReadString(Section, Name, L"");
+            FIniFile->WriteString(SubKey, Name, Value);
+          }
+        }
+#ifndef _MSC_VER
+        __finally
+        {
+          delete Names;
+        }
+#endif
+
+        FIniFile->EraseSection(Section);
+      }
+    }
+  }
+#ifndef _MSC_VER
+  __finally
+  {
+    delete Sections;
+  }
+#endif
+}
+//===========================================================================
+#define NOT_IMPLEMENTED throw Exception(L"Not implemented")
+//===========================================================================
+class TOptionsIniFile : public TCustomIniFile
+{
+public:
+  /* __fastcall */ TOptionsIniFile(TStrings * Options);
+
+  virtual UnicodeString __fastcall ReadString(const UnicodeString Section, const UnicodeString Ident, const UnicodeString Default);
+  virtual void __fastcall WriteString(const UnicodeString Section, const UnicodeString Ident, const UnicodeString Value);
+  virtual void __fastcall ReadSection(const UnicodeString Section, TStrings * Strings);
+  virtual void __fastcall ReadSections(TStrings* Strings);
+  virtual void __fastcall ReadSectionValues(const UnicodeString Section, TStrings* Strings);
+  virtual void __fastcall EraseSection(const UnicodeString Section);
+  virtual void __fastcall DeleteKey(const UnicodeString Section, const UnicodeString Ident);
+  virtual void __fastcall UpdateFile();
+  // Hoisted overload
+  void __fastcall ReadSections(const UnicodeString Section, TStrings* Strings);
+
+private:
+  TStrings * FOptions;
+};
+//---------------------------------------------------------------------------
+/* __fastcall */ TOptionsIniFile::TOptionsIniFile(TStrings * Options) :
+  TCustomIniFile(UnicodeString())
+{
+  FOptions = Options;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TOptionsIniFile::ReadString(const UnicodeString Section, const UnicodeString Ident, const UnicodeString Default)
+{
+  assert(Section.IsEmpty());
+  int Index = FOptions->IndexOfName(Ident);
+  UnicodeString Value;
+  if (Index >= 0)
+  {
+    Value = FOptions->ValueFromIndex[Index];
+  }
+  else
+  {
+    Value = Default;
+  }
+  return Value;
+}
+//---------------------------------------------------------------------------
+void __fastcall TOptionsIniFile::WriteString(const UnicodeString Section, const UnicodeString Ident, const UnicodeString Value)
+{
+  NOT_IMPLEMENTED;
+}
+//---------------------------------------------------------------------------
+void __fastcall TOptionsIniFile::ReadSection(const UnicodeString Section, TStrings * Strings)
+{
+  assert(Section.IsEmpty());
+  Strings->BeginUpdate();
+
+  // try
+  {
+    for (int Index = 0; Index < FOptions->Count; Index++)
+    {
+      Strings->Add(FOptions->Names[Index]);
+    }
+  }
+#ifndef _MSC_VER
+  __finally
+  {
+    Strings->EndUpdate();
+  }
+#endif
+}
+//---------------------------------------------------------------------------
+void __fastcall TOptionsIniFile::ReadSections(TStrings * /*Strings*/)
+{
+  NOT_IMPLEMENTED;
+}
+//---------------------------------------------------------------------------
+void __fastcall TOptionsIniFile::ReadSectionValues(const UnicodeString Section, TStrings * /*Strings*/)
+{
+  NOT_IMPLEMENTED;
+}
+//---------------------------------------------------------------------------
+void __fastcall TOptionsIniFile::EraseSection(const UnicodeString Section)
+{
+  NOT_IMPLEMENTED;
+}
+//---------------------------------------------------------------------------
+void __fastcall TOptionsIniFile::DeleteKey(const UnicodeString Section, const UnicodeString Ident)
+{
+  NOT_IMPLEMENTED;
+}
+//---------------------------------------------------------------------------
+void __fastcall TOptionsIniFile::UpdateFile()
+{
+  NOT_IMPLEMENTED;
+}
+//---------------------------------------------------------------------------
+void __fastcall TOptionsIniFile::ReadSections(const UnicodeString Section, TStrings* Strings)
+{
+  TCustomIniFile::ReadSections(Section, Strings);
+}
+//===========================================================================
+/* __fastcall */ TOptionsStorage::TOptionsStorage(TStrings * Options) :
+  TCustomIniFileStorage(UnicodeString(L"Command-line options")) // , new TOptionsIniFile(Options))
+{
+}
+#endif
