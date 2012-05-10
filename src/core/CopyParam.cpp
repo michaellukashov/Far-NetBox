@@ -248,24 +248,6 @@ UnicodeString __fastcall TCopyParamType::ValidLocalFileName(UnicodeString FileNa
   return ::ValidLocalFileName(FileName, GetInvalidCharsReplacement(), FTokenizibleChars, LocalInvalidChars);
 }
 //---------------------------------------------------------------------------
-wchar_t * TCopyParamType::ReplaceChar(UnicodeString & FileName, wchar_t * InvalidChar) const
-{
-  size_t Index = InvalidChar - FileName.c_str();
-  DEBUG_PRINTF(L"FileName = %s, InvalidChar = %s", FileName.c_str(), InvalidChar);
-  if (GetInvalidCharsReplacement() == TokenReplacement)
-  {
-    FileName.Insert(Index + 1, CharToHex(FileName[Index]));
-    FileName[Index] = TokenPrefix;
-    InvalidChar = const_cast<wchar_t *>(FileName.c_str() + Index + 3);
-  }
-  else
-  {
-    FileName[Index] = GetInvalidCharsReplacement();
-    InvalidChar++;
-  }
-  return InvalidChar;
-}
-//---------------------------------------------------------------------------
 UnicodeString __fastcall TCopyParamType::RestoreChars(UnicodeString FileName) const
 {
   if (GetInvalidCharsReplacement() == TokenReplacement)

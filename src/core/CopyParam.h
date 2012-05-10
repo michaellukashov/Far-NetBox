@@ -61,18 +61,12 @@ public:
   static const wchar_t TokenReplacement = wchar_t(true);
 
   static UnicodeString Untokenize(const UnicodeString FileName);
-  wchar_t * ReplaceChar(UnicodeString & FileName, wchar_t * InvalidChar) const;
-  // UnicodeString RestoreChars(const UnicodeString FileName) const;
   void __fastcall SetLocalInvalidChars(UnicodeString value);
   bool __fastcall GetReplaceInvalidChars() const;
   void __fastcall SetReplaceInvalidChars(bool value);
   UnicodeString __fastcall RestoreChars(UnicodeString FileName) const;
 
 public:
-  // static const wchar_t TokenPrefix = L'%';
-  // static const wchar_t NoReplacement = static_cast<wchar_t>(false);
-  // static const wchar_t TokenReplacement = static_cast<wchar_t>(true);
-
   /* __fastcall */ TCopyParamType();
   /* __fastcall */ TCopyParamType(const TCopyParamType & Source);
   virtual/* __fastcall */  ~TCopyParamType();
