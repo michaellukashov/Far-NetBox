@@ -748,7 +748,7 @@ public:
   int __fastcall Execute(bool & ACheckBox);
 
 protected:
-  virtual void Change();
+  virtual void __fastcall Change();
   virtual void __fastcall Idle();
 
 private:
@@ -995,7 +995,7 @@ void __fastcall TFarMessageDialog::Idle()
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TFarMessageDialog::Change()
+void __fastcall TFarMessageDialog::Change()
 {
   TFarDialog::Change();
 

@@ -105,7 +105,7 @@ protected:
   LONG_PTR DefaultDialogProc(int Msg, int Param1, LONG_PTR Param2);
   virtual bool __fastcall MouseEvent(MOUSE_EVENT_RECORD * Event);
   virtual bool __fastcall Key(TFarDialogItem * Item, long KeyCode);
-  virtual void Change();
+  virtual void __fastcall Change();
   virtual void __fastcall Init();
   virtual bool __fastcall CloseQuery();
   UnicodeString __fastcall GetMsg(int MsgId);
@@ -171,7 +171,7 @@ protected:
 
   void Add(TFarDialogItem * Item);
   void Remove(TFarDialogItem * Item);
-  virtual void Change();
+  virtual void __fastcall Change();
   UnicodeString GetMsg(int MsgId);
 
 private:
@@ -276,7 +276,7 @@ protected:
   LONG_PTR DefaultItemProc(int Msg, LONG_PTR Param);
   LONG_PTR DefaultDialogProc(int Msg, int Param1, LONG_PTR Param2);
   virtual LONG_PTR FailItemProc(int Msg, LONG_PTR Param);
-  virtual void Change();
+  virtual void __fastcall Change();
   void DialogChange();
   void SetAlterType(size_t Index, bool value);
   bool GetAlterType(size_t Index);

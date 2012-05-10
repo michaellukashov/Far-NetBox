@@ -82,7 +82,7 @@ class TObject
 public:
     TObject() {}
     virtual ~TObject() {}
-    virtual void Change() {}
+    virtual void __fastcall Change() {}
 };
 
 //---------------------------------------------------------------------------
