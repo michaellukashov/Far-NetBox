@@ -331,17 +331,17 @@ public:
     Add(Value.c_str(), Value.Length());
   }
 
-  /* inline */ void AddUtfString(const UTF8String & Value)
+  inline void AddUtfString(const UTF8String & Value)
   {
-    AddString(UnicodeString(Value));
+    AddString(Value);
   }
 
-  /* inline */ void AddUtfString(const UnicodeString & Value)
+  inline void AddUtfString(const UnicodeString & Value)
   {
     AddUtfString(UTF8String(Value));
   }
 
-  /* inline */ void AddString(const UnicodeString Value, bool Utf)
+  inline void AddString(const UnicodeString Value, bool Utf)
   {
     if (Utf)
     {
@@ -349,8 +349,8 @@ public:
     }
     else
     {
-      // AddString(AnsiString(Value));
-      AddString(RawByteString(Value));
+      AddString(AnsiString(Value));
+      // AddString(RawByteString(Value));
     }
   }
 
@@ -367,7 +367,7 @@ public:
   }
 
   // now purposeless alias to AddString
-  /* inline */ void AddPathString(const UnicodeString & Value, bool Utf)
+  inline void AddPathString(const UnicodeString & Value, bool Utf)
   {
     AddString(Value, Utf);
   }
