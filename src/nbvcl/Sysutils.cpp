@@ -859,12 +859,21 @@ int FindFirst(const UnicodeString FileName, int Attr, TSearchRec & Rec)
 int FindNext(TSearchRec & Rec)
 {
   int Result = 0;
+  if (FindNextFileW(Rec.FindHandle, &Rec.FindData))
+    Result = FindMatchingFile(Rec);
+  else
+    Result = GetLastError();
   return Result;
 }
 
 int FindClose(TSearchRec & Rec)
 {
   int Result = 0;
+  if (Rec.FindHandle != INVALID_HANDLE_VALUE)
+  {
+    ::FindClose(Rec.FindHandle);
+    Rec.FindHandle = INVALID_HANDLE_VALUE;
+  }
   return Result;
 }
 
