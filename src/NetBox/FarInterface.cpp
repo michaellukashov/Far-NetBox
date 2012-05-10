@@ -1,4 +1,8 @@
 //---------------------------------------------------------------------------
+#ifndef _MSC_VER
+#include <vcl.h>
+#pragma hdrstop
+#endif
 #include "nbafx.h"
 
 #include "Common.h"
@@ -7,7 +11,10 @@
 #include "WinSCPPlugin.h"
 #include "Queue.h"
 //---------------------------------------------------------------------------
-
+#ifndef _MSC_VER
+#pragma package(smart_init)
+#endif
+//---------------------------------------------------------------------------
 TConfiguration * __fastcall CreateConfiguration()
 {
   return new TFarConfiguration(FarPlugin);
@@ -51,14 +58,14 @@ DWORD WINAPI threadstartroutine(void * Parameter)
 }
 //---------------------------------------------------------------------------
 size_t BeginThread(void * SecurityAttributes, DWORD StackSize,
-                   void * Parameter, DWORD CreationFlags,
-                   DWORD & ThreadId)
+  void * Parameter, DWORD CreationFlags,
+  DWORD & ThreadId)
 {
   HANDLE Result = ::CreateThread(static_cast<LPSECURITY_ATTRIBUTES>(SecurityAttributes),
-                                 static_cast<size_t>(StackSize),
-                                 static_cast<LPTHREAD_START_ROUTINE>(&threadstartroutine),
-                                 Parameter,
-                                 CreationFlags, &ThreadId);
+    static_cast<size_t>(StackSize),
+    static_cast<LPTHREAD_START_ROUTINE>(&threadstartroutine),
+    Parameter,
+    CreationFlags, &ThreadId);
   // DEBUG_PRINTF(L"Result = %d, ThreadId = %d", Result, ThreadId);
   return reinterpret_cast<size_t>(Result);
 }
@@ -70,11 +77,11 @@ void EndThread(int ExitCode)
 
 //---------------------------------------------------------------------------
 int __fastcall StartThread(void * SecurityAttributes, unsigned int StackSize,
-                           void * Parameter, unsigned int CreationFlags,
-                           DWORD & ThreadId)
+  void * Parameter, unsigned int CreationFlags,
+  DWORD & ThreadId)
 {
   return BeginThread(SecurityAttributes, StackSize, Parameter,
-                     CreationFlags, ThreadId);
+    CreationFlags, ThreadId);
 }
 //---------------------------------------------------------------------------
 void __fastcall CopyToClipboard(const UnicodeString Text)
