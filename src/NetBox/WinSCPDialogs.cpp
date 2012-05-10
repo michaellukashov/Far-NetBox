@@ -33,7 +33,9 @@
 #include <farcolor.hpp>
 // FAR WORKAROUND
 //---------------------------------------------------------------------------
+#ifndef _MSC_VER
 #pragma package(smart_init)
+#endif
 //---------------------------------------------------------------------------
 enum TButtonResult { brCancel = -1, brOK = 1, brConnect };
 //---------------------------------------------------------------------------
@@ -6811,7 +6813,7 @@ public:
 protected:
   virtual bool __fastcall CloseQuery();
   virtual void __fastcall Change();
-  virtual LONG_PTR /* __fastcall */ DialogProc(int Msg, int Param1, LONG_PTR Param2);
+  virtual LONG_PTR __fastcall DialogProc(int Msg, int Param1, LONG_PTR Param2);
 
   void /* __fastcall */ TransferSettingsButtonClick(TFarButton * Sender, bool & Close);
   void /* __fastcall */ CopyParamListerClick(TFarDialogItem * Item, MOUSE_EVENT_RECORD * Event);
@@ -7157,7 +7159,7 @@ bool __fastcall TFullSynchronizeDialog::CloseQuery()
   return CanClose;
 }
 //---------------------------------------------------------------------------
-LONG_PTR /* __fastcall */ TFullSynchronizeDialog::DialogProc(int Msg, int Param1, LONG_PTR Param2)
+LONG_PTR __fastcall TFullSynchronizeDialog::DialogProc(int Msg, int Param1, LONG_PTR Param2)
 {
   if (Msg == DN_RESIZECONSOLE)
   {
@@ -7261,14 +7263,14 @@ bool __fastcall TWinSCPFileSystem::FullSynchronizeDialog(TTerminal::TSynchronize
 class TSynchronizeChecklistDialog : public TWinSCPDialog
 {
 public:
-  /* __fastcall */ TSynchronizeChecklistDialog(
+  explicit /* __fastcall */ TSynchronizeChecklistDialog(
     TCustomFarPlugin * AFarPlugin, TTerminal::TSynchronizeMode Mode, int Params,
     const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory);
 
-  bool __fastcall Execute(TSynchronizeChecklist * Checklist);
+  virtual bool __fastcall Execute(TSynchronizeChecklist * Checklist);
 
 protected:
-  virtual LONG_PTR /* __fastcall */ DialogProc(int Msg, int Param1, LONG_PTR Param2);
+  virtual LONG_PTR __fastcall DialogProc(int Msg, int Param1, LONG_PTR Param2);
   virtual bool __fastcall Key(TFarDialogItem * Item, long KeyCode);
   void /* __fastcall */ CheckAllButtonClick(TFarButton * Sender, bool & Close);
   void /* __fastcall */ VideoModeButtonClick(TFarButton * Sender, bool & Close);
@@ -7926,7 +7928,7 @@ protected:
   void /* __fastcall */ DoLog(TSynchronizeController * Controller,
     TSynchronizeLogEntry Entry, const UnicodeString Message);
   void /* __fastcall */ DoSynchronizeThreads(TObject * Sender, const TThreadMethod & slot);
-  virtual LONG_PTR /* __fastcall */ DialogProc(int Msg, int Param1, LONG_PTR Param2);
+  virtual LONG_PTR __fastcall DialogProc(int Msg, int Param1, LONG_PTR Param2);
   virtual bool __fastcall CloseQuery();
   virtual bool __fastcall Key(TFarDialogItem * Item, long KeyCode);
   TCopyParamType __fastcall GetCopyParams();
