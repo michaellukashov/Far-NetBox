@@ -270,7 +270,6 @@ UnicodeString __fastcall TCopyParamType::RestoreChars(UnicodeString FileName) co
 {
   if (GetInvalidCharsReplacement() == TokenReplacement)
   {
-    Error(SNotImplemented, 206);
     wchar_t * InvalidChar = const_cast<wchar_t *>(FileName.c_str());
     while ((InvalidChar = wcschr(InvalidChar, TokenPrefix)) != NULL)
     {
