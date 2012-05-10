@@ -1936,10 +1936,10 @@ void TRegistry::WriteInteger(const UnicodeString Name, int Value)
 
 void TRegistry::WriteInt64(const UnicodeString Name, __int64 Value)
 {
-    WriteBinaryData(Name, &Value, sizeof(Value));
+  WriteBinaryData(Name, &Value, sizeof(Value));
 }
 void TRegistry::WriteBinaryData(const UnicodeString Name,
-                                const void *Buffer, int BufSize)
+  const void *Buffer, int BufSize)
 {
     PutData(Name, Buffer, BufSize, rdBinary);
 }
@@ -2019,113 +2019,6 @@ void __fastcall GetLocaleFormatSettings(int LCID, TFormatSettings &FormatSetting
     // Classes::Error(SNotImplemented, 1205);
     // return 0;
 // }
-
-//---------------------------------------------------------------------------
-
-void IncAMonth(Word & Year, Word & Month, Word & Day, Integer NumberOfMonths = 1)
-{
-  Integer Sign;
-  if (NumberOfMonths >= 0)
-    Sign = 1;
-  else
-    Sign = -1;
-  Year = Year + (NumberOfMonths % 12);
-  NumberOfMonths = NumberOfMonths / 12;
-  Month += NumberOfMonths;
-  if (Word(Month-1) > 11) // if Month <= 0, word(Month-1) > 11)
-  {
-    Year += Sign;
-    Month += -12 * Sign;
-  }
-  const TDayTable * DayTable = &MonthDays[IsLeapYear(Year)];
-  if (Day > (*DayTable)[Month]) Day = (*DayTable)[Month];
-}
-
-void ReplaceTime(TDateTime &DateTime, const TDateTime NewTime)
-{
-  DateTime = Trunc(DateTime);
-  if (DateTime >= 0)
-    DateTime = DateTime + Abs(Frac(NewTime));
-  else
-    DateTime = DateTime - Abs(Frac(NewTime));
-}
-
-TDateTime IncYear(const TDateTime AValue, const Int64 ANumberOfYears)
-{
-  TDateTime Result;
-  Result = IncMonth(AValue, ANumberOfYears * MonthsPerYear);
-  return Result;
-}
-
-TDateTime IncMonth(const TDateTime AValue, const Int64 NumberOfMonths)
-{
-  TDateTime Result;
-  Word Year, Month, Day;
-  DecodeDate(AValue, Year, Month, Day);
-  IncAMonth(Year, Month, Day, NumberOfMonths);
-  Result = EncodeDate(Year, Month, Day);
-  ReplaceTime(Result, AValue);
-  return Result;
-}
-
-TDateTime IncWeek(const TDateTime AValue, const Int64 ANumberOfWeeks)
-{
-  TDateTime Result;
-  Result = AValue + ANumberOfWeeks * DaysPerWeek;
-  return Result;
-}
-
-TDateTime IncDay(const TDateTime AValue, const Int64 ANumberOfDays)
-{
-  TDateTime Result;
-  Result = AValue + ANumberOfDays;
-  return Result;
-}
-
-TDateTime IncHour(const TDateTime AValue, const Int64 ANumberOfHours)
-{
-  TDateTime Result;
-  if (AValue > 0)
-    Result = ((AValue * HoursPerDay) + ANumberOfHours) / HoursPerDay;
-  else
-    Result = ((AValue * HoursPerDay) - ANumberOfHours) / HoursPerDay;
-  return Result;
-}
-
-TDateTime IncMinute(const TDateTime AValue, const Int64 ANumberOfMinutes)
-{
-  TDateTime Result;
-  if (AValue > 0)
-    Result = ((AValue * MinsPerDay) + ANumberOfMinutes) / MinsPerDay;
-  else
-    Result = ((AValue * MinsPerDay) - ANumberOfMinutes) / MinsPerDay;
-  return Result;
-}
-
-TDateTime IncSecond(const TDateTime AValue, const Int64 ANumberOfSeconds)
-{
-  TDateTime Result;
-  if (AValue > 0)
-    Result = ((AValue * SecsPerDay) + ANumberOfSeconds) / SecsPerDay;
-  else
-    Result = ((AValue * SecsPerDay) - ANumberOfSeconds) / SecsPerDay;
-  return Result;
-}
-
-TDateTime IncMilliSecond(const TDateTime AValue, const Int64 ANumberOfMilliSeconds)
-{
-  TDateTime Result;
-  if (AValue > 0)
-    Result = ((AValue * MSecsPerDay) + ANumberOfMilliSeconds) / MSecsPerDay;
-  else
-    Result = ((AValue * MSecsPerDay) - ANumberOfMilliSeconds) / MSecsPerDay;
-  return Result;
-}
-
-Boolean IsLeapYear(Word Year)
-{
-  return (Year / 4 == 0) && ((Year / 100 != 0) || (Year / 400 == 0));
-}
 
 //---------------------------------------------------------------------------
 

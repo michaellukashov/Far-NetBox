@@ -124,14 +124,14 @@ __int64 FileWrite(HANDLE Handle, const void *Buffer, __int64 Count);
 
 enum FileAttributesEnum
 {
-    faReadOnly = 0x00000001,
-    faHidden = 0x00000002,
-    faSysFile = 0x00000004,
-    faVolumeId = 0x00000008,
-    faDirectory = 0x00000010,
-    faArchive = 0x00000020,
-    faSymLink = 0x00000040,
-    faAnyFile = 0x0000003f,
+  faReadOnly = 0x00000001,
+  faHidden = 0x00000002,
+  faSysFile = 0x00000004,
+  faVolumeId = 0x00000008,
+  faDirectory = 0x00000010,
+  faArchive = 0x00000020,
+  faSymLink = 0x00000040,
+  faAnyFile = 0x0000003f,
 };
 
 bool FileExists(const UnicodeString filename);
@@ -187,6 +187,39 @@ UnicodeString ExpandUNCFileName(const UnicodeString FileName);
 __int64 FileSeek(HANDLE file, __int64 offset, int Origin);
 
 //---------------------------------------------------------------------------
+typedef WIN32_FIND_DATA TWin32FindData;
+typedef UnicodeString TFileName;
+
+struct TSystemTime
+{
+  Word wYear;
+  Word wMonth;
+  Word wDayOfWeek;
+  Word wDay;
+  Word wHour;
+  Word wMinute;
+  Word wSecond;
+  Word wMilliseconds;
+};
+
+struct TFileTime
+{
+  Integer LowTime;
+  Integer HighTime;
+};
+
+struct TSearchRec
+{
+  Integer Time;
+  Int64 Size;
+  Integer Attr;
+  TFileName Name;
+  Integer ExcludeAttr;
+  THandle FindHandle;
+  TWin32FindData FindData;
+};
+
+//---------------------------------------------------------------------------
 
 int FindFirst(const UnicodeString FileName, int FindAttrs, TSearchRec & Rec);
 int FindNext(TSearchRec & Rec);
@@ -211,7 +244,18 @@ UnicodeString UnixExcludeLeadingBackslash(UnicodeString Path);
 extern int RandSeed;
 extern void __fastcall Randomize();
 //---------------------------------------------------------------------------
+TDateTime IncYear(const TDateTime AValue, const Int64 ANumberOfYears = 1);
+TDateTime IncMonth(const TDateTime AValue, const Int64 NumberOfMonths = 1);
+TDateTime IncWeek(const TDateTime AValue, const Int64 ANumberOfWeeks = 1);
+TDateTime IncDay(const TDateTime AValue, const Int64 ANumberOfDays = 1);
+TDateTime IncHour(const TDateTime AValue, const Int64 ANumberOfHours = 1);
+TDateTime IncMinute(const TDateTime AValue, const Int64 ANumberOfMinutes = 1);
+TDateTime IncSecond(const TDateTime AValue, const Int64 ANumberOfSeconds = 1);
+TDateTime IncMilliSecond(const TDateTime AValue, const Int64 ANumberOfMilliSeconds = 1);
 
+Boolean IsLeapYear(Word Year);
+
+//---------------------------------------------------------------------------
 } // namespace Sysutils
 
 using namespace Sysutils;

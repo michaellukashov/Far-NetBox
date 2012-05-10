@@ -950,48 +950,7 @@ typedef DelphiSet<TReplaceFlag> TReplaceFlags;
 
 //---------------------------------------------------------------------------
 typedef HANDLE THandle;
-typedef WIN32_FIND_DATA TWin32FindData;
-typedef UnicodeString TFileName;
 
-struct TSystemTime
-{
-    Word wYear;
-    Word wMonth;
-    Word wDayOfWeek;
-    Word wDay;
-    Word wHour;
-    Word wMinute;
-    Word wSecond;
-    Word wMilliseconds;
-};
-struct TFileTime
-{
-  Integer LowTime;
-  Integer HighTime;
-};
-
-struct TSearchRec
-{
-    Integer Time;
-    Int64 Size;
-    Integer Attr;
-    TFileName Name;
-    Integer ExcludeAttr;
-    THandle FindHandle;
-    TWin32FindData FindData;
-};
-
-//---------------------------------------------------------------------------
-TDateTime IncYear(const TDateTime AValue, const Int64 ANumberOfYears = 1);
-TDateTime IncMonth(const TDateTime AValue, const Int64 NumberOfMonths = 1);
-TDateTime IncWeek(const TDateTime AValue, const Int64 ANumberOfWeeks = 1);
-TDateTime IncDay(const TDateTime AValue, const Int64 ANumberOfDays = 1);
-TDateTime IncHour(const TDateTime AValue, const Int64 ANumberOfHours = 1);
-TDateTime IncMinute(const TDateTime AValue, const Int64 ANumberOfMinutes = 1);
-TDateTime IncSecond(const TDateTime AValue, const Int64 ANumberOfSeconds = 1);
-TDateTime IncMilliSecond(const TDateTime AValue, const Int64 ANumberOfMilliSeconds = 1);
-
-Boolean IsLeapYear(Word Year);
 //---------------------------------------------------------------------------
 inline double Trunc(double value) { double intpart; modf(value, &intpart); return intpart; }
 inline double Frac(double value) { double intpart; return modf(value, &intpart); }
