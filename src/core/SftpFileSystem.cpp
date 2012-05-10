@@ -350,20 +350,7 @@ public:
     else
     {
       AddString(AnsiString(Value));
-      // AddString(RawByteString(Value));
     }
-  }
-
-  void __fastcall AddStringW(const UnicodeString ValueW)
-  {
-    // std::string ValueA = W2MB(ValueW.c_str(), FCodePage);
-    // AddString(ValueA);
-    AddString(ValueW, true);
-  }
-
-  /* inline */ void __fastcall AddString(const UnicodeString Value)
-  {
-    AddStringW(Value);
   }
 
   // now purposeless alias to AddString
@@ -563,31 +550,6 @@ public:
     return (Hi << 32) + Lo;
   }
 
-  std::string GetStringA()
-  {
-    std::string ResultA;
-    size_t Len = GetCardinal();
-    Need(Len);
-    // cannot happen anyway as Need() would raise exception
-    assert(Len < SFTP_MAX_PACKET_LEN);
-    ResultA.resize(Len);
-    memmove(const_cast<char *>(ResultA.c_str()), FData + FPosition, Len);
-    FPosition += Len;
-    // DEBUG_PRINTF(L"Result = %s", MB2W(ResultA.c_str(), FCodePage).c_str());
-    return ResultA;
-  }
-
-  UnicodeString GetStringW()
-  {
-    UnicodeString Result = MB2W(GetStringA().c_str(), FCodePage);
-    return Result;
-  }
-
-  /* inline */ std::string GetString()
-  {
-    return GetStringA();
-  }
-
   RawByteString GetRawByteString()
   {
     RawByteString Result;
@@ -601,7 +563,7 @@ public:
     return Result;
   }
 
-  /* inline */ UnicodeString GetUtfString()
+  inline UnicodeString GetUtfString()
   {
     return UnicodeString(UTF8String(GetRawByteString().c_str()));
   }
@@ -610,17 +572,17 @@ public:
   // as file handles), and SFTP spec does not say explicitly that they
   // are in UTF. For most of them it actually does not matter as
   // the content should be pure ASCII (e.g. extension names, etc.)
-  /* inline */ UnicodeString GetAnsiString()
+  inline UnicodeString GetAnsiString()
   {
     return UnicodeString(AnsiString(GetRawByteString().c_str()));
   }
 
-  /* inline */ RawByteString GetFileHandle()
+  inline RawByteString GetFileHandle()
   {
     return GetRawByteString();
   }
 
-  /* inline */ UnicodeString GetString(bool Utf)
+  inline UnicodeString GetString(bool Utf)
   {
     if (Utf)
     {
@@ -633,10 +595,9 @@ public:
   }
 
   // now purposeless alias to GetString(bool)
-  /* inline */ UnicodeString GetPathString(bool Utf)
+  inline UnicodeString GetPathString(bool Utf)
   {
-    UnicodeString result = MB2W(GetString().c_str(), FCodePage);
-    return result;
+    return GetString(Utf);
   }
 
   void GetFile(TRemoteFile * File, int Version, TDSTMode DSTMode, bool Utf, bool SignedTS, bool Complete)
@@ -651,7 +612,7 @@ public:
       File->SetFileName(GetPathString(Utf));
       if (Version < 4)
       {
-        ListingStr = GetStringW();
+        ListingStr = GetAnsiString();
       }
     }
     Flags = GetCardinal();
@@ -684,8 +645,8 @@ public:
     if (Flags & SSH_FILEXFER_ATTR_OWNERGROUP)
     {
       assert(Version >= 4);
-      File->GetOwner().SetName(GetStringW());
-      File->GetGroup().SetName(GetStringW());
+      File->GetOwner().SetName(GetString(Utf));
+      File->GetGroup().SetName(GetString(Utf));
     }
     if (Flags & SSH_FILEXFER_ATTR_PERMISSIONS)
     {
@@ -1711,7 +1672,7 @@ protected:
         assert(!File->GetIsParentDirectory() && !File->GetIsThisDirectory());
 
         Request->ChangeType(SSH_FXP_EXTENDED);
-        Request->AddStringW(SFTP_EXT_CHECK_FILE_NAME);
+        Request->AddString(SFTP_EXT_CHECK_FILE_NAME);
         Request->AddPathString(FFileSystem->LocalCanonify(File->GetFullFileName()),
           FFileSystem->FUtfStrings);
         Request->AddString(FAlg);
@@ -2251,7 +2212,7 @@ unsigned long __fastcall TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
       // message is in UTF only since SFTP specification 01 (specification 00
       // is also version 3)
       // (in other words, always use UTF unless server is known to be buggy)
-      ServerMessage = Packet->GetStringW();
+      ServerMessage = Packet->GetString(!FUtfNever);
       // SSH-2.0-Maverick_SSHD and SSH-2.0-CIGNA SFTP Server Ready! omit the language tag
       // and I believe I've seen one more server doing the same.
       if (Packet->GetRemainingLength() > 0)
