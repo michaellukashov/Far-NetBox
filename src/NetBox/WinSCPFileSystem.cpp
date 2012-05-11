@@ -370,13 +370,11 @@ void __fastcall TWinSCPFileSystem::Init(TSecureShell * /* SecureShell */)
 //---------------------------------------------------------------------------
 /* __fastcall */ TWinSCPFileSystem::~TWinSCPFileSystem()
 {
-  // DEBUG_PRINTF(L"FTerminal = %x", FTerminal);
   Disconnect();
   delete FQueueStatusSection;
   FQueueStatusSection = NULL;
   delete FPathHistory;
   FPathHistory = NULL;
-  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void __fastcall TWinSCPFileSystem::HandleException(Exception * E, int OpMode)
@@ -2630,7 +2628,7 @@ bool __fastcall TWinSCPFileSystem::SetDirectoryEx(const UnicodeString Dir, int O
               }
             }
           }
-          catch (Exception & E)
+          catch(Exception & E)
           {
             FSynchronisingBrowse = false;
             WinSCPPlugin()->ShowExtendedException(&E);
