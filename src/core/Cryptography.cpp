@@ -245,8 +245,8 @@ static void derive_key(const unsigned char pwd[],  /* the PASSWORD     */
         /* ux[] holds the running xor value             */
         memset(ux, 0, OUT_BLOCK_LENGTH);
 
-      /* set HMAC context (c3) for password and salt  */
-      memmove(c3, c2, sizeof(hmac_ctx));
+        /* set HMAC context (c3) for password and salt  */
+        memmove(c3, c2, sizeof(hmac_ctx));
 
         /* enter additional data for 1st block into uu  */
         uu[0] = (unsigned char)((i + 1) >> 24);
@@ -520,7 +520,7 @@ RawByteString __fastcall ScramblePassword(UnicodeString Password)
   Buf[Padding] = (char)('0' + (Len % 10));
   Buf[Padding + 1] = (char)('0' + ((Len / 10) % 10));
   Buf[Padding + 2] = (char)('0' + ((Len / 100) % 10));
-  strcpy(Buf + Padding + 3, (char *)UtfPassword.c_str());
+  strcpy(Buf + Padding + 3, const_cast<char *>(UtfPassword.c_str()));
   char * S = Buf;
   int Last = 31;
   while (*S != '\0')
