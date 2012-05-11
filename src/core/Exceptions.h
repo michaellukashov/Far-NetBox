@@ -39,12 +39,12 @@ public:
 #endif
 
   // inline __fastcall ExtException(const UnicodeString Msg, const TVarRec * Args, const int Args_Size) : Sysutils::Exception(Msg, Args, Args_Size) { }
-  explicit /* __fastcall */ ExtException(const UnicodeString Msg) : Sysutils::Exception(Msg) {}
+  explicit /* __fastcall */ ExtException(const UnicodeString Msg) : Sysutils::Exception(Msg), FMoreMessages(NULL) {}
   // inline __fastcall ExtException(int Ident, const TVarRec * Args, const int Args_Size)/* overload */ : Sysutils::Exception(Ident, Args, Args_Size) { }
-  explicit /* __fastcall */ ExtException(int Ident) : Sysutils::Exception(Ident) {}
-  explicit /* __fastcall */ ExtException(const UnicodeString Msg, int AHelpContext) : Sysutils::Exception(Msg, AHelpContext) {}
+  explicit /* __fastcall */ ExtException(int Ident) : Sysutils::Exception(Ident), FMoreMessages(NULL) {}
+  explicit /* __fastcall */ ExtException(const UnicodeString Msg, int AHelpContext) : Sysutils::Exception(Msg, AHelpContext), FMoreMessages(NULL) {}
   // inline __fastcall ExtException(const UnicodeString Msg, const TVarRec * Args, const int Args_Size, int AHelpContext) : Sysutils::Exception(Msg, Args, Args_Size, AHelpContext) { }
-  inline /* __fastcall */ ExtException(int Ident, int AHelpContext)/* overload */ : Sysutils::Exception(Ident, AHelpContext) { }
+  inline /* __fastcall */ ExtException(int Ident, int AHelpContext)/* overload */ : Sysutils::Exception(Ident, AHelpContext), FMoreMessages(NULL) { }
   // inline __fastcall ExtException(PResStringRec ResStringRec, const TVarRec * Args, const int Args_Size, int AHelpContext)/* overload */ : Sysutils::Exception(ResStringRec, Args, Args_Size, AHelpContext) { }
   
   // explicit /* __fastcall */ ExtException(const UnicodeString Msg, std::exception * E);
