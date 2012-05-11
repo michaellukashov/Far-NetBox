@@ -40,7 +40,7 @@
   { TYPE __Backup = FIRST; FIRST = SECOND; SECOND = __Backup; }
 //---------------------------------------------------------------------------
 extern const wchar_t EngShortMonthNames[12][4];
-extern const char Bom[4];
+extern const std::string Bom;
 extern const wchar_t TokenPrefix;
 extern const wchar_t NoReplacement;
 extern const wchar_t TokenReplacement;

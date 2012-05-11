@@ -673,6 +673,7 @@ public:
   int Pos(wchar_t Ch) const;
   int Pos(const wchar_t * Str) const;
   int Pos(const char Ch) const;
+  int Pos(const char * Ch) const;
 public:
   const RawByteString & operator=(const UnicodeString & strCopy);
   const RawByteString & operator=(const RawByteString & strCopy);

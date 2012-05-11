@@ -569,15 +569,17 @@ RawByteString::operator UnicodeString() const
 
 int RawByteString::Pos(wchar_t Ch) const
 {
-  // rawstring_t s(&Ch, 1);
-  // RawByteString s(&Ch, 1);
-  // return Data.find(reinterpret_cast<const unsigned char *>(s.c_str()), 0, 1);
   return Data.find(Ch) + 1;
 }
 
 int RawByteString::Pos(const char Ch) const
 {
   return Data.find((unsigned char)Ch) + 1;
+}
+
+int RawByteString::Pos(const char * Str) const
+{
+  return Data.find((const unsigned char *)Str) + 1;
 }
 
 RawByteString & RawByteString::Insert(const char * Str, int Pos)

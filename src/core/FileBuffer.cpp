@@ -105,7 +105,7 @@ void __fastcall TFileBuffer::Convert(char * Source, char * Dest, int Params,
   assert(strlen(Dest) <= 2);
 
   if (FLAGSET(Params, cpRemoveBOM) && (GetSize() >= 3) &&
-      (memcmp(GetData(), Bom, sizeof(Bom)) == 0))
+      (memcmp(GetData(), Bom.c_str(), Bom.size()) == 0))
   {
     Delete(1, 3);
   }

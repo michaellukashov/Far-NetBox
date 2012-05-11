@@ -39,7 +39,7 @@ UnicodeString __fastcall MungeStr(const UnicodeString Str, bool ForceAnsi)
     Source = UTF8String(Str);
     if (Source.Length() > Str.Length())
     {
-      Source.Insert(Bom, 1);
+      Source.Insert(Bom.c_str(), 1);
     }
   }
   // should contain ASCII characters only
@@ -58,9 +58,10 @@ UnicodeString __fastcall UnMungeStr(const UnicodeString Str)
   Dest.SetLength(Source.Length() + 1);
   putty_unmungestr(Source.c_str(), (char *)Dest.c_str(), Dest.Length());
   UnicodeString Result;
-  if (Dest.SubString(1, LENOF(Bom)) == Bom)
+  // if (Dest.SubString(1, Bom.size()) == Bom.c_str())
+  if (Dest.Pos(Bom.c_str()) == 1)
   {
-    Dest.Delete(1, LENOF(Bom));
+    Dest.Delete(1, Bom.size());
     Result = UTF8String(Dest.c_str());
   }
   else
