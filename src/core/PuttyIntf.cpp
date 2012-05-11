@@ -145,8 +145,9 @@ int get_userpass_input(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
       for (int Index = 0; Index < int(p->n_prompts); Index++)
       {
         prompt_t * Prompt = p->prompts[Index];
+        // strncpy(Prompt->result, AnsiString(Results->Strings[Index]).c_str(), Prompt->result_len);
         std::string Str = W2MB(Results.GetStrings(Index).c_str());
-        Prompt->result = _strdup(Str.c_str()); // TODO: memleaks
+        Prompt->result = _strdup(Str.c_str()); // TODO: check memleaks
         Prompt->result_len = Str.size();
         Prompt->result[Prompt->result_len - 1] = '\0';
       }
