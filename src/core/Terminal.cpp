@@ -1087,8 +1087,8 @@ void /* __fastcall */ TTerminal::Reopen(int Params)
   // try
   {
     BOOST_SCOPE_EXIT ( (&Self) (&PrevRemoteDirectory)
-                       (&OrigFSProtocol) (&PrevAutoReadDirectory) (&PrevReadCurrentDirectoryPending)
-                       (&PrevReadDirectoryPending) (&PrevExceptionOnFail) )
+      (&OrigFSProtocol) (&PrevAutoReadDirectory) (&PrevReadCurrentDirectoryPending)
+      (&PrevReadDirectoryPending) (&PrevExceptionOnFail) )
     {
       Self->GetSessionData()->SetRemoteDirectory(PrevRemoteDirectory);
       Self->GetSessionData()->SetFSProtocol(OrigFSProtocol);
@@ -1959,11 +1959,11 @@ unsigned int __fastcall TTerminal::CommandError(Exception * E, const UnicodeStri
   // from within OnShowExtendedException handler
   assert(FCallbackGuard == NULL);
   unsigned int Result = 0;
-  if (E && ::InheritsFrom<Exception, EFatal>(E))
+  if (E && E->InheritsFrom<EFatal>())
   {
     FatalError(E, Msg);
   }
-  else if (E && ::InheritsFrom<Exception, EAbort>(E))
+  else if (E && E->InheritsFrom<EAbort>())
   {
     // resent EAbort exception
     Abort();
@@ -2035,7 +2035,7 @@ bool /* __fastcall */ TTerminal::HandleException(Exception * E)
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TTerminal::CloseOnCompletion(TOnceDoneOperation Operation, const UnicodeString Message)
+void __fastcall TTerminal::CloseOnCompletion(TOnceDoneOperation Operation, const UnicodeString Message)
 {
   LogEvent(L"Closing session after completed operation (as requested by user)");
   Close();
@@ -3944,7 +3944,7 @@ void /* __fastcall */ TTerminal::DoAnyCommand(const UnicodeString Command,
     {
       RollbackAction(*Action, NULL, &E);
     }
-    if (GetExceptionOnFail() || ::InheritsFrom<Exception, EFatal>(&E)) { throw; }
+    if (GetExceptionOnFail() || E.InheritsFrom<EFatal>()) { throw; }
       else { HandleExtendedException(&E); }
   }
 }
@@ -5542,7 +5542,7 @@ int /* __fastcall */ TTerminalList::GetActiveCount()
 void /* __fastcall */ TTerminalList::Idle()
 {
   TTerminal * Terminal;
-  for (size_t i = 0; i < GetCount(); i++)
+  for (int i = 0; i < GetCount(); i++)
   {
     Terminal = GetTerminal(i);
     if (Terminal->GetStatus() == ssOpened)
