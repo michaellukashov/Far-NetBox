@@ -167,7 +167,7 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
 }
 //---------------------------------------------------------------------------
 #define LASTELEM(ELEM) \
-  ELEM.SubString(::LastDelimiter(ELEM, L".>") + 1, ELEM.Length() - ::LastDelimiter(ELEM, L".>"))
+  ELEM.SubString(ELEM.LastDelimiter(L".>") + 1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
   { \
@@ -181,38 +181,37 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
 #undef REGCONFIG
 #define REGCONFIG(CANCREATE) \
   BLOCK(L"Interface", CANCREATE, \
+    KEY(String,   RandomSeedFile); \
     KEY(String,   PuttyRegistryStorageKey); \
     KEY(Bool,     ConfirmOverwriting); \
     KEY(Bool,     ConfirmResume); \
     KEY(Bool,     AutoReadDirectoryAfterOp); \
-    KEY(Integer,      SessionReopenAuto); \
-    KEY(Integer,      SessionReopenBackground); \
-    KEY(Integer,      SessionReopenTimeout); \
-    KEY(Integer,      SessionReopenAutoStall); \
-    KEY(Integer,      TunnelLocalPortNumberLow); \
-    KEY(Integer,      TunnelLocalPortNumberHigh); \
-    KEY(Integer,      CacheDirectoryChangesMaxSize); \
+    KEY(Integer,  SessionReopenAuto); \
+    KEY(Integer,  SessionReopenBackground); \
+    KEY(Integer,  SessionReopenTimeout); \
+    KEY(Integer,  SessionReopenAutoStall); \
+    KEY(Integer,  TunnelLocalPortNumberLow); \
+    KEY(Integer,  TunnelLocalPortNumberHigh); \
+    KEY(Integer,  CacheDirectoryChangesMaxSize); \
     KEY(Bool,     ShowFtpWelcomeMessage); \
-    KEY(Integer,      SessionReopenAutoMaximumNumberOfRetries); \
+    KEY(String,   ExternalIpAddress); \
+    KEY(Integer,  SessionReopenAutoMaximumNumberOfRetries); \
   ); \
   BLOCK(L"Logging", CANCREATE, \
     KEYEX(Bool,  Logging, Logging); \
     KEYEX(String,LogFileName, LogFileName); \
     KEY(Bool,    LogFileAppend); \
-    KEY(Integer,     LogWindowLines); \
-    KEY(Integer,     LogProtocol); \
+    KEY(Integer, LogWindowLines); \
+    KEY(Integer, LogProtocol); \
     KEYEX(Bool,  PermanentLogActions, LogActions); \
     KEYEX(Bool,  LogActions, LogActions); \
+    KEYEX(String,PermanentActionsLogFileName, ActionsLogFileName); \
   );
-    // KEY(String,   RandomSeedFile); \
-    // KEY(String,   ExternalIpAddress); \
-    // KEYEX(String,PermanentActionsLogFileName, ActionsLogFileName); \
-    
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::SaveData(THierarchicalStorage * Storage, bool /*All*/)
 {
   // #define KEYEX(TYPE, VAR, NAME) Storage->Write ## TYPE(LASTELEM(UnicodeString(TEXT(#NAME))), VAR)
-  #define KEYEX(TYPE, VAR, NAME) Storage->Write ## TYPE(LASTELEM(MB2W(#NAME)), Get##VAR())
+  #define KEYEX(TYPE, VAR, NAME) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), Get##VAR())
   REGCONFIG(true);
   #undef KEYEX
 }
@@ -295,7 +294,7 @@ void __fastcall TConfiguration::Export(const UnicodeString FileName)
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::LoadData(THierarchicalStorage * Storage)
 {
-  #define KEYEX(TYPE, VAR, NAME) Set##VAR(Storage->Read ## TYPE(LASTELEM(MB2W(#NAME)), Get##VAR()))
+  #define KEYEX(TYPE, VAR, NAME) Set##VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), Get##VAR()))
   // #pragma warn -eas
   REGCONFIG(false);
   // #pragma warn +eas
@@ -438,7 +437,7 @@ void __fastcall TConfiguration::LoadDirectoryChangesCache(const UnicodeString Se
         Storage->OpenSubKey(L"CDCache", false) &&
         Storage->ValueExists(SessionKey))
     {
-      DirectoryChangesCache->Deserialize(UnicodeString(Storage->ReadBinaryData(SessionKey)));
+      DirectoryChangesCache->Deserialize(Storage->ReadBinaryData(SessionKey));
     }
   }
 #ifndef _MSC_VER
@@ -589,7 +588,7 @@ void __fastcall TConfiguration::CleanupConfiguration()
   }
   catch (Exception &E)
   {
-    throw ExtException(FMTLOAD(CLEANUP_CONFIG_ERROR), &E);
+    throw ExtException(&E, FMTLOAD(CLEANUP_CONFIG_ERROR));
   }
 }
 //---------------------------------------------------------------------------
@@ -620,7 +619,7 @@ void __fastcall TConfiguration::CleanupHostKeys()
   }
   catch (Exception &E)
   {
-    throw ExtException(FMTLOAD(CLEANUP_HOSTKEYS_ERROR), &E);
+    throw ExtException(&E, FMTLOAD(CLEANUP_HOSTKEYS_ERROR));
   }
 }
 //---------------------------------------------------------------------------
@@ -639,7 +638,7 @@ void __fastcall TConfiguration::CleanupRandomSeedFile()
   }
   catch (Exception &E)
   {
-    throw ExtException(FMTLOAD(CLEANUP_SEEDFILE_ERROR), &E);
+    throw ExtException(&E, FMTLOAD(CLEANUP_SEEDFILE_ERROR));
   }
 }
 //---------------------------------------------------------------------------
@@ -663,7 +662,7 @@ void __fastcall TConfiguration::CleanupIniFile()
   }
   catch (Exception &E)
   {
-    throw ExtException(FMTLOAD(CLEANUP_INIFILE_ERROR), &E);
+    throw ExtException(&E, FMTLOAD(CLEANUP_INIFILE_ERROR));
   }
 }
 //---------------------------------------------------------------------------
@@ -806,7 +805,7 @@ UnicodeString __fastcall TConfiguration::GetVersionStr()
   }
   catch (Exception &E)
   {
-    throw ExtException(L"Can't get application version", &E);
+    throw ExtException(&E, L"Can't get application version");
   }
 }
 //---------------------------------------------------------------------------
@@ -825,7 +824,7 @@ UnicodeString __fastcall TConfiguration::GetVersion()
   }
   catch (Exception &E)
   {
-    throw ExtException(L"Can't get application version", &E);
+    throw ExtException(&E, L"Can't get application version");
   }
 }
 //---------------------------------------------------------------------------
@@ -992,19 +991,17 @@ void __fastcall TConfiguration::Saved()
 //---------------------------------------------------------------------------
 TStorage __fastcall TConfiguration::GetStorage()
 {
-  /*
   if (FStorage == stDetect)
   {
-    if (FileExists(IniFileStorageName))
+    /* if (FileExists(IniFileStorageName))
     {
       FStorage = stIniFile;
     }
-    else
+    else*/
     {
       FStorage = stRegistry;
     }
   }
-  */
   return FStorage;
 }
 //---------------------------------------------------------------------------
@@ -1054,12 +1051,6 @@ TEOLType __fastcall TConfiguration::GetLocalEOLType()
 //---------------------------------------------------------------------
 void __fastcall TConfiguration::TemporaryLogging(const UnicodeString ALogFileName)
 {
-/*
-  FLogging = true;
-  FLogFileName = ALogFileName;
-  FLogActions = AnsiSameText(ExtractFileExt(FLogFileName), L".xml");
-  UpdateActualLogProtocol();
-*/
   if (SameText(ExtractFileExt(ALogFileName), L".xml"))
   {
     TemporaryActionsLogging(ALogFileName);
