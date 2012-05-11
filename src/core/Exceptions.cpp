@@ -111,33 +111,6 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   }
 }
 //---------------------------------------------------------------------------
-/*
-__fastcall ExtException::ExtException(UnicodeString Msg, std::exception * E) :
-  parent(Msg),
-  FMoreMessages(NULL),
-  FHelpKeyword()
-{
-  // "copy std::exception"
-  // AddMoreMessages(E);
-  // and append message to the end to more messages
-  if (!Msg.IsEmpty())
-  {
-    if (GetMessage().IsEmpty())
-    {
-      SetMessage(Msg);
-    }
-    else
-    {
-      if (FMoreMessages == NULL)
-      {
-        FMoreMessages = new TStringList();
-      }
-      FMoreMessages->Append(GetMessage());
-    }
-  }
-}
-*/
-//---------------------------------------------------------------------------
 /* __fastcall */ ExtException::ExtException(UnicodeString Msg, TStrings* MoreMessages,
   bool Own, UnicodeString HelpKeyword) :
   Exception(Msg),
@@ -186,7 +159,7 @@ void __fastcall ExtException::AddMoreMessages(const Exception * E)
 
     // new exception does not have own message, this is in fact duplication of
     // the exception data, but the exception class may being changed
-    if (FMessage.IsEmpty())
+    if (GetMessage().IsEmpty())
     {
       SetMessage(Msg);
     }
