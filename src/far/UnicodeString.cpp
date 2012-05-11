@@ -407,7 +407,6 @@ void  __cdecl UnicodeString::ThrowIfOutOfRange(int idx) const
 
 int UnicodeString::Pos(wchar_t Ch) const
 {
-  // bool Pos(size_t &nPos, wchar_t Ch, size_t nStartPos=0) const;
   size_t nPos = 0;
   if (Pos(nPos, Ch))
   {
@@ -496,7 +495,6 @@ AnsiString AnsiString::SubString(int Pos, int Len) const
 {
   std::string s = Data.substr(Pos - 1, Len);
   AnsiString Result(s.c_str(), s.size());
-  // return AnsiString(reinterpret_cast<const char *>(s).c_str(), Len));
   return Result;
 }
 
@@ -592,7 +590,6 @@ RawByteString RawByteString::SubString(int Pos, int Len) const
 {
   rawstring_t s = Data.substr(Pos - 1, Len);
   RawByteString Result(s.c_str(), s.size());
-  // return RawByteString(reinterpret_cast<const char *>(s).c_str(), Len));
   return Result;
 }
 
@@ -671,8 +668,7 @@ UTF8String::UTF8String(const UnicodeString & Str)
 
 int UTF8String::Pos(wchar_t Ch) const
 {
-  // wstring_t s(&Ch, 1);
-  return Data.find(Ch) + 1; // s.c_str(), 0, 1);
+  return Data.find(Ch) + 1;
 }
 
 UTF8String & UTF8String::Insert(const wchar_t * Str, int Pos)
@@ -750,7 +746,6 @@ bool __fastcall operator !=(const UTF8String & lhs, const UTF8String & rhs)
 
 UnicodeString & UnicodeString::Lower(int nStartPos, int nLength)
 {
-  // std::transform(Data.begin(), Data.end(), Data.begin(), ::toupper);
   Data = Sysutils::LowerCase(SubString(nStartPos, nLength)).c_str();
   return *this;
 }
@@ -779,7 +774,7 @@ UnicodeString & UnicodeString::Replace(int Pos, int Len, const wchar_t * Str, in
 
 UnicodeString & UnicodeString::Append(const char * lpszAdd, UINT CodePage)
 {
-  // Data.append();
+  Data.append(::MB2W(lpszAdd, CodePage).c_str());
   return *this;
 }
 
@@ -788,13 +783,7 @@ UnicodeString & UnicodeString::Insert(int Pos, const wchar_t * Str, int StrLen)
   Data.insert(Pos - 1, Str, StrLen);
   return *this;
 }
-/*
-UnicodeString & UnicodeString::Insert(int Pos, const wchar_t * Str, int StrLen)
-{
-  Data.insert(Pos - 1, Str, StrLen);
-  return *this;
-}
-*/
+
 bool UnicodeString::RPos(int & nPos, wchar_t Ch, int nStartPos) const
 {
   int pos = (int)Data.find_last_of(Ch, Data.size() - nStartPos);

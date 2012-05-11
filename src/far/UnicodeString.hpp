@@ -283,7 +283,6 @@ public:
 protected:
   void  __cdecl ThrowIfOutOfRange(int idx) const;
 };
-// typedef UnicodeString string;
 #endif
 
 //------------------------------------------------------------------------------
@@ -346,7 +345,6 @@ private:
     if (Length > 0)
     {
         memmove(const_cast<wchar_t *>(Data.c_str()), Str, Length * sizeof(wchar_t));
-        // Data[Length-1] = 0;
     }
     Data = Data.c_str();
   }
@@ -381,12 +379,10 @@ public:
 
   UnicodeString(const UnicodeString & Str) { Init(Str.c_str(), Str.GetLength()); }
   UnicodeString(const UTF8String & Str) { Init(Str.c_str(), Str.GetLength()); }
-  // UnicodeString(const RawByteString & Str) { Init(Str.c_str(), Str.GetLength()); }
   UnicodeString(const std::wstring & Str) { Init(Str.c_str(), Str.size()); }
 
   ~UnicodeString() {}
 
-  // operator const char * () const { return c_str(); }
   int size() const { return Length(); }
   const wchar_t * c_str() const { return Data.c_str(); }
   const wchar_t * data() const { return Data.c_str(); }
@@ -476,14 +472,10 @@ public:
   const UnicodeString & __fastcall operator +=(const char * rhs);
   const UnicodeString & __fastcall operator +=(const wchar_t rhs);
 
-  // friend bool __fastcall operator ==(const UnicodeString & Str, const wchar_t * Str);
-
   bool operator ==(const UnicodeString & Str) const { return Data == Str.Data; }
   bool operator ==(const wchar_t * Str) const { return wcscmp(Data.c_str(), Str) == 0; }
-  // bool operator ==(wchar_t Ch) const { return wcscmp(Data.c_str(), &Ch) == 0; }
   bool operator !=(const UnicodeString & Str) const { return Data != Str.Data; }
   bool operator !=(const wchar_t * Str) const { return wcscmp(Data.c_str(), Str) != 0; }
-  // bool operator !=(wchar_t Ch) const { return !IsSubStrAt(0, GetLength(), &Ch, 1); }
 
   wchar_t __fastcall operator [](const int idx) const
   {
@@ -494,7 +486,7 @@ public:
   wchar_t & __fastcall operator [](const int idx)
   {
     ThrowIfOutOfRange(idx);   // Should Range-checking be optional to avoid overhead ??
-    // Unique();                 // Ensure we're not ref-counted (and Unicode)
+    Unique();                 // Ensure we're not ref-counted (and Unicode)
     return Data[idx-1];
   }
 
@@ -505,7 +497,6 @@ private:
     if (Length > 0)
     {
         memmove(const_cast<wchar_t *>(Data.c_str()), Str, Length * sizeof(wchar_t));
-        // Data[Length - 1] = 0;
     }
     Data = Data.c_str();
   }
@@ -516,19 +507,15 @@ private:
     if (Size > 0)
     {
       MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), Size);
-      // Data[Size - 1] = 0;
     }
     Data = Data.c_str();
   }
 
   void  __cdecl ThrowIfOutOfRange(int idx) const;
 
-  // typedef std::basic_string<wchar_t> wstring_t;
   std::wstring Data;
 };
 
-//------------------------------------------------------------------------------
-// typedef UTF8String AnsiString;
 //------------------------------------------------------------------------------
 class RawByteString;
 
@@ -544,7 +531,6 @@ public:
   AnsiString(const unsigned char * Str, int Size) { Init(Str, Size); }
   AnsiString(const UnicodeString & Str) { Init(Str.c_str(), Str.GetLength()); }
   AnsiString(const UTF8String & Str) { Init(Str.c_str(), Str.GetLength()); }
-  // AnsiString(const AnsiString & Str) { Init(Str.c_str(), Str.GetLength()); }
   ~AnsiString() {}
 
   operator const char * () const { return Data.c_str(); }
@@ -558,8 +544,6 @@ public:
   void SetLength(int nLength) { Data.resize(nLength); }
   AnsiString & Delete(int Index, int Count) { Data.erase(Index - 1, Count); return *this; }
 
-  // AnsiString & Insert(int Pos, const wchar_t * Str, int StrLen);
-  // AnsiString & Insert(const wchar_t * Str, int Pos) { return Insert(Pos, Str, wcslen(Str)); }
   AnsiString & Insert(const char * Str, int Pos);
 
   AnsiString SubString(int Pos, int Len = -1) const;
@@ -615,7 +599,6 @@ private:
     if (Length > 0)
     {
       memmove(const_cast<char *>(Data.c_str()), Str, Length);
-      // Data[Length-1] = 0;
     }
     Data = Data.c_str();
   }
@@ -625,12 +608,10 @@ private:
     if (Length > 0)
     {
       memmove(const_cast<char *>(Data.c_str()), Str, Length);
-      // Data[Length-1] = 0;
     }
     Data = Data.c_str();
   }
 
-  // typedef std::basic_string<char> string_t;
   std::string Data;
 };
 
@@ -657,15 +638,12 @@ public:
   operator UnicodeString() const;
   int size() const { return Data.size(); }
   const char * c_str() const { return reinterpret_cast<const char *>(Data.c_str()); }
-  // const unsigned char * c_str() const { return Data.c_str(); }
   int Length() const { return Data.size(); }
   int GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
   void SetLength(int nLength) { Data.resize(nLength); }
   RawByteString & Delete(int Index, int Count) { Data.erase(Index - 1, Count); return *this; }
 
-  // RawByteString & Insert(int Pos, const wchar_t * Str, int StrLen);
-  // RawByteString & Insert(const wchar_t * Str, int Pos) { return Insert(Pos, Str, wcslen(Str)); }
   RawByteString & Insert(const char * Str, int Pos);
 
   RawByteString SubString(int Pos, int Len = -1) const;
@@ -718,7 +696,6 @@ private:
         reinterpret_cast<LPSTR>(const_cast<unsigned char *>(Data.c_str())), Size-1, nullptr, nullptr);
       Data[Size-1] = 0;
     }
-    // Data = Data.c_str();
   }
   void Init(const char * Str, int Length)
   {
@@ -726,9 +703,8 @@ private:
     if (Length > 0)
     {
       memmove(const_cast<unsigned char *>(Data.c_str()), Str, Length);
-      // Data[Length-1] = 0;
+      Data[Length-1] = 0;
     }
-    // Data = Data.c_str();
   }
   void Init(const unsigned char * Str, int Length)
   {
@@ -736,9 +712,8 @@ private:
     if (Length > 0)
     {
       memmove(const_cast<unsigned char *>(Data.c_str()), Str, Length);
-      // Data[Length-1] = 0;
+      Data[Length-1] = 0;
     }
-    // Data = Data.c_str();
   }
 
   typedef std::basic_string<unsigned char> rawstring_t;
