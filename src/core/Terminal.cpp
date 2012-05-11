@@ -1245,7 +1245,7 @@ unsigned int __fastcall TTerminal::QueryUserException(const UnicodeString Query,
         MoreMessages.AddStrings(EE->GetMoreMessages());
       }
     }
-    Result = QueryUser(!Query.IsEmpty() ? Query : UnicodeString(E->GetMessage()),
+    Result = QueryUser(!Query.IsEmpty() ? Query : UnicodeString(E ? E->GetMessage() : L""),
       MoreMessages.GetCount() ? &MoreMessages : NULL,
       Answers, Params, QueryType);
   }
