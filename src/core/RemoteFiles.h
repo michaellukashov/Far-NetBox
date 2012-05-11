@@ -385,10 +385,11 @@ public:
   bool __fastcall GetIsEmpty() const;
 #endif
 protected:
-  virtual void __fastcall Delete(size_t Index);
+  virtual void __fastcall Delete(int Index);
 private:
   TCriticalSection * FSection;
   TRemoteDirectoryCache * Self;
+  // bool __fastcall GetIsEmpty() const;
   void __fastcall DoClearFileList(UnicodeString Directory, bool SubDirs);
 };
 //---------------------------------------------------------------------------
@@ -411,15 +412,15 @@ public:
   void __fastcall Deserialize(const UnicodeString Data);
 
 #ifdef _MSC_VER
+  __property bool IsEmpty = { read = GetIsEmpty };
+#else
   bool __fastcall GetIsEmpty() const;
 #endif
 
 private:
   static bool __fastcall DirectoryChangeKey(const UnicodeString SourceDir,
     const UnicodeString Change, UnicodeString & Key);
-#ifndef _MSC_VER
-  bool __fastcall GetIsEmpty() const;
-#endif
+  // bool __fastcall GetIsEmpty() const;
   void __fastcall SetValue(const UnicodeString & Name, const UnicodeString & Value);
   UnicodeString __fastcall GetValue(const UnicodeString & Name);
 

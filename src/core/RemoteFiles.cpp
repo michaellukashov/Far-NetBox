@@ -1397,7 +1397,7 @@ void __fastcall TRemoteFileList::AddFile(TRemoteFile * File)
 void __fastcall TRemoteFileList::DuplicateTo(TRemoteFileList * Copy)
 {
   Copy->Clear();
-  for (size_t Index = 0; Index < GetCount(); Index++)
+  for (int Index = 0; Index < GetCount(); Index++)
   {
     TRemoteFile * File = GetFiles(Index);
     Copy->AddFile(File->Duplicate(false));
@@ -1712,7 +1712,7 @@ void __fastcall TRemoteDirectoryCache::DoClearFileList(UnicodeString Directory, 
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TRemoteDirectoryCache::Delete(size_t Index)
+void __fastcall TRemoteDirectoryCache::Delete(int Index)
 {
   delete (TRemoteFileList *)GetObjects(Index);
   TStringList::Delete(Index);
