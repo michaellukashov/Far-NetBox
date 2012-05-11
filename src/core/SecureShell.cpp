@@ -351,7 +351,7 @@ void __fastcall TSecureShell::Open()
   char * RealHost = NULL;
   FreeBackend(); // in case we are reconnecting
   const char * InitError = FBackend->init(this, &FBackendHandle, FConfig,
-    const_cast<char *>(W2MB(FSessionData->GetHostNameExpanded().c_str(), FSessionData->GetCodePageAsNumber()).c_str()), FSessionData->GetPortNumber(), &RealHost, 0,
+    (char *)AnsiString(FSessionData->GetHostNameExpanded()).c_str(), FSessionData->GetPortNumber(), &RealHost, 0,
     FConfig->tcp_keepalives);
   sfree(RealHost);
   if (InitError)
@@ -1795,7 +1795,7 @@ struct TClipboardHandler
 {
   UnicodeString Text;
 
-  void __fastcall Copy(TObject * )
+  void __fastcall Copy(TObject * /*Sender*/)
   {
     CopyToClipboard(Text);
   }
