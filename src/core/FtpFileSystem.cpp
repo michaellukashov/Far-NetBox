@@ -2733,7 +2733,7 @@ void __fastcall TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
       }
       else
       {
-        throw ExtException(Error, MoreMessages, true); //, HelpKeyword);
+        throw ExtException(Error, MoreMessages, true, HelpKeyword);
       }
     }
 
@@ -3048,7 +3048,7 @@ TDateTime __fastcall TFTPFileSystem::ConvertRemoteTimestamp(time_t Time, bool Ha
       static_cast<unsigned short>(Tm->tm_mday));
     if (HasTime)
     {
-      Result = Result + EncodeTimeVerbose(
+      Result += EncodeTimeVerbose(
         static_cast<unsigned short>(Tm->tm_hour),
         static_cast<unsigned short>(Tm->tm_min),
         static_cast<unsigned short>(Tm->tm_sec), 0);
@@ -3244,7 +3244,7 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
   else
   {
     FSessionInfo.CertificateFingerprint =
-      BytesToHex(RawByteString(reinterpret_cast<const char *>(Data.Hash), Data.HashLen), false, L':');
+      BytesToHex(RawByteString(reinterpret_cast<const char*>(Data.Hash), Data.HashLen), false, L':');
 
     int VerificationResultStr;
     switch (Data.VerificationResult)
@@ -3467,7 +3467,7 @@ bool __fastcall TFTPFileSystem::HandleListData(const wchar_t * Path,
       {
         File->SetTerminal(FTerminal);
 
-        File->SetFileName(UnicodeString(Entry->Name));
+        File->SetFileName(Entry->Name);
         if (wcslen(Entry->Permissions) >= 10)
         {
           try
