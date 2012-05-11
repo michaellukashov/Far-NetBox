@@ -18,14 +18,14 @@
 #pragma package(smart_init)
 #endif
 //---------------------------------------------------------------------------
-bool __fastcall ExceptionMessage(const Exception * E, UnicodeString & Message)
+bool __fastcall ExceptionMessage(Exception * E, UnicodeString & Message)
 {
   bool Result = true;
-  if (dynamic_cast<const EAbort *>(E) != NULL)
+  if (dynamic_cast<EAbort *>(E) != NULL)
   {
     Result = false;
   }
-  else if (dynamic_cast<const EAccessViolation*>(E) != NULL)
+  else if (dynamic_cast<EAccessViolation*>(E) != NULL)
   {
     Message = LoadStr(ACCESS_VIOLATION_ERROR);
   }
@@ -37,10 +37,6 @@ bool __fastcall ExceptionMessage(const Exception * E, UnicodeString & Message)
   {
     Message = E->GetMessage();
   }
-  /*else
-  {
-    Message = MB2W(E->what());
-  }*/
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -62,14 +58,14 @@ TStrings * ExceptionToMoreMessages(Exception * E)
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ ExtException::ExtException(Exception * E) :
-  parent(L""),
+  Exception(L""),
   FMoreMessages(NULL)
 {
   AddMoreMessages(E);
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ ExtException::ExtException(UnicodeString Msg) :
-  parent(Msg),
+  Exception(Msg),
   FMoreMessages(NULL)
 {
   // append message to the end to more messages
@@ -91,7 +87,7 @@ TStrings * ExceptionToMoreMessages(Exception * E)
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ ExtException::ExtException(UnicodeString Msg, Exception * E) :
-  parent(Msg),
+  Exception(L""),
   FMoreMessages(NULL)
 {
   // "copy std::exception"
@@ -142,7 +138,7 @@ __fastcall ExtException::ExtException(UnicodeString Msg, std::exception * E) :
 //---------------------------------------------------------------------------
 /* __fastcall */ ExtException::ExtException(UnicodeString Msg, TStrings * MoreMessages,
   bool Own) :
-  parent(Msg),
+  Exception(Msg),
   FMoreMessages(NULL)
 {
   if (Own)
@@ -157,20 +153,20 @@ __fastcall ExtException::ExtException(UnicodeString Msg, std::exception * E) :
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ ExtException::ExtException(ExtException & E) throw() :
-  parent(NULL),
+  Exception(L""),
   FMoreMessages(NULL)
 {
   AddMoreMessages(&E);
 }
 
-ExtException & /* __fastcall */ ExtException::operator =(const ExtException & E) throw()
+ExtException & /* __fastcall */ ExtException::operator =(ExtException & E) throw()
 {
   AddMoreMessages(&E);
   return *this;
 }
 
 //---------------------------------------------------------------------------
-void __fastcall ExtException::AddMoreMessages(const Exception * E)
+void __fastcall ExtException::AddMoreMessages(Exception * E)
 {
   if (E != NULL)
   {
@@ -179,7 +175,7 @@ void __fastcall ExtException::AddMoreMessages(const Exception * E)
       FMoreMessages = new TStringList();
     }
 
-    const ExtException * ExtE = dynamic_cast<const ExtException *>(E);
+    ExtException * ExtE = dynamic_cast<ExtException *>(E);
     if (ExtE != NULL)
     {
       if (!ExtE->GetHelpKeyword().IsEmpty())
@@ -237,14 +233,14 @@ UnicodeString __fastcall LastSysErrorMessage()
 //---------------------------------------------------------------------------
 /*
 __fastcall EOSExtException::EOSExtException(UnicodeString Msg) :
-  parent(Msg, LastSysErrorMessage())
+  ExtException(Msg, LastSysErrorMessage())
 {
 }
 */
 
 //---------------------------------------------------------------------------
 /* __fastcall */ EFatal::EFatal(UnicodeString Msg, Exception * E) :
-  parent(Msg, E),
+  ExtException(Msg, E),
   FReopenQueried(false)
 {
   EFatal * F = dynamic_cast<EFatal *>(E);
@@ -252,27 +248,5 @@ __fastcall EOSExtException::EOSExtException(UnicodeString Msg) :
   {
     FReopenQueried = F->FReopenQueried;
   }
-}
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
-/* __fastcall */ Exception::Exception(Exception * E) :
-  parent("")
-{
-  // AddMoreMessages(E);
-}
-//---------------------------------------------------------------------------
-/* __fastcall */ Exception::Exception(Exception & E) throw() :
-  parent(E.what())
-{
-}
-//---------------------------------------------------------------------------
-/* __fastcall */ Exception::Exception(UnicodeString Msg) :
-  parent(W2MB(Msg.c_str()).c_str())
-{
-}
-//---------------------------------------------------------------------------
-/* __fastcall */ Exception::Exception(std::exception * E) :
-  parent(E->what())
-{
 }
 //---------------------------------------------------------------------------

@@ -10,75 +10,70 @@
 #else
 #include "stdafx.h"
 #include "Classes.h"
+#include "SysUtils.h"
 #endif
 
-class Exception;
 //---------------------------------------------------------------------------
-bool __fastcall ExceptionMessage(const Exception * E, UnicodeString & Message);
+bool __fastcall ExceptionMessage(Exception * E, UnicodeString & Message);
 UnicodeString __fastcall LastSysErrorMessage();
 TStrings * ExceptionToMoreMessages(Exception * E);
 //---------------------------------------------------------------------------
 enum TOnceDoneOperation { odoIdle, odoDisconnect, odoShutDown };
 //---------------------------------------------------------------------------
-class Exception : public std::exception, public TObject
+class ExtException : public Sysutils::Exception
 {
-  typedef std::exception parent;
 public:
-  explicit /* __fastcall */ Exception(Exception * E);
-  explicit /* __fastcall */ Exception(Exception & E);
-  explicit /* __fastcall */ Exception(UnicodeString Msg);
-  explicit /* __fastcall */ Exception(std::exception * E);
-  template<typename T>
-  bool InheritsFrom() const { return dynamic_cast<const T *>(this) != NULL; }
-
-  // UnicodeString GetHelpKeyword() const { return FHelpKeyword; }
-  const UnicodeString GetMessage() const { return FMessage; }
-  void SetMessage(const UnicodeString value) { FMessage = value; }
-protected:
-  UnicodeString FMessage;
-  // UnicodeString FHelpKeyword;
-};
-//---------------------------------------------------------------------------
-class ExtException : public Exception
-{
-  typedef Exception parent;
-public:
-  explicit /* __fastcall */ ExtException(const std::exception * E);
   explicit /* __fastcall */ ExtException(Exception* E);
   explicit /* __fastcall */ ExtException(Exception* E, UnicodeString Msg);
-  explicit /* __fastcall */ ExtException(UnicodeString Msg);
   // "copy the exception", just append message to the end
-  explicit /* __fastcall */ ExtException(UnicodeString Msg, Exception * E);
-  // explicit /* __fastcall */ ExtException(UnicodeString Msg, std::exception * E);
+  explicit /* __fastcall */ ExtException(UnicodeString Msg, Exception* E);
   // explicit /* __fastcall */ ExtException(UnicodeString Msg, UnicodeString MoreMessages, UnicodeString HelpKeyword = L"");
-  explicit /* __fastcall */ ExtException(UnicodeString Msg, TStrings * MoreMessages, bool Own);
-  explicit /* __fastcall */ ExtException(ExtException &) throw();
-  ExtException  & /* __fastcall */ operator =(const ExtException &) throw();
-  virtual /* __fastcall */ ~ExtException(void) throw();
+  explicit /* __fastcall */ ExtException(UnicodeString Msg, TStrings* MoreMessages, bool Own, UnicodeString HelpKeyword = L"");
+  virtual /* __fastcall */ ~ExtException(void);
 #ifndef _MSC_VER
   __property TStrings* MoreMessages = {read=FMoreMessages};
   __property UnicodeString HelpKeyword = {read=FHelpKeyword};
-#endif
-
+#else
   TStrings * /* __fastcall */ GetMoreMessages() const { return FMoreMessages; }
   UnicodeString /* __fastcall */ GetHelpKeyword() const { return FHelpKeyword; }
+#endif
+
+  // inline __fastcall ExtException(const UnicodeString Msg, const TVarRec * Args, const int Args_Size) : Sysutils::Exception(Msg, Args, Args_Size) { }
+  // inline __fastcall ExtException(int Ident, const TVarRec * Args, const int Args_Size)/* overload */ : Sysutils::Exception(Ident, Args, Args_Size) { }
+  inline __fastcall ExtException(const UnicodeString Msg, int AHelpContext) : Sysutils::Exception(Msg, AHelpContext) { }
+  // inline __fastcall ExtException(const UnicodeString Msg, const TVarRec * Args, const int Args_Size, int AHelpContext) : Sysutils::Exception(Msg, Args, Args_Size, AHelpContext) { }
+  // inline __fastcall ExtException(int Ident, int AHelpContext)/* overload */ : Exception(Ident, AHelpContext) { }
+  // inline __fastcall ExtException(PResStringRec ResStringRec, const TVarRec * Args, const int Args_Size, int AHelpContext)/* overload */ : Sysutils::Exception(ResStringRec, Args, Args_Size, AHelpContext) { }
+  
+  // explicit /* __fastcall */ ExtException(const UnicodeString Msg, std::exception * E);
+  // explicit /* __fastcall */ ExtException(const std::exception * E);
+  // explicit /* __fastcall */ ExtException(UnicodeString Msg);
+  // explicit /* __fastcall */ ExtException(ExtException &) throw();
+  // ExtException  & /* __fastcall */ operator =(ExtException &) throw();
+
 protected:
-  void __fastcall AddMoreMessages(const Exception* E);
+  void __fastcall AddMoreMessages(Exception* E);
 
 private:
-  TStrings* FMoreMessages;
+  Classes::TStrings* FMoreMessages;
   UnicodeString FHelpKeyword;
 };
 //---------------------------------------------------------------------------
 #define DERIVE_EXT_EXCEPTION(NAME, BASE) \
   class NAME : public BASE \
   { \
-    typedef BASE parent; \
   public: \
-    explicit /* __fastcall */ NAME(UnicodeString Msg, Exception* E) : parent(Msg, E) {} \
+    explicit /* __fastcall */ NAME(Exception* E, UnicodeString Msg) : BASE(E, Msg) {} \
+    explicit /* __fastcall */ NAME(Exception* E, int Ident) : BASE(E, Ident) {} \
+    inline /* __fastcall */ virtual ~NAME(void) { } \
     virtual /* __fastcall */ ~NAME(void) throw() {} \
+    // inline __fastcall NAME(const UnicodeString Msg, const TVarRec * Args, const int Args_Size) : BASE(Msg, Args, Args_Size) { } \
+    // inline __fastcall NAME(int Ident, const TVarRec * Args, const int Args_Size) : BASE(Ident, Args, Args_Size) { } \
+    inline __fastcall NAME(const UnicodeString Msg, int AHelpContext) : BASE(Msg, AHelpContext) { } \
+    // inline __fastcall NAME(const UnicodeString Msg, const TVarRec * Args, const int Args_Size, int AHelpContext) : BASE(Msg, Args, Args_Size, AHelpContext) { } \
+    inline __fastcall NAME(int Ident, int AHelpContext) : BASE(Ident, AHelpContext) { } \
+    // inline __fastcall NAME(PResStringRec ResStringRec, const TVarRec * Args, const int Args_Size, int AHelpContext) : BASE(ResStringRec, Args, Args_Size, AHelpContext) { } \
   };
-
 //---------------------------------------------------------------------------
 DERIVE_EXT_EXCEPTION(ESsh, ExtException);
 DERIVE_EXT_EXCEPTION(ETerminal, ExtException);
@@ -87,22 +82,18 @@ DERIVE_EXT_EXCEPTION(EScp, ExtException); // SCP protocol fatal error (non-fatal
 DERIVE_EXT_EXCEPTION(EScpSkipFile, ExtException);
 DERIVE_EXT_EXCEPTION(EScpFileSkipped, EScpSkipFile);
 //---------------------------------------------------------------------------
-/*
 class EOSExtException : public ExtException
 {
-  typedef ExtException parent;
 public:
   __fastcall EOSExtException();
   __fastcall EOSExtException(UnicodeString Msg);
 };
-*/
 //---------------------------------------------------------------------------
 class EFatal : public ExtException
 {
-  typedef ExtException parent;
 public:
   // fatal errors are always copied, new message is only appended
-  explicit /* __fastcall */ EFatal(UnicodeString Msg, Exception * E);
+  explicit /* __fastcall */ EFatal(Exception* E, UnicodeString Msg);
 
 #ifndef _MSC_VER
   __property bool ReopenQueried = { read = FReopenQueried, write = FReopenQueried };
@@ -118,9 +109,8 @@ private:
 #define DERIVE_FATAL_EXCEPTION(NAME, BASE) \
   class NAME : public BASE \
   { \
-    typedef BASE parent; \
   public: \
-    explicit /* __fastcall */ NAME(UnicodeString Msg, Exception* E) : parent(Msg, E) {} \
+    explicit /* __fastcall */ NAME(Exception* E, UnicodeString Msg) : BASE(E, Msg) {} \
   };
 //---------------------------------------------------------------------------
 DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal);
@@ -129,10 +119,9 @@ DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal);
 // = close on completionclass ESshTerminate : public EFatal
 class ESshTerminate : public EFatal
 {
-  typedef EFatal parent;
 public:
-  explicit /* __fastcall */ ESshTerminate(UnicodeString Msg, Exception * E, TOnceDoneOperation AOperation) :
-    parent(Msg, E),
+  explicit /* __fastcall */ ESshTerminate(Exception* E, UnicodeString Msg, TOnceDoneOperation AOperation) :
+    EFatal(E, Msg),
     Operation(AOperation)
   {}
 
