@@ -946,7 +946,7 @@ void __fastcall TSCPFileSystem::DetectReturnVar()
         // if fatal error occurs, we need to exit ...
         throw;
       }
-      catch (std::exception &E)
+      catch (Exception &E)
       {
         // ...otherwise, we will try next variable (if any)
         Success = false;
@@ -1394,8 +1394,8 @@ void __fastcall TSCPFileSystem::CalculateFilesChecksum(const UnicodeString & /*A
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TSCPFileSystem::CustomCommandOnFile(const UnicodeString FileName,
-  const TRemoteFile * File, UnicodeString Command, int Params,
-  TCaptureOutputEvent * OutputEvent)
+    const TRemoteFile * File, UnicodeString Command, int Params,
+    TCaptureOutputEvent * OutputEvent)
 {
   assert(File);
   bool Dir = File->GetIsDirectory() && !File->GetIsSymLink();
@@ -1842,7 +1842,7 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString FileName,
     }
     else
     {
-      UnicodeString AbsoluteFileName = FTerminal->AbsolutePath(DestFileName, false); // TargetDir +
+      UnicodeString AbsoluteFileName = FTerminal->AbsolutePath(/* TargetDir + */DestFileName, false);
       assert(File);
 
       // File is regular file (not directory)
@@ -2508,7 +2508,7 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
             FSecureShell->SendNull();
             return;
 
-          case 'T':
+          case L'T':
             unsigned long MTime, ATime;
             if (swscanf(Line.c_str(), L"%ld %*d %ld %*d",  &MTime, &ATime) == 2)
             {
@@ -2528,8 +2528,8 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
               SCPError(LoadStr(SCP_ILLEGAL_TIME_FORMAT), False);
             }
 
-          case 'C':
-          case 'D':
+          case L'C':
+          case L'D':
             break; // continue pass switch{}
 
           default:
@@ -2610,7 +2610,7 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
           continue;
         }
           else
-        if (Ctrl == 'C')
+        if (Ctrl == L'C')
         {
           TDownloadSessionAction Action(FTerminal->GetActionLog());
           Action.FileName(AbsoluteFileName);
