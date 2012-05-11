@@ -986,10 +986,10 @@ static void __fastcall EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Y
 
       if (Result >= EncodeDateVerbose(Year, Month, 1))
       {
-        Result = Result - 7;
+        Result -= 7;
       }
     }
-    Result = Result + EncodeTimeVerbose(Date.wHour, Date.wMinute, Date.wSecond,
+    Result += EncodeTimeVerbose(Date.wHour, Date.wMinute, Date.wSecond,
       Date.wMilliseconds);
   }
   else
@@ -1052,21 +1052,21 @@ TDateTime __fastcall UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode)
     if ((DSTMode == dstmWin) || (DSTMode == dstmUnix))
     {
       const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
-      Result = Result - CurrentParams->CurrentDifference;
+      Result -= CurrentParams->CurrentDifference;
     }
     else if (DSTMode == dstmKeep)
     {
-      Result = Result - Params->BaseDifference;
+      Result -= Params->BaseDifference;
     }
   }
   else
   {
-    Result = Result - Params->BaseDifference;
+    Result -= Params->BaseDifference;
   }
 
   if ((DSTMode == dstmUnix) || (DSTMode == dstmKeep))
   {
-    Result = Result - (IsDateInDST(Result) ?
+    Result -= (IsDateInDST(Result) ?
       Params->DaylightDifference : Params->StandardDifference);
   }
 
@@ -1223,10 +1223,10 @@ TDateTime __fastcall ConvertTimestampToUTC(TDateTime DateTime)
 {
 
   const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
-  DateTime = DateTime + CurrentParams->CurrentDifference;
+  DateTime += CurrentParams->CurrentDifference;
 
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
-  DateTime = DateTime +
+  DateTime +=
     (IsDateInDST(DateTime) ?
       Params->DaylightDifference : Params->StandardDifference);
 
