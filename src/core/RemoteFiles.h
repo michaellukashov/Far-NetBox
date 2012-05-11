@@ -411,7 +411,7 @@ public:
   void __fastcall Serialize(UnicodeString & Data);
   void __fastcall Deserialize(const UnicodeString Data);
 
-#ifdef _MSC_VER
+#ifndef _MSC_VER
   __property bool IsEmpty = { read = GetIsEmpty };
 #else
   bool __fastcall GetIsEmpty() const;
