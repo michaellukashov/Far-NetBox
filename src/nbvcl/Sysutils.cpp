@@ -707,11 +707,18 @@ UnicodeString WrapText(const UnicodeString Line, int MaxCol)
 }
 
 //---------------------------------------------------------------------------
-UnicodeString TranslateExceptionMessage(const std::exception * E)
+UnicodeString TranslateExceptionMessage(std::exception * E)
 {
   if (E)
   {
-    return MB2W(E->what());
+    if (dynamic_cast<Exception *>(E) != NULL)
+    {
+      return dynamic_cast<Exception *>(E)->GetMessage();
+    }
+    else
+    {
+      return E->what();
+    }
   }
   else
   {

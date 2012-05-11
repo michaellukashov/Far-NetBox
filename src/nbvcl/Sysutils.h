@@ -210,7 +210,7 @@ UnicodeString FmtLoadStr(int id, ...);
 //---------------------------------------------------------------------------
 UnicodeString WrapText(const UnicodeString Line, int MaxCol = 40);
 //---------------------------------------------------------------------------
-UnicodeString TranslateExceptionMessage(const std::exception *E);
+UnicodeString TranslateExceptionMessage(std::exception * E);
 //---------------------------------------------------------------------------
 
 void AppendWChar(UnicodeString &str, const wchar_t ch);
