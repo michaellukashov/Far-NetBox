@@ -351,7 +351,8 @@ void __fastcall TSecureShell::Open()
   char * RealHost = NULL;
   FreeBackend(); // in case we are reconnecting
   const char * InitError = FBackend->init(this, &FBackendHandle, FConfig,
-    (char *)AnsiString(FSessionData->GetHostNameExpanded()).c_str(), FSessionData->GetPortNumber(), &RealHost, 0,
+    const_cast<char *>(W2MB(FSessionData->GetHostNameExpanded().c_str(), FSessionData->GetCodePageAsNumber()).c_str()), FSessionData->GetPortNumber(), &RealHost, 0,
+    // (char *)AnsiString(FSessionData->GetHostNameExpanded()).c_str(), FSessionData->GetPortNumber(), &RealHost, 0,
     FConfig->tcp_keepalives);
   sfree(RealHost);
   if (InitError)
