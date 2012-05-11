@@ -1474,7 +1474,7 @@ void __fastcall TSessionData::SetPassword(UnicodeString avalue)
   SET_SESSION_PROPERTY(Password);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall TSessionData::GetPassword()
+UnicodeString __fastcall TSessionData::GetPassword() const
 {
   return DecryptPassword(FPassword, GetUserName() + GetHostName());
 }
@@ -2297,7 +2297,7 @@ UnicodeString __fastcall TSessionData::GetLocalName()
 TLoginType __fastcall TSessionData::GetLoginType() const
 {
   return (GetUserName() == CONST_LOGIN_ANONYMOUS) && GetPassword().IsEmpty() ?
-         ltAnonymous : ltNormal;
+    ltAnonymous : ltNormal;
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionData::SetLoginType(TLoginType value)

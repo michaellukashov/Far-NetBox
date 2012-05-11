@@ -172,7 +172,7 @@ public:
   void __fastcall SetUserName(UnicodeString value);
   UnicodeString __fastcall GetUserNameExpanded();
   void __fastcall SetPassword(UnicodeString value);
-  UnicodeString __fastcall GetPassword();
+  UnicodeString __fastcall GetPassword() const;
   void __fastcall SetPasswordless(bool value);
   void __fastcall SetPingInterval(int value);
   void __fastcall SetTryAgent(bool value);
@@ -581,7 +581,7 @@ class TStoredSessionList : public TNamedObjectList
 public:
   explicit /* __fastcall */ TStoredSessionList(bool aReadOnly = false);
   virtual /* __fastcall */ ~TStoredSessionList();
-  // void __fastcall Load(const UnicodeString aKey, bool UseDefaults);
+  void __fastcall Load(const UnicodeString aKey, bool UseDefaults);
   void __fastcall Load();
   void __fastcall Save(bool All, bool Explicit);
   void __fastcall Saved();
