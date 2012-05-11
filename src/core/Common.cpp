@@ -324,24 +324,6 @@ UnicodeString __fastcall GetShellFolderPath(int CSIdl)
   {
     Result = Path;
   }
-/*
-  HMODULE Shell32Lib = LoadLibrary(L"SHELL32.DLL");
-  if (Shell32Lib != NULL)
-  {
-    typedef HRESULT (__stdcall *PFNSHGETFOLDERPATH)(HWND, int, HANDLE, DWORD, LPTSTR);
-    PFNSHGETFOLDERPATH SHGetFolderPath = reinterpret_cast<PFNSHGETFOLDERPATH>(
-                                           GetProcAddress(Shell32Lib, "SHGetFolderPathA"));
-    if (SHGetFolderPath != NULL)
-    {
-      wchar_t Path[2 * MAX_PATH + 10] = L"\0";
-      const int SHGFP_TYPE_CURRENT = 0;
-      if (SUCCEEDED(SHGetFolderPath(NULL, CSIdl, NULL, SHGFP_TYPE_CURRENT, Path)))
-      {
-        Result = Path;
-      }
-    }
-  }
-*/
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -830,33 +812,6 @@ void __fastcall ProcessLocalDirectory(UnicodeString DirName,
     }
 #endif
   }
-/*
-  WIN32_FIND_DATA SearchRec;
-
-  UnicodeString dirName = IncludeTrailingBackslash(DirName);
-  UnicodeString FileName = dirName + L"*.*";
-  HANDLE h = ::FindFirstFileW(FileName.c_str(), &SearchRec);
-  if (h != INVALID_HANDLE_VALUE)
-  {
-    BOOST_SCOPE_EXIT ( (&h) )
-    {
-      ::FindClose(h);
-    } BOOST_SCOPE_EXIT_END
-    processlocalfile_signal_type sig;
-    sig.connect(CallBackFunc);
-    do
-    {
-      if ((wcscmp(SearchRec.cFileName, THISDIRECTORY) != 0) && (wcscmp(SearchRec.cFileName, PARENTDIRECTORY) != 0))
-      {
-        if ((SearchRec.dwFileAttributes & FindAttrs) != 0)
-        {
-          sig(dirName + SearchRec.cFileName, SearchRec, Param);
-        }
-      }
-    }
-    while (::FindNextFile(h, &SearchRec));
-  }
-*/
 }
 //---------------------------------------------------------------------------
 TDateTime __fastcall EncodeDateVerbose(Word Year, Word Month, Word Day)
@@ -884,7 +839,6 @@ TDateTime __fastcall EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec)
   }
   return TDateTime();
 }
-
 //---------------------------------------------------------------------------
 struct TDateTimeParams
 {
