@@ -1253,7 +1253,7 @@ void __fastcall TActionLog::Add(const UnicodeString & Line)
       FConfiguration->SetLogActions(false);
       try
       {
-        throw ExtException(&EFMTLOAD(LOG_GEN_ERROR));
+        throw ExtException(&E, FMTLOAD(LOG_GEN_ERROR));
       }
       catch (Exception &E)
       {
