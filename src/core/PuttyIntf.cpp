@@ -55,9 +55,7 @@ void __fastcall PuttyFinalize()
   random_unref();
 
   sk_cleanup();
-#ifdef MPEXT
   win_misc_cleanup();
-#endif
   DeleteCriticalSection(&noise_section);
 }
 //---------------------------------------------------------------------------
@@ -131,6 +129,7 @@ int get_userpass_input(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
   int Result;
   TStringList Prompts;
   TStringList Results;
+  // try
   {
     for (int Index = 0; Index < static_cast<int>(p->n_prompts); Index++)
     {
@@ -145,10 +144,7 @@ int get_userpass_input(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
       for (int Index = 0; Index < int(p->n_prompts); Index++)
       {
         prompt_t * Prompt = p->prompts[Index];
-        // strncpy(Prompt->result, AnsiString(Results->Strings[Index]).c_str(), Prompt->result_len);
-        std::string Str = W2MB(Results.GetStrings(Index).c_str());
-        Prompt->result = _strdup(Str.c_str()); // TODO: check memleaks
-        Prompt->result_len = Str.size();
+        strncpy(Prompt->result, AnsiString(Results.GetStrings(Index)).c_str(), Prompt->result_len);
         Prompt->result[Prompt->result_len - 1] = '\0';
       }
       Result = 1;
@@ -181,7 +177,7 @@ void logevent(void * frontend, const char * string)
   // Frontend maybe NULL here
   if (frontend != NULL)
   {
-    (static_cast<TSecureShell *>(frontend))->PuttyLogEvent(MB2W(string));
+    (static_cast<TSecureShell *>(frontend))->PuttyLogEvent(string);
   }
 }
 //---------------------------------------------------------------------------
@@ -190,12 +186,12 @@ void connection_fatal(void * frontend, char * fmt, ...)
   va_list Param;
   char Buf[200];
   va_start(Param, fmt);
-  vsnprintf_s(Buf, sizeof(Buf), fmt, Param); \
-  Buf[sizeof(Buf) - 1] = '\0'; \
+  vsnprintf(Buf, LENOF(Buf), fmt, Param); \
+  Buf[LENOF(Buf) - 1] = '\0'; \
   va_end(Param);
 
   assert(frontend != NULL);
-  (static_cast<TSecureShell *>(frontend))->PuttyFatalError(MB2W(Buf));
+  (static_cast<TSecureShell *>(frontend))->PuttyFatalError(Buf);
 }
 //---------------------------------------------------------------------------
 int verify_ssh_host_key(void * frontend, char * host, int port, char * keytype,
@@ -203,7 +199,7 @@ int verify_ssh_host_key(void * frontend, char * host, int port, char * keytype,
   void * /*ctx*/)
 {
   assert(frontend != NULL);
-  (static_cast<TSecureShell *>(frontend))->VerifyHostKey(MB2W(host), port, MB2W(keytype), MB2W(keystr), MB2W(fingerprint));
+  (static_cast<TSecureShell *>(frontend))->VerifyHostKey(host, port, keytype, keystr, fingerprint);
 
   // We should return 0 when key was not confirmed, we throw exception instead.
   return 1;
@@ -213,7 +209,7 @@ int askalg(void * frontend, const char * algtype, const char * algname,
   void (* /*callback*/)(void * ctx, int result), void * /*ctx*/)
 {
   assert(frontend != NULL);
-  (static_cast<TSecureShell *>(frontend))->AskAlg(MB2W(algtype), MB2W(algname));
+  (static_cast<TSecureShell *>(frontend))->AskAlg(algtype, algname);
 
   // We should return 0 when alg was not confirmed, we throw exception instead.
   return 1;
@@ -227,20 +223,20 @@ void old_keyfile_warning(void)
 void display_banner(void * frontend, const char * banner, int size)
 {
   assert(frontend);
-  UnicodeString Banner(MB2W(std::string(banner, size).c_str()).c_str());
+  UnicodeString Banner(banner, size);
   (static_cast<TSecureShell *>(frontend))->DisplayBanner(Banner);
 }
 //---------------------------------------------------------------------------
 static void SSHFatalError(const char * Format, va_list Param)
 {
   char Buf[200];
-  vsnprintf_s(Buf, sizeof(Buf), Format, Param);
-  Buf[sizeof(Buf) - 1] = '\0';
+  vsnprintf(Buf, LENOF(Buf), Format, Param);
+  Buf[LENOF(Buf) - 1] = '\0';
 
   // Only few calls from putty\winnet.c might be connected with specific
   // TSecureShell. Otherwise called only for really fatal errors
   // like 'out of memory' from putty\ssh.c.
-  throw ESshFatal(NULL, MB2W(Buf));
+  throw ESshFatal(NULL, Buf);
 }
 //---------------------------------------------------------------------------
 void fatalbox(char * fmt, ...)
@@ -338,7 +334,7 @@ int get_remote_username(Config * cfg, char *user, size_t len)
 {
   if (*cfg->username)
   {
-    strncpy_s(user, len, cfg->username, len);
+    strncpy(user, cfg->username, len);
     user[len-1] = '\0';
   }
   else
@@ -356,7 +352,7 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
   assert(Key == HKEY_CURRENT_USER);
   USEDPARAM(Key);
 
-  UnicodeString RegKey = MB2W(SubKey);
+  UnicodeString RegKey = SubKey;
   int PuttyKeyLen = Configuration->GetPuttyRegistryStorageKey().Length();
   assert(RegKey.SubString(1, PuttyKeyLen) == Configuration->GetPuttyRegistryStorageKey());
   RegKey = RegKey.SubString(PuttyKeyLen + 1, RegKey.Length() - PuttyKeyLen);
@@ -410,10 +406,10 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
   assert(Configuration != NULL);
 
   THierarchicalStorage * Storage = reinterpret_cast<THierarchicalStorage *>(Key);
-  UnicodeString Value;
+  AnsiString Value;
   if (Storage == NULL)
   {
-    if (UnicodeString(MB2W(ValueName)) == L"RandSeedFile")
+    if (UnicodeString(ValueName) == L"RandSeedFile")
     {
       Value = Configuration->GetRandomSeedFileName();
       R = ERROR_SUCCESS;
@@ -426,9 +422,9 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
   }
   else
   {
-    if (Storage->ValueExists(MB2W(ValueName)))
+    if (Storage->ValueExists(ValueName))
     {
-      Value = Storage->ReadStringRaw(MB2W(ValueName), L"");
+      Value = Storage->ReadStringRaw(ValueName, L"");
       R = ERROR_SUCCESS;
     }
     else
@@ -442,7 +438,7 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
     assert(Type != NULL);
     *Type = REG_SZ;
     char * DataStr = reinterpret_cast<char *>(Data);
-    strncpy_s(DataStr, *DataSize, W2MB(Value.c_str()).c_str(), *DataSize);
+    strncpy(DataStr, Value.c_str(), *DataSize);
     DataStr[*DataSize - 1] = '\0';
     *DataSize = static_cast<unsigned long>(strlen(DataStr));
   }
@@ -461,8 +457,8 @@ long reg_set_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long /*R
   assert(Storage != NULL);
   if (Storage != NULL)
   {
-    std::string Value(reinterpret_cast<const char*>(Data), DataSize - 1);
-    Storage->WriteStringRaw(MB2W(ValueName), MB2W(Value.c_str()));
+    UnicodeString Value(reinterpret_cast<const char*>(Data), DataSize - 1);
+    Storage->WriteStringRaw(ValueName, Value);
   }
 
   return ERROR_SUCCESS;
@@ -486,19 +482,19 @@ TKeyType KeyType(UnicodeString FileName)
   assert(ktUnopenable == SSH_KEYTYPE_UNOPENABLE);
   assert(ktSSHCom == SSH_KEYTYPE_SSHCOM);
   Filename KeyFile;
-  ASCOPY(KeyFile.path, W2MB(FileName.c_str()));
+  ASCOPY(KeyFile.path, FileName);
   return static_cast<TKeyType>(key_type(&KeyFile));
 }
 //---------------------------------------------------------------------------
 UnicodeString KeyTypeName(TKeyType KeyType)
 {
-  return MB2W(key_type_to_str(KeyType));
+  return key_type_to_str(KeyType);
 }
 //---------------------------------------------------------------------------
 __int64 __fastcall ParseSize(UnicodeString SizeStr)
 {
-  // AnsiString AnsiSizeStr = SizeStr;
-  return parse_blocksize(W2MB(SizeStr.c_str()).c_str());
+  AnsiString AnsiSizeStr = SizeStr;
+  return parse_blocksize(AnsiSizeStr.c_str());
 }
 //---------------------------------------------------------------------------
 bool __fastcall HasGSSAPI()
