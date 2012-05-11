@@ -178,8 +178,6 @@ void __fastcall TSessionData::Default()
 
   // FTP
   SetFtpPasvMode(true);
-  SetFtpAllowEmptyPassword(false);
-  SetFtpEncryption(fesPlainFTP);
   SetFtpForcePasvIp(false);
   SetFtpAccount(L"");
   SetFtpPingInterval(30);
@@ -188,10 +186,13 @@ void __fastcall TSessionData::Default()
 
   SetFtpProxyLogonType(0); // none
 
-  SetCustomParam1(L"");
-  SetCustomParam2(L"");
+  SetFtpAllowEmptyPassword(false);
+  SetFtpEncryption(fesPlainFTP);
 
   SetSslSessionReuse(true);
+
+  SetCustomParam1(L"");
+  SetCustomParam2(L"");
 
   FNumberOfRetries = 0;
 
@@ -383,7 +384,7 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
   SetPingInterval(
     Storage->ReadInteger(L"PingInterval", GetPingInterval()/SecsPerMin)*SecsPerMin +
     PingIntervalSecs);
-  if (GetPingInterval()== 0)
+  if (GetPingInterval() == 0)
   {
     SetPingInterval(30);
   }
@@ -425,9 +426,10 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
   SetPublicKeyFile(Storage->ReadString(L"PublicKeyFile", GetPublicKeyFile()));
   SetAddressFamily(static_cast<TAddressFamily>
     (Storage->ReadInteger(L"AddressFamily", GetAddressFamily())));
-  SetCodePage(Storage->ReadString(L"CodePage", GetCodePage()));
   SetRekeyData(Storage->ReadString(L"RekeyBytes", GetRekeyData()));
   SetRekeyTime(Storage->ReadInteger(L"RekeyTime", GetRekeyTime()));
+
+  SetCodePage(Storage->ReadString(L"CodePage", GetCodePage()));
 
   SetFSProtocol(static_cast<TFSProtocol>(Storage->ReadInteger(L"FSProtocol", GetFSProtocol())));
   SetLocalDirectory(Storage->ReadString(L"LocalDirectory", GetLocalDirectory()));
@@ -540,16 +542,16 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
   READ_SFTP_BUG(SignedTS);
   #undef READ_SFTP_BUG
 
-  SetSFTPMaxVersion(static_cast<size_t>(Storage->ReadInteger(L"SFTPMaxVersion", GetSFTPMaxVersion())));
-  SetSFTPMinPacketSize(static_cast<size_t>(Storage->ReadInteger(L"SFTPMinPacketSize", GetSFTPMinPacketSize())));
-  SetSFTPMaxPacketSize(static_cast<size_t>(Storage->ReadInteger(L"SFTPMaxPacketSize", GetSFTPMaxPacketSize())));
+  SetSFTPMaxVersion(Storage->ReadInteger(L"SFTPMaxVersion", GetSFTPMaxVersion()));
+  SetSFTPMinPacketSize(Storage->ReadInteger(L"SFTPMinPacketSize", GetSFTPMinPacketSize()));
+  SetSFTPMaxPacketSize(Storage->ReadInteger(L"SFTPMaxPacketSize", GetSFTPMaxPacketSize()));
 
   SetColor(Storage->ReadInteger(L"Color", GetColor()));
 
   SetProtocolStr(Storage->ReadString(L"Protocol", GetProtocolStr()));
 
   SetTunnel(Storage->ReadBool(L"Tunnel", GetTunnel()));
-  SetTunnelPortNumber(static_cast<size_t>(Storage->ReadInteger(L"TunnelPortNumber", GetTunnelPortNumber())));
+  SetTunnelPortNumber(Storage->ReadInteger(L"TunnelPortNumber", GetTunnelPortNumber()));
   SetTunnelUserName(Storage->ReadString(L"TunnelUserName", GetTunnelUserName()));
   // must be loaded after TunnelUserName,
   // because TunnelHostName may be in format user@host
@@ -567,19 +569,20 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
     }
   }
   SetTunnelPublicKeyFile(Storage->ReadString(L"TunnelPublicKeyFile", GetTunnelPublicKeyFile()));
-  SetTunnelLocalPortNumber(static_cast<size_t>(Storage->ReadInteger(L"TunnelLocalPortNumber", GetTunnelLocalPortNumber())));
+  SetTunnelLocalPortNumber(Storage->ReadInteger(L"TunnelLocalPortNumber", GetTunnelLocalPortNumber()));
 
   // Ftp prefix
   SetFtpPasvMode(Storage->ReadBool(L"FtpPasvMode", GetFtpPasvMode()));
   SetFtpForcePasvIp(Storage->ReadBool(L"FtpForcePasvIp", GetFtpForcePasvIp()));
-  SetFtpAllowEmptyPassword(Storage->ReadBool(L"FtpAllowEmptyPassword", GetFtpAllowEmptyPassword()));
-  SetFtpEncryption(static_cast<TFtpEncryptionSwitch>(Storage->ReadInteger(L"FtpEncryption", GetFtpEncryption())));
   SetFtpAccount(Storage->ReadString(L"FtpAccount", GetFtpAccount()));
   SetFtpPingInterval(Storage->ReadInteger(L"FtpPingInterval", GetFtpPingInterval()));
   SetFtpPingType(static_cast<TPingType>(Storage->ReadInteger(L"FtpPingType", GetFtpPingType())));
   SetFtps(static_cast<TFtps>(Storage->ReadInteger(L"Ftps", GetFtps())));
 
   SetFtpProxyLogonType(Storage->ReadInteger(L"FtpProxyLogonType", GetFtpProxyLogonType()));
+
+  SetFtpAllowEmptyPassword(Storage->ReadBool(L"FtpAllowEmptyPassword", GetFtpAllowEmptyPassword()));
+  SetFtpEncryption(static_cast<TFtpEncryptionSwitch>(Storage->ReadInteger(L"FtpEncryption", GetFtpEncryption())));
 
   SetCustomParam1(Storage->ReadString(L"CustomParam1", GetCustomParam1()));
   SetCustomParam2(Storage->ReadString(L"CustomParam2", GetCustomParam2()));
@@ -698,16 +701,17 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
     WRITE_DATA_EX(String, L"Cipher", GetCipherList(), );
     WRITE_DATA_EX(String, L"KEX", GetKexList(), );
     WRITE_DATA_EX(Integer, L"AddressFamily", GetAddressFamily(), );
-    WRITE_DATA_EX(String, L"CodePage", GetCodePage(), );
     WRITE_DATA_EX(String, L"RekeyBytes", GetRekeyData(), );
     WRITE_DATA_EX(Integer, L"RekeyTime", GetRekeyTime(), );
 
     WRITE_DATA_EX(Bool, L"TcpNoDelay", GetTcpNoDelay(), );
 
+    WRITE_DATA_EX(String, L"CodePage", GetCodePage(), );
+
     if (PuttyExport)
     {
-      WRITE_DATA_EX(String, L"UserName", GetUserName(), );
-      WRITE_DATA_EX(String, L"PublicKeyFile", GetPublicKeyFile(), );
+      WRITE_DATA_EX(StringRaw, L"UserName", GetUserName(), );
+      WRITE_DATA_EX(StringRaw, L"PublicKeyFile", GetPublicKeyFile(), );
     }
     else
     {
@@ -850,8 +854,6 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
 
       WRITE_DATA_EX(Bool, L"FtpPasvMode", GetFtpPasvMode(), );
       WRITE_DATA_EX(Bool, L"FtpForcePasvIp", GetFtpForcePasvIp(), );
-      WRITE_DATA_EX(Bool, L"FtpAllowEmptyPassword", GetFtpAllowEmptyPassword(), );
-      WRITE_DATA_EX(Integer, L"FtpEncryption", GetFtpEncryption(), );
       WRITE_DATA_EX(String, L"FtpAccount", GetFtpAccount(), );
       WRITE_DATA_EX(Integer, L"FtpPingInterval", GetFtpPingInterval(), );
       WRITE_DATA_EX(Integer, L"FtpPingType", GetFtpPingType(), );
@@ -862,6 +864,8 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
       WRITE_DATA_EX(String, L"CustomParam1", GetCustomParam1(), );
       WRITE_DATA_EX(String, L"CustomParam2", GetCustomParam2(), );
 
+      WRITE_DATA_EX(Bool, L"FtpAllowEmptyPassword", GetFtpAllowEmptyPassword(), );
+      WRITE_DATA_EX(Integer, L"FtpEncryption", GetFtpEncryption(), );
       WRITE_DATA_EX(Bool, L"SslSessionReuse", GetSslSessionReuse(), );
     }
 
@@ -1159,7 +1163,7 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
       SetPassword(DecodeUrlChars(UserInfo));
       SetPasswordless(GetPassword().IsEmpty() && PasswordSeparator);
 
-      if (PSlash < Url.Length())
+      if (PSlash <= Url.Length())
       {
         ARemoteDirectory = Url.SubString(PSlash, Url.Length() - PSlash + 1);
       }
@@ -1470,15 +1474,9 @@ void __fastcall TSessionData::SetPassword(UnicodeString avalue)
   SET_SESSION_PROPERTY(Password);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall TSessionData::GetPassword() const
+UnicodeString __fastcall TSessionData::GetPassword()
 {
-#ifdef NETBOX_DEBUG
-  UnicodeString Pass = DecryptPassword(FPassword, GetUserName() + GetHostName());
-  DEBUG_PRINTF(L"Pass = %s", Pass.c_str());
-  return Pass;
-#else
   return DecryptPassword(FPassword, GetUserName() + GetHostName());
-#endif
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionData::SetPasswordless(bool value)
@@ -1825,7 +1823,7 @@ UnicodeString __fastcall TSessionData::GetSessionName()
     Result = GetName();
     if (GetHidden())
     {
-      Result = Result.SubString(TNamedObjectList::HiddenPrefix.Length(), Result.Length() - TNamedObjectList::HiddenPrefix.Length());
+      Result = Result.SubString(TNamedObjectList::HiddenPrefix.Length() + 1, Result.Length() - TNamedObjectList::HiddenPrefix.Length());
     }
   }
   else
@@ -2086,12 +2084,12 @@ void __fastcall TSessionData::SetSFTPMaxVersion(int value)
   SET_SESSION_PROPERTY(SFTPMaxVersion);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetSFTPMinPacketSize(int value)
+void __fastcall TSessionData::SetSFTPMinPacketSize(unsigned long value)
 {
   SET_SESSION_PROPERTY(SFTPMinPacketSize);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetSFTPMaxPacketSize(int value)
+void __fastcall TSessionData::SetSFTPMaxPacketSize(unsigned long value)
 {
   SET_SESSION_PROPERTY(SFTPMaxPacketSize);
 }

@@ -123,8 +123,8 @@ private:
   int FSFTPUploadQueue;
   int FSFTPListingQueue;
   int FSFTPMaxVersion;
-  int FSFTPMinPacketSize;
-  int FSFTPMaxPacketSize;
+  unsigned long FSFTPMinPacketSize;
+  unsigned long FSFTPMaxPacketSize;
   TDSTMode FDSTMode;
   TAutoSwitch FSFTPBugs[SFTP_BUG_COUNT];
   bool FDeleteToRecycleBin;
@@ -134,7 +134,6 @@ private:
   TAutoSwitch FSCPLsFullTime;
   TAutoSwitch FFtpListAll;
   TAddressFamily FAddressFamily;
-  UnicodeString FCodePage;
   UnicodeString FRekeyData;
   unsigned int FRekeyTime;
   int FColor;
@@ -148,9 +147,6 @@ private:
   UnicodeString FTunnelPortFwd;
   bool FFtpPasvMode;
   bool FFtpForcePasvIp;
-  bool FFtpAllowEmptyPassword;
-  TFtpEncryptionSwitch FFtpEncryption;
-  TLoginType FLoginType;
   UnicodeString FFtpAccount;
   int FFtpPingInterval;
   TPingType FFtpPingType;
@@ -162,6 +158,10 @@ private:
   int FOrigPortNumber;
   TProxyMethod FOrigProxyMethod;
   TSessionSource FSource;
+  UnicodeString FCodePage;
+  bool FFtpAllowEmptyPassword;
+  TFtpEncryptionSwitch FFtpEncryption;
+  TLoginType FLoginType;
   int FNumberOfRetries;
   bool FSslSessionReuse;
 
@@ -172,7 +172,7 @@ public:
   void __fastcall SetUserName(UnicodeString value);
   UnicodeString __fastcall GetUserNameExpanded();
   void __fastcall SetPassword(UnicodeString value);
-  UnicodeString __fastcall GetPassword() const;
+  UnicodeString __fastcall GetPassword();
   void __fastcall SetPasswordless(bool value);
   void __fastcall SetPingInterval(int value);
   void __fastcall SetTryAgent(bool value);
@@ -260,12 +260,12 @@ public:
   void __fastcall SetCustomParam1(UnicodeString value);
   void __fastcall SetCustomParam2(UnicodeString value);
   void __fastcall SetResolveSymlinks(bool value);
-  // void __fastcall SetSFTPDownloadQueue(int value);
-  // void __fastcall SetSFTPUploadQueue(int value);
-  // void __fastcall SetSFTPListingQueue(int value);
+  void __fastcall SetSFTPDownloadQueue(int value);
+  void __fastcall SetSFTPUploadQueue(int value);
+  void __fastcall SetSFTPListingQueue(int value);
   void __fastcall SetSFTPMaxVersion(int value);
-  void __fastcall SetSFTPMinPacketSize(int value);
-  void __fastcall SetSFTPMaxPacketSize(int value);
+  void __fastcall SetSFTPMinPacketSize(unsigned long value);
+  void __fastcall SetSFTPMaxPacketSize(unsigned long value);
   void __fastcall SetSFTPBug(TSftpBug Bug, TAutoSwitch value);
   TAutoSwitch __fastcall GetSFTPBug(TSftpBug Bug) const;
   void __fastcall SetSCPLsFullTime(TAutoSwitch value);
@@ -278,7 +278,6 @@ public:
   void __fastcall SetRecycleBinPath(UnicodeString value);
   void __fastcall SetPostLoginCommands(UnicodeString value);
   void __fastcall SetAddressFamily(TAddressFamily value);
-  void __fastcall SetCodePage(const UnicodeString value);
   void __fastcall SetRekeyData(UnicodeString value);
   void __fastcall SetRekeyTime(unsigned int value);
   void __fastcall SetColor(int value);
@@ -314,6 +313,7 @@ public:
   __property UnicodeString InternalStorageKey = { read = GetInternalStorageKey };
 #endif
 
+  void __fastcall SetCodePage(const UnicodeString value);
 public:
   explicit TSessionData(UnicodeString aName);
   void __fastcall Default();
@@ -526,11 +526,8 @@ public:
   UnicodeString __fastcall GetCustomParam2() const { return FCustomParam2; }
   bool __fastcall GetResolveSymlinks() const { return FResolveSymlinks; }
   int __fastcall GetSFTPDownloadQueue() const { return FSFTPDownloadQueue; }
-  void __fastcall SetSFTPDownloadQueue(int value);
   int __fastcall GetSFTPUploadQueue() const { return FSFTPUploadQueue; }
-  void __fastcall SetSFTPUploadQueue(int value);
   int __fastcall GetSFTPListingQueue() const { return FSFTPListingQueue; }
-  void __fastcall SetSFTPListingQueue(int value);
   int __fastcall GetSFTPMaxVersion() const { return FSFTPMaxVersion; }
   int __fastcall GetSFTPMinPacketSize() const { return FSFTPMinPacketSize; }
   int __fastcall GetSFTPMaxPacketSize() const { return FSFTPMaxPacketSize; }
@@ -582,9 +579,9 @@ private:
 class TStoredSessionList : public TNamedObjectList
 {
 public:
-  explicit TStoredSessionList(bool aReadOnly = false);
-  virtual ~TStoredSessionList();
-  void __fastcall Load(const UnicodeString aKey, bool UseDefaults);
+  explicit /* __fastcall */ TStoredSessionList(bool aReadOnly = false);
+  virtual /* __fastcall */ ~TStoredSessionList();
+  // void __fastcall Load(const UnicodeString aKey, bool UseDefaults);
   void __fastcall Load();
   void __fastcall Save(bool All, bool Explicit);
   void __fastcall Saved();
