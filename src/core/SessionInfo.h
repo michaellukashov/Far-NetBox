@@ -98,9 +98,7 @@ typedef boost::signal3<void, const UnicodeString & /* FileName */, const Unicode
 typedef calculatedchecksum_signal_type::slot_type TCalculatedChecksumEvent;
 #endif
 //---------------------------------------------------------------------------
-// class TCriticalSection;
 class TSessionActionRecord;
-// class TSessionLog;
 class TActionLog;
 //---------------------------------------------------------------------------
 class TSessionAction
@@ -224,11 +222,11 @@ friend class TSessionAction;
 friend class TSessionActionRecord;
 public:
   explicit /* __fastcall */ TSessionLog(TSessionUI* UI, TSessionData * SessionData,
-    TConfiguration *Configuration);
+    TConfiguration * Configuration);
   virtual /* __fastcall */ ~TSessionLog();
   HIDESBASE  void __fastcall Add(TLogLineType Type, const UnicodeString & Line);
   void __fastcall AddStartupInfo();
-  void __fastcall AddException(Exception *E);
+  void __fastcall AddException(Exception * E);
   void __fastcall AddSeparator();
 
   virtual void __fastcall Clear();

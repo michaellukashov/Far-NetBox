@@ -567,7 +567,7 @@ void __fastcall TCallSessionAction::AddOutput(const UnicodeString & Output, bool
   }
 }
 //---------------------------------------------------------------------------
-TLsSessionAction::TLsSessionAction(TActionLog * Log,
+/* __fastcall */ TLsSessionAction::TLsSessionAction(TActionLog * Log,
     const UnicodeString & Destination) :
   TSessionAction(Log, laLs)
 {
@@ -838,7 +838,7 @@ void __fastcall TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
       FConfiguration->SetLogging(false);
       try
       {
-        throw ExtException(FMTLOAD(LOG_GEN_ERROR), &E);
+        throw ExtException(&E, FMTLOAD(LOG_GEN_ERROR));
       }
       catch (Exception &E)
       {
@@ -890,8 +890,8 @@ void __fastcall TSessionLog::CloseLogFile()
 {
   if (FFile != NULL)
   {
-     fclose(static_cast<FILE *>(FFile));
-     FFile = NULL;
+    fclose(static_cast<FILE *>(FFile));
+    FFile = NULL;
   }
   FCurrentLogFileName = L"";
   FCurrentFileName = L"";
@@ -915,7 +915,7 @@ void __fastcall TSessionLog::OpenLogFile()
     FConfiguration->SetLogFileName(UnicodeString());
     try
     {
-      throw ExtException(FMTLOAD(LOG_GEN_ERROR), &E);
+      throw ExtException(&E, FMTLOAD(LOG_GEN_ERROR));
     }
     catch (Exception & E)
     {
@@ -1253,7 +1253,7 @@ void __fastcall TActionLog::Add(const UnicodeString & Line)
       FConfiguration->SetLogActions(false);
       try
       {
-        throw ExtException(FMTLOAD(LOG_GEN_ERROR), &E);
+        throw ExtException(&EFMTLOAD(LOG_GEN_ERROR));
       }
       catch (Exception &E)
       {
@@ -1348,7 +1348,7 @@ void __fastcall TActionLog::OpenLogFile()
     FConfiguration->SetLogActions(false);
     try
     {
-      throw ExtException(FMTLOAD(LOG_GEN_ERROR), &E);
+      throw ExtException(&E, FMTLOAD(LOG_GEN_ERROR));
     }
     catch (Exception & E)
     {
