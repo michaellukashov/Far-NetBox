@@ -40,32 +40,30 @@ const TDayTable MonthDays[] =
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 /* __fastcall */ Exception::Exception(Exception * E) :
-  std::exception(E->what())
-{
-  // AddMoreMessages(E);
-}
-//---------------------------------------------------------------------------
-/* __fastcall */ Exception::Exception(Exception & E) :
-  std::exception(E.what())
+  std::exception(E ? E->what() : ""),
+  FMessage(E ? E->GetMessage() : L"")
 {
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ Exception::Exception(const UnicodeString Msg) :
-  std::exception(W2MB(Msg.c_str()).c_str())
+/* __fastcall */ Exception::Exception(UnicodeString Msg) :
+  std::exception(""),
+  FMessage(Msg)
 {
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ Exception::Exception(const wchar_t *Msg) :
-  std::exception(W2MB(Msg).c_str())
+  std::exception(""),
+  FMessage(Msg)
 {
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ Exception::Exception(std::exception * E) :
-  std::exception(E->what())
+  std::exception(E ? E->what() : "")
 {
 }
-/* __fastcall */ Exception::Exception(const UnicodeString Msg, int AHelpContext) :
-  std::exception(W2MB(Msg.c_str()).c_str())
+/* __fastcall */ Exception::Exception(UnicodeString Msg, int AHelpContext) :
+  std::exception(""),
+  FMessage(Msg)
 {
   // TODO: FHelpContext = AHelpContext
 }
