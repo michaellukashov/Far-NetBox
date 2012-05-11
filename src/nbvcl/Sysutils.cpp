@@ -38,6 +38,28 @@ const TDayTable MonthDays[] =
 };
 
 //---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+/* __fastcall */ Exception::Exception(Exception * E) :
+  std::exception("")
+{
+  // AddMoreMessages(E);
+}
+//---------------------------------------------------------------------------
+/* __fastcall */ Exception::Exception(Exception & E) throw() :
+  std::exception(E.what())
+{
+}
+//---------------------------------------------------------------------------
+/* __fastcall */ Exception::Exception(UnicodeString Msg) :
+  std::exception(W2MB(Msg.c_str()).c_str())
+{
+}
+//---------------------------------------------------------------------------
+/* __fastcall */ Exception::Exception(std::exception * E) :
+  std::exception(E->what())
+{
+}
+//---------------------------------------------------------------------------
 UnicodeString IntToStr(int value)
 {
   std::string result = boost::lexical_cast<std::string>(value);

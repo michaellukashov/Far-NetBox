@@ -10,13 +10,34 @@
 
 #include "Classes.h"
 #include "UnicodeString.hpp"
-#include "Exceptions.h"
+// #include "Exceptions.h"
 #endif
 
 namespace Sysutils {
+
 //---------------------------------------------------------------------------
 typedef int TDayTable[12];
 extern const TDayTable MonthDays[];
+
+//---------------------------------------------------------------------------
+class Exception : public std::exception, public TObject
+{
+public:
+  explicit /* __fastcall */ Exception(Exception * E);
+  explicit /* __fastcall */ Exception(Exception & E);
+  explicit /* __fastcall */ Exception(UnicodeString Msg);
+  explicit /* __fastcall */ Exception(std::exception * E);
+  template<typename T>
+  bool InheritsFrom() const { return dynamic_cast<const T *>(this) != NULL; }
+
+  // UnicodeString GetHelpKeyword() const { return FHelpKeyword; }
+  const UnicodeString GetMessage() const { return FMessage; }
+  void SetMessage(const UnicodeString value) { FMessage = value; }
+protected:
+  UnicodeString FMessage;
+  // UnicodeString FHelpKeyword;
+};
+
 //---------------------------------------------------------------------------
 
 UnicodeString ExtractShortPathName(const UnicodeString Path1);
@@ -229,12 +250,11 @@ int FindClose(TSearchRec & Rec);
 void InitPlatformId();
 bool Win32Check(bool RetVal);
 //---------------------------------------------------------------------------
-class EConvertError : public ExtException
+class EConvertError : public Exception
 {
-  typedef ExtException parent;
 public:
   EConvertError(const UnicodeString Msg) :
-    parent(Msg, NULL)
+    Exception(Msg)
   {}
 };
 
