@@ -718,7 +718,7 @@ private:
         reinterpret_cast<LPSTR>(const_cast<unsigned char *>(Data.c_str())), Size-1, nullptr, nullptr);
       Data[Size-1] = 0;
     }
-    Data = Data.c_str();
+    // Data = Data.c_str();
   }
   void Init(const char * Str, int Length)
   {
@@ -728,7 +728,7 @@ private:
       memmove(const_cast<unsigned char *>(Data.c_str()), Str, Length);
       // Data[Length-1] = 0;
     }
-    Data = Data.c_str();
+    // Data = Data.c_str();
   }
   void Init(const unsigned char * Str, int Length)
   {
@@ -738,7 +738,7 @@ private:
       memmove(const_cast<unsigned char *>(Data.c_str()), Str, Length);
       // Data[Length-1] = 0;
     }
-    Data = Data.c_str();
+    // Data = Data.c_str();
   }
 
   typedef std::basic_string<unsigned char> rawstring_t;
