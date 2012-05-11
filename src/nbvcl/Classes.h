@@ -402,14 +402,35 @@ public:
         FValue += rhs.FValue;
         return *this;
     }
+    TDateTime &operator += (const TDateTime &rhs)
+    {
+        FValue += rhs.FValue;
+        return *this;
+    }
+    TDateTime &operator += (double val)
+    {
+        FValue += val;
+        return *this;
+    }
     TDateTime &operator - (const TDateTime &rhs)
     {
         FValue -= rhs.FValue;
         return *this;
     }
-    void operator = (double value)
+    TDateTime &operator -= (const TDateTime &rhs)
+    {
+        FValue -= rhs.FValue;
+        return *this;
+    }
+    TDateTime &operator -= (double val)
+    {
+        FValue -= val;
+        return *this;
+    }
+    TDateTime &operator = (double value)
     {
         FValue = value;
+        return *this;
     }
     bool operator == (const TDateTime &rhs)
     {
