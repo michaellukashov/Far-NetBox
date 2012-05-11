@@ -482,7 +482,7 @@ TKeyType KeyType(UnicodeString FileName)
   assert(ktUnopenable == SSH_KEYTYPE_UNOPENABLE);
   assert(ktSSHCom == SSH_KEYTYPE_SSHCOM);
   Filename KeyFile;
-  ASCOPY(KeyFile.path, FileName);
+  ASCOPY(KeyFile.path, FileName.c_str());
   return static_cast<TKeyType>(key_type(&KeyFile));
 }
 //---------------------------------------------------------------------------

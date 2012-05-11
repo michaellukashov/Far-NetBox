@@ -15,13 +15,13 @@
 
 #endif
 //---------------------------------------------------------------------------
-#define EXCEPTION throw ExtException(L"", NULL)
+#define EXCEPTION throw ExtException(NULL, L"")
 #define THROWOSIFFALSE(C) if (!(C)) RaiseLastOSError();
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = NULL; delete PObj; }
 #define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
 #define ASCOPY(dest, source) \
   { \
-    std::string CopyBuf = source; \
+    AnsiString CopyBuf = source; \
     strncpy(dest, CopyBuf.c_str(), LENOF(dest)); \
     dest[LENOF(dest)-1] = '\0'; \
   }

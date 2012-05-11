@@ -163,8 +163,8 @@ void __fastcall TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, b
   ClearConfig(cfg);
 
   // user-configurable settings
-  ASCOPY(cfg->host, W2MB(Data->GetHostNameExpanded(), Data->GetCodePageAsNumber()));
-  ASCOPY(cfg->username, W2MB(Data->GetUserNameExpanded(), Data->GetCodePageAsNumber()));
+  ASCOPY(cfg->host, Data->GetHostNameExpanded());
+  ASCOPY(cfg->username, Data->GetUserNameExpanded());
   cfg->port = Data->GetPortNumber();
   cfg->protocol = PROT_SSH;
   // always set 0, as we will handle keepalives ourselves to avoid
@@ -174,7 +174,7 @@ void __fastcall TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, b
   cfg->tryagent = Data->GetTryAgent();
   cfg->agentfwd = Data->GetAgentFwd();
   cfg->addressfamily = Data->GetAddressFamily();
-  ASCOPY(cfg->ssh_rekey_data, W2MB(Data->GetRekeyData(), Data->GetCodePageAsNumber()));
+  ASCOPY(cfg->ssh_rekey_data, Data->GetRekeyData());
   cfg->ssh_rekey_time = Data->GetRekeyTime();
 
   for (int c = 0; c < CIPHER_COUNT; c++)
@@ -209,7 +209,7 @@ void __fastcall TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, b
   UnicodeString SPublicKeyFile = Data->GetPublicKeyFile();
   if (SPublicKeyFile.IsEmpty()) { SPublicKeyFile = Configuration->GetDefaultKeyFile(); }
   SPublicKeyFile = StripPathQuotes(ExpandEnvironmentVariables(SPublicKeyFile));
-  ASCOPY(cfg->keyfile.path, W2MB(SPublicKeyFile.c_str(), Data->GetCodePageAsNumber()));
+  ASCOPY(cfg->keyfile.path, SPublicKeyFile);
   cfg->sshprot = Data->GetSshProt();
   cfg->ssh2_des_cbc = Data->GetSsh2DES();
   cfg->ssh_no_userauth = Data->GetSshNoUserAuth();
@@ -220,17 +220,17 @@ void __fastcall TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, b
   cfg->change_username = Data->GetChangeUsername();
 
   cfg->proxy_type = Data->GetProxyMethod();
-  ASCOPY(cfg->proxy_host, W2MB(Data->GetProxyHost().c_str(), Data->GetCodePageAsNumber()));
+  ASCOPY(cfg->proxy_host, Data->GetProxyHost());
   cfg->proxy_port = Data->GetProxyPort();
-  ASCOPY(cfg->proxy_username, W2MB(Data->GetProxyUsername().c_str(), Data->GetCodePageAsNumber()));
-  ASCOPY(cfg->proxy_password, W2MB(Data->GetProxyPassword().c_str(), Data->GetCodePageAsNumber()));
+  ASCOPY(cfg->proxy_username, Data->GetProxyUsername());
+  ASCOPY(cfg->proxy_password, Data->GetProxyPassword());
   if (Data->GetProxyMethod() == pmCmd)
   {
-    ASCOPY(cfg->proxy_telnet_command, W2MB(Data->GetProxyLocalCommand().c_str(), Data->GetCodePageAsNumber()));
+    ASCOPY(cfg->proxy_telnet_command, Data->GetProxyLocalCommand());
   }
   else
   {
-    ASCOPY(cfg->proxy_telnet_command, W2MB(Data->GetProxyTelnetCommand().c_str(), Data->GetCodePageAsNumber()));
+    ASCOPY(cfg->proxy_telnet_command, Data->GetProxyTelnetCommand());
   }
   cfg->proxy_dns = Data->GetProxyDNS();
   cfg->even_proxy_localhost = Data->GetProxyLocalhost();
@@ -258,7 +258,7 @@ void __fastcall TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, b
   if (!Data->GetTunnelPortFwd().IsEmpty())
   {
     assert(!Simple);
-    ASCOPY(cfg->portfwd, W2MB(Data->GetTunnelPortFwd().c_str(), Data->GetCodePageAsNumber()));
+    ASCOPY(cfg->portfwd, Data->GetTunnelPortFwd());
     // when setting up a tunnel, do not open shell/sftp
     cfg->ssh_no_shell = TRUE;
   }
