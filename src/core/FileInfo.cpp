@@ -230,9 +230,7 @@ unsigned __fastcall GetTranslationCount(void * FileInfo)
   PTranslations P;
   UINT Len;
   if (!VerQueryValue(FileInfo, L"\\VarFileInfo\\Translation", reinterpret_cast<void **>(&P), &Len))
-  {
     throw Exception(L"File info translations not available");
-  }
   return Len / 4;
 }
 //---------------------------------------------------------------------------
@@ -243,13 +241,9 @@ TTranslation __fastcall GetTranslation(void * FileInfo, unsigned i)
   UINT Len;
 
   if (!VerQueryValue(FileInfo, L"\\VarFileInfo\\Translation", reinterpret_cast<void **>(&P), &Len))
-  {
     throw Exception(L"File info translations not available");
-  }
   if (i * sizeof(TTranslation) >= Len)
-  {
     throw Exception(L"Specified translation not available");
-  }
   return P[i];
 };
 //---------------------------------------------------------------------------
