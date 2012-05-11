@@ -520,7 +520,7 @@ RawByteString __fastcall ScramblePassword(UnicodeString Password)
   Buf[Padding] = (char)('0' + (Len % 10));
   Buf[Padding + 1] = (char)('0' + ((Len / 10) % 10));
   Buf[Padding + 2] = (char)('0' + ((Len / 100) % 10));
-  strcpy(Buf + Padding + 3, const_cast<char *>(UtfPassword.c_str()));
+  strcpy(Buf + Padding + 3, reinterpret_cast<char *>(UtfPassword.c_str()));
   char * S = Buf;
   int Last = 31;
   while (*S != '\0')
