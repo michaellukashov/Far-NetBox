@@ -43,6 +43,30 @@ protected:
 };
 
 //---------------------------------------------------------------------------
+class EAbort : public Exception
+{
+public:
+    EAbort(std::string what) : Exception(what.c_str())
+    {}
+};
+
+class EAccessViolation : public Exception
+{
+public:
+    EAccessViolation(std::string what) : Exception(what.c_str())
+    {}
+
+};
+
+class EFileNotFoundError : public Exception
+{
+public:
+    EFileNotFoundError() : Exception("")
+    {
+    }
+};
+
+//---------------------------------------------------------------------------
 
 UnicodeString ExtractShortPathName(const UnicodeString Path1);
 UnicodeString ExtractDirectory(const UnicodeString path, wchar_t delimiter = '/');

@@ -53,7 +53,7 @@ int __cdecl debug_printf2(const char *format, ...)
 //---------------------------------------------------------------------------
 void Abort()
 {
-    throw Classes::EAbort("");
+    throw Sysutils::EAbort("");
 }
 //---------------------------------------------------------------------------
 void Error(int ErrorID, int data)

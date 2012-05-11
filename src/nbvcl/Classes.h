@@ -449,29 +449,6 @@ public:
     UnicodeString GetFileType(const UnicodeString strFileName);
 };
 
-class EAbort : public std::exception
-{
-public:
-    EAbort(std::string what) : std::exception(what.c_str())
-    {}
-};
-
-class EAccessViolation : public std::exception
-{
-public:
-    EAccessViolation(std::string what) : std::exception(what.c_str())
-    {}
-
-};
-
-class EFileNotFoundError : public std::exception
-{
-public:
-    EFileNotFoundError() : std::exception("")
-    {
-    }
-};
-
 //---------------------------------------------------------------------------
 
 enum TSeekOrigin
