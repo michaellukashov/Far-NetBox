@@ -35,7 +35,7 @@ public:
   bool InheritsFrom() const { return dynamic_cast<const T *>(this) != NULL; }
 
   // UnicodeString GetHelpKeyword() const { return FHelpKeyword; }
-  const UnicodeString GetMessage() const { return FMessage; }
+  const UnicodeString GetMessage() const { return FMessage.IsEmpty() ? UnicodeString(what()) : FMessage; }
   void SetMessage(const UnicodeString value) { FMessage = value; }
 protected:
   UnicodeString FMessage;
