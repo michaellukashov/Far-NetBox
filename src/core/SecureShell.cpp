@@ -1845,7 +1845,7 @@ void __fastcall TSecureShell::VerifyHostKey(UnicodeString Host, int Port,
     if (retrieve_host_key(W2MB(Host.c_str(), FSessionData->GetCodePageAsNumber()).c_str(), Port, W2MB(KeyType.c_str(), FSessionData->GetCodePageAsNumber()).c_str(),
           const_cast<char *>(AnsiStoredKeys.c_str()), static_cast<int>(AnsiStoredKeys.size())) == 0)
     {
-      StoredKeys = MB2W(AnsiStoredKeys.c_str(), FSessionData->GetCodePageAsNumber()).c_str();
+      StoredKeys = AnsiStoredKeys.c_str();
       UnicodeString Buf = StoredKeys;
       while (!Result && !Buf.IsEmpty())
       {

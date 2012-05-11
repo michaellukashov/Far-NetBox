@@ -1497,9 +1497,7 @@ void __fastcall TSCPFileSystem::SCPResponse(bool * GotLastLine)
     case 1:     /* error */
     case 2:     /* fatal error */
       // pscp adds 'Resp' to 'Msg', why?
-      // UnicodeString MsgW = FSecureShell->ReceiveLine();
       // UnicodeString Msg = W2MB(MsgW.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber());
-      // UnicodeString LineW = MB2W(Line.c_str(), FTerminal->GetSessionData()->GetCodePageAsNumber());
       UnicodeString Msg = FSecureShell->ReceiveLine();
       UnicodeString Line = UnicodeString(static_cast<char>(Resp)) + Msg;
       if (IsLastLine(Line))

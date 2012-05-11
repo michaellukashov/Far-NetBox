@@ -2533,7 +2533,7 @@ UnicodeString __fastcall TSFTPFileSystem::RealPath(const UnicodeString Path)
   {
     if (FTerminal->GetActive())
     {
-      throw ExtException(FMTLOAD(SFTP_REALPATH_ERROR, Path.c_str()), &E);
+      throw ExtException(&E, FMTLOAD(SFTP_REALPATH_ERROR, Path.c_str()));
     }
     else
     {
