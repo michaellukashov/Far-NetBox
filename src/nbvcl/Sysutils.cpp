@@ -40,12 +40,12 @@ const TDayTable MonthDays[] =
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 /* __fastcall */ Exception::Exception(Exception * E) :
-  std::exception("")
+  std::exception(E->what())
 {
   // AddMoreMessages(E);
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ Exception::Exception(Exception & E) throw() :
+/* __fastcall */ Exception::Exception(Exception & E) :
   std::exception(E.what())
 {
 }

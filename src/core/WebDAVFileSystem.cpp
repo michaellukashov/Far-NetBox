@@ -718,7 +718,7 @@ void __fastcall TWebDAVFileSystem::DeleteFile(const UnicodeString FileName,
   bool res = WebDAVDelete(FullFileName.c_str(), type, errorInfo);
   if (!res && !errorInfo.IsEmpty())
   {
-    THROW_SKIP_FILE(errorInfo, NULL);
+    THROW_SKIP_FILE(NULL, errorInfo);
   }
 }
 //---------------------------------------------------------------------------
@@ -737,7 +737,7 @@ void __fastcall TWebDAVFileSystem::RenameFile(const UnicodeString FileName,
     bool res = WebDAVRename(FullFileName.c_str(), NewName.c_str(), type, errorInfo);
     if (!res && !errorInfo.IsEmpty())
     {
-      THROW_SKIP_FILE(errorInfo, NULL);
+      THROW_SKIP_FILE(NULL, errorInfo);
     }
   }
 }
@@ -771,7 +771,7 @@ void __fastcall TWebDAVFileSystem::CreateDirectory(const UnicodeString DirName)
     }
     if (!res)
     {
-      THROW_SKIP_FILE(errorInfo, NULL);
+      THROW_SKIP_FILE(NULL, errorInfo);
     }
   }
 }
@@ -1962,7 +1962,7 @@ void __fastcall TWebDAVFileSystem::FileTransfer(const UnicodeString FileName,
   switch (FFileTransferAbort)
   {
     case ftaSkip:
-      THROW_SKIP_FILE(errorInfo, NULL);
+      THROW_SKIP_FILE(NULL, errorInfo);
 
     case ftaCancel:
       Abort();

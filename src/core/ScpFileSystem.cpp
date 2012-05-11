@@ -43,11 +43,11 @@ const int ecIgnoreWarnings = 2;
 const int ecReadProgress = 4;
 const int ecDefault = ecRaiseExcept;
 //---------------------------------------------------------------------------
-#define THROW_FILE_SKIPPED(MESSAGE, EXCEPTION) \
-  throw EScpFileSkipped(MESSAGE, EXCEPTION)
+#define THROW_FILE_SKIPPED(EXCEPTION, MESSAGE) \
+  throw EScpFileSkipped(EXCEPTION, MESSAGE)
 
-#define THROW_SCP_ERROR(MESSAGE, EXCEPTION) \
-  throw EScp(MESSAGE, EXCEPTION)
+#define THROW_SCP_ERROR(EXCEPTION, MESSAGE) \
+  throw EScp(EXCEPTION, MESSAGE)
 //===========================================================================
 #define MaxShellCommand fsAnyCommand
 #define ShellCommandCount MaxShellCommand + 1
@@ -1538,11 +1538,11 @@ void __fastcall TSCPFileSystem::SCPResponse(bool * GotLastLine)
 
       if (Resp == 1)
       {
-        THROW_FILE_SKIPPED(Msg, NULL);
+        THROW_FILE_SKIPPED(NULL, Msg);
       }
         else
       {
-        THROW_SCP_ERROR(Msg, NULL);
+        THROW_SCP_ERROR(NULL, Msg);
       }
   }
 }
@@ -2091,7 +2091,7 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString FileName,
     if (!Dir)
     {
       FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, FileName.c_str()),
-        THROWOSIFFALSE(::DeleteFile(FileName));
+        THROWOSIFFALSE(Sysutils::DeleteFile(FileName));
       )
     }
   }
@@ -2400,7 +2400,7 @@ void __fastcall TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
 void __fastcall TSCPFileSystem::SCPError(const UnicodeString Message, bool Fatal)
 {
   SCPSendError(Message, Fatal);
-  THROW_FILE_SKIPPED(Message, NULL);
+  THROW_FILE_SKIPPED(NULL, Message);
 }
 //---------------------------------------------------------------------------
 void __fastcall TSCPFileSystem::SCPSendError(const UnicodeString Message, bool Fatal)
@@ -2499,7 +2499,7 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
         switch (Ctrl) {
           case 1:
             // Error (already logged by ReceiveLine())
-            THROW_FILE_SKIPPED(FMTLOAD(REMOTE_ERROR, Line.c_str()), NULL);
+            THROW_FILE_SKIPPED(NULL, FMTLOAD(REMOTE_ERROR, Line.c_str()));
 
           case 2:
             // Fatal error, terminate copying
@@ -2571,7 +2571,7 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
         // last possibility to cancel transfer before it starts
         if (OperationProgress->Cancel)
         {
-          THROW_SKIP_FILE(LoadStr(USER_TERMINATED), NULL);
+          THROW_SKIP_FILE(NULL, LoadStr(USER_TERMINATED));
         }
 
         bool Dir = (Ctrl == L'D');

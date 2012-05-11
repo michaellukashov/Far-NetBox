@@ -476,7 +476,7 @@ void __fastcall TCallbackGuard::FatalError(Exception * E, const UnicodeString & 
   {
     assert(FFatalError == NULL);
 
-    FFatalError = new ExtException(Msg, E);
+    FFatalError = new ExtException(E, Msg);
   }
 
   // silently abort what we are doing.
@@ -1567,7 +1567,7 @@ bool /* __fastcall */ TTerminal::FileOperationLoopQuery(Exception & E,
     else
     {
       // this can happen only during file transfer with SCP
-      throw ExtException(Message, &E);
+      throw ExtException(&E, Message);
     }
   }
 
@@ -2039,8 +2039,8 @@ void /* __fastcall */ TTerminal::CloseOnCompletion(TOnceDoneOperation Operation,
 {
   LogEvent(L"Closing session after completed operation (as requested by user)");
   Close();
-  throw ESshTerminate(
-    NULL, Message.IsEmpty() ? UnicodeString(LoadStr(CLOSED_ON_COMPLETION)) : Message,
+  throw ESshTerminate(NULL,
+    Message.IsEmpty() ? UnicodeString(LoadStr(CLOSED_ON_COMPLETION)) : Message,
     Operation);
 }
 //---------------------------------------------------------------------------
@@ -2318,8 +2318,8 @@ void /* __fastcall */ TTerminal::EnsureNonExistence(const UnicodeString FileName
     TRemoteFile * File = FFiles->FindFile(FileName);
     if (File)
     {
-      if (File->GetIsDirectory()) { throw ECommand(FMTLOAD(RENAME_CREATE_DIR_EXISTS, FileName.c_str()), NULL); }
-      else { throw ECommand(FMTLOAD(RENAME_CREATE_FILE_EXISTS, FileName.c_str()), NULL); }
+      if (File->GetIsDirectory()) { throw ECommand(NULL, FMTLOAD(RENAME_CREATE_DIR_EXISTS, FileName.c_str())); }
+      else { throw ECommand(NULL, FMTLOAD(RENAME_CREATE_FILE_EXISTS, FileName.c_str())); }
     }
   }
 }

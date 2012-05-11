@@ -71,27 +71,9 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   FHelpKeyword()
 {
   AddMoreMessages(E);
-/*
-  // append message to the end to more messages
-  if (!Msg.IsEmpty())
-  {
-    if (GetMessage().IsEmpty())
-    {
-      SetMessage(Msg);
-    }
-    else
-    {
-      if (FMoreMessages == NULL)
-      {
-        FMoreMessages = new TStringList();
-      }
-      FMoreMessages->Append(Msg);
-    }
-  }
-*/
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ ExtException::ExtException(UnicodeString Msg, Exception * E) :
+/* __fastcall */ ExtException::ExtException(UnicodeString Msg, Exception* E) :
   Exception(L""),
   FMoreMessages(NULL),
   FHelpKeyword()
@@ -173,22 +155,6 @@ __fastcall ExtException::ExtException(UnicodeString Msg, std::exception * E) :
   }
 }
 //---------------------------------------------------------------------------
-
-// /* __fastcall */ ExtException::ExtException(ExtException & E) :
-  // Exception(L""),
-  // FMoreMessages(NULL)
-//    FHelpKeyword(),
-// {
-  // AddMoreMessages(&E);
-// }
-
-// ExtException & /* __fastcall */ ExtException::operator =(ExtException & E)
-// {
-  // AddMoreMessages(&E);
-  // return *this;
-// }
-
-//---------------------------------------------------------------------------
 void __fastcall ExtException::AddMoreMessages(Exception * E)
 {
   if (E != NULL)
@@ -254,12 +220,10 @@ UnicodeString __fastcall LastSysErrorMessage()
   return Result;
 }
 //---------------------------------------------------------------------------
-/*
-__fastcall EOSExtException::EOSExtException(UnicodeString Msg) :
+/* __fastcall */ EOSExtException::EOSExtException(UnicodeString Msg) :
   ExtException(Msg, LastSysErrorMessage())
 {
 }
-*/
 //---------------------------------------------------------------------------
 /* __fastcall */ EFatal::EFatal(Exception * E, UnicodeString Msg) :
   ExtException(Msg, E),
@@ -271,4 +235,3 @@ __fastcall EOSExtException::EOSExtException(UnicodeString Msg) :
     FReopenQueried = F->FReopenQueried;
   }
 }
-//---------------------------------------------------------------------------
