@@ -45,11 +45,6 @@ public:
   explicit /* __fastcall */ ExtException(const UnicodeString Msg, int AHelpContext) : Sysutils::Exception(Msg, AHelpContext), FMoreMessages(NULL) {}
   // inline __fastcall ExtException(const UnicodeString Msg, const TVarRec * Args, const int Args_Size, int AHelpContext) : Sysutils::Exception(Msg, Args, Args_Size, AHelpContext) { }
   inline /* __fastcall */ ExtException(int Ident, int AHelpContext)/* overload */ : Sysutils::Exception(Ident, AHelpContext), FMoreMessages(NULL) { }
-  // inline __fastcall ExtException(PResStringRec ResStringRec, const TVarRec * Args, const int Args_Size, int AHelpContext)/* overload */ : Sysutils::Exception(ResStringRec, Args, Args_Size, AHelpContext) { }
-  
-  // explicit /* __fastcall */ ExtException(const UnicodeString Msg, std::exception * E);
-  // explicit /* __fastcall */ ExtException(ExtException &);
-  // ExtException  & /* __fastcall */ operator =(ExtException &);
 
 protected:
   void __fastcall AddMoreMessages(Exception* E);
