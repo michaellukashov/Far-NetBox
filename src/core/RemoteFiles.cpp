@@ -1227,7 +1227,7 @@ void __fastcall TRemoteFile::SetListingStr(UnicodeString value)
   }
   catch (Exception &E)
   {
-    throw ETerminal(FmtLoadStr(LIST_LINE_ERROR, value.c_str()), &E);
+    throw ETerminal(&E, FmtLoadStr(LIST_LINE_ERROR, value.c_str()));
   }
 }
 //---------------------------------------------------------------------------

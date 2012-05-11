@@ -3539,7 +3539,7 @@ bool __fastcall TFTPFileSystem::HandleListData(const wchar_t * Path,
              Entry->Name, Entry->Permissions, Entry->OwnerGroup, Int64ToStr(Entry->Size).c_str(),
              int(Entry->Dir), int(Entry->Link), Entry->Year, Entry->Month, Entry->Day,
              Entry->Hour, Entry->Minute, int(Entry->HasTime), int(Entry->HasDate));
-        throw ETerminal(FMTLOAD(LIST_LINE_ERROR, EntryData.c_str()), &E);
+        throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, EntryData.c_str()));
       }
 
       FFileList->AddFile(File);

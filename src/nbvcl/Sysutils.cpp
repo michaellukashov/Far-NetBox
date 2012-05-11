@@ -50,8 +50,13 @@ const TDayTable MonthDays[] =
 {
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ Exception::Exception(UnicodeString Msg) :
+/* __fastcall */ Exception::Exception(const UnicodeString Msg) :
   std::exception(W2MB(Msg.c_str()).c_str())
+{
+}
+//---------------------------------------------------------------------------
+/* __fastcall */ Exception::Exception(const wchar_t *Msg) :
+  std::exception(W2MB(Msg).c_str())
 {
 }
 //---------------------------------------------------------------------------
@@ -59,6 +64,18 @@ const TDayTable MonthDays[] =
   std::exception(E->what())
 {
 }
+/* __fastcall */ Exception::Exception(const UnicodeString Msg, int AHelpContext) :
+  std::exception(W2MB(Msg.c_str()).c_str())
+{
+  // TODO: FHelpContext = AHelpContext
+}
+
+/* __fastcall */ Exception::Exception(int Ident) :
+  std::exception()
+{
+  // TODO: Fident = Ident;
+}
+
 //---------------------------------------------------------------------------
 UnicodeString IntToStr(int value)
 {

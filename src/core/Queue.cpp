@@ -2315,11 +2315,11 @@ void __fastcall TTerminalThread::Rethrow()
       } BOOST_SCOPE_EXIT_END
       if (dynamic_cast<EFatal *>(FException) != NULL)
       {
-        throw EFatal(L"", FException);
+        throw EFatal(FException, L"");
       }
       else
       {
-        throw ExtException(L"", FException);
+        throw ExtException(FException, L"");
       }
     }
 #ifndef _MSC_VER
@@ -2340,7 +2340,7 @@ void __fastcall TTerminalThread::SaveException(Exception & E)
 
   if (dynamic_cast<EFatal *>(&E) != NULL)
   {
-    FException = new EFatal(L"", &E);
+    FException = new EFatal(&E, L"");
   }
   else
   {

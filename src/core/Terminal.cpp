@@ -402,7 +402,7 @@ void __fastcall TTunnelUI::DisplayBanner(const UnicodeString & Banner)
 //---------------------------------------------------------------------------
 void __fastcall TTunnelUI::FatalError(Exception * E, UnicodeString Msg)
 {
-  throw ESshFatal(Msg, E);
+  throw ESshFatal(E, Msg);
 }
 //---------------------------------------------------------------------------
 void __fastcall TTunnelUI::HandleExtendedException(Exception * E)
@@ -502,7 +502,7 @@ void __fastcall TCallbackGuard::Verify()
 
     if (FFatalError != NULL)
     {
-      throw ESshFatal(L"", FFatalError);
+      throw ESshFatal(FFatalError, L"");
     }
   }
 }
@@ -1414,7 +1414,7 @@ void /* __fastcall */ TTerminal::TerminalError(UnicodeString Msg)
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::TerminalError(Exception * E, UnicodeString Msg)
 {
-  throw ETerminal(Msg, E);
+  throw ETerminal(E, Msg);
 }
 //---------------------------------------------------------------------------
 bool /* __fastcall */ TTerminal::DoQueryReopen(Exception * E)
@@ -1562,7 +1562,7 @@ bool /* __fastcall */ TTerminal::FileOperationLoopQuery(Exception & E,
 
     if (AllowSkip)
     {
-      THROW_SKIP_FILE(Message, &E);
+      THROW_SKIP_FILE(&E, Message);
     }
     else
     {
@@ -1943,7 +1943,7 @@ void /* __fastcall */ TTerminal::FatalError(Exception * E, UnicodeString Msg)
   }
   else
   {
-    throw ESshFatal(Msg, E);
+    throw ESshFatal(E, Msg);
   }
 }
 //---------------------------------------------------------------------------
@@ -1970,11 +1970,11 @@ unsigned int __fastcall TTerminal::CommandError(Exception * E, const UnicodeStri
   }
   else if (GetExceptionOnFail())
   {
-    throw ECommand(Msg, E);
+    throw ECommand(E, Msg);
   }
   else if (!Answers)
   {
-    ECommand * ECmd = new ECommand(Msg, E);
+    ECommand * ECmd = new ECommand(E, Msg);
     // try
     {
       BOOST_SCOPE_EXIT ( (&ECmd) )
@@ -2040,8 +2040,7 @@ void /* __fastcall */ TTerminal::CloseOnCompletion(TOnceDoneOperation Operation,
   LogEvent(L"Closing session after completed operation (as requested by user)");
   Close();
   throw ESshTerminate(
-    Message.IsEmpty() ? UnicodeString(LoadStr(CLOSED_ON_COMPLETION)) : Message,
-    NULL,
+    NULL, Message.IsEmpty() ? UnicodeString(LoadStr(CLOSED_ON_COMPLETION)) : Message,
     Operation);
 }
 //---------------------------------------------------------------------------

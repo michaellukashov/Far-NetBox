@@ -59,15 +59,19 @@ TStrings * ExceptionToMoreMessages(Exception * E)
 //---------------------------------------------------------------------------
 /* __fastcall */ ExtException::ExtException(Exception * E) :
   Exception(L""),
-  FMoreMessages(NULL)
+  FMoreMessages(NULL),
+  FHelpKeyword()
 {
   AddMoreMessages(E);
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ ExtException::ExtException(UnicodeString Msg) :
+/* __fastcall */ ExtException::ExtException(Exception* E, UnicodeString Msg):
   Exception(Msg),
-  FMoreMessages(NULL)
+  FMoreMessages(NULL),
+  FHelpKeyword()
 {
+  AddMoreMessages(E);
+/*
   // append message to the end to more messages
   if (!Msg.IsEmpty())
   {
@@ -84,13 +88,15 @@ TStrings * ExceptionToMoreMessages(Exception * E)
       FMoreMessages->Append(Msg);
     }
   }
+*/
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ ExtException::ExtException(UnicodeString Msg, Exception * E) :
   Exception(L""),
-  FMoreMessages(NULL)
+  FMoreMessages(NULL),
+  FHelpKeyword()
 {
-  // "copy std::exception"
+  // "copy exception"
   AddMoreMessages(E);
   // and append message to the end to more messages
   if (!Msg.IsEmpty())
@@ -110,10 +116,24 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   }
 }
 //---------------------------------------------------------------------------
+/* __fastcall */ ExtException::ExtException(UnicodeString Msg, UnicodeString MoreMessages,
+    UnicodeString HelpKeyword) :
+  Exception(Msg),
+  FMoreMessages(NULL),
+  FHelpKeyword(HelpKeyword)
+{
+  if (!MoreMessages.IsEmpty())
+  {
+    FMoreMessages = new TStringList();
+    FMoreMessages->SetText(MoreMessages);
+  }
+}
+//---------------------------------------------------------------------------
 /*
 __fastcall ExtException::ExtException(UnicodeString Msg, std::exception * E) :
   parent(Msg),
-  FMoreMessages(NULL)
+  FMoreMessages(NULL),
+  FHelpKeyword()
 {
   // "copy std::exception"
   // AddMoreMessages(E);
@@ -136,10 +156,11 @@ __fastcall ExtException::ExtException(UnicodeString Msg, std::exception * E) :
 }
 */
 //---------------------------------------------------------------------------
-/* __fastcall */ ExtException::ExtException(UnicodeString Msg, TStrings * MoreMessages,
-  bool Own) :
+/* __fastcall */ ExtException::ExtException(UnicodeString Msg, TStrings* MoreMessages,
+  bool Own, UnicodeString HelpKeyword) :
   Exception(Msg),
-  FMoreMessages(NULL)
+  FMoreMessages(NULL),
+  FHelpKeyword(HelpKeyword)
 {
   if (Own)
   {
@@ -152,18 +173,20 @@ __fastcall ExtException::ExtException(UnicodeString Msg, std::exception * E) :
   }
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ ExtException::ExtException(ExtException & E) throw() :
-  Exception(L""),
-  FMoreMessages(NULL)
-{
-  AddMoreMessages(&E);
-}
 
-ExtException & /* __fastcall */ ExtException::operator =(ExtException & E) throw()
-{
-  AddMoreMessages(&E);
-  return *this;
-}
+// /* __fastcall */ ExtException::ExtException(ExtException & E) :
+  // Exception(L""),
+  // FMoreMessages(NULL)
+//    FHelpKeyword(),
+// {
+  // AddMoreMessages(&E);
+// }
+
+// ExtException & /* __fastcall */ ExtException::operator =(ExtException & E)
+// {
+  // AddMoreMessages(&E);
+  // return *this;
+// }
 
 //---------------------------------------------------------------------------
 void __fastcall ExtException::AddMoreMessages(Exception * E)
@@ -237,9 +260,8 @@ __fastcall EOSExtException::EOSExtException(UnicodeString Msg) :
 {
 }
 */
-
 //---------------------------------------------------------------------------
-/* __fastcall */ EFatal::EFatal(UnicodeString Msg, Exception * E) :
+/* __fastcall */ EFatal::EFatal(Exception * E, UnicodeString Msg) :
   ExtException(Msg, E),
   FReopenQueried(false)
 {
