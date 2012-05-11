@@ -157,7 +157,7 @@ __fastcall ExtException::ExtException(UnicodeString Msg, std::exception * E) :
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ ExtException::ExtException(ExtException & E) throw() :
-  parent(E),
+  parent(NULL),
   FMoreMessages(NULL)
 {
   AddMoreMessages(&E);
@@ -170,7 +170,7 @@ ExtException & /* __fastcall */ ExtException::operator =(const ExtException & E)
 }
 
 //---------------------------------------------------------------------------
-void __fastcall ExtException::AddMoreMessages(const Exception* E)
+void __fastcall ExtException::AddMoreMessages(const Exception * E)
 {
   if (E != NULL)
   {
