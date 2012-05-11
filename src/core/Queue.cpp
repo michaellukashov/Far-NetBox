@@ -1154,6 +1154,7 @@ bool __fastcall TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
   bool Result;
   if (FItem->FTerminated || FItem->FCancel)
   {
+    // avoid reconnection if we are closing
     Result = false;
   }
   else
@@ -1824,12 +1825,12 @@ int __fastcall TQueueItemProxy::GetIndex()
 //---------------------------------------------------------------------------
 void __fastcall TTerminalQueueStatus::ResetStats()
 {
-  FActiveCount = NPOS;
+  FActiveCount = -1;
 }
 //---------------------------------------------------------------------------
 int __fastcall TTerminalQueueStatus::GetActiveCount()
 {
-  if (static_cast<int>(FActiveCount) < 0)
+  if (FActiveCount < 0)
   {
     FActiveCount = 0;
 
@@ -2344,7 +2345,7 @@ void __fastcall TTerminalThread::SaveException(Exception & E)
   }
   else
   {
-    FException = new ExtException(L"", &E);
+    FException = new ExtException(&E, L"");
   }
 }
 //---------------------------------------------------------------------------
