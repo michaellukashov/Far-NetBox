@@ -376,7 +376,7 @@ public:
   UnicodeString(const wchar_t * Str, int Size) { Init(Str, Size); }
   UnicodeString(const wchar_t Src) { Init(&Src, 1); }
   UnicodeString(const char * Str, int Size) { Init(Str, Size); }
-  UnicodeString(const char * Str) { Init(Str, strlen(Str)); }
+  UnicodeString(const char * Str) { Init(Str, Str ? strlen(Str) : 0); }
   UnicodeString(int Size, wchar_t Ch) : Data(Size, Ch) {}
 
   UnicodeString(const UnicodeString & Str) { Init(Str.c_str(), Str.GetLength()); }
@@ -538,9 +538,9 @@ public:
   AnsiString() {}
   AnsiString(const wchar_t * Str) { Init(Str, StrLength(Str)); }
   AnsiString(const wchar_t * Str, int Size) { Init(Str, Size); }
-  AnsiString(const char * Str) { Init(Str, strlen(Str)); }
+  AnsiString(const char * Str) { Init(Str, Str ? strlen(Str) : 0); }
   AnsiString(const char * Str, int Size) { Init(Str, Size); }
-  AnsiString(const unsigned char * Str) { Init(Str, strlen(reinterpret_cast<const char *>(Str))); }
+  AnsiString(const unsigned char * Str) { Init(Str, Str ? strlen(reinterpret_cast<const char *>(Str)) : 0); }
   AnsiString(const unsigned char * Str, int Size) { Init(Str, Size); }
   AnsiString(const UnicodeString & Str) { Init(Str.c_str(), Str.GetLength()); }
   AnsiString(const UTF8String & Str) { Init(Str.c_str(), Str.GetLength()); }
@@ -642,9 +642,9 @@ public:
   RawByteString() {}
   RawByteString(const wchar_t * Str) { Init(Str, StrLength(Str)); }
   RawByteString(const wchar_t * Str, int Size) { Init(Str, Size); }
-  RawByteString(const char * Str) { Init(Str, strlen(Str)); }
+  RawByteString(const char * Str) { Init(Str, Str ? strlen(Str) : 0); }
   RawByteString(const char * Str, int Size) { Init(Str, Size); }
-  RawByteString(const unsigned char * Str) { Init(Str, strlen(reinterpret_cast<const char *>(Str))); }
+  RawByteString(const unsigned char * Str) { Init(Str, Str ? strlen(reinterpret_cast<const char *>(Str)) : 0); }
   RawByteString(const unsigned char * Str, int Size) { Init(Str, Size); }
   RawByteString(const UnicodeString & Str) { Init(Str.c_str(), Str.GetLength()); }
   RawByteString(const RawByteString & Str) { Init(Str.c_str(), Str.GetLength()); }
