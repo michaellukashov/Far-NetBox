@@ -96,11 +96,13 @@ protected:
 
   UnicodeString __fastcall GetCurrentSubKey();
   UnicodeString __fastcall GetCurrentSubKeyMunged();
+  // virtual void __fastcall SetAccessMode(TStorageAccessMode value);
   virtual bool __fastcall DoKeyExists(const UnicodeString SubKey, bool ForceAnsi) = 0;
   static UnicodeString __fastcall IncludeTrailingBackslash(const UnicodeString & S);
   static UnicodeString __fastcall ExcludeTrailingBackslash(const UnicodeString & S);
   virtual bool __fastcall DoOpenSubKey(const UnicodeString SubKey, bool CanCreate) = 0;
   UnicodeString __fastcall MungeKeyName(UnicodeString Key);
+  // virtual UnicodeString __fastcall GetSource() = 0;
 };
 //---------------------------------------------------------------------------
 class TRegistryStorage : public THierarchicalStorage

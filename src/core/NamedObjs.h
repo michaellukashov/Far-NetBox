@@ -56,8 +56,8 @@ public:
   __property int Count = { read = GetCount, write = SetCount };
   __property int HiddenCount = { read = FHiddenCount, write = FHiddenCount };
 #else
-  size_t GetHiddenCount() { return FHiddenCount; }
-  void SetHiddenCount(size_t value) { FHiddenCount = value; }
+  int GetHiddenCount() { return FHiddenCount; }
+  void SetHiddenCount(int value) { FHiddenCount = value; }
 #endif
 };
 //---------------------------------------------------------------------------

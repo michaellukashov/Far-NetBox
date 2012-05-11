@@ -227,7 +227,7 @@ bool __fastcall TOptions::SwitchValue(const UnicodeString Switch, bool Default, 
   }
   else
   {
-    throw Exception(FMTLOAD(URL_OPTION_BOOL_VALUE_ERROR, (Value.c_str())));
+    throw Exception(FMTLOAD(URL_OPTION_BOOL_VALUE_ERROR, Value.c_str()));
   }
   return Result;
 }

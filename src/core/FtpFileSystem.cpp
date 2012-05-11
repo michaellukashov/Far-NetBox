@@ -450,7 +450,28 @@ void __fastcall TFTPFileSystem::Open()
         FUserName = UserName;
       }
     }
+/*
+    // ask for password if it was not specified in advance,
+    // on retry ask always
+    if ((Data->Password.IsEmpty() && !Data->Passwordless) || FPasswordFailed)
+    {
+      FTerminal->LogEvent(L"Password prompt (no password provided or last login attempt failed)");
 
+      if (!FPasswordFailed && !PromptedForCredentials)
+      {
+        FTerminal->Information(LoadStr(FTP_CREDENTIAL_PROMPT), false);
+        PromptedForCredentials = true;
+      }
+
+      // on retry ask for new password
+      Password = L"";
+      if (!FTerminal->PromptUser(Data, pkPassword, LoadStr(PASSWORD_TITLE), L"",
+            LoadStr(PASSWORD_PROMPT), false, 0, Password))
+      {
+        FTerminal->FatalError(NULL, LoadStr(AUTHENTICATION_FAILED));
+      }
+    }
+*/
     FActive = FFileZillaIntf->Connect(
       HostName.c_str(), Data->GetPortNumber(), UserName.c_str(),
       Password.c_str(), Account.c_str(), false, Path.c_str(),
@@ -1115,6 +1136,7 @@ void __fastcall TFTPFileSystem::Sink(const UnicodeString FileName,
     THROW_SKIP_FILE_NULL;
   }
 
+  assert(File);
   FTerminal->LogEvent(FORMAT(L"File: \"%s\"", FileName.c_str()));
 
   OperationProgress->SetFile(OnlyFileName);
@@ -1494,19 +1516,6 @@ void __fastcall TFTPFileSystem::Source(const UnicodeString FileName,
     // so we log it always (if supported)
     if (FFileTransferPreserveTime && (FServerCapabilities->GetCapability(mfmt_command) == yes))
     {
-      /*
-       // Inspired by SysUtils::FileAge
-       WIN32_FIND_DATA FindData;
-       HANDLE Handle = FindFirstFile(FileName.c_str(), &FindData);
-       if (Handle != INVALID_HANDLE_VALUE)
-       {
-          TTouchSessionAction TouchAction(FTerminal->GetLog(), DestFullName,
-              UnixToDateTime(
-              ConvertTimestampToUnixSafe(FindData.ftLastWriteTime, dstmUnix),
-              dstmUnix));
-              FindClose(Handle);
-        }
-      */
       TTouchSessionAction TouchAction(FTerminal->GetActionLog(), DestFullName, Modification);
     }
   }
@@ -1886,7 +1895,7 @@ void __fastcall TFTPFileSystem::ReadCurrentDirectory()
       }
       else
       {
-        throw ExtException(FMTLOAD(FTP_PWD_RESPONSE_ERROR, Response->GetText().c_str()));
+        throw Exception(FMTLOAD(FTP_PWD_RESPONSE_ERROR, Response->GetText().c_str()));
       }
     }
 #ifndef _MSC_VER
