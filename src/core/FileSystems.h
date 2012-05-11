@@ -33,11 +33,6 @@ const int tfFirstLevel =   0x01;
 const int tfAutoResume = 0x02;
 const int tfNewDirectory = 0x04;
 //---------------------------------------------------------------------------
-// const int ecRaiseExcept = 1;
-// const int ecIgnoreWarnings = 2;
-// const int ecReadProgress = 4;
-// const int ecDefault = ecRaiseExcept;
-//---------------------------------------------------------------------------
 struct TSinkFileParams
 {
   UnicodeString TargetDir;
