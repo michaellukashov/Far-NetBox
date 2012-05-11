@@ -14,7 +14,7 @@
 #endif
 
 //---------------------------------------------------------------------------
-bool __fastcall ExceptionMessage(Exception * E, UnicodeString & Message);
+bool __fastcall ExceptionMessage(const Exception * E, UnicodeString & Message);
 UnicodeString __fastcall LastSysErrorMessage();
 TStrings * ExceptionToMoreMessages(Exception * E);
 //---------------------------------------------------------------------------
@@ -44,10 +44,15 @@ public:
   explicit /* __fastcall */ ExtException(int Ident) : Sysutils::Exception(Ident), FMoreMessages(NULL) {}
   explicit /* __fastcall */ ExtException(const UnicodeString Msg, int AHelpContext) : Sysutils::Exception(Msg, AHelpContext), FMoreMessages(NULL) {}
   // inline __fastcall ExtException(const UnicodeString Msg, const TVarRec * Args, const int Args_Size, int AHelpContext) : Sysutils::Exception(Msg, Args, Args_Size, AHelpContext) { }
-  inline /* __fastcall */ ExtException(int Ident, int AHelpContext)/* overload */ : Sysutils::Exception(Ident, AHelpContext), FMoreMessages(NULL) { }
+  inline /* __fastcall */ ExtException(int Ident, int AHelpContext)/* overload */ : Sysutils::Exception(Ident, AHelpContext), FMoreMessages(NULL) {}
+
+  /* __fastcall */ ExtException(ExtException & E) : Sysutils::Exception(E.GetMessage()), FMoreMessages(NULL)
+  { AddMoreMessages(&E); }
+  ExtException & operator =(const ExtException &rhs)
+  { SetMessage(rhs.GetMessage()); AddMoreMessages(&rhs); }
 
 protected:
-  void __fastcall AddMoreMessages(Exception* E);
+  void __fastcall AddMoreMessages(const Exception* E);
 
 private:
   Classes::TStrings* FMoreMessages;
