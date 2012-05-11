@@ -400,22 +400,22 @@ UnicodeString __fastcall TCopyParamType::GetLogStr() const
     L"Resume: %c (%d); CalcS: %s; Mask: %s\n"
     L"  TM: %c; ClAr: %s; CPS: %u; InclM(%s): %s\n"
     L"  AscM: %s\n",
-    BooleanToEngStr(GetPreserveTime()).c_str(),
-    BooleanToEngStr(GetPreserveReadOnly()).c_str(),
-    GetRights().GetText().c_str(),
-    BooleanToEngStr(GetPreserveRights()).c_str(),
-    BooleanToEngStr(GetIgnorePermErrors()).c_str(),
-    CaseC[GetFileNameCase()],
-    CharToHex(GetInvalidCharsReplacement()).c_str(),
-    ResumeC[GetResumeSupport()],
-    (int)GetResumeThreshold(),
-    BooleanToEngStr(GetCalculateSize()).c_str(),
-    GetFileMask().c_str(),
-    ModeC[GetTransferMode()],
-    BooleanToEngStr(GetClearArchive()).c_str(),
-    int(GetCPSLimit()),
-    GetIncludeFileMask().GetMasks().c_str(),
-    GetAsciiFileMask().GetMasks().c_str());
+     BooleanToEngStr(GetPreserveTime()).c_str(),
+     BooleanToEngStr(GetPreserveReadOnly()).c_str(),
+     GetRights().GetText().c_str(),
+     BooleanToEngStr(GetPreserveRights()).c_str(),
+     BooleanToEngStr(GetIgnorePermErrors()).c_str(),
+     CaseC[GetFileNameCase()],
+     CharToHex(GetInvalidCharsReplacement()).c_str(),
+     ResumeC[GetResumeSupport()],
+     (int)GetResumeThreshold(),
+     BooleanToEngStr(GetCalculateSize()).c_str(),
+     GetFileMask().c_str(),
+     ModeC[GetTransferMode()],
+     BooleanToEngStr(GetClearArchive()).c_str(),
+     int(GetCPSLimit()),
+     GetIncludeFileMask().GetMasks().c_str(),
+     GetAsciiFileMask().GetMasks().c_str());
 }
 //---------------------------------------------------------------------------
 int __fastcall TCopyParamType::LocalFileAttrs(const TRights & Rights) const
