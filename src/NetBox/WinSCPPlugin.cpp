@@ -646,23 +646,23 @@ void __fastcall TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 //---------------------------------------------------------------------------
 void __fastcall TWinSCPPlugin::ShowExtendedException(Exception * E)
 {
-  // if (strlen(E->what()) > 0)
+  if (!E->GetMessage().IsEmpty())
   {
-    if (::InheritsFrom<std::exception, std::exception>(E))
+    if (E->InheritsFrom<Exception>())
     {
-      if (!::InheritsFrom<std::exception, EAbort>(E))
+      if (!E->InheritsFrom<EAbort>())
       {
         TQueryType Type;
-        Type = (::InheritsFrom<std::exception, ESshTerminate>(E)) ?
+        Type = (E->InheritsFrom<ESshTerminate>()) ?
           qtInformation : qtError;
 
         TStrings * MoreMessages = NULL;
-        if (::InheritsFrom<std::exception, ExtException>(E))
+        if (E->InheritsFrom<ExtException>())
         {
-          MoreMessages = dynamic_cast<const ExtException *>(E)->GetMoreMessages();
+          MoreMessages = dynamic_cast<ExtException *>(E)->GetMoreMessages();
         }
 
-        UnicodeString Message = ::TranslateExceptionMessage(E);
+        UnicodeString Message = TranslateExceptionMessage(E);
         MoreMessageDialog(Message, MoreMessages, Type, qaOK);
       }
     }
