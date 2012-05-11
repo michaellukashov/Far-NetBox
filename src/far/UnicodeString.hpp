@@ -694,7 +694,7 @@ private:
     {
       WideCharToMultiByte(CP_UTF8, 0, Str, Length,
         reinterpret_cast<LPSTR>(const_cast<unsigned char *>(Data.c_str())), Size-1, nullptr, nullptr);
-      Data[Size-1] = 0;
+      // Data[Size-1] = 0;
     }
   }
   void Init(const char * Str, int Length)
@@ -703,7 +703,7 @@ private:
     if (Length > 0)
     {
       memmove(const_cast<unsigned char *>(Data.c_str()), Str, Length);
-      Data[Length-1] = 0;
+      // Data[Length-1] = 0;
     }
   }
   void Init(const unsigned char * Str, int Length)
@@ -712,7 +712,7 @@ private:
     if (Length > 0)
     {
       memmove(const_cast<unsigned char *>(Data.c_str()), Str, Length);
-      Data[Length-1] = 0;
+      // Data[Length-1] = 0;
     }
   }
 
