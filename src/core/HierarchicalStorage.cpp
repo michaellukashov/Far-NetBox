@@ -458,7 +458,7 @@ UnicodeString __fastcall THierarchicalStorage::ExcludeTrailingBackslash(const Un
 void __fastcall TRegistryStorage::Init()
 {
   FFailed = 0;
-  FRegistry = new TRegistry;
+  FRegistry = new TRegistry();
   FRegistry->SetAccess(KEY_READ);
 }
 //---------------------------------------------------------------------------
