@@ -16,14 +16,14 @@ enum TSFTPOverwriteMode { omOverwrite, omAppend, omResume };
 //---------------------------------------------------------------------------
 class TSFTPFileSystem : public TCustomFileSystem
 {
-  friend class TSFTPPacket;
-  friend class TSFTPQueue;
-  friend class TSFTPAsynchronousQueue;
-  friend class TSFTPUploadQueue;
-  friend class TSFTPDownloadQueue;
-  friend class TSFTPLoadFilesPropertiesQueue;
-  friend class TSFTPCalculateFilesChecksumQueue;
-  friend class TSFTPBusy;
+friend class TSFTPPacket;
+friend class TSFTPQueue;
+friend class TSFTPAsynchronousQueue;
+friend class TSFTPUploadQueue;
+friend class TSFTPDownloadQueue;
+friend class TSFTPLoadFilesPropertiesQueue;
+friend class TSFTPCalculateFilesChecksumQueue;
+friend class TSFTPBusy;
 public:
   explicit /* __fastcall */ TSFTPFileSystem(TTerminal * ATermina);
   virtual void __fastcall Init(TSecureShell * SecureShell);

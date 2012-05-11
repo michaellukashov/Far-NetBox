@@ -1357,8 +1357,7 @@ public:
     TSFTPFixedLenQueue(AFileSystem, codePage)
   {
   }
-  virtual ~TSFTPDownloadQueue()
-  {}
+  virtual ~TSFTPDownloadQueue() {}
 
   bool __fastcall Init(int QueueLen, const RawByteString & AHandle,__int64 ATransfered,
     TFileOperationProgressType * AOperationProgress)
@@ -1428,7 +1427,7 @@ public:
     Self = this;
   }
 
-  virtual ~TSFTPUploadQueue()
+  virtual /* __fastcall */ ~TSFTPUploadQueue()
   {
     delete FStream;
   }
@@ -1916,10 +1915,10 @@ void __fastcall TSFTPFileSystem::ResetConnection()
 {
   // there must be no valid packet reservation at the end
   /*
-  for (size_t i = 0; i < FPacketReservations->GetCount(); i++)
+  for (int i = 0; i < FPacketReservations->GetCount(); i++)
   {
-      assert(FPacketReservations->GetItem(i) == NULL);
-      delete static_cast<TSFTPPacket *>(FPacketReservations->GetItem(i));
+    assert(FPacketReservations->GetItem(i) == NULL);
+    delete static_cast<TSFTPPacket *>(FPacketReservations->GetItem(i));
   }
   */
   FPacketReservations->Clear();
@@ -2276,7 +2275,7 @@ void __fastcall TSFTPFileSystem::RemoveReservation(int Reservation)
   FPacketReservations->Delete(Reservation);
 }
 //---------------------------------------------------------------------------
-int __fastcall TSFTPFileSystem::PacketLength(unsigned char * LenBuf, int ExpectedType)
+/* inline */ int __fastcall TSFTPFileSystem::PacketLength(unsigned char * LenBuf, int ExpectedType)
 {
   int Length = GET_32BIT(LenBuf);
   if (Length > SFTP_MAX_PACKET_LEN)
@@ -2405,7 +2404,7 @@ int __fastcall TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
   {
     if (Packet->GetType() == SSH_FXP_STATUS)
     {
-      if (static_cast<int>(AllowStatus) < 0)
+      if (AllowStatus < 0)
       {
         AllowStatus = (ExpectedType == SSH_FXP_STATUS ? asOK : asNo);
       }
@@ -2800,13 +2799,13 @@ void __fastcall TSFTPFileSystem::DoStartup()
              int(FSupport->OpenBlockMasks),
              int(FSupport->BlockMasks),
              int(FSupport->MaxReadSize)));
-          FTerminal->LogEvent(FORMAT(   L"  Attribute extensions (%d)\n", FSupport->AttribExtensions->GetCount()));
+          FTerminal->LogEvent(FORMAT(L"  Attribute extensions (%d)\n", FSupport->AttribExtensions->GetCount()));
           for (int Index = 0; Index < FSupport->AttribExtensions->GetCount(); Index++)
           {
             FTerminal->LogEvent(
               FORMAT(L"    %s", FSupport->AttribExtensions->GetStrings(Index).c_str()));
           }
-          FTerminal->LogEvent(FORMAT(   L"  Extensions (%d)\n", FSupport->Extensions->GetCount()));
+          FTerminal->LogEvent(FORMAT(L"  Extensions (%d)\n", FSupport->Extensions->GetCount()));
           for (int Index = 0; Index < FSupport->Extensions->GetCount(); Index++)
           {
             FTerminal->LogEvent(
@@ -3236,7 +3235,7 @@ void __fastcall TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         }
         catch(Exception &E)
         {
-          if (::InheritsFrom<Exception, EFatal>(&E))
+          if (E.InheritsFrom<EFatal>())
           {
             throw;
           }
@@ -3571,6 +3570,7 @@ bool __fastcall TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
 
     static int LoadFilesPropertiesQueueLen = 5;
     TSFTPLoadFilesPropertiesQueue Queue(this, GetSessionData()->GetCodePageAsNumber());
+    // try
     {
       BOOST_SCOPE_EXIT ( (&Self) (&Queue) (&Progress) )
       {
@@ -3836,8 +3836,8 @@ TStrings * __fastcall TSFTPFileSystem::GetFixedPaths()
 void __fastcall TSFTPFileSystem::SpaceAvailable(const UnicodeString Path,
   TSpaceAvailable & ASpaceAvailable)
 {
-  TSFTPPacket Packet(char(SSH_FXP_EXTENDED), GetSessionData()->GetCodePageAsNumber());
-  Packet.AddString(RawByteString(SFTP_EXT_SPACE_AVAILABLE));
+  TSFTPPacket Packet(SSH_FXP_EXTENDED, GetSessionData()->GetCodePageAsNumber());
+  Packet.AddString(SFTP_EXT_SPACE_AVAILABLE);
   Packet.AddPathString(LocalCanonify(Path), FUtfStrings);
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_EXTENDED_REPLY);
   ASpaceAvailable.BytesOnDevice = Packet.GetInt64();
@@ -3881,7 +3881,7 @@ void __fastcall TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
         {
           FTerminal->DirectoryModified(TargetDir, false);
 
-          if (::DirectoryExists(ExtractFilePath(FileName)))
+          if (DirectoryExists(ExtractFilePath(FileName)))
           {
             FTerminal->DirectoryModified(UnixIncludeTrailingBackslash(TargetDir) +
               FileNameOnly, true);
@@ -4236,7 +4236,7 @@ void __fastcall TSFTPFileSystem::SFTPSource(const UnicodeString FileName,
       bool DestFileExists = false;
       TRights DestRights;
 
-    __int64 ResumeOffset = 0;
+      __int64 ResumeOffset = 0;
 
       FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", FileName.c_str()));
 
@@ -4753,6 +4753,7 @@ int /* __fastcall */ TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * 
             OpenParams->FileParams->DestSize = OpenParams->DestFileSize;
           }
           // file exists (otherwise exception was thrown)
+          assert(File);
           SAFE_DESTROY(File);
         }
         catch(...)
@@ -4934,10 +4935,9 @@ void __fastcall TSFTPFileSystem::SFTPDirectorySource(const UnicodeString Directo
   TSearchRec SearchRec;
   bool FindOK = false;
 
-  FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-    UnicodeString path = DirectoryName + L"*.*";
-    FindOK = (bool)(FindFirst(path.c_str(),
-       FindAttrs, SearchRec) == 0);
+  FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
+    FindOK = (bool)(FindFirst(DirectoryName + L"*.*",
+      FindAttrs, SearchRec) == 0);
   );
 
   // try
@@ -4951,7 +4951,7 @@ void __fastcall TSFTPFileSystem::SFTPDirectorySource(const UnicodeString Directo
       UnicodeString FileName = DirectoryName + SearchRec.Name;
       try
       {
-        if ((wcscmp(SearchRec.Name, THISDIRECTORY) != 0) && (wcscmp(SearchRec.Name, PARENTDIRECTORY) != 0))
+        if ((SearchRec.Name != THISDIRECTORY) && (SearchRec.Name != PARENTDIRECTORY))
         {
           SFTPSourceRobust(FileName, DestFullName, CopyParam, Params, OperationProgress,
             Flags & ~tfFirstLevel);
@@ -4989,7 +4989,7 @@ void __fastcall TSFTPFileSystem::SFTPDirectorySource(const UnicodeString Directo
     }
     else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
     {
-      FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
+      FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
         THROWOSIFFALSE(FileSetAttr(DirectoryName, Attrs & ~faArchive) == 0);
       )
     }
@@ -5124,6 +5124,7 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
     THROW_SKIP_FILE_NULL;
   }
 
+  assert(File);
   FTerminal->LogEvent(FORMAT(L"File: \"%s\"", FileName.c_str()));
 
   OperationProgress->SetFile(OnlyFileName);
@@ -5280,7 +5281,6 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
         __int64 MTime = 0;
         try
         {
-
           FTerminal->OpenLocalFile(DestFullName, GENERIC_WRITE,
             NULL, &LocalHandle, NULL, &MTime, NULL, &DestFileSize, false);
 
