@@ -302,8 +302,9 @@ protected:
 
 struct TStringItem
 {
-    UnicodeString FString;
-    TObject *FObject;
+  TStringItem() : FString(), FObject(NULL) {}
+  UnicodeString FString;
+  TObject *FObject;
 };
 
 class TStringList;
