@@ -690,7 +690,7 @@ const wchar_t *LogLineMarks = L"<>!.*";
   TConfiguration * Configuration):
   TStringList()
 {
-  FCriticalSection = new TCriticalSection;
+  FCriticalSection = new TCriticalSection();
   FConfiguration = Configuration;
   FParent = NULL;
   FUI = UI;
