@@ -1475,7 +1475,7 @@ protected:
         Request->AddString(FHandle);
         Request->AddInt64(FTransfered);
         Request->AddData(BlockBuf.GetData(), BlockBuf.GetSize());
-        FLastBlockSize = static_cast<size_t>(BlockBuf.GetSize());
+        FLastBlockSize = BlockBuf.GetSize();
 
         FTransfered += BlockBuf.GetSize();
       }
@@ -1901,13 +1901,11 @@ void __fastcall TSFTPFileSystem::Idle()
 void __fastcall TSFTPFileSystem::ResetConnection()
 {
   // there must be no valid packet reservation at the end
-  /*
   for (int i = 0; i < FPacketReservations->GetCount(); i++)
   {
     assert(FPacketReservations->GetItem(i) == NULL);
     delete static_cast<TSFTPPacket *>(FPacketReservations->GetItem(i));
   }
-  */
   FPacketReservations->Clear();
   FPacketNumbers.clear();
 }
