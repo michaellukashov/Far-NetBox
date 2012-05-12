@@ -949,7 +949,7 @@ void __fastcall TSessionLog::DeleteUnnecessary()
     }
     else
     {
-      while (!FConfiguration->GetLogWindowComplete() && (static_cast<int>(GetCount()) > FConfiguration->GetLogWindowLines()))
+      while (!FConfiguration->GetLogWindowComplete() && (GetCount() > FConfiguration->GetLogWindowLines()))
       {
         Delete(0);
         FTopIndex++;
