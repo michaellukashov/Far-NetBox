@@ -241,11 +241,15 @@ protected:
   bool __fastcall SynchronizeBrowsing(const UnicodeString NewPath);
   bool __fastcall IsEditHistoryEmpty();
   void __fastcall EditHistory();
-  UnicodeString __fastcall ProgressBar(size_t Percentage, size_t Width);
+  UnicodeString __fastcall ProgressBar(int Percentage, int Width);
   bool __fastcall IsLogging();
   void __fastcall ShowLog();
 
+#ifndef _MSC_VER
+  __property TTerminal * Terminal = { read = FTerminal };
+#else
   TTerminal * GetTerminal() { return FTerminal; }
+#endif
 
 private:
   TTerminal * FTerminal;

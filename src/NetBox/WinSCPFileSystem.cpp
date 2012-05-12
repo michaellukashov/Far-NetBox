@@ -241,7 +241,7 @@ public:
     TCustomCommand * ChildCustomCommand);
 
 protected:
-  virtual void __fastcall Prompt(size_t Index, const UnicodeString Prompt,
+  virtual void __fastcall Prompt(int Index, const UnicodeString Prompt,
     UnicodeString & Value);
 
 private:
@@ -255,7 +255,7 @@ TFarInteractiveCustomCommand::TFarInteractiveCustomCommand(
   FPlugin = Plugin;
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarInteractiveCustomCommand::Prompt(size_t /*Index*/,
+void __fastcall TFarInteractiveCustomCommand::Prompt(int /*Index*/,
     const UnicodeString Prompt, UnicodeString & Value)
 {
   UnicodeString APrompt = Prompt;
@@ -2244,7 +2244,7 @@ void __fastcall TWinSCPFileSystem::CopyFullFileNamesToClipboard()
     } BOOST_SCOPE_EXIT_END
     if (FileList != NULL)
     {
-      for (size_t Index = 0; Index < FileList->GetCount(); Index++)
+      for (int Index = 0; Index < FileList->GetCount(); Index++)
       {
         TRemoteFile * File = reinterpret_cast<TRemoteFile *>(FileList->GetObjects(Index));
         if (File != NULL)
@@ -3166,7 +3166,7 @@ bool __fastcall TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool
   {
     UnicodeString FileName;
     TFarPanelItem * PanelItem;
-    for (size_t i = 0; i < PanelItems->GetCount(); i++)
+    for (int i = 0; i < PanelItems->GetCount(); i++)
     {
       PanelItem = static_cast<TFarPanelItem *>(PanelItems->GetItem(i));
       bool AnyData = false;
@@ -3268,7 +3268,7 @@ TStrings * __fastcall TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems
     UnicodeString FileName;
     TFarPanelItem * PanelItem;
     TObject * Data = NULL;
-    for (size_t Index = 0; Index < PanelItems->GetCount(); Index++)
+    for (int Index = 0; Index < PanelItems->GetCount(); Index++)
     {
       PanelItem = static_cast<TFarPanelItem *>(PanelItems->GetItem(Index));
       assert(PanelItem);
@@ -3456,10 +3456,10 @@ void __fastcall TWinSCPFileSystem::LogAuthentication(
     {
       delete AuthenticationLogLines;
     } BOOST_SCOPE_EXIT_END
-    size_t Width = 42;
-    size_t Height = 11;
+    int Width = 42;
+    int Height = 11;
     FarWrapText(::TrimRight(FAuthenticationLog->GetText()), AuthenticationLogLines, Width);
-    size_t Count;
+    int Count;
     UnicodeString Message;
     if (AuthenticationLogLines->GetCount() == 0)
     {
@@ -3524,8 +3524,8 @@ void /* __fastcall */ TWinSCPFileSystem::TerminalChangeDirectory(TObject * /*Sen
   if (!FNoProgress)
   {
     UnicodeString Directory = FTerminal->GetCurrentDirectory();
-    size_t Index = FPathHistory->IndexOf(Directory.c_str());
-    if (Index != NPOS)
+    int Index = FPathHistory->IndexOf(Directory.c_str());
+    if (Index >= 0)
     {
       FPathHistory->Delete(Index);
     }
@@ -3886,7 +3886,7 @@ void __fastcall TWinSCPFileSystem::ShowOperationProgress(
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TWinSCPFileSystem::ProgressBar(size_t Percentage, size_t Width)
+UnicodeString __fastcall TWinSCPFileSystem::ProgressBar(int Percentage, int Width)
 {
   UnicodeString Result;
   // 0xB0 - 0x2591
