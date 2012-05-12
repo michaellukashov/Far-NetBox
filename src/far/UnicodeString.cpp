@@ -824,7 +824,8 @@ UnicodeString UnicodeString::TrimRight() const
 
 const UnicodeString & UnicodeString::operator=(const UnicodeString & strCopy)
 {
-  Init(strCopy.c_str(), strCopy.Length());
+  // Init(strCopy.c_str(), strCopy.Length());
+  Data = strCopy.Data;
   return *this;
 }
 
@@ -837,6 +838,7 @@ const UnicodeString & UnicodeString::operator=(const RawByteString & strCopy)
 const UnicodeString & UnicodeString::operator=(const AnsiString & strCopy)
 {
   Init(strCopy.c_str(), strCopy.Length());
+  // Data = strCopy.Data;
   return *this;
 }
 
