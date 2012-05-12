@@ -24,8 +24,8 @@ int __cdecl debug_printf(const wchar_t *format, ...)
     va_list args;
     va_start(args, format);
     len = _vscwprintf(format, args);
-    std::wstring buf(len + sizeof(wchar_t), 0);
-    vswprintf_s(&buf[0], buf.size(), format, args);
+    std::wstring buf(len + 1, 0);
+    vswprintf((wchar_t *)buf.c_str(), buf.size(), format, args);
 
     va_end(args);
     OutputDebugStringW(buf.c_str());
