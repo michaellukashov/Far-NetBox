@@ -942,7 +942,7 @@ public:
   {
     if (FLength + ALength > FCapacity)
     {
-      FCapacity = FLength + ALength + SFTP_PACKET_ALLOC_DELTA;
+      SetCapacity(FLength + ALength + SFTP_PACKET_ALLOC_DELTA);
     }
     memmove(FData + FLength, AData, ALength);
     FLength += ALength;
