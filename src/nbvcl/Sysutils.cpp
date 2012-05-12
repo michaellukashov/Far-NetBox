@@ -1070,7 +1070,7 @@ UnicodeString ExtractFileDir(const UnicodeString str)
   }
   else
   {
-    result = (Pos == 0) ? UnicodeString(L"/") : UnicodeString();
+    result = (Pos == 1) ? UnicodeString(L"/") : UnicodeString();
   }
   return result;
 }
