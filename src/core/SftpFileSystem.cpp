@@ -2313,7 +2313,7 @@ int __fastcall TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
       FSecureShell->Receive(LenBuf, sizeof(LenBuf));
       int Length = PacketLength(LenBuf, ExpectedType);
       Packet->SetCapacity(Length);
-      FSecureShell->Receive((unsigned char *)Packet->GetData(), Length);
+      FSecureShell->Receive(Packet->GetData(), Length);
       Packet->DataUpdated(Length);
 
       if (FTerminal->GetLog()->GetLogging())
