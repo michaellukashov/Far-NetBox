@@ -242,7 +242,7 @@ public:
     *this = Source;
   }
 
-  explicit TSFTPPacket(char AType, unsigned int codePage)
+  explicit TSFTPPacket(unsigned char AType, unsigned int codePage)
   {
     Init(codePage);
     ChangeType(AType);
@@ -878,12 +878,12 @@ public:
   __property TSFTPFileSystem * ReservedBy = { read = FReservedBy, write = FReservedBy };
   __property UnicodeString TypeName = { read = GetTypeName };
 #else
-  size_t GetLength() const { return FLength; }
-  char * GetData() const { return (char *)FData; }
-  size_t GetCapacity() const { return FCapacity; }
+  unsigned int GetLength() const { return FLength; }
+  unsigned char * GetData() const { return FData; }
+  unsigned int GetCapacity() const { return FCapacity; }
   unsigned char GetType() const { return FType; }
-  size_t GetMessageNumber() const { return FMessageNumber; }
-  void __fastcall SetMessageNumber(size_t value) { FMessageNumber = value; }
+  unsigned int GetMessageNumber() const { return FMessageNumber; }
+  void __fastcall SetMessageNumber(unsigned int value) { FMessageNumber = value; }
   TSFTPFileSystem * GetReservedBy() const { return FReservedBy; }
   void __fastcall SetReservedBy(TSFTPFileSystem * value) { FReservedBy = value; }
 #endif
@@ -1034,19 +1034,6 @@ public:
       throw Exception(FMTLOAD(SFTP_PACKET_ERROR, static_cast<int>(FPosition), static_cast<int>(Size), static_cast<int>(FLength)));
     }
   }
-
-private:
-
-  /* inline */ void __fastcall Add(const void * AData, size_t ALength)
-  {
-    if (FLength + ALength > GetCapacity())
-    {
-      SetCapacity(FLength + ALength + SFTP_PACKET_ALLOC_DELTA);
-    }
-    memmove(FData + FLength, AData, ALength);
-    FLength += ALength;
-  }
-
 };
 //---------------------------------------------------------------------------
 int TSFTPPacket::FMessageCounter = 0;
@@ -1203,7 +1190,7 @@ protected:
   class TSFTPQueuePacket : public TSFTPPacket
   {
   public:
-    TSFTPQueuePacket(unsigned int codePage) :
+    explicit TSFTPQueuePacket(unsigned int codePage) :
       TSFTPPacket(codePage)
     {
       Token = NULL;
