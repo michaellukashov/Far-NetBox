@@ -2706,7 +2706,7 @@ void __fastcall TSFTPFileSystem::DoStartup()
 
   FVersion = Packet.GetCardinal();
   FTerminal->LogEvent(FORMAT(L"SFTP version %d negotiated.", FVersion));
-  if (FVersion < 0 || FVersion < SFTPMinVersion || FVersion > SFTPMaxVersion)
+  if (FVersion < SFTPMinVersion || FVersion > SFTPMaxVersion)
   {
     FTerminal->FatalError(NULL, FMTLOAD(SFTP_VERSION_NOT_SUPPORTED,
       FVersion, SFTPMinVersion, SFTPMaxVersion));
