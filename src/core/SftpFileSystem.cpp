@@ -1041,7 +1041,7 @@ int TSFTPPacket::FMessageCounter = 0;
 class TSFTPQueue
 {
 public:
-  /* __fastcall */ TSFTPQueue(TSFTPFileSystem * AFileSystem, unsigned int codePage)
+  explicit /* __fastcall */ TSFTPQueue(TSFTPFileSystem * AFileSystem, unsigned int codePage)
   {
     FFileSystem = AFileSystem;
     assert(FFileSystem);
