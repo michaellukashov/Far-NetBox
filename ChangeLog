@@ -1,5 +1,7 @@
 NetBox 2.1.0 ??.05.2012
 ---------------------
+  * WebDAV: bugfix: files not copied when trying to copy directory tree to remote server
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=645#p94910)
   * WinSCP core upgraded to 5.0.6
 
 NetBox 2.0.19 23.04.2012
