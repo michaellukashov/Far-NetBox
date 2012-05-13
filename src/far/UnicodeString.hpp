@@ -694,7 +694,7 @@ private:
     {
       WideCharToMultiByte(CP_UTF8, 0, Str, Length,
         reinterpret_cast<LPSTR>(const_cast<unsigned char *>(Data.c_str())), Size-1, nullptr, nullptr);
-      // Data[Size-1] = 0;
+      Data.resize(Size - 1);
     }
   }
   void Init(const char * Str, int Length)
