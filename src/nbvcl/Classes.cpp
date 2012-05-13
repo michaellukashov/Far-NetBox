@@ -872,7 +872,7 @@ void TStringList::Delete(int Index)
     Classes::Error(SListIndexError, Index);
   }
   Changing();
-  DEBUG_PRINTF(L"Index = %d, Count = %d, Value = %s", Index, GetCount(), FList[Index].FString.c_str());
+  // DEBUG_PRINTF(L"Index = %d, Count = %d, Value = %s", Index, GetCount(), FList[Index].FString.c_str());
   FList.erase(FList.begin() + Index);
   Changed();
 }
