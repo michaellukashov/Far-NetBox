@@ -1424,7 +1424,7 @@ public:
     const RawByteString AHandle, __int64 ATransfered)
   {
     FFileName = AFileName;
-    FStream = new TSafeHandleStream(static_cast<HANDLE>(AFile));
+    FStream = new TSafeHandleStream(AFile);
     OperationProgress = AOperationProgress;
     FHandle = AHandle;
     FTransfered = ATransfered;
@@ -4441,7 +4441,7 @@ void __fastcall TSFTPFileSystem::SFTPSource(const UnicodeString FileName,
             FTerminal->LogEvent(L"Resuming file transfer (append style).");
             ResumeOffset = OpenParams.DestFileSize;
           }
-          FileSeek(static_cast<HANDLE>(File), ResumeOffset, 0);
+          FileSeek(File, ResumeOffset, 0);
           OperationProgress->AddResumed(ResumeOffset);
         }
 
@@ -5254,7 +5254,7 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
           else
           {
             FTerminal->LogEvent(L"Resuming file transfer.");
-            FileSeek(static_cast<HANDLE>(LocalHandle), ResumeOffset, 0);
+            FileSeek(LocalHandle, ResumeOffset, 0);
             OperationProgress->AddResumed(ResumeOffset);
           }
         }
@@ -5327,7 +5327,7 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
                 NULL, &LocalHandle, NULL, NULL, NULL, NULL);
             }
             ResumeAllowed = false;
-            FileSeek(static_cast<HANDLE>(LocalHandle), DestFileSize, 0);
+            FileSeek(LocalHandle, DestFileSize, 0);
             if (OverwriteMode == omAppend)
             {
               FTerminal->LogEvent(L"Appending to file.");
@@ -5384,7 +5384,7 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
           SSH_FILEXFER_ATTR_MODIFYTIME);
       }
 
-      FileStream = new TSafeHandleStream(static_cast<HANDLE>(LocalHandle));
+      FileStream = new TSafeHandleStream(LocalHandle);
 
       // at end of this block queue is discarded
       {
