@@ -2231,7 +2231,7 @@ std::string TWebDAVFileSystem::GetNamespace(const TiXmlElement * element, const 
     }
     attr = attr->Next();
   }
-  return AnsiString(ns);
+  return RawByteString(ns).c_str();
 }
 
 FILETIME TWebDAVFileSystem::ParseDateTime(const char * dt) const
