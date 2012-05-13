@@ -228,7 +228,7 @@ struct TSFTPSupport
   bool Loaded;
 };
 //---------------------------------------------------------------------------
-class TSFTPPacket
+class TSFTPPacket : public TObject
 {
 public:
   explicit TSFTPPacket(unsigned int codePage)
@@ -2297,7 +2297,7 @@ int __fastcall TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
   TSFTPBusy Busy(this);
 
   int Result = SSH_FX_OK;
-  int Reservation = FPacketReservations->IndexOf(reinterpret_cast<TObject *>(Packet));
+  int Reservation = FPacketReservations->IndexOf(Packet);
 
   if ((Reservation < 0) || (Packet->GetCapacity() == 0))
   {
@@ -2364,7 +2364,7 @@ int __fastcall TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
               if ((Reservation >= 0) && (Reservation > Index))
               {
                 Reservation--;
-                assert(Reservation == FPacketReservations->IndexOf(reinterpret_cast<TObject *>(Packet)));
+                assert(Reservation == FPacketReservations->IndexOf(Packet));
               }
             }
             break;
@@ -2409,12 +2409,12 @@ void __fastcall TSFTPFileSystem::ReserveResponse(const TSFTPPacket * Packet,
 {
   if (Response != NULL)
   {
-    assert(FPacketReservations->IndexOf(reinterpret_cast<TObject *>(Response)) < 0);
+    assert(FPacketReservations->IndexOf(Response) < 0);
     // mark response as not received yet
     Response->SetCapacity(0);
     Response->SetReservedBy(this);
   }
-  FPacketReservations->Add(reinterpret_cast<TObject *>(Response));
+  FPacketReservations->Add(Response);
   if (FPacketReservations->GetCount() >= FPacketNumbers.size())
   {
     FPacketNumbers.resize(FPacketReservations->GetCount() + 10);
@@ -2424,7 +2424,7 @@ void __fastcall TSFTPFileSystem::ReserveResponse(const TSFTPPacket * Packet,
 //---------------------------------------------------------------------------
 void __fastcall TSFTPFileSystem::UnreserveResponse(TSFTPPacket * Response)
 {
-  int Reservation = FPacketReservations->IndexOf(reinterpret_cast<TObject *>(Response));
+  int Reservation = FPacketReservations->IndexOf(Response);
   if (Response->GetCapacity() != 0)
   {
     // added check for already received packet
