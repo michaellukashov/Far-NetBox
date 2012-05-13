@@ -47,7 +47,7 @@ public:
   __property UnicodeString LogText = { read = GetLogText };
   __property UnicodeString DisplayText = { read = GetDisplayText };
 #else
-  void __fastcall SetID(size_t value);
+  void __fastcall SetID(unsigned int value);
   bool __fastcall GetNameValid() const;
   bool __fastcall GetIsSet() const;
   UnicodeString __fastcall GetDisplayText() const;

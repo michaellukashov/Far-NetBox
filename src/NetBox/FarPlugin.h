@@ -40,7 +40,7 @@ typedef TFarInputBoxValidateSignal::slot_type TFarInputBoxValidateEvent;
 typedef void __fastcall (__closure *TFarMessageTimerEvent)(unsigned int & Result);
 typedef void __fastcall (__closure *TFarMessageClickEvent)(void * Token, int Result, bool & Close);
 #else
-typedef boost::signal1<void, size_t &> TFarMessageTimerSignal;
+typedef boost::signal1<void, unsigned int &> TFarMessageTimerSignal;
 typedef TFarMessageTimerSignal::slot_type TFarMessageTimerEvent;
 typedef boost::signal3<void, void *, int, bool &> TFarMessageClickSignal;
 typedef TFarMessageClickSignal::slot_type TFarMessageClickEvent;
@@ -54,11 +54,11 @@ struct TFarMessageParams
   TStrings * MoreMessages;
   UnicodeString CheckBoxLabel;
   bool CheckBox;
-  size_t Timer;
-  size_t TimerAnswer;
+  unsigned int Timer;
+  unsigned int TimerAnswer;
   TFarMessageTimerEvent * TimerEvent;
-  size_t Timeout;
-  size_t TimeoutButton;
+  unsigned int Timeout;
+  unsigned int TimeoutButton;
   UnicodeString TimeoutStr;
   TFarMessageClickEvent * ClickEvent;
   void * Token;
