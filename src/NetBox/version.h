@@ -7,10 +7,10 @@
 #include <string>
 
 #define PLUGIN_VERSION_MAJOR         2
-#define PLUGIN_VERSION_MINOR         0
-#define PLUGIN_VERSION_PATCH         19
-#define PLUGIN_VERSION_BUILD         106
+#define PLUGIN_VERSION_MINOR         1
+#define PLUGIN_VERSION_PATCH         0
+#define PLUGIN_VERSION_BUILD         107
 
-static const std::wstring CONST_VERSION_STR(L"2.0.19");
-static const std::wstring CONST_COMPILATION_TIME(L"12.05.2012 00:40:34");
+static const std::wstring CONST_VERSION_STR(L"2.1.0");
+static const std::wstring CONST_COMPILATION_TIME(L"13.05.2012 22:50:23");
 
