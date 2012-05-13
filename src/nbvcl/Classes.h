@@ -63,11 +63,11 @@ int __cdecl debug_printf2(const char * format, ...);
 
 //---------------------------------------------------------------------------
 class TObject;
-typedef boost::signal0<void> threadmethod_signal_type;
-typedef threadmethod_signal_type::slot_type TThreadMethod;
+typedef boost::signal0<void> TThreadMethodSignal;
+typedef TThreadMethodSignal::slot_type TThreadMethodEvent;
 
-typedef boost::signal1<void, TObject * /* Sender */> notify_signal_type;
-typedef notify_signal_type::slot_type TNotifyEvent;
+typedef boost::signal1<void, TObject * /* Sender */> TNotifySignal;
+typedef TNotifySignal::slot_type TNotifyEvent;
 //---------------------------------------------------------------------------
 void Abort();
 void Error(int ErrorID, int data);
@@ -335,12 +335,12 @@ public:
   void __fastcall QuickSort(int L, int R, TStringListSortCompare SCompare);
 
   void __fastcall LoadFromFile(const UnicodeString FileName);
-  const notify_signal_type & __fastcall GetOnChange() const { return FOnChange; }
+  const TNotifySignal & __fastcall GetOnChange() const { return FOnChange; }
   void __fastcall SetOnChange(const TNotifyEvent & onChange)
   {
     FOnChange.connect(onChange);
   }
-  const notify_signal_type & __fastcall GetOnChanging() const { return FOnChanging; }
+  const TNotifySignal & __fastcall GetOnChanging() const { return FOnChanging; }
   void __fastcall SetOnChanging(const TNotifyEvent & onChanging)
   {
     FOnChanging.connect(onChanging);
@@ -357,8 +357,8 @@ private:
   void __fastcall ExchangeItems(int Index1, int Index2);
 
 private:
-  notify_signal_type FOnChange;
-  notify_signal_type FOnChanging;
+  TNotifySignal FOnChange;
+  TNotifySignal FOnChanging;
   TStringItemList FList;
   bool FSorted;
   bool FCaseSensitive;

@@ -32,18 +32,18 @@ enum THandlesFunction { hfProcessKey, hfProcessHostFile, hfProcessEvent };
 typedef void __fastcall (__closure * TFarInputBoxValidateEvent)
   (AnsiString & Text);
 #else
-typedef boost::signal1<void, UnicodeString &> farinputboxvalidate_signal_type;
-typedef farinputboxvalidate_signal_type::slot_type TFarInputBoxValidateEvent;
+typedef boost::signal1<void, UnicodeString &> TFarInputBoxValidateSignal;
+typedef TFarInputBoxValidateSignal::slot_type TFarInputBoxValidateEvent;
 #endif
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
 typedef void __fastcall (__closure *TFarMessageTimerEvent)(unsigned int & Result);
 typedef void __fastcall (__closure *TFarMessageClickEvent)(void * Token, int Result, bool & Close);
 #else
-typedef boost::signal1<void, size_t &> farmessagetimer_signal_type;
-typedef farmessagetimer_signal_type::slot_type TFarMessageTimerEvent;
-typedef boost::signal3<void, void *, int, bool &> farmessageclick_signal_type;
-typedef farmessageclick_signal_type::slot_type TFarMessageClickEvent;
+typedef boost::signal1<void, size_t &> TFarMessageTimerSignal;
+typedef TFarMessageTimerSignal::slot_type TFarMessageTimerEvent;
+typedef boost::signal3<void, void *, int, bool &> TFarMessageClickSignal;
+typedef TFarMessageClickSignal::slot_type TFarMessageClickEvent;
 #endif
 
 //---------------------------------------------------------------------------

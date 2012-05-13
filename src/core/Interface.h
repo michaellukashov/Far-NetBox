@@ -54,14 +54,14 @@ struct TQueryButtonAlias
 
   unsigned int Button;
   UnicodeString Alias;
-  notify_signal_type OnClick;
+  TNotifySignal OnClick;
 };
 
 #ifndef _MSC_VER
 typedef void __fastcall (__closure *TQueryParamsTimerEvent)(unsigned int & Result);
 #else
-typedef boost::signal1<void, unsigned int & /* Result */> queryparamstimer_signal_type;
-typedef queryparamstimer_signal_type::slot_type TQueryParamsTimerEvent;
+typedef boost::signal1<void, unsigned int & /* Result */> TQueryParamsTimerSignal;
+typedef TQueryParamsTimerSignal::slot_type TQueryParamsTimerEvent;
 #endif
 
 struct TQueryParams
@@ -106,10 +106,10 @@ typedef void __fastcall (__closure *TFindingFileEvent)
   (TTerminal * Terminal, const UnicodeString Directory, bool & Cancel);
 #else
 typedef boost::signal4<void, TTerminal * /* Terminal */, const UnicodeString /* FileName */, const TRemoteFile * /* File */,
-   bool & /* Cancel */> filefound_signal_type;
-typedef filefound_signal_type::slot_type TFileFoundEvent;
-typedef boost::signal3<void, TTerminal * /* Terminal */, const UnicodeString /* Directory */, bool & /* Cancel */> findingfile_signal_type;
-typedef findingfile_signal_type::slot_type TFindingFileEvent;
+   bool & /* Cancel */> TFileFoundSignal;
+typedef TFileFoundSignal::slot_type TFileFoundEvent;
+typedef boost::signal3<void, TTerminal * /* Terminal */, const UnicodeString /* Directory */, bool & /* Cancel */> TFindingFileSignal;
+typedef TFindingFileSignal::slot_type TFindingFileEvent;
 #endif
 //---------------------------------------------------------------------------
 #endif

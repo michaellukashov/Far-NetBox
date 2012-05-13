@@ -150,7 +150,7 @@ private:
   UnicodeString FCachedDirectoryChange;
   bool FProcessingCommand;
   int FLsFullTime;
-  captureoutput_signal_type FOnCaptureOutput;
+  TCaptureOutputSignal FOnCaptureOutput;
   TSessionInfo FSessionInfo;
   UnicodeString FUserName;
   TDateTime FLastDataSent;

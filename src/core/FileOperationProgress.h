@@ -29,11 +29,11 @@ typedef void __fastcall (__closure *TFileOperationFinished)
   (TFileOperation Operation, TOperationSide Side, bool Temp,
     const UnicodeString & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
 #else
-typedef boost::signal2<void, TFileOperationProgressType & /* ProgressData */, TCancelStatus & /* Cancel */> fileoperationprogress_signal_type;
-typedef fileoperationprogress_signal_type::slot_type TFileOperationProgressEvent;
+typedef boost::signal2<void, TFileOperationProgressType & /* ProgressData */, TCancelStatus & /* Cancel */> TFileOperationProgressSignal;
+typedef TFileOperationProgressSignal::slot_type TFileOperationProgressEvent;
 typedef boost::signal6<void, TFileOperation /* Operation */, TOperationSide /* Side */, bool /* Temp */,
-        const UnicodeString & /* FileName */, bool /* Success */, TOnceDoneOperation & /* OnceDoneOperation */> fileoperationfinished_signal_type;
-typedef fileoperationfinished_signal_type::slot_type TFileOperationFinishedEvent;
+        const UnicodeString & /* FileName */, bool /* Success */, TOnceDoneOperation & /* OnceDoneOperation */> TFileOperationFinishedSignal;
+typedef TFileOperationFinishedSignal::slot_type TFileOperationFinishedEvent;
 #endif
 //---------------------------------------------------------------------------
 class TFileOperationProgressType
@@ -44,8 +44,8 @@ private:
   // when current file was started being transfered
   TDateTime FFileStartTime;
   int FFilesFinished;
-  fileoperationprogress_signal_type * FOnProgress;
-  fileoperationfinished_signal_type * FOnFinished;
+  TFileOperationProgressSignal * FOnProgress;
+  TFileOperationFinishedSignal * FOnFinished;
   bool FReset;
   unsigned int FLastSecond;
   unsigned long FRemainingCPS;
@@ -95,7 +95,7 @@ public:
 
   explicit /* __fastcall */ TFileOperationProgressType();
   explicit /* __fastcall */ TFileOperationProgressType(
-    fileoperationprogress_signal_type * AOnProgress, fileoperationfinished_signal_type * AOnFinished);
+    TFileOperationProgressSignal * AOnProgress, TFileOperationFinishedSignal * AOnFinished);
   virtual /* __fastcall */ ~TFileOperationProgressType();
   void __fastcall AddLocallyUsed(__int64 ASize);
   void __fastcall AddTransfered(__int64 ASize, bool AddToTotals = true);

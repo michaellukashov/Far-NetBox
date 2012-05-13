@@ -21,8 +21,8 @@ class TSessionData;
 #ifndef _MSC_VER
 typedef void __fastcall (__closure* TProcessMessagesEvent)();
 #else
-typedef boost::signal0<void> processmessages_signal_type;
-typedef processmessages_signal_type::slot_type TProcessMessagesEvent;
+typedef boost::signal0<void> TProcessMessagesSignal;
+typedef TProcessMessagesSignal::slot_type TProcessMessagesEvent;
 #endif
 //---------------------------------------------------------------------------
 bool __fastcall FindFile(UnicodeString & Path);

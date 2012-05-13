@@ -128,7 +128,7 @@ public:
         OnChangeNotifyEventTriggered(false)
     {
     }
-    const notify_signal_type &GetOnChange() const { return FOnChange; }
+    const TNotifySignal &GetOnChange() const { return FOnChange; }
     void SetOnChange(const TNotifyEvent &Event) { FOnChange.connect(Event); }
     virtual void Changed()
     {
@@ -145,15 +145,15 @@ public:
 
     bool OnChangeNotifyEventTriggered;
 private:
-    notify_signal_type FOnChange;
+    TNotifySignal FOnChange;
 };
 
 class TClass2 // : public boost::signals::trackable
 {
   // typedef void result_type;
-  typedef boost::signal2<void, TClass2 *, int> click_signal_type;
-  typedef click_signal_type::slot_type click_slot_type;
-  // typedef click_signal_type::slot_function_type click_slot_type;
+  typedef boost::signal2<void, TClass2 *, int> TClickSignal;
+  typedef TClickSignal::slot_type TClickEvent;
+  // typedef TClickSignal::slot_function_type TClickEvent;
 
 public:
     TClass2() :
@@ -161,8 +161,8 @@ public:
     {
     }
     
-    const click_signal_type &GetOnClick() const { return m_OnClick; }
-    boost::signals::connection SetOnClick(const click_slot_type &onClick)
+    const TClickSignal &GetOnClick() const { return m_OnClick; }
+    boost::signals::connection SetOnClick(const TClickEvent &onClick)
     {
         return m_OnClick.connect(onClick);
         // DEBUG_PRINTF(L"m_OnClick.num_slots = %d", m_OnClick.num_slots());
@@ -174,7 +174,7 @@ public:
     }
     bool OnClickTriggered;
 private:
-    click_signal_type m_OnClick;
+    TClickSignal m_OnClick;
 };
 
 class TClass3

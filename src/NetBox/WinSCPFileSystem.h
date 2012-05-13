@@ -66,10 +66,10 @@ typedef void __fastcall (__closure *TGetSynchronizeOptionsEvent)
 typedef void __fastcall (__closure *TGetSpaceAvailable)
   (const AnsiString Path, TSpaceAvailable & ASpaceAvailable, bool & Close);
 #else
-typedef boost::signal2<void, int /* Params */, TSynchronizeOptions & /* Options */ > getsynchronizeoptions_signal_type;
-typedef getsynchronizeoptions_signal_type::slot_type TGetSynchronizeOptionsEvent;
-typedef boost::signal3<void, const UnicodeString /* Path */, TSpaceAvailable & /* ASpaceAvailable */, bool & /* Close */ > getspaceavailable_signal_type;
-typedef getspaceavailable_signal_type::slot_type TGetSpaceAvailableEvent;
+typedef boost::signal2<void, int /* Params */, TSynchronizeOptions & /* Options */ > TGetSynchronizeOptionsSignal;
+typedef TGetSynchronizeOptionsSignal::slot_type TGetSynchronizeOptionsEvent;
+typedef boost::signal3<void, const UnicodeString /* Path */, TSpaceAvailable & /* ASpaceAvailable */, bool & /* Close */ > TGetSpaceAvailableSignal;
+typedef TGetSpaceAvailableSignal::slot_type TGetSpaceAvailableEvent;
 #endif
 struct TMultipleEdit
 {
@@ -88,8 +88,8 @@ struct TEditHistory
 #ifndef _MSC_VER
 typedef void __fastcall (__closure * TProcessSessionEvent)(TSessionData * Data, void * Param);
 #else
-typedef boost::signal2<void, TSessionData *, void *> processsession_signal_type;
-typedef processsession_signal_type::slot_type TProcessSessionEvent;
+typedef boost::signal2<void, TSessionData *, void *> TProcessSessionSignal;
+typedef TProcessSessionSignal::slot_type TProcessSessionEvent;
 #endif
 //---------------------------------------------------------------------------
 class TWinSCPFileSystem : public TCustomFarFileSystem

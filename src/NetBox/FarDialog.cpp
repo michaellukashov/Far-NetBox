@@ -803,7 +803,7 @@ void __fastcall TFarDialog::BreakSynchronize()
   SetEvent(FSynchronizeObjects[1]);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarDialog::Synchronize(const TThreadMethod & slot)
+void __fastcall TFarDialog::Synchronize(const TThreadMethodEvent & slot)
 {
   if (FSynchronizeObjects[0] == INVALID_HANDLE_VALUE)
   {
@@ -900,7 +900,7 @@ void __fastcall TFarDialog::ProcessGroup(int Group, const TFarProcessGroupEvent 
     {
       Self->UnlockChanges();
     } BOOST_SCOPE_EXIT_END
-    processgroupevent_signal_type processgroupevent;
+    TFarProcessGroupSignal processgroupevent;
     processgroupevent.connect(Callback);
     for (int i = 0; i < GetItemCount(); i++)
     {

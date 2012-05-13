@@ -234,7 +234,7 @@ private:
   bool FFileTransferPreserveTime;
   unsigned long FFileTransferCPSLimit;
   bool FAwaitingProgress;
-  captureoutput_signal_type FOnCaptureOutput;
+  TCaptureOutputSignal FOnCaptureOutput;
   UnicodeString FUserName;
   TAutoSwitch FListAll;
   bool FDoListAll;

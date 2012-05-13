@@ -5883,8 +5883,8 @@ bool __fastcall TWinSCPFileSystem::LinkDialog(UnicodeString & FileName,
 typedef void __fastcall (__closure *TFeedFileSystemData)
   (TObject * Control, int Label, AnsiString Value);
 #else
-typedef boost::signal3<void, TObject *, int, UnicodeString> feedfilesystemdata_signal_type;
-typedef feedfilesystemdata_signal_type::slot_type TFeedFileSystemDataEvent;
+typedef boost::signal3<void, TObject *, int, UnicodeString> TFeedFileSystemDataSignal;
+typedef TFeedFileSystemDataSignal::slot_type TFeedFileSystemDataEvent;
 #endif
 //---------------------------------------------------------------------------
 class TLabelList;
@@ -5921,7 +5921,7 @@ protected:
   virtual bool __fastcall Key(TFarDialogItem * Item, long KeyCode);
 
 private:
-  getspaceavailable_signal_type FOnGetSpaceAvailable;
+  TGetSpaceAvailableSignal FOnGetSpaceAvailable;
   TFileSystemInfo FFileSystemInfo;
   TSessionInfo FSessionInfo;
   bool FSpaceAvailableLoaded;
@@ -6117,7 +6117,7 @@ UnicodeString __fastcall TFileSystemInfoDialog::SpaceStr(__int64 Bytes)
 //---------------------------------------------------------------------
 void __fastcall TFileSystemInfoDialog::Feed(const TFeedFileSystemDataEvent & AddItem)
 {
-  feedfilesystemdata_signal_type sig;
+  TFeedFileSystemDataSignal sig;
   sig.connect(AddItem);
   sig(ServerLabels, SERVER_REMOTE_SYSTEM, FFileSystemInfo.RemoteSystem);
   sig(ServerLabels, SERVER_SESSION_PROTOCOL, FSessionInfo.ProtocolName);
@@ -7927,7 +7927,7 @@ protected:
   void /* __fastcall */ DoAbort(TObject * Sender, bool Close);
   void /* __fastcall */ DoLog(TSynchronizeController * Controller,
     TSynchronizeLogEntry Entry, const UnicodeString Message);
-  void /* __fastcall */ DoSynchronizeThreads(TObject * Sender, const TThreadMethod & slot);
+  void /* __fastcall */ DoSynchronizeThreads(TObject * Sender, const TThreadMethodEvent & slot);
   virtual LONG_PTR __fastcall DialogProc(int Msg, int Param1, LONG_PTR Param2);
   virtual bool __fastcall CloseQuery();
   virtual bool __fastcall Key(TFarDialogItem * Item, long KeyCode);
@@ -7941,11 +7941,11 @@ private:
   bool FAbort;
   bool FClose;
   TSynchronizeParamType FParams;
-  synchronizestartstop_signal_type FOnStartStop;
+  TSynchronizeStartStopSignal FOnStartStop;
   int FOptions;
   TSynchronizeOptions * FSynchronizeOptions;
   TCopyParamType FCopyParams;
-  getsynchronizeoptions_signal_type FOnGetOptions;
+  TGetSynchronizeOptionsSignal FOnGetOptions;
   int FCopyParamAttrs;
 
   TFarEdit * LocalDirectoryEdit;
@@ -8175,7 +8175,7 @@ void /* __fastcall */ TSynchronizeDialog::DoStartStop(bool Start, bool Synchroni
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TSynchronizeDialog::DoSynchronizeThreads(TObject * /*Sender*/,
-    const TThreadMethod & slot)
+    const TThreadMethodEvent & slot)
 {
   if (FStarted)
   {

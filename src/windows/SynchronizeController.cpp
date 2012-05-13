@@ -27,7 +27,7 @@
 //---------------------------------------------------------------------------
 /* __fastcall */ TSynchronizeController::TSynchronizeController(
   TSynchronizeEvent AOnSynchronize, TSynchronizeInvalidEvent AOnSynchronizeInvalid,
-  TSynchronizeTooManyDirectories AOnTooManyDirectories)
+  TSynchronizeTooManyDirectoriesEvent AOnTooManyDirectories)
 {
   FOnSynchronize.connect(AOnSynchronize);
   FOnSynchronizeInvalid.connect(AOnSynchronizeInvalid);
@@ -47,7 +47,7 @@ void /* __fastcall */ TSynchronizeController::StartStop(TObject * Sender,
   bool Start, const TSynchronizeParamType & Params, const TCopyParamType & CopyParam,
   TSynchronizeOptions * Options,
   TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
-  TSynchronizeLog OnSynchronizeLog)
+  TSynchronizeLogEvent OnSynchronizeLog)
 {
   if (Start)
   {

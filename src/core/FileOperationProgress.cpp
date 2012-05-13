@@ -18,7 +18,7 @@
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TFileOperationProgressType::TFileOperationProgressType(
-  fileoperationprogress_signal_type * AOnProgress, fileoperationfinished_signal_type * AOnFinished) :
+  TFileOperationProgressSignal * AOnProgress, TFileOperationFinishedSignal * AOnFinished) :
   FOnProgress(AOnProgress),
   FOnFinished(AOnFinished)
 {

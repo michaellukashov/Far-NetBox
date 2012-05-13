@@ -73,13 +73,13 @@ enum TQueueEvent { qeEmpty, qePendingUserAction };
 typedef void __fastcall (__closure * TQueueEventEvent)
   (TTerminalQueue * Queue, TQueueEvent Event);
 #else
-typedef boost::signal1<void, TTerminalQueue *> queuelistupdate_signal_type;
-typedef queuelistupdate_signal_type::slot_type TQueueListUpdateEvent;
-typedef boost::signal2<void, TTerminalQueue *, TQueueItem *> queueitemupdate_signal_type;
-typedef queueitemupdate_signal_type::slot_type TQueueItemUpdateEvent;
+typedef boost::signal1<void, TTerminalQueue *> TQueueListUpdateSignal;
+typedef TQueueListUpdateSignal::slot_type TQueueListUpdateEvent;
+typedef boost::signal2<void, TTerminalQueue *, TQueueItem *> TQueueItemUpdateSignal;
+typedef TQueueItemUpdateSignal::slot_type TQueueItemUpdateEvent;
 enum TQueueEvent { qeEmpty, qePendingUserAction };
-typedef boost::signal2<void, TTerminalQueue *, TQueueEvent> queueevent_signal_type;
-typedef queueevent_signal_type::slot_type TQueueEventEvent;
+typedef boost::signal2<void, TTerminalQueue *, TQueueEvent> TQueueEventSignal;
+typedef TQueueEventSignal::slot_type TQueueEventEvent;
 #endif
 //---------------------------------------------------------------------------
 class TTerminalQueue : public TSignalThread
@@ -109,17 +109,17 @@ public:
 #else
   int __fastcall GetTransfersLimit() { return FTransfersLimit; }
   // void __fastcall SetTransfersLimit(int value);
-  queryuser_signal_type & __fastcall GetOnQueryUser() { return FOnQueryUser; }
+  TQueryUserSignal & __fastcall GetOnQueryUser() { return FOnQueryUser; }
   void __fastcall SetOnQueryUser(const TQueryUserEvent & value) { FOnQueryUser.connect(value); }
-  promptuser_signal_type & __fastcall GetOnPromptUser() { return FOnPromptUser; }
+  TPromptUserSignal & __fastcall GetOnPromptUser() { return FOnPromptUser; }
   void __fastcall SetOnPromptUser(const TPromptUserEvent & value) { FOnPromptUser.connect(value); }
-  extendedexception_signal_type & __fastcall GetOnShowExtendedException() { return FOnShowExtendedException; }
+  TExtendedExceptionSignal & __fastcall GetOnShowExtendedException() { return FOnShowExtendedException; }
   void __fastcall SetOnShowExtendedException(const TExtendedExceptionEvent & value) { FOnShowExtendedException.connect(value); }
-  queuelistupdate_signal_type & __fastcall GetOnListUpdate() { return FOnListUpdate; }
+  TQueueListUpdateSignal & __fastcall GetOnListUpdate() { return FOnListUpdate; }
   void __fastcall SetOnListUpdate(const TQueueListUpdateEvent & value) { FOnListUpdate.connect(value); }
-  queueitemupdate_signal_type & __fastcall GetOnQueueItemUpdate() { return FOnQueueItemUpdate; }
+  TQueueItemUpdateSignal & __fastcall GetOnQueueItemUpdate() { return FOnQueueItemUpdate; }
   void __fastcall SetOnQueueItemUpdate(const TQueueItemUpdateEvent & value) { FOnQueueItemUpdate.connect(value); }
-  queueevent_signal_type & __fastcall GetOnEvent() { return FOnEvent; }
+  TQueueEventSignal & __fastcall GetOnEvent() { return FOnEvent; }
   void __fastcall SetOnEvent(const TQueueEventEvent & value) { FOnEvent.connect(value); }
 #endif
 
@@ -129,12 +129,12 @@ protected:
   friend class TPromptUserAction;
   friend class TShowExtendedExceptionAction;
 
-  queryuser_signal_type FOnQueryUser;
-  promptuser_signal_type FOnPromptUser;
-  extendedexception_signal_type FOnShowExtendedException;
-  queueitemupdate_signal_type FOnQueueItemUpdate;
-  queuelistupdate_signal_type FOnListUpdate;
-  queueevent_signal_type FOnEvent;
+  TQueryUserSignal FOnQueryUser;
+  TPromptUserSignal FOnPromptUser;
+  TExtendedExceptionSignal FOnShowExtendedException;
+  TQueueItemUpdateSignal FOnQueueItemUpdate;
+  TQueueListUpdateSignal FOnListUpdate;
+  TQueueEventSignal FOnEvent;
   TTerminal * FTerminal;
   TConfiguration * FConfiguration;
   TSessionData * FSessionData;
@@ -393,7 +393,7 @@ public:
   __property TNotifyEvent OnIdle = { read = FOnIdle, write = FOnIdle };
   __property bool Cancelling = { read = FCancel };
 #else
-  notify_signal_type & GetOnIdle() { return FOnIdle; }
+  TNotifySignal & GetOnIdle() { return FOnIdle; }
   void SetOnIdle(const TNotifyEvent & Value) { FOnIdle.connect(Value); }
   bool GetCancelling() const { return FCancel; };
 #endif
@@ -404,19 +404,19 @@ protected:
 private:
   TTerminal * FTerminal;
 
-  informationevent_signal_type * FOnInformation;
-  queryuser_signal_type * FOnQueryUser;
-  promptuser_signal_type * FOnPromptUser;
-  extendedexception_signal_type * FOnShowExtendedException;
-  displaybanner_signal_type * FOnDisplayBanner;
-  notify_signal_type * FOnChangeDirectory;
-  readdirectory_signal_type * FOnReadDirectory;
-  notify_signal_type * FOnStartReadDirectory;
-  readdirectoryprogress_signal_type * FOnReadDirectoryProgress;
+  TInformationSignal * FOnInformation;
+  TQueryUserSignal * FOnQueryUser;
+  TPromptUserSignal * FOnPromptUser;
+  TExtendedExceptionSignal * FOnShowExtendedException;
+  TDisplayBannerSignal * FOnDisplayBanner;
+  TNotifySignal * FOnChangeDirectory;
+  TReadDirectorySignal * FOnReadDirectory;
+  TNotifySignal * FOnStartReadDirectory;
+  TReadDirectoryProgressSignal * FOnReadDirectoryProgress;
 
-  notify_signal_type FOnIdle;
+  TNotifySignal FOnIdle;
 
-  notify_signal_type FAction;
+  TNotifySignal FAction;
   HANDLE FActionEvent;
   TUserAction * FUserAction;
 

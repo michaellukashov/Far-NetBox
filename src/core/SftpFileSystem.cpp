@@ -3543,8 +3543,8 @@ bool __fastcall TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
   // without knowledge of server's capabilities, this all make no sense
   if (FSupport->Loaded)
   {
-    fileoperationprogress_signal_type sig1;
-    fileoperationfinished_signal_type sig2;
+    TFileOperationProgressSignal sig1;
+    TFileOperationFinishedSignal sig2;
     sig1.connect(boost::bind(&TTerminal::DoProgress, FTerminal, _1, _2));
     sig2.connect(boost::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6));
     TFileOperationProgressType Progress(&sig1, &sig2);
@@ -3687,7 +3687,7 @@ void __fastcall TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & 
     {
       TSFTPPacket Packet(GetSessionData()->GetCodePageAsNumber());
       bool Next = false;
-      calculatedchecksum_signal_type sig;
+      TCalculatedChecksumSignal sig;
       if (true) // OnCalculatedChecksum)
       {
         sig.connect(OnCalculatedChecksum);
@@ -3766,8 +3766,8 @@ void __fastcall TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Al
   TStrings * FileList, TStrings * Checksums,
   TCalculatedChecksumEvent OnCalculatedChecksum)
 {
-  fileoperationprogress_signal_type sig1;
-  fileoperationfinished_signal_type sig2;
+  TFileOperationProgressSignal sig1;
+  TFileOperationFinishedSignal sig2;
   sig1.connect(boost::bind(&TTerminal::DoProgress, FTerminal, _1, _2));
   sig2.connect(boost::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6));
   TFileOperationProgressType Progress(&sig1, &sig2);

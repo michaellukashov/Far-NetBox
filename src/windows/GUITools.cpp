@@ -197,7 +197,7 @@ bool __fastcall ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString Path,
   {
     if (true) // (ProcessMessages != NULL)
     {
-      processmessages_signal_type sig;
+      TProcessMessagesSignal sig;
       sig.connect(ProcessMessages);
       unsigned long WaitResult;
       do

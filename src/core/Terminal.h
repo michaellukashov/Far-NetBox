@@ -70,35 +70,35 @@ typedef void __fastcall (__closure *TInformationEvent)
   (TTerminal * Terminal, const UnicodeString & Str, bool Status, int Phase);
 #else
 typedef boost::signal8<void, TObject * /* Sender */, const UnicodeString /* Query */, TStrings * /* MoreMessages */ , unsigned int /* Answers */,
-  const TQueryParams * /* Params */, unsigned int & /* Answer */, TQueryType /* QueryType */, void * /* Arg */ > queryuser_signal_type;
-typedef queryuser_signal_type::slot_type TQueryUserEvent;
+  const TQueryParams * /* Params */, unsigned int & /* Answer */, TQueryType /* QueryType */, void * /* Arg */ > TQueryUserSignal;
+typedef TQueryUserSignal::slot_type TQueryUserEvent;
 typedef boost::signal8<void, TTerminal * /* Terminal */, TPromptKind /* Kind */, UnicodeString /* Name */, UnicodeString /* Instructions */,
-   TStrings * /* Prompts */, TStrings * /* Results */, bool & /* Result */, void * /* Arg */> promptuser_signal_type;
-typedef promptuser_signal_type::slot_type TPromptUserEvent;
+   TStrings * /* Prompts */, TStrings * /* Results */, bool & /* Result */, void * /* Arg */> TPromptUserSignal;
+typedef TPromptUserSignal::slot_type TPromptUserEvent;
 typedef boost::signal5<void, TTerminal * /* Terminal */, UnicodeString /* SessionName */, const UnicodeString & /* Banner */,
-   bool & /* NeverShowAgain */, int /* Options */> displaybanner_signal_type;
-typedef displaybanner_signal_type::slot_type TDisplayBannerEvent;
-typedef boost::signal3<void, TTerminal * /* Terminal */, Exception * /* E */, void * /* Arg */> extendedexception_signal_type;
-typedef extendedexception_signal_type::slot_type TExtendedExceptionEvent;
-typedef boost::signal2<void, TObject * /* Sender */, Boolean /* ReloadOnly */> readdirectory_signal_type;
-typedef readdirectory_signal_type::slot_type TReadDirectoryEvent;
-typedef boost::signal3<void, TObject* /* Sender */, int /* Progress */, bool & /* Cancel */> readdirectoryprogress_signal_type;
-typedef readdirectoryprogress_signal_type::slot_type TReadDirectoryProgressEvent;
-typedef boost::signal3<void, const UnicodeString /* FileName */, const TRemoteFile * /* File */, void * /* Param */> processfile_signal_type;
-typedef processfile_signal_type::slot_type TProcessFileEvent;
-typedef boost::signal4<void, const UnicodeString /* FileName */, const TRemoteFile * /* File */, void * /* Param */, int /* Index */> processfileex_signal_type;
-typedef processfileex_signal_type::slot_type TProcessFileEventEx;
-typedef boost::signal2<int, void * /* Param1 */, void * /* Param2 */> fileoperation_signal_type;
-typedef fileoperation_signal_type::slot_type TFileOperationEvent;
+   bool & /* NeverShowAgain */, int /* Options */> TDisplayBannerSignal;
+typedef TDisplayBannerSignal::slot_type TDisplayBannerEvent;
+typedef boost::signal3<void, TTerminal * /* Terminal */, Exception * /* E */, void * /* Arg */> TExtendedExceptionSignal;
+typedef TExtendedExceptionSignal::slot_type TExtendedExceptionEvent;
+typedef boost::signal2<void, TObject * /* Sender */, Boolean /* ReloadOnly */> TReadDirectorySignal;
+typedef TReadDirectorySignal::slot_type TReadDirectoryEvent;
+typedef boost::signal3<void, TObject* /* Sender */, int /* Progress */, bool & /* Cancel */> TReadDirectoryProgressSignal;
+typedef TReadDirectoryProgressSignal::slot_type TReadDirectoryProgressEvent;
+typedef boost::signal3<void, const UnicodeString /* FileName */, const TRemoteFile * /* File */, void * /* Param */> TProcessFileSignal;
+typedef TProcessFileSignal::slot_type TProcessFileEvent;
+typedef boost::signal4<void, const UnicodeString /* FileName */, const TRemoteFile * /* File */, void * /* Param */, int /* Index */> TProcessFileEventSignal;
+typedef TProcessFileEventSignal::slot_type TProcessFileEventEx;
+typedef boost::signal2<int, void * /* Param1 */, void * /* Param2 */> TFileOperationSignal;
+typedef TFileOperationSignal::slot_type TFileOperationEvent;
 typedef boost::signal4<void, const UnicodeString /* LocalDirectory */, const UnicodeString /* RemoteDirectory */,
-   bool & /* Continue */, bool /* Collect */> synchronizedirectory_signal_type;
-typedef synchronizedirectory_signal_type::slot_type TSynchronizeDirectoryEvent;
-typedef boost::signal2<void, const UnicodeString /* FileName */, bool /* Alternative */> deletelocalfile_signal_type;
-typedef deletelocalfile_signal_type::slot_type TDeleteLocalFileEvent;
-typedef boost::signal3<int, TTerminal * /* Terminal */, const UnicodeString /* Directory */, bool /* SubDirs */> directorymodified_signal_type;
-typedef directorymodified_signal_type::slot_type TDirectoryModifiedEvent;
-typedef boost::signal4<void, TTerminal * /* Terminal */, const UnicodeString & /* Str */, bool /* Status */, int /* Phase */> informationevent_signal_type;
-typedef informationevent_signal_type::slot_type TInformationEvent;
+   bool & /* Continue */, bool /* Collect */> TSynchronizeDirectorySignal;
+typedef TSynchronizeDirectorySignal::slot_type TSynchronizeDirectoryEvent;
+typedef boost::signal2<void, const UnicodeString /* FileName */, bool /* Alternative */> TDeleteLocalFileSignal;
+typedef TDeleteLocalFileSignal::slot_type TDeleteLocalFileEvent;
+typedef boost::signal3<int, TTerminal * /* Terminal */, const UnicodeString /* Directory */, bool /* SubDirs */> TDirectoryModifiedSignal;
+typedef TDirectoryModifiedSignal::slot_type TDirectoryModifiedEvent;
+typedef boost::signal4<void, TTerminal * /* Terminal */, const UnicodeString & /* Str */, bool /* Status */, int /* Phase */> TInformationSignal;
+typedef TInformationSignal::slot_type TInformationEvent;
 #endif
 //---------------------------------------------------------------------------
 #define SUSPEND_OPERATION(Command)                            \
@@ -208,17 +208,17 @@ private:
   TRemoteDirectory * FFiles;
   int FInTransaction;
   bool FSuspendTransaction;
-  notify_signal_type FOnChangeDirectory;
-  readdirectory_signal_type FOnReadDirectory;
-  notify_signal_type FOnStartReadDirectory;
-  readdirectoryprogress_signal_type FOnReadDirectoryProgress;
-  deletelocalfile_signal_type FOnDeleteLocalFile;
+  TNotifySignal FOnChangeDirectory;
+  TReadDirectorySignal FOnReadDirectory;
+  TNotifySignal FOnStartReadDirectory;
+  TReadDirectoryProgressSignal FOnReadDirectoryProgress;
+  TDeleteLocalFileSignal FOnDeleteLocalFile;
   TRemoteTokenList FMembership;
   TRemoteTokenList FGroups;
   TRemoteTokenList FUsers;
   bool FUsersGroupsLookedup;
-  fileoperationprogress_signal_type FOnProgress;
-  fileoperationfinished_signal_type FOnFinished;
+  TFileOperationProgressSignal FOnProgress;
+  TFileOperationFinishedSignal FOnFinished;
   TFileOperationProgressType * FOperationProgress;
   bool FUseBusyCursor;
   TRemoteDirectoryCache * FDirectoryCache;
@@ -251,14 +251,14 @@ private:
   TCallbackGuard * FCallbackGuard;
   TFindingFileEvent FOnFindingFile;
 #else
-  queryuser_signal_type FOnQueryUser;
-  promptuser_signal_type FOnPromptUser;
-  displaybanner_signal_type FOnDisplayBanner;
-  extendedexception_signal_type FOnShowExtendedException;
-  informationevent_signal_type FOnInformation;
-  notify_signal_type FOnClose;
+  TQueryUserSignal FOnQueryUser;
+  TPromptUserSignal FOnPromptUser;
+  TDisplayBannerSignal FOnDisplayBanner;
+  TExtendedExceptionSignal FOnShowExtendedException;
+  TInformationSignal FOnInformation;
+  TNotifySignal FOnClose;
   TCallbackGuard * FCallbackGuard;
-  findingfile_signal_type FOnFindingFile;
+  TFindingFileSignal FOnFindingFile;
   TTerminal *Self;
 
 public:
@@ -565,36 +565,36 @@ public:
   TConfiguration *__fastcall GetConfiguration() { return FConfiguration; }
   TSessionStatus __fastcall GetStatus() { return FStatus; }
   TRemoteDirectory * GetFiles() { return FFiles; }
-  notify_signal_type & GetOnChangeDirectory() { return FOnChangeDirectory; }
+  TNotifySignal & GetOnChangeDirectory() { return FOnChangeDirectory; }
   void SetOnChangeDirectory(const TNotifyEvent &value) { FOnChangeDirectory.connect(value); }
-  readdirectory_signal_type & GetOnReadDirectory() { return FOnReadDirectory; }
+  TReadDirectorySignal & GetOnReadDirectory() { return FOnReadDirectory; }
   void SetOnReadDirectory(const TReadDirectoryEvent &value) { FOnReadDirectory.connect(value); }
-  notify_signal_type & GetOnStartReadDirectory() { return FOnStartReadDirectory; }
+  TNotifySignal & GetOnStartReadDirectory() { return FOnStartReadDirectory; }
   void SetOnStartReadDirectory(const TNotifyEvent &value) { FOnStartReadDirectory.connect(value); }
-  readdirectoryprogress_signal_type & GetOnReadDirectoryProgress() { return FOnReadDirectoryProgress; }
+  TReadDirectoryProgressSignal & GetOnReadDirectoryProgress() { return FOnReadDirectoryProgress; }
   void SetOnReadDirectoryProgress(const TReadDirectoryProgressEvent &value) { FOnReadDirectoryProgress.connect(value); }
-  deletelocalfile_signal_type & GetOnDeleteLocalFile() { return FOnDeleteLocalFile; }
+  TDeleteLocalFileSignal & GetOnDeleteLocalFile() { return FOnDeleteLocalFile; }
   void SetOnDeleteLocalFile(const TDeleteLocalFileEvent & value) { FOnDeleteLocalFile.connect(value); }
-  fileoperationprogress_signal_type & GetOnProgress() { return FOnProgress; }
+  TFileOperationProgressSignal & GetOnProgress() { return FOnProgress; }
   void SetOnProgress(const TFileOperationProgressEvent & value) { FOnProgress.connect(value); }
-  fileoperationfinished_signal_type & GetOnFinished() { return FOnFinished; }
+  TFileOperationFinishedSignal & GetOnFinished() { return FOnFinished; }
   void SetOnFinished(const TFileOperationFinishedEvent & value) { FOnFinished.connect(value); }
   TCurrentFSProtocol GetFSProtocol() { return FFSProtocol; }
   bool GetUseBusyCursor() { return FUseBusyCursor; }
   void SetUseBusyCursor(bool value) { FUseBusyCursor = value; }
   bool GetAutoReadDirectory() { return FAutoReadDirectory; }
   void SetAutoReadDirectory(bool value) { FAutoReadDirectory = value; }
-  queryuser_signal_type & GetOnQueryUser() { return FOnQueryUser; }
+  TQueryUserSignal & GetOnQueryUser() { return FOnQueryUser; }
   void SetOnQueryUser(const TQueryUserEvent & value) { FOnQueryUser.connect(value); }
-  promptuser_signal_type & GetOnPromptUser() { return FOnPromptUser; }
+  TPromptUserSignal & GetOnPromptUser() { return FOnPromptUser; }
   void SetOnPromptUser(const TPromptUserEvent & value) { FOnPromptUser.connect(value); }
-  displaybanner_signal_type & GetOnDisplayBanner() { return FOnDisplayBanner; }
+  TDisplayBannerSignal & GetOnDisplayBanner() { return FOnDisplayBanner; }
   void SetOnDisplayBanner(const TDisplayBannerEvent & value) { FOnDisplayBanner.connect(value); }
-  extendedexception_signal_type & GetOnShowExtendedException() { return FOnShowExtendedException; }
+  TExtendedExceptionSignal & GetOnShowExtendedException() { return FOnShowExtendedException; }
   void SetOnShowExtendedException(const TExtendedExceptionEvent & value) { FOnShowExtendedException.connect(value); }
-  informationevent_signal_type & GetOnInformation() { return FOnInformation; }
+  TInformationSignal & GetOnInformation() { return FOnInformation; }
   void SetOnInformation(const TInformationEvent & value) { FOnInformation.connect(value); }
-  notify_signal_type & GetOnClose() { return FOnClose; }
+  TNotifySignal & GetOnClose() { return FOnClose; }
   void SetOnClose(const TNotifyEvent & value) { FOnClose.connect(value); }
   size_t GetTunnelLocalPortNumber() { return FTunnelLocalPortNumber; }
 #endif

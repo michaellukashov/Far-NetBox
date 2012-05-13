@@ -181,8 +181,8 @@ typedef void __fastcall (__closure * TCustomCommandPatternEvent)
    bool & LastPass);
 #else
 typedef boost::signal5<void, int /* Index */, const UnicodeString /* Pattern */, void * /* Arg */, UnicodeString & /* Replacement */,
-   bool & /* LastPass */ > customcommandpattern_signal_type;
-typedef customcommandpattern_signal_type::slot_type TCustomCommandPatternEvent;
+   bool & /* LastPass */ > TCustomCommandPatternSignal;
+typedef TCustomCommandPatternSignal::slot_type TCustomCommandPatternEvent;
 #endif
 //---------------------------------------------------------------------------
 class TCustomCommand

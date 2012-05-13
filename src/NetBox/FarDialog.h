@@ -35,14 +35,14 @@ typedef void __fastcall (__closure * TFarMouseClickEvent)
 typedef void __fastcall (__closure * TFarProcessGroupEvent)
   (TFarDialogItem * Item, void * Arg);
 #else
-typedef boost::signal4<void, TFarDialog *, TFarDialogItem *, long, bool &> key_signal_type;
-typedef key_signal_type::slot_type TFarKeyEvent;
+typedef boost::signal4<void, TFarDialog *, TFarDialogItem *, long, bool &> TFarKeySignal;
+typedef TFarKeySignal::slot_type TFarKeyEvent;
 
-typedef boost::signal2<void, TFarDialogItem *, MOUSE_EVENT_RECORD *> mouse_click_signal_type;
-typedef mouse_click_signal_type::slot_type TFarMouseClickEvent;
+typedef boost::signal2<void, TFarDialogItem *, MOUSE_EVENT_RECORD *> TFarMouseClickSignal;
+typedef TFarMouseClickSignal::slot_type TFarMouseClickEvent;
 
-typedef boost::signal2<void, TFarDialogItem *, void *> processgroupevent_signal_type;
-typedef processgroupevent_signal_type::slot_type TFarProcessGroupEvent;
+typedef boost::signal2<void, TFarDialogItem *, void *> TFarProcessGroupSignal;
+typedef TFarProcessGroupSignal::slot_type TFarProcessGroupEvent;
 #endif
 //---------------------------------------------------------------------------
 class TFarDialog : public TObject
@@ -101,7 +101,7 @@ public:
   TFarDialogItem * GetItemFocused() { return FItemFocused; }
   int GetResult() { return FResult; }
 
-  const key_signal_type & GetOnKey() const { return FOnKey; }
+  const TFarKeySignal & GetOnKey() const { return FOnKey; }
   void SetOnKey(const TFarKeyEvent & value) { FOnKey.connect(value); }
 #endif
 
@@ -136,7 +136,7 @@ protected:
   void __fastcall RefreshBounds();
   virtual void __fastcall Idle();
   void __fastcall BreakSynchronize();
-  void __fastcall Synchronize(const TThreadMethod & Method);
+  void __fastcall Synchronize(const TThreadMethodEvent & Method);
   void __fastcall Close(TFarButton * Button);
   void __fastcall ProcessGroup(int Group, const TFarProcessGroupEvent & Callback, void * Arg);
   void /* __fastcall */ ShowItem(TFarDialogItem * Item, void * Arg);
@@ -161,7 +161,7 @@ private:
   int FDefaultGroup;
   size_t FTag;
   TFarDialogItem * FItemFocused;
-  key_signal_type FOnKey;
+  TFarKeySignal FOnKey;
   FarDialogItem * FDialogItems;
   size_t FDialogItemsCapacity;
   int FChangesLocked;
@@ -169,7 +169,7 @@ private:
   int FResult;
   bool FNeedsSynchronize;
   HANDLE FSynchronizeObjects[2];
-  threadmethod_signal_type FSynchronizeMethod;
+  TThreadMethodSignal FSynchronizeMethod;
   TFarDialog * Self;
 
 public:
@@ -300,9 +300,9 @@ public:
   void SetTag(int value) { FTag = value; }
   TFarDialog * GetDialog() { return FDialog; }
 
-  const notify_signal_type & GetOnExit() const { return FOnExit; }
+  const TNotifySignal & GetOnExit() const { return FOnExit; }
   void SetOnExit(const TNotifyEvent & value) { FOnExit.connect(value); }
-  const mouse_click_signal_type & GetOnMouseClick() const { return FOnMouseClick; }
+  const TFarMouseClickSignal & GetOnMouseClick() const { return FOnMouseClick; }
   void SetOnMouseClick(const TFarMouseClickEvent & value) { FOnMouseClick.connect(value); }
 #endif
 
@@ -318,8 +318,8 @@ protected:
   int FDefaultType;
   int FGroup;
   int FTag;
-  notify_signal_type FOnExit;
-  mouse_click_signal_type FOnMouseClick;
+  TNotifySignal FOnExit;
+  TFarMouseClickSignal FOnMouseClick;
 
   explicit /* __fastcall */ TFarDialogItem(TFarDialog * ADialog, int AType);
   virtual /* __fastcall */ ~TFarDialogItem();
@@ -439,10 +439,10 @@ public:
 };
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
-typedef void __fastcall (__closure * TFarButtonClick)(TFarButton * Sender, bool & Close);
+typedef void __fastcall (__closure * TFarButtonClickEvent)(TFarButton * Sender, bool & Close);
 #else
-typedef boost::signal2<void, TFarButton *, bool &> button_click_signal_type;
-typedef button_click_signal_type::slot_type TFarButtonClick;
+typedef boost::signal2<void, TFarButton *, bool &> TFarButtonClickSignal;
+typedef TFarButtonClickSignal::slot_type TFarButtonClickEvent;
 #endif
 enum TFarButtonBrackets { brNone, brTight, brSpace, brNormal };
 //---------------------------------------------------------------------------
@@ -457,7 +457,7 @@ public:
   __property bool Default = { read = GetDefault, write = SetDefault };
   __property TFarButtonBrackets Brackets = { read = FBrackets, write = SetBrackets };
   __property CenterGroup;
-  __property TFarButtonClick OnClick = { read = FOnClick, write = FOnClick };
+  __property TFarButtonClickEvent OnClick = { read = FOnClick, write = FOnClick };
 #else
   virtual UnicodeString GetCaption() { return GetData(); }
   virtual void SetCaption(const UnicodeString value) { SetData(value); }
@@ -466,8 +466,8 @@ public:
   TFarButtonBrackets GetBrackets() { return FBrackets; }
   bool GetCenterGroup() { return TFarDialogItem::GetCenterGroup(); }
   void SetCenterGroup(bool value) { TFarDialogItem::SetCenterGroup(value); }
-  virtual const button_click_signal_type & GetOnClick() const { return FOnClick; }
-  virtual void SetOnClick(const TFarButtonClick & value) { FOnClick.connect(value); }
+  virtual const TFarButtonClickSignal & GetOnClick() const { return FOnClick; }
+  virtual void SetOnClick(const TFarButtonClickEvent & value) { FOnClick.connect(value); }
 #endif
 
 protected:
@@ -478,7 +478,7 @@ protected:
 
 private:
   int FResult;
-  button_click_signal_type FOnClick;
+  TFarButtonClickSignal FOnClick;
   TFarButtonBrackets FBrackets;
 
 public:
@@ -488,11 +488,11 @@ public:
 };
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
-typedef void __fastcall (__closure * TFarAllowChange)(TFarDialogItem * Sender,
+typedef void __fastcall (__closure * TFarAllowChangeEvent)(TFarDialogItem * Sender,
   long NewState, bool & AllowChange);
 #else
-typedef boost::signal3<void, TFarDialogItem *, long, bool &> farallowchange_signal_type;
-typedef farallowchange_signal_type::slot_type TFarAllowChange;
+typedef boost::signal3<void, TFarDialogItem *, long, bool &> TFarAllowChangeSignal;
+typedef TFarAllowChangeSignal::slot_type TFarAllowChangeEvent;
 #endif
 //---------------------------------------------------------------------------
 class TFarCheckBox : public TFarDialogItem
@@ -503,7 +503,7 @@ public:
 #ifndef _MSC_VER
   __property AnsiString Caption = { read = Data, write = Data };
   __property bool AllowGrayed = { read = GetFlag, write = SetFlag, index = DIF_3STATE };
-  __property TFarAllowChange OnAllowChange = { read = FOnAllowChange, write = FOnAllowChange };
+  __property TFarAllowChangeEvent OnAllowChange = { read = FOnAllowChange, write = FOnAllowChange };
   __property Checked;
   __property Selected;
 #else
@@ -511,8 +511,8 @@ public:
   virtual void SetCaption(const UnicodeString value) { SetData(value); }
   bool GetAllowGrayed() { return GetFlag(DIF_3STATE); }
   void SetAllowGrayed(bool value) { SetFlag(DIF_3STATE, value); }
-  virtual farallowchange_signal_type & GetOnAllowChange() { return FOnAllowChange; }
-  virtual void SetOnAllowChange(const TFarAllowChange & value) { FOnAllowChange.connect(value); }
+  virtual TFarAllowChangeSignal & GetOnAllowChange() { return FOnAllowChange; }
+  virtual void SetOnAllowChange(const TFarAllowChangeEvent & value) { FOnAllowChange.connect(value); }
   bool GetChecked() { return TFarDialogItem::GetChecked(); }
   void SetChecked(bool value) { TFarDialogItem::SetChecked(value); }
   int GetSelected() { return TFarDialogItem::GetSelected(); }
@@ -520,7 +520,7 @@ public:
 #endif
 
 protected:
-  farallowchange_signal_type FOnAllowChange;
+  TFarAllowChangeSignal FOnAllowChange;
   virtual LONG_PTR __fastcall ItemProc(int Msg, LONG_PTR Param);
   virtual bool __fastcall GetIsEmpty();
   virtual void __fastcall SetData(const UnicodeString value);
@@ -534,18 +534,18 @@ public:
 #ifndef _MSC_VER
   __property Checked;
   __property AnsiString Caption = { read = Data, write = Data };
-  __property TFarAllowChange OnAllowChange = { read = FOnAllowChange, write = FOnAllowChange };
+  __property TFarAllowChangeEvent OnAllowChange = { read = FOnAllowChange, write = FOnAllowChange };
 #else
   bool GetChecked() { return TFarDialogItem::GetChecked(); }
   void SetChecked(bool value) { TFarDialogItem::SetChecked(value); }
   virtual UnicodeString GetCaption() { return GetData(); }
   virtual void SetCaption(const UnicodeString value) { SetData(value); }
-  virtual farallowchange_signal_type & GetOnAllowChange() { return FOnAllowChange; }
-  virtual void SetOnAllowChange(const TFarAllowChange & value) { FOnAllowChange.connect(value); }
+  virtual TFarAllowChangeSignal & GetOnAllowChange() { return FOnAllowChange; }
+  virtual void SetOnAllowChange(const TFarAllowChangeEvent & value) { FOnAllowChange.connect(value); }
 #endif
 
 protected:
-  farallowchange_signal_type FOnAllowChange;
+  TFarAllowChangeSignal FOnAllowChange;
   virtual LONG_PTR __fastcall ItemProc(int Msg, LONG_PTR Param);
   virtual bool __fastcall GetIsEmpty();
   virtual void __fastcall SetData(const UnicodeString value);

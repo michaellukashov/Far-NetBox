@@ -780,7 +780,7 @@ void /* __fastcall */ TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeS
 //---------------------------------------------------------------------------
 void __fastcall TSessionLog::DoAdd(TLogLineType Type, UnicodeString Line,
   // void __fastcall (__closure *f)(TLogLineType Type, const UnicodeString & Line))
-  const doaddlog_slot_type &func)
+  const TDoAddLogEvent &func)
 {
   UnicodeString Prefix;
 
@@ -789,7 +789,7 @@ void __fastcall TSessionLog::DoAdd(TLogLineType Type, UnicodeString Line,
     Prefix = L"[" + GetName() + L"] ";
   }
 
-  doaddlog_signal_type sig;
+  TDoAddLogSignal sig;
   sig.connect(func);
   while (!Line.IsEmpty())
   {

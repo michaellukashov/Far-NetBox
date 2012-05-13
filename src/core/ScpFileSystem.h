@@ -90,7 +90,7 @@ private:
   UnicodeString FCachedDirectoryChange;
   bool FProcessingCommand;
   int FLsFullTime;
-  captureoutput_signal_type FOnCaptureOutput;
+  TCaptureOutputSignal FOnCaptureOutput;
   bool FUtfStrings;
   bool FUtfNever;
   TSCPFileSystem * Self;

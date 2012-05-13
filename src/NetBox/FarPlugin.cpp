@@ -963,7 +963,7 @@ void __fastcall TFarMessageDialog::Idle()
       if (FParams->TimerEvent != NULL)
       {
         FParams->TimerAnswer = 0;
-        farmessagetimer_signal_type sig;
+        TFarMessageTimerSignal sig;
         sig.connect(*FParams->TimerEvent);
         sig(FParams->TimerAnswer);
         if (FParams->TimerAnswer != 0)
@@ -1043,7 +1043,7 @@ void /* __fastcall */ TFarMessageDialog::ButtonClick(TFarButton * Sender, bool &
 {
   if (FParams->ClickEvent != NULL)
   {
-    farmessageclick_signal_type sig;
+    TFarMessageClickSignal sig;
     sig.connect(*FParams->ClickEvent);
     sig(FParams->Token, Sender->GetResult() - 1, Close);
   }
@@ -1263,7 +1263,7 @@ bool __fastcall TCustomFarPlugin::InputBox(const UnicodeString Title,
 {
   bool Repeat = false;
   int Result = 0;
-  farinputboxvalidate_signal_type sig;
+  TFarInputBoxValidateSignal sig;
   if (OnValidate)
   {
     sig.connect(*OnValidate);

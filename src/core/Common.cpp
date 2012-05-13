@@ -794,7 +794,7 @@ void __fastcall ProcessLocalDirectory(UnicodeString DirName,
         FindClose(SearchRec);
       } BOOST_SCOPE_EXIT_END
 #endif
-      processlocalfile_signal_type sig;
+      TProcessLocalFileSignal sig;
       sig.connect(CallBackFunc);
       do
       {

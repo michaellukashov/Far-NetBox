@@ -1578,7 +1578,7 @@ int /* __fastcall */ TTerminal::FileOperationLoop(const TFileOperationEvent & Ca
   const UnicodeString Message, void * Param1, void * Param2)
 {
   // assert(CallBackFunc);
-  fileoperation_signal_type sig;
+  TFileOperationSignal sig;
   sig.connect(CallBackFunc);
   int Result = 0;
   FILE_OPERATION_LOOP_EX
@@ -2704,7 +2704,7 @@ void /* __fastcall */ TTerminal::ProcessDirectory(const UnicodeString DirName,
       UnicodeString Directory = UnixIncludeTrailingBackslash(DirName);
 
       TRemoteFile * File;
-      processfile_signal_type sig;
+      TProcessFileSignal sig;
       sig.connect(CallBackFunc);
       for (int Index = 0; Index < FileList->GetCount(); Index++)
       {
@@ -2834,8 +2834,8 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
 
   try
   {
-    fileoperationprogress_signal_type sig1;
-    fileoperationfinished_signal_type sig2;
+    TFileOperationProgressSignal sig1;
+    TFileOperationFinishedSignal sig2;
     sig1.connect(boost::bind(&TTerminal::DoProgress, this, _1, _2));
     sig2.connect(boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
     TFileOperationProgressType Progress(&sig1, &sig2);
@@ -2869,7 +2869,7 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
         int Index = 0;
         UnicodeString FileName;
         bool Success;
-        processfile_signal_type sig;
+        TProcessFileSignal sig;
         sig.connect(ProcessFile);
         while ((Index < FileList->GetCount()) && (Progress.Cancel == csContinue))
         {
@@ -3894,7 +3894,7 @@ void /* __fastcall */ TTerminal::AnyCommand(const UnicodeString Command,
 
   private:
     TCallSessionAction & FAction;
-    captureoutput_signal_type FOutputEvent;
+    TCaptureOutputSignal FOutputEvent;
   private:
 #pragma warning(push)
 #pragma warning(disable: 4822)
@@ -4226,8 +4226,8 @@ void /* __fastcall */ TTerminal::CalculateLocalFileSize(const UnicodeString File
 void /* __fastcall */ TTerminal::CalculateLocalFilesSize(TStrings * FileList,
   __int64 & Size, const TCopyParamType * CopyParam)
 {
-  fileoperationprogress_signal_type sig1;
-  fileoperationfinished_signal_type sig2;
+  TFileOperationProgressSignal sig1;
+  TFileOperationFinishedSignal sig2;
   sig1.connect(boost::bind(&TTerminal::DoProgress, this, _1, _2));
   sig2.connect(boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
   TFileOperationProgressType OperationProgress(&sig1, &sig2);
@@ -4925,7 +4925,7 @@ void /* __fastcall */ TTerminal::DoSynchronizeProgress(const TSynchronizeData & 
   if (Data.OnSynchronizeDirectory != NULL)
   {
     bool Continue = true;
-    synchronizedirectory_signal_type sig;
+    TSynchronizeDirectorySignal sig;
     if (Data.OnSynchronizeDirectory)
     {
       sig.connect(*Data.OnSynchronizeDirectory);
@@ -5007,7 +5007,7 @@ void /* __fastcall */ TTerminal::FileFind(UnicodeString FileName,
     if (AParams->FileMask.Matches(FullFileName, false,
          File->GetIsDirectory(), &MaskParams))
     {
-      filefound_signal_type sig;
+      TFileFoundSignal sig;
       if (AParams->OnFileFound)
       {
         sig.connect(*AParams->OnFileFound);
@@ -5024,7 +5024,7 @@ void /* __fastcall */ TTerminal::FileFind(UnicodeString FileName,
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::DoFilesFind(UnicodeString Directory, TFilesFindParams & Params)
 {
-  findingfile_signal_type sig;
+  TFindingFileSignal sig;
   if (Params.OnFindingFile)
   {
     sig.connect(*Params.OnFindingFile);
@@ -5153,8 +5153,8 @@ bool /* __fastcall */ TTerminal::CopyToRemote(TStrings * FilesToCopy,
   bool Result = false;
   TOnceDoneOperation OnceDoneOperation = odoIdle;
 
-  fileoperationprogress_signal_type sig1;
-  fileoperationfinished_signal_type sig2;
+  TFileOperationProgressSignal sig1;
+  TFileOperationFinishedSignal sig2;
   sig1.connect(boost::bind(&TTerminal::DoProgress, this, _1, _2));
   sig2.connect(boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
   TFileOperationProgressType OperationProgress(&sig1, &sig2);
@@ -5283,8 +5283,8 @@ bool /* __fastcall */ TTerminal::CopyToLocal(TStrings * FilesToCopy,
       } BOOST_SCOPE_EXIT_END
       __int64 TotalSize = 0;
       bool TotalSizeKnown = false;
-      fileoperationprogress_signal_type sig1;
-      fileoperationfinished_signal_type sig2;
+      TFileOperationProgressSignal sig1;
+      TFileOperationFinishedSignal sig2;
       sig1.connect(boost::bind(&TTerminal::DoProgress, this, _1, _2));
       sig2.connect(boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
       TFileOperationProgressType OperationProgress(&sig1, &sig2);
