@@ -1187,6 +1187,16 @@ void __fastcall TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString Dir
     ExtractFileName(ExcludeTrailingBackslash(DirectoryName), false), osLocal,
     FLAGSET(Flags, tfFirstLevel));
   UnicodeString DestFullName = UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
+  // create DestFullName if it does not exist
+  {
+    bool isExist = false;
+    UnicodeString errorInfo;
+    bool res = WebDAVCheckExisting(DestFullName.c_str(), ItemDirectory, isExist, errorInfo);
+    if (res && !isExist)
+    {
+      CreateDirectory(DestFullName);
+    }
+  }
 
   OperationProgress->SetFile(DirectoryName);
 
