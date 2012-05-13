@@ -26,7 +26,6 @@ int __cdecl debug_printf(const wchar_t * format, ...)
   len = _vscwprintf(format, args);
   std::wstring buf(len + 1, 0);
   vswprintf((wchar_t *)buf.c_str(), buf.size(), format, args);
-
   va_end(args);
   OutputDebugStringW(buf.c_str());
 #endif
@@ -43,7 +42,6 @@ int __cdecl debug_printf2(const char * format, ...)
   len = _vscprintf(format, args);
   std::string buf(len + sizeof(char), 0);
   vsprintf_s(&buf[0], buf.size(), format, args);
-
   va_end(args);
   OutputDebugStringA(buf.c_str());
 #endif
@@ -1885,7 +1883,7 @@ int TRegistry::GetData(const UnicodeString Name, void * Buffer,
   DWORD DataType = REG_NONE;
   // DEBUG_PRINTF(L"GetCurrentKey = %d", GetCurrentKey());
   if (RegQueryValueEx(GetCurrentKey(), Name.c_str(), NULL, &DataType,
-                      reinterpret_cast<BYTE *>(Buffer), &BufSize) != ERROR_SUCCESS)
+    reinterpret_cast<BYTE *>(Buffer), &BufSize) != ERROR_SUCCESS)
   {
     throw std::exception("RegQueryValueEx failed"); // FIXME ERegistryException.CreateResFmt(@SRegGetDataFailed, [Name]);
   }
@@ -1895,7 +1893,7 @@ int TRegistry::GetData(const UnicodeString Name, void * Buffer,
 }
 
 void TRegistry::PutData(const UnicodeString Name, const void * Buffer,
-                        int BufSize, TRegDataType RegData)
+  int BufSize, TRegDataType RegData)
 {
   int DataType = Classes::RegDataToDataType(RegData);
   // DEBUG_PRINTF(L"GetCurrentKey = %d, Name = %s, REG_DWORD = %d, DataType = %d, BufSize = %d", GetCurrentKey(), Name.c_str(), REG_DWORD, DataType, BufSize);
@@ -1980,14 +1978,8 @@ bool TRegistry::GetKeyInfo(TRegKeyInfo & Value)
 {
   memset(&Value, 0, sizeof(Value));
   bool Result = RegQueryInfoKey(GetCurrentKey(), NULL, NULL, NULL, &Value.NumSubKeys,
-                                &Value.MaxSubKeyLen, NULL, &Value.NumValues, &Value.MaxValueLen,
-                                &Value.MaxDataLen, NULL, &Value.FileTime) == ERROR_SUCCESS;
-  // if SysLocale.FarEast and (Win32Platform = VER_PLATFORM_WIN32_NT) then
-  // with Value do
-  // begin
-  // Inc(MaxSubKeyLen, MaxSubKeyLen);
-  // Inc(MaxValueLen, MaxValueLen);
-  // end;
+    &Value.MaxSubKeyLen, NULL, &Value.NumValues, &Value.MaxValueLen,
+    &Value.MaxDataLen, NULL, &Value.FileTime) == ERROR_SUCCESS;
   return Result;
 }
 
@@ -2014,12 +2006,6 @@ void __fastcall GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettin
 {
   Classes::Error(SNotImplemented, 1204);
 }
-
-// int __fastcall GetDefaultLCID()
-// {
-// Classes::Error(SNotImplemented, 1205);
-// return 0;
-// }
 
 //---------------------------------------------------------------------------
 
