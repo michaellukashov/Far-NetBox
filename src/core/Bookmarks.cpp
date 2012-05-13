@@ -513,7 +513,7 @@ void __fastcall TBookmarkList::ShortCuts(TShortCuts & ShortCuts)
 void __fastcall TBookmark::Assign(TPersistent * Source)
 {
   TBookmark * SourceBookmark;
-  SourceBookmark = reinterpret_cast<TBookmark *>(Source);
+  SourceBookmark = dynamic_cast<TBookmark *>(Source);
   if (SourceBookmark)
   {
     SetName(SourceBookmark->GetName());

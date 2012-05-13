@@ -5518,7 +5518,7 @@ void /* __fastcall */ TTerminalList::FreeAndNullTerminal(TTerminal * & Terminal)
   FreeTerminal(T);
 }
 //---------------------------------------------------------------------------
-TTerminal * /* __fastcall */ TTerminalList::GetTerminal(size_t Index)
+TTerminal * /* __fastcall */ TTerminalList::GetTerminal(int Index)
 {
   return dynamic_cast<TTerminal *>(GetItem(Index));
 }

@@ -640,7 +640,7 @@ public:
   __property TTerminal * Terminals[int Index]  = { read=GetTerminal };
   __property int ActiveCount = { read = GetActiveCount };
 #else
-  TTerminal *GetTerminal(size_t Index);
+  TTerminal * GetTerminal(int Index);
   int GetActiveCount();
 #endif
 

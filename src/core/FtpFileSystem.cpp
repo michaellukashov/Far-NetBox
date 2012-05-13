@@ -2467,7 +2467,7 @@ bool __fastcall TFTPFileSystem::KeepWaitingForReply(unsigned int & ReplyToAwait,
   return
      (FReply == 0) &&
      ((ReplyToAwait == 0) ||
-     (WantLastCode && NoFinalLastCode()));
+      (WantLastCode && NoFinalLastCode()));
 }
 //---------------------------------------------------------------------------
 void __fastcall TFTPFileSystem::DoWaitForReply(unsigned int & ReplyToAwait, bool WantLastCode)

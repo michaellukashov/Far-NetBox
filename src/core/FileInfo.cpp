@@ -255,9 +255,7 @@ UnicodeString __fastcall GetLanguage(Word Language)
 
   Len = VerLanguageName(Language, P, LENOF(P));
   if (Len > LENOF(P))
-  {
     throw Exception(L"Language not available");
-  }
   return UnicodeString(P, Len);
 };
 //---------------------------------------------------------------------------

@@ -23,10 +23,9 @@ UnicodeString __fastcall GetRegistryKey();
 void __fastcall Busy(bool Start);
 UnicodeString __fastcall AppNameString();
 UnicodeString __fastcall SshVersionString();
-void __fastcall CopyToClipboard(const UnicodeString Text);
+void __fastcall CopyToClipboard(UnicodeString Text);
 int __fastcall StartThread(void * SecurityAttributes, unsigned int StackSize,
-  void * Parameter, unsigned int CreationFlags,
-  DWORD & ThreadId);
+  /* TThreadFunc ThreadFunc, */ void * Parameter, unsigned int CreationFlags, DWORD & ThreadId);
 
 const unsigned int qaYes =      0x00000001;
 const unsigned int qaNo =       0x00000002;
@@ -72,7 +71,7 @@ struct TQueryParams
   unsigned int AliasesCount;
   unsigned int Params;
   unsigned int Timer;
-  TQueryParamsTimerEvent *TimerEvent;
+  TQueryParamsTimerEvent * TimerEvent;
   UnicodeString TimerMessage;
   unsigned int TimerAnswers;
   unsigned int Timeout;

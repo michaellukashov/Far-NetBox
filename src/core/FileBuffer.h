@@ -54,7 +54,7 @@ public:
 class TSafeHandleStream : public THandleStream
 {
 public:
-  explicit /* __fastcall */ TSafeHandleStream(HANDLE AHandle);
+  explicit /* __fastcall */ TSafeHandleStream(THandle AHandle);
   virtual /* __fastcall */ ~TSafeHandleStream() {}
   virtual __int64 __fastcall Read(void * Buffer, __int64 Count);
   virtual __int64 __fastcall Write(const void * Buffer, __int64 Count);

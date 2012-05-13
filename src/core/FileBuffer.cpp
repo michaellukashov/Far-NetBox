@@ -107,7 +107,7 @@ void __fastcall TFileBuffer::Convert(char * Source, char * Dest, int Params,
   if (FLAGSET(Params, cpRemoveBOM) && (GetSize() >= 3) &&
       (memcmp(GetData(), Bom.c_str(), Bom.size()) == 0))
   {
-    Delete(1, 3);
+    Delete(0, 3);
   }
 
   if (FLAGSET(Params, cpRemoveCtrlZ) && (GetSize() > 0) && ((*(GetData() + GetSize() - 1)) == '\x1A'))
@@ -242,7 +242,7 @@ void __fastcall TFileBuffer::WriteToStream(TStream * Stream, const DWORD Len)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-/* __fastcall */ TSafeHandleStream::TSafeHandleStream(HANDLE AHandle) :
+/* __fastcall */ TSafeHandleStream::TSafeHandleStream(THandle AHandle) :
   THandleStream(AHandle)
 {
 }
