@@ -210,7 +210,7 @@ void __fastcall TFarDialog::SetHelpTopic(UnicodeString value)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarDialog::SetFlags(size_t value)
+void __fastcall TFarDialog::SetFlags(unsigned int value)
 {
   if (GetFlags() != value)
   {
@@ -870,7 +870,7 @@ LONG_PTR __fastcall TFarDialog::SendMessage(int Msg, int Param1, LONG_PTR Param2
   return GetFarPlugin()->GetStartupInfo()->SendDlgMessage(GetHandle(), Msg, Param1, Param2);
 }
 //---------------------------------------------------------------------------
-int __fastcall TFarDialog::GetSystemColor(size_t Index)
+int __fastcall TFarDialog::GetSystemColor(unsigned int Index)
 {
   return static_cast<int>(GetFarPlugin()->FarAdvControl(ACTL_GETCOLOR, reinterpret_cast<void *>(Index)));
 }
@@ -1196,7 +1196,7 @@ void __fastcall TFarDialogItem::SetFlags(unsigned int value)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarDialogItem::UpdateFlags(size_t value)
+void __fastcall TFarDialogItem::UpdateFlags(unsigned int value)
 {
   if (GetFlags() != value)
   {
