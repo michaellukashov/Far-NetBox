@@ -1346,7 +1346,7 @@ UnicodeString __fastcall ReplaceCopyright(UnicodeString S)
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
-  Text->SetCaption(ReplaceCopyright(LoadStr(PUTTY_COPYRIGHT)));
+  Text->SetCaption(LoadStr(PUTTY_COPYRIGHT));
   Text->SetCenterGroup(true);
 
   #ifndef NO_FILEZILLA
@@ -1355,7 +1355,7 @@ UnicodeString __fastcall ReplaceCopyright(UnicodeString S)
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
-  Text->SetCaption(ReplaceCopyright(LoadStr(FILEZILLA_COPYRIGHT)));
+  Text->SetCaption(LoadStr(FILEZILLA_COPYRIGHT));
   Text->SetCenterGroup(true);
   #endif
 
