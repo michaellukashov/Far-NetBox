@@ -1,6 +1,7 @@
 ms/bcb.mak
 ms/ntdll.mak
 ms/ssleay32.def
+ms/libeay32.def
 ms/nt.mak
 ms/libeay32.def
 ms/uptable.asm
