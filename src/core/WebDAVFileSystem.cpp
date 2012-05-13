@@ -2225,13 +2225,13 @@ std::string TWebDAVFileSystem::GetNamespace(const TiXmlElement * element, const 
     if (strncmp(attr->Name(), "xmlns:", 6) == 0 && strcmp(attr->Value(), name) == 0)
     {
       ns = attr->Name();
-      ns.Delete(1, ns.Pos(':') + 1);
+      ns.Delete(1, ns.Pos(':'));
       ns += ':';
       break;
     }
     attr = attr->Next();
   }
-  return std::string((char *)ns.c_str());
+  return AnsiString(ns);
 }
 
 FILETIME TWebDAVFileSystem::ParseDateTime(const char * dt) const
@@ -2461,9 +2461,9 @@ bool TWebDAVFileSystem::WebDAVGetList(const UnicodeString Directory, UnicodeStri
     //name
     item.Name = path;
     const int nameDelim = item.Name.RPos(L'/'); //Save only name without full path
-    if (nameDelim >= 0)
+    if (nameDelim > 0)
     {
-      item.Name.Delete(1, nameDelim + 1);
+      item.Name.Delete(1, nameDelim);
     }
 
     //Find correct 'propstat' node (with HTTP 200 OK status)
