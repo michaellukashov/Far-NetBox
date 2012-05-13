@@ -325,6 +325,11 @@ public:
     Add(Data, ALength);
   }
 
+  void AddStringW(const UnicodeString & ValueW)
+  {
+    AddString(W2MB(ValueW.c_str(), FCodePage).c_str());
+  }
+
   void AddString(const RawByteString & Value)
   {
     AddCardinal(Value.Length());
@@ -343,6 +348,7 @@ public:
 
   inline void AddString(const UnicodeString Value, bool Utf)
   {
+    /*
     if (Utf)
     {
       AddUtfString(Value);
@@ -351,6 +357,8 @@ public:
     {
       AddString(AnsiString(Value));
     }
+    */
+    AddStringW(Value);
   }
 
   // now purposeless alias to AddString
@@ -582,8 +590,14 @@ public:
     return GetRawByteString();
   }
 
+  UnicodeString GetStringW()
+  {
+    return MB2W(GetRawByteString().c_str(), FCodePage);
+  }
+
   inline UnicodeString GetString(bool Utf)
   {
+    /*
     if (Utf)
     {
       return GetUtfString();
@@ -592,6 +606,8 @@ public:
     {
       return GetAnsiString();
     }
+    */
+    return GetStringW();
   }
 
   // now purposeless alias to GetString(bool)
