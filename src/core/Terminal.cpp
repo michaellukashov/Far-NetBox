@@ -563,7 +563,6 @@ void __fastcall TTerminal::Init(TSessionData * SessionData, TConfiguration * Con
   FOperationProgress = NULL;
   FClosedOnCompletion = NULL;
   FTunnel = NULL;
-  FAnyInformation = false;;
   Self = this;
 }
 //---------------------------------------------------------------------------

@@ -259,7 +259,6 @@ private:
   notify_signal_type FOnClose;
   TCallbackGuard * FCallbackGuard;
   findingfile_signal_type FOnFindingFile;
-  bool FAnyInformation;
   TTerminal *Self;
 
 public:
