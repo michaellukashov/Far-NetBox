@@ -816,10 +816,11 @@ UnicodeString __fastcall TConfiguration::GetVersion()
   {
     UnicodeString Result;
     VS_FIXEDFILEINFO Info = GetFixedApplicationInfo();
-    Result = TrimVersion(FORMAT(L"%d.%d.%d",
+    Result = // TrimVersion(
+      FORMAT(L"%d.%d.%d",
       HIWORD(Info.dwFileVersionMS),
       LOWORD(Info.dwFileVersionMS),
-      HIWORD(Info.dwFileVersionLS)));
+      HIWORD(Info.dwFileVersionLS));
     return Result;
   }
   catch (Exception &E)
