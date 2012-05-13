@@ -83,8 +83,7 @@ struct TOpenRemoteFileParams
     DestFileSize(0),
     FileParams(NULL),
     Confirmed(false)
-  {
-  }
+  {}
   int LocalFileAttrs;
   UnicodeString RemoteFileName;
   TFileOperationProgressType * OperationProgress;
