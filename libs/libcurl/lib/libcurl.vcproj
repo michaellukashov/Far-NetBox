@@ -113,7 +113,12 @@
 <File RelativePath="curl_addrinfo.c"></File>
 <File RelativePath="curl_fnmatch.c"></File>
 <File RelativePath="curl_gethostname.c"></File>
+<File RelativePath="curl_gssapi.c"></File>
 <File RelativePath="curl_memrchr.c"></File>
+<File RelativePath="curl_ntlm.c"></File>
+<File RelativePath="curl_ntlm_core.c"></File>
+<File RelativePath="curl_ntlm_msgs.c"></File>
+<File RelativePath="curl_ntlm_wb.c"></File>
 <File RelativePath="curl_rand.c"></File>
 <File RelativePath="curl_rtmp.c"></File>
 <File RelativePath="curl_sspi.c"></File>
@@ -143,7 +148,6 @@
 <File RelativePath="http_digest.c"></File>
 <File RelativePath="http_negotiate.c"></File>
 <File RelativePath="http_negotiate_sspi.c"></File>
-<File RelativePath="http_ntlm.c"></File>
 <File RelativePath="http_proxy.c"></File>
 <File RelativePath="idn_win32.c"></File>
 <File RelativePath="if2ip.c"></File>
@@ -211,12 +215,17 @@
 <File RelativePath="curl_base64.h"></File>
 <File RelativePath="curl_fnmatch.h"></File>
 <File RelativePath="curl_gethostname.h"></File>
+<File RelativePath="curl_gssapi.h"></File>
 <File RelativePath="curl_hmac.h"></File>
 <File RelativePath="curl_ldap.h"></File>
 <File RelativePath="curl_md4.h"></File>
 <File RelativePath="curl_md5.h"></File>
 <File RelativePath="curl_memory.h"></File>
 <File RelativePath="curl_memrchr.h"></File>
+<File RelativePath="curl_ntlm_core.h"></File>
+<File RelativePath="curl_ntlm.h"></File>
+<File RelativePath="curl_ntlm_msgs.h"></File>
+<File RelativePath="curl_ntlm_wb.h"></File>
 <File RelativePath="curl_rand.h"></File>
 <File RelativePath="curl_rtmp.h"></File>
 <File RelativePath="curl_sspi.h"></File>
@@ -240,7 +249,6 @@
 <File RelativePath="http_digest.h"></File>
 <File RelativePath="http.h"></File>
 <File RelativePath="http_negotiate.h"></File>
-<File RelativePath="http_ntlm.h"></File>
 <File RelativePath="http_proxy.h"></File>
 <File RelativePath="if2ip.h"></File>
 <File RelativePath="imap.h"></File>

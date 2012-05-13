@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2012, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -79,7 +79,6 @@
 #include "url.h"
 #include "rawstr.h"
 #include "strtoofft.h"
-#include "http_proxy.h"
 
 #define _MPRINTF_REPLACE /* use our functions only */
 #include <curl/mprintf.h>
@@ -670,33 +669,6 @@ static CURLcode pop3_connect(struct connectdata *conn,
   pp->endofresp = pop3_endofresp;
   pp->conn = conn;
 
-  if(conn->bits.tunnel_proxy && conn->bits.httpproxy) {
-    /* for POP3 over HTTP proxy */
-    struct HTTP http_proxy;
-    struct FTP *pop3_save;
-
-    /* BLOCKING */
-    /* We want "seamless" POP3 operations through HTTP proxy tunnel */
-
-    /* Curl_proxyCONNECT is based on a pointer to a struct HTTP at the member
-     * conn->proto.http; we want POP3 through HTTP and we have to change the
-     * member temporarily for connecting to the HTTP proxy. After
-     * Curl_proxyCONNECT we have to set back the member to the original struct
-     * POP3 pointer
-     */
-    pop3_save = data->state.proto.pop3;
-    memset(&http_proxy, 0, sizeof(http_proxy));
-    data->state.proto.http = &http_proxy;
-
-    result = Curl_proxyCONNECT(conn, FIRSTSOCKET,
-                               conn->host.name, conn->remote_port);
-
-    data->state.proto.pop3 = pop3_save;
-
-    if(CURLE_OK != result)
-      return result;
-  }
-
   if(conn->handler->flags & PROTOPT_SSL) {
     /* BLOCKING */
     result = Curl_ssl_connect(conn, FIRSTSOCKET);
@@ -755,7 +727,7 @@ static CURLcode pop3_done(struct connectdata *conn, CURLcode status,
   Curl_safefree(pop3c->mailbox);
   pop3c->mailbox = NULL;
 
-  /* clear these for next connection */
+  /* Clear the transfer mode for the next connection */
   pop3->transfer = FTPTRANSFER_BODY;
 
   return result;
@@ -1035,7 +1007,7 @@ CURLcode Curl_pop3_write(struct connectdata *conn,
                          char *str,
                          size_t nread)
 {
-  /* This code could be made into a special function in the handler struct. */
+  /* This code could be made into a special function in the handler struct */
   CURLcode result = CURLE_OK;
   struct SessionHandle *data = conn->data;
   struct SingleRequest *k = &data->req;
@@ -1131,10 +1103,15 @@ CURLcode Curl_pop3_write(struct connectdata *conn,
   }
 
   if(pop3c->eob == POP3_EOB_LEN) {
-    /* We have a full match so the transfer is done! */
+    /* We have a full match so the transfer is done, however we must transfer
+    the CRLF at the start of the EOB as this is considered to be part of the
+    message as per RFC-1939, sect. 3 */
+    result = Curl_client_write(conn, CLIENTWRITE_BODY, (char*)POP3_EOB, 2);
+
     k->keepon &= ~KEEP_RECV;
     pop3c->eob = 0;
-    return CURLE_OK;
+
+    return result;
   }
 
   if(pop3c->eob)
