@@ -285,7 +285,6 @@ __int64 TFarConfiguration::GetConfirmationsSettings()
 void __fastcall TFarConfiguration::CacheFarSettings()
 {
   FFarConfirmations = GetConfirmationsSettings();
-  FFarConfirmations = GetPlugin()->FarAdvControl(ACTL_GETCONFIRMATIONS);
 }
 //---------------------------------------------------------------------------
 __int64 __fastcall TFarConfiguration::FarConfirmations()

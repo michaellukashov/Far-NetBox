@@ -116,7 +116,7 @@ public:
 
   virtual int __fastcall ProcessPanelInput(const struct ProcessPanelInputInfo *Info);
 
-  virtual int ProcessPanelEvent(const struct ProcessPanelEventInfo *Info);
+  virtual int __fastcall ProcessPanelEvent(const struct ProcessPanelEventInfo *Info);
 
 
   virtual int __fastcall SetDirectory(const struct SetDirectoryInfo *Info);
@@ -128,7 +128,7 @@ public:
 
   virtual int __fastcall ProcessEditorEvent(const struct ProcessEditorEventInfo *Info);
 
-  virtual int ProcessEditorInput(const struct ProcessEditorInputInfo *Info);
+  virtual int __fastcall ProcessEditorInput(const struct ProcessEditorInputInfo *Info);
 
   virtual void __fastcall HandleException(Exception * E, int OpMode = 0);
 
@@ -157,11 +157,10 @@ public:
     UnicodeString Title = L"");
   bool __fastcall Editor(const UnicodeString FileName, unsigned int Flags,
     UnicodeString Title = L"");
-    int FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, int Param1, void *Param2 = NULL);
-  INT_PTR __fastcall FarControl(FILE_CONTROL_COMMANDS Command, int Param1, void * Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
+  DWORD __fastcall FarControl(FILE_CONTROL_COMMANDS Command, int Param1, void * Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
+  __int64 __fastcall FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, int Param1, void *Param2 = NULL);
   int __fastcall FarEditorControl(EDITOR_CONTROL_COMMANDS Command, void * Param);
-  INT_PTR __fastcall FarSystemSettings();
-  INT_PTR __fastcall FarAdvControl(int Command, void * Param = NULL);
+  __int64 __fastcall FarSystemSettings();
   void __fastcall Text(int X, int Y, int Color, const UnicodeString Str);
   void __fastcall FlushText();
   void __fastcall WriteConsole(const UnicodeString Str);
@@ -256,7 +255,7 @@ public:
 #endif
 private:
   void __fastcall UpdateProgress(int state, int progress);
-    __int64 GetSystemSetting(HANDLE &Settings, const wchar_t *Name);
+  __int64 __fastcall GetSystemSetting(HANDLE & Settings, const wchar_t * Name);
 
 private:
   PluginInfo FPluginInfo;
@@ -291,24 +290,15 @@ public:
 
   void __fastcall GetOpenPanelInfo(struct OpenPanelInfo *Info);
   int __fastcall GetFindData(struct GetFindDataInfo *Info);
-
   void __fastcall FreeFindData(const struct FreeFindDataInfo *Info);
-
   int __fastcall ProcessHostFile(const struct ProcessHostFileInfo *Info);
   int __fastcall ProcessPanelInput(const struct ProcessPanelInputInfo *Info);
-
-  int ProcessPanelEvent(int Event, void *Param);
-
+  int __fastcall  ProcessPanelEvent(int Event, void *Param);
   int __fastcall SetDirectory(const struct SetDirectoryInfo *Info);
   int __fastcall MakeDirectory(struct MakeDirectoryInfo *Info);
   int __fastcall DeleteFiles(const struct DeleteFilesInfo *Info);
   int __fastcall GetFiles(struct GetFilesInfo *Info);
   int __fastcall PutFiles(const struct PutFilesInfo *Info);
-
-
-
-
-
   virtual void __fastcall Close();
 
 protected:
@@ -332,8 +322,8 @@ protected:
   virtual int __fastcall PutFilesEx(TObjectList * PanelItems, bool Move, int OpMode);
 
   void __fastcall ResetCachedInfo();
-  DWORD __fastcall FarControl(FILE_CONTROL_COMMANDS Command, int Param1, LONG_PTR Param2);
-  DWORD __fastcall FarControl(FILE_CONTROL_COMMANDS Command, int Param1, LONG_PTR Param2, HANDLE Plugin);
+  DWORD __fastcall FarControl(FILE_CONTROL_COMMANDS Command, int Param1, void * Param2);
+  DWORD __fastcall FarControl(FILE_CONTROL_COMMANDS Command, int Param1, void * Param2, HANDLE Plugin);
   bool __fastcall UpdatePanel(bool ClearSelection = false, bool Another = false);
   void __fastcall RedrawPanel(bool Another = false);
   void __fastcall ClosePanel();
@@ -425,11 +415,11 @@ protected:
   virtual ~TCustomFarPanelItem()
   {}
   virtual void __fastcall GetData(
-    unsigned long & Flags, UnicodeString & FileName, __int64 & Size,
+    unsigned __int64 & Flags, UnicodeString & FileName, __int64 & Size,
     unsigned long & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     unsigned long & NumberOfLinks, UnicodeString & Description,
-    UnicodeString & Owner, void *& UserData, int & CustomColumnNumber) = 0;
+    UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber) = 0;
   virtual UnicodeString __fastcall GetCustomColumnData(int Column);
 
   void __fastcall FillPanelItem(struct PluginPanelItem * PanelItem);
@@ -454,11 +444,11 @@ protected:
   PluginPanelItem * FPanelItem;
 
   virtual void __fastcall GetData(
-    unsigned long & Flags, UnicodeString & FileName, __int64 & Size,
+    unsigned __int64 & Flags, UnicodeString & FileName, __int64 & Size,
     unsigned long & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     unsigned long & NumberOfLinks, UnicodeString & Description,
-    UnicodeString & Owner, void *& UserData, int & CustomColumnNumber);
+    UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber);
   virtual UnicodeString __fastcall GetCustomColumnData(int Column);
 
 public:
@@ -480,11 +470,11 @@ public:
 
 protected:
   virtual void __fastcall GetData(
-    unsigned long & Flags, UnicodeString & FileName, __int64 & Size,
+    unsigned __int64 & Flags, UnicodeString & FileName, __int64 & Size,
     unsigned long & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     unsigned long & NumberOfLinks, UnicodeString & Description,
-    UnicodeString & Owner, void *& UserData, int & CustomColumnNumber);
+    UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber);
 
 private:
   UnicodeString FHint;

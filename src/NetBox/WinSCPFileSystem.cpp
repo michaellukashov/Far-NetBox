@@ -81,11 +81,11 @@ void __fastcall TSessionPanelItem::SetKeyBarTitles(TFarKeyBarTitles * KeyBarTitl
 }
 //---------------------------------------------------------------------------
 void __fastcall TSessionPanelItem::GetData(
-  unsigned long & /*Flags*/, UnicodeString & FileName, __int64 & /*Size*/,
+  unsigned __int64 & /*Flags*/, UnicodeString & FileName, __int64 & /*Size*/,
   unsigned long & /*FileAttributes*/,
   TDateTime & /*LastWriteTime*/, TDateTime & /*LastAccess*/,
   unsigned long & /*NumberOfLinks*/, UnicodeString & /*Description*/,
-  UnicodeString & /*Owner*/, void *& UserData, int & /*CustomColumnNumber*/)
+  UnicodeString & /*Owner*/, void *& UserData, size_t & /*CustomColumnNumber*/)
 {
   FileName = UnixExtractFileName(FSessionData->GetName());
   // DEBUG_PRINTF(L"FileName = %s, GetName = %s", FileName.c_str(), FSessionData->GetName().c_str());
@@ -99,11 +99,11 @@ void __fastcall TSessionPanelItem::GetData(
 }
 //---------------------------------------------------------------------------
 void __fastcall TSessionFolderPanelItem::GetData(
-  unsigned long & /*Flags*/, UnicodeString & FileName, __int64 & /*Size*/,
+  unsigned __int64 & /*Flags*/, UnicodeString & FileName, __int64 & /*Size*/,
   unsigned long & FileAttributes,
   TDateTime & /*LastWriteTime*/, TDateTime & /*LastAccess*/,
   unsigned long & /*NumberOfLinks*/, UnicodeString & /*Description*/,
-  UnicodeString & /*Owner*/, void *& /*UserData*/, int & /*CustomColumnNumber*/)
+  UnicodeString & /*Owner*/, void *& /*UserData*/, size_t & /*CustomColumnNumber*/)
 {
   FileName = FFolder;
   FileAttributes = FILE_ATTRIBUTE_DIRECTORY;
@@ -117,11 +117,11 @@ void __fastcall TSessionFolderPanelItem::GetData(
 }
 //---------------------------------------------------------------------------
 void __fastcall TRemoteFilePanelItem::GetData(
-  unsigned long & /*Flags*/, UnicodeString & FileName, __int64 & Size,
+  unsigned __int64 & /*Flags*/, UnicodeString & FileName, __int64 & Size,
   unsigned long & FileAttributes,
   TDateTime & LastWriteTime, TDateTime & LastAccess,
   unsigned long & /*NumberOfLinks*/, UnicodeString & /*Description*/,
-  UnicodeString & Owner, void *& UserData, int & CustomColumnNumber)
+  UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber)
 {
   FileName = FRemoteFile->GetFileName();
   Size = FRemoteFile->GetSize();
@@ -921,7 +921,7 @@ bool __fastcall TWinSCPFileSystem::ExecuteCommand(const UnicodeString Command)
           Self->RedrawPanel(true);
         }
       } BOOST_SCOPE_EXIT_END
-      FarControl(FCTL_SETCMDLINE, 0, reinterpret_cast<LONG_PTR>(L""));
+      FarControl(FCTL_SETCMDLINE, 0, reinterpret_cast<void *>(L""));
       FPlugin->ShowConsoleTitle(Command);
       // try
       {
@@ -2171,7 +2171,7 @@ void __fastcall TWinSCPFileSystem::InsertTokenOnCommandLine(UnicodeString Token,
       Token += L" ";
     }
 
-    FarControl(FCTL_INSERTCMDLINE, 0, reinterpret_cast<LONG_PTR>(Token.c_str()));
+    FarControl(FCTL_INSERTCMDLINE, 0, reinterpret_cast<void *>(const_cast<wchar_t *>(Token.c_str())));
   }
 }
 //---------------------------------------------------------------------------
@@ -2433,10 +2433,6 @@ bool __fastcall TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString NewPa
   memset(&fpd, 0, sizeof(fpd));
   fpd.StructSize = sizeof(fpd);
   fpd.Name = LocalPath.c_str();
-  // if (!FarControl(FCTL_SETPANELDIR,
-  //                0,
-  //                reinterpret_cast<LONG_PTR>(LocalPath.c_str()),
-  //                reinterpret_cast<HANDLE>(PANEL_PASSIVE)))
   if (!FarControl(FCTL_SETPANELDIRECTORY, 0, &fpd, reinterpret_cast<HANDLE>(PANEL_PASSIVE)))
   {
     Result = false;
@@ -2455,10 +2451,6 @@ bool __fastcall TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString NewPa
       memset(&fpd, 0, sizeof(fpd));
       fpd.StructSize = sizeof(fpd);
       fpd.Name = OldPath.c_str();
-      // FarControl(FCTL_SETPANELDIR,
-      //           0,
-      //           reinterpret_cast<LONG_PTR>(OldPath.c_str()),
-      //           reinterpret_cast<HANDLE>(PANEL_PASSIVE));
       FarControl(FCTL_SETPANELDIRECTORY, sizeof(fpd), &fpd, reinterpret_cast<HANDLE>(PANEL_PASSIVE));
       Result = false;
     }

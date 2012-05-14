@@ -45,7 +45,7 @@ protected:
   virtual void __fastcall GetPluginInfoEx(PLUGIN_FLAGS &Flags, TStrings * DiskMenuStrings,
     TStrings * PluginMenuStrings, TStrings * PluginConfigStrings,
     TStrings * CommandPrefixes);
-  virtual TCustomFarFileSystem * __fastcall OpenPluginEx(OPENFROM OpenFrom, LONG_PTR Item);
+  virtual TCustomFarFileSystem * __fastcall OpenPluginEx(OPENFROM OpenFrom, INT_PTR Item);
   virtual bool __fastcall ImportSessions();
   virtual bool __fastcall ConfigureEx(int Item);
   virtual int __fastcall ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info);

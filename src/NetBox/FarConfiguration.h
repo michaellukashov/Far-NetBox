@@ -153,7 +153,7 @@ public:
   bool __fastcall GetConfirmDeleting();
   void __fastcall SetBookmarks(UnicodeString Key, TBookmarkList * value);
   TBookmarkList * __fastcall GetBookmarks(UnicodeString Key);
-  int __fastcall FarConfirmations();
+  __int64 __fastcall FarConfirmations();
 
   UnicodeString __fastcall GetPageantPath() const { return FPageantPath; }
   UnicodeString __fastcall GetPuttygenPath() const { return FPuttygenPath; }

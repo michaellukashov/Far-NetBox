@@ -123,10 +123,10 @@ protected:
 #endif
   void __fastcall Add(TFarDialogItem * Item);
   void __fastcall Add(TFarDialogContainer * Container);
-  LONG_PTR __fastcall SendMessage(int Msg, int Param1, LONG_PTR Param2);
-  virtual LONG_PTR __fastcall DialogProc(int Msg, int Param1, LONG_PTR Param2);
-  virtual LONG_PTR __fastcall FailDialogProc(int Msg, int Param1, LONG_PTR Param2);
-  LONG_PTR __fastcall DefaultDialogProc(int Msg, int Param1, LONG_PTR Param2);
+  LONG_PTR __fastcall SendMessage(int Msg, int Param1, void * Param2);
+  virtual LONG_PTR __fastcall DialogProc(int Msg, int Param1, void * Param2);
+  virtual LONG_PTR __fastcall FailDialogProc(int Msg, int Param1, void * Param2);
+  LONG_PTR __fastcall DefaultDialogProc(int Msg, int Param1, void * Param2);
   virtual bool __fastcall MouseEvent(MOUSE_EVENT_RECORD * Event);
   virtual bool __fastcall Key(TFarDialogItem * Item, long KeyCode);
   virtual void __fastcall Change();
@@ -145,7 +145,7 @@ protected:
   bool __fastcall ChangesLocked();
   TFarDialogItem * __fastcall ItemAt(int X, int Y);
 
-  static INT_PTR WINAPI DialogProcGeneral(HANDLE Handle, int Msg, int Param1, LONG_PTR Param2);
+  static INT_PTR WINAPI DialogProcGeneral(HANDLE Handle, int Msg, int Param1, void * Param2);
 
 private:
   TCustomFarPlugin * FFarPlugin;
@@ -332,20 +332,19 @@ protected:
   __property TFarDialogContainer * Container = { read = FContainer, write = SetContainer };
   __property bool Checked = { read = GetChecked, write = SetChecked };
 #else
-  bool GetCenterGroup() { return GetFlag(DIF_CENTERGROUP); }
-  void SetCenterGroup(bool value) { SetFlag(DIF_CENTERGROUP, value); }
-  void SetType(FARDIALOGITEMTYPES value);
-  TFarDialogContainer * GetContainer() { return FContainer; }
+  bool __fastcall GetCenterGroup() { return GetFlag(DIF_CENTERGROUP); }
+  void __fastcall SetCenterGroup(bool value) { SetFlag(DIF_CENTERGROUP, value); }
+  TFarDialogContainer * __fastcall GetContainer() { return FContainer; }
 #endif
 
   virtual void __fastcall Detach();
   void __fastcall DialogResized();
-  LONG_PTR __fastcall SendMessage(int Msg, LONG_PTR Param);
-  LONG_PTR __fastcall SendDialogMessage(int Msg, int Param1, LONG_PTR Param2);
-  virtual LONG_PTR __fastcall ItemProc(int Msg, LONG_PTR Param);
-  LONG_PTR __fastcall DefaultItemProc(int Msg, LONG_PTR Param);
-  LONG_PTR __fastcall DefaultDialogProc(int Msg, int Param1, LONG_PTR Param2);
-  virtual LONG_PTR __fastcall FailItemProc(int Msg, LONG_PTR Param);
+  LONG_PTR __fastcall SendMessage(int Msg, void * Param);
+  LONG_PTR __fastcall SendDialogMessage(int Msg, int Param1, void * Param2);
+  virtual LONG_PTR __fastcall ItemProc(int Msg, void * Param);
+  LONG_PTR __fastcall DefaultItemProc(int Msg, void * Param);
+  LONG_PTR __fastcall DefaultDialogProc(int Msg, int Param1, void * Param2);
+  virtual LONG_PTR __fastcall FailItemProc(int Msg, void * Param);
   virtual void __fastcall Change();
   void __fastcall DialogChange();
   void __fastcall SetAlterType(FARDIALOGITEMTYPES Index, bool value);
@@ -367,7 +366,7 @@ public:
   virtual void __fastcall SetData(const UnicodeString value);
   virtual UnicodeString __fastcall GetData();
   void __fastcall UpdateData(const UnicodeString value);
-  void __fastcall UpdateSelected(int value);
+  void __fastcall UpdateSelected(int Param);
 
   bool __fastcall GetFlag(FARDIALOGITEMFLAGS Index);
   void __fastcall SetFlag(FARDIALOGITEMFLAGS Index, bool value);
@@ -398,8 +397,8 @@ public:
   void __fastcall SetFlags(FARDIALOGITEMFLAGS value);
   void __fastcall UpdateFlags(FARDIALOGITEMFLAGS value);
   TRect __fastcall GetActualBounds();
-  void __fastcall SetType(int value);
-  int __fastcall GetType();
+  void __fastcall SetType(FARDIALOGITEMTYPES value);
+  FARDIALOGITEMTYPES __fastcall GetType();
   void __fastcall SetEnabledFollow(TFarDialogItem * value);
   void __fastcall SetEnabledDependency(TFarDialogItem * value);
   void __fastcall SetEnabledDependencyNegative(TFarDialogItem * value);
@@ -472,7 +471,7 @@ public:
 protected:
   virtual void __fastcall SetDataInternal(const UnicodeString value);
   virtual UnicodeString __fastcall GetData();
-  virtual LONG_PTR __fastcall ItemProc(int Msg, LONG_PTR Param);
+  virtual LONG_PTR __fastcall ItemProc(int Msg, void * Param);
   virtual bool __fastcall HotKey(char HotKey);
 
 private:
@@ -490,7 +489,7 @@ public:
 typedef void __fastcall (__closure * TFarAllowChangeEvent)(TFarDialogItem * Sender,
   long NewState, bool & AllowChange);
 #else
-typedef boost::signal3<void, TFarDialogItem *, long, bool &> TFarAllowChangeSignal;
+typedef boost::signal3<void, TFarDialogItem *, void *, bool &> TFarAllowChangeSignal;
 typedef TFarAllowChangeSignal::slot_type TFarAllowChangeEvent;
 #endif
 //---------------------------------------------------------------------------
@@ -520,7 +519,7 @@ public:
 
 protected:
   TFarAllowChangeSignal FOnAllowChange;
-  virtual LONG_PTR __fastcall ItemProc(int Msg, LONG_PTR Param);
+  virtual LONG_PTR __fastcall ItemProc(int Msg, void * Param);
   virtual bool __fastcall GetIsEmpty();
   virtual void __fastcall SetData(const UnicodeString value);
 };
@@ -545,7 +544,7 @@ public:
 
 protected:
   TFarAllowChangeSignal FOnAllowChange;
-  virtual LONG_PTR __fastcall ItemProc(int Msg, LONG_PTR Param);
+  virtual LONG_PTR __fastcall ItemProc(int Msg, void * Param);
   virtual bool __fastcall GetIsEmpty();
   virtual void __fastcall SetData(const UnicodeString value);
 };
@@ -586,7 +585,7 @@ public:
 #endif
 
 protected:
-  virtual LONG_PTR __fastcall ItemProc(int Msg, LONG_PTR Param);
+  virtual LONG_PTR __fastcall ItemProc(int Msg, void * Param);
   virtual void __fastcall Detach();
 
 private:
@@ -666,17 +665,17 @@ public:
   __property int VisibleCount = { read = GetVisibleCount };
   __property unsigned int Flags[int Index] = { read = GetFlags, write = SetFlags };
 #else
-  FARDIALOGITEMFLAGS GetFlags(size_t Index);
-  void SetFlags(size_t Index, FARDIALOGITEMFLAGS value);
-  bool GetDisabled(int Index) { return GetFlag(Index, LIF_DISABLE); }
-  void SetDisabled(int Index, bool value) { SetFlag(Index, LIF_DISABLE, value); }
-  bool GetChecked(int Index) { return GetFlag(Index, LIF_CHECKED); }
-  void SetChecked(int Index, bool value) { SetFlag(Index, LIF_CHECKED, value); }
+  FARDIALOGITEMFLAGS __fastcall GetFlags(int Index);
+  void __fastcall SetFlags(int Index, FARDIALOGITEMFLAGS value);
+  bool __fastcall GetDisabled(int Index) { return GetFlag(Index, LIF_DISABLE); }
+  void __fastcall SetDisabled(int Index, bool value) { SetFlag(Index, LIF_DISABLE, value); }
+  bool __fastcall GetChecked(int Index) { return GetFlag(Index, LIF_CHECKED); }
+  void __fastcall SetChecked(int Index, bool value) { SetFlag(Index, LIF_CHECKED, value); }
 #endif
 
 protected:
   virtual void __fastcall Changed();
-  virtual LONG_PTR __fastcall ItemProc(int Msg, LONG_PTR Param);
+  virtual LONG_PTR __fastcall ItemProc(int Msg, void * Param);
   virtual void __fastcall Init();
   void __fastcall UpdatePosition(int Position);
   int __fastcall GetPosition();
@@ -708,10 +707,6 @@ public:
   void __fastcall SetTopIndex(int value);
   int __fastcall GetMaxLength();
   int __fastcall GetVisibleCount();
-  unsigned int __fastcall GetFlags(int Index);
-  void __fastcall SetFlags(int Index, unsigned int value);
-  bool __fastcall GetFlag(int Index, int Flag);
-  void __fastcall SetFlag(int Index, int Flag, bool value);
 };
 //---------------------------------------------------------------------------
 enum TFarListBoxAutoSelect { asOnlyFocus, asAlways, asNever };
@@ -746,7 +741,7 @@ public:
 #endif
 
 protected:
-  virtual LONG_PTR __fastcall ItemProc(int Msg, LONG_PTR Param);
+  virtual LONG_PTR __fastcall ItemProc(int Msg, void * Param);
   virtual void __fastcall Init();
   virtual bool __fastcall CloseQuery();
 
@@ -795,7 +790,7 @@ public:
 #endif
 
 protected:
-  virtual LONG_PTR __fastcall ItemProc(int Msg, LONG_PTR Param);
+  virtual LONG_PTR __fastcall ItemProc(int Msg, void * Param);
   virtual void __fastcall Init();
 
 private:
@@ -818,7 +813,7 @@ public:
 #endif
 
 protected:
-  virtual LONG_PTR __fastcall ItemProc(int Msg, LONG_PTR Param);
+  virtual LONG_PTR __fastcall ItemProc(int Msg, void * Param);
   virtual void __fastcall DoFocus();
 
 private:

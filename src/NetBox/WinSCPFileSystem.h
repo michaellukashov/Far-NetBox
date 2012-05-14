@@ -359,11 +359,11 @@ protected:
   TSessionData * FSessionData;
 
   virtual void __fastcall GetData(
-    unsigned long & Flags, UnicodeString & FileName, __int64 & Size,
+    unsigned __int64 & Flags, UnicodeString & FileName, __int64 & Size,
     unsigned long & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     unsigned long & NumberOfLinks, UnicodeString & Description,
-    UnicodeString & Owner, void *& UserData, int & CustomColumnNumber);
+    UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber);
 };
 //---------------------------------------------------------------------------
 class TSessionFolderPanelItem : public TCustomFarPanelItem
@@ -375,11 +375,11 @@ protected:
   UnicodeString FFolder;
 
   virtual void __fastcall GetData(
-    unsigned long & Flags, UnicodeString & FileName, __int64 & Size,
+    unsigned __int64 & Flags, UnicodeString & FileName, __int64 & Size,
     unsigned long & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     unsigned long & NumberOfLinks, UnicodeString & Description,
-    UnicodeString & Owner, void *& UserData, int & CustomColumnNumber);
+    UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber);
 };
 //---------------------------------------------------------------------------
 class TRemoteFilePanelItem : public TCustomFarPanelItem
@@ -393,11 +393,11 @@ protected:
   TRemoteFile * FRemoteFile;
 
   virtual void __fastcall GetData(
-    unsigned long & Flags, UnicodeString & FileName, __int64 & Size,
+    unsigned __int64 & Flags, UnicodeString & FileName, __int64 & Size,
     unsigned long & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     unsigned long & NumberOfLinks, UnicodeString & Description,
-    UnicodeString & Owner, void *& UserData, int & CustomColumnNumber);
+    UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber);
     virtual UnicodeString __fastcall GetCustomColumnData(int Column);
     static void __fastcall TranslateColumnTypes(UnicodeString & ColumnTypes,
       TStrings * ColumnTitles);

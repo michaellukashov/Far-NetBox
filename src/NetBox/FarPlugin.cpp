@@ -148,15 +148,15 @@ void __fastcall TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
     ResetCachedInfo();
 
     Info->StructSize = sizeof(PluginInfo);
-    TStringList DiskMenuStrings;
-    TStringList PluginMenuStrings;
-    TStringList PluginConfigStrings;
+    TStringList DiskMenu;
+    TStringList PluginMenu;
+    TStringList PluginConfig;
     TStringList CommandPrefixes;
 
     ClearPluginInfo(FPluginInfo);
 
-    GetPluginInfoEx(FPluginInfo.Flags, &DiskMenuStrings, &PluginMenuStrings,
-                    &PluginConfigStrings, &CommandPrefixes);
+    GetPluginInfoEx(FPluginInfo.Flags, &DiskMenu, &PluginMenu,
+                    &PluginConfig, &CommandPrefixes);
 
     #define COMPOSESTRINGARRAY(NAME) \
         if (NAME.GetCount()) \
@@ -169,13 +169,13 @@ void __fastcall TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
           for (int Index = 0; Index < NAME.GetCount(); Index++) \
           { \
             StringArray[Index] = DuplicateStr(NAME.GetStrings(Index)); \
-            Guids[Index] = *reinterpret_cast<const GUID *>(NAME.GetObject(Index)); \
+            Guids[Index] = *reinterpret_cast<const GUID *>(NAME.GetObjects(Index)); \
           } \
         }
 
-    COMPOSESTRINGARRAY(DiskMenuStrings);
-    COMPOSESTRINGARRAY(PluginMenuStrings);
-    COMPOSESTRINGARRAY(PluginConfigStrings);
+    COMPOSESTRINGARRAY(DiskMenu);
+    COMPOSESTRINGARRAY(PluginMenu);
+    COMPOSESTRINGARRAY(PluginConfig);
 
     #undef COMPOSESTRINGARRAY
     // FIXME
@@ -227,9 +227,9 @@ void __fastcall TCustomFarPlugin::ClearPluginInfo(PluginInfo & Info)
       delete[] Info.NAME.Guids; \
       Info.NAME.Strings = NULL;
 
-    FREESTRINGARRAY(DiskMenuStrings);
-    FREESTRINGARRAY(PluginMenuStrings);
-    FREESTRINGARRAY(PluginConfigStrings);
+    FREESTRINGARRAY(DiskMenu);
+    FREESTRINGARRAY(PluginMenu);
+    FREESTRINGARRAY(PluginConfig);
 
     #undef FREESTRINGARRAY
 
@@ -1675,7 +1675,7 @@ void __fastcall TCustomFarPlugin::ResetCachedInfo()
   FValidFarSystemSettings = false;
 }
 //---------------------------------------------------------------------------
-INT_PTR __fastcall TCustomFarPlugin::GetSystemSetting(HANDLE &Settings, const wchar_t *Name)
+__int64 __fastcall TCustomFarPlugin::GetSystemSetting(HANDLE & Settings, const wchar_t * Name)
 {
   FarSettingsItem item = {FSSF_SYSTEM, Name, FST_UNKNOWN, {0} };
   if (FStartupInfo.SettingsControl(Settings, SCTL_GET, 0, &item) && FST_QWORD == item.Type)
@@ -1685,7 +1685,7 @@ INT_PTR __fastcall TCustomFarPlugin::GetSystemSetting(HANDLE &Settings, const wc
   return 0;
 }
 //---------------------------------------------------------------------------
-__int64 TCustomFarPlugin::FarSystemSettings()
+__int64 __fastcall TCustomFarPlugin::FarSystemSettings()
 {
   if (!FValidFarSystemSettings)
   {
@@ -1704,7 +1704,7 @@ __int64 TCustomFarPlugin::FarSystemSettings()
   return FFarSystemSettings;
 }
 //---------------------------------------------------------------------------
-DWORD __fastcall TCustomFarPlugin::FarControl(FILE_CONTROL_COMMANDS Command, int Param1, LONG_PTR Param2, HANDLE Plugin)
+DWORD __fastcall TCustomFarPlugin::FarControl(FILE_CONTROL_COMMANDS Command, int Param1, void * Param2, HANDLE Plugin)
 {
   switch (Command)
   {
@@ -1725,7 +1725,7 @@ DWORD __fastcall TCustomFarPlugin::FarControl(FILE_CONTROL_COMMANDS Command, int
   return FStartupInfo.PanelControl(Plugin, Command, Param1, Param2);
 }
 //---------------------------------------------------------------------------
-INT_PTR __fastcall TCustomFarPlugin::FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, int Param1, void * Param2)
+__int64 __fastcall TCustomFarPlugin::FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, int Param1, void * Param2)
 {
   TFarEnvGuard Guard;
   return FStartupInfo.AdvControl(&MainGuid, Command, Param1, Param2);
@@ -2236,12 +2236,12 @@ TFarPanelInfo * __fastcall TCustomFarFileSystem::GetPanelInfo(int Another)
   return FPanelInfo[another];
 }
 //---------------------------------------------------------------------------
-DWORD __fastcall TCustomFarFileSystem::FarControl(FILE_CONTROL_COMMANDS Command, int Param1, LONG_PTR Param2)
+DWORD __fastcall TCustomFarFileSystem::FarControl(FILE_CONTROL_COMMANDS Command, int Param1, void * Param2)
 {
   return FPlugin->FarControl(Command, Param1, Param2, this);
 }
 //---------------------------------------------------------------------------
-DWORD __fastcall TCustomFarFileSystem::FarControl(FILE_CONTROL_COMMANDS Command, int Param1, LONG_PTR Param2, HANDLE Plugin)
+DWORD __fastcall TCustomFarFileSystem::FarControl(FILE_CONTROL_COMMANDS Command, int Param1, void * Param2, HANDLE Plugin)
 {
   return FPlugin->FarControl(Command, Param1, Param2, Plugin);
 }
@@ -2621,11 +2621,11 @@ void __fastcall TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * Pane
 
 //---------------------------------------------------------------------------
 void __fastcall TFarPanelItem::GetData(
-  unsigned long & /*Flags*/, UnicodeString & /*FileName*/, __int64 & /*Size*/,
+  unsigned __int64 & /*Flags*/, UnicodeString & /*FileName*/, __int64 & /*Size*/,
   unsigned long & /*FileAttributes*/,
   TDateTime & /*LastWriteTime*/, TDateTime & /*LastAccess*/,
   unsigned long & /*NumberOfLinks*/, UnicodeString & /*Description*/,
-  UnicodeString & /*Owner*/, void *& /*UserData*/, int & /*CustomColumnNumber*/)
+  UnicodeString & /*Owner*/, void *& /*UserData*/, size_t & /*CustomColumnNumber*/)
 {
   assert(false);
 }
@@ -2692,11 +2692,11 @@ bool __fastcall TFarPanelItem::GetIsFile()
 }
 //---------------------------------------------------------------------------
 void __fastcall THintPanelItem::GetData(
-  unsigned long & /*Flags*/, UnicodeString & FileName, __int64 & /*Size*/,
+  unsigned __int64 & /*Flags*/, UnicodeString & FileName, __int64 & /*Size*/,
   unsigned long & /*FileAttributes*/,
   TDateTime & /*LastWriteTime*/, TDateTime & /*LastAccess*/,
   unsigned long & /*NumberOfLinks*/, UnicodeString & /*Description*/,
-  UnicodeString & /*Owner*/, void *& /*UserData*/, int & /*CustomColumnNumber*/)
+  UnicodeString & /*Owner*/, void *& /*UserData*/, size_t & /*CustomColumnNumber*/)
 {
   FileName = FHint;
 }
@@ -2742,7 +2742,7 @@ int __fastcall TFarPanelInfo::GetSelectedCount()
     // DEBUG_PRINTF(L"size1 = %d, sizeof(PluginPanelItem) = %d", size, sizeof(PluginPanelItem));
     PluginPanelItem * ppi = (PluginPanelItem *)malloc(size);
     memset(ppi, 0, size);
-    FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, reinterpret_cast<LONG_PTR>(ppi));
+    FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, reinterpret_cast<void *>(ppi));
     if ((ppi->Flags & PPIF_SELECTED) == 0)
     {
       // DEBUG_PRINTF(L"ppi->Flags = %x", ppi->Flags);
@@ -2773,7 +2773,7 @@ TObjectList * __fastcall TFarPanelInfo::GetItems()
     gppi.Size = size;
     FOwner->FarControl(FCTL_GETPANELITEM, Index, static_cast<void *>(&gppi));
     // DEBUG_PRINTF(L"ppi.FileName = %s", ppi->FileName);
-    FItems->Add(static_cast<nb::TObject *>(new TFarPanelItem(ppi)));
+    FItems->Add(static_cast<TObject *>(new TFarPanelItem(ppi)));
   }
   return FItems;
 }
@@ -2812,7 +2812,7 @@ void __fastcall TFarPanelInfo::ApplySelection()
 {
   // for "another panel info", there's no owner
   assert(FOwner != NULL);
-  FOwner->FarControl(FCTL_SETSELECTION, 0, reinterpret_cast<LONG_PTR>(FPanelInfo));
+  FOwner->FarControl(FCTL_SETSELECTION, 0, reinterpret_cast<void *>(FPanelInfo));
 }
 //---------------------------------------------------------------------------
 TFarPanelItem * __fastcall TFarPanelInfo::GetFocusedItem()
@@ -2857,7 +2857,7 @@ void __fastcall TFarPanelInfo::SetFocusedIndex(int value)
     PanelRedrawInfo PanelInfo;
     PanelInfo.CurrentItem = FPanelInfo->CurrentItem;
     PanelInfo.TopPanelItem = FPanelInfo->TopPanelItem;
-    FOwner->FarControl(FCTL_REDRAWPANEL, 0, reinterpret_cast<LONG_PTR>(&PanelInfo));
+    FOwner->FarControl(FCTL_REDRAWPANEL, 0, reinterpret_cast<void *>(&PanelInfo));
   }
 }
 //---------------------------------------------------------------------------
@@ -2891,16 +2891,6 @@ bool __fastcall TFarPanelInfo::GetIsPlugin()
 UnicodeString __fastcall TFarPanelInfo::GetCurrentDirectory()
 {
   UnicodeString Result = L"";
-  /*
-  size_t Size = FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(0, NULL);
-  if (Size)
-  {
-      Result.SetLength(Size);
-      FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(Size,
-          const_cast<wchar_t *>(Result.c_str()));
-  }
-  */
-  // FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<LONG_PTR>(&Info), Another ? PANEL_PASSIVE : PANEL_ACTIVE);
   int Size = FarPlugin->FarControl(FCTL_GETPANELDIRECTORY,
                                    0,
                                    NULL,

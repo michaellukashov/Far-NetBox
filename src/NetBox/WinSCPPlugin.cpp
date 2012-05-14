@@ -335,7 +335,7 @@ int __fastcall TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEve
     for (int Index = 0; Index < FOpenedPlugins->GetCount(); Index++)
     {
       FileSystem = dynamic_cast<TWinSCPFileSystem *>(FOpenedPlugins->GetItem(Index));
-      FileSystem->ProcessEditorEvent(Event, Param);
+      FileSystem->ProcessEditorEvent(Info->Event, Info->Param);
     }
   }
 
@@ -362,7 +362,7 @@ int __fastcall TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
   return Result;
 }
 //---------------------------------------------------------------------------
-TCustomFarFileSystem * __fastcall TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, LONG_PTR Item)
+TCustomFarFileSystem * __fastcall TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, INT_PTR Item)
 {
   TWinSCPFileSystem * FileSystem = NULL;
   try
