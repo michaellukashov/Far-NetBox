@@ -69,14 +69,13 @@ bool TXmlStorage::LoadXml()
 
   // Get and check root node
   TiXmlElement * xmlRoot = FXmlDoc->RootElement();
-  if (strcmp(xmlRoot->Value(), CONST_ROOT_NODE) != 0)
-  {
-    return false;
-  }
-  if (strcmp(xmlRoot->Attribute(CONST_VERSION_ATTR), CONST_XML_VERSION) != 0)
-  {
-    return false;
-  }
+  if (!xmlRoot) return false;
+  const char * value = xmlRoot->Value();
+  if (!value) return false;
+  if (strcmp(value, CONST_ROOT_NODE) != 0) return false;
+  const char * attr = xmlRoot->Attribute(CONST_VERSION_ATTR);
+  if (!attr) return false;
+  if (strcmp(attr, CONST_XML_VERSION) != 0) return false;
   TiXmlElement * Element = xmlRoot->FirstChildElement(ToStdString(FStoredSessionsSubKey).c_str());
   if (Element != NULL)
   {
