@@ -1518,7 +1518,7 @@ TDateTime IncMilliSecond(const TDateTime AValue, const Int64 ANumberOfMilliSecon
 
 Boolean IsLeapYear(Word Year)
 {
-  return (Year / 4 == 0) && ((Year / 100 != 0) || (Year / 400 == 0));
+  return (Year % 4 == 0) && ((Year % 100 != 0) || (Year % 400 == 0));
 }
 
 //---------------------------------------------------------------------------
