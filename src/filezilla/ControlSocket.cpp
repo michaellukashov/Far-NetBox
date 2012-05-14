@@ -20,7 +20,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "fzafx.h"
+#include "stdafx.h"
 #include "ControlSocket.h"
 #include "mainthread.h"
 #include "AsyncProxySocketLayer.h"
@@ -42,11 +42,17 @@
 #include <Options.h>
 
 #ifdef _DEBUG
+#ifndef _MSC_VER
+#undef THIS_FILE
+static char THIS_FILE[]=__FILE__;
+#endif
 #define new DEBUG_NEW
 #endif
 
+#ifdef _MSC_VER
 #define GetOption(OPTION) GetInstanceOption(this->m_pApiLogParent, OPTION)
 #define GetOptionVal(OPTION) GetInstanceOptionVal(this->m_pApiLogParent, OPTION)
+#endif
 
 #ifndef MPEXT
 std::list<CControlSocket::t_ActiveList> CControlSocket::m_InstanceList[2];
@@ -121,14 +127,14 @@ void CControlSocket::ShowStatus(CString status, int type) const
 		int len=status.GetLength()-5;
 		status=_T("PASS ");
 		for (int i=0;i<len;i++)
-			status+="*";
+			status+=_MPT("*");
 	}
 	else if ( status.Left(5)==_T("ACCT ") )
 	{
 		int len=status.GetLength()-5;
 		status=_T("ACCT ");
 		for (int i=0;i<len;i++)
-			status+="*";
+			status+=_MPT("*");
 	}
 	LogMessageRaw(type, (LPCTSTR)status);
 }
@@ -489,7 +495,7 @@ CString CControlSocket::ConvertDomainName(CString domain)
 	USES_CONVERSION;
 
 	LPCWSTR buffer = T2CW(domain);
-	
+
 	char *utf8 = new char[wcslen(buffer) * 2 + 2];
 	if (!WideCharToMultiByte(CP_UTF8, 0, buffer, -1, utf8, wcslen(buffer) * 2 + 2, 0, 0))
 	{

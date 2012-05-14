@@ -112,7 +112,7 @@
 #endif
 
 #ifdef USE_CYASSL
-#include <openssl/ssl.h>
+#include <cyassl/openssl/ssl.h>
 #endif
 
 #ifdef USE_NSS
@@ -422,8 +422,6 @@ struct ConnectBits {
                          This is implicit when SSL-protocols are used through
                          proxies, but can also be enabled explicitly by
                          apps */
-  bool tunnel_connecting; /* TRUE while we're still waiting for a proxy CONNECT
-                           */
   bool authneg;       /* TRUE when the auth phase has started, which means
                          that we are creating a request with an auth header,
                          but it is not the final request in the auth
@@ -964,6 +962,12 @@ struct connectdata {
   unsigned short localport;
   int localportrange;
 
+  /* tunnel as in tunnel through a HTTP proxy with CONNECT */
+  enum {
+    TUNNEL_INIT,    /* init/default/no tunnel state */
+    TUNNEL_CONNECT, /* CONNECT has been sent off */
+    TUNNEL_COMPLETE /* CONNECT response received completely */
+  } tunnel_state[2]; /* two separate ones to allow FTP */
 };
 
 /* The end of connectdata. */
@@ -1335,6 +1339,7 @@ enum dupstring {
   STRING_SOCKS5_GSSAPI_SERVICE,  /* GSSAPI service name */
 #endif
   STRING_MAIL_FROM,
+  STRING_MAIL_AUTH,
 
 #ifdef USE_TLS_SRP
   STRING_TLSAUTH_USERNAME,     /* TLS auth <username> */
@@ -1508,6 +1513,8 @@ struct UserDefined {
   bool ftp_skip_ip;      /* skip the IP address the FTP server passes on to
                             us */
   bool connect_only;     /* make connection, let application use the socket */
+  bool ssl_enable_beast; /* especially allow this flaw for interoperability's
+                            sake*/
   long ssh_auth_types;   /* allowed SSH auth types */
   bool http_te_skip;     /* pass the raw body data to the user, even when
                             transfer-encoded (chunked, compressed) */
@@ -1539,6 +1546,10 @@ struct UserDefined {
 
   long gssapi_delegation; /* GSSAPI credential delegation, see the
                              documentation of CURLOPT_GSSAPI_DELEGATION */
+
+  bool tcp_keepalive;    /* use TCP keepalives */
+  long tcp_keepidle;     /* seconds in idle before sending keepalive probe */
+  long tcp_keepintvl;    /* seconds between TCP keepalive probes */
 };
 
 struct Names {

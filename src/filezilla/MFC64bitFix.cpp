@@ -16,8 +16,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include "fzafx.h"
-
+#include "stdafx.h"
 #include "MFC64bitFix.h"
 
 __int64 GetLength64(CFile &file)
@@ -49,7 +48,7 @@ BOOL PASCAL GetStatus64(LPCTSTR lpszFileName, CFileStatus64& rStatus)
 	// attempt to fully qualify path first
 	if (!AfxFullPath(rStatus.m_szFullName, lpszFileName))
 	{
-		rStatus.m_szFullName[0] = '\0';
+		rStatus.m_szFullName[0] = _MPT('\0');
 		return FALSE;
 	}
 

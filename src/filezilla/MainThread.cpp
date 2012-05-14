@@ -19,7 +19,7 @@
 // MainThread.cpp: Implementierungsdatei
 //
 
-#include "fzafx.h"
+#include "stdafx.h"
 #include "MainThread.h"
 #ifndef MPEXT
 #include "fileexistsdlg.h"
@@ -32,13 +32,19 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
+#ifndef _MSC_VER
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
 #endif
 
 #define ECS m_CriticalSection.Lock()
 #define LCS m_CriticalSection.Unlock()
 
+#ifdef _MSC_VER
 #define GetOption(OPTION) GetInstanceOption(this->m_pApiLogParent, OPTION)
 #define GetOptionVal(OPTION) GetInstanceOptionVal(this->m_pApiLogParent, OPTION)
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // CMainThread
@@ -74,8 +80,10 @@ CMainThread::~CMainThread()
 
 BOOL CMainThread::InitInstance()
 {
+#ifdef _MSC_VER
 	AFX_MANAGE_STATE(AfxGetModuleState());
 	afxCurrentResourceHandle = ::HInst;
+#endif
 
 	m_nTimerID=SetTimer(0,1,1000,0);
 #ifndef MPEXT_NO_CACHE

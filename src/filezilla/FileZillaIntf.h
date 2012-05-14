@@ -6,17 +6,22 @@
 
 #include <time.h>
 #include <FileZillaOpt.h>
+#ifdef _MSC_VER
+#include "Classes.h"
+#include "Sysutils.h"
+#endif
 //---------------------------------------------------------------------------
 class CFileZillaApi;
 class TFileZillaIntern;
 //---------------------------------------------------------------------------
 struct TListDataEntry
 {
-  const wchar_t *Name;
-  const wchar_t *Permissions;
-  const wchar_t *OwnerGroup;
-  const wchar_t *LinkTarget;
+  const wchar_t * Name;
+  const wchar_t * Permissions;
+  const wchar_t * OwnerGroup;
   __int64 Size;
+  bool Dir;
+  bool Link;
   int Year;
   int Month;
   int Day;
@@ -25,8 +30,7 @@ struct TListDataEntry
   int Second;
   bool HasTime;
   bool HasDate;
-  bool Dir;
-  bool Link;
+  const wchar_t * LinkTarget;
 };
 //---------------------------------------------------------------------------
 struct TFtpsCertificateData
@@ -130,73 +134,73 @@ public:
     SERVER_FTP_TLS_EXPLICIT = 0x1400
   };
 
-  static void Initialize();
-  static void Finalize();
-  static void SetResourceModule(void * ResourceHandle);
+  static void __fastcall Initialize();
+  static void __fastcall Finalize();
+  static void __fastcall SetResourceModule(void * ResourceHandle);
 
-  explicit TFileZillaIntf();
-  virtual ~TFileZillaIntf();
+  explicit /* __fastcall */ TFileZillaIntf();
+  virtual /* __fastcall */ ~TFileZillaIntf();
 
-  bool Init();
-  void Destroying();
+  bool __fastcall Init();
+  void __fastcall Destroying();
 
-  bool SetCurrentPath(const char * Path);
-  bool GetCurrentPath(char * Path, size_t MaxLen);
+  bool __fastcall SetCurrentPath(const wchar_t * Path);
+  bool __fastcall GetCurrentPath(wchar_t * Path, size_t MaxLen);
 
-  bool Cancel();
+  bool __fastcall Cancel();
 
-  bool Connect(const char * Host, int Port, const char * User,
-    const char * Pass, const char * Account, bool FwByPass,
-    const char * Path, int ServerType, int Pasv, int TimeZoneOffset, int UTF8,
+  bool __fastcall Connect(const wchar_t * Host, int Port, const wchar_t * User,
+    const wchar_t * Pass, const wchar_t * Account, bool FwByPass,
+    const wchar_t * Path, int ServerType, int Pasv, int TimeZoneOffset, int UTF8,
     bool bForcePasvIp);
-  bool Close();
+  bool __fastcall Close();
 
-  bool List();
-  bool List(const char * Path);
+  bool __fastcall List();
+  bool __fastcall List(const wchar_t * Path);
 #ifdef MPEXT
-  bool ListFile(const wchar_t * FullFileName);
+  bool __fastcall ListFile(const wchar_t * FullFileName);
 #endif
 
-  bool CustomCommand(const wchar_t * Command);
+  bool __fastcall CustomCommand(const wchar_t * Command);
 
-  bool MakeDir(const char* Path);
-  bool Chmod(int Value, const char* FileName, const char* Path);
-  bool Delete(const char* FileName, const char* Path);
-  bool RemoveDir(const char* FileName, const char* Path);
-  bool Rename(const char* OldName, const char* NewName,
-    const char* Path, const char* NewPath);
+  bool __fastcall MakeDir(const wchar_t* Path);
+  bool __fastcall Chmod(int Value, const wchar_t* FileName, const wchar_t* Path);
+  bool __fastcall Delete(const wchar_t* FileName, const wchar_t* Path);
+  bool __fastcall RemoveDir(const wchar_t* FileName, const wchar_t* Path);
+  bool __fastcall Rename(const wchar_t* OldName, const wchar_t* NewName,
+    const wchar_t* Path, const wchar_t* NewPath);
 
-  bool FileTransfer(const char * LocalFile, const char * RemoteFile,
-    const char * RemotePath, bool Get, __int64 Size, int Type, void * UserData);
+  bool __fastcall FileTransfer(const wchar_t * LocalFile, const wchar_t * RemoteFile,
+    const wchar_t * RemotePath, bool Get, __int64 Size, int Type, void * UserData);
 
-  virtual const wchar_t * Option(int OptionID) const = 0;
-  virtual int OptionVal(int OptionID) const = 0;
+  virtual const wchar_t * __fastcall Option(int OptionID) const = 0;
+  virtual int __fastcall OptionVal(int OptionID) const = 0;
 
-  void SetDebugLevel(TLogLevel Level);
-  bool HandleMessage(WPARAM wParam, LPARAM lParam);
+  void __fastcall SetDebugLevel(TLogLevel Level);
+  bool __fastcall HandleMessage(WPARAM wParam, LPARAM lParam);
 
 protected:
-  bool PostMessage(WPARAM wParam, LPARAM lParam);
-  virtual bool DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lParam) = 0;
+  bool __fastcall PostMessage(WPARAM wParam, LPARAM lParam);
+  virtual bool __fastcall DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lParam) = 0;
 
-  virtual bool HandleStatus(const char * Status, int Type) = 0;
-  virtual bool HandleAsynchRequestOverwrite(
-    char * FileName1, size_t FileName1Len, const char * FileName2,
-    const char * Path1, const char * Path2,
+  virtual bool __fastcall HandleStatus(const wchar_t * Status, int Type) = 0;
+  virtual bool __fastcall HandleAsynchRequestOverwrite(
+    wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
+    const wchar_t * Path1, const wchar_t * Path2,
     __int64 Size1, __int64 Size2, time_t Time1, time_t Time2,
     bool HasTime1, bool HasTime2, void * UserData, int & RequestResult) = 0;
-  virtual bool HandleAsynchRequestVerifyCertificate(
+  virtual bool __fastcall HandleAsynchRequestVerifyCertificate(
     const TFtpsCertificateData & Data, int & RequestResult) = 0;
-  virtual bool HandleListData(const char * Path, const TListDataEntry * Entries,
-    size_t Count) = 0;
-  virtual bool HandleTransferStatus(bool Valid, __int64 TransferSize,
+  virtual bool __fastcall HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
+    unsigned int Count) = 0;
+  virtual bool __fastcall HandleTransferStatus(bool Valid, __int64 TransferSize,
     __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
     bool FileTransfer) = 0;
-  virtual bool HandleReply(int Command, unsigned int Reply) = 0;
-  virtual bool HandleCapabilities(TFTPServerCapabilities *ServerCapabilities) = 0;
-  virtual bool CheckError(int ReturnCode, const char * Context);
+  virtual bool __fastcall HandleReply(int Command, unsigned int Reply) = 0;
+  virtual bool __fastcall HandleCapabilities(TFTPServerCapabilities *ServerCapabilities) = 0;
+  virtual bool __fastcall CheckError(int ReturnCode, const wchar_t * Context);
 
-  inline bool Check(int ReturnCode, const char * Context, int Expected = -1);
+  inline bool __fastcall Check(int ReturnCode, const wchar_t * Context, int Expected = -1);
 
 private:
   CFileZillaApi * FFileZillaApi;

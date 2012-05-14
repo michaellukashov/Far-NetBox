@@ -8,66 +8,66 @@
 class TXmlStorage : public THierarchicalStorage
 {
 public:
-    explicit TXmlStorage(const std::wstring AStorage, const std::wstring StoredSessionsSubKey);
-    virtual ~TXmlStorage();
+  explicit /* __fastcall */ TXmlStorage(const UnicodeString AStorage, const UnicodeString StoredSessionsSubKey);
+  virtual void __fastcall Init();
+  virtual /* __fastcall */ ~TXmlStorage();
 
-    virtual void Init();
-    bool Copy(TXmlStorage *Storage);
+  bool Copy(TXmlStorage * Storage);
 
-    virtual bool OpenSubKey(const std::wstring SubKey, bool CanCreate, bool Path = false);
-    virtual void CloseSubKey();
-    virtual bool DeleteSubKey(const std::wstring SubKey);
-    virtual bool DeleteValue(const std::wstring Name);
-    virtual void GetSubKeyNames(nb::TStrings *Strings);
-    virtual bool KeyExists(const std::wstring SubKey);
-    virtual bool ValueExists(const std::wstring Value);
+  virtual void __fastcall CloseSubKey();
+  virtual bool __fastcall DeleteSubKey(const UnicodeString SubKey);
+  virtual bool __fastcall DeleteValue(const UnicodeString Name);
+  virtual void __fastcall GetSubKeyNames(TStrings * Strings);
+  virtual bool __fastcall ValueExists(const UnicodeString Value);
 
-    virtual int BinaryDataSize(const std::wstring Name);
+  virtual size_t __fastcall BinaryDataSize(const UnicodeString Name);
 
-    virtual bool Readbool(const std::wstring Name, bool Default);
-    virtual int Readint(const std::wstring Name, int Default);
-    virtual __int64 ReadInt64(const std::wstring Name, __int64 Default);
-    virtual nb::TDateTime ReadDateTime(const std::wstring Name, nb::TDateTime Default);
-    virtual double ReadFloat(const std::wstring Name, double Default);
-    virtual std::wstring ReadStringRaw(const std::wstring Name, const std::wstring Default);
-    virtual size_t ReadBinaryData(const std::wstring Name, void *Buffer, size_t Size);
+  virtual bool __fastcall ReadBool(const UnicodeString Name, bool Default);
+  virtual int __fastcall ReadInteger(const UnicodeString Name, int Default);
+  virtual __int64 __fastcall ReadInt64(const UnicodeString Name, __int64 Default);
+  virtual TDateTime __fastcall ReadDateTime(const UnicodeString Name, TDateTime Default);
+  virtual double __fastcall ReadFloat(const UnicodeString Name, double Default);
+  virtual UnicodeString __fastcall ReadStringRaw(const UnicodeString Name, const UnicodeString Default);
+  virtual size_t __fastcall ReadBinaryData(const UnicodeString Name, void * Buffer, size_t Size);
 
-    virtual void Writebool(const std::wstring Name, bool Value);
-    virtual void Writeint(const std::wstring Name, int Value);
-    virtual void WriteInt64(const std::wstring Name, __int64 Value);
-    virtual void WriteDateTime(const std::wstring Name, nb::TDateTime Value);
-    virtual void WriteFloat(const std::wstring Name, double Value);
-    virtual void WriteStringRaw(const std::wstring Name, const std::wstring Value);
-    virtual void WriteBinaryData(const std::wstring Name, const void *Buffer, size_t Size);
+  virtual void __fastcall WriteBool(const UnicodeString Name, bool Value);
+  virtual void __fastcall WriteInteger(const UnicodeString Name, int Value);
+  virtual void __fastcall WriteInt64(const UnicodeString Name, __int64 Value);
+  virtual void __fastcall WriteDateTime(const UnicodeString Name, TDateTime Value);
+  virtual void __fastcall WriteFloat(const UnicodeString Name, double Value);
+  virtual void __fastcall WriteStringRaw(const UnicodeString Name, const UnicodeString Value);
+  virtual void __fastcall WriteBinaryData(const UnicodeString Name, const void * Buffer, int Size);
 
-    virtual void GetValueNames(nb::TStrings *Strings);
+  virtual void __fastcall GetValueNames(TStrings * Strings);
 
-    virtual void SetAccessMode(TStorageAccessMode value);
+  virtual void __fastcall SetAccessMode(TStorageAccessMode value);
+  virtual bool __fastcall DoKeyExists(const UnicodeString SubKey, bool ForceAnsi);
+  virtual bool __fastcall DoOpenSubKey(const UnicodeString MungedSubKey, bool CanCreate);
 
 protected:
-    virtual std::wstring GetSource();
+  virtual UnicodeString __fastcall GetSource();
 
-    int GetFailed();
-    void SetFailed(int value) { FFailed = value; }
-
-private:
-    std::wstring GetSubKeyText(const std::wstring Name);
-    TiXmlElement *FindElement(const std::wstring Value);
-    std::string ToStdString(const std::wstring String) { return nb::W2MB(String.c_str()); }
-    std::wstring ToStdWString(const std::string &String) { return nb::MB2W(String.c_str()); }
-    void RemoveIfExists(const std::wstring Name);
-    void AddNewElement(const std::wstring Name, const std::wstring Value);
-    TiXmlElement *FindChildElement(const std::string &subKey);
-    std::wstring GetValue(TiXmlElement *Element);
-
-    bool LoadXml();
-    bool WriteXml();
+  int __fastcall GetFailed();
+  void __fastcall SetFailed(int value) { FFailed = value; }
 
 private:
-    TiXmlDocument *FXmlDoc;
-    std::vector<TiXmlElement *> FSubElements;
-    TiXmlElement *FCurrentElement;
-    std::wstring FStoredSessionsSubKey;
-    int FFailed;
-    bool FStoredSessionsOpened;
+  UnicodeString GetSubKeyText(const UnicodeString Name);
+  TiXmlElement * FindElement(const UnicodeString Value);
+  std::string ToStdString(const UnicodeString String) { return W2MB(String.c_str()); }
+  UnicodeString ToUnicodeString(const std::string & String) { return MB2W(String.c_str()); }
+  void RemoveIfExists(const UnicodeString Name);
+  void AddNewElement(const UnicodeString Name, const UnicodeString Value);
+  TiXmlElement * FindChildElement(const std::string & subKey);
+  UnicodeString GetValue(TiXmlElement * Element);
+
+  bool LoadXml();
+  bool WriteXml();
+
+private:
+  TiXmlDocument * FXmlDoc;
+  std::vector<TiXmlElement *> FSubElements;
+  TiXmlElement * FCurrentElement;
+  UnicodeString FStoredSessionsSubKey;
+  int FFailed;
+  bool FStoredSessionsOpened;
 };

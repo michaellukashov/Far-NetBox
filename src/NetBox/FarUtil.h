@@ -1,21 +1,3 @@
-/**************************************************************************
- *  Far plugin helper (for FAR 2.0) (http://code.google.com/p/farplugs)   *
- *  Copyright (C) 2000-2011 by Artem Senichev <artemsen@gmail.com>        *
- *                                                                        *
- *  This program is free software: you can redistribute it and/or modify  *
- *  it under the terms of the GNU General Public License as published by  *
- *  the Free Software Foundation, either version 3 of the License, or     *
- *  (at your option) any later version.                                   *
- *                                                                        *
- *  This program is distributed in the hope that it will be useful,       *
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *
- *                                                                        *
- *  You should have received a copy of the GNU General Public License     *
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>. *
- **************************************************************************/
-
 #pragma once
 
 #include "FarDialog.h"
@@ -282,7 +264,7 @@ private:
  * \param errCode system error code
  * \return error message
  */
-std::wstring GetSystemErrorMessage(const DWORD errCode);
+UnicodeString GetSystemErrorMessage(const DWORD errCode);
 
 /**
  * Parse URL
@@ -295,7 +277,7 @@ std::wstring GetSystemErrorMessage(const DWORD errCode);
  * \param userName user name
  * \param password password
  */
-void ParseURL(const wchar_t *url, std::wstring *scheme, std::wstring *hostName, unsigned short *port, std::wstring *path, std::wstring *query, std::wstring *userName, std::wstring *password);
+void ParseURL(const wchar_t *url, UnicodeString *scheme, UnicodeString *hostName, unsigned short *port, UnicodeString *path, UnicodeString *query, UnicodeString *userName, UnicodeString *password);
 
 /**
  * Convert unix time to file time
@@ -304,7 +286,7 @@ void ParseURL(const wchar_t *url, std::wstring *scheme, std::wstring *hostName, 
  */
 FILETIME UnixTimeToFileTime(const time_t t);
 
-unsigned long TextToNumber(const std::wstring text);
+unsigned long TextToNumber(const UnicodeString text);
 
 /**
  * Convert int to std::string
@@ -313,7 +295,7 @@ unsigned long TextToNumber(const std::wstring text);
  */
 std::string NumberToText(int number);
 
-std::wstring NumberToWString(unsigned long number);
+UnicodeString NumberToWString(unsigned long number);
 
 //---------------------------------------------------------------------------
 

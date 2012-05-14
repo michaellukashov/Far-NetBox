@@ -1,16 +1,19 @@
 //---------------------------------------------------------------------------
 #ifndef PuttyToolsH
 #define PuttyToolsH
+
+#include "SysUtils.h"
+
 //---------------------------------------------------------------------------
 enum TKeyType { ktUnopenable, ktUnknown, ktSSH1, ktSSH2, ktOpenSSH, ktSSHCom };
-TKeyType KeyType(const std::wstring FileName);
-std::wstring KeyTypeName(TKeyType KeyType);
+TKeyType KeyType(UnicodeString FileName);
+UnicodeString KeyTypeName(TKeyType KeyType);
 //---------------------------------------------------------------------------
-__int64 ParseSize(const std::wstring SizeStr);
+__int64 __fastcall ParseSize(UnicodeString SizeStr);
 //---------------------------------------------------------------------------
-bool HasGSSAPI();
+bool __fastcall HasGSSAPI();
 //---------------------------------------------------------------------------
-void AES256EncodeWithMAC(char *Data, size_t Len, const char *Password,
-                         size_t PasswordLen, const char *Salt);
+void __fastcall AES256EncodeWithMAC(char * Data, size_t Len, const char * Password,
+  size_t PasswordLen, const char * Salt);
 //---------------------------------------------------------------------------
 #endif

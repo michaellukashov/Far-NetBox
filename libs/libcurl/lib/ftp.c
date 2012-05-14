@@ -3197,33 +3197,6 @@ static CURLcode ftp_connect(struct connectdata *conn,
   pp->endofresp = ftp_endofresp;
   pp->conn = conn;
 
-  if(conn->bits.tunnel_proxy && conn->bits.httpproxy) {
-    /* for FTP over HTTP proxy */
-    struct HTTP http_proxy;
-    struct FTP *ftp_save;
-
-    /* BLOCKING */
-    /* We want "seamless" FTP operations through HTTP proxy tunnel */
-
-    /* Curl_proxyCONNECT is based on a pointer to a struct HTTP at the member
-     * conn->proto.http; we want FTP through HTTP and we have to change the
-     * member temporarily for connecting to the HTTP proxy. After
-     * Curl_proxyCONNECT we have to set back the member to the original struct
-     * FTP pointer
-     */
-    ftp_save = data->state.proto.ftp;
-    memset(&http_proxy, 0, sizeof(http_proxy));
-    data->state.proto.http = &http_proxy;
-
-    result = Curl_proxyCONNECT(conn, FIRSTSOCKET,
-                               conn->host.name, conn->remote_port);
-
-    data->state.proto.ftp = ftp_save;
-
-    if(CURLE_OK != result)
-      return result;
-  }
-
   if(conn->handler->flags & PROTOPT_SSL) {
     /* BLOCKING */
     result = Curl_ssl_connect(conn, FIRSTSOCKET);
@@ -4271,7 +4244,8 @@ CURLcode ftp_parse_url_path(struct connectdata *conn)
         return CURLE_OUT_OF_MEMORY;
 
       ftpc->dirs[0] = curl_easy_unescape(conn->data, slash_pos ? cur_pos : "/",
-                                         slash_pos?(int)(slash_pos-cur_pos):1,
+                                         slash_pos ?
+                                         curlx_sztosi(slash_pos-cur_pos) : 1,
                                          NULL);
       if(!ftpc->dirs[0]) {
         freedirs(ftpc);
@@ -4310,7 +4284,7 @@ CURLcode ftp_parse_url_path(struct connectdata *conn)
           /* we skip empty path components, like "x//y" since the FTP command
              CWD requires a parameter and a non-existent parameter a) doesn't
              work on many servers and b) has no effect on the others. */
-          int len = (int)(slash_pos - cur_pos + absolute_dir);
+          int len = curlx_sztosi(slash_pos - cur_pos + absolute_dir);
           ftpc->dirs[ftpc->dirdepth] =
             curl_easy_unescape(conn->data, cur_pos - absolute_dir, len, NULL);
           if(!ftpc->dirs[ftpc->dirdepth]) { /* run out of memory ... */
@@ -4381,8 +4355,8 @@ CURLcode ftp_parse_url_path(struct connectdata *conn)
       return CURLE_OUT_OF_MEMORY;
     }
 
-    dlen -= ftpc->file?(int)strlen(ftpc->file):0;
-    if((dlen == (int)strlen(ftpc->prevpath)) &&
+    dlen -= ftpc->file?curlx_uztosi(strlen(ftpc->file)):0;
+    if((dlen == curlx_uztosi(strlen(ftpc->prevpath))) &&
        strnequal(path, ftpc->prevpath, dlen)) {
       infof(data, "Request has same path as previous transfer\n");
       ftpc->cwddone = TRUE;

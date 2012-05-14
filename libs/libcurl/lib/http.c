@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2012, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -1309,27 +1309,17 @@ CURLcode Curl_http_connect(struct connectdata *conn, bool *done)
      function to make the re-use checks properly be able to check this bit. */
   conn->bits.close = FALSE;
 
-#ifndef CURL_DISABLE_PROXY
-  /* If we are not using a proxy and we want a secure connection, perform SSL
-   * initialization & connection now.  If using a proxy with https, then we
-   * must tell the proxy to CONNECT to the host we want to talk to.  Only
-   * after the connect has occurred, can we start talking SSL
-   */
-  if(conn->bits.tunnel_proxy && conn->bits.httpproxy) {
-
-    /* either SSL over proxy, or explicitly asked for */
-    result = Curl_proxyCONNECT(conn, FIRSTSOCKET,
-                               conn->host.name,
-                               conn->remote_port);
-    if(CURLE_OK != result)
+  if(data->state.used_interface == Curl_if_multi) {
+    /* when the multi interface is used, the CONNECT procedure might not have
+       been completed */
+    result = Curl_proxy_connect(conn);
+    if(result)
       return result;
   }
 
-  if(conn->bits.tunnel_connecting) {
+  if(conn->tunnel_state[FIRSTSOCKET] == TUNNEL_CONNECT)
     /* nothing else to do except wait right now - we're not done here. */
     return CURLE_OK;
-  }
-#endif /* CURL_DISABLE_PROXY */
 
   if(conn->given->flags & PROTOPT_SSL) {
     /* perform SSL initialization */
@@ -1857,9 +1847,23 @@ CURLcode Curl_http(struct connectdata *conn, bool *done)
       /* ignore empty data */
       free(cookiehost);
     else {
-      char *colon = strchr(cookiehost, ':');
-      if(colon)
-        *colon = 0; /* The host must not include an embedded port number */
+      /* If the host begins with '[', we start searching for the port after
+         the bracket has been closed */
+      int startsearch = 0;
+      if(*cookiehost == '[') {
+        char *closingbracket;
+        closingbracket = strchr(cookiehost+1, ']');
+        if(closingbracket)
+          *closingbracket = 0;
+        /* since the 'cookiehost' is an allocated memory area that will be
+           freed later we cannot simply increment the pointer */
+        memmove(cookiehost, cookiehost + 1, strlen(cookiehost) - 1);
+      }
+      else {
+        char *colon = strchr(cookiehost + startsearch, ':');
+        if(colon)
+          *colon = 0; /* The host must not include an embedded port number */
+      }
       Curl_safefree(conn->allocptr.cookiehost);
       conn->allocptr.cookiehost = cookiehost;
     }
