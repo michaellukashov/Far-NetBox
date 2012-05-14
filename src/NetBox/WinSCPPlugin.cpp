@@ -58,8 +58,8 @@ TMessageParams::TMessageParams()
 {
   if (FInitialized)
   {
+    // FarConfiguration->SetPlugin(NULL);
     CoreFinalize();
-    FarConfiguration->SetPlugin(NULL);
   }
 }
 //---------------------------------------------------------------------------
@@ -328,7 +328,6 @@ int __fastcall TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEve
 {
   // for performance reasons, do not pass the event to file systems on redraw
   if ((Info->Event != EE_REDRAW) || FarConfiguration->GetEditorUploadOnSave() ||
-
       FarConfiguration->GetEditorMultiple())
   {
     TWinSCPFileSystem * FileSystem = NULL;
