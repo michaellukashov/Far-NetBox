@@ -48,7 +48,7 @@ public:
 
 private:
   UnicodeString __fastcall GetFullCurrentSubKey() { return /* GetStorage() + */ GetCurrentSubKey(); }
-  int __fastcall OpenSubKeyInternal(int Root, const UnicodeString SubKey, bool CanCreate, bool Path);
+  int __fastcall OpenSubKeyInternal(int Root, const UnicodeString SubKey, bool CanCreate);
 
 private:
   int FRoot;

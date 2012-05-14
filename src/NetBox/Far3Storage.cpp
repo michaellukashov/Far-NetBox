@@ -45,7 +45,7 @@ void __fastcall TFar3Storage::SetAccessMode(TStorageAccessMode value)
   THierarchicalStorage::SetAccessMode(value);
 }
 //---------------------------------------------------------------------------
-int __fastcall TFar3Storage::OpenSubKeyInternal(int Root, const UnicodeString SubKey, bool CanCreate, bool Path)
+int __fastcall TFar3Storage::OpenSubKeyInternal(int Root, const UnicodeString SubKey, bool CanCreate)
 {
   int root = 0;
   if (CanCreate)
@@ -73,18 +73,14 @@ bool __fastcall TFar3Storage::DoOpenSubKey(const UnicodeString MungedSubKey, boo
     // CutToChar(subKey, L'\\', false);
     while (!subKey.IsEmpty())
     {
-      root = OpenSubKeyInternal(root, CutToChar(subKey, L'\\', false), CanCreate, false);
+      root = OpenSubKeyInternal(root, CutToChar(subKey, L'\\', false), CanCreate);
       Result &= root != 0;
       // DEBUG_PRINTF(L"SubKey = %s, Result = %d", SubKey.c_str(), Result);
     }
     if (Result)
     {
-      // Result = THierarchicalStorage::OpenSubKey(SubKey, CanCreate, Path);
-      // if (Result)
-      {
-        FSubKeyIds.push_back(OldRoot);
-        FRoot = root;
-      }
+      FSubKeyIds.push_back(OldRoot);
+      FRoot = root;
     }
     return Result;
   }
@@ -95,14 +91,12 @@ bool __fastcall TFar3Storage::DoOpenSubKey(const UnicodeString MungedSubKey, boo
 void __fastcall TFar3Storage::CloseSubKey()
 {
   // DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
-  assert(FKeyHistory->GetCount() == FSubKeyIds.size());
   THierarchicalStorage::CloseSubKey();
+  // assert(FKeyHistory->GetCount() == FSubKeyIds.size() - 1);
   if (FKeyHistory->GetCount() && FSubKeyIds.size())
   {
     FRoot = FSubKeyIds.back();
     FSubKeyIds.pop_back();
-    // OpenSubKey(GetCurrentSubKey(), true);
-    // DEBUG_PRINTF(L"GetCurrentSubKey = %s", GetCurrentSubKey().c_str());
   }
   else
   {
