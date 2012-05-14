@@ -14,6 +14,7 @@
 #include "FarConfiguration.h"
 #include "Far3Storage.h"
 #include "FarPlugin.h"
+//---------------------------------------------------------------------------
 #ifndef _MSC_VER
 #pragma package(smart_init)
 #endif
@@ -86,12 +87,12 @@ void __fastcall TFarConfiguration::Default()
 //---------------------------------------------------------------------------
 THierarchicalStorage * TFarConfiguration::CreateScpStorage(bool SessionList)
 {
-  return TGUIConfiguration::CreateScpStorage(SessionList);
   // if (GetStorage() == stFar3Storage)
   {
     assert(FFarPlugin);
     return new TFar3Storage(GetRegistryStorageKey(), MainGuid, FFarPlugin->GetStartupInfo()->SettingsControl);
   }
+  return TGUIConfiguration::CreateScpStorage(SessionList);
 }
 //---------------------------------------------------------------------------
 void __fastcall TFarConfiguration::Saved()
