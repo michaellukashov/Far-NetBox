@@ -227,11 +227,14 @@ void __fastcall TConfiguration::Save(bool All, bool Explicit)
     {
       delete AStorage;
     } BOOST_SCOPE_EXIT_END
-    AStorage->SetAccessMode(smReadWrite);
-    AStorage->SetExplicit(Explicit);
-    if (AStorage->OpenSubKey(GetConfigurationSubKey(), true))
+    if (AStorage)
     {
-      SaveData(AStorage, All);
+      AStorage->SetAccessMode(smReadWrite);
+      AStorage->SetExplicit(Explicit);
+      if (AStorage->OpenSubKey(GetConfigurationSubKey(), true))
+      {
+        SaveData(AStorage, All);
+      }
     }
   }
 #ifndef _MSC_VER
