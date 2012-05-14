@@ -2,21 +2,17 @@
 #ifndef CryptographyH
 #define CryptographyH
 //---------------------------------------------------------------------------
-void CryptographyInitialize();
-void CryptographyFinalize();
-void ScramblePassword(std::wstring &Password);
-bool UnscramblePassword(std::wstring &Password);
-void AES256EncyptWithMAC(const std::wstring Input, const std::wstring Password,
-                         std::wstring Salt, std::wstring &Output, std::wstring Mac);
-void AES256EncyptWithMAC(const std::wstring Input, const std::wstring Password,
-                         std::wstring &Output);
-bool AES256DecryptWithMAC(const std::wstring Input, const std::wstring Password,
-                          std::wstring Salt, std::wstring &Output, std::wstring Mac);
-bool AES256DecryptWithMAC(const std::wstring Input, const std::wstring Password,
-                          std::wstring &Output);
-void AES256CreateVerifier(const std::wstring Input, std::wstring &Verifier);
-bool AES256Verify(const std::wstring Input, std::wstring Verifier);
-int IsValidPassword(const std::wstring Password);
-size_t PasswordMaxLength();
+void __fastcall CryptographyInitialize();
+void __fastcall CryptographyFinalize();
+RawByteString __fastcall ScramblePassword(UnicodeString Password);
+bool __fastcall UnscramblePassword(RawByteString Scrambled, UnicodeString & Password);
+void __fastcall AES256EncyptWithMAC(RawByteString Input, UnicodeString Password,
+  RawByteString & Output);
+bool __fastcall AES256DecryptWithMAC(RawByteString Input, UnicodeString Password,
+  RawByteString & Output);
+void __fastcall AES256CreateVerifier(UnicodeString Input, RawByteString & Verifier);
+bool __fastcall AES256Verify(UnicodeString Input, RawByteString Verifier);
+int __fastcall IsValidPassword(UnicodeString Password);
+int __fastcall PasswordMaxLength();
 //---------------------------------------------------------------------------
 #endif

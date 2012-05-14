@@ -1,123 +1,132 @@
 //---------------------------------------------------------------------------
+#ifndef _MSC_VER
+#include <vcl.h>
+#pragma hdrstop
+#else
 #include "stdafx.h"
+#endif
 
 #include "NamedObjs.h"
 #include "Common.h"
+#include "SysUtils.h"
 //---------------------------------------------------------------------------
-int NamedObjectSortProc(void *Item1, void *Item2)
+#ifndef _MSC_VER
+#pragma package(smart_init)
+#endif
+//---------------------------------------------------------------------------
+int /* __fastcall */ NamedObjectSortProc(void * Item1, void * Item2)
 {
-    bool HasPrefix1 = (static_cast<TNamedObject *>(Item1))->GetHidden();
-    bool HasPrefix2 = (static_cast<TNamedObject *>(Item2))->GetHidden();
-    if (HasPrefix1 && !HasPrefix2) { return -1; }
-    else if (!HasPrefix1 && HasPrefix2) { return 1; }
+  bool HasPrefix1 = (static_cast<TNamedObject *>(Item1))->GetHidden();
+  bool HasPrefix2 = (static_cast<TNamedObject *>(Item2))->GetHidden();
+  if (HasPrefix1 && !HasPrefix2) { return -1; }
     else
-    {
-        return ::AnsiCompareStr((static_cast<TNamedObject *>(Item1))->GetName(), (static_cast<TNamedObject *>(Item2))->GetName());
-    }
+  if (!HasPrefix1 && HasPrefix2) { return 1; }
+    else
+  {
+    return AnsiCompareStr((static_cast<TNamedObject *>(Item1))->GetName(), (static_cast<TNamedObject *>(Item2))->GetName());
+  }
 }
 //--- TNamedObject ----------------------------------------------------------
-TNamedObject::TNamedObject(const std::wstring AName) :
-    nb::TPersistent()
+/* __fastcall */ TNamedObject::TNamedObject(UnicodeString AName) :
+  FHidden(false)
 {
-    SetName(AName);
+  SetName(AName);
 }
 //---------------------------------------------------------------------------
-void TNamedObject::SetName(const std::wstring value)
+void __fastcall TNamedObject::SetName(UnicodeString value)
 {
-    FHidden = (value.substr(0, TNamedObjectList::HiddenPrefix.size()) == TNamedObjectList::HiddenPrefix);
-    FName = value;
-}
-
-int TNamedObject::CompareName(const std::wstring aName,
-                              bool CaseSensitive)
-{
-    // DEBUG_PRINTF(L"CaseSensitive = %d, Name = %s, aName = %s", CaseSensitive, Name.c_str(), aName.c_str());
-    if (CaseSensitive)
-    {
-        return ::AnsiCompare(GetName(), aName);
-    }
-    else
-    {
-        return ::AnsiCompareIC(GetName(), aName);
-    }
+  FHidden = (value.SubString(1, TNamedObjectList::HiddenPrefix.Length()) == TNamedObjectList::HiddenPrefix);
+  FName = value;
 }
 //---------------------------------------------------------------------------
-void TNamedObject::MakeUniqueIn(TNamedObjectList *List)
+Integer __fastcall TNamedObject::CompareName(UnicodeString aName,
+  Boolean CaseSensitive)
 {
-    // This object can't be item of list, it would create infinite loop
-    if (List && (List->IndexOf(this) == NPOS))
-        while (List->FindByName(GetName()))
+  if (CaseSensitive)
+  {
+    return ::AnsiCompare(GetName(), aName);
+  }
+  else
+  {
+    return ::AnsiCompareIC(GetName(), aName);
+  }
+}
+//---------------------------------------------------------------------------
+void __fastcall TNamedObject::MakeUniqueIn(TNamedObjectList * List)
+{
+  // This object can't be item of list, it would create infinite loop
+  if (List && (List->IndexOf(this) == -1))
+    while (List->FindByName(GetName()))
+    {
+      Integer N = 0, P = 0;
+      // If name already contains number parenthesis remove it (and remember it)
+      UnicodeString Name = GetName();
+      if ((Name[Name.Length()] == L')') && ((P = Name.LastDelimiter(L'(')) > 0))
+        try
         {
-            size_t N = 0, P = 0;
-            // If name already contains number parenthesis remove it (and remember it)
-            std::wstring Name = GetName();
-            if ((Name[Name.size() - 1] == L')') && ((P = ::LastDelimiter(Name, L"(")) != std::wstring::npos))
-                try
-                {
-                    N = StrToInt(Name.substr(P + 1, Name.size() - P - 1));
-                    Name.erase(P, Name.size() - P + 1);
-                    SetName(::TrimRight(Name));
-                }
-                catch (const std::exception &E)
-                {
-                    N = 0;
-                };
-            Name += L" (" + IntToStr(static_cast<int>(N+1)) + L")";
+          N = StrToInt(Name.SubString(P + 1, Name.Length() - P - 1));
+          Name.Delete(P, Name.Length() - P + 1);
+          SetName(Name.TrimRight());
         }
+        catch (Exception &E)
+        {
+          N = 0;
+        };
+      Name += L" (" + IntToStr(static_cast<int>(N+1)) + L")";
+    }
 }
 //--- TNamedObjectList ------------------------------------------------------
-const std::wstring TNamedObjectList::HiddenPrefix = L"_!_";
+const UnicodeString TNamedObjectList::HiddenPrefix = L"_!_";
 //---------------------------------------------------------------------------
-TNamedObjectList::TNamedObjectList() :
-    nb::TObjectList(),
-    FHiddenCount(0),
-    AutoSort(true)
+/* __fastcall */ TNamedObjectList::TNamedObjectList():
+  TObjectList(),
+  FHiddenCount(0),
+  AutoSort(true)
 {
-    AutoSort = true;
+  AutoSort = True;
 }
 //---------------------------------------------------------------------------
-TNamedObject *TNamedObjectList::AtObject(size_t Index)
+TNamedObject * __fastcall TNamedObjectList::AtObject(Integer Index)
 {
-    // DEBUG_PRINTF(L"Index = %d, Count = %d, GetHiddenCount = %d", Index, GetCount(), GetHiddenCount());
-    return static_cast<TNamedObject *>(GetItem(Index + GetHiddenCount()));
+  return static_cast<TNamedObject *>(GetItem(Index + GetHiddenCount()));
 }
 //---------------------------------------------------------------------------
-void TNamedObjectList::Recount()
+void __fastcall TNamedObjectList::Recount()
 {
-    size_t i = 0;
-    while ((i < nb::TObjectList::GetCount()) && (static_cast<TNamedObject *>(GetItem(i)))->GetHidden()) { i++; }
-    FHiddenCount = i;
+  int i = 0;
+  while ((i < TObjectList::GetCount()) && (static_cast<TNamedObject *>(GetItem(i)))->GetHidden()) { i++; }
+  FHiddenCount = i;
 }
 //---------------------------------------------------------------------------
-void TNamedObjectList::AlphaSort()
+void __fastcall TNamedObjectList::AlphaSort()
 {
-    Sort(NamedObjectSortProc);
+  Sort(NamedObjectSortProc);
 }
 //---------------------------------------------------------------------------
-void TNamedObjectList::Notify(void *Ptr, nb::TListNotification Action)
+void __fastcall TNamedObjectList::Notify(void *Ptr, TListNotification Action)
 {
-    nb::TObjectList::Notify(Ptr, Action);
-    if (AutoSort && (Action == nb::lnAdded)) { AlphaSort(); }
-    Recount();
+  TObjectList::Notify(Ptr, Action);
+  if (AutoSort && (Action == lnAdded)) { AlphaSort(); }
+  Recount();
 }
 //---------------------------------------------------------------------------
-TNamedObject *TNamedObjectList::FindByName(const std::wstring Name,
-        bool CaseSensitive)
+TNamedObject * __fastcall TNamedObjectList::FindByName(UnicodeString Name,
+  Boolean CaseSensitive)
 {
-    for (size_t Index = 0; Index < nb::TObjectList::GetCount(); Index++)
-        if (!(static_cast<TNamedObject *>(GetItem(Index)))->CompareName(Name, CaseSensitive))
-        {
-            return static_cast<TNamedObject *>(GetItem(Index));
-        }
-    return NULL;
+  for (Integer Index = 0; Index < TObjectList::GetCount(); Index++)
+    if (!(static_cast<TNamedObject *>(GetItem(Index)))->CompareName(Name, CaseSensitive))
+    {
+      return static_cast<TNamedObject *>(GetItem(Index));
+    }
+  return NULL;
 }
 //---------------------------------------------------------------------------
-void TNamedObjectList::SetCount(size_t value)
+void __fastcall TNamedObjectList::SetCount(int value)
 {
-    nb::TObjectList::SetCount(value/*+HiddenCount*/);
+  TObjectList::SetCount(value/*+HiddenCount*/);
 }
 //---------------------------------------------------------------------------
-size_t TNamedObjectList::GetCount()
+int __fastcall TNamedObjectList::GetCount()
 {
-    return nb::TObjectList::GetCount() - GetHiddenCount();
+  return TObjectList::GetCount() - GetHiddenCount();
 }

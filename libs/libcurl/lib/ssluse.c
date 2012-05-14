@@ -67,6 +67,7 @@
 #include <x509v3.h>
 #endif
 
+#include "warnless.h"
 #include "curl_memory.h"
 #include "non-ascii.h" /* for Curl_convert_from_utf8 prototype */
 
@@ -144,7 +145,7 @@
 static char global_passwd[64];
 #endif
 
-static int passwd_callback(char *buf, int num, int verify
+static int passwd_callback(char *buf, int num, int encrypting
 #ifdef HAVE_USERDATA_IN_PWD_CALLBACK
                            /* This was introduced in 0.9.4, we can set this
                               using SSL_CTX_set_default_passwd_cb_userdata()
@@ -153,12 +154,13 @@ static int passwd_callback(char *buf, int num, int verify
 #endif
                            )
 {
-  if(verify)
-    fprintf(stderr, "%s\n", buf);
-  else {
-    if(num > (int)strlen((char *)global_passwd)) {
-      strcpy(buf, global_passwd);
-      return (int)strlen(buf);
+  DEBUGASSERT(0 == encrypting);
+
+  if(!encrypting) {
+    int klen = curlx_uztosi(strlen((char *)global_passwd));
+    if(num > klen) {
+      memcpy(buf, global_passwd, klen+1);
+      return klen;
     }
   }
   return 0;
@@ -254,7 +256,7 @@ static int ossl_seed(struct SessionHandle *data)
       if(!area)
         return 3; /* out of memory */
 
-      len = (int)strlen(area);
+      len = curlx_uztosi(strlen(area));
       RAND_add(area, len, (len >> 1));
 
       free(area); /* now remove the random junk */
@@ -338,6 +340,8 @@ int cert_stuff(struct connectdata *conn,
       size_t len = strlen(data->set.str[STRING_KEY_PASSWD]);
       if(len < sizeof(global_passwd))
         memcpy(global_passwd, data->set.str[STRING_KEY_PASSWD], len+1);
+      else
+        global_passwd[0] = '\0';
 #else
       /*
        * We set the password in the callback userdata
@@ -1252,7 +1256,7 @@ static CURLcode verifyhost(struct connectdata *conn,
         else /* not a UTF8 name */
           j = ASN1_STRING_to_UTF8(&peer_CN, tmp);
 
-        if(peer_CN && ((int)strlen((char *)peer_CN) != j)) {
+        if(peer_CN && (curlx_uztosi(strlen((char *)peer_CN)) != j)) {
           /* there was a terminating zero before the end of string, this
              cannot match and we return failure! */
           failf(data, "SSL: illegal cert name field");
@@ -1566,7 +1570,10 @@ ossl_connect_step1(struct connectdata *conn,
 #endif
 
 #ifdef SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS
-  ctx_options &= ~SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS;
+  /* unless the user explicitly ask to allow the protocol vulnerability we
+     use the work-around */
+  if(!conn->data->set.ssl_enable_beast)
+    ctx_options &= ~SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS;
 #endif
 
   /* disable SSLv2 in the default case (i.e. allow SSLv3 and TLSv1) */

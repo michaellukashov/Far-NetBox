@@ -16,7 +16,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include "fzafx.h"
+#include "stdafx.h"
 #include "FzApiStructures.h"
 
 t_server::t_server()
@@ -40,7 +40,7 @@ const bool operator == (const t_server &a,const t_server &b)
 		return false;
 	if (a.account != b.account)
 		return false;
-	if (a.pass!=b.pass && a.user!="anonymous")
+	if (a.pass!=b.pass && a.user!=_MPT("anonymous"))
 		return false;
 	if (a.nServerType!=b.nServerType)
 		return false;

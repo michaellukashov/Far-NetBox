@@ -1,11 +1,12 @@
 #pragma once
-#include "stdafx.h"
+#include "nbafx.h"
 #include <time.h>
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
 
 #include "FarPlugin.h"
+#include "SysUtils.h"
 #include "Cryptography.h"
 #include "WinSCPSecurity.h"
 
@@ -28,33 +29,33 @@ public:
         CryptographyFinalize();
     }
 protected:
-    virtual void GetPluginInfoEx(PLUGIN_FLAGS &Flags,
-        nb::TStrings *DiskMenuStrings, nb::TStrings *PluginMenuStrings,
-        nb::TStrings *PluginConfigStrings, nb::TStrings *CommandPrefixes)
+    virtual void __fastcall GetPluginInfoEx(long unsigned &Flags,
+        TStrings *DiskMenuStrings, TStrings *PluginMenuStrings,
+        TStrings *PluginConfigStrings, TStrings *CommandPrefixes)
     {
         DEBUG_PRINTF(L"call");
     }
-    virtual TCustomFarFileSystem *OpenPluginEx(OPENFROM OpenFrom, INT_PTR Item)
+    virtual TCustomFarFileSystem * __fastcall OpenPluginEx(OPENFROM OpenFrom, LONG_PTR Item)
     {
         DEBUG_PRINTF(L"call");
         return NULL;
     }
-    virtual bool ConfigureEx(const struct ConfigureInfo *Info)
+    virtual bool __fastcall ConfigureEx(const struct ConfigureInfo *Info)
     {
         DEBUG_PRINTF(L"call");
         return false;
     }
-    virtual int ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info)
+    virtual int __fastcall ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info)
     {
         DEBUG_PRINTF(L"call");
         return -1;
     }
-    virtual int ProcessEditorInputEx(const INPUT_RECORD *Rec)
+    virtual int __fastcall ProcessEditorInputEx(const INPUT_RECORD *Rec)
     {
         DEBUG_PRINTF(L"call");
         return -1;
     }
-    virtual bool ImportSessions()
+    virtual bool __fastcall ImportSessions()
     {
         return false;
     }

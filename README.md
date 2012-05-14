@@ -2,7 +2,7 @@ NetBox: SFTP/FTP/FTPS/SCP/WebDAV client for Far Manager 2.0/3.0
 ==============
 
     Based on WinSCP: SFTP/FTP/SCP client for FAR version 1.6.2 Copyright (c) 2000-2009 Martin Prikryl  
-    Based on WinSCP version 4.3.7 Copyright (c) 2000-2012 Martin Prikryl  
+    Based on WinSCP version 5.0.6 Copyright (c) 2000-2012 Martin Prikryl  
     SSH and SCP code based on PuTTY 0.62 Copyright (c) 1997-2011 Simon Tatham  
     FTP code based on FileZilla 2.2.32 Copyright (c) 2001-2007 Tim Kosse  
 
@@ -59,14 +59,6 @@ Create 'boost/stage' directory:
 
     mkdir libs/boost/stage
 
-Compile 'boost.date_time' library:
-
-    cd libs/boost/libs/date_time/build
-
-    call bjam variant=debug link=static threading=multi runtime-debugging=on runtime-link=static stage -j3  
-    cp -R libs/boost/libs/date_time/build/stage/* libs/boost/stage/
-    call bjam architecture=x86 address-model=64 variant=debug link=static threading=multi runtime-debugging=on runtime-link=static stage -j3  
-    cp -R libs/boost/libs/date_time/build/stage/* libs/boost/stage/x64
 
 Compile 'boost.signals' library:
 

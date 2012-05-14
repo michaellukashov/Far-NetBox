@@ -61,12 +61,16 @@ If you use this class in commercial applications, please send a short message
 to tim.kosse@gmx.de
 */
 
-#include "fzafx.h"
+#include "stdafx.h"
 #include "AsyncSocketExLayer.h"
 
 #include "AsyncSocketEx.h"
 
 #ifdef _DEBUG
+#ifndef _MSC_VER
+	#undef THIS_FILE
+	static char THIS_FILE[]=__FILE__;
+#endif
 	#ifdef DEBUG_NEW
 		#define new DEBUG_NEW
 	#endif

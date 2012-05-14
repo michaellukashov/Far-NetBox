@@ -1,5 +1,9 @@
 //---------------------------------------------------------------------------
-#include "stdafx.h"
+#ifndef _MSC_VER
+#include <vcl.h>
+#pragma hdrstop
+#endif
+#include "nbafx.h"
 
 #include "Common.h"
 #include "CoreMain.h"
@@ -7,77 +11,81 @@
 #include "WinSCPPlugin.h"
 #include "Queue.h"
 //---------------------------------------------------------------------------
-
-TConfiguration *CreateConfiguration()
+#ifndef _MSC_VER
+#pragma package(smart_init)
+#endif
+//---------------------------------------------------------------------------
+TConfiguration * __fastcall CreateConfiguration()
 {
-    return new TFarConfiguration(FarPlugin);
+  return new TFarConfiguration(FarPlugin);
 }
 //---------------------------------------------------------------------------
-void ShowExtendedException(const std::exception *E)
+void __fastcall ShowExtendedException(Exception * E)
 {
-    assert(FarPlugin != NULL);
-    TWinSCPPlugin *WinSCPPlugin = dynamic_cast<TWinSCPPlugin *>(FarPlugin);
-    assert(WinSCPPlugin != NULL);
-    WinSCPPlugin->ShowExtendedException(E);
-}
-std::wstring AppNameString()
-{
-    return L"NetBox";
-}
-
-//---------------------------------------------------------------------------
-std::wstring GetRegistryKey()
-{
-    // return L"Software\\Michael Lukashov\\FarNetBox";
-    return L"Software\\Far2\\Plugins\\NetBox 2";
+  assert(FarPlugin != NULL);
+  TWinSCPPlugin * WinSCPPlugin = dynamic_cast<TWinSCPPlugin *>(FarPlugin);
+  assert(WinSCPPlugin != NULL);
+  WinSCPPlugin->ShowExtendedException(E);
 }
 //---------------------------------------------------------------------------
-void Busy(bool /*Start*/)
+UnicodeString __fastcall AppNameString()
 {
-    // nothing
-}
-//---------------------------------------------------------------------------
-std::wstring SshVersionString()
-{
-    return FORMAT(L"NetBox-FAR-release-%s", Configuration->GetVersion().c_str());
+  return L"NetBox";
 }
 
 //---------------------------------------------------------------------------
-DWORD WINAPI threadstartroutine(void *Parameter)
+UnicodeString __fastcall GetRegistryKey()
 {
-    TSimpleThread *SimpleThread = static_cast<TSimpleThread *>(Parameter);
-    return TSimpleThread::ThreadProc(SimpleThread);
+  // return L"Software\\Michael Lukashov\\FarNetBox";
+  return L"Software\\Far2\\Plugins\\NetBox 2";
 }
 //---------------------------------------------------------------------------
-size_t BeginThread(void *SecurityAttributes, DWORD StackSize,
-    void *Parameter, DWORD CreationFlags,
-    DWORD &ThreadId)
+void __fastcall Busy(bool /*Start*/)
 {
-    HANDLE Result = ::CreateThread(static_cast<LPSECURITY_ATTRIBUTES>(SecurityAttributes),
-        static_cast<size_t>(StackSize),
-        static_cast<LPTHREAD_START_ROUTINE>(&threadstartroutine),
-        Parameter,
-        CreationFlags, &ThreadId);
-    // DEBUG_PRINTF(L"Result = %d, ThreadId = %d", Result, ThreadId);
-    return reinterpret_cast<size_t>(Result);
+  // nothing
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall SshVersionString()
+{
+  return FORMAT(L"NetBox-FAR-release-%s", Configuration->GetVersion().c_str());
+}
+
+//---------------------------------------------------------------------------
+DWORD WINAPI threadstartroutine(void * Parameter)
+{
+  TSimpleThread * SimpleThread = static_cast<TSimpleThread *>(Parameter);
+  return TSimpleThread::ThreadProc(SimpleThread);
+}
+//---------------------------------------------------------------------------
+size_t BeginThread(void * SecurityAttributes, DWORD StackSize,
+  void * Parameter, DWORD CreationFlags,
+  DWORD & ThreadId)
+{
+  HANDLE Result = ::CreateThread(static_cast<LPSECURITY_ATTRIBUTES>(SecurityAttributes),
+    static_cast<size_t>(StackSize),
+    static_cast<LPTHREAD_START_ROUTINE>(&threadstartroutine),
+    Parameter,
+    CreationFlags, &ThreadId);
+  // DEBUG_PRINTF(L"Result = %d, ThreadId = %d", Result, ThreadId);
+  return reinterpret_cast<size_t>(Result);
 }
 
 void EndThread(int ExitCode)
 {
-    ::ExitThread(ExitCode);
+  ::ExitThread(ExitCode);
 }
 
 //---------------------------------------------------------------------------
-size_t StartThread(void *SecurityAttributes, unsigned StackSize,
-    void *Parameter, unsigned CreationFlags,
-    DWORD &ThreadId)
+int __fastcall StartThread(void * SecurityAttributes, unsigned int StackSize,
+  void * Parameter, unsigned int CreationFlags,
+  DWORD & ThreadId)
 {
-    return BeginThread(SecurityAttributes, StackSize, Parameter,
-        CreationFlags, ThreadId);
+  return BeginThread(SecurityAttributes, StackSize, Parameter,
+    CreationFlags, ThreadId);
 }
 //---------------------------------------------------------------------------
-void CopyToClipboard(const std::wstring Text)
+void __fastcall CopyToClipboard(const UnicodeString Text)
 {
-    assert(FarPlugin != NULL);
-    FarPlugin->FarCopyToClipboard(Text);
+  assert(FarPlugin != NULL);
+  FarPlugin->FarCopyToClipboard(Text);
 }

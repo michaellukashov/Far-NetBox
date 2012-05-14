@@ -1,4 +1,8 @@
 //---------------------------------------------------------------------------
+#ifndef _MSC_VER
+#include <vcl.h>
+#pragma hdrstop
+#endif
 #include "stdafx.h"
 
 #include "CoreMain.h"
@@ -12,105 +16,108 @@
 #include "FileZillaIntf.h"
 #endif
 //---------------------------------------------------------------------------
-TConfiguration *Configuration = NULL;
-TStoredSessionList *StoredSessions = NULL;
+#ifndef _MSC_VER
+#pragma package(smart_init)
+#endif
+//---------------------------------------------------------------------------
+TConfiguration * Configuration = NULL;
+TStoredSessionList * StoredSessions = NULL;
 //---------------------------------------------------------------------------
 TQueryButtonAlias::TQueryButtonAlias() :
-    Button(0)
+  Button(0)
 {
-    OnClick.disconnect_all_slots();
+  OnClick.disconnect_all_slots();
 }
 //---------------------------------------------------------------------------
-TQueryParams::TQueryParams(unsigned int AParams, std::wstring AHelpKeyword)
+TQueryParams::TQueryParams(unsigned int AParams, UnicodeString AHelpKeyword)
 {
-    Params = AParams;
-    Aliases = NULL;
-    AliasesCount = 0;
-    Timer = 0;
-    TimerEvent = NULL;
-    TimerMessage = L"";
-    TimerAnswers = 0;
-    Timeout = 0;
-    TimeoutAnswer = 0;
-    NoBatchAnswers = 0;
-    HelpKeyword = AHelpKeyword;
+  Params = AParams;
+  Aliases = NULL;
+  AliasesCount = 0;
+  Timer = 0;
+  TimerEvent = NULL;
+  TimerMessage = L"";
+  TimerAnswers = 0;
+  Timeout = 0;
+  TimeoutAnswer = 0;
+  NoBatchAnswers = 0;
+  HelpKeyword = AHelpKeyword;
 }
 //---------------------------------------------------------------------------
-bool IsAuthenticationPrompt(TPromptKind Kind)
+bool __fastcall IsAuthenticationPrompt(TPromptKind Kind)
 {
-    return
-        (Kind == pkUserName) || (Kind == pkPassphrase) || (Kind == pkTIS) ||
-        (Kind == pkCryptoCard) || (Kind == pkKeybInteractive) ||
-        (Kind == pkPassword) || (Kind == pkNewPassword);
+  return
+    (Kind == pkUserName) || (Kind == pkPassphrase) || (Kind == pkTIS) ||
+    (Kind == pkCryptoCard) || (Kind == pkKeybInteractive) ||
+    (Kind == pkPassword) || (Kind == pkNewPassword);
 }
 //---------------------------------------------------------------------------
 void CoreInitialize()
 {
-    // Randomize();
-    srand(static_cast<unsigned int>(time(NULL)));
-    CryptographyInitialize();
+  Randomize();
+  CryptographyInitialize();
 
-    // configuration needs to be created and loaded before putty is initialized,
-    // so that random seed path is known
-    Configuration = CreateConfiguration();
+  // configuration needs to be created and loaded before putty is initialized,
+  // so that random seed path is known
+  Configuration = CreateConfiguration();
 
-    try
-    {
-        Configuration->Load();
-    }
-    catch (const std::exception &E)
-    {
-        ShowExtendedException(&E);
-    }
+  try
+  {
+    Configuration->Load();
+  }
+  catch (Exception & E)
+  {
+    ShowExtendedException(&E);
+  }
 
-    PuttyInitialize();
-#ifndef NO_FILEZILLA
-    TFileZillaIntf::Initialize();
-#endif
+  PuttyInitialize();
+  #ifndef NO_FILEZILLA
+  TFileZillaIntf::Initialize();
+  #endif
 
-    StoredSessions = new TStoredSessionList();
+  StoredSessions = new TStoredSessionList();
 
-    try
-    {
-        StoredSessions->Load();
-    }
-    catch (const std::exception &E)
-    {
-        ShowExtendedException(&E);
-    }
+  try
+  {
+    StoredSessions->Load();
+  }
+  catch (Exception & E)
+  {
+    ShowExtendedException(&E);
+  }
 }
 //---------------------------------------------------------------------------
 void CoreFinalize()
 {
-    try
-    {
-        // only modified, implicit
-        Configuration->Save(false, false);
-    }
-    catch (const std::exception &E)
-    {
-        ShowExtendedException(&E);
-    }
+  try
+  {
+    // only modified, implicit
+    Configuration->Save(false, false);
+  }
+  catch(Exception & E)
+  {
+    ShowExtendedException(&E);
+  }
 
-#ifndef NO_FILEZILLA
-    TFileZillaIntf::Finalize();
-#endif
-    PuttyFinalize();
+  #ifndef NO_FILEZILLA
+  TFileZillaIntf::Finalize();
+  #endif
+  PuttyFinalize();
 
-    delete StoredSessions;
-    StoredSessions = NULL;
-    delete Configuration;
-    Configuration = NULL;
+  delete StoredSessions;
+  StoredSessions = NULL;
+  delete Configuration;
+  Configuration = NULL;
 
-    CryptographyFinalize();
+  CryptographyFinalize();
 }
 //---------------------------------------------------------------------------
-void CoreSetResourceModule(void *ResourceHandle)
+void CoreSetResourceModule(void * ResourceHandle)
 {
-#ifndef NO_FILEZILLA
-    TFileZillaIntf::SetResourceModule(ResourceHandle);
-#else
-    USEDPARAM(ResourceHandle);
-#endif
+  #ifndef NO_FILEZILLA
+  TFileZillaIntf::SetResourceModule(ResourceHandle);
+  #else
+  USEDPARAM(ResourceHandle);
+  #endif
 }
 //---------------------------------------------------------------------------

@@ -101,7 +101,7 @@ static void logfopen_callback(void *handle, int mode)
     if (ctx->state == L_OPEN) {
 	/* Write header line into log file. */
 	tm = ltime();
-	strftime2(buf, 24, "%Y.%m.%d %H:%M:%S", &tm);
+	strftime(buf, 24, "%Y.%m.%d %H:%M:%S", &tm);
 	logprintf(ctx, "=~=~=~=~=~=~=~=~=~=~=~= PuTTY log %s"
 		  " =~=~=~=~=~=~=~=~=~=~=~=\r\n", buf);
     }
@@ -393,16 +393,16 @@ static void xlatlognam(Filename *dest, Filename src,
 	    size = 0;
 	    if (*s) switch (c = *s++, tolower((unsigned char)c)) {
 	      case 'y':
-		size = strftime2(buf, sizeof(buf), "%Y", tm);
+		size = strftime(buf, sizeof(buf), "%Y", tm);
 		break;
 	      case 'm':
-		size = strftime2(buf, sizeof(buf), "%m", tm);
+		size = strftime(buf, sizeof(buf), "%m", tm);
 		break;
 	      case 'd':
-		size = strftime2(buf, sizeof(buf), "%d", tm);
+		size = strftime(buf, sizeof(buf), "%d", tm);
 		break;
 	      case 't':
-		size = strftime2(buf, sizeof(buf), "%H%M%S", tm);
+		size = strftime(buf, sizeof(buf), "%H%M%S", tm);
 		break;
 	      case 'h':
 		bufp = hostname;

@@ -46,13 +46,13 @@
    to make the BANNER define (used by src/session.c) be a valid SSH
    banner. Release versions have no appended strings and may of course not
    have dashes either. */
-#define LIBSSH2_VERSION "1.4.0"
+#define LIBSSH2_VERSION "1.4.1"
 
 /* The numeric version number is also available "in parts" by using these
    defines: */
 #define LIBSSH2_VERSION_MAJOR 1
 #define LIBSSH2_VERSION_MINOR 4
-#define LIBSSH2_VERSION_PATCH 0
+#define LIBSSH2_VERSION_PATCH 1
 
 /* This is the numeric version of the libssh2 version number, meant for easier
    parsing and comparions by programs. The LIBSSH2_VERSION_NUM define will
@@ -69,7 +69,7 @@
    and it is always a greater number in a more recent release. It makes
    comparisons with greater than and less than work.
 */
-#define LIBSSH2_VERSION_NUM 0x010400
+#define LIBSSH2_VERSION_NUM 0x010401
 
 /*
  * This is the date and time when the full source package was created. The
@@ -80,7 +80,7 @@
  *
  * "Mon Feb 12 11:35:33 UTC 2007"
  */
-#define LIBSSH2_TIMESTAMP "Tue Jan 31 22:25:28 UTC 2012"
+#define LIBSSH2_TIMESTAMP "Wed Apr  4 20:46:14 UTC 2012"
 
 #ifndef RC_INVOKED
 
@@ -135,9 +135,10 @@ typedef long long libssh2_int64_t;
 
 #ifdef WIN32
 typedef SOCKET libssh2_socket_t;
+#define LIBSSH2_INVALID_SOCKET INVALID_SOCKET
 #else /* !WIN32 */
 typedef int libssh2_socket_t;
-#define INVALID_SOCKET -1
+#define LIBSSH2_INVALID_SOCKET -1
 #endif /* WIN32 */
 
 /* Part of every banner, user specified or not */
@@ -466,6 +467,8 @@ LIBSSH2_API void **libssh2_session_abstract(LIBSSH2_SESSION *session);
 
 LIBSSH2_API void *libssh2_session_callback_set(LIBSSH2_SESSION *session,
                                                int cbtype, void *callback);
+LIBSSH2_API int libssh2_session_banner_set(LIBSSH2_SESSION *session,
+                                           const char *banner);
 LIBSSH2_API int libssh2_banner_set(LIBSSH2_SESSION *session,
                                    const char *banner);
 

@@ -1,222 +1,210 @@
+//---------------------------------------------------------------------------
+#ifndef _MSC_VER
+#include <vcl.h>
+#pragma hdrstop
+#else
 #include "stdafx.h"
+#endif
 
+#include "Common.h"
 #include "Exceptions.h"
 #include "Common.h"
 #include "TextsCore.h"
 #include "Terminal.h"
+#include "SysUtils.h"
 
 //---------------------------------------------------------------------------
-bool ExceptionMessage(const std::exception *E, std::wstring &Message)
+#ifndef _MSC_VER
+#pragma package(smart_init)
+#endif
+//---------------------------------------------------------------------------
+bool __fastcall ExceptionMessage(const Exception * E, UnicodeString & Message)
 {
-    bool Result = true;
-    if (dynamic_cast<const nb::EAbort *>(E) != NULL)
+  bool Result = true;
+  if (dynamic_cast<const EAbort *>(E) != NULL)
+  {
+    Result = false;
+  }
+  else if (dynamic_cast<const EAccessViolation*>(E) != NULL)
+  {
+    Message = LoadStr(ACCESS_VIOLATION_ERROR);
+  }
+  else if (E->GetMessage().IsEmpty())
+  {
+    Result = false;
+  }
+  else
+  {
+    Message = E->GetMessage();
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+TStrings * ExceptionToMoreMessages(Exception * E)
+{
+  TStrings * Result = NULL;
+  UnicodeString Message;
+  if (ExceptionMessage(E, Message))
+  {
+    Result = new TStringList();
+    Result->Add(Message);
+    ExtException * ExtE = dynamic_cast<ExtException *>(E);
+    if (ExtE != NULL)
     {
-        Result = false;
+      Result->AddStrings(ExtE->GetMoreMessages());
     }
-    else if (dynamic_cast<const nb::EAccessViolation *>(E) != NULL)
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+/* __fastcall */ ExtException::ExtException(Exception * E) :
+  Exception(L""),
+  FMoreMessages(NULL),
+  FHelpKeyword()
+{
+  AddMoreMessages(E);
+}
+//---------------------------------------------------------------------------
+/* __fastcall */ ExtException::ExtException(Exception* E, UnicodeString Msg):
+  Exception(Msg),
+  FMoreMessages(NULL),
+  FHelpKeyword()
+{
+  AddMoreMessages(E);
+}
+//---------------------------------------------------------------------------
+/* __fastcall */ ExtException::ExtException(UnicodeString Msg, Exception* E) :
+  Exception(L""),
+  FMoreMessages(NULL),
+  FHelpKeyword()
+{
+  // "copy exception"
+  AddMoreMessages(E);
+  // and append message to the end to more messages
+  if (!Msg.IsEmpty())
+  {
+    if (FMessage.IsEmpty())
     {
-        Message = LoadStr(ACCESS_VIOLATION_ERROR);
-    }
-    else if (std::string(E->what()).empty())
-    {
-        Result = false;
+      SetMessage(Msg);
     }
     else
     {
-        Message = nb::MB2W(E->what());
+      if (FMoreMessages == NULL)
+      {
+        FMoreMessages = new TStringList();
+      }
+      FMoreMessages->Append(GetMessage());
     }
-    return Result;
+  }
 }
 //---------------------------------------------------------------------------
-nb::TStrings *ExceptionToMoreMessages(const std::exception *E)
+/* __fastcall */ ExtException::ExtException(UnicodeString Msg, UnicodeString MoreMessages,
+    UnicodeString HelpKeyword) :
+  Exception(Msg),
+  FMoreMessages(NULL),
+  FHelpKeyword(HelpKeyword)
 {
-    nb::TStrings *Result = NULL;
-    std::wstring Message;
-    if (ExceptionMessage(E, Message))
+  if (!MoreMessages.IsEmpty())
+  {
+    FMoreMessages = new TStringList();
+    FMoreMessages->SetText(MoreMessages);
+  }
+}
+//---------------------------------------------------------------------------
+/* __fastcall */ ExtException::ExtException(UnicodeString Msg, TStrings* MoreMessages,
+  bool Own, UnicodeString HelpKeyword) :
+  Exception(Msg),
+  FMoreMessages(NULL),
+  FHelpKeyword(HelpKeyword)
+{
+  if (Own)
+  {
+    FMoreMessages = MoreMessages;
+  }
+  else
+  {
+    FMoreMessages = new TStringList();
+    FMoreMessages->Assign(MoreMessages);
+  }
+}
+//---------------------------------------------------------------------------
+void __fastcall ExtException::AddMoreMessages(const Exception * E)
+{
+  if (E != NULL)
+  {
+    if (FMoreMessages == NULL)
     {
-        Result = new nb::TStringList();
-        Result->Add(Message);
-        const ExtException *ExtE = dynamic_cast<const ExtException *>(E);
-        if (ExtE != NULL)
-        {
-            Result->AddStrings(ExtE->GetMoreMessages());
-        }
+      FMoreMessages = new TStringList();
     }
-    return Result;
-}
-//---------------------------------------------------------------------------
-ExtException::ExtException(const std::exception *E) :
-    parent(""),
-    FMoreMessages(NULL)
-{
-    AddMoreMessages(E);
-    DEBUG_PRINTF(L"FMessage = %s", FMessage.c_str());
-}
-//---------------------------------------------------------------------------
-ExtException::ExtException(const std::wstring Msg) :
-    parent(nb::W2MB(Msg.c_str()).c_str()),
-    FMoreMessages(NULL)
-{
-    // append message to the end to more messages
-    // DEBUG_PRINTF(L"begin");
-    if (!Msg.empty())
+
+    const ExtException * ExtE = dynamic_cast<const ExtException *>(E);
+    if (ExtE != NULL)
     {
-        if (GetMessage().empty())
-        {
-            SetMessage(Msg);
-        }
-        else
-        {
-            if (FMoreMessages == NULL)
-            {
-                FMoreMessages = new nb::TStringList();
-            }
-            FMoreMessages->Append(Msg);
-        }
-    }
-    DEBUG_PRINTF(L"FMessage = %s", FMessage.c_str());
-}
+      if (!ExtE->GetHelpKeyword().IsEmpty())
+      {
+        // we have to yet decide what to do now
+        assert(GetHelpKeyword().IsEmpty());
 
-//---------------------------------------------------------------------------
-ExtException::ExtException(const std::wstring Msg, const std::exception *E) :
-    parent(nb::W2MB(Msg.c_str()).c_str()),
-    FMoreMessages(NULL)
-{
-    DEBUG_PRINTF(L"Msg = %s, E = %x", Msg.c_str(), E);
-    // "copy std::exception"
-    AddMoreMessages(E);
-    // and append message to the end to more messages
-    if (!Msg.empty())
+        FHelpKeyword = ExtE->GetHelpKeyword();
+      }
+
+      if (ExtE->GetMoreMessages() != NULL)
+      {
+        FMoreMessages->Assign(ExtE->GetMoreMessages());
+      }
+    }
+
+    UnicodeString Msg;
+    ExceptionMessage(E, Msg);
+
+    // new exception does not have own message, this is in fact duplication of
+    // the exception data, but the exception class may being changed
+    if (GetMessage().IsEmpty())
     {
-        if (GetMessage().empty())
-        {
-            SetMessage(Msg);
-        }
-        else
-        {
-            if (FMoreMessages == NULL)
-            {
-                FMoreMessages = new nb::TStringList();
-            }
-            FMoreMessages->Append(GetMessage());
-        }
+      SetMessage(Msg);
     }
-    DEBUG_PRINTF(L"FMessage = %s", FMessage.c_str());
-}
-//---------------------------------------------------------------------------
-ExtException::ExtException(const std::wstring Msg, nb::TStrings *MoreMessages,
-                           bool Own) :
-    parent(nb::W2MB(Msg.c_str()).c_str()),
-    FMoreMessages(NULL)
-{
-    if (Own)
+    else if (!Msg.IsEmpty())
     {
-        FMoreMessages = MoreMessages;
+      FMoreMessages->Insert(0, Msg);
     }
-    else
+
+    if (FMoreMessages->GetCount() == 0)
     {
-        FMoreMessages = new nb::TStringList();
-        FMoreMessages->Assign(MoreMessages);
+      delete FMoreMessages;
+      FMoreMessages = NULL;
     }
-    DEBUG_PRINTF(L"FMessage = %s", FMessage.c_str());
+  }
 }
 //---------------------------------------------------------------------------
-ExtException::ExtException(const ExtException &E) throw() :
-    parent(E.what()),
-    FMoreMessages(NULL)
+/* __fastcall */ ExtException::~ExtException()
 {
-    AddMoreMessages(&E);
-}
-
-ExtException &ExtException::operator =(const ExtException &E) throw()
-{
-    AddMoreMessages(&E);
-    return *this;
-}
-
-//---------------------------------------------------------------------------
-void ExtException::AddMoreMessages(const std::exception *E)
-{
-    if (E != NULL)
-    {
-        if (FMoreMessages == NULL)
-        {
-            FMoreMessages = new nb::TStringList();
-        }
-
-        const ExtException *ExtE = dynamic_cast<const ExtException *>(E);
-        if (ExtE != NULL)
-        {
-            if (!ExtE->GetHelpKeyword().empty())
-            {
-                // we have to yet decide what to do now
-                assert(GetHelpKeyword().empty());
-
-                FHelpKeyword = ExtE->GetHelpKeyword();
-            }
-
-            if (ExtE->GetMoreMessages() != NULL)
-            {
-                FMoreMessages->Assign(ExtE->GetMoreMessages());
-            }
-        }
-
-        std::wstring Msg;
-        ExceptionMessage(E, Msg);
-
-        // new std::exception does not have own message, this is in fact duplication of
-        // the std::exception data, but the std::exception class may being changed
-        if (GetMessage().empty())
-        {
-            SetMessage(Msg);
-        }
-        else if (!Msg.empty())
-        {
-            FMoreMessages->Insert(0, Msg);
-        }
-
-        if (FMoreMessages->GetCount() == 0)
-        {
-            delete FMoreMessages;
-            FMoreMessages = NULL;
-        }
-    }
+  delete FMoreMessages;
+  FMoreMessages = NULL;
 }
 //---------------------------------------------------------------------------
-ExtException::~ExtException()
+UnicodeString __fastcall LastSysErrorMessage()
 {
-    DEBUG_PRINTF(L"~ExtException");
-    delete FMoreMessages;
-    FMoreMessages = NULL;
+  int LastError = GetLastError();
+  UnicodeString Result;
+  if (LastError != 0)
+  {
+    Result = FORMAT(L"System Error.  Code: %d.\r\n%s", LastError, SysErrorMessage(LastError).c_str());
+  }
+  return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring LastSysErrorMessage()
-{
-    int LastError = GetLastError();
-    std::wstring Result;
-    if (LastError != 0)
-    {
-        Result = FORMAT(L"System Error.  Code: %d.\r\n%s", LastError, SysErrorMessage(LastError).c_str());
-    }
-    return Result;
-}
-//---------------------------------------------------------------------------
-/*
-EOSExtException::EOSExtException(const std::wstring Msg) :
-  parent(Msg, LastSysErrorMessage())
+/* __fastcall */ EOSExtException::EOSExtException(UnicodeString Msg) :
+  ExtException(Msg, LastSysErrorMessage())
 {
 }
-*/
-
 //---------------------------------------------------------------------------
-EFatal::EFatal(const std::wstring Msg, const std::exception *E) :
-    parent(Msg, E),
-    FReopenQueried(false)
+/* __fastcall */ EFatal::EFatal(Exception * E, UnicodeString Msg) :
+  ExtException(Msg, E),
+  FReopenQueried(false)
 {
-    const EFatal *F = dynamic_cast<const EFatal *>(E);
-    if (F != NULL)
-    {
-        FReopenQueried = F->FReopenQueried;
-    }
+  EFatal * F = dynamic_cast<EFatal *>(E);
+  if (F != NULL)
+  {
+    FReopenQueried = F->FReopenQueried;
+  }
 }
-//---------------------------------------------------------------------------
