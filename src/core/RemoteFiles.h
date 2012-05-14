@@ -54,7 +54,7 @@ public:
   UnicodeString __fastcall GetLogText() const;
   UnicodeString __fastcall GetName() const { return FName; }
   void __fastcall SetName(const UnicodeString value) { FName = value; }
-  size_t GetID() const { return FID; }
+  unsigned int GetID() const { return FID; }
   bool __fastcall GetIDValid() const { return FIDValid; }
 #endif
 
