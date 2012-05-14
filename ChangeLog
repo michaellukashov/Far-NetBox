@@ -1,6 +1,6 @@
 NetBox 2.0.19 23.04.2012
 ---------------------
-  * WebDAV: some bugfixes
+  * WebDAV: bugfixes
   * Bugfix: Ask for user password if current password is empty or not accepted
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=645#p94910)
 
