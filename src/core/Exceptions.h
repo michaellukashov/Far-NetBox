@@ -38,13 +38,9 @@ public:
   UnicodeString /* __fastcall */ GetHelpKeyword() const { return FHelpKeyword; }
 #endif
 
-  // inline __fastcall ExtException(const UnicodeString Msg, const TVarRec * Args, const int Args_Size) : Sysutils::Exception(Msg, Args, Args_Size) { }
-  explicit /* __fastcall */ ExtException(const UnicodeString Msg) : Sysutils::Exception(Msg), FMoreMessages(NULL) {}
-  // inline __fastcall ExtException(int Ident, const TVarRec * Args, const int Args_Size)/* overload */ : Sysutils::Exception(Ident, Args, Args_Size) { }
+  explicit /* __fastcall */ ExtException(UnicodeString Msg) : Sysutils::Exception(Msg), FMoreMessages(NULL) {}
   explicit /* __fastcall */ ExtException(int Ident) : Sysutils::Exception(Ident), FMoreMessages(NULL) {}
-  explicit /* __fastcall */ ExtException(const UnicodeString Msg, int AHelpContext) : Sysutils::Exception(Msg, AHelpContext), FMoreMessages(NULL) {}
-  // inline __fastcall ExtException(const UnicodeString Msg, const TVarRec * Args, const int Args_Size, int AHelpContext) : Sysutils::Exception(Msg, Args, Args_Size, AHelpContext) { }
-  inline /* __fastcall */ ExtException(int Ident, int AHelpContext)/* overload */ : Sysutils::Exception(Ident, AHelpContext), FMoreMessages(NULL) {}
+  explicit /* __fastcall */ ExtException(UnicodeString Msg, int AHelpContext) : Sysutils::Exception(Msg, AHelpContext), FMoreMessages(NULL) {}
 
   /* __fastcall */ ExtException(ExtException & E) : Sysutils::Exception(E.GetMessage()), FMoreMessages(NULL)
   { AddMoreMessages(&E); }
@@ -64,14 +60,8 @@ private:
   { \
   public: \
     explicit /* __fastcall */ NAME(Exception* E, UnicodeString Msg) : BASE(E, Msg) {} \
-    explicit /* __fastcall */ NAME(Exception* E, int Ident) : BASE(E, Ident) {} \
     virtual /* __fastcall */ ~NAME(void) { } \
-    /* inline __fastcall NAME(const UnicodeString Msg, const TVarRec * Args, const int Args_Size) : BASE(Msg, Args, Args_Size) { } */ \
-    /* inline __fastcall NAME(int Ident, const TVarRec * Args, const int Args_Size) : BASE(Ident, Args, Args_Size) { } */ \
     explicit /* __fastcall */ NAME(const UnicodeString Msg, int AHelpContext) : BASE(Msg, AHelpContext) { } \
-    /* inline __fastcall NAME(const UnicodeString Msg, const TVarRec * Args, const int Args_Size, int AHelpContext) : BASE(Msg, Args, Args_Size, AHelpContext) { } */ \
-    explicit /* __fastcall */ NAME(int Ident, int AHelpContext) : BASE(Ident, AHelpContext) { } \
-    /* inline __fastcall NAME(PResStringRec ResStringRec, const TVarRec * Args, const int Args_Size, int AHelpContext) : BASE(ResStringRec, Args, Args_Size, AHelpContext) { } */ \
   };
 //---------------------------------------------------------------------------
 DERIVE_EXT_EXCEPTION(ESsh, ExtException);
