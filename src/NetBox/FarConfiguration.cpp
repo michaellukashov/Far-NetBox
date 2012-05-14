@@ -90,7 +90,7 @@ THierarchicalStorage * TFarConfiguration::CreateScpStorage(bool SessionList)
   // if (GetStorage() == stFar3Storage)
   {
     assert(FFarPlugin);
-    return new TFar3Storage(GetRegistryStorageKey(), MainGuid, FFarPlugin->GetStartupInfo()->SettingsControl);
+    return FFarPlugin ? new TFar3Storage(GetRegistryStorageKey(), MainGuid, FFarPlugin->GetStartupInfo()->SettingsControl) : NULL;
   }
   return TGUIConfiguration::CreateScpStorage(SessionList);
 }
