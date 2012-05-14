@@ -11,7 +11,7 @@ class TFar3Storage : public THierarchicalStorage
 {
 public:
   explicit /* __fastcall */ TFar3Storage(const UnicodeString AStorage,
-    const GUID &guid, FARAPISETTINGSCONTROL SettingsControl);
+                                         const GUID & guid, FARAPISETTINGSCONTROL SettingsControl);
   virtual /* __fastcall */ ~TFar3Storage();
 
   bool __fastcall Copy(TFar3Storage * Storage);
@@ -19,7 +19,7 @@ public:
   virtual void __fastcall CloseSubKey();
   virtual bool __fastcall DeleteSubKey(const UnicodeString SubKey);
   virtual bool __fastcall DeleteValue(const UnicodeString Name);
-  virtual void __fastcall GetSubKeyNames(TStrings *Strings);
+  virtual void __fastcall GetSubKeyNames(TStrings * Strings);
   virtual bool __fastcall ValueExists(const UnicodeString Value);
 
   virtual size_t __fastcall BinaryDataSize(const UnicodeString Name);
@@ -40,7 +40,7 @@ public:
   virtual void __fastcall WriteFloat(const UnicodeString Name, double Value);
   virtual void __fastcall WriteBinaryData(const UnicodeString Name, const void * Buffer, int Size);
 
-  virtual void __fastcall GetValueNames(TStrings* Strings);
+  virtual void __fastcall GetValueNames(TStrings * Strings);
   virtual void __fastcall SetAccessMode(TStorageAccessMode value);
   virtual bool __fastcall DoKeyExists(const UnicodeString SubKey, bool ForceAnsi);
   virtual bool __fastcall DoOpenSubKey(const UnicodeString MungedSubKey, bool CanCreate);
