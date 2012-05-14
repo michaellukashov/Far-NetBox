@@ -48,14 +48,15 @@ void __fastcall TFar3Storage::SetAccessMode(TStorageAccessMode value)
 int __fastcall TFar3Storage::OpenSubKeyInternal(int Root, const UnicodeString SubKey, bool CanCreate)
 {
   int root = 0;
+  UnicodeString UnmungedSubKey = PuttyUnMungeStr(SubKey);
   if (CanCreate)
   {
     // DEBUG_PRINTF(L"SubKey = %s", SubKey.c_str());
-    root = FPluginSettings.CreateSubKey(Root, SubKey.c_str());
+    root = FPluginSettings.CreateSubKey(Root, UnmungedSubKey.c_str());
   }
   else
   {
-    root = FPluginSettings.OpenSubKey(Root, SubKey.c_str());
+    root = FPluginSettings.OpenSubKey(Root, UnmungedSubKey.c_str());
   }
   return root;
 }
