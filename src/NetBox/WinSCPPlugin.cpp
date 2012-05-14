@@ -58,8 +58,8 @@ TMessageParams::TMessageParams()
 {
   if (FInitialized)
   {
-    FarConfiguration->SetPlugin(NULL);
     CoreFinalize();
+    FarConfiguration->SetPlugin(NULL);
   }
 }
 //---------------------------------------------------------------------------
