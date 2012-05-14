@@ -2,136 +2,234 @@
 #ifndef HierarchicalStorageH
 #define HierarchicalStorageH
 
+#ifndef _MSC_VER
+#include <registry.hpp>
+#else
 #include "Classes.h"
+
+#include <boost/noncopyable.hpp>
+#endif
 //---------------------------------------------------------------------------
-class nb::TRegistry;
-//---------------------------------------------------------------------------
-enum TStorage { stRegistry, stXmlFile, stFar3Storage };
+enum TStorage { stDetect, stRegistry, stIniFile, stNul, stXmlFile, stFar3Storage };
 enum TStorageAccessMode { smRead, smReadWrite };
 //---------------------------------------------------------------------------
-class THierarchicalStorage
+class THierarchicalStorage : private boost::noncopyable
 {
 public:
-    explicit THierarchicalStorage(const std::wstring AStorage);
-    virtual ~THierarchicalStorage();
+  explicit /* __fastcall */ THierarchicalStorage(const UnicodeString AStorage);
+  virtual void __fastcall Init() {}
+  virtual /* __fastcall */ ~THierarchicalStorage();
+  bool __fastcall OpenRootKey(bool CanCreate);
+  bool __fastcall OpenSubKey(UnicodeString SubKey, bool CanCreate, bool Path = false);
+  virtual void __fastcall CloseSubKey();
+  virtual bool __fastcall DeleteSubKey(const UnicodeString SubKey) = 0;
+  virtual void __fastcall GetSubKeyNames(Classes::TStrings* Strings) = 0;
+  virtual void __fastcall GetValueNames(Classes::TStrings* Strings) = 0;
+  bool __fastcall HasSubKeys();
+  bool __fastcall HasSubKey(const UnicodeString SubKey);
+  bool __fastcall KeyExists(const UnicodeString SubKey);
+  virtual bool __fastcall ValueExists(const UnicodeString Value) = 0;
+  virtual void __fastcall RecursiveDeleteSubKey(const UnicodeString Key);
+  virtual void __fastcall ClearSubKeys();
+  virtual void __fastcall ReadValues(Classes::TStrings* Strings, bool MaintainKeys = false);
+  virtual void __fastcall WriteValues(Classes::TStrings* Strings, bool MaintainKeys = false);
+  virtual void __fastcall ClearValues();
+  virtual bool __fastcall DeleteValue(const UnicodeString Name) = 0;
 
-    virtual void Init() {}
-    bool OpenRootKey(bool CanCreate);
-    virtual bool OpenSubKey(const std::wstring SubKey, bool CanCreate, bool Path = false);
-    virtual void CloseSubKey();
-    virtual bool DeleteSubKey(const std::wstring SubKey) = 0;
-    virtual void GetSubKeyNames(nb::TStrings *Strings) = 0;
-    virtual void GetValueNames(nb::TStrings *Strings) = 0;
-    bool HasSubKeys();
-    bool HasSubKey(const std::wstring SubKey);
-    virtual bool KeyExists(const std::wstring SubKey) = 0;
-    virtual bool ValueExists(const std::wstring Value) = 0;
-    virtual void RecursiveDeleteSubKey(const std::wstring Key);
-    virtual void ClearSubKeys();
-    virtual void ReadValues(nb::TStrings *Strings, bool MaintainKeys = false);
-    virtual void WriteValues(nb::TStrings *Strings, bool MaintainKeys = false);
-    virtual void ClearValues();
-    virtual bool DeleteValue(const std::wstring Name) = 0;
+  virtual size_t __fastcall BinaryDataSize(const UnicodeString Name) = 0;
 
-    virtual int BinaryDataSize(const std::wstring Name) = 0;
+  virtual bool __fastcall ReadBool(const UnicodeString Name, bool Default) = 0;
+  virtual int __fastcall ReadInteger(const UnicodeString Name, int Default) = 0;
+  virtual __int64 __fastcall ReadInt64(const UnicodeString Name, __int64 Default) = 0;
+  virtual TDateTime __fastcall ReadDateTime(const UnicodeString Name, TDateTime Default) = 0;
+  virtual double __fastcall ReadFloat(const UnicodeString Name, double Default) = 0;
+  virtual UnicodeString __fastcall ReadStringRaw(const UnicodeString Name, const UnicodeString Default) = 0;
+  virtual size_t __fastcall ReadBinaryData(const UnicodeString Name, void * Buffer, size_t Size) = 0;
 
-    virtual bool Readbool(const std::wstring Name, bool Default) = 0;
-    virtual int Readint(const std::wstring Name, int Default) = 0;
-    virtual __int64 ReadInt64(const std::wstring Name, __int64 Default) = 0;
-    virtual nb::TDateTime ReadDateTime(const std::wstring Name, nb::TDateTime Default) = 0;
-    virtual double ReadFloat(const std::wstring Name, double Default) = 0;
-    virtual std::wstring ReadStringRaw(const std::wstring Name, const std::wstring Default) = 0;
-    virtual size_t ReadBinaryData(const std::wstring Name, void *Buffer, size_t Size) = 0;
+  virtual UnicodeString __fastcall ReadString(UnicodeString Name, UnicodeString Default);
+  RawByteString __fastcall ReadBinaryData(const UnicodeString Name);
+  RawByteString __fastcall ReadStringAsBinaryData(const UnicodeString Name, const RawByteString Default);
 
-    virtual std::wstring ReadString(const std::wstring Name, const std::wstring Default);
-    std::wstring ReadBinaryData(const std::wstring Name);
+  virtual void __fastcall WriteBool(const UnicodeString Name, bool Value) = 0;
+  virtual void __fastcall WriteStringRaw(const UnicodeString Name, const UnicodeString Value) = 0;
+  virtual void __fastcall WriteInteger(const UnicodeString Name, int Value) = 0;
+  virtual void __fastcall WriteInt64(UnicodeString Name, __int64 Value) = 0;
+  virtual void __fastcall WriteDateTime(const UnicodeString Name, TDateTime Value) = 0;
+  virtual void __fastcall WriteFloat(const UnicodeString Name, double Value) = 0;
+  virtual void __fastcall WriteBinaryData(const UnicodeString Name, const void * Buffer, int Size) = 0;
 
-    virtual void Writebool(const std::wstring Name, bool Value) = 0;
-    virtual void WriteStringRaw(const std::wstring Name, const std::wstring Value) = 0;
-    virtual void Writeint(const std::wstring Name, int Value) = 0;
-    virtual void WriteInt64(const std::wstring Name, __int64 Value) = 0;
-    virtual void WriteDateTime(const std::wstring Name, nb::TDateTime Value) = 0;
-    virtual void WriteFloat(const std::wstring Name, double Value) = 0;
-    virtual void WriteBinaryData(const std::wstring Name, const void *Buffer, size_t Size) = 0;
+  virtual void __fastcall WriteString(const UnicodeString Name, const UnicodeString Value);
+  void __fastcall WriteBinaryData(const UnicodeString Name, const RawByteString Value);
+  void __fastcall WriteBinaryDataAsString(const UnicodeString Name, const RawByteString Value);
 
-    virtual void WriteString(const std::wstring Name, const std::wstring Value);
-    void WriteBinaryData(const std::wstring Name, const std::wstring Value);
+  virtual void __fastcall Flush();
 
-    std::wstring GetStorage() { return FStorage; }
-    std::wstring GetCurrentSubKey();
-    TStorageAccessMode GetAccessMode() { return FAccessMode; }
-    virtual void SetAccessMode(TStorageAccessMode value);
-    bool GetExplicit() { return FExplicit; }
-    void SetExplicit(bool value) { FExplicit = value; }
-    bool GetMungeStringValues() { return FMungeStringValues; }
-    void SetMungeStringValues(bool value) { FMungeStringValues = value; }
-    virtual std::wstring GetSource() = 0;
+#ifndef _MSC_VER
+  __property UnicodeString Storage  = { read=FStorage };
+  __property UnicodeString CurrentSubKey  = { read=GetCurrentSubKey };
+  __property TStorageAccessMode AccessMode  = { read=FAccessMode, write=SetAccessMode };
+  __property bool Explicit = { read = FExplicit, write = FExplicit };
+  __property bool ForceAnsi = { read = FForceAnsi, write = FForceAnsi };
+  __property bool MungeStringValues = { read = FMungeStringValues, write = FMungeStringValues };
+  __property UnicodeString Source = { read = GetSource };
+#else
+  UnicodeString __fastcall GetStorage() { return FStorage; }
+  TStorageAccessMode __fastcall GetAccessMode() { return FAccessMode; }
+  bool __fastcall GetExplicit() { return FExplicit; }
+  void __fastcall SetExplicit(bool value) { FExplicit = value; }
+  bool __fastcall GetForceAnsi() { return FForceAnsi; }
+  void __fastcall SetForceAnsi(bool value) { FForceAnsi = value; }
+  bool __fastcall GetMungeStringValues() { return FMungeStringValues; }
+  void __fastcall SetMungeStringValues(bool value) { FMungeStringValues = value; }
+#endif
+
+  virtual void __fastcall SetAccessMode(TStorageAccessMode value);
+  virtual UnicodeString __fastcall GetSource() = 0;
 
 protected:
-    std::wstring FStorage;
-    nb::TStrings *FKeyHistory;
-    TStorageAccessMode FAccessMode;
-    bool FExplicit;
-    bool FMungeStringValues;
+  UnicodeString FStorage;
+  TStrings * FKeyHistory;
+  TStorageAccessMode FAccessMode;
+  bool FExplicit;
+  bool FMungeStringValues;
+  bool FForceAnsi;
 
-    std::wstring GetCurrentSubKeyMunged();
-    static std::wstring IncludeTrailingBackslash(const std::wstring S);
-    static std::wstring ExcludeTrailingBackslash(const std::wstring S);
-    std::wstring MungeSubKey(const std::wstring Key, bool Path);
+  UnicodeString __fastcall GetCurrentSubKey();
+  UnicodeString __fastcall GetCurrentSubKeyMunged();
+  // virtual void __fastcall SetAccessMode(TStorageAccessMode value);
+  virtual bool __fastcall DoKeyExists(const UnicodeString SubKey, bool ForceAnsi) = 0;
+  static UnicodeString __fastcall IncludeTrailingBackslash(const UnicodeString & S);
+  static UnicodeString __fastcall ExcludeTrailingBackslash(const UnicodeString & S);
+  virtual bool __fastcall DoOpenSubKey(const UnicodeString SubKey, bool CanCreate) = 0;
+  UnicodeString __fastcall MungeKeyName(UnicodeString Key);
+  // virtual UnicodeString __fastcall GetSource() = 0;
 };
 //---------------------------------------------------------------------------
 class TRegistryStorage : public THierarchicalStorage
 {
 public:
-    explicit TRegistryStorage(const std::wstring AStorage, HKEY ARootKey);
-    explicit TRegistryStorage(const std::wstring AStorage);
-    virtual ~TRegistryStorage();
+  explicit /* __fastcall */ TRegistryStorage(const UnicodeString AStorage, HKEY ARootKey);
+  explicit /* __fastcall */ TRegistryStorage(const UnicodeString AStorage);
+  virtual void __fastcall Init();
+  virtual /* __fastcall */ ~TRegistryStorage();
 
-    bool Copy(TRegistryStorage *Storage);
+  bool __fastcall Copy(TRegistryStorage * Storage);
 
-    virtual bool OpenSubKey(const std::wstring SubKey, bool CanCreate, bool Path = false);
-    virtual void CloseSubKey();
-    virtual bool DeleteSubKey(const std::wstring SubKey);
-    virtual bool DeleteValue(const std::wstring Name);
-    virtual void GetSubKeyNames(nb::TStrings *Strings);
-    virtual bool KeyExists(const std::wstring SubKey);
-    virtual bool ValueExists(const std::wstring Value);
+  virtual void __fastcall CloseSubKey();
+  virtual bool __fastcall DeleteSubKey(const UnicodeString SubKey);
+  virtual bool __fastcall DeleteValue(const UnicodeString Name);
+  virtual void __fastcall GetSubKeyNames(Classes::TStrings* Strings);
+  virtual bool __fastcall ValueExists(const UnicodeString Value);
 
-    virtual int BinaryDataSize(const std::wstring Name);
+  virtual size_t __fastcall BinaryDataSize(const UnicodeString Name);
 
-    virtual bool Readbool(const std::wstring Name, bool Default);
-    virtual int Readint(const std::wstring Name, int Default);
-    virtual __int64 ReadInt64(const std::wstring Name, __int64 Default);
-    virtual nb::TDateTime ReadDateTime(const std::wstring Name, nb::TDateTime Default);
-    virtual double ReadFloat(const std::wstring Name, double Default);
-    virtual std::wstring ReadStringRaw(const std::wstring Name, const std::wstring Default);
-    virtual size_t ReadBinaryData(const std::wstring Name, void *Buffer, size_t Size);
+  virtual bool __fastcall ReadBool(const UnicodeString Name, bool Default);
+  virtual int __fastcall ReadInteger(const UnicodeString Name, int Default);
+  virtual __int64 __fastcall ReadInt64(const UnicodeString Name, __int64 Default);
+  virtual TDateTime __fastcall ReadDateTime(const UnicodeString Name, TDateTime Default);
+  virtual double __fastcall ReadFloat(const UnicodeString Name, double Default);
+  virtual UnicodeString __fastcall ReadStringRaw(const UnicodeString Name, const UnicodeString Default);
+  virtual size_t __fastcall ReadBinaryData(const UnicodeString Name, void * Buffer, size_t Size);
 
-    virtual void Writebool(const std::wstring Name, bool Value);
-    virtual void Writeint(const std::wstring Name, int Value);
-    virtual void WriteInt64(const std::wstring Name, __int64 Value);
-    virtual void WriteDateTime(const std::wstring Name, nb::TDateTime Value);
-    virtual void WriteFloat(const std::wstring Name, double Value);
-    virtual void WriteStringRaw(const std::wstring Name, const std::wstring Value);
-    virtual void WriteBinaryData(const std::wstring Name, const void *Buffer, size_t Size);
+  virtual void __fastcall WriteBool(const UnicodeString Name, bool Value);
+  virtual void __fastcall WriteInteger(const UnicodeString Name, int Value);
+  virtual void __fastcall WriteInt64(const UnicodeString Name, __int64 Value);
+  virtual void __fastcall WriteDateTime(const UnicodeString Name, TDateTime Value);
+  virtual void __fastcall WriteFloat(const UnicodeString Name, double Value);
+  virtual void __fastcall WriteStringRaw(const UnicodeString Name, const UnicodeString Value);
+  virtual void __fastcall WriteBinaryData(const UnicodeString Name, const void * Buffer, int Size);
 
-    virtual void GetValueNames(nb::TStrings *Strings);
+  virtual void __fastcall GetValueNames(Classes::TStrings* Strings);
 
-    virtual void SetAccessMode(TStorageAccessMode value);
-protected:
-    virtual std::wstring GetSource();
+// protected:
+  int __fastcall GetFailed();
+  virtual void __fastcall SetAccessMode(TStorageAccessMode value);
+  virtual bool __fastcall DoKeyExists(const UnicodeString SubKey, bool ForceAnsi);
+  virtual bool __fastcall DoOpenSubKey(const UnicodeString SubKey, bool CanCreate);
+  virtual UnicodeString __fastcall GetSource();
 
-    int GetFailed();
-    void SetFailed(int value) { FFailed = value; }
+#ifndef _MSC_VER
+  __property int Failed  = { read=GetFailed, write=FFailed };
+#else
+  void SetFailed(int value) { FFailed = value; }
+#endif
 
 private:
-    nb::TRegistry *FRegistry;
-    int FFailed;
+  TRegistry * FRegistry;
+  int FFailed;
 
-    void Init();
+#ifndef _MSC_VER
+  void __fastcall Init();
+#endif
+};
+#ifndef _MSC_VER
+//---------------------------------------------------------------------------
+class TCustomIniFileStorage : public THierarchicalStorage
+{
+public:
+  explicit /* __fastcall */ TCustomIniFileStorage(const UnicodeString Storage, TCustomIniFile * IniFile);
+  virtual void __fastcall Init() {}
+  virtual /* __fastcall */ ~TCustomIniFileStorage();
+
+  virtual bool __fastcall DeleteSubKey(const UnicodeString SubKey);
+  virtual bool __fastcall DeleteValue(const UnicodeString Name);
+  virtual void __fastcall GetSubKeyNames(Classes::TStrings* Strings);
+  virtual bool __fastcall ValueExists(const UnicodeString Value);
+
+  virtual size_t __fastcall BinaryDataSize(const UnicodeString Name);
+
+  virtual bool __fastcall ReadBool(const UnicodeString Name, bool Default);
+  virtual int __fastcall ReadInteger(const UnicodeString Name, int Default);
+  virtual __int64 __fastcall ReadInt64(const UnicodeString Name, __int64 Default);
+  virtual TDateTime __fastcall ReadDateTime(const UnicodeString Name, TDateTime Default);
+  virtual double __fastcall ReadFloat(const UnicodeString Name, double Default);
+  virtual UnicodeString __fastcall ReadStringRaw(const UnicodeString Name, const UnicodeString Default);
+  virtual size_t __fastcall ReadBinaryData(const UnicodeString Name, void * Buffer, size_t Size);
+
+  virtual void __fastcall WriteBool(const UnicodeString Name, bool Value);
+  virtual void __fastcall WriteInteger(const UnicodeString Name, int Value);
+  virtual void __fastcall WriteInt64(UnicodeString Name, __int64 Value);
+  virtual void __fastcall WriteDateTime(const UnicodeString Name, TDateTime Value);
+  virtual void __fastcall WriteFloat(const UnicodeString Name, double Value);
+  virtual void __fastcall WriteStringRaw(const UnicodeString Name, const UnicodeString Value);
+  virtual void __fastcall WriteBinaryData(const UnicodeString Name, const void * Buffer, int Size);
+
+  virtual void __fastcall GetValueNames(Classes::TStrings* Strings);
+
+private:
+  UnicodeString __fastcall GetCurrentSection();
+protected:
+  TCustomIniFile * FIniFile;
+
+#ifndef _MSC_VER
+  __property UnicodeString CurrentSection  = { read=GetCurrentSection };
+#endif
+  virtual bool __fastcall DoKeyExists(const UnicodeString SubKey, bool ForceAnsi);
+  virtual bool __fastcall DoOpenSubKey(const UnicodeString SubKey, bool CanCreate);
+  virtual UnicodeString __fastcall GetSource();
 };
 //---------------------------------------------------------------------------
-std::wstring PuttyMungeStr(const std::wstring Str);
-std::wstring PuttyUnMungeStr(const std::wstring Str);
+class TIniFileStorage : public TCustomIniFileStorage
+{
+public:
+  explicit /* __fastcall */ TIniFileStorage(const UnicodeString FileName);
+  virtual /* __fastcall */ ~TIniFileStorage();
+
+  virtual void __fastcall Flush();
+
+private:
+  TStrings * FOriginal;
+  void __fastcall ApplyOverrides();
+};
+//---------------------------------------------------------------------------
+class TOptionsStorage : public TCustomIniFileStorage
+{
+public:
+  explicit /* __fastcall */ TOptionsStorage(TStrings * Options);
+};
+#endif
+//---------------------------------------------------------------------------
+UnicodeString __fastcall PuttyMungeStr(const UnicodeString Str);
+UnicodeString __fastcall PuttyUnMungeStr(const UnicodeString Str);
 //---------------------------------------------------------------------------
 #endif

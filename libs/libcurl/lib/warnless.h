@@ -30,6 +30,8 @@ int curlx_uztosi(size_t uznum);
 
 unsigned long curlx_uztoul(size_t uznum);
 
+unsigned int curlx_uztoui(size_t uznum);
+
 int curlx_sltosi(long slnum);
 
 unsigned int curlx_sltoui(long slnum);
@@ -39,6 +41,8 @@ unsigned short curlx_sltous(long slnum);
 ssize_t curlx_uztosz(size_t uznum);
 
 size_t curlx_sotouz(curl_off_t sonum);
+
+int curlx_sztosi(ssize_t sznum);
 
 size_t curlx_sitouz(int sinum);
 

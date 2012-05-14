@@ -88,11 +88,15 @@ Version 2.0:
 
 */
 
-#include "fzafx.h"
+#include "stdafx.h"
 #include "AsyncSslSocketLayer.h"
 
 #if defined _DEBUG && defined _AFX
 #define new DEBUG_NEW
+#ifndef _MSC_VER
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
 #endif
 
 // Simple macro to declare function type and function pointer based on the

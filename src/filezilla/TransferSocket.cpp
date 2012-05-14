@@ -19,24 +19,26 @@
 // TransferSocket.cpp: Implementierungsdatei
 //
 
-#include "fzafx.h"
+#include "stdafx.h"
 #ifndef MPEXT
 #include "filezilla.h"
 #endif
 #include "TransferSocket.h"
 #include "mainthread.h"
 #include "AsyncProxySocketLayer.h"
+#include "Options.h"
+#include "TextsFileZilla.h"
+#include "Crypt.h"
 #ifndef MPEXT_NO_GSS
 #include "AsyncGssSocketLayer.h"
 #endif
 
-#include <TextsFileZilla.h>
-#include <FileZillaOpt.h>
-#include <Options.h>
-#include <Crypt.h>
-
 #ifdef _DEBUG
 #define new DEBUG_NEW
+#ifndef _MSC_VER
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
 #endif
 
 #define BUFSIZE 16384
@@ -217,9 +219,9 @@ void CTransferSocket::OnReceive(int nErrorCode)
 			CTimeSpan timespan = CTime::GetCurrentTime() - m_StartTime;
 			int elapsed = (int)timespan.GetTotalSeconds();
 			//TODO
-			//There are servers which report the total number of 
+			//There are servers which report the total number of
 			//bytes in the list response message, but yet it is not supported by FZ.
-			/*double leftmodifier=(transfersize-transferstart-transferleft); 
+			/*double leftmodifier=(transfersize-transferstart-transferleft);
 			leftmodifier*=100;
 			leftmodifier/=(transfersize-transferstart);
 			if (leftmodifier==0)
@@ -348,7 +350,7 @@ void CTransferSocket::OnReceive(int nErrorCode)
 			UpdateStatusBar(false);
 			return;
 		}
-		
+
 		int written = 0;
 		m_LastActiveTime = CTime::GetCurrentTime();
 		UpdateRecvLed();
@@ -419,7 +421,7 @@ void CTransferSocket::OnReceive(int nErrorCode)
 	}
 }
 
-void CTransferSocket::OnAccept(int nErrorCode) 
+void CTransferSocket::OnAccept(int nErrorCode)
 {
 	LogMessage(__FILE__, __LINE__, this,FZ_LOG_DEBUG, _T("OnAccept(%d)"), nErrorCode);
 	m_bListening=FALSE;
@@ -430,15 +432,17 @@ void CTransferSocket::OnAccept(int nErrorCode)
 	
 	Attach(socket);
 
-	/* Set internal socket send buffer to twice the programs buffer size
+	/* Set internal socket send buffer
 	 * this should fix the speed problems some users have reported
 	 */
 	DWORD value;
 	int len = sizeof(value);
 	GetSockOpt(SO_SNDBUF, &value, &len);
-	if (value < (BUFSIZE*2))
+	// MPEXT
+	int sndbuf = COptions::GetOptionVal(OPTION_MPEXT_SNDBUF);
+	if (value < sndbuf)
 	{
-		value = BUFSIZE * 2;
+		value = sndbuf;
 		SetSockOpt(SO_SNDBUF, &value, sizeof(value));
 	}
 
@@ -459,7 +463,7 @@ void CTransferSocket::OnAccept(int nErrorCode)
 #endif
 			if (res == SSL_FAILURE_INITSSL)
 				m_pOwner->ShowStatus(IDS_ERRORMSG_CANTINITSSL, 1);
-					
+
 			if (res)
 			{
 				Close();
@@ -486,7 +490,7 @@ void CTransferSocket::OnAccept(int nErrorCode)
 	}
 }
 
-void CTransferSocket::OnConnect(int nErrorCode) 
+void CTransferSocket::OnConnect(int nErrorCode)
 {
 	LogMessage(__FILE__, __LINE__, this,FZ_LOG_DEBUG, _T("OnConnect(%d)"), nErrorCode);
 	if (nErrorCode)
@@ -509,15 +513,17 @@ void CTransferSocket::OnConnect(int nErrorCode)
 	}
 	else
 	{
-		/* Set internal socket send buffer to twice the programs buffer size
+		/* Set internal socket send buffer
 		 * this should fix the speed problems some users have reported
 		 */
 		DWORD value;
 		int len = sizeof(value);
 		GetSockOpt(SO_SNDBUF, &value, &len);
-		if (value < (BUFSIZE*2))
+		// MPEXT
+		int sndbuf = COptions::GetOptionVal(OPTION_MPEXT_SNDBUF);
+		if (value < sndbuf)
 		{
-			value = BUFSIZE * 2;
+			value = sndbuf;
 			SetSockOpt(SO_SNDBUF, &value, sizeof(value));
 		}
 	}
@@ -627,7 +633,7 @@ void CTransferSocket::SetActive()
 		OnClose(0);
 }
 
-void CTransferSocket::OnSend(int nErrorCode) 
+void CTransferSocket::OnSend(int nErrorCode)
 {
 	if (m_nTransferState == STATE_WAITING)
 	{

@@ -61,7 +61,7 @@ If you use this class in commercial applications, please send a short message
 to tim.kosse@gmx.de
 */
 
-#include "fzafx.h"
+#include "stdafx.h"
 #include "AsyncSocketEx.h"
 #include "wtypes.h"
 #include "oleauto.h"
@@ -73,6 +73,19 @@ to tim.kosse@gmx.de
 
 #ifndef GWL_USERDATA
 #define GWL_USERDATA GWLP_USERDATA
+#endif
+
+#ifndef _MSC_VER
+#ifdef MPEXT
+#pragma warn -inl
+#endif
+#endif
+
+#ifdef _DEBUG
+#ifndef _MSC_VER
+#undef THIS_FILE
+static char THIS_FILE[]=__FILE__;
+#endif
 #endif
 
 #ifndef CCRITICALSECTIONWRAPPERINCLUDED

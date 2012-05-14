@@ -9,6 +9,11 @@
 #include "SessionData.h"
 #include "SessionInfo.h"
 //---------------------------------------------------------------------------
+#ifndef PuttyIntfH
+struct Backend;
+struct Config;
+#endif
+//---------------------------------------------------------------------------
 struct _WSANETWORKEVENTS;
 typedef struct _WSANETWORKEVENTS WSANETWORKEVENTS;
 typedef UINT_PTR SOCKET;
@@ -17,149 +22,160 @@ struct TPuttyTranslation;
 //---------------------------------------------------------------------------
 class TSecureShell
 {
-    friend class TPoolForDataEvent;
+friend class TPoolForDataEvent;
 
 private:
-    SOCKET FSocket;
-    HANDLE FSocketEvent;
-    TSockets FPortFwdSockets;
-    TSessionUI *FUI;
-    TSessionData *FSessionData;
-    bool FActive;
-    TSessionInfo FSessionInfo;
-    bool FSessionInfoValid;
-    nb::TDateTime FLastDataSent;
-    Backend *FBackend;
-    void *FBackendHandle;
-    const unsigned int *FMinPacketSize;
-    const unsigned int *FMaxPacketSize;
-    Config *FConfig;
-    nb::notify_signal_type FOnReceive;
-    bool FFrozen;
-    bool FDataWhileFrozen;
-    bool FStoredPasswordTried;
-    bool FStoredPasswordTriedForKI;
-    int FSshVersion;
-    bool FOpened;
-    int FWaiting;
-    bool FSimple;
+  SOCKET FSocket;
+  HANDLE FSocketEvent;
+  TSockets FPortFwdSockets;
+  TSessionUI * FUI;
+  TSessionData * FSessionData;
+  bool FActive;
+  TSessionInfo FSessionInfo;
+  bool FSessionInfoValid;
+  TDateTime FLastDataSent;
+  Backend * FBackend;
+  void * FBackendHandle;
+  const unsigned int * FMinPacketSize;
+  const unsigned int * FMaxPacketSize;
+  Config * FConfig;
+  TNotifySignal FOnReceive;
+  bool FFrozen;
+  bool FDataWhileFrozen;
+  bool FStoredPasswordTried;
+  bool FStoredPasswordTriedForKI;
+  int FSshVersion;
+  bool FOpened;
+  int FWaiting;
+  bool FSimple;
 
-    size_t PendLen;
-    size_t PendSize;
-    size_t OutLen;
-    char *OutPtr;
-    char *Pending;
-    TSessionLog *FLog;
-    TConfiguration *FConfiguration;
-    bool FAuthenticating;
-    bool FAuthenticated;
-    std::wstring FStdErrorTemp;
-    std::wstring FStdError;
-    std::wstring FCWriteTemp;
-    std::wstring FAuthenticationLog;
-    std::wstring FLastTunnelError;
-    std::wstring FUserName;
-    TSecureShell *Self;
-
-    static TCipher FuncToSsh1Cipher(const void *Cipher);
-    static TCipher FuncToSsh2Cipher(const void *Cipher);
-    std::wstring FuncToCompression(int SshVersion, const void *Compress) const;
-    void Init();
-    void inline CheckConnection(int Message = -1);
-    void WaitForData();
-    void Discard();
-    void FreeBackend();
-    void PoolForData(WSANETWORKEVENTS &Events, size_t &Result);
-    inline void CaptureOutput(TLogLineType Type,
-                              const std::wstring Line);
-    void ResetConnection();
-    void ResetSessionInfo();
-    void SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup);
-    bool EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS &Events);
-    void HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS &Events);
-    bool ProcessNetworkEvents(SOCKET Socket);
-    bool EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
-                         WSANETWORKEVENTS *Events);
-    void UpdateSessionInfo();
-    void DispatchSendBuffer(size_t BufSize);
-    void SendBuffer(size_t &Result);
-    int TimeoutPrompt(queryparamstimer_slot_type *PoolEvent);
-
-protected:
-    captureoutput_signal_type FOnCaptureOutput;
-
-    void GotHostKey();
-    int TranslatePuttyMessage(const TPuttyTranslation *Translation,
-                              size_t Count, std::wstring &Message);
-    int TranslateAuthenticationMessage(std::wstring &Message);
-    int TranslateErrorMessage(std::wstring &Message);
-    void AddStdError(const std::wstring Str);
-    void AddStdErrorLine(const std::wstring Str);
-    void FatalError(const std::exception *E, const std::wstring Msg);
-    void inline LogEvent(const std::wstring Str);
-    void FatalError(const std::wstring Error);
-    static void ClearConfig(Config *cfg);
-    static void StoreToConfig(TSessionData *Data, Config *cfg, bool Simple);
+  unsigned PendLen;
+  unsigned PendSize;
+  unsigned OutLen;
+  unsigned char * OutPtr;
+  unsigned char * Pending;
+  TSessionLog * FLog;
+  TConfiguration * FConfiguration;
+  bool FAuthenticating;
+  bool FAuthenticated;
+  UnicodeString FStdErrorTemp;
+  UnicodeString FStdError;
+  UnicodeString FCWriteTemp;
+  UnicodeString FAuthenticationLog;
+  UnicodeString FLastTunnelError;
+  UnicodeString FUserName;
+  TSecureShell * Self;
 
 public:
-    explicit TSecureShell(TSessionUI *UI, TSessionData *SessionData,
-                 TSessionLog *Log, TConfiguration *Configuration);
-    virtual ~TSecureShell();
-    void Open();
-    void Close();
-    void KeepAlive();
-    size_t Receive(char *Buf, size_t Len);
-    bool Peek(char *& Buf, size_t Len);
-    std::wstring ReceiveLine();
-    void Send(const char *Buf, size_t Len);
-    void SendStr(const std::wstring Str);
-    void SendSpecial(int Code);
-    void Idle(unsigned int MSec = 0);
-    void SendEOF();
-    void SendLine(const std::wstring Line);
-    void SendNull();
+  static TCipher __fastcall FuncToSsh1Cipher(const void * Cipher);
+  static TCipher __fastcall FuncToSsh2Cipher(const void * Cipher);
+  UnicodeString __fastcall FuncToCompression(int SshVersion, const void * Compress) const;
+  void __fastcall Init();
+  void __fastcall SetActive(bool value);
+  void inline __fastcall CheckConnection(int Message = -1);
+  void __fastcall WaitForData();
+  void __fastcall Discard();
+  void __fastcall FreeBackend();
+  void __fastcall PoolForData(WSANETWORKEVENTS & Events, unsigned int & Result);
+  inline void __fastcall CaptureOutput(TLogLineType Type,
+    const UnicodeString & Line);
+  void __fastcall ResetConnection();
+  void __fastcall ResetSessionInfo();
+  void __fastcall SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup);
+  bool __fastcall EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events);
+  void __fastcall HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events);
+  bool __fastcall ProcessNetworkEvents(SOCKET Socket);
+  bool __fastcall EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
+    WSANETWORKEVENTS * Events);
+  void __fastcall UpdateSessionInfo();
+  bool __fastcall GetReady();
+  void __fastcall DispatchSendBuffer(int BufSize);
+  void /* __fastcall */ SendBuffer(unsigned int & Result);
+  unsigned int __fastcall TimeoutPrompt(TQueryParamsTimerEvent * PoolEvent);
 
-    const TSessionInfo &GetSessionInfo();
-    bool SshFallbackCmd() const;
-    unsigned long MinPacketSize();
-    unsigned long MaxPacketSize();
-    void ClearStdError();
-    bool GetStoredCredentialsTried();
+protected:
+  TCaptureOutputSignal FOnCaptureOutput;
 
-    void RegisterReceiveHandler(const nb::notify_slot_type &Handler);
-    void UnregisterReceiveHandler(const nb::notify_slot_type &Handler);
+  void __fastcall GotHostKey();
+  int __fastcall TranslatePuttyMessage(const TPuttyTranslation * Translation,
+    size_t Count, UnicodeString & Message);
+  int __fastcall TranslateAuthenticationMessage(UnicodeString & Message);
+  int __fastcall TranslateErrorMessage(UnicodeString & Message);
+  void __fastcall AddStdError(UnicodeString Str);
+  void __fastcall AddStdErrorLine(const UnicodeString & Str);
+  void __fastcall FatalError(Exception * E, UnicodeString Msg);
+  void __fastcall /* inline */ LogEvent(const UnicodeString & Str);
+  void __fastcall FatalError(UnicodeString Error);
+  static void __fastcall ClearConfig(Config * cfg);
+  static void __fastcall StoreToConfig(TSessionData * Data, Config * cfg, bool Simple);
 
-    // interface to PuTTY core
-    void UpdateSocket(SOCKET value, bool Startup);
-    void UpdatePortFwdSocket(SOCKET value, bool Startup);
-    void PuttyFatalError(const std::wstring Error);
-    bool PromptUser(bool ToServer,
-                    const std::wstring AName, bool NameRequired,
-                    const std::wstring Instructions, bool InstructionsRequired,
-                    nb::TStrings *Prompts, nb::TStrings *Results);
-    void FromBackend(bool IsStdErr, const char *Data, size_t Length);
-    void CWrite(const char *Data, size_t Length);
-    const std::wstring GetStdError();
-    void VerifyHostKey(const std::wstring Host, int Port,
-                       const std::wstring KeyType, const std::wstring KeyStr, const std::wstring Fingerprint);
-    void AskAlg(const std::wstring AlgType, const std::wstring AlgName);
-    void DisplayBanner(const std::wstring Banner);
-    void OldKeyfileWarning();
-    void PuttyLogEvent(const std::wstring Str);
+public:
+  explicit /* __fastcall */ TSecureShell(TSessionUI * UI, TSessionData * SessionData,
+    TSessionLog * Log, TConfiguration * Configuration);
+  virtual /* __fastcall */ ~TSecureShell();
+  void __fastcall Open();
+  void __fastcall Close();
+  void __fastcall KeepAlive();
+  int __fastcall Receive(unsigned char * Buf, int Len);
+  bool __fastcall Peek(unsigned char *& Buf, int Len);
+  UnicodeString __fastcall ReceiveLine();
+  void __fastcall Send(const unsigned char * Buf, int Len);
+  void __fastcall SendStr(UnicodeString Str);
+  void __fastcall SendSpecial(int Code);
+  void __fastcall Idle(unsigned int MSec = 0);
+  void __fastcall SendEOF();
+  void __fastcall SendLine(UnicodeString Line);
+  void __fastcall SendNull();
 
-    bool GetActive() { return FActive; }
-    void SetActive(bool value);
-    bool GetReady();
-    captureoutput_signal_type &GetOnCaptureOutput() { return FOnCaptureOutput; }
-    void SetOnCaptureOutput(const captureoutput_slot_type &value) { FOnCaptureOutput.connect(value); }
-    nb::TDateTime GetLastDataSent() { return FLastDataSent; }
-    std::wstring GetLastTunnelError() { return FLastTunnelError; }
-    std::wstring GetUserName() { return FUserName; }
-    bool GetSimple() { return FSimple; }
-    void SetSimple(bool value) { FSimple = value; }
+  const TSessionInfo & __fastcall GetSessionInfo();
+  bool __fastcall SshFallbackCmd() const;
+  unsigned int __fastcall MinPacketSize();
+  unsigned int __fastcall MaxPacketSize();
+  void __fastcall ClearStdError();
+  bool __fastcall GetStoredCredentialsTried();
+
+  void __fastcall RegisterReceiveHandler(const TNotifyEvent & Handler);
+  void __fastcall UnregisterReceiveHandler(const TNotifyEvent & Handler);
+
+  // interface to PuTTY core
+  void __fastcall UpdateSocket(SOCKET value, bool Startup);
+  void __fastcall UpdatePortFwdSocket(SOCKET value, bool Startup);
+  void __fastcall PuttyFatalError(UnicodeString Error);
+  bool __fastcall PromptUser(bool ToServer,
+    UnicodeString AName, bool NameRequired,
+    UnicodeString Instructions, bool InstructionsRequired,
+    TStrings * Prompts, TStrings * Results);
+  void __fastcall FromBackend(bool IsStdErr, const unsigned char * Data, int Length);
+  void __fastcall CWrite(const char * Data, int Length);
+  const UnicodeString & __fastcall GetStdError();
+  void __fastcall VerifyHostKey(UnicodeString Host, int Port,
+    const UnicodeString KeyType, UnicodeString KeyStr, const UnicodeString Fingerprint);
+  void __fastcall AskAlg(const UnicodeString AlgType, const UnicodeString AlgName);
+  void __fastcall DisplayBanner(const UnicodeString & Banner);
+  void __fastcall OldKeyfileWarning();
+  void __fastcall PuttyLogEvent(const UnicodeString & Str);
+
+#ifndef _MSC_VER
+  __property bool Active = { read = FActive, write = SetActive };
+  __property bool Ready = { read = GetReady };
+  __property TCaptureOutputEvent OnCaptureOutput = { read = FOnCaptureOutput, write = FOnCaptureOutput };
+  __property TDateTime LastDataSent = { read = FLastDataSent };
+  __property UnicodeString LastTunnelError = { read = FLastTunnelError };
+  __property UnicodeString UserName = { read = FUserName };
+  __property bool Simple = { read = FSimple, write = FSimple };
+#else
+  bool __fastcall GetActive() { return FActive; }
+  TCaptureOutputSignal & GetOnCaptureOutput() { return FOnCaptureOutput; }
+  void SetOnCaptureOutput(const TCaptureOutputEvent & value) { FOnCaptureOutput.connect(value); }
+  TDateTime GetLastDataSent() { return FLastDataSent; }
+  UnicodeString GetLastTunnelError() { return FLastTunnelError; }
+  UnicodeString GetUserName() { return FUserName; }
+  bool GetSimple() { return FSimple; }
+  void SetSimple(bool value) { FSimple = value; }
+#endif
 private:
-    TSecureShell(const TSecureShell &);
-    void operator=(const TSecureShell &);
+  TSecureShell(const TSecureShell &);
+  void operator=(const TSecureShell &);
 };
 //---------------------------------------------------------------------------
 #endif

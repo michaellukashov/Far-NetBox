@@ -9,103 +9,132 @@ class THierarchicalStorage;
 class TBookmarkList;
 class TShortCuts;
 //---------------------------------------------------------------------------
-class TBookmarks : public nb::TObject
+class TBookmarks : public TObject
 {
 public:
-    TBookmarks();
-    virtual ~TBookmarks();
+  /* __fastcall */ TBookmarks();
+  virtual /* __fastcall */ ~TBookmarks();
 
-    void Load(THierarchicalStorage *Storage);
-    void Save(THierarchicalStorage *Storage, bool All);
-    void ModifyAll(bool Modify);
-    void Clear();
+  void __fastcall Load(THierarchicalStorage * Storage);
+  void __fastcall Save(THierarchicalStorage * Storage, bool All);
+  void __fastcall ModifyAll(bool Modify);
+  void __fastcall Clear();
 
-    TBookmarkList *GetBookmark(const std::wstring Index);
-    void SetBookmark(const std::wstring Index, TBookmarkList *value);
-    TBookmarkList *GetSharedBookmarks();
-    void SetSharedBookmarks(TBookmarkList *value);
+#ifndef _MSC_VER
+  __property TBookmarkList * Bookmarks[UnicodeString Index] = { read = GetBookmarks, write = SetBookmarks };
+  __property TBookmarkList * SharedBookmarks = { read = GetSharedBookmarks, write = SetSharedBookmarks };
+#endif
 
 private:
-    nb::TStringList *FBookmarkLists;
-    std::wstring FSharedKey;
-    static std::wstring Keys[];
+  TStringList * FBookmarkLists;
+  UnicodeString FSharedKey;
+  static UnicodeString Keys[];
 
-    void LoadLevel(THierarchicalStorage *Storage, const std::wstring Key,
-                   int Index, TBookmarkList *BookmarkList);
+public:
+  TBookmarkList * __fastcall GetBookmarks(UnicodeString Index);
+  void __fastcall SetBookmarks(UnicodeString Index, TBookmarkList * value);
+  TBookmarkList * __fastcall GetSharedBookmarks();
+  void __fastcall SetSharedBookmarks(TBookmarkList * value);
+private:
+  void __fastcall LoadLevel(THierarchicalStorage * Storage, const UnicodeString Key,
+    int Index, TBookmarkList * BookmarkList);
 };
 //---------------------------------------------------------------------------
-class TBookmarkList : public nb::TPersistent
+class TBookmarkList : public TPersistent
 {
-    friend class TBookmarks;
-    friend class TBookmark;
+friend class TBookmarks;
+friend class TBookmark;
 public:
-    TBookmarkList();
-    virtual ~TBookmarkList();
+  /* __fastcall */ TBookmarkList();
+  virtual /* __fastcall */ ~TBookmarkList();
 
-    void Clear();
-    void Add(TBookmark *Bookmark);
-    void Insert(size_t Index, TBookmark *Bookmark);
-    void InsertBefore(TBookmark *BeforeBookmark, TBookmark *Bookmark);
-    void MoveTo(TBookmark *ToBookmark, TBookmark *Bookmark, bool Before);
-    void Delete(TBookmark *Bookmark);
-    TBookmark *FindByName(const std::wstring Node, const std::wstring Name);
-    TBookmark *FindByShortCut(nb::TShortCut ShortCut);
-    virtual void Assign(nb::TPersistent *Source);
-    void LoadOptions(THierarchicalStorage *Storage);
-    void SaveOptions(THierarchicalStorage *Storage);
-    void ShortCuts(TShortCuts &ShortCuts);
+  void __fastcall Clear();
+  void __fastcall Add(TBookmark * Bookmark);
+  void __fastcall Insert(int Index, TBookmark * Bookmark);
+  void __fastcall InsertBefore(TBookmark * BeforeBookmark, TBookmark * Bookmark);
+  void __fastcall MoveTo(TBookmark * ToBookmark, TBookmark * Bookmark, bool Before);
+  void __fastcall Delete(TBookmark * Bookmark);
+  TBookmark * __fastcall FindByName(const UnicodeString Node, const UnicodeString Name);
+  TBookmark * __fastcall FindByShortCut(TShortCut ShortCut);
+  virtual void __fastcall Assign(TPersistent * Source);
+  void __fastcall LoadOptions(THierarchicalStorage * Storage);
+  void __fastcall SaveOptions(THierarchicalStorage * Storage);
+  void __fastcall ShortCuts(TShortCuts & ShortCuts);
 
-    size_t GetCount();
-    TBookmark *GetBookmark(size_t Index);
-    bool GetNodeOpened(const std::wstring Index);
-    void SetNodeOpened(const std::wstring Index, bool value);
+#ifndef _MSC_VER
+  __property int Count = { read = GetCount };
+  __property TBookmark * Bookmarks[int Index] = { read = GetBookmarks };
+  __property bool NodeOpened[UnicodeString Index] = { read = GetNodeOpened, write = SetNodeOpened };
+#endif
 
 protected:
-    size_t IndexOf(TBookmark *Bookmark);
-    void KeyChanged(size_t Index);
+  int __fastcall IndexOf(TBookmark * Bookmark);
+  void __fastcall KeyChanged(int Index);
 
-    bool GetModified() { return FModified; }
-    void SetModified(bool value) { FModified = value; }
+#ifndef _MSC_VER
+  __property bool Modified = { read = FModified, write = FModified };
+#else
+  bool GetModified() { return FModified; }
+  void SetModified(bool value) { FModified = value; }
+#endif
 
 private:
-    nb::TStringList *FBookmarks;
-    nb::TStringList *FOpenedNodes;
-    bool FModified;
+  TStringList * FBookmarks;
+  TStringList * FOpenedNodes;
+  bool FModified;
+
+public:
+  int __fastcall GetCount();
+  TBookmark * __fastcall GetBookmarks(int Index);
+  bool __fastcall GetNodeOpened(UnicodeString Index);
+  void __fastcall SetNodeOpened(UnicodeString Index, bool value);
 };
 //---------------------------------------------------------------------------
-class TBookmark : public nb::TPersistent
+class TBookmark : public TPersistent
 {
-    friend class TBookmarkList;
+friend class TBookmarkList;
 public:
-    TBookmark();
+  /* __fastcall */ TBookmark();
 
-    virtual void Assign(nb::TPersistent *Source);
+  virtual void __fastcall Assign(TPersistent * Source);
 
-    std::wstring GetName() { return FName; }
-    void SetName(const std::wstring value);
-    std::wstring GetLocal() { return FLocal; }
-    void SetLocal(const std::wstring value);
-    std::wstring GetRemote() { return FRemote; }
-    void SetRemote(const std::wstring value);
-    std::wstring GetNode() { return FNode; }
-    void SetNode(const std::wstring value);
-    nb::TShortCut GetShortCut() { return FShortCut; }
-    void SetShortCut(nb::TShortCut value);
+#ifndef _MSC_VER
+  __property UnicodeString Name = { read = FName, write = SetName };
+  __property UnicodeString Local = { read = FLocal, write = SetLocal };
+  __property UnicodeString Remote = { read = FRemote, write = SetRemote };
+  __property UnicodeString Node = { read = FNode, write = SetNode };
+  __property TShortCut ShortCut = { read = FShortCut, write = SetShortCut };
+#else
+  UnicodeString __fastcall GetName() { return FName; }
+  UnicodeString __fastcall GetLocal() { return FLocal; }
+  UnicodeString __fastcall GetRemote() { return FRemote; }
+  UnicodeString __fastcall GetNode() { return FNode; }
+  TShortCut __fastcall GetShortCut() { return FShortCut; }
+#endif
 
 protected:
-    TBookmarkList *FOwner;
+  TBookmarkList * FOwner;
 
-    static std::wstring BookmarkKey(const std::wstring Node, const std::wstring Name);
-    std::wstring GetKey();
+  static UnicodeString __fastcall BookmarkKey(const UnicodeString Node, const UnicodeString Name);
+#ifndef _MSC_VER
+  __property UnicodeString Key = { read = GetKey };
+#endif
 
 private:
-    std::wstring FName;
-    std::wstring FLocal;
-    std::wstring FRemote;
-    std::wstring FNode;
-    nb::TShortCut FShortCut;
+  UnicodeString FName;
+  UnicodeString FLocal;
+  UnicodeString FRemote;
+  UnicodeString FNode;
+  TShortCut FShortCut;
 
-    void Modify(size_t OldIndex);
+public:
+  void __fastcall SetName(const UnicodeString value);
+  void __fastcall SetLocal(const UnicodeString value);
+  void __fastcall SetRemote(const UnicodeString value);
+  void __fastcall SetNode(const UnicodeString value);
+  void __fastcall SetShortCut(TShortCut value);
+  UnicodeString __fastcall GetKey();
+  void __fastcall Modify(int OldIndex);
 };
 //---------------------------------------------------------------------------
 #endif

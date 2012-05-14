@@ -15,7 +15,7 @@
 #include "tree234.h"
 
 #ifndef MPEXT
-// #include "winhelp.h"
+#include "winhelp.h"
 #endif
 
 struct Filename {

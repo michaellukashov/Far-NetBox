@@ -1,7 +1,12 @@
 //---------------------------------------------------------------------------
-#include "stdafx.h"
+#include "nbafx.h"
 #define NO_WIN32_LEAN_AND_MEAN
+#ifndef _MSC_VER
+#include <vcl.h>
+#pragma hdrstop
+#endif
 
+#include <shlobj.h>
 #include <Common.h>
 
 #include "boostdefines.hpp"
@@ -14,418 +19,428 @@
 #include <SessionData.h>
 #include <Exceptions.h>
 //---------------------------------------------------------------------------
-bool FindFile(std::wstring &Path)
+#ifndef _MSC_VER
+#pragma package(smart_init)
+#endif
+//---------------------------------------------------------------------------
+bool __fastcall FindFile(UnicodeString & Path)
 {
-    bool Result = FileExists(Path);
-    if (!Result)
+  bool Result = FileExists(Path);
+  if (!Result)
+  {
+    int Len = GetEnvironmentVariable(L"PATH", NULL, 0);
+    if (Len > 0)
     {
-        size_t Len = GetEnvironmentVariable(L"PATH", NULL, 0);
-        if (Len > 0)
-        {
-            // DEBUG_PRINTF(L"Len = %d", Len);
-            std::wstring Paths;
-            Paths.resize(Len - 1);
-            GetEnvironmentVariable(L"PATH", reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Paths.c_str())), static_cast<DWORD>(Len));
-            // DEBUG_PRINTF(L"Paths = %s", Paths.c_str());
+      UnicodeString Paths;
+      Paths.SetLength(Len - 1);
+      GetEnvironmentVariable(L"PATH", reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Paths.c_str())), static_cast<DWORD>(Len));
 
-            std::wstring NewPath = FileSearch(ExtractFileName(Path, true), Paths);
-            Result = !NewPath.empty();
-            if (Result)
-            {
-                Path = NewPath;
-            }
-        }
+      UnicodeString NewPath = FileSearch(ExtractFileName(Path, true), Paths);
+      Result = !NewPath.IsEmpty();
+      if (Result)
+      {
+        Path = NewPath;
+      }
     }
-    // DEBUG_PRINTF(L"Result = %d", Result);
-    return Result;
+  }
+  return Result;
 }
 //---------------------------------------------------------------------------
-bool FileExistsEx(const std::wstring Path)
+bool __fastcall FileExistsEx(UnicodeString Path)
 {
-    std::wstring path = Path;
-    return FindFile(path);
+  return FindFile(Path);
 }
 //---------------------------------------------------------------------------
-void OpenSessionInPutty(const std::wstring PuttyPath,
-                        TSessionData *SessionData, const std::wstring Password)
+void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
+  TSessionData * SessionData, UnicodeString Password)
 {
-    std::wstring Program, Params, Dir;
-    SplitCommand(PuttyPath, Program, Params, Dir);
-    Program = ExpandEnvironmentVariables(Program);
-    std::wstring password = Password;
-    if (FindFile(Program))
+  UnicodeString Program, Params, Dir;
+  SplitCommand(PuttyPath, Program, Params, Dir);
+  Program = ExpandEnvironmentVariables(Program);
+  if (FindFile(Program))
+  {
+    UnicodeString SessionName;
+    TRegistryStorage * Storage = NULL;
+    TSessionData * ExportData = NULL;
+    TRegistryStorage * SourceStorage = NULL;
+    // try
     {
-        std::wstring SessionName;
-        TRegistryStorage *Storage = NULL;
-        TSessionData *ExportData = NULL;
-        TRegistryStorage *SourceStorage = NULL;
+      BOOST_SCOPE_EXIT ( (&Storage) (&ExportData) (&SourceStorage) )
+      {
+        delete Storage;
+        delete ExportData;
+        delete SourceStorage;
+      } BOOST_SCOPE_EXIT_END
+      Storage = new TRegistryStorage(Configuration->GetPuttySessionsKey());
+      Storage->SetAccessMode(smReadWrite);
+      // make it compatible with putty
+      Storage->SetMungeStringValues(false);
+      Storage->SetForceAnsi(true);
+      if (Storage->OpenRootKey(true))
+      {
+        if (Storage->KeyExists(SessionData->GetStorageKey()))
         {
-            BOOST_SCOPE_EXIT ( (&Storage) (&ExportData) (&SourceStorage) )
-            {
-                delete Storage;
-                delete ExportData;
-                delete SourceStorage;
-            } BOOST_SCOPE_EXIT_END
-            Storage = new TRegistryStorage(Configuration->GetPuttySessionsKey());
-            Storage->SetAccessMode(smReadWrite);
-            // make it compatible with putty
-            Storage->SetMungeStringValues(false);
-            if (Storage->OpenRootKey(true))
-            {
-                if (Storage->KeyExists(SessionData->GetStorageKey()))
-                {
-                    SessionName = SessionData->GetSessionName();
-                }
-                else
-                {
-                    SourceStorage = new TRegistryStorage(Configuration->GetPuttySessionsKey());
-                    SourceStorage->SetMungeStringValues(false);
-                    if (SourceStorage->OpenSubKey(StoredSessions->GetDefaultSettings()->GetName(), false) &&
-                            Storage->OpenSubKey(GUIConfiguration->GetPuttySession(), true))
-                    {
-                        Storage->Copy(SourceStorage);
-                        Storage->CloseSubKey();
-                    }
-
-                    ExportData = new TSessionData(L"");
-                    ExportData->Assign(SessionData);
-                    ExportData->SetModified(true);
-                    ExportData->SetName(GUIConfiguration->GetPuttySession());
-                    ExportData->SetPassword(L"");
-
-                    if (SessionData->GetFSProtocol() == fsFTP)
-                    {
-                        if (GUIConfiguration->GetTelnetForFtpInPutty())
-                        {
-                            ExportData->SetProtocol(ptTelnet);
-                            ExportData->SetPortNumber(23);
-                            // PuTTY  does not allow -pw for telnet
-                            password = L"";
-                        }
-                        else
-                        {
-                            ExportData->SetProtocol(ptSSH);
-                            ExportData->SetPortNumber(22);
-                        }
-                    }
-
-                    ExportData->Save(Storage, true);
-                    SessionName = GUIConfiguration->GetPuttySession();
-                }
-            }
-        }
-
-        if (!Params.empty())
-        {
-            Params += L" ";
-        }
-        if (!password.empty())
-        {
-            Params += FORMAT(L"-pw %s ", EscapePuttyCommandParam(password).c_str());
-        }
-        Params += FORMAT(L"-load %s", EscapePuttyCommandParam(SessionName).c_str());
-
-        if (!ExecuteShell(Program, Params))
-        {
-            throw ExtException(FMTLOAD(EXECUTE_APP_ERROR, Program.c_str()));
-        }
-    }
-    else
-    {
-        throw ExtException(FMTLOAD(FILE_NOT_FOUND, Program.c_str()));
-    }
-}
-//---------------------------------------------------------------------------
-bool ExecuteShell(const std::wstring Path, const std::wstring Params)
-{
-    return ((int)::ShellExecute(NULL, L"open", const_cast<wchar_t *>(Path.data()),
-                                const_cast<wchar_t *>(Params.data()), NULL, SW_SHOWNORMAL) > 32);
-}
-//---------------------------------------------------------------------------
-bool ExecuteShell(const std::wstring Path, const std::wstring Params,
-                  HANDLE &Handle)
-{
-    // DEBUG_PRINTF(L"Path = %s, Params = %s", Path.c_str(), Params.c_str());
-    bool Result = false;
-    _SHELLEXECUTEINFOW ExecuteInfo;
-    memset(&ExecuteInfo, 0, sizeof(ExecuteInfo));
-    ExecuteInfo.cbSize = sizeof(ExecuteInfo);
-    ExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-    ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(0));
-    ExecuteInfo.lpFile = const_cast<wchar_t *>(Path.data());
-    ExecuteInfo.lpParameters = const_cast<wchar_t *>(Params.data());
-    ExecuteInfo.nShow = SW_SHOW;
-
-    Result = (::ShellExecuteEx(&ExecuteInfo) != 0);
-    if (Result)
-    {
-        Handle = ExecuteInfo.hProcess;
-    }
-    return Result;
-}
-//---------------------------------------------------------------------------
-bool ExecuteShellAndWait(HINSTANCE Handle, const std::wstring Path,
-                         const std::wstring Params, const processmessages_signal_type &ProcessMessages)
-{
-    bool Result = false;
-    _SHELLEXECUTEINFOW ExecuteInfo;
-    memset(&ExecuteInfo, 0, sizeof(ExecuteInfo));
-    ExecuteInfo.cbSize = sizeof(ExecuteInfo);
-    ExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-    ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(0));
-    ExecuteInfo.lpFile = const_cast<wchar_t *>(Path.data());
-    ExecuteInfo.lpParameters = const_cast<wchar_t *>(Params.data());
-    ExecuteInfo.nShow = SW_SHOW;
-
-    Result = (ShellExecuteEx(&ExecuteInfo) != 0);
-    if (Result)
-    {
-        if (!ProcessMessages.empty())
-        {
-            unsigned long WaitResult;
-            do
-            {
-                WaitResult = WaitForSingleObject(ExecuteInfo.hProcess, 200);
-                if (WaitResult == WAIT_FAILED)
-                {
-                    throw ExtException(LoadStr(DOCUMENT_WAIT_ERROR));
-                }
-                ProcessMessages();
-            }
-            while (WaitResult == WAIT_TIMEOUT);
+          SessionName = SessionData->GetSessionName();
         }
         else
         {
-            WaitForSingleObject(ExecuteInfo.hProcess, INFINITE);
+          SourceStorage = new TRegistryStorage(Configuration->GetPuttySessionsKey());
+          SourceStorage->SetMungeStringValues(false);
+          SourceStorage->SetForceAnsi(true);
+          if (SourceStorage->OpenSubKey(StoredSessions->GetDefaultSettings()->GetName(), false) &&
+              Storage->OpenSubKey(GUIConfiguration->GetPuttySession(), true))
+          {
+            Storage->Copy(SourceStorage);
+            Storage->CloseSubKey();
+          }
+
+          ExportData = new TSessionData(L"");
+          ExportData->Assign(SessionData);
+          ExportData->SetModified(true);
+          ExportData->SetName(GUIConfiguration->GetPuttySession());
+          ExportData->SetPassword(L"");
+
+          if (SessionData->GetFSProtocol() == fsFTP)
+          {
+            if (GUIConfiguration->GetTelnetForFtpInPutty())
+            {
+              ExportData->SetProtocol(ptTelnet);
+              ExportData->SetPortNumber(23);
+              // PuTTY  does not allow -pw for telnet
+              Password = L"";
+            }
+            else
+            {
+              ExportData->SetProtocol(ptSSH);
+              ExportData->SetPortNumber(22);
+            }
+          }
+
+          ExportData->Save(Storage, true);
+          SessionName = GUIConfiguration->GetPuttySession();
         }
+      }
     }
-    return Result;
-}
-//---------------------------------------------------------------------------
-bool ExecuteShellAndWait(HINSTANCE Handle, const std::wstring Command,
-                         const processmessages_signal_type &ProcessMessages)
-{
-    std::wstring Program, Params, Dir;
-    SplitCommand(Command, Program, Params, Dir);
-    return ExecuteShellAndWait(Handle, Program, Params, ProcessMessages);
-}
-//---------------------------------------------------------------------------
-bool SpecialFolderLocation(int PathID, std::wstring &Path)
-{
-    LPITEMIDLIST Pidl;
-    wchar_t Buf[260];
-    if (SHGetSpecialFolderLocation(NULL, PathID, &Pidl) == NO_ERROR &&
-            SHGetPathFromIDList(Pidl, Buf))
+#ifndef _MSC_VER
+    __finally
     {
-        Path = std::wstring(Buf);
-        return true;
+      delete Storage;
+      delete ExportData;
+      delete SourceStorage;
     }
-    return false;
+#endif
+
+    if (!Params.IsEmpty())
+    {
+      Params += L" ";
+    }
+    if (!Password.IsEmpty())
+    {
+      Params += FORMAT(L"-pw %s ", EscapePuttyCommandParam(Password).c_str());
+    }
+    Params += FORMAT(L"-load %s", EscapePuttyCommandParam(SessionName).c_str());
+
+    if (!ExecuteShell(Program, Params))
+    {
+      throw Exception(FMTLOAD(EXECUTE_APP_ERROR, Program.c_str()));
+    }
+  }
+  else
+  {
+    throw Exception(FMTLOAD(FILE_NOT_FOUND, Program.c_str()));
+  }
 }
 //---------------------------------------------------------------------------
-std::wstring ItemsFormatString(const std::wstring SingleItemFormat,
-                               const std::wstring MultiItemsFormat, size_t Count, const std::wstring FirstItem)
+bool __fastcall ExecuteShell(const UnicodeString Path, const UnicodeString Params)
 {
-    std::wstring Result;
-    if (Count == 1)
+  return ((int)::ShellExecute(NULL, L"open", const_cast<wchar_t*>(Path.data()),
+    const_cast<wchar_t*>(Params.data()), NULL, SW_SHOWNORMAL) > 32);
+}
+//---------------------------------------------------------------------------
+bool __fastcall ExecuteShell(const UnicodeString Path, const UnicodeString Params,
+  HANDLE & Handle)
+{
+  bool Result = false;
+
+  _SHELLEXECUTEINFOW ExecuteInfo;
+  memset(&ExecuteInfo, 0, sizeof(ExecuteInfo));
+  ExecuteInfo.cbSize = sizeof(ExecuteInfo);
+  ExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+  ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(0));
+  ExecuteInfo.lpFile = const_cast<wchar_t *>(Path.data());
+  ExecuteInfo.lpParameters = const_cast<wchar_t *>(Params.data());
+  ExecuteInfo.nShow = SW_SHOW;
+
+  Result = (::ShellExecuteEx(&ExecuteInfo) != 0);
+  if (Result)
+  {
+    Handle = ExecuteInfo.hProcess;
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+bool __fastcall ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString Path,
+  const UnicodeString Params, TProcessMessagesEvent ProcessMessages)
+{
+  bool Result = false;
+  _SHELLEXECUTEINFOW ExecuteInfo;
+  memset(&ExecuteInfo, 0, sizeof(ExecuteInfo));
+  ExecuteInfo.cbSize = sizeof(ExecuteInfo);
+  ExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+  ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(0));
+  ExecuteInfo.lpFile = const_cast<wchar_t *>(Path.data());
+  ExecuteInfo.lpParameters = const_cast<wchar_t *>(Params.data());
+  ExecuteInfo.nShow = SW_SHOW;
+
+  Result = (ShellExecuteEx(&ExecuteInfo) != 0);
+  if (Result)
+  {
+    if (true) // (ProcessMessages != NULL)
     {
-        Result = FORMAT(SingleItemFormat.c_str(), FirstItem.c_str());
+      TProcessMessagesSignal sig;
+      sig.connect(ProcessMessages);
+      unsigned long WaitResult;
+      do
+      {
+        WaitResult = WaitForSingleObject(ExecuteInfo.hProcess, 200);
+        if (WaitResult == WAIT_FAILED)
+        {
+          throw Exception(LoadStr(DOCUMENT_WAIT_ERROR));
+        }
+        sig();
+      }
+      while (WaitResult == WAIT_TIMEOUT);
     }
     else
     {
-        Result = FORMAT(MultiItemsFormat.c_str(), Count);
+      WaitForSingleObject(ExecuteInfo.hProcess, INFINITE);
     }
-    return Result;
+  }
+  return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring ItemsFormatString(const std::wstring SingleItemFormat,
-                               const std::wstring MultiItemsFormat, nb::TStrings *Items)
+bool __fastcall ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString Command,
+  TProcessMessagesEvent ProcessMessages)
 {
-    return ItemsFormatString(SingleItemFormat, MultiItemsFormat,
-                             Items->GetCount(), (Items->GetCount() > 0 ? Items->GetString(0) : std::wstring()));
+  UnicodeString Program, Params, Dir;
+  SplitCommand(Command, Program, Params, Dir);
+  return ExecuteShellAndWait(Handle, Program, Params, ProcessMessages);
 }
 //---------------------------------------------------------------------------
-std::wstring FileNameFormatString(const std::wstring SingleFileFormat,
-                                  const std::wstring MultiFilesFormat, nb::TStrings *Files, bool Remote)
+bool __fastcall SpecialFolderLocation(int PathID, UnicodeString & Path)
 {
-    assert(Files != NULL);
-    std::wstring Item;
-    if (Files->GetCount() > 0)
-    {
-        Item = Remote ? UnixExtractFileName(Files->GetString(0)) :
-               ExtractFileName(Files->GetString(0), true);
-    }
-    return ItemsFormatString(SingleFileFormat, MultiFilesFormat,
-                             Files->GetCount(), Item);
+  LPITEMIDLIST Pidl;
+  wchar_t Buf[256];
+  if (SHGetSpecialFolderLocation(NULL, PathID, &Pidl) == NO_ERROR &&
+      SHGetPathFromIDList(Pidl, Buf))
+  {
+    Path = UnicodeString(Buf);
+    return true;
+  }
+  return false;
 }
-//---------------------------------------------------------------------
-std::wstring FormatBytes(__int64 Bytes, bool UseOrders)
+//---------------------------------------------------------------------------
+UnicodeString __fastcall ItemsFormatString(const UnicodeString SingleItemFormat,
+  const UnicodeString MultiItemsFormat, int Count, const UnicodeString FirstItem)
 {
-    std::wstring Result;
-
-    if (!UseOrders || (Bytes < static_cast<__int64>(100*1024)))
+  UnicodeString Result;
+  if (Count == 1)
+  {
+    Result = FORMAT(SingleItemFormat.c_str(), FirstItem.c_str());
+  }
+  else
+  {
+    Result = FORMAT(MultiItemsFormat.c_str(), Count);
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall ItemsFormatString(const UnicodeString SingleItemFormat,
+  const UnicodeString MultiItemsFormat, TStrings * Items)
+{
+  return ItemsFormatString(SingleItemFormat, MultiItemsFormat,
+    Items->GetCount(), (Items->GetCount() > 0 ? Items->GetStrings(0) : UnicodeString()));
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall FileNameFormatString(const UnicodeString SingleFileFormat,
+  const UnicodeString MultiFilesFormat, TStrings * Files, bool Remote)
+{
+  assert(Files != NULL);
+  UnicodeString Item;
+  if (Files->GetCount() > 0)
+  {
+    Item = Remote ? UnixExtractFileName(Files->GetStrings(0)) :
+      ExtractFileName(Files->GetStrings(0), true);
+  }
+  return ItemsFormatString(SingleFileFormat, MultiFilesFormat,
+    Files->GetCount(), Item);
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall UniqTempDir(const UnicodeString BaseDir, const UnicodeString Identity,
+  bool Mask)
+{
+  UnicodeString TempDir;
+  do
+  {
+    TempDir = BaseDir.IsEmpty() ? SystemTemporaryDirectory() : BaseDir;
+    TempDir = IncludeTrailingBackslash(TempDir) + Identity;
+    if (Mask)
     {
-        // Result = FormatFloat(L"#,##0 \"B\"", Bytes);
-        Result = FORMAT(L"%.0f B", static_cast<double>(Bytes));
-    }
-    else if (Bytes < static_cast<__int64>(100*1024*1024))
-    {
-        // Result = FormatFloat(L"#,##0 \"KiB\"", Bytes / 1024);
-        Result = FORMAT(L"%.0f KiB", static_cast<double>(Bytes / 1024.0));
+      TempDir += L"?????";
     }
     else
     {
-        // Result = FormatFloat(L"#,##0 \"MiB\"", Bytes / (1024*1024));
-        Result = FORMAT(L"%.0f MiB", static_cast<double>(Bytes / (1024*1024.0)));
-    }
-    return Result;
+      // TempDir += IncludeTrailingBackslash(FormatDateTime(L"nnzzz", Now()));
+      TDateTime dt = Now();
+      unsigned short H, M, S, MS;
+      dt.DecodeTime(H, M, S, MS);
+      TempDir += IncludeTrailingBackslash(FORMAT(L"%02d%03d", M, MS));
+    };
+  }
+  while (!Mask && DirectoryExists(TempDir));
+
+  return TempDir;
 }
 //---------------------------------------------------------------------------
-std::wstring UniqTempDir(const std::wstring BaseDir, const std::wstring Identity,
-                         bool Mask)
+bool __fastcall DeleteDirectory(const UnicodeString DirName)
 {
-    std::wstring TempDir;
-    do
+  TSearchRec sr = {0};
+  bool retval = true;
+  if (FindFirst(DirName + L"\\*", faAnyFile, sr) == 0) // VCL Function
+  {
+    if (FLAGSET(sr.Attr, faDirectory))
     {
-        TempDir = BaseDir.empty() ? SystemTemporaryDirectory() : BaseDir;
-        TempDir = IncludeTrailingBackslash(TempDir) + Identity;
-        if (Mask)
+      if ((sr.Name != THISDIRECTORY) && (sr.Name != PARENTDIRECTORY))
+        retval = DeleteDirectory(DirName + L"\\" + sr.Name);
+    }
+    else
+    {
+      retval = DeleteFile(DirName + L"\\" + sr.Name);
+    }
+
+    if (retval)
+    {
+      while (FindNext(sr) == 0)
+      { // VCL Function
+        if (FLAGSET(sr.Attr, faDirectory))
         {
-            TempDir += L"?????";
+          if ((sr.Name != THISDIRECTORY) && (sr.Name != PARENTDIRECTORY))
+            retval = DeleteDirectory(DirName + L"\\" + sr.Name);
         }
         else
         {
-            TempDir += IncludeTrailingBackslash(FormatDateTime(L"nnzzz", nb::Now()));
-        };
-    }
-    while (!Mask && DirectoryExists(TempDir));
+          retval = DeleteFile(DirName + L"\\" + sr.Name);
+        }
 
-    return TempDir;
+        if (!retval) { break; }
+      }
+    }
+  }
+  FindClose(sr);
+  if (retval) { retval = RemoveDir(DirName); } // VCL function
+  return retval;
 }
 //---------------------------------------------------------------------------
-bool DeleteDirectory(const std::wstring DirName)
+UnicodeString __fastcall FormatDateTimeSpan(const UnicodeString TimeFormat, TDateTime DateTime)
 {
-    bool retval = true;
-    WIN32_FIND_DATA sr;
-    // sr.dwFileAttributes = faAnyFile;
-    HANDLE h = ::FindFirstFileW(DirName.c_str(), &sr);
-    if (h != INVALID_HANDLE_VALUE)
-    {
-        if (FLAGSET(sr.dwFileAttributes, faDirectory))
-        {
-            if ((wcscmp(sr.cFileName, THISDIRECTORY) != 0) && (wcscmp(sr.cFileName, PARENTDIRECTORY) != 0))
-            {
-                retval = ::DeleteDirectory(DirName + L"\\" + sr.cFileName);
-            }
-        }
-        else
-        {
-            retval = ::DeleteFile(DirName + L"\\" + sr.cFileName);
-        }
-
-        if (retval)
-        {
-            while (::FindNextFile(h, &sr) == 0)
-            {
-                if (FLAGSET(sr.dwFileAttributes, faDirectory))
-                {
-                    if ((wcscmp(sr.cFileName, THISDIRECTORY) != 0) && (wcscmp(sr.cFileName, PARENTDIRECTORY) != 0))
-                    {
-                        retval = ::DeleteDirectory(DirName + L"\\" + sr.cFileName);
-                    }
-                }
-                else
-                {
-                    retval = ::DeleteFile(DirName + L"\\" + sr.cFileName);
-                }
-
-                if (!retval) { break; }
-            }
-        }
-    }
-    ::FindClose(h);
-    if (retval) { retval = ::RemoveDir(DirName); }
-    return retval;
-}
-//---------------------------------------------------------------------------
-std::wstring FormatDateTimeSpan(const std::wstring TimeFormat, nb::TDateTime DateTime)
-{
-    std::wstring Result;
-    if (static_cast<int>(DateTime) > 0)
-    {
-        Result = IntToStr(static_cast<int>(DateTime)) + L", ";
-    }
-    // days are decremented, because when there are to many of them,
-    // "integer overflow" error occurs
-    // Result += FormatDateTime(TimeFormat, nb::TDateTime(DateTime - int(DateTime)));
-    // DEBUG_PRINTF(L"TimeFormat = %s", TimeFormat.c_str());
-    nb::TDateTime dt(DateTime - static_cast<int>(DateTime));
-    unsigned int H, M, S, MS;
-    dt.DecodeTime(H, M, S, MS);
-    Result += FORMAT(L"%d:%02d:%02d", H, M, S);
-    return Result;
+  UnicodeString Result;
+  if (static_cast<int>(DateTime) > 0)
+  {
+    Result = IntToStr(static_cast<int>(DateTime)) + L", ";
+  }
+  // days are decremented, because when there are to many of them,
+  // "integer overflow" error occurs
+  // Result += FormatDateTime(TimeFormat, System::TDateTime(DateTime - int(DateTime)));
+  TDateTime dt(DateTime - static_cast<int>(DateTime));
+  unsigned short H, M, S, MS;
+  dt.DecodeTime(H, M, S, MS);
+  Result += FORMAT(L"%02d:%02d:%02d", H, M, S);
+  return Result;
 }
 //---------------------------------------------------------------------------
 TLocalCustomCommand::TLocalCustomCommand()
 {
 }
 //---------------------------------------------------------------------------
-TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData &Data,
-        const std::wstring Path) :
-    TFileCustomCommand(Data, Path)
+TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
+    const UnicodeString & Path) :
+  TFileCustomCommand(Data, Path)
 {
 }
 //---------------------------------------------------------------------------
-TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData &Data,
-        const std::wstring Path, const std::wstring FileName,
-        const std::wstring LocalFileName, const std::wstring FileList) :
-    TFileCustomCommand(Data, Path, FileName, FileList)
+TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
+  const UnicodeString & Path, const UnicodeString & FileName,
+  const UnicodeString & LocalFileName, const UnicodeString & FileList) :
+  TFileCustomCommand(Data, Path, FileName, FileList)
 {
-    FLocalFileName = LocalFileName;
+  FLocalFileName = LocalFileName;
 }
 //---------------------------------------------------------------------------
-size_t TLocalCustomCommand::PatternLen(size_t Index, char PatternCmd)
+int __fastcall TLocalCustomCommand::PatternLen(int Index, wchar_t PatternCmd)
 {
-    size_t Len = 0;
-    if (PatternCmd == '^')
-    {
-        Len = 3;
-    }
-    else
-    {
-        Len = TFileCustomCommand::PatternLen(Index, PatternCmd);
-    }
-    return Len;
+  int Len = 0;
+  if (PatternCmd == L'^')
+  {
+    Len = 3;
+  }
+  else
+  {
+    Len = TFileCustomCommand::PatternLen(Index, PatternCmd);
+  }
+  return Len;
 }
 //---------------------------------------------------------------------------
-bool TLocalCustomCommand::PatternReplacement(size_t Index,
-        const std::wstring Pattern, std::wstring &Replacement, bool &Delimit)
+bool __fastcall TLocalCustomCommand::PatternReplacement(int Index,
+  const UnicodeString & Pattern, UnicodeString & Replacement, bool & Delimit)
 {
-    bool Result = false;
-    if (Pattern == L"!^!")
-    {
-        Replacement = FLocalFileName;
-        Result = true;
-    }
-    else
-    {
-        Result = TFileCustomCommand::PatternReplacement(Index, Pattern, Replacement, Delimit);
-    }
-    return Result;
+  bool Result = false;
+  if (Pattern == L"!^!")
+  {
+    Replacement = FLocalFileName;
+    Result = true;
+  }
+  else
+  {
+    Result = TFileCustomCommand::PatternReplacement(Index, Pattern, Replacement, Delimit);
+  }
+  return Result;
 }
 //---------------------------------------------------------------------------
-void TLocalCustomCommand::DelimitReplacement(
-    const std::wstring /*Replacement*/, char /*Quote*/)
+void __fastcall TLocalCustomCommand::DelimitReplacement(
+  UnicodeString & /*Replacement*/, wchar_t /*Quote*/)
 {
-    // never delimit local commands
+  // never delimit local commands
 }
 //---------------------------------------------------------------------------
-bool TLocalCustomCommand::HasLocalFileName(const std::wstring Command)
+bool __fastcall TLocalCustomCommand::HasLocalFileName(const UnicodeString & Command)
 {
-    return FindPattern(Command, '^');
+  return FindPattern(Command, L'^');
 }
 //---------------------------------------------------------------------------
-bool TLocalCustomCommand::IsFileCommand(const std::wstring Command)
+bool __fastcall TLocalCustomCommand::IsFileCommand(const UnicodeString & Command)
 {
-    return TFileCustomCommand::IsFileCommand(Command) || HasLocalFileName(Command);
+  return TFileCustomCommand::IsFileCommand(Command) || HasLocalFileName(Command);
 }
+//---------------------------------------------------------------------
+UnicodeString __fastcall FormatBytes(__int64 Bytes, bool UseOrders)
+{
+  UnicodeString Result;
+
+  if (!UseOrders || (Bytes < static_cast<__int64>(100*1024)))
+  {
+    // Result = FormatFloat(L"#,##0 \"B\"", Bytes);
+    Result = FORMAT(L"%.0f B", static_cast<double>(Bytes));
+  }
+  else if (Bytes < static_cast<__int64>(100*1024*1024))
+  {
+    // Result = FormatFloat(L"#,##0 \"KiB\"", Bytes / 1024);
+    Result = FORMAT(L"%.0f KiB", static_cast<double>(Bytes / 1024.0));
+  }
+  else
+  {
+    // Result = FormatFloat(L"#,##0 \"MiB\"", Bytes / (1024*1024));
+    Result = FORMAT(L"%.0f MiB", static_cast<double>(Bytes / (1024*1024.0)));
+  }
+  return Result;
+}
+//---------------------------------------------------------------------

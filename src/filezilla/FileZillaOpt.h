@@ -160,6 +160,7 @@
 // MPEXT
 #define OPTION_MPEXT_SHOWHIDDEN 1000
 #define OPTION_MPEXT_PRESERVEUPLOADFILETIME 1001
-#define OPTION_MPEXT_SSLSESSIONREUSE 1002
+#define OPTION_MPEXT_SNDBUF 1002
+#define OPTION_MPEXT_SSLSESSIONREUSE 1003
 //---------------------------------------------------------------------------
 #endif // FileZillaOptH
