@@ -323,7 +323,7 @@ bool AnsiSameText(const UnicodeString str1, const UnicodeString str2)
 
 bool SameText(const UnicodeString str1, const UnicodeString str2)
 {
-  return AnsiSameText(str1, str2) == 0;
+  return AnsiSameText(str1, str2);
 }
 
 int AnsiCompareText(const UnicodeString str1, const UnicodeString str2)
