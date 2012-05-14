@@ -385,11 +385,11 @@ void __fastcall TFarDialog::GetNextItemPosition(int & Left, int & Top)
   }
 }
 //---------------------------------------------------------------------------
-INT_PTR WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1, void *Param2)
+INT_PTR WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1, LONG_PTR Param2)
 {
   TFarPluginEnvGuard Guard;
 
-  static std::map<HANDLE, void *> Dialogs;
+  static std::map<HANDLE, LONG_PTR> Dialogs;
   TFarDialog * Dialog = NULL;
   LONG_PTR Result = 0;
   if (Msg == DN_INITDIALOG)
@@ -461,7 +461,7 @@ LONG_PTR __fastcall TFarDialog::DialogProc(int Msg, int Param1, LONG_PTR Param2)
       case DN_LISTCHANGE:
         Changed = true;
 
-      case DN_MOUSECLICK:
+      // case DN_MOUSECLICK:
       case DN_CTLCOLORDLGITEM:
       case DN_CTLCOLORDLGLIST:
       case DN_DRAWDLGITEM:

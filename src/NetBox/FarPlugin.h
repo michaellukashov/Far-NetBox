@@ -130,8 +130,6 @@ public:
 
   virtual int ProcessEditorInput(const struct ProcessEditorInputInfo *Info);
 
-  virtual int __fastcall PutFiles(HANDLE Plugin, struct PluginPanelItem * PanelItem,
-
   virtual void __fastcall HandleException(Exception * E, int OpMode = 0);
 
   static wchar_t * DuplicateStr(const UnicodeString Str, bool AllowEmpty = false);

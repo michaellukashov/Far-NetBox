@@ -87,8 +87,8 @@ public:
   __property TFarKeyEvent OnKey = { read = FOnKey, write = FOnKey };
 #else
   TRect GetBounds() { return FBounds; }
-  FARDIALOGITEMFLAGS GetFlags() const { return FFlags; }
-  void SetFlags(const FARDIALOGITEMFLAGS value);
+  FARDIALOGITEMFLAGS __fastcall GetFlags() const { return FFlags; }
+  void __fastcall SetFlags(const FARDIALOGITEMFLAGS value);
   UnicodeString GetHelpTopic() { return FHelpTopic; }
   HANDLE GetHandle() { return FHandle; }
   TFarButton * GetDefaultButton() const { return FDefaultButton; }
@@ -176,7 +176,6 @@ private:
 public:
   void __fastcall SetBounds(TRect value);
   void __fastcall SetHelpTopic(UnicodeString value);
-  void __fastcall SetFlags(unsigned int value);
   void __fastcall SetCentered(bool value);
   bool __fastcall GetCentered();
   TPoint __fastcall GetSize();
@@ -273,8 +272,6 @@ public:
   __property TNotifyEvent OnExit = { read = FOnExit, write = FOnExit };
   __property TFarMouseClickEvent OnMouseClick = { read = FOnMouseClick, write = FOnMouseClick };
 #else
-  FARDIALOGITEMFLAGS GetFlags();
-  void SetFlags(FARDIALOGITEMFLAGS value);
   TRect __fastcall GetBounds() { return FBounds; }
   int __fastcall GetLeft() { return GetCoordinate(0); }
   void __fastcall SetLeft(int value) { SetCoordinate(0, value); }
@@ -395,13 +392,12 @@ private:
   unsigned long FColorMask;
   // bool FOem;
 
-  void UpdateFlags(FARDIALOGITEMFLAGS value);
 public:
   void __fastcall SetBounds(TRect value);
-  void __fastcall SetFlags(unsigned int value);
-  void __fastcall UpdateFlags(unsigned int value);
+  FARDIALOGITEMFLAGS __fastcall GetFlags();
+  void __fastcall SetFlags(FARDIALOGITEMFLAGS value);
+  void __fastcall UpdateFlags(FARDIALOGITEMFLAGS value);
   TRect __fastcall GetActualBounds();
-  size_t __fastcall GetFlags();
   void __fastcall SetType(int value);
   int __fastcall GetType();
   void __fastcall SetEnabledFollow(TFarDialogItem * value);

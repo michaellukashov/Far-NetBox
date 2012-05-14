@@ -58,20 +58,13 @@ extern "C"
     FarPlugin->ExitFAR();
   }
 
-  void WINAPI GetPluginInfoW(PluginInfo *Info)
+  void WINAPI GetPluginInfoW(PluginInfo * Info)
   {
    if (Info->StructSize < sizeof(PluginInfo))
      return;
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    FarPlugin->GetPluginInfo(pi);
-  }
-  int WINAPI ConfigureW(int item)
-  {
-    assert(FarPlugin);
-    TFarPluginGuard Guard;
     FarPlugin->GetPluginInfo(Info);
-    return FarPlugin->Configure(item);
   }
 
   int WINAPI ConfigureW(const struct ConfigureInfo *Info)
