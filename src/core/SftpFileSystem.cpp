@@ -4579,19 +4579,35 @@ void __fastcall TSFTPFileSystem::SFTPSource(const UnicodeString FileName,
           }
           bool Resend = false;
           FILE_OPERATION_LOOP(FMTLOAD(PRESERVE_TIME_PERM_ERROR, DestFileName.c_str()),
-            TSFTPPacket DummyResponse(GetSessionData()->GetCodePageAsNumber());
-            TSFTPPacket * Response = &PropertiesResponse;
-            if (Resend)
+            try
             {
-              PropertiesRequest.Reuse();
-              SendPacket(&PropertiesRequest);
-              // ReceiveResponse currently cannot receive twice into same packet,
-              // so DummyResponse is temporary workaround
-              Response = &DummyResponse;
+              TSFTPPacket DummyResponse(GetSessionData()->GetCodePageAsNumber());
+              TSFTPPacket * Response = &PropertiesResponse;
+              if (Resend)
+              {
+                PropertiesRequest.Reuse();
+                SendPacket(&PropertiesRequest);
+                // ReceiveResponse currently cannot receive twice into same packet,
+                // so DummyResponse is temporary workaround
+                Response = &DummyResponse;
+              }
+              Resend = true;
+              ReceiveResponse(&PropertiesRequest, Response, SSH_FXP_STATUS,
+                asOK | FLAGMASK(CopyParam->GetIgnorePermErrors(), asPermDenied));
             }
-            Resend = true;
-            ReceiveResponse(&PropertiesRequest, Response, SSH_FXP_STATUS,
-              asOK | FLAGMASK(CopyParam->GetIgnorePermErrors(), asPermDenied));
+            catch (...)
+            {
+              if (FTerminal->GetActive() &&
+                  (!CopyParam->GetPreserveRights() && !CopyParam->GetPreserveTime()))
+              {
+                assert(DoResume);
+                FTerminal->LogEvent(L"Ignoring error preserving permissions of overwritten file");
+              }
+              else
+              {
+                throw;
+              }
+            }
           );
         }
         catch(Exception & E)
