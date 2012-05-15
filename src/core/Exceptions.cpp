@@ -224,7 +224,7 @@ ExtException * __fastcall ESshTerminate::Clone()
   return new ESshTerminate(this, L"", Operation);
 }
 //---------------------------------------------------------------------------
-__fastcall ECallbackGuardAbort::ECallbackGuardAbort() : EAbort(L"callback abort")
+/* __fastcall */ ECallbackGuardAbort::ECallbackGuardAbort() : EAbort(L"callback abort")
 {
 }
 //---------------------------------------------------------------------------
@@ -241,7 +241,7 @@ Exception * __fastcall CloneException(Exception * E)
   }
   else
   {
-    return new Exception(E->Message);
+    return new Exception(E->GetMessage());
   }
 }
 //---------------------------------------------------------------------------

@@ -128,7 +128,7 @@ public:
 class ECallbackGuardAbort : public EAbort
 {
 public:
-  __fastcall ECallbackGuardAbort();
+  /* __fastcall */ ECallbackGuardAbort();
 };
 //---------------------------------------------------------------------------
 Exception * __fastcall CloneException(Exception * Exception);
