@@ -8,6 +8,7 @@
 #include "RemoteFiles.h"
 #include "FileBuffer.h"
 #include "HierarchicalStorage.h"
+// #include "Usage.h"
 //---------------------------------------------------------------------------
 #define SET_CONFIG_PROPERTY_EX(PROPERTY, APPLY) \
   if (Get##PROPERTY() != value) { F ## PROPERTY = value; Changed(); APPLY; }
@@ -16,7 +17,6 @@
 //---------------------------------------------------------------------------
 #define CONST_DEFAULT_NUMBER_OF_RETRIES 2
 //---------------------------------------------------------------------------
-class TCriticalSection;
 enum TAutoSwitch { asOn, asOff, asAuto };
 enum TFtpEncryptionSwitch { fesPlainFTP, fesExplicitSSL, fesImplicit, fesExplicitTLS };
 //---------------------------------------------------------------------------
@@ -29,6 +29,7 @@ private:
   TNotifySignal FOnChange;
 
   void * FApplicationInfo;
+  // TUsage * FUsage;
   bool FLogging;
   bool FPermanentLogging;
   UnicodeString FLogFileName;
@@ -45,7 +46,6 @@ private:
   bool FConfirmResume;
   bool FAutoReadDirectoryAfterOp;
   int FSessionReopenAuto;
-  int FSessionReopenAutoMaximumNumberOfRetries;
   int FSessionReopenBackground;
   int FSessionReopenTimeout;
   int FSessionReopenAutoStall;
@@ -62,6 +62,8 @@ private:
   bool FDisablePasswordStoring;
   bool FForceBanners;
   bool FDisableAcceptingHostKeys;
+  bool FDefaultCollectUsage;
+  int FSessionReopenAutoMaximumNumberOfRetries;
 
 public:
   UnicodeString __fastcall GetOSVersionStr();
@@ -112,6 +114,8 @@ public:
   int __fastcall GetCompoundVersion();
   void __fastcall UpdateActualLogProtocol();
   void __fastcall SetExternalIpAddress(UnicodeString value);
+  bool __fastcall GetCollectUsage();
+  void __fastcall SetCollectUsage(bool value);
 
 protected:
   TStorage FStorage;
@@ -194,6 +198,8 @@ public:
 #ifndef _MSC_VER
   __property TVSFixedFileInfo *FixedApplicationInfo  = { read=GetFixedApplicationInfo };
   __property void * ApplicationInfo  = { read=GetApplicationInfo };
+  __property TUsage * Usage = { read = FUsage };
+  __property bool CollectUsage = { read = GetCollectUsage, write = SetCollectUsage };
   __property UnicodeString StoredSessionsSubKey = {read=GetStoredSessionsSubKey};
   __property UnicodeString PuttyRegistryStorageKey  = { read=FPuttyRegistryStorageKey, write=SetPuttyRegistryStorageKey };
   __property UnicodeString PuttySessionsKey  = { read=GetPuttySessionsKey };
@@ -252,6 +258,8 @@ public:
   UnicodeString __fastcall GetActionsLogFileName() const { return FActionsLogFileName; }
   UnicodeString __fastcall GetRandomSeedFile() const { return FRandomSeedFile; }
   int __fastcall GetSessionReopenAutoStall() { return FSessionReopenAutoStall; }
+
+  // TUsage * GetUsage() { return FUsage; };
 
   UnicodeString GetPuttyRegistryStorageKey() { return FPuttyRegistryStorageKey; }
   bool GetLogging() { return FLogging; }
