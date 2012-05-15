@@ -61,9 +61,9 @@ private:
   class NAME : public BASE \
   { \
   public: \
-    explicit /* __fastcall */ NAME(Exception* E, UnicodeString Msg) : BASE(E, Msg) {} \
-    virtual /* __fastcall */ ~NAME(void) { } \
-    explicit /* __fastcall */ NAME(const UnicodeString Msg, int AHelpContext) : BASE(Msg, AHelpContext) { } \
+    explicit inline /* __fastcall */ NAME(Exception* E, UnicodeString Msg) : BASE(E, Msg) {} \
+    virtual inline /* __fastcall */ ~NAME(void) { } \
+    explicit inline  /* __fastcall */ NAME(const UnicodeString Msg, int AHelpContext) : BASE(Msg, AHelpContext) { } \
     virtual ExtException * __fastcall Clone() { return new NAME(this, L""); } \
   };
 //---------------------------------------------------------------------------
@@ -104,7 +104,7 @@ private:
   class NAME : public BASE \
   { \
   public: \
-    explicit /* __fastcall */ NAME(Exception* E, UnicodeString Msg) : BASE(E, Msg) {} \
+    explicit inline /* __fastcall */ NAME(Exception* E, UnicodeString Msg) : BASE(E, Msg) {} \
     virtual ExtException * __fastcall Clone() { return new NAME(this, L""); } \
   };
 //---------------------------------------------------------------------------
@@ -115,7 +115,7 @@ DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal);
 class ESshTerminate : public EFatal
 {
 public:
-  explicit /* __fastcall */ ESshTerminate(Exception* E, UnicodeString Msg, TOnceDoneOperation AOperation) :
+  explicit inline /* __fastcall */ ESshTerminate(Exception* E, UnicodeString Msg, TOnceDoneOperation AOperation) :
     EFatal(E, Msg),
     Operation(AOperation)
   {}
