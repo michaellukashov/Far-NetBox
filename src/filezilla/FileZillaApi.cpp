@@ -492,7 +492,6 @@ int CFileZillaApi::ListFile(const CServerPath& path, const CString& fileName)
 	
 	if (m_pMainThread->IsBusy())
 		return FZ_REPLY_BUSY;
-
 	t_command command;
 	command.id=FZ_COMMAND_LISTFILE;
 	command.path=path;

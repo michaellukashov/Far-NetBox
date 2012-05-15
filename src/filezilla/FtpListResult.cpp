@@ -1403,6 +1403,42 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
 	return TRUE;
 }
 
+bool CFtpListResult::parseMlsdDateTime(const CString value, t_directory::t_direntry &direntry) const
+{
+	if (value.IsEmpty())
+		return FALSE;
+
+	bool result = FALSE;
+	int Year, Month, Day, Hours, Minutes, Seconds;
+	Year=Month=Day=Hours=Minutes=Seconds=0;
+	if (swscanf((LPCWSTR)value, L"%4d%2d%2d%2d%2d%2d", &Year, &Month, &Day, &Hours, &Minutes, &Seconds) == 6)
+	{
+		direntry.date.hasdate = TRUE;
+		direntry.date.hastime = TRUE;
+		direntry.date.hasseconds = TRUE;
+		result = TRUE;
+	}
+	else if (swscanf((LPCWSTR)value, L"%4d%2d%2d", &Year, &Month, &Day) == 3)
+	{
+		direntry.date.hasdate = TRUE;
+		direntry.date.hastime = FALSE;
+		result = TRUE;
+	}
+	if (result)
+	{
+		direntry.date.year = Year;
+		direntry.date.month = Month;
+		direntry.date.day = Day;
+		direntry.date.hour = Hours;
+		direntry.date.minute = Minutes;
+		direntry.date.second = Seconds;
+		CTime dateTime(Year, Month, Day, Hours, Minutes, Seconds);
+		// direntry.EntryTime = dateTime.FromTimezone(GMT0);
+		direntry.EntryTime = dateTime;
+	}
+	return result;
+}
+
 BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_directory::t_direntry &direntry)
 {
 	int pos = 0;
@@ -2880,41 +2916,6 @@ bool CFtpListResult::parseTime(const char *str, int len, t_directory::t_direntry
 	date.hastime = TRUE;
 
 	return true;
-}
-
-bool CFtpListResult::parseMlsdDateTime(const CString value, t_directory::t_direntry &direntry) const
-{
-	if (value.IsEmpty())
-		return FALSE;
-
-	bool result = FALSE;
-	int Year, Month, Day, Hours, Minutes, Seconds;
-	Year=Month=Day=Hours=Minutes=Seconds=0;
-	if (swscanf((LPCWSTR)value, L"%4d%2d%2d%2d%2d%2d", &Year, &Month, &Day, &Hours, &Minutes, &Seconds) == 6)
-	{
-		direntry.date.hasdate = TRUE;
-		direntry.date.hastime = TRUE;
-		result = TRUE;
-	}
-	else if (swscanf((LPCWSTR)value, L"%4d%2d%2d", &Year, &Month, &Day) == 3)
-	{
-		direntry.date.hasdate = TRUE;
-		direntry.date.hastime = FALSE;
-		result = TRUE;
-	}
-	if (result)
-	{
-		direntry.date.year = Year;
-		direntry.date.month = Month;
-		direntry.date.day = Day;
-		direntry.date.hour = Hours;
-		direntry.date.minute = Minutes;
-		direntry.date.second = Seconds;
-		CTime dateTime(Year, Month, Day, Hours, Minutes, Seconds);
-		// direntry.EntryTime = dateTime.FromTimezone(GMT0);
-		direntry.EntryTime = dateTime;
-	}
-	return result;
 }
 
 BOOL CFtpListResult::parseAsWfFtp(const char *line, const int linelen, t_directory::t_direntry &direntry)
