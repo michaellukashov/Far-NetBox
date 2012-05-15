@@ -14,7 +14,6 @@
 #include "Terminal.h"
 //---------------------------------------------------------------------------
 extern const wchar_t IncludeExcludeFileMasksDelimiter = L'|';
-static UnicodeString IncludeExcludeFileMasksDelimiterStr = UnicodeString(L' ') + IncludeExcludeFileMasksDelimiter + L' ';
 static UnicodeString FileMasksDelimiters = L";,";
 static UnicodeString AllFileMasksDelimiters = FileMasksDelimiters + IncludeExcludeFileMasksDelimiter;
 static UnicodeString DirectoryMaskDelimiters = L"/\\";
@@ -220,7 +219,14 @@ UnicodeString __fastcall TFileMasks::ComposeMaskStr(
   AddToList(ExcludeMasks, ComposeMaskStr(ExcludeDirectoryMasksStr, true), FileMasksDelimiterStr);
 
   UnicodeString Result = IncludeMasks;
-  AddToList(Result, ExcludeMasks, IncludeExcludeFileMasksDelimiterStr);
+  if (!ExcludeMasks.IsEmpty())
+  {
+    if (!Result.IsEmpty())
+    {
+      Result += L' ';
+    }
+    Result += UnicodeString(IncludeExcludeFileMasksDelimiter) + L' ' + ExcludeMasks;
+  }
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -229,15 +235,18 @@ UnicodeString __fastcall TFileMasks::ComposeMaskStr(
   Init();
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TFileMasks::TFileMasks(int ForceDirectoryMasks)
+/* __fastcall */ TFileMasks::TFileMasks(int ForceDirectoryMasks, bool NoImplicitMatch)
 {
   Init();
   FForceDirectoryMasks = ForceDirectoryMasks;
+  FNoImplicitMatch = NoImplicitMatch;
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TFileMasks::TFileMasks(const TFileMasks & Source)
 {
   Init();
+  FForceDirectoryMasks = Source.FForceDirectoryMasks;
+  FNoImplicitMatch = Source.FNoImplicitMatch;
   SetStr(Source.GetMasks(), false);
 }
 //---------------------------------------------------------------------------
@@ -259,6 +268,7 @@ void __fastcall TFileMasks::Init()
   {
     FMasksStr[Index] = NULL;
   }
+  FNoImplicitMatch = false;
 
   DoInit(false);
 }
@@ -406,14 +416,32 @@ bool __fastcall TFileMasks::MatchesMasks(const UnicodeString FileName, bool Dire
 bool __fastcall TFileMasks::Matches(const UnicodeString FileName, bool Directory,
   const UnicodeString Path, const TParams * Params) const
 {
+  bool ImplicitMatch;
+  return Matches(FileName, Directory, Path, Params, ImplicitMatch);
+}
+//---------------------------------------------------------------------------
+bool __fastcall TFileMasks::Matches(const UnicodeString FileName, bool Directory,
+  const UnicodeString Path, const TParams * Params,
+  bool & ImplicitMatch) const
+{
+  bool ImplicitIncludeMatch = (!FNoImplicitMatch && FMasks[MASK_INDEX(Directory, true)].empty());
+  bool ExplicitIncludeMatch = MatchesMasks(FileName, Directory, Path, Params, FMasks[MASK_INDEX(Directory, true)], true);
   bool Result =
-    (FMasks[MASK_INDEX(Directory, true)].empty() || MatchesMasks(FileName, Directory, Path, Params, FMasks[MASK_INDEX(Directory, true)], true)) &&
+    (ImplicitIncludeMatch || ExplicitIncludeMatch) &&
     !MatchesMasks(FileName, Directory, Path, Params, FMasks[MASK_INDEX(Directory, false)], false);
+  ImplicitMatch = Result && ImplicitIncludeMatch && !ExplicitIncludeMatch;
   return Result;
 }
 //---------------------------------------------------------------------------
 bool __fastcall TFileMasks::Matches(const UnicodeString FileName, bool Local,
   bool Directory, const TParams * Params) const
+{
+  bool ImplicitMatch;
+  return Matches(FileName, Local, Directory, Params, ImplicitMatch);
+}
+//---------------------------------------------------------------------------
+bool __fastcall TFileMasks::Matches(const UnicodeString FileName, bool Local,
+  bool Directory, const TParams * Params, bool & ImplicitMatch) const
 {
   bool Result;
   if (Local)
@@ -423,12 +451,14 @@ bool __fastcall TFileMasks::Matches(const UnicodeString FileName, bool Local,
     {
       Path = ToUnixPath(ExcludeTrailingBackslash(Path));
     }
-    Result = Matches(ExtractFileName(FileName, false), Directory, Path, Params);
+    Result = Matches(ExtractFileName(FileName, false), Directory, Path, Params,
+      ImplicitMatch);
   }
   else
   {
     Result = Matches(UnixExtractFileName(FileName), Directory,
-      UnixExcludeTrailingBackslash(UnixExtractFilePath(FileName)), Params);
+      UnixExcludeTrailingBackslash(UnixExtractFilePath(FileName)), Params,
+        ImplicitMatch);
   }
   return Result;
 }
@@ -468,6 +498,8 @@ TFileMasks & __fastcall TFileMasks::operator =(const UnicodeString & rhs)
 //---------------------------------------------------------------------------
 TFileMasks & __fastcall TFileMasks::operator =(const TFileMasks & rhm)
 {
+  FForceDirectoryMasks = rhm.FForceDirectoryMasks;
+  FNoImplicitMatch = rhm.FNoImplicitMatch;
   SetMasks(rhm.GetMasks());
   return *this;
 }
@@ -566,8 +598,7 @@ void __fastcall TFileMasks::CreateMask(
         Boundary = TMask::Open;
       }
 
-      TFormatSettings FormatSettings;
-      GetLocaleFormatSettings(GetDefaultLCID(), FormatSettings);
+      TFormatSettings FormatSettings(GetDefaultLCID());
       FormatSettings.DateSeparator = L'-';
       FormatSettings.TimeSeparator = L':';
       FormatSettings.ShortDateFormat = L"yyyy/mm/dd";

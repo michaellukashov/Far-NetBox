@@ -61,7 +61,7 @@ public:
     TStrings * IncludeDirectoryMasksStr, TStrings * ExcludeDirectoryMasksStr);
 
   /* __fastcall */ TFileMasks();
-  explicit /* __fastcall */ TFileMasks(int ForceDirectoryMasks);
+  explicit /* __fastcall */ TFileMasks(int ForceDirectoryMasks, bool NoImplicitMatch);
   /* __fastcall */ TFileMasks(const TFileMasks & Source);
   explicit /* __fastcall */ TFileMasks(const UnicodeString & AMasks);
   virtual /* __fastcall */ ~TFileMasks();
@@ -74,10 +74,13 @@ public:
 
   bool __fastcall Matches(const UnicodeString FileName, bool Directory = false,
     const UnicodeString Path = L"", const TParams * Params = NULL) const;
+  bool __fastcall Matches(const UnicodeString FileName, bool Directory,
+    const UnicodeString Path, const TParams * Params,
+    bool & ImplicitMatch) const;
   bool __fastcall Matches(const UnicodeString FileName, bool Local, bool Directory,
     const TParams * Params = NULL) const;
-  bool __fastcall GetIsValid();
-  bool __fastcall GetIsValid(int & Start, int & Length) const;
+  bool __fastcall Matches(const UnicodeString FileName, bool Local, bool Directory,
+    const TParams * Params, bool & ImplicitMatch) const;
 
 #ifndef  _MSC_VER
   __property UnicodeString Masks = { read = FStr, write = SetMasks };
@@ -87,6 +90,8 @@ public:
   __property TStrings * IncludeDirectoryMasksStr = { read = GetMasksStr, index = MASK_INDEX(true, true) };
   __property TStrings * ExcludeDirectoryMasksStr = { read = GetMasksStr, index = MASK_INDEX(true, false) };
 #else
+  bool __fastcall GetIsValid();
+  bool __fastcall GetIsValid(int & Start, int & Length) const;
   UnicodeString __fastcall GetMasks() const { return FStr; }
   void __fastcall SetMasks(const UnicodeString value);
 
@@ -98,6 +103,7 @@ public:
 
 private:
   int FForceDirectoryMasks;
+  bool FNoImplicitMatch;
   UnicodeString FStr;
 
   struct TMaskMask
