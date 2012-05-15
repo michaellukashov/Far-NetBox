@@ -5001,20 +5001,24 @@ void /* __fastcall */ TTerminal::FileFind(UnicodeString FileName,
     MaskParams.Modification = File->GetModification();
 
     UnicodeString FullFileName = UnixExcludeTrailingBackslash(File->GetFullFileName());
+    bool ImplicitMatch;
     if (AParams->FileMask.Matches(FullFileName, false,
-         File->GetIsDirectory(), &MaskParams))
+         File->GetIsDirectory(), &MaskParams, ImplicitMatch))
     {
-      TFileFoundSignal sig;
-      if (AParams->OnFileFound)
+      if (!ImplicitMatch)
       {
-        sig.connect(*AParams->OnFileFound);
+        TFileFoundSignal sig;
+        if (AParams->OnFileFound)
+        {
+          sig.connect(*AParams->OnFileFound);
+        }
+        sig(this, FileName, File, AParams->Cancel);
       }
-      sig(this, FileName, File, AParams->Cancel);
-    }
 
-    if (File->GetIsDirectory())
-    {
-      DoFilesFind(FullFileName, *AParams);
+      if (File->GetIsDirectory())
+      {
+        DoFilesFind(FullFileName, *AParams);
+      }
     }
   }
 }
