@@ -457,14 +457,6 @@ private:
   delete FFatalError;
 }
 //---------------------------------------------------------------------------
-class ECallbackGuardAbort : public EAbort
-{
-public:
-  /* __fastcall */ ECallbackGuardAbort() : EAbort("")
-  {
-  }
-};
-//---------------------------------------------------------------------------
 void __fastcall TCallbackGuard::FatalError(Exception * E, const UnicodeString & Msg)
 {
   assert(FGuarding);
@@ -474,8 +466,7 @@ void __fastcall TCallbackGuard::FatalError(Exception * E, const UnicodeString & 
   // that converts any exception to fatal one (such as in TTerminal::Open).
   if (dynamic_cast<ECallbackGuardAbort *>(E) == NULL)
   {
-    assert(FFatalError == NULL);
-
+    delete FFatalError;
     FFatalError = new ExtException(E, Msg);
   }
 
@@ -524,10 +515,9 @@ void __fastcall TTerminal::Init(TSessionData * SessionData, TConfiguration * Con
   FFiles = new TRemoteDirectory(this);
   FExceptionOnFail = 0;
   FInTransaction = 0;
-  FSuspendTransaction = false;
   FReadCurrentDirectoryPending = false;
   FReadDirectoryPending = false;
-  FUsersGroupsLookedup = false;
+  FUsersGroupsLookedup = False;
   FTunnelLocalPortNumber = 0;
   FFileSystem = NULL;
   FSecureShell = NULL;
@@ -560,6 +550,7 @@ void __fastcall TTerminal::Init(TSessionData * SessionData, TConfiguration * Con
   FTunnelUI = NULL;
   FTunnelOpening = false;
   FCallbackGuard = NULL;
+  FSuspendTransaction = false;
   FOperationProgress = NULL;
   FClosedOnCompletion = NULL;
   FTunnel = NULL;
@@ -4145,6 +4136,8 @@ bool /* __fastcall */ TTerminal::AllowLocalFileTransfer(UnicodeString FileName,
     ::FindClose(Handle);
     bool Directory = FLAGSET(FindData.dwFileAttributes, FILE_ATTRIBUTE_DIRECTORY);
     TFileMasks::TParams Params;
+    // SearchRec.Size in C++B2010 is __int64,
+    // so we should be able to use it instead of FindData.nFileSize*
     Params.Size =
       (static_cast<__int64>(FindData.nFileSizeHigh) << 32) +
       FindData.nFileSizeLow;
@@ -4192,6 +4185,8 @@ void /* __fastcall */ TTerminal::CalculateLocalFileSize(const UnicodeString File
   bool Dir = FLAGSET(Rec.Attr, faDirectory);
 
   bool AllowTransfer = (AParams->CopyParam == NULL);
+  // SearchRec.Size in C++B2010 is __int64,
+  // so we should be able to use it instead of FindData.nFileSize*
   __int64 Size =
     (static_cast<__int64>(Rec.FindData.nFileSizeHigh) << 32) +
     Rec.FindData.nFileSizeLow;
@@ -4393,6 +4388,8 @@ void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeStri
           FileName = SearchRec.Name;
           // add dirs for recursive mode or when we are interested in newly
           // added subdirs
+          // SearchRec.Size in C++B2010 is __int64,
+          // so we should be able to use it instead of FindData.nFileSize*
           __int64 Size =
             (static_cast<__int64>(SearchRec.FindData.nFileSizeHigh) << 32) +
             SearchRec.FindData.nFileSizeLow;

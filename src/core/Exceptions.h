@@ -47,6 +47,8 @@ public:
   ExtException & operator =(const ExtException &rhs)
   { SetMessage(rhs.GetMessage()); AddMoreMessages(&rhs); }
 
+  virtual ExtException * __fastcall Clone();
+
 protected:
   void __fastcall AddMoreMessages(const Exception* E);
 
@@ -62,6 +64,7 @@ private:
     explicit /* __fastcall */ NAME(Exception* E, UnicodeString Msg) : BASE(E, Msg) {} \
     virtual /* __fastcall */ ~NAME(void) { } \
     explicit /* __fastcall */ NAME(const UnicodeString Msg, int AHelpContext) : BASE(Msg, AHelpContext) { } \
+    virtual ExtException * __fastcall Clone() { return new NAME(this, L""); } \
   };
 //---------------------------------------------------------------------------
 DERIVE_EXT_EXCEPTION(ESsh, ExtException);
@@ -91,6 +94,8 @@ public:
   void /* __fastcall */ SetReopenQueried(bool value) { FReopenQueried = value; }
 #endif
 
+  virtual ExtException * __fastcall Clone();
+
 private:
   bool FReopenQueried;
 };
@@ -100,12 +105,13 @@ private:
   { \
   public: \
     explicit /* __fastcall */ NAME(Exception* E, UnicodeString Msg) : BASE(E, Msg) {} \
+    virtual ExtException * __fastcall Clone() { return new NAME(this, L""); } \
   };
 //---------------------------------------------------------------------------
 DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal);
 //---------------------------------------------------------------------------
 // exception that closes application, but displayes info message (not error message)
-// = close on completionclass ESshTerminate : public EFatal
+// = close on completion
 class ESshTerminate : public EFatal
 {
 public:
@@ -114,7 +120,18 @@ public:
     Operation(AOperation)
   {}
 
+  virtual ExtException * __fastcall Clone();
+
   TOnceDoneOperation Operation;
 };
+//---------------------------------------------------------------------------
+class ECallbackGuardAbort : public EAbort
+{
+public:
+  __fastcall ECallbackGuardAbort();
+};
+//---------------------------------------------------------------------------
+Exception * __fastcall CloneException(Exception * Exception);
+void __fastcall RethrowException(Exception * E);
 //---------------------------------------------------------------------------
 #endif  // Exceptions

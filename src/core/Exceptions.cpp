@@ -182,6 +182,11 @@ void __fastcall ExtException::AddMoreMessages(const Exception * E)
   FMoreMessages = NULL;
 }
 //---------------------------------------------------------------------------
+ExtException * __fastcall ExtException::Clone()
+{
+  return new ExtException(this, L"");
+}
+//---------------------------------------------------------------------------
 UnicodeString __fastcall LastSysErrorMessage()
 {
   int LastError = GetLastError();
@@ -206,5 +211,52 @@ UnicodeString __fastcall LastSysErrorMessage()
   if (F != NULL)
   {
     FReopenQueried = F->FReopenQueried;
+  }
+}
+//---------------------------------------------------------------------------
+ExtException * __fastcall EFatal::Clone()
+{
+  return new EFatal(this, L"");
+}
+//---------------------------------------------------------------------------
+ExtException * __fastcall ESshTerminate::Clone()
+{
+  return new ESshTerminate(this, L"", Operation);
+}
+//---------------------------------------------------------------------------
+__fastcall ECallbackGuardAbort::ECallbackGuardAbort() : EAbort(L"callback abort")
+{
+}
+//---------------------------------------------------------------------------
+Exception * __fastcall CloneException(Exception * E)
+{
+  ExtException * Ext = dynamic_cast<ExtException *>(E);
+  if (Ext != NULL)
+  {
+    return Ext->Clone();
+  }
+  else if (dynamic_cast<ECallbackGuardAbort *>(E) != NULL)
+  {
+    return new ECallbackGuardAbort();
+  }
+  else
+  {
+    return new Exception(E->Message);
+  }
+}
+//---------------------------------------------------------------------------
+void __fastcall RethrowException(Exception * E)
+{
+  if (dynamic_cast<EFatal *>(E) != NULL)
+  {
+    throw EFatal(E, L"");
+  }
+  else if (dynamic_cast<ECallbackGuardAbort *>(E) != NULL)
+  {
+    throw ECallbackGuardAbort();
+  }
+  else
+  {
+    throw ExtException(E, L"");
   }
 }
