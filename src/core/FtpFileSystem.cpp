@@ -31,8 +31,6 @@
 #define OPENSSL_NO_EC
 #define OPENSSL_NO_ECDSA
 #define OPENSSL_NO_ECDH
-#define OPENSSL_NO_ENGINE
-#define OPENSSL_NO_DEPRECATED
 #endif
 #include <openssl/x509_vfy.h>
 //---------------------------------------------------------------------------
@@ -254,7 +252,6 @@ private:
   FListAll(asOn),
   FFileSystemInfoValid(false),
   FDoListAll(false),
-  // FMfmt(false)
   FServerCapabilities(NULL)
 {
   Self = this;
@@ -375,6 +372,7 @@ void __fastcall TFTPFileSystem::Open()
 
   UnicodeString HostName = Data->GetHostNameExpanded();
   UnicodeString UserName = Data->GetUserNameExpanded();
+  // UnicodeString Password = Data->GetPassword();
   UnicodeString Account = Data->GetFtpAccount();
   UnicodeString Path = Data->GetRemoteDirectory();
   int ServerType = 0;
@@ -472,6 +470,7 @@ void __fastcall TFTPFileSystem::Open()
       }
     }
 */
+    FPasswordFailed = false;
     FActive = FFileZillaIntf->Connect(
       HostName.c_str(), Data->GetPortNumber(), UserName.c_str(),
       Password.c_str(), Account.c_str(), false, Path.c_str(),
@@ -479,12 +478,12 @@ void __fastcall TFTPFileSystem::Open()
 
     assert(FActive);
 
-    FPasswordFailed = false;
-
     try
     {
       // do not wait for FTP response code as Connect is complex operation
       GotReply(WaitForCommandReply(false), REPLY_CONNECT, LoadStr(CONNECTION_FAILED));
+
+      Shred(Password);
 
       // we have passed, even if we got 530 on the way (if it is possible at all),
       // ignore it
@@ -495,7 +494,9 @@ void __fastcall TFTPFileSystem::Open()
     {
       if (FPasswordFailed)
       {
-        FTerminal->Information(LoadStr(FTP_ACCESS_DENIED), false);
+        FTerminal->Information(
+          LoadStr(Password.IsEmpty() ? FTP_ACCESS_DENIED_EMPTY_PASSWORD : FTP_ACCESS_DENIED),
+          false);
       }
       else
       {
@@ -657,7 +658,7 @@ void __fastcall TFTPFileSystem::AnyCommand(const UnicodeString Command,
     } BOOST_SCOPE_EXIT_END
     FFileZillaIntf->CustomCommand(Command.c_str());
 
-    GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
+    GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_3XX_CODE);
   }
 #ifndef _MSC_VER
   __finally
@@ -1514,7 +1515,8 @@ void __fastcall TFTPFileSystem::Source(const UnicodeString FileName,
 
     // we are not able to tell if setting timestamp succeeded,
     // so we log it always (if supported)
-    if (FFileTransferPreserveTime && (FServerCapabilities->GetCapability(mfmt_command) == yes))
+    if (FFileTransferPreserveTime &&
+        (FServerCapabilities->GetCapability(mfmt_command) == yes))
     {
       TTouchSessionAction TouchAction(FTerminal->GetActionLog(), DestFullName, Modification);
     }
@@ -1807,7 +1809,7 @@ bool __fastcall TFTPFileSystem::IsCapable(int Capability) const
       return true;
 
     case fcPreservingTimestampUpload:
-      return FServerCapabilities->GetCapability(mfmt_command) == yes;
+      return (FServerCapabilities->GetCapability(mfmt_command) == yes);
 
     case fcModeChangingUpload:
     case fcLoadingAdditionalProperties:
@@ -1995,9 +1997,11 @@ void __fastcall TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
   while (Repeat);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFTPFileSystem::DoReadFile(const UnicodeString FileName, TRemoteFile *& AFile)
+void __fastcall TFTPFileSystem::DoReadFile(const UnicodeString & FileName,
+  TRemoteFile *& AFile)
 {
   TRemoteFileList * FileList = new TRemoteFileList();
+  // try
   {
     BOOST_SCOPE_EXIT ( (&FileList) )
     {
@@ -2008,11 +2012,19 @@ void __fastcall TFTPFileSystem::DoReadFile(const UnicodeString FileName, TRemote
 
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_ALLOW_CANCEL);
     TRemoteFile * File = FileList->FindFile(FileName);
-    if (File)
+    if (File != NULL)
+    {
       AFile = File->Duplicate();
+    }
 
     FLastDataSent = Now();
   }
+#ifndef _MSC_VER
+  __finally
+  {
+    delete FileList;
+  }
+#endif
 }
 //---------------------------------------------------------------------------
 void __fastcall TFTPFileSystem::ReadFile(const UnicodeString FileName,
@@ -2037,25 +2049,37 @@ void __fastcall TFTPFileSystem::ReadFile(const UnicodeString FileName,
     {
       AFile = FFileListCache->FindFile(NameOnly);
     }
-
     // if cache is invalid or file is not in cache, (re)read the directory
     if (AFile == NULL)
     {
+      TRemoteFileList * FileListCache = new TRemoteFileList();
+      FileListCache->SetDirectory(Path);
+      try
+      {
+        ReadDirectory(FileListCache);
+      }
+      catch(...)
+      {
+        delete FileListCache;
+        throw;
+      }
+      // set only after we successfully read the directory,
+      // otherwise, when we reconnect from ReadDirectory,
+      // the FFileListCache is reset from ResetCache.
       delete FFileListCache;
-      FFileListCache = NULL;
-      FFileListCache = new TRemoteFileList();
-      FFileListCache->SetDirectory(Path);
-      ReadDirectory(FFileListCache);
+      FFileListCache = FileListCache;
       FFileListCachePath = GetCurrentDirectory();
 
       AFile = FFileListCache->FindFile(NameOnly);
     }
   }
+
   if (AFile == NULL)
   {
     File = NULL;
     throw Exception(FMTLOAD(FILE_NOT_EXISTS, FileName.c_str()));
   }
+
   assert(AFile != NULL);
   File = AFile->Duplicate();
 }
@@ -2330,12 +2354,12 @@ int __fastcall TFTPFileSystem::GetOptionVal(int OptionID) const
       Result = (FDoListAll ? TRUE : FALSE);
       break;
 
-    case OPTION_MPEXT_SNDBUF:
-      Result = Data->GetSendBuf();
-      break;
-
     case OPTION_MPEXT_SSLSESSIONREUSE:
       Result = (Data->GetSslSessionReuse() ? TRUE : FALSE);
+      break;
+
+    case OPTION_MPEXT_SNDBUF:
+      Result = Data->GetSendBuf();
       break;
 
     default:
@@ -2586,8 +2610,10 @@ void __fastcall TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
     {
       assert(Reply == TFileZillaIntf::REPLY_OK);
 
-      // With REPLY_2XX_CODE treat "OK" non-2xx code like an error
-      if (FLAGSET(Flags, REPLY_2XX_CODE) && (FLastCodeClass != 2))
+      // With REPLY_2XX_CODE treat "OK" non-2xx code like an error.
+      // REPLY_3XX_CODE has to be always used along with REPLY_2XX_CODE.
+      if ((FLAGSET(Flags, REPLY_2XX_CODE) && (FLastCodeClass != 2)) &&
+          ((FLAGCLEAR(Flags, REPLY_3XX_CODE) || (FLastCodeClass != 3))))
       {
         GotReply(TFileZillaIntf::REPLY_ERROR, Flags, Error);
       }
@@ -3035,31 +3061,36 @@ TDateTime __fastcall TFTPFileSystem::ConvertLocalTimestamp(time_t Time)
   return UnixToDateTime(Timestamp, dstmUnix);
 }
 //---------------------------------------------------------------------------
-TDateTime __fastcall TFTPFileSystem::ConvertRemoteTimestamp(time_t Time, bool HasTime)
+void __fastcall TFTPFileSystem::ConvertRemoteTimestamp(
+  time_t Time, bool HasTime, TDateTime & DateTime, TModificationFmt & ModificationFmt)
 {
-  TDateTime Result;
   tm * Tm = localtime(&Time);
   if (Tm != NULL)
   {
     // should be the same as HandleListData
-    Result = EncodeDateVerbose(
+    DateTime = EncodeDateVerbose(
       static_cast<unsigned short>(Tm->tm_year + 1900),
       static_cast<unsigned short>(Tm->tm_mon + 1),
       static_cast<unsigned short>(Tm->tm_mday));
     if (HasTime)
     {
-      Result += EncodeTimeVerbose(
+      DateTime += EncodeTimeVerbose(
         static_cast<unsigned short>(Tm->tm_hour),
         static_cast<unsigned short>(Tm->tm_min),
         static_cast<unsigned short>(Tm->tm_sec), 0);
+      ModificationFmt = (Tm->tm_sec != 0 ? mfFull : mfMDHM);
+    }
+    else
+    {
+      ModificationFmt = mfMDY;
     }
   }
   else
   {
     // incorrect, but at least something
-    Result = UnixToDateTime(Time, dstmUnix);
+    DateTime = UnixToDateTime(Time, dstmUnix);
+    ModificationFmt = (HasTime ? mfMDHM : mfMDY);
   }
-  return Result;
 }
 //---------------------------------------------------------------------------
 bool __fastcall TFTPFileSystem::HandleAsynchRequestOverwrite(
@@ -3098,13 +3129,13 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestOverwrite(
         if (OperationProgress->Side == osLocal)
         {
           FileParams.SourceTimestamp = ConvertLocalTimestamp(Time2);
-          FileParams.DestTimestamp = ConvertRemoteTimestamp(Time1, HasTime1);
-          FileParams.DestPrecision = (HasTime1 ? mfMDHM : mfMDY);
+          ConvertRemoteTimestamp(Time1, HasTime1,
+            FileParams.DestTimestamp, FileParams.DestPrecision);
         }
         else
         {
-          FileParams.SourceTimestamp = ConvertRemoteTimestamp(Time2, HasTime2);
-          FileParams.SourcePrecision = (HasTime2 ? mfMDHM : mfMDY);
+          ConvertRemoteTimestamp(Time2, HasTime2,
+            FileParams.SourceTimestamp, FileParams.SourcePrecision);
           FileParams.DestTimestamp = ConvertLocalTimestamp(Time1);
         }
       }
@@ -3516,10 +3547,11 @@ bool __fastcall TFTPFileSystem::HandleListData(const wchar_t * Path,
           if (Entry->HasTime)
           {
             File->SetModification(Modification +
-              EncodeTimeVerbose(static_cast<unsigned short>(Entry->Hour), static_cast<unsigned short>(Entry->Minute), 0, 0));
+              EncodeTimeVerbose(static_cast<unsigned short>(Entry->Hour), static_cast<unsigned short>(Entry->Minute),
+                static_cast<unsigned short>(Entry->Second), 0));
             // not exact as we got year as well, but it is most probably
             // guessed by FZAPI anyway
-            File->SetModificationFmt(mfMDHM);
+            File->SetModificationFmt(Entry->HasSeconds ? mfFull : mfMDHM);
           }
           else
           {
@@ -3544,10 +3576,11 @@ bool __fastcall TFTPFileSystem::HandleListData(const wchar_t * Path,
       {
         delete File;
         UnicodeString EntryData =
-          FORMAT(L"%s/%s/%s/%s/%d/%d/%d/%d/%d/%d/%d/%d/%d",
+          FORMAT(L"%s/%s/%s/%s/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d",
              Entry->Name, Entry->Permissions, Entry->OwnerGroup, Int64ToStr(Entry->Size).c_str(),
              int(Entry->Dir), int(Entry->Link), Entry->Year, Entry->Month, Entry->Day,
-             Entry->Hour, Entry->Minute, int(Entry->HasTime), int(Entry->HasDate));
+             Entry->Hour, Entry->Minute, int(Entry->HasTime),
+             int(Entry->HasSeconds), int(Entry->HasDate));
         throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, EntryData.c_str()));
       }
 
@@ -3609,9 +3642,9 @@ bool __fastcall TFTPFileSystem::HandleReply(int Command, unsigned int Reply)
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFTPFileSystem::HandleCapabilities(TFTPServerCapabilities * ServerCapabilities)
+bool __fastcall TFTPFileSystem::HandleCapabilities(
+  TFTPServerCapabilities * ServerCapabilities)
 {
-  // FMfmt = Mfmt;
   FServerCapabilities->Assign(ServerCapabilities);
   FFileSystemInfoValid = false;
   return true;

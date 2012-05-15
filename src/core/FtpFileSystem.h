@@ -99,7 +99,8 @@ protected:
   {
     REPLY_CONNECT =      0x01,
     REPLY_2XX_CODE =     0x02,
-    REPLY_ALLOW_CANCEL = 0x04
+    REPLY_ALLOW_CANCEL = 0x04,
+    REPLY_3XX_CODE =     0x08
   };
 
   bool __fastcall PostMessage(unsigned int Type, WPARAM wParam, LPARAM lParam);
@@ -177,13 +178,13 @@ protected:
   void __fastcall ResetCaches();
   void __fastcall CaptureOutput(const UnicodeString & Str);
   void __fastcall DoReadDirectory(TRemoteFileList * FileList);
-  void __fastcall DoReadFile(const UnicodeString FileName, TRemoteFile *& AFile);
+  void __fastcall DoReadFile(const UnicodeString & FileName, TRemoteFile *& AFile);
   void __fastcall FileTransfer(const UnicodeString & FileName, const UnicodeString & LocalFile,
     const UnicodeString & RemoteFile, const UnicodeString & RemotePath, bool Get,
     __int64 Size, int Type, TFileTransferData & UserData,
     TFileOperationProgressType * OperationProgress);
   TDateTime __fastcall ConvertLocalTimestamp(time_t Time);
-  TDateTime __fastcall ConvertRemoteTimestamp(time_t Time, bool HasTime);
+  void __fastcall ConvertRemoteTimestamp(time_t Time, bool HasTime, TDateTime & DateTime, TModificationFmt & ModificationFmt);
   void __fastcall SetLastCode(int Code);
 
   static bool __fastcall Unquote(UnicodeString & Str);
