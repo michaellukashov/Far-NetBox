@@ -24,6 +24,7 @@ public:
 
 protected:
   HANDLE FThread;
+  TThreadID FThreadId;
   bool FFinished;
 
   virtual void __fastcall Execute() = 0;
@@ -53,13 +54,13 @@ protected:
   virtual /* __fastcall */ ~TSignalThread();
 
   bool __fastcall WaitForEvent();
+  int __fastcall WaitForEvent(unsigned int Timeout);
   virtual void __fastcall Execute();
   virtual void __fastcall ProcessEvent() = 0;
 };
 //---------------------------------------------------------------------------
 class TTerminal;
 class TQueueItem;
-class TCriticalSection;
 class TTerminalQueue;
 class TQueueItemProxy;
 class TTerminalQueueStatus;
@@ -388,6 +389,7 @@ public:
   void __fastcall TerminalReopen();
 
   void __fastcall Cancel();
+  void __fastcall Idle();
 
 #ifndef _MSC_VER
   __property TNotifyEvent OnIdle = { read = FOnIdle, write = FOnIdle };
@@ -421,15 +423,20 @@ private:
   TUserAction * FUserAction;
 
   Exception * FException;
+  Exception * FIdleException;
   bool FCancel;
   bool FCancelled;
+  bool FPendingIdle;
+
+  DWORD FMainThread;
+  TCriticalSection * FSection;
   TTerminalThread * Self;
 
   void __fastcall WaitForUserAction(TUserAction * UserAction);
-  void __fastcall RunAction(const TNotifyEvent & Action);
+  void __fastcall RunAction(TNotifyEvent Action);
 
-  void __fastcall SaveException(Exception & E);
-  void __fastcall Rethrow();
+  static void __fastcall SaveException(Exception & E, Exception *& Exception);
+  static void __fastcall Rethrow(Exception *& Exception);
   void __fastcall FatalAbort();
   void __fastcall CheckCancel();
 

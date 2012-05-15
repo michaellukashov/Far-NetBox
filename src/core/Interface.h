@@ -25,7 +25,8 @@ UnicodeString __fastcall AppNameString();
 UnicodeString __fastcall SshVersionString();
 void __fastcall CopyToClipboard(UnicodeString Text);
 int __fastcall StartThread(void * SecurityAttributes, unsigned int StackSize,
-  /* TThreadFunc ThreadFunc, */ void * Parameter, unsigned int CreationFlags, DWORD & ThreadId);
+  /* TThreadFunc ThreadFunc, */ void * Parameter, unsigned int CreationFlags,
+  TThreadID & ThreadId);
 
 const unsigned int qaYes =      0x00000001;
 const unsigned int qaNo =       0x00000002;

@@ -944,6 +944,7 @@ typedef DelphiSet<TReplaceFlag> TReplaceFlags;
 
 //---------------------------------------------------------------------------
 typedef HANDLE THandle;
+typedef DWORD TThreadID;
 
 //---------------------------------------------------------------------------
 inline double Trunc(double value) { double intpart; modf(value, &intpart); return intpart; }
