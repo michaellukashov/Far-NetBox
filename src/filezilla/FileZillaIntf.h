@@ -29,6 +29,7 @@ struct TListDataEntry
   int Minute;
   int Second;
   bool HasTime;
+  bool HasSeconds;
   bool HasDate;
   const wchar_t * LinkTarget;
 };
@@ -197,7 +198,7 @@ protected:
     __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
     bool FileTransfer) = 0;
   virtual bool __fastcall HandleReply(int Command, unsigned int Reply) = 0;
-  virtual bool __fastcall HandleCapabilities(TFTPServerCapabilities *ServerCapabilities) = 0;
+  virtual bool __fastcall HandleCapabilities(TFTPServerCapabilities * ServerCapabilities) = 0;
   virtual bool __fastcall CheckError(int ReturnCode, const wchar_t * Context);
 
   inline bool __fastcall Check(int ReturnCode, const wchar_t * Context, int Expected = -1);
@@ -207,9 +208,8 @@ private:
   TFileZillaIntern * FIntern;
   t_server * FServer;
 };
-
+//---------------------------------------------------------------------------
 #ifdef MPEXT
-
 //---------------------------------------------------------------------------
 enum ftp_capabilities_t
 {
@@ -217,7 +217,6 @@ enum ftp_capabilities_t
     yes,
     no
 };
-
 //---------------------------------------------------------------------------
 enum ftp_capability_names_t
 {
@@ -236,22 +235,22 @@ enum ftp_capability_names_t
     list_hidden_support, // LIST -a command
     rest_stream, // supports REST+STOR in addition to APPE
 };
-
 //---------------------------------------------------------------------------
 class TFTPServerCapabilities
 {
 public:
-	ftp_capabilities_t GetCapability(ftp_capability_names_t name);
-	ftp_capabilities_t GetCapabilityString(ftp_capability_names_t name, std::string *pOption = NULL);
-
-	void SetCapability(ftp_capability_names_t name, ftp_capabilities_t cap);
-	void SetCapability(ftp_capability_names_t name, ftp_capabilities_t cap, const std::string &option);
-	void Clear() { m_capabilityMap.clear(); }
+	ftp_capabilities_t GetCapability(ftp_capability_names_t Name);
+	ftp_capabilities_t GetCapabilityString(ftp_capability_names_t Name, std::string * Option = NULL);
+  void SetCapability(ftp_capability_names_t Name, ftp_capabilities_t Cap);
+  void SetCapability(ftp_capability_names_t Name, ftp_capabilities_t Cap, const std::string & Option);
+  void Clear() { FCapabilityMap.clear(); }
 	void Assign(TFTPServerCapabilities *Source)
 	{
-		m_capabilityMap.clear();
-		if (Source)
-			m_capabilityMap = Source->m_capabilityMap;
+    FCapabilityMap.clear();
+    if (Source != NULL)
+    {
+      FCapabilityMap = Source->FCapabilityMap;
+    }
 	}
 protected:
 	struct t_cap
@@ -265,10 +264,9 @@ protected:
 		std::string option;
 		int number;
 	};
-	std::map<ftp_capability_names_t, t_cap> m_capabilityMap;
+
+  std::map<ftp_capability_names_t, t_cap> FCapabilityMap;
 };
-
 #endif
-
 //---------------------------------------------------------------------------
 #endif // FileZillaIntfH
