@@ -7,7 +7,7 @@
 #include "leak_detector.h"
 // extern int GC_find_leak;
 
-#include "stdafx.h"
+#include "nbafx.h"
 #include <time.h>
 #include <stdio.h>
 #include <iostream>
@@ -60,10 +60,10 @@ BOOST_AUTO_TEST_SUITE(testnetbox_01)
 
 BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
 {
-    nb::TList list;
+    TList list;
     BOOST_CHECK_EQUAL(0, list.GetCount());
-    nb::TObject obj1;
-    nb::TObject obj2;
+    TObject obj1;
+    TObject obj2;
     if (1)
     {
         list.Add(&obj1);
@@ -114,37 +114,37 @@ BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
 
 BOOST_FIXTURE_TEST_CASE(test2, base_fixture_t)
 {
-    std::wstring str;
+    UnicodeString str;
     if (1)
     {
-        nb::TStringList strings;
+        TStringList strings;
         BOOST_CHECK_EQUAL(0, strings.GetCount());
         BOOST_CHECK_EQUAL(0, strings.Add(L"line 1"));
         BOOST_CHECK_EQUAL(1, strings.GetCount());
-        str = strings.GetString(0);
+        str = strings.GetStrings(0);
         // DEBUG_PRINTF(L"str = %s", str.c_str());
-        BOOST_CHECK_EQUAL(nb::W2MB(str.c_str()), "line 1");
+        BOOST_CHECK_EQUAL(W2MB(str.c_str()), "line 1");
         strings.PutString(0, L"line 0");
         BOOST_CHECK_EQUAL(1, strings.GetCount());
-        str = strings.GetString(0);
-        BOOST_CHECK_EQUAL(nb::W2MB(str.c_str()), "line 0");
+        str = strings.GetStrings(0);
+        BOOST_CHECK_EQUAL(W2MB(str.c_str()), "line 0");
         strings.PutString(0, L"line 00");
         BOOST_CHECK_EQUAL(1, strings.GetCount());
-        BOOST_CHECK_EQUAL(nb::W2MB(strings.GetString(0).c_str()), "line 00");
+        BOOST_CHECK_EQUAL(W2MB(strings.GetStrings(0).c_str()), "line 00");
         strings.Add(L"line 11");
         BOOST_CHECK_EQUAL(2, strings.GetCount());
-        BOOST_CHECK_EQUAL(nb::W2MB(strings.GetString(1).c_str()), "line 11");
+        BOOST_CHECK_EQUAL(W2MB(strings.GetStrings(1).c_str()), "line 11");
         strings.Delete(1);
         BOOST_CHECK_EQUAL(1, strings.GetCount());
     }
-    nb::TStringList strings;
+    TStringList strings;
     if (1)
     {
         BOOST_CHECK_EQUAL(0, strings.GetCount());
         strings.Add(L"line 1");
         str = strings.GetText();
         // DEBUG_PRINTF(L"str = %s", str.c_str());
-        BOOST_CHECK_EQUAL(nb::W2MB(str.c_str()).c_str(), "line 1\n");
+        BOOST_CHECK_EQUAL(W2MB(str.c_str()).c_str(), "line 1\n");
     }
     if (1)
     {
@@ -152,63 +152,63 @@ BOOST_FIXTURE_TEST_CASE(test2, base_fixture_t)
         BOOST_CHECK_EQUAL(2, strings.GetCount());
         str = strings.GetText();
         // DEBUG_PRINTF(L"str = %s", str.c_str());
-        BOOST_CHECK_EQUAL(nb::W2MB(str.c_str()).c_str(), "line 1\nline 2\n");
+        BOOST_CHECK_EQUAL(W2MB(str.c_str()).c_str(), "line 1\nline 2\n");
         strings.Insert(0, L"line 0");
         BOOST_CHECK_EQUAL(3, strings.GetCount());
         str = strings.GetText();
-        BOOST_CHECK_EQUAL(nb::W2MB(str.c_str()).c_str(), "line 0\nline 1\nline 2\n");
+        BOOST_CHECK_EQUAL(W2MB(str.c_str()).c_str(), "line 0\nline 1\nline 2\n");
         strings.PutObject(0, NULL);
-        std::wstring str = strings.GetString(0);
-        BOOST_CHECK_EQUAL(nb::W2MB(str.c_str()), "line 0");
+        UnicodeString str = strings.GetStrings(0);
+        BOOST_CHECK_EQUAL(W2MB(str.c_str()), "line 0");
     }
 }
 
 BOOST_FIXTURE_TEST_CASE(test3, base_fixture_t)
 {
-    std::wstring Text = L"text text text text text1\ntext text text text text2\n";
-    nb::TStringList Lines;
+    UnicodeString Text = L"text text text text text1\ntext text text text text2\n";
+    TStringList Lines;
     Lines.SetText(Text);
     BOOST_CHECK_EQUAL(2, Lines.GetCount());
-    BOOST_TEST_MESSAGE("Lines 0 = " << nb::W2MB(Lines.GetString(0).c_str()));
-    BOOST_TEST_MESSAGE("Lines 1 = " << nb::W2MB(Lines.GetString(1).c_str()));
-    BOOST_CHECK_EQUAL("text text text text text1", nb::W2MB(Lines.GetString(0).c_str()).c_str());
-    BOOST_CHECK_EQUAL("text text text text text2", nb::W2MB(Lines.GetString(1).c_str()).c_str());
+    BOOST_TEST_MESSAGE("Lines 0 = " << W2MB(Lines.GetStrings(0).c_str()));
+    BOOST_TEST_MESSAGE("Lines 1 = " << W2MB(Lines.GetStrings(1).c_str()));
+    BOOST_CHECK_EQUAL("text text text text text1", W2MB(Lines.GetStrings(0).c_str()).c_str());
+    BOOST_CHECK_EQUAL("text text text text text2", W2MB(Lines.GetStrings(1).c_str()).c_str());
 }
 
 BOOST_FIXTURE_TEST_CASE(test4, base_fixture_t)
 {
-    std::wstring Text = L"text, text text, text text1\ntext text text, text text2\n";
-    nb::TStringList Lines;
+    UnicodeString Text = L"text, text text, text text1\ntext text text, text text2\n";
+    TStringList Lines;
     Lines.SetCommaText(Text);
     BOOST_CHECK_EQUAL(6, Lines.GetCount());
-    BOOST_CHECK_EQUAL("text", nb::W2MB(Lines.GetString(0).c_str()).c_str());
-    BOOST_CHECK_EQUAL(" text text", nb::W2MB(Lines.GetString(1).c_str()).c_str());
-    BOOST_CHECK_EQUAL(" text text1", nb::W2MB(Lines.GetString(2).c_str()).c_str());
-    BOOST_CHECK_EQUAL("text text text", nb::W2MB(Lines.GetString(3).c_str()).c_str());
-    BOOST_CHECK_EQUAL(" text text2", nb::W2MB(Lines.GetString(4).c_str()).c_str());
-    std::wstring Text2 = Lines.GetCommaText();
-    BOOST_TEST_MESSAGE("Text2 = " << nb::W2MB(Text2.c_str()));
-    BOOST_CHECK_EQUAL("\"text\",\" text text\",\" text text1\",\"text text text\",\" text text2\",\"\"", nb::W2MB(Text2.c_str()).c_str());
+    BOOST_CHECK_EQUAL("text", W2MB(Lines.GetStrings(0).c_str()).c_str());
+    BOOST_CHECK_EQUAL(" text text", W2MB(Lines.GetStrings(1).c_str()).c_str());
+    BOOST_CHECK_EQUAL(" text text1", W2MB(Lines.GetStrings(2).c_str()).c_str());
+    BOOST_CHECK_EQUAL("text text text", W2MB(Lines.GetStrings(3).c_str()).c_str());
+    BOOST_CHECK_EQUAL(" text text2", W2MB(Lines.GetStrings(4).c_str()).c_str());
+    UnicodeString Text2 = Lines.GetCommaText();
+    BOOST_TEST_MESSAGE("Text2 = " << W2MB(Text2.c_str()));
+    BOOST_CHECK_EQUAL("\"text\",\" text text\",\" text text1\",\"text text text\",\" text text2\",\"\"", W2MB(Text2.c_str()).c_str());
 }
 
 BOOST_FIXTURE_TEST_CASE(test5, base_fixture_t)
 {
-    nb::TStringList Lines;
-    nb::TObject obj1;
+    TStringList Lines;
+    TObject obj1;
     Lines.InsertObject(0, L"line 1", &obj1);
-    BOOST_CHECK(&obj1 == Lines.GetObject(0));
+    BOOST_CHECK(&obj1 == Lines.GetObjects(0));
 }
 
 BOOST_FIXTURE_TEST_CASE(test6, base_fixture_t)
 {
-    nb::TStringList Lines;
+    TStringList Lines;
     Lines.Add(L"bbb");
     Lines.Add(L"aaa");
-    // BOOST_TEST_MESSAGE("Lines = " << nb::W2MB(Lines.GetText().c_str()).c_str());
+    // BOOST_TEST_MESSAGE("Lines = " << W2MB(Lines.GetText().c_str()).c_str());
     {
         Lines.SetSorted(true);
-        // BOOST_TEST_MESSAGE("Lines = " << nb::W2MB(Lines.GetText().c_str()).c_str());
-        BOOST_CHECK_EQUAL("aaa", nb::W2MB(Lines.GetString(0).c_str()).c_str());
+        // BOOST_TEST_MESSAGE("Lines = " << W2MB(Lines.GetText().c_str()).c_str());
+        BOOST_CHECK_EQUAL("aaa", W2MB(Lines.GetStrings(0).c_str()).c_str());
         BOOST_CHECK_EQUAL(2, Lines.GetCount());
     }
     {
@@ -217,16 +217,16 @@ BOOST_FIXTURE_TEST_CASE(test6, base_fixture_t)
         Lines.SetCaseSensitive(true);
         Lines.SetSorted(true);
         BOOST_CHECK_EQUAL(3, Lines.GetCount());
-        // BOOST_TEST_MESSAGE("Lines = " << nb::W2MB(Lines.GetText().c_str()).c_str());
-        BOOST_CHECK_EQUAL("aaa", nb::W2MB(Lines.GetString(0).c_str()).c_str());
-        BOOST_CHECK_EQUAL("Aaa", nb::W2MB(Lines.GetString(1).c_str()).c_str());
-        BOOST_CHECK_EQUAL("bbb", nb::W2MB(Lines.GetString(2).c_str()).c_str());
+        // BOOST_TEST_MESSAGE("Lines = " << W2MB(Lines.GetText().c_str()).c_str());
+        BOOST_CHECK_EQUAL("aaa", W2MB(Lines.GetStrings(0).c_str()).c_str());
+        BOOST_CHECK_EQUAL("Aaa", W2MB(Lines.GetStrings(1).c_str()).c_str());
+        BOOST_CHECK_EQUAL("bbb", W2MB(Lines.GetStrings(2).c_str()).c_str());
     }
 }
 
 BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
 {
-    nb::TStringList Lines;
+    TStringList Lines;
     {
         Lines.Add(L"bbb");
         BOOST_TEST_MESSAGE("before try");
@@ -271,9 +271,9 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
     }
     Lines.Clear();
     int cnt = 0;
-    nb::TStringList *Lines1 = new nb::TStringList();
+    TStringList *Lines1 = new TStringList();
     int cnt1 = 0;
-    nb::TStringList *Lines2 = new nb::TStringList();
+    TStringList *Lines2 = new TStringList();
     {
         Lines.BeginUpdate();
         cnt++;
@@ -318,29 +318,29 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
 
 BOOST_FIXTURE_TEST_CASE(test8, base_fixture_t)
 {
-    std::wstring ProgramsFolder;
-    std::wstring DefaultPuttyPathOnly = ::IncludeTrailingBackslash(ProgramsFolder) + L"PuTTY\\putty.exe";
+    UnicodeString ProgramsFolder;
+    UnicodeString DefaultPuttyPathOnly = ::IncludeTrailingBackslash(ProgramsFolder) + L"PuTTY\\putty.exe";
     BOOST_CHECK(DefaultPuttyPathOnly == L"\\PuTTY\\putty.exe");
     BOOST_CHECK(L"" == ::ExcludeTrailingBackslash(::IncludeTrailingBackslash(ProgramsFolder)));
 }
 
 BOOST_FIXTURE_TEST_CASE(test9, base_fixture_t)
 {
-    std::wstring Folder = L"C:\\Program Files\\Putty";
-    BOOST_TEST_MESSAGE("ExtractFileDir = " << nb::W2MB(::ExtractFileDir(Folder).c_str()).c_str());
+    UnicodeString Folder = L"C:\\Program Files\\Putty";
+    BOOST_TEST_MESSAGE("ExtractFileDir = " << W2MB(::ExtractFileDir(Folder).c_str()).c_str());
     BOOST_CHECK(L"C:\\Program Files\\" == ::ExtractFileDir(Folder));
     BOOST_CHECK(L"C:\\Program Files\\" == ::ExtractFilePath(Folder));
-    BOOST_TEST_MESSAGE("GetCurrentDir = " << nb::W2MB(::GetCurrentDir().c_str()).c_str());
-    BOOST_CHECK(::GetCurrentDir().size() > 0);
+    BOOST_TEST_MESSAGE("GetCurrentDir = " << W2MB(::GetCurrentDir().c_str()).c_str());
+    BOOST_CHECK(::GetCurrentDir().Length() > 0);
     BOOST_CHECK(::DirectoryExists(::GetCurrentDir()));
 }
 
 BOOST_FIXTURE_TEST_CASE(test10, base_fixture_t)
 {
-    nb::TDateTime dt1(23, 58, 59, 102);
+    TDateTime dt1(23, 58, 59, 102);
     BOOST_TEST_MESSAGE("dt1 = " << dt1);
     BOOST_CHECK(dt1 > 0.0);
-    unsigned int H, M, S, MS;
+    unsigned short H, M, S, MS;
     dt1.DecodeTime(H, M, S, MS);
     BOOST_CHECK_EQUAL(H, 23);
     BOOST_CHECK_EQUAL(M, 58);
@@ -350,16 +350,16 @@ BOOST_FIXTURE_TEST_CASE(test10, base_fixture_t)
 
 BOOST_FIXTURE_TEST_CASE(test11, base_fixture_t)
 {
-    nb::TDateTime dt1 = EncodeDateVerbose(2009, 12, 29);
+    TDateTime dt1 = EncodeDateVerbose(2009, 12, 29);
     BOOST_TEST_MESSAGE("dt1 = " << dt1);
-    bg::date::ymd_type ymd(2009, 12, 29);
-    BOOST_TEST_MESSAGE("ymd.year = " << ymd.year << ", ymd.month = " << ymd.month << ", ymd.day = " << ymd.day);
-    unsigned int Y, M, D;
+    // bg::date::ymd_type ymd(2009, 12, 29);
+    // BOOST_TEST_MESSAGE("ymd.year = " << ymd.year << ", ymd.month = " << ymd.month << ", ymd.day = " << ymd.day);
+    unsigned short Y, M, D;
     dt1.DecodeDate(Y, M, D);
     BOOST_TEST_MESSAGE("Y = " << Y << ", M = " << M << ", D = " << D);
-    BOOST_CHECK(Y == ymd.year);
-    BOOST_CHECK(M == ymd.month);
-    BOOST_CHECK(D == ymd.day);
+    BOOST_CHECK(Y == 2009);
+    BOOST_CHECK(M == 12);
+    BOOST_CHECK(D == 29);
     int DOW = ::DayOfWeek(dt1);
     BOOST_CHECK_EQUAL(3, DOW);
 }
@@ -369,7 +369,7 @@ BOOST_FIXTURE_TEST_CASE(test12, base_fixture_t)
     BOOST_TEST_MESSAGE("Is2000 = " << Is2000());
     BOOST_TEST_MESSAGE("IsWin7 = " << IsWin7());
     BOOST_TEST_MESSAGE("IsExactly2008R2 = " << IsExactly2008R2());
-    nb::TDateTime dt = ::EncodeDateVerbose(2009, 12, 29);
+    TDateTime dt = ::EncodeDateVerbose(2009, 12, 29);
     FILETIME ft = ::DateTimeToFileTime(dt, dstmWin);
     BOOST_TEST_MESSAGE("ft.dwLowDateTime = " << ft.dwLowDateTime);
     BOOST_TEST_MESSAGE("ft.dwHighDateTime = " << ft.dwHighDateTime);
@@ -377,9 +377,9 @@ BOOST_FIXTURE_TEST_CASE(test12, base_fixture_t)
 
 BOOST_FIXTURE_TEST_CASE(test13, base_fixture_t)
 {
-    std::wstring str_value = ::IntToStr(1234);
-    BOOST_TEST_MESSAGE("str_value = " << nb::W2MB(str_value.c_str()));
-    BOOST_CHECK(nb::W2MB(str_value.c_str()) == "1234");
+    UnicodeString str_value = ::IntToStr(1234);
+    BOOST_TEST_MESSAGE("str_value = " << W2MB(str_value.c_str()));
+    BOOST_CHECK(W2MB(str_value.c_str()) == "1234");
     int int_value = ::StrToInt(L"1234");
     BOOST_TEST_MESSAGE("int_value = " << int_value);
     BOOST_CHECK(int_value == 1234);
@@ -387,28 +387,28 @@ BOOST_FIXTURE_TEST_CASE(test13, base_fixture_t)
 
 BOOST_FIXTURE_TEST_CASE(test14, base_fixture_t)
 {
-    nb::TStringList Strings1;
-    nb::TStringList Strings2;
+    TStringList Strings1;
+    TStringList Strings2;
     Strings1.AddStrings(&Strings2);
     BOOST_CHECK(0 == Strings1.GetCount());
     Strings2.Add(L"lalalla");
     Strings1.AddStrings(&Strings2);
     BOOST_CHECK(1 == Strings1.GetCount());
-    BOOST_CHECK(L"lalalla" == Strings1.GetString(0));
+    BOOST_CHECK(L"lalalla" == Strings1.GetStrings(0));
 }
 
 BOOST_FIXTURE_TEST_CASE(test15, base_fixture_t)
 {
-    std::wstring res = ::IntToHex(10, 2);
-    BOOST_TEST_MESSAGE("res = " << nb::W2MB(res.c_str()));
+    UnicodeString res = ::IntToHex(10, 2);
+    BOOST_TEST_MESSAGE("res = " << W2MB(res.c_str()));
     BOOST_CHECK(res == L"0a");
 }
 
 BOOST_FIXTURE_TEST_CASE(test16, base_fixture_t)
 {
     {
-        std::wstring Name1 = L"1";
-        std::wstring Name2 = L"2";
+        UnicodeString Name1 = L"1";
+        UnicodeString Name2 = L"2";
         int res = ::AnsiCompareIC(Name1, Name2);
         BOOST_TEST_MESSAGE("res = " << res);
         BOOST_CHECK(res != 0);
@@ -417,8 +417,8 @@ BOOST_FIXTURE_TEST_CASE(test16, base_fixture_t)
         BOOST_CHECK(res != 0);
     }
     {
-        std::wstring Name1 = L"abc";
-        std::wstring Name2 = L"ABC";
+        UnicodeString Name1 = L"abc";
+        UnicodeString Name2 = L"ABC";
         int res = ::AnsiCompareIC(Name1, Name2);
         BOOST_TEST_MESSAGE("res = " << res);
         BOOST_CHECK(res == 0);
@@ -427,70 +427,73 @@ BOOST_FIXTURE_TEST_CASE(test16, base_fixture_t)
         BOOST_CHECK(res != 0);
     }
     {
-        std::wstring Name1 = L"Unlimited";
-        std::wstring Name2 = L"Unlimited";
+        UnicodeString Name1 = L"Unlimited";
+        UnicodeString Name2 = L"Unlimited";
         BOOST_CHECK(::AnsiSameText(Name1, Name2));
     }
 }
 
 BOOST_FIXTURE_TEST_CASE(test17, base_fixture_t)
 {
-    nb::TStringList List1;
+    TStringList List1;
     List1.SetText(L"123\n456");
     BOOST_CHECK(2 == List1.GetCount());
-    BOOST_TEST_MESSAGE("List1.GetString(0) = " << nb::W2MB(List1.GetString(0).c_str()));
-    BOOST_CHECK("123" == nb::W2MB(List1.GetString(0).c_str()));
-    BOOST_TEST_MESSAGE("List1.GetString(1) = " << nb::W2MB(List1.GetString(1).c_str()));
-    BOOST_CHECK("456" == nb::W2MB(List1.GetString(1).c_str()));
+    BOOST_TEST_MESSAGE("List1.GetStrings(0) = " << W2MB(List1.GetStrings(0).c_str()));
+    BOOST_CHECK("123" == W2MB(List1.GetStrings(0).c_str()));
+    BOOST_TEST_MESSAGE("List1.GetStrings(1) = " << W2MB(List1.GetStrings(1).c_str()));
+    BOOST_CHECK("456" == W2MB(List1.GetStrings(1).c_str()));
     List1.Move(0, 1);
-    BOOST_TEST_MESSAGE("List1.GetString(0) = " << nb::W2MB(List1.GetString(0).c_str()));
-    BOOST_CHECK("456" == nb::W2MB(List1.GetString(0).c_str()));
-    BOOST_TEST_MESSAGE("List1.GetString(1) = " << nb::W2MB(List1.GetString(1).c_str()));
-    BOOST_CHECK("123" == nb::W2MB(List1.GetString(1).c_str()));
+    BOOST_TEST_MESSAGE("List1.GetStrings(0) = " << W2MB(List1.GetStrings(0).c_str()));
+    BOOST_CHECK("456" == W2MB(List1.GetStrings(0).c_str()));
+    BOOST_TEST_MESSAGE("List1.GetStrings(1) = " << W2MB(List1.GetStrings(1).c_str()));
+    BOOST_CHECK("123" == W2MB(List1.GetStrings(1).c_str()));
 }
 
 BOOST_FIXTURE_TEST_CASE(test18, base_fixture_t)
 {
     {
-        std::wstring Key = L"Interface";
-        std::wstring Res = ::CutToChar(Key, L'\\', false);
-        BOOST_CHECK(Key.empty());
-        BOOST_CHECK("Interface" == nb::W2MB(Res.c_str()));
+        UnicodeString Key = L"Interface";
+        UnicodeString Res = ::CutToChar(Key, L'\\', false);
+        BOOST_CHECK(Key.IsEmpty());
+        BOOST_CHECK("Interface" == W2MB(Res.c_str()));
     }
     {
-        std::wstring Key = L"Interface\\SubKey";
-        std::wstring Res = ::CutToChar(Key, L'\\', false);
-        BOOST_CHECK("SubKey" == nb::W2MB(Key.c_str()));
-        BOOST_CHECK("Interface" == nb::W2MB(Res.c_str()));
+        UnicodeString Key = L"Interface\\SubKey";
+        UnicodeString Res = ::CutToChar(Key, L'\\', false);
+        BOOST_CHECK("SubKey" == W2MB(Key.c_str()));
+        BOOST_CHECK("Interface" == W2MB(Res.c_str()));
     }
 }
 
 BOOST_FIXTURE_TEST_CASE(test19, base_fixture_t)
 {
-    nb::TStringList Strings1;
+    TStringList Strings1;
     Strings1.Add(L"Name1=Value1");
     BOOST_CHECK(0 == Strings1.IndexOfName(L"Name1"));
 }
 
 BOOST_FIXTURE_TEST_CASE(test20, base_fixture_t)
 {
-    nb::TDateTime DateTime = nb::Now();
-    std::wstring str = ::FormatDateTime(L"HH:MM:SS", DateTime);
-    BOOST_TEST_MESSAGE("str = " << nb::W2MB(str.c_str()));
+    TDateTime DateTime = Now();
+    unsigned short H, M, S, MS;
+    DateTime.DecodeTime(H, M, S, MS);
+    // UnicodeString str = ::FormatDateTime(L"HH:MM:SS", DateTime);
+    UnicodeString str = FORMAT(L"%02d:%02d:%02d", H, M, S);
+    BOOST_TEST_MESSAGE("str = " << W2MB(str.c_str()));
     // BOOST_CHECK(str == L"20:20:20");
 }
 
 BOOST_FIXTURE_TEST_CASE(test21, base_fixture_t)
 {
-    std::wstring str = ::FormatFloat(L"#,##0", 23.456);
-    BOOST_TEST_MESSAGE("str = " << nb::W2MB(str.c_str()));
+    UnicodeString str = ::FormatFloat(L"#,##0", 23.456);
+    BOOST_TEST_MESSAGE("str = " << W2MB(str.c_str()));
     // BOOST_CHECK(str.c_str() == L"23.46");
-    BOOST_CHECK("23.46" == nb::W2MB(str.c_str()));
+    BOOST_CHECK("23.46" == W2MB(str.c_str()));
 }
 
 BOOST_FIXTURE_TEST_CASE(test22, base_fixture_t)
 {
-    std::wstring FileName = L"testfile";
+    UnicodeString FileName = L"testfile";
     ::DeleteFile(FileName);
     std::string str = "test string";
     {
@@ -498,7 +501,7 @@ BOOST_FIXTURE_TEST_CASE(test22, base_fixture_t)
         HANDLE File = ::CreateFile(FileName.c_str(), GENERIC_WRITE, FILE_SHARE_READ,
           NULL, CREATE_ALWAYS, CreateAttr, 0);
         BOOST_CHECK(File != 0);
-        nb::TStream *FileStream = new TSafeHandleStream(File);
+        TStream *FileStream = new TSafeHandleStream(File);
         TFileBuffer *BlockBuf = new TFileBuffer();
         // BlockBuf->SetSize(1024);
         BlockBuf->SetPosition(0);
@@ -509,12 +512,12 @@ BOOST_FIXTURE_TEST_CASE(test22, base_fixture_t)
         delete FileStream; FileStream = NULL;
         delete BlockBuf; BlockBuf = NULL;
         ::CloseHandle(File);
-        BOOST_TEST_MESSAGE("FileName1 = " << nb::W2MB(FileName.c_str()));
+        BOOST_TEST_MESSAGE("FileName1 = " << W2MB(FileName.c_str()));
         BOOST_REQUIRE(::FileExists(FileName));
     }
     {
-        BOOST_TEST_MESSAGE("FileName2 = " << nb::W2MB(FileName.c_str()));
-        WIN32_FIND_DATA Rec;
+        BOOST_TEST_MESSAGE("FileName2 = " << W2MB(FileName.c_str()));
+        TSearchRec Rec;
         BOOST_CHECK(FileSearchRec(FileName, Rec));
     }
     {
@@ -527,7 +530,7 @@ BOOST_FIXTURE_TEST_CASE(test22, base_fixture_t)
           0, // FILE_ATTRIBUTE_NORMAL, // 0,
           NULL);
         DEBUG_PRINTF(L"File = %d", File);
-        nb::TStream *FileStream = new TSafeHandleStream(File);
+        TStream *FileStream = new TSafeHandleStream(File);
         TFileBuffer *BlockBuf = new TFileBuffer();
         BlockBuf->ReadStream(FileStream, str.size(), true);
         BOOST_TEST_MESSAGE("BlockBuf->GetSize = " << BlockBuf->GetSize());
@@ -540,8 +543,8 @@ BOOST_FIXTURE_TEST_CASE(test22, base_fixture_t)
 
 BOOST_FIXTURE_TEST_CASE(test23, base_fixture_t)
 {
-    std::wstring Dir1 = L"subdir1";
-    std::wstring Dir2 = L"subdir1/subdir2";
+    UnicodeString Dir1 = L"subdir1";
+    UnicodeString Dir2 = L"subdir1/subdir2";
     ::RemoveDir(Dir2);
     ::RemoveDir(Dir1);
     BOOST_TEST_MESSAGE("DirectoryExists(Dir2) = " << DirectoryExists(Dir2));
@@ -557,7 +560,7 @@ BOOST_FIXTURE_TEST_CASE(test23, base_fixture_t)
 
 BOOST_FIXTURE_TEST_CASE(test24, base_fixture_t)
 {
-    nb::TDateTime now = nb::Now();
+    TDateTime now = Now();
     BOOST_TEST_MESSAGE("now = " << (double)now);
     BOOST_CHECK(now > 0.0);
 }

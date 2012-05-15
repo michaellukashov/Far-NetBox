@@ -1,16 +1,25 @@
 //---------------------------------------------------------------------------
+#ifndef _MSC_VER
+#include <vcl.h>
+#pragma hdrstop
+#else
 #include "stdafx.h"
+#endif
 
 #include "FileSystems.h"
 #include "RemoteFiles.h"
 #include "Common.h"
 //---------------------------------------------------------------------------
-TCustomFileSystem::TCustomFileSystem(TTerminal *ATerminal):
-    FTerminal(ATerminal)
+#ifndef _MSC_VER
+#pragma package(smart_init)
+#endif
+//---------------------------------------------------------------------------
+/* __fastcall */ TCustomFileSystem::TCustomFileSystem(TTerminal * ATerminal):
+  FTerminal(ATerminal)
 {
-    assert(FTerminal);
+  assert(FTerminal);
 }
 //---------------------------------------------------------------------------
-TCustomFileSystem::~TCustomFileSystem()
+/* __fastcall */ TCustomFileSystem::~TCustomFileSystem()
 {
 }

@@ -1,5 +1,5 @@
 // MP: Renamed to avoid clashes with utf8.c from PuTTY
-#include "fzafx.h"
+#include "stdafx.h"
 #include "utf8.h"
 
 // Check for valid UTF-8 string. Code taken from the examples in RFC 2640

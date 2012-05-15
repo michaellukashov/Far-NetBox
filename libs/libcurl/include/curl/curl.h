@@ -673,6 +673,15 @@ typedef enum {
   CURLUSESSL_LAST     /* not an option, never use */
 } curl_usessl;
 
+/* Definition of bits for the CURLOPT_SSL_OPTIONS argument: */
+
+/* - ALLOW_BEAST tells libcurl to allow the BEAST SSL vulnerability in the
+   name of improving interoperability with older servers. Some SSL libraries
+   have introduced work-arounds for this flaw but those work-arounds sometimes
+   make the SSL communication fail. To regain functionality with those broken
+   servers, a user can this way allow the vulnerability back. */
+#define CURLSSLOPT_ALLOW_BEAST (1<<0)
+
 #ifndef CURL_NO_OLDIES /* define this to test if your app builds with all
                           the obsolete stuff removed! */
 
@@ -1498,6 +1507,19 @@ typedef enum {
   /* Time-out accept operations (currently for FTP only) after this amount
      of miliseconds. */
   CINIT(ACCEPTTIMEOUT_MS, LONG, 212),
+
+  /* Set TCP keepalive */
+  CINIT(TCP_KEEPALIVE, LONG, 213),
+
+  /* non-universal keepalive knobs (Linux, AIX, HP-UX, more) */
+  CINIT(TCP_KEEPIDLE, LONG, 214),
+  CINIT(TCP_KEEPINTVL, LONG, 215),
+
+  /* Enable/disable specific SSL features with a bitmask, see CURLSSLOPT_* */
+  CINIT(SSL_OPTIONS, LONG, 216),
+
+  /* set the SMTP auth originator */
+  CINIT(MAIL_AUTH, OBJECTPOINT, 217),
 
   CURLOPT_LASTENTRY /* the last unused */
 } CURLoption;

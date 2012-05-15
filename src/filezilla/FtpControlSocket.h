@@ -53,7 +53,7 @@ public:
 	virtual void Connect(t_server &server);
 	virtual void OnTimer();
 	virtual BOOL IsReady();
-	virtual void List(BOOL bFinish, int nError=0, CServerPath path=CServerPath(), CString subdir="", int nListMode = 0);
+	virtual void List(BOOL bFinish, int nError=0, CServerPath path=CServerPath(), CString subdir=_MPT(""), int nListMode = 0);
 #ifdef MPEXT
 	virtual void ListFile(CServerPath path=CServerPath(), CString fileName="");
 #endif

@@ -39,6 +39,9 @@
 /* to disable LDAPS */
 #undef CURL_DISABLE_LDAPS
 
+/* to disable --libcurl C code generation option */
+#undef CURL_DISABLE_LIBCURL_OPTION
+
 /* to disable POP3 */
 #undef CURL_DISABLE_POP3
 
@@ -382,9 +385,6 @@
 /* Define to 1 if you have the `ldap_url_parse' function. */
 #undef HAVE_LDAP_URL_PARSE
 
-/* Define to 1 if you have the `gcrypt' library (-lgcrypt). */
-#undef HAVE_LIBGCRYPT
-
 /* Define to 1 if you have the <libgen.h> header file. */
 #undef HAVE_LIBGEN_H
 
@@ -599,6 +599,9 @@
 /* Define to 1 if you have the socket function. */
 #undef HAVE_SOCKET
 
+/* Define to 1 if you have the socketpair function. */
+#undef HAVE_SOCKETPAIR
+
 /* Define to 1 if you have the <socket.h> header file. */
 #undef HAVE_SOCKET_H
 
@@ -607,6 +610,9 @@
 
 /* if you have the function SRP_Calc_client_key */
 #undef HAVE_SSLEAY_SRP
+
+/* Define to 1 if you have the `SSLv2_client_method' function. */
+#undef HAVE_SSLV2_CLIENT_METHOD
 
 /* Define to 1 if you have the `SSL_get_shutdown' function. */
 #undef HAVE_SSL_GET_SHUTDOWN
@@ -725,6 +731,9 @@
 /* Define to 1 if you have the <sys/utime.h> header file. */
 #undef HAVE_SYS_UTIME_H
 
+/* Define to 1 if you have the <sys/wait.h> header file. */
+#undef HAVE_SYS_WAIT_H
+
 /* Define to 1 if you have the <sys/xattr.h> header file. */
 #undef HAVE_SYS_XATTR_H
 
@@ -812,6 +821,12 @@
 
 /* Define to 1 if _THREAD_SAFE preprocessor symbol must be defined. */
 #undef NEED_THREAD_SAFE
+
+/* Define to enable NTLM delegation to winbind's ntlm_auth helper. */
+#undef NTLM_WB_ENABLED
+
+/* Define absolute filename for winbind's ntlm_auth helper. */
+#undef NTLM_WB_FILE
 
 /* cpu-machine-OS */
 #undef OS
@@ -968,6 +983,9 @@
 
 /* if GnuTLS is enabled */
 #undef USE_GNUTLS
+
+/* if GnuTLS uses nettle as crypto backend */
+#undef USE_GNUTLS_NETTLE
 
 /* if librtmp is in use */
 #undef USE_LIBRTMP

@@ -201,7 +201,7 @@ _libssh2_cipher_crypt(_libssh2_cipher_ctx * ctx,
     return ret == 1 ? 0 : 1;
 }
 
-#if LIBSSH2_AES_CTR && !defined(HAVE_EVP_AES_128_CTR)
+#if LIBSSH2_AES_CTR
 
 #include <openssl/aes.h>
 #include <openssl/evp.h>
@@ -217,6 +217,10 @@ static int
 aes_ctr_init(EVP_CIPHER_CTX *ctx, const unsigned char *key,
              const unsigned char *iv, int enc) /* init key */
 {
+    /*
+     * variable "c" is leaked from this scope, but is later freed
+     * in aes_ctr_cleanup
+     */
     aes_ctr_ctx *c = malloc(sizeof(*c));
     const EVP_CIPHER *aes_cipher;
     (void) enc;
@@ -358,6 +362,8 @@ void _libssh2_init_aes_ctr(void)
     _libssh2_EVP_aes_256_ctr();
 }
 
+#else
+void _libssh2_init_aes_ctr(void) {}
 #endif /* LIBSSH2_AES_CTR */
 
 /* TODO: Optionally call a passphrase callback specified by the
