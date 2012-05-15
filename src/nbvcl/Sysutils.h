@@ -45,24 +45,22 @@ protected:
 class EAbort : public Exception
 {
 public:
-    EAbort(std::string what) : Exception(what.c_str())
+    EAbort(std::wstring what) : Exception(what)
     {}
 };
 
 class EAccessViolation : public Exception
 {
 public:
-    EAccessViolation(std::string what) : Exception(what.c_str())
+    EAccessViolation(std::wstring what) : Exception(what)
     {}
-
 };
 
 class EFileNotFoundError : public Exception
 {
 public:
     EFileNotFoundError() : Exception("")
-    {
-    }
+    {}
 };
 
 //---------------------------------------------------------------------------
