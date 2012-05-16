@@ -29,6 +29,7 @@ struct TListDataEntry
   int Minute;
   int Second;
   bool HasTime;
+  bool HasSeconds;
   bool HasDate;
   const wchar_t * LinkTarget;
 };
@@ -197,7 +198,7 @@ protected:
     __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
     bool FileTransfer) = 0;
   virtual bool __fastcall HandleReply(int Command, unsigned int Reply) = 0;
-  virtual bool __fastcall HandleCapabilities(TFTPServerCapabilities *ServerCapabilities) = 0;
+  virtual bool __fastcall HandleCapabilities(TFTPServerCapabilities * ServerCapabilities) = 0;
   virtual bool __fastcall CheckError(int ReturnCode, const wchar_t * Context);
 
   inline bool __fastcall Check(int ReturnCode, const wchar_t * Context, int Expected = -1);
@@ -207,68 +208,65 @@ private:
   TFileZillaIntern * FIntern;
   t_server * FServer;
 };
-
+//---------------------------------------------------------------------------
 #ifdef MPEXT
-
 //---------------------------------------------------------------------------
 enum ftp_capabilities_t
 {
-    unknown,
-    yes,
-    no
+  unknown,
+  yes,
+  no
 };
-
 //---------------------------------------------------------------------------
 enum ftp_capability_names_t
 {
-    syst_command = 1, // reply of SYST command as option
-    feat_command,
-    clnt_command, // set to 'yes' if CLNT should be sent
-    utf8_command, // set to 'yes' if OPTS UTF8 ON should be sent
-    mlsd_command,
-    opts_mlst_command, // Arguments for OPTS MLST command
-    mfmt_command,
-    pret_command,
-    mdtm_command,
-    size_command,
-    mode_z_support,
-    tvfs_support, // Trivial virtual file store (RFC 3659)
-    list_hidden_support, // LIST -a command
-    rest_stream, // supports REST+STOR in addition to APPE
+  syst_command = 1, // reply of SYST command as option
+  feat_command,
+  clnt_command, // set to 'yes' if CLNT should be sent
+  utf8_command, // set to 'yes' if OPTS UTF8 ON should be sent
+  mlsd_command,
+  opts_mlst_command, // Arguments for OPTS MLST command
+  mfmt_command,
+  pret_command,
+  mdtm_command,
+  size_command,
+  mode_z_support,
+  tvfs_support, // Trivial virtual file store (RFC 3659)
+  list_hidden_support, // LIST -a command
+  rest_stream, // supports REST+STOR in addition to APPE
 };
-
 //---------------------------------------------------------------------------
 class TFTPServerCapabilities
 {
 public:
-	ftp_capabilities_t GetCapability(ftp_capability_names_t name);
-	ftp_capabilities_t GetCapabilityString(ftp_capability_names_t name, std::string *pOption = NULL);
-
-	void SetCapability(ftp_capability_names_t name, ftp_capabilities_t cap);
-	void SetCapability(ftp_capability_names_t name, ftp_capabilities_t cap, const std::string &option);
-	void Clear() { m_capabilityMap.clear(); }
-	void Assign(TFTPServerCapabilities *Source)
-	{
-		m_capabilityMap.clear();
-		if (Source)
-			m_capabilityMap = Source->m_capabilityMap;
-	}
+  ftp_capabilities_t GetCapability(ftp_capability_names_t Name);
+  ftp_capabilities_t GetCapabilityString(ftp_capability_names_t Name, std::string * Option = NULL);
+  void SetCapability(ftp_capability_names_t Name, ftp_capabilities_t Cap);
+  void SetCapability(ftp_capability_names_t Name, ftp_capabilities_t Cap, const std::string & Option);
+  void Clear() { FCapabilityMap.clear(); }
+  void Assign(TFTPServerCapabilities * Source)
+  {
+    FCapabilityMap.clear();
+    if (Source != NULL)
+    {
+      FCapabilityMap = Source->FCapabilityMap;
+    }
+  }
 protected:
-	struct t_cap
-	{
-		t_cap() :
-			cap(unknown),
-			option(),
-			number(0)
-		{}
-		ftp_capabilities_t cap;
-		std::string option;
-		int number;
-	};
-	std::map<ftp_capability_names_t, t_cap> m_capabilityMap;
+  struct t_cap
+  {
+    t_cap() :
+      cap(unknown),
+      option(),
+      number(0)
+    {}
+    ftp_capabilities_t cap;
+    std::string option;
+    int number;
+  };
+
+  std::map<ftp_capability_names_t, t_cap> FCapabilityMap;
 };
-
 #endif
-
 //---------------------------------------------------------------------------
 #endif // FileZillaIntfH

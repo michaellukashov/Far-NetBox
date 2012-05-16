@@ -414,13 +414,14 @@ bool __fastcall TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
           Dest.Second = Source.date.second;
           Dest.HasTime = Source.date.hastime;
           Dest.HasDate = Source.date.hasdate;
+          Dest.HasSeconds = Source.date.hasseconds;
           Dest.LinkTarget = Source.linkTarget;
         }
 
-        // Result = HandleListData(Path, &Entries[0], Num);
         int Num = Directory->num;
         TListDataEntry * pEntries = Num > 0 ? &Entries[0] : NULL;
         Result = HandleListData(Path, pEntries, Num);
+
         delete Directory;
       }
       break;

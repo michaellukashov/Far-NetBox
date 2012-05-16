@@ -103,6 +103,16 @@ void PackStr(RawByteString &Str)
   Str = Str.c_str();
 }
 //---------------------------------------------------------------------------
+void __fastcall Shred(UnicodeString & Str)
+{
+  if (!Str.IsEmpty())
+  {
+    Str.Unique();
+    memset((wchar_t *)Str.c_str(), 0, Str.Length() * sizeof(*Str.c_str()));
+    Str = L"";
+  }
+}
+//---------------------------------------------------------------------------
 UnicodeString MakeValidFileName(UnicodeString FileName)
 {
   UnicodeString IllegalChars = L":;,=+<>|\"[] \\/?*";
@@ -369,7 +379,7 @@ static wchar_t * __fastcall ReplaceChar(
   else
   {
     FileName[Index] = InvalidCharsReplacement;
-    InvalidChar++;
+    InvalidChar = (wchar_t *)FileName.c_str() + Index;
   }
   return InvalidChar;
 }
@@ -1222,13 +1232,17 @@ __int64 __fastcall ConvertTimestampToUnix(const FILETIME & FileTime,
 TDateTime __fastcall ConvertTimestampToUTC(TDateTime DateTime)
 {
 
-  const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
-  DateTime += CurrentParams->CurrentDifference;
-
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
   DateTime +=
     (IsDateInDST(DateTime) ?
       Params->DaylightDifference : Params->StandardDifference);
+  DateTime += Params->BaseDifference;
+
+  if (Params->DaylightHack)
+  {
+    const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
+    DateTime += CurrentParams->CurrentDaylightDifference;
+  }
 
   return DateTime;
 }
@@ -1340,6 +1354,21 @@ UnicodeString __fastcall FixedLenDateTimeFormat(const UnicodeString & Format)
   }
 
   return Result;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall StandardTimestamp(const TDateTime & DateTime)
+{
+  // return FormatDateTime(L"yyyy'-'mm'-'dd'T'hh':'nn':'ss'.'zzz'Z'", ConvertTimestampToUTC(DateTime));
+  unsigned short Y, M, D, H, N, S, MS;
+  DateTime.DecodeDate(Y, M, D);
+  DateTime.DecodeTime(H, N, S, MS);
+  UnicodeString dt = FORMAT(L"%04d-%02d-%02dT%02d:%02d:%02d.%03dZ", Y, M, D, H, N, S, MS);
+  return dt;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall StandardTimestamp()
+{
+  return StandardTimestamp(Now());
 }
 //---------------------------------------------------------------------------
 static TDateTime TwoSeconds(0, 0, 2, 0);
@@ -1485,13 +1514,13 @@ TLibModule * __fastcall FindModule(void * Instance)
 
   while (CurModule)
   {
-    if (CurModule->instance == (long)Instance)
+    if (CurModule->Instance == (unsigned)Instance)
     {
       break;
     }
     else
     {
-      CurModule = CurModule->next;
+      CurModule = CurModule->Next;
     }
   }
   return CurModule;
@@ -1500,20 +1529,15 @@ TLibModule * __fastcall FindModule(void * Instance)
 //---------------------------------------------------------------------------
 UnicodeString __fastcall LoadStr(int Ident, unsigned int MaxLength)
 {
-  UnicodeString Result;
-  Result.SetLength(MaxLength);
 #ifndef _MSC_VER
   TLibModule * MainModule = FindModule(HInstance);
   assert(MainModule != NULL);
-  int Length = LoadString((HINSTANCE)MainModule->resinstance, Ident, Result.c_str(), MaxLength);
 #else
-  HINSTANCE hInstance = FarPlugin ? FarPlugin->GetHandle() : GetModuleHandle(0);
-  // DEBUG_PRINTF(L"hInstance = %u", hInstance);
-  assert(hInstance != 0);
-
+  UnicodeString Result;
   Result.SetLength(MaxLength > 0 ? MaxLength : 255);
-  size_t Length = ::LoadString(hInstance, Ident, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Result.c_str())),
-                               static_cast<int>(Result.Length()));
+  HINSTANCE hInstance = FarPlugin ? FarPlugin->GetHandle() : GetModuleHandle(0);
+  assert(hInstance != 0);
+  int Length = LoadString(hInstance, Ident, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Result.c_str())), Result.Length());
 #endif
   Result.SetLength(Length);
 
@@ -1771,8 +1795,41 @@ LCID __fastcall GetDefaultLCID()
   return Is2000() ? GetUserDefaultLCID() : GetThreadLocale();
 }
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
+static UnicodeString ADefaultEncodingName;
+UnicodeString __fastcall DefaultEncodingName()
+{
+  if (ADefaultEncodingName.IsEmpty())
+  {
+    CPINFOEX Info;
+    GetCPInfoEx(CP_ACP, 0, &Info);
+    ADefaultEncodingName = Info.CodePageName;
+  }
+  return ADefaultEncodingName;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall WindowsProductName()
+{
+  UnicodeString Result;
+  TRegistry * Registry = new TRegistry();
+  Registry->SetAccess(KEY_READ);
+  try
+  {
+    Registry->SetRootKey(HKEY_LOCAL_MACHINE);
+    if (Registry->OpenKey("SOFTWARE", false) &&
+        Registry->OpenKey("Microsoft", false) &&
+        Registry->OpenKey("Windows NT", false) &&
+        Registry->OpenKey("CurrentVersion", false))
+    {
+      Result = Registry->ReadString("ProductName");
+    }
+    delete Registry;
+  }
+  catch(...)
+  {
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
 // Suppress warning about unused constants in DateUtils.hpp
-#pragma warn -8080
-#endif
+// #pragma warn -8080
 

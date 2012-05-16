@@ -81,21 +81,6 @@ UnicodeString __fastcall XmlAttributeEscape(UnicodeString Str)
   return DoXmlEscape(Str, true);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall XmlTimestamp(const TDateTime & DateTime)
-{
-  // return FormatDateTime(L"yyyy'-'mm'-'dd'T'hh':'nn':'ss'.'zzz'Z'", ConvertTimestampToUTC(DateTime));
-  unsigned short Y, M, D, H, N, S, MS;
-  DateTime.DecodeDate(Y, M, D);
-  DateTime.DecodeTime(H, N, S, MS);
-  UnicodeString dt = FORMAT(L"%04d-%02d-%02dT%02d:%02d:%02d.%03dZ", Y, M, D, H, N, S, MS);
-  return dt;
-}
-//---------------------------------------------------------------------------
-UnicodeString __fastcall XmlTimestamp()
-{
-  return XmlTimestamp(Now());
-}
-//---------------------------------------------------------------------------
 TStrings * __fastcall ExceptionToMessages(Exception * E)
 {
   TStrings * Result = NULL;
@@ -198,7 +183,7 @@ public:
             {
               FLog->AddIndented(FORMAT(L"      <size value=\"%s\" />", IntToStr(File->GetSize()).c_str()));
             }
-            FLog->AddIndented(FORMAT(L"      <modification value=\"%s\" />", XmlTimestamp(File->GetModification()).c_str()));
+            FLog->AddIndented(FORMAT(L"      <modification value=\"%s\" />", StandardTimestamp(File->GetModification()).c_str()));
             FLog->AddIndented(FORMAT(L"      <permissions value=\"%s\" />", XmlAttributeEscape(File->GetRights()->GetText()).c_str()));
             FLog->AddIndented(L"    </file>");
           }
@@ -212,7 +197,7 @@ public:
           {
             FLog->AddIndented(FORMAT(L"    <size value=\"%s\" />", IntToStr(FFile->GetSize()).c_str()));
           }
-          FLog->AddIndented(FORMAT(L"    <modification value=\"%s\" />", XmlTimestamp(FFile->GetModification()).c_str()));
+          FLog->AddIndented(FORMAT(L"    <modification value=\"%s\" />", StandardTimestamp(FFile->GetModification()).c_str()));
           FLog->AddIndented(FORMAT(L"    <permissions value=\"%s\" />", XmlAttributeEscape(FFile->GetRights()->GetText()).c_str()));
           FLog->AddIndented(L"  </file>");
         }
@@ -274,7 +259,7 @@ public:
 
   void __fastcall Modification(const TDateTime & DateTime)
   {
-    Parameter(L"modification", XmlTimestamp(DateTime));
+    Parameter(L"modification", StandardTimestamp(DateTime));
   }
 
   void __fastcall Recursive()
@@ -1305,7 +1290,7 @@ void __fastcall TActionLog::ReflectSettings()
     FLogging = true;
     Add(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
     Add(FORMAT(L"<session xmlns=\"http://winscp.net/schema/session/1.0\" name=\"%s\" start=\"%s\">",
-      XmlAttributeEscape(FSessionData->GetSessionName()).c_str(), XmlTimestamp().c_str()));
+      XmlAttributeEscape(FSessionData->GetSessionName()).c_str(), StandardTimestamp().c_str()));
   }
   else if (!ALogging && FLogging)
   {
@@ -1377,7 +1362,7 @@ void __fastcall TActionLog::BeginGroup(UnicodeString Name)
   FInGroup = true;
   assert(FIndent == L"  ");
   AddIndented(FORMAT(L"<group name=\"%s\" start=\"%s\">",
-    XmlAttributeEscape(Name).c_str(), XmlTimestamp().c_str()));
+    XmlAttributeEscape(Name).c_str(), StandardTimestamp().c_str()));
   FIndent = L"    ";
 }
 //---------------------------------------------------------------------------

@@ -4579,19 +4579,35 @@ void __fastcall TSFTPFileSystem::SFTPSource(const UnicodeString FileName,
           }
           bool Resend = false;
           FILE_OPERATION_LOOP(FMTLOAD(PRESERVE_TIME_PERM_ERROR, DestFileName.c_str()),
-            TSFTPPacket DummyResponse(GetSessionData()->GetCodePageAsNumber());
-            TSFTPPacket * Response = &PropertiesResponse;
-            if (Resend)
+            try
             {
-              PropertiesRequest.Reuse();
-              SendPacket(&PropertiesRequest);
-              // ReceiveResponse currently cannot receive twice into same packet,
-              // so DummyResponse is temporary workaround
-              Response = &DummyResponse;
+              TSFTPPacket DummyResponse(GetSessionData()->GetCodePageAsNumber());
+              TSFTPPacket * Response = &PropertiesResponse;
+              if (Resend)
+              {
+                PropertiesRequest.Reuse();
+                SendPacket(&PropertiesRequest);
+                // ReceiveResponse currently cannot receive twice into same packet,
+                // so DummyResponse is temporary workaround
+                Response = &DummyResponse;
+              }
+              Resend = true;
+              ReceiveResponse(&PropertiesRequest, Response, SSH_FXP_STATUS,
+                asOK | FLAGMASK(CopyParam->GetIgnorePermErrors(), asPermDenied));
             }
-            Resend = true;
-            ReceiveResponse(&PropertiesRequest, Response, SSH_FXP_STATUS,
-              asOK | FLAGMASK(CopyParam->GetIgnorePermErrors(), asPermDenied));
+            catch (...)
+            {
+              if (FTerminal->GetActive() &&
+                  (!CopyParam->GetPreserveRights() && !CopyParam->GetPreserveTime()))
+              {
+                assert(DoResume);
+                FTerminal->LogEvent(L"Ignoring error preserving permissions of overwritten file");
+              }
+              else
+              {
+                throw;
+              }
+            }
           );
         }
         catch(Exception & E)
@@ -5276,101 +5292,10 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
         }
       }
 
-      if ((Attrs >= 0) && !ResumeTransfer)
-      {
-        __int64 DestFileSize = 0;
-        __int64 MTime = 0;
-        try
-        {
-          FTerminal->OpenLocalFile(DestFullName, GENERIC_WRITE,
-            NULL, &LocalHandle, NULL, &MTime, NULL, &DestFileSize, false);
-
-          FTerminal->LogEvent(L"Confirming overwriting of file.");
-          TOverwriteFileParams FileParams;
-          FileParams.SourceSize = OperationProgress->TransferSize;
-          FileParams.SourceTimestamp = File->GetModification();
-          FileParams.DestTimestamp = UnixToDateTime(MTime,
-            GetSessionData()->GetDSTMode());
-          FileParams.DestSize = DestFileSize;
-          UnicodeString PrevDestFileName = DestFileName;
-          SFTPConfirmOverwrite(DestFileName, Params, OperationProgress, OverwriteMode, &FileParams);
-          if (PrevDestFileName != DestFileName)
-          {
-            DestFullName = TargetDir + DestFileName;
-            DestPartialFullName = DestFullName + FTerminal->GetConfiguration()->GetPartialExt();
-            if (ResumeAllowed)
-            {
-              if (FileExists(DestPartialFullName))
-              {
-                FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, DestPartialFullName.c_str()),
-                  THROWOSIFFALSE(Sysutils::DeleteFile(DestPartialFullName));
-                )
-              }
-              LocalFileName = DestPartialFullName;
-            }
-            else
-            {
-              LocalFileName = DestFullName;
-            }
-          }
-
-          if (OverwriteMode == omOverwrite)
-          {
-            // is NULL when overwritting read-only file
-            if (LocalHandle)
-            {
-              CloseHandle(LocalHandle);
-              LocalHandle = NULL;
-            }
-          }
-
-          if (OverwriteMode == omOverwrite)
-          {
-            // is NULL when overwritting read-only file
-            if (LocalHandle)
-            {
-              CloseHandle(LocalHandle);
-              LocalHandle = NULL;
-            }
-          }
-          else
-          {
-            // is NULL when overwritting read-only file, so following will
-            // probably fail anyway
-            if (LocalHandle == NULL)
-            {
-              FTerminal->OpenLocalFile(DestFullName, GENERIC_WRITE,
-                NULL, &LocalHandle, NULL, NULL, NULL, NULL);
-            }
-            ResumeAllowed = false;
-            FileSeek(LocalHandle, DestFileSize, 0);
-            if (OverwriteMode == omAppend)
-            {
-              FTerminal->LogEvent(L"Appending to file.");
-            }
-            else
-            {
-              FTerminal->LogEvent(L"Resuming file transfer (append style).");
-              assert(OverwriteMode == omResume);
-              OperationProgress->AddResumed(DestFileSize);
-            }
-          }
-        }
-        catch (EOSError & E)
-        {
-          if (E.ErrorCode != ERROR_FILE_NOT_FOUND)
-          {
-            throw;
-          }
-        }
-      }
-
-      Action.Destination(ExpandUNCFileName(DestFullName));
-
       // first open source file, not to loose the destination file,
       // if we cannot open the source one in the first place
       FTerminal->LogEvent(L"Opening remote file.");
-      FILE_OPERATION_LOOP (FMTLOAD(SFTP_OPEN_FILE_ERROR, (FileName.c_str())),
+      FILE_OPERATION_LOOP (FMTLOAD(SFTP_OPEN_FILE_ERROR, (FileName)),
         int OpenType = SSH_FXF_READ;
         if ((FVersion >= 4) && OperationProgress->AsciiTransfer)
         {
@@ -5378,6 +5303,122 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
         }
         RemoteHandle = SFTPOpenRemoteFile(FileName, OpenType);
       );
+
+      TDateTime Modification(0.0);
+      FILETIME AcTime = {0};
+      FILETIME WrTime = {0};
+
+      TSFTPPacket RemoteFilePacket(SSH_FXP_FSTAT);
+      RemoteFilePacket.AddString(RemoteHandle);
+      SendCustomReadFile(&RemoteFilePacket, &RemoteFilePacket,
+        SSH_FILEXFER_ATTR_MODIFYTIME);
+      ReceiveResponse(&RemoteFilePacket, &RemoteFilePacket);
+
+      const TRemoteFile * AFile = File;
+      // try
+      {
+        BOOST_SCOPE_EXIT ( (&AFile) (&File) )
+        {
+          if (AFile != File)
+          {
+            delete AFile;
+            AFile = NULL;
+          }
+        } BOOST_SCOPE_EXIT_END
+        // ignore errors
+        if (RemoteFilePacket.GetType() == SSH_FXP_ATTRS)
+        {
+          // load file, avoid completion (resolving symlinks) as we do not need that
+          AFile = LoadFile(&RemoteFilePacket, NULL, UnixExtractFileName(FileName),
+            NULL, false);
+        }
+
+        Modification = AFile->GetModification();
+        AcTime = DateTimeToFileTime(AFile->GetLastAccess(),
+          FTerminal->GetSessionData()->GetDSTMode());
+        WrTime = DateTimeToFileTime(AFile->GetModification(),
+          FTerminal->GetSessionData()->GetDSTMode());
+      }
+#ifndef _MSC_VER
+      __finally
+      {
+        if (AFile != File)
+        {
+          delete AFile;
+        }
+      }
+#endif
+
+      if ((Attrs >= 0) && !ResumeTransfer)
+      {
+        __int64 DestFileSize = 0;
+        __int64 MTime = 0;
+        FTerminal->OpenLocalFile(DestFullName, GENERIC_WRITE,
+          NULL, &LocalHandle, NULL, &MTime, NULL, &DestFileSize, false);
+
+        FTerminal->LogEvent(L"Confirming overwriting of file.");
+        TOverwriteFileParams FileParams;
+        FileParams.SourceSize = OperationProgress->TransferSize;
+        FileParams.SourceTimestamp = File->GetModification();
+        FileParams.DestTimestamp = UnixToDateTime(MTime,
+          GetSessionData()->GetDSTMode());
+        FileParams.DestSize = DestFileSize;
+        UnicodeString PrevDestFileName = DestFileName;
+        SFTPConfirmOverwrite(DestFileName, Params, OperationProgress, OverwriteMode, &FileParams);
+        if (PrevDestFileName != DestFileName)
+        {
+          DestFullName = TargetDir + DestFileName;
+          DestPartialFullName = DestFullName + FTerminal->GetConfiguration()->GetPartialExt();
+          if (ResumeAllowed)
+          {
+            if (FileExists(DestPartialFullName))
+            {
+              FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, DestPartialFullName.c_str()),
+                THROWOSIFFALSE(Sysutils::DeleteFile(DestPartialFullName));
+              )
+            }
+            LocalFileName = DestPartialFullName;
+          }
+          else
+          {
+            LocalFileName = DestFullName;
+          }
+        }
+
+        if (OverwriteMode == omOverwrite)
+        {
+          // is NULL when overwritting read-only file
+          if (LocalHandle)
+          {
+            CloseHandle(LocalHandle);
+            LocalHandle = NULL;
+          }
+        }
+        else
+        {
+          // is NULL when overwritting read-only file, so following will
+          // probably fail anyway
+          if (LocalHandle == NULL)
+          {
+            FTerminal->OpenLocalFile(DestFullName, GENERIC_WRITE,
+              NULL, &LocalHandle, NULL, NULL, NULL, NULL);
+          }
+          ResumeAllowed = false;
+          FileSeek(LocalHandle, DestFileSize, 0);
+          if (OverwriteMode == omAppend)
+          {
+            FTerminal->LogEvent(L"Appending to file.");
+          }
+          else
+          {
+            FTerminal->LogEvent(L"Resuming file transfer (append style).");
+            assert(OverwriteMode == omResume);
+            OperationProgress->AddResumed(DestFileSize);
+          }
+        }
+      }
+
+      Action.Destination(ExpandUNCFileName(DestFullName));
 
       // if not already opened (resume, append...), create new empty file
       if (!LocalHandle)
@@ -5392,15 +5433,7 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
 
       DeleteLocalFile = true;
 
-      TSFTPPacket RemoteFilePacket(SSH_FXP_FSTAT, GetSessionData()->GetCodePageAsNumber());
-      if (CopyParam->GetPreserveTime())
-      {
-        RemoteFilePacket.AddString(RemoteHandle);
-        SendCustomReadFile(&RemoteFilePacket, &RemoteFilePacket,
-          SSH_FILEXFER_ATTR_MODIFYTIME);
-      }
-
-      FileStream = new TSafeHandleStream(LocalHandle);
+      FileStream = new TSafeHandleStream((THandle)LocalHandle);
 
       // at end of this block queue is discarded
       {
@@ -5553,41 +5586,7 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
 
       if (CopyParam->GetPreserveTime())
       {
-        ReceiveResponse(&RemoteFilePacket, &RemoteFilePacket);
-
-        const TRemoteFile * AFile = File;
-        // try
-        {
-          BOOST_SCOPE_EXIT ( (&AFile) (&File) )
-          {
-            if (AFile != File)
-            {
-              delete AFile;
-            }
-          } BOOST_SCOPE_EXIT_END
-          // ignore errors
-          if (RemoteFilePacket.GetType() == SSH_FXP_ATTRS)
-          {
-            // load file, avoid completion (resolving symlinks) as we do not need that
-            AFile = LoadFile(&RemoteFilePacket, NULL, UnixExtractFileName(FileName),
-              NULL, false);
-          }
-
-          FILETIME AcTime = DateTimeToFileTime(AFile->GetLastAccess(),
-            GetSessionData()->GetDSTMode());
-          FILETIME WrTime = DateTimeToFileTime(AFile->GetModification(),
-            GetSessionData()->GetDSTMode());
-          SetFileTime(LocalHandle, NULL, &AcTime, &WrTime);
-        }
-#ifndef _MSC_VER
-        __finally
-        {
-          if (AFile != File)
-          {
-            delete AFile;
-          }
-        }
-#endif
+        SetFileTime(LocalHandle, NULL, &AcTime, &WrTime);
       }
 
       CloseHandle(LocalHandle);
