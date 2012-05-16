@@ -313,7 +313,6 @@ public:
   __property UnicodeString InternalStorageKey = { read = GetInternalStorageKey };
 #endif
 
-  void __fastcall SetCodePage(const UnicodeString value);
 public:
   explicit TSessionData(UnicodeString aName);
   void __fastcall Default();
@@ -540,6 +539,7 @@ public:
   UnicodeString __fastcall GetPostLoginCommands() const { return FPostLoginCommands; }
   TAddressFamily __fastcall GetAddressFamily() const { return FAddressFamily; }
   UnicodeString __fastcall GetCodePage() const { return FCodePage; }
+  void __fastcall SetCodePage(const UnicodeString value);
   unsigned int __fastcall GetCodePageAsNumber() const;
   UnicodeString __fastcall GetRekeyData() const { return FRekeyData; }
   unsigned int __fastcall GetRekeyTime() const { return FRekeyTime; }
