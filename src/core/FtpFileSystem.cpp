@@ -398,6 +398,7 @@ void __fastcall TFTPFileSystem::Open()
   int Pasv = (Data->GetFtpPasvMode() ? 1 : 2);
   int TimeZoneOffset = static_cast<int>((Round(static_cast<double>(Data->GetTimeDifference()) * MinsPerDay)));
   int UTF8 = 0;
+  DEBUG_PRINTF(L"GetCodePageAsNumber = %d", GetCodePageAsNumber(Data->GetCodePage()));
   switch (Data->GetNotUtf())
   {
     case asOn:
