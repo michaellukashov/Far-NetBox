@@ -1358,7 +1358,12 @@ UnicodeString __fastcall FixedLenDateTimeFormat(const UnicodeString & Format)
 //---------------------------------------------------------------------------
 UnicodeString __fastcall StandardTimestamp(const TDateTime & DateTime)
 {
-  return FormatDateTime(L"yyyy'-'mm'-'dd'T'hh':'nn':'ss'.'zzz'Z'", ConvertTimestampToUTC(DateTime));
+  // return FormatDateTime(L"yyyy'-'mm'-'dd'T'hh':'nn':'ss'.'zzz'Z'", ConvertTimestampToUTC(DateTime));
+  unsigned short Y, M, D, H, N, S, MS;
+  DateTime.DecodeDate(Y, M, D);
+  DateTime.DecodeTime(H, N, S, MS);
+  UnicodeString dt = FORMAT(L"%04d-%02d-%02dT%02d:%02d:%02d.%03dZ", Y, M, D, H, N, S, MS);
+  return dt;
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall StandardTimestamp()
