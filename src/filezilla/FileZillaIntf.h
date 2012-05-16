@@ -213,57 +213,57 @@ private:
 //---------------------------------------------------------------------------
 enum ftp_capabilities_t
 {
-    unknown,
-    yes,
-    no
+  unknown,
+  yes,
+  no
 };
 //---------------------------------------------------------------------------
 enum ftp_capability_names_t
 {
-    syst_command = 1, // reply of SYST command as option
-    feat_command,
-    clnt_command, // set to 'yes' if CLNT should be sent
-    utf8_command, // set to 'yes' if OPTS UTF8 ON should be sent
-    mlsd_command,
-    opts_mlst_command, // Arguments for OPTS MLST command
-    mfmt_command,
-    pret_command,
-    mdtm_command,
-    size_command,
-    mode_z_support,
-    tvfs_support, // Trivial virtual file store (RFC 3659)
-    list_hidden_support, // LIST -a command
-    rest_stream, // supports REST+STOR in addition to APPE
+  syst_command = 1, // reply of SYST command as option
+  feat_command,
+  clnt_command, // set to 'yes' if CLNT should be sent
+  utf8_command, // set to 'yes' if OPTS UTF8 ON should be sent
+  mlsd_command,
+  opts_mlst_command, // Arguments for OPTS MLST command
+  mfmt_command,
+  pret_command,
+  mdtm_command,
+  size_command,
+  mode_z_support,
+  tvfs_support, // Trivial virtual file store (RFC 3659)
+  list_hidden_support, // LIST -a command
+  rest_stream, // supports REST+STOR in addition to APPE
 };
 //---------------------------------------------------------------------------
 class TFTPServerCapabilities
 {
 public:
-	ftp_capabilities_t GetCapability(ftp_capability_names_t Name);
-	ftp_capabilities_t GetCapabilityString(ftp_capability_names_t Name, std::string * Option = NULL);
+  ftp_capabilities_t GetCapability(ftp_capability_names_t Name);
+  ftp_capabilities_t GetCapabilityString(ftp_capability_names_t Name, std::string * Option = NULL);
   void SetCapability(ftp_capability_names_t Name, ftp_capabilities_t Cap);
   void SetCapability(ftp_capability_names_t Name, ftp_capabilities_t Cap, const std::string & Option);
   void Clear() { FCapabilityMap.clear(); }
-	void Assign(TFTPServerCapabilities *Source)
-	{
+  void Assign(TFTPServerCapabilities * Source)
+  {
     FCapabilityMap.clear();
     if (Source != NULL)
     {
       FCapabilityMap = Source->FCapabilityMap;
     }
-	}
+  }
 protected:
-	struct t_cap
-	{
-		t_cap() :
-			cap(unknown),
-			option(),
-			number(0)
-		{}
-		ftp_capabilities_t cap;
-		std::string option;
-		int number;
-	};
+  struct t_cap
+  {
+    t_cap() :
+      cap(unknown),
+      option(),
+      number(0)
+    {}
+    ftp_capabilities_t cap;
+    std::string option;
+    int number;
+  };
 
   std::map<ftp_capability_names_t, t_cap> FCapabilityMap;
 };

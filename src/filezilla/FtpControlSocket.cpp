@@ -2260,13 +2260,13 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 #endif
                 else
                 {
-		cmd = _T("LIST");
+			cmd = _T("LIST");
 #ifdef MPEXT
-		if (COptions::GetOptionVal(OPTION_MPEXT_SHOWHIDDEN) && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
+			if (COptions::GetOptionVal(OPTION_MPEXT_SHOWHIDDEN) && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
 #else
-		if (m_pOwner->GetOption(FZAPI_OPTION_SHOWHIDDEN) && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
+			if (m_pOwner->GetOption(FZAPI_OPTION_SHOWHIDDEN) && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
 #endif
-			cmd += _T(" -a");
+				cmd += _T(" -a");
 		}
 		if (!Send(cmd))
 			return;
@@ -4244,11 +4244,11 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 			{
 				cmd=_MPT("LIST");
 #ifdef MPEXT
-			if ((COptions::GetOptionVal(OPTION_MPEXT_SHOWHIDDEN) || pData->transferfile.remotefile.Left(1)==_MPT(".")) && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
+				if ((COptions::GetOptionVal(OPTION_MPEXT_SHOWHIDDEN) || pData->transferfile.remotefile.Left(1)==_MPT(".")) && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
 #else
-			if ((m_pOwner->GetOption(FZAPI_OPTION_SHOWHIDDEN) || pData->transferfile.remotefile.Left(1)==_MPT(".")) && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
+				if ((m_pOwner->GetOption(FZAPI_OPTION_SHOWHIDDEN) || pData->transferfile.remotefile.Left(1)==_MPT(".")) && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
 #endif
-				cmd += _MPT(" -a");
+					cmd += _MPT(" -a");
 			}
 			if(!Send(cmd))
 				bError=TRUE;
@@ -6025,7 +6025,7 @@ void CFtpControlSocket::DiscardLine(CStringA line)
 		else if (line == _MPAT(" CLNT") || line.Left(6) == _MPAT(" CLNT "))
 			m_hasClntCmd = true;
 #ifdef MPEXT
-		else if (line == _MPAT("MLSD"))
+		else if (line == _MPAT(" MLSD"))
 		{
 			m_serverCapabilities.SetCapability(mlsd_command, yes);
 		}
@@ -6036,7 +6036,7 @@ void CFtpControlSocket::DiscardLine(CStringA line)
 			// MSLT/MLSD specs require use of UTC
 			// m_serverCapabilities.SetCapability(timezone_offset, no);
 		}
-		else if (line == _MPAT("MFMT"))
+		else if (line == _MPAT(" MFMT"))
 			m_hasMfmtCmd = true;
 #endif
 	}
