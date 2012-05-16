@@ -1481,7 +1481,7 @@ void __fastcall TSessionData::SetPassword(UnicodeString avalue)
 UnicodeString __fastcall TSessionData::GetPassword() const
 {
   UnicodeString Password = DecryptPassword(FPassword, GetUserName() + GetHostName());
-  DEBUG_PRINTF(L"Password = %s", Password.c_str());
+  // DEBUG_PRINTF(L"Password = %s", Password.c_str());
   return Password;
 }
 //---------------------------------------------------------------------
