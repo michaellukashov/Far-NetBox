@@ -5308,7 +5308,7 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
       FILETIME AcTime = {0};
       FILETIME WrTime = {0};
 
-      TSFTPPacket RemoteFilePacket(SSH_FXP_FSTAT);
+      TSFTPPacket RemoteFilePacket(SSH_FXP_FSTAT, GetSessionData()->GetCodePageAsNumber());
       RemoteFilePacket.AddString(RemoteHandle);
       SendCustomReadFile(&RemoteFilePacket, &RemoteFilePacket,
         SSH_FILEXFER_ATTR_MODIFYTIME);
