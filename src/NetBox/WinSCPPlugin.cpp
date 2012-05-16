@@ -93,7 +93,7 @@ void __fastcall TWinSCPPlugin::GetPluginInfoEx(PLUGIN_FLAGS &Flags,
   TStrings * DiskMenuStrings, TStrings * PluginMenuStrings,
   TStrings * PluginConfigStrings, TStrings * CommandPrefixes)
 {
-  Flags = PF_PRELOAD | PF_FULLCMDLINE;
+  Flags = PF_FULLCMDLINE;
   if (FarConfiguration->GetDisksMenu())
   {
     DiskMenuStrings->AddObject(GetMsg(PLUGIN_NAME),
