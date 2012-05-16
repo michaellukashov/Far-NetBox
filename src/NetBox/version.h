@@ -9,8 +9,8 @@
 #define PLUGIN_VERSION_MAJOR         2
 #define PLUGIN_VERSION_MINOR         1
 #define PLUGIN_VERSION_PATCH         1
-#define PLUGIN_VERSION_BUILD         110
+#define PLUGIN_VERSION_BUILD         115
 
 static const std::wstring CONST_VERSION_STR(L"2.1.1");
-static const std::wstring CONST_COMPILATION_TIME(L"16.05.2012 15:45:40");
+static const std::wstring CONST_COMPILATION_TIME(L"16.05.2012 23:05:59");
 

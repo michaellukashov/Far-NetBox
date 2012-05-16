@@ -751,8 +751,9 @@ void __fastcall TWebDAVFileSystem::CopyFile(const UnicodeString FileName,
 void __fastcall TWebDAVFileSystem::CreateDirectory(const UnicodeString DirName)
 {
   DEBUG_PRINTF(L"FCurrentDirectory = %s, DirName = %s", FCurrentDirectory.c_str(), DirName.c_str());
+  UnicodeString FullDirName = AbsolutePath(DirName, true);
   UnicodeString errorInfo;
-  bool res = WebDAVMakeDirectory(DirName.c_str(), errorInfo);
+  bool res = WebDAVMakeDirectory(FullDirName.c_str(), errorInfo);
   if (!res)
   {
     std::vector<std::wstring> dirnames;
