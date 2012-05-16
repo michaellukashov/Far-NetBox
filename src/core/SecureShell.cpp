@@ -1632,7 +1632,7 @@ bool __fastcall TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventR
       {
         if (Configuration->GetActualLogProtocol() >= 2)
         {
-          LogEvent(L"Timeout waiting for network events");
+          // LogEvent(L"Timeout waiting for network events");
         }
 
         MSec = 0;
