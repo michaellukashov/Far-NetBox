@@ -1,8 +1,12 @@
-NetBox 2.1.1 ??.05.2012
+NetBox 2.1.1 16.05.2012
 ---------------------
-  * SFTP, SCP: bugfix: do not truncate user password if it's longer than 100 bytes
-  * FTP: use CodePage setting to setup UTF8 mode
-  * SFTP: bugfix: error when trying to edit remote file
+  * WebDAV: Bugfix: cannot create directory
+  * Issue #22: Incorrect initialization of sessions with non-ASCII names
+  * SFTP, SCP: Bugfix: do not truncate user password if it's longer than 100 bytes
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=660#p95847)
+  * FTP: Use CodePage setting to setup UTF8 mode
+  * SFTP: Bugfix: error when trying to edit remote file
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=660#p95836)
   * WinSCP core upgraded to 5.0.7
   
 NetBox 2.1.0 15.05.2012
