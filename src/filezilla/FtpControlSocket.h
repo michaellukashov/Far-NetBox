@@ -122,7 +122,7 @@ protected:
 	int GetReplyCode();
 	CString GetReply();
 	void LogOnToServer(BOOL bSkipReply = FALSE);
-	BOOL Send(CString str, BOOL bUpdateRecvTime = TRUE);
+	BOOL Send(CString str);
 	
 	BOOL ParsePwdReply(CString& rawpwd);
 

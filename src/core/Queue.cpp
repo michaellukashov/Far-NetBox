@@ -340,17 +340,15 @@ int __fastcall TSimpleThread::ThreadProc(void * Thread)
   FThread(NULL), FFinished(true)
 {
 #ifndef _MSC_VER
-  DWORD ThreadID;
   FThread = reinterpret_cast<HANDLE>(
-    StartThread(NULL, 0, ThreadProc, this, CREATE_SUSPENDED, ThreadID));
+    StartThread(NULL, 0, ThreadProc, this, CREATE_SUSPENDED, FThreadId));
 #endif
 }
 //---------------------------------------------------------------------------
 void __fastcall TSimpleThread::Init()
 {
-  DWORD ThreadID;
   FThread = reinterpret_cast<HANDLE>(
-    StartThread(NULL, 0, this, CREATE_SUSPENDED, ThreadID));
+    StartThread(NULL, 0, this, CREATE_SUSPENDED, FThreadId));
 }
 
 //---------------------------------------------------------------------------
@@ -449,8 +447,21 @@ void __fastcall TSignalThread::TriggerEvent()
 //---------------------------------------------------------------------------
 bool __fastcall TSignalThread::WaitForEvent()
 {
-  return (WaitForSingleObject(FEvent, INFINITE) == WAIT_OBJECT_0) &&
-    !FTerminated;
+  // should never return -1, so it is only about 0 or 1
+  return (WaitForEvent(INFINITE) > 0);
+}
+//---------------------------------------------------------------------------
+int __fastcall TSignalThread::WaitForEvent(unsigned int Timeout)
+{
+  unsigned int Result = WaitForSingleObject(FEvent, Timeout);
+  if ((Result == WAIT_TIMEOUT) && !FTerminated)
+  {
+    return -1;
+  }
+  else
+  {
+    return ((Result == WAIT_OBJECT_0) && !FTerminated) ? 1 : 0;
+  }
 }
 //---------------------------------------------------------------------------
 void __fastcall TSignalThread::Execute()
@@ -2052,14 +2063,17 @@ void __fastcall TDownloadQueueItem::DoExecute(TTerminal * Terminal)
 /* __fastcall */ TTerminalThread::TTerminalThread(TTerminal * Terminal) :
   TSignalThread(), FTerminal(Terminal)
 {
-#ifndef _MSC_VER
-  FAction = NULL;
+  // FAction = NULL;
   FActionEvent = CreateEvent(NULL, false, false, NULL);
   FException = NULL;
-  FOnIdle = NULL;
+  FIdleException = NULL;
+  // FOnIdle = NULL;
   FUserAction = NULL;
   FCancel = false;
+  FMainThread = GetCurrentThreadId();
+  FSection = new TCriticalSection();
 
+#ifndef _MSC_VER
   FOnInformation = FTerminal->OnInformation;
   FOnQueryUser = FTerminal->OnQueryUser;
   FOnPromptUser = FTerminal->OnPromptUser;
@@ -2088,17 +2102,6 @@ void __fastcall TTerminalThread::Init()
 {
   Self = this;
   TSignalThread::Init(false);
-
-#ifndef _MSC_VER
-  FAction = NULL;
-#endif
-  FActionEvent = CreateEvent(NULL, false, false, NULL);
-  FException = NULL;
-#ifndef _MSC_VER
-  FOnIdle = NULL;
-#endif
-  FUserAction = NULL;
-  FCancel = false;
 
   FOnInformation = &FTerminal->GetOnInformation();
   FOnQueryUser = &FTerminal->GetOnQueryUser();
@@ -2150,16 +2153,17 @@ void __fastcall TTerminalThread::Init()
   FTerminal->OnStartReadDirectory = FOnStartReadDirectory;
   FTerminal->OnReadDirectoryProgress = FOnReadDirectoryProgress;
 #else
-  // assert(FTerminal->GetOnInformation().equal(boost::bind(&TTerminalThread::TerminalInformation, this, _1, _2, _3, _4)));
-  // assert(FTerminal->GetOnQueryUser() == boost::bind(&TTerminalThread::TerminalQueryUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
-  // assert(FTerminal->GetOnPromptUser() == boost::bind(&TTerminalThread::TerminalPromptUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
-  // assert(FTerminal->GetOnShowExtendedException() == boost::bind(&TTerminalThread::TerminalShowExtendedException, this, _1, _2, _3));
-  // assert(FTerminal->GetOnDisplayBanner() == boost::bind(&TTerminalThread::TerminalDisplayBanner, this, _1, _2, _3, _4, _5));
-  // assert(FTerminal->GetOnChangeDirectory() == boost::bind(&TTerminalThread::TerminalChangeDirectory, this, _1));
-  // assert(FTerminal->GetOnReadDirectory() == boost::bind(&TTerminalThread::TerminalReadDirectory, this, _1, _2));
-  // assert(FTerminal->GetOnStartReadDirectory() == boost::bind(&TTerminalThread::TerminalStartReadDirectory, this, _1));
-  // assert(FTerminal->GetOnReadDirectoryProgress() == boost::bind(&TTerminalThread::TerminalReadDirectoryProgress, this, _1, _2, _3));
-
+/*
+  assert(FTerminal->GetOnInformation().equal(boost::bind(&TTerminalThread::TerminalInformation, this, _1, _2, _3, _4)));
+  assert(FTerminal->GetOnQueryUser() == boost::bind(&TTerminalThread::TerminalQueryUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
+  assert(FTerminal->GetOnPromptUser() == boost::bind(&TTerminalThread::TerminalPromptUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
+  assert(FTerminal->GetOnShowExtendedException() == boost::bind(&TTerminalThread::TerminalShowExtendedException, this, _1, _2, _3));
+  assert(FTerminal->GetOnDisplayBanner() == boost::bind(&TTerminalThread::TerminalDisplayBanner, this, _1, _2, _3, _4, _5));
+  assert(FTerminal->GetOnChangeDirectory() == boost::bind(&TTerminalThread::TerminalChangeDirectory, this, _1));
+  assert(FTerminal->GetOnReadDirectory() == boost::bind(&TTerminalThread::TerminalReadDirectory, this, _1, _2));
+  assert(FTerminal->GetOnStartReadDirectory() == boost::bind(&TTerminalThread::TerminalStartReadDirectory, this, _1));
+  assert(FTerminal->GetOnReadDirectoryProgress() == boost::bind(&TTerminalThread::TerminalReadDirectoryProgress, this, _1, _2, _3));
+*/
   FTerminal->SetOnInformation(*FOnInformation);
   FTerminal->SetOnQueryUser(*FOnQueryUser);
   FTerminal->SetOnPromptUser(*FOnPromptUser);
@@ -2170,11 +2174,27 @@ void __fastcall TTerminalThread::Init()
   FTerminal->SetOnStartReadDirectory(*FOnStartReadDirectory);
   FTerminal->SetOnReadDirectoryProgress(*FOnReadDirectoryProgress);
 #endif
+
+  delete FSection;
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminalThread::Cancel()
 {
   FCancel = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TTerminalThread::Idle()
+{
+  TGuard Guard(FSection);
+  // only when running user action already,
+  // so that the exception is catched, saved and actually
+  // passed back into the terminal thread, savex again
+  // and passed back to us
+  if ((FUserAction != NULL) && (FIdleException != NULL))
+  {
+    Rethrow(FIdleException);
+  }
+  FPendingIdle = true;
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminalThread::TerminalOpen()
@@ -2187,15 +2207,12 @@ void __fastcall TTerminalThread::TerminalReopen()
   RunAction(boost::bind(&TTerminalThread::TerminalReopenEvent, this, _1));
 }
 //---------------------------------------------------------------------------
-void __fastcall TTerminalThread::RunAction(const TNotifyEvent & Action)
+void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
 {
-#ifndef _MSC_VER
-  assert(FAction == NULL);
-#endif
+  // assert(FAction == NULL);
   assert(FException == NULL);
-#ifndef _MSC_VER
-  assert(FOnIdle != NULL);
-#endif
+  assert(FIdleException == NULL);
+  // assert(FOnIdle != NULL);
 
   FCancelled = false;
   FAction.connect(Action);
@@ -2229,7 +2246,7 @@ void __fastcall TTerminalThread::RunAction(const TNotifyEvent & Action)
               }
               catch (Exception & E)
               {
-                SaveException(E);
+                SaveException(E, FException);
               }
 
               FUserAction = NULL;
@@ -2251,7 +2268,7 @@ void __fastcall TTerminalThread::RunAction(const TNotifyEvent & Action)
       while (!Done);
 
 
-      Rethrow();
+      Rethrow(FException);
     }
 #ifndef _MSC_VER
     __finally
@@ -2298,55 +2315,38 @@ void __fastcall TTerminalThread::ProcessEvent()
   }
   catch(Exception & E)
   {
-    SaveException(E);
+    SaveException(E, FException);
   }
 
   SetEvent(FActionEvent);
 }
 //---------------------------------------------------------------------------
-void __fastcall TTerminalThread::Rethrow()
+void __fastcall TTerminalThread::Rethrow(Exception *& Exception)
 {
-  if (FException != NULL)
+  if (Exception != NULL)
   {
     // try
     {
-      BOOST_SCOPE_EXIT ( (&Self) )
+      BOOST_SCOPE_EXIT ( (&Exception) )
       {
-        SAFE_DESTROY(Self->FException);
+        SAFE_DESTROY(Exception);
       } BOOST_SCOPE_EXIT_END
-      if (dynamic_cast<EFatal *>(FException) != NULL)
-      {
-        throw EFatal(FException, L"");
-      }
-      else
-      {
-        throw ExtException(FException, L"");
-      }
+      RethrowException(Exception);
     }
 #ifndef _MSC_VER
     __finally
     {
-      SAFE_DESTROY(FException);
+      SAFE_DESTROY(Exception);
     }
 #endif
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TTerminalThread::SaveException(Exception & E)
+void __fastcall TTerminalThread::SaveException(Exception & E, Exception *& Exception)
 {
-  assert(FException == NULL);
+  assert(Exception == NULL);
 
-  // should not happen
-  assert(dynamic_cast<ESshTerminate *>(&E) == NULL);
-
-  if (dynamic_cast<EFatal *>(&E) != NULL)
-  {
-    FException = new EFatal(&E, L"");
-  }
-  else
-  {
-    FException = new ExtException(&E, L"");
-  }
+  Exception = CloneException(&E);
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminalThread::FatalAbort()
@@ -2365,37 +2365,92 @@ void __fastcall TTerminalThread::CheckCancel()
 //---------------------------------------------------------------------------
 void __fastcall TTerminalThread::WaitForUserAction(TUserAction * UserAction)
 {
-  CheckCancel();
-
-  // have to save it as we can go recursive via TQueryParams::TimerEvent,
-  // see TTerminalThread::TerminalQueryUser
-  TUserAction * PrevUserAction = FUserAction;
-  // try
+  DWORD Thread = GetCurrentThreadId();
+  // we can get called from the main thread from within Idle,
+  // should be only to call HandleExtendedException
+  if (Thread == FMainThread)
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&PrevUserAction) )
+    if (UserAction != NULL)
     {
-      Self->FUserAction = PrevUserAction;
-      SAFE_DESTROY(Self->FException);
-    } BOOST_SCOPE_EXIT_END
-    FUserAction = UserAction;
-
-    if (!WaitForEvent())
-    {
-      FatalAbort();
+      UserAction->Execute(NULL);
     }
-
-
-    Rethrow();
   }
-#ifndef _MSC_VER
-  __finally
+  else
   {
-    FUserAction = PrevUserAction;
-    SAFE_DESTROY(FException);
-  }
-#endif
+    // we should be called from our thread only,
+    // with exception noted above
+    assert(Thread == FThreadId);
+    CheckCancel();
 
-  CheckCancel();
+    // have to save it as we can go recursive via TQueryParams::TimerEvent,
+    // see TTerminalThread::TerminalQueryUser
+    TUserAction * PrevUserAction = FUserAction;
+    // try
+    {
+      BOOST_SCOPE_EXIT ( (&Self) (&PrevUserAction) )
+      {
+        Self->FUserAction = PrevUserAction;
+        SAFE_DESTROY(Self->FException);
+      } BOOST_SCOPE_EXIT_END
+      FUserAction = UserAction;
+
+      while (true)
+      {
+
+        {
+          TGuard Guard(FSection);
+          // If idle exception is already set, we are only waiting
+          // for the main thread to pick it up
+          // (or at least to finish handling the user action, so
+          // that we rethrow the idle exception below)
+          // Also if idle exception is set, it is probable that terminal
+          // is not active anyway.
+          if (FTerminal->GetActive() && FPendingIdle && (FIdleException == NULL))
+          {
+            FPendingIdle = false;
+            try
+            {
+              FTerminal->Idle();
+            }
+            catch (Exception & E)
+            {
+              SaveException(E, FIdleException);
+            }
+          }
+        }
+
+        int WaitResult = WaitForEvent(1000);
+        if (WaitResult == 0)
+        {
+          SAFE_DESTROY(FIdleException);
+          FatalAbort();
+        }
+        else if (WaitResult > 0)
+        {
+          break;
+        }
+      }
+
+
+      Rethrow(FException);
+
+      if (FIdleException != NULL)
+      {
+        // idle exception was not used to cancel the user action
+        // (if it where it would be already cloned into the FException above
+        // and rethrown)
+        Rethrow(FIdleException);
+      }
+    }
+#ifndef _MSC_VER
+    __finally
+    {
+      FUserAction = PrevUserAction;
+      SAFE_DESTROY(FException);
+    }
+#endif
+    CheckCancel();
+  }
 }
 //---------------------------------------------------------------------------
 void  /* __fastcall */ TTerminalThread::TerminalInformation(

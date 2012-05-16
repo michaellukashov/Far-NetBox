@@ -677,45 +677,6 @@ public:
 };
 
 //---------------------------------------------------------------------------
-
-// From SysUtils.hpp
-struct TFormatSettings
-{
-private:
-  // typedef StaticArray<UnicodeString, 12> _TFormatSettings__1;
-
-  // typedef StaticArray<UnicodeString, 12> _TFormatSettings__2;
-
-  // typedef StaticArray<UnicodeString, 7> _TFormatSettings__3;
-
-  // typedef StaticArray<UnicodeString, 7> _TFormatSettings__4;
-public:
-  unsigned char CurrencyFormat;
-  unsigned char NegCurrFormat;
-  wchar_t ThousandSeparator;
-  wchar_t DecimalSeparator;
-  unsigned char CurrencyDecimals;
-  wchar_t DateSeparator;
-  wchar_t TimeSeparator;
-  wchar_t ListSeparator;
-  UnicodeString CurrencyString;
-  UnicodeString ShortDateFormat;
-  UnicodeString LongDateFormat;
-  UnicodeString TimeAMString;
-  UnicodeString TimePMString;
-  UnicodeString ShortTimeFormat;
-  UnicodeString LongTimeFormat;
-  // _TFormatSettings__1 ShortMonthNames;
-  // _TFormatSettings__2 LongMonthNames;
-  // _TFormatSettings__3 ShortDayNames;
-  // _TFormatSettings__4 LongDayNames;
-  unsigned short TwoDigitYearCenturyWindow;
-};
-
-void __fastcall GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings);
-// int __fastcall GetDefaultLCID();
-
-//---------------------------------------------------------------------------
 // from wxvcl\sysset.h
 
 template <class T>
@@ -944,6 +905,7 @@ typedef DelphiSet<TReplaceFlag> TReplaceFlags;
 
 //---------------------------------------------------------------------------
 typedef HANDLE THandle;
+typedef DWORD TThreadID;
 
 //---------------------------------------------------------------------------
 inline double Trunc(double value) { double intpart; modf(value, &intpart); return intpart; }

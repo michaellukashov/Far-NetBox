@@ -30,19 +30,20 @@ const wchar_t ProtocolNames[PROTOCOL_COUNT][10] = { L"raw", L"telnet", L"rlogin"
 const wchar_t SshProtList[][10] = {L"1 only", L"1", L"2", L"2 only"};
 const wchar_t ProxyMethodList[][10] = {L"none", L"SOCKS4", L"SOCKS5", L"HTTP", L"Telnet", L"Cmd" };
 const TCipher DefaultCipherList[CIPHER_COUNT] =
-  { cipAES, cipBlowfish, cip3DES, cipWarn, cipArcfour, cipDES };
+  { cipBlowfish, cipAES, cip3DES, cipWarn, cipArcfour, cipDES };
 const TKex DefaultKexList[KEX_COUNT] =
   { kexDHGEx, kexDHGroup14, kexDHGroup1, kexRSA, kexWarn };
 const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][15] = { L"SCP", L"SFTP (SCP)", L"SFTP", L"", L"", L"FTP", L"FTPS", L"WebDAV - HTTP", L"WebDAV - HTTPS" };
-const UnicodeString CONST_LOGIN_ANONYMOUS = L"anonymous";
 const int SshPortNumber = 22;
 const int FtpPortNumber = 21;
-const int HTTPPortNumber = 80;
-const int HTTPSPortNumber = 443;
 const int FtpsImplicitPortNumber = 990;
 const int DefaultSendBuf = 262144;
 const UnicodeString AnonymousUserName(L"anonymous");
 const UnicodeString AnonymousPassword(L"anonymous@example.com");
+
+const UnicodeString CONST_LOGIN_ANONYMOUS = L"anonymous";
+const int HTTPPortNumber = 80;
+const int HTTPSPortNumber = 443;
 const unsigned int CONST_DEFAULT_CODEPAGE = CP_ACP;
 //---------------------------------------------------------------------
 TDateTime __fastcall SecToDateTime(int Sec)
@@ -64,8 +65,6 @@ void __fastcall TSessionData::Default()
   SetPortNumber(SshPortNumber);
   SetUserName(CONST_LOGIN_ANONYMOUS);
   SetPassword(L"");
-  SetLoginType(ltAnonymous);
-  SetPasswordless(false);
   SetPingInterval(30);
   // when changing default, update load/save logic
   SetPingType(ptOff);
@@ -116,7 +115,6 @@ void __fastcall TSessionData::Default()
   SetSpecial(false);
   SetFSProtocol(fsSFTP);
   SetAddressFamily(afAuto);
-  SetCodePage(::GetCodePageAsString(CONST_DEFAULT_CODEPAGE));
   SetRekeyData(L"1G");
   SetRekeyTime(MinsPerHour);
 
@@ -150,8 +148,7 @@ void __fastcall TSessionData::Default()
   SetScp1Compatibility(false);
   SetTimeDifference(TDateTime(0));
   SetSCPLsFullTime(asAuto);
-  SetNotUtf(asOn);
-  SetFtpListAll(asAuto);
+  SetNotUtf(asOn); // asAuto
 
   // SFTP
   SetSftpServer(L"");
@@ -183,23 +180,25 @@ void __fastcall TSessionData::Default()
   SetFtpPingInterval(30);
   SetFtpPingType(ptDummyCommand);
   SetFtps(ftpsNone);
+  SetFtpListAll(asAuto);
+  SetSslSessionReuse(true);
 
   SetFtpProxyLogonType(0); // none
 
-  SetFtpAllowEmptyPassword(false);
-  SetFtpEncryption(fesPlainFTP);
-
-  SetSslSessionReuse(true);
 
   SetCustomParam1(L"");
   SetCustomParam2(L"");
 
-  FNumberOfRetries = 0;
-
-  FSelected = false;
+  SetSelected(false);
   FModified = false;
   FSource = ::ssNone;
 
+  SetCodePage(::GetCodePageAsString(CONST_DEFAULT_CODEPAGE));
+  SetLoginType(ltAnonymous);
+  SetFtpAllowEmptyPassword(false);
+  SetFtpEncryption(fesPlainFTP);
+
+  FNumberOfRetries = 0;
   // add also to TSessionLog::AddStartupInfo()
 }
 //---------------------------------------------------------------------
@@ -209,149 +208,172 @@ void __fastcall TSessionData::NonPersistant()
   SetPreserveDirectoryChanges(false);
 }
 //---------------------------------------------------------------------
+#define BASE_PROPERTIES \
+  PROPERTY(HostName); \
+  PROPERTY(PortNumber); \
+  PROPERTY(UserName); \
+  PROPERTY(Password); \
+  PROPERTY(PublicKeyFile); \
+  PROPERTY(FSProtocol); \
+  PROPERTY(Ftps); \
+  PROPERTY(LocalDirectory); \
+  PROPERTY(RemoteDirectory); \
+//---------------------------------------------------------------------
+#define ADVANCED_PROPERTIES \
+  PROPERTY(PingInterval); \
+  PROPERTY(PingType); \
+  PROPERTY(Timeout); \
+  PROPERTY(TryAgent); \
+  PROPERTY(AgentFwd); \
+  PROPERTY(AuthTIS); \
+  PROPERTY(ChangeUsername); \
+  PROPERTY(Compression); \
+  PROPERTY(SshProt); \
+  PROPERTY(Ssh2DES); \
+  PROPERTY(SshNoUserAuth); \
+  PROPERTY(CipherList); \
+  PROPERTY(KexList); \
+  PROPERTY(AddressFamily); \
+  PROPERTY(RekeyData); \
+  PROPERTY(RekeyTime); \
+  PROPERTY(HostKey); \
+  \
+  PROPERTY(SynchronizeBrowsing); \
+  PROPERTY(UpdateDirectories); \
+  PROPERTY(CacheDirectories); \
+  PROPERTY(CacheDirectoryChanges); \
+  PROPERTY(PreserveDirectoryChanges); \
+  \
+  PROPERTY(ResolveSymlinks); \
+  PROPERTY(DSTMode); \
+  PROPERTY(LockInHome); \
+  PROPERTY(Special); \
+  PROPERTY(Selected); \
+  PROPERTY(ReturnVar); \
+  PROPERTY(LookupUserGroups); \
+  PROPERTY(EOLType); \
+  PROPERTY(Shell); \
+  PROPERTY(ClearAliases); \
+  PROPERTY(Scp1Compatibility); \
+  PROPERTY(UnsetNationalVars); \
+  PROPERTY(ListingCommand); \
+  PROPERTY(IgnoreLsWarnings); \
+  PROPERTY(SCPLsFullTime); \
+  \
+  PROPERTY(TimeDifference); \
+  PROPERTY(TcpNoDelay); \
+  PROPERTY(SendBuf); \
+  PROPERTY(SshSimple); \
+  PROPERTY(AuthKI); \
+  PROPERTY(AuthKIPassword); \
+  PROPERTY(AuthGSSAPI); \
+  PROPERTY(GSSAPIFwdTGT); \
+  PROPERTY(GSSAPIServerRealm); \
+  PROPERTY(DeleteToRecycleBin); \
+  PROPERTY(OverwrittenToRecycleBin); \
+  PROPERTY(RecycleBinPath); \
+  PROPERTY(NotUtf); \
+  PROPERTY(PostLoginCommands); \
+  \
+  PROPERTY(ProxyMethod); \
+  PROPERTY(ProxyHost); \
+  PROPERTY(ProxyPort); \
+  PROPERTY(ProxyUsername); \
+  PROPERTY(ProxyPassword); \
+  PROPERTY(ProxyTelnetCommand); \
+  PROPERTY(ProxyLocalCommand); \
+  PROPERTY(ProxyDNS); \
+  PROPERTY(ProxyLocalhost); \
+  \
+  PROPERTY(SftpServer); \
+  PROPERTY(SFTPDownloadQueue); \
+  PROPERTY(SFTPUploadQueue); \
+  PROPERTY(SFTPListingQueue); \
+  PROPERTY(SFTPMaxVersion); \
+  PROPERTY(SFTPMaxPacketSize); \
+  \
+  PROPERTY(Color); \
+  \
+  PROPERTY(Tunnel); \
+  PROPERTY(TunnelHostName); \
+  PROPERTY(TunnelPortNumber); \
+  PROPERTY(TunnelUserName); \
+  PROPERTY(TunnelPassword); \
+  PROPERTY(TunnelPublicKeyFile); \
+  PROPERTY(TunnelLocalPortNumber); \
+  PROPERTY(TunnelPortFwd); \
+  \
+  PROPERTY(FtpPasvMode); \
+  PROPERTY(FtpForcePasvIp); \
+  PROPERTY(FtpAccount); \
+  PROPERTY(FtpPingInterval); \
+  PROPERTY(FtpPingType); \
+  PROPERTY(FtpListAll); \
+  PROPERTY(SslSessionReuse); \
+  \
+  PROPERTY(FtpProxyLogonType); \
+  \
+  PROPERTY(CustomParam1); \
+  PROPERTY(CustomParam2); \
+  \
+  PROPERTY(CodePage); \
+  PROPERTY(LoginType); \
+  PROPERTY(FtpAllowEmptyPassword); \
+  PROPERTY(FtpEncryption);
+//---------------------------------------------------------------------
 void __fastcall TSessionData::Assign(TPersistent * Source)
 {
   if (Source && ::InheritsFrom<TPersistent, TSessionData>(Source))
   {
-    #define DUPL(P) Set##P(((TSessionData *)Source)->Get##P())
-    DUPL(Name);
-    DUPL(HostName);
-    DUPL(PortNumber);
-    DUPL(LoginType);
-    DUPL(UserName);
-    DUPL(Password);
-    DUPL(Passwordless);
-    DUPL(PingInterval);
-    DUPL(PingType);
-    DUPL(Timeout);
-    DUPL(TryAgent);
-    DUPL(AgentFwd);
-    DUPL(AuthTIS);
-    DUPL(ChangeUsername);
-    DUPL(Compression);
-    DUPL(SshProt);
-    DUPL(Ssh2DES);
-    DUPL(SshNoUserAuth);
-    DUPL(CipherList);
-    DUPL(KexList);
-    DUPL(PublicKeyFile);
-    DUPL(AddressFamily);
-    DUPL(CodePage);
-    DUPL(RekeyData);
-    DUPL(RekeyTime);
-    DUPL(HostKey);
-
-    DUPL(FSProtocol);
-    DUPL(LocalDirectory);
-    DUPL(RemoteDirectory);
-    DUPL(SynchronizeBrowsing);
-    DUPL(UpdateDirectories);
-    DUPL(CacheDirectories);
-    DUPL(CacheDirectoryChanges);
-    DUPL(PreserveDirectoryChanges);
-
-    DUPL(ResolveSymlinks);
-    DUPL(DSTMode);
-    DUPL(LockInHome);
-    DUPL(Special);
-    DUPL(Selected);
-    DUPL(ReturnVar);
-    DUPL(LookupUserGroups);
-    DUPL(EOLType);
-    DUPL(Shell);
-    DUPL(ClearAliases);
-    DUPL(Scp1Compatibility);
-    DUPL(UnsetNationalVars);
-    DUPL(ListingCommand);
-    DUPL(IgnoreLsWarnings);
-    DUPL(SCPLsFullTime);
-    DUPL(FtpListAll);
-
-    DUPL(TimeDifference);
-    // new in 53b
-    DUPL(TcpNoDelay);
-    DUPL(SendBuf);
-    DUPL(SshSimple);
-    DUPL(AuthKI);
-    DUPL(AuthKIPassword);
-    DUPL(AuthGSSAPI);
-    DUPL(GSSAPIFwdTGT);
-    DUPL(GSSAPIServerRealm);
-    DUPL(DeleteToRecycleBin);
-    DUPL(OverwrittenToRecycleBin);
-    DUPL(RecycleBinPath);
-    DUPL(NotUtf);
-    DUPL(PostLoginCommands);
-
-    DUPL(ProxyMethod);
-    DUPL(ProxyHost);
-    DUPL(ProxyPort);
-    DUPL(ProxyUsername);
-    DUPL(ProxyPassword);
-    DUPL(ProxyTelnetCommand);
-    DUPL(ProxyLocalCommand);
-    DUPL(ProxyDNS);
-    DUPL(ProxyLocalhost);
-
+    #define PROPERTY(P) Set##P(((TSessionData *)Source)->Get##P())
+    PROPERTY(Name);
+    BASE_PROPERTIES;
+    ADVANCED_PROPERTIES;
     for (unsigned int Index = 0; Index < LENOF(FBugs); Index++)
     {
-      // DUPL(Bug[(TSshBug)Index]);
+      // PROPERTY(Bug[(TSshBug)Index]);
       (static_cast<TSessionData *>(Source))->SetBug(static_cast<TSshBug>(Index),
           GetBug(static_cast<TSshBug>(Index)));
     }
-
-    // SFTP
-    DUPL(SftpServer);
-    DUPL(SFTPDownloadQueue);
-    DUPL(SFTPUploadQueue);
-    DUPL(SFTPListingQueue);
-    DUPL(SFTPMaxVersion);
-    DUPL(SFTPMinPacketSize);
-    DUPL(SFTPMaxPacketSize);
-
     for (unsigned int Index = 0; Index < LENOF(FSFTPBugs); Index++)
     {
-      // DUPL(SFTPBug[(TSftpBug)Index]);
+      // PROPERTY(SFTPBug[(TSftpBug)Index]);
       (static_cast<TSessionData *>(Source))->SetSFTPBug(static_cast<TSftpBug>(Index),
           GetSFTPBug(static_cast<TSftpBug>(Index)));
     }
+    #undef PROPERTY
 
-    DUPL(Color);
+    FModified = ((TSessionData *)Source)->GetModified();
+    FSource = ((TSessionData *)Source)->FSource;
 
-    DUPL(Tunnel);
-    DUPL(TunnelHostName);
-    DUPL(TunnelPortNumber);
-    DUPL(TunnelUserName);
-    DUPL(TunnelPassword);
-    DUPL(TunnelPublicKeyFile);
-    DUPL(TunnelLocalPortNumber);
-    DUPL(TunnelPortFwd);
-
-    DUPL(FtpPasvMode);
-    DUPL(FtpAllowEmptyPassword);
-    DUPL(FtpEncryption);
-    DUPL(FtpForcePasvIp);
-    DUPL(FtpAccount);
-    DUPL(FtpPingInterval);
-    DUPL(FtpPingType);
-    DUPL(Ftps);
-
-    DUPL(FtpProxyLogonType);
-
-    DUPL(CustomParam1);
-    DUPL(CustomParam2);
-    DUPL(SslSessionReuse);
-
-    #undef DUPL
-    FModified = (static_cast<TSessionData *>(Source))->GetModified();
-    FSource = (static_cast<TSessionData *>(Source))->FSource;
-
-    FNumberOfRetries = (static_cast<TSessionData *>(Source))->GetNumberOfRetries();
+    FNumberOfRetries = ((TSessionData *)Source)->FNumberOfRetries;
   }
   else
   {
     TNamedObject::Assign(Source);
   }
+}
+//---------------------------------------------------------------------
+bool __fastcall TSessionData::IsSame(const TSessionData * Default, bool AdvancedOnly)
+{
+  #define PROPERTY(P) if (Get##P() != Default->Get##P()) return false;
+  if (!AdvancedOnly)
+  {
+    BASE_PROPERTIES;
+  }
+  ADVANCED_PROPERTIES;
+  for (unsigned int Index = 0; Index < LENOF(FBugs); Index++)
+  {
+    // PROPERTY(Bug[(TSshBug)Index]);
+    if (GetBug(static_cast<TSshBug>(Index)) != Default->GetBug(static_cast<TSshBug>(Index))) return false;
+  }
+  for (unsigned int Index = 0; Index < LENOF(FSFTPBugs); Index++)
+  {
+    // PROPERTY(SFTPBug[(TSftpBug)Index]);
+    if (GetSFTPBug(static_cast<TSftpBug>(Index)) != Default->GetSFTPBug(static_cast<TSftpBug>(Index))) return false;
+  }
+  #undef PROPERTY
+  return true;
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword)
@@ -373,8 +395,6 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
       FPassword = Storage->ReadStringAsBinaryData(L"Password", FPassword);
     }
   }
-  SetLoginType(static_cast<TLoginType>(Storage->ReadInteger(L"LoginType", GetLoginType())));
-  SetPasswordless(Storage->ReadBool(L"Passwordless", GetPasswordless()));
   // Putty uses PingIntervalSecs
   int PingIntervalSecs = Storage->ReadInteger(L"PingIntervalSecs", -1);
   if (PingIntervalSecs < 0)
@@ -429,8 +449,6 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
   SetRekeyData(Storage->ReadString(L"RekeyBytes", GetRekeyData()));
   SetRekeyTime(Storage->ReadInteger(L"RekeyTime", GetRekeyTime()));
 
-  SetCodePage(Storage->ReadString(L"CodePage", GetCodePage()));
-
   SetFSProtocol(static_cast<TFSProtocol>(Storage->ReadInteger(L"FSProtocol", GetFSProtocol())));
   SetLocalDirectory(Storage->ReadString(L"LocalDirectory", GetLocalDirectory()));
   SetRemoteDirectory(Storage->ReadString(L"RemoteDirectory", GetRemoteDirectory()));
@@ -451,7 +469,6 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
     Storage->ReadBool(L"AliasGroupList", false) ? UnicodeString(L"ls -gla") : GetListingCommand()));
   SetIgnoreLsWarnings(Storage->ReadBool(L"IgnoreLsWarnings", GetIgnoreLsWarnings()));
   SetSCPLsFullTime(static_cast<TAutoSwitch>(Storage->ReadInteger(L"SCPLsFullTime", GetSCPLsFullTime())));
-  SetFtpListAll(static_cast<TAutoSwitch>(Storage->ReadInteger(L"FtpListAll", GetFtpListAll())));
   SetScp1Compatibility(Storage->ReadBool(L"Scp1Compatibility", GetScp1Compatibility()));
   SetTimeDifference(TDateTime(Storage->ReadFloat(L"TimeDifference", GetTimeDifference())));
   SetDeleteToRecycleBin(Storage->ReadBool(L"DeleteToRecycleBin", GetDeleteToRecycleBin()));
@@ -578,16 +595,18 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
   SetFtpPingInterval(Storage->ReadInteger(L"FtpPingInterval", GetFtpPingInterval()));
   SetFtpPingType(static_cast<TPingType>(Storage->ReadInteger(L"FtpPingType", GetFtpPingType())));
   SetFtps(static_cast<TFtps>(Storage->ReadInteger(L"Ftps", GetFtps())));
+  SetFtpListAll(static_cast<TAutoSwitch>(Storage->ReadInteger(L"FtpListAll", GetFtpListAll())));
+  SetSslSessionReuse(Storage->ReadBool(L"SslSessionReuse", GetSslSessionReuse()));
 
   SetFtpProxyLogonType(Storage->ReadInteger(L"FtpProxyLogonType", GetFtpProxyLogonType()));
-
-  SetFtpAllowEmptyPassword(Storage->ReadBool(L"FtpAllowEmptyPassword", GetFtpAllowEmptyPassword()));
-  SetFtpEncryption(static_cast<TFtpEncryptionSwitch>(Storage->ReadInteger(L"FtpEncryption", GetFtpEncryption())));
 
   SetCustomParam1(Storage->ReadString(L"CustomParam1", GetCustomParam1()));
   SetCustomParam2(Storage->ReadString(L"CustomParam2", GetCustomParam2()));
 
-  SetSslSessionReuse(Storage->ReadBool(L"SslSessionReuse", GetSslSessionReuse()));
+  SetCodePage(Storage->ReadString(L"CodePage", GetCodePage()));
+  SetLoginType(static_cast<TLoginType>(Storage->ReadInteger(L"LoginType", GetLoginType())));
+  SetFtpAllowEmptyPassword(Storage->ReadBool(L"FtpAllowEmptyPassword", GetFtpAllowEmptyPassword()));
+  SetFtpEncryption(static_cast<TFtpEncryptionSwitch>(Storage->ReadInteger(L"FtpEncryption", GetFtpEncryption())));
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionData::Load(THierarchicalStorage * Storage)
@@ -654,7 +673,6 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
 
     WRITE_DATA_EX(String, L"HostName", GetHostName(), );
     WRITE_DATA_EX(Integer, L"PortNumber", GetPortNumber(), );
-    WRITE_DATA_EX(Bool, L"Passwordless", GetPasswordless(), );
     WRITE_DATA_EX(Integer, L"PingInterval", GetPingInterval() / SecsPerMin, );
     WRITE_DATA_EX(Integer, L"PingIntervalSecs", GetPingInterval() % SecsPerMin, );
     Storage->DeleteValue(L"PingIntervalSec"); // obsolete
@@ -706,8 +724,6 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
 
     WRITE_DATA_EX(Bool, L"TcpNoDelay", GetTcpNoDelay(), );
 
-    WRITE_DATA_EX(String, L"CodePage", GetCodePage(), );
-
     if (PuttyExport)
     {
       WRITE_DATA_EX(StringRaw, L"UserName", GetUserName(), );
@@ -740,7 +756,6 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
       WRITE_DATA_EX(String, L"ListingCommand", GetListingCommand(), );
       WRITE_DATA_EX(Bool, L"IgnoreLsWarnings", GetIgnoreLsWarnings(), );
       WRITE_DATA_EX(Integer, L"SCPLsFullTime", GetSCPLsFullTime(), );
-      WRITE_DATA_EX(Integer, L"FtpListAll", GetFtpListAll(), );
       WRITE_DATA_EX(Bool, L"Scp1Compatibility", GetScp1Compatibility(), );
       WRITE_DATA_EX(Float, L"TimeDifference", GetTimeDifference(), );
       WRITE_DATA_EX(Bool, L"DeleteToRecycleBin", GetDeleteToRecycleBin(), );
@@ -858,15 +873,18 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
       WRITE_DATA_EX(Integer, L"FtpPingInterval", GetFtpPingInterval(), );
       WRITE_DATA_EX(Integer, L"FtpPingType", GetFtpPingType(), );
       WRITE_DATA_EX(Integer, L"Ftps", GetFtps(), );
+      WRITE_DATA_EX(Integer, L"FtpListAll", GetFtpListAll(), );
+      WRITE_DATA_EX(Bool, L"SslSessionReuse", GetSslSessionReuse(), );
 
       WRITE_DATA_EX(Integer, L"FtpProxyLogonType", GetFtpProxyLogonType(), );
 
       WRITE_DATA_EX(String, L"CustomParam1", GetCustomParam1(), );
       WRITE_DATA_EX(String, L"CustomParam2", GetCustomParam2(), );
 
+      WRITE_DATA_EX(String, L"CodePage", GetCodePage(), );
+      WRITE_DATA_EX(Integer, L"LoginType", GetLoginType(), );
       WRITE_DATA_EX(Bool, L"FtpAllowEmptyPassword", GetFtpAllowEmptyPassword(), );
       WRITE_DATA_EX(Integer, L"FtpEncryption", GetFtpEncryption(), );
-      WRITE_DATA_EX(Bool, L"SslSessionReuse", GetSslSessionReuse(), );
     }
 
     SavePasswords(Storage, PuttyExport);
@@ -1158,10 +1176,8 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
         SetFtps(AFtps);
       }
 
-      bool PasswordSeparator = (UserInfo.Pos(L':') != 0);
       SetUserName(DecodeUrlChars(CutToChar(UserInfo, L':', false)));
       SetPassword(DecodeUrlChars(UserInfo));
-      SetPasswordless(GetPassword().IsEmpty() && PasswordSeparator);
 
       if (PSlash <= Url.Length())
       {
@@ -1398,11 +1414,7 @@ void __fastcall TSessionData::SetHostName(UnicodeString value)
     Modify();
 
     SetPassword(XPassword);
-    if (!XPassword.IsEmpty())
-    {
-      XPassword.Unique();
-      memset((void *)XPassword.c_str(), 0, XPassword.Length() * sizeof(*XPassword.c_str()));
-    }
+    Shred(XPassword);
   }
 }
 //---------------------------------------------------------------------
@@ -1452,11 +1464,7 @@ void __fastcall TSessionData::SetUserName(UnicodeString value)
   UnicodeString XPassword = GetPassword();
   SET_SESSION_PROPERTY(UserName);
   SetPassword(XPassword);
-  if (!XPassword.IsEmpty())
-  {
-    XPassword.Unique();
-    memset((void *)XPassword.c_str(), 0, XPassword.Length() * sizeof(*XPassword.c_str()));
-  }
+  Shred(XPassword);
 }
 //---------------------------------------------------------------------
 UnicodeString __fastcall TSessionData::GetUserNameExpanded()
@@ -1466,10 +1474,6 @@ UnicodeString __fastcall TSessionData::GetUserNameExpanded()
 //---------------------------------------------------------------------
 void __fastcall TSessionData::SetPassword(UnicodeString avalue)
 {
-  if (!avalue.IsEmpty())
-  {
-    SetPasswordless(false);
-  }
   RawByteString value = EncryptPassword(avalue, GetUserName() + GetHostName());
   SET_SESSION_PROPERTY(Password);
 }
@@ -1477,11 +1481,6 @@ void __fastcall TSessionData::SetPassword(UnicodeString avalue)
 UnicodeString __fastcall TSessionData::GetPassword() const
 {
   return DecryptPassword(FPassword, GetUserName() + GetHostName());
-}
-//---------------------------------------------------------------------
-void __fastcall TSessionData::SetPasswordless(bool value)
-{
-  SET_SESSION_PROPERTY(Passwordless);
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionData::SetPingInterval(int value)
@@ -2110,11 +2109,6 @@ void __fastcall TSessionData::SetSCPLsFullTime(TAutoSwitch value)
 {
   SET_SESSION_PROPERTY(SCPLsFullTime);
 }
-//---------------------------------------------------------------------
-void __fastcall TSessionData::SetFtpListAll(TAutoSwitch value)
-{
-  SET_SESSION_PROPERTY(FtpListAll);
-}
 //---------------------------------------------------------------------------
 void __fastcall TSessionData::SetColor(int value)
 {
@@ -2143,11 +2137,7 @@ void __fastcall TSessionData::SetTunnelHostName(UnicodeString value)
     Modify();
 
     SetTunnelPassword(XTunnelPassword);
-    if (!XTunnelPassword.IsEmpty())
-    {
-      XTunnelPassword.Unique();
-      memset(const_cast<wchar_t *>(XTunnelPassword.c_str()), 0, XTunnelPassword.Length() * sizeof(*XTunnelPassword.c_str()));
-    }
+    Shred(XTunnelPassword);
   }
 }
 //---------------------------------------------------------------------
@@ -2162,11 +2152,7 @@ void __fastcall TSessionData::SetTunnelUserName(UnicodeString value)
   UnicodeString XTunnelPassword = GetTunnelPassword();
   SET_SESSION_PROPERTY(TunnelUserName);
   SetTunnelPassword(XTunnelPassword);
-  if (!XTunnelPassword.IsEmpty())
-  {
-    XTunnelPassword.Unique();
-    memset(const_cast<wchar_t *>(XTunnelPassword.c_str()), 0, XTunnelPassword.Length() * sizeof(*XTunnelPassword.c_str()));
-  }
+  Shred(XTunnelPassword);
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionData::SetTunnelPassword(UnicodeString avalue)
@@ -2175,7 +2161,7 @@ void __fastcall TSessionData::SetTunnelPassword(UnicodeString avalue)
   SET_SESSION_PROPERTY(TunnelPassword);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall TSessionData::GetTunnelPassword()
+UnicodeString __fastcall TSessionData::GetTunnelPassword() const
 {
   return DecryptPassword(FTunnelPassword, GetTunnelUserName() + GetTunnelHostName());
 }
@@ -2247,6 +2233,16 @@ void __fastcall TSessionData::SetFtpPingType(TPingType value)
 void __fastcall TSessionData::SetFtps(TFtps value)
 {
   SET_SESSION_PROPERTY(Ftps);
+}
+//---------------------------------------------------------------------
+void __fastcall TSessionData::SetFtpListAll(TAutoSwitch value)
+{
+  SET_SESSION_PROPERTY(FtpListAll);
+}
+//---------------------------------------------------------------------
+void __fastcall TSessionData::SetSslSessionReuse(bool value)
+{
+  SET_SESSION_PROPERTY(SslSessionReuse);
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionData::SetNotUtf(TAutoSwitch value)
@@ -2340,11 +2336,6 @@ void __fastcall TSessionData::RemoveProtocolPrefix(UnicodeString & hostName)
   AdjustHostName(hostName, L"https://");
 }
 
-//---------------------------------------------------------------------
-void __fastcall TSessionData::SetSslSessionReuse(bool value)
-{
-  SET_SESSION_PROPERTY(SslSessionReuse);
-}
 //=== TStoredSessionList ----------------------------------------------
 /* __fastcall */ TStoredSessionList::TStoredSessionList(bool aReadOnly):
   TNamedObjectList(), FReadOnly(aReadOnly)
@@ -2639,15 +2630,76 @@ void __fastcall TStoredSessionList::Cleanup()
   }
 }
 //---------------------------------------------------------------------------
+void __fastcall TStoredSessionList::UpdateStaticUsage()
+{
+/*
+  int SCP = 0;
+  int SFTP = 0;
+  int FTP = 0;
+  int FTPS = 0;
+  int Password = 0;
+  int Advanced = 0;
+  bool Folders = false;
+  std::auto_ptr<TSessionData> FactoryDefaults(new TSessionData(L""));
+  for (int Index = 0; Index < Count; Index++)
+  {
+    TSessionData * Data = Sessions[Index];
+    switch (Data->FSProtocol)
+    {
+      case fsSCPonly:
+        SCP++;
+        break;
+
+      case fsSFTP:
+      case fsSFTPonly:
+        SFTP++;
+        break;
+
+      case fsFTP:
+        if (Data->Ftps == ftpsNone)
+        {
+          FTP++;
+        }
+        else
+        {
+          FTPS++;
+        }
+        break;
+    }
+
+    if (Data->HasAnyPassword())
+    {
+      Password++;
+    }
+
+    if (!Data->IsSame(FactoryDefaults.get(), true))
+    {
+      Advanced++;
+    }
+
+    if (Data->Name.Pos(L"/") > 0)
+    {
+      Folders = true;
+    }
+  }
+
+  Configuration->Usage->Set(L"StoredSessionsCountSCP", SCP);
+  Configuration->Usage->Set(L"StoredSessionsCountSFTP", SFTP);
+  Configuration->Usage->Set(L"StoredSessionsCountFTP", FTP);
+  Configuration->Usage->Set(L"StoredSessionsCountFTPS", FTPS);
+  Configuration->Usage->Set(L"StoredSessionsCountPassword", Password);
+  Configuration->Usage->Set(L"StoredSessionsCountAdvanced", Advanced);
+
+  bool CustomDefaultStoredSession = !FDefaultSettings->IsSame(FactoryDefaults.get(), false);
+  Configuration->Usage->Set(L"UsingDefaultStoredSession", CustomDefaultStoredSession);
+  Configuration->Usage->Set(L"UsingStoredSessionsFolders", Folders);
+*/
+}
+//---------------------------------------------------------------------------
 int __fastcall TStoredSessionList::IndexOf(TSessionData * Data)
 {
   for (int Index = 0; Index < GetCount(); Index++)
-  {
-    if (Data == GetSession(Index))
-    {
-      return Index;
-    }
-  }
+    if (Data == GetSession(Index)) { return Index; }
   return -1;
 }
 //---------------------------------------------------------------------------
@@ -2681,6 +2733,8 @@ void __fastcall TStoredSessionList::SetDefaultSettings(TSessionData * value)
   if (FDefaultSettings != value)
   {
     FDefaultSettings->Assign(value);
+    // make sure default settings are saved
+    FDefaultSettings->SetModified(true);
     FDefaultSettings->SetName(DefaultName);
     if (!FReadOnly)
     {

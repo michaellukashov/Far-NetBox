@@ -233,6 +233,7 @@ public:
   /* __fastcall */ TGUIConfiguration();
   virtual /* __fastcall */ ~TGUIConfiguration();
   virtual void __fastcall Default();
+  virtual void __fastcall UpdateStaticUsage();
 
 #ifndef _MSC_VER
   HANDLE __fastcall ChangeResourceModule(HANDLE Instance);

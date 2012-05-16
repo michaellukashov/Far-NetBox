@@ -51,6 +51,8 @@ void /* __fastcall */ TSynchronizeController::StartStop(TObject * Sender,
 {
   if (Start)
   {
+    // Configuration->Usage->Inc(L"KeepUpToDates");
+
     try
     {
       // assert(OnSynchronizeLog != NULL);

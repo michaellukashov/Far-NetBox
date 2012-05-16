@@ -51,7 +51,7 @@ int __cdecl debug_printf2(const char * format, ...)
 //---------------------------------------------------------------------------
 void Abort()
 {
-  throw Sysutils::EAbort("");
+  throw Sysutils::EAbort(L"");
 }
 //---------------------------------------------------------------------------
 void Error(int ErrorID, int data)

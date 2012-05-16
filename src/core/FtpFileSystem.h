@@ -9,7 +9,6 @@
 //---------------------------------------------------------------------------
 class TFileZillaIntf;
 class TFileZillaImpl;
-class TCriticalSection;
 class TMessageQueue;
 class TFTPServerCapabilities;
 struct TOverwriteFileParams;
@@ -19,8 +18,8 @@ struct TFtpsCertificateData;
 //---------------------------------------------------------------------------
 class TFTPFileSystem : public TCustomFileSystem
 {
-  friend class TFileZillaImpl;
-  friend class TFTPFileListHelper;
+friend class TFileZillaImpl;
+friend class TFTPFileListHelper;
 
 public:
   explicit /* __fastcall */  TFTPFileSystem(TTerminal * ATerminal);
@@ -82,9 +81,6 @@ public:
   virtual bool __fastcall GetStoredCredentialsTried();
   virtual UnicodeString __fastcall GetUserName();
 
-public:
-  virtual void __fastcall FileTransferProgress(__int64 TransferSize, __int64 Bytes);
-
 protected:
 #ifndef _MSC_VER
   enum TOverwriteMode { omOverwrite, omResume };
@@ -99,7 +95,8 @@ protected:
   {
     REPLY_CONNECT =      0x01,
     REPLY_2XX_CODE =     0x02,
-    REPLY_ALLOW_CANCEL = 0x04
+    REPLY_ALLOW_CANCEL = 0x04,
+    REPLY_3XX_CODE =     0x08
   };
 
   bool __fastcall PostMessage(unsigned int Type, WPARAM wParam, LPARAM lParam);
@@ -171,19 +168,21 @@ protected:
   void __fastcall ReadDirectoryProgress(__int64 Bytes);
   void __fastcall ResetFileTransfer();
   void __fastcall DoFileTransferProgress(__int64 TransferSize, __int64 Bytes);
-#ifndef _MSC_VER
+#ifdef _MSC_VER
+public:
   void __fastcall FileTransferProgress(__int64 TransferSize, __int64 Bytes);
+protected:
 #endif
   void __fastcall ResetCaches();
   void __fastcall CaptureOutput(const UnicodeString & Str);
   void __fastcall DoReadDirectory(TRemoteFileList * FileList);
-  void __fastcall DoReadFile(const UnicodeString FileName, TRemoteFile *& AFile);
+  void __fastcall DoReadFile(const UnicodeString & FileName, TRemoteFile *& AFile);
   void __fastcall FileTransfer(const UnicodeString & FileName, const UnicodeString & LocalFile,
     const UnicodeString & RemoteFile, const UnicodeString & RemotePath, bool Get,
     __int64 Size, int Type, TFileTransferData & UserData,
     TFileOperationProgressType * OperationProgress);
   TDateTime __fastcall ConvertLocalTimestamp(time_t Time);
-  TDateTime __fastcall ConvertRemoteTimestamp(time_t Time, bool HasTime);
+  void __fastcall ConvertRemoteTimestamp(time_t Time, bool HasTime, TDateTime & DateTime, TModificationFmt & ModificationFmt);
   void __fastcall SetLastCode(int Code);
 
   static bool __fastcall Unquote(UnicodeString & Str);

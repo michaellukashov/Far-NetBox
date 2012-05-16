@@ -42,7 +42,6 @@
   FConfirmResume(false),
   FAutoReadDirectoryAfterOp(false),
   FSessionReopenAuto(0),
-  FSessionReopenAutoMaximumNumberOfRetries(0),
   FSessionReopenBackground(0),
   FSessionReopenTimeout(0),
   FSessionReopenAutoStall(0),
@@ -53,13 +52,17 @@
   FDisablePasswordStoring(false),
   FForceBanners(false),
   FDisableAcceptingHostKeys(false),
-  FCriticalSection(NULL)
+  FCriticalSection(NULL),
+  FDefaultCollectUsage(false),
+  FSessionReopenAutoMaximumNumberOfRetries(0)
 {
   FCriticalSection = new TCriticalSection();
   FUpdating = 0;
   FStorage = stRegistry;
   FDontSave = false;
   FApplicationInfo = NULL;
+  // FUsage = new TUsage(this);
+  // FDefaultCollectUsage = false;
 
   wchar_t Buf[10];
   UnicodeString RandomSeedPath;
@@ -114,7 +117,6 @@ void __fastcall TConfiguration::Default()
   FConfirmResume = true;
   FAutoReadDirectoryAfterOp = true;
   FSessionReopenAuto = 5000;
-  FSessionReopenAutoMaximumNumberOfRetries = CONST_DEFAULT_NUMBER_OF_RETRIES;
   FSessionReopenBackground = 2000;
   FSessionReopenTimeout = 0;
   FSessionReopenAutoStall = 60000;
@@ -123,6 +125,8 @@ void __fastcall TConfiguration::Default()
   FCacheDirectoryChangesMaxSize = 100;
   FShowFtpWelcomeMessage = false;
   FExternalIpAddress = L"";
+  FSessionReopenAutoMaximumNumberOfRetries = CONST_DEFAULT_NUMBER_OF_RETRIES;
+  FDefaultCollectUsage = false;
 
   FLogging = false;
   FPermanentLogging = false;
@@ -145,6 +149,7 @@ void __fastcall TConfiguration::Default()
   assert(!FUpdating);
   if (FApplicationInfo) { FreeFileInfo(FApplicationInfo); }
   delete FCriticalSection;
+  // delete FUsage;
 }
 //---------------------------------------------------------------------------
 THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
@@ -195,6 +200,7 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
     KEY(Integer,  CacheDirectoryChangesMaxSize); \
     KEY(Bool,     ShowFtpWelcomeMessage); \
     KEY(String,   ExternalIpAddress); \
+    KEY(Bool,     CollectUsage); \
     KEY(Integer,  SessionReopenAutoMaximumNumberOfRetries); \
   ); \
   BLOCK(L"Logging", CANCREATE, \
@@ -214,6 +220,12 @@ void __fastcall TConfiguration::SaveData(THierarchicalStorage * Storage, bool /*
   #define KEYEX(TYPE, VAR, NAME) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), Get##VAR())
   REGCONFIG(true);
   #undef KEYEX
+
+  if (Storage->OpenSubKey(L"Usage", true))
+  {
+    // FUsage->Save(Storage);
+    Storage->CloseSubKey();
+  }
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::Save(bool All, bool Explicit)
@@ -303,6 +315,12 @@ void __fastcall TConfiguration::LoadData(THierarchicalStorage * Storage)
   // #pragma warn +eas
   #undef KEYEX
 
+  if (Storage->OpenSubKey(L"Usage", false))
+  {
+    // FUsage->Load(Storage);
+    Storage->CloseSubKey();
+  }
+
   if (FPermanentLogActions && FPermanentActionsLogFileName.IsEmpty() &&
       FPermanentLogging && !FPermanentLogFileName.IsEmpty())
   {
@@ -317,6 +335,7 @@ void __fastcall TConfiguration::LoadAdmin(THierarchicalStorage * Storage)
   FDisablePasswordStoring = Storage->ReadBool(L"DisablePasswordStoring", FDisablePasswordStoring);
   FForceBanners = Storage->ReadBool(L"ForceBanners", FForceBanners);
   FDisableAcceptingHostKeys = Storage->ReadBool(L"DisableAcceptingHostKeys", FDisableAcceptingHostKeys);
+  FDefaultCollectUsage = Storage->ReadBool(L"DefaultCollectUsage", FDefaultCollectUsage);
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::Load()
@@ -1051,6 +1070,16 @@ void __fastcall TConfiguration::SetPuttyRegistryStorageKey(UnicodeString value)
 TEOLType __fastcall TConfiguration::GetLocalEOLType()
 {
   return eolCRLF;
+}
+//---------------------------------------------------------------------
+bool __fastcall TConfiguration::GetCollectUsage()
+{
+  return false; // FUsage->Collect;
+}
+//---------------------------------------------------------------------
+void __fastcall TConfiguration::SetCollectUsage(bool value)
+{
+  // FUsage->Collect = value;
 }
 //---------------------------------------------------------------------
 void __fastcall TConfiguration::TemporaryLogging(const UnicodeString ALogFileName)
