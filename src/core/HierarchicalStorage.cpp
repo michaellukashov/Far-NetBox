@@ -32,7 +32,7 @@ UnicodeString __fastcall MungeStr(const UnicodeString Str, bool ForceAnsi)
   RawByteString Source;
   if (ForceAnsi)
   {
-    Source = AnsiString(Str);
+    Source = AnsiString(W2MB(Str.c_str()).c_str());
   }
   else
   {
@@ -65,7 +65,7 @@ UnicodeString __fastcall UnMungeStr(const UnicodeString Str)
   }
   else
   {
-    Result = AnsiString(MB2W(Dest.c_str()));
+    Result = AnsiString(MB2W(Dest.c_str()).c_str());
   }
   return Result;
 }
