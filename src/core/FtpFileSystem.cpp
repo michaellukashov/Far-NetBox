@@ -372,7 +372,7 @@ void __fastcall TFTPFileSystem::Open()
 
   UnicodeString HostName = Data->GetHostNameExpanded();
   UnicodeString UserName = Data->GetUserNameExpanded();
-  // UnicodeString Password = Data->GetPassword();
+  UnicodeString Password = Data->GetPassword();
   UnicodeString Account = Data->GetFtpAccount();
   UnicodeString Path = Data->GetRemoteDirectory();
   int ServerType = 0;
@@ -418,8 +418,6 @@ void __fastcall TFTPFileSystem::Open()
 
   do
   {
-    UnicodeString Password = Data->GetPassword();
-
     FSystem = L"";
     FFeatures->Clear();
     FFileSystemInfoValid = false;
@@ -448,18 +446,11 @@ void __fastcall TFTPFileSystem::Open()
         FUserName = UserName;
       }
     }
-/*
-    // ask for password if it was not specified in advance,
-    // on retry ask always
-    if ((Data->Password.IsEmpty() && !Data->Passwordless) || FPasswordFailed)
-    {
-      FTerminal->LogEvent(L"Password prompt (no password provided or last login attempt failed)");
 
-      if (!FPasswordFailed && !PromptedForCredentials)
-      {
-        FTerminal->Information(LoadStr(FTP_CREDENTIAL_PROMPT), false);
-        PromptedForCredentials = true;
-      }
+    // on retry ask for password
+    if (FPasswordFailed)
+    {
+      FTerminal->LogEvent(L"Password prompt (last login attempt failed)");
 
       // on retry ask for new password
       Password = L"";
@@ -469,7 +460,7 @@ void __fastcall TFTPFileSystem::Open()
         FTerminal->FatalError(NULL, LoadStr(AUTHENTICATION_FAILED));
       }
     }
-*/
+
     FPasswordFailed = false;
     FActive = FFileZillaIntf->Connect(
       HostName.c_str(), Data->GetPortNumber(), UserName.c_str(),
@@ -2032,7 +2023,7 @@ void __fastcall TFTPFileSystem::ReadFile(const UnicodeString FileName,
 {
   UnicodeString Path = UnixExtractFilePath(FileName);
   UnicodeString NameOnly = UnixExtractFileName(FileName);
-  TRemoteFile * AFile = NULL;
+  TRemoteFile *AFile = NULL;
   if (FServerCapabilities->GetCapability(mlsd_command) == yes)
   {
     DoReadFile(FileName, AFile);
@@ -2045,7 +2036,7 @@ void __fastcall TFTPFileSystem::ReadFile(const UnicodeString FileName,
     if ((FFileListCache != NULL) &&
         UnixComparePaths(Path, FFileListCache->GetDirectory()) &&
         (TTerminal::IsAbsolutePath(FFileListCache->GetDirectory()) ||
-         (FFileListCachePath == GetCurrentDirectory())))
+        (FFileListCachePath == GetCurrentDirectory())))
     {
       AFile = FFileListCache->FindFile(NameOnly);
     }
@@ -2871,14 +2862,6 @@ void __fastcall TFTPFileSystem::HandleReplyStatus(UnicodeString Response)
       if (FLastCode == 530)
       {
         FPasswordFailed = true;
-        // ask for new password
-        UnicodeString Password = L"";
-        if (!FTerminal->PromptUser(FTerminal->GetSessionData(), pkPassword, LoadStr(PASSWORD_TITLE), L"",
-              LoadStr(PASSWORD_PROMPT), false, 0, Password))
-        {
-          FTerminal->FatalError(NULL, LoadStr(AUTHENTICATION_FAILED));
-        }
-        FTerminal->GetSessionData()->SetPassword(Password);
       };
     }
     else if (FLastCommand == SYST)

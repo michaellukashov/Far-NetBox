@@ -9,7 +9,6 @@
 //---------------------------------------------------------------------------
 class TFileZillaIntf;
 class TFileZillaImpl;
-class TCriticalSection;
 class TMessageQueue;
 class TFTPServerCapabilities;
 struct TOverwriteFileParams;
@@ -19,8 +18,8 @@ struct TFtpsCertificateData;
 //---------------------------------------------------------------------------
 class TFTPFileSystem : public TCustomFileSystem
 {
-  friend class TFileZillaImpl;
-  friend class TFTPFileListHelper;
+friend class TFileZillaImpl;
+friend class TFTPFileListHelper;
 
 public:
   explicit /* __fastcall */  TFTPFileSystem(TTerminal * ATerminal);
@@ -81,9 +80,6 @@ public:
   virtual bool __fastcall TemporaryTransferFile(const UnicodeString & FileName);
   virtual bool __fastcall GetStoredCredentialsTried();
   virtual UnicodeString __fastcall GetUserName();
-
-public:
-  virtual void __fastcall FileTransferProgress(__int64 TransferSize, __int64 Bytes);
 
 protected:
 #ifndef _MSC_VER
@@ -172,8 +168,10 @@ protected:
   void __fastcall ReadDirectoryProgress(__int64 Bytes);
   void __fastcall ResetFileTransfer();
   void __fastcall DoFileTransferProgress(__int64 TransferSize, __int64 Bytes);
-#ifndef _MSC_VER
+#ifdef _MSC_VER
+public:
   void __fastcall FileTransferProgress(__int64 TransferSize, __int64 Bytes);
+protected:
 #endif
   void __fastcall ResetCaches();
   void __fastcall CaptureOutput(const UnicodeString & Str);
