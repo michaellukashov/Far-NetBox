@@ -222,11 +222,11 @@ private:
   }
   void Init(const char * Str, int Length)
   {
-    int Size = MultiByteToWideChar(CP_UTF8, 0, Str, Length > 0 ? Length : -1, NULL, 0);
+    int Size = MultiByteToWideChar(CP_AUTODETECT, 0, Str, Length > 0 ? Length : -1, NULL, 0);
     Data.resize(Size);
     if (Size > 0)
     {
-      MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), Size);
+      MultiByteToWideChar(CP_AUTODETECT, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), Size);
     }
     Data = Data.c_str();
   }
