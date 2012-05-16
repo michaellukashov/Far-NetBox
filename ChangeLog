@@ -1,5 +1,6 @@
 NetBox 2.1.1 ??.05.2012
 ---------------------
+  * FTP: use CodePage setting to setup UTF8 mode
   * SFTP: bugfix: error when trying to edit remote file
   * WinSCP core upgraded to 5.0.7
   
