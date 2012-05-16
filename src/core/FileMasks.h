@@ -93,7 +93,6 @@ public:
   bool __fastcall GetIsValid();
   bool __fastcall GetIsValid(int & Start, int & Length) const;
   UnicodeString __fastcall GetMasks() const { return FStr; }
-  void __fastcall SetMasks(const UnicodeString value);
 
   TStrings * __fastcall GetIncludeFileMasksStr() { return GetMasksStr(MASK_INDEX(false, true)); };
   TStrings * __fastcall GetExcludeFileMasksStr() { return GetMasksStr(MASK_INDEX(false, false)); };
@@ -156,7 +155,9 @@ private:
   mutable TStrings * FMasksStr[4];
 
   void __fastcall SetStr(const UnicodeString value, bool SingleMask);
-  // void __fastcall SetMasks(const UnicodeString value);
+public:
+  void __fastcall SetMasks(const UnicodeString value);
+private:
   void __fastcall CreateMaskMask(const UnicodeString & Mask, int Start, int End,
     bool Ex, TMaskMask & MaskMask);
   void __fastcall CreateMask(const UnicodeString & MaskStr, int MaskStart,
