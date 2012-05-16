@@ -32,7 +32,7 @@ UnicodeString __fastcall MungeStr(const UnicodeString Str, bool ForceAnsi)
   RawByteString Source;
   if (ForceAnsi)
   {
-    Source = AnsiString(Str);
+    Source = AnsiString(W2MB(Str.c_str()).c_str());
   }
   else
   {
@@ -58,7 +58,6 @@ UnicodeString __fastcall UnMungeStr(const UnicodeString Str)
   Dest.SetLength(Source.Length() + 1);
   putty_unmungestr(Source.c_str(), (char *)Dest.c_str(), Dest.Length());
   UnicodeString Result;
-  // if (Dest.SubString(1, Bom.size()) == Bom.c_str())
   if (Dest.Pos(Bom.c_str()) == 1)
   {
     Dest.Delete(1, Bom.size());
@@ -66,7 +65,7 @@ UnicodeString __fastcall UnMungeStr(const UnicodeString Str)
   }
   else
   {
-    Result = AnsiString(Dest.c_str());
+    Result = AnsiString(MB2W(Dest.c_str()).c_str());
   }
   return Result;
 }
