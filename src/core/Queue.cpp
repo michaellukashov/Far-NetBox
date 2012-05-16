@@ -341,15 +341,14 @@ int __fastcall TSimpleThread::ThreadProc(void * Thread)
 {
 #ifndef _MSC_VER
   FThread = reinterpret_cast<HANDLE>(
-    StartThread(NULL, 0, ThreadProc, this, CREATE_SUSPENDED, ThreadID));
+    StartThread(NULL, 0, ThreadProc, this, CREATE_SUSPENDED, FThreadId));
 #endif
 }
 //---------------------------------------------------------------------------
 void __fastcall TSimpleThread::Init()
 {
-  DWORD ThreadID;
   FThread = reinterpret_cast<HANDLE>(
-    StartThread(NULL, 0, this, CREATE_SUSPENDED, ThreadID));
+    StartThread(NULL, 0, this, CREATE_SUSPENDED, FThreadId));
 }
 
 //---------------------------------------------------------------------------
@@ -2154,16 +2153,17 @@ void __fastcall TTerminalThread::Init()
   FTerminal->OnStartReadDirectory = FOnStartReadDirectory;
   FTerminal->OnReadDirectoryProgress = FOnReadDirectoryProgress;
 #else
-  // assert(FTerminal->GetOnInformation().equal(boost::bind(&TTerminalThread::TerminalInformation, this, _1, _2, _3, _4)));
-  // assert(FTerminal->GetOnQueryUser() == boost::bind(&TTerminalThread::TerminalQueryUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
-  // assert(FTerminal->GetOnPromptUser() == boost::bind(&TTerminalThread::TerminalPromptUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
-  // assert(FTerminal->GetOnShowExtendedException() == boost::bind(&TTerminalThread::TerminalShowExtendedException, this, _1, _2, _3));
-  // assert(FTerminal->GetOnDisplayBanner() == boost::bind(&TTerminalThread::TerminalDisplayBanner, this, _1, _2, _3, _4, _5));
-  // assert(FTerminal->GetOnChangeDirectory() == boost::bind(&TTerminalThread::TerminalChangeDirectory, this, _1));
-  // assert(FTerminal->GetOnReadDirectory() == boost::bind(&TTerminalThread::TerminalReadDirectory, this, _1, _2));
-  // assert(FTerminal->GetOnStartReadDirectory() == boost::bind(&TTerminalThread::TerminalStartReadDirectory, this, _1));
-  // assert(FTerminal->GetOnReadDirectoryProgress() == boost::bind(&TTerminalThread::TerminalReadDirectoryProgress, this, _1, _2, _3));
-
+/*
+  assert(FTerminal->GetOnInformation().equal(boost::bind(&TTerminalThread::TerminalInformation, this, _1, _2, _3, _4)));
+  assert(FTerminal->GetOnQueryUser() == boost::bind(&TTerminalThread::TerminalQueryUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
+  assert(FTerminal->GetOnPromptUser() == boost::bind(&TTerminalThread::TerminalPromptUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
+  assert(FTerminal->GetOnShowExtendedException() == boost::bind(&TTerminalThread::TerminalShowExtendedException, this, _1, _2, _3));
+  assert(FTerminal->GetOnDisplayBanner() == boost::bind(&TTerminalThread::TerminalDisplayBanner, this, _1, _2, _3, _4, _5));
+  assert(FTerminal->GetOnChangeDirectory() == boost::bind(&TTerminalThread::TerminalChangeDirectory, this, _1));
+  assert(FTerminal->GetOnReadDirectory() == boost::bind(&TTerminalThread::TerminalReadDirectory, this, _1, _2));
+  assert(FTerminal->GetOnStartReadDirectory() == boost::bind(&TTerminalThread::TerminalStartReadDirectory, this, _1));
+  assert(FTerminal->GetOnReadDirectoryProgress() == boost::bind(&TTerminalThread::TerminalReadDirectoryProgress, this, _1, _2, _3));
+*/
   FTerminal->SetOnInformation(*FOnInformation);
   FTerminal->SetOnQueryUser(*FOnQueryUser);
   FTerminal->SetOnPromptUser(*FOnPromptUser);
@@ -2209,14 +2209,10 @@ void __fastcall TTerminalThread::TerminalReopen()
 //---------------------------------------------------------------------------
 void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
 {
-#ifndef _MSC_VER
-  assert(FAction == NULL);
-#endif
+  // assert(FAction == NULL);
   assert(FException == NULL);
-#ifndef _MSC_VER
   assert(FIdleException == NULL);
-  assert(FOnIdle != NULL);
-#endif
+  // assert(FOnIdle != NULL);
 
   FCancelled = false;
   FAction.connect(Action);
