@@ -148,6 +148,8 @@ TDateTime __fastcall ConvertTimestampToUTC(TDateTime DateTime);
 __int64 __fastcall ConvertTimestampToUnixSafe(const FILETIME & FileTime,
   TDSTMode DSTMode);
 UnicodeString __fastcall FixedLenDateTimeFormat(const UnicodeString & Format);
+UnicodeString __fastcall StandardTimestamp(const TDateTime & DateTime);
+UnicodeString __fastcall StandardTimestamp();
 int __fastcall CompareFileTime(TDateTime T1, TDateTime T2);
 //---------------------------------------------------------------------------
 template<class MethodT>
