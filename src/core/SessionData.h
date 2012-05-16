@@ -58,7 +58,6 @@ private:
   int FPortNumber;
   UnicodeString FUserName;
   RawByteString FPassword;
-  bool FPasswordless;
   int FPingInterval;
   TPingType FPingType;
   bool FTryAgent;
@@ -133,6 +132,7 @@ private:
   UnicodeString FPostLoginCommands;
   TAutoSwitch FSCPLsFullTime;
   TAutoSwitch FFtpListAll;
+  bool FSslSessionReuse;
   TAddressFamily FAddressFamily;
   UnicodeString FRekeyData;
   unsigned int FRekeyTime;
@@ -163,7 +163,6 @@ private:
   TFtpEncryptionSwitch FFtpEncryption;
   TLoginType FLoginType;
   int FNumberOfRetries;
-  bool FSslSessionReuse;
 
 public:
   void __fastcall SetHostName(UnicodeString value);
@@ -173,7 +172,6 @@ public:
   UnicodeString __fastcall GetUserNameExpanded();
   void __fastcall SetPassword(UnicodeString value);
   UnicodeString __fastcall GetPassword() const;
-  void __fastcall SetPasswordless(bool value);
   void __fastcall SetPingInterval(int value);
   void __fastcall SetTryAgent(bool value);
   void __fastcall SetAgentFwd(bool value);
@@ -270,6 +268,8 @@ public:
   TAutoSwitch __fastcall GetSFTPBug(TSftpBug Bug) const;
   void __fastcall SetSCPLsFullTime(TAutoSwitch value);
   void __fastcall SetFtpListAll(TAutoSwitch value);
+  bool __fastcall GetSslSessionReuse() const { return FSslSessionReuse; }
+  void __fastcall SetSslSessionReuse(bool value);
   UnicodeString __fastcall GetStorageKey();
   UnicodeString __fastcall GetInternalStorageKey();
   void __fastcall SetDSTMode(TDSTMode value);
@@ -286,7 +286,7 @@ public:
   void __fastcall SetTunnelPortNumber(int value);
   void __fastcall SetTunnelUserName(UnicodeString value);
   void __fastcall SetTunnelPassword(UnicodeString value);
-  UnicodeString __fastcall GetTunnelPassword();
+  UnicodeString __fastcall GetTunnelPassword() const;
   void __fastcall SetTunnelPublicKeyFile(UnicodeString value);
   void __fastcall SetTunnelPortFwd(UnicodeString value);
   void __fastcall SetTunnelLocalPortNumber(int value);
@@ -333,6 +333,7 @@ public:
   void __fastcall ConfigureTunnel(int PortNumber);
   void __fastcall RollbackTunnel();
   void __fastcall ExpandEnvironmentVariables();
+  bool __fastcall IsSame(const TSessionData * Default, bool AdvancedOnly);
   static void __fastcall ValidatePath(const UnicodeString Path);
   static void __fastcall ValidateName(const UnicodeString Name);
 
@@ -343,7 +344,6 @@ public:
   __property UnicodeString UserName  = { read=FUserName, write=SetUserName };
   __property UnicodeString UserNameExpanded  = { read=GetUserNameExpanded };
   __property UnicodeString Password  = { read=GetPassword, write=SetPassword };
-  __property bool Passwordless = { read=FPasswordless, write=SetPasswordless };
   __property int PingInterval  = { read=FPingInterval, write=SetPingInterval };
   __property bool TryAgent  = { read=FTryAgent, write=SetTryAgent };
   __property bool AgentFwd  = { read=FAgentFwd, write=SetAgentFwd };
@@ -428,6 +428,7 @@ public:
   __property TAutoSwitch SFTPBug[TSftpBug Bug]  = { read=GetSFTPBug, write=SetSFTPBug };
   __property TAutoSwitch SCPLsFullTime = { read = FSCPLsFullTime, write = SetSCPLsFullTime };
   __property TAutoSwitch FtpListAll = { read = FFtpListAll, write = SetFtpListAll };
+  __property bool SslSessionReuse = { read = FSslSessionReuse, write = SetSslSessionReuse };
   __property TDSTMode DSTMode = { read = FDSTMode, write = SetDSTMode };
   __property bool DeleteToRecycleBin = { read = FDeleteToRecycleBin, write = SetDeleteToRecycleBin };
   __property bool OverwrittenToRecycleBin = { read = FOverwrittenToRecycleBin, write = SetOverwrittenToRecycleBin };
@@ -466,7 +467,6 @@ public:
   TLoginType __fastcall GetLoginType() const;
   void __fastcall SetLoginType(TLoginType value);
   UnicodeString GetUserName() const { return FUserName; }
-  bool GetPasswordless() const { return FPasswordless; }
   size_t GetPingInterval() const { return FPingInterval; }
   bool GetTryAgent() const { return FTryAgent; }
   bool GetAgentFwd() const { return FAgentFwd; }
@@ -568,8 +568,6 @@ public:
 
   int __fastcall GetNumberOfRetries() const { return FNumberOfRetries; }
   void __fastcall SetNumberOfRetries(int value) { FNumberOfRetries = value; }
-  bool __fastcall GetSslSessionReuse() const { return FSslSessionReuse; }
-  void __fastcall SetSslSessionReuse(bool value);
 #endif
 private:
   void __fastcall AdjustHostName(UnicodeString & hostName, const UnicodeString prefix);
@@ -596,6 +594,7 @@ public:
     { return (TSessionData*)AtObject(Index); }
   void __fastcall SelectSessionsToImport(TStoredSessionList * Dest, bool SSHOnly);
   void __fastcall Cleanup();
+  void __fastcall UpdateStaticUsage();
   int __fastcall IndexOf(TSessionData * Data);
   TSessionData * __fastcall NewSession(UnicodeString SessionName, TSessionData * Session);
   TSessionData * __fastcall ParseUrl(UnicodeString Url, TOptions * Options, bool & DefaultsOnly,

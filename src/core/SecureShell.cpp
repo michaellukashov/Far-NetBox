@@ -1109,7 +1109,14 @@ int __fastcall TSecureShell::TranslateAuthenticationMessage(UnicodeString & Mess
     { L"Server refused our key", AUTH_TRANSL_KEY_REFUSED }
   };
 
-  return TranslatePuttyMessage(Translation, LENOF(Translation), Message);
+  int Result = TranslatePuttyMessage(Translation, LENOF(Translation), Message);
+
+  if ((Result == 2) || (Result == 3) || (Result == 4))
+  {
+    // Configuration->Usage->Inc(L"OpenedSessionsPrivateKey");
+  }
+
+  return Result;
 }
 //---------------------------------------------------------------------------
 void __fastcall TSecureShell::AddStdError(UnicodeString Str)
@@ -1625,7 +1632,7 @@ bool __fastcall TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventR
       {
         if (Configuration->GetActualLogProtocol() >= 2)
         {
-          LogEvent(L"Timeout waiting for network events");
+          // LogEvent(L"Timeout waiting for network events");
         }
 
         MSec = 0;

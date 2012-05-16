@@ -72,7 +72,7 @@ t_directory::t_direntry::t_direntry()
 t_directory::t_direntry::t_date::t_date()
 {
 	year=month=day=hour=minute=second=0;
-	hasdate=hastime=FALSE;
+	hasdate=hastime=hasseconds=FALSE;
 }
 
 void t_directory::Merge(const t_directory &directory, CTime MergeTime)

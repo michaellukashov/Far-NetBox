@@ -647,6 +647,11 @@ void __fastcall TGUIConfiguration::DefaultLocalized()
   }
 }
 //---------------------------------------------------------------------------
+void __fastcall TGUIConfiguration::UpdateStaticUsage()
+{
+  // Usage->Set(L"CopyParamsCount", (FCopyParamListDefaults ? 0 : FCopyParamList->Count));
+}
+//---------------------------------------------------------------------------
 UnicodeString __fastcall TGUIConfiguration::PropertyToKey(const UnicodeString Property)
 {
   // no longer useful
@@ -963,7 +968,7 @@ void __fastcall TGUIConfiguration::SetLocaleSafe(LCID value)
 void __fastcall TGUIConfiguration::FreeResourceModule(HANDLE Instance)
 {
   TLibModule * MainModule = FindModule(HInstance);
-  if ((long)Instance != MainModule->instance)
+  if ((unsigned)Instance != MainModule->Instance)
   {
     FreeLibrary(static_cast<HMODULE>(Instance));
   }
@@ -976,15 +981,15 @@ HANDLE __fastcall TGUIConfiguration::ChangeResourceModule(HANDLE Instance)
     Instance = HInstance;
   }
   TLibModule * MainModule = FindModule(HInstance);
-  HANDLE Result = (HANDLE)MainModule->resinstance;
-  MainModule->resinstance = (long)Instance;
+  HANDLE Result = (HANDLE)MainModule->ResInstance;
+  MainModule->ResInstance = (unsigned)Instance;
   CoreSetResourceModule(Instance);
   return Result;
 }
 //---------------------------------------------------------------------------
 HANDLE __fastcall TGUIConfiguration::GetResourceModule()
 {
-  return (HANDLE)FindModule(HInstance)->resinstance;
+  return (HANDLE)FindModule(HInstance)->ResInstance;
 }
 //---------------------------------------------------------------------------
 void __fastcall TGUIConfiguration::SetResourceModule(HINSTANCE Instance)

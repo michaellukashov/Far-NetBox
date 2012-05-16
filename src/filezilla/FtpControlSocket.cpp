@@ -202,6 +202,7 @@ CFtpControlSocket::CFtpControlSocket(CMainThread *pMainThread) : CControlSocket(
 
 	m_mayBeMvsFilesystem = false;
 	m_mayBeBS2000Filesystem = false;
+
 	m_Port = 0;
 	m_SslSessions = NULL;
 }
@@ -226,6 +227,7 @@ CFtpControlSocket::~CFtpControlSocket()
 		free(m_SslSessions);
 		m_SslSessions = NULL;
 	}
+ 
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -298,6 +300,7 @@ bool CFtpControlSocket::InitConnect()
 		DoClose(FZ_REPLY_CRITICALERROR);
 		return false;
 	}
+
 	if (m_SslSessions)
 	{
 		ShowStatus(_T("Internal error: m_SslSessions not zero in Connect"), 1);
@@ -640,7 +643,6 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 		int code = GetReplyCode();
 		if (code != 2 && code != 3)
 			m_serverCapabilities.SetCapability(mlsd_command, no);
-
 		ShowStatus(IDS_STATUSMSG_CONNECTED, 0);
 		m_pOwner->SetConnected(TRUE);
 		ResetOperation(FZ_REPLY_OK);
@@ -755,6 +757,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 			return;
 		}
 #endif
+
 		if (m_serverCapabilities.GetCapability(mlsd_command) == yes)
 		{
 			std::string args;
@@ -1261,7 +1264,7 @@ void CFtpControlSocket::OnConnect(int nErrorCode)
 	}
 }
 
-BOOL CFtpControlSocket::Send(CString str, BOOL bUpdateRecvTime)
+BOOL CFtpControlSocket::Send(CString str)
 {
 	USES_CONVERSION;
 
@@ -1355,13 +1358,10 @@ BOOL CFtpControlSocket::Send(CString str, BOOL bUpdateRecvTime)
 	{
 		m_awaitsReply = true;
 		m_LastSendTime = CTime::GetCurrentTime();
-		if (bUpdateRecvTime)
-		{
-			// Count timeout since the last request, not only since the last received data
-			// otherwise we may happen to timeout immediatelly after sending request if
-			// CheckForTimeout occurs in between and we haven't received any data for a while
-			m_LastRecvTime = m_LastSendTime;
-		}
+		// Count timeout since the last request, not only since the last received data
+		// otherwise we may happen to timeout immediatelly after sending request if
+		// CheckForTimeout occurs in between and we haven't received any data for a while
+		m_LastRecvTime = m_LastSendTime;
 		PostMessage(m_pOwner->m_hOwnerWnd, m_pOwner->m_nReplyMessageID, FZ_MSG_MAKEMSG(FZ_MSG_SOCKETSTATUS, FZ_SOCKETSTATUS_SEND), 0);
 	}
 	return TRUE;
@@ -1423,6 +1423,7 @@ void CFtpControlSocket::DoClose(int nError /*=0*/)
 
 	free(m_SslSessions);
 	m_SslSessions = NULL;
+
 	CControlSocket::Close();
 }
 
@@ -2253,17 +2254,20 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 
 		m_pTransferSocket->SetActive();
 
-		cmd = _T("LIST");
-#ifdef MPEXT
-		if (COptions::GetOptionVal(OPTION_MPEXT_SHOWHIDDEN) && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
-#else
-		if (m_pOwner->GetOption(FZAPI_OPTION_SHOWHIDDEN) && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
-#endif
-			cmd += _T(" -a");
 #ifdef MPEXT
 		if (m_serverCapabilities.GetCapability(mlsd_command) == yes)
 			cmd = _T("MLSD");
 #endif
+                else
+                {
+			cmd = _T("LIST");
+#ifdef MPEXT
+			if (COptions::GetOptionVal(OPTION_MPEXT_SHOWHIDDEN) && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
+#else
+			if (m_pOwner->GetOption(FZAPI_OPTION_SHOWHIDDEN) && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
+#endif
+				cmd += _T(" -a");
+		}
 		if (!Send(cmd))
 			return;
 
@@ -2321,7 +2325,6 @@ void CFtpControlSocket::ListFile(CServerPath path /*=CServerPath()*/, CString fi
 		pData=new CListData;
 		pData->path=path;
 		pData->fileName=fileName;
-		DEBUG_PRINTF(L"fileName = %s", (LPCWSTR)fileName);
 		m_Operation.pData=pData;
 		ShowStatus(IDS_STATUSMSG_RETRIEVINGLISTFILE, 0);
 		pData->nFinish=-1;
@@ -2339,7 +2342,6 @@ void CFtpControlSocket::ListFile(CServerPath path /*=CServerPath()*/, CString fi
 	case LIST_LISTFILE:
 		retmsg = GetReply();
 		code = GetReplyCode();
-		DEBUG_PRINTF(L"retmsg = %s, code = %d, m_Operation.nOpState = %d", (LPCWSTR)retmsg, code, m_Operation.nOpState);
 		if (IsMisleadingListResponse())
 		{
 			ShowStatus(IDS_STATUSMSG_LISTFILESUCCESSFUL, 0);
@@ -4233,17 +4235,21 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 
 			m_pTransferSocket->SetActive();
 			pData->ListStartTime=CTime::GetCurrentTime();
-			CString cmd=_MPT("LIST");
-#ifdef MPEXT
-			if ((COptions::GetOptionVal(OPTION_MPEXT_SHOWHIDDEN) || pData->transferfile.remotefile.Left(1)==_MPT(".")) && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
-#else
-			if ((m_pOwner->GetOption(FZAPI_OPTION_SHOWHIDDEN) || pData->transferfile.remotefile.Left(1)==_MPT(".")) && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
-#endif
-				cmd += _MPT(" -a");
+			CString cmd;
 #ifdef MPEXT
 			if (m_serverCapabilities.GetCapability(mlsd_command) == yes)
-				cmd = _MPAT("MLSD");
+				cmd = _T("MLSD");
 #endif
+			else
+			{
+				cmd=_MPT("LIST");
+#ifdef MPEXT
+				if ((COptions::GetOptionVal(OPTION_MPEXT_SHOWHIDDEN) || pData->transferfile.remotefile.Left(1)==_MPT(".")) && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
+#else
+				if ((m_pOwner->GetOption(FZAPI_OPTION_SHOWHIDDEN) || pData->transferfile.remotefile.Left(1)==_MPT(".")) && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
+#endif
+					cmd += _MPT(" -a");
+			}
 			if(!Send(cmd))
 				bError=TRUE;
 			else if(pData->bPasv)
@@ -5286,7 +5292,7 @@ void CFtpControlSocket::SendKeepAliveCommand()
 	//Choose a random command from the list
 	TCHAR commands[4][7]={_MPT("PWD"),_MPT("REST 0"),_MPT("TYPE A"),_MPT("TYPE I")};
 	int choice=(rand()*4)/(RAND_MAX+1);
-	Send(commands[choice], FALSE);
+	Send(commands[choice]);
 }
 
 void CFtpControlSocket::MakeDir(const CServerPath &path)
@@ -6008,66 +6014,30 @@ void CFtpControlSocket::DiscardLine(CStringA line)
 {
 	if (m_Operation.nOpMode == CSMODE_CONNECT && m_Operation.nOpState == CONNECT_FEAT)
 	{
-		line.MakeUpper().Trim(" ");
-		if (line == _MPAT("MODE Z") || line.Left(7) == _MPAT("MODE Z "))
-		{
+		line.MakeUpper();
 #ifndef MPEXT_NO_ZLIB
+		if (line == _MPAT(" MODE Z") || line.Left(8) == _MPAT(" MODE Z "))
 			m_zlibSupported = true;
+		else
 #endif
-#ifdef MPEXT
-			m_serverCapabilities.SetCapability(mode_z_support, yes);
-#endif
-		}
-		else if (line == _MPAT("UTF8") && m_CurrentServer.nUTF8 != 2)
-		{
-			
+			if (line == _MPAT(" UTF8") && m_CurrentServer.nUTF8 != 2)
 			m_bAnnouncesUTF8 = true;
-#ifdef MPEXT
-			m_serverCapabilities.SetCapability(utf8_command, yes);
-#endif
-		}
-		else if (line == _MPAT("CLNT") || line.Left(5) == _MPAT("CLNT "))
-		{
+		else if (line == _MPAT(" CLNT") || line.Left(6) == _MPAT(" CLNT "))
 			m_hasClntCmd = true;
 #ifdef MPEXT
-			m_serverCapabilities.SetCapability(clnt_command, yes);
-#endif
-		}
-#ifdef MPEXT
-		else if (line == _MPAT("MLSD"))
+		else if (line == _MPAT(" MLSD"))
 		{
 			m_serverCapabilities.SetCapability(mlsd_command, yes);
 		}
-		else if (line.Left(4) == _MPAT("MLST"))
+		else if (line.Left(5) == _T(" MLST"))
 		{
 			USES_CONVERSION;
-			m_serverCapabilities.SetCapability(mlsd_command, yes, (LPCSTR)line.Mid(5));
+			m_serverCapabilities.SetCapability(mlsd_command, yes, (LPCSTR)line.Mid(6, -1));
 			// MSLT/MLSD specs require use of UTC
 			// m_serverCapabilities.SetCapability(timezone_offset, no);
 		}
-		else if (line == _MPAT("MFMT"))
-		{
+		else if (line == _MPAT(" MFMT"))
 			m_hasMfmtCmd = true;
-			m_serverCapabilities.SetCapability(mfmt_command, yes);
-		}
-		else if (line == _MPAT(" PRET"))
-			m_serverCapabilities.SetCapability(pret_command, yes);
-		else if (line == _MPAT("MDTM"))
-		{
-			m_serverCapabilities.SetCapability(mdtm_command, yes);
-		}
-		else if (line == _MPAT("SIZE"))
-		{
-			m_serverCapabilities.SetCapability(size_command, yes);
-		}
-		else if (line == _MPAT("TVFS"))
-		{
-			m_serverCapabilities.SetCapability(tvfs_support, yes);
-		}
-		else if (line == _MPAT("REST STREAM"))
-		{
-			m_serverCapabilities.SetCapability(rest_stream, yes);
-		}
 #endif
 	}
 #ifdef MPEXT
@@ -6084,7 +6054,7 @@ bool CFtpControlSocket::NeedModeCommand()
 	return false;
 #else
 	bool useZlib;
-	if (m_Operation.nOpMode == CSMODE_LIST || m_Operation.nOpMode == CSMODE_LISTFILE || (m_Operation.nOpMode == CSMODE_TRANSFER && m_Operation.nOpMode <= FILETRANSFER_TYPE))
+	if (m_Operation.nOpMode == CSMODE_LIST || (m_Operation.nOpMode == CSMODE_TRANSFER && m_Operation.nOpMode <= FILETRANSFER_TYPE))
 		useZlib = COptions::GetOptionVal(OPTION_MODEZ_USE) != 0;
 	else
 		useZlib = COptions::GetOptionVal(OPTION_MODEZ_USE) > 1;
@@ -6119,6 +6089,7 @@ CString CFtpControlSocket::GetReply()
 	if (m_bUTF8)
 	{
 		// convert from UTF-8 to ANSI
+		LPCSTR utf8 = (LPCSTR)m_RecvBuffer.front();
 		if (m_Operation.nOpMode&CSMODE_LISTFILE && m_Operation.nOpState==LIST_LISTFILE)
 		{
 			line = (LPCSTR)m_ListFile;
@@ -6236,37 +6207,37 @@ bool CFtpControlSocket::CheckForcePasvIp(CString & host)
 	}
 	return result;
 }
+#endif
 
 //---------------------------------------------------------------------------
-ftp_capabilities_t TFTPServerCapabilities::GetCapability(ftp_capability_names_t name)
+ftp_capabilities_t TFTPServerCapabilities::GetCapability(ftp_capability_names_t Name)
 {
-	t_cap tcap = m_capabilityMap[name];
+	t_cap tcap = FCapabilityMap[Name];
 	return tcap.cap;
 }
 
-ftp_capabilities_t TFTPServerCapabilities::GetCapabilityString(ftp_capability_names_t name, std::string *option)
+ftp_capabilities_t TFTPServerCapabilities::GetCapabilityString(ftp_capability_names_t Name, std::string * Option)
 {
-	t_cap tcap = m_capabilityMap[name];
-	if (option)
-		*option = tcap.option;
+	t_cap tcap = FCapabilityMap[Name];
+	if (Option)
+		*Option = tcap.option;
 	return tcap.cap;
 }
 
-void TFTPServerCapabilities::SetCapability(ftp_capability_names_t name, ftp_capabilities_t cap)
+void TFTPServerCapabilities::SetCapability(ftp_capability_names_t Name, ftp_capabilities_t Cap)
 {
-	t_cap tcap = m_capabilityMap[name];
-	tcap.cap = cap;
+	t_cap tcap = FCapabilityMap[Name];
+	tcap.cap = Cap;
 	tcap.number = 1;
-	m_capabilityMap[name] = tcap;
+	FCapabilityMap[Name] = tcap;
 }
 
-void TFTPServerCapabilities::SetCapability(ftp_capability_names_t name, ftp_capabilities_t cap, const std::string &option)
+void TFTPServerCapabilities::SetCapability(ftp_capability_names_t Name, ftp_capabilities_t Cap, const std::string & Option)
 {
-	t_cap tcap = m_capabilityMap[name];
-	tcap.cap = cap;
-	tcap.option = option;
+	t_cap tcap = FCapabilityMap[Name];
+	tcap.cap = Cap;
+	tcap.option = Option;
 	tcap.number = 0;
-	m_capabilityMap[name] = tcap;
+	FCapabilityMap[Name] = tcap;
 }
 
-#endif

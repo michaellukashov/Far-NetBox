@@ -50,6 +50,7 @@ UnicodeString ReplaceChar(UnicodeString Str, wchar_t A, wchar_t B);
 UnicodeString DeleteChar(UnicodeString Str, wchar_t C);
 void PackStr(UnicodeString &Str);
 void PackStr(RawByteString &Str);
+void __fastcall Shred(UnicodeString & Str);
 UnicodeString MakeValidFileName(UnicodeString FileName);
 UnicodeString RootKeyToStr(HKEY RootKey);
 UnicodeString BooleanToStr(bool B);
@@ -110,6 +111,8 @@ TLibModule * __fastcall FindModule(void * Instance);
 __int64 __fastcall Round(double Number);
 bool __fastcall TryRelativeStrToDateTime(UnicodeString S, TDateTime & DateTime);
 LCID __fastcall GetDefaultLCID();
+UnicodeString __fastcall DefaultEncodingName();
+UnicodeString __fastcall WindowsProductName();
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
 typedef void __fastcall (__closure* TProcessLocalFileEvent)
@@ -145,6 +148,8 @@ TDateTime __fastcall ConvertTimestampToUTC(TDateTime DateTime);
 __int64 __fastcall ConvertTimestampToUnixSafe(const FILETIME & FileTime,
   TDSTMode DSTMode);
 UnicodeString __fastcall FixedLenDateTimeFormat(const UnicodeString & Format);
+UnicodeString __fastcall StandardTimestamp(const TDateTime & DateTime);
+UnicodeString __fastcall StandardTimestamp();
 int __fastcall CompareFileTime(TDateTime T1, TDateTime T2);
 //---------------------------------------------------------------------------
 template<class MethodT>
