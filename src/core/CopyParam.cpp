@@ -25,8 +25,6 @@
 //---------------------------------------------------------------------------
 /* __fastcall */ TCopyParamType::~TCopyParamType()
 {
-  // DEBUG_PRINTF(L"begin");
-  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TCopyParamType::Default()
@@ -79,7 +77,6 @@ UnicodeString __fastcall TCopyParamType::GetInfoStr(UnicodeString Separator, int
       S = FORMAT(S.c_str(), GetAsciiFileMask().GetMasks().c_str());
     }
     ADD(S, cpaIncludeMaskOnly | cpaNoTransferMode);
-    // ADD(S, cpaExcludeMaskOnly | cpaNoTransferMode);
   }
 
   if (GetFileNameCase() != Defaults.GetFileNameCase())
