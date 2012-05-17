@@ -644,21 +644,9 @@ private:
 //---------------------------------------------------------------------------
 struct TCustomCommandParams
 {
-  TCustomCommandParams(
-    UnicodeString Command,
-    int Params,
-    TCaptureOutputEvent OutputEvent) :
-    Command(Command),
-    Params(Params),
-    OutputEvent(OutputEvent)
-  {
-  }
   UnicodeString Command;
   int Params;
   TCaptureOutputEvent OutputEvent;
-private:
-  TCustomCommandParams(const TCustomCommandParams &);
-  void operator=(const TCustomCommandParams &);
 };
 //---------------------------------------------------------------------------
 struct TCalculateSizeStats

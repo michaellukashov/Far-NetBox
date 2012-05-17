@@ -521,7 +521,6 @@ void __fastcall TTerminal::Init(TSessionData * SessionData, TConfiguration * Con
   FTunnelLocalPortNumber = 0;
   FFileSystem = NULL;
   FSecureShell = NULL;
-#ifndef _MSC_VER
   FOnProgress = NULL;
   FOnFinished = NULL;
   FOnDeleteLocalFile = NULL;
@@ -533,7 +532,7 @@ void __fastcall TTerminal::Init(TSessionData * SessionData, TConfiguration * Con
   FOnInformation = NULL;
   FOnClose = NULL;
   FOnFindingFile = NULL;
-#endif
+
   FUseBusyCursor = True;
   FLockDirectory = L"";
   FDirectoryCache = new TRemoteDirectoryCache();
@@ -813,6 +812,7 @@ void __fastcall TTerminal::Open()
               else
               {
                 assert(FSecureShell == NULL);
+                // try
                 {
                   BOOST_SCOPE_EXIT ( (&Self) )
                   {
@@ -861,6 +861,13 @@ void __fastcall TTerminal::Open()
                     LogEvent(L"Using SFTP protocol.");
                   }
                 }
+#ifndef _MSC_VER
+                __finally
+                {
+                  delete FSecureShell;
+                  FSecureShell = NULL;
+                }
+#endif
               }
             }
             else
@@ -868,6 +875,15 @@ void __fastcall TTerminal::Open()
               FFileSystem->Open();
             }
           }
+#ifndef _MSC_VER
+          __finally
+          {
+            if (FSessionData->Tunnel)
+            {
+              FSessionData->RollbackTunnel();
+            }
+          }
+#endif
 
           if (GetSessionData()->GetCacheDirectoryChanges())
           {
@@ -930,7 +946,7 @@ void __fastcall TTerminal::Open()
     // }
     catch(Exception & E)
     {
-      // any Exception while opening session is fatal
+      // any exception while opening session is fatal
       FatalError(&E, L"");
     }
   }
@@ -950,7 +966,7 @@ bool __fastcall TTerminal::IsListenerFree(unsigned int PortNumber)
     Address.sin_family = AF_INET;
     Address.sin_port = htons(static_cast<short>(PortNumber));
     Address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-    Result = (::bind(Socket, reinterpret_cast<sockaddr *>(&Address), sizeof(Address)) == 0);
+    Result = (bind(Socket, reinterpret_cast<sockaddr *>(&Address), sizeof(Address)) == 0);
     closesocket(Socket);
   }
   return Result;
@@ -1439,8 +1455,8 @@ bool /* __fastcall */ TTerminal::DoQueryReopen(Exception * E)
       Params.Aliases = Aliases;
       Params.AliasesCount = LENOF(Aliases);
       Result = (QueryUserException(L"", E, qaRetry | qaAbort, &Params, qtError) == qaRetry);
-
     }
+
     if (Fatal != NULL)
     {
       Fatal->SetReopenQueried(true);
@@ -1582,9 +1598,7 @@ int /* __fastcall */ TTerminal::FileOperationLoop(TFileOperationEvent CallBackFu
 UnicodeString /* __fastcall */ TTerminal::TranslateLockedPath(UnicodeString Path, bool Lock)
 {
   if (!GetSessionData()->GetLockInHome() || Path.IsEmpty() || (Path[1] != L'/'))
-  {
     return Path;
-  }
 
   if (Lock)
   {
@@ -1832,9 +1846,7 @@ void /* __fastcall */ TTerminal::BeginTransaction()
 void /* __fastcall */ TTerminal::EndTransaction()
 {
   if (FInTransaction == 0)
-  {
     TerminalError(L"Can't end transaction, not in transaction");
-  }
   assert(FInTransaction > 0);
   FInTransaction--;
 
@@ -1878,9 +1890,7 @@ void /* __fastcall */ TTerminal::SetExceptionOnFail(bool value)
   else
   {
     if (FExceptionOnFail == 0)
-    {
       throw Exception(L"ExceptionOnFail is already zero.");
-    }
     FExceptionOnFail--;
   }
 
@@ -2248,7 +2258,7 @@ void /* __fastcall */ TTerminal::FileModified(const TRemoteFile * File,
     }
   }
 }
-//----/* __fastcall */ -----------------------------------------------------------------------
+//---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::DirectoryModified(const UnicodeString Path, bool SubDirs)
 {
   if (Path.IsEmpty())
@@ -3144,10 +3154,10 @@ void /* __fastcall */ TTerminal::CustomCommandOnFiles(UnicodeString Command,
 {
   if (!TRemoteCustomCommand().IsFileListCommand(Command))
   {
-    TCustomCommandParams AParams(Command, Params, OutputEvent);
-    // AParams.Command = Command;
-    // AParams.Params = Params;
-    // AParams.OutputEvent = OutputEvent;
+    TCustomCommandParams AParams;
+    AParams.Command = Command;
+    AParams.Params = Params;
+    AParams.OutputEvent = OutputEvent;
     ProcessFiles(Files, foCustomCommand, fastdelegate::bind(&TTerminal::CustomCommandOnFile, this, _1, _2, _3), &AParams);
   }
   else
@@ -3500,7 +3510,7 @@ bool /* __fastcall */ TTerminal::MoveFiles(TStrings * FileList, const UnicodeStr
         // this is just optimization to avoid checking existence of current
         // directory after each move operation.
         UnicodeString curDirectory = Self->GetCurrentDirectory();
-        for (size_t Index = 0; !PossiblyMoved && (Index < FileList->GetCount()); Index++)
+        for (int Index = 0; !PossiblyMoved && (Index < FileList->GetCount()); Index++)
         {
           const TRemoteFile * File =
             dynamic_cast<const TRemoteFile *>(FileList->GetObjects(Index));
@@ -3871,18 +3881,11 @@ void /* __fastcall */ TTerminal::AnyCommand(const UnicodeString Command,
   private:
     TCallSessionAction & FAction;
     TCaptureOutputEvent FOutputEvent;
-  private:
-#pragma warning(push)
-#pragma warning(disable: 4822)
-    TOutputProxy(const TOutputProxy &);
-    void operator=(const TOutputProxy &);
-#pragma warning(pop)
   };
 
   TCallSessionAction Action(GetActionLog(), Command, GetCurrentDirectory());
   TOutputProxy ProxyOutputEvent(Action, OutputEvent);
-  TCaptureOutputEvent outputEvent = fastdelegate::bind(&TOutputProxy::Output, &ProxyOutputEvent, _1, _2);
-  DoAnyCommand(Command, outputEvent, &Action);
+  DoAnyCommand(Command, fastdelegate::bind(&TOutputProxy::Output, &ProxyOutputEvent, _1, _2), &Action);
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::DoAnyCommand(const UnicodeString Command,
@@ -4023,7 +4026,6 @@ void /* __fastcall */ TTerminal::OpenLocalFile(const UnicodeString FileName,
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
   FILE_OPERATION_LOOP (FMTLOAD(FILE_NOT_EXISTS, FileName.c_str()),
     Attrs = FileGetAttr(FileName);
-    // if ((Attrs == -1) && (Access != GENERIC_WRITE)) RaiseLastOSError();
     if (Attrs == -1) { RaiseLastOSError(); }
   )
 
@@ -4334,7 +4336,7 @@ void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeStri
     {
       if (Data.LocalFileList != NULL)
       {
-        for (size_t Index = 0; Index < Data.LocalFileList->GetCount(); Index++)
+        for (int Index = 0; Index < Data.LocalFileList->GetCount(); Index++)
         {
           TSynchronizeFileData * FileData = reinterpret_cast<TSynchronizeFileData *>
             (Data.LocalFileList->GetObjects(Index));
@@ -5128,6 +5130,7 @@ bool /* __fastcall */ TTerminal::CopyToRemote(TStrings * FilesToCopy,
         (FLAGCLEAR(Params, cpDelete) ? CopyParam : NULL));
     }
 
+    // TFileOperationProgressType OperationProgress(&DoProgress, &DoFinished);
     OperationProgress.Start((Params & cpDelete ? foMove : foCopy), osLocal,
       FilesToCopy->GetCount(), (Params & cpTemporary) > 0, TargetDir, CopyParam->GetCPSLimit());
 
