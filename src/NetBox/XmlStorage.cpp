@@ -26,7 +26,7 @@ TXmlStorage::TXmlStorage(const UnicodeString AStorage,
   FFailed(0),
   FStoredSessionsOpened(false)
 {
-};
+}
 //---------------------------------------------------------------------------
 void TXmlStorage::Init()
 {

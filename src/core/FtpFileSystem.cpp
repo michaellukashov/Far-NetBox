@@ -398,20 +398,21 @@ void __fastcall TFTPFileSystem::Open()
   int Pasv = (Data->GetFtpPasvMode() ? 1 : 2);
   int TimeZoneOffset = static_cast<int>((Round(static_cast<double>(Data->GetTimeDifference()) * MinsPerDay)));
   int UTF8 = 0;
-  switch (Data->GetNotUtf())
+  unsigned int CodePage = Data->GetCodePageAsNumber();
+  switch (CodePage)
   {
-    case asOn:
-      UTF8 = 2;
+    case CP_ACP:
+      UTF8 = 2; // no UTF8
       break;
 
-    case asOff:
-      UTF8 = 1;
+    case CP_UTF8:
+      UTF8 = 1; // always UTF8
       break;
 
-    case asAuto:
-      UTF8 = 0;
+    default:
+      UTF8 = 0; // auto detect
       break;
-  };
+  }
 
   FPasswordFailed = false;
   bool PromptedForCredentials = false;
