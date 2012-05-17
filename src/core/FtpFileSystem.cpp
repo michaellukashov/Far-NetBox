@@ -1368,8 +1368,7 @@ void __fastcall TFTPFileSystem::SourceRobust(const UnicodeString FileName,
     Retry = false;
     try
     {
-      Source(FileName, TargetDir, CopyParam, Params,
-        &OpenParams, &FileParams, OperationProgress,
+      Source(FileName, TargetDir, CopyParam, Params, &OpenParams, &FileParams, OperationProgress,
         Flags, Action);
     }
     catch(Exception & E)
