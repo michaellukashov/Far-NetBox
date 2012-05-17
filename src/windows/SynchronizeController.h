@@ -46,7 +46,7 @@ typedef fastdelegate::FastDelegate2<void,
   TObject* /* Sender */, TThreadMethodEvent /* Method */ > TSynchronizeThreadsEvent;
 enum TSynchronizeLogEntry { slScan, slStart, slChange, slUpload, slDelete, slDirChange };
 typedef fastdelegate::FastDelegate3<void,
-  TSynchronizeController * /* Controller */, TSynchronizeLogEntry /* Entry */, const UnicodeString /* Message */ > TSynchronizeLogEvent;
+  TSynchronizeController * /* Controller */, TSynchronizeLogEntry /* Entry */, const UnicodeString & /* Message */ > TSynchronizeLogEvent;
 typedef fastdelegate::FastDelegate8<void,
   TObject * /* Sender */, bool /* Start */, const TSynchronizeParamType & /* Params */,
   const TCopyParamType & /* CopyParam */, TSynchronizeOptions * /* Options */,

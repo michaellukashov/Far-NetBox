@@ -847,7 +847,7 @@ int __fastcall TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
       if (Params->Timer > 0)
       {
         FarParams.Timer = Params->Timer;
-        FarParams.TimerEvent = Params->TimerEvent;
+        FarParams.TimerEvent = *Params->TimerEvent;
       }
 
       if (Params->Timeout > 0)

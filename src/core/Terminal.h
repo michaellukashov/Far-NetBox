@@ -82,7 +82,7 @@ typedef fastdelegate::FastDelegate2<void, TObject * /* Sender */, Boolean /* Rel
 typedef fastdelegate::FastDelegate3<void,
   TObject * /* Sender */, int /* Progress */, bool & /* Cancel */> TReadDirectoryProgressEvent;
 typedef fastdelegate::FastDelegate3<void,
-  const UnicodeString /* FileName */, const TRemoteFile * /* File */, void * /* Param */> TProcessFileEvent;
+  UnicodeString /* FileName */, const TRemoteFile * /* File */, void * /* Param */> TProcessFileEvent;
 typedef fastdelegate::FastDelegate4<void,
   const UnicodeString /* FileName */, const TRemoteFile * /* File */, void * /* Param */, int /* Index */> TProcessFileEventEx;
 typedef fastdelegate::FastDelegate2<int,
@@ -91,7 +91,7 @@ typedef fastdelegate::FastDelegate4<void,
   const UnicodeString & /* LocalDirectory */, const UnicodeString & /* RemoteDirectory */,
   bool & /* Continue */, bool /* Collect */> TSynchronizeDirectoryEvent;
 typedef fastdelegate::FastDelegate2<void,
-  const UnicodeString /* FileName */, bool /* Alternative */> TDeleteLocalFileEvent;
+  const UnicodeString & /* FileName */, bool /* Alternative */> TDeleteLocalFileEvent;
 typedef fastdelegate::FastDelegate3<int,
   TTerminal * /* Terminal */, const UnicodeString /* Directory */, bool /* SubDirs */> TDirectoryModifiedEvent;
 typedef fastdelegate::FastDelegate4<void,
@@ -468,11 +468,11 @@ public:
   void __fastcall RefreshDirectory();
   void __fastcall RenameFile(const UnicodeString FileName, const UnicodeString NewName);
   void __fastcall RenameFile(const TRemoteFile * File, const UnicodeString NewName, bool CheckExistence);
-  void /* __fastcall */ MoveFile(const UnicodeString FileName, const TRemoteFile * File,
+  void /* __fastcall */ MoveFile(const UnicodeString & FileName, const TRemoteFile * File,
     /*const TMoveFileParams*/ void * Param);
   bool __fastcall MoveFiles(TStrings * FileList, const UnicodeString Target,
     const UnicodeString FileMask);
-  void /* __fastcall */ CopyFile(const UnicodeString FileName, const TRemoteFile * File,
+  void /* __fastcall */ CopyFile(const UnicodeString & FileName, const TRemoteFile * File,
     /*const TMoveFileParams*/ void * Param);
   bool __fastcall CopyFiles(TStrings * FileList, const UnicodeString Target,
     const UnicodeString FileMask);

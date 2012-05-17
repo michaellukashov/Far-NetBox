@@ -57,7 +57,7 @@ struct TFarMessageParams
   unsigned int Timeout;
   unsigned int TimeoutButton;
   UnicodeString TimeoutStr;
-  TFarMessageClickEvent * ClickEvent;
+  TFarMessageClickEvent ClickEvent;
   void * Token;
 };
 //---------------------------------------------------------------------------

@@ -305,9 +305,9 @@ private:
   void /* __fastcall */ TerminalReadDirectoryProgress(TObject * Sender, int Progress,
     bool & Cancel);
   void /* __fastcall */ TerminalInformation(TTerminal * Terminal,
-    const UnicodeString Str, bool Status, bool Active);
+    const UnicodeString & Str, bool Status, int Phase);
   void /* __fastcall */ TerminalQueryUser(TObject * Sender,
-    const UnicodeString Query, TStrings * MoreMessages, unsigned int Answers,
+    const UnicodeString & Query, TStrings * MoreMessages, unsigned int Answers,
     const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * Arg);
   void /* __fastcall */ TerminalPromptUser(TTerminal * Terminal,
     TPromptKind Kind, UnicodeString Name, UnicodeString Instructions,
@@ -318,7 +318,7 @@ private:
     int Options);
   void /* __fastcall */ TerminalShowExtendedException(TTerminal * Terminal,
     Exception * E, void * Arg);
-  void /* __fastcall */ TerminalDeleteLocalFile(const UnicodeString FileName, bool Alternative);
+  void /* __fastcall */ TerminalDeleteLocalFile(const UnicodeString & FileName, bool Alternative);
   void /* __fastcall */ OperationProgress(
     TFileOperationProgressType & ProgressData, TCancelStatus & Cancel);
   void /* __fastcall */ OperationFinished(TFileOperation Operation,

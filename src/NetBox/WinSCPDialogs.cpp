@@ -5879,8 +5879,8 @@ bool __fastcall TWinSCPFileSystem::LinkDialog(UnicodeString & FileName,
 typedef void __fastcall (__closure *TFeedFileSystemData)
   (TObject * Control, int Label, AnsiString Value);
 #else
-typedef fastdelegate::FastDelegate3<void, TObject *, int, UnicodeString> TFeedFileSystemDataEvent;
-typedef TFeedFileSystemDataEvent::slot_type TFeedFileSystemDataEvent;
+typedef fastdelegate::FastDelegate3<void,
+  TObject *, int, UnicodeString &> TFeedFileSystemDataEvent;
 #endif
 //---------------------------------------------------------------------------
 class TLabelList;
@@ -5901,9 +5901,9 @@ protected:
   UnicodeString __fastcall CapabilityStr(TFSCapability Capability1,
     TFSCapability Capability2);
   UnicodeString __fastcall SpaceStr(__int64 Bytes);
-  void /* __fastcall */ ControlsAddItem(TObject * Control, int Label, UnicodeString Value);
-  void /* __fastcall */ CalculateMaxLenAddItem(TObject * Control, int Label, UnicodeString Value);
-  void /* __fastcall */ ClipboardAddItem(TObject * Control, int Label, UnicodeString Value);
+  void /* __fastcall */ ControlsAddItem(TObject * Control, int Label, UnicodeString & Value);
+  void /* __fastcall */ CalculateMaxLenAddItem(TObject * Control, int Label, UnicodeString & Value);
+  void /* __fastcall */ ClipboardAddItem(TObject * Control, int Label, UnicodeString & Value);
   void __fastcall FeedControls();
   void __fastcall UpdateControls();
   TLabelList * __fastcall CreateLabelArray(size_t Count);
@@ -6113,34 +6113,32 @@ UnicodeString __fastcall TFileSystemInfoDialog::SpaceStr(__int64 Bytes)
 //---------------------------------------------------------------------
 void __fastcall TFileSystemInfoDialog::Feed(TFeedFileSystemDataEvent AddItem)
 {
-  TFeedFileSystemDataEvent sig;
-  sig = AddItem;
-  sig(ServerLabels, SERVER_REMOTE_SYSTEM, FFileSystemInfo.RemoteSystem);
-  sig(ServerLabels, SERVER_SESSION_PROTOCOL, FSessionInfo.ProtocolName);
-  sig(ServerLabels, SERVER_SSH_IMPLEMENTATION, FSessionInfo.SshImplementation);
+  AddItem(ServerLabels, SERVER_REMOTE_SYSTEM, FFileSystemInfo.RemoteSystem);
+  AddItem(ServerLabels, SERVER_SESSION_PROTOCOL, FSessionInfo.ProtocolName);
+  AddItem(ServerLabels, SERVER_SSH_IMPLEMENTATION, FSessionInfo.SshImplementation);
 
   UnicodeString Str = FSessionInfo.CSCipher;
   if (FSessionInfo.CSCipher != FSessionInfo.SCCipher)
   {
     Str += FORMAT(L"/%s", FSessionInfo.SCCipher.c_str());
   }
-  sig(ServerLabels, SERVER_CIPHER, Str);
+  AddItem(ServerLabels, SERVER_CIPHER, Str);
 
   Str = DefaultStr(FSessionInfo.CSCompression, LoadStr(NO_STR));
   if (FSessionInfo.CSCompression != FSessionInfo.SCCompression)
   {
     Str += FORMAT(L"/%s", DefaultStr(FSessionInfo.SCCompression, LoadStr(NO_STR)).c_str());
   }
-  sig(ServerLabels, SERVER_COMPRESSION, Str);
+  AddItem(ServerLabels, SERVER_COMPRESSION, Str);
   if (FSessionInfo.ProtocolName != FFileSystemInfo.ProtocolName)
   {
-    sig(ServerLabels, SERVER_FS_PROTOCOL, FFileSystemInfo.ProtocolName);
+    AddItem(ServerLabels, SERVER_FS_PROTOCOL, FFileSystemInfo.ProtocolName);
   }
 
-  sig(HostKeyFingerprintEdit, 0, FSessionInfo.HostKeyFingerprint);
+  AddItem(HostKeyFingerprintEdit, 0, FSessionInfo.HostKeyFingerprint);
 
-  sig(ProtocolLabels, PROTOCOL_MODE_CHANGING, CapabilityStr(fcModeChanging));
-  sig(ProtocolLabels, PROTOCOL_OWNER_GROUP_CHANGING, CapabilityStr(fcGroupChanging));
+  AddItem(ProtocolLabels, PROTOCOL_MODE_CHANGING, CapabilityStr(fcModeChanging));
+  AddItem(ProtocolLabels, PROTOCOL_OWNER_GROUP_CHANGING, CapabilityStr(fcGroupChanging));
   UnicodeString AnyCommand;
   if (!FFileSystemInfo.IsCapable[fcShellAnyCommand] &&
       FFileSystemInfo.IsCapable[fcAnyCommand])
@@ -6151,25 +6149,25 @@ void __fastcall TFileSystemInfoDialog::Feed(TFeedFileSystemDataEvent AddItem)
   {
     AnyCommand = CapabilityStr(fcAnyCommand);
   }
-  sig(ProtocolLabels, PROTOCOL_ANY_COMMAND, AnyCommand);
-  sig(ProtocolLabels, PROTOCOL_SYMBOLIC_HARD_LINK, CapabilityStr(fcSymbolicLink, fcHardLink));
-  sig(ProtocolLabels, PROTOCOL_USER_GROUP_LISTING, CapabilityStr(fcUserGroupListing));
-  sig(ProtocolLabels, PROTOCOL_REMOTE_COPY, CapabilityStr(fcRemoteCopy));
-  sig(ProtocolLabels, PROTOCOL_CHECKING_SPACE_AVAILABLE, CapabilityStr(fcCheckingSpaceAvailable));
-  sig(ProtocolLabels, PROTOCOL_CALCULATING_CHECKSUM, CapabilityStr(fcCalculatingChecksum));
-  sig(ProtocolLabels, PROTOCOL_NATIVE_TEXT_MODE, CapabilityStr(fcNativeTextMode));
+  AddItem(ProtocolLabels, PROTOCOL_ANY_COMMAND, AnyCommand);
+  AddItem(ProtocolLabels, PROTOCOL_SYMBOLIC_HARD_LINK, CapabilityStr(fcSymbolicLink, fcHardLink));
+  AddItem(ProtocolLabels, PROTOCOL_USER_GROUP_LISTING, CapabilityStr(fcUserGroupListing));
+  AddItem(ProtocolLabels, PROTOCOL_REMOTE_COPY, CapabilityStr(fcRemoteCopy));
+  AddItem(ProtocolLabels, PROTOCOL_CHECKING_SPACE_AVAILABLE, CapabilityStr(fcCheckingSpaceAvailable));
+  AddItem(ProtocolLabels, PROTOCOL_CALCULATING_CHECKSUM, CapabilityStr(fcCalculatingChecksum));
+  AddItem(ProtocolLabels, PROTOCOL_NATIVE_TEXT_MODE, CapabilityStr(fcNativeTextMode));
 
-  sig(InfoLister, 0, FFileSystemInfo.AdditionalInfo);
+  AddItem(InfoLister, 0, FFileSystemInfo.AdditionalInfo);
 
-  sig(SpaceAvailableLabels, SPACE_AVAILABLE_BYTES_ON_DEVICE, SpaceStr(FSpaceAvailable.BytesOnDevice));
-  sig(SpaceAvailableLabels, SPACE_AVAILABLE_UNUSED_BYTES_ON_DEVICE, SpaceStr(FSpaceAvailable.UnusedBytesOnDevice));
-  sig(SpaceAvailableLabels, SPACE_AVAILABLE_BYTES_AVAILABLE_TO_USER, SpaceStr(FSpaceAvailable.BytesAvailableToUser));
-  sig(SpaceAvailableLabels, SPACE_AVAILABLE_UNUSED_BYTES_AVAILABLE_TO_USER, SpaceStr(FSpaceAvailable.UnusedBytesAvailableToUser));
-  sig(SpaceAvailableLabels, SPACE_AVAILABLE_BYTES_PER_ALLOCATION_UNIT, SpaceStr(FSpaceAvailable.BytesPerAllocationUnit));
+  AddItem(SpaceAvailableLabels, SPACE_AVAILABLE_BYTES_ON_DEVICE, SpaceStr(FSpaceAvailable.BytesOnDevice));
+  AddItem(SpaceAvailableLabels, SPACE_AVAILABLE_UNUSED_BYTES_ON_DEVICE, SpaceStr(FSpaceAvailable.UnusedBytesOnDevice));
+  AddItem(SpaceAvailableLabels, SPACE_AVAILABLE_BYTES_AVAILABLE_TO_USER, SpaceStr(FSpaceAvailable.BytesAvailableToUser));
+  AddItem(SpaceAvailableLabels, SPACE_AVAILABLE_UNUSED_BYTES_AVAILABLE_TO_USER, SpaceStr(FSpaceAvailable.UnusedBytesAvailableToUser));
+  AddItem(SpaceAvailableLabels, SPACE_AVAILABLE_BYTES_PER_ALLOCATION_UNIT, SpaceStr(FSpaceAvailable.BytesPerAllocationUnit));
 }
 //---------------------------------------------------------------------
 void /* __fastcall */ TFileSystemInfoDialog::ControlsAddItem(TObject * Control,
-    int Label, UnicodeString Value)
+  int Label, UnicodeString & Value)
 {
   if (FLastFeededControl != Control)
   {
@@ -6216,7 +6214,7 @@ void /* __fastcall */ TFileSystemInfoDialog::ControlsAddItem(TObject * Control,
 }
 //---------------------------------------------------------------------
 void /* __fastcall */ TFileSystemInfoDialog::CalculateMaxLenAddItem(TObject * Control,
-    int Label, UnicodeString Value)
+    int Label, UnicodeString & Value)
 {
   TLabelList * List = dynamic_cast<TLabelList *>(Control);
   if (List != NULL)
@@ -6230,7 +6228,7 @@ void /* __fastcall */ TFileSystemInfoDialog::CalculateMaxLenAddItem(TObject * Co
 }
 //---------------------------------------------------------------------
 void /* __fastcall */ TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
-    int Label, UnicodeString Value)
+    int Label, UnicodeString & Value)
 {
   TFarDialogItem * Control = dynamic_cast<TFarDialogItem *>(AControl);
   // check for Enabled instead of Visible, as Visible is false
@@ -7922,7 +7920,7 @@ protected:
   TSynchronizeParamType __fastcall GetParams();
   void /* __fastcall */ DoAbort(TObject * Sender, bool Close);
   void /* __fastcall */ DoLog(TSynchronizeController * Controller,
-    TSynchronizeLogEntry Entry, const UnicodeString Message);
+    TSynchronizeLogEntry Entry, const UnicodeString & Message);
   void /* __fastcall */ DoSynchronizeThreads(TObject * Sender, TThreadMethodEvent slot);
   virtual LONG_PTR __fastcall DialogProc(int Msg, int Param1, LONG_PTR Param2);
   virtual bool __fastcall CloseQuery();
@@ -8212,7 +8210,7 @@ void /* __fastcall */ TSynchronizeDialog::DoAbort(TObject * /*Sender*/, bool Clo
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TSynchronizeDialog::DoLog(TSynchronizeController * /*Controller*/,
-  TSynchronizeLogEntry /*Entry*/, const UnicodeString /*Message*/)
+  TSynchronizeLogEntry /*Entry*/, const UnicodeString & /*Message*/)
 {
   // void
 }

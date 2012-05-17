@@ -3463,7 +3463,7 @@ void /* __fastcall */ TTerminal::DoRenameFile(const UnicodeString FileName,
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TTerminal::MoveFile(const UnicodeString FileName,
+void /* __fastcall */ TTerminal::MoveFile(const UnicodeString & FileName,
   const TRemoteFile * File, /*const TMoveFileParams*/ void * Param)
 {
   if (GetOperationProgress() &&

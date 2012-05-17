@@ -1041,7 +1041,7 @@ void /* __fastcall */ TFarMessageDialog::ButtonClick(TFarButton * Sender, bool &
 {
   if (FParams->ClickEvent != NULL)
   {
-    (*FParams->ClickEvent)(FParams->Token, Sender->GetResult() - 1, Close);
+    FParams->ClickEvent(FParams->Token, Sender->GetResult() - 1, Close);
   }
 }
 //---------------------------------------------------------------------------

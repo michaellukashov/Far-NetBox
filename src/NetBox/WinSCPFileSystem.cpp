@@ -3488,9 +3488,9 @@ void __fastcall TWinSCPFileSystem::LogAuthentication(
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TWinSCPFileSystem::TerminalInformation(
-  TTerminal * Terminal, const UnicodeString Str, bool /*Status*/, bool Active)
+  TTerminal * Terminal, const UnicodeString & Str, bool /*Status*/, int Phase)
 {
-  if (Active)
+  if (Phase > 0)
   {
     if (GetTerminal() && (GetTerminal()->GetStatus() == ssOpening))
     {
@@ -3579,7 +3579,7 @@ void /* __fastcall */ TWinSCPFileSystem::TerminalReadDirectory(TObject * /*Sende
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWinSCPFileSystem::TerminalDeleteLocalFile(const UnicodeString FileName,
+void /* __fastcall */ TWinSCPFileSystem::TerminalDeleteLocalFile(const UnicodeString & FileName,
   bool Alternative)
 {
   if (!RecursiveDeleteFile(FileName,
