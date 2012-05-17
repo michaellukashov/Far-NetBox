@@ -1,6 +1,6 @@
 //						FastDelegateBind.h 
 //  Helper file for FastDelegates. Provides bind() function, enabling
-//  FastDelegates to be rapidly compared to programs using boost::function and boost::bind.
+//  FastDelegates to be rapidly compared to programs using boost::function and fastdelegate::bind.
 //
 //  Documentation is found at http://www.codeproject.com/cpp/FastDelegate.asp
 //
@@ -8,7 +8,7 @@
 //		 Minor changes by Don Clugston.
 //
 // Warning: The arguments to 'bind' are ignored! No actual binding is performed.
-// The behaviour is equivalent to boost::bind only when the basic placeholder 
+// The behaviour is equivalent to fastdelegate::bind only when the basic placeholder 
 // arguments _1, _2, _3, etc are used in order.
 //
 // HISTORY:
@@ -28,13 +28,13 @@
 //				(Original author: Jody Hagins).
 //
 // Add another helper, so FastDelegate can be a dropin replacement
-// for boost::bind (in a fair number of cases).
-// Note the elipses, because boost::bind() takes place holders
+// for fastdelegate::bind (in a fair number of cases).
+// Note the elipses, because fastdelegate::bind() takes place holders
 // but FastDelegate does not care about them.  Getting the place holder
 // mechanism to work, and play well with boost is a bit tricky, so
 // we do the "easy" thing...
 // Assume we have the following code...
-//      using boost::bind;
+//      using fastdelegate::bind;
 //      bind(&Foo:func, &foo, _1, _2);
 // we should be able to replace the "using" with...
 //      using fastdelegate::bind;

@@ -804,8 +804,6 @@ void __fastcall ProcessLocalDirectory(UnicodeString DirName,
         FindClose(SearchRec);
       } BOOST_SCOPE_EXIT_END
 #endif
-      // TProcessLocalFileEvent sig;
-      // sig.connect(CallBackFunc);
       do
       {
         if ((SearchRec.Name != L".") && (SearchRec.Name != L".."))

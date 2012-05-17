@@ -166,7 +166,7 @@ public:
 #else
   bool __fastcall GetActive() { return FActive; }
   TCaptureOutputEvent & GetOnCaptureOutput() { return FOnCaptureOutput; }
-  void SetOnCaptureOutput(const TCaptureOutputEvent & value) { FOnCaptureOutput.connect(value); }
+  void SetOnCaptureOutput(const TCaptureOutputEvent & value) { FOnCaptureOutput = value; }
   TDateTime GetLastDataSent() { return FLastDataSent; }
   UnicodeString GetLastTunnelError() { return FLastTunnelError; }
   UnicodeString GetUserName() { return FUserName; }

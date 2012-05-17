@@ -1298,7 +1298,7 @@ class TSFTPAsynchronousQueue : public TSFTPQueue
 public:
   explicit /* __fastcall */ TSFTPAsynchronousQueue(TSFTPFileSystem * AFileSystem, unsigned int codePage) : TSFTPQueue(AFileSystem, codePage)
   {
-    FFileSystem->FSecureShell->RegisterReceiveHandler(boost::bind(&TSFTPAsynchronousQueue::ReceiveHandler, this, _1));
+    FFileSystem->FSecureShell->RegisterReceiveHandler(fastdelegate::bind(&TSFTPAsynchronousQueue::ReceiveHandler, this, _1));
     FReceiveHandlerRegistered = true;
   }
 
@@ -1345,7 +1345,7 @@ protected:
     if (FReceiveHandlerRegistered)
     {
       FReceiveHandlerRegistered = false;
-      FFileSystem->FSecureShell->UnregisterReceiveHandler(boost::bind(&TSFTPAsynchronousQueue::ReceiveHandler, this, _1));
+      FFileSystem->FSecureShell->UnregisterReceiveHandler(fastdelegate::bind(&TSFTPAsynchronousQueue::ReceiveHandler, this, _1));
     }
   }
 
@@ -3408,7 +3408,7 @@ void __fastcall TSFTPFileSystem::DeleteFile(const UnicodeString FileName,
     {
       try
       {
-        FTerminal->ProcessDirectory(FileName, boost::bind(&TTerminal::DeleteFile, FTerminal, _1, _2, _3), &Params);
+        FTerminal->ProcessDirectory(FileName, fastdelegate::bind(&TTerminal::DeleteFile, FTerminal, _1, _2, _3), &Params);
       }
       catch(...)
       {
@@ -3513,7 +3513,7 @@ void __fastcall TSFTPFileSystem::ChangeFileProperties(const UnicodeString FileNa
     {
       try
       {
-        FTerminal->ProcessDirectory(FileName, boost::bind(&TTerminal::ChangeFileProperties, FTerminal, _1, _2, _3),
+        FTerminal->ProcessDirectory(FileName, fastdelegate::bind(&TTerminal::ChangeFileProperties, FTerminal, _1, _2, _3),
           static_cast<void *>(const_cast<TRemoteProperties *>(AProperties)));
       }
       catch(...)
@@ -3561,10 +3561,10 @@ bool __fastcall TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
   {
     TFileOperationProgressEvent sig1;
     TFileOperationFinishedEvent sig2;
-    sig1.connect(boost::bind(&TTerminal::DoProgress, FTerminal, _1, _2));
-    sig2.connect(boost::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6));
+    sig1 = fastdelegate::bind(&TTerminal::DoProgress, FTerminal, _1, _2);
+    sig2 = fastdelegate::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6);
     TFileOperationProgressType Progress(&sig1, &sig2);
-    // TFileOperationProgressType Progress(boost::bind(&TTerminal::DoProgress, FTerminal, _1, _2), boost::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6));
+    // TFileOperationProgressType Progress(fastdelegate::bind(&TTerminal::DoProgress, FTerminal, _1, _2), fastdelegate::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6));
     Progress.Start(foGetProperties, osRemote, FileList->GetCount());
 
     FTerminal->FOperationProgress = &Progress;
@@ -3706,7 +3706,7 @@ void __fastcall TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & 
       TCalculatedChecksumEvent sig;
       if (true) // OnCalculatedChecksum)
       {
-        sig.connect(OnCalculatedChecksum);
+        sig = OnCalculatedChecksum;
       }
       do
       {
@@ -3784,10 +3784,10 @@ void __fastcall TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Al
 {
   TFileOperationProgressEvent sig1;
   TFileOperationFinishedEvent sig2;
-  sig1.connect(boost::bind(&TTerminal::DoProgress, FTerminal, _1, _2));
-  sig2.connect(boost::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6));
+  sig = fastdelegate::bind(&TTerminal::DoProgress, FTerminal, _1, _2);
+  sig2 = fastdelegate::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6);
   TFileOperationProgressType Progress(&sig1, &sig2);
-  // TFileOperationProgressType Progress(boost::bind(&TTerminal::DoProgress, FTerminal, _1, _2), boost::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6));
+  // TFileOperationProgressType Progress(fastdelegate::bind(&TTerminal::DoProgress, FTerminal, _1, _2), fastdelegate::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6));
   Progress.Start(foCalculateChecksum, osRemote, FileList->GetCount());
 
   FTerminal->FOperationProgress = &Progress;
@@ -4371,7 +4371,7 @@ void __fastcall TSFTPFileSystem::SFTPSource(const UnicodeString FileName,
       OpenParams.Confirmed = false;
 
       FTerminal->LogEvent(L"Opening remote file.");
-      FTerminal->FileOperationLoop(boost::bind(&TSFTPFileSystem::SFTPOpenRemote, this, _1, _2), OperationProgress, true,
+      FTerminal->FileOperationLoop(fastdelegate::bind(&TSFTPFileSystem::SFTPOpenRemote, this, _1, _2), OperationProgress, true,
         FMTLOAD(SFTP_CREATE_FILE_ERROR, OpenParams.RemoteFileName.c_str()),
         &OpenParams);
 
@@ -5172,7 +5172,7 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
       SinkFileParams.Skipped = false;
       SinkFileParams.Flags = Flags & ~tfFirstLevel;
 
-      FTerminal->ProcessDirectory(FileName, boost::bind(&TSFTPFileSystem::SFTPSinkFile, this, _1, _2, _3), &SinkFileParams);
+      FTerminal->ProcessDirectory(FileName, fastdelegate::bind(&TSFTPFileSystem::SFTPSinkFile, this, _1, _2, _3), &SinkFileParams);
 
       // Do not delete directory if some of its files were skip.
       // Throw "skip file" for the directory to avoid attempt to deletion

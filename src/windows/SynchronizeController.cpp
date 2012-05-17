@@ -29,9 +29,9 @@
   TSynchronizeEvent AOnSynchronize, TSynchronizeInvalidEvent AOnSynchronizeInvalid,
   TSynchronizeTooManyDirectoriesEvent AOnTooManyDirectories)
 {
-  FOnSynchronize.connect(AOnSynchronize);
-  FOnSynchronizeInvalid.connect(AOnSynchronizeInvalid);
-  FOnTooManyDirectories.connect(AOnTooManyDirectories);
+  FOnSynchronize = AOnSynchronize;
+  FOnSynchronizeInvalid = AOnSynchronizeInvalid;
+  FOnTooManyDirectories = AOnTooManyDirectories;
   // FSynchronizeMonitor = NULL;
   // FSynchronizeAbort = NULL;
   // FSynchronizeLog = NULL;
@@ -56,7 +56,7 @@ void /* __fastcall */ TSynchronizeController::StartStop(TObject * Sender,
     try
     {
       // assert(OnSynchronizeLog != NULL);
-      FSynchronizeLog.connect(OnSynchronizeLog);
+      FSynchronizeLog = OnSynchronizeLog;
       assert(!FSynchronizeLog.empty());
 
       FOptions = Options;
@@ -72,7 +72,7 @@ void /* __fastcall */ TSynchronizeController::StartStop(TObject * Sender,
       FSynchronizeParams = Params;
 
       // assert(OnAbort);
-      FSynchronizeAbort.connect(OnAbort);
+      FSynchronizeAbort = OnAbort;
 
       if (FLAGSET(FSynchronizeParams.Options, soRecurse))
       {

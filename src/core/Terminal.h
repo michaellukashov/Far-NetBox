@@ -85,17 +85,17 @@ typedef fastdelegate::FastDelegate3<void,
   const UnicodeString /* FileName */, const TRemoteFile * /* File */, void * /* Param */> TProcessFileEvent;
 typedef fastdelegate::FastDelegate4<void,
   const UnicodeString /* FileName */, const TRemoteFile * /* File */, void * /* Param */, int /* Index */> TProcessFileEventExEvent;
-typedef fastdelegate::FastDelegate2<int, void * /* Param1 */, void * /* Param2 */> TFileOperationEvent;
-typedef TFileOperationEvent::slot_type TFileOperationEvent;
-typedef fastdelegate::FastDelegate4<void, const UnicodeString /* LocalDirectory */, const UnicodeString /* RemoteDirectory */,
-   bool & /* Continue */, bool /* Collect */> TSynchronizeDirectoryEvent;
-typedef TSynchronizeDirectoryEvent::slot_type TSynchronizeDirectoryEvent;
-typedef fastdelegate::FastDelegate2<void, const UnicodeString /* FileName */, bool /* Alternative */> TDeleteLocalFileEvent;
-typedef TDeleteLocalFileEvent::slot_type TDeleteLocalFileEvent;
-typedef fastdelegate::FastDelegate3<int, TTerminal * /* Terminal */, const UnicodeString /* Directory */, bool /* SubDirs */> TDirectoryModifiedEvent;
-typedef TDirectoryModifiedEvent::slot_type TDirectoryModifiedEvent;
-typedef fastdelegate::FastDelegate4<void, TTerminal * /* Terminal */, const UnicodeString & /* Str */, bool /* Status */, int /* Phase */> TInformationEvent;
-typedef TInformationEvent::slot_type TInformationEvent;
+typedef fastdelegate::FastDelegate2<int,
+  void * /* Param1 */, void * /* Param2 */> TFileOperationEvent;
+typedef fastdelegate::FastDelegate4<void,
+  const UnicodeString /* LocalDirectory */, const UnicodeString /* RemoteDirectory */,
+  bool & /* Continue */, bool /* Collect */> TSynchronizeDirectoryEvent;
+typedef fastdelegate::FastDelegate2<void,
+  const UnicodeString /* FileName */, bool /* Alternative */> TDeleteLocalFileEvent;
+typedef fastdelegate::FastDelegate3<int,
+  TTerminal * /* Terminal */, const UnicodeString /* Directory */, bool /* SubDirs */> TDirectoryModifiedEvent;
+typedef fastdelegate::FastDelegate4<void,
+  TTerminal * /* Terminal */, const UnicodeString & /* Str */, bool /* Status */, int /* Phase */> TInformationEvent;
 #endif
 //---------------------------------------------------------------------------
 #define SUSPEND_OPERATION(Command)                            \
@@ -563,36 +563,36 @@ public:
   TSessionStatus __fastcall GetStatus() { return FStatus; }
   TRemoteDirectory * GetFiles() { return FFiles; }
   TNotifyEvent & GetOnChangeDirectory() { return FOnChangeDirectory; }
-  void SetOnChangeDirectory(const TNotifyEvent &value) { FOnChangeDirectory.connect(value); }
+  void SetOnChangeDirectory(TNotifyEvent value) { FOnChangeDirectory value; }
   TReadDirectoryEvent & GetOnReadDirectory() { return FOnReadDirectory; }
-  void SetOnReadDirectory(const TReadDirectoryEvent &value) { FOnReadDirectory.connect(value); }
+  void SetOnReadDirectory(TReadDirectoryEvent value) { FOnReadDirectory value; }
   TNotifyEvent & GetOnStartReadDirectory() { return FOnStartReadDirectory; }
-  void SetOnStartReadDirectory(const TNotifyEvent &value) { FOnStartReadDirectory.connect(value); }
+  void SetOnStartReadDirectory(TNotifyEvent value) { FOnStartReadDirectory value; }
   TReadDirectoryProgressEvent & GetOnReadDirectoryProgress() { return FOnReadDirectoryProgress; }
-  void SetOnReadDirectoryProgress(const TReadDirectoryProgressEvent &value) { FOnReadDirectoryProgress.connect(value); }
+  void SetOnReadDirectoryProgress(TReadDirectoryProgressEvent value) { FOnReadDirectoryProgress = value; }
   TDeleteLocalFileEvent & GetOnDeleteLocalFile() { return FOnDeleteLocalFile; }
-  void SetOnDeleteLocalFile(const TDeleteLocalFileEvent & value) { FOnDeleteLocalFile.connect(value); }
+  void SetOnDeleteLocalFile(TDeleteLocalFileEvent value) { FOnDeleteLocalFile = value; }
   TFileOperationProgressEvent & GetOnProgress() { return FOnProgress; }
-  void SetOnProgress(const TFileOperationProgressEvent & value) { FOnProgress.connect(value); }
+  void SetOnProgress(TFileOperationProgressEvent value) { FOnProgress = value; }
   TFileOperationFinishedEvent & GetOnFinished() { return FOnFinished; }
-  void SetOnFinished(const TFileOperationFinishedEvent & value) { FOnFinished.connect(value); }
+  void SetOnFinished(TFileOperationFinishedEvent value) { FOnFinished = value; }
   TCurrentFSProtocol GetFSProtocol() { return FFSProtocol; }
   bool GetUseBusyCursor() { return FUseBusyCursor; }
   void SetUseBusyCursor(bool value) { FUseBusyCursor = value; }
   bool GetAutoReadDirectory() { return FAutoReadDirectory; }
   void SetAutoReadDirectory(bool value) { FAutoReadDirectory = value; }
   TQueryUserEvent & GetOnQueryUser() { return FOnQueryUser; }
-  void SetOnQueryUser(const TQueryUserEvent & value) { FOnQueryUser.connect(value); }
+  void SetOnQueryUser(TQueryUserEvent value) { FOnQueryUser = value; }
   TPromptUserEvent & GetOnPromptUser() { return FOnPromptUser; }
-  void SetOnPromptUser(const TPromptUserEvent & value) { FOnPromptUser.connect(value); }
+  void SetOnPromptUser(TPromptUserEvent value) { FOnPromptUser = value; }
   TDisplayBannerEvent & GetOnDisplayBanner() { return FOnDisplayBanner; }
-  void SetOnDisplayBanner(const TDisplayBannerEvent & value) { FOnDisplayBanner.connect(value); }
+  void SetOnDisplayBanner(TDisplayBannerEvent value) { FOnDisplayBanner = value; }
   TExtendedExceptionEvent & GetOnShowExtendedException() { return FOnShowExtendedException; }
-  void SetOnShowExtendedException(const TExtendedExceptionEvent & value) { FOnShowExtendedException.connect(value); }
+  void SetOnShowExtendedException(TExtendedExceptionEvent value) { FOnShowExtendedException = value; }
   TInformationEvent & GetOnInformation() { return FOnInformation; }
-  void SetOnInformation(const TInformationEvent & value) { FOnInformation.connect(value); }
+  void SetOnInformation(TInformationEvent value) { FOnInformation = value; }
   TNotifyEvent & GetOnClose() { return FOnClose; }
-  void SetOnClose(const TNotifyEvent & value) { FOnClose.connect(value); }
+  void SetOnClose(TNotifyEvent value) { FOnClose = value; }
   size_t GetTunnelLocalPortNumber() { return FTunnelLocalPortNumber; }
 #endif
 private:

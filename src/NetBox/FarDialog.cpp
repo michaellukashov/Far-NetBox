@@ -802,15 +802,14 @@ void __fastcall TFarDialog::BreakSynchronize()
   SetEvent(FSynchronizeObjects[1]);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarDialog::Synchronize(const TThreadMethodEvent & slot)
+void __fastcall TFarDialog::Synchronize(TThreadMethodEvent Event)
 {
   if (FSynchronizeObjects[0] == INVALID_HANDLE_VALUE)
   {
     FSynchronizeObjects[0] = CreateSemaphore(NULL, 0, 2, NULL);
     FSynchronizeObjects[1] = CreateEvent(NULL, false, false, NULL);
   }
-  FSynchronizeMethod.disconnect_all_slots();
-  FSynchronizeMethod.connect(slot);
+  FSynchronizeMethod = Event;
   FNeedsSynchronize = true;
   WaitForMultipleObjects(LENOF(FSynchronizeObjects),
                          reinterpret_cast<HANDLE *>(&FSynchronizeObjects), false, INFINITE);
@@ -881,12 +880,12 @@ void __fastcall TFarDialog::Redraw()
 //---------------------------------------------------------------------------
 void __fastcall TFarDialog::ShowGroup(int Group, bool Show)
 {
-  ProcessGroup(Group, boost::bind(&TFarDialog::ShowItem, this, _1, _2), &Show);
+  ProcessGroup(Group, fastdelegate::bind(&TFarDialog::ShowItem, this, _1, _2), &Show);
 }
 //---------------------------------------------------------------------------
 void __fastcall TFarDialog::EnableGroup(int Group, bool Enable)
 {
-  ProcessGroup(Group, boost::bind(&TFarDialog::EnableItem, this, _1, _2), &Enable);
+  ProcessGroup(Group, fastdelegate::bind(&TFarDialog::EnableItem, this, _1, _2), &Enable);
 }
 //---------------------------------------------------------------------------
 void __fastcall TFarDialog::ProcessGroup(int Group, const TFarProcessGroupEvent & Callback,
@@ -899,14 +898,12 @@ void __fastcall TFarDialog::ProcessGroup(int Group, const TFarProcessGroupEvent 
     {
       Self->UnlockChanges();
     } BOOST_SCOPE_EXIT_END
-    TFarProcessGroupEvent processgroupevent;
-    processgroupevent.connect(Callback);
     for (int i = 0; i < GetItemCount(); i++)
     {
       TFarDialogItem * I = GetItem(i);
       if (I->GetGroup() == Group)
       {
-        processgroupevent(I, Arg);
+        Callback(I, Arg);
       }
     }
   }
@@ -2602,7 +2599,7 @@ void __fastcall TFarComboBox::Init()
   FItems(new TStringList()),
   FTopIndex(0)
 {
-  FItems->SetOnChange(boost::bind(&TFarLister::ItemsChange, this, _1));
+  FItems->SetOnChange(fastdelegate::bind(&TFarLister::ItemsChange, this, _1));
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TFarLister::~TFarLister()

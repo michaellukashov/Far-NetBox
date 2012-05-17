@@ -918,7 +918,7 @@ void /* __fastcall */ TWebDAVFileSystem::CustomCommandOnFile(const UnicodeString
   if (Dir && (Params & ccRecursive))
   {
     TCustomCommandParams AParams(Command, Params, OutputEvent);
-    FTerminal->ProcessDirectory(FileName, boost::bind(&TTerminal::CustomCommandOnFile, FTerminal, _1, _2, _3),
+    FTerminal->ProcessDirectory(FileName, fastdelegate::bind(&TTerminal::CustomCommandOnFile, FTerminal, _1, _2, _3),
                                 &AParams);
   }
 
@@ -1446,7 +1446,7 @@ void __fastcall TWebDAVFileSystem::Sink(const UnicodeString FileName,
       SinkFileParams.Skipped = false;
       SinkFileParams.Flags = Flags & ~(tfFirstLevel | tfAutoResume);
 
-      FTerminal->ProcessDirectory(FileName, boost::bind(&TWebDAVFileSystem::SinkFile, this, _1, _2, _3), &SinkFileParams);
+      FTerminal->ProcessDirectory(FileName, fastdelegate::bind(&TWebDAVFileSystem::SinkFile, this, _1, _2, _3), &SinkFileParams);
 
       // Do not delete directory if some of its files were skip.
       // Throw "skip file" for the directory to avoid __fastcall attempt to deletion

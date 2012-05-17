@@ -1196,11 +1196,11 @@ void __fastcall TTerminalItem::Init(int Index)
   try
   {
     FTerminal->SetUseBusyCursor(false);
-    FTerminal->SetOnQueryUser(boost::bind(&TTerminalItem::TerminalQueryUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
-    FTerminal->SetOnPromptUser(boost::bind(&TTerminalItem::TerminalPromptUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
-    FTerminal->SetOnShowExtendedException(boost::bind(&TTerminalItem::TerminalShowExtendedException, this, _1, _2, _3));
-    FTerminal->SetOnProgress(boost::bind(&TTerminalItem::OperationProgress, this, _1, _2));
-    FTerminal->SetOnFinished(boost::bind(&TTerminalItem::OperationFinished, this, _1, _2, _3, _4, _5, _6));
+    FTerminal->SetOnQueryUser(fastdelegate::bind(&TTerminalItem::TerminalQueryUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
+    FTerminal->SetOnPromptUser(fastdelegate::bind(&TTerminalItem::TerminalPromptUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
+    FTerminal->SetOnShowExtendedException(fastdelegate::bind(&TTerminalItem::TerminalShowExtendedException, this, _1, _2, _3));
+    FTerminal->SetOnProgress(fastdelegate::bind(&TTerminalItem::OperationProgress, this, _1, _2));
+    FTerminal->SetOnFinished(fastdelegate::bind(&TTerminalItem::OperationFinished, this, _1, _2, _3, _4, _5, _6));
   }
   catch(...)
   {
@@ -2113,15 +2113,15 @@ void __fastcall TTerminalThread::Init()
   FOnStartReadDirectory = &FTerminal->GetOnStartReadDirectory();
   FOnReadDirectoryProgress = &FTerminal->GetOnReadDirectoryProgress();
 
-  FTerminal->SetOnInformation(boost::bind(&TTerminalThread::TerminalInformation, this, _1, _2, _3, _4));
-  FTerminal->SetOnQueryUser(boost::bind(&TTerminalThread::TerminalQueryUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
-  FTerminal->SetOnPromptUser(boost::bind(&TTerminalThread::TerminalPromptUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
-  FTerminal->SetOnShowExtendedException(boost::bind(&TTerminalThread::TerminalShowExtendedException, this, _1, _2, _3));
-  FTerminal->SetOnDisplayBanner(boost::bind(&TTerminalThread::TerminalDisplayBanner, this, _1, _2, _3, _4, _5));
-  FTerminal->SetOnChangeDirectory(boost::bind(&TTerminalThread::TerminalChangeDirectory, this, _1));
-  FTerminal->SetOnReadDirectory(boost::bind(&TTerminalThread::TerminalReadDirectory, this, _1, _2));
-  FTerminal->SetOnStartReadDirectory(boost::bind(&TTerminalThread::TerminalStartReadDirectory, this, _1));
-  FTerminal->SetOnReadDirectoryProgress(boost::bind(&TTerminalThread::TerminalReadDirectoryProgress, this, _1, _2, _3));
+  FTerminal->SetOnInformation(fastdelegate::bind(&TTerminalThread::TerminalInformation, this, _1, _2, _3, _4));
+  FTerminal->SetOnQueryUser(fastdelegate::bind(&TTerminalThread::TerminalQueryUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
+  FTerminal->SetOnPromptUser(fastdelegate::bind(&TTerminalThread::TerminalPromptUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
+  FTerminal->SetOnShowExtendedException(fastdelegate::bind(&TTerminalThread::TerminalShowExtendedException, this, _1, _2, _3));
+  FTerminal->SetOnDisplayBanner(fastdelegate::bind(&TTerminalThread::TerminalDisplayBanner, this, _1, _2, _3, _4, _5));
+  FTerminal->SetOnChangeDirectory(fastdelegate::bind(&TTerminalThread::TerminalChangeDirectory, this, _1));
+  FTerminal->SetOnReadDirectory(fastdelegate::bind(&TTerminalThread::TerminalReadDirectory, this, _1, _2));
+  FTerminal->SetOnStartReadDirectory(fastdelegate::bind(&TTerminalThread::TerminalStartReadDirectory, this, _1));
+  FTerminal->SetOnReadDirectoryProgress(fastdelegate::bind(&TTerminalThread::TerminalReadDirectoryProgress, this, _1, _2, _3));
 
   Start();
 }
@@ -2154,15 +2154,15 @@ void __fastcall TTerminalThread::Init()
   FTerminal->OnReadDirectoryProgress = FOnReadDirectoryProgress;
 #else
 /*
-  assert(FTerminal->GetOnInformation().equal(boost::bind(&TTerminalThread::TerminalInformation, this, _1, _2, _3, _4)));
-  assert(FTerminal->GetOnQueryUser() == boost::bind(&TTerminalThread::TerminalQueryUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
-  assert(FTerminal->GetOnPromptUser() == boost::bind(&TTerminalThread::TerminalPromptUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
-  assert(FTerminal->GetOnShowExtendedException() == boost::bind(&TTerminalThread::TerminalShowExtendedException, this, _1, _2, _3));
-  assert(FTerminal->GetOnDisplayBanner() == boost::bind(&TTerminalThread::TerminalDisplayBanner, this, _1, _2, _3, _4, _5));
-  assert(FTerminal->GetOnChangeDirectory() == boost::bind(&TTerminalThread::TerminalChangeDirectory, this, _1));
-  assert(FTerminal->GetOnReadDirectory() == boost::bind(&TTerminalThread::TerminalReadDirectory, this, _1, _2));
-  assert(FTerminal->GetOnStartReadDirectory() == boost::bind(&TTerminalThread::TerminalStartReadDirectory, this, _1));
-  assert(FTerminal->GetOnReadDirectoryProgress() == boost::bind(&TTerminalThread::TerminalReadDirectoryProgress, this, _1, _2, _3));
+  assert(FTerminal->GetOnInformation().equal(fastdelegate::bind(&TTerminalThread::TerminalInformation, this, _1, _2, _3, _4)));
+  assert(FTerminal->GetOnQueryUser() == fastdelegate::bind(&TTerminalThread::TerminalQueryUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
+  assert(FTerminal->GetOnPromptUser() == fastdelegate::bind(&TTerminalThread::TerminalPromptUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
+  assert(FTerminal->GetOnShowExtendedException() == fastdelegate::bind(&TTerminalThread::TerminalShowExtendedException, this, _1, _2, _3));
+  assert(FTerminal->GetOnDisplayBanner() == fastdelegate::bind(&TTerminalThread::TerminalDisplayBanner, this, _1, _2, _3, _4, _5));
+  assert(FTerminal->GetOnChangeDirectory() == fastdelegate::bind(&TTerminalThread::TerminalChangeDirectory, this, _1));
+  assert(FTerminal->GetOnReadDirectory() == fastdelegate::bind(&TTerminalThread::TerminalReadDirectory, this, _1, _2));
+  assert(FTerminal->GetOnStartReadDirectory() == fastdelegate::bind(&TTerminalThread::TerminalStartReadDirectory, this, _1));
+  assert(FTerminal->GetOnReadDirectoryProgress() == fastdelegate::bind(&TTerminalThread::TerminalReadDirectoryProgress, this, _1, _2, _3));
 */
   FTerminal->SetOnInformation(*FOnInformation);
   FTerminal->SetOnQueryUser(*FOnQueryUser);
@@ -2199,12 +2199,12 @@ void __fastcall TTerminalThread::Idle()
 //---------------------------------------------------------------------------
 void __fastcall TTerminalThread::TerminalOpen()
 {
-  RunAction(boost::bind(&TTerminalThread::TerminalOpenEvent, this, _1));
+  RunAction(fastdelegate::bind(&TTerminalThread::TerminalOpenEvent, this, _1));
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminalThread::TerminalReopen()
 {
-  RunAction(boost::bind(&TTerminalThread::TerminalReopenEvent, this, _1));
+  RunAction(fastdelegate::bind(&TTerminalThread::TerminalReopenEvent, this, _1));
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
@@ -2215,7 +2215,7 @@ void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
   // assert(FOnIdle != NULL);
 
   FCancelled = false;
-  FAction.connect(Action);
+  FAction = Action;
   try
   {
     // try

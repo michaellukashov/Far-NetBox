@@ -849,7 +849,7 @@ void __fastcall TFarMessageDialog::Init(unsigned int AFlags,
       Button = new TFarButton(this);
       Button->SetDefault(Index == 0);
       Button->SetBrackets(brNone);
-      Button->SetOnClick(boost::bind(&TFarMessageDialog::ButtonClick, this, _1, _2));
+      Button->SetOnClick(fastdelegate::bind(&TFarMessageDialog::ButtonClick, this, _1, _2));
       UnicodeString Caption = Buttons->GetStrings(Index);
       if ((FParams->Timeout > 0) &&
           (FParams->TimeoutButton == Index))
@@ -1262,7 +1262,7 @@ bool __fastcall TCustomFarPlugin::InputBox(const UnicodeString Title,
   TFarInputBoxValidateEvent sig;
   if (OnValidate)
   {
-    sig.connect(*OnValidate);
+    sig = *OnValidate;
   }
   do
   {

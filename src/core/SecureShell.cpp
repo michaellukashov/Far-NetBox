@@ -685,7 +685,7 @@ void __fastcall TSecureShell::CWrite(const char * Data, int Length)
 void __fastcall TSecureShell::RegisterReceiveHandler(const TNotifyEvent & Handler)
 {
   assert(FOnReceive.empty());
-  FOnReceive.connect(Handler);
+  FOnReceive = Handler;
 }
 //---------------------------------------------------------------------------
 void __fastcall TSecureShell::UnregisterReceiveHandler(const TNotifyEvent & Handler)
@@ -1443,7 +1443,7 @@ void __fastcall TSecureShell::WaitForData()
       TPoolForDataEvent Event(this, Events);
 
       LogEvent(L"Waiting for data timed out, asking user what to do.");
-      TQueryParamsTimerEvent slot = boost::bind(&TPoolForDataEvent::PoolForData, &Event, _1);
+      TQueryParamsTimerEvent slot = fastdelegate::bind(&TPoolForDataEvent::PoolForData, &Event, _1);
       unsigned int Answer = TimeoutPrompt(&slot);
       switch (Answer)
       {
@@ -1893,7 +1893,7 @@ void __fastcall TSecureShell::VerifyHostKey(UnicodeString Host, int Port,
       TQueryButtonAlias Aliases[3];
       Aliases[0].Button = qaRetry;
       Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);
-      Aliases[0].OnClick.connect(boost::bind(&TClipboardHandler::Copy, ClipboardHandler, _1));
+      Aliases[0].OnClick = fastdelegate::bind(&TClipboardHandler::Copy, ClipboardHandler, _1);
       Answers = qaYes | qaCancel | qaRetry;
       AliasesCount = 1;
       if (!Unknown)
