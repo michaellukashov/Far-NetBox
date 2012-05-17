@@ -2291,7 +2291,7 @@ UnicodeString __fastcall TSessionData::GetLocalName()
 //---------------------------------------------------------------------
 TLoginType __fastcall TSessionData::GetLoginType() const
 {
-  return (GetUserName() == CONST_LOGIN_ANONYMOUS) && GetPassword().IsEmpty() ?
+  return (GetUserName() == AnonymousUserName) && GetPassword().IsEmpty() ?
     ltAnonymous : ltNormal;
 }
 //---------------------------------------------------------------------
@@ -2301,7 +2301,7 @@ void __fastcall TSessionData::SetLoginType(TLoginType value)
   if (GetLoginType() == ltAnonymous)
   {
     SetPassword(L"");
-    SetUserName(CONST_LOGIN_ANONYMOUS);
+    SetUserName(AnonymousUserName);
   }
 }
 //---------------------------------------------------------------------

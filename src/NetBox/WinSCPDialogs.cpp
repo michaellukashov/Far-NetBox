@@ -3093,7 +3093,7 @@ void TSessionDialog::LoginTypeComboChange()
   FLoginTypeIndex = LoginTypeCombo->GetItems()->GetSelected();
   if (GetLoginType() == ltAnonymous)
   {
-    UserNameEdit->SetText(CONST_LOGIN_ANONYMOUS);
+    UserNameEdit->SetText(AnonymousUserName);
     PasswordEdit->SetText(L"");
   }
   else if (GetLoginType() == ltNormal)
@@ -3294,7 +3294,7 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
   if ((GetLoginType() == ltAnonymous))
   {
     LoginTypeCombo->GetItems()->SetSelected(0);
-    UserNameEdit->SetText(CONST_LOGIN_ANONYMOUS);
+    UserNameEdit->SetText(AnonymousUserName);
     PasswordEdit->SetText(L"");
   }
   else
