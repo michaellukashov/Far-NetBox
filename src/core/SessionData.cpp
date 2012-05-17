@@ -41,7 +41,6 @@ const int DefaultSendBuf = 262144;
 const UnicodeString AnonymousUserName(L"anonymous");
 const UnicodeString AnonymousPassword(L"anonymous@example.com");
 
-const UnicodeString CONST_LOGIN_ANONYMOUS = L"anonymous";
 const int HTTPPortNumber = 80;
 const int HTTPSPortNumber = 443;
 const unsigned int CONST_DEFAULT_CODEPAGE = CP_ACP;
@@ -63,7 +62,7 @@ void __fastcall TSessionData::Default()
 {
   SetHostName(L"");
   SetPortNumber(SshPortNumber);
-  SetUserName(CONST_LOGIN_ANONYMOUS);
+  SetUserName(L"");
   SetPassword(L"");
   SetPingInterval(30);
   // when changing default, update load/save logic
@@ -184,7 +183,6 @@ void __fastcall TSessionData::Default()
   SetSslSessionReuse(true);
 
   SetFtpProxyLogonType(0); // none
-
 
   SetCustomParam1(L"");
   SetCustomParam2(L"");
@@ -731,7 +729,6 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
     }
     else
     {
-      WRITE_DATA_EX(Integer, L"LoginType", GetLoginType(), );
       WRITE_DATA_EX(String, L"UserName", GetUserName(), );
       WRITE_DATA_EX(String, L"PublicKeyFile", GetPublicKeyFile(), );
       WRITE_DATA_EX(Integer, L"FSProtocol", GetFSProtocol(), );
