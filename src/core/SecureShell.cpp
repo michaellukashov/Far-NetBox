@@ -64,10 +64,8 @@ void __fastcall AnsiStrDispose(char * S)
   Pending = NULL;
   FBackendHandle = NULL;
   ResetConnection();
-#ifndef _MSC_VER
   FOnCaptureOutput = NULL;
   FOnReceive = NULL;
-#endif
   FConfig = new Config();
   memset(FConfig, 0, sizeof(*FConfig));
   FSocket = INVALID_SOCKET;
@@ -235,9 +233,7 @@ void __fastcall TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, b
   cfg->proxy_dns = Data->GetProxyDNS();
   cfg->even_proxy_localhost = Data->GetProxyLocalhost();
 
-#ifndef _MSC_VER
-  #pragma option push -w-eas
-#endif
+  // #pragma option push -w-eas
   // after 0.53b values were reversed, however putty still stores
   // settings to registry in same way as before
   cfg->sshbug_ignore1 = Data->GetBug(sbIgnore1);
@@ -251,9 +247,7 @@ void __fastcall TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, b
   cfg->sshbug_pksessid2 = Data->GetBug(sbPKSessID2);
   cfg->sshbug_maxpkt2 = Data->GetBug(sbMaxPkt2);
   cfg->sshbug_ignore2 = Data->GetBug(sbIgnore2);
-#ifndef _MSC_VER
-  #pragma option pop
-#endif
+  // #pragma option pop
 
   if (!Data->GetTunnelPortFwd().IsEmpty())
   {
