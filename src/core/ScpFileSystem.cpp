@@ -1401,11 +1401,10 @@ void /* __fastcall */ TSCPFileSystem::CustomCommandOnFile(const UnicodeString Fi
   bool Dir = File->GetIsDirectory() && !File->GetIsSymLink();
   if (Dir && (Params & ccRecursive))
   {
-    TCustomCommandParams AParams(Command, Params, OutputEvent);
-    // AParams.Command = Command;
-    // AParams.Params = Params;
-    // AParams.OutputEvent = OutputEvent;
-    // AParams.OutputEvent = OutputEvent;
+    TCustomCommandParams AParams;
+    AParams.Command = Command;
+    AParams.Params = Params;
+    AParams.OutputEvent = OutputEvent;
     FTerminal->ProcessDirectory(FileName, fastdelegate::bind(&TTerminal::CustomCommandOnFile, FTerminal, _1, _2, _3),
       &AParams);
   }

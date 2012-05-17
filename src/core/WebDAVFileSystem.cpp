@@ -917,17 +917,20 @@ void /* __fastcall */ TWebDAVFileSystem::CustomCommandOnFile(const UnicodeString
   bool Dir = File->GetIsDirectory() && !File->GetIsSymLink();
   if (Dir && (Params & ccRecursive))
   {
-    TCustomCommandParams AParams(Command, Params, OutputEvent);
+    TCustomCommandParams AParams;
+    AParams.Command = Command;
+    AParams.Params = Params;
+    AParams.OutputEvent = OutputEvent;
     FTerminal->ProcessDirectory(FileName, fastdelegate::bind(&TTerminal::CustomCommandOnFile, FTerminal, _1, _2, _3),
-                                &AParams);
+      &AParams);
   }
 
   if (!Dir || (Params & ccApplyToDirectories))
   {
     TCustomCommandData Data(FTerminal);
     UnicodeString Cmd = TRemoteCustomCommand(
-                          Data, FTerminal->GetCurrentDirectory(), FileName, L"").
-                        Complete(Command, true);
+      Data, FTerminal->GetCurrentDirectory(), FileName, L"").
+      Complete(Command, true);
 
   }
 }
