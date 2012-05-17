@@ -1708,9 +1708,7 @@ private:
   int FIndex;
 };
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
-#pragma warn .inl
-#endif
+// #pragma warn .inl
 //---------------------------------------------------------------------------
 class TSFTPBusy
 {
@@ -3585,8 +3583,9 @@ bool __fastcall TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
           assert((Packet.GetType() == SSH_FXP_ATTRS) || (Packet.GetType() == SSH_FXP_STATUS));
           if (Packet.GetType() == SSH_FXP_ATTRS)
           {
-            assert(File);
+            assert(File != NULL);
             Progress.SetFile(File->GetFileName());
+            assert(File != NULL);
             LoadFile(File, &Packet);
             Result = true;
             TOnceDoneOperation OnceDoneOperation;
@@ -3623,7 +3622,7 @@ void __fastcall TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & 
   TOnceDoneOperation OnceDoneOperation; // not used
 
   // recurse into subdirectories only if we have callback function
-  if (true) // OnCalculatedChecksum != NULL)
+  if (!OnCalculatedChecksum.empty())
   {
     for (int Index = 0; Index < FileList->GetCount(); Index++)
     {
@@ -3698,11 +3697,6 @@ void __fastcall TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & 
     {
       TSFTPPacket Packet(GetSessionData()->GetCodePageAsNumber());
       bool Next = false;
-      TCalculatedChecksumEvent sig;
-      if (true) // OnCalculatedChecksum)
-      {
-        sig = OnCalculatedChecksum;
-      }
       do
       {
         bool Success = false;
@@ -3729,7 +3723,7 @@ void __fastcall TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & 
 
             Alg = Packet.GetAnsiString();
             Checksum = BytesToHex(reinterpret_cast<const unsigned char*>(Packet.GetNextData(Packet.GetRemainingLength())), Packet.GetRemainingLength());
-            sig(File->GetFileName(), Alg, Checksum);
+            OnCalculatedChecksum(File->GetFileName(), Alg, Checksum);
 
             Success = true;
           }
@@ -3803,7 +3797,7 @@ void __fastcall TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Al
 //---------------------------------------------------------------------------
 void /* __fastcall */ TSFTPFileSystem::CustomCommandOnFile(const UnicodeString /* FileName */,
   const TRemoteFile * /* File */, UnicodeString /* Command */, int /* Params */,
-  TCaptureOutputEvent /* Output */)
+  TCaptureOutputEvent /* OutputEvent */)
 {
   assert(false);
 }
@@ -4974,6 +4968,7 @@ void __fastcall TSFTPFileSystem::SFTPDirectorySource(const UnicodeString Directo
           if (!FTerminal->HandleException(&E)) throw;
         );
       }
+
       FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
         FindOK = (FindNext(SearchRec) == 0);
       );
