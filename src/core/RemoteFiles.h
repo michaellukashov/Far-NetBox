@@ -122,7 +122,7 @@ private:
   int FIsHidden;
   UnicodeString FTypeName;
   TRemoteFile * Self;
-#ifndef _MSC_VER
+public:
   int __fastcall GetAttr();
   bool __fastcall GetBrokenLink();
   bool __fastcall GetIsDirectory() const;
@@ -148,7 +148,6 @@ private:
   bool __fastcall GetIsInaccesibleDirectory() const;
   UnicodeString __fastcall GetExtension();
   UnicodeString __fastcall GetUserModificationStr();
-#endif
   void __fastcall LoadTypeInfo();
 
 protected:
@@ -196,11 +195,8 @@ public:
   __property bool IsInaccesibleDirectory  = { read=GetIsInaccesibleDirectory };
   __property UnicodeString Extension  = { read=GetExtension };
 #else
-  int __fastcall GetAttr();
-  bool __fastcall GetBrokenLink();
   TRemoteFileList * __fastcall GetDirectory() const { return FDirectory; }
   void __fastcall SetDirectory(TRemoteFileList * value) { FDirectory = value; }
-  UnicodeString __fastcall GetRightsStr();
   __int64 __fastcall GetSize() const { return FSize; }
   void __fastcall SetSize(__int64 value) { FSize = value; }
   TRemoteToken __fastcall GetOwner() const { return FOwner; }
@@ -211,40 +207,18 @@ public:
   void __fastcall SetFileName(const UnicodeString value) { FFileName = value; }
   int __fastcall GetINodeBlocks() { return FINodeBlocks; };
   TDateTime __fastcall GetModification() const { return FModification; }
-  void __fastcall SetModification(const TDateTime & value);
-  UnicodeString __fastcall GetModificationStr();
-  UnicodeString __fastcall GetUserModificationStr();
   TModificationFmt __fastcall GetModificationFmt() const { return FModificationFmt; }
   void __fastcall SetModificationFmt(TModificationFmt value) { FModificationFmt = value; }
   TDateTime __fastcall GetLastAccess() const { return FLastAccess; }
   void __fastcall SetLastAccess(TDateTime value) { FLastAccess = value; }
   bool __fastcall GetIsSymLink() const { return FIsSymLink; }
-  bool __fastcall GetIsDirectory() const;
-  TRemoteFile * __fastcall GetLinkedFile();
-  void __fastcall SetLinkedFile(TRemoteFile * value);
   UnicodeString __fastcall GetLinkTo() const { return FLinkTo; }
   void __fastcall SetLinkTo(const UnicodeString value) { FLinkTo = value; }
-  UnicodeString __fastcall GetListingStr();
-  void __fastcall SetListingStr(const UnicodeString value);
   TRights * __fastcall GetRights() const { return FRights; }
-  void __fastcall SetRights(TRights * value);
   TTerminal * __fastcall GetTerminal() const { return FTerminal; }
-  void __fastcall SetTerminal(TTerminal * value);
-  wchar_t __fastcall GetType() const;
-  void __fastcall SetType(wchar_t AType);
   bool __fastcall GetSelected() { return FSelected; }
   void __fastcall SetSelected(bool value) { FSelected = value; }
-  UnicodeString __fastcall GetFullFileName() const;
   void __fastcall SetFullFileName(const UnicodeString value) { FFullFileName = value; }
-  bool __fastcall GetHaveFullFileName() const;
-  int __fastcall GetIconIndex() const;
-  UnicodeString __fastcall GetTypeName();
-  bool __fastcall GetIsHidden();
-  void __fastcall SetIsHidden(bool value);
-  bool __fastcall GetIsParentDirectory() const;
-  bool __fastcall GetIsThisDirectory() const;
-  bool __fastcall GetIsInaccesibleDirectory() const;
-  UnicodeString __fastcall GetExtension();
 #endif
 };
 //---------------------------------------------------------------------------
