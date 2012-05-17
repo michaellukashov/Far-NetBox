@@ -135,10 +135,6 @@ public:
   int __fastcall TransferProgress();
   int __fastcall OverallProgress();
   int __fastcall TotalTransferProgress();
-
-private:
-  // TFileOperationProgressType(const TFileOperationProgressType & rhs);
-  // void operator=(const TFileOperationProgressType & rhs);
 };
 //---------------------------------------------------------------------------
 class TSuspendFileOperationProgress
