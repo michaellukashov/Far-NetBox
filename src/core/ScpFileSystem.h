@@ -91,8 +91,6 @@ private:
   bool FProcessingCommand;
   int FLsFullTime;
   TCaptureOutputEvent FOnCaptureOutput;
-  bool FUtfStrings;
-  bool FUtfNever;
   TSCPFileSystem * Self;
 
   void __fastcall ClearAliases();
