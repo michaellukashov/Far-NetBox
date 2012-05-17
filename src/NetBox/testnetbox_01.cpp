@@ -26,6 +26,7 @@
 #include "FarPlugin.h"
 #include "testutils.h"
 #include "FileBuffer.h"
+#include "FastDelegate.h"
 
 using namespace boost::unit_test;
 
@@ -573,5 +574,38 @@ BOOST_FIXTURE_TEST_CASE(test25, base_fixture_t)
     CHECK_LEAKS();
 #endif
 }
+
+//------------------------------------------------------------------------------
+
+class CBaseClass {
+protected:
+	char *m_name;
+public:
+	CBaseClass(char *name) : m_name(name) {};
+	void SimpleMemberFunction(int num, char *str) {
+		printf("In SimpleMemberFunction in %s. Num=%d, str = %s\n", m_name, num, str);	}
+	int SimpleMemberFunctionReturnsInt(int num, char *str) {
+		printf("In SimpleMemberFunction in %s. Num=%d, str = %s\n", m_name, num, str); return -1;	}
+	void ConstMemberFunction(int num, char *str) const {
+		printf("In ConstMemberFunction in %s. Num=%d, str = %s\n", m_name, num, str);	}
+	virtual void SimpleVirtualFunction(int num, char *str) {
+		printf("In SimpleVirtualFunction in %s. Num=%d, str = %s\n", m_name, num, str);	}
+	static void StaticMemberFunction(int num, char *str) {
+		printf("In StaticMemberFunction. Num=%d, str =%s\n", num, str);	}
+};
+
+BOOST_FIXTURE_TEST_CASE(test26, base_fixture_t)
+{
+  typedef fastdelegate::FastDelegate2<int, int, char *> TSignal;
+  TSignal sig;
+  
+  CBaseClass a("Base A");
+  sig = fastdelegate::MakeDelegate(&a, &CBaseClass::SimpleMemberFunctionReturnsInt);
+  int result = sig(10, "abc");
+  BOOST_TEST_MESSAGE("result = " << result);
+  BOOST_CHECK(result == -1);
+}
+
+//------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()
