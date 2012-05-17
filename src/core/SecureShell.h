@@ -134,8 +134,8 @@ public:
   void __fastcall ClearStdError();
   bool __fastcall GetStoredCredentialsTried();
 
-  void __fastcall RegisterReceiveHandler(const TNotifyEvent & Handler);
-  void __fastcall UnregisterReceiveHandler(const TNotifyEvent & Handler);
+  void __fastcall RegisterReceiveHandler(TNotifyEvent Handler);
+  void __fastcall UnregisterReceiveHandler(TNotifyEvent Handler);
 
   // interface to PuTTY core
   void __fastcall UpdateSocket(SOCKET value, bool Startup);
@@ -165,8 +165,8 @@ public:
   __property bool Simple = { read = FSimple, write = FSimple };
 #else
   bool __fastcall GetActive() { return FActive; }
-  TCaptureOutputEvent & GetOnCaptureOutput() { return FOnCaptureOutput; }
-  void SetOnCaptureOutput(const TCaptureOutputEvent & value) { FOnCaptureOutput = value; }
+  TCaptureOutputEvent GetOnCaptureOutput() { return FOnCaptureOutput; }
+  void SetOnCaptureOutput(TCaptureOutputEvent value) { FOnCaptureOutput = value; }
   TDateTime GetLastDataSent() { return FLastDataSent; }
   UnicodeString GetLastTunnelError() { return FLastTunnelError; }
   UnicodeString GetUserName() { return FUserName; }

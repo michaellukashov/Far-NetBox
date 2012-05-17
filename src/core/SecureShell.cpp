@@ -682,13 +682,13 @@ void __fastcall TSecureShell::CWrite(const char * Data, int Length)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSecureShell::RegisterReceiveHandler(const TNotifyEvent & Handler)
+void __fastcall TSecureShell::RegisterReceiveHandler(TNotifyEvent Handler)
 {
   assert(FOnReceive.empty());
   FOnReceive = Handler;
 }
 //---------------------------------------------------------------------------
-void __fastcall TSecureShell::UnregisterReceiveHandler(const TNotifyEvent & Handler)
+void __fastcall TSecureShell::UnregisterReceiveHandler(TNotifyEvent Handler)
 {
   assert(!FOnReceive.empty());
   USEDPARAM(Handler);

@@ -68,13 +68,13 @@ typedef void __fastcall (__closure *TInformationEvent)
   (TTerminal * Terminal, const UnicodeString & Str, bool Status, int Phase);
 #else
 typedef fastdelegate::FastDelegate8<void,
-  TObject * /* Sender */, const UnicodeString /* Query */, TStrings * /* MoreMessages */ , unsigned int /* Answers */,
+  TObject * /* Sender */, const UnicodeString & /* Query */, TStrings * /* MoreMessages */ , unsigned int /* Answers */,
   const TQueryParams * /* Params */, unsigned int & /* Answer */, TQueryType /* QueryType */, void * /* Arg */ > TQueryUserEvent;
 typedef fastdelegate::FastDelegate8<void,
   TTerminal * /* Terminal */, TPromptKind /* Kind */, UnicodeString /* Name */, UnicodeString /* Instructions */,
   TStrings * /* Prompts */, TStrings * /* Results */, bool & /* Result */, void * /* Arg */> TPromptUserEvent;
 typedef fastdelegate::FastDelegate5<void,
-  TTerminal * /* Terminal */, UnicodeString /* SessionName */, const UnicodeString & /* Banner */,
+  TTerminal * /* Terminal */, UnicodeString & /* SessionName */, const UnicodeString & /* Banner */,
   bool & /* NeverShowAgain */, int /* Options */> TDisplayBannerEvent;
 typedef fastdelegate::FastDelegate3<void,
   TTerminal * /* Terminal */, Exception * /* E */, void * /* Arg */> TExtendedExceptionEvent;
@@ -84,11 +84,11 @@ typedef fastdelegate::FastDelegate3<void,
 typedef fastdelegate::FastDelegate3<void,
   const UnicodeString /* FileName */, const TRemoteFile * /* File */, void * /* Param */> TProcessFileEvent;
 typedef fastdelegate::FastDelegate4<void,
-  const UnicodeString /* FileName */, const TRemoteFile * /* File */, void * /* Param */, int /* Index */> TProcessFileEventExEvent;
+  const UnicodeString /* FileName */, const TRemoteFile * /* File */, void * /* Param */, int /* Index */> TProcessFileEventEx;
 typedef fastdelegate::FastDelegate2<int,
   void * /* Param1 */, void * /* Param2 */> TFileOperationEvent;
 typedef fastdelegate::FastDelegate4<void,
-  const UnicodeString /* LocalDirectory */, const UnicodeString /* RemoteDirectory */,
+  const UnicodeString & /* LocalDirectory */, const UnicodeString & /* RemoteDirectory */,
   bool & /* Continue */, bool /* Collect */> TSynchronizeDirectoryEvent;
 typedef fastdelegate::FastDelegate2<void,
   const UnicodeString /* FileName */, bool /* Alternative */> TDeleteLocalFileEvent;
@@ -307,12 +307,12 @@ protected:
   void /* __fastcall */ LookupUsersGroups();
   void /* __fastcall */ FileModified(const TRemoteFile * File,
     const UnicodeString FileName, bool ClearDirectoryChange = false);
-  int /* __fastcall */ FileOperationLoop(const TFileOperationEvent &CallBackFunc,
+  int /* __fastcall */ FileOperationLoop(TFileOperationEvent CallBackFunc,
     TFileOperationProgressType * OperationProgress, bool AllowSkip,
     const UnicodeString Message, void * Param1 = NULL, void * Param2 = NULL);
   // bool __fastcall GetIsCapable(TFSCapability Capability) const;
   bool /* __fastcall */ ProcessFiles(TStrings * FileList, TFileOperation Operation,
-    const TProcessFileEvent &ProcessFile, void * Param = NULL, TOperationSide Side = osRemote,
+    TProcessFileEvent ProcessFile, void * Param = NULL, TOperationSide Side = osRemote,
     bool Ex = false);
   bool __fastcall ProcessFilesEx(TStrings * FileList, TFileOperation Operation,
     TProcessFileEventEx ProcessFile, void * Param = NULL, TOperationSide Side = osRemote);
@@ -350,7 +350,7 @@ protected:
   void /* __fastcall */ DoSynchronizeCollectDirectory(const UnicodeString LocalDirectory,
     const UnicodeString RemoteDirectory, TSynchronizeMode Mode,
     const TCopyParamType * CopyParam, int Params,
-    const TSynchronizeDirectoryEvent & OnSynchronizeDirectory,
+    TSynchronizeDirectoryEvent OnSynchronizeDirectory,
     TSynchronizeOptions * Options, int Level, TSynchronizeChecklist * Checklist);
   void /* __fastcall */ SynchronizeCollectFile(const UnicodeString FileName,
     const TRemoteFile * File, /*TSynchronizeData*/ void * Param);
@@ -484,11 +484,11 @@ public:
   TSynchronizeChecklist * __fastcall SynchronizeCollect(const UnicodeString LocalDirectory,
     const UnicodeString RemoteDirectory, TSynchronizeMode Mode,
     const TCopyParamType * CopyParam, int Params,
-    const TSynchronizeDirectoryEvent & OnSynchronizeDirectory, TSynchronizeOptions * Options);
+    TSynchronizeDirectoryEvent OnSynchronizeDirectory, TSynchronizeOptions * Options);
   void __fastcall SynchronizeApply(TSynchronizeChecklist * Checklist,
     const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
     const TCopyParamType * CopyParam, int Params,
-    const TSynchronizeDirectoryEvent & OnSynchronizeDirectory);
+    TSynchronizeDirectoryEvent OnSynchronizeDirectory);
   void __fastcall FilesFind(UnicodeString Directory, const TFileMasks & FileMask,
     TFileFoundEvent OnFileFound, TFindingFileEvent OnFindingFile);
   void __fastcall SpaceAvailable(const UnicodeString Path, TSpaceAvailable & ASpaceAvailable);
@@ -562,36 +562,36 @@ public:
   TConfiguration *__fastcall GetConfiguration() { return FConfiguration; }
   TSessionStatus __fastcall GetStatus() { return FStatus; }
   TRemoteDirectory * GetFiles() { return FFiles; }
-  TNotifyEvent & GetOnChangeDirectory() { return FOnChangeDirectory; }
-  void SetOnChangeDirectory(TNotifyEvent value) { FOnChangeDirectory value; }
-  TReadDirectoryEvent & GetOnReadDirectory() { return FOnReadDirectory; }
-  void SetOnReadDirectory(TReadDirectoryEvent value) { FOnReadDirectory value; }
-  TNotifyEvent & GetOnStartReadDirectory() { return FOnStartReadDirectory; }
-  void SetOnStartReadDirectory(TNotifyEvent value) { FOnStartReadDirectory value; }
-  TReadDirectoryProgressEvent & GetOnReadDirectoryProgress() { return FOnReadDirectoryProgress; }
+  TNotifyEvent GetOnChangeDirectory() { return FOnChangeDirectory; }
+  void SetOnChangeDirectory(TNotifyEvent value) { FOnChangeDirectory = value; }
+  TReadDirectoryEvent GetOnReadDirectory() { return FOnReadDirectory; }
+  void SetOnReadDirectory(TReadDirectoryEvent value) { FOnReadDirectory = value; }
+  TNotifyEvent GetOnStartReadDirectory() { return FOnStartReadDirectory; }
+  void SetOnStartReadDirectory(TNotifyEvent value) { FOnStartReadDirectory = value; }
+  TReadDirectoryProgressEvent GetOnReadDirectoryProgress() { return FOnReadDirectoryProgress; }
   void SetOnReadDirectoryProgress(TReadDirectoryProgressEvent value) { FOnReadDirectoryProgress = value; }
-  TDeleteLocalFileEvent & GetOnDeleteLocalFile() { return FOnDeleteLocalFile; }
+  TDeleteLocalFileEvent GetOnDeleteLocalFile() { return FOnDeleteLocalFile; }
   void SetOnDeleteLocalFile(TDeleteLocalFileEvent value) { FOnDeleteLocalFile = value; }
-  TFileOperationProgressEvent & GetOnProgress() { return FOnProgress; }
+  TFileOperationProgressEvent GetOnProgress() { return FOnProgress; }
   void SetOnProgress(TFileOperationProgressEvent value) { FOnProgress = value; }
-  TFileOperationFinishedEvent & GetOnFinished() { return FOnFinished; }
+  TFileOperationFinishedEvent GetOnFinished() { return FOnFinished; }
   void SetOnFinished(TFileOperationFinishedEvent value) { FOnFinished = value; }
   TCurrentFSProtocol GetFSProtocol() { return FFSProtocol; }
   bool GetUseBusyCursor() { return FUseBusyCursor; }
   void SetUseBusyCursor(bool value) { FUseBusyCursor = value; }
   bool GetAutoReadDirectory() { return FAutoReadDirectory; }
   void SetAutoReadDirectory(bool value) { FAutoReadDirectory = value; }
-  TQueryUserEvent & GetOnQueryUser() { return FOnQueryUser; }
+  TQueryUserEvent GetOnQueryUser() { return FOnQueryUser; }
   void SetOnQueryUser(TQueryUserEvent value) { FOnQueryUser = value; }
-  TPromptUserEvent & GetOnPromptUser() { return FOnPromptUser; }
+  TPromptUserEvent GetOnPromptUser() { return FOnPromptUser; }
   void SetOnPromptUser(TPromptUserEvent value) { FOnPromptUser = value; }
-  TDisplayBannerEvent & GetOnDisplayBanner() { return FOnDisplayBanner; }
+  TDisplayBannerEvent GetOnDisplayBanner() { return FOnDisplayBanner; }
   void SetOnDisplayBanner(TDisplayBannerEvent value) { FOnDisplayBanner = value; }
-  TExtendedExceptionEvent & GetOnShowExtendedException() { return FOnShowExtendedException; }
+  TExtendedExceptionEvent GetOnShowExtendedException() { return FOnShowExtendedException; }
   void SetOnShowExtendedException(TExtendedExceptionEvent value) { FOnShowExtendedException = value; }
-  TInformationEvent & GetOnInformation() { return FOnInformation; }
+  TInformationEvent GetOnInformation() { return FOnInformation; }
   void SetOnInformation(TInformationEvent value) { FOnInformation = value; }
-  TNotifyEvent & GetOnClose() { return FOnClose; }
+  TNotifyEvent GetOnClose() { return FOnClose; }
   void SetOnClose(TNotifyEvent value) { FOnClose = value; }
   size_t GetTunnelLocalPortNumber() { return FTunnelLocalPortNumber; }
 #endif

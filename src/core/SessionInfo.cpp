@@ -765,7 +765,7 @@ void /* __fastcall */ TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeS
 //---------------------------------------------------------------------------
 void __fastcall TSessionLog::DoAdd(TLogLineType Type, UnicodeString Line,
   // void __fastcall (__closure *f)(TLogLineType Type, const UnicodeString & Line))
-  TDoAddLogEvent func)
+  TDoAddLogEvent Event)
 {
   UnicodeString Prefix;
 
@@ -776,7 +776,7 @@ void __fastcall TSessionLog::DoAdd(TLogLineType Type, UnicodeString Line,
 
   while (!Line.IsEmpty())
   {
-    func(Type, Prefix + CutToChar(Line, L'\n', false));
+    Event(Type, Prefix + CutToChar(Line, L'\n', false));
   }
 }
 //---------------------------------------------------------------------------

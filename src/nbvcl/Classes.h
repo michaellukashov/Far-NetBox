@@ -333,7 +333,7 @@ public:
   TNotifyEvent __fastcall GetOnChange() { return FOnChange; }
   void __fastcall SetOnChange(TNotifyEvent onChange) { FOnChange = onChange; }
   TNotifyEvent __fastcall GetOnChanging() { return FOnChanging; }
-  void __fastcall SetOnChanging(const TNotifyEvent & onChanging) { FOnChanging = onChanging; }
+  void __fastcall SetOnChanging(TNotifyEvent onChanging) { FOnChanging = onChanging; }
 
   virtual void __fastcall PutObject(int Index, TObject * AObject);
   virtual void __fastcall SetUpdateState(bool Updating);

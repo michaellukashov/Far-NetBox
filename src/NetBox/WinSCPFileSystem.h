@@ -65,10 +65,10 @@ typedef void __fastcall (__closure *TGetSynchronizeOptionsEvent)
 typedef void __fastcall (__closure *TGetSpaceAvailable)
   (const AnsiString Path, TSpaceAvailable & ASpaceAvailable, bool & Close);
 #else
-typedef fastdelegate::FastDelegate2<void, int /* Params */, TSynchronizeOptions & /* Options */ > TGetSynchronizeOptionsEvent;
-typedef TGetSynchronizeOptionsEvent::slot_type TGetSynchronizeOptionsEvent;
-typedef fastdelegate::FastDelegate3<void, const UnicodeString /* Path */, TSpaceAvailable & /* ASpaceAvailable */, bool & /* Close */ > TGetSpaceAvailableEvent;
-typedef TGetSpaceAvailableEvent::slot_type TGetSpaceAvailableEvent;
+typedef fastdelegate::FastDelegate2<void,
+  int /* Params */, TSynchronizeOptions & /* Options */ > TGetSynchronizeOptionsEvent;
+typedef fastdelegate::FastDelegate3<void,
+  const UnicodeString & /* Path */, TSpaceAvailable & /* ASpaceAvailable */, bool & /* Close */ > TGetSpaceAvailableEvent;
 #endif
 struct TMultipleEdit
 {
@@ -88,7 +88,6 @@ struct TEditHistory
 typedef void __fastcall (__closure * TProcessSessionEvent)(TSessionData * Data, void * Param);
 #else
 typedef fastdelegate::FastDelegate2<void, TSessionData *, void *> TProcessSessionEvent;
-typedef TProcessSessionEvent::slot_type TProcessSessionEvent;
 #endif
 //---------------------------------------------------------------------------
 class TWinSCPFileSystem : public TCustomFarFileSystem
@@ -141,7 +140,7 @@ protected:
   void __fastcall FocusSession(TSessionData * Data);
   void /* __fastcall */ DeleteSession(TSessionData * Data, void * Param);
   void __fastcall ProcessSessions(TObjectList * PanelItems,
-    const TProcessSessionEvent & ProcessSession, void * Param);
+    TProcessSessionEvent ProcessSession, void * Param);
   void /* __fastcall */ ExportSession(TSessionData * Data, void * Param);
   bool __fastcall ImportSessions(TObjectList * PanelItems, bool Move, int OpMode);
   void __fastcall FileProperties();
@@ -177,7 +176,7 @@ protected:
     bool Edit, bool AllowSymbolic);
   void __fastcall FileSystemInfoDialog(const TSessionInfo & SessionInfo,
     const TFileSystemInfo & FileSystemInfo, UnicodeString SpaceAvailablePath,
-    const TGetSpaceAvailableEvent & OnGetSpaceAvailable);
+    TGetSpaceAvailableEvent OnGetSpaceAvailable);
   bool __fastcall OpenDirectoryDialog(bool Add, UnicodeString & Directory,
     TBookmarkList * BookmarkList);
   bool __fastcall ApplyCommandDialog(UnicodeString & Command, int & Params);
@@ -202,15 +201,15 @@ protected:
     TRemoteProperties * Properties, bool & SaveSettings);
   bool __fastcall QueueDialog(TTerminalQueueStatus * Status, bool ClosingPlugin);
   bool __fastcall SynchronizeDialog(TSynchronizeParamType & Params,
-    const TCopyParamType * CopyParams, const TSynchronizeStartStopEvent & OnStartStop,
+    const TCopyParamType * CopyParams, TSynchronizeStartStopEvent OnStartStop,
     bool & SaveSettings, int Options, int CopyParamAttrs,
-    const TGetSynchronizeOptionsEvent & OnGetOptions);
+    TGetSynchronizeOptionsEvent OnGetOptions);
   void /* __fastcall */ DoSynchronize(TSynchronizeController * Sender,
-    const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
+    const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,
     const TCopyParamType & CopyParam, const TSynchronizeParamType & Params,
     TSynchronizeChecklist ** Checklist, TSynchronizeOptions * Options, bool Full);
   void /* __fastcall */ DoSynchronizeInvalid(TSynchronizeController * Sender,
-    const UnicodeString Directory, const UnicodeString ErrorStr);
+    const UnicodeString & Directory, const UnicodeString & ErrorStr);
   void /* __fastcall */ DoSynchronizeTooManyDirectories(TSynchronizeController * Sender,
     int & MaxDirectories);
   void __fastcall Synchronize(const UnicodeString LocalDirectory,
@@ -315,7 +314,7 @@ private:
     TStrings * Prompts, TStrings * Results, bool & Result,
     void * Arg);
   void /* __fastcall */ TerminalDisplayBanner(TTerminal * Terminal,
-    UnicodeString SessionName, const UnicodeString Banner, bool & NeverShowAgain,
+    UnicodeString & SessionName, const UnicodeString & Banner, bool & NeverShowAgain,
     int Options);
   void /* __fastcall */ TerminalShowExtendedException(TTerminal * Terminal,
     Exception * E, void * Arg);
@@ -323,7 +322,7 @@ private:
   void /* __fastcall */ OperationProgress(
     TFileOperationProgressType & ProgressData, TCancelStatus & Cancel);
   void /* __fastcall */ OperationFinished(TFileOperation Operation,
-    TOperationSide Side, bool DragDrop, const UnicodeString FileName, bool Success,
+    TOperationSide Side, bool DragDrop, const UnicodeString & FileName, bool Success,
     TOnceDoneOperation & DisconnectWhenComplete);
   void __fastcall CancelConfiguration(TFileOperationProgressType & ProgressData);
   TStrings * __fastcall CreateFileList(TObjectList * PanelItems,
@@ -335,12 +334,12 @@ private:
     TFarPanelInfo * PanelInfo = NULL);
   void /* __fastcall */ CustomCommandGetParamValue(
     const UnicodeString AName, UnicodeString & Value);
-  void /* __fastcall */ TerminalSynchronizeDirectory(const UnicodeString LocalDirectory,
-    const UnicodeString RemoteDirectory, bool & Continue, bool Collect);
+  void /* __fastcall */ TerminalSynchronizeDirectory(const UnicodeString & LocalDirectory,
+    const UnicodeString & RemoteDirectory, bool & Continue, bool Collect);
   void /* __fastcall */ QueueListUpdate(TTerminalQueue * Queue);
   void /* __fastcall */ QueueItemUpdate(TTerminalQueue * Queue, TQueueItem * Item);
   void /* __fastcall */ QueueEvent(TTerminalQueue * Queue, TQueueEvent Event);
-  void /* __fastcall */ GetSpaceAvailable(const UnicodeString Path,
+  void /* __fastcall */ GetSpaceAvailable(const UnicodeString & Path,
     TSpaceAvailable & ASpaceAvailable, bool & Close);
   void __fastcall QueueAddItem(TQueueItem * Item);
 };

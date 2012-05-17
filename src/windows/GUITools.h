@@ -21,7 +21,6 @@ class TSessionData;
 typedef void __fastcall (__closure* TProcessMessagesEvent)();
 #else
 typedef fastdelegate::FastDelegate0<void> TProcessMessagesEvent;
-typedef TProcessMessagesEvent::slot_type TProcessMessagesEvent;
 #endif
 //---------------------------------------------------------------------------
 bool __fastcall FindFile(UnicodeString & Path);

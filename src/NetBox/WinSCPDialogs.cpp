@@ -5890,13 +5890,13 @@ public:
   enum { tabProtocol = 1, tabCapabilities, tabSpaceAvailable, tabCount };
 
   explicit /* __fastcall */ TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
-    const TGetSpaceAvailableEvent & OnGetSpaceAvailable);
+    TGetSpaceAvailableEvent OnGetSpaceAvailable);
 
   void __fastcall Execute(const TSessionInfo & SessionInfo,
     const TFileSystemInfo & FileSystemInfo, UnicodeString SpaceAvailablePath);
 
 protected:
-  void __fastcall Feed(const TFeedFileSystemDataEvent & AddItem);
+  void __fastcall Feed(TFeedFileSystemDataEvent AddItem);
   UnicodeString __fastcall CapabilityStr(TFSCapability Capability);
   UnicodeString __fastcall CapabilityStr(TFSCapability Capability1,
     TFSCapability Capability2);
@@ -5951,7 +5951,7 @@ public:
 };
 //---------------------------------------------------------------------------
 /* __fastcall */ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
-    const TGetSpaceAvailableEvent & OnGetSpaceAvailable) : TTabbedDialog(AFarPlugin, tabCount),
+    TGetSpaceAvailableEvent OnGetSpaceAvailable) : TTabbedDialog(AFarPlugin, tabCount),
   FSpaceAvailableLoaded(false)
 {
   FOnGetSpaceAvailable = OnGetSpaceAvailable;
@@ -6411,7 +6411,7 @@ bool __fastcall TFileSystemInfoDialog::SpaceAvailableSupported()
 //---------------------------------------------------------------------------
 void __fastcall TWinSCPFileSystem::FileSystemInfoDialog(
   const TSessionInfo & SessionInfo, const TFileSystemInfo & FileSystemInfo,
-  UnicodeString SpaceAvailablePath, const TGetSpaceAvailableEvent & OnGetSpaceAvailable)
+  UnicodeString SpaceAvailablePath, TGetSpaceAvailableEvent OnGetSpaceAvailable)
 {
   TFileSystemInfoDialog * Dialog = new TFileSystemInfoDialog(FPlugin, OnGetSpaceAvailable);
   // try
@@ -7903,8 +7903,8 @@ class TSynchronizeDialog : TFarDialog
 {
 public:
   /* __fastcall */ TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
-    const TSynchronizeStartStopEvent & OnStartStop,
-    int Options, int CopyParamAttrs, const TGetSynchronizeOptionsEvent & OnGetOptions);
+    TSynchronizeStartStopEvent OnStartStop,
+    int Options, int CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions);
   virtual /* __fastcall */ ~TSynchronizeDialog();
 
   bool __fastcall Execute(TSynchronizeParamType & Params,
@@ -7923,7 +7923,7 @@ protected:
   void /* __fastcall */ DoAbort(TObject * Sender, bool Close);
   void /* __fastcall */ DoLog(TSynchronizeController * Controller,
     TSynchronizeLogEntry Entry, const UnicodeString Message);
-  void /* __fastcall */ DoSynchronizeThreads(TObject * Sender, const TThreadMethodEvent & slot);
+  void /* __fastcall */ DoSynchronizeThreads(TObject * Sender, TThreadMethodEvent slot);
   virtual LONG_PTR __fastcall DialogProc(int Msg, int Param1, LONG_PTR Param2);
   virtual bool __fastcall CloseQuery();
   virtual bool __fastcall Key(TFarDialogItem * Item, long KeyCode);
@@ -7959,8 +7959,8 @@ private:
 };
 //---------------------------------------------------------------------------
 /* __fastcall */ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
-  const TSynchronizeStartStopEvent & OnStartStop,
-  int Options, int CopyParamAttrs, const TGetSynchronizeOptionsEvent & OnGetOptions) :
+  TSynchronizeStartStopEvent OnStartStop,
+  int Options, int CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions) :
   TFarDialog(AFarPlugin)
 {
   TFarText * Text;
@@ -8171,7 +8171,7 @@ void /* __fastcall */ TSynchronizeDialog::DoStartStop(bool Start, bool Synchroni
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TSynchronizeDialog::DoSynchronizeThreads(TObject * /*Sender*/,
-    const TThreadMethodEvent & slot)
+    TThreadMethodEvent slot)
 {
   if (FStarted)
   {
@@ -8359,8 +8359,8 @@ int __fastcall TSynchronizeDialog::ActualCopyParamAttrs()
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 bool __fastcall TWinSCPFileSystem::SynchronizeDialog(TSynchronizeParamType & Params,
-    const TCopyParamType * CopyParams, const TSynchronizeStartStopEvent & OnStartStop,
-    bool & SaveSettings, int Options, int CopyParamAttrs, const TGetSynchronizeOptionsEvent & OnGetOptions)
+    const TCopyParamType * CopyParams, TSynchronizeStartStopEvent OnStartStop,
+    bool & SaveSettings, int Options, int CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions)
 {
   bool Result;
   TSynchronizeDialog * Dialog = new TSynchronizeDialog(FPlugin, OnStartStop,

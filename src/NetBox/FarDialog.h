@@ -95,8 +95,8 @@ public:
   TFarDialogItem * GetItemFocused() { return FItemFocused; }
   int GetResult() { return FResult; }
 
-  const TFarKeyEvent & GetOnKey() const { return FOnKey; }
-  void SetOnKey(const TFarKeyEvent & value) { FOnKey = value; }
+  TFarKeyEvent GetOnKey() const { return FOnKey; }
+  void SetOnKey(TFarKeyEvent value) { FOnKey = value; }
 #endif
 
   void __fastcall Redraw();
@@ -130,9 +130,9 @@ protected:
   void __fastcall RefreshBounds();
   virtual void __fastcall Idle();
   void __fastcall BreakSynchronize();
-  void __fastcall Synchronize(const TThreadMethodEvent & Method);
+  void __fastcall Synchronize(TThreadMethodEvent Method);
   void __fastcall Close(TFarButton * Button);
-  void __fastcall ProcessGroup(int Group, const TFarProcessGroupEvent & Callback, void * Arg);
+  void __fastcall ProcessGroup(int Group, TFarProcessGroupEvent Callback, void * Arg);
   void /* __fastcall */ ShowItem(TFarDialogItem * Item, void * Arg);
   void /* __fastcall */ EnableItem(TFarDialogItem * Item, void * Arg);
   bool __fastcall ChangesLocked();
@@ -294,10 +294,10 @@ public:
   void SetTag(int value) { FTag = value; }
   TFarDialog * GetDialog() { return FDialog; }
 
-  const TNotifyEvent & GetOnExit() const { return FOnExit; }
-  void SetOnExit(const TNotifyEvent & value) { FOnExit = value; }
-  const TFarMouseClickEvent & GetOnMouseClick() const { return FOnMouseClick; }
-  void SetOnMouseClick(const TFarMouseClickEvent & value) { FOnMouseClick = value; }
+  TNotifyEvent GetOnExit() const { return FOnExit; }
+  void SetOnExit(TNotifyEvent value) { FOnExit = value; }
+  TFarMouseClickEvent GetOnMouseClick() const { return FOnMouseClick; }
+  void SetOnMouseClick(TFarMouseClickEvent value) { FOnMouseClick = value; }
 #endif
 
   void __fastcall Move(int DeltaX, int DeltaY);
@@ -459,8 +459,8 @@ public:
   TFarButtonBrackets GetBrackets() { return FBrackets; }
   bool GetCenterGroup() { return TFarDialogItem::GetCenterGroup(); }
   void SetCenterGroup(bool value) { TFarDialogItem::SetCenterGroup(value); }
-  virtual const TFarButtonClickEvent & GetOnClick() const { return FOnClick; }
-  virtual void SetOnClick(const TFarButtonClickEvent & value) { FOnClick = value; }
+  virtual TFarButtonClickEvent GetOnClick() const { return FOnClick; }
+  virtual void SetOnClick(TFarButtonClickEvent value) { FOnClick = value; }
 #endif
 
 protected:
@@ -504,8 +504,8 @@ public:
   virtual void SetCaption(const UnicodeString value) { SetData(value); }
   bool GetAllowGrayed() { return GetFlag(DIF_3STATE); }
   void SetAllowGrayed(bool value) { SetFlag(DIF_3STATE, value); }
-  virtual TFarAllowChangeEvent & GetOnAllowChange() { return FOnAllowChange; }
-  virtual void SetOnAllowChange(const TFarAllowChangeEvent & value) { FOnAllowChange = value; }
+  virtual TFarAllowChangeEvent GetOnAllowChange() { return FOnAllowChange; }
+  virtual void SetOnAllowChange(TFarAllowChangeEvent value) { FOnAllowChange = value; }
   bool GetChecked() { return TFarDialogItem::GetChecked(); }
   void SetChecked(bool value) { TFarDialogItem::SetChecked(value); }
   int GetSelected() { return TFarDialogItem::GetSelected(); }
@@ -533,8 +533,8 @@ public:
   void SetChecked(bool value) { TFarDialogItem::SetChecked(value); }
   virtual UnicodeString GetCaption() { return GetData(); }
   virtual void SetCaption(const UnicodeString value) { SetData(value); }
-  virtual TFarAllowChangeEvent & GetOnAllowChange() { return FOnAllowChange; }
-  virtual void SetOnAllowChange(const TFarAllowChangeEvent & value) { FOnAllowChange = value; }
+  virtual TFarAllowChangeEvent GetOnAllowChange() { return FOnAllowChange; }
+  virtual void SetOnAllowChange(TFarAllowChangeEvent value) { FOnAllowChange = value; }
 #endif
 
 protected:

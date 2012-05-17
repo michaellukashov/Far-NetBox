@@ -161,8 +161,8 @@ public:
     {
     }
     
-    const TClickEvent &GetOnClick() const { return m_OnClick; }
-    void SetOnClick(const TClickEvent &onClick)
+    TClickEvent GetOnClick() const { return m_OnClick; }
+    void SetOnClick(TClickEvent onClick)
     {
         return m_OnClick = onClick;
         // DEBUG_PRINTF(L"m_OnClick.num_slots = %d", m_OnClick.num_slots());

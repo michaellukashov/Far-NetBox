@@ -1560,8 +1560,8 @@ void __fastcall TWinSCPFileSystem::Synchronize(const UnicodeString LocalDirector
         Self->FPlugin->RestoreScreen(Self->FSynchronizationSaveScreenHandle);
       } BOOST_SCOPE_EXIT_END
       AChecklist = FTerminal->SynchronizeCollect(LocalDirectory, RemoteDirectory,
-                   Mode, &CopyParam, Params | TTerminal::spNoConfirmation,
-                   fastdelegate::bind(&TWinSCPFileSystem::TerminalSynchronizeDirectory, this, _1, _2, _3, _4), Options);
+        Mode, &CopyParam, Params | TTerminal::spNoConfirmation,
+        fastdelegate::bind(&TWinSCPFileSystem::TerminalSynchronizeDirectory, this, _1, _2, _3, _4), Options);
     }
 #ifndef _MSC_VER
     __finally
@@ -1759,7 +1759,7 @@ void __fastcall TWinSCPFileSystem::FullSynchronize(bool Source)
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TWinSCPFileSystem::TerminalSynchronizeDirectory(
-  const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
+  const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,
   bool & Continue, bool Collect)
 {
   static unsigned long LastTicks;
@@ -1875,8 +1875,8 @@ void __fastcall TWinSCPFileSystem::Synchronize()
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TWinSCPFileSystem::DoSynchronize(
-  TSynchronizeController * /*Sender*/, const UnicodeString LocalDirectory,
-  const UnicodeString RemoteDirectory, const TCopyParamType & CopyParam,
+  TSynchronizeController * /*Sender*/, const UnicodeString & LocalDirectory,
+  const UnicodeString & RemoteDirectory, const TCopyParamType & CopyParam,
   const TSynchronizeParamType & Params, TSynchronizeChecklist ** Checklist,
   TSynchronizeOptions * Options, bool Full)
 {
@@ -1909,8 +1909,8 @@ void /* __fastcall */ TWinSCPFileSystem::DoSynchronize(
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TWinSCPFileSystem::DoSynchronizeInvalid(
-  TSynchronizeController * /*Sender*/, const UnicodeString Directory,
-  const UnicodeString ErrorStr)
+  TSynchronizeController * /*Sender*/, const UnicodeString & Directory,
+  const UnicodeString & ErrorStr)
 {
   UnicodeString Message;
   if (!Directory.IsEmpty())
@@ -2277,7 +2277,7 @@ void __fastcall TWinSCPFileSystem::CopyFullFileNamesToClipboard()
 #endif
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWinSCPFileSystem::GetSpaceAvailable(const UnicodeString Path,
+void /* __fastcall */ TWinSCPFileSystem::GetSpaceAvailable(const UnicodeString & Path,
   TSpaceAvailable & ASpaceAvailable, bool & Close)
 {
   // terminal can be already closed (e.g. dropped connection)
@@ -2717,7 +2717,7 @@ void /* __fastcall */ TWinSCPFileSystem::DeleteSession(TSessionData * Data, void
 }
 //---------------------------------------------------------------------------
 void __fastcall TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
-  const TProcessSessionEvent & ProcessSession, void * Param)
+  TProcessSessionEvent ProcessSession, void * Param)
 {
   for (int Index = 0; Index < PanelItems->GetCount(); Index++)
   {
@@ -2739,7 +2739,7 @@ void __fastcall TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
     {
       assert(PanelItem->GetUserData() == NULL);
       UnicodeString Folder = UnixIncludeTrailingBackslash(
-                               UnixIncludeTrailingBackslash(FSessionsFolder) + PanelItem->GetFileName());
+        UnixIncludeTrailingBackslash(FSessionsFolder) + PanelItem->GetFileName());
       int Index = 0;
       while (Index < StoredSessions->GetCount())
       {
@@ -2750,8 +2750,7 @@ void __fastcall TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
           {
             Index--;
           }
-          sig(Data, Param);
-          // DEBUG_PRINTF(L"Index = %d, StoredSessions->GetCount = %d", Index, StoredSessions->GetCount());
+          ProcessSession(Data, Param);
         }
         Index++;
       }
@@ -3611,7 +3610,7 @@ int __fastcall TWinSCPFileSystem::MoreMessageDialog(const UnicodeString Str,
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TWinSCPFileSystem::TerminalQueryUser(TObject * /*Sender*/,
-  const UnicodeString Query, TStrings * MoreMessages, unsigned int Answers,
+  const UnicodeString & Query, TStrings * MoreMessages, unsigned int Answers,
   const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * /*Arg*/)
 {
   TMessageParams AParams;
@@ -3664,8 +3663,8 @@ void /* __fastcall */ TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TWinSCPFileSystem::TerminalDisplayBanner(
-  TTerminal * /*Terminal*/, UnicodeString SessionName,
-  const UnicodeString Banner, bool & NeverShowAgain, int Options)
+  TTerminal * /*Terminal*/, UnicodeString & SessionName,
+  const UnicodeString & Banner, bool & NeverShowAgain, int Options)
 {
   BannerDialog(SessionName, Banner, NeverShowAgain, Options);
 }
@@ -3704,7 +3703,7 @@ void /* __fastcall */ TWinSCPFileSystem::OperationProgress(
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
-  TOperationSide Side, bool /*Temp*/, const UnicodeString FileName, bool Success,
+  TOperationSide Side, bool /*Temp*/, const UnicodeString & FileName, bool Success,
   TOnceDoneOperation & /*DisconnectWhenComplete*/)
 {
   // DEBUG_PRINTF(L"begin");

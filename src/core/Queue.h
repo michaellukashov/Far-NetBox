@@ -109,18 +109,18 @@ public:
 #else
   int __fastcall GetTransfersLimit() { return FTransfersLimit; }
   // void __fastcall SetTransfersLimit(int value);
-  TQueryUserEvent & __fastcall GetOnQueryUser() { return FOnQueryUser; }
-  void __fastcall SetOnQueryUser(const TQueryUserEvent & value) { FOnQueryUser = value; }
-  TPromptUserEvent & __fastcall GetOnPromptUser() { return FOnPromptUser; }
-  void __fastcall SetOnPromptUser(const TPromptUserEvent & value) { FOnPromptUser = value; }
-  TExtendedExceptionEvent & __fastcall GetOnShowExtendedException() { return FOnShowExtendedException; }
-  void __fastcall SetOnShowExtendedException(const TExtendedExceptionEvent & value) { FOnShowExtendedException = value; }
-  TQueueListUpdateEvent & __fastcall GetOnListUpdate() { return FOnListUpdate; }
-  void __fastcall SetOnListUpdate(const TQueueListUpdateEvent & value) { FOnListUpdate = value; }
-  TQueueItemUpdateEvent & __fastcall GetOnQueueItemUpdate() { return FOnQueueItemUpdate; }
-  void __fastcall SetOnQueueItemUpdate(const TQueueItemUpdateEvent & value) { FOnQueueItemUpdate = value; }
-  TQueueEventEvent & __fastcall GetOnEvent() { return FOnEvent; }
-  void __fastcall SetOnEvent(const TQueueEventEvent & value) { FOnEvent = value; }
+  TQueryUserEvent __fastcall GetOnQueryUser() { return FOnQueryUser; }
+  void __fastcall SetOnQueryUser(TQueryUserEvent value) { FOnQueryUser = value; }
+  TPromptUserEvent __fastcall GetOnPromptUser() { return FOnPromptUser; }
+  void __fastcall SetOnPromptUser(TPromptUserEvent value) { FOnPromptUser = value; }
+  TExtendedExceptionEvent __fastcall GetOnShowExtendedException() { return FOnShowExtendedException; }
+  void __fastcall SetOnShowExtendedException(TExtendedExceptionEvent value) { FOnShowExtendedException = value; }
+  TQueueListUpdateEvent __fastcall GetOnListUpdate() { return FOnListUpdate; }
+  void __fastcall SetOnListUpdate(TQueueListUpdateEvent value) { FOnListUpdate = value; }
+  TQueueItemUpdateEvent __fastcall GetOnQueueItemUpdate() { return FOnQueueItemUpdate; }
+  void __fastcall SetOnQueueItemUpdate(TQueueItemUpdateEvent value) { FOnQueueItemUpdate = value; }
+  TQueueEventEvent __fastcall GetOnEvent() { return FOnEvent; }
+  void __fastcall SetOnEvent(TQueueEventEvent value) { FOnEvent = value; }
 #endif
 
 protected:
@@ -394,8 +394,8 @@ public:
   __property TNotifyEvent OnIdle = { read = FOnIdle, write = FOnIdle };
   __property bool Cancelling = { read = FCancel };
 #else
-  TNotifyEvent & GetOnIdle() { return FOnIdle; }
-  void SetOnIdle(const TNotifyEvent & Value) { FOnIdle = Value; }
+  TNotifyEvent GetOnIdle() { return FOnIdle; }
+  void SetOnIdle(TNotifyEvent Value) { FOnIdle = Value; }
   bool GetCancelling() const { return FCancel; };
 #endif
 

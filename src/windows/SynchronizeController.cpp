@@ -32,9 +32,9 @@
   FOnSynchronize = AOnSynchronize;
   FOnSynchronizeInvalid = AOnSynchronizeInvalid;
   FOnTooManyDirectories = AOnTooManyDirectories;
-  // FSynchronizeMonitor = NULL;
-  // FSynchronizeAbort = NULL;
-  // FSynchronizeLog = NULL;
+  FSynchronizeMonitor = NULL;
+  FSynchronizeAbort = NULL;
+  FSynchronizeLog = NULL;
   FOptions = NULL;
 }
 //---------------------------------------------------------------------------

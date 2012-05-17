@@ -6,6 +6,7 @@
 #include "nbafx.h"
 
 #include "boostdefines.hpp"
+#include <boost/bind.hpp>
 #include <boost/scope_exit.hpp>
 #endif
 
@@ -888,7 +889,7 @@ void __fastcall TFarDialog::EnableGroup(int Group, bool Enable)
   ProcessGroup(Group, fastdelegate::bind(&TFarDialog::EnableItem, this, _1, _2), &Enable);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarDialog::ProcessGroup(int Group, const TFarProcessGroupEvent & Callback,
+void __fastcall TFarDialog::ProcessGroup(int Group, TFarProcessGroupEvent Callback,
   void * Arg)
 {
   LockChanges();

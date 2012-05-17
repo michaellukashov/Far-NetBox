@@ -250,8 +250,8 @@ public:
   TSessionLog * __fastcall GetParent() { return FParent; }
   void __fastcall SetParent(TSessionLog *value) { FParent = value; }
   bool __fastcall GetLogging() { return FLogging; }
-  TNotifyEvent & GetOnStateChange() { return FOnStateChange; }
-  void SetOnStateChange(const TNotifyEvent & value) { FOnStateChange = value; }
+  TNotifyEvent GetOnStateChange() { return FOnStateChange; }
+  void SetOnStateChange(TNotifyEvent value) { FOnStateChange = value; }
   UnicodeString __fastcall GetCurrentFileName() { return FCurrentFileName; }
   size_t __fastcall GetTopIndex() { return FTopIndex; }
   UnicodeString __fastcall GetName() { return FName; }
@@ -291,7 +291,7 @@ public:
   UnicodeString __fastcall GetSessionName();
   void __fastcall DoAdd(TLogLineType Type, UnicodeString Line,
     // void __fastcall (__closure *f)(TLogLineType Type, const UnicodeString & Line));
-    const TDoAddLogEvent &func);
+    TDoAddLogEvent Event);
   void /* __fastcall */ DoAddToParent(TLogLineType aType, const UnicodeString & aLine);
   void /* __fastcall */ DoAddToSelf(TLogLineType aType, const UnicodeString & aLine);
   void /* __fastcall */ DoAddStartupInfo(TSessionData * Data);

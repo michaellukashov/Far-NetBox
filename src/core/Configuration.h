@@ -270,8 +270,8 @@ public:
   size_t GetActualLogProtocol() { return FActualLogProtocol; }
   bool GetLogActions() { return FLogActions; }
   int GetLogWindowLines() { return FLogWindowLines; }
-  TNotifyEvent & GetOnChange() { return FOnChange; }
-  void SetOnChange(const TNotifyEvent & value) { FOnChange = value; }
+  TNotifyEvent GetOnChange() { return FOnChange; }
+  void SetOnChange(TNotifyEvent value) { FOnChange = value; }
   int GetSessionReopenAuto() { return FSessionReopenAuto; }
   int __fastcall GetSessionReopenAutoMaximumNumberOfRetries() const { return FSessionReopenAutoMaximumNumberOfRetries; }
   void __fastcall SetSessionReopenAutoMaximumNumberOfRetries(int value);

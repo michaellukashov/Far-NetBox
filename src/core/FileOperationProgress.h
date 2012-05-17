@@ -31,7 +31,7 @@ typedef fastdelegate::FastDelegate2<void,
   TFileOperationProgressType & /* ProgressData */, TCancelStatus & /* Cancel */> TFileOperationProgressEvent;
 typedef fastdelegate::FastDelegate6<void,
   TFileOperation /* Operation */, TOperationSide /* Side */, bool /* Temp */,
-   const UnicodeString & /* FileName */, bool /* Success */, TOnceDoneOperation & /* OnceDoneOperation */> TFileOperationFinishedEvent;
+  const UnicodeString & /* FileName */, bool /* Success */, TOnceDoneOperation & /* OnceDoneOperation */> TFileOperationFinishedEvent;
 #endif
 //---------------------------------------------------------------------------
 class TFileOperationProgressType

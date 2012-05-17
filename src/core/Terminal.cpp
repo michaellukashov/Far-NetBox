@@ -2810,7 +2810,7 @@ void /* __fastcall */ TTerminal::AnnounceFileListOperation()
 }
 //---------------------------------------------------------------------------
 bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
-  TFileOperation Operation, const TProcessFileEvent & ProcessFile, void * Param,
+  TFileOperation Operation, TProcessFileEvent ProcessFile, void * Param,
   TOperationSide Side, bool Ex)
 {
   assert(FFileSystem);
@@ -4293,7 +4293,7 @@ struct TSynchronizeData
 TSynchronizeChecklist * /* __fastcall */ TTerminal::SynchronizeCollect(const UnicodeString LocalDirectory,
   const UnicodeString RemoteDirectory, TSynchronizeMode Mode,
   const TCopyParamType * CopyParam, int Params,
-  const TSynchronizeDirectoryEvent & OnSynchronizeDirectory,
+  TSynchronizeDirectoryEvent OnSynchronizeDirectory,
   TSynchronizeOptions * Options)
 {
   TSynchronizeChecklist * Checklist = new TSynchronizeChecklist();
@@ -4315,7 +4315,7 @@ TSynchronizeChecklist * /* __fastcall */ TTerminal::SynchronizeCollect(const Uni
 void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeString LocalDirectory,
   const UnicodeString RemoteDirectory, TSynchronizeMode Mode,
   const TCopyParamType * CopyParam, int Params,
-  const TSynchronizeDirectoryEvent & OnSynchronizeDirectory, TSynchronizeOptions * Options,
+  TSynchronizeDirectoryEvent OnSynchronizeDirectory, TSynchronizeOptions * Options,
   int Flags, TSynchronizeChecklist * Checklist)
 {
   TSynchronizeData Data;
@@ -4717,7 +4717,7 @@ void /* __fastcall */ TTerminal::SynchronizeCollectFile(const UnicodeString File
 void /* __fastcall */ TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
   const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
   const TCopyParamType * CopyParam, int Params,
-  const TSynchronizeDirectoryEvent & OnSynchronizeDirectory)
+  TSynchronizeDirectoryEvent OnSynchronizeDirectory)
 {
   TSynchronizeData Data;
 
