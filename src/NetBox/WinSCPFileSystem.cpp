@@ -1403,7 +1403,7 @@ void __fastcall TWinSCPFileSystem::ApplyCommand()
               MakeFileListParam.Recursive =
                 FLAGSET(Params, ccRecursive) && !FileListCommand;
 
-              ProcessLocalDirectory(TempDir, boost::bind(&TTerminal::MakeLocalFileList, FTerminal, _1, _2, _3), &MakeFileListParam);
+              ProcessLocalDirectory(TempDir, fastdelegate::bind(&TTerminal::MakeLocalFileList, FTerminal, _1, _2, _3), &MakeFileListParam);
               TFileOperationProgressSignal sig1;
               TFileOperationFinishedSignal sig2;
               sig1.connect(boost::bind(&TWinSCPFileSystem::OperationProgress, this, _1, _2));

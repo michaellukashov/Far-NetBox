@@ -117,16 +117,12 @@ UnicodeString __fastcall WindowsProductName();
 #ifndef _MSC_VER
 typedef void __fastcall (__closure* TProcessLocalFileEvent)
   (const UnicodeString FileName, const TSearchRec Rec, void * Param);
+#else
+typedef fastdelegate::FastDelegate3<void, UnicodeString, TSearchRec /* Rec */, void * /* Param */> TProcessLocalFileEvent;
+#endif
 bool __fastcall FileSearchRec(const UnicodeString FileName, TSearchRec & Rec);
 void __fastcall ProcessLocalDirectory(UnicodeString DirName,
   TProcessLocalFileEvent CallBackFunc, void * Param = NULL, int FindAttrs = -1);
-#else
-typedef boost::signal3<void, const UnicodeString, const TSearchRec /* Rec */, void * /* Param */ > TProcessLocalFileSignal;
-typedef TProcessLocalFileSignal::slot_type TProcessLocalFileEvent;
-bool __fastcall FileSearchRec(const UnicodeString FileName, TSearchRec & Rec);
-void __fastcall ProcessLocalDirectory(UnicodeString DirName,
-  const TProcessLocalFileEvent &CallBackFunc, void * Param = NULL, int FindAttrs = -1);
-#endif
 //---------------------------------------------------------------------------
 enum TDSTMode
 {

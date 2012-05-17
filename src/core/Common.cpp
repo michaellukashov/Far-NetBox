@@ -781,7 +781,7 @@ bool __fastcall FileSearchRec(const UnicodeString FileName, TSearchRec & Rec)
 }
 //---------------------------------------------------------------------------
 void __fastcall ProcessLocalDirectory(UnicodeString DirName,
-  const TProcessLocalFileEvent & CallBackFunc, void * Param,
+  TProcessLocalFileEvent CallBackFunc, void * Param,
   int FindAttrs)
 {
   // assert(CallBackFunc);
@@ -804,13 +804,13 @@ void __fastcall ProcessLocalDirectory(UnicodeString DirName,
         FindClose(SearchRec);
       } BOOST_SCOPE_EXIT_END
 #endif
-      TProcessLocalFileSignal sig;
-      sig.connect(CallBackFunc);
+      // TProcessLocalFileSignal sig;
+      // sig.connect(CallBackFunc);
       do
       {
         if ((SearchRec.Name != L".") && (SearchRec.Name != L".."))
         {
-          sig(DirName + SearchRec.Name, SearchRec, Param);
+          CallBackFunc(DirName + SearchRec.Name, SearchRec, Param);
         }
 
       } while (FindNext(SearchRec) == 0);

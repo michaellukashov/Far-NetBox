@@ -4168,7 +4168,7 @@ void /* __fastcall */ TTerminal::MakeLocalFileList(const UnicodeString FileName,
   bool Directory = FLAGSET(Rec.Attr, faDirectory);
   if (Directory && Params.Recursive)
   {
-    ProcessLocalDirectory(FileName, boost::bind(&TTerminal::MakeLocalFileList, this, _1, _2, _3), &Params);
+    ProcessLocalDirectory(FileName, fastdelegate::bind(&TTerminal::MakeLocalFileList, this, _1, _2, _3), &Params);
   }
 
   if (!Directory || Params.IncludeDirs)
@@ -4207,7 +4207,7 @@ void /* __fastcall */ TTerminal::CalculateLocalFileSize(const UnicodeString File
     }
     else
     {
-      ProcessLocalDirectory(FileName, boost::bind(&TTerminal::CalculateLocalFileSize, this, _1, _2, _3), Params);
+      ProcessLocalDirectory(FileName, fastdelegate::bind(&TTerminal::CalculateLocalFileSize, this, _1, _2, _3), Params);
     }
   }
 
