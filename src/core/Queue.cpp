@@ -518,14 +518,12 @@ void __fastcall TSignalThread::Terminate()
 void __fastcall TTerminalQueue::Init()
 {
   TSignalThread::Init(true);
-#ifndef _MSC_VER
   FOnQueryUser = NULL;
   FOnPromptUser = NULL;
   FOnShowExtendedException = NULL;
   FOnQueueItemUpdate = NULL;
   FOnListUpdate = NULL;
   FOnEvent = NULL;
-#endif
   FLastIdle = Now();
   FIdleInterval = EncodeTimeVerbose(0, 0, 2, 0);
 
@@ -2153,8 +2151,7 @@ void __fastcall TTerminalThread::Init()
   FTerminal->OnStartReadDirectory = FOnStartReadDirectory;
   FTerminal->OnReadDirectoryProgress = FOnReadDirectoryProgress;
 #else
-/*
-  assert(FTerminal->GetOnInformation().equal(fastdelegate::bind(&TTerminalThread::TerminalInformation, this, _1, _2, _3, _4)));
+  assert(FTerminal->GetOnInformation() == fastdelegate::bind(&TTerminalThread::TerminalInformation, this, _1, _2, _3, _4));
   assert(FTerminal->GetOnQueryUser() == fastdelegate::bind(&TTerminalThread::TerminalQueryUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
   assert(FTerminal->GetOnPromptUser() == fastdelegate::bind(&TTerminalThread::TerminalPromptUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
   assert(FTerminal->GetOnShowExtendedException() == fastdelegate::bind(&TTerminalThread::TerminalShowExtendedException, this, _1, _2, _3));
@@ -2163,7 +2160,7 @@ void __fastcall TTerminalThread::Init()
   assert(FTerminal->GetOnReadDirectory() == fastdelegate::bind(&TTerminalThread::TerminalReadDirectory, this, _1, _2));
   assert(FTerminal->GetOnStartReadDirectory() == fastdelegate::bind(&TTerminalThread::TerminalStartReadDirectory, this, _1));
   assert(FTerminal->GetOnReadDirectoryProgress() == fastdelegate::bind(&TTerminalThread::TerminalReadDirectoryProgress, this, _1, _2, _3));
-*/
+
   FTerminal->SetOnInformation(FOnInformation);
   FTerminal->SetOnQueryUser(FOnQueryUser);
   FTerminal->SetOnPromptUser(FOnPromptUser);
