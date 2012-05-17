@@ -3559,12 +3559,7 @@ bool __fastcall TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
   // without knowledge of server's capabilities, this all make no sense
   if (FSupport->Loaded)
   {
-    TFileOperationProgressEvent sig1;
-    TFileOperationFinishedEvent sig2;
-    sig1 = fastdelegate::bind(&TTerminal::DoProgress, FTerminal, _1, _2);
-    sig2 = fastdelegate::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6);
-    TFileOperationProgressType Progress(&sig1, &sig2);
-    // TFileOperationProgressType Progress(fastdelegate::bind(&TTerminal::DoProgress, FTerminal, _1, _2), fastdelegate::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6));
+    TFileOperationProgressType Progress(fastdelegate::bind(&TTerminal::DoProgress, FTerminal, _1, _2), fastdelegate::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6));
     Progress.Start(foGetProperties, osRemote, FileList->GetCount());
 
     FTerminal->FOperationProgress = &Progress;
@@ -3782,12 +3777,7 @@ void __fastcall TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Al
   TStrings * FileList, TStrings * Checksums,
   TCalculatedChecksumEvent OnCalculatedChecksum)
 {
-  TFileOperationProgressEvent sig1;
-  TFileOperationFinishedEvent sig2;
-  sig1 = fastdelegate::bind(&TTerminal::DoProgress, FTerminal, _1, _2);
-  sig2 = fastdelegate::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6);
-  TFileOperationProgressType Progress(&sig1, &sig2);
-  // TFileOperationProgressType Progress(fastdelegate::bind(&TTerminal::DoProgress, FTerminal, _1, _2), fastdelegate::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6));
+  TFileOperationProgressType Progress(fastdelegate::bind(&TTerminal::DoProgress, FTerminal, _1, _2), fastdelegate::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6));
   Progress.Start(foCalculateChecksum, osRemote, FileList->GetCount());
 
   FTerminal->FOperationProgress = &Progress;
@@ -3812,14 +3802,14 @@ void __fastcall TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Al
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TSFTPFileSystem::CustomCommandOnFile(const UnicodeString /* FileName */,
-    const TRemoteFile * /* File */, UnicodeString /* Command */, int /* Params */,
-    TCaptureOutputEvent * /* OutputEvent */)
+  const TRemoteFile * /* File */, UnicodeString /* Command */, int /* Params */,
+  TCaptureOutputEvent /* Output */)
 {
   assert(false);
 }
 //---------------------------------------------------------------------------
 void __fastcall TSFTPFileSystem::AnyCommand(const UnicodeString /*Command*/,
-  TCaptureOutputEvent * /*OutputEvent*/)
+  TCaptureOutputEvent /* OutputEvent */)
 {
   assert(false);
 }

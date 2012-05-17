@@ -18,7 +18,7 @@
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TFileOperationProgressType::TFileOperationProgressType(
-  TFileOperationProgressEvent * AOnProgress, TFileOperationFinishedEvent * AOnFinished) :
+  TFileOperationProgressEvent AOnProgress, TFileOperationFinishedEvent AOnFinished) :
   FOnProgress(AOnProgress),
   FOnFinished(AOnFinished)
 {
@@ -195,9 +195,9 @@ int __fastcall TFileOperationProgressType::OverallProgress()
 void __fastcall TFileOperationProgressType::DoProgress()
 {
   SetThreadExecutionState(ES_SYSTEM_REQUIRED);
-  if (FOnProgress != NULL)
+  if (!FOnProgress.empty())
   {
-    (*FOnProgress)(*this, Cancel);
+    FOnProgress(*this, Cancel);
   }
 }
 //---------------------------------------------------------------------------
@@ -205,9 +205,9 @@ void __fastcall TFileOperationProgressType::Finish(UnicodeString FileName,
   bool Success, TOnceDoneOperation & OnceDoneOperation)
 {
   assert(InProgress);
-  if (FOnFinished != NULL)
+  if (!FOnFinished.empty())
   {
-    (*FOnFinished)(Operation, Side, Temp, FileName,
+    FOnFinished(Operation, Side, Temp, FileName,
       // TODO : There wasn't 'Success' condition, was it by mistake or by purpose?
       Success && (Cancel == csContinue), OnceDoneOperation);
   }

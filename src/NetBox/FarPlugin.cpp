@@ -1255,15 +1255,10 @@ int __fastcall TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeString Ti
 //---------------------------------------------------------------------------
 bool __fastcall TCustomFarPlugin::InputBox(const UnicodeString Title,
   const UnicodeString Prompt, UnicodeString & Text, unsigned long Flags,
-  const UnicodeString HistoryName, size_t MaxLen, TFarInputBoxValidateEvent * OnValidate)
+  const UnicodeString HistoryName, size_t MaxLen, TFarInputBoxValidateEvent OnValidate)
 {
   bool Repeat = false;
   int Result = 0;
-  TFarInputBoxValidateEvent sig;
-  if (OnValidate)
-  {
-    sig = *OnValidate;
-  }
   do
   {
     UnicodeString DestText;
@@ -1292,7 +1287,7 @@ bool __fastcall TCustomFarPlugin::InputBox(const UnicodeString Title,
       {
         try
         {
-          sig(Text);
+          OnValidate(Text);
         }
         catch (Exception & E)
         {

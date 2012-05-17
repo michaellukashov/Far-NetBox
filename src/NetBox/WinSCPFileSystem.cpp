@@ -932,8 +932,7 @@ bool __fastcall TWinSCPFileSystem::ExecuteCommand(const UnicodeString Command)
         FPlugin->ShowTerminalScreen();
 
         FOutputLog = true;
-        TCaptureOutputEvent OutputEvent = fastdelegate::bind(&TWinSCPFileSystem::TerminalCaptureLog, this, _1, _2);
-        FTerminal->AnyCommand(Command, &OutputEvent);
+        FTerminal->AnyCommand(Command, fastdelegate::bind(&TWinSCPFileSystem::TerminalCaptureLog, this, _1, _2));
       }
 #ifndef _MSC_VER
       __finally
@@ -1268,21 +1267,21 @@ void __fastcall TWinSCPFileSystem::ApplyCommand()
                   Self->RedrawPanel();
                 }
               } BOOST_SCOPE_EXIT_END
-              TCaptureOutputEvent * OutputEvent = NULL;
+              TCaptureOutputEvent OutputEvent = NULL;
               FOutputLog = false;
               if (FLAGSET(Params, ccShowResults))
               {
                 assert(!FNoProgress);
                 FNoProgress = true;
                 FOutputLog = true;
-                OutputEvent = reinterpret_cast<TCaptureOutputEvent *>(&fastdelegate::bind(&TWinSCPFileSystem::TerminalCaptureLog, this, _1, _2));
+                OutputEvent = fastdelegate::bind(&TWinSCPFileSystem::TerminalCaptureLog, this, _1, _2);
               }
 
               if (FLAGSET(Params, ccCopyResults))
               {
                 assert(FCapturedLog == NULL);
                 FCapturedLog = new TStringList();
-                OutputEvent = reinterpret_cast<TCaptureOutputEvent *>(&fastdelegate::bind(&TWinSCPFileSystem::TerminalCaptureLog, this, _1, _2));
+                OutputEvent = fastdelegate::bind(&TWinSCPFileSystem::TerminalCaptureLog, this, _1, _2);
               }
               // try
               {
@@ -1404,12 +1403,8 @@ void __fastcall TWinSCPFileSystem::ApplyCommand()
                 FLAGSET(Params, ccRecursive) && !FileListCommand;
 
               ProcessLocalDirectory(TempDir, fastdelegate::bind(&TTerminal::MakeLocalFileList, FTerminal, _1, _2, _3), &MakeFileListParam);
-              TFileOperationProgressEvent sig1;
-              TFileOperationFinishedEvent sig2;
-              sig1 = fastdelegate::bind(&TWinSCPFileSystem::OperationProgress, this, _1, _2);
-              sig2 = fastdelegate::bind(&TWinSCPFileSystem::OperationFinished, this, _1, _2, _3, _4, _5, _6);
-              TFileOperationProgressType Progress(&sig1, &sig2);
-              // TFileOperationProgressType Progress(fastdelegate::bind(&TWinSCPFileSystem::OperationProgress, this, _1, _2), fastdelegate::bind(&TWinSCPFileSystem::OperationFinished, this, _1, _2, _3, _4, _5, _6));
+
+              TFileOperationProgressType Progress(fastdelegate::bind(&TWinSCPFileSystem::OperationProgress, this, _1, _2), fastdelegate::bind(&TWinSCPFileSystem::OperationFinished, this, _1, _2, _3, _4, _5, _6));
 
               Progress.Start(foCustomCommand, osRemote, FileListCommand ? 1 : FileList->GetCount());
               // try

@@ -2821,12 +2821,7 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
 
   try
   {
-    TFileOperationProgressEvent sig1;
-    TFileOperationFinishedEvent sig2;
-    sig1 = fastdelegate::bind(&TTerminal::DoProgress, this, _1, _2);
-    sig2 = fastdelegate::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6);
-    TFileOperationProgressType Progress(&sig1, &sig2);
-    // TFileOperationProgressType Progress(fastdelegate::bind(&TTerminal::DoProgress, this, _1, _2), fastdelegate::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
+    TFileOperationProgressType Progress(fastdelegate::bind(&TTerminal::DoProgress, this, _1, _2), fastdelegate::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
     TFileOperationProgressType * OperationProgress(&Progress);
     Progress.Start(Operation, Side, FileList->GetCount());
 
@@ -3113,7 +3108,7 @@ void /* __fastcall */ TTerminal::CustomCommandOnFile(UnicodeString FileName,
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::DoCustomCommandOnFile(UnicodeString FileName,
   const TRemoteFile * File, UnicodeString Command, int Params,
-  TCaptureOutputEvent * OutputEvent)
+  TCaptureOutputEvent OutputEvent)
 {
   try
   {
@@ -3145,7 +3140,7 @@ void /* __fastcall */ TTerminal::DoCustomCommandOnFile(UnicodeString FileName,
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::CustomCommandOnFiles(UnicodeString Command,
-  int Params, TStrings * Files, TCaptureOutputEvent * OutputEvent)
+  int Params, TStrings * Files, TCaptureOutputEvent OutputEvent)
 {
   if (!TRemoteCustomCommand().IsFileListCommand(Command))
   {
@@ -3852,19 +3847,16 @@ TTerminal * /* __fastcall */ TTerminal::GetCommandSession()
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::AnyCommand(const UnicodeString Command,
-  TCaptureOutputEvent * OutputEvent)
+  TCaptureOutputEvent OutputEvent)
 {
 
   class TOutputProxy
   {
   public:
-    /* __fastcall */ TOutputProxy(TCallSessionAction & Action, const TCaptureOutputEvent * OutputEvent) :
-      FAction(Action)
+    /* __fastcall */ TOutputProxy(TCallSessionAction & Action, TCaptureOutputEvent OutputEvent) :
+      FAction(Action),
+      FOutputEvent(OutputEvent)
     {
-      if (OutputEvent)
-      {
-        FOutputEvent = *OutputEvent;
-      }
     }
 
     void /* __fastcall */ Output(const UnicodeString & Str, bool StdError)
@@ -3889,12 +3881,12 @@ void /* __fastcall */ TTerminal::AnyCommand(const UnicodeString Command,
 
   TCallSessionAction Action(GetActionLog(), Command, GetCurrentDirectory());
   TOutputProxy ProxyOutputEvent(Action, OutputEvent);
-  TCaptureOutputEvent * outputEvent = reinterpret_cast<TCaptureOutputEvent *>(&fastdelegate::bind(&TOutputProxy::Output, &ProxyOutputEvent, _1, _2));
+  TCaptureOutputEvent outputEvent = fastdelegate::bind(&TOutputProxy::Output, &ProxyOutputEvent, _1, _2);
   DoAnyCommand(Command, outputEvent, &Action);
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::DoAnyCommand(const UnicodeString Command,
-  TCaptureOutputEvent * OutputEvent, TCallSessionAction * Action)
+  TCaptureOutputEvent OutputEvent, TCallSessionAction * Action)
 {
   assert(FFileSystem);
   try
@@ -4214,12 +4206,7 @@ void /* __fastcall */ TTerminal::CalculateLocalFileSize(const UnicodeString File
 void /* __fastcall */ TTerminal::CalculateLocalFilesSize(TStrings * FileList,
   __int64 & Size, const TCopyParamType * CopyParam)
 {
-  TFileOperationProgressEvent sig1;
-  TFileOperationFinishedEvent sig2;
-  sig1 = fastdelegate::bind(&TTerminal::DoProgress, this, _1, _2);
-  sig2 = fastdelegate::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6);
-  TFileOperationProgressType OperationProgress(&sig1, &sig2);
-  // TFileOperationProgressType OperationProgress(fastdelegate::bind(&TTerminal::DoProgress, this, _1, _2), fastdelegate::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
+  TFileOperationProgressType OperationProgress(fastdelegate::bind(&TTerminal::DoProgress, this, _1, _2), fastdelegate::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
   TOnceDoneOperation OnceDoneOperation = odoIdle;
   OperationProgress.Start(foCalculateSize, osLocal, FileList->GetCount());
   // try
@@ -4282,7 +4269,7 @@ struct TSynchronizeData
   UnicodeString RemoteDirectory;
   TTerminal::TSynchronizeMode Mode;
   int Params;
-  const TSynchronizeDirectoryEvent * OnSynchronizeDirectory;
+  TSynchronizeDirectoryEvent OnSynchronizeDirectory;
   TSynchronizeOptions * Options;
   int Flags;
   TStringList * LocalFileList;
@@ -4324,7 +4311,7 @@ void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeStri
   Data.RemoteDirectory = UnixIncludeTrailingBackslash(RemoteDirectory);
   Data.Mode = Mode;
   Data.Params = Params;
-  Data.OnSynchronizeDirectory = &OnSynchronizeDirectory;
+  Data.OnSynchronizeDirectory = OnSynchronizeDirectory;
   Data.LocalFileList = NULL;
   Data.CopyParam = CopyParam;
   Data.Options = Options;
@@ -4658,7 +4645,7 @@ void /* __fastcall */ TTerminal::SynchronizeCollectFile(const UnicodeString File
           DoSynchronizeCollectDirectory(
             Data->LocalDirectory + LocalData->Info.FileName,
             Data->RemoteDirectory + File->GetFileName(),
-            Data->Mode, Data->CopyParam, Data->Params, *Data->OnSynchronizeDirectory,
+            Data->Mode, Data->CopyParam, Data->Params, Data->OnSynchronizeDirectory,
             Data->Options, (Data->Flags & ~sfFirstLevel),
             Data->Checklist);
         }
@@ -4721,7 +4708,7 @@ void /* __fastcall */ TTerminal::SynchronizeApply(TSynchronizeChecklist * Checkl
 {
   TSynchronizeData Data;
 
-  Data.OnSynchronizeDirectory = &OnSynchronizeDirectory;
+  Data.OnSynchronizeDirectory = OnSynchronizeDirectory;
 
   int CopyParams =
     FLAGMASK(FLAGSET(Params, spNoConfirmation), cpNoConfirmation);
@@ -4912,16 +4899,11 @@ void /* __fastcall */ TTerminal::SynchronizeApply(TSynchronizeChecklist * Checkl
 void /* __fastcall */ TTerminal::DoSynchronizeProgress(const TSynchronizeData & Data,
   bool Collect)
 {
-  if (Data.OnSynchronizeDirectory != NULL)
+  if (!Data.OnSynchronizeDirectory.empty())
   {
     bool Continue = true;
-    TSynchronizeDirectoryEvent sig;
-    if (Data.OnSynchronizeDirectory)
-    {
-      sig = *Data.OnSynchronizeDirectory;
-      sig(Data.LocalDirectory, Data.RemoteDirectory,
-        Continue, Collect);
-    }
+    Data.OnSynchronizeDirectory(Data.LocalDirectory, Data.RemoteDirectory,
+      Continue, Collect);
 
     if (!Continue)
     {
@@ -5134,12 +5116,7 @@ bool /* __fastcall */ TTerminal::CopyToRemote(TStrings * FilesToCopy,
   bool Result = false;
   TOnceDoneOperation OnceDoneOperation = odoIdle;
 
-  TFileOperationProgressEvent sig1;
-  TFileOperationFinishedEvent sig2;
-  sig1 = fastdelegate::bind(&TTerminal::DoProgress, this, _1, _2);
-  sig2 = fastdelegate::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6);
-  TFileOperationProgressType OperationProgress(&sig1, &sig2);
-  // TFileOperationProgressType OperationProgress(fastdelegate::bind(&TTerminal::DoProgress, this, _1, _2), fastdelegate::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
+  TFileOperationProgressType OperationProgress(fastdelegate::bind(&TTerminal::DoProgress, this, _1, _2), fastdelegate::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
   try
   {
 
@@ -5264,12 +5241,7 @@ bool /* __fastcall */ TTerminal::CopyToLocal(TStrings * FilesToCopy,
       } BOOST_SCOPE_EXIT_END
       __int64 TotalSize = 0;
       bool TotalSizeKnown = false;
-      TFileOperationProgressEvent sig1;
-      TFileOperationFinishedEvent sig2;
-      sig1 = fastdelegate::bind(&TTerminal::DoProgress, this, _1, _2);
-      sig2 = fastdelegate::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6);
-      TFileOperationProgressType OperationProgress(&sig1, &sig2);
-      // TFileOperationProgressType OperationProgress(fastdelegate::bind(&TTerminal::DoProgress, this, _1, _2), fastdelegate::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
+      TFileOperationProgressType OperationProgress(fastdelegate::bind(&TTerminal::DoProgress, this, _1, _2), fastdelegate::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
 
       if (CopyParam->GetCalculateSize())
       {

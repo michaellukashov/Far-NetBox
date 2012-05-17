@@ -1395,7 +1395,7 @@ void __fastcall TSCPFileSystem::CalculateFilesChecksum(const UnicodeString & /*A
 //---------------------------------------------------------------------------
 void /* __fastcall */ TSCPFileSystem::CustomCommandOnFile(const UnicodeString FileName,
     const TRemoteFile * File, UnicodeString Command, int Params,
-    TCaptureOutputEvent * OutputEvent)
+    TCaptureOutputEvent OutputEvent)
 {
   assert(File);
   bool Dir = File->GetIsDirectory() && !File->GetIsSymLink();
@@ -1435,13 +1435,13 @@ void /* __fastcall */ TSCPFileSystem::CaptureOutput(const UnicodeString & AddedL
 }
 //---------------------------------------------------------------------------
 void __fastcall TSCPFileSystem::AnyCommand(const UnicodeString Command,
-  TCaptureOutputEvent * OutputEvent)
+  TCaptureOutputEvent OutputEvent)
 {
   assert(FSecureShell->GetOnCaptureOutput().empty());
   if (OutputEvent != NULL)
   {
     FSecureShell->SetOnCaptureOutput(fastdelegate::bind(&TSCPFileSystem::CaptureOutput, this, _1, _2));
-    FOnCaptureOutput = *OutputEvent;
+    FOnCaptureOutput = OutputEvent;
   }
   // try
   {

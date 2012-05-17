@@ -238,16 +238,6 @@ private:
   TTunnelUI * FTunnelUI;
   int FTunnelLocalPortNumber;
   UnicodeString FTunnelError;
-#ifndef _MSC_VER
-  TQueryUserEvent FOnQueryUser;
-  TPromptUserEvent FOnPromptUser;
-  TDisplayBannerEvent FOnDisplayBanner;
-  TExtendedExceptionEvent FOnShowExtendedException;
-  TInformationEvent FOnInformation;
-  TNotifyEvent FOnClose;
-  TCallbackGuard * FCallbackGuard;
-  TFindingFileEvent FOnFindingFile;
-#else
   TQueryUserEvent FOnQueryUser;
   TPromptUserEvent FOnPromptUser;
   TDisplayBannerEvent FOnDisplayBanner;
@@ -259,7 +249,6 @@ private:
   TTerminal *Self;
 
 public:
-#endif
   void __fastcall CommandError(Exception * E, const UnicodeString Msg);
   unsigned int __fastcall CommandError(Exception * E, const UnicodeString Msg, unsigned int Answers);
   UnicodeString __fastcall GetCurrentDirectory();
@@ -296,7 +285,7 @@ protected:
   void /* __fastcall */ DoDeleteFile(const UnicodeString FileName, const TRemoteFile * File,
     int Params);
   void /* __fastcall */ DoCustomCommandOnFile(UnicodeString FileName,
-    const TRemoteFile * File, UnicodeString Command, int Params, TCaptureOutputEvent * OutputEvent);
+    const TRemoteFile * File, UnicodeString Command, int Params, TCaptureOutputEvent OutputEvent);
   void /* __fastcall */ DoRenameFile(const UnicodeString FileName,
     const UnicodeString NewName, bool Move);
   void /* __fastcall */ DoCopyFile(const UnicodeString FileName, const UnicodeString NewName);
@@ -401,7 +390,7 @@ protected:
     const UnicodeString & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
   void __fastcall RollbackAction(TSessionAction & Action,
     TFileOperationProgressType * OperationProgress, Exception * E = NULL);
-  void /* __fastcall */ DoAnyCommand(const UnicodeString Command, TCaptureOutputEvent * OutputEvent,
+  void /* __fastcall */ DoAnyCommand(const UnicodeString Command, TCaptureOutputEvent OutputEvent,
     TCallSessionAction * Action);
   TRemoteFileList * /* __fastcall */ DoReadDirectoryListing(UnicodeString Directory, bool UseCache);
   RawByteString __fastcall EncryptPassword(const UnicodeString & Password);
@@ -426,7 +415,7 @@ public:
   void __fastcall Idle();
   void __fastcall RecryptPasswords();
   bool __fastcall AllowedAnyCommand(const UnicodeString Command);
-  void __fastcall AnyCommand(const UnicodeString Command, TCaptureOutputEvent * OutputEvent);
+  void __fastcall AnyCommand(const UnicodeString Command, TCaptureOutputEvent OutputEvent);
   void __fastcall CloseOnCompletion(TOnceDoneOperation Operation = odoDisconnect, const UnicodeString Message = L"");
   UnicodeString __fastcall AbsolutePath(UnicodeString Path, bool Local);
   void __fastcall BeginTransaction();
@@ -453,7 +442,7 @@ public:
   void /* __fastcall */ CustomCommandOnFile(UnicodeString FileName,
     const TRemoteFile * File, void * AParams);
   void __fastcall CustomCommandOnFiles(UnicodeString Command, int Params,
-    TStrings * Files, TCaptureOutputEvent * OutputEvent);
+    TStrings * Files, TCaptureOutputEvent OutputEvent);
   void __fastcall ChangeDirectory(const UnicodeString Directory);
   void __fastcall EndTransaction();
   void __fastcall HomeDirectory();
@@ -658,7 +647,7 @@ struct TCustomCommandParams
   TCustomCommandParams(
     UnicodeString Command,
     int Params,
-    TCaptureOutputEvent * OutputEvent) :
+    TCaptureOutputEvent OutputEvent) :
     Command(Command),
     Params(Params),
     OutputEvent(OutputEvent)
@@ -666,7 +655,7 @@ struct TCustomCommandParams
   }
   UnicodeString Command;
   int Params;
-  TCaptureOutputEvent * OutputEvent;
+  TCaptureOutputEvent OutputEvent;
 private:
   TCustomCommandParams(const TCustomCommandParams &);
   void operator=(const TCustomCommandParams &);

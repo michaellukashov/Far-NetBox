@@ -42,8 +42,8 @@ private:
   // when current file was started being transfered
   TDateTime FFileStartTime;
   int FFilesFinished;
-  TFileOperationProgressEvent * FOnProgress;
-  TFileOperationFinishedEvent * FOnFinished;
+  TFileOperationProgressEvent FOnProgress;
+  TFileOperationFinishedEvent FOnFinished;
   bool FReset;
   unsigned int FLastSecond;
   unsigned long FRemainingCPS;
@@ -93,7 +93,7 @@ public:
 
   explicit /* __fastcall */ TFileOperationProgressType();
   explicit /* __fastcall */ TFileOperationProgressType(
-    TFileOperationProgressEvent * AOnProgress, TFileOperationFinishedEvent * AOnFinished);
+    TFileOperationProgressEvent AOnProgress, TFileOperationFinishedEvent AOnFinished);
   virtual /* __fastcall */ ~TFileOperationProgressType();
   void __fastcall AddLocallyUsed(__int64 ASize);
   void __fastcall AddTransfered(__int64 ASize, bool AddToTotals = true);

@@ -405,15 +405,15 @@ protected:
 private:
   TTerminal * FTerminal;
 
-  TInformationEvent * FOnInformation;
-  TQueryUserEvent * FOnQueryUser;
-  TPromptUserEvent * FOnPromptUser;
-  TExtendedExceptionEvent * FOnShowExtendedException;
-  TDisplayBannerEvent * FOnDisplayBanner;
-  TNotifyEvent * FOnChangeDirectory;
-  TReadDirectoryEvent * FOnReadDirectory;
-  TNotifyEvent * FOnStartReadDirectory;
-  TReadDirectoryProgressEvent * FOnReadDirectoryProgress;
+  TInformationEvent FOnInformation;
+  TQueryUserEvent FOnQueryUser;
+  TPromptUserEvent FOnPromptUser;
+  TExtendedExceptionEvent FOnShowExtendedException;
+  TDisplayBannerEvent FOnDisplayBanner;
+  TNotifyEvent FOnChangeDirectory;
+  TReadDirectoryEvent FOnReadDirectory;
+  TNotifyEvent FOnStartReadDirectory;
+  TReadDirectoryProgressEvent FOnReadDirectoryProgress;
 
   TNotifyEvent FOnIdle;
 

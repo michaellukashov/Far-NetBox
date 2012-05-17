@@ -911,7 +911,7 @@ bool TWebDAVFileSystem::ConfirmOverwrite(UnicodeString & FileName,
 
 //---------------------------------------------------------------------------
 void /* __fastcall */ TWebDAVFileSystem::CustomCommandOnFile(const UnicodeString FileName,
-  const TRemoteFile * File, UnicodeString Command, int Params, TCaptureOutputEvent * OutputEvent)
+  const TRemoteFile * File, UnicodeString Command, int Params, TCaptureOutputEvent OutputEvent)
 {
   assert(File);
   bool Dir = File->GetIsDirectory() && !File->GetIsSymLink();
@@ -946,7 +946,7 @@ void __fastcall TWebDAVFileSystem::CaptureOutput(const UnicodeString AddedLine, 
 }
 //---------------------------------------------------------------------------
 void __fastcall TWebDAVFileSystem::AnyCommand(const UnicodeString Command,
-  TCaptureOutputEvent * OutputEvent)
+  TCaptureOutputEvent OutputEvent)
 {
   Error(SNotImplemented, 1008);
 }

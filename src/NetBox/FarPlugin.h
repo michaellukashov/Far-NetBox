@@ -118,7 +118,7 @@ public:
     const int * BreakKeys, int & BreakCode);
   bool __fastcall InputBox(const UnicodeString Title, const UnicodeString Prompt,
     UnicodeString & Text, unsigned long Flags, const UnicodeString HistoryName = L"",
-    size_t MaxLen = 255, TFarInputBoxValidateEvent * OnValidate = NULL);
+    size_t MaxLen = 255, TFarInputBoxValidateEvent OnValidate = NULL);
   UnicodeString __fastcall GetMsg(int MsgId);
   void __fastcall SaveScreen(HANDLE & Screen);
   void __fastcall RestoreScreen(HANDLE & Screen);

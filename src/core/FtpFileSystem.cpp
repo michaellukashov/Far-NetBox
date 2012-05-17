@@ -634,14 +634,14 @@ void __fastcall TFTPFileSystem::EnsureLocation()
 }
 //---------------------------------------------------------------------------
 void __fastcall TFTPFileSystem::AnyCommand(const UnicodeString Command,
-  TCaptureOutputEvent * OutputEvent)
+  TCaptureOutputEvent OutputEvent)
 {
   // end-user has right to expect that client current directory is really
   // current directory for the server
   EnsureLocation();
 
   assert(FOnCaptureOutput.empty());
-  FOnCaptureOutput = *OutputEvent;
+  FOnCaptureOutput = OutputEvent;
   // try
   {
     BOOST_SCOPE_EXIT ( (&Self) )
@@ -1735,7 +1735,7 @@ void __fastcall TFTPFileSystem::DeleteFile(const UnicodeString AFileName,
 //---------------------------------------------------------------------------
 void /* __fastcall */ TFTPFileSystem::CustomCommandOnFile(const UnicodeString /*FileName*/,
   const TRemoteFile * /*File*/, UnicodeString /*Command*/, int /*Params*/,
-  TCaptureOutputEvent * /*OutputEvent*/)
+  TCaptureOutputEvent /*OutputEvent*/)
 {
   // if ever implemented, do not forget to add EnsureLocation,
   // see AnyCommand for a reason why
