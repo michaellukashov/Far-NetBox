@@ -646,7 +646,7 @@ void __fastcall TFTPFileSystem::AnyCommand(const UnicodeString Command,
   {
     BOOST_SCOPE_EXIT ( (&Self) )
     {
-      Self->FOnCaptureOutput.disconnect_all_slots();
+      Self->FOnCaptureOutput.clear();
     } BOOST_SCOPE_EXIT_END
     FFileZillaIntf->CustomCommand(Command.c_str());
 
@@ -3390,7 +3390,7 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       TQueryButtonAlias Aliases[1];
       Aliases[0].Button = qaRetry;
       Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);
-      Aliases[0].OnClick = fastdelegate::bind(&TClipboardHandler::Copy, ClipboardHandler, _1));
+      Aliases[0].OnClick = fastdelegate::bind(&TClipboardHandler::Copy, &ClipboardHandler, _1);
 
       TQueryParams Params;
       Params.HelpKeyword = HELP_VERIFY_CERTIFICATE;

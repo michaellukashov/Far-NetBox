@@ -307,14 +307,14 @@ private:
   void /* __fastcall */ TerminalInformation(TTerminal * Terminal,
     const UnicodeString & Str, bool Status, int Phase);
   void /* __fastcall */ TerminalQueryUser(TObject * Sender,
-    const UnicodeString & Query, TStrings * MoreMessages, unsigned int Answers,
+    UnicodeString Query, TStrings * MoreMessages, unsigned int Answers,
     const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * Arg);
   void /* __fastcall */ TerminalPromptUser(TTerminal * Terminal,
     TPromptKind Kind, UnicodeString Name, UnicodeString Instructions,
     TStrings * Prompts, TStrings * Results, bool & Result,
     void * Arg);
   void /* __fastcall */ TerminalDisplayBanner(TTerminal * Terminal,
-    UnicodeString & SessionName, const UnicodeString & Banner, bool & NeverShowAgain,
+    UnicodeString SessionName, UnicodeString Banner, bool & NeverShowAgain,
     int Options);
   void /* __fastcall */ TerminalShowExtendedException(TTerminal * Terminal,
     Exception * E, void * Arg);

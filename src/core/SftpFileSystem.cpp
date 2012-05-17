@@ -3784,7 +3784,7 @@ void __fastcall TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Al
 {
   TFileOperationProgressEvent sig1;
   TFileOperationFinishedEvent sig2;
-  sig = fastdelegate::bind(&TTerminal::DoProgress, FTerminal, _1, _2);
+  sig1 = fastdelegate::bind(&TTerminal::DoProgress, FTerminal, _1, _2);
   sig2 = fastdelegate::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6);
   TFileOperationProgressType Progress(&sig1, &sig2);
   // TFileOperationProgressType Progress(fastdelegate::bind(&TTerminal::DoProgress, FTerminal, _1, _2), fastdelegate::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6));

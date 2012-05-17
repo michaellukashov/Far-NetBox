@@ -453,7 +453,7 @@ private:
   void /* __fastcall */ TerminalShowExtendedException(TTerminal * Terminal,
     Exception * E, void * Arg);
   void /* __fastcall */ TerminalDisplayBanner(TTerminal * Terminal,
-    UnicodeString SessionName, const UnicodeString & Banner,
+    UnicodeString SessionName, UnicodeString Banner,
     bool & NeverShowAgain, int Options);
   void /* __fastcall */ TerminalChangeDirectory(TObject * Sender);
   void /* __fastcall */ TerminalReadDirectory(TObject * Sender, Boolean ReloadOnly);

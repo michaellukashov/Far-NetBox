@@ -68,13 +68,13 @@ typedef void __fastcall (__closure *TInformationEvent)
   (TTerminal * Terminal, const UnicodeString & Str, bool Status, int Phase);
 #else
 typedef fastdelegate::FastDelegate8<void,
-  TObject * /* Sender */, const UnicodeString & /* Query */, TStrings * /* MoreMessages */ , unsigned int /* Answers */,
+  TObject * /* Sender */, UnicodeString /* Query */, TStrings * /* MoreMessages */ , unsigned int /* Answers */,
   const TQueryParams * /* Params */, unsigned int & /* Answer */, TQueryType /* QueryType */, void * /* Arg */ > TQueryUserEvent;
 typedef fastdelegate::FastDelegate8<void,
   TTerminal * /* Terminal */, TPromptKind /* Kind */, UnicodeString /* Name */, UnicodeString /* Instructions */,
   TStrings * /* Prompts */, TStrings * /* Results */, bool & /* Result */, void * /* Arg */> TPromptUserEvent;
 typedef fastdelegate::FastDelegate5<void,
-  TTerminal * /* Terminal */, UnicodeString & /* SessionName */, const UnicodeString & /* Banner */,
+  TTerminal * /* Terminal */, UnicodeString /* SessionName */, UnicodeString /* Banner */,
   bool & /* NeverShowAgain */, int /* Options */> TDisplayBannerEvent;
 typedef fastdelegate::FastDelegate3<void,
   TTerminal * /* Terminal */, Exception * /* E */, void * /* Arg */> TExtendedExceptionEvent;
@@ -468,11 +468,11 @@ public:
   void __fastcall RefreshDirectory();
   void __fastcall RenameFile(const UnicodeString FileName, const UnicodeString NewName);
   void __fastcall RenameFile(const TRemoteFile * File, const UnicodeString NewName, bool CheckExistence);
-  void /* __fastcall */ MoveFile(const UnicodeString & FileName, const TRemoteFile * File,
+  void /* __fastcall */ MoveFile(UnicodeString FileName, const TRemoteFile * File,
     /*const TMoveFileParams*/ void * Param);
   bool __fastcall MoveFiles(TStrings * FileList, const UnicodeString Target,
     const UnicodeString FileMask);
-  void /* __fastcall */ CopyFile(const UnicodeString & FileName, const TRemoteFile * File,
+  void /* __fastcall */ CopyFile(UnicodeString FileName, const TRemoteFile * File,
     /*const TMoveFileParams*/ void * Param);
   bool __fastcall CopyFiles(TStrings * FileList, const UnicodeString Target,
     const UnicodeString FileMask);

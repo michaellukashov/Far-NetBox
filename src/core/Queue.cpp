@@ -2209,10 +2209,10 @@ void __fastcall TTerminalThread::TerminalReopen()
 //---------------------------------------------------------------------------
 void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
 {
-  // assert(FAction == NULL);
+  assert(FAction.empty());
   assert(FException == NULL);
   assert(FIdleException == NULL);
-  // assert(FOnIdle != NULL);
+  assert(!FOnIdle.empty());
 
   FCancelled = false;
   FAction = Action;
@@ -2222,7 +2222,7 @@ void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
     {
       BOOST_SCOPE_EXIT ( (&Self) )
       {
-        Self->FAction.disconnect_all_slots();
+        Self->FAction = NULL;
         SAFE_DESTROY(Self->FException);
       } BOOST_SCOPE_EXIT_END
       TriggerEvent();
@@ -2531,7 +2531,7 @@ void /* __fastcall */ TTerminalThread::TerminalShowExtendedException(
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminalThread::TerminalDisplayBanner(TTerminal * Terminal,
-  UnicodeString SessionName, const UnicodeString & Banner,
+  UnicodeString SessionName, UnicodeString Banner,
   bool & NeverShowAgain, int Options)
 {
   TDisplayBannerAction Action(*FOnDisplayBanner);

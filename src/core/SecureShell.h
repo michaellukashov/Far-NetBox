@@ -91,7 +91,7 @@ public:
   bool __fastcall GetReady();
   void __fastcall DispatchSendBuffer(int BufSize);
   void /* __fastcall */ SendBuffer(unsigned int & Result);
-  unsigned int __fastcall TimeoutPrompt(TQueryParamsTimerEvent * PoolEvent);
+  unsigned int __fastcall TimeoutPrompt(TQueryParamsTimerEvent PoolEvent);
 
 protected:
   TCaptureOutputEvent FOnCaptureOutput;

@@ -3463,7 +3463,7 @@ void /* __fastcall */ TTerminal::DoRenameFile(const UnicodeString FileName,
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TTerminal::MoveFile(const UnicodeString & FileName,
+void /* __fastcall */ TTerminal::MoveFile(UnicodeString FileName,
   const TRemoteFile * File, /*const TMoveFileParams*/ void * Param)
 {
   if (GetOperationProgress() &&
@@ -3612,7 +3612,7 @@ void /* __fastcall */ TTerminal::DoCopyFile(const UnicodeString FileName,
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TTerminal::CopyFile(const UnicodeString FileName,
+void /* __fastcall */ TTerminal::CopyFile(UnicodeString FileName,
   const TRemoteFile * /*File*/, /*const TMoveFileParams*/ void * Param)
 {
   if (GetOperationProgress() && (GetOperationProgress()->Operation == foRemoteCopy))

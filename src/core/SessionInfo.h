@@ -212,7 +212,7 @@ public:
 };
 //---------------------------------------------------------------------------
 typedef fastdelegate::FastDelegate2<void,
-  TLogLineType, const UnicodeString> TDoAddLogEvent;
+  TLogLineType, UnicodeString> TDoAddLogEvent;
 //---------------------------------------------------------------------------
 class TSessionLog : protected TStringList
 {
@@ -292,8 +292,8 @@ public:
   void __fastcall DoAdd(TLogLineType Type, UnicodeString Line,
     // void __fastcall (__closure *f)(TLogLineType Type, const UnicodeString & Line));
     TDoAddLogEvent Event);
-  void /* __fastcall */ DoAddToParent(TLogLineType aType, const UnicodeString & aLine);
-  void /* __fastcall */ DoAddToSelf(TLogLineType aType, const UnicodeString & aLine);
+  void /* __fastcall */ DoAddToParent(TLogLineType aType, UnicodeString aLine);
+  void /* __fastcall */ DoAddToSelf(TLogLineType aType, UnicodeString aLine);
   void /* __fastcall */ DoAddStartupInfo(TSessionData * Data);
 };
 //---------------------------------------------------------------------------

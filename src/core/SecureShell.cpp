@@ -692,7 +692,7 @@ void __fastcall TSecureShell::UnregisterReceiveHandler(TNotifyEvent Handler)
 {
   assert(!FOnReceive.empty());
   USEDPARAM(Handler);
-  FOnReceive.disconnect_all_slots();
+  FOnReceive.clear();
 }
 //---------------------------------------------------------------------------
 void __fastcall TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, int Length)
@@ -912,7 +912,7 @@ void __fastcall TSecureShell::SendEOF()
   SendSpecial(TS_EOF);
 }
 //---------------------------------------------------------------------------
-unsigned int __fastcall TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent * PoolEvent)
+unsigned int __fastcall TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
 {
   FWaiting++;
 
@@ -1443,8 +1443,7 @@ void __fastcall TSecureShell::WaitForData()
       TPoolForDataEvent Event(this, Events);
 
       LogEvent(L"Waiting for data timed out, asking user what to do.");
-      TQueryParamsTimerEvent slot = fastdelegate::bind(&TPoolForDataEvent::PoolForData, &Event, _1);
-      unsigned int Answer = TimeoutPrompt(&slot);
+      unsigned int Answer = TimeoutPrompt(fastdelegate::bind(&TPoolForDataEvent::PoolForData, &Event, _1));
       switch (Answer)
       {
         case qaRetry:
@@ -1893,7 +1892,7 @@ void __fastcall TSecureShell::VerifyHostKey(UnicodeString Host, int Port,
       TQueryButtonAlias Aliases[3];
       Aliases[0].Button = qaRetry;
       Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);
-      Aliases[0].OnClick = fastdelegate::bind(&TClipboardHandler::Copy, ClipboardHandler, _1);
+      Aliases[0].OnClick = fastdelegate::bind(&TClipboardHandler::Copy, &ClipboardHandler, _1);
       Answers = qaYes | qaCancel | qaRetry;
       AliasesCount = 1;
       if (!Unknown)

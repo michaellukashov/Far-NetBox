@@ -3610,7 +3610,7 @@ int __fastcall TWinSCPFileSystem::MoreMessageDialog(const UnicodeString Str,
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TWinSCPFileSystem::TerminalQueryUser(TObject * /*Sender*/,
-  const UnicodeString & Query, TStrings * MoreMessages, unsigned int Answers,
+  UnicodeString Query, TStrings * MoreMessages, unsigned int Answers,
   const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * /*Arg*/)
 {
   TMessageParams AParams;
@@ -3663,8 +3663,8 @@ void /* __fastcall */ TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TWinSCPFileSystem::TerminalDisplayBanner(
-  TTerminal * /*Terminal*/, UnicodeString & SessionName,
-  const UnicodeString & Banner, bool & NeverShowAgain, int Options)
+  TTerminal * /*Terminal*/, UnicodeString SessionName,
+  UnicodeString Banner, bool & NeverShowAgain, int Options)
 {
   BannerDialog(SessionName, Banner, NeverShowAgain, Options);
 }
