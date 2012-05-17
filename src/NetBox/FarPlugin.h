@@ -1,7 +1,6 @@
 #pragma once
 
 #include "boostdefines.hpp"
-#include <boost/signals/signal3.hpp>
 
 #pragma warning(push, 1)
 #include "Classes.h"
@@ -32,18 +31,16 @@ enum THandlesFunction { hfProcessKey, hfProcessHostFile, hfProcessEvent };
 typedef void __fastcall (__closure * TFarInputBoxValidateEvent)
   (AnsiString & Text);
 #else
-typedef boost::signal1<void, UnicodeString &> TFarInputBoxValidateSignal;
-typedef TFarInputBoxValidateSignal::slot_type TFarInputBoxValidateEvent;
+typedef fastdelegate::FastDelegate1<void,
+  UnicodeString &> TFarInputBoxValidateEvent;
 #endif
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
 typedef void __fastcall (__closure *TFarMessageTimerEvent)(unsigned int & Result);
 typedef void __fastcall (__closure *TFarMessageClickEvent)(void * Token, int Result, bool & Close);
 #else
-typedef boost::signal1<void, unsigned int &> TFarMessageTimerSignal;
-typedef TFarMessageTimerSignal::slot_type TFarMessageTimerEvent;
-typedef boost::signal3<void, void *, int, bool &> TFarMessageClickSignal;
-typedef TFarMessageClickSignal::slot_type TFarMessageClickEvent;
+typedef fastdelegate::FastDelegate1<void, unsigned int &> TFarMessageTimerEvent;
+typedef fastdelegate::FastDelegate3<void, void *, int, bool &> TFarMessageClickEvent;
 #endif
 
 //---------------------------------------------------------------------------
@@ -56,7 +53,7 @@ struct TFarMessageParams
   bool CheckBox;
   unsigned int Timer;
   unsigned int TimerAnswer;
-  TFarMessageTimerEvent * TimerEvent;
+  TFarMessageTimerEvent TimerEvent;
   unsigned int Timeout;
   unsigned int TimeoutButton;
   UnicodeString TimeoutStr;

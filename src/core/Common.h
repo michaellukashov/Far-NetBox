@@ -6,7 +6,6 @@
 #include <WinBase.h>
 
 #include "boostdefines.hpp"
-#include <boost/signals/signal3.hpp>
 
 #include "Classes.h"
 #include "UnicodeString.hpp"
@@ -118,7 +117,8 @@ UnicodeString __fastcall WindowsProductName();
 typedef void __fastcall (__closure* TProcessLocalFileEvent)
   (const UnicodeString FileName, const TSearchRec Rec, void * Param);
 #else
-typedef fastdelegate::FastDelegate3<void, UnicodeString, TSearchRec /* Rec */, void * /* Param */> TProcessLocalFileEvent;
+typedef fastdelegate::FastDelegate3<void,
+  UnicodeString, TSearchRec /* Rec */, void * /* Param */> TProcessLocalFileEvent;
 #endif
 bool __fastcall FileSearchRec(const UnicodeString FileName, TSearchRec & Rec);
 void __fastcall ProcessLocalDirectory(UnicodeString DirName,

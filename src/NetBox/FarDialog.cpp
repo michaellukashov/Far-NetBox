@@ -7,7 +7,6 @@
 
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
-#include <boost/bind.hpp>
 #endif
 
 #include <map>
@@ -900,7 +899,7 @@ void __fastcall TFarDialog::ProcessGroup(int Group, const TFarProcessGroupEvent 
     {
       Self->UnlockChanges();
     } BOOST_SCOPE_EXIT_END
-    TFarProcessGroupSignal processgroupevent;
+    TFarProcessGroupEvent processgroupevent;
     processgroupevent.connect(Callback);
     for (int i = 0; i < GetItemCount(); i++)
     {

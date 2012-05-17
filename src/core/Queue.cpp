@@ -37,7 +37,7 @@ private:
 class TNotifyAction : public TUserAction
 {
 public:
-  explicit /* __fastcall */ TNotifyAction(const TNotifySignal & AOnNotify) :
+  explicit /* __fastcall */ TNotifyAction(const TNotifyEvent & AOnNotify) :
     OnNotify(AOnNotify),
     Sender(NULL)
   {
@@ -51,7 +51,7 @@ public:
     }
   }
 
-  const TNotifySignal & OnNotify;
+  const TNotifyEvent & OnNotify;
   TObject * Sender;
 private:
   TNotifyAction(const TNotifyAction &);
@@ -61,7 +61,7 @@ private:
 class TInformationUserAction : public TUserAction
 {
 public:
-  explicit /* __fastcall */ TInformationUserAction(const TInformationSignal & AOnInformation) :
+  explicit /* __fastcall */ TInformationUserAction(const TInformationEvent & AOnInformation) :
     OnInformation(AOnInformation),
     Terminal(NULL),
     Status(false),
@@ -77,7 +77,7 @@ public:
     }
   }
 
-  const TInformationSignal & OnInformation;
+  const TInformationEvent & OnInformation;
   TTerminal * Terminal;
   UnicodeString Str;
   bool Status;
@@ -90,7 +90,7 @@ private:
 class TQueryUserAction : public TUserAction
 {
 public:
-  explicit /* __fastcall */ TQueryUserAction(const TQueryUserSignal & AOnQueryUser) :
+  explicit /* __fastcall */ TQueryUserAction(const TQueryUserEvent & AOnQueryUser) :
     OnQueryUser(AOnQueryUser),
     Sender(NULL),
     MoreMessages(NULL),
@@ -108,7 +108,7 @@ public:
     }
   }
 
-  const TQueryUserSignal & OnQueryUser;
+  const TQueryUserEvent & OnQueryUser;
   TObject * Sender;
   UnicodeString Query;
   TStrings * MoreMessages;
@@ -124,7 +124,7 @@ private:
 class TPromptUserAction : public TUserAction
 {
 public:
-  explicit /* __fastcall */ TPromptUserAction(const TPromptUserSignal & AOnPromptUser) :
+  explicit /* __fastcall */ TPromptUserAction(const TPromptUserEvent & AOnPromptUser) :
     OnPromptUser(AOnPromptUser),
     Terminal(NULL),
     Kind(pkPrompt),
@@ -146,7 +146,7 @@ public:
     }
   }
 
-  const TPromptUserSignal & OnPromptUser;
+  const TPromptUserEvent & OnPromptUser;
   TTerminal * Terminal;
   TPromptKind Kind;
   UnicodeString Name;
@@ -162,7 +162,7 @@ private:
 class TShowExtendedExceptionAction : public TUserAction
 {
 public:
-  explicit /* __fastcall */ TShowExtendedExceptionAction(const TExtendedExceptionSignal & AOnShowExtendedException) :
+  explicit /* __fastcall */ TShowExtendedExceptionAction(const TExtendedExceptionEvent & AOnShowExtendedException) :
     OnShowExtendedException(AOnShowExtendedException),
     Terminal(NULL),
     E(NULL)
@@ -177,7 +177,7 @@ public:
     }
   }
 
-  const TExtendedExceptionSignal & OnShowExtendedException;
+  const TExtendedExceptionEvent & OnShowExtendedException;
   TTerminal * Terminal;
   Exception * E;
 private:
@@ -188,7 +188,7 @@ private:
 class TDisplayBannerAction : public TUserAction
 {
 public:
-  explicit /* __fastcall */ TDisplayBannerAction(const TDisplayBannerSignal & AOnDisplayBanner) :
+  explicit /* __fastcall */ TDisplayBannerAction(const TDisplayBannerEvent & AOnDisplayBanner) :
     OnDisplayBanner(AOnDisplayBanner),
     Terminal(NULL),
     NeverShowAgain(false),
@@ -204,7 +204,7 @@ public:
     }
   }
 
-  const TDisplayBannerSignal & OnDisplayBanner;
+  const TDisplayBannerEvent & OnDisplayBanner;
   TTerminal * Terminal;
   UnicodeString SessionName;
   UnicodeString Banner;
@@ -218,7 +218,7 @@ private:
 class TReadDirectoryAction : public TUserAction
 {
 public:
-  explicit /* __fastcall */ TReadDirectoryAction(const TReadDirectorySignal & AOnReadDirectory) :
+  explicit /* __fastcall */ TReadDirectoryAction(const TReadDirectoryEvent & AOnReadDirectory) :
     OnReadDirectory(AOnReadDirectory),
     Sender(NULL),
     ReloadOnly(false)
@@ -233,7 +233,7 @@ public:
     }
   }
 
-  const TReadDirectorySignal & OnReadDirectory;
+  const TReadDirectoryEvent & OnReadDirectory;
   TObject * Sender;
   bool ReloadOnly;
 private:
@@ -244,7 +244,7 @@ private:
 class TReadDirectoryProgressAction : public TUserAction
 {
 public:
-  explicit /* __fastcall */ TReadDirectoryProgressAction(const TReadDirectoryProgressSignal & AOnReadDirectoryProgress) :
+  explicit /* __fastcall */ TReadDirectoryProgressAction(const TReadDirectoryProgressEvent & AOnReadDirectoryProgress) :
     OnReadDirectoryProgress(AOnReadDirectoryProgress),
     Sender(NULL),
     Progress(0),
@@ -260,7 +260,7 @@ public:
     }
   }
 
-  const TReadDirectoryProgressSignal & OnReadDirectoryProgress;
+  const TReadDirectoryProgressEvent & OnReadDirectoryProgress;
   TObject * Sender;
   int Progress;
   bool Cancel;

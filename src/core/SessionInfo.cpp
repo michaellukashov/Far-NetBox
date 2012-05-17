@@ -774,7 +774,7 @@ void __fastcall TSessionLog::DoAdd(TLogLineType Type, UnicodeString Line,
     Prefix = L"[" + GetName() + L"] ";
   }
 
-  TDoAddLogSignal sig;
+  TDoAddLogEvent sig;
   sig.connect(func);
   while (!Line.IsEmpty())
   {

@@ -39,7 +39,7 @@ private:
   const unsigned int * FMinPacketSize;
   const unsigned int * FMaxPacketSize;
   Config * FConfig;
-  TNotifySignal FOnReceive;
+  TNotifyEvent FOnReceive;
   bool FFrozen;
   bool FDataWhileFrozen;
   bool FStoredPasswordTried;
@@ -94,7 +94,7 @@ public:
   unsigned int __fastcall TimeoutPrompt(TQueryParamsTimerEvent * PoolEvent);
 
 protected:
-  TCaptureOutputSignal FOnCaptureOutput;
+  TCaptureOutputEvent FOnCaptureOutput;
 
   void __fastcall GotHostKey();
   int __fastcall TranslatePuttyMessage(const TPuttyTranslation * Translation,
@@ -165,7 +165,7 @@ public:
   __property bool Simple = { read = FSimple, write = FSimple };
 #else
   bool __fastcall GetActive() { return FActive; }
-  TCaptureOutputSignal & GetOnCaptureOutput() { return FOnCaptureOutput; }
+  TCaptureOutputEvent & GetOnCaptureOutput() { return FOnCaptureOutput; }
   void SetOnCaptureOutput(const TCaptureOutputEvent & value) { FOnCaptureOutput.connect(value); }
   TDateTime GetLastDataSent() { return FLastDataSent; }
   UnicodeString GetLastTunnelError() { return FLastTunnelError; }

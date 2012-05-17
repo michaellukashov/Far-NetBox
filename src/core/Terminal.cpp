@@ -91,8 +91,8 @@ struct TFilesFindParams
   {
   }
   TFileMasks FileMask;
-  const TFileFoundEvent * OnFileFound;
-  const TFindingFileEvent * OnFindingFile;
+  TFileFoundEvent OnFileFound;
+  TFindingFileEvent OnFindingFile;
   bool Cancel;
 };
 //---------------------------------------------------------------------------
@@ -1569,7 +1569,7 @@ int /* __fastcall */ TTerminal::FileOperationLoop(const TFileOperationEvent & Ca
   const UnicodeString Message, void * Param1, void * Param2)
 {
   // assert(CallBackFunc);
-  TFileOperationSignal sig;
+  TFileOperationEvent sig;
   sig.connect(CallBackFunc);
   int Result = 0;
   FILE_OPERATION_LOOP_EX
@@ -2695,7 +2695,7 @@ void /* __fastcall */ TTerminal::ProcessDirectory(const UnicodeString DirName,
       UnicodeString Directory = UnixIncludeTrailingBackslash(DirName);
 
       TRemoteFile * File;
-      TProcessFileSignal sig;
+      TProcessFileEvent sig;
       sig.connect(CallBackFunc);
       for (int Index = 0; Index < FileList->GetCount(); Index++)
       {
@@ -2825,8 +2825,8 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
 
   try
   {
-    TFileOperationProgressSignal sig1;
-    TFileOperationFinishedSignal sig2;
+    TFileOperationProgressEvent sig1;
+    TFileOperationFinishedEvent sig2;
     sig1.connect(boost::bind(&TTerminal::DoProgress, this, _1, _2));
     sig2.connect(boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
     TFileOperationProgressType Progress(&sig1, &sig2);
@@ -2860,7 +2860,7 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
         int Index = 0;
         UnicodeString FileName;
         bool Success;
-        TProcessFileSignal sig;
+        TProcessFileEvent sig;
         sig.connect(ProcessFile);
         while ((Index < FileList->GetCount()) && (Progress.Cancel == csContinue))
         {
@@ -3885,7 +3885,7 @@ void /* __fastcall */ TTerminal::AnyCommand(const UnicodeString Command,
 
   private:
     TCallSessionAction & FAction;
-    TCaptureOutputSignal FOutputEvent;
+    TCaptureOutputEvent FOutputEvent;
   private:
 #pragma warning(push)
 #pragma warning(disable: 4822)
@@ -4221,8 +4221,8 @@ void /* __fastcall */ TTerminal::CalculateLocalFileSize(const UnicodeString File
 void /* __fastcall */ TTerminal::CalculateLocalFilesSize(TStrings * FileList,
   __int64 & Size, const TCopyParamType * CopyParam)
 {
-  TFileOperationProgressSignal sig1;
-  TFileOperationFinishedSignal sig2;
+  TFileOperationProgressEvent sig1;
+  TFileOperationFinishedEvent sig2;
   sig1.connect(boost::bind(&TTerminal::DoProgress, this, _1, _2));
   sig2.connect(boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
   TFileOperationProgressType OperationProgress(&sig1, &sig2);
@@ -4922,7 +4922,7 @@ void /* __fastcall */ TTerminal::DoSynchronizeProgress(const TSynchronizeData & 
   if (Data.OnSynchronizeDirectory != NULL)
   {
     bool Continue = true;
-    TSynchronizeDirectorySignal sig;
+    TSynchronizeDirectoryEvent sig;
     if (Data.OnSynchronizeDirectory)
     {
       sig.connect(*Data.OnSynchronizeDirectory);
@@ -4983,7 +4983,7 @@ void /* __fastcall */ TTerminal::FileFind(UnicodeString FileName,
   const TRemoteFile * File, /*TFilesFindParams*/ void * Param)
 {
   // see DoFilesFind
-  FOnFindingFile.disconnect_all_slots();
+  FOnFindingFile = NULL;
 
   assert(Param);
   assert(File);
@@ -5007,12 +5007,7 @@ void /* __fastcall */ TTerminal::FileFind(UnicodeString FileName,
     {
       if (!ImplicitMatch)
       {
-        TFileFoundSignal sig;
-        if (AParams->OnFileFound)
-        {
-          sig.connect(*AParams->OnFileFound);
-        }
-        sig(this, FileName, File, AParams->Cancel);
+        AParams->OnFileFound(this, FileName, File, AParams->Cancel);
       }
 
       if (File->GetIsDirectory())
@@ -5025,27 +5020,19 @@ void /* __fastcall */ TTerminal::FileFind(UnicodeString FileName,
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::DoFilesFind(UnicodeString Directory, TFilesFindParams & Params)
 {
-  TFindingFileSignal sig;
-  if (Params.OnFindingFile)
-  {
-    sig.connect(*Params.OnFindingFile);
-  }
-  sig(this, Directory, Params.Cancel);
+  Params.OnFindingFile(this, Directory, Params.Cancel);
   if (!Params.Cancel)
   {
-    assert(FOnFindingFile.empty());
+    assert(FOnFindingFile == NULL);
     // ideally we should set the handler only around actually reading
     // of the directory listing, so we at least reset the handler in
     // FileFind
-    if (Params.OnFindingFile)
-    {
-      FOnFindingFile.connect(*Params.OnFindingFile);
-    }
+    FOnFindingFile = Params.OnFindingFile;
     // try
     {
       BOOST_SCOPE_EXIT ( (&Self) )
       {
-        Self->FOnFindingFile.disconnect_all_slots();
+        Self->FOnFindingFile = NULL;
       } BOOST_SCOPE_EXIT_END
       ProcessDirectory(Directory, boost::bind(&TTerminal::FileFind, this, _1, _2, _3), &Params, false, true);
     }
@@ -5059,7 +5046,7 @@ void /* __fastcall */ TTerminal::DoFilesFind(UnicodeString Directory, TFilesFind
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminal::FilesFind(UnicodeString Directory, const TFileMasks & FileMask,
-  const TFileFoundEvent * OnFileFound, const TFindingFileEvent * OnFindingFile)
+  TFileFoundEvent OnFileFound, TFindingFileEvent OnFindingFile)
 {
   TFilesFindParams Params;
   Params.FileMask = FileMask;
@@ -5154,8 +5141,8 @@ bool /* __fastcall */ TTerminal::CopyToRemote(TStrings * FilesToCopy,
   bool Result = false;
   TOnceDoneOperation OnceDoneOperation = odoIdle;
 
-  TFileOperationProgressSignal sig1;
-  TFileOperationFinishedSignal sig2;
+  TFileOperationProgressEvent sig1;
+  TFileOperationFinishedEvent sig2;
   sig1.connect(boost::bind(&TTerminal::DoProgress, this, _1, _2));
   sig2.connect(boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
   TFileOperationProgressType OperationProgress(&sig1, &sig2);
@@ -5284,8 +5271,8 @@ bool /* __fastcall */ TTerminal::CopyToLocal(TStrings * FilesToCopy,
       } BOOST_SCOPE_EXIT_END
       __int64 TotalSize = 0;
       bool TotalSizeKnown = false;
-      TFileOperationProgressSignal sig1;
-      TFileOperationFinishedSignal sig2;
+      TFileOperationProgressEvent sig1;
+      TFileOperationFinishedEvent sig2;
       sig1.connect(boost::bind(&TTerminal::DoProgress, this, _1, _2));
       sig2.connect(boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
       TFileOperationProgressType OperationProgress(&sig1, &sig2);

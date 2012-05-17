@@ -1404,8 +1404,8 @@ void __fastcall TWinSCPFileSystem::ApplyCommand()
                 FLAGSET(Params, ccRecursive) && !FileListCommand;
 
               ProcessLocalDirectory(TempDir, fastdelegate::bind(&TTerminal::MakeLocalFileList, FTerminal, _1, _2, _3), &MakeFileListParam);
-              TFileOperationProgressSignal sig1;
-              TFileOperationFinishedSignal sig2;
+              TFileOperationProgressEvent sig1;
+              TFileOperationFinishedEvent sig2;
               sig1.connect(boost::bind(&TWinSCPFileSystem::OperationProgress, this, _1, _2));
               sig2.connect(boost::bind(&TWinSCPFileSystem::OperationFinished, this, _1, _2, _3, _4, _5, _6));
               TFileOperationProgressType Progress(&sig1, &sig2);
@@ -1433,7 +1433,7 @@ void __fastcall TWinSCPFileSystem::ApplyCommand()
                   TLocalCustomCommand CustomCommand(Data,
                     GetTerminal()->GetCurrentDirectory(), L"", LocalFile, FileList);
                   ExecuteShellAndWait(FPlugin->GetHandle(), CustomCommand.Complete(Command, true),
-                    TProcessMessagesSignal());
+                    TProcessMessagesEvent());
                 }
                 else if (LocalFileCommand)
                 {
@@ -1448,7 +1448,7 @@ void __fastcall TWinSCPFileSystem::ApplyCommand()
                       TLocalCustomCommand CustomCommand(Data,
                         GetTerminal()->GetCurrentDirectory(), FileName, LocalFile, L"");
                       ExecuteShellAndWait(FPlugin->GetHandle(),
-                        CustomCommand.Complete(Command, true), TProcessMessagesSignal());
+                        CustomCommand.Complete(Command, true), TProcessMessagesEvent());
                     }
                   }
                   else if (RemoteFileList->GetCount() == 1)
@@ -1462,7 +1462,7 @@ void __fastcall TWinSCPFileSystem::ApplyCommand()
                         Data, GetTerminal()->GetCurrentDirectory(),
                         FileName, LocalFileList->GetStrings(Index), L"");
                       ExecuteShellAndWait(FPlugin->GetHandle(),
-                        CustomCommand.Complete(Command, true), TProcessMessagesSignal());
+                        CustomCommand.Complete(Command, true), TProcessMessagesEvent());
                     }
                   }
                   else
@@ -1480,7 +1480,7 @@ void __fastcall TWinSCPFileSystem::ApplyCommand()
                         Data, GetTerminal()->GetCurrentDirectory(),
                         FileName, LocalFileList->GetStrings(Index), L"");
                       ExecuteShellAndWait(FPlugin->GetHandle(),
-                        CustomCommand.Complete(Command, true), TProcessMessagesSignal());
+                        CustomCommand.Complete(Command, true), TProcessMessagesEvent());
                     }
                   }
                 }
@@ -1492,7 +1492,7 @@ void __fastcall TWinSCPFileSystem::ApplyCommand()
                     TLocalCustomCommand CustomCommand(Data,
                       GetTerminal()->GetCurrentDirectory(), RemoteFileList->GetStrings(Index), L"", L"");
                     ExecuteShellAndWait(FPlugin->GetHandle(),
-                      CustomCommand.Complete(Command, true), TProcessMessagesSignal());
+                      CustomCommand.Complete(Command, true), TProcessMessagesEvent());
                   }
                 }
               }
@@ -2303,7 +2303,7 @@ void __fastcall TWinSCPFileSystem::ShowInformation()
 {
   TSessionInfo SessionInfo = GetTerminal()->GetSessionInfo();
   TFileSystemInfo FileSystemInfo = GetTerminal()->GetFileSystemInfo();
-  TGetSpaceAvailableSignal OnGetSpaceAvailable;
+  TGetSpaceAvailableEvent OnGetSpaceAvailable;
   if (GetTerminal()->GetIsCapable(fcCheckingSpaceAvailable))
   {
     OnGetSpaceAvailable.connect(boost::bind(&TWinSCPFileSystem::GetSpaceAvailable, this, _1, _2, _3));
@@ -2719,7 +2719,7 @@ void /* __fastcall */ TWinSCPFileSystem::DeleteSession(TSessionData * Data, void
 void __fastcall TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
   const TProcessSessionEvent & ProcessSession, void * Param)
 {
-  TProcessSessionSignal sig;
+  TProcessSessionEvent sig;
   sig.connect(ProcessSession);
   for (int Index = 0; Index < PanelItems->GetCount(); Index++)
   {

@@ -7,10 +7,6 @@
 
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
-#include <boost/signals/signal1.hpp>
-#include <boost/signals/signal2.hpp>
-#include <boost/signals/signal3.hpp>
-#include <boost/bind.hpp>
 #endif
 
 #include "WinSCPPlugin.h"
@@ -5883,8 +5879,8 @@ bool __fastcall TWinSCPFileSystem::LinkDialog(UnicodeString & FileName,
 typedef void __fastcall (__closure *TFeedFileSystemData)
   (TObject * Control, int Label, AnsiString Value);
 #else
-typedef boost::signal3<void, TObject *, int, UnicodeString> TFeedFileSystemDataSignal;
-typedef TFeedFileSystemDataSignal::slot_type TFeedFileSystemDataEvent;
+typedef fastdelegate::FastDelegate3<void, TObject *, int, UnicodeString> TFeedFileSystemDataEvent;
+typedef TFeedFileSystemDataEvent::slot_type TFeedFileSystemDataEvent;
 #endif
 //---------------------------------------------------------------------------
 class TLabelList;
@@ -5921,7 +5917,7 @@ protected:
   virtual bool __fastcall Key(TFarDialogItem * Item, long KeyCode);
 
 private:
-  TGetSpaceAvailableSignal FOnGetSpaceAvailable;
+  TGetSpaceAvailableEvent FOnGetSpaceAvailable;
   TFileSystemInfo FFileSystemInfo;
   TSessionInfo FSessionInfo;
   bool FSpaceAvailableLoaded;
@@ -6117,7 +6113,7 @@ UnicodeString __fastcall TFileSystemInfoDialog::SpaceStr(__int64 Bytes)
 //---------------------------------------------------------------------
 void __fastcall TFileSystemInfoDialog::Feed(const TFeedFileSystemDataEvent & AddItem)
 {
-  TFeedFileSystemDataSignal sig;
+  TFeedFileSystemDataEvent sig;
   sig.connect(AddItem);
   sig(ServerLabels, SERVER_REMOTE_SYSTEM, FFileSystemInfo.RemoteSystem);
   sig(ServerLabels, SERVER_SESSION_PROTOCOL, FSessionInfo.ProtocolName);
@@ -7941,11 +7937,11 @@ private:
   bool FAbort;
   bool FClose;
   TSynchronizeParamType FParams;
-  TSynchronizeStartStopSignal FOnStartStop;
+  TSynchronizeStartStopEvent FOnStartStop;
   int FOptions;
   TSynchronizeOptions * FSynchronizeOptions;
   TCopyParamType FCopyParams;
-  TGetSynchronizeOptionsSignal FOnGetOptions;
+  TGetSynchronizeOptionsEvent FOnGetOptions;
   int FCopyParamAttrs;
 
   TFarEdit * LocalDirectoryEdit;

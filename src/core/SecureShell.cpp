@@ -991,8 +991,7 @@ void __fastcall TSecureShell::DispatchSendBuffer(int BufSize)
     if (Now() - Start > FSessionData->GetTimeoutDT())
     {
       LogEvent(L"Waiting for dispatching send buffer timed out, asking user what to do.");
-      TQueryParamsTimerEvent slot = boost::bind(&TSecureShell::SendBuffer, this, _1);
-      unsigned int Answer = TimeoutPrompt(&slot);
+      unsigned int Answer = TimeoutPrompt(fastdelegate::bind(&TSecureShell::SendBuffer, this, _1));
       switch (Answer)
       {
         case qaRetry:

@@ -804,7 +804,7 @@ void __fastcall ProcessLocalDirectory(UnicodeString DirName,
         FindClose(SearchRec);
       } BOOST_SCOPE_EXIT_END
 #endif
-      // TProcessLocalFileSignal sig;
+      // TProcessLocalFileEvent sig;
       // sig.connect(CallBackFunc);
       do
       {

@@ -596,8 +596,8 @@ public:
 
 BOOST_FIXTURE_TEST_CASE(test26, base_fixture_t)
 {
-  typedef fastdelegate::FastDelegate2<int, int, char *> TSignal;
-  TSignal sig;
+  typedef fastdelegate::FastDelegate2<int, int, char *> TEvent;
+  TEvent sig;
   
   CBaseClass a("Base A");
   sig = fastdelegate::MakeDelegate(&a, &CBaseClass::SimpleMemberFunctionReturnsInt);
