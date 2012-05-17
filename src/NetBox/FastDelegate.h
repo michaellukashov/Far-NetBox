@@ -935,7 +935,7 @@ private:	// Invoker for static functions
 };
 
 //N=1
-template<class Param1, class RetType=detail::DefaultVoid>
+template<class RetType=detail::DefaultVoid, class Param1=detail::DefaultVoid>
 class FastDelegate1 {
 private:
 	typedef typename detail::DefaultVoidToVoid<RetType>::type DesiredRetType;
@@ -1020,7 +1020,7 @@ private:	// Invoker for static functions
 };
 
 //N=2
-template<class Param1, class Param2, class RetType=detail::DefaultVoid>
+template<class RetType=detail::DefaultVoid, class Param1=detail::DefaultVoid, class Param2=detail::DefaultVoid>
 class FastDelegate2 {
 private:
 	typedef typename detail::DefaultVoidToVoid<RetType>::type DesiredRetType;
@@ -1105,7 +1105,7 @@ private:	// Invoker for static functions
 };
 
 //N=3
-template<class Param1, class Param2, class Param3, class RetType=detail::DefaultVoid>
+template<class RetType=detail::DefaultVoid, class Param1=detail::DefaultVoid, class Param2=detail::DefaultVoid, class Param3=detail::DefaultVoid>
 class FastDelegate3 {
 private:
 	typedef typename detail::DefaultVoidToVoid<RetType>::type DesiredRetType;
@@ -1190,7 +1190,7 @@ private:	// Invoker for static functions
 };
 
 //N=4
-template<class Param1, class Param2, class Param3, class Param4, class RetType=detail::DefaultVoid>
+template<class RetType=detail::DefaultVoid, class Param1=detail::DefaultVoid, class Param2=detail::DefaultVoid, class Param3=detail::DefaultVoid, class Param4=detail::DefaultVoid>
 class FastDelegate4 {
 private:
 	typedef typename detail::DefaultVoidToVoid<RetType>::type DesiredRetType;
@@ -1748,15 +1748,15 @@ public:
 // Specialization to allow use of
 // FastDelegate< R ( Param1, Param2, Param3 ) >
 // instead of 
-// FastDelegate3 < Param1, Param2, Param3, R >
+// FastDelegate3 < R, Param1, Param2, Param3 >
 template<typename R, class Param1, class Param2, class Param3>
 class FastDelegate< R ( Param1, Param2, Param3 ) >
   // Inherit from FastDelegate3 so that it can be treated just like a FastDelegate3
-  : public FastDelegate3 < Param1, Param2, Param3, R >
+  : public FastDelegate3 < R, Param1, Param2, Param3 >
 {
 public:
   // Make using the base type a bit easier via typedef.
-  typedef FastDelegate3 < Param1, Param2, Param3, R > BaseType;
+  typedef FastDelegate3 < R, Param1, Param2, Param3 > BaseType;
 
   // Allow users access to the specific type of this delegate.
   typedef FastDelegate SelfType;
@@ -2000,47 +2000,47 @@ public:
 #endif
 
 //N=0
-template <class X, class Y, class RetType>
+template <class RetType, class X, class Y>
 FastDelegate0<FASTDLGT_RETTYPE> MakeDelegate(Y* x, RetType (X::*func)()) { 
 	return FastDelegate0<FASTDLGT_RETTYPE>(x, func);
 }
 
-template <class X, class Y, class RetType>
+template <class RetType, class X, class Y>
 FastDelegate0<FASTDLGT_RETTYPE> MakeDelegate(Y* x, RetType (X::*func)() const) { 
 	return FastDelegate0<FASTDLGT_RETTYPE>(x, func);
 }
 
 //N=1
-template <class X, class Y, class Param1, class RetType>
-FastDelegate1<Param1, FASTDLGT_RETTYPE> MakeDelegate(Y* x, RetType (X::*func)(Param1 p1)) { 
-	return FastDelegate1<Param1, FASTDLGT_RETTYPE>(x, func);
+template <class RetType, class X, class Y, class Param1>
+FastDelegate1<FASTDLGT_RETTYPE, Param1> MakeDelegate(Y* x, RetType (X::*func)(Param1 p1)) { 
+	return FastDelegate1<FASTDLGT_RETTYPE, Param1>(x, func);
 }
 
-template <class X, class Y, class Param1, class RetType>
-FastDelegate1<Param1, FASTDLGT_RETTYPE> MakeDelegate(Y* x, RetType (X::*func)(Param1 p1) const) { 
-	return FastDelegate1<Param1, FASTDLGT_RETTYPE>(x, func);
+template <class RetType, class X, class Y, class Param1>
+FastDelegate1<FASTDLGT_RETTYPE, Param1> MakeDelegate(Y* x, RetType (X::*func)(Param1 p1) const) { 
+	return FastDelegate1<FASTDLGT_RETTYPE, Param1>(x, func);
 }
 
 //N=2
-template <class X, class Y, class Param1, class Param2, class RetType>
-FastDelegate2<Param1, Param2, FASTDLGT_RETTYPE> MakeDelegate(Y* x, RetType (X::*func)(Param1 p1, Param2 p2)) { 
-	return FastDelegate2<Param1, Param2, FASTDLGT_RETTYPE>(x, func);
+template <class RetType, class X, class Y, class Param1, class Param2>
+FastDelegate2<FASTDLGT_RETTYPE, Param1, Param2> MakeDelegate(Y* x, RetType (X::*func)(Param1 p1, Param2 p2)) { 
+	return FastDelegate2<FASTDLGT_RETTYPE, Param1, Param2>(x, func);
 }
 
-template <class X, class Y, class Param1, class Param2, class RetType>
-FastDelegate2<Param1, Param2, FASTDLGT_RETTYPE> MakeDelegate(Y* x, RetType (X::*func)(Param1 p1, Param2 p2) const) { 
-	return FastDelegate2<Param1, Param2, FASTDLGT_RETTYPE>(x, func);
+template <class RetType, class X, class Y, class Param1, class Param2>
+FastDelegate2<FASTDLGT_RETTYPE, Param1, Param2> MakeDelegate(Y* x, RetType (X::*func)(Param1 p1, Param2 p2) const) { 
+	return FastDelegate2<FASTDLGT_RETTYPE, Param1, Param2>(x, func);
 }
 
 //N=3
-template <class X, class Y, class Param1, class Param2, class Param3, class RetType>
-FastDelegate3<Param1, Param2, Param3, FASTDLGT_RETTYPE> MakeDelegate(Y* x, RetType (X::*func)(Param1 p1, Param2 p2, Param3 p3)) { 
-	return FastDelegate3<Param1, Param2, Param3, FASTDLGT_RETTYPE>(x, func);
+template <class RetType, class X, class Y, class Param1, class Param2, class Param3>
+FastDelegate3<FASTDLGT_RETTYPE, Param1, Param2, Param3> MakeDelegate(Y* x, RetType (X::*func)(Param1 p1, Param2 p2, Param3 p3)) { 
+	return FastDelegate3<FASTDLGT_RETTYPE, Param1, Param2, Param3>(x, func);
 }
 
-template <class X, class Y, class Param1, class Param2, class Param3, class RetType>
-FastDelegate3<Param1, Param2, Param3, FASTDLGT_RETTYPE> MakeDelegate(Y* x, RetType (X::*func)(Param1 p1, Param2 p2, Param3 p3) const) { 
-	return FastDelegate3<Param1, Param2, Param3, FASTDLGT_RETTYPE>(x, func);
+template <class RetType, class X, class Y, class Param1, class Param2, class Param3>
+FastDelegate3<FASTDLGT_RETTYPE, Param1, Param2, Param3> MakeDelegate(Y* x, RetType (X::*func)(Param1 p1, Param2 p2, Param3 p3) const) { 
+	return FastDelegate3<FASTDLGT_RETTYPE, Param1, Param2, Param3>(x, func);
 }
 
 //N=4
