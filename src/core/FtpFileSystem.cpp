@@ -634,19 +634,19 @@ void __fastcall TFTPFileSystem::EnsureLocation()
 }
 //---------------------------------------------------------------------------
 void __fastcall TFTPFileSystem::AnyCommand(const UnicodeString Command,
-  TCaptureOutputEvent * OutputEvent)
+  TCaptureOutputEvent OutputEvent)
 {
   // end-user has right to expect that client current directory is really
   // current directory for the server
   EnsureLocation();
 
   assert(FOnCaptureOutput.empty());
-  FOnCaptureOutput.connect(*OutputEvent);
+  FOnCaptureOutput = OutputEvent;
   // try
   {
     BOOST_SCOPE_EXIT ( (&Self) )
     {
-      Self->FOnCaptureOutput.disconnect_all_slots();
+      Self->FOnCaptureOutput.clear();
     } BOOST_SCOPE_EXIT_END
     FFileZillaIntf->CustomCommand(Command.c_str());
 
@@ -754,7 +754,7 @@ void __fastcall TFTPFileSystem::ChangeFileProperties(const UnicodeString AFileNa
       {
         try
         {
-          FTerminal->ProcessDirectory(AFileName, boost::bind(&TTerminal::ChangeFileProperties, FTerminal, _1, _2, _3),
+          FTerminal->ProcessDirectory(AFileName, fastdelegate::bind(&TTerminal::ChangeFileProperties, FTerminal, _1, _2, _3),
             static_cast<void *>(const_cast<TRemoteProperties *>(Properties)));
         }
         catch(...)
@@ -1166,7 +1166,7 @@ void __fastcall TFTPFileSystem::Sink(const UnicodeString FileName,
       SinkFileParams.Skipped = false;
       SinkFileParams.Flags = Flags & ~(tfFirstLevel | tfAutoResume);
 
-      FTerminal->ProcessDirectory(FileName, boost::bind(&TFTPFileSystem::SinkFile, this, _1, _2, _3), &SinkFileParams);
+      FTerminal->ProcessDirectory(FileName, fastdelegate::bind(&TFTPFileSystem::SinkFile, this, _1, _2, _3), &SinkFileParams);
 
       // Do not delete directory if some of its files were skip.
       // Throw "skip file" for the directory to avoid attempt to deletion
@@ -1368,8 +1368,7 @@ void __fastcall TFTPFileSystem::SourceRobust(const UnicodeString FileName,
     Retry = false;
     try
     {
-      Source(FileName, TargetDir, CopyParam, Params,
-        &OpenParams, &FileParams, OperationProgress,
+      Source(FileName, TargetDir, CopyParam, Params, &OpenParams, &FileParams, OperationProgress,
         Flags, Action);
     }
     catch(Exception & E)
@@ -1697,7 +1696,7 @@ void __fastcall TFTPFileSystem::DeleteFile(const UnicodeString AFileName,
   {
     try
     {
-      FTerminal->ProcessDirectory(FileName, boost::bind(&TTerminal::DeleteFile, FTerminal, _1, _2, _3), &Params);
+      FTerminal->ProcessDirectory(FileName, fastdelegate::bind(&TTerminal::DeleteFile, FTerminal, _1, _2, _3), &Params);
     }
     catch(...)
     {
@@ -1735,7 +1734,7 @@ void __fastcall TFTPFileSystem::DeleteFile(const UnicodeString AFileName,
 //---------------------------------------------------------------------------
 void /* __fastcall */ TFTPFileSystem::CustomCommandOnFile(const UnicodeString /*FileName*/,
   const TRemoteFile * /*File*/, UnicodeString /*Command*/, int /*Params*/,
-  TCaptureOutputEvent * /*OutputEvent*/)
+  TCaptureOutputEvent /*OutputEvent*/)
 {
   // if ever implemented, do not forget to add EnsureLocation,
   // see AnyCommand for a reason why
@@ -3390,7 +3389,7 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       TQueryButtonAlias Aliases[1];
       Aliases[0].Button = qaRetry;
       Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);
-      Aliases[0].OnClick.connect(boost::bind(&TClipboardHandler::Copy, ClipboardHandler, _1));
+      Aliases[0].OnClick = fastdelegate::bind(&TClipboardHandler::Copy, &ClipboardHandler, _1);
 
       TQueryParams Params;
       Params.HelpKeyword = HELP_VERIFY_CERTIFICATE;

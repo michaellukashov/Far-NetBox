@@ -125,6 +125,7 @@ void __fastcall TConfiguration::Default()
   FCacheDirectoryChangesMaxSize = 100;
   FShowFtpWelcomeMessage = false;
   FExternalIpAddress = L"";
+  // CollectUsage = FDefaultCollectUsage;
   FSessionReopenAutoMaximumNumberOfRetries = CONST_DEFAULT_NUMBER_OF_RETRIES;
   FDefaultCollectUsage = false;
 

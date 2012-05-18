@@ -99,9 +99,7 @@ TStrings * __fastcall ExceptionToMessages(Exception * E)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
-#pragma warn -inl
-#endif
+// #pragma warn -inl
 class TSessionActionRecord
 {
 public:
@@ -349,9 +347,7 @@ private:
   TRemoteFileList * FFileList;
   TRemoteFile * FFile;
 };
-#ifndef _MSC_VER
-#pragma warn .inl
-#endif
+// #pragma warn .inl
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 /* __fastcall */ TSessionAction::TSessionAction(TActionLog *Log, TLogAction Action)
@@ -723,13 +719,13 @@ TLogLineType __fastcall TSessionLog::GetType(int Index)
   return static_cast<TLogLineType>(reinterpret_cast<size_t>(GetObjects(Index - FTopIndex)));
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TSessionLog::DoAddToParent(TLogLineType Type, const UnicodeString & Line)
+void /* __fastcall */ TSessionLog::DoAddToParent(TLogLineType Type, UnicodeString Line)
 {
   assert(FParent != NULL);
   FParent->Add(Type, Line);
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString & Line)
+void /* __fastcall */ TSessionLog::DoAddToSelf(TLogLineType Type, UnicodeString Line)
 {
   if (static_cast<int>(FTopIndex) < 0)
   {
@@ -765,7 +761,7 @@ void /* __fastcall */ TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeS
 //---------------------------------------------------------------------------
 void __fastcall TSessionLog::DoAdd(TLogLineType Type, UnicodeString Line,
   // void __fastcall (__closure *f)(TLogLineType Type, const UnicodeString & Line))
-  const TDoAddLogEvent &func)
+  TDoAddLogEvent Event)
 {
   UnicodeString Prefix;
 
@@ -774,11 +770,9 @@ void __fastcall TSessionLog::DoAdd(TLogLineType Type, UnicodeString Line,
     Prefix = L"[" + GetName() + L"] ";
   }
 
-  TDoAddLogSignal sig;
-  sig.connect(func);
   while (!Line.IsEmpty())
   {
-    sig(Type, Prefix + CutToChar(Line, L'\n', false));
+    Event(Type, Prefix + CutToChar(Line, L'\n', false));
   }
 }
 //---------------------------------------------------------------------------
@@ -791,7 +785,7 @@ void __fastcall TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
     {
       if (FParent != NULL)
       {
-        DoAdd(Type, Line, boost::bind(&TSessionLog::DoAddToParent, this, _1, _2));
+        DoAdd(Type, Line, fastdelegate::bind(&TSessionLog::DoAddToParent, this, _1, _2));
       }
       else
       {
@@ -805,7 +799,7 @@ void __fastcall TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
             Self->DeleteUnnecessary();
             Self->EndUpdate();
           } BOOST_SCOPE_EXIT_END
-          DoAdd(Type, Line, boost::bind(&TSessionLog::DoAddToSelf, this, _1, _2));
+          DoAdd(Type, Line, fastdelegate::bind(&TSessionLog::DoAddToSelf, this, _1, _2));
         }
 #ifndef _MSC_VER
         __finally
@@ -981,7 +975,7 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
     } BOOST_SCOPE_EXIT_END
 #endif
     // #define ADF(S, F) DoAdd(llMessage, FORMAT(S, F), DoAddToSelf);
-    #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), boost::bind(&TSessionLog::DoAddToSelf, this, _1, _2));
+    #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), fastdelegate::bind(&TSessionLog::DoAddToSelf, this, _1, _2));
     AddSeparator();
     ADF(L"NetBox %s (OS %s)", FConfiguration->GetVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
     THierarchicalStorage * Storage = FConfiguration->CreateScpStorage(false);

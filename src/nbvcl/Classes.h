@@ -17,9 +17,6 @@
 #include <assert.h>
 
 #include "boostdefines.hpp"
-#include <boost/signals/signal0.hpp>
-#include <boost/signals/signal1.hpp>
-#include <boost/bind.hpp>
 #include <boost/noncopyable.hpp>
 
 #include <rtlconsts.h>
@@ -63,11 +60,9 @@ int __cdecl debug_printf2(const char * format, ...);
 
 //---------------------------------------------------------------------------
 class TObject;
-typedef boost::signal0<void> TThreadMethodSignal;
-typedef TThreadMethodSignal::slot_type TThreadMethodEvent;
+typedef fastdelegate::FastDelegate0<void> TThreadMethodEvent;
 
-typedef boost::signal1<void, TObject * /* Sender */> TNotifySignal;
-typedef TNotifySignal::slot_type TNotifyEvent;
+typedef fastdelegate::FastDelegate1<void, TObject * /* Sender */> TNotifyEvent;
 //---------------------------------------------------------------------------
 void Abort();
 void Error(int ErrorID, int data);
@@ -335,16 +330,10 @@ public:
   void __fastcall QuickSort(int L, int R, TStringListSortCompare SCompare);
 
   void __fastcall LoadFromFile(const UnicodeString FileName);
-  const TNotifySignal & __fastcall GetOnChange() const { return FOnChange; }
-  void __fastcall SetOnChange(const TNotifyEvent & onChange)
-  {
-    FOnChange.connect(onChange);
-  }
-  const TNotifySignal & __fastcall GetOnChanging() const { return FOnChanging; }
-  void __fastcall SetOnChanging(const TNotifyEvent & onChanging)
-  {
-    FOnChanging.connect(onChanging);
-  }
+  TNotifyEvent __fastcall GetOnChange() { return FOnChange; }
+  void __fastcall SetOnChange(TNotifyEvent onChange) { FOnChange = onChange; }
+  TNotifyEvent __fastcall GetOnChanging() { return FOnChanging; }
+  void __fastcall SetOnChanging(TNotifyEvent onChanging) { FOnChanging = onChanging; }
 
   virtual void __fastcall PutObject(int Index, TObject * AObject);
   virtual void __fastcall SetUpdateState(bool Updating);
@@ -357,8 +346,8 @@ private:
   void __fastcall ExchangeItems(int Index1, int Index2);
 
 private:
-  TNotifySignal FOnChange;
-  TNotifySignal FOnChanging;
+  TNotifyEvent FOnChange;
+  TNotifyEvent FOnChanging;
   TStringItemList FList;
   bool FSorted;
   bool FCaseSensitive;

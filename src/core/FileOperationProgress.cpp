@@ -10,18 +10,18 @@
 //---------------------------------------------------------------------------
 #define TRANSFER_BUF_SIZE 4096
 //---------------------------------------------------------------------------
-/* __fastcall */ TFileOperationProgressType::TFileOperationProgressType() :
-  FOnProgress(NULL),
-  FOnFinished(NULL)
+/* __fastcall */ TFileOperationProgressType::TFileOperationProgressType()
 {
+  FOnProgress = NULL;
+  FOnFinished = NULL;
   Clear();
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TFileOperationProgressType::TFileOperationProgressType(
-  TFileOperationProgressSignal * AOnProgress, TFileOperationFinishedSignal * AOnFinished) :
-  FOnProgress(AOnProgress),
-  FOnFinished(AOnFinished)
+  TFileOperationProgressEvent AOnProgress, TFileOperationFinishedEvent AOnFinished)
 {
+  FOnProgress = AOnProgress;
+  FOnFinished = AOnFinished;
   FReset = false;
   Clear();
 }
@@ -195,22 +195,16 @@ int __fastcall TFileOperationProgressType::OverallProgress()
 void __fastcall TFileOperationProgressType::DoProgress()
 {
   SetThreadExecutionState(ES_SYSTEM_REQUIRED);
-  if (FOnProgress != NULL)
-  {
-    (*FOnProgress)(*this, Cancel);
-  }
+  FOnProgress(*this, Cancel);
 }
 //---------------------------------------------------------------------------
 void __fastcall TFileOperationProgressType::Finish(UnicodeString FileName,
   bool Success, TOnceDoneOperation & OnceDoneOperation)
 {
   assert(InProgress);
-  if (FOnFinished != NULL)
-  {
-    (*FOnFinished)(Operation, Side, Temp, FileName,
-      // TODO : There wasn't 'Success' condition, was it by mistake or by purpose?
-      Success && (Cancel == csContinue), OnceDoneOperation);
-  }
+  FOnFinished(Operation, Side, Temp, FileName,
+    // TODO : There wasn't 'Success' condition, was it by mistake or by purpose?
+    Success && (Cancel == csContinue), OnceDoneOperation);
   FFilesFinished++;
   DoProgress();
 }

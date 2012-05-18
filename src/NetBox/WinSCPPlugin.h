@@ -17,7 +17,7 @@ struct TMessageParams
   unsigned int Flags;
   unsigned int Params;
   unsigned int Timer;
-  TQueryParamsTimerEvent * TimerEvent;
+  TQueryParamsTimerEvent TimerEvent;
   UnicodeString TimerMessage;
   unsigned int TimerAnswers;
   unsigned int Timeout;

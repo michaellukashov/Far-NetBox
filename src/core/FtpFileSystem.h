@@ -32,7 +32,7 @@ public:
   virtual void __fastcall Idle();
   virtual UnicodeString __fastcall AbsolutePath(UnicodeString Path, bool Local);
   virtual void __fastcall AnyCommand(const UnicodeString Command,
-    TCaptureOutputEvent * OutputEvent);
+    TCaptureOutputEvent OutputEvent);
   virtual void __fastcall ChangeDirectory(const UnicodeString Directory);
   virtual void __fastcall CachedChangeDirectory(const UnicodeString Directory);
   virtual void __fastcall AnnounceFileListOperation();
@@ -56,7 +56,7 @@ public:
   virtual void __fastcall DeleteFile(const UnicodeString FileName,
     const TRemoteFile * File, int Params, TRmSessionAction & Action);
   virtual void /* __fastcall */ CustomCommandOnFile(const UnicodeString FileName,
-    const TRemoteFile * File, UnicodeString Command, int Params, TCaptureOutputEvent * OutputEvent);
+    const TRemoteFile * File, UnicodeString Command, int Params, TCaptureOutputEvent OutputEvent);
   virtual void __fastcall DoStartup();
   virtual void __fastcall HomeDirectory();
   virtual bool __fastcall IsCapable(int Capability) const;
@@ -233,7 +233,7 @@ private:
   bool FFileTransferPreserveTime;
   unsigned long FFileTransferCPSLimit;
   bool FAwaitingProgress;
-  TCaptureOutputSignal FOnCaptureOutput;
+  TCaptureOutputEvent FOnCaptureOutput;
   UnicodeString FUserName;
   TAutoSwitch FListAll;
   bool FDoListAll;

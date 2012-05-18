@@ -139,10 +139,7 @@ public:
   void SetResumeThreshold(__int64 value) { FResumeThreshold = value; }
   char GetInvalidCharsReplacement() const { return FInvalidCharsReplacement; }
   void SetInvalidCharsReplacement(char value) { FInvalidCharsReplacement = value; }
-  // bool GetReplaceInvalidChars() const;
-  // void SetReplaceInvalidChars(bool value);
   UnicodeString GetLocalInvalidChars() const { return FLocalInvalidChars; }
-  // void SetLocalInvalidChars(const UnicodeString value);
   bool GetCalculateSize() const { return FCalculateSize; }
   void SetCalculateSize(bool value) { FCalculateSize = value; }
   UnicodeString GetFileMask() const { return FFileMask; }
