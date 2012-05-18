@@ -1398,7 +1398,7 @@ void __fastcall TSCPFileSystem::AnyCommand(const UnicodeString Command,
   TCaptureOutputEvent OutputEvent)
 {
   assert(FSecureShell->GetOnCaptureOutput().empty());
-  if (OutputEvent != NULL)
+  if (!OutputEvent.empty())
   {
     FSecureShell->SetOnCaptureOutput(fastdelegate::bind(&TSCPFileSystem::CaptureOutput, this, _1, _2));
     FOnCaptureOutput = OutputEvent;
