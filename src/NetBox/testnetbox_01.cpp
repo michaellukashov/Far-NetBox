@@ -144,15 +144,16 @@ BOOST_FIXTURE_TEST_CASE(test2, base_fixture_t)
         BOOST_CHECK_EQUAL(0, strings.GetCount());
         strings.Add(L"line 1");
         str = strings.GetText();
-        // DEBUG_PRINTF(L"str = %s", str.c_str());
-        BOOST_CHECK_EQUAL(W2MB(str.c_str()).c_str(), "line 1\n");
+        BOOST_TEST_MESSAGE("str = " << W2MB(str.c_str()).c_str());
+        // DEBUG_PRINTF(L"str = %s", BytesToHex(str.c_str(), str.Length(), false));
+        BOOST_CHECK(_wcsicmp(str.c_str(), L"line 1\n") == 0);
     }
     if (1)
     {
         strings.Add(L"line 2");
         BOOST_CHECK_EQUAL(2, strings.GetCount());
         str = strings.GetText();
-        // DEBUG_PRINTF(L"str = %s", str.c_str());
+        BOOST_TEST_MESSAGE(L"str = " << str.c_str());
         BOOST_CHECK_EQUAL(W2MB(str.c_str()).c_str(), "line 1\nline 2\n");
         strings.Insert(0, L"line 0");
         BOOST_CHECK_EQUAL(3, strings.GetCount());
