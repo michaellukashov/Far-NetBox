@@ -25,15 +25,18 @@
 //---------------------------------------------------------------------------
 UnicodeString __fastcall UnixIncludeTrailingBackslash(const UnicodeString Path)
 {
-  // it used to return "/" when input path was empty
-  if (!Path.IsEmpty() && !Path.IsDelimiter(L"/", Path.Length()))
+  if (!Path.IsEmpty())
   {
-    return Path + L"/";
+	  if (!Path.IsDelimiter(L"/", Path.Length()))
+    {
+      return Path + L"/";
+    }
+    else
+    {
+      return Path;
+    }
   }
-  else
-  {
-    return Path;
-  }
+  return L"/";
 }
 //---------------------------------------------------------------------------
 // Keeps "/" for root path
