@@ -483,7 +483,7 @@ typedef void __fastcall (__closure * TFarAllowChangeEvent)(TFarDialogItem * Send
   long NewState, bool & AllowChange);
 #else
 typedef fastdelegate::FastDelegate3<void, TFarDialogItem *,
-  long, bool &> TFarAllowChangeEvent;
+  void *, bool &> TFarAllowChangeEvent;
 #endif
 //---------------------------------------------------------------------------
 class TFarCheckBox : public TFarDialogItem
