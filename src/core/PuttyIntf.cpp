@@ -223,7 +223,7 @@ int askalg(void * frontend, const char * algtype, const char * algname,
 //---------------------------------------------------------------------------
 void old_keyfile_warning(void)
 {
-  // no reference to TSecureShell instace available
+  // no reference to TSecureShell instance available
 }
 //---------------------------------------------------------------------------
 void display_banner(void * frontend, const char * banner, int size)
