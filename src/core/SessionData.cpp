@@ -62,8 +62,8 @@ void __fastcall TSessionData::Default()
 {
   SetHostName(L"");
   SetPortNumber(SshPortNumber);
-  SetUserName(L"");
-  SetPassword(L"");
+  SetUserName(AnonymousUserName);
+  SetPassword(AnonymousPassword);
   SetPingInterval(30);
   // when changing default, update load/save logic
   SetPingType(ptOff);
