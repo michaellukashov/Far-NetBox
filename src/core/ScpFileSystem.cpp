@@ -810,6 +810,7 @@ void __fastcall TSCPFileSystem::ExecCommand2(TFSCommand Cmd, ...)
   va_start(args, Cmd);
   UnicodeString FullCommand = FCommandSet->FullCommand(Cmd, args);
   UnicodeString Command = FCommandSet->Command(Cmd, args);
+  DEBUG_PRINTF(L"FullCommand = %s, Command = %s", FullCommand.c_str(), Command.c_str());
   ExecCommand(FullCommand, Params, Command);
   va_end(args);
   if (Params & ecRaiseExcept)
