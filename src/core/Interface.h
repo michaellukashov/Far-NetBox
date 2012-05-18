@@ -8,9 +8,6 @@
 
 #ifdef _MSC_VER
 #include "boostdefines.hpp"
-#include <boost/signals/signal1.hpp>
-#include <boost/signals/signal3.hpp>
-#include <boost/signals/signal4.hpp>
 
 #include "Exceptions.h"
 #endif
@@ -54,14 +51,13 @@ struct TQueryButtonAlias
 
   unsigned int Button;
   UnicodeString Alias;
-  TNotifySignal OnClick;
+  TNotifyEvent OnClick;
 };
 
 #ifndef _MSC_VER
 typedef void __fastcall (__closure *TQueryParamsTimerEvent)(unsigned int & Result);
 #else
-typedef boost::signal1<void, unsigned int & /* Result */> TQueryParamsTimerSignal;
-typedef TQueryParamsTimerSignal::slot_type TQueryParamsTimerEvent;
+typedef fastdelegate::FastDelegate1<void, unsigned int & /* Result */> TQueryParamsTimerEvent;
 #endif
 
 struct TQueryParams
@@ -72,7 +68,7 @@ struct TQueryParams
   unsigned int AliasesCount;
   unsigned int Params;
   unsigned int Timer;
-  TQueryParamsTimerEvent * TimerEvent;
+  TQueryParamsTimerEvent TimerEvent;
   UnicodeString TimerMessage;
   unsigned int TimerAnswers;
   unsigned int Timeout;
@@ -105,11 +101,11 @@ typedef void __fastcall (__closure *TFileFoundEvent)
 typedef void __fastcall (__closure *TFindingFileEvent)
   (TTerminal * Terminal, const UnicodeString Directory, bool & Cancel);
 #else
-typedef boost::signal4<void, TTerminal * /* Terminal */, const UnicodeString /* FileName */, const TRemoteFile * /* File */,
-   bool & /* Cancel */> TFileFoundSignal;
-typedef TFileFoundSignal::slot_type TFileFoundEvent;
-typedef boost::signal3<void, TTerminal * /* Terminal */, const UnicodeString /* Directory */, bool & /* Cancel */> TFindingFileSignal;
-typedef TFindingFileSignal::slot_type TFindingFileEvent;
+typedef fastdelegate::FastDelegate4<void,
+  TTerminal * /* Terminal */, const UnicodeString /* FileName */, const TRemoteFile * /* File */,
+  bool & /* Cancel */> TFileFoundEvent;
+typedef fastdelegate::FastDelegate3<void,
+  TTerminal * /* Terminal */, const UnicodeString /* Directory */, bool & /* Cancel */> TFindingFileEvent;
 #endif
 //---------------------------------------------------------------------------
 #endif

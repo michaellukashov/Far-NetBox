@@ -64,10 +64,8 @@ void __fastcall AnsiStrDispose(char * S)
   Pending = NULL;
   FBackendHandle = NULL;
   ResetConnection();
-#ifndef _MSC_VER
   FOnCaptureOutput = NULL;
   FOnReceive = NULL;
-#endif
   FConfig = new Config();
   memset(FConfig, 0, sizeof(*FConfig));
   FSocket = INVALID_SOCKET;
@@ -235,9 +233,7 @@ void __fastcall TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, b
   cfg->proxy_dns = Data->GetProxyDNS();
   cfg->even_proxy_localhost = Data->GetProxyLocalhost();
 
-#ifndef _MSC_VER
-  #pragma option push -w-eas
-#endif
+  // #pragma option push -w-eas
   // after 0.53b values were reversed, however putty still stores
   // settings to registry in same way as before
   cfg->sshbug_ignore1 = Data->GetBug(sbIgnore1);
@@ -251,9 +247,7 @@ void __fastcall TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, b
   cfg->sshbug_pksessid2 = Data->GetBug(sbPKSessID2);
   cfg->sshbug_maxpkt2 = Data->GetBug(sbMaxPkt2);
   cfg->sshbug_ignore2 = Data->GetBug(sbIgnore2);
-#ifndef _MSC_VER
-  #pragma option pop
-#endif
+  // #pragma option pop
 
   if (!Data->GetTunnelPortFwd().IsEmpty())
   {
@@ -682,17 +676,17 @@ void __fastcall TSecureShell::CWrite(const char * Data, int Length)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSecureShell::RegisterReceiveHandler(const TNotifyEvent & Handler)
+void __fastcall TSecureShell::RegisterReceiveHandler(TNotifyEvent Handler)
 {
   assert(FOnReceive.empty());
-  FOnReceive.connect(Handler);
+  FOnReceive = Handler;
 }
 //---------------------------------------------------------------------------
-void __fastcall TSecureShell::UnregisterReceiveHandler(const TNotifyEvent & Handler)
+void __fastcall TSecureShell::UnregisterReceiveHandler(TNotifyEvent Handler)
 {
   assert(!FOnReceive.empty());
   USEDPARAM(Handler);
-  FOnReceive.disconnect_all_slots();
+  FOnReceive.clear();
 }
 //---------------------------------------------------------------------------
 void __fastcall TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, int Length)
@@ -912,7 +906,7 @@ void __fastcall TSecureShell::SendEOF()
   SendSpecial(TS_EOF);
 }
 //---------------------------------------------------------------------------
-unsigned int __fastcall TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent * PoolEvent)
+unsigned int __fastcall TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
 {
   FWaiting++;
 
@@ -991,8 +985,7 @@ void __fastcall TSecureShell::DispatchSendBuffer(int BufSize)
     if (Now() - Start > FSessionData->GetTimeoutDT())
     {
       LogEvent(L"Waiting for dispatching send buffer timed out, asking user what to do.");
-      TQueryParamsTimerEvent slot = boost::bind(&TSecureShell::SendBuffer, this, _1);
-      unsigned int Answer = TimeoutPrompt(&slot);
+      unsigned int Answer = TimeoutPrompt(fastdelegate::bind(&TSecureShell::SendBuffer, this, _1));
       switch (Answer)
       {
         case qaRetry:
@@ -1444,8 +1437,7 @@ void __fastcall TSecureShell::WaitForData()
       TPoolForDataEvent Event(this, Events);
 
       LogEvent(L"Waiting for data timed out, asking user what to do.");
-      TQueryParamsTimerEvent slot = boost::bind(&TPoolForDataEvent::PoolForData, &Event, _1);
-      unsigned int Answer = TimeoutPrompt(&slot);
+      unsigned int Answer = TimeoutPrompt(fastdelegate::bind(&TPoolForDataEvent::PoolForData, &Event, _1));
       switch (Answer)
       {
         case qaRetry:
@@ -1894,7 +1886,7 @@ void __fastcall TSecureShell::VerifyHostKey(UnicodeString Host, int Port,
       TQueryButtonAlias Aliases[3];
       Aliases[0].Button = qaRetry;
       Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);
-      Aliases[0].OnClick.connect(boost::bind(&TClipboardHandler::Copy, ClipboardHandler, _1));
+      Aliases[0].OnClick = fastdelegate::bind(&TClipboardHandler::Copy, &ClipboardHandler, _1);
       Answers = qaYes | qaCancel | qaRetry;
       AliasesCount = 1;
       if (!Unknown)

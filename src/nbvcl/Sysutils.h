@@ -6,7 +6,6 @@
 #include <WinBase.h>
 
 #include "boostdefines.hpp"
-#include <boost/signals/signal3.hpp>
 
 #include "Classes.h"
 #include "UnicodeString.hpp"

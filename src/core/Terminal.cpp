@@ -91,8 +91,8 @@ struct TFilesFindParams
   {
   }
   TFileMasks FileMask;
-  const TFileFoundEvent * OnFileFound;
-  const TFindingFileEvent * OnFindingFile;
+  TFileFoundEvent OnFileFound;
+  TFindingFileEvent OnFindingFile;
   bool Cancel;
 };
 //---------------------------------------------------------------------------
@@ -521,7 +521,6 @@ void __fastcall TTerminal::Init(TSessionData * SessionData, TConfiguration * Con
   FTunnelLocalPortNumber = 0;
   FFileSystem = NULL;
   FSecureShell = NULL;
-#ifndef _MSC_VER
   FOnProgress = NULL;
   FOnFinished = NULL;
   FOnDeleteLocalFile = NULL;
@@ -533,7 +532,7 @@ void __fastcall TTerminal::Init(TSessionData * SessionData, TConfiguration * Con
   FOnInformation = NULL;
   FOnClose = NULL;
   FOnFindingFile = NULL;
-#endif
+
   FUseBusyCursor = True;
   FLockDirectory = L"";
   FDirectoryCache = new TRemoteDirectoryCache();
@@ -813,6 +812,7 @@ void __fastcall TTerminal::Open()
               else
               {
                 assert(FSecureShell == NULL);
+                // try
                 {
                   BOOST_SCOPE_EXIT ( (&Self) )
                   {
@@ -861,6 +861,13 @@ void __fastcall TTerminal::Open()
                     LogEvent(L"Using SFTP protocol.");
                   }
                 }
+#ifndef _MSC_VER
+                __finally
+                {
+                  delete FSecureShell;
+                  FSecureShell = NULL;
+                }
+#endif
               }
             }
             else
@@ -868,6 +875,15 @@ void __fastcall TTerminal::Open()
               FFileSystem->Open();
             }
           }
+#ifndef _MSC_VER
+          __finally
+          {
+            if (FSessionData->Tunnel)
+            {
+              FSessionData->RollbackTunnel();
+            }
+          }
+#endif
 
           if (GetSessionData()->GetCacheDirectoryChanges())
           {
@@ -930,7 +946,7 @@ void __fastcall TTerminal::Open()
     // }
     catch(Exception & E)
     {
-      // any Exception while opening session is fatal
+      // any exception while opening session is fatal
       FatalError(&E, L"");
     }
   }
@@ -950,7 +966,7 @@ bool __fastcall TTerminal::IsListenerFree(unsigned int PortNumber)
     Address.sin_family = AF_INET;
     Address.sin_port = htons(static_cast<short>(PortNumber));
     Address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-    Result = (::bind(Socket, reinterpret_cast<sockaddr *>(&Address), sizeof(Address)) == 0);
+    Result = (bind(Socket, reinterpret_cast<sockaddr *>(&Address), sizeof(Address)) == 0);
     closesocket(Socket);
   }
   return Result;
@@ -1439,8 +1455,8 @@ bool /* __fastcall */ TTerminal::DoQueryReopen(Exception * E)
       Params.Aliases = Aliases;
       Params.AliasesCount = LENOF(Aliases);
       Result = (QueryUserException(L"", E, qaRetry | qaAbort, &Params, qtError) == qaRetry);
-
     }
+
     if (Fatal != NULL)
     {
       Fatal->SetReopenQueried(true);
@@ -1564,18 +1580,16 @@ bool /* __fastcall */ TTerminal::FileOperationLoopQuery(Exception & E,
   return Result;
 }
 //---------------------------------------------------------------------------
-int /* __fastcall */ TTerminal::FileOperationLoop(const TFileOperationEvent & CallBackFunc,
+int /* __fastcall */ TTerminal::FileOperationLoop(TFileOperationEvent CallBackFunc,
   TFileOperationProgressType * OperationProgress, bool AllowSkip,
   const UnicodeString Message, void * Param1, void * Param2)
 {
   // assert(CallBackFunc);
-  TFileOperationSignal sig;
-  sig.connect(CallBackFunc);
   int Result = 0;
   FILE_OPERATION_LOOP_EX
   (
     AllowSkip, Message,
-    Result = sig(Param1, Param2);
+    Result = CallBackFunc(Param1, Param2);
   );
 
   return Result;
@@ -1584,9 +1598,7 @@ int /* __fastcall */ TTerminal::FileOperationLoop(const TFileOperationEvent & Ca
 UnicodeString /* __fastcall */ TTerminal::TranslateLockedPath(UnicodeString Path, bool Lock)
 {
   if (!GetSessionData()->GetLockInHome() || Path.IsEmpty() || (Path[1] != L'/'))
-  {
     return Path;
-  }
 
   if (Lock)
   {
@@ -1834,9 +1846,7 @@ void /* __fastcall */ TTerminal::BeginTransaction()
 void /* __fastcall */ TTerminal::EndTransaction()
 {
   if (FInTransaction == 0)
-  {
     TerminalError(L"Can't end transaction, not in transaction");
-  }
   assert(FInTransaction > 0);
   FInTransaction--;
 
@@ -1880,9 +1890,7 @@ void /* __fastcall */ TTerminal::SetExceptionOnFail(bool value)
   else
   {
     if (FExceptionOnFail == 0)
-    {
       throw Exception(L"ExceptionOnFail is already zero.");
-    }
     FExceptionOnFail--;
   }
 
@@ -2250,7 +2258,7 @@ void /* __fastcall */ TTerminal::FileModified(const TRemoteFile * File,
     }
   }
 }
-//----/* __fastcall */ -----------------------------------------------------------------------
+//---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::DirectoryModified(const UnicodeString Path, bool SubDirs)
 {
   if (Path.IsEmpty())
@@ -2695,14 +2703,12 @@ void /* __fastcall */ TTerminal::ProcessDirectory(const UnicodeString DirName,
       UnicodeString Directory = UnixIncludeTrailingBackslash(DirName);
 
       TRemoteFile * File;
-      TProcessFileSignal sig;
-      sig.connect(CallBackFunc);
       for (int Index = 0; Index < FileList->GetCount(); Index++)
       {
         File = FileList->GetFiles(Index);
         if (!File->GetIsParentDirectory() && !File->GetIsThisDirectory())
         {
-          sig(Directory + File->GetFileName(), File, Param);
+          CallBackFunc(Directory + File->GetFileName(), File, Param);
         }
       }
     }
@@ -2814,7 +2820,7 @@ void /* __fastcall */ TTerminal::AnnounceFileListOperation()
 }
 //---------------------------------------------------------------------------
 bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
-  TFileOperation Operation, const TProcessFileEvent & ProcessFile, void * Param,
+  TFileOperation Operation, TProcessFileEvent ProcessFile, void * Param,
   TOperationSide Side, bool Ex)
 {
   assert(FFileSystem);
@@ -2825,12 +2831,7 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
 
   try
   {
-    TFileOperationProgressSignal sig1;
-    TFileOperationFinishedSignal sig2;
-    sig1.connect(boost::bind(&TTerminal::DoProgress, this, _1, _2));
-    sig2.connect(boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
-    TFileOperationProgressType Progress(&sig1, &sig2);
-    // TFileOperationProgressType Progress(boost::bind(&TTerminal::DoProgress, this, _1, _2), boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
+    TFileOperationProgressType Progress(fastdelegate::bind(&TTerminal::DoProgress, this, _1, _2), fastdelegate::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
     TFileOperationProgressType * OperationProgress(&Progress);
     Progress.Start(Operation, Side, FileList->GetCount());
 
@@ -2860,8 +2861,6 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
         int Index = 0;
         UnicodeString FileName;
         bool Success;
-        TProcessFileSignal sig;
-        sig.connect(ProcessFile);
         while ((Index < FileList->GetCount()) && (Progress.Cancel == csContinue))
         {
           FileName = FileList->GetStrings(Index);
@@ -2877,7 +2876,7 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
               if (!Ex)
               {
                 TRemoteFile * RemoteFile = static_cast<TRemoteFile *>(FileList->GetObjects(Index));
-                sig(FileName, RemoteFile, Param);
+                ProcessFile(FileName, RemoteFile, Param);
               }
               else
               {
@@ -3072,7 +3071,7 @@ bool /* __fastcall */ TTerminal::DeleteFiles(TStrings * FilesToDelete, int Param
   // TODO: avoid resolving symlinks while reading subdirectories.
   // Resolving does not work anyway for relative symlinks in subdirectories
   // (at least for SFTP).
-  return ProcessFiles(FilesToDelete, foDelete, boost::bind(&TTerminal::DeleteFile, this, _1, _2, _3), &Params);
+  return ProcessFiles(FilesToDelete, foDelete, fastdelegate::bind(&TTerminal::DeleteFile, this, _1, _2, _3), &Params);
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::DeleteLocalFile(UnicodeString FileName,
@@ -3093,7 +3092,7 @@ void /* __fastcall */ TTerminal::DeleteLocalFile(UnicodeString FileName,
 //---------------------------------------------------------------------------
 bool /* __fastcall */ TTerminal::DeleteLocalFiles(TStrings * FileList, int Params)
 {
-  return ProcessFiles(FileList, foDelete, boost::bind(&TTerminal::DeleteLocalFile, this, _1, _2, _3), &Params, osLocal);
+  return ProcessFiles(FileList, foDelete, fastdelegate::bind(&TTerminal::DeleteLocalFile, this, _1, _2, _3), &Params, osLocal);
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::CustomCommandOnFile(UnicodeString FileName,
@@ -3119,7 +3118,7 @@ void /* __fastcall */ TTerminal::CustomCommandOnFile(UnicodeString FileName,
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::DoCustomCommandOnFile(UnicodeString FileName,
   const TRemoteFile * File, UnicodeString Command, int Params,
-  TCaptureOutputEvent * OutputEvent)
+  TCaptureOutputEvent OutputEvent)
 {
   try
   {
@@ -3151,16 +3150,15 @@ void /* __fastcall */ TTerminal::DoCustomCommandOnFile(UnicodeString FileName,
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::CustomCommandOnFiles(UnicodeString Command,
-  int Params, TStrings * Files, TCaptureOutputEvent * OutputEvent)
+  int Params, TStrings * Files, TCaptureOutputEvent OutputEvent)
 {
   if (!TRemoteCustomCommand().IsFileListCommand(Command))
   {
-    TCustomCommandParams AParams(Command, Params, OutputEvent);
-    // AParams.Command = Command;
-    // AParams.Params = Params;
-    // AParams.OutputEvent.connect(OutputEvent);
-    // AParams.OutputEvent = OutputEvent;
-    ProcessFiles(Files, foCustomCommand, boost::bind(&TTerminal::CustomCommandOnFile, this, _1, _2, _3), &AParams);
+    TCustomCommandParams AParams;
+    AParams.Command = Command;
+    AParams.Params = Params;
+    AParams.OutputEvent = OutputEvent;
+    ProcessFiles(Files, foCustomCommand, fastdelegate::bind(&TTerminal::CustomCommandOnFile, this, _1, _2, _3), &AParams);
   }
   else
   {
@@ -3274,7 +3272,7 @@ void /* __fastcall */ TTerminal::ChangeFilesProperties(TStrings * FileList,
   const TRemoteProperties * Properties)
 {
   AnnounceFileListOperation();
-  ProcessFiles(FileList, foSetProperties, boost::bind(&TTerminal::ChangeFileProperties, this, _1, _2, _3), const_cast<void *>(static_cast<const void *>(Properties)));
+  ProcessFiles(FileList, foSetProperties, fastdelegate::bind(&TTerminal::ChangeFileProperties, this, _1, _2, _3), const_cast<void *>(static_cast<const void *>(Properties)));
 }
 //---------------------------------------------------------------------------
 bool /* __fastcall */ TTerminal::LoadFilesProperties(TStrings * FileList)
@@ -3363,7 +3361,7 @@ void /* __fastcall */ TTerminal::DoCalculateDirectorySize(const UnicodeString Fi
 {
   try
   {
-    ProcessDirectory(FileName, boost::bind(&TTerminal::CalculateFileSize, this, _1, _2, _3), Params);
+    ProcessDirectory(FileName, fastdelegate::bind(&TTerminal::CalculateFileSize, this, _1, _2, _3), Params);
   }
   catch(Exception & E)
   {
@@ -3387,7 +3385,7 @@ void /* __fastcall */ TTerminal::CalculateFilesSize(TStrings * FileList,
   Param.Params = Params;
   Param.CopyParam = CopyParam;
   Param.Stats = Stats;
-  ProcessFiles(FileList, foCalculateSize, boost::bind(&TTerminal::CalculateFileSize, this, _1, _2, _3), &Param);
+  ProcessFiles(FileList, foCalculateSize, fastdelegate::bind(&TTerminal::CalculateFileSize, this, _1, _2, _3), &Param);
   Size = Param.Size;
 }
 //---------------------------------------------------------------------------
@@ -3470,7 +3468,7 @@ void /* __fastcall */ TTerminal::DoRenameFile(const UnicodeString FileName,
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TTerminal::MoveFile(const UnicodeString FileName,
+void /* __fastcall */ TTerminal::MoveFile(UnicodeString FileName,
   const TRemoteFile * File, /*const TMoveFileParams*/ void * Param)
 {
   if (GetOperationProgress() &&
@@ -3512,7 +3510,7 @@ bool /* __fastcall */ TTerminal::MoveFiles(TStrings * FileList, const UnicodeStr
         // this is just optimization to avoid checking existence of current
         // directory after each move operation.
         UnicodeString curDirectory = Self->GetCurrentDirectory();
-        for (size_t Index = 0; !PossiblyMoved && (Index < FileList->GetCount()); Index++)
+        for (int Index = 0; !PossiblyMoved && (Index < FileList->GetCount()); Index++)
         {
           const TRemoteFile * File =
             dynamic_cast<const TRemoteFile *>(FileList->GetObjects(Index));
@@ -3543,7 +3541,7 @@ bool /* __fastcall */ TTerminal::MoveFiles(TStrings * FileList, const UnicodeStr
       }
       Self->EndTransaction();
     } BOOST_SCOPE_EXIT_END
-    Result = ProcessFiles(FileList, foRemoteMove, boost::bind(&TTerminal::MoveFile, this, _1, _2, _3), &Params);
+    Result = ProcessFiles(FileList, foRemoteMove, fastdelegate::bind(&TTerminal::MoveFile, this, _1, _2, _3), &Params);
   }
 #ifndef _MSC_VER
   __finally
@@ -3619,7 +3617,7 @@ void /* __fastcall */ TTerminal::DoCopyFile(const UnicodeString FileName,
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TTerminal::CopyFile(const UnicodeString FileName,
+void /* __fastcall */ TTerminal::CopyFile(UnicodeString FileName,
   const TRemoteFile * /*File*/, /*const TMoveFileParams*/ void * Param)
 {
   if (GetOperationProgress() && (GetOperationProgress()->Operation == foRemoteCopy))
@@ -3644,7 +3642,7 @@ bool /* __fastcall */ TTerminal::CopyFiles(TStrings * FileList, const UnicodeStr
   Params.Target = Target;
   Params.FileMask = FileMask;
   DirectoryModified(Target, true);
-  return ProcessFiles(FileList, foRemoteCopy, boost::bind(&TTerminal::CopyFile, this, _1, _2, _3), &Params);
+  return ProcessFiles(FileList, foRemoteCopy, fastdelegate::bind(&TTerminal::CopyFile, this, _1, _2, _3), &Params);
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::CreateDirectory(const UnicodeString DirName,
@@ -3859,19 +3857,16 @@ TTerminal * /* __fastcall */ TTerminal::GetCommandSession()
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::AnyCommand(const UnicodeString Command,
-  TCaptureOutputEvent * OutputEvent)
+  TCaptureOutputEvent OutputEvent)
 {
 
   class TOutputProxy
   {
   public:
-    /* __fastcall */ TOutputProxy(TCallSessionAction & Action, const TCaptureOutputEvent * OutputEvent) :
-      FAction(Action)
+    /* __fastcall */ TOutputProxy(TCallSessionAction & Action, TCaptureOutputEvent OutputEvent) :
+      FAction(Action),
+      FOutputEvent(OutputEvent)
     {
-      if (OutputEvent)
-      {
-        FOutputEvent.connect(*OutputEvent);
-      }
     }
 
     void /* __fastcall */ Output(const UnicodeString & Str, bool StdError)
@@ -3885,23 +3880,16 @@ void /* __fastcall */ TTerminal::AnyCommand(const UnicodeString Command,
 
   private:
     TCallSessionAction & FAction;
-    TCaptureOutputSignal FOutputEvent;
-  private:
-#pragma warning(push)
-#pragma warning(disable: 4822)
-    TOutputProxy(const TOutputProxy &);
-    void operator=(const TOutputProxy &);
-#pragma warning(pop)
+    TCaptureOutputEvent FOutputEvent;
   };
 
   TCallSessionAction Action(GetActionLog(), Command, GetCurrentDirectory());
   TOutputProxy ProxyOutputEvent(Action, OutputEvent);
-  TCaptureOutputEvent * outputEvent = reinterpret_cast<TCaptureOutputEvent *>(&boost::bind(&TOutputProxy::Output, &ProxyOutputEvent, _1, _2));
-  DoAnyCommand(Command, outputEvent, &Action);
+  DoAnyCommand(Command, fastdelegate::bind(&TOutputProxy::Output, &ProxyOutputEvent, _1, _2), &Action);
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::DoAnyCommand(const UnicodeString Command,
-  TCaptureOutputEvent * OutputEvent, TCallSessionAction * Action)
+  TCaptureOutputEvent OutputEvent, TCallSessionAction * Action)
 {
   assert(FFileSystem);
   try
@@ -4038,7 +4026,6 @@ void /* __fastcall */ TTerminal::OpenLocalFile(const UnicodeString FileName,
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
   FILE_OPERATION_LOOP (FMTLOAD(FILE_NOT_EXISTS, FileName.c_str()),
     Attrs = FileGetAttr(FileName);
-    // if ((Attrs == -1) && (Access != GENERIC_WRITE)) RaiseLastOSError();
     if (Attrs == -1) { RaiseLastOSError(); }
   )
 
@@ -4168,7 +4155,7 @@ void /* __fastcall */ TTerminal::MakeLocalFileList(const UnicodeString FileName,
   bool Directory = FLAGSET(Rec.Attr, faDirectory);
   if (Directory && Params.Recursive)
   {
-    ProcessLocalDirectory(FileName, boost::bind(&TTerminal::MakeLocalFileList, this, _1, _2, _3), &Params);
+    ProcessLocalDirectory(FileName, fastdelegate::bind(&TTerminal::MakeLocalFileList, this, _1, _2, _3), &Params);
   }
 
   if (!Directory || Params.IncludeDirs)
@@ -4207,7 +4194,7 @@ void /* __fastcall */ TTerminal::CalculateLocalFileSize(const UnicodeString File
     }
     else
     {
-      ProcessLocalDirectory(FileName, boost::bind(&TTerminal::CalculateLocalFileSize, this, _1, _2, _3), Params);
+      ProcessLocalDirectory(FileName, fastdelegate::bind(&TTerminal::CalculateLocalFileSize, this, _1, _2, _3), Params);
     }
   }
 
@@ -4221,12 +4208,7 @@ void /* __fastcall */ TTerminal::CalculateLocalFileSize(const UnicodeString File
 void /* __fastcall */ TTerminal::CalculateLocalFilesSize(TStrings * FileList,
   __int64 & Size, const TCopyParamType * CopyParam)
 {
-  TFileOperationProgressSignal sig1;
-  TFileOperationFinishedSignal sig2;
-  sig1.connect(boost::bind(&TTerminal::DoProgress, this, _1, _2));
-  sig2.connect(boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
-  TFileOperationProgressType OperationProgress(&sig1, &sig2);
-  // TFileOperationProgressType OperationProgress(boost::bind(&TTerminal::DoProgress, this, _1, _2), boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
+  TFileOperationProgressType OperationProgress(fastdelegate::bind(&TTerminal::DoProgress, this, _1, _2), fastdelegate::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
   TOnceDoneOperation OnceDoneOperation = odoIdle;
   OperationProgress.Start(foCalculateSize, osLocal, FileList->GetCount());
   // try
@@ -4289,7 +4271,7 @@ struct TSynchronizeData
   UnicodeString RemoteDirectory;
   TTerminal::TSynchronizeMode Mode;
   int Params;
-  const TSynchronizeDirectoryEvent * OnSynchronizeDirectory;
+  TSynchronizeDirectoryEvent OnSynchronizeDirectory;
   TSynchronizeOptions * Options;
   int Flags;
   TStringList * LocalFileList;
@@ -4300,7 +4282,7 @@ struct TSynchronizeData
 TSynchronizeChecklist * /* __fastcall */ TTerminal::SynchronizeCollect(const UnicodeString LocalDirectory,
   const UnicodeString RemoteDirectory, TSynchronizeMode Mode,
   const TCopyParamType * CopyParam, int Params,
-  const TSynchronizeDirectoryEvent & OnSynchronizeDirectory,
+  TSynchronizeDirectoryEvent OnSynchronizeDirectory,
   TSynchronizeOptions * Options)
 {
   TSynchronizeChecklist * Checklist = new TSynchronizeChecklist();
@@ -4322,7 +4304,7 @@ TSynchronizeChecklist * /* __fastcall */ TTerminal::SynchronizeCollect(const Uni
 void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeString LocalDirectory,
   const UnicodeString RemoteDirectory, TSynchronizeMode Mode,
   const TCopyParamType * CopyParam, int Params,
-  const TSynchronizeDirectoryEvent & OnSynchronizeDirectory, TSynchronizeOptions * Options,
+  TSynchronizeDirectoryEvent OnSynchronizeDirectory, TSynchronizeOptions * Options,
   int Flags, TSynchronizeChecklist * Checklist)
 {
   TSynchronizeData Data;
@@ -4331,7 +4313,7 @@ void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeStri
   Data.RemoteDirectory = UnixIncludeTrailingBackslash(RemoteDirectory);
   Data.Mode = Mode;
   Data.Params = Params;
-  Data.OnSynchronizeDirectory = &OnSynchronizeDirectory;
+  Data.OnSynchronizeDirectory = OnSynchronizeDirectory;
   Data.LocalFileList = NULL;
   Data.CopyParam = CopyParam;
   Data.Options = Options;
@@ -4354,7 +4336,7 @@ void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeStri
     {
       if (Data.LocalFileList != NULL)
       {
-        for (size_t Index = 0; Index < Data.LocalFileList->GetCount(); Index++)
+        for (int Index = 0; Index < Data.LocalFileList->GetCount(); Index++)
         {
           TSynchronizeFileData * FileData = reinterpret_cast<TSynchronizeFileData *>
             (Data.LocalFileList->GetObjects(Index));
@@ -4445,7 +4427,7 @@ void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeStri
         DoSynchronizeProgress(Data, true);
       }
 
-      ProcessDirectory(RemoteDirectory, boost::bind(&TTerminal::SynchronizeCollectFile, this, _1, _2, _3), &Data,
+      ProcessDirectory(RemoteDirectory, fastdelegate::bind(&TTerminal::SynchronizeCollectFile, this, _1, _2, _3), &Data,
         FLAGSET(Params, spUseCache));
 
       TSynchronizeFileData * FileData;
@@ -4665,7 +4647,7 @@ void /* __fastcall */ TTerminal::SynchronizeCollectFile(const UnicodeString File
           DoSynchronizeCollectDirectory(
             Data->LocalDirectory + LocalData->Info.FileName,
             Data->RemoteDirectory + File->GetFileName(),
-            Data->Mode, Data->CopyParam, Data->Params, *Data->OnSynchronizeDirectory,
+            Data->Mode, Data->CopyParam, Data->Params, Data->OnSynchronizeDirectory,
             Data->Options, (Data->Flags & ~sfFirstLevel),
             Data->Checklist);
         }
@@ -4724,11 +4706,11 @@ void /* __fastcall */ TTerminal::SynchronizeCollectFile(const UnicodeString File
 void /* __fastcall */ TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
   const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
   const TCopyParamType * CopyParam, int Params,
-  const TSynchronizeDirectoryEvent & OnSynchronizeDirectory)
+  TSynchronizeDirectoryEvent OnSynchronizeDirectory)
 {
   TSynchronizeData Data;
 
-  Data.OnSynchronizeDirectory = &OnSynchronizeDirectory;
+  Data.OnSynchronizeDirectory = OnSynchronizeDirectory;
 
   int CopyParams =
     FLAGMASK(FLAGSET(Params, spNoConfirmation), cpNoConfirmation);
@@ -4865,13 +4847,13 @@ void /* __fastcall */ TTerminal::SynchronizeApply(TSynchronizeChecklist * Checkl
           if (DownloadList->GetCount() > 0)
           {
             ProcessFiles(DownloadList, foSetProperties,
-              boost::bind(&TTerminal::SynchronizeLocalTimestamp, this, _1, _2, _3), NULL, osLocal);
+              fastdelegate::bind(&TTerminal::SynchronizeLocalTimestamp, this, _1, _2, _3), NULL, osLocal);
           }
 
           if (UploadList->GetCount() > 0)
           {
             ProcessFiles(UploadList, foSetProperties,
-              boost::bind(&TTerminal::SynchronizeRemoteTimestamp, this, _1, _2, _3));
+              fastdelegate::bind(&TTerminal::SynchronizeRemoteTimestamp, this, _1, _2, _3));
           }
         }
         else
@@ -4919,16 +4901,11 @@ void /* __fastcall */ TTerminal::SynchronizeApply(TSynchronizeChecklist * Checkl
 void /* __fastcall */ TTerminal::DoSynchronizeProgress(const TSynchronizeData & Data,
   bool Collect)
 {
-  if (Data.OnSynchronizeDirectory != NULL)
+  if (!Data.OnSynchronizeDirectory.empty())
   {
     bool Continue = true;
-    TSynchronizeDirectorySignal sig;
-    if (Data.OnSynchronizeDirectory)
-    {
-      sig.connect(*Data.OnSynchronizeDirectory);
-      sig(Data.LocalDirectory, Data.RemoteDirectory,
-        Continue, Collect);
-    }
+    Data.OnSynchronizeDirectory(Data.LocalDirectory, Data.RemoteDirectory,
+      Continue, Collect);
 
     if (!Continue)
     {
@@ -4983,7 +4960,7 @@ void /* __fastcall */ TTerminal::FileFind(UnicodeString FileName,
   const TRemoteFile * File, /*TFilesFindParams*/ void * Param)
 {
   // see DoFilesFind
-  FOnFindingFile.disconnect_all_slots();
+  FOnFindingFile = NULL;
 
   assert(Param);
   assert(File);
@@ -5007,12 +4984,7 @@ void /* __fastcall */ TTerminal::FileFind(UnicodeString FileName,
     {
       if (!ImplicitMatch)
       {
-        TFileFoundSignal sig;
-        if (AParams->OnFileFound)
-        {
-          sig.connect(*AParams->OnFileFound);
-        }
-        sig(this, FileName, File, AParams->Cancel);
+        AParams->OnFileFound(this, FileName, File, AParams->Cancel);
       }
 
       if (File->GetIsDirectory())
@@ -5025,29 +4997,21 @@ void /* __fastcall */ TTerminal::FileFind(UnicodeString FileName,
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::DoFilesFind(UnicodeString Directory, TFilesFindParams & Params)
 {
-  TFindingFileSignal sig;
-  if (Params.OnFindingFile)
-  {
-    sig.connect(*Params.OnFindingFile);
-  }
-  sig(this, Directory, Params.Cancel);
+  Params.OnFindingFile(this, Directory, Params.Cancel);
   if (!Params.Cancel)
   {
-    assert(FOnFindingFile.empty());
+    assert(FOnFindingFile == NULL);
     // ideally we should set the handler only around actually reading
     // of the directory listing, so we at least reset the handler in
     // FileFind
-    if (Params.OnFindingFile)
-    {
-      FOnFindingFile.connect(*Params.OnFindingFile);
-    }
+    FOnFindingFile = Params.OnFindingFile;
     // try
     {
       BOOST_SCOPE_EXIT ( (&Self) )
       {
-        Self->FOnFindingFile.disconnect_all_slots();
+        Self->FOnFindingFile = NULL;
       } BOOST_SCOPE_EXIT_END
-      ProcessDirectory(Directory, boost::bind(&TTerminal::FileFind, this, _1, _2, _3), &Params, false, true);
+      ProcessDirectory(Directory, fastdelegate::bind(&TTerminal::FileFind, this, _1, _2, _3), &Params, false, true);
     }
 #ifndef _MSC_VER
     __finally
@@ -5059,7 +5023,7 @@ void /* __fastcall */ TTerminal::DoFilesFind(UnicodeString Directory, TFilesFind
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminal::FilesFind(UnicodeString Directory, const TFileMasks & FileMask,
-  const TFileFoundEvent * OnFileFound, const TFindingFileEvent * OnFindingFile)
+  TFileFoundEvent OnFileFound, TFindingFileEvent OnFindingFile)
 {
   TFilesFindParams Params;
   Params.FileMask = FileMask;
@@ -5154,12 +5118,7 @@ bool /* __fastcall */ TTerminal::CopyToRemote(TStrings * FilesToCopy,
   bool Result = false;
   TOnceDoneOperation OnceDoneOperation = odoIdle;
 
-  TFileOperationProgressSignal sig1;
-  TFileOperationFinishedSignal sig2;
-  sig1.connect(boost::bind(&TTerminal::DoProgress, this, _1, _2));
-  sig2.connect(boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
-  TFileOperationProgressType OperationProgress(&sig1, &sig2);
-  // TFileOperationProgressType OperationProgress(boost::bind(&TTerminal::DoProgress, this, _1, _2), boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
+  TFileOperationProgressType OperationProgress(fastdelegate::bind(&TTerminal::DoProgress, this, _1, _2), fastdelegate::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
   try
   {
 
@@ -5171,6 +5130,7 @@ bool /* __fastcall */ TTerminal::CopyToRemote(TStrings * FilesToCopy,
         (FLAGCLEAR(Params, cpDelete) ? CopyParam : NULL));
     }
 
+    // TFileOperationProgressType OperationProgress(&DoProgress, &DoFinished);
     OperationProgress.Start((Params & cpDelete ? foMove : foCopy), osLocal,
       FilesToCopy->GetCount(), (Params & cpTemporary) > 0, TargetDir, CopyParam->GetCPSLimit());
 
@@ -5284,12 +5244,7 @@ bool /* __fastcall */ TTerminal::CopyToLocal(TStrings * FilesToCopy,
       } BOOST_SCOPE_EXIT_END
       __int64 TotalSize = 0;
       bool TotalSizeKnown = false;
-      TFileOperationProgressSignal sig1;
-      TFileOperationFinishedSignal sig2;
-      sig1.connect(boost::bind(&TTerminal::DoProgress, this, _1, _2));
-      sig2.connect(boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
-      TFileOperationProgressType OperationProgress(&sig1, &sig2);
-      // TFileOperationProgressType OperationProgress(boost::bind(&TTerminal::DoProgress, this, _1, _2), boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
+      TFileOperationProgressType OperationProgress(fastdelegate::bind(&TTerminal::DoProgress, this, _1, _2), fastdelegate::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
 
       if (CopyParam->GetCalculateSize())
       {

@@ -11,8 +11,6 @@
 
 #ifdef _MSC_VER
 #include "boostdefines.hpp"
-#include <boost/signals/signal2.hpp>
-#include <boost/signals/signal3.hpp>
 
 #include "Exceptions.h"
 #endif
@@ -92,10 +90,10 @@ typedef void __fastcall (__closure *TCaptureOutputEvent)(
 typedef void __fastcall (__closure *TCalculatedChecksumEvent)(
   const UnicodeString & FileName, const UnicodeString & Alg, const UnicodeString & Hash);
 #else
-typedef boost::signal2<void, const UnicodeString & /* Str */, bool /* StdError */> TCaptureOutputSignal;
-typedef TCaptureOutputSignal::slot_type TCaptureOutputEvent;
-typedef boost::signal3<void, const UnicodeString & /* FileName */, const UnicodeString & /* Alg */, const UnicodeString & /* Hash */> TCalculatedChecksumSignal;
-typedef TCalculatedChecksumSignal::slot_type TCalculatedChecksumEvent;
+typedef fastdelegate::FastDelegate2<void,
+  const UnicodeString & /* Str */, bool /* StdError */> TCaptureOutputEvent;
+typedef fastdelegate::FastDelegate3<void,
+  const UnicodeString & /* FileName */, const UnicodeString & /* Alg */, const UnicodeString & /* Hash */> TCalculatedChecksumEvent;
 #endif
 //---------------------------------------------------------------------------
 class TSessionActionRecord;
@@ -213,8 +211,8 @@ public:
   void __fastcall File(TRemoteFile * File);
 };
 //---------------------------------------------------------------------------
-typedef boost::signal2<void, TLogLineType, const UnicodeString> TDoAddLogSignal;
-typedef TDoAddLogSignal::slot_type TDoAddLogEvent;
+typedef fastdelegate::FastDelegate2<void,
+  TLogLineType, UnicodeString> TDoAddLogEvent;
 //---------------------------------------------------------------------------
 class TSessionLog : protected TStringList
 {
@@ -252,8 +250,8 @@ public:
   TSessionLog * __fastcall GetParent() { return FParent; }
   void __fastcall SetParent(TSessionLog *value) { FParent = value; }
   bool __fastcall GetLogging() { return FLogging; }
-  TNotifySignal & GetOnStateChange() { return FOnStateChange; }
-  void SetOnStateChange(const TNotifyEvent & value) { FOnStateChange.connect(value); }
+  TNotifyEvent GetOnStateChange() { return FOnStateChange; }
+  void SetOnStateChange(TNotifyEvent value) { FOnStateChange = value; }
   UnicodeString __fastcall GetCurrentFileName() { return FCurrentFileName; }
   size_t __fastcall GetTopIndex() { return FTopIndex; }
   UnicodeString __fastcall GetName() { return FName; }
@@ -278,7 +276,7 @@ private:
   TSessionData * FSessionData;
   UnicodeString FName;
   bool FClosed;
-  TNotifySignal FOnStateChange;
+  TNotifyEvent FOnStateChange;
   TSessionLog *Self;
 
 public:
@@ -293,9 +291,9 @@ public:
   UnicodeString __fastcall GetSessionName();
   void __fastcall DoAdd(TLogLineType Type, UnicodeString Line,
     // void __fastcall (__closure *f)(TLogLineType Type, const UnicodeString & Line));
-    const TDoAddLogEvent &func);
-  void /* __fastcall */ DoAddToParent(TLogLineType aType, const UnicodeString & aLine);
-  void /* __fastcall */ DoAddToSelf(TLogLineType aType, const UnicodeString & aLine);
+    TDoAddLogEvent Event);
+  void /* __fastcall */ DoAddToParent(TLogLineType aType, UnicodeString aLine);
+  void /* __fastcall */ DoAddToSelf(TLogLineType aType, UnicodeString aLine);
   void /* __fastcall */ DoAddStartupInfo(TSessionData * Data);
 };
 //---------------------------------------------------------------------------

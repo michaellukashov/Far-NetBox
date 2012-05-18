@@ -128,8 +128,8 @@ public:
         OnChangeNotifyEventTriggered(false)
     {
     }
-    const TNotifySignal &GetOnChange() const { return FOnChange; }
-    void SetOnChange(const TNotifyEvent &Event) { FOnChange.connect(Event); }
+    TNotifyEvent GetOnChange() const { return FOnChange; }
+    void SetOnChange(TNotifyEvent Event) { FOnChange = Event; }
     virtual void Changed()
     {
         if (FOnChange.num_slots() > 0)
@@ -145,15 +145,15 @@ public:
 
     bool OnChangeNotifyEventTriggered;
 private:
-    TNotifySignal FOnChange;
+    TNotifyEvent FOnChange;
 };
 
 class TClass2 // : public boost::signals::trackable
 {
   // typedef void result_type;
-  typedef boost::signal2<void, TClass2 *, int> TClickSignal;
-  typedef TClickSignal::slot_type TClickEvent;
-  // typedef TClickSignal::slot_function_type TClickEvent;
+  typedef fastdelegate::FastDelegate2<void, TClass2 *, int> TClickEvent;
+  typedef TClickEvent::slot_type TClickEvent;
+  // typedef TClickEvent::slot_function_type TClickEvent;
 
 public:
     TClass2() :
@@ -161,10 +161,10 @@ public:
     {
     }
     
-    const TClickSignal &GetOnClick() const { return m_OnClick; }
-    boost::signals::connection SetOnClick(const TClickEvent &onClick)
+    TClickEvent GetOnClick() const { return m_OnClick; }
+    void SetOnClick(TClickEvent onClick)
     {
-        return m_OnClick.connect(onClick);
+        return m_OnClick = onClick;
         // DEBUG_PRINTF(L"m_OnClick.num_slots = %d", m_OnClick.num_slots());
     }
     void Click()
@@ -174,7 +174,7 @@ public:
     }
     bool OnClickTriggered;
 private:
-    TClickSignal m_OnClick;
+    TClickEvent m_OnClick;
 };
 
 class TClass3
@@ -206,7 +206,7 @@ BOOST_FIXTURE_TEST_CASE(test2, base_fixture_t)
     {
         TClass2 cl2;
         TClass3 cl3;
-        cl2.SetOnClick(boost::bind(&TClass3::ClickEventHandler, &cl3, _1, _2));
+        cl2.SetOnClick(fastdelegate::bind(&TClass3::ClickEventHandler, &cl3, _1, _2));
         BOOST_CHECK(cl2.GetOnClick().num_slots() > 0);
         cl2.Click();
         BOOST_CHECK_EQUAL(true, cl2.OnClickTriggered);
@@ -220,7 +220,7 @@ BOOST_FIXTURE_TEST_CASE(test3, base_fixture_t)
     {
         TClass1 cl1;
         BOOST_CHECK_EQUAL(false, cl1.OnChangeNotifyEventTriggered);
-        cl1.SetOnChange(boost::bind(&base_fixture_t::OnChangeNotifyEvent, this, _1));
+        cl1.SetOnChange(fastdelegate::bind(&base_fixture_t::OnChangeNotifyEvent, this, _1));
         cl1.Change(L"line 1");
         BOOST_CHECK_EQUAL(true, cl1.OnChangeNotifyEventTriggered);
     }
@@ -231,7 +231,7 @@ BOOST_FIXTURE_TEST_CASE(test4, base_fixture_t)
     if (1)
     {
         TStringList strings;
-        strings.SetOnChange(boost::bind(&base_fixture_t::onStringListChange, this, _1));
+        strings.SetOnChange(fastdelegate::bind(&base_fixture_t::onStringListChange, this, _1));
         strings.Add(L"line 1");
         // BOOST_CHECK_EQUAL(true, OnChangeNotifyEventTriggered);
         BOOST_CHECK_EQUAL(true, onStringListChangeTriggered);

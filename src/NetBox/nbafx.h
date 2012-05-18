@@ -38,3 +38,6 @@
 #include <farkeys.hpp>
 #include <farcolor.hpp>
 #pragma warning(pop)
+
+#include "FastDelegate.h"
+#include "FastDelegateBind.h"

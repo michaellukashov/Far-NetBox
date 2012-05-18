@@ -39,7 +39,7 @@ private:
   const unsigned int * FMinPacketSize;
   const unsigned int * FMaxPacketSize;
   Config * FConfig;
-  TNotifySignal FOnReceive;
+  TNotifyEvent FOnReceive;
   bool FFrozen;
   bool FDataWhileFrozen;
   bool FStoredPasswordTried;
@@ -91,10 +91,10 @@ public:
   bool __fastcall GetReady();
   void __fastcall DispatchSendBuffer(int BufSize);
   void /* __fastcall */ SendBuffer(unsigned int & Result);
-  unsigned int __fastcall TimeoutPrompt(TQueryParamsTimerEvent * PoolEvent);
+  unsigned int __fastcall TimeoutPrompt(TQueryParamsTimerEvent PoolEvent);
 
 protected:
-  TCaptureOutputSignal FOnCaptureOutput;
+  TCaptureOutputEvent FOnCaptureOutput;
 
   void __fastcall GotHostKey();
   int __fastcall TranslatePuttyMessage(const TPuttyTranslation * Translation,
@@ -134,8 +134,8 @@ public:
   void __fastcall ClearStdError();
   bool __fastcall GetStoredCredentialsTried();
 
-  void __fastcall RegisterReceiveHandler(const TNotifyEvent & Handler);
-  void __fastcall UnregisterReceiveHandler(const TNotifyEvent & Handler);
+  void __fastcall RegisterReceiveHandler(TNotifyEvent Handler);
+  void __fastcall UnregisterReceiveHandler(TNotifyEvent Handler);
 
   // interface to PuTTY core
   void __fastcall UpdateSocket(SOCKET value, bool Startup);
@@ -165,8 +165,8 @@ public:
   __property bool Simple = { read = FSimple, write = FSimple };
 #else
   bool __fastcall GetActive() { return FActive; }
-  TCaptureOutputSignal & GetOnCaptureOutput() { return FOnCaptureOutput; }
-  void SetOnCaptureOutput(const TCaptureOutputEvent & value) { FOnCaptureOutput.connect(value); }
+  TCaptureOutputEvent GetOnCaptureOutput() { return FOnCaptureOutput; }
+  void SetOnCaptureOutput(TCaptureOutputEvent value) { FOnCaptureOutput = value; }
   TDateTime GetLastDataSent() { return FLastDataSent; }
   UnicodeString GetLastTunnelError() { return FLastTunnelError; }
   UnicodeString GetUserName() { return FUserName; }

@@ -1201,6 +1201,10 @@ void __fastcall TOptionsIniFile::ReadSection(const UnicodeString Section, TStrin
 
   // try
   {
+    BOOST_SCOPE_EXIT ( (&Strings) )
+    {
+      Strings->EndUpdate();
+    } BOOST_SCOPE_EXIT_END
     for (int Index = 0; Index < FOptions->Count; Index++)
     {
       Strings->Add(FOptions->Names[Index]);

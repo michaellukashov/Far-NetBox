@@ -911,23 +911,26 @@ bool TWebDAVFileSystem::ConfirmOverwrite(UnicodeString & FileName,
 
 //---------------------------------------------------------------------------
 void /* __fastcall */ TWebDAVFileSystem::CustomCommandOnFile(const UnicodeString FileName,
-  const TRemoteFile * File, UnicodeString Command, int Params, TCaptureOutputEvent * OutputEvent)
+  const TRemoteFile * File, UnicodeString Command, int Params, TCaptureOutputEvent OutputEvent)
 {
   assert(File);
   bool Dir = File->GetIsDirectory() && !File->GetIsSymLink();
   if (Dir && (Params & ccRecursive))
   {
-    TCustomCommandParams AParams(Command, Params, OutputEvent);
-    FTerminal->ProcessDirectory(FileName, boost::bind(&TTerminal::CustomCommandOnFile, FTerminal, _1, _2, _3),
-                                &AParams);
+    TCustomCommandParams AParams;
+    AParams.Command = Command;
+    AParams.Params = Params;
+    AParams.OutputEvent = OutputEvent;
+    FTerminal->ProcessDirectory(FileName, fastdelegate::bind(&TTerminal::CustomCommandOnFile, FTerminal, _1, _2, _3),
+      &AParams);
   }
 
   if (!Dir || (Params & ccApplyToDirectories))
   {
     TCustomCommandData Data(FTerminal);
     UnicodeString Cmd = TRemoteCustomCommand(
-                          Data, FTerminal->GetCurrentDirectory(), FileName, L"").
-                        Complete(Command, true);
+      Data, FTerminal->GetCurrentDirectory(), FileName, L"").
+      Complete(Command, true);
 
   }
 }
@@ -946,7 +949,7 @@ void __fastcall TWebDAVFileSystem::CaptureOutput(const UnicodeString AddedLine, 
 }
 //---------------------------------------------------------------------------
 void __fastcall TWebDAVFileSystem::AnyCommand(const UnicodeString Command,
-  TCaptureOutputEvent * OutputEvent)
+  TCaptureOutputEvent OutputEvent)
 {
   Error(SNotImplemented, 1008);
 }
@@ -1446,7 +1449,7 @@ void __fastcall TWebDAVFileSystem::Sink(const UnicodeString FileName,
       SinkFileParams.Skipped = false;
       SinkFileParams.Flags = Flags & ~(tfFirstLevel | tfAutoResume);
 
-      FTerminal->ProcessDirectory(FileName, boost::bind(&TWebDAVFileSystem::SinkFile, this, _1, _2, _3), &SinkFileParams);
+      FTerminal->ProcessDirectory(FileName, fastdelegate::bind(&TWebDAVFileSystem::SinkFile, this, _1, _2, _3), &SinkFileParams);
 
       // Do not delete directory if some of its files were skip.
       // Throw "skip file" for the directory to avoid __fastcall attempt to deletion

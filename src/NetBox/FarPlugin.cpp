@@ -849,7 +849,7 @@ void __fastcall TFarMessageDialog::Init(unsigned int AFlags,
       Button = new TFarButton(this);
       Button->SetDefault(Index == 0);
       Button->SetBrackets(brNone);
-      Button->SetOnClick(boost::bind(&TFarMessageDialog::ButtonClick, this, _1, _2));
+      Button->SetOnClick(fastdelegate::bind(&TFarMessageDialog::ButtonClick, this, _1, _2));
       UnicodeString Caption = Buttons->GetStrings(Index);
       if ((FParams->Timeout > 0) &&
           (FParams->TimeoutButton == Index))
@@ -963,9 +963,7 @@ void __fastcall TFarMessageDialog::Idle()
       if (FParams->TimerEvent != NULL)
       {
         FParams->TimerAnswer = 0;
-        TFarMessageTimerSignal sig;
-        sig.connect(*FParams->TimerEvent);
-        sig(FParams->TimerAnswer);
+        FParams->TimerEvent(FParams->TimerAnswer);
         if (FParams->TimerAnswer != 0)
         {
           Close(GetDefaultButton());
@@ -1043,9 +1041,7 @@ void /* __fastcall */ TFarMessageDialog::ButtonClick(TFarButton * Sender, bool &
 {
   if (FParams->ClickEvent != NULL)
   {
-    TFarMessageClickSignal sig;
-    sig.connect(*FParams->ClickEvent);
-    sig(FParams->Token, Sender->GetResult() - 1, Close);
+    FParams->ClickEvent(FParams->Token, Sender->GetResult() - 1, Close);
   }
 }
 //---------------------------------------------------------------------------
@@ -1259,15 +1255,10 @@ int __fastcall TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeString Ti
 //---------------------------------------------------------------------------
 bool __fastcall TCustomFarPlugin::InputBox(const UnicodeString Title,
   const UnicodeString Prompt, UnicodeString & Text, unsigned long Flags,
-  const UnicodeString HistoryName, size_t MaxLen, TFarInputBoxValidateEvent * OnValidate)
+  const UnicodeString HistoryName, size_t MaxLen, TFarInputBoxValidateEvent OnValidate)
 {
   bool Repeat = false;
   int Result = 0;
-  TFarInputBoxValidateSignal sig;
-  if (OnValidate)
-  {
-    sig.connect(*OnValidate);
-  }
   do
   {
     UnicodeString DestText;
@@ -1296,7 +1287,7 @@ bool __fastcall TCustomFarPlugin::InputBox(const UnicodeString Title,
       {
         try
         {
-          sig(Text);
+          OnValidate(Text);
         }
         catch (Exception & E)
         {

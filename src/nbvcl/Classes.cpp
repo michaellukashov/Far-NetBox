@@ -981,14 +981,14 @@ void TStringList::SetUpdateState(bool Updating)
 }
 void TStringList::Changing()
 {
-  if (GetUpdateCount() == 0)
+  if (GetUpdateCount() == 0 && !FOnChanging.empty())
   {
     FOnChanging(this);
   }
 }
 void TStringList::Changed()
 {
-  if (GetUpdateCount() == 0)
+  if (GetUpdateCount() == 0 && !FOnChange.empty())
   {
     FOnChange(this);
   }

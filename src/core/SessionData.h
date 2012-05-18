@@ -42,7 +42,6 @@ extern const wchar_t ProxyMethodList[][10];
 extern const TCipher DefaultCipherList[CIPHER_COUNT];
 extern const TKex DefaultKexList[KEX_COUNT];
 extern const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][15];
-extern const UnicodeString CONST_LOGIN_ANONYMOUS;
 extern const int DefaultSendBuf;
 extern const UnicodeString AnonymousUserName;
 extern const UnicodeString AnonymousPassword;
@@ -604,7 +603,7 @@ public:
   __property TSessionData * Sessions[int Index]  = { read=AtSession };
   __property TSessionData * DefaultSettings  = { read=FDefaultSettings, write=SetDefaultSettings };
 #else
-  TSessionData * __fastcall GetSession(size_t Index) { return static_cast<TSessionData *>(AtObject(Index)); }
+  TSessionData * __fastcall GetSession(int Index) { return static_cast<TSessionData *>(AtObject(Index)); }
   TSessionData * __fastcall GetDefaultSettings() const { return FDefaultSettings; }
   TSessionData * __fastcall GetSessionByName(const UnicodeString SessionName);
 #endif
