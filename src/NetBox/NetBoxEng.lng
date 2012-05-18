@@ -176,7 +176,7 @@
 "R (rights), RO (octal format) and L (symlink target)"
 "Auto&matically refresh directory after operation"
 
-"Version %s"
+"Version %s build %d"
 "Based on %s version %s"
 "&Homepage"
 "&Support forum"

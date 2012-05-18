@@ -27,6 +27,7 @@
 #include <Queue.h>
 #include <farkeys.hpp>
 #include <farcolor.hpp>
+#include "version.h"
 // FAR WORKAROUND
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
@@ -1264,7 +1265,7 @@ UnicodeString __fastcall ReplaceCopyright(UnicodeString S)
 
   Text = new TFarText(this);
   // DEBUG_PRINTF(L"Configuration->GetVersion = %s", Configuration->GetVersion().c_str());
-  Text->SetCaption(FORMAT(GetMsg(ABOUT_VERSION).c_str(), Configuration->GetVersion().c_str()));
+  Text->SetCaption(FORMAT(GetMsg(ABOUT_VERSION).c_str(), Configuration->GetVersion().c_str(), PLUGIN_VERSION_BUILD));
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
