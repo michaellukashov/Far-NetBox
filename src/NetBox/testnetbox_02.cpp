@@ -132,7 +132,7 @@ public:
     void SetOnChange(TNotifyEvent Event) { FOnChange = Event; }
     virtual void Changed()
     {
-        if (FOnChange.num_slots() > 0)
+        if (!FOnChange.empty())
         {
             FOnChange(this);
             OnChangeNotifyEventTriggered = true;
@@ -150,10 +150,7 @@ private:
 
 class TClass2 // : public boost::signals::trackable
 {
-  // typedef void result_type;
   typedef fastdelegate::FastDelegate2<void, TClass2 *, int> TClickEvent;
-  typedef TClickEvent::slot_type TClickEvent;
-  // typedef TClickEvent::slot_function_type TClickEvent;
 
 public:
     TClass2() :
@@ -207,7 +204,7 @@ BOOST_FIXTURE_TEST_CASE(test2, base_fixture_t)
         TClass2 cl2;
         TClass3 cl3;
         cl2.SetOnClick(fastdelegate::bind(&TClass3::ClickEventHandler, &cl3, _1, _2));
-        BOOST_CHECK(cl2.GetOnClick().num_slots() > 0);
+        BOOST_CHECK(!cl2.GetOnClick().empty());
         cl2.Click();
         BOOST_CHECK_EQUAL(true, cl2.OnClickTriggered);
         BOOST_CHECK_EQUAL(true, cl3.ClickEventHandlerTriggered);
