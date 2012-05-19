@@ -401,7 +401,7 @@ void __fastcall TSimpleThread::WaitFor(unsigned int Milliseconds)
 {
 #ifndef _MSC_VER
   FEvent = CreateEvent(NULL, false, false, NULL);
-  assert(FEvent != NULL);
+  assert(FEvent != 0);
 
   if (LowPriority)
   {
@@ -414,7 +414,7 @@ void __fastcall TSignalThread::Init(bool LowPriority)
 {
   TSimpleThread::Init();
   FEvent = CreateEvent(NULL, false, false, NULL);
-  assert(FEvent != NULL);
+  assert(FEvent != 0);
 
   if (LowPriority)
   {
@@ -2303,7 +2303,7 @@ void /* __fastcall */ TTerminalThread::TerminalReopenEvent(TObject * /*Sender*/)
 //---------------------------------------------------------------------------
 void __fastcall TTerminalThread::ProcessEvent()
 {
-  assert(FEvent != NULL);
+  assert(FEvent != 0);
   assert(FException == NULL);
 
   try

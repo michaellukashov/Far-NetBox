@@ -330,9 +330,9 @@ public:
   void __fastcall QuickSort(int L, int R, TStringListSortCompare SCompare);
 
   void __fastcall LoadFromFile(const UnicodeString FileName);
-  TNotifyEvent __fastcall GetOnChange() { return FOnChange; }
+  TNotifyEvent & __fastcall GetOnChange() { return FOnChange; }
   void __fastcall SetOnChange(TNotifyEvent onChange) { FOnChange = onChange; }
-  TNotifyEvent __fastcall GetOnChanging() { return FOnChanging; }
+  TNotifyEvent & __fastcall GetOnChanging() { return FOnChanging; }
   void __fastcall SetOnChanging(TNotifyEvent onChanging) { FOnChanging = onChanging; }
 
   virtual void __fastcall PutObject(int Index, TObject * AObject);

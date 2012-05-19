@@ -686,7 +686,7 @@ void __fastcall TSecureShell::UnregisterReceiveHandler(TNotifyEvent Handler)
 {
   assert(!FOnReceive.empty());
   USEDPARAM(Handler);
-  FOnReceive.clear();
+  FOnReceive = NULL;
 }
 //---------------------------------------------------------------------------
 void __fastcall TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, int Length)

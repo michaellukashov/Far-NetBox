@@ -128,7 +128,7 @@ public:
         OnChangeNotifyEventTriggered(false)
     {
     }
-    TNotifyEvent GetOnChange() const { return FOnChange; }
+    TNotifyEvent & GetOnChange() const { return FOnChange; }
     void SetOnChange(TNotifyEvent Event) { FOnChange = Event; }
     virtual void Changed()
     {

@@ -551,36 +551,36 @@ public:
   TConfiguration *__fastcall GetConfiguration() { return FConfiguration; }
   TSessionStatus __fastcall GetStatus() { return FStatus; }
   TRemoteDirectory * GetFiles() { return FFiles; }
-  TNotifyEvent GetOnChangeDirectory() { return FOnChangeDirectory; }
+  TNotifyEvent & GetOnChangeDirectory() { return FOnChangeDirectory; }
   void SetOnChangeDirectory(TNotifyEvent value) { FOnChangeDirectory = value; }
-  TReadDirectoryEvent GetOnReadDirectory() { return FOnReadDirectory; }
+  TReadDirectoryEvent & GetOnReadDirectory() { return FOnReadDirectory; }
   void SetOnReadDirectory(TReadDirectoryEvent value) { FOnReadDirectory = value; }
-  TNotifyEvent GetOnStartReadDirectory() { return FOnStartReadDirectory; }
+  TNotifyEvent & GetOnStartReadDirectory() { return FOnStartReadDirectory; }
   void SetOnStartReadDirectory(TNotifyEvent value) { FOnStartReadDirectory = value; }
-  TReadDirectoryProgressEvent GetOnReadDirectoryProgress() { return FOnReadDirectoryProgress; }
+  TReadDirectoryProgressEvent & GetOnReadDirectoryProgress() { return FOnReadDirectoryProgress; }
   void SetOnReadDirectoryProgress(TReadDirectoryProgressEvent value) { FOnReadDirectoryProgress = value; }
-  TDeleteLocalFileEvent GetOnDeleteLocalFile() { return FOnDeleteLocalFile; }
+  TDeleteLocalFileEvent & GetOnDeleteLocalFile() { return FOnDeleteLocalFile; }
   void SetOnDeleteLocalFile(TDeleteLocalFileEvent value) { FOnDeleteLocalFile = value; }
-  TFileOperationProgressEvent GetOnProgress() { return FOnProgress; }
+  TFileOperationProgressEvent & GetOnProgress() { return FOnProgress; }
   void SetOnProgress(TFileOperationProgressEvent value) { FOnProgress = value; }
-  TFileOperationFinishedEvent GetOnFinished() { return FOnFinished; }
+  TFileOperationFinishedEvent & GetOnFinished() { return FOnFinished; }
   void SetOnFinished(TFileOperationFinishedEvent value) { FOnFinished = value; }
   TCurrentFSProtocol GetFSProtocol() { return FFSProtocol; }
   bool GetUseBusyCursor() { return FUseBusyCursor; }
   void SetUseBusyCursor(bool value) { FUseBusyCursor = value; }
   bool GetAutoReadDirectory() { return FAutoReadDirectory; }
   void SetAutoReadDirectory(bool value) { FAutoReadDirectory = value; }
-  TQueryUserEvent GetOnQueryUser() { return FOnQueryUser; }
+  TQueryUserEvent & GetOnQueryUser() { return FOnQueryUser; }
   void SetOnQueryUser(TQueryUserEvent value) { FOnQueryUser = value; }
-  TPromptUserEvent GetOnPromptUser() { return FOnPromptUser; }
+  TPromptUserEvent & GetOnPromptUser() { return FOnPromptUser; }
   void SetOnPromptUser(TPromptUserEvent value) { FOnPromptUser = value; }
-  TDisplayBannerEvent GetOnDisplayBanner() { return FOnDisplayBanner; }
+  TDisplayBannerEvent & GetOnDisplayBanner() { return FOnDisplayBanner; }
   void SetOnDisplayBanner(TDisplayBannerEvent value) { FOnDisplayBanner = value; }
-  TExtendedExceptionEvent GetOnShowExtendedException() { return FOnShowExtendedException; }
+  TExtendedExceptionEvent & GetOnShowExtendedException() { return FOnShowExtendedException; }
   void SetOnShowExtendedException(TExtendedExceptionEvent value) { FOnShowExtendedException = value; }
-  TInformationEvent GetOnInformation() { return FOnInformation; }
+  TInformationEvent & GetOnInformation() { return FOnInformation; }
   void SetOnInformation(TInformationEvent value) { FOnInformation = value; }
-  TNotifyEvent GetOnClose() { return FOnClose; }
+  TNotifyEvent & GetOnClose() { return FOnClose; }
   void SetOnClose(TNotifyEvent value) { FOnClose = value; }
   size_t GetTunnelLocalPortNumber() { return FTunnelLocalPortNumber; }
 #endif
