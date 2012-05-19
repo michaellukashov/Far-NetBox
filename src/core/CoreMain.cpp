@@ -26,7 +26,7 @@ TStoredSessionList * StoredSessions = NULL;
 TQueryButtonAlias::TQueryButtonAlias() :
   Button(0)
 {
-  OnClick.clear();
+  OnClick = NULL;
 }
 //---------------------------------------------------------------------------
 TQueryParams::TQueryParams(unsigned int AParams, UnicodeString AHelpKeyword)

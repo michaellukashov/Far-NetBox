@@ -1407,8 +1407,8 @@ void __fastcall TSCPFileSystem::AnyCommand(const UnicodeString Command,
   {
     BOOST_SCOPE_EXIT ( (&Self) )
     {
-      Self->FOnCaptureOutput.clear();
-      Self->FSecureShell->GetOnCaptureOutput().clear();
+      Self->FOnCaptureOutput = NULL;
+      Self->FSecureShell->SetOnCaptureOutput(NULL);
     } BOOST_SCOPE_EXIT_END
     ExecCommand2(fsAnyCommand, Command.c_str(),
       ecDefault | ecIgnoreWarnings);

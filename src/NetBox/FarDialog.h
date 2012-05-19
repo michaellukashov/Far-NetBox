@@ -95,7 +95,7 @@ public:
   TFarDialogItem * GetItemFocused() { return FItemFocused; }
   int GetResult() { return FResult; }
 
-  TFarKeyEvent GetOnKey() const { return FOnKey; }
+  TFarKeyEvent & GetOnKey() { return FOnKey; }
   void SetOnKey(TFarKeyEvent value) { FOnKey = value; }
 #endif
 
@@ -294,9 +294,9 @@ public:
   void SetTag(int value) { FTag = value; }
   TFarDialog * GetDialog() { return FDialog; }
 
-  TNotifyEvent GetOnExit() const { return FOnExit; }
+  TNotifyEvent & GetOnExit() { return FOnExit; }
   void SetOnExit(TNotifyEvent value) { FOnExit = value; }
-  TFarMouseClickEvent GetOnMouseClick() const { return FOnMouseClick; }
+  TFarMouseClickEvent & GetOnMouseClick() { return FOnMouseClick; }
   void SetOnMouseClick(TFarMouseClickEvent value) { FOnMouseClick = value; }
 #endif
 
@@ -459,7 +459,7 @@ public:
   TFarButtonBrackets GetBrackets() { return FBrackets; }
   bool GetCenterGroup() { return TFarDialogItem::GetCenterGroup(); }
   void SetCenterGroup(bool value) { TFarDialogItem::SetCenterGroup(value); }
-  virtual TFarButtonClickEvent GetOnClick() const { return FOnClick; }
+  virtual TFarButtonClickEvent & GetOnClick() { return FOnClick; }
   virtual void SetOnClick(TFarButtonClickEvent value) { FOnClick = value; }
 #endif
 
@@ -504,7 +504,7 @@ public:
   virtual void SetCaption(const UnicodeString value) { SetData(value); }
   bool GetAllowGrayed() { return GetFlag(DIF_3STATE); }
   void SetAllowGrayed(bool value) { SetFlag(DIF_3STATE, value); }
-  virtual TFarAllowChangeEvent GetOnAllowChange() { return FOnAllowChange; }
+  virtual TFarAllowChangeEvent & GetOnAllowChange() { return FOnAllowChange; }
   virtual void SetOnAllowChange(TFarAllowChangeEvent value) { FOnAllowChange = value; }
   bool GetChecked() { return TFarDialogItem::GetChecked(); }
   void SetChecked(bool value) { TFarDialogItem::SetChecked(value); }
@@ -533,7 +533,7 @@ public:
   void SetChecked(bool value) { TFarDialogItem::SetChecked(value); }
   virtual UnicodeString GetCaption() { return GetData(); }
   virtual void SetCaption(const UnicodeString value) { SetData(value); }
-  virtual TFarAllowChangeEvent GetOnAllowChange() { return FOnAllowChange; }
+  virtual TFarAllowChangeEvent & GetOnAllowChange() { return FOnAllowChange; }
   virtual void SetOnAllowChange(TFarAllowChangeEvent value) { FOnAllowChange = value; }
 #endif
 

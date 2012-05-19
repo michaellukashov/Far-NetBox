@@ -646,7 +646,7 @@ void __fastcall TFTPFileSystem::AnyCommand(const UnicodeString Command,
   {
     BOOST_SCOPE_EXIT ( (&Self) )
     {
-      Self->FOnCaptureOutput.clear();
+      Self->FOnCaptureOutput = NULL;
     } BOOST_SCOPE_EXIT_END
     FFileZillaIntf->CustomCommand(Command.c_str());
 

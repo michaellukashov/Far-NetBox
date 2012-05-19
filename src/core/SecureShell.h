@@ -165,7 +165,7 @@ public:
   __property bool Simple = { read = FSimple, write = FSimple };
 #else
   bool __fastcall GetActive() { return FActive; }
-  TCaptureOutputEvent GetOnCaptureOutput() { return FOnCaptureOutput; }
+  TCaptureOutputEvent & GetOnCaptureOutput() { return FOnCaptureOutput; }
   void SetOnCaptureOutput(TCaptureOutputEvent value) { FOnCaptureOutput = value; }
   TDateTime GetLastDataSent() { return FLastDataSent; }
   UnicodeString GetLastTunnelError() { return FLastTunnelError; }

@@ -250,7 +250,7 @@ public:
   TSessionLog * __fastcall GetParent() { return FParent; }
   void __fastcall SetParent(TSessionLog *value) { FParent = value; }
   bool __fastcall GetLogging() { return FLogging; }
-  TNotifyEvent GetOnStateChange() { return FOnStateChange; }
+  TNotifyEvent & GetOnStateChange() { return FOnStateChange; }
   void SetOnStateChange(TNotifyEvent value) { FOnStateChange = value; }
   UnicodeString __fastcall GetCurrentFileName() { return FCurrentFileName; }
   size_t __fastcall GetTopIndex() { return FTopIndex; }
