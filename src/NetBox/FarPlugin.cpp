@@ -1944,7 +1944,7 @@ void __fastcall TCustomFarFileSystem::GetOpenPanelInfo(struct OpenPanelInfo * In
           FOpenPanelInfo.StartSortMode, StartSortOrder, KeyBarTitles, ShortcutData);
  
         FOpenPanelInfo.HostFile = TCustomFarPlugin::DuplicateStr(HostFile);
-        FOpenPluginInfo.CurDir = TCustomFarPlugin::DuplicateStr(::StringReplace(CurDir, L"\\", L"/", TReplaceFlags::Init(rfReplaceAll)));
+        FOpenPanelInfo.CurDir = TCustomFarPlugin::DuplicateStr(::StringReplace(CurDir, L"\\", L"/", TReplaceFlags::Init(rfReplaceAll)));
 
         FOpenPanelInfo.Format = TCustomFarPlugin::DuplicateStr(Format);
         FOpenPanelInfo.PanelTitle = TCustomFarPlugin::DuplicateStr(PanelTitle);
