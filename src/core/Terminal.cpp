@@ -3941,7 +3941,7 @@ bool /* __fastcall */ TTerminal::DoCreateLocalFile(const UnicodeString FileName,
     Done = (*AHandle != INVALID_HANDLE_VALUE);
     if (!Done)
     {
-      int FileAttr;
+      int FileAttr = 0;
       if (::FileExists(FileName) &&
         (((FileAttr = FileGetAttr(FileName)) & (faReadOnly | faHidden)) != 0))
       {
