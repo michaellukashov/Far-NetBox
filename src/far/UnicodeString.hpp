@@ -71,11 +71,11 @@ private:
   void Init(const char * Str, int Length)
   {
     int Size = MultiByteToWideChar(CP_UTF8, 0, Str, Length > 0 ? Length : -1, NULL, 0);
-    Data.resize(Size);
+    Data.resize(Size + 1);
     if (Size > 0)
     {
-      MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), Size);
-      Data[Size-1] = 0;
+      MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), Size + 1);
+      Data[Size] = 0;
     }
     Data = Data.c_str();
   }
@@ -223,10 +223,11 @@ private:
   void Init(const char * Str, int Length)
   {
     int Size = MultiByteToWideChar(CP_UTF8, 0, Str, Length > 0 ? Length : -1, NULL, 0);
-    Data.resize(Size);
+    Data.resize(Size + 1);
     if (Size > 0)
     {
-      MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), Size);
+      MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), Size + 1);
+      Data[Size] = 0;
     }
     Data = Data.c_str();
   }

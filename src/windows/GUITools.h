@@ -3,7 +3,6 @@
 #define GUIToolsH
 //---------------------------------------------------------------------------
 #include "boostdefines.hpp"
-#include <boost/signals/signal0.hpp>
 
 // from shlobj.h
 #define CSIDL_DESKTOP                   0x0000        // <desktop>
@@ -21,8 +20,7 @@ class TSessionData;
 #ifndef _MSC_VER
 typedef void __fastcall (__closure* TProcessMessagesEvent)();
 #else
-typedef boost::signal0<void> TProcessMessagesSignal;
-typedef TProcessMessagesSignal::slot_type TProcessMessagesEvent;
+typedef fastdelegate::FastDelegate0<void> TProcessMessagesEvent;
 #endif
 //---------------------------------------------------------------------------
 bool __fastcall FindFile(UnicodeString & Path);

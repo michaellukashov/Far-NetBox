@@ -3,7 +3,6 @@
 #define QueueH
 //---------------------------------------------------------------------------
 #include "boostdefines.hpp"
-#include <boost/signals/signal2.hpp>
 #include <boost/noncopyable.hpp>
 
 #include "Terminal.h"
@@ -74,13 +73,13 @@ enum TQueueEvent { qeEmpty, qePendingUserAction };
 typedef void __fastcall (__closure * TQueueEventEvent)
   (TTerminalQueue * Queue, TQueueEvent Event);
 #else
-typedef boost::signal1<void, TTerminalQueue *> TQueueListUpdateSignal;
-typedef TQueueListUpdateSignal::slot_type TQueueListUpdateEvent;
-typedef boost::signal2<void, TTerminalQueue *, TQueueItem *> TQueueItemUpdateSignal;
-typedef TQueueItemUpdateSignal::slot_type TQueueItemUpdateEvent;
+typedef fastdelegate::FastDelegate1<void,
+  TTerminalQueue *> TQueueListUpdateEvent;
+typedef fastdelegate::FastDelegate2<void,
+  TTerminalQueue *, TQueueItem *> TQueueItemUpdateEvent;
 enum TQueueEvent { qeEmpty, qePendingUserAction };
-typedef boost::signal2<void, TTerminalQueue *, TQueueEvent> TQueueEventSignal;
-typedef TQueueEventSignal::slot_type TQueueEventEvent;
+typedef fastdelegate::FastDelegate2<void,
+  TTerminalQueue *, TQueueEvent> TQueueEventEvent;
 #endif
 //---------------------------------------------------------------------------
 class TTerminalQueue : public TSignalThread
@@ -110,18 +109,18 @@ public:
 #else
   int __fastcall GetTransfersLimit() { return FTransfersLimit; }
   // void __fastcall SetTransfersLimit(int value);
-  TQueryUserSignal & __fastcall GetOnQueryUser() { return FOnQueryUser; }
-  void __fastcall SetOnQueryUser(const TQueryUserEvent & value) { FOnQueryUser.connect(value); }
-  TPromptUserSignal & __fastcall GetOnPromptUser() { return FOnPromptUser; }
-  void __fastcall SetOnPromptUser(const TPromptUserEvent & value) { FOnPromptUser.connect(value); }
-  TExtendedExceptionSignal & __fastcall GetOnShowExtendedException() { return FOnShowExtendedException; }
-  void __fastcall SetOnShowExtendedException(const TExtendedExceptionEvent & value) { FOnShowExtendedException.connect(value); }
-  TQueueListUpdateSignal & __fastcall GetOnListUpdate() { return FOnListUpdate; }
-  void __fastcall SetOnListUpdate(const TQueueListUpdateEvent & value) { FOnListUpdate.connect(value); }
-  TQueueItemUpdateSignal & __fastcall GetOnQueueItemUpdate() { return FOnQueueItemUpdate; }
-  void __fastcall SetOnQueueItemUpdate(const TQueueItemUpdateEvent & value) { FOnQueueItemUpdate.connect(value); }
-  TQueueEventSignal & __fastcall GetOnEvent() { return FOnEvent; }
-  void __fastcall SetOnEvent(const TQueueEventEvent & value) { FOnEvent.connect(value); }
+  TQueryUserEvent & __fastcall GetOnQueryUser() { return FOnQueryUser; }
+  void __fastcall SetOnQueryUser(TQueryUserEvent value) { FOnQueryUser = value; }
+  TPromptUserEvent & __fastcall GetOnPromptUser() { return FOnPromptUser; }
+  void __fastcall SetOnPromptUser(TPromptUserEvent value) { FOnPromptUser = value; }
+  TExtendedExceptionEvent & __fastcall GetOnShowExtendedException() { return FOnShowExtendedException; }
+  void __fastcall SetOnShowExtendedException(TExtendedExceptionEvent value) { FOnShowExtendedException = value; }
+  TQueueListUpdateEvent & __fastcall GetOnListUpdate() { return FOnListUpdate; }
+  void __fastcall SetOnListUpdate(TQueueListUpdateEvent value) { FOnListUpdate = value; }
+  TQueueItemUpdateEvent & __fastcall GetOnQueueItemUpdate() { return FOnQueueItemUpdate; }
+  void __fastcall SetOnQueueItemUpdate(TQueueItemUpdateEvent value) { FOnQueueItemUpdate = value; }
+  TQueueEventEvent & __fastcall GetOnEvent() { return FOnEvent; }
+  void __fastcall SetOnEvent(TQueueEventEvent value) { FOnEvent = value; }
 #endif
 
 protected:
@@ -130,12 +129,12 @@ protected:
   friend class TPromptUserAction;
   friend class TShowExtendedExceptionAction;
 
-  TQueryUserSignal FOnQueryUser;
-  TPromptUserSignal FOnPromptUser;
-  TExtendedExceptionSignal FOnShowExtendedException;
-  TQueueItemUpdateSignal FOnQueueItemUpdate;
-  TQueueListUpdateSignal FOnListUpdate;
-  TQueueEventSignal FOnEvent;
+  TQueryUserEvent FOnQueryUser;
+  TPromptUserEvent FOnPromptUser;
+  TExtendedExceptionEvent FOnShowExtendedException;
+  TQueueItemUpdateEvent FOnQueueItemUpdate;
+  TQueueListUpdateEvent FOnListUpdate;
+  TQueueEventEvent FOnEvent;
   TTerminal * FTerminal;
   TConfiguration * FConfiguration;
   TSessionData * FSessionData;
@@ -395,8 +394,8 @@ public:
   __property TNotifyEvent OnIdle = { read = FOnIdle, write = FOnIdle };
   __property bool Cancelling = { read = FCancel };
 #else
-  TNotifySignal & GetOnIdle() { return FOnIdle; }
-  void SetOnIdle(const TNotifyEvent & Value) { FOnIdle.connect(Value); }
+  TNotifyEvent & GetOnIdle() { return FOnIdle; }
+  void SetOnIdle(TNotifyEvent Value) { FOnIdle = Value; }
   bool GetCancelling() const { return FCancel; };
 #endif
 
@@ -406,19 +405,19 @@ protected:
 private:
   TTerminal * FTerminal;
 
-  TInformationSignal * FOnInformation;
-  TQueryUserSignal * FOnQueryUser;
-  TPromptUserSignal * FOnPromptUser;
-  TExtendedExceptionSignal * FOnShowExtendedException;
-  TDisplayBannerSignal * FOnDisplayBanner;
-  TNotifySignal * FOnChangeDirectory;
-  TReadDirectorySignal * FOnReadDirectory;
-  TNotifySignal * FOnStartReadDirectory;
-  TReadDirectoryProgressSignal * FOnReadDirectoryProgress;
+  TInformationEvent FOnInformation;
+  TQueryUserEvent FOnQueryUser;
+  TPromptUserEvent FOnPromptUser;
+  TExtendedExceptionEvent FOnShowExtendedException;
+  TDisplayBannerEvent FOnDisplayBanner;
+  TNotifyEvent FOnChangeDirectory;
+  TReadDirectoryEvent FOnReadDirectory;
+  TNotifyEvent FOnStartReadDirectory;
+  TReadDirectoryProgressEvent FOnReadDirectoryProgress;
 
-  TNotifySignal FOnIdle;
+  TNotifyEvent FOnIdle;
 
-  TNotifySignal FAction;
+  TNotifyEvent FAction;
   HANDLE FActionEvent;
   TUserAction * FUserAction;
 
@@ -454,7 +453,7 @@ private:
   void /* __fastcall */ TerminalShowExtendedException(TTerminal * Terminal,
     Exception * E, void * Arg);
   void /* __fastcall */ TerminalDisplayBanner(TTerminal * Terminal,
-    UnicodeString SessionName, const UnicodeString & Banner,
+    UnicodeString SessionName, UnicodeString Banner,
     bool & NeverShowAgain, int Options);
   void /* __fastcall */ TerminalChangeDirectory(TObject * Sender);
   void /* __fastcall */ TerminalReadDirectory(TObject * Sender, Boolean ReloadOnly);

@@ -124,7 +124,7 @@ public:
   virtual void __fastcall Idle() = 0;
   virtual UnicodeString __fastcall AbsolutePath(UnicodeString Path, bool Local) = 0;
   virtual void __fastcall AnyCommand(const UnicodeString Command,
-    TCaptureOutputEvent * OutputEvent) = 0;
+    TCaptureOutputEvent OutputEvent) = 0;
   virtual void __fastcall ChangeDirectory(const UnicodeString Directory) = 0;
   virtual void __fastcall CachedChangeDirectory(const UnicodeString Directory) = 0;
   virtual void __fastcall AnnounceFileListOperation() = 0;
@@ -149,7 +149,7 @@ public:
     const TRemoteFile * File, int Params,
     TRmSessionAction & Action) = 0;
   virtual void /* __fastcall */ CustomCommandOnFile(const UnicodeString FileName,
-    const TRemoteFile * File, UnicodeString Command, int Params, TCaptureOutputEvent * OutputEvent) = 0;
+    const TRemoteFile * File, UnicodeString Command, int Params, TCaptureOutputEvent OutputEvent) = 0;
   virtual void __fastcall DoStartup() = 0;
   virtual void __fastcall HomeDirectory() = 0;
   virtual bool __fastcall IsCapable(int Capability) const = 0;

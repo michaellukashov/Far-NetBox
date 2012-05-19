@@ -26,6 +26,7 @@
 #include "FarPlugin.h"
 #include "testutils.h"
 #include "FileBuffer.h"
+#include "FastDelegate.h"
 
 using namespace boost::unit_test;
 
@@ -143,15 +144,16 @@ BOOST_FIXTURE_TEST_CASE(test2, base_fixture_t)
         BOOST_CHECK_EQUAL(0, strings.GetCount());
         strings.Add(L"line 1");
         str = strings.GetText();
-        // DEBUG_PRINTF(L"str = %s", str.c_str());
-        BOOST_CHECK_EQUAL(W2MB(str.c_str()).c_str(), "line 1\n");
+        BOOST_TEST_MESSAGE("str = " << W2MB(str.c_str()).c_str());
+        // DEBUG_PRINTF(L"str = %s", BytesToHex(str.c_str(), str.Length(), false));
+        BOOST_CHECK(_wcsicmp(str.c_str(), L"line 1\n") == 0);
     }
     if (1)
     {
         strings.Add(L"line 2");
         BOOST_CHECK_EQUAL(2, strings.GetCount());
         str = strings.GetText();
-        // DEBUG_PRINTF(L"str = %s", str.c_str());
+        BOOST_TEST_MESSAGE(L"str = " << str.c_str());
         BOOST_CHECK_EQUAL(W2MB(str.c_str()).c_str(), "line 1\nline 2\n");
         strings.Insert(0, L"line 0");
         BOOST_CHECK_EQUAL(3, strings.GetCount());
@@ -573,5 +575,38 @@ BOOST_FIXTURE_TEST_CASE(test25, base_fixture_t)
     CHECK_LEAKS();
 #endif
 }
+
+//------------------------------------------------------------------------------
+
+class CBaseClass {
+protected:
+	char *m_name;
+public:
+	CBaseClass(char *name) : m_name(name) {};
+	void SimpleMemberFunction(int num, char *str) {
+		printf("In SimpleMemberFunction in %s. Num=%d, str = %s\n", m_name, num, str);	}
+	int SimpleMemberFunctionReturnsInt(int num, char *str) {
+		printf("In SimpleMemberFunction in %s. Num=%d, str = %s\n", m_name, num, str); return -1;	}
+	void ConstMemberFunction(int num, char *str) const {
+		printf("In ConstMemberFunction in %s. Num=%d, str = %s\n", m_name, num, str);	}
+	virtual void SimpleVirtualFunction(int num, char *str) {
+		printf("In SimpleVirtualFunction in %s. Num=%d, str = %s\n", m_name, num, str);	}
+	static void StaticMemberFunction(int num, char *str) {
+		printf("In StaticMemberFunction. Num=%d, str =%s\n", num, str);	}
+};
+
+BOOST_FIXTURE_TEST_CASE(test26, base_fixture_t)
+{
+  typedef fastdelegate::FastDelegate2<int, int, char *> TEvent;
+  TEvent sig;
+  
+  CBaseClass a("Base A");
+  sig = fastdelegate::MakeDelegate(&a, &CBaseClass::SimpleMemberFunctionReturnsInt);
+  int result = sig(10, "abc");
+  BOOST_TEST_MESSAGE("result = " << result);
+  BOOST_CHECK(result == -1);
+}
+
+//------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

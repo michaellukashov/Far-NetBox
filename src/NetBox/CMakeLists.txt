@@ -48,7 +48,7 @@ include ( ${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake )
 
 project ( NetBox )
 
-set ( CMAKE_BUILD_TYPE Debug )
+set ( CMAKE_BUILD_TYPE UnityDebug )
 
 set ( FAR_VERSION Far2 )
 set ( PLATFORM x86 )

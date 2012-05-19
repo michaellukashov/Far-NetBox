@@ -26,7 +26,7 @@ TStoredSessionList * StoredSessions = NULL;
 TQueryButtonAlias::TQueryButtonAlias() :
   Button(0)
 {
-  OnClick.disconnect_all_slots();
+  OnClick = NULL;
 }
 //---------------------------------------------------------------------------
 TQueryParams::TQueryParams(unsigned int AParams, UnicodeString AHelpKeyword)

@@ -195,10 +195,8 @@ bool __fastcall ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString Path,
   Result = (ShellExecuteEx(&ExecuteInfo) != 0);
   if (Result)
   {
-    if (true) // (ProcessMessages != NULL)
+    if (!ProcessMessages.empty())
     {
-      TProcessMessagesSignal sig;
-      sig.connect(ProcessMessages);
       unsigned long WaitResult;
       do
       {
@@ -207,7 +205,7 @@ bool __fastcall ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString Path,
         {
           throw Exception(LoadStr(DOCUMENT_WAIT_ERROR));
         }
-        sig();
+        ProcessMessages();
       }
       while (WaitResult == WAIT_TIMEOUT);
     }

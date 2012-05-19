@@ -859,8 +859,7 @@ int __fastcall TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
     }
 
     FarParams.Token = &Data;
-    TFarMessageClickEvent slot = boost::bind(&TWinSCPPlugin::MessageClick, this, _1, _2, _3);
-    FarParams.ClickEvent = &slot;
+    FarParams.ClickEvent = fastdelegate::bind(&TWinSCPPlugin::MessageClick, this, _1, _2, _3);
 
     UnicodeString DialogStr = Str;
     if (MoreMessages && (MoreMessages->GetCount() > 0))

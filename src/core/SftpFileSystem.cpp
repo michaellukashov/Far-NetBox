@@ -1298,7 +1298,7 @@ class TSFTPAsynchronousQueue : public TSFTPQueue
 public:
   explicit /* __fastcall */ TSFTPAsynchronousQueue(TSFTPFileSystem * AFileSystem, unsigned int codePage) : TSFTPQueue(AFileSystem, codePage)
   {
-    FFileSystem->FSecureShell->RegisterReceiveHandler(boost::bind(&TSFTPAsynchronousQueue::ReceiveHandler, this, _1));
+    FFileSystem->FSecureShell->RegisterReceiveHandler(fastdelegate::bind(&TSFTPAsynchronousQueue::ReceiveHandler, this, _1));
     FReceiveHandlerRegistered = true;
   }
 
@@ -1345,7 +1345,7 @@ protected:
     if (FReceiveHandlerRegistered)
     {
       FReceiveHandlerRegistered = false;
-      FFileSystem->FSecureShell->UnregisterReceiveHandler(boost::bind(&TSFTPAsynchronousQueue::ReceiveHandler, this, _1));
+      FFileSystem->FSecureShell->UnregisterReceiveHandler(fastdelegate::bind(&TSFTPAsynchronousQueue::ReceiveHandler, this, _1));
     }
   }
 
@@ -1708,9 +1708,7 @@ private:
   int FIndex;
 };
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
-#pragma warn .inl
-#endif
+// #pragma warn .inl
 //---------------------------------------------------------------------------
 class TSFTPBusy
 {
@@ -3408,7 +3406,7 @@ void __fastcall TSFTPFileSystem::DeleteFile(const UnicodeString FileName,
     {
       try
       {
-        FTerminal->ProcessDirectory(FileName, boost::bind(&TTerminal::DeleteFile, FTerminal, _1, _2, _3), &Params);
+        FTerminal->ProcessDirectory(FileName, fastdelegate::bind(&TTerminal::DeleteFile, FTerminal, _1, _2, _3), &Params);
       }
       catch(...)
       {
@@ -3513,7 +3511,7 @@ void __fastcall TSFTPFileSystem::ChangeFileProperties(const UnicodeString FileNa
     {
       try
       {
-        FTerminal->ProcessDirectory(FileName, boost::bind(&TTerminal::ChangeFileProperties, FTerminal, _1, _2, _3),
+        FTerminal->ProcessDirectory(FileName, fastdelegate::bind(&TTerminal::ChangeFileProperties, FTerminal, _1, _2, _3),
           static_cast<void *>(const_cast<TRemoteProperties *>(AProperties)));
       }
       catch(...)
@@ -3559,12 +3557,7 @@ bool __fastcall TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
   // without knowledge of server's capabilities, this all make no sense
   if (FSupport->Loaded)
   {
-    TFileOperationProgressSignal sig1;
-    TFileOperationFinishedSignal sig2;
-    sig1.connect(boost::bind(&TTerminal::DoProgress, FTerminal, _1, _2));
-    sig2.connect(boost::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6));
-    TFileOperationProgressType Progress(&sig1, &sig2);
-    // TFileOperationProgressType Progress(boost::bind(&TTerminal::DoProgress, FTerminal, _1, _2), boost::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6));
+    TFileOperationProgressType Progress(fastdelegate::bind(&TTerminal::DoProgress, FTerminal, _1, _2), fastdelegate::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6));
     Progress.Start(foGetProperties, osRemote, FileList->GetCount());
 
     FTerminal->FOperationProgress = &Progress;
@@ -3590,8 +3583,9 @@ bool __fastcall TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
           assert((Packet.GetType() == SSH_FXP_ATTRS) || (Packet.GetType() == SSH_FXP_STATUS));
           if (Packet.GetType() == SSH_FXP_ATTRS)
           {
-            assert(File);
+            assert(File != NULL);
             Progress.SetFile(File->GetFileName());
+            assert(File != NULL);
             LoadFile(File, &Packet);
             Result = true;
             TOnceDoneOperation OnceDoneOperation;
@@ -3628,7 +3622,7 @@ void __fastcall TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & 
   TOnceDoneOperation OnceDoneOperation; // not used
 
   // recurse into subdirectories only if we have callback function
-  if (true) // OnCalculatedChecksum != NULL)
+  if (!OnCalculatedChecksum.empty())
   {
     for (int Index = 0; Index < FileList->GetCount(); Index++)
     {
@@ -3703,11 +3697,6 @@ void __fastcall TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & 
     {
       TSFTPPacket Packet(GetSessionData()->GetCodePageAsNumber());
       bool Next = false;
-      TCalculatedChecksumSignal sig;
-      if (true) // OnCalculatedChecksum)
-      {
-        sig.connect(OnCalculatedChecksum);
-      }
       do
       {
         bool Success = false;
@@ -3734,7 +3723,7 @@ void __fastcall TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & 
 
             Alg = Packet.GetAnsiString();
             Checksum = BytesToHex(reinterpret_cast<const unsigned char*>(Packet.GetNextData(Packet.GetRemainingLength())), Packet.GetRemainingLength());
-            sig(File->GetFileName(), Alg, Checksum);
+            OnCalculatedChecksum(File->GetFileName(), Alg, Checksum);
 
             Success = true;
           }
@@ -3782,12 +3771,7 @@ void __fastcall TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Al
   TStrings * FileList, TStrings * Checksums,
   TCalculatedChecksumEvent OnCalculatedChecksum)
 {
-  TFileOperationProgressSignal sig1;
-  TFileOperationFinishedSignal sig2;
-  sig1.connect(boost::bind(&TTerminal::DoProgress, FTerminal, _1, _2));
-  sig2.connect(boost::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6));
-  TFileOperationProgressType Progress(&sig1, &sig2);
-  // TFileOperationProgressType Progress(boost::bind(&TTerminal::DoProgress, FTerminal, _1, _2), boost::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6));
+  TFileOperationProgressType Progress(fastdelegate::bind(&TTerminal::DoProgress, FTerminal, _1, _2), fastdelegate::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6));
   Progress.Start(foCalculateChecksum, osRemote, FileList->GetCount());
 
   FTerminal->FOperationProgress = &Progress;
@@ -3812,14 +3796,14 @@ void __fastcall TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Al
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TSFTPFileSystem::CustomCommandOnFile(const UnicodeString /* FileName */,
-    const TRemoteFile * /* File */, UnicodeString /* Command */, int /* Params */,
-    TCaptureOutputEvent * /* OutputEvent */)
+  const TRemoteFile * /* File */, UnicodeString /* Command */, int /* Params */,
+  TCaptureOutputEvent /* OutputEvent */)
 {
   assert(false);
 }
 //---------------------------------------------------------------------------
 void __fastcall TSFTPFileSystem::AnyCommand(const UnicodeString /*Command*/,
-  TCaptureOutputEvent * /*OutputEvent*/)
+  TCaptureOutputEvent /* OutputEvent */)
 {
   assert(false);
 }
@@ -4371,7 +4355,7 @@ void __fastcall TSFTPFileSystem::SFTPSource(const UnicodeString FileName,
       OpenParams.Confirmed = false;
 
       FTerminal->LogEvent(L"Opening remote file.");
-      FTerminal->FileOperationLoop(boost::bind(&TSFTPFileSystem::SFTPOpenRemote, this, _1, _2), OperationProgress, true,
+      FTerminal->FileOperationLoop(fastdelegate::bind(&TSFTPFileSystem::SFTPOpenRemote, this, _1, _2), OperationProgress, true,
         FMTLOAD(SFTP_CREATE_FILE_ERROR, OpenParams.RemoteFileName.c_str()),
         &OpenParams);
 
@@ -4984,6 +4968,7 @@ void __fastcall TSFTPFileSystem::SFTPDirectorySource(const UnicodeString Directo
           if (!FTerminal->HandleException(&E)) throw;
         );
       }
+
       FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
         FindOK = (FindNext(SearchRec) == 0);
       );
@@ -5172,7 +5157,7 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
       SinkFileParams.Skipped = false;
       SinkFileParams.Flags = Flags & ~tfFirstLevel;
 
-      FTerminal->ProcessDirectory(FileName, boost::bind(&TSFTPFileSystem::SFTPSinkFile, this, _1, _2, _3), &SinkFileParams);
+      FTerminal->ProcessDirectory(FileName, fastdelegate::bind(&TSFTPFileSystem::SFTPSinkFile, this, _1, _2, _3), &SinkFileParams);
 
       // Do not delete directory if some of its files were skip.
       // Throw "skip file" for the directory to avoid attempt to deletion
@@ -5295,7 +5280,7 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
       // first open source file, not to loose the destination file,
       // if we cannot open the source one in the first place
       FTerminal->LogEvent(L"Opening remote file.");
-      FILE_OPERATION_LOOP (FMTLOAD(SFTP_OPEN_FILE_ERROR, (FileName)),
+      FILE_OPERATION_LOOP (FMTLOAD(SFTP_OPEN_FILE_ERROR, FileName.c_str()),
         int OpenType = SSH_FXF_READ;
         if ((FVersion >= 4) && OperationProgress->AsciiTransfer)
         {

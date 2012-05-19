@@ -7,7 +7,6 @@
 #include <Masks.hpp>
 #else
 #include "boostdefines.hpp"
-#include <boost/signals/signal5.hpp>
 
 #include "Classes.h"
 #include "Common.h"
@@ -187,9 +186,8 @@ typedef void __fastcall (__closure * TCustomCommandPatternEvent)
   (int Index, const UnicodeString Pattern, void * Arg, UnicodeString & Replacement,
    bool & LastPass);
 #else
-typedef boost::signal5<void, int /* Index */, const UnicodeString /* Pattern */, void * /* Arg */, UnicodeString & /* Replacement */,
-   bool & /* LastPass */ > TCustomCommandPatternSignal;
-typedef TCustomCommandPatternSignal::slot_type TCustomCommandPatternEvent;
+typedef fastdelegate::FastDelegate5<void, int /* Index */, UnicodeString /* Pattern */, void * /* Arg */, UnicodeString & /* Replacement */,
+   bool & /* LastPass */ > TCustomCommandPatternEvent;
 #endif
 //---------------------------------------------------------------------------
 class TCustomCommand
