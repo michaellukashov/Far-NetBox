@@ -43,22 +43,22 @@ protected:
 class EAbort : public Exception
 {
 public:
-    EAbort(std::wstring what) : Exception(what)
-    {}
+  EAbort(std::wstring what) : Exception(what)
+  {}
 };
 
 class EAccessViolation : public Exception
 {
 public:
-    EAccessViolation(std::wstring what) : Exception(what)
-    {}
+  EAccessViolation(std::wstring what) : Exception(what)
+  {}
 };
 
 class EFileNotFoundError : public Exception
 {
 public:
-    EFileNotFoundError() : Exception("")
-    {}
+  EFileNotFoundError() : Exception("")
+  {}
 };
 
 //---------------------------------------------------------------------------
@@ -66,11 +66,11 @@ public:
 class EOSError : public Exception
 {
 public:
-    EOSError(const UnicodeString msg, DWORD code) : Exception(msg),
-      ErrorCode(code)
-    {
-    }
-    DWORD ErrorCode;
+  EOSError(const UnicodeString msg, DWORD code) : Exception(msg),
+    ErrorCode(code)
+  {
+  }
+  DWORD ErrorCode;
 };
 
 void RaiseLastOSError();
@@ -87,7 +87,7 @@ private:
 
   // typedef StaticArray<UnicodeString, 7> _TFormatSettings__4;
 public:
-  TFormatSettings(int LCID){}
+  TFormatSettings(int LCID) {}
   unsigned char CurrencyFormat;
   unsigned char NegCurrFormat;
   wchar_t ThousandSeparator;
@@ -136,20 +136,20 @@ char HexToChar(const UnicodeString Hex, size_t MinChars = 0);
 UnicodeString ReplaceStrAll(const UnicodeString Str, const UnicodeString What, const UnicodeString ByWhat);
 UnicodeString SysErrorMessage(int code);
 
-bool TryStrToDateTime(const UnicodeString value, TDateTime &Value, TFormatSettings &FormatSettings);
-UnicodeString DateTimeToStr(UnicodeString &Result, const UnicodeString &Format,
-  TDateTime DateTime);
+bool TryStrToDateTime(const UnicodeString value, TDateTime & Value, TFormatSettings & FormatSettings);
+UnicodeString DateTimeToStr(UnicodeString & Result, const UnicodeString & Format,
+                            TDateTime DateTime);
 UnicodeString DateTimeToString(TDateTime DateTime);
-unsigned int DayOfWeek(const TDateTime &DateTime);
+unsigned int DayOfWeek(const TDateTime & DateTime);
 
 TDateTime Date();
-void DecodeDate(const TDateTime &DateTime, unsigned short &Y,
-  unsigned short &M, unsigned short &D);
-void DecodeTime(const TDateTime &DateTime, unsigned short &H,
-  unsigned short &N, unsigned short &S, unsigned short &MS);
+void DecodeDate(const TDateTime & DateTime, unsigned short & Y,
+                unsigned short & M, unsigned short & D);
+void DecodeTime(const TDateTime & DateTime, unsigned short & H,
+                unsigned short & N, unsigned short & S, unsigned short & MS);
 
 UnicodeString FormatDateTime(const UnicodeString fmt, TDateTime DateTime);
-TDateTime SystemTimeToDateTime(const SYSTEMTIME &SystemTime);
+TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime);
 
 TDateTime EncodeDate(int Year, int Month, int Day);
 TDateTime EncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec);
@@ -178,8 +178,8 @@ int AnsiCompareText(const UnicodeString str1, const UnicodeString str2);
 int AnsiCompareIC(const UnicodeString str1, const UnicodeString str2);
 bool AnsiContainsText(const UnicodeString str1, const UnicodeString str2);
 
-int StringCmp(const wchar_t *s1, const wchar_t *s2);
-int StringCmpI(const wchar_t *s1, const wchar_t *s2);
+int StringCmp(const wchar_t * s1, const wchar_t * s2);
+int StringCmpI(const wchar_t * s1, const wchar_t * s2);
 
 //---------------------------------------------------------------------------
 UnicodeString IntToStr(int value);
@@ -189,8 +189,8 @@ __int64 ToInt(const UnicodeString value);
 int StrToIntDef(const UnicodeString value, int defval);
 __int64 StrToInt64(const UnicodeString value);
 __int64 StrToInt64Def(const UnicodeString value, __int64 defval);
-bool TryStrToInt(const std::wstring value, int &Value);
-bool TryStrToInt(const std::wstring value, __int64 &Value);
+bool TryStrToInt(const std::wstring value, int & Value);
+bool TryStrToInt(const std::wstring value, __int64 & Value);
 
 //---------------------------------------------------------------------------
 double StrToFloat(const UnicodeString Value);
@@ -200,8 +200,8 @@ UnicodeString FormatFloat(const UnicodeString Format, double value);
 TTimeStamp DateTimeToTimeStamp(TDateTime DateTime);
 //---------------------------------------------------------------------------
 
-__int64 FileRead(HANDLE Handle, void *Buffer, __int64 Count);
-__int64 FileWrite(HANDLE Handle, const void *Buffer, __int64 Count);
+__int64 FileRead(HANDLE Handle, void * Buffer, __int64 Count);
+__int64 FileWrite(HANDLE Handle, const void * Buffer, __int64 Count);
 
 //---------------------------------------------------------------------------
 
@@ -232,14 +232,14 @@ bool RemoveDir(const UnicodeString Dir);
 
 //---------------------------------------------------------------------------
 template <class Base, class Derived>
-bool InheritsFrom(const Base *t)
+bool InheritsFrom(const Base * t)
 {
-    return dynamic_cast<const Derived *>(t) != NULL;
+  return dynamic_cast<const Derived *>(t) != NULL;
 }
 
 //---------------------------------------------------------------------------
-UnicodeString Format(const wchar_t *format, ...);
-UnicodeString Format(const wchar_t *format, va_list args);
+UnicodeString Format(const wchar_t * format, ...);
+UnicodeString Format(const wchar_t * format, va_list args);
 UnicodeString FmtLoadStr(int id, ...);
 //---------------------------------------------------------------------------
 UnicodeString WrapText(const UnicodeString Line, int MaxCol = 40);
@@ -247,11 +247,11 @@ UnicodeString WrapText(const UnicodeString Line, int MaxCol = 40);
 UnicodeString TranslateExceptionMessage(std::exception * E);
 //---------------------------------------------------------------------------
 
-void AppendWChar(UnicodeString &str, const wchar_t ch);
-void AppendChar(std::string &str, const char ch);
+void AppendWChar(UnicodeString & str, const wchar_t ch);
+void AppendChar(std::string & str, const char ch);
 
-void AppendPathDelimiterW(UnicodeString &str);
-void AppendPathDelimiterA(std::string &str);
+void AppendPathDelimiterW(UnicodeString & str);
+void AppendPathDelimiterA(std::string & str);
 
 UnicodeString ExpandEnvVars(const UnicodeString str);
 
@@ -259,9 +259,9 @@ UnicodeString ExpandEnvVars(const UnicodeString str);
 
 UnicodeString StringOfChar(const wchar_t c, int len);
 
-char *StrNew(const char *str);
+char * StrNew(const char * str);
 
-wchar_t *AnsiStrScan(const wchar_t *Str, const wchar_t TokenPrefix);
+wchar_t * AnsiStrScan(const wchar_t * Str, const wchar_t TokenPrefix);
 
 UnicodeString ChangeFileExt(const UnicodeString FileName, const UnicodeString ext);
 UnicodeString ExtractFileExt(const UnicodeString FileName);
