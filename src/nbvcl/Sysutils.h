@@ -9,7 +9,6 @@
 
 #include "Classes.h"
 #include "UnicodeString.hpp"
-// #include "Exceptions.h"
 #endif
 
 namespace Sysutils {
@@ -62,6 +61,19 @@ public:
     {}
 };
 
+//---------------------------------------------------------------------------
+
+class EOSError : public Exception
+{
+public:
+    EOSError(const UnicodeString msg, DWORD code) : Exception(msg),
+      ErrorCode(code)
+    {
+    }
+    DWORD ErrorCode;
+};
+
+void RaiseLastOSError();
 //---------------------------------------------------------------------------
 
 struct TFormatSettings
@@ -168,19 +180,6 @@ bool AnsiContainsText(const UnicodeString str1, const UnicodeString str2);
 
 int StringCmp(const wchar_t *s1, const wchar_t *s2);
 int StringCmpI(const wchar_t *s1, const wchar_t *s2);
-//---------------------------------------------------------------------------
-
-class EOSError : public std::exception
-{
-public:
-    EOSError(const UnicodeString msg, DWORD code) : std::exception(W2MB(msg.c_str()).c_str()),
-        ErrorCode(code)
-    {
-    }
-    DWORD ErrorCode;
-};
-
-void RaiseLastOSError();
 
 //---------------------------------------------------------------------------
 UnicodeString IntToStr(int value);
