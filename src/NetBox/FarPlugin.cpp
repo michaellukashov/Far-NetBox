@@ -959,8 +959,8 @@ void __fastcall TFarMessageDialog::Idle()
     size_t SinceLastTimer = static_cast<size_t>((static_cast<double>(Now()) - static_cast<double>(FLastTimerTime)) * 24*60*60*1000);
     if (SinceLastTimer >= FParams->Timeout)
     {
-      assert(FParams->TimerEvent != NULL);
-      if (FParams->TimerEvent != NULL)
+      assert(!FParams->TimerEvent.empty());
+      if (!FParams->TimerEvent.empty())
       {
         FParams->TimerAnswer = 0;
         FParams->TimerEvent(FParams->TimerAnswer);
@@ -1039,7 +1039,7 @@ int __fastcall TFarMessageDialog::Execute(bool & ACheckBox)
 //---------------------------------------------------------------------------
 void /* __fastcall */ TFarMessageDialog::ButtonClick(TFarButton * Sender, bool & Close)
 {
-  if (FParams->ClickEvent != NULL)
+  if (!FParams->ClickEvent.empty())
   {
     FParams->ClickEvent(FParams->Token, Sender->GetResult() - 1, Close);
   }
@@ -1944,8 +1944,7 @@ void __fastcall TCustomFarFileSystem::GetOpenPanelInfo(struct OpenPanelInfo * In
           FOpenPanelInfo.StartSortMode, StartSortOrder, KeyBarTitles, ShortcutData);
  
         FOpenPanelInfo.HostFile = TCustomFarPlugin::DuplicateStr(HostFile);
-
-        FOpenPanelInfo.CurDir = TCustomFarPlugin::DuplicateStr(::StringReplace(CurDir, L"/", L"\\", TReplaceFlags::Init(rfReplaceAll)));
+        FOpenPluginInfo.CurDir = TCustomFarPlugin::DuplicateStr(::StringReplace(CurDir, L"\\", L"/", TReplaceFlags::Init(rfReplaceAll)));
 
         FOpenPanelInfo.Format = TCustomFarPlugin::DuplicateStr(Format);
         FOpenPanelInfo.PanelTitle = TCustomFarPlugin::DuplicateStr(PanelTitle);
