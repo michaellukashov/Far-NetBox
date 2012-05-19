@@ -1910,7 +1910,8 @@ void __fastcall TCustomFarFileSystem::GetOpenPluginInfo(struct OpenPluginInfo * 
           FOpenPluginInfo.StartSortMode, StartSortOrder, KeyBarTitles, ShortcutData);
 
         FOpenPluginInfo.HostFile = TCustomFarPlugin::DuplicateStr(HostFile);
-        FOpenPluginInfo.CurDir = TCustomFarPlugin::DuplicateStr(::StringReplace(CurDir, L"/", L"\\", TReplaceFlags::Init(rfReplaceAll)));
+        // FOpenPluginInfo.CurDir = TCustomFarPlugin::DuplicateStr(::StringReplace(CurDir, L"/", L"\\", TReplaceFlags::Init(rfReplaceAll)));
+        FOpenPluginInfo.CurDir = TCustomFarPlugin::DuplicateStr(::StringReplace(CurDir, L"\\", L"/", TReplaceFlags::Init(rfReplaceAll)));
         FOpenPluginInfo.Format = TCustomFarPlugin::DuplicateStr(Format);
         FOpenPluginInfo.PanelTitle = TCustomFarPlugin::DuplicateStr(PanelTitle);
         PanelModes->FillOpenPluginInfo(&FOpenPluginInfo);
