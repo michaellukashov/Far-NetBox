@@ -3020,15 +3020,15 @@ void AdjustRemoteDir(TFarEdit * HostNameEdit,
   {
     hostName.Delete(1, 7);
   }
-  else if (LowerCase(hostName.SubString(1, 7)) == L"https://")
+  else if (LowerCase(hostName.SubString(1, 8)) == L"https://")
   {
     hostName.Delete(1, 8);
   }
   UnicodeString dir;
-  size_t P = hostName.Pos(L'/');
+  int P = hostName.Pos(L'/');
   if (P > 0)
   {
-    dir = hostName.SubString(P, hostName.Length() - P);
+    dir = hostName.SubString(P, hostName.Length() - P + 1);
     hostName.SetLength(hostName.Length() - dir.Length());
   }
   UnicodeString remotedir = RemoteDirectoryEdit->GetText();
