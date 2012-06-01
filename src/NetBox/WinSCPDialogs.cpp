@@ -3396,15 +3396,12 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
 
   // SFTP tab
 
-#define TRISTATE(COMBO, PROP, MSG) \
+  #define TRISTATE(COMBO, PROP, MSG) \
     COMBO->GetItems()->SetSelected(2 - SessionData->Get ## PROP)
   SFTP_BUGS();
 
-  // DEBUG_PRINTF(L"SessionData->GetSftpServer = %s", SessionData->GetSftpServer().c_str());
-  // DEBUG_PRINTF(L"SftpServerEdit->GetText = %s", SftpServerEdit->GetText().c_str());
   if (SessionData->GetSftpServer().IsEmpty())
   {
-    // DEBUG_PRINTF(L"SftpServerEdit->GetItems()->GetStrings(0) = %s", SftpServerEdit->GetItems()->GetStrings(0).c_str());
     SftpServerEdit->SetText(SftpServerEdit->GetItems()->GetStrings(0));
   }
   else
