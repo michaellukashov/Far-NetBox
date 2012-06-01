@@ -299,7 +299,7 @@ int UnicodeString::ToInt() const
 
 UnicodeString & UnicodeString::Replace(int Pos, int Len, const wchar_t * Str, int DataLen)
 {
-  Data.replace(Pos, Len, std::wstring(Str, DataLen));
+  Data.replace(Pos - 1, Len, std::wstring(Str, DataLen));
   return *this;
 }
 
