@@ -255,7 +255,7 @@ UnicodeString StringReplace(const UnicodeString str, const UnicodeString from, c
   return AnsiReplaceStr(str, from, to);
 }
 
-bool IsDelimiter(const UnicodeString str, const UnicodeString delimiters, int index)
+bool IsDelimiter(const UnicodeString delimiters, const UnicodeString str, int index)
 {
   if (index <= str.Length())
   {
@@ -271,13 +271,13 @@ bool IsDelimiter(const UnicodeString str, const UnicodeString delimiters, int in
   return false;
 }
 
-int LastDelimiter(const UnicodeString str, const UnicodeString delimiters)
+int LastDelimiter(const UnicodeString delimiters, const UnicodeString str)
 {
   if (str.Length())
   {
     for (int i = str.Length(); i >= 1; --i)
     {
-      if (::IsDelimiter(str, delimiters, i))
+      if (str.IsDelimiter(delimiters, i))
       {
         return i;
       }
@@ -1061,7 +1061,7 @@ UnicodeString IncludeTrailingBackslash(const UnicodeString str)
 UnicodeString ExtractFileDir(const UnicodeString str)
 {
   UnicodeString result;
-  int Pos = ::LastDelimiter(str, L"/\\");
+  int Pos = str.LastDelimiter(L"/\\");
   // DEBUG_PRINTF(L"Pos = %d", Pos);
   // it used to return Path when no slash was found
   if (Pos > 0)

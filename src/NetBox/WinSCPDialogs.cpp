@@ -7681,7 +7681,7 @@ void __fastcall TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
     } BOOST_SCOPE_EXIT_END
     for (int Index = 0; Index < List->GetCount(); Index++)
     {
-      if (!Scroll || (::LastDelimiter(List->GetStrings(Index), L"{}") > 0))
+      if (!Scroll || (List->GetStrings(Index).LastDelimiter(L"{}") > 0))
       {
         const TSynchronizeChecklist::TItem * ChecklistItem =
           reinterpret_cast<TSynchronizeChecklist::TItem *>(List->GetObjects(Index));
