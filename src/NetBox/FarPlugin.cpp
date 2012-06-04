@@ -1566,7 +1566,7 @@ void __fastcall TCustomFarPlugin::UpdateProgress(int state, int progress)
   if (state == PS_NORMAL)
   {
     PROGRESSVALUE pv;
-    pv.Completed = progress;
+    pv.Completed = progress < 0 ? 0 : progress > 100 ? 100 : progress;
     pv.Total = 100;
     FarAdvControl(ACTL_SETPROGRESSVALUE, (void *)&pv);
   }

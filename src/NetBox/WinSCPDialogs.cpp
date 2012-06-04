@@ -3020,15 +3020,15 @@ void AdjustRemoteDir(TFarEdit * HostNameEdit,
   {
     hostName.Delete(1, 7);
   }
-  else if (LowerCase(hostName.SubString(1, 7)) == L"https://")
+  else if (LowerCase(hostName.SubString(1, 8)) == L"https://")
   {
     hostName.Delete(1, 8);
   }
   UnicodeString dir;
-  size_t P = hostName.Pos(L'/');
+  int P = hostName.Pos(L'/');
   if (P > 0)
   {
-    dir = hostName.SubString(P, hostName.Length() - P);
+    dir = hostName.SubString(P, hostName.Length() - P + 1);
     hostName.SetLength(hostName.Length() - dir.Length());
   }
   UnicodeString remotedir = RemoteDirectoryEdit->GetText();
@@ -3396,15 +3396,12 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
 
   // SFTP tab
 
-#define TRISTATE(COMBO, PROP, MSG) \
+  #define TRISTATE(COMBO, PROP, MSG) \
     COMBO->GetItems()->SetSelected(2 - SessionData->Get ## PROP)
   SFTP_BUGS();
 
-  // DEBUG_PRINTF(L"SessionData->GetSftpServer = %s", SessionData->GetSftpServer().c_str());
-  // DEBUG_PRINTF(L"SftpServerEdit->GetText = %s", SftpServerEdit->GetText().c_str());
   if (SessionData->GetSftpServer().IsEmpty())
   {
-    // DEBUG_PRINTF(L"SftpServerEdit->GetItems()->GetStrings(0) = %s", SftpServerEdit->GetItems()->GetStrings(0).c_str());
     SftpServerEdit->SetText(SftpServerEdit->GetItems()->GetStrings(0));
   }
   else
@@ -7684,7 +7681,7 @@ void __fastcall TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
     } BOOST_SCOPE_EXIT_END
     for (int Index = 0; Index < List->GetCount(); Index++)
     {
-      if (!Scroll || (::LastDelimiter(List->GetStrings(Index), L"{}") > 0))
+      if (!Scroll || (List->GetStrings(Index).LastDelimiter(L"{}") > 0))
       {
         const TSynchronizeChecklist::TItem * ChecklistItem =
           reinterpret_cast<TSynchronizeChecklist::TItem *>(List->GetObjects(Index));

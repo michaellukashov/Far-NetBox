@@ -299,7 +299,7 @@ int UnicodeString::ToInt() const
 
 UnicodeString & UnicodeString::Replace(int Pos, int Len, const wchar_t * Str, int DataLen)
 {
-  Data.replace(Pos, Len, std::wstring(Str, DataLen));
+  Data.replace(Pos - 1, Len, std::wstring(Str, DataLen));
   return *this;
 }
 
@@ -330,12 +330,12 @@ UnicodeString UnicodeString::SubStr(int Pos, int Len) const
 
 bool UnicodeString::IsDelimiter(UnicodeString Chars, int Pos) const
 {
-  return Sysutils::IsDelimiter(*this, Chars, Pos);
+  return Sysutils::IsDelimiter(Chars, *this, Pos);
 }
 
 int UnicodeString::LastDelimiter(const UnicodeString & delimiters) const
 {
-  return Sysutils::LastDelimiter(*this, delimiters);
+  return Sysutils::LastDelimiter(delimiters, *this);
 }
 
 UnicodeString UnicodeString::Trim() const

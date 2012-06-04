@@ -1,6 +1,15 @@
-NetBox 2.1.2 ??.05.2012
+NetBox 2.1.3 ??.06.2012
+---------------------
+  * Far3: bugfix: cannot create session with non-ASCII symbols (Issue #22)
+  * WebDAV: bugfix: plugin hangs when creating new session
+   (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=690#p96120)
+
+NetBox 2.1.2 19.05.2012
+---------------------
+  * Far2: bugfix: AV when trying to copy from plugin panel to protected local directory
   * SFTP: bugfix: error when trying to execute command on remote host
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=95922#p95890)
+  * various bugfixes
 
 NetBox 2.1.1 16.05.2012
 ---------------------

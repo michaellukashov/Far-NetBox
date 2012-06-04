@@ -2321,7 +2321,8 @@ void __fastcall TSessionData::AdjustHostName(UnicodeString & hostName, const Uni
   if (::LowerCase(hostName.SubString(1, prefix.Length())) == prefix)
   {
     hostName.Delete(1, prefix.Length());
-    hostName = ::ReplaceStrAll(hostName, L"/", L"_");
+    int pos = 1;
+    hostName = CopyToChars(hostName, pos, L"/", true, NULL, false);
   }
 }
 //---------------------------------------------------------------------

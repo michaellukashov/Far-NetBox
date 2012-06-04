@@ -1,8 +1,8 @@
 #pragma once
 
-#define PLUGIN_VERSION_NUM 2,1,2,117
-#define PLUGIN_VERSION_TXT "2.1.2"
-#define PLUGIN_VERSION_WTXT L"2.1.2"
+#define PLUGIN_VERSION_NUM 2,1,3,120
+#define PLUGIN_VERSION_TXT "2.1.3"
+#define PLUGIN_VERSION_WTXT L"2.1.3"
 
 #define PLUGIN_AUTHOR       L"Michael Lukashov"
 #define PLUGIN_DESCR        L"SFTP/FTP/FTPS/SCP/WebDAV client for FAR 2.0/3.0"
