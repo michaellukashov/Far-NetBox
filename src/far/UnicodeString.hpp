@@ -409,11 +409,11 @@ public:
 private:
   void Init(const wchar_t * Str, int Length)
   {
-    int Size = WideCharToMultiByte(CP_UTF8, 0, Str, Length, nullptr, 0, nullptr, nullptr) + 1;
+    int Size = WideCharToMultiByte(CP_ACP, 0, Str, Length, nullptr, 0, nullptr, nullptr) + 1;
     Data.resize(Size);
     if (Size > 0)
     {
-      WideCharToMultiByte(CP_UTF8, 0, Str, Length,
+      WideCharToMultiByte(CP_ACP, 0, Str, Length,
         reinterpret_cast<LPSTR>(const_cast<unsigned char *>(Data.c_str())), Size-1, nullptr, nullptr);
       Data.resize(Size - 1);
     }

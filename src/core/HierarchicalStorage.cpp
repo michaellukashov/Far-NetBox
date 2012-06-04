@@ -53,7 +53,7 @@ UnicodeString __fastcall MungeStr(const UnicodeString Str, bool ForceAnsi)
 UnicodeString __fastcall UnMungeStr(const UnicodeString Str)
 {
   // Str should contain ASCII characters only
-  RawByteString Source = AnsiString(Str);
+  RawByteString Source = Str;
   RawByteString Dest;
   Dest.SetLength(Source.Length() + 1);
   putty_unmungestr(Source.c_str(), (char *)Dest.c_str(), Dest.Length());
