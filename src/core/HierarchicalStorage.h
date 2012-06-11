@@ -53,7 +53,7 @@ public:
   virtual void __fastcall WriteBool(const UnicodeString Name, bool Value) = 0;
   virtual void __fastcall WriteStringRaw(const UnicodeString Name, const UnicodeString Value) = 0;
   virtual void __fastcall WriteInteger(const UnicodeString Name, int Value) = 0;
-  virtual void __fastcall WriteInt64(UnicodeString Name, __int64 Value) = 0;
+  virtual void __fastcall WriteInt64(const UnicodeString Name, __int64 Value) = 0;
   virtual void __fastcall WriteDateTime(const UnicodeString Name, TDateTime Value) = 0;
   virtual void __fastcall WriteFloat(const UnicodeString Name, double Value) = 0;
   virtual void __fastcall WriteBinaryData(const UnicodeString Name, const void * Buffer, int Size) = 0;
@@ -188,7 +188,7 @@ public:
 
   virtual void __fastcall WriteBool(const UnicodeString Name, bool Value);
   virtual void __fastcall WriteInteger(const UnicodeString Name, int Value);
-  virtual void __fastcall WriteInt64(UnicodeString Name, __int64 Value);
+  virtual void __fastcall WriteInt64(const UnicodeString Name, __int64 Value);
   virtual void __fastcall WriteDateTime(const UnicodeString Name, TDateTime Value);
   virtual void __fastcall WriteFloat(const UnicodeString Name, double Value);
   virtual void __fastcall WriteStringRaw(const UnicodeString Name, const UnicodeString Value);

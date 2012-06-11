@@ -44,7 +44,9 @@ private:
   bool FIgnorePermErrors;
   TResumeSupport FResumeSupport;
   __int64 FResumeThreshold;
-  // UnicodeString __fastcall GetLogStr() const;
+#ifndef _MSC_VER
+  UnicodeString __fastcall GetLogStr() const;
+#endif
   wchar_t FInvalidCharsReplacement;
   UnicodeString FLocalInvalidChars;
   UnicodeString FTokenizibleChars;
@@ -137,7 +139,7 @@ public:
   void SetResumeSupport(TResumeSupport value) { FResumeSupport = value; }
   __int64 GetResumeThreshold() const { return FResumeThreshold; }
   void SetResumeThreshold(__int64 value) { FResumeThreshold = value; }
-  char GetInvalidCharsReplacement() const { return FInvalidCharsReplacement; }
+  wchar_t GetInvalidCharsReplacement() const { return FInvalidCharsReplacement; }
   void SetInvalidCharsReplacement(char value) { FInvalidCharsReplacement = value; }
   UnicodeString GetLocalInvalidChars() const { return FLocalInvalidChars; }
   bool GetCalculateSize() const { return FCalculateSize; }
