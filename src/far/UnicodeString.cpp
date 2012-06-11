@@ -317,8 +317,8 @@ UnicodeString & UnicodeString::Insert(int Pos, const wchar_t * Str, int StrLen)
 
 bool UnicodeString::RPos(int & nPos, wchar_t Ch, int nStartPos) const
 {
-  int pos = (int)Data.find_last_of(Ch, Data.size() - nStartPos);
-  nPos = pos + 1;
+  size_t pos = Data.find_last_of(Ch, Data.size() - nStartPos);
+  nPos = static_cast<int>(pos + 1);
   return pos != std::wstring::npos;
 }
 

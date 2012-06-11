@@ -1592,7 +1592,7 @@ void TRegistry::GetValueNames(TStrings * Strings)
   if (GetKeyInfo(Info))
   {
     S.SetLength(Info.MaxValueLen + 1);
-    for (int I = 0; I < Info.NumSubKeys; I++)
+    for (unsigned int I = 0; I < Info.NumSubKeys; I++)
     {
       DWORD Len = Info.MaxValueLen + 1;
       RegEnumValue(GetCurrentKey(), static_cast<DWORD>(I), &S[1], &Len, NULL, NULL, NULL, NULL);
@@ -1609,7 +1609,7 @@ void TRegistry::GetKeyNames(TStrings * Strings)
   if (GetKeyInfo(Info))
   {
     S.SetLength(Info.MaxSubKeyLen + 1);
-    for (int I = 0; I < Info.NumSubKeys; I++)
+    for (unsigned int I = 0; I < Info.NumSubKeys; I++)
     {
       DWORD Len = Info.MaxSubKeyLen + 1;
       RegEnumKeyEx(GetCurrentKey(), static_cast<DWORD>(I), &S[1], &Len, NULL, NULL, NULL, NULL);

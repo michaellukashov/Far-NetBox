@@ -157,7 +157,7 @@ private:
   TFarDialogItem * FItemFocused;
   TFarKeyEvent FOnKey;
   FarDialogItem * FDialogItems;
-  size_t FDialogItemsCapacity;
+  int FDialogItemsCapacity;
   int FChangesLocked;
   bool FChangesPending;
   int FResult;
@@ -392,7 +392,7 @@ public:
   void __fastcall SetFlags(unsigned int value);
   void __fastcall UpdateFlags(unsigned int value);
   TRect __fastcall GetActualBounds();
-  size_t __fastcall GetFlags();
+  unsigned int __fastcall GetFlags();
   void __fastcall SetType(int value);
   int __fastcall GetType();
   void __fastcall SetEnabledFollow(TFarDialogItem * value);
@@ -702,8 +702,8 @@ public:
   int __fastcall GetVisibleCount();
   unsigned int __fastcall GetFlags(int Index);
   void __fastcall SetFlags(int Index, unsigned int value);
-  bool __fastcall GetFlag(int Index, int Flag);
-  void __fastcall SetFlag(int Index, int Flag, bool value);
+  bool __fastcall GetFlag(int Index, unsigned int Flag);
+  void __fastcall SetFlag(int Index, int Flag, bool Value);
 };
 //---------------------------------------------------------------------------
 enum TFarListBoxAutoSelect { asOnlyFocus, asAlways, asNever };

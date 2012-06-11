@@ -174,7 +174,7 @@ private:
   TAutoSwitch FListAll;
   bool FDoListAll;
   mutable UnicodeString FOptionScratch;
-  size_t m_ProgressPercent; ///< Progress percent value
+  int m_ProgressPercent; ///< Progress percent value
   TWebDAVFileSystem * Self;
 
 private:

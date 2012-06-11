@@ -307,7 +307,7 @@ UnicodeString TCopyParamType::Untokenize(const UnicodeString FileName)
   UnicodeString Result = FileName;
   while ((Token = AnsiStrScan(Result.c_str(), TokenPrefix)) != NULL)
   {
-    size_t Index = Token - Result.c_str() + 1;
+    int Index = Token - Result.c_str() + 1;
     if (Index > Result.Length() - 2)
     {
       Result = FileName;
