@@ -1208,7 +1208,7 @@ TRect __fastcall TFarDialogItem::GetActualBounds()
                GetDialogItem()->X2, GetDialogItem()->Y2);
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TFarDialogItem::GetFlags()
+unsigned int __fastcall TFarDialogItem::GetFlags()
 {
   return GetDialogItem()->Flags;
 }
