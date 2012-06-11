@@ -5,6 +5,7 @@
 #include <curl/curl.h>
 #include "SessionInfo.h"
 #include "FileSystems.h"
+#pragma warning (disable : 4512) // assignment operator could not be generated
 
 //---------------------------------------------------------------------------
 
@@ -100,21 +101,21 @@ public:
     * @param $progress pointer to variable to save progress percent of the current operation
     * @return curl status
     */
-  virtual CURLcode SetOutput(std::string & out, size_t * progress) = 0;
+  virtual CURLcode SetOutput(std::string & out, int * progress) = 0;
 
   /** @brief Set output as file
     * @param $out output file
     * @param $progress pointer to variable to save progress percent of the current operation
     * @return curl status
     */
-  virtual CURLcode SetOutput(CNBFile * out, size_t * progress) = 0;
+  virtual CURLcode SetOutput(CNBFile * out, int * progress) = 0;
 
   /** @brief Set input as file (upload operations)
     * @param $in input file
     * @param $progress pointer to variable to save progress percent of the current operation
     * @return curl status
     */
-  virtual CURLcode SetInput(CNBFile * in, size_t * progress) = 0;
+  virtual CURLcode SetInput(CNBFile * in, int * progress) = 0;
 
   /** @brief Perform request
     * @return curl status
@@ -148,9 +149,9 @@ public:
                            const TSessionData * Data,
                            int LogLevel, const bool handleTimeout = true);
   virtual CURLcode SetSlist(CSlistURL & slist);
-  virtual CURLcode SetOutput(std::string & out, size_t * progress);
-  virtual CURLcode SetOutput(CNBFile * out, size_t * progress);
-  virtual CURLcode SetInput(CNBFile * in, size_t * progress);
+  virtual CURLcode SetOutput(std::string & out, int * progress);
+  virtual CURLcode SetOutput(CNBFile * out, int * progress);
+  virtual CURLcode SetInput(CNBFile * in, int * progress);
   virtual CURLcode Perform();
   virtual const char * GetTopURL() const
   {
@@ -233,7 +234,7 @@ private:
     unsigned __int64 Current;
     unsigned __int64 Total;
     CNBFile * File;
-    size_t * ProgressPtr;
+    int * ProgressPtr;
     HANDLE AbortEvent;
     enum InputReaderType
     {
@@ -247,7 +248,7 @@ private:
   struct TCURLProgressInfo
   {
     CEasyURL * EasyURLPtr;
-    size_t * ProgressPtr;
+    int * ProgressPtr;
     HANDLE AbortEvent;
     bool Aborted;
   };

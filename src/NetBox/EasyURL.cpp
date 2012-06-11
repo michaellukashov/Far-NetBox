@@ -208,7 +208,7 @@ CURLcode CEasyURL::SetSlist(CSlistURL & slist)
   return urlCode;
 }
 
-CURLcode CEasyURL::SetOutput(std::string & out, size_t * progress)
+CURLcode CEasyURL::SetOutput(std::string & out, int * progress)
 {
   assert(m_Prepared);
   assert(progress);
@@ -220,7 +220,7 @@ CURLcode CEasyURL::SetOutput(std::string & out, size_t * progress)
   return CURLE_OK;
 }
 
-CURLcode CEasyURL::SetOutput(CNBFile * out, size_t * progress)
+CURLcode CEasyURL::SetOutput(CNBFile * out, int * progress)
 {
   assert(m_Prepared);
   assert(out);
@@ -233,7 +233,7 @@ CURLcode CEasyURL::SetOutput(CNBFile * out, size_t * progress)
   return CURLE_OK;
 }
 
-CURLcode CEasyURL::SetInput(CNBFile * in, size_t * progress)
+CURLcode CEasyURL::SetInput(CNBFile * in, int * progress)
 {
   assert(m_Prepared);
   assert(in);

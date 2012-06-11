@@ -158,7 +158,7 @@ private:
   TFarDialogItem * FItemFocused;
   TFarKeyEvent FOnKey;
   FarDialogItem * FDialogItems;
-  size_t FDialogItemsCapacity;
+  int FDialogItemsCapacity;
   int FChangesLocked;
   bool FChangesPending;
   int FResult;

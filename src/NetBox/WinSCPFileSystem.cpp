@@ -646,7 +646,7 @@ void __fastcall TWinSCPFileSystem::DuplicateRenameSession(TSessionData * Data,
     TNamedObject * EData = StoredSessions->FindByName(Name);
     if ((EData != NULL) && (EData != Data))
     {
-      throw ExtException(FORMAT(GetMsg(SESSION_ALREADY_EXISTS_ERROR).c_str(), Name.c_str()));
+      throw Exception(FORMAT(GetMsg(SESSION_ALREADY_EXISTS_ERROR).c_str(), Name.c_str()));
     }
     else
     {
@@ -740,7 +740,7 @@ void __fastcall TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool 
             {
               if (StoredSessions->FindByName(Name))
               {
-                throw ExtException(FORMAT(GetMsg(SESSION_ALREADY_EXISTS_ERROR).c_str(), Name.c_str()));
+                throw Exception(FORMAT(GetMsg(SESSION_ALREADY_EXISTS_ERROR).c_str(), Name.c_str()));
               }
               else
               {
@@ -848,7 +848,7 @@ void __fastcall TWinSCPFileSystem::RequireLocalPanel(TFarPanelInfo * Panel, cons
 {
   if (Panel->GetIsPlugin() || (Panel->GetType() != ptFile))
   {
-    throw ExtException(Message);
+    throw Exception(Message);
   }
 }
 //---------------------------------------------------------------------------
@@ -856,7 +856,7 @@ void __fastcall TWinSCPFileSystem::RequireCapability(int Capability)
 {
   if (!FTerminal->GetIsCapable(static_cast<TFSCapability>(Capability)))
   {
-    throw ExtException(FORMAT(GetMsg(OPERATION_NOT_SUPPORTED).c_str(),
+    throw Exception(FORMAT(GetMsg(OPERATION_NOT_SUPPORTED).c_str(),
       FTerminal->GetFileSystemInfo().ProtocolName.c_str()));
   }
 }
@@ -1196,7 +1196,7 @@ void __fastcall TWinSCPFileSystem::TemporarilyDownloadFiles(
   TempDir = FPlugin->TemporaryDir();
   if (TempDir.IsEmpty() || !ForceDirectories(TempDir))
   {
-    throw ExtException(FMTLOAD(CREATE_TEMP_DIR_ERROR, TempDir.c_str()));
+    throw Exception(FMTLOAD(CREATE_TEMP_DIR_ERROR, TempDir.c_str()));
   }
 
   FTerminal->SetExceptionOnFail(true);
@@ -1371,7 +1371,7 @@ void __fastcall TWinSCPFileSystem::ApplyCommand()
               {
                 if ((LocalFileList == NULL) || (LocalFileList->GetCount() != 1))
                 {
-                  throw ExtException(GetMsg(CUSTOM_COMMAND_SELECTED_UNMATCH1));
+                  throw Exception(GetMsg(CUSTOM_COMMAND_SELECTED_UNMATCH1));
                 }
               }
               else
@@ -1381,7 +1381,7 @@ void __fastcall TWinSCPFileSystem::ApplyCommand()
                      (FileList->GetCount() != 1) &&
                      (LocalFileList->GetCount() != FileList->GetCount())))
                 {
-                  throw ExtException(GetMsg(CUSTOM_COMMAND_SELECTED_UNMATCH));
+                  throw Exception(GetMsg(CUSTOM_COMMAND_SELECTED_UNMATCH));
                 }
               }
             }
@@ -1466,7 +1466,7 @@ void __fastcall TWinSCPFileSystem::ApplyCommand()
                   {
                     if (LocalFileList->GetCount() != RemoteFileList->GetCount())
                     {
-                      throw ExtException(GetMsg(CUSTOM_COMMAND_PAIRS_DOWNLOAD_FAILED));
+                      throw Exception(GetMsg(CUSTOM_COMMAND_PAIRS_DOWNLOAD_FAILED));
                     }
 
                     for (int Index = 0; Index < LocalFileList->GetCount(); Index++)
@@ -3199,7 +3199,7 @@ bool __fastcall TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool
       }
       if (!AnyData)
       {
-        throw ExtException(FORMAT(GetMsg(IMPORT_SESSIONS_EMPTY).c_str(), FileName.c_str()));
+        throw Exception(FORMAT(GetMsg(IMPORT_SESSIONS_EMPTY).c_str(), FileName.c_str()));
       }
     }
   }

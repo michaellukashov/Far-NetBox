@@ -281,7 +281,7 @@ TCustomFarFileSystem * __fastcall TCustomFarPlugin::GetPanelFileSystem(bool Anot
   RECT PassivePanelBounds = GetPanelBounds(PANEL_PASSIVE);
 
   TCustomFarFileSystem * FileSystem = NULL;
-  size_t Index = 0;
+  int Index = 0;
   while (!Result && (Index < FOpenedPlugins->GetCount()))
   {
     FileSystem = dynamic_cast<TCustomFarFileSystem *>(FOpenedPlugins->GetItem(Index));
@@ -843,7 +843,7 @@ void __fastcall TFarMessageDialog::Init(unsigned int AFlags,
     int ButtonLines = 1;
     TFarButton * Button = NULL;
     FTimeoutButton = NULL;
-    for (int Index = 0; Index < Buttons->GetCount(); Index++)
+    for (unsigned int Index = 0; Index < Buttons->GetCount(); Index++)
     {
       TFarButton * PrevButton = Button;
       Button = new TFarButton(this);
@@ -871,7 +871,7 @@ void __fastcall TFarMessageDialog::Init(unsigned int AFlags,
 
       if (MaxMessageWidth < Button->GetRight() - GetBorderBox()->GetLeft())
       {
-        for (size_t PIndex = 0; PIndex < GetItemCount(); PIndex++)
+        for (int PIndex = 0; PIndex < GetItemCount(); PIndex++)
         {
           TFarButton * PrevButton = dynamic_cast<TFarButton *>(GetItem(PIndex));
           if ((PrevButton != NULL) && (PrevButton != Button))
@@ -884,7 +884,7 @@ void __fastcall TFarMessageDialog::Init(unsigned int AFlags,
       }
 
       // DEBUG_PRINTF(L"Button->GetLeft = %d, Button->GetRight = %d, GetBorderBox()->GetLeft = %d", Button->GetLeft(), Button->GetRight(), GetBorderBox()->GetLeft());
-      if (MaxLen < static_cast<size_t>(Button->GetRight() - GetBorderBox()->GetLeft()))
+      if (MaxLen < Button->GetRight() - GetBorderBox()->GetLeft())
       {
         MaxLen = Button->GetRight() - GetBorderBox()->GetLeft();
       }
@@ -900,7 +900,7 @@ void __fastcall TFarMessageDialog::Init(unsigned int AFlags,
       FCheckBox = new TFarCheckBox(this);
       FCheckBox->SetCaption(FParams->CheckBoxLabel);
 
-      if (MaxLen < static_cast<size_t>(FCheckBox->GetRight() - GetBorderBox()->GetLeft()))
+      if (MaxLen < FCheckBox->GetRight() - GetBorderBox()->GetLeft())
       {
         MaxLen = FCheckBox->GetRight() - GetBorderBox()->GetLeft();
       }
@@ -922,7 +922,7 @@ void __fastcall TFarMessageDialog::Init(unsigned int AFlags,
 
     if (FParams->MoreMessages != NULL)
     {
-      size_t MoreMessageHeight = GetFarPlugin()->TerminalInfo().y - S.y - 1;
+      int MoreMessageHeight = GetFarPlugin()->TerminalInfo().y - S.y - 1;
       if (MoreMessageHeight > MoreMessagesLister->GetItems()->GetCount())
       {
         MoreMessageHeight = MoreMessagesLister->GetItems()->GetCount();
@@ -1890,7 +1890,7 @@ void __fastcall TCustomFarFileSystem::ClearOpenPanelInfo(OpenPanelInfo & Info)
     assert(!Info.DescrFiles);
     assert(!Info.DescrFilesNumber);
     assert(Info.PanelModesNumber == 0 || Info.PanelModesNumber == PANEL_MODES_COUNT);
-    for (int Index = 0; Index < static_cast<size_t>(Info.PanelModesNumber); Index++)
+    for (int Index = 0; Index < Info.PanelModesNumber; Index++)
     {
       assert(Info.PanelModesArray);
       TFarPanelModes::ClearPanelMode(
@@ -2587,7 +2587,7 @@ void __fastcall TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * Pane
   PanelItem->Owner = TCustomFarPlugin::DuplicateStr(Owner);
   // PanelItem->CustomColumnData = new wchar_t *[PanelItem->CustomColumnNumber];
   wchar_t ** CustomColumnData = new wchar_t *[PanelItem->CustomColumnNumber];
-  for (int Index = 0; Index < static_cast<size_t>(PanelItem->CustomColumnNumber); Index++)
+  for (int Index = 0; Index < PanelItem->CustomColumnNumber; Index++)
   {
     CustomColumnData[Index] =
       TCustomFarPlugin::DuplicateStr(GetCustomColumnData(Index));
@@ -3084,7 +3084,7 @@ void __fastcall FarWrapText(const UnicodeString Text, TStrings * Result, size_t 
       WrappedLine = ::ReplaceChar(WrappedLine, '\3', '\'');
       WrappedLine = ::ReplaceChar(WrappedLine, '\4', '\"');
       WrappedLines.SetText(WrappedLine);
-      for (size_t WrappedIndex = 0; WrappedIndex < WrappedLines.GetCount(); WrappedIndex++)
+      for (int WrappedIndex = 0; WrappedIndex < WrappedLines.GetCount(); WrappedIndex++)
       {
         UnicodeString FullLine = WrappedLines.GetStrings(WrappedIndex);
         do

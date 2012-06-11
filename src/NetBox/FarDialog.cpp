@@ -2400,7 +2400,7 @@ int __fastcall TFarList::GetTopIndex()
 //---------------------------------------------------------------------------
 int __fastcall TFarList::GetMaxLength()
 {
-  size_t Result = 0;
+  int Result = 0;
   for (int i = 0; i < GetCount(); i++)
   {
     if (Result < GetStrings(i).Length())
@@ -2419,7 +2419,7 @@ int __fastcall TFarList::GetVisibleCount()
 //---------------------------------------------------------------------------
 int __fastcall TFarList::GetSelectedInt(bool Init)
 {
-  size_t Result = NPOS;
+  int Result = NPOS;
   assert(GetDialogItem() != NULL);
   if (GetCount() == 0)
   {
@@ -2706,7 +2706,7 @@ LONG_PTR __fastcall TFarLister::ItemProc(int Msg, void * Param)
     UnicodeString Buf;
     for (int Row = 0; Row < GetHeight(); Row++)
     {
-      size_t Index = GetTopIndex() + Row;
+      int Index = GetTopIndex() + Row;
       Buf = L" ";
       if (Index < GetItems()->GetCount())
       {
