@@ -5,6 +5,7 @@
 #include <curl/curl.h>
 #include "SessionInfo.h"
 #include "FileSystems.h"
+#pragma warning (disable : 4512) // assignment operator could not be generated
 
 //---------------------------------------------------------------------------
 

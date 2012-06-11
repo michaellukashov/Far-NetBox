@@ -1,4 +1,7 @@
 #define PUTTY_DO_GLOBALS
+#pragma warning(push)
+#pragma warning(disable: 4512) // assignment operator could not be generated
+
 #include "..\nbvcl\Classes.cpp"
 #include "..\nbvcl\SysUtils.cpp"
 
@@ -36,3 +39,5 @@
 #include "..\windows\SynchronizeController.cpp"
 #include "..\windows\GUIConfiguration.cpp"
 #include "..\windows\GUITools.cpp"
+
+#pragma warning(pop)
