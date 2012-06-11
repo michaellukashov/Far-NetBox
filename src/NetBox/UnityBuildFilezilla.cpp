@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #pragma warning(push)
 #pragma warning(disable: 4512) // assignment operator could not be generated
 
