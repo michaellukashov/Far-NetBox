@@ -395,7 +395,7 @@ UnicodeString __fastcall TCopyParamType::GetLogStr() const
   return FORMAT(
     L"  PrTime: %s; PrRO: %s; Rght: %s; PrR: %s (%s); FnCs: %c; RIC: %s; "
     L"Resume: %c (%d); CalcS: %s; Mask: %s\n"
-    L"  TM: %c; ClAr: %s; CPS: %u; InclM(%s): %s\n"
+    L"  TM: %c; ClAr: %s; CPS: %u; InclM: %s\n"
     L"  AscM: %s\n",
      BooleanToEngStr(GetPreserveTime()).c_str(),
      BooleanToEngStr(GetPreserveReadOnly()).c_str(),
