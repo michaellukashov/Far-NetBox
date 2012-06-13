@@ -5878,7 +5878,7 @@ typedef void __fastcall (__closure *TFeedFileSystemData)
   (TObject * Control, int Label, AnsiString Value);
 #else
 typedef fastdelegate::FastDelegate3<void,
-  TObject *, int, UnicodeString &> TFeedFileSystemDataEvent;
+  TObject *, int, UnicodeString> TFeedFileSystemDataEvent;
 #endif
 //---------------------------------------------------------------------------
 class TLabelList;
@@ -5899,9 +5899,9 @@ protected:
   UnicodeString __fastcall CapabilityStr(TFSCapability Capability1,
     TFSCapability Capability2);
   UnicodeString __fastcall SpaceStr(__int64 Bytes);
-  void /* __fastcall */ ControlsAddItem(TObject * Control, int Label, UnicodeString & Value);
-  void /* __fastcall */ CalculateMaxLenAddItem(TObject * Control, int Label, UnicodeString & Value);
-  void /* __fastcall */ ClipboardAddItem(TObject * Control, int Label, UnicodeString & Value);
+  void /* __fastcall */ ControlsAddItem(TObject * Control, int Label, UnicodeString Value);
+  void /* __fastcall */ CalculateMaxLenAddItem(TObject * Control, int Label, UnicodeString Value);
+  void /* __fastcall */ ClipboardAddItem(TObject * Control, int Label, UnicodeString Value);
   void __fastcall FeedControls();
   void __fastcall UpdateControls();
   TLabelList * __fastcall CreateLabelArray(size_t Count);
@@ -6165,7 +6165,7 @@ void __fastcall TFileSystemInfoDialog::Feed(TFeedFileSystemDataEvent AddItem)
 }
 //---------------------------------------------------------------------
 void /* __fastcall */ TFileSystemInfoDialog::ControlsAddItem(TObject * Control,
-  int Label, UnicodeString & Value)
+  int Label, UnicodeString Value)
 {
   if (FLastFeededControl != Control)
   {
@@ -6212,7 +6212,7 @@ void /* __fastcall */ TFileSystemInfoDialog::ControlsAddItem(TObject * Control,
 }
 //---------------------------------------------------------------------
 void /* __fastcall */ TFileSystemInfoDialog::CalculateMaxLenAddItem(TObject * Control,
-    int Label, UnicodeString & Value)
+    int Label, UnicodeString Value)
 {
   TLabelList * List = dynamic_cast<TLabelList *>(Control);
   if (List != NULL)
@@ -6226,7 +6226,7 @@ void /* __fastcall */ TFileSystemInfoDialog::CalculateMaxLenAddItem(TObject * Co
 }
 //---------------------------------------------------------------------
 void /* __fastcall */ TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
-    int Label, UnicodeString & Value)
+    int Label, UnicodeString Value)
 {
   TFarDialogItem * Control = dynamic_cast<TFarDialogItem *>(AControl);
   // check for Enabled instead of Visible, as Visible is false

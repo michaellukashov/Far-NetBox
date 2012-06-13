@@ -1432,7 +1432,7 @@ void IncAMonth(Word & Year, Word & Month, Word & Day, Integer NumberOfMonths = 1
     Month += -12 * Sign;
   }
   const TDayTable * DayTable = &MonthDays[IsLeapYear(Year)];
-  if (Day > (*DayTable)[Month]) Day = (*DayTable)[Month];
+  if (Day > (*DayTable)[Month]) Day = static_cast<Word>(*DayTable[Month]);
 }
 
 void ReplaceTime(TDateTime &DateTime, const TDateTime NewTime)

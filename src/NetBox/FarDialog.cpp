@@ -1208,7 +1208,7 @@ TRect __fastcall TFarDialogItem::GetActualBounds()
                GetDialogItem()->X2, GetDialogItem()->Y2);
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TFarDialogItem::GetFlags()
+unsigned int __fastcall TFarDialogItem::GetFlags()
 {
   return GetDialogItem()->Flags;
 }
@@ -2366,7 +2366,7 @@ int __fastcall TFarList::GetTopIndex()
 //---------------------------------------------------------------------------
 int __fastcall TFarList::GetMaxLength()
 {
-  size_t Result = 0;
+  int Result = 0;
   for (int i = 0; i < GetCount(); i++)
   {
     if (Result < GetStrings(i).Length())
@@ -2385,7 +2385,7 @@ int __fastcall TFarList::GetVisibleCount()
 //---------------------------------------------------------------------------
 int __fastcall TFarList::GetSelectedInt(bool Init)
 {
-  size_t Result = NPOS;
+  int Result = NPOS;
   assert(GetDialogItem() != NULL);
   if (GetCount() == 0)
   {
@@ -2436,7 +2436,7 @@ void __fastcall TFarList::SetFlags(int Index, unsigned int value)
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFarList::GetFlag(int Index, int Flag)
+bool __fastcall TFarList::GetFlag(int Index, unsigned int Flag)
 {
   return FLAGSET(GetFlags(Index), Flag);
 }
@@ -2668,7 +2668,7 @@ LONG_PTR __fastcall TFarLister::ItemProc(int Msg, LONG_PTR Param)
     UnicodeString Buf;
     for (int Row = 0; Row < GetHeight(); Row++)
     {
-      size_t Index = GetTopIndex() + Row;
+      int Index = GetTopIndex() + Row;
       Buf = L" ";
       if (Index < GetItems()->GetCount())
       {
