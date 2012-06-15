@@ -3485,7 +3485,7 @@ void __fastcall TWinSCPFileSystem::LogAuthentication(
 void /* __fastcall */ TWinSCPFileSystem::TerminalInformation(
   TTerminal * Terminal, const UnicodeString & Str, bool /*Status*/, int Phase)
 {
-  if (Phase > 0)
+  if (Phase != 0)
   {
     if (GetTerminal() && (GetTerminal()->GetStatus() == ssOpening))
     {
