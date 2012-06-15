@@ -919,7 +919,7 @@ bool __fastcall TWinSCPFileSystem::ExecuteCommand(const UnicodeString Command)
           Self->RedrawPanel(true);
         }
       } BOOST_SCOPE_EXIT_END
-      FarControl(FCTL_SETCMDLINE, 0, reinterpret_cast<LONG_PTR>(L""));
+      FarControl(FCTL_SETCMDLINE, 0, reinterpret_cast<intptr_t>(L""));
       FPlugin->ShowConsoleTitle(Command);
       // try
       {
@@ -2164,7 +2164,7 @@ void __fastcall TWinSCPFileSystem::InsertTokenOnCommandLine(UnicodeString Token,
       Token += L" ";
     }
 
-    FarControl(FCTL_INSERTCMDLINE, 0, reinterpret_cast<LONG_PTR>(Token.c_str()));
+    FarControl(FCTL_INSERTCMDLINE, 0, reinterpret_cast<intptr_t>(Token.c_str()));
   }
 }
 //---------------------------------------------------------------------------
@@ -2424,7 +2424,7 @@ bool __fastcall TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString NewPa
   UnicodeString LocalPath = IncludeTrailingBackslash(NewPath);
   if (!FarControl(FCTL_SETPANELDIR,
                   0,
-                  reinterpret_cast<LONG_PTR>(LocalPath.c_str()),
+                  reinterpret_cast<intptr_t>(LocalPath.c_str()),
                   reinterpret_cast<HANDLE>(PANEL_PASSIVE)))
   {
     Result = false;
@@ -2441,7 +2441,7 @@ bool __fastcall TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString NewPa
       // previous directory.
       FarControl(FCTL_SETPANELDIR,
                  0,
-                 reinterpret_cast<LONG_PTR>(OldPath.c_str()),
+                 reinterpret_cast<intptr_t>(OldPath.c_str()),
                  reinterpret_cast<HANDLE>(PANEL_PASSIVE));
       Result = false;
     }

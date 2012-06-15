@@ -129,7 +129,7 @@ public:
     UnicodeString Title = L"");
 
   intptr_t __fastcall FarAdvControl(int Command, void * Param = NULL);
-  DWORD __fastcall FarControl(int Command, int Param1, LONG_PTR Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
+  DWORD __fastcall FarControl(int Command, int Param1, intptr_t Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
   int __fastcall FarEditorControl(int Command, void * Param);
   intptr_t __fastcall FarSystemSettings();
   void __fastcall Text(int X, int Y, int Color, const UnicodeString Str);
@@ -194,7 +194,7 @@ protected:
   virtual void __fastcall GetPluginInfoEx(long unsigned & Flags,
     TStrings * DiskMenuStrings, TStrings * PluginMenuStrings,
     TStrings * PluginConfigStrings, TStrings * CommandPrefixes) = 0;
-  virtual TCustomFarFileSystem * __fastcall OpenPluginEx(int OpenFrom, LONG_PTR Item) = 0;
+  virtual TCustomFarFileSystem * __fastcall OpenPluginEx(int OpenFrom, intptr_t Item) = 0;
   virtual bool __fastcall ImportSessions() = 0;
   virtual bool __fastcall ConfigureEx(int Item) = 0;
   virtual int __fastcall ProcessEditorEventEx(int Event, void * Param) = 0;
@@ -296,8 +296,8 @@ protected:
   virtual int __fastcall PutFilesEx(TObjectList * PanelItems, bool Move, int OpMode);
 
   void __fastcall ResetCachedInfo();
-  DWORD __fastcall FarControl(int Command, int Param1, LONG_PTR Param2);
-  DWORD __fastcall FarControl(int Command, int Param1, LONG_PTR Param2, HANDLE Plugin);
+  DWORD __fastcall FarControl(int Command, int Param1, intptr_t Param2);
+  DWORD __fastcall FarControl(int Command, int Param1, intptr_t Param2, HANDLE Plugin);
   bool __fastcall UpdatePanel(bool ClearSelection = false, bool Another = false);
   void __fastcall RedrawPanel(bool Another = false);
   void __fastcall ClosePlugin();
