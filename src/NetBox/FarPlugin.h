@@ -213,7 +213,7 @@ protected:
   unsigned int FFarThread;
   // bool FOldFar;
   bool FValidFarSystemSettings;
-  INT_PTR FFarSystemSettings;
+  intptr_t FFarSystemSettings;
   TPoint FNormalConsoleSize;
   TCustomFarPlugin * Self;
 

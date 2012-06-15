@@ -117,10 +117,10 @@ protected:
 #endif
   void __fastcall Add(TFarDialogItem * Item);
   void __fastcall Add(TFarDialogContainer * Container);
-  LONG_PTR __fastcall SendMessage(int Msg, int Param1, void * Param2);
-  virtual LONG_PTR __fastcall DialogProc(int Msg, int Param1, void * Param2);
-  virtual LONG_PTR __fastcall FailDialogProc(int Msg, int Param1, void * Param2);
-  LONG_PTR __fastcall DefaultDialogProc(int Msg, int Param1, void * Param2);
+  intptr_t __fastcall SendMessage(int Msg, int Param1, void * Param2);
+  virtual intptr_t __fastcall DialogProc(int Msg, int Param1, void * Param2);
+  virtual intptr_t __fastcall FailDialogProc(int Msg, int Param1, void * Param2);
+  intptr_t __fastcall DefaultDialogProc(int Msg, int Param1, void * Param2);
   virtual bool __fastcall MouseEvent(MOUSE_EVENT_RECORD * Event);
   virtual bool __fastcall Key(TFarDialogItem * Item, long KeyCode);
   virtual void __fastcall Change();
@@ -333,12 +333,12 @@ protected:
 
   virtual void __fastcall Detach();
   void __fastcall DialogResized();
-  LONG_PTR __fastcall SendMessage(int Msg, void * Param);
-  LONG_PTR __fastcall SendDialogMessage(int Msg, int Param1, void * Param2);
-  virtual LONG_PTR __fastcall ItemProc(int Msg, void * Param);
-  LONG_PTR __fastcall DefaultItemProc(int Msg, void * Param);
-  LONG_PTR __fastcall DefaultDialogProc(int Msg, int Param1, void * Param2);
-  virtual LONG_PTR __fastcall FailItemProc(int Msg, void * Param);
+  intptr_t __fastcall SendMessage(int Msg, void * Param);
+  intptr_t __fastcall SendDialogMessage(int Msg, int Param1, void * Param2);
+  virtual intptr_t __fastcall ItemProc(int Msg, void * Param);
+  intptr_t __fastcall DefaultItemProc(int Msg, void * Param);
+  intptr_t __fastcall DefaultDialogProc(int Msg, int Param1, void * Param2);
+  virtual intptr_t __fastcall FailItemProc(int Msg, void * Param);
   virtual void __fastcall Change();
   void __fastcall DialogChange();
   void __fastcall SetAlterType(FARDIALOGITEMTYPES Index, bool value);
@@ -464,7 +464,7 @@ public:
 protected:
   virtual void __fastcall SetDataInternal(const UnicodeString value);
   virtual UnicodeString __fastcall GetData();
-  virtual LONG_PTR __fastcall ItemProc(int Msg, void * Param);
+  virtual intptr_t __fastcall ItemProc(int Msg, void * Param);
   virtual bool __fastcall HotKey(char HotKey);
 
 private:
@@ -512,7 +512,7 @@ public:
 
 protected:
   TFarAllowChangeEvent FOnAllowChange;
-  virtual LONG_PTR __fastcall ItemProc(int Msg, void * Param);
+  virtual intptr_t __fastcall ItemProc(int Msg, void * Param);
   virtual bool __fastcall GetIsEmpty();
   virtual void __fastcall SetData(const UnicodeString value);
 };
@@ -537,7 +537,7 @@ public:
 
 protected:
   TFarAllowChangeEvent FOnAllowChange;
-  virtual LONG_PTR __fastcall ItemProc(int Msg, void * Param);
+  virtual intptr_t __fastcall ItemProc(int Msg, void * Param);
   virtual bool __fastcall GetIsEmpty();
   virtual void __fastcall SetData(const UnicodeString value);
 };
@@ -578,7 +578,7 @@ public:
 #endif
 
 protected:
-  virtual LONG_PTR __fastcall ItemProc(int Msg, void * Param);
+  virtual intptr_t __fastcall ItemProc(int Msg, void * Param);
   virtual void __fastcall Detach();
 
 private:
@@ -668,7 +668,7 @@ public:
 
 protected:
   virtual void __fastcall Changed();
-  virtual LONG_PTR __fastcall ItemProc(int Msg, void * Param);
+  virtual intptr_t __fastcall ItemProc(int Msg, void * Param);
   virtual void __fastcall Init();
   void __fastcall UpdatePosition(int Position);
   int __fastcall GetPosition();
@@ -734,7 +734,7 @@ public:
 #endif
 
 protected:
-  virtual LONG_PTR __fastcall ItemProc(int Msg, void * Param);
+  virtual intptr_t __fastcall ItemProc(int Msg, void * Param);
   virtual void __fastcall Init();
   virtual bool __fastcall CloseQuery();
 
@@ -783,7 +783,7 @@ public:
 #endif
 
 protected:
-  virtual LONG_PTR __fastcall ItemProc(int Msg, void * Param);
+  virtual intptr_t __fastcall ItemProc(int Msg, void * Param);
   virtual void __fastcall Init();
 
 private:
@@ -806,7 +806,7 @@ public:
 #endif
 
 protected:
-  virtual LONG_PTR __fastcall ItemProc(int Msg, void * Param);
+  virtual intptr_t __fastcall ItemProc(int Msg, void * Param);
   virtual void __fastcall DoFocus();
 
 private:

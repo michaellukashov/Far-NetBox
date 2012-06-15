@@ -3490,7 +3490,7 @@ void __fastcall TWinSCPFileSystem::LogAuthentication(
 void /* __fastcall */ TWinSCPFileSystem::TerminalInformation(
   TTerminal * Terminal, const UnicodeString & Str, bool /*Status*/, int Phase)
 {
-  if (Phase > 0)
+  if (Phase != 0)
   {
     if (GetTerminal() && (GetTerminal()->GetStatus() == ssOpening))
     {
@@ -4528,7 +4528,7 @@ void __fastcall TWinSCPFileSystem::MultipleEdit(const UnicodeString Directory,
   {
     assert(i != FMultipleEdits.end());
 
-    INT_PTR WindowCount = FarPlugin->FarAdvControl(ACTL_GETWINDOWCOUNT, 0);
+    intptr_t WindowCount = FarPlugin->FarAdvControl(ACTL_GETWINDOWCOUNT, 0);
     WindowInfo Window;
     Window.Pos = 0;
     while (Window.Pos < WindowCount)

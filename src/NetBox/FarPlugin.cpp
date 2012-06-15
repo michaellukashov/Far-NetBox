@@ -2570,7 +2570,7 @@ void __fastcall TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * Pane
   GetData(PanelItem->Flags, FileName, Size, PanelItem->FileAttributes,
     LastWriteTime, LastAccess, PanelItem->NumberOfLinks, Description, Owner,
     static_cast<void *>(UserData), PanelItem->CustomColumnNumber);
-  PanelItem->UserData = reinterpret_cast<DWORD_PTR>(UserData);
+  PanelItem->UserData = reinterpret_cast<uintptr_t>(UserData);
   // DEBUG_PRINTF(L"LastWriteTime = %f, LastAccess = %f", LastWriteTime, LastAccess);
   FILETIME FileTime = DateTimeToFileTime(LastWriteTime, dstmWin);
   FILETIME FileTimeA = DateTimeToFileTime(LastAccess, dstmWin);
