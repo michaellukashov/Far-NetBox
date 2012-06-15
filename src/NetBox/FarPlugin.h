@@ -78,7 +78,7 @@ public:
   virtual void __fastcall ExitFAR();
   virtual void __fastcall GetPluginInfo(struct PluginInfo * Info);
   virtual int __fastcall Configure(int Item);
-  virtual void * __fastcall OpenPlugin(int OpenFrom, INT_PTR Item);
+  virtual void * __fastcall OpenPlugin(int OpenFrom, intptr_t Item);
   virtual void __fastcall ClosePlugin(void * Plugin);
   virtual void __fastcall GetOpenPluginInfo(HANDLE Plugin, struct OpenPluginInfo * Info);
   virtual int __fastcall GetFindData(HANDLE Plugin,
@@ -128,10 +128,10 @@ public:
   bool __fastcall Editor(const UnicodeString FileName, unsigned int Flags,
     UnicodeString Title = L"");
 
-  INT_PTR __fastcall FarAdvControl(int Command, void * Param = NULL);
+  intptr_t __fastcall FarAdvControl(int Command, void * Param = NULL);
   DWORD __fastcall FarControl(int Command, int Param1, LONG_PTR Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
   int __fastcall FarEditorControl(int Command, void * Param);
-  INT_PTR __fastcall FarSystemSettings();
+  intptr_t __fastcall FarSystemSettings();
   void __fastcall Text(int X, int Y, int Color, const UnicodeString Str);
   void __fastcall FlushText();
   void __fastcall WriteConsole(const UnicodeString Str);
@@ -186,7 +186,7 @@ protected:
   unsigned int FFarThread;
   // bool FOldFar;
   bool FValidFarSystemSettings;
-  INT_PTR FFarSystemSettings;
+  intptr_t FFarSystemSettings;
   TPoint FNormalConsoleSize;
   TCustomFarPlugin * Self;
 

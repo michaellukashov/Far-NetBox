@@ -4523,7 +4523,7 @@ void __fastcall TWinSCPFileSystem::MultipleEdit(const UnicodeString Directory,
   {
     assert(i != FMultipleEdits.end());
 
-    INT_PTR WindowCount = FarPlugin->FarAdvControl(ACTL_GETWINDOWCOUNT);
+    intptr_t WindowCount = FarPlugin->FarAdvControl(ACTL_GETWINDOWCOUNT);
     WindowInfo Window;
     Window.Pos = 0;
     while (Window.Pos < WindowCount)

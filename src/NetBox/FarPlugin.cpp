@@ -323,7 +323,7 @@ int __fastcall TCustomFarPlugin::Configure(int Item)
   }
 }
 //---------------------------------------------------------------------------
-void * __fastcall TCustomFarPlugin::OpenPlugin(int OpenFrom, INT_PTR Item)
+void * __fastcall TCustomFarPlugin::OpenPlugin(int OpenFrom, intptr_t Item)
 {
   try
   {
@@ -333,7 +333,7 @@ void * __fastcall TCustomFarPlugin::OpenPlugin(int OpenFrom, INT_PTR Item)
     if ((OpenFrom == OPEN_SHORTCUT) || (OpenFrom == OPEN_COMMANDLINE))
     {
       Buf = reinterpret_cast<wchar_t *>(Item);
-      Item = reinterpret_cast<INT_PTR>(Buf.c_str());
+      Item = reinterpret_cast<intptr_t>(Buf.c_str());
     }
 
     TCustomFarFileSystem * Result = OpenPluginEx(OpenFrom, Item);
@@ -1653,7 +1653,7 @@ void __fastcall TCustomFarPlugin::ResetCachedInfo()
   FValidFarSystemSettings = false;
 }
 //---------------------------------------------------------------------------
-INT_PTR __fastcall TCustomFarPlugin::FarSystemSettings()
+intptr_t __fastcall TCustomFarPlugin::FarSystemSettings()
 {
   if (!FValidFarSystemSettings)
   {
@@ -1684,7 +1684,7 @@ DWORD __fastcall TCustomFarPlugin::FarControl(int Command, int Param1, LONG_PTR 
   return FStartupInfo.Control(Plugin, Command, Param1, Param2);
 }
 //---------------------------------------------------------------------------
-INT_PTR __fastcall TCustomFarPlugin::FarAdvControl(int Command, void * Param)
+intptr_t __fastcall TCustomFarPlugin::FarAdvControl(int Command, void * Param)
 {
   TFarEnvGuard Guard;
   return FStartupInfo.AdvControl(FStartupInfo.ModuleNumber, Command, Param);
