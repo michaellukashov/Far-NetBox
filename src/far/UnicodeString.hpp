@@ -271,6 +271,20 @@ public:
 
   int Pos(wchar_t Ch) const;
   int Pos(const wchar_t * Str) const;
+
+  char __fastcall operator [](const int idx) const
+  {
+    ThrowIfOutOfRange(idx);   // Should Range-checking be optional to avoid overhead ??
+    return Data[idx-1];
+  }
+
+  char & __fastcall operator [](const int idx)
+  {
+    ThrowIfOutOfRange(idx);   // Should Range-checking be optional to avoid overhead ??
+    Unique();                 // Ensure we're not ref-counted (and Unicode)
+    return Data[idx-1];
+  }
+
 public:
   const AnsiString & operator=(const UnicodeString & strCopy);
   const AnsiString & operator=(const RawByteString & strCopy);
@@ -332,6 +346,7 @@ private:
     }
     Data = Data.c_str();
   }
+  void  __cdecl ThrowIfOutOfRange(int idx) const;
 
   std::string Data;
 };
