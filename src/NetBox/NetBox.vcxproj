@@ -110,6 +110,7 @@
       <IgnoreSpecificDefaultLibraries>uafxcwd.lib;mfcs100ud.lib;comctl32.lib;msvcrtd.lib;msvcurtd.lib;msvcprtd.lib;libc.lib;libcmt.lib;msvcrt.lib;libcmtd.lib;mfc100ud.lib;Atl.lib;comctl32.lib;mfcs100ud.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <AdditionalOptions>/verbose:lib /ignore:4099 /ignore:4204 %(AdditionalOptions)</AdditionalOptions>
+      <DelayLoadDLLs>gdiplus.dll;gdi32.dll;msimg32.dll</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='UnityDebug|x64'">
@@ -130,6 +131,7 @@
       <IgnoreSpecificDefaultLibraries>uafxcwd.lib;mfc100ud.lib;Atl.lib;comctl32.lib;msvcrtd.lib;msvcurtd.lib;msvcprtd.lib;libc.lib;libcmt.lib;msvcrt.lib;libcmtd.lib;mfc100ud.lib;Atl.lib;comctl32.lib;mfcs100ud.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <AdditionalOptions>/verbose:lib /ignore:4099 /ignore:4204 %(AdditionalOptions)</AdditionalOptions>
+      <DelayLoadDLLs>gdiplus.dll;gdi32.dll;msimg32.dll</DelayLoadDLLs>
       <EntryPointSymbol>
       </EntryPointSymbol>
     </Link>
@@ -156,6 +158,7 @@
       <AdditionalDependencies>mfcs100u.lib;uafxcw.lib;libcmt.lib;libcpmt.lib;windowscodecs.lib;delayimp.lib;libtinyxml.lib;libeay32.lib;ssleay32.lib;libputty.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <IgnoreSpecificDefaultLibraries>uafxcw.lib;mfc100u.lib;Atl.lib;comctl32.lib;msvcrt.lib;msvcurt.lib;msvcprt.lib;libc.lib;msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <DelayLoadDLLs>gdiplus.dll;gdi32.dll;msimg32.dll</DelayLoadDLLs>
     </Link>
     <PostBuildEvent>
       <Command>makeDist.cmd x86 Far2</Command>
@@ -183,6 +186,7 @@
       <AdditionalDependencies>mfcs100u.lib;uafxcw.lib;libcmt.lib;libcpmt.lib;windowscodecs.lib;delayimp.lib;libtinyxml.lib;libeay32.lib;ssleay32.lib;libputty.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;comctl32.lib;;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <IgnoreSpecificDefaultLibraries>uafxcw.lib;mfc100u.lib;Atl.lib;comctl32.lib;msvcrt.lib;msvcurt.lib;msvcprt.lib;libc.lib;libcmt.lib;msvcrt.lib;libcmt.lib;mfc100u.lib;Atl.lib;comctl32.lib;mfcs100u.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <DelayLoadDLLs>gdiplus.dll;gdi32.dll;msimg32.dll</DelayLoadDLLs>
     </Link>
     <PostBuildEvent>
       <Command>makeDist.cmd x64 Far2</Command>
