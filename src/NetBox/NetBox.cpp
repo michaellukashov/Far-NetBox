@@ -61,7 +61,7 @@ extern "C"
     return FarPlugin->Configure(item);
   }
 
-  HANDLE WINAPI OpenPluginW(int openFrom, INT_PTR item)
+  HANDLE WINAPI OpenPluginW(int openFrom, intptr_t item)
   {
     assert(FarPlugin);
     TFarPluginGuard Guard;
@@ -198,7 +198,7 @@ extern "C"
       return INVALID_HANDLE_VALUE;
     }
     HANDLE handle = static_cast<HANDLE>(FarPlugin->OpenPlugin(OPEN_ANALYSE,
-                                        reinterpret_cast<INT_PTR>(fileName)));
+                                        reinterpret_cast<intptr_t>(fileName)));
     return handle;
   }
 

@@ -19,8 +19,8 @@ version_h = \
 #define PLUGIN_VERSION_PATCH         %(patch)s
 #define PLUGIN_VERSION_BUILD         %(build)s
 
-static const std::wstring CONST_VERSION_STR(L"%(version_major)s.%(version_minor)s.%(patch)s");
-static const std::wstring CONST_COMPILATION_TIME(L"%(compile_time)s");
+static const std::wstring NETBOX_VERSION_NUMBER(L"%(version_major)s.%(version_minor)s.%(patch)s");
+static const std::wstring NETBOX_COMPILATION_TIME(L"%(compile_time)s");
 
 """
 
