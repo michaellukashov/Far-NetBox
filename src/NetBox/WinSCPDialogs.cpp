@@ -3256,10 +3256,10 @@ void __fastcall TSessionDialog::UpdateControls()
   UnicodeString ProxyCommand =
     ((ProxyMethod == pmCmd) ?
      ProxyLocalCommandEdit->GetText() : ProxyTelnetCommandEdit->GetText());
-  ProxyHostEdit->SetEnabled(Proxy &&
+  ProxyHostEdit->SetEnabled(Proxy && (ProxyMethod != pmSystem) &&
     ((ProxyMethod != pmCmd) ||
      AnsiContainsText(ProxyCommand, L"%proxyhost")));
-  ProxyPortEdit->SetEnabled(Proxy &&
+  ProxyPortEdit->SetEnabled(Proxy && (ProxyMethod != pmSystem) &&
     ((ProxyMethod != pmCmd) ||
      AnsiContainsText(ProxyCommand, L"%proxyport")));
   ProxyUsernameEdit->SetEnabled(Proxy &&
@@ -3269,13 +3269,15 @@ void __fastcall TSessionDialog::UpdateControls()
      (ProxyMethod == pmHTTP) ||
      (((ProxyMethod == pmTelnet) ||
        (ProxyMethod == pmCmd)) &&
-      AnsiContainsText(ProxyCommand, L"%user"))));
+      AnsiContainsText(ProxyCommand, L"%user")) ||
+     (ProxyMethod == pmSystem)));
   ProxyPasswordEdit->SetEnabled(Proxy &&
     ((ProxyMethod == pmSocks5) ||
      (ProxyMethod == pmHTTP) ||
      (((ProxyMethod == pmTelnet) ||
        (ProxyMethod == pmCmd)) &&
-      AnsiContainsText(ProxyCommand, L"%pass"))));
+      AnsiContainsText(ProxyCommand, L"%pass")) ||
+     (ProxyMethod == pmSystem)));
   bool ProxySettings = Proxy && SshProtocol;
   ProxyTelnetCommandEdit->SetEnabled(ProxySettings && (ProxyMethod == pmTelnet));
   ProxyLocalCommandEdit->SetVisible((GetTab() == ProxyMethodCombo->GetGroup()) && (ProxyMethod == pmCmd));
