@@ -3512,8 +3512,9 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
   }
 
   // Proxy tab
-  SshProxyMethodCombo->GetItems()->SetSelected(SessionData->GetProxyMethod());
-  int Index = ProxyMethodToIndex(SessionData->GetProxyMethod(), FtpProxyMethodCombo->GetItems());
+  int Index = ProxyMethodToIndex(SessionData->GetProxyMethod(), SshProxyMethodCombo->GetItems());
+  SshProxyMethodCombo->GetItems()->SetSelected(Index);
+  Index = ProxyMethodToIndex(SessionData->GetProxyMethod(), FtpProxyMethodCombo->GetItems());
   if (Index == -1)
   {
     FtpProxyMethodCombo->GetItems()->SetSelected(pmNone);
@@ -3858,8 +3859,13 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
       (CodePageEdit->GetText() == CodePageEdit->GetItems()->GetStrings(0)) ?
       UnicodeString() : CodePageEdit->GetText());
 
+    TFSProtocol FSProtocol = GetFSProtocol();
+    bool SshProtocol =
+      (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP) || (FSProtocol == fsSCPonly);
+
     // Proxy tab
-    TProxyMethod ProxyMethod = IndexToProxyMethod(SshProxyMethodCombo->GetItems()->GetSelected(), SshProxyMethodCombo->GetItems());
+    TFarComboBox * ProxyMethodCombo = (SshProtocol ? SshProxyMethodCombo : FtpProxyMethodCombo);
+    TProxyMethod ProxyMethod = IndexToProxyMethod(ProxyMethodCombo->GetItems()->GetSelected(), ProxyMethodCombo->GetItems());
     SessionData->SetProxyMethod(ProxyMethod);
     SessionData->SetProxyHost(ProxyHostEdit->GetText());
     SessionData->SetProxyPort(ProxyPortEdit->GetAsInteger());
