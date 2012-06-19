@@ -3513,7 +3513,6 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
   // Proxy tab
   SshProxyMethodCombo->GetItems()->SetSelected(SessionData->GetProxyMethod());
   int Index = ProxyMethodToIndex(SessionData->GetProxyMethod(), FtpProxyMethodCombo->GetItems());
-  // if (SessionData->GetProxyMethod() >= static_cast<int>(FtpProxyMethodCombo->GetItems()->GetCount()))
   if (Index == -1)
   {
     FtpProxyMethodCombo->GetItems()->SetSelected(pmNone);
