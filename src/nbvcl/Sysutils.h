@@ -240,6 +240,8 @@ bool InheritsFrom(const Base * t)
 //---------------------------------------------------------------------------
 UnicodeString Format(const wchar_t * format, ...);
 UnicodeString Format(const wchar_t * format, va_list args);
+AnsiString Format(const char * format, ...);
+AnsiString Format(const char * format, va_list args);
 UnicodeString FmtLoadStr(int id, ...);
 //---------------------------------------------------------------------------
 UnicodeString WrapText(const UnicodeString Line, int MaxCol = 40);

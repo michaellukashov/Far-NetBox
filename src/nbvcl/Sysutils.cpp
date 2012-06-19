@@ -586,6 +586,32 @@ UnicodeString Format(const wchar_t * format, va_list args)
 }
 
 //---------------------------------------------------------------------------
+
+AnsiString Format(const char * format, ...)
+{
+  AnsiString result;
+  va_list args;
+  va_start(args, format);
+  result = ::Format(format, args);
+  va_end(args);
+  return result.c_str();
+}
+
+//---------------------------------------------------------------------------
+
+AnsiString Format(const char * format, va_list args)
+{
+  AnsiString result;
+  if (format && *format)
+  {
+    size_t len = _vscprintf(format, args);
+    result.SetLength(len + 1);
+    vsprintf_s(&result[1], len + 1, format, args);
+  }
+  return result.c_str();
+}
+
+//---------------------------------------------------------------------------
 UnicodeString FmtLoadStr(int id, ...)
 {
   // DEBUG_PRINTF(L"begin: id = %d", id)
