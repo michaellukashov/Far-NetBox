@@ -2539,6 +2539,7 @@ static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsFTPS, fsH
   FtpProxyMethodCombo->GetItems()->Add(GetMsg(LOGIN_PROXY_SOCKS4));
   FtpProxyMethodCombo->GetItems()->Add(GetMsg(LOGIN_PROXY_SOCKS5));
   FtpProxyMethodCombo->GetItems()->Add(GetMsg(LOGIN_PROXY_HTTP));
+  FtpProxyMethodCombo->GetItems()->Add(GetMsg(LOGIN_PROXY_SYSTEM));
   FtpProxyMethodCombo->SetRight(CRect.Right - 12 - 2);
 
   SshProxyMethodCombo = new TFarComboBox(this);
@@ -2546,9 +2547,14 @@ static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsFTPS, fsH
   SshProxyMethodCombo->SetWidth(FtpProxyMethodCombo->GetWidth());
   FtpProxyMethodCombo->SetRight(FtpProxyMethodCombo->GetRight());
   SshProxyMethodCombo->SetDropDownList(true);
-  SshProxyMethodCombo->GetItems()->AddStrings(FtpProxyMethodCombo->GetItems());
+  // SshProxyMethodCombo->GetItems()->AddStrings(FtpProxyMethodCombo->GetItems());
+  SshProxyMethodCombo->GetItems()->Add(GetMsg(LOGIN_PROXY_NONE));
+  SshProxyMethodCombo->GetItems()->Add(GetMsg(LOGIN_PROXY_SOCKS4));
+  SshProxyMethodCombo->GetItems()->Add(GetMsg(LOGIN_PROXY_SOCKS5));
+  SshProxyMethodCombo->GetItems()->Add(GetMsg(LOGIN_PROXY_HTTP));
   SshProxyMethodCombo->GetItems()->Add(GetMsg(LOGIN_PROXY_TELNET));
   SshProxyMethodCombo->GetItems()->Add(GetMsg(LOGIN_PROXY_LOCAL));
+  SshProxyMethodCombo->GetItems()->Add(GetMsg(LOGIN_PROXY_SYSTEM));
 
   SetNextItemPosition(ipNewLine);
 
@@ -3493,11 +3499,11 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
 
   // Proxy tab
   SshProxyMethodCombo->GetItems()->SetSelected(SessionData->GetProxyMethod());
-  if (SessionData->GetProxyMethod() >= static_cast<int>(FtpProxyMethodCombo->GetItems()->GetCount()))
+  /* if (SessionData->GetProxyMethod() >= static_cast<int>(FtpProxyMethodCombo->GetItems()->GetCount()))
   {
     FtpProxyMethodCombo->GetItems()->SetSelected(pmNone);
   }
-  else
+  else */
   {
     FtpProxyMethodCombo->GetItems()->SetSelected(SessionData->GetProxyMethod());
   }
