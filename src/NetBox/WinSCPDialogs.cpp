@@ -1837,6 +1837,7 @@ private:
   int __fastcall LoginTypeToIndex(TLoginType LoginType);
   int __fastcall FSProtocolToIndex(TFSProtocol FSProtocol, bool & AllowScpFallback);
   int ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Items);
+  TProxyMethod IndexToProxyMethod(int Index, TFarList * Items);
   TFSProtocol __fastcall IndexToFSProtocol(size_t Index, bool AllowScpFallback);
   TFSProtocol __fastcall GetFSProtocol();
   TLoginType __fastcall IndexToLoginType(size_t Index);
@@ -3858,7 +3859,8 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
       UnicodeString() : CodePageEdit->GetText());
 
     // Proxy tab
-    SessionData->SetProxyMethod(static_cast<TProxyMethod>(SshProxyMethodCombo->GetItems()->GetSelected()));
+    TProxyMethod ProxyMethod = IndexToProxyMethod(SshProxyMethodCombo->GetItems()->GetSelected(), SshProxyMethodCombo->GetItems());
+    SessionData->SetProxyMethod(ProxyMethod);
     SessionData->SetProxyHost(ProxyHostEdit->GetText());
     SessionData->SetProxyPort(ProxyPortEdit->GetAsInteger());
     SessionData->SetProxyUsername(ProxyUsernameEdit->GetText());
@@ -4043,12 +4045,22 @@ int TSessionDialog::ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Item
 {
   for (int Index = 0; Index < Items->GetCount(); Index++)
   {
-      TObject * Obj = static_cast<TObject *>(Items->GetObjects(Index));
-      TProxyMethod Method = static_cast<TProxyMethod>(reinterpret_cast<size_t>(Obj));
-      if (Method == ProxyMethod)
-        return Index;
+    TObject * Obj = static_cast<TObject *>(Items->GetObjects(Index));
+    TProxyMethod Method = static_cast<TProxyMethod>(reinterpret_cast<size_t>(Obj));
+    if (Method == ProxyMethod)
+      return Index;
   }
   return -1;
+}
+TProxyMethod TSessionDialog::IndexToProxyMethod(int Index, TFarList * Items)
+{
+  TProxyMethod Result = pmNone;
+  if (Index >= 0 && Index < Items->GetCount())
+  {
+    TObject * Obj = static_cast<TObject *>(Items->GetObjects(Index));
+    Result = static_cast<TProxyMethod>(reinterpret_cast<size_t>(Obj));
+  }
+  return Result;
 }
 //---------------------------------------------------------------------------
 TFSProtocol __fastcall TSessionDialog::GetFSProtocol()
