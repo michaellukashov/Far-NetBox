@@ -2010,9 +2010,26 @@ void __fastcall TSessionData::SetProxyPassword(UnicodeString avalue)
   SET_SESSION_PROPERTY(ProxyPassword);
 }
 //---------------------------------------------------------------------
+UnicodeString __fastcall TSessionData::GetProxyHost() const
+{
+  PrepareProxyData();
+  return FProxyHost;
+}
+int __fastcall TSessionData::GetProxyPort() const
+{
+  PrepareProxyData();
+  return FProxyPort;
+}
+UnicodeString __fastcall TSessionData::GetProxyUsername() const
+{
+  return FProxyUsername;
+}
 UnicodeString __fastcall TSessionData::GetProxyPassword() const
 {
   return DecryptPassword(FProxyPassword, GetProxyUsername() + GetProxyHost());
+}
+void  __fastcall TSessionData::PrepareProxyData() const
+{
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionData::SetProxyTelnetCommand(UnicodeString value)

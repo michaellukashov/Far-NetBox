@@ -512,9 +512,9 @@ public:
   int __fastcall GetSendBuf() const { return FSendBuf; }
   bool __fastcall GetSshSimple() const { return FSshSimple; }
   TProxyMethod __fastcall GetProxyMethod() const { return FProxyMethod; }
-  UnicodeString __fastcall GetProxyHost() const { return FProxyHost; }
-  int __fastcall GetProxyPort() const { return FProxyPort; }
-  UnicodeString __fastcall GetProxyUsername() const { return FProxyUsername; }
+  UnicodeString __fastcall GetProxyHost() const;
+  int __fastcall GetProxyPort() const;
+  UnicodeString __fastcall GetProxyUsername() const;
   UnicodeString __fastcall GetProxyTelnetCommand() const { return FProxyTelnetCommand; }
   UnicodeString __fastcall GetProxyLocalCommand() const { return FProxyLocalCommand; }
   TAutoSwitch __fastcall GetProxyDNS() const { return FProxyDNS; }
@@ -569,6 +569,7 @@ public:
   void __fastcall SetNumberOfRetries(int value) { FNumberOfRetries = value; }
 #endif
 private:
+  void  __fastcall PrepareProxyData() const;
   void __fastcall AdjustHostName(UnicodeString & hostName, const UnicodeString prefix);
   void __fastcall RemoveProtocolPrefix(UnicodeString & hostName);
 };
