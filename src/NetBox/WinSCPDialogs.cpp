@@ -1834,8 +1834,9 @@ private:
 
   void __fastcall LoadPing(TSessionData * SessionData);
   void __fastcall SavePing(TSessionData * SessionData);
-  size_t __fastcall LoginTypeToIndex(TLoginType LoginType);
-  size_t __fastcall FSProtocolToIndex(TFSProtocol FSProtocol, bool & AllowScpFallback);
+  int __fastcall LoginTypeToIndex(TLoginType LoginType);
+  int __fastcall FSProtocolToIndex(TFSProtocol FSProtocol, bool & AllowScpFallback);
+  int ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Items);
   TFSProtocol __fastcall IndexToFSProtocol(size_t Index, bool AllowScpFallback);
   TFSProtocol __fastcall GetFSProtocol();
   TLoginType __fastcall IndexToLoginType(size_t Index);
@@ -2535,11 +2536,16 @@ static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsFTPS, fsH
 
   FtpProxyMethodCombo = new TFarComboBox(this);
   FtpProxyMethodCombo->SetDropDownList(true);
-  FtpProxyMethodCombo->GetItems()->Add(GetMsg(LOGIN_PROXY_NONE));
-  FtpProxyMethodCombo->GetItems()->Add(GetMsg(LOGIN_PROXY_SOCKS4));
-  FtpProxyMethodCombo->GetItems()->Add(GetMsg(LOGIN_PROXY_SOCKS5));
-  FtpProxyMethodCombo->GetItems()->Add(GetMsg(LOGIN_PROXY_HTTP));
-  FtpProxyMethodCombo->GetItems()->Add(GetMsg(LOGIN_PROXY_SYSTEM));
+  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_NONE),
+    static_cast<TObject *>(reinterpret_cast<void *>(pmNone)));
+  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_SOCKS4),
+    static_cast<TObject *>(reinterpret_cast<void *>(pmSocks4)));
+  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_SOCKS5),
+    static_cast<TObject *>(reinterpret_cast<void *>(pmSocks5)));
+  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_HTTP),
+    static_cast<TObject *>(reinterpret_cast<void *>(pmHTTP)));
+  FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_SYSTEM),
+    static_cast<TObject *>(reinterpret_cast<void *>(pmSystem)));
   FtpProxyMethodCombo->SetRight(CRect.Right - 12 - 2);
 
   SshProxyMethodCombo = new TFarComboBox(this);
@@ -2548,13 +2554,20 @@ static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsFTPS, fsH
   FtpProxyMethodCombo->SetRight(FtpProxyMethodCombo->GetRight());
   SshProxyMethodCombo->SetDropDownList(true);
   // SshProxyMethodCombo->GetItems()->AddStrings(FtpProxyMethodCombo->GetItems());
-  SshProxyMethodCombo->GetItems()->Add(GetMsg(LOGIN_PROXY_NONE));
-  SshProxyMethodCombo->GetItems()->Add(GetMsg(LOGIN_PROXY_SOCKS4));
-  SshProxyMethodCombo->GetItems()->Add(GetMsg(LOGIN_PROXY_SOCKS5));
-  SshProxyMethodCombo->GetItems()->Add(GetMsg(LOGIN_PROXY_HTTP));
-  SshProxyMethodCombo->GetItems()->Add(GetMsg(LOGIN_PROXY_TELNET));
-  SshProxyMethodCombo->GetItems()->Add(GetMsg(LOGIN_PROXY_LOCAL));
-  SshProxyMethodCombo->GetItems()->Add(GetMsg(LOGIN_PROXY_SYSTEM));
+  SshProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_NONE),
+    static_cast<TObject *>(reinterpret_cast<void *>(pmNone)));
+  SshProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_SOCKS4),
+    static_cast<TObject *>(reinterpret_cast<void *>(pmSocks4)));
+  SshProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_SOCKS5),
+    static_cast<TObject *>(reinterpret_cast<void *>(pmSocks5)));
+  SshProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_HTTP),
+    static_cast<TObject *>(reinterpret_cast<void *>(pmHTTP)));
+  SshProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_TELNET),
+    static_cast<TObject *>(reinterpret_cast<void *>(pmTelnet)));
+  SshProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_LOCAL),
+    static_cast<TObject *>(reinterpret_cast<void *>(pmCmd)));
+  SshProxyMethodCombo->GetItems()->AddObject(GetMsg(LOGIN_PROXY_SYSTEM),
+    static_cast<TObject *>(reinterpret_cast<void *>(pmSystem)));
 
   SetNextItemPosition(ipNewLine);
 
@@ -3499,13 +3512,15 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
 
   // Proxy tab
   SshProxyMethodCombo->GetItems()->SetSelected(SessionData->GetProxyMethod());
-  /* if (SessionData->GetProxyMethod() >= static_cast<int>(FtpProxyMethodCombo->GetItems()->GetCount()))
+  int Index = ProxyMethodToIndex(SessionData->GetProxyMethod(), FtpProxyMethodCombo->GetItems());
+  // if (SessionData->GetProxyMethod() >= static_cast<int>(FtpProxyMethodCombo->GetItems()->GetCount()))
+  if (Index == -1)
   {
     FtpProxyMethodCombo->GetItems()->SetSelected(pmNone);
   }
-  else */
+  else
   {
-    FtpProxyMethodCombo->GetItems()->SetSelected(SessionData->GetProxyMethod());
+    FtpProxyMethodCombo->GetItems()->SetSelected(Index);
   }
   ProxyHostEdit->SetText(SessionData->GetProxyHost());
   ProxyPortEdit->SetAsInteger(SessionData->GetProxyPort());
@@ -3996,12 +4011,12 @@ void __fastcall TSessionDialog::SavePing(TSessionData * SessionData)
   }
 }
 //---------------------------------------------------------------------------
-size_t TSessionDialog::LoginTypeToIndex(TLoginType LoginType)
+int TSessionDialog::LoginTypeToIndex(TLoginType LoginType)
 {
   return static_cast<size_t>(LoginType);
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TSessionDialog::FSProtocolToIndex(TFSProtocol FSProtocol,
+int __fastcall TSessionDialog::FSProtocolToIndex(TFSProtocol FSProtocol,
     bool & AllowScpFallback)
 {
   if (FSProtocol == fsSFTP)
@@ -4023,6 +4038,18 @@ size_t __fastcall TSessionDialog::FSProtocolToIndex(TFSProtocol FSProtocol,
     // SFTP is always present
     return FSProtocolToIndex(fsSFTP, AllowScpFallback);
   }
+}
+//---------------------------------------------------------------------------
+int TSessionDialog::ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Items)
+{
+  for (int Index = 0; Index < Items->GetCount(); Index++)
+  {
+      TObject * Obj = static_cast<TObject *>(Items->GetObjects(Index));
+      TProxyMethod Method = static_cast<TProxyMethod>(reinterpret_cast<size_t>(Obj));
+      if (Method == ProxyMethod)
+        return Index;
+  }
+  return -1;
 }
 //---------------------------------------------------------------------------
 TFSProtocol __fastcall TSessionDialog::GetFSProtocol()

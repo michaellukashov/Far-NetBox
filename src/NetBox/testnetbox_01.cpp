@@ -644,7 +644,7 @@ BOOST_FIXTURE_TEST_CASE(test27, base_fixture_t)
     else
     {
         //no error so check the proxy settings and free any strings
-        BOOST_TEST_MESSAGE("Auto Detect is: " << ProxyConfig.fAutoDetect);
+        BOOST_TEST_MESSAGE("AutoConfigDetect is: " << ProxyConfig.fAutoDetect);
         if (NULL != ProxyConfig.lpszAutoConfigUrl)
         {
             BOOST_TEST_MESSAGE("AutoConfigURL is: " << W2MB(ProxyConfig.lpszAutoConfigUrl));
