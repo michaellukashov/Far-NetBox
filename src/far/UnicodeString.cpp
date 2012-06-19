@@ -89,6 +89,12 @@ const AnsiString & __fastcall AnsiString::operator +=(const char Ch)
   return *this;
 }
 
+void  __cdecl AnsiString::ThrowIfOutOfRange(int idx) const
+{
+  if (idx < 1 || idx > Length()) // NOTE: UnicodeString is 1-based !!
+    throw std::runtime_error("Index is out of range"); // ERangeError(Sysconst_SRangeError);
+}
+
 //------------------------------------------------------------------------------
 
 RawByteString::operator UnicodeString() const

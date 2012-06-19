@@ -45,28 +45,7 @@ Compile boost libraries:
 Boost 1.48.0 or later is required to build NetBox.  
 You can download the source code for boost from [download page](http://sourceforge.net/projects/boost/files/boost/1.48.0/).
 
-Unpack archive to directory C:/src/Far-NetBox/libs
-
-Compile bjam:
-
-    cd libs/boost/tools/build/v2/engine
-    call build.bat
-
-Copy the resulting bjam.exe binary (located in libs/boost/tools/build/v2/engine/bin.ntx86)  
-to some directory which is listed in %PATH% variable, say C:/Windows
-
-Create 'boost/stage' directory:
-
-    mkdir libs/boost/stage
-
-
-Compile 'boost.signals' library:
-
-    cd libs/boost/libs/signals/build  
-    call bjam variant=debug link=static threading=multi runtime-debugging=on runtime-link=static stage -j3  
-    cp -R libs/boost/libs/signals/build/stage/* libs/boost/stage/  
-    call bjam architecture=x86 address-model=64 variant=debug link=static threading=multi runtime-debugging=on runtime-link=static stage -j3  
-    cp -R libs/boost/libs/signals/build/stage/* libs/boost/stage/x64
+Unpack archive to directory C:/src/Far-NetBox/libs  
 
 
 Compile openssl:
