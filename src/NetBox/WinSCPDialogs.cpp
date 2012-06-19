@@ -1836,8 +1836,9 @@ private:
   void __fastcall SavePing(TSessionData * SessionData);
   int __fastcall LoginTypeToIndex(TLoginType LoginType);
   int __fastcall FSProtocolToIndex(TFSProtocol FSProtocol, bool & AllowScpFallback);
-  int ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Items);
-  TProxyMethod IndexToProxyMethod(int Index, TFarList * Items);
+  int __fastcall ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Items);
+  TProxyMethod __fastcall IndexToProxyMethod(int Index, TFarList * Items);
+  TFarComboBox * __fastcall GetProxyMethodCombo();
   TFSProtocol __fastcall IndexToFSProtocol(size_t Index, bool AllowScpFallback);
   TFSProtocol __fastcall GetFSProtocol();
   TLoginType __fastcall IndexToLoginType(size_t Index);
@@ -3237,11 +3238,12 @@ void __fastcall TSessionDialog::UpdateControls()
   Scp1CompatibilityCheck->SetEnabled(ScpOnlyProtocol);
 
   // Connection/Proxy tab
-  TFarComboBox * ProxyMethodCombo = (SshProtocol ? SshProxyMethodCombo : FtpProxyMethodCombo);
+  TFarComboBox * ProxyMethodCombo = GetProxyMethodCombo();
+  TProxyMethod ProxyMethod = IndexToProxyMethod(ProxyMethodCombo->GetItems()->GetSelected(), ProxyMethodCombo->GetItems());
   ProxyMethodCombo->SetVisible((GetTab() == ProxyMethodCombo->GetGroup()));
   TFarComboBox * OtherProxyMethodCombo = (!SshProtocol ? SshProxyMethodCombo : FtpProxyMethodCombo);
   OtherProxyMethodCombo->SetVisible(false);
-  if (ProxyMethodCombo->GetItems()->GetSelected() >= OtherProxyMethodCombo->GetItems()->GetCount())
+  if (ProxyMethod >= OtherProxyMethodCombo->GetItems()->GetCount())
   {
     OtherProxyMethodCombo->GetItems()->SetSelected(pmNone);
   }
@@ -3250,35 +3252,35 @@ void __fastcall TSessionDialog::UpdateControls()
     OtherProxyMethodCombo->GetItems()->SetSelected(ProxyMethodCombo->GetItems()->GetSelected());
   }
 
-  bool Proxy = (ProxyMethodCombo->GetItems()->GetSelected() != pmNone);
+  bool Proxy = (ProxyMethod != pmNone);
   UnicodeString ProxyCommand =
-    ((ProxyMethodCombo->GetItems()->GetSelected() == pmCmd) ?
+    ((ProxyMethod == pmCmd) ?
      ProxyLocalCommandEdit->GetText() : ProxyTelnetCommandEdit->GetText());
   ProxyHostEdit->SetEnabled(Proxy &&
-                            ((ProxyMethodCombo->GetItems()->GetSelected() != pmCmd) ||
-                             AnsiContainsText(ProxyCommand, L"%proxyhost")));
+    ((ProxyMethod != pmCmd) ||
+     AnsiContainsText(ProxyCommand, L"%proxyhost")));
   ProxyPortEdit->SetEnabled(Proxy &&
-                            ((ProxyMethodCombo->GetItems()->GetSelected() != pmCmd) ||
-                             AnsiContainsText(ProxyCommand, L"%proxyport")));
+    ((ProxyMethod != pmCmd) ||
+     AnsiContainsText(ProxyCommand, L"%proxyport")));
   ProxyUsernameEdit->SetEnabled(Proxy &&
-                                // FZAPI does not support username for SOCKS4
-                                (((ProxyMethodCombo->GetItems()->GetSelected() == pmSocks4) && SshProtocol) ||
-                                 (ProxyMethodCombo->GetItems()->GetSelected() == pmSocks5) ||
-                                 (ProxyMethodCombo->GetItems()->GetSelected() == pmHTTP) ||
-                                 (((ProxyMethodCombo->GetItems()->GetSelected() == pmTelnet) ||
-                                   (ProxyMethodCombo->GetItems()->GetSelected() == pmCmd)) &&
-                                  AnsiContainsText(ProxyCommand, L"%user"))));
+    // FZAPI does not support username for SOCKS4
+    (((ProxyMethod == pmSocks4) && SshProtocol) ||
+     (ProxyMethod == pmSocks5) ||
+     (ProxyMethod == pmHTTP) ||
+     (((ProxyMethod == pmTelnet) ||
+       (ProxyMethod == pmCmd)) &&
+      AnsiContainsText(ProxyCommand, L"%user"))));
   ProxyPasswordEdit->SetEnabled(Proxy &&
-                                ((ProxyMethodCombo->GetItems()->GetSelected() == pmSocks5) ||
-                                 (ProxyMethodCombo->GetItems()->GetSelected() == pmHTTP) ||
-                                 (((ProxyMethodCombo->GetItems()->GetSelected() == pmTelnet) ||
-                                   (ProxyMethodCombo->GetItems()->GetSelected() == pmCmd)) &&
-                                  AnsiContainsText(ProxyCommand, L"%pass"))));
+    ((ProxyMethod == pmSocks5) ||
+     (ProxyMethod == pmHTTP) ||
+     (((ProxyMethod == pmTelnet) ||
+       (ProxyMethod == pmCmd)) &&
+      AnsiContainsText(ProxyCommand, L"%pass"))));
   bool ProxySettings = Proxy && SshProtocol;
-  ProxyTelnetCommandEdit->SetEnabled(ProxySettings && (ProxyMethodCombo->GetItems()->GetSelected() == pmTelnet));
-  ProxyLocalCommandEdit->SetVisible((GetTab() == ProxyMethodCombo->GetGroup()) && (ProxyMethodCombo->GetItems()->GetSelected() == pmCmd));
+  ProxyTelnetCommandEdit->SetEnabled(ProxySettings && (ProxyMethod == pmTelnet));
+  ProxyLocalCommandEdit->SetVisible((GetTab() == ProxyMethodCombo->GetGroup()) && (ProxyMethod == pmCmd));
   ProxyLocalCommandLabel->SetVisible(ProxyLocalCommandEdit->GetVisible());
-  ProxyTelnetCommandEdit->SetVisible((GetTab() == ProxyMethodCombo->GetGroup()) && (ProxyMethodCombo->GetItems()->GetSelected() != pmCmd));
+  ProxyTelnetCommandEdit->SetVisible((GetTab() == ProxyMethodCombo->GetGroup()) && (ProxyMethod != pmCmd));
   ProxyTelnetCommandLabel->SetVisible(ProxyTelnetCommandEdit->GetVisible());
   ProxyLocalhostCheck->SetEnabled(ProxySettings);
   ProxyDNSOffButton->SetEnabled(ProxySettings);
@@ -3859,12 +3861,8 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
       (CodePageEdit->GetText() == CodePageEdit->GetItems()->GetStrings(0)) ?
       UnicodeString() : CodePageEdit->GetText());
 
-    TFSProtocol FSProtocol = GetFSProtocol();
-    bool SshProtocol =
-      (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP) || (FSProtocol == fsSCPonly);
-
     // Proxy tab
-    TFarComboBox * ProxyMethodCombo = (SshProtocol ? SshProxyMethodCombo : FtpProxyMethodCombo);
+    TFarComboBox * ProxyMethodCombo = GetProxyMethodCombo();
     TProxyMethod ProxyMethod = IndexToProxyMethod(ProxyMethodCombo->GetItems()->GetSelected(), ProxyMethodCombo->GetItems());
     SessionData->SetProxyMethod(ProxyMethod);
     SessionData->SetProxyHost(ProxyHostEdit->GetText());
@@ -4047,7 +4045,7 @@ int __fastcall TSessionDialog::FSProtocolToIndex(TFSProtocol FSProtocol,
   }
 }
 //---------------------------------------------------------------------------
-int TSessionDialog::ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Items)
+int __fastcall TSessionDialog::ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Items)
 {
   for (int Index = 0; Index < Items->GetCount(); Index++)
   {
@@ -4058,7 +4056,7 @@ int TSessionDialog::ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Item
   }
   return -1;
 }
-TProxyMethod TSessionDialog::IndexToProxyMethod(int Index, TFarList * Items)
+TProxyMethod __fastcall TSessionDialog::IndexToProxyMethod(int Index, TFarList * Items)
 {
   TProxyMethod Result = pmNone;
   if (Index >= 0 && Index < Items->GetCount())
@@ -4067,6 +4065,14 @@ TProxyMethod TSessionDialog::IndexToProxyMethod(int Index, TFarList * Items)
     Result = static_cast<TProxyMethod>(reinterpret_cast<size_t>(Obj));
   }
   return Result;
+}
+TFarComboBox * __fastcall TSessionDialog::GetProxyMethodCombo()
+{
+  TFSProtocol FSProtocol = GetFSProtocol();
+  bool SshProtocol =
+    (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP) || (FSProtocol == fsSCPonly);
+
+  return SshProtocol ? SshProxyMethodCombo : FtpProxyMethodCombo;
 }
 //---------------------------------------------------------------------------
 TFSProtocol __fastcall TSessionDialog::GetFSProtocol()
