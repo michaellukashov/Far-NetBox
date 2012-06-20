@@ -2084,6 +2084,21 @@ void __fastcall TSessionData::ParseIEProxyConfig() const
 {
   assert(FIEProxyConfig);
   TFSProtocol FSProtocol = GetFSProtocol();
+  UnicodeString HostName = GetHostName();
+  DEBUG_PRINTF(L"FIEProxyConfig->Proxy = %s", FIEProxyConfig->Proxy.c_str());
+  TStringList ProxyServerList;
+  ProxyServerList.SetDelimiter(L';');
+  ProxyServerList.SetDelimitedText(FIEProxyConfig->Proxy);
+  for (int Index = 0; Index < ProxyServerList.GetCount(); Index++)
+  {
+    UnicodeString ProxyServer = ProxyServerList.GetStrings(Index);
+    DEBUG_PRINTF(L"proxy = %s", ProxyServer.c_str());
+    TStringList ProxyServerForScheme;
+    ProxyServerForScheme.SetDelimiter(L'=');
+    ProxyServerList.SetDelimitedText(ProxyServer);
+    UnicodeString UrlScheme = ProxyServerList.GetStrings(0);
+    DEBUG_PRINTF(L"UrlScheme = %s", UrlScheme.c_str());
+  }
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionData::SetProxyTelnetCommand(UnicodeString value)
