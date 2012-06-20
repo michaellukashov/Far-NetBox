@@ -48,10 +48,16 @@ extern const UnicodeString AnonymousPassword;
 //---------------------------------------------------------------------------
 struct TIEProxyConfig
 {
+  TIEProxyConfig() :
+    AutoDetect(false),
+    ProxyPort(0)
+  {}
   bool AutoDetect; // not used
   UnicodeString AutoConfigUrl; // not used
   UnicodeString Proxy; //< string in format "http=host:80;https=host:443;ftp=ftpproxy:20;socks=socksproxy:1080"
   UnicodeString ProxyBypass; //< string in format "*.local, foo.com, google.com"
+  UnicodeString ProxyHost;
+  int ProxyPort;
 };
 //---------------------------------------------------------------------------
 class TStoredSessionList;

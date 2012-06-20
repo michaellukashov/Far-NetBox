@@ -516,8 +516,11 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
         break;
     }
   }
-  SetProxyHost(Storage->ReadString(L"ProxyHost", GetProxyHost()));
-  SetProxyPort(Storage->ReadInteger(L"ProxyPort", GetProxyPort()));
+  if (GetProxyMethod() != pmSystem)
+  {
+    SetProxyHost(Storage->ReadString(L"ProxyHost", GetProxyHost()));
+    SetProxyPort(Storage->ReadInteger(L"ProxyPort", GetProxyPort()));
+  }
   SetProxyUsername(Storage->ReadString(L"ProxyUsername", GetProxyUsername()));
   if (Storage->ValueExists(L"ProxyPassword"))
   {
@@ -814,8 +817,11 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
       Storage->DeleteValue(L"ProxyType");
       Storage->DeleteValue(L"ProxySOCKSVersion");
     }
-    WRITE_DATA_EX(String, L"ProxyHost", GetProxyHost(), );
-    WRITE_DATA_EX(Integer, L"ProxyPort", GetProxyPort(), );
+    if (GetProxyMethod() != pmSystem)
+    {
+      WRITE_DATA_EX(String, L"ProxyHost", GetProxyHost(), );
+      WRITE_DATA_EX(Integer, L"ProxyPort", GetProxyPort(), );
+    }
     WRITE_DATA_EX(String, L"ProxyUsername", GetProxyUsername(), );
     if (GetProxyMethod() == pmCmd)
     {
@@ -2024,11 +2030,15 @@ void __fastcall TSessionData::SetProxyPassword(UnicodeString avalue)
 UnicodeString __fastcall TSessionData::GetProxyHost() const
 {
   PrepareProxyData();
+  if ((GetProxyMethod() == pmSystem) && (NULL != FIEProxyConfig))
+    return FIEProxyConfig->ProxyHost;
   return FProxyHost;
 }
 int __fastcall TSessionData::GetProxyPort() const
 {
   PrepareProxyData();
+  if ((GetProxyMethod() == pmSystem) && (NULL != FIEProxyConfig))
+    return FIEProxyConfig->ProxyPort;
   return FProxyPort;
 }
 UnicodeString __fastcall TSessionData::GetProxyUsername() const
@@ -2157,6 +2167,8 @@ void __fastcall TSessionData::ParseIEProxyConfig() const
     ProxyPort = ProxyPortTmp;
   }
   DEBUG_PRINTF(L"ProxyUrl = %s, ProxyPort = %d", ProxyUrl.c_str(), ProxyPort);
+  FIEProxyConfig->ProxyHost = ProxyUrl;
+  FIEProxyConfig->ProxyPort = ProxyPort;
 }
 void __fastcall TSessionData::FromURI(const UnicodeString & ProxyURI,
   UnicodeString & ProxyUrl, int & ProxyPort) const

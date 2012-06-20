@@ -3527,8 +3527,11 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
   {
     FtpProxyMethodCombo->GetItems()->SetSelected(Index);
   }
-  ProxyHostEdit->SetText(SessionData->GetProxyHost());
-  ProxyPortEdit->SetAsInteger(SessionData->GetProxyPort());
+  if (SessionData->GetProxyMethod() != pmSystem)
+  {
+    ProxyHostEdit->SetText(SessionData->GetProxyHost());
+    ProxyPortEdit->SetAsInteger(SessionData->GetProxyPort());
+  }
   ProxyUsernameEdit->SetText(SessionData->GetProxyUsername());
   ProxyPasswordEdit->SetText(SessionData->GetProxyPassword());
   ProxyTelnetCommandEdit->SetText(SessionData->GetProxyTelnetCommand());
