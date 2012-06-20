@@ -217,7 +217,7 @@ void __fastcall TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, b
   cfg->gssapifwd = Data->GetGSSAPIFwdTGT();
   cfg->change_username = Data->GetChangeUsername();
 
-  cfg->proxy_type = Data->GetProxyMethod();
+  cfg->proxy_type = Data->GetActualProxyMethod();
   ASCOPY(cfg->proxy_host, Data->GetProxyHost());
   cfg->proxy_port = Data->GetProxyPort();
   ASCOPY(cfg->proxy_username, Data->GetProxyUsername());
