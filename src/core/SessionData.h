@@ -582,6 +582,8 @@ private:
 private:
   void  __fastcall PrepareProxyData() const;
   void __fastcall ParseIEProxyConfig() const;
+  void __fastcall FromURI(const UnicodeString & ProxyURI,
+    UnicodeString & ProxyUrl, int & ProxyPort) const;
   void __fastcall AdjustHostName(UnicodeString & hostName, const UnicodeString prefix);
   void __fastcall RemoveProtocolPrefix(UnicodeString & hostName);
 };

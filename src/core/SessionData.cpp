@@ -2083,21 +2083,91 @@ void  __fastcall TSessionData::PrepareProxyData() const
 void __fastcall TSessionData::ParseIEProxyConfig() const
 {
   assert(FIEProxyConfig);
-  TFSProtocol FSProtocol = GetFSProtocol();
-  UnicodeString HostName = GetHostName();
   DEBUG_PRINTF(L"FIEProxyConfig->Proxy = %s", FIEProxyConfig->Proxy.c_str());
   TStringList ProxyServerList;
   ProxyServerList.SetDelimiter(L';');
   ProxyServerList.SetDelimitedText(FIEProxyConfig->Proxy);
+  DEBUG_PRINTF(L"ProxyServerList.GetCount = %d", ProxyServerList.GetCount());
+  UnicodeString ProxyUrl;
+  int ProxyPort = 0;
+  UnicodeString ProxyUrlTmp;
+  int ProxyPortTmp = 0;
   for (int Index = 0; Index < ProxyServerList.GetCount(); Index++)
   {
-    UnicodeString ProxyServer = ProxyServerList.GetStrings(Index);
-    DEBUG_PRINTF(L"proxy = %s", ProxyServer.c_str());
+    UnicodeString ProxyServer = ProxyServerList.GetStrings(Index).Trim();
+    DEBUG_PRINTF(L"ProxyServer = %s", ProxyServer.c_str());
     TStringList ProxyServerForScheme;
     ProxyServerForScheme.SetDelimiter(L'=');
-    ProxyServerList.SetDelimitedText(ProxyServer);
-    UnicodeString UrlScheme = ProxyServerList.GetStrings(0);
-    DEBUG_PRINTF(L"UrlScheme = %s", UrlScheme.c_str());
+    ProxyServerForScheme.SetDelimitedText(ProxyServer);
+    UnicodeString ProxyScheme;
+    UnicodeString ProxyURI;
+    if (ProxyServerForScheme.GetCount() == 2)
+    {
+      ProxyScheme = ProxyServerList.GetStrings(0).Trim();
+      ProxyURI = ProxyServerList.GetStrings(1).Trim();
+    }
+    else
+    {
+      if (ProxyServerForScheme.GetCount() == 1)
+      {
+        ProxyScheme = L"http";
+        ProxyURI = ProxyServerList.GetStrings(0).Trim();
+      }
+    }
+    if (ProxyUrlTmp.IsEmpty() && (ProxyPortTmp == 0))
+    {
+      FromURI(ProxyURI, ProxyUrlTmp, ProxyPortTmp);
+    }
+    switch (GetFSProtocol())
+    {
+      // case fsSCPonly:
+        // break;
+      case fsSFTP:
+      case fsSFTPonly:
+      case fsFTP:
+        if (ProxyScheme == L"ftp")
+        {
+          FromURI(ProxyURI, ProxyUrl, ProxyPort);
+        }
+        break;
+      // case fsFTPS:
+        // break;
+      case fsHTTP:
+        if (ProxyScheme == L"http")
+        {
+          FromURI(ProxyURI, ProxyUrl, ProxyPort);
+        }
+        break;
+      case fsHTTPS:
+        if (ProxyScheme == L"https")
+        {
+          FromURI(ProxyURI, ProxyUrl, ProxyPort);
+        }
+        break;
+      default:
+        break;
+    }
+    DEBUG_PRINTF(L"ProxyUrl = %s, ProxyPort = %d", ProxyUrl.c_str(), ProxyPort);
+    DEBUG_PRINTF(L"ProxyUrlTmp = %s, ProxyPortTmp = %d", ProxyUrlTmp.c_str(), ProxyPortTmp);
+    DEBUG_PRINTF(L"ProxyServerForScheme.GetCount = %d, ProxyScheme = %s, ProxyURI = %s", ProxyServerForScheme.GetCount(), ProxyScheme.c_str(), ProxyURI.c_str());
+  }
+  if (ProxyUrl.IsEmpty() && (ProxyPort == 0))
+  {
+    ProxyUrl = ProxyUrlTmp;
+    ProxyPort = ProxyPortTmp;
+  }
+  DEBUG_PRINTF(L"ProxyUrl = %s, ProxyPort = %d", ProxyUrl.c_str(), ProxyPort);
+}
+void __fastcall TSessionData::FromURI(const UnicodeString & ProxyURI,
+  UnicodeString & ProxyUrl, int & ProxyPort) const
+{
+  ProxyUrl.Clear();
+  ProxyPort = 0;
+  int Pos = ProxyURI.RPos(L':');
+  if (Pos > 0)
+  {
+    ProxyUrl = ProxyURI.SubString(1, Pos - 1).Trim();
+    ProxyPort = ProxyURI.SubString(Pos + 1, -1).Trim().ToInt();
   }
 }
 //---------------------------------------------------------------------
