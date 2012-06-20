@@ -1,4 +1,4 @@
-NetBox 2.1.4 ??.06.2012
+NetBox 2.1.4 20.06.2012
 ---------------------
   * Add new type of proxy: "System sesttings". Read actual proxy configuration from IE system settings.
   * Far3: bugfix: plugin now works in WinPE environment (tested Hiren Boot CD, MiniPE, WinPE uVS)
