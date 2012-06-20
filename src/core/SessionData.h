@@ -470,11 +470,11 @@ public:
   __property UnicodeString Source = { read = GetSource };
 #else
   UnicodeString GetHostName() const { return FHostName; }
-  size_t GetPortNumber() const { return FPortNumber; }
+  int GetPortNumber() const { return FPortNumber; }
   TLoginType __fastcall GetLoginType() const;
   void __fastcall SetLoginType(TLoginType value);
   UnicodeString GetUserName() const { return FUserName; }
-  size_t GetPingInterval() const { return FPingInterval; }
+  int GetPingInterval() const { return FPingInterval; }
   bool GetTryAgent() const { return FTryAgent; }
   bool GetAgentFwd() const { return FAgentFwd; }
   const UnicodeString GetListingCommand() const { return FListingCommand; }
