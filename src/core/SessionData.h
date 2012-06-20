@@ -566,7 +566,7 @@ public:
   void __fastcall SetFtpEncryption(TFtpEncryptionSwitch value);
   bool __fastcall GetFtpForcePasvIp() const { return FFtpForcePasvIp; }
   UnicodeString __fastcall GetFtpAccount() const { return FFtpAccount; }
-  size_t __fastcall GetFtpPingInterval() const { return FFtpPingInterval; }
+  int __fastcall GetFtpPingInterval() const { return FFtpPingInterval; }
   TPingType __fastcall GetFtpPingType() const { return FFtpPingType; }
   TFtps __fastcall GetFtps() const { return FFtps; }
   TAutoSwitch __fastcall GetNotUtf() const { return FNotUtf; }
