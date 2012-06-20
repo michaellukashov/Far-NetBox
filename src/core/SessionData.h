@@ -46,6 +46,14 @@ extern const int DefaultSendBuf;
 extern const UnicodeString AnonymousUserName;
 extern const UnicodeString AnonymousPassword;
 //---------------------------------------------------------------------------
+struct TIEProxyConfig
+{
+  bool AutoDetect;
+  UnicodeString AutoConfigUrl;
+  UnicodeString Proxy; //< string in format host:port
+  UnicodeString ProxyBypass; //< string in format *.local
+};
+//---------------------------------------------------------------------------
 class TStoredSessionList;
 //---------------------------------------------------------------------------
 class TSessionData : public TNamedObject
@@ -314,6 +322,7 @@ public:
 
 public:
   explicit TSessionData(UnicodeString aName);
+  virtual ~TSessionData();
   void __fastcall Default();
   void __fastcall NonPersistant();
   void __fastcall Load(THierarchicalStorage * Storage);
@@ -568,6 +577,8 @@ public:
   int __fastcall GetNumberOfRetries() const { return FNumberOfRetries; }
   void __fastcall SetNumberOfRetries(int value) { FNumberOfRetries = value; }
 #endif
+private:
+  mutable TIEProxyConfig * FIEProxyConfig;
 private:
   void  __fastcall PrepareProxyData() const;
   void __fastcall AdjustHostName(UnicodeString & hostName, const UnicodeString prefix);

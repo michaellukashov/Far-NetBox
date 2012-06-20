@@ -5,6 +5,8 @@
 #endif
 #include "stdafx.h"
 
+#include <Winhttp.h>
+
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
 
@@ -52,10 +54,18 @@ TDateTime __fastcall SecToDateTime(int Sec)
 }
 //--- TSessionData ----------------------------------------------------
 /* __fastcall */ TSessionData::TSessionData(UnicodeString aName):
-  TNamedObject(aName)
+  TNamedObject(aName),
+  FIEProxyConfig(NULL)
 {
   Default();
   FModified = true;
+}
+TSessionData::~TSessionData()
+{
+  if (NULL != FIEProxyConfig)
+  {
+    delete FIEProxyConfig;
+  }
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionData::Default()
@@ -2030,6 +2040,32 @@ UnicodeString __fastcall TSessionData::GetProxyPassword() const
 }
 void  __fastcall TSessionData::PrepareProxyData() const
 {
+  if ((GetProxyMethod() == pmSystem) && (NULL == FIEProxyConfig))
+  {
+    FIEProxyConfig = new TIEProxyConfig;
+    WINHTTP_CURRENT_USER_IE_PROXY_CONFIG ProxyConfig = {0};
+    if (!WinHttpGetIEProxyConfigForCurrentUser(&ProxyConfig))
+    {
+      DWORD Err = GetLastError();
+      DEBUG_PRINTF(L"Error reading system proxy configuration, code: %x", Err);
+    }
+    else
+    {
+      FIEProxyConfig->AutoDetect = !!ProxyConfig.fAutoDetect;
+      if (NULL != ProxyConfig.lpszAutoConfigUrl)
+      {
+        FIEProxyConfig->AutoConfigUrl = ProxyConfig.lpszAutoConfigUrl;
+      }
+      if (NULL != ProxyConfig.lpszProxy)
+      {
+        FIEProxyConfig->Proxy = ProxyConfig.lpszProxy;
+      }
+      if (NULL != ProxyConfig.lpszProxyBypass)
+      {
+        FIEProxyConfig->ProxyBypass = ProxyConfig.lpszProxyBypass;
+      }
+    }
+  }
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionData::SetProxyTelnetCommand(UnicodeString value)
