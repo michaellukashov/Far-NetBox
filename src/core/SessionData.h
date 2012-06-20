@@ -529,7 +529,10 @@ public:
   int __fastcall GetSendBuf() const { return FSendBuf; }
   bool __fastcall GetSshSimple() const { return FSshSimple; }
   TProxyMethod __fastcall GetProxyMethod() const { return FProxyMethod; }
-  TProxyMethod __fastcall GetSystemProxyMethod() const;
+  TProxyMethod __fastcall GetActualProxyMethod() const
+  {
+    return GetProxyMethod() == pmSystem ? GetSystemProxyMethod() : GetProxyMethod();
+  }
   UnicodeString __fastcall GetProxyHost() const;
   int __fastcall GetProxyPort() const;
   UnicodeString __fastcall GetProxyUsername() const;
@@ -589,6 +592,7 @@ public:
 private:
   mutable TIEProxyConfig * FIEProxyConfig;
 private:
+  TProxyMethod __fastcall GetSystemProxyMethod() const;
   void  __fastcall PrepareProxyData() const;
   void __fastcall ParseIEProxyConfig() const;
   void __fastcall FromURI(const UnicodeString & ProxyURI,

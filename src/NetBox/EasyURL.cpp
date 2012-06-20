@@ -148,7 +148,7 @@ CURLcode CEasyURL::Prepare(const char * path,
     CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_USERNAME, m_UserName.c_str()));
     CHECK_CURL_CALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PASSWORD, m_Password.c_str()));
   }
-  TProxyMethod ProxyMethod = Data->GetProxyMethod();
+  TProxyMethod ProxyMethod = Data->GetActualProxyMethod();
   if (ProxyMethod != pmNone)
   {
     int proxy_type = CURLPROXY_HTTP;
