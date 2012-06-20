@@ -1046,7 +1046,10 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
     }
     ADF(L"Ping type: %s, Ping interval: %d sec; Timeout: %d sec",
       UnicodeString(PingTypes[PingType]).c_str(), PingInterval, Data->GetTimeout());
-    ADF(L"Proxy: %s", ProxyMethodList[Data->GetProxyMethod()]);
+    ADF(L"Proxy: %s%s", ProxyMethodList[Data->GetProxyMethod()],
+      Data->GetProxyMethod() == pmSystem ?
+        FORMAT(L" (%s)", ProxyMethodList[Data->GetActualProxyMethod()]).c_str() :
+        L"")
     if (Data->GetProxyMethod() != ::pmNone)
     {
       ADF(L"HostName: %s (Port: %d); Username: %s; Passwd: %s",
