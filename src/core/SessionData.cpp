@@ -2038,32 +2038,43 @@ UnicodeString __fastcall TSessionData::GetProxyPassword() const
 {
   return DecryptPassword(FProxyPassword, GetProxyUsername() + GetProxyHost());
 }
+static void FreeIEProxyConfig(WINHTTP_CURRENT_USER_IE_PROXY_CONFIG * IEProxyConfig)
+{
+  if (!IEProxyConfig) return;
+  if (IEProxyConfig->lpszAutoConfigUrl)
+    GlobalFree(IEProxyConfig->lpszAutoConfigUrl);
+  if (IEProxyConfig->lpszProxy)
+    GlobalFree(IEProxyConfig->lpszProxy);
+  if (IEProxyConfig->lpszProxyBypass)
+    GlobalFree(IEProxyConfig->lpszProxyBypass);
+}
 void  __fastcall TSessionData::PrepareProxyData() const
 {
   if ((GetProxyMethod() == pmSystem) && (NULL == FIEProxyConfig))
   {
     FIEProxyConfig = new TIEProxyConfig;
-    WINHTTP_CURRENT_USER_IE_PROXY_CONFIG ProxyConfig = {0};
-    if (!WinHttpGetIEProxyConfigForCurrentUser(&ProxyConfig))
+    WINHTTP_CURRENT_USER_IE_PROXY_CONFIG IEProxyConfig = {0};
+    if (!WinHttpGetIEProxyConfigForCurrentUser(&IEProxyConfig))
     {
       DWORD Err = GetLastError();
       DEBUG_PRINTF(L"Error reading system proxy configuration, code: %x", Err);
     }
     else
     {
-      FIEProxyConfig->AutoDetect = !!ProxyConfig.fAutoDetect;
-      if (NULL != ProxyConfig.lpszAutoConfigUrl)
+      FIEProxyConfig->AutoDetect = !!IEProxyConfig.fAutoDetect;
+      if (NULL != IEProxyConfig.lpszAutoConfigUrl)
       {
-        FIEProxyConfig->AutoConfigUrl = ProxyConfig.lpszAutoConfigUrl;
+        FIEProxyConfig->AutoConfigUrl = IEProxyConfig.lpszAutoConfigUrl;
       }
-      if (NULL != ProxyConfig.lpszProxy)
+      if (NULL != IEProxyConfig.lpszProxy)
       {
-        FIEProxyConfig->Proxy = ProxyConfig.lpszProxy;
+        FIEProxyConfig->Proxy = IEProxyConfig.lpszProxy;
       }
-      if (NULL != ProxyConfig.lpszProxyBypass)
+      if (NULL != IEProxyConfig.lpszProxyBypass)
       {
-        FIEProxyConfig->ProxyBypass = ProxyConfig.lpszProxyBypass;
+        FIEProxyConfig->ProxyBypass = IEProxyConfig.lpszProxyBypass;
       }
+      FreeIEProxyConfig(&IEProxyConfig);
     }
   }
 }
