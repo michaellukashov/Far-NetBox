@@ -30,7 +30,7 @@ const wchar_t CipherNames[CIPHER_COUNT][10] = {L"WARN", L"3des", L"blowfish", L"
 const wchar_t KexNames[KEX_COUNT][20] = {L"WARN", L"dh-group1-sha1", L"dh-group14-sha1", L"dh-gex-sha1", L"rsa" };
 const wchar_t ProtocolNames[PROTOCOL_COUNT][10] = { L"raw", L"telnet", L"rlogin", L"ssh" };
 const wchar_t SshProtList[][10] = {L"1 only", L"1", L"2", L"2 only"};
-const wchar_t ProxyMethodList[][10] = {L"none", L"SOCKS4", L"SOCKS5", L"HTTP", L"Telnet", L"Cmd" };
+const wchar_t ProxyMethodList[][10] = {L"none", L"SOCKS4", L"SOCKS5", L"HTTP", L"Telnet", L"Cmd", L"System" };
 const TCipher DefaultCipherList[CIPHER_COUNT] =
   { cipBlowfish, cipAES, cip3DES, cipWarn, cipArcfour, cipDES };
 const TKex DefaultKexList[KEX_COUNT] =
@@ -2027,6 +2027,13 @@ void __fastcall TSessionData::SetProxyPassword(UnicodeString avalue)
   SET_SESSION_PROPERTY(ProxyPassword);
 }
 //---------------------------------------------------------------------
+TProxyMethod __fastcall TSessionData::GetSystemProxyMethod() const
+{
+  PrepareProxyData();
+  if ((GetProxyMethod() == pmSystem) && (NULL != FIEProxyConfig))
+    return FIEProxyConfig->ProxyMethod;
+  return pmNone;
+}
 UnicodeString __fastcall TSessionData::GetProxyHost() const
 {
   PrepareProxyData();
@@ -2100,8 +2107,10 @@ void __fastcall TSessionData::ParseIEProxyConfig() const
   DEBUG_PRINTF(L"ProxyServerList.GetCount = %d", ProxyServerList.GetCount());
   UnicodeString ProxyUrl;
   int ProxyPort = 0;
+  TProxyMethod ProxyMethod = pmNone;
   UnicodeString ProxyUrlTmp;
   int ProxyPortTmp = 0;
+  TProxyMethod ProxyMethodTmp = pmNone;
   for (int Index = 0; Index < ProxyServerList.GetCount(); Index++)
   {
     UnicodeString ProxyServer = ProxyServerList.GetStrings(Index).Trim();
@@ -2122,36 +2131,31 @@ void __fastcall TSessionData::ParseIEProxyConfig() const
       {
         ProxyScheme = L"http";
         ProxyURI = ProxyServerList.GetStrings(0).Trim();
+        ProxyMethodTmp = pmHTTP;
       }
     }
     if (ProxyUrlTmp.IsEmpty() && (ProxyPortTmp == 0))
     {
-      FromURI(ProxyURI, ProxyUrlTmp, ProxyPortTmp);
+      FromURI(ProxyURI, ProxyUrlTmp, ProxyPortTmp, ProxyMethodTmp);
     }
     switch (GetFSProtocol())
     {
       // case fsSCPonly:
-        // break;
-      case fsSFTP:
-      case fsSFTPonly:
-      case fsFTP:
-        if (ProxyScheme == L"ftp")
-        {
-          FromURI(ProxyURI, ProxyUrl, ProxyPort);
-        }
-        break;
+      // case fsSFTP:
+      // case fsSFTPonly:
+      // case fsFTP:
       // case fsFTPS:
         // break;
       case fsHTTP:
         if (ProxyScheme == L"http")
         {
-          FromURI(ProxyURI, ProxyUrl, ProxyPort);
+          FromURI(ProxyURI, ProxyUrl, ProxyPort, ProxyMethod);
         }
         break;
       case fsHTTPS:
         if (ProxyScheme == L"https")
         {
-          FromURI(ProxyURI, ProxyUrl, ProxyPort);
+          FromURI(ProxyURI, ProxyUrl, ProxyPort, ProxyMethod);
         }
         break;
       default:
@@ -2161,26 +2165,59 @@ void __fastcall TSessionData::ParseIEProxyConfig() const
     DEBUG_PRINTF(L"ProxyUrlTmp = %s, ProxyPortTmp = %d", ProxyUrlTmp.c_str(), ProxyPortTmp);
     DEBUG_PRINTF(L"ProxyServerForScheme.GetCount = %d, ProxyScheme = %s, ProxyURI = %s", ProxyServerForScheme.GetCount(), ProxyScheme.c_str(), ProxyURI.c_str());
   }
-  if (ProxyUrl.IsEmpty() && (ProxyPort == 0))
+  if (ProxyUrl.IsEmpty() && (ProxyPort == 0) && (ProxyMethod == pmNone))
   {
     ProxyUrl = ProxyUrlTmp;
     ProxyPort = ProxyPortTmp;
+    ProxyMethod = ProxyMethodTmp;
   }
-  DEBUG_PRINTF(L"ProxyUrl = %s, ProxyPort = %d", ProxyUrl.c_str(), ProxyPort);
+  DEBUG_PRINTF(L"ProxyUrl = %s, ProxyPort = %d, ProxyMethod = %d", ProxyUrl.c_str(), ProxyPort, ProxyMethod);
   FIEProxyConfig->ProxyHost = ProxyUrl;
   FIEProxyConfig->ProxyPort = ProxyPort;
+  FIEProxyConfig->ProxyMethod = ProxyMethod;
 }
 void __fastcall TSessionData::FromURI(const UnicodeString & ProxyURI,
-  UnicodeString & ProxyUrl, int & ProxyPort) const
+  UnicodeString & ProxyUrl, int & ProxyPort, TProxyMethod & ProxyMethod) const
 {
   ProxyUrl.Clear();
   ProxyPort = 0;
+  ProxyMethod = pmNone;
   int Pos = ProxyURI.RPos(L':');
   if (Pos > 0)
   {
     ProxyUrl = ProxyURI.SubString(1, Pos - 1).Trim();
     ProxyPort = ProxyURI.SubString(Pos + 1, -1).Trim().ToInt();
   }
+  // remove scheme from Url e.g. "socks5://" "https://"
+  Pos = ProxyUrl.Pos(L"://");
+  if (Pos > 0)
+  {
+    UnicodeString ProxyScheme = ProxyUrl.SubString(1, Pos - 1);
+    DEBUG_PRINTF(L"ProxyScheme = %s", ProxyScheme.c_str());
+    ProxyUrl = ProxyUrl.SubString(Pos + 3, -1);
+    if (ProxyScheme == L"socks4")
+    {
+      ProxyMethod = pmSocks4;
+    }
+    else if (ProxyScheme == L"socks5")
+    {
+      ProxyMethod = pmSocks5;
+    }
+    else if (ProxyScheme == L"socks")
+    {
+      ProxyMethod = pmSocks5;
+    }
+    else if (ProxyScheme == L"http")
+    {
+      ProxyMethod = pmHTTP;
+    }
+    else if (ProxyScheme == L"https")
+    {
+      ProxyMethod = pmHTTP; // TODO: pmHTTPS
+    }
+  }
+  if (ProxyMethod == pmNone)
+    ProxyMethod = pmHTTP; // default value
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionData::SetProxyTelnetCommand(UnicodeString value)

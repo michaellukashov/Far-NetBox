@@ -50,7 +50,8 @@ struct TIEProxyConfig
 {
   TIEProxyConfig() :
     AutoDetect(false),
-    ProxyPort(0)
+    ProxyPort(0),
+    ProxyMethod(pmNone)
   {}
   bool AutoDetect; // not used
   UnicodeString AutoConfigUrl; // not used
@@ -58,6 +59,7 @@ struct TIEProxyConfig
   UnicodeString ProxyBypass; //< string in format "*.local, foo.com, google.com"
   UnicodeString ProxyHost;
   int ProxyPort;
+  TProxyMethod ProxyMethod;
 };
 //---------------------------------------------------------------------------
 class TStoredSessionList;
@@ -527,6 +529,7 @@ public:
   int __fastcall GetSendBuf() const { return FSendBuf; }
   bool __fastcall GetSshSimple() const { return FSshSimple; }
   TProxyMethod __fastcall GetProxyMethod() const { return FProxyMethod; }
+  TProxyMethod __fastcall GetSystemProxyMethod() const;
   UnicodeString __fastcall GetProxyHost() const;
   int __fastcall GetProxyPort() const;
   UnicodeString __fastcall GetProxyUsername() const;
@@ -589,7 +592,7 @@ private:
   void  __fastcall PrepareProxyData() const;
   void __fastcall ParseIEProxyConfig() const;
   void __fastcall FromURI(const UnicodeString & ProxyURI,
-    UnicodeString & ProxyUrl, int & ProxyPort) const;
+    UnicodeString & ProxyUrl, int & ProxyPort, TProxyMethod & ProxyMethod) const;
   void __fastcall AdjustHostName(UnicodeString & hostName, const UnicodeString prefix);
   void __fastcall RemoveProtocolPrefix(UnicodeString & hostName);
 };
