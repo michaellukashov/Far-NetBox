@@ -9,6 +9,7 @@
 
 #include "nbafx.h"
 #include <time.h>
+#include <Winhttp.h>
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
@@ -34,6 +35,16 @@ using namespace boost::unit_test;
 // stub
 TCustomFarPlugin *FarPlugin = NULL;
 //------------------------------------------------------------------------------
+
+void FreeIEConfig(WINHTTP_CURRENT_USER_IE_PROXY_CONFIG* ie_config)
+{
+  if (ie_config->lpszAutoConfigUrl)
+    GlobalFree(ie_config->lpszAutoConfigUrl);
+  if (ie_config->lpszProxy)
+    GlobalFree(ie_config->lpszProxy);
+  if (ie_config->lpszProxyBypass)
+    GlobalFree(ie_config->lpszProxyBypass);
+}
 
 /*******************************************************************************
             test suite
@@ -605,6 +616,49 @@ BOOST_FIXTURE_TEST_CASE(test26, base_fixture_t)
   int result = sig(10, "abc");
   BOOST_TEST_MESSAGE("result = " << result);
   BOOST_CHECK(result == -1);
+}
+
+//------------------------------------------------------------------------------
+
+BOOST_FIXTURE_TEST_CASE(test27, base_fixture_t)
+{
+    WINHTTP_CURRENT_USER_IE_PROXY_CONFIG ProxyConfig = {0};
+    if (!WinHttpGetIEProxyConfigForCurrentUser(&ProxyConfig))
+    {
+        DWORD Err = GetLastError();
+        switch (Err)
+        {
+        case ERROR_FILE_NOT_FOUND:
+            BOOST_TEST_MESSAGE("The error is ERROR_FILE_NOT_FOUND");
+            break;
+        case ERROR_WINHTTP_INTERNAL_ERROR:
+            BOOST_TEST_MESSAGE("ERROR_WINHTTP_INTERNAL_ERROR");
+            break;
+        case ERROR_NOT_ENOUGH_MEMORY:
+            BOOST_TEST_MESSAGE("ERROR_NOT_ENOUGH_MEMORY");
+            break;
+        default:
+            BOOST_TEST_MESSAGE("Look up error in header file.");
+        }
+    }
+    else
+    {
+        //no error so check the proxy settings and free any strings
+        BOOST_TEST_MESSAGE("AutoConfigDetect is: " << ProxyConfig.fAutoDetect);
+        if (NULL != ProxyConfig.lpszAutoConfigUrl)
+        {
+            BOOST_TEST_MESSAGE("AutoConfigURL is: " << W2MB(ProxyConfig.lpszAutoConfigUrl));
+        }
+        if (NULL != ProxyConfig.lpszProxy)
+        {
+            BOOST_TEST_MESSAGE("AutoConfigProxy is: " << W2MB(ProxyConfig.lpszProxy));
+        }
+        if (NULL != ProxyConfig.lpszProxyBypass)
+        {
+            BOOST_TEST_MESSAGE("AutoConfigBypass is: " << W2MB(ProxyConfig.lpszProxyBypass));
+        }
+        FreeIEConfig(&ProxyConfig);
+    }
 }
 
 //------------------------------------------------------------------------------

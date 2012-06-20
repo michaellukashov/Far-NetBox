@@ -1616,7 +1616,7 @@ int TWebDAVFileSystem::GetOptionVal(int OptionID) const
   switch (OptionID)
   {
     case OPTION_PROXYTYPE:
-      switch (Data->GetProxyMethod())
+      switch (Data->GetActualProxyMethod())
       {
         case pmNone:
           Result = PROXY_NONE;

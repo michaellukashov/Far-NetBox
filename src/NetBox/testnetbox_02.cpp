@@ -15,8 +15,6 @@
 #define BOOST_TEST_MAIN
 // #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
-// #include <boost/type_traits/is_base_of.hpp>
-#include <boost/signals/signal1.hpp>
 #include <boost/bind.hpp>
 
 #include "winstuff.h"
@@ -128,7 +126,7 @@ public:
         OnChangeNotifyEventTriggered(false)
     {
     }
-    TNotifyEvent & GetOnChange() const { return FOnChange; }
+    TNotifyEvent & GetOnChange() { return FOnChange; }
     void SetOnChange(TNotifyEvent Event) { FOnChange = Event; }
     virtual void Changed()
     {
@@ -148,7 +146,7 @@ private:
     TNotifyEvent FOnChange;
 };
 
-class TClass2 // : public boost::signals::trackable
+class TClass2
 {
   typedef fastdelegate::FastDelegate2<void, TClass2 *, int> TClickEvent;
 

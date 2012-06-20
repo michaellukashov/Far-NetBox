@@ -2824,7 +2824,7 @@ TFarPanelItem * __fastcall TFarPanelInfo::GetFocusedItem()
 void __fastcall TFarPanelInfo::SetFocusedItem(TFarPanelItem * value)
 {
   TObjectList * Items = GetItems();
-  size_t Index = Items->IndexOf(static_cast<TObject *>(value));
+  int Index = Items->IndexOf(static_cast<TObject *>(value));
   assert(Index != NPOS);
   SetFocusedIndex(Index);
   // delete Items;
@@ -2832,7 +2832,7 @@ void __fastcall TFarPanelInfo::SetFocusedItem(TFarPanelItem * value)
 //---------------------------------------------------------------------------
 int __fastcall TFarPanelInfo::GetFocusedIndex()
 {
-  return static_cast<size_t>(FPanelInfo->CurrentItem);
+  return FPanelInfo->CurrentItem;
 }
 //---------------------------------------------------------------------------
 void __fastcall TFarPanelInfo::SetFocusedIndex(int value)

@@ -20,7 +20,7 @@ enum TProtocol { ptRaw, ptTelnet, ptRLogin, ptSSH };
 enum TFSProtocol { fsSCPonly = 0, fsSFTP = 1, fsSFTPonly = 2, fsFTP = 5, fsFTPS = 6, fsHTTP = 7, fsHTTPS = 8 };
 enum TLoginType { ltAnonymous = 0, ltNormal = 1 };
 #define FSPROTOCOL_COUNT (fsHTTPS+1)
-enum TProxyMethod { pmNone, pmSocks4, pmSocks5, pmHTTP, pmTelnet, pmCmd };
+enum TProxyMethod { pmNone, pmSocks4, pmSocks5, pmHTTP, pmTelnet, pmCmd, pmSystem };
 enum TSshProt { ssh1only, ssh1, ssh2, ssh2only };
 enum TKex { kexWarn, kexDHGroup1, kexDHGroup14, kexDHGEx, kexRSA };
 #define KEX_COUNT (kexRSA+1)
@@ -45,6 +45,22 @@ extern const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][15];
 extern const int DefaultSendBuf;
 extern const UnicodeString AnonymousUserName;
 extern const UnicodeString AnonymousPassword;
+//---------------------------------------------------------------------------
+struct TIEProxyConfig
+{
+  TIEProxyConfig() :
+    AutoDetect(false),
+    ProxyPort(0),
+    ProxyMethod(pmNone)
+  {}
+  bool AutoDetect; // not used
+  UnicodeString AutoConfigUrl; // not used
+  UnicodeString Proxy; //< string in format "http=host:80;https=host:443;ftp=ftpproxy:20;socks=socksproxy:1080"
+  UnicodeString ProxyBypass; //< string in format "*.local, foo.com, google.com"
+  UnicodeString ProxyHost;
+  int ProxyPort;
+  TProxyMethod ProxyMethod;
+};
 //---------------------------------------------------------------------------
 class TStoredSessionList;
 //---------------------------------------------------------------------------
@@ -314,6 +330,7 @@ public:
 
 public:
   explicit TSessionData(UnicodeString aName);
+  virtual ~TSessionData();
   void __fastcall Default();
   void __fastcall NonPersistant();
   void __fastcall Load(THierarchicalStorage * Storage);
@@ -461,11 +478,11 @@ public:
   __property UnicodeString Source = { read = GetSource };
 #else
   UnicodeString GetHostName() const { return FHostName; }
-  size_t GetPortNumber() const { return FPortNumber; }
+  int GetPortNumber() const { return FPortNumber; }
   TLoginType __fastcall GetLoginType() const;
   void __fastcall SetLoginType(TLoginType value);
   UnicodeString GetUserName() const { return FUserName; }
-  size_t GetPingInterval() const { return FPingInterval; }
+  int GetPingInterval() const { return FPingInterval; }
   bool GetTryAgent() const { return FTryAgent; }
   bool GetAgentFwd() const { return FAgentFwd; }
   const UnicodeString GetListingCommand() const { return FListingCommand; }
@@ -512,9 +529,13 @@ public:
   int __fastcall GetSendBuf() const { return FSendBuf; }
   bool __fastcall GetSshSimple() const { return FSshSimple; }
   TProxyMethod __fastcall GetProxyMethod() const { return FProxyMethod; }
-  UnicodeString __fastcall GetProxyHost() const { return FProxyHost; }
-  int __fastcall GetProxyPort() const { return FProxyPort; }
-  UnicodeString __fastcall GetProxyUsername() const { return FProxyUsername; }
+  TProxyMethod __fastcall GetActualProxyMethod() const
+  {
+    return GetProxyMethod() == pmSystem ? GetSystemProxyMethod() : GetProxyMethod();
+  }
+  UnicodeString __fastcall GetProxyHost() const;
+  int __fastcall GetProxyPort() const;
+  UnicodeString __fastcall GetProxyUsername() const;
   UnicodeString __fastcall GetProxyTelnetCommand() const { return FProxyTelnetCommand; }
   UnicodeString __fastcall GetProxyLocalCommand() const { return FProxyLocalCommand; }
   TAutoSwitch __fastcall GetProxyDNS() const { return FProxyDNS; }
@@ -557,7 +578,7 @@ public:
   void __fastcall SetFtpEncryption(TFtpEncryptionSwitch value);
   bool __fastcall GetFtpForcePasvIp() const { return FFtpForcePasvIp; }
   UnicodeString __fastcall GetFtpAccount() const { return FFtpAccount; }
-  size_t __fastcall GetFtpPingInterval() const { return FFtpPingInterval; }
+  int __fastcall GetFtpPingInterval() const { return FFtpPingInterval; }
   TPingType __fastcall GetFtpPingType() const { return FFtpPingType; }
   TFtps __fastcall GetFtps() const { return FFtps; }
   TAutoSwitch __fastcall GetNotUtf() const { return FNotUtf; }
@@ -569,6 +590,13 @@ public:
   void __fastcall SetNumberOfRetries(int value) { FNumberOfRetries = value; }
 #endif
 private:
+  mutable TIEProxyConfig * FIEProxyConfig;
+private:
+  TProxyMethod __fastcall GetSystemProxyMethod() const;
+  void  __fastcall PrepareProxyData() const;
+  void __fastcall ParseIEProxyConfig() const;
+  void __fastcall FromURI(const UnicodeString & ProxyURI,
+    UnicodeString & ProxyUrl, int & ProxyPort, TProxyMethod & ProxyMethod) const;
   void __fastcall AdjustHostName(UnicodeString & hostName, const UnicodeString prefix);
   void __fastcall RemoveProtocolPrefix(UnicodeString & hostName);
 };
