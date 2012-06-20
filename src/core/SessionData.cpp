@@ -65,6 +65,7 @@ TSessionData::~TSessionData()
   if (NULL != FIEProxyConfig)
   {
     delete FIEProxyConfig;
+    FIEProxyConfig = NULL;
   }
 }
 //---------------------------------------------------------------------
@@ -2040,7 +2041,7 @@ UnicodeString __fastcall TSessionData::GetProxyPassword() const
 }
 static void FreeIEProxyConfig(WINHTTP_CURRENT_USER_IE_PROXY_CONFIG * IEProxyConfig)
 {
-  if (!IEProxyConfig) return;
+  assert(IEProxyConfig);
   if (IEProxyConfig->lpszAutoConfigUrl)
     GlobalFree(IEProxyConfig->lpszAutoConfigUrl);
   if (IEProxyConfig->lpszProxy)
@@ -2075,8 +2076,14 @@ void  __fastcall TSessionData::PrepareProxyData() const
         FIEProxyConfig->ProxyBypass = IEProxyConfig.lpszProxyBypass;
       }
       FreeIEProxyConfig(&IEProxyConfig);
+      ParseIEProxyConfig();
     }
   }
+}
+void __fastcall TSessionData::ParseIEProxyConfig() const
+{
+  assert(FIEProxyConfig);
+  TFSProtocol FSProtocol = GetFSProtocol();
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionData::SetProxyTelnetCommand(UnicodeString value)
