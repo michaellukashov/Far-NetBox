@@ -4523,7 +4523,7 @@ void __fastcall TWinSCPFileSystem::MultipleEdit(const UnicodeString Directory,
   {
     assert(i != FMultipleEdits.end());
 
-    intptr_t WindowCount = FarPlugin->FarAdvControl(ACTL_GETWINDOWCOUNT);
+    INT_PTR WindowCount = FarPlugin->FarAdvControl(ACTL_GETWINDOWCOUNT);
     int Pos = 0;
     while (Pos < WindowCount)
     {
@@ -4535,8 +4535,9 @@ void __fastcall TWinSCPFileSystem::MultipleEdit(const UnicodeString Directory,
             Window.Name && AnsiSameText(Window.Name, i->second.LocalFileName))
         {
           int res = FarPlugin->FarAdvControl(ACTL_SETCURRENTWINDOW, reinterpret_cast<void *>(Pos));
+          // int res = FarPlugin->FarAdvControl(ACTL_SETCURRENTWINDOW, (void *)Pos);
           DEBUG_PRINTF(L"res = %d", res);
-          FarPlugin->FarAdvControl(ACTL_COMMIT, NULL);
+          FarPlugin->FarAdvControl(ACTL_COMMIT, 0);
           break;
         }
       }
