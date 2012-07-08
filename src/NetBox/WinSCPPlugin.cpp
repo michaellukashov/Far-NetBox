@@ -625,7 +625,7 @@ void __fastcall TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
         UnicodeString Path = (Result == MPageant) ?
           FarConfiguration->GetPageantPath() : FarConfiguration->GetPuttygenPath();
         UnicodeString Program, Params, Dir;
-        SplitCommand(Path, Program, Params, Dir);
+        SplitCommand(ExpandEnvironmentVariables(Path), Program, Params, Dir);
         ExecuteShell(Program, Params);
       }
       else if ((Result == MClearCaches) && FileSystem)
