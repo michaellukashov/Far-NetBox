@@ -1,5 +1,8 @@
 NetBox 2.1.5 ??.07.2012
 ---------------------
+  * Bugfix: Issue #30 (Far crash when "Confirmation: ... already loaded.
+    How to open this file?" and you choose "Current" on ssh)
+    See also http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=96655#p96654
 
 NetBox 2.1.4 20.06.2012
 ---------------------
