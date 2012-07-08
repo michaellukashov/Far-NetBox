@@ -520,6 +520,8 @@ void __fastcall TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
     MenuItems->SetDisabled(MPutty, !FSVisible || !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->GetPuttyPath()))));
     MenuItems->SetDisabled(MEditHistory, !FSConnected || (FileSystem && FileSystem->IsEditHistoryEmpty()));
     MenuItems->SetChecked(MSynchronizeBrowsing, FSVisible && (FileSystem && FileSystem->IsSynchronizedBrowsing()));
+    DEBUG_PRINTF(L"FarConfiguration->GetPageantPath = %s", FarConfiguration->GetPageantPath().c_str());
+    DEBUG_PRINTF(L"FarConfiguration->GetPuttygenPath = %s", FarConfiguration->GetPuttygenPath().c_str());
     MenuItems->SetDisabled(MPageant, !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->GetPageantPath()))));
     MenuItems->SetDisabled(MPuttygen, !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->GetPuttygenPath()))));
 
@@ -611,6 +613,7 @@ void __fastcall TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
       {
         UnicodeString Path = (Result == MPageant) ?
           FarConfiguration->GetPageantPath() : FarConfiguration->GetPuttygenPath();
+        DEBUG_PRINTF(L"Path = %s", Path.c_str());
         UnicodeString Program, Params, Dir;
         SplitCommand(Path, Program, Params, Dir);
         ExecuteShell(Program, Params);

@@ -48,6 +48,7 @@ bool __fastcall FindFile(UnicodeString & Path)
 //---------------------------------------------------------------------------
 bool __fastcall FileExistsEx(UnicodeString Path)
 {
+  DEBUG_PRINTF(L"Path = %s", Path.c_str());
   return FindFile(Path);
 }
 //---------------------------------------------------------------------------
