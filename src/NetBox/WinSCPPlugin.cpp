@@ -615,7 +615,7 @@ void __fastcall TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
           FarConfiguration->GetPageantPath() : FarConfiguration->GetPuttygenPath();
         DEBUG_PRINTF(L"Path = %s", Path.c_str());
         UnicodeString Program, Params, Dir;
-        SplitCommand(Path, Program, Params, Dir);
+        SplitCommand(ExpandEnvironmentVariables(Path), Program, Params, Dir);
         ExecuteShell(Program, Params);
       }
       else if ((Result == MClearCaches) && FileSystem)
