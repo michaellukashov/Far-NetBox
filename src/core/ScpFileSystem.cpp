@@ -1908,8 +1908,8 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString FileName,
             Buf.SetLength(MAX_PATH * 2);
             swprintf_s(const_cast<wchar_t *>(Buf.c_str()), Buf.Length(), L"C%s %ld %s",
               Rights.GetOctal().c_str(),
-              static_cast<int>(OperationProgress->AsciiTransfer ? (__int64)AsciiBuf.GetSize() :
-                OperationProgress->LocalSize),
+              OperationProgress->AsciiTransfer ? AsciiBuf.GetSize() :
+                OperationProgress->LocalSize,
               DestFileName.c_str());
             FSecureShell->SendLine(Buf.c_str());
             SCPResponse();
