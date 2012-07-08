@@ -128,7 +128,7 @@ public:
   bool __fastcall Editor(const UnicodeString FileName, unsigned int Flags,
     UnicodeString Title = L"");
 
-  INT_PTR __fastcall FarAdvControl(int Command, void * Param = NULL);
+  intptr_t __fastcall FarAdvControl(int Command, void * Param = NULL);
   DWORD __fastcall FarControl(int Command, int Param1, intptr_t Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
   int __fastcall FarEditorControl(int Command, void * Param);
   intptr_t __fastcall FarSystemSettings();

@@ -1684,7 +1684,7 @@ DWORD __fastcall TCustomFarPlugin::FarControl(int Command, int Param1, intptr_t 
   return FStartupInfo.Control(Plugin, Command, Param1, Param2);
 }
 //---------------------------------------------------------------------------
-INT_PTR __fastcall TCustomFarPlugin::FarAdvControl(int Command, void * Param)
+intptr_t __fastcall TCustomFarPlugin::FarAdvControl(int Command, void * Param)
 {
   TFarEnvGuard Guard;
   return FStartupInfo.AdvControl(FStartupInfo.ModuleNumber, Command, Param);
