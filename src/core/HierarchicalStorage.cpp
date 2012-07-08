@@ -1060,7 +1060,7 @@ void __fastcall TIniFileStorage::Flush()
         }
         else
         {
-          TStream * Stream = new THandleStream(int(Handle));
+          TStream * Stream = new THandleStream(Handle);
           try
           {
             Strings->SaveToStream(Stream);
