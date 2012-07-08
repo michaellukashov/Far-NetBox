@@ -2875,7 +2875,7 @@ TFarPanelType __fastcall TFarPanelInfo::GetType()
 //---------------------------------------------------------------------------
 bool __fastcall TFarPanelInfo::GetIsPlugin()
 {
-  return (FPanelInfo->PluginHandle != INVALID_HANDLE_VALUE);
+  return ((FPanelInfo->PluginHandle != INVALID_HANDLE_VALUE) && (FPanelInfo->PluginHandle != 0));
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TFarPanelInfo::GetCurrentDirectory()
