@@ -4524,23 +4524,28 @@ void __fastcall TWinSCPFileSystem::MultipleEdit(const UnicodeString Directory,
     assert(i != FMultipleEdits.end());
 
     intptr_t WindowCount = FarPlugin->FarAdvControl(ACTL_GETWINDOWCOUNT);
-    WindowInfo Window;
-    Window.Pos = 0;
-    while (Window.Pos < WindowCount)
+    int Pos = 0;
+    while (Pos < WindowCount)
     {
+      WindowInfo Window = {0};
+      Window.Pos = Pos;
+      UnicodeString EditedFileName(1024, 0);
+      Window.Name = (wchar_t *)EditedFileName.c_str();
+      Window.NameSize = EditedFileName.GetLength();
       if (FarPlugin->FarAdvControl(ACTL_GETWINDOWINFO, &Window) != 0)
       {
         if ((Window.Type == WTYPE_EDITOR) &&
-            AnsiSameText(Window.Name, i->second.LocalFileName))
+            Window.Name && AnsiSameText(Window.Name, i->second.LocalFileName))
         {
-          FarPlugin->FarAdvControl(ACTL_SETCURRENTWINDOW, reinterpret_cast<void *>(Window.Pos));
+          if (FarPlugin->FarAdvControl(ACTL_SETCURRENTWINDOW, reinterpret_cast<void *>(Pos)) != 0)
+            FarPlugin->FarAdvControl(ACTL_COMMIT, 0);
           break;
         }
       }
-      Window.Pos++;
+      Pos++;
     }
 
-    assert(Window.Pos < WindowCount);
+    assert(Pos < WindowCount);
   }
 }
 //---------------------------------------------------------------------------
