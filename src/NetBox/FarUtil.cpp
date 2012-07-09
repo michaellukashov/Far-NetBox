@@ -10,8 +10,8 @@ UnicodeString GetSystemErrorMessage(const DWORD errCode)
 
   UnicodeString errorMsg;
 
-  wchar_t codeNum[16];
-  swprintf_s(codeNum, L"[0x%08X]", errCode);
+  wchar_t codeNum[16] = {0};
+  swprintf_s(codeNum, sizeof(codeNum), L"[0x%08X]", errCode);
   errorMsg = codeNum;
 
   wchar_t errInfoBuff[256];
