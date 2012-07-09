@@ -1024,7 +1024,7 @@ void __fastcall TSessionData::Remove()
 }
 //---------------------------------------------------------------------
 bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
-  TStoredSessionList * StoredSessions, bool & DefaultsOnly, UnicodeString * FileName,
+  TStoredSessionList * AStoredSessions, bool & DefaultsOnly, UnicodeString * FileName,
   bool * AProtocolDefined)
 {
   bool ProtocolDefined = false;
@@ -1099,9 +1099,9 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
     // (this allows setting for example default username for host
     // by creating stored session named by host)
     TSessionData * Data = NULL;
-    for (Integer Index = 0; Index < StoredSessions->GetCount() + StoredSessions->GetHiddenCount(); Index++)
+    for (Integer Index = 0; Index < AStoredSessions->GetCount() + AStoredSessions->GetHiddenCount(); Index++)
     {
-      TSessionData * AData = static_cast<TSessionData *>(StoredSessions->GetItem(Index));
+      TSessionData * AData = static_cast<TSessionData *>(AStoredSessions->GetItem(Index));
       if (AnsiSameText(AData->GetName(), DecodedUrl) ||
           AnsiSameText(AData->GetName() + L"/", DecodedUrl.SubString(1, AData->GetName().Length() + 1)))
       {
@@ -1127,14 +1127,14 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
       if (Data->GetHidden())
       {
         Data->Remove();
-        StoredSessions->Remove(Data);
+        AStoredSessions->Remove(Data);
         // only modified, implicit
-        StoredSessions->Save(false, false);
+        AStoredSessions->Save(false, false);
       }
     }
     else
     {
-      Assign(StoredSessions->GetDefaultSettings());
+      Assign(AStoredSessions->GetDefaultSettings());
       SetName(L"");
 
       int PSlash = Url.Pos(L"/");
@@ -1214,7 +1214,7 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
   }
   else
   {
-    Assign(StoredSessions->GetDefaultSettings());
+    Assign(AStoredSessions->GetDefaultSettings());
 
     DefaultsOnly = true;
   }
