@@ -23,7 +23,7 @@ UnicodeString GetSystemErrorMessage(const DWORD errCode)
     }
   //Remove '\r\n' from the end
   wchar_t * c = *errInfoBuff ? &errInfoBuff[wcslen(errInfoBuff) - 1] : NULL;
-  while (*errInfoBuff && (*c == L'\n') || (*c == L'\r'))
+  while (*errInfoBuff && c && (*c == L'\n') || (*c == L'\r'))
   {
     *c = 0;
     c = *errInfoBuff ? &errInfoBuff[wcslen(errInfoBuff) - 1] : NULL;
