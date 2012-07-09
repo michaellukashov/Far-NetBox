@@ -700,6 +700,13 @@ BOOST_FIXTURE_TEST_CASE(test28, base_fixture_t)
     BOOST_CHECK(MTime == 1338899268LU);
     BOOST_CHECK(ATime == 1338899268LU);
   }
+  {
+    int errCode = 0xFF;
+    wchar_t codeNum[16] = {0};
+    swprintf_s(codeNum, sizeof(codeNum), L"[0x%08X]", errCode);
+    BOOST_TEST_MESSAGE("codeNum = " << AnsiString(codeNum).c_str());
+    BOOST_CHECK(AnsiString(codeNum) == AnsiString("[0x000000FF]"));
+  }
 }
 
 //------------------------------------------------------------------------------
