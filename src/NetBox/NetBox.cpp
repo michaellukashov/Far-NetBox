@@ -222,6 +222,7 @@ extern "C"
     }
     curl_global_init(CURL_GLOBAL_ALL);
     // DEBUG_PRINTF(L"DllProcessAttach: end");
+    return TRUE;
   }
 
 //---------------------------------------------------------------------------
