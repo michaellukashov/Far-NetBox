@@ -1,6 +1,7 @@
 NetBox 2.1.6 ??.07.2012
 --------------------
-  
+  * zlib core upgraded to 1.2.6
+
 NetBox 2.1.5 09.07.2012
 ---------------------
   * Bugfix: Far3: error "Synchronization is supported only against regular panel."
