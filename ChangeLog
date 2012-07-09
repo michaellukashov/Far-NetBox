@@ -1,4 +1,4 @@
-NetBox 2.1.5 ??.07.2012
+NetBox 2.1.5 09.07.2012
 ---------------------
   * Bugfix: Far3: error "Synchronization is supported only against regular panel."
     occurs when option "Synchronize browsing" is on.
