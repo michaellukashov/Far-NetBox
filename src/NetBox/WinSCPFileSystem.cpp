@@ -1905,7 +1905,7 @@ void /* __fastcall */ TWinSCPFileSystem::DoSynchronize(
 //---------------------------------------------------------------------------
 void /* __fastcall */ TWinSCPFileSystem::DoSynchronizeInvalid(
   TSynchronizeController * /*Sender*/, const UnicodeString & Directory,
-  const UnicodeString & ErrorStr)
+  const UnicodeString & /* ErrorStr */)
 {
   UnicodeString Message;
   if (!Directory.IsEmpty())
