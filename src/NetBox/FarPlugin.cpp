@@ -267,7 +267,7 @@ RECT __fastcall TCustomFarPlugin::GetPanelBounds(HANDLE PanelHandle)
 
 //---------------------------------------------------------------------------
 TCustomFarFileSystem * __fastcall TCustomFarPlugin::GetPanelFileSystem(bool Another,
-    HANDLE Plugin)
+    HANDLE /* Plugin */)
 {
   // DEBUG_PRINTF(L"begin");
   TCustomFarFileSystem * Result = NULL;
@@ -319,7 +319,7 @@ int __fastcall TCustomFarPlugin::Configure(int Item)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
-    return false;
+    return (int)false;
   }
 }
 //---------------------------------------------------------------------------
@@ -558,7 +558,7 @@ int __fastcall TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void * P
     }
     else
     {
-      return false;
+      return (int)false;
     }
   }
   catch(Exception & E)
@@ -843,7 +843,7 @@ void __fastcall TFarMessageDialog::Init(unsigned int AFlags,
     int ButtonLines = 1;
     TFarButton * Button = NULL;
     FTimeoutButton = NULL;
-    for (unsigned int Index = 0; Index < Buttons->GetCount(); Index++)
+    for (int Index = 0; Index < Buttons->GetCount(); Index++)
     {
       TFarButton * PrevButton = Button;
       Button = new TFarButton(this);

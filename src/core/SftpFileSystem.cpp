@@ -971,7 +971,8 @@ public:
       FCapacity = ACapacity;
       if (FCapacity > 0)
       {
-        unsigned char * NData = (new unsigned char[FCapacity + FSendPrefixLen]) + FSendPrefixLen;
+        unsigned char * NData = new unsigned char[FCapacity + FSendPrefixLen];
+        NData += FSendPrefixLen;
         if (FData)
         {
           memmove(NData - FSendPrefixLen, FData - FSendPrefixLen,
@@ -5638,8 +5639,8 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
     // If file is directory, do not delete it recursively, because it should be
     // empty already. If not, it should not be deleted (some files were
     // skipped or some new files were copied to it, while we were downloading)
-    int Params = dfNoRecursive;
-    FTerminal->DeleteFile(FileName, File, &Params);
+    int Params2 = dfNoRecursive;
+    FTerminal->DeleteFile(FileName, File, &Params2);
     ChildError = false;
   }
 }

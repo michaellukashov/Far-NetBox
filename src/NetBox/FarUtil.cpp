@@ -10,8 +10,8 @@ UnicodeString GetSystemErrorMessage(const DWORD errCode)
 
   UnicodeString errorMsg;
 
-  wchar_t codeNum[16];
-  swprintf_s(codeNum, L"[0x%08X]", errCode);
+  wchar_t codeNum[16] = {0};
+  swprintf_s(codeNum, sizeof(codeNum), L"[0x%08X]", errCode);
   errorMsg = codeNum;
 
   wchar_t errInfoBuff[256];
@@ -23,7 +23,7 @@ UnicodeString GetSystemErrorMessage(const DWORD errCode)
     }
   //Remove '\r\n' from the end
   wchar_t * c = *errInfoBuff ? &errInfoBuff[wcslen(errInfoBuff) - 1] : NULL;
-  while (*errInfoBuff && (*c == L'\n') || (*c == L'\r'))
+  while (*errInfoBuff && c && (*c == L'\n') || (*c == L'\r'))
   {
     *c = 0;
     c = *errInfoBuff ? &errInfoBuff[wcslen(errInfoBuff) - 1] : NULL;

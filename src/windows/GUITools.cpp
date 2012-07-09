@@ -228,7 +228,7 @@ bool __fastcall ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString Comman
 bool __fastcall SpecialFolderLocation(int PathID, UnicodeString & Path)
 {
   LPITEMIDLIST Pidl;
-  wchar_t Buf[256];
+  wchar_t Buf[MAX_PATH];
   if (SHGetSpecialFolderLocation(NULL, PathID, &Pidl) == NO_ERROR &&
       SHGetPathFromIDList(Pidl, Buf))
   {

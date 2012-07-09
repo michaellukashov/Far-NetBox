@@ -1846,10 +1846,10 @@ void __fastcall TSecureShell::VerifyHostKey(UnicodeString Host, int Port,
           const_cast<char *>(AnsiStoredKeys.c_str()), static_cast<int>(AnsiStoredKeys.size())) == 0)
     {
       StoredKeys = AnsiStoredKeys.c_str();
-      UnicodeString Buf = StoredKeys;
-      while (!Result && !Buf.IsEmpty())
+      UnicodeString Buf2 = StoredKeys;
+      while (!Result && !Buf2.IsEmpty())
       {
-        UnicodeString StoredKey = CutToChar(Buf, Delimiter, false);
+        UnicodeString StoredKey = CutToChar(Buf2, Delimiter, false);
         if (StoredKey == KeyStr)
         {
           LogEvent(L"Host key matches cached key");
