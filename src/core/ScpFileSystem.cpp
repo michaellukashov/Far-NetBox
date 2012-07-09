@@ -1906,7 +1906,7 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString FileName,
             // TVarRec don't understand 'unsigned int' -> we use sprintf()
             Buf.Clear();
             Buf.SetLength(MAX_PATH * 2);
-            swprintf_s(const_cast<wchar_t *>(Buf.c_str()), Buf.Length(), L"C%s %ld %s",
+            swprintf_s(const_cast<wchar_t *>(Buf.c_str()), Buf.Length(), L"C%s %lld %s",
               Rights.GetOctal().c_str(),
               OperationProgress->AsciiTransfer ? AsciiBuf.GetSize() :
                 OperationProgress->LocalSize,
