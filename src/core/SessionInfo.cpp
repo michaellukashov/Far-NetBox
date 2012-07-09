@@ -668,11 +668,11 @@ FILE * __fastcall OpenFile(UnicodeString LogFileName, TSessionData * SessionData
 //---------------------------------------------------------------------------
 const wchar_t *LogLineMarks = L"<>!.*";
 /* __fastcall */ TSessionLog::TSessionLog(TSessionUI* UI, TSessionData * SessionData,
-  TConfiguration * Configuration):
+  TConfiguration * AConfiguration):
   TStringList()
 {
   FCriticalSection = new TCriticalSection();
-  FConfiguration = Configuration;
+  FConfiguration = AConfiguration;
   FParent = NULL;
   FUI = UI;
   FSessionData = SessionData;
