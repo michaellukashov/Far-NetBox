@@ -138,7 +138,7 @@ void __fastcall TFarDialog::SetBounds(TRect value)
         SendMessage(DM_RESIZEDIALOG, 0, reinterpret_cast<intptr_t>(&Coord));
         Coord.X = static_cast<short int>(FBounds.Left);
         Coord.Y = static_cast<short int>(FBounds.Top);
-        SendMessage(DM_MOVEDIALOG, true, reinterpret_cast<intptr_t>(&Coord));
+        SendMessage(DM_MOVEDIALOG, (int)true, reinterpret_cast<intptr_t>(&Coord));
       }
       for (int  i = 0; i < GetItemCount(); i++)
       {
@@ -406,7 +406,7 @@ LONG_PTR WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1
       // DM_CLOSE is sent after DN_CLOSE, if the dialog was closed programatically
       // by SendMessage(DM_CLOSE, ...)
       assert(Msg == DM_CLOSE);
-      Result = false;
+      Result = (int)false;
     }
     else
     {
@@ -504,7 +504,7 @@ intptr_t __fastcall TFarDialog::DialogProc(int Msg, int Param1, intptr_t Param2)
           Handled = true;
           if (!Close)
           {
-            Result = true;
+            Result = (int)true;
           }
         }
         break;
@@ -520,7 +520,7 @@ intptr_t __fastcall TFarDialog::DialogProc(int Msg, int Param1, intptr_t Param2)
       {
         case DN_INITDIALOG:
           Init();
-          Result = true;
+          Result = (int)true;
           break;
 
         case DN_DRAGGED:
@@ -537,7 +537,7 @@ intptr_t __fastcall TFarDialog::DialogProc(int Msg, int Param1, intptr_t Param2)
           break;
 
         case DN_CLOSE:
-          Result = true;
+          Result = (int)true;
           if (Param1 >= 0)
           {
             TFarButton * Button = dynamic_cast<TFarButton *>(GetItem(Param1));
@@ -550,7 +550,7 @@ intptr_t __fastcall TFarDialog::DialogProc(int Msg, int Param1, intptr_t Param2)
             if (Button == NULL)
             {
               assert(dynamic_cast<TFarListBox *>(GetItem(Param1)) != NULL);
-              Result = false;
+              Result = (int)false;
             }
             else
             {
@@ -611,7 +611,7 @@ intptr_t __fastcall TFarDialog::FailDialogProc(int Msg, int Param1, intptr_t Par
   switch (Msg)
   {
     case DN_CLOSE:
-      Result = false;
+      Result = (int)false;
       break;
 
     default:
@@ -949,7 +949,7 @@ void __fastcall TFarDialog::LockChanges()
     assert(!FChangesPending);
     if (GetHandle())
     {
-      SendMessage(DM_ENABLEREDRAW, false, 0);
+      SendMessage(DM_ENABLEREDRAW, (int)false, 0);
     }
   }
 }
@@ -2702,7 +2702,7 @@ intptr_t __fastcall TFarLister::ItemProc(int Msg, intptr_t Param)
   }
   else if (Msg == DN_KEY)
   {
-    Result = true;
+    Result = (int)true;
 
     int NewTopIndex = GetTopIndex();
     if ((Param == KEY_UP) || (Param == KEY_LEFT))
@@ -2808,7 +2808,7 @@ intptr_t __fastcall TFarLister::ItemProc(int Msg, intptr_t Param)
         NewTopIndex = static_cast<int>(ceil(static_cast<float>(P.y - 1) / (GetHeight() - 2) * (GetItems()->GetCount() - GetHeight() + 1)));
       }
 
-      Result = true;
+      Result = (int)true;
 
       SetTopIndex(NewTopIndex);
     }

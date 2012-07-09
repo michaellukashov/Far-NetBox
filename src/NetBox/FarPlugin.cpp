@@ -319,7 +319,7 @@ int __fastcall TCustomFarPlugin::Configure(int Item)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
-    return false;
+    return (int)false;
   }
 }
 //---------------------------------------------------------------------------
@@ -558,7 +558,7 @@ int __fastcall TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void * P
     }
     else
     {
-      return false;
+      return (int)false;
     }
   }
   catch(Exception & E)
