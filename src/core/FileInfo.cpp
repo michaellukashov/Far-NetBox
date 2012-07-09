@@ -33,7 +33,7 @@ struct VS_VERSION_INFO_STRUCT32
 //---------------------------------------------------------------------------
 unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, unsigned int DataSize, void * Data)
 {
-  unsigned int Len;
+  unsigned int Len = 0;
 
   bool NeedFree = false;
   HMODULE Module = GetModuleHandle(FileName);

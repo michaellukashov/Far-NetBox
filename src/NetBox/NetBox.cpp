@@ -205,22 +205,27 @@ extern "C"
 //---------------------------------------------------------------------------
   static int Processes = 0;
 //---------------------------------------------------------------------------
-  void DllProcessAttach(HINSTANCE HInst)
+  BOOL DllProcessAttach(HINSTANCE HInstance)
   {
-    // DEBUG_PRINTF(L"HInst = %u", HInst);
-    FarPlugin = CreateFarPlugin(HInst);
+    // DEBUG_PRINTF(L"HInstance= %u", HInstance);
+    FarPlugin = CreateFarPlugin(HInstance);
 
     assert(!Processes);
     Processes++;
-    InitExtensionModule(HInst);
+    InitExtensionModule(HInstance);
     WSADATA wsaData;
-    WSAStartup(MAKEWORD(2, 2), &wsaData);
+    int err = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    if (err != 0)
+    {
+      // printf("WSAStartup failed with error: %d\n", err);
+      return FALSE;
+    }
     curl_global_init(CURL_GLOBAL_ALL);
     // DEBUG_PRINTF(L"DllProcessAttach: end");
   }
 
 //---------------------------------------------------------------------------
-  void DllProcessDetach()
+  BOOL DllProcessDetach()
   {
     // DEBUG_PRINTF(L"DllProcessDetach: start");
     assert(Processes);
@@ -234,24 +239,26 @@ extern "C"
       WSACleanup();
     }
     // DEBUG_PRINTF(L"DllProcessDetach: end");
+    return TRUE;
   }
 
 //---------------------------------------------------------------------------
-  BOOL WINAPI DllMain(HINSTANCE HInst, DWORD Reason, LPVOID /*ptr*/ )
+  BOOL WINAPI DllMain(HINSTANCE HInstance, DWORD Reason, LPVOID /*ptr*/ )
   {
     // DEBUG_PRINTF(L"DllEntryPoint: start");
+    BOOL Result = TRUE;
     switch (Reason)
     {
       case DLL_PROCESS_ATTACH:
-        DllProcessAttach(HInst);
+        Result = DllProcessAttach(HInstance);
         break;
 
       case DLL_PROCESS_DETACH:
-        DllProcessDetach();
+        Result = DllProcessDetach();
         break;
     }
     // DEBUG_PRINTF(L"DllEntryPoint: end");
-    return true;
+    return Result;
   }
 
 }

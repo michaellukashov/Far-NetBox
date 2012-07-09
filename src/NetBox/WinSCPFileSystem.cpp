@@ -1339,8 +1339,8 @@ void __fastcall TWinSCPFileSystem::ApplyCommand()
         }
         else
         {
-          TCustomCommandData Data(GetTerminal());
-          TLocalCustomCommand LocalCustomCommand(Data, GetTerminal()->GetCurrentDirectory());
+          TCustomCommandData Data1(GetTerminal());
+          TLocalCustomCommand LocalCustomCommand(Data1, GetTerminal()->GetCurrentDirectory());
           TFarInteractiveCustomCommand InteractiveCustomCommand(FPlugin,
               &LocalCustomCommand);
 
@@ -1424,8 +1424,8 @@ void __fastcall TWinSCPFileSystem::ApplyCommand()
                     LocalFile = LocalFileList->GetStrings(0);
                   }
 
-                  TCustomCommandData Data(FTerminal);
-                  TLocalCustomCommand CustomCommand(Data,
+                  TCustomCommandData Data2(FTerminal);
+                  TLocalCustomCommand CustomCommand(Data2,
                     GetTerminal()->GetCurrentDirectory(), L"", LocalFile, FileList);
                   ExecuteShellAndWait(FPlugin->GetHandle(), CustomCommand.Complete(Command, true),
                     TProcessMessagesEvent());
@@ -1439,8 +1439,8 @@ void __fastcall TWinSCPFileSystem::ApplyCommand()
                     for (int Index = 0; Index < RemoteFileList->GetCount(); Index++)
                     {
                       UnicodeString FileName = RemoteFileList->GetStrings(Index);
-                      TCustomCommandData Data(FTerminal);
-                      TLocalCustomCommand CustomCommand(Data,
+                      TCustomCommandData Data3(FTerminal);
+                      TLocalCustomCommand CustomCommand(Data3,
                         GetTerminal()->GetCurrentDirectory(), FileName, LocalFile, L"");
                       ExecuteShellAndWait(FPlugin->GetHandle(),
                         CustomCommand.Complete(Command, true), TProcessMessagesEvent());
@@ -1452,9 +1452,9 @@ void __fastcall TWinSCPFileSystem::ApplyCommand()
 
                     for (int Index = 0; Index < LocalFileList->GetCount(); Index++)
                     {
-                      TCustomCommandData Data(FTerminal);
+                      TCustomCommandData Data4(FTerminal);
                       TLocalCustomCommand CustomCommand(
-                        Data, GetTerminal()->GetCurrentDirectory(),
+                        Data4, GetTerminal()->GetCurrentDirectory(),
                         FileName, LocalFileList->GetStrings(Index), L"");
                       ExecuteShellAndWait(FPlugin->GetHandle(),
                         CustomCommand.Complete(Command, true), TProcessMessagesEvent());
@@ -1470,9 +1470,9 @@ void __fastcall TWinSCPFileSystem::ApplyCommand()
                     for (int Index = 0; Index < LocalFileList->GetCount(); Index++)
                     {
                       UnicodeString FileName = RemoteFileList->GetStrings(Index);
-                      TCustomCommandData Data(FTerminal);
+                      TCustomCommandData Data5(FTerminal);
                       TLocalCustomCommand CustomCommand(
-                        Data, GetTerminal()->GetCurrentDirectory(),
+                        Data5, GetTerminal()->GetCurrentDirectory(),
                         FileName, LocalFileList->GetStrings(Index), L"");
                       ExecuteShellAndWait(FPlugin->GetHandle(),
                         CustomCommand.Complete(Command, true), TProcessMessagesEvent());
@@ -1483,8 +1483,8 @@ void __fastcall TWinSCPFileSystem::ApplyCommand()
                 {
                   for (int Index = 0; Index < RemoteFileList->GetCount(); Index++)
                   {
-                    TCustomCommandData Data(FTerminal);
-                    TLocalCustomCommand CustomCommand(Data,
+                    TCustomCommandData Data6(FTerminal);
+                    TLocalCustomCommand CustomCommand(Data6,
                       GetTerminal()->GetCurrentDirectory(), RemoteFileList->GetStrings(Index), L"", L"");
                     ExecuteShellAndWait(FPlugin->GetHandle(),
                       CustomCommand.Complete(Command, true), TProcessMessagesEvent());
