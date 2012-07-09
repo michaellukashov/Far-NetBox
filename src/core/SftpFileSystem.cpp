@@ -971,7 +971,8 @@ public:
       FCapacity = ACapacity;
       if (FCapacity > 0)
       {
-        unsigned char * NData = (new unsigned char[FCapacity + FSendPrefixLen]) + FSendPrefixLen;
+        unsigned char * NData = new unsigned char[FCapacity + FSendPrefixLen];
+        NData += FSendPrefixLen;
         if (FData)
         {
           memmove(NData - FSendPrefixLen, FData - FSendPrefixLen,
