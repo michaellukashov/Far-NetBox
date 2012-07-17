@@ -1906,11 +1906,13 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString FileName,
             // TVarRec don't understand 'unsigned int' -> we use sprintf()
             Buf.Clear();
             Buf.SetLength(MAX_PATH * 2);
-            swprintf_s(const_cast<wchar_t *>(Buf.c_str()), Buf.Length(), L"C%s %ld %s",
+            __int64 sz = OperationProgress->AsciiTransfer ? AsciiBuf.GetSize() :
+              OperationProgress->LocalSize;
+            swprintf_s(const_cast<wchar_t *>(Buf.c_str()), Buf.Length(), L"C%s %lld %s",
               Rights.GetOctal().c_str(),
-              OperationProgress->AsciiTransfer ? AsciiBuf.GetSize() :
-                OperationProgress->LocalSize,
+              sz,
               DestFileName.c_str());
+            DEBUG_PRINTF(L"Buf = %s, DestFileName.c_str = %s", Buf.c_str(), DestFileName.c_str());
             FSecureShell->SendLine(Buf.c_str());
             SCPResponse();
             // Indicate we started transfering file, we need to finish it
