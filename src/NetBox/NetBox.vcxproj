@@ -161,7 +161,7 @@
       <DelayLoadDLLs>gdiplus.dll;gdi32.dll;msimg32.dll</DelayLoadDLLs>
     </Link>
     <PostBuildEvent>
-      <Command>makeDist.cmd x86 Far2</Command>
+      <Command>@rem makeDist.cmd x86 Far2</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='UnityRelease|x64'">
@@ -189,7 +189,7 @@
       <DelayLoadDLLs>gdiplus.dll;gdi32.dll;msimg32.dll</DelayLoadDLLs>
     </Link>
     <PostBuildEvent>
-      <Command>makeDist.cmd x64 Far2</Command>
+      <Command>@rem makeDist.cmd x64 Far2</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

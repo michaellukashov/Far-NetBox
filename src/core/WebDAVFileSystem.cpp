@@ -1452,7 +1452,7 @@ void __fastcall TWebDAVFileSystem::Sink(const UnicodeString FileName,
       FTerminal->ProcessDirectory(FileName, fastdelegate::bind(&TWebDAVFileSystem::SinkFile, this, _1, _2, _3), &SinkFileParams);
 
       // Do not delete directory if some of its files were skip.
-      // Throw "skip file" for the directory to avoid __fastcall attempt to deletion
+      // Throw "skip file" for the directory to avoid attempt to deletion
       // of any parent directory
       if (FLAGSET(Params, cpDelete) && SinkFileParams.Skipped)
       {
@@ -1986,7 +1986,7 @@ void __fastcall TWebDAVFileSystem::FileTransfer(const UnicodeString FileName,
   if (!FFileTransferCancelled)
   {
     // show completion of transfer
-    // call non-guarded variant to avoid __fastcall deadlock with keepalives
+    // call non-guarded variant to avoid deadlock with keepalives
     // (we are not waiting for reply anymore so keepalives are free to proceed)
     DoFileTransferProgress(OperationProgress->TransferSize, OperationProgress->TransferSize);
   }
