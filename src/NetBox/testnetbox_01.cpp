@@ -663,4 +663,52 @@ BOOST_FIXTURE_TEST_CASE(test27, base_fixture_t)
 
 //------------------------------------------------------------------------------
 
+BOOST_FIXTURE_TEST_CASE(test28, base_fixture_t)
+{
+  UnicodeString Buf;
+  UnicodeString DestFileName(L"FileName");
+  TFileBuffer AsciiBuf;
+  DEBUG_PRINTF(L"1");
+  AsciiBuf.SetSize(0xFFFFFFFFFF);
+  DEBUG_PRINTF(L"2");
+  Buf.Clear();
+  Buf.SetLength(MAX_PATH * 2);
+  DEBUG_PRINTF(L"AsciiBuf.GetSize = %lld", AsciiBuf.GetSize());
+  swprintf_s(const_cast<wchar_t *>(Buf.c_str()), Buf.Length(), L"C%s %lld %s",
+    L"",
+    AsciiBuf.GetSize(),
+    DestFileName.c_str());
+  DEBUG_PRINTF(L"3");
+  BOOST_TEST_MESSAGE("Buf1 = " << AnsiString(Buf).c_str());
+  DEBUG_PRINTF(L"Buf = %s", Buf.c_str());
+  BOOST_CHECK(Buf.GetLength() > 0);
+  if (0)
+  {
+    // causes error
+    swprintf_s(const_cast<wchar_t *>(Buf.c_str()), Buf.Length(), L"C%s %ld %s",
+      L"",
+      AsciiBuf.GetSize(),
+      DestFileName.c_str());
+    BOOST_TEST_MESSAGE("Buf2 = " << AnsiString(Buf).c_str());
+  }
+  {
+    // Ctrl = T, Line = 1338899268 0 1338899268 0
+    UnicodeString Line = L"1338899268 0 1338899268 0";
+    unsigned long MTime, ATime;
+    if (swscanf(Line.c_str(), L"%ld %*d %ld %*d",  &MTime, &ATime) != 2)
+      BOOST_FAIL("swscanf");
+    BOOST_CHECK(MTime == 1338899268LU);
+    BOOST_CHECK(ATime == 1338899268LU);
+  }
+  {
+    int errCode = 0xFF;
+    wchar_t codeNum[16] = {0};
+    swprintf_s(codeNum, sizeof(codeNum), L"[0x%08X]", errCode);
+    BOOST_TEST_MESSAGE("codeNum = " << AnsiString(codeNum).c_str());
+    BOOST_CHECK(AnsiString(codeNum) == AnsiString("[0x000000FF]"));
+  }
+}
+
+//------------------------------------------------------------------------------
+
 BOOST_AUTO_TEST_SUITE_END()

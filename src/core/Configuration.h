@@ -276,9 +276,9 @@ public:
   int __fastcall GetSessionReopenAutoMaximumNumberOfRetries() const { return FSessionReopenAutoMaximumNumberOfRetries; }
   void __fastcall SetSessionReopenAutoMaximumNumberOfRetries(int value);
   int GetSessionReopenBackground() { return FSessionReopenBackground; }
-  size_t GetSessionReopenTimeout() { return FSessionReopenTimeout; }
-  size_t GetTunnelLocalPortNumberLow() { return FTunnelLocalPortNumberLow; }
-  size_t GetTunnelLocalPortNumberHigh() { return FTunnelLocalPortNumberHigh; }
+  int GetSessionReopenTimeout() { return FSessionReopenTimeout; }
+  int GetTunnelLocalPortNumberLow() { return FTunnelLocalPortNumberLow; }
+  int GetTunnelLocalPortNumberHigh() { return FTunnelLocalPortNumberHigh; }
   int GetCacheDirectoryChangesMaxSize() { return FCacheDirectoryChangesMaxSize; }
   bool GetShowFtpWelcomeMessage() { return FShowFtpWelcomeMessage; }
   UnicodeString GetExternalIpAddress() const { return FExternalIpAddress; }

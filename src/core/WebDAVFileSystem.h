@@ -75,7 +75,7 @@ public:
   virtual UnicodeString __fastcall GetUserName();
 
 public:
-  virtual void __fastcall __fastcall FileTransferProgress(__int64 TransferSize, __int64 Bytes);
+  virtual void __fastcall FileTransferProgress(__int64 TransferSize, __int64 Bytes);
 
 protected:
 #ifndef _MSC_VER

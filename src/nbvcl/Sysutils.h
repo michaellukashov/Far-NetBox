@@ -87,7 +87,7 @@ private:
 
   // typedef StaticArray<UnicodeString, 7> _TFormatSettings__4;
 public:
-  TFormatSettings(int LCID) {}
+  TFormatSettings(int /* LCID */) {}
   unsigned char CurrencyFormat;
   unsigned char NegCurrFormat;
   wchar_t ThousandSeparator;
