@@ -1925,6 +1925,10 @@ void __fastcall TSecureShell::VerifyHostKey(UnicodeString Host, int Port,
         case qaCancel:
           Verified = false;
           break;
+
+        default:
+          Verified = true;
+          break;
       }
     }
 
