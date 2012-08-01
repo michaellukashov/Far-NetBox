@@ -1,4 +1,7 @@
-NetBox 2.1.6 ??.07.2012
+NetBox 2.1.7 ??.08.2012
+--------------------
+
+NetBox 2.1.6 18.07.2012
 --------------------
   * Bugfix: Far3: SCP: cannot store edited file
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=705#p96759)
