@@ -6029,12 +6029,10 @@ void CFtpControlSocket::DiscardLine(CStringA line)
 		{
 			m_serverCapabilities.SetCapability(mlsd_command, yes);
 		}
-		else if (line.Left(5) == _T(" MLST"))
+		else if (line.Left(5) == _MPAT(" MLST"))
 		{
 			USES_CONVERSION;
 			m_serverCapabilities.SetCapability(mlsd_command, yes, (LPCSTR)line.Mid(6, -1));
-			// MSLT/MLSD specs require use of UTC
-			// m_serverCapabilities.SetCapability(timezone_offset, no);
 		}
 		else if (line == _MPAT(" MFMT"))
 			m_hasMfmtCmd = true;

@@ -1288,6 +1288,10 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
 	// MLSD format as described here: http://www.ietf.org/internet-drafts/draft-ietf-ftpext-mlst-16.txt
 	// Parsing is done strict, abort on slightest error.
 
+	// If we ever add some detection that entry is symlink,
+	// make sure to add support for resolving the symlink
+	// using MLST to TFTPFileSystem::ReadSymlink
+
 	int pos = 0;
 	int tokenlen = 0;
 
@@ -1356,21 +1360,8 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
 			if (!parseMlsdDateTime(value, direntry))
 				return FALSE;
 		}
-		else if (factname == _T("perm"))
-		{
-			if (!value.IsEmpty())
-			{
-				if (!direntry.permissionstr.IsEmpty())
-					direntry.permissionstr = value + _T(" (") + direntry.permissionstr + _T(")");
-				else
-					direntry.permissionstr = value;
-			}
-		}
 		else if (factname == _T("unix.mode"))
 		{
-			if (!direntry.permissionstr.IsEmpty())
-				direntry.permissionstr = direntry.permissionstr + _T(" (") + value + _T(")");
-			else
 				direntry.permissionstr = value;
 		}
 		else if (factname == _T("unix.owner") || factname == _T("unix.user"))
