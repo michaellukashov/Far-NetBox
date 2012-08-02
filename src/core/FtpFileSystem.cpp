@@ -2024,9 +2024,11 @@ void __fastcall TFTPFileSystem::ReadFile(const UnicodeString FileName,
   UnicodeString Path = UnixExtractFilePath(FileName);
   UnicodeString NameOnly = UnixExtractFileName(FileName);
   TRemoteFile *AFile = NULL;
+  bool Own = false;
   if (FServerCapabilities->GetCapability(mlsd_command) == yes)
   {
     DoReadFile(FileName, AFile);
+    Own = true;
   }
   else
   {
@@ -2063,6 +2065,8 @@ void __fastcall TFTPFileSystem::ReadFile(const UnicodeString FileName,
 
       AFile = FFileListCache->FindFile(NameOnly);
     }
+
+    Own = false;
   }
 
   if (AFile == NULL)
@@ -2072,7 +2076,7 @@ void __fastcall TFTPFileSystem::ReadFile(const UnicodeString FileName,
   }
 
   assert(AFile != NULL);
-  File = AFile->Duplicate();
+  File = Own ? AFile : AFile->Duplicate();
 }
 //---------------------------------------------------------------------------
 void __fastcall TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
@@ -2081,6 +2085,10 @@ void __fastcall TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   // Resolving symlinks over FTP is big overhead
   // (involves opening TCPIP connection for retrieving "directory listing").
   // Moreover FZAPI does not support that anyway.
+  // Note that while we could use MLST to read the symlink,
+  // it's hardly of any use as, if MLST is supported, we use MLSD to
+  // retrieve directory listing and from MLSD we cannot atm detect that
+  // the file is symlink anyway.
   File = new TRemoteFile(SymlinkFile);
   try
   {
@@ -3482,16 +3490,21 @@ bool __fastcall TFTPFileSystem::HandleListData(const wchar_t * Path,
         File->SetTerminal(FTerminal);
 
         File->SetFileName(Entry->Name);
-        if (wcslen(Entry->Permissions) >= 10)
+        try
         {
-          try
+          int PermissionsLen = wcslen(Entry->Permissions);
+          if (PermissionsLen >= 10)
           {
             File->GetRights()->SetText(Entry->Permissions + 1);
           }
-          catch (...)
+          else if ((PermissionsLen == 3) || (PermissionsLen == 4))
           {
-            // ignore permissions errors with FTP
+            File->GetRights()->SetOctal(Entry->Permissions);
           }
+        }
+        catch (...)
+        {
+          // ignore permissions errors with FTP
         }
 
         const wchar_t * Space = wcschr(Entry->OwnerGroup, L' ');

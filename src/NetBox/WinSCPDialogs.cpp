@@ -2009,7 +2009,7 @@ static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsFTPS, fsH
 
   TransferProtocolCombo = new TFarComboBox(this);
   TransferProtocolCombo->SetDropDownList(true);
-  TransferProtocolCombo->SetWidth(10);
+  TransferProtocolCombo->SetWidth(16);
   TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_SFTP));
   TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_SCP));
 #ifndef NO_FILEZILLA
