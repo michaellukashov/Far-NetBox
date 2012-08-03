@@ -595,64 +595,10 @@ TFileSystemInfo::TFileSystemInfo()
 FILE * __fastcall OpenFile(UnicodeString LogFileName, TSessionData * SessionData, bool Append, UnicodeString & NewFileName)
 {
   FILE * Result;
-  UnicodeString ANewFileName = StripPathQuotes(ExpandEnvironmentVariables(LogFileName));
-  TDateTime N = Now();
-  for (int Index = 1; Index < ANewFileName.Length(); Index++)
-  {
-    if (ANewFileName[Index] == L'&')
-    {
-      UnicodeString Replacement;
-      // keep consistent with TFileCustomCommand::PatternReplacement
-      unsigned short Y, M, D, H, NN, S, MS;
-      TDateTime DateTime = N;
-      DateTime.DecodeDate(Y, M, D);
-      DateTime.DecodeTime(H, NN, S, MS);
-      switch (tolower(ANewFileName[Index + 1]))
-      {
-        case L'y':
-          // Replacement = FormatDateTime(L"yyyy", N);
-          Replacement = FORMAT(L"%04d", Y);
-          break;
-
-        case L'm':
-          // Replacement = FormatDateTime(L"mm", N);
-          Replacement = FORMAT(L"%02d", M);
-          break;
-
-        case L'd':
-          // Replacement = FormatDateTime(L"dd", N);
-          Replacement = FORMAT(L"%02d", D);
-          break;
-
-        case L't':
-          // Replacement = FormatDateTime(L"hhnnss", N);
-          Replacement = FORMAT(L"%02d%02d%02d", H, NN, S);
-          break;
-
-        case L'@':
-          Replacement = MakeValidFileName(SessionData->GetHostNameExpanded());
-          break;
-
-        case L's':
-          Replacement = MakeValidFileName(SessionData->GetSessionName());
-          break;
-
-        case L'&':
-          Replacement = L"&";
-          break;
-
-        default:
-          Replacement = UnicodeString(L"&") + ANewFileName[Index + 1];
-          break;
-      }
-      ANewFileName.Delete(Index, 2);
-      ANewFileName.Insert(Replacement, Index);
-      Index += Replacement.Length() - 1;
-    }
-  }
+  UnicodeString ANewFileName = GetExpandedLogFileName(LogFileName, SessionData, Append);
   // Result = _wfopen(ANewFileName.c_str(), (Append ? L"a" : L"w"));
   Result = _fsopen(W2MB(ANewFileName.c_str()).c_str(),
-    Append ? "a" : "w", SH_DENYWR);
+    Append ? "a" : "w", SH_DENYWR); // _SH_DENYNO); // 
   if (Result != NULL)
   {
     setvbuf(Result, NULL, _IONBF, BUFSIZ);
@@ -1065,6 +1011,7 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
         ADF(L"Local command: %s", Data->GetProxyLocalCommand().c_str());
       }
     }
+    wchar_t const * BugFlags = L"+-A";
     if (Data->GetUsesSsh())
     {
       ADF(L"SSH protocol version: %s; Compression: %s",
@@ -1082,7 +1029,6 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
       ADF(L"Ciphers: %s; Ssh2DES: %s",
         Data->GetCipherList().c_str(), BooleanToEngStr(Data->GetSsh2DES()).c_str());
       UnicodeString Bugs;
-      wchar_t const * BugFlags = L"A+-";
       for (int Index = 0; Index < BUG_COUNT; Index++)
       {
         Bugs += UnicodeString(BugFlags[Data->GetBug(static_cast<TSshBug>(Index))])+(Index<BUG_COUNT-1?L",":L"");
@@ -1129,9 +1075,9 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
           Ftps = L"None";
           break;
       }
-      ADF(L"FTP: FTPS: %s; Passive: %s [Force IP: %s]",
+      ADF(L"FTP: FTPS: %s; Passive: %s [Force IP: %c]",
          Ftps.c_str(), BooleanToEngStr(Data->GetFtpPasvMode()).c_str(),
-         BooleanToEngStr(Data->GetFtpForcePasvIp()).c_str());
+         BugFlags[Data->GetFtpForcePasvIp()]);
     }
     ADF(L"Local directory: %s, Remote directory: %s, Update: %s, Cache: %s",
       (Data->GetLocalDirectory().IsEmpty() ? UnicodeString(L"default").c_str() : Data->GetLocalDirectory().c_str()),
@@ -1142,6 +1088,12 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
        BooleanToEngStr(Data->GetCacheDirectoryChanges()).c_str(),
        BooleanToEngStr(Data->GetPreserveDirectoryChanges()).c_str());
     ADF(L"DST mode: %d", static_cast<int>(Data->GetDSTMode()));
+
+    if ((Data->GetFSProtocol() == fsHTTP) || (Data->GetFSProtocol() == fsHTTPS))
+    {
+      ADF(L"Compression: %s",
+        BooleanToEngStr(Data->GetCompression()).c_str());
+    }
 
     AddSeparator();
 
@@ -1226,7 +1178,7 @@ void __fastcall TActionLog::Add(const UnicodeString & Line)
       if (FFile != NULL)
       {
         UTF8String UtfLine = UTF8String(Line);
-        fwrite(UtfLine.c_str(), UtfLine.Length(), 1, (FILE *)FFile);
+        fwrite(UtfLine.c_str(), 1, UtfLine.Length(), (FILE *)FFile);
         fwrite("\n", 1, 1, (FILE *)FFile);
       }
     }
@@ -1263,7 +1215,22 @@ void __fastcall TActionLog::AddFailure(Exception * E)
   TStrings * Messages = ExceptionToMessages(E);
   if (Messages != NULL)
   {
-    AddFailure(Messages);
+    // try
+    {
+#ifdef _MSC_VER
+      BOOST_SCOPE_EXIT ( (&Messages) )
+      {
+        delete Messages;
+      } BOOST_SCOPE_EXIT_END
+#endif
+      AddFailure(Messages);
+    }
+#ifndef _MSC_VER
+    __finally
+    {
+      delete Messages;
+    }
+#endif
   }
 }
 //---------------------------------------------------------------------------

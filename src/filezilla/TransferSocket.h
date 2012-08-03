@@ -19,7 +19,7 @@
 #if !defined(AFX_TRANSFERSOCKET_H__3F95A3A8_478E_45D4_BFD5_6102B42E12DA__INCLUDED_)
 #define AFX_TRANSFERSOCKET_H__3F95A3A8_478E_45D4_BFD5_6102B42E12DA__INCLUDED_
 
-#include "FtpListResult.h"	// Hinzugefügt von der Klassenansicht
+#include "FtpListResult.h"	// Hinzugefï¿½gt von der Klassenansicht
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
@@ -58,7 +58,7 @@ public:
 	CTransferSocket(CFtpControlSocket *pOwner, int nMode);
 	virtual ~CTransferSocket();
 
-// Überschreibungen
+// ï¿½berschreibungen
 public:
 	int m_nInternalMessageID;
 	virtual void Close();
@@ -78,7 +78,7 @@ public:
 #ifndef MPEXT_NO_ZLIB
 	bool InitZlib(int level);
 #endif
-	// Vom Klassen-Assistenten generierte virtuelle Funktionsüberschreibungen
+	// Vom Klassen-Assistenten generierte virtuelle Funktionsï¿½berschreibungen
 	//{{AFX_VIRTUAL(CTransferSocket)
 	public:
 	virtual void OnReceive(int nErrorCode);
@@ -90,7 +90,7 @@ public:
 
 	// Generierte Nachrichtenzuordnungsfunktionen
 	//{{AFX_MSG(CTransferSocket)
-		// HINWEIS - Der Klassen-Assistent fügt hier Member-Funktionen ein und entfernt diese.
+		// HINWEIS - Der Klassen-Assistent fï¿½gt hier Member-Funktionen ein und entfernt diese.
 	//}}AFX_MSG
 
 // Implementierung
@@ -98,6 +98,7 @@ protected:
 	
 	virtual int OnLayerCallback(std::list<t_callbackMsg>& callbacks);
 	int ReadDataFromFile(char *buffer, int len);
+	virtual void LogSocketMessage(int nMessageType, LPCTSTR pMsgFormat);
 
 	CFtpControlSocket *m_pOwner;
 	CAsyncProxySocketLayer* m_pProxyLayer;
@@ -111,10 +112,6 @@ protected:
 	void UpdateSendLed();
 	void UpdateStatusBar(bool forceUpdate);
 	BOOL m_bSentClose;
-	char m_cLastChar;
-	int m_ReadSize;
-	int m_ReadPos;
-	char *m_ReadBuffer;
 	int m_bufferpos;
 	char *m_pBuffer;
 #ifndef MPEXT_NO_ZLIB
@@ -145,6 +142,6 @@ protected:
 /////////////////////////////////////////////////////////////////////////////
 
 //{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ fügt unmittelbar vor der vorhergehenden Zeile zusätzliche Deklarationen ein.
+// Microsoft Visual C++ fï¿½gt unmittelbar vor der vorhergehenden Zeile zusï¿½tzliche Deklarationen ein.
 
 #endif // AFX_TRANSFERSOCKET_H__3F95A3A8_478E_45D4_BFD5_6102B42E12DA__INCLUDED_

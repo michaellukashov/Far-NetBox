@@ -112,7 +112,7 @@ bool __fastcall TFileZillaIntf::Cancel()
 bool __fastcall TFileZillaIntf::Connect(const wchar_t * Host, int Port, const wchar_t * User,
   const wchar_t * Pass, const wchar_t * Account, bool FwByPass,
   const wchar_t * Path, int ServerType, int Pasv, int TimeZoneOffset, int UTF8,
-  bool bForcePasvIp)
+  int iForcePasvIp)
 {
   ASSERT(FFileZillaApi != NULL);
   ASSERT((ServerType & FZ_SERVERTYPE_HIGHMASK) == FZ_SERVERTYPE_FTP);
@@ -130,7 +130,7 @@ bool __fastcall TFileZillaIntf::Connect(const wchar_t * Host, int Port, const wc
   Server.nPasv = Pasv;
   Server.nTimeZoneOffset = TimeZoneOffset;
   Server.nUTF8 = UTF8;
-  Server.bForcePasvIp = bForcePasvIp;
+  Server.iForcePasvIp = iForcePasvIp;
 
   *FServer = Server;
 

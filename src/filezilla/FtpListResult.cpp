@@ -562,6 +562,9 @@ BOOL CFtpListResult::parseLine(const char *lineToParse, const int linelen, t_dir
 
 void CFtpListResult::AddData(char *data, int size)
 {
+	#ifdef _DEBUG
+	USES_CONVERSION;
+	#endif
 	if (!size)
 		return;
 
@@ -1288,6 +1291,10 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
 	// MLSD format as described here: http://www.ietf.org/internet-drafts/draft-ietf-ftpext-mlst-16.txt
 	// Parsing is done strict, abort on slightest error.
 
+	// If we ever add some detection that entry is symlink,
+	// make sure to add support for resolving the symlink
+	// using MLST to TFTPFileSystem::ReadSymlink
+
 	int pos = 0;
 	int tokenlen = 0;
 
@@ -1356,22 +1363,9 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
 			if (!parseMlsdDateTime(value, direntry))
 				return FALSE;
 		}
-		else if (factname == _T("perm"))
-		{
-			if (!value.IsEmpty())
-			{
-				if (!direntry.permissionstr.IsEmpty())
-					direntry.permissionstr = value + _T(" (") + direntry.permissionstr + _T(")");
-				else
-					direntry.permissionstr = value;
-			}
-		}
 		else if (factname == _T("unix.mode"))
 		{
-			if (!direntry.permissionstr.IsEmpty())
-				direntry.permissionstr = direntry.permissionstr + _T(" (") + value + _T(")");
-			else
-				direntry.permissionstr = value;
+			direntry.permissionstr = value;
 		}
 		else if (factname == _T("unix.owner") || factname == _T("unix.user"))
 			owner = value;
@@ -2448,10 +2442,8 @@ const char * CFtpListResult::strnstr(const char *str, int len, const char *c) co
 void CFtpListResult::copyStr(CString &target, int pos, const char *source, int len, bool mayInvalidateUTF8 /*=false*/)
 {
 	USES_CONVERSION;
-	char pbuf[1024];
-	char *p = pbuf;
-	if (len + 1 > sizeof(pbuf))
-		p = new char[len + 1];
+
+	char *p = new char[len + 1];
 	memcpy(p, source, len);
 	p[len] = '\0';
 	if (m_bUTF8 && *m_bUTF8)
@@ -2472,14 +2464,10 @@ void CFtpListResult::copyStr(CString &target, int pos, const char *source, int l
 			int len = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)p, -1, NULL, 0);
 			if (len != 0)
 			{
-				WCHAR buf[1024];
-				LPWSTR p1 = buf;
-				if (len + 1 > sizeof(buf))
-					p1 = new WCHAR[len + 1];
+				LPWSTR p1 = new WCHAR[len + 1];
 				MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)p, -1 , (LPWSTR)p1, len + 1);
 				target = target.Left(pos) + W2CT(p1);
-				if (len + 1 > sizeof(buf))
-					delete [] p1;
+				delete [] p1;
 			}
 			else
 				target = target.Left(pos) + A2CT(p);
@@ -2487,8 +2475,7 @@ void CFtpListResult::copyStr(CString &target, int pos, const char *source, int l
 	}
 	else
 		target = target.Left(pos) + A2CT(p);
-	if (len + 1 > sizeof(pbuf))
-		delete [] p;
+	delete [] p;
 }
 
 BOOL CFtpListResult::parseAsIBM(const char *line, const int linelen, t_directory::t_direntry &direntry)

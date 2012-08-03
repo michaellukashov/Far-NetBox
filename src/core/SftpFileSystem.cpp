@@ -4520,7 +4520,8 @@ void __fastcall TSFTPFileSystem::SFTPSource(const UnicodeString FileName,
         {
           FILE_OPERATION_LOOP(FMTLOAD(DELETE_ON_RESUME_ERROR,
               UnixExtractFileName(DestFullName).c_str(), DestFullName.c_str()),
-            if (GetSessionData()->GetOverwrittenToRecycleBin())
+            if (GetSessionData()->GetOverwrittenToRecycleBin() &&
+                !FTerminal->GetSessionData()->GetRecycleBinPath().IsEmpty())
             {
               FTerminal->RecycleFile(DestFullName, NULL);
             }
@@ -4796,7 +4797,8 @@ int /* __fastcall */ TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * 
         }
 
         if ((OpenParams->OverwriteMode == omOverwrite) &&
-            GetSessionData()->GetOverwrittenToRecycleBin())
+            GetSessionData()->GetOverwrittenToRecycleBin() &&
+            !FTerminal->GetSessionData()->GetRecycleBinPath().IsEmpty())
         {
           FTerminal->RecycleFile(OpenParams->RemoteFileName, NULL);
         }

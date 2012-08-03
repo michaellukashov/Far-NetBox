@@ -142,7 +142,6 @@ CAsyncProxySocketLayer::CAsyncProxySocketLayer()
 	m_nProxyPeerPort=0;
 	m_pProxyPeerHost = NULL;
 	m_pStrBuffer = NULL;
-	memset(&m_ProxyData, 0, sizeof(m_ProxyData));
 	m_ProxyData.pProxyHost = NULL;
 	m_ProxyData.pProxyUser = NULL;
 	m_ProxyData.pProxyPass = NULL;

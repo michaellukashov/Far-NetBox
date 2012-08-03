@@ -1,22 +1,30 @@
 #pragma once
 
+#ifdef _MSC_VER
+#include "stdafx.h"
+#endif // #ifdef _MSC_VER
+
+#include <apr_pools.h>
+
 #include <FileSystems.h>
 #include "Terminal.h"
-#include "EasyURL.h"
-//---------------------------------------------------------------------------
-class TCURLIntf;
-struct TListDataEntry;
-class TMessageQueue;
-class TiXmlElement;
 
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+struct TListDataEntry;
+
+//------------------------------------------------------------------------------
+namespace webdav {
+  struct session_t;
+  typedef int error_t;
+}
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 class TWebDAVFileSystem : public TCustomFileSystem
 {
-  friend class CEasyURL;
   friend class TWebDAVFileListHelper;
 public:
   explicit TWebDAVFileSystem(TTerminal * ATerminal);
-  virtual ~TWebDAVFileSystem();
+  virtual /* __fastcall */ ~TWebDAVFileSystem();
   virtual void __fastcall Init();
 
   virtual void __fastcall Open();
@@ -75,25 +83,15 @@ public:
   virtual UnicodeString __fastcall GetUserName();
 
 public:
+  virtual void __fastcall ReadDirectoryProgress(__int64 Bytes);
   virtual void __fastcall FileTransferProgress(__int64 TransferSize, __int64 Bytes);
 
 protected:
-#ifndef _MSC_VER
-  __property TStrings * Output = { read = FOutput };
-  __property int ReturnCode = { read = FReturnCode };
-#endif
   virtual UnicodeString __fastcall GetCurrentDirectory();
 
   bool __fastcall HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
     unsigned int Count);
-  bool __fastcall HandleTransferStatus(bool Valid, __int64 TransferSize,
-    __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
-    bool FileTransfer);
-  bool __fastcall HandleCapabilities(bool Mfmt);
-  bool __fastcall CheckError(int ReturnCode, const wchar_t * Context);
   void __fastcall EnsureLocation();
-  UnicodeString __fastcall ActualCurrentDirectory();
-  void __fastcall Discard();
   void __fastcall DoChangeDirectory(const UnicodeString Directory);
 
   void __fastcall Sink(const UnicodeString FileName,
@@ -105,7 +103,7 @@ protected:
     const TRemoteFile * File, const UnicodeString TargetDir,
     const TCopyParamType * CopyParam, int Params,
     TFileOperationProgressType * OperationProgress, unsigned int Flags);
-  void SinkFile(const UnicodeString FileName, const TRemoteFile * File, void * Param);
+  void /* __fastcall */ SinkFile(const UnicodeString FileName, const TRemoteFile * File, void * Param);
   void __fastcall WebDAVSourceRobust(const UnicodeString FileName,
     const UnicodeString TargetDir, const TCopyParamType * CopyParam, int Params,
     TFileOperationProgressType * OperationProgress, unsigned int Flags);
@@ -118,179 +116,101 @@ protected:
     int Params, TFileOperationProgressType * OperationProgress, unsigned int Flags);
   bool __fastcall ConfirmOverwrite(UnicodeString & FileName,
     TOverwriteMode & OverwriteMode, TFileOperationProgressType * OperationProgress,
-    const TOverwriteFileParams * FileParams, int Params, bool AutoResume);
-  void __fastcall ReadDirectoryProgress(__int64 Bytes);
+    const TOverwriteFileParams * FileParams, int Params, bool AutoResume,
+    unsigned int &Answer);
   void __fastcall ResetFileTransfer();
   void __fastcall DoFileTransferProgress(__int64 TransferSize, __int64 Bytes);
-  void __fastcall ResetCaches();
-  void __fastcall CaptureOutput(const UnicodeString Str);
   void __fastcall DoReadDirectory(TRemoteFileList * FileList);
   void __fastcall FileTransfer(const UnicodeString FileName, const UnicodeString LocalFile,
     const UnicodeString RemoteFile, const UnicodeString RemotePath, bool Get,
     __int64 Size, int Type, TFileTransferData & UserData,
     TFileOperationProgressType * OperationProgress);
 
-protected:
-  const wchar_t * __fastcall GetOption(int OptionID) const;
-  int __fastcall GetOptionVal(int OptionID) const;
-
 private:
-  enum TCommand
-  {
-    CMD_UNKNOWN,
-    PASS,
-    SYST,
-    FEAT
-  };
-
   TFileSystemInfo FFileSystemInfo;
   UnicodeString FCurrentDirectory;
-  UnicodeString FHomeDirectory;
   TRemoteFileList * FFileList;
   UnicodeString FCachedDirectoryChange;
-  bool FProcessingCommand;
-  int FLsFullTime;
   TCaptureOutputEvent FOnCaptureOutput;
   TSessionInfo FSessionInfo;
   UnicodeString FUserName;
-  TDateTime FLastDataSent;
-  TCURLIntf * FCURLIntf;
   bool FPasswordFailed;
-  UnicodeString FSystem;
   bool FActive;
-  bool FWaitingForReply;
   enum { ftaNone, ftaSkip, ftaCancel } FFileTransferAbort;
   bool FIgnoreFileList;
   bool FFileTransferCancelled;
   __int64 FFileTransferResumed;
   bool FFileTransferPreserveTime;
   size_t FFileTransferCPSLimit;
-  bool FAwaitingProgress;
-  TCommand FLastCommand;
   size_t FLastReadDirectoryProgress;
-  TStrings * FLastResponse;
-  TStrings * FLastError;
+  TFileOperationProgressType * FCurrentOperationProgress;
   TCriticalSection * FTransferStatusCriticalSection;
-  TAutoSwitch FListAll;
-  bool FDoListAll;
-  mutable UnicodeString FOptionScratch;
-  int m_ProgressPercent; ///< Progress percent value
   TWebDAVFileSystem * Self;
 
 private:
   void __fastcall CustomReadFile(const UnicodeString FileName,
     TRemoteFile *& File, TRemoteFile * ALinkedByFile);
-  static UnicodeString __fastcall DelimitStr(const UnicodeString Str);
-  TRemoteFile * __fastcall CreateRemoteFile(const UnicodeString ListingStr,
-      TRemoteFile * LinkedByFile = NULL);
-  void __fastcall CaptureOutput(const UnicodeString AddedLine, bool StdError);
+  bool SendPropFindRequest(const wchar_t * dir, int & responseCode);
 
 private:
-  enum
-  {
-    REPLY_CONNECT =      0x01,
-    REPLY_2XX_CODE =     0x02,
-    REPLY_ALLOW_CANCEL = 0x04
-  };
-  enum ItemType
-  {
-    ItemDirectory,
-    ItemFile,
-  };
+  bool WebDAVCheckExisting(const wchar_t * path, int & is_dir);
+  bool WebDAVMakeDirectory(const wchar_t * path);
+  bool WebDAVGetList(const UnicodeString Directory);
+  bool WebDAVGetFile(const wchar_t * remotePath, const wchar_t * localPath, const unsigned __int64 fileSize);
+  bool WebDAVPutFile(const wchar_t * remotePath, const wchar_t * localPath, const unsigned __int64 fileSize);
+  bool WebDAVRenameFile(const wchar_t * srcPath, const wchar_t * dstPath);
+  bool WebDAVDeleteFile(const wchar_t * path);
 
+public:
+  webdav::error_t GetServerSettings(
+    const char **proxy_host,
+    unsigned int *proxy_port,
+    const char **proxy_username,
+    const char **proxy_password,
+    int *timeout_seconds,
+    int *neon_debug,
+    const char **neon_debug_file_name,
+    bool *compression,
+    unsigned int *neon_auth_types,
+    const char **pk11_provider,
+    const char **ssl_authority_file,
+    const char *requested_host,
+    apr_pool_t *pool);
+  webdav::error_t VerifyCertificate(
+    const char * Prompt, const char *fingerprint,
+    unsigned int & RequestResult);
+  webdav::error_t AskForClientCertificateFilename(
+    const char **cert_file, unsigned int & RequestResult,
+    apr_pool_t *pool);
+  webdav::error_t AskForUsername(
+    const char **user_name,
+    unsigned int & RequestResult,
+    apr_pool_t *pool);
+  webdav::error_t AskForUserPassword(
+    const char **password, 
+    const char *user_name,
+    unsigned int & RequestResult,
+    apr_pool_t *pool);
+  webdav::error_t AskForPassphrase(
+    const char **passphrase,
+    const char *realm,
+    unsigned int & RequestResult,
+    apr_pool_t *pool);
+  webdav::error_t SimplePrompt(
+    const char *prompt_text,
+    const char *prompt_string,
+    unsigned int & RequestResult,
+    apr_pool_t *pool);
+  webdav::error_t CreateStorage(THierarchicalStorage *& Storage);
+  size_t AdjustToCPSLimit(size_t len);
+  bool GetIsCancelled();
 private:
-  bool WebDAVCheckExisting(const wchar_t * path, const ItemType type, bool & isExist, UnicodeString & errorInfo);
-  bool WebDAVMakeDirectory(const wchar_t * path, UnicodeString & errorInfo);
-  bool WebDAVGetList(const UnicodeString Directory, UnicodeString & errorInfo);
-  bool WebDAVGetFile(const wchar_t * remotePath, const wchar_t * localPath, const unsigned __int64 fileSize, UnicodeString & errorInfo);
-  bool WebDAVPutFile(const wchar_t * remotePath, const wchar_t * localPath, const unsigned __int64 fileSize, UnicodeString & errorInfo);
-  bool WebDAVRename(const wchar_t * srcPath, const wchar_t * dstPath, const ItemType type, UnicodeString & errorInfo);
-  bool WebDAVDelete(const wchar_t * path, const ItemType type, UnicodeString & errorInfo);
-  bool WebDAVAborted() const
-  {
-    return FCURLIntf->Aborted();
-  }
-
+  webdav::error_t OpenURL(const UnicodeString & repos_URL,
+    apr_pool_t *pool);
 private:
-  /** @brief Format error description
-    * @param errCode system error code
-    * @param info additional info
-    * @return error description
-    */
-  UnicodeString FormatErrorDescription(const DWORD errCode, const wchar_t * info = NULL) const;
-
-private:
-  /** @brief Send PROPFIND request
-    * @param dir directory to load
-    * @param responseCode response code
-    * @param response response buffer
-    * @param errInfo buffer to save error message
-    * @return false if error
-    */
-  bool SendPropFindRequest(const wchar_t * dir, long & responseCode, UnicodeString & response, UnicodeString & errInfo);
-
-  /** @brief Check response for valid code
-    * @param expect expected response code
-    * @param responseCode buffer to save error code
-    * @param errInfo buffer to save error message
-    * @return false if error (response unexpected)
-    */
-  bool CheckResponseCode(const long expect, long & responseCode, UnicodeString & errInfo);
-
-  /** @brief response for valid code
-    * @param expect1 expected response code
-    * @param expect2 expected response code
-    * @param responseCode buffer to save error code
-    * @param errInfo buffer to save error message
-    * @return false if error (response unexpected)
-    */
-  bool CheckResponseCode(const long expect1, const long expect2, long & responseCode, UnicodeString & errInfo);
-
-  /** @brief Get incorrect response information
-    * @param code response code
-    * @return response information
-    */
-  UnicodeString GetBadResponseInfo(const int code) const;
-
-  /** @brief Get xml namespace
-    * @param element xml element
-    * @param name namespace name (URI)
-    * @param defaultVal default namespace id
-    * @return namespace id
-    */
-  std::string GetNamespace(const TiXmlElement * element, const char * name, const char * defaultVal) const;
-
-  /** @brief Parse internet datetime
-    * @param dt internet datetime
-    * @return corresponding FILETIME (filled zero if error)
-    */
-  FILETIME ParseDateTime(const char * dt) const;
-
-  /** @brief Check for hexadecimal char (0123456789abcdefABCDEF)
-    * @param ch checked char
-    * @return true if cahr is a hexadecimal
-    */
-  inline bool IsHexadecimal(const char ch) const
-  {
-    return ((ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'f') || (ch >= 'A' && ch <= 'F'));
-  }
-
-  /** @brief Decode content with safe symbols wrapper (%XX)
-    * @param src source std::string
-    * @return decoded content
-    */
-  std::string DecodeHex(const std::string & src) const;
-
-  /** @brief Encode URL to UTF8 format with unsafe symbols wrapper (%XX)
-    * @param src source std::string
-    * @return encoded URL
-    */
-  std::string EscapeUTF8URL(const wchar_t * src) const;
-
-protected:
-  CURLcode CURLPrepare(const char * webDavPath, const bool handleTimeout = true);
+  apr_pool_t *webdav_pool;
+  webdav::session_t *FSession;
 private:
   TWebDAVFileSystem(const TWebDAVFileSystem &);
   void __fastcall operator=(const TWebDAVFileSystem &);
 };
-

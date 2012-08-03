@@ -63,7 +63,7 @@ to tim.kosse@gmx.de
 */#if !defined(AFX_ASYNCSOCKETEXLAYER_H__90C7FDB6_F3F1_4CC0_B77B_858458A563F3__INCLUDED_)
 #define AFX_ASYNCSOCKETEXLAYER_H__90C7FDB6_F3F1_4CC0_B77B_858458A563F3__INCLUDED_
 
-#include "AsyncSocketEx.h"	// Hinzugefügt von der Klassenansicht
+#include "AsyncSocketEx.h"	// Hinzugefï¿½gt von der Klassenansicht
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
@@ -139,6 +139,8 @@ protected:
 
 	// Iterate through protocols
 	bool TryNextProtocol();
+
+	void LogSocketMessage(int nMessageType, LPCTSTR pMsgFormat);
 
 private:
 	//Layer state can't be set directly from derived classes

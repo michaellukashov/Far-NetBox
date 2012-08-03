@@ -54,7 +54,18 @@ Compile openssl:
     call src/NetBox/scripts/build_openssl.bat x86  
     call src/NetBox/scripts/build_openssl.bat x64  
 
+Compile expat:
 
+    cd libs/expat  
+    call src/NetBox/scripts/build_expat.bat x86  
+    call src/NetBox/scripts/build_expat.bat x64  
+    
+Compile neon:
+
+    cd libs/neon  
+    call src/NetBox/scripts/build_neon.bat x86  
+    call src/NetBox/scripts/build_neon.bat x64  
+    
 Compile NetBox plugin:
 
     cmd /c %VS100COMNTOOLS%\..\..\VC\vcvarsall.bat x86 && devenv NetBox.sln /Build "Debug|Win32" /USEENV /Project "NetBox"

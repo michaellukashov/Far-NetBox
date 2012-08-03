@@ -256,6 +256,7 @@ public:
 
   operator const char * () const { return Data.c_str(); }
   operator UnicodeString() const;
+  operator std::string() const { return std::string(operator const char *()); }
   int size() const { return Data.size(); }
   const char * c_str() const { return Data.c_str(); }
   // const unsigned char * c_str() const { return Data.c_str(); }
@@ -264,6 +265,7 @@ public:
   bool IsEmpty() const { return Length() == 0; }
   void SetLength(int nLength) { Data.resize(nLength); }
   AnsiString & Delete(int Index, int Count) { Data.erase(Index - 1, Count); return *this; }
+  AnsiString & Clear() { Data.clear(); return *this; }
 
   AnsiString & Insert(const char * Str, int Pos);
 
@@ -284,6 +286,12 @@ public:
     Unique();                 // Ensure we're not ref-counted (and Unicode)
     return Data[idx-1];
   }
+
+  AnsiString & Append(const char * Str, int StrLen) { Data.append(Str, StrLen); return *this; }
+  AnsiString & Append(const AnsiString & Str) { return Append(Str.c_str(), Str.GetLength()); }
+  AnsiString & Append(const char * Str) { return Append(Str, strlen(Str ? Str : "")); }
+  AnsiString & Append(const char Ch) { return Append(&Ch, 1); }
+  // AnsiString & Append(const char * lpszAdd, UINT CodePage=CP_OEMCP);
 
 public:
   const AnsiString & operator=(const UnicodeString & strCopy);

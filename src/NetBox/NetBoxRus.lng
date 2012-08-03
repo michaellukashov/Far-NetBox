@@ -200,6 +200,7 @@
 "Bugs"
 "Authentication"
 "KEX|Key exchange"
+"HTTP(S)"
 " Session "
 "&Host name:"
 "Po&rt number:"
@@ -210,7 +211,7 @@
 "&Password:"
 "Private &key file:"
 " Protocol "
-"&File protocol:    "
+"&File protocol: "
 "SCP"
 "SFTP"
 "FTP"
@@ -371,6 +372,8 @@
 "Implicit FTP over SSL"
 "Explicit FTP over TLS"
 "Post login &commands:"
+
+" HTTP(S) protocol options "
 
 "Attributes"
 "Change file attributes for"

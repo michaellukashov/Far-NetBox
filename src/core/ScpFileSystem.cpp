@@ -2622,6 +2622,7 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
                   {
                     case qaCancel:
                       OperationProgress->Cancel = csCancel; // continue on next case
+                      // FALLTHROUGH
                     case qaNo:
                       SkipConfirmed = true;
                       EXCEPTION;

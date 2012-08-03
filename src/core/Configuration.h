@@ -50,6 +50,7 @@ private:
   int FSessionReopenTimeout;
   int FSessionReopenAutoStall;
   UnicodeString FIniFileStorageName;
+  UnicodeString FVirtualIniFileStorageName;
   int FTunnelLocalPortNumberLow;
   int FTunnelLocalPortNumberHigh;
   int FCacheDirectoryChangesMaxSize;
