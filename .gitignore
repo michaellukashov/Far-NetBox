@@ -26,6 +26,7 @@ ipch/
 *.bak
 *.vcxproj.filters
 *.vcxproj.user
+*.cache
 *.zip
 *.7z
 *.orig

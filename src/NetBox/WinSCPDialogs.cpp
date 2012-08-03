@@ -1699,7 +1699,7 @@ class TSessionDialog : public TTabbedDialog
 {
 public:
   enum TSessionTab { tabSession = 1, tabEnvironment, tabDirectories, tabSFTP, tabSCP, tabFTP,
-    tabConnection, tabTunnel, tabProxy, tabSsh, tabKex, tabAuthentication, tabBugs, tabCount };
+    tabConnection, tabTunnel, tabProxy, tabSsh, tabKex, tabAuthentication, tabBugs, tabHttp, tabCount };
 
   explicit /* __fastcall */ TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum Action);
 
@@ -1719,6 +1719,7 @@ private:
   TTabButton * AuthenticatonTab;
   TTabButton * KexTab;
   TTabButton * BugsTab;
+  TTabButton * HttpTab;
   TTabButton * ScpTab;
   TTabButton * SftpTab;
   TTabButton * FtpTab;
@@ -1830,6 +1831,7 @@ private:
   TFarCheckBox * FtpAllowEmptyPasswordCheck;
   TFarCheckBox * SslSessionReuseCheck;
   TFarComboBox * FtpEncryptionCombo;
+  TFarCheckBox * HttpCompressionCheck;
   TSessionDialog * Self;
 
   void __fastcall LoadPing(TSessionData * SessionData);
@@ -1989,6 +1991,11 @@ static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsFTPS, fsH
   BugsTab->SetTabName(GetMsg(LOGIN_TAB_BUGS));
   BugsTab->SetTab(tabBugs);
   BugsTab->SetBrackets(TabBrackets);
+
+  HttpTab = new TTabButton(this);
+  HttpTab->SetTabName(GetMsg(LOGIN_TAB_HTTP));
+  HttpTab->SetTab(tabHttp);
+  HttpTab->SetBrackets(TabBrackets);
 
   // Sesion tab
 
@@ -2967,6 +2974,18 @@ static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsFTPS, fsH
   BugPKSessID2Combo->SetEnabledDependencyNegative(SshProt1onlyButton);
   BugRekey2Combo->SetEnabledDependencyNegative(SshProt1onlyButton);
 
+  // Http tab
+
+  SetNextItemPosition(ipNewLine);
+
+  SetDefaultGroup(tabHttp);
+  Separator = new TFarSeparator(this);
+  Separator->SetPosition(GroupTop);
+  Separator->SetCaption(GetMsg(LOGIN_HTTP_GROUP));
+
+  HttpCompressionCheck = new TFarCheckBox(this);
+  HttpCompressionCheck->SetCaption(GetMsg(LOGIN_COMPRESSION));
+
   #undef TRISTATE
 
   new TFarSeparator(this);
@@ -3223,6 +3242,9 @@ void __fastcall TSessionDialog::UpdateControls()
 
   // Bugs tab
   BugsTab->SetEnabled(SshProtocol);
+
+  // Http tab
+  HttpTab->SetEnabled(InternalHTTPProtocol);
 
   // Scp/Shell tab
   ScpTab->SetEnabled(InternalSshProtocol);
@@ -3641,6 +3663,10 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
   // Bugs tab
 
   BUGS();
+
+  // Http tab
+  HttpCompressionCheck->SetChecked(SessionData->GetCompression());
+
   #undef TRISTATE
 
   int Button = ShowModal();
@@ -3947,6 +3973,10 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
 
     // Bugs tab
     // BUGS();
+
+    // Http tab
+    SessionData->SetCompression(HttpCompressionCheck->GetChecked());
+
     #undef TRISTATE
     SessionData->SetBug(sbIgnore1, static_cast<TAutoSwitch>(2 - BugIgnore1Combo->GetItems()->GetSelected()));
     SessionData->SetBug(sbPlainPW1, static_cast<TAutoSwitch>(2 - BugPlainPW1Combo->GetItems()->GetSelected()));

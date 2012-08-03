@@ -3096,3 +3096,63 @@ UnicodeString GetCodePageAsString(unsigned int cp)
 }
 
 //---------------------------------------------------------------------
+UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TSessionData * SessionData, bool Append)
+{
+  UnicodeString ANewFileName = StripPathQuotes(ExpandEnvironmentVariables(LogFileName));
+  TDateTime N = Now();
+  for (int Index = 1; Index < ANewFileName.Length(); Index++)
+  {
+    if (ANewFileName[Index] == L'&')
+    {
+      UnicodeString Replacement;
+      // keep consistent with TFileCustomCommand::PatternReplacement
+      unsigned short Y, M, D, H, NN, S, MS;
+      TDateTime DateTime = N;
+      DateTime.DecodeDate(Y, M, D);
+      DateTime.DecodeTime(H, NN, S, MS);
+      switch (tolower(ANewFileName[Index + 1]))
+      {
+        case L'y':
+          // Replacement = FormatDateTime(L"yyyy", N);
+          Replacement = FORMAT(L"%04d", Y);
+          break;
+
+        case L'm':
+          // Replacement = FormatDateTime(L"mm", N);
+          Replacement = FORMAT(L"%02d", M);
+          break;
+
+        case L'd':
+          // Replacement = FormatDateTime(L"dd", N);
+          Replacement = FORMAT(L"%02d", D);
+          break;
+
+        case L't':
+          // Replacement = FormatDateTime(L"hhnnss", N);
+          Replacement = FORMAT(L"%02d%02d%02d", H, NN, S);
+          break;
+
+        case L'@':
+          Replacement = MakeValidFileName(SessionData->GetHostNameExpanded());
+          break;
+
+        case L's':
+          Replacement = MakeValidFileName(SessionData->GetSessionName());
+          break;
+
+        case L'&':
+          Replacement = L"&";
+          break;
+
+        default:
+          Replacement = UnicodeString(L"&") + ANewFileName[Index + 1];
+          break;
+      }
+      ANewFileName.Delete(Index, 2);
+      ANewFileName.Insert(Replacement, Index);
+      Index += Replacement.Length() - 1;
+    }
+  }
+  return ANewFileName;
+}
+//---------------------------------------------------------------------

@@ -655,4 +655,6 @@ bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx);
 unsigned int GetCodePageAsNumber(const UnicodeString CodePage);
 UnicodeString GetCodePageAsString(unsigned int cp);
 //---------------------------------------------------------------------------
+UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TSessionData * SessionData, bool Append);
+//---------------------------------------------------------------------------
 #endif

@@ -4,7 +4,6 @@
 
 #include "FarTexts.h"
 #include "FarUtil.h"
-#include "EasyURL.h"
 #include "resource.h"
 #include "Common.h"
 #include "Sysutils.h"
@@ -220,8 +219,7 @@ extern "C"
       // printf("WSAStartup failed with error: %d\n", err);
       return FALSE;
     }
-    curl_global_init(CURL_GLOBAL_ALL);
-    // DEBUG_PRINTF(L"DllProcessAttach: end");
+   // DEBUG_PRINTF(L"DllProcessAttach: end");
     return TRUE;
   }
 
@@ -236,7 +234,6 @@ extern "C"
       assert(FarPlugin);
       SAFE_DESTROY(FarPlugin);
       TermExtensionModule();
-      curl_global_cleanup();
       WSACleanup();
     }
     // DEBUG_PRINTF(L"DllProcessDetach: end");
