@@ -1,5 +1,6 @@
 NetBox 2.1.7 ??.08.2012
 --------------------
+  * WinSCP core upgraded to 5.0.8 beta
   * various minor bugfixes
 
 NetBox 2.1.6 18.07.2012
