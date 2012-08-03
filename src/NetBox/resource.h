@@ -1,6 +1,6 @@
 #pragma once
 
-#define PLUGIN_VERSION_NUM 2,1,7,131
+#define PLUGIN_VERSION_NUM 2,1,7,132
 #define PLUGIN_VERSION_TXT "2.1.7"
 #define PLUGIN_VERSION_WTXT L"2.1.7"
 
@@ -9,7 +9,7 @@
 #define PLUGIN_FILENAME     L"NetBox.dll"
 
 #define WINSCP_PLUGIN_VERSION_WTXT  L"1.6.2.151"
-#define WINSCP_VERSION_WTXT         L"5.0.7"
+#define WINSCP_VERSION_WTXT         L"5.0.8"
 #define PUTTY_VERSION_WTXT          L"0.62"
 #define FILEZILLA_VERSION_WTXT      L"2.2.32"
 #define ZLIB_VERSION_WTXT           L"1.2.6"
