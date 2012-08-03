@@ -3502,7 +3502,7 @@ bool __fastcall TFTPFileSystem::HandleListData(const wchar_t * Path,
             File->GetRights()->SetOctal(Entry->Permissions);
           }
         }
-        catch (...)
+        catch(...)
         {
           // ignore permissions errors with FTP
         }

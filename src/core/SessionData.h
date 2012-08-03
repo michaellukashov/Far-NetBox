@@ -161,7 +161,7 @@ private:
   int FTunnelLocalPortNumber;
   UnicodeString FTunnelPortFwd;
   bool FFtpPasvMode;
-  bool FFtpForcePasvIp;
+  TAutoSwitch FFtpForcePasvIp;
   UnicodeString FFtpAccount;
   int FFtpPingInterval;
   TPingType FFtpPingType;
@@ -307,7 +307,7 @@ public:
   void __fastcall SetTunnelLocalPortNumber(int value);
   bool __fastcall GetTunnelAutoassignLocalPortNumber();
   void __fastcall SetFtpPasvMode(bool value);
-  void __fastcall SetFtpForcePasvIp(bool value);
+  void __fastcall SetFtpForcePasvIp(TAutoSwitch value);
   void __fastcall SetFtpAccount(UnicodeString value);
   void __fastcall SetFtpPingInterval(int value);
   void __fastcall SetFtpPingType(TPingType value);
@@ -463,7 +463,7 @@ public:
   __property int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber, write = SetTunnelLocalPortNumber };
   __property UnicodeString TunnelPortFwd = { read = FTunnelPortFwd, write = SetTunnelPortFwd };
   __property bool FtpPasvMode = { read = FFtpPasvMode, write = SetFtpPasvMode };
-  __property bool FtpForcePasvIp = { read = FFtpForcePasvIp, write = SetFtpForcePasvIp };
+  __property TAutoSwitch FtpForcePasvIp = { read = FFtpForcePasvIp, write = SetFtpForcePasvIp };
   __property UnicodeString FtpAccount = { read = FFtpAccount, write = SetFtpAccount };
   __property int FtpPingInterval  = { read=FFtpPingInterval, write=SetFtpPingInterval };
   __property TDateTime FtpPingIntervalDT  = { read=GetFtpPingIntervalDT };
@@ -576,7 +576,7 @@ public:
   void __fastcall SetFtpAllowEmptyPassword(bool value);
   TFtpEncryptionSwitch __fastcall GetFtpEncryption() const { return FFtpEncryption; }
   void __fastcall SetFtpEncryption(TFtpEncryptionSwitch value);
-  bool __fastcall GetFtpForcePasvIp() const { return FFtpForcePasvIp; }
+  TAutoSwitch __fastcall GetFtpForcePasvIp() const { return FFtpForcePasvIp; }
   UnicodeString __fastcall GetFtpAccount() const { return FFtpAccount; }
   int __fastcall GetFtpPingInterval() const { return FFtpPingInterval; }
   TPingType __fastcall GetFtpPingType() const { return FFtpPingType; }

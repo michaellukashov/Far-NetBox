@@ -1064,6 +1064,7 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
         ADF(L"Local command: %s", Data->GetProxyLocalCommand().c_str());
       }
     }
+    wchar_t const * BugFlags = L"+-A";
     if (Data->GetUsesSsh())
     {
       ADF(L"SSH protocol version: %s; Compression: %s",
@@ -1081,7 +1082,6 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
       ADF(L"Ciphers: %s; Ssh2DES: %s",
         Data->GetCipherList().c_str(), BooleanToEngStr(Data->GetSsh2DES()).c_str());
       UnicodeString Bugs;
-      wchar_t const * BugFlags = L"A+-";
       for (int Index = 0; Index < BUG_COUNT; Index++)
       {
         Bugs += UnicodeString(BugFlags[Data->GetBug(static_cast<TSshBug>(Index))])+(Index<BUG_COUNT-1?L",":L"");
@@ -1128,9 +1128,9 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
           Ftps = L"None";
           break;
       }
-      ADF(L"FTP: FTPS: %s; Passive: %s [Force IP: %s]",
+      ADF(L"FTP: FTPS: %s; Passive: %s [Force IP: %c]",
          Ftps.c_str(), BooleanToEngStr(Data->GetFtpPasvMode()).c_str(),
-         BooleanToEngStr(Data->GetFtpForcePasvIp()).c_str());
+         BugFlags[Data->GetFtpForcePasvIp()]);
     }
     ADF(L"Local directory: %s, Remote directory: %s, Update: %s, Cache: %s",
       (Data->GetLocalDirectory().IsEmpty() ? UnicodeString(L"default").c_str() : Data->GetLocalDirectory().c_str()),
@@ -1225,7 +1225,7 @@ void __fastcall TActionLog::Add(const UnicodeString & Line)
       if (FFile != NULL)
       {
         UTF8String UtfLine = UTF8String(Line);
-        fwrite(UtfLine.c_str(), UtfLine.Length(), 1, (FILE *)FFile);
+        fwrite(UtfLine.c_str(), 1, UtfLine.Length(), (FILE *)FFile);
         fwrite("\n", 1, 1, (FILE *)FFile);
       }
     }
@@ -1262,7 +1262,22 @@ void __fastcall TActionLog::AddFailure(Exception * E)
   TStrings * Messages = ExceptionToMessages(E);
   if (Messages != NULL)
   {
-    AddFailure(Messages);
+    // try
+    {
+#ifdef _MSC_VER
+      BOOST_SCOPE_EXIT ( (&Messages) )
+      {
+        delete Messages;
+      } BOOST_SCOPE_EXIT_END
+#endif
+      AddFailure(Messages);
+    }
+#ifndef _MSC_VER
+    __finally
+    {
+      delete Messages;
+    }
+#endif
   }
 }
 //---------------------------------------------------------------------------

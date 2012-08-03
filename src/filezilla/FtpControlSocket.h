@@ -19,8 +19,8 @@
 #if !defined(AFX_FTPCONTROLSOCKET_H__AE6AA44E_B09D_487A_8EF2_A23697434945__INCLUDED_)
 #define AFX_FTPCONTROLSOCKET_H__AE6AA44E_B09D_487A_8EF2_A23697434945__INCLUDED_
 
-#include "structures.h"	// Hinzugefügt von der Klassenansicht
-#include "StdAfx.h"	// Hinzugefügt von der Klassenansicht
+#include "structures.h"	// Hinzugefï¿½gt von der Klassenansicht
+#include "StdAfx.h"	// Hinzugefï¿½gt von der Klassenansicht
 #include "FileZillaApi.h"
 #include "FileZillaIntf.h"
 #include "ControlSocket.h"
@@ -48,7 +48,7 @@ public:
 	CFtpControlSocket(CMainThread *pMainThread);
 	virtual ~CFtpControlSocket();
 
-// Überschreibungen
+// ï¿½berschreibungen
 public:
 	virtual void Connect(t_server &server);
 	virtual void OnTimer();
@@ -81,16 +81,13 @@ public:
 #ifndef MPEXT_NO_SSL
 	BOOL m_bDidRejectCertificate;
 #endif
-	static const size_t m_MaxSslSessions; /* SSL session id cache size */
-	ssl_session_info_t *m_SslSessions; /* SSL session id cache */
-	
 	// Some servers are broken. Instead of an empty listing, some MVS servers
 	// for example they return something "550 no members found"
 	// Other servers return "550 No files found."
 	bool IsMisleadingListResponse();
 
 	
-	// Vom Klassen-Assistenten generierte virtuelle Funktionsüberschreibungen
+	// Vom Klassen-Assistenten generierte virtuelle Funktionsï¿½berschreibungen
 	//{{AFX_VIRTUAL(CFtpControlSocket)
 	public:
 	virtual void OnReceive(int nErrorCode);
@@ -101,7 +98,7 @@ public:
 
 	// Generierte Nachrichtenzuordnungsfunktionen
 	//{{AFX_MSG(CFtpControlSocket)
-		// HINWEIS - Der Klassen-Assistent fügt hier Member-Funktionen ein und entfernt diese.
+		// HINWEIS - Der Klassen-Assistent fï¿½gt hier Member-Funktionen ein und entfernt diese.
 	//}}AFX_MSG
 
 // Implementierung
@@ -133,6 +130,7 @@ protected:
 	bool InitConnect();
 
 #ifdef MPEXT
+	bool IsRoutableAddress(const CString & host);
 	bool CheckForcePasvIp(CString & host);
 #endif
 
@@ -142,7 +140,6 @@ protected:
 	CTime m_LastSendTime;
 	
 	CString m_ServerName;
-	int m_Port;
 	std::list<CStringA> m_RecvBuffer;
 	CTime m_LastRecvTime;
 	class CListData;
@@ -183,6 +180,6 @@ private:
 /////////////////////////////////////////////////////////////////////////////
 
 //{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ fügt unmittelbar vor der vorhergehenden Zeile zusätzliche Deklarationen ein.
+// Microsoft Visual C++ fï¿½gt unmittelbar vor der vorhergehenden Zeile zusï¿½tzliche Deklarationen ein.
 
 #endif // AFX_FTPCONTROLSOCKET_H__AE6AA44E_B09D_487A_8EF2_A23697434945__INCLUDED_

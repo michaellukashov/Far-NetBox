@@ -153,7 +153,7 @@ public:
   bool __fastcall Connect(const wchar_t * Host, int Port, const wchar_t * User,
     const wchar_t * Pass, const wchar_t * Account, bool FwByPass,
     const wchar_t * Path, int ServerType, int Pasv, int TimeZoneOffset, int UTF8,
-    bool bForcePasvIp);
+    int iForcePasvIp);
   bool __fastcall Close();
 
   bool __fastcall List();

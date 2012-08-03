@@ -32,7 +32,7 @@ const wchar_t ProtocolNames[PROTOCOL_COUNT][10] = { L"raw", L"telnet", L"rlogin"
 const wchar_t SshProtList[][10] = {L"1 only", L"1", L"2", L"2 only"};
 const wchar_t ProxyMethodList[][10] = {L"none", L"SOCKS4", L"SOCKS5", L"HTTP", L"Telnet", L"Cmd", L"System" };
 const TCipher DefaultCipherList[CIPHER_COUNT] =
-  { cipBlowfish, cipAES, cip3DES, cipWarn, cipArcfour, cipDES };
+  { cipAES, cipBlowfish, cip3DES, cipWarn, cipArcfour, cipDES };
 const TKex DefaultKexList[KEX_COUNT] =
   { kexDHGEx, kexDHGroup14, kexDHGroup1, kexRSA, kexWarn };
 const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][15] = { L"SCP", L"SFTP (SCP)", L"SFTP", L"", L"", L"FTP", L"FTPS", L"WebDAV - HTTP", L"WebDAV - HTTPS" };
@@ -141,7 +141,7 @@ void __fastcall TSessionData::Default()
   SetDSTMode(dstmUnix);
   SetDeleteToRecycleBin(false);
   SetOverwrittenToRecycleBin(false);
-  SetRecycleBinPath(L"/tmp");
+  SetRecycleBinPath(L"");
   SetColor(0);
   SetPostLoginCommands(L"");
 
@@ -185,7 +185,7 @@ void __fastcall TSessionData::Default()
 
   // FTP
   SetFtpPasvMode(true);
-  SetFtpForcePasvIp(false);
+  SetFtpForcePasvIp(asAuto);
   SetFtpAccount(L"");
   SetFtpPingInterval(30);
   SetFtpPingType(ptDummyCommand);
@@ -602,7 +602,7 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
 
   // Ftp prefix
   SetFtpPasvMode(Storage->ReadBool(L"FtpPasvMode", GetFtpPasvMode()));
-  SetFtpForcePasvIp(Storage->ReadBool(L"FtpForcePasvIp", GetFtpForcePasvIp()));
+  SetFtpForcePasvIp(TAutoSwitch(Storage->ReadInteger(L"FtpForcePasvIp2", GetFtpForcePasvIp())));
   SetFtpAccount(Storage->ReadString(L"FtpAccount", GetFtpAccount()));
   SetFtpPingInterval(Storage->ReadInteger(L"FtpPingInterval", GetFtpPingInterval()));
   SetFtpPingType(static_cast<TPingType>(Storage->ReadInteger(L"FtpPingType", GetFtpPingType())));
@@ -775,7 +775,7 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
       WRITE_DATA_EX(String, L"PostLoginCommands", GetPostLoginCommands(), );
 
       WRITE_DATA_EX(String, L"ReturnVar", GetReturnVar(), );
-      WRITE_DATA_EX(Bool, L"LookupUserGroups", GetLookupUserGroups(), );
+      WRITE_DATA_EX(Integer, L"LookupUserGroups2", GetLookupUserGroups(), );
       WRITE_DATA_EX(Integer, L"EOLType", GetEOLType(), );
       Storage->DeleteValue(L"SFTPUtfBug");
       WRITE_DATA_EX(Integer, L"Utf", GetNotUtf(), );
@@ -882,7 +882,7 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
       WRITE_DATA_EX(Integer, L"TunnelLocalPortNumber", GetTunnelLocalPortNumber(), );
 
       WRITE_DATA_EX(Bool, L"FtpPasvMode", GetFtpPasvMode(), );
-      WRITE_DATA_EX(Bool, L"FtpForcePasvIp", GetFtpForcePasvIp(), );
+      WRITE_DATA_EX(Integer, L"FtpForcePasvIp2", GetFtpForcePasvIp(), );
       WRITE_DATA_EX(String, L"FtpAccount", GetFtpAccount(), );
       WRITE_DATA_EX(Integer, L"FtpPingInterval", GetFtpPingInterval(), );
       WRITE_DATA_EX(Integer, L"FtpPingType", GetFtpPingType(), );
@@ -2409,7 +2409,7 @@ void __fastcall TSessionData::SetFtpEncryption(TFtpEncryptionSwitch value)
   SET_SESSION_PROPERTY(FtpEncryption);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetFtpForcePasvIp(bool value)
+void __fastcall TSessionData::SetFtpForcePasvIp(TAutoSwitch value)
 {
   SET_SESSION_PROPERTY(FtpForcePasvIp);
 }
@@ -2844,6 +2844,7 @@ void __fastcall TStoredSessionList::UpdateStaticUsage()
   int FTPS = 0;
   int Password = 0;
   int Advanced = 0;
+  int Color = 0;
   bool Folders = false;
   std::auto_ptr<TSessionData> FactoryDefaults(new TSessionData(L""));
   for (int Index = 0; Index < Count; Index++)
@@ -2877,6 +2878,11 @@ void __fastcall TStoredSessionList::UpdateStaticUsage()
       Password++;
     }
 
+    if (Data->Color != 0)
+    {
+      Color++;
+    }
+
     if (!Data->IsSame(FactoryDefaults.get(), true))
     {
       Advanced++;
@@ -2893,6 +2899,7 @@ void __fastcall TStoredSessionList::UpdateStaticUsage()
   Configuration->Usage->Set(L"StoredSessionsCountFTP", FTP);
   Configuration->Usage->Set(L"StoredSessionsCountFTPS", FTPS);
   Configuration->Usage->Set(L"StoredSessionsCountPassword", Password);
+  Configuration->Usage->Set(L"StoredSessionsCountColor", Color);
   Configuration->Usage->Set(L"StoredSessionsCountAdvanced", Advanced);
 
   bool CustomDefaultStoredSession = !FDefaultSettings->IsSame(FactoryDefaults.get(), false);

@@ -1590,7 +1590,7 @@ UnicodeString __fastcall DoEncodeUrl(UnicodeString S, UnicodeString Chars)
   {
     if (Chars.Pos(S[i]) > 0)
     {
-      UnicodeString H = CharToHex(S[i]);
+      UnicodeString H = ByteToHex(AnsiString(UnicodeString(S[i]))[1]);
       S.Insert(H, i + 1);
       S[i] = '%';
       i += H.Length();

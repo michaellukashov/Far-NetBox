@@ -89,7 +89,7 @@ UnicodeString __fastcall MaskFilePart(const UnicodeString Part, const UnicodeStr
 //---------------------------------------------------------------------------
 UnicodeString __fastcall MaskFileName(UnicodeString FileName, const UnicodeString Mask)
 {
-  if (!Mask.IsEmpty() && (Mask != L"*") && (Mask != L"*.*"))
+  if (IsEffectiveFileNameMask(Mask))
   {
     bool Masked;
     int P = Mask.LastDelimiter(L".");
@@ -119,11 +119,9 @@ UnicodeString __fastcall MaskFileName(UnicodeString FileName, const UnicodeStrin
   return FileName;
 }
 //---------------------------------------------------------------------------
-bool __fastcall IsFileNameMask(const UnicodeString Mask)
+bool __fastcall IsEffectiveFileNameMask(const UnicodeString & Mask)
 {
-  bool Masked = false;
-  MaskFilePart(L"", Mask, Masked);
-  return Masked;
+  return !Mask.IsEmpty() && (Mask != L"*") && (Mask != L"*.*");
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall DelimitFileNameMask(UnicodeString Mask)

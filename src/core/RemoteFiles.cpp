@@ -1034,9 +1034,17 @@ void __fastcall TRemoteFile::SetListingStr(UnicodeString value)
     Line = Line.TrimLeft();
 
     GETCOL;
-    FINodeBlocks = StrToInt(Col);
+    if (!TryStrToInt(Col, FINodeBlocks))
+    {
+      // if the column is not an integer, suppose it's owner
+      // (Android BusyBox)
+      FINodeBlocks = 0;
+    }
+    else
+    {
+      GETCOL;
+    }
 
-    GETCOL;
     FOwner.SetName(Col);
 
     // #60 17.10.01: group name can contain space
@@ -1089,7 +1097,14 @@ void __fastcall TRemoteFile::SetListingStr(UnicodeString value)
         GETCOL;
         Hour = static_cast<Word>(Col.SubString(1, 2).ToInt());
         Min = static_cast<Word>(Col.SubString(4, 2).ToInt());
-        Sec = static_cast<Word>(Col.SubString(7, 2).ToInt());
+        if (Col.Length() >= 8)
+        {
+          Sec = (Word)StrToInt(Col.SubString(7, 2));
+        }
+        else
+        {
+          Sec = 0;
+        }
         FModificationFmt = mfFull;
         // skip TZ (TODO)
         // do not trim leading space of filename

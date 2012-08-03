@@ -66,10 +66,6 @@ CTransferSocket::CTransferSocket(CFtpControlSocket *pOwner, int nMode)
 	m_pBuffer2 = 0;
 #endif
 	m_bufferpos = 0;
-	m_ReadPos = 0;
-	m_ReadBuffer = 0;
-	m_ReadSize = 0;
-	m_cLastChar = 0;
 	m_pFile = 0;
 	m_bListening = FALSE;
 	m_bSentClose = FALSE;
@@ -118,11 +114,6 @@ CTransferSocket::~CTransferSocket()
 #ifndef MPEXT_NO_ZLIB
 	delete [] m_pBuffer2;
 #endif
-	if (m_ReadBuffer)
-	{
-		delete [] m_ReadBuffer;
-		m_ReadBuffer = 0;
-	}
 	PostMessage(m_pOwner->m_pOwner->m_hOwnerWnd, m_pOwner->m_pOwner->m_nReplyMessageID, FZ_MSG_MAKEMSG(FZ_MSG_TRANSFERSTATUS, 0), 0);
 	Close();
 	RemoveAllLayers();
@@ -454,8 +445,7 @@ void CTransferSocket::OnAccept(int nErrorCode)
 		if (m_pSslLayer)
 		{
 			AddLayer(m_pSslLayer);
-			int res = m_pSslLayer->InitSSLConnection(true, m_pOwner->m_ServerName, m_pOwner->m_Port,
-				m_pOwner->m_SslSessions, m_pOwner->m_MaxSslSessions);
+			int res = m_pSslLayer->InitSSLConnection(true, m_pOwner->m_pSslLayer, COptions::GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE));
 #ifndef MPEXT_NO_SSLDLL
 			if (res == SSL_FAILURE_LOADDLLS)
 				m_pOwner->ShowStatus(IDS_ERRORMSG_CANTLOADSSLDLLS, 1);
@@ -538,8 +528,7 @@ void CTransferSocket::OnConnect(int nErrorCode)
 		if (m_pSslLayer)
 		{
 			AddLayer(m_pSslLayer);
-			int res = m_pSslLayer->InitSSLConnection(true, m_pOwner->m_ServerName, m_pOwner->m_Port,
-				m_pOwner->m_SslSessions, m_pOwner->m_MaxSslSessions);
+			int res = m_pSslLayer->InitSSLConnection(true, m_pOwner->m_pSslLayer, COptions::GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE));
 #ifndef MPEXT_NO_SSLDLL
 			if (res == SSL_FAILURE_LOADDLLS)
 				m_pOwner->ShowStatus(IDS_ERRORMSG_CANTLOADSSLDLLS, 1);
@@ -693,7 +682,7 @@ void CTransferSocket::OnSend(int nErrorCode)
 						return;
 					}
 
-					m_transferdata.transferleft -= numread;					
+					m_transferdata.transferleft -= numread;
 					m_zlibStream.next_in = (Bytef *)m_pBuffer2;
 					m_zlibStream.avail_in = numread;
 
@@ -790,7 +779,7 @@ void CTransferSocket::OnSend(int nErrorCode)
 			m_bufferpos += numsent;
 
 			UpdateStatusBar(false);
-			
+
 			if (!m_zlibStream.avail_in && !m_pFile && m_zlibStream.avail_out &&
 				m_zlibStream.avail_out + m_bufferpos == BUFSIZE && res == Z_STREAM_END)
 			{
@@ -1425,7 +1414,7 @@ bool CTransferSocket::InitZlib(int level)
 		res = deflateInit2(&m_zlibStream, level, Z_DEFLATED, 15, 8, Z_DEFAULT_STRATEGY);
 	else
 		res = inflateInit2(&m_zlibStream, 15);
-	
+
 	if (res == Z_OK)
 		m_useZlib = true;
 
@@ -1437,44 +1426,21 @@ int CTransferSocket::ReadDataFromFile(char *buffer, int len)
 {
 	TRY
 	{
-#ifndef MPEXT
-		if (!m_transferdata.bType)
-#endif
-			return m_pFile->Read(buffer, len);
-#ifndef MPEXT
-		else
-		{   //Read the file as ASCII file with CRLF line end
-			if (!m_ReadBuffer)
-				m_ReadBuffer = new char[BUFSIZE];
-			if (!m_ReadSize)
-				m_ReadSize = m_pFile->Read(m_ReadBuffer, len);
-			int numread = 0;
-			while (numread < len)
+		// Comparing to Filezilla 2, we do not do any translation locally,
+		// leaving it onto the server (what Filezilla 3 seems to do too)
+		const char Bom[4] = "\xEF\xBB\xBF";
+		int read = m_pFile->Read(buffer, len);
+		if (m_transferdata.bType && (read >= 3) && (memcmp(buffer, Bom, 3) == 0))
+		{
+			memcpy(buffer, buffer + 3, read - 3);
+			read -= 3;
+			int read2 = m_pFile->Read(buffer + read, 3);
+			if (read2 > 0)
 			{
-				if (m_ReadPos >= m_ReadSize)
-				{
-					m_ReadSize = m_pFile->Read(m_ReadBuffer, len);
-					m_ReadPos = 0;
-					if (!m_ReadSize)
-					    break;
-				}
-				if (m_ReadBuffer[m_ReadPos] == '\n' && m_cLastChar != '\r')
-				{
-					buffer[numread++] = '\r';
-					m_cLastChar = '\r';
-					if (numread == len)
-					    break;
-				}
-
-				buffer[numread] = m_ReadBuffer[m_ReadPos];
-				m_cLastChar = buffer[numread];
-				numread++;
-				m_ReadPos++;
+				read += read2;
 			}
-			ASSERT(numread <= len);
-			return numread;
 		}
-#endif
+		return read;
 	}
 	CATCH_ALL(e)
 	{
@@ -1494,4 +1460,9 @@ int CTransferSocket::ReadDataFromFile(char *buffer, int len)
 		return -1;
 	}
 	END_CATCH_ALL;
+}
+
+void CTransferSocket::LogSocketMessage(int nMessageType, LPCTSTR pMsgFormat)
+{
+	LogMessage(nMessageType, pMsgFormat);
 }

@@ -239,6 +239,10 @@ Exception * __fastcall CloneException(Exception * E)
   {
     return new ECallbackGuardAbort();
   }
+  else if (dynamic_cast<EAbort *>(E) != NULL)
+  {
+    return new EAbort(E->GetMessage());
+  }
   else
   {
     return new Exception(E->GetMessage());
@@ -254,6 +258,10 @@ void __fastcall RethrowException(Exception * E)
   else if (dynamic_cast<ECallbackGuardAbort *>(E) != NULL)
   {
     throw ECallbackGuardAbort();
+  }
+  else if (dynamic_cast<EAbort *>(E) != NULL)
+  {
+    throw EAbort(E->GetMessage());
   }
   else
   {

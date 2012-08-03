@@ -82,7 +82,7 @@ BEGIN
   SFTP_OPEN_FILE_ERROR, "Cannot open remote file '%s'."
   SFTP_CLOSE_FILE_ERROR, "Cannot close remote file '%s'."
   NOT_FILE_ERROR, "'%s' is not file!"
-  RENAME_AFTER_RESUME_ERROR, "Transfer was succesfully finished, but temporary transfer file '%s' could not be renamed to target file name '%s'. If the problem persists, you may try to turn off transfer resume support."
+  RENAME_AFTER_RESUME_ERROR, "Transfer was successfully finished, but temporary transfer file '%s' could not be renamed to target file name '%s'. If the problem persists, you may try to turn off transfer resume support."
   CREATE_LINK_ERROR, "Cannot create link '%s'."
   INVALID_SHELL_COMMAND, "Invalid command '%s'."
   SFTP_SERVER_MESSAGE_UNSUPPORTED, "None"
