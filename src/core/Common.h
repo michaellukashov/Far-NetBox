@@ -14,7 +14,7 @@
 
 #endif
 //---------------------------------------------------------------------------
-#define EXCEPTION throw ExtException(NULL, L"")
+#define EXCEPTION throw ExtException(UnicodeString(), NULL)
 #define THROWOSIFFALSE(C) if (!(C)) RaiseLastOSError();
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = NULL; delete PObj; }
 #define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)

@@ -179,7 +179,7 @@ public:
             FLog->AddIndented(FORMAT(L"      <type value=\"%s\" />", XmlAttributeEscape(File->GetType()).c_str()));
             if (!File->GetIsDirectory())
             {
-              FLog->AddIndented(FORMAT(L"      <size value=\"%s\" />", IntToStr(File->GetSize()).c_str()));
+              FLog->AddIndented(FORMAT(L"      <size value=\"%s\" />", Int64ToStr(File->GetSize()).c_str()));
             }
             FLog->AddIndented(FORMAT(L"      <modification value=\"%s\" />", StandardTimestamp(File->GetModification()).c_str()));
             FLog->AddIndented(FORMAT(L"      <permissions value=\"%s\" />", XmlAttributeEscape(File->GetRights()->GetText()).c_str()));
@@ -193,7 +193,7 @@ public:
           FLog->AddIndented(FORMAT(L"    <type value=\"%s\" />", XmlAttributeEscape(FFile->GetType()).c_str()));
           if (!FFile->GetIsDirectory())
           {
-            FLog->AddIndented(FORMAT(L"    <size value=\"%s\" />", IntToStr(FFile->GetSize()).c_str()));
+            FLog->AddIndented(FORMAT(L"    <size value=\"%s\" />", Int64ToStr(FFile->GetSize()).c_str()));
           }
           FLog->AddIndented(FORMAT(L"    <modification value=\"%s\" />", StandardTimestamp(FFile->GetModification()).c_str()));
           FLog->AddIndented(FORMAT(L"    <permissions value=\"%s\" />", XmlAttributeEscape(FFile->GetRights()->GetText()).c_str()));

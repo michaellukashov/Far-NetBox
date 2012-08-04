@@ -22,8 +22,8 @@ public:
   void __fastcall Convert(TEOLType Source, TEOLType Dest, int Params, bool & Token);
   void __fastcall Convert(char * Source, TEOLType Dest, int Params, bool & Token);
   void __fastcall Convert(TEOLType Source, char * Dest, int Params, bool & Token);
-  void __fastcall Insert(int Index, const char * Buf, int Len);
-  void __fastcall Delete(int Index, int Len);
+  void __fastcall Insert(__int64 Index, const char * Buf, int Len);
+  void __fastcall Delete(__int64 Index, int Len);
   DWORD __fastcall LoadStream(TStream * Stream, const DWORD Len, bool ForceLen);
   DWORD __fastcall ReadStream(TStream * Stream, const DWORD Len, bool ForceLen);
   void __fastcall WriteToStream(TStream * Stream, const DWORD Len);

@@ -4475,7 +4475,7 @@ void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeStri
           LogEvent(FORMAT(L"Local file '%s' [%s] [%s] is new",
             UnicodeString(FileData->Info.Directory + FileData->Info.FileName).c_str(),
              StandardTimestamp(FileData->Info.Modification).c_str(),
-             Int64ToStr(FileData->Info.Size)).c_str());
+             Int64ToStr(FileData->Info.Size).c_str()));
         }
 
         if (Modified || New)
@@ -4681,7 +4681,7 @@ void /* __fastcall */ TTerminal::SynchronizeCollectFile(const UnicodeString File
             LogEvent(FORMAT(L"Local file '%s' [%s] [%s] is modifed comparing to remote file '%s' [%s] [%s]",
               UnicodeString(LocalData->Info.Directory + LocalData->Info.FileName).c_str(),
                StandardTimestamp(LocalData->Info.Modification).c_str(),
-               IntToStr(LocalData->Info.Size).c_str(),
+               Int64ToStr(LocalData->Info.Size).c_str(),
                FullRemoteFileName.c_str(),
                StandardTimestamp(File->GetModification()).c_str(),
                Int64ToStr(File->GetSize()).c_str()));

@@ -316,7 +316,7 @@ UnicodeString TCopyParamType::Untokenize(const UnicodeString FileName)
     else
     {
       // wchar_t Ch = static_cast<wchar_t>(HexToInt(Result.SubString(Index + 1, 2), -1));
-      wchar_t Ch = static_cast<wchar_t>(HexToInt(Result.SubString(Index + 1, 2), -1));
+      wchar_t Ch = static_cast<wchar_t>(HexToInt(Result.SubString(Index + 1, 2), (size_t)-1));
       if (Ch == '\0')
       {
         Result = FileName;

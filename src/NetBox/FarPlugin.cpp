@@ -658,7 +658,7 @@ int __fastcall TCustomFarPlugin::GetFiles(HANDLE Plugin,
 }
 //---------------------------------------------------------------------------
 int __fastcall TCustomFarPlugin::PutFiles(HANDLE Plugin,
-  struct PluginPanelItem * PanelItem, int ItemsNumber, int Move, int OpMode)
+  struct PluginPanelItem * PanelItem, int ItemsNumber, int Move, const wchar_t * srcPath, int OpMode)
 {
   TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Plugin);
   try
@@ -668,7 +668,7 @@ int __fastcall TCustomFarPlugin::PutFiles(HANDLE Plugin,
 
     {
       TGuard Guard(FileSystem->GetCriticalSection());
-      return FileSystem->PutFiles(PanelItem, ItemsNumber, Move, OpMode);
+      return FileSystem->PutFiles(PanelItem, ItemsNumber, Move, srcPath, OpMode);
     }
   }
   catch(Exception & E)
@@ -852,7 +852,7 @@ void __fastcall TFarMessageDialog::Init(unsigned int AFlags,
       Button->SetOnClick(fastdelegate::bind(&TFarMessageDialog::ButtonClick, this, _1, _2));
       UnicodeString Caption = Buttons->GetStrings(Index);
       if ((FParams->Timeout > 0) &&
-          (FParams->TimeoutButton == Index))
+          (FParams->TimeoutButton == (size_t)Index))
       {
         FTimeoutButtonCaption = Caption;
         Caption = FORMAT(FParams->TimeoutStr.c_str(), Caption.c_str(), static_cast<int>(FParams->Timeout / 1000));
@@ -923,11 +923,11 @@ void __fastcall TFarMessageDialog::Init(unsigned int AFlags,
     if (FParams->MoreMessages != NULL)
     {
       int MoreMessageHeight = GetFarPlugin()->TerminalInfo().y - S.y - 1;
+      assert(MoreMessagesLister != NULL);
       if (MoreMessageHeight > MoreMessagesLister->GetItems()->GetCount())
       {
         MoreMessageHeight = MoreMessagesLister->GetItems()->GetCount();
       }
-      assert(MoreMessagesLister != NULL);
       MoreMessagesLister->SetHeight(MoreMessageHeight);
       MoreMessagesLister->SetRight(
         GetBorderBox()->GetRight() - (MoreMessagesLister->GetScrollBar() ? 0 : 1));
@@ -2133,7 +2133,7 @@ int __fastcall TCustomFarFileSystem::GetFiles(struct PluginPanelItem * PanelItem
 }
 //---------------------------------------------------------------------------
 int __fastcall TCustomFarFileSystem::PutFiles(struct PluginPanelItem * PanelItem,
-  int ItemsNumber, int Move, int OpMode)
+  int ItemsNumber, int Move, const wchar_t * srcPath, int OpMode)
 {
   ResetCachedInfo();
   TObjectList * PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);

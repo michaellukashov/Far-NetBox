@@ -159,7 +159,7 @@ extern "C"
     assert(FarPlugin);
     TFarPluginGuard Guard;
     int result = FarPlugin->PutFiles(plugin, panelItem, itemsNumber,
-                                     move, opMode);
+                                     move, srcPath, opMode);
     DEBUG_PRINTF(L"end, result = %d", result);
     return result;
   }

@@ -77,7 +77,7 @@ DWORD __fastcall TFileBuffer::ReadStream(TStream * Stream, const DWORD Len, bool
     }
     else
     {
-      Result = Stream->Read(GetData() + GetPosition(), Len);
+      Result = Stream->Read(GetData() + GetPosition(), (__int64)Len);
     }
     if (Result != Len)
     {
@@ -208,14 +208,14 @@ void __fastcall TFileBuffer::Convert(TEOLType Source, char * Dest, int Params,
   Convert(EOLToStr(Source), Dest, Params, Token);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileBuffer::Insert(int Index, const char * Buf, int Len)
+void __fastcall TFileBuffer::Insert(__int64 Index, const char * Buf, int Len)
 {
   SetSize(GetSize() + Len);
   memmove(GetData() + Index + Len, GetData() + Index, GetSize() - Index - Len);
   memmove(GetData() + Index, Buf, Len);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileBuffer::Delete(int Index, int Len)
+void __fastcall TFileBuffer::Delete(__int64 Index, int Len)
 {
   memmove(GetData() + Index, GetData() + Index + Len, GetSize() - Index - Len);
   SetSize(GetSize() - Len);

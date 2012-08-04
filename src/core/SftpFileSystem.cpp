@@ -1491,8 +1491,8 @@ protected:
         Request->ChangeType(SSH_FXP_WRITE);
         Request->AddString(FHandle);
         Request->AddInt64(FTransfered);
-        Request->AddData(BlockBuf.GetData(), BlockBuf.GetSize());
-        FLastBlockSize = BlockBuf.GetSize();
+        Request->AddData(BlockBuf.GetData(), (int)BlockBuf.GetSize());
+        FLastBlockSize = (int)BlockBuf.GetSize();
 
         FTransfered += BlockBuf.GetSize();
       }

@@ -1956,7 +1956,6 @@ path_uri_decode(const char * path, apr_pool_t * pool)
   retstr = stringbuf_create_ensure(strlen(path) + 1, pool);
 
   retstr->len = 0;
-  int len = 0;
   for (i = 0; path[i]; i++)
   {
     char c = path[i];
@@ -2280,8 +2279,8 @@ utf8_to_unicode(WCHAR ** retstr,
                 const char * srcstr,
                 apr_pool_t * pool)
 {
-  apr_size_t retlen = 0;
-  /*apr_size_t srcremains = strlen(srcstr) + 1;
+  /*apr_size_t retlen = 0;
+  apr_size_t srcremains = strlen(srcstr) + 1;
   *retstr = static_cast<WCHAR *>(apr_pcalloc(pool, srcremains * 4));
   apr_status_t rv;
   if (rv = apr_conv_utf8_to_ucs2(srcstr, &srcremains, *retstr, &retlen)) {
@@ -2328,8 +2327,8 @@ utf8_to_unicode(WCHAR ** retstr,
 static error_t
 check_utf8(const char * data, apr_size_t len, apr_pool_t * pool)
 {
-  if (false)  // !utf__is_valid(data, len))
-    return invalid_utf8(data, len, pool);
+  // TODO: if (!utf__is_valid(data, len)))
+    // return invalid_utf8(data, len, pool);
   return WEBDAV_NO_ERROR;
 }
 
@@ -2426,8 +2425,7 @@ check_cstring_utf8(const char * data, apr_pool_t * pool)
 {
 
   // TODO: if (!utf__cstring_is_valid(data))
-  if (false)
-    return invalid_utf8(data, strlen(data), pool);
+    // return invalid_utf8(data, strlen(data), pool);
   return WEBDAV_NO_ERROR;
 }
 
@@ -8937,7 +8935,6 @@ session_open(
   apr_pool_t * pool)
 {
   assert(callback_baton);
-  callback_baton_t * cb = static_cast<callback_baton_t *>(callback_baton);
   // TODO: check options, url, prepare parameters, callbacks, auth etc
   apr_pool_t * sesspool = webdav_pool_create(pool);
 
@@ -9072,7 +9069,7 @@ list_func(void * baton,
     apr_status_t apr_err;
     apr_size_t size;
     char timestr[20];
-    const char * sizestr, *utf8_timestr;
+    const char * utf8_timestr;
 
     /* time_to_human_cstring gives us something *way* too long
        to use for this, so we have to roll our own.  We include
@@ -9097,7 +9094,6 @@ list_func(void * baton,
     /* we need it in UTF-8. */
     WEBDAV_ERR(utf_cstring_to_utf8(&utf8_timestr, timestr, pool));
 
-    sizestr = apr_psprintf(pool, "%" APR_INT64_T_FMT, dirent->size);
     TListDataEntry entry = {0};
     // WEBDAV_ERR(utf_cstring_to_utf8(reinterpret_cast<const char **>(&entry.Name), entryname, pb->pool));
     if (APR_SUCCESS != utf8_to_unicode(const_cast<wchar_t **>(&entry.Name), entryname, pb->pool))
@@ -9617,7 +9613,6 @@ plaintext_prompt_helper(bool * may_save_plaintext,
                         void * baton,
                         apr_pool_t * pool)
 {
-  const char * answer = NULL;
   bool answered = FALSE;
   cmdline_prompt_baton2_t * pb = static_cast<cmdline_prompt_baton2_t *>(baton);
 
@@ -9646,12 +9641,12 @@ plaintext_prompt_helper(bool * may_save_plaintext,
       else
         return err;
     }
-    if (RequestResult = qaYes)
+    if (RequestResult == qaYes)
     {
       *may_save_plaintext = TRUE;
       answered = TRUE;
     }
-    else if (RequestResult = qaNo)
+    else if (RequestResult == qaNo)
     {
       *may_save_plaintext = FALSE;
       answered = TRUE;
@@ -9900,7 +9895,6 @@ cmdline_auth_simple_prompt(auth_cred_simple_t ** cred_p,
 {
   auth_cred_simple_t * ret =
     static_cast<auth_cred_simple_t *>(apr_pcalloc(pool, sizeof(*ret)));
-  const char * pass_prompt;
   cmdline_prompt_baton2_t * pb =
     static_cast<cmdline_prompt_baton2_t *>(baton);
 
@@ -10175,7 +10169,6 @@ init_session_from_path(session_t * session,
                        apr_pool_t * pool)
 {
   const char * initial_url, *url;
-  const char * ignored_url, *corrected_url;
 
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
   assert(ras);
@@ -10383,8 +10376,6 @@ static error_t
 options_end_element(void * baton, int state,
                     const char * nspace, const char * name)
 {
-  options_ctx_t * oc = static_cast<options_ctx_t *>(baton);
-
   return WEBDAV_NO_ERROR;
 }
 
@@ -10427,7 +10418,7 @@ neon_exchange_capabilities(neon_session_t * ras,
                                   "</D:options>",
                                   200,
                                   relocation_location ? 301 : 0,
-                                  pool)))
+                                  pool)) != WEBDAV_NO_ERROR)
     goto cleanup;
   if (req->code == 301)
   {
@@ -10705,7 +10696,6 @@ neon_get_baseline_info(const char ** bc_relative_p,
                        apr_pool_t * pool)
 {
   neon_resource_t * baseline_rsrc = NULL;
-  const string_t * my_bc_url = NULL;
   string_t my_bc_rel = {0};
 
   /* Go fetch a BASELINE_RSRC that contains specific properties we
@@ -11156,7 +11146,6 @@ neon_get_props_resource(neon_resource_t ** rsrc,
   /* ### HACK.  We need to have the client canonicalize paths, get rid
      of double slashes and such.  This check is just a check against
      non-SVN servers;  in the long run we want to re-enable this. */
-  if (1)
   {
     /* pick out the first response: the URL requested will not match
      * the response href. */
@@ -11170,10 +11159,6 @@ neon_get_props_resource(neon_resource_t ** rsrc,
     }
     else
       *rsrc = NULL;
-  }
-  else
-  {
-    *rsrc = static_cast<neon_resource_t *>(apr_hash_get(props, url_path, APR_HASH_KEY_STRING));
   }
 
   if (*rsrc == NULL)
@@ -11213,7 +11198,6 @@ append_setprop(stringbuf_t * body,
                const string_t * value,
                apr_pool_t * pool)
 {
-  const char * encoding = NULL;
   const char * xml_safe = NULL;
   const char * xml_tag_name = NULL;
 
@@ -12819,7 +12803,6 @@ void __fastcall TWebDAVFileSystem::Open()
   UnicodeString url = FORMAT(L"%s://%s:%d%s", ProtocolName.c_str(), HostName.c_str(), Port, Path.c_str());
 
   FPasswordFailed = false;
-  bool PromptedForCredentials = false;
 
   try
   {
@@ -13517,6 +13500,23 @@ void __fastcall TWebDAVFileSystem::WebDAVSource(const UnicodeString FileName,
             qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll,
             &QueryParams, osRemote, Params, OperationProgress, Message);
         );
+        switch (Answer)
+        {
+          case qaYes:
+            CanProceed = true;
+            break;
+
+          case qaCancel:
+            OperationProgress->Cancel = csCancel; // continue on next case
+            // FALLTHROUGH
+          case qaNo:
+            CanProceed = false;
+            // EXCEPTION;
+            break;
+
+          default:
+            break;
+        }
       }
       else
       {
@@ -13532,7 +13532,6 @@ void __fastcall TWebDAVFileSystem::WebDAVSource(const UnicodeString FileName,
         FileParams.DestSize = File->GetSize();
         FileParams.DestTimestamp = File->GetModification();
 
-        unsigned int Answer = 0;
         TOverwriteMode OverwriteMode = omOverwrite;
         bool AutoResume = false;
         ConfirmOverwrite(FileNameOnly, OverwriteMode, OperationProgress,
@@ -13548,7 +13547,6 @@ void __fastcall TWebDAVFileSystem::WebDAVSource(const UnicodeString FileName,
             // FALLTHROUGH
           case qaNo:
             CanProceed = false;
-            SkipConfirmed = true;
             // EXCEPTION;
             break;
 
@@ -13922,7 +13920,6 @@ void __fastcall TWebDAVFileSystem::Sink(const UnicodeString FileName,
                                         TFileOperationProgressType * OperationProgress, unsigned int Flags,
                                         TDownloadSessionAction & Action)
 {
-  bool SkipConfirmed = false;
   UnicodeString FileNameOnly = UnixExtractFileName(FileName);
 
   Action.FileName(FileName);
@@ -13966,7 +13963,6 @@ void __fastcall TWebDAVFileSystem::Sink(const UnicodeString FileName,
           // FALLTHROUGH
         case qaNo:
           CanProceed = false;
-          SkipConfirmed = true;
           // EXCEPTION;
         default:
           break;
@@ -14043,7 +14039,6 @@ void __fastcall TWebDAVFileSystem::Sink(const UnicodeString FileName,
     if (FileExists(DestFullName))
     {
       __int64 Size;
-      int Attrs;
       __int64 MTime;
       FTerminal->OpenLocalFile(DestFullName, GENERIC_READ, NULL,
                                NULL, NULL, &MTime, NULL, &Size);
@@ -14067,7 +14062,6 @@ void __fastcall TWebDAVFileSystem::Sink(const UnicodeString FileName,
           // FALLTHROUGH
         case qaNo:
           CanProceed = false;
-          SkipConfirmed = true;
           // EXCEPTION;
         default:
           break;

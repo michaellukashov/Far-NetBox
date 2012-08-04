@@ -2672,12 +2672,12 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
                   BlockBuf.SetSize(OperationProgress->TransferBlockSize());
                   BlockBuf.SetPosition(0);
 
-                  FSecureShell->Receive(reinterpret_cast<unsigned char *>(BlockBuf.GetData()), BlockBuf.GetSize());
+                  FSecureShell->Receive(reinterpret_cast<unsigned char *>(BlockBuf.GetData()), (int)BlockBuf.GetSize());
                   OperationProgress->AddTransfered(BlockBuf.GetSize());
 
                   if (OperationProgress->AsciiTransfer)
                   {
-                    unsigned int PrevBlockSize = BlockBuf.GetSize();
+                    unsigned int PrevBlockSize = (unsigned int)BlockBuf.GetSize();
                     BlockBuf.Convert(FTerminal->GetSessionData()->GetEOLType(),
                       FTerminal->GetConfiguration()->GetLocalEOLType(), 0, ConvertToken);
                     OperationProgress->SetLocalSize(
@@ -2686,7 +2686,7 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
 
                   // This is crucial, if it fails during file transfer, it's fatal error
                   FILE_OPERATION_LOOP_EX (false, FMTLOAD(WRITE_ERROR, DestFileName.c_str()),
-                    BlockBuf.WriteToStream(FileStream, BlockBuf.GetSize());
+                    BlockBuf.WriteToStream(FileStream, (unsigned int)BlockBuf.GetSize());
                   );
 
                   OperationProgress->AddLocallyUsed(BlockBuf.GetSize());

@@ -72,6 +72,13 @@ TStrings * ExceptionToMoreMessages(Exception * E)
 {
   AddMoreMessages(E);
 }
+/* __fastcall */ ExtException::ExtException(ExtException* E, UnicodeString Msg):
+  Exception(Msg),
+  FMoreMessages(NULL),
+  FHelpKeyword()
+{
+  AddMoreMessages(E);
+}
 //---------------------------------------------------------------------------
 /* __fastcall */ ExtException::ExtException(UnicodeString Msg, Exception* E) :
   Exception(L""),
