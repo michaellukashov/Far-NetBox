@@ -62,9 +62,9 @@ void __fastcall TFileBuffer::SetMemory(TMemoryStream * value)
   }
 }
 //---------------------------------------------------------------------------
-DWORD __fastcall TFileBuffer::ReadStream(TStream * Stream, const DWORD Len, bool ForceLen)
+__int64 __fastcall TFileBuffer::ReadStream(TStream * Stream, const __int64 Len, bool ForceLen)
 {
-  DWORD Result;
+  __int64 Result;
   try
   {
     SetSize(GetPosition() + Len);
@@ -92,7 +92,7 @@ DWORD __fastcall TFileBuffer::ReadStream(TStream * Stream, const DWORD Len, bool
   return Result;
 }
 //---------------------------------------------------------------------------
-DWORD __fastcall TFileBuffer::LoadStream(TStream * Stream, const DWORD Len, bool ForceLen)
+__int64 __fastcall TFileBuffer::LoadStream(TStream * Stream, const __int64 Len, bool ForceLen)
 {
   FMemory->Seek(0, soFromBeginning);
   return ReadStream(Stream, Len, ForceLen);
@@ -208,20 +208,20 @@ void __fastcall TFileBuffer::Convert(TEOLType Source, char * Dest, int Params,
   Convert(EOLToStr(Source), Dest, Params, Token);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileBuffer::Insert(__int64 Index, const char * Buf, int Len)
+void __fastcall TFileBuffer::Insert(__int64 Index, const char * Buf, size_t Len)
 {
   SetSize(GetSize() + Len);
-  memmove(GetData() + Index + Len, GetData() + Index, GetSize() - Index - Len);
+  memmove(GetData() + Index + Len, GetData() + Index, (size_t)GetSize() - Index - Len);
   memmove(GetData() + Index, Buf, Len);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileBuffer::Delete(__int64 Index, int Len)
+void __fastcall TFileBuffer::Delete(__int64 Index, size_t Len)
 {
-  memmove(GetData() + Index, GetData() + Index + Len, GetSize() - Index - Len);
+  memmove(GetData() + Index, GetData() + Index + Len, (size_t)GetSize() - Index - Len);
   SetSize(GetSize() - Len);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileBuffer::WriteToStream(TStream * Stream, const DWORD Len)
+void __fastcall TFileBuffer::WriteToStream(TStream * Stream, const __int64 Len)
 {
   try
   {

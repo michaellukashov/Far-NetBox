@@ -22,11 +22,11 @@ public:
   void __fastcall Convert(TEOLType Source, TEOLType Dest, int Params, bool & Token);
   void __fastcall Convert(char * Source, TEOLType Dest, int Params, bool & Token);
   void __fastcall Convert(TEOLType Source, char * Dest, int Params, bool & Token);
-  void __fastcall Insert(__int64 Index, const char * Buf, int Len);
-  void __fastcall Delete(__int64 Index, int Len);
-  DWORD __fastcall LoadStream(TStream * Stream, const DWORD Len, bool ForceLen);
-  DWORD __fastcall ReadStream(TStream * Stream, const DWORD Len, bool ForceLen);
-  void __fastcall WriteToStream(TStream * Stream, const DWORD Len);
+  void __fastcall Insert(__int64 Index, const char * Buf, size_t Len);
+  void __fastcall Delete(__int64 Index, size_t Len);
+  __int64 __fastcall LoadStream(TStream * Stream, const __int64 Len, bool ForceLen);
+  __int64 __fastcall ReadStream(TStream * Stream, const __int64 Len, bool ForceLen);
+  void __fastcall WriteToStream(TStream * Stream, const __int64 Len);
 #ifndef _MSC_VER
   __property TMemoryStream * Memory  = { read=FMemory, write=SetMemory };
   __property char * Data = { read=GetData };
