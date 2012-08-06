@@ -1,5 +1,13 @@
-NetBox 2.1.7 ??.08.2012
+NetBox 2.1.8 ??.08.2012
 --------------------
+
+NetBox 2.1.7 04.08.2012
+--------------------
+  * WebDAV: rewrite WebDAV protocol support using neon + expat + apr
+      neon 0.29.6: http://www.webdav.org/neon
+      expat 2.1.0: http://www.libexpat.org
+      apr 1.4.6: http://apr.apache.org
+  * WinSCP core upgraded to 5.0.8 beta
   * various minor bugfixes
 
 NetBox 2.1.6 18.07.2012

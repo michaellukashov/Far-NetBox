@@ -121,3 +121,8 @@ void CoreSetResourceModule(void * ResourceHandle)
   #endif
 }
 //---------------------------------------------------------------------------
+void CoreMaintenanceTask()
+{
+  DontSaveRandomSeed();
+}
+//---------------------------------------------------------------------------

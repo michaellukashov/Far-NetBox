@@ -2526,6 +2526,19 @@ void /* __fastcall */ TTerminal::CustomReadDirectory(TRemoteFileList * FileList)
   assert(FileList);
   assert(FFileSystem);
   FFileSystem->ReadDirectory(FileList);
+
+  if (Configuration->GetActualLogProtocol() >= 1)
+  {
+    for (int Index = 0; Index < FileList->GetCount(); Index++)
+    {
+      TRemoteFile * File = FileList->GetFiles(Index);
+      LogEvent(FORMAT(L"%s;%c;%lld;%s;%s;%s;%s;%d",
+        File->GetFileName().c_str(), File->GetType(), File->GetSize(), StandardTimestamp(File->GetModification()).c_str(),
+         File->GetOwner().GetLogText().c_str(), File->GetGroup().GetLogText().c_str(), File->GetRights()->GetText().c_str(),
+         File->GetAttr()));
+    }
+  }
+
   ReactOnCommand(fsListDirectory);
 }
 //---------------------------------------------------------------------------
@@ -2980,12 +2993,17 @@ TUsableCopyParamAttrs /* __fastcall */ TTerminal::UsableCopyParamAttrs(int Param
 //---------------------------------------------------------------------------
 bool /* __fastcall */ TTerminal::IsRecycledFile(UnicodeString FileName)
 {
-  UnicodeString Path = UnixExtractFilePath(FileName);
-  if (Path.IsEmpty())
+  bool Result = !GetSessionData()->GetRecycleBinPath().IsEmpty();
+  if (Result)
   {
-    Path = GetCurrentDirectory();
+    UnicodeString Path = UnixExtractFilePath(FileName);
+    if (Path.IsEmpty())
+    {
+      Path = GetCurrentDirectory();
+    }
+    Result = UnixComparePaths(Path, GetSessionData()->GetRecycleBinPath());
   }
-  return UnixComparePaths(Path, GetSessionData()->GetRecycleBinPath());
+  return Result;
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::RecycleFile(UnicodeString FileName,
@@ -3031,7 +3049,8 @@ void /* __fastcall */ TTerminal::DeleteFile(UnicodeString FileName,
   int Params = (AParams != NULL) ? *(static_cast<int*>(AParams)) : 0;
   bool Recycle =
     FLAGCLEAR(Params, dfForceDelete) &&
-    (GetSessionData()->GetDeleteToRecycleBin() != FLAGSET(Params, dfAlternative));
+    (GetSessionData()->GetDeleteToRecycleBin() != FLAGSET(Params, dfAlternative)) &&
+    !GetSessionData()->GetRecycleBinPath().IsEmpty();
   if (Recycle && !IsRecycledFile(FileName))
   {
     RecycleFile(FileName, File);
@@ -4381,8 +4400,9 @@ void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeStri
           MaskParams.Modification = Modification;
           UnicodeString RemoteFileName =
             CopyParam->ChangeFileName(FileName, osLocal, false);
+          UnicodeString FullLocalFileName = Data.LocalDirectory + FileName;
           if ((FileName != THISDIRECTORY) && (FileName != PARENTDIRECTORY) &&
-              CopyParam->AllowTransfer(Data.LocalDirectory + FileName, osLocal,
+              CopyParam->AllowTransfer(FullLocalFileName, osLocal,
                 FLAGSET(SearchRec.Attr, faDirectory), MaskParams) &&
               !FFileSystem->TemporaryTransferFile(FileName) &&
               (FLAGCLEAR(Flags, sfFirstLevel) ||
@@ -4403,6 +4423,13 @@ void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeStri
             FileData->Modified = false;
             Data.LocalFileList->AddObject(FileName,
               reinterpret_cast<TObject*>(FileData));
+            LogEvent(FORMAT(L"Local file '%s' [%s] [%s] included to synchronization",
+              FullLocalFileName.c_str(), StandardTimestamp(Modification).c_str(), Int64ToStr(Size).c_str()));
+          }
+          else
+          {
+            LogEvent(FORMAT(L"Local file '%s' [%s] [%s] excluded from synchronization",
+              FullLocalFileName.c_str(), StandardTimestamp(Modification).c_str(), Int64ToStr(Size).c_str()));
           }
 
           FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()),
@@ -4442,6 +4469,15 @@ void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeStri
         bool New = (FileData->New &&
           ((Mode == smLocal) ||
            (((Mode == smBoth) || (Mode == smRemote)) && FLAGCLEAR(Params, spTimestamp))));
+
+        if (New)
+        {
+          LogEvent(FORMAT(L"Local file '%s' [%s] [%s] is new",
+            UnicodeString(FileData->Info.Directory + FileData->Info.FileName).c_str(),
+             StandardTimestamp(FileData->Info.Modification).c_str(),
+             Int64ToStr(FileData->Info.Size).c_str()));
+        }
+
         if (Modified || New)
         {
           TSynchronizeChecklist::TItem * ChecklistItem = new TSynchronizeChecklist::TItem();
@@ -4536,8 +4572,10 @@ void /* __fastcall */ TTerminal::SynchronizeCollectFile(const UnicodeString File
   MaskParams.Modification = File->GetModification();
   UnicodeString LocalFileName =
     Data->CopyParam->ChangeFileName(File->GetFileName(), osRemote, false);
+  UnicodeString FullRemoteFileName =
+    UnixExcludeTrailingBackslash(File->GetFullFileName());
   if (Data->CopyParam->AllowTransfer(
-        UnixExcludeTrailingBackslash(File->GetFullFileName()), osRemote,
+        FullRemoteFileName, osRemote,
         File->GetIsDirectory(), MaskParams) &&
       !FFileSystem->TemporaryTransferFile(File->GetFileName()) &&
       (FLAGCLEAR(Data->Flags, sfFirstLevel) ||
@@ -4640,6 +4678,24 @@ void /* __fastcall */ TTerminal::SynchronizeCollectFile(const UnicodeString File
             // we need this for custom commands over checklist only,
             // not for sync itself
             LocalData->MatchingRemoteFileFile = File->Duplicate();
+            LogEvent(FORMAT(L"Local file '%s' [%s] [%s] is modifed comparing to remote file '%s' [%s] [%s]",
+              UnicodeString(LocalData->Info.Directory + LocalData->Info.FileName).c_str(),
+               StandardTimestamp(LocalData->Info.Modification).c_str(),
+               Int64ToStr(LocalData->Info.Size).c_str(),
+               FullRemoteFileName.c_str(),
+               StandardTimestamp(File->GetModification()).c_str(),
+               Int64ToStr(File->GetSize()).c_str()));
+          }
+
+          if (Modified)
+          {
+            LogEvent(FORMAT(L"Remote file '%s' [%s] [%s] is modifed comparing to local file '%s' [%s] [%s]",
+              FullRemoteFileName.c_str(),
+               StandardTimestamp(File->GetModification()).c_str(),
+               Int64ToStr(File->GetSize()).c_str(),
+               UnicodeString(LocalData->Info.Directory + LocalData->Info.FileName).c_str(),
+               StandardTimestamp(LocalData->Info.Modification).c_str(),
+               Int64ToStr(LocalData->Info.Size).c_str()));
           }
         }
         else if (FLAGCLEAR(Data->Params, spNoRecurse))
@@ -4655,6 +4711,8 @@ void /* __fastcall */ TTerminal::SynchronizeCollectFile(const UnicodeString File
       else
       {
         ChecklistItem->Local.Directory = Data->LocalDirectory;
+        LogEvent(FORMAT(L"Remote file '%s' [%s] [%s] is new",
+          FullRemoteFileName.c_str(), StandardTimestamp(File->GetModification()).c_str(), Int64ToStr(File->GetSize()).c_str()));
       }
 
       if (New || Modified)
@@ -4700,6 +4758,11 @@ void /* __fastcall */ TTerminal::SynchronizeCollectFile(const UnicodeString File
       delete ChecklistItem;
     }
 #endif
+  }
+  else
+  {
+    LogEvent(FORMAT(L"Remote file '%s' [%s] [%s] excluded from synchronization",
+      FullRemoteFileName.c_str(), StandardTimestamp(File->GetModification()).c_str(), Int64ToStr(File->GetSize()).c_str()));
   }
 }
 //---------------------------------------------------------------------------

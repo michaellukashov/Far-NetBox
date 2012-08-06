@@ -96,7 +96,7 @@ public:
   virtual int __fastcall GetFiles(HANDLE Plugin, struct PluginPanelItem * PanelItem,
     int ItemsNumber, int Move, const wchar_t ** DestPath, int OpMode);
   virtual int __fastcall PutFiles(HANDLE Plugin, struct PluginPanelItem * PanelItem,
-    int ItemsNumber, int Move, int OpMode);
+    int ItemsNumber, int Move, const wchar_t * srcPath, int OpMode);
   virtual int __fastcall ProcessEditorEvent(int Event, void * Param);
   virtual int __fastcall ProcessEditorInput(const INPUT_RECORD * Rec);
 
@@ -272,7 +272,7 @@ public:
   int __fastcall GetFiles(struct PluginPanelItem * PanelItem,
     int ItemsNumber, int Move, const wchar_t ** DestPath, int OpMode);
   int __fastcall PutFiles(struct PluginPanelItem * PanelItem,
-    int ItemsNumber, int Move, int OpMode);
+    int ItemsNumber, int Move, const wchar_t * srcPath, int OpMode);
   virtual void __fastcall Close();
 
 protected:

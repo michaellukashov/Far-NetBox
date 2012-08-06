@@ -99,13 +99,13 @@ struct TOpenRemoteFileParams
 };
 //---------------------------------------------------------------------------
 
-/** @brief interface for custom filesystems
+/** @brief Interface for custom filesystems
   *
   */
 class TFileSystemIntf
 {
 public:
-  virtual ~TFileSystemIntf()
+  virtual /* __fastcall */ ~TFileSystemIntf()
   {}
 
   virtual void __fastcall FileTransferProgress(__int64 TransferSize, __int64 Bytes) = 0;

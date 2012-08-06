@@ -5,7 +5,7 @@ NetBox: SFTP/FTP/FTPS/SCP/WebDAV клиент для Far Manager 2.0/3.0
 
    Плагин реализует клиентскую часть протоколов SFTP, FTP, SCP, FTPS и WebDAV.  
    SFTP, FTP, SCP, FTPS протоколы реализованы на основе плагина WinSCP [http://winscp.net/eng/download.php/](http://winscp.net/eng/download.php/)  
-   WebDAV базируется на библиотеке libcurl [http://curl.haxx.se/](http://curl.haxx.se/).  
+   Поддержка протокола WebDAV реализована на основе библиотеки neon [http://www.webdav.org/neon/](http://www.webdav.org/neon/).  
    Парсер xml работает c помощью библиотеки TinyXML [http://sourceforge.net/projects/tinyxml/] (http://sourceforge.net/projects/tinyxml/).
 
 2. Использование префикса командной строки

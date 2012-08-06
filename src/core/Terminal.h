@@ -597,6 +597,12 @@ public:
     const UnicodeString & Name);
   virtual /* __fastcall */ ~TSecondaryTerminal() {}
 
+#ifndef _MSC_VER
+  __property TTerminal * MainTerminal = { read = FMainTerminal };
+#else
+  TTerminal * GetMainTerminal() { return FMainTerminal; }
+#endif
+
 protected:
   virtual void __fastcall DirectoryLoaded(TRemoteFileList * FileList);
   virtual void __fastcall DirectoryModified(const UnicodeString Path,

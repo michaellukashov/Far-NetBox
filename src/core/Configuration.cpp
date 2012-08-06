@@ -927,7 +927,33 @@ UnicodeString __fastcall TConfiguration::GetIniFileStorageName()
 {
   if (FIniFileStorageName.IsEmpty())
   {
-    return ChangeFileExt(L"" /*ParamStr(0)*/, L".ini");
+    UnicodeString IniPath = L""; // ChangeFileExt(ParamStr(0), L".ini");
+    /*
+    if (FVirtualIniFileStorageName.IsEmpty() &&
+        TPath::IsDriveRooted(IniPath))
+    {
+      UnicodeString LocalAppDataPath = GetShellFolderPath(CSIDL_LOCAL_APPDATA);
+      // virtual store for non-system drives have a different virtual store,
+      // do not bother about them
+      if (TPath::IsDriveRooted(LocalAppDataPath) &&
+          SameText(ExtractFileDrive(IniPath), ExtractFileDrive(LocalAppDataPath)))
+      {
+        FVirtualIniFileStorageName =
+          IncludeTrailingBackslash(LocalAppDataPath) +
+          L"VirtualStore\\" +
+          IniPath.SubString(4, IniPath.Length() - 3);
+      }
+    }
+
+    if (!FVirtualIniFileStorageName.IsEmpty() &&
+        FileExists(FVirtualIniFileStorageName))
+    {
+      return FVirtualIniFileStorageName;
+    }
+    else*/
+    {
+      return IniPath;
+    }
   }
   else
   {
