@@ -9629,7 +9629,7 @@ plaintext_prompt_helper(bool * may_save_plaintext,
 
     unsigned int RequestResult = 0;
     // error_t err = prompt(&answer, prompt_string, FALSE, pb, pool);
-    error_t err = fs->SimplePrompt(prompt_text, prompt_string, RequestResult, pool);
+    error_t err = fs->SimplePrompt(prompt_text, prompt_string, RequestResult);
     if (err)
     {
       if (err == WEBDAV_ERR_CANCELLED)
@@ -9919,7 +9919,7 @@ cmdline_auth_simple_prompt(auth_cred_simple_t ** cred_p,
   // pass_prompt = apr_psprintf(pool, "Password for '%s': ", ret->username);
   // WEBDAV_ERR(prompt(&(ret->password), pass_prompt, TRUE, pb, pool));
 
-  WEBDAV_ERR(fs->AskForUserPassword(&ret->password, ret->username, RequestResult, pool));
+  WEBDAV_ERR(fs->AskForUserPassword(&ret->password, RequestResult, pool));
   if (RequestResult != qaOK) return WEBDAV_NO_ERROR;
 
   ret->may_save = may_save;
@@ -12124,10 +12124,8 @@ neon_open(
                                      &debug,
                                      &neon_debug_file_name,
                                      &compression,
-                                     &neon_auth_types,
                                      &pkcs11_provider,
                                      &ssl_authority_file,
-                                     uri->host,
                                      pool));
     if (neon_auth_types == 0)
     {
@@ -14261,7 +14259,7 @@ bool __fastcall TWebDAVFileSystem::HandleListData(const wchar_t * Path,
           {
             unsigned short seconds = 0;
             if (Entry->HasSeconds)
-              seconds = Entry->Second;
+              seconds = static_cast<unsigned short>(Entry->Second);
             File->SetModification(Modification +
                                   EncodeTimeVerbose(static_cast<unsigned short>(Entry->Hour),
                                                     static_cast<unsigned short>(Entry->Minute),
@@ -14571,7 +14569,7 @@ bool TWebDAVFileSystem::WebDAVRenameFile(const wchar_t * srcPath, const wchar_t 
   const char * dst_path = NULL;
   err = webdav::path_cstring_to_utf8(&src_path, AnsiString(srcPath).c_str(), pool);
   if (err) return false;
-  err = webdav::path_cstring_to_utf8(&dst_path, AnsiString(srcPath).c_str(), pool);
+  err = webdav::path_cstring_to_utf8(&dst_path, AnsiString(dstPath).c_str(), pool);
   if (err) return false;
   err = webdav::client_move_file_or_directory(
           FSession,
@@ -14680,10 +14678,8 @@ webdav::error_t TWebDAVFileSystem::GetServerSettings(
   int * neon_debug,
   const char ** neon_debug_file_name,
   bool * compression,
-  unsigned int * neon_auth_types,
   const char ** pk11_provider,
   const char ** ssl_authority_file,
-  const char * requested_host,
   apr_pool_t * pool)
 {
   /* If we find nothing, default to nulls. */
@@ -14820,7 +14816,6 @@ webdav::error_t TWebDAVFileSystem::AskForUsername(
 
 webdav::error_t TWebDAVFileSystem::AskForUserPassword(
   const char ** password,
-  const char * user_name,
   unsigned int & RequestResult,
   apr_pool_t * pool)
 {
@@ -14860,8 +14855,7 @@ webdav::error_t TWebDAVFileSystem::AskForPassphrase(
 webdav::error_t TWebDAVFileSystem::SimplePrompt(
   const char * prompt_text,
   const char * prompt_string,
-  unsigned int & RequestResult,
-  apr_pool_t * pool)
+  unsigned int & RequestResult)
 {
   RequestResult = 0;
   TSessionData * Data = FTerminal->GetSessionData();
