@@ -1712,8 +1712,8 @@ protected:
 private:
   TSessionActionEnum FAction;
   TSessionData * FSessionData;
-  size_t FTransferProtocolIndex;
-  size_t FLoginTypeIndex;
+  int FTransferProtocolIndex;
+  int FLoginTypeIndex;
 
   TTabButton * SshTab;
   TTabButton * AuthenticatonTab;
@@ -5995,7 +5995,7 @@ protected:
   void /* __fastcall */ ClipboardAddItem(TObject * Control, int Label, UnicodeString Value);
   void __fastcall FeedControls();
   void __fastcall UpdateControls();
-  TLabelList * __fastcall CreateLabelArray(size_t Count);
+  TLabelList * __fastcall CreateLabelArray(int Count);
   virtual void __fastcall SelectTab(int Tab);
   virtual void __fastcall Change();
   void /* __fastcall */ SpaceAvailableButtonClick(TFarButton * Sender, bool & Close);
@@ -8792,10 +8792,10 @@ void __fastcall TQueueDialog::RefreshQueue()
   if (QueueListBox->GetItems()->GetCount() > 0)
   {
     bool Change = false;
-    size_t TopIndex = QueueListBox->GetItems()->GetTopIndex();
-    size_t Index = TopIndex;
+    int TopIndex = QueueListBox->GetItems()->GetTopIndex();
+    int Index = TopIndex;
 
-    size_t ILine = 0;
+    int ILine = 0;
     while ((Index > ILine) &&
            (QueueListBox->GetItems()->GetObjects(Index) ==
             QueueListBox->GetItems()->GetObjects(Index - ILine - 1)))
