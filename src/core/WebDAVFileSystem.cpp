@@ -13478,7 +13478,6 @@ void __fastcall TWebDAVFileSystem::WebDAVSource(const UnicodeString FileName,
   bool CheckExistence = UnixComparePaths(TargetDir, FTerminal->GetCurrentDirectory()) &&
     (FTerminal->FFiles != NULL) && FTerminal->FFiles->GetLoaded();
   FTerminal->LogEvent(FORMAT(L"File: \"%s\"", FileName.c_str()));
-  bool SkipConfirmed = false;
   bool CanProceed = false;
   UnicodeString FileNameOnly =
     CopyParam->ChangeFileName(ExtractFileName(FileName, false), osLocal, true);
