@@ -925,7 +925,7 @@ private:
     FLength = 0;
     FPosition = 0;
     FMessageNumber = SFTPNoMessageNumber;
-    FType = -1;
+    FType = (unsigned char)-1;
     FReservedBy = NULL;
     FCodePage = codePage;
     Self = this;
@@ -2430,7 +2430,7 @@ void __fastcall TSFTPFileSystem::ReserveResponse(const TSFTPPacket * Packet,
     Response->SetReservedBy(this);
   }
   FPacketReservations->Add(Response);
-  if (FPacketReservations->GetCount() >= FPacketNumbers.size())
+  if ((size_t)FPacketReservations->GetCount() >= FPacketNumbers.size())
   {
     FPacketNumbers.resize(FPacketReservations->GetCount() + 10);
   }
@@ -2979,8 +2979,8 @@ void __fastcall TSFTPFileSystem::LookupUsersGroups()
 {
   assert(SupportsExtension(SFTP_EXT_OWNER_GROUP));
 
-  TSFTPPacket PacketOwners(char(SSH_FXP_EXTENDED), GetSessionData()->GetCodePageAsNumber());
-  TSFTPPacket PacketGroups(char(SSH_FXP_EXTENDED), GetSessionData()->GetCodePageAsNumber());
+  TSFTPPacket PacketOwners((unsigned char)SSH_FXP_EXTENDED, GetSessionData()->GetCodePageAsNumber());
+  TSFTPPacket PacketGroups((unsigned char)SSH_FXP_EXTENDED, GetSessionData()->GetCodePageAsNumber());
 
   TSFTPPacket * Packets[] = { &PacketOwners, &PacketGroups };
   TRemoteTokenList * Lists[] = { &FTerminal->FUsers, &FTerminal->FGroups };
@@ -2990,7 +2990,7 @@ void __fastcall TSFTPFileSystem::LookupUsersGroups()
   {
     TSFTPPacket * Packet = Packets[Index];
     Packet->AddString(RawByteString(SFTP_EXT_OWNER_GROUP));
-    Packet->AddByte(ListTypes[Index]);
+    Packet->AddByte((unsigned char)ListTypes[Index]);
     SendPacket(Packet);
     ReserveResponse(Packet, Packet);
   }
@@ -5537,7 +5537,7 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
               {
                 assert(!ResumeTransfer && !ResumeAllowed);
 
-                unsigned int PrevBlockSize = BlockBuf.GetSize();
+                __int64 PrevBlockSize = BlockBuf.GetSize();
                 BlockBuf.Convert(GetEOL(), FTerminal->GetConfiguration()->GetLocalEOLType(), 0, ConvertToken);
                 OperationProgress->SetLocalSize(
                   OperationProgress->LocalSize - PrevBlockSize + BlockBuf.GetSize());

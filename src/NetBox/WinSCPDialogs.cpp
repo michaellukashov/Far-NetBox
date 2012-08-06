@@ -6152,7 +6152,7 @@ public:
   OkButton->SetCenterGroup(true);
 }
 //---------------------------------------------------------------------------
-TLabelList * __fastcall TFileSystemInfoDialog::CreateLabelArray(size_t Count)
+TLabelList * __fastcall TFileSystemInfoDialog::CreateLabelArray(int Count)
 {
   TLabelList * List = new TLabelList();
   try
@@ -7369,15 +7369,15 @@ private:
   TSynchronizeChecklist * FChecklist;
   UnicodeString FLocalDirectory;
   UnicodeString FRemoteDirectory;
-  static const size_t FColumns = 8;
+  static const int FColumns = 8;
   int FWidths[FColumns];
   UnicodeString FActions[TSynchronizeChecklist::ActionCount];
-  size_t FScroll;
+  int FScroll;
   bool FCanScrollRight;
-  size_t FChecked;
+  int FChecked;
 
   void __fastcall AdaptSize();
-  int __fastcall ColumnWidth(size_t Index);
+  int __fastcall ColumnWidth(int Index);
   void __fastcall LoadChecklist();
   void __fastcall RefreshChecklist(bool Scroll);
   void __fastcall UpdateControls();
@@ -7584,7 +7584,7 @@ void __fastcall TSynchronizeChecklistDialog::AdaptSize()
 UnicodeString __fastcall TSynchronizeChecklistDialog::FormatSize(
   __int64 Size, int Column)
 {
-  size_t Width = FWidths[Column];
+  int Width = FWidths[Column];
   UnicodeString Result = FORMAT(L"%lu", Size);
 
   if (Result.Length() > Width)

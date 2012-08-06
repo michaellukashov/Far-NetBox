@@ -692,7 +692,7 @@ struct TFarMessageData
 
   const TMessageParams * Params;
   int Buttons[15 + 1];
-  size_t ButtonCount;
+  int ButtonCount;
 };
 //---------------------------------------------------------------------------
 void /* __fastcall */ TWinSCPPlugin::MessageClick(void * Token, int Result, bool & Close)
