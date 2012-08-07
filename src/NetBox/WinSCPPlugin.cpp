@@ -142,7 +142,7 @@ bool __fastcall TWinSCPPlugin::ImportSessions(const UnicodeString RegistryStorag
     } BOOST_SCOPE_EXIT_END
     ImportStorage->GetSubKeyNames(SubKeyNames);
     // DEBUG_PRINTF(L"SubKeyNames->GetCount = %d", SubKeyNames->GetCount());
-    for (size_t i = 0; i < SubKeyNames->GetCount(); i++)
+    for (int i = 0; i < SubKeyNames->GetCount(); i++)
     {
       // DEBUG_PRINTF(L"SubKeyNames->GetStrings(%d) = %s", i, SubKeyNames->GetStrings(i).c_str());
       TSessionData * ExportData = new TSessionData(SubKeyNames->GetStrings(i));
@@ -705,7 +705,7 @@ struct TFarMessageData
 
   const TMessageParams * Params;
   int Buttons[15 + 1];
-  size_t ButtonCount;
+  int ButtonCount;
 };
 //---------------------------------------------------------------------------
 void /* __fastcall */ TWinSCPPlugin::MessageClick(void * Token, int Result, bool & Close)

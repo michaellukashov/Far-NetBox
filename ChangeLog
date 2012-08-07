@@ -1,3 +1,6 @@
+NetBox 2.1.8 ??.08.2012
+--------------------
+
 NetBox 2.1.7 04.08.2012
 --------------------
   * WebDAV: rewrite WebDAV protocol support using neon + expat + apr

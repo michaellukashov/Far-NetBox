@@ -62,7 +62,7 @@ RawByteString EncryptPassword(UnicodeString UnicodePassword, UnicodeString Unico
   for (Index = 0; Index < Shift; Index++)
     Result += SimpleEncryptChar((unsigned char)random(256));
   for (Index = 0; Index < Password.Length(); Index++)
-    Result += SimpleEncryptChar(Password.c_str()[Index]);
+    Result += SimpleEncryptChar((unsigned char)Password.c_str()[Index]);
   while (Result.Length() < PWALG_SIMPLE_MAXLEN * 2)
     Result += SimpleEncryptChar((unsigned char)random(256));
   return Result;

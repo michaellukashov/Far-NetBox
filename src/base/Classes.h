@@ -472,7 +472,7 @@ public:
   virtual ~TStream();
   virtual __int64 __fastcall Read(void * Buffer, __int64 Count) = 0;
   virtual __int64 __fastcall Write(const void * Buffer, __int64 Count) = 0;
-  virtual __int64 __fastcall Seek(__int64 Offset, __int64 Origin) = 0;
+  virtual __int64 __fastcall Seek(__int64 Offset, int Origin) = 0;
   virtual __int64 __fastcall Seek(const __int64 Offset, TSeekOrigin Origin) = 0;
   void __fastcall ReadBuffer(void * Buffer, __int64 Count);
   void __fastcall WriteBuffer(const void * Buffer, __int64 Count);
@@ -503,7 +503,7 @@ public:
   virtual ~THandleStream();
   virtual __int64 __fastcall Read(void * Buffer, __int64 Count);
   virtual __int64 __fastcall Write(const void * Buffer, __int64 Count);
-  virtual __int64 __fastcall Seek(__int64 Offset, __int64 Origin);
+  virtual __int64 __fastcall Seek(__int64 Offset, int Origin);
   virtual __int64 __fastcall Seek(const __int64 Offset, TSeekOrigin Origin);
 
   HANDLE __fastcall GetHandle() { return FHandle; }
@@ -538,7 +538,7 @@ public:
   TMemoryStream();
   virtual  ~TMemoryStream();
   virtual __int64 __fastcall Read(void * Buffer, __int64 Count);
-  virtual __int64 __fastcall Seek(__int64 Offset, __int64 Origin);
+  virtual __int64 __fastcall Seek(__int64 Offset, int Origin);
   virtual __int64 __fastcall Seek(const __int64 Offset, TSeekOrigin Origin);
   void __fastcall SaveToStream(TStream * Stream);
   void __fastcall SaveToFile(const UnicodeString FileName);

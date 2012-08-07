@@ -838,7 +838,7 @@ UnicodeString ExtractFileExt(const UnicodeString FileName)
 UnicodeString get_full_path_name(const UnicodeString path)
 {
   UnicodeString buf(MAX_PATH, 0);
-  size_t size = GetFullPathNameW(path.c_str(), static_cast<DWORD>(buf.Length() - 1),
+  int size = GetFullPathNameW(path.c_str(), static_cast<DWORD>(buf.Length() - 1),
                                  reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(buf.c_str())), NULL);
   if (size > buf.Length())
   {
@@ -1176,7 +1176,7 @@ unsigned int HexToInt(const UnicodeString Hex, size_t MinChars)
     size_t A = Digits.find_first_of(static_cast<wchar_t>(toupper(Hex[I])));
     if (A == std::wstring::npos)
     {
-      if ((MinChars == NPOS) || (I <= MinChars))
+      if ((MinChars == NPOS) || ((size_t)I <= MinChars))
       {
           Result = 0;
       }
@@ -1279,9 +1279,9 @@ static bool DecodeDateFully(const TDateTime & DateTime,
       D -= I;
       M++;
     }
-    Year = Y;
-    Month = M;
-    Day = D + 1;
+    Year = (unsigned short)Y;
+    Month = (unsigned short)M;
+    Day = (unsigned short)D + 1;
   }
   return Result;
 }
@@ -1301,16 +1301,16 @@ void DecodeTime(const TDateTime &DateTime, unsigned short &Hour,
   unsigned int H, M, S, MS;
   DivMod(MinCount, 60, H, M);
   DivMod(MSecCount, 1000, S, MS);
-  Hour = H;
-  Min = M;
-  Sec = S;
-  MSec = MS;
+  Hour = (unsigned short)H;
+  Min = (unsigned short)M;
+  Sec = (unsigned short)S;
+  MSec = (unsigned short)MS;
 }
 
 //---------------------------------------------------------------------------
 bool TryEncodeDate(int Year, int Month, int Day, TDateTime & Date)
 {
-  const TDayTable * DayTable = &MonthDays[IsLeapYear(Year)];
+  const TDayTable * DayTable = &MonthDays[IsLeapYear((Word)Year)];
   if ((Year >= 1) && (Year <= 9999) && (Month >= 1) && (Month <= 12) &&
       (Day >= 1) && (Day <= (*DayTable)[Month - 1]))
   {
@@ -1442,7 +1442,7 @@ void __fastcall Randomize()
 }
 //---------------------------------------------------------------------------
 
-void IncAMonth(Word & Year, Word & Month, Word & Day, Integer NumberOfMonths = 1)
+void IncAMonth(Word & Year, Word & Month, Word & Day, Int64 NumberOfMonths = 1)
 {
   Integer Sign;
   if (NumberOfMonths >= 0)
@@ -1451,11 +1451,11 @@ void IncAMonth(Word & Year, Word & Month, Word & Day, Integer NumberOfMonths = 1
     Sign = -1;
   Year = Year + (NumberOfMonths % 12);
   NumberOfMonths = NumberOfMonths / 12;
-  Month += NumberOfMonths;
+  Month += (Word)NumberOfMonths;
   if (Word(Month-1) > 11) // if Month <= 0, word(Month-1) > 11)
   {
-    Year += Sign;
-    Month += -12 * Sign;
+    Year += (Word)Sign;
+    Month += -12 * (Word)Sign;
   }
   const TDayTable * DayTable = &MonthDays[IsLeapYear(Year)];
   if (Day > (*DayTable)[Month]) Day = static_cast<Word>(*DayTable[Month]);

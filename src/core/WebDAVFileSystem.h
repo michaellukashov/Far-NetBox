@@ -171,10 +171,8 @@ public:
     int *neon_debug,
     const char **neon_debug_file_name,
     bool *compression,
-    unsigned int *neon_auth_types,
     const char **pk11_provider,
     const char **ssl_authority_file,
-    const char *requested_host,
     apr_pool_t *pool);
   webdav::error_t VerifyCertificate(
     const char * Prompt, const char *fingerprint,
@@ -188,7 +186,6 @@ public:
     apr_pool_t *pool);
   webdav::error_t AskForUserPassword(
     const char **password, 
-    const char *user_name,
     unsigned int & RequestResult,
     apr_pool_t *pool);
   webdav::error_t AskForPassphrase(
@@ -199,8 +196,7 @@ public:
   webdav::error_t SimplePrompt(
     const char *prompt_text,
     const char *prompt_string,
-    unsigned int & RequestResult,
-    apr_pool_t *pool);
+    unsigned int & RequestResult);
   webdav::error_t CreateStorage(THierarchicalStorage *& Storage);
   size_t AdjustToCPSLimit(size_t len);
   bool GetIsCancelled();

@@ -121,7 +121,7 @@ void TList::SetCount(int NewCount)
   {
     Classes::Error(SListCountError, NewCount);
   }
-  if (NewCount <= FList.size())
+  if ((size_t)NewCount <= FList.size())
   {
     int sz = FList.size();
     for (int I = sz - 1; (I != NPOS) && (I >= NewCount); I--)
@@ -142,7 +142,7 @@ void * TList::GetItem(int Index) const
 }
 void TList::SetItem(int Index, void * Item)
 {
-  if ((Index == NPOS) || (Index >= FList.size()))
+  if ((Index == NPOS) || ((size_t)Index >= FList.size()))
   {
     Classes::Error(SListIndexError, Index);
   }
@@ -179,7 +179,7 @@ void TList::Move(int CurIndex, int NewIndex)
 {
   if (CurIndex != NewIndex)
   {
-    if ((NewIndex == NPOS) || (NewIndex >= FList.size()))
+    if ((NewIndex == NPOS) || ((size_t)NewIndex >= FList.size()))
     {
       Classes::Error(SListIndexError, NewIndex);
     }
@@ -192,7 +192,7 @@ void TList::Move(int CurIndex, int NewIndex)
 }
 void TList::Delete(int Index)
 {
-  if ((Index == NPOS) || (Index >= FList.size()))
+  if ((Index == NPOS) || ((size_t)Index >= FList.size()))
   {
     Classes::Error(SListIndexError, Index);
   }
@@ -205,11 +205,11 @@ void TList::Delete(int Index)
 }
 void TList::Insert(int Index, void * Item)
 {
-  if ((Index == NPOS) || (Index > FList.size()))
+  if ((Index == NPOS) || ((size_t)Index > FList.size()))
   {
     Classes::Error(SListIndexError, Index);
   }
-  if (Index <= FList.size())
+  if ((size_t)Index <= FList.size())
   {
     FList.insert(FList.begin() + Index, Item);
   }
@@ -221,11 +221,11 @@ void TList::Insert(int Index, void * Item)
 int TList::IndexOf(void * value) const
 {
   int Result = 0;
-  while ((Result < FList.size()) && (FList[Result] != value))
+  while (((size_t)Result < FList.size()) && (FList[Result] != value))
   {
     Result++;
   }
-  if (Result == FList.size())
+  if ((size_t)Result == FList.size())
   {
     Result = NPOS;
   }
@@ -428,7 +428,8 @@ void TStrings::SetDelimitedText(const UnicodeString Value)
   std::vector<std::wstring> lines;
   std::wstring delim = std::wstring(1, GetDelimiter());
   delim.append(1, L'\n');
-  alg::split(lines, std::wstring(Value.c_str()), alg::is_any_of(delim), alg::token_compress_on);
+  std::wstring value = Value.c_str();
+  alg::split(lines, value, alg::is_any_of(delim), alg::token_compress_on);
   UnicodeString line;
   BOOST_FOREACH(line, lines)
   {
@@ -721,7 +722,7 @@ void TStrings::Append(const UnicodeString value)
   Insert(GetCount(), value);
 }
 
-void TStrings::SaveToStream(TStream * Stream)
+void TStrings::SaveToStream(TStream * /*Stream*/)
 {
   Classes::Error(SNotImplemented, 12);
 }
@@ -845,13 +846,13 @@ void TStringList::PutString(int Index, const UnicodeString S)
   {
     Classes::Error(SSortedListError, 0);
   }
-  if ((Index == NPOS) || (Index > FList.size()))
+  if ((Index == NPOS) || ((size_t)Index > FList.size()))
   {
     Classes::Error(SListIndexError, Index);
   }
   Changing();
   // DEBUG_PRINTF(L"Index = %d, size = %d", Index, FList.size());
-  if (Index < FList.size())
+  if ((size_t)Index < FList.size())
   {
     TObject * Temp = GetObjects(Index);
     TStringItem item;
@@ -867,7 +868,7 @@ void TStringList::PutString(int Index, const UnicodeString S)
 }
 void TStringList::Delete(int Index)
 {
-  if ((Index == NPOS) || (Index >= FList.size()))
+  if ((Index == NPOS) || ((size_t)Index >= FList.size()))
   {
     Classes::Error(SListIndexError, Index);
   }
@@ -878,7 +879,7 @@ void TStringList::Delete(int Index)
 }
 TObject * TStringList::GetObjects(int Index)
 {
-  if ((Index == NPOS) || (Index >= FList.size()))
+  if ((Index == NPOS) || ((size_t)Index >= FList.size()))
   {
     Classes::Error(SListIndexError, Index);
   }
@@ -913,7 +914,7 @@ void TStringList::InsertItem(int Index, const UnicodeString S, TObject * AObject
 UnicodeString TStringList::GetStrings(int Index) const
 {
   // DEBUG_PRINTF(L"Index = %d, FList.size = %d", Index, FList.size());
-  if ((Index == NPOS) || (Index >= FList.size()))
+  if ((Index == NPOS) || ((size_t)Index >= FList.size()))
   {
     Classes::Error(SListIndexError, Index);
   }
@@ -957,7 +958,7 @@ void TStringList::LoadFromFile(const UnicodeString FileName)
 
 void TStringList::PutObject(int Index, TObject * AObject)
 {
-  if ((Index == NPOS) || (Index >= FList.size()))
+  if ((Index == NPOS) || ((size_t)Index >= FList.size()))
   {
     Classes::Error(SListIndexError, Index);
   }
@@ -995,7 +996,7 @@ void TStringList::Changed()
 }
 void TStringList::Insert(int Index, const UnicodeString S)
 {
-  if ((Index == NPOS) || (Index > FList.size()))
+  if ((Index == NPOS) || ((size_t)Index > FList.size()))
   {
     Classes::Error(SListIndexError, Index);
   }
@@ -1313,15 +1314,27 @@ __int64 __fastcall THandleStream::Write(const void * Buffer, __int64 Count)
   if (Result == -1) { Result = 0; }
   return Result;
 }
-__int64 __fastcall THandleStream::Seek(__int64 Offset, __int64 Origin)
+__int64 __fastcall THandleStream::Seek(__int64 Offset, int Origin)
 {
   __int64 Result = ::FileSeek(FHandle, Offset, Origin);
   return Result;
 }
 __int64 __fastcall THandleStream::Seek(const __int64 Offset, TSeekOrigin Origin)
 {
-  Classes::Error(SNotImplemented, 1202);
-  return 0;
+  int origin = FILE_BEGIN;
+  switch (Origin)
+  {
+    case soFromBeginning:
+      origin = FILE_BEGIN;
+      break;
+    case soFromCurrent:
+      origin = FILE_CURRENT;
+      break;
+    case soFromEnd:
+      origin = FILE_END;
+      break;
+  }
+  return Seek(Offset, origin);
 }
 
 void __fastcall THandleStream::SetSize(const __int64 NewSize)
@@ -1366,11 +1379,9 @@ __int64 __fastcall TMemoryStream::Read(void * Buffer, __int64 Count)
   return Result;
 }
 
-__int64 __fastcall TMemoryStream::Seek(__int64 Offset, __int64 Origin)
+__int64 __fastcall TMemoryStream::Seek(__int64 Offset, int Origin)
 {
-  // return Seek(Offset, Classes::soFromCurrent);
-  Classes::Error(SNotImplemented, 1303);
-  return 0;
+  return Seek(Offset, (TSeekOrigin)Origin);
 }
 
 __int64 __fastcall TMemoryStream::Seek(const __int64 Offset, TSeekOrigin Origin)

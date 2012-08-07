@@ -1714,8 +1714,8 @@ protected:
 private:
   TSessionActionEnum FAction;
   TSessionData * FSessionData;
-  size_t FTransferProtocolIndex;
-  size_t FLoginTypeIndex;
+  int FTransferProtocolIndex;
+  int FLoginTypeIndex;
 
   TTabButton * SshTab;
   TTabButton * AuthenticatonTab;
@@ -5997,7 +5997,7 @@ protected:
   void /* __fastcall */ ClipboardAddItem(TObject * Control, int Label, UnicodeString Value);
   void __fastcall FeedControls();
   void __fastcall UpdateControls();
-  TLabelList * __fastcall CreateLabelArray(size_t Count);
+  TLabelList * __fastcall CreateLabelArray(int Count);
   virtual void __fastcall SelectTab(int Tab);
   virtual void __fastcall Change();
   void /* __fastcall */ SpaceAvailableButtonClick(TFarButton * Sender, bool & Close);
@@ -6154,7 +6154,7 @@ public:
   OkButton->SetCenterGroup(true);
 }
 //---------------------------------------------------------------------------
-TLabelList * __fastcall TFileSystemInfoDialog::CreateLabelArray(size_t Count)
+TLabelList * __fastcall TFileSystemInfoDialog::CreateLabelArray(int Count)
 {
   TLabelList * List = new TLabelList();
   try
@@ -7380,15 +7380,15 @@ private:
   TSynchronizeChecklist * FChecklist;
   UnicodeString FLocalDirectory;
   UnicodeString FRemoteDirectory;
-  static const size_t FColumns = 8;
+  static const int FColumns = 8;
   int FWidths[FColumns];
   UnicodeString FActions[TSynchronizeChecklist::ActionCount];
-  size_t FScroll;
+  int FScroll;
   bool FCanScrollRight;
-  size_t FChecked;
+  int FChecked;
 
   void __fastcall AdaptSize();
-  int __fastcall ColumnWidth(size_t Index);
+  int __fastcall ColumnWidth(int Index);
   void __fastcall LoadChecklist();
   void __fastcall RefreshChecklist(bool Scroll);
   void __fastcall UpdateControls();
@@ -7595,7 +7595,7 @@ void __fastcall TSynchronizeChecklistDialog::AdaptSize()
 UnicodeString __fastcall TSynchronizeChecklistDialog::FormatSize(
   __int64 Size, int Column)
 {
-  size_t Width = FWidths[Column];
+  int Width = FWidths[Column];
   UnicodeString Result = FORMAT(L"%lu", Size);
 
   if (Result.Length() > Width)
@@ -8810,10 +8810,10 @@ void __fastcall TQueueDialog::RefreshQueue()
   if (QueueListBox->GetItems()->GetCount() > 0)
   {
     bool Change = false;
-    size_t TopIndex = QueueListBox->GetItems()->GetTopIndex();
-    size_t Index = TopIndex;
+    int TopIndex = QueueListBox->GetItems()->GetTopIndex();
+    int Index = TopIndex;
 
-    size_t ILine = 0;
+    int ILine = 0;
     while ((Index > ILine) &&
            (QueueListBox->GetItems()->GetObjects(Index) ==
             QueueListBox->GetItems()->GetObjects(Index - ILine - 1)))

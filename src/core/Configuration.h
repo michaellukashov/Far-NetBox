@@ -267,8 +267,8 @@ public:
   UnicodeString __fastcall GetLogFileName() { return FLogFileName; }
   void __fastcall SetLogToFile(bool value);
   bool GetLogFileAppend() { return FLogFileAppend; }
-  size_t GetLogProtocol() { return FLogProtocol; }
-  size_t GetActualLogProtocol() { return FActualLogProtocol; }
+  int GetLogProtocol() { return FLogProtocol; }
+  int GetActualLogProtocol() { return FActualLogProtocol; }
   bool GetLogActions() { return FLogActions; }
   int GetLogWindowLines() { return FLogWindowLines; }
   TNotifyEvent & GetOnChange() { return FOnChange; }

@@ -104,7 +104,7 @@ RawByteString::operator UnicodeString() const
 
 int RawByteString::Pos(wchar_t Ch) const
 {
-  return Data.find(Ch) + 1;
+  return Data.find((unsigned char)Ch) + 1;
 }
 
 int RawByteString::Pos(const char Ch) const

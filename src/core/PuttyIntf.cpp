@@ -145,7 +145,7 @@ int get_userpass_input(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
       {
         prompt_t * Prompt = p->prompts[Index];
         AnsiString Str = Results.GetStrings(Index).c_str();
-        if (Str.size() >= Prompt->result_len)
+        if ((size_t)Str.size() >= Prompt->result_len)
         {
           Prompt->result = (char *)srealloc(Prompt->result, Str.size() + 1);
           Prompt->result_len = Str.size() + 1;

@@ -2,7 +2,7 @@ NetBox: SFTP/FTP/FTPS/SCP/WebDAV client for Far Manager 2.0/3.0
 ==============
 
     Based on WinSCP: SFTP/FTP/SCP client for FAR version 1.6.2 Copyright (c) 2000-2009 Martin Prikryl  
-    Based on WinSCP version 5.0.7 Copyright (c) 2000-2012 Martin Prikryl  
+    Based on WinSCP version 5.0.8 Copyright (c) 2000-2012 Martin Prikryl  
     SSH and SCP code based on PuTTY 0.62 Copyright (c) 1997-2011 Simon Tatham  
     FTP code based on FileZilla 2.2.32 Copyright (c) 2001-2007 Tim Kosse  
 
@@ -54,18 +54,6 @@ Compile openssl:
     call src/NetBox/scripts/build_openssl.bat x86  
     call src/NetBox/scripts/build_openssl.bat x64  
 
-Compile expat:
-
-    cd libs/expat  
-    call src/NetBox/scripts/build_expat.bat x86  
-    call src/NetBox/scripts/build_expat.bat x64  
-    
-Compile neon:
-
-    cd libs/neon  
-    call src/NetBox/scripts/build_neon.bat x86  
-    call src/NetBox/scripts/build_neon.bat x64  
-    
 Compile NetBox plugin:
 
     cmd /c %VS100COMNTOOLS%\..\..\VC\vcvarsall.bat x86 && devenv NetBox.sln /Build "Debug|Win32" /USEENV /Project "NetBox"
