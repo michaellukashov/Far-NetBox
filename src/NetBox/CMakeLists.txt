@@ -67,6 +67,7 @@ set ( PLATFORM x86 )
 set ( OUTPUT_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
 
 set ( LIBS_ROOT ${PROJECT_ROOT}/libs )
+set ( SRC_ROOT ${PROJECT_ROOT}/src )
 
 #-------------------------------------------------------
 
@@ -77,15 +78,15 @@ set ( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/
 #-------------------------------------------------------------------------------
 
 include_directories (
-    ${PROJECT_ROOT}/src/NetBox
-    ${PROJECT_ROOT}/src/PluginSDK/${FAR_VERSION}
-    ${PROJECT_ROOT}/src/base
-    ${PROJECT_ROOT}/src/core
-    ${PROJECT_ROOT}/src/windows
-    ${PROJECT_ROOT}/src/resource
-    ${PROJECT_ROOT}/src/Common
-    ${PROJECT_ROOT}/src/filezilla
-    ${PROJECT_ROOT}/src/filezilla/misc
+    ${SRC_ROOT}/NetBox
+    ${SRC_ROOT}/PluginSDK/${FAR_VERSION}
+    ${SRC_ROOT}/base
+    ${SRC_ROOT}/core
+    ${SRC_ROOT}/windows
+    ${SRC_ROOT}/resource
+    ${SRC_ROOT}/Common
+    ${SRC_ROOT}/filezilla
+    ${SRC_ROOT}/filezilla/misc
     ${LIBS_ROOT}
     ${LIBS_ROOT}/boost
     ${LIBS_ROOT}/Putty
@@ -109,93 +110,93 @@ link_directories (
 #-------------------------------------------------------------------------------
 
 set ( NETBOX_ALL_HEADERS
-    ${PROJECT_ROOT}/src/NetBox/resource.h
+    ${SRC_ROOT}/NetBox/resource.h
 )
 
 set ( COMMON_SOURCES
-    ${PROJECT_ROOT}/src/base/Classes.cpp
-    ${PROJECT_ROOT}/src/base/Sysutils.cpp
-    ${PROJECT_ROOT}/src/base/UnicodeString.cpp
-    ${PROJECT_ROOT}/src/base/farrtl.cpp
-    ${PROJECT_ROOT}/src/base/local.cpp
-    ${PROJECT_ROOT}/src/core/RemoteFiles.cpp
-    ${PROJECT_ROOT}/src/core/Terminal.cpp
-    ${PROJECT_ROOT}/src/core/Exceptions.cpp
-    ${PROJECT_ROOT}/src/core/FileOperationProgress.cpp
-    ${PROJECT_ROOT}/src/core/Queue.cpp
-    ${PROJECT_ROOT}/src/core/SecureShell.cpp
-    ${PROJECT_ROOT}/src/core/SessionInfo.cpp
-    ${PROJECT_ROOT}/src/core/CoreMain.cpp
-    ${PROJECT_ROOT}/src/core/FileMasks.cpp
-    ${PROJECT_ROOT}/src/core/CopyParam.cpp
-    ${PROJECT_ROOT}/src/core/SessionData.cpp
-    ${PROJECT_ROOT}/src/core/Configuration.cpp
-    ${PROJECT_ROOT}/src/core/ScpFileSystem.cpp
-    ${PROJECT_ROOT}/src/core/FtpFileSystem.cpp
-    ${PROJECT_ROOT}/src/core/SftpFileSystem.cpp
-    ${PROJECT_ROOT}/src/core/WebDAVFileSystem.cpp
-    ${PROJECT_ROOT}/src/core/PuttyIntf.cpp
-    ${PROJECT_ROOT}/src/core/FileBuffer.cpp
-    ${PROJECT_ROOT}/src/core/NamedObjs.cpp
-    ${PROJECT_ROOT}/src/core/HierarchicalStorage.cpp
-    ${PROJECT_ROOT}/src/core/Option.cpp
-    ${PROJECT_ROOT}/src/core/FileInfo.cpp
-    ${PROJECT_ROOT}/src/core/FileSystems.cpp
-    ${PROJECT_ROOT}/src/core/Bookmarks.cpp
-    ${PROJECT_ROOT}/src/core/Cryptography.cpp
-    ${PROJECT_ROOT}/src/core/WinSCPSecurity.cpp
-    ${PROJECT_ROOT}/src/core/Common.cpp
-    ${PROJECT_ROOT}/src/windows/SynchronizeController.cpp
-    ${PROJECT_ROOT}/src/windows/GUIConfiguration.cpp
-    ${PROJECT_ROOT}/src/windows/GUITools.cpp
-    ${PROJECT_ROOT}/src/NetBox/stdafx.cpp
-    ${PROJECT_ROOT}/src/NetBox/FarUtil.cpp
-    ${PROJECT_ROOT}/src/NetBox/FarPlugin.cpp
-    ${PROJECT_ROOT}/src/NetBox/FarDialog.cpp
-    ${PROJECT_ROOT}/src/NetBox/WinSCPDialogs.cpp
-    ${PROJECT_ROOT}/src/NetBox/WinSCPFileSystem.cpp
-    ${PROJECT_ROOT}/src/NetBox/WinSCPPlugin.cpp
-    ${PROJECT_ROOT}/src/NetBox/FarInterface.cpp
-    ${PROJECT_ROOT}/src/NetBox/FarConfiguration.cpp
-    ${PROJECT_ROOT}/src/NetBox/XmlStorage.cpp
-    ${PROJECT_ROOT}/src/resource/TextsCore1.rc
-    ${PROJECT_ROOT}/src/resource/TextsCore2.rc
-    ${PROJECT_ROOT}/src/resource/rtlconsts.rc
-    ${PROJECT_ROOT}/src/resource/TextsFileZilla.rc
-    ${PROJECT_ROOT}/src/filezilla/FileZillaIntf.cpp
-    ${PROJECT_ROOT}/src/filezilla/FileZillaIntern.cpp
-    ${PROJECT_ROOT}/src/filezilla/ApiLog.cpp
-    ${PROJECT_ROOT}/src/filezilla/ServerPath.cpp
-    ${PROJECT_ROOT}/src/filezilla/AsyncSslSocketLayer.cpp
-    ${PROJECT_ROOT}/src/filezilla/AsyncSocketExLayer.cpp
-    ${PROJECT_ROOT}/src/filezilla/AsyncSocketEx.cpp
-    ${PROJECT_ROOT}/src/filezilla/FileZillaApi.cpp
-    ${PROJECT_ROOT}/src/filezilla/FzApiStructures.cpp
-    ${PROJECT_ROOT}/src/filezilla/Crypt.cpp
-    ${PROJECT_ROOT}/src/filezilla/ControlSocket.cpp
-    ${PROJECT_ROOT}/src/filezilla/FtpControlSocket.cpp
-    ${PROJECT_ROOT}/src/filezilla/MainThread.cpp
-    ${PROJECT_ROOT}/src/filezilla/TransferSocket.cpp
-    ${PROJECT_ROOT}/src/filezilla/PathFunctions.cpp
-    ${PROJECT_ROOT}/src/filezilla/FtpListResult.cpp
-    ${PROJECT_ROOT}/src/filezilla/AsyncProxySocketLayer.cpp
-    ${PROJECT_ROOT}/src/filezilla/structures.cpp
-    ${PROJECT_ROOT}/src/filezilla/MFC64bitFix.cpp
-    ${PROJECT_ROOT}/src/filezilla/Options.cpp
-    ${PROJECT_ROOT}/src/filezilla/afxdll.cpp
-    ${PROJECT_ROOT}/src/filezilla/misc/Fzutf8.cpp
-    ${PROJECT_ROOT}/src/filezilla/misc/CBase64Coding.cpp
+    ${SRC_ROOT}/base/Classes.cpp
+    ${SRC_ROOT}/base/Sysutils.cpp
+    ${SRC_ROOT}/base/UnicodeString.cpp
+    ${SRC_ROOT}/base/farrtl.cpp
+    ${SRC_ROOT}/base/local.cpp
+    ${SRC_ROOT}/core/RemoteFiles.cpp
+    ${SRC_ROOT}/core/Terminal.cpp
+    ${SRC_ROOT}/core/Exceptions.cpp
+    ${SRC_ROOT}/core/FileOperationProgress.cpp
+    ${SRC_ROOT}/core/Queue.cpp
+    ${SRC_ROOT}/core/SecureShell.cpp
+    ${SRC_ROOT}/core/SessionInfo.cpp
+    ${SRC_ROOT}/core/CoreMain.cpp
+    ${SRC_ROOT}/core/FileMasks.cpp
+    ${SRC_ROOT}/core/CopyParam.cpp
+    ${SRC_ROOT}/core/SessionData.cpp
+    ${SRC_ROOT}/core/Configuration.cpp
+    ${SRC_ROOT}/core/ScpFileSystem.cpp
+    ${SRC_ROOT}/core/FtpFileSystem.cpp
+    ${SRC_ROOT}/core/SftpFileSystem.cpp
+    ${SRC_ROOT}/core/WebDAVFileSystem.cpp
+    ${SRC_ROOT}/core/PuttyIntf.cpp
+    ${SRC_ROOT}/core/FileBuffer.cpp
+    ${SRC_ROOT}/core/NamedObjs.cpp
+    ${SRC_ROOT}/core/HierarchicalStorage.cpp
+    ${SRC_ROOT}/core/Option.cpp
+    ${SRC_ROOT}/core/FileInfo.cpp
+    ${SRC_ROOT}/core/FileSystems.cpp
+    ${SRC_ROOT}/core/Bookmarks.cpp
+    ${SRC_ROOT}/core/Cryptography.cpp
+    ${SRC_ROOT}/core/WinSCPSecurity.cpp
+    ${SRC_ROOT}/core/Common.cpp
+    ${SRC_ROOT}/windows/SynchronizeController.cpp
+    ${SRC_ROOT}/windows/GUIConfiguration.cpp
+    ${SRC_ROOT}/windows/GUITools.cpp
+    ${SRC_ROOT}/NetBox/stdafx.cpp
+    ${SRC_ROOT}/NetBox/FarUtil.cpp
+    ${SRC_ROOT}/NetBox/FarPlugin.cpp
+    ${SRC_ROOT}/NetBox/FarDialog.cpp
+    ${SRC_ROOT}/NetBox/WinSCPDialogs.cpp
+    ${SRC_ROOT}/NetBox/WinSCPFileSystem.cpp
+    ${SRC_ROOT}/NetBox/WinSCPPlugin.cpp
+    ${SRC_ROOT}/NetBox/FarInterface.cpp
+    ${SRC_ROOT}/NetBox/FarConfiguration.cpp
+    ${SRC_ROOT}/NetBox/XmlStorage.cpp
+    ${SRC_ROOT}/resource/TextsCore1.rc
+    ${SRC_ROOT}/resource/TextsCore2.rc
+    ${SRC_ROOT}/resource/rtlconsts.rc
+    ${SRC_ROOT}/resource/TextsFileZilla.rc
+    ${SRC_ROOT}/filezilla/FileZillaIntf.cpp
+    ${SRC_ROOT}/filezilla/FileZillaIntern.cpp
+    ${SRC_ROOT}/filezilla/ApiLog.cpp
+    ${SRC_ROOT}/filezilla/ServerPath.cpp
+    ${SRC_ROOT}/filezilla/AsyncSslSocketLayer.cpp
+    ${SRC_ROOT}/filezilla/AsyncSocketExLayer.cpp
+    ${SRC_ROOT}/filezilla/AsyncSocketEx.cpp
+    ${SRC_ROOT}/filezilla/FileZillaApi.cpp
+    ${SRC_ROOT}/filezilla/FzApiStructures.cpp
+    ${SRC_ROOT}/filezilla/Crypt.cpp
+    ${SRC_ROOT}/filezilla/ControlSocket.cpp
+    ${SRC_ROOT}/filezilla/FtpControlSocket.cpp
+    ${SRC_ROOT}/filezilla/MainThread.cpp
+    ${SRC_ROOT}/filezilla/TransferSocket.cpp
+    ${SRC_ROOT}/filezilla/PathFunctions.cpp
+    ${SRC_ROOT}/filezilla/FtpListResult.cpp
+    ${SRC_ROOT}/filezilla/AsyncProxySocketLayer.cpp
+    ${SRC_ROOT}/filezilla/structures.cpp
+    ${SRC_ROOT}/filezilla/MFC64bitFix.cpp
+    ${SRC_ROOT}/filezilla/Options.cpp
+    ${SRC_ROOT}/filezilla/afxdll.cpp
+    ${SRC_ROOT}/filezilla/misc/Fzutf8.cpp
+    ${SRC_ROOT}/filezilla/misc/CBase64Coding.cpp
 )
 
 #-------------------------------------------------------------------------------
 # target NetBox
 
 set ( NETBOX_SOURCES # ${COMMON_SOURCES}
-    ${PROJECT_ROOT}/src/NetBox/UnityBuildCore.cpp
-    ${PROJECT_ROOT}/src/NetBox/UnityBuildMain.cpp
-    ${PROJECT_ROOT}/src/NetBox/UnityBuildFilezilla.cpp
-    # ${PROJECT_ROOT}/src/NetBox/NetBox.cpp
-    ${PROJECT_ROOT}/src/NetBox/NetBox.def
+    ${SRC_ROOT}/NetBox/UnityBuildCore.cpp
+    ${SRC_ROOT}/NetBox/UnityBuildMain.cpp
+    ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
+    # ${SRC_ROOT}/NetBox/NetBox.cpp
+    ${SRC_ROOT}/NetBox/NetBox.def
 )
 
 add_library (libeay32 STATIC IMPORTED)
@@ -494,20 +495,20 @@ add_dependencies ( NetBox
 #-------------------------------------------------------
 # target testnetbox_01
 
-set ( TESTNETBOX_01_DIR ${PROJECT_ROOT}/src/NetBox )
+set ( TESTNETBOX_01_DIR ${SRC_ROOT}/NetBox )
 
 set ( TESTNETBOX_01_SOURCES
-    ${PROJECT_ROOT}/src/base/Classes.cpp
-    ${PROJECT_ROOT}/src/base/Sysutils.cpp
-    ${PROJECT_ROOT}/src/base/UnicodeString.cpp
-    ${PROJECT_ROOT}/src/base/farrtl.cpp
-    ${PROJECT_ROOT}/src/base/local.cpp
-    ${PROJECT_ROOT}/src/core/Common.cpp
-    ${PROJECT_ROOT}/src/core/Exceptions.cpp
-    ${PROJECT_ROOT}/src/core/FileBuffer.cpp
+    ${SRC_ROOT}/base/Classes.cpp
+    ${SRC_ROOT}/base/Sysutils.cpp
+    ${SRC_ROOT}/base/UnicodeString.cpp
+    ${SRC_ROOT}/base/farrtl.cpp
+    ${SRC_ROOT}/base/local.cpp
+    ${SRC_ROOT}/core/Common.cpp
+    ${SRC_ROOT}/core/Exceptions.cpp
+    ${SRC_ROOT}/core/FileBuffer.cpp
     ${TESTNETBOX_01_DIR}/testnetbox_01.cpp
-    ${PROJECT_ROOT}/src/resource/TextsCore1.rc
-    ${PROJECT_ROOT}/src/resource/rtlconsts.rc
+    ${SRC_ROOT}/resource/TextsCore1.rc
+    ${SRC_ROOT}/resource/rtlconsts.rc
 )
 
 add_executable( testnetbox_01 ${TESTNETBOX_01_SOURCES} )
@@ -527,13 +528,13 @@ target_link_libraries ( testnetbox_01 ${NETBOX_LIBRARIES} )
 #-------------------------------------------------------
 # target testnetbox_02
 
-set ( TESTNETBOX_02_DIR ${PROJECT_ROOT}/src/NetBox )
+set ( TESTNETBOX_02_DIR ${SRC_ROOT}/NetBox )
 
 set ( TESTNETBOX_02_SOURCES
     ${TESTNETBOX_02_DIR}/UnityBuildCore.cpp
     ${TESTNETBOX_02_DIR}/UnityBuildMain.cpp
     ${TESTNETBOX_02_DIR}/UnityBuildFilezilla.cpp
-    ${PROJECT_ROOT}/src/resource/testnetbox_02.rc
+    ${SRC_ROOT}/resource/testnetbox_02.rc
     ${TESTNETBOX_02_DIR}/testnetbox_02.cpp
 )
 
@@ -557,7 +558,7 @@ target_link_libraries ( testnetbox_02 ${NETBOX_LIBRARIES} )
 #-------------------------------------------------------
 # target testnetbox_03
 
-set ( TESTNETBOX_03_DIR ${PROJECT_ROOT}/src/NetBox )
+set ( TESTNETBOX_03_DIR ${SRC_ROOT}/NetBox )
 
 set ( TESTNETBOX_03_SOURCES
     ${TESTNETBOX_03_DIR}/UnityBuildCore.cpp
@@ -586,7 +587,7 @@ target_link_libraries ( testnetbox_03 ${NETBOX_LIBRARIES} )
 #-------------------------------------------------------
 # target testnetbox_04
 
-set ( TESTNETBOX_04_DIR ${PROJECT_ROOT}/src/NetBox )
+set ( TESTNETBOX_04_DIR ${SRC_ROOT}/NetBox )
 set ( TESTNETBOX_04_SOURCES
     ${TESTNETBOX_04_DIR}/UnityBuildCore.cpp
     ${TESTNETBOX_04_DIR}/UnityBuildMain.cpp
