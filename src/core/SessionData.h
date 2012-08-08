@@ -329,8 +329,8 @@ public:
 #endif
 
 public:
-  explicit TSessionData(UnicodeString aName);
-  virtual ~TSessionData();
+  explicit /* __fastcall */ TSessionData(UnicodeString aName);
+  virtual /* __fastcall */ ~TSessionData();
   void __fastcall Default();
   void __fastcall NonPersistant();
   void __fastcall Load(THierarchicalStorage * Storage);
