@@ -1,5 +1,7 @@
 NetBox 2.1.8 ??.08.2012
 --------------------
+  * Bugfix: Far3: cannot verify server's rsa2 key fingerprint
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=720#p97354)
 
 NetBox 2.1.7 04.08.2012
 --------------------
