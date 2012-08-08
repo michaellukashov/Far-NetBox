@@ -925,7 +925,7 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
     AddSeparator();
     ADF(L"NetBox %s (OS %s)", FConfiguration->GetVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
     THierarchicalStorage * Storage = FConfiguration->CreateScpStorage(false);
-    if (0) // temporarily disable Configuration report
+    Storage->SetAccessMode(smRead);
     // try
     {
 #ifdef _MSC_VER
