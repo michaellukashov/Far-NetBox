@@ -17,7 +17,7 @@ TFar3Storage::TFar3Storage(const UnicodeString AStorage,
 {
   // DEBUG_PRINTF(L"AStorage = %s", AStorage.c_str());
   Init();
-};
+}
 //---------------------------------------------------------------------------
 void __fastcall TFar3Storage::Init()
 {
@@ -26,7 +26,7 @@ void __fastcall TFar3Storage::Init()
 //---------------------------------------------------------------------------
 TFar3Storage::~TFar3Storage()
 {
-};
+}
 //---------------------------------------------------------------------------
 bool __fastcall TFar3Storage::Copy(TFar3Storage * Storage)
 {
