@@ -36,7 +36,6 @@ UnicodeString __fastcall AppNameString()
 //---------------------------------------------------------------------------
 UnicodeString __fastcall GetRegistryKey()
 {
-  // return L"Software\\Michael Lukashov\\FarNetBox";
   return L"Software\\Far2\\Plugins\\NetBox 2";
 }
 //---------------------------------------------------------------------------
