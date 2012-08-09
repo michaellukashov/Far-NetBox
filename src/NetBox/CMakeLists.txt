@@ -4,17 +4,34 @@ string(REPLACE "\\" "/" PROJECT_ROOT ${PROJECT_ROOT})
 
 #-------------------------------------------------------------------------------
 
+project ( NetBox )
+
+IF(NOT DEFINED CMAKE_BUILD_TYPE)
+  set ( CMAKE_BUILD_TYPE Debug )
+ENDIF(NOT DEFINED CMAKE_BUILD_TYPE)
+
+set ( FAR_VERSION Far2 )
+set ( PLATFORM x86 )
+
+set ( OUTPUT_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
+
+set ( LIBS_ROOT ${PROJECT_ROOT}/libs )
+set ( SRC_ROOT ${PROJECT_ROOT}/src )
+
+#-------------------------------------------------------------------------------
+
 set ( CMAKE_CXX_FLAGS
-    "-DWIN32;_WINDOWS /EHsc /MP2 -D_SCL_SECURE_NO_WARNINGS; -D_UNICODE;UNICODE /MTd
-    /DAPR_DECLARE_STATIC;
-    /DCOMPILED_FROM_DSP;XML_STATIC;_RTLDLL;
-    /DNE_HAVE_SSL;HAVE_OPENSSL;HAVE_EXPAT;HAVE_EXPAT_H;NE_HAVE_DAV;NE_HAVE_ZLIB;USE_GETADDRINFO;NOUSER;NOGDI;NOCRYPT;
-    /D_ATL_MIN_CRT;_ATL_NO_DEFAULT_LIBS;
+    "-DWIN32;_WINDOWS /EHsc /MP2 -D_SCL_SECURE_NO_WARNINGS -D_UNICODE;UNICODE /MTd
+    /DAPR_DECLARE_STATIC
+    /DCOMPILED_FROM_DSP;XML_STATIC;_RTLDLL
+    /DNE_HAVE_SSL;HAVE_OPENSSL;HAVE_EXPAT;HAVE_EXPAT_H;NE_HAVE_DAV;NE_HAVE_ZLIB;USE_GETADDRINFO
+    /D_ATL_MIN_CRT;_ATL_NO_DEFAULT_LIBS
+    /DNOCRYPT
+    /DMPEXT;NO_STRICT;_WINDLL;_USRDLL
 "
 )
-    # /D_CONVERSION_DONT_USE_THREAD_LOCALE
 
-set ( CMAKE_CXX_FLAGS_DEBUG "-D_DEBUG;_WINDOWS;NETBOX_DEBUG;MPEXT;NO_STRICT;_ATL_MIN_CRT;_ATL_NO_DEFAULT_LIBS;_WINDLL;_USRDLL;"
+set ( CMAKE_CXX_FLAGS_DEBUG "-D_DEBUG;NETBOX_DEBUG;"
      " /Gm- /EHsc /MTd /GS" )
 set ( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG;BOOST_DISABLE_ASSERTS" )
 
@@ -46,28 +63,8 @@ set ( CMAKE_LINK_FLAGS
 "
 )
 
-# definitions
-ADD_DEFINITIONS("-DNETBOX_DEBUG")
-ADD_DEFINITIONS("-DUSE_FASTFLOW
-    -D_FF_WIN_XP;MPEXT;NO_SECURITY
-")
-
 include ( ${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake )
 # message ( "system: ${CMAKE_SYSTEM_NAME}" )
-
-#-------------------------------------------------------------------------------
-
-project ( NetBox )
-
-set ( CMAKE_BUILD_TYPE UnityDebug )
-
-set ( FAR_VERSION Far2 )
-set ( PLATFORM x86 )
-
-set ( OUTPUT_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
-
-set ( LIBS_ROOT ${PROJECT_ROOT}/libs )
-set ( SRC_ROOT ${PROJECT_ROOT}/src )
 
 #-------------------------------------------------------
 
@@ -104,14 +101,9 @@ include_directories (
 
 link_directories (
     ${LIBS_ROOT}/boost/stage
-    # ${PROJECT_ROOT}/Temp/NetBox/${CMAKE_BUILD_TYPE}/${PLATFORM}/zlib
 )
 
 #-------------------------------------------------------------------------------
-
-set ( NETBOX_ALL_HEADERS
-    ${SRC_ROOT}/NetBox/resource.h
-)
 
 set ( COMMON_SOURCES
     ${SRC_ROOT}/base/Classes.cpp
@@ -254,7 +246,7 @@ add_library (libputty STATIC
 
 set_target_properties( libputty
     PROPERTIES
-    COMPILE_FLAGS "/TC -D_CRTIMP= -DLibrary;SECURITY_WIN32;_WINDOWS;NET_SETUP_DIAGNOSTICS;NO_SECURITY"
+    COMPILE_FLAGS "/TC -D_CRTIMP= -DLibrary;SECURITY_WIN32"
 )
 
 #-------------------------------------------------------------------------------
@@ -266,10 +258,7 @@ add_library (libtinyxml STATIC
     ${LIBS_ROOT}/tinyXML/tinyxmlparser.cpp
 )
 
-set_target_properties( libtinyxml
-    PROPERTIES
-    COMPILE_FLAGS "-DSECURITY_WIN32;_WINDOWS"
-)
+#-------------------------------------------------------------------------------
 
 add_library (libneon STATIC
     ${LIBS_ROOT}/neon/src/ne_alloc.c
