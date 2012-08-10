@@ -40,12 +40,12 @@ public:
   int Pos(wchar_t Ch) const;
 
 public:
-  const UTF8String & operator=(const UnicodeString & strCopy);
-  const UTF8String & operator=(const UTF8String & strCopy);
-  const UTF8String & operator=(const RawByteString & strCopy);
-  const UTF8String & operator=(const char * lpszData);
-  const UTF8String & operator=(const wchar_t * lpwszData);
-  const UTF8String & operator=(wchar_t chData);
+  UTF8String & operator=(const UnicodeString & strCopy);
+  UTF8String & operator=(const UTF8String & strCopy);
+  UTF8String & operator=(const RawByteString & strCopy);
+  UTF8String & operator=(const char * lpszData);
+  UTF8String & operator=(const wchar_t * lpwszData);
+  UTF8String & operator=(wchar_t chData);
 
   UTF8String __fastcall operator +(const UTF8String & rhs) const;
   UTF8String __fastcall operator +(const std::wstring & rhs) const;
@@ -162,14 +162,14 @@ public:
   operator std::wstring () const { return Data; }
   operator LPCWSTR () const { return Data.c_str(); }
 
-  const UnicodeString & operator=(const UnicodeString & strCopy);
-  const UnicodeString & operator=(const RawByteString & strCopy);
-  const UnicodeString & operator=(const AnsiString & strCopy);
-  const UnicodeString & operator=(const UTF8String & strCopy);
-  const UnicodeString & operator=(const std::wstring & strCopy);
-  const UnicodeString & operator=(const wchar_t * lpwszData);
-  const UnicodeString & operator=(const char * lpszData);
-  const UnicodeString & operator=(const wchar_t Ch);
+  UnicodeString & operator=(const UnicodeString & strCopy);
+  UnicodeString & operator=(const RawByteString & strCopy);
+  UnicodeString & operator=(const AnsiString & strCopy);
+  UnicodeString & operator=(const UTF8String & strCopy);
+  UnicodeString & operator=(const std::wstring & strCopy);
+  UnicodeString & operator=(const wchar_t * lpwszData);
+  UnicodeString & operator=(const char * lpszData);
+  UnicodeString & operator=(const wchar_t Ch);
 
   UnicodeString __fastcall operator +(const UnicodeString & rhs) const;
   UnicodeString __fastcall operator +(const RawByteString & rhs) const;
@@ -294,14 +294,14 @@ public:
   // AnsiString & Append(const char * lpszAdd, UINT CodePage=CP_OEMCP);
 
 public:
-  const AnsiString & operator=(const UnicodeString & strCopy);
-  const AnsiString & operator=(const RawByteString & strCopy);
-  const AnsiString & operator=(const AnsiString & strCopy);
-  const AnsiString & operator=(const UTF8String & strCopy);
-  const AnsiString & operator=(const std::wstring & strCopy);
-  const AnsiString & operator=(const char * lpszData);
-  const AnsiString & operator=(const wchar_t * lpwszData);
-  const AnsiString & operator=(wchar_t chData);
+  AnsiString & operator=(const UnicodeString & strCopy);
+  AnsiString & operator=(const RawByteString & strCopy);
+  AnsiString & operator=(const AnsiString & strCopy);
+  AnsiString & operator=(const UTF8String & strCopy);
+  AnsiString & operator=(const std::wstring & strCopy);
+  AnsiString & operator=(const char * lpszData);
+  AnsiString & operator=(const wchar_t * lpwszData);
+  AnsiString & operator=(wchar_t chData);
 
   AnsiString __fastcall operator +(const UnicodeString & rhs) const;
   AnsiString __fastcall operator +(const RawByteString & rhs) const;
@@ -397,14 +397,14 @@ public:
   int Pos(const char Ch) const;
   int Pos(const char * Ch) const;
 public:
-  const RawByteString & operator=(const UnicodeString & strCopy);
-  const RawByteString & operator=(const RawByteString & strCopy);
-  const RawByteString & operator=(const AnsiString & strCopy);
-  const RawByteString & operator=(const UTF8String & strCopy);
-  const RawByteString & operator=(const std::wstring & strCopy);
-  const RawByteString & operator=(const char * lpszData);
-  const RawByteString & operator=(const wchar_t * lpwszData);
-  const RawByteString & operator=(wchar_t chData);
+  RawByteString & operator=(const UnicodeString & strCopy);
+  RawByteString & operator=(const RawByteString & strCopy);
+  RawByteString & operator=(const AnsiString & strCopy);
+  RawByteString & operator=(const UTF8String & strCopy);
+  RawByteString & operator=(const std::wstring & strCopy);
+  RawByteString & operator=(const char * lpszData);
+  RawByteString & operator=(const wchar_t * lpwszData);
+  RawByteString & operator=(wchar_t chData);
 
   RawByteString __fastcall operator +(const UnicodeString & rhs) const;
   RawByteString __fastcall operator +(const RawByteString & rhs) const;

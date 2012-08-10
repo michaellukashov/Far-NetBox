@@ -64,6 +64,8 @@ t_directory& t_directory::operator=(const t_directory &a)
 
 t_directory::t_direntry::t_direntry()
 {
+	dir=FALSE;
+	size=0;
 	bUnsure=TRUE;
 	bLink=FALSE;
 	EntryTime=CTime::GetCurrentTime();

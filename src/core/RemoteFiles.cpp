@@ -2486,11 +2486,13 @@ void __fastcall TRemoteProperties::Default()
 {
   Valid.Clear();
   AddXToDirectories = false;
+  Recursive = false;
   Rights.SetAllowUndef(false);
   Rights.SetNumber(0);
   Group.Clear();
   Owner.Clear();
-  Recursive = false;
+  Modification = 0;
+  LastAccess = 0;
 }
 //---------------------------------------------------------------------------
 bool __fastcall TRemoteProperties::operator ==(const TRemoteProperties & rhp) const

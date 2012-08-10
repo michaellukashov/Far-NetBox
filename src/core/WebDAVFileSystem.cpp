@@ -209,7 +209,7 @@ typedef struct neon_request_t
                                            not dispatched yet. */
   int code;                             /* HTTP return code, or 0 if none */
   const char * code_desc;               /* Textual description of CODE */
-  error_t * err;                     /* error encountered while executing
+  error_t err;                     /* error encountered while executing
                                            the request */
   bool marshalled_error;       /* TRUE if the error was server-side */
   apr_pool_t * pool;                    /* where this struct is allocated */
@@ -389,8 +389,8 @@ typedef struct list_func_baton_t
        error_clear(&err__tmp);            \
      else if (err__tmp)                      \
        {                                         \
-         error_clear((req)->err);            \
-         (req)->err = &err__tmp;              \
+         error_clear(&(req)->err);            \
+         (req)->err = err__tmp;              \
          (req)->marshalled_error = false;        \
        }                                         \
    } while (0)
@@ -8021,8 +8021,8 @@ typedef struct error_parser_baton
   stringbuf_t * want_cdata;
   stringbuf_t * cdata;
 
-  error_t ** dst_err;
-  error_t * tmp_err;
+  error_t * dst_err;
+  error_t tmp_err;
   bool * marshalled_error;
 } error_parser_baton_t;
 
@@ -8035,7 +8035,7 @@ start_err_element(void * baton, int parent,
   int acc = elm
             ? validate_error_elements(parent, elm->id) : NEON__XML_DECLINE;
   error_parser_baton_t * b = static_cast<error_parser_baton_t *>(baton);
-  error_t ** err = &(b->tmp_err);
+  error_t * err = &(b->tmp_err);
 
   if (acc < 1)  /* ! > 0 */
     return acc;
@@ -8047,7 +8047,7 @@ start_err_element(void * baton, int parent,
       /* allocate the error_t.  Hopefully the value will be
          overwritten by the <human-readable> tag, or even someday by
          a <D:failed-precondition/> tag. */
-      ** err = error_create(APR_EGENERAL, NULL,
+      * err = error_create(APR_EGENERAL, NULL,
                             "General svn error from server");
       break;
     }
@@ -8099,13 +8099,13 @@ static int
 end_err_element(void * baton, int state, const char * nspace, const char * name)
 {
   error_parser_baton_t * b = static_cast<error_parser_baton_t *>(baton);
-  error_t ** err = &(b->tmp_err);
+  error_t * err = &(b->tmp_err);
 
   switch (state)
   {
     case ELEM_human_readable:
     {
-      if (b->cdata->data && *err)
+      if (b->cdata->data && err)
       {
         /* On the server dav_error_response_tag() will add a leading
            and trailing newline if DEBUG_CR is defined in mod_dav.h,
@@ -8125,11 +8125,11 @@ end_err_element(void * baton, int state, const char * nspace, const char * name)
 
     case ELEM_error:
     {
-      if (*(b->dst_err))
-        error_clear(b->tmp_err);
+      if (b->dst_err)
+        error_clear(&b->tmp_err);
       else if (b->tmp_err)
       {
-        *(b->dst_err) = b->tmp_err;
+        b->dst_err = &b->tmp_err;
         if (b->marshalled_error)
           *(b->marshalled_error) = TRUE;
       }
@@ -8162,7 +8162,7 @@ error_parser_baton_cleanup(void * baton)
   error_parser_baton_t * b = static_cast<error_parser_baton_t *>(baton);
 
   if (b->tmp_err)
-    error_clear(b->tmp_err);
+    error_clear(&b->tmp_err);
 
   return APR_SUCCESS;
 }
@@ -8437,7 +8437,7 @@ neon_request_dispatch(int * code_p,
     *code_p = req->code;
 
   if (!req->marshalled_error && req->err)
-    WEBDAV_ERR(*req->err);
+    WEBDAV_ERR(req->err);
 
   /* If the status code was one of the two that we expected, then go
      ahead and return now. IGNORE any marshalled error. */
@@ -8446,7 +8446,7 @@ neon_request_dispatch(int * code_p,
 
   /* Any other errors? Report them */
   if (req->err)
-    WEBDAV_ERR(*req->err);
+    WEBDAV_ERR(req->err);
 
   WEBDAV_ERR(neon_check_parse_error(req->method, error_parser, req->url));
 
@@ -11293,8 +11293,6 @@ client_list2(
   error_t err = 0;
 
   assert(session);
-  neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
-  assert(ras);
 
   /* We use the kind field to determine if we should recurse, so we
      always need it. */
@@ -11345,9 +11343,6 @@ client_get_file(
   const char * local_path,
   apr_pool_t * pool)
 {
-  neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
-  assert(ras);
-
   const char * remote_url = NULL;
   WEBDAV_ERR(init_session_from_path(session,
                                     &remote_url, path_uri_encode(remote_path, pool),
@@ -12392,10 +12387,6 @@ neon_get_file(session_t * session,
     /* Request all properties if caller requested them. */
     which_props = starting_props;
   }
-  else if (stream)
-  {
-    which_props = restype_props;
-  }
   else
   {
     /* Request only resource type on other cases. */
@@ -12741,6 +12732,7 @@ static const UnicodeString CONST_HTTPS_PROTOCOL_BASE_NAME = L"WebDAV - HTTPS";
 TWebDAVFileSystem::TWebDAVFileSystem(TTerminal * ATerminal) :
   TCustomFileSystem(ATerminal),
   FFileList(NULL),
+  FOnCaptureOutput(NULL),
   FPasswordFailed(false),
   FActive(false),
   FFileTransferAbort(ftaNone),

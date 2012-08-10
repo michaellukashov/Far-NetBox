@@ -95,7 +95,9 @@ CAsyncSocketExLayer::CAsyncSocketExLayer()
 	m_nPendingEvents = 0;
 
 	m_nFamily = AF_UNSPEC;
+	m_lEvent = 0;
 	m_lpszSocketAddress = 0;
+	m_nSocketPort = 0;
 
 	m_nextAddr = 0;
 	m_addrInfo = 0;

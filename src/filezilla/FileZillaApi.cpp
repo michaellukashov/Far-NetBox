@@ -854,14 +854,18 @@ BOOL CFileZillaApi::DumpDirectoryCache(LPCTSTR pFileName)
 //CAsyncRequestData derived classes
 CAsyncRequestData::CAsyncRequestData()
 {
+	nRequestType = 0;
+	nRequestID = 0;
+	nRequestResult = 0;
 }
 
 CAsyncRequestData::~CAsyncRequestData()
 {
 }
-	
 COverwriteRequestData::COverwriteRequestData()
 {
+	size1 = 0;
+	size2 = 0;
 	nRequestType=FZ_ASYNCREQUEST_OVERWRITE;
 	time1=0;
 	time2=0;

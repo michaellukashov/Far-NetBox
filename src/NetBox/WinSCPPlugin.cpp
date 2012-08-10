@@ -687,6 +687,7 @@ struct TFarMessageData
   TFarMessageData()
   {
     Params = NULL;
+    memset(Buttons, 0, sizeof(Buttons));
     ButtonCount = 0;
   }
 

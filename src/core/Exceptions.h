@@ -46,7 +46,7 @@ public:
   /* __fastcall */ ExtException(ExtException & E) : Sysutils::Exception(L""), FMoreMessages(NULL)
   { AddMoreMessages(&E); }
   ExtException & operator =(const ExtException &rhs)
-  { SetMessage(rhs.GetMessage()); AddMoreMessages(&rhs); }
+  { SetMessage(rhs.GetMessage()); AddMoreMessages(&rhs); return *this; }
 
   virtual ExtException * __fastcall Clone();
 

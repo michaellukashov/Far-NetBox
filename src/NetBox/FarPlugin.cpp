@@ -38,6 +38,7 @@ TFarMessageParams::TFarMessageParams()
   Timeout = 0;
   TimeoutButton = 0;
   ClickEvent = NULL;
+  Token = NULL;
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
@@ -344,7 +345,7 @@ void * __fastcall TCustomFarPlugin::OpenPlugin(int OpenFrom, intptr_t Item)
     }
     else
     {
-      Result = (TCustomFarFileSystem *)INVALID_HANDLE_VALUE;
+      Result = static_cast<TCustomFarFileSystem *>(INVALID_HANDLE_VALUE);
     }
 
     return Result;
@@ -1800,8 +1801,12 @@ unsigned int TCustomFarFileSystem::FInstances = 0;
 //---------------------------------------------------------------------------
 /* __fastcall */ TCustomFarFileSystem::TCustomFarFileSystem(TCustomFarPlugin * APlugin) :
     TObject(),
-    FPlugin(APlugin)
+    FPlugin(APlugin),
+    FClosed(false),
+    FOpenPluginInfoValid(false),
+    FCriticalSection(NULL)
 {
+    memset(FPanelInfo, 0, sizeof(FPanelInfo));
 };
 
 void __fastcall TCustomFarFileSystem::Init()
@@ -1940,7 +1945,7 @@ int __fastcall TCustomFarFileSystem::GetFindData(
   // DEBUG_PRINTF(L"begin");
   ResetCachedInfo();
   TObjectList * PanelItems = new TObjectList();
-  bool Result;
+  bool Result = false;
   // try
   {
     BOOST_SCOPE_EXIT ( (&PanelItems) )
@@ -2003,7 +2008,7 @@ int __fastcall TCustomFarFileSystem::ProcessHostFile(struct PluginPanelItem * Pa
 {
   ResetCachedInfo();
   TObjectList * PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
-  bool Result;
+  bool Result = false;
   // try
   {
     BOOST_SCOPE_EXIT ( (&PanelItems) )
@@ -2078,7 +2083,7 @@ int __fastcall TCustomFarFileSystem::DeleteFiles(struct PluginPanelItem * PanelI
 {
   ResetCachedInfo();
   TObjectList * PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
-  bool Result;
+  bool Result = false;
   // try
   {
     BOOST_SCOPE_EXIT ( (&PanelItems) )
@@ -2102,7 +2107,7 @@ int __fastcall TCustomFarFileSystem::GetFiles(struct PluginPanelItem * PanelItem
 {
   ResetCachedInfo();
   TObjectList * PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
-  int Result;
+  int Result = 0;
   UnicodeString DestPathStr = *DestPath;
   // try
   {
@@ -2137,7 +2142,7 @@ int __fastcall TCustomFarFileSystem::PutFiles(struct PluginPanelItem * PanelItem
 {
   ResetCachedInfo();
   TObjectList * PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
-  int Result;
+  int Result = 0;
   // try
   {
     BOOST_SCOPE_EXIT ( (&PanelItems) )
@@ -2687,9 +2692,9 @@ int __fastcall TFarPanelInfo::GetSelectedCount()
 
   if (Count == 1)
   {
-    size_t size = FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, NULL);
+    DWORD size = FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, NULL);
     // DEBUG_PRINTF(L"size1 = %d, sizeof(PluginPanelItem) = %d", size, sizeof(PluginPanelItem));
-    PluginPanelItem * ppi = (PluginPanelItem *)malloc(size);
+    PluginPanelItem * ppi = static_cast<PluginPanelItem *>(malloc(size));
     memset(ppi, 0, size);
     FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, reinterpret_cast<intptr_t>(ppi));
     if ((ppi->Flags & PPIF_SELECTED) == 0)
@@ -2714,8 +2719,8 @@ TObjectList * __fastcall TFarPanelInfo::GetItems()
   {
     // DEBUG_PRINTF(L"Index = %d", Index);
     // TODO: move to common function
-    size_t size = FOwner->FarControl(FCTL_GETPANELITEM, Index, NULL);
-    PluginPanelItem * ppi = (PluginPanelItem *)malloc(size);
+    DWORD size = FOwner->FarControl(FCTL_GETPANELITEM, Index, NULL);
+    PluginPanelItem * ppi = static_cast<PluginPanelItem *>(malloc(size));
     memset(ppi, 0, size);
     FOwner->FarControl(FCTL_GETPANELITEM, Index, reinterpret_cast<intptr_t>(ppi));
     // DEBUG_PRINTF(L"ppi.FileName = %s", ppi->FindData.lpwszFileName);
@@ -3008,7 +3013,7 @@ UnicodeString __fastcall TFarEditorInfo::GetFileName()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-/* __fastcall */ TFarPluginEnvGuard::TFarPluginEnvGuard()
+/* __fastcall */ TFarPluginEnvGuard::TFarPluginEnvGuard() : FANSIApis(false)
 {
   assert(FarPlugin != NULL);
 

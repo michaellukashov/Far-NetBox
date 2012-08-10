@@ -739,7 +739,7 @@ public:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 
-	HWND CAsyncSocketExHelperWindow::GetHwnd()
+	HWND GetHwnd()
 	{
 		return m_hWnd;
 	}
@@ -777,8 +777,10 @@ CAsyncSocketEx::CAsyncSocketEx()
 	m_pFirstLayer = 0;
 	m_pLastLayer = 0;
 #endif //NOLAYERS
+	m_lEvent = 0;
 	m_pAsyncGetHostByNameBuffer = NULL;
 	m_hAsyncGetHostByNameHandle = NULL;
+	m_nAsyncGetHostByNamePort = 0;
 
 	m_nSocketPort = 0;
 	m_lpszSocketAddress = 0;

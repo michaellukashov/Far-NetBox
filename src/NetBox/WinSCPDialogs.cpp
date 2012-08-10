@@ -276,7 +276,8 @@ bool __fastcall TTabbedDialog::Key(TFarDialogItem * /*Item*/, long KeyCode)
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 /* __fastcall */ TTabButton::TTabButton(TTabbedDialog * Dialog) :
-  TFarButton(Dialog)
+  TFarButton(Dialog),
+  FTab(0)
 {
   SetCenterGroup(true);
   SetOnClick(fastdelegate::bind(&TTabbedDialog::TabButtonClick, Dialog, _1, _2));
@@ -4706,7 +4707,6 @@ private:
   assert(OnlyFile);
   FMultiple = (FileList->GetCount() > 1);
   TRemoteFile * File;
-  int Directories = 0;
 
   TStringList * UsedGroupList = NULL;
   TStringList * UsedUserList = NULL;
@@ -4731,6 +4731,7 @@ private:
       UsedUserList->SetSorted(true);
     }
 
+    int Directories = 0;
     for (int Index = 0; Index < FileList->GetCount(); Index++)
     {
       File = reinterpret_cast<TRemoteFile *>(FileList->GetObjects(Index));
@@ -6733,7 +6734,11 @@ private:
 };
 //---------------------------------------------------------------------------
 /* __fastcall */ TApplyCommandDialog::TApplyCommandDialog(TCustomFarPlugin * AFarPlugin) :
-  TWinSCPDialog(AFarPlugin)
+  TWinSCPDialog(AFarPlugin),
+  FParams(0),
+  PasswordEdit(NULL),
+  NormalEdit(NULL),
+  HideTypingCheck(NULL)
 {
   TFarText * Text;
 

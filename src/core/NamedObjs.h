@@ -19,7 +19,7 @@ public:
   bool __fastcall GetHidden() { return FHidden; }
   UnicodeString __fastcall GetName() { return FName; }
 #endif
-  /* __fastcall */ TNamedObject() : TPersistent() {};
+  /* __fastcall */ TNamedObject() : TPersistent(), FHidden(false) {};
   Integer __fastcall CompareName(UnicodeString aName, Boolean CaseSensitive = False);
   explicit /* __fastcall */ TNamedObject(UnicodeString aName);
   void __fastcall MakeUniqueIn(TNamedObjectList * List);

@@ -21,9 +21,14 @@
 
 t_server::t_server()
 {
+	port = 0;
+	fwbypass = FALSE;
+	bDontRememberPass = FALSE;
+	nServerType = 0;
 	nPasv = 0;
 	nTimeZoneOffset = 0;
 	nUTF8 = 0;
+	iForcePasvIp = 0;
 }
 
 t_server::~t_server()
