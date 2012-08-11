@@ -14,9 +14,6 @@
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
 #include <boost/bind.hpp>
-
-#include "WebDAVFileSystem.h"
-#include "Common.h"
 #endif
 
 #include "Common.h"
@@ -30,6 +27,7 @@
 #ifndef NO_FILEZILLA
 #include "FtpFileSystem.h"
 #endif
+#include "WebDAVFileSystem.h"
 #include "TextsCore.h"
 #include "HelpCore.h"
 #include "CoreMain.h"
