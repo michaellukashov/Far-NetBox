@@ -195,7 +195,6 @@ protected:
     TStrings * DiskMenuStrings, TStrings * PluginMenuStrings,
     TStrings * PluginConfigStrings, TStrings * CommandPrefixes) = 0;
   virtual TCustomFarFileSystem * __fastcall OpenPluginEx(int OpenFrom, intptr_t Item) = 0;
-  virtual bool __fastcall ImportSessions() = 0;
   virtual bool __fastcall ConfigureEx(int Item) = 0;
   virtual int __fastcall ProcessEditorEventEx(int Event, void * Param) = 0;
   virtual int __fastcall ProcessEditorInputEx(const INPUT_RECORD * Rec) = 0;

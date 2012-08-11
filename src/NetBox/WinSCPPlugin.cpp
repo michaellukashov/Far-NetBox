@@ -111,102 +111,6 @@ void __fastcall TWinSCPPlugin::GetPluginInfoEx(long unsigned & Flags,
   CommandPrefixes->SetCommaText(FarConfiguration->GetCommandPrefixes());
 }
 //---------------------------------------------------------------------------
-bool __fastcall TWinSCPPlugin::ImportSessions(const UnicodeString RegistryStorageKey,
-  int & imported)
-{
-  // DEBUG_PRINTF(L"begin");
-  imported = 0;
-  THierarchicalStorage * ImportStorage = new TRegistryStorage(RegistryStorageKey);
-  THierarchicalStorage * ExportStorage = new TRegistryStorage(Configuration->GetRegistryStorageKey());
-  ExportStorage->SetAccessMode(smReadWrite);
-  TSessionData * FactoryDefaults = new TSessionData(L"");
-  BOOST_SCOPE_EXIT ( (&FactoryDefaults) (&ImportStorage) (&ExportStorage) )
-  {
-    delete FactoryDefaults;
-    delete ImportStorage;
-    delete ExportStorage;
-  } BOOST_SCOPE_EXIT_END
-
-  int failed = 0;
-  if (ImportStorage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), /* CanCreate */ false) &&
-      ExportStorage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), /* CanCreate */ true)
-     )
-  {
-    TStrings * SubKeyNames = new TStringList();
-    BOOST_SCOPE_EXIT ( (&SubKeyNames) )
-    {
-      delete SubKeyNames;
-    } BOOST_SCOPE_EXIT_END
-    ImportStorage->GetSubKeyNames(SubKeyNames);
-    // DEBUG_PRINTF(L"SubKeyNames->GetCount = %d", SubKeyNames->GetCount());
-    for (int i = 0; i < SubKeyNames->GetCount(); i++)
-    {
-      // DEBUG_PRINTF(L"SubKeyNames->GetStrings(%d) = %s", i, SubKeyNames->GetStrings(i).c_str());
-      TSessionData * ExportData = new TSessionData(SubKeyNames->GetStrings(i));
-      BOOST_SCOPE_EXIT ( (&ExportData) )
-      {
-        delete ExportData;
-      } BOOST_SCOPE_EXIT_END
-      if (!ExportData->HasSessionName())
-      {
-        continue;
-      }
-      ExportData->Load(ImportStorage);
-      ExportData->SetModified(true);
-      try
-      {
-        ExportData->Save(ExportStorage, /* PuttyExport = */ false, FactoryDefaults);
-        imported++;
-      }
-      catch (const std::exception & E)
-      {
-        failed++;
-      }
-    }
-  }
-
-  // DEBUG_PRINTF(L"end, imported = %d, failed = %d", imported, failed);
-  return true;
-}
-//---------------------------------------------------------------------------
-bool __fastcall TWinSCPPlugin::ImportSessions()
-{
-  // DEBUG_PRINTF(L"begin");
-  const UnicodeString SessionsKeys[] =
-  {
-    L"Software\\Martin Prikryl\\WinSCP 2", // WinSCP 1.6.2 sessions
-    L"Software\\Michael Lukashov\\FarNetBox", // NetBox 2.0.0 sessions
-    L"",
-  };
-  int all_imported = 0;
-  for (int i = 0; !SessionsKeys[i].IsEmpty(); i++)
-  {
-    UnicodeString RegistryStorageKey = SessionsKeys[i];
-    // DEBUG_PRINTF(L"RegistryStorageKey = %s", RegistryStorageKey.c_str());
-    try
-    {
-      int imported = 0;
-      ImportSessions(RegistryStorageKey, imported);
-      all_imported += imported;
-    }
-    catch (Exception & E)
-    {
-      ShowExtendedException(&E);
-    }
-  }
-  MoreMessageDialog(FORMAT(GetMsg(IMPORTED_SESSIONS_INFO).c_str(), all_imported),
-                    /* MoreMessages */ NULL, qtInformation, qaOK);
-  TWinSCPFileSystem * PanelSystem = NULL;
-  PanelSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem());
-  if (PanelSystem && PanelSystem->SessionList())
-  {
-    // PanelSystem->RedrawPanel(/* Another */ false);
-    PanelSystem->UpdatePanel(/* ClearSelection */ true, /* Another */ false);
-  }
-  // DEBUG_PRINTF(L"end, all_imported = %d", all_imported);
-  return false;
-}
-//---------------------------------------------------------------------------
 bool __fastcall TWinSCPPlugin::ConfigureEx(int /*Item*/)
 {
   // DEBUG_PRINTF(L"begin");
@@ -511,7 +415,6 @@ void __fastcall TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
     int MPageant = MenuItems->Add(GetMsg(MENU_COMMANDS_PAGEANT), FromFileSystem);
     int MPuttygen = MenuItems->Add(GetMsg(MENU_COMMANDS_PUTTYGEN), FromFileSystem);
     MenuItems->AddSeparator(FromFileSystem);
-    int MImportSessions = MenuItems->Add(GetMsg(MENU_COMMANDS_IMPORT_SESSIONS));
     int MConfigure = MenuItems->Add(GetMsg(MENU_COMMANDS_CONFIGURE));
     int MAbout = MenuItems->Add(GetMsg(CONFIG_ABOUT));
 
@@ -584,10 +487,6 @@ void __fastcall TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
       else if (Result == MHomeDirectory && FileSystem)
       {
         FileSystem->HomeDirectory();
-      }
-      else if (Result == MImportSessions)
-      {
-        ImportSessions();
       }
       else if (Result == MConfigure)
       {
