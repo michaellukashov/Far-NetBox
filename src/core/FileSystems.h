@@ -105,8 +105,7 @@ struct TOpenRemoteFileParams
 class TFileSystemIntf
 {
 public:
-  virtual /* __fastcall */ ~TFileSystemIntf()
-  {}
+  virtual /* __fastcall */ ~TFileSystemIntf() = 0;
 
   virtual void __fastcall FileTransferProgress(__int64 TransferSize, __int64 Bytes) = 0;
 };
