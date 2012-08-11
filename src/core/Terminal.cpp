@@ -769,7 +769,7 @@ void __fastcall TTerminal::Open()
 #else
                 FFSProtocol = cfsFTP;
                 FFileSystem = new TFTPFileSystem(this);
-                (static_cast<TFTPFileSystem *>(FFileSystem))->Init();
+                FFileSystem->Init();
                 FFileSystem->Open();
                 GetLog()->AddSeparator();
                 LogEvent(L"Using FTP protocol.");
@@ -783,7 +783,7 @@ void __fastcall TTerminal::Open()
 #else
                 FFSProtocol = cfsFTPS;
                 FFileSystem = new TFTPFileSystem(this);
-                (static_cast<TFTPFileSystem *>(FFileSystem))->Init();
+                FFileSystem->Init();
                 FFileSystem->Open();
                 GetLog()->AddSeparator();
                 LogEvent(L"Using FTPS protocol.");
@@ -793,7 +793,7 @@ void __fastcall TTerminal::Open()
               {
                 FFSProtocol = cfsHTTP;
                 FFileSystem = new TWebDAVFileSystem(this);
-                static_cast<TWebDAVFileSystem *>(FFileSystem)->Init();
+                FFileSystem->Init();
                 FFileSystem->Open();
                 GetLog()->AddSeparator();
                 LogEvent(L"Using WebDAV protocol.");
