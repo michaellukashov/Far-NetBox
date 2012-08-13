@@ -294,7 +294,8 @@ private:
   TDateTime Interval) :
   TSimpleThread(),
   FFileSystem(FileSystem),
-  FInterval(Interval)
+  FInterval(Interval),
+  FEvent(0)
 {
 }
 //---------------------------------------------------------------------------
@@ -1819,7 +1820,6 @@ void __fastcall TWinSCPFileSystem::Synchronize()
      TTerminal::spNotByTime | TTerminal::spBySize));
   Params.Params = GUIConfiguration->GetSynchronizeParams() & ~UnusedParams;
   Params.Options = GUIConfiguration->GetSynchronizeOptions();
-  bool SaveSettings = false;
   TSynchronizeController Controller(
     fastdelegate::bind(&TWinSCPFileSystem::DoSynchronize, this, _1, _2, _3, _4, _5, _6, _7, _8),
     fastdelegate::bind(&TWinSCPFileSystem::DoSynchronizeInvalid, this, _1, _2, _3),
@@ -1841,6 +1841,7 @@ void __fastcall TWinSCPFileSystem::Synchronize()
         }
       }
     } BOOST_SCOPE_EXIT_END
+    bool SaveSettings = false;
     TCopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
     int CopyParamAttrs = GetTerminal()->UsableCopyParamAttrs(0).Upload;
     int Options =

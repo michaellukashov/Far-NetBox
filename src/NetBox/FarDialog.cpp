@@ -751,8 +751,6 @@ int __fastcall TFarDialog::ShowModal()
 {
   FResult = -1;
 
-  int BResult;
-
   TFarDialog * PrevTopDialog = GetFarPlugin()->FTopDialog;
   GetFarPlugin()->FTopDialog = this;
   // try
@@ -768,6 +766,7 @@ int __fastcall TFarDialog::ShowModal()
     assert(GetDefaultButton()->GetDefault());
 
     UnicodeString AHelpTopic = GetHelpTopic();
+    int BResult = 0;
     // try
     {
       TFarEnvGuard Guard;
@@ -1793,6 +1792,7 @@ bool __fastcall TFarDialogItem::HotKey(char /*HotKey*/)
   TFarDialogItem(ADialog, DI_BUTTON)
 {
   FResult = 0;
+  FOnClick = NULL;
   FBrackets = brNormal;
 }
 //---------------------------------------------------------------------------
@@ -1942,7 +1942,8 @@ bool __fastcall TFarButton::HotKey(char HotKey)
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 /* __fastcall */ TFarCheckBox::TFarCheckBox(TFarDialog * ADialog) :
-  TFarDialogItem(ADialog, DI_CHECKBOX)
+  TFarDialogItem(ADialog, DI_CHECKBOX),
+  FOnAllowChange(NULL)
 {
 }
 //---------------------------------------------------------------------------
@@ -1983,7 +1984,8 @@ void TFarCheckBox::SetData(const UnicodeString value)
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 /* __fastcall */ TFarRadioButton::TFarRadioButton(TFarDialog * ADialog) :
-  TFarDialogItem(ADialog, DI_RADIOBUTTON)
+  TFarDialogItem(ADialog, DI_RADIOBUTTON),
+  FOnAllowChange(NULL)
 {
 }
 //---------------------------------------------------------------------------
@@ -2506,7 +2508,8 @@ intptr_t __fastcall TFarList::ItemProc(int Msg, void * Param)
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 /* __fastcall */ TFarListBox::TFarListBox(TFarDialog * ADialog) :
-  TFarDialogItem(ADialog, DI_LISTBOX)
+  TFarDialogItem(ADialog, DI_LISTBOX),
+  FDenyClose(NULL)
 {
   FList = new TFarList(this);
   GetDialogItem()->ListItems = FList->GetListItems();

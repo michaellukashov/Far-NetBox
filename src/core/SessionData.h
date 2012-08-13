@@ -329,8 +329,8 @@ public:
 #endif
 
 public:
-  explicit TSessionData(UnicodeString aName);
-  virtual ~TSessionData();
+  explicit /* __fastcall */ TSessionData(UnicodeString aName);
+  virtual /* __fastcall */ ~TSessionData();
   void __fastcall Default();
   void __fastcall NonPersistant();
   void __fastcall Load(THierarchicalStorage * Storage);
@@ -618,7 +618,7 @@ public:
   void __fastcall Import(TStoredSessionList * From, bool OnlySelected);
   void __fastcall RecryptPasswords();
   TSessionData * __fastcall AtSession(int Index)
-    { return (TSessionData*)AtObject(Index); }
+    { return static_cast<TSessionData *>(AtObject(Index)); }
   void __fastcall SelectSessionsToImport(TStoredSessionList * Dest, bool SSHOnly);
   void __fastcall Cleanup();
   void __fastcall UpdateStaticUsage();

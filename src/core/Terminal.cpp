@@ -14,9 +14,6 @@
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
 #include <boost/bind.hpp>
-
-#include "WebDAVFileSystem.h"
-#include "Common.h"
 #endif
 
 #include "Common.h"
@@ -30,6 +27,7 @@
 #ifndef NO_FILEZILLA
 #include "FtpFileSystem.h"
 #endif
+#include "WebDAVFileSystem.h"
 #include "TextsCore.h"
 #include "HelpCore.h"
 #include "CoreMain.h"
@@ -771,7 +769,7 @@ void __fastcall TTerminal::Open()
 #else
                 FFSProtocol = cfsFTP;
                 FFileSystem = new TFTPFileSystem(this);
-                (static_cast<TFTPFileSystem *>(FFileSystem))->Init();
+                FFileSystem->Init();
                 FFileSystem->Open();
                 GetLog()->AddSeparator();
                 LogEvent(L"Using FTP protocol.");
@@ -785,7 +783,7 @@ void __fastcall TTerminal::Open()
 #else
                 FFSProtocol = cfsFTPS;
                 FFileSystem = new TFTPFileSystem(this);
-                (static_cast<TFTPFileSystem *>(FFileSystem))->Init();
+                FFileSystem->Init();
                 FFileSystem->Open();
                 GetLog()->AddSeparator();
                 LogEvent(L"Using FTPS protocol.");
@@ -795,7 +793,7 @@ void __fastcall TTerminal::Open()
               {
                 FFSProtocol = cfsHTTP;
                 FFileSystem = new TWebDAVFileSystem(this);
-                static_cast<TWebDAVFileSystem *>(FFileSystem)->Init();
+                FFileSystem->Init();
                 FFileSystem->Open();
                 GetLog()->AddSeparator();
                 LogEvent(L"Using WebDAV protocol.");

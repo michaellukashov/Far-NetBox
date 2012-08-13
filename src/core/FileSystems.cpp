@@ -14,6 +14,9 @@
 #pragma package(smart_init)
 #endif
 //---------------------------------------------------------------------------
+/* __fastcall */ TFileSystemIntf::~TFileSystemIntf()
+{}
+//---------------------------------------------------------------------------
 /* __fastcall */ TCustomFileSystem::TCustomFileSystem(TTerminal * ATerminal):
   FTerminal(ATerminal)
 {

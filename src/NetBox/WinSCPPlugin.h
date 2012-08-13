@@ -46,7 +46,6 @@ protected:
     TStrings * PluginMenuStrings, TStrings * PluginConfigStrings,
     TStrings * CommandPrefixes);
   virtual TCustomFarFileSystem * __fastcall OpenPluginEx(OPENFROM OpenFrom, INT_PTR Item);
-  virtual bool __fastcall ImportSessions();
   virtual bool __fastcall ConfigureEx(int Item);
   virtual int __fastcall ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info);
   virtual int __fastcall ProcessEditorInputEx(const INPUT_RECORD * Rec);
@@ -65,9 +64,6 @@ protected:
   bool __fastcall ConfirmationsConfigurationDialog();
   bool __fastcall IntegrationConfigurationDialog();
   void __fastcall AboutDialog();
-
-private:
-    bool __fastcall ImportSessions(const UnicodeString RegistryStorageKey, int & imported);
 
 private:
   bool FInitialized;

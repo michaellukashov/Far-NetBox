@@ -38,6 +38,7 @@ TFarMessageParams::TFarMessageParams()
   Timeout = 0;
   TimeoutButton = 0;
   ClickEvent = NULL;
+  Token = NULL;
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
@@ -1834,8 +1835,12 @@ unsigned int TCustomFarFileSystem::FInstances = 0;
 //---------------------------------------------------------------------------
 /* __fastcall */ TCustomFarFileSystem::TCustomFarFileSystem(TCustomFarPlugin * APlugin) :
     TObject(),
-    FPlugin(APlugin)
+    FPlugin(APlugin),
+    FClosed(false),
+    FOpenPluginInfoValid(false),
+    FCriticalSection(NULL)
 {
+    memset(FPanelInfo, 0, sizeof(FPanelInfo));
 };
 
 void __fastcall TCustomFarFileSystem::Init()
@@ -2039,7 +2044,7 @@ int __fastcall TCustomFarFileSystem::ProcessHostFile(const struct ProcessHostFil
 {
   ResetCachedInfo();
   TObjectList * PanelItems = CreatePanelItemList(Info->PanelItem, Info->ItemsNumber);
-  bool Result;
+  bool Result = false;
   // try
   {
     BOOST_SCOPE_EXIT ( (&PanelItems) )
@@ -2118,7 +2123,7 @@ int __fastcall TCustomFarFileSystem::DeleteFiles(const struct DeleteFilesInfo *I
 {
   ResetCachedInfo();
   TObjectList * PanelItems = CreatePanelItemList(Info->PanelItem, Info->ItemsNumber);
-  bool Result;
+  bool Result = false;
   // try
   {
     BOOST_SCOPE_EXIT ( (&PanelItems) )
@@ -2141,7 +2146,7 @@ int __fastcall TCustomFarFileSystem::GetFiles(struct GetFilesInfo * Info)
 {
   ResetCachedInfo();
   TObjectList * PanelItems = CreatePanelItemList(Info->PanelItem, Info->ItemsNumber);
-  int Result;
+  int Result = 0;
   UnicodeString DestPathStr = Info->DestPath;
   // try
   {
@@ -2728,9 +2733,9 @@ int __fastcall TFarPanelInfo::GetSelectedCount()
 
   if (Count == 1)
   {
-    size_t size = FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, NULL);
+    DWORD size = FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, NULL);
     // DEBUG_PRINTF(L"size1 = %d, sizeof(PluginPanelItem) = %d", size, sizeof(PluginPanelItem));
-    PluginPanelItem * ppi = (PluginPanelItem *)malloc(size);
+    PluginPanelItem * ppi = static_cast<PluginPanelItem *>(malloc(size));
     memset(ppi, 0, size);
     FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, reinterpret_cast<void *>(ppi));
     if ((ppi->Flags & PPIF_SELECTED) == 0)
@@ -2755,8 +2760,8 @@ TObjectList * __fastcall TFarPanelInfo::GetItems()
   {
     // DEBUG_PRINTF(L"Index = %d", Index);
     // TODO: move to common function
-    size_t size = FOwner->FarControl(FCTL_GETPANELITEM, Index, NULL);
-    PluginPanelItem * ppi = (PluginPanelItem *)malloc(size);
+    DWORD size = FOwner->FarControl(FCTL_GETPANELITEM, Index, NULL);
+    PluginPanelItem * ppi = static_cast<PluginPanelItem *>(malloc(size));
     memset(ppi, 0, size);
     FarGetPluginPanelItem gppi;
     gppi.Item = ppi;
@@ -3045,7 +3050,7 @@ UnicodeString __fastcall TFarEditorInfo::GetFileName()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-/* __fastcall */ TFarPluginEnvGuard::TFarPluginEnvGuard()
+/* __fastcall */ TFarPluginEnvGuard::TFarPluginEnvGuard() : FANSIApis(false)
 {
   assert(FarPlugin != NULL);
 

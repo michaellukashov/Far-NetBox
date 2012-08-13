@@ -94,6 +94,7 @@ public:
     OnQueryUser(AOnQueryUser),
     Sender(NULL),
     MoreMessages(NULL),
+    Answers(0),
     Params(NULL),
     Answer(0),
     Type(qtConfirmation)
@@ -129,7 +130,8 @@ public:
     Terminal(NULL),
     Kind(pkPrompt),
     Prompts(NULL),
-    Results(new TStringList())
+    Results(new TStringList()),
+    Result(false)
   {
   }
 
@@ -488,9 +490,10 @@ void __fastcall TSignalThread::Terminate()
   TSignalThread(),
   FTerminal(Terminal), FTransfersLimit(2), FEnabled(true),
   FConfiguration(Configuration), FSessionData(NULL), FItems(NULL),
-  FTerminals(NULL), FItemsSection(NULL), FFreeTerminals(0),
+  FTerminals(NULL), FForcedItems(NULL), FItemsSection(NULL), FFreeTerminals(0),
   FItemsInProcess(0), FTemporaryTerminals(0), FOverallTerminals(0)
 {
+  Self = this;
 #ifndef _MSC_VER
   FOnQueryUser = NULL;
   FOnPromptUser = NULL;
@@ -1178,8 +1181,9 @@ bool __fastcall TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
 //---------------------------------------------------------------------------
 /* __fastcall */ TTerminalItem::TTerminalItem(TTerminalQueue * Queue) :
   TSignalThread(), FQueue(Queue), FTerminal(NULL), FItem(NULL),
-  FCriticalSection(NULL), FUserAction(NULL)
+  FCriticalSection(NULL), FUserAction(NULL), FCancel(false), FPause(false)
 {
+  Self = this;
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminalItem::Init(int Index)
@@ -1187,7 +1191,6 @@ void __fastcall TTerminalItem::Init(int Index)
   TSignalThread::Init(true);
 
   FCriticalSection = new TCriticalSection();
-  Self = this;
 
   FTerminal = new TBackgroundTerminal(FQueue->FTerminal);
   FTerminal->Init(FQueue->FSessionData, FQueue->FConfiguration, this, FORMAT(L"Background %d", Index));
@@ -2068,8 +2071,11 @@ void __fastcall TDownloadQueueItem::DoExecute(TTerminal * Terminal)
   // FOnIdle = NULL;
   FUserAction = NULL;
   FCancel = false;
+  FCancelled = false;
+  FPendingIdle = false;
   FMainThread = GetCurrentThreadId();
   FSection = new TCriticalSection();
+  Self = this;
 
 #ifndef _MSC_VER
   FOnInformation = FTerminal->OnInformation;
@@ -2098,7 +2104,6 @@ void __fastcall TDownloadQueueItem::DoExecute(TTerminal * Terminal)
 
 void __fastcall TTerminalThread::Init()
 {
-  Self = this;
   TSignalThread::Init(false);
 
   FOnInformation = FTerminal->GetOnInformation();

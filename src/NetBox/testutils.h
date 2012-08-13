@@ -55,10 +55,6 @@ protected:
         DEBUG_PRINTF(L"call");
         return -1;
     }
-    virtual bool __fastcall ImportSessions()
-    {
-        return false;
-    }
 };
 
 //------------------------------------------------------------------------------

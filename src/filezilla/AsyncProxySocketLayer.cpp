@@ -136,6 +136,7 @@ CAsyncProxySocketLayer::CAsyncProxySocketLayer()
 	m_nProxyOpID=0;
 	m_nProxyOpState=0;
 	m_pRecvBuffer=0;
+	m_nRecvBufferLen=0;
 	m_nRecvBufferPos=0;
 	m_ProxyData.nProxyType=0;
 	m_nProxyPeerIp=0;

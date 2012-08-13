@@ -52,6 +52,10 @@ static char THIS_FILE[] = __FILE__;
 CMainThread::CMainThread()
 {
 	m_hOwnerWnd = 0;
+	m_nReplyMessageID = 0;
+	m_nInternalMessageID = 0;
+	m_pPostKeepAliveCommand = 0;
+	m_nTimerID = 0;
 	m_pControlSocket = NULL;
 	m_pFtpControlSocket = NULL;
 #ifndef MPEXT_NO_SFTP
