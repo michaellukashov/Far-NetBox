@@ -1837,7 +1837,6 @@ unsigned int TCustomFarFileSystem::FInstances = 0;
     TObject(),
     FPlugin(APlugin),
     FClosed(false),
-    FOpenPluginInfoValid(false),
     FCriticalSection(NULL)
 {
     memset(FPanelInfo, 0, sizeof(FPanelInfo));
