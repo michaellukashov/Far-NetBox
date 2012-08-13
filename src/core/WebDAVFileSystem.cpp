@@ -6691,7 +6691,7 @@ io_file_write_full(apr_file_t * file, const void * buf,
      "_full" part here. Thus, always call apr_file_write directly on
      Win32 as this minimizes overhead for small data buffers. */
 #ifdef WIN32
-#define MAXBUFSIZE 30*1024
+#define MAXBUFSIZE 64*1024
   apr_size_t bw = nbytes;
   apr_size_t to_write = nbytes;
 
