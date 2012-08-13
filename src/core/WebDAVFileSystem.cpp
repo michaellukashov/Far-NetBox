@@ -11578,6 +11578,7 @@ typedef struct neonprogress_baton_t
 {
   neon_session_t * ras;
   off_t last_progress;
+  apr_time_t last_progress_time;
   apr_pool_t * pool;
 } neonprogress_baton_t;
 
@@ -12008,29 +12009,35 @@ static void ra_neon_neonprogress(
 
   if (ras->progress_func)
   {
-    if (total < 0)
+    apr_time_t now = apr_time_now();
+    if (now - pb->last_progress_time > 500000) // 0.5 sec
     {
-      /* Neon sends the total number of bytes sent for this specific
-         session and there are two sessions active at once.
+        DEBUG_PRINTF2("now = %lld, pb->last_progress_time = %lld", now, pb->last_progress_time);
+        if (total < 0)
+        {
+          /* Neon sends the total number of bytes sent for this specific
+             session and there are two sessions active at once.
 
-         For this case we combine the totals to allow clients to provide
-         a better progress indicator. */
+             For this case we combine the totals to allow clients to provide
+             a better progress indicator. */
 
-      if (progress >= pb->last_progress)
-        ras->total_progress += (progress - pb->last_progress);
-      else
-        /* Session total has been reset. A new stream started */
-        ras->total_progress += pb->last_progress;
+          if (progress >= pb->last_progress)
+            ras->total_progress += (progress - pb->last_progress);
+          else
+            /* Session total has been reset. A new stream started */
+            ras->total_progress += pb->last_progress;
 
-      pb->last_progress = progress;
+          pb->last_progress = progress;
 
-      ras->progress_func(ras->total_progress, -1, ras->progress_baton, pb->pool);
-    }
-    else
-    {
-      /* Neon provides total bytes to receive information. Pass literaly
-         to allow providing a percentage. */
-      ras->progress_func(progress, total, ras->progress_baton, pb->pool);
+          ras->progress_func(ras->total_progress, -1, ras->progress_baton, pb->pool);
+        }
+        else
+        {
+          /* Neon provides total bytes to receive information. Pass literaly
+             to allow providing a percentage. */
+          ras->progress_func(progress, total, ras->progress_baton, pb->pool);
+        }
+        pb->last_progress_time = now;
     }
   }
 }
