@@ -12010,9 +12010,9 @@ static void ra_neon_neonprogress(
   if (ras->progress_func)
   {
     apr_time_t now = apr_time_now();
-    if (now - pb->last_progress_time > 500000) // 0.5 sec
+    if (now - pb->last_progress_time > 200000) // 0.2 sec
     {
-        DEBUG_PRINTF2("now = %lld, pb->last_progress_time = %lld", now, pb->last_progress_time);
+        // DEBUG_PRINTF2("now = %lld, pb->last_progress_time = %lld", now, pb->last_progress_time);
         if (total < 0)
         {
           /* Neon sends the total number of bytes sent for this specific
