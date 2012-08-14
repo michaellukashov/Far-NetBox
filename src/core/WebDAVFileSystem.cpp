@@ -11411,9 +11411,13 @@ client_move_file_or_directory(
 
   apr_hash_t * extra_headers = apr_hash_make(pool);
   apr_hash_set(extra_headers, "Destination", APR_HASH_KEY_STRING, target_to);
+  // apr_hash_set(extra_headers, "Content-Type", APR_HASH_KEY_STRING, "text/xml; charset=\"utf-8\"");
+  neon_add_depth_header(extra_headers, NEON__DEPTH_INFINITE);
   err = neon_simple_request(&code, ras, "MOVE", target_from,
                             extra_headers, NULL,
-                            201, 0, pool);
+                            201 /* Created */,
+                            204 /* No Content */,
+                            pool);
   if (err && (err == WEBDAV_ERR_DAV_REQUEST_FAILED))
   {
     err = error_createf(WEBDAV_ERR_CANNOT_MOVE, NULL,
