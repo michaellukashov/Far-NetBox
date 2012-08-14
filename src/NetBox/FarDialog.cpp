@@ -2492,7 +2492,7 @@ intptr_t __fastcall TFarList::ItemProc(int Msg, void * Param)
   assert(GetDialogItem() != NULL);
   if (Msg == DN_LISTCHANGE)
   {
-    if ((Param < 0) || ((Param == 0) && (GetCount() == 0)))
+    if ((Param == 0) && (GetCount() == 0))
     {
       GetDialogItem()->UpdateData(L"");
     }
