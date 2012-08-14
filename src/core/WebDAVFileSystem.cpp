@@ -170,7 +170,7 @@ typedef struct neon_session_t
   apr_pool_t * pool;
   stringbuf_t * url;                /* original, unparsed session url */
   ne_uri root;                          /* parsed version of above */
-  const char * repos_root;              /* URL for repository root */
+  const char * webdav_root;              /* URL for WebDAV resource root */
 
   ne_session * ne_sess;                 /* HTTP session to server */
   ne_session * ne_sess2;
@@ -307,7 +307,7 @@ typedef struct list_func_baton_t
 #define WEBDAV_ERR_BAD_DATE 1024
 #define WEBDAV_ERR_CLIENT_UNRELATED_RESOURCES 1025
 #define WEBDAV_ERR_VERSION_MISMATCH 1026
-#define WEBDAV_ERR_REPOS_ROOT_URL_MISMATCH 1027
+#define WEBDAV_ERR_ROOT_URL_MISMATCH 1027
 #define WEBDAV_ERR_BAD_FILENAME 1028
 #define WEBDAV_ERR_ENTRY_MISSING_URL 1029
 #define WEBDAV_ERR_FS_NOT_FILE 1030
@@ -497,15 +497,15 @@ parse_url(const char * url, ne_uri * uri)
 }
 
 static error_t
-parse_ne_uri(ne_uri ** uri, const char * repos_url, apr_pool_t * pool)
+parse_ne_uri(ne_uri ** uri, const char * webdav_url, apr_pool_t * pool)
 {
   /* Sanity check the URI */
   *uri = static_cast<ne_uri *>(apr_pcalloc(pool, sizeof(**uri)));
-  if (!parse_url(repos_url, *uri))
+  if (!parse_url(webdav_url, *uri))
   {
     return error_createf(WEBDAV_ERR_ILLEGAL_URL, NULL,
                          "URL '%s' is malformed or the "
-                         "scheme or host or path is missing", repos_url);
+                         "scheme or host or path is missing", webdav_url);
   }
   /* make sure we eventually destroy the uri */
   apr_pool_cleanup_register(pool, *uri, cleanup_uri, apr_pool_cleanup_null);
@@ -766,12 +766,12 @@ typedef struct vtable_t
      time this is called.  SESSION->priv may be set by this function. */
   error_t (*open_session)(session_t * session,
                           const char ** corrected_url,
-                          const char * repos_URL,
+                          const char * webdav_URL,
                           const callbacks2_t * callbacks,
                           void * callback_baton,
                           apr_pool_t * pool);
   /* See reparent(). */
-  /* URL is guaranteed to have what get_repos_root() returns as a prefix. */
+  /* URL is guaranteed to have what get_webdav_resource_root() returns as a prefix. */
   error_t (*reparent)(session_t * session,
                       const char * url,
                       apr_pool_t * pool);
@@ -802,8 +802,8 @@ typedef struct vtable_t
                   const char * path,
                   dirent_t ** dirent,
                   apr_pool_t * pool);
-  /* See get_repos_root2(). */
-  error_t (*get_repos_root)(session_t * session,
+  /* See get_webdav_resource_root2(). */
+  error_t (*get_webdav_resource_root)(session_t * session,
                             const char ** url,
                             apr_pool_t * pool);
   /* See has_capability(). */
@@ -6690,7 +6690,6 @@ io_file_write_full(apr_file_t * file, const void * buf,
      for larger values of NBYTES. In that case, we have to emulate the
      "_full" part here. Thus, always call apr_file_write directly on
      Win32 as this minimizes overhead for small data buffers. */
-#ifdef WIN32
 #define MAXBUFSIZE 64*1024
   apr_size_t bw = nbytes;
   apr_size_t to_write = nbytes;
@@ -6718,7 +6717,6 @@ io_file_write_full(apr_file_t * file, const void * buf,
   if (bytes_written)
     *bytes_written = nbytes - to_write;
 #undef MAXBUFSIZE
-#endif
 
   return error_trace(do_io_file_wrapper_cleanup(
                        file, rv,
@@ -7792,10 +7790,10 @@ neon_simple_request(int * code,
 static void
 neon_add_depth_header(apr_hash_t * extra_headers, int depth)
 {
-  /*  assert(extra_headers != NULL);
+  assert(extra_headers != NULL);
   assert(depth == NEON__DEPTH_ZERO
          || depth == NEON__DEPTH_ONE
-         || depth == NEON__DEPTH_INFINITE); */
+         || depth == NEON__DEPTH_INFINITE);
   apr_hash_set(extra_headers, "Depth", APR_HASH_KEY_STRING,
                (depth == NEON__DEPTH_INFINITE)
                ? "infinity" : (depth == NEON__DEPTH_ZERO) ? "0" : "1");
@@ -7966,9 +7964,9 @@ generate_error(neon_request_t * req, apr_pool_t * pool)
                  (WEBDAV_ERR_DAV_RELOCATED, NULL,
                   apr_psprintf(pool,
                                (req->code == 301)
-                               ? "Repository moved permanently to '%s';"
+                               ? "WebDAV resource moved permanently to '%s';"
                                " please relocate"
-                               : "Repository moved temporarily to '%s';"
+                               : "WebDAV resource moved temporarily to '%s';"
                                " please relocate",
                                neon_request_get_location(req, pool)));
 
@@ -8528,29 +8526,29 @@ get_path_relative_to_session(session_t * session,
 static error_t
 client_path_relative_to_root(const char ** rel_path,
                               const char * abspath_or_url,
-                              const char * repos_root,
+                              const char * webdav_root,
                               bool include_leading_slash,
                               session_t * ra_session,
                               apr_pool_t * result_pool,
                               apr_pool_t * scratch_pool)
 {
-  const char * repos_relpath = NULL;
+  const char * webdav_relpath = NULL;
 
   if (!path_is_url(abspath_or_url))
   {
     error_createf(WEBDAV_ERR_DAV_NOT_IMPLEMENTED, NULL,
                   "not implemented: 'client_path_relative_to_root'");
   }
-  /* Merge handling passes a root that is not the repos root */
-  else if (repos_root != NULL)
+  /* Merge handling passes a root that is not WebDAV resource root */
+  else if (webdav_root != NULL)
   {
-    if (!uri__is_ancestor(repos_root, abspath_or_url))
+    /*if (!uri__is_ancestor(webdav_root, abspath_or_url))
       return error_createf(WEBDAV_ERR_CLIENT_UNRELATED_RESOURCES, NULL,
-                           "URL '%s' is not a child of repository "
+                           "URL '%s' is not a child of "
                            "root URL '%s'",
-                           abspath_or_url, repos_root);
+                           abspath_or_url, webdav_root);*/
 
-    repos_relpath = uri_skip_ancestor(repos_root, abspath_or_url,
+    webdav_relpath = uri_skip_ancestor(webdav_root, abspath_or_url,
                                       result_pool);
   }
   else
@@ -8560,14 +8558,14 @@ client_path_relative_to_root(const char ** rel_path,
     WEBDAV_ERR_ASSERT(ra_session != NULL);
 
     /* Ask the RA layer to create a relative path for us */
-    err = get_path_relative_to_root(ra_session, &repos_relpath,
+    err = get_path_relative_to_root(ra_session, &webdav_relpath,
                                     abspath_or_url, scratch_pool);
 
     if (err)
     {
       if (err == WEBDAV_ERR_ILLEGAL_URL)
         return error_createf(WEBDAV_ERR_CLIENT_UNRELATED_RESOURCES, &err,
-                             "URL '%s' is not inside repository",
+                             "URL '%s' is not inside WebDAV resource root",
                              abspath_or_url);
 
       return error_trace(err);
@@ -8575,9 +8573,9 @@ client_path_relative_to_root(const char ** rel_path,
   }
 
   if (include_leading_slash)
-    *rel_path = apr_pstrcat(result_pool, "/", repos_relpath, NULL);
+    *rel_path = apr_pstrcat(result_pool, "/", webdav_relpath, NULL);
   else
-    *rel_path = repos_relpath;
+    *rel_path = webdav_relpath;
 
   return WEBDAV_NO_ERROR;
 }
@@ -8851,11 +8849,11 @@ get_dir2(session_t * session,
 }
 
 static error_t
-get_repos_root2(session_t * session,
+get_webdav_resource_root2(session_t * session,
                 const char ** url,
                 apr_pool_t * pool)
 {
-  WEBDAV_ERR(session->vtable->get_repos_root(session, url, pool));
+  WEBDAV_ERR(session->vtable->get_webdav_resource_root(session, url, pool));
   *url = *url ? apr_pstrdup(pool, *url) : NULL;
   return WEBDAV_NO_ERROR;
 }
@@ -8878,7 +8876,7 @@ get_path_relative_to_root(session_t * session,
                           apr_pool_t * pool)
 {
   const char * root_url = NULL;
-  WEBDAV_ERR(session->vtable->get_repos_root(session, &root_url, pool));
+  WEBDAV_ERR(session->vtable->get_webdav_resource_root(session, &root_url, pool));
   if (strcmp(root_url, url) == 0)
   {
     *rel_path = "";
@@ -8888,7 +8886,7 @@ get_path_relative_to_root(session_t * session,
     *rel_path = uri__is_child(root_url, url, pool);
     if (!*rel_path)
       return error_createf(WEBDAV_ERR_ILLEGAL_URL, NULL,
-                           "'%s' isn't a child of repository root "
+                           "'%s' isn't a child of root "
                            "URL '%s'",
                            url, root_url);
   }
@@ -8912,16 +8910,6 @@ reparent(session_t * session,
          const char * url,
          apr_pool_t * pool)
 {
-  const char * repos_root = NULL;
-
-  /* Make sure the new URL is in the same repository, so that the
-     implementations don't have to do it. */
-  WEBDAV_ERR(get_repos_root2(session, &repos_root, pool));
-  if (!uri__is_ancestor(repos_root, url))
-    return error_createf(WEBDAV_ERR_ILLEGAL_URL, NULL,
-                         "'%s' isn't in the same repository as '%s'",
-                         url, repos_root);
-
   return session->vtable->reparent(session, url, pool);
 }
 
@@ -8929,7 +8917,7 @@ static error_t
 session_open(
   session_t ** session_p,
   const char ** corrected_url_p,
-  const char * repos_URL,
+  const char * webdav_URL,
   const callbacks2_t * callbacks,
   void * callback_baton,
   apr_pool_t * pool)
@@ -8941,12 +8929,12 @@ session_open(
   /* Initialize the return variable. */
   *session_p = NULL;
 
-  ne_uri * repos_URI = NULL;
-  error_t err = parse_ne_uri(&repos_URI, repos_URL, sesspool);
-  if (err != WEBDAV_NO_ERROR || repos_URI->host == NULL)
+  ne_uri * webdav_URI = NULL;
+  error_t err = parse_ne_uri(&webdav_URI, webdav_URL, sesspool);
+  if (err != WEBDAV_NO_ERROR || webdav_URI->host == NULL)
     return error_createf(WEBDAV_ERR_ILLEGAL_URL, NULL,
-                         "Illegal repository URL '%s'",
-                         repos_URL);
+                         "Illegal URL '%s'",
+                         webdav_URL);
 
   /* Auth caching parameters. */
   bool store_passwords = WEBDAV_CONFIG_DEFAULT_OPTION_STORE_PASSWORDS;
@@ -9007,18 +8995,18 @@ session_open(
 
   const char * corrected_url = NULL;
   /* Ask the library to open the session. */
-  WEBDAV_ERR_W(vtable->open_session(session, &corrected_url, repos_URL,
+  WEBDAV_ERR_W(vtable->open_session(session, &corrected_url, webdav_URL,
                                     callbacks, callback_baton,
                                     sesspool),
-               apr_psprintf(pool, "Unable to connect to a repository at URL '%s'",
-                            repos_URL));
+               apr_psprintf(pool, "Unable to connect to a WebDAV resource at URL '%s'",
+                            webdav_URL));
 
   if (corrected_url_p && corrected_url)
   {
     if (!path_is_url(corrected_url))
     {
       ne_uri * corrected_URI = NULL;
-      WEBDAV_ERR(parse_ne_uri(&corrected_URI, repos_URL, sesspool));
+      WEBDAV_ERR(parse_ne_uri(&corrected_URI, webdav_URL, sesspool));
       if (corrected_URI->path) ne_free(corrected_URI->path);
       corrected_URI->path = (char *)strdup(corrected_url);
       corrected_url = neon_uri_unparse(corrected_URI, sesspool);
@@ -10520,7 +10508,7 @@ neon_get_starting_props(neon_resource_t ** rsrc,
 
   /* Cache some of the resource information. */
 
-  if (!sess->repos_root)
+  if (!sess->webdav_root)
   {
     string_t * propval = NULL;
 
@@ -10535,7 +10523,7 @@ neon_get_starting_props(neon_resource_t ** rsrc,
       uri = sess->root;
       uri.path = urlbuf->data;
 
-      sess->repos_root = neon_uri_unparse(&uri, sess->pool);
+      sess->webdav_root = neon_uri_unparse(&uri, sess->pool);
     }
   }
 
@@ -10600,17 +10588,16 @@ neon_search_for_starting_props(neon_resource_t ** rsrc,
     /* if we detect an infinite loop, get out. */
     if (path_s->len == len)
       return error_createf(0, &err,
-                           "The path was not part of a repository");
+                           "The path was not part of a WebDAV resource");
 
     error_clear(&err);
   }
 
-  /* error out if entire URL was bogus (not a single part of it exists
-     in the repository!)  */
+  /* error out if entire URL was bogus)  */
   if (path_is_empty(path_s->data))
     return error_createf(WEBDAV_ERR_ILLEGAL_URL, NULL,
                          "No part of path '%s' was found in "
-                         "repository HEAD", parsed_url.path);
+                         "WebDAV resource", parsed_url.path);
 
   /* Duplicate rsrc out of iterpool into pool */
   {
@@ -11269,7 +11256,7 @@ neon_do_proppatch(neon_session_t * ras,
   if (err)
     return error_create
            (WEBDAV_ERR_DAV_PROPPATCH_FAILED, &err,
-            "At least one property change failed; repository is unchanged");
+            "At least one property change failed; WebDAV resource is unchanged");
 
   return WEBDAV_NO_ERROR;
 }
@@ -11288,7 +11275,7 @@ client_list2(
 {
   dirent_t * dirent = NULL;
   const char * url = NULL;
-  const char * repos_root = NULL;
+  const char * webdav_root = NULL;
   const char * fs_path = NULL;
   error_t err = 0;
 
@@ -11303,11 +11290,11 @@ client_list2(
                                     &url, path_or_url,
                                     pool));
 
-  WEBDAV_ERR(get_repos_root2(session, &repos_root, pool));
+  WEBDAV_ERR(get_webdav_resource_root2(session, &webdav_root, pool));
 
   WEBDAV_ERR(client_path_relative_to_root(&fs_path,
              url,
-             repos_root, TRUE, session,
+             webdav_root, TRUE, session,
              pool, pool));
 
   err = stat(session, "",
@@ -11489,7 +11476,7 @@ client_check_path(
     (target)[len - 1] = '\0';
   if (*target == '/')
   {
-    const char * abs_path = apr_pstrcat(pool, ras->repos_root, target, NULL);
+    const char * abs_path = apr_pstrcat(pool, ras->webdav_root, target, NULL);
 
     err = get_path_relative_to_root(session,
                                     &rel_path,
@@ -11557,7 +11544,7 @@ client_send_propfind_request(
   char * url_path = apr_pstrdup(pool, target);
 
   WEBDAV_ERR(neon_get_props(&props, ras, url_path, NEON__DEPTH_ZERO,
-                            starting_props, // NULL, /* all props */
+                            starting_props,
                             pool));
 
   if (err && (err == WEBDAV_ERR_DAV_REQUEST_FAILED))
@@ -12073,7 +12060,7 @@ static error_t
 neon_open(
   session_t * session,
   const char ** corrected_url,
-  const char * repos_URL,
+  const char * webdav_URL,
   const callbacks2_t * callbacks,
   void * callback_baton,
   apr_pool_t * pool)
@@ -12084,7 +12071,7 @@ neon_open(
   *corrected_url = NULL;
 
   ne_uri * uri = NULL;
-  WEBDAV_ERR(parse_ne_uri(&uri, repos_URL, pool));
+  WEBDAV_ERR(parse_ne_uri(&uri, webdav_URL, pool));
 
   /* Initialize neon if required */
   WEBDAV_ERR(ensure_neon_initialized());
@@ -12211,11 +12198,11 @@ neon_open(
   /* Create and fill a session_baton. */
   neon_session_t * ras = static_cast<neon_session_t *>(apr_pcalloc(pool, sizeof(*ras)));
   ras->pool = pool;
-  // ras->url = stringbuf_create(repos_URL, pool);
+  // ras->url = stringbuf_create(webdav_URL, pool);
   {
     // canonicalize url
     const char * remote_url = NULL;
-    remote_url = urlpath_canonicalize(repos_URL, pool);
+    remote_url = urlpath_canonicalize(webdav_URL, pool);
     ras->url = stringbuf_create(remote_url, pool);
   }
   /* copies uri pointer members, they get free'd in __close. */
@@ -12355,6 +12342,7 @@ neon_reparent(session_t * session,
 
   ras->root = *uri;
   stringbuf_set(ras->url, url);
+  ras->webdav_root = neon_uri_unparse(uri, session->pool);
   return WEBDAV_NO_ERROR;
 }
 
@@ -12581,7 +12569,7 @@ neon_stat(session_t * session,
   apr_hash_t * resources = NULL;
   error_t err = neon_get_props(&resources, ras, final_url,
                                NEON__DEPTH_ZERO,
-                               starting_props, // NULL /* all props */,
+                               starting_props,
                                pool);
   if (err)
   {
@@ -12634,14 +12622,14 @@ neon_stat(session_t * session,
 }
 
 static error_t
-neon_get_repos_root(session_t * session,
+neon_get_webdav_resource_root(session_t * session,
                     const char ** url,
                     apr_pool_t * pool)
 {
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
   assert(ras);
 
-  if (!ras->repos_root)
+  if (!ras->webdav_root)
   {
     const char * bc_relative = "";
 
@@ -12654,10 +12642,10 @@ neon_get_repos_root(session_t * session,
     stringbuf_t * url_buf = stringbuf_dup(ras->url, pool);
     if (bc_relative)
       path_remove_components(url_buf, path_component_count(bc_relative));
-    ras->repos_root = apr_pstrdup(ras->pool, url_buf->data);
+    ras->webdav_root = apr_pstrdup(ras->pool, url_buf->data);
   }
 
-  *url = ras->repos_root;
+  *url = ras->webdav_root;
   return WEBDAV_NO_ERROR;
 }
 
@@ -12673,7 +12661,7 @@ static const vtable_t neon_vtable =
   neon_get_dir, // get_dir
   neon_check_path, // check_path
   neon_stat, // stat
-  neon_get_repos_root, // get_repos_root
+  neon_get_webdav_resource_root, // get_webdav_resource_root
 };
 
 static error_t
@@ -14602,7 +14590,7 @@ bool TWebDAVFileSystem::WebDAVDeleteFile(const wchar_t * path)
   return err == WEBDAV_NO_ERROR;
 }
 
-webdav::error_t TWebDAVFileSystem::OpenURL(const UnicodeString & repos_URL,
+webdav::error_t TWebDAVFileSystem::OpenURL(const UnicodeString & webdav_URL,
     apr_pool_t * pool)
 {
   // prepare callbacks, contexts
@@ -14639,11 +14627,12 @@ webdav::error_t TWebDAVFileSystem::OpenURL(const UnicodeString & repos_URL,
   }
   webdav::session_t * session_p = NULL;
   const char * corrected_url = NULL;
-  AnsiString base_url = AnsiString(repos_URL).c_str();
+  AnsiString base_url = AnsiString(webdav_URL).c_str();
+  const char * base_url_encoded = webdav::path_uri_encode(base_url.c_str(), pool);
   WEBDAV_ERR(webdav::client_open_session_internal(
                &session_p,
                &corrected_url,
-               base_url.c_str(),
+               base_url_encoded,
                ctx,
                pool));
 
@@ -14654,7 +14643,7 @@ webdav::error_t TWebDAVFileSystem::OpenURL(const UnicodeString & repos_URL,
   }
   else
   {
-    url = apr_pstrdup(pool, base_url.c_str());
+    url = apr_pstrdup(pool, base_url_encoded);
   }
   ne_uri * uri = NULL;
   if (WEBDAV_NO_ERROR == webdav::parse_ne_uri(&uri, url, pool))
