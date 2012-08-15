@@ -1,5 +1,9 @@
 NetBox 2.1.8 ??.08.2012
 --------------------
+  * Bugfix: WebDAV: cannot redirect from HTTP to HTTPS
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=735#p97473)
+  * Bugfix: WebDAV: cannot copy from server to local directory with non-ASCII name
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=735#p97463)
   * Bugfix: Issue #31: [DAV] fails to re-connect if plug-in was closed while visiting a folder with space in its name
   * WebDAV: fix speed issues
   * Bugfix: Far3: cannot verify server's rsa2 key fingerprint
