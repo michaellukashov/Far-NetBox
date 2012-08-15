@@ -13601,9 +13601,8 @@ void __fastcall TWebDAVFileSystem::WebDAVSource(const UnicodeString FileName,
 
       TFileTransferData UserData;
 
-      unsigned int TransferType = 2; // OperationProgress->AsciiTransfer = false
-
       {
+        unsigned int TransferType = 2; // OperationProgress->AsciiTransfer = false
         // ignore file list
         TWebDAVFileListHelper Helper(this, NULL, true);
 
@@ -14078,9 +14077,9 @@ void __fastcall TWebDAVFileSystem::Sink(const UnicodeString FileName,
       {
         FilePath = L"/";
       }
-      unsigned int TransferType = 2; // OperationProgress->AsciiTransfer = false
 
       {
+        unsigned int TransferType = 2; // OperationProgress->AsciiTransfer = false
         // ignore file list
         TWebDAVFileListHelper Helper(this, NULL, true);
 

@@ -2243,7 +2243,7 @@ void __fastcall TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
          !OperationProgress->Cancel; IFile++)
     {
       UnicodeString FileName = FilesToCopy->GetStrings(IFile);
-      TRemoteFile * File = (TRemoteFile *)FilesToCopy->GetObjects(IFile);
+      TRemoteFile * File = static_cast<TRemoteFile *>(FilesToCopy->GetObjects(IFile));
       assert(File);
 
       try

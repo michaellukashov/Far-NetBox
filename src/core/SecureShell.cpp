@@ -1616,7 +1616,7 @@ bool __fastcall TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventR
           while (i != FPortFwdSockets.end())
           {
             ProcessNetworkEvents(*i);
-            i++;
+            ++i;
           }
         }
       }

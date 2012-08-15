@@ -36,6 +36,7 @@
   FSynchronizeAbort = NULL;
   FSynchronizeLog = NULL;
   FOptions = NULL;
+  FOnSynchronizeThreads = NULL;
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TSynchronizeController::~TSynchronizeController()

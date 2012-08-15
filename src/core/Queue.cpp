@@ -1784,7 +1784,7 @@ bool __fastcall TQueueItemProxy::ProcessUserAction()
 {
   assert(FQueueItem != NULL);
 
-  bool Result;
+  bool Result = false;
   FProcessingUserAction = true;
   // try
   {

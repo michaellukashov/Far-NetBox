@@ -307,7 +307,7 @@ void __fastcall TTabButton::SetTabName(const UnicodeString Value)
 //---------------------------------------------------------------------------
 bool __fastcall TWinSCPPlugin::ConfigurationDialog()
 {
-  bool Result;
+  bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   // try
   {
@@ -491,7 +491,7 @@ bool __fastcall TWinSCPPlugin::ConfigurationDialog()
 //---------------------------------------------------------------------------
 bool __fastcall TWinSCPPlugin::PanelConfigurationDialog()
 {
-  bool Result;
+  bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   // try
   {
@@ -542,7 +542,7 @@ bool __fastcall TWinSCPPlugin::PanelConfigurationDialog()
 //---------------------------------------------------------------------------
 bool __fastcall TWinSCPPlugin::LoggingConfigurationDialog()
 {
-  bool Result;
+  bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   // try
   {
@@ -674,7 +674,7 @@ bool __fastcall TWinSCPPlugin::TransferConfigurationDialog()
 //---------------------------------------------------------------------------
 bool __fastcall TWinSCPPlugin::EnduranceConfigurationDialog()
 {
-  bool Result;
+  bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   // try
   {
@@ -815,7 +815,7 @@ bool __fastcall TWinSCPPlugin::EnduranceConfigurationDialog()
 //---------------------------------------------------------------------------
 bool __fastcall TWinSCPPlugin::QueueConfigurationDialog()
 {
-  bool Result;
+  bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   // try
   {
@@ -1032,7 +1032,7 @@ void __fastcall TTransferEditorConfigurationDialog::UpdateControls()
 //---------------------------------------------------------------------------
 bool __fastcall TWinSCPPlugin::TransferEditorConfigurationDialog()
 {
-  bool Result;
+  bool Result = false;
   TTransferEditorConfigurationDialog * Dialog = new TTransferEditorConfigurationDialog(this);
   // try
   {
@@ -1053,7 +1053,7 @@ bool __fastcall TWinSCPPlugin::TransferEditorConfigurationDialog()
 //---------------------------------------------------------------------------
 bool __fastcall TWinSCPPlugin::ConfirmationsConfigurationDialog()
 {
-  bool Result;
+  bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   // try
   {
@@ -1127,7 +1127,7 @@ bool __fastcall TWinSCPPlugin::ConfirmationsConfigurationDialog()
 //---------------------------------------------------------------------------
 bool __fastcall TWinSCPPlugin::IntegrationConfigurationDialog()
 {
-  bool Result;
+  bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   // try
   {
@@ -1633,7 +1633,7 @@ bool __fastcall TWinSCPFileSystem::PasswordDialog(TSessionData * SessionData,
 bool __fastcall TWinSCPFileSystem::BannerDialog(const UnicodeString SessionName,
   const UnicodeString Banner, bool & NeverShowAgain, int Options)
 {
-  bool Result;
+  bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(FPlugin);
   // try
   {
@@ -3151,7 +3151,6 @@ void __fastcall TSessionDialog::UpdateControls()
   bool InternalHTTPProtocol =
     (FSProtocol == fsHTTP) || (FSProtocol == fsHTTPS);
   bool SshProtocol = InternalSshProtocol;
-  bool HTTPProtocol = FSProtocol == fsHTTP;
   bool HTTPSProtocol = FSProtocol == fsHTTPS;
   bool SftpProtocol = (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP);
   bool ScpOnlyProtocol = (FSProtocol == fsSCPonly);
@@ -4306,7 +4305,7 @@ void __fastcall TSessionDialog::CodePageEditAdd(unsigned int cp)
 bool __fastcall TWinSCPFileSystem::SessionDialog(TSessionData * SessionData,
   TSessionActionEnum & Action)
 {
-  bool Result;
+  bool Result = false;
   TSessionDialog * Dialog = new TSessionDialog(FPlugin, Action);
   // try
   {
@@ -5775,7 +5774,7 @@ bool __fastcall TWinSCPFileSystem::CopyDialog(bool ToRemote,
   int Options,
   int CopyParamAttrs)
 {
-  bool Result;
+  bool Result = false;
   TCopyDialog * Dialog = new TCopyDialog(FPlugin, ToRemote,
     Move, FileList, Options, CopyParamAttrs);
   // try
@@ -5798,7 +5797,7 @@ bool __fastcall TWinSCPFileSystem::CopyDialog(bool ToRemote,
 bool __fastcall TWinSCPPlugin::CopyParamDialog(const UnicodeString Caption,
   TCopyParamType & CopyParam, int CopyParamAttrs)
 {
-  bool Result;
+  bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   // try
   {
@@ -5945,7 +5944,7 @@ bool __fastcall TLinkDialog::Execute(UnicodeString & FileName, UnicodeString & P
 bool __fastcall TWinSCPFileSystem::LinkDialog(UnicodeString & FileName,
   UnicodeString & PointTo, bool & Symbolic, bool Edit, bool AllowSymbolic)
 {
-  bool Result;
+  bool Result = false;
   TLinkDialog * Dialog = new TLinkDialog(FPlugin, Edit, AllowSymbolic);
   // try
   {
@@ -6420,7 +6419,7 @@ void __fastcall TFileSystemInfoDialog::Execute(
 //---------------------------------------------------------------------------
 bool __fastcall TFileSystemInfoDialog::Key(TFarDialogItem * Item, long KeyCode)
 {
-  bool Result;
+  bool Result = false;
   if ((Item == SpaceAvailablePathEdit) && (KeyCode == KEY_ENTER))
   {
     CheckSpaceAvailable();
@@ -6522,8 +6521,8 @@ void __fastcall TWinSCPFileSystem::FileSystemInfoDialog(
 bool __fastcall TWinSCPFileSystem::OpenDirectoryDialog(
   bool Add, UnicodeString & Directory, TBookmarkList * BookmarkList)
 {
-  bool Result;
-  bool Repeat;
+  bool Result = false;
+  bool Repeat = false;
 
   int ItemFocused = -1;
 
@@ -6868,7 +6867,7 @@ bool __fastcall TApplyCommandDialog::Execute(UnicodeString & Command, int & Para
 bool __fastcall TWinSCPFileSystem::ApplyCommandDialog(UnicodeString & Command,
   int & Params)
 {
-  bool Result;
+  bool Result = false;
   TApplyCommandDialog * Dialog = new TApplyCommandDialog(FPlugin);
   // try
   {
@@ -7326,7 +7325,7 @@ bool __fastcall TWinSCPFileSystem::FullSynchronizeDialog(TTerminal::TSynchronize
   TCopyParamType * CopyParams, bool & SaveSettings, bool & SaveMode, int Options,
   const TUsableCopyParamAttrs & CopyParamAttrs)
 {
-  bool Result;
+  bool Result = false;
   TFullSynchronizeDialog * Dialog = new TFullSynchronizeDialog(
     FPlugin, Options, CopyParamAttrs);
   // try
@@ -7970,7 +7969,7 @@ bool __fastcall TWinSCPFileSystem::SynchronizeChecklistDialog(
   TSynchronizeChecklist * Checklist, TTerminal::TSynchronizeMode Mode, int Params,
   const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory)
 {
-  bool Result;
+  bool Result = false;
   TSynchronizeChecklistDialog * Dialog = new TSynchronizeChecklistDialog(
     FPlugin, Mode, Params, LocalDirectory, RemoteDirectory);
   // try
@@ -8454,7 +8453,7 @@ bool __fastcall TWinSCPFileSystem::SynchronizeDialog(TSynchronizeParamType & Par
     const TCopyParamType * CopyParams, TSynchronizeStartStopEvent OnStartStop,
     bool & SaveSettings, int Options, int CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions)
 {
-  bool Result;
+  bool Result = false;
   TSynchronizeDialog * Dialog = new TSynchronizeDialog(FPlugin, OnStartStop,
       Options, CopyParamAttrs, OnGetOptions);
   // try
@@ -9023,7 +9022,7 @@ bool __fastcall TQueueDialog::Execute(TTerminalQueueStatus * Status)
 bool __fastcall TWinSCPFileSystem::QueueDialog(
   TTerminalQueueStatus * Status, bool ClosingPlugin)
 {
-  bool Result;
+  bool Result = false;
   TQueueDialog * Dialog = new TQueueDialog(FPlugin, this, ClosingPlugin);
   // try
   {
@@ -9045,7 +9044,7 @@ bool __fastcall TWinSCPFileSystem::QueueDialog(
 bool __fastcall TWinSCPFileSystem::CreateDirectoryDialog(UnicodeString & Directory,
     TRemoteProperties * Properties, bool & SaveSettings)
 {
-  bool Result;
+  bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(FPlugin);
   // try
   {

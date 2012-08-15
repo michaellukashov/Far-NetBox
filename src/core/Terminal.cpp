@@ -113,14 +113,14 @@ TSynchronizeOptions::~TSynchronizeOptions()
 //---------------------------------------------------------------------------
 bool __fastcall TSynchronizeOptions::MatchesFilter(const UnicodeString & FileName)
 {
-  int FoundIndex;
-  bool Result;
+  bool Result = false;
   if (Filter == NULL)
   {
     Result = true;
   }
   else
   {
+    int FoundIndex = 0;
     Result = Filter->Find(FileName, FoundIndex);
   }
   return Result;
@@ -3505,7 +3505,7 @@ bool /* __fastcall */ TTerminal::MoveFiles(TStrings * FileList, const UnicodeStr
   Params.Target = Target;
   Params.FileMask = FileMask;
   DirectoryModified(Target, true);
-  bool Result;
+  bool Result = false;
   BeginTransaction();
   // try
   {

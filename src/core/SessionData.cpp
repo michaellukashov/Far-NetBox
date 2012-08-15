@@ -334,7 +334,7 @@ void __fastcall TSessionData::Assign(TPersistent * Source)
 {
   if (Source && ::InheritsFrom<TPersistent, TSessionData>(Source))
   {
-    #define PROPERTY(P) Set##P(((TSessionData *)Source)->Get##P())
+    #define PROPERTY(P) Set##P((static_cast<TSessionData *>(Source))->Get##P())
     PROPERTY(Name);
     BASE_PROPERTIES;
     ADVANCED_PROPERTIES;
@@ -352,10 +352,10 @@ void __fastcall TSessionData::Assign(TPersistent * Source)
     }
     #undef PROPERTY
 
-    FModified = ((TSessionData *)Source)->GetModified();
-    FSource = ((TSessionData *)Source)->FSource;
+    FModified = static_cast<TSessionData *>(Source)->GetModified();
+    FSource = static_cast<TSessionData *>(Source)->FSource;
 
-    FNumberOfRetries = ((TSessionData *)Source)->FNumberOfRetries;
+    FNumberOfRetries = static_cast<TSessionData *>(Source)->FNumberOfRetries;
   }
   else
   {

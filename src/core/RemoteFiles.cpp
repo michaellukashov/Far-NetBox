@@ -220,8 +220,6 @@ UnicodeString __fastcall ToUnixPath(const UnicodeString Path)
 //---------------------------------------------------------------------------
 static void __fastcall CutFirstDirectory(UnicodeString & S, bool Unix)
 {
-  bool Root;
-  int P;
   UnicodeString Sep = Unix ? L"/" : L"\\";
   if (S == Sep)
   {
@@ -229,6 +227,8 @@ static void __fastcall CutFirstDirectory(UnicodeString & S, bool Unix)
   }
   else
   {
+    bool Root = false;
+    int P = 0;
     if (S[1] == Sep[1])
     {
       Root = true;
@@ -1216,12 +1216,10 @@ void __fastcall TRemoteFile::SetListingStr(UnicodeString value)
       // separating space is already deleted, other spaces are treated as part of name
 
       {
-        int P;
-
         FLinkTo = L"";
         if (GetIsSymLink())
         {
-          P = Line.Pos(SYMLINKSTR);
+          int P = Line.Pos(SYMLINKSTR);
           if (P)
           {
             FLinkTo = Line.SubString(
@@ -1623,7 +1621,7 @@ void __fastcall TRemoteDirectoryCache::Clear()
     } BOOST_SCOPE_EXIT_END
     for (int Index = 0; Index < GetCount(); Index++)
     {
-      delete (TRemoteFileList *)GetObjects(Index);
+      delete static_cast<TRemoteFileList *>(GetObjects(Index));
       PutObject(Index, NULL);
     }
   }
@@ -1729,7 +1727,7 @@ void __fastcall TRemoteDirectoryCache::DoClearFileList(UnicodeString Directory, 
 //---------------------------------------------------------------------------
 void __fastcall TRemoteDirectoryCache::Delete(int Index)
 {
-  delete (TRemoteFileList *)GetObjects(Index);
+  delete static_cast<TRemoteFileList *>(GetObjects(Index));
   TStringList::Delete(Index);
 }
 //---------------------------------------------------------------------------

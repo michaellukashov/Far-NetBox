@@ -1896,7 +1896,6 @@ void __fastcall TCustomFarFileSystem::GetOpenPluginInfo(struct OpenPluginInfo * 
     {
       ClearOpenPluginInfo(FOpenPluginInfo);
       UnicodeString HostFile, CurDir, Format, PanelTitle, ShortcutData;
-      bool StartSortOrder;
       TFarPanelModes * PanelModes = NULL;
       TFarKeyBarTitles * KeyBarTitles = NULL;
       // try
@@ -1908,7 +1907,7 @@ void __fastcall TCustomFarFileSystem::GetOpenPluginInfo(struct OpenPluginInfo * 
         } BOOST_SCOPE_EXIT_END
         PanelModes = new TFarPanelModes();
         KeyBarTitles = new TFarKeyBarTitles();
-        StartSortOrder = false;
+        bool StartSortOrder = false;
 
         GetOpenPluginInfoEx(FOpenPluginInfo.Flags, HostFile, CurDir, Format,
           PanelTitle, PanelModes, FOpenPluginInfo.StartPanelMode,

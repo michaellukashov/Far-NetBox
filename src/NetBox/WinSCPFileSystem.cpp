@@ -2475,7 +2475,7 @@ bool __fastcall TWinSCPFileSystem::SetDirectoryEx(const UnicodeString Dir, int O
     }
     else
     {
-      bool Result;
+      bool Result = false;
       // try
       {
         BOOST_SCOPE_EXIT ( (&Self) )
@@ -2779,7 +2779,7 @@ bool __fastcall TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, int O
       else
       {
         Query = FORMAT(GetMsg(Recycle ? RECYCLE_FILE_CONFIRM : DELETE_FILE_CONFIRM).c_str(),
-          ((TFarPanelItem *)PanelItems->GetItem(0))->GetFileName().c_str());
+          static_cast<TFarPanelItem *>(PanelItems->GetItem(0))->GetFileName().c_str());
       }
 
       if ((OpMode & OPM_SILENT) || !FarConfiguration->GetConfirmDeleting() ||
@@ -2920,7 +2920,7 @@ int __fastcall TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move
     if (PanelItems->GetCount() == 1)
     {
       Prompt = FORMAT(GetMsg(EXPORT_SESSION_PROMPT).c_str(),
-        ((TFarPanelItem *)PanelItems->GetItem(0))->GetFileName().c_str());
+        static_cast<TFarPanelItem *>(PanelItems->GetItem(0))->GetFileName().c_str());
     }
     else
     {
@@ -4407,7 +4407,7 @@ void __fastcall TWinSCPFileSystem::MultipleEdit()
         if (FileList->GetCount() == 1)
         {
           MultipleEdit(FTerminal->GetCurrentDirectory(), FileList->GetStrings(0),
-            (TRemoteFile *)FileList->GetObjects(0));
+            static_cast<TRemoteFile *>(FileList->GetObjects(0)));
         }
       }
 #ifndef _MSC_VER
