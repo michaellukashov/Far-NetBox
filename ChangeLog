@@ -1,5 +1,7 @@
-NetBox 2.1.8 ??.08.2012
+NetBox 2.1.8 15.08.2012
 --------------------
+  * Bugfix: WebDAV: do not show password in Password dialog
+    (https://github.com/michaellukashov/Far-NetBox/issues/21#issuecomment-7600548)
   * Bugfix: WebDAV: cannot redirect from HTTP to HTTPS
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=735#p97473)
   * Bugfix: WebDAV: cannot copy from server to local directory with non-ASCII name
