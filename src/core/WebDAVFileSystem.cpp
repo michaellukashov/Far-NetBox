@@ -12138,13 +12138,13 @@ neon_open(
       baton->file = _fsopen(neon_debug_file_name, "w", SH_DENYWR);
       if (baton->file)
       {
-        debug = NE_DBG_HTTP | // NE_DBG_XML | // NE_DBG_HTTPAUTH |
+        debug = NE_DBG_HTTP | 
+                // NE_DBG_XML | NE_DBG_HTTPAUTH |
                 NE_DBG_HTTPPLAIN |
                 // NE_DBG_XMLPARSE |
                 NE_DBG_HTTPBODY |
                 // NE_DBG_SSL |
                 NE_DBG_FLUSH;
-        // ne_debug_init(stderr, debug);
         ne_debug_init(baton->file, debug);
       }
       apr_pool_cleanup_register(pool, baton,
