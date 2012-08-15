@@ -374,7 +374,7 @@ void __fastcall TCustomFarPlugin::ClosePanel(void * Plugin)
     assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
     // try
     {
-      BOOST_SCOPE_EXIT ( (&Self) (&FileSystem) )
+      BOOST_SCOPE_EXIT ( (Self) (FileSystem) )
       {
         Self->FOpenedPlugins->Remove(FileSystem);
       } BOOST_SCOPE_EXIT_END
@@ -788,7 +788,7 @@ void __fastcall TFarMessageDialog::Init(unsigned int AFlags,
   TStrings * MoreMessageLines = NULL;
   // try
   {
-    BOOST_SCOPE_EXIT ( (&MessageLines) (&MoreMessageLines) )
+    BOOST_SCOPE_EXIT ( (MessageLines) (MoreMessageLines) )
     {
       delete MessageLines;
       delete MoreMessageLines;
@@ -1055,7 +1055,7 @@ int __fastcall TCustomFarPlugin::DialogMessage(unsigned int Flags,
     new TFarMessageDialog(this, Params);
   // try
   {
-    BOOST_SCOPE_EXIT ( (&Dialog) )
+    BOOST_SCOPE_EXIT ( (Dialog) )
     {
       delete Dialog;
     } BOOST_SCOPE_EXIT_END
@@ -1082,7 +1082,7 @@ int __fastcall TCustomFarPlugin::FarMessage(unsigned int Flags,
   wchar_t ** Items = NULL;
   // try
   {
-    BOOST_SCOPE_EXIT ( (&MessageLines) (&Items) )
+    BOOST_SCOPE_EXIT ( (MessageLines) (Items) )
     {
       delete MessageLines;
       delete[] Items;
@@ -1202,7 +1202,7 @@ int __fastcall TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeString Ti
   int Result = 0;
   FarMenuItem * MenuItems = new FarMenuItem[Items->GetCount()];
   {
-    BOOST_SCOPE_EXIT ( (&MenuItems) )
+    BOOST_SCOPE_EXIT ( (MenuItems) )
     {
       delete[] MenuItems;
     } BOOST_SCOPE_EXIT_END
@@ -1929,19 +1929,18 @@ void __fastcall TCustomFarFileSystem::GetOpenPanelInfo(struct OpenPanelInfo * In
     {
       ClearOpenPanelInfo(FOpenPanelInfo);
       UnicodeString HostFile, CurDir, Format, PanelTitle, ShortcutData;
-      bool StartSortOrder;
       TFarPanelModes * PanelModes = NULL;
       TFarKeyBarTitles * KeyBarTitles = NULL;
       // try
       {
-        BOOST_SCOPE_EXIT ( (&PanelModes) (&KeyBarTitles) )
+        BOOST_SCOPE_EXIT ( (PanelModes) (KeyBarTitles) )
         {
           delete PanelModes;
           delete KeyBarTitles;
         } BOOST_SCOPE_EXIT_END
         PanelModes = new TFarPanelModes();
         KeyBarTitles = new TFarKeyBarTitles();
-        StartSortOrder = false;
+        bool StartSortOrder = false;
 
         GetOpenPanelInfoEx(FOpenPanelInfo.Flags, HostFile, CurDir, Format,
           PanelTitle, PanelModes, FOpenPanelInfo.StartPanelMode,
@@ -1985,7 +1984,7 @@ int __fastcall TCustomFarFileSystem::GetFindData(struct GetFindDataInfo *Info)
   bool Result = false;
   // try
   {
-    BOOST_SCOPE_EXIT ( (&PanelItems) )
+    BOOST_SCOPE_EXIT ( (PanelItems) )
     {
       delete PanelItems;
     } BOOST_SCOPE_EXIT_END
@@ -2046,7 +2045,7 @@ int __fastcall TCustomFarFileSystem::ProcessHostFile(const struct ProcessHostFil
   bool Result = false;
   // try
   {
-    BOOST_SCOPE_EXIT ( (&PanelItems) )
+    BOOST_SCOPE_EXIT ( (PanelItems) )
     {
       delete PanelItems;
     } BOOST_SCOPE_EXIT_END
@@ -2096,7 +2095,7 @@ int __fastcall TCustomFarFileSystem::MakeDirectory(struct MakeDirectoryInfo *Inf
   int Result = 0;
   // try
   {
-    BOOST_SCOPE_EXIT ( (&NameStr) (&Info) )
+    BOOST_SCOPE_EXIT ( (&NameStr) (Info) )
     {
       if (0 != wcscmp(NameStr.c_str(), Info->Name))
       {
@@ -2125,7 +2124,7 @@ int __fastcall TCustomFarFileSystem::DeleteFiles(const struct DeleteFilesInfo *I
   bool Result = false;
   // try
   {
-    BOOST_SCOPE_EXIT ( (&PanelItems) )
+    BOOST_SCOPE_EXIT ( (PanelItems) )
     {
       delete PanelItems;
     } BOOST_SCOPE_EXIT_END
@@ -2149,7 +2148,7 @@ int __fastcall TCustomFarFileSystem::GetFiles(struct GetFilesInfo * Info)
   UnicodeString DestPathStr = Info->DestPath;
   // try
   {
-    BOOST_SCOPE_EXIT ( (&DestPathStr) (&Info) (&PanelItems) )
+    BOOST_SCOPE_EXIT ( (&DestPathStr) (Info) (PanelItems) )
     {
       if (DestPathStr != Info->DestPath)
       {
@@ -2181,7 +2180,7 @@ int __fastcall TCustomFarFileSystem::PutFiles(const struct PutFilesInfo *Info)
   int Result = 0;
   // try
   {
-    BOOST_SCOPE_EXIT ( (&PanelItems) )
+    BOOST_SCOPE_EXIT ( (PanelItems) )
     {
       delete PanelItems;
     } BOOST_SCOPE_EXIT_END

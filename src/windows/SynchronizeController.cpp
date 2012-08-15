@@ -36,6 +36,7 @@
   FSynchronizeAbort = NULL;
   FSynchronizeLog = NULL;
   FOptions = NULL;
+  FOnSynchronizeThreads = NULL;
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TSynchronizeController::~TSynchronizeController()
@@ -156,7 +157,7 @@ void __fastcall TSynchronizeController::SynchronizeChange(
       {
         // try
         {
-          BOOST_SCOPE_EXIT ( (&Checklist) )
+          BOOST_SCOPE_EXIT ( (Checklist) )
           {
             delete Checklist;
           } BOOST_SCOPE_EXIT_END

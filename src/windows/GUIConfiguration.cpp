@@ -270,7 +270,7 @@ void __fastcall TCopyParamList::ValidateName(const UnicodeString Name)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TCopyParamList::operator=(const TCopyParamList & rhl)
+TCopyParamList & __fastcall TCopyParamList::operator=(const TCopyParamList & rhl)
 {
   Clear();
 
@@ -287,6 +287,7 @@ void __fastcall TCopyParamList::operator=(const TCopyParamList & rhl)
   // there should be comparison of with the assigned list, but we rely on caller
   // to do it instead (TGUIConfiguration::SetCopyParamList)
   Modify();
+  return *this;
 }
 //---------------------------------------------------------------------------
 bool __fastcall TCopyParamList::operator==(const TCopyParamList & rhl) const
@@ -466,7 +467,7 @@ void __fastcall TCopyParamList::Save(THierarchicalStorage * Storage) const
     {
       // try
       {
-        BOOST_SCOPE_EXIT ( (&Storage) )
+        BOOST_SCOPE_EXIT ( (Storage) )
         {
           Storage->CloseSubKey();
         } BOOST_SCOPE_EXIT_END

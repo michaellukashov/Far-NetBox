@@ -513,7 +513,7 @@ bool __fastcall HasGSSAPI()
     ssh_gss_liblist * List = ssh_gss_setup(&cfg);
     // try
     {
-      BOOST_SCOPE_EXIT ( (&List) )
+      BOOST_SCOPE_EXIT ( (List) )
       {
         ssh_gss_cleanup(List);
       } BOOST_SCOPE_EXIT_END

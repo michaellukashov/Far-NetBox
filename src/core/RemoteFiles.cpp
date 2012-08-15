@@ -220,8 +220,6 @@ UnicodeString __fastcall ToUnixPath(const UnicodeString Path)
 //---------------------------------------------------------------------------
 static void __fastcall CutFirstDirectory(UnicodeString & S, bool Unix)
 {
-  bool Root;
-  int P;
   UnicodeString Sep = Unix ? L"/" : L"\\";
   if (S == Sep)
   {
@@ -229,6 +227,8 @@ static void __fastcall CutFirstDirectory(UnicodeString & S, bool Unix)
   }
   else
   {
+    bool Root = false;
+    int P = 0;
     if (S[1] == Sep[1])
     {
       Root = true;
@@ -1177,7 +1177,7 @@ void __fastcall TRemoteFile::SetListingStr(UnicodeString value)
             Word CurrMonth, CurrDay;
             Hour = (Word)StrToInt(Col.SubString(1, P-1));
             Min = (Word)StrToInt(Col.SubString(P+1, Col.Length() - P));
-            if (Hour > 23 || Hour > 59) Abort();
+            if (Hour > 23 || Min > 59) Abort();
             // When we don't got year, we assume current year
             // with exception that the date would be in future
             // in this case we assume last year.
@@ -1216,12 +1216,10 @@ void __fastcall TRemoteFile::SetListingStr(UnicodeString value)
       // separating space is already deleted, other spaces are treated as part of name
 
       {
-        int P;
-
         FLinkTo = L"";
         if (GetIsSymLink())
         {
-          P = Line.Pos(SYMLINKSTR);
+          int P = Line.Pos(SYMLINKSTR);
           if (P)
           {
             FLinkTo = Line.SubString(
@@ -1298,7 +1296,7 @@ void __fastcall TRemoteFile::FindLinkedFile()
     {
       // try
       {
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
           Self->GetTerminal()->SetExceptionOnFail(false);
         } BOOST_SCOPE_EXIT_END
@@ -1617,13 +1615,13 @@ void __fastcall TRemoteDirectoryCache::Clear()
   TGuard Guard(FSection);
   // try
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
       Self->TStringList::Clear();
     } BOOST_SCOPE_EXIT_END
     for (int Index = 0; Index < GetCount(); Index++)
     {
-      delete (TRemoteFileList *)GetObjects(Index);
+      delete static_cast<TRemoteFileList *>(GetObjects(Index));
       PutObject(Index, NULL);
     }
   }
@@ -1729,7 +1727,7 @@ void __fastcall TRemoteDirectoryCache::DoClearFileList(UnicodeString Directory, 
 //---------------------------------------------------------------------------
 void __fastcall TRemoteDirectoryCache::Delete(int Index)
 {
-  delete (TRemoteFileList *)GetObjects(Index);
+  delete static_cast<TRemoteFileList *>(GetObjects(Index));
   TStringList::Delete(Index);
 }
 //---------------------------------------------------------------------------
@@ -1863,7 +1861,7 @@ void __fastcall TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data)
     TStrings * Limited = new TStringList();
     // try
     {
-      BOOST_SCOPE_EXIT ( (&Limited) )
+      BOOST_SCOPE_EXIT ( (Limited) )
       {
         delete Limited;
       } BOOST_SCOPE_EXIT_END

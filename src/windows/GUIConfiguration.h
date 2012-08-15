@@ -116,7 +116,7 @@ public:
 
   static void __fastcall ValidateName(const UnicodeString Name);
 
-  void __fastcall operator=(const TCopyParamList & rhl);
+  TCopyParamList & __fastcall operator=(const TCopyParamList & rhl);
   bool __fastcall operator==(const TCopyParamList & rhl) const;
 
   void __fastcall Clear();

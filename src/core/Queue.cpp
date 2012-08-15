@@ -719,7 +719,7 @@ TTerminalQueueStatus * __fastcall TTerminalQueue::CreateStatus(TTerminalQueueSta
   {
     // try
     {
-      BOOST_SCOPE_EXIT ( (&Current) )
+      BOOST_SCOPE_EXIT ( (Current) )
       {
         if (Current != NULL)
         {
@@ -1388,7 +1388,7 @@ bool __fastcall TTerminalItem::WaitForUserAction(
 
   // try
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&PrevStatus) )
+    BOOST_SCOPE_EXIT ( (Self) (&PrevStatus) )
     {
       Self->FUserAction = NULL;
       Self->FItem->SetStatus(PrevStatus);
@@ -1523,7 +1523,7 @@ void /* __fastcall */ TTerminalItem::OperationProgress(
 
     // try
     {
-      BOOST_SCOPE_EXIT ( (&Self) (&PrevStatus) (&ProgressData) )
+      BOOST_SCOPE_EXIT ( (Self) (&PrevStatus) (&ProgressData) )
       {
         Self->FItem->SetStatus(PrevStatus);
         ProgressData.Resume();
@@ -1662,7 +1662,7 @@ void __fastcall TQueueItem::Execute(TTerminalItem * TerminalItem)
 {
   // try
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
       TGuard Guard(Self->FSection);
       delete Self->FProgressData;
@@ -1784,11 +1784,11 @@ bool __fastcall TQueueItemProxy::ProcessUserAction()
 {
   assert(FQueueItem != NULL);
 
-  bool Result;
+  bool Result = false;
   FProcessingUserAction = true;
   // try
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
       Self->FProcessingUserAction = false;
     } BOOST_SCOPE_EXIT_END
@@ -2222,7 +2222,7 @@ void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
   {
     // try
     {
-      BOOST_SCOPE_EXIT ( (&Self) )
+      BOOST_SCOPE_EXIT ( (Self) )
       {
         Self->FAction = NULL;
         SAFE_DESTROY(Self->FException);
@@ -2329,7 +2329,7 @@ void __fastcall TTerminalThread::Rethrow(Exception *& Exception)
   {
     // try
     {
-      BOOST_SCOPE_EXIT ( (&Exception) )
+      BOOST_SCOPE_EXIT ( (Exception) )
       {
         SAFE_DESTROY(Exception);
       } BOOST_SCOPE_EXIT_END
@@ -2389,7 +2389,7 @@ void __fastcall TTerminalThread::WaitForUserAction(TUserAction * UserAction)
     TUserAction * PrevUserAction = FUserAction;
     // try
     {
-      BOOST_SCOPE_EXIT ( (&Self) (&PrevUserAction) )
+      BOOST_SCOPE_EXIT ( (Self) (PrevUserAction) )
       {
         Self->FUserAction = PrevUserAction;
         SAFE_DESTROY(Self->FException);

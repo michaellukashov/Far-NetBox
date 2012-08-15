@@ -65,7 +65,7 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
     TRegistryStorage * SourceStorage = NULL;
     // try
     {
-      BOOST_SCOPE_EXIT ( (&Storage) (&ExportData) (&SourceStorage) )
+      BOOST_SCOPE_EXIT ( (Storage) (ExportData) (SourceStorage) )
       {
         delete Storage;
         delete ExportData;

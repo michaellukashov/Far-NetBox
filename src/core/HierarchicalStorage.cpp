@@ -209,7 +209,7 @@ void __fastcall THierarchicalStorage::ClearSubKeys()
   TStringList *SubKeys = new TStringList();
   // try
   {
-    BOOST_SCOPE_EXIT ( (&SubKeys) )
+    BOOST_SCOPE_EXIT ( (SubKeys) )
     {
       delete SubKeys;
     } BOOST_SCOPE_EXIT_END
@@ -243,7 +243,7 @@ bool __fastcall THierarchicalStorage::HasSubKeys()
   TStrings * SubKeys = new TStringList();
   // try
   {
-    BOOST_SCOPE_EXIT ( (&SubKeys) )
+    BOOST_SCOPE_EXIT ( (SubKeys) )
     {
       delete SubKeys;
     } BOOST_SCOPE_EXIT_END
@@ -280,7 +280,7 @@ void __fastcall THierarchicalStorage::ReadValues(Classes::TStrings* Strings,
   TStrings * Names = new TStringList();
   // try
   {
-    BOOST_SCOPE_EXIT ( (&Names) )
+    BOOST_SCOPE_EXIT ( (Names) )
     {
       delete Names;
     } BOOST_SCOPE_EXIT_END
@@ -311,7 +311,7 @@ void __fastcall THierarchicalStorage::ClearValues()
   TStrings * Names = new TStringList();
   // try
   {
-    BOOST_SCOPE_EXIT ( (&Names) )
+    BOOST_SCOPE_EXIT ( (Names) )
     {
       delete Names;
     } BOOST_SCOPE_EXIT_END
@@ -474,7 +474,7 @@ bool __fastcall TRegistryStorage::Copy(TRegistryStorage * Storage)
   TStrings * Names = new TStringList();
   // try
   {
-    BOOST_SCOPE_EXIT ( (&Names) )
+    BOOST_SCOPE_EXIT ( (Names) )
     {
       delete Names;
     } BOOST_SCOPE_EXIT_END
@@ -756,7 +756,7 @@ bool __fastcall TCustomIniFileStorage::DoOpenSubKey(const UnicodeString SubKey, 
     TStringList * Sections = new TStringList();
     // try
     {
-      BOOST_SCOPE_EXIT ( (&Sections) )
+      BOOST_SCOPE_EXIT ( (Sections) )
       {
         delete Sections;
       } BOOST_SCOPE_EXIT_END
@@ -805,7 +805,7 @@ void __fastcall TCustomIniFileStorage::GetSubKeyNames(Classes::TStrings* Strings
   TStrings * Sections = new TStringList();
   // try
   {
-    BOOST_SCOPE_EXIT ( (&Sections) )
+    BOOST_SCOPE_EXIT ( (Sections) )
     {
       delete Sections;
     } BOOST_SCOPE_EXIT_END
@@ -1094,7 +1094,7 @@ void __fastcall TIniFileStorage::ApplyOverrides()
   TStrings * Sections = new TStringList();
   // try
   {
-    BOOST_SCOPE_EXIT ( (&Sections) )
+    BOOST_SCOPE_EXIT ( (Sections) )
     {
       delete Sections;
     } BOOST_SCOPE_EXIT_END
@@ -1114,7 +1114,7 @@ void __fastcall TIniFileStorage::ApplyOverrides()
         TStrings * Names = new TStringList;
         // try
         {
-          BOOST_SCOPE_EXIT ( (&Names) )
+          BOOST_SCOPE_EXIT ( (Names) )
           {
             delete Names;
           } BOOST_SCOPE_EXIT_END
@@ -1202,7 +1202,7 @@ void __fastcall TOptionsIniFile::ReadSection(const UnicodeString Section, TStrin
 
   // try
   {
-    BOOST_SCOPE_EXIT ( (&Strings) )
+    BOOST_SCOPE_EXIT ( (Strings) )
     {
       Strings->EndUpdate();
     } BOOST_SCOPE_EXIT_END

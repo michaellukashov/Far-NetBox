@@ -3047,7 +3047,7 @@ config_read_auth_data(apr_hash_t ** hash,
   WEBDAV_ERR(fs->CreateStorage(Storage));
   // try
   {
-    BOOST_SCOPE_EXIT ( (&Storage) )
+    BOOST_SCOPE_EXIT ( (Storage) )
     {
       delete Storage;
     } BOOST_SCOPE_EXIT_END
@@ -3059,7 +3059,7 @@ config_read_auth_data(apr_hash_t ** hash,
     TStrings * Keys = new TStringList();
     // try
     {
-      BOOST_SCOPE_EXIT ( (&Keys) )
+      BOOST_SCOPE_EXIT ( (Keys) )
       {
         delete Keys;
       } BOOST_SCOPE_EXIT_END
@@ -3104,7 +3104,7 @@ config_write_auth_data(apr_hash_t * hash,
   WEBDAV_ERR(fs->CreateStorage(Storage));
   // try
   {
-    BOOST_SCOPE_EXIT ( (&Storage) )
+    BOOST_SCOPE_EXIT ( (Storage) )
     {
       delete Storage;
     } BOOST_SCOPE_EXIT_END
@@ -9009,9 +9009,9 @@ session_open(
       WEBDAV_ERR(parse_ne_uri(&corrected_URI, webdav_URL, sesspool));
       if (corrected_URI->path) ne_free(corrected_URI->path);
       corrected_URI->path = (char *)strdup(corrected_url);
-      corrected_url = neon_uri_unparse(corrected_URI, sesspool);
+      corrected_url = neon_uri_unparse(corrected_URI, pool);
     }
-    *corrected_url_p = uri_canonicalize(corrected_url, sesspool);
+    *corrected_url_p = uri_canonicalize(corrected_url, pool);
     webdav_pool_destroy(sesspool);
     return WEBDAV_NO_ERROR;
   }
@@ -12138,13 +12138,13 @@ neon_open(
       baton->file = _fsopen(neon_debug_file_name, "w", SH_DENYWR);
       if (baton->file)
       {
-        debug = NE_DBG_HTTP | // NE_DBG_XML | // NE_DBG_HTTPAUTH |
+        debug = NE_DBG_HTTP | 
+                // NE_DBG_XML | NE_DBG_HTTPAUTH |
                 NE_DBG_HTTPPLAIN |
                 // NE_DBG_XMLPARSE |
                 NE_DBG_HTTPBODY |
                 // NE_DBG_SSL |
                 NE_DBG_FLUSH;
-        // ne_debug_init(stderr, debug);
         ne_debug_init(baton->file, debug);
       }
       apr_pool_cleanup_register(pool, baton,
@@ -13383,7 +13383,7 @@ void __fastcall TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
     // try
     {
 #ifdef _MSC_VER
-      BOOST_SCOPE_EXIT ( (&OperationProgress) (&FileName) (&Success) (&OnceDoneOperation) )
+      BOOST_SCOPE_EXIT ( (OperationProgress) (&FileName) (&Success) (&OnceDoneOperation) )
       {
         OperationProgress->Finish(FileName, Success, OnceDoneOperation);
       } BOOST_SCOPE_EXIT_END
@@ -13601,9 +13601,8 @@ void __fastcall TWebDAVFileSystem::WebDAVSource(const UnicodeString FileName,
 
       TFileTransferData UserData;
 
-      unsigned int TransferType = 2; // OperationProgress->AsciiTransfer = false
-
       {
+        unsigned int TransferType = 2; // OperationProgress->AsciiTransfer = false
         // ignore file list
         TWebDAVFileListHelper Helper(this, NULL, true);
 
@@ -13756,7 +13755,7 @@ void __fastcall TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString Dir
       // try
       {
 #ifdef _MSC_VER
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
           Self->FTerminal->SetExceptionOnFail(false);
         } BOOST_SCOPE_EXIT_END
@@ -13827,7 +13826,7 @@ void __fastcall TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
     // try
     {
 #ifdef _MSC_VER
-      BOOST_SCOPE_EXIT ( (&Self) (&OperationProgress) (&FileName) (&Success) (&OnceDoneOperation) )
+      BOOST_SCOPE_EXIT ( (Self) (OperationProgress) (&FileName) (&Success) (&OnceDoneOperation) )
       {
         OperationProgress->Finish(FileName, Success, OnceDoneOperation);
         Self->FTerminal->SetExceptionOnFail(false);
@@ -14078,9 +14077,9 @@ void __fastcall TWebDAVFileSystem::Sink(const UnicodeString FileName,
       {
         FilePath = L"/";
       }
-      unsigned int TransferType = 2; // OperationProgress->AsciiTransfer = false
 
       {
+        unsigned int TransferType = 2; // OperationProgress->AsciiTransfer = false
         // ignore file list
         TWebDAVFileListHelper Helper(this, NULL, true);
 
@@ -14814,7 +14813,7 @@ webdav::error_t TWebDAVFileSystem::AskForUserPassword(
   TSessionData * Data = FTerminal->GetSessionData();
   UnicodeString Password = Data->GetPassword();
   if (!FTerminal->PromptUser(Data, pkPassword, LoadStr(PASSWORD_TITLE), L"",
-                            LoadStr(PASSWORD_PROMPT), true, 0, Password))
+                            LoadStr(PASSWORD_PROMPT), false, 0, Password))
   {
     return WEBDAV_ERR_CANCELLED;
   }
@@ -14834,7 +14833,7 @@ webdav::error_t TWebDAVFileSystem::AskForPassphrase(
   UnicodeString Passphrase = Data->GetUserNameExpanded();
   UnicodeString Prompt = FORMAT(LoadStr(PROMPT_KEY_PASSPHRASE), UnicodeString(realm));
   if (!FTerminal->PromptUser(Data, pkPassphrase, LoadStr(PASSPHRASE_TITLE), L"",
-                            Prompt, true, 0, Passphrase))
+                            Prompt, false, 0, Passphrase))
   {
     return WEBDAV_ERR_CANCELLED;
   }
@@ -14855,7 +14854,7 @@ webdav::error_t TWebDAVFileSystem::SimplePrompt(
   // try
   {
 #ifdef _MSC_VER
-    BOOST_SCOPE_EXIT ( (&MoreMessages) )
+    BOOST_SCOPE_EXIT ( (MoreMessages) )
     {
       delete MoreMessages;
     } BOOST_SCOPE_EXIT_END

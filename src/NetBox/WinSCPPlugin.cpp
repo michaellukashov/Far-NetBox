@@ -122,7 +122,7 @@ bool __fastcall TWinSCPPlugin::ConfigureEx(int /*Item*/)
   TFarMenuItems * MenuItems = new TFarMenuItems();
   // try
   {
-    BOOST_SCOPE_EXIT ( (&MenuItems) )
+    BOOST_SCOPE_EXIT ( (MenuItems) )
     {
       delete MenuItems;
     } BOOST_SCOPE_EXIT_END
@@ -348,7 +348,7 @@ TCustomFarFileSystem * __fastcall TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom,
         TSessionData * Session = NULL;
         THierarchicalStorage * ImportStorage = NULL;
         {
-          BOOST_SCOPE_EXIT ( (&ImportStorage) (&Session) )
+          BOOST_SCOPE_EXIT ( (ImportStorage) (Session) )
           {
             delete ImportStorage;
             delete Session;
@@ -395,7 +395,7 @@ void __fastcall TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
   TFarMenuItems * MenuItems = new TFarMenuItems();
   // try
   {
-    BOOST_SCOPE_EXIT ( (&MenuItems) )
+    BOOST_SCOPE_EXIT ( (MenuItems) )
     {
       delete MenuItems;
     } BOOST_SCOPE_EXIT_END
@@ -637,7 +637,7 @@ int __fastcall TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
   TStrings * ButtonLabels = new TStringList();
   // try
   {
-    BOOST_SCOPE_EXIT ( (&ButtonLabels) )
+    BOOST_SCOPE_EXIT ( (ButtonLabels) )
     {
       delete ButtonLabels;
     } BOOST_SCOPE_EXIT_END
@@ -702,7 +702,7 @@ int __fastcall TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
         } \
         if (NeverAskAgainPending && CANNEVERASK) \
         { \
-          ButtonLabels->PutObject(ButtonLabels->GetCount() - 1, (TObject *)true); \
+          ButtonLabels->PutObject(ButtonLabels->GetCount() - 1, reinterpret_cast<TObject *>((size_t)true)); \
           NeverAskAgainPending = false; \
         } \
       }
