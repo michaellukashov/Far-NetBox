@@ -1177,7 +1177,7 @@ void __fastcall TRemoteFile::SetListingStr(UnicodeString value)
             Word CurrMonth, CurrDay;
             Hour = (Word)StrToInt(Col.SubString(1, P-1));
             Min = (Word)StrToInt(Col.SubString(P+1, Col.Length() - P));
-            if (Hour > 23 || Hour > 59) Abort();
+            if (Hour > 23 || Min > 59) Abort();
             // When we don't got year, we assume current year
             // with exception that the date would be in future
             // in this case we assume last year.
