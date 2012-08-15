@@ -14813,7 +14813,7 @@ webdav::error_t TWebDAVFileSystem::AskForUserPassword(
   TSessionData * Data = FTerminal->GetSessionData();
   UnicodeString Password = Data->GetPassword();
   if (!FTerminal->PromptUser(Data, pkPassword, LoadStr(PASSWORD_TITLE), L"",
-                            LoadStr(PASSWORD_PROMPT), true, 0, Password))
+                            LoadStr(PASSWORD_PROMPT), false, 0, Password))
   {
     return WEBDAV_ERR_CANCELLED;
   }
@@ -14833,7 +14833,7 @@ webdav::error_t TWebDAVFileSystem::AskForPassphrase(
   UnicodeString Passphrase = Data->GetUserNameExpanded();
   UnicodeString Prompt = FORMAT(LoadStr(PROMPT_KEY_PASSPHRASE), UnicodeString(realm));
   if (!FTerminal->PromptUser(Data, pkPassphrase, LoadStr(PASSPHRASE_TITLE), L"",
-                            Prompt, true, 0, Passphrase))
+                            Prompt, false, 0, Passphrase))
   {
     return WEBDAV_ERR_CANCELLED;
   }
