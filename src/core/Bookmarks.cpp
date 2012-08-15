@@ -55,7 +55,7 @@ void __fastcall TBookmarks::Load(THierarchicalStorage * Storage)
       TStrings * BookmarkKeys = new TStringList();
       // try
       {
-        BOOST_SCOPE_EXIT ( (&BookmarkKeys) )
+        BOOST_SCOPE_EXIT ( (BookmarkKeys) )
         {
           delete BookmarkKeys;
         } BOOST_SCOPE_EXIT_END
@@ -102,7 +102,7 @@ void __fastcall TBookmarks::LoadLevel(THierarchicalStorage * Storage, const Unic
   TStrings * Names = new TStringList();
   // try
   {
-    BOOST_SCOPE_EXIT ( (&Names) )
+    BOOST_SCOPE_EXIT ( (Names) )
     {
       delete Names;
     } BOOST_SCOPE_EXIT_END

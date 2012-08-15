@@ -741,7 +741,7 @@ void __fastcall TSecureShell::FromBackend(bool IsStdErr, const unsigned char * D
         FFrozen = true;
         // try
         {
-          BOOST_SCOPE_EXIT ( (&Self) )
+          BOOST_SCOPE_EXIT ( (Self) )
           {
             Self->FFrozen = false;
           } BOOST_SCOPE_EXIT_END
@@ -792,7 +792,7 @@ Integer __fastcall TSecureShell::Receive(unsigned char * Buf, Integer Len)
 
     // try
     {
-      BOOST_SCOPE_EXIT ( (&OutPtr) )
+      BOOST_SCOPE_EXIT ( (OutPtr) )
       {
         OutPtr = NULL;
       } BOOST_SCOPE_EXIT_END
@@ -913,7 +913,7 @@ unsigned int __fastcall TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolE
   unsigned int Answer;
   // try
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
       Self->FWaiting--;
     } BOOST_SCOPE_EXIT_END
@@ -1937,7 +1937,7 @@ void __fastcall TSecureShell::VerifyHostKey(UnicodeString Host, int Port,
       Exception * E = new Exception(LoadStr(KEY_NOT_VERIFIED));
       // try
       {
-        BOOST_SCOPE_EXIT ( (&E) )
+        BOOST_SCOPE_EXIT ( (E) )
         {
           delete E;
         } BOOST_SCOPE_EXIT_END

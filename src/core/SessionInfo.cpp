@@ -741,7 +741,7 @@ void __fastcall TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
         BeginUpdate();
         // try
         {
-          BOOST_SCOPE_EXIT ( (&Self) )
+          BOOST_SCOPE_EXIT ( (Self) )
           {
             Self->DeleteUnnecessary();
             Self->EndUpdate();
@@ -865,7 +865,7 @@ void __fastcall TSessionLog::DeleteUnnecessary()
   BeginUpdate();
   // try
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
         Self->EndUpdate();
     } BOOST_SCOPE_EXIT_END
@@ -914,7 +914,7 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
   // try
   {
 #ifdef _MSC_VER
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
       Self->DeleteUnnecessary();
 
@@ -929,7 +929,7 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
     // try
     {
 #ifdef _MSC_VER
-      BOOST_SCOPE_EXIT ( (&Storage) )
+      BOOST_SCOPE_EXIT ( (Storage) )
       {
         delete Storage;
       } BOOST_SCOPE_EXIT_END
@@ -1218,7 +1218,7 @@ void __fastcall TActionLog::AddFailure(Exception * E)
     // try
     {
 #ifdef _MSC_VER
-      BOOST_SCOPE_EXIT ( (&Messages) )
+      BOOST_SCOPE_EXIT ( (Messages) )
       {
         delete Messages;
       } BOOST_SCOPE_EXIT_END

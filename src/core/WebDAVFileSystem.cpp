@@ -3047,7 +3047,7 @@ config_read_auth_data(apr_hash_t ** hash,
   WEBDAV_ERR(fs->CreateStorage(Storage));
   // try
   {
-    BOOST_SCOPE_EXIT ( (&Storage) )
+    BOOST_SCOPE_EXIT ( (Storage) )
     {
       delete Storage;
     } BOOST_SCOPE_EXIT_END
@@ -3059,7 +3059,7 @@ config_read_auth_data(apr_hash_t ** hash,
     TStrings * Keys = new TStringList();
     // try
     {
-      BOOST_SCOPE_EXIT ( (&Keys) )
+      BOOST_SCOPE_EXIT ( (Keys) )
       {
         delete Keys;
       } BOOST_SCOPE_EXIT_END
@@ -3104,7 +3104,7 @@ config_write_auth_data(apr_hash_t * hash,
   WEBDAV_ERR(fs->CreateStorage(Storage));
   // try
   {
-    BOOST_SCOPE_EXIT ( (&Storage) )
+    BOOST_SCOPE_EXIT ( (Storage) )
     {
       delete Storage;
     } BOOST_SCOPE_EXIT_END
@@ -13383,7 +13383,7 @@ void __fastcall TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
     // try
     {
 #ifdef _MSC_VER
-      BOOST_SCOPE_EXIT ( (&OperationProgress) (&FileName) (&Success) (&OnceDoneOperation) )
+      BOOST_SCOPE_EXIT ( (OperationProgress) (&FileName) (&Success) (&OnceDoneOperation) )
       {
         OperationProgress->Finish(FileName, Success, OnceDoneOperation);
       } BOOST_SCOPE_EXIT_END
@@ -13755,7 +13755,7 @@ void __fastcall TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString Dir
       // try
       {
 #ifdef _MSC_VER
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
           Self->FTerminal->SetExceptionOnFail(false);
         } BOOST_SCOPE_EXIT_END
@@ -13826,7 +13826,7 @@ void __fastcall TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
     // try
     {
 #ifdef _MSC_VER
-      BOOST_SCOPE_EXIT ( (&Self) (&OperationProgress) (&FileName) (&Success) (&OnceDoneOperation) )
+      BOOST_SCOPE_EXIT ( (Self) (OperationProgress) (&FileName) (&Success) (&OnceDoneOperation) )
       {
         OperationProgress->Finish(FileName, Success, OnceDoneOperation);
         Self->FTerminal->SetExceptionOnFail(false);
@@ -14854,7 +14854,7 @@ webdav::error_t TWebDAVFileSystem::SimplePrompt(
   // try
   {
 #ifdef _MSC_VER
-    BOOST_SCOPE_EXIT ( (&MoreMessages) )
+    BOOST_SCOPE_EXIT ( (MoreMessages) )
     {
       delete MoreMessages;
     } BOOST_SCOPE_EXIT_END

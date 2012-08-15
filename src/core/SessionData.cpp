@@ -1005,7 +1005,7 @@ void __fastcall TSessionData::Remove()
   THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
   // try
   {
-    BOOST_SCOPE_EXIT ( (&Storage) )
+    BOOST_SCOPE_EXIT ( (Storage) )
     {
       delete Storage;
     } BOOST_SCOPE_EXIT_END
@@ -1278,7 +1278,7 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
       TRegistryStorage * OptionsStorage = NULL;
       // try
       {
-        BOOST_SCOPE_EXIT ( (&RawSettings) (&OptionsStorage) )
+        BOOST_SCOPE_EXIT ( (RawSettings) (OptionsStorage) )
         {
           delete RawSettings;
           delete OptionsStorage;
@@ -2562,7 +2562,7 @@ void __fastcall TStoredSessionList::Load(THierarchicalStorage * Storage,
   TList * Loaded = new TList;
   // try
   {
-    BOOST_SCOPE_EXIT ( (&SubKeys) (&Loaded) )
+    BOOST_SCOPE_EXIT ( (SubKeys) (Loaded) )
     {
       delete SubKeys;
       delete Loaded;
@@ -2634,7 +2634,7 @@ void __fastcall TStoredSessionList::Load()
   THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
   // try
   {
-    BOOST_SCOPE_EXIT ( (&Storage) )
+    BOOST_SCOPE_EXIT ( (Storage) )
     {
       delete Storage;
     } BOOST_SCOPE_EXIT_END
@@ -2674,7 +2674,7 @@ void __fastcall TStoredSessionList::DoSave(THierarchicalStorage * Storage,
   TSessionData * FactoryDefaults = new TSessionData(L"");
   // try
   {
-    BOOST_SCOPE_EXIT ( (&FactoryDefaults) )
+    BOOST_SCOPE_EXIT ( (FactoryDefaults) )
     {
       delete FactoryDefaults;
     } BOOST_SCOPE_EXIT_END
@@ -2703,7 +2703,7 @@ void __fastcall TStoredSessionList::DoSave(bool All, bool Explicit, bool Recrypt
   THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
   // try
   {
-    BOOST_SCOPE_EXIT ( (&Storage) )
+    BOOST_SCOPE_EXIT ( (Storage) )
     {
       delete Storage;
     } BOOST_SCOPE_EXIT_END
@@ -2750,7 +2750,7 @@ void __fastcall TStoredSessionList::Export(const UnicodeString FileName)
   THierarchicalStorage * Storage = new TIniFileStorage(FileName);
   // try
   {
-    BOOST_SCOPE_EXIT ( (&Storage) )
+    BOOST_SCOPE_EXIT ( (Storage) )
     {
       delete Storage;
     } BOOST_SCOPE_EXIT_END
@@ -2812,7 +2812,7 @@ void __fastcall TStoredSessionList::Cleanup()
     TRegistryStorage * Storage = new TRegistryStorage(Configuration->GetRegistryStorageKey());
     // try
     {
-      BOOST_SCOPE_EXIT ( (&Storage) )
+      BOOST_SCOPE_EXIT ( (Storage) )
       {
         delete Storage;
       } BOOST_SCOPE_EXIT_END
@@ -2965,7 +2965,7 @@ void __fastcall TStoredSessionList::ImportHostKeys(const UnicodeString TargetKey
   TStringList * KeyList = NULL;
   // try
   {
-    BOOST_SCOPE_EXIT ( (&SourceStorage) (&TargetStorage) (&KeyList) )
+    BOOST_SCOPE_EXIT ( (SourceStorage) (TargetStorage) (KeyList) )
     {
       delete SourceStorage;
       delete TargetStorage;
@@ -3051,7 +3051,7 @@ void __fastcall TStoredSessionList::Load(const UnicodeString aKey, bool UseDefau
 {
   TRegistryStorage * Storage = new TRegistryStorage(aKey);
   {
-    BOOST_SCOPE_EXIT ( (&Storage) )
+    BOOST_SCOPE_EXIT ( (Storage) )
     {
       delete Storage;
     } BOOST_SCOPE_EXIT_END

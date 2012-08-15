@@ -438,7 +438,7 @@ const TFileSystemInfo & __fastcall TSCPFileSystem::GetFileSystemInfo(bool Retrie
     FTerminal->SetExceptionOnFail(true);
     // try
     {
-      BOOST_SCOPE_EXIT ( (&Self) )
+      BOOST_SCOPE_EXIT ( (Self) )
       {
         Self->FTerminal->SetExceptionOnFail(false);
       } BOOST_SCOPE_EXIT_END
@@ -675,7 +675,7 @@ void __fastcall TSCPFileSystem::ReadCommandOutput(int Params, const UnicodeStrin
 {
   // try
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
       Self->FProcessingCommand = false;
     } BOOST_SCOPE_EXIT_END
@@ -755,7 +755,7 @@ void __fastcall TSCPFileSystem::ExecCommand(const UnicodeString & Cmd, int Param
   }
   // try
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
       if (Self->FTerminal->GetUseBusyCursor())
       {
@@ -956,7 +956,7 @@ void __fastcall TSCPFileSystem::ClearAliases()
     TStrings * CommandList = FCommandSet->CreateCommandList();
     // try
     {
-      BOOST_SCOPE_EXIT ( (&CommandList) )
+      BOOST_SCOPE_EXIT ( (CommandList) )
       {
         delete CommandList;
       } BOOST_SCOPE_EXIT_END
@@ -1084,7 +1084,7 @@ void __fastcall TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         TStringList * OutputCopy = new TStringList();
         // try
         {
-          BOOST_SCOPE_EXIT ( (&OutputCopy) )
+          BOOST_SCOPE_EXIT ( (OutputCopy) )
           {
             delete OutputCopy;
           } BOOST_SCOPE_EXIT_END
@@ -1405,7 +1405,7 @@ void __fastcall TSCPFileSystem::AnyCommand(const UnicodeString Command,
   }
   // try
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
       Self->FOnCaptureOutput = NULL;
       Self->FSecureShell->SetOnCaptureOutput(NULL);
@@ -1531,7 +1531,7 @@ void __fastcall TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
 
   // try
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&GotLastLine) (&CopyBatchStarted)
+    BOOST_SCOPE_EXIT ( (Self) (&GotLastLine) (&CopyBatchStarted)
       (&Failed) )
     {
       // Tell remote side, that we're done.
@@ -1785,7 +1785,7 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString FileName,
   TSafeHandleStream * Stream = new TSafeHandleStream(File);
   // try
   {
-    BOOST_SCOPE_EXIT ( (&File) (&Stream) )
+    BOOST_SCOPE_EXIT ( (File) (&Stream) )
     {
       if (File != NULL)
       {
@@ -2094,7 +2094,7 @@ void __fastcall TSCPFileSystem::SCPDirectorySource(const UnicodeString Directory
 
   // try
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&DirectoryName) )
+    BOOST_SCOPE_EXIT ( (Self) (&DirectoryName) )
     {
       if (Self->FTerminal->GetActive())
       {
@@ -2211,7 +2211,7 @@ void __fastcall TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
 
   // try
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&CloseSCP) (&OperationProgress) )
+    BOOST_SCOPE_EXIT ( (Self) (&CloseSCP) (OperationProgress) )
     {
       // In case that copying doesn't cause fatal error (ie. connection is
       // still active) but wasn't succesful (exception or user termination)
@@ -2274,7 +2274,7 @@ void __fastcall TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
             FTerminal->SetExceptionOnFail(true);
             // try
             {
-              BOOST_SCOPE_EXIT ( (&Self) )
+              BOOST_SCOPE_EXIT ( (Self) )
               {
                 Self->FTerminal->SetExceptionOnFail(false);
               } BOOST_SCOPE_EXIT_END
@@ -2583,7 +2583,7 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
 
             // try
             {
-              BOOST_SCOPE_EXIT ( (&File) (&FileStream) )
+              BOOST_SCOPE_EXIT ( (&File) (FileStream) )
               {
                 if (File) { CloseHandle(File); }
                 if (FileStream) { delete FileStream; }

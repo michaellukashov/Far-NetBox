@@ -125,7 +125,7 @@ void __fastcall TFarDialog::SetBounds(TRect value)
     LockChanges();
     // try
     {
-      BOOST_SCOPE_EXIT ( (&Self) )
+      BOOST_SCOPE_EXIT ( (Self) )
       {
         Self->UnlockChanges();
       } BOOST_SCOPE_EXIT_END
@@ -748,7 +748,7 @@ int __fastcall TFarDialog::ShowModal()
   // try
   {
     HANDLE dlg = INVALID_HANDLE_VALUE;
-    BOOST_SCOPE_EXIT ( (&Self) (&PrevTopDialog) (&dlg) )
+    BOOST_SCOPE_EXIT ( (Self) (PrevTopDialog) (dlg) )
     {
       Self->GetFarPlugin()->FTopDialog = PrevTopDialog;
       if (dlg != INVALID_HANDLE_VALUE)
@@ -832,7 +832,7 @@ void __fastcall TFarDialog::Change()
     TList * NotifiedContainers = new TList();
     // try
     {
-      BOOST_SCOPE_EXIT ( (&NotifiedContainers) )
+      BOOST_SCOPE_EXIT ( (NotifiedContainers) )
       {
         delete NotifiedContainers;
       } BOOST_SCOPE_EXIT_END
@@ -894,7 +894,7 @@ void __fastcall TFarDialog::ProcessGroup(int Group, TFarProcessGroupEvent Callba
   LockChanges();
   // try
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
       Self->UnlockChanges();
     } BOOST_SCOPE_EXIT_END
@@ -960,7 +960,7 @@ void __fastcall TFarDialog::UnlockChanges()
   if (FChangesLocked == 0)
   {
     // try
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
       if (Self->GetHandle())
       {
@@ -2200,7 +2200,7 @@ void __fastcall TFarList::Put(int Index, const UnicodeString S)
     FNoDialogUpdate = true;
     // try
     {
-      BOOST_SCOPE_EXIT ( (&Self) )
+      BOOST_SCOPE_EXIT ( (Self) )
       {
         Self->FNoDialogUpdate = false;
       } BOOST_SCOPE_EXIT_END
@@ -2269,7 +2269,7 @@ void __fastcall TFarList::Changed()
       GetDialogItem()->GetDialog()->LockChanges();
       // try
       {
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
           Self->GetDialogItem()->GetDialog()->UnlockChanges();
         } BOOST_SCOPE_EXIT_END
