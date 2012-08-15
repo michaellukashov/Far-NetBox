@@ -9009,9 +9009,9 @@ session_open(
       WEBDAV_ERR(parse_ne_uri(&corrected_URI, webdav_URL, sesspool));
       if (corrected_URI->path) ne_free(corrected_URI->path);
       corrected_URI->path = (char *)strdup(corrected_url);
-      corrected_url = neon_uri_unparse(corrected_URI, sesspool);
+      corrected_url = neon_uri_unparse(corrected_URI, pool);
     }
-    *corrected_url_p = uri_canonicalize(corrected_url, sesspool);
+    *corrected_url_p = uri_canonicalize(corrected_url, pool);
     webdav_pool_destroy(sesspool);
     return WEBDAV_NO_ERROR;
   }
