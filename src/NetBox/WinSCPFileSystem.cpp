@@ -1704,7 +1704,7 @@ void __fastcall TWinSCPFileSystem::FullSynchronize(bool Source)
       }
 #endif
 
-      if (Checklist->GetCount() == 0)
+      if (Checklist && Checklist->GetCount() == 0)
       {
         MoreMessageDialog(GetMsg(COMPARE_NO_DIFFERENCES), NULL,
            qtInformation, qaOK);
