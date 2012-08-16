@@ -13621,25 +13621,6 @@ void __fastcall TWebDAVFileSystem::WebDAVSource(const UnicodeString FileName,
       UnicodeString DestFullName = TargetDir + UserData.FileName;
       // only now, we know the final destination
       Action.Destination(DestFullName);
-
-      /* TODO: implement setting datetime
-      // we are not able to tell if setting timestamp succeeded,
-      // so we log it always (if supported)
-      if (FFileTransferPreserveTime && FMfmt)
-      {
-        // Inspired by SysUtils::FileAge
-        WIN32_FIND_DATA FindData;
-        HANDLE Handle = FindFirstFile(DestFullName.c_str(), &FindData);
-        if (Handle != INVALID_HANDLE_VALUE)
-        {
-          TTouchSessionAction TouchAction(FTerminal->GetActionLog(), DestFullName,
-            UnixToDateTime(
-              ConvertTimestampToUnixSafe(FindData.ftLastWriteTime, dstmUnix),
-              dstmUnix));
-          FindClose(Handle);
-        }
-      }
-      */
     }
 
     /* TODO : Delete also read-only files. */
@@ -13986,15 +13967,6 @@ void __fastcall TWebDAVFileSystem::Sink(const UnicodeString FileName,
         {
           THROW_SKIP_FILE_NULL;
         }
-        /*if (Attrs == -1)
-        {
-          Attrs = faDirectory;
-        }
-        {
-          FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
-            THROWOSIFFALSE(FileSetAttr(DestFullName, Attrs & ~faArchive) == 0);
-          );
-        }*/
         // set time
         {
           FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
