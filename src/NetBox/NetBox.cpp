@@ -212,13 +212,6 @@ extern "C"
     assert(!Processes);
     Processes++;
     InitExtensionModule(HInstance);
-    WSADATA wsaData;
-    int err = WSAStartup(MAKEWORD(2, 2), &wsaData);
-    if (err != 0)
-    {
-      // printf("WSAStartup failed with error: %d\n", err);
-      return FALSE;
-    }
    // DEBUG_PRINTF(L"DllProcessAttach: end");
     return TRUE;
   }
@@ -234,7 +227,6 @@ extern "C"
       assert(FarPlugin);
       SAFE_DESTROY(FarPlugin);
       TermExtensionModule();
-      WSACleanup();
     }
     // DEBUG_PRINTF(L"DllProcessDetach: end");
     return TRUE;
