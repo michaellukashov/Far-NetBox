@@ -267,7 +267,6 @@ TiXmlElement * TXmlStorage::FindElement(const UnicodeString Name)
        Element != NULL; Element = Element->NextSiblingElement())
   {
     UnicodeString name = ToUnicodeString(Element->ValueStr());
-    // DEBUG_PRINTF(L"name = %s", name.c_str());
     if (name == Name)
     {
       return const_cast<TiXmlElement *>(Element);
@@ -365,7 +364,6 @@ __int64 TXmlStorage::ReadInt64(const UnicodeString Name, __int64 Default)
 UnicodeString TXmlStorage::ReadStringRaw(const UnicodeString Name, const UnicodeString Default)
 {
   UnicodeString Result = GetSubKeyText(Name);
-  DEBUG_PRINTF(L"Name = %s, Result = %s", Name.c_str(), Result.c_str());
   return Result.IsEmpty() ? Default : Result;
 }
 //---------------------------------------------------------------------------

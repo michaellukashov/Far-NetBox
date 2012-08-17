@@ -319,6 +319,13 @@ private:
   void /* __fastcall */ TerminalShowExtendedException(TTerminal * Terminal,
     Exception * E, void * Arg);
   void /* __fastcall */ TerminalDeleteLocalFile(const UnicodeString & FileName, bool Alternative);
+  HANDLE /* __fastcall */ TerminalCreateLocalFile(const UnicodeString & LocalFileName,
+    DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
+  DWORD /* __fastcall */ TerminalGetLocalFileAttributes(const UnicodeString & LocalFileName);
+  BOOL /* __fastcall */ TerminalSetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes);
+  BOOL /* __fastcall */ TerminalMoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags);
+  BOOL /* __fastcall */ TerminalRemoveLocalDirectory(const UnicodeString & LocalDirName);
+  BOOL /* __fastcall */ TerminalCreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
   void /* __fastcall */ OperationProgress(
     TFileOperationProgressType & ProgressData, TCancelStatus & Cancel);
   void /* __fastcall */ OperationFinished(TFileOperation Operation,

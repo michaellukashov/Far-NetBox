@@ -378,8 +378,6 @@ double StrToFloatDef(const UnicodeString Value, double defval)
 //---------------------------------------------------------------------------
 UnicodeString FormatFloat(const UnicodeString Format, double value)
 {
-  // DEBUG_PRINTF(L"Format = %s", Format.c_str());
-  // #,##0 "B"
   UnicodeString result(20, 0);
   swprintf_s(&result[1], result.Length(), L"%.2f", value);
   return result.c_str();
@@ -393,7 +391,6 @@ TTimeStamp DateTimeToTimeStamp(TDateTime DateTime)
   fractpart = modf(DateTime, &intpart);
   result.Time = static_cast<int>(fractpart * MSecsPerDay);
   result.Date = static_cast<int>(intpart + DateDelta);
-  // DEBUG_PRINTF(L"DateTime = %f, time = %u, Date = %u", DateTime, result.Time, result.Date);
   return result;
 }
 
@@ -402,7 +399,6 @@ TTimeStamp DateTimeToTimeStamp(TDateTime DateTime)
 __int64 FileRead(HANDLE Handle, void * Buffer, __int64 Count)
 {
   __int64 Result = -1;
-  // DEBUG_PRINTF(L"Handle = %d, Count = %d", Handle, Count);
   DWORD res = 0;
   if (::ReadFile(Handle, reinterpret_cast<LPVOID>(Buffer), static_cast<DWORD>(Count), &res, NULL))
   {
@@ -412,7 +408,6 @@ __int64 FileRead(HANDLE Handle, void * Buffer, __int64 Count)
   {
     Result = -1;
   }
-  // DEBUG_PRINTF(L"Result = %d, Handle = %d, Count = %d", (int)Result, Handle, Count);
   return Result;
 }
 
@@ -428,7 +423,6 @@ __int64 FileWrite(HANDLE Handle, const void * Buffer, __int64 Count)
   {
     Result = -1;
   }
-  // DEBUG_PRINTF(L" Result = %d, Handle = %d, Count = %d", (int)Result, Handle, Count);
   return Result;
 }
 
@@ -447,14 +441,12 @@ bool RenameFile(const UnicodeString from, const UnicodeString to)
 
 bool DirectoryExists(const UnicodeString filename)
 {
-  // DEBUG_PRINTF(L"filename = %s", filename.c_str());
   if ((filename == THISDIRECTORY) || (filename == PARENTDIRECTORY))
   {
     return true;
   }
 
   int attr = GetFileAttributes(filename.c_str());
-  // DEBUG_PRINTF(L"attr = %d, FILE_ATTRIBUTE_DIRECTORY = %d", attr, FILE_ATTRIBUTE_DIRECTORY);
 
   if ((attr != 0xFFFFFFFF) && FLAGSET(attr, FILE_ATTRIBUTE_DIRECTORY))
   {
@@ -465,7 +457,6 @@ bool DirectoryExists(const UnicodeString filename)
 
 UnicodeString FileSearch(const UnicodeString FileName, const UnicodeString DirectoryList)
 {
-  // DEBUG_PRINTF(L"FileName = %s, DirectoryList = %s", FileName.c_str(), DirectoryList.c_str());
   size_t i;
   UnicodeString Temp;
   UnicodeString Result;
@@ -485,7 +476,6 @@ UnicodeString FileSearch(const UnicodeString FileName, const UnicodeString Direc
     {
       Result = Temp.SubString(1, i - 1);
       Temp.Delete(1, i);
-      // DEBUG_PRINTF(L"Result = %s, Temp = %s", Result.c_str(), Temp.c_str());
     }
     else
     {
@@ -500,7 +490,6 @@ UnicodeString FileSearch(const UnicodeString FileName, const UnicodeString Direc
     }
   }
   while (!(Temp.Length() == 0) || (Result.Length() != 0));
-  // DEBUG_PRINTF(L"Result = %s", Result.c_str());
   return Result;
 }
 
@@ -519,7 +508,6 @@ int FileSetAttr(const UnicodeString filename, int attrs)
 
 bool CreateDir(const UnicodeString Dir)
 {
-  // DEBUG_PRINTF(L"Dir = %s", Dir.c_str());
   return ::CreateDirectory(Dir.c_str(), NULL) != 0;
 }
 
@@ -530,14 +518,12 @@ bool RemoveDir(const UnicodeString Dir)
 
 bool ForceDirectories(const UnicodeString Dir)
 {
-  // DEBUG_PRINTF(L"Dir = %s", Dir.c_str());
   bool Result = true;
   if (Dir.IsEmpty())
   {
     return false;
   }
   UnicodeString Dir2 = ExcludeTrailingBackslash(Dir);
-  // DEBUG_PRINTF(L"Dir2 = %s", Dir2.c_str());
   if ((Dir2.Length() < 3) || DirectoryExists(Dir2))
   {
     return Result;
@@ -547,15 +533,12 @@ bool ForceDirectories(const UnicodeString Dir)
     return ::CreateDir(Dir2);
   }
   Result = ForceDirectories(ExtractFilePath(Dir2)) && CreateDir(Dir2);
-  // DEBUG_PRINTF(L"Result = %d", Result);
   return Result;
 }
 
 bool DeleteFile(const UnicodeString File)
 {
-  // DEBUG_PRINTF(L"File = %s, FileExists(File) = %d", File.c_str(), ::FileExists(File));
   ::DeleteFile(File.c_str());
-  // DEBUG_PRINTF(L"FileExists(File) = %d", ::FileExists(File));
   return !::FileExists(File);
 }
 
@@ -614,18 +597,14 @@ AnsiString Format(const char * format, va_list args)
 //---------------------------------------------------------------------------
 UnicodeString FmtLoadStr(int id, ...)
 {
-  // DEBUG_PRINTF(L"begin: id = %d", id)
   UnicodeString result;
   UnicodeString format;
   HINSTANCE hInstance = FarPlugin ? FarPlugin->GetHandle() : GetModuleHandle(0);
-  // DEBUG_PRINTF(L"hInstance = %u", hInstance);
   format.SetLength(255);
   size_t Length = ::LoadString(hInstance, id, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(format.c_str())), static_cast<int>(format.Length()));
   format.SetLength(Length);
-  // DEBUG_PRINTF(L"format = %s", format.c_str());
   if (!Length)
   {
-    // TRACE(_T("Unknown resource string id : %d"), id);
     DEBUG_PRINTF(L"Unknown resource string id: %d\n", id);
   }
   else
@@ -651,7 +630,6 @@ UnicodeString FmtLoadStr(int id, ...)
     va_end(args);
     result = buf;
   }
-  // DEBUG_PRINTF(L"result = %s", result.c_str());
   return result;
 }
 //---------------------------------------------------------------------------
@@ -791,7 +769,6 @@ UnicodeString ExpandEnvVars(const UnicodeString & str)
   wchar_t buf[MAX_PATH];
   unsigned size = ExpandEnvironmentStringsW(str.c_str(), buf, static_cast<DWORD>(sizeof(buf) - 1));
   UnicodeString result = UnicodeString(buf, size - 1);
-  // DEBUG_PRINTF(L"result = %s", result.c_str());
   return result;
 }
 
@@ -1088,7 +1065,6 @@ UnicodeString ExtractFileDir(const UnicodeString str)
 {
   UnicodeString result;
   int Pos = str.LastDelimiter(L"/\\");
-  // DEBUG_PRINTF(L"Pos = %d", Pos);
   // it used to return Path when no slash was found
   if (Pos > 0)
   {
@@ -1104,7 +1080,6 @@ UnicodeString ExtractFileDir(const UnicodeString str)
 UnicodeString ExtractFilePath(const UnicodeString str)
 {
   UnicodeString result = ::ExtractFileDir(str);
-  // DEBUG_PRINTF(L"str = %s, result = %s", str.c_str(), result.c_str());
   return result;
 }
 
@@ -1120,7 +1095,6 @@ UnicodeString GetCurrentDir()
   {
     ::GetCurrentDirectory(sizeof(path), path);
   }
-  // DEBUG_PRINTF(L"path = %s", path);
   result = path;
   return result;
 }
@@ -1248,7 +1222,6 @@ static bool DecodeDateFully(const TDateTime & DateTime,
       Y += 400;
     }
     DivMod(T, D100, I, D);
-    // DEBUG_PRINTF(L"T = %u, D100 = %u, I = %u, D = %u", T, D100, I, D);
     if (I == 4)
     {
       I--;
@@ -1256,10 +1229,8 @@ static bool DecodeDateFully(const TDateTime & DateTime,
     }
     Y += I * 100;
     DivMod(D, D4, I, D);
-    // DEBUG_PRINTF(L"D4 = %u, I = %u, D = %u", D4, I, D);
     Y += I * 4;
     DivMod(D, D1, I, D);
-    // DEBUG_PRINTF(L"D1 = %u, I = %u, D = %u", D1, I, D);
     if (I == 4)
     {
       I--;
@@ -1339,11 +1310,9 @@ TDateTime EncodeDate(int Year, int Month, int Day)
 bool TryEncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec, TDateTime & Time)
 {
   bool Result = false;
-  // DEBUG_PRINTF(L"Hour = %d, Min = %d, Sec = %d, MSec = %d", Hour, Min, Sec, MSec);
   if ((Hour < 24) && (Min < 60) && (Sec < 60) && (MSec < 1000))
   {
     Time = (Hour * 3600000 + Min * 60000 + Sec * 1000 + MSec) / static_cast<double>(MSecsPerDay);
-    // DEBUG_PRINTF(L"Time = %f", Time);
     Result = true;
   }
   return Result;
@@ -1356,7 +1325,6 @@ TDateTime EncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsi
   {
     ::ConvertError(STimeEncodeError);
   }
-  // DEBUG_PRINTF(L"Result = %f", Result);
   return Result;
 }
 TDateTime StrToDateTime(const UnicodeString Value)

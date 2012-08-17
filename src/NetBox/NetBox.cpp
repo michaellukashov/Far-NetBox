@@ -138,25 +138,21 @@ extern "C"
 
   int WINAPI SetDirectoryW(const struct SetDirectoryInfo *Info)
   {
-    DEBUG_PRINTF(L"begin, dir = %s", Info->Dir);
     if (Info->StructSize < sizeof(SetDirectoryInfo))
       return FALSE;
     assert(FarPlugin);
     TFarPluginGuard Guard;
     int result = FarPlugin->SetDirectory(Info);
-    DEBUG_PRINTF(L"end, result = %d", result);
     return result;
   }
 
   int WINAPI MakeDirectoryW(struct MakeDirectoryInfo *Info)
   {
-    DEBUG_PRINTF(L"begin, name = %s", Info->Name);
     if (Info->StructSize < sizeof(MakeDirectoryInfo))
       return FALSE;
     assert(FarPlugin);
     TFarPluginGuard Guard;
     int result = FarPlugin->MakeDirectory(Info);
-    DEBUG_PRINTF(L"end, result = %d", result);
     return result;
   }
 
@@ -180,13 +176,11 @@ extern "C"
 
   int WINAPI PutFilesW(const struct PutFilesInfo *Info)
   {
-    DEBUG_PRINTF(L"begin, srcPath = %s", Info->SrcPath);
     if (Info->StructSize < sizeof(PutFilesInfo))
       return FALSE;
     assert(FarPlugin);
     TFarPluginGuard Guard;
     int result = FarPlugin->PutFiles(Info);
-    DEBUG_PRINTF(L"end, result = %d", result);
     return result;
   }
 
@@ -248,27 +242,17 @@ extern "C"
 //---------------------------------------------------------------------------
   BOOL DllProcessAttach(HINSTANCE HInstance)
   {
-    // DEBUG_PRINTF(L"HInstance= %u", HInstance);
     FarPlugin = CreateFarPlugin(HInstance);
 
     assert(!Processes);
     Processes++;
     InitExtensionModule(HInstance);
-    WSADATA wsaData;
-    int err = WSAStartup(MAKEWORD(2, 2), &wsaData);
-    if (err != 0)
-    {
-      // printf("WSAStartup failed with error: %d\n", err);
-      return FALSE;
-    }
-   // DEBUG_PRINTF(L"DllProcessAttach: end");
     return TRUE;
   }
 
 //---------------------------------------------------------------------------
   BOOL DllProcessDetach()
   {
-    // DEBUG_PRINTF(L"DllProcessDetach: start");
     assert(Processes);
     Processes--;
     if (!Processes)
@@ -276,16 +260,13 @@ extern "C"
       assert(FarPlugin);
       SAFE_DESTROY(FarPlugin);
       TermExtensionModule();
-      WSACleanup();
     }
-    // DEBUG_PRINTF(L"DllProcessDetach: end");
     return TRUE;
   }
 
 //---------------------------------------------------------------------------
   BOOL WINAPI DllMain(HINSTANCE HInstance, DWORD Reason, LPVOID /*ptr*/ )
   {
-    // DEBUG_PRINTF(L"DllEntryPoint: start");
     BOOL Result = TRUE;
     switch (Reason)
     {
@@ -297,7 +278,6 @@ extern "C"
         Result = DllProcessDetach();
         break;
     }
-    // DEBUG_PRINTF(L"DllEntryPoint: end");
     return Result;
   }
 

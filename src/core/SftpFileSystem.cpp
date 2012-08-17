@@ -4635,7 +4635,7 @@ void __fastcall TSFTPFileSystem::SFTPSource(const UnicodeString FileName,
   else if (CopyParam->GetClearArchive() && FLAGSET(OpenParams.LocalFileAttrs, faArchive))
   {
     FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, FileName.c_str()),
-      THROWOSIFFALSE(FileSetAttr(FileName, OpenParams.LocalFileAttrs & ~faArchive) == 0);
+      THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(FileName, OpenParams.LocalFileAttrs & ~faArchive) == 0);
     )
   }
 }
@@ -4990,12 +4990,12 @@ void __fastcall TSFTPFileSystem::SFTPDirectorySource(const UnicodeString Directo
   {
     if (FLAGSET(Params, cpDelete))
     {
-      RemoveDir(DirectoryName);
+      FTerminal->RemoveLocalDirectory(DirectoryName);
     }
     else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
     {
       FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
-        THROWOSIFFALSE(FileSetAttr(DirectoryName, Attrs & ~faArchive) == 0);
+        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DirectoryName, Attrs & ~faArchive) == 0);
       )
     }
   }
@@ -5144,7 +5144,7 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
     if (!File->GetIsSymLink())
     {
       FILE_OPERATION_LOOP (FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
-        int Attrs = FileGetAttr(DestFullName);
+        int Attrs = FTerminal->GetLocalFileAttributes(DestFullName);
         if ((Attrs & faDirectory) == 0) { EXCEPTION; }
       );
 
@@ -5204,7 +5204,7 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
 
     int Attrs = 0;
     FILE_OPERATION_LOOP (FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
-      Attrs = FileGetAttr(DestFullName);
+      Attrs = FTerminal->GetLocalFileAttributes(DestFullName);
       if ((Attrs >= 0) && (Attrs & faDirectory)) { EXCEPTION; }
     );
 
@@ -5606,7 +5606,7 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
       if ((NewAttrs & Attrs) != NewAttrs)
       {
         FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
-          THROWOSIFFALSE(FileSetAttr(DestFullName, Attrs | NewAttrs) == 0);
+          THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFullName, Attrs | NewAttrs) == 0);
         );
       }
 

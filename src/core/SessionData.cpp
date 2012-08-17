@@ -1495,7 +1495,6 @@ void __fastcall TSessionData::SetPassword(UnicodeString avalue)
 UnicodeString __fastcall TSessionData::GetPassword() const
 {
   UnicodeString Password = DecryptPassword(FPassword, GetUserName() + GetHostName());
-  // DEBUG_PRINTF(L"Password = %s", Password.c_str());
   return Password;
 }
 //---------------------------------------------------------------------
@@ -2100,11 +2099,9 @@ void  __fastcall TSessionData::PrepareProxyData() const
 void __fastcall TSessionData::ParseIEProxyConfig() const
 {
   assert(FIEProxyConfig);
-  DEBUG_PRINTF(L"FIEProxyConfig->Proxy = %s", FIEProxyConfig->Proxy.c_str());
   TStringList ProxyServerList;
   ProxyServerList.SetDelimiter(L';');
   ProxyServerList.SetDelimitedText(FIEProxyConfig->Proxy);
-  DEBUG_PRINTF(L"ProxyServerList.GetCount = %d", ProxyServerList.GetCount());
   UnicodeString ProxyUrl;
   int ProxyPort = 0;
   TProxyMethod ProxyMethod = pmNone;
@@ -2114,7 +2111,6 @@ void __fastcall TSessionData::ParseIEProxyConfig() const
   for (int Index = 0; Index < ProxyServerList.GetCount(); Index++)
   {
     UnicodeString ProxyServer = ProxyServerList.GetStrings(Index).Trim();
-    DEBUG_PRINTF(L"ProxyServer = %s", ProxyServer.c_str());
     TStringList ProxyServerForScheme;
     ProxyServerForScheme.SetDelimiter(L'=');
     ProxyServerForScheme.SetDelimitedText(ProxyServer);
@@ -2161,9 +2157,6 @@ void __fastcall TSessionData::ParseIEProxyConfig() const
       default:
         break;
     }
-    DEBUG_PRINTF(L"ProxyUrl = %s, ProxyPort = %d", ProxyUrl.c_str(), ProxyPort);
-    DEBUG_PRINTF(L"ProxyUrlTmp = %s, ProxyPortTmp = %d", ProxyUrlTmp.c_str(), ProxyPortTmp);
-    DEBUG_PRINTF(L"ProxyServerForScheme.GetCount = %d, ProxyScheme = %s, ProxyURI = %s", ProxyServerForScheme.GetCount(), ProxyScheme.c_str(), ProxyURI.c_str());
   }
   if (ProxyUrl.IsEmpty() && (ProxyPort == 0) && (ProxyMethod == pmNone))
   {
@@ -2171,7 +2164,6 @@ void __fastcall TSessionData::ParseIEProxyConfig() const
     ProxyPort = ProxyPortTmp;
     ProxyMethod = ProxyMethodTmp;
   }
-  DEBUG_PRINTF(L"ProxyUrl = %s, ProxyPort = %d, ProxyMethod = %d", ProxyUrl.c_str(), ProxyPort, ProxyMethod);
   FIEProxyConfig->ProxyHost = ProxyUrl;
   FIEProxyConfig->ProxyPort = ProxyPort;
   FIEProxyConfig->ProxyMethod = ProxyMethod;
@@ -2193,7 +2185,6 @@ void __fastcall TSessionData::FromURI(const UnicodeString & ProxyURI,
   if (Pos > 0)
   {
     UnicodeString ProxyScheme = ProxyUrl.SubString(1, Pos - 1);
-    DEBUG_PRINTF(L"ProxyScheme = %s", ProxyScheme.c_str());
     ProxyUrl = ProxyUrl.SubString(Pos + 3, -1);
     if (ProxyScheme == L"socks4")
     {

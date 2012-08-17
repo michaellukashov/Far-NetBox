@@ -888,7 +888,6 @@ UnicodeString __fastcall TSecureShell::ReceiveLine()
   // UnicodeString UnicodeLine = Line;
   UnicodeString UnicodeLine = ::TrimRight(MB2W(Line.c_str(), FSessionData->GetCodePageAsNumber()));
   CaptureOutput(llOutput, UnicodeLine);
-  // DEBUG_PRINTF(L"UnicodeLine = %s", UnicodeLine.c_str());
   return UnicodeLine;
 }
 //---------------------------------------------------------------------------

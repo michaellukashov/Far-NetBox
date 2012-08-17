@@ -279,6 +279,7 @@ typedef struct list_func_baton_t
 {
   bool verbose;
   listdataentry_vector_t * entries;
+  session_t * session;
   apr_pool_t * pool;
 } list_func_baton_t;
 
@@ -9034,8 +9035,10 @@ list_func(void * baton,
   assert(pb->entries);
   const char * entryname = NULL;
 
-  // if (pb->sess->callbacks->cancel_func)
-  // WEBDAV_ERR(pb->sess->callbacks->cancel_func(pb->ctx->cancel_baton));
+  neon_session_t * ras = static_cast<neon_session_t *>(pb->session->priv);
+  assert(ras);
+  if (ras->callbacks->cancel_func)
+    WEBDAV_ERR(ras->callbacks->cancel_func(ras->callback_baton));
 
   if (strcmp(path, "") == 0)
   {
@@ -10266,8 +10269,10 @@ get_dir_contents(apr_uint32_t dirent_fields,
   }
   WEBDAV_ERR(err);
 
-  // if (ctx->cancel_func)
-  // WEBDAV_ERR(ctx->cancel_func(ctx->cancel_baton));
+  neon_session_t * ras = static_cast<neon_session_t *>(ra_session->priv);
+  assert(ras);
+  if (ras->callbacks->cancel_func)
+    WEBDAV_ERR(ras->callbacks->cancel_func(ras->callback_baton));
 
   /* Sort the hash, so we can call the callback in a "deterministic" order. */
   array = sort_hash(tmpdirents, sort_compare_items_lexically, pool);
@@ -12961,33 +12966,7 @@ void __fastcall TWebDAVFileSystem::ReadCurrentDirectory()
 {
   if (FCachedDirectoryChange.IsEmpty())
   {
-    UnicodeString Path = FCurrentDirectory.IsEmpty() ? UnicodeString(L"/") : FCurrentDirectory;
-    int responseCode = 0;
-    bool isExist = SendPropFindRequest(Path.c_str(), responseCode);
-    if (isExist)
-    {
-      FCurrentDirectory = Path;
-    }
-    else if (responseCode == 401)
-    {
-      // Unauthorized
-      FPasswordFailed = true;
-      UnicodeString Password = L"";
-      if (!FTerminal->PromptUser(FTerminal->GetSessionData(), pkPassword, LoadStr(PASSWORD_TITLE), L"",
-                                LoadStr(PASSWORD_PROMPT), false, 0, Password))
-      {
-        FTerminal->FatalError(NULL, LoadStr(AUTHENTICATION_FAILED));
-      }
-      FTerminal->GetSessionData()->SetPassword(Password);
-      throw ExtException(L"", NULL, true);
-    }
-    /*else
-    {
-      // FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, L"webdav#1",
-                                          // UnicodeString(L"Couldn't read directory " + FCurrentDirectory).c_str()));
-      throw Exception(FMTLOAD(INTERNAL_ERROR, L"webdav#1",
-                                          UnicodeString(L"Couldn't read directory " + FCurrentDirectory).c_str()));
-    }*/
+    FCurrentDirectory = FCurrentDirectory.IsEmpty() ? UnicodeString(L"/") : FCurrentDirectory;
   }
   else
   {
@@ -13621,25 +13600,6 @@ void __fastcall TWebDAVFileSystem::WebDAVSource(const UnicodeString FileName,
       UnicodeString DestFullName = TargetDir + UserData.FileName;
       // only now, we know the final destination
       Action.Destination(DestFullName);
-
-      /* TODO: implement setting datetime
-      // we are not able to tell if setting timestamp succeeded,
-      // so we log it always (if supported)
-      if (FFileTransferPreserveTime && FMfmt)
-      {
-        // Inspired by SysUtils::FileAge
-        WIN32_FIND_DATA FindData;
-        HANDLE Handle = FindFirstFile(DestFullName.c_str(), &FindData);
-        if (Handle != INVALID_HANDLE_VALUE)
-        {
-          TTouchSessionAction TouchAction(FTerminal->GetActionLog(), DestFullName,
-            UnixToDateTime(
-              ConvertTimestampToUnixSafe(FindData.ftLastWriteTime, dstmUnix),
-              dstmUnix));
-          FindClose(Handle);
-        }
-      }
-      */
     }
 
     /* TODO : Delete also read-only files. */
@@ -13655,7 +13615,7 @@ void __fastcall TWebDAVFileSystem::WebDAVSource(const UnicodeString FileName,
     else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
     {
       FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, FileName.c_str()),
-        THROWOSIFFALSE(FileSetAttr(FileName, Attrs & ~faArchive) == 0);
+        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(FileName, Attrs & ~faArchive) == 0);
       )
     }
   }
@@ -13796,12 +13756,12 @@ void __fastcall TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString Dir
   {
     if (FLAGSET(Params, cpDelete))
     {
-      RemoveDir(DirectoryName);
+      FTerminal->RemoveLocalDirectory(DirectoryName);
     }
     else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
     {
       FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
-        THROWOSIFFALSE(FileSetAttr(DirectoryName, Attrs & ~faArchive) == 0);
+        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DirectoryName, Attrs & ~faArchive) == 0);
       )
     }
   }
@@ -13961,7 +13921,7 @@ void __fastcall TWebDAVFileSystem::Sink(const UnicodeString FileName,
       if (!File->GetIsSymLink())
       {
         FILE_OPERATION_LOOP (FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
-          int Attrs = FileGetAttr(DestFullName);
+          int Attrs = FTerminal->GetLocalFileAttributes(DestFullName);
           if (FLAGCLEAR(Attrs, faDirectory)) { EXCEPTION; }
         );
 
@@ -13985,31 +13945,6 @@ void __fastcall TWebDAVFileSystem::Sink(const UnicodeString FileName,
         if (FLAGSET(Params, cpDelete) && SinkFileParams.Skipped)
         {
           THROW_SKIP_FILE_NULL;
-        }
-        /*if (Attrs == -1)
-        {
-          Attrs = faDirectory;
-        }
-        {
-          FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
-            THROWOSIFFALSE(FileSetAttr(DestFullName, Attrs & ~faArchive) == 0);
-          );
-        }*/
-        // set time
-        {
-          FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
-            HANDLE Handle;
-            Handle = CreateFile(DestFullName.c_str(), GENERIC_READ | GENERIC_WRITE,
-                                FILE_SHARE_READ | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, 0);
-            FILETIME WrTime = DateTimeToFileTime(File->GetModification(),
-                              FTerminal->GetSessionData()->GetDSTMode());
-            bool Result = SetFileTime(Handle, &WrTime, &WrTime, &WrTime) > 0;
-            CloseHandle(Handle);
-            if (!Result)
-            {
-              Abort();
-            }
-          );
         }
       }
       else
@@ -14062,7 +13997,7 @@ void __fastcall TWebDAVFileSystem::Sink(const UnicodeString FileName,
 
       int Attrs = -1;
       FILE_OPERATION_LOOP (FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
-        Attrs = FileGetAttr(DestFullName);
+        Attrs = FTerminal->GetLocalFileAttributes(DestFullName);
         if ((Attrs >= 0) && FLAGSET(Attrs, faDirectory)) { EXCEPTION; }
       );
 
@@ -14097,7 +14032,7 @@ void __fastcall TWebDAVFileSystem::Sink(const UnicodeString FileName,
       if (DestFileName != UserData.FileName)
       {
         DestFullName = TargetDir + UserData.FileName;
-        Attrs = FileGetAttr(DestFullName);
+        Attrs = FTerminal->GetLocalFileAttributes(DestFullName);
       }
 
       Action.Destination(ExpandUNCFileName(DestFullName));
@@ -14110,25 +14045,11 @@ void __fastcall TWebDAVFileSystem::Sink(const UnicodeString FileName,
       if ((NewAttrs & Attrs) != NewAttrs)
       {
         FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
-          THROWOSIFFALSE(FileSetAttr(DestFullName, Attrs | NewAttrs) == 0);
+          THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFullName, Attrs | NewAttrs) == 0);
         );
       }
       // set time
-      {
-        FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
-          HANDLE Handle;
-          Handle = CreateFile(DestFullName.c_str(), GENERIC_WRITE,
-                              FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, 0);
-          FILETIME WrTime = DateTimeToFileTime(File->GetModification(),
-                            FTerminal->GetSessionData()->GetDSTMode());
-          bool Result = SetFileTime(Handle, &WrTime, &WrTime, &WrTime) > 0;
-          CloseHandle(Handle);
-          if (!Result)
-          {
-            Abort();
-          }
-        );
-      }
+      FTerminal->SetLocalFileTime(DestFullName, File->GetModification());
     }
   }
 
@@ -14475,6 +14396,7 @@ bool TWebDAVFileSystem::WebDAVGetList(const UnicodeString Directory)
   webdav::list_func_baton_t baton = {0};
   baton.verbose = true;
   baton.entries = &Entries;
+  baton.session = FSession;
   baton.pool = webdav_pool_create(webdav_pool);
   webdav::error_t err = 0;
   const char * remote_path = NULL;
@@ -14612,8 +14534,8 @@ webdav::error_t TWebDAVFileSystem::OpenURL(const UnicodeString & webdav_URL,
     webdav::auth_baton_create(&ab, pool);
     webdav::auth_baton_init(ab,
                               /* non_interactive */ FALSE,
-                              /* auth_username */ auth_username,
-                              /* auth_password */ auth_password,
+                              auth_username,
+                              auth_password,
                               /* no_auth_cache */ FALSE,
                               /* trust_server_cert */ TRUE,
                               this,

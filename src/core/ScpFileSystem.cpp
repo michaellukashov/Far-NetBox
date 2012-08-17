@@ -2056,7 +2056,7 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString FileName,
   else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
   {
     FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, FileName.c_str()),
-      THROWOSIFFALSE(FileSetAttr(FileName, Attrs & ~faArchive) == 0);
+      THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(FileName, Attrs & ~faArchive) == 0);
     )
   }
 
@@ -2077,7 +2077,7 @@ void __fastcall TSCPFileSystem::SCPDirectorySource(const UnicodeString Directory
 
   // Get directory attributes
   FILE_OPERATION_LOOP (FMTLOAD(CANT_GET_ATTRS, DirectoryName.c_str()),
-    Attrs = FileGetAttr(DirectoryName);
+    Attrs = FTerminal->GetLocalFileAttributes(DirectoryName);
     if (Attrs == -1) { RaiseLastOSError(); }
   )
 
@@ -2171,12 +2171,12 @@ void __fastcall TSCPFileSystem::SCPDirectorySource(const UnicodeString Directory
     {
       if (FLAGSET(Params, cpDelete))
       {
-        RemoveDir(DirectoryName);
+        FTerminal->RemoveLocalDirectory(DirectoryName);
       }
       else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
       {
         FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
-          THROWOSIFFALSE(FileSetAttr(DirectoryName, Attrs & ~faArchive) == 0);
+          THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DirectoryName, Attrs & ~faArchive) == 0);
         )
       }
     }
@@ -2547,7 +2547,7 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
           CopyParam->ChangeFileName(OperationProgress->FileName, osRemote,
             Level == 0);
 
-        FileData.Attrs = FileGetAttr(DestFileName);
+        FileData.Attrs = FTerminal->GetLocalFileAttributes(DestFileName);
         // If getting attrs failes, we suppose, that file/folder doesn't exists
         FileData.Exists = (FileData.Attrs != -1);
         if (Dir)
@@ -2759,7 +2759,7 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
           if ((NewAttrs & FileData.Attrs) != NewAttrs)
           {
             FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFileName.c_str()),
-              THROWOSIFFALSE(FileSetAttr(DestFileName, FileData.Attrs | NewAttrs) == 0);
+              THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFileName, FileData.Attrs | NewAttrs) == 0);
             );
           }
         }

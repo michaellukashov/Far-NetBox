@@ -13,7 +13,6 @@
 #include "FarPlugin.h"
 #include "FarDialog.h"
 #include <Common.h>
-// FAR WORKAROUND
 #include "Exceptions.h"
 #include "TextsCore.h"
 #include "FileMasks.h"

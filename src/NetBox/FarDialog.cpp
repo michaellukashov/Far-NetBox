@@ -15,7 +15,6 @@
 #include "FarDialog.h"
 #include "Common.h"
 
-// FAR WORKAROUND
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
 #pragma package(smart_init)
@@ -1157,7 +1156,6 @@ void __fastcall TFarDialogItem::ResetBounds()
 {
   TRect B = FBounds;
   FarDialogItem * DItem = GetDialogItem();
-  // DEBUG_PRINTF(L"this = %x, DItem = %x, GetContainer = %x", this, DItem, GetContainer());
   #define BOUND(DIB, BB, DB, CB) DItem->DIB = B.BB >= 0 ? \
     (GetContainer() ? GetContainer()->CB : 0) + B.BB : GetDialog()->GetSize().DB + B.BB
   BOUND(X1, Left, x, GetLeft());
@@ -2541,14 +2539,6 @@ intptr_t TFarListBox::ItemProc(int Msg, void *Param)
   {
     Result = TFarDialogItem::ItemProc(Msg, Param);
   }
-/*
-  // FAR WORKAROUND
-  if ((Msg == DN_MOUSECLICK) && (Items->Count > 0) &&
-      (FarPlugin->FarVersion() < FAR170ALPHA6))
-  {
-    FDenyClose = true;
-  }
-*/
   return Result;
 }
 //---------------------------------------------------------------------------
