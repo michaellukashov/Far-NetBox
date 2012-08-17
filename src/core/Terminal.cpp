@@ -3086,7 +3086,7 @@ bool /* __fastcall */ TTerminal::DeleteFiles(TStrings * FilesToDelete, int Param
 void /* __fastcall */ TTerminal::DeleteLocalFile(UnicodeString FileName,
   const TRemoteFile * /*File*/, void * Params)
 {
-  if (!GetOnDeleteLocalFile().empty())
+  if (GetOnDeleteLocalFile().empty())
   {
     if (!RecursiveDeleteFile(FileName, false))
     {
