@@ -522,6 +522,8 @@ void __fastcall TTerminal::Init(TSessionData * SessionData, TConfiguration * Con
   FOnProgress = NULL;
   FOnFinished = NULL;
   FOnDeleteLocalFile = NULL;
+  FOnCreateLocalFile = NULL;
+  FOnGetLocalFileAttributes = NULL;
   FOnReadDirectoryProgress = NULL;
   FOnQueryUser = NULL;
   FOnPromptUser = NULL;
@@ -3945,14 +3947,14 @@ bool /* __fastcall */ TTerminal::DoCreateLocalFile(const UnicodeString FileName,
   unsigned int CreateAttr = FILE_ATTRIBUTE_NORMAL;
   do
   {
-    *AHandle = CreateFile(FileName.c_str(), GENERIC_WRITE, FILE_SHARE_READ,
-      NULL, CREATE_ALWAYS, CreateAttr, 0);
+    *AHandle = CreateLocalFile(FileName.c_str(), GENERIC_WRITE, FILE_SHARE_READ,
+      CREATE_ALWAYS, CreateAttr);
     Done = (*AHandle != INVALID_HANDLE_VALUE);
     if (!Done)
     {
       int FileAttr = 0;
       if (::FileExists(FileName) &&
-        (((FileAttr = FileGetAttr(FileName)) & (faReadOnly | faHidden)) != 0))
+        (((FileAttr = GetLocalFileAttributes(FileName)) & (faReadOnly | faHidden)) != 0))
       {
         if (FLAGSET(FileAttr, faReadOnly))
         {
@@ -3990,7 +3992,7 @@ bool /* __fastcall */ TTerminal::DoCreateLocalFile(const UnicodeString FileName,
             FLAGMASK(FLAGSET(FileAttr, faReadOnly), FILE_ATTRIBUTE_READONLY);
 
           FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, FileName.c_str()),
-            if (FileSetAttr(FileName, FileAttr & ~(faReadOnly | faHidden)) != 0)
+            if (!SetLocalFileAttributes(FileName, FileAttr & ~(faReadOnly | faHidden)))
             {
               RaiseLastOSError();
             }
@@ -4034,7 +4036,7 @@ void /* __fastcall */ TTerminal::OpenLocalFile(const UnicodeString FileName,
   HANDLE Handle = 0;
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
   FILE_OPERATION_LOOP (FMTLOAD(FILE_NOT_EXISTS, FileName.c_str()),
-    Attrs = FileGetAttr(FileName);
+    Attrs = GetLocalFileAttributes(FileName);
     if (Attrs == -1) { RaiseLastOSError(); }
   )
 
@@ -4049,9 +4051,9 @@ void /* __fastcall */ TTerminal::OpenLocalFile(const UnicodeString FileName,
     }
 
     FILE_OPERATION_LOOP (FMTLOAD(OPENFILE_ERROR, FileName.c_str()),
-      Handle = CreateFile(FileName.c_str(), Access,
+      Handle = CreateLocalFile(FileName.c_str(), Access,
         Access == GENERIC_READ ? FILE_SHARE_READ | FILE_SHARE_WRITE : FILE_SHARE_READ,
-        NULL, OPEN_EXISTING, 0, 0);
+        OPEN_EXISTING, 0);
       if (Handle == INVALID_HANDLE_VALUE)
       {
         Handle = 0;
@@ -4970,27 +4972,13 @@ void /* __fastcall */ TTerminal::DoSynchronizeProgress(const TSynchronizeData & 
 void /* __fastcall */ TTerminal::SynchronizeLocalTimestamp(const UnicodeString /*FileName*/,
   const TRemoteFile * File, void * /*Param*/)
 {
-  TFileOperationProgressType * OperationProgress = GetOperationProgress();
   const TSynchronizeChecklist::TItem * ChecklistItem =
     reinterpret_cast<const TSynchronizeChecklist::TItem *>(File);
 
   UnicodeString LocalFile =
     IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
       ChecklistItem->Local.FileName;
-
-  FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, LocalFile.c_str()),
-    HANDLE Handle;
-    OpenLocalFile(LocalFile, GENERIC_WRITE, NULL, &Handle,
-      NULL, NULL, NULL, NULL);
-    FILETIME WrTime = DateTimeToFileTime(ChecklistItem->Remote.Modification,
-      GetSessionData()->GetDSTMode());
-    bool Result = SetFileTime(Handle, NULL, NULL, &WrTime) > 0;
-    CloseHandle(Handle);
-    if (!Result)
-    {
-      Abort();
-    }
-  );
+  SetLocalFileTime(LocalFile, ChecklistItem->Remote.Modification);
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::SynchronizeRemoteTimestamp(const UnicodeString /*FileName*/,
@@ -5405,6 +5393,104 @@ bool /* __fastcall */ TTerminal::CopyToLocal(TStrings * FilesToCopy,
   }
 
   return Result;
+}
+//---------------------------------------------------------------------------
+void __fastcall TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
+  const TDateTime & Modification)
+{
+  FILETIME WrTime = DateTimeToFileTime(Modification,
+    GetSessionData()->GetDSTMode());
+  SetLocalFileTime(LocalFileName, NULL, &WrTime);
+}
+//---------------------------------------------------------------------------
+void __fastcall TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
+  FILETIME * AcTime, FILETIME * WrTime)
+{
+  TFileOperationProgressType * OperationProgress = GetOperationProgress();
+  FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, LocalFileName.c_str()),
+    HANDLE Handle;
+    OpenLocalFile(LocalFileName, GENERIC_WRITE, NULL, &Handle,
+      NULL, NULL, NULL, NULL);
+    bool Result = ::SetFileTime(Handle, NULL, AcTime, WrTime) > 0;
+    CloseHandle(Handle);
+    if (!Result)
+    {
+      Abort();
+    }
+  );
+}
+//---------------------------------------------------------------------------
+HANDLE __fastcall TTerminal::CreateLocalFile(const UnicodeString & LocalFileName, DWORD DesiredAccess,
+    DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes)
+{
+  if (GetOnCreateLocalFile().empty())
+  {
+    return ::CreateFile(LocalFileName.c_str(), DesiredAccess, ShareMode, NULL, CreationDisposition, FlagsAndAttributes, 0);
+  }
+  else
+  {
+    return GetOnCreateLocalFile()(LocalFileName, DesiredAccess, ShareMode, CreationDisposition, FlagsAndAttributes);
+  }
+}
+//---------------------------------------------------------------------------
+DWORD __fastcall TTerminal::GetLocalFileAttributes(const UnicodeString & LocalFileName)
+{
+  if (GetOnGetLocalFileAttributes().empty())
+  {
+    return ::GetFileAttributes(LocalFileName.c_str());
+  }
+  else
+  {
+    return GetOnGetLocalFileAttributes()(LocalFileName);
+  }
+}
+//---------------------------------------------------------------------------
+BOOL __fastcall TTerminal::SetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes)
+{
+  if (GetOnSetLocalFileAttributes().empty())
+  {
+    return ::SetFileAttributes(LocalFileName.c_str(), FileAttributes);
+  }
+  else
+  {
+    return GetOnSetLocalFileAttributes()(LocalFileName, FileAttributes);
+  }
+}
+//---------------------------------------------------------------------------
+BOOL __fastcall TTerminal::MoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags)
+{
+  if (GetOnMoveLocalFile().empty())
+  {
+    return ::MoveFileEx(LocalFileName.c_str(), NewLocalFileName.c_str(), Flags) != 0;
+  }
+  else
+  {
+    return GetOnMoveLocalFile()(LocalFileName, NewLocalFileName, Flags);
+  }
+}
+//---------------------------------------------------------------------------
+BOOL __fastcall TTerminal::RemoveLocalDirectory(const UnicodeString & LocalDirName)
+{
+  if (GetOnRemoveLocalDirectory().empty())
+  {
+    return ::RemoveDirectory(LocalDirName) != 0;
+  }
+  else
+  {
+    return GetOnRemoveLocalDirectory()(LocalDirName);
+  }
+}
+//---------------------------------------------------------------------------
+BOOL __fastcall TTerminal::CreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
+{
+  if (GetOnCreateLocalDirectory().empty())
+  {
+    return ::CreateDirectory(LocalDirName.c_str(), SecurityAttributes) != 0;
+  }
+  else
+  {
+    return GetOnCreateLocalDirectory()(LocalDirName, SecurityAttributes);
+  }
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TSecondaryTerminal::TSecondaryTerminal(TTerminal * MainTerminal) :

@@ -61,7 +61,20 @@ typedef void __fastcall (__closure *TSynchronizeDirectory)
   (const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
    bool & Continue, bool Collect);
 typedef void __fastcall (__closure *TDeleteLocalFileEvent)(
-  const UnicodeString FileName, bool Alternative);
+  const UnicodeString & FileName, bool Alternative);
+typedef HANDLE __fastcall (__closure *TCreateLocalFileEvent)(
+  const UnicodeString & FileName, DWORD DesiredAccess,
+    DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
+typedef DWORD __fastcall (__closure *TGetLocalFileAttributesEvent)(
+  const UnicodeString & FileName);
+typedef BOOL __fastcall (__closure *TSetLocalFileAttributesEvent)(
+  const UnicodeString & FileName, DWORD FileAttributes);
+typedef BOOL __fastcall (__closure *TMoveLocalFileEvent)(
+  const UnicodeString & FileName, const UnicodeString & NewFileName, DWORD Flags);
+typedef BOOL __fastcall (__closure *TRemoveLocalDirectoryEvent)(
+  const UnicodeString & LocalDirName);
+typedef BOOL __fastcall (__closure *TCreateLocalDirectoryEvent)(
+  const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
 typedef int __fastcall (__closure *TDirectoryModifiedEvent)
   (TTerminal * Terminal, const UnicodeString Directory, bool SubDirs);
 typedef void __fastcall (__closure *TInformationEvent)
@@ -92,6 +105,19 @@ typedef fastdelegate::FastDelegate4<void,
   bool & /* Continue */, bool /* Collect */> TSynchronizeDirectoryEvent;
 typedef fastdelegate::FastDelegate2<void,
   const UnicodeString & /* FileName */, bool /* Alternative */> TDeleteLocalFileEvent;
+typedef fastdelegate::FastDelegate5<HANDLE,
+  const UnicodeString & /* FileName */, DWORD /* DesiredAccess */,
+  DWORD /* ShareMode */, DWORD /* CreationDisposition */, DWORD /* FlagsAndAttributes */> TCreateLocalFileEvent;
+typedef fastdelegate::FastDelegate1<DWORD,
+  const UnicodeString & /* FileName */> TGetLocalFileAttributesEvent;
+typedef fastdelegate::FastDelegate2<BOOL,
+  const UnicodeString & /* FileName */, DWORD /* FileAttributes */ > TSetLocalFileAttributesEvent;
+typedef fastdelegate::FastDelegate3<BOOL,
+  const UnicodeString & /* FileName */, const UnicodeString & /* NewFileName */, DWORD /* Flags */ > TMoveLocalFileEvent;
+typedef fastdelegate::FastDelegate1<BOOL,
+  const UnicodeString & /* LocalDirName */> TRemoveLocalDirectoryEvent;
+typedef fastdelegate::FastDelegate2<BOOL,
+  const UnicodeString & /* LocalDirName */, LPSECURITY_ATTRIBUTES /* SecurityAttributes */ > TCreateLocalDirectoryEvent;
 typedef fastdelegate::FastDelegate3<int,
   TTerminal * /* Terminal */, const UnicodeString /* Directory */, bool /* SubDirs */> TDirectoryModifiedEvent;
 typedef fastdelegate::FastDelegate4<void,
@@ -210,6 +236,12 @@ private:
   TNotifyEvent FOnStartReadDirectory;
   TReadDirectoryProgressEvent FOnReadDirectoryProgress;
   TDeleteLocalFileEvent FOnDeleteLocalFile;
+  TCreateLocalFileEvent FOnCreateLocalFile;
+  TGetLocalFileAttributesEvent FOnGetLocalFileAttributes;
+  TSetLocalFileAttributesEvent FOnSetLocalFileAttributes;
+  TMoveLocalFileEvent FOnMoveLocalFile;
+  TRemoveLocalDirectoryEvent FOnRemoveLocalDirectory;
+  TCreateLocalDirectoryEvent FOnCreateLocalDirectory;
   TRemoteTokenList FMembership;
   TRemoteTokenList FGroups;
   TRemoteTokenList FUsers;
@@ -402,6 +434,18 @@ protected:
   TFileOperationProgressType * __fastcall GetOperationProgress() { return FOperationProgress; }
 #endif
 
+  void __fastcall SetLocalFileTime(const UnicodeString & LocalFileName,
+    const TDateTime & Modification);
+  void __fastcall SetLocalFileTime(const UnicodeString & LocalFileName,
+    FILETIME * AcTime, FILETIME * WrTime);
+  HANDLE __fastcall CreateLocalFile(const UnicodeString & LocalFileName, DWORD DesiredAccess,
+    DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
+  DWORD __fastcall GetLocalFileAttributes(const UnicodeString & LocalFileName);
+  BOOL __fastcall SetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes);
+  BOOL __fastcall MoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags);
+  BOOL __fastcall RemoveLocalDirectory(const UnicodeString & LocalDirName);
+  BOOL __fastcall CreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
+
 public:
   explicit /* __fastcall */ TTerminal();
   virtual void __fastcall Init(TSessionData * SessionData, TConfiguration * Configuration);
@@ -518,6 +562,12 @@ public:
   __property TNotifyEvent OnStartReadDirectory = { read = FOnStartReadDirectory, write = FOnStartReadDirectory };
   __property TReadDirectoryProgressEvent OnReadDirectoryProgress = { read = FOnReadDirectoryProgress, write = FOnReadDirectoryProgress };
   __property TDeleteLocalFileEvent OnDeleteLocalFile = { read = FOnDeleteLocalFile, write = FOnDeleteLocalFile };
+  __property TCreateLocalFileEvent OnCreateLocalFile = { read = FOnCreateLocalFile, write = FOnCreateLocalFile };
+  __property TGetLocalFileAttributesEvent OnGetLocalFileAttributes = { read = FOnGetLocalFileAttributes, write = FOnGetLocalFileAttributes };
+  __property TSetLocalFileAttributesEvent OnSetLocalFileAttributes = { read = FOnSetLocalFileAttributes, write = FOnSetLocalFileAttributes };
+  __property TMoveLocalFileEvent OnMoveLocalFile = { read = FOnMoveLocalFile, write = FOnMoveLocalFile };
+  __property TRemoveLocalDirectoryEvent OnRemoveLocalDirectory = { read = FOnRemoveLocalDirectory, write = FOnRemoveLocalDirectory };
+  __property TCreateLocalDirectoryEvent OnCreateLocalDirectory = { read = FOnCreateLocalDirectory, write = FOnCreateLocalDirectory };
   __property const TRemoteTokenList * Groups = { read = GetGroups };
   __property const TRemoteTokenList * Users = { read = GetUsers };
   __property const TRemoteTokenList * Membership = { read = GetMembership };
@@ -561,6 +611,18 @@ public:
   void SetOnReadDirectoryProgress(TReadDirectoryProgressEvent value) { FOnReadDirectoryProgress = value; }
   TDeleteLocalFileEvent & GetOnDeleteLocalFile() { return FOnDeleteLocalFile; }
   void SetOnDeleteLocalFile(TDeleteLocalFileEvent value) { FOnDeleteLocalFile = value; }
+  TCreateLocalFileEvent & GetOnCreateLocalFile() { return FOnCreateLocalFile; }
+  void SetOnCreateLocalFile(TCreateLocalFileEvent value) { FOnCreateLocalFile = value; }
+  TGetLocalFileAttributesEvent & GetOnGetLocalFileAttributes() { return FOnGetLocalFileAttributes; }
+  void SetOnGetLocalFileAttributes(TGetLocalFileAttributesEvent value) { FOnGetLocalFileAttributes = value; }
+  TSetLocalFileAttributesEvent & GetOnSetLocalFileAttributes() { return FOnSetLocalFileAttributes; }
+  void SetOnSetLocalFileAttributes(TSetLocalFileAttributesEvent value) { FOnSetLocalFileAttributes = value; }
+  TMoveLocalFileEvent & GetOnMoveLocalFile() { return FOnMoveLocalFile; }
+  void SetOnMoveLocalFile(TMoveLocalFileEvent value) { FOnMoveLocalFile = value; }
+  TRemoveLocalDirectoryEvent & GetOnRemoveLocalDirectory() { return FOnRemoveLocalDirectory; }
+  void SetOnRemoveLocalDirectory(TRemoveLocalDirectoryEvent value) { FOnRemoveLocalDirectory = value; }
+  TCreateLocalDirectoryEvent & GetOnCreateLocalDirectory() { return FOnCreateLocalDirectory; }
+  void SetOnCreateLocalDirectory(TCreateLocalDirectoryEvent value) { FOnCreateLocalDirectory = value; }
   TFileOperationProgressEvent & GetOnProgress() { return FOnProgress; }
   void SetOnProgress(TFileOperationProgressEvent value) { FOnProgress = value; }
   TFileOperationFinishedEvent & GetOnFinished() { return FOnFinished; }

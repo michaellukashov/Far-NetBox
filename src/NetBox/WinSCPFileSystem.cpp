@@ -3320,6 +3320,12 @@ bool __fastcall TWinSCPFileSystem::Connect(TSessionData * Data)
     FTerminal->SetOnFinished(fastdelegate::bind(&TWinSCPFileSystem::OperationFinished, this, _1, _2, _3, _4, _5, _6));
     FTerminal->SetOnProgress(fastdelegate::bind(&TWinSCPFileSystem::OperationProgress, this, _1, _2));
     FTerminal->SetOnDeleteLocalFile(fastdelegate::bind(&TWinSCPFileSystem::TerminalDeleteLocalFile, this, _1, _2));
+    FTerminal->SetOnCreateLocalFile(fastdelegate::bind(&TWinSCPFileSystem::TerminalCreateLocalFile, this, _1, _2, _3, _4, _5));
+    FTerminal->SetOnGetLocalFileAttributes(fastdelegate::bind(&TWinSCPFileSystem::TerminalGetLocalFileAttributes, this, _1));
+    FTerminal->SetOnSetLocalFileAttributes(fastdelegate::bind(&TWinSCPFileSystem::TerminalSetLocalFileAttributes, this, _1, _2));
+    FTerminal->SetOnMoveLocalFile(fastdelegate::bind(&TWinSCPFileSystem::TerminalMoveLocalFile, this, _1, _2, _3));
+    FTerminal->SetOnRemoveLocalDirectory(fastdelegate::bind(&TWinSCPFileSystem::TerminalRemoveLocalDirectory, this, _1));
+    FTerminal->SetOnCreateLocalDirectory(fastdelegate::bind(&TWinSCPFileSystem::TerminalCreateLocalDirectory, this, _1, _2));
     ConnectTerminal(FTerminal);
 
     FTerminal->SetOnClose(fastdelegate::bind(&TWinSCPFileSystem::TerminalClose, this, _1));
@@ -3539,6 +3545,37 @@ void /* __fastcall */ TWinSCPFileSystem::TerminalDeleteLocalFile(const UnicodeSt
   {
     throw Exception(FORMAT(GetMsg(DELETE_LOCAL_FILE_ERROR).c_str(), FileName.c_str()));
   }
+}
+//---------------------------------------------------------------------------
+HANDLE /* __fastcall */ TWinSCPFileSystem::TerminalCreateLocalFile(const UnicodeString & LocalFileName,
+  DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes)
+{
+  return ::CreateFile(LocalFileName.c_str(), DesiredAccess, ShareMode, NULL, CreationDisposition, FlagsAndAttributes, 0);
+}
+//---------------------------------------------------------------------------
+DWORD /* __fastcall */ TWinSCPFileSystem::TerminalGetLocalFileAttributes(const UnicodeString & LocalFileName)
+{
+  return ::GetFileAttributes(LocalFileName.c_str());
+}
+//---------------------------------------------------------------------------
+BOOL /* __fastcall */ TWinSCPFileSystem::TerminalSetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes)
+{
+  return ::SetFileAttributes(LocalFileName.c_str(), FileAttributes);
+}
+//---------------------------------------------------------------------------
+BOOL /* __fastcall */ TWinSCPFileSystem::TerminalMoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags)
+{
+  return ::MoveFileExW(LocalFileName.c_str(), NewLocalFileName.c_str(), Flags) != 0;
+}
+//---------------------------------------------------------------------------
+BOOL /* __fastcall */ TWinSCPFileSystem::TerminalRemoveLocalDirectory(const UnicodeString & LocalDirName)
+{
+  return ::RemoveDirectory(LocalDirName) != 0;
+}
+//---------------------------------------------------------------------------
+BOOL /* __fastcall */ TWinSCPFileSystem::TerminalCreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
+{
+  return ::CreateDirectory(LocalDirName.c_str(), SecurityAttributes) != 0;
 }
 //---------------------------------------------------------------------------
 int __fastcall TWinSCPFileSystem::MoreMessageDialog(const UnicodeString Str,

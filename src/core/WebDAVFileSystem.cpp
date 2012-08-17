@@ -13615,7 +13615,7 @@ void __fastcall TWebDAVFileSystem::WebDAVSource(const UnicodeString FileName,
     else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
     {
       FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, FileName.c_str()),
-        THROWOSIFFALSE(FileSetAttr(FileName, Attrs & ~faArchive) == 0);
+        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(FileName, Attrs & ~faArchive) == 0);
       )
     }
   }
@@ -13756,12 +13756,12 @@ void __fastcall TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString Dir
   {
     if (FLAGSET(Params, cpDelete))
     {
-      RemoveDir(DirectoryName);
+      FTerminal->RemoveLocalDirectory(DirectoryName);
     }
     else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
     {
       FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
-        THROWOSIFFALSE(FileSetAttr(DirectoryName, Attrs & ~faArchive) == 0);
+        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DirectoryName, Attrs & ~faArchive) == 0);
       )
     }
   }
@@ -13921,7 +13921,7 @@ void __fastcall TWebDAVFileSystem::Sink(const UnicodeString FileName,
       if (!File->GetIsSymLink())
       {
         FILE_OPERATION_LOOP (FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
-          int Attrs = FileGetAttr(DestFullName);
+          int Attrs = FTerminal->GetLocalFileAttributes(DestFullName);
           if (FLAGCLEAR(Attrs, faDirectory)) { EXCEPTION; }
         );
 
@@ -13997,7 +13997,7 @@ void __fastcall TWebDAVFileSystem::Sink(const UnicodeString FileName,
 
       int Attrs = -1;
       FILE_OPERATION_LOOP (FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
-        Attrs = FileGetAttr(DestFullName);
+        Attrs = FTerminal->GetLocalFileAttributes(DestFullName);
         if ((Attrs >= 0) && FLAGSET(Attrs, faDirectory)) { EXCEPTION; }
       );
 
@@ -14032,7 +14032,7 @@ void __fastcall TWebDAVFileSystem::Sink(const UnicodeString FileName,
       if (DestFileName != UserData.FileName)
       {
         DestFullName = TargetDir + UserData.FileName;
-        Attrs = FileGetAttr(DestFullName);
+        Attrs = FTerminal->GetLocalFileAttributes(DestFullName);
       }
 
       Action.Destination(ExpandUNCFileName(DestFullName));
@@ -14045,25 +14045,11 @@ void __fastcall TWebDAVFileSystem::Sink(const UnicodeString FileName,
       if ((NewAttrs & Attrs) != NewAttrs)
       {
         FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
-          THROWOSIFFALSE(FileSetAttr(DestFullName, Attrs | NewAttrs) == 0);
+          THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFullName, Attrs | NewAttrs) == 0);
         );
       }
       // set time
-      {
-        FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
-          HANDLE Handle;
-          Handle = CreateFile(DestFullName.c_str(), GENERIC_WRITE,
-                              FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, 0);
-          FILETIME WrTime = DateTimeToFileTime(File->GetModification(),
-                            FTerminal->GetSessionData()->GetDSTMode());
-          bool Result = SetFileTime(Handle, &WrTime, &WrTime, &WrTime) > 0;
-          CloseHandle(Handle);
-          if (!Result)
-          {
-            Abort();
-          }
-        );
-      }
+      FTerminal->SetLocalFileTime(DestFullName, File->GetModification());
     }
   }
 
