@@ -65,7 +65,6 @@ size_t BeginThread(void * SecurityAttributes, DWORD StackSize,
     static_cast<LPTHREAD_START_ROUTINE>(&threadstartroutine),
     Parameter,
     CreationFlags, &ThreadId);
-  // DEBUG_PRINTF(L"Result = %d, ThreadId = %d", Result, ThreadId);
   return reinterpret_cast<size_t>(Result);
 }
 

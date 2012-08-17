@@ -1143,7 +1143,6 @@ void __fastcall TFarDialogItem::ResetBounds()
 {
   TRect B = FBounds;
   FarDialogItem * DItem = GetDialogItem();
-  // DEBUG_PRINTF(L"this = %x, DItem = %x, GetContainer = %x", this, DItem, GetContainer());
   #define BOUND(DIB, BB, DB, CB) DItem->DIB = B.BB >= 0 ? \
     (GetContainer() ? GetContainer()->CB : 0) + B.BB : GetDialog()->GetSize().DB + B.BB
   BOUND(X1, Left, x, GetLeft());

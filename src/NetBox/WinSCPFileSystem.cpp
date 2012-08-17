@@ -87,7 +87,6 @@ void __fastcall TSessionPanelItem::GetData(
   UnicodeString & /*Owner*/, void *& UserData, int & /*CustomColumnNumber*/)
 {
   FileName = UnixExtractFileName(FSessionData->GetName());
-  // DEBUG_PRINTF(L"FileName = %s, GetName = %s", FileName.c_str(), FSessionData->GetName().c_str());
   UserData = FSessionData;
 }
 //---------------------------------------------------------------------------
@@ -495,7 +494,6 @@ void __fastcall TWinSCPFileSystem::GetOpenPluginInfoEx(long unsigned & Flags,
 bool __fastcall TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
 {
   bool Result;
-  // DEBUG_PRINTF(L"begin: Connected = %d", Connected());
   if (Connected())
   {
     assert(!FNoProgress);
@@ -550,7 +548,6 @@ bool __fastcall TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int O
         delete ChildPaths;
       } BOOST_SCOPE_EXIT_END
       ChildPaths->SetCaseSensitive(false);
-      // DEBUG_PRINTF(L"StoredSessions->GetCount = %d", StoredSessions->GetCount());
       for (int Index = 0; Index < StoredSessions->GetCount(); Index++)
       {
         Data = StoredSessions->GetSession(Index);
@@ -628,7 +625,6 @@ bool __fastcall TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int O
   {
     Result = false;
   }
-  // DEBUG_PRINTF(L"Result = %d", Result);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -677,19 +673,15 @@ void __fastcall TWinSCPFileSystem::DuplicateRenameSession(TSessionData * Data,
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::FocusSession(TSessionData * Data)
 {
-  // DEBUG_PRINTF(L"begin");
   TFarPanelItem * SessionItem = GetPanelInfo()->FindUserData(Data);
-  // DEBUG_PRINTF(L"SessionItem = %x", SessionItem);
   if (SessionItem != NULL)
   {
     GetPanelInfo()->SetFocusedItem(SessionItem);
   }
-  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void __fastcall TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
 {
-  // DEBUG_PRINTF(L"begin: Data = %x, Edit = %d", Data, Edit);
   TSessionData * OrigData = Data;
   bool NewData = !Data;
   bool FillInConnect = !Edit && !Data->GetCanLogin();
@@ -732,7 +724,6 @@ void __fastcall TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool 
               Name = UnixIncludeTrailingBackslash(FSessionsFolder);
             }
             Name += Data->GetSessionName();
-            // DEBUG_PRINTF(L"Name = %s", Name.c_str());
             if (FPlugin->InputBox(GetMsg(NEW_SESSION_NAME_TITLE),
                                   GetMsg(NEW_SESSION_NAME_PROMPT), Name, 0) &&
                 !Name.IsEmpty())
@@ -796,7 +787,6 @@ void __fastcall TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool 
     }
   }
 #endif
-  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 bool __fastcall TWinSCPFileSystem::ProcessEventEx(int Event, void * Param)
@@ -966,7 +956,6 @@ bool __fastcall TWinSCPFileSystem::ExecuteCommand(const UnicodeString Command)
 bool __fastcall TWinSCPFileSystem::ProcessKeyEx(int Key, unsigned int ControlState)
 {
   bool Handled = false;
-  // DEBUG_PRINTF(L"begin, Key = %u, ControlState = %u", Key, ControlState);
 
   TFarPanelItem * Focused = GetPanelInfo()->GetFocusedItem();
 
@@ -979,12 +968,6 @@ bool __fastcall TWinSCPFileSystem::ProcessKeyEx(int Key, unsigned int ControlSta
   else if (SessionList())
   {
     TSessionData * Data = NULL;
-
-    // DEBUG_PRINTF(L"Focused = %x", Focused);
-    if (Focused)
-    {
-      // DEBUG_PRINTF(L"Focused->GetIsFile = %d, Focused->GetUserData = %x", Focused->GetIsFile(), Focused->GetUserData());
-    }
     if ((Focused != NULL) && Focused->GetIsFile() && Focused->GetUserData())
     {
       Data = static_cast<TSessionData *>(Focused->GetUserData());
@@ -1008,10 +991,8 @@ bool __fastcall TWinSCPFileSystem::ProcessKeyEx(int Key, unsigned int ControlSta
       Handled = true;
     }
 
-    // DEBUG_PRINTF(L"Key = %x, VK_F4 = %x, ControlState = %d", Key, VK_F4, ControlState);
     if (Key == VK_F4 && (ControlState == 0))
     {
-      // DEBUG_PRINTF(L"Data = %x, StoredSessions->GetCount = %d", Data, StoredSessions->GetCount());
       if ((Data != NULL) || (StoredSessions->GetCount() == 0))
       {
         EditConnectSession(Data, true);
@@ -1121,13 +1102,11 @@ bool __fastcall TWinSCPFileSystem::ProcessKeyEx(int Key, unsigned int ControlSta
       Handled = true;
     }
   }
-  // DEBUG_PRINTF(L"end");
   return Handled;
 }
 //---------------------------------------------------------------------------
 void __fastcall TWinSCPFileSystem::CreateLink()
 {
-  // DEBUG_PRINTF(L"begin");
   RequireCapability(fcResolveSymlink);
   RequireCapability(fcSymbolicLink);
 
@@ -1182,7 +1161,6 @@ void __fastcall TWinSCPFileSystem::CreateLink()
       RedrawPanel();
     }
   }
-  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void __fastcall TWinSCPFileSystem::TemporarilyDownloadFiles(
@@ -1244,7 +1222,6 @@ void __fastcall TWinSCPFileSystem::ApplyCommand()
       UnicodeString Command = FarConfiguration->GetApplyCommandCommand();
       if (ApplyCommandDialog(Command, Params))
       {
-        DEBUG_PRINTF(L"Command = %s, Params = %d", Command.c_str(), Params);
         FarConfiguration->SetApplyCommandParams(Params);
         FarConfiguration->SetApplyCommandCommand(Command);
         if (FLAGCLEAR(Params, ccLocal))
@@ -1615,7 +1592,6 @@ bool __fastcall TWinSCPFileSystem::SynchronizeAllowSelectedOnly()
 void /* __fastcall */ TWinSCPFileSystem::GetSynchronizeOptions(
   int Params, TSynchronizeOptions & Options)
 {
-  // DEBUG_PRINTF(L"begin");
   if (FLAGSET(Params, spSelectedOnly) && SynchronizeAllowSelectedOnly())
   {
     Options.Filter = new TStringList();
@@ -1632,7 +1608,6 @@ void /* __fastcall */ TWinSCPFileSystem::GetSynchronizeOptions(
     }
     Options.Filter->Sort();
   }
-  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void __fastcall TWinSCPFileSystem::FullSynchronize(bool Source)
@@ -1799,7 +1774,6 @@ void /* __fastcall */ TWinSCPFileSystem::TerminalSynchronizeDirectory(
         (MoreMessageDialog(GetMsg(CANCEL_OPERATION), NULL,
           qtConfirmation, qaOK | qaCancel) == qaOK))
     {
-      // DEBUG_PRINTF(L"after MoreMessageDialog");
       Continue = false;
     }
   }
@@ -1968,7 +1942,6 @@ void /* __fastcall */ TWinSCPFileSystem::CustomCommandGetParamValue(
 //---------------------------------------------------------------------------
 void __fastcall TWinSCPFileSystem::TransferFiles(bool Move)
 {
-  // DEBUG_PRINTF(L"begin");
   if (Move)
   {
     RequireCapability(fcRemoteMove);
@@ -2030,12 +2003,10 @@ void __fastcall TWinSCPFileSystem::TransferFiles(bool Move)
 #endif
     }
   }
-  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void __fastcall TWinSCPFileSystem::RenameFile()
 {
-  // DEBUG_PRINTF(L"begin");
   TFarPanelItem * PanelItem = GetPanelInfo()->GetFocusedItem();
   assert(PanelItem != NULL);
 
@@ -2069,12 +2040,10 @@ void __fastcall TWinSCPFileSystem::RenameFile()
 #endif
     }
   }
-  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void __fastcall TWinSCPFileSystem::FileProperties()
 {
-  // DEBUG_PRINTF(L"begin");
   TStrings * FileList = CreateSelectedFileList(osRemote);
   if (FileList)
   {
@@ -2148,7 +2117,6 @@ void __fastcall TWinSCPFileSystem::FileProperties()
     }
 #endif
   }
-  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void __fastcall TWinSCPFileSystem::InsertTokenOnCommandLine(UnicodeString Token, bool Separate)
@@ -2458,7 +2426,6 @@ bool __fastcall TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString NewPa
 //---------------------------------------------------------------------------
 bool __fastcall TWinSCPFileSystem::SetDirectoryEx(const UnicodeString Dir, int OpMode)
 {
-  // DEBUG_PRINTF(L"begin, Dir = %s", Dir.c_str());
   if (!SessionList() && !Connected())
   {
     return false;
@@ -2503,7 +2470,6 @@ bool __fastcall TWinSCPFileSystem::SetDirectoryEx(const UnicodeString Dir, int O
     if (SessionList())
     {
       FSessionsFolder = AbsolutePath(L"/" + FSessionsFolder, Dir);
-      // DEBUG_PRINTF(L"FSessionsFolder = %s", FSessionsFolder.c_str());
       assert(FSessionsFolder[1] == L'/');
       FSessionsFolder.Delete(1, 1);
       FNewSessionsFolder = L"";
@@ -2533,7 +2499,6 @@ bool __fastcall TWinSCPFileSystem::SetDirectoryEx(const UnicodeString Dir, int O
           }
           Self->FNoProgress = false;
         } BOOST_SCOPE_EXIT_END
-        // DEBUG_PRINTF(L"Dir = %s, FTerminal->GetCurrentDirectory = %s", Dir.c_str(), FTerminal->GetCurrentDirectory().c_str());
         if (Dir == L"\\")
         {
           FTerminal->ChangeDirectory(ROOTDIRECTORY);
@@ -2636,7 +2601,6 @@ bool __fastcall TWinSCPFileSystem::SetDirectoryEx(const UnicodeString Dir, int O
 
     return true;
   }
-  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 int __fastcall TWinSCPFileSystem::MakeDirectoryEx(UnicodeString & Name, int OpMode)
@@ -2827,7 +2791,6 @@ int __fastcall TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move
   UnicodeString & DestPath, int OpMode)
 {
   int Result;
-  // DEBUG_PRINTF(L"begin, DestPath = %s, Connected = %d", DestPath.c_str(), Connected());
   if (Connected())
   {
     FFileList = CreateFileList(PanelItems, osRemote);
@@ -2945,7 +2908,6 @@ int __fastcall TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move
   {
     Result = -1;
   }
-  // DEBUG_PRINTF(L"end, Result = %d", Result);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -2991,7 +2953,6 @@ int __fastcall TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
                                    UnicodeString DestPath)
 {
   int Result = 1;
-  // DEBUG_PRINTF(L"DestPath = %s, Edit = %d", DestPath.c_str(), Edit);
   bool Confirmed = (OpMode & OPM_SILENT);
   bool Ask = !Confirmed;
 
@@ -3069,7 +3030,6 @@ int __fastcall TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
   {
     Result = -1;
   }
-  // DEBUG_PRINTF(L"end, Result = %d", Result);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -3317,10 +3277,8 @@ TStrings * __fastcall TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems
 //---------------------------------------------------------------------------
 void __fastcall TWinSCPFileSystem::SaveSession()
 {
-  // DEBUG_PRINTF(L"FTerminal->GetSessionData()->Name = %s", FTerminal->GetSessionData()->Name.c_str());
   if (FTerminal->GetActive() && !FTerminal->GetSessionData()->GetName().IsEmpty())
   {
-    // DEBUG_PRINTF(L"FTerminal->GetCurrentDirectory = %s", FTerminal->GetCurrentDirectory().c_str());
     FTerminal->GetSessionData()->SetRemoteDirectory(FTerminal->GetCurrentDirectory());
 
     TSessionData * Data;
@@ -3405,7 +3363,6 @@ void __fastcall TWinSCPFileSystem::Disconnect()
   {
     if (!FTerminal->GetSessionData()->GetName().IsEmpty())
     {
-      DEBUG_PRINTF(L"FTerminal->GetSessionData()->GetName = %s", FTerminal->GetSessionData()->GetName().c_str());
       FPrevSessionName = FTerminal->GetSessionData()->GetName();
     }
     SaveSession();
@@ -3702,7 +3659,6 @@ void /* __fastcall */ TWinSCPFileSystem::OperationFinished(TFileOperation Operat
   TOperationSide Side, bool /*Temp*/, const UnicodeString & FileName, bool Success,
   TOnceDoneOperation & /*DisconnectWhenComplete*/)
 {
-  // DEBUG_PRINTF(L"begin");
   USEDPARAM(Side);
 
   if ((Operation != foCalculateSize) &&
@@ -3755,7 +3711,6 @@ void /* __fastcall */ TWinSCPFileSystem::OperationFinished(TFileOperation Operat
       FSynchronizeController->LogOperation(soDelete, FileName);
     }
   }
-  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void __fastcall TWinSCPFileSystem::ShowOperationProgress(
@@ -3832,7 +3787,6 @@ void __fastcall TWinSCPFileSystem::ShowOperationProgress(
       if (ProgressData.TotalSizeSet)
       {
         Value = FormatDateTimeSpan(Configuration->GetTimeFormat(), ProgressData.TotalTimeLeft());
-        // DEBUG_PRINTF(L"Value = %s", Value.c_str());
         LabelText = TimeLeftLabel;
       }
       else
@@ -4055,7 +4009,6 @@ void __fastcall TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressTyp
       {
         Result = MoreMessageDialog(GetMsg(CANCEL_OPERATION), NULL,
                                    qtConfirmation, qaOK | qaCancel);
-        DEBUG_PRINTF(L"after MoreMessageDialog: Result = %d", Result);
       }
       switch (Result)
       {

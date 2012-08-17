@@ -1265,7 +1265,6 @@ UnicodeString __fastcall ReplaceCopyright(UnicodeString S)
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
-  // DEBUG_PRINTF(L"Configuration->GetVersion = %s", Configuration->GetVersion().c_str());
   Text->SetCaption(FORMAT(GetMsg(ABOUT_VERSION).c_str(), Configuration->GetVersion().c_str(), PLUGIN_VERSION_BUILD));
   Text->SetCenterGroup(true);
 
@@ -1388,7 +1387,6 @@ void /* __fastcall */ TAboutDialog::UrlButtonClick(TFarButton * Sender, bool & /
 //---------------------------------------------------------------------------
 void __fastcall TWinSCPPlugin::AboutDialog()
 {
-  DEBUG_PRINTF(L"begin");
   TFarDialog * Dialog = new TAboutDialog(this);
   // try
   {
@@ -1396,7 +1394,6 @@ void __fastcall TWinSCPPlugin::AboutDialog()
     {
       delete Dialog;
     } BOOST_SCOPE_EXIT_END
-    DEBUG_PRINTF(L"before Dialog->ShowModal");
     Dialog->ShowModal();
   }
 #ifndef _MSC_VER
@@ -1405,7 +1402,6 @@ void __fastcall TWinSCPPlugin::AboutDialog()
     delete Dialog;
   }
 #endif
-  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -3090,7 +3086,6 @@ void __fastcall TSessionDialog::TransferProtocolComboChange()
   FTransferProtocolIndex = TransferProtocolCombo->GetItems()->GetSelected();
 
   LoadPing(FSessionData);
-  // DEBUG_PRINTF(L"GetFSProtocol = %d, PortNumberEdit->GetAsInteger = %d", GetFSProtocol(), PortNumberEdit->GetAsInteger());
   if (GetFSProtocol() == fsSFTPonly || GetFSProtocol() == fsSCPonly)
   {
     if (PortNumberEdit->GetAsInteger() == 21)
@@ -3634,7 +3629,6 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
       KexListBox->GetItems()->EndUpdate();
     } BOOST_SCOPE_EXIT_END
     KexListBox->GetItems()->Clear();
-    // DEBUG_PRINTF(L"KEX_NAME_WARN = %d, KEX_COUNT = %d, KEX_NAME_GSSGEX = %d", KEX_NAME_WARN, KEX_COUNT, KEX_NAME_GSSGEX);
     assert(KEX_NAME_WARN+KEX_COUNT+1 == KEX_NAME_GSSGEX);
     for (int Index = 0; Index < KEX_COUNT; Index++)
     {
@@ -4793,10 +4787,8 @@ private:
     }
     else if (UserList)
     {
-      DEBUG_PRINTF(L"UserList->GetCount = %d", UserList->Count());
       for (int Index = 0; Index < UserList->Count(); Index++)
       {
-        DEBUG_PRINTF(L"user = %s", UserList->Token(Index)->GetName().c_str());
         GroupComboBox->GetItems()->Add(UserList->Token(Index)->GetName());
       }
     }
@@ -4820,7 +4812,6 @@ private:
     {
       for (int Index = 0; Index < GroupList->Count(); Index++)
       {
-        DEBUG_PRINTF(L"group = %s", GroupList->Token(Index)->GetName().c_str());
         GroupComboBox->GetItems()->Add(GroupList->Token(Index)->GetName());
       }
     }
@@ -8363,7 +8354,6 @@ void /* __fastcall */ TSynchronizeDialog::StartButtonClick(TFarButton * /*Sender
       FSynchronizing = false;
       UpdateControls();
 
-      DEBUG_PRINTF(L"before FarPlugin->HandleException");
       FarPlugin->HandleException(&E);
     }
   }
