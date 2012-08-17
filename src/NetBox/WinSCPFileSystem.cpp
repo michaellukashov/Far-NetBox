@@ -632,7 +632,7 @@ void __fastcall TWinSCPFileSystem::DuplicateRenameSession(TSessionData * Data,
 {
   assert(Data);
   UnicodeString Name = Data->GetName();
-  if (FPlugin->InputBox(GetMsg(Duplicate ? DUPLICATE_SESSION_TITLE : RENAME_SESSION_TITLE),
+  if (WinSCPPlugin()->InputBox(GetMsg(Duplicate ? DUPLICATE_SESSION_TITLE : RENAME_SESSION_TITLE),
         GetMsg(Duplicate ? DUPLICATE_SESSION_PROMPT : RENAME_SESSION_PROMPT),
         Name, NULL) &&
       !Name.IsEmpty() && (Name != Data->GetName()))
@@ -723,7 +723,7 @@ void __fastcall TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool 
               Name = UnixIncludeTrailingBackslash(FSessionsFolder);
             }
             Name += Data->GetSessionName();
-            if (FPlugin->InputBox(GetMsg(NEW_SESSION_NAME_TITLE),
+            if (WinSCPPlugin()->InputBox(GetMsg(NEW_SESSION_NAME_TITLE),
                                   GetMsg(NEW_SESSION_NAME_PROMPT), Name, 0) &&
                 !Name.IsEmpty())
             {
@@ -824,7 +824,7 @@ void /* __fastcall */ TWinSCPFileSystem::TerminalCaptureLog(
 {
   if (FOutputLog)
   {
-    FPlugin->WriteConsole(AddedLine + L"\n");
+    WinSCPPlugin()->WriteConsole(AddedLine + L"\n");
   }
   if (FCapturedLog != NULL)
   {
@@ -910,16 +910,16 @@ bool __fastcall TWinSCPFileSystem::ExecuteCommand(const UnicodeString Command)
         }
       } BOOST_SCOPE_EXIT_END
       FarControl(FCTL_SETCMDLINE, 0, reinterpret_cast<intptr_t>(L""));
-      FPlugin->ShowConsoleTitle(Command);
+      WinSCPPlugin()->ShowConsoleTitle(Command);
       // try
       {
         BOOST_SCOPE_EXIT ( (Self) )
         {
-          Self->FPlugin->ScrollTerminalScreen(1);
-          Self->FPlugin->SaveTerminalScreen();
-          Self->FPlugin->ClearConsoleTitle();
+          Self->WinSCPPlugin()->ScrollTerminalScreen(1);
+          Self->WinSCPPlugin()->SaveTerminalScreen();
+          Self->WinSCPPlugin()->ClearConsoleTitle();
         } BOOST_SCOPE_EXIT_END
-        FPlugin->ShowTerminalScreen();
+        WinSCPPlugin()->ShowTerminalScreen();
 
         FOutputLog = true;
         FTerminal->AnyCommand(Command, fastdelegate::bind(&TWinSCPFileSystem::TerminalCaptureLog, this, _1, _2));
@@ -927,9 +927,9 @@ bool __fastcall TWinSCPFileSystem::ExecuteCommand(const UnicodeString Command)
 #ifndef _MSC_VER
       __finally
       {
-        FPlugin->ScrollTerminalScreen(1);
-        FPlugin->SaveTerminalScreen();
-        FPlugin->ClearConsoleTitle();
+        WinSCPPlugin()->ScrollTerminalScreen(1);
+        WinSCPPlugin()->SaveTerminalScreen();
+        WinSCPPlugin()->ClearConsoleTitle();
       }
 #endif
     }
@@ -1169,7 +1169,7 @@ void __fastcall TWinSCPFileSystem::TemporarilyDownloadFiles(
   CopyParam.SetPreserveReadOnly(false);
   CopyParam.SetResumeSupport(rsOff);
 
-  TempDir = FPlugin->TemporaryDir();
+  TempDir = WinSCPPlugin()->TemporaryDir();
   if (TempDir.IsEmpty() || !ForceDirectories(TempDir))
   {
     throw Exception(FMTLOAD(CREATE_TEMP_DIR_ERROR, TempDir.c_str()));
@@ -1230,7 +1230,7 @@ void __fastcall TWinSCPFileSystem::ApplyCommand()
             TCustomCommandData Data(GetTerminal());
             TRemoteCustomCommand RemoteCustomCommand(Data, GetTerminal()->GetCurrentDirectory());
             TFarInteractiveCustomCommand InteractiveCustomCommand(
-              FPlugin, &RemoteCustomCommand);
+              WinSCPPlugin(), &RemoteCustomCommand);
 
             Command = InteractiveCustomCommand.Complete(Command, false);
 
@@ -1267,19 +1267,19 @@ void __fastcall TWinSCPFileSystem::ApplyCommand()
                   if (FLAGSET(Params, ccShowResults))
                   {
                     Self->FNoProgress = false;
-                    Self->FPlugin->ScrollTerminalScreen(1);
-                    Self->FPlugin->SaveTerminalScreen();
+                    Self->WinSCPPlugin()->ScrollTerminalScreen(1);
+                    Self->WinSCPPlugin()->SaveTerminalScreen();
                   }
 
                   if (FLAGSET(Params, ccCopyResults))
                   {
-                    Self->FPlugin->FarCopyToClipboard(Self->FCapturedLog);
+                    Self->WinSCPPlugin()->FarCopyToClipboard(Self->FCapturedLog);
                     SAFE_DESTROY(Self->FCapturedLog);
                   }
                 } BOOST_SCOPE_EXIT_END
                 if (FLAGSET(Params, ccShowResults))
                 {
-                  FPlugin->ShowTerminalScreen();
+                  WinSCPPlugin()->ShowTerminalScreen();
                 }
 
                 FTerminal->CustomCommandOnFiles(Command, Params, FileList, OutputEvent);
@@ -1290,13 +1290,13 @@ void __fastcall TWinSCPFileSystem::ApplyCommand()
                 if (FLAGSET(Params, ccShowResults))
                 {
                   FNoProgress = false;
-                  FPlugin->ScrollTerminalScreen(1);
-                  FPlugin->SaveTerminalScreen();
+                  WinSCPPlugin()->ScrollTerminalScreen(1);
+                  WinSCPPlugin()->SaveTerminalScreen();
                 }
 
                 if (FLAGSET(Params, ccCopyResults))
                 {
-                  FPlugin->FarCopyToClipboard(FCapturedLog);
+                  WinSCPPlugin()->FarCopyToClipboard(FCapturedLog);
                   SAFE_DESTROY(FCapturedLog);
                 }
               }
@@ -1318,7 +1318,7 @@ void __fastcall TWinSCPFileSystem::ApplyCommand()
         {
           TCustomCommandData Data1(GetTerminal());
           TLocalCustomCommand LocalCustomCommand(Data1, GetTerminal()->GetCurrentDirectory());
-          TFarInteractiveCustomCommand InteractiveCustomCommand(FPlugin,
+          TFarInteractiveCustomCommand InteractiveCustomCommand(WinSCPPlugin(),
               &LocalCustomCommand);
 
           Command = InteractiveCustomCommand.Complete(Command, false);
@@ -1404,7 +1404,7 @@ void __fastcall TWinSCPFileSystem::ApplyCommand()
                   TCustomCommandData Data2(FTerminal);
                   TLocalCustomCommand CustomCommand(Data2,
                     GetTerminal()->GetCurrentDirectory(), L"", LocalFile, FileList);
-                  ExecuteShellAndWait(FPlugin->GetHandle(), CustomCommand.Complete(Command, true),
+                  ExecuteShellAndWait(WinSCPPlugin()->GetHandle(), CustomCommand.Complete(Command, true),
                     TProcessMessagesEvent());
                 }
                 else if (LocalFileCommand)
@@ -1419,7 +1419,7 @@ void __fastcall TWinSCPFileSystem::ApplyCommand()
                       TCustomCommandData Data3(FTerminal);
                       TLocalCustomCommand CustomCommand(Data3,
                         GetTerminal()->GetCurrentDirectory(), FileName, LocalFile, L"");
-                      ExecuteShellAndWait(FPlugin->GetHandle(),
+                      ExecuteShellAndWait(WinSCPPlugin()->GetHandle(),
                         CustomCommand.Complete(Command, true), TProcessMessagesEvent());
                     }
                   }
@@ -1433,7 +1433,7 @@ void __fastcall TWinSCPFileSystem::ApplyCommand()
                       TLocalCustomCommand CustomCommand(
                         Data4, GetTerminal()->GetCurrentDirectory(),
                         FileName, LocalFileList->GetStrings(Index), L"");
-                      ExecuteShellAndWait(FPlugin->GetHandle(),
+                      ExecuteShellAndWait(WinSCPPlugin()->GetHandle(),
                         CustomCommand.Complete(Command, true), TProcessMessagesEvent());
                     }
                   }
@@ -1451,7 +1451,7 @@ void __fastcall TWinSCPFileSystem::ApplyCommand()
                       TLocalCustomCommand CustomCommand(
                         Data5, GetTerminal()->GetCurrentDirectory(),
                         FileName, LocalFileList->GetStrings(Index), L"");
-                      ExecuteShellAndWait(FPlugin->GetHandle(),
+                      ExecuteShellAndWait(WinSCPPlugin()->GetHandle(),
                         CustomCommand.Complete(Command, true), TProcessMessagesEvent());
                     }
                   }
@@ -1463,7 +1463,7 @@ void __fastcall TWinSCPFileSystem::ApplyCommand()
                     TCustomCommandData Data6(FTerminal);
                     TLocalCustomCommand CustomCommand(Data6,
                       GetTerminal()->GetCurrentDirectory(), RemoteFileList->GetStrings(Index), L"", L"");
-                    ExecuteShellAndWait(FPlugin->GetHandle(),
+                    ExecuteShellAndWait(WinSCPPlugin()->GetHandle(),
                       CustomCommand.Complete(Command, true), TProcessMessagesEvent());
                   }
                 }
@@ -1520,16 +1520,16 @@ void __fastcall TWinSCPFileSystem::Synchronize(const UnicodeString LocalDirector
         *Checklist = AChecklist;
       }
     } BOOST_SCOPE_EXIT_END
-    FPlugin->SaveScreen(FSynchronizationSaveScreenHandle);
-    FPlugin->ShowConsoleTitle(GetMsg(SYNCHRONIZE_PROGRESS_COMPARE_TITLE));
+    WinSCPPlugin()->SaveScreen(FSynchronizationSaveScreenHandle);
+    WinSCPPlugin()->ShowConsoleTitle(GetMsg(SYNCHRONIZE_PROGRESS_COMPARE_TITLE));
     FSynchronizationStart = Now();
     FSynchronizationCompare = true;
     // try
     {
       BOOST_SCOPE_EXIT ( (Self) )
       {
-        Self->FPlugin->ClearConsoleTitle();
-        Self->FPlugin->RestoreScreen(Self->FSynchronizationSaveScreenHandle);
+        Self->WinSCPPlugin()->ClearConsoleTitle();
+        Self->WinSCPPlugin()->RestoreScreen(Self->FSynchronizationSaveScreenHandle);
       } BOOST_SCOPE_EXIT_END
       AChecklist = FTerminal->SynchronizeCollect(LocalDirectory, RemoteDirectory,
         Mode, &CopyParam, Params | TTerminal::spNoConfirmation,
@@ -1538,21 +1538,21 @@ void __fastcall TWinSCPFileSystem::Synchronize(const UnicodeString LocalDirector
 #ifndef _MSC_VER
     __finally
     {
-      FPlugin->ClearConsoleTitle();
-      FPlugin->RestoreScreen(FSynchronizationSaveScreenHandle);
+      WinSCPPlugin()->ClearConsoleTitle();
+      WinSCPPlugin()->RestoreScreen(FSynchronizationSaveScreenHandle);
     }
 #endif
 
-    FPlugin->SaveScreen(FSynchronizationSaveScreenHandle);
-    FPlugin->ShowConsoleTitle(GetMsg(SYNCHRONIZE_PROGRESS_TITLE));
+    WinSCPPlugin()->SaveScreen(FSynchronizationSaveScreenHandle);
+    WinSCPPlugin()->ShowConsoleTitle(GetMsg(SYNCHRONIZE_PROGRESS_TITLE));
     FSynchronizationStart = Now();
     FSynchronizationCompare = false;
     // try
     {
       BOOST_SCOPE_EXIT ( (Self) )
       {
-        Self->FPlugin->ClearConsoleTitle();
-        Self->FPlugin->RestoreScreen(Self->FSynchronizationSaveScreenHandle);
+        Self->WinSCPPlugin()->ClearConsoleTitle();
+        Self->WinSCPPlugin()->RestoreScreen(Self->FSynchronizationSaveScreenHandle);
       } BOOST_SCOPE_EXIT_END
       FTerminal->SynchronizeApply(AChecklist, LocalDirectory, RemoteDirectory,
         &CopyParam, Params | TTerminal::spNoConfirmation,
@@ -1561,8 +1561,8 @@ void __fastcall TWinSCPFileSystem::Synchronize(const UnicodeString LocalDirector
 #ifndef _MSC_VER
     __finally
     {
-      FPlugin->ClearConsoleTitle();
-      FPlugin->RestoreScreen(FSynchronizationSaveScreenHandle);
+      WinSCPPlugin()->ClearConsoleTitle();
+      WinSCPPlugin()->RestoreScreen(FSynchronizationSaveScreenHandle);
     }
 #endif
   }
@@ -1655,16 +1655,16 @@ void __fastcall TWinSCPFileSystem::FullSynchronize(bool Source)
           Self->RedrawPanel();
         }
       } BOOST_SCOPE_EXIT_END
-      FPlugin->SaveScreen(FSynchronizationSaveScreenHandle);
-      FPlugin->ShowConsoleTitle(GetMsg(SYNCHRONIZE_PROGRESS_COMPARE_TITLE));
+      WinSCPPlugin()->SaveScreen(FSynchronizationSaveScreenHandle);
+      WinSCPPlugin()->ShowConsoleTitle(GetMsg(SYNCHRONIZE_PROGRESS_COMPARE_TITLE));
       FSynchronizationStart = Now();
       FSynchronizationCompare = true;
       // try
       {
         BOOST_SCOPE_EXIT ( (Self) )
         {
-          Self->FPlugin->ClearConsoleTitle();
-          Self->FPlugin->RestoreScreen(Self->FSynchronizationSaveScreenHandle);
+          Self->WinSCPPlugin()->ClearConsoleTitle();
+          Self->WinSCPPlugin()->RestoreScreen(Self->FSynchronizationSaveScreenHandle);
         } BOOST_SCOPE_EXIT_END
         Checklist = FTerminal->SynchronizeCollect(LocalDirectory, RemoteDirectory,
           Mode, &CopyParam, Params | TTerminal::spNoConfirmation,
@@ -1673,8 +1673,8 @@ void __fastcall TWinSCPFileSystem::FullSynchronize(bool Source)
 #ifndef _MSC_VER
       __finally
       {
-        FPlugin->ClearConsoleTitle();
-        FPlugin->RestoreScreen(FSynchronizationSaveScreenHandle);
+        WinSCPPlugin()->ClearConsoleTitle();
+        WinSCPPlugin()->RestoreScreen(FSynchronizationSaveScreenHandle);
       }
 #endif
 
@@ -1691,16 +1691,16 @@ void __fastcall TWinSCPFileSystem::FullSynchronize(bool Source)
         {
           FSynchronizationStart = Now();
         }
-        FPlugin->SaveScreen(FSynchronizationSaveScreenHandle);
-        FPlugin->ShowConsoleTitle(GetMsg(SYNCHRONIZE_PROGRESS_TITLE));
+        WinSCPPlugin()->SaveScreen(FSynchronizationSaveScreenHandle);
+        WinSCPPlugin()->ShowConsoleTitle(GetMsg(SYNCHRONIZE_PROGRESS_TITLE));
         FSynchronizationStart = Now();
         FSynchronizationCompare = false;
         // try
         {
           BOOST_SCOPE_EXIT ( (Self) )
           {
-            Self->FPlugin->ClearConsoleTitle();
-            Self->FPlugin->RestoreScreen(Self->FSynchronizationSaveScreenHandle);
+            Self->WinSCPPlugin()->ClearConsoleTitle();
+            Self->WinSCPPlugin()->RestoreScreen(Self->FSynchronizationSaveScreenHandle);
           } BOOST_SCOPE_EXIT_END
           FTerminal->SynchronizeApply(Checklist, LocalDirectory, RemoteDirectory,
             &CopyParam, Params | TTerminal::spNoConfirmation,
@@ -1709,8 +1709,8 @@ void __fastcall TWinSCPFileSystem::FullSynchronize(bool Source)
 #ifndef _MSC_VER
         __finally
         {
-          FPlugin->ClearConsoleTitle();
-          FPlugin->RestoreScreen(FSynchronizationSaveScreenHandle);
+          WinSCPPlugin()->ClearConsoleTitle();
+          WinSCPPlugin()->RestoreScreen(FSynchronizationSaveScreenHandle);
         }
 #endif
       }
@@ -1767,9 +1767,9 @@ void /* __fastcall */ TWinSCPFileSystem::TerminalSynchronizeDirectory(
     Message += TimeElapsedLabel +
       FormatDateTimeSpan(Configuration->GetTimeFormat(), TDateTime(Now() - FSynchronizationStart)) + L"\n";
 
-    FPlugin->Message(0, (Collect ? ProgressTitleCompare : ProgressTitle), Message);
+    WinSCPPlugin()->Message(0, (Collect ? ProgressTitleCompare : ProgressTitle), Message);
 
-    if (FPlugin->CheckForEsc() &&
+    if (WinSCPPlugin()->CheckForEsc() &&
         (MoreMessageDialog(GetMsg(CANCEL_OPERATION), NULL,
           qtConfirmation, qaOK | qaCancel) == qaOK))
     {
@@ -1932,7 +1932,7 @@ void /* __fastcall */ TWinSCPFileSystem::CustomCommandGetParamValue(
   {
     Name = GetMsg(APPLY_COMMAND_PARAM_PROMPT);
   }
-  if (!FPlugin->InputBox(GetMsg(APPLY_COMMAND_PARAM_TITLE),
+  if (!WinSCPPlugin()->InputBox(GetMsg(APPLY_COMMAND_PARAM_TITLE),
         Name, Value, 0, APPLY_COMMAND_PARAM_HISTORY))
   {
     Abort();
@@ -2229,7 +2229,7 @@ void __fastcall TWinSCPFileSystem::CopyFullFileNamesToClipboard()
       }
     }
 
-    FPlugin->FarCopyToClipboard(FileNames);
+    WinSCPPlugin()->FarCopyToClipboard(FileNames);
   }
 #ifndef _MSC_VER
   __finally
@@ -2481,7 +2481,7 @@ bool __fastcall TWinSCPFileSystem::SetDirectoryEx(const UnicodeString Dir, int O
       FNoProgress = !Normal;
       if (!FNoProgress)
       {
-        FPlugin->ShowConsoleTitle(GetMsg(CHANGING_DIRECTORY_TITLE));
+        WinSCPPlugin()->ShowConsoleTitle(GetMsg(CHANGING_DIRECTORY_TITLE));
       }
       FTerminal->SetExceptionOnFail(true);
       // try
@@ -2494,7 +2494,7 @@ bool __fastcall TWinSCPFileSystem::SetDirectoryEx(const UnicodeString Dir, int O
           }
           if (!Self->FNoProgress)
           {
-            Self->FPlugin->ClearConsoleTitle();
+            Self->WinSCPPlugin()->ClearConsoleTitle();
           }
           Self->FNoProgress = false;
         } BOOST_SCOPE_EXIT_END
@@ -2518,7 +2518,7 @@ bool __fastcall TWinSCPFileSystem::SetDirectoryEx(const UnicodeString Dir, int O
         FTerminal->ExceptionOnFail = false;
         if (!FNoProgress)
         {
-          FPlugin->ClearConsoleTitle();
+          WinSCPPlugin()->ClearConsoleTitle();
         }
         FNoProgress = false;
       }
@@ -2619,19 +2619,19 @@ int __fastcall TWinSCPFileSystem::MakeDirectoryEx(UnicodeString & Name, int OpMo
         GUIConfiguration->SetNewDirectoryProperties(Properties);
       }
 
-      FPlugin->ShowConsoleTitle(GetMsg(CREATING_FOLDER));
+      WinSCPPlugin()->ShowConsoleTitle(GetMsg(CREATING_FOLDER));
       // try
       {
         BOOST_SCOPE_EXIT ( (Self) )
         {
-          Self->FPlugin->ClearConsoleTitle();
+          Self->WinSCPPlugin()->ClearConsoleTitle();
         } BOOST_SCOPE_EXIT_END
         FTerminal->CreateDirectory(Name, &Properties);
       }
 #ifndef _MSC_VER
       __finally
       {
-        FPlugin->ClearConsoleTitle();
+        WinSCPPlugin()->ClearConsoleTitle();
       }
 #endif
       return 1;
@@ -2647,7 +2647,7 @@ int __fastcall TWinSCPFileSystem::MakeDirectoryEx(UnicodeString & Name, int OpMo
     assert(!(OpMode & OPM_SILENT) || !Name.IsEmpty());
 
     if (((OpMode & OPM_SILENT) ||
-         FPlugin->InputBox(GetMsg(CREATE_FOLDER_TITLE),
+         WinSCPPlugin()->InputBox(GetMsg(CREATE_FOLDER_TITLE),
            StripHotKey(GetMsg(CREATE_FOLDER_PROMPT)),
            Name, 0, MAKE_SESSION_FOLDER_HISTORY)) &&
         !Name.IsEmpty())
@@ -2890,7 +2890,7 @@ int __fastcall TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move
     }
 
     bool AResult = (OpMode & OPM_SILENT) ||
-      FPlugin->InputBox(Title, Prompt, DestPath, 0, L"Copy");
+      WinSCPPlugin()->InputBox(Title, Prompt, DestPath, 0, L"Copy");
     if (AResult)
     {
       TExportSessionParam Param;
@@ -3429,7 +3429,7 @@ void __fastcall TWinSCPFileSystem::LogAuthentication(
 
     Message += ::StringOfChar(L'\n', Height - Count);
 
-    FPlugin->Message(0, Terminal->GetSessionData()->GetSessionName(), Message);
+    WinSCPPlugin()->Message(0, Terminal->GetSessionData()->GetSessionName(), Message);
   }
 #ifndef _MSC_VER
   __finally
@@ -3449,20 +3449,20 @@ void /* __fastcall */ TWinSCPFileSystem::TerminalInformation(
       if (FAuthenticationLog == NULL)
       {
         FAuthenticationLog = new TStringList();
-        FPlugin->SaveScreen(FAuthenticationSaveScreenHandle);
-        FPlugin->ShowConsoleTitle(GetTerminal()->GetSessionData()->GetSessionName());
+        WinSCPPlugin()->SaveScreen(FAuthenticationSaveScreenHandle);
+        WinSCPPlugin()->ShowConsoleTitle(GetTerminal()->GetSessionData()->GetSessionName());
       }
 
       LogAuthentication(Terminal, Str);
-      FPlugin->UpdateConsoleTitle(Str);
+      WinSCPPlugin()->UpdateConsoleTitle(Str);
     }
   }
   else
   {
     if (FAuthenticationLog != NULL)
     {
-      FPlugin->ClearConsoleTitle();
-      FPlugin->RestoreScreen(FAuthenticationSaveScreenHandle);
+      WinSCPPlugin()->ClearConsoleTitle();
+      WinSCPPlugin()->RestoreScreen(FAuthenticationSaveScreenHandle);
       SAFE_DESTROY(FAuthenticationLog);
     }
   }
@@ -3492,7 +3492,7 @@ void /* __fastcall */ TWinSCPFileSystem::TerminalStartReadDirectory(TObject * /*
 {
   if (!FNoProgress)
   {
-    FPlugin->ShowConsoleTitle(GetMsg(READING_DIRECTORY_TITLE));
+    WinSCPPlugin()->ShowConsoleTitle(GetMsg(READING_DIRECTORY_TITLE));
   }
 }
 //---------------------------------------------------------------------------
@@ -3509,14 +3509,14 @@ void /* __fastcall */ TWinSCPFileSystem::TerminalReadDirectoryProgress(
   }
   else
   {
-    if (FPlugin->CheckForEsc())
+    if (WinSCPPlugin()->CheckForEsc())
     {
       Cancel = true;
     }
 
     if (!FNoProgress)
     {
-      FPlugin->UpdateConsoleTitle(
+      WinSCPPlugin()->UpdateConsoleTitle(
         FORMAT(L"%s (%d)", GetMsg(READING_DIRECTORY_TITLE).c_str(), Progress));
     }
   }
@@ -3527,7 +3527,7 @@ void /* __fastcall */ TWinSCPFileSystem::TerminalReadDirectory(TObject * /*Sende
 {
   if (!FNoProgress)
   {
-    FPlugin->ClearConsoleTitle();
+    WinSCPPlugin()->ClearConsoleTitle();
   }
 }
 //---------------------------------------------------------------------------
@@ -3535,7 +3535,7 @@ void /* __fastcall */ TWinSCPFileSystem::TerminalDeleteLocalFile(const UnicodeSt
   bool Alternative)
 {
   if (!RecursiveDeleteFile(FileName,
-        (FLAGSET(FPlugin->FarSystemSettings(), FSS_DELETETORECYCLEBIN)) != Alternative))
+        (FLAGSET(WinSCPPlugin()->FarSystemSettings(), FSS_DELETETORECYCLEBIN)) != Alternative))
   {
     throw Exception(FORMAT(GetMsg(DELETE_LOCAL_FILE_ERROR).c_str(), FileName.c_str()));
   }
@@ -3601,7 +3601,7 @@ void /* __fastcall */ TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal
     assert((Prompts->GetObjects(0)) != NULL);
     UnicodeString AResult = Results->GetStrings(0);
 
-    Result = FPlugin->InputBox(Name, StripHotKey(Prompts->GetStrings(0)), AResult, FIB_NOUSELASTHISTORY);
+    Result = WinSCPPlugin()->InputBox(Name, StripHotKey(Prompts->GetStrings(0)), AResult, FIB_NOUSELASTHISTORY);
     if (Result)
     {
       Results->PutString(0, AResult);
@@ -3638,15 +3638,15 @@ void /* __fastcall */ TWinSCPFileSystem::OperationProgress(
   bool First = false;
   if (ProgressData.InProgress && !FProgressSaveScreenHandle)
   {
-    FPlugin->SaveScreen(FProgressSaveScreenHandle);
+    WinSCPPlugin()->SaveScreen(FProgressSaveScreenHandle);
     First = true;
   }
 
   // operation is finished (or terminated), so we hide progress form
   if (!ProgressData.InProgress && FProgressSaveScreenHandle)
   {
-    FPlugin->RestoreScreen(FProgressSaveScreenHandle);
-    FPlugin->ClearConsoleTitle();
+    WinSCPPlugin()->RestoreScreen(FProgressSaveScreenHandle);
+    WinSCPPlugin()->ClearConsoleTitle();
   }
   else
   {
@@ -3813,22 +3813,22 @@ void __fastcall TWinSCPFileSystem::ShowOperationProgress(
     }
     UnicodeString Message =
       Message1 + ProgressBar1 + Message2 + ProgressBar2;
-    FPlugin->Message(0, Title, Message, NULL, NULL);
+    WinSCPPlugin()->Message(0, Title, Message, NULL, NULL);
 
     if (First)
     {
-      FPlugin->ShowConsoleTitle(Title);
+      WinSCPPlugin()->ShowConsoleTitle(Title);
     }
-    FPlugin->UpdateConsoleTitleProgress(percents);
+    WinSCPPlugin()->UpdateConsoleTitleProgress(percents);
 
-    if (FPlugin->CheckForEsc())
+    if (WinSCPPlugin()->CheckForEsc())
     {
       CancelConfiguration(ProgressData);
     }
   }
   if (percents == 100)
   {
-    FPlugin->UpdateConsoleTitleProgress(percents);
+    WinSCPPlugin()->UpdateConsoleTitleProgress(percents);
   }
 }
 //---------------------------------------------------------------------------
@@ -4071,7 +4071,7 @@ void __fastcall TWinSCPFileSystem::UploadFromEditor(bool NoReload, const Unicode
 //---------------------------------------------------------------------------
 void __fastcall TWinSCPFileSystem::UploadOnSave(bool NoReload)
 {
-  TFarEditorInfo * Info = FPlugin->EditorInfo();
+  TFarEditorInfo * Info = WinSCPPlugin()->EditorInfo();
   if (Info != NULL)
   {
     // try
@@ -4135,7 +4135,7 @@ void __fastcall TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*
     if ((LastTicks == 0) || (Ticks - LastTicks > 500))
     {
       LastTicks = Ticks;
-      TFarEditorInfo * Info = FPlugin->EditorInfo();
+      TFarEditorInfo * Info = WinSCPPlugin()->EditorInfo();
       if (Info != NULL)
       {
         // try
@@ -4149,7 +4149,7 @@ void __fastcall TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*
           {
             UnicodeString FullFileName = UnixIncludeTrailingBackslash(I->second.Directory) +
                                          I->second.FileName;
-            FPlugin->FarEditorControl(ECTL_SETTITLE, static_cast<void *>(const_cast<wchar_t *>(FullFileName.c_str())));
+            WinSCPPlugin()->FarEditorControl(ECTL_SETTITLE, static_cast<void *>(const_cast<wchar_t *>(FullFileName.c_str())));
           }
         }
 #ifndef _MSC_VER
@@ -4168,7 +4168,7 @@ void __fastcall TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*
     // file with the same name is read from both filesystems recently
     if (IsActiveFileSystem())
     {
-      TFarEditorInfo * Info = FPlugin->EditorInfo();
+      TFarEditorInfo * Info = WinSCPPlugin()->EditorInfo();
       if (Info != NULL)
       {
         // try
@@ -4204,7 +4204,7 @@ void __fastcall TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*
                 memset(&Parameter, 0, sizeof(Parameter));
                 Parameter.Type = ESPT_LOCKMODE;
                 Parameter.Param.iParam = TRUE;
-                FPlugin->FarEditorControl(ECTL_SETPARAM, &Parameter);
+                WinSCPPlugin()->FarEditorControl(ECTL_SETPARAM, &Parameter);
               }
             }
           }
@@ -4226,7 +4226,7 @@ void __fastcall TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*
       UploadOnSave(false);
     }
 
-    TFarEditorInfo * Info = FPlugin->EditorInfo();
+    TFarEditorInfo * Info = WinSCPPlugin()->EditorInfo();
     if (Info != NULL)
     {
       // try
@@ -4271,7 +4271,7 @@ void __fastcall TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*
   }
   else if (Event == EE_SAVE)
   {
-    TFarEditorInfo * Info = FPlugin->EditorInfo();
+    TFarEditorInfo * Info = WinSCPPlugin()->EditorInfo();
     if (Info != NULL)
     {
       // try
@@ -4304,7 +4304,7 @@ void __fastcall TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*
             UnicodeString FullFileName = UnixIncludeTrailingBackslash(I->second.Directory) +
                 I->second.FileName;
             // note that we need to reset the title periodically (see EE_REDRAW)
-            FPlugin->FarEditorControl(ECTL_SETTITLE, static_cast<void *>(const_cast<wchar_t *>(FullFileName.c_str())));
+            WinSCPPlugin()->FarEditorControl(ECTL_SETTITLE, static_cast<void *>(const_cast<wchar_t *>(FullFileName.c_str())));
           }
 
           if (FarConfiguration->GetEditorUploadOnSave())
@@ -4520,7 +4520,7 @@ void __fastcall TWinSCPFileSystem::EditHistory()
     while (i != FEditHistories.end())
     {
       MenuItems->Add(MinimizeName(UnixIncludeTrailingBackslash((*i).Directory) + (*i).FileName,
-        FPlugin->MaxMenuItemLength(), true));
+        WinSCPPlugin()->MaxMenuItemLength(), true));
       ++i;
     }
 
@@ -4530,7 +4530,7 @@ void __fastcall TWinSCPFileSystem::EditHistory()
     const int BreakKeys[] = { VK_F4, 0 };
 
     int BreakCode = 0;
-    int Result = FPlugin->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
+    int Result = WinSCPPlugin()->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
       GetMsg(MENU_EDIT_HISTORY), L"", MenuItems, BreakKeys, BreakCode);
 
     if ((Result >= 0) && (Result < static_cast<int>(FEditHistories.size())))
@@ -4577,5 +4577,5 @@ bool __fastcall TWinSCPFileSystem::IsLogging()
 void __fastcall TWinSCPFileSystem::ShowLog()
 {
   assert(Connected() && FTerminal->GetLog()->GetLoggingToFile());
-  FPlugin->Viewer(FTerminal->GetLog()->GetCurrentFileName(), VF_NONMODAL);
+  WinSCPPlugin()->Viewer(FTerminal->GetLog()->GetCurrentFileName(), VF_NONMODAL);
 }
