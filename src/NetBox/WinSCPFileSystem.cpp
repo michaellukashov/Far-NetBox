@@ -3545,42 +3545,92 @@ void /* __fastcall */ TWinSCPFileSystem::TerminalReadDirectory(TObject * /*Sende
 void /* __fastcall */ TWinSCPFileSystem::TerminalDeleteLocalFile(const UnicodeString & FileName,
   bool Alternative)
 {
-  if (!RecursiveDeleteFile(FileName,
-        (FLAGSET(WinSCPPlugin()->FarSystemSettings(), NBSS_DELETETORECYCLEBIN)) != Alternative))
+  bool ToRecycleBin = FLAGSET(WinSCPPlugin()->FarSystemSettings(), NBSS_DELETETORECYCLEBIN) != Alternative;
+  if (ToRecycleBin || !WinSCPPlugin()->GetSystemFunctions())
   {
-    throw Exception(FORMAT(GetMsg(DELETE_LOCAL_FILE_ERROR).c_str(), FileName.c_str()));
+    if (!RecursiveDeleteFile(FileName, ToRecycleBin))
+    {
+      throw Exception(FORMAT(GetMsg(DELETE_LOCAL_FILE_ERROR).c_str(), FileName.c_str()));
+    }
+  }
+  else
+  {
+    WinSCPPlugin()->DeleteLocalFile(FileName);
   }
 }
 //---------------------------------------------------------------------------
 HANDLE /* __fastcall */ TWinSCPFileSystem::TerminalCreateLocalFile(const UnicodeString & LocalFileName,
   DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes)
 {
-  return ::CreateFile(LocalFileName.c_str(), DesiredAccess, ShareMode, NULL, CreationDisposition, FlagsAndAttributes, 0);
+  if (!WinSCPPlugin()->GetSystemFunctions())
+  {
+    return ::CreateFile(LocalFileName.c_str(), DesiredAccess, ShareMode, NULL, CreationDisposition, FlagsAndAttributes, 0);
+  }
+  else
+  {
+    return WinSCPPlugin()->CreateLocalFile(LocalFileName, DesiredAccess,
+      ShareMode, CreationDisposition, FlagsAndAttributes);
+  }
 }
 //---------------------------------------------------------------------------
 DWORD /* __fastcall */ TWinSCPFileSystem::TerminalGetLocalFileAttributes(const UnicodeString & LocalFileName)
 {
-  return ::GetFileAttributes(LocalFileName.c_str());
+  if (!WinSCPPlugin()->GetSystemFunctions())
+  {
+    return ::GetFileAttributes(LocalFileName.c_str());
+  }
+  else
+  {
+    return WinSCPPlugin()->GetLocalFileAttributes(LocalFileName);
+  }
 }
 //---------------------------------------------------------------------------
 BOOL /* __fastcall */ TWinSCPFileSystem::TerminalSetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes)
 {
-  return ::SetFileAttributes(LocalFileName.c_str(), FileAttributes);
+  if (!WinSCPPlugin()->GetSystemFunctions())
+  {
+    return ::SetFileAttributes(LocalFileName.c_str(), FileAttributes);
+  }
+  else
+  {
+    return WinSCPPlugin()->SetLocalFileAttributes(LocalFileName, FileAttributes);
+  }
 }
 //---------------------------------------------------------------------------
 BOOL /* __fastcall */ TWinSCPFileSystem::TerminalMoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags)
 {
-  return ::MoveFileExW(LocalFileName.c_str(), NewLocalFileName.c_str(), Flags) != 0;
+  if (!WinSCPPlugin()->GetSystemFunctions())
+  {
+    return ::MoveFileExW(LocalFileName.c_str(), NewLocalFileName.c_str(), Flags) != 0;
+  }
+  else
+  {
+    return WinSCPPlugin()->MoveLocalFile(LocalFileName, NewLocalFileName, Flags);
+  }
 }
 //---------------------------------------------------------------------------
 BOOL /* __fastcall */ TWinSCPFileSystem::TerminalRemoveLocalDirectory(const UnicodeString & LocalDirName)
 {
-  return ::RemoveDirectory(LocalDirName) != 0;
+  if (!WinSCPPlugin()->GetSystemFunctions())
+  {
+    return ::RemoveDirectory(LocalDirName) != 0;
+  }
+  else
+  {
+    return WinSCPPlugin()->RemoveLocalDirectory(LocalDirName);
+  }
 }
 //---------------------------------------------------------------------------
 BOOL /* __fastcall */ TWinSCPFileSystem::TerminalCreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
 {
-  return ::CreateDirectory(LocalDirName.c_str(), SecurityAttributes) != 0;
+  if (!WinSCPPlugin()->GetSystemFunctions())
+  {
+    return ::CreateDirectory(LocalDirName.c_str(), SecurityAttributes) != 0;
+  }
+  else
+  {
+    return WinSCPPlugin()->CreateLocalDirectory(LocalDirName, SecurityAttributes);
+  }
 }
 //---------------------------------------------------------------------------
 int __fastcall TWinSCPFileSystem::MoreMessageDialog(const UnicodeString Str,

@@ -65,6 +65,17 @@ protected:
   bool __fastcall IntegrationConfigurationDialog();
   void __fastcall AboutDialog();
 
+protected:
+  ArclitePrivateInfo * __fastcall GetSystemFunctions() { return static_cast<ArclitePrivateInfo *>(FStartupInfo.Private); }
+  void __fastcall DeleteLocalFile(const UnicodeString & LocalFileName);
+  HANDLE __fastcall CreateLocalFile(const UnicodeString & LocalFileName,
+    DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
+  DWORD __fastcall GetLocalFileAttributes(const UnicodeString & LocalFileName);
+  BOOL __fastcall SetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes);
+  BOOL __fastcall MoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags);
+  BOOL __fastcall RemoveLocalDirectory(const UnicodeString & LocalDirName);
+  BOOL __fastcall CreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
+
 private:
   bool FInitialized;
   TWinSCPPlugin * Self;
