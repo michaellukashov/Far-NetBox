@@ -119,21 +119,17 @@ extern "C"
 
   int WINAPI SetDirectoryW(HANDLE plugin, const wchar_t * dir, int opMode)
   {
-    DEBUG_PRINTF(L"begin, dir = %s", dir);
     assert(FarPlugin);
     TFarPluginGuard Guard;
     int result = FarPlugin->SetDirectory(plugin, dir, opMode);
-    DEBUG_PRINTF(L"end, result = %d", result);
     return result;
   }
 
   int WINAPI MakeDirectoryW(HANDLE plugin, const wchar_t ** name, int opMode)
   {
-    DEBUG_PRINTF(L"begin, name = %s", *name);
     assert(FarPlugin);
     TFarPluginGuard Guard;
     int result = FarPlugin->MakeDirectory(plugin, name, opMode);
-    DEBUG_PRINTF(L"end, result = %d", result);
     return result;
   }
 
@@ -155,12 +151,10 @@ extern "C"
 
   int WINAPI PutFilesW(HANDLE plugin, PluginPanelItem * panelItem, int itemsNumber, int move, const wchar_t * srcPath, int opMode)
   {
-    DEBUG_PRINTF(L"begin, srcPath = %s", srcPath);
     assert(FarPlugin);
     TFarPluginGuard Guard;
     int result = FarPlugin->PutFiles(plugin, panelItem, itemsNumber,
                                      move, srcPath, opMode);
-    DEBUG_PRINTF(L"end, result = %d", result);
     return result;
   }
 
@@ -206,20 +200,17 @@ extern "C"
 //---------------------------------------------------------------------------
   BOOL DllProcessAttach(HINSTANCE HInstance)
   {
-    // DEBUG_PRINTF(L"HInstance= %u", HInstance);
     FarPlugin = CreateFarPlugin(HInstance);
 
     assert(!Processes);
     Processes++;
     InitExtensionModule(HInstance);
-   // DEBUG_PRINTF(L"DllProcessAttach: end");
     return TRUE;
   }
 
 //---------------------------------------------------------------------------
   BOOL DllProcessDetach()
   {
-    // DEBUG_PRINTF(L"DllProcessDetach: start");
     assert(Processes);
     Processes--;
     if (!Processes)
@@ -228,14 +219,12 @@ extern "C"
       SAFE_DESTROY(FarPlugin);
       TermExtensionModule();
     }
-    // DEBUG_PRINTF(L"DllProcessDetach: end");
     return TRUE;
   }
 
 //---------------------------------------------------------------------------
   BOOL WINAPI DllMain(HINSTANCE HInstance, DWORD Reason, LPVOID /*ptr*/ )
   {
-    // DEBUG_PRINTF(L"DllEntryPoint: start");
     BOOL Result = TRUE;
     switch (Reason)
     {
@@ -247,7 +236,6 @@ extern "C"
         Result = DllProcessDetach();
         break;
     }
-    // DEBUG_PRINTF(L"DllEntryPoint: end");
     return Result;
   }
 
