@@ -28,7 +28,6 @@
 #include <farkeys.hpp>
 #include <farcolor.hpp>
 #include "version.h"
-// FAR WORKAROUND
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
 #pragma package(smart_init)

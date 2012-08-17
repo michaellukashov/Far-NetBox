@@ -29,7 +29,6 @@
 #include <CompThread.hpp>
 #include <SysUtils.hpp>
 #endif
-// FAR WORKAROUND
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
 #pragma package(smart_init)

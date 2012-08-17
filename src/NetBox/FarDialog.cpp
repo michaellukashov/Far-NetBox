@@ -15,7 +15,6 @@
 #include "FarDialog.h"
 #include "Common.h"
 
-// FAR WORKAROUND
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
 #pragma package(smart_init)
@@ -2502,14 +2501,6 @@ intptr_t TFarListBox::ItemProc(int Msg, intptr_t Param)
   {
     Result = TFarDialogItem::ItemProc(Msg, Param);
   }
-/*
-  // FAR WORKAROUND
-  if ((Msg == DN_MOUSECLICK) && (Items->Count > 0) &&
-      (FarPlugin->FarVersion() < FAR170ALPHA6))
-  {
-    FDenyClose = true;
-  }
-*/
   return Result;
 }
 //---------------------------------------------------------------------------
