@@ -13946,22 +13946,6 @@ void __fastcall TWebDAVFileSystem::Sink(const UnicodeString FileName,
         {
           THROW_SKIP_FILE_NULL;
         }
-        // set time
-        {
-          FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
-            HANDLE Handle;
-            Handle = CreateFile(DestFullName.c_str(), GENERIC_READ | GENERIC_WRITE,
-                                FILE_SHARE_READ | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, 0);
-            FILETIME WrTime = DateTimeToFileTime(File->GetModification(),
-                              FTerminal->GetSessionData()->GetDSTMode());
-            bool Result = SetFileTime(Handle, &WrTime, &WrTime, &WrTime) > 0;
-            CloseHandle(Handle);
-            if (!Result)
-            {
-              Abort();
-            }
-          );
-        }
       }
       else
       {
