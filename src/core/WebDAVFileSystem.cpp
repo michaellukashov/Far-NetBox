@@ -12961,33 +12961,7 @@ void __fastcall TWebDAVFileSystem::ReadCurrentDirectory()
 {
   if (FCachedDirectoryChange.IsEmpty())
   {
-    UnicodeString Path = FCurrentDirectory.IsEmpty() ? UnicodeString(L"/") : FCurrentDirectory;
-    int responseCode = 0;
-    bool isExist = SendPropFindRequest(Path.c_str(), responseCode);
-    if (isExist)
-    {
-      FCurrentDirectory = Path;
-    }
-    else if (responseCode == 401)
-    {
-      // Unauthorized
-      FPasswordFailed = true;
-      UnicodeString Password = L"";
-      if (!FTerminal->PromptUser(FTerminal->GetSessionData(), pkPassword, LoadStr(PASSWORD_TITLE), L"",
-                                LoadStr(PASSWORD_PROMPT), false, 0, Password))
-      {
-        FTerminal->FatalError(NULL, LoadStr(AUTHENTICATION_FAILED));
-      }
-      FTerminal->GetSessionData()->SetPassword(Password);
-      throw ExtException(L"", NULL, true);
-    }
-    /*else
-    {
-      // FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, L"webdav#1",
-                                          // UnicodeString(L"Couldn't read directory " + FCurrentDirectory).c_str()));
-      throw Exception(FMTLOAD(INTERNAL_ERROR, L"webdav#1",
-                                          UnicodeString(L"Couldn't read directory " + FCurrentDirectory).c_str()));
-    }*/
+    FCurrentDirectory = FCurrentDirectory.IsEmpty() ? UnicodeString(L"/") : FCurrentDirectory;
   }
   else
   {
