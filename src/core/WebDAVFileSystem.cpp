@@ -279,6 +279,7 @@ typedef struct list_func_baton_t
 {
   bool verbose;
   listdataentry_vector_t * entries;
+  session_t * session;
   apr_pool_t * pool;
 } list_func_baton_t;
 
@@ -9034,8 +9035,10 @@ list_func(void * baton,
   assert(pb->entries);
   const char * entryname = NULL;
 
-  // if (pb->sess->callbacks->cancel_func)
-  // WEBDAV_ERR(pb->sess->callbacks->cancel_func(pb->ctx->cancel_baton));
+  neon_session_t * ras = static_cast<neon_session_t *>(pb->session->priv);
+  assert(ras);
+  if (ras->callbacks->cancel_func)
+    WEBDAV_ERR(ras->callbacks->cancel_func(ras->callback_baton));
 
   if (strcmp(path, "") == 0)
   {
@@ -10266,8 +10269,10 @@ get_dir_contents(apr_uint32_t dirent_fields,
   }
   WEBDAV_ERR(err);
 
-  // if (ctx->cancel_func)
-  // WEBDAV_ERR(ctx->cancel_func(ctx->cancel_baton));
+  neon_session_t * ras = static_cast<neon_session_t *>(ra_session->priv);
+  assert(ras);
+  if (ras->callbacks->cancel_func)
+    WEBDAV_ERR(ras->callbacks->cancel_func(ras->callback_baton));
 
   /* Sort the hash, so we can call the callback in a "deterministic" order. */
   array = sort_hash(tmpdirents, sort_compare_items_lexically, pool);
@@ -14421,6 +14426,7 @@ bool TWebDAVFileSystem::WebDAVGetList(const UnicodeString Directory)
   webdav::list_func_baton_t baton = {0};
   baton.verbose = true;
   baton.entries = &Entries;
+  baton.session = FSession;
   baton.pool = webdav_pool_create(webdav_pool);
   webdav::error_t err = 0;
   const char * remote_path = NULL;
