@@ -12705,6 +12705,7 @@ void __fastcall TWebDAVFileSystem::Init()
   // apr_pool_terminate();
   webdav_pool_destroy(webdav_pool);
   webdav_pool = NULL;
+  ne_sock_exit();
 }
 //---------------------------------------------------------------------------
 void __fastcall TWebDAVFileSystem::Open()
