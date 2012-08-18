@@ -6575,18 +6575,18 @@ cstring_to_utf8(const char ** path_utf8,
 
 /* Wrapper for apr_file_open(), taking an APR-encoded filename. */
 static apr_status_t
-file_open(apr_file_t ** f,
+file_open(apr_file_t ** file,
           const char * fname_apr,
-          apr_int32_t flag,
+          apr_int32_t flags,
           apr_fileperms_t perm,
           bool retry_on_failure,
           apr_pool_t * pool)
 {
-  apr_status_t status = apr_file_open(f, fname_apr, flag, perm, pool);
+  apr_status_t status = apr_file_open(file, fname_apr, flags, perm, pool);
 
   if (retry_on_failure)
   {
-    WIN32_RETRY_LOOP(status, apr_file_open(f, fname_apr, flag, perm, pool));
+    WIN32_RETRY_LOOP(status, apr_file_open(file, fname_apr, flags, perm, pool));
   }
   return status;
 }
