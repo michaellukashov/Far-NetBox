@@ -1063,7 +1063,7 @@ bool __fastcall TWinSCPFileSystem::ProcessKeyEx(WORD Key, DWORD ControlState)
     }
 
     if ((Key == VK_INSERT) &&
-        ((ControlState & (ALTMASK | SHIFTMASK)) || (ControlState & (CTRLMASK | ALTMASK))))
+        (FLAGSET(ControlState, ALTMASK | SHIFTMASK) || FLAGSET(ControlState, CTRLMASK | ALTMASK)))
     {
       CopyFullFileNamesToClipboard();
       Handled = true;
@@ -2214,7 +2214,7 @@ void __fastcall TWinSCPFileSystem::CopyFullFileNamesToClipboard()
         TRemoteFile * File = reinterpret_cast<TRemoteFile *>(FileList->GetObjects(Index));
         if (File != NULL)
         {
-          FileNames->Add(File->GetFullFileName());
+          FileNames->Add(File->GetFileName());
         }
         else
         {
