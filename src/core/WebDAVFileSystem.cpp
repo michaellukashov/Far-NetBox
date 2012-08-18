@@ -6613,8 +6613,8 @@ io_file_open(apr_file_t ** new_file, const char * fname,
 }
 
 static error_t
-io_file_open_writable(apr_file_t ** new_file, apr_os_file_t *thefile,
-                      apr_int32_t flags, apr_fileperms_t perms,
+io_file_open_writable(apr_file_t ** new_file, apr_os_file_t * thefile,
+                      apr_int32_t flags,
                       apr_pool_t * pool)
 {
   const char * fname_apr = NULL;
@@ -7142,19 +7142,19 @@ stream_from_aprfile2(apr_file_t * file,
 
 static error_t
 stream_open_writable(stream_t ** stream,
-                     const char * path,
-                     apr_pool_t * result_pool,
-                     apr_pool_t * scratch_pool)
+  apr_os_file_t * thefile,
+  apr_pool_t * result_pool,
+  apr_pool_t * scratch_pool)
 {
   apr_file_t * file = NULL;
-
-  WEBDAV_ERR(io_file_open_writable(&file, path,
-                          APR_WRITE
-                          | APR_BUFFERED
-                          | APR_BINARY
-                          | APR_CREATE,
-                          // | APR_EXCL,
-                          APR_OS_DEFAULT, result_pool));
+  WEBDAV_ERR(io_file_open_writable(&file,
+    thefile,
+    APR_WRITE
+    | APR_BUFFERED
+    | APR_BINARY
+    | APR_CREATE,
+    // | APR_EXCL,
+    result_pool));
   *stream = stream_from_aprfile2(file, FALSE, result_pool);
 
   return WEBDAV_NO_ERROR;
@@ -11351,7 +11351,7 @@ static error_t
 client_get_file(
   session_t * session,
   const char * remote_path,
-  const char * local_path,
+  apr_os_file_t * thefile,
   apr_pool_t * pool)
 {
   const char * remote_url = NULL;
@@ -11360,7 +11360,7 @@ client_get_file(
                                     pool));
 
   stream_t * fstream = NULL;
-  WEBDAV_ERR(stream_open_writable(&fstream, local_path,
+  WEBDAV_ERR(stream_open_writable(&fstream, thefile,
                                   pool, pool));
   const char * src_rel = NULL;
   WEBDAV_ERR(get_path_relative_to_session(session, &src_rel,
@@ -14313,7 +14313,8 @@ void __fastcall TWebDAVFileSystem::FileTransfer(const UnicodeString FileName,
     UnicodeString FullRemoteFileName = RemotePath + RemoteFile;
     if (Get)
     {
-      WebDAVGetFile(FullRemoteFileName.c_str(), LocalFile.c_str(), Size);
+      HANDLE LocalFileHandle = NULL; // LocalFile.c_str(),
+      WebDAVGetFile(FullRemoteFileName.c_str(), &LocalFileHandle);
     }
     else
     {
@@ -14437,26 +14438,23 @@ bool TWebDAVFileSystem::WebDAVGetList(const UnicodeString Directory)
   return err == WEBDAV_NO_ERROR;
 }
 
-bool TWebDAVFileSystem::WebDAVGetFile(const wchar_t * remotePath, const wchar_t * localPath, const unsigned __int64 /*fileSize*/)
+bool TWebDAVFileSystem::WebDAVGetFile(const wchar_t * remotePath,
+  HANDLE * LocalFileHandle)
 {
   assert(remotePath && *remotePath);
-  assert(localPath && *localPath);
+  assert(LocalFileHandle);
 
   assert(FSession);
   apr_pool_t * pool = webdav_pool_create(webdav_pool);
   webdav::error_t err = 0;
   const char * remote_path = NULL;
-  const char * local_path = NULL;
   err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(remotePath).c_str(), pool);
   if (err) return false;
-  err = webdav::path_cstring_to_utf8(&local_path, AnsiString(localPath).c_str(), pool);
-  if (err) return false;
   err = webdav::client_get_file(
-          FSession,
-          remote_path,
-          local_path,
-          pool
-        );
+    FSession,
+    remote_path,
+    LocalFileHandle,
+    pool);
 
   webdav_pool_destroy(pool);
   return err == WEBDAV_NO_ERROR;
