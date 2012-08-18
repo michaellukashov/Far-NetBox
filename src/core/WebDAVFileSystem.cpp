@@ -14666,7 +14666,7 @@ webdav::error_t TWebDAVFileSystem::GetServerSettings(
       WEBDAV_ERR(webdav::path_cstring_to_utf8(neon_debug_file_name,
                                               AnsiString(GetExpandedLogFileName(
                                                   FTerminal->GetConfiguration()->GetLogFileName(),
-                                                  FTerminal->GetSessionData(), FTerminal->GetConfiguration()->GetLogFileAppend())).c_str(), pool));
+                                                  FTerminal->GetSessionData())).c_str(), pool));
     }
     else
     {

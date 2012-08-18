@@ -595,7 +595,7 @@ TFileSystemInfo::TFileSystemInfo()
 FILE * __fastcall OpenFile(UnicodeString LogFileName, TSessionData * SessionData, bool Append, UnicodeString & NewFileName)
 {
   FILE * Result;
-  UnicodeString ANewFileName = GetExpandedLogFileName(LogFileName, SessionData, Append);
+  UnicodeString ANewFileName = GetExpandedLogFileName(LogFileName, SessionData);
   // Result = _wfopen(ANewFileName.c_str(), (Append ? L"a" : L"w"));
   Result = _fsopen(W2MB(ANewFileName.c_str()).c_str(),
     Append ? "a" : "w", SH_DENYWR); // _SH_DENYNO); // 
