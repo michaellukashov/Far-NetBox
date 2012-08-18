@@ -6499,7 +6499,7 @@ atomic_init_once(volatile atomic_t * global_status,
 //------------------------------------------------------------------------------
 // from io.c
 
-#define RETRY_MAX_ATTEMPTS 100
+#define RETRY_MAX_ATTEMPTS 2
 #define RETRY_INITIAL_SLEEP 1000
 #define RETRY_MAX_SLEEP 128000
 
