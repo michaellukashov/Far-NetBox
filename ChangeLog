@@ -1,5 +1,9 @@
 NetBox 2.1.9 ??.08.2012
 --------------------
+  * Bugfix: Far3: Ctrl-Ins Shift-Ins work incorrect
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=600#p93306,
+    http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=97522#p97522)
+  * Far3: use privilege elevation, if available
   * WebDAV: fix speed issues
 
 NetBox 2.1.8 15.08.2012
