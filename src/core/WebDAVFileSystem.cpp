@@ -436,7 +436,6 @@ error_createf(apr_status_t apr_err,
   err = make_error_internal(apr_err, child);
 
   va_start(ap, fmt);
-  // err->message = apr_pvsprintf(err->pool, fmt, ap);
   AnsiString Message = Format(fmt, ap);
   va_end(ap);
   AnsiString Message2 = Format("Error, code: %d, message: %s", apr_err, Message.c_str());
@@ -2602,11 +2601,11 @@ apr_base64_decode_binary(unsigned char * bufplain,
   while (nprbytes > 4)
   {
     *(bufout++) =
-      (unsigned char)(pr2six[*bufin] << 2 | pr2six[bufin[1]] >> 4);
+      (unsigned char)((pr2six[*bufin] << 2) | (pr2six[bufin[1]] >> 4));
     *(bufout++) =
-      (unsigned char)(pr2six[bufin[1]] << 4 | pr2six[bufin[2]] >> 2);
+      (unsigned char)((pr2six[bufin[1]] << 4) | (pr2six[bufin[2]] >> 2));
     *(bufout++) =
-      (unsigned char)(pr2six[bufin[2]] << 6 | pr2six[bufin[3]]);
+      (unsigned char)((pr2six[bufin[2]] << 6) | pr2six[bufin[3]]);
     bufin += 4;
     nprbytes -= 4;
   }
@@ -2615,17 +2614,17 @@ apr_base64_decode_binary(unsigned char * bufplain,
   if (nprbytes > 1)
   {
     *(bufout++) =
-      (unsigned char)(pr2six[*bufin] << 2 | pr2six[bufin[1]] >> 4);
+      (unsigned char)((pr2six[*bufin] << 2) | (pr2six[bufin[1]] >> 4));
   }
   if (nprbytes > 2)
   {
     *(bufout++) =
-      (unsigned char)(pr2six[bufin[1]] << 4 | pr2six[bufin[2]] >> 2);
+      (unsigned char)((pr2six[bufin[1]] << 4) | (pr2six[bufin[2]] >> 2));
   }
   if (nprbytes > 3)
   {
     *(bufout++) =
-      (unsigned char)(pr2six[bufin[2]] << 6 | pr2six[bufin[3]]);
+      (unsigned char)((pr2six[bufin[2]] << 6) | pr2six[bufin[3]]);
   }
 
   nbytesdecoded -= (4 - (int)nprbytes) & 3;
@@ -4540,7 +4539,7 @@ windows_validate_certificate(bool * ok_p,
                              apr_pool_t * pool)
 {
   PCCERT_CONTEXT cert_context = NULL;
-  CERT_CHAIN_PARA chain_para = {0};
+  CERT_CHAIN_PARA chain_para;
   PCCERT_CHAIN_CONTEXT chain_context = NULL;
 
   *ok_p = FALSE;
