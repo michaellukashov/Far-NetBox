@@ -6600,7 +6600,8 @@ io_file_open(apr_file_t ** new_file, const char * fname,
   apr_status_t status = 0;
 
   WEBDAV_ERR(cstring_from_utf8(&fname_apr, fname, pool));
-  status = file_open(new_file, fname_apr, flag | APR_BINARY, perm, TRUE,
+  status = file_open(new_file, fname_apr, flag | APR_BINARY, perm,
+                     /* retry_on_failure */ FALSE,
                      pool);
 
   if (status)
