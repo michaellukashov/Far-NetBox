@@ -6593,14 +6593,14 @@ file_open(apr_file_t ** file,
 
 static error_t
 io_file_open(apr_file_t ** new_file, const char * fname,
-             apr_int32_t flag, apr_fileperms_t perm,
+             apr_int32_t flags, apr_fileperms_t perms,
              apr_pool_t * pool)
 {
   const char * fname_apr = NULL;
   apr_status_t status = 0;
 
   WEBDAV_ERR(cstring_from_utf8(&fname_apr, fname, pool));
-  status = file_open(new_file, fname_apr, flag | APR_BINARY, perm,
+  status = file_open(new_file, fname_apr, flags | APR_BINARY, perms,
                      /* retry_on_failure */ FALSE,
                      pool);
 
@@ -6608,6 +6608,24 @@ io_file_open(apr_file_t ** new_file, const char * fname,
     return error_wrap_apr(status, "Can't open file '%s'",
                           // dirent_local_style(fname, pool));
                           fname);
+  else
+    return WEBDAV_NO_ERROR;
+}
+
+static error_t
+io_file_open_writable(apr_file_t ** new_file, apr_os_file_t *thefile,
+                      apr_int32_t flags, apr_fileperms_t perms,
+                      apr_pool_t * pool)
+{
+  const char * fname_apr = NULL;
+  apr_status_t status = 0;
+
+  status = apr_os_file_put(new_file, thefile,
+                           flags | APR_BINARY,
+                           pool);
+
+  if (status)
+    return error_wrap_apr(status, "Can't open file");
   else
     return WEBDAV_NO_ERROR;
 }
@@ -7130,7 +7148,7 @@ stream_open_writable(stream_t ** stream,
 {
   apr_file_t * file = NULL;
 
-  WEBDAV_ERR(io_file_open(&file, path,
+  WEBDAV_ERR(io_file_open_writable(&file, path,
                           APR_WRITE
                           | APR_BUFFERED
                           | APR_BINARY
