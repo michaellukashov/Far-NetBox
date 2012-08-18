@@ -14313,7 +14313,8 @@ void __fastcall TWebDAVFileSystem::FileTransfer(const UnicodeString FileName,
     UnicodeString FullRemoteFileName = RemotePath + RemoteFile;
     if (Get)
     {
-      HANDLE LocalFileHandle = NULL; // LocalFile.c_str(),
+      HANDLE LocalFileHandle = FTerminal->CreateLocalFile(LocalFile,
+        GENERIC_WRITE, 0, CREATE_ALWAYS, 0);
       WebDAVGetFile(FullRemoteFileName.c_str(), &LocalFileHandle);
     }
     else
