@@ -6844,7 +6844,7 @@ typedef error_t (*stream_mark_fn_t)(void * baton,
 typedef error_t (*stream_seek_fn_t)(void * baton,
                                     const stream_mark_t * mark);
 
-typedef bool (*stream__is_buffered_fn_t)(void * baton);
+typedef bool (*stream_is_buffered_fn_t)(void * baton);
 
 //------------------------------------------------------------------------------
 // from stream.c
@@ -6858,7 +6858,7 @@ typedef struct stream_t
   close_fn_t close_fn;
   stream_mark_fn_t mark_fn;
   stream_seek_fn_t seek_fn;
-  stream__is_buffered_fn_t is_buffered_fn;
+  stream_is_buffered_fn_t is_buffered_fn;
 } stream_t;
 
 /*** Generic stream for APR files ***/
@@ -7044,8 +7044,8 @@ stream_set_seek(stream_t * stream, stream_seek_fn_t seek_fn)
 }
 
 static void
-stream__set_is_buffered(stream_t * stream,
-                        stream__is_buffered_fn_t is_buffered_fn)
+stream_set_is_buffered(stream_t * stream,
+                        stream_is_buffered_fn_t is_buffered_fn)
 {
   stream->is_buffered_fn = is_buffered_fn;
 }
@@ -7090,7 +7090,7 @@ stream_empty(apr_pool_t * pool)
   stream_set_write(stream, write_handler_empty);
   stream_set_mark(stream, mark_handler_empty);
   stream_set_seek(stream, seek_handler_empty);
-  stream__set_is_buffered(stream, is_buffered_handler_empty);
+  stream_set_is_buffered(stream, is_buffered_handler_empty);
   return stream;
 }
 
@@ -7113,7 +7113,7 @@ stream_from_aprfile2(apr_file_t * file,
   stream_set_skip(stream, skip_handler_apr);
   stream_set_mark(stream, mark_handler_apr);
   stream_set_seek(stream, seek_handler_apr);
-  stream__set_is_buffered(stream, is_buffered_handler_apr);
+  stream_set_is_buffered(stream, is_buffered_handler_apr);
 
   if (!disown)
     stream_set_close(stream, close_handler_apr);
@@ -7192,7 +7192,7 @@ stream_seek(stream_t * stream, const stream_mark_t * mark)
 }
 
 static bool
-stream__is_buffered(stream_t * stream)
+stream_is_buffered(stream_t * stream)
 {
   if (stream->is_buffered_fn == NULL)
     return FALSE;
