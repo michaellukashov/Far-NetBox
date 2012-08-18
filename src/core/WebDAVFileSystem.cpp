@@ -6617,7 +6617,6 @@ io_file_open_writable(apr_file_t ** new_file, apr_os_file_t * thefile,
                       apr_int32_t flags,
                       apr_pool_t * pool)
 {
-  const char * fname_apr = NULL;
   apr_status_t status = 0;
 
   status = apr_os_file_put(new_file, thefile,
