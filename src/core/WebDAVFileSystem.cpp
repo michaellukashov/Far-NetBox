@@ -6499,7 +6499,7 @@ atomic_init_once(volatile atomic_t * global_status,
 //------------------------------------------------------------------------------
 // from io.c
 
-#define RETRY_MAX_ATTEMPTS 100
+#define RETRY_MAX_ATTEMPTS 2
 #define RETRY_INITIAL_SLEEP 1000
 #define RETRY_MAX_SLEEP 128000
 
@@ -6575,38 +6575,57 @@ cstring_to_utf8(const char ** path_utf8,
 
 /* Wrapper for apr_file_open(), taking an APR-encoded filename. */
 static apr_status_t
-file_open(apr_file_t ** f,
+file_open(apr_file_t ** file,
           const char * fname_apr,
-          apr_int32_t flag,
+          apr_int32_t flags,
           apr_fileperms_t perm,
           bool retry_on_failure,
           apr_pool_t * pool)
 {
-  apr_status_t status = apr_file_open(f, fname_apr, flag, perm, pool);
+  apr_status_t status = apr_file_open(file, fname_apr, flags, perm, pool);
 
   if (retry_on_failure)
   {
-    WIN32_RETRY_LOOP(status, apr_file_open(f, fname_apr, flag, perm, pool));
+    WIN32_RETRY_LOOP(status, apr_file_open(file, fname_apr, flags, perm, pool));
   }
   return status;
 }
 
 static error_t
 io_file_open(apr_file_t ** new_file, const char * fname,
-             apr_int32_t flag, apr_fileperms_t perm,
+             apr_int32_t flags, apr_fileperms_t perms,
              apr_pool_t * pool)
 {
   const char * fname_apr = NULL;
   apr_status_t status = 0;
 
   WEBDAV_ERR(cstring_from_utf8(&fname_apr, fname, pool));
-  status = file_open(new_file, fname_apr, flag | APR_BINARY, perm, TRUE,
+  status = file_open(new_file, fname_apr, flags | APR_BINARY, perms,
+                     /* retry_on_failure */ FALSE,
                      pool);
 
   if (status)
     return error_wrap_apr(status, "Can't open file '%s'",
                           // dirent_local_style(fname, pool));
                           fname);
+  else
+    return WEBDAV_NO_ERROR;
+}
+
+static error_t
+io_file_open_writable(apr_file_t ** new_file, apr_os_file_t * thefile,
+                      apr_int32_t flags,
+                      apr_pool_t * pool)
+{
+  const char * fname_apr = NULL;
+  apr_status_t status = 0;
+
+  status = apr_os_file_put(new_file, thefile,
+                           flags | APR_BINARY,
+                           pool);
+
+  if (status)
+    return error_wrap_apr(status, "Can't open file");
   else
     return WEBDAV_NO_ERROR;
 }
@@ -6844,7 +6863,7 @@ typedef error_t (*stream_mark_fn_t)(void * baton,
 typedef error_t (*stream_seek_fn_t)(void * baton,
                                     const stream_mark_t * mark);
 
-typedef bool (*stream__is_buffered_fn_t)(void * baton);
+typedef bool (*stream_is_buffered_fn_t)(void * baton);
 
 //------------------------------------------------------------------------------
 // from stream.c
@@ -6858,7 +6877,7 @@ typedef struct stream_t
   close_fn_t close_fn;
   stream_mark_fn_t mark_fn;
   stream_seek_fn_t seek_fn;
-  stream__is_buffered_fn_t is_buffered_fn;
+  stream_is_buffered_fn_t is_buffered_fn;
 } stream_t;
 
 /*** Generic stream for APR files ***/
@@ -7044,8 +7063,8 @@ stream_set_seek(stream_t * stream, stream_seek_fn_t seek_fn)
 }
 
 static void
-stream__set_is_buffered(stream_t * stream,
-                        stream__is_buffered_fn_t is_buffered_fn)
+stream_set_is_buffered(stream_t * stream,
+                        stream_is_buffered_fn_t is_buffered_fn)
 {
   stream->is_buffered_fn = is_buffered_fn;
 }
@@ -7090,7 +7109,7 @@ stream_empty(apr_pool_t * pool)
   stream_set_write(stream, write_handler_empty);
   stream_set_mark(stream, mark_handler_empty);
   stream_set_seek(stream, seek_handler_empty);
-  stream__set_is_buffered(stream, is_buffered_handler_empty);
+  stream_set_is_buffered(stream, is_buffered_handler_empty);
   return stream;
 }
 
@@ -7113,7 +7132,7 @@ stream_from_aprfile2(apr_file_t * file,
   stream_set_skip(stream, skip_handler_apr);
   stream_set_mark(stream, mark_handler_apr);
   stream_set_seek(stream, seek_handler_apr);
-  stream__set_is_buffered(stream, is_buffered_handler_apr);
+  stream_set_is_buffered(stream, is_buffered_handler_apr);
 
   if (!disown)
     stream_set_close(stream, close_handler_apr);
@@ -7123,19 +7142,19 @@ stream_from_aprfile2(apr_file_t * file,
 
 static error_t
 stream_open_writable(stream_t ** stream,
-                     const char * path,
-                     apr_pool_t * result_pool,
-                     apr_pool_t * scratch_pool)
+  apr_os_file_t * thefile,
+  apr_pool_t * result_pool,
+  apr_pool_t * scratch_pool)
 {
   apr_file_t * file = NULL;
-
-  WEBDAV_ERR(io_file_open(&file, path,
-                          APR_WRITE
-                          | APR_BUFFERED
-                          | APR_BINARY
-                          | APR_CREATE,
-                          // | APR_EXCL,
-                          APR_OS_DEFAULT, result_pool));
+  WEBDAV_ERR(io_file_open_writable(&file,
+    thefile,
+    APR_WRITE
+    | APR_BUFFERED
+    | APR_BINARY
+    | APR_CREATE,
+    // | APR_EXCL,
+    result_pool));
   *stream = stream_from_aprfile2(file, FALSE, result_pool);
 
   return WEBDAV_NO_ERROR;
@@ -7192,7 +7211,7 @@ stream_seek(stream_t * stream, const stream_mark_t * mark)
 }
 
 static bool
-stream__is_buffered(stream_t * stream)
+stream_is_buffered(stream_t * stream)
 {
   if (stream->is_buffered_fn == NULL)
     return FALSE;
@@ -11332,7 +11351,7 @@ static error_t
 client_get_file(
   session_t * session,
   const char * remote_path,
-  const char * local_path,
+  apr_os_file_t * thefile,
   apr_pool_t * pool)
 {
   const char * remote_url = NULL;
@@ -11341,7 +11360,7 @@ client_get_file(
                                     pool));
 
   stream_t * fstream = NULL;
-  WEBDAV_ERR(stream_open_writable(&fstream, local_path,
+  WEBDAV_ERR(stream_open_writable(&fstream, thefile,
                                   pool, pool));
   const char * src_rel = NULL;
   WEBDAV_ERR(get_path_relative_to_session(session, &src_rel,
@@ -14294,7 +14313,9 @@ void __fastcall TWebDAVFileSystem::FileTransfer(const UnicodeString FileName,
     UnicodeString FullRemoteFileName = RemotePath + RemoteFile;
     if (Get)
     {
-      WebDAVGetFile(FullRemoteFileName.c_str(), LocalFile.c_str(), Size);
+      HANDLE LocalFileHandle = FTerminal->CreateLocalFile(LocalFile,
+        GENERIC_WRITE, 0, CREATE_ALWAYS, 0);
+      WebDAVGetFile(FullRemoteFileName.c_str(), &LocalFileHandle);
     }
     else
     {
@@ -14418,26 +14439,23 @@ bool TWebDAVFileSystem::WebDAVGetList(const UnicodeString Directory)
   return err == WEBDAV_NO_ERROR;
 }
 
-bool TWebDAVFileSystem::WebDAVGetFile(const wchar_t * remotePath, const wchar_t * localPath, const unsigned __int64 /*fileSize*/)
+bool TWebDAVFileSystem::WebDAVGetFile(const wchar_t * remotePath,
+  HANDLE * LocalFileHandle)
 {
   assert(remotePath && *remotePath);
-  assert(localPath && *localPath);
+  assert(LocalFileHandle);
 
   assert(FSession);
   apr_pool_t * pool = webdav_pool_create(webdav_pool);
   webdav::error_t err = 0;
   const char * remote_path = NULL;
-  const char * local_path = NULL;
   err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(remotePath).c_str(), pool);
   if (err) return false;
-  err = webdav::path_cstring_to_utf8(&local_path, AnsiString(localPath).c_str(), pool);
-  if (err) return false;
   err = webdav::client_get_file(
-          FSession,
-          remote_path,
-          local_path,
-          pool
-        );
+    FSession,
+    remote_path,
+    LocalFileHandle,
+    pool);
 
   webdav_pool_destroy(pool);
   return err == WEBDAV_NO_ERROR;
