@@ -4,8 +4,6 @@
 // testnetbox_03 --run_test=testnetbox_03/test1 --log_level=all 2>&1 | tee res.txt
 //------------------------------------------------------------------------------
 
-#include "leak_detector.h"
-
 #include "nbafx.h"
 #include <time.h>
 #include <stdio.h>

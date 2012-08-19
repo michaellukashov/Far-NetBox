@@ -312,7 +312,7 @@ bool __fastcall TWinSCPPlugin::ConfigurationDialog()
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   // try
   {
-    BOOST_SCOPE_EXIT ( (Dialog) )
+    BOOST_SCOPE_EXIT ( (&Dialog) )
     {
       delete Dialog;
     } BOOST_SCOPE_EXIT_END
@@ -496,7 +496,7 @@ bool __fastcall TWinSCPPlugin::PanelConfigurationDialog()
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   // try
   {
-    BOOST_SCOPE_EXIT ( (Dialog) )
+    BOOST_SCOPE_EXIT ( (&Dialog) )
     {
       delete Dialog;
     } BOOST_SCOPE_EXIT_END
@@ -518,7 +518,7 @@ bool __fastcall TWinSCPPlugin::PanelConfigurationDialog()
       Configuration->BeginUpdate();
       // try
       {
-        BOOST_SCOPE_EXIT ( (Configuration) )
+        BOOST_SCOPE_EXIT ( (&Configuration) )
         {
           Configuration->EndUpdate();
         } BOOST_SCOPE_EXIT_END
@@ -547,7 +547,7 @@ bool __fastcall TWinSCPPlugin::LoggingConfigurationDialog()
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   // try
   {
-    BOOST_SCOPE_EXIT ( (Dialog) )
+    BOOST_SCOPE_EXIT ( (&Dialog) )
     {
       delete Dialog;
     } BOOST_SCOPE_EXIT_END
@@ -628,7 +628,7 @@ bool __fastcall TWinSCPPlugin::LoggingConfigurationDialog()
       Configuration->BeginUpdate();
       // try
       {
-        BOOST_SCOPE_EXIT ( (Configuration) )
+        BOOST_SCOPE_EXIT ( (&Configuration) )
         {
           Configuration->EndUpdate();
         } BOOST_SCOPE_EXIT_END
@@ -679,7 +679,7 @@ bool __fastcall TWinSCPPlugin::EnduranceConfigurationDialog()
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   // try
   {
-    BOOST_SCOPE_EXIT ( (Dialog) )
+    BOOST_SCOPE_EXIT ( (&Dialog) )
     {
       delete Dialog;
     } BOOST_SCOPE_EXIT_END
@@ -779,7 +779,7 @@ bool __fastcall TWinSCPPlugin::EnduranceConfigurationDialog()
       Configuration->BeginUpdate();
       // try
       {
-        BOOST_SCOPE_EXIT ( (Configuration) )
+        BOOST_SCOPE_EXIT ( (&Configuration) )
         {
           Configuration->EndUpdate();
         } BOOST_SCOPE_EXIT_END
@@ -820,7 +820,7 @@ bool __fastcall TWinSCPPlugin::QueueConfigurationDialog()
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   // try
   {
-    BOOST_SCOPE_EXIT ( (Dialog) )
+    BOOST_SCOPE_EXIT ( (&Dialog) )
     {
       delete Dialog;
     } BOOST_SCOPE_EXIT_END
@@ -869,7 +869,7 @@ bool __fastcall TWinSCPPlugin::QueueConfigurationDialog()
       Configuration->BeginUpdate();
       // try
       {
-        BOOST_SCOPE_EXIT ( (Configuration) )
+        BOOST_SCOPE_EXIT ( (&Configuration) )
         {
           Configuration->EndUpdate();
         } BOOST_SCOPE_EXIT_END
@@ -977,7 +977,7 @@ bool __fastcall TTransferEditorConfigurationDialog::Execute()
     Configuration->BeginUpdate();
     // try
     {
-      BOOST_SCOPE_EXIT ( (Configuration) )
+      BOOST_SCOPE_EXIT ( (&Configuration) )
       {
         Configuration->EndUpdate();
       } BOOST_SCOPE_EXIT_END
@@ -1006,7 +1006,7 @@ void __fastcall TTransferEditorConfigurationDialog::Change()
     LockChanges();
     // try
     {
-      BOOST_SCOPE_EXIT ( (Self) )
+      BOOST_SCOPE_EXIT ( (&Self) )
       {
         Self->UnlockChanges();
       } BOOST_SCOPE_EXIT_END
@@ -1037,7 +1037,7 @@ bool __fastcall TWinSCPPlugin::TransferEditorConfigurationDialog()
   TTransferEditorConfigurationDialog * Dialog = new TTransferEditorConfigurationDialog(this);
   // try
   {
-    BOOST_SCOPE_EXIT ( (Dialog) )
+    BOOST_SCOPE_EXIT ( (&Dialog) )
     {
       delete Dialog;
     } BOOST_SCOPE_EXIT_END
@@ -1058,7 +1058,7 @@ bool __fastcall TWinSCPPlugin::ConfirmationsConfigurationDialog()
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   // try
   {
-    BOOST_SCOPE_EXIT ( (Dialog) )
+    BOOST_SCOPE_EXIT ( (&Dialog) )
     {
       delete Dialog;
     } BOOST_SCOPE_EXIT_END
@@ -1095,7 +1095,7 @@ bool __fastcall TWinSCPPlugin::ConfirmationsConfigurationDialog()
       Configuration->BeginUpdate();
       // try
       {
-        BOOST_SCOPE_EXIT ( (Configuration) )
+        BOOST_SCOPE_EXIT ( (&Configuration) )
         {
           Configuration->EndUpdate();
         } BOOST_SCOPE_EXIT_END
@@ -1132,7 +1132,7 @@ bool __fastcall TWinSCPPlugin::IntegrationConfigurationDialog()
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   // try
   {
-    BOOST_SCOPE_EXIT ( (Dialog) )
+    BOOST_SCOPE_EXIT ( (&Dialog) )
     {
       delete Dialog;
     } BOOST_SCOPE_EXIT_END
@@ -1180,7 +1180,7 @@ bool __fastcall TWinSCPPlugin::IntegrationConfigurationDialog()
       Configuration->BeginUpdate();
       // try
       {
-        BOOST_SCOPE_EXIT ( (Configuration) )
+        BOOST_SCOPE_EXIT ( (&Configuration) )
         {
           Configuration->EndUpdate();
         } BOOST_SCOPE_EXIT_END
@@ -1391,7 +1391,7 @@ void __fastcall TWinSCPPlugin::AboutDialog()
   TFarDialog * Dialog = new TAboutDialog(this);
   // try
   {
-    BOOST_SCOPE_EXIT ( (Dialog) )
+    BOOST_SCOPE_EXIT ( (&Dialog) )
     {
       delete Dialog;
     } BOOST_SCOPE_EXIT_END
@@ -1611,7 +1611,7 @@ bool __fastcall TWinSCPFileSystem::PasswordDialog(TSessionData * SessionData,
     Kind, Name, Instructions, Prompts, StoredCredentialsTried);
   // try
   {
-    BOOST_SCOPE_EXIT ( (Dialog) )
+    BOOST_SCOPE_EXIT ( (&Dialog) )
     {
       delete Dialog;
     } BOOST_SCOPE_EXIT_END
@@ -1634,7 +1634,7 @@ bool __fastcall TWinSCPFileSystem::BannerDialog(const UnicodeString SessionName,
   TWinSCPDialog * Dialog = new TWinSCPDialog(FPlugin);
   // try
   {
-    BOOST_SCOPE_EXIT ( (Dialog) )
+    BOOST_SCOPE_EXIT ( (&Dialog) )
     {
       delete Dialog;
     } BOOST_SCOPE_EXIT_END
@@ -1897,7 +1897,7 @@ static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsFTPS, fsH
     COMBO->SetWidth(7); \
     COMBO->GetItems()->BeginUpdate(); \
     { \
-        BOOST_SCOPE_EXIT ( (COMBO) ) \
+        BOOST_SCOPE_EXIT ( (&COMBO) ) \
         { \
           COMBO->GetItems()->EndUpdate(); \
         } BOOST_SCOPE_EXIT_END \
@@ -2755,7 +2755,7 @@ static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsFTPS, fsH
   TunnelLocalPortNumberEdit->GetItems()->BeginUpdate();
   // try
   {
-    BOOST_SCOPE_EXIT ( (Self) )
+    BOOST_SCOPE_EXIT ( (&Self) )
     {
       Self->TunnelLocalPortNumberEdit->GetItems()->EndUpdate();
     } BOOST_SCOPE_EXIT_END
@@ -3034,7 +3034,7 @@ void __fastcall TSessionDialog::Change()
     LockChanges();
     // try
     {
-      BOOST_SCOPE_EXIT ( (Self) )
+      BOOST_SCOPE_EXIT ( (&Self) )
       {
         Self->UnlockChanges();
       } BOOST_SCOPE_EXIT_END
@@ -3459,7 +3459,7 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
   TStrings * PostLoginCommands = new TStringList();
   // try
   {
-    BOOST_SCOPE_EXIT ( (PostLoginCommands) )
+    BOOST_SCOPE_EXIT ( (&PostLoginCommands) )
     {
       delete PostLoginCommands;
     } BOOST_SCOPE_EXIT_END
@@ -3596,7 +3596,7 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
   CipherListBox->GetItems()->BeginUpdate();
   // try
   {
-    BOOST_SCOPE_EXIT ( (CipherListBox) )
+    BOOST_SCOPE_EXIT ( (&CipherListBox) )
     {
       CipherListBox->GetItems()->EndUpdate();
     } BOOST_SCOPE_EXIT_END
@@ -3625,7 +3625,7 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
   KexListBox->GetItems()->BeginUpdate();
   // try
   {
-    BOOST_SCOPE_EXIT ( (KexListBox) )
+    BOOST_SCOPE_EXIT ( (&KexListBox) )
     {
       KexListBox->GetItems()->EndUpdate();
     } BOOST_SCOPE_EXIT_END
@@ -3781,7 +3781,7 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
     TStrings * PostLoginCommands = new TStringList;
     // try
     {
-      BOOST_SCOPE_EXIT ( (PostLoginCommands) )
+      BOOST_SCOPE_EXIT ( (&PostLoginCommands) )
       {
         delete PostLoginCommands;
       } BOOST_SCOPE_EXIT_END
@@ -4304,7 +4304,7 @@ bool __fastcall TWinSCPFileSystem::SessionDialog(TSessionData * SessionData,
   TSessionDialog * Dialog = new TSessionDialog(FPlugin, Action);
   // try
   {
-    BOOST_SCOPE_EXIT ( (Dialog) )
+    BOOST_SCOPE_EXIT ( (&Dialog) )
     {
       delete Dialog;
     } BOOST_SCOPE_EXIT_END
@@ -4601,7 +4601,7 @@ void __fastcall TRightsContainer::SetRights(const TRights & value)
     GetDialog()->LockChanges();
     // try
     {
-      BOOST_SCOPE_EXIT ( (Self) )
+      BOOST_SCOPE_EXIT ( (&Self) )
       {
         Self->GetDialog()->UnlockChanges();
       } BOOST_SCOPE_EXIT_END
@@ -4707,7 +4707,7 @@ private:
 
   // try
   {
-    BOOST_SCOPE_EXIT ( (UsedUserList) (UsedGroupList) )
+    BOOST_SCOPE_EXIT ( (&UsedUserList) (&UsedGroupList) )
     {
       delete UsedUserList;
       delete UsedGroupList;
@@ -4978,7 +4978,7 @@ bool __fastcall TWinSCPFileSystem::PropertiesDialog(TStrings * FileList,
     Directory, GroupList, UserList, AllowedChanges);
   // try
   {
-    BOOST_SCOPE_EXIT ( (Dialog) )
+    BOOST_SCOPE_EXIT ( (&Dialog) )
     {
       delete Dialog;
     } BOOST_SCOPE_EXIT_END
@@ -5655,7 +5655,7 @@ bool __fastcall TCopyDialog::Execute(UnicodeString & TargetDirectory,
     Configuration->BeginUpdate();
     // try
     {
-      BOOST_SCOPE_EXIT ( (Configuration) )
+      BOOST_SCOPE_EXIT ( (&Configuration) )
       {
         Configuration->EndUpdate();
       } BOOST_SCOPE_EXIT_END
@@ -5717,7 +5717,7 @@ void __fastcall TCopyDialog::Change()
     TStringList * InfoStrLines = new TStringList();
     // try
     {
-      BOOST_SCOPE_EXIT ( (InfoStrLines) )
+      BOOST_SCOPE_EXIT ( (&InfoStrLines) )
       {
         delete InfoStrLines;
       } BOOST_SCOPE_EXIT_END
@@ -5771,7 +5771,7 @@ bool __fastcall TWinSCPFileSystem::CopyDialog(bool ToRemote,
     Move, FileList, Options, CopyParamAttrs);
   // try
   {
-    BOOST_SCOPE_EXIT ( (Dialog) )
+    BOOST_SCOPE_EXIT ( (&Dialog) )
     {
       delete Dialog;
     } BOOST_SCOPE_EXIT_END
@@ -5793,7 +5793,7 @@ bool __fastcall TWinSCPPlugin::CopyParamDialog(const UnicodeString Caption,
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   // try
   {
-    BOOST_SCOPE_EXIT ( (Dialog) )
+    BOOST_SCOPE_EXIT ( (&Dialog) )
     {
       delete Dialog;
     } BOOST_SCOPE_EXIT_END
@@ -5940,7 +5940,7 @@ bool __fastcall TWinSCPFileSystem::LinkDialog(UnicodeString & FileName,
   TLinkDialog * Dialog = new TLinkDialog(FPlugin, Edit, AllowSymbolic);
   // try
   {
-    BOOST_SCOPE_EXIT ( (Dialog) )
+    BOOST_SCOPE_EXIT ( (&Dialog) )
     {
       delete Dialog;
     } BOOST_SCOPE_EXIT_END
@@ -6497,7 +6497,7 @@ void __fastcall TWinSCPFileSystem::FileSystemInfoDialog(
   TFileSystemInfoDialog * Dialog = new TFileSystemInfoDialog(FPlugin, OnGetSpaceAvailable);
   // try
   {
-    BOOST_SCOPE_EXIT ( (Dialog) )
+    BOOST_SCOPE_EXIT ( (&Dialog) )
     {
       delete Dialog;
     } BOOST_SCOPE_EXIT_END
@@ -6527,7 +6527,7 @@ bool __fastcall TWinSCPFileSystem::OpenDirectoryDialog(
     TList * Bookmarks = new TList();
     // try
     {
-      BOOST_SCOPE_EXIT ( (BookmarkItems) (Bookmarks) (BookmarkPaths) )
+      BOOST_SCOPE_EXIT ( (&BookmarkItems) (&Bookmarks) (&BookmarkPaths) )
       {
         delete BookmarkItems;
         delete Bookmarks;
@@ -6555,7 +6555,7 @@ bool __fastcall TWinSCPFileSystem::OpenDirectoryDialog(
       TStringList * BookmarkDirectories = new TStringList();
       // try
       {
-        BOOST_SCOPE_EXIT ( (BookmarkDirectories) )
+        BOOST_SCOPE_EXIT ( (&BookmarkDirectories) )
         {
           delete BookmarkDirectories;
         } BOOST_SCOPE_EXIT_END
@@ -6872,7 +6872,7 @@ bool __fastcall TWinSCPFileSystem::ApplyCommandDialog(UnicodeString & Command,
   TApplyCommandDialog * Dialog = new TApplyCommandDialog(FPlugin);
   // try
   {
-    BOOST_SCOPE_EXIT ( (Dialog) )
+    BOOST_SCOPE_EXIT ( (&Dialog) )
     {
       delete Dialog;
     } BOOST_SCOPE_EXIT_END
@@ -7175,7 +7175,7 @@ void __fastcall TFullSynchronizeDialog::Change()
     TStringList * InfoStrLines = new TStringList();
     // try
     {
-      BOOST_SCOPE_EXIT ( (InfoStrLines) )
+      BOOST_SCOPE_EXIT ( (&InfoStrLines) )
       {
         delete InfoStrLines;
       } BOOST_SCOPE_EXIT_END
@@ -7331,7 +7331,7 @@ bool __fastcall TWinSCPFileSystem::FullSynchronizeDialog(TTerminal::TSynchronize
     FPlugin, Options, CopyParamAttrs);
   // try
   {
-    BOOST_SCOPE_EXIT ( (Dialog) )
+    BOOST_SCOPE_EXIT ( (&Dialog) )
     {
       delete Dialog;
     } BOOST_SCOPE_EXIT_END
@@ -7717,7 +7717,7 @@ void __fastcall TSynchronizeChecklistDialog::LoadChecklist()
   TFarList * List = new TFarList();
   // try
   {
-    BOOST_SCOPE_EXIT ( (List) )
+    BOOST_SCOPE_EXIT ( (&List) )
     {
       delete List;
     } BOOST_SCOPE_EXIT_END
@@ -7771,7 +7771,7 @@ void __fastcall TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
   List->BeginUpdate();
   // try
   {
-    BOOST_SCOPE_EXIT ( (List) )
+    BOOST_SCOPE_EXIT ( (&List) )
     {
       List->EndUpdate();
     } BOOST_SCOPE_EXIT_END
@@ -7818,7 +7818,7 @@ void __fastcall TSynchronizeChecklistDialog::CheckAll(bool Check)
   List->BeginUpdate();
   // try
   {
-    BOOST_SCOPE_EXIT ( (List) )
+    BOOST_SCOPE_EXIT ( (&List) )
     {
       List->EndUpdate();
     } BOOST_SCOPE_EXIT_END
@@ -7978,7 +7978,7 @@ bool __fastcall TWinSCPFileSystem::SynchronizeChecklistDialog(
     FPlugin, Mode, Params, LocalDirectory, RemoteDirectory);
   // try
   {
-    BOOST_SCOPE_EXIT ( (Dialog) )
+    BOOST_SCOPE_EXIT ( (&Dialog) )
     {
       delete Dialog;
     } BOOST_SCOPE_EXIT_END
@@ -8400,7 +8400,7 @@ void __fastcall TSynchronizeDialog::Change()
     TStringList * InfoStrLines = new TStringList();
     // try
     {
-      BOOST_SCOPE_EXIT ( (InfoStrLines) )
+      BOOST_SCOPE_EXIT ( (&InfoStrLines) )
       {
         delete InfoStrLines;
       } BOOST_SCOPE_EXIT_END
@@ -8463,7 +8463,7 @@ bool __fastcall TWinSCPFileSystem::SynchronizeDialog(TSynchronizeParamType & Par
       Options, CopyParamAttrs, OnGetOptions);
   // try
   {
-    BOOST_SCOPE_EXIT ( (Dialog) )
+    BOOST_SCOPE_EXIT ( (&Dialog) )
     {
       delete Dialog;
     } BOOST_SCOPE_EXIT_END
@@ -8856,7 +8856,7 @@ void __fastcall TQueueDialog::LoadQueue()
   TFarList * List = new TFarList();
   // try
   {
-    BOOST_SCOPE_EXIT ( (List) )
+    BOOST_SCOPE_EXIT ( (&List) )
     {
       delete List;
     } BOOST_SCOPE_EXIT_END
@@ -9033,7 +9033,7 @@ bool __fastcall TWinSCPFileSystem::QueueDialog(
   TQueueDialog * Dialog = new TQueueDialog(FPlugin, this, ClosingPlugin);
   // try
   {
-    BOOST_SCOPE_EXIT ( (Dialog) )
+    BOOST_SCOPE_EXIT ( (&Dialog) )
     {
       delete Dialog;
     } BOOST_SCOPE_EXIT_END
@@ -9055,7 +9055,7 @@ bool __fastcall TWinSCPFileSystem::CreateDirectoryDialog(UnicodeString & Directo
   TWinSCPDialog * Dialog = new TWinSCPDialog(FPlugin);
   // try
   {
-    BOOST_SCOPE_EXIT ( (Dialog) )
+    BOOST_SCOPE_EXIT ( (&Dialog) )
     {
       delete Dialog;
     } BOOST_SCOPE_EXIT_END

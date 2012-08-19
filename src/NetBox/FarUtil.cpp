@@ -4,171 +4,133 @@
 #include "FarUtil.h"
 #include "FarTexts.h"
 
-UnicodeString GetSystemErrorMessage(const DWORD errCode)
+bool CNBFile::OpenWrite(const wchar_t *fileName)
 {
-  assert(errCode);
+    assert(m_File == INVALID_HANDLE_VALUE);
+    assert(fileName);
+    m_LastError = ERROR_SUCCESS;
 
-  UnicodeString errorMsg;
-
-  wchar_t codeNum[16] = {0};
-  swprintf_s(codeNum, sizeof(codeNum), L"[0x%08X]", errCode);
-  errorMsg = codeNum;
-
-  wchar_t errInfoBuff[256];
-  ZeroMemory(errInfoBuff, sizeof(errInfoBuff));
-  if (!FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM, NULL, errCode, 0, errInfoBuff, sizeof(errInfoBuff) / sizeof(wchar_t), NULL))
-    if (!FormatMessageW(FORMAT_MESSAGE_FROM_HMODULE, GetModuleHandle(L"Wininet.dll"), errCode, 0, errInfoBuff, sizeof(errInfoBuff) / sizeof(wchar_t), NULL))
+    m_File = CreateFile(fileName, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (m_File == INVALID_HANDLE_VALUE)
     {
-      FormatMessageW(FORMAT_MESSAGE_FROM_HMODULE, GetModuleHandle(L"Winhttp.dll"), errCode, 0, errInfoBuff, sizeof(errInfoBuff) / sizeof(wchar_t), NULL);
+        m_LastError = GetLastError();
     }
-  //Remove '\r\n' from the end
-  wchar_t * c = *errInfoBuff ? &errInfoBuff[wcslen(errInfoBuff) - 1] : NULL;
-  while (*errInfoBuff && c && (*c == L'\n') || (*c == L'\r'))
-  {
-    *c = 0;
-    c = *errInfoBuff ? &errInfoBuff[wcslen(errInfoBuff) - 1] : NULL;
-  }
-
-  if (*errInfoBuff)
-  {
-    errorMsg += L": ";
-    errorMsg += errInfoBuff;
-  }
-
-  return errorMsg;
+    return (m_LastError == ERROR_SUCCESS);
 }
 
-
-void ParseURL(const wchar_t * url, UnicodeString * scheme, UnicodeString * hostName, unsigned short * port, UnicodeString * path, UnicodeString * query, UnicodeString * userName, UnicodeString * password)
+bool CNBFile::OpenRead(const wchar_t *fileName)
 {
-  assert(url);
+    assert(m_File == INVALID_HANDLE_VALUE);
+    assert(fileName);
+    m_LastError = ERROR_SUCCESS;
 
-  UnicodeString urlParse(url);
-
-  //Parse scheme name
-  int delimScheme = urlParse.Pos(L"://");
-  if (delimScheme > 0)
-  {
-    if (scheme)
+    m_File = CreateFile(fileName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (m_File == INVALID_HANDLE_VALUE)
     {
-      *scheme = urlParse.SubString(1, delimScheme - 1);
-      // transform(scheme->begin(), scheme->end(), scheme->begin(), tolower);
-      scheme->Lower();
+        m_LastError = GetLastError();
     }
-    urlParse.Delete(1, delimScheme + 2);
-  }
-
-  //Parse path
-  int delimPath = urlParse.Pos(L'/');
-  if (delimPath > 0)
-  {
-    UnicodeString parsePath = urlParse.SubString(delimPath);
-    urlParse.Delete(delimPath, -1);
-    //Parse query
-    int delimQuery = 0;
-    if (parsePath.RPos(delimQuery, L'?'))
-    {
-      if (query)
-      {
-        *query = parsePath.SubString(delimQuery);
-      }
-      parsePath.Delete(1, delimQuery);
-    }
-    if (path)
-    {
-      *path = parsePath;
-    }
-  }
-  if (path && path->IsEmpty())
-  {
-    *path = L'/';
-  }
-
-  //Parse user name/password
-  int delimLogin = 0;
-  if (urlParse.RPos(delimLogin, L'@'))
-  {
-    UnicodeString parseLogin = urlParse.SubString(1, delimLogin);
-    int delimPwd = 0;
-    if (parseLogin.RPos(delimPwd, L':'))
-    {
-      if (password)
-      {
-        *password = parseLogin.SubString(delimPwd + 1);
-      }
-      parseLogin.Delete(delimPwd, -1);
-    }
-    if (userName)
-    {
-      *userName = parseLogin;
-    }
-    urlParse.Delete(1, delimLogin + 1);
-  }
-
-  //Parse port
-  if (port)
-  {
-    *port = 0;
-  }
-
-  int delimPort = 0;
-  if (urlParse.RPos(delimPort, L':'))
-  {
-    if (port)
-    {
-      const UnicodeString portNum = urlParse.SubString(delimPort + 1);
-      *port = static_cast<unsigned short>(_wtoi(portNum.c_str()));
-    }
-    urlParse.Delete(delimPort, -1);
-  }
-
-  if (hostName)
-  {
-    *hostName = urlParse;
-  }
+    return (m_LastError == ERROR_SUCCESS);
 }
 
-FILETIME UnixTimeToFileTime(const time_t t)
+bool CNBFile::Read(void *buff, size_t &buffSize)
 {
-  FILETIME ft;
-  const LONGLONG ll = Int32x32To64(t, 10000000) + 116444736000000000;
-  ft.dwLowDateTime = static_cast<DWORD>(ll);
-  ft.dwHighDateTime = ll >> 32;
-  return ft;
-}
+    assert(m_File != INVALID_HANDLE_VALUE);
+    m_LastError = ERROR_SUCCESS;
 
-unsigned long TextToNumber(const UnicodeString text)
-{
-  return static_cast<unsigned long>(_wtoi(text.c_str()));
-}
-
-std::string NumberToText(int number)
-{
-  char codeText[16];
-  _itoa_s(number, codeText, 10);
-  return std::string(codeText);
-}
-
-UnicodeString NumberToWString(unsigned long number)
-{
-  wchar_t toText[16];
-  _itow_s(number, toText, 10);
-  return UnicodeString(toText);
-}
-
-void CheckAbortEvent(HANDLE * AbortEvent)
-{
-  assert(AbortEvent);
-  static HANDLE stdIn = GetStdHandle(STD_INPUT_HANDLE);
-  INPUT_RECORD rec;
-  DWORD readCount = 0;
-  while (*AbortEvent && PeekConsoleInput(stdIn, &rec, 1, &readCount) && readCount != 0)
-  {
-    ReadConsoleInput(stdIn, &rec, 1, &readCount);
-    if (rec.EventType == KEY_EVENT && rec.Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE && rec.Event.KeyEvent.bKeyDown)
+    DWORD bytesRead = static_cast<DWORD>(buffSize);
+    if (!ReadFile(m_File, buff, bytesRead, &bytesRead, NULL))
     {
-      SetEvent(*AbortEvent);
+        m_LastError = GetLastError();
+        buffSize = 0;
     }
-  }
+    else
+    {
+        buffSize = static_cast<size_t>(bytesRead);
+    }
+    return (m_LastError == ERROR_SUCCESS);
 }
 
+bool CNBFile::Write(const void *buff, const size_t buffSize)
+{
+    assert(m_File != INVALID_HANDLE_VALUE);
+    m_LastError = ERROR_SUCCESS;
+
+    DWORD bytesWritten;
+    if (!WriteFile(m_File, buff, static_cast<DWORD>(buffSize), &bytesWritten, NULL))
+    {
+        m_LastError = GetLastError();
+    }
+    return (m_LastError == ERROR_SUCCESS);
+}
+
+__int64 CNBFile::GetFileSize()
+{
+    assert(m_File != INVALID_HANDLE_VALUE);
+    m_LastError = ERROR_SUCCESS;
+
+    LARGE_INTEGER fileSize;
+    if (!GetFileSizeEx(m_File, &fileSize))
+    {
+        m_LastError = GetLastError();
+        return -1;
+    }
+    return fileSize.QuadPart;
+}
+
+void CNBFile::Close()
+{
+    if (m_File != INVALID_HANDLE_VALUE)
+    {
+        CloseHandle(m_File);
+        m_File = INVALID_HANDLE_VALUE;
+    }
+}
+
+DWORD CNBFile::LastError() const
+{
+    return m_LastError;
+}
+
+DWORD CNBFile::SaveFile(const wchar_t *fileName, const std::vector<char>& fileContent)
+{
+    CNBFile f;
+    if (f.OpenWrite(fileName) && !fileContent.empty())
+    {
+        f.Write(&fileContent[0], fileContent.size());
+    }
+    return f.LastError();
+}
+
+DWORD CNBFile::SaveFile(const wchar_t *fileName, const char *fileContent)
+{
+    assert(fileContent);
+    CNBFile f;
+    if (f.OpenWrite(fileName) && *fileContent)
+    {
+        f.Write(fileContent, strlen(fileContent));
+    }
+    return f.LastError();
+}
+
+DWORD CNBFile::LoadFile(const wchar_t *fileName, std::vector<char>& fileContent)
+{
+    fileContent.clear();
+
+    CNBFile f;
+    if (f.OpenRead(fileName))
+    {
+        const __int64 fs = f.GetFileSize();
+        if (fs < 0)
+        {
+            return f.LastError();
+        }
+        if (fs == 0)
+        {
+            return ERROR_SUCCESS;
+        }
+        size_t s = static_cast<size_t>(fs);
+        fileContent.resize(s);
+        f.Read(&fileContent[0], s);
+    }
+    return f.LastError();
+}

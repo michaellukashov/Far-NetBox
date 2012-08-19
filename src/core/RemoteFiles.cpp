@@ -1296,7 +1296,7 @@ void __fastcall TRemoteFile::FindLinkedFile()
     {
       // try
       {
-        BOOST_SCOPE_EXIT ( (Self) )
+        BOOST_SCOPE_EXIT ( (&Self) )
         {
           Self->GetTerminal()->SetExceptionOnFail(false);
         } BOOST_SCOPE_EXIT_END
@@ -1615,7 +1615,7 @@ void __fastcall TRemoteDirectoryCache::Clear()
   TGuard Guard(FSection);
   // try
   {
-    BOOST_SCOPE_EXIT ( (Self) )
+    BOOST_SCOPE_EXIT ( (&Self) )
     {
       Self->TStringList::Clear();
     } BOOST_SCOPE_EXIT_END
@@ -1861,7 +1861,7 @@ void __fastcall TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data)
     TStrings * Limited = new TStringList();
     // try
     {
-      BOOST_SCOPE_EXIT ( (Limited) )
+      BOOST_SCOPE_EXIT ( (&Limited) )
       {
         delete Limited;
       } BOOST_SCOPE_EXIT_END

@@ -547,7 +547,7 @@ void __fastcall TFTPFileSystem::Idle()
       TRemoteDirectory * Files = new TRemoteDirectory(FTerminal);
       // try
       {
-        BOOST_SCOPE_EXIT ( (Files) )
+        BOOST_SCOPE_EXIT ( (&Files) )
         {
           delete Files;
         } BOOST_SCOPE_EXIT_END
@@ -644,7 +644,7 @@ void __fastcall TFTPFileSystem::AnyCommand(const UnicodeString Command,
   FOnCaptureOutput = OutputEvent;
   // try
   {
-    BOOST_SCOPE_EXIT ( (Self) )
+    BOOST_SCOPE_EXIT ( (&Self) )
     {
       Self->FOnCaptureOutput = NULL;
     } BOOST_SCOPE_EXIT_END
@@ -738,7 +738,7 @@ void __fastcall TFTPFileSystem::ChangeFileProperties(const UnicodeString AFileNa
 
     // try
     {
-      BOOST_SCOPE_EXIT ( (OwnedFile) )
+      BOOST_SCOPE_EXIT ( (&OwnedFile) )
       {
         delete OwnedFile;
       } BOOST_SCOPE_EXIT_END
@@ -1035,7 +1035,7 @@ void __fastcall TFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
 
     // try
     {
-      BOOST_SCOPE_EXIT ( (OperationProgress) (&FileName) (&Success) (&OnceDoneOperation) )
+      BOOST_SCOPE_EXIT ( (&OperationProgress) (&FileName) (&Success) (&OnceDoneOperation) )
       {
         OperationProgress->Finish(FileName, Success, OnceDoneOperation);
       } BOOST_SCOPE_EXIT_END
@@ -1314,7 +1314,7 @@ void __fastcall TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
 
     // try
     {
-      BOOST_SCOPE_EXIT ( (OperationProgress) (&FileName) (&Success) (&OnceDoneOperation) )
+      BOOST_SCOPE_EXIT ( (&OperationProgress) (&FileName) (&Success) (&OnceDoneOperation) )
       {
         OperationProgress->Finish(FileName, Success, OnceDoneOperation);
       } BOOST_SCOPE_EXIT_END
@@ -1612,7 +1612,7 @@ void __fastcall TFTPFileSystem::DirectorySource(const UnicodeString DirectoryNam
       FTerminal->SetExceptionOnFail(true);
       // try
       {
-        BOOST_SCOPE_EXIT ( (Self) )
+        BOOST_SCOPE_EXIT ( (&Self) )
         {
           Self->FTerminal->SetExceptionOnFail(false);
         } BOOST_SCOPE_EXIT_END
@@ -1746,7 +1746,7 @@ void __fastcall TFTPFileSystem::DoStartup()
   TStrings * PostLoginCommands = new TStringList();
   // try
   {
-    BOOST_SCOPE_EXIT ( (PostLoginCommands) )
+    BOOST_SCOPE_EXIT ( (&PostLoginCommands) )
     {
       delete PostLoginCommands;
     } BOOST_SCOPE_EXIT_END
@@ -1847,7 +1847,7 @@ void __fastcall TFTPFileSystem::ReadCurrentDirectory()
 
     // try
     {
-      BOOST_SCOPE_EXIT ( (Response) )
+      BOOST_SCOPE_EXIT ( (&Response) )
       {
         delete Response;
       } BOOST_SCOPE_EXIT_END
@@ -1994,7 +1994,7 @@ void __fastcall TFTPFileSystem::DoReadFile(const UnicodeString & FileName,
   TRemoteFileList * FileList = new TRemoteFileList();
   // try
   {
-    BOOST_SCOPE_EXIT ( (FileList) )
+    BOOST_SCOPE_EXIT ( (&FileList) )
     {
       delete FileList;
     } BOOST_SCOPE_EXIT_END
@@ -2445,7 +2445,7 @@ void __fastcall TFTPFileSystem::PoolForFatalNonCommandReply()
 
   // try
   {
-    BOOST_SCOPE_EXIT ( (Self) )
+    BOOST_SCOPE_EXIT ( (&Self) )
     {
       Self->FReply = 0;
       assert(Self->FCommandReply == 0);
@@ -2542,7 +2542,7 @@ unsigned int __fastcall TFTPFileSystem::WaitForReply(bool Command, bool WantLast
 
   // try
   {
-    BOOST_SCOPE_EXIT ( (Self) )
+    BOOST_SCOPE_EXIT ( (&Self) )
     {
       Self->FReply = 0;
       Self->FCommandReply = 0;
@@ -2601,7 +2601,7 @@ void __fastcall TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
 {
   // try
   {
-    BOOST_SCOPE_EXIT ( (Self) )
+    BOOST_SCOPE_EXIT ( (&Self) )
     {
       Self->ResetReply();
     } BOOST_SCOPE_EXIT_END
@@ -2743,7 +2743,7 @@ void __fastcall TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
         ExtException * E = new ExtException(Error, MoreMessages, true);
         // try
         {
-          BOOST_SCOPE_EXIT ( (E) )
+          BOOST_SCOPE_EXIT ( (&E) )
           {
             delete E;
           } BOOST_SCOPE_EXIT_END
@@ -3357,7 +3357,7 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       FTerminal->GetConfiguration()->CreateScpStorage(false);
     // try
     {
-      BOOST_SCOPE_EXIT ( (Storage) )
+      BOOST_SCOPE_EXIT ( (&Storage) )
       {
         delete Storage;
       } BOOST_SCOPE_EXIT_END
@@ -3437,7 +3437,7 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
           FTerminal->GetConfiguration()->CreateScpStorage(false);
         // try
         {
-          BOOST_SCOPE_EXIT ( (Storage) )
+          BOOST_SCOPE_EXIT ( (&Storage) )
           {
             delete Storage;
           } BOOST_SCOPE_EXIT_END

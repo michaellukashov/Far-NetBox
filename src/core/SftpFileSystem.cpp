@@ -816,7 +816,7 @@ public:
     RawByteString Dump;
     // try
     {
-      BOOST_SCOPE_EXIT ( (DumpLines) )
+      BOOST_SCOPE_EXIT ( (&DumpLines) )
       {
         delete DumpLines;
       } BOOST_SCOPE_EXIT_END
@@ -1151,7 +1151,7 @@ public:
     TSFTPPacket * Response = NULL;
     // try
     {
-      BOOST_SCOPE_EXIT ( (Request) (Response) )
+      BOOST_SCOPE_EXIT ( (&Request) (&Response) )
       {
         delete Request;
         delete Response;
@@ -1644,7 +1644,7 @@ public:
     bool Result;
     // try
     {
-      BOOST_SCOPE_EXIT ( (File) (Token) )
+      BOOST_SCOPE_EXIT ( (&File) (&Token) )
       {
         File = static_cast<TRemoteFile *>(Token);
       } BOOST_SCOPE_EXIT_END
@@ -2113,7 +2113,7 @@ void __fastcall TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
   BusyStart();
   // try
   {
-    BOOST_SCOPE_EXIT ( (Self) )
+    BOOST_SCOPE_EXIT ( (&Self) )
     {
       Self->BusyEnd();
     } BOOST_SCOPE_EXIT_END
@@ -2469,7 +2469,7 @@ int __fastcall TSFTPFileSystem::ReceiveResponse(
   TSFTPPacket * AResponse = (Response ? Response : new TSFTPPacket(GetSessionData()->GetCodePageAsNumber()));
   // try
   {
-    BOOST_SCOPE_EXIT ( (Response) (AResponse) )
+    BOOST_SCOPE_EXIT ( (&Response) (&AResponse) )
     {
       if (!Response)
       {
@@ -3128,7 +3128,7 @@ void __fastcall TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
   TSFTPPacket Response(GetSessionData()->GetCodePageAsNumber());
   // try
   {
-    BOOST_SCOPE_EXIT ( (Self) (&Packet) (&Handle) )
+    BOOST_SCOPE_EXIT ( (&Self) (&Packet) (&Handle) )
     {
       if (Self->FTerminal->GetActive())
       {
@@ -3218,7 +3218,7 @@ void __fastcall TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           FTerminal->SetExceptionOnFail(true);
           // try
           {
-            BOOST_SCOPE_EXIT ( (Self) )
+            BOOST_SCOPE_EXIT ( (&Self) )
             {
               Self->FTerminal->SetExceptionOnFail(false);
             } BOOST_SCOPE_EXIT_END
@@ -3502,7 +3502,7 @@ void __fastcall TSFTPFileSystem::ChangeFileProperties(const UnicodeString FileNa
 
   // try
   {
-    BOOST_SCOPE_EXIT ( (File) )
+    BOOST_SCOPE_EXIT ( (&File) )
     {
       delete File;
     } BOOST_SCOPE_EXIT_END
@@ -3567,7 +3567,7 @@ bool __fastcall TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
     TSFTPLoadFilesPropertiesQueue Queue(this, GetSessionData()->GetCodePageAsNumber());
     // try
     {
-      BOOST_SCOPE_EXIT ( (Self) (&Queue) (&Progress) )
+      BOOST_SCOPE_EXIT ( (&Self) (&Queue) (&Progress) )
       {
         Queue.DisposeSafe();
         Self->FTerminal->FOperationProgress = NULL;
@@ -3642,8 +3642,8 @@ void __fastcall TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & 
           bool Success = false;
           // try
           {
-            BOOST_SCOPE_EXIT ( (SubFiles) (SubFileList) (&FirstLevel)
-              (File) (&Success) (&OnceDoneOperation) (OperationProgress) )
+            BOOST_SCOPE_EXIT ( (&SubFiles) (&SubFileList) (&FirstLevel)
+              (&File) (&Success) (&OnceDoneOperation) (&OperationProgress) )
             {
               delete SubFiles;
               delete SubFileList;
@@ -3707,8 +3707,8 @@ void __fastcall TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & 
 
         // try
         {
-          BOOST_SCOPE_EXIT ( (&FirstLevel) (File)
-            (&Success) (&OnceDoneOperation) (OperationProgress) )
+          BOOST_SCOPE_EXIT ( (&FirstLevel) (&File)
+            (&Success) (&OnceDoneOperation) (&OperationProgress) )
           {
             if (FirstLevel)
             {
@@ -3779,7 +3779,7 @@ void __fastcall TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Al
 
   // try
   {
-    BOOST_SCOPE_EXIT ( (Self) (&Progress) )
+    BOOST_SCOPE_EXIT ( (&Self) (&Progress) )
     {
       Self->FTerminal->FOperationProgress = NULL;
       Progress.Stop();
@@ -3855,8 +3855,8 @@ void __fastcall TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
 
     // try
     {
-      BOOST_SCOPE_EXIT ( (Self) (&FileName) (&Success) (&OnceDoneOperation)
-        (OperationProgress) )
+      BOOST_SCOPE_EXIT ( (&Self) (&FileName) (&Success) (&OnceDoneOperation)
+        (&OperationProgress) )
       {
         Self->FAvoidBusy = false;
         OperationProgress->Finish(FileName, Success, OnceDoneOperation);
@@ -4193,7 +4193,7 @@ void __fastcall TSFTPFileSystem::SFTPSource(const UnicodeString FileName,
 
   // try
   {
-    BOOST_SCOPE_EXIT ( (File) )
+    BOOST_SCOPE_EXIT ( (&File) )
     {
       if (File != NULL)
       {
@@ -4406,8 +4406,8 @@ void __fastcall TSFTPFileSystem::SFTPSource(const UnicodeString FileName,
 
       // try
       {
-        BOOST_SCOPE_EXIT ( (Self) (&TransferFinished) (&OpenParams)
-          (&CloseRequest) (&DoResume) (&DestFileName) (OperationProgress) )
+        BOOST_SCOPE_EXIT ( (&Self) (&TransferFinished) (&OpenParams)
+          (&CloseRequest) (&DoResume) (&DestFileName) (&OperationProgress) )
         {
           if (Self->FTerminal->GetActive())
           {
@@ -5024,8 +5024,8 @@ void __fastcall TSFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
 
     // try
     {
-      BOOST_SCOPE_EXIT ( (Self) (&FileName) (&Success) (&OnceDoneOperation)
-        (OperationProgress))
+      BOOST_SCOPE_EXIT ( (&Self) (&FileName) (&Success) (&OnceDoneOperation)
+        (&OperationProgress))
       {
         Self->FAvoidBusy = false;
         OperationProgress->Finish(FileName, Success, OnceDoneOperation);
@@ -5218,10 +5218,10 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
     TOverwriteMode OverwriteMode = omOverwrite;
     // try
     {
-      BOOST_SCOPE_EXIT ( (Self) (&LocalHandle) (FileStream) (&DeleteLocalFile)
+      BOOST_SCOPE_EXIT ( (&Self) (&LocalHandle) (&FileStream) (&DeleteLocalFile)
         (&ResumeAllowed) (&OverwriteMode) (&LocalFileName)
         (&DestFileName) (&RemoteHandle)
-        (OperationProgress) )
+        (&OperationProgress) )
       {
         if (LocalHandle) { ::CloseHandle(LocalHandle); }
         if (FileStream) { delete FileStream; }
@@ -5305,7 +5305,7 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
       const TRemoteFile * AFile = File;
       // try
       {
-        BOOST_SCOPE_EXIT ( (AFile) (File) )
+        BOOST_SCOPE_EXIT ( (&AFile) (&File) )
         {
           if (AFile != File)
           {

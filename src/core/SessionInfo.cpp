@@ -595,7 +595,7 @@ TFileSystemInfo::TFileSystemInfo()
 FILE * __fastcall OpenFile(UnicodeString LogFileName, TSessionData * SessionData, bool Append, UnicodeString & NewFileName)
 {
   FILE * Result;
-  UnicodeString ANewFileName = GetExpandedLogFileName(LogFileName, SessionData, Append);
+  UnicodeString ANewFileName = GetExpandedLogFileName(LogFileName, SessionData);
   // Result = _wfopen(ANewFileName.c_str(), (Append ? L"a" : L"w"));
   Result = _fsopen(W2MB(ANewFileName.c_str()).c_str(),
     Append ? "a" : "w", SH_DENYWR); // _SH_DENYNO); // 
@@ -741,7 +741,7 @@ void __fastcall TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
         BeginUpdate();
         // try
         {
-          BOOST_SCOPE_EXIT ( (Self) )
+          BOOST_SCOPE_EXIT ( (&Self) )
           {
             Self->DeleteUnnecessary();
             Self->EndUpdate();
@@ -865,7 +865,7 @@ void __fastcall TSessionLog::DeleteUnnecessary()
   BeginUpdate();
   // try
   {
-    BOOST_SCOPE_EXIT ( (Self) )
+    BOOST_SCOPE_EXIT ( (&Self) )
     {
         Self->EndUpdate();
     } BOOST_SCOPE_EXIT_END
@@ -914,7 +914,7 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
   // try
   {
 #ifdef _MSC_VER
-    BOOST_SCOPE_EXIT ( (Self) )
+    BOOST_SCOPE_EXIT ( (&Self) )
     {
       Self->DeleteUnnecessary();
 
@@ -930,7 +930,7 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
     // try
     {
 #ifdef _MSC_VER
-      BOOST_SCOPE_EXIT ( (Storage) )
+      BOOST_SCOPE_EXIT ( (&Storage) )
       {
         delete Storage;
       } BOOST_SCOPE_EXIT_END
@@ -1219,7 +1219,7 @@ void __fastcall TActionLog::AddFailure(Exception * E)
     // try
     {
 #ifdef _MSC_VER
-      BOOST_SCOPE_EXIT ( (Messages) )
+      BOOST_SCOPE_EXIT ( (&Messages) )
       {
         delete Messages;
       } BOOST_SCOPE_EXIT_END
