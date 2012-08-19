@@ -12659,8 +12659,8 @@ private:
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
   FILE_OPERATION_LOOP_CUSTOM(Self->FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
 //---------------------------------------------------------------------------
-static const UnicodeString CONST_HTTP_PROTOCOL_BASE_NAME = L"WebDAV - HTTP";
-static const UnicodeString CONST_HTTPS_PROTOCOL_BASE_NAME = L"WebDAV - HTTPS";
+static const UnicodeString CONST_HTTP_PROTOCOL_BASE_NAME = L"HTTP";
+static const UnicodeString CONST_HTTPS_PROTOCOL_BASE_NAME = L"HTTPS";
 
 //===========================================================================
 
