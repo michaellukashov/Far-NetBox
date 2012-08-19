@@ -2171,14 +2171,18 @@ void __fastcall TWinSCPFileSystem::InsertFileNameOnCommandLine(bool Full)
       TRemoteFile * File = reinterpret_cast<TRemoteFile *>(Focused->GetUserData());
       if (File != NULL)
       {
+        UnicodeString Path;
         if (Full)
         {
-          InsertTokenOnCommandLine(File->GetFullFileName(), true);
+          // Get full address (with server address)
+          UnicodeString SessionUrl = GetSessionUrl(FTerminal);
+          Path = FORMAT(L"%s%s", SessionUrl.c_str(), File->GetFullFileName().c_str());
         }
         else
         {
-          InsertTokenOnCommandLine(File->GetFileName(), true);
+          Path = File->GetFileName();
         }
+        InsertTokenOnCommandLine(Path, true);
       }
     }
     else

@@ -539,7 +539,7 @@ public:
   UnicodeString __fastcall PeekCurrentDirectory();
   void __fastcall FatalAbort();
 
-  const TSessionInfo & __fastcall GetSessionInfo();
+  const TSessionInfo & __fastcall GetSessionInfo() const;
   const TFileSystemInfo & __fastcall GetFileSystemInfo(bool Retrieve = false);
   void __fastcall /* inline */ LogEvent(const UnicodeString & Str);
 
@@ -842,5 +842,7 @@ struct TSpaceAvailable
   __int64 UnusedBytesAvailableToUser;
   unsigned long BytesPerAllocationUnit;
 };
+//---------------------------------------------------------------------------
+UnicodeString GetSessionUrl(const TTerminal * Terminal);
 //---------------------------------------------------------------------------
 #endif
