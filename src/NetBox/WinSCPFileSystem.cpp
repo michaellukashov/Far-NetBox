@@ -2922,8 +2922,9 @@ void /* __fastcall */ TWinSCPFileSystem::ExportSession(TSessionData * Data, void
   TSessionData * FactoryDefaults = new TSessionData(L"");
   ExportData->Assign(Data);
   ExportData->SetModified(true);
+  // TCopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
   UnicodeString XmlFileName = IncludeTrailingBackslash(Param.DestPath) +
-    GUIConfiguration->GetDefaultCopyParam().ValidLocalFileName(::ExtractFilename(ExportData->GetName())) + L".netbox";
+    ::ValidLocalFileName(::ExtractFilename(ExportData->GetName())) + L".netbox";
   THierarchicalStorage * ExportStorage = new TXmlStorage(XmlFileName, Configuration->GetStoredSessionsSubKey());
   ExportStorage->Init();
   ExportStorage->SetAccessMode(smReadWrite);

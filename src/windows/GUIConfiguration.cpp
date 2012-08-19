@@ -69,13 +69,13 @@ void __fastcall TGUICopyParamType::GUIAssign(const TGUICopyParamType * Source)
 //---------------------------------------------------------------------------
 void __fastcall TGUICopyParamType::Default()
 {
-  TCopyParamType::Default();
-
   GUIDefault();
 }
 //---------------------------------------------------------------------------
 void __fastcall TGUICopyParamType::GUIDefault()
 {
+  TCopyParamType::Default();
+
   SetQueue(false);
   SetQueueNoConfirmation(true);
   SetQueueIndividually(false);
