@@ -366,7 +366,7 @@ void __fastcall TCustomFarPlugin::ClosePlugin(void * Plugin)
     assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
     // try
     {
-      BOOST_SCOPE_EXIT ( (Self) (FileSystem) )
+      BOOST_SCOPE_EXIT ( (&Self) (&FileSystem) )
       {
         Self->FOpenedPlugins->Remove(FileSystem);
       } BOOST_SCOPE_EXIT_END
@@ -787,7 +787,7 @@ void __fastcall TFarMessageDialog::Init(unsigned int AFlags,
   TStrings * MoreMessageLines = NULL;
   // try
   {
-    BOOST_SCOPE_EXIT ( (MessageLines) (MoreMessageLines) )
+    BOOST_SCOPE_EXIT ( (&MessageLines) (&MoreMessageLines) )
     {
       delete MessageLines;
       delete MoreMessageLines;
@@ -1054,7 +1054,7 @@ int __fastcall TCustomFarPlugin::DialogMessage(unsigned int Flags,
     new TFarMessageDialog(this, Params);
   // try
   {
-    BOOST_SCOPE_EXIT ( (Dialog) )
+    BOOST_SCOPE_EXIT ( (&Dialog) )
     {
       delete Dialog;
     } BOOST_SCOPE_EXIT_END
@@ -1081,7 +1081,7 @@ int __fastcall TCustomFarPlugin::FarMessage(unsigned int Flags,
   wchar_t ** Items = NULL;
   // try
   {
-    BOOST_SCOPE_EXIT ( (MessageLines) (Items) )
+    BOOST_SCOPE_EXIT ( (&MessageLines) (&Items) )
     {
       delete MessageLines;
       delete[] Items;
@@ -1194,7 +1194,7 @@ int __fastcall TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeString Ti
   int Result = 0;
   FarMenuItemEx * MenuItems = new FarMenuItemEx[Items->GetCount()];
   {
-    BOOST_SCOPE_EXIT ( (MenuItems) )
+    BOOST_SCOPE_EXIT ( (&MenuItems) )
     {
       delete[] MenuItems;
     } BOOST_SCOPE_EXIT_END
@@ -1899,7 +1899,7 @@ void __fastcall TCustomFarFileSystem::GetOpenPluginInfo(struct OpenPluginInfo * 
       TFarKeyBarTitles * KeyBarTitles = NULL;
       // try
       {
-        BOOST_SCOPE_EXIT ( (PanelModes) (KeyBarTitles) )
+        BOOST_SCOPE_EXIT ( (&PanelModes) (&KeyBarTitles) )
         {
           delete PanelModes;
           delete KeyBarTitles;
@@ -1946,7 +1946,7 @@ int __fastcall TCustomFarFileSystem::GetFindData(
   bool Result = false;
   // try
   {
-    BOOST_SCOPE_EXIT ( (PanelItems) )
+    BOOST_SCOPE_EXIT ( (&PanelItems) )
     {
       delete PanelItems;
     } BOOST_SCOPE_EXIT_END
@@ -2009,7 +2009,7 @@ int __fastcall TCustomFarFileSystem::ProcessHostFile(struct PluginPanelItem * Pa
   bool Result = false;
   // try
   {
-    BOOST_SCOPE_EXIT ( (PanelItems) )
+    BOOST_SCOPE_EXIT ( (&PanelItems) )
     {
       delete PanelItems;
     } BOOST_SCOPE_EXIT_END
@@ -2053,7 +2053,7 @@ int __fastcall TCustomFarFileSystem::MakeDirectory(const wchar_t ** Name, int Op
   int Result = 0;
   // try
   {
-    BOOST_SCOPE_EXIT ( (&NameStr) (Name) )
+    BOOST_SCOPE_EXIT ( (&NameStr) (&Name) )
     {
       if (NameStr != *Name)
       {
@@ -2084,7 +2084,7 @@ int __fastcall TCustomFarFileSystem::DeleteFiles(struct PluginPanelItem * PanelI
   bool Result = false;
   // try
   {
-    BOOST_SCOPE_EXIT ( (PanelItems) )
+    BOOST_SCOPE_EXIT ( (&PanelItems) )
     {
       delete PanelItems;
     } BOOST_SCOPE_EXIT_END
@@ -2109,7 +2109,7 @@ int __fastcall TCustomFarFileSystem::GetFiles(struct PluginPanelItem * PanelItem
   UnicodeString DestPathStr = *DestPath;
   // try
   {
-    BOOST_SCOPE_EXIT ( (&DestPathStr) (DestPath) (PanelItems) )
+    BOOST_SCOPE_EXIT ( (&DestPathStr) (&DestPath) (&PanelItems) )
     {
       if (DestPathStr != *DestPath)
       {
@@ -2143,7 +2143,7 @@ int __fastcall TCustomFarFileSystem::PutFiles(struct PluginPanelItem * PanelItem
   int Result = 0;
   // try
   {
-    BOOST_SCOPE_EXIT ( (PanelItems) )
+    BOOST_SCOPE_EXIT ( (&PanelItems) )
     {
       delete PanelItems;
     } BOOST_SCOPE_EXIT_END
