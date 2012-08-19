@@ -5089,7 +5089,7 @@ void /* __fastcall */ TTerminal::SpaceAvailable(const UnicodeString Path,
   }
 }
 //---------------------------------------------------------------------------
-const TSessionInfo & /* __fastcall */ TTerminal::GetSessionInfo()
+const TSessionInfo & /* __fastcall */ TTerminal::GetSessionInfo() const
 {
   return FFileSystem->GetSessionInfo();
 }
@@ -5653,3 +5653,14 @@ void /* __fastcall */ TTerminalList::RecryptPasswords()
     GetTerminal(Index)->RecryptPasswords();
   }
 }
+//---------------------------------------------------------------------------
+UnicodeString GetSessionUrl(const TTerminal * Terminal)
+{
+  const TSessionInfo & SessionInfo = Terminal->GetSessionInfo() ;
+  UnicodeString Protocol = SessionInfo.ProtocolBaseName;
+  UnicodeString HostName = Terminal->GetSessionData()->GetHostNameExpanded();
+  int Port = Terminal->GetSessionData()->GetPortNumber();
+  UnicodeString SessionUrl = FORMAT(L"%s://%s:%d", Protocol.Lower().c_str(), HostName.c_str(), Port);
+  return SessionUrl;
+}
+//---------------------------------------------------------------------------
