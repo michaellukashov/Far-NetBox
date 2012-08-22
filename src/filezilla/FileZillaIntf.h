@@ -71,6 +71,11 @@ struct TFtpsCertificateData
   int VerificationDepth;
 };
 //---------------------------------------------------------------------------
+struct TNeedPassRequestData
+{
+    wchar_t * Password;
+};
+//---------------------------------------------------------------------------
 class t_server;
 class TFTPServerCapabilities;
 //---------------------------------------------------------------------------
@@ -192,6 +197,8 @@ protected:
     bool HasTime1, bool HasTime2, void * UserData, int & RequestResult) = 0;
   virtual bool __fastcall HandleAsynchRequestVerifyCertificate(
     const TFtpsCertificateData & Data, int & RequestResult) = 0;
+  virtual bool __fastcall HandleAsynchRequestNeedPass(
+    struct TNeedPassRequestData & Data, int & RequestResult) = 0;
   virtual bool __fastcall HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
     unsigned int Count) = 0;
   virtual bool __fastcall HandleTransferStatus(bool Valid, __int64 TransferSize,

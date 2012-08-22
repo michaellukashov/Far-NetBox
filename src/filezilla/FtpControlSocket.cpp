@@ -109,6 +109,21 @@ public:
 	bool askOnResumeFail;
 };
 
+class CFtpControlSocket::CLogonData:public CFtpControlSocket::t_operation::COpData
+{
+public:
+	CLogonData()
+	{
+		waitForAsyncRequest = false;
+		gotPassword = false;
+	}
+	virtual ~CLogonData()
+	{
+	}
+	bool waitForAsyncRequest;
+	bool gotPassword;
+};
+
 class CFtpControlSocket::CListData:public CFtpControlSocket::t_operation::COpData
 {
 public:
@@ -245,6 +260,7 @@ CFtpControlSocket::~CFtpControlSocket()
 #define CONNECT_OPTSUTF8 -15
 #define CONNECT_CLNT -16
 #define CONNECT_OPTSMLST -17
+#define CONNECT_NEEDPASS -18
 
 bool CFtpControlSocket::InitConnect()
 {
@@ -493,6 +509,8 @@ void CFtpControlSocket::Connect(t_server &server)
 	}
 	m_ServerName = logontype?fwhost:hostname;
 	m_LastRecvTime = m_LastSendTime = CTime::GetCurrentTime();
+
+	m_Operation.pData = new CLogonData();
 }
 
 void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
@@ -959,13 +977,37 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 		}
 	}
 #endif
+	CLogonData *pData = static_cast<CLogonData *>(m_Operation.pData);
+	bool needpass = (m_CurrentServer.pass == COptions::GetOption(OPTION_ANONPWD)) || (m_CurrentServer.pass == _MPT(""));
 	switch(logonseq[logontype][m_Operation.nOpState])
 	{
 		case 0:
 			temp=_MPT("USER ")+m_CurrentServer.user;
+			pData->gotPassword = false;
 			break;
 		case 1:
-			temp=_MPT("PASS ")+m_CurrentServer.pass;
+			if (needpass && !pData->waitForAsyncRequest && !pData->gotPassword)
+			{
+				CNeedPassRequestData *pNeedPassRequestData = new CNeedPassRequestData();
+				pNeedPassRequestData->nRequestID = m_pOwner->GetNextAsyncRequestID();
+				pNeedPassRequestData->nOldOpState = m_Operation.nOpState;
+				m_Operation.nOpState = CONNECT_NEEDPASS;
+				if (!PostMessage(m_pOwner->m_hOwnerWnd, m_pOwner->m_nReplyMessageID, FZ_MSG_MAKEMSG(FZ_MSG_ASYNCREQUEST, FZ_ASYNCREQUEST_NEEDPASS), (LPARAM)pNeedPassRequestData))
+				{
+					delete pNeedPassRequestData;
+					ResetOperation(FZ_REPLY_ERROR);
+				}
+				pData->waitForAsyncRequest = true;
+				return;
+			}
+			else if (!needpass || pData->gotPassword)
+			{
+				temp=_MPT("PASS ")+m_CurrentServer.pass;
+			}
+			else
+			{
+				return;
+			}
 			break;
 		case 2:
 			temp=_MPT("ACCT ")+CCrypt::decrypt(COptions::GetOption(OPTION_FWPASS));
@@ -995,7 +1037,28 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 			temp=_MPT("USER ")+m_CurrentServer.user+_MPT("@")+COptions::GetOption(OPTION_FWUSER)+_MPT("@")+hostname;
 			break;
 		case 11:
-			temp=_MPT("PASS ")+m_CurrentServer.pass+_MPT("@")+CCrypt::decrypt(COptions::GetOption(OPTION_FWPASS));
+			if (needpass && !pData->waitForAsyncRequest && !pData->gotPassword)
+			{
+				CNeedPassRequestData *pNeedPassRequestData = new CNeedPassRequestData();
+				pNeedPassRequestData->nRequestID = m_pOwner->GetNextAsyncRequestID();
+				pNeedPassRequestData->nOldOpState = m_Operation.nOpState;
+				m_Operation.nOpState = CONNECT_NEEDPASS;
+				if (!PostMessage(m_pOwner->m_hOwnerWnd, m_pOwner->m_nReplyMessageID, FZ_MSG_MAKEMSG(FZ_MSG_ASYNCREQUEST, FZ_ASYNCREQUEST_NEEDPASS), (LPARAM)pNeedPassRequestData))
+				{
+					delete pNeedPassRequestData;
+					ResetOperation(FZ_REPLY_ERROR);
+				}
+				pData->waitForAsyncRequest = true;
+				return;
+			}
+			else if (!needpass || pData->gotPassword)
+			{
+				temp=_MPT("PASS ")+m_CurrentServer.pass+_MPT("@")+CCrypt::decrypt(COptions::GetOption(OPTION_FWPASS));
+			}
+			else
+			{
+				return;
+			}
 			break;
 		case 12:
 			if (m_CurrentServer.account == _T(""))
@@ -5746,6 +5809,31 @@ void CFtpControlSocket::SetAsyncRequestResult(int nAction, CAsyncRequestData *pD
 		SetVerifyCertResult(nAction, ((CVerifyCertRequestData *)pData)->pCertData );
 		break;
 #endif
+	case FZ_ASYNCREQUEST_NEEDPASS:
+		if (m_Operation.nOpMode!=CSMODE_CONNECT ||
+			m_Operation.nOpState != CONNECT_NEEDPASS)
+			break;
+		if (!m_RecvBuffer.empty() && m_RecvBuffer.front() != "")
+		{
+			DoClose();
+			break;
+		}
+		if (!nAction)
+		{
+			DoClose(FZ_REPLY_CRITICALERROR|FZ_REPLY_CANCEL);
+			ShowStatus(IDS_ERRORMSG_INTERRUPTED,1);
+			break;
+		}
+		else
+		{
+			m_CurrentServer.pass=((CNeedPassRequestData *)pData)->Password;
+			m_Operation.nOpState=((CNeedPassRequestData *)pData)->nOldOpState;
+			CLogonData *pLogonData = static_cast<CLogonData *>(m_Operation.pData);
+			pLogonData->waitForAsyncRequest = false;
+			pLogonData->gotPassword = true;
+			LogOnToServer(TRUE);
+		}
+		break;
 #ifndef MPEXT_NO_GSS
 	case FZ_ASYNCREQUEST_GSS_AUTHFAILED:
 		if (m_Operation.nOpMode!=CSMODE_CONNECT || m_Operation.nOpState!=CONNECT_GSS_FAILED)

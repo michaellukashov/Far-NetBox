@@ -127,6 +127,7 @@ typedef struct
 #ifndef MPEXT_NO_GSS
 #define FZ_ASYNCREQUEST_GSS_NEEDUSER 8
 #endif
+#define FZ_ASYNCREQUEST_NEEDPASS 10
 
 class CAsyncRequestData
 {
@@ -162,6 +163,15 @@ public:
 	t_SslCertData *pCertData;
 };
 #endif
+
+class CNeedPassRequestData : public CAsyncRequestData
+{
+public:
+	CNeedPassRequestData();
+	virtual ~CNeedPassRequestData();
+	CString Password;
+	int nOldOpState;
+};
 
 #ifndef MPEXT_NO_GSS
 class CGssNeedPassRequestData : public CAsyncRequestData

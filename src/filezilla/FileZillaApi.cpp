@@ -747,6 +747,8 @@ int CFileZillaApi::SetAsyncRequestResult(int nAction, CAsyncRequestData *pData)
 		}
 		break;
 #endif
+	case FZ_ASYNCREQUEST_NEEDPASS:
+		break;
 #ifndef MPEXT_NO_GSS
 	case FZ_ASYNCREQUEST_GSS_AUTHFAILED:
 	case FZ_ASYNCREQUEST_GSS_NEEDUSER:
@@ -891,6 +893,15 @@ CVerifyCertRequestData::~CVerifyCertRequestData()
 	delete pCertData;
 }
 #endif
+
+CNeedPassRequestData::CNeedPassRequestData()
+{
+	nRequestType=FZ_ASYNCREQUEST_NEEDPASS;
+}
+
+CNeedPassRequestData::~CNeedPassRequestData()
+{
+}
 
 #ifndef MPEXT_NO_GSS
 CGssNeedPassRequestData::CGssNeedPassRequestData()
