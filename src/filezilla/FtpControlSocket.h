@@ -142,6 +142,7 @@ protected:
 	CString m_ServerName;
 	std::list<CStringA> m_RecvBuffer;
 	CTime m_LastRecvTime;
+	class CLogonData;
 	class CListData;
 	class CFileTransferData;
 	class CMakeDirData;
