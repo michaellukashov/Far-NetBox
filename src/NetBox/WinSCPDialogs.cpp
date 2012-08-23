@@ -1789,6 +1789,7 @@ private:
   TFarRadioButton * IPv4Button;
   TFarRadioButton * IPv6Button;
   TFarCheckBox * FtpPasvModeCheck;
+  TFarCheckBox * SshBufferSizeCheck;
   TFarCheckBox * FtpAllowEmptyPasswordCheck;
   TFarCheckBox * SslSessionReuseCheck;
   TFarComboBox * FtpEncryptionCombo;
@@ -2427,6 +2428,9 @@ static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsFTPS, fsH
 
   FtpPasvModeCheck = new TFarCheckBox(this);
   FtpPasvModeCheck->SetCaption(GetMsg(LOGIN_FTP_PASV_MODE));
+
+  SshBufferSizeCheck = new TFarCheckBox(this);
+  SshBufferSizeCheck->SetCaption(GetMsg(LOGIN_SSH_OPTIMIZE_BUFFER_SIZE));
 
   Separator = new TFarSeparator(this);
   Separator->SetCaption(GetMsg(LOGIN_TIMEOUTS_GROUP));
@@ -3139,6 +3143,7 @@ void __fastcall TSessionDialog::UpdateControls()
     WinSCPPlugin->MoreMessageDialog(GetMsg(FTP_PASV_MODE_REQUIRED),
       NULL, qtInformation, qaOK);
   }
+  SshBufferSizeCheck->SetEnabled(SshProtocol);
   PingNullPacketButton->SetEnabled(SshProtocol);
   IPAutoButton->SetEnabled(SshProtocol);
 
@@ -3468,6 +3473,7 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
 
   // Connection tab
   FtpPasvModeCheck->SetChecked(SessionData->GetFtpPasvMode());
+  SshBufferSizeCheck->SetChecked((FSessionData->GetSendBuf() > 0) && FSessionData->GetSshSimple());
   LoadPing(SessionData);
   TimeoutEdit->SetAsInteger(SessionData->GetTimeout());
 
@@ -3792,6 +3798,8 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
 
     // Connection tab
     SessionData->SetFtpPasvMode(FtpPasvModeCheck->GetChecked());
+    SessionData->SetSendBuf(SshBufferSizeCheck->GetChecked() ? DefaultSendBuf : 0);
+    SessionData->SetSshSimple(SshBufferSizeCheck->GetChecked());
     if (PingOffButton->GetChecked())
     {
       SessionData->SetPingType(ptOff);
