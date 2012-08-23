@@ -730,7 +730,7 @@ dirent_is_root(const char * dirent, apr_size_t len);
 //------------------------------------------------------------------------------
 // from svn_fspth.h
 
-#define urlpath_basename             fspath__basename
+#define urlpath_basename             fspath_basename
 
 //------------------------------------------------------------------------------
 // from svn_props.h
@@ -998,7 +998,7 @@ string_compare(const char * str1,
 /* Our own realloc, since APR doesn't have one.  Note: this is a
    generic realloc for memory pools, *not* for strings. */
 static void *
-my__realloc(char * data, apr_size_t oldsize, apr_size_t request,
+my_realloc(char * data, apr_size_t oldsize, apr_size_t request,
             apr_pool_t * pool)
 {
   void * new_area = NULL;
@@ -1100,7 +1100,7 @@ stringbuf_ensure(stringbuf_t * str, apr_size_t minimum_size)
         }
       }
 
-    str->data = (char *) my__realloc(str->data,
+    str->data = (char *) my_realloc(str->data,
                                      str->len + 1,
                                      /* We need to maintain (and thus copy)
                                         the trailing nul */
@@ -1865,7 +1865,7 @@ fail:
 
       alphanum | mark | ":" | "@" | "&" | "=" | "+" | "$" | ","
 */
-const char uri__char_validity[256] =
+const char uri_char_validity[256] =
 {
   0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0,
@@ -1993,7 +1993,7 @@ path_uri_decode(const char * path, apr_pool_t * pool)
 static const char *
 path_uri_encode(const char * path, apr_pool_t * pool)
 {
-  const char * ret = uri_escape(path, uri__char_validity, pool);
+  const char * ret = uri_escape(path, uri_char_validity, pool);
 
   /* Our interface guarantees a copy. */
   if (ret == path)
@@ -2042,7 +2042,7 @@ path_url_add_component2(const char * url,
                         apr_pool_t * pool)
 {
   /* = path_uri_encode() but without always copying */
-  component = uri_escape(component, uri__char_validity, pool);
+  component = uri_escape(component, uri_char_validity, pool);
 
   return path_join(url, component, pool);
 }
@@ -2215,7 +2215,7 @@ typedef struct client_ctx_t
 // from win32_xlate.c
 
 static apr_status_t
-subr__win32_xlate_to_stringbuf(// win32_xlate_t *handle,
+subr_win32_xlate_to_stringbuf(// win32_xlate_t *handle,
   const char * src_data,
   apr_size_t src_length,
   stringbuf_t ** dest,
@@ -2327,7 +2327,7 @@ utf8_to_unicode(WCHAR ** retstr,
 static error_t
 check_utf8(const char * data, apr_size_t len, apr_pool_t * pool)
 {
-  // TODO: if (!utf__is_valid(data, len)))
+  // TODO: if (!utf_is_valid(data, len)))
     // return invalid_utf8(data, len, pool);
   return WEBDAV_NO_ERROR;
 }
@@ -2343,7 +2343,7 @@ convert_to_stringbuf(// xlate_handle_node_t *node,
 {
   apr_status_t apr_err = 0;
 
-  apr_err = subr__win32_xlate_to_stringbuf(// (win32_xlate_t *) node->handle,
+  apr_err = subr_win32_xlate_to_stringbuf(// (win32_xlate_t *) node->handle,
               src_data, src_length,
               dest, pool);
 
@@ -2405,7 +2405,7 @@ static error_t
 check_cstring_utf8(const char * data, apr_pool_t * pool)
 {
 
-  // TODO: if (!utf__cstring_is_valid(data))
+  // TODO: if (!utf_cstring_is_valid(data))
     // return invalid_utf8(data, strlen(data), pool);
   return WEBDAV_NO_ERROR;
 }
@@ -5500,7 +5500,7 @@ canonicalize(path_type_t type, const char * path, apr_pool_t * pool)
             src += 2;
           break;
         default:
-          if (!uri__char_validity[(unsigned char)*src])
+          if (!uri_char_validity[(unsigned char)*src])
             need_extra += 2;
           break;
       }
@@ -5548,7 +5548,7 @@ canonicalize(path_type_t type, const char * path, apr_pool_t * pool)
 
             val = (int)strtol(digitz, NULL, 16);
 
-            if (uri__char_validity[(unsigned char)val])
+            if (uri_char_validity[(unsigned char)val])
               *(dst++) = (char)val;
             else
             {
@@ -5559,7 +5559,7 @@ canonicalize(path_type_t type, const char * path, apr_pool_t * pool)
           }
           break;
         default:
-          if (!uri__char_validity[(unsigned char)*src])
+          if (!uri_char_validity[(unsigned char)*src])
           {
             apr_snprintf(dst, 4, "%%%02X", (unsigned char)*src);
             dst += 3;
@@ -6023,10 +6023,10 @@ uri_is_canonical(const char * uri, apr_pool_t * pool)
       digitz[2] = '\0';
       val = (int)strtol(digitz, NULL, 16);
 
-      if (uri__char_validity[val])
+      if (uri_char_validity[val])
         return FALSE; /* Should not have been escaped */
     }
-    else if (*ptr != '/' && !uri__char_validity[(unsigned char)*ptr])
+    else if (*ptr != '/' && !uri_char_validity[(unsigned char)*ptr])
       return FALSE; /* Character should have been escaped */
     ptr++;
   }
@@ -6057,7 +6057,7 @@ uri_skip_ancestor(const char * parent_uri,
 }
 
 static bool
-uri__is_ancestor(const char * parent_uri, const char * child_uri)
+uri_is_ancestor(const char * parent_uri, const char * child_uri)
 {
   return uri_skip_ancestor(parent_uri, child_uri) != NULL;
 }
@@ -6173,7 +6173,7 @@ is_child(path_type_t type, const char * path1, const char * path2,
 }
 
 static const char *
-uri__is_child(const char * parent_uri,
+uri_is_child(const char * parent_uri,
               const char * child_uri,
               apr_pool_t * pool)
 {
@@ -6190,17 +6190,17 @@ uri__is_child(const char * parent_uri,
 }
 
 static bool
-fspath__is_canonical(const char * fspath)
+fspath_is_canonical(const char * fspath)
 {
   return fspath[0] == '/' && relpath_is_canonical(fspath + 1);
 }
 
 static const char *
-fspath__basename(const char * fspath,
+fspath_basename(const char * fspath,
                  apr_pool_t * pool)
 {
   const char * result = NULL;
-  assert(fspath__is_canonical(fspath));
+  assert(fspath_is_canonical(fspath));
 
   result = relpath_basename(fspath + 1, pool);
 
@@ -8493,7 +8493,7 @@ get_path_relative_to_session(session_t * session,
   }
   else
   {
-    *rel_path = uri__is_child(sess_url, url, pool);
+    *rel_path = uri_is_child(sess_url, url, pool);
     if (!*rel_path)
       return error_createf(WEBDAV_ERR_ILLEGAL_URL, NULL,
                            "'%s' isn't a child of session URL '%s'",
@@ -8521,7 +8521,7 @@ client_path_relative_to_root(const char ** rel_path,
   /* Merge handling passes a root that is not WebDAV resource root */
   else if (webdav_root != NULL)
   {
-    /*if (!uri__is_ancestor(webdav_root, abspath_or_url))
+    /*if (!uri_is_ancestor(webdav_root, abspath_or_url))
       return error_createf(WEBDAV_ERR_CLIENT_UNRELATED_RESOURCES, NULL,
                            "URL '%s' is not a child of "
                            "root URL '%s'",
@@ -8861,7 +8861,7 @@ get_path_relative_to_root(session_t * session,
   }
   else
   {
-    *rel_path = uri__is_child(root_url, url, pool);
+    *rel_path = uri_is_child(root_url, url, pool);
     if (!*rel_path)
       return error_createf(WEBDAV_ERR_ILLEGAL_URL, NULL,
                            "'%s' isn't a child of root "
@@ -10108,7 +10108,7 @@ get_client_string(void * baton,
   return WEBDAV_NO_ERROR;
 }
 
-// see ra.c::client__session_from_path
+// see ra.c::client_session_from_path
 static error_t
 init_session_from_path(session_t * session,
                        const char ** url_p,
