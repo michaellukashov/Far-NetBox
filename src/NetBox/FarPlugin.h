@@ -229,6 +229,7 @@ private:
   PluginInfo FPluginInfo;
   TStringList * FSavedTitles;
   UnicodeString FCurrentTitle;
+  UnicodeString FTemporaryDir;
   short FCurrentProgress;
 
   void __fastcall ClearPluginInfo(PluginInfo & Info);

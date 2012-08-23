@@ -1757,10 +1757,18 @@ UnicodeString __fastcall TCustomFarPlugin::FormatFarVersion(int Version)
 UnicodeString __fastcall TCustomFarPlugin::TemporaryDir()
 {
   UnicodeString Result;
-  Result.SetLength(MAX_PATH);
-  TFarEnvGuard Guard;
-  FFarStandardFunctions.MkTemp(const_cast<wchar_t *>(Result.c_str()), Result.Length(), NULL);
-  PackStr(Result);
+  if (FTemporaryDir.IsEmpty())
+  {
+    Result.SetLength(MAX_PATH);
+    TFarEnvGuard Guard;
+    FFarStandardFunctions.MkTemp(const_cast<wchar_t *>(Result.c_str()), Result.Length(), NULL);
+    PackStr(Result);
+    FTemporaryDir = Result;
+  }
+  else
+  {
+    Result = FTemporaryDir;
+  }
   return Result;
 }
 //---------------------------------------------------------------------------
