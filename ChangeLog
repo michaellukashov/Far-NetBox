@@ -1,5 +1,6 @@
 NetBox 2.1.10 ??.08.2012
 --------------------
+  * Bugfix: Issue #33: cursor position not restored
   * FTP: Trigger password prompt by the 331 FTP response
     (http://winscp.net/tracker/show_bug.cgi?id=653)
 
