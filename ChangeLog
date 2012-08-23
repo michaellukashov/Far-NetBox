@@ -1,5 +1,7 @@
 NetBox 2.1.10 ??.08.2012
 --------------------
+  * Bugfix: WebDAV: SOCKS5 proxy did not work
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=97556#p97556)
   * SCP, SFTP: add session option "Optimize connection buffer size"
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=97556#p97534)
   * Bugfix: Plugin configuration: remove option "Disks menu hotkey: Autoassign, Manual"
