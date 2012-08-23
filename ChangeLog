@@ -1,5 +1,7 @@
 NetBox 2.1.10 ??.08.2012
 --------------------
+  * Bugfix: Plugin configuration: remove option "Disks menu hotkey: Autoassign, Manual"
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=97556#p97531)
   * Bugfix: "Copy file" dialog: minimize file name
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=97556#p97531)
   * Bugfix: Issue #33: cursor position not restored
