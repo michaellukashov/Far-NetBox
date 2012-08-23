@@ -163,6 +163,7 @@ private:
 
 public:
   webdav::error_t GetServerSettings(
+    int * proxy_method,
     const char **proxy_host,
     unsigned int *proxy_port,
     const char **proxy_username,

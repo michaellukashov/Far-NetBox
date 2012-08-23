@@ -12040,6 +12040,7 @@ neon_open(
   const char * pkcs11_provider = NULL;
   const char * ssl_authority_file = NULL;
   {
+    int proxy_method = 0;
     const char * proxy_host = NULL;
     unsigned int proxy_port = 0;
     const char * proxy_username = NULL;
@@ -12052,17 +12053,19 @@ neon_open(
                              CONST_FS_KEY,
                              APR_HASH_KEY_STRING));
     assert(fs);
-    WEBDAV_ERR(fs->GetServerSettings(&proxy_host,
-                                     &proxy_port,
-                                     &proxy_username,
-                                     &proxy_password,
-                                     &timeout,
-                                     &debug,
-                                     &neon_debug_file_name,
-                                     &compression,
-                                     &pkcs11_provider,
-                                     &ssl_authority_file,
-                                     pool));
+    WEBDAV_ERR(fs->GetServerSettings(
+      &proxy_method,
+      &proxy_host,
+      &proxy_port,
+      &proxy_username,
+      &proxy_password,
+      &timeout,
+      &debug,
+      &neon_debug_file_name,
+      &compression,
+      &pkcs11_provider,
+      &ssl_authority_file,
+      pool));
     if (neon_auth_types == 0)
     {
       /* If there were no auth types specified in the configuration
@@ -12098,27 +12101,42 @@ neon_open(
 #endif // #ifdef NETBOX_DEBUG
     }
 
-    if (proxy_host)
+    TProxyMethod method = (TProxyMethod)proxy_method;
+    if (method != ::pmNone)
     {
-      ne_session_proxy(sess, proxy_host, proxy_port);
-      ne_session_proxy(sess2, proxy_host, proxy_port);
-
-      if (proxy_username)
+      if ((method == pmSocks4) || (method == pmSocks5))
       {
-        proxy_auth_baton_t * pab = static_cast<proxy_auth_baton_t *>(apr_pcalloc(pool, sizeof(*pab)));
-        pab->username = proxy_username;
-        pab->password = proxy_password ? proxy_password : "";
-
-        ne_set_proxy_auth(sess, proxy_auth, pab);
-        ne_set_proxy_auth(sess2, proxy_auth, pab);
+        enum ne_sock_sversion vers = method == pmSocks4 ? NE_SOCK_SOCKSV4A : NE_SOCK_SOCKSV5;
+        ne_session_socks_proxy(sess, vers, proxy_host, proxy_port, proxy_username, proxy_password);
+        ne_session_socks_proxy(sess2, vers, proxy_host, proxy_port, proxy_username, proxy_password);
       }
-      else
+      else if (method == pmSystem)
       {
-        /* Enable (only) the Negotiate scheme for proxy
-           authentication, if no username/password is
-           configured. */
-        ne_add_proxy_auth(sess, NE_AUTH_NEGOTIATE, NULL, NULL);
-        ne_add_proxy_auth(sess2, NE_AUTH_NEGOTIATE, NULL, NULL);
+        ne_session_system_proxy(sess, 0);
+        ne_session_system_proxy(sess2, 0);
+      }
+      else if (proxy_host)
+      {
+        ne_session_proxy(sess, proxy_host, proxy_port);
+        ne_session_proxy(sess2, proxy_host, proxy_port);
+
+        if (proxy_username)
+        {
+          proxy_auth_baton_t * pab = static_cast<proxy_auth_baton_t *>(apr_pcalloc(pool, sizeof(*pab)));
+          pab->username = proxy_username;
+          pab->password = proxy_password ? proxy_password : "";
+
+          ne_set_proxy_auth(sess, proxy_auth, pab);
+          ne_set_proxy_auth(sess2, proxy_auth, pab);
+        }
+        else
+        {
+          /* Enable (only) the Negotiate scheme for proxy
+             authentication, if no username/password is
+             configured. */
+          ne_add_proxy_auth(sess, NE_AUTH_NEGOTIATE, NULL, NULL);
+          ne_add_proxy_auth(sess2, NE_AUTH_NEGOTIATE, NULL, NULL);
+        }
       }
     }
 
@@ -14482,6 +14500,7 @@ webdav::error_t TWebDAVFileSystem::OpenURL(const UnicodeString & webdav_URL,
 //---------------------------------------------------------------------------
 
 webdav::error_t TWebDAVFileSystem::GetServerSettings(
+  int * proxy_method,
   const char ** proxy_host,
   unsigned int * proxy_port,
   const char ** proxy_username,
@@ -14495,6 +14514,7 @@ webdav::error_t TWebDAVFileSystem::GetServerSettings(
   apr_pool_t * pool)
 {
   /* If we find nothing, default to nulls. */
+  *proxy_method = 0;
   *proxy_host = NULL;
   *proxy_port = (unsigned int)-1;
   *proxy_username = NULL;
@@ -14504,12 +14524,13 @@ webdav::error_t TWebDAVFileSystem::GetServerSettings(
 
   {
     TProxyMethod ProxyMethod = FTerminal->GetSessionData()->GetProxyMethod();
+    *proxy_method = (int)ProxyMethod;
     if (ProxyMethod != (TProxyMethod)::pmNone)
     {
       WEBDAV_ERR(webdav::path_cstring_to_utf8(proxy_host, AnsiString(FTerminal->GetSessionData()->GetProxyHost()).c_str(), pool));
+      WEBDAV_ERR(webdav::path_cstring_to_utf8(proxy_username, AnsiString(FTerminal->GetSessionData()->GetProxyUsername()).c_str(), pool));
+      WEBDAV_ERR(webdav::path_cstring_to_utf8(proxy_password, AnsiString(FTerminal->GetSessionData()->GetProxyPassword()).c_str(), pool));
     }
-    WEBDAV_ERR(webdav::path_cstring_to_utf8(proxy_username, AnsiString(FTerminal->GetSessionData()->GetProxyUsername()).c_str(), pool));
-    WEBDAV_ERR(webdav::path_cstring_to_utf8(proxy_password, AnsiString(FTerminal->GetSessionData()->GetProxyPassword()).c_str(), pool));
   }
 
   /* Apply non-proxy-specific settings regardless of exceptions: */
