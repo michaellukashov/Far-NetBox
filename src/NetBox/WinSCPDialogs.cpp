@@ -316,40 +316,12 @@ bool __fastcall TWinSCPPlugin::ConfigurationDialog()
     } BOOST_SCOPE_EXIT_END
     TFarText * Text;
 
-    Dialog->SetSize(TPoint(67, 23));
+    Dialog->SetSize(TPoint(67, 22));
     Dialog->SetCaption(FORMAT(L"%s - %s",
                               GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_INTERFACE)).c_str()));
 
     TFarCheckBox * DisksMenuCheck = new TFarCheckBox(Dialog);
     DisksMenuCheck->SetCaption(GetMsg(CONFIG_DISKS_MENU));
-
-    Text = new TFarText(Dialog);
-    Text->SetLeft(Text->GetLeft() + 4);
-    Text->SetCaption(GetMsg(CONFIG_HOTKEY_LABEL));
-    Text->SetEnabledDependency(DisksMenuCheck);
-
-    Dialog->SetNextItemPosition(ipRight);
-
-    TFarRadioButton * AutoHotKeyButton = new TFarRadioButton(Dialog);
-    AutoHotKeyButton->SetCaption(GetMsg(CONFIG_HOTKEY_AUTOASSIGN));
-    AutoHotKeyButton->SetEnabledDependency(DisksMenuCheck);
-    AutoHotKeyButton->SetChecked(true);
-
-    TFarRadioButton * ManualHotKeyButton = new TFarRadioButton(Dialog);
-    ManualHotKeyButton->SetCaption(GetMsg(CONFIG_HOTKEY_MANUAL));
-    // ManualHotKeyButton->SetEnabledDependency(DisksMenuCheck);
-    ManualHotKeyButton->SetEnabled(false);
-    AutoHotKeyButton->SetChecked(false);
-
-    TFarEdit * HotKeyEdit = new TFarEdit(Dialog);
-    HotKeyEdit->SetWidth(1);
-    HotKeyEdit->SetFixed(true);
-    HotKeyEdit->SetMask(L"9");
-    HotKeyEdit->SetEnabledDependency(ManualHotKeyButton);
-
-    Text = new TFarText(Dialog);
-    Text->SetCaption(L"(1 - 9)");
-    Text->SetEnabledDependency(ManualHotKeyButton);
 
     Dialog->SetNextItemPosition(ipNewLine);
 
@@ -442,10 +414,6 @@ bool __fastcall TWinSCPPlugin::ConfigurationDialog()
     Dialog->AddStandardButtons();
 
     DisksMenuCheck->SetChecked(FarConfiguration->GetDisksMenu());
-    AutoHotKeyButton->SetChecked(!FarConfiguration->GetDisksMenuHotKey() != 0);
-    ManualHotKeyButton->SetChecked(FarConfiguration->GetDisksMenuHotKey() != 0);
-    HotKeyEdit->SetText(FarConfiguration->GetDisksMenuHotKey() ?
-                        IntToStr(FarConfiguration->GetDisksMenuHotKey()) : UnicodeString());
     PluginsMenuCheck->SetChecked(FarConfiguration->GetPluginsMenu());
     PluginsMenuCommandsCheck->SetChecked(FarConfiguration->GetPluginsMenuCommands());
     HostNameInTitleCheck->SetChecked(FarConfiguration->GetHostNameInTitle());
@@ -462,9 +430,6 @@ bool __fastcall TWinSCPPlugin::ConfigurationDialog()
     if (Result)
     {
       FarConfiguration->SetDisksMenu(DisksMenuCheck->GetChecked());
-      FarConfiguration->SetDisksMenuHotKey(
-        ManualHotKeyButton->GetChecked() && !HotKeyEdit->GetIsEmpty() ?
-        StrToInt(HotKeyEdit->GetText()) : 0);
       FarConfiguration->SetPluginsMenu(PluginsMenuCheck->GetChecked());
       FarConfiguration->SetPluginsMenuCommands(PluginsMenuCommandsCheck->GetChecked());
       FarConfiguration->SetHostNameInTitle(HostNameInTitleCheck->GetChecked());
