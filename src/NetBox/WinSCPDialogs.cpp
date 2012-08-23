@@ -5522,8 +5522,8 @@ private:
   TFarButton * Button;
   TFarSeparator * Separator;
   TFarText * Text;
-
-  SetSize(TPoint(78, 12 + (FLAGCLEAR(FOptions, coTempTransfer) ? 4 : 0)));
+  const int DlgLength = 78;
+  SetSize(TPoint(DlgLength, 12 + (FLAGCLEAR(FOptions, coTempTransfer) ? 4 : 0)));
   TRect CRect = GetClientRect();
 
   SetCaption(GetMsg(Move ? MOVE_TITLE : COPY_TITLE));
@@ -5537,9 +5537,12 @@ private:
     }
     else
     {
-      Prompt = FORMAT(GetMsg(Move ? MOVE_FILE_PROMPT : COPY_FILE_PROMPT).c_str(),
-                      ToRemote ? ExtractFileName(FileList->GetStrings(0), true).c_str() :
-                      UnixExtractFileName(FileList->GetStrings(0)).c_str());
+      UnicodeString PromptMsg = GetMsg(Move ? MOVE_FILE_PROMPT : COPY_FILE_PROMPT);
+      UnicodeString FileName = ToRemote ?
+        ExtractFileName(FileList->GetStrings(0), false).c_str() :
+        UnixExtractFileName(FileList->GetStrings(0)).c_str();
+      UnicodeString MinimizedName = MinimizeName(FileName, DlgLength - PromptMsg.Length() - 6, false);
+      Prompt = FORMAT(PromptMsg.c_str(), MinimizedName.c_str());
     }
 
     Text = new TFarText(this);
