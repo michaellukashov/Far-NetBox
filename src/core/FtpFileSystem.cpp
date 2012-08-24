@@ -3413,8 +3413,7 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       Params.Aliases = Aliases;
       Params.AliasesCount = LENOF(Aliases);
       unsigned int Answer = FTerminal->QueryUser(
-        FMTLOAD(VERIFY_CERT_PROMPT2, FSessionInfo.Certificate.c_str(),
-          FMTLOAD(VERIFY_CERT_PROMPT4).c_str()),
+        FMTLOAD(VERIFY_CERT_PROMPT2, FSessionInfo.Certificate.c_str()),
         NULL, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);
 
       switch (Answer)
