@@ -139,7 +139,7 @@
 "Export"
 "Export session \"%s\" to:"
 "Export %d session(s) to:"
-"Import sessions from selected files"
+"Import session(s) from selected file(s)?"
 "File \"%s\" does not contain any session data."
 "Duplicate session"
 "New session name:"
