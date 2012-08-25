@@ -2537,13 +2537,34 @@ void __fastcall TSessionData::RemoveProtocolPrefix(UnicodeString & hostName)
 //---------------------------------------------------------------------
 TFSProtocol __fastcall TSessionData::TranslateFSProtocolNumber(int FSProtocol)
 {
+  TFSProtocol Result = -1;
   if (GetSessionVersion() >= GetVersionNumber2110())
   {
-    return static_cast<TFSProtocol>(FSProtocol);
+    Result = static_cast<TFSProtocol>(FSProtocol);
   }
   else
   {
+    // enum TFSProtocol_219 { fsFTPS_219 = 6, fsHTTP_219 = 7, fsHTTPS_219 = 8 };
+    // enum TFSProtocol { fsHTTP = 6 };
+    if (FSProtocol < fsFTPS_219)
+    {
+      Result = static_cast<TFSProtocol>(FSProtocol);
+    }
+    switch (FSProtocol)
+    {
+      case fsFTPS_219:
+        Result = fsFTP;
+        break;
+      case fsHTTP_219:
+        Result = fsHTTP;
+        break;
+      case fsHTTPS_219:
+        Result = fsHTTP;
+        break;
+    }
   }
+  assert(Result != -1);
+  return Result;
 }
 //---------------------------------------------------------------------
 //=== TStoredSessionList ----------------------------------------------
