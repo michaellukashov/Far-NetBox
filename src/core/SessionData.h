@@ -183,6 +183,7 @@ private:
   TFtpEncryptionSwitch FFtpEncryption;
   TLoginType FLoginType;
   int FNumberOfRetries;
+  DWORD FSessionVersion;
 
 public:
   void __fastcall SetHostName(UnicodeString value);
@@ -593,6 +594,11 @@ public:
 
   int __fastcall GetNumberOfRetries() const { return FNumberOfRetries; }
   void __fastcall SetNumberOfRetries(int value) { FNumberOfRetries = value; }
+  DWORD __fastcall GetSessionVersion() const { return FSessionVersion; }
+  void __fastcall SetSessionVersion(DWORD value) { FSessionVersion = value; }
+protected:
+  DWORD __fastcall GetDefaultVersion() { return ::GetVersionNumber219(); }
+  TFSProtocol __fastcall TranslateFSProtocolNumber(int FSProtocol);
 #endif
 private:
   mutable TIEProxyConfig * FIEProxyConfig;

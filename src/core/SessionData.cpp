@@ -19,6 +19,7 @@
 #include "TextsCore.h"
 #include "PuttyIntf.h"
 #include "RemoteFiles.h"
+#include "version.h"
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
 #pragma package(smart_init)
@@ -208,6 +209,7 @@ void __fastcall TSessionData::Default()
   SetFtpEncryption(fesPlainFTP);
 
   FNumberOfRetries = 0;
+  FSessionVersion = ::StrToVersionNumber(NETBOX_VERSION_NUMBER);
   // add also to TSessionLog::AddStartupInfo()
 }
 //---------------------------------------------------------------------
@@ -387,6 +389,7 @@ bool __fastcall TSessionData::IsSame(const TSessionData * Default, bool Advanced
 //---------------------------------------------------------------------
 void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword)
 {
+  SetSessionVersion(Storage->ReadInteger(L"SessionVersion", GetDefaultVersion()));
   SetPortNumber(Storage->ReadInteger(L"PortNumber", GetPortNumber()));
   SetUserName(Storage->ReadString(L"UserName", GetUserName()));
   // must be loaded after UserName, because HostName may be in format user@host
@@ -458,7 +461,7 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
   SetRekeyData(Storage->ReadString(L"RekeyBytes", GetRekeyData()));
   SetRekeyTime(Storage->ReadInteger(L"RekeyTime", GetRekeyTime()));
 
-  SetFSProtocol(static_cast<TFSProtocol>(Storage->ReadInteger(L"FSProtocol", GetFSProtocol())));
+  SetFSProtocol(TranslateFSProtocolNumber(Storage->ReadInteger(L"FSProtocol", GetFSProtocol())));
   SetLocalDirectory(Storage->ReadString(L"LocalDirectory", GetLocalDirectory()));
   SetRemoteDirectory(Storage->ReadString(L"RemoteDirectory", GetRemoteDirectory()));
   SetSynchronizeBrowsing(Storage->ReadBool(L"SynchronizeBrowsing", GetSynchronizeBrowsing()));
@@ -2531,7 +2534,18 @@ void __fastcall TSessionData::RemoveProtocolPrefix(UnicodeString & hostName)
   AdjustHostName(hostName, L"http://");
   AdjustHostName(hostName, L"https://");
 }
-
+//---------------------------------------------------------------------
+TFSProtocol __fastcall TSessionData::TranslateFSProtocolNumber(int FSProtocol)
+{
+  if (GetSessionVersion() >= GetVersionNumber2110())
+  {
+    return static_cast<TFSProtocol>(FSProtocol);
+  }
+  else
+  {
+  }
+}
+//---------------------------------------------------------------------
 //=== TStoredSessionList ----------------------------------------------
 /* __fastcall */ TStoredSessionList::TStoredSessionList(bool aReadOnly):
   TNamedObjectList(), FReadOnly(aReadOnly)
