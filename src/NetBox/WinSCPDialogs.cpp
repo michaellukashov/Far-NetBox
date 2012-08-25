@@ -3056,38 +3056,38 @@ void __fastcall TSessionDialog::TransferProtocolComboChange()
   LoadPing(FSessionData);
   if (GetFSProtocol() == fsSFTPonly || GetFSProtocol() == fsSCPonly)
   {
-    if (PortNumberEdit->GetAsInteger() == 21)
+    if (PortNumberEdit->GetAsInteger() == FtpPortNumber)
     {
-      PortNumberEdit->SetAsInteger(22);
+      PortNumberEdit->SetAsInteger(SshPortNumber);
     }
   }
   else if (GetFSProtocol() == fsFTP)
   {
-    if (PortNumberEdit->GetAsInteger() == 22 || PortNumberEdit->GetAsInteger() == 990)
+    if (PortNumberEdit->GetAsInteger() == SshPortNumber || PortNumberEdit->GetAsInteger() == FtpsImplicitPortNumber)
     {
-      PortNumberEdit->SetAsInteger(21);
+      PortNumberEdit->SetAsInteger(FtpPortNumber);
     }
   }
   else if (GetFSProtocol() == fsFTPS)
   {
-    if (PortNumberEdit->GetAsInteger() == 22 || PortNumberEdit->GetAsInteger() == 80)
+    if (PortNumberEdit->GetAsInteger() == SshPortNumber || PortNumberEdit->GetAsInteger() == HTTPPortNumber)
     {
-      PortNumberEdit->SetAsInteger(990);
+      PortNumberEdit->SetAsInteger(FtpsImplicitPortNumber);
     }
   }
   else if (GetFSProtocol() == fsHTTP)
   {
-    if (PortNumberEdit->GetAsInteger() == 21 || PortNumberEdit->GetAsInteger() == 990 || PortNumberEdit->GetAsInteger() == 443)
+    if (PortNumberEdit->GetAsInteger() == FtpPortNumber || PortNumberEdit->GetAsInteger() == FtpsImplicitPortNumber || PortNumberEdit->GetAsInteger() == HTTPSPortNumber)
     {
-      PortNumberEdit->SetAsInteger(80);
+      PortNumberEdit->SetAsInteger(HTTPPortNumber);
       ::AdjustRemoteDir(HostNameEdit, RemoteDirectoryEdit, UpdateDirectoriesCheck);
     }
   }
   else if (GetFSProtocol() == fsHTTPS)
   {
-    if (PortNumberEdit->GetAsInteger() == 80)
+    if (PortNumberEdit->GetAsInteger() == HTTPPortNumber)
     {
-      PortNumberEdit->SetAsInteger(443);
+      PortNumberEdit->SetAsInteger(HTTPSPortNumber);
       ::AdjustRemoteDir(HostNameEdit, RemoteDirectoryEdit, UpdateDirectoriesCheck);
     }
   }
