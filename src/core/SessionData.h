@@ -42,7 +42,7 @@ extern const wchar_t SshProtList[][10];
 extern const wchar_t ProxyMethodList[][10];
 extern const TCipher DefaultCipherList[CIPHER_COUNT];
 extern const TKex DefaultKexList[KEX_COUNT];
-extern const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][15];
+extern const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][13];
 extern const int DefaultSendBuf;
 extern const UnicodeString AnonymousUserName;
 extern const UnicodeString AnonymousPassword;

@@ -36,16 +36,16 @@ const TCipher DefaultCipherList[CIPHER_COUNT] =
   { cipAES, cipBlowfish, cip3DES, cipWarn, cipArcfour, cipDES };
 const TKex DefaultKexList[KEX_COUNT] =
   { kexDHGEx, kexDHGroup14, kexDHGroup1, kexRSA, kexWarn };
-const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][15] = { L"SCP", L"SFTP (SCP)", L"SFTP", L"", L"", L"FTP", L"FTPS", L"WebDAV - HTTP", L"WebDAV - HTTPS" };
+const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][13] = { L"SCP", L"SFTP (SCP)", L"SFTP", L"", L"", L"FTP", L"WebDAV" };
 const int SshPortNumber = 22;
 const int FtpPortNumber = 21;
 const int FtpsImplicitPortNumber = 990;
+const int HTTPPortNumber = 80;
+const int HTTPSPortNumber = 443;
 const int DefaultSendBuf = 262144;
 const UnicodeString AnonymousUserName(L"anonymous");
 const UnicodeString AnonymousPassword(L"anonymous@example.com");
 
-const int HTTPPortNumber = 80;
-const int HTTPSPortNumber = 443;
 const unsigned int CONST_DEFAULT_CODEPAGE = CP_ACP;
 //---------------------------------------------------------------------
 TDateTime __fastcall SecToDateTime(int Sec)
@@ -1073,13 +1073,15 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
   else if (Url.SubString(1, 5).LowerCase() == L"http:")
   {
     AFSProtocol = fsHTTP;
+    AFtps = ftpsNone;
     APortNumber = HTTPPortNumber;
     Url.Delete(1, 5);
     ProtocolDefined = true;
   }
   else if (Url.SubString(1, 6).LowerCase() == L"https:")
   {
-    AFSProtocol = fsHTTPS;
+    AFSProtocol = fsHTTP;
+    AFtps = ftpsImplicit;
     APortNumber = HTTPSPortNumber;
     Url.Delete(1, 6);
     ProtocolDefined = true;
@@ -1874,16 +1876,16 @@ UnicodeString __fastcall TSessionData::GetSessionUrl()
         break;
 
       case fsFTP:
-        Url = L"ftp://";
-        break;
-      case fsFTPS:
-        Url = L"ftps://";
+        if (GetFtps() == ftpsNone)
+          Url = L"ftp://";
+        else
+          Url = L"ftps://";
         break;
       case fsHTTP:
-        Url = L"http://";
-        break;
-      case fsHTTPS:
-        Url = L"https://";
+        if (GetFtps() == ftpsNone)
+          Url = L"http://";
+        else
+          Url = L"https://";
         break;
     }
 
@@ -2146,13 +2148,7 @@ void __fastcall TSessionData::ParseIEProxyConfig() const
       // case fsFTPS:
         // break;
       case fsHTTP:
-        if (ProxyScheme == L"http")
-        {
-          FromURI(ProxyURI, ProxyUrl, ProxyPort, ProxyMethod);
-        }
-        break;
-      case fsHTTPS:
-        if (ProxyScheme == L"https")
+        if ((ProxyScheme == L"http") || (ProxyScheme == L"https"))
         {
           FromURI(ProxyURI, ProxyUrl, ProxyPort, ProxyMethod);
         }
@@ -2537,15 +2533,13 @@ void __fastcall TSessionData::RemoveProtocolPrefix(UnicodeString & hostName)
 //---------------------------------------------------------------------
 TFSProtocol __fastcall TSessionData::TranslateFSProtocolNumber(int FSProtocol)
 {
-  TFSProtocol Result = -1;
+  TFSProtocol Result = static_cast<TFSProtocol>(-1);
   if (GetSessionVersion() >= GetVersionNumber2110())
   {
     Result = static_cast<TFSProtocol>(FSProtocol);
   }
   else
   {
-    // enum TFSProtocol_219 { fsFTPS_219 = 6, fsHTTP_219 = 7, fsHTTPS_219 = 8 };
-    // enum TFSProtocol { fsHTTP = 6 };
     if (FSProtocol < fsFTPS_219)
     {
       Result = static_cast<TFSProtocol>(FSProtocol);
