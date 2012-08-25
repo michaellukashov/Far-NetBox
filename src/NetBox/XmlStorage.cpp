@@ -10,9 +10,8 @@
 #include "XmlStorage.h"
 #include "TextsCore.h"
 #include "FarUtil.h"
-#include "version.h"
 //---------------------------------------------------------------------------
-static const char * CONST_XML_VERSION20 = "2.0";
+static const char * CONST_XML_VERSION21 = "2.1";
 static const char * CONST_ROOT_NODE = "NetBox";
 static const char * CONST_SESSION_NODE = "Session";
 static const char * CONST_VERSION_ATTR = "version";
@@ -128,7 +127,7 @@ void TXmlStorage::SetAccessMode(TStorageAccessMode value)
       FXmlDoc->LinkEndChild(new TiXmlDeclaration("1.0", "UTF-8", ""));
       assert(FCurrentElement == NULL);
       FCurrentElement = new TiXmlElement(CONST_ROOT_NODE);
-      FCurrentElement->SetAttribute(CONST_VERSION_ATTR, AnsiString(NETBOX_VERSION_NUMBER.c_str()).c_str());
+      FCurrentElement->SetAttribute(CONST_VERSION_ATTR, CONST_XML_VERSION21);
       FXmlDoc->LinkEndChild(FCurrentElement);
       break;
   }
