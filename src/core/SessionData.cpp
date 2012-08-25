@@ -389,7 +389,7 @@ bool __fastcall TSessionData::IsSame(const TSessionData * Default, bool Advanced
 //---------------------------------------------------------------------
 void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword)
 {
-  SetSessionVersion(Storage->ReadInteger(L"SessionVersion", GetDefaultVersion()));
+  SetSessionVersion(Storage->ReadInteger(L"Version", GetDefaultVersion()));
   SetPortNumber(Storage->ReadInteger(L"PortNumber", GetPortNumber()));
   SetUserName(Storage->ReadString(L"UserName", GetUserName()));
   // must be loaded after UserName, because HostName may be in format user@host
@@ -686,6 +686,7 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
     #define WRITE_DATA_CONV(TYPE, NAME, PROPERTY) WRITE_DATA_EX(TYPE, NAME, PROPERTY, WRITE_DATA_CONV_FUNC)
     #define WRITE_DATA(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, #PROPERTY, PROPERTY, )
 
+    Storage->WriteString(L"Version", ::VersionNumberToStr(::GetCurrentVersionNumber()));
     WRITE_DATA_EX(String, L"HostName", GetHostName(), );
     WRITE_DATA_EX(Integer, L"PortNumber", GetPortNumber(), );
     WRITE_DATA_EX(Integer, L"PingInterval", GetPingInterval() / SecsPerMin, );

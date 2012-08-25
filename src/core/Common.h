@@ -201,6 +201,7 @@ struct TVersionInfo
 };
 #define MAKEVERSIONNUMBER(major,minor,revision) ( ((major)<<16) | ((minor)<<8) | (revision))
 DWORD __fastcall StrToVersionNumber(const UnicodeString & VersionMumberStr);
+UnicodeString __fastcall VersionNumberToStr(DWORD VersionNumber);
 DWORD inline __fastcall GetVersionNumber219() { return MAKEVERSIONNUMBER(2,1,9); }
 DWORD inline __fastcall GetVersionNumber2110() { return MAKEVERSIONNUMBER(2,1,10); }
 DWORD inline __fastcall GetCurrentVersionNumber() { return GetVersionNumber2110(); }

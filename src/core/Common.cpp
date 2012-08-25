@@ -1842,6 +1842,12 @@ DWORD __fastcall StrToVersionNumber(const UnicodeString & VersionMumberStr)
   return Result;
 }
 //---------------------------------------------------------------------------
+UnicodeString __fastcall VersionNumberToStr(DWORD VersionNumber)
+{
+  UnicodeString Result;
+  return Result;
+}
+//---------------------------------------------------------------------------
 // Suppress warning about unused constants in DateUtils.hpp
 // #pragma warn -8080
 
