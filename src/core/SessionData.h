@@ -45,6 +45,11 @@ extern const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][15];
 extern const int DefaultSendBuf;
 extern const UnicodeString AnonymousUserName;
 extern const UnicodeString AnonymousPassword;
+extern const int SshPortNumber;
+extern const int FtpPortNumber;
+extern const int FtpsImplicitPortNumber;
+extern const int HTTPPortNumber;
+extern const int HTTPSPortNumber;
 //---------------------------------------------------------------------------
 struct TIEProxyConfig
 {
