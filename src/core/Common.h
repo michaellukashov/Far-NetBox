@@ -191,6 +191,14 @@ private:
 #ifndef USEDPARAM
 #define USEDPARAM(p) ((&p) == (&p))
 #endif
-
+//---------------------------------------------------------------------------
+struct TVersionInfo
+{
+  DWORD Major;
+  DWORD Minor;
+  DWORD Revision;
+  DWORD Build;
+};
+#define MAKEVERSIONNUMBER(major,minor,revision) ( ((major)<<16) | ((minor)<<8) | (revision))
 //---------------------------------------------------------------------------
 #endif
