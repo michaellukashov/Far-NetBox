@@ -200,5 +200,6 @@ struct TVersionInfo
   DWORD Build;
 };
 #define MAKEVERSIONNUMBER(major,minor,revision) ( ((major)<<16) | ((minor)<<8) | (revision))
+DWORD __fastcall StrToVersionNumber(const UnicodeString & VersionMumberStr);
 //---------------------------------------------------------------------------
 #endif

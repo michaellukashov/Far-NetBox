@@ -1828,6 +1828,20 @@ UnicodeString __fastcall WindowsProductName()
   return Result;
 }
 //---------------------------------------------------------------------------
+DWORD __fastcall StrToVersionNumber(const UnicodeString & VersionMumberStr)
+{
+  DWORD Result = 0;
+  UnicodeString Version = VersionMumberStr;
+  int Shift = 16;
+  while (!Version.IsEmpty())
+  {
+    UnicodeString Num = CutToChar(Version, L'.', true);
+    Result += Num.ToInt() << Shift;
+    if (Shift >= 8) Shift -= 8;
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
 // Suppress warning about unused constants in DateUtils.hpp
 // #pragma warn -8080
 
