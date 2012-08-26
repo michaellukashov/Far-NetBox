@@ -3061,32 +3061,33 @@ void __fastcall TSessionDialog::TransferProtocolComboChange()
 
   FTransferProtocolIndex = TransferProtocolCombo->GetItems()->GetSelected();
   FFtpEncryptionComboIndex = FtpEncryptionCombo->GetItems()->GetSelected();
+  int Port = PortNumberEdit->GetAsInteger();
 
   LoadPing(FSessionData);
   if (GetFSProtocol() == fsSFTPonly || GetFSProtocol() == fsSCPonly)
   {
-    if (PortNumberEdit->GetAsInteger() == FtpPortNumber)
+    if (Port == FtpPortNumber)
     {
       PortNumberEdit->SetAsInteger(SshPortNumber);
     }
   }
   else if ((GetFSProtocol() == fsFTP) && (Ftps == ftpsNone) || (Ftps == ftpsExplicitSsl) || (Ftps == ftpsExplicitTls))
   {
-    if (PortNumberEdit->GetAsInteger() == SshPortNumber || PortNumberEdit->GetAsInteger() == FtpsImplicitPortNumber)
+    if ((Port== SshPortNumber) || (Port == FtpsImplicitPortNumber))
     {
       PortNumberEdit->SetAsInteger(FtpPortNumber);
     }
   }
   else if ((GetFSProtocol() == fsFTP) && (Ftps == ftpsImplicit))
   {
-    if (PortNumberEdit->GetAsInteger() == SshPortNumber || PortNumberEdit->GetAsInteger() == HTTPPortNumber)
+    if (Port == SshPortNumber || Port == HTTPPortNumber)
     {
       PortNumberEdit->SetAsInteger(FtpsImplicitPortNumber);
     }
   }
   else if ((GetFSProtocol() == fsHTTP) && (Ftps == ftpsNone))
   {
-    if (PortNumberEdit->GetAsInteger() == FtpPortNumber || PortNumberEdit->GetAsInteger() == FtpsImplicitPortNumber || PortNumberEdit->GetAsInteger() == HTTPSPortNumber)
+    if (Port == FtpPortNumber || Port == FtpsImplicitPortNumber || Port == HTTPSPortNumber)
     {
       PortNumberEdit->SetAsInteger(HTTPPortNumber);
       ::AdjustRemoteDir(HostNameEdit, RemoteDirectoryEdit, UpdateDirectoriesCheck);
@@ -3094,7 +3095,7 @@ void __fastcall TSessionDialog::TransferProtocolComboChange()
   }
   else if ((GetFSProtocol() == fsHTTP) && (Ftps != ftpsNone))
   {
-    if (PortNumberEdit->GetAsInteger() == HTTPPortNumber)
+    if (Port == HTTPPortNumber)
     {
       PortNumberEdit->SetAsInteger(HTTPSPortNumber);
       ::AdjustRemoteDir(HostNameEdit, RemoteDirectoryEdit, UpdateDirectoriesCheck);
