@@ -1958,7 +1958,7 @@ static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsWebDAV };
   HttpTab->SetTab(tabHttp);
   HttpTab->SetBrackets(TabBrackets);
 
-  // Sesion tab
+  // Session tab
 
   SetNextItemPosition(ipNewLine);
   SetDefaultGroup(tabSession);
@@ -3154,8 +3154,8 @@ void __fastcall TSessionDialog::UpdateControls()
   SftpTab->SetEnabled(SftpProtocol);
 
   // FTP tab
-  FtpTab->SetEnabled(FtpProtocol);
-  FtpAllowEmptyPasswordCheck->SetEnabled(FtpProtocol);
+  FtpTab->SetEnabled(FtpProtocol || FtpsProtocol);
+  FtpAllowEmptyPasswordCheck->SetEnabled(FtpProtocol || FtpsProtocol);
   SslSessionReuseCheck->SetEnabled(FtpsProtocol);
 
   // SSH tab
@@ -3185,7 +3185,7 @@ void __fastcall TSessionDialog::UpdateControls()
     (FSProtocol != fsSCPonly) || CacheDirectoriesCheck->GetChecked());
   PreserveDirectoryChangesCheck->SetEnabled(
     CacheDirectoryChangesCheck->GetIsEnabled() && CacheDirectoryChangesCheck->GetChecked());
-  ResolveSymlinksCheck->SetEnabled(!FtpProtocol);
+  ResolveSymlinksCheck->SetEnabled(!FtpProtocol && !InternalHTTPProtocol);
 
   // Environment tab
   DSTModeUnixCheck->SetEnabled(!FtpProtocol);
