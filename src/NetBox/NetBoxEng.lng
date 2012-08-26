@@ -363,7 +363,7 @@
 " Protocol options "
 "&Session ID re-use"
 "&Encryption:"
-"Use plain FTP"
+"No encryption"
 "Explicit FTP over SSL"
 "Implicit FTP over SSL"
 "Explicit FTP over TLS"
