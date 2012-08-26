@@ -172,7 +172,7 @@ typedef fastdelegate::FastDelegate4<void,
 #define FILE_OPERATION_LOOP(MESSAGE, OPERATION) \
   FILE_OPERATION_LOOP_EX(True, MESSAGE, OPERATION)
 //---------------------------------------------------------------------------
-enum TCurrentFSProtocol { cfsUnknown, cfsSCP, cfsSFTP, cfsFTP, cfsFTPS, cfsHTTP, cfsHTTPS };
+enum TCurrentFSProtocol { cfsUnknown, cfsSCP, cfsSFTP, cfsFTP, cfsFTPS, cfsWebDAV };
 //---------------------------------------------------------------------------
 const int cpDelete = 0x01;
 const int cpTemporary = 0x04;

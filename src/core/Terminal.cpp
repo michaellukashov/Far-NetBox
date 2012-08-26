@@ -793,7 +793,7 @@ void __fastcall TTerminal::Open()
               }
               else if (GetSessionData()->GetFSProtocol() == fsWebDAV)
               {
-                FFSProtocol = cfsHTTP;
+                FFSProtocol = cfsWebDAV;
                 FFileSystem = new TWebDAVFileSystem(this);
                 FFileSystem->Init();
                 FFileSystem->Open();
