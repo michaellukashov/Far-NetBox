@@ -1,8 +1,4 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
-#include <vcl.h>
-#pragma hdrstop
-#else
 #include "stdafx.h"
 #include <wincrypt.h>
 #include <stdio.h>
@@ -10,7 +6,6 @@
 
 #include "boostdefines.hpp"
 #include <boost/algorithm/string.hpp>
-#endif // #ifndef _MSC_VER
 
 #include <apr_hash.h>
 #include <apr_strings.h>
@@ -42,10 +37,6 @@
 #include "HelpCore.h"
 #include "version.h"
 
-//---------------------------------------------------------------------------
-#ifndef _MSC_VER
-#pragma package(smart_init)
-#endif
 //---------------------------------------------------------------------------
 
 namespace webdav {
@@ -3042,14 +3033,14 @@ config_read_auth_data(apr_hash_t ** hash,
     {
       delete Keys;
     }
-#endif*/
+#endif
   }
 #ifndef _MSC_VER
   __finally
   {
     delete Storage;
   }
-#endif*/
+#endif
   return WEBDAV_NO_ERROR;
 }
 
@@ -3086,7 +3077,7 @@ config_write_auth_data(apr_hash_t * hash,
   {
     delete Storage;
   }
-#endif*/
+#endif
   return WEBDAV_NO_ERROR;
 }
 
