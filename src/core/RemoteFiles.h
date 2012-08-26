@@ -474,7 +474,7 @@ public:
   __property bool Unknown = { read = FUnknown };
 #else
   bool __fastcall GetAllowUndef() const { return FAllowUndef; }
-  bool __fastcall GetUnknown() { return FUnknown; }
+  bool __fastcall GetUnknown() const { return FUnknown; }
 #endif
 
 private:
@@ -497,7 +497,7 @@ public:
   unsigned short __fastcall GetNumberUnset() const { return FUnset; }
   unsigned long __fastcall GetNumberDecadic() const;
   UnicodeString __fastcall GetOctal() const;
-  bool __fastcall GetReadOnly();
+  bool __fastcall GetReadOnly() const;
   bool __fastcall GetRight(TRight Right) const;
   TState __fastcall GetRightUndef(TRight Right) const;
   void __fastcall SetAllowUndef(bool value);

@@ -378,6 +378,35 @@ bool __fastcall TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
             L"setasyncrequestresult");
         }
       }
+      else if (FZ_MSG_PARAM(wParam) == FZ_ASYNCREQUEST_NEEDPASS)
+      {
+        int RequestResult = 0;
+        CNeedPassRequestData * AData = (CNeedPassRequestData *)lParam;
+        try
+        {
+            TNeedPassRequestData Data;
+            Data.Password = NULL;
+            Data.Password = AData->Password.GetBuffer(AData->Password.GetLength());
+            Result = HandleAsynchRequestNeedPass(Data, RequestResult);
+            AData->Password.ReleaseBuffer(AData->Password.GetLength());
+            if (Result)
+            {
+              AData->Password = Data.Password;
+              free(Data.Password);
+              Data.Password = NULL;
+            }
+        }
+        catch(...)
+        {
+          FFileZillaApi->SetAsyncRequestResult(0, AData);
+          throw;
+        }
+        if (Result)
+        {
+          Result = Check(FFileZillaApi->SetAsyncRequestResult(RequestResult, AData),
+            L"setasyncrequestresult");
+        }
+      }
       else
       {
         // FZ_ASYNCREQUEST_GSS_AUTHFAILED

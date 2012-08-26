@@ -1,9 +1,4 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
-#define NO_WIN32_LEAN_AND_MEAN
-#include <vcl.h>
-#pragma hdrstop
-#else
 #include <iostream>
 #include <iomanip>
 
@@ -18,15 +13,9 @@
 #include "FarPlugin.h"
 #include "RemoteFiles.h"
 #include "Sysutils.h"
-#endif
 
-#ifdef _MSC_VER
 namespace alg = boost::algorithm;
-#endif
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
-#pragma package(smart_init)
-#endif
 
 namespace Sysutils {
 //---------------------------------------------------------------------------
@@ -1198,7 +1187,7 @@ static bool DecodeDateFully(const TDateTime & DateTime,
   static const int D100 = D4 * 25 - 1;
   static const int D400 = D100 * 4 + 1;
   bool Result = false;
-  int T = DateTimeToTimeStamp(DateTime).Date;
+  unsigned int T = DateTimeToTimeStamp(DateTime).Date;
   unsigned int Y = 0;
   unsigned int M = 0;
   unsigned int D = 0;

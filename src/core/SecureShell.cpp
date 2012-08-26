@@ -767,7 +767,7 @@ void __fastcall TSecureShell::FromBackend(bool IsStdErr, const unsigned char * D
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TSecureShell::Peek(unsigned char *& Buf, int Len)
+bool __fastcall TSecureShell::Peek(unsigned char *& Buf, int Len) const
 {
   bool Result = (int(PendLen) >= Len);
 
@@ -1050,7 +1050,7 @@ void __fastcall TSecureShell::SendLine(UnicodeString Line)
 }
 //---------------------------------------------------------------------------
 int __fastcall TSecureShell::TranslatePuttyMessage(
-  const TPuttyTranslation * Translation, size_t Count, UnicodeString & Message)
+  const TPuttyTranslation * Translation, size_t Count, UnicodeString & Message) const
 {
   int Result = -1;
   for (unsigned int Index = 0; Index < Count; Index++)
@@ -1142,7 +1142,7 @@ void __fastcall TSecureShell::AddStdErrorLine(const UnicodeString & Str)
   }
 }
 //---------------------------------------------------------------------------
-const UnicodeString & __fastcall TSecureShell::GetStdError()
+const UnicodeString & __fastcall TSecureShell::GetStdError() const
 {
   return FStdError;
 }
@@ -2000,12 +2000,12 @@ void __fastcall TSecureShell::OldKeyfileWarning()
   FUI->QueryUser(LoadStr(OLD_KEY), NULL, qaOK, NULL, qtWarning);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TSecureShell::GetStoredCredentialsTried()
+bool __fastcall TSecureShell::GetStoredCredentialsTried() const
 {
   return FStoredPasswordTried || FStoredPasswordTriedForKI;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TSecureShell::GetReady()
+bool __fastcall TSecureShell::GetReady() const
 {
   return FOpened && (FWaiting == 0);
 }

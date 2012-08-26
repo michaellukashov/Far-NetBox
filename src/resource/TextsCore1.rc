@@ -222,12 +222,10 @@ BEGIN
   TUNNEL_INSTRUCTION, "Tunnel session authentication"
   RENAME_TITLE, "Transfer under different name"
   RENAME_PROMPT2, "&New name:"
-  VERIFY_CERT_PROMPT2, "The server's certificate is not known. You have no guarantee that the server is the computer you think it is. Server's certificate details follow:\n\n%s\n\n%s"
+  VERIFY_CERT_PROMPT2, "The server's certificate is not known. You have no guarantee that the server is the computer you think it is. Server's certificate details follow:\n\n%s\n\nIf you trust this certificate, press Yes. To connect without storing certificate, press No. To abandon the connection press Cancel.\n\nContinue connecting and store the certificate?"
   VERIFY_CERT_CONTACT, "- Organization: %s\n|- Location: %s\n|- Other: %s\n"
   VERIFY_CERT_CONTACT_LIST, "%s, %s"
   CERT_TEXT, "Issuer:\n%s\nSubject:\n%s\nValid: %s - %s\n\nFingerprint (SHA1): %s\n\nSummary: %s"
-  VERIFY_CERT_PROMPT3, "%s\n%s"
-  VERIFY_CERT_PROMPT4, "If you trust this certificate, press Yes. To connect without storing certificate, press No. To abandon the connection press Cancel.\n\nContinue connecting and store the certificate?"
 
   CERT_FILENAME_PROMPT_TITLE, "Certificate file name"
   CERT_FILENAME_PROMPT, "Enter certificate file name:"

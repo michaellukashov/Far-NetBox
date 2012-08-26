@@ -306,7 +306,7 @@ void TObjectList::Clear()
 {
   parent::Clear();
 }
-bool TObjectList::GetOwnsObjects()
+bool TObjectList::GetOwnsObjects() const
 {
   return FOwnsObjects;
 }
@@ -567,7 +567,7 @@ void TStrings::InsertObject(int Index, const UnicodeString Key, TObject * AObjec
   PutObject(Index, AObject);
 }
 
-bool TStrings::Equals(TStrings * Strings)
+bool TStrings::Equals(TStrings * Strings) const
 {
   bool Result = false;
   int Count = GetCount();
@@ -655,7 +655,7 @@ const UnicodeString TStrings::GetName(int Index)
   return ExtractName(GetStrings(Index));
 }
 
-UnicodeString TStrings::ExtractName(const UnicodeString S)
+UnicodeString TStrings::ExtractName(const UnicodeString S) const
 {
   UnicodeString Result = S;
   int P = ::AnsiPos(Result, L'=');
@@ -722,7 +722,7 @@ void TStrings::Append(const UnicodeString value)
   Insert(GetCount(), value);
 }
 
-void TStrings::SaveToStream(TStream * /*Stream*/)
+void TStrings::SaveToStream(TStream * /*Stream*/) const
 {
   Classes::Error(SNotImplemented, 12);
 }
@@ -1010,12 +1010,12 @@ void TStringList::Sort()
 {
   CustomSort(StringListCompareStrings);
 }
-void TStringList::CustomSort(TStringListSortCompare CompareFunc)
+void TStringList::CustomSort(TStringListSortCompare ACompareFunc)
 {
   if (!GetSorted() && (GetCount() > 1))
   {
     Changing();
-    QuickSort(0, GetCount() - 1, CompareFunc);
+    QuickSort(0, GetCount() - 1, ACompareFunc);
     Changed();
   }
 }
@@ -1167,7 +1167,7 @@ TSHFileInfo::~TSHFileInfo()
 {
 }
 
-int TSHFileInfo::GetFileIconIndex(UnicodeString strFileName, BOOL bSmallIcon)
+int TSHFileInfo::GetFileIconIndex(UnicodeString strFileName, BOOL bSmallIcon) const
 {
   SHFILEINFO sfi;
 
@@ -1749,7 +1749,7 @@ bool TRegistry::ValueExists(const UnicodeString Name)
   return Result;
 }
 
-bool TRegistry::GetDataInfo(const UnicodeString ValueName, TRegDataInfo & Value)
+bool TRegistry::GetDataInfo(const UnicodeString ValueName, TRegDataInfo & Value) const
 {
   DWORD DataType;
   memset(&Value, 0, sizeof(Value));
@@ -1889,7 +1889,7 @@ int TRegistry::ReadBinaryData(const UnicodeString Name,
 }
 
 int TRegistry::GetData(const UnicodeString Name, void * Buffer,
-                       DWORD BufSize, TRegDataType & RegData)
+                       DWORD BufSize, TRegDataType & RegData) const
 {
   DWORD DataType = REG_NONE;
   // DEBUG_PRINTF(L"GetCurrentKey = %d", GetCurrentKey());
@@ -1985,7 +1985,7 @@ HKEY TRegistry::GetKey(const UnicodeString Key)
   return Result;
 }
 
-bool TRegistry::GetKeyInfo(TRegKeyInfo & Value)
+bool TRegistry::GetKeyInfo(TRegKeyInfo & Value) const
 {
   memset(&Value, 0, sizeof(Value));
   bool Result = RegQueryInfoKey(GetCurrentKey(), NULL, NULL, NULL, &Value.NumSubKeys,

@@ -156,7 +156,7 @@ public:
   UnicodeString TrimLeft() const;
   UnicodeString TrimRight() const;
 
-  void Unique() {}
+  void Unique() const {}
 
 public:
   operator std::wstring () const { return Data; }
@@ -321,7 +321,7 @@ public:
   friend bool __fastcall operator !=(const AnsiString & lhs, const AnsiString & rhs)
   { return lhs.Data != rhs.Data; }
 
-  void Unique() {}
+  void Unique() const {}
 
 private:
   void Init(const wchar_t * Str, int Length)
@@ -420,14 +420,14 @@ public:
   const RawByteString & __fastcall operator +=(const char Ch);
   const RawByteString & __fastcall operator +=(const char * rhs);
 
-  bool __fastcall operator ==(char * rhs)
+  bool __fastcall operator ==(char * rhs) const
   { return (char *)Data.c_str() == rhs; }
   friend bool __fastcall operator ==(RawByteString & lhs, RawByteString & rhs)
   { return lhs.Data == rhs.Data; }
   friend bool __fastcall operator !=(RawByteString & lhs, RawByteString & rhs)
   { return lhs.Data != rhs.Data; }
 
-  void Unique() {}
+  void Unique() const {}
 
 private:
   void Init(const wchar_t * Str, int Length)

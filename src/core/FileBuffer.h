@@ -34,7 +34,7 @@ public:
   __property int Position = { read=GetPosition, write=SetPosition };
 #else
   TMemoryStream * __fastcall GetMemory() { return FMemory; }
-  __int64 __fastcall GetSize() { return FSize; }
+  __int64 __fastcall GetSize() const { return FSize; }
 #endif
 
 private:

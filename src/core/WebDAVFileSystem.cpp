@@ -1,8 +1,4 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
-#include <vcl.h>
-#pragma hdrstop
-#else
 #include "stdafx.h"
 #include <wincrypt.h>
 #include <stdio.h>
@@ -10,7 +6,6 @@
 
 #include "boostdefines.hpp"
 #include <boost/algorithm/string.hpp>
-#endif // #ifndef _MSC_VER
 
 #include <apr_hash.h>
 #include <apr_strings.h>
@@ -42,10 +37,6 @@
 #include "HelpCore.h"
 #include "version.h"
 
-//---------------------------------------------------------------------------
-#ifndef _MSC_VER
-#pragma package(smart_init)
-#endif
 //---------------------------------------------------------------------------
 
 namespace webdav {
@@ -110,10 +101,9 @@ typedef struct callback_baton_t
 //------------------------------------------------------------------------------
 // from ra_loader.h
 
-typedef error_t
-(*init_func_t)(const version_t * loader_version,
-               const vtable_t ** vtable,
-               apr_pool_t * pool);
+typedef error_t (*init_func_t)(const version_t * loader_version,
+  const vtable_t ** vtable,
+  apr_pool_t * pool);
 
 //------------------------------------------------------------------------------
 // from svn_string.h
@@ -173,10 +163,6 @@ typedef struct neon_session_t
   const char * webdav_root;              /* URL for WebDAV resource root */
 
   ne_session * ne_sess;                 /* HTTP session to server */
-  ne_session * ne_sess2;
-  bool main_session_busy;      /* TRUE when requests should be created
-                                           and issued on sess2; currently
-                                           only used by fetch.c */
 
   const callbacks2_t * callbacks; /* callbacks to get auth data */
   void * callback_baton;
@@ -730,7 +716,7 @@ dirent_is_root(const char * dirent, apr_size_t len);
 //------------------------------------------------------------------------------
 // from svn_fspth.h
 
-#define urlpath_basename             fspath__basename
+#define urlpath_basename             fspath_basename
 
 //------------------------------------------------------------------------------
 // from svn_props.h
@@ -998,7 +984,7 @@ string_compare(const char * str1,
 /* Our own realloc, since APR doesn't have one.  Note: this is a
    generic realloc for memory pools, *not* for strings. */
 static void *
-my__realloc(char * data, apr_size_t oldsize, apr_size_t request,
+my_realloc(char * data, apr_size_t oldsize, apr_size_t request,
             apr_pool_t * pool)
 {
   void * new_area = NULL;
@@ -1100,7 +1086,7 @@ stringbuf_ensure(stringbuf_t * str, apr_size_t minimum_size)
         }
       }
 
-    str->data = (char *) my__realloc(str->data,
+    str->data = (char *) my_realloc(str->data,
                                      str->len + 1,
                                      /* We need to maintain (and thus copy)
                                         the trailing nul */
@@ -1865,7 +1851,7 @@ fail:
 
       alphanum | mark | ":" | "@" | "&" | "=" | "+" | "$" | ","
 */
-const char uri__char_validity[256] =
+const char uri_char_validity[256] =
 {
   0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0,
@@ -1993,7 +1979,7 @@ path_uri_decode(const char * path, apr_pool_t * pool)
 static const char *
 path_uri_encode(const char * path, apr_pool_t * pool)
 {
-  const char * ret = uri_escape(path, uri__char_validity, pool);
+  const char * ret = uri_escape(path, uri_char_validity, pool);
 
   /* Our interface guarantees a copy. */
   if (ret == path)
@@ -2042,7 +2028,7 @@ path_url_add_component2(const char * url,
                         apr_pool_t * pool)
 {
   /* = path_uri_encode() but without always copying */
-  component = uri_escape(component, uri__char_validity, pool);
+  component = uri_escape(component, uri_char_validity, pool);
 
   return path_join(url, component, pool);
 }
@@ -2215,7 +2201,7 @@ typedef struct client_ctx_t
 // from win32_xlate.c
 
 static apr_status_t
-subr__win32_xlate_to_stringbuf(// win32_xlate_t *handle,
+subr_win32_xlate_to_stringbuf(// win32_xlate_t *handle,
   const char * src_data,
   apr_size_t src_length,
   stringbuf_t ** dest,
@@ -2327,7 +2313,7 @@ utf8_to_unicode(WCHAR ** retstr,
 static error_t
 check_utf8(const char * data, apr_size_t len, apr_pool_t * pool)
 {
-  // TODO: if (!utf__is_valid(data, len)))
+  // TODO: if (!utf_is_valid(data, len)))
     // return invalid_utf8(data, len, pool);
   return WEBDAV_NO_ERROR;
 }
@@ -2343,7 +2329,7 @@ convert_to_stringbuf(// xlate_handle_node_t *node,
 {
   apr_status_t apr_err = 0;
 
-  apr_err = subr__win32_xlate_to_stringbuf(// (win32_xlate_t *) node->handle,
+  apr_err = subr_win32_xlate_to_stringbuf(// (win32_xlate_t *) node->handle,
               src_data, src_length,
               dest, pool);
 
@@ -2405,7 +2391,7 @@ static error_t
 check_cstring_utf8(const char * data, apr_pool_t * pool)
 {
 
-  // TODO: if (!utf__cstring_is_valid(data))
+  // TODO: if (!utf_cstring_is_valid(data))
     // return invalid_utf8(data, strlen(data), pool);
   return WEBDAV_NO_ERROR;
 }
@@ -2864,20 +2850,18 @@ typedef struct auth_provider_object_t
 
 } auth_provider_object_t;
 
-typedef error_t (*auth_plaintext_prompt_func_t)(
-  bool * may_save_plaintext,
+typedef error_t (*auth_plaintext_prompt_func_t)(bool * may_save_plaintext,
   const char * realmstring,
   void * baton,
   apr_pool_t * pool);
 
-typedef bool (*auth_password_get_t)
-(const char ** password,
- apr_hash_t * creds,
- const char * realmstring,
- const char * username,
- apr_hash_t * parameters,
- bool non_interactive,
- apr_pool_t * pool);
+typedef bool (*auth_password_get_t)(const char ** password,
+  apr_hash_t * creds,
+  const char * realmstring,
+  const char * username,
+  apr_hash_t * parameters,
+  bool non_interactive,
+  apr_pool_t * pool);
 
 typedef struct auth_cred_simple_t
 {
@@ -2895,14 +2879,13 @@ typedef struct auth_cred_username_t
   bool may_save;
 } auth_cred_username_t;
 
-typedef bool (*auth_password_set_t)
-(apr_hash_t * creds,
- const char * realmstring,
- const char * username,
- const char * password,
- apr_hash_t * parameters,
- bool non_interactive,
- apr_pool_t * pool);
+typedef bool (*auth_password_set_t)(apr_hash_t * creds,
+  const char * realmstring,
+  const char * username,
+  const char * password,
+  apr_hash_t * parameters,
+  bool non_interactive,
+  apr_pool_t * pool);
 
 /** @c AUTH_CRED_SSL_CLIENT_CERT credentials. */
 typedef struct auth_cred_ssl_client_cert_t
@@ -3050,14 +3033,14 @@ config_read_auth_data(apr_hash_t ** hash,
     {
       delete Keys;
     }
-#endif*/
+#endif
   }
 #ifndef _MSC_VER
   __finally
   {
     delete Storage;
   }
-#endif*/
+#endif
   return WEBDAV_NO_ERROR;
 }
 
@@ -3094,7 +3077,7 @@ config_write_auth_data(apr_hash_t * hash,
   {
     delete Storage;
   }
-#endif*/
+#endif
   return WEBDAV_NO_ERROR;
 }
 
@@ -3215,11 +3198,11 @@ auth_simple_first_creds_helper(void ** credentials,
      we failed to get the creds, so allow the auth system to try the
      next provider. */
   TWebDAVFileSystem * fs = static_cast<TWebDAVFileSystem *>(apr_hash_get(parameters,
-                           CONST_FS_KEY,
-                           APR_HASH_KEY_STRING));
+    CONST_FS_KEY,
+    APR_HASH_KEY_STRING));
   assert(fs);
   err = config_read_auth_data(&creds_hash, AUTH_CRED_SIMPLE,
-                              realmstring, fs, pool);
+    realmstring, fs, pool);
   if (err)
   {
     error_clear(&err);
@@ -3477,8 +3460,8 @@ auth_simple_save_creds_helper(bool * saved,
   }
 
   TWebDAVFileSystem * fs = static_cast<TWebDAVFileSystem *>(apr_hash_get(parameters,
-                           CONST_FS_KEY,
-                           APR_HASH_KEY_STRING));
+    CONST_FS_KEY,
+    APR_HASH_KEY_STRING));
   assert(fs);
   /* Save credentials to disk. */
   err = config_write_auth_data(creds_hash, AUTH_CRED_SIMPLE,
@@ -3536,11 +3519,10 @@ simple_provider =
 
 /* Public API */
 static void
-auth_get_simple_provider2
-(auth_provider_object_t ** provider,
- auth_plaintext_prompt_func_t plaintext_prompt_func,
- void * prompt_baton,
- apr_pool_t * pool)
+auth_get_simple_provider2(auth_provider_object_t ** provider,
+  auth_plaintext_prompt_func_t plaintext_prompt_func,
+  void * prompt_baton,
+  apr_pool_t * pool)
 {
   auth_provider_object_t * po = static_cast<auth_provider_object_t *>(apr_pcalloc(pool, sizeof(*po)));
   simple_provider_baton_t * pb = static_cast<simple_provider_baton_t *>(apr_pcalloc(pool, sizeof(*pb)));
@@ -3604,8 +3586,8 @@ prompt_for_simple_creds(auth_cred_simple_t ** cred_p,
       error_t err;
 
       TWebDAVFileSystem * fs = static_cast<TWebDAVFileSystem *>(apr_hash_get(parameters,
-                               CONST_FS_KEY,
-                               APR_HASH_KEY_STRING));
+        CONST_FS_KEY,
+        APR_HASH_KEY_STRING));
       assert(fs);
       err = config_read_auth_data(&creds_hash, AUTH_CRED_SIMPLE,
                                   realmstring, fs, pool);
@@ -3727,12 +3709,11 @@ static const auth_provider_t simple_prompt_provider =
 
 /* Public API */
 static void
-auth_get_simple_prompt_provider
-(auth_provider_object_t ** provider,
- auth_simple_prompt_func_t prompt_func,
- void * prompt_baton,
- int retry_limit,
- apr_pool_t * pool)
+auth_get_simple_prompt_provider(auth_provider_object_t ** provider,
+  auth_simple_prompt_func_t prompt_func,
+  void * prompt_baton,
+  int retry_limit,
+  apr_pool_t * pool)
 {
   auth_provider_object_t * po =
     static_cast<auth_provider_object_t *>(apr_pcalloc(pool, sizeof(*po)));
@@ -3811,15 +3792,14 @@ auth_ssl_client_cert_pw_set(apr_hash_t * creds,
 }
 
 static error_t
-auth_ssl_client_cert_pw_file_first_creds_helper
-(void ** credentials_p,
- void ** iter_baton,
- void * provider_baton,
- apr_hash_t * parameters,
- const char * realmstring,
- auth_password_get_t passphrase_get,
- const char * passtype,
- apr_pool_t * pool)
+auth_ssl_client_cert_pw_file_first_creds_helper(void ** credentials_p,
+  void ** iter_baton,
+  void * provider_baton,
+  apr_hash_t * parameters,
+  const char * realmstring,
+  auth_password_get_t passphrase_get,
+  const char * passtype,
+  apr_pool_t * pool)
 {
   bool non_interactive = apr_hash_get(parameters,
                                       WEBDAV_AUTH_PARAM_NON_INTERACTIVE,
@@ -3831,8 +3811,8 @@ auth_ssl_client_cert_pw_file_first_creds_helper
     apr_hash_t * creds_hash = NULL;
 
     TWebDAVFileSystem * fs = static_cast<TWebDAVFileSystem *>(apr_hash_get(parameters,
-                             CONST_FS_KEY,
-                             APR_HASH_KEY_STRING));
+      CONST_FS_KEY,
+      APR_HASH_KEY_STRING));
     assert(fs);
     /* Try to load passphrase from the auth/ cache. */
     err = config_read_auth_data(&creds_hash,
@@ -3861,15 +3841,14 @@ auth_ssl_client_cert_pw_file_first_creds_helper
 }
 
 static error_t
-auth_ssl_client_cert_pw_file_save_creds_helper
-(bool * saved,
- void * credentials,
- void * provider_baton,
- apr_hash_t * parameters,
- const char * realmstring,
- auth_password_set_t passphrase_set,
- const char * passtype,
- apr_pool_t * pool)
+auth_ssl_client_cert_pw_file_save_creds_helper(bool * saved,
+   void * credentials,
+   void * provider_baton,
+   apr_hash_t * parameters,
+   const char * realmstring,
+   auth_password_set_t passphrase_set,
+   const char * passtype,
+   apr_pool_t * pool)
 {
   auth_cred_ssl_client_cert_pw_t * creds =
     static_cast<auth_cred_ssl_client_cert_pw_t *>(credentials);
@@ -3993,8 +3972,8 @@ auth_ssl_client_cert_pw_file_save_creds_helper
       }
 
       TWebDAVFileSystem * fs = static_cast<TWebDAVFileSystem *>(apr_hash_get(parameters,
-                               CONST_FS_KEY,
-                               APR_HASH_KEY_STRING));
+        CONST_FS_KEY,
+        APR_HASH_KEY_STRING));
       assert(fs);
       /* Save credentials to disk. */
       err = config_write_auth_data(creds_hash,
@@ -4063,11 +4042,10 @@ static const auth_provider_t ssl_client_cert_pw_file_provider =
 
 /*** Public API to SSL file providers. ***/
 static void
-auth_get_ssl_client_cert_pw_file_provider2
-(auth_provider_object_t ** provider,
- auth_plaintext_passphrase_prompt_func_t plaintext_passphrase_prompt_func,
- void * prompt_baton,
- apr_pool_t * pool)
+auth_get_ssl_client_cert_pw_file_provider2(auth_provider_object_t ** provider,
+  auth_plaintext_passphrase_prompt_func_t plaintext_passphrase_prompt_func,
+  void * prompt_baton,
+  apr_pool_t * pool)
 {
   auth_provider_object_t * po =
     static_cast<auth_provider_object_t *>(apr_pcalloc(pool, sizeof(*po)));
@@ -4176,12 +4154,11 @@ static const auth_provider_t client_cert_pw_prompt_provider =
 };
 
 static void
-auth_get_ssl_client_cert_pw_prompt_provider
-(auth_provider_object_t ** provider,
- auth_ssl_client_cert_pw_prompt_func_t prompt_func,
- void * prompt_baton,
- int retry_limit,
- apr_pool_t * pool)
+auth_get_ssl_client_cert_pw_prompt_provider(auth_provider_object_t ** provider,
+  auth_ssl_client_cert_pw_prompt_func_t prompt_func,
+  void * prompt_baton,
+  int retry_limit,
+  apr_pool_t * pool)
 {
   auth_provider_object_t * po =
     static_cast<auth_provider_object_t *>(apr_pcalloc(pool, sizeof(*po)));
@@ -4461,9 +4438,8 @@ static const auth_provider_t windows_ssl_client_cert_pw_provider =
 
 /* Public API */
 static void
-auth_get_windows_ssl_client_cert_pw_provider
-(auth_provider_object_t ** provider,
- apr_pool_t * pool)
+auth_get_windows_ssl_client_cert_pw_provider(auth_provider_object_t ** provider,
+  apr_pool_t * pool)
 {
   auth_provider_object_t * po =
     static_cast<auth_provider_object_t *>(apr_pcalloc(pool, sizeof(*po)));
@@ -4614,8 +4590,8 @@ static const auth_provider_t windows_server_trust_provider =
 
 /* Public API */
 static void
-auth_get_windows_ssl_server_trust_provider
-(auth_provider_object_t ** provider, apr_pool_t * pool)
+auth_get_windows_ssl_server_trust_provider(auth_provider_object_t ** provider,
+  apr_pool_t * pool)
 {
   auth_provider_object_t * po =
     static_cast<auth_provider_object_t *>(apr_pcalloc(pool, sizeof(*po)));
@@ -4648,8 +4624,8 @@ username_first_creds(void ** credentials,
     apr_hash_t * creds_hash = NULL;
 
     TWebDAVFileSystem * fs = static_cast<TWebDAVFileSystem *>(apr_hash_get(parameters,
-                             CONST_FS_KEY,
-                             APR_HASH_KEY_STRING));
+      CONST_FS_KEY,
+      APR_HASH_KEY_STRING));
     assert(fs);
     /* Try to load credentials from a file on disk, based on the
        realmstring.  Don't throw an error, though: if something went
@@ -4710,16 +4686,16 @@ username_save_creds(bool * saved,
   /* Put the credentials in a hash and save it to disk */
   creds_hash = apr_hash_make(pool);
   apr_hash_set(creds_hash, AUTHN_USERNAME_KEY, APR_HASH_KEY_STRING,
-               string_create(creds->username, pool));
+    string_create(creds->username, pool));
 
   TWebDAVFileSystem * fs = static_cast<TWebDAVFileSystem *>(apr_hash_get(parameters,
-                           CONST_FS_KEY,
-                           APR_HASH_KEY_STRING));
+    CONST_FS_KEY,
+    APR_HASH_KEY_STRING));
   assert(fs);
   err = config_write_auth_data(creds_hash, WEBDAV_AUTH_CRED_USERNAME,
-                               realmstring,
-                               fs,
-                               pool);
+    realmstring,
+    fs,
+    pool);
   error_clear(&err);
   *saved = !err;
 
@@ -4879,12 +4855,11 @@ static const auth_provider_t username_prompt_provider =
 
 /* Public API */
 static void
-auth_get_username_prompt_provider
-(auth_provider_object_t ** provider,
- auth_username_prompt_func_t prompt_func,
- void * prompt_baton,
- int retry_limit,
- apr_pool_t * pool)
+auth_get_username_prompt_provider(auth_provider_object_t ** provider,
+  auth_username_prompt_func_t prompt_func,
+  void * prompt_baton,
+  int retry_limit,
+  apr_pool_t * pool)
 {
   auth_provider_object_t * po =
     static_cast<auth_provider_object_t *>(apr_pcalloc(pool, sizeof(*po)));
@@ -5116,11 +5091,10 @@ auth_save_credentials(auth_iterstate_t * state,
 }
 
 static error_t
-auth_get_platform_specific_provider
-(auth_provider_object_t ** provider,
- const char * provider_name,
- const char * provider_type,
- apr_pool_t * pool)
+auth_get_platform_specific_provider(auth_provider_object_t ** provider,
+  const char * provider_name,
+  const char * provider_type,
+  apr_pool_t * pool)
 {
   *provider = NULL;
 
@@ -5146,9 +5120,8 @@ auth_get_platform_specific_provider
 }
 
 static error_t
-auth_get_platform_specific_client_providers
-(apr_array_header_t ** providers,
- apr_pool_t * pool)
+auth_get_platform_specific_client_providers(apr_array_header_t ** providers,
+  apr_pool_t * pool)
 {
   auth_provider_object_t * provider;
   const char * password_stores_config_option;
@@ -5500,7 +5473,7 @@ canonicalize(path_type_t type, const char * path, apr_pool_t * pool)
             src += 2;
           break;
         default:
-          if (!uri__char_validity[(unsigned char)*src])
+          if (!uri_char_validity[(unsigned char)*src])
             need_extra += 2;
           break;
       }
@@ -5548,7 +5521,7 @@ canonicalize(path_type_t type, const char * path, apr_pool_t * pool)
 
             val = (int)strtol(digitz, NULL, 16);
 
-            if (uri__char_validity[(unsigned char)val])
+            if (uri_char_validity[(unsigned char)val])
               *(dst++) = (char)val;
             else
             {
@@ -5559,7 +5532,7 @@ canonicalize(path_type_t type, const char * path, apr_pool_t * pool)
           }
           break;
         default:
-          if (!uri__char_validity[(unsigned char)*src])
+          if (!uri_char_validity[(unsigned char)*src])
           {
             apr_snprintf(dst, 4, "%%%02X", (unsigned char)*src);
             dst += 3;
@@ -6023,10 +5996,10 @@ uri_is_canonical(const char * uri, apr_pool_t * pool)
       digitz[2] = '\0';
       val = (int)strtol(digitz, NULL, 16);
 
-      if (uri__char_validity[val])
+      if (uri_char_validity[val])
         return FALSE; /* Should not have been escaped */
     }
-    else if (*ptr != '/' && !uri__char_validity[(unsigned char)*ptr])
+    else if (*ptr != '/' && !uri_char_validity[(unsigned char)*ptr])
       return FALSE; /* Character should have been escaped */
     ptr++;
   }
@@ -6057,7 +6030,7 @@ uri_skip_ancestor(const char * parent_uri,
 }
 
 static bool
-uri__is_ancestor(const char * parent_uri, const char * child_uri)
+uri_is_ancestor(const char * parent_uri, const char * child_uri)
 {
   return uri_skip_ancestor(parent_uri, child_uri) != NULL;
 }
@@ -6173,7 +6146,7 @@ is_child(path_type_t type, const char * path1, const char * path2,
 }
 
 static const char *
-uri__is_child(const char * parent_uri,
+uri_is_child(const char * parent_uri,
               const char * child_uri,
               apr_pool_t * pool)
 {
@@ -6190,17 +6163,17 @@ uri__is_child(const char * parent_uri,
 }
 
 static bool
-fspath__is_canonical(const char * fspath)
+fspath_is_canonical(const char * fspath)
 {
   return fspath[0] == '/' && relpath_is_canonical(fspath + 1);
 }
 
 static const char *
-fspath__basename(const char * fspath,
+fspath_basename(const char * fspath,
                  apr_pool_t * pool)
 {
   const char * result = NULL;
-  assert(fspath__is_canonical(fspath));
+  assert(fspath_is_canonical(fspath));
 
   result = relpath_basename(fspath + 1, pool);
 
@@ -7613,14 +7586,14 @@ ra_neon_body_provider(void * userdata,
     callback_baton_t * cb = static_cast<callback_baton_t *>(req->sess->callback_baton);
 
     TWebDAVFileSystem * fs = static_cast<TWebDAVFileSystem *>(apr_hash_get(cb->ctx->auth_baton->parameters,
-                             CONST_FS_KEY,
-                             APR_HASH_KEY_STRING));
+      CONST_FS_KEY,
+      APR_HASH_KEY_STRING));
     assert(fs);
     fs->AdjustToCPSLimit(buflen);
 
     apr_size_t nbytes = buflen;
     error_t err = io_file_read(body_file, buffer, &nbytes,
-                               req->iterpool);
+      req->iterpool);
     if (err)
     {
       if (APR_STATUS_IS_EOF(err))
@@ -8389,12 +8362,8 @@ neon_request_dispatch(int * code_p,
   /* attach a standard <D:error> body parser to the request */
   error_parser = error_parser_create(req);
 
-  if (req->ne_sess == req->sess->ne_sess)  /* We're consuming 'session 1' */
-    req->sess->main_session_busy = TRUE;
   /* run the request, see what comes back. */
   req->rv = ne_request_dispatch(req->ne_req);
-  if (req->ne_sess == req->sess->ne_sess)  /* We're done consuming 'session 1' */
-    req->sess->main_session_busy = FALSE;
 
   /* Save values from the request */
   statstruct = ne_get_status(req->ne_req);
@@ -8458,7 +8427,7 @@ neon_request_create(neon_request_t ** request,
   path = path_from_url(url);
 
   req = static_cast<neon_request_t *>(apr_pcalloc(reqpool, sizeof(*req)));
-  req->ne_sess = sess->main_session_busy ? sess->ne_sess2 : sess->ne_sess;
+  req->ne_sess = sess->ne_sess;
   req->ne_req = ne_request_create(req->ne_sess, method, path);
   req->sess = sess;
   req->pool = reqpool;
@@ -8493,7 +8462,7 @@ get_path_relative_to_session(session_t * session,
   }
   else
   {
-    *rel_path = uri__is_child(sess_url, url, pool);
+    *rel_path = uri_is_child(sess_url, url, pool);
     if (!*rel_path)
       return error_createf(WEBDAV_ERR_ILLEGAL_URL, NULL,
                            "'%s' isn't a child of session URL '%s'",
@@ -8521,7 +8490,7 @@ client_path_relative_to_root(const char ** rel_path,
   /* Merge handling passes a root that is not WebDAV resource root */
   else if (webdav_root != NULL)
   {
-    /*if (!uri__is_ancestor(webdav_root, abspath_or_url))
+    /*if (!uri_is_ancestor(webdav_root, abspath_or_url))
       return error_createf(WEBDAV_ERR_CLIENT_UNRELATED_RESOURCES, NULL,
                            "URL '%s' is not a child of "
                            "root URL '%s'",
@@ -8680,8 +8649,8 @@ get_file_reader(void * userdata, const char * buf, size_t len)
   callback_baton_t * cb = static_cast<callback_baton_t *>(cgc->callback_baton);
 
   TWebDAVFileSystem * fs = static_cast<TWebDAVFileSystem *>(apr_hash_get(cb->ctx->auth_baton->parameters,
-                           CONST_FS_KEY,
-                           APR_HASH_KEY_STRING));
+    CONST_FS_KEY,
+    APR_HASH_KEY_STRING));
   assert(fs);
   fs->AdjustToCPSLimit(len);
 
@@ -8861,7 +8830,7 @@ get_path_relative_to_root(session_t * session,
   }
   else
   {
-    *rel_path = uri__is_child(root_url, url, pool);
+    *rel_path = uri_is_child(root_url, url, pool);
     if (!*rel_path)
       return error_createf(WEBDAV_ERR_ILLEGAL_URL, NULL,
                            "'%s' isn't a child of root "
@@ -9151,6 +9120,7 @@ create_baton_open(auth_baton_t * auth_baton,
      credentials will be automatically sorted into different tables by
      register_provider(). */
   if (providers)
+  {
     for (int i = 0; i < providers->nelts; i++)
     {
       provider_set_t * table = NULL;
@@ -9162,16 +9132,15 @@ create_baton_open(auth_baton_t * auth_baton,
       if (!table)
       {
         table = static_cast<provider_set_t *>(apr_pcalloc(pool, sizeof(*table)));
-        table->providers
-          = apr_array_make(pool, 1, sizeof(auth_provider_object_t *));
+        table->providers = apr_array_make(pool, 1, sizeof(auth_provider_object_t *));
 
         apr_hash_set(auth_baton->tables,
                      provider->vtable->cred_kind, APR_HASH_KEY_STRING,
                      table);
       }
-      APR_ARRAY_PUSH(table->providers, auth_provider_object_t *)
-        = provider;
+      APR_ARRAY_PUSH(table->providers, auth_provider_object_t *) = provider;
     }
+  }
 }
 
 //---------------------------------------------------------------------------
@@ -9225,8 +9194,8 @@ static const auth_provider_t ssl_client_cert_file_provider =
 
 
 /*** Public API to SSL file providers. ***/
-void auth_get_ssl_client_cert_file_provider
-(auth_provider_object_t ** provider, apr_pool_t * pool)
+void auth_get_ssl_client_cert_file_provider(auth_provider_object_t ** provider,
+  apr_pool_t * pool)
 {
   auth_provider_object_t * po =
     static_cast<auth_provider_object_t *>(apr_pcalloc(pool, sizeof(*po)));
@@ -9326,12 +9295,11 @@ static const auth_provider_t ssl_client_cert_prompt_provider =
 };
 
 /*** Public API to SSL prompting providers. ***/
-static void auth_get_ssl_client_cert_prompt_provider
-(auth_provider_object_t ** provider,
- auth_ssl_client_cert_prompt_func_t prompt_func,
- void * prompt_baton,
- int retry_limit,
- apr_pool_t * pool)
+static void auth_get_ssl_client_cert_prompt_provider(auth_provider_object_t ** provider,
+  auth_ssl_client_cert_prompt_func_t prompt_func,
+  void * prompt_baton,
+  int retry_limit,
+  apr_pool_t * pool)
 {
   auth_provider_object_t * po =
     static_cast<auth_provider_object_t *>(apr_pcalloc(pool, sizeof(*po)));
@@ -9368,8 +9336,8 @@ ssl_server_trust_file_first_credentials(void ** credentials,
         AUTH_PARAM_SSL_SERVER_CERT_INFO,
         APR_HASH_KEY_STRING));
   TWebDAVFileSystem * fs = static_cast<TWebDAVFileSystem *>(apr_hash_get(parameters,
-                           CONST_FS_KEY,
-                           APR_HASH_KEY_STRING));
+    CONST_FS_KEY,
+    APR_HASH_KEY_STRING));
   assert(fs);
   apr_hash_t * creds_hash = NULL;
   error_t error = WEBDAV_NO_ERROR;
@@ -9444,8 +9412,8 @@ ssl_server_trust_file_save_credentials(bool * saved,
               AUTH_PARAM_SSL_SERVER_CERT_INFO,
               APR_HASH_KEY_STRING));
   TWebDAVFileSystem * fs = static_cast<TWebDAVFileSystem *>(apr_hash_get(parameters,
-                           CONST_FS_KEY,
-                           APR_HASH_KEY_STRING));
+    CONST_FS_KEY,
+    APR_HASH_KEY_STRING));
   assert(fs);
 
   creds_hash = apr_hash_make(pool);
@@ -9476,8 +9444,8 @@ static const auth_provider_t ssl_server_trust_file_provider =
 
 /*** Public API to SSL file providers. ***/
 static void
-auth_get_ssl_server_trust_file_provider
-(auth_provider_object_t ** provider, apr_pool_t * pool)
+auth_get_ssl_server_trust_file_provider(auth_provider_object_t ** provider,
+  apr_pool_t * pool)
 {
   auth_provider_object_t * po =
     static_cast<auth_provider_object_t *>(apr_pcalloc(pool, sizeof(*po)));
@@ -9541,11 +9509,10 @@ static const auth_provider_t ssl_server_trust_prompt_provider =
 
 /*** Public API to SSL prompting providers. ***/
 static void
-auth_get_ssl_server_trust_prompt_provider
-(auth_provider_object_t ** provider,
- auth_ssl_server_trust_prompt_func_t prompt_func,
- void * prompt_baton,
- apr_pool_t * pool)
+auth_get_ssl_server_trust_prompt_provider(auth_provider_object_t ** provider,
+  auth_ssl_server_trust_prompt_func_t prompt_func,
+  void * prompt_baton,
+  apr_pool_t * pool)
 {
   auth_provider_object_t * po =
     static_cast<auth_provider_object_t *>(apr_pcalloc(pool, sizeof(*po)));
@@ -9587,8 +9554,8 @@ plaintext_prompt_helper(bool * may_save_plaintext,
     auth_baton_t * ab = static_cast<auth_baton_t *>(pb->cancel_baton);
     assert(ab);
     TWebDAVFileSystem * fs = static_cast<TWebDAVFileSystem *>(apr_hash_get(ab->parameters,
-                             CONST_FS_KEY,
-                             APR_HASH_KEY_STRING));
+      CONST_FS_KEY,
+      APR_HASH_KEY_STRING));
     assert(fs);
 
     unsigned int RequestResult = 0;
@@ -9680,71 +9647,63 @@ cmdline_auth_plaintext_passphrase_prompt(bool * may_save_plaintext,
 
 /* This implements 'auth_ssl_server_trust_prompt_func_t'. */
 static error_t
-cmdline_auth_ssl_server_trust_prompt
-(auth_cred_ssl_server_trust_t ** cred_p,
- void * baton,
- const char * realm,
- apr_uint32_t failures,
- const auth_ssl_server_cert_info_t * cert_info,
- bool may_save,
- apr_pool_t * pool)
+cmdline_auth_ssl_server_trust_prompt(auth_cred_ssl_server_trust_t ** cred_p,
+  void * baton,
+  const char * realm,
+  apr_uint32_t failures,
+  const auth_ssl_server_cert_info_t * cert_info,
+  bool may_save,
+  apr_pool_t * pool)
 {
   cmdline_prompt_baton2_t * pb =
     static_cast<cmdline_prompt_baton2_t *>(baton);
-  stringbuf_t * buf = stringbuf_createf
-                      (pool, "Error validating server certificate for '%s':\n", realm);
+  stringbuf_t * buf = stringbuf_create("", pool);
 
-  if (failures & WEBDAV_AUTH_SSL_UNKNOWNCA)
+  /*if (failures & WEBDAV_AUTH_SSL_UNKNOWNCA)
   {
-    stringbuf_appendcstr
-    (buf,
+    stringbuf_appendcstr(buf,
      " - The certificate is not issued by a trusted authority. Use the\n"
      "   fingerprint to validate the certificate manually!\n");
-  }
+  }*/
 
   if (failures & WEBDAV_AUTH_SSL_CNMISMATCH)
   {
-    stringbuf_appendcstr
-    (buf, " - The certificate hostname does not match.\n");
+    stringbuf_appendcstr(buf, "- The certificate hostname does not match.\n");
   }
 
   if (failures & WEBDAV_AUTH_SSL_NOTYETVALID)
   {
-    stringbuf_appendcstr
-    (buf, " - The certificate is not yet valid.\n");
+    stringbuf_appendcstr(buf, "- The certificate is not yet valid.\n");
   }
 
   if (failures & WEBDAV_AUTH_SSL_EXPIRED)
   {
-    stringbuf_appendcstr
-    (buf, " - The certificate has expired.\n");
+    stringbuf_appendcstr(buf, "- The certificate has expired.\n");
   }
 
   if (failures & WEBDAV_AUTH_SSL_OTHER)
   {
-    stringbuf_appendcstr
-    (buf, " - The certificate has an unknown error.\n");
+    stringbuf_appendcstr(buf, "- The certificate has an unknown error.\n");
   }
 
-  stringbuf_t * msg = stringbuf_createf
-                      (pool,
-                       "Certificate information:\n"
-                       " - Hostname: %s\n"
-                       " - Valid: from %s until %s\n"
-                       " - Issuer: %s\n"
-                       " - Fingerprint: %s\n",
-                       cert_info->hostname,
-                       cert_info->valid_from,
-                       cert_info->valid_until,
-                       cert_info->issuer_dname,
-                       cert_info->fingerprint);
+  stringbuf_t * msg = stringbuf_createf(pool,
+    // "Certificate information:\n"
+    " - Hostname: %s\n"
+    " - Valid: from %s until %s\n"
+    " - Issuer: %s\n"
+    " - Fingerprint: %s",
+    cert_info->hostname,
+    cert_info->valid_from,
+    cert_info->valid_until,
+    cert_info->issuer_dname,
+    cert_info->fingerprint);
   stringbuf_appendstr(buf, msg);
 
   auth_baton_t * ab = static_cast<auth_baton_t *>(pb->cancel_baton);
   assert(ab);
   TWebDAVFileSystem * fs = static_cast<TWebDAVFileSystem *>(apr_hash_get(ab->parameters,
-                           CONST_FS_KEY,
-                           APR_HASH_KEY_STRING));
+    CONST_FS_KEY,
+    APR_HASH_KEY_STRING));
   assert(fs);
 
   unsigned int RequestResult = 0;
@@ -9772,12 +9731,11 @@ cmdline_auth_ssl_server_trust_prompt
 
 /* This implements 'auth_ssl_client_cert_prompt_func_t'. */
 static error_t
-cmdline_auth_ssl_client_cert_prompt
-(auth_cred_ssl_client_cert_t ** cred_p,
- void * baton,
- const char * realm,
- bool may_save,
- apr_pool_t * pool)
+cmdline_auth_ssl_client_cert_prompt(auth_cred_ssl_client_cert_t ** cred_p,
+  void * baton,
+  const char * realm,
+  bool may_save,
+  apr_pool_t * pool)
 {
   auth_cred_ssl_client_cert_t * cred = NULL;
   const char * cert_file = NULL;
@@ -9788,8 +9746,8 @@ cmdline_auth_ssl_client_cert_prompt
   auth_baton_t * ab = static_cast<auth_baton_t *>(pb->cancel_baton);
   assert(ab);
   TWebDAVFileSystem * fs = static_cast<TWebDAVFileSystem *>(apr_hash_get(ab->parameters,
-                           CONST_FS_KEY,
-                           APR_HASH_KEY_STRING));
+    CONST_FS_KEY,
+    APR_HASH_KEY_STRING));
   assert(fs);
 
   unsigned int RequestResult = 0;
@@ -9808,12 +9766,11 @@ cmdline_auth_ssl_client_cert_prompt
 
 /* This implements 'auth_ssl_client_cert_pw_prompt_func_t'. */
 static error_t
-cmdline_auth_ssl_client_cert_pw_prompt
-(auth_cred_ssl_client_cert_pw_t ** cred_p,
- void * baton,
- const char * realm,
- bool may_save,
- apr_pool_t * pool)
+cmdline_auth_ssl_client_cert_pw_prompt(auth_cred_ssl_client_cert_pw_t ** cred_p,
+  void * baton,
+  const char * realm,
+  bool may_save,
+  apr_pool_t * pool)
 {
   auth_cred_ssl_client_cert_pw_t * cred = NULL;
   cmdline_prompt_baton2_t * pb =
@@ -9822,8 +9779,8 @@ cmdline_auth_ssl_client_cert_pw_prompt
   auth_baton_t * ab = static_cast<auth_baton_t *>(pb->cancel_baton);
   assert(ab);
   TWebDAVFileSystem * fs = static_cast<TWebDAVFileSystem *>(apr_hash_get(ab->parameters,
-                           CONST_FS_KEY,
-                           APR_HASH_KEY_STRING));
+    CONST_FS_KEY,
+    APR_HASH_KEY_STRING));
   assert(fs);
 
   unsigned int RequestResult = 0;
@@ -9842,11 +9799,11 @@ cmdline_auth_ssl_client_cert_pw_prompt
 /* This implements 'auth_simple_prompt_func_t'. */
 static error_t
 cmdline_auth_simple_prompt(auth_cred_simple_t ** cred_p,
-                           void * baton,
-                           const char * realm,
-                           const char * username,
-                           bool may_save,
-                           apr_pool_t * pool)
+  void * baton,
+  const char * realm,
+  const char * username,
+  bool may_save,
+  apr_pool_t * pool)
 {
   auth_cred_simple_t * ret =
     static_cast<auth_cred_simple_t *>(apr_pcalloc(pool, sizeof(*ret)));
@@ -9856,8 +9813,8 @@ cmdline_auth_simple_prompt(auth_cred_simple_t ** cred_p,
   auth_baton_t * ab = static_cast<auth_baton_t *>(pb->cancel_baton);
   assert(ab);
   TWebDAVFileSystem * fs = static_cast<TWebDAVFileSystem *>(apr_hash_get(ab->parameters,
-                           CONST_FS_KEY,
-                           APR_HASH_KEY_STRING));
+    CONST_FS_KEY,
+    APR_HASH_KEY_STRING));
   assert(fs);
   unsigned int RequestResult = 0;
 
@@ -9880,10 +9837,10 @@ cmdline_auth_simple_prompt(auth_cred_simple_t ** cred_p,
 /* This implements 'auth_username_prompt_func_t'. */
 static error_t
 cmdline_auth_username_prompt(auth_cred_username_t ** cred_p,
-                             void * baton,
-                             const char * realm,
-                             bool may_save,
-                             apr_pool_t * pool)
+  void * baton,
+  const char * realm,
+  bool may_save,
+  apr_pool_t * pool)
 {
   auth_cred_username_t * ret =
     static_cast<auth_cred_username_t *>(apr_pcalloc(pool, sizeof(*ret)));
@@ -9893,8 +9850,8 @@ cmdline_auth_username_prompt(auth_cred_username_t ** cred_p,
   auth_baton_t * ab = static_cast<auth_baton_t *>(pb->cancel_baton);
   assert(ab);
   TWebDAVFileSystem * fs = static_cast<TWebDAVFileSystem *>(apr_hash_get(ab->parameters,
-                           CONST_FS_KEY,
-                           APR_HASH_KEY_STRING));
+    CONST_FS_KEY,
+    APR_HASH_KEY_STRING));
   assert(fs);
 
   unsigned int RequestResult = 0;
@@ -9910,14 +9867,13 @@ cmdline_auth_username_prompt(auth_cred_username_t ** cred_p,
 // from cmdline.c
 
 static error_t
-ssl_trust_unknown_server_cert
-(auth_cred_ssl_server_trust_t ** cred_p,
- void * baton,
- const char * realm,
- apr_uint32_t failures,
- const auth_ssl_server_cert_info_t * cert_info,
- bool may_save,
- apr_pool_t * pool)
+ssl_trust_unknown_server_cert(auth_cred_ssl_server_trust_t ** cred_p,
+  void * baton,
+  const char * realm,
+  apr_uint32_t failures,
+  const auth_ssl_server_cert_info_t * cert_info,
+  bool may_save,
+  apr_pool_t * pool)
 {
   *cred_p = NULL;
 
@@ -9933,15 +9889,15 @@ ssl_trust_unknown_server_cert
 
 static error_t
 auth_baton_init(auth_baton_t * ab,
-                          bool non_interactive,
-                          const char * auth_username,
-                          const char * auth_password,
-                          bool no_auth_cache,
-                          bool trust_server_cert,
-                          TWebDAVFileSystem * fs,
-                          cancel_func_t cancel_func,
-                          void * cancel_baton,
-                          apr_pool_t * pool)
+  bool non_interactive,
+  const char * auth_username,
+  const char * auth_password,
+  bool no_auth_cache,
+  bool trust_server_cert,
+  TWebDAVFileSystem * fs,
+  cancel_func_t cancel_func,
+  void * cancel_baton,
+  apr_pool_t * pool)
 {
   bool store_password_val = TRUE;
   bool store_auth_creds_val = TRUE;
@@ -9984,9 +9940,9 @@ auth_baton_init(auth_baton_t * ab,
 
   /* The server-cert, client-cert, and client-cert-password providers. */
   WEBDAV_ERR(auth_get_platform_specific_provider(&provider,
-             "windows",
-             "ssl_server_trust",
-             pool));
+    "windows",
+    "ssl_server_trust",
+    pool));
   APR_ARRAY_PUSH(providers, auth_provider_object_t *) = provider;
 
   auth_get_ssl_server_trust_file_provider(&provider, pool);
@@ -10013,10 +9969,10 @@ auth_baton_init(auth_baton_t * ab,
   {
     /* Two basic prompt providers: username/password, and just username. */
     auth_get_simple_prompt_provider(&provider,
-                                    cmdline_auth_simple_prompt,
-                                    pb,
-                                    2, /* retry limit */
-                                    pool);
+      cmdline_auth_simple_prompt,
+      pb,
+      2, /* retry limit */
+      pool);
     APR_ARRAY_PUSH(providers, auth_provider_object_t *) = provider;
 
     auth_get_username_prompt_provider(&provider, cmdline_auth_username_prompt, pb,
@@ -10091,8 +10047,8 @@ cancel_callback(void * baton)
 {
   callback_baton_t * cb = static_cast<callback_baton_t *>(baton);
   TWebDAVFileSystem * fs = static_cast<TWebDAVFileSystem *>(apr_hash_get(cb->ctx->auth_baton->parameters,
-                           CONST_FS_KEY,
-                           APR_HASH_KEY_STRING));
+    CONST_FS_KEY,
+    APR_HASH_KEY_STRING));
   assert(fs);
   cancelled = (atomic_t)fs->GetIsCancelled();
   return error_trace((cb->ctx->cancel_func)(cb->ctx->cancel_baton));
@@ -10108,7 +10064,7 @@ get_client_string(void * baton,
   return WEBDAV_NO_ERROR;
 }
 
-// see ra.c::client__session_from_path
+// see ra.c::client_session_from_path
 static error_t
 init_session_from_path(session_t * session,
                        const char ** url_p,
@@ -11927,8 +11883,8 @@ progress_func(off_t progress, off_t total,
 {
   client_ctx_t * ctx = static_cast<client_ctx_t *>(baton);
   TWebDAVFileSystem * fs = static_cast<TWebDAVFileSystem *>(apr_hash_get(ctx->auth_baton->parameters,
-                           CONST_FS_KEY,
-                           APR_HASH_KEY_STRING));
+    CONST_FS_KEY,
+    APR_HASH_KEY_STRING));
   assert(fs);
   if (total == -1)
     fs->ReadDirectoryProgress(progress);
@@ -12032,14 +11988,13 @@ neon_open(
   }
 
   ne_session * sess = ne_session_create(uri->scheme, uri->host, uri->port);
-  ne_session * sess2 = ne_session_create(uri->scheme, uri->host, uri->port);
   apr_pool_cleanup_register(pool, sess, cleanup_session, apr_pool_cleanup_null);
-  apr_pool_cleanup_register(pool, sess2, cleanup_session, apr_pool_cleanup_null);
   bool compression = FALSE;
   unsigned int neon_auth_types = 0;
   const char * pkcs11_provider = NULL;
   const char * ssl_authority_file = NULL;
   {
+    int proxy_method = 0;
     const char * proxy_host = NULL;
     unsigned int proxy_port = 0;
     const char * proxy_username = NULL;
@@ -12049,20 +12004,22 @@ neon_open(
     const char * neon_debug_file_name = NULL;
 
     TWebDAVFileSystem * fs = static_cast<TWebDAVFileSystem *>(apr_hash_get(cb->ctx->auth_baton->parameters,
-                             CONST_FS_KEY,
-                             APR_HASH_KEY_STRING));
+      CONST_FS_KEY,
+      APR_HASH_KEY_STRING));
     assert(fs);
-    WEBDAV_ERR(fs->GetServerSettings(&proxy_host,
-                                     &proxy_port,
-                                     &proxy_username,
-                                     &proxy_password,
-                                     &timeout,
-                                     &debug,
-                                     &neon_debug_file_name,
-                                     &compression,
-                                     &pkcs11_provider,
-                                     &ssl_authority_file,
-                                     pool));
+    WEBDAV_ERR(fs->GetServerSettings(
+      &proxy_method,
+      &proxy_host,
+      &proxy_port,
+      &proxy_username,
+      &proxy_password,
+      &timeout,
+      &debug,
+      &neon_debug_file_name,
+      &compression,
+      &pkcs11_provider,
+      &ssl_authority_file,
+      pool));
     if (neon_auth_types == 0)
     {
       /* If there were no auth types specified in the configuration
@@ -12098,43 +12055,50 @@ neon_open(
 #endif // #ifdef NETBOX_DEBUG
     }
 
-    if (proxy_host)
+    TProxyMethod method = (TProxyMethod)proxy_method;
+    if (method != ::pmNone)
     {
-      ne_session_proxy(sess, proxy_host, proxy_port);
-      ne_session_proxy(sess2, proxy_host, proxy_port);
-
-      if (proxy_username)
+      if ((method == pmSocks4) || (method == pmSocks5))
       {
-        proxy_auth_baton_t * pab = static_cast<proxy_auth_baton_t *>(apr_pcalloc(pool, sizeof(*pab)));
-        pab->username = proxy_username;
-        pab->password = proxy_password ? proxy_password : "";
-
-        ne_set_proxy_auth(sess, proxy_auth, pab);
-        ne_set_proxy_auth(sess2, proxy_auth, pab);
+        enum ne_sock_sversion vers = method == pmSocks4 ? NE_SOCK_SOCKSV4A : NE_SOCK_SOCKSV5;
+        ne_session_socks_proxy(sess, vers, proxy_host, proxy_port, proxy_username, proxy_password);
       }
-      else
+      else if (method == pmSystem)
       {
-        /* Enable (only) the Negotiate scheme for proxy
-           authentication, if no username/password is
-           configured. */
-        ne_add_proxy_auth(sess, NE_AUTH_NEGOTIATE, NULL, NULL);
-        ne_add_proxy_auth(sess2, NE_AUTH_NEGOTIATE, NULL, NULL);
+        ne_session_system_proxy(sess, 0);
+      }
+      else if (proxy_host)
+      {
+        ne_session_proxy(sess, proxy_host, proxy_port);
+
+        if (proxy_username)
+        {
+          proxy_auth_baton_t * pab = static_cast<proxy_auth_baton_t *>(apr_pcalloc(pool, sizeof(*pab)));
+          pab->username = proxy_username;
+          pab->password = proxy_password ? proxy_password : "";
+
+          ne_set_proxy_auth(sess, proxy_auth, pab);
+        }
+        else
+        {
+          /* Enable (only) the Negotiate scheme for proxy
+             authentication, if no username/password is
+             configured. */
+          ne_add_proxy_auth(sess, NE_AUTH_NEGOTIATE, NULL, NULL);
+        }
       }
     }
 
     if (!timeout)
       timeout = DEFAULT_HTTP_TIMEOUT;
     ne_set_read_timeout(sess, timeout);
-    ne_set_read_timeout(sess2, timeout);
 
     ne_set_connect_timeout(sess, timeout);
-    ne_set_connect_timeout(sess2, timeout);
   }
 
   {
     static std::string useragent = "NetBox/" + W2MB(NETBOX_VERSION_NUMBER.c_str());
     ne_set_useragent(sess, useragent.c_str());
-    ne_set_useragent(sess2, useragent.c_str());
   }
 
   /* clean up trailing slashes from the URL */
@@ -12154,7 +12118,6 @@ neon_open(
   /* copies uri pointer members, they get free'd in __close. */
   ras->root = *uri;
   ras->ne_sess = sess;
-  ras->ne_sess2 = sess2;
   ras->callbacks = callbacks;
   ras->callback_baton = callback_baton;
   ras->compression = compression;
@@ -12166,7 +12129,6 @@ neon_open(
      point. */
   /* Register an authentication 'pull' callback with the neon sessions */
   ne_add_server_auth(sess, neon_auth_types, request_auth, ras);
-  ne_add_server_auth(sess2, neon_auth_types, request_auth, ras);
 
   if (is_ssl_session)
   {
@@ -12188,7 +12150,6 @@ neon_open(
                    "Invalid config: unable to load certificate file '%s'", file);
         }
         ne_ssl_trust_cert(sess, ca_cert);
-        ne_ssl_trust_cert(sess2, ca_cert);
       }
     }
 
@@ -12196,7 +12157,6 @@ neon_open(
        verification problems, neon will call our verify function before
        outright rejection of the connection.*/
     ne_ssl_set_verify(sess, server_ssl_callback, ras);
-    ne_ssl_set_verify(sess2, server_ssl_callback, ras);
     /* For client connections, we register a callback for if the server
        wants to authenticate the client via client certificate. */
 
@@ -12217,7 +12177,6 @@ neon_open(
 
       /* Share the provider between the two sessions. */
       ne_ssl_set_pkcs11_provider(sess, provider);
-      ne_ssl_set_pkcs11_provider(sess2, provider);
 
       ne_ssl_pkcs11_provider_pin(provider, client_ssl_pkcs11_pin_entry,
                                  ras);
@@ -12231,7 +12190,6 @@ neon_open(
     else
     {
       ne_ssl_provide_clicert(sess, client_ssl_callback, ras);
-      ne_ssl_provide_clicert(sess2, client_ssl_callback, ras);
     }
 
     /* See if the user wants us to trust "default" openssl CAs. */
@@ -12241,7 +12199,6 @@ neon_open(
     if (trust_default_ca)
     {
       ne_ssl_trust_default_ca(sess);
-      ne_ssl_trust_default_ca(sess2);
     }
   }
 
@@ -12259,7 +12216,6 @@ neon_open(
     progress2->last_progress = 0;
 
     ne_set_progress(sess, ra_neon_neonprogress, progress1);
-    ne_set_progress(sess2, ra_neon_neonprogress, progress2);
   }
 
   session->priv = ras;
@@ -12688,7 +12644,7 @@ TWebDAVFileSystem::TWebDAVFileSystem(TTerminal * ATerminal) :
 void __fastcall TWebDAVFileSystem::Init()
 {
   FFileSystemInfo.ProtocolBaseName =
-    FTerminal->GetSessionData()->GetFSProtocol() == fsHTTP ?
+    FTerminal->GetSessionData()->GetFtps() == ftpsNone ?
     CONST_HTTP_PROTOCOL_BASE_NAME : CONST_HTTPS_PROTOCOL_BASE_NAME;
   FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
 
@@ -12716,14 +12672,13 @@ void __fastcall TWebDAVFileSystem::Open()
 
   FSessionInfo.LoginTime = Now();
   FSessionInfo.ProtocolBaseName =
-    FTerminal->GetSessionData()->GetFSProtocol() == fsHTTP ?
+    Data->GetFtps() == ftpsNone ?
     CONST_HTTP_PROTOCOL_BASE_NAME : CONST_HTTPS_PROTOCOL_BASE_NAME;
   FSessionInfo.ProtocolName = FSessionInfo.ProtocolBaseName;
 
   UnicodeString HostName = Data->GetHostName();
   size_t Port = Data->GetPortNumber();
-  UnicodeString ProtocolName = FTerminal->GetSessionData()->GetFSProtocol() == fsHTTP ?
-                               L"http" : L"https";
+  UnicodeString ProtocolName = Data->GetFtps() == ftpsNone ? L"http" : L"https";
   UnicodeString UserName = Data->GetUserName();
   UnicodeString Path = Data->GetRemoteDirectory();
   UnicodeString url = FORMAT(L"%s://%s:%d%s", ProtocolName.c_str(), HostName.c_str(), Port, Path.c_str());
@@ -13234,7 +13189,7 @@ void __fastcall TWebDAVFileSystem::AnyCommand(const UnicodeString Command,
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TWebDAVFileSystem::FileUrl(const UnicodeString FileName)
 {
-  return FTerminal->FileUrl(FTerminal->GetSessionData()->GetFSProtocol() == fsHTTP ?
+  return FTerminal->FileUrl(FTerminal->GetSessionData()->GetFtps() == ftpsNone ?
     L"http" : L"https", FileName);
 }
 //---------------------------------------------------------------------------
@@ -13269,12 +13224,10 @@ void __fastcall TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
 
     // try
     {
-#ifdef _MSC_VER
       BOOST_SCOPE_EXIT ( (&OperationProgress) (&FileName) (&Success) (&OnceDoneOperation) )
       {
         OperationProgress->Finish(FileName, Success, OnceDoneOperation);
       } BOOST_SCOPE_EXIT_END
-#endif // #ifdef _MSC_VER
       try
       {
         if (FTerminal->GetSessionData()->GetCacheDirectories())
@@ -13302,7 +13255,7 @@ void __fastcall TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
     {
       OperationProgress->Finish(FileName, Success, OnceDoneOperation);
     }
-#endif // #ifdef _MSC_VER
+#endif // #ifndef _MSC_VER
     Index++;
   }
 }
@@ -13561,12 +13514,10 @@ void __fastcall TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString Dir
 
   // try
   {
-#ifdef _MSC_VER
     BOOST_SCOPE_EXIT ( (&SearchRec) (&findHandle) )
     {
       ::FindClose(findHandle);
     } BOOST_SCOPE_EXIT_END
-#endif // #ifdef _MSC_VER
     while (FindOK && !OperationProgress->Cancel)
     {
       UnicodeString FileName = DirectoryName + SearchRec.cFileName;
@@ -13620,12 +13571,10 @@ void __fastcall TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString Dir
       FTerminal->SetExceptionOnFail(true);
       // try
       {
-#ifdef _MSC_VER
         BOOST_SCOPE_EXIT ( (&Self) )
         {
           Self->FTerminal->SetExceptionOnFail(false);
         } BOOST_SCOPE_EXIT_END
-#endif // #ifdef _MSC_VER
         FTerminal->CreateDirectory(DestFullName, &Properties);
       }
 #ifndef _MSC_VER
@@ -13633,7 +13582,7 @@ void __fastcall TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString Dir
       {
         Self->FTerminal->SetExceptionOnFail(false);
       }
-#endif // #ifdef _MSC_VER
+#endif // #ifndef _MSC_VER
     }
     catch (...)
     {
@@ -13691,13 +13640,11 @@ void __fastcall TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
     FTerminal->SetExceptionOnFail(true);
     // try
     {
-#ifdef _MSC_VER
       BOOST_SCOPE_EXIT ( (&Self) (&OperationProgress) (&FileName) (&Success) (&OnceDoneOperation) )
       {
         OperationProgress->Finish(FileName, Success, OnceDoneOperation);
         Self->FTerminal->SetExceptionOnFail(false);
       } BOOST_SCOPE_EXIT_END
-#endif // #ifdef _MSC_VER
       try
       {
         SinkRobust(AbsolutePath(FileName, false), File, FullTargetDir, CopyParam, Params,
@@ -14427,20 +14374,20 @@ webdav::error_t TWebDAVFileSystem::OpenURL(const UnicodeString & webdav_URL,
     const char * auth_username = NULL;
     const char * auth_password = NULL;
     WEBDAV_ERR(webdav::utf_cstring_to_utf8(&auth_username,
-                                           AnsiString(FTerminal->GetSessionData()->GetUserNameExpanded()).c_str(), pool));
+      AnsiString(FTerminal->GetSessionData()->GetUserNameExpanded()).c_str(), pool));
     WEBDAV_ERR(webdav::utf_cstring_to_utf8(&auth_password,
-                                           AnsiString(FTerminal->GetSessionData()->GetPassword()).c_str(), pool));
+      AnsiString(FTerminal->GetSessionData()->GetPassword()).c_str(), pool));
     webdav::auth_baton_t * ab = NULL;
     webdav::auth_baton_create(&ab, pool);
     webdav::auth_baton_init(ab,
-                              /* non_interactive */ FALSE,
-                              auth_username,
-                              auth_password,
-                              /* no_auth_cache */ FALSE,
-                              /* trust_server_cert */ TRUE,
-                              this,
-                              webdav::check_cancel, ab,
-                              pool);
+      FALSE, /* non_interactive */
+      auth_username,
+      auth_password,
+      FALSE, /* no_auth_cache */
+      TRUE, /* trust_server_cert */
+      this,
+      webdav::check_cancel, ab,
+      pool);
     ctx->auth_baton = ab;
 
     /* Set up our cancellation support. */
@@ -14482,6 +14429,7 @@ webdav::error_t TWebDAVFileSystem::OpenURL(const UnicodeString & webdav_URL,
 //---------------------------------------------------------------------------
 
 webdav::error_t TWebDAVFileSystem::GetServerSettings(
+  int * proxy_method,
   const char ** proxy_host,
   unsigned int * proxy_port,
   const char ** proxy_username,
@@ -14495,6 +14443,7 @@ webdav::error_t TWebDAVFileSystem::GetServerSettings(
   apr_pool_t * pool)
 {
   /* If we find nothing, default to nulls. */
+  *proxy_method = 0;
   *proxy_host = NULL;
   *proxy_port = (unsigned int)-1;
   *proxy_username = NULL;
@@ -14504,12 +14453,13 @@ webdav::error_t TWebDAVFileSystem::GetServerSettings(
 
   {
     TProxyMethod ProxyMethod = FTerminal->GetSessionData()->GetProxyMethod();
+    *proxy_method = (int)ProxyMethod;
     if (ProxyMethod != (TProxyMethod)::pmNone)
     {
       WEBDAV_ERR(webdav::path_cstring_to_utf8(proxy_host, AnsiString(FTerminal->GetSessionData()->GetProxyHost()).c_str(), pool));
+      WEBDAV_ERR(webdav::path_cstring_to_utf8(proxy_username, AnsiString(FTerminal->GetSessionData()->GetProxyUsername()).c_str(), pool));
+      WEBDAV_ERR(webdav::path_cstring_to_utf8(proxy_password, AnsiString(FTerminal->GetSessionData()->GetProxyPassword()).c_str(), pool));
     }
-    WEBDAV_ERR(webdav::path_cstring_to_utf8(proxy_username, AnsiString(FTerminal->GetSessionData()->GetProxyUsername()).c_str(), pool));
-    WEBDAV_ERR(webdav::path_cstring_to_utf8(proxy_password, AnsiString(FTerminal->GetSessionData()->GetProxyPassword()).c_str(), pool));
   }
 
   /* Apply non-proxy-specific settings regardless of exceptions: */
@@ -14584,9 +14534,8 @@ webdav::error_t TWebDAVFileSystem::VerifyCertificate(
   Params.Aliases = Aliases;
   Params.AliasesCount = LENOF(Aliases);
   unsigned int Answer = FTerminal->QueryUser(
-                          FMTLOAD(VERIFY_CERT_PROMPT3, UnicodeString(Prompt).c_str(),
-                                  FMTLOAD(VERIFY_CERT_PROMPT4).c_str()),
-                          NULL, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);
+    FMTLOAD(VERIFY_CERT_PROMPT2, UnicodeString(Prompt).c_str()),
+    NULL, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);
   RequestResult = Answer;
   return WEBDAV_NO_ERROR;
 }
@@ -14674,12 +14623,10 @@ webdav::error_t TWebDAVFileSystem::SimplePrompt(
   TStrings * MoreMessages = new TStringList();
   // try
   {
-#ifdef _MSC_VER
     BOOST_SCOPE_EXIT ( (&MoreMessages) )
     {
       delete MoreMessages;
     } BOOST_SCOPE_EXIT_END
-#endif // #ifdef _MSC_VER
     MoreMessages->Add(UnicodeString(prompt_string));
     unsigned int Answer = FTerminal->QueryUser(
                             UnicodeString(prompt_text),

@@ -1,3 +1,17 @@
+NetBox 2.1.10 27.08.2012
+--------------------
+  * Bugfix: WebDAV: SOCKS5 proxy did not work
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=97556#p97556)
+  * SCP, SFTP: add session option "Optimize connection buffer size"
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=97556#p97534)
+  * Bugfix: Plugin configuration: remove option "Disks menu hotkey: Autoassign, Manual"
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=97556#p97531)
+  * Bugfix: "Copy file" dialog: minimize file name
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=97556#p97531)
+  * Bugfix: Issue #33: cursor position not restored
+  * FTP: Trigger password prompt by the 331 FTP response
+    (http://winscp.net/tracker/show_bug.cgi?id=653)
+
 NetBox 2.1.9 20.08.2012
 --------------------
   * Bugfix: export session did not work

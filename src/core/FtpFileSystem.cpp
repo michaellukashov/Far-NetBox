@@ -66,6 +66,8 @@ protected:
     bool HasTime1, bool HasTime2, void * UserData, int & RequestResult);
   virtual bool __fastcall HandleAsynchRequestVerifyCertificate(
     const TFtpsCertificateData & Data, int & RequestResult);
+  virtual bool __fastcall HandleAsynchRequestNeedPass(
+    struct TNeedPassRequestData & Data, int & RequestResult);
   virtual bool __fastcall HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
     unsigned int Count);
   virtual bool __fastcall HandleTransferStatus(bool Valid, __int64 TransferSize,
@@ -120,6 +122,12 @@ bool __fastcall TFileZillaImpl::HandleAsynchRequestVerifyCertificate(
   const TFtpsCertificateData & Data, int & RequestResult)
 {
   return FFileSystem->HandleAsynchRequestVerifyCertificate(Data, RequestResult);
+}
+//---------------------------------------------------------------------------
+bool __fastcall TFileZillaImpl::HandleAsynchRequestNeedPass(
+  struct TNeedPassRequestData & Data, int & RequestResult)
+{
+  return FFileSystem->HandleAsynchRequestNeedPass(Data, RequestResult);
 }
 //---------------------------------------------------------------------------
 bool __fastcall TFileZillaImpl::HandleListData(const wchar_t * Path,
@@ -224,8 +232,9 @@ private:
   FFileZillaIntf(NULL),
   FQueueCriticalSection(new TCriticalSection()),
   FTransferStatusCriticalSection(new TCriticalSection()),
-  FQueueEvent(CreateEvent(NULL, true, false, NULL)),
   FQueue(new TMessageQueue()),
+  FQueueEvent(CreateEvent(NULL, true, false, NULL)),
+  FFileSystemInfoValid(false),
   FReply(0),
   FCommandReply(0),
   FLastCommand(CMD_UNKNOWN),
@@ -250,7 +259,6 @@ private:
   FFileTransferCPSLimit(0),
   FAwaitingProgress(false),
   FListAll(asOn),
-  FFileSystemInfoValid(false),
   FDoListAll(false),
   FServerCapabilities(NULL)
 {
@@ -3405,8 +3413,7 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       Params.Aliases = Aliases;
       Params.AliasesCount = LENOF(Aliases);
       unsigned int Answer = FTerminal->QueryUser(
-        FMTLOAD(VERIFY_CERT_PROMPT2, FSessionInfo.Certificate.c_str(),
-          FMTLOAD(VERIFY_CERT_PROMPT4).c_str()),
+        FMTLOAD(VERIFY_CERT_PROMPT2, FSessionInfo.Certificate.c_str()),
         NULL, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);
 
       switch (Answer)
@@ -3457,6 +3464,30 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       }
     }
 
+    return true;
+  }
+}
+//---------------------------------------------------------------------------
+bool __fastcall TFTPFileSystem::HandleAsynchRequestNeedPass(
+  struct TNeedPassRequestData & Data, int & RequestResult)
+{
+  if (!FActive)
+  {
+    return false;
+  }
+  else
+  {
+    UnicodeString Password = L"";
+    if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkPassword, LoadStr(PASSWORD_TITLE), L"",
+      LoadStr(PASSWORD_PROMPT), false, 0, Password))
+    {
+      Data.Password = _wcsdup(Password.c_str());
+      RequestResult = TFileZillaIntf::REPLY_OK;
+    }
+    else
+    {
+      RequestResult = TFileZillaIntf::REPLY_ABORTED;
+    }
     return true;
   }
 }

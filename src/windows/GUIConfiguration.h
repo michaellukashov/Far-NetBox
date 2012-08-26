@@ -90,7 +90,7 @@ public:
   __property TCopyParamRuleData Data = { read = FData, write = FData };
   __property bool IsEmpty = { read = GetEmpty };
 #else
-  TCopyParamRuleData __fastcall GetData() { return FData; }
+  TCopyParamRuleData __fastcall GetData() const { return FData; }
   void __fastcall SetData(TCopyParamRuleData value) { FData = value; }
 #endif
 
@@ -139,7 +139,7 @@ public:
   __property TStrings * NameList = { read = GetNameList };
   __property bool AnyRule = { read = GetAnyRule };
 #else
-  bool __fastcall GetModified() { return FModified; }
+  bool __fastcall GetModified() const { return FModified; }
 #endif
 
 private:

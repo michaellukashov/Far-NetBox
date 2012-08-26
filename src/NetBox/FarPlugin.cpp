@@ -1789,10 +1789,18 @@ UnicodeString __fastcall TCustomFarPlugin::FormatFarVersion(VersionInfo &Info)
 UnicodeString __fastcall TCustomFarPlugin::TemporaryDir()
 {
   UnicodeString Result;
-  Result.SetLength(MAX_PATH);
-  TFarEnvGuard Guard;
-  FFarStandardFunctions.MkTemp(const_cast<wchar_t *>(Result.c_str()), Result.Length(), NULL);
-  PackStr(Result);
+  if (FTemporaryDir.IsEmpty())
+  {
+    Result.SetLength(MAX_PATH);
+    TFarEnvGuard Guard;
+    FFarStandardFunctions.MkTemp(const_cast<wchar_t *>(Result.c_str()), Result.Length(), NULL);
+    PackStr(Result);
+    FTemporaryDir = Result;
+  }
+  else
+  {
+    Result = FTemporaryDir;
+  }
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -3007,12 +3015,12 @@ bool __fastcall TFarMenuItems::GetFlag(size_t Index, size_t Flag)
   delete FEditorInfo;
 }
 //---------------------------------------------------------------------------
-int __fastcall TFarEditorInfo::GetEditorID()
+int __fastcall TFarEditorInfo::GetEditorID() const
 {
   return FEditorInfo->EditorID;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TFarEditorInfo::GetFileName()
+UnicodeString __fastcall TFarEditorInfo::GetFileName() const
 {
   UnicodeString Result = L"";
   size_t buffLen = FarPlugin->FarEditorControl(ECTL_GETFILENAME, NULL);

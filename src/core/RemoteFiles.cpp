@@ -2347,7 +2347,7 @@ void __fastcall TRights::SetReadOnly(bool value)
   SetRight(rrOtherWrite, !value);
 }
 //---------------------------------------------------------------------------
-bool  __fastcall TRights::GetReadOnly()
+bool  __fastcall TRights::GetReadOnly() const
 {
   return GetRight(rrUserWrite) && GetRight(rrGroupWrite) && GetRight(rrOtherWrite);
 }

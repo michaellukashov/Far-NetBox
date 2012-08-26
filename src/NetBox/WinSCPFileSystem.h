@@ -81,7 +81,7 @@ struct TEditHistory
 {
   UnicodeString FileName;
   UnicodeString Directory;
-  bool operator==(const TEditHistory & rh) { return (FileName == rh.FileName) && (Directory == rh.Directory); }
+  bool operator==(const TEditHistory & rh) const { return (FileName == rh.FileName) && (Directory == rh.Directory); }
 };
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER

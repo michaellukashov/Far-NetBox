@@ -399,7 +399,8 @@ void __fastcall TSimpleThread::WaitFor(unsigned int Milliseconds)
 //---------------------------------------------------------------------------
 /* __fastcall */ TSignalThread::TSignalThread() :
   TSimpleThread(),
-  FTerminated(true), FEvent(NULL)
+  FEvent(NULL),
+  FTerminated(true)
 {
 #ifndef _MSC_VER
   FEvent = CreateEvent(NULL, false, false, NULL);
@@ -488,10 +489,10 @@ void __fastcall TSignalThread::Terminate()
 /* __fastcall */ TTerminalQueue::TTerminalQueue(TTerminal * Terminal,
   TConfiguration * Configuration) :
   TSignalThread(),
-  FTerminal(Terminal), FTransfersLimit(2), FEnabled(true),
-  FConfiguration(Configuration), FSessionData(NULL), FItems(NULL),
-  FTerminals(NULL), FForcedItems(NULL), FItemsSection(NULL), FFreeTerminals(0),
-  FItemsInProcess(0), FTemporaryTerminals(0), FOverallTerminals(0)
+  FTerminal(Terminal), FConfiguration(Configuration), FTransfersLimit(2), FEnabled(true),
+  FSessionData(NULL), FItems(NULL), FItemsInProcess(0), FItemsSection(NULL),
+  FFreeTerminals(0), FTerminals(NULL), FForcedItems(NULL),
+  FTemporaryTerminals(0), FOverallTerminals(0)
 {
   Self = this;
 #ifndef _MSC_VER
@@ -1571,8 +1572,9 @@ bool __fastcall TTerminalItem::OverrideItemStatus(TQueueItem::TStatus & ItemStat
 // TQueueItem
 //---------------------------------------------------------------------------
 /* __fastcall */ TQueueItem::TQueueItem() :
-  FStatus(qsPending), FTerminalItem(NULL), FSection(NULL), FProgressData(NULL),
-  FQueue(NULL), FInfo(NULL), FCompleteEvent(INVALID_HANDLE_VALUE),
+  FStatus(qsPending), FSection(NULL), FTerminalItem(NULL), FProgressData(NULL),
+  FInfo(NULL),
+  FQueue(NULL), FCompleteEvent(INVALID_HANDLE_VALUE),
   FCPSLimit(-1)
 {
   FSection = new TCriticalSection();
@@ -1696,7 +1698,7 @@ void __fastcall TQueueItem::SetCPSLimit(unsigned long CPSLimit)
 //---------------------------------------------------------------------------
 /* __fastcall */ TQueueItemProxy::TQueueItemProxy(TTerminalQueue * Queue,
   TQueueItem * QueueItem) :
-  FQueue(Queue), FQueueItem(QueueItem), FProgressData(NULL),
+  FProgressData(NULL), FQueue(Queue), FQueueItem(QueueItem),
   FQueueStatus(NULL), FInfo(NULL),
   FProcessingUserAction(false), FUserData(NULL)
 {

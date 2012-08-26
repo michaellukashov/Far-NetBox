@@ -257,6 +257,7 @@ private:
   PluginInfo FPluginInfo;
   TStringList * FSavedTitles;
   UnicodeString FCurrentTitle;
+  UnicodeString FTemporaryDir;
   short FCurrentProgress;
 
   void __fastcall ClearPluginInfo(PluginInfo & Info);
@@ -576,8 +577,8 @@ private:
   EditorInfo * FEditorInfo;
 
 public:
-  int __fastcall GetEditorID();
-  UnicodeString __fastcall GetFileName();
+  int __fastcall GetEditorID() const;
+  UnicodeString __fastcall GetFileName() const;
 };
 //---------------------------------------------------------------------------
 class TFarEnvGuard
