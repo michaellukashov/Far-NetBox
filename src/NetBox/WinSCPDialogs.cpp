@@ -1675,6 +1675,7 @@ private:
   TSessionData * FSessionData;
   int FTransferProtocolIndex;
   int FLoginTypeIndex;
+  int FFtpEncryptionComboIndex;
 
   TTabButton * SshTab;
   TTabButton * AuthenticatonTab;
@@ -1843,7 +1844,11 @@ static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsHTTP };
 //---------------------------------------------------------------------------
 /* __fastcall */ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum Action) :
   TTabbedDialog(AFarPlugin, tabCount),
-  FAction(Action)
+  FAction(Action),
+  FSessionData(NULL),
+  FTransferProtocolIndex(0),
+  FLoginTypeIndex(0),
+  FFtpEncryptionComboIndex(0)
 {
   Self = this;
   TPoint S = TPoint(67, 23);
@@ -2990,7 +2995,8 @@ void __fastcall TSessionDialog::Change()
 
   if (GetHandle() && !ChangesLocked())
   {
-    if (FTransferProtocolIndex != TransferProtocolCombo->GetItems()->GetSelected())
+    if ((FTransferProtocolIndex != TransferProtocolCombo->GetItems()->GetSelected()) ||
+        (FFtpEncryptionComboIndex != FtpEncryptionCombo->GetItems()->GetSelected()))
     {
       TransferProtocolComboChange();
     }
@@ -3054,6 +3060,7 @@ void __fastcall TSessionDialog::TransferProtocolComboChange()
   SavePing(FSessionData);
 
   FTransferProtocolIndex = TransferProtocolCombo->GetItems()->GetSelected();
+  FFtpEncryptionComboIndex = FtpEncryptionCombo->GetItems()->GetSelected();
 
   LoadPing(FSessionData);
   if (GetFSProtocol() == fsSFTPonly || GetFSProtocol() == fsSCPonly)
@@ -3287,6 +3294,7 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
   FSessionData = SessionData;
   FTransferProtocolIndex = TransferProtocolCombo->GetItems()->GetSelected();
   FLoginTypeIndex = LoginTypeCombo->GetItems()->GetSelected();
+  FFtpEncryptionComboIndex = FtpEncryptionCombo->GetItems()->GetSelected();
 
   HideTabs();
   SelectTab(tabSession);
