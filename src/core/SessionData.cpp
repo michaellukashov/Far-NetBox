@@ -2548,12 +2548,15 @@ TFSProtocol __fastcall TSessionData::TranslateFSProtocolNumber(int FSProtocol)
     switch (FSProtocol)
     {
       case fsFTPS_219:
+        SetFtps(ftpsExplicitSsl);
         Result = fsFTP;
         break;
       case fsHTTP_219:
+        SetFtps(ftpsNone);
         Result = fsHTTP;
         break;
       case fsHTTPS_219:
+        SetFtps(ftpsImplicit);
         Result = fsHTTP;
         break;
     }
