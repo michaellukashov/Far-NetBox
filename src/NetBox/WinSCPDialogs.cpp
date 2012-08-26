@@ -35,14 +35,6 @@
 //---------------------------------------------------------------------------
 enum TButtonResult { brCancel = -1, brOK = 1, brConnect };
 //---------------------------------------------------------------------------
-TFtps FtpEncryptionToFtps(TFtpEncryptionSwitch value)
-{
-  return value == fesPlainFTP ? ftpsNone :
-         value == fesExplicitSSL ? ftpsExplicitSsl :
-         value == fesImplicit ? ftpsImplicit :
-         value == fesExplicitTLS ? ftpsExplicitTls : ftpsNone;
-}
-//---------------------------------------------------------------------------
 class TWinSCPDialog : public TFarDialog
 {
 public:
@@ -3458,22 +3450,22 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
 
   SslSessionReuseCheck->SetChecked(SessionData->GetSslSessionReuse());
 
-  TFtpEncryptionSwitch FtpEncryption = SessionData->GetFtpEncryption();
-  switch (FtpEncryption)
+  TFtps Ftps = SessionData->GetFtps();
+  switch (Ftps)
   {
-    case fesPlainFTP:
+    case ftpsNone:
       FtpEncryptionCombo->GetItems()->SetSelected(0);
       break;
 
-    case fesExplicitSSL:
+    case ftpsImplicit:
       FtpEncryptionCombo->GetItems()->SetSelected(1);
       break;
 
-    case fesImplicit:
+    case ftpsExplicitSsl:
       FtpEncryptionCombo->GetItems()->SetSelected(2);
       break;
 
-    case fesExplicitTLS:
+    case ftpsExplicitTls:
       FtpEncryptionCombo->GetItems()->SetSelected(3);
       break;
 
@@ -3778,7 +3770,7 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
     }
     if ((GetFSProtocol() == fsFTP) && (GetFtps() != ftpsNone))
     {
-      SessionData->SetFtps(FtpEncryptionToFtps(SessionData->GetFtpEncryption()));
+      SessionData->SetFtps(GetFtps());
     }
     else
     {
@@ -3788,19 +3780,19 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
     switch (FtpEncryptionCombo->GetItems()->GetSelected())
     {
       case 0:
-        SessionData->SetFtpEncryption(fesPlainFTP);
+        SessionData->SetFtps(ftpsNone);
         break;
       case 1:
-        SessionData->SetFtpEncryption(fesExplicitSSL);
+        SessionData->SetFtps(ftpsImplicit);
         break;
       case 2:
-        SessionData->SetFtpEncryption(fesImplicit);
+        SessionData->SetFtps(ftpsExplicitSsl);
         break;
       case 3:
-        SessionData->SetFtpEncryption(fesExplicitTLS);
+        SessionData->SetFtps(ftpsExplicitTls);
         break;
       default:
-        SessionData->SetFtpEncryption(fesPlainFTP);
+        SessionData->SetFtps(ftpsNone);
         break;
     }
 #ifndef _MSC_VER
@@ -4110,11 +4102,11 @@ TFtps __fastcall TSessionDialog::IndexToFtps(int Index)
       break;
 
     case 1:
-      Result = ftpsExplicitSsl;
+      Result = ftpsImplicit;
       break;
 
     case 2:
-      Result = ftpsImplicit;
+      Result = ftpsExplicitSsl;
       break;
 
     case 3:

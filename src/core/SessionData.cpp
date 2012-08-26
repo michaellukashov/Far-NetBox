@@ -206,7 +206,6 @@ void __fastcall TSessionData::Default()
   SetCodePage(::GetCodePageAsString(CONST_DEFAULT_CODEPAGE));
   SetLoginType(ltAnonymous);
   SetFtpAllowEmptyPassword(false);
-  SetFtpEncryption(fesPlainFTP);
 
   FNumberOfRetries = 0;
   FSessionVersion = ::StrToVersionNumber(NETBOX_VERSION_NUMBER);
@@ -329,8 +328,7 @@ void __fastcall TSessionData::NonPersistant()
   \
   PROPERTY(CodePage); \
   PROPERTY(LoginType); \
-  PROPERTY(FtpAllowEmptyPassword); \
-  PROPERTY(FtpEncryption);
+  PROPERTY(FtpAllowEmptyPassword);
 //---------------------------------------------------------------------
 void __fastcall TSessionData::Assign(TPersistent * Source)
 {
@@ -621,7 +619,10 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
   SetCodePage(Storage->ReadString(L"CodePage", GetCodePage()));
   SetLoginType(static_cast<TLoginType>(Storage->ReadInteger(L"LoginType", GetLoginType())));
   SetFtpAllowEmptyPassword(Storage->ReadBool(L"FtpAllowEmptyPassword", GetFtpAllowEmptyPassword()));
-  SetFtpEncryption(static_cast<TFtpEncryptionSwitch>(Storage->ReadInteger(L"FtpEncryption", GetFtpEncryption())));
+  if (GetSessionVersion() < GetVersionNumber2110())
+  {
+    SetFtps(TranslateFtpEncryptionNumber(Storage->ReadInteger(L"FtpEncryption", -1)));
+  }
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionData::Load(THierarchicalStorage * Storage)
@@ -902,7 +903,6 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
       WRITE_DATA_EX(String, L"CodePage", GetCodePage(), );
       WRITE_DATA_EX(Integer, L"LoginType", GetLoginType(), );
       WRITE_DATA_EX(Bool, L"FtpAllowEmptyPassword", GetFtpAllowEmptyPassword(), );
-      WRITE_DATA_EX(Integer, L"FtpEncryption", GetFtpEncryption(), );
     }
 
     SavePasswords(Storage, PuttyExport);
@@ -2395,11 +2395,6 @@ void __fastcall TSessionData::SetFtpAllowEmptyPassword(bool value)
   SET_SESSION_PROPERTY(FtpAllowEmptyPassword);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetFtpEncryption(TFtpEncryptionSwitch value)
-{
-  SET_SESSION_PROPERTY(FtpEncryption);
-}
-//---------------------------------------------------------------------
 void __fastcall TSessionData::SetFtpForcePasvIp(TAutoSwitch value)
 {
   SET_SESSION_PROPERTY(FtpForcePasvIp);
@@ -2558,6 +2553,34 @@ TFSProtocol __fastcall TSessionData::TranslateFSProtocolNumber(int FSProtocol)
       case fsHTTPS_219:
         SetFtps(ftpsImplicit);
         Result = fsHTTP;
+        break;
+    }
+  }
+  assert(Result != -1);
+  return Result;
+}
+//---------------------------------------------------------------------
+TFtps __fastcall TSessionData::TranslateFtpEncryptionNumber(int FtpEncryption)
+{
+  TFtps Result = GetFtps();
+  if ((GetSessionVersion() < GetVersionNumber2110()) &&
+      (GetFSProtocol() == fsFTP) && (GetFtps() != ftpsNone))
+  {
+    switch (FtpEncryption)
+    {
+      case fesPlainFTP:
+        Result = ftpsNone;
+        break;
+      case fesExplicitSSL:
+        Result = ftpsExplicitSsl;
+        break;
+      case fesImplicit:
+        Result = ftpsImplicit;
+        break;
+      case fesExplicitTLS:
+        Result = ftpsExplicitTls;
+        break;
+      default:
         break;
     }
   }

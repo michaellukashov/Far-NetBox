@@ -181,7 +181,6 @@ private:
   TSessionSource FSource;
   UnicodeString FCodePage;
   bool FFtpAllowEmptyPassword;
-  TFtpEncryptionSwitch FFtpEncryption;
   TLoginType FLoginType;
   int FNumberOfRetries;
   DWORD FSessionVersion;
@@ -581,8 +580,6 @@ public:
   bool __fastcall GetFtpPasvMode() const { return FFtpPasvMode; }
   bool __fastcall GetFtpAllowEmptyPassword() const { return FFtpAllowEmptyPassword; }
   void __fastcall SetFtpAllowEmptyPassword(bool value);
-  TFtpEncryptionSwitch __fastcall GetFtpEncryption() const { return FFtpEncryption; }
-  void __fastcall SetFtpEncryption(TFtpEncryptionSwitch value);
   TAutoSwitch __fastcall GetFtpForcePasvIp() const { return FFtpForcePasvIp; }
   UnicodeString __fastcall GetFtpAccount() const { return FFtpAccount; }
   int __fastcall GetFtpPingInterval() const { return FFtpPingInterval; }
@@ -600,6 +597,7 @@ public:
 protected:
   DWORD __fastcall GetDefaultVersion() { return ::GetVersionNumber219(); }
   TFSProtocol __fastcall TranslateFSProtocolNumber(int FSProtocol);
+  TFtps __fastcall TranslateFtpEncryptionNumber(int FtpEncryption);
 #endif
 private:
   mutable TIEProxyConfig * FIEProxyConfig;
