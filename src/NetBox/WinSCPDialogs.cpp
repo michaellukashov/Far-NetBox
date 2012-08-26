@@ -3071,23 +3071,23 @@ void __fastcall TSessionDialog::TransferProtocolComboChange()
       PortNumberEdit->SetAsInteger(SshPortNumber);
     }
   }
-  else if ((GetFSProtocol() == fsFTP) && (Ftps == ftpsNone) || (Ftps == ftpsExplicitSsl) || (Ftps == ftpsExplicitTls))
+  else if ((GetFSProtocol() == fsFTP) && ((Ftps == ftpsNone) || (Ftps == ftpsExplicitSsl) || (Ftps == ftpsExplicitTls)))
   {
-    if ((Port== SshPortNumber) || (Port == FtpsImplicitPortNumber))
+    if ((Port== SshPortNumber) || (Port == FtpsImplicitPortNumber) || (Port == HTTPPortNumber) || (Port == HTTPSPortNumber))
     {
       PortNumberEdit->SetAsInteger(FtpPortNumber);
     }
   }
   else if ((GetFSProtocol() == fsFTP) && (Ftps == ftpsImplicit))
   {
-    if (Port == SshPortNumber || Port == HTTPPortNumber)
+    if ((Port == SshPortNumber) || (Port == FtpPortNumber) || (Port == HTTPPortNumber) || (Port == HTTPSPortNumber))
     {
       PortNumberEdit->SetAsInteger(FtpsImplicitPortNumber);
     }
   }
   else if ((GetFSProtocol() == fsHTTP) && (Ftps == ftpsNone))
   {
-    if (Port == FtpPortNumber || Port == FtpsImplicitPortNumber || Port == HTTPSPortNumber)
+    if ((Port == FtpPortNumber) || (Port == FtpsImplicitPortNumber) || (Port == HTTPSPortNumber))
     {
       PortNumberEdit->SetAsInteger(HTTPPortNumber);
       ::AdjustRemoteDir(HostNameEdit, RemoteDirectoryEdit, UpdateDirectoriesCheck);
@@ -3095,7 +3095,7 @@ void __fastcall TSessionDialog::TransferProtocolComboChange()
   }
   else if ((GetFSProtocol() == fsHTTP) && (Ftps != ftpsNone))
   {
-    if (Port == HTTPPortNumber)
+    if ((Port == FtpPortNumber) || (Port == FtpsImplicitPortNumber) || (Port == HTTPPortNumber))
     {
       PortNumberEdit->SetAsInteger(HTTPSPortNumber);
       ::AdjustRemoteDir(HostNameEdit, RemoteDirectoryEdit, UpdateDirectoriesCheck);
