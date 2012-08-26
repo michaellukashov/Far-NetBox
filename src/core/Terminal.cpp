@@ -743,7 +743,7 @@ void __fastcall TTerminal::Open()
             }
 
             assert(FTunnel == NULL);
-            if (FSessionData->GetTunnel())
+            if (GetSessionData()->GetTunnel())
             {
               DoInformation(LoadStr(OPEN_TUNNEL), true);
               LogEvent(L"Opening tunnel.");
@@ -777,7 +777,7 @@ void __fastcall TTerminal::Open()
                 LogEvent(L"Using FTP protocol.");
 #endif
               }
-              if ((GetSessionData()->GetFSProtocol() == fsFTP) && (GetSessionData()->GetFtps() != ftpsNone))
+              else if ((GetSessionData()->GetFSProtocol() == fsFTP) && (GetSessionData()->GetFtps() != ftpsNone))
               {
 #if defined(NO_FILEZILLA) && defined(MPEXT_NO_SSLDLL)
                 LogEvent(L"FTPS protocol is not supported by this build.");
