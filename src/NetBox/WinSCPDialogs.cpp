@@ -1696,6 +1696,7 @@ private:
   TFarCheckBox * AllowScpFallbackCheck;
   TFarText * HostNameLabel;
   TFarText * InsecureLabel;
+  TFarComboBox * FtpEncryptionCombo;
   TFarCheckBox * UpdateDirectoriesCheck;
   TFarCheckBox * CacheDirectoriesCheck;
   TFarCheckBox * CacheDirectoryChangesCheck;
@@ -1792,7 +1793,6 @@ private:
   TFarCheckBox * SshBufferSizeCheck;
   TFarCheckBox * FtpAllowEmptyPasswordCheck;
   TFarCheckBox * SslSessionReuseCheck;
-  TFarComboBox * FtpEncryptionCombo;
   TFarCheckBox * HttpCompressionCheck;
   TSessionDialog * Self;
 
@@ -1994,6 +1994,23 @@ static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsHTTP };
   InsecureLabel = new TFarText(this);
   InsecureLabel->SetCaption(GetMsg(LOGIN_INSECURE));
   InsecureLabel->MoveAt(AllowScpFallbackCheck->GetLeft(), AllowScpFallbackCheck->GetTop());
+
+  SetNextItemPosition(ipNewLine);
+
+  Text = new TFarText(this);
+  Text->SetCaption(GetMsg(LOGIN_FTP_ENCRYPTION));
+  Text->SetWidth(15);
+
+  SetNextItemPosition(ipRight);
+
+  FtpEncryptionCombo = new TFarComboBox(this);
+  FtpEncryptionCombo->SetDropDownList(true);
+  FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_USE_PLAIN_FTP));
+  FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_REQUIRE_EXPLICIT_FTP));
+  FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_REQUIRE_IMPLICIT_FTP));
+  FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_REQUIRE_EXPLICIT_TLS_FTP));
+  FtpEncryptionCombo->SetRight(CRect.Right);
+  FtpEncryptionCombo->SetWidth(30);
 
   SetNextItemPosition(ipNewLine);
 
@@ -2384,22 +2401,6 @@ static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsHTTP };
 
   SslSessionReuseCheck = new TFarCheckBox(this);
   SslSessionReuseCheck->SetCaption(GetMsg(LOGIN_FTP_SSLSESSIONREUSE));
-
-  SetNextItemPosition(ipNewLine);
-
-  Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_FTP_ENCRYPTION));
-
-  SetNextItemPosition(ipRight);
-
-  FtpEncryptionCombo = new TFarComboBox(this);
-  FtpEncryptionCombo->SetDropDownList(true);
-  FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_USE_PLAIN_FTP));
-  FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_REQUIRE_EXPLICIT_FTP));
-  FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_REQUIRE_IMPLICIT_FTP));
-  FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_REQUIRE_EXPLICIT_TLS_FTP));
-  FtpEncryptionCombo->SetWidth(35);
-  // FtpEncryptionCombo->SetRight(CRect.Right - 12 - 2);
 
   SetNextItemPosition(ipNewLine);
 
@@ -3129,6 +3130,7 @@ void __fastcall TSessionDialog::UpdateControls()
     TransferProtocolCombo->GetVisible() &&
     (IndexToFSProtocol(TransferProtocolCombo->GetItems()->GetSelected(), false) == fsSFTPonly));
   InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !SshProtocol && !FtpsProtocol && !HTTPSProtocol);
+  FtpEncryptionCombo->SetEnabled(FtpProtocol || FtpsProtocol);
   PrivateKeyEdit->SetEnabled(SshProtocol);
   HostNameLabel->SetCaption(GetMsg(LOGIN_HOST_NAME));
 
@@ -3155,7 +3157,6 @@ void __fastcall TSessionDialog::UpdateControls()
   FtpTab->SetEnabled(FtpProtocol);
   FtpAllowEmptyPasswordCheck->SetEnabled(FtpProtocol);
   SslSessionReuseCheck->SetEnabled(FtpsProtocol);
-  FtpEncryptionCombo->SetEnabled(FtpProtocol || FtpsProtocol);
 
   // SSH tab
   SshTab->SetEnabled(SshProtocol);
