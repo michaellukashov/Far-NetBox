@@ -791,7 +791,7 @@ void __fastcall TTerminal::Open()
                 LogEvent(L"Using FTPS protocol.");
 #endif
               }
-              else if (GetSessionData()->GetFSProtocol() == fsHTTP)
+              else if (GetSessionData()->GetFSProtocol() == fsWebDAV)
               {
                 FFSProtocol = cfsHTTP;
                 FFileSystem = new TWebDAVFileSystem(this);

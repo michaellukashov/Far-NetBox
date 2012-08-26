@@ -1832,7 +1832,7 @@ private:
 #define UTF_TRISTATE() \
   TRISTATE(UtfCombo, Utf, LOGIN_UTF);
 //---------------------------------------------------------------------------
-static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsHTTP };
+static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsWebDAV };
 //---------------------------------------------------------------------------
 /* __fastcall */ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum Action) :
   TTabbedDialog(AFarPlugin, tabCount),
@@ -3077,7 +3077,7 @@ void __fastcall TSessionDialog::TransferProtocolComboChange()
       PortNumberEdit->SetAsInteger(FtpsImplicitPortNumber);
     }
   }
-  else if ((GetFSProtocol() == fsHTTP) && (Ftps == ftpsNone))
+  else if ((GetFSProtocol() == fsWebDAV) && (Ftps == ftpsNone))
   {
     if ((Port == FtpPortNumber) || (Port == FtpsImplicitPortNumber) || (Port == HTTPSPortNumber))
     {
@@ -3085,7 +3085,7 @@ void __fastcall TSessionDialog::TransferProtocolComboChange()
       ::AdjustRemoteDir(HostNameEdit, RemoteDirectoryEdit, UpdateDirectoriesCheck);
     }
   }
-  else if ((GetFSProtocol() == fsHTTP) && (Ftps != ftpsNone))
+  else if ((GetFSProtocol() == fsWebDAV) && (Ftps != ftpsNone))
   {
     if ((Port == FtpPortNumber) || (Port == FtpsImplicitPortNumber) || (Port == HTTPPortNumber))
     {
@@ -3114,8 +3114,8 @@ void __fastcall TSessionDialog::UpdateControls()
   TFtps Ftps = GetFtps();
   bool InternalSshProtocol =
     (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP) || (FSProtocol == fsSCPonly);
-  bool InternalHTTPProtocol = FSProtocol == fsHTTP;
-  bool HTTPSProtocol = (FSProtocol == fsHTTP) && (Ftps != ftpsNone);
+  bool InternalHTTPProtocol = FSProtocol == fsWebDAV;
+  bool HTTPSProtocol = (FSProtocol == fsWebDAV) && (Ftps != ftpsNone);
   bool SshProtocol = InternalSshProtocol;
   bool SftpProtocol = (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP);
   bool ScpOnlyProtocol = (FSProtocol == fsSCPonly);
@@ -3649,7 +3649,7 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
       Action = saEdit;
     }
 
-    if (GetFSProtocol() == fsHTTP)
+    if (GetFSProtocol() == fsWebDAV)
     {
       ::AdjustRemoteDir(HostNameEdit, RemoteDirectoryEdit, UpdateDirectoriesCheck);
     }

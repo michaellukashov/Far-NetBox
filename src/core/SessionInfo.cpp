@@ -1089,7 +1089,7 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
        BooleanToEngStr(Data->GetPreserveDirectoryChanges()).c_str());
     ADF(L"DST mode: %d", static_cast<int>(Data->GetDSTMode()));
 
-    if (Data->GetFSProtocol() == fsHTTP)
+    if (Data->GetFSProtocol() == fsWebDAV)
     {
       ADF(L"Compression: %s",
         BooleanToEngStr(Data->GetCompression()).c_str());

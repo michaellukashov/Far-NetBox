@@ -1073,7 +1073,7 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
   }
   else if (Url.SubString(1, 5).LowerCase() == L"http:")
   {
-    AFSProtocol = fsHTTP;
+    AFSProtocol = fsWebDAV;
     AFtps = ftpsNone;
     APortNumber = HTTPPortNumber;
     Url.Delete(1, 5);
@@ -1081,7 +1081,7 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
   }
   else if (Url.SubString(1, 6).LowerCase() == L"https:")
   {
-    AFSProtocol = fsHTTP;
+    AFSProtocol = fsWebDAV;
     AFtps = ftpsImplicit;
     APortNumber = HTTPSPortNumber;
     Url.Delete(1, 6);
@@ -1882,7 +1882,7 @@ UnicodeString __fastcall TSessionData::GetSessionUrl()
         else
           Url = L"ftps://";
         break;
-      case fsHTTP:
+      case fsWebDAV:
         if (GetFtps() == ftpsNone)
           Url = L"http://";
         else
@@ -2148,7 +2148,7 @@ void __fastcall TSessionData::ParseIEProxyConfig() const
       // case fsFTP:
       // case fsFTPS:
         // break;
-      case fsHTTP:
+      case fsWebDAV:
         if ((ProxyScheme == L"http") || (ProxyScheme == L"https"))
         {
           FromURI(ProxyURI, ProxyUrl, ProxyPort, ProxyMethod);
@@ -2548,11 +2548,11 @@ TFSProtocol __fastcall TSessionData::TranslateFSProtocolNumber(int FSProtocol)
         break;
       case fsHTTP_219:
         SetFtps(ftpsNone);
-        Result = fsHTTP;
+        Result = fsWebDAV;
         break;
       case fsHTTPS_219:
         SetFtps(ftpsImplicit);
-        Result = fsHTTP;
+        Result = fsWebDAV;
         break;
     }
   }
