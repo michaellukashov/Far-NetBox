@@ -553,8 +553,8 @@ private:
   EditorInfo * FEditorInfo;
 
 public:
-  int __fastcall GetEditorID();
-  UnicodeString __fastcall GetFileName();
+  int __fastcall GetEditorID() const;
+  UnicodeString __fastcall GetFileName() const;
 };
 //---------------------------------------------------------------------------
 class TFarEnvGuard

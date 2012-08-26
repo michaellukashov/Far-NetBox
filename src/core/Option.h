@@ -21,16 +21,16 @@ public:
   UnicodeString __fastcall SwitchValue(const UnicodeString Switch, const UnicodeString Default = L"");
   bool __fastcall SwitchValue(const UnicodeString Switch, bool Default);
   bool __fastcall SwitchValue(const UnicodeString Switch, bool Default, bool DefaultOnNonExistence);
-  bool __fastcall UnusedSwitch(UnicodeString & Switch);
+  bool __fastcall UnusedSwitch(UnicodeString & Switch) const;
 
 #ifndef _MSC_VER
   __property int ParamCount = { read = FParamCount };
   __property UnicodeString Param[int Index] = { read = GetParam };
   __property bool Empty = { read = GetEmpty };
 #else
-  int __fastcall GetParamCount() { return FParamCount; }
+  int __fastcall GetParamCount() const { return FParamCount; }
   UnicodeString __fastcall GetParam(int Index);
-  bool __fastcall GetEmpty();
+  bool __fastcall GetEmpty() const;
 #endif
 
 protected:

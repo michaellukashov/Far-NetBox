@@ -52,8 +52,8 @@
   FDisablePasswordStoring(false),
   FForceBanners(false),
   FDisableAcceptingHostKeys(false),
-  FCriticalSection(NULL),
   FDefaultCollectUsage(false),
+  FCriticalSection(NULL),
   FSessionReopenAutoMaximumNumberOfRetries(0)
 {
   FCriticalSection = new TCriticalSection();

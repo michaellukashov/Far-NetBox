@@ -232,8 +232,9 @@ private:
   FFileZillaIntf(NULL),
   FQueueCriticalSection(new TCriticalSection()),
   FTransferStatusCriticalSection(new TCriticalSection()),
-  FQueueEvent(CreateEvent(NULL, true, false, NULL)),
   FQueue(new TMessageQueue()),
+  FQueueEvent(CreateEvent(NULL, true, false, NULL)),
+  FFileSystemInfoValid(false),
   FReply(0),
   FCommandReply(0),
   FLastCommand(CMD_UNKNOWN),
@@ -258,7 +259,6 @@ private:
   FFileTransferCPSLimit(0),
   FAwaitingProgress(false),
   FListAll(asOn),
-  FFileSystemInfoValid(false),
   FDoListAll(false),
   FServerCapabilities(NULL)
 {

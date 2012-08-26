@@ -103,11 +103,11 @@ public:
   void __fastcall Finish(UnicodeString FileName, bool Success,
     TOnceDoneOperation & OnceDoneOperation);
   unsigned long __fastcall LocalBlockSize();
-  bool __fastcall IsLocallyDone();
-  bool __fastcall IsTransferDone();
+  bool __fastcall IsLocallyDone() const;
+  bool __fastcall IsTransferDone() const;
   void __fastcall SetFile(UnicodeString AFileName, bool AFileInProgress = true);
   void __fastcall SetFileInProgress();
-  int __fastcall OperationProgress();
+  int __fastcall OperationProgress() const;
   unsigned long __fastcall TransferBlockSize();
   unsigned long __fastcall AdjustToCPSLimit(unsigned long Size);
   static unsigned long __fastcall StaticBlockSize();
@@ -127,14 +127,14 @@ public:
   void __fastcall Stop();
   void __fastcall Suspend();
   // whole operation
-  TDateTime __fastcall TimeElapsed();
+  TDateTime __fastcall TimeElapsed() const;
   // only current file
   TDateTime __fastcall TimeExpected();
   TDateTime __fastcall TotalTimeExpected();
   TDateTime __fastcall TotalTimeLeft();
-  int __fastcall TransferProgress();
+  int __fastcall TransferProgress() const;
   int __fastcall OverallProgress();
-  int __fastcall TotalTransferProgress();
+  int __fastcall TotalTransferProgress() const;
 };
 //---------------------------------------------------------------------------
 class TSuspendFileOperationProgress

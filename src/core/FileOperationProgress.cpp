@@ -151,14 +151,14 @@ void __fastcall TFileOperationProgressType::Resume()
   DoProgress();
 }
 //---------------------------------------------------------------------------
-int __fastcall TFileOperationProgressType::OperationProgress()
+int __fastcall TFileOperationProgressType::OperationProgress() const
 {
   assert(Count);
   int Result = (FFilesFinished * 100)/Count;
   return Result;
 }
 //---------------------------------------------------------------------------
-int __fastcall TFileOperationProgressType::TransferProgress()
+int __fastcall TFileOperationProgressType::TransferProgress() const
 {
   int Result;
   if (TransferSize)
@@ -172,7 +172,7 @@ int __fastcall TFileOperationProgressType::TransferProgress()
   return Result;
 }
 //---------------------------------------------------------------------------
-int __fastcall TFileOperationProgressType::TotalTransferProgress()
+int __fastcall TFileOperationProgressType::TotalTransferProgress() const
 {
   assert(TotalSizeSet);
   int Result = TotalSize > 0 ? static_cast<int>(((TotalTransfered + TotalSkipped) * 100) / TotalSize) : 0;
@@ -241,7 +241,7 @@ void __fastcall TFileOperationProgressType::AddLocallyUsed(__int64 ASize)
   DoProgress();
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileOperationProgressType::IsLocallyDone()
+bool __fastcall TFileOperationProgressType::IsLocallyDone() const
 {
   assert(LocallyUsed <= LocalSize);
   return (LocallyUsed == LocalSize);
@@ -396,7 +396,7 @@ unsigned long __fastcall TFileOperationProgressType::StaticBlockSize()
   return TRANSFER_BUF_SIZE;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileOperationProgressType::IsTransferDone()
+bool __fastcall TFileOperationProgressType::IsTransferDone() const
 {
   assert(TransferedSize <= TransferSize);
   return (TransferedSize == TransferSize);
@@ -414,7 +414,7 @@ void __fastcall TFileOperationProgressType::SetResumeStatus(TResumeStatus AResum
   DoProgress();
 }
 //---------------------------------------------------------------------------
-TDateTime __fastcall TFileOperationProgressType::TimeElapsed()
+TDateTime __fastcall TFileOperationProgressType::TimeElapsed() const
 {
   return Now() - StartTime;
 }

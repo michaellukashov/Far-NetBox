@@ -101,7 +101,7 @@ UnicodeString __fastcall TOptions::GetParam(int Index)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TOptions::GetEmpty()
+bool __fastcall TOptions::GetEmpty() const
 {
   return FOptions.empty();
 }
@@ -237,7 +237,7 @@ bool __fastcall TOptions::SwitchValue(const UnicodeString Switch, bool Default)
   return SwitchValue(Switch, Default, Default);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TOptions::UnusedSwitch(UnicodeString & Switch)
+bool __fastcall TOptions::UnusedSwitch(UnicodeString & Switch) const
 {
   bool Result = false;
   size_t Index = 0;

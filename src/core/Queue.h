@@ -262,8 +262,8 @@ public:
 #else
   TFileOperationProgressType * __fastcall GetProgressData();
   TQueueItem::TInfo * __fastcall GetInfo() { return FInfo; }
-  TQueueItem::TStatus __fastcall GetStatus() { return FStatus; }
-  bool __fastcall GetProcessingUserAction() { return FProcessingUserAction; }
+  TQueueItem::TStatus __fastcall GetStatus() const { return FStatus; }
+  bool __fastcall GetProcessingUserAction() const { return FProcessingUserAction; }
   int __fastcall GetIndex();
   void * __fastcall GetUserData() { return FUserData; }
   void __fastcall SetUserData(void * value) { FUserData = value; }

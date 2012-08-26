@@ -5060,7 +5060,6 @@ public:
 /* __fastcall */ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
     int Options, int CopyParamAttrs) :
   TFarDialogContainer(ADialog),
-  FOptions(Options), FCopyParamAttrs(CopyParamAttrs),
   TMTextButton(NULL),
   TMBinaryButton(NULL),
   TMAutomaticButton(NULL),
@@ -5080,7 +5079,8 @@ public:
   NegativeExcludeCombo(NULL),
   ExcludeFileMaskCombo(NULL),
   CalculateSizeCheck(NULL),
-  SpeedCombo(NULL)
+  SpeedCombo(NULL),
+  FOptions(Options), FCopyParamAttrs(CopyParamAttrs)
 {
   TFarBox * Box;
   TFarSeparator * Separator;
@@ -8552,15 +8552,15 @@ private:
   TWinSCPFileSystem * AFileSystem, bool ClosingPlugin) :
   TFarDialog(AFarPlugin),
   FStatus(NULL),
+  FFileSystem(AFileSystem),
+  FClosingPlugin(ClosingPlugin),
   QueueListBox(NULL),
   ShowButton(NULL),
   ExecuteButton(NULL),
   DeleteButton(NULL),
   MoveUpButton(NULL),
   MoveDownButton(NULL),
-  CloseButton(NULL),
-  FFileSystem(AFileSystem),
-  FClosingPlugin(ClosingPlugin)
+  CloseButton(NULL)
 {
   TFarSeparator * Separator = NULL;
   TFarText * Text = NULL;

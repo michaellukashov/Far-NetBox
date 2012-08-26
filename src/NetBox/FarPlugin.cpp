@@ -1810,8 +1810,8 @@ unsigned int TCustomFarFileSystem::FInstances = 0;
     TObject(),
     FPlugin(APlugin),
     FClosed(false),
-    FOpenPluginInfoValid(false),
-    FCriticalSection(NULL)
+    FCriticalSection(NULL),
+    FOpenPluginInfoValid(false)
 {
     memset(FPanelInfo, 0, sizeof(FPanelInfo));
 };
@@ -2979,12 +2979,12 @@ bool __fastcall TFarMenuItems::GetFlag(size_t Index, size_t Flag)
   delete FEditorInfo;
 }
 //---------------------------------------------------------------------------
-int __fastcall TFarEditorInfo::GetEditorID()
+int __fastcall TFarEditorInfo::GetEditorID() const
 {
   return FEditorInfo->EditorID;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TFarEditorInfo::GetFileName()
+UnicodeString __fastcall TFarEditorInfo::GetFileName() const
 {
   UnicodeString Result = L"";
   size_t buffLen = FarPlugin->FarEditorControl(ECTL_GETFILENAME, NULL);

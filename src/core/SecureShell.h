@@ -88,7 +88,7 @@ public:
   bool __fastcall EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
     WSANETWORKEVENTS * Events);
   void __fastcall UpdateSessionInfo();
-  bool __fastcall GetReady();
+  bool __fastcall GetReady() const;
   void __fastcall DispatchSendBuffer(int BufSize);
   void /* __fastcall */ SendBuffer(unsigned int & Result);
   unsigned int __fastcall TimeoutPrompt(TQueryParamsTimerEvent PoolEvent);
@@ -98,7 +98,7 @@ protected:
 
   void __fastcall GotHostKey();
   int __fastcall TranslatePuttyMessage(const TPuttyTranslation * Translation,
-    size_t Count, UnicodeString & Message);
+    size_t Count, UnicodeString & Message) const;
   int __fastcall TranslateAuthenticationMessage(UnicodeString & Message);
   int __fastcall TranslateErrorMessage(UnicodeString & Message);
   void __fastcall AddStdError(UnicodeString Str);
@@ -117,7 +117,7 @@ public:
   void __fastcall Close();
   void __fastcall KeepAlive();
   int __fastcall Receive(unsigned char * Buf, int Len);
-  bool __fastcall Peek(unsigned char *& Buf, int Len);
+  bool __fastcall Peek(unsigned char *& Buf, int Len) const;
   UnicodeString __fastcall ReceiveLine();
   void __fastcall Send(const unsigned char * Buf, int Len);
   void __fastcall SendStr(UnicodeString Str);
@@ -132,7 +132,7 @@ public:
   unsigned int __fastcall MinPacketSize();
   unsigned int __fastcall MaxPacketSize();
   void __fastcall ClearStdError();
-  bool __fastcall GetStoredCredentialsTried();
+  bool __fastcall GetStoredCredentialsTried() const;
 
   void __fastcall RegisterReceiveHandler(TNotifyEvent Handler);
   void __fastcall UnregisterReceiveHandler(TNotifyEvent Handler);
@@ -147,7 +147,7 @@ public:
     TStrings * Prompts, TStrings * Results);
   void __fastcall FromBackend(bool IsStdErr, const unsigned char * Data, int Length);
   void __fastcall CWrite(const char * Data, int Length);
-  const UnicodeString & __fastcall GetStdError();
+  const UnicodeString & __fastcall GetStdError() const;
   void __fastcall VerifyHostKey(UnicodeString Host, int Port,
     const UnicodeString KeyType, UnicodeString KeyStr, const UnicodeString Fingerprint);
   void __fastcall AskAlg(const UnicodeString AlgType, const UnicodeString AlgName);
@@ -164,13 +164,13 @@ public:
   __property UnicodeString UserName = { read = FUserName };
   __property bool Simple = { read = FSimple, write = FSimple };
 #else
-  bool __fastcall GetActive() { return FActive; }
+  bool __fastcall GetActive() const { return FActive; }
   TCaptureOutputEvent & GetOnCaptureOutput() { return FOnCaptureOutput; }
   void SetOnCaptureOutput(TCaptureOutputEvent value) { FOnCaptureOutput = value; }
-  TDateTime GetLastDataSent() { return FLastDataSent; }
-  UnicodeString GetLastTunnelError() { return FLastTunnelError; }
-  UnicodeString GetUserName() { return FUserName; }
-  bool GetSimple() { return FSimple; }
+  TDateTime GetLastDataSent() const { return FLastDataSent; }
+  UnicodeString GetLastTunnelError() const { return FLastTunnelError; }
+  UnicodeString GetUserName() const { return FUserName; }
+  bool GetSimple() const { return FSimple; }
   void SetSimple(bool value) { FSimple = value; }
 #endif
 private:

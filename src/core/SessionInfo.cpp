@@ -312,7 +312,7 @@ protected:
     FLog->RecordPendingActions();
   }
 
-  const wchar_t * __fastcall ActionName()
+  const wchar_t * __fastcall ActionName() const
   {
     switch (FAction)
     {

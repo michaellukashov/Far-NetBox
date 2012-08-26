@@ -113,7 +113,7 @@ struct TRect
     Right(right),
     Bottom(bottom)
   {}
-  bool operator == (const TRect & other)
+  bool operator == (const TRect & other) const
   {
     return
       Left == other.Left &&
@@ -125,7 +125,7 @@ struct TRect
   {
     return !(operator == (other));
   }
-  bool operator == (const RECT & other)
+  bool operator == (const RECT & other) const
   {
     return
       Left == other.left &&
@@ -207,7 +207,7 @@ public:
   virtual void __fastcall Insert(int Index, TObject * value);
   int IndexOf(TObject * value) const;
   virtual void __fastcall Clear();
-  bool GetOwnsObjects();
+  bool GetOwnsObjects() const;
   void SetOwnsObjects(bool value);
   virtual void __fastcall Sort(CompareFunc func);
   virtual void __fastcall Notify(void * Ptr, int Action);
@@ -228,10 +228,10 @@ class TStrings : public TPersistent
 {
 public:
   TStrings() :
+    FDuplicates(dupAccept),
     FDelimiter(L','),
     FQuoteChar(L'"'),
-    FUpdateCount(0),
-    FDuplicates(dupAccept)
+    FUpdateCount(0)
   {
   }
   virtual ~TStrings()
@@ -251,7 +251,7 @@ public:
   virtual TObject * __fastcall GetObjects(int Index);
   int __fastcall AddObject(const UnicodeString S, TObject * AObject);
   virtual void __fastcall InsertObject(int Index, const UnicodeString Key, TObject * AObject);
-  bool __fastcall Equals(TStrings * value);
+  bool __fastcall Equals(TStrings * value) const;
   virtual void __fastcall Clear() = 0;
   virtual void __fastcall PutObject(int Index, TObject * AObject);
   virtual void __fastcall PutString(int Index, const UnicodeString S);
@@ -260,14 +260,14 @@ public:
   int __fastcall IndexOf(const UnicodeString S);
   virtual int __fastcall IndexOfName(const UnicodeString Name);
   const UnicodeString __fastcall GetName(int Index);
-  UnicodeString __fastcall ExtractName(const UnicodeString S);
+  UnicodeString __fastcall ExtractName(const UnicodeString S) const;
   const UnicodeString __fastcall GetValue(const UnicodeString Name);
   void __fastcall SetValue(const UnicodeString Name, const UnicodeString Value);
   UnicodeString __fastcall GetCommaText();
   void __fastcall AddStrings(TStrings * Strings);
   void __fastcall Append(const UnicodeString value);
   virtual void __fastcall Insert(int Index, const UnicodeString AString) = 0;
-  void __fastcall SaveToStream(TStream * Stream);
+  void __fastcall SaveToStream(TStream * Stream) const;
   wchar_t __fastcall GetDelimiter() const { return FDelimiter; }
   void __fastcall SetDelimiter(wchar_t value)
   {
@@ -326,7 +326,7 @@ public:
   bool __fastcall GetSorted() const;
   void __fastcall SetSorted(bool value);
   virtual void __fastcall Sort();
-  virtual void __fastcall CustomSort(TStringListSortCompare CompareFunc);
+  virtual void __fastcall CustomSort(TStringListSortCompare ACompareFunc);
   void __fastcall QuickSort(int L, int R, TStringListSortCompare SCompare);
 
   void __fastcall LoadFromFile(const UnicodeString FileName);
@@ -448,7 +448,7 @@ public:
   virtual ~TSHFileInfo();
 
   //get the image's index in the system's image list
-  int GetFileIconIndex( UnicodeString strFileName, BOOL bSmallIcon);
+  int GetFileIconIndex( UnicodeString strFileName, BOOL bSmallIcon) const;
   int GetDirIconIndex(BOOL bSmallIcon);
 
   //get file type
@@ -553,7 +553,7 @@ public:
 protected:
   void __fastcall SetPointer(void * Ptr, __int64 Size);
   virtual void * __fastcall Realloc(__int64 & NewCapacity);
-  __int64 __fastcall GetCapacity() { return FCapacity; }
+  __int64 __fastcall GetCapacity() const { return FCapacity; }
 private:
   void __fastcall SetCapacity(__int64 NewCapacity);
 private:
@@ -606,7 +606,7 @@ public:
   bool DeleteValue(const UnicodeString value);
   bool KeyExists(const UnicodeString SubKey);
   bool ValueExists(const UnicodeString Value);
-  bool GetDataInfo(const UnicodeString ValueName, TRegDataInfo & Value);
+  bool GetDataInfo(const UnicodeString ValueName, TRegDataInfo & Value) const;
   TRegDataType GetDataType(const UnicodeString ValueName);
   int GetDataSize(const UnicodeString Name);
   bool ReadBool(const UnicodeString Name);
@@ -633,9 +633,9 @@ private:
   HKEY GetBaseKey(bool Relative);
   HKEY GetKey(const UnicodeString Key);
   void SetCurrentKey(HKEY Value) { FCurrentKey = Value; }
-  bool GetKeyInfo(TRegKeyInfo & Value);
+  bool GetKeyInfo(TRegKeyInfo & Value) const;
   int GetData(const UnicodeString Name, void * Buffer,
-              DWORD BufSize, TRegDataType & RegData);
+              DWORD BufSize, TRegDataType & RegData) const;
   void PutData(const UnicodeString Name, const void * Buffer,
                int BufSize, TRegDataType RegData);
 private:
