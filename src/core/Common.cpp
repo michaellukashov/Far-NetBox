@@ -1844,7 +1844,10 @@ DWORD __fastcall StrToVersionNumber(const UnicodeString & VersionMumberStr)
 //---------------------------------------------------------------------------
 UnicodeString __fastcall VersionNumberToStr(DWORD VersionNumber)
 {
-  UnicodeString Result;
+  DWORD Major = (VersionNumber>>16) & 0xFF;
+  DWORD Minor = (VersionNumber>>8) & 0xFF; 
+  DWORD Revision = (VersionNumber & 0xFF);
+  UnicodeString Result = FORMAT(L"%d.%d.%d", Major, Minor, Revision);
   return Result;
 }
 //---------------------------------------------------------------------------
