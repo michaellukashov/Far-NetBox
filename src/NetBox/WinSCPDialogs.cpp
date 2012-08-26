@@ -1980,15 +1980,13 @@ static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsHTTP };
 
   TransferProtocolCombo = new TFarComboBox(this);
   TransferProtocolCombo->SetDropDownList(true);
-  TransferProtocolCombo->SetWidth(16);
+  TransferProtocolCombo->SetWidth(10);
   TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_SFTP));
   TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_SCP));
 #ifndef NO_FILEZILLA
   TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_FTP));
-  TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_FTPS));
 #endif
   TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_HTTP));
-  TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_HTTPS));
 
   AllowScpFallbackCheck = new TFarCheckBox(this);
   AllowScpFallbackCheck->SetCaption(GetMsg(LOGIN_ALLOW_SCP_FALLBACK));
@@ -3049,6 +3047,7 @@ void AdjustRemoteDir(TFarEdit * HostNameEdit,
 //---------------------------------------------------------------------------
 void __fastcall TSessionDialog::TransferProtocolComboChange()
 {
+  TFtps Ftps = GetFtps();
   // note that this modifies the session for good,
   // even if user cancels the dialog
   SavePing(FSessionData);
@@ -3063,21 +3062,21 @@ void __fastcall TSessionDialog::TransferProtocolComboChange()
       PortNumberEdit->SetAsInteger(SshPortNumber);
     }
   }
-  else if ((GetFSProtocol() == fsFTP) && ((GetFtps() == ftpsNone) || (GetFtps() == ftpsExplicitSsl) || (GetFtps() == ftpsExplicitTls)))
+  else if ((GetFSProtocol() == fsFTP) && (Ftps == ftpsNone) || (Ftps == ftpsExplicitSsl) || (Ftps == ftpsExplicitTls))
   {
     if (PortNumberEdit->GetAsInteger() == SshPortNumber || PortNumberEdit->GetAsInteger() == FtpsImplicitPortNumber)
     {
       PortNumberEdit->SetAsInteger(FtpPortNumber);
     }
   }
-  else if ((GetFSProtocol() == fsFTP) && (GetFtps() == ftpsImplicit))
+  else if ((GetFSProtocol() == fsFTP) && (Ftps == ftpsImplicit))
   {
     if (PortNumberEdit->GetAsInteger() == SshPortNumber || PortNumberEdit->GetAsInteger() == HTTPPortNumber)
     {
       PortNumberEdit->SetAsInteger(FtpsImplicitPortNumber);
     }
   }
-  else if ((GetFSProtocol() == fsHTTP) && (GetFtps() == ftpsNone))
+  else if ((GetFSProtocol() == fsHTTP) && (Ftps == ftpsNone))
   {
     if (PortNumberEdit->GetAsInteger() == FtpPortNumber || PortNumberEdit->GetAsInteger() == FtpsImplicitPortNumber || PortNumberEdit->GetAsInteger() == HTTPSPortNumber)
     {
@@ -3085,7 +3084,7 @@ void __fastcall TSessionDialog::TransferProtocolComboChange()
       ::AdjustRemoteDir(HostNameEdit, RemoteDirectoryEdit, UpdateDirectoriesCheck);
     }
   }
-  else if ((GetFSProtocol() == fsHTTP) && (GetFtps() != ftpsNone))
+  else if ((GetFSProtocol() == fsHTTP) && (Ftps != ftpsNone))
   {
     if (PortNumberEdit->GetAsInteger() == HTTPPortNumber)
     {
@@ -3111,15 +3110,16 @@ void TSessionDialog::LoginTypeComboChange()
 void __fastcall TSessionDialog::UpdateControls()
 {
   TFSProtocol FSProtocol = GetFSProtocol();
+  TFtps Ftps = GetFtps();
   bool InternalSshProtocol =
     (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP) || (FSProtocol == fsSCPonly);
   bool InternalHTTPProtocol = FSProtocol == fsHTTP;
   bool SshProtocol = InternalSshProtocol;
-  bool HTTPSProtocol = (FSProtocol == fsHTTP) && (GetFtps() != ftpsNone);
+  bool HTTPSProtocol = (FSProtocol == fsHTTP) && (Ftps != ftpsNone);
   bool SftpProtocol = (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP);
   bool ScpOnlyProtocol = (FSProtocol == fsSCPonly);
-  bool FtpProtocol = (FSProtocol == fsFTP);
-  bool FtpsProtocol = (FSProtocol == fsFTP) && (GetFtps() != ftpsNone);
+  bool FtpProtocol = (FSProtocol == fsFTP) && (Ftps == ftpsNone);
+  bool FtpsProtocol = (FSProtocol == fsFTP) && (Ftps != ftpsNone);
   bool LoginAnonymous = (GetLoginType() == ltAnonymous);
 
   ConnectButton->SetEnabled(!HostNameEdit->GetIsEmpty());
