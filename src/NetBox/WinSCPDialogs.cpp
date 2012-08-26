@@ -35,14 +35,6 @@
 //---------------------------------------------------------------------------
 enum TButtonResult { brCancel = -1, brOK = 1, brConnect };
 //---------------------------------------------------------------------------
-TFtps FtpEncryptionToFtps(TFtpEncryptionSwitch value)
-{
-  return value == fesPlainFTP ? ftpsNone :
-         value == fesExplicitSSL ? ftpsExplicitSsl :
-         value == fesImplicit ? ftpsImplicit :
-         value == fesExplicitTLS ? ftpsExplicitTls : ftpsNone;
-}
-//---------------------------------------------------------------------------
 class TWinSCPDialog : public TFarDialog
 {
 public:
@@ -1675,6 +1667,7 @@ private:
   TSessionData * FSessionData;
   int FTransferProtocolIndex;
   int FLoginTypeIndex;
+  int FFtpEncryptionComboIndex;
 
   TTabButton * SshTab;
   TTabButton * AuthenticatonTab;
@@ -1696,6 +1689,7 @@ private:
   TFarCheckBox * AllowScpFallbackCheck;
   TFarText * HostNameLabel;
   TFarText * InsecureLabel;
+  TFarComboBox * FtpEncryptionCombo;
   TFarCheckBox * UpdateDirectoriesCheck;
   TFarCheckBox * CacheDirectoriesCheck;
   TFarCheckBox * CacheDirectoryChangesCheck;
@@ -1792,7 +1786,6 @@ private:
   TFarCheckBox * SshBufferSizeCheck;
   TFarCheckBox * FtpAllowEmptyPasswordCheck;
   TFarCheckBox * SslSessionReuseCheck;
-  TFarComboBox * FtpEncryptionCombo;
   TFarCheckBox * HttpCompressionCheck;
   TSessionDialog * Self;
 
@@ -1803,9 +1796,11 @@ private:
   int __fastcall ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Items);
   TProxyMethod __fastcall IndexToProxyMethod(int Index, TFarList * Items);
   TFarComboBox * __fastcall GetProxyMethodCombo();
-  TFSProtocol __fastcall IndexToFSProtocol(size_t Index, bool AllowScpFallback);
+  TFSProtocol __fastcall IndexToFSProtocol(int Index, bool AllowScpFallback);
   TFSProtocol __fastcall GetFSProtocol();
-  TLoginType __fastcall IndexToLoginType(size_t Index);
+  TFtps __fastcall IndexToFtps(int Index);
+  TFtps __fastcall GetFtps();
+  TLoginType __fastcall IndexToLoginType(int Index);
   TLoginType __fastcall GetLoginType();
   bool __fastcall VerifyKey(UnicodeString FileName, bool TypeOnly);
   void /* __fastcall */ CipherButtonClick(TFarButton * Sender, bool & Close);
@@ -1837,11 +1832,15 @@ private:
 #define UTF_TRISTATE() \
   TRISTATE(UtfCombo, Utf, LOGIN_UTF);
 //---------------------------------------------------------------------------
-static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsFTPS, fsHTTP, fsHTTPS };
+static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsWebDAV };
 //---------------------------------------------------------------------------
 /* __fastcall */ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum Action) :
   TTabbedDialog(AFarPlugin, tabCount),
-  FAction(Action)
+  FAction(Action),
+  FSessionData(NULL),
+  FTransferProtocolIndex(0),
+  FLoginTypeIndex(0),
+  FFtpEncryptionComboIndex(0)
 {
   Self = this;
   TPoint S = TPoint(67, 23);
@@ -1959,7 +1958,7 @@ static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsFTPS, fsH
   HttpTab->SetTab(tabHttp);
   HttpTab->SetBrackets(TabBrackets);
 
-  // Sesion tab
+  // Session tab
 
   SetNextItemPosition(ipNewLine);
   SetDefaultGroup(tabSession);
@@ -1978,15 +1977,13 @@ static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsFTPS, fsH
 
   TransferProtocolCombo = new TFarComboBox(this);
   TransferProtocolCombo->SetDropDownList(true);
-  TransferProtocolCombo->SetWidth(16);
+  TransferProtocolCombo->SetWidth(10);
   TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_SFTP));
   TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_SCP));
 #ifndef NO_FILEZILLA
   TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_FTP));
-  TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_FTPS));
 #endif
   TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_HTTP));
-  TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_HTTPS));
 
   AllowScpFallbackCheck = new TFarCheckBox(this);
   AllowScpFallbackCheck->SetCaption(GetMsg(LOGIN_ALLOW_SCP_FALLBACK));
@@ -1994,6 +1991,23 @@ static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsFTPS, fsH
   InsecureLabel = new TFarText(this);
   InsecureLabel->SetCaption(GetMsg(LOGIN_INSECURE));
   InsecureLabel->MoveAt(AllowScpFallbackCheck->GetLeft(), AllowScpFallbackCheck->GetTop());
+
+  SetNextItemPosition(ipNewLine);
+
+  Text = new TFarText(this);
+  Text->SetCaption(GetMsg(LOGIN_FTP_ENCRYPTION));
+  Text->SetWidth(15);
+
+  SetNextItemPosition(ipRight);
+
+  FtpEncryptionCombo = new TFarComboBox(this);
+  FtpEncryptionCombo->SetDropDownList(true);
+  FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_USE_PLAIN_FTP));
+  FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_REQUIRE_IMPLICIT_FTP));
+  FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_REQUIRE_EXPLICIT_FTP));
+  FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_REQUIRE_EXPLICIT_TLS_FTP));
+  FtpEncryptionCombo->SetRight(CRect.Right);
+  FtpEncryptionCombo->SetWidth(30);
 
   SetNextItemPosition(ipNewLine);
 
@@ -2384,22 +2398,6 @@ static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsFTPS, fsH
 
   SslSessionReuseCheck = new TFarCheckBox(this);
   SslSessionReuseCheck->SetCaption(GetMsg(LOGIN_FTP_SSLSESSIONREUSE));
-
-  SetNextItemPosition(ipNewLine);
-
-  Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_FTP_ENCRYPTION));
-
-  SetNextItemPosition(ipRight);
-
-  FtpEncryptionCombo = new TFarComboBox(this);
-  FtpEncryptionCombo->SetDropDownList(true);
-  // FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_USE_PLAIN_FTP));
-  FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_REQUIRE_EXPLICIT_FTP));
-  FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_REQUIRE_IMPLICIT_FTP));
-  FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_REQUIRE_EXPLICIT_TLS_FTP));
-  FtpEncryptionCombo->SetWidth(35);
-  // FtpEncryptionCombo->SetRight(CRect.Right - 12 - 2);
 
   SetNextItemPosition(ipNewLine);
 
@@ -2989,7 +2987,8 @@ void __fastcall TSessionDialog::Change()
 
   if (GetHandle() && !ChangesLocked())
   {
-    if (FTransferProtocolIndex != TransferProtocolCombo->GetItems()->GetSelected())
+    if ((FTransferProtocolIndex != TransferProtocolCombo->GetItems()->GetSelected()) ||
+        (FFtpEncryptionComboIndex != FtpEncryptionCombo->GetItems()->GetSelected()))
     {
       TransferProtocolComboChange();
     }
@@ -3047,47 +3046,50 @@ void AdjustRemoteDir(TFarEdit * HostNameEdit,
 //---------------------------------------------------------------------------
 void __fastcall TSessionDialog::TransferProtocolComboChange()
 {
+  TFtps Ftps = GetFtps();
   // note that this modifies the session for good,
   // even if user cancels the dialog
   SavePing(FSessionData);
 
   FTransferProtocolIndex = TransferProtocolCombo->GetItems()->GetSelected();
+  FFtpEncryptionComboIndex = FtpEncryptionCombo->GetItems()->GetSelected();
+  int Port = PortNumberEdit->GetAsInteger();
 
   LoadPing(FSessionData);
   if (GetFSProtocol() == fsSFTPonly || GetFSProtocol() == fsSCPonly)
   {
-    if (PortNumberEdit->GetAsInteger() == 21)
+    if (Port == FtpPortNumber)
     {
-      PortNumberEdit->SetAsInteger(22);
+      PortNumberEdit->SetAsInteger(SshPortNumber);
     }
   }
-  else if (GetFSProtocol() == fsFTP)
+  else if ((GetFSProtocol() == fsFTP) && ((Ftps == ftpsNone) || (Ftps == ftpsExplicitSsl) || (Ftps == ftpsExplicitTls)))
   {
-    if (PortNumberEdit->GetAsInteger() == 22 || PortNumberEdit->GetAsInteger() == 990)
+    if ((Port== SshPortNumber) || (Port == FtpsImplicitPortNumber) || (Port == HTTPPortNumber) || (Port == HTTPSPortNumber))
     {
-      PortNumberEdit->SetAsInteger(21);
+      PortNumberEdit->SetAsInteger(FtpPortNumber);
     }
   }
-  else if (GetFSProtocol() == fsFTPS)
+  else if ((GetFSProtocol() == fsFTP) && (Ftps == ftpsImplicit))
   {
-    if (PortNumberEdit->GetAsInteger() == 22 || PortNumberEdit->GetAsInteger() == 80)
+    if ((Port == SshPortNumber) || (Port == FtpPortNumber) || (Port == HTTPPortNumber) || (Port == HTTPSPortNumber))
     {
-      PortNumberEdit->SetAsInteger(990);
+      PortNumberEdit->SetAsInteger(FtpsImplicitPortNumber);
     }
   }
-  else if (GetFSProtocol() == fsHTTP)
+  else if ((GetFSProtocol() == fsWebDAV) && (Ftps == ftpsNone))
   {
-    if (PortNumberEdit->GetAsInteger() == 21 || PortNumberEdit->GetAsInteger() == 990 || PortNumberEdit->GetAsInteger() == 443)
+    if ((Port == FtpPortNumber) || (Port == FtpsImplicitPortNumber) || (Port == HTTPSPortNumber))
     {
-      PortNumberEdit->SetAsInteger(80);
+      PortNumberEdit->SetAsInteger(HTTPPortNumber);
       ::AdjustRemoteDir(HostNameEdit, RemoteDirectoryEdit, UpdateDirectoriesCheck);
     }
   }
-  else if (GetFSProtocol() == fsHTTPS)
+  else if ((GetFSProtocol() == fsWebDAV) && (Ftps != ftpsNone))
   {
-    if (PortNumberEdit->GetAsInteger() == 80)
+    if ((Port == FtpPortNumber) || (Port == FtpsImplicitPortNumber) || (Port == HTTPPortNumber))
     {
-      PortNumberEdit->SetAsInteger(443);
+      PortNumberEdit->SetAsInteger(HTTPSPortNumber);
       ::AdjustRemoteDir(HostNameEdit, RemoteDirectoryEdit, UpdateDirectoriesCheck);
     }
   }
@@ -3109,16 +3111,16 @@ void TSessionDialog::LoginTypeComboChange()
 void __fastcall TSessionDialog::UpdateControls()
 {
   TFSProtocol FSProtocol = GetFSProtocol();
+  TFtps Ftps = GetFtps();
   bool InternalSshProtocol =
     (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP) || (FSProtocol == fsSCPonly);
-  bool InternalHTTPProtocol =
-    (FSProtocol == fsHTTP) || (FSProtocol == fsHTTPS);
+  bool InternalHTTPProtocol = FSProtocol == fsWebDAV;
+  bool HTTPSProtocol = (FSProtocol == fsWebDAV) && (Ftps != ftpsNone);
   bool SshProtocol = InternalSshProtocol;
-  bool HTTPSProtocol = FSProtocol == fsHTTPS;
   bool SftpProtocol = (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP);
   bool ScpOnlyProtocol = (FSProtocol == fsSCPonly);
-  bool FtpProtocol = ((FSProtocol == fsFTP) || (FSProtocol == fsFTPS));
-  bool FtpsProtocol = (FSProtocol == fsFTPS);
+  bool FtpProtocol = (FSProtocol == fsFTP) && (Ftps == ftpsNone);
+  bool FtpsProtocol = (FSProtocol == fsFTP) && (Ftps != ftpsNone);
   bool LoginAnonymous = (GetLoginType() == ltAnonymous);
 
   ConnectButton->SetEnabled(!HostNameEdit->GetIsEmpty());
@@ -3128,6 +3130,7 @@ void __fastcall TSessionDialog::UpdateControls()
     TransferProtocolCombo->GetVisible() &&
     (IndexToFSProtocol(TransferProtocolCombo->GetItems()->GetSelected(), false) == fsSFTPonly));
   InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !SshProtocol && !FtpsProtocol && !HTTPSProtocol);
+  FtpEncryptionCombo->SetEnabled(FtpProtocol || FtpsProtocol || InternalHTTPProtocol || HTTPSProtocol);
   PrivateKeyEdit->SetEnabled(SshProtocol);
   HostNameLabel->SetCaption(GetMsg(LOGIN_HOST_NAME));
 
@@ -3151,10 +3154,9 @@ void __fastcall TSessionDialog::UpdateControls()
   SftpTab->SetEnabled(SftpProtocol);
 
   // FTP tab
-  FtpTab->SetEnabled(FtpProtocol);
-  FtpAllowEmptyPasswordCheck->SetEnabled(FtpProtocol);
+  FtpTab->SetEnabled(FtpProtocol || FtpsProtocol);
+  FtpAllowEmptyPasswordCheck->SetEnabled(FtpProtocol || FtpsProtocol);
   SslSessionReuseCheck->SetEnabled(FtpsProtocol);
-  FtpEncryptionCombo->SetEnabled(FtpsProtocol);
 
   // SSH tab
   SshTab->SetEnabled(SshProtocol);
@@ -3183,7 +3185,7 @@ void __fastcall TSessionDialog::UpdateControls()
     (FSProtocol != fsSCPonly) || CacheDirectoriesCheck->GetChecked());
   PreserveDirectoryChangesCheck->SetEnabled(
     CacheDirectoryChangesCheck->GetIsEnabled() && CacheDirectoryChangesCheck->GetChecked());
-  ResolveSymlinksCheck->SetEnabled(!FtpProtocol);
+  ResolveSymlinksCheck->SetEnabled(!FtpProtocol && !InternalHTTPProtocol);
 
   // Environment tab
   DSTModeUnixCheck->SetEnabled(!FtpProtocol);
@@ -3285,6 +3287,7 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
   FSessionData = SessionData;
   FTransferProtocolIndex = TransferProtocolCombo->GetItems()->GetSelected();
   FLoginTypeIndex = LoginTypeCombo->GetItems()->GetSelected();
+  FFtpEncryptionComboIndex = FtpEncryptionCombo->GetItems()->GetSelected();
 
   HideTabs();
   SelectTab(tabSession);
@@ -3447,23 +3450,23 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
 
   SslSessionReuseCheck->SetChecked(SessionData->GetSslSessionReuse());
 
-  TFtpEncryptionSwitch FtpEncryption = SessionData->GetFtpEncryption();
-  switch (FtpEncryption)
+  TFtps Ftps = SessionData->GetFtps();
+  switch (Ftps)
   {
-    case fesPlainFTP:
+    case ftpsNone:
       FtpEncryptionCombo->GetItems()->SetSelected(0);
       break;
 
-    case fesExplicitSSL:
-      FtpEncryptionCombo->GetItems()->SetSelected(0);
-      break;
-
-    case fesImplicit:
+    case ftpsImplicit:
       FtpEncryptionCombo->GetItems()->SetSelected(1);
       break;
 
-    case fesExplicitTLS:
+    case ftpsExplicitSsl:
       FtpEncryptionCombo->GetItems()->SetSelected(2);
+      break;
+
+    case ftpsExplicitTls:
+      FtpEncryptionCombo->GetItems()->SetSelected(3);
       break;
 
     default:
@@ -3646,7 +3649,7 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
       Action = saEdit;
     }
 
-    if ((GetFSProtocol() == fsHTTP) || (GetFSProtocol() == fsHTTPS))
+    if (GetFSProtocol() == fsWebDAV)
     {
       ::AdjustRemoteDir(HostNameEdit, RemoteDirectoryEdit, UpdateDirectoriesCheck);
     }
@@ -3765,9 +3768,9 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
 
       SessionData->SetPostLoginCommands(PostLoginCommands->GetText());
     }
-    if (GetFSProtocol() == fsFTPS)
+    if ((GetFSProtocol() == fsFTP) && (GetFtps() != ftpsNone))
     {
-      SessionData->SetFtps(FtpEncryptionToFtps(SessionData->GetFtpEncryption()));
+      SessionData->SetFtps(GetFtps());
     }
     else
     {
@@ -3777,16 +3780,19 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
     switch (FtpEncryptionCombo->GetItems()->GetSelected())
     {
       case 0:
-        SessionData->SetFtpEncryption(fesExplicitSSL);
+        SessionData->SetFtps(ftpsNone);
         break;
       case 1:
-        SessionData->SetFtpEncryption(fesImplicit);
+        SessionData->SetFtps(ftpsImplicit);
         break;
       case 2:
-        SessionData->SetFtpEncryption(fesExplicitTLS);
+        SessionData->SetFtps(ftpsExplicitSsl);
+        break;
+      case 3:
+        SessionData->SetFtps(ftpsExplicitTls);
         break;
       default:
-        SessionData->SetFtpEncryption(fesPlainFTP);
+        SessionData->SetFtps(ftpsNone);
         break;
     }
 #ifndef _MSC_VER
@@ -3816,7 +3822,7 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
     {
       SessionData->SetPingType(ptOff);
     }
-    if ((GetFSProtocol() == fsFTP) || (GetFSProtocol() == fsFTPS))
+    if (GetFSProtocol() == fsFTP)
     {
       if (PingOffButton->GetChecked())
       {
@@ -3962,7 +3968,7 @@ void __fastcall TSessionDialog::LoadPing(TSessionData * SessionData)
   TFSProtocol FSProtocol = IndexToFSProtocol(FTransferProtocolIndex,
     AllowScpFallbackCheck->GetChecked());
 
-  switch ((FSProtocol == fsFTP) || (FSProtocol == fsFTPS) ? SessionData->GetFtpPingType() : SessionData->GetPingType())
+  switch ((FSProtocol == fsFTP) ? SessionData->GetFtpPingType() : SessionData->GetPingType())
   {
     case ptOff:
       PingOffButton->SetChecked(true);
@@ -3980,8 +3986,8 @@ void __fastcall TSessionDialog::LoadPing(TSessionData * SessionData)
       break;
   }
   PingIntervalSecEdit->SetAsInteger(
-    ((GetFSProtocol() == fsFTP) || (GetFSProtocol() == fsFTPS) ?
-     SessionData->GetFtpPingInterval() : SessionData->GetPingInterval()));
+    (GetFSProtocol() == fsFTP) ?
+     SessionData->GetFtpPingInterval() : SessionData->GetPingInterval());
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionDialog::SavePing(TSessionData * SessionData)
@@ -4005,7 +4011,7 @@ void __fastcall TSessionDialog::SavePing(TSessionData * SessionData)
   }
   TFSProtocol FSProtocol = IndexToFSProtocol(FTransferProtocolIndex,
                            AllowScpFallbackCheck->GetChecked());
-  if ((FSProtocol == fsFTP) || (FSProtocol == fsFTPS))
+  if (FSProtocol == fsFTP)
   {
     SessionData->SetFtpPingType(PingType);
     SessionData->SetFtpPingInterval(PingIntervalSecEdit->GetAsInteger());
@@ -4082,12 +4088,49 @@ TFSProtocol __fastcall TSessionDialog::GetFSProtocol()
                            AllowScpFallbackCheck->GetChecked());
 }
 //---------------------------------------------------------------------------
+TFtps __fastcall TSessionDialog::IndexToFtps(int Index)
+{
+  bool InBounds = (Index != NPOS) && (Index < FtpEncryptionCombo->GetItems()->GetCount());
+  assert(InBounds);
+  TFtps Result = ftpsNone;
+  if (InBounds)
+  {
+  switch (Index)
+  {
+    case 0:
+      Result = ftpsNone;
+      break;
+
+    case 1:
+      Result = ftpsImplicit;
+      break;
+
+    case 2:
+      Result = ftpsExplicitSsl;
+      break;
+
+    case 3:
+      Result = ftpsExplicitTls;
+      break;
+
+    default:
+      break;
+  }
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+TFtps __fastcall TSessionDialog::GetFtps()
+{
+  return IndexToFtps(FtpEncryptionCombo->GetItems()->GetSelected());
+}
+//---------------------------------------------------------------------------
 TLoginType __fastcall TSessionDialog::GetLoginType()
 {
   return IndexToLoginType(LoginTypeCombo->GetItems()->GetSelected());
 }
 //---------------------------------------------------------------------------
-TFSProtocol __fastcall TSessionDialog::IndexToFSProtocol(size_t Index, bool AllowScpFallback)
+TFSProtocol __fastcall TSessionDialog::IndexToFSProtocol(int Index, bool AllowScpFallback)
 {
   bool InBounds = (Index != NPOS) && (Index < LENOF(FSOrder));
   assert(InBounds);
@@ -4103,7 +4146,7 @@ TFSProtocol __fastcall TSessionDialog::IndexToFSProtocol(size_t Index, bool Allo
   return Result;
 }
 //---------------------------------------------------------------------------
-TLoginType __fastcall TSessionDialog::IndexToLoginType(size_t Index)
+TLoginType __fastcall TSessionDialog::IndexToLoginType(int Index)
 {
   bool InBounds = (Index != NPOS) && (Index <= ltNormal);
   assert(InBounds);

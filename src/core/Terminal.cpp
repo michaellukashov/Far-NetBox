@@ -763,7 +763,7 @@ void __fastcall TTerminal::Open()
 
             if (FFileSystem == NULL)
             {
-              if (GetSessionData()->GetFSProtocol() == fsFTP)
+              if ((GetSessionData()->GetFSProtocol() == fsFTP) && (GetSessionData()->GetFtps() == ftpsNone))
               {
 #ifdef NO_FILEZILLA
                 LogEvent(L"FTP protocol is not supported by this build.");
@@ -777,7 +777,7 @@ void __fastcall TTerminal::Open()
                 LogEvent(L"Using FTP protocol.");
 #endif
               }
-              else if (GetSessionData()->GetFSProtocol() == fsFTPS)
+              if ((GetSessionData()->GetFSProtocol() == fsFTP) && (GetSessionData()->GetFtps() != ftpsNone))
               {
 #if defined(NO_FILEZILLA) && defined(MPEXT_NO_SSLDLL)
                 LogEvent(L"FTPS protocol is not supported by this build.");
@@ -791,7 +791,7 @@ void __fastcall TTerminal::Open()
                 LogEvent(L"Using FTPS protocol.");
 #endif
               }
-              else if ((GetSessionData()->GetFSProtocol() == fsHTTP) || (GetSessionData()->GetFSProtocol() == fsHTTPS))
+              else if (GetSessionData()->GetFSProtocol() == fsWebDAV)
               {
                 FFSProtocol = cfsHTTP;
                 FFileSystem = new TWebDAVFileSystem(this);

@@ -11,7 +11,7 @@
 #include "TextsCore.h"
 #include "FarUtil.h"
 //---------------------------------------------------------------------------
-static const char * CONST_XML_VERSION = "2.0";
+static const char * CONST_XML_VERSION21 = "2.1";
 static const char * CONST_ROOT_NODE = "NetBox";
 static const char * CONST_SESSION_NODE = "Session";
 static const char * CONST_VERSION_ATTR = "version";
@@ -75,7 +75,8 @@ bool TXmlStorage::LoadXml()
   if (strcmp(value, CONST_ROOT_NODE) != 0) return false;
   const char * attr = xmlRoot->Attribute(CONST_VERSION_ATTR);
   if (!attr) return false;
-  if (strcmp(attr, CONST_XML_VERSION) != 0) return false;
+  DWORD Version = StrToVersionNumber(UnicodeString(attr));
+  if (Version < MAKEVERSIONNUMBER(2,0,0)) return false;
   TiXmlElement * Element = xmlRoot->FirstChildElement(ToStdString(FStoredSessionsSubKey).c_str());
   if (Element != NULL)
   {
@@ -126,7 +127,7 @@ void TXmlStorage::SetAccessMode(TStorageAccessMode value)
       FXmlDoc->LinkEndChild(new TiXmlDeclaration("1.0", "UTF-8", ""));
       assert(FCurrentElement == NULL);
       FCurrentElement = new TiXmlElement(CONST_ROOT_NODE);
-      FCurrentElement->SetAttribute(CONST_VERSION_ATTR, CONST_XML_VERSION);
+      FCurrentElement->SetAttribute(CONST_VERSION_ATTR, CONST_XML_VERSION21);
       FXmlDoc->LinkEndChild(FCurrentElement);
       break;
   }

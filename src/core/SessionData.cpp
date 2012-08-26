@@ -19,6 +19,7 @@
 #include "TextsCore.h"
 #include "PuttyIntf.h"
 #include "RemoteFiles.h"
+#include "version.h"
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
 #pragma package(smart_init)
@@ -35,16 +36,16 @@ const TCipher DefaultCipherList[CIPHER_COUNT] =
   { cipAES, cipBlowfish, cip3DES, cipWarn, cipArcfour, cipDES };
 const TKex DefaultKexList[KEX_COUNT] =
   { kexDHGEx, kexDHGroup14, kexDHGroup1, kexRSA, kexWarn };
-const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][15] = { L"SCP", L"SFTP (SCP)", L"SFTP", L"", L"", L"FTP", L"FTPS", L"WebDAV - HTTP", L"WebDAV - HTTPS" };
+const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][11] = { L"SCP", L"SFTP (SCP)", L"SFTP", L"", L"", L"FTP", L"WebDAV" };
 const int SshPortNumber = 22;
 const int FtpPortNumber = 21;
 const int FtpsImplicitPortNumber = 990;
+const int HTTPPortNumber = 80;
+const int HTTPSPortNumber = 443;
 const int DefaultSendBuf = 262144;
 const UnicodeString AnonymousUserName(L"anonymous");
 const UnicodeString AnonymousPassword(L"anonymous@example.com");
 
-const int HTTPPortNumber = 80;
-const int HTTPSPortNumber = 443;
 const unsigned int CONST_DEFAULT_CODEPAGE = CP_ACP;
 //---------------------------------------------------------------------
 TDateTime __fastcall SecToDateTime(int Sec)
@@ -205,9 +206,9 @@ void __fastcall TSessionData::Default()
   SetCodePage(::GetCodePageAsString(CONST_DEFAULT_CODEPAGE));
   SetLoginType(ltAnonymous);
   SetFtpAllowEmptyPassword(false);
-  SetFtpEncryption(fesPlainFTP);
 
   FNumberOfRetries = 0;
+  FSessionVersion = ::StrToVersionNumber(NETBOX_VERSION_NUMBER);
   // add also to TSessionLog::AddStartupInfo()
 }
 //---------------------------------------------------------------------
@@ -327,8 +328,7 @@ void __fastcall TSessionData::NonPersistant()
   \
   PROPERTY(CodePage); \
   PROPERTY(LoginType); \
-  PROPERTY(FtpAllowEmptyPassword); \
-  PROPERTY(FtpEncryption);
+  PROPERTY(FtpAllowEmptyPassword);
 //---------------------------------------------------------------------
 void __fastcall TSessionData::Assign(TPersistent * Source)
 {
@@ -387,6 +387,7 @@ bool __fastcall TSessionData::IsSame(const TSessionData * Default, bool Advanced
 //---------------------------------------------------------------------
 void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword)
 {
+  SetSessionVersion(::StrToVersionNumber(Storage->ReadString(L"Version", ::VersionNumberToStr(GetDefaultVersion()))));
   SetPortNumber(Storage->ReadInteger(L"PortNumber", GetPortNumber()));
   SetUserName(Storage->ReadString(L"UserName", GetUserName()));
   // must be loaded after UserName, because HostName may be in format user@host
@@ -458,7 +459,7 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
   SetRekeyData(Storage->ReadString(L"RekeyBytes", GetRekeyData()));
   SetRekeyTime(Storage->ReadInteger(L"RekeyTime", GetRekeyTime()));
 
-  SetFSProtocol(static_cast<TFSProtocol>(Storage->ReadInteger(L"FSProtocol", GetFSProtocol())));
+  SetFSProtocol(TranslateFSProtocolNumber(Storage->ReadInteger(L"FSProtocol", GetFSProtocol())));
   SetLocalDirectory(Storage->ReadString(L"LocalDirectory", GetLocalDirectory()));
   SetRemoteDirectory(Storage->ReadString(L"RemoteDirectory", GetRemoteDirectory()));
   SetSynchronizeBrowsing(Storage->ReadBool(L"SynchronizeBrowsing", GetSynchronizeBrowsing()));
@@ -618,7 +619,10 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
   SetCodePage(Storage->ReadString(L"CodePage", GetCodePage()));
   SetLoginType(static_cast<TLoginType>(Storage->ReadInteger(L"LoginType", GetLoginType())));
   SetFtpAllowEmptyPassword(Storage->ReadBool(L"FtpAllowEmptyPassword", GetFtpAllowEmptyPassword()));
-  SetFtpEncryption(static_cast<TFtpEncryptionSwitch>(Storage->ReadInteger(L"FtpEncryption", GetFtpEncryption())));
+  if (GetSessionVersion() < GetVersionNumber2110())
+  {
+    SetFtps(TranslateFtpEncryptionNumber(Storage->ReadInteger(L"FtpEncryption", -1)));
+  }
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionData::Load(THierarchicalStorage * Storage)
@@ -683,6 +687,7 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
     #define WRITE_DATA_CONV(TYPE, NAME, PROPERTY) WRITE_DATA_EX(TYPE, NAME, PROPERTY, WRITE_DATA_CONV_FUNC)
     #define WRITE_DATA(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, #PROPERTY, PROPERTY, )
 
+    Storage->WriteString(L"Version", ::VersionNumberToStr(::GetCurrentVersionNumber()));
     WRITE_DATA_EX(String, L"HostName", GetHostName(), );
     WRITE_DATA_EX(Integer, L"PortNumber", GetPortNumber(), );
     WRITE_DATA_EX(Integer, L"PingInterval", GetPingInterval() / SecsPerMin, );
@@ -898,7 +903,6 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
       WRITE_DATA_EX(String, L"CodePage", GetCodePage(), );
       WRITE_DATA_EX(Integer, L"LoginType", GetLoginType(), );
       WRITE_DATA_EX(Bool, L"FtpAllowEmptyPassword", GetFtpAllowEmptyPassword(), );
-      WRITE_DATA_EX(Integer, L"FtpEncryption", GetFtpEncryption(), );
     }
 
     SavePasswords(Storage, PuttyExport);
@@ -1069,14 +1073,16 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
   }
   else if (Url.SubString(1, 5).LowerCase() == L"http:")
   {
-    AFSProtocol = fsHTTP;
+    AFSProtocol = fsWebDAV;
+    AFtps = ftpsNone;
     APortNumber = HTTPPortNumber;
     Url.Delete(1, 5);
     ProtocolDefined = true;
   }
   else if (Url.SubString(1, 6).LowerCase() == L"https:")
   {
-    AFSProtocol = fsHTTPS;
+    AFSProtocol = fsWebDAV;
+    AFtps = ftpsImplicit;
     APortNumber = HTTPSPortNumber;
     Url.Delete(1, 6);
     ProtocolDefined = true;
@@ -1871,16 +1877,16 @@ UnicodeString __fastcall TSessionData::GetSessionUrl()
         break;
 
       case fsFTP:
-        Url = L"ftp://";
+        if (GetFtps() == ftpsNone)
+          Url = L"ftp://";
+        else
+          Url = L"ftps://";
         break;
-      case fsFTPS:
-        Url = L"ftps://";
-        break;
-      case fsHTTP:
-        Url = L"http://";
-        break;
-      case fsHTTPS:
-        Url = L"https://";
+      case fsWebDAV:
+        if (GetFtps() == ftpsNone)
+          Url = L"http://";
+        else
+          Url = L"https://";
         break;
     }
 
@@ -2142,14 +2148,8 @@ void __fastcall TSessionData::ParseIEProxyConfig() const
       // case fsFTP:
       // case fsFTPS:
         // break;
-      case fsHTTP:
-        if (ProxyScheme == L"http")
-        {
-          FromURI(ProxyURI, ProxyUrl, ProxyPort, ProxyMethod);
-        }
-        break;
-      case fsHTTPS:
-        if (ProxyScheme == L"https")
+      case fsWebDAV:
+        if ((ProxyScheme == L"http") || (ProxyScheme == L"https"))
         {
           FromURI(ProxyURI, ProxyUrl, ProxyPort, ProxyMethod);
         }
@@ -2395,11 +2395,6 @@ void __fastcall TSessionData::SetFtpAllowEmptyPassword(bool value)
   SET_SESSION_PROPERTY(FtpAllowEmptyPassword);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetFtpEncryption(TFtpEncryptionSwitch value)
-{
-  SET_SESSION_PROPERTY(FtpEncryption);
-}
-//---------------------------------------------------------------------
 void __fastcall TSessionData::SetFtpForcePasvIp(TAutoSwitch value)
 {
   SET_SESSION_PROPERTY(FtpForcePasvIp);
@@ -2531,7 +2526,68 @@ void __fastcall TSessionData::RemoveProtocolPrefix(UnicodeString & hostName)
   AdjustHostName(hostName, L"http://");
   AdjustHostName(hostName, L"https://");
 }
-
+//---------------------------------------------------------------------
+TFSProtocol __fastcall TSessionData::TranslateFSProtocolNumber(int FSProtocol)
+{
+  TFSProtocol Result = static_cast<TFSProtocol>(-1);
+  if (GetSessionVersion() >= GetVersionNumber2110())
+  {
+    Result = static_cast<TFSProtocol>(FSProtocol);
+  }
+  else
+  {
+    if (FSProtocol < fsFTPS_219)
+    {
+      Result = static_cast<TFSProtocol>(FSProtocol);
+    }
+    switch (FSProtocol)
+    {
+      case fsFTPS_219:
+        SetFtps(ftpsExplicitSsl);
+        Result = fsFTP;
+        break;
+      case fsHTTP_219:
+        SetFtps(ftpsNone);
+        Result = fsWebDAV;
+        break;
+      case fsHTTPS_219:
+        SetFtps(ftpsImplicit);
+        Result = fsWebDAV;
+        break;
+    }
+  }
+  assert(Result != -1);
+  return Result;
+}
+//---------------------------------------------------------------------
+TFtps __fastcall TSessionData::TranslateFtpEncryptionNumber(int FtpEncryption)
+{
+  TFtps Result = GetFtps();
+  if ((GetSessionVersion() < GetVersionNumber2110()) &&
+      (GetFSProtocol() == fsFTP) && (GetFtps() != ftpsNone))
+  {
+    switch (FtpEncryption)
+    {
+      case fesPlainFTP:
+        Result = ftpsNone;
+        break;
+      case fesExplicitSSL:
+        Result = ftpsExplicitSsl;
+        break;
+      case fesImplicit:
+        Result = ftpsImplicit;
+        break;
+      case fesExplicitTLS:
+        Result = ftpsExplicitTls;
+        break;
+      default:
+        break;
+    }
+  }
+  assert(Result != -1);
+  return Result;
+}
+//---------------------------------------------------------------------
 //=== TStoredSessionList ----------------------------------------------
 /* __fastcall */ TStoredSessionList::TStoredSessionList(bool aReadOnly):
   TNamedObjectList(), FReadOnly(aReadOnly)

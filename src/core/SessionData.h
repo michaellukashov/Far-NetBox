@@ -17,9 +17,10 @@ enum TCipher { cipWarn, cip3DES, cipBlowfish, cipAES, cipDES, cipArcfour };
 enum TProtocol { ptRaw, ptTelnet, ptRLogin, ptSSH };
 #define PROTOCOL_COUNT (ptSSH+1)
 // explicit values to skip obsoleted fsExternalSSH, fsExternalSFTP
-enum TFSProtocol { fsSCPonly = 0, fsSFTP = 1, fsSFTPonly = 2, fsFTP = 5, fsFTPS = 6, fsHTTP = 7, fsHTTPS = 8 };
+enum TFSProtocol_219 { fsFTPS_219 = 6, fsHTTP_219 = 7, fsHTTPS_219 = 8 };
+enum TFSProtocol { fsSCPonly = 0, fsSFTP = 1, fsSFTPonly = 2, fsFTP = 5, fsWebDAV = 6 };
 enum TLoginType { ltAnonymous = 0, ltNormal = 1 };
-#define FSPROTOCOL_COUNT (fsHTTPS+1)
+#define FSPROTOCOL_COUNT (fsWebDAV+1)
 enum TProxyMethod { pmNone, pmSocks4, pmSocks5, pmHTTP, pmTelnet, pmCmd, pmSystem };
 enum TSshProt { ssh1only, ssh1, ssh2, ssh2only };
 enum TKex { kexWarn, kexDHGroup1, kexDHGroup14, kexDHGEx, kexRSA };
@@ -41,10 +42,15 @@ extern const wchar_t SshProtList[][10];
 extern const wchar_t ProxyMethodList[][10];
 extern const TCipher DefaultCipherList[CIPHER_COUNT];
 extern const TKex DefaultKexList[KEX_COUNT];
-extern const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][15];
+extern const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][11];
 extern const int DefaultSendBuf;
 extern const UnicodeString AnonymousUserName;
 extern const UnicodeString AnonymousPassword;
+extern const int SshPortNumber;
+extern const int FtpPortNumber;
+extern const int FtpsImplicitPortNumber;
+extern const int HTTPPortNumber;
+extern const int HTTPSPortNumber;
 //---------------------------------------------------------------------------
 struct TIEProxyConfig
 {
@@ -175,9 +181,9 @@ private:
   TSessionSource FSource;
   UnicodeString FCodePage;
   bool FFtpAllowEmptyPassword;
-  TFtpEncryptionSwitch FFtpEncryption;
   TLoginType FLoginType;
   int FNumberOfRetries;
+  DWORD FSessionVersion;
 
 public:
   void __fastcall SetHostName(UnicodeString value);
@@ -574,8 +580,6 @@ public:
   bool __fastcall GetFtpPasvMode() const { return FFtpPasvMode; }
   bool __fastcall GetFtpAllowEmptyPassword() const { return FFtpAllowEmptyPassword; }
   void __fastcall SetFtpAllowEmptyPassword(bool value);
-  TFtpEncryptionSwitch __fastcall GetFtpEncryption() const { return FFtpEncryption; }
-  void __fastcall SetFtpEncryption(TFtpEncryptionSwitch value);
   TAutoSwitch __fastcall GetFtpForcePasvIp() const { return FFtpForcePasvIp; }
   UnicodeString __fastcall GetFtpAccount() const { return FFtpAccount; }
   int __fastcall GetFtpPingInterval() const { return FFtpPingInterval; }
@@ -588,6 +592,12 @@ public:
 
   int __fastcall GetNumberOfRetries() const { return FNumberOfRetries; }
   void __fastcall SetNumberOfRetries(int value) { FNumberOfRetries = value; }
+  DWORD __fastcall GetSessionVersion() const { return FSessionVersion; }
+  void __fastcall SetSessionVersion(DWORD value) { FSessionVersion = value; }
+protected:
+  DWORD __fastcall GetDefaultVersion() { return ::GetVersionNumber219(); }
+  TFSProtocol __fastcall TranslateFSProtocolNumber(int FSProtocol);
+  TFtps __fastcall TranslateFtpEncryptionNumber(int FtpEncryption);
 #endif
 private:
   mutable TIEProxyConfig * FIEProxyConfig;

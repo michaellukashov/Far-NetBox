@@ -12653,7 +12653,7 @@ TWebDAVFileSystem::TWebDAVFileSystem(TTerminal * ATerminal) :
 void __fastcall TWebDAVFileSystem::Init()
 {
   FFileSystemInfo.ProtocolBaseName =
-    FTerminal->GetSessionData()->GetFSProtocol() == fsHTTP ?
+    FTerminal->GetSessionData()->GetFtps() == ftpsNone ?
     CONST_HTTP_PROTOCOL_BASE_NAME : CONST_HTTPS_PROTOCOL_BASE_NAME;
   FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
 
@@ -12681,13 +12681,13 @@ void __fastcall TWebDAVFileSystem::Open()
 
   FSessionInfo.LoginTime = Now();
   FSessionInfo.ProtocolBaseName =
-    FTerminal->GetSessionData()->GetFSProtocol() == fsHTTP ?
+    FTerminal->GetSessionData()->GetFtps() == ftpsNone ?
     CONST_HTTP_PROTOCOL_BASE_NAME : CONST_HTTPS_PROTOCOL_BASE_NAME;
   FSessionInfo.ProtocolName = FSessionInfo.ProtocolBaseName;
 
   UnicodeString HostName = Data->GetHostName();
   size_t Port = Data->GetPortNumber();
-  UnicodeString ProtocolName = FTerminal->GetSessionData()->GetFSProtocol() == fsHTTP ?
+  UnicodeString ProtocolName = FTerminal->GetSessionData()->GetFtps() == ftpsNone ?
                                L"http" : L"https";
   UnicodeString UserName = Data->GetUserName();
   UnicodeString Path = Data->GetRemoteDirectory();
@@ -13199,7 +13199,7 @@ void __fastcall TWebDAVFileSystem::AnyCommand(const UnicodeString Command,
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TWebDAVFileSystem::FileUrl(const UnicodeString FileName)
 {
-  return FTerminal->FileUrl(FTerminal->GetSessionData()->GetFSProtocol() == fsHTTP ?
+  return FTerminal->FileUrl(FTerminal->GetSessionData()->GetFtps() == ftpsNone ?
     L"http" : L"https", FileName);
 }
 //---------------------------------------------------------------------------

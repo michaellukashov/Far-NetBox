@@ -980,8 +980,8 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
     ADF(L"Code Page: %d", Data->GetCodePageAsNumber());
     wchar_t * PingTypes = L"-NC";
     TPingType PingType;
-    size_t PingInterval;
-    if ((Data->GetFSProtocol() == fsFTP) || (Data->GetFSProtocol() == fsFTPS))
+    int PingInterval;
+    if (Data->GetFSProtocol() == fsFTP)
     {
       PingType = Data->GetFtpPingType();
       PingInterval = Data->GetFtpPingInterval();
@@ -1053,7 +1053,7 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
          BooleanToEngStr(Data->GetIgnoreLsWarnings()).c_str(),
          BooleanToEngStr(Data->GetScp1Compatibility()).c_str());
     }
-    if ((Data->GetFSProtocol() == fsFTP) || (Data->GetFSProtocol() == fsFTPS))
+    if (Data->GetFSProtocol() == fsFTP)
     {
       UnicodeString Ftps;
       switch (Data->GetFtps())
@@ -1089,7 +1089,7 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
        BooleanToEngStr(Data->GetPreserveDirectoryChanges()).c_str());
     ADF(L"DST mode: %d", static_cast<int>(Data->GetDSTMode()));
 
-    if ((Data->GetFSProtocol() == fsHTTP) || (Data->GetFSProtocol() == fsHTTPS))
+    if (Data->GetFSProtocol() == fsWebDAV)
     {
       ADF(L"Compression: %s",
         BooleanToEngStr(Data->GetCompression()).c_str());
