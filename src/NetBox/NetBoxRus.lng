@@ -364,9 +364,9 @@
 "&Session ID re-use"
 "&Encryption:"
 "No encryption"
-"Explicit FTP over SSL"
-"Implicit FTP over SSL"
-"Explicit FTP over TLS"
+"SSL/TLS Implicit encryption"
+"SSL Explicit encryption"
+"TLS Explicit encryption"
 "Post login &commands:"
 
 " HTTP(S) protocol options "
