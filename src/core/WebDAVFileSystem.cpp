@@ -12681,14 +12681,13 @@ void __fastcall TWebDAVFileSystem::Open()
 
   FSessionInfo.LoginTime = Now();
   FSessionInfo.ProtocolBaseName =
-    FTerminal->GetSessionData()->GetFtps() == ftpsNone ?
+    Data->GetFtps() == ftpsNone ?
     CONST_HTTP_PROTOCOL_BASE_NAME : CONST_HTTPS_PROTOCOL_BASE_NAME;
   FSessionInfo.ProtocolName = FSessionInfo.ProtocolBaseName;
 
   UnicodeString HostName = Data->GetHostName();
   size_t Port = Data->GetPortNumber();
-  UnicodeString ProtocolName = FTerminal->GetSessionData()->GetFtps() == ftpsNone ?
-                               L"http" : L"https";
+  UnicodeString ProtocolName = Data->GetFtps() == ftpsNone ? L"http" : L"https";
   UnicodeString UserName = Data->GetUserName();
   UnicodeString Path = Data->GetRemoteDirectory();
   UnicodeString url = FORMAT(L"%s://%s:%d%s", ProtocolName.c_str(), HostName.c_str(), Port, Path.c_str());
