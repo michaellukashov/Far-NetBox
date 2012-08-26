@@ -3115,8 +3115,8 @@ void __fastcall TSessionDialog::UpdateControls()
   bool InternalSshProtocol =
     (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP) || (FSProtocol == fsSCPonly);
   bool InternalHTTPProtocol = FSProtocol == fsHTTP;
-  bool SshProtocol = InternalSshProtocol;
   bool HTTPSProtocol = (FSProtocol == fsHTTP) && (Ftps != ftpsNone);
+  bool SshProtocol = InternalSshProtocol;
   bool SftpProtocol = (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP);
   bool ScpOnlyProtocol = (FSProtocol == fsSCPonly);
   bool FtpProtocol = (FSProtocol == fsFTP) && (Ftps == ftpsNone);
@@ -3130,7 +3130,7 @@ void __fastcall TSessionDialog::UpdateControls()
     TransferProtocolCombo->GetVisible() &&
     (IndexToFSProtocol(TransferProtocolCombo->GetItems()->GetSelected(), false) == fsSFTPonly));
   InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !SshProtocol && !FtpsProtocol && !HTTPSProtocol);
-  FtpEncryptionCombo->SetEnabled(FtpProtocol || FtpsProtocol);
+  FtpEncryptionCombo->SetEnabled(FtpProtocol || FtpsProtocol || InternalHTTPProtocol || HTTPSProtocol);
   PrivateKeyEdit->SetEnabled(SshProtocol);
   HostNameLabel->SetCaption(GetMsg(LOGIN_HOST_NAME));
 
