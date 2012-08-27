@@ -1,3 +1,6 @@
+NetBox 2.1.11 ??.09.2012
+--------------------
+
 NetBox 2.1.10 27.08.2012
 --------------------
   * Bugfix: WebDAV: SOCKS5 proxy did not work
