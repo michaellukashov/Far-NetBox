@@ -99,8 +99,8 @@ protected:
   void __fastcall GotHostKey();
   int __fastcall TranslatePuttyMessage(const TPuttyTranslation * Translation,
     size_t Count, UnicodeString & Message) const;
-  int __fastcall TranslateAuthenticationMessage(UnicodeString & Message);
-  int __fastcall TranslateErrorMessage(UnicodeString & Message);
+  int __fastcall TranslateAuthenticationMessage(UnicodeString & Message) const;
+  int __fastcall TranslateErrorMessage(UnicodeString & Message) const;
   void __fastcall AddStdError(UnicodeString Str);
   void __fastcall AddStdErrorLine(const UnicodeString & Str);
   void __fastcall FatalError(Exception * E, UnicodeString Msg);

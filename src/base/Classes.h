@@ -121,7 +121,7 @@ struct TRect
       Right == other.Right &&
       Bottom == other.Bottom;
   }
-  bool operator != (const TRect & other)
+  bool operator != (const TRect & other) const
   {
     return !(operator == (other));
   }
@@ -133,7 +133,7 @@ struct TRect
       Right == other.right &&
       Bottom == other.bottom;
   }
-  bool operator != (const RECT & other)
+  bool operator != (const RECT & other) const
   {
     return !(operator == (other));
   }
@@ -259,7 +259,7 @@ public:
   void __fastcall Move(int CurIndex, int NewIndex);
   int __fastcall IndexOf(const UnicodeString S);
   virtual int __fastcall IndexOfName(const UnicodeString Name);
-  const UnicodeString __fastcall GetName(int Index);
+  const UnicodeString __fastcall GetName(int Index) const;
   UnicodeString __fastcall ExtractName(const UnicodeString S) const;
   const UnicodeString __fastcall GetValue(const UnicodeString Name);
   void __fastcall SetValue(const UnicodeString Name, const UnicodeString Value);
@@ -596,28 +596,28 @@ public:
   ~TRegistry();
   void SetAccess(int access);
   void SetRootKey(HKEY ARootKey);
-  void GetValueNames(TStrings * Names);
-  void GetKeyNames(TStrings * Names);
+  void GetValueNames(TStrings * Names) const;
+  void GetKeyNames(TStrings * Names) const;
   HKEY GetCurrentKey() const;
   HKEY GetRootKey() const;
   void CloseKey();
   bool OpenKey(const UnicodeString key, bool CanCreate);
   bool DeleteKey(const UnicodeString key);
-  bool DeleteValue(const UnicodeString value);
+  bool DeleteValue(const UnicodeString value) const;
   bool KeyExists(const UnicodeString SubKey);
-  bool ValueExists(const UnicodeString Value);
+  bool ValueExists(const UnicodeString Value) const;
   bool GetDataInfo(const UnicodeString ValueName, TRegDataInfo & Value) const;
-  TRegDataType GetDataType(const UnicodeString ValueName);
-  int GetDataSize(const UnicodeString Name);
+  TRegDataType GetDataType(const UnicodeString ValueName) const;
+  int GetDataSize(const UnicodeString Name) const;
   bool ReadBool(const UnicodeString Name);
   TDateTime ReadDateTime(const UnicodeString Name);
-  double ReadFloat(const UnicodeString Name);
-  int ReadInteger(const UnicodeString Name);
+  double ReadFloat(const UnicodeString Name) const;
+  int ReadInteger(const UnicodeString Name) const;
   __int64 ReadInt64(const UnicodeString Name);
   UnicodeString ReadString(const UnicodeString Name);
   UnicodeString ReadStringRaw(const UnicodeString Name);
   int ReadBinaryData(const UnicodeString Name,
-                     void * Buffer, int Size);
+                     void * Buffer, int Size) const;
 
   void WriteBool(const UnicodeString Name, bool Value);
   void WriteDateTime(const UnicodeString Name, TDateTime & Value);
@@ -867,7 +867,7 @@ public:
     return *NewOne;
   }
 
-  bool IsEmpty ( void )
+  bool IsEmpty() const
   {
     return ( FSet.size() == 0 );
   }

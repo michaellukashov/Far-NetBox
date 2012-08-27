@@ -179,7 +179,7 @@ int __fastcall TFileOperationProgressType::TotalTransferProgress() const
   return Result < 100 ? Result : 100;
 }
 //---------------------------------------------------------------------------
-int __fastcall TFileOperationProgressType::OverallProgress()
+int __fastcall TFileOperationProgressType::OverallProgress() const
 {
   if (TotalSizeSet)
   {

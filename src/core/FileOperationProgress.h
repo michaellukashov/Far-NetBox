@@ -133,7 +133,7 @@ public:
   TDateTime __fastcall TotalTimeExpected();
   TDateTime __fastcall TotalTimeLeft();
   int __fastcall TransferProgress() const;
-  int __fastcall OverallProgress();
+  int __fastcall OverallProgress() const;
   int __fastcall TotalTransferProgress() const;
 };
 //---------------------------------------------------------------------------

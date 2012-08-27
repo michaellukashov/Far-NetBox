@@ -1085,7 +1085,7 @@ int __fastcall TSecureShell::TranslatePuttyMessage(
   return Result;
 }
 //---------------------------------------------------------------------------
-int __fastcall TSecureShell::TranslateAuthenticationMessage(UnicodeString & Message)
+int __fastcall TSecureShell::TranslateAuthenticationMessage(UnicodeString & Message) const
 {
   static const TPuttyTranslation Translation[] = {
     { L"Using username \"%\".", AUTH_TRANSL_USERNAME },
@@ -1173,7 +1173,7 @@ void __fastcall TSecureShell::CaptureOutput(TLogLineType Type,
   FLog->Add(Type, Line);
 }
 //---------------------------------------------------------------------------
-int __fastcall TSecureShell::TranslateErrorMessage(UnicodeString & Message)
+int __fastcall TSecureShell::TranslateErrorMessage(UnicodeString & Message) const
 {
   static const TPuttyTranslation Translation[] = {
     { L"Server unexpectedly closed network connection", UNEXPECTED_CLOSE_ERROR },

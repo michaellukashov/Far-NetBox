@@ -461,7 +461,7 @@ bool __fastcall TFileMasks::Matches(const UnicodeString FileName, bool Local,
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileMasks::GetIsValid()
+bool __fastcall TFileMasks::GetIsValid() const
 {
   int Start, Length;
   return GetIsValid(Start, Length);
@@ -507,7 +507,7 @@ bool __fastcall TFileMasks::operator ==(const UnicodeString & rhs) const
   return (GetMasks() == rhs);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileMasks::ThrowError(int Start, int End)
+void __fastcall TFileMasks::ThrowError(int Start, int End) const
 {
   throw EFileMasksException(
     FMTLOAD(MASK_ERROR, GetMasks().SubString(Start, End - Start + 1).c_str()),

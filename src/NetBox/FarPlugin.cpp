@@ -2984,7 +2984,7 @@ int __fastcall TFarEditorInfo::GetEditorID() const
   return FEditorInfo->EditorID;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TFarEditorInfo::GetFileName() const
+UnicodeString __fastcall TFarEditorInfo::GetFileName()
 {
   UnicodeString Result = L"";
   size_t buffLen = FarPlugin->FarEditorControl(ECTL_GETFILENAME, NULL);
