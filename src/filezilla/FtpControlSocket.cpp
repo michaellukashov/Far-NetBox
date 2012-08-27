@@ -1099,6 +1099,7 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
 	if (numread == SOCKET_ERROR)
 	{
 		delete [] buffer;
+		buffer = NULL;
 		if (GetLastError() != WSAEWOULDBLOCK)
 		{
 			ShowStatus(IDS_STATUSMSG_DISCONNECTED, 1);
@@ -1109,6 +1110,7 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
 	if (!numread)
 	{
 		delete [] buffer;
+		buffer = NULL;
 		ShowStatus(IDS_STATUSMSG_DISCONNECTED, 1);
 		DoClose();
 	}
