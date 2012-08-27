@@ -53,8 +53,8 @@
   FForceBanners(false),
   FDisableAcceptingHostKeys(false),
   FDefaultCollectUsage(false),
-  FCriticalSection(NULL),
-  FSessionReopenAutoMaximumNumberOfRetries(0)
+  FSessionReopenAutoMaximumNumberOfRetries(0),
+  FCriticalSection(NULL)
 {
   FCriticalSection = new TCriticalSection();
   FUpdating = 0;

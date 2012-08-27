@@ -420,7 +420,10 @@ LONG_PTR WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1
 
   if ((Msg == DN_CLOSE) && Result)
   {
-    Dialog->FHandle = 0;
+    if (Dialog != NULL)
+    {
+        Dialog->FHandle = 0;
+    }
     Dialogs.erase(Handle);
   }
   return Result;

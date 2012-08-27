@@ -745,7 +745,10 @@ TTerminalQueueStatus * __fastcall TTerminalQueue::CreateStatus(TTerminalQueueSta
 
         if (ItemProxy != NULL)
         {
-          Current->Delete(ItemProxy);
+          if (Current != NULL)
+          {
+            Current->Delete(ItemProxy);
+          }
           Status->Add(ItemProxy);
           ItemProxy->Update();
         }

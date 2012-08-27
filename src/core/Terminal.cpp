@@ -145,7 +145,7 @@ TOverwriteFileParams::TOverwriteFileParams()
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TSynchronizeChecklist::TItem::TItem() :
-  Action(saNone), IsDirectory(false), RemoteFile(NULL), Checked(true), ImageIndex(-1)
+  Action(saNone), IsDirectory(false), ImageIndex(-1), Checked(true), RemoteFile(NULL)
 {
   Local.ModificationFmt = mfFull;
   Local.Modification = 0;
@@ -434,8 +434,8 @@ private:
 };
 //---------------------------------------------------------------------------
 /* __fastcall */ TCallbackGuard::TCallbackGuard(TTerminal * Terminal) :
-  FTerminal(Terminal),
   FFatalError(NULL),
+  FTerminal(Terminal),
   FGuarding(FTerminal->FCallbackGuard == NULL)
 {
   if (FGuarding)
@@ -5495,9 +5495,9 @@ BOOL __fastcall TTerminal::CreateLocalDirectory(const UnicodeString & LocalDirNa
 //---------------------------------------------------------------------------
 /* __fastcall */ TSecondaryTerminal::TSecondaryTerminal(TTerminal * MainTerminal) :
   TTerminal(),
-  FMainTerminal(MainTerminal),
   FMasterPasswordTried(false),
-  FMasterTunnelPasswordTried(false)
+  FMasterTunnelPasswordTried(false),
+  FMainTerminal(MainTerminal)
 {
 }
 
