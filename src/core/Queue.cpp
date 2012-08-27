@@ -489,10 +489,10 @@ void __fastcall TSignalThread::Terminate()
 /* __fastcall */ TTerminalQueue::TTerminalQueue(TTerminal * Terminal,
   TConfiguration * Configuration) :
   TSignalThread(),
-  FTerminal(Terminal), FConfiguration(Configuration), FTransfersLimit(2), FEnabled(true),
-  FSessionData(NULL), FItems(NULL), FItemsInProcess(0), FItemsSection(NULL),
-  FFreeTerminals(0), FTerminals(NULL), FForcedItems(NULL),
-  FTemporaryTerminals(0), FOverallTerminals(0)
+  FTerminal(Terminal), FConfiguration(Configuration), FSessionData(NULL),
+  FItems(NULL), FItemsInProcess(0), FItemsSection(NULL),
+  FFreeTerminals(0), FTerminals(NULL), FForcedItems(NULL), FTemporaryTerminals(0),
+  FOverallTerminals(0), FTransfersLimit(2), FEnabled(true)
 {
   Self = this;
 #ifndef _MSC_VER
