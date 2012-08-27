@@ -1547,7 +1547,7 @@ void __fastcall TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
               // (Not sure, if it causes remote side to terminate scp)
               Self->FSecureShell->SendLine(L"E");
               Self->SCPResponse();
-            };
+            }
             /* TODO 1 : Show stderror to user? */
             Self->FSecureShell->ClearStdError();
 
@@ -1737,7 +1737,7 @@ void __fastcall TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
             // (Not sure, if it causes remote side to terminate scp)
             FSecureShell->SendLine(L"E");
             SCPResponse();
-          };
+          }
           /* TODO 1 : Show stderror to user? */
           FSecureShell->ClearStdError();
 
@@ -2155,7 +2155,7 @@ void __fastcall TSCPFileSystem::SCPDirectorySource(const UnicodeString Directory
         FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
           FindOK = (FindNext(SearchRec) == 0);
         );
-      };
+      }
     }
 #ifndef _MSC_VER
     __finally

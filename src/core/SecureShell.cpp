@@ -838,7 +838,7 @@ Integer __fastcall TSecureShell::Receive(unsigned char * Buf, Integer Len)
       OutPtr = NULL;
     }
 #endif
-  };
+  }
   if (Configuration->GetActualLogProtocol() >= 1)
   {
     LogEvent(FORMAT(L"Read %u bytes (%d pending)",

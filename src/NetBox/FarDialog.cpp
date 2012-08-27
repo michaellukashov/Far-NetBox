@@ -577,7 +577,7 @@ intptr_t __fastcall TFarDialog::DialogProc(int Msg, int Param1, intptr_t Param2)
         case DN_ENTERIDLE:
           Idle();
           break;
-      };
+      }
 
       if (!Handled)
       {

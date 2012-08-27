@@ -1597,7 +1597,7 @@ void __fastcall TFTPFileSystem::DirectorySource(const UnicodeString DirectoryNam
       FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
         FindOK = (FindNext(SearchRec) == 0);
       );
-    };
+    }
   }
 #ifndef _MSC_VER
   __finally
@@ -2878,7 +2878,7 @@ void __fastcall TFTPFileSystem::HandleReplyStatus(UnicodeString Response)
       if (FLastCode == 530)
       {
         FPasswordFailed = true;
-      };
+      }
     }
     else if (FLastCommand == SYST)
     {

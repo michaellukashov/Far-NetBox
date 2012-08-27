@@ -3884,7 +3884,7 @@ void __fastcall TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
           if (!FTerminal->HandleException(&E))
           {
             throw;
-          };
+          }
         );
       }
     }
@@ -4975,7 +4975,7 @@ void __fastcall TSFTPFileSystem::SFTPDirectorySource(const UnicodeString Directo
       FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
         FindOK = (FindNext(SearchRec) == 0);
       );
-    };
+    }
   }
 #ifndef _MSC_VER
   __finally
@@ -5554,7 +5554,7 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
             {
               Abort();
             }
-          };
+          }
 
           if (GapCount > 0)
           {

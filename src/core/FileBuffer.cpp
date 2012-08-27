@@ -258,4 +258,4 @@ __int64 __fastcall TSafeHandleStream::Write(const void * Buffer, __int64 Count)
     RaiseLastOSError();
   }
   return Result;
-};
+}

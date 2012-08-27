@@ -2552,12 +2552,12 @@ TRemoteProperties __fastcall TRemoteProperties::CommonProperties(TStrings * File
       {
         CommonProperties.Owner.Clear();
         CommonProperties.Valid >> vpOwner;
-      };
+      }
       if (CommonProperties.Group != File->GetGroup())
       {
         CommonProperties.Group.Clear();
         CommonProperties.Valid >> vpGroup;
-      };
+      }
     }
   }
   return CommonProperties;

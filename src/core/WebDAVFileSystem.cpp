@@ -13548,7 +13548,7 @@ void __fastcall TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString Dir
       FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
         FindOK = (::FindNextFile(findHandle, &SearchRec) != 0);
       );
-    };
+    }
   }
 #ifndef _MSC_VER
   __finally

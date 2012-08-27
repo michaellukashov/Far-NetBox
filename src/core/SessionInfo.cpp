@@ -412,14 +412,14 @@ void __fastcall TSessionAction::Cancel()
 /* __fastcall */ TFileSessionAction::TFileSessionAction(TActionLog * Log, TLogAction Action) :
   TSessionAction(Log, Action)
 {
-};
+}
 //---------------------------------------------------------------------------
 /* __fastcall */ TFileSessionAction::TFileSessionAction(
     TActionLog * Log, TLogAction Action, const UnicodeString & AFileName) :
   TSessionAction(Log, Action)
 {
   FileName(AFileName);
-};
+}
 //---------------------------------------------------------------------------
 void __fastcall TFileSessionAction::FileName(const UnicodeString & FileName)
 {
@@ -434,13 +434,13 @@ void __fastcall TFileSessionAction::FileName(const UnicodeString & FileName)
     TActionLog * Log, TLogAction Action) :
   TFileSessionAction(Log, Action)
 {
-};
+}
 //---------------------------------------------------------------------------
 /* __fastcall */ TFileLocationSessionAction::TFileLocationSessionAction(
     TActionLog * Log, TLogAction Action, const UnicodeString & FileName) :
   TFileSessionAction(Log, Action, FileName)
 {
-};
+}
 //---------------------------------------------------------------------------
 void __fastcall TFileLocationSessionAction::Destination(const UnicodeString & Destination)
 {
@@ -454,13 +454,13 @@ void __fastcall TFileLocationSessionAction::Destination(const UnicodeString & De
 /* __fastcall */ TUploadSessionAction::TUploadSessionAction(TActionLog * Log) :
   TFileLocationSessionAction(Log, laUpload)
 {
-};
+}
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 /* __fastcall */ TDownloadSessionAction::TDownloadSessionAction(TActionLog * Log) :
   TFileLocationSessionAction(Log, laDownload)
 {
-};
+}
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 /* __fastcall */ TChmodSessionAction::TChmodSessionAction(

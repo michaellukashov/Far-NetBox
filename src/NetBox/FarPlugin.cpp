@@ -1814,7 +1814,7 @@ unsigned int TCustomFarFileSystem::FInstances = 0;
     FOpenPluginInfoValid(false)
 {
     memset(FPanelInfo, 0, sizeof(FPanelInfo));
-};
+}
 
 void __fastcall TCustomFarFileSystem::Init()
 {
@@ -2994,7 +2994,7 @@ UnicodeString __fastcall TFarEditorInfo::GetFileName()
     FarPlugin->FarEditorControl(ECTL_GETFILENAME, (wchar_t *)Result.c_str());
   }
   return Result.c_str();
-};
+}
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 /* __fastcall */ TFarEnvGuard::TFarEnvGuard()

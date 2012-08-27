@@ -376,7 +376,7 @@ void TStrings::SetTextStr(const UnicodeString Text)
       Add(S);
       if (*P == 0x0D) { P++; }
       if (*P == 0x0A) { P++; }
-    };
+    }
   }
 }
 
@@ -502,13 +502,13 @@ UnicodeString TStrings::GetTextStr()
     {
       memmove(P, S.c_str(), L);
       P += S.Length();
-    };
+    }
     L = LB.Length() * sizeof(wchar_t);
     if (L != 0)
     {
       memmove(P, LB.c_str(), L);
       P += LB.Length();
-    };
+    }
   }
   return Result;
 }

@@ -633,7 +633,7 @@ void __fastcall TSessionData::Load(THierarchicalStorage * Storage)
     DoLoad(Storage, RewritePassword);
 
     Storage->CloseSubKey();
-  };
+  }
 
   if (RewritePassword)
   {

@@ -8346,7 +8346,7 @@ void /* __fastcall */ TSynchronizeDialog::StartButtonClick(TFarButton * /*Sender
       case qaCancel:
         Continue = false;
         break;
-    };
+    }
   }
   else
   {
