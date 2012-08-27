@@ -70,7 +70,7 @@ BOOL CApiLog::InitLog(HWND hTargetWnd, int nLogMessage)
 
 void CApiLog::LogMessage(int nMessageType, LPCTSTR pMsgFormat, ...) const
 {
-	ASSERT(nMessageType>=0 || nMessageType<=8);
+	ASSERT(nMessageType>=0 && nMessageType<=8);
 	ASSERT(m_hTargetWnd || m_pApiLogParent);
 	if (nMessageType>=FZ_LOG_APIERROR && (nMessageType-FZ_LOG_APIERROR)>=m_pApiLogParent->m_nDebugLevel)
 		return;
@@ -91,7 +91,7 @@ void CApiLog::LogMessage(int nMessageType, LPCTSTR pMsgFormat, ...) const
 
 void CApiLog::LogMessageRaw(int nMessageType, LPCTSTR pMsg) const
 {
-	ASSERT(nMessageType>=0 || nMessageType<=8);
+	ASSERT(nMessageType>=0 && nMessageType<=8);
 	ASSERT(m_hTargetWnd || m_pApiLogParent);
 	if (nMessageType>=FZ_LOG_APIERROR && (nMessageType-FZ_LOG_APIERROR)>=m_pApiLogParent->m_nDebugLevel)
 		return;
@@ -105,7 +105,7 @@ void CApiLog::LogMessageRaw(int nMessageType, LPCTSTR pMsg) const
 
 void CApiLog::LogMessage(int nMessageType, UINT nFormatID, ...) const
 {
-	ASSERT(nMessageType>=0 || nMessageType<=8);
+	ASSERT(nMessageType>=0 && nMessageType<=8);
 	ASSERT(m_hTargetWnd || m_pApiLogParent);
 	if (nMessageType>=FZ_LOG_APIERROR && (nMessageType-FZ_LOG_APIERROR)>=m_pApiLogParent->m_nDebugLevel)
 		return;
@@ -129,7 +129,7 @@ void CApiLog::LogMessage(int nMessageType, UINT nFormatID, ...) const
 
 void CApiLog::LogMessage(CString SourceFile, int nSourceLine, void *pInstance, int nMessageType, LPCTSTR pMsgFormat, ...) const
 {
-	ASSERT(nMessageType>=4 || nMessageType<=8);
+	ASSERT(nMessageType>=4 && nMessageType<=8);
 	ASSERT(m_hTargetWnd || m_pApiLogParent);
 	ASSERT(nSourceLine>0);
 
@@ -165,7 +165,7 @@ BOOL CApiLog::PostMessage(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) con
 
 void CApiLog::LogMessageRaw(CString SourceFile, int nSourceLine, void *pInstance, int nMessageType, LPCTSTR pMsg) const
 {
-	ASSERT(nMessageType>=4 || nMessageType<=8);
+	ASSERT(nMessageType>=4 && nMessageType<=8);
 	ASSERT(m_hTargetWnd || m_pApiLogParent);
 	ASSERT(nSourceLine>0);
 
