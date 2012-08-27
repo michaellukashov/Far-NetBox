@@ -195,7 +195,7 @@ protected:
   bool __fastcall PasswordDialog(TSessionData * SessionData,
     TPromptKind Kind, const UnicodeString Name, const UnicodeString Instructions, TStrings * Prompts,
     TStrings * Results, bool StoredCredentialsTried);
-  bool __fastcall BannerDialog(const UnicodeString SessionName, const UnicodeString Banner,
+  bool __fastcall BannerDialog(const UnicodeString SessionName, const UnicodeString & Banner,
     bool & NeverShowAgain, int Options);
   bool __fastcall CreateDirectoryDialog(UnicodeString & Directory,
     TRemoteProperties * Properties, bool & SaveSettings);
@@ -314,7 +314,7 @@ private:
     TStrings * Prompts, TStrings * Results, bool & Result,
     void * Arg);
   void /* __fastcall */ TerminalDisplayBanner(TTerminal * Terminal,
-    UnicodeString SessionName, UnicodeString Banner, bool & NeverShowAgain,
+    UnicodeString SessionName, const UnicodeString & Banner, bool & NeverShowAgain,
     int Options);
   void /* __fastcall */ TerminalShowExtendedException(TTerminal * Terminal,
     Exception * E, void * Arg);

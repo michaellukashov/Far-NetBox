@@ -130,3 +130,4 @@ int __fastcall TNamedObjectList::GetCount()
 {
   return TObjectList::GetCount() - GetHiddenCount();
 }
+

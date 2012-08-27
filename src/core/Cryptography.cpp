@@ -636,3 +636,4 @@ int __fastcall IsValidPassword(UnicodeString Password)
     return (Password.Length() >= 6) && ((A + B + C + D) >= 2);
   }
 }
+

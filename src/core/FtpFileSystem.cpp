@@ -3219,7 +3219,7 @@ UnicodeString __fastcall FormatContact(const TFtpsCertificateData::TContact & Co
   UnicodeString Result =
     FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 1).c_str(),
       FormatContactList(FormatContactList(FormatContactList(
-       Contact.Organization, Contact.Unit).c_str(), Contact.CommonName).c_str(), Contact.Mail).c_str());
+        Contact.Organization, Contact.Unit).c_str(), Contact.CommonName).c_str(), Contact.Mail).c_str());
 
   if ((wcslen(Contact.Country) > 0) ||
       (wcslen(Contact.StateProvince) > 0) ||

@@ -666,13 +666,13 @@ TLogLineType __fastcall TSessionLog::GetType(int Index)
   return static_cast<TLogLineType>(reinterpret_cast<size_t>(GetObjects(Index - FTopIndex)));
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TSessionLog::DoAddToParent(TLogLineType Type, UnicodeString Line)
+void /* __fastcall */ TSessionLog::DoAddToParent(TLogLineType Type, const UnicodeString & Line)
 {
   assert(FParent != NULL);
   FParent->Add(Type, Line);
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TSessionLog::DoAddToSelf(TLogLineType Type, UnicodeString Line)
+void /* __fastcall */ TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString & Line)
 {
   if (static_cast<int>(FTopIndex) < 0)
   {

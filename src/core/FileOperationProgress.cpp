@@ -202,6 +202,7 @@ void __fastcall TFileOperationProgressType::Finish(UnicodeString FileName,
   bool Success, TOnceDoneOperation & OnceDoneOperation)
 {
   assert(InProgress);
+
   FOnFinished(Operation, Side, Temp, FileName,
     // TODO : There wasn't 'Success' condition, was it by mistake or by purpose?
     Success && (Cancel == csContinue), OnceDoneOperation);

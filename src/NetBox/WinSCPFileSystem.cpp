@@ -3656,7 +3656,7 @@ void /* __fastcall */ TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal
 //---------------------------------------------------------------------------
 void /* __fastcall */ TWinSCPFileSystem::TerminalDisplayBanner(
   TTerminal * /*Terminal*/, UnicodeString SessionName,
-  UnicodeString Banner, bool & NeverShowAgain, int Options)
+  const UnicodeString & Banner, bool & NeverShowAgain, int Options)
 {
   BannerDialog(SessionName, Banner, NeverShowAgain, Options);
 }

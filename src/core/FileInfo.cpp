@@ -286,3 +286,4 @@ int __fastcall CalculateCompoundVersion(int MajorVer,
     100 * MajorVer));
   return CompoundVer;
 }
+

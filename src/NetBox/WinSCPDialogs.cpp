@@ -1583,7 +1583,7 @@ bool __fastcall TWinSCPFileSystem::PasswordDialog(TSessionData * SessionData,
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 bool __fastcall TWinSCPFileSystem::BannerDialog(const UnicodeString SessionName,
-  const UnicodeString Banner, bool & NeverShowAgain, int Options)
+  const UnicodeString & Banner, bool & NeverShowAgain, int Options)
 {
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(FPlugin);

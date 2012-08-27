@@ -1333,3 +1333,4 @@ bool __fastcall TShortCuts::Has(TShortCut ShortCut) const
 {
   return (FShortCuts.count(ShortCut) != 0);
 }
+

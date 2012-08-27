@@ -684,7 +684,7 @@ void __fastcall TSecureShell::RegisterReceiveHandler(TNotifyEvent Handler)
 //---------------------------------------------------------------------------
 void __fastcall TSecureShell::UnregisterReceiveHandler(TNotifyEvent Handler)
 {
-  assert(!FOnReceive.empty());
+  assert(FOnReceive == Handler);
   USEDPARAM(Handler);
   FOnReceive = NULL;
 }

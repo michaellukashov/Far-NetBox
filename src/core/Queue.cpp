@@ -2538,7 +2538,7 @@ void /* __fastcall */ TTerminalThread::TerminalShowExtendedException(
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminalThread::TerminalDisplayBanner(TTerminal * Terminal,
-  UnicodeString SessionName, UnicodeString Banner,
+  UnicodeString SessionName, const UnicodeString & Banner,
   bool & NeverShowAgain, int Options)
 {
   TDisplayBannerAction Action(FOnDisplayBanner);
