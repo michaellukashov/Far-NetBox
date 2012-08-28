@@ -3,6 +3,8 @@
 #pragma warning(push)
 #pragma warning(disable: 4512) // assignment operator could not be generated
 
+#include "..\filezilla\stdafx.cpp"
+#include "..\filezilla\afxdll.cpp"
 #include "..\filezilla\FileZillaIntf.cpp"
 #include "..\filezilla\FileZillaIntern.cpp"
 #include "..\filezilla\ApiLog.cpp"
@@ -23,7 +25,6 @@
 #include "..\filezilla\structures.cpp"
 #include "..\filezilla\MFC64bitFix.cpp"
 #include "..\filezilla\Options.cpp"
-#include "..\filezilla\afxdll.cpp"
 #include "..\filezilla\misc\Fzutf8.cpp"
 #include "..\filezilla\misc\CBase64Coding.cpp"
 
