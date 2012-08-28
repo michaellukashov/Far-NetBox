@@ -1689,6 +1689,7 @@ private:
   TFarCheckBox * AllowScpFallbackCheck;
   TFarText * HostNameLabel;
   TFarText * InsecureLabel;
+  TFarText * FtpEncryptionLabel;
   TFarComboBox * FtpEncryptionCombo;
   TFarCheckBox * UpdateDirectoriesCheck;
   TFarCheckBox * CacheDirectoriesCheck;
@@ -1994,9 +1995,9 @@ static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsWebDAV };
 
   SetNextItemPosition(ipNewLine);
 
-  Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_FTP_ENCRYPTION));
-  Text->SetWidth(15);
+  FtpEncryptionLabel = new TFarText(this);
+  FtpEncryptionLabel->SetCaption(GetMsg(LOGIN_FTP_ENCRYPTION));
+  FtpEncryptionLabel->SetWidth(15);
 
   SetNextItemPosition(ipRight);
 
@@ -3130,6 +3131,8 @@ void __fastcall TSessionDialog::UpdateControls()
     TransferProtocolCombo->GetVisible() &&
     (IndexToFSProtocol(TransferProtocolCombo->GetItems()->GetSelected(), false) == fsSFTPonly));
   InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !SshProtocol && !FtpsProtocol && !HTTPSProtocol);
+  FtpEncryptionLabel->SetVisible(FtpProtocol || FtpsProtocol || InternalHTTPProtocol || HTTPSProtocol);
+  FtpEncryptionCombo->SetVisible(FtpProtocol || FtpsProtocol || InternalHTTPProtocol || HTTPSProtocol);
   FtpEncryptionCombo->SetEnabled(FtpProtocol || FtpsProtocol || InternalHTTPProtocol || HTTPSProtocol);
   PrivateKeyEdit->SetEnabled(SshProtocol);
   HostNameLabel->SetCaption(GetMsg(LOGIN_HOST_NAME));
