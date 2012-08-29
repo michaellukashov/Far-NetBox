@@ -58,14 +58,14 @@ public:
 #ifndef _MSC_VER
   __property TRect Bounds = { read = FBounds, write = SetBounds };
   __property TRect ClientRect = { read = GetClientRect };
-  __property AnsiString HelpTopic = { read = FHelpTopic, write = SetHelpTopic };
+  __property UnicodeString HelpTopic = { read = FHelpTopic, write = SetHelpTopic };
   __property unsigned int Flags = { read = FFlags, write = SetFlags };
   __property bool Centered = { read = GetCentered, write = SetCentered };
   __property TPoint Size = { read = GetSize, write = SetSize };
   __property TPoint ClientSize = { read = GetClientSize };
   __property int Width = { read = GetWidth, write = SetWidth };
   __property int Height = { read = GetHeight, write = SetHeight };
-  __property AnsiString Caption = { read = GetCaption, write = SetCaption };
+  __property UnicodeString Caption = { read = GetCaption, write = SetCaption };
   __property HANDLE Handle = { read = FHandle };
   __property TFarButton * DefaultButton = { read = FDefaultButton };
   __property TFarBox * BorderBox = { read = FBorderBox };
@@ -321,7 +321,7 @@ protected:
 #ifndef _MSC_VER
   __property FarDialogItem * DialogItem = { read = GetDialogItem };
   __property bool CenterGroup = { read = GetFlag, write = SetFlag, index = DIF_CENTERGROUP };
-  __property AnsiString Data = { read = GetData, write = SetData };
+  __property UnicodeString Data = { read = GetData, write = SetData };
   __property int Type = { read = GetType, write = SetType };
   __property int Item = { read = FItem };
   __property int Selected = { read = GetSelected, write = SetSelected };
@@ -422,7 +422,7 @@ public:
   explicit /* __fastcall */ TFarBox(TFarDialog * ADialog);
 
 #ifndef _MSC_VER
-  __property AnsiString Caption = { read = Data, write = Data };
+  __property UnicodeString Caption = { read = Data, write = Data };
   __property bool Double = { read = GetAlterType, write = SetAlterType, index = DI_DOUBLEBOX };
 #else
   virtual UnicodeString GetCaption() { return GetData(); }
@@ -445,7 +445,7 @@ public:
   explicit /* __fastcall */ TFarButton(TFarDialog * ADialog);
 
 #ifndef _MSC_VER
-  __property AnsiString Caption = { read = Data, write = Data };
+  __property UnicodeString Caption = { read = Data, write = Data };
   __property int Result = { read = FResult, write = FResult };
   __property bool Default = { read = GetDefault, write = SetDefault };
   __property TFarButtonBrackets Brackets = { read = FBrackets, write = SetBrackets };
@@ -494,7 +494,7 @@ public:
   explicit /* __fastcall */ TFarCheckBox(TFarDialog * ADialog);
 
 #ifndef _MSC_VER
-  __property AnsiString Caption = { read = Data, write = Data };
+  __property UnicodeString Caption = { read = Data, write = Data };
   __property bool AllowGrayed = { read = GetFlag, write = SetFlag, index = DIF_3STATE };
   __property TFarAllowChangeEvent OnAllowChange = { read = FOnAllowChange, write = FOnAllowChange };
   __property Checked;
@@ -526,7 +526,7 @@ public:
 
 #ifndef _MSC_VER
   __property Checked;
-  __property AnsiString Caption = { read = Data, write = Data };
+  __property UnicodeString Caption = { read = Data, write = Data };
   __property TFarAllowChangeEvent OnAllowChange = { read = FOnAllowChange, write = FOnAllowChange };
 #else
   bool GetChecked() { return TFarDialogItem::GetChecked(); }
@@ -550,12 +550,12 @@ public:
   explicit /* __fastcall */ TFarEdit(TFarDialog * ADialog);
 
 #ifndef _MSC_VER
-  __property AnsiString Text = { read = Data, write = Data };
+  __property UnicodeString Text = { read = Data, write = Data };
   __property int AsInteger = { read = GetAsInteger, write = SetAsInteger };
   __property bool Password = { read = GetAlterType, write = SetAlterType, index = DI_PSWEDIT };
   __property bool Fixed = { read = GetAlterType, write = SetAlterType, index = DI_FIXEDIT };
-  __property AnsiString Mask = { read = GetHistoryMask, write = SetHistoryMask, index = 1 };
-  __property AnsiString History = { read = GetHistoryMask, write = SetHistoryMask, index = 0 };
+  __property UnicodeString Mask = { read = GetHistoryMask, write = SetHistoryMask, index = 1 };
+  __property UnicodeString History = { read = GetHistoryMask, write = SetHistoryMask, index = 0 };
   __property bool ExpandEnvVars = { read = GetFlag, write = SetFlag, index = DIF_EDITEXPAND };
   __property bool AutoSelect = { read = GetFlag, write = SetFlag, index = DIF_SELECTONENTRY };
   __property bool ReadOnly = { read = GetFlag, write = SetFlag, index = DIF_READONLY };
@@ -599,7 +599,7 @@ public:
 
 #ifndef _MSC_VER
   __property bool Double = { read = GetDouble, write = SetDouble };
-  __property AnsiString Caption = { read = Data, write = Data };
+  __property UnicodeString Caption = { read = Data, write = Data };
   __property int Position = { read = GetPosition, write = SetPosition };
 #else
   virtual UnicodeString GetCaption() { return GetData(); }
@@ -622,7 +622,7 @@ public:
   explicit  /* __fastcall */ TFarText(TFarDialog * ADialog);
 
 #ifndef _MSC_VER
-  __property AnsiString Caption = { read = Data, write = Data };
+  __property UnicodeString Caption = { read = Data, write = Data };
   __property CenterGroup;
   __property char Color = { read = GetColor, write = SetColor, index = 0 };
 #else
@@ -767,7 +767,7 @@ public:
   __property bool AutoHighlight = { read = GetFlag, write = SetFlag, index = DIF_LISTAUTOHIGHLIGHT };
   __property bool WrapMode = { read = GetFlag, write = SetFlag, index = DIF_LISTWRAPMODE };
   __property TFarList * Items = { read = FList };
-  __property AnsiString Text = { read = Data, write = Data };
+  __property UnicodeString Text = { read = Data, write = Data };
   __property bool AutoSelect = { read = GetFlag, write = SetFlag, index = DIF_SELECTONENTRY };
   __property bool DropDownList = { read = GetFlag, write = SetFlag, index = DIF_DROPDOWNLIST };
 #else
