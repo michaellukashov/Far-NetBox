@@ -12686,18 +12686,26 @@ void __fastcall TWebDAVFileSystem::Open()
 
   FPasswordFailed = false;
 
-  try
+  for (int i = 0; i < 5; i++)
   {
-    FActive = (WEBDAV_NO_ERROR == OpenURL(url, webdav_pool));
-    if (!FActive)
+    FActive = false;
+    try
     {
-      throw Exception(LoadStr(CONNECTION_FAILED));
+      FActive = (WEBDAV_NO_ERROR == OpenURL(url, webdav_pool));
+      if (FActive)
+      {
+        break;
+      }
+    }
+    catch (...)
+    {
+      apr_sleep(200000); // 0.2 sec
     }
   }
-  catch (...)
+  if (!FActive)
   {
     FTerminal->Closed();
-    throw;
+    throw Exception(LoadStr(CONNECTION_FAILED));
   }
 }
 //---------------------------------------------------------------------------
