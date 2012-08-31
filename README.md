@@ -1,4 +1,4 @@
-NetBox: SFTP/FTP/FTPS/SCP/WebDAV client for Far Manager 2.0/3.0
+NetBox: SFTP/FTP(S)/SCP/WebDAV client for Far Manager 2.0/3.0
 ==============
 
     Based on WinSCP: SFTP/FTP/SCP client for FAR version 1.6.2 Copyright (c) 2000-2009 Martin Prikryl  
