@@ -1,5 +1,7 @@
 NetBox 2.1.11 ??.09.2012
 --------------------
+ * FTP: Bugfix: Error retrieving file stats, if FTP server returns full file path in MLST response
+   (http://winscp.net/tracker/show_bug.cgi?id=906)
  * FTP: Bugfix: Error when listing file with MLST FTP command fails
    (http://winscp.net/tracker/show_bug.cgi?id=905)
 
