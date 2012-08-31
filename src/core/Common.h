@@ -11,6 +11,7 @@
 #include "UnicodeString.hpp"
 #include "Exceptions.h"
 #include "SysUtils.h"
+#include "version.h"
 
 #endif
 //---------------------------------------------------------------------------
@@ -204,6 +205,6 @@ DWORD __fastcall StrToVersionNumber(const UnicodeString & VersionMumberStr);
 UnicodeString __fastcall VersionNumberToStr(DWORD VersionNumber);
 DWORD inline __fastcall GetVersionNumber219() { return MAKEVERSIONNUMBER(2,1,9); }
 DWORD inline __fastcall GetVersionNumber2110() { return MAKEVERSIONNUMBER(2,1,10); }
-DWORD inline __fastcall GetCurrentVersionNumber() { return GetVersionNumber2110(); }
+DWORD inline __fastcall GetCurrentVersionNumber() { return StrToVersionNumber(NETBOX_VERSION_NUMBER); }
 //---------------------------------------------------------------------------
 #endif
