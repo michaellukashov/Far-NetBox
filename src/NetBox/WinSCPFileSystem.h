@@ -73,6 +73,7 @@ typedef fastdelegate::FastDelegate3<void,
 struct TMultipleEdit
 {
   UnicodeString FileName;
+  UnicodeString FileTitle;
   UnicodeString Directory;
   UnicodeString LocalFileName;
   bool PendingSave;
@@ -272,6 +273,7 @@ private:
   UnicodeString FOriginalEditFile;
   UnicodeString FLastEditFile;
   UnicodeString FLastMultipleEditFile;
+  UnicodeString FLastMultipleEditFileTitle;
   UnicodeString FLastMultipleEditDirectory;
   bool FLastMultipleEditReadOnly;
   int FLastEditorID;
