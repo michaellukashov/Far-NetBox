@@ -349,6 +349,8 @@ private:
   void /* __fastcall */ GetSpaceAvailable(const UnicodeString & Path,
     TSpaceAvailable & ASpaceAvailable, bool & Close);
   void __fastcall QueueAddItem(TQueueItem * Item);
+private:
+  UnicodeString __fastcall GetFileNameHash(const UnicodeString FileName);
 };
 //---------------------------------------------------------------------------
 class TSessionPanelItem : public TCustomFarPanelItem

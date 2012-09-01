@@ -29,6 +29,7 @@
 #include <CompThread.hpp>
 #include <SysUtils.hpp>
 #endif
+#include "PuttyIntf.h"
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
 #pragma package(smart_init)
@@ -4484,14 +4485,19 @@ void __fastcall TWinSCPFileSystem::MultipleEdit(const UnicodeString Directory,
     TStrings * FileList = new TStringList;
     assert(!FNoProgressFinish);
     FNoProgressFinish = true;
+    UnicodeString NewFileName;
+    TRemoteFile * FileDuplicate = File->Duplicate();
     // try
     {
-      BOOST_SCOPE_EXIT ( (&Self) (&FileList) )
+      BOOST_SCOPE_EXIT ( (&Self) (&FileList) (&FileDuplicate) )
       {
         Self->FNoProgressFinish = false;
+        delete FileDuplicate;
         delete FileList;
       } BOOST_SCOPE_EXIT_END
-      FileList->AddObject(FullFileName, File);
+      NewFileName = GetFileNameHash(FullFileName) + UnixExtractFileExt(FileName);
+      FileDuplicate->SetFileName(NewFileName);
+      FileList->AddObject(FullFileName, FileDuplicate);
       TemporarilyDownloadFiles(FileList, CopyParam, TempDir);
     }
 #ifndef _MSC_VER
@@ -4502,7 +4508,7 @@ void __fastcall TWinSCPFileSystem::MultipleEdit(const UnicodeString Directory,
     }
 #endif
 
-    FLastMultipleEditFile = IncludeTrailingBackslash(TempDir) + FileName;
+    FLastMultipleEditFile = IncludeTrailingBackslash(TempDir) + NewFileName;
     FLastMultipleEditDirectory = Directory;
 
     if (FarPlugin->Editor(FLastMultipleEditFile,
@@ -4619,3 +4625,14 @@ void __fastcall TWinSCPFileSystem::ShowLog()
   assert(Connected() && FTerminal->GetLog()->GetLoggingToFile());
   WinSCPPlugin()->Viewer(FTerminal->GetLog()->GetCurrentFileName(), VF_NONMODAL);
 }
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TWinSCPFileSystem::GetFileNameHash(const UnicodeString FileName)
+{
+  RawByteString Result;
+  Result.SetLength(16);
+  md5checksum(
+    reinterpret_cast<const char*>(FileName.c_str()), FileName.Length() * sizeof(wchar_t),
+    (unsigned char *)Result.c_str());
+  return BytesToHex(Result);
+}
+//---------------------------------------------------------------------------
