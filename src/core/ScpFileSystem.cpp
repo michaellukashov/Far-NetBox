@@ -2256,7 +2256,7 @@ void __fastcall TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
         // Filename is used for error messaging and excluding files only
         // Send in full path to allow path-based excluding
         UnicodeString FullFileName = UnixExcludeTrailingBackslash(File->GetFullFileName());
-        SCPSink(FullFileName, NULL, TargetDir, UnixExtractFilePath(FullFileName),
+        SCPSink(FullFileName, File, TargetDir, UnixExtractFilePath(FullFileName),
           CopyParam, Success, OperationProgress, Params, 0);
         // operation succeded (no exception), so it's ok that
         // remote side closed SCP, but we continue with next file
@@ -2514,7 +2514,8 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
             FTerminal->LogEvent(FORMAT(L"Warning: Remote host set a compound pathname '%s'", Line.c_str()));
           }
 
-          OperationProgress->SetFile(OnlyFileName);
+          OperationProgress->SetFile(File && !File->GetIsDirectory() ?
+            UnixExtractFileName(File->GetFileName()) : OnlyFileName);
           AbsoluteFileName = SourceDir + OnlyFileName;
           OperationProgress->SetTransferSize(TSize);
         }
@@ -2544,8 +2545,8 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
 
         UnicodeString DestFileName =
           IncludeTrailingBackslash(TargetDir) +
-          CopyParam->ChangeFileName(OperationProgress->FileName, osRemote,
-            Level == 0);
+          CopyParam->ChangeFileName(OperationProgress->FileName,
+            osRemote, Level == 0);
 
         FileData.Attrs = FTerminal->GetLocalFileAttributes(DestFileName);
         // If getting attrs failes, we suppose, that file/folder doesn't exists
