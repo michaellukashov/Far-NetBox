@@ -117,8 +117,9 @@ private:
     TFileOperationProgressType * OperationProgress, int Level);
   void __fastcall SCPError(const UnicodeString Message, bool Fatal);
   void __fastcall SCPSendError(const UnicodeString Message, bool Fatal);
-  void __fastcall SCPSink(const UnicodeString TargetDir,
-    const UnicodeString FileName, const UnicodeString SourceDir,
+  void __fastcall SCPSink(const UnicodeString FileName,
+    const TRemoteFile * File, const UnicodeString TargetDir,
+    const UnicodeString SourceDir,
     const TCopyParamType * CopyParam, bool & Success,
     TFileOperationProgressType * OperationProgress, int Params, int Level);
   void __fastcall SCPSource(const UnicodeString FileName,
