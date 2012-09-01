@@ -123,10 +123,10 @@ public:
   void __fastcall SaveScreen(HANDLE & Screen);
   void __fastcall RestoreScreen(HANDLE & Screen);
   bool __fastcall CheckForEsc();
-  bool __fastcall Viewer(const UnicodeString FileName, unsigned int Flags,
-    UnicodeString Title = L"");
-  bool __fastcall Editor(const UnicodeString FileName, unsigned int Flags,
-    UnicodeString Title = L"");
+  bool __fastcall Viewer(const UnicodeString FileName, const UnicodeString Title,
+    unsigned int Flags);
+  bool __fastcall Editor(const UnicodeString FileName, const UnicodeString Title,
+    unsigned int Flags);
 
   intptr_t __fastcall FarAdvControl(int Command, void * Param = NULL);
   DWORD __fastcall FarControl(int Command, int Param1, intptr_t Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);

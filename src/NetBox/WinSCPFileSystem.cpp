@@ -4511,8 +4511,8 @@ void __fastcall TWinSCPFileSystem::MultipleEdit(const UnicodeString Directory,
     FLastMultipleEditFile = IncludeTrailingBackslash(TempDir) + NewFileName;
     FLastMultipleEditDirectory = Directory;
 
-    if (FarPlugin->Editor(FLastMultipleEditFile,
-           EF_NONMODAL | EF_IMMEDIATERETURN | EF_DISABLEHISTORY, FullFileName))
+    if (FarPlugin->Editor(FLastMultipleEditFile, FullFileName,
+           EF_NONMODAL | EF_IMMEDIATERETURN | EF_DISABLEHISTORY))
     {
       assert(FLastMultipleEditFile == L"");
     }
@@ -4623,7 +4623,7 @@ bool __fastcall TWinSCPFileSystem::IsLogging()
 void __fastcall TWinSCPFileSystem::ShowLog()
 {
   assert(Connected() && FTerminal->GetLog()->GetLoggingToFile());
-  WinSCPPlugin()->Viewer(FTerminal->GetLog()->GetCurrentFileName(), VF_NONMODAL);
+  WinSCPPlugin()->Viewer(FTerminal->GetLog()->GetCurrentFileName(), FTerminal->GetLog()->GetCurrentFileName(), VF_NONMODAL);
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TWinSCPFileSystem::GetFileNameHash(const UnicodeString FileName)
