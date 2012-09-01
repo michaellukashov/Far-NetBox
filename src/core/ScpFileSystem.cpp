@@ -2568,8 +2568,7 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
             CopyParam, Success, OperationProgress, Params, Level + 1);
           continue;
         }
-          else
-        if (Ctrl == L'C')
+        else if (Ctrl == L'C')
         {
           TDownloadSessionAction Action(FTerminal->GetActionLog());
           Action.FileName(AbsoluteFileName);
