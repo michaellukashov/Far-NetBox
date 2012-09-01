@@ -13745,7 +13745,7 @@ void __fastcall TWebDAVFileSystem::Sink(const UnicodeString FileName,
 
   OperationProgress->SetFile(FileNameOnly);
 
-  UnicodeString DestFileName = CopyParam->ChangeFileName(FileNameOnly,
+  UnicodeString DestFileName = CopyParam->ChangeFileName(UnixExtractFileName(File->GetFileName()),
                                osRemote, FLAGSET(Flags, tfFirstLevel));
   UnicodeString DestFullName = TargetDir + DestFileName;
 
