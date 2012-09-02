@@ -14149,16 +14149,19 @@ void __fastcall TWebDAVFileSystem::FileTransfer(const UnicodeString FileName,
   FCurrentOperationProgress = OperationProgress;
   FILE_OPERATION_LOOP (FMTLOAD(TRANSFER_ERROR, FileName.c_str()),
     UnicodeString FullRemoteFileName = RemotePath + RemoteFile;
+    bool Result = false;
     if (Get)
     {
       HANDLE LocalFileHandle = FTerminal->CreateLocalFile(LocalFile,
         GENERIC_WRITE, 0, CREATE_ALWAYS, 0);
-      WebDAVGetFile(FullRemoteFileName.c_str(), &LocalFileHandle);
+      Result = WebDAVGetFile(FullRemoteFileName.c_str(), &LocalFileHandle);
     }
     else
     {
-      WebDAVPutFile(FullRemoteFileName.c_str(), LocalFile.c_str(), Size);
+      Result = WebDAVPutFile(FullRemoteFileName.c_str(), LocalFile.c_str(), Size);
     }
+    if (!Result)
+      EXCEPTION;
   );
 
   switch (FFileTransferAbort)
