@@ -1,5 +1,8 @@
 NetBox 2.1.11 ??.09.2012
 --------------------
+ * Bugfix: issue #34: Problem with editing 2 files with same name over scp
+   (https://github.com/michaellukashov/Far-NetBox/issues/34,
+   http://forum.farmanager.com/viewtopic.php?f=39&p=97665#p97665)
  * FTP: Bugfix: Error retrieving file stats, if FTP server returns full file path in MLST response
    (http://winscp.net/tracker/show_bug.cgi?id=906)
  * FTP: Bugfix: Error when listing file with MLST FTP command fails
