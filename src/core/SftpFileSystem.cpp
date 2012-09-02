@@ -5134,7 +5134,7 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
 
   OperationProgress->SetFile(OnlyFileName);
 
-  UnicodeString DestFileName = CopyParam->ChangeFileName(OnlyFileName,
+  UnicodeString DestFileName = CopyParam->ChangeFileName(UnixExtractFileName(File->GetFileName()),
     osRemote, FLAGSET(Flags, tfFirstLevel));
   UnicodeString DestFullName = TargetDir + DestFileName;
 

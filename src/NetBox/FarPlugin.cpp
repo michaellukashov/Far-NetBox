@@ -1627,7 +1627,7 @@ bool __fastcall TCustomFarPlugin::CheckForEsc()
 }
 //---------------------------------------------------------------------------
 bool __fastcall TCustomFarPlugin::Viewer(UnicodeString FileName,
-  unsigned int Flags, UnicodeString Title)
+  const UnicodeString Title, unsigned int Flags)
 {
   TFarEnvGuard Guard;
   int Result = FStartupInfo.Viewer(
@@ -1638,7 +1638,7 @@ bool __fastcall TCustomFarPlugin::Viewer(UnicodeString FileName,
 }
 //---------------------------------------------------------------------------
 bool __fastcall TCustomFarPlugin::Editor(const UnicodeString FileName,
-  unsigned int Flags, UnicodeString Title)
+  const UnicodeString Title, unsigned int Flags)
 {
   TFarEnvGuard Guard;
   int Result = FStartupInfo.Editor(

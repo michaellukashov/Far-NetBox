@@ -73,6 +73,7 @@ typedef fastdelegate::FastDelegate3<void,
 struct TMultipleEdit
 {
   UnicodeString FileName;
+  UnicodeString FileTitle;
   UnicodeString Directory;
   UnicodeString LocalFileName;
   bool PendingSave;
@@ -272,6 +273,7 @@ private:
   UnicodeString FOriginalEditFile;
   UnicodeString FLastEditFile;
   UnicodeString FLastMultipleEditFile;
+  UnicodeString FLastMultipleEditFileTitle;
   UnicodeString FLastMultipleEditDirectory;
   bool FLastMultipleEditReadOnly;
   int FLastEditorID;
@@ -349,6 +351,8 @@ private:
   void /* __fastcall */ GetSpaceAvailable(const UnicodeString & Path,
     TSpaceAvailable & ASpaceAvailable, bool & Close);
   void __fastcall QueueAddItem(TQueueItem * Item);
+private:
+  UnicodeString __fastcall GetFileNameHash(const UnicodeString FileName);
 };
 //---------------------------------------------------------------------------
 class TSessionPanelItem : public TCustomFarPanelItem
