@@ -33,7 +33,7 @@ public:
 
   // UnicodeString GetHelpKeyword() const { return FHelpKeyword; }
   const UnicodeString GetMessage() const { return FMessage; }
-  void SetMessage(const UnicodeString value) { FMessage = value; }
+  void SetMessage(const UnicodeString & Value) { FMessage = Value; }
 protected:
   UnicodeString FMessage;
   // UnicodeString FHelpKeyword;
@@ -66,7 +66,7 @@ public:
 class EOSError : public Exception
 {
 public:
-  EOSError(const UnicodeString msg, DWORD code) : Exception(msg),
+  EOSError(const UnicodeString & Msg, DWORD code) : Exception(Msg),
     ErrorCode(code)
   {
   }
@@ -317,7 +317,7 @@ bool Win32Check(bool RetVal);
 class EConvertError : public Exception
 {
 public:
-  EConvertError(const UnicodeString Msg) :
+  EConvertError(const UnicodeString & Msg) :
     Exception(Msg)
   {}
 };

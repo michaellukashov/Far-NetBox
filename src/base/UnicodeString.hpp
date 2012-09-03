@@ -119,7 +119,7 @@ public:
   UnicodeString & LowerCase() { return Lower(); }
   UnicodeString & UpperCase() { return Upper(); }
 
-  int CompareIC(const UnicodeString str) const;
+  int CompareIC(const UnicodeString & Str) const;
   int ToInt() const;
 
   UnicodeString & Replace(int Pos, int Len, const wchar_t * Str, int DataLen);
@@ -135,10 +135,10 @@ public:
   UnicodeString & Append(const char * lpszAdd, UINT CodePage=CP_OEMCP);
 
   UnicodeString & Insert(int Pos, const wchar_t * Str, int StrLen);
-  UnicodeString & Insert(int Pos, const UnicodeString Str) { return Insert(Pos, Str.c_str(), Str.Length()); }
+  UnicodeString & Insert(int Pos, const UnicodeString & Str) { return Insert(Pos, Str.c_str(), Str.Length()); }
   UnicodeString & Insert(const wchar_t * Str, int Pos) { return Insert(Pos, Str, wcslen(Str)); }
   UnicodeString & Insert(const wchar_t Ch, int Pos) { return Insert(Pos, &Ch, 1); }
-  UnicodeString & Insert(const UnicodeString Str, int Pos) { return Insert(Pos, Str); }
+  UnicodeString & Insert(const UnicodeString & Str, int Pos) { return Insert(Pos, Str); }
 
   int Pos(wchar_t Ch) const { return (int)Data.find(Ch) + 1; }
   int Pos(UnicodeString Str) const { return (int)Data.find(Str.Data) + 1; }

@@ -53,8 +53,8 @@
   FForceBanners(false),
   FDisableAcceptingHostKeys(false),
   FDefaultCollectUsage(false),
-  FCriticalSection(NULL),
-  FSessionReopenAutoMaximumNumberOfRetries(0)
+  FSessionReopenAutoMaximumNumberOfRetries(0),
+  FCriticalSection(NULL)
 {
   FCriticalSection = new TCriticalSection();
   FUpdating = 0;
@@ -1336,3 +1336,4 @@ bool __fastcall TShortCuts::Has(TShortCut ShortCut) const
 {
   return (FShortCuts.count(ShortCut) != 0);
 }
+

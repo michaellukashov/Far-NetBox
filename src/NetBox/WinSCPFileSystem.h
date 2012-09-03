@@ -73,6 +73,7 @@ typedef fastdelegate::FastDelegate3<void,
 struct TMultipleEdit
 {
   UnicodeString FileName;
+  UnicodeString FileTitle;
   UnicodeString Directory;
   UnicodeString LocalFileName;
   bool PendingSave;
@@ -195,7 +196,7 @@ protected:
   bool __fastcall PasswordDialog(TSessionData * SessionData,
     TPromptKind Kind, const UnicodeString Name, const UnicodeString Instructions, TStrings * Prompts,
     TStrings * Results, bool StoredCredentialsTried);
-  bool __fastcall BannerDialog(const UnicodeString SessionName, const UnicodeString Banner,
+  bool __fastcall BannerDialog(const UnicodeString SessionName, const UnicodeString & Banner,
     bool & NeverShowAgain, int Options);
   bool __fastcall CreateDirectoryDialog(UnicodeString & Directory,
     TRemoteProperties * Properties, bool & SaveSettings);
@@ -272,6 +273,7 @@ private:
   UnicodeString FOriginalEditFile;
   UnicodeString FLastEditFile;
   UnicodeString FLastMultipleEditFile;
+  UnicodeString FLastMultipleEditFileTitle;
   UnicodeString FLastMultipleEditDirectory;
   bool FLastMultipleEditReadOnly;
   int FLastEditorID;
@@ -314,7 +316,7 @@ private:
     TStrings * Prompts, TStrings * Results, bool & Result,
     void * Arg);
   void /* __fastcall */ TerminalDisplayBanner(TTerminal * Terminal,
-    UnicodeString SessionName, UnicodeString Banner, bool & NeverShowAgain,
+    UnicodeString SessionName, const UnicodeString & Banner, bool & NeverShowAgain,
     int Options);
   void /* __fastcall */ TerminalShowExtendedException(TTerminal * Terminal,
     Exception * E, void * Arg);
@@ -349,6 +351,8 @@ private:
   void /* __fastcall */ GetSpaceAvailable(const UnicodeString & Path,
     TSpaceAvailable & ASpaceAvailable, bool & Close);
   void __fastcall QueueAddItem(TQueueItem * Item);
+private:
+  UnicodeString __fastcall GetFileNameHash(const UnicodeString FileName);
 };
 //---------------------------------------------------------------------------
 class TSessionPanelItem : public TCustomFarPanelItem

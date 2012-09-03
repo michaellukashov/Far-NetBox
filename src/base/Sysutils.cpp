@@ -450,7 +450,6 @@ UnicodeString FileSearch(const UnicodeString FileName, const UnicodeString Direc
   UnicodeString Temp;
   UnicodeString Result;
   Temp = DirectoryList;
-  wchar_t PathSeparator = L'\\';
   UnicodeString PathSeparators = L"/\\";
   do
   {
@@ -1192,7 +1191,7 @@ static bool DecodeDateFully(const TDateTime & DateTime,
   unsigned int M = 0;
   unsigned int D = 0;
   unsigned int I = 0;
-  if (T <= 0)
+  if ((int)T <= 0)
   {
     Year = 0;
     Month = 0;

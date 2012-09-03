@@ -489,10 +489,10 @@ void __fastcall TSignalThread::Terminate()
 /* __fastcall */ TTerminalQueue::TTerminalQueue(TTerminal * Terminal,
   TConfiguration * Configuration) :
   TSignalThread(),
-  FTerminal(Terminal), FConfiguration(Configuration), FTransfersLimit(2), FEnabled(true),
-  FSessionData(NULL), FItems(NULL), FItemsInProcess(0), FItemsSection(NULL),
-  FFreeTerminals(0), FTerminals(NULL), FForcedItems(NULL),
-  FTemporaryTerminals(0), FOverallTerminals(0)
+  FTerminal(Terminal), FConfiguration(Configuration), FSessionData(NULL),
+  FItems(NULL), FItemsInProcess(0), FItemsSection(NULL),
+  FFreeTerminals(0), FTerminals(NULL), FForcedItems(NULL), FTemporaryTerminals(0),
+  FOverallTerminals(0), FTransfersLimit(2), FEnabled(true)
 {
   Self = this;
 #ifndef _MSC_VER
@@ -745,7 +745,10 @@ TTerminalQueueStatus * __fastcall TTerminalQueue::CreateStatus(TTerminalQueueSta
 
         if (ItemProxy != NULL)
         {
-          Current->Delete(ItemProxy);
+          if (Current != NULL)
+          {
+            Current->Delete(ItemProxy);
+          }
           Status->Add(ItemProxy);
           ItemProxy->Update();
         }
@@ -2535,7 +2538,7 @@ void /* __fastcall */ TTerminalThread::TerminalShowExtendedException(
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminalThread::TerminalDisplayBanner(TTerminal * Terminal,
-  UnicodeString SessionName, UnicodeString Banner,
+  UnicodeString SessionName, const UnicodeString & Banner,
   bool & NeverShowAgain, int Options)
 {
   TDisplayBannerAction Action(FOnDisplayBanner);

@@ -1640,7 +1640,7 @@ bool __fastcall TCustomFarPlugin::CheckForEsc()
 }
 //---------------------------------------------------------------------------
 bool __fastcall TCustomFarPlugin::Viewer(UnicodeString FileName,
-  unsigned int Flags, UnicodeString Title)
+  const UnicodeString Title, unsigned int Flags)
 {
   TFarEnvGuard Guard;
   int Result = FStartupInfo.Viewer(
@@ -1651,7 +1651,7 @@ bool __fastcall TCustomFarPlugin::Viewer(UnicodeString FileName,
 }
 //---------------------------------------------------------------------------
 bool __fastcall TCustomFarPlugin::Editor(const UnicodeString FileName,
-  unsigned int Flags, UnicodeString Title)
+  const UnicodeString Title, unsigned int Flags)
 {
   TFarEnvGuard Guard;
   int Result = FStartupInfo.Editor(
@@ -1847,7 +1847,7 @@ unsigned int TCustomFarFileSystem::FInstances = 0;
     FCriticalSection(NULL)
 {
     memset(FPanelInfo, 0, sizeof(FPanelInfo));
-};
+}
 
 void __fastcall TCustomFarFileSystem::Init()
 {
@@ -3020,7 +3020,7 @@ int __fastcall TFarEditorInfo::GetEditorID() const
   return FEditorInfo->EditorID;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TFarEditorInfo::GetFileName() const
+UnicodeString __fastcall TFarEditorInfo::GetFileName()
 {
   UnicodeString Result = L"";
   size_t buffLen = FarPlugin->FarEditorControl(ECTL_GETFILENAME, NULL);
@@ -3030,7 +3030,7 @@ UnicodeString __fastcall TFarEditorInfo::GetFileName() const
     FarPlugin->FarEditorControl(ECTL_GETFILENAME, (wchar_t *)Result.c_str());
   }
   return Result.c_str();
-};
+}
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 /* __fastcall */ TFarEnvGuard::TFarEnvGuard()

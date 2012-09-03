@@ -370,7 +370,8 @@ UnicodeString __fastcall TCopyParamType::ChangeFileName(UnicodeString FileName,
 bool __fastcall TCopyParamType::UseAsciiTransfer(UnicodeString FileName,
   TOperationSide Side, const TFileMasks::TParams & Params) const
 {
-  switch (GetTransferMode()) {
+  switch (GetTransferMode())
+  {
     case tmBinary: return false;
     case tmAscii: return true;
     case tmAutomatic: return GetAsciiFileMask().Matches(FileName, (Side == osLocal),

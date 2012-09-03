@@ -134,7 +134,7 @@ public:
 
 #ifndef _MSC_VER
   __property int Tab = { read = FTab, write = FTab };
-  __property AnsiString TabName = { read = FTabName, write = SetTabName };
+  __property UnicodeString TabName = { read = FTabName, write = SetTabName };
 #else
   int GetTab() { return FTab; }
   void SetTab(int value) { FTab = value; }
@@ -180,6 +180,11 @@ void __fastcall TTabbedDialog::HideTabs()
 //---------------------------------------------------------------------------
 void __fastcall TTabbedDialog::SelectTab(int Tab)
 {
+  /*for (int i = FTabCount - 1; i >= 1; i--)
+  {
+    TTabButton * Button = TabButton(i);
+    Button->SetBrackets(Button->GetTab() == Tab ? brTight : brSpace);
+  }*/
   if (FTab != Tab)
   {
     if (FTab)
@@ -235,6 +240,7 @@ void /* __fastcall */ TTabbedDialog::TabButtonClick(TFarButton * Sender, bool & 
   TTabButton * Tab = dynamic_cast<TTabButton *>(Sender);
   assert(Tab != NULL);
 
+  // HideTabs();
   SelectTab(Tab->GetTab());
 
   Close = false;
@@ -1585,7 +1591,7 @@ bool __fastcall TWinSCPFileSystem::PasswordDialog(TSessionData * SessionData,
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 bool __fastcall TWinSCPFileSystem::BannerDialog(const UnicodeString SessionName,
-  const UnicodeString Banner, bool & NeverShowAgain, int Options)
+  const UnicodeString & Banner, bool & NeverShowAgain, int Options)
 {
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(FPlugin);
@@ -1691,6 +1697,7 @@ private:
   TFarCheckBox * AllowScpFallbackCheck;
   TFarText * HostNameLabel;
   TFarText * InsecureLabel;
+  TFarText * FtpEncryptionLabel;
   TFarComboBox * FtpEncryptionCombo;
   TFarCheckBox * UpdateDirectoriesCheck;
   TFarCheckBox * CacheDirectoriesCheck;
@@ -1882,7 +1889,7 @@ static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsWebDAV };
   int GroupTop;
   int Pos;
 
-  TFarButtonBrackets TabBrackets = brNone;
+  TFarButtonBrackets TabBrackets = brNone; // brSpace; // 
 
   Tab = new TTabButton(this);
   Tab->SetTabName(GetMsg(LOGIN_TAB_SESSION));
@@ -1996,9 +2003,9 @@ static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsWebDAV };
 
   SetNextItemPosition(ipNewLine);
 
-  Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_FTP_ENCRYPTION));
-  Text->SetWidth(15);
+  FtpEncryptionLabel = new TFarText(this);
+  FtpEncryptionLabel->SetCaption(GetMsg(LOGIN_FTP_ENCRYPTION));
+  FtpEncryptionLabel->SetWidth(15);
 
   SetNextItemPosition(ipRight);
 
@@ -3132,6 +3139,8 @@ void __fastcall TSessionDialog::UpdateControls()
     TransferProtocolCombo->GetVisible() &&
     (IndexToFSProtocol(TransferProtocolCombo->GetItems()->GetSelected(), false) == fsSFTPonly));
   InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !SshProtocol && !FtpsProtocol && !HTTPSProtocol);
+  FtpEncryptionLabel->SetVisible(FtpProtocol || FtpsProtocol || InternalHTTPProtocol || HTTPSProtocol);
+  FtpEncryptionCombo->SetVisible(FtpProtocol || FtpsProtocol || InternalHTTPProtocol || HTTPSProtocol);
   FtpEncryptionCombo->SetEnabled(FtpProtocol || FtpsProtocol || InternalHTTPProtocol || HTTPSProtocol);
   PrivateKeyEdit->SetEnabled(SshProtocol);
   HostNameLabel->SetCaption(GetMsg(LOGIN_HOST_NAME));
@@ -5977,7 +5986,7 @@ bool __fastcall TWinSCPFileSystem::LinkDialog(UnicodeString & FileName,
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
 typedef void __fastcall (__closure *TFeedFileSystemData)
-  (TObject * Control, int Label, AnsiString Value);
+  (TObject * Control, int Label, UnicodeString Value);
 #else
 typedef fastdelegate::FastDelegate3<void,
   TObject *, int, UnicodeString> TFeedFileSystemDataEvent;
@@ -8360,7 +8369,7 @@ void /* __fastcall */ TSynchronizeDialog::StartButtonClick(TFarButton * /*Sender
       case qaCancel:
         Continue = false;
         break;
-    };
+    }
   }
   else
   {

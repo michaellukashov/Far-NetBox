@@ -633,7 +633,7 @@ void __fastcall TSessionData::Load(THierarchicalStorage * Storage)
     DoLoad(Storage, RewritePassword);
 
     Storage->CloseSubKey();
-  };
+  }
 
   if (RewritePassword)
   {
@@ -1040,6 +1040,14 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
   {
     // Remove "netbox:" prefix
     Url.Delete(1, 7);
+  }
+  if (Url.SubString(1, 7).LowerCase() == L"webdav:")
+  {
+    AFSProtocol = fsWebDAV;
+    AFtps = ftpsNone;
+    APortNumber = HTTPPortNumber;
+    Url.Delete(1, 7);
+    ProtocolDefined = true;
   }
   if (Url.SubString(1, 4).LowerCase() == L"scp:")
   {

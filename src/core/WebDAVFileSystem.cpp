@@ -12615,8 +12615,7 @@ private:
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
   FILE_OPERATION_LOOP_CUSTOM(Self->FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
 //---------------------------------------------------------------------------
-static const UnicodeString CONST_HTTP_PROTOCOL_BASE_NAME = L"HTTP";
-static const UnicodeString CONST_HTTPS_PROTOCOL_BASE_NAME = L"HTTPS";
+static const UnicodeString CONST_WEBDAV_PROTOCOL_BASE_NAME = L"WebDAV";
 
 //===========================================================================
 
@@ -12643,9 +12642,7 @@ TWebDAVFileSystem::TWebDAVFileSystem(TTerminal * ATerminal) :
 
 void __fastcall TWebDAVFileSystem::Init()
 {
-  FFileSystemInfo.ProtocolBaseName =
-    FTerminal->GetSessionData()->GetFtps() == ftpsNone ?
-    CONST_HTTP_PROTOCOL_BASE_NAME : CONST_HTTPS_PROTOCOL_BASE_NAME;
+  FFileSystemInfo.ProtocolBaseName = CONST_WEBDAV_PROTOCOL_BASE_NAME;
   FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
 
   if (apr_pool_initialize() != APR_SUCCESS)
@@ -12671,32 +12668,44 @@ void __fastcall TWebDAVFileSystem::Open()
   TSessionData * Data = FTerminal->GetSessionData();
 
   FSessionInfo.LoginTime = Now();
-  FSessionInfo.ProtocolBaseName =
-    Data->GetFtps() == ftpsNone ?
-    CONST_HTTP_PROTOCOL_BASE_NAME : CONST_HTTPS_PROTOCOL_BASE_NAME;
+  FSessionInfo.ProtocolBaseName = CONST_WEBDAV_PROTOCOL_BASE_NAME;
   FSessionInfo.ProtocolName = FSessionInfo.ProtocolBaseName;
+
+  bool Ssl = (FTerminal->GetSessionData()->GetFtps() != ftpsNone);
+  if (Ssl)
+  {
+    FSessionInfo.SecurityProtocolName = LoadStr(FTPS_IMPLICIT);
+  }
 
   UnicodeString HostName = Data->GetHostName();
   size_t Port = Data->GetPortNumber();
-  UnicodeString ProtocolName = Data->GetFtps() == ftpsNone ? L"http" : L"https";
+  UnicodeString ProtocolName = !Ssl ? L"http" : L"https";
   UnicodeString UserName = Data->GetUserName();
   UnicodeString Path = Data->GetRemoteDirectory();
   UnicodeString url = FORMAT(L"%s://%s:%d%s", ProtocolName.c_str(), HostName.c_str(), Port, Path.c_str());
 
   FPasswordFailed = false;
 
-  try
+  for (int i = 0; i < 5; i++)
   {
-    FActive = (WEBDAV_NO_ERROR == OpenURL(url, webdav_pool));
-    if (!FActive)
+    FActive = false;
+    try
     {
-      throw Exception(LoadStr(CONNECTION_FAILED));
+      FActive = (WEBDAV_NO_ERROR == OpenURL(url, webdav_pool));
+      if (FActive)
+      {
+        break;
+      }
+    }
+    catch (...)
+    {
+      apr_sleep(200000); // 0.2 sec
     }
   }
-  catch (...)
+  if (!FActive)
   {
     FTerminal->Closed();
-    throw;
+    throw Exception(LoadStr(CONNECTION_FAILED));
   }
 }
 //---------------------------------------------------------------------------
@@ -12770,8 +12779,6 @@ bool __fastcall TWebDAVFileSystem::IsCapable(int Capability) const
       return true;
 
     case fcTextMode:
-      return FTerminal->GetSessionData()->GetEOLType() != FTerminal->GetConfiguration()->GetLocalEOLType();
-
     case fcNativeTextMode:
     case fcNewerOnlyUpload:
     case fcTimestampChanging:
@@ -13548,7 +13555,7 @@ void __fastcall TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString Dir
       FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
         FindOK = (::FindNextFile(findHandle, &SearchRec) != 0);
       );
-    };
+    }
   }
 #ifndef _MSC_VER
   __finally
@@ -13738,7 +13745,7 @@ void __fastcall TWebDAVFileSystem::Sink(const UnicodeString FileName,
 
   OperationProgress->SetFile(FileNameOnly);
 
-  UnicodeString DestFileName = CopyParam->ChangeFileName(FileNameOnly,
+  UnicodeString DestFileName = CopyParam->ChangeFileName(UnixExtractFileName(File->GetFileName()),
                                osRemote, FLAGSET(Flags, tfFirstLevel));
   UnicodeString DestFullName = TargetDir + DestFileName;
 
@@ -14142,16 +14149,19 @@ void __fastcall TWebDAVFileSystem::FileTransfer(const UnicodeString FileName,
   FCurrentOperationProgress = OperationProgress;
   FILE_OPERATION_LOOP (FMTLOAD(TRANSFER_ERROR, FileName.c_str()),
     UnicodeString FullRemoteFileName = RemotePath + RemoteFile;
+    bool Result = false;
     if (Get)
     {
       HANDLE LocalFileHandle = FTerminal->CreateLocalFile(LocalFile,
         GENERIC_WRITE, 0, CREATE_ALWAYS, 0);
-      WebDAVGetFile(FullRemoteFileName.c_str(), &LocalFileHandle);
+      Result = WebDAVGetFile(FullRemoteFileName.c_str(), &LocalFileHandle);
     }
     else
     {
-      WebDAVPutFile(FullRemoteFileName.c_str(), LocalFile.c_str(), Size);
+      Result = WebDAVPutFile(FullRemoteFileName.c_str(), LocalFile.c_str(), Size);
     }
+    if (!Result)
+      EXCEPTION;
   );
 
   switch (FFileTransferAbort)

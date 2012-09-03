@@ -222,7 +222,7 @@ VS_FIXEDFILEINFO __fastcall GetFixedFileInfo(void * FileInfo)
     throw Exception(L"Fixed file info not available");
   }
   return *pResult;
-};
+}
 //---------------------------------------------------------------------------
 // Return number of available file version info translations
 unsigned __fastcall GetTranslationCount(void * FileInfo)
@@ -245,7 +245,7 @@ TTranslation __fastcall GetTranslation(void * FileInfo, unsigned i)
   if (i * sizeof(TTranslation) >= Len)
     throw Exception(L"Specified translation not available");
   return P[i];
-};
+}
 //---------------------------------------------------------------------------
 // Return the name of the specified language
 UnicodeString __fastcall GetLanguage(Word Language)
@@ -257,7 +257,7 @@ UnicodeString __fastcall GetLanguage(Word Language)
   if (Len > LENOF(P))
     throw Exception(L"Language not available");
   return UnicodeString(P, Len);
-};
+}
 //---------------------------------------------------------------------------
 // Return the value of the specified file version info string using the
 // specified translation
@@ -277,7 +277,7 @@ UnicodeString __fastcall GetFileInfoString(void * FileInfo,
   UnicodeString Result = UnicodeString(P, Len);
   PackStr(Result);
   return Result;
-};
+}
 //---------------------------------------------------------------------------
 int __fastcall CalculateCompoundVersion(int MajorVer,
   int MinorVer, int Release, int Build)
@@ -286,3 +286,4 @@ int __fastcall CalculateCompoundVersion(int MajorVer,
     100 * MajorVer));
   return CompoundVer;
 }
+

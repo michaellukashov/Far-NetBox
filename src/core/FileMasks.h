@@ -89,7 +89,7 @@ public:
   __property TStrings * IncludeDirectoryMasksStr = { read = GetMasksStr, index = MASK_INDEX(true, true) };
   __property TStrings * ExcludeDirectoryMasksStr = { read = GetMasksStr, index = MASK_INDEX(true, false) };
 #else
-  bool __fastcall GetIsValid();
+  bool __fastcall GetIsValid() const;
   bool __fastcall GetIsValid(int & Start, int & Length) const;
   UnicodeString __fastcall GetMasks() const { return FStr; }
 
@@ -174,7 +174,7 @@ private:
   static inline bool __fastcall MatchesMaskMask(const TMaskMask & MaskMask, const UnicodeString & Str);
   static inline bool __fastcall IsAnyMask(const UnicodeString & Mask);
   static UnicodeString __fastcall ComposeMaskStr(TStrings * MasksStr, bool Directory);
-  void __fastcall ThrowError(int Start, int End);
+  void __fastcall ThrowError(int Start, int End) const;
 };
 //---------------------------------------------------------------------------
 UnicodeString __fastcall MaskFileName(UnicodeString FileName, const UnicodeString Mask);

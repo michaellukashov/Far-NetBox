@@ -1,4 +1,4 @@
-NetBox: SFTP/FTP/FTPS/SCP/WebDAV клиент для Far Manager 2.0/3.0
+NetBox: SFTP/FTP(S)/SCP/WebDAV клиент для Far Manager 2.0/3.0
 ===============
 
 1. Общие сведения о плагине

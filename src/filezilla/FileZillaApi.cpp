@@ -897,6 +897,7 @@ CVerifyCertRequestData::~CVerifyCertRequestData()
 CNeedPassRequestData::CNeedPassRequestData()
 {
 	nRequestType=FZ_ASYNCREQUEST_NEEDPASS;
+	nOldOpState=0;
 }
 
 CNeedPassRequestData::~CNeedPassRequestData()

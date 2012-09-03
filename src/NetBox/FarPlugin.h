@@ -150,10 +150,10 @@ public:
   void __fastcall SaveScreen(HANDLE & Screen);
   void __fastcall RestoreScreen(HANDLE & Screen);
   bool __fastcall CheckForEsc();
-  bool __fastcall Viewer(const UnicodeString FileName, unsigned int Flags,
-    UnicodeString Title = L"");
-  bool __fastcall Editor(const UnicodeString FileName, unsigned int Flags,
-    UnicodeString Title = L"");
+  bool __fastcall Viewer(const UnicodeString FileName, const UnicodeString Title,
+    unsigned int Flags);
+  bool __fastcall Editor(const UnicodeString FileName, const UnicodeString Title,
+    unsigned int Flags);
   DWORD __fastcall FarControl(FILE_CONTROL_COMMANDS Command, int Param1, void * Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
   __int64 __fastcall FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, int Param1, void *Param2 = NULL);
   int __fastcall FarEditorControl(EDITOR_CONTROL_COMMANDS Command, void * Param);
@@ -578,7 +578,7 @@ private:
 
 public:
   int __fastcall GetEditorID() const;
-  UnicodeString __fastcall GetFileName() const;
+  static UnicodeString __fastcall GetFileName();
 };
 //---------------------------------------------------------------------------
 class TFarEnvGuard

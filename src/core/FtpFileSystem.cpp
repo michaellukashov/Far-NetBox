@@ -1142,7 +1142,7 @@ void __fastcall TFTPFileSystem::Sink(const UnicodeString FileName,
 
   OperationProgress->SetFile(OnlyFileName);
 
-  UnicodeString DestFileName = CopyParam->ChangeFileName(OnlyFileName,
+  UnicodeString DestFileName = CopyParam->ChangeFileName(UnixExtractFileName(File->GetFileName()),
     osRemote, FLAGSET(Flags, tfFirstLevel));
   UnicodeString DestFullName = TargetDir + DestFileName;
 
@@ -1597,7 +1597,7 @@ void __fastcall TFTPFileSystem::DirectorySource(const UnicodeString DirectoryNam
       FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
         FindOK = (FindNext(SearchRec) == 0);
       );
-    };
+    }
   }
 #ifndef _MSC_VER
   __finally
@@ -2878,7 +2878,7 @@ void __fastcall TFTPFileSystem::HandleReplyStatus(UnicodeString Response)
       if (FLastCode == 530)
       {
         FPasswordFailed = true;
-      };
+      }
     }
     else if (FLastCommand == SYST)
     {
@@ -3219,7 +3219,7 @@ UnicodeString __fastcall FormatContact(const TFtpsCertificateData::TContact & Co
   UnicodeString Result =
     FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 1).c_str(),
       FormatContactList(FormatContactList(FormatContactList(
-       Contact.Organization, Contact.Unit).c_str(), Contact.CommonName).c_str(), Contact.Mail).c_str());
+        Contact.Organization, Contact.Unit).c_str(), Contact.CommonName).c_str(), Contact.Mail).c_str());
 
   if ((wcslen(Contact.Country) > 0) ||
       (wcslen(Contact.StateProvince) > 0) ||

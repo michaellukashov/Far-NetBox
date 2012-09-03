@@ -312,7 +312,7 @@ BOOL CAsyncSocketExLayer::ConnectNext(LPCTSTR lpszHostAddress, UINT nHostPort)
 {
 	ASSERT(GetLayerState()==unconnected);
 	ASSERT(m_pOwnerSocket);
-	BOOL res;
+	BOOL res = FALSE;
 	if (m_pNextLayer)
 		res = m_pNextLayer->Connect(lpszHostAddress, nHostPort);
 	else if (m_nFamily == AF_INET)

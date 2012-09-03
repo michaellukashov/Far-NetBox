@@ -293,9 +293,9 @@ UnicodeString & UnicodeString::Upper(int nStartPos, int nLength)
   return *this;
 }
 
-int UnicodeString::CompareIC(const UnicodeString str) const
+int UnicodeString::CompareIC(const UnicodeString & Str) const
 {
-  return Sysutils::AnsiCompareIC(*this, str);
+  return Sysutils::AnsiCompareIC(*this, Str);
 }
 
 int UnicodeString::ToInt() const

@@ -1547,7 +1547,7 @@ void __fastcall TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
               // (Not sure, if it causes remote side to terminate scp)
               Self->FSecureShell->SendLine(L"E");
               Self->SCPResponse();
-            };
+            }
             /* TODO 1 : Show stderror to user? */
             Self->FSecureShell->ClearStdError();
 
@@ -1737,7 +1737,7 @@ void __fastcall TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
             // (Not sure, if it causes remote side to terminate scp)
             FSecureShell->SendLine(L"E");
             SCPResponse();
-          };
+          }
           /* TODO 1 : Show stderror to user? */
           FSecureShell->ClearStdError();
 
@@ -2156,7 +2156,7 @@ void __fastcall TSCPFileSystem::SCPDirectorySource(const UnicodeString Directory
         FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
           FindOK = (FindNext(SearchRec) == 0);
         );
-      };
+      }
     }
 #ifndef _MSC_VER
     __finally
@@ -2257,7 +2257,7 @@ void __fastcall TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
         // Filename is used for error messaging and excluding files only
         // Send in full path to allow path-based excluding
         UnicodeString FullFileName = UnixExcludeTrailingBackslash(File->GetFullFileName());
-        SCPSink(TargetDir, FullFileName, UnixExtractFilePath(FullFileName),
+        SCPSink(FullFileName, File, TargetDir, UnixExtractFilePath(FullFileName),
           CopyParam, Success, OperationProgress, Params, 0);
         // operation succeded (no exception), so it's ok that
         // remote side closed SCP, but we continue with next file
@@ -2372,8 +2372,9 @@ void __fastcall TSCPFileSystem::SCPSendError(const UnicodeString Message, bool F
   FSecureShell->SendLine(L"scp: error");
 }
 //---------------------------------------------------------------------------
-void __fastcall TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
-  const UnicodeString FileName, const UnicodeString SourceDir,
+void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
+  const TRemoteFile * File, const UnicodeString TargetDir,
+  const UnicodeString SourceDir,
   const TCopyParamType * CopyParam, bool & Success,
   TFileOperationProgressType * OperationProgress, int Params,
   int Level)
@@ -2514,7 +2515,8 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
             FTerminal->LogEvent(FORMAT(L"Warning: Remote host set a compound pathname '%s'", Line.c_str()));
           }
 
-          OperationProgress->SetFile(OnlyFileName);
+          OperationProgress->SetFile(File && !File->GetIsDirectory() ?
+            UnixExtractFileName(File->GetFileName()) : OnlyFileName);
           AbsoluteFileName = SourceDir + OnlyFileName;
           OperationProgress->SetTransferSize(TSize);
         }
@@ -2544,8 +2546,8 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
 
         UnicodeString DestFileName =
           IncludeTrailingBackslash(TargetDir) +
-          CopyParam->ChangeFileName(OperationProgress->FileName, osRemote,
-            Level == 0);
+          CopyParam->ChangeFileName(OperationProgress->FileName,
+            osRemote, Level == 0);
 
         FileData.Attrs = FTerminal->GetLocalFileAttributes(DestFileName);
         // If getting attrs failes, we suppose, that file/folder doesn't exists
@@ -2565,12 +2567,11 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
             /* SCP: can we set the timestamp for directories ? */
           }
           UnicodeString FullFileName = SourceDir + OperationProgress->FileName;
-          SCPSink(DestFileName, FullFileName, UnixIncludeTrailingBackslash(FullFileName),
+          SCPSink(FullFileName, NULL, DestFileName, UnixIncludeTrailingBackslash(FullFileName),
             CopyParam, Success, OperationProgress, Params, Level + 1);
           continue;
         }
-          else
-        if (Ctrl == L'C')
+        else if (Ctrl == L'C')
         {
           TDownloadSessionAction Action(FTerminal->GetActionLog());
           Action.FileName(AbsoluteFileName);

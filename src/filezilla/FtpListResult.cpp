@@ -1393,7 +1393,10 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
 	if (!(str = GetNextToken(line, linelen, tokenlen, pos, 1)))
 		return FALSE;
 
-	copyStr(direntry.name, 0, str, tokenlen, true);
+	CString fileName;
+	copyStr(fileName, 0, str, tokenlen, true);
+	CServerPath path(fileName);
+	direntry.name = path.GetLastSegment();
 	return TRUE;
 }
 

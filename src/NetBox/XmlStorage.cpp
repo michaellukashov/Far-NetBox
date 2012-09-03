@@ -41,7 +41,7 @@ TXmlStorage::~TXmlStorage()
     WriteXml();
   }
   delete FXmlDoc;
-};
+}
 //---------------------------------------------------------------------------
 bool TXmlStorage::LoadXml()
 {

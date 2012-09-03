@@ -376,7 +376,7 @@ void TStrings::SetTextStr(const UnicodeString Text)
       Add(S);
       if (*P == 0x0D) { P++; }
       if (*P == 0x0A) { P++; }
-    };
+    }
   }
 }
 
@@ -502,13 +502,13 @@ UnicodeString TStrings::GetTextStr()
     {
       memmove(P, S.c_str(), L);
       P += S.Length();
-    };
+    }
     L = LB.Length() * sizeof(wchar_t);
     if (L != 0)
     {
       memmove(P, LB.c_str(), L);
       P += LB.Length();
-    };
+    }
   }
   return Result;
 }
@@ -650,7 +650,7 @@ int TStrings::IndexOfName(const UnicodeString Name)
   return NPOS;
 }
 
-const UnicodeString TStrings::GetName(int Index)
+const UnicodeString TStrings::GetName(int Index) const
 {
   return ExtractName(GetStrings(Index));
 }
@@ -1595,7 +1595,7 @@ void TRegistry::SetRootKey(HKEY ARootKey)
     CloseKey();
   }
 }
-void TRegistry::GetValueNames(TStrings * Strings)
+void TRegistry::GetValueNames(TStrings * Strings) const
 {
   Strings->Clear();
   TRegKeyInfo Info;
@@ -1612,7 +1612,7 @@ void TRegistry::GetValueNames(TStrings * Strings)
   }
 }
 
-void TRegistry::GetKeyNames(TStrings * Strings)
+void TRegistry::GetKeyNames(TStrings * Strings) const
 {
   Strings->Clear();
   TRegKeyInfo Info;
@@ -1714,7 +1714,7 @@ bool TRegistry::DeleteKey(const UnicodeString Key)
   return Result;
 }
 
-bool TRegistry::DeleteValue(const UnicodeString Name)
+bool TRegistry::DeleteValue(const UnicodeString Name) const
 {
   bool Result = RegDeleteValue(GetCurrentKey(), Name.c_str()) == ERROR_SUCCESS;
   return Result;
@@ -1741,7 +1741,7 @@ bool TRegistry::KeyExists(const UnicodeString Key)
   return Result;
 }
 
-bool TRegistry::ValueExists(const UnicodeString Name)
+bool TRegistry::ValueExists(const UnicodeString Name) const
 {
   TRegDataInfo Info;
   bool Result = GetDataInfo(Name, Info);
@@ -1760,7 +1760,7 @@ bool TRegistry::GetDataInfo(const UnicodeString ValueName, TRegDataInfo & Value)
   return Result;
 }
 
-TRegDataType TRegistry::GetDataType(const UnicodeString ValueName)
+TRegDataType TRegistry::GetDataType(const UnicodeString ValueName) const
 {
   TRegDataType Result;
   TRegDataInfo Info;
@@ -1775,7 +1775,7 @@ TRegDataType TRegistry::GetDataType(const UnicodeString ValueName)
   return Result;
 }
 
-int TRegistry::GetDataSize(const UnicodeString ValueName)
+int TRegistry::GetDataSize(const UnicodeString ValueName) const
 {
   int Result = 0;
   TRegDataInfo Info;
@@ -1802,7 +1802,7 @@ TDateTime TRegistry::ReadDateTime(const UnicodeString Name)
   return Result;
 }
 
-double TRegistry::ReadFloat(const UnicodeString Name)
+double TRegistry::ReadFloat(const UnicodeString Name) const
 {
   double Result = 0.0;
   TRegDataType RegData;
@@ -1814,7 +1814,7 @@ double TRegistry::ReadFloat(const UnicodeString Name)
   return Result;
 }
 
-int TRegistry::ReadInteger(const UnicodeString Name)
+int TRegistry::ReadInteger(const UnicodeString Name) const
 {
   DWORD Result = 0;
   TRegDataType RegData = rdUnknown;
@@ -1864,7 +1864,7 @@ UnicodeString TRegistry::ReadStringRaw(const UnicodeString Name)
 }
 
 int TRegistry::ReadBinaryData(const UnicodeString Name,
-                              void * Buffer, int BufSize)
+                              void * Buffer, int BufSize) const
 {
   int Result = 0;
   TRegDataInfo Info;

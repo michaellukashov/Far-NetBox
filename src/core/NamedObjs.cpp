@@ -71,7 +71,7 @@ void __fastcall TNamedObject::MakeUniqueIn(TNamedObjectList * List)
         catch (Exception &E)
         {
           N = 0;
-        };
+        }
       Name += L" (" + IntToStr(static_cast<int>(N+1)) + L")";
     }
 }
@@ -130,3 +130,4 @@ int __fastcall TNamedObjectList::GetCount()
 {
   return TObjectList::GetCount() - GetHiddenCount();
 }
+

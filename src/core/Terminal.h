@@ -87,7 +87,7 @@ typedef fastdelegate::FastDelegate8<void,
   TTerminal * /* Terminal */, TPromptKind /* Kind */, UnicodeString /* Name */, UnicodeString /* Instructions */,
   TStrings * /* Prompts */, TStrings * /* Results */, bool & /* Result */, void * /* Arg */> TPromptUserEvent;
 typedef fastdelegate::FastDelegate5<void,
-  TTerminal * /* Terminal */, UnicodeString /* SessionName */, UnicodeString /* Banner */,
+  TTerminal * /* Terminal */, UnicodeString /* SessionName */, const UnicodeString & /* Banner */,
   bool & /* NeverShowAgain */, int /* Options */> TDisplayBannerEvent;
 typedef fastdelegate::FastDelegate3<void,
   TTerminal * /* Terminal */, Exception * /* E */, void * /* Arg */> TExtendedExceptionEvent;

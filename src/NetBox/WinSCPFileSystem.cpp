@@ -30,6 +30,7 @@
 #include <CompThread.hpp>
 #include <SysUtils.hpp>
 #endif
+#include "PuttyIntf.h"
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
 #pragma package(smart_init)
@@ -3711,7 +3712,7 @@ void /* __fastcall */ TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal
 //---------------------------------------------------------------------------
 void /* __fastcall */ TWinSCPFileSystem::TerminalDisplayBanner(
   TTerminal * /*Terminal*/, UnicodeString SessionName,
-  UnicodeString Banner, bool & NeverShowAgain, int Options)
+  const UnicodeString & Banner, bool & NeverShowAgain, int Options)
 {
   BannerDialog(SessionName, Banner, NeverShowAgain, Options);
 }
@@ -4243,7 +4244,7 @@ void __fastcall TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*
           if (I != FMultipleEdits.end())
           {
             UnicodeString FullFileName = UnixIncludeTrailingBackslash(I->second.Directory) +
-                                         I->second.FileName;
+              I->second.FileTitle;
             WinSCPPlugin()->FarEditorControl(ECTL_SETTITLE, static_cast<void *>(const_cast<wchar_t *>(FullFileName.c_str())));
           }
         }
@@ -4289,6 +4290,7 @@ void __fastcall TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*
 
               TMultipleEdit MultipleEdit;
               MultipleEdit.FileName = ExtractFileName(Info->GetFileName(), false);
+              MultipleEdit.FileTitle = FLastMultipleEditFileTitle;
               MultipleEdit.Directory = FLastMultipleEditDirectory;
               MultipleEdit.LocalFileName = Info->GetFileName();
               MultipleEdit.PendingSave = false;
@@ -4397,7 +4399,7 @@ void __fastcall TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*
             I->second.FileName = ::ExtractFileName(Info->GetFileName(), true);
             // update editor title
             UnicodeString FullFileName = UnixIncludeTrailingBackslash(I->second.Directory) +
-                I->second.FileName;
+                I->second.FileTitle;
             // note that we need to reset the title periodically (see EE_REDRAW)
             WinSCPPlugin()->FarEditorControl(ECTL_SETTITLE, static_cast<void *>(const_cast<wchar_t *>(FullFileName.c_str())));
           }
@@ -4483,11 +4485,15 @@ void __fastcall TWinSCPFileSystem::MultipleEdit(const UnicodeString Directory,
 
   UnicodeString FullFileName = UnixIncludeTrailingBackslash(Directory) + FileName;
 
+  TRemoteFile * FileDuplicate = File->Duplicate();
+  UnicodeString NewFileName = GetFileNameHash(FullFileName) + UnixExtractFileExt(FileName);
+  FileDuplicate->SetFileName(NewFileName);
+
   TMultipleEdits::iterator i = FMultipleEdits.begin();
   while (i != FMultipleEdits.end())
   {
     if (UnixComparePaths(Directory, i->second.Directory) &&
-        (FileName == i->second.FileName))
+        (NewFileName == i->second.FileName))
     {
       break;
     }
@@ -4546,7 +4552,7 @@ void __fastcall TWinSCPFileSystem::MultipleEdit(const UnicodeString Directory,
         Self->FNoProgressFinish = false;
         delete FileList;
       } BOOST_SCOPE_EXIT_END
-      FileList->AddObject(FullFileName, File);
+      FileList->AddObject(FullFileName, FileDuplicate);
       TemporarilyDownloadFiles(FileList, CopyParam, TempDir);
     }
 #ifndef _MSC_VER
@@ -4557,15 +4563,17 @@ void __fastcall TWinSCPFileSystem::MultipleEdit(const UnicodeString Directory,
     }
 #endif
 
-    FLastMultipleEditFile = IncludeTrailingBackslash(TempDir) + FileName;
+    FLastMultipleEditFile = IncludeTrailingBackslash(TempDir) + NewFileName;
+    FLastMultipleEditFileTitle = FileName;
     FLastMultipleEditDirectory = Directory;
 
-    if (FarPlugin->Editor(FLastMultipleEditFile,
-           EF_NONMODAL | EF_IMMEDIATERETURN | EF_DISABLEHISTORY, FullFileName))
+    if (FarPlugin->Editor(FLastMultipleEditFile, FullFileName,
+           EF_NONMODAL | EF_IMMEDIATERETURN | EF_DISABLEHISTORY))
     {
       assert(FLastMultipleEditFile == L"");
     }
     FLastMultipleEditFile = L"";
+    FLastMultipleEditFileTitle = L"";
   }
   else
   {
@@ -4596,6 +4604,7 @@ void __fastcall TWinSCPFileSystem::MultipleEdit(const UnicodeString Directory,
 
     assert(Pos < WindowCount);
   }
+  delete FileDuplicate;
 }
 //---------------------------------------------------------------------------
 bool __fastcall TWinSCPFileSystem::IsEditHistoryEmpty()
@@ -4673,5 +4682,16 @@ bool __fastcall TWinSCPFileSystem::IsLogging()
 void __fastcall TWinSCPFileSystem::ShowLog()
 {
   assert(Connected() && FTerminal->GetLog()->GetLoggingToFile());
-  WinSCPPlugin()->Viewer(FTerminal->GetLog()->GetCurrentFileName(), VF_NONMODAL);
+  WinSCPPlugin()->Viewer(FTerminal->GetLog()->GetCurrentFileName(), FTerminal->GetLog()->GetCurrentFileName(), VF_NONMODAL);
 }
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TWinSCPFileSystem::GetFileNameHash(const UnicodeString FileName)
+{
+  RawByteString Result;
+  Result.SetLength(16);
+  md5checksum(
+    reinterpret_cast<const char*>(FileName.c_str()), FileName.Length() * sizeof(wchar_t),
+    (unsigned char *)Result.c_str());
+  return BytesToHex(Result);
+}
+//---------------------------------------------------------------------------

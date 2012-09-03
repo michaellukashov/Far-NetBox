@@ -412,14 +412,14 @@ void __fastcall TSessionAction::Cancel()
 /* __fastcall */ TFileSessionAction::TFileSessionAction(TActionLog * Log, TLogAction Action) :
   TSessionAction(Log, Action)
 {
-};
+}
 //---------------------------------------------------------------------------
 /* __fastcall */ TFileSessionAction::TFileSessionAction(
     TActionLog * Log, TLogAction Action, const UnicodeString & AFileName) :
   TSessionAction(Log, Action)
 {
   FileName(AFileName);
-};
+}
 //---------------------------------------------------------------------------
 void __fastcall TFileSessionAction::FileName(const UnicodeString & FileName)
 {
@@ -434,13 +434,13 @@ void __fastcall TFileSessionAction::FileName(const UnicodeString & FileName)
     TActionLog * Log, TLogAction Action) :
   TFileSessionAction(Log, Action)
 {
-};
+}
 //---------------------------------------------------------------------------
 /* __fastcall */ TFileLocationSessionAction::TFileLocationSessionAction(
     TActionLog * Log, TLogAction Action, const UnicodeString & FileName) :
   TFileSessionAction(Log, Action, FileName)
 {
-};
+}
 //---------------------------------------------------------------------------
 void __fastcall TFileLocationSessionAction::Destination(const UnicodeString & Destination)
 {
@@ -454,13 +454,13 @@ void __fastcall TFileLocationSessionAction::Destination(const UnicodeString & De
 /* __fastcall */ TUploadSessionAction::TUploadSessionAction(TActionLog * Log) :
   TFileLocationSessionAction(Log, laUpload)
 {
-};
+}
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 /* __fastcall */ TDownloadSessionAction::TDownloadSessionAction(TActionLog * Log) :
   TFileLocationSessionAction(Log, laDownload)
 {
-};
+}
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 /* __fastcall */ TChmodSessionAction::TChmodSessionAction(
@@ -666,13 +666,13 @@ TLogLineType __fastcall TSessionLog::GetType(int Index)
   return static_cast<TLogLineType>(reinterpret_cast<size_t>(GetObjects(Index - FTopIndex)));
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TSessionLog::DoAddToParent(TLogLineType Type, UnicodeString Line)
+void /* __fastcall */ TSessionLog::DoAddToParent(TLogLineType Type, const UnicodeString & Line)
 {
   assert(FParent != NULL);
   FParent->Add(Type, Line);
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TSessionLog::DoAddToSelf(TLogLineType Type, UnicodeString Line)
+void /* __fastcall */ TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString & Line)
 {
   if (static_cast<int>(FTopIndex) < 0)
   {

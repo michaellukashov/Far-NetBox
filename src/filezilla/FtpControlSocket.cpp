@@ -1099,6 +1099,7 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
 	if (numread == SOCKET_ERROR)
 	{
 		delete [] buffer;
+		buffer = NULL;
 		if (GetLastError() != WSAEWOULDBLOCK)
 		{
 			ShowStatus(IDS_STATUSMSG_DISCONNECTED, 1);
@@ -1109,6 +1110,7 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
 	if (!numread)
 	{
 		delete [] buffer;
+		buffer = NULL;
 		ShowStatus(IDS_STATUSMSG_DISCONNECTED, 1);
 		DoClose();
 	}
@@ -6148,7 +6150,8 @@ CString CFtpControlSocket::GetReply()
 		LPCSTR utf8 = (LPCSTR)m_RecvBuffer.front();
 		if (m_Operation.nOpMode&CSMODE_LISTFILE && m_Operation.nOpState==LIST_LISTFILE)
 		{
-			line = (LPCSTR)m_ListFile;
+			if (GetReplyCode() == 2)
+				line = (LPCSTR)m_ListFile;
 		}
 		if (!utf8_valid((const unsigned char*)line, strlen(line)))
 		{
