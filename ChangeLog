@@ -1,5 +1,8 @@
-NetBox 2.1.11 ??.09.2012
+NetBox 2.1.11 03.09.2012
 --------------------
+ * Minor changes in "Edit session" dialog
+ * WebDAV: try to open session 5 times before throwing exception
+   (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=780#p97663)
  * Bugfix: issue #34: Problem with editing 2 files with same name over scp
    (https://github.com/michaellukashov/Far-NetBox/issues/34,
    http://forum.farmanager.com/viewtopic.php?f=39&p=97665#p97665)
