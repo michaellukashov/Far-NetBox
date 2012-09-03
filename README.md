@@ -56,8 +56,8 @@ Compile openssl:
 
 Compile NetBox plugin:
 
-    cmd /c %VS100COMNTOOLS%\..\..\VC\vcvarsall.bat x86 && devenv NetBox.sln /Build "UnityDebug|Win32" /USEENV /Project "NetBox"
-    cmd /c %VS100COMNTOOLS%\..\..\VC\vcvarsall.bat x86_amd64 && devenv NetBox.sln /Build "UnityDebug|x64" /USEENV /Project "NetBox"
+    cmd /c %VS100COMNTOOLS%\..\..\VC\vcvarsall.bat x86 && devenv NetBox.sln /Build "Debug|Win32" /USEENV /Project "NetBox"
+    cmd /c %VS100COMNTOOLS%\..\..\VC\vcvarsall.bat x86_amd64 && devenv NetBox.sln /Build "Debug|x64" /USEENV /Project "NetBox"
 
 
 Links
