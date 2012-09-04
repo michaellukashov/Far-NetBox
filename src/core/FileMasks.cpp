@@ -456,7 +456,7 @@ bool __fastcall TFileMasks::Matches(const UnicodeString FileName, bool Local,
   {
     Result = Matches(UnixExtractFileName(FileName), Directory,
       UnixExcludeTrailingBackslash(UnixExtractFilePath(FileName)), Params,
-        ImplicitMatch);
+      ImplicitMatch);
   }
   return Result;
 }

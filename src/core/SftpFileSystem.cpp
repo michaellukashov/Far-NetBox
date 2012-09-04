@@ -3586,7 +3586,6 @@ bool __fastcall TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
           {
             assert(File != NULL);
             Progress.SetFile(File->GetFileName());
-            assert(File != NULL);
             LoadFile(File, &Packet);
             Result = true;
             TOnceDoneOperation OnceDoneOperation;
@@ -4756,7 +4755,6 @@ int /* __fastcall */ TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * 
             OpenParams->FileParams->DestSize = OpenParams->DestFileSize;
           }
           // file exists (otherwise exception was thrown)
-          assert(File);
           SAFE_DESTROY(File);
         }
         catch(...)
@@ -5118,8 +5116,8 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
 
   UnicodeString OnlyFileName = UnixExtractFileName(FileName);
 
-  assert(File);
   TFileMasks::TParams MaskParams;
+  assert(File);
   MaskParams.Size = File->GetSize();
   MaskParams.Modification = File->GetModification();
 
@@ -5129,7 +5127,6 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
     THROW_SKIP_FILE_NULL;
   }
 
-  assert(File);
   FTerminal->LogEvent(FORMAT(L"File: \"%s\"", FileName.c_str()));
 
   OperationProgress->SetFile(OnlyFileName);

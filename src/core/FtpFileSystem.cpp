@@ -252,7 +252,7 @@ private:
   FWaitingForReply(false),
   FFileTransferAbort(ftaNone),
   FIgnoreFileList(false),
-  // FOnCaptureOutput(NULL),
+  FOnCaptureOutput(NULL),
   FFileTransferCancelled(false),
   FFileTransferResumed(0),
   FFileTransferPreserveTime(false),
@@ -648,7 +648,7 @@ void __fastcall TFTPFileSystem::AnyCommand(const UnicodeString Command,
   // current directory for the server
   EnsureLocation();
 
-  assert(FOnCaptureOutput.empty());
+  assert(FOnCaptureOutput == NULL);
   FOnCaptureOutput = OutputEvent;
   // try
   {
@@ -2799,7 +2799,7 @@ void __fastcall TFTPFileSystem::HandleReplyStatus(UnicodeString Response)
 {
   int Code = 0;
 
-  if (!FOnCaptureOutput.empty())
+  if (FOnCaptureOutput != NULL)
   {
     FOnCaptureOutput(Response, false);
   }

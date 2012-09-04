@@ -19,8 +19,8 @@
 #if !defined(AFX_FTPCONTROLSOCKET_H__AE6AA44E_B09D_487A_8EF2_A23697434945__INCLUDED_)
 #define AFX_FTPCONTROLSOCKET_H__AE6AA44E_B09D_487A_8EF2_A23697434945__INCLUDED_
 
-#include "structures.h"	// Hinzugefï¿½gt von der Klassenansicht
-#include "StdAfx.h"	// Hinzugefï¿½gt von der Klassenansicht
+#include "structures.h"	// Hinzugefügt von der Klassenansicht
+#include "StdAfx.h"	// Hinzugefügt von der Klassenansicht
 #include "FileZillaApi.h"
 #include "FileZillaIntf.h"
 #include "ControlSocket.h"

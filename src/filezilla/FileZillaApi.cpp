@@ -864,6 +864,7 @@ CAsyncRequestData::CAsyncRequestData()
 CAsyncRequestData::~CAsyncRequestData()
 {
 }
+
 COverwriteRequestData::COverwriteRequestData()
 {
 	size1 = 0;

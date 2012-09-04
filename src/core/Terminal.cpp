@@ -5535,7 +5535,7 @@ bool /* __fastcall */ TSecondaryTerminal::DoPromptUser(TSessionData * Data,
 {
   bool AResult = false;
 
-  if ((Prompts->GetCount() == 1) && !((void *)(Prompts->GetObjects(0) != NULL)) &&
+  if ((Prompts->GetCount() == 1) && !(Prompts->GetObjects(0) != NULL) &&
       ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
        (Kind == pkTIS) || (Kind == pkCryptoCard)))
   {
