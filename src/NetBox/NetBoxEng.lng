@@ -280,7 +280,7 @@
 "IPv&6"
 "&Charset encoding for filenames:"
 " Proxy "
-"Proxy &type:         "
+"Proxy &type: "
 "None"
 "SOCKS4"
 "SOCKS5"
@@ -288,6 +288,17 @@
 "Telnet"
 "Local"
 "System settings"
+
+"SITE %host"
+"USER %proxyuser, USER %user@%host"
+"OPEN %host"
+"USER %proxyuser, USER %user"
+"USER %user@%host"
+"USER %proxyuser@%host"
+"USER %user@%host %proxyuser"
+"USER %user@%proxyuser@%host"
+
+
 "Pro&xy host name:"
 "Po&rt number:"
 "&User name:"
@@ -369,7 +380,7 @@
 "TLS Explicit encryption"
 "Post login &commands:"
 
-" HTTP(S) protocol options "
+" WebDAV protocol options "
 
 "Attributes"
 "Change file attributes for"

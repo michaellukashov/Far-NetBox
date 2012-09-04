@@ -1,5 +1,6 @@
 NetBox 2.1.12 ??.09.2012
 --------------------
+  * FTP: Add new types of proxy
   * Bugfix: FTP: Error connecting over SOCKS proxy with FTP protocol
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=97755#p97743,
     http://winscp.net/tracker/show_bug.cgi?id=907)
