@@ -3144,7 +3144,7 @@ void __fastcall TSessionDialog::UpdateControls()
   TFtps Ftps = GetFtps();
   bool InternalSshProtocol =
     (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP) || (FSProtocol == fsSCPonly);
-  bool InternalHTTPProtocol = FSProtocol == fsWebDAV;
+  bool InternalWebDAVProtocol = FSProtocol == fsWebDAV;
   bool HTTPSProtocol = (FSProtocol == fsWebDAV) && (Ftps != ftpsNone);
   bool SshProtocol = InternalSshProtocol;
   bool SftpProtocol = (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP);
@@ -3160,9 +3160,9 @@ void __fastcall TSessionDialog::UpdateControls()
     TransferProtocolCombo->GetVisible() &&
     (IndexToFSProtocol(TransferProtocolCombo->GetItemIndex(), false) == fsSFTPonly));
   InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !SshProtocol && !FtpsProtocol && !HTTPSProtocol);
-  FtpEncryptionLabel->SetVisible(FtpProtocol || FtpsProtocol || InternalHTTPProtocol || HTTPSProtocol);
-  FtpEncryptionCombo->SetVisible(FtpProtocol || FtpsProtocol || InternalHTTPProtocol || HTTPSProtocol);
-  FtpEncryptionCombo->SetEnabled(FtpProtocol || FtpsProtocol || InternalHTTPProtocol || HTTPSProtocol);
+  FtpEncryptionLabel->SetVisible(FtpProtocol || FtpsProtocol || InternalWebDAVProtocol || HTTPSProtocol);
+  FtpEncryptionCombo->SetVisible(FtpProtocol || FtpsProtocol || InternalWebDAVProtocol || HTTPSProtocol);
+  FtpEncryptionCombo->SetEnabled(FtpProtocol || FtpsProtocol || InternalWebDAVProtocol || HTTPSProtocol);
   PrivateKeyEdit->SetEnabled(SshProtocol);
   HostNameLabel->SetCaption(GetMsg(LOGIN_HOST_NAME));
 
@@ -3217,7 +3217,7 @@ void __fastcall TSessionDialog::UpdateControls()
     (FSProtocol != fsSCPonly) || CacheDirectoriesCheck->GetChecked());
   PreserveDirectoryChangesCheck->SetEnabled(
     CacheDirectoryChangesCheck->GetIsEnabled() && CacheDirectoryChangesCheck->GetChecked());
-  ResolveSymlinksCheck->SetEnabled(!FtpProtocol && !InternalHTTPProtocol);
+  ResolveSymlinksCheck->SetEnabled(!FtpProtocol && !InternalWebDAVProtocol);
 
   // Environment tab
   DSTModeUnixCheck->SetEnabled(!FtpProtocol);
@@ -3242,7 +3242,7 @@ void __fastcall TSessionDialog::UpdateControls()
   BugsTab->SetEnabled(SshProtocol);
 
   // Http tab
-  HttpTab->SetEnabled(InternalHTTPProtocol);
+  HttpTab->SetEnabled(InternalWebDAVProtocol);
 
   // Scp/Shell tab
   ScpTab->SetEnabled(InternalSshProtocol);
@@ -3261,7 +3261,7 @@ void __fastcall TSessionDialog::UpdateControls()
   TFarComboBox * ProxyMethodCombo = GetProxyMethodCombo();
   TProxyMethod ProxyMethod = IndexToProxyMethod(ProxyMethodCombo->GetItemIndex(), ProxyMethodCombo->GetItems());
   ProxyMethodCombo->SetVisible((GetTab() == ProxyMethodCombo->GetGroup()));
-  TFarComboBox * OtherProxyMethodCombo = (!SshProtocol ? SshProxyMethodCombo : FtpProxyMethodCombo);
+  TFarComboBox * OtherProxyMethodCombo = (!(SshProtocol || InternalWebDAVProtocol) ? SshProxyMethodCombo : FtpProxyMethodCombo);
   OtherProxyMethodCombo->SetVisible(false);
   if (ProxyMethod >= OtherProxyMethodCombo->GetItems()->GetCount())
   {
@@ -4115,8 +4115,8 @@ TFarComboBox * __fastcall TSessionDialog::GetProxyMethodCombo()
   TFSProtocol FSProtocol = GetFSProtocol();
   bool SshProtocol =
     (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP) || (FSProtocol == fsSCPonly);
-
-  return SshProtocol ? SshProxyMethodCombo : FtpProxyMethodCombo;
+  bool WebDAVProtocol = FSProtocol == fsWebDAV;
+  return SshProtocol || WebDAVProtocol ? SshProxyMethodCombo : FtpProxyMethodCombo;
 }
 //---------------------------------------------------------------------------
 TFSProtocol __fastcall TSessionDialog::GetFSProtocol()
