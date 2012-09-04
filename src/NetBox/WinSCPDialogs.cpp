@@ -594,7 +594,7 @@ bool __fastcall TWinSCPPlugin::LoggingConfigurationDialog()
           Configuration->EndUpdate();
         } BOOST_SCOPE_EXIT_END
         Configuration->SetLogging(LoggingCheck->GetChecked());
-        Configuration->SetLogProtocol(LogProtocolCombo->GetItems()->GetSelected());
+        Configuration->SetLogProtocol(LogProtocolCombo->GetItemIndex());
         Configuration->SetLogToFile(LogToFileCheck->GetChecked());
         if (LogToFileCheck->GetChecked())
         {
@@ -3017,12 +3017,12 @@ void __fastcall TSessionDialog::Change()
 
   if (GetHandle() && !ChangesLocked())
   {
-    if ((FTransferProtocolIndex != TransferProtocolCombo->GetItems()->GetSelected()) ||
-        (FFtpEncryptionComboIndex != FtpEncryptionCombo->GetItems()->GetSelected()))
+    if ((FTransferProtocolIndex != TransferProtocolCombo->GetItemIndex()) ||
+        (FFtpEncryptionComboIndex != FtpEncryptionCombo->GetItemIndex()))
     {
       TransferProtocolComboChange();
     }
-    if (FLoginTypeIndex != LoginTypeCombo->GetItems()->GetSelected())
+    if (FLoginTypeIndex != LoginTypeCombo->GetItemIndex())
     {
       LoginTypeComboChange();
     }
@@ -3081,8 +3081,8 @@ void __fastcall TSessionDialog::TransferProtocolComboChange()
   // even if user cancels the dialog
   SavePing(FSessionData);
 
-  FTransferProtocolIndex = TransferProtocolCombo->GetItems()->GetSelected();
-  FFtpEncryptionComboIndex = FtpEncryptionCombo->GetItems()->GetSelected();
+  FTransferProtocolIndex = TransferProtocolCombo->GetItemIndex();
+  FFtpEncryptionComboIndex = FtpEncryptionCombo->GetItemIndex();
   int Port = PortNumberEdit->GetAsInteger();
 
   LoadPing(FSessionData);
@@ -3127,7 +3127,7 @@ void __fastcall TSessionDialog::TransferProtocolComboChange()
 //---------------------------------------------------------------------------
 void TSessionDialog::LoginTypeComboChange()
 {
-  FLoginTypeIndex = LoginTypeCombo->GetItems()->GetSelected();
+  FLoginTypeIndex = LoginTypeCombo->GetItemIndex();
   if (GetLoginType() == ltAnonymous)
   {
     UserNameEdit->SetText(AnonymousUserName);
@@ -3158,7 +3158,7 @@ void __fastcall TSessionDialog::UpdateControls()
   // Basic tab
   AllowScpFallbackCheck->SetVisible(
     TransferProtocolCombo->GetVisible() &&
-    (IndexToFSProtocol(TransferProtocolCombo->GetItems()->GetSelected(), false) == fsSFTPonly));
+    (IndexToFSProtocol(TransferProtocolCombo->GetItemIndex(), false) == fsSFTPonly));
   InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !SshProtocol && !FtpsProtocol && !HTTPSProtocol);
   FtpEncryptionLabel->SetVisible(FtpProtocol || FtpsProtocol || InternalHTTPProtocol || HTTPSProtocol);
   FtpEncryptionCombo->SetVisible(FtpProtocol || FtpsProtocol || InternalHTTPProtocol || HTTPSProtocol);
@@ -3171,7 +3171,7 @@ void __fastcall TSessionDialog::UpdateControls()
 
   // Connection sheet
   FtpPasvModeCheck->SetEnabled(FtpProtocol);
-  if (FtpProtocol && (FtpProxyMethodCombo->GetItems()->GetSelected() != pmNone) && !FtpPasvModeCheck->GetChecked())
+  if (FtpProtocol && (FtpProxyMethodCombo->GetItemIndex() != pmNone) && !FtpPasvModeCheck->GetChecked())
   {
     FtpPasvModeCheck->SetChecked(true);
     TWinSCPPlugin * WinSCPPlugin = dynamic_cast<TWinSCPPlugin *>(FarPlugin);
@@ -3233,7 +3233,7 @@ void __fastcall TSessionDialog::UpdateControls()
 
   // Kex tab
   KexTab->SetEnabled(SshProtocol && !SshProt1onlyButton->GetChecked() &&
-                     (BugRekey2Combo->GetItems()->GetSelected() != 2));
+                     (BugRekey2Combo->GetItemIndex() != 2));
   KexUpButton->SetEnabled((KexListBox->GetItems()->GetSelected() > 0));
   KexDownButton->SetEnabled(
     (KexListBox->GetItems()->GetSelected() < KexListBox->GetItems()->GetCount() - 1));
@@ -3259,7 +3259,7 @@ void __fastcall TSessionDialog::UpdateControls()
 
   // Connection/Proxy tab
   TFarComboBox * ProxyMethodCombo = GetProxyMethodCombo();
-  TProxyMethod ProxyMethod = IndexToProxyMethod(ProxyMethodCombo->GetItems()->GetSelected(), ProxyMethodCombo->GetItems());
+  TProxyMethod ProxyMethod = IndexToProxyMethod(ProxyMethodCombo->GetItemIndex(), ProxyMethodCombo->GetItems());
   ProxyMethodCombo->SetVisible((GetTab() == ProxyMethodCombo->GetGroup()));
   TFarComboBox * OtherProxyMethodCombo = (!SshProtocol ? SshProxyMethodCombo : FtpProxyMethodCombo);
   OtherProxyMethodCombo->SetVisible(false);
@@ -3269,7 +3269,7 @@ void __fastcall TSessionDialog::UpdateControls()
   }
   else
   {
-    OtherProxyMethodCombo->GetItems()->SetSelected(ProxyMethodCombo->GetItems()->GetSelected());
+    OtherProxyMethodCombo->GetItems()->SetSelected(ProxyMethodCombo->GetItemIndex());
   }
 
   bool Proxy = (ProxyMethod != pmNone);
@@ -3317,9 +3317,9 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
   SetCaption(GetMsg(Captions[Action]));
 
   FSessionData = SessionData;
-  FTransferProtocolIndex = TransferProtocolCombo->GetItems()->GetSelected();
-  FLoginTypeIndex = LoginTypeCombo->GetItems()->GetSelected();
-  FFtpEncryptionComboIndex = FtpEncryptionCombo->GetItems()->GetSelected();
+  FTransferProtocolIndex = TransferProtocolCombo->GetItemIndex();
+  FLoginTypeIndex = LoginTypeCombo->GetItemIndex();
+  FFtpEncryptionComboIndex = FtpEncryptionCombo->GetItemIndex();
 
   HideTabs();
   SelectTab(tabSession);
@@ -3731,7 +3731,7 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
     {
       SessionData->SetDSTMode(dstmWin);
     }
-    if (EOLTypeCombo->GetItems()->GetSelected() == 0)
+    if (EOLTypeCombo->GetItemIndex() == 0)
     {
       SessionData->SetEOLType(eolLF);
     }
@@ -3740,7 +3740,7 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
       SessionData->SetEOLType(eolCRLF);
     }
     /*
-    switch (UtfCombo->GetItems()->GetSelected())
+    switch (UtfCombo->GetItemIndex())
     {
     case 1:
         SessionData->SetNotUtf(asOn);
@@ -3779,15 +3779,15 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
     // SFTP tab
 
     #define TRISTATE(COMBO, PROP, MSG) \
-      SessionData->Set##PROP(sb##PROP, static_cast<TAutoSwitch>(2 - COMBO->GetItems()->GetSelected()));
+      SessionData->Set##PROP(sb##PROP, static_cast<TAutoSwitch>(2 - COMBO->GetItemIndex()));
     // SFTP_BUGS();
-    SessionData->SetSFTPBug(sbSymlink, static_cast<TAutoSwitch>(2 - SFTPBugSymlinkCombo->GetItems()->GetSelected()));
-    SessionData->SetSFTPBug(sbSignedTS, static_cast<TAutoSwitch>(2 - SFTPBugSignedTSCombo->GetItems()->GetSelected()));
+    SessionData->SetSFTPBug(sbSymlink, static_cast<TAutoSwitch>(2 - SFTPBugSymlinkCombo->GetItemIndex()));
+    SessionData->SetSFTPBug(sbSignedTS, static_cast<TAutoSwitch>(2 - SFTPBugSignedTSCombo->GetItemIndex()));
 
     SessionData->SetSftpServer(
       (SftpServerEdit->GetText() == SftpServerEdit->GetItems()->GetStrings(0)) ?
       UnicodeString() : SftpServerEdit->GetText());
-    SessionData->SetSFTPMaxVersion(SFTPMaxVersionCombo->GetItems()->GetSelected());
+    SessionData->SetSFTPMaxVersion(SFTPMaxVersionCombo->GetItemIndex());
     SessionData->SetSFTPMinPacketSize(SFTPMinPacketSizeEdit->GetAsInteger());
     SessionData->SetSFTPMaxPacketSize(SFTPMaxPacketSizeEdit->GetAsInteger());
 
@@ -3821,7 +3821,7 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
       SessionData->SetFtps(ftpsNone);
     }
 
-    switch (FtpEncryptionCombo->GetItems()->GetSelected())
+    switch (FtpEncryptionCombo->GetItemIndex())
     {
       case 0:
         SessionData->SetFtps(ftpsNone);
@@ -3994,14 +3994,14 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
     SessionData->SetCompression(HttpCompressionCheck->GetChecked());
 
     #undef TRISTATE
-    SessionData->SetBug(sbIgnore1, static_cast<TAutoSwitch>(2 - BugIgnore1Combo->GetItems()->GetSelected()));
-    SessionData->SetBug(sbPlainPW1, static_cast<TAutoSwitch>(2 - BugPlainPW1Combo->GetItems()->GetSelected()));
-    SessionData->SetBug(sbRSA1, static_cast<TAutoSwitch>(2 - BugRSA1Combo->GetItems()->GetSelected()));
-    SessionData->SetBug(sbHMAC2, static_cast<TAutoSwitch>(2 - BugHMAC2Combo->GetItems()->GetSelected()));
-    SessionData->SetBug(sbDeriveKey2, static_cast<TAutoSwitch>(2 - BugDeriveKey2Combo->GetItems()->GetSelected()));
-    SessionData->SetBug(sbRSAPad2, static_cast<TAutoSwitch>(2 - BugRSAPad2Combo->GetItems()->GetSelected()));
-    SessionData->SetBug(sbPKSessID2, static_cast<TAutoSwitch>(2 - BugPKSessID2Combo->GetItems()->GetSelected()));
-    SessionData->SetBug(sbRekey2, static_cast<TAutoSwitch>(2 - BugRekey2Combo->GetItems()->GetSelected()));
+    SessionData->SetBug(sbIgnore1, static_cast<TAutoSwitch>(2 - BugIgnore1Combo->GetItemIndex()));
+    SessionData->SetBug(sbPlainPW1, static_cast<TAutoSwitch>(2 - BugPlainPW1Combo->GetItemIndex()));
+    SessionData->SetBug(sbRSA1, static_cast<TAutoSwitch>(2 - BugRSA1Combo->GetItemIndex()));
+    SessionData->SetBug(sbHMAC2, static_cast<TAutoSwitch>(2 - BugHMAC2Combo->GetItemIndex()));
+    SessionData->SetBug(sbDeriveKey2, static_cast<TAutoSwitch>(2 - BugDeriveKey2Combo->GetItemIndex()));
+    SessionData->SetBug(sbRSAPad2, static_cast<TAutoSwitch>(2 - BugRSAPad2Combo->GetItemIndex()));
+    SessionData->SetBug(sbPKSessID2, static_cast<TAutoSwitch>(2 - BugPKSessID2Combo->GetItemIndex()));
+    SessionData->SetBug(sbRekey2, static_cast<TAutoSwitch>(2 - BugRekey2Combo->GetItemIndex()));
   }
 
   return Result;
@@ -4130,7 +4130,7 @@ TFarComboBox * __fastcall TSessionDialog::GetProxyMethodCombo()
 //---------------------------------------------------------------------------
 TFSProtocol __fastcall TSessionDialog::GetFSProtocol()
 {
-  return IndexToFSProtocol(TransferProtocolCombo->GetItems()->GetSelected(),
+  return IndexToFSProtocol(TransferProtocolCombo->GetItemIndex(),
                            AllowScpFallbackCheck->GetChecked());
 }
 //---------------------------------------------------------------------------
@@ -4220,12 +4220,12 @@ TFtps __fastcall TSessionDialog::IndexToFtps(int Index)
 //---------------------------------------------------------------------------
 TFtps __fastcall TSessionDialog::GetFtps()
 {
-  return IndexToFtps(FtpEncryptionCombo->GetItems()->GetSelected());
+  return IndexToFtps(FtpEncryptionCombo->GetItemIndex());
 }
 //---------------------------------------------------------------------------
 TLoginType __fastcall TSessionDialog::GetLoginType()
 {
-  return IndexToLoginType(LoginTypeCombo->GetItems()->GetSelected());
+  return IndexToLoginType(LoginTypeCombo->GetItemIndex());
 }
 //---------------------------------------------------------------------------
 TFSProtocol __fastcall TSessionDialog::IndexToFSProtocol(int Index, bool AllowScpFallback)
@@ -5552,7 +5552,7 @@ TCopyParamType __fastcall TCopyParamsContainer::GetParams()
 
   Result.SetClearArchive(ClearArchiveCheck->GetChecked());
 
-  Result.SetNegativeExclude((NegativeExcludeCombo->GetItems()->GetSelected() == 1));
+  Result.SetNegativeExclude((NegativeExcludeCombo->GetItemIndex() == 1));
   Result.GetExcludeFileMask().SetMasks(ExcludeFileMaskCombo->GetText());
 
   Result.SetPreserveTime(PreserveTimeCheck->GetChecked());
