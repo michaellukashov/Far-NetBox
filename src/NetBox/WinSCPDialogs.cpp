@@ -573,7 +573,7 @@ bool __fastcall TWinSCPPlugin::LoggingConfigurationDialog()
     Dialog->AddStandardButtons();
 
     LoggingCheck->SetChecked(Configuration->GetLogging());
-    LogProtocolCombo->GetItems()->SetSelected(Configuration->GetLogProtocol());
+    LogProtocolCombo->SetItemIndex(Configuration->GetLogProtocol());
     LogToFileCheck->SetChecked(Configuration->GetLogToFile());
     LogFileNameEdit->SetText(
       (!Configuration->GetLogToFile() && Configuration->GetLogFileName().IsEmpty()) ?
@@ -3265,11 +3265,11 @@ void __fastcall TSessionDialog::UpdateControls()
   OtherProxyMethodCombo->SetVisible(false);
   if (ProxyMethod >= OtherProxyMethodCombo->GetItems()->GetCount())
   {
-    OtherProxyMethodCombo->GetItems()->SetSelected(pmNone);
+    OtherProxyMethodCombo->SetItemIndex(pmNone);
   }
   else
   {
-    OtherProxyMethodCombo->GetItems()->SetSelected(ProxyMethodCombo->GetItemIndex());
+    OtherProxyMethodCombo->SetItemIndex(ProxyMethodCombo->GetItemIndex());
   }
 
   bool Proxy = (ProxyMethod != pmNone);
@@ -3330,7 +3330,7 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
   HostNameEdit->SetText(SessionData->GetHostName());
   PortNumberEdit->SetAsInteger(SessionData->GetPortNumber());
 
-  LoginTypeCombo->GetItems()->SetSelected(
+  LoginTypeCombo->SetItemIndex(
     LoginTypeToIndex(SessionData->GetLoginType()));
 
   UserNameEdit->SetText(SessionData->GetUserName());
@@ -3339,17 +3339,17 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
 
   if ((GetLoginType() == ltAnonymous))
   {
-    LoginTypeCombo->GetItems()->SetSelected(0);
+    LoginTypeCombo->SetItemIndex(0);
     UserNameEdit->SetText(AnonymousUserName);
     PasswordEdit->SetText(L"");
   }
   else
   {
-    LoginTypeCombo->GetItems()->SetSelected(1);
+    LoginTypeCombo->SetItemIndex(1);
   }
 
   bool AllowScpFallback;
-  TransferProtocolCombo->GetItems()->SetSelected(
+  TransferProtocolCombo->SetItemIndex(
     FSProtocolToIndex(SessionData->GetFSProtocol(), AllowScpFallback));
   AllowScpFallbackCheck->SetChecked(AllowScpFallback);
 
@@ -3364,25 +3364,25 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
   // Environment tab
   if (SessionData->GetEOLType() == eolLF)
   {
-    EOLTypeCombo->GetItems()->SetSelected(0);
+    EOLTypeCombo->SetItemIndex(0);
   }
   else
   {
-    EOLTypeCombo->GetItems()->SetSelected(1);
+    EOLTypeCombo->SetItemIndex(1);
   }
   /*
   switch (SessionData->GetNotUtf())
   {
   case asOn:
-      UtfCombo->GetItems()->SetSelected(1);
+      UtfCombo->SetItemIndex(1);
       break;
 
   case asOff:
-      UtfCombo->GetItems()->SetSelected(2);
+      UtfCombo->SetItemIndex(2);
       break;
 
   default:
-      UtfCombo->GetItems()->SetSelected(0);
+      UtfCombo->SetItemIndex(0);
       break;
   }
   */
@@ -3442,7 +3442,7 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
   // SFTP tab
 
   #define TRISTATE(COMBO, PROP, MSG) \
-    COMBO->GetItems()->SetSelected(2 - SessionData->Get ## PROP)
+    COMBO->SetItemIndex(2 - SessionData->Get ## PROP)
   SFTP_BUGS();
 
   if (SessionData->GetSftpServer().IsEmpty())
@@ -3453,7 +3453,7 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
   {
     SftpServerEdit->SetText(SessionData->GetSftpServer());
   }
-  SFTPMaxVersionCombo->GetItems()->SetSelected(SessionData->GetSFTPMaxVersion());
+  SFTPMaxVersionCombo->SetItemIndex(SessionData->GetSFTPMaxVersion());
   SFTPMinPacketSizeEdit->SetAsInteger(SessionData->GetSFTPMinPacketSize());
   SFTPMaxPacketSizeEdit->SetAsInteger(SessionData->GetSFTPMaxPacketSize());
 
@@ -3486,23 +3486,23 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
   switch (Ftps)
   {
     case ftpsNone:
-      FtpEncryptionCombo->GetItems()->SetSelected(0);
+      FtpEncryptionCombo->SetItemIndex(0);
       break;
 
     case ftpsImplicit:
-      FtpEncryptionCombo->GetItems()->SetSelected(1);
+      FtpEncryptionCombo->SetItemIndex(1);
       break;
 
     case ftpsExplicitSsl:
-      FtpEncryptionCombo->GetItems()->SetSelected(2);
+      FtpEncryptionCombo->SetItemIndex(2);
       break;
 
     case ftpsExplicitTls:
-      FtpEncryptionCombo->GetItems()->SetSelected(3);
+      FtpEncryptionCombo->SetItemIndex(3);
       break;
 
     default:
-      FtpEncryptionCombo->GetItems()->SetSelected(0);
+      FtpEncryptionCombo->SetItemIndex(0);
       break;
   }
 
@@ -4377,14 +4377,14 @@ void /* __fastcall */ TSessionDialog::AuthGSSAPICheckAllowChange(TFarDialogItem 
 void /* __fastcall */ TSessionDialog::UnixEnvironmentButtonClick(
   TFarButton * /*Sender*/, bool & /*Close*/)
 {
-  EOLTypeCombo->GetItems()->SetSelected(0);
+  EOLTypeCombo->SetItemIndex(0);
   DSTModeUnixCheck->SetChecked(true);
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TSessionDialog::WindowsEnvironmentButtonClick(
   TFarButton * /*Sender*/, bool & /*Close*/)
 {
-  EOLTypeCombo->GetItems()->SetSelected(1);
+  EOLTypeCombo->SetItemIndex(1);
   DSTModeWinCheck->SetChecked(true);
 }
 //---------------------------------------------------------------------------
@@ -5509,7 +5509,7 @@ void __fastcall TCopyParamsContainer::SetParams(TCopyParamType value)
 
   ClearArchiveCheck->SetChecked(value.GetClearArchive());
 
-  NegativeExcludeCombo->GetItems()->SetSelected((value.GetNegativeExclude() ? 1 : 0));
+  NegativeExcludeCombo->SetItemIndex((value.GetNegativeExclude() ? 1 : 0));
   ExcludeFileMaskCombo->SetText(value.GetExcludeFileMask().GetMasks());
 
   PreserveTimeCheck->SetChecked(value.GetPreserveTime());
