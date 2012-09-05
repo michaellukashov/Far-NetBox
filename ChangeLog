@@ -1,5 +1,6 @@
 NetBox 2.1.12 ??.09.2012
 --------------------
+  * WinSCP core upgraded to 5.0.9 RC
   * Bugfix: issue #34: Problem with editing 2 files with same name over scp
     (https://github.com/michaellukashov/Far-NetBox/issues/34)
   * FTP: Add new types of proxy
