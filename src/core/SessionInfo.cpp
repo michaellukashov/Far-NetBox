@@ -943,17 +943,20 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
     }
 #endif
 
-    typedef BOOL (WINAPI * TGetUserNameEx)(EXTENDED_NAME_FORMAT NameFormat, LPWSTR lpNameBuffer, PULONG nSize);
-    HINSTANCE Secur32 = LoadLibrary(L"secur32.dll");
-    TGetUserNameEx GetUserNameEx =
-      (Secur32 != NULL) ? reinterpret_cast<TGetUserNameEx>(GetProcAddress(Secur32, "GetUserNameExW")) : NULL;
-    wchar_t UserName[UNLEN + 1];
-    unsigned long UserNameSize = LENOF(UserName);
-    if ((GetUserNameEx == NULL) || !GetUserNameEx(NameSamCompatible, (LPWSTR)UserName, &UserNameSize))
+    if (0)
     {
-      wcscpy(UserName, L"<Failed to retrieve username>");
+      typedef BOOL (WINAPI * TGetUserNameEx)(EXTENDED_NAME_FORMAT NameFormat, LPWSTR lpNameBuffer, PULONG nSize);
+      HINSTANCE Secur32 = LoadLibrary(L"secur32.dll");
+      TGetUserNameEx GetUserNameEx =
+        (Secur32 != NULL) ? reinterpret_cast<TGetUserNameEx>(GetProcAddress(Secur32, "GetUserNameExW")) : NULL;
+      wchar_t UserName[UNLEN + 1];
+      unsigned long UserNameSize = LENOF(UserName);
+      if ((GetUserNameEx == NULL) || !GetUserNameEx(NameSamCompatible, (LPWSTR)UserName, &UserNameSize))
+      {
+        wcscpy(UserName, L"<Failed to retrieve username>");
+      }
+      ADF(L"Local account: %s", UserName);
     }
-    ADF(L"Local account: %s", UserName);
     unsigned short Y, M, D, H, N, S, MS;
     TDateTime DateTime = Now();
     DateTime.DecodeDate(Y, M, D);
@@ -964,19 +967,28 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
     // ADF(L"Command-line: %s", CmdLine.c_str());
     ADF(L"Login time: %s", dt.c_str());
     AddSeparator();
-    ADF(L"Session name: %s (%s)", Data->GetSessionName().c_str(), Data->GetSource().c_str());
+    if (0)
+    {
+      ADF(L"Session name: %s (%s)", Data->GetSessionName().c_str(), Data->GetSource().c_str());
+    }
     ADF(L"Host name: %s (Port: %d)", Data->GetHostNameExpanded().c_str(), Data->GetPortNumber());
-    ADF(L"User name: %s (Password: %s, Key file: %s)",
-      Data->GetUserNameExpanded().c_str(), BooleanToEngStr(!Data->GetPassword().IsEmpty()).c_str(),
-       BooleanToEngStr(!Data->GetPublicKeyFile().IsEmpty()).c_str())
+    if (0)
+    {
+      ADF(L"User name: %s (Password: %s, Key file: %s)",
+        Data->GetUserNameExpanded().c_str(), BooleanToEngStr(!Data->GetPassword().IsEmpty()).c_str(),
+         BooleanToEngStr(!Data->GetPublicKeyFile().IsEmpty()).c_str())
+    }
     ADF(L"Tunnel: %s", BooleanToEngStr(Data->GetTunnel()).c_str());
     if (Data->GetTunnel())
     {
       ADF(L"Tunnel: Host name: %s (Port: %d)", Data->GetTunnelHostName().c_str(), Data->GetTunnelPortNumber());
-      ADF(L"Tunnel: User name: %s (Password: %s, Key file: %s)",
-        Data->GetTunnelUserName().c_str(), BooleanToEngStr(!Data->GetTunnelPassword().IsEmpty()).c_str(),
-         BooleanToEngStr(!Data->GetTunnelPublicKeyFile().IsEmpty()).c_str());
-        ADF(L"Tunnel: Local port number: %d", Data->GetTunnelLocalPortNumber());
+      if (0)
+      {
+        ADF(L"Tunnel: User name: %s (Password: %s, Key file: %s)",
+          Data->GetTunnelUserName().c_str(), BooleanToEngStr(!Data->GetTunnelPassword().IsEmpty()).c_str(),
+           BooleanToEngStr(!Data->GetTunnelPublicKeyFile().IsEmpty()).c_str());
+          ADF(L"Tunnel: Local port number: %d", Data->GetTunnelLocalPortNumber());
+      }
     }
     ADF(L"Transfer Protocol: %s", Data->GetFSProtocolStr().c_str());
     ADF(L"Code Page: %d", Data->GetCodePageAsNumber());
