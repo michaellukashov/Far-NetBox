@@ -191,7 +191,6 @@ private:
   TDateTime FBeepOnFinishAfter;
   UnicodeString FDefaultPuttyPathOnly;
   UnicodeString FDefaultPuttyPath;
-  bool FSynchronizeBrowsing;
   TCopyParamList * FCopyParamList;
   bool FCopyParamListDefaults;
   UnicodeString FCopyParamCurrent;
@@ -208,7 +207,7 @@ public:
   virtual LCID __fastcall GetLocale();
   void __fastcall SetLocale(LCID value);
   void __fastcall SetLocaleSafe(LCID value);
-  virtual HANDLE __fastcall LoadNewResourceModule(LCID Locale,
+  virtual HINSTANCE __fastcall LoadNewResourceModule(LCID Locale,
     UnicodeString * FileName = NULL);
   HANDLE __fastcall GetResourceModule();
   // virtual void __fastcall SetResourceModule(HINSTANCE Instance);
@@ -224,6 +223,7 @@ public:
   int __fastcall GetCopyParamIndex();
   TGUICopyParamType __fastcall GetCurrentCopyParam();
   TGUICopyParamType __fastcall GetCopyParamPreset(UnicodeString Name);
+  bool __fastcall GetHasCopyParamPreset(UnicodeString Name);
   void __fastcall SetCopyParamIndex(int value);
   void __fastcall SetCopyParamCurrent(UnicodeString value);
   void __fastcall SetNewDirectoryProperties(const TRemoteProperties & value);
@@ -266,6 +266,7 @@ public:
   __property int CopyParamIndex = { read = GetCopyParamIndex, write = SetCopyParamIndex };
   __property TGUICopyParamType CurrentCopyParam = { read = GetCurrentCopyParam };
   __property TGUICopyParamType CopyParamPreset[UnicodeString Name] = { read = GetCopyParamPreset };
+  __property bool HasCopyParamPreset[UnicodeString Name] = { read = GetHasCopyParamPreset };
   __property TRemoteProperties NewDirectoryProperties = { read = FNewDirectoryProperties, write = SetNewDirectoryProperties };
   __property int KeepUpToDateChangeDelay = { read = FKeepUpToDateChangeDelay, write = FKeepUpToDateChangeDelay };
   __property UnicodeString ChecksumAlg = { read = FChecksumAlg, write = FChecksumAlg };
@@ -307,8 +308,6 @@ public:
   TGUICopyParamType & __fastcall GetDefaultCopyParam() { return FDefaultCopyParam; }
   bool __fastcall GetBeepOnFinish() { return FBeepOnFinish; }
   void __fastcall SetBeepOnFinish(bool value) { FBeepOnFinish = value; }
-  bool __fastcall GetSynchronizeBrowsing() { return FSynchronizeBrowsing; }
-  void __fastcall SetSynchronizeBrowsing(bool value) { FSynchronizeBrowsing = value; }
   TDateTime __fastcall GetBeepOnFinishAfter() { return FBeepOnFinishAfter; }
   void __fastcall SetBeepOnFinishAfter(TDateTime value) { FBeepOnFinishAfter = value; }
   UnicodeString __fastcall GetCopyParamCurrent() { return FCopyParamCurrent; }

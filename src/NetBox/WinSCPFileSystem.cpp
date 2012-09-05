@@ -3361,8 +3361,10 @@ bool __fastcall TWinSCPFileSystem::Connect(TSessionData * Data)
     FQueue = NULL;
   }
 
-  FSynchronisingBrowse = GUIConfiguration->GetSynchronizeBrowsing();
-
+  if (FTerminal != NULL)
+  {
+    FSynchronisingBrowse = FTerminal->GetSessionData()->GetSynchronizeBrowsing();
+  }
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -3388,7 +3390,7 @@ void __fastcall TWinSCPFileSystem::Disconnect()
   FQueueStatus = NULL;
   if (FTerminal != NULL)
   {
-    GUIConfiguration->SetSynchronizeBrowsing(FSynchronisingBrowse);
+    FTerminal->GetSessionData()->SetSynchronizeBrowsing(FSynchronisingBrowse);
   }
   SAFE_DESTROY(FTerminal);
 }

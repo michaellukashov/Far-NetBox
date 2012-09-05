@@ -195,7 +195,7 @@ bool __fastcall ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString Path,
   Result = (ShellExecuteEx(&ExecuteInfo) != 0);
   if (Result)
   {
-    if (!ProcessMessages.empty())
+    if (ProcessMessages != NULL)
     {
       unsigned long WaitResult;
       do
