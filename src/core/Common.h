@@ -119,7 +119,7 @@ typedef void __fastcall (__closure* TProcessLocalFileEvent)
   (const UnicodeString FileName, const TSearchRec Rec, void * Param);
 #else
 typedef fastdelegate::FastDelegate3<void,
-  UnicodeString, TSearchRec /* Rec */, void * /* Param */> TProcessLocalFileEvent;
+  const UnicodeString & /* FileName */, const TSearchRec & /* Rec */, void * /* Param */> TProcessLocalFileEvent;
 #endif
 bool __fastcall FileSearchRec(const UnicodeString FileName, TSearchRec & Rec);
 void __fastcall ProcessLocalDirectory(UnicodeString DirName,

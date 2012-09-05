@@ -2872,7 +2872,7 @@ void __fastcall TStoredSessionList::Cleanup()
         delete Storage;
       } BOOST_SCOPE_EXIT_END
       Storage->SetAccessMode(smReadWrite);
-      if (Storage->OpenRootKey(false))
+      if (Storage->OpenRootKey(False))
       {
         Storage->RecursiveDeleteSubKey(Configuration->GetStoredSessionsSubKey());
       }
@@ -2961,6 +2961,20 @@ void __fastcall TStoredSessionList::UpdateStaticUsage()
   Configuration->Usage->Set(L"UsingDefaultStoredSession", CustomDefaultStoredSession);
   Configuration->Usage->Set(L"UsingStoredSessionsFolders", Folders);
 */
+}
+//---------------------------------------------------------------------------
+TSessionData * __fastcall TStoredSessionList::FindSame(TSessionData * Data)
+{
+  TSessionData * Result;
+  if (Data->GetHidden() && Data->GetName().IsEmpty())
+  {
+    Result = NULL;
+  }
+  else
+  {
+    Result = dynamic_cast<TSessionData *>(FindByName(Data->GetName()));
+  }
+  return Result;
 }
 //---------------------------------------------------------------------------
 int __fastcall TStoredSessionList::IndexOf(TSessionData * Data)

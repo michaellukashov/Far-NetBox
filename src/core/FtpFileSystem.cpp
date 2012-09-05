@@ -471,6 +471,7 @@ void __fastcall TFTPFileSystem::Open()
     }
 
     FPasswordFailed = false;
+
     FActive = FFileZillaIntf->Connect(
       HostName.c_str(), Data->GetPortNumber(), UserName.c_str(),
       Password.c_str(), Account.c_str(), false, Path.c_str(),
@@ -1126,8 +1127,8 @@ void __fastcall TFTPFileSystem::Sink(const UnicodeString FileName,
 
   Action.FileName(FileName);
 
-  assert(File);
   TFileMasks::TParams MaskParams;
+  assert(File);
   MaskParams.Size = File->GetSize();
   MaskParams.Modification = File->GetModification();
 
@@ -1137,7 +1138,6 @@ void __fastcall TFTPFileSystem::Sink(const UnicodeString FileName,
     THROW_SKIP_FILE_NULL;
   }
 
-  assert(File);
   FTerminal->LogEvent(FORMAT(L"File: \"%s\"", FileName.c_str()));
 
   OperationProgress->SetFile(OnlyFileName);
