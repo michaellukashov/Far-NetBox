@@ -48,7 +48,7 @@ public:
 	CFtpControlSocket(CMainThread *pMainThread);
 	virtual ~CFtpControlSocket();
 
-// ï¿½berschreibungen
+// Überschreibungen
 public:
 	virtual void Connect(t_server &server);
 	virtual void OnTimer();
@@ -87,7 +87,7 @@ public:
 	bool IsMisleadingListResponse();
 
 	
-	// Vom Klassen-Assistenten generierte virtuelle Funktionsï¿½berschreibungen
+	// Vom Klassen-Assistenten generierte virtuelle Funktionsüberschreibungen
 	//{{AFX_VIRTUAL(CFtpControlSocket)
 	public:
 	virtual void OnReceive(int nErrorCode);
@@ -98,7 +98,7 @@ public:
 
 	// Generierte Nachrichtenzuordnungsfunktionen
 	//{{AFX_MSG(CFtpControlSocket)
-		// HINWEIS - Der Klassen-Assistent fï¿½gt hier Member-Funktionen ein und entfernt diese.
+		// HINWEIS - Der Klassen-Assistent fügt hier Member-Funktionen ein und entfernt diese.
 	//}}AFX_MSG
 
 // Implementierung
@@ -181,6 +181,6 @@ private:
 /////////////////////////////////////////////////////////////////////////////
 
 //{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ fï¿½gt unmittelbar vor der vorhergehenden Zeile zusï¿½tzliche Deklarationen ein.
+// Microsoft Visual C++ fügt unmittelbar vor der vorhergehenden Zeile zusätzliche Deklarationen ein.
 
 #endif // AFX_FTPCONTROLSOCKET_H__AE6AA44E_B09D_487A_8EF2_A23697434945__INCLUDED_
