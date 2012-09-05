@@ -207,4 +207,6 @@ DWORD inline __fastcall GetVersionNumber219() { return MAKEVERSIONNUMBER(2,1,9);
 DWORD inline __fastcall GetVersionNumber2110() { return MAKEVERSIONNUMBER(2,1,10); }
 DWORD inline __fastcall GetCurrentVersionNumber() { return StrToVersionNumber(NETBOX_VERSION_NUMBER); }
 //---------------------------------------------------------------------------
+UnicodeString __fastcall FormatBytes(__int64 Bytes, bool UseOrders = true);
+//---------------------------------------------------------------------------
 #endif

@@ -1850,6 +1850,28 @@ UnicodeString __fastcall VersionNumberToStr(DWORD VersionNumber)
   UnicodeString Result = FORMAT(L"%d.%d.%d", Major, Minor, Revision);
   return Result;
 }
+//---------------------------------------------------------------------
+UnicodeString __fastcall FormatBytes(__int64 Bytes, bool UseOrders)
+{
+  UnicodeString Result;
+
+  if (!UseOrders || (Bytes < static_cast<__int64>(100*1024)))
+  {
+    // Result = FormatFloat(L"#,##0 \"B\"", Bytes);
+    Result = FORMAT(L"%.0f B", static_cast<double>(Bytes));
+  }
+  else if (Bytes < static_cast<__int64>(100*1024*1024))
+  {
+    // Result = FormatFloat(L"#,##0 \"KiB\"", Bytes / 1024);
+    Result = FORMAT(L"%.0f KiB", static_cast<double>(Bytes / 1024.0));
+  }
+  else
+  {
+    // Result = FormatFloat(L"#,##0 \"MiB\"", Bytes / (1024*1024));
+    Result = FORMAT(L"%.0f MiB", static_cast<double>(Bytes / (1024*1024.0)));
+  }
+  return Result;
+}
 //---------------------------------------------------------------------------
 // Suppress warning about unused constants in DateUtils.hpp
 // #pragma warn -8080
