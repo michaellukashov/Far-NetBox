@@ -4075,8 +4075,9 @@ void __fastcall TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressTyp
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinSCPFileSystem::UploadFromEditor(bool NoReload, const UnicodeString FileName,
-    const UnicodeString DestPath)
+void __fastcall TWinSCPFileSystem::UploadFromEditor(bool NoReload,
+  const UnicodeString FileName, const UnicodeString RealFileName,
+  const UnicodeString DestPath)
 {
   assert(FFileList == NULL);
   FFileList = new TStringList();
@@ -4092,13 +4093,16 @@ void __fastcall TWinSCPFileSystem::UploadFromEditor(bool NoReload, const Unicode
   }
 
   // try
+  TRemoteFile * File = new TRemoteFile();
+  File->SetFileName(RealFileName);
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&PrevAutoReadDirectory) )
+    BOOST_SCOPE_EXIT ( (&Self) (&PrevAutoReadDirectory) (&File) )
     {
       Self->FTerminal->SetAutoReadDirectory(PrevAutoReadDirectory);
       SAFE_DESTROY(Self->FFileList);
+      SAFE_DESTROY(File);
     } BOOST_SCOPE_EXIT_END
-    FFileList->Add(FileName);
+    FFileList->AddObject(FileName, File);
     UploadFiles(false, 0, true, DestPath);
   }
 #ifndef _MSC_VER
@@ -4138,12 +4142,12 @@ void __fastcall TWinSCPFileSystem::UploadOnSave(bool NoReload)
         {
           assert(FLastEditFile == Info->GetFileName());
           // always upload under the most recent name
-          UploadFromEditor(NoReload, FLastEditFile, FTerminal->GetCurrentDirectory());
+          UploadFromEditor(NoReload, FLastEditFile, FLastEditFile, FTerminal->GetCurrentDirectory());
         }
 
         if (MultipleEdit)
         {
-          UploadFromEditor(NoReload, Info->GetFileName(), I->second.Directory);
+          UploadFromEditor(NoReload, Info->GetFileName(), I->second.FileTitle, I->second.Directory);
           // note that panel gets not refreshed upon switch to
           // panel view. but that's intentional
         }
@@ -4287,7 +4291,7 @@ void __fastcall TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*
         {
           if (I->second.PendingSave)
           {
-            UploadFromEditor(true, Info->GetFileName(), I->second.Directory);
+            UploadFromEditor(true, Info->GetFileName(), I->second.FileTitle, I->second.Directory);
             // reload panel content (if uploaded to current directory.
             // no need for RefreshPanel as panel is not visible yet.
             UpdatePanel();

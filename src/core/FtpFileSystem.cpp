@@ -1318,13 +1318,15 @@ void __fastcall TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   {
     bool Success = false;
     FileName = FilesToCopy->GetStrings(Index);
-    FileNameOnly = ExtractFileName(FileName, false);
+    TRemoteFile * File = dynamic_cast<TRemoteFile *>(FilesToCopy->GetObjects(Index));
+    UnicodeString RealFileName = File ? File->GetFileName() : FileName;
+    FileNameOnly = ExtractFileName(RealFileName, false);
 
     // try
     {
-      BOOST_SCOPE_EXIT ( (&OperationProgress) (&FileName) (&Success) (&OnceDoneOperation) )
+      BOOST_SCOPE_EXIT ( (&OperationProgress) (&RealFileName) (&Success) (&OnceDoneOperation) )
       {
-        OperationProgress->Finish(FileName, Success, OnceDoneOperation);
+        OperationProgress->Finish(RealFileName, Success, OnceDoneOperation);
       } BOOST_SCOPE_EXIT_END
       try
       {
@@ -1337,7 +1339,7 @@ void __fastcall TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
             FTerminal->DirectoryModified(FullTargetDir + FileNameOnly, true);
           }
         }
-        SourceRobust(FileName, FullTargetDir, CopyParam, Params, OperationProgress,
+        SourceRobust(FileName, File, FullTargetDir, CopyParam, Params, OperationProgress,
           tfFirstLevel);
         Success = true;
         FLastDataSent = Now();
@@ -1360,6 +1362,7 @@ void __fastcall TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
 }
 //---------------------------------------------------------------------------
 void __fastcall TFTPFileSystem::SourceRobust(const UnicodeString FileName,
+  const TRemoteFile * File,
   const UnicodeString TargetDir, const TCopyParamType * CopyParam, int Params,
   TFileOperationProgressType * OperationProgress, unsigned int Flags)
 {
@@ -1376,7 +1379,7 @@ void __fastcall TFTPFileSystem::SourceRobust(const UnicodeString FileName,
     Retry = false;
     try
     {
-      Source(FileName, TargetDir, CopyParam, Params, &OpenParams, &FileParams, OperationProgress,
+      Source(FileName, File, TargetDir, CopyParam, Params, &OpenParams, &FileParams, OperationProgress,
         Flags, Action);
     }
     catch(Exception & E)
@@ -1405,21 +1408,23 @@ void __fastcall TFTPFileSystem::SourceRobust(const UnicodeString FileName,
 //---------------------------------------------------------------------------
 // Copy file to remote host
 void __fastcall TFTPFileSystem::Source(const UnicodeString FileName,
+  const TRemoteFile * File,
   const UnicodeString TargetDir, const TCopyParamType * CopyParam, int Params,
   TOpenRemoteFileParams * OpenParams,
   TOverwriteFileParams * FileParams,
   TFileOperationProgressType * OperationProgress, unsigned int Flags,
   TUploadSessionAction & Action)
 {
-  FTerminal->LogEvent(FORMAT(L"File: \"%s\"", FileName.c_str()));
+  UnicodeString RealFileName = File ? File->GetFileName() : FileName;
+  FTerminal->LogEvent(FORMAT(L"File: \"%s\"", RealFileName.c_str()));
 
   Action.FileName(ExpandUNCFileName(FileName));
 
-  OperationProgress->SetFile(FileName, false);
+  OperationProgress->SetFile(RealFileName, false);
 
   if (!FTerminal->AllowLocalFileTransfer(FileName, CopyParam))
   {
-    FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", FileName.c_str()));
+    FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", RealFileName.c_str()));
     THROW_SKIP_FILE_NULL;
   }
 
@@ -1436,15 +1441,15 @@ void __fastcall TFTPFileSystem::Source(const UnicodeString FileName,
   if (Dir)
   {
     Action.Cancel();
-    DirectorySource(IncludeTrailingBackslash(FileName), TargetDir,
+    DirectorySource(IncludeTrailingBackslash(RealFileName), TargetDir,
       OpenParams->LocalFileAttrs, CopyParam, Params, OperationProgress, Flags);
   }
   else
   {
-    UnicodeString DestFileName = CopyParam->ChangeFileName(ExtractFileName(FileName, false),
+    UnicodeString DestFileName = CopyParam->ChangeFileName(ExtractFileName(RealFileName, false),
       osLocal, FLAGSET(Flags, tfFirstLevel));
 
-    FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", FileName.c_str()));
+    FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", RealFileName.c_str()));
 
     OperationProgress->SetLocalSize(Size);
 
@@ -1471,7 +1476,7 @@ void __fastcall TFTPFileSystem::Source(const UnicodeString FileName,
     MaskParams.Size = Size;
     MaskParams.Modification = Modification;
     OperationProgress->SetAsciiTransfer(
-      CopyParam->UseAsciiTransfer(FileName, osLocal, MaskParams));
+      CopyParam->UseAsciiTransfer(RealFileName, osLocal, MaskParams));
     FTerminal->LogEvent(
       UnicodeString(OperationProgress->AsciiTransfer ? L"Ascii" : L"Binary") +
         L" transfer mode selected.");
@@ -1504,7 +1509,7 @@ void __fastcall TFTPFileSystem::Source(const UnicodeString FileName,
       UserData.Params = Params;
       UserData.AutoResume = FLAGSET(Flags, tfAutoResume) || DoResume;
       UserData.CopyParam = CopyParam;
-      FileTransfer(FileName, FileName, DestFileName,
+      FileTransfer(RealFileName, FileName, DestFileName,
         TargetDir, false, Size, TransferType, UserData, OperationProgress);
     }
 
@@ -1574,7 +1579,7 @@ void __fastcall TFTPFileSystem::DirectorySource(const UnicodeString DirectoryNam
       {
         if ((SearchRec.Name != THISDIRECTORY) && (SearchRec.Name != PARENTDIRECTORY))
         {
-          SourceRobust(FileName, DestFullName, CopyParam, Params, OperationProgress,
+          SourceRobust(FileName, NULL, DestFullName, CopyParam, Params, OperationProgress,
             Flags & ~(tfFirstLevel | tfAutoResume));
           // if any file got uploaded (i.e. there were any file in the
           // directory and at least one was not skipped),
