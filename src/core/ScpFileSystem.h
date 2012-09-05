@@ -123,6 +123,7 @@ private:
     const TCopyParamType * CopyParam, bool & Success,
     TFileOperationProgressType * OperationProgress, int Params, int Level);
   void __fastcall SCPSource(const UnicodeString FileName,
+    const TRemoteFile * File,
     const UnicodeString TargetDir, const TCopyParamType * CopyParam, int Params,
     TFileOperationProgressType * OperationProgress, int Level);
   void __fastcall SendCommand(const UnicodeString Cmd);

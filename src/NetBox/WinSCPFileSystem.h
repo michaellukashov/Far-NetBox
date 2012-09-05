@@ -232,7 +232,8 @@ protected:
     TCopyParamType CopyParam, UnicodeString & TempDir);
   int __fastcall UploadFiles(bool Move, int OpMode, bool Edit, UnicodeString DestPath);
   void __fastcall UploadOnSave(bool NoReload);
-  void __fastcall UploadFromEditor(bool NoReload, const UnicodeString FileName, const UnicodeString DestPath);
+  void __fastcall UploadFromEditor(bool NoReload, const UnicodeString FileName,
+    const UnicodeString RealFileName, const UnicodeString DestPath);
   void __fastcall LogAuthentication(TTerminal * Terminal, const UnicodeString Msg);
   void __fastcall MultipleEdit();
   void __fastcall MultipleEdit(const UnicodeString Directory, const UnicodeString FileName, TRemoteFile * File);
