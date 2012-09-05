@@ -191,7 +191,7 @@ const int ropNoReadDirectory = 0x02;
 //---------------------------------------------------------------------------
 const int boDisableNeverShowAgain = 0x01;
 //---------------------------------------------------------------------------
-class TTerminal : public TObject, public TSessionUI //, private boost::noncopyable
+class TTerminal : public TObject, public TSessionUI
 {
 public:
   // TScript::SynchronizeProc relies on the order
@@ -357,8 +357,8 @@ protected:
     const TRemoteFile * File, /*TCalculateSizeParams*/ void * Size);
   void /* __fastcall */ DoCalculateDirectorySize(const UnicodeString FileName,
     const TRemoteFile * File, TCalculateSizeParams * Params);
-  void /* __fastcall */ CalculateLocalFileSize(const UnicodeString FileName,
-    const TSearchRec Rec, /*__int64*/ void * Params);
+  void /* __fastcall */ CalculateLocalFileSize(const UnicodeString & FileName,
+    const TSearchRec & Rec, /*__int64*/ void * Params);
   void /* __fastcall */ CalculateLocalFilesSize(TStrings * FileList, __int64 & Size,
     const TCopyParamType * CopyParam = NULL);
   TBatchOverwrite /* __fastcall */ EffectiveBatchOverwrite(
@@ -501,12 +501,12 @@ public:
   void __fastcall RefreshDirectory();
   void __fastcall RenameFile(const UnicodeString FileName, const UnicodeString NewName);
   void __fastcall RenameFile(const TRemoteFile * File, const UnicodeString NewName, bool CheckExistence);
-  void /* __fastcall */ MoveFile(UnicodeString FileName, const TRemoteFile * File,
-    /*const TMoveFileParams*/ void * Param);
+  void /* __fastcall */ MoveFile(const UnicodeString FileName, const TRemoteFile * File,
+    /* const TMoveFileParams */ void * Param);
   bool __fastcall MoveFiles(TStrings * FileList, const UnicodeString Target,
     const UnicodeString FileMask);
-  void /* __fastcall */ CopyFile(UnicodeString FileName, const TRemoteFile * File,
-    /*const TMoveFileParams*/ void * Param);
+  void /* __fastcall */ CopyFile(const UnicodeString FileName, const TRemoteFile * File,
+    /* const TMoveFileParams */ void * Param);
   bool __fastcall CopyFiles(TStrings * FileList, const UnicodeString Target,
     const UnicodeString FileMask);
   void __fastcall CalculateFilesSize(TStrings * FileList, __int64 & Size,
@@ -527,8 +527,8 @@ public:
   void __fastcall SpaceAvailable(const UnicodeString Path, TSpaceAvailable & ASpaceAvailable);
   bool __fastcall DirectoryFileList(const UnicodeString Path,
     TRemoteFileList *& FileList, bool CanLoad);
-  void /* __fastcall */ MakeLocalFileList(const UnicodeString FileName,
-    const TSearchRec Rec, void * Param);
+  void /* __fastcall */ MakeLocalFileList(const UnicodeString & FileName,
+    const TSearchRec & Rec, void * Param);
   UnicodeString __fastcall FileUrl(const UnicodeString FileName);
   bool __fastcall FileOperationLoopQuery(Exception & E,
     TFileOperationProgressType * OperationProgress, const UnicodeString Message,
@@ -773,7 +773,7 @@ public:
     saDownloadUpdate, saDeleteRemote, saDeleteLocal };
   static const int ActionCount = saDeleteLocal;
 
-  class TItem
+  class TItem : public TObject
   {
   friend class TTerminal;
 

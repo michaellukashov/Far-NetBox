@@ -854,7 +854,7 @@ void __fastcall TSessionLog::OpenLogFile()
 //---------------------------------------------------------------------------
 void __fastcall TSessionLog::StateChange()
 {
-  if (!FOnStateChange.empty())
+  if (FOnStateChange != NULL)
   {
     FOnStateChange(this);
   }
@@ -960,6 +960,8 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
     DateTime.DecodeTime(H, N, S, MS);
     UnicodeString dt = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d", D, M, Y, H, N, S);
     // ADF(L"Login time: %s", FormatDateTime(L"dddddd tt", Now()).c_str());
+    ADF(L"Working directory: %s", GetCurrentDir().c_str());
+    // ADF(L"Command-line: %s", CmdLine.c_str());
     ADF(L"Login time: %s", dt.c_str());
     AddSeparator();
     ADF(L"Session name: %s (%s)", Data->GetSessionName().c_str(), Data->GetSource().c_str());

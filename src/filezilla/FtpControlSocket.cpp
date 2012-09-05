@@ -1898,7 +1898,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 				{
 					temp = temp.Mid(3);
 					pData->port = atol( T2CA(temp.Left(temp.GetLength() - 1) ) );
-					if ((int)pData->port < 0 || pData->port > 65535)
+					if (pData->port < 0 || pData->port > 65535)
 					{
 						LogMessage(__FILE__, __LINE__, this, FZ_LOG_WARNING, _T("Port %u not valid"), pData->port);
 						error = TRUE;
@@ -6302,11 +6302,9 @@ bool CFtpControlSocket::CheckForcePasvIp(CString & host)
 			}
 			else if (!IsRoutableAddress(host) && IsRoutableAddress(ahost))
 			{
-
 				LogMessage(__FILE__, __LINE__, this, FZ_LOG_WARNING, _T("Server sent passive reply with unroutable address %s, using host address instead."), host, ahost);
 				host = ahost;
 			}
-
 			break;
 	}
 

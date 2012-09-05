@@ -346,7 +346,6 @@ void __fastcall TSecureShell::Open()
   FreeBackend(); // in case we are reconnecting
   const char * InitError = FBackend->init(this, &FBackendHandle, FConfig,
     const_cast<char *>(W2MB(FSessionData->GetHostNameExpanded().c_str(), FSessionData->GetCodePageAsNumber()).c_str()), FSessionData->GetPortNumber(), &RealHost, 0,
-    // (char *)AnsiString(FSessionData->GetHostNameExpanded()).c_str(), FSessionData->GetPortNumber(), &RealHost, 0,
     FConfig->tcp_keepalives);
   sfree(RealHost);
   if (InitError)
@@ -678,7 +677,7 @@ void __fastcall TSecureShell::CWrite(const char * Data, int Length)
 //---------------------------------------------------------------------------
 void __fastcall TSecureShell::RegisterReceiveHandler(TNotifyEvent Handler)
 {
-  assert(FOnReceive.empty());
+  assert(FOnReceive == NULL);
   FOnReceive = Handler;
 }
 //---------------------------------------------------------------------------
@@ -734,7 +733,7 @@ void __fastcall TSecureShell::FromBackend(bool IsStdErr, const unsigned char * D
       PendLen += Len;
     }
 
-    if (!FOnReceive.empty())
+    if (FOnReceive != NULL)
     {
       if (!FFrozen)
       {
@@ -1166,7 +1165,7 @@ void __fastcall TSecureShell::ClearStdError()
 void __fastcall TSecureShell::CaptureOutput(TLogLineType Type,
   const UnicodeString & Line)
 {
-  if (!FOnCaptureOutput.empty())
+  if (FOnCaptureOutput != NULL)
   {
     FOnCaptureOutput(Line, (Type == llStdError));
   }

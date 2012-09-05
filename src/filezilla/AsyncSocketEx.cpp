@@ -1485,9 +1485,13 @@ BOOL CAsyncSocketEx::GetPeerName( SOCKADDR* lpSockAddr, int* lpSockAddrLen )
 #endif //NOLAYERS
 
 	if (!getpeername(m_SocketData.hSocket, lpSockAddr, lpSockAddrLen))
+	{
 		return TRUE;
+	}
 	else
+	{
 		return FALSE;
+	}
 }
 
 #ifdef _AFX

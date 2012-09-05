@@ -195,7 +195,7 @@ bool __fastcall ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString Path,
   Result = (ShellExecuteEx(&ExecuteInfo) != 0);
   if (Result)
   {
-    if (!ProcessMessages.empty())
+    if (ProcessMessages != NULL)
     {
       unsigned long WaitResult;
       do
@@ -418,27 +418,5 @@ bool __fastcall TLocalCustomCommand::HasLocalFileName(const UnicodeString & Comm
 bool __fastcall TLocalCustomCommand::IsFileCommand(const UnicodeString & Command)
 {
   return TFileCustomCommand::IsFileCommand(Command) || HasLocalFileName(Command);
-}
-//---------------------------------------------------------------------
-UnicodeString __fastcall FormatBytes(__int64 Bytes, bool UseOrders)
-{
-  UnicodeString Result;
-
-  if (!UseOrders || (Bytes < static_cast<__int64>(100*1024)))
-  {
-    // Result = FormatFloat(L"#,##0 \"B\"", Bytes);
-    Result = FORMAT(L"%.0f B", static_cast<double>(Bytes));
-  }
-  else if (Bytes < static_cast<__int64>(100*1024*1024))
-  {
-    // Result = FormatFloat(L"#,##0 \"KiB\"", Bytes / 1024);
-    Result = FORMAT(L"%.0f KiB", static_cast<double>(Bytes / 1024.0));
-  }
-  else
-  {
-    // Result = FormatFloat(L"#,##0 \"MiB\"", Bytes / (1024*1024));
-    Result = FORMAT(L"%.0f MiB", static_cast<double>(Bytes / (1024*1024.0)));
-  }
-  return Result;
 }
 //---------------------------------------------------------------------

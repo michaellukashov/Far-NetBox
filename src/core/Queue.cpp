@@ -45,7 +45,7 @@ public:
 
   virtual void __fastcall Execute(void * Arg)
   {
-    if (!OnNotify.empty())
+    if (OnNotify != NULL)
     {
       OnNotify(Sender);
     }
@@ -71,7 +71,7 @@ public:
 
   virtual void __fastcall Execute(void * Arg)
   {
-    if (!OnInformation.empty())
+    if (OnInformation != NULL)
     {
       OnInformation(Terminal, Str, Status, Phase);
     }
@@ -103,7 +103,7 @@ public:
 
   virtual void __fastcall Execute(void * Arg)
   {
-    if (!OnQueryUser.empty())
+    if (OnQueryUser != NULL)
     {
       OnQueryUser(Sender, Query, MoreMessages, Answers, Params, Answer, Type, Arg);
     }
@@ -142,7 +142,7 @@ public:
 
   virtual void __fastcall Execute(void * Arg)
   {
-    if (!OnPromptUser.empty())
+    if (OnPromptUser != NULL)
     {
       OnPromptUser(Terminal, Kind, Name, Instructions, Prompts, Results, Result, Arg);
     }
@@ -173,7 +173,7 @@ public:
 
   virtual void __fastcall Execute(void * Arg)
   {
-    if (!OnShowExtendedException.empty())
+    if (OnShowExtendedException != NULL)
     {
       OnShowExtendedException(Terminal, E, Arg);
     }
@@ -200,7 +200,7 @@ public:
 
   virtual void __fastcall Execute(void * Arg)
   {
-    if (!OnDisplayBanner.empty())
+    if (OnDisplayBanner != NULL)
     {
       OnDisplayBanner(Terminal, SessionName, Banner, NeverShowAgain, Options);
     }
@@ -229,7 +229,7 @@ public:
 
   virtual void __fastcall Execute(void * Arg)
   {
-    if (!OnReadDirectory.empty())
+    if (OnReadDirectory != NULL)
     {
       OnReadDirectory(Sender, ReloadOnly);
     }
@@ -256,7 +256,7 @@ public:
 
   virtual void __fastcall Execute(void * Arg)
   {
-    if (!OnReadDirectoryProgress.empty())
+    if (OnReadDirectoryProgress != NULL)
     {
       OnReadDirectoryProgress(Sender, Progress, Cancel);
     }
@@ -417,7 +417,7 @@ void __fastcall TSignalThread::Init(bool LowPriority)
 {
   TSimpleThread::Init();
   FEvent = CreateEvent(NULL, false, false, NULL);
-  assert(FEvent != 0);
+  assert(FEvent != NULL);
 
   if (LowPriority)
   {
@@ -1072,7 +1072,7 @@ void __fastcall TTerminalQueue::ProcessEvent()
 //---------------------------------------------------------------------------
 void __fastcall TTerminalQueue::DoQueueItemUpdate(TQueueItem * Item)
 {
-  if (!GetOnQueueItemUpdate().empty())
+  if (GetOnQueueItemUpdate() != NULL)
   {
     GetOnQueueItemUpdate()(this, Item);
   }
@@ -1080,7 +1080,7 @@ void __fastcall TTerminalQueue::DoQueueItemUpdate(TQueueItem * Item)
 //---------------------------------------------------------------------------
 void __fastcall TTerminalQueue::DoListUpdate()
 {
-  if (!GetOnListUpdate().empty())
+  if (GetOnListUpdate() != NULL)
   {
     GetOnListUpdate()(this);
   }
@@ -1088,7 +1088,7 @@ void __fastcall TTerminalQueue::DoListUpdate()
 //---------------------------------------------------------------------------
 void __fastcall TTerminalQueue::DoEvent(TQueueEvent Event)
 {
-  if (!GetOnEvent().empty())
+  if (GetOnEvent() != NULL)
   {
     GetOnEvent()(this, Event);
   }
@@ -2216,10 +2216,10 @@ void __fastcall TTerminalThread::TerminalReopen()
 //---------------------------------------------------------------------------
 void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
 {
-  assert(FAction.empty());
+  assert(FAction == NULL);
   assert(FException == NULL);
   assert(FIdleException == NULL);
-  assert(!FOnIdle.empty());
+  assert(FOnIdle != NULL);
 
   FCancelled = false;
   FAction = Action;
@@ -2261,7 +2261,7 @@ void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
             }
             else
             {
-              if (!FOnIdle.empty())
+              if (FOnIdle != NULL)
               {
                 FOnIdle(NULL);
               }
@@ -2313,7 +2313,7 @@ void /* __fastcall */ TTerminalThread::TerminalReopenEvent(TObject * /*Sender*/)
 //---------------------------------------------------------------------------
 void __fastcall TTerminalThread::ProcessEvent()
 {
-  assert(FEvent != 0);
+  assert(FEvent != NULL);
   assert(FException == NULL);
 
   try

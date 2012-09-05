@@ -90,7 +90,7 @@ public:
   BOOL post;
 };
 //---------------------------------------------------------------------------
-typedef struct t_ffam_transferstatus_struct
+typedef struct
 {
   __int64 bytes;
 #ifdef MPEXT
@@ -123,7 +123,7 @@ public:
     ASSERT(AfxIsValidAddress(lpBuf, nCount));
 
     DWORD dwRead;
-    if (!::ReadFile((HANDLE)m_hFile, lpBuf, nCount, &dwRead, NULL))
+    if (!::ReadFile(m_hFile, lpBuf, nCount, &dwRead, NULL))
     {
       // The only change from MFC CFile::Read is m_strFileName
       CFileException::ThrowOsError((LONG)::GetLastError(), m_strFileName);
@@ -135,10 +135,10 @@ public:
   // MFC allocates CObject (ancestor of CFile) with new, but deallocates with free,
   // what codeguard dislikes, this is fix, not sure if it is necessary for
   // release version, but probably causes no harm
-  // void operator delete(void* p)
-  // {
-    // delete p;
-  // }
+  /*void operator delete(void* p)
+  {
+    delete p;
+  }*/
 };
 //---------------------------------------------------------------------------
 #define CFile CFileFix

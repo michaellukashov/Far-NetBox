@@ -727,8 +727,7 @@ void __fastcall TSCPFileSystem::ReadCommandOutput(int Params, const UnicodeStrin
       {
         FTerminal->TerminalError(FMTLOAD(COMMAND_FAILED_CODEONLY, GetReturnCode()));
       }
-      else
-      if (!(Params & coOnlyReturnCode) &&
+      else if (!(Params & coOnlyReturnCode) &&
           ((!Message.IsEmpty() && ((FOutput->GetCount() == 0) || !(Params & coIgnoreWarnings))) ||
            WrongReturnCode))
       {
@@ -1389,7 +1388,7 @@ void /* __fastcall */ TSCPFileSystem::CaptureOutput(const UnicodeString & AddedL
       !RemoveLastLine(Line, ReturnCode) ||
       !Line.IsEmpty())
   {
-    assert(!FOnCaptureOutput.empty());
+    assert(FOnCaptureOutput != NULL);
     FOnCaptureOutput(Line, StdError);
   }
 }
@@ -2376,7 +2375,8 @@ void __fastcall TSCPFileSystem::SCPSendError(const UnicodeString Message, bool F
 }
 //---------------------------------------------------------------------------
 void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
-  const TRemoteFile * File, const UnicodeString TargetDir,
+  const TRemoteFile * File,
+  const UnicodeString TargetDir,
   const UnicodeString SourceDir,
   const TCopyParamType * CopyParam, bool & Success,
   TFileOperationProgressType * OperationProgress, int Params,
@@ -2581,16 +2581,16 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
 
           try
           {
-            HANDLE File = NULL;
+            HANDLE FileHandle = NULL;
             TStream * FileStream = NULL;
 
             /* TODO 1 : Turn off read-only attr */
 
             // try
             {
-              BOOST_SCOPE_EXIT ( (&File) (&FileStream) )
+              BOOST_SCOPE_EXIT ( (&FileHandle) (&FileStream) )
               {
-                if (File) { CloseHandle(File); }
+                if (FileHandle) { CloseHandle(FileHandle); }
                 if (FileStream) { delete FileStream; }
               } BOOST_SCOPE_EXIT_END
               try
@@ -2636,13 +2636,13 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
                 Action.Destination(DestFileName);
 
                 if (!FTerminal->CreateLocalFile(DestFileName, OperationProgress,
-                       &File, FLAGSET(Params, cpNoConfirmation)))
+                       &FileHandle, FLAGSET(Params, cpNoConfirmation)))
                 {
                   SkipConfirmed = true;
                   EXCEPTION;
                 }
 
-                FileStream = new TSafeHandleStream(File);
+                FileStream = new TSafeHandleStream(FileHandle);
               }
               catch (Exception &E)
               {
@@ -2734,13 +2734,13 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
 
               if (FileData.SetTime && CopyParam->GetPreserveTime())
               {
-                SetFileTime(File, NULL, &FileData.AcTime, &FileData.WrTime);
+                SetFileTime(FileHandle, NULL, &FileData.AcTime, &FileData.WrTime);
               }
             }
 #ifndef _MSC_VER
             __finally
             {
-              if (File) CloseHandle(File);
+              if (FileHandle) CloseHandle(FileHandle);
               if (FileStream) delete FileStream;
             }
 #endif

@@ -56,13 +56,12 @@ void /* __fastcall */ TSynchronizeController::StartStop(TObject * Sender,
 
     try
     {
-      // assert(OnSynchronizeLog != NULL);
+      assert(OnSynchronizeLog != NULL);
       FSynchronizeLog = OnSynchronizeLog;
-      assert(!FSynchronizeLog.empty());
 
       FOptions = Options;
       if (FLAGSET(Params.Options, soSynchronize) &&
-          (!FOnSynchronize.empty()))
+          (FOnSynchronize != NULL))
       {
         FOnSynchronize(this, Params.LocalDirectory,
           Params.RemoteDirectory, CopyParam,
@@ -72,7 +71,7 @@ void /* __fastcall */ TSynchronizeController::StartStop(TObject * Sender,
       FCopyParam = CopyParam;
       FSynchronizeParams = Params;
 
-      // assert(OnAbort);
+      assert(OnAbort);
       FSynchronizeAbort = OnAbort;
 
       if (FLAGSET(FSynchronizeParams.Options, soRecurse))
@@ -144,7 +143,7 @@ void __fastcall TSynchronizeController::SynchronizeChange(
     SynchronizeLog(slChange, FMTLOAD(SYNCHRONIZE_CHANGE,
       ExcludeTrailingBackslash(LocalDirectory).c_str()));
 
-    if (!FOnSynchronize.empty())
+    if (FOnSynchronize != NULL)
     {
       // this is completelly wrong as the options structure
       // can contain non-root specific options in future
@@ -212,7 +211,7 @@ void __fastcall TSynchronizeController::SynchronizeAbort(bool Close)
     // FIXME FSynchronizeMonitor->Close();
     Error(SNotImplemented, 258);
   }
-  assert(!FSynchronizeAbort.empty());
+  assert(FSynchronizeAbort);
   FSynchronizeAbort(NULL, Close);
 }
 //---------------------------------------------------------------------------
@@ -243,7 +242,7 @@ void __fastcall TSynchronizeController::LogOperation(TSynchronizeOperation Opera
 void __fastcall TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
   const UnicodeString Message)
 {
-  if (!FSynchronizeLog.empty())
+  if (FSynchronizeLog != NULL)
   {
     FSynchronizeLog(this, Entry, Message);
   }
@@ -268,7 +267,7 @@ void __fastcall TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
 void __fastcall TSynchronizeController::SynchronizeInvalid(
   TObject * /*Sender*/, const UnicodeString Directory, const UnicodeString ErrorStr)
 {
-  if (!FOnSynchronizeInvalid.empty())
+  if (FOnSynchronizeInvalid != NULL)
   {
     FOnSynchronizeInvalid(this, Directory, ErrorStr);
   }
@@ -279,7 +278,7 @@ void __fastcall TSynchronizeController::SynchronizeInvalid(
 void __fastcall TSynchronizeController::SynchronizeTooManyDirectories(
   TObject * /*Sender*/, int & MaxDirectories)
 {
-  if (!FOnTooManyDirectories.empty())
+  if (FOnTooManyDirectories != NULL)
   {
     FOnTooManyDirectories(this, MaxDirectories);
   }

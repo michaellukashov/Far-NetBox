@@ -563,7 +563,7 @@ void __fastcall TConfiguration::Changed()
 {
   if (FUpdating == 0)
   {
-    if (!GetOnChange().empty())
+    if (GetOnChange())
     {
       GetOnChange()(this);
     }

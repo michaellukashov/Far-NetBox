@@ -348,16 +348,6 @@ public:
 
   inline void AddString(const UnicodeString Value, bool Utf)
   {
-    /*
-    if (Utf)
-    {
-      AddUtfString(Value);
-    }
-    else
-    {
-      AddString(AnsiString(Value));
-    }
-    */
     AddStringW(Value);
   }
 
@@ -597,16 +587,6 @@ public:
 
   inline UnicodeString GetString(bool Utf)
   {
-    /*
-    if (Utf)
-    {
-      return GetUtfString();
-    }
-    else
-    {
-      return GetAnsiString();
-    }
-    */
     return GetStringW();
   }
 
@@ -3622,7 +3602,7 @@ void __fastcall TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & 
   TOnceDoneOperation OnceDoneOperation; // not used
 
   // recurse into subdirectories only if we have callback function
-  if (!OnCalculatedChecksum.empty())
+  if (OnCalculatedChecksum != NULL)
   {
     for (int Index = 0; Index < FileList->GetCount(); Index++)
     {

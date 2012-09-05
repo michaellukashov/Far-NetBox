@@ -108,7 +108,7 @@ void __fastcall Shred(UnicodeString & Str)
   if (!Str.IsEmpty())
   {
     Str.Unique();
-    memset((wchar_t *)Str.c_str(), 0, Str.Length() * sizeof(*Str.c_str()));
+    memset(const_cast<wchar_t *>(Str.c_str()), 0, Str.Length() * sizeof(*Str.c_str()));
     Str = L"";
   }
 }
@@ -322,7 +322,7 @@ UnicodeString __fastcall SystemTemporaryDirectory()
 {
   UnicodeString TempDir;
   TempDir.SetLength(MAX_PATH);
-  TempDir.SetLength(GetTempPath(MAX_PATH, (LPWSTR)TempDir.c_str()));
+  TempDir.SetLength(GetTempPath(MAX_PATH, const_cast<LPWSTR>(TempDir.c_str())));
   return TempDir;
 }
 //---------------------------------------------------------------------------
@@ -374,12 +374,12 @@ static wchar_t * __fastcall ReplaceChar(
 
     FileName.Insert(ByteToHex(static_cast<unsigned char>(FileName[Index])), Index + 1);
     FileName[Index] = TokenPrefix;
-    InvalidChar = (wchar_t *)FileName.c_str() + Index + 2;
+    InvalidChar = const_cast<wchar_t *>(FileName.c_str() + Index + 2);
   }
   else
   {
     FileName[Index] = InvalidCharsReplacement;
-    InvalidChar = (wchar_t *)FileName.c_str() + Index;
+    InvalidChar = const_cast<wchar_t *>(FileName.c_str() + Index);
   }
   return InvalidChar;
 }
@@ -398,7 +398,7 @@ UnicodeString __fastcall ValidLocalFileName(
     bool ATokenReplacement = (InvalidCharsReplacement == TokenReplacement);
     const wchar_t * Chars =
       (ATokenReplacement ? TokenizibleChars : LocalInvalidChars).c_str();
-    wchar_t * InvalidChar = (wchar_t *)FileName.c_str();
+    wchar_t * InvalidChar = const_cast<wchar_t *>(FileName.c_str());
     while ((InvalidChar = wcspbrk(InvalidChar, Chars)) != NULL)
     {
       int Pos = (InvalidChar - FileName.c_str() + 1);
@@ -422,7 +422,7 @@ UnicodeString __fastcall ValidLocalFileName(
         ((FileName[FileName.Length()] == L' ') ||
          (FileName[FileName.Length()] == L'.')))
     {
-      ReplaceChar(FileName, (wchar_t *)FileName.c_str() + FileName.Length() - 1, InvalidCharsReplacement);
+      ReplaceChar(FileName, const_cast<wchar_t *>(FileName.c_str() + FileName.Length() - 1), InvalidCharsReplacement);
     }
 
     if (IsReservedName(FileName))
@@ -572,13 +572,13 @@ UnicodeString __fastcall ExpandEnvironmentVariables(const UnicodeString & Str)
 
   Buf.SetLength(Size);
   Buf.Unique();
-  unsigned int Len = ExpandEnvironmentStrings(Str.c_str(), (LPWSTR)Buf.c_str(), Size);
+  unsigned int Len = ExpandEnvironmentStrings(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), Size);
 
   if (Len > Size)
   {
     Buf.SetLength(Len);
     Buf.Unique();
-    ExpandEnvironmentStrings(Str.c_str(), (LPWSTR)Buf.c_str(), Len);
+    ExpandEnvironmentStrings(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), Len);
   }
 
   PackStr(Buf);
@@ -808,7 +808,8 @@ void __fastcall ProcessLocalDirectory(UnicodeString DirName,
       {
         if ((SearchRec.Name != L".") && (SearchRec.Name != L".."))
         {
-          CallBackFunc(DirName + SearchRec.Name, SearchRec, Param);
+          UnicodeString FileName = DirName + SearchRec.Name;
+          CallBackFunc(FileName, SearchRec, Param);
         }
 
       } while (FindNext(SearchRec) == 0);
@@ -1848,6 +1849,28 @@ UnicodeString __fastcall VersionNumberToStr(DWORD VersionNumber)
   DWORD Minor = (VersionNumber>>8) & 0xFF; 
   DWORD Revision = (VersionNumber & 0xFF);
   UnicodeString Result = FORMAT(L"%d.%d.%d", Major, Minor, Revision);
+  return Result;
+}
+//---------------------------------------------------------------------
+UnicodeString __fastcall FormatBytes(__int64 Bytes, bool UseOrders)
+{
+  UnicodeString Result;
+
+  if (!UseOrders || (Bytes < static_cast<__int64>(100*1024)))
+  {
+    // Result = FormatFloat(L"#,##0 \"B\"", Bytes);
+    Result = FORMAT(L"%.0f B", static_cast<double>(Bytes));
+  }
+  else if (Bytes < static_cast<__int64>(100*1024*1024))
+  {
+    // Result = FormatFloat(L"#,##0 \"KiB\"", Bytes / 1024);
+    Result = FORMAT(L"%.0f KiB", static_cast<double>(Bytes / 1024.0));
+  }
+  else
+  {
+    // Result = FormatFloat(L"#,##0 \"MiB\"", Bytes / (1024*1024));
+    Result = FORMAT(L"%.0f MiB", static_cast<double>(Bytes / (1024*1024.0)));
+  }
   return Result;
 }
 //---------------------------------------------------------------------------
