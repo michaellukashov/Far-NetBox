@@ -727,8 +727,7 @@ void __fastcall TSCPFileSystem::ReadCommandOutput(int Params, const UnicodeStrin
       {
         FTerminal->TerminalError(FMTLOAD(COMMAND_FAILED_CODEONLY, GetReturnCode()));
       }
-      else
-      if (!(Params & coOnlyReturnCode) &&
+      else if (!(Params & coOnlyReturnCode) &&
           ((!Message.IsEmpty() && ((FOutput->GetCount() == 0) || !(Params & coIgnoreWarnings))) ||
            WrongReturnCode))
       {
@@ -1389,7 +1388,7 @@ void /* __fastcall */ TSCPFileSystem::CaptureOutput(const UnicodeString & AddedL
       !RemoveLastLine(Line, ReturnCode) ||
       !Line.IsEmpty())
   {
-    assert(!FOnCaptureOutput.empty());
+    assert(FOnCaptureOutput != NULL);
     FOnCaptureOutput(Line, StdError);
   }
 }
@@ -1591,10 +1590,12 @@ void __fastcall TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
       !OperationProgress->Cancel; IFile++)
     {
       UnicodeString FileName = FilesToCopy->GetStrings(IFile);
+      TRemoteFile * File = dynamic_cast<TRemoteFile *>(FilesToCopy->GetObjects(IFile));
+      UnicodeString RealFileName = File ? File->GetFileName() : FileName;
       bool CanProceed = false;
 
       UnicodeString FileNameOnly =
-        CopyParam->ChangeFileName(ExtractFileName(FileName, false), osLocal, true);
+        CopyParam->ChangeFileName(ExtractFileName(RealFileName, false), osLocal, true);
 
       if (CheckExistence)
       {
@@ -1687,9 +1688,9 @@ void __fastcall TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
 
         try
         {
-          SCPSource(FileName, TargetDirFull,
+          SCPSource(FileName, File, TargetDirFull,
             CopyParam, Params, OperationProgress, 0);
-          OperationProgress->Finish(FileName, true, OnceDoneOperation);
+          OperationProgress->Finish(RealFileName, true, OnceDoneOperation);
         }
         catch (EScpFileSkipped &E)
         {
@@ -1757,39 +1758,41 @@ void __fastcall TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
 }
 //---------------------------------------------------------------------------
 void __fastcall TSCPFileSystem::SCPSource(const UnicodeString FileName,
+  const TRemoteFile * File,
   const UnicodeString TargetDir, const TCopyParamType * CopyParam, int Params,
   TFileOperationProgressType * OperationProgress, int Level)
 {
+  UnicodeString RealFileName = File ? File->GetFileName() : FileName;
   UnicodeString DestFileName = CopyParam->ChangeFileName(
-    ExtractFileName(FileName, false), osLocal, Level == 0);
+    ExtractFileName(RealFileName, false), osLocal, Level == 0);
 
-  FTerminal->LogEvent(FORMAT(L"File: \"%s\"", FileName.c_str()));
+  FTerminal->LogEvent(FORMAT(L"File: \"%s\"", RealFileName.c_str()));
 
-  OperationProgress->SetFile(FileName, false);
+  OperationProgress->SetFile(RealFileName, false);
 
   if (!FTerminal->AllowLocalFileTransfer(FileName, CopyParam))
   {
-    FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", FileName.c_str()));
+    FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", RealFileName.c_str()));
     THROW_SKIP_FILE_NULL;
   }
 
-  HANDLE File;
+  HANDLE FileHandle;
   int Attrs;
   __int64 MTime, ATime;
   __int64 Size;
 
   FTerminal->OpenLocalFile(FileName, GENERIC_READ,
-    &Attrs, &File, NULL, &MTime, &ATime, &Size);
+    &Attrs, &FileHandle, NULL, &MTime, &ATime, &Size);
 
   bool Dir = FLAGSET(Attrs, faDirectory);
-  TSafeHandleStream * Stream = new TSafeHandleStream(File);
+  TSafeHandleStream * Stream = new TSafeHandleStream(FileHandle);
   // try
   {
-    BOOST_SCOPE_EXIT ( (&File) (&Stream) )
+    BOOST_SCOPE_EXIT ( (&FileHandle) (&Stream) )
     {
-      if (File != NULL)
+      if (FileHandle != NULL)
       {
-        ::CloseHandle(File);
+        ::CloseHandle(FileHandle);
       }
       delete Stream;
     } BOOST_SCOPE_EXIT_END
@@ -1802,10 +1805,10 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString FileName,
     else
     {
       UnicodeString AbsoluteFileName = FTerminal->AbsolutePath(/* TargetDir + */DestFileName, false);
-      assert(File);
+      assert(FileHandle);
 
       // File is regular file (not directory)
-      FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", FileName.c_str()));
+      FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", RealFileName.c_str()));
 
       OperationProgress->SetLocalSize(Size);
 
@@ -1821,7 +1824,7 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString FileName,
       MaskParams.Size = Size;
       MaskParams.Modification = Modification;
       OperationProgress->SetAsciiTransfer(
-        CopyParam->UseAsciiTransfer(FileName, osLocal, MaskParams));
+        CopyParam->UseAsciiTransfer(RealFileName, osLocal, MaskParams));
       FTerminal->LogEvent(
         UnicodeString((OperationProgress->AsciiTransfer ? L"Ascii" : L"Binary")) +
           L" transfer mode selected.");
@@ -2128,7 +2131,7 @@ void __fastcall TSCPFileSystem::SCPDirectorySource(const UnicodeString Directory
         {
           if ((SearchRec.Name != THISDIRECTORY) && (SearchRec.Name != PARENTDIRECTORY))
           {
-            SCPSource(FileName, TargetDirFull, CopyParam, Params, OperationProgress, Level + 1);
+            SCPSource(FileName, NULL, TargetDirFull, CopyParam, Params, OperationProgress, Level + 1);
           }
         }
         // Previously we catched EScpSkipFile, making error being displayed
@@ -2373,7 +2376,8 @@ void __fastcall TSCPFileSystem::SCPSendError(const UnicodeString Message, bool F
 }
 //---------------------------------------------------------------------------
 void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
-  const TRemoteFile * File, const UnicodeString TargetDir,
+  const TRemoteFile * File,
+  const UnicodeString TargetDir,
   const UnicodeString SourceDir,
   const TCopyParamType * CopyParam, bool & Success,
   TFileOperationProgressType * OperationProgress, int Params,
@@ -2578,16 +2582,16 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
 
           try
           {
-            HANDLE File = NULL;
+            HANDLE FileHandle = NULL;
             TStream * FileStream = NULL;
 
             /* TODO 1 : Turn off read-only attr */
 
             // try
             {
-              BOOST_SCOPE_EXIT ( (&File) (&FileStream) )
+              BOOST_SCOPE_EXIT ( (&FileHandle) (&FileStream) )
               {
-                if (File) { CloseHandle(File); }
+                if (FileHandle) { CloseHandle(FileHandle); }
                 if (FileStream) { delete FileStream; }
               } BOOST_SCOPE_EXIT_END
               try
@@ -2633,13 +2637,13 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
                 Action.Destination(DestFileName);
 
                 if (!FTerminal->CreateLocalFile(DestFileName, OperationProgress,
-                       &File, FLAGSET(Params, cpNoConfirmation)))
+                       &FileHandle, FLAGSET(Params, cpNoConfirmation)))
                 {
                   SkipConfirmed = true;
                   EXCEPTION;
                 }
 
-                FileStream = new TSafeHandleStream(File);
+                FileStream = new TSafeHandleStream(FileHandle);
               }
               catch (Exception &E)
               {
@@ -2731,13 +2735,13 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
 
               if (FileData.SetTime && CopyParam->GetPreserveTime())
               {
-                SetFileTime(File, NULL, &FileData.AcTime, &FileData.WrTime);
+                SetFileTime(FileHandle, NULL, &FileData.AcTime, &FileData.WrTime);
               }
             }
 #ifndef _MSC_VER
             __finally
             {
-              if (File) CloseHandle(File);
+              if (FileHandle) CloseHandle(FileHandle);
               if (FileStream) delete FileStream;
             }
 #endif

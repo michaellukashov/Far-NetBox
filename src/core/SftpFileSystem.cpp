@@ -348,16 +348,6 @@ public:
 
   inline void AddString(const UnicodeString Value, bool Utf)
   {
-    /*
-    if (Utf)
-    {
-      AddUtfString(Value);
-    }
-    else
-    {
-      AddString(AnsiString(Value));
-    }
-    */
     AddStringW(Value);
   }
 
@@ -597,16 +587,6 @@ public:
 
   inline UnicodeString GetString(bool Utf)
   {
-    /*
-    if (Utf)
-    {
-      return GetUtfString();
-    }
-    else
-    {
-      return GetAnsiString();
-    }
-    */
     return GetStringW();
   }
 
@@ -3586,7 +3566,6 @@ bool __fastcall TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
           {
             assert(File != NULL);
             Progress.SetFile(File->GetFileName());
-            assert(File != NULL);
             LoadFile(File, &Packet);
             Result = true;
             TOnceDoneOperation OnceDoneOperation;
@@ -3623,7 +3602,7 @@ void __fastcall TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & 
   TOnceDoneOperation OnceDoneOperation; // not used
 
   // recurse into subdirectories only if we have callback function
-  if (!OnCalculatedChecksum.empty())
+  if (OnCalculatedChecksum != NULL)
   {
     for (int Index = 0; Index < FileList->GetCount(); Index++)
     {
@@ -3849,17 +3828,19 @@ void __fastcall TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   {
     bool Success = false;
     FileName = FilesToCopy->GetStrings(Index);
-    FileNameOnly = ExtractFileName(FileName, false);
+    TRemoteFile * File = dynamic_cast<TRemoteFile *>(FilesToCopy->GetObjects(Index));
+    UnicodeString RealFileName = File ? File->GetFileName() : FileName;
+    FileNameOnly = ExtractFileName(RealFileName, false);
     assert(!FAvoidBusy);
     FAvoidBusy = true;
 
     // try
     {
-      BOOST_SCOPE_EXIT ( (&Self) (&FileName) (&Success) (&OnceDoneOperation)
+      BOOST_SCOPE_EXIT ( (&Self) (&RealFileName) (&Success) (&OnceDoneOperation)
         (&OperationProgress) )
       {
         Self->FAvoidBusy = false;
-        OperationProgress->Finish(FileName, Success, OnceDoneOperation);
+        OperationProgress->Finish(RealFileName, Success, OnceDoneOperation);
       } BOOST_SCOPE_EXIT_END
       try
       {
@@ -3873,7 +3854,7 @@ void __fastcall TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
               FileNameOnly, true);
           }
         }
-        SFTPSourceRobust(FileName, FullTargetDir, CopyParam, Params, OperationProgress,
+        SFTPSourceRobust(FileName, File, FullTargetDir, CopyParam, Params, OperationProgress,
           tfFirstLevel);
         Success = true;
       }
@@ -3892,7 +3873,7 @@ void __fastcall TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     __finally
     {
       FAvoidBusy = false;
-      OperationProgress->Finish(FileName, Success, OnceDoneOperation);
+      OperationProgress->Finish(RealFileName, Success, OnceDoneOperation);
     }
 #endif
     Index++;
@@ -4111,6 +4092,7 @@ bool TSFTPFileSystem::SFTPConfirmResume(const UnicodeString DestFileName,
 }
 //---------------------------------------------------------------------------
 void __fastcall TSFTPFileSystem::SFTPSourceRobust(const UnicodeString FileName,
+  const TRemoteFile * File,
   const UnicodeString TargetDir, const TCopyParamType * CopyParam, int Params,
   TFileOperationProgressType * OperationProgress, unsigned int Flags)
 {
@@ -4127,7 +4109,7 @@ void __fastcall TSFTPFileSystem::SFTPSourceRobust(const UnicodeString FileName,
     bool ChildError = false;
     try
     {
-      SFTPSource(FileName, TargetDir, CopyParam, Params,
+      SFTPSource(FileName, File, TargetDir, CopyParam, Params,
         OpenParams, FileParams,
         OperationProgress,
         Flags, Action, ChildError);
@@ -4161,43 +4143,45 @@ void __fastcall TSFTPFileSystem::SFTPSourceRobust(const UnicodeString FileName,
 }
 //---------------------------------------------------------------------------
 void __fastcall TSFTPFileSystem::SFTPSource(const UnicodeString FileName,
+  const TRemoteFile * File,
   const UnicodeString TargetDir, const TCopyParamType * CopyParam, int Params,
   TOpenRemoteFileParams & OpenParams,
   TOverwriteFileParams & FileParams,
   TFileOperationProgressType * OperationProgress, unsigned int Flags,
   TUploadSessionAction & Action, bool & ChildError)
 {
-  FTerminal->LogEvent(FORMAT(L"File: \"%s\"", FileName.c_str()));
+  UnicodeString RealFileName = File ? File->GetFileName() : FileName;
+  FTerminal->LogEvent(FORMAT(L"File: \"%s\"", RealFileName.c_str()));
 
-  Action.FileName(ExpandUNCFileName(FileName));
+  Action.FileName(ExpandUNCFileName(RealFileName));
 
-  OperationProgress->SetFile(FileName, false);
+  OperationProgress->SetFile(RealFileName, false);
 
   if (!FTerminal->AllowLocalFileTransfer(FileName, CopyParam))
   {
-    FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", FileName.c_str()));
+    FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", RealFileName.c_str()));
     THROW_SKIP_FILE_NULL;
   }
 
   // TOpenRemoteFileParams OpenParams;
   // OpenParams.OverwriteMode = omOverwrite;
 
-  HANDLE File = 0;
+  HANDLE FileHandle = 0;
   __int64 MTime = 0, ATime = 0;
   __int64 Size = 0;
 
   FTerminal->OpenLocalFile(FileName, GENERIC_READ, &OpenParams.LocalFileAttrs,
-    &File, NULL, &MTime, &ATime, &Size);
+    &FileHandle, NULL, &MTime, &ATime, &Size);
 
   bool Dir = FLAGSET(OpenParams.LocalFileAttrs, faDirectory);
 
   // try
   {
-    BOOST_SCOPE_EXIT ( (&File) )
+    BOOST_SCOPE_EXIT ( (&FileHandle) )
     {
-      if (File != NULL)
+      if (FileHandle != NULL)
       {
-        CloseHandle(File);
+        CloseHandle(FileHandle);
       }
     } BOOST_SCOPE_EXIT_END
     OperationProgress->SetFileInProgress();
@@ -4211,9 +4195,9 @@ void __fastcall TSFTPFileSystem::SFTPSource(const UnicodeString FileName,
     else
     {
       // File is regular file (not directory)
-      assert(File);
+      assert(FileHandle);
 
-      UnicodeString DestFileName = CopyParam->ChangeFileName(ExtractFileName(FileName, false),
+      UnicodeString DestFileName = CopyParam->ChangeFileName(ExtractFileName(RealFileName, false),
         osLocal, FLAGSET(Flags, tfFirstLevel));
       UnicodeString DestFullName = LocalCanonify(TargetDir + DestFileName);
       UnicodeString DestPartialFullName;
@@ -4224,7 +4208,7 @@ void __fastcall TSFTPFileSystem::SFTPSource(const UnicodeString FileName,
 
       __int64 ResumeOffset = 0;
 
-      FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", FileName.c_str()));
+      FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", RealFileName.c_str()));
 
       OperationProgress->SetLocalSize(Size);
 
@@ -4240,7 +4224,7 @@ void __fastcall TSFTPFileSystem::SFTPSource(const UnicodeString FileName,
       MaskParams.Size = Size;
       MaskParams.Modification = Modification;
       OperationProgress->SetAsciiTransfer(
-        CopyParam->UseAsciiTransfer(FileName, osLocal, MaskParams));
+        CopyParam->UseAsciiTransfer(RealFileName, osLocal, MaskParams));
       FTerminal->LogEvent(
         UnicodeString((OperationProgress->AsciiTransfer ? L"Ascii" : L"Binary")) +
           L" transfer mode selected.");
@@ -4442,7 +4426,7 @@ void __fastcall TSFTPFileSystem::SFTPSource(const UnicodeString FileName,
             FTerminal->LogEvent(L"Resuming file transfer (append style).");
             ResumeOffset = OpenParams.DestFileSize;
           }
-          FileSeek(File, ResumeOffset, 0);
+          FileSeek(FileHandle, ResumeOffset, 0);
           OperationProgress->AddResumed(ResumeOffset);
         }
 
@@ -4453,7 +4437,7 @@ void __fastcall TSFTPFileSystem::SFTPSource(const UnicodeString FileName,
           {
             Queue.DisposeSafe();
           } BOOST_SCOPE_EXIT_END
-          Queue.Init(FileName, File, OperationProgress,
+          Queue.Init(FileName, FileHandle, OperationProgress,
             OpenParams.RemoteFileHandle,
             DestWriteOffset + OperationProgress->TransferedSize);
 
@@ -4615,9 +4599,9 @@ void __fastcall TSFTPFileSystem::SFTPSource(const UnicodeString FileName,
 #ifndef _MSC_VER
   __finally
   {
-    if (File != NULL)
+    if (FileHandle != NULL)
     {
-      CloseHandle(File);
+      CloseHandle(FileHandle);
     }
   }
 #endif
@@ -4756,7 +4740,6 @@ int /* __fastcall */ TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * 
             OpenParams->FileParams->DestSize = OpenParams->DestFileSize;
           }
           // file exists (otherwise exception was thrown)
-          assert(File);
           SAFE_DESTROY(File);
         }
         catch(...)
@@ -4957,7 +4940,7 @@ void __fastcall TSFTPFileSystem::SFTPDirectorySource(const UnicodeString Directo
       {
         if ((SearchRec.Name != THISDIRECTORY) && (SearchRec.Name != PARENTDIRECTORY))
         {
-          SFTPSourceRobust(FileName, DestFullName, CopyParam, Params, OperationProgress,
+          SFTPSourceRobust(FileName, NULL, DestFullName, CopyParam, Params, OperationProgress,
             Flags & ~tfFirstLevel);
         }
       }
@@ -5118,8 +5101,8 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
 
   UnicodeString OnlyFileName = UnixExtractFileName(FileName);
 
-  assert(File);
   TFileMasks::TParams MaskParams;
+  assert(File);
   MaskParams.Size = File->GetSize();
   MaskParams.Modification = File->GetModification();
 
@@ -5129,7 +5112,6 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
     THROW_SKIP_FILE_NULL;
   }
 
-  assert(File);
   FTerminal->LogEvent(FORMAT(L"File: \"%s\"", FileName.c_str()));
 
   OperationProgress->SetFile(OnlyFileName);

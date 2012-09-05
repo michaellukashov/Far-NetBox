@@ -193,6 +193,7 @@ public:
   UnicodeString __fastcall GetUserNameExpanded();
   void __fastcall SetPassword(UnicodeString value);
   UnicodeString __fastcall GetPassword() const;
+  void __fastcall SetPasswordless(bool value);
   void __fastcall SetPingInterval(int value);
   void __fastcall SetTryAgent(bool value);
   void __fastcall SetAgentFwd(bool value);
@@ -633,6 +634,7 @@ public:
   void __fastcall Cleanup();
   void __fastcall UpdateStaticUsage();
   int __fastcall IndexOf(TSessionData * Data);
+  TSessionData * __fastcall FindSame(TSessionData * Data);
   TSessionData * __fastcall NewSession(UnicodeString SessionName, TSessionData * Session);
   TSessionData * __fastcall ParseUrl(UnicodeString Url, TOptions * Options, bool & DefaultsOnly,
     UnicodeString * FileName = NULL, bool * ProtocolDefined = NULL);

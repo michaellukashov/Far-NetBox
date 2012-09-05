@@ -1898,7 +1898,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 				{
 					temp = temp.Mid(3);
 					pData->port = atol( T2CA(temp.Left(temp.GetLength() - 1) ) );
-					if ((int)pData->port < 0 || pData->port > 65535)
+					if (pData->port < 0 || pData->port > 65535)
 					{
 						LogMessage(__FILE__, __LINE__, this, FZ_LOG_WARNING, _T("Port %u not valid"), pData->port);
 						error = TRUE;
@@ -6275,34 +6275,37 @@ bool CFtpControlSocket::CheckForcePasvIp(CString & host)
 	bool result = true;
 	unsigned int tmpPort;
 	CString ahost;
-	if (!GetPeerName(ahost, tmpPort))
+	switch (m_CurrentServer.iForcePasvIp)
 	{
-		LogMessage(__FILE__, __LINE__, this, FZ_LOG_WARNING, _T("GetPeerName failed"));
-		result = false;
-	}
-	else
-	{
-		switch (m_CurrentServer.iForcePasvIp)
-		{
-			case 0:
-				if (ahost != host)
-				{
-					LogMessage(__FILE__, __LINE__, this, FZ_LOG_WARNING, _T("Using host address %s instead of the one suggested by the server: %s"), ahost, host);
-					host = ahost;
-				}
-				break;
+		case 0: // on
+			if (!GetPeerName(ahost, tmpPort))
+			{
+				LogMessage(__FILE__, __LINE__, this, FZ_LOG_WARNING, _T("Error retrieving server address"));
+				result = false;
+			}
+			else if (ahost != host)
+			{
+				LogMessage(__FILE__, __LINE__, this, FZ_LOG_WARNING, _T("Using host address %s instead of the one suggested by the server: %s"), ahost, host);
+				host = ahost;
+			}
+			break;
 
-			case 1:
-				// noop
-				break;
+		case 1: // off
+			// noop
+			break;
 
-			default:
-				if (!IsRoutableAddress(host) && IsRoutableAddress(ahost))
-				{
-					LogMessage(__FILE__, __LINE__, this, FZ_LOG_WARNING, _T("Server sent passive reply with unroutable address %s, using host address instead."), host, ahost);
-				}
-				break;
-		}
+		default: // auto
+			if (!GetPeerName(ahost, tmpPort))
+			{
+			    // this is not failure in "auto" mode
+				LogMessage(__FILE__, __LINE__, this, FZ_LOG_WARNING, _T("Error retrieving server address"));
+			}
+			else if (!IsRoutableAddress(host) && IsRoutableAddress(ahost))
+			{
+				LogMessage(__FILE__, __LINE__, this, FZ_LOG_WARNING, _T("Server sent passive reply with unroutable address %s, using host address instead."), host, ahost);
+				host = ahost;
+			}
+			break;
 	}
 
 	return result;

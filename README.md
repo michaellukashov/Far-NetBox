@@ -56,8 +56,8 @@ Compile openssl:
 
 Compile NetBox plugin:
 
-    cmd /c %VS100COMNTOOLS%\..\..\VC\vcvarsall.bat x86 && devenv NetBox.sln /Build "UnityDebug|Win32" /USEENV /Project "NetBox"
-    cmd /c %VS100COMNTOOLS%\..\..\VC\vcvarsall.bat x86_amd64 && devenv NetBox.sln /Build "UnityDebug|x64" /USEENV /Project "NetBox"
+    cmd /c %VS100COMNTOOLS%\..\..\VC\vcvarsall.bat x86 && devenv NetBox.sln /Build "Debug|Win32" /USEENV /Project "NetBox"
+    cmd /c %VS100COMNTOOLS%\..\..\VC\vcvarsall.bat x86_amd64 && devenv NetBox.sln /Build "Debug|x64" /USEENV /Project "NetBox"
 
 
 Links
@@ -69,13 +69,8 @@ Links
 * NetBox discussions (in Russian): [http://forum.farmanager.com/viewtopic.php?f=5&t=6317](http://forum.farmanager.com/viewtopic.php?f=5&t=6317)
 * NetBox discussions (in English): [http://forum.farmanager.com/viewtopic.php?f=39&t=6638](http://forum.farmanager.com/viewtopic.php?f=39&t=6638)
 
-Boring Copyright Stuff
+License
 ========================
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-
+NetBox is [free](http://www.gnu.org/philosophy/free-sw.html) software: you can use it, redistribute it and/or modify it under the terms of the [GNU General Public License](http://www.gnu.org/licenses/gpl.html) as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.  
+NetBox is distributed in the hope that it will be useful, but without any warranty; without even the implied warranty of merchantability or fitness for a particular purpose. See the [GNU General Public License](http://www.gnu.org/licenses/gpl.html) for more details.  

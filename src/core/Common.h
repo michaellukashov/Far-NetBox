@@ -119,7 +119,7 @@ typedef void __fastcall (__closure* TProcessLocalFileEvent)
   (const UnicodeString FileName, const TSearchRec Rec, void * Param);
 #else
 typedef fastdelegate::FastDelegate3<void,
-  UnicodeString, TSearchRec /* Rec */, void * /* Param */> TProcessLocalFileEvent;
+  const UnicodeString & /* FileName */, const TSearchRec & /* Rec */, void * /* Param */> TProcessLocalFileEvent;
 #endif
 bool __fastcall FileSearchRec(const UnicodeString FileName, TSearchRec & Rec);
 void __fastcall ProcessLocalDirectory(UnicodeString DirName,
@@ -206,5 +206,7 @@ UnicodeString __fastcall VersionNumberToStr(DWORD VersionNumber);
 DWORD inline __fastcall GetVersionNumber219() { return MAKEVERSIONNUMBER(2,1,9); }
 DWORD inline __fastcall GetVersionNumber2110() { return MAKEVERSIONNUMBER(2,1,10); }
 DWORD inline __fastcall GetCurrentVersionNumber() { return StrToVersionNumber(NETBOX_VERSION_NUMBER); }
+//---------------------------------------------------------------------------
+UnicodeString __fastcall FormatBytes(__int64 Bytes, bool UseOrders = true);
 //---------------------------------------------------------------------------
 #endif

@@ -150,9 +150,11 @@ protected:
   void __fastcall DoDeleteFile(const UnicodeString FileName, unsigned char Type);
 
   void __fastcall SFTPSourceRobust(const UnicodeString FileName,
+    const TRemoteFile * File,
     const UnicodeString TargetDir, const TCopyParamType * CopyParam, int Params,
     TFileOperationProgressType * OperationProgress, unsigned int Flags);
   void __fastcall SFTPSource(const UnicodeString FileName,
+    const TRemoteFile * File,
     const UnicodeString TargetDir, const TCopyParamType * CopyParam, int Params,
     TOpenRemoteFileParams & OpenParams,
     TOverwriteFileParams & FileParams,

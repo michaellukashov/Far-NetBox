@@ -1343,9 +1343,8 @@ UnicodeString __fastcall TRemoteFile::GetFullFileName() const
     assert(GetDirectory() != NULL);
     UnicodeString Path;
     if (GetIsParentDirectory()) { Path = GetDirectory()->GetParentPath(); }
-    else
-    if (GetIsDirectory()) { Path = UnixIncludeTrailingBackslash(GetDirectory()->GetFullDirectory() + GetFileName()); }
-      else { Path = GetDirectory()->GetFullDirectory() + GetFileName(); }
+    else if (GetIsDirectory()) { Path = UnixIncludeTrailingBackslash(GetDirectory()->GetFullDirectory() + GetFileName()); }
+    else { Path = GetDirectory()->GetFullDirectory() + GetFileName(); }
     return GetTerminal()->TranslateLockedPath(Path, true);
   }
   else

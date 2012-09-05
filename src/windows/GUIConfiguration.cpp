@@ -423,7 +423,7 @@ void __fastcall TCopyParamList::Load(THierarchicalStorage * Storage, int ACount)
       {
         // try
         {
-          BOOST_SCOPE_EXIT ( (Storage) )
+          BOOST_SCOPE_EXIT ( (&Storage) )
           {
             Storage->CloseSubKey();
           } BOOST_SCOPE_EXIT_END
@@ -554,7 +554,6 @@ bool __fastcall TCopyParamList::GetAnyRule() const
   FQueueRememberPassword(false),
   FQueueTransfersLimit(0),
   FBeepOnFinish(false),
-  FSynchronizeBrowsing(false),
   FCopyParamList(NULL),
   FCopyParamListDefaults(false),
   FKeepUpToDateChangeDelay(0),
@@ -612,7 +611,6 @@ void __fastcall TGUIConfiguration::Default()
   FKeepUpToDateChangeDelay = 500;
   FChecksumAlg = L"md5";
   FSessionReopenAutoIdle = 5000;
-  FSynchronizeBrowsing = false;
 
   FNewDirectoryProperties.Default();
   FNewDirectoryProperties.Rights = TRights::rfDefault | TRights::rfExec;
@@ -665,7 +663,7 @@ UnicodeString __fastcall TGUIConfiguration::PropertyToKey(const UnicodeString Pr
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
   { \
-      BOOST_SCOPE_EXIT ( (Storage) ) \
+      BOOST_SCOPE_EXIT ( (&Storage) ) \
       { \
         Storage->CloseSubKey(); \
       } BOOST_SCOPE_EXIT_END \
@@ -694,7 +692,6 @@ UnicodeString __fastcall TGUIConfiguration::PropertyToKey(const UnicodeString Pr
     KEY(Integer,  KeepUpToDateChangeDelay); \
     KEY(String,   ChecksumAlg); \
     KEY(Integer,  SessionReopenAutoIdle); \
-    KEY(Bool,     SynchronizeBrowsing); \
   ); \
 //---------------------------------------------------------------------------
 void __fastcall TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
@@ -710,7 +707,7 @@ void __fastcall TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool
   if (Storage->OpenSubKey(L"Interface\\CopyParam", true, true))
   // try
   {
-    BOOST_SCOPE_EXIT ( (Storage) )
+    BOOST_SCOPE_EXIT ( (&Storage) )
     {
       Storage->CloseSubKey();
     } BOOST_SCOPE_EXIT_END
@@ -737,7 +734,7 @@ void __fastcall TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool
   if (Storage->OpenSubKey(L"Interface\\NewDirectory", true, true))
   // try
   {
-    BOOST_SCOPE_EXIT ( (Storage) )
+    BOOST_SCOPE_EXIT ( (&Storage) )
     {
       Storage->CloseSubKey();
     } BOOST_SCOPE_EXIT_END
@@ -811,7 +808,7 @@ void __fastcall TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   if (Storage->OpenSubKey(L"Interface\\NewDirectory", false, true))
   // try
   {
-    BOOST_SCOPE_EXIT ( (Storage) )
+    BOOST_SCOPE_EXIT ( (&Storage) )
     {
       Storage->CloseSubKey();
     } BOOST_SCOPE_EXIT_END
@@ -833,11 +830,11 @@ void __fastcall TGUIConfiguration::Saved()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-HANDLE __fastcall TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
+HINSTANCE __fastcall TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
   UnicodeString * FileName)
 {
   UnicodeString LibraryFileName;
-  HANDLE NewInstance = 0;
+  HINSTANCE NewInstance = 0;
   bool Internal = (ALocale == InternalLocale());
   if (!Internal)
   {
@@ -928,7 +925,7 @@ void __fastcall TGUIConfiguration::SetLocale(LCID value)
 {
   if (GetLocale() != value)
   {
-    HANDLE Module = LoadNewResourceModule(value);
+    HINSTANCE Module = LoadNewResourceModule(value);
     if (Module != NULL)
     {
       FLocale = value;
@@ -945,7 +942,7 @@ void __fastcall TGUIConfiguration::SetLocaleSafe(LCID value)
 {
   if (GetLocale() != value)
   {
-    HANDLE Module;
+    HINSTANCE Module;
 
     try
     {
@@ -1217,6 +1214,11 @@ TGUICopyParamType __fastcall TGUIConfiguration::GetCopyParamPreset(UnicodeString
     }
   }
   return Result;
+}
+//---------------------------------------------------------------------------
+bool __fastcall TGUIConfiguration::GetHasCopyParamPreset(UnicodeString Name)
+{
+  return Name.IsEmpty() || (FCopyParamList->IndexOfName(Name) >= 0);
 }
 //---------------------------------------------------------------------------
 void __fastcall TGUIConfiguration::SetNewDirectoryProperties(

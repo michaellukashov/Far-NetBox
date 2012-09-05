@@ -780,6 +780,8 @@ public:
   void SetAutoSelect(bool value) { SetFlag(DIF_SELECTONENTRY, value); }
   bool GetDropDownList() { return GetFlag(DIF_DROPDOWNLIST); }
   void SetDropDownList(bool value) { SetFlag(DIF_DROPDOWNLIST, value); }
+  int GetItemIndex() const { return FList->GetSelected(); }
+  void SetItemIndex(int Index) { FList->SetSelected(Index); }
 #endif
 
 protected:
