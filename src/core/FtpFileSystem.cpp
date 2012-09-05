@@ -252,12 +252,12 @@ private:
   FWaitingForReply(false),
   FFileTransferAbort(ftaNone),
   FIgnoreFileList(false),
-  FOnCaptureOutput(NULL),
   FFileTransferCancelled(false),
   FFileTransferResumed(0),
   FFileTransferPreserveTime(false),
   FFileTransferCPSLimit(0),
   FAwaitingProgress(false),
+  FOnCaptureOutput(NULL),
   FListAll(asOn),
   FDoListAll(false),
   FServerCapabilities(NULL)
