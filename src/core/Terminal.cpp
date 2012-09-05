@@ -941,7 +941,7 @@ void __fastcall TTerminal::Open()
     // }
     catch(Exception & E)
     {
-      LogEvent(FORMAT(L"Got error: \"%s\".", E.GetMessage().c_str()));
+      LogEvent(FORMAT(L"Got error: \"%s\"", E.GetMessage().c_str()));
       // any exception while opening session is fatal
       FatalError(&E, L"");
     }
