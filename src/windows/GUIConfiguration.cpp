@@ -755,9 +755,9 @@ void __fastcall TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   // duplicated from core\configuration.cpp
   #undef KEY
   #define KEY(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(PropertyToKey(MB2W(#VAR)), Get##VAR()))
-  // #pragma warn -eas
+  #pragma warn -eas
   REGCONFIG(false);
-  // #pragma warn +eas
+  #pragma warn +eas
   #undef KEY
 
   if (Storage->OpenSubKey(L"Interface\\CopyParam", false, true))

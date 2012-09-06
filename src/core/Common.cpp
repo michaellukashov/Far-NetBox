@@ -1875,5 +1875,5 @@ UnicodeString __fastcall FormatBytes(__int64 Bytes, bool UseOrders)
 }
 //---------------------------------------------------------------------------
 // Suppress warning about unused constants in DateUtils.hpp
-// #pragma warn -8080
+#pragma warn -8080
 

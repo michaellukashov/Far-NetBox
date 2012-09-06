@@ -308,9 +308,9 @@ void __fastcall TConfiguration::Export(const UnicodeString FileName)
 void __fastcall TConfiguration::LoadData(THierarchicalStorage * Storage)
 {
   #define KEYEX(TYPE, VAR, NAME) Set##VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), Get##VAR()))
-  // #pragma warn -eas
+  #pragma warn -eas
   REGCONFIG(false);
-  // #pragma warn +eas
+  #pragma warn +eas
   #undef KEYEX
 
   if (Storage->OpenSubKey(L"Usage", false))

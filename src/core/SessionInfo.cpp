@@ -99,7 +99,7 @@ TStrings * __fastcall ExceptionToMessages(Exception * E)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-// #pragma warn -inl
+#pragma warn -inl
 class TSessionActionRecord
 {
 public:
@@ -347,7 +347,7 @@ private:
   TRemoteFileList * FFileList;
   TRemoteFile * FFile;
 };
-// #pragma warn .inl
+#pragma warn .inl
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 /* __fastcall */ TSessionAction::TSessionAction(TActionLog *Log, TLogAction Action)

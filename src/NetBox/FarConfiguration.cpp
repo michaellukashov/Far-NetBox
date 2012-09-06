@@ -143,9 +143,9 @@ void __fastcall TFarConfiguration::LoadData(THierarchicalStorage * Storage)
 
   // duplicated from core\configuration.cpp
   #define KEY(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(LASTELEM(MB2W(#VAR)), Get##VAR()))
-  // #pragma warn -eas
+  #pragma warn -eas
   REGCONFIG(false);
-  // #pragma warn +eas
+  #pragma warn +eas
   #undef KEY
 
   if (Storage->OpenSubKey(L"Bookmarks", false))
