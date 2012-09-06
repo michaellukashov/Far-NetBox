@@ -148,7 +148,7 @@ private:
 
 class TClass2
 {
-  typedef fastdelegate::FastDelegate2<void, TClass2 *, int> TClickEvent;
+  DEFINE_EVENT_TYPE2(TClickEvent, void, TClass2 *, int);
 
 public:
   TClass2() :

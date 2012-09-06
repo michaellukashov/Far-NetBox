@@ -4,7 +4,8 @@
 // testnetbox_03 --run_test=testnetbox_03/test1 --log_level=all 2>&1 | tee res.txt
 //------------------------------------------------------------------------------
 
-#include "nbafx.h"
+#include <Classes.hpp>
+#include <CppProperties.h>
 #include <time.h>
 #include <stdio.h>
 #include <iostream>
@@ -571,5 +572,73 @@ BOOST_FIXTURE_TEST_CASE(test25, base_fixture_t)
   CHECK_LEAKS();
 #endif
 }
+
+BOOST_FIXTURE_TEST_CASE(test26, base_fixture_t)
+{
+  TBookmarks Bookmarks;
+}
+
+//------------------------------------------------------------------------------
+class TestPropsClass
+{
+private:
+  std::map<std::string, std::string> FAssignments;
+  Property<std::string> FKey;
+  int GetNumber() { return 42; }
+  float AddWeight(float const & value) { return value; }
+  std::string GetKey()
+  {
+    // extra processing steps here
+    return FKey();
+  }
+  std::string SetKey(const std::string & Key)
+  {
+    // extra processing steps here
+    return FKey(Key);
+  }
+  std::string & GetAssignment(const std::string & Key)
+  {
+    // extra processing steps here
+    return FAssignments[Key];
+  }
+  std::string & SetAssignment(const std::string & Key, const std::string & Value)
+  {
+    // extra processing steps here
+    FAssignments[Key] = Value;
+    return FAssignments[Key];
+  }
+public:
+  TestPropsClass()
+  {
+    Number(this);
+    WeightedValue(this);
+    Key(this);
+    Assignments(this);
+  }
+  Property<std::string> Name;
+  Property<int> ID;
+  ROProperty<int, TestPropsClass, &TestPropsClass::GetNumber> Number;
+  WOProperty<float, TestPropsClass, &TestPropsClass::AddWeight> WeightedValue;
+  RWProperty<std::string, TestPropsClass, &TestPropsClass::GetKey, &TestPropsClass::SetKey> Key;
+  IndexedProperty<std::string, std::string, TestPropsClass, &TestPropsClass::GetAssignment, &TestPropsClass::SetAssignment > Assignments;
+};
+
+BOOST_FIXTURE_TEST_CASE(test27, base_fixture_t)
+{
+  TestPropsClass obj;
+  obj.Name = "Name";
+  obj.WeightedValue = 1234;
+  obj.Key = "Key";
+  obj.Assignments["Hours"] = "23";
+  obj.Assignments["Minutes"] = "59";
+  BOOST_TEST_MESSAGE("Name = " << obj.Name);
+  BOOST_TEST_MESSAGE("Number = " << obj.Number);
+  BOOST_TEST_MESSAGE("Key = " << obj.Key);
+  // BOOST_TEST_MESSAGE("Assignments = " << obj.Assignments);
+  BOOST_TEST_MESSAGE("Hours = " << obj.Assignments["Hours"]);
+  BOOST_TEST_MESSAGE("Minutes = " << obj.Assignments["Minutes"]);
+}
+
+//------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

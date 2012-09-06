@@ -28,6 +28,7 @@
 #include "testutils.h"
 #include "FileBuffer.h"
 #include "FastDelegate.h"
+#include "CppProperties.h"
 
 using namespace boost::unit_test;
 
@@ -619,7 +620,7 @@ public:
 
 BOOST_FIXTURE_TEST_CASE(test26, base_fixture_t)
 {
-  typedef fastdelegate::FastDelegate2<int, int, char *> TEvent;
+  DEFINE_EVENT_TYPE2(TEvent, int, int, char *);
   TEvent sig;
 
   CBaseClass a("Base A");
@@ -628,9 +629,7 @@ BOOST_FIXTURE_TEST_CASE(test26, base_fixture_t)
   BOOST_TEST_MESSAGE("result = " << result);
   BOOST_CHECK(result == -1);
 }
-
 //------------------------------------------------------------------------------
-
 BOOST_FIXTURE_TEST_CASE(test27, base_fixture_t)
 {
     WINHTTP_CURRENT_USER_IE_PROXY_CONFIG ProxyConfig = {0};
@@ -671,9 +670,7 @@ BOOST_FIXTURE_TEST_CASE(test27, base_fixture_t)
         FreeIEConfig(&ProxyConfig);
     }
 }
-
 //------------------------------------------------------------------------------
-
 BOOST_FIXTURE_TEST_CASE(test28, base_fixture_t)
 {
   UnicodeString Buf;
@@ -719,7 +716,6 @@ BOOST_FIXTURE_TEST_CASE(test28, base_fixture_t)
     BOOST_CHECK(AnsiString(codeNum) == AnsiString("[0x000000FF]"));
   }
 }
-
 //------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()
