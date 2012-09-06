@@ -1,3 +1,9 @@
+#pragma once
+
+#include <map>
+#include <iostream>
+
+//------------------------------------------------------------------------------
 // Some utility templates for emulating properties --
 // preferring a library solution to a new language feature
 // Each property has three sets of redundant acccessors:
@@ -12,156 +18,164 @@ class Property
 {
   T data;
 public:
-// access with function call syntax
+  // access with function call syntax
   Property() : data() { }
   T operator()() const
   {
     return data;
   }
-  T operator()(T const & value)
+  T operator()(const T & value)
   {
     data = value;
     return data;
   }
-// access with get()/set() syntax
+  // access with get()/set() syntax
   T get() const
   {
     return data;
   }
-  T set(T const & value)
+  T set(const T & value)
   {
     data = value;
     return data;
   }
-// access with '=' sign
-// in an industrial-strength library,
-// specializations for appropriate types might choose to
-// add combined operators like +=, etc.
+  // access with '=' sign
+  // in an industrial-strength library,
+  // specializations for appropriate types might choose to
+  // add combined operators like +=, etc.
   operator T() const
   {
     return data;
   }
-  T operator = (T const & value)
+  T operator = (const T & value)
   {
     data = value;
     return data;
   }
   typedef T value_type; // might be useful for template deductions
 };
+//------------------------------------------------------------------------------
 // a read-only property calling a user-defined getter
-template <class T, class Object, typename T(Object::*real_getter)()>
+template <
+  class T,
+  class Object,
+  typename T (Object::*real_getter)()
+  >
 class ROProperty
 {
   Object * my_object;
 public:
-// this function must be called by the containing class, normally in a
-// constructor, to initialize the ROProperty so it knows where its
-// real implementation code can be found. obj is usually the containing
-// class, but need not be; it could be a special implementation object.
+  // this function must be called by the containing class, normally in a
+  // constructor, to initialize the ROProperty so it knows where its
+  // real implementation code can be found. obj is usually the containing
+  // class, but need not be; it could be a special implementation object.
   void operator()(Object * obj)
   {
     my_object = obj;
   }
-// function call syntax
+  // function call syntax
   T operator()() const
   {
     return (my_object->*real_getter)();
   }
-// get/set syntax
+  // get/set syntax
   T get() const
   {
     return (my_object->*real_getter)();
   }
-  void set(T const & value);   // reserved but not implemented, per C++/CLI
-// use on rhs of '='
+  void set(const T & value);   // reserved but not implemented, per C++/CLI
+  // use on rhs of '='
   operator T() const
   {
     return (my_object->*real_getter)();
   }
   typedef T value_type; // might be useful for template deductions
 };
+//------------------------------------------------------------------------------
 // a write-only property calling a user-defined setter
 template <
-class T,
-      class Object,
-      typename T(Object::*real_setter)(T const &)
-      >
+  class T,
+  class Object,
+  typename T (Object::*real_setter)(const T &)
+  >
 class WOProperty
 {
   Object * my_object;
 public:
-// this function must be called by the containing class, normally in
-// a constructor, to initialize the WOProperty so it knows where its
-// real implementation code can be found
+  // this function must be called by the containing class, normally in
+  // a constructor, to initialize the WOProperty so it knows where its
+  // real implementation code can be found
   void operator()(Object * obj)
   {
     my_object = obj;
   }
-// function call syntax
-  T operator()(T const & value)
+  // function call syntax
+  T operator()(const T & value)
   {
     return (my_object->*real_setter)(value);
   }
-// get/set syntax
+  // get/set syntax
   T get() const; // name reserved but not implemented per C++/CLI
-  T set(T const & value)
+  T set(const T & value)
   {
     return (my_object->*real_setter)(value);
   }
-// access with '=' sign
-  T operator = (T const & value)
+  // access with '=' sign
+  T operator = (const T & value)
   {
     return (my_object->*real_setter)(value);
   }
   typedef T value_type; // might be useful for template deductions
 };
+//------------------------------------------------------------------------------
 // a read-write property which invokes user-defined functions
 template <
-class T,
-      class Object,
-      typename T(Object::*real_getter)(),
-      typename T(Object::*real_setter)(T const &)
-      >
+  class T,
+  class Object,
+  typename T (Object::*real_getter)(),
+  typename T (Object::*real_setter)(const T &)
+  >
 class RWProperty
 {
   Object * my_object;
 public:
-// this function must be called by the containing class, normally in a
-// constructor, to initialize the ROProperty so it knows where its
-// real implementation code can be found
+  // this function must be called by the containing class, normally in a
+  // constructor, to initialize the ROProperty so it knows where its
+  // real implementation code can be found
   void operator()(Object * obj)
   {
     my_object = obj;
   }
-// function call syntax
+  // function call syntax
   T operator()() const
   {
     return (my_object->*real_getter)();
   }
-  T operator()(T const & value)
+  T operator()(const T & value)
   {
     return (my_object->*real_setter)(value);
   }
-// get/set syntax
+  // get/set syntax
   T get() const
   {
     return (my_object->*real_getter)();
   }
-  T set(T const & value)
+  T set(const T & value)
   {
     return (my_object->*real_setter)(value);
   }
-// access with '=' sign
+  // access with '=' sign
   operator T() const
   {
     return (my_object->*real_getter)();
   }
-  T operator = (T const & value)
+  T operator = (const T & value)
   {
     return (my_object->*real_setter)(value);
   }
   typedef T value_type; // might be useful for template deductions
 };
+//------------------------------------------------------------------------------
 // a read/write property providing indexed access.
 // this class simply encapsulates a std::map and changes its interface
 // to functions consistent with the other property<> classes.
@@ -175,52 +189,106 @@ public:
 // to have any facility for erasing key/value pairs from the container.
 // C++/CLI properties can have multi-dimensional indexes: prop[2,3]. This is
 // not allowed by the current rules of standard C++
-#include <map>
 #ifndef USING_OLD_COMPILER
-template <class Key, class T, class Compare = less<Key>,
-         class Allocator = allocator<pair<const Key, T> > >
+template <
+  class Key,
+  class T,
+  class Object,
+  typename T & (Object::*real_getter)(const Key &),
+  typename T & (Object::*real_setter)(const Key &, const T &),
+  class Compare = std::less<Key>,
+  class Allocator = std::allocator<std::pair<const Key, T> >
+  >
 #else
-template <class Key, class T>
+template <
+  class Key,
+  class T,
+  class Object,
+  typename T & (Object::*real_getter)(const Key &),
+  typename T & (Object::*real_setter)(const Key &, const T &)
+  >
 #endif
 class IndexedProperty
 {
-#ifndef USING_OLD_COMPILER
-  std::map< Key, T, Compare, Allocator > data;
-  typedef std::map< Key, T, Compare, Allocator >::iterator map_iterator;
-#else
-  std::map< Key, T > data;
-  typedef std::map< Key, T >::iterator map_iterator;
-#endif
+  Object * my_object;
 public:
-// function call syntax
-  T operator()(Key const & key)
+  // this function must be called by the containing class, normally in a
+  // constructor, to initialize the ROProperty so it knows where its
+  // real implementation code can be found
+  void operator()(Object * obj)
   {
-    std::pair< map_iterator, bool > result;
-    result = data.insert(std::make_pair(key, T()));
-    return (*result.first).second;
+    my_object = obj;
   }
-  T operator()(Key const & key, T const & t)
+  // function call syntax
+  T operator()(const Key & AKey)
   {
-    std::pair< map_iterator, bool > result;
-    result = data.insert(std::make_pair(key, t));
-    return (*result.first).second;
+    return (my_object->*real_getter)(AKey);
   }
-// get/set syntax
-  T get_Item(Key const & key)
+  T operator()(const Key & AKey, const T & AValue)
   {
-    std::pair< map_iterator, bool > result;
-    result = data.insert(std::make_pair(key, T()));
-    return (*result.first).second;
+    return (my_object->*real_setter)(AKey, AValue);
   }
-  T set_Item(Key const & key, T const & t)
+  // get/set syntax
+  T get_Item(const Key & AKey)
   {
-    std::pair< map_iterator, bool > result;
-    result = data.insert(std::make_pair(key, t));
-    return (*result.first).second;
+    return (my_object->*real_getter)(AKey);
   }
-// operator [] syntax
-  T & operator[](Key const & key)
+  T set_Item(const Key & AKey, const T & AValue)
   {
-    return (*((data.insert(make_pair(key, T()))).first)).second;
+    return (my_object->*real_setter)(AKey, AValue);
+  }
+  // operator [] syntax
+  T & operator[](const Key & AKey)
+  {
+    return (my_object->*real_getter)(AKey);
   }
 };
+
+//------------------------------------------------------------------------------
+
+template <
+  class T
+  >
+inline std::ostream& operator<<(std::ostream& os, const Property< T >& prop)
+{
+    os << prop();
+    return os;
+}
+
+template <
+  class T,
+  class Object,
+  typename T (Object::*real_getter)()
+  >
+inline std::ostream& operator<<(std::ostream& os, const ROProperty< T, Object, real_getter >& prop)
+{
+    os << prop();
+    return os;
+}
+
+template <
+  class T, class Object,
+  typename T (Object::*real_getter)(),
+  typename T (Object::*real_setter)(const T &)
+  >
+inline std::ostream& operator<<(std::ostream& os, const RWProperty< T, Object, real_getter, real_setter >& prop)
+{
+    os << prop();
+    return os;
+}
+
+/*template <
+  class Key,
+  class T,
+  class Object,
+  typename T (Object::*real_getter)(const Key &),
+  typename T (Object::*real_setter)(const Key &, const T &),
+  class Compare,
+  class Allocator
+  >
+inline std::ostream& operator<<(std::ostream& os, const IndexedProperty< Key, T, Object, real_getter, real_setter, Compare, Allocator >& prop)
+{
+    os << "size: " << prop.size();
+    return os;
+}
+*/
