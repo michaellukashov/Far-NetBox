@@ -2,18 +2,11 @@
 #ifndef SessionInfoH
 #define SessionInfoH
 
-#ifdef _MSC_VER
-#include "UnicodeString.hpp"
-#endif
+#include <Classes.hpp>
 
 #include "SessionData.h"
 #include "Interface.h"
 
-#ifdef _MSC_VER
-#include "boostdefines.hpp"
-
-#include "Exceptions.h"
-#endif
 //---------------------------------------------------------------------------
 enum TSessionStatus { ssClosed, ssOpening, ssOpened };
 //---------------------------------------------------------------------------

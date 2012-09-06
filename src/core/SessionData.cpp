@@ -1,14 +1,8 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#endif
-#include "stdafx.h"
 
 #include <Winhttp.h>
-
-#include "boostdefines.hpp"
-#include <boost/scope_exit.hpp>
 
 #include "SessionData.h"
 
@@ -21,9 +15,7 @@
 #include "RemoteFiles.h"
 #include "version.h"
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #pragma package(smart_init)
-#endif
 //---------------------------------------------------------------------------
 enum TProxyType { pxNone, pxHTTP, pxSocks, pxTelnet }; // 0.53b and older
 const wchar_t * DefaultName = L"Default Settings";

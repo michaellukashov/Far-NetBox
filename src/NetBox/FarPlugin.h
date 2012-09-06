@@ -3,8 +3,8 @@
 #include "boostdefines.hpp"
 
 #pragma warning(push, 1)
-#include "Classes.h"
-#include "SysUtils.h"
+#include <Classes.hpp>
+#include <Sysutils.hpp>
 #pragma warning(pop)
 #include "Common.h"
 #include "plugin.hpp"

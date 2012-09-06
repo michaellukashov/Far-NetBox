@@ -1,25 +1,16 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#else
-#include "stdafx.h"
 
-#include "boostdefines.hpp"
-#include <boost/scope_exit.hpp>
-#include <boost/noncopyable.hpp>
-#endif
+#include <Sysutils.hpp>
 
-#include "Sysutils.h"
 #include "Common.h"
 #include "Terminal.h"
 #include "Queue.h"
 #include "Exceptions.h"
 #include "CoreMain.h"
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #pragma package(smart_init)
-#endif
 //---------------------------------------------------------------------------
 class TBackgroundTerminal;
 //---------------------------------------------------------------------------

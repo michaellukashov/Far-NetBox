@@ -1,14 +1,5 @@
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#else
-//---------------------------------------------------------------------------
-#include "nbafx.h"
-
-#include "boostdefines.hpp"
-#include <boost/bind.hpp>
-#include <boost/scope_exit.hpp>
-#endif
 
 #include <map>
 
@@ -16,9 +7,7 @@
 #include "Common.h"
 
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #pragma package(smart_init)
-#endif
 //---------------------------------------------------------------------------
 UnicodeString __fastcall StripHotKey(const UnicodeString Text)
 {

@@ -2,7 +2,7 @@
 #ifndef FileBufferH
 #define FileBufferH
 
-#include "Classes.h"
+#include <Classes.hpp>
 //---------------------------------------------------------------------------
 enum TEOLType { eolLF /* \n */, eolCRLF /* \r\n */, eolCR /* \r */ };
 const int cpRemoveCtrlZ = 0x01;

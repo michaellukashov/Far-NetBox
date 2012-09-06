@@ -1,18 +1,14 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#else
-#include "stdafx.h"
+
+#include <Sysutils.hpp>
+
 #include "Common.h"
 #include "Option.h"
-#include "SysUtils.h"
 #include "TextsCore.h"
-#endif
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #pragma package(smart_init)
-#endif
 //---------------------------------------------------------------------------
 /* __fastcall */ TOptions::TOptions()
 {

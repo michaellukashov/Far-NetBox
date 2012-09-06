@@ -2,15 +2,11 @@
 #ifndef ExceptionsH
 #define ExceptionsH
 
-#ifndef _MSC_VER
 #include <Classes.hpp>
 #include <SysUtils.hpp>
+#ifndef _MSC_VER
 #include <SysInit.hpp>
 #include <System.hpp>
-#else
-#include "stdafx.h"
-#include "Classes.h"
-#include "SysUtils.h"
 #endif
 
 //---------------------------------------------------------------------------

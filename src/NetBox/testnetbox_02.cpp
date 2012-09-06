@@ -4,7 +4,7 @@
 // testnetbox_02 --run_test=testnetbox_02/test1 --log_level=all 2>&1 | tee res.txt
 //------------------------------------------------------------------------------
 
-#include "nbafx.h"
+#include <Classes.hpp>
 #include <time.h>
 #include <stdio.h>
 #include <iostream>
@@ -15,7 +15,6 @@
 #define BOOST_TEST_MAIN
 // #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
-#include <boost/bind.hpp>
 
 #include "winstuff.h"
 #include "puttyexp.h"

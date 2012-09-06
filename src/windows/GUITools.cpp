@@ -1,16 +1,10 @@
 //---------------------------------------------------------------------------
-#include "nbafx.h"
 #define NO_WIN32_LEAN_AND_MEAN
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#endif
 
 #include <shlobj.h>
 #include <Common.h>
-
-#include "boostdefines.hpp"
-#include <boost/scope_exit.hpp>
 
 #include "GUITools.h"
 #include "GUIConfiguration.h"
@@ -19,9 +13,7 @@
 #include <SessionData.h>
 #include <Exceptions.h>
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #pragma package(smart_init)
-#endif
 //---------------------------------------------------------------------------
 bool __fastcall FindFile(UnicodeString & Path)
 {

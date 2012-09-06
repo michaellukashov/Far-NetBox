@@ -2,7 +2,7 @@
 #ifndef PuttyToolsH
 #define PuttyToolsH
 
-#include "SysUtils.h"
+#include <Sysutils.hpp>
 
 //---------------------------------------------------------------------------
 enum TKeyType { ktUnopenable, ktUnknown, ktSSH1, ktSSH2, ktOpenSSH, ktSSHCom };

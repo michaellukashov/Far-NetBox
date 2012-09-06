@@ -1,12 +1,12 @@
 
 #include "afxdll.h"
-#include "nbafx.h"
+#include <Classes.hpp>
+#include <Sysutils.hpp>
 
 #include "FarTexts.h"
 #include "FarUtil.h"
 #include "resource.h"
 #include "Common.h"
-#include "Sysutils.h"
 
 //---------------------------------------------------------------------------
 extern TCustomFarPlugin * __fastcall CreateFarPlugin(HINSTANCE HInst);

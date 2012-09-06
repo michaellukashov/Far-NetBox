@@ -1,20 +1,11 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#endif
 
 #include "Terminal.h"
 
-#ifndef _MSC_VER
 #include <SysUtils.hpp>
 #include <FileCtrl.hpp>
-#else
-#include "stdafx.h"
-#include "boostdefines.hpp"
-#include <boost/scope_exit.hpp>
-#include <boost/bind.hpp>
-#endif
 
 #include "Common.h"
 #include "PuttyTools.h"
@@ -37,9 +28,7 @@
 #include <winsock2.h>
 #endif
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #pragma package(smart_init)
-#endif
 //---------------------------------------------------------------------------
 #define COMMAND_ERROR_ARI(MESSAGE, REPEAT) \
   { \

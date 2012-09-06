@@ -2,18 +2,13 @@
 #ifndef CommonH
 #define CommonH
 
-#ifdef _MSC_VER
-#include <WinBase.h>
+#include "coredefines.hpp"
 
-#include "boostdefines.hpp"
-
-#include "Classes.h"
-#include "UnicodeString.hpp"
+#include <Classes.hpp>
+#include <Sysutils.hpp>
 #include "Exceptions.h"
-#include "SysUtils.h"
 #include "version.h"
 
-#endif
 //---------------------------------------------------------------------------
 #define EXCEPTION throw ExtException(UnicodeString(), NULL)
 #define THROWOSIFFALSE(C) if (!(C)) RaiseLastOSError();

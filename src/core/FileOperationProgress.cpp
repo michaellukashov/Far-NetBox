@@ -1,9 +1,6 @@
 //---------------------------------------------------------------------------
-#include "stdafx.h"
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#endif
 
 #include "Common.h"
 #include "FileOperationProgress.h"

@@ -1,9 +1,6 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#endif
-#include "nbafx.h"
 
 #include "Common.h"
 #include "CoreMain.h"
@@ -11,9 +8,7 @@
 #include "WinSCPPlugin.h"
 #include "Queue.h"
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #pragma package(smart_init)
-#endif
 //---------------------------------------------------------------------------
 TConfiguration * __fastcall CreateConfiguration()
 {

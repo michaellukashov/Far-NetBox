@@ -1,16 +1,9 @@
 #pragma once
 
-#include "stdafx.h"
-
-#include "boostdefines.hpp"
-#include <boost/algorithm/string.hpp>
-#include <boost/foreach.hpp>
-#include <boost/scope_exit.hpp>
-
-#include "Classes.h"
+#include <Classes.hpp>
 #include "Common.h"
 #include "Exceptions.h"
-#include "Sysutils.h"
+#include <Sysutils.hpp>
 
 namespace alg = boost::algorithm;
 

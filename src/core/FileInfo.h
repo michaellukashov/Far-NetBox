@@ -1,8 +1,8 @@
 #ifndef FileInfoH
 #define FileInfoH
 
-#include "stdafx.h"
-#include "SysUtils.h"
+#include <Classes.hpp>
+#include <Sysutils.hpp>
 
 struct TTranslation {
   Word Language, CharSet;

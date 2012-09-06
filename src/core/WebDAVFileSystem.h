@@ -1,8 +1,6 @@
 #pragma once
 
-#ifdef _MSC_VER
-#include "stdafx.h"
-#endif // #ifdef _MSC_VER
+#include <Classes.hpp>
 
 #include <apr_pools.h>
 

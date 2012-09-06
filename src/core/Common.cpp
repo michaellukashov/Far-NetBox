@@ -1,29 +1,19 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #define NO_WIN32_LEAN_AND_MEAN
 #include <vcl.h>
 #pragma hdrstop
-#else
 
-#include "stdafx.h"
+#include <Classes.hpp>
+#include <Sysutils.hpp>
 
-#include "boostdefines.hpp"
-#include <boost/scope_exit.hpp>
-#include <boost/algorithm/string.hpp>
-
-#include "Classes.h"
-#include "Sysutils.h"
 #include "FarPlugin.h"
-#endif
 
 #include "Common.h"
 #include "Exceptions.h"
 #include "TextsCore.h"
 #include "Interface.h"
-#ifndef _MSC_VER
 #include <StrUtils.hpp>
 #include <DateUtils.hpp>
-#endif
 #include <math.h>
 #include <shlobj.h>
 
@@ -31,9 +21,7 @@
 namespace alg = boost::algorithm;
 #endif
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #pragma package(smart_init)
-#endif
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 // TGuard

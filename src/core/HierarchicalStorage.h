@@ -2,13 +2,7 @@
 #ifndef HierarchicalStorageH
 #define HierarchicalStorageH
 
-#ifndef _MSC_VER
 #include <registry.hpp>
-#else
-#include "Classes.h"
-
-#include <boost/noncopyable.hpp>
-#endif
 //---------------------------------------------------------------------------
 enum TStorage { stDetect, stRegistry, stIniFile, stNul, stXmlFile };
 enum TStorageAccessMode { smRead, smReadWrite };

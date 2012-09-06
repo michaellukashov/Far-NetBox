@@ -8,7 +8,7 @@
 #else
 #include "boostdefines.hpp"
 
-#include "Classes.h"
+#include <Classes.hpp>
 #include "Common.h"
 #endif
 //---------------------------------------------------------------------------

@@ -7,7 +7,7 @@
 // #include "leak_detector.h"
 // extern int GC_find_leak;
 
-#include "nbafx.h"
+#include <Classes.hpp>
 #include <time.h>
 #include <Winhttp.h>
 #include <stdio.h>
@@ -20,7 +20,6 @@
 // #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 // #include <boost/type_traits/is_base_of.hpp>
-#include <boost/scope_exit.hpp>
 
 #include "TestTexts.h"
 #include "Common.h"

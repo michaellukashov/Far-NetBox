@@ -2,17 +2,10 @@
 #include <iostream>
 #include <iomanip>
 
-#include "stdafx.h"
-
-#include "boostdefines.hpp"
-#include <boost/scope_exit.hpp>
-#include <boost/algorithm/string.hpp>
-#include <boost/lexical_cast.hpp>
-
-#include "Classes.h"
+#include <Classes.hpp>
+#include <Sysutils.hpp>
 #include "FarPlugin.h"
 #include "RemoteFiles.h"
-#include "Sysutils.h"
 
 namespace alg = boost::algorithm;
 //---------------------------------------------------------------------------

@@ -7,7 +7,6 @@
 #include "boostdefines.hpp"
 
 #include "FarPlugin.h"
-#include "nbafx.h"
 
 #define MAX_SIZE -1
 

@@ -1,14 +1,7 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
 #include <LanguagesDEPfix.hpp>
-#else
-#include "nbafx.h"
-
-#include "boostdefines.hpp"
-#include <boost/scope_exit.hpp>
-#endif
 #include "GUIConfiguration.h"
 #include "GUITools.h"
 #include <Common.h>
@@ -17,9 +10,7 @@
 #include <Terminal.h>
 #include <CoreMain.h>
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #pragma package(smart_init)
-#endif
 //---------------------------------------------------------------------------
 const int ccLocal = ccUser;
 const int ccShowResults = ccUser << 1;

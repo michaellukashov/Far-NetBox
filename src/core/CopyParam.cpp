@@ -1,9 +1,8 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#endif
-#include "stdafx.h"
+
+#include <Sysutils.hpp>
 
 #include "Common.h"
 #include "Exceptions.h"
@@ -11,7 +10,6 @@
 #include "HierarchicalStorage.h"
 #include "TextsCore.h"
 #include "Exceptions.h"
-#include "SysUtils.h"
 //---------------------------------------------------------------------------
 /* __fastcall */ TCopyParamType::TCopyParamType()
 {

@@ -1,17 +1,10 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#else
-#include "stdafx.h"
 
-#include "boostdefines.hpp"
-#include <boost/scope_exit.hpp>
-#include <boost/bind.hpp>
-#endif
+#include <Sysutils.hpp>
 
 #include "SftpFileSystem.h"
-
 #include "PuttyTools.h"
 #include "Common.h"
 #include "Exceptions.h"
@@ -20,13 +13,10 @@
 #include "TextsCore.h"
 #include "HelpCore.h"
 #include "SecureShell.h"
-#include "Sysutils.h"
 
 #include <memory>
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #pragma package(smart_init)
-#endif
 //---------------------------------------------------------------------------
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
   FILE_OPERATION_LOOP_CUSTOM(Self->FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)

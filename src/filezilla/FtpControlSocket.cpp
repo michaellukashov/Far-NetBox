@@ -43,7 +43,7 @@
 #include <FileZillaOpt.h>
 #include <Options.h>
 #include <Crypt.h>
-#include "Classes.h"
+#include <Classes.hpp>
 #include "Common.h"
 #endif
 #ifdef MPEXT

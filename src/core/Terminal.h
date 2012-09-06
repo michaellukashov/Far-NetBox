@@ -2,14 +2,7 @@
 #ifndef TerminalH
 #define TerminalH
 
-#ifndef _MSC_VER
 #include <Classes.hpp>
-#else
-#include "boostdefines.hpp"
-#include <boost/noncopyable.hpp>
-
-#include "Classes.h"
-#endif
 
 #include "SessionInfo.h"
 #include "Interface.h"

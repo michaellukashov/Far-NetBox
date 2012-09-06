@@ -2,14 +2,10 @@
 #ifndef SysutilsH
 #define SysutilsH
 
-#ifdef _MSC_VER
 #include <WinBase.h>
 
-#include "boostdefines.hpp"
-
-#include "Classes.h"
-#include "UnicodeString.hpp"
-#endif
+#include <Classes.hpp>
+#include <headers.hpp>
 
 namespace Sysutils {
 

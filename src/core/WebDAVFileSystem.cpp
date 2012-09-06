@@ -1,11 +1,9 @@
 //---------------------------------------------------------------------------
-#include "stdafx.h"
 #include <wincrypt.h>
 #include <stdio.h>
 #include <winhttp.h>
 
-#include "boostdefines.hpp"
-#include <boost/algorithm/string.hpp>
+#include <Classes.hpp>
 
 #include <apr_hash.h>
 #include <apr_strings.h>

@@ -1,12 +1,8 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#endif
-#include "stdafx.h"
 
 #include "CoreMain.h"
-
 #include "Common.h"
 #include "Interface.h"
 #include "Configuration.h"
@@ -16,9 +12,7 @@
 #include "FileZillaIntf.h"
 #endif
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #pragma package(smart_init)
-#endif
 //---------------------------------------------------------------------------
 TConfiguration * Configuration = NULL;
 TStoredSessionList * StoredSessions = NULL;

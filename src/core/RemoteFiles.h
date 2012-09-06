@@ -5,9 +5,8 @@
 #include <vector>
 #include <map>
 
-#ifdef _MSC_VER
-#include "Classes.h"
-#endif
+#include <Classes.hpp>
+
 //---------------------------------------------------------------------------
 enum TModificationFmt { mfNone, mfMDHM, mfMDY, mfFull };
 //---------------------------------------------------------------------------

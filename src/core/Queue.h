@@ -2,8 +2,6 @@
 #ifndef QueueH
 #define QueueH
 //---------------------------------------------------------------------------
-#include "boostdefines.hpp"
-#include <boost/noncopyable.hpp>
 
 #include "Terminal.h"
 #include "FileOperationProgress.h"

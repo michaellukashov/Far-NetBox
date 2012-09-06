@@ -6,7 +6,7 @@
 #include "FzApiStructures.h"
 #include "structures.h"
 #ifdef _MSC_VER
-#include "Classes.h"
+#include <Classes.hpp>
 #include "Common.h"
 #endif
 //---------------------------------------------------------------------------
@@ -18,9 +18,7 @@
 //---------------------------------------------------------------------------
 #define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #pragma package(smart_init)
-#endif
 //---------------------------------------------------------------------------
 void __fastcall TFileZillaIntf::Initialize()
 {

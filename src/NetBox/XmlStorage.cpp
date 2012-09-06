@@ -1,10 +1,7 @@
 //---------------------------------------------------------------------------
-#include "nbafx.h"
+#include <Classes.hpp>
 
 #include <vector>
-
-#include "boostdefines.hpp"
-#include <boost/scope_exit.hpp>
 
 #include "Common.h"
 #include "XmlStorage.h"

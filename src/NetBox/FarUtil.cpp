@@ -1,4 +1,4 @@
-#include "nbafx.h"
+#include <Classes.hpp>
 
 #include "Common.h"
 #include "FarUtil.h"

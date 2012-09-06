@@ -2,6 +2,7 @@
 
 #include "stdafx.h"
 
+// #include <Windows.h>
 #include <WinDef.h>
 #include <CommCtrl.h>
 
@@ -18,9 +19,14 @@
 
 #include "boostdefines.hpp"
 #include <boost/noncopyable.hpp>
+#include <boost/scope_exit.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/foreach.hpp>
+#include <boost/bind.hpp>
 
 #include <rtlconsts.h>
-#include "UnicodeString.hpp"
+#include <headers.hpp>
 
 #pragma warning(pop)
 

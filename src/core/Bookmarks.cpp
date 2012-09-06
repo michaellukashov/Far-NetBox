@@ -1,24 +1,15 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#else
-#include "stdafx.h"
 
-#include "boostdefines.hpp"
-#include <boost/scope_exit.hpp>
-#endif
 #include <Common.h>
 #include "NamedObjs.h"
 #include "Bookmarks.h"
 #include "Configuration.h"
 #include "HierarchicalStorage.h"
 #include "TextsCore.h"
-#include "Exceptions.h"
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #pragma package(smart_init)
-#endif
 //---------------------------------------------------------------------------
 /* __fastcall */ TBookmarks::TBookmarks() : TObject()
 {

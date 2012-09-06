@@ -1,21 +1,11 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#else
-#include "stdafx.h"
-#include "boostdefines.hpp"
-#include <boost/scope_exit.hpp>
 
-#include "PuttyIntf.h"
-#endif
+#include <SysUtils.hpp>
 
 #include "RemoteFiles.h"
-
-#ifndef _MSC_VER
-#include <SysUtils.hpp>
-#endif
-
+#include "PuttyIntf.h"
 #include "Common.h"
 #include "Exceptions.h"
 #include "Interface.h"

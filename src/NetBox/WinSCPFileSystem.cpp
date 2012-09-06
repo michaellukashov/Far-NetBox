@@ -1,16 +1,7 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#else
-#include "nbafx.h"
 
-#include "boostdefines.hpp"
-#include <boost/scope_exit.hpp>
-#include <boost/bind.hpp>
-
-#include "FarUtil.h"
-#endif
 #include "WinSCPFileSystem.h"
 #include "WinSCPPlugin.h"
 #include "FarDialog.h"
@@ -24,16 +15,12 @@
 #include <ScpFileSystem.h>
 #include <Bookmarks.h>
 #include <GUITools.h>
-#include "XmlStorage.h"
-#ifndef _MSC_VER
-#include <CompThread.hpp>
 #include <SysUtils.hpp>
-#endif
+#include <CompThread.hpp>
 #include "PuttyIntf.h"
+#include "XmlStorage.h"
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #pragma package(smart_init)
-#endif
 //---------------------------------------------------------------------------
 /* __fastcall */ TSessionPanelItem::TSessionPanelItem(TSessionData * ASessionData):
   TCustomFarPanelItem()

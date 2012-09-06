@@ -1,12 +1,8 @@
 //---------------------------------------------------------------------------
-#ifndef  _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#else
-#include "stdafx.h"
-#endif
-#include "FileMasks.h"
 
+#include "FileMasks.h"
 #include "Common.h"
 #include "TextsCore.h"
 #include "RemoteFiles.h"

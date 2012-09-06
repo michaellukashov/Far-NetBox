@@ -1,14 +1,6 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#else
-#include "nbafx.h"
-
-#include "boostdefines.hpp"
-#include <boost/scope_exit.hpp>
-#include <boost/bind.hpp>
-#endif
 
 #include "FarPlugin.h"
 #include "FarDialog.h"
@@ -23,9 +15,7 @@
 TCustomFarPlugin * FarPlugin = NULL;
 #define FAR_TITLE_SUFFIX L" - Far"
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #pragma package(smart_init)
-#endif
 //---------------------------------------------------------------------------
 TFarMessageParams::TFarMessageParams()
 {

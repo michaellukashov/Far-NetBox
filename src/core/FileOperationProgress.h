@@ -7,11 +7,6 @@
 #include "Exceptions.h"
 #include <vector>
 
-#ifdef _MSC_VER
-#include "boostdefines.hpp"
-#include <boost/noncopyable.hpp>
-#endif
-
 //---------------------------------------------------------------------------
 class TFileOperationProgressType;
 enum TFileOperation { foNone, foCopy, foMove, foDelete, foSetProperties,
