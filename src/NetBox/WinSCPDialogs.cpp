@@ -3160,9 +3160,10 @@ void __fastcall TSessionDialog::UpdateControls()
     TransferProtocolCombo->GetVisible() &&
     (IndexToFSProtocol(TransferProtocolCombo->GetItemIndex(), false) == fsSFTPonly));
   InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !SshProtocol && !FtpsProtocol && !HTTPSProtocol);
-  FtpEncryptionLabel->SetVisible(FtpProtocol || FtpsProtocol || InternalWebDAVProtocol || HTTPSProtocol);
-  FtpEncryptionCombo->SetVisible(FtpProtocol || FtpsProtocol || InternalWebDAVProtocol || HTTPSProtocol);
-  FtpEncryptionCombo->SetEnabled(FtpProtocol || FtpsProtocol || InternalWebDAVProtocol || HTTPSProtocol);
+  bool FtpEncryptionVisible = (GetTab() == FtpEncryptionCombo->GetGroup()) &&
+    (FtpProtocol || FtpsProtocol || InternalWebDAVProtocol || HTTPSProtocol);
+  FtpEncryptionLabel->SetVisible(FtpEncryptionVisible);
+  FtpEncryptionCombo->SetVisible(FtpEncryptionVisible);
   PrivateKeyEdit->SetEnabled(SshProtocol);
   HostNameLabel->SetCaption(GetMsg(LOGIN_HOST_NAME));
 
