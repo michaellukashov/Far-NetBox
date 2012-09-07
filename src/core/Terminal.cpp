@@ -2786,7 +2786,7 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
 
   try
   {
-    TFileOperationProgressType Progress(fastdelegate::bind(&TTerminal::DoProgress, this, _1, _2), fastdelegate::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
+    TFileOperationProgressType Progress(MAKE_CALLBACK0(TTerminal::DoProgress, this), MAKE_CALLBACK6(TTerminal::DoFinished, this));
     TFileOperationProgressType * OperationProgress(&Progress);
     Progress.Start(Operation, Side, FileList->GetCount());
 
@@ -3032,7 +3032,7 @@ bool /* __fastcall */ TTerminal::DeleteFiles(TStrings * FilesToDelete, int Param
   // TODO: avoid resolving symlinks while reading subdirectories.
   // Resolving does not work anyway for relative symlinks in subdirectories
   // (at least for SFTP).
-  return ProcessFiles(FilesToDelete, foDelete, fastdelegate::bind(&TTerminal::DeleteFile, this, _1, _2, _3), &Params);
+  return ProcessFiles(FilesToDelete, foDelete, MAKE_CALLBACK3(TTerminal::DeleteFile, this), &Params);
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::DeleteLocalFile(UnicodeString FileName,
@@ -3053,7 +3053,7 @@ void /* __fastcall */ TTerminal::DeleteLocalFile(UnicodeString FileName,
 //---------------------------------------------------------------------------
 bool /* __fastcall */ TTerminal::DeleteLocalFiles(TStrings * FileList, int Params)
 {
-  return ProcessFiles(FileList, foDelete, fastdelegate::bind(&TTerminal::DeleteLocalFile, this, _1, _2, _3), &Params, osLocal);
+  return ProcessFiles(FileList, foDelete, MAKE_CALLBACK3(TTerminal::DeleteLocalFile, this), &Params, osLocal);
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::CustomCommandOnFile(UnicodeString FileName,
@@ -3119,7 +3119,7 @@ void /* __fastcall */ TTerminal::CustomCommandOnFiles(UnicodeString Command,
     AParams.Command = Command;
     AParams.Params = Params;
     AParams.OutputEvent = OutputEvent;
-    ProcessFiles(Files, foCustomCommand, fastdelegate::bind(&TTerminal::CustomCommandOnFile, this, _1, _2, _3), &AParams);
+    ProcessFiles(Files, foCustomCommand, MAKE_CALLBACK3(TTerminal::CustomCommandOnFile, this), &AParams);
   }
   else
   {
@@ -3233,7 +3233,7 @@ void /* __fastcall */ TTerminal::ChangeFilesProperties(TStrings * FileList,
   const TRemoteProperties * Properties)
 {
   AnnounceFileListOperation();
-  ProcessFiles(FileList, foSetProperties, fastdelegate::bind(&TTerminal::ChangeFileProperties, this, _1, _2, _3), const_cast<void *>(static_cast<const void *>(Properties)));
+  ProcessFiles(FileList, foSetProperties, MAKE_CALLBACK3(TTerminal::ChangeFileProperties, this), const_cast<void *>(static_cast<const void *>(Properties)));
 }
 //---------------------------------------------------------------------------
 bool /* __fastcall */ TTerminal::LoadFilesProperties(TStrings * FileList)
@@ -3322,7 +3322,7 @@ void /* __fastcall */ TTerminal::DoCalculateDirectorySize(const UnicodeString Fi
 {
   try
   {
-    ProcessDirectory(FileName, fastdelegate::bind(&TTerminal::CalculateFileSize, this, _1, _2, _3), Params);
+    ProcessDirectory(FileName, MAKE_CALLBACK3(TTerminal::CalculateFileSize, this), Params);
   }
   catch(Exception & E)
   {
@@ -3346,7 +3346,7 @@ void /* __fastcall */ TTerminal::CalculateFilesSize(TStrings * FileList,
   Param.Params = Params;
   Param.CopyParam = CopyParam;
   Param.Stats = Stats;
-  ProcessFiles(FileList, foCalculateSize, fastdelegate::bind(&TTerminal::CalculateFileSize, this, _1, _2, _3), &Param);
+  ProcessFiles(FileList, foCalculateSize, MAKE_CALLBACK3(TTerminal::CalculateFileSize, this), &Param);
   Size = Param.Size;
 }
 //---------------------------------------------------------------------------
@@ -3502,7 +3502,7 @@ bool /* __fastcall */ TTerminal::MoveFiles(TStrings * FileList, const UnicodeStr
       }
       Self->EndTransaction();
     } BOOST_SCOPE_EXIT_END
-    Result = ProcessFiles(FileList, foRemoteMove, fastdelegate::bind(&TTerminal::MoveFile, this, _1, _2, _3), &Params);
+    Result = ProcessFiles(FileList, foRemoteMove, MAKE_CALLBACK3(TTerminal::MoveFile, this), &Params);
   }
 #ifndef _MSC_VER
   __finally
@@ -3603,7 +3603,7 @@ bool /* __fastcall */ TTerminal::CopyFiles(TStrings * FileList, const UnicodeStr
   Params.Target = Target;
   Params.FileMask = FileMask;
   DirectoryModified(Target, true);
-  return ProcessFiles(FileList, foRemoteCopy, fastdelegate::bind(&TTerminal::CopyFile, this, _1, _2, _3), &Params);
+  return ProcessFiles(FileList, foRemoteCopy, MAKE_CALLBACK3(TTerminal::CopyFile, this), &Params);
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::CreateDirectory(const UnicodeString DirName,
@@ -3846,7 +3846,7 @@ void /* __fastcall */ TTerminal::AnyCommand(const UnicodeString Command,
 
   TCallSessionAction Action(GetActionLog(), Command, GetCurrentDirectory());
   TOutputProxy ProxyOutputEvent(Action, OutputEvent);
-  DoAnyCommand(Command, fastdelegate::bind(&TOutputProxy::Output, &ProxyOutputEvent, _1, _2), &Action);
+  DoAnyCommand(Command, MAKE_CALLBACK2(TOutputProxy::Output, &ProxyOutputEvent), &Action);
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::DoAnyCommand(const UnicodeString Command,
@@ -4116,7 +4116,7 @@ void /* __fastcall */ TTerminal::MakeLocalFileList(const UnicodeString & FileNam
   bool Directory = FLAGSET(Rec.Attr, faDirectory);
   if (Directory && Params.Recursive)
   {
-    ProcessLocalDirectory(FileName, fastdelegate::bind(&TTerminal::MakeLocalFileList, this, _1, _2, _3), &Params);
+    ProcessLocalDirectory(FileName, MAKE_CALLBACK3(TTerminal::MakeLocalFileList, this), &Params);
   }
 
   if (!Directory || Params.IncludeDirs)
@@ -4155,7 +4155,7 @@ void /* __fastcall */ TTerminal::CalculateLocalFileSize(const UnicodeString & Fi
     }
     else
     {
-      ProcessLocalDirectory(FileName, fastdelegate::bind(&TTerminal::CalculateLocalFileSize, this, _1, _2, _3), Params);
+      ProcessLocalDirectory(FileName, MAKE_CALLBACK3(TTerminal::CalculateLocalFileSize, this), Params);
     }
   }
 
@@ -4169,7 +4169,7 @@ void /* __fastcall */ TTerminal::CalculateLocalFileSize(const UnicodeString & Fi
 void /* __fastcall */ TTerminal::CalculateLocalFilesSize(TStrings * FileList,
   __int64 & Size, const TCopyParamType * CopyParam)
 {
-  TFileOperationProgressType OperationProgress(fastdelegate::bind(&TTerminal::DoProgress, this, _1, _2), fastdelegate::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
+  TFileOperationProgressType OperationProgress(MAKE_CALLBACK2(TTerminal::DoProgress, this), MAKE_CALLBACK0(TTerminal::DoFinished, this));
   TOnceDoneOperation OnceDoneOperation = odoIdle;
   OperationProgress.Start(foCalculateSize, osLocal, FileList->GetCount());
   // try
@@ -4396,7 +4396,7 @@ void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeStri
         DoSynchronizeProgress(Data, true);
       }
 
-      ProcessDirectory(RemoteDirectory, fastdelegate::bind(&TTerminal::SynchronizeCollectFile, this, _1, _2, _3), &Data,
+      ProcessDirectory(RemoteDirectory, MAKE_CALLBACK3(TTerminal::SynchronizeCollectFile, this), &Data,
         FLAGSET(Params, spUseCache));
 
       TSynchronizeFileData * FileData;
@@ -4835,13 +4835,13 @@ void /* __fastcall */ TTerminal::SynchronizeApply(TSynchronizeChecklist * Checkl
           if (DownloadList->GetCount() > 0)
           {
             ProcessFiles(DownloadList, foSetProperties,
-              fastdelegate::bind(&TTerminal::SynchronizeLocalTimestamp, this, _1, _2, _3), NULL, osLocal);
+              MAKE_CALLBACK3(TTerminal::SynchronizeLocalTimestamp, this), NULL, osLocal);
           }
 
           if (UploadList->GetCount() > 0)
           {
             ProcessFiles(UploadList, foSetProperties,
-              fastdelegate::bind(&TTerminal::SynchronizeRemoteTimestamp, this, _1, _2, _3));
+              MAKE_CALLBACK3(TTerminal::SynchronizeRemoteTimestamp, this));
           }
         }
         else
@@ -4985,7 +4985,7 @@ void /* __fastcall */ TTerminal::DoFilesFind(UnicodeString Directory, TFilesFind
       {
         Self->FOnFindingFile = NULL;
       } BOOST_SCOPE_EXIT_END
-      ProcessDirectory(Directory, fastdelegate::bind(&TTerminal::FileFind, this, _1, _2, _3), &Params, false, true);
+      ProcessDirectory(Directory, MAKE_CALLBACK3(TTerminal::FileFind, this), &Params, false, true);
     }
 #ifndef _MSC_VER
     __finally
@@ -5092,7 +5092,7 @@ bool /* __fastcall */ TTerminal::CopyToRemote(TStrings * FilesToCopy,
   bool Result = false;
   TOnceDoneOperation OnceDoneOperation = odoIdle;
 
-  TFileOperationProgressType OperationProgress(fastdelegate::bind(&TTerminal::DoProgress, this, _1, _2), fastdelegate::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
+  TFileOperationProgressType OperationProgress(MAKE_CALLBACK2(TTerminal::DoProgress, this), MAKE_CALLBACK6(TTerminal::DoFinished, this));
   try
   {
 
@@ -5218,7 +5218,7 @@ bool /* __fastcall */ TTerminal::CopyToLocal(TStrings * FilesToCopy,
       } BOOST_SCOPE_EXIT_END
       __int64 TotalSize = 0;
       bool TotalSizeKnown = false;
-      TFileOperationProgressType OperationProgress(fastdelegate::bind(&TTerminal::DoProgress, this, _1, _2), fastdelegate::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
+      TFileOperationProgressType OperationProgress(MAKE_CALLBACK2(TTerminal::DoProgress, this), MAKE_CALLBACK6(TTerminal::DoFinished, this));
 
       if (CopyParam->GetCalculateSize())
       {
@@ -5356,7 +5356,7 @@ void __fastcall TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
 HANDLE __fastcall TTerminal::CreateLocalFile(const UnicodeString & LocalFileName, DWORD DesiredAccess,
     DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes)
 {
-  if (GetOnCreateLocalFile().empty())
+  if (!GetOnCreateLocalFile())
   {
     return ::CreateFile(LocalFileName.c_str(), DesiredAccess, ShareMode, NULL, CreationDisposition, FlagsAndAttributes, 0);
   }
@@ -5368,7 +5368,7 @@ HANDLE __fastcall TTerminal::CreateLocalFile(const UnicodeString & LocalFileName
 //---------------------------------------------------------------------------
 DWORD __fastcall TTerminal::GetLocalFileAttributes(const UnicodeString & LocalFileName)
 {
-  if (GetOnGetLocalFileAttributes().empty())
+  if (!GetOnGetLocalFileAttributes())
   {
     return ::GetFileAttributes(LocalFileName.c_str());
   }
@@ -5380,7 +5380,7 @@ DWORD __fastcall TTerminal::GetLocalFileAttributes(const UnicodeString & LocalFi
 //---------------------------------------------------------------------------
 BOOL __fastcall TTerminal::SetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes)
 {
-  if (GetOnSetLocalFileAttributes().empty())
+  if (!GetOnSetLocalFileAttributes())
   {
     return ::SetFileAttributes(LocalFileName.c_str(), FileAttributes);
   }
@@ -5392,7 +5392,7 @@ BOOL __fastcall TTerminal::SetLocalFileAttributes(const UnicodeString & LocalFil
 //---------------------------------------------------------------------------
 BOOL __fastcall TTerminal::MoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags)
 {
-  if (GetOnMoveLocalFile().empty())
+  if (!GetOnMoveLocalFile())
   {
     return ::MoveFileEx(LocalFileName.c_str(), NewLocalFileName.c_str(), Flags) != 0;
   }
@@ -5404,7 +5404,7 @@ BOOL __fastcall TTerminal::MoveLocalFile(const UnicodeString & LocalFileName, co
 //---------------------------------------------------------------------------
 BOOL __fastcall TTerminal::RemoveLocalDirectory(const UnicodeString & LocalDirName)
 {
-  if (GetOnRemoveLocalDirectory().empty())
+  if (!GetOnRemoveLocalDirectory())
   {
     return ::RemoveDirectory(LocalDirName) != 0;
   }
@@ -5416,7 +5416,7 @@ BOOL __fastcall TTerminal::RemoveLocalDirectory(const UnicodeString & LocalDirNa
 //---------------------------------------------------------------------------
 BOOL __fastcall TTerminal::CreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
 {
-  if (GetOnCreateLocalDirectory().empty())
+  if (!GetOnCreateLocalDirectory())
   {
     return ::CreateDirectory(LocalDirName.c_str(), SecurityAttributes) != 0;
   }

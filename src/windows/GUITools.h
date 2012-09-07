@@ -20,7 +20,7 @@ class TSessionData;
 #ifndef _MSC_VER
 typedef void __fastcall (__closure* TProcessMessagesEvent)();
 #else
-typedef fastdelegate::FastDelegate0<void> TProcessMessagesEvent;
+DEFINE_CALLBACK_TYPE0(TProcessMessagesEvent, void);
 #endif
 //---------------------------------------------------------------------------
 bool __fastcall FindFile(UnicodeString & Path);

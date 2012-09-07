@@ -1250,7 +1250,7 @@ class TSFTPAsynchronousQueue : public TSFTPQueue
 public:
   explicit /* __fastcall */ TSFTPAsynchronousQueue(TSFTPFileSystem * AFileSystem, unsigned int codePage) : TSFTPQueue(AFileSystem, codePage)
   {
-    FFileSystem->FSecureShell->RegisterReceiveHandler(fastdelegate::bind(&TSFTPAsynchronousQueue::ReceiveHandler, this, _1));
+    FFileSystem->FSecureShell->RegisterReceiveHandler(MAKE_CALLBACK1(TSFTPAsynchronousQueue::ReceiveHandler, this));
     FReceiveHandlerRegistered = true;
   }
 
@@ -1297,7 +1297,7 @@ protected:
     if (FReceiveHandlerRegistered)
     {
       FReceiveHandlerRegistered = false;
-      FFileSystem->FSecureShell->UnregisterReceiveHandler(fastdelegate::bind(&TSFTPAsynchronousQueue::ReceiveHandler, this, _1));
+      FFileSystem->FSecureShell->UnregisterReceiveHandler(MAKE_CALLBACK1(TSFTPAsynchronousQueue::ReceiveHandler, this));
     }
   }
 
@@ -3358,7 +3358,7 @@ void __fastcall TSFTPFileSystem::DeleteFile(const UnicodeString FileName,
     {
       try
       {
-        FTerminal->ProcessDirectory(FileName, fastdelegate::bind(&TTerminal::DeleteFile, FTerminal, _1, _2, _3), &Params);
+        FTerminal->ProcessDirectory(FileName, MAKE_CALLBACK3(TTerminal::DeleteFile, FTerminal), &Params);
       }
       catch(...)
       {
@@ -3457,7 +3457,7 @@ void __fastcall TSFTPFileSystem::ChangeFileProperties(const UnicodeString FileNa
     {
       try
       {
-        FTerminal->ProcessDirectory(FileName, fastdelegate::bind(&TTerminal::ChangeFileProperties, FTerminal, _1, _2, _3),
+        FTerminal->ProcessDirectory(FileName, MAKE_CALLBACK3(TTerminal::ChangeFileProperties, FTerminal),
           static_cast<void *>(const_cast<TRemoteProperties *>(AProperties)));
       }
       catch(...)
@@ -3497,7 +3497,7 @@ bool __fastcall TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
   // without knowledge of server's capabilities, this all make no sense
   if (FSupport->Loaded)
   {
-    TFileOperationProgressType Progress(fastdelegate::bind(&TTerminal::DoProgress, FTerminal, _1, _2), fastdelegate::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6));
+    TFileOperationProgressType Progress(MAKE_CALLBACK2(TTerminal::DoProgress, FTerminal), MAKE_CALLBACK6(TTerminal::DoFinished, FTerminal));
     Progress.Start(foGetProperties, osRemote, FileList->GetCount());
 
     FTerminal->FOperationProgress = &Progress;
@@ -3710,7 +3710,7 @@ void __fastcall TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Al
   TStrings * FileList, TStrings * Checksums,
   TCalculatedChecksumEvent OnCalculatedChecksum)
 {
-  TFileOperationProgressType Progress(fastdelegate::bind(&TTerminal::DoProgress, FTerminal, _1, _2), fastdelegate::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6));
+  TFileOperationProgressType Progress(MAKE_CALLBACK2(TTerminal::DoProgress, FTerminal), MAKE_CALLBACK6(TTerminal::DoFinished, FTerminal));
   Progress.Start(foCalculateChecksum, osRemote, FileList->GetCount());
 
   FTerminal->FOperationProgress = &Progress;
@@ -4299,7 +4299,7 @@ void __fastcall TSFTPFileSystem::SFTPSource(const UnicodeString FileName,
       OpenParams.Confirmed = false;
 
       FTerminal->LogEvent(L"Opening remote file.");
-      FTerminal->FileOperationLoop(fastdelegate::bind(&TSFTPFileSystem::SFTPOpenRemote, this, _1, _2), OperationProgress, true,
+      FTerminal->FileOperationLoop(MAKE_CALLBACK2(TSFTPFileSystem::SFTPOpenRemote, this), OperationProgress, true,
         FMTLOAD(SFTP_CREATE_FILE_ERROR, OpenParams.RemoteFileName.c_str()),
         &OpenParams);
 
@@ -5101,7 +5101,7 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
       SinkFileParams.Skipped = false;
       SinkFileParams.Flags = Flags & ~tfFirstLevel;
 
-      FTerminal->ProcessDirectory(FileName, fastdelegate::bind(&TSFTPFileSystem::SFTPSinkFile, this, _1, _2, _3), &SinkFileParams);
+      FTerminal->ProcessDirectory(FileName, MAKE_CALLBACK3(TSFTPFileSystem::SFTPSinkFile, this), &SinkFileParams);
 
       // Do not delete directory if some of its files were skip.
       // Throw "skip file" for the directory to avoid attempt to deletion

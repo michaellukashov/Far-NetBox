@@ -619,7 +619,7 @@ public:
 
 BOOST_FIXTURE_TEST_CASE(test26, base_fixture_t)
 {
-  DEFINE_EVENT_TYPE2(TEvent, int, int, char *);
+  DEFINE_CALLBACK_TYPE2(TEvent, int, int, char *);
   TEvent sig;
 
   CBaseClass a("Base A");

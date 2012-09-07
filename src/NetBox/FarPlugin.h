@@ -3,7 +3,7 @@
 #include "boostdefines.hpp"
 
 #pragma warning(push, 1)
-#include <Classes.hpp>
+#include <vcl.h>
 #include <Sysutils.hpp>
 #pragma warning(pop)
 #include "Common.h"
@@ -31,16 +31,15 @@ enum THandlesFunction { hfProcessKey, hfProcessHostFile, hfProcessEvent };
 typedef void __fastcall (__closure * TFarInputBoxValidateEvent)
   (AnsiString & Text);
 #else
-typedef fastdelegate::FastDelegate1<void,
-  UnicodeString &> TFarInputBoxValidateEvent;
+DEFINE_CALLBACK_TYPE1(TFarInputBoxValidateEvent, void, UnicodeString &);
 #endif
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
 typedef void __fastcall (__closure *TFarMessageTimerEvent)(unsigned int & Result);
 typedef void __fastcall (__closure *TFarMessageClickEvent)(void * Token, int Result, bool & Close);
 #else
-typedef fastdelegate::FastDelegate1<void, unsigned int &> TFarMessageTimerEvent;
-typedef fastdelegate::FastDelegate3<void, void *, int, bool &> TFarMessageClickEvent;
+DEFINE_CALLBACK_TYPE1(TFarMessageTimerEvent, void, unsigned int &);
+DEFINE_CALLBACK_TYPE3(TFarMessageClickEvent, void, void *, int, bool &);
 #endif
 
 //---------------------------------------------------------------------------

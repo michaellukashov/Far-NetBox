@@ -30,12 +30,12 @@ typedef void __fastcall (__closure * TFarMouseClickEvent)
 typedef void __fastcall (__closure * TFarProcessGroupEvent)
   (TFarDialogItem * Item, void * Arg);
 #else
-typedef fastdelegate::FastDelegate4<void,
-  TFarDialog *, TFarDialogItem *, long, bool &> TFarKeyEvent;
-typedef fastdelegate::FastDelegate2<void,
-  TFarDialogItem *, MOUSE_EVENT_RECORD *> TFarMouseClickEvent;
-typedef fastdelegate::FastDelegate2<void,
-  TFarDialogItem *, void *> TFarProcessGroupEvent;
+DEFINE_CALLBACK_TYPE4(TFarKeyEvent, void,
+  TFarDialog *, TFarDialogItem *, long, bool &);
+DEFINE_CALLBACK_TYPE2(TFarMouseClickEvent, void,
+  TFarDialogItem *, MOUSE_EVENT_RECORD *);
+DEFINE_CALLBACK_TYPE2(TFarProcessGroupEvent, void,
+  TFarDialogItem *, void *);
 #endif
 //---------------------------------------------------------------------------
 class TFarDialog : public TObject
@@ -434,7 +434,7 @@ public:
 #ifndef _MSC_VER
 typedef void __fastcall (__closure * TFarButtonClickEvent)(TFarButton * Sender, bool & Close);
 #else
-typedef fastdelegate::FastDelegate2<void, TFarButton *, bool &> TFarButtonClickEvent;
+DEFINE_CALLBACK_TYPE2(TFarButtonClickEvent, void, TFarButton *, bool &);
 #endif
 enum TFarButtonBrackets { brNone, brTight, brSpace, brNormal };
 //---------------------------------------------------------------------------
@@ -483,8 +483,8 @@ public:
 typedef void __fastcall (__closure * TFarAllowChangeEvent)(TFarDialogItem * Sender,
   long NewState, bool & AllowChange);
 #else
-typedef fastdelegate::FastDelegate3<void, TFarDialogItem *,
-  long, bool &> TFarAllowChangeEvent;
+DEFINE_CALLBACK_TYPE3(TFarAllowChangeEvent, void, TFarDialogItem * /* Sender */,
+  long /* NewState */, bool & /* AllowChange */);
 #endif
 //---------------------------------------------------------------------------
 class TFarCheckBox : public TFarDialogItem

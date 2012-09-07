@@ -2,11 +2,10 @@
 #ifndef NamedObjsH
 #define NamedObjsH
 
+#include <vcl.h>
 #include <Classes.hpp>
-#ifndef _MSC_VER
 #include <system.hpp>
 #include <contnrs.hpp>
-#endif
 //---------------------------------------------------------------------------
 class TNamedObjectList;
 class TNamedObject : public TPersistent

@@ -44,7 +44,7 @@
 #include <Options.h>
 #include <Crypt.h>
 #include <Classes.hpp>
-#include "Common.h"
+#include <Common.h>
 #endif
 #ifdef MPEXT
 #define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))

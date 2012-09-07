@@ -1,4 +1,4 @@
-#include <Classes.hpp>
+#include <vcl.h>
 
 #include "Common.h"
 #include "FarUtil.h"

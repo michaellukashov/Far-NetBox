@@ -1,6 +1,6 @@
 
 #include "afxdll.h"
-#include <Classes.hpp>
+#include <vcl.h>
 #include <Sysutils.hpp>
 
 #include "FarTexts.h"

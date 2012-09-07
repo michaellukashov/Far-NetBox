@@ -1,7 +1,7 @@
 #ifndef FileInfoH
 #define FileInfoH
 
-#include <Classes.hpp>
+#include <vcl.h>
 #include <Sysutils.hpp>
 
 struct TTranslation {

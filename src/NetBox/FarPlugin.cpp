@@ -836,7 +836,7 @@ void __fastcall TFarMessageDialog::Init(unsigned int AFlags,
       Button = new TFarButton(this);
       Button->SetDefault(Index == 0);
       Button->SetBrackets(brNone);
-      Button->SetOnClick(fastdelegate::bind(&TFarMessageDialog::ButtonClick, this, _1, _2));
+      Button->SetOnClick(MAKE_CALLBACK2(TFarMessageDialog::ButtonClick, this));
       UnicodeString Caption = Buttons->GetStrings(Index);
       if ((FParams->Timeout > 0) &&
           (FParams->TimeoutButton == (size_t)Index))
@@ -939,8 +939,8 @@ void __fastcall TFarMessageDialog::Idle()
     size_t SinceLastTimer = static_cast<size_t>((static_cast<double>(Now()) - static_cast<double>(FLastTimerTime)) * 24*60*60*1000);
     if (SinceLastTimer >= FParams->Timeout)
     {
-      assert(!FParams->TimerEvent.empty());
-      if (!FParams->TimerEvent.empty())
+      assert(FParams->TimerEvent);
+      if (FParams->TimerEvent)
       {
         FParams->TimerAnswer = 0;
         FParams->TimerEvent(FParams->TimerAnswer);
@@ -1019,7 +1019,7 @@ int __fastcall TFarMessageDialog::Execute(bool & ACheckBox)
 //---------------------------------------------------------------------------
 void /* __fastcall */ TFarMessageDialog::ButtonClick(TFarButton * Sender, bool & Close)
 {
-  if (!FParams->ClickEvent.empty())
+  if (FParams->ClickEvent)
   {
     FParams->ClickEvent(FParams->Token, Sender->GetResult() - 1, Close);
   }

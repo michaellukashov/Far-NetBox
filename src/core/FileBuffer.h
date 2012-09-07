@@ -2,6 +2,7 @@
 #ifndef FileBufferH
 #define FileBufferH
 
+#include <vcl.h>
 #include <Classes.hpp>
 //---------------------------------------------------------------------------
 enum TEOLType { eolLF /* \n */, eolCRLF /* \r\n */, eolCR /* \r */ };

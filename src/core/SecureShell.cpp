@@ -973,7 +973,7 @@ void __fastcall TSecureShell::DispatchSendBuffer(int BufSize)
     if (Now() - Start > FSessionData->GetTimeoutDT())
     {
       LogEvent(L"Waiting for dispatching send buffer timed out, asking user what to do.");
-      unsigned int Answer = TimeoutPrompt(fastdelegate::bind(&TSecureShell::SendBuffer, this, _1));
+      unsigned int Answer = TimeoutPrompt(MAKE_CALLBACK1(TSecureShell::SendBuffer, this));
       switch (Answer)
       {
         case qaRetry:
@@ -1425,7 +1425,7 @@ void __fastcall TSecureShell::WaitForData()
       TPoolForDataEvent Event(this, Events);
 
       LogEvent(L"Waiting for data timed out, asking user what to do.");
-      unsigned int Answer = TimeoutPrompt(fastdelegate::bind(&TPoolForDataEvent::PoolForData, &Event, _1));
+      unsigned int Answer = TimeoutPrompt(MAKE_CALLBACK1(TPoolForDataEvent::PoolForData, &Event));
       switch (Answer)
       {
         case qaRetry:
@@ -1874,7 +1874,7 @@ void __fastcall TSecureShell::VerifyHostKey(UnicodeString Host, int Port,
       TQueryButtonAlias Aliases[3];
       Aliases[0].Button = qaRetry;
       Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);
-      Aliases[0].OnClick = fastdelegate::bind(&TClipboardHandler::Copy, &ClipboardHandler, _1);
+      Aliases[0].OnClick = MAKE_CALLBACK1(TClipboardHandler::Copy, &ClipboardHandler);
       Answers = qaYes | qaCancel | qaRetry;
       AliasesCount = 1;
       if (!Unknown)

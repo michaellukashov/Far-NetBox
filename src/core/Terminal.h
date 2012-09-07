@@ -2,6 +2,7 @@
 #ifndef TerminalH
 #define TerminalH
 
+#include <vcl.h>
 #include <Classes.hpp>
 
 #include "SessionInfo.h"
@@ -44,8 +45,8 @@ typedef void __fastcall (__closure *TExtendedExceptionEvent)
 typedef void __fastcall (__closure *TReadDirectoryEvent)(System::TObject * Sender, Boolean ReloadOnly);
 typedef void __fastcall (__closure *TReadDirectoryProgressEvent)(
   System::TObject* Sender, int Progress, bool & Cancel);
-typedef void __fastcall (__closure *TProcessFileEvent)
-  (const UnicodeString FileName, const TRemoteFile * File, void * Param);
+DEFINE_CALLBACK_TYPE3(TProcessFileEvent, void,
+  UnicodeString /* FileName */, const TRemoteFile * /* File */, void * /* Param */);
 typedef void __fastcall (__closure *TProcessFileEventEx)
   (const UnicodeString FileName, const TRemoteFile * File, void * Param, int Index);
 typedef int __fastcall (__closure *TFileOperationEvent)
@@ -73,48 +74,48 @@ typedef int __fastcall (__closure *TDirectoryModifiedEvent)
 typedef void __fastcall (__closure *TInformationEvent)
   (TTerminal * Terminal, const UnicodeString & Str, bool Status, int Phase);
 #else
-typedef fastdelegate::FastDelegate8<void,
+DEFINE_CALLBACK_TYPE8(TQueryUserEvent, void,
   TObject * /* Sender */, UnicodeString /* Query */, TStrings * /* MoreMessages */ , unsigned int /* Answers */,
-  const TQueryParams * /* Params */, unsigned int & /* Answer */, TQueryType /* QueryType */, void * /* Arg */ > TQueryUserEvent;
-typedef fastdelegate::FastDelegate8<void,
+  const TQueryParams * /* Params */, unsigned int & /* Answer */, TQueryType /* QueryType */, void * /* Arg */);
+DEFINE_CALLBACK_TYPE8(TPromptUserEvent, void,
   TTerminal * /* Terminal */, TPromptKind /* Kind */, UnicodeString /* Name */, UnicodeString /* Instructions */,
-  TStrings * /* Prompts */, TStrings * /* Results */, bool & /* Result */, void * /* Arg */> TPromptUserEvent;
-typedef fastdelegate::FastDelegate5<void,
+  TStrings * /* Prompts */, TStrings * /* Results */, bool & /* Result */, void * /* Arg */);
+DEFINE_CALLBACK_TYPE5(TDisplayBannerEvent, void,
   TTerminal * /* Terminal */, UnicodeString /* SessionName */, const UnicodeString & /* Banner */,
-  bool & /* NeverShowAgain */, int /* Options */> TDisplayBannerEvent;
-typedef fastdelegate::FastDelegate3<void,
-  TTerminal * /* Terminal */, Exception * /* E */, void * /* Arg */> TExtendedExceptionEvent;
-typedef fastdelegate::FastDelegate2<void, TObject * /* Sender */, Boolean /* ReloadOnly */> TReadDirectoryEvent;
-typedef fastdelegate::FastDelegate3<void,
-  TObject * /* Sender */, int /* Progress */, bool & /* Cancel */> TReadDirectoryProgressEvent;
-typedef fastdelegate::FastDelegate3<void,
-  UnicodeString /* FileName */, const TRemoteFile * /* File */, void * /* Param */> TProcessFileEvent;
-typedef fastdelegate::FastDelegate4<void,
-  const UnicodeString /* FileName */, const TRemoteFile * /* File */, void * /* Param */, int /* Index */> TProcessFileEventEx;
-typedef fastdelegate::FastDelegate2<int,
-  void * /* Param1 */, void * /* Param2 */> TFileOperationEvent;
-typedef fastdelegate::FastDelegate4<void,
+  bool & /* NeverShowAgain */, int /* Options */);
+DEFINE_CALLBACK_TYPE3(TExtendedExceptionEvent, void,
+  TTerminal * /* Terminal */, Exception * /* E */, void * /* Arg */);
+DEFINE_CALLBACK_TYPE2(TReadDirectoryEvent, void, TObject * /* Sender */, Boolean /* ReloadOnly */);
+DEFINE_CALLBACK_TYPE3(TReadDirectoryProgressEvent, void,
+  TObject * /* Sender */, int /* Progress */, bool & /* Cancel */);
+DEFINE_CALLBACK_TYPE3(TProcessFileEvent, void,
+  UnicodeString /* FileName */, const TRemoteFile * /* File */, void * /* Param */);
+DEFINE_CALLBACK_TYPE4(TProcessFileEventEx, void,
+  const UnicodeString /* FileName */, const TRemoteFile * /* File */, void * /* Param */, int /* Index */);
+DEFINE_CALLBACK_TYPE2(TFileOperationEvent, int,
+  void * /* Param1 */, void * /* Param2 */);
+DEFINE_CALLBACK_TYPE4(TSynchronizeDirectoryEvent, void,
   const UnicodeString & /* LocalDirectory */, const UnicodeString & /* RemoteDirectory */,
-  bool & /* Continue */, bool /* Collect */> TSynchronizeDirectoryEvent;
-typedef fastdelegate::FastDelegate2<void,
-  const UnicodeString & /* FileName */, bool /* Alternative */> TDeleteLocalFileEvent;
-typedef fastdelegate::FastDelegate5<HANDLE,
+  bool & /* Continue */, bool /* Collect */);
+DEFINE_CALLBACK_TYPE2(TDeleteLocalFileEvent, void,
+  const UnicodeString & /* FileName */, bool /* Alternative */);
+DEFINE_CALLBACK_TYPE5(TCreateLocalFileEvent, HANDLE,
   const UnicodeString & /* FileName */, DWORD /* DesiredAccess */,
-  DWORD /* ShareMode */, DWORD /* CreationDisposition */, DWORD /* FlagsAndAttributes */> TCreateLocalFileEvent;
-typedef fastdelegate::FastDelegate1<DWORD,
-  const UnicodeString & /* FileName */> TGetLocalFileAttributesEvent;
-typedef fastdelegate::FastDelegate2<BOOL,
-  const UnicodeString & /* FileName */, DWORD /* FileAttributes */ > TSetLocalFileAttributesEvent;
-typedef fastdelegate::FastDelegate3<BOOL,
-  const UnicodeString & /* FileName */, const UnicodeString & /* NewFileName */, DWORD /* Flags */ > TMoveLocalFileEvent;
-typedef fastdelegate::FastDelegate1<BOOL,
-  const UnicodeString & /* LocalDirName */> TRemoveLocalDirectoryEvent;
-typedef fastdelegate::FastDelegate2<BOOL,
-  const UnicodeString & /* LocalDirName */, LPSECURITY_ATTRIBUTES /* SecurityAttributes */ > TCreateLocalDirectoryEvent;
-typedef fastdelegate::FastDelegate3<int,
-  TTerminal * /* Terminal */, const UnicodeString /* Directory */, bool /* SubDirs */> TDirectoryModifiedEvent;
-typedef fastdelegate::FastDelegate4<void,
-  TTerminal * /* Terminal */, const UnicodeString & /* Str */, bool /* Status */, int /* Phase */> TInformationEvent;
+  DWORD /* ShareMode */, DWORD /* CreationDisposition */, DWORD /* FlagsAndAttributes */);
+DEFINE_CALLBACK_TYPE1(TGetLocalFileAttributesEvent, DWORD,
+  const UnicodeString & /* FileName */);
+DEFINE_CALLBACK_TYPE2(TSetLocalFileAttributesEvent, BOOL,
+  const UnicodeString & /* FileName */, DWORD /* FileAttributes */);
+DEFINE_CALLBACK_TYPE3(TMoveLocalFileEvent, BOOL,
+  const UnicodeString & /* FileName */, const UnicodeString & /* NewFileName */, DWORD /* Flags */);
+DEFINE_CALLBACK_TYPE1(TRemoveLocalDirectoryEvent, BOOL,
+  const UnicodeString & /* LocalDirName */);
+DEFINE_CALLBACK_TYPE2(TCreateLocalDirectoryEvent, BOOL,
+  const UnicodeString & /* LocalDirName */, LPSECURITY_ATTRIBUTES /* SecurityAttributes */);
+DEFINE_CALLBACK_TYPE3(TDirectoryModifiedEvent, int,
+  TTerminal * /* Terminal */, const UnicodeString /* Directory */, bool /* SubDirs */);
+DEFINE_CALLBACK_TYPE4(TInformationEvent, void,
+  TTerminal * /* Terminal */, const UnicodeString & /* Str */, bool /* Status */, int /* Phase */);
 #endif
 //---------------------------------------------------------------------------
 #define SUSPEND_OPERATION(Command)                            \

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "stdafx.h"
+#include <coredefines.hpp>
 
 // #include <Windows.h>
 #include <WinDef.h>
@@ -66,9 +67,9 @@ int __cdecl debug_printf2(const char * format, ...);
 
 //---------------------------------------------------------------------------
 class TObject;
-typedef fastdelegate::FastDelegate0<void> TThreadMethodEvent;
+DEFINE_CALLBACK_TYPE0(TThreadMethodEvent, void);
 
-typedef fastdelegate::FastDelegate1<void, TObject * /* Sender */> TNotifyEvent;
+DEFINE_CALLBACK_TYPE1(TNotifyEvent, void, TObject * /* Sender */);
 //---------------------------------------------------------------------------
 void Abort();
 void Error(int ErrorID, int data);

@@ -1192,11 +1192,11 @@ void __fastcall TTerminalItem::Init(int Index)
   try
   {
     FTerminal->SetUseBusyCursor(false);
-    FTerminal->SetOnQueryUser(fastdelegate::bind(&TTerminalItem::TerminalQueryUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
-    FTerminal->SetOnPromptUser(fastdelegate::bind(&TTerminalItem::TerminalPromptUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
-    FTerminal->SetOnShowExtendedException(fastdelegate::bind(&TTerminalItem::TerminalShowExtendedException, this, _1, _2, _3));
-    FTerminal->SetOnProgress(fastdelegate::bind(&TTerminalItem::OperationProgress, this, _1, _2));
-    FTerminal->SetOnFinished(fastdelegate::bind(&TTerminalItem::OperationFinished, this, _1, _2, _3, _4, _5, _6));
+    FTerminal->SetOnQueryUser(MAKE_CALLBACK8(TTerminalItem::TerminalQueryUser, this));
+    FTerminal->SetOnPromptUser(MAKE_CALLBACK8(TTerminalItem::TerminalPromptUser, this));
+    FTerminal->SetOnShowExtendedException(MAKE_CALLBACK3(TTerminalItem::TerminalShowExtendedException, this));
+    FTerminal->SetOnProgress(MAKE_CALLBACK2(TTerminalItem::OperationProgress, this));
+    FTerminal->SetOnFinished(MAKE_CALLBACK6(TTerminalItem::OperationFinished, this));
   }
   catch(...)
   {
@@ -2112,15 +2112,15 @@ void __fastcall TTerminalThread::Init()
   FOnStartReadDirectory = FTerminal->GetOnStartReadDirectory();
   FOnReadDirectoryProgress = FTerminal->GetOnReadDirectoryProgress();
 
-  FTerminal->SetOnInformation(fastdelegate::bind(&TTerminalThread::TerminalInformation, this, _1, _2, _3, _4));
-  FTerminal->SetOnQueryUser(fastdelegate::bind(&TTerminalThread::TerminalQueryUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
-  FTerminal->SetOnPromptUser(fastdelegate::bind(&TTerminalThread::TerminalPromptUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
-  FTerminal->SetOnShowExtendedException(fastdelegate::bind(&TTerminalThread::TerminalShowExtendedException, this, _1, _2, _3));
-  FTerminal->SetOnDisplayBanner(fastdelegate::bind(&TTerminalThread::TerminalDisplayBanner, this, _1, _2, _3, _4, _5));
-  FTerminal->SetOnChangeDirectory(fastdelegate::bind(&TTerminalThread::TerminalChangeDirectory, this, _1));
-  FTerminal->SetOnReadDirectory(fastdelegate::bind(&TTerminalThread::TerminalReadDirectory, this, _1, _2));
-  FTerminal->SetOnStartReadDirectory(fastdelegate::bind(&TTerminalThread::TerminalStartReadDirectory, this, _1));
-  FTerminal->SetOnReadDirectoryProgress(fastdelegate::bind(&TTerminalThread::TerminalReadDirectoryProgress, this, _1, _2, _3));
+  FTerminal->SetOnInformation(MAKE_CALLBACK4(TTerminalThread::TerminalInformation, this));
+  FTerminal->SetOnQueryUser(MAKE_CALLBACK8(TTerminalThread::TerminalQueryUser, this));
+  FTerminal->SetOnPromptUser(MAKE_CALLBACK8(TTerminalThread::TerminalPromptUser, this));
+  FTerminal->SetOnShowExtendedException(MAKE_CALLBACK3(TTerminalThread::TerminalShowExtendedException, this));
+  FTerminal->SetOnDisplayBanner(MAKE_CALLBACK5(TTerminalThread::TerminalDisplayBanner, this));
+  FTerminal->SetOnChangeDirectory(MAKE_CALLBACK1(TTerminalThread::TerminalChangeDirectory, this));
+  FTerminal->SetOnReadDirectory(MAKE_CALLBACK2(TTerminalThread::TerminalReadDirectory, this));
+  FTerminal->SetOnStartReadDirectory(MAKE_CALLBACK1(TTerminalThread::TerminalStartReadDirectory, this));
+  FTerminal->SetOnReadDirectoryProgress(MAKE_CALLBACK3(TTerminalThread::TerminalReadDirectoryProgress, this));
 
   Start();
 }
@@ -2152,15 +2152,15 @@ void __fastcall TTerminalThread::Init()
   FTerminal->OnStartReadDirectory = FOnStartReadDirectory;
   FTerminal->OnReadDirectoryProgress = FOnReadDirectoryProgress;
 #else
-  assert(FTerminal->GetOnInformation() == fastdelegate::bind(&TTerminalThread::TerminalInformation, this, _1, _2, _3, _4));
-  assert(FTerminal->GetOnQueryUser() == fastdelegate::bind(&TTerminalThread::TerminalQueryUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
-  assert(FTerminal->GetOnPromptUser() == fastdelegate::bind(&TTerminalThread::TerminalPromptUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
-  assert(FTerminal->GetOnShowExtendedException() == fastdelegate::bind(&TTerminalThread::TerminalShowExtendedException, this, _1, _2, _3));
-  assert(FTerminal->GetOnDisplayBanner() == fastdelegate::bind(&TTerminalThread::TerminalDisplayBanner, this, _1, _2, _3, _4, _5));
-  assert(FTerminal->GetOnChangeDirectory() == fastdelegate::bind(&TTerminalThread::TerminalChangeDirectory, this, _1));
-  assert(FTerminal->GetOnReadDirectory() == fastdelegate::bind(&TTerminalThread::TerminalReadDirectory, this, _1, _2));
-  assert(FTerminal->GetOnStartReadDirectory() == fastdelegate::bind(&TTerminalThread::TerminalStartReadDirectory, this, _1));
-  assert(FTerminal->GetOnReadDirectoryProgress() == fastdelegate::bind(&TTerminalThread::TerminalReadDirectoryProgress, this, _1, _2, _3));
+  assert(FTerminal->GetOnInformation() == MAKE_CALLBACK4(TTerminalThread::TerminalInformation, this));
+  assert(FTerminal->GetOnQueryUser() == MAKE_CALLBACK8(TTerminalThread::TerminalQueryUser, this));
+  assert(FTerminal->GetOnPromptUser() == MAKE_CALLBACK8(TTerminalThread::TerminalPromptUser, this));
+  assert(FTerminal->GetOnShowExtendedException() == MAKE_CALLBACK3(TTerminalThread::TerminalShowExtendedException, this));
+  assert(FTerminal->GetOnDisplayBanner() == MAKE_CALLBACK5(TTerminalThread::TerminalDisplayBanner, this));
+  assert(FTerminal->GetOnChangeDirectory() == MAKE_CALLBACK1(TTerminalThread::TerminalChangeDirectory, this));
+  assert(FTerminal->GetOnReadDirectory() == MAKE_CALLBACK2(TTerminalThread::TerminalReadDirectory, this));
+  assert(FTerminal->GetOnStartReadDirectory() == MAKE_CALLBACK1(TTerminalThread::TerminalStartReadDirectory, this));
+  assert(FTerminal->GetOnReadDirectoryProgress() == MAKE_CALLBACK3(TTerminalThread::TerminalReadDirectoryProgress, this));
 
   FTerminal->SetOnInformation(FOnInformation);
   FTerminal->SetOnQueryUser(FOnQueryUser);
@@ -2197,12 +2197,12 @@ void __fastcall TTerminalThread::Idle()
 //---------------------------------------------------------------------------
 void __fastcall TTerminalThread::TerminalOpen()
 {
-  RunAction(fastdelegate::bind(&TTerminalThread::TerminalOpenEvent, this, _1));
+  RunAction(MAKE_CALLBACK1(TTerminalThread::TerminalOpenEvent, this));
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminalThread::TerminalReopen()
 {
-  RunAction(fastdelegate::bind(&TTerminalThread::TerminalReopenEvent, this, _1));
+  RunAction(MAKE_CALLBACK1(TTerminalThread::TerminalReopenEvent, this));
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)

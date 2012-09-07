@@ -2,12 +2,11 @@
 #ifndef ExceptionsH
 #define ExceptionsH
 
+#include <vcl.h>
 #include <Classes.hpp>
 #include <SysUtils.hpp>
-#ifndef _MSC_VER
 #include <SysInit.hpp>
 #include <System.hpp>
-#endif
 
 //---------------------------------------------------------------------------
 bool __fastcall ExceptionMessage(const Exception * E, UnicodeString & Message);

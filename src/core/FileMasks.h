@@ -3,14 +3,9 @@
 #define FileMasksH
 //---------------------------------------------------------------------------
 #include <vector>
-#ifndef  _MSC_VER
+#include <vcl.h>
 #include <Masks.hpp>
-#else
-#include "boostdefines.hpp"
 
-#include <Classes.hpp>
-#include "Common.h"
-#endif
 //---------------------------------------------------------------------------
 class EFileMasksException : public Exception
 {
@@ -22,24 +17,6 @@ public:
 //---------------------------------------------------------------------------
 extern const wchar_t IncludeExcludeFileMasksDelimiter;
 #define MASK_INDEX(DIRECTORY, INCLUDE) ((DIRECTORY ? 2 : 0) + (INCLUDE ? 0 : 1))
-//---------------------------------------------------------------------------
-namespace Masks
-{
-
-class TMask
-{
-public:
-  explicit TMask(const UnicodeString Mask) :
-    FMask(Mask)
-  {
-  }
-  bool GetMatches(const UnicodeString Str);
-private:
-  UnicodeString FMask;
-};
-
-} // namespace Masks
-
 //---------------------------------------------------------------------------
 class TFileMasks
 {
@@ -186,8 +163,8 @@ typedef void __fastcall (__closure * TCustomCommandPatternEvent)
   (int Index, const UnicodeString Pattern, void * Arg, UnicodeString & Replacement,
    bool & LastPass);
 #else
-typedef fastdelegate::FastDelegate5<void, int /* Index */, UnicodeString /* Pattern */, void * /* Arg */, UnicodeString & /* Replacement */,
-   bool & /* LastPass */ > TCustomCommandPatternEvent;
+DEFINE_CALLBACK_TYPE5(TCustomCommandPatternEvent, void, int /* Index */, UnicodeString /* Pattern */, void * /* Arg */, UnicodeString & /* Replacement */,
+   bool & /* LastPass */);
 #endif
 //---------------------------------------------------------------------------
 class TCustomCommand

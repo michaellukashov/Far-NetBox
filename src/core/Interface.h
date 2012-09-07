@@ -57,7 +57,7 @@ struct TQueryButtonAlias
 #ifndef _MSC_VER
 typedef void __fastcall (__closure *TQueryParamsTimerEvent)(unsigned int & Result);
 #else
-typedef fastdelegate::FastDelegate1<void, unsigned int & /* Result */> TQueryParamsTimerEvent;
+DEFINE_CALLBACK_TYPE1(TQueryParamsTimerEvent, void, unsigned int & /* Result */);
 #endif
 
 struct TQueryParams
@@ -101,11 +101,11 @@ typedef void __fastcall (__closure *TFileFoundEvent)
 typedef void __fastcall (__closure *TFindingFileEvent)
   (TTerminal * Terminal, const UnicodeString Directory, bool & Cancel);
 #else
-typedef fastdelegate::FastDelegate4<void,
+DEFINE_CALLBACK_TYPE4(TFileFoundEvent, void,
   TTerminal * /* Terminal */, const UnicodeString /* FileName */, const TRemoteFile * /* File */,
-  bool & /* Cancel */> TFileFoundEvent;
-typedef fastdelegate::FastDelegate3<void,
-  TTerminal * /* Terminal */, const UnicodeString /* Directory */, bool & /* Cancel */> TFindingFileEvent;
+  bool & /* Cancel */);
+DEFINE_CALLBACK_TYPE3(TFindingFileEvent, void,
+  TTerminal * /* Terminal */, const UnicodeString /* Directory */, bool & /* Cancel */);
 #endif
 //---------------------------------------------------------------------------
 #endif

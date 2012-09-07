@@ -722,7 +722,7 @@ void __fastcall TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
     {
       if (FParent != NULL)
       {
-        DoAdd(Type, Line, fastdelegate::bind(&TSessionLog::DoAddToParent, this, _1, _2));
+        DoAdd(Type, Line, MAKE_CALLBACK2(TSessionLog::DoAddToParent, this));
       }
       else
       {
@@ -731,12 +731,7 @@ void __fastcall TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
         BeginUpdate();
         // try
         {
-          BOOST_SCOPE_EXIT ( (&Self) )
-          {
-            Self->DeleteUnnecessary();
-            Self->EndUpdate();
-          } BOOST_SCOPE_EXIT_END
-          DoAdd(Type, Line, fastdelegate::bind(&TSessionLog::DoAddToSelf, this, _1, _2));
+          DoAdd(Type, Line, MAKE_CALLBACK2(TSessionLog::DoAddToSelf, this));
         }
 #ifndef _MSC_VER
         __finally
@@ -912,7 +907,7 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
     } BOOST_SCOPE_EXIT_END
 #endif
     // #define ADF(S, F) DoAdd(llMessage, FORMAT(S, F), DoAddToSelf);
-    #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), fastdelegate::bind(&TSessionLog::DoAddToSelf, this, _1, _2));
+    #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), MAKE_CALLBACK2(TSessionLog::DoAddToSelf, this));
     AddSeparator();
     ADF(L"NetBox %s (OS %s)", FConfiguration->GetVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
     THierarchicalStorage * Storage = FConfiguration->CreateScpStorage(false);

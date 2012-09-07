@@ -573,7 +573,7 @@ void /* __fastcall */ TWinSCPPlugin::MessageClick(void * Token, int Result, bool
     for (int i = 0; i < Data.Params->AliasesCount; i++)
     {
       if ((static_cast<int>(Data.Params->Aliases[i].Button) == Data.Buttons[Result]) &&
-          (!Data.Params->Aliases[i].OnClick.empty()))
+          (Data.Params->Aliases[i].OnClick))
       {
         Data.Params->Aliases[i].OnClick(NULL);
         Close = false;
@@ -722,7 +722,7 @@ int __fastcall TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
     }
 
     FarParams.Token = &Data;
-    FarParams.ClickEvent = fastdelegate::bind(&TWinSCPPlugin::MessageClick, this, _1, _2, _3);
+    FarParams.ClickEvent = MAKE_CALLBACK3(TWinSCPPlugin::MessageClick, this);
 
     UnicodeString DialogStr = Str;
     if (MoreMessages && (MoreMessages->GetCount() > 0))

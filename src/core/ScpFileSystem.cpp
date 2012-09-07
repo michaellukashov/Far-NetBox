@@ -1336,7 +1336,7 @@ void /* __fastcall */ TSCPFileSystem::CustomCommandOnFile(const UnicodeString Fi
     AParams.Command = Command;
     AParams.Params = Params;
     AParams.OutputEvent = OutputEvent;
-    FTerminal->ProcessDirectory(FileName, fastdelegate::bind(&TTerminal::CustomCommandOnFile, FTerminal, _1, _2, _3),
+    FTerminal->ProcessDirectory(FileName, MAKE_CALLBACK3(TTerminal::CustomCommandOnFile, FTerminal),
       &AParams);
   }
 
@@ -1367,10 +1367,10 @@ void /* __fastcall */ TSCPFileSystem::CaptureOutput(const UnicodeString & AddedL
 void __fastcall TSCPFileSystem::AnyCommand(const UnicodeString Command,
   TCaptureOutputEvent OutputEvent)
 {
-  assert(FSecureShell->GetOnCaptureOutput().empty());
-  if (!OutputEvent.empty())
+  assert(!FSecureShell->GetOnCaptureOutput());
+  if (OutputEvent)
   {
-    FSecureShell->SetOnCaptureOutput(fastdelegate::bind(&TSCPFileSystem::CaptureOutput, this, _1, _2));
+    FSecureShell->SetOnCaptureOutput(MAKE_CALLBACK2(TSCPFileSystem::CaptureOutput, this));
     FOnCaptureOutput = OutputEvent;
   }
   // try

@@ -71,13 +71,13 @@ enum TQueueEvent { qeEmpty, qePendingUserAction };
 typedef void __fastcall (__closure * TQueueEventEvent)
   (TTerminalQueue * Queue, TQueueEvent Event);
 #else
-typedef fastdelegate::FastDelegate1<void,
-  TTerminalQueue *> TQueueListUpdateEvent;
-typedef fastdelegate::FastDelegate2<void,
-  TTerminalQueue *, TQueueItem *> TQueueItemUpdateEvent;
+DEFINE_CALLBACK_TYPE1(TQueueListUpdateEvent, void,
+  TTerminalQueue * /* Queue */);
+DEFINE_CALLBACK_TYPE2(TQueueItemUpdateEvent, void,
+  TTerminalQueue * /* Queue */, TQueueItem * /* Item */);
 enum TQueueEvent { qeEmpty, qePendingUserAction };
-typedef fastdelegate::FastDelegate2<void,
-  TTerminalQueue *, TQueueEvent> TQueueEventEvent;
+DEFINE_CALLBACK_TYPE2(TQueueEventEvent, void,
+  TTerminalQueue * /* Queue */, TQueueEvent /* Event */);
 #endif
 //---------------------------------------------------------------------------
 class TTerminalQueue : public TSignalThread

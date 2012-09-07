@@ -8,7 +8,6 @@
 #include <Sysutils.hpp>
 #include "Exceptions.h"
 #include "version.h"
-
 //---------------------------------------------------------------------------
 #define EXCEPTION throw ExtException(UnicodeString(), NULL)
 #define THROWOSIFFALSE(C) if (!(C)) RaiseLastOSError();
@@ -113,8 +112,8 @@ UnicodeString __fastcall WindowsProductName();
 typedef void __fastcall (__closure* TProcessLocalFileEvent)
   (const UnicodeString FileName, const TSearchRec Rec, void * Param);
 #else
-typedef fastdelegate::FastDelegate3<void,
-  const UnicodeString & /* FileName */, const TSearchRec & /* Rec */, void * /* Param */> TProcessLocalFileEvent;
+DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
+  const UnicodeString & /* FileName */, const TSearchRec & /* Rec */, void * /* Param */);
 #endif
 bool __fastcall FileSearchRec(const UnicodeString FileName, TSearchRec & Rec);
 void __fastcall ProcessLocalDirectory(UnicodeString DirName,

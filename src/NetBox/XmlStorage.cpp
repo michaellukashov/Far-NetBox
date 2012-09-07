@@ -1,9 +1,8 @@
 //---------------------------------------------------------------------------
-#include <Classes.hpp>
-
 #include <vector>
 
-#include "Common.h"
+#include <Classes.hpp>
+#include <Common.h>
 #include "XmlStorage.h"
 #include "TextsCore.h"
 #include "FarUtil.h"

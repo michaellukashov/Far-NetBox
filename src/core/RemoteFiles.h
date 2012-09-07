@@ -5,7 +5,7 @@
 #include <vector>
 #include <map>
 
-#include <Classes.hpp>
+#include <vcl.h>
 
 //---------------------------------------------------------------------------
 enum TModificationFmt { mfNone, mfMDHM, mfMDY, mfFull };

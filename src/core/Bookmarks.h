@@ -2,7 +2,7 @@
 #ifndef BookmarksH
 #define BookmarksH
 
-#include <Classes.hpp>
+#include <vcl.h>
 
 //---------------------------------------------------------------------------
 class THierarchicalStorage;

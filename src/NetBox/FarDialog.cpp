@@ -488,7 +488,7 @@ intptr_t __fastcall TFarDialog::DialogProc(int Msg, int Param1, intptr_t Param2)
             ((Param1 < 0) ||
              ((Param1 >= 0) && (dynamic_cast<TFarButton *>(GetItem(Param1)) == NULL))) &&
             GetDefaultButton()->GetEnabled() &&
-            (!GetDefaultButton()->GetOnClick().empty()))
+            (GetDefaultButton()->GetOnClick()))
         {
           bool Close = (GetDefaultButton()->GetResult() != 0);
           GetDefaultButton()->GetOnClick()(GetDefaultButton(), Close);
@@ -648,7 +648,7 @@ bool __fastcall TFarDialog::MouseEvent(MOUSE_EVENT_RECORD * Event)
 bool __fastcall TFarDialog::Key(TFarDialogItem * Item, long KeyCode)
 {
   bool Result = false;
-  if (!FOnKey.empty())
+  if (FOnKey)
   {
     FOnKey(this, Item, KeyCode, Result);
   }
@@ -861,12 +861,12 @@ void __fastcall TFarDialog::Redraw()
 //---------------------------------------------------------------------------
 void __fastcall TFarDialog::ShowGroup(int Group, bool Show)
 {
-  ProcessGroup(Group, fastdelegate::bind(&TFarDialog::ShowItem, this, _1, _2), &Show);
+  ProcessGroup(Group, MAKE_CALLBACK2(TFarDialog::ShowItem, this), &Show);
 }
 //---------------------------------------------------------------------------
 void __fastcall TFarDialog::EnableGroup(int Group, bool Enable)
 {
-  ProcessGroup(Group, fastdelegate::bind(&TFarDialog::EnableItem, this, _1, _2), &Enable);
+  ProcessGroup(Group, MAKE_CALLBACK2(TFarDialog::EnableItem, this), &Enable);
 }
 //---------------------------------------------------------------------------
 void __fastcall TFarDialog::ProcessGroup(int Group, TFarProcessGroupEvent Callback,
@@ -1408,7 +1408,7 @@ void __fastcall TFarDialogItem::DoFocus()
 //---------------------------------------------------------------------------
 void __fastcall TFarDialogItem::DoExit()
 {
-  if (!FOnExit.empty())
+  if (FOnExit)
   {
     FOnExit(this);
   }
@@ -1684,7 +1684,7 @@ TPoint __fastcall TFarDialogItem::MouseClientPosition(MOUSE_EVENT_RECORD * Event
 //---------------------------------------------------------------------------
 bool /* __fastcall */ TFarDialogItem::MouseClick(MOUSE_EVENT_RECORD * Event)
 {
-  if (!FOnMouseClick.empty())
+  if (FOnMouseClick)
   {
     FOnMouseClick(this, Event);
   }
@@ -1858,7 +1858,7 @@ intptr_t __fastcall TFarButton::ItemProc(int Msg, intptr_t Param)
     else
     {
       bool Close = (GetResult() != 0);
-      if (!FOnClick.empty())
+      if (FOnClick)
       {
         FOnClick(this, Close);
       }
@@ -1881,7 +1881,7 @@ bool __fastcall TFarButton::HotKey(char HotKey)
   if (Result)
   {
     bool Close = (GetResult() != 0);
-    if (!FOnClick.empty())
+    if (FOnClick)
     {
       FOnClick(this, Close);
     }
@@ -1906,7 +1906,7 @@ intptr_t __fastcall TFarCheckBox::ItemProc(int Msg, intptr_t Param)
   if (Msg == DN_BTNCLICK)
   {
     bool Allow = true;
-    if (!FOnAllowChange.empty())
+    if (FOnAllowChange)
     {
       FOnAllowChange(this, Param, Allow);
     }
@@ -1948,7 +1948,7 @@ intptr_t __fastcall TFarRadioButton::ItemProc(int Msg, intptr_t Param)
   if (Msg == DN_BTNCLICK)
   {
     bool Allow = true;
-    if (!FOnAllowChange.empty())
+    if (FOnAllowChange)
     {
       FOnAllowChange(this, Param, Allow);
     }
@@ -2575,7 +2575,7 @@ void __fastcall TFarComboBox::Init()
   FItems(new TStringList()),
   FTopIndex(0)
 {
-  FItems->SetOnChange(fastdelegate::bind(&TFarLister::ItemsChange, this, _1));
+  FItems->SetOnChange(MAKE_CALLBACK1(TFarLister::ItemsChange, this));
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TFarLister::~TFarLister()

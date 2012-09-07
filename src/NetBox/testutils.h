@@ -5,7 +5,7 @@
 #include <iostream>
 #include <fstream>
 
-#include <Classes.hpp>
+#include <vcl.h>
 #include <Sysutils.hpp>
 
 #include "FarPlugin.h"

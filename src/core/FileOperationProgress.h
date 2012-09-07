@@ -22,11 +22,11 @@ typedef void __fastcall (__closure *TFileOperationFinished)
   (TFileOperation Operation, TOperationSide Side, bool Temp,
     const UnicodeString & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
 #else
-typedef fastdelegate::FastDelegate2<void,
-  TFileOperationProgressType & /* ProgressData */, TCancelStatus & /* Cancel */> TFileOperationProgressEvent;
-typedef fastdelegate::FastDelegate6<void,
+DEFINE_CALLBACK_TYPE2(TFileOperationProgressEvent, void,
+  TFileOperationProgressType & /* ProgressData */, TCancelStatus & /* Cancel */);
+DEFINE_CALLBACK_TYPE6(TFileOperationFinishedEvent, void,
   TFileOperation /* Operation */, TOperationSide /* Side */, bool /* Temp */,
-  const UnicodeString & /* FileName */, bool /* Success */, TOnceDoneOperation & /* OnceDoneOperation */> TFileOperationFinishedEvent;
+  const UnicodeString & /* FileName */, bool /* Success */, TOnceDoneOperation & /* OnceDoneOperation */);
 #endif
 //---------------------------------------------------------------------------
 class TFileOperationProgressType

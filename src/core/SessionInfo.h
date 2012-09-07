@@ -2,11 +2,10 @@
 #ifndef SessionInfoH
 #define SessionInfoH
 
-#include <Classes.hpp>
+#include <vcl.h>
 
 #include "SessionData.h"
 #include "Interface.h"
-
 //---------------------------------------------------------------------------
 enum TSessionStatus { ssClosed, ssOpening, ssOpened };
 //---------------------------------------------------------------------------
@@ -83,10 +82,10 @@ typedef void __fastcall (__closure *TCaptureOutputEvent)(
 typedef void __fastcall (__closure *TCalculatedChecksumEvent)(
   const UnicodeString & FileName, const UnicodeString & Alg, const UnicodeString & Hash);
 #else
-typedef fastdelegate::FastDelegate2<void,
-  const UnicodeString & /* Str */, bool /* StdError */> TCaptureOutputEvent;
-typedef fastdelegate::FastDelegate3<void,
-  const UnicodeString & /* FileName */, const UnicodeString & /* Alg */, const UnicodeString & /* Hash */> TCalculatedChecksumEvent;
+DEFINE_CALLBACK_TYPE2(TCaptureOutputEvent, void,
+  const UnicodeString & /* Str */, bool /* StdError */);
+DEFINE_CALLBACK_TYPE3(TCalculatedChecksumEvent, void,
+  const UnicodeString & /* FileName */, const UnicodeString & /* Alg */, const UnicodeString & /* Hash */);
 #endif
 //---------------------------------------------------------------------------
 class TSessionActionRecord;
@@ -204,8 +203,8 @@ public:
   void __fastcall File(TRemoteFile * File);
 };
 //---------------------------------------------------------------------------
-typedef fastdelegate::FastDelegate2<void,
-  TLogLineType, const UnicodeString & > TDoAddLogEvent;
+DEFINE_CALLBACK_TYPE2(TDoAddLogEvent, void,
+  TLogLineType, const UnicodeString &);
 //---------------------------------------------------------------------------
 class TSessionLog : protected TStringList
 {
