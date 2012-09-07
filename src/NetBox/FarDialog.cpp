@@ -821,12 +821,8 @@ void __fastcall TFarDialog::Change()
   else
   {
     TList * NotifiedContainers = new TList();
-    // try
+    std::auto_ptr<TList> NotifiedContainersPtr(NotifiedContainers);
     {
-      BOOST_SCOPE_EXIT ( (&NotifiedContainers) )
-      {
-        delete NotifiedContainers;
-      } BOOST_SCOPE_EXIT_END
       TFarDialogItem * DItem;
       for (int i = 0; i < GetItemCount(); i++)
       {
@@ -843,12 +839,6 @@ void __fastcall TFarDialog::Change()
         (static_cast<TFarDialogContainer *>((*NotifiedContainers)[Index]))->Change();
       }
     }
-#ifndef _MSC_VER
-    __finally
-    {
-      delete NotifiedContainers;
-    }
-#endif
   }
 }
 //---------------------------------------------------------------------------

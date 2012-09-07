@@ -2996,24 +2996,17 @@ config_read_auth_data(apr_hash_t ** hash,
   const char * subkey = CertificateStorageKey;
   THierarchicalStorage * Storage = NULL;
   WEBDAV_ERR(fs->CreateStorage(Storage));
-  // try
+  assert(Storage);
+  std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
   {
-    BOOST_SCOPE_EXIT ( (&Storage) )
-    {
-      delete Storage;
-    } BOOST_SCOPE_EXIT_END
     Storage->SetAccessMode(smRead);
     if (!Storage->OpenSubKey(UnicodeString(subkey), false))
       return WEBDAV_ERR_BAD_PARAM;
 
     *hash = apr_hash_make(pool);
     TStrings * Keys = new TStringList();
-    // try
+    std::auto_ptr<TStrings> KeysPtr(Keys);
     {
-      BOOST_SCOPE_EXIT ( (&Keys) )
-      {
-        delete Keys;
-      } BOOST_SCOPE_EXIT_END
       Storage->GetValueNames(Keys);
       for (int Index = 0; Index < Keys->GetCount(); Index++)
       {
@@ -3026,19 +3019,7 @@ config_read_auth_data(apr_hash_t ** hash,
                                     StrToIntDef(Value, 0)));
       }
     }
-#ifndef _MSC_VER
-    __finally
-    {
-      delete Keys;
-    }
-#endif
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Storage;
-  }
-#endif
   return WEBDAV_NO_ERROR;
 }
 
@@ -3053,12 +3034,9 @@ config_write_auth_data(apr_hash_t * hash,
   assert(fs);
   THierarchicalStorage * Storage = NULL;
   WEBDAV_ERR(fs->CreateStorage(Storage));
-  // try
+  assert(Storage);
+  std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
   {
-    BOOST_SCOPE_EXIT ( (&Storage) )
-    {
-      delete Storage;
-    } BOOST_SCOPE_EXIT_END
     Storage->SetAccessMode(smReadWrite);
 
     if (!Storage->OpenSubKey(UnicodeString(subkey), true))
@@ -3070,12 +3048,6 @@ config_write_auth_data(apr_hash_t * hash,
     if (trusted_cert && failstr)
       Storage->WriteString(UnicodeString(trusted_cert->data), UnicodeString(failstr->data));
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Storage;
-  }
-#endif
   return WEBDAV_NO_ERROR;
 }
 
@@ -14634,24 +14606,14 @@ webdav::error_t TWebDAVFileSystem::SimplePrompt(
   TSessionData * Data = FTerminal->GetSessionData();
   UnicodeString Text = Data->GetUserNameExpanded();
   TStrings * MoreMessages = new TStringList();
-  // try
+  std::auto_ptr<TStrings> MoreMessagesPtr(MoreMessages);
   {
-    BOOST_SCOPE_EXIT ( (&MoreMessages) )
-    {
-      delete MoreMessages;
-    } BOOST_SCOPE_EXIT_END
     MoreMessages->Add(UnicodeString(prompt_string));
     unsigned int Answer = FTerminal->QueryUser(
                             UnicodeString(prompt_text),
                             MoreMessages, qaYes | qaNo | qaCancel, NULL, qtConfirmation);
     RequestResult = Answer;
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete MoreMessages;
-  }
-#endif // #ifndef _MSC_VER
   return RequestResult == qaCancel ? WEBDAV_ERR_CANCELLED : WEBDAV_NO_ERROR;
 }
 

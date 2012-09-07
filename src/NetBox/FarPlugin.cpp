@@ -774,20 +774,17 @@ void __fastcall TFarMessageDialog::Init(unsigned int AFlags,
   assert(FLAGCLEAR(AFlags, FMSG_ALLINONE));
 
   TStrings * MessageLines = new TStringList();
+  std::auto_ptr<TStrings> MessageLinesPtr(MessageLines);
   TStrings * MoreMessageLines = NULL;
-  // try
+  std::auto_ptr<TStrings> MoreMessageLinesPtr(NULL);
   {
-    BOOST_SCOPE_EXIT ( (&MessageLines) (&MoreMessageLines) )
-    {
-      delete MessageLines;
-      delete MoreMessageLines;
-    } BOOST_SCOPE_EXIT_END
     FarWrapText(Message, MessageLines, MaxMessageWidth);
     int MaxLen = GetFarPlugin()->MaxLength(MessageLines);
     // DEBUG_PRINTF(L"MaxLen = %d, FParams->MoreMessages = %x", MaxLen, FParams->MoreMessages);
     if (FParams->MoreMessages != NULL)
     {
       MoreMessageLines = new TStringList();
+      MoreMessageLinesPtr.reset(MoreMessageLines);
       UnicodeString MoreMessages = FParams->MoreMessages->GetText();
       while (MoreMessages[MoreMessages.Length()] == L'\n' ||
              MoreMessages[MoreMessages.Length()] == L'\r')
@@ -930,13 +927,6 @@ void __fastcall TFarMessageDialog::Init(unsigned int AFlags,
     // DEBUG_PRINTF(L"S.x = %d, S.y = %d", S.x, S.y);
     SetSize(S);
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete MessageLines;
-    delete MoreMessageLines;
-  }
-#endif
 }
 
 //---------------------------------------------------------------------------
@@ -1042,21 +1032,11 @@ int __fastcall TCustomFarPlugin::DialogMessage(unsigned int Flags,
   int Result;
   TFarMessageDialog * Dialog =
     new TFarMessageDialog(this, Params);
-  // try
+  std::auto_ptr<TFarMessageDialog> DialogPtr(Dialog);
   {
-    BOOST_SCOPE_EXIT ( (&Dialog) )
-    {
-      delete Dialog;
-    } BOOST_SCOPE_EXIT_END
     Dialog->Init(Flags, Title, Message, Buttons);
     Result = Dialog->Execute(Params->CheckBox);
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Dialog;
-  }
-#endif
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1068,12 +1048,11 @@ int __fastcall TCustomFarPlugin::FarMessage(unsigned int Flags,
 
   int Result;
   TStringList * MessageLines = NULL;
+  std::auto_ptr<TStrings> MessageLinesPtr(NULL);
   wchar_t ** Items = NULL;
-  // try
   {
-    BOOST_SCOPE_EXIT ( (&MessageLines) (&Items) )
+    BOOST_SCOPE_EXIT ( (&Items) )
     {
-      delete MessageLines;
       delete[] Items;
     } BOOST_SCOPE_EXIT_END
     UnicodeString FullMessage = Message;
@@ -1089,6 +1068,7 @@ int __fastcall TCustomFarPlugin::FarMessage(unsigned int Flags,
     }
 
     MessageLines = new TStringList();
+    MessageLinesPtr.reset(MessageLines);
     MessageLines->Add(Title);
     FarWrapText(FullMessage, MessageLines, MaxMessageWidth);
 
@@ -1119,13 +1099,6 @@ int __fastcall TCustomFarPlugin::FarMessage(unsigned int Flags,
       Flags | FMSG_LEFTALIGN, NULL, Items, static_cast<int>(MessageLines->GetCount()),
       static_cast<int>(Buttons->GetCount()));
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Items;
-    delete MessageLines;
-  }
-#endif
 
   return Result;
 }
@@ -1894,16 +1867,14 @@ void __fastcall TCustomFarFileSystem::GetOpenPluginInfo(struct OpenPluginInfo * 
       ClearOpenPluginInfo(FOpenPluginInfo);
       UnicodeString HostFile, CurDir, Format, PanelTitle, ShortcutData;
       TFarPanelModes * PanelModes = NULL;
+      std::auto_ptr<TFarPanelModes> PanelModesPtr(NULL);
       TFarKeyBarTitles * KeyBarTitles = NULL;
-      // try
+      std::auto_ptr<TFarKeyBarTitles> KeyBarTitlesPtr(NULL);
       {
-        BOOST_SCOPE_EXIT ( (&PanelModes) (&KeyBarTitles) )
-        {
-          delete PanelModes;
-          delete KeyBarTitles;
-        } BOOST_SCOPE_EXIT_END
         PanelModes = new TFarPanelModes();
+        PanelModesPtr.reset(PanelModes);
         KeyBarTitles = new TFarKeyBarTitles();
+        KeyBarTitlesPtr.reset(KeyBarTitles);
         bool StartSortOrder = false;
 
         GetOpenPluginInfoEx(FOpenPluginInfo.Flags, HostFile, CurDir, Format,
@@ -1920,13 +1891,6 @@ void __fastcall TCustomFarFileSystem::GetOpenPluginInfo(struct OpenPluginInfo * 
         KeyBarTitles->FillOpenPluginInfo(&FOpenPluginInfo);
         FOpenPluginInfo.ShortcutData = TCustomFarPlugin::DuplicateStr(ShortcutData);
       }
-#ifndef _MSC_VER
-      __finally
-      {
-        delete PanelModes;
-        delete KeyBarTitles;
-      }
-#endif
 
       FOpenPluginInfoValid = true;
     }
@@ -1940,14 +1904,10 @@ int __fastcall TCustomFarFileSystem::GetFindData(
 {
   // DEBUG_PRINTF(L"begin");
   ResetCachedInfo();
-  TObjectList * PanelItems = new TObjectList();
   bool Result = false;
-  // try
+  TObjectList * PanelItems = new TObjectList();
+  std::auto_ptr<TObjectList> PanelItemsPtr(PanelItems);
   {
-    BOOST_SCOPE_EXIT ( (&PanelItems) )
-    {
-      delete PanelItems;
-    } BOOST_SCOPE_EXIT_END
     Result = !FClosed && GetFindDataEx(PanelItems, OpMode);
     // DEBUG_PRINTF(L"Result = %d, PanelItems->GetCount = %d", Result, PanelItems->GetCount());
     if (Result && PanelItems->GetCount())
@@ -1967,12 +1927,6 @@ int __fastcall TCustomFarFileSystem::GetFindData(
       *ItemsNumber = 0;
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete PanelItems;
-  }
-#endif
   // DEBUG_PRINTF(L"end: Result = %d", Result);
   return Result;
 }
@@ -2003,22 +1957,12 @@ int __fastcall TCustomFarFileSystem::ProcessHostFile(struct PluginPanelItem * Pa
   int ItemsNumber, int OpMode)
 {
   ResetCachedInfo();
-  TObjectList * PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
   bool Result = false;
-  // try
+  TObjectList * PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
+  std::auto_ptr<TObjectList> PanelItemsPtr(PanelItems);
   {
-    BOOST_SCOPE_EXIT ( (&PanelItems) )
-    {
-      delete PanelItems;
-    } BOOST_SCOPE_EXIT_END
     Result = ProcessHostFileEx(PanelItems, OpMode);
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete PanelItems;
-  }
-#endif
 
   return Result;
 }
@@ -2078,22 +2022,12 @@ int __fastcall TCustomFarFileSystem::DeleteFiles(struct PluginPanelItem * PanelI
     int ItemsNumber, int OpMode)
 {
   ResetCachedInfo();
-  TObjectList * PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
   bool Result = false;
-  // try
+  TObjectList * PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
+  std::auto_ptr<TObjectList> PanelItemsPtr(PanelItems);
   {
-    BOOST_SCOPE_EXIT ( (&PanelItems) )
-    {
-      delete PanelItems;
-    } BOOST_SCOPE_EXIT_END
     Result = DeleteFilesEx(PanelItems, OpMode);
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete PanelItems;
-  }
-#endif
 
   return Result;
 }
@@ -2137,22 +2071,12 @@ int __fastcall TCustomFarFileSystem::PutFiles(struct PluginPanelItem * PanelItem
   int ItemsNumber, int Move, const wchar_t * srcPath, int OpMode)
 {
   ResetCachedInfo();
-  TObjectList * PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
   int Result = 0;
-  // try
+  TObjectList * PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
+  std::auto_ptr<TObjectList> PanelItemsPtr(PanelItems);
   {
-    BOOST_SCOPE_EXIT ( (&PanelItems) )
-    {
-      delete PanelItems;
-    } BOOST_SCOPE_EXIT_END
     Result = PutFilesEx(PanelItems, Move > 0, OpMode);
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete PanelItems;
-  }
-#endif
 
   return Result;
 }

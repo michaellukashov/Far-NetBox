@@ -297,12 +297,8 @@ bool __fastcall TWinSCPPlugin::ConfigurationDialog()
 {
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
-  // try
+  std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
   {
-    BOOST_SCOPE_EXIT ( (&Dialog) )
-    {
-      delete Dialog;
-    } BOOST_SCOPE_EXIT_END
     TFarText * Text;
 
     Dialog->SetSize(TPoint(67, 22));
@@ -433,12 +429,6 @@ bool __fastcall TWinSCPPlugin::ConfigurationDialog()
       FarConfiguration->SetFullScreenDetailed(CustomPanelFullScreenCheck->GetChecked());
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Dialog;
-  }
-#endif
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -446,12 +436,8 @@ bool __fastcall TWinSCPPlugin::PanelConfigurationDialog()
 {
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
-  // try
+  std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
   {
-    BOOST_SCOPE_EXIT ( (&Dialog) )
-    {
-      delete Dialog;
-    } BOOST_SCOPE_EXIT_END
     Dialog->SetSize(TPoint(65, 7));
     Dialog->SetCaption(FORMAT(L"%s - %s",
       GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_PANEL)).c_str()));
@@ -484,12 +470,6 @@ bool __fastcall TWinSCPPlugin::PanelConfigurationDialog()
 #endif
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Dialog;
-  }
-#endif
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -497,12 +477,8 @@ bool __fastcall TWinSCPPlugin::LoggingConfigurationDialog()
 {
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
-  // try
+  std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
   {
-    BOOST_SCOPE_EXIT ( (&Dialog) )
-    {
-      delete Dialog;
-    } BOOST_SCOPE_EXIT_END
     TFarSeparator * Separator;
     TFarText * Text;
 
@@ -601,12 +577,6 @@ bool __fastcall TWinSCPPlugin::LoggingConfigurationDialog()
 #endif
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Dialog;
-  }
-#endif
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -629,12 +599,8 @@ bool __fastcall TWinSCPPlugin::EnduranceConfigurationDialog()
 {
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
-  // try
+  std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
   {
-    BOOST_SCOPE_EXIT ( (&Dialog) )
-    {
-      delete Dialog;
-    } BOOST_SCOPE_EXIT_END
     TFarSeparator * Separator;
     TFarText * Text;
 
@@ -757,12 +723,6 @@ bool __fastcall TWinSCPPlugin::EnduranceConfigurationDialog()
 #endif
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Dialog;
-  }
-#endif
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -770,12 +730,8 @@ bool __fastcall TWinSCPPlugin::QueueConfigurationDialog()
 {
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
-  // try
+  std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
   {
-    BOOST_SCOPE_EXIT ( (&Dialog) )
-    {
-      delete Dialog;
-    } BOOST_SCOPE_EXIT_END
     TFarText * Text;
 
     Dialog->SetSize(TPoint(76, 11));
@@ -843,12 +799,6 @@ bool __fastcall TWinSCPPlugin::QueueConfigurationDialog()
 #endif
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Dialog;
-  }
-#endif
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -987,20 +937,10 @@ bool __fastcall TWinSCPPlugin::TransferEditorConfigurationDialog()
 {
   bool Result = false;
   TTransferEditorConfigurationDialog * Dialog = new TTransferEditorConfigurationDialog(this);
-  // try
+  std::auto_ptr<TTransferEditorConfigurationDialog> DialogPtr(Dialog);
   {
-    BOOST_SCOPE_EXIT ( (&Dialog) )
-    {
-      delete Dialog;
-    } BOOST_SCOPE_EXIT_END
     Result = Dialog->Execute();
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Dialog;
-  }
-#endif
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1008,12 +948,8 @@ bool __fastcall TWinSCPPlugin::ConfirmationsConfigurationDialog()
 {
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
-  // try
+  std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
   {
-    BOOST_SCOPE_EXIT ( (&Dialog) )
-    {
-      delete Dialog;
-    } BOOST_SCOPE_EXIT_END
     Dialog->SetSize(TPoint(65, 10));
     Dialog->SetCaption(FORMAT(L"%s - %s",
       GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_CONFIRMATIONS)).c_str()));
@@ -1069,12 +1005,6 @@ bool __fastcall TWinSCPPlugin::ConfirmationsConfigurationDialog()
 #endif
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Dialog;
-  }
-#endif
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1082,12 +1012,8 @@ bool __fastcall TWinSCPPlugin::IntegrationConfigurationDialog()
 {
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
-  // try
+  std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
   {
-    BOOST_SCOPE_EXIT ( (&Dialog) )
-    {
-      delete Dialog;
-    } BOOST_SCOPE_EXIT_END
     TFarText * Text;
 
     Dialog->SetSize(TPoint(65, 14));
@@ -1150,12 +1076,6 @@ bool __fastcall TWinSCPPlugin::IntegrationConfigurationDialog()
 #endif
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Dialog;
-  }
-#endif
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1341,20 +1261,10 @@ void /* __fastcall */ TAboutDialog::UrlButtonClick(TFarButton * Sender, bool & /
 void __fastcall TWinSCPPlugin::AboutDialog()
 {
   TFarDialog * Dialog = new TAboutDialog(this);
-  // try
+  std::auto_ptr<TFarDialog> DialogPtr(Dialog);
   {
-    BOOST_SCOPE_EXIT ( (&Dialog) )
-    {
-      delete Dialog;
-    } BOOST_SCOPE_EXIT_END
     Dialog->ShowModal();
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Dialog;
-  }
-#endif
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -1561,20 +1471,10 @@ bool __fastcall TWinSCPFileSystem::PasswordDialog(TSessionData * SessionData,
   bool Result = false;
   TPasswordDialog * Dialog = new TPasswordDialog(FPlugin, SessionData->GetName(),
     Kind, Name, Instructions, Prompts, StoredCredentialsTried);
-  // try
+  std::auto_ptr<TPasswordDialog> DialogPtr(Dialog);
   {
-    BOOST_SCOPE_EXIT ( (&Dialog) )
-    {
-      delete Dialog;
-    } BOOST_SCOPE_EXIT_END
     Result = Dialog->Execute(Results);
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Dialog;
-  }
-#endif
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1584,12 +1484,8 @@ bool __fastcall TWinSCPFileSystem::BannerDialog(const UnicodeString SessionName,
 {
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(FPlugin);
-  // try
+  std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
   {
-    BOOST_SCOPE_EXIT ( (&Dialog) )
-    {
-      delete Dialog;
-    } BOOST_SCOPE_EXIT_END
     Dialog->SetSize(TPoint(70, 21));
     Dialog->SetCaption(FORMAT(GetMsg(BANNER_TITLE).c_str(), SessionName.c_str()));
 
@@ -1635,12 +1531,6 @@ bool __fastcall TWinSCPFileSystem::BannerDialog(const UnicodeString SessionName,
       }
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Dialog;
-  }
-#endif
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -3452,12 +3342,8 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
   // FTP tab
   FtpAllowEmptyPasswordCheck->SetChecked(SessionData->GetFtpAllowEmptyPassword());
   TStrings * PostLoginCommands = new TStringList();
-  // try
+  std::auto_ptr<TStrings> PostLoginCommandsPtr(PostLoginCommands);
   {
-    BOOST_SCOPE_EXIT ( (&PostLoginCommands) )
-    {
-      delete PostLoginCommands;
-    } BOOST_SCOPE_EXIT_END
     PostLoginCommands->SetText(SessionData->GetPostLoginCommands());
     for (int Index = 0; (Index < PostLoginCommands->GetCount()) &&
          (Index < LENOF(PostLoginCommandsEdits)); Index++)
@@ -3465,12 +3351,6 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
       PostLoginCommandsEdits[Index]->SetText(PostLoginCommands->GetStrings(Index));
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete PostLoginCommands;
-  }
-#endif
 
   SslSessionReuseCheck->SetChecked(SessionData->GetSslSessionReuse());
 
@@ -3778,12 +3658,8 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
     SessionData->SetFtpAllowEmptyPassword(FtpAllowEmptyPasswordCheck->GetChecked());
     SessionData->SetSslSessionReuse(SslSessionReuseCheck->GetChecked());
     TStrings * PostLoginCommands = new TStringList;
-    // try
+    std::auto_ptr<TStrings> PostLoginCommandsPtr(PostLoginCommands);
     {
-      BOOST_SCOPE_EXIT ( (&PostLoginCommands) )
-      {
-        delete PostLoginCommands;
-      } BOOST_SCOPE_EXIT_END
       for (int Index = 0; Index < LENOF(PostLoginCommandsEdits); Index++)
       {
         UnicodeString Text = PostLoginCommandsEdits[Index]->GetText();
@@ -3822,12 +3698,6 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
         SessionData->SetFtps(ftpsNone);
         break;
     }
-#ifndef _MSC_VER
-    __finally
-    {
-      delete PostLoginCommands;
-    }
-#endif
 
     // Connection tab
     SessionData->SetFtpPasvMode(FtpPasvModeCheck->GetChecked());
@@ -4397,20 +4267,10 @@ bool __fastcall TWinSCPFileSystem::SessionDialog(TSessionData * SessionData,
 {
   bool Result = false;
   TSessionDialog * Dialog = new TSessionDialog(FPlugin, Action);
-  // try
+  std::auto_ptr<TSessionDialog> DialogPtr(Dialog);
   {
-    BOOST_SCOPE_EXIT ( (&Dialog) )
-    {
-      delete Dialog;
-    } BOOST_SCOPE_EXIT_END
     Result = Dialog->Execute(SessionData, Action);
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Dialog;
-  }
-#endif
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -4799,25 +4659,23 @@ private:
 
   TStringList * UsedGroupList = NULL;
   TStringList * UsedUserList = NULL;
+  std::auto_ptr<TStrings> UsedGroupListPtr(NULL);
+  std::auto_ptr<TStrings> UsedUserListPtr(NULL);
 
-  // try
   {
-    BOOST_SCOPE_EXIT ( (&UsedUserList) (&UsedGroupList) )
-    {
-      delete UsedUserList;
-      delete UsedGroupList;
-    } BOOST_SCOPE_EXIT_END
     if ((GroupList == NULL) || (GroupList->Count() == 0))
     {
       UsedGroupList = new TStringList();
       UsedGroupList->SetDuplicates(dupIgnore);
       UsedGroupList->SetSorted(true);
+      UsedGroupListPtr.reset(UsedGroupList);
     }
     if ((UserList == NULL) || (UserList->Count() == 0))
     {
       UsedUserList = new TStringList();
       UsedUserList->SetDuplicates(dupIgnore);
       UsedUserList->SetSorted(true);
+      UsedUserListPtr.reset(UsedUserList);
     }
 
     int Directories = 0;
@@ -4952,13 +4810,6 @@ private:
     Button->SetResult(brCancel);
     Button->SetCenterGroup(true);
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete UsedUserList;
-    delete UsedGroupList;
-  }
-#endif
 }
 //---------------------------------------------------------------------------
 void __fastcall TPropertiesDialog::Change()
@@ -5071,20 +4922,10 @@ bool __fastcall TWinSCPFileSystem::PropertiesDialog(TStrings * FileList,
   bool Result = false;
   TPropertiesDialog * Dialog = new TPropertiesDialog(FPlugin, FileList,
     Directory, GroupList, UserList, AllowedChanges);
-  // try
+  std::auto_ptr<TPropertiesDialog> DialogPtr(Dialog);
   {
-    BOOST_SCOPE_EXIT ( (&Dialog) )
-    {
-      delete Dialog;
-    } BOOST_SCOPE_EXIT_END
     Result = Dialog->Execute(Properties);
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Dialog;
-  }
-#endif
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -5813,22 +5654,12 @@ void __fastcall TCopyDialog::Change()
   {
     UnicodeString InfoStr = FCopyParams.GetInfoStr(L"; ", FCopyParamAttrs);
     TStringList * InfoStrLines = new TStringList();
-    // try
+    std::auto_ptr<TStrings> InfoStrLinesPtr(InfoStrLines);
     {
-      BOOST_SCOPE_EXIT ( (&InfoStrLines) )
-      {
-        delete InfoStrLines;
-      } BOOST_SCOPE_EXIT_END
       FarWrapText(InfoStr, InfoStrLines, GetBorderBox()->GetWidth() - 4);
       CopyParamLister->SetItems(InfoStrLines);
       CopyParamLister->SetRight(GetBorderBox()->GetRight() - (CopyParamLister->GetScrollBar() ? 0 : 1));
     }
-#ifndef _MSC_VER
-    __finally
-    {
-      delete InfoStrLines;
-    }
-#endif
   }
 }
 //---------------------------------------------------------------------------
@@ -5867,20 +5698,10 @@ bool __fastcall TWinSCPFileSystem::CopyDialog(bool ToRemote,
   bool Result = false;
   TCopyDialog * Dialog = new TCopyDialog(FPlugin, ToRemote,
     Move, FileList, Options, CopyParamAttrs);
-  // try
+  std::auto_ptr<TCopyDialog> DialogPtr(Dialog);
   {
-    BOOST_SCOPE_EXIT ( (&Dialog) )
-    {
-      delete Dialog;
-    } BOOST_SCOPE_EXIT_END
     Result = Dialog->Execute(TargetDirectory, Params);
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Dialog;
-  }
-#endif
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -5889,12 +5710,8 @@ bool __fastcall TWinSCPPlugin::CopyParamDialog(const UnicodeString Caption,
 {
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
-  // try
+  std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
   {
-    BOOST_SCOPE_EXIT ( (&Dialog) )
-    {
-      delete Dialog;
-    } BOOST_SCOPE_EXIT_END
     Dialog->SetCaption(Caption);
 
     // temporary
@@ -5918,12 +5735,6 @@ bool __fastcall TWinSCPPlugin::CopyParamDialog(const UnicodeString Caption,
       CopyParam = CopyParamsContainer->GetParams();
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Dialog;
-  }
-#endif
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -6036,20 +5847,10 @@ bool __fastcall TWinSCPFileSystem::LinkDialog(UnicodeString & FileName,
 {
   bool Result = false;
   TLinkDialog * Dialog = new TLinkDialog(FPlugin, Edit, AllowSymbolic);
-  // try
+  std::auto_ptr<TLinkDialog> DialogPtr(Dialog);
   {
-    BOOST_SCOPE_EXIT ( (&Dialog) )
-    {
-      delete Dialog;
-    } BOOST_SCOPE_EXIT_END
     Result = Dialog->Execute(FileName, PointTo, Symbolic);
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Dialog;
-  }
-#endif
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -6591,20 +6392,10 @@ void __fastcall TWinSCPFileSystem::FileSystemInfoDialog(
   UnicodeString SpaceAvailablePath, TGetSpaceAvailableEvent OnGetSpaceAvailable)
 {
   TFileSystemInfoDialog * Dialog = new TFileSystemInfoDialog(FPlugin, OnGetSpaceAvailable);
-  // try
+  std::auto_ptr<TFileSystemInfoDialog> DialogPtr(Dialog);
   {
-    BOOST_SCOPE_EXIT ( (&Dialog) )
-    {
-      delete Dialog;
-    } BOOST_SCOPE_EXIT_END
     Dialog->Execute(SessionInfo, FileSystemInfo, SpaceAvailablePath);
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Dialog;
-  }
-#endif
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -6619,16 +6410,12 @@ bool __fastcall TWinSCPFileSystem::OpenDirectoryDialog(
   do
   {
     TStrings * BookmarkPaths = new TStringList();
+    std::auto_ptr<TStrings> BookmarkPathsPtr(BookmarkPaths);
     TFarMenuItems * BookmarkItems = new TFarMenuItems();
+    std::auto_ptr<TStrings> BookmarkItemsPtr(BookmarkItems);
     TList * Bookmarks = new TList();
-    // try
+    std::auto_ptr<TList> BookmarksPtr(Bookmarks);
     {
-      BOOST_SCOPE_EXIT ( (&BookmarkItems) (&Bookmarks) (&BookmarkPaths) )
-      {
-        delete BookmarkItems;
-        delete Bookmarks;
-        delete BookmarkPaths;
-      } BOOST_SCOPE_EXIT_END
       int BookmarksOffset = -1;
 
       int MaxLength = FPlugin->MaxMenuItemLength();
@@ -6649,12 +6436,8 @@ bool __fastcall TWinSCPFileSystem::OpenDirectoryDialog(
 
       int FirstItemFocused = -1;
       TStringList * BookmarkDirectories = new TStringList();
-      // try
+      std::auto_ptr<TStringList> BookmarkDirectoriesPtr(BookmarkDirectories);
       {
-        BOOST_SCOPE_EXIT ( (&BookmarkDirectories) )
-        {
-          delete BookmarkDirectories;
-        } BOOST_SCOPE_EXIT_END
         BookmarkDirectories->SetSorted(true);
         for (int i = 0; i < BookmarkList->GetCount(); i++)
         {
@@ -6709,12 +6492,6 @@ bool __fastcall TWinSCPFileSystem::OpenDirectoryDialog(
           }
         }
       }
-#ifndef _MSC_VER
-      __finally
-      {
-        delete BookmarkDirectories;
-      }
-#endif
 
       if (ItemFocused < 0)
       {
@@ -6779,14 +6556,6 @@ bool __fastcall TWinSCPFileSystem::OpenDirectoryDialog(
 
       Result = (BreakCode < 0) && (ItemFocused >= 0);
     }
-#ifndef _MSC_VER
-    __finally
-    {
-      delete BookmarkItems;
-      delete Bookmarks;
-      delete BookmarkPaths;
-    }
-#endif
   }
   while (Repeat);
 
@@ -6959,20 +6728,10 @@ bool __fastcall TWinSCPFileSystem::ApplyCommandDialog(UnicodeString & Command,
 {
   bool Result = false;
   TApplyCommandDialog * Dialog = new TApplyCommandDialog(FPlugin);
-  // try
+  std::auto_ptr<TApplyCommandDialog> DialogPtr(Dialog);
   {
-    BOOST_SCOPE_EXIT ( (&Dialog) )
-    {
-      delete Dialog;
-    } BOOST_SCOPE_EXIT_END
     Result = Dialog->Execute(Command, Params);
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Dialog;
-  }
-#endif
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -7262,22 +7021,12 @@ void __fastcall TFullSynchronizeDialog::Change()
 
     UnicodeString InfoStr = FCopyParams.GetInfoStr(L"; ", ActualCopyParamAttrs());
     TStringList * InfoStrLines = new TStringList();
-    // try
+    std::auto_ptr<TStrings> InfoStrLinesPtr(InfoStrLines);
     {
-      BOOST_SCOPE_EXIT ( (&InfoStrLines) )
-      {
-        delete InfoStrLines;
-      } BOOST_SCOPE_EXIT_END
       FarWrapText(InfoStr, InfoStrLines, GetBorderBox()->GetWidth() - 4);
       CopyParamLister->SetItems(InfoStrLines);
       CopyParamLister->SetRight(GetBorderBox()->GetRight() - (CopyParamLister->GetScrollBar() ? 0 : 1));
     }
-#ifndef _MSC_VER
-    __finally
-    {
-      delete InfoStrLines;
-    }
-#endif
   }
 }
 //---------------------------------------------------------------------------
@@ -7418,21 +7167,11 @@ bool __fastcall TWinSCPFileSystem::FullSynchronizeDialog(TTerminal::TSynchronize
   bool Result = false;
   TFullSynchronizeDialog * Dialog = new TFullSynchronizeDialog(
     FPlugin, Options, CopyParamAttrs);
-  // try
+  std::auto_ptr<TFullSynchronizeDialog> DialogPtr(Dialog);
   {
-    BOOST_SCOPE_EXIT ( (&Dialog) )
-    {
-      delete Dialog;
-    } BOOST_SCOPE_EXIT_END
     Result = Dialog->Execute(Mode, Params, LocalDirectory, RemoteDirectory,
       CopyParams, SaveSettings, SaveMode);
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Dialog;
-  }
-#endif
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -7804,12 +7543,8 @@ void __fastcall TSynchronizeChecklistDialog::LoadChecklist()
 {
   FChecked = 0;
   TFarList * List = new TFarList();
-  // try
+  std::auto_ptr<TFarList> ListPtr(List);
   {
-    BOOST_SCOPE_EXIT ( (&List) )
-    {
-      delete List;
-    } BOOST_SCOPE_EXIT_END
     List->BeginUpdate();
     for (int Index = 0; Index < FChecklist->GetCount(); Index++)
     {
@@ -7834,12 +7569,6 @@ void __fastcall TSynchronizeChecklistDialog::LoadChecklist()
 
     ListBox->SetItems(List);
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete List;
-  }
-#endif
 
   UpdateControls();
 }
@@ -8062,20 +7791,10 @@ bool __fastcall TWinSCPFileSystem::SynchronizeChecklistDialog(
   bool Result = false;
   TSynchronizeChecklistDialog * Dialog = new TSynchronizeChecklistDialog(
     FPlugin, Mode, Params, LocalDirectory, RemoteDirectory);
-  // try
+  std::auto_ptr<TSynchronizeChecklistDialog> DialogPtr(Dialog);
   {
-    BOOST_SCOPE_EXIT ( (&Dialog) )
-    {
-      delete Dialog;
-    } BOOST_SCOPE_EXIT_END
     Result = Dialog->Execute(Checklist);
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Dialog;
-  }
-#endif
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -8484,22 +8203,12 @@ void __fastcall TSynchronizeDialog::Change()
 
     UnicodeString InfoStr = FCopyParams.GetInfoStr(L"; ", ActualCopyParamAttrs());
     TStringList * InfoStrLines = new TStringList();
-    // try
+    std::auto_ptr<TStrings> InfoStrLinesPtr(InfoStrLines);
     {
-      BOOST_SCOPE_EXIT ( (&InfoStrLines) )
-      {
-        delete InfoStrLines;
-      } BOOST_SCOPE_EXIT_END
       FarWrapText(InfoStr, InfoStrLines, GetBorderBox()->GetWidth() - 4);
       CopyParamLister->SetItems(InfoStrLines);
       CopyParamLister->SetRight(GetBorderBox()->GetRight() - (CopyParamLister->GetScrollBar() ? 0 : 1));
     }
-#ifndef _MSC_VER
-    __finally
-    {
-      delete InfoStrLines;
-    }
-#endif
   }
 }
 //---------------------------------------------------------------------------
@@ -8545,20 +8254,10 @@ bool __fastcall TWinSCPFileSystem::SynchronizeDialog(TSynchronizeParamType & Par
   bool Result = false;
   TSynchronizeDialog * Dialog = new TSynchronizeDialog(FPlugin, OnStartStop,
       Options, CopyParamAttrs, OnGetOptions);
-  // try
+  std::auto_ptr<TSynchronizeDialog> DialogPtr(Dialog);
   {
-    BOOST_SCOPE_EXIT ( (&Dialog) )
-    {
-      delete Dialog;
-    } BOOST_SCOPE_EXIT_END
     Result = Dialog->Execute(Params, CopyParams, SaveSettings);
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Dialog;
-  }
-#endif
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -8936,7 +8635,7 @@ void __fastcall TQueueDialog::RefreshQueue()
 void __fastcall TQueueDialog::LoadQueue()
 {
   TFarList * List = new TFarList();
-  // try
+  std::auto_ptr<TFarList> ListPtr(List);
   {
     BOOST_SCOPE_EXIT ( (&List) )
     {
@@ -8957,12 +8656,6 @@ void __fastcall TQueueDialog::LoadQueue()
     }
     QueueListBox->SetItems(List);
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete List;
-  }
-#endif
 }
 //---------------------------------------------------------------------------
 bool __fastcall TQueueDialog::FillQueueItemLine(UnicodeString & Line,
@@ -9113,20 +8806,10 @@ bool __fastcall TWinSCPFileSystem::QueueDialog(
 {
   bool Result = false;
   TQueueDialog * Dialog = new TQueueDialog(FPlugin, this, ClosingPlugin);
-  // try
+  std::auto_ptr<TQueueDialog> DialogPtr(Dialog);
   {
-    BOOST_SCOPE_EXIT ( (&Dialog) )
-    {
-      delete Dialog;
-    } BOOST_SCOPE_EXIT_END
     Result = Dialog->Execute(Status);
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Dialog;
-  }
-#endif
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -9135,12 +8818,8 @@ bool __fastcall TWinSCPFileSystem::CreateDirectoryDialog(UnicodeString & Directo
 {
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(FPlugin);
-  // try
+  std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
   {
-    BOOST_SCOPE_EXIT ( (&Dialog) )
-    {
-      delete Dialog;
-    } BOOST_SCOPE_EXIT_END
     TFarText * Text;
     TFarSeparator * Separator;
 
@@ -9192,12 +8871,6 @@ bool __fastcall TWinSCPFileSystem::CreateDirectoryDialog(UnicodeString & Directo
       }
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Dialog;
-  }
-#endif
   return Result;
 }
 //---------------------------------------------------------------------------

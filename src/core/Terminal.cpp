@@ -796,14 +796,9 @@ void __fastcall TTerminal::Open()
               else
               {
                 assert(FSecureShell == NULL);
-                // try
                 {
-                  BOOST_SCOPE_EXIT ( (&Self) )
-                  {
-                    delete Self->FSecureShell;
-                    Self->FSecureShell = NULL;
-                  } BOOST_SCOPE_EXIT_END
                   FSecureShell = new TSecureShell(this, FSessionData, GetLog(), Configuration);
+                  std::auto_ptr<TSecureShell> SecureShellPtr(FSecureShell);
                   try
                   {
                     // there will be only one channel in this session
@@ -845,13 +840,7 @@ void __fastcall TTerminal::Open()
                     LogEvent(L"Using SFTP protocol.");
                   }
                 }
-#ifndef _MSC_VER
-                __finally
-                {
-                  delete FSecureShell;
-                  FSecureShell = NULL;
-                }
-#endif
+                FSecureShell = NULL;
               }
             }
             else
@@ -1138,24 +1127,18 @@ bool __fastcall TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
   UnicodeString Name, UnicodeString Instructions, UnicodeString Prompt, bool Echo, int MaxLen, UnicodeString & Result)
 {
   bool AResult;
-  TStringList Prompts;
-  TStringList Results;
-  // try
+  TStrings * Prompts = new TStringList();
+  TStrings * Results = new TStringList();
+  std::auto_ptr<TStrings> PromptsPtr(Prompts);
+  std::auto_ptr<TStrings> ResultsPtr(Results);
   {
-    Prompts.AddObject(Prompt, reinterpret_cast<TObject *>(static_cast<size_t>(Echo)));
-    Results.AddObject(Result, reinterpret_cast<TObject *>(MaxLen));
+    Prompts->AddObject(Prompt, reinterpret_cast<TObject *>(static_cast<size_t>(Echo)));
+    Results->AddObject(Result, reinterpret_cast<TObject *>(MaxLen));
 
-    AResult = PromptUser(Data, Kind, Name, Instructions, &Prompts, &Results);
+    AResult = PromptUser(Data, Kind, Name, Instructions, Prompts, Results);
 
-    Result = Results.GetStrings(0);
+    Result = Results->GetStrings(0);
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Prompts;
-    delete Results;
-  }
-#endif
 
   return AResult;
 }
@@ -1220,32 +1203,26 @@ unsigned int __fastcall TTerminal::QueryUserException(const UnicodeString Query,
   TQueryType QueryType)
 {
   unsigned int Result;
-  TStringList MoreMessages;
-  // try
+  TStrings * MoreMessages = new TStringList();
+  std::auto_ptr<TStrings> MoreMessagesPtr(MoreMessages);
   {
     if (E != NULL)
     {
       if (!E->GetMessage().IsEmpty() && !Query.IsEmpty())
       {
-        MoreMessages.Add(E->GetMessage());
+        MoreMessages->Add(E->GetMessage());
       }
 
       ExtException * EE = dynamic_cast<ExtException*>(E);
       if ((EE != NULL) && (EE->GetMoreMessages() != NULL))
       {
-        MoreMessages.AddStrings(EE->GetMoreMessages());
+        MoreMessages->AddStrings(EE->GetMoreMessages());
       }
     }
     Result = QueryUser(!Query.IsEmpty() ? Query : UnicodeString(E ? E->GetMessage() : L""),
-      MoreMessages.GetCount() ? &MoreMessages : NULL,
+      MoreMessages->GetCount() ? MoreMessages : NULL,
       Answers, Params, QueryType);
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete MoreMessages;
-  }
-#endif
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1958,20 +1935,10 @@ unsigned int __fastcall TTerminal::CommandError(Exception * E, const UnicodeStri
   else if (!Answers)
   {
     ECommand * ECmd = new ECommand(E, Msg);
-    // try
+    std::auto_ptr<ECommand> ECmdPtr(ECmd);
     {
-      BOOST_SCOPE_EXIT ( (&ECmd) )
-      {
-        delete ECmd;
-      } BOOST_SCOPE_EXIT_END
       HandleExtendedException(ECmd);
     }
-#ifndef _MSC_VER
-    __finally
-    {
-      delete ECmd;
-    }
-#endif
   }
   else
   {
@@ -2692,12 +2659,8 @@ void /* __fastcall */ TTerminal::ProcessDirectory(const UnicodeString DirName,
   // skip if directory listing fails and user selects "skip"
   if (FileList)
   {
-    // try
+    std::auto_ptr<TRemoteFileList> FileListPtr(FileList);
     {
-      BOOST_SCOPE_EXIT ( (&FileList) )
-      {
-        delete FileList;
-      } BOOST_SCOPE_EXIT_END
       UnicodeString Directory = UnixIncludeTrailingBackslash(DirName);
 
       TRemoteFile * File;
@@ -2710,12 +2673,6 @@ void /* __fastcall */ TTerminal::ProcessDirectory(const UnicodeString DirName,
         }
       }
     }
-#ifndef _MSC_VER
-    __finally
-    {
-      delete FileList;
-    }
-#endif
   }
 }
 //---------------------------------------------------------------------------
@@ -4466,7 +4423,7 @@ void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeStri
         if (Modified || New)
         {
           TSynchronizeChecklist::TItem * ChecklistItem = new TSynchronizeChecklist::TItem();
-          // try
+          std::auto_ptr<TSynchronizeChecklist::TItem> ChecklistItemPtr(ChecklistItem);
           {
             BOOST_SCOPE_EXIT ( (&ChecklistItem) )
             {
@@ -4513,12 +4470,6 @@ void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeStri
               ChecklistItem = NULL;
             }
           }
-#ifndef _MSC_VER
-          __finally
-          {
-            delete ChecklistItem;
-          }
-#endif
         }
         else
         {
@@ -4569,13 +4520,8 @@ void /* __fastcall */ TTerminal::SynchronizeCollectFile(const UnicodeString File
         Data->Options->MatchesFilter(LocalFileName)))
   {
     TSynchronizeChecklist::TItem * ChecklistItem = new TSynchronizeChecklist::TItem();
-    // try
+    std::auto_ptr<TSynchronizeChecklist::TItem> ChecklistItemPtr(ChecklistItem);
     {
-      BOOST_SCOPE_EXIT ( (&ChecklistItem) )
-      {
-        delete ChecklistItem;
-      }
-      BOOST_SCOPE_EXIT_END
       ChecklistItem->IsDirectory = File->GetIsDirectory();
       ChecklistItem->ImageIndex = File->GetIconIndex();
 
@@ -4737,12 +4683,6 @@ void /* __fastcall */ TTerminal::SynchronizeCollectFile(const UnicodeString File
         }
       }
     }
-#ifndef _MSC_VER
-    __finally
-    {
-      delete ChecklistItem;
-    }
-#endif
   }
   else
   {

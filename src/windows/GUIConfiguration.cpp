@@ -994,13 +994,8 @@ TStrings * __fastcall TGUIConfiguration::GetLocales()
 {
   Error(SNotImplemented, 93);
   UnicodeString LocalesExts;
-  TStringList * Exts = new TStringList();
-  // try
+  std::auto_ptr<TStringList> Exts(new TStringList());
   {
-    BOOST_SCOPE_EXIT ( (Exts) )
-    {
-      delete Exts;
-    } BOOST_SCOPE_EXIT_END
     Exts->SetSorted(true);
     Exts->SetCaseSensitive(false);
 
@@ -1111,12 +1106,6 @@ TStrings * __fastcall TGUIConfiguration::GetLocales()
       }
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Exts;
-  }
-#endif
 
   return FLocales;
 }

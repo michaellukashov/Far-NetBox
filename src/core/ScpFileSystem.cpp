@@ -943,23 +943,14 @@ void __fastcall TSCPFileSystem::ClearAliases()
     FTerminal->LogEvent(L"Clearing all aliases.");
     ClearAlias(TCommandSet::ExtractCommand(FTerminal->GetSessionData()->GetListingCommand()));
     TStrings * CommandList = FCommandSet->CreateCommandList();
-    // try
+    assert(CommandList);
+    std::auto_ptr<TStrings> CommandListPtr(CommandList);
     {
-      BOOST_SCOPE_EXIT ( (&CommandList) )
-      {
-        delete CommandList;
-      } BOOST_SCOPE_EXIT_END
       for (int Index = 0; Index < CommandList->GetCount(); Index++)
       {
         ClearAlias(CommandList->GetStrings(Index));
       }
     }
-#ifndef _MSC_VER
-    __finally
-    {
-      delete CommandList;
-    }
-#endif
   }
   catch (Exception &E)
   {
@@ -1071,12 +1062,8 @@ void __fastcall TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         // Copy LS command output, because eventual symlink analysis would
         // modify FTerminal->Output
         TStringList * OutputCopy = new TStringList();
-        // try
+        std::auto_ptr<TStringList> OutputCopyPtr(OutputCopy);
         {
-          BOOST_SCOPE_EXIT ( (&OutputCopy) )
-          {
-            delete OutputCopy;
-          } BOOST_SCOPE_EXIT_END
           OutputCopy->Assign(FOutput);
 
           // delete leading "total xxx" line
@@ -1093,12 +1080,6 @@ void __fastcall TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
             FileList->AddFile(File);
           }
         }
-#ifndef _MSC_VER
-        __finally
-        {
-          delete OutputCopy;
-        }
-#endif
       }
       else
       {

@@ -105,12 +105,8 @@ bool __fastcall TWinSCPPlugin::ConfigureEx(int /*Item*/)
   bool Change = false;
 
   TFarMenuItems * MenuItems = new TFarMenuItems();
-  // try
+  std::auto_ptr<TFarMenuItems> MenuItemsPtr(MenuItems);
   {
-    BOOST_SCOPE_EXIT ( (&MenuItems) )
-    {
-      delete MenuItems;
-    } BOOST_SCOPE_EXIT_END
     int MInterface = MenuItems->Add(GetMsg(CONFIG_INTERFACE));
     int MConfirmations = MenuItems->Add(GetMsg(CONFIG_CONFIRMATIONS));
     int MPanel = MenuItems->Add(GetMsg(CONFIG_PANEL));
@@ -202,12 +198,6 @@ bool __fastcall TWinSCPPlugin::ConfigureEx(int /*Item*/)
     }
     while (Result >= 0);
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete MenuItems;
-  }
-#endif
 
   return Change;
 }
@@ -367,12 +357,8 @@ TCustomFarFileSystem * __fastcall TWinSCPPlugin::OpenPluginEx(int OpenFrom, intp
 void __fastcall TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 {
   TFarMenuItems * MenuItems = new TFarMenuItems();
-  // try
+  std::auto_ptr<TFarMenuItems> MenuItemsPtr(MenuItems);
   {
-    BOOST_SCOPE_EXIT ( (&MenuItems) )
-    {
-      delete MenuItems;
-    } BOOST_SCOPE_EXIT_END
     TWinSCPFileSystem * FileSystem;
     TWinSCPFileSystem * AnotherFileSystem;
     FileSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem());
@@ -522,12 +508,6 @@ void __fastcall TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
       }
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete MenuItems;
-  }
-#endif
 }
 //---------------------------------------------------------------------------
 void __fastcall TWinSCPPlugin::ShowExtendedException(Exception * E)
@@ -609,12 +589,8 @@ int __fastcall TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
 {
   int Result = 0;
   TStrings * ButtonLabels = new TStringList();
-  // try
+  std::auto_ptr<TStrings> ButtonLabelsPtr(ButtonLabels);
   {
-    BOOST_SCOPE_EXIT ( (&ButtonLabels) )
-    {
-      delete ButtonLabels;
-    } BOOST_SCOPE_EXIT_END
     unsigned int Flags = 0;
 
     if (Params != NULL)
@@ -779,11 +755,5 @@ int __fastcall TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
       Result = qaNeverAskAgain;
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete ButtonLabels;
-  }
-#endif
   return Result;
 }

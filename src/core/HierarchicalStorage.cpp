@@ -197,25 +197,15 @@ void __fastcall THierarchicalStorage::CloseSubKey()
 //---------------------------------------------------------------------------
 void __fastcall THierarchicalStorage::ClearSubKeys()
 {
-  TStringList *SubKeys = new TStringList();
-  // try
+  TStringList * SubKeys = new TStringList();
+  std::auto_ptr<TStringList> SubKeysPtr(SubKeys);
   {
-    BOOST_SCOPE_EXIT ( (&SubKeys) )
-    {
-      delete SubKeys;
-    } BOOST_SCOPE_EXIT_END
     GetSubKeyNames(SubKeys);
     for (int Index = 0; Index < SubKeys->GetCount(); Index++)
     {
       RecursiveDeleteSubKey(SubKeys->GetStrings(Index));
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete SubKeys;
-  }
-#endif
 }
 //---------------------------------------------------------------------------
 void __fastcall THierarchicalStorage::RecursiveDeleteSubKey(const UnicodeString Key)
@@ -232,21 +222,11 @@ bool __fastcall THierarchicalStorage::HasSubKeys()
 {
   bool Result;
   TStrings * SubKeys = new TStringList();
-  // try
+  std::auto_ptr<TStrings> SubKeysPtr(SubKeys);
   {
-    BOOST_SCOPE_EXIT ( (&SubKeys) )
-    {
-      delete SubKeys;
-    } BOOST_SCOPE_EXIT_END
     GetSubKeyNames(SubKeys);
     Result = (SubKeys->GetCount() > 0);
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete SubKeys;
-  }
-#endif
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -269,12 +249,8 @@ void __fastcall THierarchicalStorage::ReadValues(Classes::TStrings* Strings,
   bool MaintainKeys)
 {
   TStrings * Names = new TStringList();
-  // try
+  std::auto_ptr<TStrings> NamesPtr(Names);
   {
-    BOOST_SCOPE_EXIT ( (&Names) )
-    {
-      delete Names;
-    } BOOST_SCOPE_EXIT_END
     GetValueNames(Names);
     for (int Index = 0; Index < Names->GetCount(); Index++)
     {
@@ -289,35 +265,19 @@ void __fastcall THierarchicalStorage::ReadValues(Classes::TStrings* Strings,
       }
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Names;
-  }
-#endif
 }
 //---------------------------------------------------------------------------
 void __fastcall THierarchicalStorage::ClearValues()
 {
   TStrings * Names = new TStringList();
-  // try
+  std::auto_ptr<TStrings> NamesPtr(Names);
   {
-    BOOST_SCOPE_EXIT ( (&Names) )
-    {
-      delete Names;
-    } BOOST_SCOPE_EXIT_END
     GetValueNames(Names);
     for (int Index = 0; Index < Names->GetCount(); Index++)
     {
       DeleteValue(Names->GetStrings(Index));
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Names;
-  }
-#endif
 }
 //---------------------------------------------------------------------------
 void __fastcall THierarchicalStorage::WriteValues(Classes::TStrings * Strings,
@@ -462,12 +422,8 @@ bool __fastcall TRegistryStorage::Copy(TRegistryStorage * Storage)
   TRegistry * Registry = Storage->FRegistry;
   bool Result = true;
   TStrings * Names = new TStringList();
-  // try
+  std::auto_ptr<TStrings> NamesPtr(Names);
   {
-    BOOST_SCOPE_EXIT ( (&Names) )
-    {
-      delete Names;
-    } BOOST_SCOPE_EXIT_END
     Registry->GetValueNames(Names);
     std::vector<unsigned char> Buffer(1024, 0);
     int Index = 0;
@@ -498,12 +454,6 @@ bool __fastcall TRegistryStorage::Copy(TRegistryStorage * Storage)
       ++Index;
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Names;
-  }
-#endif
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -744,12 +694,8 @@ bool __fastcall TCustomIniFileStorage::DoOpenSubKey(const UnicodeString SubKey, 
   if (!Result)
   {
     TStringList * Sections = new TStringList();
-    // try
+    std::auto_ptr<TStringList> SectionsPtr(Sections);
     {
-      BOOST_SCOPE_EXIT ( (&Sections) )
-      {
-        delete Sections;
-      } BOOST_SCOPE_EXIT_END
       Sections->SetSorted(true);
       FIniFile->ReadSections(Sections);
       UnicodeString NewKey = ExcludeTrailingBackslash(GetCurrentSubKey()+SubKey);
@@ -764,12 +710,6 @@ bool __fastcall TCustomIniFileStorage::DoOpenSubKey(const UnicodeString SubKey, 
         }
       }
     }
-#ifndef _MSC_VER
-    __finally
-    {
-      delete Sections;
-    }
-#endif
   }
 
   return Result;
@@ -793,12 +733,8 @@ bool __fastcall TCustomIniFileStorage::DeleteSubKey(const UnicodeString SubKey)
 void __fastcall TCustomIniFileStorage::GetSubKeyNames(Classes::TStrings* Strings)
 {
   TStrings * Sections = new TStringList();
-  // try
+  std::auto_ptr<TStringList> SectionsPtr(Sections);
   {
-    BOOST_SCOPE_EXIT ( (&Sections) )
-    {
-      delete Sections;
-    } BOOST_SCOPE_EXIT_END
     Strings->Clear();
     FIniFile->ReadSections(Sections);
     for (int i = 0; i < Sections->GetCount(); i++)
@@ -821,12 +757,6 @@ void __fastcall TCustomIniFileStorage::GetSubKeyNames(Classes::TStrings* Strings
       }
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Sections;
-  }
-#endif
 }
 //---------------------------------------------------------------------------
 void __fastcall TCustomIniFileStorage::GetValueNames(Classes::TStrings* Strings)
@@ -1013,7 +943,8 @@ void __fastcall TIniFileStorage::Flush()
   if (FOriginal != NULL)
   {
     TStrings * Strings = new TStringList;
-    try
+    std::auto_ptr<TStrings> StringsPtr(Strings);
+    std::auto_ptr<TStrings> OriginalPtr(FOriginal);
     {
       dynamic_cast<TMemIniFile *>(FIniFile)->GetStrings(Strings);
       if (!Strings->Equals(FOriginal))
@@ -1063,12 +994,7 @@ void __fastcall TIniFileStorage::Flush()
         }
       }
     }
-    __finally
-    {
-      delete FOriginal;
-      FOriginal = NULL;
-      delete Strings;
-    }
+    FOriginal = NULL;
   }
 }
 //---------------------------------------------------------------------------
@@ -1082,12 +1008,8 @@ void __fastcall TIniFileStorage::ApplyOverrides()
   UnicodeString OverridesKey = IncludeTrailingBackslash(L"Override");
 
   TStrings * Sections = new TStringList();
-  // try
+  std::auto_ptr<TStringList> SectionsPtr(Sections);
   {
-    BOOST_SCOPE_EXIT ( (&Sections) )
-    {
-      delete Sections;
-    } BOOST_SCOPE_EXIT_END
     Sections->Clear();
     FIniFile->ReadSections(Sections);
     for (int i = 0; i < Sections->Count; i++)
@@ -1102,12 +1024,8 @@ void __fastcall TIniFileStorage::ApplyOverrides()
 
         // this all uses raw names (munged)
         TStrings * Names = new TStringList;
-        // try
+        std::auto_ptr<TStrings> NamesPtr(Names);
         {
-          BOOST_SCOPE_EXIT ( (&Names) )
-          {
-            delete Names;
-          } BOOST_SCOPE_EXIT_END
           FIniFile->ReadSection(Section, Names);
 
           for (int ii = 0; ii < Names->Count; ii++)
@@ -1117,23 +1035,11 @@ void __fastcall TIniFileStorage::ApplyOverrides()
             FIniFile->WriteString(SubKey, Name, Value);
           }
         }
-#ifndef _MSC_VER
-        __finally
-        {
-          delete Names;
-        }
-#endif
 
         FIniFile->EraseSection(Section);
       }
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Sections;
-  }
-#endif
 }
 //===========================================================================
 #define NOT_IMPLEMENTED throw Exception(L"Not implemented")

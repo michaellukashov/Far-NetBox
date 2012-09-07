@@ -120,30 +120,32 @@ int get_userpass_input(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
   assert(SecureShell != NULL);
 
   int Result;
-  TStringList Prompts;
-  TStringList Results;
+  TStrings * Prompts = new TStringList();
+  TStrings * Results = new TStringList();
+  std::auto_ptr<TStrings> PromptsPtr(Prompts);
+  std::auto_ptr<TStrings> ResultsPtr(Results);
   // try
   {
     for (int Index = 0; Index < static_cast<int>(p->n_prompts); Index++)
     {
       prompt_t * Prompt = p->prompts[Index];
-      Prompts.AddObject(Prompt->prompt, reinterpret_cast<TObject *>(static_cast<size_t>(Prompt->echo)));
-      Results.AddObject(L"", reinterpret_cast<TObject *>(Prompt->result_len));
+      Prompts->AddObject(Prompt->prompt, reinterpret_cast<TObject *>(static_cast<size_t>(Prompt->echo)));
+      Results->AddObject(L"", reinterpret_cast<TObject *>(Prompt->result_len));
     }
 
     if (SecureShell->PromptUser(p->to_server, p->name, p->name_reqd,
-          p->instruction, p->instr_reqd, &Prompts, &Results))
+          p->instruction, p->instr_reqd, Prompts, Results))
     {
       for (int Index = 0; Index < int(p->n_prompts); Index++)
       {
         prompt_t * Prompt = p->prompts[Index];
-        AnsiString Str = Results.GetStrings(Index).c_str();
+        AnsiString Str = Results->GetStrings(Index).c_str();
         if ((size_t)Str.size() >= Prompt->result_len)
         {
           Prompt->result = (char *)srealloc(Prompt->result, Str.size() + 1);
           Prompt->result_len = Str.size() + 1;
         }
-        strncpy(Prompt->result, AnsiString(Results.GetStrings(Index)).c_str(), Prompt->result_len);
+        strncpy(Prompt->result, AnsiString(Results->GetStrings(Index)).c_str(), Prompt->result_len);
         Prompt->result[Prompt->result_len - 1] = '\0';
       }
       Result = 1;
@@ -153,13 +155,6 @@ int get_userpass_input(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
       Result = 0;
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Prompts;
-    delete Results;
-  }
-#endif
 
   return Result;
 }

@@ -11,7 +11,6 @@
 #include <TextsCore.h>
 #include <CoreMain.h>
 #include <SessionData.h>
-#include <Exceptions.h>
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
@@ -53,17 +52,14 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
   {
     UnicodeString SessionName;
     TRegistryStorage * Storage = NULL;
+    std::auto_ptr<TRegistryStorage> StoragePtr(NULL);
     TSessionData * ExportData = NULL;
+    std::auto_ptr<TSessionData> ExportDataPtr(NULL);
     TRegistryStorage * SourceStorage = NULL;
-    // try
+    std::auto_ptr<TRegistryStorage> SourceStoragePtr(NULL);
     {
-      BOOST_SCOPE_EXIT ( (&Storage) (&ExportData) (&SourceStorage) )
-      {
-        delete Storage;
-        delete ExportData;
-        delete SourceStorage;
-      } BOOST_SCOPE_EXIT_END
       Storage = new TRegistryStorage(Configuration->GetPuttySessionsKey());
+      StoragePtr.reset(Storage);
       Storage->SetAccessMode(smReadWrite);
       // make it compatible with putty
       Storage->SetMungeStringValues(false);
@@ -77,6 +73,7 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
         else
         {
           SourceStorage = new TRegistryStorage(Configuration->GetPuttySessionsKey());
+          SourceStoragePtr.reset(SourceStorage);
           SourceStorage->SetMungeStringValues(false);
           SourceStorage->SetForceAnsi(true);
           if (SourceStorage->OpenSubKey(StoredSessions->GetDefaultSettings()->GetName(), false) &&
@@ -87,6 +84,7 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
           }
 
           ExportData = new TSessionData(L"");
+          ExportDataPtr.reset(ExportData);
           ExportData->Assign(SessionData);
           ExportData->SetModified(true);
           ExportData->SetName(GUIConfiguration->GetPuttySession());
@@ -113,14 +111,6 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
         }
       }
     }
-#ifndef _MSC_VER
-    __finally
-    {
-      delete Storage;
-      delete ExportData;
-      delete SourceStorage;
-    }
-#endif
 
     if (!Params.IsEmpty())
     {

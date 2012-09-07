@@ -1848,12 +1848,8 @@ void __fastcall TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data)
   if (ACount > FMaxSize)
   {
     TStrings * Limited = new TStringList();
-    // try
+    std::auto_ptr<TStrings> LimitedPtr(Limited);
     {
-      BOOST_SCOPE_EXIT ( (&Limited) )
-      {
-        delete Limited;
-      } BOOST_SCOPE_EXIT_END
       int Index = ACount - FMaxSize;
       while (Index < ACount)
       {
@@ -1862,12 +1858,6 @@ void __fastcall TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data)
       }
       Data += Limited->GetText();
     }
-#ifndef _MSC_VER
-    __finally
-    {
-      delete Limited;
-    }
-#endif
   }
   else
   {

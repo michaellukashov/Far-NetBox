@@ -1923,20 +1923,10 @@ void __fastcall TSecureShell::VerifyHostKey(UnicodeString Host, int Port,
     if (!Verified)
     {
       Exception * E = new Exception(LoadStr(KEY_NOT_VERIFIED));
-      // try
+      std::auto_ptr<Exception> EPtr(E);
       {
-        BOOST_SCOPE_EXIT ( (&E) )
-        {
-          delete E;
-        } BOOST_SCOPE_EXIT_END
         FUI->FatalError(E, FMTLOAD(HOSTKEY, Fingerprint.c_str()));
       }
-#ifndef _MSC_VER
-      __finally
-      {
-        delete E;
-      }
-#endif
     }
   }
 }

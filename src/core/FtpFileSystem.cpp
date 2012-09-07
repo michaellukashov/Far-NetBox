@@ -545,12 +545,8 @@ void __fastcall TFTPFileSystem::Idle()
       FLastDataSent = Now();
 
       TRemoteDirectory * Files = new TRemoteDirectory(FTerminal);
-      // try
+      std::auto_ptr<TRemoteDirectory> FilesPtr(Files);
       {
-        BOOST_SCOPE_EXIT ( (&Files) )
-        {
-          delete Files;
-        } BOOST_SCOPE_EXIT_END
         try
         {
           Files->SetDirectory(GetCurrentDirectory());
@@ -566,12 +562,6 @@ void __fastcall TFTPFileSystem::Idle()
           }
         }
       }
-#ifndef _MSC_VER
-      __finally
-      {
-        delete Files;
-      }
-#endif
     }
   }
 }
@@ -736,12 +726,8 @@ void __fastcall TFTPFileSystem::ChangeFileProperties(const UnicodeString AFileNa
 
     TRemoteFile * OwnedFile = NULL;
 
-    // try
+    std::auto_ptr<TRemoteFile> OwnedFilePtr(NULL);
     {
-      BOOST_SCOPE_EXIT ( (&OwnedFile) )
-      {
-        delete OwnedFile;
-      } BOOST_SCOPE_EXIT_END
       UnicodeString FileName = AbsolutePath(AFileName, false);
 
       if (File == NULL)
@@ -749,6 +735,7 @@ void __fastcall TFTPFileSystem::ChangeFileProperties(const UnicodeString AFileNa
         ReadFile(FileName, OwnedFile);
         File = OwnedFile;
       }
+      OwnedFilePtr.reset(OwnedFile);
 
       if ((File != NULL) && File->GetIsDirectory() && !File->GetIsSymLink() && Properties->Recursive)
       {
@@ -785,12 +772,6 @@ void __fastcall TFTPFileSystem::ChangeFileProperties(const UnicodeString AFileNa
 
       GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
     }
-#ifndef _MSC_VER
-    __finally
-    {
-      delete OwnedFile;
-    }
-#endif
   }
   else
   {
@@ -1748,13 +1729,8 @@ void /* __fastcall */ TFTPFileSystem::CustomCommandOnFile(const UnicodeString /*
 void __fastcall TFTPFileSystem::DoStartup()
 {
   TStrings * PostLoginCommands = new TStringList();
-  // try
+  std::auto_ptr<TStrings> PostLoginCommandsPtr(PostLoginCommands);
   {
-    BOOST_SCOPE_EXIT ( (&PostLoginCommands) )
-    {
-      delete PostLoginCommands;
-    } BOOST_SCOPE_EXIT_END
-
     PostLoginCommands->SetText(FTerminal->GetSessionData()->GetPostLoginCommands());
     for (int Index = 0; Index < PostLoginCommands->GetCount(); Index++)
     {
@@ -1767,12 +1743,6 @@ void __fastcall TFTPFileSystem::DoStartup()
       }
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete PostLoginCommands;
-  }
-#endif
 
   // retrieve initialize working directory to save it as home directory
   ReadCurrentDirectory();
@@ -1849,13 +1819,9 @@ void __fastcall TFTPFileSystem::ReadCurrentDirectory()
     TStrings * Response = NULL;
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE, L"", &Code, &Response);
 
-    // try
+    assert(Response != NULL);
+    std::auto_ptr<TStrings> ResponsePtr(Response);
     {
-      BOOST_SCOPE_EXIT ( (&Response) )
-      {
-        delete Response;
-      } BOOST_SCOPE_EXIT_END
-      assert(Response != NULL);
       bool Result = false;
 
       // the only allowed 2XX code to "PWD"
@@ -1895,12 +1861,6 @@ void __fastcall TFTPFileSystem::ReadCurrentDirectory()
         throw Exception(FMTLOAD(FTP_PWD_RESPONSE_ERROR, Response->GetText().c_str()));
       }
     }
-#ifndef _MSC_VER
-    __finally
-    {
-      delete Response;
-    }
-#endif
   }
 }
 //---------------------------------------------------------------------------
@@ -1996,12 +1956,8 @@ void __fastcall TFTPFileSystem::DoReadFile(const UnicodeString & FileName,
   TRemoteFile *& AFile)
 {
   TRemoteFileList * FileList = new TRemoteFileList();
-  // try
+  std::auto_ptr<TRemoteFileList> FileListPtr(FileList);
   {
-    BOOST_SCOPE_EXIT ( (&FileList) )
-    {
-      delete FileList;
-    } BOOST_SCOPE_EXIT_END
     TFTPFileListHelper Helper(this, FileList, false);
     FFileZillaIntf->ListFile(FileName.c_str());
 
@@ -2014,12 +1970,6 @@ void __fastcall TFTPFileSystem::DoReadFile(const UnicodeString & FileName,
 
     FLastDataSent = Now();
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete FileList;
-  }
-#endif
 }
 //---------------------------------------------------------------------------
 void __fastcall TFTPFileSystem::ReadFile(const UnicodeString FileName,
@@ -2745,20 +2695,10 @@ void __fastcall TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
         // for fatal error, it is essential that there is some message
         assert(!Error.IsEmpty());
         ExtException * E = new ExtException(Error, MoreMessages, true);
-        // try
+        std::auto_ptr<ExtException> EPtr(E);
         {
-          BOOST_SCOPE_EXIT ( (&E) )
-          {
-            delete E;
-          } BOOST_SCOPE_EXIT_END
           FTerminal->FatalError(E, L"");
         }
-#ifndef _MSC_VER
-        __finally
-        {
-          delete E;
-        }
-#endif
       }
       else
       {
@@ -3359,7 +3299,7 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 
     THierarchicalStorage * Storage =
       FTerminal->GetConfiguration()->CreateScpStorage(false);
-    // try
+    std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
     {
       BOOST_SCOPE_EXIT ( (&Storage) )
       {
@@ -3373,12 +3313,6 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
         RequestResult = 1;
       }
     }
-#ifndef _MSC_VER
-    __finally
-    {
-      delete Storage;
-    }
-#endif
 
     if (RequestResult == 0)
     {
@@ -3438,12 +3372,8 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       {
         THierarchicalStorage * Storage =
           FTerminal->GetConfiguration()->CreateScpStorage(false);
-        // try
+        std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
         {
-          BOOST_SCOPE_EXIT ( (&Storage) )
-          {
-            delete Storage;
-          } BOOST_SCOPE_EXIT_END
           Storage->SetAccessMode(smReadWrite);
 
           if (Storage->OpenSubKey(CertificateStorageKey, true))
@@ -3451,12 +3381,6 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
             Storage->WriteString(FSessionInfo.CertificateFingerprint, L"");
           }
         }
-#ifndef _MSC_VER
-        __finally
-        {
-          delete Storage;
-        }
-#endif
       }
     }
 

@@ -782,23 +782,13 @@ public:
 
   void LoadFromFile(const UnicodeString FileName)
   {
-    TStringList * DumpLines = new TStringList();
     RawByteString Dump;
-    // try
+    TStringList * DumpLines = new TStringList();
+    std::auto_ptr<TStringList> DumpLinesPtr(DumpLines);
     {
-      BOOST_SCOPE_EXIT ( (&DumpLines) )
-      {
-        delete DumpLines;
-      } BOOST_SCOPE_EXIT_END
       DumpLines->LoadFromFile(FileName);
       Dump = AnsiString(DumpLines->GetText());
     }
-#ifndef _MSC_VER
-    __finally
-    {
-      delete DumpLines;
-    }
-#endif
 
     SetCapacity(1 * 1024 * 1024); // 20480);
     unsigned char Byte[3];
@@ -1119,16 +1109,13 @@ public:
     bool Result;
     TSFTPQueuePacket * Request = NULL;
     TSFTPPacket * Response = NULL;
-    // try
+    std::auto_ptr<TSFTPQueuePacket> RequestPtr(NULL);
+    std::auto_ptr<TSFTPPacket> ResponsePtr(NULL);
     {
-      BOOST_SCOPE_EXIT ( (&Request) (&Response) )
-      {
-        delete Request;
-        delete Response;
-      } BOOST_SCOPE_EXIT_END
       Request = static_cast<TSFTPQueuePacket*>(FRequests->GetItem(0));
       FRequests->Delete(0);
       assert(Request);
+      RequestPtr.reset(Request);
       if (Token != NULL)
       {
         *Token = Request->Token;
@@ -1137,6 +1124,7 @@ public:
       Response = static_cast<TSFTPPacket *>(FResponses->GetItem(0));
       FResponses->Delete(0);
       assert(Response);
+      ResponsePtr.reset(Response);
 
       FFileSystem->ReceiveResponse(Request, Response,
         ExpectedType, AllowStatus);
@@ -1152,13 +1140,6 @@ public:
         SendRequests();
       }
     }
-#ifndef _MSC_VER
-    __finally
-    {
-      delete Request;
-      delete Response;
-    }
-#endif
 
     return Result;
   }
@@ -3469,15 +3450,9 @@ void __fastcall TSFTPFileSystem::ChangeFileProperties(const UnicodeString FileNa
 
   UnicodeString RealFileName = LocalCanonify(FileName);
   ReadFile(RealFileName, File);
-
-  // try
+  assert(File);
+  std::auto_ptr<TRemoteFile> FilePtr(File);
   {
-    BOOST_SCOPE_EXIT ( (&File) )
-    {
-      delete File;
-    } BOOST_SCOPE_EXIT_END
-    assert(File);
-
     if (File->GetIsDirectory() && !File->GetIsSymLink() && AProperties->Recursive)
     {
       try
@@ -3514,12 +3489,6 @@ void __fastcall TSFTPFileSystem::ChangeFileProperties(const UnicodeString FileNa
     Packet.AddProperties(&Properties, *File->GetRights(), File->GetIsDirectory(), FVersion, FUtfStrings, &Action);
     SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete File;
-  }
-#endif
 }
 //---------------------------------------------------------------------------
 bool __fastcall TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)

@@ -145,12 +145,8 @@ void __fastcall TSynchronizeController::SynchronizeChange(
         FSynchronizeParams, &Checklist, Options, false);
       if (Checklist != NULL)
       {
-        // try
+        std::auto_ptr<TSynchronizeChecklist> ChecklistPtr(Checklist);
         {
-          BOOST_SCOPE_EXIT ( (&Checklist) )
-          {
-            delete Checklist;
-          } BOOST_SCOPE_EXIT_END
           if (FLAGSET(FSynchronizeParams.Options, soRecurse))
           {
             SubdirsChanged = false;
@@ -180,12 +176,6 @@ void __fastcall TSynchronizeController::SynchronizeChange(
             SubdirsChanged = false;
           }
         }
-#ifndef _MSC_VER
-        __finally
-        {
-          delete Checklist;
-        }
-#endif
       }
     }
   }

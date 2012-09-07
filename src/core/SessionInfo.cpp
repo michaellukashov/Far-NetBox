@@ -916,22 +916,11 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
     AddSeparator();
     ADF(L"NetBox %s (OS %s)", FConfiguration->GetVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
     THierarchicalStorage * Storage = FConfiguration->CreateScpStorage(false);
-    // try
+    assert(Storage);
+    std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
     {
-#ifdef _MSC_VER
-      BOOST_SCOPE_EXIT ( (&Storage) )
-      {
-        delete Storage;
-      } BOOST_SCOPE_EXIT_END
-#endif
       ADF(L"Configuration: %s", Storage->GetSource().c_str());
     }
-#ifndef _MSC_VER
-    __finally
-    {
-      delete Storage;
-    }
-#endif
 
     if (0)
     {
@@ -1219,22 +1208,10 @@ void __fastcall TActionLog::AddFailure(Exception * E)
   TStrings * Messages = ExceptionToMessages(E);
   if (Messages != NULL)
   {
-    // try
+    std::auto_ptr<TStrings> MessagesPtr(Messages);
     {
-#ifdef _MSC_VER
-      BOOST_SCOPE_EXIT ( (&Messages) )
-      {
-        delete Messages;
-      } BOOST_SCOPE_EXIT_END
-#endif
       AddFailure(Messages);
     }
-#ifndef _MSC_VER
-    __finally
-    {
-      delete Messages;
-    }
-#endif
   }
 }
 //---------------------------------------------------------------------------
