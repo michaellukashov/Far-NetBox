@@ -12,11 +12,13 @@ public:
     FMask(Mask)
   {
   }
-  bool GetMatches(const UnicodeString Str);
+  bool GetMatches(const UnicodeString Str)
+  {
+    return Sysutils::AnsiCompareIC(FMask, Str) == 0;
+  }
 private:
   UnicodeString FMask;
 };
 
 } // namespace Masks
 
-//---------------------------------------------------------------------------

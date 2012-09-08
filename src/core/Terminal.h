@@ -2,7 +2,6 @@
 #ifndef TerminalH
 #define TerminalH
 
-#include <vcl.h>
 #include <Classes.hpp>
 
 #include "SessionInfo.h"
@@ -30,55 +29,11 @@ struct TFilesFindParams;
 class TTunnelUI;
 class TCallbackGuard;
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
-typedef void __fastcall (__closure *TQueryUserEvent)
-  (TObject * Sender, const UnicodeString Query, TStrings * MoreMessages, unsigned int Answers,
-   const TQueryParams * Params, unsigned int & Answer, TQueryType QueryType, void * Arg);
-typedef void __fastcall (__closure *TPromptUserEvent)
-  (TTerminal * Terminal, TPromptKind Kind, UnicodeString Name, UnicodeString Instructions,
-   TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
-typedef void __fastcall (__closure *TDisplayBannerEvent)
-  (TTerminal * Terminal, UnicodeString SessionName, const UnicodeString & Banner,
-   bool & NeverShowAgain, int Options);
-typedef void __fastcall (__closure *TExtendedExceptionEvent)
-  (TTerminal * Terminal, Exception * E, void * Arg);
-typedef void __fastcall (__closure *TReadDirectoryEvent)(System::TObject * Sender, Boolean ReloadOnly);
-typedef void __fastcall (__closure *TReadDirectoryProgressEvent)(
-  System::TObject* Sender, int Progress, bool & Cancel);
-DEFINE_CALLBACK_TYPE3(TProcessFileEvent, void,
-  UnicodeString /* FileName */, const TRemoteFile * /* File */, void * /* Param */);
-typedef void __fastcall (__closure *TProcessFileEventEx)
-  (const UnicodeString FileName, const TRemoteFile * File, void * Param, int Index);
-typedef int __fastcall (__closure *TFileOperationEvent)
-  (void * Param1, void * Param2);
-typedef void __fastcall (__closure *TSynchronizeDirectory)
-  (const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
-   bool & Continue, bool Collect);
-typedef void __fastcall (__closure *TDeleteLocalFileEvent)(
-  const UnicodeString & FileName, bool Alternative);
-typedef HANDLE __fastcall (__closure *TCreateLocalFileEvent)(
-  const UnicodeString & FileName, DWORD DesiredAccess,
-    DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
-typedef DWORD __fastcall (__closure *TGetLocalFileAttributesEvent)(
-  const UnicodeString & FileName);
-typedef BOOL __fastcall (__closure *TSetLocalFileAttributesEvent)(
-  const UnicodeString & FileName, DWORD FileAttributes);
-typedef BOOL __fastcall (__closure *TMoveLocalFileEvent)(
-  const UnicodeString & FileName, const UnicodeString & NewFileName, DWORD Flags);
-typedef BOOL __fastcall (__closure *TRemoveLocalDirectoryEvent)(
-  const UnicodeString & LocalDirName);
-typedef BOOL __fastcall (__closure *TCreateLocalDirectoryEvent)(
-  const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
-typedef int __fastcall (__closure *TDirectoryModifiedEvent)
-  (TTerminal * Terminal, const UnicodeString Directory, bool SubDirs);
-typedef void __fastcall (__closure *TInformationEvent)
-  (TTerminal * Terminal, const UnicodeString & Str, bool Status, int Phase);
-#else
 DEFINE_CALLBACK_TYPE8(TQueryUserEvent, void,
-  TObject * /* Sender */, UnicodeString /* Query */, TStrings * /* MoreMessages */ , unsigned int /* Answers */,
+  TObject * /* Sender */, const UnicodeString & /* Query */, TStrings * /* MoreMessages */ , unsigned int /* Answers */,
   const TQueryParams * /* Params */, unsigned int & /* Answer */, TQueryType /* QueryType */, void * /* Arg */);
 DEFINE_CALLBACK_TYPE8(TPromptUserEvent, void,
-  TTerminal * /* Terminal */, TPromptKind /* Kind */, UnicodeString /* Name */, UnicodeString /* Instructions */,
+  TTerminal * /* Terminal */, TPromptKind /* Kind */, const UnicodeString & /* Name */, const UnicodeString & /* Instructions */,
   TStrings * /* Prompts */, TStrings * /* Results */, bool & /* Result */, void * /* Arg */);
 DEFINE_CALLBACK_TYPE5(TDisplayBannerEvent, void,
   TTerminal * /* Terminal */, UnicodeString /* SessionName */, const UnicodeString & /* Banner */,
@@ -89,9 +44,9 @@ DEFINE_CALLBACK_TYPE2(TReadDirectoryEvent, void, TObject * /* Sender */, Boolean
 DEFINE_CALLBACK_TYPE3(TReadDirectoryProgressEvent, void,
   TObject * /* Sender */, int /* Progress */, bool & /* Cancel */);
 DEFINE_CALLBACK_TYPE3(TProcessFileEvent, void,
-  UnicodeString /* FileName */, const TRemoteFile * /* File */, void * /* Param */);
+  const UnicodeString & /* FileName */, const TRemoteFile * /* File */, void * /* Param */);
 DEFINE_CALLBACK_TYPE4(TProcessFileEventEx, void,
-  const UnicodeString /* FileName */, const TRemoteFile * /* File */, void * /* Param */, int /* Index */);
+  const UnicodeString & /* FileName */, const TRemoteFile * /* File */, void * /* Param */, int /* Index */);
 DEFINE_CALLBACK_TYPE2(TFileOperationEvent, int,
   void * /* Param1 */, void * /* Param2 */);
 DEFINE_CALLBACK_TYPE4(TSynchronizeDirectoryEvent, void,
@@ -99,6 +54,10 @@ DEFINE_CALLBACK_TYPE4(TSynchronizeDirectoryEvent, void,
   bool & /* Continue */, bool /* Collect */);
 DEFINE_CALLBACK_TYPE2(TDeleteLocalFileEvent, void,
   const UnicodeString & /* FileName */, bool /* Alternative */);
+DEFINE_CALLBACK_TYPE3(TDirectoryModifiedEvent, int,
+  TTerminal * /* Terminal */, const UnicodeString /* Directory */, bool /* SubDirs */);
+DEFINE_CALLBACK_TYPE4(TInformationEvent, void,
+  TTerminal * /* Terminal */, const UnicodeString & /* Str */, bool /* Status */, int /* Phase */);
 DEFINE_CALLBACK_TYPE5(TCreateLocalFileEvent, HANDLE,
   const UnicodeString & /* FileName */, DWORD /* DesiredAccess */,
   DWORD /* ShareMode */, DWORD /* CreationDisposition */, DWORD /* FlagsAndAttributes */);
@@ -112,11 +71,6 @@ DEFINE_CALLBACK_TYPE1(TRemoveLocalDirectoryEvent, BOOL,
   const UnicodeString & /* LocalDirName */);
 DEFINE_CALLBACK_TYPE2(TCreateLocalDirectoryEvent, BOOL,
   const UnicodeString & /* LocalDirName */, LPSECURITY_ATTRIBUTES /* SecurityAttributes */);
-DEFINE_CALLBACK_TYPE3(TDirectoryModifiedEvent, int,
-  TTerminal * /* Terminal */, const UnicodeString /* Directory */, bool /* SubDirs */);
-DEFINE_CALLBACK_TYPE4(TInformationEvent, void,
-  TTerminal * /* Terminal */, const UnicodeString & /* Str */, bool /* Status */, int /* Phase */);
-#endif
 //---------------------------------------------------------------------------
 #define SUSPEND_OPERATION(Command)                            \
   {                                                           \
@@ -347,7 +301,7 @@ protected:
     __int64 * ATime, __int64 * Size, bool TryWriteReadOnly = true);
   bool /* __fastcall */ AllowLocalFileTransfer(UnicodeString FileName, const TCopyParamType *CopyParam);
   bool /* __fastcall */ HandleException(Exception * E);
-  void /* __fastcall */ CalculateFileSize(UnicodeString FileName,
+  void /* __fastcall */ CalculateFileSize(const UnicodeString & FileName,
     const TRemoteFile * File, /*TCalculateSizeParams*/ void * Size);
   void /* __fastcall */ DoCalculateDirectorySize(const UnicodeString FileName,
     const TRemoteFile * File, TCalculateSizeParams * Params);
@@ -367,14 +321,14 @@ protected:
     const TCopyParamType * CopyParam, int Params,
     TSynchronizeDirectoryEvent OnSynchronizeDirectory,
     TSynchronizeOptions * Options, int Level, TSynchronizeChecklist * Checklist);
-  void /* __fastcall */ SynchronizeCollectFile(const UnicodeString FileName,
+  void /* __fastcall */ SynchronizeCollectFile(const UnicodeString & FileName,
     const TRemoteFile * File, /*TSynchronizeData*/ void * Param);
-  void /* __fastcall */ SynchronizeRemoteTimestamp(const UnicodeString FileName,
+  void /* __fastcall */ SynchronizeRemoteTimestamp(const UnicodeString & FileName,
     const TRemoteFile * File, void * Param);
-  void /* __fastcall */ SynchronizeLocalTimestamp(const UnicodeString FileName,
+  void /* __fastcall */ SynchronizeLocalTimestamp(const UnicodeString & FileName,
     const TRemoteFile * File, void * Param);
   void /* __fastcall */ DoSynchronizeProgress(const TSynchronizeData & Data, bool Collect);
-  void /* __fastcall */ DeleteLocalFile(UnicodeString FileName,
+  void /* __fastcall */ DeleteLocalFile(const UnicodeString & FileName,
     const TRemoteFile * File, void * Param);
   void /* __fastcall */ RecycleFile(UnicodeString FileName, const TRemoteFile * File);
   TStrings * __fastcall GetFixedPaths();
@@ -392,7 +346,7 @@ protected:
   bool __fastcall PromptUser(TSessionData * Data, TPromptKind Kind,
     UnicodeString Name, UnicodeString Instructions, UnicodeString Prompt, bool Echo,
     int MaxLen, UnicodeString & Result);
-  void /* __fastcall */ FileFind(UnicodeString FileName, const TRemoteFile * File, void * Param);
+  void /* __fastcall */ FileFind(const UnicodeString & FileName, const TRemoteFile * File, void * Param);
   void /* __fastcall */ DoFilesFind(UnicodeString Directory, TFilesFindParams & Params);
   bool /* __fastcall */ DoCreateLocalFile(const UnicodeString FileName,
     TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
@@ -472,19 +426,19 @@ public:
   void __fastcall CreateDirectory(const UnicodeString DirName,
     const TRemoteProperties * Properties = NULL);
   void __fastcall CreateLink(const UnicodeString FileName, const UnicodeString PointTo, bool Symbolic);
-  void /* __fastcall */ DeleteFile(UnicodeString FileName,
+  void /* __fastcall */ DeleteFile(const UnicodeString & FileName,
     const TRemoteFile * File = NULL, void * Params = NULL);
   bool __fastcall DeleteFiles(TStrings * FilesToDelete, int Params = 0);
   bool __fastcall DeleteLocalFiles(TStrings * FileList, int Params = 0);
   bool __fastcall IsRecycledFile(UnicodeString FileName);
-  void /* __fastcall */ CustomCommandOnFile(UnicodeString FileName,
+  void /* __fastcall */ CustomCommandOnFile(const UnicodeString & FileName,
     const TRemoteFile * File, void * AParams);
   void __fastcall CustomCommandOnFiles(UnicodeString Command, int Params,
     TStrings * Files, TCaptureOutputEvent OutputEvent);
   void __fastcall ChangeDirectory(const UnicodeString Directory);
   void __fastcall EndTransaction();
   void __fastcall HomeDirectory();
-  void /* __fastcall */ ChangeFileProperties(UnicodeString FileName,
+  void /* __fastcall */ ChangeFileProperties(const UnicodeString & FileName,
     const TRemoteFile * File, /*const TRemoteProperties */ void * Properties);
   void __fastcall ChangeFilesProperties(TStrings * FileList,
     const TRemoteProperties * Properties);
@@ -493,13 +447,13 @@ public:
   void __fastcall TerminalError(Exception * E, UnicodeString Msg);
   void __fastcall ReloadDirectory();
   void __fastcall RefreshDirectory();
-  void __fastcall RenameFile(const UnicodeString FileName, const UnicodeString NewName);
-  void __fastcall RenameFile(const TRemoteFile * File, const UnicodeString NewName, bool CheckExistence);
-  void /* __fastcall */ MoveFile(const UnicodeString FileName, const TRemoteFile * File,
+  void __fastcall RenameFile(const UnicodeString & FileName, const UnicodeString & NewName);
+  void __fastcall RenameFile(const TRemoteFile * File, const UnicodeString & NewName, bool CheckExistence);
+  void /* __fastcall */ MoveFile(const UnicodeString & FileName, const TRemoteFile * File,
     /* const TMoveFileParams */ void * Param);
   bool __fastcall MoveFiles(TStrings * FileList, const UnicodeString Target,
     const UnicodeString FileMask);
-  void /* __fastcall */ CopyFile(const UnicodeString FileName, const TRemoteFile * File,
+  void /* __fastcall */ CopyFile(const UnicodeString & FileName, const TRemoteFile * File,
     /* const TMoveFileParams */ void * Param);
   bool __fastcall CopyFiles(TStrings * FileList, const UnicodeString Target,
     const UnicodeString FileMask);

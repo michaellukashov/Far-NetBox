@@ -67,7 +67,7 @@ int __cdecl debug_printf2(const char * format, ...);
 
 //---------------------------------------------------------------------------
 class TObject;
-DEFINE_CALLBACK_TYPE0(TThreadMethodEvent, void);
+DEFINE_CALLBACK_TYPE0(TThreadMethod, void);
 
 DEFINE_CALLBACK_TYPE1(TNotifyEvent, void, TObject * /* Sender */);
 //---------------------------------------------------------------------------

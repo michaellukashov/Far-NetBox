@@ -13,6 +13,9 @@
 #include "CoreMain.h"
 #include "WinSCPSecurity.h"
 #include <shlobj.h>
+#ifndef _MSC_VER
+#include <System.IOUtils.hpp>
+#endif
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
@@ -156,16 +159,7 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
 #define LASTELEM(ELEM) \
   ELEM.SubString(ELEM.LastDelimiter(L".>") + 1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
-  if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
-  TRY_FINALLY1 (Storage, \
-  { \
-    BLOCK \
-  } \
-  , \
-  { \
-    Storage->CloseSubKey(); \
-  } \
-  );
+  if (Storage->OpenSubKey(KEY, CANCREATE, true)) TRY_FINALLY1 (Storage, { BLOCK }, { Storage->CloseSubKey(); } );
 #define KEY(TYPE, VAR) KEYEX(TYPE, VAR, VAR)
 #undef REGCONFIG
 #define REGCONFIG(CANCREATE) \
@@ -250,13 +244,13 @@ void __fastcall TConfiguration::Export(const UnicodeString FileName)
   std::auto_ptr<THierarchicalStorage> ExportStoragePtr(NULL);
   {
     ExportStorage = NULL; // new TIniFileStorage(FileName);
-    ExportStoragePtr.reset(ExportStorage);
     ExportStorage->SetAccessMode(smReadWrite);
     ExportStorage->SetExplicit(true);
+    ExportStoragePtr.reset(ExportStorage);
 
     Storage = CreateScpStorage(false);
-    StoragePtr.reset(Storage);
     Storage->SetAccessMode(smRead);
+    StoragePtr.reset(Storage);
 
     CopyData(Storage, ExportStorage);
 
@@ -888,15 +882,15 @@ void __fastcall TConfiguration::SetStorage(TStorage value)
     std::auto_ptr<THierarchicalStorage> TargetStoragePtr(NULL);
     {
       SourceStorage = CreateScpStorage(false);
-      SourceStoragePtr.reset(SourceStorage);
       SourceStorage->SetAccessMode(smRead);
+      SourceStoragePtr.reset(SourceStorage);
 
       FStorage = value;
 
       TargetStorage = CreateScpStorage(false);
-      TargetStoragePtr.reset(TargetStorage);
       TargetStorage->SetAccessMode(smReadWrite);
       TargetStorage->SetExplicit(true);
+      TargetStoragePtr.reset(TargetStorage);
 
       // copy before save as it removes the ini file,
       // when switching from ini to registry

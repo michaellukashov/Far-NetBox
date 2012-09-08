@@ -783,7 +783,7 @@ void __fastcall TFarDialog::BreakSynchronize()
   SetEvent(FSynchronizeObjects[1]);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarDialog::Synchronize(TThreadMethodEvent Event)
+void __fastcall TFarDialog::Synchronize(TThreadMethod Event)
 {
   if (FSynchronizeObjects[0] == INVALID_HANDLE_VALUE)
   {

@@ -2,8 +2,6 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <stdio.h>
-
 #include "ScpFileSystem.h"
 
 #include "Terminal.h"
@@ -331,15 +329,15 @@ UnicodeString __fastcall TCommandSet::GetReturnVar()
   assert(GetSessionData());
   if (!FReturnVar.IsEmpty())
   {
-    return UnicodeString(L"$") + FReturnVar;
+    return UnicodeString(L'$') + FReturnVar;
   }
   else if (GetSessionData()->GetDetectReturnVar())
   {
-    return L"0";
+    return L'0';
   }
   else
   {
-    return UnicodeString(L"$") + GetSessionData()->GetReturnVar();
+    return UnicodeString(L'$') + GetSessionData()->GetReturnVar();
   }
 }
 //---------------------------------------------------------------------------
@@ -1355,6 +1353,7 @@ void __fastcall TSCPFileSystem::AnyCommand(const UnicodeString Command,
     FSecureShell->SetOnCaptureOutput(MAKE_CALLBACK2(TSCPFileSystem::CaptureOutput, this));
     FOnCaptureOutput = OutputEvent;
   }
+
   TRY_FINALLY1 (Self,
   {
     ExecCommand2(fsAnyCommand, Command.c_str(),
@@ -2104,7 +2103,7 @@ void __fastcall TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
   TRY_FINALLY3 (Self, CloseSCP, OperationProgress,
   {
     for (int IFile = 0; (IFile < FilesToCopy->GetCount()) &&
-         !OperationProgress->Cancel; IFile++)
+      !OperationProgress->Cancel; IFile++)
     {
       UnicodeString FileName = FilesToCopy->GetStrings(IFile);
       TRemoteFile * File = static_cast<TRemoteFile *>(FilesToCopy->GetObjects(IFile));
@@ -2141,7 +2140,7 @@ void __fastcall TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
               FILE_OPERATION_LOOP(FMTLOAD(DELETE_FILE_ERROR, FileName.c_str()),
                 // pass full file name in FileName, in case we are not moving
                 // from current directory
-                FTerminal->DeleteFile(FileName, File)
+                FTerminal->DeleteFile(FileName, File, &Params)
               );
             }
             ,
@@ -2404,8 +2403,8 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
 
         UnicodeString DestFileName =
           IncludeTrailingBackslash(TargetDir) +
-          CopyParam->ChangeFileName(OperationProgress->FileName,
-            osRemote, Level == 0);
+          CopyParam->ChangeFileName(OperationProgress->FileName, osRemote,
+            Level == 0);
 
         FileData.Attrs = FTerminal->GetLocalFileAttributes(DestFileName);
         // If getting attrs failes, we suppose, that file/folder doesn't exists
@@ -2532,7 +2531,7 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
 
                   if (OperationProgress->AsciiTransfer)
                   {
-                    unsigned int PrevBlockSize = (unsigned int)BlockBuf.GetSize();
+                    unsigned int PrevBlockSize = static_cast<unsigned int>(BlockBuf.GetSize());
                     BlockBuf.Convert(FTerminal->GetSessionData()->GetEOLType(),
                       FTerminal->GetConfiguration()->GetLocalEOLType(), 0, ConvertToken);
                     OperationProgress->SetLocalSize(
@@ -2541,7 +2540,7 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
 
                   // This is crucial, if it fails during file transfer, it's fatal error
                   FILE_OPERATION_LOOP_EX (false, FMTLOAD(WRITE_ERROR, DestFileName.c_str()),
-                    BlockBuf.WriteToStream(FileStream, (unsigned int)BlockBuf.GetSize());
+                    BlockBuf.WriteToStream(FileStream, static_cast<unsigned int>(BlockBuf.GetSize()));
                   );
 
                   OperationProgress->AddLocallyUsed(BlockBuf.GetSize());

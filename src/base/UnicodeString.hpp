@@ -118,6 +118,7 @@ public:
   UnicodeString & LowerCase() { return Lower(); }
   UnicodeString & UpperCase() { return Upper(); }
 
+  int Compare(const UnicodeString & Str) const;
   int CompareIC(const UnicodeString & Str) const;
   int ToInt() const;
 

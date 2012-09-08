@@ -10,8 +10,6 @@
 #endif
 #include "FtpFileSystem.h"
 #include "FileZillaIntf.h"
-#include "AsyncProxySocketLayer.h"
-#include "FtpControlSocket.h"
 
 #include "Common.h"
 #include "Exceptions.h"
@@ -19,12 +17,9 @@
 #include "TextsCore.h"
 #include "TextsFileZilla.h"
 #include "HelpCore.h"
-#include "TextsCore.h"
-#ifdef MPEXT
 #define OPENSSL_NO_EC
 #define OPENSSL_NO_ECDSA
 #define OPENSSL_NO_ECDH
-#endif
 #include <openssl/x509_vfy.h>
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -173,9 +168,7 @@ struct TFileTransferData
   int OverwriteResult;
   const TCopyParamType * CopyParam;
 };
-#endif
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 const int tfFirstLevel = 0x01;
 const int tfAutoResume = 0x02;
 #endif
@@ -1234,7 +1227,7 @@ void __fastcall TFTPFileSystem::Sink(const UnicodeString FileName,
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TFTPFileSystem::SinkFile(UnicodeString FileName,
+void /* __fastcall */ TFTPFileSystem::SinkFile(const UnicodeString & FileName,
   const TRemoteFile * File, void * Param)
 {
   TSinkFileParams * Params = static_cast<TSinkFileParams *>(Param);
@@ -2183,26 +2176,26 @@ int __fastcall TFTPFileSystem::GetOptionVal(int OptionID) const
       switch (Data->GetActualProxyMethod())
       {
         case ::pmNone:
-          Result = PROXYTYPE_NOPROXY;
+          Result = 0; // PROXYTYPE_NOPROXY;
           break;
 
         case pmSocks4:
-          Result = PROXYTYPE_SOCKS4A;
+          Result = 2; // PROXYTYPE_SOCKS4A
           break;
 
         case pmSocks5:
-          Result = PROXYTYPE_SOCKS5;
+          Result = 3; // PROXYTYPE_SOCKS5
           break;
 
         case pmHTTP:
-          Result = PROXYTYPE_HTTP11;
+          Result = 4; // PROXYTYPE_HTTP11
           break;
 
         case pmTelnet:
         case pmCmd:
         default:
           assert(false);
-          Result = PROXYTYPE_NOPROXY;
+          Result = 0; // PROXYTYPE_NOPROXY;
           break;
       }
       break;

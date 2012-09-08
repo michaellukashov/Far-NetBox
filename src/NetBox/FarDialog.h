@@ -129,7 +129,7 @@ protected:
   void __fastcall RefreshBounds();
   virtual void __fastcall Idle();
   void __fastcall BreakSynchronize();
-  void __fastcall Synchronize(TThreadMethodEvent Method);
+  void __fastcall Synchronize(TThreadMethod Method);
   void __fastcall Close(TFarButton * Button);
   void __fastcall ProcessGroup(int Group, TFarProcessGroupEvent Callback, void * Arg);
   void /* __fastcall */ ShowItem(TFarDialogItem * Item, void * Arg);
@@ -162,7 +162,7 @@ private:
   int FResult;
   bool FNeedsSynchronize;
   HANDLE FSynchronizeObjects[2];
-  TThreadMethodEvent FSynchronizeMethod;
+  TThreadMethod FSynchronizeMethod;
   TFarDialog * Self;
 
 public:

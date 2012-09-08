@@ -2883,32 +2883,33 @@ void /* __fastcall */ TTerminal::RecycleFile(UnicodeString FileName,
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TTerminal::DeleteFile(UnicodeString FileName,
+void /* __fastcall */ TTerminal::DeleteFile(const UnicodeString & FileName,
   const TRemoteFile * File, void * AParams)
 {
+  UnicodeString LocalFileName = FileName;
   if (FileName.IsEmpty() && File)
   {
-    FileName = File->GetFileName();
+    LocalFileName = File->GetFileName();
   }
   if (GetOperationProgress() && GetOperationProgress()->Operation == foDelete)
   {
     if (GetOperationProgress()->Cancel != csContinue) { Abort(); }
-    GetOperationProgress()->SetFile(FileName);
+    GetOperationProgress()->SetFile(LocalFileName);
   }
   int Params = (AParams != NULL) ? *(static_cast<int*>(AParams)) : 0;
   bool Recycle =
     FLAGCLEAR(Params, dfForceDelete) &&
     (GetSessionData()->GetDeleteToRecycleBin() != FLAGSET(Params, dfAlternative)) &&
     !GetSessionData()->GetRecycleBinPath().IsEmpty();
-  if (Recycle && !IsRecycledFile(FileName))
+  if (Recycle && !IsRecycledFile(LocalFileName))
   {
-    RecycleFile(FileName, File);
+    RecycleFile(LocalFileName, File);
   }
   else
   {
-    LogEvent(FORMAT(L"Deleting file \"%s\".", FileName.c_str()));
-    if (File) { FileModified(File, FileName, true); }
-    DoDeleteFile(FileName, File, Params);
+    LogEvent(FORMAT(L"Deleting file \"%s\".", LocalFileName.c_str()));
+    if (File) { FileModified(File, LocalFileName, true); }
+    DoDeleteFile(LocalFileName, File, Params);
     ReactOnCommand(fsDeleteFile);
   }
 }
@@ -2942,7 +2943,7 @@ bool /* __fastcall */ TTerminal::DeleteFiles(TStrings * FilesToDelete, int Param
   return ProcessFiles(FilesToDelete, foDelete, MAKE_CALLBACK3(TTerminal::DeleteFile, this), &Params);
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TTerminal::DeleteLocalFile(UnicodeString FileName,
+void /* __fastcall */ TTerminal::DeleteLocalFile(const UnicodeString & FileName,
   const TRemoteFile * /*File*/, void * Params)
 {
   if (GetOnDeleteLocalFile() == NULL)
@@ -2963,23 +2964,24 @@ bool /* __fastcall */ TTerminal::DeleteLocalFiles(TStrings * FileList, int Param
   return ProcessFiles(FileList, foDelete, MAKE_CALLBACK3(TTerminal::DeleteLocalFile, this), &Params, osLocal);
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TTerminal::CustomCommandOnFile(UnicodeString FileName,
+void /* __fastcall */ TTerminal::CustomCommandOnFile(const UnicodeString & FileName,
   const TRemoteFile * File, void * AParams)
 {
   TCustomCommandParams * Params = (static_cast<TCustomCommandParams *>(AParams));
+  UnicodeString LocalFileName = FileName;
   if (FileName.IsEmpty() && File)
   {
-    FileName = File->GetFileName();
+    LocalFileName = File->GetFileName();
   }
   if (GetOperationProgress() && GetOperationProgress()->Operation == foCustomCommand)
   {
     if (GetOperationProgress()->Cancel != csContinue) { Abort(); }
-    GetOperationProgress()->SetFile(FileName);
+    GetOperationProgress()->SetFile(LocalFileName);
   }
   LogEvent(FORMAT(L"Executing custom command \"%s\" (%d) on file \"%s\".",
-    Params->Command.c_str(), Params->Params, FileName.c_str()));
-  if (File) { FileModified(File, FileName); }
-  DoCustomCommandOnFile(FileName, File, Params->Command, Params->Params,
+    Params->Command.c_str(), Params->Params, LocalFileName.c_str()));
+  if (File) { FileModified(File, LocalFileName); }
+  DoCustomCommandOnFile(LocalFileName, File, Params->Command, Params->Params,
     Params->OutputEvent);
   ReactOnCommand(fsAnyCommand);
 }
@@ -3055,25 +3057,25 @@ void /* __fastcall */ TTerminal::CustomCommandOnFiles(UnicodeString Command,
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TTerminal::ChangeFileProperties(UnicodeString FileName,
+void /* __fastcall */ TTerminal::ChangeFileProperties(const UnicodeString & FileName,
   const TRemoteFile * File, /*const TRemoteProperties*/ void * Properties)
 {
   TRemoteProperties * RProperties = static_cast<TRemoteProperties *>(Properties);
   assert(RProperties && !RProperties->Valid.Empty());
-
+  UnicodeString LocalFileName = FileName;
   if (FileName.IsEmpty() && File)
   {
-    FileName = File->GetFileName();
+    LocalFileName = File->GetFileName();
   }
   if (GetOperationProgress() && GetOperationProgress()->Operation == foSetProperties)
   {
     if (GetOperationProgress()->Cancel != csContinue) { Abort(); }
-    GetOperationProgress()->SetFile(FileName);
+    GetOperationProgress()->SetFile(LocalFileName);
   }
   if (GetLog()->GetLogging())
   {
     LogEvent(FORMAT(L"Changing properties of \"%s\" (%s)",
-      FileName.c_str(), BooleanToEngStr(RProperties->Recursive).c_str()));
+      LocalFileName.c_str(), BooleanToEngStr(RProperties->Recursive).c_str()));
     if (RProperties->Valid.Contains(vpRights))
     {
       LogEvent(FORMAT(L" - mode: \"%s\"", RProperties->Rights.GetModeStr().c_str()));
@@ -3111,8 +3113,8 @@ void /* __fastcall */ TTerminal::ChangeFileProperties(UnicodeString FileName,
            dt.c_str()));
     }
   }
-  FileModified(File, FileName);
-  DoChangeFileProperties(FileName, File, RProperties);
+  FileModified(File, LocalFileName);
+  DoChangeFileProperties(LocalFileName, File, RProperties);
   ReactOnCommand(fsChangeProperties);
 }
 //---------------------------------------------------------------------------
@@ -3157,16 +3159,16 @@ bool /* __fastcall */ TTerminal::LoadFilesProperties(TStrings * FileList)
   return Result;
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TTerminal::CalculateFileSize(UnicodeString FileName,
+void /* __fastcall */ TTerminal::CalculateFileSize(const UnicodeString & FileName,
   const TRemoteFile * File, /*TCalculateSizeParams*/ void * Param)
 {
   assert(Param);
   assert(File);
   TCalculateSizeParams * AParams = static_cast<TCalculateSizeParams *>(Param);
-
+  UnicodeString LocalFileName = FileName;
   if (FileName.IsEmpty())
   {
-    FileName = File->GetFileName();
+    LocalFileName = File->GetFileName();
   }
 
   bool AllowTransfer = (AParams->CopyParam == NULL);
@@ -3187,7 +3189,7 @@ void /* __fastcall */ TTerminal::CalculateFileSize(UnicodeString FileName,
     {
       if (!File->GetIsSymLink())
       {
-        LogEvent(FORMAT(L"Getting size of directory \"%s\"", FileName.c_str()));
+        LogEvent(FORMAT(L"Getting size of directory \"%s\"", LocalFileName.c_str()));
         // pass in full path so we get it back in file list for AllowTransfer() exclusion
         DoCalculateDirectorySize(File->GetFullFileName(), File, AParams);
       }
@@ -3220,7 +3222,7 @@ void /* __fastcall */ TTerminal::CalculateFileSize(UnicodeString FileName,
   if (GetOperationProgress() && GetOperationProgress()->Operation == foCalculateSize)
   {
     if (GetOperationProgress()->Cancel != csContinue) { Abort(); }
-    GetOperationProgress()->SetFile(FileName);
+    GetOperationProgress()->SetFile(LocalFileName);
   }
 }
 //---------------------------------------------------------------------------
@@ -3264,8 +3266,8 @@ void /* __fastcall */ TTerminal::CalculateFilesChecksum(const UnicodeString & Al
   FFileSystem->CalculateFilesChecksum(Alg, FileList, Checksums, OnCalculatedChecksum);
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TTerminal::RenameFile(const UnicodeString FileName,
-  const UnicodeString NewName)
+void /* __fastcall */ TTerminal::RenameFile(const UnicodeString & FileName,
+  const UnicodeString & NewName)
 {
   LogEvent(FORMAT(L"Renaming file \"%s\" to \"%s\".", FileName.c_str(), NewName.c_str()));
   DoRenameFile(FileName, NewName, false);
@@ -3273,7 +3275,7 @@ void /* __fastcall */ TTerminal::RenameFile(const UnicodeString FileName,
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::RenameFile(const TRemoteFile * File,
-  const UnicodeString NewName, bool CheckExistence)
+  const UnicodeString & NewName, bool CheckExistence)
 {
   assert(File && File->GetDirectory() == FFiles);
   bool Proceed = true;
@@ -3336,7 +3338,7 @@ void /* __fastcall */ TTerminal::DoRenameFile(const UnicodeString FileName,
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TTerminal::MoveFile(const UnicodeString FileName,
+void /* __fastcall */ TTerminal::MoveFile(const UnicodeString & FileName,
   const TRemoteFile * File, /*const TMoveFileParams*/ void * Param)
 {
   if (GetOperationProgress() &&
@@ -3444,7 +3446,7 @@ void /* __fastcall */ TTerminal::DoCopyFile(const UnicodeString FileName,
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TTerminal::CopyFile(UnicodeString FileName,
+void /* __fastcall */ TTerminal::CopyFile(const UnicodeString & FileName,
   const TRemoteFile * /*File*/, /*const TMoveFileParams*/ void * Param)
 {
   if (GetOperationProgress() && (GetOperationProgress()->Operation == foRemoteCopy))
@@ -4335,7 +4337,7 @@ void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeStri
   );
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TTerminal::SynchronizeCollectFile(const UnicodeString FileName,
+void /* __fastcall */ TTerminal::SynchronizeCollectFile(const UnicodeString & FileName,
   const TRemoteFile * File, /*TSynchronizeData*/ void * Param)
 {
   TSynchronizeData * Data = static_cast<TSynchronizeData *>(Param);
@@ -4729,7 +4731,7 @@ void /* __fastcall */ TTerminal::DoSynchronizeProgress(const TSynchronizeData & 
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TTerminal::SynchronizeLocalTimestamp(const UnicodeString /*FileName*/,
+void /* __fastcall */ TTerminal::SynchronizeLocalTimestamp(const UnicodeString & /*FileName*/,
   const TRemoteFile * File, void * /*Param*/)
 {
   const TSynchronizeChecklist::TItem * ChecklistItem =
@@ -4741,7 +4743,7 @@ void /* __fastcall */ TTerminal::SynchronizeLocalTimestamp(const UnicodeString /
   SetLocalFileTime(LocalFile, ChecklistItem->Remote.Modification);
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TTerminal::SynchronizeRemoteTimestamp(const UnicodeString /*FileName*/,
+void /* __fastcall */ TTerminal::SynchronizeRemoteTimestamp(const UnicodeString & /*FileName*/,
   const TRemoteFile * File, void * /*Param*/)
 {
   const TSynchronizeChecklist::TItem * ChecklistItem =
@@ -4757,7 +4759,7 @@ void /* __fastcall */ TTerminal::SynchronizeRemoteTimestamp(const UnicodeString 
     NULL, &Properties);
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TTerminal::FileFind(UnicodeString FileName,
+void /* __fastcall */ TTerminal::FileFind(const UnicodeString & FileName,
   const TRemoteFile * File, /*TFilesFindParams*/ void * Param)
 {
   // see DoFilesFind
@@ -4769,9 +4771,10 @@ void /* __fastcall */ TTerminal::FileFind(UnicodeString FileName,
 
   if (!AParams->Cancel)
   {
+    UnicodeString LocalFileName = FileName;
     if (FileName.IsEmpty())
     {
-      FileName = File->GetFileName();
+      LocalFileName = File->GetFileName();
     }
 
     TFileMasks::TParams MaskParams;
@@ -4785,7 +4788,7 @@ void /* __fastcall */ TTerminal::FileFind(UnicodeString FileName,
     {
       if (!ImplicitMatch)
       {
-        AParams->OnFileFound(this, FileName, File, AParams->Cancel);
+        AParams->OnFileFound(this, LocalFileName, File, AParams->Cancel);
       }
 
       if (File->GetIsDirectory())

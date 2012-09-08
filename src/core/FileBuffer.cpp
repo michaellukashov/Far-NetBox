@@ -2,7 +2,6 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <Sysutils.hpp>
 #include "Common.h"
 #include "FileBuffer.h"
 //---------------------------------------------------------------------------
@@ -140,7 +139,7 @@ void __fastcall TFileBuffer::Convert(char * Source, char * Dest, int Params,
       }
       else if (*Ptr == Source[0])
       {
-                if ((*Ptr == Dest[0]) && (Index == GetSize() - 1))
+        if ((*Ptr == Dest[0]) && (Index == GetSize() - 1))
         {
           Token = true;
         }

@@ -2608,8 +2608,14 @@ void __fastcall TStoredSessionList::Load(THierarchicalStorage * Storage,
       }
       if (ValidName)
       {
-        if (SessionName == FDefaultSettings->GetName()) { SessionData = FDefaultSettings; }
-          else { SessionData = static_cast<TSessionData*>(FindByName(SessionName)); }
+        if (SessionName == FDefaultSettings->GetName())
+        {
+          SessionData = FDefaultSettings;
+        }
+        else
+        {
+          SessionData = static_cast<TSessionData*>(FindByName(SessionName));
+        }
 
         if ((SessionData != FDefaultSettings) || !UseDefaults)
         {

@@ -2,7 +2,6 @@
 #ifndef ExceptionsH
 #define ExceptionsH
 
-#include <vcl.h>
 #include <Classes.hpp>
 #include <SysUtils.hpp>
 #include <SysInit.hpp>
@@ -114,7 +113,7 @@ public:
   explicit inline /* __fastcall */ ESshTerminate(Exception* E, UnicodeString Msg, TOnceDoneOperation AOperation) :
     EFatal(E, Msg),
     Operation(AOperation)
-  {}
+  { }
 
   virtual ExtException * __fastcall Clone();
 

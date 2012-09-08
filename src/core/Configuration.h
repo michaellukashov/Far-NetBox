@@ -3,8 +3,6 @@
 #define ConfigurationH
 
 #include <set>
-
-#include <vcl.h>
 #include "RemoteFiles.h"
 #include "FileBuffer.h"
 #include "HierarchicalStorage.h"

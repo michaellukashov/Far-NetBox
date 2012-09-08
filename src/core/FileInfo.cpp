@@ -2,11 +2,9 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <Windows.h>
-
 #include <Common.h>
-#include <Sysutils.hpp>
 #include <Exceptions.h>
+#include <Windows.hpp>
 #include "FileInfo.h"
 #include "FileBuffer.h"
 //---------------------------------------------------------------------------

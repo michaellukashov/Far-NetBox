@@ -1,9 +1,9 @@
 //---------------------------------------------------------------------------
 #ifndef GUIToolsH
 #define GUIToolsH
-//---------------------------------------------------------------------------
-#include "boostdefines.hpp"
 
+#include "coredefines.hpp"
+//---------------------------------------------------------------------------
 // from shlobj.h
 #define CSIDL_DESKTOP                   0x0000        // <desktop>
 #define CSIDL_SENDTO                    0x0009        // <user name>\SendTo
@@ -17,11 +17,7 @@
 //---------------------------------------------------------------------------
 class TSessionData;
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
-typedef void __fastcall (__closure* TProcessMessagesEvent)();
-#else
 DEFINE_CALLBACK_TYPE0(TProcessMessagesEvent, void);
-#endif
 //---------------------------------------------------------------------------
 bool __fastcall FindFile(UnicodeString & Path);
 bool __fastcall FileExistsEx(UnicodeString Path);

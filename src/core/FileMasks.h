@@ -3,9 +3,7 @@
 #define FileMasksH
 //---------------------------------------------------------------------------
 #include <vector>
-#include <vcl.h>
 #include <Masks.hpp>
-
 //---------------------------------------------------------------------------
 class EFileMasksException : public Exception
 {
@@ -94,18 +92,12 @@ private:
   struct TMask
   {
     TMask() :
-      // FileNameMask
-      // DirectoryMask
       HighSizeMask(None),
       HighSize(0),
       LowSizeMask(None),
       LowSize(0),
       HighModificationMask(None),
-      // HighModification
       LowModificationMask(None)
-      // LowModification
-      // MaskStr
-      // UserStr
     {}
     TMaskMask FileNameMask;
     TMaskMask DirectoryMask;
@@ -158,14 +150,9 @@ UnicodeString __fastcall MaskFileName(UnicodeString FileName, const UnicodeStrin
 bool __fastcall IsEffectiveFileNameMask(const UnicodeString & Mask);
 UnicodeString __fastcall DelimitFileNameMask(UnicodeString Mask);
 //---------------------------------------------------------------------------
-#ifndef  _MSC_VER
-typedef void __fastcall (__closure * TCustomCommandPatternEvent)
-  (int Index, const UnicodeString Pattern, void * Arg, UnicodeString & Replacement,
-   bool & LastPass);
-#else
-DEFINE_CALLBACK_TYPE5(TCustomCommandPatternEvent, void, int /* Index */, UnicodeString /* Pattern */, void * /* Arg */, UnicodeString & /* Replacement */,
-   bool & /* LastPass */);
-#endif
+DEFINE_CALLBACK_TYPE5(TCustomCommandPatternEvent, void,
+  int /* Index */, const UnicodeString /* Pattern */, void * /* Arg */, UnicodeString & /* Replacement */,
+  bool & /* LastPass */);
 //---------------------------------------------------------------------------
 class TCustomCommand
 {

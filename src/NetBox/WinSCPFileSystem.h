@@ -310,10 +310,10 @@ private:
   void /* __fastcall */ TerminalInformation(TTerminal * Terminal,
     const UnicodeString & Str, bool Status, int Phase);
   void /* __fastcall */ TerminalQueryUser(TObject * Sender,
-    UnicodeString Query, TStrings * MoreMessages, unsigned int Answers,
+    const UnicodeString & Query, TStrings * MoreMessages, unsigned int Answers,
     const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * Arg);
   void /* __fastcall */ TerminalPromptUser(TTerminal * Terminal,
-    TPromptKind Kind, UnicodeString Name, UnicodeString Instructions,
+    TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions,
     TStrings * Prompts, TStrings * Results, bool & Result,
     void * Arg);
   void /* __fastcall */ TerminalDisplayBanner(TTerminal * Terminal,

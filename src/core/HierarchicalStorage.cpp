@@ -36,7 +36,7 @@ UnicodeString __fastcall MungeStr(const UnicodeString Str, bool ForceAnsi)
   // should contain ASCII characters only
   RawByteString Dest;
   Dest.SetLength(Source.Length() * 3 + 1);
-  putty_mungestr(Source.c_str(), (char *)Dest.c_str());
+  putty_mungestr(Source.c_str(), const_cast<char *>(Dest.c_str()));
   PackStr(Dest);
   return UnicodeString(Dest.c_str(), Dest.Length());
 }
@@ -47,7 +47,7 @@ UnicodeString __fastcall UnMungeStr(const UnicodeString Str)
   RawByteString Source = Str;
   RawByteString Dest;
   Dest.SetLength(Source.Length() + 1);
-  putty_unmungestr(Source.c_str(), (char *)Dest.c_str(), Dest.Length());
+  putty_unmungestr(Source.c_str(), const_cast<char *>(Dest.c_str()), Dest.Length());
   UnicodeString Result;
   if (Dest.Pos(Bom.c_str()) == 1)
   {
@@ -733,7 +733,7 @@ bool __fastcall TCustomIniFileStorage::DeleteSubKey(const UnicodeString SubKey)
 void __fastcall TCustomIniFileStorage::GetSubKeyNames(Classes::TStrings* Strings)
 {
   TStrings * Sections = new TStringList();
-  std::auto_ptr<TStringList> SectionsPtr(Sections);
+  std::auto_ptr<TStrings> SectionsPtr(Sections);
   {
     Strings->Clear();
     FIniFile->ReadSections(Sections);
@@ -1009,7 +1009,7 @@ void __fastcall TIniFileStorage::ApplyOverrides()
   UnicodeString OverridesKey = IncludeTrailingBackslash(L"Override");
 
   TStrings * Sections = new TStringList();
-  std::auto_ptr<TStringList> SectionsPtr(Sections);
+  std::auto_ptr<TStrings> SectionsPtr(Sections);
   {
     Sections->Clear();
     FIniFile->ReadSections(Sections);

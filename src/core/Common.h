@@ -3,9 +3,6 @@
 #define CommonH
 
 #include "coredefines.hpp"
-
-#include <Classes.hpp>
-#include <Sysutils.hpp>
 #include "Exceptions.h"
 #include "version.h"
 //---------------------------------------------------------------------------
@@ -108,13 +105,8 @@ LCID __fastcall GetDefaultLCID();
 UnicodeString __fastcall DefaultEncodingName();
 UnicodeString __fastcall WindowsProductName();
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
-typedef void __fastcall (__closure* TProcessLocalFileEvent)
-  (const UnicodeString FileName, const TSearchRec Rec, void * Param);
-#else
 DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
   const UnicodeString & /* FileName */, const TSearchRec & /* Rec */, void * /* Param */);
-#endif
 bool __fastcall FileSearchRec(const UnicodeString FileName, TSearchRec & Rec);
 void __fastcall ProcessLocalDirectory(UnicodeString DirName,
   TProcessLocalFileEvent CallBackFunc, void * Param = NULL, int FindAttrs = -1);
@@ -184,7 +176,7 @@ private:
 #define FAIL assert(false)
 #endif
 #ifndef USEDPARAM
-#define USEDPARAM(p) ((&p) == (&p))
+#define USEDPARAM(p) void(p);
 #endif
 //---------------------------------------------------------------------------
 struct TVersionInfo

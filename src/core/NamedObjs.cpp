@@ -2,10 +2,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <Sysutils.hpp>
-
 #include "NamedObjs.h"
-#include "Common.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
@@ -39,11 +36,11 @@ Integer __fastcall TNamedObject::CompareName(UnicodeString aName,
 {
   if (CaseSensitive)
   {
-    return ::AnsiCompare(GetName(), aName);
+    return GetName().Compare(aName);
   }
   else
   {
-    return ::AnsiCompareIC(GetName(), aName);
+    return GetName().CompareIC(aName);
   }
 }
 //---------------------------------------------------------------------------

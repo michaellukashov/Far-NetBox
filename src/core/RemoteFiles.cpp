@@ -2,10 +2,10 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include "RemoteFiles.h"
+
 #include <SysUtils.hpp>
 
-#include "RemoteFiles.h"
-#include "PuttyIntf.h"
 #include "Common.h"
 #include "Exceptions.h"
 #include "Interface.h"
@@ -48,7 +48,7 @@ bool __fastcall UnixIsChildPath(UnicodeString Parent, UnicodeString Child)
 //---------------------------------------------------------------------------
 UnicodeString __fastcall UnixExtractFileDir(const UnicodeString Path)
 {
-  int Pos = Path.LastDelimiter(L"/");
+  int Pos = Path.LastDelimiter(L'/');
   // it used to return Path when no slash was found
   if (Pos > 1)
   {
@@ -63,14 +63,14 @@ UnicodeString __fastcall UnixExtractFileDir(const UnicodeString Path)
 // must return trailing backslash
 UnicodeString __fastcall UnixExtractFilePath(const UnicodeString Path)
 {
-  int Pos = Path.LastDelimiter(L"/");
+  int Pos = Path.LastDelimiter(L'/');
   // it used to return Path when no slash was found
   return (Pos > 0) ? Path.SubString(1, Pos) : UnicodeString();
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall UnixExtractFileName(const UnicodeString Path)
 {
-  int Pos = Path.LastDelimiter(L"/");
+  int Pos = Path.LastDelimiter(L'/');
   UnicodeString Result;
   if (Pos > 0)
   {
@@ -878,8 +878,14 @@ Boolean __fastcall TRemoteFile::GetIsInaccesibleDirectory() const
 //---------------------------------------------------------------------------
 wchar_t __fastcall TRemoteFile::GetType() const
 {
-  if (GetIsSymLink() && FLinkedFile) { return FLinkedFile->GetType(); }
-    else { return FType; }
+  if (GetIsSymLink() && FLinkedFile)
+  {
+    return FLinkedFile->GetType();
+  }
+  else
+  {
+     return FType;
+  }
 }
 //---------------------------------------------------------------------------
 void __fastcall TRemoteFile::SetType(wchar_t AType)

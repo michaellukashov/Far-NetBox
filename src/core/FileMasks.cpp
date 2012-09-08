@@ -3,6 +3,7 @@
 #pragma hdrstop
 
 #include "FileMasks.h"
+
 #include "Common.h"
 #include "TextsCore.h"
 #include "RemoteFiles.h"
@@ -14,18 +15,6 @@ static UnicodeString FileMasksDelimiters = L";,";
 static UnicodeString AllFileMasksDelimiters = FileMasksDelimiters + IncludeExcludeFileMasksDelimiter;
 static UnicodeString DirectoryMaskDelimiters = L"/\\";
 static UnicodeString FileMasksDelimiterStr = UnicodeString(FileMasksDelimiters[1]) + L' ';
-//---------------------------------------------------------------------------
-
-namespace Masks
-{
-
-bool TMask::GetMatches(const UnicodeString Str)
-{
-  return AnsiCompareIC(FMask, Str) == 0;
-}
-
-} // namespace Masks
-
 //---------------------------------------------------------------------------
 /* __fastcall */ EFileMasksException::EFileMasksException(
     UnicodeString Message, int AErrorStart, int AErrorLen) :
@@ -592,7 +581,7 @@ void __fastcall TFileMasks::CreateMask(
         Boundary = TMask::Open;
       }
 
-      TFormatSettings FormatSettings(GetDefaultLCID());
+      TFormatSettings FormatSettings = TFormatSettings::Create(GetDefaultLCID());
       FormatSettings.DateSeparator = L'-';
       FormatSettings.TimeSeparator = L':';
       FormatSettings.ShortDateFormat = L"yyyy/mm/dd";

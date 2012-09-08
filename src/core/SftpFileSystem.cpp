@@ -2,7 +2,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <Sysutils.hpp>
+#include "SftpFileSystem.h"
 
 #include "SftpFileSystem.h"
 #include "PuttyTools.h"
@@ -173,9 +173,7 @@ const int tfNewDirectory = 0x02;
 //---------------------------------------------------------------------------
 #define SFTP_PACKET_ALLOC_DELTA 256
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #pragma warn -inl
-#endif
 //---------------------------------------------------------------------------
 struct TSFTPSupport
 {
@@ -807,15 +805,15 @@ public:
         else
         {
           Byte[1] = C;
-          assert(FLength < GetCapacity());
-          GetData()[FLength] = HexToByte(UnicodeString(reinterpret_cast<char *>(Byte)));
+          assert(Length < GetCapacity());
+          GetData()[Length] = HexToByte(UnicodeString(reinterpret_cast<char *>(Byte)));
           Length++;
           memset(Byte, '\0', sizeof(Byte));
         }
       }
       Index++;
     }
-    DataUpdated(FLength);
+    DataUpdated(Length);
   }
 
   UnicodeString __fastcall Dump() const
@@ -5389,6 +5387,7 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
           THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFullName, Attrs | NewAttrs) == 0);
         );
       }
+
     }
     ,
     {
@@ -5425,7 +5424,7 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TSFTPFileSystem::SFTPSinkFile(UnicodeString FileName,
+void /* __fastcall */ TSFTPFileSystem::SFTPSinkFile(const UnicodeString & FileName,
   const TRemoteFile * File, void * Param)
 {
   TSinkFileParams * Params = static_cast<TSinkFileParams *>(Param);

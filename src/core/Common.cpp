@@ -18,6 +18,8 @@
 #include <shlobj.h>
 
 #ifdef _MSC_VER
+#include "FarPlugin.h"
+
 namespace alg = boost::algorithm;
 #endif
 //---------------------------------------------------------------------------

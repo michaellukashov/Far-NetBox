@@ -2,9 +2,8 @@
 #ifndef SynchronizeControllerH
 #define SynchronizeControllerH
 //---------------------------------------------------------------------------
-#include "boostdefines.hpp"
-
 #include <CopyParam.h>
+#include "coredefines.hpp"
 //---------------------------------------------------------------------------
 struct TSynchronizeParamType
 {
@@ -17,33 +16,10 @@ struct TSynchronizeParamType
 class TSynchronizeController;
 struct TSynchronizeOptions;
 class TSynchronizeChecklist;
-#ifndef _MSC_VER
-typedef void __fastcall (__closure * TSynchronizeAbortEvent)
-  (System::TObject * Sender, bool Close);
-typedef void __fastcall (__closure * TSynchronizeThreadsEvent)
-  (TObject* Sender, TThreadMethodEvent Method);
-enum TSynchronizeLogEntry { slScan, slStart, slChange, slUpload, slDelete, slDirChange };
-typedef void __fastcall (__closure * TSynchronizeLogEvent)
-  (TSynchronizeController * Controller, TSynchronizeLogEntry Entry, const UnicodeString Message);
-typedef void __fastcall (__closure * TSynchronizeStartStopEvent)
-  (System::TObject * Sender, bool Start, const TSynchronizeParamType & Params,
-   const TCopyParamType & CopyParam, TSynchronizeOptions * Options,
-   TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
-   TSynchronizeLogEvent OnSynchronizeLog);
-typedef void __fastcall (__closure * TSynchronizeEvent)
-  (TSynchronizeController * Sender, const UnicodeString LocalDirectory,
-   const UnicodeString RemoteDirectory, const TCopyParamType & CopyParam,
-   const TSynchronizeParamType & Params, TSynchronizeChecklist ** Checklist,
-   TSynchronizeOptions * Options, bool Full);
-typedef void __fastcall (__closure * TSynchronizeInvalidEvent)
-  (TSynchronizeController * Sender, const UnicodeString Directory, const UnicodeString ErrorStr);
-typedef void __fastcall (__closure * TSynchronizeTooManyDirectoriesEvent)
-  (TSynchronizeController * Sender, int & MaxDirectories);
-#else
 DEFINE_CALLBACK_TYPE2(TSynchronizeAbortEvent, void,
   TObject * /* Sender */, bool /* Close */);
 DEFINE_CALLBACK_TYPE2(TSynchronizeThreadsEvent, void,
-  TObject* /* Sender */, TThreadMethodEvent /* Method */);
+  TObject * /* Sender */, TThreadMethod /* Method */);
 enum TSynchronizeLogEntry { slScan, slStart, slChange, slUpload, slDelete, slDirChange };
 DEFINE_CALLBACK_TYPE3(TSynchronizeLogEvent, void,
   TSynchronizeController * /* Controller */, TSynchronizeLogEntry /* Entry */, const UnicodeString & /* Message */);
@@ -61,7 +37,6 @@ DEFINE_CALLBACK_TYPE3(TSynchronizeInvalidEvent, void,
   TSynchronizeController * /* Sender */, const UnicodeString & /* Directory */, const UnicodeString & /* ErrorStr */);
 DEFINE_CALLBACK_TYPE2(TSynchronizeTooManyDirectoriesEvent, void,
   TSynchronizeController * /* Sender */, int & /* MaxDirectories */);
-#endif
 //---------------------------------------------------------------------------
 namespace Discmon
 {

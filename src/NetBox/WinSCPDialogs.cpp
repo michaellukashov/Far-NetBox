@@ -7745,7 +7745,7 @@ protected:
   void /* __fastcall */ DoAbort(TObject * Sender, bool Close);
   void /* __fastcall */ DoLog(TSynchronizeController * Controller,
     TSynchronizeLogEntry Entry, const UnicodeString & Message);
-  void /* __fastcall */ DoSynchronizeThreads(TObject * Sender, TThreadMethodEvent slot);
+  void /* __fastcall */ DoSynchronizeThreads(TObject * Sender, TThreadMethod slot);
   virtual intptr_t __fastcall DialogProc(int Msg, int Param1, intptr_t Param2);
   virtual bool __fastcall CloseQuery();
   virtual bool __fastcall Key(TFarDialogItem * Item, long KeyCode);
@@ -7993,7 +7993,7 @@ void /* __fastcall */ TSynchronizeDialog::DoStartStop(bool Start, bool Synchroni
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TSynchronizeDialog::DoSynchronizeThreads(TObject * /*Sender*/,
-    TThreadMethodEvent slot)
+    TThreadMethod slot)
 {
   if (FStarted)
   {

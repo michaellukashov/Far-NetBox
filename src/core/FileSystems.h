@@ -4,7 +4,6 @@
 
 #include <SessionInfo.h>
 #include "Exceptions.h"
-#include "Terminal.h"
 //---------------------------------------------------------------------------
 class TTerminal;
 class TRights;
@@ -14,9 +13,6 @@ class TCopyParamType;
 struct TSpaceAvailable;
 class TFileOperationProgressType;
 class TRemoteProperties;
-class TSecureShell;
-//---------------------------------------------------------------------------
-enum TOverwriteMode { omOverwrite, omAppend, omResume };
 //---------------------------------------------------------------------------
 enum TFSCommand { fsNull = 0, fsVarValue, fsLastLine, fsFirstLine,
   fsCurrentDirectory, fsChangeDirectory, fsListDirectory, fsListCurrentDirectory,
@@ -28,6 +24,8 @@ enum TFSCommand { fsNull = 0, fsVarValue, fsLastLine, fsFirstLine,
 const int dfNoRecursive = 0x01;
 const int dfAlternative = 0x02;
 const int dfForceDelete = 0x04;
+//---------------------------------------------------------------------------
+enum TOverwriteMode { omOverwrite, omAppend, omResume };
 //---------------------------------------------------------------------------
 const int tfFirstLevel =   0x01;
 const int tfAutoResume = 0x02;

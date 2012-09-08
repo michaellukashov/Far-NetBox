@@ -5,10 +5,8 @@
 #include <Common.h>
 #include <RemoteFiles.h>
 #include <Terminal.h>
-#ifndef _MSC_VER
 #include <DiscMon.hpp>
 #include <Exceptions.h>
-#endif
 #include "GUIConfiguration.h"
 #include "CoreMain.h"
 #include "TextsCore.h"

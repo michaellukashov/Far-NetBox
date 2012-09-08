@@ -13875,7 +13875,7 @@ void __fastcall TWebDAVFileSystem::Sink(const UnicodeString FileName,
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWebDAVFileSystem::SinkFile(const UnicodeString FileName,
+void /* __fastcall */ TWebDAVFileSystem::SinkFile(const UnicodeString & FileName,
     const TRemoteFile * File, void * Param)
 {
   TSinkFileParams * Params = static_cast<TSinkFileParams *>(Param);

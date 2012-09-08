@@ -1,9 +1,6 @@
 #ifndef FileInfoH
 #define FileInfoH
 
-#include <vcl.h>
-#include <Sysutils.hpp>
-
 struct TTranslation {
   Word Language, CharSet;
 };

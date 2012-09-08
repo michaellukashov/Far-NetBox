@@ -2,14 +2,9 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <Sysutils.hpp>
-
 #include "Common.h"
 #include "Exceptions.h"
-#include "Common.h"
 #include "TextsCore.h"
-#include "Terminal.h"
-
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------

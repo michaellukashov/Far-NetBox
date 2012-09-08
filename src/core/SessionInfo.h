@@ -2,8 +2,6 @@
 #ifndef SessionInfoH
 #define SessionInfoH
 
-#include <vcl.h>
-
 #include "SessionData.h"
 #include "Interface.h"
 //---------------------------------------------------------------------------
@@ -76,17 +74,10 @@ public:
 enum TLogLineType { llOutput, llInput, llStdError, llMessage, llException };
 enum TLogAction { laUpload, laDownload, laTouch, laChmod, laMkdir, laRm, laMv, laCall, laLs, laStat };
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
-typedef void __fastcall (__closure *TCaptureOutputEvent)(
-  const UnicodeString & Str, bool StdError);
-typedef void __fastcall (__closure *TCalculatedChecksumEvent)(
-  const UnicodeString & FileName, const UnicodeString & Alg, const UnicodeString & Hash);
-#else
 DEFINE_CALLBACK_TYPE2(TCaptureOutputEvent, void,
   const UnicodeString & /* Str */, bool /* StdError */);
 DEFINE_CALLBACK_TYPE3(TCalculatedChecksumEvent, void,
   const UnicodeString & /* FileName */, const UnicodeString & /* Alg */, const UnicodeString & /* Hash */);
-#endif
 //---------------------------------------------------------------------------
 class TSessionActionRecord;
 class TActionLog;
@@ -282,7 +273,6 @@ public:
   bool __fastcall GetLoggingToFile();
   UnicodeString __fastcall GetSessionName();
   void __fastcall DoAdd(TLogLineType Type, UnicodeString Line,
-    // void __fastcall (__closure *f)(TLogLineType Type, const UnicodeString & Line));
     TDoAddLogEvent Event);
   void /* __fastcall */ DoAddToParent(TLogLineType aType, const UnicodeString & aLine);
   void /* __fastcall */ DoAddToSelf(TLogLineType aType, const UnicodeString & aLine);

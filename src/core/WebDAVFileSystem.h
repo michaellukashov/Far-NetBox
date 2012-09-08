@@ -101,7 +101,7 @@ protected:
     const TRemoteFile * File, const UnicodeString TargetDir,
     const TCopyParamType * CopyParam, int Params,
     TFileOperationProgressType * OperationProgress, unsigned int Flags);
-  void /* __fastcall */ SinkFile(const UnicodeString FileName, const TRemoteFile * File, void * Param);
+  void /* __fastcall */ SinkFile(const UnicodeString & FileName, const TRemoteFile * File, void * Param);
   void __fastcall WebDAVSourceRobust(const UnicodeString FileName,
     const TRemoteFile * File,
     const UnicodeString TargetDir, const TCopyParamType * CopyParam, int Params,

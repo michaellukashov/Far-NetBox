@@ -2,7 +2,6 @@
 #ifndef QueueH
 #define QueueH
 //---------------------------------------------------------------------------
-
 #include "Terminal.h"
 #include "FileOperationProgress.h"
 //---------------------------------------------------------------------------
@@ -62,15 +61,6 @@ class TTerminalQueue;
 class TQueueItemProxy;
 class TTerminalQueueStatus;
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
-typedef void __fastcall (__closure * TQueueListUpdate)
-  (TTerminalQueue * Queue);
-typedef void __fastcall (__closure * TQueueItemUpdateEvent)
-  (TTerminalQueue * Queue, TQueueItem * Item);
-enum TQueueEvent { qeEmpty, qePendingUserAction };
-typedef void __fastcall (__closure * TQueueEventEvent)
-  (TTerminalQueue * Queue, TQueueEvent Event);
-#else
 DEFINE_CALLBACK_TYPE1(TQueueListUpdateEvent, void,
   TTerminalQueue * /* Queue */);
 DEFINE_CALLBACK_TYPE2(TQueueItemUpdateEvent, void,
@@ -78,7 +68,6 @@ DEFINE_CALLBACK_TYPE2(TQueueItemUpdateEvent, void,
 enum TQueueEvent { qeEmpty, qePendingUserAction };
 DEFINE_CALLBACK_TYPE2(TQueueEventEvent, void,
   TTerminalQueue * /* Queue */, TQueueEvent /* Event */);
-#endif
 //---------------------------------------------------------------------------
 class TTerminalQueue : public TSignalThread
 {
@@ -101,7 +90,7 @@ public:
   __property TQueryUserEvent OnQueryUser = { read = FOnQueryUser, write = FOnQueryUser };
   __property TPromptUserEvent OnPromptUser = { read = FOnPromptUser, write = FOnPromptUser };
   __property TExtendedExceptionEvent OnShowExtendedException = { read = FOnShowExtendedException, write = FOnShowExtendedException };
-  __property TQueueListUpdate OnListUpdate = { read = FOnListUpdate, write = FOnListUpdate };
+  __property TQueueListUpdateEvent OnListUpdate = { read = FOnListUpdate, write = FOnListUpdate };
   __property TQueueItemUpdateEvent OnQueueItemUpdate = { read = FOnQueueItemUpdate, write = FOnQueueItemUpdate };
   __property TQueueEventEvent OnEvent = { read = FOnEvent, write = FOnEvent };
 #else
@@ -233,7 +222,7 @@ protected:
   virtual UnicodeString __fastcall StartupDirectory() = 0;
 };
 //---------------------------------------------------------------------------
-class TQueueItemProxy
+class TQueueItemProxy : public TObject
 {
 friend class TQueueItem;
 friend class TTerminalQueueStatus;
@@ -443,10 +432,10 @@ private:
   void /* __fastcall */ TerminalInformation(
     TTerminal * Terminal, const UnicodeString & Str, bool Status, int Phase);
   void /* __fastcall */ TerminalQueryUser(TObject * Sender,
-    const UnicodeString Query, TStrings * MoreMessages, unsigned int Answers,
+    const UnicodeString & Query, TStrings * MoreMessages, unsigned int Answers,
     const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * Arg);
   void /* __fastcall */ TerminalPromptUser(TTerminal * Terminal, TPromptKind Kind,
-    UnicodeString Name, UnicodeString Instructions,
+    const UnicodeString & Name, const UnicodeString & Instructions,
     TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
   void /* __fastcall */ TerminalShowExtendedException(TTerminal * Terminal,
     Exception * E, void * Arg);

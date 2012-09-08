@@ -10,7 +10,6 @@
 #include "HelpCore.h"
 #include "Common.h"
 #include "CoreMain.h"
-#include "FileSystems.h"
 
 #ifndef AUTO_WINSOCK
 #include <winsock2.h>
@@ -829,7 +828,7 @@ Integer __fastcall TSecureShell::Receive(unsigned char * Buf, Integer Len)
 UnicodeString __fastcall TSecureShell::ReceiveLine()
 {
   unsigned Index = 0;
-  std::string Line;
+  AnsiString Line;
   Boolean EOL = False;
 
   do
@@ -844,8 +843,8 @@ UnicodeString __fastcall TSecureShell::ReceiveLine()
         Index++;
       }
       EOL = static_cast<Boolean>(Index && (Pending[Index-1] == '\n'));
-      Integer PrevLen = Line.size();
-      Line.resize(PrevLen + Index);
+      Integer PrevLen = Line.Length();
+      Line.SetLength(PrevLen + Index);
       Receive(reinterpret_cast<unsigned char *>(const_cast<char *>(Line.c_str())) + PrevLen, Index);
     }
 
@@ -862,7 +861,7 @@ UnicodeString __fastcall TSecureShell::ReceiveLine()
   while (!EOL);
 
   // We don't want end-of-line character
-  Line.resize(Line.size()-1);
+  Line.SetLength(Line.Length()-1);
 
   // UnicodeString UnicodeLine = Line;
   UnicodeString UnicodeLine = ::TrimRight(MB2W(Line.c_str(), FSessionData->GetCodePageAsNumber()));

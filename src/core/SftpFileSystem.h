@@ -183,7 +183,7 @@ protected:
     const TCopyParamType * CopyParam, int Params,
     TFileOperationProgressType * OperationProgress, unsigned int Flags,
     TDownloadSessionAction & Action, bool & ChildError);
-  void /* __fastcall */ SFTPSinkFile(UnicodeString FileName,
+  void /* __fastcall */ SFTPSinkFile(const UnicodeString & FileName,
     const TRemoteFile * File, void * Param);
   char * __fastcall GetEOL() const;
   inline void __fastcall BusyStart();

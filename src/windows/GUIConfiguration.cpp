@@ -642,16 +642,7 @@ UnicodeString __fastcall TGUIConfiguration::PropertyToKey(const UnicodeString Pr
 // duplicated from core\configuration.cpp
 #undef BLOCK
 #define BLOCK(KEY, CANCREATE, BLOCK) \
-  if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
-  TRY_FINALLY1 (Storage, \
-  { \
-    BLOCK \
-  } \
-  , \
-  { \
-    Storage->CloseSubKey(); \
-  } \
-  );
+  if (Storage->OpenSubKey(KEY, CANCREATE, true)) TRY_FINALLY1 (Storage, { BLOCK  } , { Storage->CloseSubKey(); } );
 #undef REGCONFIG
 #define REGCONFIG(CANCREATE) \
   BLOCK(L"Interface", CANCREATE, \
@@ -774,17 +765,15 @@ void __fastcall TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   }
 
   if (Storage->OpenSubKey(L"Interface\\NewDirectory", false, true))
+  TRY_FINALLY1 (Storage,
   {
-    TRY_FINALLY1 (Storage,
-    {
-      FNewDirectoryProperties.Load(Storage);
-    }
-    ,
-    {
-      Storage->CloseSubKey();
-    }
-    );
+    FNewDirectoryProperties.Load(Storage);
   }
+  ,
+  {
+    Storage->CloseSubKey();
+  }
+  );
 }
 //---------------------------------------------------------------------------
 void __fastcall TGUIConfiguration::Saved()
@@ -968,7 +957,8 @@ TStrings * __fastcall TGUIConfiguration::GetLocales()
 {
   Error(SNotImplemented, 93);
   UnicodeString LocalesExts;
-  std::auto_ptr<TStringList> Exts(new TStringList());
+  TStringList * Exts = new TStringList();
+  std::auto_ptr<TStringList> ExtsPtr(Exts);
   {
     Exts->SetSorted(true);
     Exts->SetCaseSensitive(false);

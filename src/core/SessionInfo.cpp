@@ -585,7 +585,7 @@ TFileSystemInfo::TFileSystemInfo()
 FILE * __fastcall OpenFile(UnicodeString LogFileName, TSessionData * SessionData, bool Append, UnicodeString & NewFileName)
 {
   FILE * Result;
-  UnicodeString ANewFileName = GetExpandedLogFileName(LogFileName, SessionData);
+  UnicodeString ANewFileName = StripPathQuotes(GetExpandedLogFileName(LogFileName, SessionData));
   // Result = _wfopen(ANewFileName.c_str(), (Append ? L"a" : L"w"));
   Result = _fsopen(W2MB(ANewFileName.c_str()).c_str(),
     Append ? "a" : "w", SH_DENYWR); // _SH_DENYNO); // 
@@ -697,7 +697,6 @@ void /* __fastcall */ TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeS
 }
 //---------------------------------------------------------------------------
 void __fastcall TSessionLog::DoAdd(TLogLineType Type, UnicodeString Line,
-  // void __fastcall (__closure *f)(TLogLineType Type, const UnicodeString & Line))
   TDoAddLogEvent Event)
 {
   UnicodeString Prefix;
@@ -851,7 +850,7 @@ void __fastcall TSessionLog::DeleteUnnecessary()
   {
     if (!GetLogging() || (FParent != NULL))
     {
-        Clear();
+      Clear();
     }
     else
     {

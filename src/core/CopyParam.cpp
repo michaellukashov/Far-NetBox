@@ -2,14 +2,11 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <Sysutils.hpp>
-
 #include "Common.h"
 #include "Exceptions.h"
 #include "CopyParam.h"
 #include "HierarchicalStorage.h"
 #include "TextsCore.h"
-#include "Exceptions.h"
 //---------------------------------------------------------------------------
 /* __fastcall */ TCopyParamType::TCopyParamType()
 {

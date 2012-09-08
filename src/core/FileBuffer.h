@@ -2,17 +2,11 @@
 #ifndef FileBufferH
 #define FileBufferH
 
-#include <vcl.h>
-#include <Classes.hpp>
+#include <classes.hpp>
 //---------------------------------------------------------------------------
 enum TEOLType { eolLF /* \n */, eolCRLF /* \r\n */, eolCR /* \r */ };
 const int cpRemoveCtrlZ = 0x01;
 const int cpRemoveBOM =   0x02;
-//---------------------------------------------------------------------------
-#ifndef _MSC_VER
-class TStream;
-class TMemoryStream;
-#endif
 //---------------------------------------------------------------------------
 class TFileBuffer
 {
@@ -49,9 +43,7 @@ public:
   void __fastcall SetPosition(__int64 value);
   __int64 __fastcall GetPosition() const;
 };
-
 //---------------------------------------------------------------------------
-
 class TSafeHandleStream : public THandleStream
 {
 public:
@@ -60,7 +52,6 @@ public:
   virtual __int64 __fastcall Read(void * Buffer, __int64 Count);
   virtual __int64 __fastcall Write(const void * Buffer, __int64 Count);
 };
-
 //---------------------------------------------------------------------------
 char * __fastcall EOLToStr(TEOLType EOLType);
 //---------------------------------------------------------------------------

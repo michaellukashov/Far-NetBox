@@ -2,13 +2,10 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <Sysutils.hpp>
-
 #include "Common.h"
 #include "Terminal.h"
 #include "Queue.h"
 #include "Exceptions.h"
-#include "CoreMain.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
@@ -295,10 +292,10 @@ protected:
   bool __fastcall OverrideItemStatus(TQueueItem::TStatus & ItemStatus);
 
   void /* __fastcall */ TerminalQueryUser(TObject * Sender,
-    const UnicodeString Query, TStrings * MoreMessages, unsigned int Answers,
+    const UnicodeString & Query, TStrings * MoreMessages, unsigned int Answers,
     const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * Arg);
   void /* __fastcall */ TerminalPromptUser(TTerminal * Terminal, TPromptKind Kind,
-    UnicodeString Name, UnicodeString Instructions,
+    const UnicodeString & Name, const UnicodeString & Instructions,
     TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
   void /* __fastcall */ TerminalShowExtendedException(TTerminal * Terminal,
     Exception * E, void * Arg);
@@ -572,7 +569,7 @@ void __fastcall TTerminalQueue::TerminalFinished(TTerminalItem * TerminalItem)
     {
       TGuard Guard(FItemsSection);
 
-      int Index = FTerminals->IndexOf(static_cast<TObject *>(TerminalItem));
+      int Index = FTerminals->IndexOf(TerminalItem);
       assert(Index >= 0);
 
       if (Index < FFreeTerminals)
@@ -588,7 +585,7 @@ void __fastcall TTerminalQueue::TerminalFinished(TTerminalItem * TerminalItem)
         FTemporaryTerminals--;
       }
 
-      FTerminals->Extract(static_cast<TObject *>(TerminalItem));
+      FTerminals->Extract(TerminalItem);
 
       delete TerminalItem;
     }
@@ -606,7 +603,7 @@ bool __fastcall TTerminalQueue::TerminalFree(TTerminalItem * TerminalItem)
     {
       TGuard Guard(FItemsSection);
 
-      int Index = FTerminals->IndexOf(static_cast<TObject *>(TerminalItem));
+      int Index = FTerminals->IndexOf(TerminalItem);
       assert(Index >= 0);
       assert(Index >= FFreeTerminals);
 
@@ -633,7 +630,7 @@ void __fastcall TTerminalQueue::AddItem(TQueueItem * Item)
   {
     TGuard Guard(FItemsSection);
 
-    FItems->Add(static_cast<TObject *>(Item));
+    FItems->Add(Item);
     Item->FQueue = this;
   }
 
@@ -649,11 +646,11 @@ void __fastcall TTerminalQueue::RetryItem(TQueueItem * Item)
     {
       TGuard Guard(FItemsSection);
 
-      int Index = FItems->Remove(static_cast<TObject *>(Item));
+      int Index = FItems->Remove(Item);
       assert(Index < FItemsInProcess);
       USEDPARAM(Index);
       FItemsInProcess--;
-      FItems->Add(static_cast<TObject *>(Item));
+      FItems->Add(Item);
     }
 
     DoListUpdate();
@@ -673,7 +670,7 @@ void __fastcall TTerminalQueue::DeleteItem(TQueueItem * Item)
 
       // does this need to be within guard?
       Monitored = (Item->GetCompleteEvent() != INVALID_HANDLE_VALUE);
-      int Index = FItems->Remove(static_cast<TObject *>(Item));
+      int Index = FItems->Remove(Item);
       assert(Index < FItemsInProcess);
       USEDPARAM(Index);
       FItemsInProcess--;
@@ -769,7 +766,7 @@ bool __fastcall TTerminalQueue::ItemGetData(TQueueItem * Item,
   {
     TGuard Guard(FItemsSection);
 
-    Result = (FItems->IndexOf(static_cast<TObject *>(Item)) >= 0);
+    Result = (FItems->IndexOf(Item) >= 0);
     if (Result)
     {
       Item->GetData(Proxy);
@@ -790,7 +787,7 @@ bool __fastcall TTerminalQueue::ItemProcessUserAction(TQueueItem * Item, void * 
     {
       TGuard Guard(FItemsSection);
 
-      Result = (FItems->IndexOf(static_cast<TObject *>(Item)) >= 0) &&
+      Result = (FItems->IndexOf(Item) >= 0) &&
         TQueueItem::IsUserActionStatus(Item->GetStatus());
       if (Result)
       {
@@ -816,8 +813,8 @@ bool __fastcall TTerminalQueue::ItemMove(TQueueItem * Item, TQueueItem * BeforeI
     {
       TGuard Guard(FItemsSection);
 
-      int Index = FItems->IndexOf(static_cast<TObject *>(Item));
-      int IndexDest = FItems->IndexOf(static_cast<TObject *>(BeforeItem));
+      int Index = FItems->IndexOf(Item);
+      int IndexDest = FItems->IndexOf(BeforeItem);
       Result = (Index >= 0) && (IndexDest >= 0) &&
         (Item->GetStatus() == TQueueItem::qsPending) &&
         (BeforeItem->GetStatus() == TQueueItem::qsPending);
@@ -846,7 +843,7 @@ bool __fastcall TTerminalQueue::ItemExecuteNow(TQueueItem * Item)
     {
       TGuard Guard(FItemsSection);
 
-      int Index = FItems->IndexOf(static_cast<TObject *>(Item));
+      int Index = FItems->IndexOf(Item);
       Result = (Index >= 0) && (Item->GetStatus() == TQueueItem::qsPending) &&
         // prevent double-initiation when "execute" is clicked twice too fast
         (Index >= FItemsInProcess);
@@ -890,7 +887,7 @@ bool __fastcall TTerminalQueue::ItemDelete(TQueueItem * Item)
     {
       TGuard Guard(FItemsSection);
 
-      int Index = FItems->IndexOf(static_cast<TObject *>(Item));
+      int Index = FItems->IndexOf(Item);
       Result = (Index >= 0);
       if (Result)
       {
@@ -928,7 +925,7 @@ bool __fastcall TTerminalQueue::ItemPause(TQueueItem * Item, bool Pause)
     {
       TGuard Guard(FItemsSection);
 
-      Result = (FItems->IndexOf(static_cast<TObject *>(Item)) >= 0) &&
+      Result = (FItems->IndexOf(Item) >= 0) &&
         ((Pause && (Item->GetStatus() == TQueueItem::qsProcessing)) ||
          (!Pause && (Item->GetStatus() == TQueueItem::qsPaused)));
       if (Result)
@@ -961,7 +958,7 @@ bool __fastcall TTerminalQueue::ItemSetCPSLimit(TQueueItem * Item, unsigned long
   {
     TGuard Guard(FItemsSection);
 
-    Result = (FItems->IndexOf(static_cast<TObject *>(Item)) >= 0);
+    Result = (FItems->IndexOf(Item) >= 0);
     if (Result)
     {
       Item->SetCPSLimit(CPSLimit);
@@ -1400,7 +1397,7 @@ void __fastcall TTerminalItem::Finished()
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminalItem::TerminalQueryUser(TObject * Sender,
-  const UnicodeString Query, TStrings * MoreMessages, unsigned int Answers,
+  const UnicodeString & Query, TStrings * MoreMessages, unsigned int Answers,
   const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * Arg)
 {
   // so far query without queue item can occur only for key cofirmation
@@ -1433,7 +1430,7 @@ void /* __fastcall */ TTerminalItem::TerminalQueryUser(TObject * Sender,
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminalItem::TerminalPromptUser(TTerminal * Terminal,
-  TPromptKind Kind, UnicodeString Name, UnicodeString Instructions, TStrings * Prompts,
+  TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
   TStrings * Results, bool & Result, void * Arg)
 {
   if (FItem == NULL)
@@ -1773,7 +1770,7 @@ bool __fastcall TQueueItemProxy::SetCPSLimit(unsigned long CPSLimit)
 int __fastcall TQueueItemProxy::GetIndex()
 {
   assert(FQueueStatus != NULL);
-  int Index = FQueueStatus->FList->IndexOf(static_cast<TObject *>(static_cast<void *>(this)));
+  int Index = FQueueStatus->FList->IndexOf(this);
   assert(Index >= 0);
   return Index;
 }
@@ -1821,13 +1818,13 @@ int __fastcall TTerminalQueueStatus::GetActiveCount()
 void __fastcall TTerminalQueueStatus::Add(TQueueItemProxy * ItemProxy)
 {
   ItemProxy->FQueueStatus = this;
-  FList->Add(static_cast<TObject *>(static_cast<void *>(ItemProxy)));
+  FList->Add(ItemProxy);
   ResetStats();
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminalQueueStatus::Delete(TQueueItemProxy * ItemProxy)
 {
-  FList->Extract(static_cast<TObject *>(static_cast<void *>(ItemProxy)));
+  FList->Extract(ItemProxy);
   ItemProxy->FQueueStatus = NULL;
   ResetStats();
 }
@@ -2026,11 +2023,11 @@ void __fastcall TDownloadQueueItem::DoExecute(TTerminal * Terminal)
 /* __fastcall */ TTerminalThread::TTerminalThread(TTerminal * Terminal) :
   TSignalThread(), FTerminal(Terminal)
 {
-  // FAction = NULL;
+  FAction = NULL;
   FActionEvent = CreateEvent(NULL, false, false, NULL);
   FException = NULL;
   FIdleException = NULL;
-  // FOnIdle = NULL;
+  FOnIdle = NULL;
   FUserAction = NULL;
   FCancel = false;
   FCancelled = false;
@@ -2413,7 +2410,7 @@ void  /* __fastcall */ TTerminalThread::TerminalInformation(
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminalThread::TerminalQueryUser(TObject * Sender,
-  const UnicodeString Query, TStrings * MoreMessages, unsigned int Answers,
+  const UnicodeString & Query, TStrings * MoreMessages, unsigned int Answers,
   const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * Arg)
 {
   USEDPARAM(Arg);
@@ -2443,7 +2440,7 @@ void /* __fastcall */ TTerminalThread::TerminalQueryUser(TObject * Sender,
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminalThread::TerminalPromptUser(TTerminal * Terminal,
-  TPromptKind Kind, UnicodeString Name, UnicodeString Instructions, TStrings * Prompts,
+  TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
   TStrings * Results, bool & Result, void * Arg)
 {
   USEDPARAM(Arg);

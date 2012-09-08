@@ -2,9 +2,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <Sysutils.hpp>
-
-#include "Common.h"
+#include <Common.h>
 #include "Option.h"
 #include "TextsCore.h"
 //---------------------------------------------------------------------------

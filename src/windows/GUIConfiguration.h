@@ -74,9 +74,9 @@ struct TCopyParamRuleData
 class TCopyParamRule
 {
 public:
-  /* __fastcall */ TCopyParamRule();
+  explicit /* __fastcall */ TCopyParamRule();
   explicit /* __fastcall */ TCopyParamRule(const TCopyParamRuleData & Data);
-  /* __fastcall */ TCopyParamRule(const TCopyParamRule & Source);
+  explicit /* __fastcall */ TCopyParamRule(const TCopyParamRule & Source);
 
   bool __fastcall Matches(const TCopyParamRuleData & Value) const;
   void __fastcall Load(THierarchicalStorage * Storage);
@@ -107,7 +107,7 @@ class TCopyParamList
 {
 friend class TGUIConfiguration;
 public:
-  /* __fastcall */ TCopyParamList();
+  explicit /* __fastcall */ TCopyParamList();
   virtual /* __fastcall */ ~TCopyParamList();
   int __fastcall Find(const TCopyParamRuleData & Value) const;
 
@@ -230,7 +230,7 @@ public:
   virtual void __fastcall Saved();
 
 public:
-  /* __fastcall */ TGUIConfiguration();
+  explicit /* __fastcall */ TGUIConfiguration();
   virtual /* __fastcall */ ~TGUIConfiguration();
   virtual void __fastcall Default();
   virtual void __fastcall UpdateStaticUsage();

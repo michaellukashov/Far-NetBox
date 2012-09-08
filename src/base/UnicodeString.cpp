@@ -293,6 +293,11 @@ UnicodeString & UnicodeString::Upper(int nStartPos, int nLength)
   return *this;
 }
 
+int UnicodeString::Compare(const UnicodeString & Str) const
+{
+  return Sysutils::AnsiCompare(*this, Str);
+}
+
 int UnicodeString::CompareIC(const UnicodeString & Str) const
 {
   return Sysutils::AnsiCompareIC(*this, Str);

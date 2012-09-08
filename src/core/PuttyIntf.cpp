@@ -124,7 +124,6 @@ int get_userpass_input(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
   TStrings * Results = new TStringList();
   std::auto_ptr<TStrings> PromptsPtr(Prompts);
   std::auto_ptr<TStrings> ResultsPtr(Results);
-  // try
   {
     for (int Index = 0; Index < static_cast<int>(p->n_prompts); Index++)
     {

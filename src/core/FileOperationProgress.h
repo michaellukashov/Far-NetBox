@@ -6,7 +6,6 @@
 #include "CopyParam.h"
 #include "Exceptions.h"
 #include <vector>
-
 //---------------------------------------------------------------------------
 class TFileOperationProgressType;
 enum TFileOperation { foNone, foCopy, foMove, foDelete, foSetProperties,
@@ -15,19 +14,11 @@ enum TFileOperation { foNone, foCopy, foMove, foDelete, foSetProperties,
 enum TCancelStatus { csContinue = 0, csCancel, csCancelTransfer, csRemoteAbort };
 enum TResumeStatus { rsNotAvailable, rsEnabled, rsDisabled };
 enum TBatchOverwrite { boNo, boAll, boNone, boOlder, boAlternateResume, boAppend, boResume };
-#ifndef _MSC_VER
-typedef void __fastcall (__closure *TFileOperationProgressEvent)
-  (TFileOperationProgressType & ProgressData, TCancelStatus & Cancel);
-typedef void __fastcall (__closure *TFileOperationFinished)
-  (TFileOperation Operation, TOperationSide Side, bool Temp,
-    const UnicodeString & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
-#else
 DEFINE_CALLBACK_TYPE2(TFileOperationProgressEvent, void,
   TFileOperationProgressType & /* ProgressData */, TCancelStatus & /* Cancel */);
 DEFINE_CALLBACK_TYPE6(TFileOperationFinishedEvent, void,
   TFileOperation /* Operation */, TOperationSide /* Side */, bool /* Temp */,
   const UnicodeString & /* FileName */, bool /* Success */, TOnceDoneOperation & /* OnceDoneOperation */);
-#endif
 //---------------------------------------------------------------------------
 class TFileOperationProgressType
 {
