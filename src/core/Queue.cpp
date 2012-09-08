@@ -709,15 +709,8 @@ TTerminalQueueStatus * __fastcall TTerminalQueue::CreateStatus(TTerminalQueueSta
   TTerminalQueueStatus * Status = new TTerminalQueueStatus();
   try
   {
-    // try
+    TRY_FINALLY1 (Current,
     {
-      BOOST_SCOPE_EXIT ( (&Current) )
-      {
-        if (Current != NULL)
-        {
-          delete Current;
-        }
-      } BOOST_SCOPE_EXIT_END
       TGuard Guard(FItemsSection);
 
       TQueueItem * Item;
@@ -749,15 +742,14 @@ TTerminalQueueStatus * __fastcall TTerminalQueue::CreateStatus(TTerminalQueueSta
         }
       }
     }
-#ifndef _MSC_VER
-    __finally
+    ,
     {
       if (Current != NULL)
       {
         delete Current;
       }
     }
-#endif
+    );
   }
   catch(...)
   {
@@ -1381,13 +1373,8 @@ bool __fastcall TTerminalItem::WaitForUserAction(
 
   TQueueItem::TStatus PrevStatus = FItem->GetStatus();
 
-  // try
+  TRY_FINALLY2 (Self, PrevStatus,
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&PrevStatus) )
-    {
-      Self->FUserAction = NULL;
-      Self->FItem->SetStatus(PrevStatus);
-    } BOOST_SCOPE_EXIT_END
     FUserAction = UserAction;
 
     FItem->SetStatus(ItemStatus);
@@ -1395,13 +1382,12 @@ bool __fastcall TTerminalItem::WaitForUserAction(
 
     Result = !FTerminated && WaitForEvent() && !FCancel;
   }
-#ifndef _MSC_VER
-  __finally
+  ,
   {
-    FUserAction = NULL;
-    FItem->SetStatus(PrevStatus);
+    Self->FUserAction = NULL;
+    Self->FItem->SetStatus(PrevStatus);
   }
-#endif
+  );
 
   return Result;
 }
@@ -1516,24 +1502,18 @@ void /* __fastcall */ TTerminalItem::OperationProgress(
     FPause = false;
     ProgressData.Suspend();
 
-    // try
+    TRY_FINALLY3 (Self, PrevStatus, ProgressData,
     {
-      BOOST_SCOPE_EXIT ( (&Self) (&PrevStatus) (&ProgressData) )
-      {
-        Self->FItem->SetStatus(PrevStatus);
-        ProgressData.Resume();
-      } BOOST_SCOPE_EXIT_END
       FItem->SetStatus(TQueueItem::qsPaused);
 
       WaitForEvent();
     }
-#ifndef _MSC_VER
-    __finally
+    ,
     {
-      FItem->SetStatus(PrevStatus);
+      Self->FItem->SetStatus(PrevStatus);
       ProgressData.Resume();
     }
-#endif
+    );
   }
 
   if (FTerminated || FCancel)
@@ -1656,14 +1636,8 @@ void __fastcall TQueueItem::GetData(TQueueItemProxy * Proxy)
 //---------------------------------------------------------------------------
 void __fastcall TQueueItem::Execute(TTerminalItem * TerminalItem)
 {
-  // try
+  TRY_FINALLY1 (Self,
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
-    {
-      TGuard Guard(Self->FSection);
-      delete Self->FProgressData;
-      Self->FProgressData = NULL;
-    } BOOST_SCOPE_EXIT_END
     {
       assert(FProgressData == NULL);
       TGuard Guard(FSection);
@@ -1671,16 +1645,13 @@ void __fastcall TQueueItem::Execute(TTerminalItem * TerminalItem)
     }
     DoExecute(TerminalItem->FTerminal);
   }
-#ifndef _MSC_VER
-  __finally
+  ,
   {
-    {
-      TGuard Guard(FSection);
-      delete FProgressData;
-      FProgressData = NULL;
-    }
+    TGuard Guard(Self->FSection);
+    delete Self->FProgressData;
+    Self->FProgressData = NULL;
   }
-#endif
+  );
 }
 //---------------------------------------------------------------------------
 void __fastcall TQueueItem::SetCPSLimit(unsigned long CPSLimit)
@@ -1782,20 +1753,15 @@ bool __fastcall TQueueItemProxy::ProcessUserAction()
 
   bool Result = false;
   FProcessingUserAction = true;
-  // try
+  TRY_FINALLY1 (Self,
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
-    {
-      Self->FProcessingUserAction = false;
-    } BOOST_SCOPE_EXIT_END
     Result = FQueue->ItemProcessUserAction(FQueueItem, NULL);
   }
-#ifndef _MSC_VER
-  __finally
+  ,
   {
-    FProcessingUserAction = false;
+    Self->FProcessingUserAction = false;
   }
-#endif
+  );
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -2216,13 +2182,8 @@ void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
   FAction = Action;
   try
   {
-    // try
+    TRY_FINALLY1 (Self,
     {
-      BOOST_SCOPE_EXIT ( (&Self) )
-      {
-        Self->FAction = NULL;
-        SAFE_DESTROY(Self->FException);
-      } BOOST_SCOPE_EXIT_END
       TriggerEvent();
 
       bool Done = false;
@@ -2268,13 +2229,12 @@ void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
 
       Rethrow(FException);
     }
-#ifndef _MSC_VER
-    __finally
+    ,
     {
-      FAction = NULL;
-      SAFE_DESTROY(FException);
+      Self->FAction = NULL;
+      SAFE_DESTROY(Self->FException);
     }
-#endif
+    );
   }
   catch(...)
   {
@@ -2323,20 +2283,15 @@ void __fastcall TTerminalThread::Rethrow(Exception *& Exception)
 {
   if (Exception != NULL)
   {
-    // try
+    TRY_FINALLY1 (Exception,
     {
-      BOOST_SCOPE_EXIT ( (&Exception) )
-      {
-        SAFE_DESTROY(Exception);
-      } BOOST_SCOPE_EXIT_END
       RethrowException(Exception);
     }
-#ifndef _MSC_VER
-    __finally
+    ,
     {
       SAFE_DESTROY(Exception);
     }
-#endif
+    );
   }
 }
 //---------------------------------------------------------------------------
@@ -2383,13 +2338,8 @@ void __fastcall TTerminalThread::WaitForUserAction(TUserAction * UserAction)
     // have to save it as we can go recursive via TQueryParams::TimerEvent,
     // see TTerminalThread::TerminalQueryUser
     TUserAction * PrevUserAction = FUserAction;
-    // try
+    TRY_FINALLY2 (Self, PrevUserAction,
     {
-      BOOST_SCOPE_EXIT ( (&Self) (&PrevUserAction) )
-      {
-        Self->FUserAction = PrevUserAction;
-        SAFE_DESTROY(Self->FException);
-      } BOOST_SCOPE_EXIT_END
       FUserAction = UserAction;
 
       while (true)
@@ -2440,13 +2390,12 @@ void __fastcall TTerminalThread::WaitForUserAction(TUserAction * UserAction)
         Rethrow(FIdleException);
       }
     }
-#ifndef _MSC_VER
-    __finally
+    ,
     {
-      FUserAction = PrevUserAction;
-      SAFE_DESTROY(FException);
+      Self->FUserAction = PrevUserAction;
+      SAFE_DESTROY(Self->FException);
     }
-#endif
+    );
     CheckCancel();
   }
 }

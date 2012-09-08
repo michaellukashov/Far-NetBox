@@ -982,15 +982,16 @@ void __fastcall TIniFileStorage::Flush()
         else
         {
           TStream * Stream = new THandleStream(Handle);
-          try
+          TRY_FINALLY2 (Handle, Stream,
           {
             Strings->SaveToStream(Stream);
           }
-          __finally
+          ,
           {
             CloseHandle(Handle);
             delete Stream;
           }
+          );
         }
       }
     }
@@ -1096,23 +1097,18 @@ void __fastcall TOptionsIniFile::ReadSection(const UnicodeString Section, TStrin
   assert(Section.IsEmpty());
   Strings->BeginUpdate();
 
-  // try
+  TRY_FINALLY1 (Strings,
   {
-    BOOST_SCOPE_EXIT ( (&Strings) )
-    {
-      Strings->EndUpdate();
-    } BOOST_SCOPE_EXIT_END
     for (int Index = 0; Index < FOptions->Count; Index++)
     {
       Strings->Add(FOptions->Names[Index]);
     }
   }
-#ifndef _MSC_VER
-  __finally
+  ,
   {
     Strings->EndUpdate();
   }
-#endif
+  );
 }
 //---------------------------------------------------------------------------
 void __fastcall TOptionsIniFile::ReadSections(TStrings * /*Strings*/)

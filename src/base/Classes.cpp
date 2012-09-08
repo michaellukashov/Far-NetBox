@@ -348,29 +348,33 @@ void TStrings::SetTextStr(const UnicodeString Text)
 {
   TStrings * Self = this;
   Self->BeginUpdate();
-  BOOST_SCOPE_EXIT( (&Self) )
+  TRY_FINALLY1 (Self,
   {
-    Self->EndUpdate();
-  } BOOST_SCOPE_EXIT_END
-  Clear();
-  const wchar_t * P = Text.c_str();
-  if (P != NULL)
-  {
-    while (*P != 0x00)
+    Clear();
+    const wchar_t * P = Text.c_str();
+    if (P != NULL)
     {
-      const wchar_t * Start = P;
-      while (!((*P == 0x00) || (*P == 0x0A) || (*P == 0x0D)))
+      while (*P != 0x00)
       {
-        P++;
+        const wchar_t * Start = P;
+        while (!((*P == 0x00) || (*P == 0x0A) || (*P == 0x0D)))
+        {
+          P++;
+        }
+        UnicodeString S;
+        S.SetLength(P - Start);
+        memmove(const_cast<wchar_t *>(S.c_str()), Start, (P - Start) * sizeof(wchar_t));
+        Add(S);
+        if (*P == 0x0D) { P++; }
+        if (*P == 0x0A) { P++; }
       }
-      UnicodeString S;
-      S.SetLength(P - Start);
-      memmove(const_cast<wchar_t *>(S.c_str()), Start, (P - Start) * sizeof(wchar_t));
-      Add(S);
-      if (*P == 0x0D) { P++; }
-      if (*P == 0x0A) { P++; }
     }
   }
+  ,
+  {
+    Self->EndUpdate();
+  }
+  );
 }
 
 UnicodeString TStrings::GetCommaText()
@@ -379,14 +383,18 @@ UnicodeString TStrings::GetCommaText()
   wchar_t LOldQuoteChar = GetQuoteChar();
   FDelimiter = L',';
   FQuoteChar = L'"';
+  UnicodeString Result;
   TStrings * Self = this;
-  BOOST_SCOPE_EXIT( (&Self) (&LOldDelimiter) (&LOldQuoteChar) )
+  TRY_FINALLY3 (Self, LOldDelimiter, LOldQuoteChar,
+  {
+    Result = GetDelimitedText();
+  }
+  ,
   {
     Self->FDelimiter = LOldDelimiter;
     Self->FQuoteChar = LOldQuoteChar;
-  } BOOST_SCOPE_EXIT_END
-
-  UnicodeString Result = GetDelimitedText();
+  }
+  );
   return Result;
 }
 UnicodeString TStrings::GetDelimitedText() const
@@ -413,21 +421,25 @@ void TStrings::SetDelimitedText(const UnicodeString Value)
 {
   TStrings * Self = this;
   Self->BeginUpdate();
-  BOOST_SCOPE_EXIT( (&Self) )
+  TRY_FINALLY1 (Self,
+  {
+    Clear();
+    std::vector<std::wstring> lines;
+    std::wstring delim = std::wstring(1, GetDelimiter());
+    delim.append(1, L'\n');
+    std::wstring value = Value.c_str();
+    alg::split(lines, value, alg::is_any_of(delim), alg::token_compress_on);
+    UnicodeString line;
+    BOOST_FOREACH(line, lines)
+    {
+      Add(line);
+    }
+  }
+  ,
   {
     Self->EndUpdate();
-  } BOOST_SCOPE_EXIT_END
-  Clear();
-  std::vector<std::wstring> lines;
-  std::wstring delim = std::wstring(1, GetDelimiter());
-  delim.append(1, L'\n');
-  std::wstring value = Value.c_str();
-  alg::split(lines, value, alg::is_any_of(delim), alg::token_compress_on);
-  UnicodeString line;
-  BOOST_FOREACH(line, lines)
-  {
-    Add(line);
   }
+  );
 }
 
 int TStrings::CompareStrings(const UnicodeString S1, const UnicodeString S2)
@@ -442,15 +454,19 @@ void TStrings::Assign(TPersistent * Source)
     BeginUpdate();
     {
       TStrings * Self = this;
-      BOOST_SCOPE_EXIT ( (&Self) )
+      TRY_FINALLY1 (Self,
+      {
+        Clear();
+        // FDefined = TStrings(Source).FDefined;
+        FQuoteChar = static_cast<TStrings *>(Source)->FQuoteChar;
+        FDelimiter = static_cast<TStrings *>(Source)->FDelimiter;
+        AddStrings(static_cast<TStrings *>(Source));
+      }
+      ,
       {
         Self->EndUpdate();
-      } BOOST_SCOPE_EXIT_END
-      Clear();
-      // FDefined = TStrings(Source).FDefined;
-      FQuoteChar = static_cast<TStrings *>(Source)->FQuoteChar;
-      FDelimiter = static_cast<TStrings *>(Source)->FDelimiter;
-      AddStrings(static_cast<TStrings *>(Source));
+      }
+      );
     }
     return;
   }
@@ -604,14 +620,18 @@ void TStrings::Move(int CurIndex, int NewIndex)
     BeginUpdate();
     {
       TStrings * Self = this;
-      BOOST_SCOPE_EXIT ( (&Self) )
+      TRY_FINALLY1 (Self,
+      {
+        UnicodeString TempString = GetStrings(CurIndex);
+        TObject * TempObject = GetObjects(CurIndex);
+        Delete(CurIndex);
+        InsertObject(NewIndex, TempString, TempObject);
+      }
+      ,
       {
         Self->EndUpdate();
-      } BOOST_SCOPE_EXIT_END
-      UnicodeString TempString = GetStrings(CurIndex);
-      TObject * TempObject = GetObjects(CurIndex);
-      Delete(CurIndex);
-      InsertObject(NewIndex, TempString, TempObject);
+      }
+      );
     }
   }
 }
@@ -699,14 +719,18 @@ void TStrings::AddStrings(TStrings * Strings)
   BeginUpdate();
   {
     TStrings * Self = this;
-    BOOST_SCOPE_EXIT ( (&Self) )
+    TRY_FINALLY1 (Self,
+    {
+      for (int I = 0; I < Strings->GetCount(); I++)
+      {
+        AddObject(Strings->GetStrings(I), Strings->GetObjects(I));
+      }
+    }
+    ,
     {
       Self->EndUpdate();
-    } BOOST_SCOPE_EXIT_END
-    for (int I = 0; I < Strings->GetCount(); I++)
-    {
-      AddObject(Strings->GetStrings(I), Strings->GetObjects(I));
     }
+    );
   }
 }
 
@@ -1681,27 +1705,31 @@ bool TRegistry::DeleteKey(const UnicodeString Key)
   if (DeleteKey != 0)
   {
     TRegistry * Self = this;
-    BOOST_SCOPE_EXIT( (&Self) (&OldKey) (&DeleteKey) )
+    TRY_FINALLY3 (Self, OldKey, DeleteKey,
     {
-      Self->SetCurrentKey(OldKey);
-      RegCloseKey(DeleteKey);
-    } BOOST_SCOPE_EXIT_END
-    SetCurrentKey(DeleteKey);
-    TRegKeyInfo Info;
-    if (GetKeyInfo(Info))
-    {
-      UnicodeString KeyName;
-      KeyName.SetLength(Info.MaxSubKeyLen + 1);
-      for (int I = Info.NumSubKeys - 1; I >= 0; I--)
+      SetCurrentKey(DeleteKey);
+      TRegKeyInfo Info;
+      if (GetKeyInfo(Info))
       {
-        DWORD Len = Info.MaxSubKeyLen + 1;
-        if (RegEnumKeyEx(DeleteKey, static_cast<DWORD>(I), &KeyName[1], &Len,
-                         NULL, NULL, NULL, NULL) == ERROR_SUCCESS)
+        UnicodeString KeyName;
+        KeyName.SetLength(Info.MaxSubKeyLen + 1);
+        for (int I = Info.NumSubKeys - 1; I >= 0; I--)
         {
-          this->DeleteKey(KeyName);
+          DWORD Len = Info.MaxSubKeyLen + 1;
+          if (RegEnumKeyEx(DeleteKey, static_cast<DWORD>(I), &KeyName[1], &Len,
+                           NULL, NULL, NULL, NULL) == ERROR_SUCCESS)
+          {
+            this->DeleteKey(KeyName);
+          }
         }
       }
     }
+    ,
+    {
+      Self->SetCurrentKey(OldKey);
+      RegCloseKey(DeleteKey);
+    }
+    );
   }
   Result = RegDeleteKey(GetBaseKey(Relative), S.c_str()) == ERROR_SUCCESS;
   return Result;
@@ -1718,18 +1746,19 @@ bool TRegistry::KeyExists(const UnicodeString Key)
   bool Result = false;
   // DEBUG_PRINTF(L"Key = %s", Key.c_str());
   unsigned OldAccess = FAccess;
+  TRegistry * Self = this;
+  TRY_FINALLY2 (Self, OldAccess,
   {
-    TRegistry * Self = this;
-    BOOST_SCOPE_EXIT( (&Self) (&OldAccess) )
-    {
-      Self->FAccess = OldAccess;
-    } BOOST_SCOPE_EXIT_END
-
     FAccess = STANDARD_RIGHTS_READ | KEY_QUERY_VALUE | KEY_ENUMERATE_SUB_KEYS;
     HKEY TempKey = GetKey(Key);
     if (TempKey != 0) { RegCloseKey(TempKey); }
     Result = TempKey != 0;
   }
+  ,
+  {
+    Self->FAccess = OldAccess;
+  }
+  );
   // DEBUG_PRINTF(L"Result = %d", Result);
   return Result;
 }

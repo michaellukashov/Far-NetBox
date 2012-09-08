@@ -454,20 +454,15 @@ bool __fastcall TWinSCPPlugin::PanelConfigurationDialog()
     if (Result)
     {
       Configuration->BeginUpdate();
-      // try
+      TRY_FINALLY1 (Configuration,
       {
-        BOOST_SCOPE_EXIT ( (&Configuration) )
-        {
-          Configuration->EndUpdate();
-        } BOOST_SCOPE_EXIT_END
         Configuration->SetAutoReadDirectoryAfterOp(AutoReadDirectoryAfterOpCheck->GetChecked());
       }
-#ifndef _MSC_VER
-      __finally
+      ,
       {
         Configuration->EndUpdate();
       }
-#endif
+      );
     }
   }
   return Result;
@@ -554,12 +549,8 @@ bool __fastcall TWinSCPPlugin::LoggingConfigurationDialog()
     if (Result)
     {
       Configuration->BeginUpdate();
-      // try
+      TRY_FINALLY1 (Configuration,
       {
-        BOOST_SCOPE_EXIT ( (&Configuration) )
-        {
-          Configuration->EndUpdate();
-        } BOOST_SCOPE_EXIT_END
         Configuration->SetLogging(LoggingCheck->GetChecked());
         Configuration->SetLogProtocol(LogProtocolCombo->GetItemIndex());
         Configuration->SetLogToFile(LogToFileCheck->GetChecked());
@@ -569,12 +560,11 @@ bool __fastcall TWinSCPPlugin::LoggingConfigurationDialog()
         }
         Configuration->SetLogFileAppend(LogFileAppendButton->GetChecked());
       }
-#ifndef _MSC_VER
-      __finally
+      ,
       {
         Configuration->EndUpdate();
       }
-#endif
+      );
     }
   }
   return Result;
@@ -695,12 +685,8 @@ bool __fastcall TWinSCPPlugin::EnduranceConfigurationDialog()
     if (Result)
     {
       Configuration->BeginUpdate();
-      // try
+      TRY_FINALLY1 (Configuration,
       {
-        BOOST_SCOPE_EXIT ( (&Configuration) )
-        {
-          Configuration->EndUpdate();
-        } BOOST_SCOPE_EXIT_END
         TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
 
         if (ResumeOnButton->GetChecked()) { CopyParam.SetResumeSupport(rsOn); }
@@ -715,12 +701,11 @@ bool __fastcall TWinSCPPlugin::EnduranceConfigurationDialog()
         Configuration->SetSessionReopenAutoMaximumNumberOfRetries(
           (SessionReopenAutoCheck->GetChecked() ? SessionReopenNumberOfRetriesEdit->GetAsInteger() : CONST_DEFAULT_NUMBER_OF_RETRIES));
       }
-#ifndef _MSC_VER
-      __finally
+      ,
       {
         Configuration->EndUpdate();
       }
-#endif
+      );
     }
   }
   return Result;
@@ -775,12 +760,8 @@ bool __fastcall TWinSCPPlugin::QueueConfigurationDialog()
     if (Result)
     {
       Configuration->BeginUpdate();
-      // try
+      TRY_FINALLY1 (Configuration,
       {
-        BOOST_SCOPE_EXIT ( (&Configuration) )
-        {
-          Configuration->EndUpdate();
-        } BOOST_SCOPE_EXIT_END
         TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
 
         FarConfiguration->SetQueueTransfersLimit(QueueTransferLimitEdit->GetAsInteger());
@@ -791,12 +772,11 @@ bool __fastcall TWinSCPPlugin::QueueConfigurationDialog()
 
         GUIConfiguration->SetDefaultCopyParam(CopyParam);
       }
-#ifndef _MSC_VER
-      __finally
+      ,
       {
         Configuration->EndUpdate();
       }
-#endif
+      );
     }
   }
   return Result;
@@ -877,23 +857,18 @@ bool __fastcall TTransferEditorConfigurationDialog::Execute()
   if (Result)
   {
     Configuration->BeginUpdate();
-    // try
+    TRY_FINALLY1 (Configuration,
     {
-      BOOST_SCOPE_EXIT ( (&Configuration) )
-      {
-        Configuration->EndUpdate();
-      } BOOST_SCOPE_EXIT_END
       FarConfiguration->SetEditorDownloadDefaultMode(EditorDownloadDefaultButton->GetChecked());
       FarConfiguration->SetEditorUploadSameOptions(EditorUploadSameButton->GetChecked());
       FarConfiguration->SetEditorUploadOnSave(EditorUploadOnSaveCheck->GetChecked());
       FarConfiguration->SetEditorMultiple(EditorMultipleCheck->GetChecked());
     }
-#ifndef _MSC_VER
-    __finally
+    ,
     {
       Configuration->EndUpdate();
     }
-#endif
+    );
   }
 
   return Result;
@@ -906,20 +881,15 @@ void __fastcall TTransferEditorConfigurationDialog::Change()
   if (GetHandle())
   {
     LockChanges();
-    // try
+    TRY_FINALLY1 (Self,
     {
-      BOOST_SCOPE_EXIT ( (&Self) )
-      {
-        Self->UnlockChanges();
-      } BOOST_SCOPE_EXIT_END
       UpdateControls();
     }
-#ifndef _MSC_VER
-    __finally
+    ,
     {
-      UnlockChanges();
+      Self->UnlockChanges();
     }
-#endif
+    );
   }
 }
 //---------------------------------------------------------------------------
@@ -981,12 +951,8 @@ bool __fastcall TWinSCPPlugin::ConfirmationsConfigurationDialog()
     if (Result)
     {
       Configuration->BeginUpdate();
-      // try
+      TRY_FINALLY1 (Configuration,
       {
-        BOOST_SCOPE_EXIT ( (&Configuration) )
-        {
-          Configuration->EndUpdate();
-        } BOOST_SCOPE_EXIT_END
         FarConfiguration->SetConfirmOverwritingOverride(
           ConfirmOverwritingCheck->GetSelected() != BSTATE_3STATE);
         GUIConfiguration->SetConfirmCommandSession(ConfirmCommandSessionCheck->GetChecked());
@@ -997,12 +963,11 @@ bool __fastcall TWinSCPPlugin::ConfirmationsConfigurationDialog()
         }
         FarConfiguration->SetConfirmSynchronizedBrowsing(ConfirmSynchronizedBrowsingCheck->GetChecked());
       }
-#ifndef _MSC_VER
-      __finally
+      ,
       {
         Configuration->EndUpdate();
       }
-#endif
+      );
     }
   }
   return Result;
@@ -1056,24 +1021,19 @@ bool __fastcall TWinSCPPlugin::IntegrationConfigurationDialog()
     if (Result)
     {
       Configuration->BeginUpdate();
-      // try
+      TRY_FINALLY1 (Configuration,
       {
-        BOOST_SCOPE_EXIT ( (&Configuration) )
-        {
-          Configuration->EndUpdate();
-        } BOOST_SCOPE_EXIT_END
         GUIConfiguration->SetPuttyPath(PuttyPathEdit->GetText());
         GUIConfiguration->SetPuttyPassword(PuttyPasswordCheck->GetChecked());
         GUIConfiguration->SetTelnetForFtpInPutty(TelnetForFtpInPuttyCheck->GetChecked());
         FarConfiguration->SetPageantPath(PageantPathEdit->GetText());
         FarConfiguration->SetPuttygenPath(PuttygenPathEdit->GetText());
       }
-#ifndef _MSC_VER
-      __finally
+      ,
       {
         Configuration->EndUpdate();
       }
-#endif
+      );
     }
   }
   return Result;
@@ -1751,15 +1711,17 @@ static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsWebDAV };
     COMBO->SetDropDownList(true); \
     COMBO->SetWidth(7); \
     COMBO->GetItems()->BeginUpdate(); \
+    TRY_FINALLY1 (COMBO, \
     { \
-        BOOST_SCOPE_EXIT ( (&COMBO) ) \
-        { \
-          COMBO->GetItems()->EndUpdate(); \
-        } BOOST_SCOPE_EXIT_END \
       COMBO->GetItems()->Add(GetMsg(LOGIN_BUGS_AUTO)); \
       COMBO->GetItems()->Add(GetMsg(LOGIN_BUGS_OFF)); \
       COMBO->GetItems()->Add(GetMsg(LOGIN_BUGS_ON)); \
     } \
+    , \
+    { \
+      COMBO->GetItems()->EndUpdate(); \
+    } \
+    ); \
     Text->SetEnabledFollow(COMBO); \
     SetNextItemPosition(ipNewLine);
 
@@ -2629,12 +2591,8 @@ static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsWebDAV };
   TunnelLocalPortNumberEdit->SetLeft(TunnelPortNumberEdit->GetLeft());
   TunnelLocalPortNumberEdit->SetEnabledDependency(TunnelCheck);
   TunnelLocalPortNumberEdit->GetItems()->BeginUpdate();
-  // try
+  TRY_FINALLY1 (Self,
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
-    {
-      Self->TunnelLocalPortNumberEdit->GetItems()->EndUpdate();
-    } BOOST_SCOPE_EXIT_END
     TunnelLocalPortNumberEdit->GetItems()->Add(GetMsg(LOGIN_TUNNEL_LOCAL_PORT_NUMBER_AUTOASSIGN));
     for (int Index = Configuration->GetTunnelLocalPortNumberLow();
          Index <= Configuration->GetTunnelLocalPortNumberHigh(); Index++)
@@ -2642,12 +2600,11 @@ static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsWebDAV };
       TunnelLocalPortNumberEdit->GetItems()->Add(IntToStr(static_cast<int>(Index)));
     }
   }
-#ifndef _MSC_VER
-  __finally
+  ,
   {
-    TunnelLocalPortNumberEdit->Items->EndUpdate();
+    Self->TunnelLocalPortNumberEdit->GetItems()->EndUpdate();
   }
-#endif
+  );
 
   SetNextItemPosition(ipNewLine);
 
@@ -2909,20 +2866,15 @@ void __fastcall TSessionDialog::Change()
     }
 
     LockChanges();
-    // try
+    TRY_FINALLY1 (Self,
     {
-      BOOST_SCOPE_EXIT ( (&Self) )
-      {
-        Self->UnlockChanges();
-      } BOOST_SCOPE_EXIT_END
       UpdateControls();
     }
-#ifndef _MSC_VER
-    __finally
+    ,
     {
-      UnlockChanges();
+      Self->UnlockChanges();
     }
-#endif
+    );
   }
 }
 //---------------------------------------------------------------------------
@@ -3473,12 +3425,8 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
   }
 
   CipherListBox->GetItems()->BeginUpdate();
-  // try
+  TRY_FINALLY1 (CipherListBox,
   {
-    BOOST_SCOPE_EXIT ( (&CipherListBox) )
-    {
-      CipherListBox->GetItems()->EndUpdate();
-    } BOOST_SCOPE_EXIT_END
     CipherListBox->GetItems()->Clear();
     assert(CIPHER_NAME_WARN+CIPHER_COUNT-1 == CIPHER_NAME_ARCFOUR);
     for (int Index = 0; Index < CIPHER_COUNT; Index++)
@@ -3489,12 +3437,11 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
         Obj);
     }
   }
-#ifndef _MSC_VER
-  __finally
+  ,
   {
-    CipherListBox->Items->EndUpdate();
+    CipherListBox->GetItems()->EndUpdate();
   }
-#endif
+  );
 
   // KEX tab
 
@@ -3502,12 +3449,8 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
   RekeyDataEdit->SetText(SessionData->GetRekeyData());
 
   KexListBox->GetItems()->BeginUpdate();
-  // try
+  TRY_FINALLY1 (KexListBox,
   {
-    BOOST_SCOPE_EXIT ( (&KexListBox) )
-    {
-      KexListBox->GetItems()->EndUpdate();
-    } BOOST_SCOPE_EXIT_END
     KexListBox->GetItems()->Clear();
     assert(KEX_NAME_WARN+KEX_COUNT+1 == KEX_NAME_GSSGEX);
     for (int Index = 0; Index < KEX_COUNT; Index++)
@@ -3517,12 +3460,11 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
         static_cast<TObject *>(reinterpret_cast<void *>(SessionData->GetKex(Index))));
     }
   }
-#ifndef _MSC_VER
-  __finally
+  ,
   {
-    KexListBox->Items->EndUpdate();
+    KexListBox->GetItems()->EndUpdate();
   }
-#endif
+  );
 
   // Authentication tab
   SshNoUserAuthCheck->SetChecked(SessionData->GetSshNoUserAuth());
@@ -4554,12 +4496,8 @@ void __fastcall TRightsContainer::SetRights(const TRights & value)
   if (GetRights() != value)
   {
     GetDialog()->LockChanges();
-    // try
+    TRY_FINALLY1 (Self,
     {
-      BOOST_SCOPE_EXIT ( (&Self) )
-      {
-        Self->GetDialog()->UnlockChanges();
-      } BOOST_SCOPE_EXIT_END
       SetAllowUndef(true); // temporarily
       for (int Right = 0; Right < LENOF(FCheckBoxes); Right++)
       {
@@ -4568,12 +4506,11 @@ void __fastcall TRightsContainer::SetRights(const TRights & value)
       }
       SetAllowUndef(value.GetAllowUndef());
     }
-#ifndef _MSC_VER
-    __finally
+    ,
     {
-      Dialog->UnlockChanges();
+      Self->GetDialog()->UnlockChanges();
     }
-#endif
+    );
   }
 }
 //---------------------------------------------------------------------------
@@ -5592,23 +5529,18 @@ bool __fastcall TCopyDialog::Execute(UnicodeString & TargetDirectory,
     }
 
     Configuration->BeginUpdate();
-    // try
+    TRY_FINALLY1 (Configuration,
     {
-      BOOST_SCOPE_EXIT ( (&Configuration) )
-      {
-        Configuration->EndUpdate();
-      } BOOST_SCOPE_EXIT_END
       if (SaveSettingsCheck->GetChecked())
       {
         GUIConfiguration->SetDefaultCopyParam(*Params);
       }
     }
-#ifndef _MSC_VER
-    __finally
+    ,
     {
       Configuration->EndUpdate();
     }
-#endif
+    );
   }
   return Result;
 }
@@ -7587,12 +7519,8 @@ void __fastcall TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
   FCanScrollRight = false;
   TFarList * List = ListBox->GetItems();
   List->BeginUpdate();
-  // try
+  TRY_FINALLY1 (List,
   {
-    BOOST_SCOPE_EXIT ( (&List) )
-    {
-      List->EndUpdate();
-    } BOOST_SCOPE_EXIT_END
     for (int Index = 0; Index < List->GetCount(); Index++)
     {
       if (!Scroll || (List->GetStrings(Index).LastDelimiter(L"{}") > 0))
@@ -7604,12 +7532,11 @@ void __fastcall TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
       }
     }
   }
-#ifndef _MSC_VER
-  __finally
+  ,
   {
     List->EndUpdate();
   }
-#endif
+  );
 }
 //---------------------------------------------------------------------------
 void __fastcall TSynchronizeChecklistDialog::UpdateControls()
@@ -7634,12 +7561,8 @@ void __fastcall TSynchronizeChecklistDialog::CheckAll(bool Check)
 {
   TFarList * List = ListBox->GetItems();
   List->BeginUpdate();
-  // try
+  TRY_FINALLY1 (List,
   {
-    BOOST_SCOPE_EXIT ( (&List) )
-    {
-      List->EndUpdate();
-    } BOOST_SCOPE_EXIT_END
     int Count = List->GetCount();
     for (int Index = 0; Index < Count; Index++)
     {
@@ -7648,12 +7571,11 @@ void __fastcall TSynchronizeChecklistDialog::CheckAll(bool Check)
 
     FChecked = (Check ? Count : 0);
   }
-#ifndef _MSC_VER
-  __finally
+  ,
   {
     List->EndUpdate();
   }
-#endif
+  );
 
   UpdateControls();
 }
@@ -8637,10 +8559,6 @@ void __fastcall TQueueDialog::LoadQueue()
   TFarList * List = new TFarList();
   std::auto_ptr<TFarList> ListPtr(List);
   {
-    BOOST_SCOPE_EXIT ( (&List) )
-    {
-      delete List;
-    } BOOST_SCOPE_EXIT_END
     UnicodeString Line;
     TQueueItemProxy * QueueItem = NULL;
     for (int Index = 0; Index < FStatus->GetCount(); Index++)

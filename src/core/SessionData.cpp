@@ -3025,11 +3025,8 @@ TSessionData * TStoredSessionList::GetSessionByName(const UnicodeString SessionN
 void __fastcall TStoredSessionList::Load(const UnicodeString aKey, bool UseDefaults)
 {
   TRegistryStorage * Storage = new TRegistryStorage(aKey);
+  std::auto_ptr<TRegistryStorage> StoragePtr(Storage);
   {
-    BOOST_SCOPE_EXIT ( (&Storage) )
-    {
-      delete Storage;
-    } BOOST_SCOPE_EXIT_END
     if (Storage->OpenRootKey(false)) { Load(Storage, false, UseDefaults); }
   }
 }

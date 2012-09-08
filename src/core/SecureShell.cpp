@@ -728,12 +728,8 @@ void __fastcall TSecureShell::FromBackend(bool IsStdErr, const unsigned char * D
       if (!FFrozen)
       {
         FFrozen = true;
-        // try
+        TRY_FINALLY1 (Self,
         {
-          BOOST_SCOPE_EXIT ( (&Self) )
-          {
-            Self->FFrozen = false;
-          } BOOST_SCOPE_EXIT_END
           do
           {
             FDataWhileFrozen = false;
@@ -741,12 +737,11 @@ void __fastcall TSecureShell::FromBackend(bool IsStdErr, const unsigned char * D
           }
           while (FDataWhileFrozen);
         }
-#ifndef _MSC_VER
-        __finally
+        ,
         {
-          FFrozen = false;
+          Self->FFrozen = false;
         }
-#endif
+        );
       }
       else
       {
@@ -779,12 +774,8 @@ Integer __fastcall TSecureShell::Receive(unsigned char * Buf, Integer Len)
     OutPtr = Buf;
     OutLen = Len;
 
-    // try
+    TRY_FINALLY1 (OutPtr,
     {
-      BOOST_SCOPE_EXIT ( (&OutPtr) )
-      {
-        OutPtr = NULL;
-      } BOOST_SCOPE_EXIT_END
       /*
        * See if the pending-input block contains some of what we
        * need.
@@ -821,12 +812,11 @@ Integer __fastcall TSecureShell::Receive(unsigned char * Buf, Integer Len)
       // This seems ambiguous
       if (Len <= 0) { FatalError(LoadStr(LOST_CONNECTION)); }
     }
-#ifndef _MSC_VER
-    __finally
+    ,
     {
       OutPtr = NULL;
     }
-#endif
+    );
   }
   if (Configuration->GetActualLogProtocol() >= 1)
   {
@@ -899,12 +889,8 @@ unsigned int __fastcall TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolE
   FWaiting++;
 
   unsigned int Answer;
-  // try
+  TRY_FINALLY1 (Self,
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
-    {
-      Self->FWaiting--;
-    } BOOST_SCOPE_EXIT_END
     TQueryParams Params(qpFatalAbort | qpAllowContinueOnError | qpIgnoreAbort);
     Params.HelpKeyword = HELP_MESSAGE_HOST_IS_NOT_COMMUNICATING;
     Params.Timer = 500;
@@ -919,12 +905,11 @@ unsigned int __fastcall TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolE
     Answer = FUI->QueryUser(FMTLOAD(CONFIRM_PROLONG_TIMEOUT3, FSessionData->GetTimeout(), FSessionData->GetTimeout()),
       NULL, qaRetry | qaAbort, &Params);
   }
-#ifndef _MSC_VER
-  __finally
+  ,
   {
-    FWaiting--;
+    Self->FWaiting--;
   }
-#endif
+  );
   return Answer;
 }
 //---------------------------------------------------------------------------
@@ -1561,12 +1546,8 @@ bool __fastcall TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventR
     int HandleCount;
     // note that this returns all handles, not only the session-related handles
     HANDLE * Handles = handle_get_events(&HandleCount);
-    // try
+    TRY_FINALLY1 (Handles,
     {
-      BOOST_SCOPE_EXIT ( (&Handles) )
-      {
-        sfree(Handles);
-      } BOOST_SCOPE_EXIT_END
       Handles = sresize(Handles, static_cast<size_t>(HandleCount + 1), HANDLE);
       Handles[HandleCount] = FSocketEvent;
       unsigned int WaitResult = WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, MSec);
@@ -1627,12 +1608,11 @@ bool __fastcall TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventR
         MSec = 0;
       }
     }
-#ifndef _MSC_VER
-    __finally
+    ,
     {
       sfree(Handles);
     }
-#endif
+    );
 
     unsigned int TicksAfter = GetTickCount();
     // ticks wraps once in 49.7 days

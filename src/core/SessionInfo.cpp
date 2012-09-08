@@ -729,18 +729,17 @@ void __fastcall TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
         TGuard Guard(FCriticalSection);
 
         BeginUpdate();
-        // try
+        TRY_FINALLY1 (Self,
         {
           DoAdd(Type, Line, MAKE_CALLBACK2(TSessionLog::DoAddToSelf, this));
         }
-#ifndef _MSC_VER
-        __finally
+        ,
         {
-          DeleteUnnecessary();
+          Self->DeleteUnnecessary();
 
-          EndUpdate();
+          Self->EndUpdate();
         }
-#endif
+        );
       }
     }
     catch (Exception &E)
@@ -848,12 +847,8 @@ void __fastcall TSessionLog::StateChange()
 void __fastcall TSessionLog::DeleteUnnecessary()
 {
   BeginUpdate();
-  // try
+  TRY_FINALLY1 (Self,
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
-    {
-        Self->EndUpdate();
-    } BOOST_SCOPE_EXIT_END
     if (!GetLogging() || (FParent != NULL))
     {
         Clear();
@@ -867,12 +862,11 @@ void __fastcall TSessionLog::DeleteUnnecessary()
       }
     }
   }
-#ifndef _MSC_VER
-  __finally
+  ,
   {
-    EndUpdate();
+    Self->EndUpdate();
   }
-#endif
+  );
 }
 //---------------------------------------------------------------------------
 void __fastcall TSessionLog::AddStartupInfo()
@@ -1090,9 +1084,9 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
 #ifndef _MSC_VER
   __finally
   {
-    DeleteUnnecessary();
+    Self->DeleteUnnecessary();
 
-    EndUpdate();
+    Self->EndUpdate();
   }
 #endif
 }

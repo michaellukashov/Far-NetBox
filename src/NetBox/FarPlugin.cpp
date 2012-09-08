@@ -354,24 +354,19 @@ void __fastcall TCustomFarPlugin::ClosePlugin(void * Plugin)
     ResetCachedInfo();
     TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Plugin);
     assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
-    // try
+    TRY_FINALLY2 (Self, FileSystem,
     {
-      BOOST_SCOPE_EXIT ( (&Self) (&FileSystem) )
-      {
-        Self->FOpenedPlugins->Remove(FileSystem);
-      } BOOST_SCOPE_EXIT_END
       {
         TGuard Guard(FileSystem->GetCriticalSection());
         FileSystem->Close();
       }
-      delete FileSystem;
     }
-#ifndef _MSC_VER
-    __finally
+    ,
     {
-      FOpenedPlugins->Remove(FileSystem);
+      Self->FOpenedPlugins->Remove(FileSystem);
     }
-#endif
+    );
+    delete FileSystem;
   }
   catch(Exception & E)
   {
@@ -1050,11 +1045,8 @@ int __fastcall TCustomFarPlugin::FarMessage(unsigned int Flags,
   TStringList * MessageLines = NULL;
   std::auto_ptr<TStrings> MessageLinesPtr(NULL);
   wchar_t ** Items = NULL;
+  TRY_FINALLY1 (Items,
   {
-    BOOST_SCOPE_EXIT ( (&Items) )
-    {
-      delete[] Items;
-    } BOOST_SCOPE_EXIT_END
     UnicodeString FullMessage = Message;
     if (Params->MoreMessages != NULL)
     {
@@ -1099,6 +1091,11 @@ int __fastcall TCustomFarPlugin::FarMessage(unsigned int Flags,
       Flags | FMSG_LEFTALIGN, NULL, Items, static_cast<int>(MessageLines->GetCount()),
       static_cast<int>(Buttons->GetCount()));
   }
+  ,
+  {
+    delete[] Items;
+  }
+  );
 
   return Result;
 }
@@ -1156,11 +1153,8 @@ int __fastcall TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeString Ti
   assert(Items && Items->GetCount());
   int Result = 0;
   FarMenuItemEx * MenuItems = new FarMenuItemEx[Items->GetCount()];
+  TRY_FINALLY1 (MenuItems,
   {
-    BOOST_SCOPE_EXIT ( (&MenuItems) )
-    {
-      delete[] MenuItems;
-    } BOOST_SCOPE_EXIT_END
     int Selected = NPOS;
     int Count = 0;
     for (int i = 0; i < Items->GetCount(); i++)
@@ -1200,12 +1194,11 @@ int __fastcall TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeString Ti
       Result = ResultItem;
     }
   }
-#ifndef _MSC_VER
-  __finally
+  ,
   {
     delete[] MenuItems;
   }
-#endif
+  );
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1993,28 +1986,20 @@ int __fastcall TCustomFarFileSystem::MakeDirectory(const wchar_t ** Name, int Op
   ResetCachedInfo();
   UnicodeString NameStr = *Name;
   int Result = 0;
-  // try
+  TRY_FINALLY2 (NameStr, Name,
   {
-    BOOST_SCOPE_EXIT ( (&NameStr) (&Name) )
-    {
-      if (NameStr != *Name)
-      {
-        // wcscpy_s(*Name, NameStr.size(), NameStr.c_str());
-        *Name = TCustomFarPlugin::DuplicateStr(NameStr, true);
-      }
-    } BOOST_SCOPE_EXIT_END
     Result = MakeDirectoryEx(NameStr, OpMode);
   }
-#ifndef _MSC_VER
-  __finally
+  ,
   {
-    StrToFar(NameStr);
-    if (NameStr != Name)
+    // StrToFar(NameStr);
+    if (NameStr != *Name)
     {
-      strcpy(Name, NameStr.c_str());
+      // wcscpy_s(*Name, NameStr.size(), NameStr.c_str());
+      *Name = TCustomFarPlugin::DuplicateStr(NameStr, true);
     }
   }
-#endif
+  );
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -2039,30 +2024,21 @@ int __fastcall TCustomFarFileSystem::GetFiles(struct PluginPanelItem * PanelItem
   TObjectList * PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
   int Result = 0;
   UnicodeString DestPathStr = *DestPath;
-  // try
+  TRY_FINALLY3 (DestPathStr, DestPath, PanelItems,
   {
-    BOOST_SCOPE_EXIT ( (&DestPathStr) (&DestPath) (&PanelItems) )
-    {
-      if (DestPathStr != *DestPath)
-      {
-        // wcscpy_s(*DestPath, DestPathStr.size(), DestPathStr.c_str());
-        *DestPath = TCustomFarPlugin::DuplicateStr(DestPathStr, true);
-      }
-      delete PanelItems;
-    } BOOST_SCOPE_EXIT_END
     Result = GetFilesEx(PanelItems, Move > 0, DestPathStr, OpMode);
   }
-#ifndef _MSC_VER
-  __finally
+  ,
   {
-    StrToFar(DestPathStr);
-    if (DestPathStr != DestPath)
+    // StrToFar(DestPathStr);
+    if (DestPathStr != *DestPath)
     {
-      strcpy(DestPath, DestPathStr.c_str());
+      // wcscpy_s(*DestPath, DestPathStr.size(), DestPathStr.c_str());
+      *DestPath = TCustomFarPlugin::DuplicateStr(DestPathStr, true);
     }
     delete PanelItems;
   }
-#endif
+  );
 
   return Result;
 }

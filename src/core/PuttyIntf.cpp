@@ -499,12 +499,8 @@ bool __fastcall HasGSSAPI()
     Config cfg;
     memset(&cfg, 0, sizeof(cfg));
     ssh_gss_liblist * List = ssh_gss_setup(&cfg);
-    // try
+    TRY_FINALLY1 (List,
     {
-      BOOST_SCOPE_EXIT ( (&List) )
-      {
-        ssh_gss_cleanup(List);
-      } BOOST_SCOPE_EXIT_END
       for (int Index = 0; (has <= 0) && (Index < List->nlibraries); Index++)
       {
         ssh_gss_library * library = &List->libraries[Index];
@@ -515,12 +511,11 @@ bool __fastcall HasGSSAPI()
            (library->release_cred(library, &ctx) == SSH_GSS_OK)) ? 1 : 0;
       }
     }
-#ifndef _MSC_VER
-    __finally
+    ,
     {
       ssh_gss_cleanup(List);
     }
-#endif
+    );
 
     if (has < 0)
     {

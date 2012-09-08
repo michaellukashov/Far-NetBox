@@ -111,12 +111,8 @@ void __fastcall TFarDialog::SetBounds(TRect value)
   if (GetBounds() != value)
   {
     LockChanges();
-    // try
+    TRY_FINALLY1 (Self,
     {
-      BOOST_SCOPE_EXIT ( (&Self) )
-      {
-        Self->UnlockChanges();
-      } BOOST_SCOPE_EXIT_END
       FBounds = value;
       if (GetHandle())
       {
@@ -133,12 +129,11 @@ void __fastcall TFarDialog::SetBounds(TRect value)
         GetItem(i)->DialogResized();
       }
     }
-#ifndef _MSC_VER
-    __finally
+    ,
     {
-      UnlockChanges();
+      Self->UnlockChanges();
     }
-#endif
+    );
   }
 }
 //---------------------------------------------------------------------------
@@ -736,15 +731,9 @@ int __fastcall TFarDialog::ShowModal()
 
   TFarDialog * PrevTopDialog = GetFarPlugin()->FTopDialog;
   GetFarPlugin()->FTopDialog = this;
-  // try
+  HANDLE dlg = INVALID_HANDLE_VALUE;
+  TRY_FINALLY3 (Self, PrevTopDialog, dlg,
   {
-    HANDLE dlg = INVALID_HANDLE_VALUE;
-    BOOST_SCOPE_EXIT ( (&Self) (&PrevTopDialog) (&dlg) )
-    {
-      Self->GetFarPlugin()->FTopDialog = PrevTopDialog;
-      if (dlg != INVALID_HANDLE_VALUE)
-        Self->GetFarPlugin()->GetStartupInfo()->DialogFree(dlg);
-    } BOOST_SCOPE_EXIT_END
     assert(GetDefaultButton());
     assert(GetDefaultButton()->GetDefault());
 
@@ -778,12 +767,13 @@ int __fastcall TFarDialog::ShowModal()
       FResult = -1;
     }
   }
-#ifndef _MSC_VER
-  __finally
+  ,
   {
-    FarPlugin->FTopDialog = PrevTopDialog;
+    Self->GetFarPlugin()->FTopDialog = PrevTopDialog;
+    if (dlg != INVALID_HANDLE_VALUE)
+      Self->GetFarPlugin()->GetStartupInfo()->DialogFree(dlg);
   }
-#endif
+  );
 
   return FResult;
 }
@@ -873,12 +863,8 @@ void __fastcall TFarDialog::ProcessGroup(int Group, TFarProcessGroupEvent Callba
   void * Arg)
 {
   LockChanges();
-  // try
+  TRY_FINALLY1 (Self,
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
-    {
-      Self->UnlockChanges();
-    } BOOST_SCOPE_EXIT_END
     for (int i = 0; i < GetItemCount(); i++)
     {
       TFarDialogItem * I = GetItem(i);
@@ -888,12 +874,11 @@ void __fastcall TFarDialog::ProcessGroup(int Group, TFarProcessGroupEvent Callba
       }
     }
   }
-#ifndef _MSC_VER
-  __finally
+  ,
   {
-    UnlockChanges();
+    Self->UnlockChanges();
   }
-#endif
+  );
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TFarDialog::ShowItem(TFarDialogItem * Item, void * Arg)
@@ -940,28 +925,22 @@ void __fastcall TFarDialog::UnlockChanges()
   FChangesLocked--;
   if (FChangesLocked == 0)
   {
-    // try
-    BOOST_SCOPE_EXIT ( (&Self) )
+    TRY_FINALLY1 (Self,
+    {
+      if (FChangesPending)
+      {
+        FChangesPending = false;
+        Change();
+      }
+    }
+    ,
     {
       if (Self->GetHandle())
       {
         Self->SendMessage(DM_ENABLEREDRAW, true, 0);
       }
-    } BOOST_SCOPE_EXIT_END
-    if (FChangesPending)
-    {
-      FChangesPending = false;
-      Change();
     }
-#ifndef _MSC_VER
-    __finally
-    {
-      if (Handle)
-      {
-        SendMessage(DM_ENABLEREDRAW, true, 0);
-      }
-    }
-#endif
+    );
   }
 }
 //---------------------------------------------------------------------------
@@ -2178,24 +2157,19 @@ void __fastcall TFarList::Put(int Index, const UnicodeString S)
   if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle())
   {
     FNoDialogUpdate = true;
-    // try
+    TRY_FINALLY1 (Self,
     {
-      BOOST_SCOPE_EXIT ( (&Self) )
-      {
-        Self->FNoDialogUpdate = false;
-      } BOOST_SCOPE_EXIT_END
       TStringList::PutString(Index, S);
       if (GetUpdateCount() == 0)
       {
         UpdateItem(Index);
       }
     }
-#ifndef _MSC_VER
-    __finally
+    ,
     {
-      FNoDialogUpdate = false;
+      Self->FNoDialogUpdate = false;
     }
-#endif
+    );
   }
   else
   {
@@ -2247,12 +2221,8 @@ void __fastcall TFarList::Changed()
     if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle())
     {
       GetDialogItem()->GetDialog()->LockChanges();
-      // try
+      TRY_FINALLY1 (Self,
       {
-        BOOST_SCOPE_EXIT ( (&Self) )
-        {
-          Self->GetDialogItem()->GetDialog()->UnlockChanges();
-        } BOOST_SCOPE_EXIT_END
         GetDialogItem()->SendMessage(DM_LISTSET, reinterpret_cast<intptr_t>(FListItems));
         if (PrevTopIndex + GetDialogItem()->GetHeight() > GetCount())
         {
@@ -2261,12 +2231,11 @@ void __fastcall TFarList::Changed()
         SetCurPos((PrevSelected >= GetCount()) ? (GetCount() - 1) : PrevSelected,
           PrevTopIndex);
       }
-#ifndef _MSC_VER
-      __finally
+      ,
       {
-        DialogItem->Dialog->UnlockChanges();
+        Self->GetDialogItem()->GetDialog()->UnlockChanges();
       }
-#endif
+      );
     }
   }
 }

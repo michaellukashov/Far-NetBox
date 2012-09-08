@@ -157,13 +157,15 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
   ELEM.SubString(ELEM.LastDelimiter(L".>") + 1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
+  TRY_FINALLY1 (Storage, \
   { \
-      BOOST_SCOPE_EXIT ( (&Storage) ) \
-      { \
-        Storage->CloseSubKey(); \
-      } BOOST_SCOPE_EXIT_END \
-      BLOCK \
-  }
+    BLOCK \
+  } \
+  , \
+  { \
+    Storage->CloseSubKey(); \
+  } \
+  );
 #define KEY(TYPE, VAR) KEYEX(TYPE, VAR, VAR)
 #undef REGCONFIG
 #define REGCONFIG(CANCREATE) \
@@ -748,15 +750,8 @@ UnicodeString __fastcall TConfiguration::GetFileFileInfoString(const UnicodeStri
 
   UnicodeString Result;
   void * Info = GetFileApplicationInfo(FileName);
-  // try
+  TRY_FINALLY2 (FileName, Info,
   {
-    BOOST_SCOPE_EXIT ( (&FileName) (&Info) )
-    {
-      if (!FileName.IsEmpty())
-      {
-        FreeFileInfo(Info);
-      }
-    } BOOST_SCOPE_EXIT_END
     if ((Info != NULL) && (GetTranslationCount(Info) > 0))
     {
       TTranslation Translation;
@@ -776,15 +771,14 @@ UnicodeString __fastcall TConfiguration::GetFileFileInfoString(const UnicodeStri
       assert(!FileName.IsEmpty());
     }
   }
-#ifndef _MSC_VER
-  __finally
+  ,
   {
     if (!FileName.IsEmpty())
     {
       FreeFileInfo(Info);
     }
   }
-#endif
+  );
   return Result;
 }
 //---------------------------------------------------------------------------

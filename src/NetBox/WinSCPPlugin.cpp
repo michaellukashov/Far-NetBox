@@ -311,13 +311,8 @@ TCustomFarFileSystem * __fastcall TWinSCPPlugin::OpenPluginEx(int OpenFrom, intp
         const wchar_t * XmlFileName = reinterpret_cast<const wchar_t *>(Item);
         TSessionData * Session = NULL;
         THierarchicalStorage * ImportStorage = NULL;
+        TRY_FINALLY2 (ImportStorage, Session,
         {
-          BOOST_SCOPE_EXIT ( (&ImportStorage) (&Session) )
-          {
-            delete ImportStorage;
-            delete Session;
-          } BOOST_SCOPE_EXIT_END
-
           ImportStorage = new TXmlStorage(XmlFileName, Configuration->GetStoredSessionsSubKey());
           ImportStorage->Init();
           ImportStorage->SetAccessMode(smRead);
@@ -338,6 +333,12 @@ TCustomFarFileSystem * __fastcall TWinSCPPlugin::OpenPluginEx(int OpenFrom, intp
           }
           FileSystem->Connect(Session);
         }
+        ,
+        {
+          delete ImportStorage;
+          delete Session;
+        }
+        );
       }
       else
       {

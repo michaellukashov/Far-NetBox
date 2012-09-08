@@ -782,16 +782,8 @@ void __fastcall ProcessLocalDirectory(UnicodeString DirName,
   DirName = IncludeTrailingBackslash(DirName);
   if (FindFirst(DirName + L"*.*", FindAttrs, SearchRec) == 0)
   {
-#ifndef _MSC_VER
-    try
-#endif
+    TRY_FINALLY1 (SearchRec,
     {
-#ifdef _MSC_VER
-      BOOST_SCOPE_EXIT ( (&SearchRec) )
-      {
-        FindClose(SearchRec);
-      } BOOST_SCOPE_EXIT_END
-#endif
       do
       {
         if ((SearchRec.Name != L".") && (SearchRec.Name != L".."))
@@ -802,12 +794,11 @@ void __fastcall ProcessLocalDirectory(UnicodeString DirName,
 
       } while (FindNext(SearchRec) == 0);
     }
-#ifndef _MSC_VER
-    __finally
+    ,
     {
       FindClose(SearchRec);
     }
-#endif
+    );
   }
 }
 //---------------------------------------------------------------------------

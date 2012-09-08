@@ -1284,20 +1284,15 @@ void __fastcall TRemoteFile::FindLinkedFile()
     GetTerminal()->SetExceptionOnFail(true);
     try
     {
-      // try
+      TRY_FINALLY1 (Self,
       {
-        BOOST_SCOPE_EXIT ( (&Self) )
-        {
-          Self->GetTerminal()->SetExceptionOnFail(false);
-        } BOOST_SCOPE_EXIT_END
         GetTerminal()->ReadSymlink(this, FLinkedFile);
       }
-#ifndef _MSC_VER
-      __finally
+      ,
       {
-        Terminal->ExceptionOnFail = false;
+        Self->GetTerminal()->SetExceptionOnFail(false);
       }
-#endif
+      );
     }
     catch (Exception &E)
     {
@@ -1602,24 +1597,19 @@ void __fastcall TRemoteDirectory::SetIncludeThisDirectory(Boolean value)
 void __fastcall TRemoteDirectoryCache::Clear()
 {
   TGuard Guard(FSection);
-  // try
+  TRY_FINALLY1 (Self,
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
-    {
-      Self->TStringList::Clear();
-    } BOOST_SCOPE_EXIT_END
     for (int Index = 0; Index < GetCount(); Index++)
     {
       delete static_cast<TRemoteFileList *>(GetObjects(Index));
       PutObject(Index, NULL);
     }
   }
-#ifndef _MSC_VER
-  __finally
+  ,
   {
-    TStringList::Clear();
+    Self->TStringList::Clear();
   }
-#endif
+  );
 }
 //---------------------------------------------------------------------------
 bool __fastcall TRemoteDirectoryCache::GetIsEmpty() const

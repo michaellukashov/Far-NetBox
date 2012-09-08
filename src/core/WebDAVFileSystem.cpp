@@ -13201,12 +13201,8 @@ void __fastcall TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     FileNameOnly = ExtractFileName(RealFileName, false);
 
-    // try
+    TRY_FINALLY4 (OperationProgress, RealFileName, Success, OnceDoneOperation,
     {
-      BOOST_SCOPE_EXIT ( (&OperationProgress) (&RealFileName) (&Success) (&OnceDoneOperation) )
-      {
-        OperationProgress->Finish(RealFileName, Success, OnceDoneOperation);
-      } BOOST_SCOPE_EXIT_END
       try
       {
         if (FTerminal->GetSessionData()->GetCacheDirectories())
@@ -13229,12 +13225,11 @@ void __fastcall TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
         );
       }
     }
-#ifndef _MSC_VER
-    __finally
+    ,
     {
       OperationProgress->Finish(RealFileName, Success, OnceDoneOperation);
     }
-#endif // #ifndef _MSC_VER
+    );
     Index++;
   }
 }
@@ -13494,12 +13489,8 @@ void __fastcall TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString Dir
 
   bool CreateDir = true;
 
-  // try
+  TRY_FINALLY2 (SearchRec, findHandle,
   {
-    BOOST_SCOPE_EXIT ( (&SearchRec) (&findHandle) )
-    {
-      ::FindClose(findHandle);
-    } BOOST_SCOPE_EXIT_END
     while (FindOK && !OperationProgress->Cancel)
     {
       UnicodeString FileName = DirectoryName + SearchRec.cFileName;
@@ -13532,12 +13523,11 @@ void __fastcall TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString Dir
       );
     }
   }
-#ifndef _MSC_VER
-  __finally
+  ,
   {
     ::FindClose(findHandle);
   }
-#endif // #ifndef _MSC_VER
+  );
 
   if (CreateDir)
   {
@@ -13551,20 +13541,15 @@ void __fastcall TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString Dir
     try
     {
       FTerminal->SetExceptionOnFail(true);
-      // try
+      TRY_FINALLY1 (Self,
       {
-        BOOST_SCOPE_EXIT ( (&Self) )
-        {
-          Self->FTerminal->SetExceptionOnFail(false);
-        } BOOST_SCOPE_EXIT_END
         FTerminal->CreateDirectory(DestFullName, &Properties);
       }
-#ifndef _MSC_VER
-      __finally
+      ,
       {
         Self->FTerminal->SetExceptionOnFail(false);
       }
-#endif // #ifndef _MSC_VER
+      );
     }
     catch (...)
     {
@@ -13620,13 +13605,8 @@ void __fastcall TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
     const TRemoteFile * File = dynamic_cast<const TRemoteFile *>(FilesToCopy->GetObjects(Index));
     bool Success = false;
     FTerminal->SetExceptionOnFail(true);
-    // try
+    TRY_FINALLY5 (Self, OperationProgress, FileName, Success, OnceDoneOperation,
     {
-      BOOST_SCOPE_EXIT ( (&Self) (&OperationProgress) (&FileName) (&Success) (&OnceDoneOperation) )
-      {
-        OperationProgress->Finish(FileName, Success, OnceDoneOperation);
-        Self->FTerminal->SetExceptionOnFail(false);
-      } BOOST_SCOPE_EXIT_END
       try
       {
         SinkRobust(AbsolutePath(FileName, false), File, FullTargetDir, CopyParam, Params,
@@ -13640,13 +13620,12 @@ void __fastcall TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
         );
       }
     }
-#ifndef _MSC_VER
-    __finally
+    ,
     {
       OperationProgress->Finish(FileName, Success, OnceDoneOperation);
       Self->FTerminal->SetExceptionOnFail(false);
     }
-#endif // #ifndef _MSC_VER
+    );
     Index++;
   }
 }

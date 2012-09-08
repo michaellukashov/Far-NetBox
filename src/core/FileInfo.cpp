@@ -38,15 +38,8 @@ unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, unsigned in
   }
   else
   {
-    // try
+    TRY_FINALLY2 (NeedFree, Module,
     {
-      BOOST_SCOPE_EXIT ( (&NeedFree) (&Module) )
-      {
-        if (NeedFree)
-        {
-          FreeLibrary(Module);
-        }
-      } BOOST_SCOPE_EXIT_END
       HANDLE Rsrc = FindResource(Module, MAKEINTRESOURCE(VS_VERSION_INFO),
         MAKEINTRESOURCE(VS_FILE_INFO));
       if (Rsrc == NULL)
@@ -61,12 +54,8 @@ unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, unsigned in
         }
         else
         {
-          // try
+          TRY_FINALLY1 (Mem,
           {
-            BOOST_SCOPE_EXIT ( (&Mem) )
-            {
-              FreeResource(Mem);
-            } BOOST_SCOPE_EXIT_END
             VS_VERSION_INFO_STRUCT32 * VersionInfo = static_cast<VS_VERSION_INFO_STRUCT32 *>(LockResource(Mem));
             const VS_FIXEDFILEINFO * FixedInfo =
               (VS_FIXEDFILEINFO *)DWORD_ALIGN(VersionInfo, VersionInfo->szKey + wcslen(VersionInfo->szKey) + 1);
@@ -90,24 +79,22 @@ unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, unsigned in
               }
             }
           }
-#ifndef _MSC_VER
-          __finally
+          ,
           {
             FreeResource(Mem);
           }
-#endif
+          );
         }
       }
     }
-#ifndef _MSC_VER
-    __finally
+    ,
     {
       if (NeedFree)
       {
         FreeLibrary(Module);
       }
     }
-#endif
+    );
   }
 
   return Len;
