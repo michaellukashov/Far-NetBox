@@ -56,14 +56,6 @@ public:
   bool __fastcall Matches(const UnicodeString FileName, bool Local, bool Directory,
     const TParams * Params, bool & ImplicitMatch) const;
 
-#ifndef  _MSC_VER
-  __property UnicodeString Masks = { read = FStr, write = SetMasks };
-
-  __property TStrings * IncludeFileMasksStr = { read = GetMasksStr, index = MASK_INDEX(false, true) };
-  __property TStrings * ExcludeFileMasksStr = { read = GetMasksStr, index = MASK_INDEX(false, false) };
-  __property TStrings * IncludeDirectoryMasksStr = { read = GetMasksStr, index = MASK_INDEX(true, true) };
-  __property TStrings * ExcludeDirectoryMasksStr = { read = GetMasksStr, index = MASK_INDEX(true, false) };
-#else
   bool __fastcall GetIsValid() const;
   bool __fastcall GetIsValid(int & Start, int & Length) const;
   UnicodeString __fastcall GetMasks() const { return FStr; }
@@ -72,7 +64,6 @@ public:
   TStrings * __fastcall GetExcludeFileMasksStr() { return GetMasksStr(MASK_INDEX(false, false)); };
   TStrings * __fastcall GetIncludeDirectoryMasksStr() { return GetMasksStr(MASK_INDEX(true, true)); };
   TStrings * __fastcall GetExcludeDirectoryMasksStr() { return GetMasksStr(MASK_INDEX(true, false)); };
-#endif
 
 private:
   int FForceDirectoryMasks;
