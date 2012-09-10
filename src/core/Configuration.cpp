@@ -1219,7 +1219,7 @@ bool __fastcall TConfiguration::GetLogWindowComplete()
 UnicodeString __fastcall TConfiguration::GetDefaultLogFileName()
 {
   // return IncludeTrailingBackslash(SystemTemporaryDirectory()) + L"winscp.log";
-  return L"%TEMP%\\!S.log";
+  return L"%TEMP%\\&S.log";
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::SetConfirmOverwriting(bool value)
