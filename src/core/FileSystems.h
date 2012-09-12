@@ -172,11 +172,7 @@ public:
   virtual bool __fastcall GetStoredCredentialsTried() = 0;
   virtual UnicodeString __fastcall GetUserName() = 0;
 
-#ifndef _MSC_VER
-  __property UnicodeString CurrentDirectory = { read = GetCurrentDirectory };
-#else
   virtual UnicodeString __fastcall GetCurrentDirectory() = 0;
-#endif
 
 public:
   virtual void __fastcall Init() {}
@@ -186,9 +182,6 @@ protected:
   TTerminal * FTerminal;
 
   explicit /* __fastcall */ TCustomFileSystem(TTerminal * ATerminal);
-#ifndef _MSC_VER
-  virtual UnicodeString __fastcall GetCurrentDirectory() = 0;
-#endif
 
   static void __fastcall FindCustomCommandPattern(
     const UnicodeString Command, int Index, int &Len, char &PatternCmd);

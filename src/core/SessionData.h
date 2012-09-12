@@ -367,7 +367,7 @@ public:
   bool __fastcall GetAuthKIPassword() const { return FAuthKIPassword; }
   bool __fastcall GetAuthGSSAPI() const { return FAuthGSSAPI; }
   bool __fastcall GetGSSAPIFwdTGT() const { return FGSSAPIFwdTGT; }
-  const __fastcall UnicodeString GetGSSAPIServerRealm() const { return FGSSAPIServerRealm; }
+  const UnicodeString __fastcall GetGSSAPIServerRealm() const { return FGSSAPIServerRealm; }
   bool __fastcall GetChangeUsername() const { return FChangeUsername; }
   bool __fastcall GetCompression() const { return FCompression; }
   TSshProt __fastcall GetSshProt() const { return FSshProt; }
@@ -509,6 +509,7 @@ public:
     UnicodeString * FileName = NULL, bool * ProtocolDefined = NULL);
   TSessionData * __fastcall GetSession(int Index) { return static_cast<TSessionData *>(AtObject(Index)); }
   TSessionData * __fastcall GetDefaultSettings() const { return FDefaultSettings; }
+  void __fastcall SetDefaultSettings(TSessionData * value);
   TSessionData * __fastcall GetSessionByName(const UnicodeString SessionName);
 
   static void __fastcall ImportHostKeys(const UnicodeString TargetKey,
@@ -518,7 +519,6 @@ public:
 private:
   TSessionData * FDefaultSettings;
   bool FReadOnly;
-  void __fastcall SetDefaultSettings(TSessionData * value);
   void __fastcall DoSave(THierarchicalStorage * Storage, bool All, bool RecryptPasswordOnly);
   void __fastcall DoSave(bool All, bool Explicit, bool RecryptPasswordOnly);
   void __fastcall DoSave(THierarchicalStorage * Storage,

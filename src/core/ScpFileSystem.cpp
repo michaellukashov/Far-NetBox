@@ -70,6 +70,7 @@ private:
   TSessionData * FSessionData;
   UnicodeString FReturnVar;
 public:
+  void __fastcall SetMasks(const UnicodeString value);
   int __fastcall GetMaxLines(TFSCommand Cmd);
   int __fastcall GetMinLines(TFSCommand Cmd);
   bool __fastcall GetModifiesFiles(TFSCommand Cmd);
@@ -99,23 +100,9 @@ public:
   UnicodeString __fastcall FullCommand(TFSCommand Cmd, va_list args);
 #endif
   static UnicodeString __fastcall ExtractCommand(UnicodeString Command);
-#ifndef _MSC_VER
-  __property int MaxLines[TFSCommand Cmd]  = { read=GetMaxLines};
-  __property int MinLines[TFSCommand Cmd]  = { read=GetMinLines };
-  __property bool ModifiesFiles[TFSCommand Cmd]  = { read=GetModifiesFiles };
-  __property bool ChangesDirectory[TFSCommand Cmd]  = { read=GetChangesDirectory };
-  __property bool OneLineCommand[TFSCommand Cmd]  = { read=GetOneLineCommand };
-  __property UnicodeString Commands[TFSCommand Cmd]  = { read=GetCommands, write=SetCommands };
-  __property UnicodeString FirstLine = { read = GetFirstLine };
-  __property bool InteractiveCommand[TFSCommand Cmd] = { read = GetInteractiveCommand };
-  __property UnicodeString LastLine  = { read=GetLastLine };
-  __property TSessionData * SessionData  = { read=FSessionData, write=FSessionData };
-  __property UnicodeString ReturnVar  = { read=GetReturnVar, write=FReturnVar };
-#else
   TSessionData * __fastcall GetSessionData() { return FSessionData; }
   void __fastcall SetSessionData(TSessionData * value) { FSessionData = value; }
   void __fastcall SetReturnVar(const UnicodeString value) { FReturnVar = value; }
-#endif
 };
 //===========================================================================
 const wchar_t NationalVars[NationalVarCount][15] =
@@ -228,8 +215,8 @@ UnicodeString __fastcall TCommandSet::GetCommands(TFSCommand Cmd)
 #ifndef _MSC_VER
 UnicodeString __fastcall TCommandSet::Command(TFSCommand Cmd, const TVarRec * args, int size)
 {
-  if (args) return Format(Commands[Cmd], args, size);
-    else return Commands[Cmd];
+  if (args) return Format(GetCommands(Cmd), args, size);
+    else return GetCommands(Cmd);
 }
 #endif
 //---------------------------------------------------------------------------
@@ -254,14 +241,14 @@ UnicodeString TCommandSet::Command(TFSCommand Cmd, va_list args)
 UnicodeString __fastcall TCommandSet::FullCommand(TFSCommand Cmd, const TVarRec * args, int size)
 {
   UnicodeString Separator;
-  if (OneLineCommand[Cmd]) Separator = L" ; ";
+  if (GetOneLineCommand(Cmd)) Separator = L" ; ";
     else Separator = L"\n";
   UnicodeString Line = Command(Cmd, args, size);
   UnicodeString LastLineCmd =
-    Command(fsLastLine, ARRAYOFCONST((LastLine, ReturnVar)));
+    Command(fsLastLine, ARRAYOFCONST((GetLastLine(), GetReturnVar())));
   UnicodeString FirstLineCmd;
-  if (InteractiveCommand[Cmd])
-    FirstLineCmd = Command(fsFirstLine, ARRAYOFCONST((FirstLine))) + Separator;
+  if (GetInteractiveCommand(Cmd))
+    FirstLineCmd = Command(fsFirstLine, ARRAYOFCONST((GetFirstLine()))) + Separator;
 
   UnicodeString Result;
   if (!Line.IsEmpty())

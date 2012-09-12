@@ -17,11 +17,6 @@ public:
   void __fastcall ModifyAll(bool Modify);
   void __fastcall Clear();
 
-#ifndef _MSC_VER
-  __property TBookmarkList * Bookmarks[UnicodeString Index] = { read = GetBookmarks, write = SetBookmarks };
-  __property TBookmarkList * SharedBookmarks = { read = GetSharedBookmarks, write = SetSharedBookmarks };
-#endif
-
 private:
   TStringList * FBookmarkLists;
   UnicodeString FSharedKey;
@@ -58,22 +53,12 @@ public:
   void __fastcall SaveOptions(THierarchicalStorage * Storage);
   void __fastcall ShortCuts(TShortCuts & ShortCuts);
 
-#ifndef _MSC_VER
-  __property int Count = { read = GetCount };
-  __property TBookmark * Bookmarks[int Index] = { read = GetBookmarks };
-  __property bool NodeOpened[UnicodeString Index] = { read = GetNodeOpened, write = SetNodeOpened };
-#endif
-
 protected:
   int __fastcall IndexOf(TBookmark * Bookmark);
   void __fastcall KeyChanged(int Index);
 
-#ifndef _MSC_VER
-  __property bool Modified = { read = FModified, write = FModified };
-#else
-  bool GetModified() { return FModified; }
-  void SetModified(bool value) { FModified = value; }
-#endif
+  bool __fastcall GetModified() { return FModified; }
+  void __fastcall SetModified(bool value) { FModified = value; }
 
 private:
   TStringList * FBookmarks;
@@ -95,27 +80,16 @@ public:
 
   virtual void __fastcall Assign(TPersistent * Source);
 
-#ifndef _MSC_VER
-  __property UnicodeString Name = { read = FName, write = SetName };
-  __property UnicodeString Local = { read = FLocal, write = SetLocal };
-  __property UnicodeString Remote = { read = FRemote, write = SetRemote };
-  __property UnicodeString Node = { read = FNode, write = SetNode };
-  __property TShortCut ShortCut = { read = FShortCut, write = SetShortCut };
-#else
   UnicodeString __fastcall GetName() { return FName; }
   UnicodeString __fastcall GetLocal() { return FLocal; }
   UnicodeString __fastcall GetRemote() { return FRemote; }
   UnicodeString __fastcall GetNode() { return FNode; }
   TShortCut __fastcall GetShortCut() { return FShortCut; }
-#endif
 
 protected:
   TBookmarkList * FOwner;
 
   static UnicodeString __fastcall BookmarkKey(const UnicodeString Node, const UnicodeString Name);
-#ifndef _MSC_VER
-  __property UnicodeString Key = { read = GetKey };
-#endif
 
 private:
   UnicodeString FName;

@@ -4,6 +4,7 @@
 
 #include <Classes.hpp>
 
+#include "coredefines.hpp"
 #include "SessionInfo.h"
 #include "Interface.h"
 #include "FileOperationProgress.h"
@@ -333,7 +334,6 @@ protected:
   void /* __fastcall */ DeleteLocalFile(const UnicodeString & FileName,
     const TRemoteFile * File, void * Param);
   void /* __fastcall */ RecycleFile(UnicodeString FileName, const TRemoteFile * File);
-  TStrings * __fastcall GetFixedPaths();
   void /* __fastcall */ DoStartup();
   virtual bool __fastcall DoQueryReopen(Exception * E);
   virtual void __fastcall FatalError(Exception * E, UnicodeString Msg);
@@ -532,6 +532,7 @@ public:
   void __fastcall SetUseBusyCursor(bool value) { FUseBusyCursor = value; }
   bool __fastcall GetAutoReadDirectory() { return FAutoReadDirectory; }
   void __fastcall SetAutoReadDirectory(bool value) { FAutoReadDirectory = value; }
+  TStrings * __fastcall GetFixedPaths();
   TQueryUserEvent & __fastcall GetOnQueryUser() { return FOnQueryUser; }
   void __fastcall SetOnQueryUser(TQueryUserEvent value) { FOnQueryUser = value; }
   TPromptUserEvent & __fastcall GetOnPromptUser() { return FOnPromptUser; }

@@ -58,15 +58,6 @@ public:
 
   virtual void __fastcall Flush();
 
-#ifndef _MSC_VER
-  __property UnicodeString Storage  = { read=FStorage };
-  __property UnicodeString CurrentSubKey  = { read=GetCurrentSubKey };
-  __property TStorageAccessMode AccessMode  = { read=FAccessMode, write=SetAccessMode };
-  __property bool Explicit = { read = FExplicit, write = FExplicit };
-  __property bool ForceAnsi = { read = FForceAnsi, write = FForceAnsi };
-  __property bool MungeStringValues = { read = FMungeStringValues, write = FMungeStringValues };
-  __property UnicodeString Source = { read = GetSource };
-#else
   UnicodeString __fastcall GetStorage() { return FStorage; }
   TStorageAccessMode __fastcall GetAccessMode() { return FAccessMode; }
   bool __fastcall GetExplicit() { return FExplicit; }
@@ -78,7 +69,6 @@ public:
 
   virtual void __fastcall SetAccessMode(TStorageAccessMode value);
   virtual UnicodeString __fastcall GetSource() = 0;
-#endif
 
 protected:
   UnicodeString FStorage;
@@ -90,17 +80,11 @@ protected:
 
   UnicodeString __fastcall GetCurrentSubKey();
   UnicodeString __fastcall GetCurrentSubKeyMunged();
-#ifndef _MSC_VER
-  virtual void __fastcall SetAccessMode(TStorageAccessMode value);
-#endif
   virtual bool __fastcall DoKeyExists(const UnicodeString SubKey, bool ForceAnsi) = 0;
   static UnicodeString __fastcall IncludeTrailingBackslash(const UnicodeString & S);
   static UnicodeString __fastcall ExcludeTrailingBackslash(const UnicodeString & S);
   virtual bool __fastcall DoOpenSubKey(const UnicodeString SubKey, bool CanCreate) = 0;
   UnicodeString __fastcall MungeKeyName(UnicodeString Key);
-#ifndef _MSC_VER
-  virtual UnicodeString __fastcall GetSource() = 0;
-#endif
 };
 //---------------------------------------------------------------------------
 class TRegistryStorage : public THierarchicalStorage
@@ -139,20 +123,13 @@ public:
 
   virtual void __fastcall GetValueNames(Classes::TStrings* Strings);
 
-#ifndef _MSC_VER
-protected:
-#endif
   int __fastcall GetFailed();
+  void __fastcall SetFailed(int value) { FFailed = value; }
   virtual void __fastcall SetAccessMode(TStorageAccessMode value);
+protected:
   virtual bool __fastcall DoKeyExists(const UnicodeString SubKey, bool ForceAnsi);
   virtual bool __fastcall DoOpenSubKey(const UnicodeString SubKey, bool CanCreate);
   virtual UnicodeString __fastcall GetSource();
-
-#ifndef _MSC_VER
-  __property int Failed  = { read=GetFailed, write=FFailed };
-#else
-  void SetFailed(int value) { FFailed = value; }
-#endif
 
 private:
   TRegistry * FRegistry;
@@ -201,9 +178,6 @@ private:
 protected:
   TCustomIniFile * FIniFile;
 
-#ifndef _MSC_VER
-  __property UnicodeString CurrentSection  = { read=GetCurrentSection };
-#endif
   virtual bool __fastcall DoKeyExists(const UnicodeString SubKey, bool ForceAnsi);
   virtual bool __fastcall DoOpenSubKey(const UnicodeString SubKey, bool CanCreate);
   virtual UnicodeString __fastcall GetSource();

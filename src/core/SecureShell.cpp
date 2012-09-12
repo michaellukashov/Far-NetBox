@@ -1658,7 +1658,7 @@ void __fastcall TSecureShell::KeepAlive()
 //---------------------------------------------------------------------------
 static unsigned int minPacketSize = 0;
 
-unsigned int __fastcall TSecureShell::MinPacketSize()
+unsigned long __fastcall TSecureShell::MinPacketSize()
 {
   if (!FSessionInfoValid)
   {
@@ -1679,7 +1679,7 @@ unsigned int __fastcall TSecureShell::MinPacketSize()
   }
 }
 //---------------------------------------------------------------------------
-unsigned int __fastcall TSecureShell::MaxPacketSize()
+unsigned long __fastcall TSecureShell::MaxPacketSize()
 {
   if (!FSessionInfoValid)
   {

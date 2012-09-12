@@ -9,32 +9,25 @@ class TNamedObjectList;
 class TNamedObject : public TPersistent
 {
 public:
-#ifndef _MSC_VER
-  __property UnicodeString Name = { read = FName, write = SetName };
-  __property bool Hidden = { read = FHidden };
-#else
   bool __fastcall GetHidden() { return FHidden; }
   UnicodeString __fastcall GetName() { return FName; }
-#endif
-  /* __fastcall */ TNamedObject() : TPersistent(), FHidden(false) {};
+  void __fastcall SetName(UnicodeString value);
+  explicit /* __fastcall */ TNamedObject() : TPersistent(), FHidden(false) {};
   Integer __fastcall CompareName(UnicodeString aName, Boolean CaseSensitive = False);
   explicit /* __fastcall */ TNamedObject(UnicodeString aName);
   void __fastcall MakeUniqueIn(TNamedObjectList * List);
 private:
   UnicodeString FName;
   bool FHidden;
-
-public:
-  void __fastcall SetName(UnicodeString value);
 };
 //---------------------------------------------------------------------------
 class TNamedObjectList : public TObjectList
 {
 private:
   int FHiddenCount;
+  virtual void __fastcall Notify(void *Ptr, TListNotification Action);
 public:
   int __fastcall GetCount();
-  virtual void __fastcall Notify(void *Ptr, TListNotification Action);
   void __fastcall SetCount(int value);
 protected:
   void __fastcall Recount();
@@ -49,13 +42,8 @@ public:
   void __fastcall AlphaSort();
   virtual TNamedObject * __fastcall AtObject(Integer Index);
   TNamedObject * __fastcall FindByName(UnicodeString Name, Boolean CaseSensitive = False);
-#ifndef _MSC_VER
-  __property int Count = { read = GetCount, write = SetCount };
-  __property int HiddenCount = { read = FHiddenCount, write = FHiddenCount };
-#else
-  int GetHiddenCount() { return FHiddenCount; }
-  void SetHiddenCount(int value) { FHiddenCount = value; }
-#endif
+  int __fastcall GetHiddenCount() { return FHiddenCount; }
+  void __fastcall SetHiddenCount(int value) { FHiddenCount = value; }
 };
 //---------------------------------------------------------------------------
 int /* __fastcall */ NamedObjectSortProc(void * Item1, void * Item2);
