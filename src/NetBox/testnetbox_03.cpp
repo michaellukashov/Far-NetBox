@@ -585,23 +585,23 @@ private:
   std::map<std::string, std::string> FAssignments;
   Property<std::string> FKey;
   int GetNumber() { return 42; }
-  float AddWeight(float const & value) { return value; }
+  float AddWeight(float value) { return value; }
   std::string GetKey()
   {
     // extra processing steps here
     return FKey();
   }
-  void SetKey(const std::string AKey)
+  void SetKey(std::string AKey)
   {
     // extra processing steps here
     FKey = AKey;
   }
-  std::string GetAssignment(const std::string AKey)
+  std::string GetAssignment(std::string AKey)
   {
     // extra processing steps here
     return FAssignments[Key];
   }
-  void SetAssignment(const std::string Key, const std::string Value)
+  void SetAssignment(std::string Key, std::string Value)
   {
     // extra processing steps here
     FAssignments[Key] = Value;
