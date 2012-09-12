@@ -674,7 +674,7 @@ void __fastcall TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool
 
   // duplicated from core\configuration.cpp
   #undef KEY
-  #define KEY(TYPE, VAR) Storage->Write ## TYPE(PropertyToKey(MB2W(#VAR)), Get##VAR())
+  #define KEY(TYPE, NAME) Storage->Write ## TYPE(PropertyToKey(MB2W(#NAME)), Get ## NAME())
   REGCONFIG(true);
   #undef KEY
 
@@ -718,7 +718,7 @@ void __fastcall TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
 
   // duplicated from core\configuration.cpp
   #undef KEY
-  #define KEY(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(PropertyToKey(MB2W(#VAR)), Get##VAR()))
+  #define KEY(TYPE, NAME) Set ## NAME(Storage->Read ## TYPE(PropertyToKey(MB2W(#NAME)), Get ## NAME()))
   #pragma warn -eas
   REGCONFIG(false);
   #pragma warn +eas

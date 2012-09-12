@@ -181,6 +181,7 @@ public:
   virtual void __fastcall SaveData(THierarchicalStorage * Storage, bool All);
   virtual void __fastcall LoadData(THierarchicalStorage * Storage);
   virtual LCID __fastcall GetLocale();
+  LCID __fastcall GetLocaleSafe() { return GetLocale(); }
   void __fastcall SetLocale(LCID value);
   void __fastcall SetLocaleSafe(LCID value);
   virtual HINSTANCE __fastcall LoadNewResourceModule(LCID Locale,

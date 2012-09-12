@@ -68,7 +68,6 @@ void /* __fastcall */ TSynchronizeController::StartStop(TObject * Sender,
         SynchronizeLog(slScan,
           FMTLOAD(SYNCHRONIZE_SCAN, FSynchronizeParams.LocalDirectory.c_str()));
       }
-      int Directories = 0;
       Error(SNotImplemented, 256);
       /*
       // FIXME
@@ -82,7 +81,7 @@ void /* __fastcall */ TSynchronizeController::StartStop(TObject * Sender,
       }
       FSynchronizeMonitor->Filters = Filters;
       FSynchronizeMonitor->MaxDirectories = 0;
-      FSynchronizeMonitor->ChangeDelay = GUIConfiguration->KeepUpToDateChangeDelay;
+      FSynchronizeMonitor->ChangeDelay = GUIConfiguration->GetKeepUpToDateChangeDelay();
       FSynchronizeMonitor->OnTooManyDirectories = SynchronizeTooManyDirectories;
       FSynchronizeMonitor->OnDirectoriesChange = SynchronizeDirectoriesChange;
       FSynchronizeMonitor->OnFilter = SynchronizeFilter;
@@ -92,10 +91,10 @@ void /* __fastcall */ TSynchronizeController::StartStop(TObject * Sender,
       FSynchronizeMonitor->OnInvalid = SynchronizeInvalid;
       FSynchronizeMonitor->OnSynchronize = OnSynchronizeThreads;
       // get count before open to avoid thread issues
-      Directories = FSynchronizeMonitor->Directories->GetCount();
+      int Directories = FSynchronizeMonitor->Directories->GetCount();
       FSynchronizeMonitor->Open();
+      SynchronizeLog(slStart, FMTLOAD(SYNCHRONIZE_START, GetDirectories()));
       */
-      SynchronizeLog(slStart, FMTLOAD(SYNCHRONIZE_START, Directories));
     }
     catch(...)
     {
