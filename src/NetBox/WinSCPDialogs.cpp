@@ -4624,9 +4624,9 @@ private:
       {
         UsedGroupList->Add(File->GetGroup().GetName());
       }
-      if (UsedUserList && !File->GetOwner().GetName().IsEmpty())
+      if (UsedUserList && !File->Owner().GetName().IsEmpty())
       {
-        UsedUserList->Add(File->GetOwner().GetName());
+        UsedUserList->Add(File->Owner().GetName());
       }
       if (File->GetIsDirectory())
       {

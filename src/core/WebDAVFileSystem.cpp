@@ -13948,12 +13948,12 @@ bool __fastcall TWebDAVFileSystem::HandleListData(const wchar_t * Path,
         const wchar_t * Space = wcschr(own.c_str(), ' ');
         if (Space != NULL)
         {
-          File->GetOwner().SetName(UnicodeString(own.c_str(), Space - own.c_str()));
+          File->Owner().SetName(UnicodeString(own.c_str(), Space - own.c_str()));
           File->GetGroup().SetName(Space + 1);
         }
         else
         {
-          File->GetOwner().SetName(Entry->OwnerGroup);
+          File->Owner().SetName(Entry->OwnerGroup);
         }
 
         File->SetSize(Entry->Size);

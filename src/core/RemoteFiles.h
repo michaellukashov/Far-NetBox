@@ -148,7 +148,7 @@ public:
   void __fastcall SetDirectory(TRemoteFileList * value) { FDirectory = value; }
   __int64 __fastcall GetSize() const { return FSize; }
   void __fastcall SetSize(__int64 value) { FSize = value; }
-  TRemoteToken __fastcall GetOwner() const { return FOwner; }
+  TRemoteToken __fastcall Owner() const { return FOwner; }
   void __fastcall SetOwner(TRemoteToken value) { FOwner = value; }
   TRemoteToken __fastcall GetGroup() const { return FGroup; }
   void __fastcall SetGroup(TRemoteToken value) { FGroup = value; }
