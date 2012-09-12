@@ -331,11 +331,31 @@ private:
   {
     PutObject(Index, Value);
   }
+  UnicodeString PropertyGetName(int Index)
+  {
+    return GetName(Index);
+  }
+  void PropertySetName(int Index, UnicodeString Value)
+  {
+    // SetName(Index, Value);
+    Classes::Error(SNotImplemented, 2012);
+  }
+  UnicodeString PropertyGetValue(UnicodeString Index)
+  {
+    return GetValue(Index);
+  }
+  void PropertySetValue(UnicodeString Index, UnicodeString Value)
+  {
+    // SetValue(Index, Value);
+    Classes::Error(SNotImplemented, 2011);
+  }
 
 public:
   ROProperty<int, TStrings, &TStrings::PropertyGetCount> Count;
   IndexedProperty<int, UnicodeString, TStrings, &TStrings::PropertyGetString, &TStrings::PropertySetString > Strings;
   IndexedProperty<int, TObject *, TStrings, &TStrings::PropertyGetObject, &TStrings::PropertySetObject > Objects;
+  IndexedProperty<int, UnicodeString, TStrings, &TStrings::PropertyGetName, &TStrings::PropertySetName> Names;
+  IndexedProperty<UnicodeString, UnicodeString, TStrings, &TStrings::PropertyGetValue, &TStrings::PropertySetValue> Values;
 
 protected:
   TDuplicatesEnum FDuplicates;

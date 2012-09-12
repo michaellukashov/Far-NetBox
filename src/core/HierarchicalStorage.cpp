@@ -292,7 +292,7 @@ void __fastcall THierarchicalStorage::WriteValues(Classes::TStrings * Strings,
       if (MaintainKeys)
       {
         assert(Strings->Strings[Index].Pos(L"=") > 1);
-        WriteString(Strings->Name[Index], Strings->Values[Strings->Names[Index]]);
+        WriteString(Strings->Names[Index], Strings->Values[Strings->Names[Index]]);
       }
       else
       {

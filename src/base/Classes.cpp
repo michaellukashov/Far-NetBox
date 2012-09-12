@@ -354,6 +354,9 @@ TStrings::TStrings() :
 {
   Count(this);
   Strings(this);
+  Objects(this);
+  Names(this);
+  Values(this);
 }
 TStrings::~TStrings()
 {
