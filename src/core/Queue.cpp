@@ -1155,7 +1155,7 @@ bool __fastcall TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
   }
   else
   {
-    Sleep(Configuration->GetSessionReopenBackground());
+    Sleep(GetConfiguration()->GetSessionReopenBackground());
     Result = true;
   }
   return Result;
@@ -1787,7 +1787,7 @@ int __fastcall TQueueItemProxy::GetIndex()
 //---------------------------------------------------------------------------
 /* __fastcall */ TTerminalQueueStatus::~TTerminalQueueStatus()
 {
-  for (int Index = 0; Index < FList->GetCount(); Index++)
+  for (int Index = 0; Index < FList->Count; Index++)
   {
     delete GetItem(Index);
   }
@@ -1806,7 +1806,7 @@ int __fastcall TTerminalQueueStatus::GetActiveCount()
   {
     FActiveCount = 0;
 
-    while ((FActiveCount < FList->GetCount()) &&
+    while ((FActiveCount < FList->Count) &&
       (GetItem(FActiveCount)->GetStatus() != TQueueItem::qsPending))
     {
       FActiveCount++;
@@ -1832,19 +1832,19 @@ void __fastcall TTerminalQueueStatus::Delete(TQueueItemProxy * ItemProxy)
 //---------------------------------------------------------------------------
 int __fastcall TTerminalQueueStatus::GetCount()
 {
-  return FList->GetCount();
+  return FList->Count;
 }
 //---------------------------------------------------------------------------
 TQueueItemProxy * __fastcall TTerminalQueueStatus::GetItem(int Index)
 {
-  return reinterpret_cast<TQueueItemProxy *>(FList->GetItem(Index));
+  return reinterpret_cast<TQueueItemProxy *>(FList->Items[Index]);
 }
 //---------------------------------------------------------------------------
 TQueueItemProxy * __fastcall TTerminalQueueStatus::FindByQueueItem(
   TQueueItem * QueueItem)
 {
   TQueueItemProxy * Item;
-  for (int Index = 0; Index < FList->GetCount(); Index++)
+  for (int Index = 0; Index < FList->Count; Index++)
   {
     Item = GetItem(Index);
     if (Item->FQueueItem == QueueItem)
@@ -1872,7 +1872,7 @@ UnicodeString __fastcall TLocatedQueueItem::StartupDirectory()
 void __fastcall TLocatedQueueItem::DoExecute(TTerminal * Terminal)
 {
   assert(Terminal != NULL);
-  Terminal->GetCurrentDirectory() = FCurrentDir;
+  Terminal->SetCurrentDirectory(FCurrentDir);
 }
 //---------------------------------------------------------------------------
 // TTransferQueueItem
@@ -1939,7 +1939,7 @@ void __fastcall TLocatedQueueItem::DoExecute(TTerminal * Terminal)
   {
     if (FLAGSET(Params, cpTemporary))
     {
-      FInfo->Source = ::ExtractFileName(FilesToCopy->GetStrings(0), true);
+      FInfo->Source = ::ExtractFileName(FilesToCopy->Strings[0], true);
       FInfo->ModifiedLocal = L"";
     }
     else
@@ -2223,6 +2223,7 @@ void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
         }
       }
       while (!Done);
+
 
 
       Rethrow(FException);
