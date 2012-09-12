@@ -1139,7 +1139,7 @@ bool /* __fastcall */ TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKi
   }
 
   if (AResult && (Configuration->GetRememberPassword()) &&
-      (Prompts->Count == 1) && !(Prompts->GetObjects(0) != NULL) &&
+      (Prompts->Count == 1) && !(Prompts->Objects[0] != NULL) &&
       ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
        (Kind == pkTIS) || (Kind == pkCryptoCard)))
   {
@@ -2742,14 +2742,14 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
               Success = false;
               if (!Ex)
               {
-                TRemoteFile * RemoteFile = static_cast<TRemoteFile *>(FileList->GetObjects(Index));
+                TRemoteFile * RemoteFile = static_cast<TRemoteFile *>(FileList->Objects[Index]);
                 ProcessFile(FileName, RemoteFile, Param);
               }
               else
               {
                 // not used anymore
                 // TProcessFileEventEx ProcessFileEx = (TProcessFileEventEx)ProcessFile;
-                // ProcessFileEx(FileName, (TRemoteFile *)FileList->GetObjects(Index), Param, Index);
+                // ProcessFileEx(FileName, (TRemoteFile *)FileList->Objects[Index], Param, Index);
               }
               Success = true;
             }
@@ -3037,7 +3037,7 @@ void /* __fastcall */ TTerminal::CustomCommandOnFiles(UnicodeString Command,
     UnicodeString FileList;
     for (int i = 0; i < Files->Count; i++)
     {
-      TRemoteFile * File = static_cast<TRemoteFile *>(Files->GetObjects(i));
+      TRemoteFile * File = static_cast<TRemoteFile *>(Files->Objects[i]);
       bool Dir = File->GetIsDirectory() && !File->GetIsSymLink();
 
       if (!Dir || FLAGSET(Params, ccApplyToDirectories))
@@ -3154,7 +3154,7 @@ bool /* __fastcall */ TTerminal::LoadFilesProperties(TStrings * FileList)
     FFileSystem->LoadFilesProperties(FileList);
   if (Result && GetSessionData()->GetCacheDirectories() &&
       (FileList->Count > 0) &&
-      (dynamic_cast<TRemoteFile *>(FileList->GetObjects(0))->GetDirectory() == FFiles))
+      (dynamic_cast<TRemoteFile *>(FileList->Objects[0])->GetDirectory() == FFiles))
   {
     AddCachedFileList(FFiles);
   }
@@ -3387,7 +3387,7 @@ bool /* __fastcall */ TTerminal::MoveFiles(TStrings * FileList, const UnicodeStr
       for (int Index = 0; !PossiblyMoved && (Index < FileList->Count); Index++)
       {
         const TRemoteFile * File =
-          dynamic_cast<const TRemoteFile *>(FileList->GetObjects(Index));
+          dynamic_cast<const TRemoteFile *>(FileList->Objects[Index]);
         // File can be NULL, and filename may not be full path,
         // but currently this is the only way we can move (at least in GUI)
         // current directory
@@ -4249,7 +4249,7 @@ void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeStri
       for (int Index = 0; Index < Data.LocalFileList->Count; Index++)
       {
         FileData = reinterpret_cast<TSynchronizeFileData *>
-          (Data.LocalFileList->GetObjects(Index));
+          (Data.LocalFileList->Objects[Index]);
         // add local file either if we are going to upload it
         // (i.e. if it is updated or we want to upload even new files)
         // or if we are going to delete it (i.e. all "new"=obsolete files)
@@ -4330,7 +4330,7 @@ void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeStri
       for (int Index = 0; Index < Data.LocalFileList->Count; Index++)
       {
         TSynchronizeFileData * FileData = reinterpret_cast<TSynchronizeFileData *>
-          (Data.LocalFileList->GetObjects(Index));
+          (Data.LocalFileList->Objects[Index]);
         delete FileData;
       }
       delete Data.LocalFileList;
@@ -4378,7 +4378,7 @@ void /* __fastcall */ TTerminal::SynchronizeCollectFile(const UnicodeString & Fi
       if (!New)
       {
         TSynchronizeFileData * LocalData =
-          reinterpret_cast<TSynchronizeFileData *>(Data->LocalFileList->GetObjects(LocalIndex));
+          reinterpret_cast<TSynchronizeFileData *>(Data->LocalFileList->Objects[LocalIndex]);
 
         LocalData->New = false;
 
@@ -5250,7 +5250,7 @@ bool /* __fastcall */ TSecondaryTerminal::DoPromptUser(TSessionData * Data,
 {
   bool AResult = false;
 
-  if ((Prompts->Count == 1) && !(Prompts->GetObjects(0) != NULL) &&
+  if ((Prompts->Count == 1) && !(Prompts->Objects[0] != NULL) &&
       ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
        (Kind == pkTIS) || (Kind == pkCryptoCard)))
   {
