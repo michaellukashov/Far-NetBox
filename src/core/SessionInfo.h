@@ -2,6 +2,7 @@
 #ifndef SessionInfoH
 #define SessionInfoH
 
+#include "coredefines.hpp"
 #include "SessionData.h"
 #include "Interface.h"
 //---------------------------------------------------------------------------
@@ -218,12 +219,15 @@ public:
   TSessionLog * __fastcall GetParent() { return FParent; }
   void __fastcall SetParent(TSessionLog *value) { FParent = value; }
   bool __fastcall GetLogging() { return FLogging; }
+  TNotifyEvent & __fastcall GetOnChange() { return TStringList::GetOnChange(); }
+  void __fastcall SetOnChange(TNotifyEvent value) { TStringList::SetOnChange(value); }
   TNotifyEvent & __fastcall GetOnStateChange() { return FOnStateChange; }
   void __fastcall SetOnStateChange(TNotifyEvent value) { FOnStateChange = value; }
   UnicodeString __fastcall GetCurrentFileName() { return FCurrentFileName; }
   int __fastcall GetTopIndex() { return FTopIndex; }
   UnicodeString __fastcall GetName() { return FName; }
   void __fastcall SetName(const UnicodeString value) { FName = value; }
+  int __fastcall GetCount() { return TStringList::Count; }
 
 protected:
   void __fastcall CloseLogFile();
@@ -256,6 +260,7 @@ public:
   UnicodeString __fastcall GetLogFileName();
   bool __fastcall GetLoggingToFile();
   UnicodeString __fastcall GetSessionName();
+private:
   void __fastcall DoAdd(TLogLineType Type, UnicodeString Line,
     TDoAddLogEvent Event);
   void /* __fastcall */ DoAddToParent(TLogLineType aType, const UnicodeString & aLine);
@@ -304,8 +309,8 @@ private:
   UnicodeString FIndent;
   bool FEnabled;
 
-public:
   void __fastcall OpenLogFile();
+public:
   UnicodeString __fastcall GetLogFileName();
   void __fastcall SetEnabled(bool value);
 };
