@@ -321,7 +321,7 @@ RawByteString __fastcall THierarchicalStorage::ReadBinaryData(const UnicodeStrin
   size_t Size = BinaryDataSize(Name);
   RawByteString Value;
   Value.SetLength(Size);
-  ReadBinaryData(Name, (void *)Value.c_str(), Size);
+  ReadBinaryData(Name, static_cast<void *>(const_cast<char *>(Value.c_str())), Size);
   return Value;
 }
 //---------------------------------------------------------------------------

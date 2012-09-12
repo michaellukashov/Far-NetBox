@@ -710,8 +710,6 @@ void __fastcall TFTPFileSystem::ChangeFileProperties(const UnicodeString AFileNa
 
   if (Properties && Properties->Valid.Contains(vpRights))
   {
-    assert(Properties);
-
     TRemoteFile * OwnedFile = NULL;
 
     std::auto_ptr<TRemoteFile> OwnedFilePtr(NULL);
@@ -2170,6 +2168,7 @@ int __fastcall TFTPFileSystem::GetOptionVal(int OptionID) const
   TSessionData * Data = FTerminal->GetSessionData();
   int Result;
 
+
   switch (OptionID)
   {
     case OPTION_PROXYTYPE:
@@ -2422,6 +2421,7 @@ void __fastcall TFTPFileSystem::DoWaitForReply(unsigned int & ReplyToAwait, bool
       while (ProcessMessage() && KeepWaitingForReply(ReplyToAwait, WantLastCode));
     }
 
+
     if (FReply != 0)
     {
       // throws
@@ -2551,7 +2551,7 @@ void __fastcall TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
         FLAGSET(Reply, TFileZillaIntf::REPLY_DISCONNECTED) ||
         FLAGSET(Reply, TFileZillaIntf::REPLY_NOTCONNECTED);
 
-      UnicodeString HelpKeyword;
+      AnsiString HelpKeyword;
       TStrings * MoreMessages = new TStringList();
       try
       {

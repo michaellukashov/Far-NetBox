@@ -185,7 +185,7 @@ UnicodeString __fastcall TCopyParamType::GetInfoStr(UnicodeString Separator, int
 void __fastcall TCopyParamType::Assign(const TCopyParamType * Source)
 {
   assert(Source != NULL);
-  #define COPY(Prop) Set##Prop(Source->Get##Prop())
+  #define COPY(Prop) Set ## Prop(Source->Get ## Prop())
   COPY(FileNameCase);
   COPY(PreserveReadOnly);
   COPY(PreserveTime);
@@ -515,7 +515,7 @@ void __fastcall TCopyParamType::Save(THierarchicalStorage * Storage) const
   Storage->WriteInteger(L"CPSLimit", GetCPSLimit());
 }
 //---------------------------------------------------------------------------
-#define C(Property) (Get##Property() == rhp.Get##Property())
+#define C(Property) (Get ## Property() == rhp.Get ## Property())
 bool __fastcall TCopyParamType::operator==(const TCopyParamType & rhp) const
 {
   return
@@ -569,7 +569,7 @@ UnicodeString __fastcall SetSpeedLimit(unsigned long Limit)
   }
   else
   {
-    Text = IntToStr(Limit / 1024);
+    Text = IntToStr(int(Limit / 1024));
   }
   return Text;
 }

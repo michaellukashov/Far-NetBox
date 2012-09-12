@@ -331,6 +331,8 @@ void __fastcall TSessionData::Assign(TPersistent * Source)
     PROPERTY(Name);
     BASE_PROPERTIES;
     ADVANCED_PROPERTIES;
+    #undef PROPERTY
+
     for (unsigned int Index = 0; Index < LENOF(FBugs); Index++)
     {
       // PROPERTY(Bug[(TSshBug)Index]);
@@ -343,7 +345,6 @@ void __fastcall TSessionData::Assign(TPersistent * Source)
       (static_cast<TSessionData *>(Source))->SetSFTPBug(static_cast<TSftpBug>(Index),
           GetSFTPBug(static_cast<TSftpBug>(Index)));
     }
-    #undef PROPERTY
 
     FModified = static_cast<TSessionData *>(Source)->GetModified();
     FSource = static_cast<TSessionData *>(Source)->FSource;
@@ -364,6 +365,8 @@ bool __fastcall TSessionData::IsSame(const TSessionData * Default, bool Advanced
     BASE_PROPERTIES;
   }
   ADVANCED_PROPERTIES;
+  #undef PROPERTY
+
   for (unsigned int Index = 0; Index < LENOF(FBugs); Index++)
   {
     // PROPERTY(Bug[(TSshBug)Index]);
@@ -374,7 +377,7 @@ bool __fastcall TSessionData::IsSame(const TSessionData * Default, bool Advanced
     // PROPERTY(SFTPBug[(TSftpBug)Index]);
     if (GetSFTPBug(static_cast<TSftpBug>(Index)) != Default->GetSFTPBug(static_cast<TSftpBug>(Index))) return false;
   }
-  #undef PROPERTY
+
   return true;
 }
 //---------------------------------------------------------------------

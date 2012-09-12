@@ -1143,6 +1143,7 @@ bool /* __fastcall */ TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKi
       ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
        (Kind == pkTIS) || (Kind == pkCryptoCard)))
   {
+
     RawByteString EncryptedPassword = EncryptPassword(Results->GetStrings(0));
     if (FTunnelOpening)
     {
@@ -1422,6 +1423,7 @@ bool /* __fastcall */ TTerminal::QueryReopen(Exception * E, int Params,
       {
         if (!GetActive())
         {
+
           Result =
             ((Configuration->GetSessionReopenTimeout() == 0) ||
              (int(double(Now() - Start) * MSecsPerDay) < Configuration->GetSessionReopenTimeout())) &&
@@ -2321,7 +2323,7 @@ void /* __fastcall */ TTerminal::ReadCurrentDirectory()
       if (!currentDirectory.IsEmpty() && !FLastDirectoryChange.IsEmpty() && (currentDirectory != OldDirectory))
       {
         FDirectoryChangesCache->AddDirectoryChange(OldDirectory,
-            FLastDirectoryChange, currentDirectory);
+          FLastDirectoryChange, currentDirectory);
       }
       // not to broke the cache, if the next directory change would not
       // be initialited by ChangeDirectory(), which sets it
@@ -3432,7 +3434,7 @@ void /* __fastcall */ TTerminal::DoCopyFile(const UnicodeString FileName,
       assert(GetCommandSessionOpened());
       assert(FCommandSession->GetFSProtocol() == cfsSCP);
       LogEvent(L"Copying file on command session.");
-      FCommandSession->GetCurrentDirectory() = GetCurrentDirectory();
+      FCommandSession->SetCurrentDirectory(GetCurrentDirectory());
       FCommandSession->FFileSystem->CopyFile(FileName, NewName);
     }
   }
@@ -4557,8 +4559,7 @@ void /* __fastcall */ TTerminal::SynchronizeApply(TSynchronizeChecklist * Checkl
 
   BeginTransaction();
 
-  TRY_FINALLY5 (Self, DownloadList, DeleteRemoteList,
-                UploadList, DeleteLocalList,
+  TRY_FINALLY5 (Self, DownloadList, DeleteRemoteList, UploadList, DeleteLocalList,
   {
     int IIndex = 0;
     while (IIndex < Checklist->GetCount())
@@ -4718,7 +4719,7 @@ void /* __fastcall */ TTerminal::SynchronizeApply(TSynchronizeChecklist * Checkl
 void /* __fastcall */ TTerminal::DoSynchronizeProgress(const TSynchronizeData & Data,
   bool Collect)
 {
-  if (!Data.OnSynchronizeDirectory.empty())
+  if (Data.OnSynchronizeDirectory)
   {
     bool Continue = true;
     Data.OnSynchronizeDirectory(Data.LocalDirectory, Data.RemoteDirectory,

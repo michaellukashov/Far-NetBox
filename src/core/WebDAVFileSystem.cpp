@@ -1,9 +1,10 @@
 //---------------------------------------------------------------------------
-#include <wincrypt.h>
-#include <stdio.h>
-#include <winhttp.h>
-
 #include <vcl.h>
+#pragma hdrstop
+
+#include <malloc.h>
+#include <stdio.h>
+#include <wincrypt.h>
 
 #include <apr_hash.h>
 #include <apr_strings.h>
@@ -12717,7 +12718,7 @@ UnicodeString __fastcall TWebDAVFileSystem::GetUserName()
 //---------------------------------------------------------------------------
 void __fastcall TWebDAVFileSystem::Idle()
 {
-  // Keep session alive
+  // TODO: Keep session alive
   return;
 }
 //---------------------------------------------------------------------------
