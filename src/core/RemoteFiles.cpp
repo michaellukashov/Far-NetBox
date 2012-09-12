@@ -868,9 +868,9 @@ Boolean __fastcall TRemoteFile::GetIsInaccesibleDirectory() const
     Result = !
        (((GetRights()->GetRightUndef(TRights::rrOtherExec) != TRights::rsNo)) ||
         ((GetRights()->GetRight(TRights::rrGroupExec) != TRights::rsNo) &&
-         GetTerminal()->GetMembership()->Exists(GetGroup().GetName())) ||
+         GetTerminal()->GetMembership()->Exists(GetFileGroup().GetName())) ||
         ((GetRights()->GetRight(TRights::rrUserExec) != TRights::rsNo) &&
-         (AnsiCompareText(GetTerminal()->GetUserName(), GetOwner().GetName()) == 0)));
+         (AnsiCompareText(GetTerminal()->GetUserName(), GetFileOwner().GetName()) == 0)));
   }
     else { Result = False; }
   return Result;
@@ -1321,8 +1321,8 @@ UnicodeString __fastcall TRemoteFile::GetListingStr()
     LinkPart = UnicodeString(SYMLINKSTR) + GetLinkTo();
   }
   return FORMAT(L"%s%s %3s %-8s %-8s %9s %-12s %s%s",
-    GetType(), GetRights()->GetText().c_str(), IntToStr(GetINodeBlocks()).c_str(), GetOwner().GetName().c_str(),
-    GetGroup().GetName().c_str(), Int64ToStr(GetSize()).c_str(), GetModificationStr().c_str(), GetFileName().c_str(),
+    GetType(), GetRights()->GetText().c_str(), IntToStr(GetINodeBlocks()).c_str(), GetFileOwner().GetName().c_str(),
+    GetFileGroup().GetName().c_str(), Int64ToStr(GetSize()).c_str(), GetModificationStr().c_str(), GetFileName().c_str(),
     LinkPart.c_str());
 }
 //---------------------------------------------------------------------------
@@ -2508,14 +2508,14 @@ TRemoteProperties __fastcall TRemoteProperties::CommonProperties(TStrings * File
       // with "recursive" option
       CommonProperties.Rights.SetAllowUndef(File->GetRights()->GetIsUndef());
       CommonProperties.Valid << vpRights;
-      if (File->GetOwner().GetIsSet())
+      if (File->GetFileOwner().GetIsSet())
       {
-        CommonProperties.Owner = File->GetOwner();
+        CommonProperties.Owner = File->GetFileOwner();
         CommonProperties.Valid << vpOwner;
       }
-      if (File->GetGroup().GetIsSet())
+      if (File->GetFileGroup().GetIsSet())
       {
-        CommonProperties.Group = File->GetGroup();
+        CommonProperties.Group = File->GetFileGroup();
         CommonProperties.Valid << vpGroup;
       }
     }
@@ -2523,12 +2523,12 @@ TRemoteProperties __fastcall TRemoteProperties::CommonProperties(TStrings * File
     {
       CommonProperties.Rights.SetAllowUndef(True);
       CommonProperties.Rights &= *File->GetRights();
-      if (CommonProperties.Owner != File->GetOwner())
+      if (CommonProperties.Owner != File->GetFileOwner())
       {
         CommonProperties.Owner.Clear();
         CommonProperties.Valid >> vpOwner;
       }
-      if (CommonProperties.Group != File->GetGroup())
+      if (CommonProperties.Group != File->GetFileGroup())
       {
         CommonProperties.Group.Clear();
         CommonProperties.Valid >> vpGroup;

@@ -108,7 +108,7 @@ void __fastcall TRemoteFilePanelItem::GetData(
     FLAGMASK(FRemoteFile->GetIsSymLink(), FILE_ATTRIBUTE_REPARSE_POINT);
   LastWriteTime = FRemoteFile->GetModification();
   LastAccess = FRemoteFile->GetLastAccess();
-  Owner = FRemoteFile->GetOwner().GetName();
+  Owner = FRemoteFile->GetFileOwner().GetName();
   UserData = FRemoteFile;
   CustomColumnNumber = 4;
 }
@@ -116,7 +116,7 @@ void __fastcall TRemoteFilePanelItem::GetData(
 UnicodeString __fastcall TRemoteFilePanelItem::GetCustomColumnData(int Column)
 {
   switch (Column) {
-    case 0: return FRemoteFile->GetGroup().GetName();
+    case 0: return FRemoteFile->GetFileGroup().GetName();
     case 1: return FRemoteFile->GetRightsStr();
     case 2: return FRemoteFile->GetRights()->GetOctal();
     case 3: return FRemoteFile->GetLinkTo();

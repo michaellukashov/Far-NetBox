@@ -4620,13 +4620,13 @@ private:
     {
       File = reinterpret_cast<TRemoteFile *>(FileList->GetObjects(Index));
       assert(File);
-      if (UsedGroupList && !File->GetGroup().GetName().IsEmpty())
+      if (UsedGroupList && !File->GetFileGroup().GetName().IsEmpty())
       {
-        UsedGroupList->Add(File->GetGroup().GetName());
+        UsedGroupList->Add(File->GetFileGroup().GetName());
       }
-      if (UsedUserList && !File->GetOwner().GetName().IsEmpty())
+      if (UsedUserList && !File->GetFileOwner().GetName().IsEmpty())
       {
-        UsedUserList->Add(File->GetOwner().GetName());
+        UsedUserList->Add(File->GetFileOwner().GetName());
       }
       if (File->GetIsDirectory())
       {

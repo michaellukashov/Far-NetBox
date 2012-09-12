@@ -3404,12 +3404,12 @@ bool __fastcall TFTPFileSystem::HandleListData(const wchar_t * Path,
         const wchar_t * Space = wcschr(Entry->OwnerGroup, L' ');
         if (Space != NULL)
         {
-          File->GetOwner().SetName(UnicodeString(Entry->OwnerGroup, Space - Entry->OwnerGroup));
-          File->GetGroup().SetName(Space + 1);
+          File->GetFileOwner().SetName(UnicodeString(Entry->OwnerGroup, Space - Entry->OwnerGroup));
+          File->GetFileGroup().SetName(Space + 1);
         }
         else
         {
-          File->GetOwner().SetName(Entry->OwnerGroup);
+          File->GetFileOwner().SetName(Entry->OwnerGroup);
         }
 
         File->SetSize(Entry->Size);

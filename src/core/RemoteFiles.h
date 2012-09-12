@@ -148,10 +148,12 @@ public:
   void __fastcall SetDirectory(TRemoteFileList * value) { FDirectory = value; }
   __int64 __fastcall GetSize() const { return FSize; }
   void __fastcall SetSize(__int64 value) { FSize = value; }
-  TRemoteToken __fastcall GetOwner() const { return FOwner; }
-  void __fastcall SetOwner(TRemoteToken value) { FOwner = value; }
-  TRemoteToken __fastcall GetGroup() const { return FGroup; }
-  void __fastcall SetGroup(TRemoteToken value) { FGroup = value; }
+  const TRemoteToken & __fastcall GetFileOwner() const { return FOwner; }
+  TRemoteToken & __fastcall GetFileOwner() { return FOwner; }
+  void __fastcall SetFileOwner(TRemoteToken value) { FOwner = value; }
+  const TRemoteToken & __fastcall GetFileGroup() const { return FGroup; }
+  TRemoteToken & __fastcall GetFileGroup() { return FGroup; }
+  void __fastcall SetFileGroup(TRemoteToken value) { FGroup = value; }
   UnicodeString __fastcall GetFileName() const { return FFileName; }
   void __fastcall SetFileName(const UnicodeString value) { FFileName = value; }
   int __fastcall GetINodeBlocks() { return FINodeBlocks; };

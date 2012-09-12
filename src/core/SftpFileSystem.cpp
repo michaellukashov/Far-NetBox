@@ -623,14 +623,14 @@ public:
     // sets SSH_FILEXFER_ATTR_UIDGID for v4, but does not include the UID/GUID
     if ((Flags & SSH_FILEXFER_ATTR_UIDGID) && (Version < 4))
     {
-      File->GetOwner().SetID(GetCardinal());
-      File->GetGroup().SetID(GetCardinal());
+      File->GetFileOwner().SetID(GetCardinal());
+      File->GetFileGroup().SetID(GetCardinal());
     }
     if (Flags & SSH_FILEXFER_ATTR_OWNERGROUP)
     {
       assert(Version >= 4);
-      File->GetOwner().SetName(GetString(Utf));
-      File->GetGroup().SetName(GetString(Utf));
+      File->GetFileOwner().SetName(GetString(Utf));
+      File->GetFileGroup().SetName(GetString(Utf));
     }
     if (Flags & SSH_FILEXFER_ATTR_PERMISSIONS)
     {
@@ -1515,7 +1515,7 @@ protected:
            File->GetRights()->GetUnknown());
       bool MissingOwnerGroup =
         (FLAGSET(FFileSystem->FSupport->AttributeMask, SSH_FILEXFER_ATTR_OWNERGROUP) &&
-           !File->GetOwner().GetIsSet() || !File->GetGroup().GetIsSet());
+           !File->GetFileOwner().GetIsSet() || !File->GetFileGroup().GetIsSet());
 
       Result = (MissingRights || MissingOwnerGroup);
       if (Result)
@@ -3423,13 +3423,13 @@ void __fastcall TSFTPFileSystem::ChangeFileProperties(const UnicodeString FileNa
     if (Properties.Valid.Contains(vpGroup) &&
         !Properties.Valid.Contains(vpOwner))
     {
-      Properties.Owner = File->GetOwner();
+      Properties.Owner = File->GetFileOwner();
       Properties.Valid << vpOwner;
     }
     else if (Properties.Valid.Contains(vpOwner) &&
              !Properties.Valid.Contains(vpGroup))
     {
-      Properties.Group = File->GetGroup();
+      Properties.Group = File->GetFileGroup();
       Properties.Valid << vpGroup;
     }
 
