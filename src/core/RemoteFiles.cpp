@@ -872,7 +872,7 @@ Boolean __fastcall TRemoteFile::GetIsInaccesibleDirectory() const
         ((GetRights()->GetRight(TRights::rrUserExec) != TRights::rsNo) &&
          (AnsiCompareText(GetTerminal()->GetUserName(), GetFileOwner().GetName()) == 0)));
   }
-    else { Result = False; }
+  else { Result = False; }
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1321,7 +1321,7 @@ UnicodeString __fastcall TRemoteFile::GetListingStr()
     LinkPart = UnicodeString(SYMLINKSTR) + GetLinkTo();
   }
   return FORMAT(L"%s%s %3s %-8s %-8s %9s %-12s %s%s",
-    GetType(), GetRights()->GetText().c_str(), IntToStr(GetINodeBlocks()).c_str(), GetFileOwner().GetName().c_str(),
+    GetType(), GetRights()->GetText().c_str(), IntToStr(FINodeBlocks).c_str(), GetFileOwner().GetName().c_str(),
     GetFileGroup().GetName().c_str(), Int64ToStr(GetSize()).c_str(), GetModificationStr().c_str(), GetFileName().c_str(),
     LinkPart.c_str());
 }
@@ -1366,6 +1366,58 @@ void __fastcall TRemoteFile::SetTerminal(TTerminal * value)
   }
 }
 //---------------------------------------------------------------------------
+const TRemoteToken & __fastcall TRemoteFile::GetFileOwner() const
+{
+  return FOwner;
+}
+//---------------------------------------------------------------------------
+TRemoteToken & __fastcall TRemoteFile::GetFileOwner()
+{
+  return FOwner;
+}
+//---------------------------------------------------------------------------
+void __fastcall TRemoteFile::SetFileOwner(TRemoteToken value)
+{
+  FOwner = value;
+}
+//---------------------------------------------------------------------------
+const TRemoteToken & __fastcall TRemoteFile::GetFileGroup() const
+{
+  return FGroup;
+}
+//---------------------------------------------------------------------------
+TRemoteToken & __fastcall TRemoteFile::GetFileGroup()
+{
+  return FGroup;
+}
+//---------------------------------------------------------------------------
+void __fastcall TRemoteFile::SetFileGroup(TRemoteToken value)
+{
+  FGroup = value;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TRemoteFile::GetFileName() const { return FFileName; }
+//---------------------------------------------------------------------------
+void __fastcall TRemoteFile::SetFileName(const UnicodeString value)
+{
+  FFileName = value;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TRemoteFile::GetLinkTo() const
+{
+  return FLinkTo;
+}
+//---------------------------------------------------------------------------
+void __fastcall TRemoteFile::SetLinkTo(const UnicodeString value)
+{
+  FLinkTo = value;
+}
+//---------------------------------------------------------------------------
+void __fastcall TRemoteFile::SetFullFileName(const UnicodeString value)
+{
+  FFullFileName = value;
+}
+//---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 /* __fastcall */ TRemoteDirectoryFile::TRemoteDirectoryFile() : TRemoteFile()
 {
@@ -1400,7 +1452,7 @@ void __fastcall TRemoteFileList::AddFile(TRemoteFile * File)
 void __fastcall TRemoteFileList::DuplicateTo(TRemoteFileList * Copy)
 {
   Copy->Clear();
-  for (int Index = 0; Index < GetCount(); Index++)
+  for (int Index = 0; Index < Count; Index++)
   {
     TRemoteFile * File = GetFiles(Index);
     Copy->AddFile(File->Duplicate(false));
@@ -1443,14 +1495,14 @@ UnicodeString __fastcall TRemoteFileList::GetParentPath()
 __int64 __fastcall TRemoteFileList::GetTotalSize()
 {
   __int64 Result = 0;
-  for (Integer Index = 0; Index < GetCount(); Index++)
+  for (Integer Index = 0; Index < Count; Index++)
     if (!GetFiles(Index)->GetIsDirectory()) { Result += GetFiles(Index)->GetSize(); }
   return Result;
 }
 //---------------------------------------------------------------------------
 TRemoteFile * __fastcall TRemoteFileList::FindFile(const UnicodeString &FileName)
 {
-  for (Integer Index = 0; Index < GetCount(); Index++)
+  for (Integer Index = 0; Index < Count; Index++)
     if (GetFiles(Index)->GetFileName() == FileName) { return GetFiles(Index); }
   return NULL;
 }
@@ -1537,7 +1589,7 @@ TStrings * __fastcall TRemoteDirectory::GetSelectedFiles()
     FSelectedFiles->Clear();
   }
 
-  for (int Index = 0; Index < GetCount(); Index ++)
+  for (int Index = 0; Index < Count; Index ++)
   {
     if (GetFiles(Index)->GetSelected())
     {
@@ -1741,12 +1793,12 @@ void __fastcall TRemoteDirectoryChangesCache::SetValue(const UnicodeString & Nam
   {
     Delete(Index);
   }
-  TStringList::SetValue(Name, Value);
+  Values(Name, Value);
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TRemoteDirectoryChangesCache::GetValue(const UnicodeString & Name)
 {
-  UnicodeString Value = TStringList::GetValue(Name);
+  UnicodeString Value = Values[Name];
   SetValue(Name, Value);
   return Value;
 }
@@ -1770,9 +1822,9 @@ void __fastcall TRemoteDirectoryChangesCache::AddDirectoryChange(
 void __fastcall TRemoteDirectoryChangesCache::ClearDirectoryChange(
   UnicodeString SourceDir)
 {
-  for (int Index = 0; Index < GetCount(); Index++)
+  for (int Index = 0; Index < Count; Index++)
   {
-    if (GetName(Index).SubString(1, SourceDir.Length()) == SourceDir)
+    if (Names[Index].SubString(1, SourceDir.Length()) == SourceDir)
     {
       Delete(Index);
       Index--;
@@ -1788,11 +1840,11 @@ void __fastcall TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
   DirectoryChangeKey(UnixExcludeTrailingBackslash(UnixExtractFilePath(TargetDir)),
     UnixExtractFileName(TargetDir), Key);
 
-  for (int Index = 0; Index < GetCount(); Index++)
+  for (int Index = 0; Index < Count; Index++)
   {
-    UnicodeString Name = GetName(Index);
+    UnicodeString Name = Names[Index];
     if ((Name.SubString(1, TargetDir.Length()) == TargetDir) ||
-        (GetValue(Name).SubString(1, TargetDir.Length()) == TargetDir) ||
+        (Values[Name].SubString(1, TargetDir.Length()) == TargetDir) ||
         (!Key.IsEmpty() && (Name == Key)))
     {
       Delete(Index);
@@ -1840,7 +1892,7 @@ bool __fastcall TRemoteDirectoryChangesCache::GetDirectoryChange(
 void __fastcall TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data)
 {
   Data = L"A";
-  int ACount = GetCount();
+  int ACount = Count;
   if (ACount > FMaxSize)
   {
     TStrings * Limited = new TStringList();

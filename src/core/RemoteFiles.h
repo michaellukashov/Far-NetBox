@@ -148,28 +148,28 @@ public:
   void __fastcall SetDirectory(TRemoteFileList * value) { FDirectory = value; }
   __int64 __fastcall GetSize() const { return FSize; }
   void __fastcall SetSize(__int64 value) { FSize = value; }
-  const TRemoteToken & __fastcall GetFileOwner() const { return FOwner; }
-  TRemoteToken & __fastcall GetFileOwner() { return FOwner; }
-  void __fastcall SetFileOwner(TRemoteToken value) { FOwner = value; }
-  const TRemoteToken & __fastcall GetFileGroup() const { return FGroup; }
-  TRemoteToken & __fastcall GetFileGroup() { return FGroup; }
-  void __fastcall SetFileGroup(TRemoteToken value) { FGroup = value; }
-  UnicodeString __fastcall GetFileName() const { return FFileName; }
-  void __fastcall SetFileName(const UnicodeString value) { FFileName = value; }
-  int __fastcall GetINodeBlocks() { return FINodeBlocks; };
+  const TRemoteToken & __fastcall GetFileOwner() const;
+  TRemoteToken & __fastcall GetFileOwner();
+  void __fastcall SetFileOwner(TRemoteToken value);
+  const TRemoteToken & __fastcall GetFileGroup() const;
+  TRemoteToken & __fastcall GetFileGroup();
+  void __fastcall SetFileGroup(TRemoteToken value);
+  UnicodeString __fastcall GetFileName() const;
+  void __fastcall SetFileName(const UnicodeString value);
+  int __fastcall GetINodeBlocks();
   TDateTime __fastcall GetModification() const { return FModification; }
   TModificationFmt __fastcall GetModificationFmt() const { return FModificationFmt; }
   void __fastcall SetModificationFmt(TModificationFmt value) { FModificationFmt = value; }
   TDateTime __fastcall GetLastAccess() const { return FLastAccess; }
   void __fastcall SetLastAccess(TDateTime value) { FLastAccess = value; }
   bool __fastcall GetIsSymLink() const { return FIsSymLink; }
-  UnicodeString __fastcall GetLinkTo() const { return FLinkTo; }
-  void __fastcall SetLinkTo(const UnicodeString value) { FLinkTo = value; }
+  UnicodeString __fastcall GetLinkTo() const;
+  void __fastcall SetLinkTo(const UnicodeString value);
   TRights * __fastcall GetRights() const { return FRights; }
   TTerminal * __fastcall GetTerminal() const { return FTerminal; }
   bool __fastcall GetSelected() { return FSelected; }
   void __fastcall SetSelected(bool value) { FSelected = value; }
-  void __fastcall SetFullFileName(const UnicodeString value) { FFullFileName = value; }
+  void __fastcall SetFullFileName(const UnicodeString value);
 };
 //---------------------------------------------------------------------------
 class TRemoteDirectoryFile : public TRemoteFile
