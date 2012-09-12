@@ -250,6 +250,7 @@ void TList::Sort()
 TObjectList::TObjectList() :
   FOwnsObjects(true)
 {
+  Items(this);
 }
 TObjectList::~TObjectList()
 {

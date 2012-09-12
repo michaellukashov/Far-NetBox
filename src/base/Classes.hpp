@@ -234,6 +234,19 @@ public:
   void SetOwnsObjects(bool value);
   virtual void __fastcall Sort(CompareFunc func);
   virtual void __fastcall Notify(void * Ptr, int Action);
+
+private:
+  TObject * PropertyGetItem(int Index)
+  {
+    return GetItem(Index);
+  }
+  void PropertySetItem(int Index, TObject * Value)
+  {
+    Insert(Index, Value);
+  }
+
+public:
+  IndexedProperty<int, TObject *, TObjectList, &TObjectList::PropertyGetItem, &TObjectList::PropertySetItem > Items;
 private:
   bool FOwnsObjects;
 };
