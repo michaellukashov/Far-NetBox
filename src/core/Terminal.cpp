@@ -170,9 +170,9 @@ TSynchronizeChecklist::TSynchronizeChecklist() :
 //---------------------------------------------------------------------------
 TSynchronizeChecklist::~TSynchronizeChecklist()
 {
-  for (int Index = 0; Index < FList->GetCount(); Index++)
+  for (int Index = 0; Index < FList->Count; Index++)
   {
-    delete static_cast<TItem *>(static_cast<void *>(FList->GetItem(Index)));
+    delete static_cast<TItem *>(static_cast<void *>(FList->Items[Index]));
   }
   delete FList;
 }
@@ -211,14 +211,14 @@ void TSynchronizeChecklist::Sort()
   FList->Sort(Compare);
 }
 //---------------------------------------------------------------------------
-int TSynchronizeChecklist::GetCount() const
+int __fastcall TSynchronizeChecklist::GetCount() const
 {
-  return FList->GetCount();
+  return FList->Count;
 }
 //---------------------------------------------------------------------------
-const TSynchronizeChecklist::TItem * TSynchronizeChecklist::GetItem(int Index) const
+const TSynchronizeChecklist::TItem * __fastcall TSynchronizeChecklist::GetItem(int Index) const
 {
-  return static_cast<TItem *>(FList->GetItem(Index));
+  return static_cast<TItem *>(FList->Items[Index]);
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -1111,7 +1111,7 @@ bool __fastcall TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
 
     AResult = PromptUser(Data, Kind, Name, Instructions, Prompts, Results);
 
-    Result = Results->GetStrings(0);
+    Result = Results->Strings[0];
   }
 
   return AResult;
@@ -1139,12 +1139,12 @@ bool /* __fastcall */ TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKi
   }
 
   if (AResult && (Configuration->GetRememberPassword()) &&
-      (Prompts->GetCount() == 1) && !(Prompts->GetObjects(0) != NULL) &&
+      (Prompts->Count == 1) && !(Prompts->GetObjects(0) != NULL) &&
       ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
        (Kind == pkTIS) || (Kind == pkCryptoCard)))
   {
 
-    RawByteString EncryptedPassword = EncryptPassword(Results->GetStrings(0));
+    RawByteString EncryptedPassword = EncryptPassword(Results->Strings[0]);
     if (FTunnelOpening)
     {
       FTunnelPassword = EncryptedPassword;
@@ -1195,7 +1195,7 @@ unsigned int __fastcall TTerminal::QueryUserException(const UnicodeString Query,
       }
     }
     Result = QueryUser(!Query.IsEmpty() ? Query : UnicodeString(E ? E->GetMessage() : L""),
-      MoreMessages->GetCount() ? MoreMessages : NULL,
+      MoreMessages->Count ? MoreMessages : NULL,
       Answers, Params, QueryType);
   }
   return Result;
@@ -2425,7 +2425,7 @@ void /* __fastcall */ TTerminal::CustomReadDirectory(TRemoteFileList * FileList)
 
   if (Configuration->GetActualLogProtocol() >= 1)
   {
-    for (int Index = 0; Index < FileList->GetCount(); Index++)
+    for (int Index = 0; Index < FileList->Count; Index++)
     {
       TRemoteFile * File = FileList->GetFiles(Index);
       LogEvent(FORMAT(L"%s;%c;%lld;%s;%s;%s;%s;%d",
@@ -2448,7 +2448,7 @@ TRemoteFileList * /* __fastcall */ TTerminal::ReadDirectoryListing(UnicodeString
     if (FileList != NULL)
     {
       int Index = 0;
-      while (Index < FileList->GetCount())
+      while (Index < FileList->Count)
       {
         TRemoteFile * File = FileList->GetFiles(Index);
         if (!Mask.Matches(File->GetFileName()))
@@ -2598,7 +2598,7 @@ void /* __fastcall */ TTerminal::ProcessDirectory(const UnicodeString DirName,
       UnicodeString Directory = UnixIncludeTrailingBackslash(DirName);
 
       TRemoteFile * File;
-      for (int Index = 0; Index < FileList->GetCount(); Index++)
+      for (int Index = 0; Index < FileList->Count; Index++)
       {
         File = FileList->GetFiles(Index);
         if (!File->GetIsParentDirectory() && !File->GetIsThisDirectory())
@@ -2717,7 +2717,7 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
   {
     TFileOperationProgressType Progress(MAKE_CALLBACK0(TTerminal::DoProgress, this), MAKE_CALLBACK6(TTerminal::DoFinished, this));
     TFileOperationProgressType * OperationProgress(&Progress);
-    Progress.Start(Operation, Side, FileList->GetCount());
+    Progress.Start(Operation, Side, FileList->Count);
 
     FOperationProgress = &Progress;
     TRY_FINALLY2 (Self, Progress,
@@ -2732,9 +2732,9 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
         int Index = 0;
         UnicodeString FileName;
         bool Success;
-        while ((Index < FileList->GetCount()) && (Progress.Cancel == csContinue))
+        while ((Index < FileList->Count) && (Progress.Cancel == csContinue))
         {
-          FileName = FileList->GetStrings(Index);
+          FileName = FileList->Strings[Index];
           try
           {
             TRY_FINALLY5 (Self, Progress, FileName, Success, OnceDoneOperation,
@@ -3035,7 +3035,7 @@ void /* __fastcall */ TTerminal::CustomCommandOnFiles(UnicodeString Command,
   else
   {
     UnicodeString FileList;
-    for (int i = 0; i < Files->GetCount(); i++)
+    for (int i = 0; i < Files->Count; i++)
     {
       TRemoteFile * File = static_cast<TRemoteFile *>(Files->GetObjects(i));
       bool Dir = File->GetIsDirectory() && !File->GetIsSymLink();
@@ -3047,7 +3047,7 @@ void /* __fastcall */ TTerminal::CustomCommandOnFiles(UnicodeString Command,
           FileList += L" ";
         }
 
-        FileList += L"\"" + ShellDelimitStr(Files->GetStrings(i), '"') + L"\"";
+        FileList += L"\"" + ShellDelimitStr(Files->Strings[i], L'"') + L"\"";
       }
     }
 
@@ -3153,7 +3153,7 @@ bool /* __fastcall */ TTerminal::LoadFilesProperties(TStrings * FileList)
     GetIsCapable(fcLoadingAdditionalProperties) &&
     FFileSystem->LoadFilesProperties(FileList);
   if (Result && GetSessionData()->GetCacheDirectories() &&
-      (FileList->GetCount() > 0) &&
+      (FileList->Count > 0) &&
       (dynamic_cast<TRemoteFile *>(FileList->GetObjects(0))->GetDirectory() == FFiles))
   {
     AddCachedFileList(FFiles);
@@ -3384,7 +3384,7 @@ bool /* __fastcall */ TTerminal::MoveFiles(TStrings * FileList, const UnicodeStr
       // this is just optimization to avoid checking existence of current
       // directory after each move operation.
       UnicodeString curDirectory = Self->GetCurrentDirectory();
-      for (int Index = 0; !PossiblyMoved && (Index < FileList->GetCount()); Index++)
+      for (int Index = 0; !PossiblyMoved && (Index < FileList->Count); Index++)
       {
         const TRemoteFile * File =
           dynamic_cast<const TRemoteFile *>(FileList->GetObjects(Index));
@@ -3393,9 +3393,9 @@ bool /* __fastcall */ TTerminal::MoveFiles(TStrings * FileList, const UnicodeStr
         // current directory
         if ((File != NULL) &&
             File->GetIsDirectory() &&
-            ((curDirectory.SubString(1, FileList->GetStrings(Index).Length()) == FileList->GetStrings(Index)) &&
-             ((FileList->GetStrings(Index).Length() == curDirectory.Length()) ||
-              (curDirectory[FileList->GetStrings(Index).Length() + 1] == '/'))))
+            ((curDirectory.SubString(1, FileList->Strings[Index].Length()) == FileList->Strings[Index]) &&
+             ((FileList->Strings[Index].Length() == curDirectory.Length()) ||
+              (curDirectory[FileList->Strings[Index].Length() + 1] == '/'))))
         {
           PossiblyMoved = true;
         }
@@ -4041,7 +4041,7 @@ void /* __fastcall */ TTerminal::CalculateLocalFilesSize(TStrings * FileList,
 {
   TFileOperationProgressType OperationProgress(MAKE_CALLBACK2(TTerminal::DoProgress, this), MAKE_CALLBACK0(TTerminal::DoFinished, this));
   TOnceDoneOperation OnceDoneOperation = odoIdle;
-  OperationProgress.Start(foCalculateSize, osLocal, FileList->GetCount());
+  OperationProgress.Start(foCalculateSize, osLocal, FileList->Count);
   TRY_FINALLY2 (Self, OperationProgress,
   {
     TCalculateSizeParams Params;
@@ -4052,9 +4052,9 @@ void /* __fastcall */ TTerminal::CalculateLocalFilesSize(TStrings * FileList,
     assert(!FOperationProgress);
     FOperationProgress = &OperationProgress;
     TSearchRec Rec = {0};
-    for (int Index = 0; Index < FileList->GetCount(); Index++)
+    for (int Index = 0; Index < FileList->Count; Index++)
     {
-      UnicodeString FileName = FileList->GetStrings(Index);
+      UnicodeString FileName = FileList->Strings[Index];
       if (FileSearchRec(FileName, Rec))
       {
         CalculateLocalFileSize(FileName, Rec, &Params);
@@ -4246,7 +4246,7 @@ void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeStri
         FLAGSET(Params, spUseCache));
 
       TSynchronizeFileData * FileData;
-      for (int Index = 0; Index < Data.LocalFileList->GetCount(); Index++)
+      for (int Index = 0; Index < Data.LocalFileList->Count; Index++)
       {
         FileData = reinterpret_cast<TSynchronizeFileData *>
           (Data.LocalFileList->GetObjects(Index));
@@ -4327,7 +4327,7 @@ void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeStri
   {
     if (Data.LocalFileList != NULL)
     {
-      for (int Index = 0; Index < Data.LocalFileList->GetCount(); Index++)
+      for (int Index = 0; Index < Data.LocalFileList->Count; Index++)
       {
         TSynchronizeFileData * FileData = reinterpret_cast<TSynchronizeFileData *>
           (Data.LocalFileList->GetObjects(Index));
@@ -4663,13 +4663,14 @@ void /* __fastcall */ TTerminal::SynchronizeApply(TSynchronizeChecklist * Checkl
 
         if (FLAGSET(Params, spTimestamp))
         {
-          if (DownloadList->GetCount() > 0)
+
+          if (DownloadList->Count > 0)
           {
             ProcessFiles(DownloadList, foSetProperties,
               MAKE_CALLBACK3(TTerminal::SynchronizeLocalTimestamp, this), NULL, osLocal);
           }
 
-          if (UploadList->GetCount() > 0)
+          if (UploadList->Count > 0)
           {
             ProcessFiles(UploadList, foSetProperties,
               MAKE_CALLBACK3(TTerminal::SynchronizeRemoteTimestamp, this));
@@ -4677,25 +4678,26 @@ void /* __fastcall */ TTerminal::SynchronizeApply(TSynchronizeChecklist * Checkl
         }
         else
         {
-          if ((DownloadList->GetCount() > 0) &&
+
+          if ((DownloadList->Count > 0) &&
               !CopyToLocal(DownloadList, Data.LocalDirectory, &SyncCopyParam, CopyParams))
           {
             Abort();
           }
 
-          if ((DeleteRemoteList->GetCount() > 0) &&
+          if ((DeleteRemoteList->Count > 0) &&
               !DeleteFiles(DeleteRemoteList))
           {
             Abort();
           }
 
-          if ((UploadList->GetCount() > 0) &&
+          if ((UploadList->Count > 0) &&
               !CopyToRemote(UploadList, Data.RemoteDirectory, &SyncCopyParam, CopyParams))
           {
             Abort();
           }
 
-          if ((DeleteLocalList->GetCount() > 0) &&
+          if ((DeleteLocalList->Count > 0) &&
               !DeleteLocalFiles(DeleteLocalList))
           {
             Abort();
@@ -4932,7 +4934,7 @@ bool /* __fastcall */ TTerminal::CopyToRemote(TStrings * FilesToCopy,
 
     // TFileOperationProgressType OperationProgress(&DoProgress, &DoFinished);
     OperationProgress.Start((Params & cpDelete ? foMove : foCopy), osLocal,
-      FilesToCopy->GetCount(), (Params & cpTemporary) > 0, TargetDir, CopyParam->GetCPSLimit());
+      FilesToCopy->Count, (Params & cpTemporary) > 0, TargetDir, CopyParam->GetCPSLimit());
 
     FOperationProgress = &OperationProgress;
     TRY_FINALLY2 (Self, OperationProgress,
@@ -4949,7 +4951,7 @@ bool /* __fastcall */ TTerminal::CopyToRemote(TStrings * FilesToCopy,
         if (GetLog()->GetLogging())
         {
           LogEvent(FORMAT(L"Copying %d files/directories to remote directory "
-            L"\"%s\"", FilesToCopy->GetCount(), TargetDir.c_str()));
+            L"\"%s\"", FilesToCopy->Count, TargetDir.c_str()));
           LogEvent(CopyParam->GetLogStr());
         }
 
@@ -5038,7 +5040,7 @@ bool /* __fastcall */ TTerminal::CopyToLocal(TStrings * FilesToCopy,
         );
       }
       OperationProgress.Start(((Params & cpDelete) != 0 ? foMove : foCopy), osRemote,
-        FilesToCopy->GetCount(), (Params & cpTemporary) > 0, TargetDir, CopyParam->GetCPSLimit());
+        FilesToCopy->Count, (Params & cpTemporary) > 0, TargetDir, CopyParam->GetCPSLimit());
 
       FOperationProgress = &OperationProgress;
       TRY_FINALLY2 (Self, OperationProgress,
@@ -5248,7 +5250,7 @@ bool /* __fastcall */ TSecondaryTerminal::DoPromptUser(TSessionData * Data,
 {
   bool AResult = false;
 
-  if ((Prompts->GetCount() == 1) && !(Prompts->GetObjects(0) != NULL) &&
+  if ((Prompts->Count == 1) && !(Prompts->GetObjects(0) != NULL) &&
       ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
        (Kind == pkTIS) || (Kind == pkCryptoCard)))
   {
@@ -5268,8 +5270,8 @@ bool /* __fastcall */ TSecondaryTerminal::DoPromptUser(TSessionData * Data,
       {
         Password = FMainTerminal->GetPassword();
       }
-      Results->PutString(0, Password);
-      if (!Results->GetStrings(0).IsEmpty())
+      Results->Strings[0] = Password;
+      if (!Results->Strings[0].IsEmpty())
       {
         LogEvent(L"Using remembered password of the main session.");
         AResult = true;
@@ -5296,7 +5298,7 @@ bool /* __fastcall */ TSecondaryTerminal::DoPromptUser(TSessionData * Data,
 //---------------------------------------------------------------------------
 /* __fastcall */ TTerminalList::~TTerminalList()
 {
-  assert(GetCount() == 0);
+  assert(Count == 0);
 }
 //---------------------------------------------------------------------------
 TTerminal * /* __fastcall */ TTerminalList::CreateTerminal(TSessionData * Data)
@@ -5335,7 +5337,7 @@ int /* __fastcall */ TTerminalList::GetActiveCount()
 {
   int Result = 0;
   TTerminal * Terminal;
-  for (int i = 0; i < GetCount(); i++)
+  for (int i = 0; i < Count; i++)
   {
     Terminal = GetTerminal(i);
     if (Terminal->GetActive())
@@ -5349,7 +5351,7 @@ int /* __fastcall */ TTerminalList::GetActiveCount()
 void /* __fastcall */ TTerminalList::Idle()
 {
   TTerminal * Terminal;
-  for (int i = 0; i < GetCount(); i++)
+  for (int i = 0; i < Count; i++)
   {
     Terminal = GetTerminal(i);
     if (Terminal->GetStatus() == ssOpened)
@@ -5361,7 +5363,7 @@ void /* __fastcall */ TTerminalList::Idle()
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminalList::RecryptPasswords()
 {
-  for (int Index = 0; Index < GetCount(); Index++)
+  for (int Index = 0; Index < Count; Index++)
   {
     GetTerminal(Index)->RecryptPasswords();
   }
