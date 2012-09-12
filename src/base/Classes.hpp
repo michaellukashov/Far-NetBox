@@ -3,7 +3,6 @@
 #include "stdafx.h"
 #include <coredefines.hpp>
 
-// #include <Windows.h>
 #include <WinDef.h>
 #include <CommCtrl.h>
 
@@ -28,6 +27,7 @@
 
 #include <rtlconsts.h>
 #include <headers.hpp>
+#include <CppProperties.h>
 
 #pragma warning(pop)
 
@@ -234,15 +234,8 @@ class TStream;
 class TStrings : public TPersistent
 {
 public:
-  TStrings() :
-    FDuplicates(dupAccept),
-    FDelimiter(L','),
-    FQuoteChar(L'"'),
-    FUpdateCount(0)
-  {
-  }
-  virtual ~TStrings()
-  {}
+  TStrings();
+  virtual ~TStrings();
   int __fastcall Add(const UnicodeString S);
   virtual int __fastcall GetCount() const = 0;
   virtual void __fastcall Delete(int Index) = 0;
@@ -261,7 +254,7 @@ public:
   bool __fastcall Equals(TStrings * value) const;
   virtual void __fastcall Clear() = 0;
   virtual void __fastcall PutObject(int Index, TObject * AObject);
-  virtual void __fastcall PutString(int Index, const UnicodeString S);
+  virtual void __fastcall PutString(int Index, const UnicodeString S) = 0;
   void __fastcall SetDuplicates(TDuplicatesEnum value);
   void __fastcall Move(int CurIndex, int NewIndex);
   int __fastcall IndexOf(const UnicodeString S);
@@ -290,6 +283,22 @@ public:
   virtual int __fastcall CompareStrings(const UnicodeString S1, const UnicodeString S2);
   int __fastcall GetUpdateCount() const { return FUpdateCount; }
   virtual void __fastcall Assign(TPersistent * Source);
+
+private:
+  int PropertyGetCount() { return GetCount(); }
+  UnicodeString PropertyGetString(const int Index)
+  {
+    return GetStrings(Index);
+  }
+  void PropertySetString(const int Index, const UnicodeString Value)
+  {
+    PutString(Index, Value);
+  }
+
+public:
+  ROProperty<int, TStrings, &TStrings::PropertyGetCount> Count;
+  IndexedProperty<int, UnicodeString, TStrings, &TStrings::PropertyGetString, &TStrings::PropertySetString > Strings;
+
 protected:
   TDuplicatesEnum FDuplicates;
   wchar_t FDelimiter;
@@ -312,6 +321,7 @@ class TStringList : public TStrings // , private boost::noncopyable
 {
   typedef TStrings parent;
   friend int StringListCompareStrings(TStringList * List, int Index1, int Index2);
+
 public:
   /* __fastcall */ TStringList();
   virtual /* __fastcall */ ~TStringList();
@@ -350,14 +360,13 @@ public:
   virtual int __fastcall CompareStrings(const UnicodeString S1, const UnicodeString S2);
 
 private:
-  void __fastcall ExchangeItems(int Index1, int Index2);
-
-private:
   TNotifyEvent FOnChange;
   TNotifyEvent FOnChanging;
   TStringItemList FList;
   bool FSorted;
   bool FCaseSensitive;
+private:
+  void __fastcall ExchangeItems(int Index1, int Index2);
 private:
   TStringList(const TStringList &);
   void operator=(const TStringList &);

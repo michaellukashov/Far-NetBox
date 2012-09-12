@@ -343,7 +343,18 @@ const int UnixDateDelta = 25569;
 const UnicodeString kernel32 = L"kernel32";
 static const int MemoryDelta = 0x2000;
 //---------------------------------------------------------------------------
-
+TStrings::TStrings() :
+  FDuplicates(dupAccept),
+  FDelimiter(L','),
+  FQuoteChar(L'"'),
+  FUpdateCount(0)
+{
+  Count(this);
+  Strings(this);
+}
+TStrings::~TStrings()
+{
+}
 void TStrings::SetTextStr(const UnicodeString Text)
 {
   TStrings * Self = this;
