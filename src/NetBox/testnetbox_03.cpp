@@ -591,21 +591,20 @@ private:
     // extra processing steps here
     return FKey();
   }
-  std::string SetKey(const std::string & Key)
+  void SetKey(const std::string AKey)
   {
     // extra processing steps here
-    return FKey(Key);
+    FKey = AKey;
   }
-  std::string & GetAssignment(const std::string & Key)
+  std::string GetAssignment(const std::string AKey)
   {
     // extra processing steps here
     return FAssignments[Key];
   }
-  std::string & SetAssignment(const std::string & Key, const std::string & Value)
+  void SetAssignment(const std::string Key, const std::string Value)
   {
     // extra processing steps here
     FAssignments[Key] = Value;
-    return FAssignments[Key];
   }
 public:
   TestPropsClass()
