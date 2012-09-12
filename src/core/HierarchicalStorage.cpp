@@ -125,8 +125,8 @@ void __fastcall THierarchicalStorage::SetAccessMode(TStorageAccessMode value)
 //---------------------------------------------------------------------------
 UnicodeString __fastcall THierarchicalStorage::GetCurrentSubKeyMunged()
 {
-  if (FKeyHistory->GetCount()) { return FKeyHistory->GetStrings(FKeyHistory->GetCount()-1); }
-    else { return L""; }
+  if (FKeyHistory->Count) { return FKeyHistory->Strings[FKeyHistory->Count-1]; }
+  else { return L""; }
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall THierarchicalStorage::GetCurrentSubKey()
@@ -191,8 +191,8 @@ bool __fastcall THierarchicalStorage::OpenSubKey(UnicodeString Key, bool CanCrea
 //---------------------------------------------------------------------------
 void __fastcall THierarchicalStorage::CloseSubKey()
 {
-  if (FKeyHistory->GetCount() == 0) throw Exception(L"");
-    else FKeyHistory->Delete(FKeyHistory->GetCount()-1);
+  if (FKeyHistory->Count == 0) throw Exception(L"");
+  else FKeyHistory->Delete(FKeyHistory->Count-1);
 }
 //---------------------------------------------------------------------------
 void __fastcall THierarchicalStorage::ClearSubKeys()
@@ -201,9 +201,9 @@ void __fastcall THierarchicalStorage::ClearSubKeys()
   std::auto_ptr<TStringList> SubKeysPtr(SubKeys);
   {
     GetSubKeyNames(SubKeys);
-    for (int Index = 0; Index < SubKeys->GetCount(); Index++)
+    for (int Index = 0; Index < SubKeys->Count; Index++)
     {
-      RecursiveDeleteSubKey(SubKeys->GetStrings(Index));
+      RecursiveDeleteSubKey(SubKeys->Strings[Index]);
     }
   }
 }
@@ -225,7 +225,7 @@ bool __fastcall THierarchicalStorage::HasSubKeys()
   std::auto_ptr<TStrings> SubKeysPtr(SubKeys);
   {
     GetSubKeyNames(SubKeys);
-    Result = (SubKeys->GetCount() > 0);
+    Result = (SubKeys->Count > 0);
   }
   return Result;
 }
@@ -252,16 +252,16 @@ void __fastcall THierarchicalStorage::ReadValues(Classes::TStrings* Strings,
   std::auto_ptr<TStrings> NamesPtr(Names);
   {
     GetValueNames(Names);
-    for (int Index = 0; Index < Names->GetCount(); Index++)
+    for (int Index = 0; Index < Names->Count; Index++)
     {
       if (MaintainKeys)
       {
-        Strings->Add(FORMAT(L"%s=%s", Names->GetStrings(Index).c_str(),
-          ReadString(Names->GetStrings(Index), L"").c_str()));
+        Strings->Add(FORMAT(L"%s=%s", Names->Strings[Index].c_str(),
+          ReadString(Names->Strings[Index], L"").c_str()));
       }
       else
       {
-        Strings->Add(ReadString(Names->GetStrings(Index), L""));
+        Strings->Add(ReadString(Names->Strings[Index], L""));
       }
     }
   }
@@ -273,9 +273,9 @@ void __fastcall THierarchicalStorage::ClearValues()
   std::auto_ptr<TStrings> NamesPtr(Names);
   {
     GetValueNames(Names);
-    for (int Index = 0; Index < Names->GetCount(); Index++)
+    for (int Index = 0; Index < Names->Count; Index++)
     {
-      DeleteValue(Names->GetStrings(Index));
+      DeleteValue(Names->Strings[Index]);
     }
   }
 }
@@ -287,16 +287,16 @@ void __fastcall THierarchicalStorage::WriteValues(Classes::TStrings * Strings,
 
   if (Strings)
   {
-    for (int Index = 0; Index < Strings->GetCount(); Index++)
+    for (int Index = 0; Index < Strings->Count; Index++)
     {
       if (MaintainKeys)
       {
-        assert(Strings->GetStrings(Index).Pos(L"=") > 1);
-        WriteString(Strings->GetName(Index), Strings->GetValue(Strings->GetName(Index)));
+        assert(Strings->Strings[Index].Pos(L"=") > 1);
+        WriteString(Strings->Name[Index], Strings->Values[Strings->Names[Index]]);
       }
       else
       {
-        WriteString(IntToStr(Index), Strings->GetStrings(Index));
+        WriteString(IntToStr(Index), Strings->Strings[Index]);
       }
     }
   }
@@ -427,9 +427,9 @@ bool __fastcall TRegistryStorage::Copy(TRegistryStorage * Storage)
     Registry->GetValueNames(Names);
     std::vector<unsigned char> Buffer(1024, 0);
     int Index = 0;
-    while ((Index < Names->GetCount()) && Result)
+    while ((Index < Names->Count) && Result)
     {
-      UnicodeString Name = MungeStr(Names->GetStrings(Index), GetForceAnsi());
+      UnicodeString Name = MungeStr(Names->Strings[Index], GetForceAnsi());
       unsigned long Size = Buffer.size();
       unsigned long Type;
       int RegResult = 0;
@@ -482,7 +482,7 @@ void __fastcall TRegistryStorage::SetAccessMode(TStorageAccessMode value)
 //---------------------------------------------------------------------------
 bool __fastcall TRegistryStorage::DoOpenSubKey(const UnicodeString SubKey, bool CanCreate)
 {
-  if (FKeyHistory->GetCount() > 0) { FRegistry->CloseKey(); }
+  if (FKeyHistory->Count > 0) { FRegistry->CloseKey(); }
   UnicodeString K = ExcludeTrailingBackslash(GetStorage() + GetCurrentSubKey() + SubKey);
   return FRegistry->OpenKey(K, CanCreate);
 }
@@ -491,7 +491,7 @@ void __fastcall TRegistryStorage::CloseSubKey()
 {
   FRegistry->CloseKey();
   THierarchicalStorage::CloseSubKey();
-  if (FKeyHistory->GetCount())
+  if (FKeyHistory->Count)
   {
     FRegistry->OpenKey(GetStorage() + GetCurrentSubKeyMunged(), True);
   }
@@ -500,7 +500,7 @@ void __fastcall TRegistryStorage::CloseSubKey()
 bool __fastcall TRegistryStorage::DeleteSubKey(const UnicodeString SubKey)
 {
   UnicodeString K;
-  if (FKeyHistory->GetCount() == 0) { K = GetStorage() + GetCurrentSubKey(); }
+  if (FKeyHistory->Count == 0) { K = GetStorage() + GetCurrentSubKey(); }
   K += MungeKeyName(SubKey);
   return FRegistry->DeleteKey(K);
 }
@@ -508,9 +508,9 @@ bool __fastcall TRegistryStorage::DeleteSubKey(const UnicodeString SubKey)
 void __fastcall TRegistryStorage::GetSubKeyNames(Classes::TStrings* Strings)
 {
   FRegistry->GetKeyNames(Strings);
-  for (int Index = 0; Index < Strings->GetCount(); Index++)
+  for (int Index = 0; Index < Strings->Count; Index++)
   {
-    Strings->PutString(Index, UnMungeStr(Strings->GetStrings(Index)));
+    Strings->Strings(Index, UnMungeStr(Strings->Strings[Index]));
   }
 }
 //---------------------------------------------------------------------------
@@ -699,12 +699,12 @@ bool __fastcall TCustomIniFileStorage::DoOpenSubKey(const UnicodeString SubKey, 
       Sections->SetSorted(true);
       FIniFile->ReadSections(Sections);
       UnicodeString NewKey = ExcludeTrailingBackslash(GetCurrentSubKey()+SubKey);
-      if (Sections->GetCount())
+      if (Sections->Count)
       {
         int Index = -1;
         Result = Sections->Find(NewKey, Index);
-        if (!Result && Index < Sections->GetCount() &&
-            Sections->GetStrings(Index).SubString(1, NewKey.Length()+1) == NewKey + L"\\")
+        if (!Result && Index < Sections->Count &&
+            Sections->Strings[Index].SubString(1, NewKey.Length()+1) == NewKey + L"\\")
         {
           Result = true;
         }
@@ -737,9 +737,9 @@ void __fastcall TCustomIniFileStorage::GetSubKeyNames(Classes::TStrings* Strings
   {
     Strings->Clear();
     FIniFile->ReadSections(Sections);
-    for (int i = 0; i < Sections->GetCount(); i++)
+    for (int i = 0; i < Sections->Count; i++)
     {
-      UnicodeString Section = Sections->GetStrings(i);
+      UnicodeString Section = Sections->Strings[i];
       if (AnsiCompareText(GetCurrentSubKey(),
           Section.SubString(1, GetCurrentSubKey().Length())) == 0)
       {
@@ -762,9 +762,9 @@ void __fastcall TCustomIniFileStorage::GetSubKeyNames(Classes::TStrings* Strings
 void __fastcall TCustomIniFileStorage::GetValueNames(Classes::TStrings* Strings)
 {
   FIniFile->ReadSection(GetCurrentSection(), Strings);
-  for (int Index = 0; Index < Strings->GetCount(); Index++)
+  for (int Index = 0; Index < Strings->Count; Index++)
   {
-    Strings->PutString(Index, UnMungeIniName(Strings->GetStrings(Index)));
+    Strings->Strings(Index, UnMungeIniName(Strings->Strings[Index]));
   }
 }
 //---------------------------------------------------------------------------
@@ -951,23 +951,23 @@ void __fastcall TIniFileStorage::Flush()
       {
         int Attr;
         // preserve attributes (especially hidden)
-        bool Exists = FileExists(Storage);
+        bool Exists = FileExists(GetStorage());
         if (Exists)
         {
-          Attr = GetFileAttributes(UnicodeString(Storage).c_str());
+          Attr = GetFileAttributes(UnicodeString(GetStorage()).c_str());
         }
         else
         {
           Attr = FILE_ATTRIBUTE_NORMAL;
         }
 
-        HANDLE Handle = CreateFile(UnicodeString(Storage).c_str(), GENERIC_READ | GENERIC_WRITE,
+        HANDLE Handle = CreateFile(UnicodeString(GetStorage()).c_str(), GENERIC_READ | GENERIC_WRITE,
           0, NULL, CREATE_ALWAYS, Attr, 0);
 
         if (Handle == INVALID_HANDLE_VALUE)
         {
           // "access denied" errors upon implicit saves to existing file are ignored
-          if (Explicit || !Exists || (GetLastError() != ERROR_ACCESS_DENIED))
+          if (GetExplicit() || !Exists || (GetLastError() != ERROR_ACCESS_DENIED))
           {
             try
             {

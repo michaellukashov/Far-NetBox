@@ -144,23 +144,23 @@ public:
           Attrs = L" recursive=\"true\"";
         }
         FLog->AddIndented(FORMAT(L"<%s%s>", Name,  Attrs.c_str()));
-        for (int Index = 0; Index < FNames->GetCount(); Index++)
+        for (int Index = 0; Index < FNames->Count; Index++)
         {
-          UnicodeString Value = FValues->GetStrings(Index);
+          UnicodeString Value = FValues->Strings[Index];
           if (Value.IsEmpty())
           {
-            FLog->AddIndented(FORMAT(L"  <%s />", FNames->GetStrings(Index).c_str()));
+            FLog->AddIndented(FORMAT(L"  <%s />", FNames->Strings[Index].c_str()));
           }
           else
           {
             FLog->AddIndented(FORMAT(L"  <%s value=\"%s\" />",
-              FNames->GetStrings(Index).c_str(), XmlAttributeEscape(Value).c_str()));
+              FNames->Strings[Index].c_str(), XmlAttributeEscape(Value).c_str()));
           }
         }
         if (FFileList != NULL)
         {
           FLog->AddIndented(L"  <files>");
-          for (int Index = 0; Index < FFileList->GetCount(); Index++)
+          for (int Index = 0; Index < FFileList->Count; Index++)
           {
             TRemoteFile * File = FFileList->GetFiles(Index);
 
@@ -266,7 +266,7 @@ public:
     int Index = FNames->IndexOf(Name);
     if (Index >= 0)
     {
-      FValues->PutString(Index, FValues->GetStrings(Index) + L"\r\n" + Output);
+      FValues->Strings[Index] = FValues->Strings[Index] + L"\r\n" + Output;
     }
     else
     {
@@ -648,12 +648,12 @@ UnicodeString __fastcall TSessionLog::GetSessionName()
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TSessionLog::GetLine(Integer Index)
 {
-  return GetStrings(Index - FTopIndex);
+  return Strings[Index - FTopIndex];
 }
 //---------------------------------------------------------------------------
 TLogLineType __fastcall TSessionLog::GetType(int Index)
 {
-  return static_cast<TLogLineType>(reinterpret_cast<size_t>(GetObjects(Index - FTopIndex)));
+  return static_cast<TLogLineType>(reinterpret_cast<size_t>(Objects[Index - FTopIndex]));
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TSessionLog::DoAddToParent(TLogLineType Type, const UnicodeString & Line)
@@ -854,7 +854,7 @@ void __fastcall TSessionLog::DeleteUnnecessary()
     }
     else
     {
-      while (!FConfiguration->GetLogWindowComplete() && (GetCount() > FConfiguration->GetLogWindowLines()))
+      while (!FConfiguration->GetLogWindowComplete() && (Count > FConfiguration->GetLogWindowLines()))
       {
         Delete(0);
         FTopIndex++;
@@ -1097,7 +1097,7 @@ void __fastcall TSessionLog::AddSeparator()
 //---------------------------------------------------------------------------
 int __fastcall TSessionLog::GetBottomIndex()
 {
-  return (GetCount() > 0 ? (GetTopIndex() + GetCount() - 1) : -1);
+  return (Count > 0 ? (GetTopIndex() + Count - 1) : -1);
 }
 //---------------------------------------------------------------------------
 bool __fastcall TSessionLog::GetLoggingToFile()
@@ -1110,7 +1110,7 @@ void __fastcall TSessionLog::Clear()
 {
   TGuard Guard(FCriticalSection);
 
-  FTopIndex += GetCount();
+  FTopIndex += Count;
   TStringList::Clear();
 }
 //---------------------------------------------------------------------------
@@ -1135,7 +1135,7 @@ void __fastcall TSessionLog::Clear()
 //---------------------------------------------------------------------------
 /* __fastcall */ TActionLog::~TActionLog()
 {
-  assert(FPendingActions->GetCount() == 0);
+  assert(FPendingActions->Count == 0);
   delete FPendingActions;
   FClosed = true;
   ReflectSettings();
@@ -1205,10 +1205,10 @@ void __fastcall TActionLog::AddFailure(Exception * E)
 //---------------------------------------------------------------------------
 void __fastcall TActionLog::AddMessages(UnicodeString Indent, TStrings * Messages)
 {
-  for (int Index = 0; Index < Messages->GetCount(); Index++)
+  for (int Index = 0; Index < Messages->Count; Index++)
   {
     AddIndented(
-      FORMAT((Indent + L"<message>%s</message>").c_str(), XmlEscape(Messages->GetStrings(Index)).c_str()));
+      FORMAT((Indent + L"<message>%s</message>").c_str(), XmlEscape(Messages->Strings[Index]).c_str()));
   }
 }
 //---------------------------------------------------------------------------
@@ -1283,8 +1283,8 @@ void __fastcall TActionLog::AddPendingAction(TSessionActionRecord * Action)
 //---------------------------------------------------------------------------
 void __fastcall TActionLog::RecordPendingActions()
 {
-  while ((FPendingActions->GetCount() > 0) &&
-         static_cast<TSessionActionRecord *>(FPendingActions->GetItem(0))->Record())
+  while ((FPendingActions->Count > 0) &&
+         static_cast<TSessionActionRecord *>(FPendingActions->Items[0])->Record())
   {
     FPendingActions->Delete(0);
   }

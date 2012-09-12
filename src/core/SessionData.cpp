@@ -1102,9 +1102,9 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
     // (this allows setting for example default username for host
     // by creating stored session named by host)
     TSessionData * Data = NULL;
-    for (Integer Index = 0; Index < AStoredSessions->GetCount() + AStoredSessions->GetHiddenCount(); Index++)
+    for (Integer Index = 0; Index < AStoredSessions->Count + AStoredSessions->GetHiddenCount(); Index++)
     {
-      TSessionData * AData = static_cast<TSessionData *>(AStoredSessions->GetItem(Index));
+      TSessionData * AData = static_cast<TSessionData *>(AStoredSessions->Items[Index]);
       if (AnsiSameText(AData->GetName(), DecodedUrl) ||
           AnsiSameText(AData->GetName() + L"/", DecodedUrl.SubString(1, AData->GetName().Length() + 1)))
       {
@@ -2599,10 +2599,10 @@ void __fastcall TStoredSessionList::Load(THierarchicalStorage * Storage,
   std::auto_ptr<TList> LoadedPtr(Loaded);
   {
     Storage->GetSubKeyNames(SubKeys);
-    for (int Index = 0; Index < SubKeys->GetCount(); Index++)
+    for (int Index = 0; Index < SubKeys->Count; Index++)
     {
       TSessionData * SessionData = NULL;
-      UnicodeString SessionName = SubKeys->GetStrings(Index);
+      UnicodeString SessionName = SubKeys->Strings[Index];
       bool ValidName = true;
       try
       {
@@ -2695,9 +2695,9 @@ void __fastcall TStoredSessionList::DoSave(THierarchicalStorage * Storage,
   std::auto_ptr<TSessionData> FactoryDefaultsPtr(FactoryDefaults);
   {
     DoSave(Storage, FDefaultSettings, All, RecryptPasswordOnly, FactoryDefaults);
-    for (int Index = 0; Index < GetCount() + GetHiddenCount(); Index++)
+    for (int Index = 0; Index < Count + GetHiddenCount(); Index++)
     {
-      TSessionData * SessionData = static_cast<TSessionData *>(GetItem(Index));
+      TSessionData * SessionData = static_cast<TSessionData *>(Items[Index]);
       DoSave(Storage, SessionData, All, RecryptPasswordOnly, FactoryDefaults);
     }
   }
@@ -2737,9 +2737,9 @@ void __fastcall TStoredSessionList::RecryptPasswords()
 void __fastcall TStoredSessionList::Saved()
 {
   FDefaultSettings->SetModified(false);
-  for (int Index = 0; Index < GetCount() + GetHiddenCount(); Index++)
+  for (int Index = 0; Index < Count + GetHiddenCount(); Index++)
   {
-    (static_cast<TSessionData *>(GetItem(Index))->SetModified(false));
+    (static_cast<TSessionData *>(Items[Index])->SetModified(false));
   }
 }
 //---------------------------------------------------------------------
@@ -2988,7 +2988,7 @@ void __fastcall TStoredSessionList::ImportHostKeys(const UnicodeString TargetKey
           UnicodeString KeyName;
           for (int KeyIndex = 0; KeyIndex < KeyList->GetCount(); KeyIndex++)
           {
-            KeyName = KeyList->GetStrings(KeyIndex);
+            KeyName = KeyList->Strings[KeyIndex];
             int P = KeyName.Pos(HostKeyName);
             if ((P > 0) && (P == KeyName.Length() - HostKeyName.Length() + 1))
             {

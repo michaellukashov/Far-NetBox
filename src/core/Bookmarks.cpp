@@ -27,9 +27,9 @@
 //---------------------------------------------------------------------------
 void __fastcall TBookmarks::Clear()
 {
-  for (int i = 0; i < FBookmarkLists->GetCount(); i++)
+  for (int i = 0; i < FBookmarkLists->Count; i++)
   {
-    delete FBookmarkLists->GetObjects(i);
+    delete FBookmarkLists->Objects[i];
   }
   FBookmarkLists->Clear();
 }
@@ -46,9 +46,9 @@ void __fastcall TBookmarks::Load(THierarchicalStorage * Storage)
       std::auto_ptr<TStrings> BookmarkKeysPtr(BookmarkKeys);
       {
         Storage->GetSubKeyNames(BookmarkKeys);
-        for (int Index = 0; Index < BookmarkKeys->GetCount(); Index++)
+        for (int Index = 0; Index < BookmarkKeys->Count; Index++)
         {
-          UnicodeString Key = BookmarkKeys->GetStrings(Index);
+          UnicodeString Key = BookmarkKeys->Strings[Index];
           if (Storage->OpenSubKey(Key, false))
           {
             TBookmarkList * BookmarkList = GetBookmarks(Key);
@@ -86,9 +86,9 @@ void __fastcall TBookmarks::LoadLevel(THierarchicalStorage * Storage, const Unic
     UnicodeString Name;
     UnicodeString Directory;
     TShortCut ShortCut(0);
-    for (int i = 0; i < Names->GetCount(); i++)
+    for (int i = 0; i < Names->Count; i++)
     {
-      Name = Names->GetStrings(i);
+      Name = Names->Strings[i];
       bool IsDirectory = (Index == 0) || (Index == 1);
       if (IsDirectory)
       {
@@ -138,9 +138,9 @@ void __fastcall TBookmarks::LoadLevel(THierarchicalStorage * Storage, const Unic
     }
 
     Storage->GetSubKeyNames(Names);
-    for (int i = 0; i < Names->GetCount(); i++)
+    for (int i = 0; i < Names->Count; i++)
     {
-      Name = Names->GetStrings(i);
+      Name = Names->Strings[i];
       if (Storage->OpenSubKey(Name, false))
       {
         LoadLevel(Storage, Key + (Key.IsEmpty() ? L"" : L"/") + Name, Index, BookmarkList);
@@ -156,13 +156,13 @@ void __fastcall TBookmarks::Save(THierarchicalStorage * Storage, bool All)
   {
     if (Storage->OpenSubKey(Keys[i], true))
     {
-      for (int Index = 0; Index < FBookmarkLists->GetCount(); Index++)
+      for (int Index = 0; Index < FBookmarkLists->Count; Index++)
       {
-        TBookmarkList * BookmarkList = dynamic_cast<TBookmarkList *>(FBookmarkLists->GetObjects(Index));
+        TBookmarkList * BookmarkList = dynamic_cast<TBookmarkList *>(FBookmarkLists->Objects[Index]);
         if (All || BookmarkList->GetModified())
         {
           UnicodeString Key;
-          Key = FBookmarkLists->GetStrings(Index);
+          Key = FBookmarkLists->Strings[Index];
           Storage->RecursiveDeleteSubKey(Key);
           if (Storage->OpenSubKey(Key, true))
           {
@@ -223,9 +223,9 @@ void __fastcall TBookmarks::Save(THierarchicalStorage * Storage, bool All)
 void __fastcall TBookmarks::ModifyAll(bool Modify)
 {
   TBookmarkList * BookmarkList;
-  for (int i = 0; i < FBookmarkLists->GetCount(); i++)
+  for (int i = 0; i < FBookmarkLists->Count; i++)
   {
-    BookmarkList = dynamic_cast<TBookmarkList *>(FBookmarkLists->GetObjects(i));
+    BookmarkList = dynamic_cast<TBookmarkList *>(FBookmarkLists->Objects[i]);
     assert(BookmarkList);
     BookmarkList->SetModified(Modify);
   }
@@ -236,7 +236,7 @@ TBookmarkList * __fastcall TBookmarks::GetBookmarks(UnicodeString Index)
   int I = FBookmarkLists->IndexOf(Index.c_str());
   if (I >= 0)
   {
-    return dynamic_cast<TBookmarkList *>(FBookmarkLists->GetObjects(I));
+    return dynamic_cast<TBookmarkList *>(FBookmarkLists->Objects[I]);
   }
   else
   {
@@ -250,7 +250,7 @@ void __fastcall TBookmarks::SetBookmarks(UnicodeString Index, TBookmarkList * va
   if (I >= 0)
   {
     TBookmarkList * BookmarkList;
-    BookmarkList = dynamic_cast<TBookmarkList *>(FBookmarkLists->GetObjects(I));
+    BookmarkList = dynamic_cast<TBookmarkList *>(FBookmarkLists->Objects[I]);
     BookmarkList->Assign(value);
   }
   else
@@ -291,9 +291,9 @@ void __fastcall TBookmarks::SetSharedBookmarks(TBookmarkList * value)
 //---------------------------------------------------------------------------
 void __fastcall TBookmarkList::Clear()
 {
-  for (int i = 0; i < FBookmarks->GetCount(); i++)
+  for (int i = 0; i < FBookmarks->Count; i++)
   {
-    delete FBookmarks->GetObjects(i);
+    delete FBookmarks->Objects[i];
   }
   FBookmarks->Clear();
   FOpenedNodes->Clear();
@@ -306,10 +306,10 @@ void __fastcall TBookmarkList::Assign(TPersistent * Source)
   if (SourceList)
   {
     Clear();
-    for (int i = 0; i < SourceList->FBookmarks->GetCount(); i++)
+    for (int i = 0; i < SourceList->FBookmarks->Count; i++)
     {
       TBookmark * Bookmark = new TBookmark();
-      Bookmark->Assign(dynamic_cast<TBookmark *>(SourceList->FBookmarks->GetObjects(i)));
+      Bookmark->Assign(dynamic_cast<TBookmark *>(SourceList->FBookmarks->Objects[i]));
       Add(Bookmark);
     }
     FOpenedNodes->Assign(SourceList->FOpenedNodes);
@@ -399,26 +399,26 @@ int __fastcall TBookmarkList::IndexOf(TBookmark * Bookmark)
 void __fastcall TBookmarkList::KeyChanged(int Index)
 {
   assert(Index < GetCount());
-  TBookmark * Bookmark = dynamic_cast<TBookmark *>(FBookmarks->GetObjects(Index));
-  assert(FBookmarks->GetStrings(Index) != Bookmark->GetKey());
+  TBookmark * Bookmark = dynamic_cast<TBookmark *>(FBookmarks->Objects[Index]);
+  assert(FBookmarks->Strings[Index] != Bookmark->GetKey());
   if (FBookmarks->IndexOf(Bookmark->GetKey().c_str()) >= 0)
   {
     throw Exception(FMTLOAD(DUPLICATE_BOOKMARK, Bookmark->GetName().c_str()));
   }
-  FBookmarks->PutString(Index, Bookmark->GetKey());
+  FBookmarks->Strings(Index, Bookmark->GetKey());
 }
 //---------------------------------------------------------------------------
 TBookmark * __fastcall TBookmarkList::FindByName(const UnicodeString Node, const UnicodeString Name)
 {
   int I = FBookmarks->IndexOf(TBookmark::BookmarkKey(Node, Name).c_str());
-  TBookmark * Bookmark = ((I >= 0) ? dynamic_cast<TBookmark *>(FBookmarks->GetObjects(I)) : NULL);
+  TBookmark * Bookmark = ((I >= 0) ? dynamic_cast<TBookmark *>(FBookmarks->Objects[I]) : NULL);
   assert(!Bookmark || (Bookmark->GetNode() == Node && Bookmark->GetName() == Name));
   return Bookmark;
 }
 //---------------------------------------------------------------------------
 TBookmark * __fastcall TBookmarkList::FindByShortCut(TShortCut ShortCut)
 {
-  for (int Index = 0; Index < FBookmarks->GetCount(); Index++)
+  for (int Index = 0; Index < FBookmarks->Count; Index++)
   {
     if (GetBookmarks(Index)->GetShortCut() == ShortCut)
     {
@@ -430,12 +430,12 @@ TBookmark * __fastcall TBookmarkList::FindByShortCut(TShortCut ShortCut)
 //---------------------------------------------------------------------------
 int __fastcall TBookmarkList::GetCount()
 {
-  return FBookmarks->GetCount();
+  return FBookmarks->Count;
 }
 //---------------------------------------------------------------------------
 TBookmark * __fastcall TBookmarkList::GetBookmarks(int Index)
 {
-  TBookmark * Bookmark = dynamic_cast<TBookmark *>(FBookmarks->GetObjects(Index));
+  TBookmark * Bookmark = dynamic_cast<TBookmark *>(FBookmarks->Objects[Index]);
   assert(Bookmark);
   return Bookmark;
 }

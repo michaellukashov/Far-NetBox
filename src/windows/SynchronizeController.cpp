@@ -91,14 +91,14 @@ void /* __fastcall */ TSynchronizeController::StartStop(TObject * Sender,
       FSynchronizeMonitor->OnInvalid = SynchronizeInvalid;
       FSynchronizeMonitor->OnSynchronize = OnSynchronizeThreads;
       // get count before open to avoid thread issues
-      int Directories = FSynchronizeMonitor->Directories->GetCount();
+      int Directories = FSynchronizeMonitor->Directories->Count;
       FSynchronizeMonitor->Open();
-      SynchronizeLog(slStart, FMTLOAD(SYNCHRONIZE_START, GetDirectories()));
+      SynchronizeLog(slStart, FMTLOAD(SYNCHRONIZE_START, Directories));
       */
     }
     catch(...)
     {
-      // FIXME SAFE_DESTROY((TObject *)FSynchronizeMonitor);
+      // FIXME SAFE_DESTROY(FSynchronizeMonitor);
       Error(SNotImplemented, 257);
       throw;
     }
@@ -106,7 +106,7 @@ void /* __fastcall */ TSynchronizeController::StartStop(TObject * Sender,
   else
   {
     FOptions = NULL;
-    // SAFE_DESTROY((TObject *)FSynchronizeMonitor);
+    // SAFE_DESTROY(FSynchronizeMonitor);
   }
 }
 //---------------------------------------------------------------------------

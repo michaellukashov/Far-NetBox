@@ -347,11 +347,11 @@ void __fastcall TCopyParamList::Change(int Index, const UnicodeString Name,
 {
   if ((Name != GetName(Index)) || !CompareItem(Index, CopyParam, Rule))
   {
-    FNames->PutString(Index, Name);
+    FNames->Strings(Index, Name);
     delete GetCopyParam(Index);
-    FCopyParams->SetItem(Index, (reinterpret_cast<TObject *>(CopyParam)));
+    FCopyParams->Items(Index, (reinterpret_cast<TObject *>(CopyParam)));
     delete GetRule(Index);
-    FRules->SetItem(Index, (reinterpret_cast<TObject *>(Rule)));
+    FRules->Items(Index, (reinterpret_cast<TObject *>(Rule)));
     Modify();
   }
   else
@@ -387,9 +387,9 @@ int __fastcall TCopyParamList::Find(const TCopyParamRuleData & Value) const
 {
   int Result = -1;
   int i = 0;
-  while ((i < FRules->GetCount()) && (Result < 0))
+  while ((i < FRules->Count) && (Result < 0))
   {
-    if (FRules->GetItem(i) != NULL)
+    if (FRules->Items[i] != NULL)
     {
       if (GetRule(i)->Matches(Value))
       {
@@ -475,22 +475,22 @@ void __fastcall TCopyParamList::Save(THierarchicalStorage * Storage) const
 //---------------------------------------------------------------------------
 int __fastcall TCopyParamList::GetCount() const
 {
-  return FCopyParams->GetCount();
+  return FCopyParams->Count;
 }
 //---------------------------------------------------------------------------
 const TCopyParamRule * __fastcall TCopyParamList::GetRule(int Index) const
 {
-  return reinterpret_cast<TCopyParamRule *>(FRules->GetItem(Index));
+  return reinterpret_cast<TCopyParamRule *>(FRules->Items[Index]);
 }
 //---------------------------------------------------------------------------
 const TCopyParamType * __fastcall TCopyParamList::GetCopyParam(int Index) const
 {
-  return reinterpret_cast<TCopyParamType *>(FCopyParams->GetItem(Index));
+  return reinterpret_cast<TCopyParamType *>(FCopyParams->Items[Index]);
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TCopyParamList::GetName(int Index) const
 {
-  return FNames->GetStrings(Index);
+  return FNames->Strings[Index];
 }
 //---------------------------------------------------------------------------
 TStrings * __fastcall TCopyParamList::GetNameList() const
@@ -501,7 +501,7 @@ TStrings * __fastcall TCopyParamList::GetNameList() const
 
     for (int i = 0; i < GetCount(); i++)
     {
-      FNameList->Add(FNames->GetStrings(i));
+      FNameList->Add(FNames->Strings[i]);
     }
   }
   return FNameList;
@@ -1048,18 +1048,18 @@ TStrings * __fastcall TGUIConfiguration::GetLocales()
               Index++;
             }
       */
-      for (int Index = 0; Index < Exts->GetCount(); Index++)
+      for (int Index = 0; Index < Exts->Count; Index++)
       {
-        if ((Exts->GetObjects(Index) == NULL) &&
-            (Exts->GetStrings(Index).Length() == 3) &&
-            SameText(Exts->GetStrings(Index).SubString(1, 2), AdditionaLanguagePrefix))
+        if ((Exts->Objects[Index] == NULL) &&
+            (Exts->Strings[Index].Length() == 3) &&
+            SameText(Exts->Strings[Index].SubString(1, 2), AdditionaLanguagePrefix))
         {
           UnicodeString LangName = GetFileFileInfoString(L"LangName",
-            ChangeFileExt(ModuleFileName(), UnicodeString(L".") + Exts->GetStrings(Index)));
+            ChangeFileExt(ModuleFileName(), UnicodeString(L".") + Exts->Strings[Index]));
           if (!LangName.IsEmpty())
           {
             FLocales->AddObject(LangName, reinterpret_cast<TObject *>(static_cast<size_t>(
-              AdditionaLanguageMask + Exts->GetStrings(Index)[2])));
+              AdditionaLanguageMask + Exts->Strings[Index][3])));
           }
         }
       }
