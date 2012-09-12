@@ -99,6 +99,8 @@ void __fastcall TPersistent::AssignError(TPersistent * Source)
 //---------------------------------------------------------------------------
 TList::TList()
 {
+  Count(this);
+  Items(this);
 }
 TList::~TList()
 {

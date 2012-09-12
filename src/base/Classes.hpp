@@ -193,6 +193,22 @@ public:
   virtual void __fastcall Sort(CompareFunc func);
   virtual void __fastcall Notify(void * Ptr, int Action);
   virtual void __fastcall Sort();
+
+private:
+  int PropertyGetCount() { return GetCount(); }
+  void * PropertyGetItem(int Index)
+  {
+    return GetItem(Index);
+  }
+  void PropertySetItem(int Index, void * Value)
+  {
+    SetItem(Index, Value);
+  }
+
+public:
+  ROProperty<int, TList, &TList::PropertyGetCount> Count;
+  IndexedProperty2<int, TList, &TList::PropertyGetItem, &TList::PropertySetItem > Items;
+
 private:
   std::vector<void *> FList;
 };
@@ -286,18 +302,27 @@ public:
 
 private:
   int PropertyGetCount() { return GetCount(); }
-  UnicodeString PropertyGetString(const int Index)
+  UnicodeString PropertyGetString(int Index)
   {
     return GetStrings(Index);
   }
-  void PropertySetString(const int Index, const UnicodeString Value)
+  void PropertySetString(int Index, UnicodeString Value)
   {
     PutString(Index, Value);
+  }
+  TObject * PropertyGetObject(int Index)
+  {
+    return GetObjects(Index);
+  }
+  void PropertySetObject(int Index, TObject * Value)
+  {
+    PutObject(Index, Value);
   }
 
 public:
   ROProperty<int, TStrings, &TStrings::PropertyGetCount> Count;
   IndexedProperty<int, UnicodeString, TStrings, &TStrings::PropertyGetString, &TStrings::PropertySetString > Strings;
+  IndexedProperty<int, TObject *, TStrings, &TStrings::PropertyGetObject, &TStrings::PropertySetObject > Objects;
 
 protected:
   TDuplicatesEnum FDuplicates;

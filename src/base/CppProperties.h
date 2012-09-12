@@ -24,7 +24,7 @@ public:
   {
     return data;
   }
-  T operator()(const T & value)
+  T operator()(T value)
   {
     data = value;
     return data;
@@ -34,7 +34,7 @@ public:
   {
     return data;
   }
-  T set(const T & value)
+  T set(T value)
   {
     data = value;
     return data;
@@ -47,7 +47,7 @@ public:
   {
     return data;
   }
-  void operator = (const T & value)
+  void operator = (T value)
   {
     data = value;
   }
@@ -82,7 +82,7 @@ public:
   {
     return (my_object->*real_getter)();
   }
-  void set(const T & value);   // reserved but not implemented, per C++/CLI
+  void set(T value);   // reserved but not implemented, per C++/CLI
   // use on rhs of '='
   operator T() const
   {
@@ -95,7 +95,7 @@ public:
 template <
   class T,
   class Object,
-  typename T (Object::*real_setter)(const T &)
+  typename T (Object::*real_setter)(T)
   >
 class WOProperty
 {
@@ -109,18 +109,18 @@ public:
     my_object = obj;
   }
   // function call syntax
-  T operator()(const T & value)
+  T operator()(T value)
   {
     return (my_object->*real_setter)(value);
   }
   // get/set syntax
   T get() const; // name reserved but not implemented per C++/CLI
-  void set(const T & value)
+  void set(T value)
   {
     void (my_object->*real_setter)(value);
   }
   // access with '=' sign
-  void operator = (const T & value)
+  void operator = (T value)
   {
     (my_object->*real_setter)(value);
   }
@@ -132,7 +132,7 @@ template <
   class T,
   class Object,
   typename T (Object::*real_getter)(),
-  typename void (Object::*real_setter)(const T)
+  typename void (Object::*real_setter)(T)
   >
 class RWProperty
 {
@@ -150,7 +150,7 @@ public:
   {
     return (my_object->*real_getter)();
   }
-  void operator()(const T value)
+  void operator()(T value)
   {
     (my_object->*real_setter)(value);
   }
@@ -159,7 +159,7 @@ public:
   {
     return (my_object->*real_getter)();
   }
-  void set(const T value)
+  void set(T value)
   {
     return (my_object->*real_setter)(value);
   }
@@ -168,7 +168,7 @@ public:
   {
     return (my_object->*real_getter)();
   }
-  void operator = (const T & value)
+  void operator = (T value)
   {
     (my_object->*real_setter)(value);
   }
@@ -188,14 +188,13 @@ public:
 // to have any facility for erasing key/value pairs from the container.
 // C++/CLI properties can have multi-dimensional indexes: prop[2,3]. This is
 // not allowed by the current rules of standard C++
+
 template <
   class Key,
   class T,
   class Object,
-  typename T (Object::*real_getter)(const Key),
-  typename void (Object::*real_setter)(const Key, const T),
-  class Compare = std::less<Key>,
-  class Allocator = std::allocator<std::pair<const Key, T> >
+  typename T (Object::*real_getter)(Key),
+  typename void (Object::*real_setter)(Key, T)
   >
 class IndexedProperty
 {
@@ -209,25 +208,67 @@ public:
     my_object = obj;
   }
   // function call syntax
-  T operator()(const Key & AKey)
+  T operator()(Key & AKey)
   {
     return (my_object->*real_getter)(AKey);
   }
-  void operator()(const Key AKey, const T AValue)
+  void operator()(Key AKey, T AValue)
   {
      (my_object->*real_setter)(AKey, AValue);
   }
   // get/set syntax
-  T get_Item(const Key AKey)
+  T get_Item(Key AKey)
   {
     return (my_object->*real_getter)(AKey);
   }
-  void set_Item(const Key AKey, const T AValue)
+  void set_Item(Key AKey, T AValue)
   {
     (my_object->*real_setter)(AKey, AValue);
   }
   // operator [] syntax
-  T operator[](const Key AKey)
+  T operator[](Key AKey)
+  {
+    return (my_object->*real_getter)(AKey);
+  }
+};
+
+template <
+  class Key,
+  class Object,
+  void * (Object::*real_getter)(Key),
+  typename void (Object::*real_setter)(Key, void *)
+  >
+class IndexedProperty2
+{
+  Object * my_object;
+public:
+  // this function must be called by the containing class, normally in a
+  // constructor, to initialize the ROProperty so it knows where its
+  // real implementation code can be found
+  void operator()(Object * obj)
+  {
+    my_object = obj;
+  }
+  // function call syntax
+  void * operator()(Key & AKey)
+  {
+    return (my_object->*real_getter)(AKey);
+  }
+  void operator()(Key AKey, void * AValue)
+  {
+     (my_object->*real_setter)(AKey, AValue);
+  }
+  // get/set syntax
+  void * get_Item(Key AKey)
+  {
+    return (my_object->*real_getter)(AKey);
+  }
+  void set_Item(Key AKey, void * AValue)
+  {
+    (my_object->*real_setter)(AKey, AValue);
+  }
+  // operator [] syntax
+  void * operator[](Key AKey)
   {
     return (my_object->*real_getter)(AKey);
   }
@@ -258,7 +299,7 @@ inline std::ostream& operator<<(std::ostream& os, const ROProperty< T, Object, r
 template <
   class T, class Object,
   typename T (Object::*real_getter)(),
-  typename void (Object::*real_setter)(const T)
+  typename void (Object::*real_setter)(T)
   >
 inline std::ostream& operator<<(std::ostream& os, const RWProperty< T, Object, real_getter, real_setter >& prop)
 {
@@ -270,12 +311,10 @@ inline std::ostream& operator<<(std::ostream& os, const RWProperty< T, Object, r
   class Key,
   class T,
   class Object,
-  typename T (Object::*real_getter)(const Key),
-  typename void (Object::*real_setter)(const Key, const T),
-  class Compare,
-  class Allocator
+  typename T (Object::*real_getter)(Key),
+  typename void (Object::*real_setter)(Key, T)
   >
-inline std::ostream& operator<<(std::ostream& os, const IndexedProperty< Key, T, Object, real_getter, real_setter, Compare, Allocator >& prop)
+inline std::ostream& operator<<(std::ostream& os, const IndexedProperty< Key, T, Object, real_getter, real_setter >& prop)
 {
     os << "size: " << prop.size();
     return os;
