@@ -5330,7 +5330,7 @@ void /* __fastcall */ TTerminalList::FreeAndNullTerminal(TTerminal * & Terminal)
 //---------------------------------------------------------------------------
 TTerminal * /* __fastcall */ TTerminalList::GetTerminal(int Index)
 {
-  return dynamic_cast<TTerminal *>(GetItem(Index));
+  return dynamic_cast<TTerminal *>(Items[Index]);
 }
 //---------------------------------------------------------------------------
 int /* __fastcall */ TTerminalList::GetActiveCount()

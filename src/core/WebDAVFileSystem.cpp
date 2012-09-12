@@ -37,9 +37,77 @@
 #include "version.h"
 
 //---------------------------------------------------------------------------
+#pragma package(smart_init)
+//---------------------------------------------------------------------------
+#ifndef _MSC_VER
+const int tfFirstLevel = 0x01;
+const int tfAutoResume = 0x02;
+//---------------------------------------------------------------------------
+struct TSinkFileParams
+{
+  UnicodeString TargetDir;
+  const TCopyParamType * CopyParam;
+  int Params;
+  TFileOperationProgressType * OperationProgress;
+  bool Skipped;
+  unsigned int Flags;
+};
+//---------------------------------------------------------------------------
+struct TFileTransferData
+{
+  TFileTransferData()
+  {
+    Params = 0;
+    AutoResume = false;
+    OverwriteResult = -1;
+    CopyParam = NULL;
+  }
+
+  UnicodeString FileName;
+  int Params;
+  bool AutoResume;
+  int OverwriteResult;
+  const TCopyParamType * CopyParam;
+};
+//---------------------------------------------------------------------------
+struct TClipboardHandler
+{
+  UnicodeString Text;
+
+  void __fastcall Copy(TObject * /*Sender*/)
+  {
+    CopyToClipboard(Text);
+  }
+};
+#endif
+//---------------------------------------------------------------------------
 
 namespace webdav {
 
+#ifndef _MSC_VER
+
+#pragma warn -8004
+
+const AnsiString __cdecl Format(const char * format, va_list args)
+{
+  int len = AnsiString().vprintf(format, args);
+  AnsiString Result;
+  Result.SetLength(len + 1);
+  vsprintf(&Result[1], format, args);
+  return Result.c_str();
+}
+
+const AnsiString __cdecl Format(const char * format, ...)
+{
+  va_list args;
+  va_start(args, format);
+  AnsiString Result = Format(format, args);
+  va_end(args);
+  return Result;
+}
+#endif
+
+//---------------------------------------------------------------------------
 struct auth_baton_t;
 struct vtable_t;
 struct stream_t;
@@ -416,15 +484,16 @@ error_createf(apr_status_t apr_err,
               ...)
 {
   error_t err = 0;
-  va_list ap;
+  va_list args;
 
   err = make_error_internal(apr_err, child);
 
-  va_start(ap, fmt);
-  AnsiString Message = Format(fmt, ap);
-  va_end(ap);
+  va_start(args, fmt);
+  AnsiString Message = Format(fmt, args);
+  va_end(args);
+
   AnsiString Message2 = Format("Error, code: %d, message: %s", apr_err, Message.c_str());
-  throw ExtException(Message2, NULL);
+  throw ExtException(UnicodeString(Message2), NULL);
 
   return err;
 }
@@ -435,13 +504,13 @@ error_wrap_apr(apr_status_t status,
                ...)
 {
   error_t err = 0;
-  va_list ap;
+  va_list args;
 
   err = make_error_internal(status, NULL);
 
-  va_start(ap, fmt);
-  AnsiString Message = Format(fmt, ap);
-  va_end(ap);
+  va_start(args, fmt);
+  AnsiString Message = Format(fmt, args);
+  va_end(args);
 
   err = error_create(err, NULL, Message.c_str());
 
@@ -3009,9 +3078,9 @@ config_read_auth_data(apr_hash_t ** hash,
     std::auto_ptr<TStrings> KeysPtr(Keys);
     {
       Storage->GetValueNames(Keys);
-      for (int Index = 0; Index < Keys->GetCount(); Index++)
+      for (int Index = 0; Index < Keys->Count; Index++)
       {
-        UnicodeString Key = Keys->GetStrings(Index);
+        UnicodeString Key = Keys->Strings[Index];
         UnicodeString Value = Storage->ReadStringRaw(Key, L"");
         apr_hash_set(*hash, AUTHN_ASCII_CERT_KEY, APR_HASH_KEY_STRING,
                      string_create(AnsiString(Key).c_str(), pool));
@@ -13194,11 +13263,11 @@ void __fastcall TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
   UnicodeString TargetDir = AbsolutePath(ATargetDir, false);
   UnicodeString FullTargetDir = UnixIncludeTrailingBackslash(TargetDir);
   int Index = 0;
-  while ((Index < FilesToCopy->GetCount()) && !OperationProgress->Cancel)
+  while ((Index < FilesToCopy->Count) && !OperationProgress->Cancel)
   {
     bool Success = false;
-    FileName = FilesToCopy->GetStrings(Index);
-    TRemoteFile * File = dynamic_cast<TRemoteFile *>(FilesToCopy->GetObjects(Index));
+    FileName = FilesToCopy->Strings[Index];
+    TRemoteFile * File = dynamic_cast<TRemoteFile *>(FilesToCopy->Objects[Index]);
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     FileNameOnly = ExtractFileName(RealFileName, false);
 
@@ -13600,10 +13669,10 @@ void __fastcall TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
   UnicodeString FullTargetDir = IncludeTrailingBackslash(TargetDir);
 
   int Index = 0;
-  while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
+  while (Index < FilesToCopy->Count && !OperationProgress->Cancel)
   {
-    UnicodeString FileName = FilesToCopy->GetStrings(Index);
-    const TRemoteFile * File = dynamic_cast<const TRemoteFile *>(FilesToCopy->GetObjects(Index));
+    UnicodeString FileName = FilesToCopy->Strings[Index];
+    const TRemoteFile * File = dynamic_cast<const TRemoteFile *>(FilesToCopy->Objects[Index]);
     bool Success = false;
     FTerminal->SetExceptionOnFail(true);
     TRY_FINALLY5 (Self, OperationProgress, FileName, Success, OnceDoneOperation,
