@@ -47,10 +47,9 @@ public:
   {
     return data;
   }
-  T operator = (const T & value)
+  void operator = (const T & value)
   {
     data = value;
-    return data;
   }
   typedef T value_type; // might be useful for template deductions
 };
@@ -116,14 +115,14 @@ public:
   }
   // get/set syntax
   T get() const; // name reserved but not implemented per C++/CLI
-  T set(const T & value)
+  void set(const T & value)
   {
-    return (my_object->*real_setter)(value);
+    void (my_object->*real_setter)(value);
   }
   // access with '=' sign
-  T operator = (const T & value)
+  void operator = (const T & value)
   {
-    return (my_object->*real_setter)(value);
+    (my_object->*real_setter)(value);
   }
   typedef T value_type; // might be useful for template deductions
 };
@@ -133,7 +132,7 @@ template <
   class T,
   class Object,
   typename T (Object::*real_getter)(),
-  typename T (Object::*real_setter)(const T &)
+  typename void (Object::*real_setter)(const T)
   >
 class RWProperty
 {
@@ -151,16 +150,16 @@ public:
   {
     return (my_object->*real_getter)();
   }
-  T operator()(const T & value)
+  void operator()(const T value)
   {
-    return (my_object->*real_setter)(value);
+    (my_object->*real_setter)(value);
   }
   // get/set syntax
   T get() const
   {
     return (my_object->*real_getter)();
   }
-  T set(const T & value)
+  void set(const T value)
   {
     return (my_object->*real_setter)(value);
   }
@@ -169,9 +168,9 @@ public:
   {
     return (my_object->*real_getter)();
   }
-  T operator = (const T & value)
+  void operator = (const T & value)
   {
-    return (my_object->*real_setter)(value);
+    (my_object->*real_setter)(value);
   }
   typedef T value_type; // might be useful for template deductions
 };
@@ -189,25 +188,15 @@ public:
 // to have any facility for erasing key/value pairs from the container.
 // C++/CLI properties can have multi-dimensional indexes: prop[2,3]. This is
 // not allowed by the current rules of standard C++
-#ifndef USING_OLD_COMPILER
 template <
   class Key,
   class T,
   class Object,
-  typename T & (Object::*real_getter)(const Key &),
-  typename T & (Object::*real_setter)(const Key &, const T &),
+  typename T (Object::*real_getter)(const Key),
+  typename void (Object::*real_setter)(const Key, const T),
   class Compare = std::less<Key>,
   class Allocator = std::allocator<std::pair<const Key, T> >
   >
-#else
-template <
-  class Key,
-  class T,
-  class Object,
-  typename T & (Object::*real_getter)(const Key &),
-  typename T & (Object::*real_setter)(const Key &, const T &)
-  >
-#endif
 class IndexedProperty
 {
   Object * my_object;
@@ -224,21 +213,21 @@ public:
   {
     return (my_object->*real_getter)(AKey);
   }
-  T operator()(const Key & AKey, const T & AValue)
+  void operator()(const Key AKey, const T AValue)
   {
-    return (my_object->*real_setter)(AKey, AValue);
+     (my_object->*real_setter)(AKey, AValue);
   }
   // get/set syntax
-  T get_Item(const Key & AKey)
+  T get_Item(const Key AKey)
   {
     return (my_object->*real_getter)(AKey);
   }
-  T set_Item(const Key & AKey, const T & AValue)
+  void set_Item(const Key AKey, const T AValue)
   {
-    return (my_object->*real_setter)(AKey, AValue);
+    (my_object->*real_setter)(AKey, AValue);
   }
   // operator [] syntax
-  T & operator[](const Key & AKey)
+  T operator[](const Key AKey)
   {
     return (my_object->*real_getter)(AKey);
   }
@@ -269,7 +258,7 @@ inline std::ostream& operator<<(std::ostream& os, const ROProperty< T, Object, r
 template <
   class T, class Object,
   typename T (Object::*real_getter)(),
-  typename T (Object::*real_setter)(const T &)
+  typename void (Object::*real_setter)(const T)
   >
 inline std::ostream& operator<<(std::ostream& os, const RWProperty< T, Object, real_getter, real_setter >& prop)
 {
@@ -281,8 +270,8 @@ inline std::ostream& operator<<(std::ostream& os, const RWProperty< T, Object, r
   class Key,
   class T,
   class Object,
-  typename T (Object::*real_getter)(const Key &),
-  typename T (Object::*real_setter)(const Key &, const T &),
+  typename T (Object::*real_getter)(const Key),
+  typename void (Object::*real_setter)(const Key, const T),
   class Compare,
   class Allocator
   >
