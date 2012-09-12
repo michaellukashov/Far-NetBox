@@ -54,6 +54,7 @@ private:
   TFileMasks FIncludeFileMask;
   bool FClearArchive;
   unsigned long FCPSLimit;
+public:
   static const wchar_t TokenPrefix = L'%';
   static const wchar_t NoReplacement = wchar_t(false);
   static const wchar_t TokenReplacement = wchar_t(true);
@@ -112,7 +113,7 @@ public:
   void __fastcall SetPreserveRights(bool value) { FPreserveRights = value; }
   bool __fastcall GetIgnorePermErrors() const { return FIgnorePermErrors; }
   void __fastcall SetIgnorePermErrors(bool value) { FIgnorePermErrors = value; }
-  const TResumeSupport & __fastcall GetResumeSupport() const { return FResumeSupport; }
+  TResumeSupport __fastcall GetResumeSupport() const { return FResumeSupport; }
   void __fastcall SetResumeSupport(TResumeSupport value) { FResumeSupport = value; }
   __int64 GetResumeThreshold() const { return FResumeThreshold; }
   void __fastcall SetResumeThreshold(__int64 value) { FResumeThreshold = value; }
