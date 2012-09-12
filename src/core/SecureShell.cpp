@@ -444,7 +444,7 @@ bool __fastcall TSecureShell::PromptUser(bool /*ToServer*/,
 {
   // there can be zero prompts!
 
-  assert(Results->GetCount() == Prompts->GetCount());
+  assert(Results->Count == Prompts->Count);
 
   TPromptKind PromptKind;
   // beware of changing order
@@ -521,8 +521,8 @@ bool __fastcall TSecureShell::PromptUser(bool /*ToServer*/,
   }
   else if (Index == 6)
   {
-    assert(Prompts->GetCount() == 1);
-    Prompts->PutString(0, LoadStr(PASSWORD_PROMPT));
+    assert(Prompts->Count == 1);
+    Prompts->Strings(0, LoadStr(PASSWORD_PROMPT));
     PromptKind = pkPassword;
   }
   else if (Index == 7)
@@ -555,16 +555,16 @@ bool __fastcall TSecureShell::PromptUser(bool /*ToServer*/,
   // on terminal console
   Instructions = Instructions.Trim();
 
-  for (int Index = 0; Index < Prompts->GetCount(); Index++)
+  for (int Index = 0; Index < Prompts->Count; Index++)
   {
-    UnicodeString Prompt = Prompts->GetStrings(Index);
+    UnicodeString Prompt = Prompts->Strings[Index];
     if (PromptTranslation != NULL)
     {
       TranslatePuttyMessage(PromptTranslation, PromptTranslationCount, Prompt);
     }
     // some servers add leading blank line to make the prompt look prettier
     // on terminal console
-    Prompts->PutString(Index, Prompt.Trim());
+    Prompts->Strings(Index, Prompt.Trim());
   }
 
   bool Result = false;
@@ -575,7 +575,7 @@ bool __fastcall TSecureShell::PromptUser(bool /*ToServer*/,
       // use empty username if no username was filled on login dialog
       // and GSSAPI auth is enabled, hence there's chance that the server can
       // deduce the username otherwise
-      Results->PutString(0, L"");
+      Results->Strings(0, L"");
       Result = true;
     }
   }
@@ -583,13 +583,13 @@ bool __fastcall TSecureShell::PromptUser(bool /*ToServer*/,
       (PromptKind == pkKeybInteractive))
   {
     if (FSessionData->GetAuthKIPassword() && !FSessionData->GetPassword().IsEmpty() &&
-        !FStoredPasswordTriedForKI && (Prompts->GetCount() == 1) &&
-        !(Prompts->GetObjects(0) != NULL))
+        !FStoredPasswordTriedForKI && (Prompts->Count == 1) &&
+        !(Prompts->Objects[0] != NULL))
     {
       LogEvent(L"Using stored password.");
       FUI->Information(LoadStr(AUTH_PASSWORD), false);
       Result = true;
-      Results->PutString(0, FSessionData->GetPassword());
+      Results->Strings(0, FSessionData->GetPassword());
       FStoredPasswordTriedForKI = true;
     }
     else if (Instructions.IsEmpty() && !InstructionsRequired && (Prompts->GetCount() == 0))
@@ -605,7 +605,7 @@ bool __fastcall TSecureShell::PromptUser(bool /*ToServer*/,
       LogEvent(L"Using stored password.");
       FUI->Information(LoadStr(AUTH_PASSWORD), false);
       Result = true;
-      Results->PutString(0, FSessionData->GetPassword());
+      Results->Strings(0, FSessionData->GetPassword());
       FStoredPasswordTried = true;
     }
   }
@@ -617,9 +617,9 @@ bool __fastcall TSecureShell::PromptUser(bool /*ToServer*/,
 
     if (Result)
     {
-      if ((PromptKind == pkUserName) && (Prompts->GetCount() == 1))
+      if ((PromptKind == pkUserName) && (Prompts->Count == 1))
       {
-        FUserName = Results->GetStrings(0);
+        FUserName = Results->Strings[0];
       }
     }
   }
@@ -648,7 +648,7 @@ void __fastcall TSecureShell::CWrite(const char * Data, int Length)
 
   UnicodeString Line;
   // Do we have at least one complete line in std error cache?
-  while (FCWriteTemp.Pos(L'\n') > 0)
+  while (FCWriteTemp.Pos(L"\n") > 0)
   {
     UnicodeString Line = CutToChar(FCWriteTemp, L'\n', false);
 

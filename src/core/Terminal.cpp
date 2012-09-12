@@ -243,14 +243,13 @@ private:
 /* __fastcall */ TTunnelThread::TTunnelThread(TSecureShell * SecureShell) :
   TSimpleThread(),
   FSecureShell(SecureShell),
-  FTerminated(false),
-  Self(NULL)
+  FTerminated(false)
 {
+  Self = this;
 }
 //---------------------------------------------------------------------------
 void __fastcall TTunnelThread::Init()
 {
-  Self = this;
   TSimpleThread::Init();
   Start();
 }
@@ -1345,8 +1344,14 @@ void /* __fastcall */ TTerminal::ReactOnCommand(int /*TFSCommand*/ Cmd)
   }
   else if (ModifiesFiles && GetAutoReadDirectory() && Configuration->GetAutoReadDirectoryAfterOp())
   {
-    if (!InTransaction()) { ReadDirectory(true); }
-    else { FReadDirectoryPending = true; }
+    if (!InTransaction())
+    {
+      ReadDirectory(true);
+    }
+    else
+    {
+      FReadDirectoryPending = true;
+    }
   }
 }
 //---------------------------------------------------------------------------
@@ -4132,6 +4137,7 @@ void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeStri
   TSynchronizeDirectoryEvent OnSynchronizeDirectory, TSynchronizeOptions * Options,
   int Flags, TSynchronizeChecklist * Checklist)
 {
+  TFileOperationProgressType * OperationProgress = GetOperationProgress();
   TSynchronizeData Data;
 
   Data.LocalDirectory = IncludeTrailingBackslash(LocalDirectory);
@@ -4145,7 +4151,6 @@ void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeStri
   Data.Flags = Flags;
   Data.Checklist = Checklist;
 
-  TFileOperationProgressType * OperationProgress = GetOperationProgress();
   LogEvent(FORMAT(L"Collecting synchronization list for local directory '%s' and remote directory '%s', "
     L"mode = %d, params = %d", LocalDirectory.c_str(), RemoteDirectory.c_str(),
     int(Mode), int(Params)));
@@ -4932,7 +4937,6 @@ bool /* __fastcall */ TTerminal::CopyToRemote(TStrings * FilesToCopy,
         (FLAGCLEAR(Params, cpDelete) ? CopyParam : NULL));
     }
 
-    // TFileOperationProgressType OperationProgress(&DoProgress, &DoFinished);
     OperationProgress.Start((Params & cpDelete ? foMove : foCopy), osLocal,
       FilesToCopy->Count, (Params & cpTemporary) > 0, TargetDir, CopyParam->GetCPSLimit());
 
@@ -5249,6 +5253,7 @@ bool /* __fastcall */ TSecondaryTerminal::DoPromptUser(TSessionData * Data,
   TStrings * Results)
 {
   bool AResult = false;
+
 
   if ((Prompts->Count == 1) && !(Prompts->Objects[0] != NULL) &&
       ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||

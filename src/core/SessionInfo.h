@@ -216,18 +216,18 @@ public:
   void __fastcall Lock();
   void __fastcall Unlock();
 
-  TSessionLog * __fastcall GetParent() { return FParent; }
-  void __fastcall SetParent(TSessionLog *value) { FParent = value; }
-  bool __fastcall GetLogging() { return FLogging; }
-  TNotifyEvent & __fastcall GetOnChange() { return TStringList::GetOnChange(); }
-  void __fastcall SetOnChange(TNotifyEvent value) { TStringList::SetOnChange(value); }
-  TNotifyEvent & __fastcall GetOnStateChange() { return FOnStateChange; }
-  void __fastcall SetOnStateChange(TNotifyEvent value) { FOnStateChange = value; }
-  UnicodeString __fastcall GetCurrentFileName() { return FCurrentFileName; }
-  int __fastcall GetTopIndex() { return FTopIndex; }
-  UnicodeString __fastcall GetName() { return FName; }
-  void __fastcall SetName(const UnicodeString value) { FName = value; }
-  int __fastcall GetCount() { return TStringList::GetCount(); }
+  TSessionLog * __fastcall GetParent();
+  void __fastcall SetParent(TSessionLog *value);
+  bool __fastcall GetLogging();
+  TNotifyEvent & __fastcall GetOnChange();
+  void __fastcall SetOnChange(TNotifyEvent value);
+  TNotifyEvent & __fastcall GetOnStateChange();
+  void __fastcall SetOnStateChange(TNotifyEvent value);
+  UnicodeString __fastcall GetCurrentFileName();
+  int __fastcall GetTopIndex();
+  UnicodeString __fastcall GetName();
+  void __fastcall SetName(const UnicodeString value);
+  int __fastcall GetCount();
 
 protected:
   void __fastcall CloseLogFile();

@@ -1184,8 +1184,8 @@ protected:
     if (Request != NULL)
     {
       TSFTPPacket * Response = new TSFTPPacket(FCodePage);
-      FRequests->Add(static_cast<TObject *>(static_cast<void *>(Request)));
-      FResponses->Add(static_cast<TObject *>(static_cast<void *>(Response)));
+      FRequests->Add(Request);
+      FResponses->Add(Response);
 
       // make sure the response is reserved before actually ending the message
       // as we may receive response asynchronously before SendPacket finishes
@@ -1774,8 +1774,8 @@ const TFileSystemInfo & __fastcall TSFTPFileSystem::GetFileSystemInfo(bool /*Ret
       FFileSystemInfo.AdditionalInfo += LoadStr(SFTP_EXTENSION_INFO) + L"\r\n";
       for (int Index = 0; Index < FExtensions->Count; Index++)
       {
-        UnicodeString Name = FExtensions->GetName(Index);
-        UnicodeString Value = FExtensions->GetValue(Name);
+        UnicodeString Name = FExtensions->Names[Index];
+        UnicodeString Value = FExtensions->Values[Name];
         UnicodeString Line;
         if (Value.IsEmpty())
         {
@@ -2884,7 +2884,7 @@ char * __fastcall TSFTPFileSystem::GetEOL() const
   if (FVersion >= 4)
   {
     assert(!FEOL.IsEmpty());
-    return (char *)FEOL.c_str();
+    return const_cast<char *>(FEOL.c_str());
   }
   else
   {
@@ -3520,8 +3520,7 @@ void __fastcall TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & 
         {
           TStrings * SubFileList = new TStringList();
           bool Success = false;
-          TRY_FINALLY8 (Self, SubFiles, SubFileList, FirstLevel,
-              File, Success, OnceDoneOperation, OperationProgress,
+          TRY_FINALLY8 (Self, SubFiles, SubFileList, FirstLevel, File, Success, OnceDoneOperation, OperationProgress,
           {
             OperationProgress->SetFile(File->GetFileName());
 
@@ -3704,8 +3703,7 @@ void __fastcall TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     assert(!FAvoidBusy);
     FAvoidBusy = true;
 
-    TRY_FINALLY5 (Self, RealFileName, Success, OnceDoneOperation,
-        OperationProgress,
+    TRY_FINALLY5 (Self, RealFileName, Success, OnceDoneOperation, OperationProgress,
     {
       try
       {

@@ -1114,6 +1114,66 @@ void __fastcall TSessionLog::Clear()
   TStringList::Clear();
 }
 //---------------------------------------------------------------------------
+TSessionLog * __fastcall TSessionLog::GetParent()
+{
+  return FParent;
+}
+//---------------------------------------------------------------------------
+void __fastcall TSessionLog::SetParent(TSessionLog *value)
+{
+  FParent = value;
+}
+//---------------------------------------------------------------------------
+bool __fastcall TSessionLog::GetLogging()
+{
+  return FLogging;
+}
+//---------------------------------------------------------------------------
+TNotifyEvent & __fastcall TSessionLog::GetOnChange()
+{
+  return TStringList::GetOnChange();
+}
+//---------------------------------------------------------------------------
+void __fastcall TSessionLog::SetOnChange(TNotifyEvent value)
+{
+  TStringList::SetOnChange(value);
+}
+//---------------------------------------------------------------------------
+TNotifyEvent & __fastcall TSessionLog::GetOnStateChange()
+{
+  return FOnStateChange;
+}
+//---------------------------------------------------------------------------
+void __fastcall TSessionLog::SetOnStateChange(TNotifyEvent value)
+{
+  FOnStateChange = value;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TSessionLog::GetCurrentFileName()
+{
+  return FCurrentFileName;
+}
+//---------------------------------------------------------------------------
+int __fastcall TSessionLog::GetTopIndex()
+{
+  return FTopIndex;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TSessionLog::GetName()
+{
+  return FName;
+}
+//---------------------------------------------------------------------------
+void __fastcall TSessionLog::SetName(const UnicodeString value)
+{
+  FName = value;
+}
+//---------------------------------------------------------------------------
+int __fastcall TSessionLog::GetCount()
+{
+  return TStringList::Count;
+}
+//---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 /* __fastcall */ TActionLog::TActionLog(TSessionUI* UI, TSessionData * SessionData,
   TConfiguration * Configuration)

@@ -1,6 +1,5 @@
-#pragma once
-
-#include <vcl.h>
+#ifndef WebDavFileSystemH
+#define WebDavFileSystemH
 
 #include <apr_pools.h>
 
@@ -211,3 +210,5 @@ private:
   TWebDAVFileSystem(const TWebDAVFileSystem &);
   void __fastcall operator=(const TWebDAVFileSystem &);
 };
+
+#endif

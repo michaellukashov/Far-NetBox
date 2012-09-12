@@ -327,7 +327,7 @@ void __fastcall TSessionData::Assign(TPersistent * Source)
 {
   if (Source && ::InheritsFrom<TPersistent, TSessionData>(Source))
   {
-    #define PROPERTY(P) Set##P((static_cast<TSessionData *>(Source))->Get##P())
+    #define PROPERTY(P) Set ## P((static_cast<TSessionData *>(Source))->Get ## P())
     PROPERTY(Name);
     BASE_PROPERTIES;
     ADVANCED_PROPERTIES;
@@ -359,7 +359,7 @@ void __fastcall TSessionData::Assign(TPersistent * Source)
 //---------------------------------------------------------------------
 bool __fastcall TSessionData::IsSame(const TSessionData * Default, bool AdvancedOnly)
 {
-  #define PROPERTY(P) if (Get##P() != Default->Get##P()) return false;
+  #define PROPERTY(P) if (Get ## P() != Default->Get ## P()) return false;
   if (!AdvancedOnly)
   {
     BASE_PROPERTIES;
@@ -1104,8 +1104,10 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
     TSessionData * Data = NULL;
     for (Integer Index = 0; Index < AStoredSessions->Count + AStoredSessions->GetHiddenCount(); Index++)
     {
+
       TSessionData * AData = static_cast<TSessionData *>(AStoredSessions->Items[Index]);
-      if (AnsiSameText(AData->GetName(), DecodedUrl) ||
+      if (
+          AnsiSameText(AData->GetName(), DecodedUrl) ||
           AnsiSameText(AData->GetName() + L"/", DecodedUrl.SubString(1, AData->GetName().Length() + 1)))
       {
         Data = AData;
@@ -2647,7 +2649,7 @@ void __fastcall TStoredSessionList::Load(THierarchicalStorage * Storage,
 
     if (!AsModified)
     {
-      for (int Index = 0; Index < TObjectList::GetCount(); Index++)
+      for (int Index = 0; Index < TObjectList::Count; Index++)
       {
         if (Loaded->IndexOf(GetItem(Index)) < 0)
         {
@@ -2664,7 +2666,7 @@ void __fastcall TStoredSessionList::Load()
   THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
   std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
   {
-    if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), false))
+    if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), False))
     {
       Load(Storage);
     }
@@ -2761,21 +2763,21 @@ void __fastcall TStoredSessionList::Export(const UnicodeString FileName)
 //---------------------------------------------------------------------
 void __fastcall TStoredSessionList::SelectAll(bool Select)
 {
-  for (int Index = 0; Index < GetCount(); Index++)
+  for (int Index = 0; Index < Count; Index++)
   {
-    GetSession(Index)->SetSelected(Select);
+    AtSession(Index)->SetSelected(Select);
   }
 }
 //---------------------------------------------------------------------
 void __fastcall TStoredSessionList::Import(TStoredSessionList * From,
   bool OnlySelected)
 {
-  for (int Index = 0; Index < From->GetCount(); Index++)
+  for (int Index = 0; Index < From->Count; Index++)
   {
-    if (!OnlySelected || From->GetSession(Index)->GetSelected())
+    if (!OnlySelected || From->AtSession(Index)->GetSelected())
     {
       TSessionData *Session = new TSessionData(L"");
-      Session->Assign(From->GetSession(Index));
+      Session->Assign(From->AtSession(Index));
       Session->SetModified(true);
       Session->MakeUniqueIn(this);
       Add(Session);
@@ -2788,11 +2790,11 @@ void __fastcall TStoredSessionList::Import(TStoredSessionList * From,
 void __fastcall TStoredSessionList::SelectSessionsToImport
   (TStoredSessionList * Dest, bool SSHOnly)
 {
-  for (int Index = 0; Index < GetCount(); Index++)
+  for (int Index = 0; Index < Count; Index++)
   {
-    GetSession(Index)->SetSelected(
-      (!SSHOnly || (GetSession(Index)->GetProtocol() == ptSSH)) &&
-      !Dest->FindByName(GetSession(Index)->GetName()));
+    AtSession(Index)->SetSelected(
+      (!SSHOnly || (AtSession(Index)->GetProtocol() == ptSSH)) &&
+      !Dest->FindByName(AtSession(Index)->GetName()));
   }
 }
 //---------------------------------------------------------------------
@@ -2893,7 +2895,7 @@ void __fastcall TStoredSessionList::UpdateStaticUsage()
 TSessionData * __fastcall TStoredSessionList::FindSame(TSessionData * Data)
 {
   TSessionData * Result;
-  if (Data->GetHidden() && Data->GetName().IsEmpty())
+  if (Data->GetHidden() || Data->GetName().IsEmpty())
   {
     Result = NULL;
   }
@@ -2906,8 +2908,8 @@ TSessionData * __fastcall TStoredSessionList::FindSame(TSessionData * Data)
 //---------------------------------------------------------------------------
 int __fastcall TStoredSessionList::IndexOf(TSessionData * Data)
 {
-  for (int Index = 0; Index < GetCount(); Index++)
-    if (Data == GetSession(Index)) { return Index; }
+  for (int Index = 0; Index < Count; Index++)
+    if (Data == AtSession(Index)) { return Index; }
   return -1;
 }
 //---------------------------------------------------------------------------
@@ -2979,14 +2981,14 @@ void __fastcall TStoredSessionList::ImportHostKeys(const UnicodeString TargetKey
       TSessionData * Session;
       UnicodeString HostKeyName;
       assert(Sessions != NULL);
-      for (int Index = 0; Index < Sessions->GetCount(); Index++)
+      for (int Index = 0; Index < Sessions->Count; Index++)
       {
-        Session = Sessions->GetSession(Index);
+        Session = Sessions->AtSession(Index);
         if (!OnlySelected || Session->GetSelected())
         {
           HostKeyName = PuttyMungeStr(FORMAT(L"@%d:%s", Session->GetPortNumber(), Session->GetHostName().c_str()));
           UnicodeString KeyName;
-          for (int KeyIndex = 0; KeyIndex < KeyList->GetCount(); KeyIndex++)
+          for (int KeyIndex = 0; KeyIndex < KeyList->Count; KeyIndex++)
           {
             KeyName = KeyList->Strings[KeyIndex];
             int P = KeyName.Pos(HostKeyName);
@@ -3022,7 +3024,7 @@ TSessionData * __fastcall TStoredSessionList::ParseUrl(UnicodeString Url,
 //---------------------------------------------------------------------------
 TSessionData * TStoredSessionList::GetSessionByName(const UnicodeString SessionName)
 {
-  for (int I = 0; I < GetCount(); I++)
+  for (int I = 0; I < Count; I++)
   {
     TSessionData * SessionData = GetSession(I);
     if (SessionData->GetName() == SessionName)

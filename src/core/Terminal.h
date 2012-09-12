@@ -282,7 +282,6 @@ protected:
   int /* __fastcall */ FileOperationLoop(TFileOperationEvent CallBackFunc,
     TFileOperationProgressType * OperationProgress, bool AllowSkip,
     const UnicodeString Message, void * Param1 = NULL, void * Param2 = NULL);
-  // bool __fastcall GetIsCapable(TFSCapability Capability) const;
   bool /* __fastcall */ ProcessFiles(TStrings * FileList, TFileOperation Operation,
     TProcessFileEvent ProcessFile, void * Param = NULL, TOperationSide Side = osRemote,
     bool Ex = false);
@@ -498,7 +497,6 @@ public:
   TSessionLog * __fastcall GetLog() { return FLog; }
   TActionLog * __fastcall GetActionLog() { return FActionLog; };
   TConfiguration *__fastcall GetConfiguration() { return FConfiguration; }
-
   TSessionStatus __fastcall GetStatus() { return FStatus; }
   TRemoteDirectory * __fastcall GetFiles() { return FFiles; }
   TNotifyEvent & __fastcall GetOnChangeDirectory() { return FOnChangeDirectory; }
