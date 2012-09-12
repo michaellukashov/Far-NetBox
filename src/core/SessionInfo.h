@@ -227,7 +227,7 @@ public:
   int __fastcall GetTopIndex() { return FTopIndex; }
   UnicodeString __fastcall GetName() { return FName; }
   void __fastcall SetName(const UnicodeString value) { FName = value; }
-  int __fastcall GetCount() { return TStringList::Count; }
+  int __fastcall GetCount() { return TStringList::GetCount(); }
 
 protected:
   void __fastcall CloseLogFile();
