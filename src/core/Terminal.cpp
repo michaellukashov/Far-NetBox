@@ -2430,7 +2430,7 @@ void /* __fastcall */ TTerminal::CustomReadDirectory(TRemoteFileList * FileList)
       TRemoteFile * File = FileList->GetFiles(Index);
       LogEvent(FORMAT(L"%s;%c;%lld;%s;%s;%s;%s;%d",
         File->GetFileName().c_str(), File->GetType(), File->GetSize(), StandardTimestamp(File->GetModification()).c_str(),
-         File->Owner().GetLogText().c_str(), File->GetGroup().GetLogText().c_str(), File->GetRights()->GetText().c_str(),
+         File->GetOwner().GetLogText().c_str(), File->GetGroup().GetLogText().c_str(), File->GetRights()->GetText().c_str(),
          File->GetAttr()));
     }
   }

@@ -870,7 +870,7 @@ Boolean __fastcall TRemoteFile::GetIsInaccesibleDirectory() const
         ((GetRights()->GetRight(TRights::rrGroupExec) != TRights::rsNo) &&
          GetTerminal()->GetMembership()->Exists(GetGroup().GetName())) ||
         ((GetRights()->GetRight(TRights::rrUserExec) != TRights::rsNo) &&
-         (AnsiCompareText(GetTerminal()->GetUserName(), Owner().GetName()) == 0)));
+         (AnsiCompareText(GetTerminal()->GetUserName(), GetOwner().GetName()) == 0)));
   }
     else { Result = False; }
   return Result;
@@ -1321,7 +1321,7 @@ UnicodeString __fastcall TRemoteFile::GetListingStr()
     LinkPart = UnicodeString(SYMLINKSTR) + GetLinkTo();
   }
   return FORMAT(L"%s%s %3s %-8s %-8s %9s %-12s %s%s",
-    GetType(), GetRights()->GetText().c_str(), IntToStr(GetINodeBlocks()).c_str(), Owner().GetName().c_str(),
+    GetType(), GetRights()->GetText().c_str(), IntToStr(GetINodeBlocks()).c_str(), GetOwner().GetName().c_str(),
     GetGroup().GetName().c_str(), Int64ToStr(GetSize()).c_str(), GetModificationStr().c_str(), GetFileName().c_str(),
     LinkPart.c_str());
 }
@@ -2508,9 +2508,9 @@ TRemoteProperties __fastcall TRemoteProperties::CommonProperties(TStrings * File
       // with "recursive" option
       CommonProperties.Rights.SetAllowUndef(File->GetRights()->GetIsUndef());
       CommonProperties.Valid << vpRights;
-      if (File->Owner().GetIsSet())
+      if (File->GetOwner().GetIsSet())
       {
-        CommonProperties.Owner = File->Owner();
+        CommonProperties.Owner = File->GetOwner();
         CommonProperties.Valid << vpOwner;
       }
       if (File->GetGroup().GetIsSet())
@@ -2523,7 +2523,7 @@ TRemoteProperties __fastcall TRemoteProperties::CommonProperties(TStrings * File
     {
       CommonProperties.Rights.SetAllowUndef(True);
       CommonProperties.Rights &= *File->GetRights();
-      if (CommonProperties.Owner != File->Owner())
+      if (CommonProperties.Owner != File->GetOwner())
       {
         CommonProperties.Owner.Clear();
         CommonProperties.Valid >> vpOwner;
