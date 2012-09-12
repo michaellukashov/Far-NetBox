@@ -44,9 +44,6 @@ private:
   bool FIgnorePermErrors;
   TResumeSupport FResumeSupport;
   __int64 FResumeThreshold;
-#ifndef _MSC_VER
-  UnicodeString __fastcall GetLogStr() const;
-#endif
   wchar_t FInvalidCharsReplacement;
   UnicodeString FLocalInvalidChars;
   UnicodeString FTokenizibleChars;
@@ -57,11 +54,11 @@ private:
   TFileMasks FIncludeFileMask;
   bool FClearArchive;
   unsigned long FCPSLimit;
-public:
   static const wchar_t TokenPrefix = L'%';
   static const wchar_t NoReplacement = wchar_t(false);
   static const wchar_t TokenReplacement = wchar_t(true);
 
+public:
   static UnicodeString Untokenize(const UnicodeString FileName);
   void __fastcall SetLocalInvalidChars(UnicodeString value);
   bool __fastcall GetReplaceInvalidChars() const;
@@ -94,69 +91,50 @@ public:
 
   bool __fastcall operator==(const TCopyParamType & rhp) const;
 
-#ifndef _MSC_VER
-  __property TFileMasks AsciiFileMask = { read = FAsciiFileMask, write = FAsciiFileMask };
-  __property TFileNameCase FileNameCase = { read = FFileNameCase, write = FFileNameCase };
-  __property bool PreserveReadOnly = { read = FPreserveReadOnly, write = FPreserveReadOnly };
-  __property bool PreserveTime = { read = FPreserveTime, write = FPreserveTime };
-  __property TRights Rights = { read = FRights, write = FRights };
-  __property TTransferMode TransferMode = { read = FTransferMode, write = FTransferMode };
-  __property UnicodeString LogStr  = { read=GetLogStr };
-  __property bool AddXToDirectories  = { read=FAddXToDirectories, write=FAddXToDirectories };
-  __property bool PreserveRights = { read = FPreserveRights, write = FPreserveRights };
-  __property bool IgnorePermErrors = { read = FIgnorePermErrors, write = FIgnorePermErrors };
-  __property TResumeSupport ResumeSupport = { read = FResumeSupport, write = FResumeSupport };
-  __property __int64 ResumeThreshold = { read = FResumeThreshold, write = FResumeThreshold };
-  __property wchar_t InvalidCharsReplacement = { read = FInvalidCharsReplacement, write = FInvalidCharsReplacement };
-  __property bool ReplaceInvalidChars = { read = GetReplaceInvalidChars, write = SetReplaceInvalidChars };
-  __property UnicodeString LocalInvalidChars = { read = FLocalInvalidChars, write = SetLocalInvalidChars };
-  __property bool CalculateSize = { read = FCalculateSize, write = FCalculateSize };
-  __property UnicodeString FileMask = { read = FFileMask, write = FFileMask };
-  __property TFileMasks IncludeFileMask = { read = FIncludeFileMask, write = FIncludeFileMask };
-  __property bool ClearArchive = { read = FClearArchive, write = FClearArchive };
-  __property unsigned long CPSLimit = { read = FCPSLimit, write = FCPSLimit };
-#else
-  TFileMasks GetAsciiFileMask() const { return FAsciiFileMask; }
-  void SetAsciiFileMask(TFileMasks value) { FAsciiFileMask = value; }
-  TFileNameCase GetFileNameCase() const { return FFileNameCase; }
-  void SetFileNameCase(TFileNameCase value) { FFileNameCase = value; }
-  bool GetPreserveReadOnly() const { return FPreserveReadOnly; }
-  void SetPreserveReadOnly(bool value) { FPreserveReadOnly = value; }
-  bool GetPreserveTime() const { return FPreserveTime; }
-  void SetPreserveTime(bool value) { FPreserveTime = value; }
-  const TRights & GetRights() const { return FRights; }
-  void SetRights(const TRights & value) { FRights.Assign(&value); }
-  TTransferMode GetTransferMode() const { return FTransferMode; }
-  void SetTransferMode(TTransferMode value) { FTransferMode = value; }
+  const TFileMasks & __fastcall GetAsciiFileMask() const { return FAsciiFileMask; }
+  TFileMasks & __fastcall GetAsciiFileMask() { return FAsciiFileMask; }
+  void __fastcall SetAsciiFileMask(TFileMasks value) { FAsciiFileMask = value; }
+  const TFileNameCase & __fastcall GetFileNameCase() const { return FFileNameCase; }
+  void __fastcall SetFileNameCase(TFileNameCase value) { FFileNameCase = value; }
+  bool __fastcall GetPreserveReadOnly() const { return FPreserveReadOnly; }
+  void __fastcall SetPreserveReadOnly(bool value) { FPreserveReadOnly = value; }
+  bool __fastcall GetPreserveTime() const { return FPreserveTime; }
+  void __fastcall SetPreserveTime(bool value) { FPreserveTime = value; }
+  const TRights & __fastcall GetRights() const { return FRights; }
+  TRights & __fastcall GetRights() { return FRights; }
+  void __fastcall SetRights(const TRights & value) { FRights.Assign(&value); }
+  TTransferMode __fastcall GetTransferMode() const { return FTransferMode; }
+  void __fastcall SetTransferMode(TTransferMode value) { FTransferMode = value; }
   UnicodeString __fastcall GetLogStr() const;
-  bool GetAddXToDirectories() const { return FAddXToDirectories; }
-  void SetAddXToDirectories(bool value) { FAddXToDirectories = value; }
-  bool GetPreserveRights() const { return FPreserveRights; }
-  void SetPreserveRights(bool value) { FPreserveRights = value; }
-  bool GetIgnorePermErrors() const { return FIgnorePermErrors; }
-  void SetIgnorePermErrors(bool value) { FIgnorePermErrors = value; }
-  TResumeSupport GetResumeSupport() const { return FResumeSupport; }
-  void SetResumeSupport(TResumeSupport value) { FResumeSupport = value; }
+  bool __fastcall GetAddXToDirectories() const { return FAddXToDirectories; }
+  void __fastcall SetAddXToDirectories(bool value) { FAddXToDirectories = value; }
+  bool __fastcall GetPreserveRights() const { return FPreserveRights; }
+  void __fastcall SetPreserveRights(bool value) { FPreserveRights = value; }
+  bool __fastcall GetIgnorePermErrors() const { return FIgnorePermErrors; }
+  void __fastcall SetIgnorePermErrors(bool value) { FIgnorePermErrors = value; }
+  const TResumeSupport & __fastcall GetResumeSupport() const { return FResumeSupport; }
+  void __fastcall SetResumeSupport(TResumeSupport value) { FResumeSupport = value; }
   __int64 GetResumeThreshold() const { return FResumeThreshold; }
-  void SetResumeThreshold(__int64 value) { FResumeThreshold = value; }
-  wchar_t GetInvalidCharsReplacement() const { return FInvalidCharsReplacement; }
-  void SetInvalidCharsReplacement(char value) { FInvalidCharsReplacement = value; }
-  UnicodeString GetLocalInvalidChars() const { return FLocalInvalidChars; }
-  bool GetCalculateSize() const { return FCalculateSize; }
-  void SetCalculateSize(bool value) { FCalculateSize = value; }
-  UnicodeString GetFileMask() const { return FFileMask; }
-  void SetFileMask(const UnicodeString value) { FFileMask = value; }
-  TFileMasks GetIncludeFileMask() const { return FIncludeFileMask; }
-  void SetIncludeFileMask(TFileMasks value) { FIncludeFileMask = value; }
-  TFileMasks GetExcludeFileMask() const { return FExcludeFileMask; }
+  void __fastcall SetResumeThreshold(__int64 value) { FResumeThreshold = value; }
+  wchar_t __fastcall GetInvalidCharsReplacement() const { return FInvalidCharsReplacement; }
+  void __fastcall SetInvalidCharsReplacement(char value) { FInvalidCharsReplacement = value; }
+  UnicodeString __fastcall GetLocalInvalidChars() const { return FLocalInvalidChars; }
+  bool __fastcall GetCalculateSize() const { return FCalculateSize; }
+  void __fastcall SetCalculateSize(bool value) { FCalculateSize = value; }
+  UnicodeString __fastcall GetFileMask() const { return FFileMask; }
+  void __fastcall SetFileMask(const UnicodeString value) { FFileMask = value; }
+  const TFileMasks & __fastcall GetIncludeFileMask() const { return FIncludeFileMask; }
+  TFileMasks & __fastcall GetIncludeFileMask() { return FIncludeFileMask; }
+  void __fastcall SetIncludeFileMask(TFileMasks value) { FIncludeFileMask = value; }
+  const TFileMasks & __fastcall GetExcludeFileMask() const { return FExcludeFileMask; }
+  TFileMasks & __fastcall GetExcludeFileMask() { return FExcludeFileMask; }
   void SetExcludeFileMask(TFileMasks value) { FExcludeFileMask = value; }
   bool GetNegativeExclude() const { return FNegativeExclude; }
   void SetNegativeExclude(bool value) { FNegativeExclude = value; }
-  bool GetClearArchive() const { return FClearArchive; }
-  void SetClearArchive(bool value) { FClearArchive = value; }
-  size_t GetCPSLimit() const { return FCPSLimit; }
-  void SetCPSLimit(size_t value) { FCPSLimit = value; }
-#endif
+  bool __fastcall GetClearArchive() const { return FClearArchive; }
+  void __fastcall SetClearArchive(bool value) { FClearArchive = value; }
+  unsigned long __fastcall GetCPSLimit() const { return FCPSLimit; }
+  void __fastcall SetCPSLimit(unsigned long value) { FCPSLimit = value; }
 };
 //---------------------------------------------------------------------------
 unsigned long __fastcall GetSpeedLimit(const UnicodeString & Text);

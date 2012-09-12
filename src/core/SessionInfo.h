@@ -215,31 +215,15 @@ public:
   void __fastcall Lock();
   void __fastcall Unlock();
 
-#ifndef _MSC_VER
-  __property TSessionLog * Parent = { read = FParent, write = FParent };
-  __property bool Logging = { read = FLogging };
-  __property int BottomIndex = { read = GetBottomIndex };
-  __property UnicodeString Line[int Index]  = { read=GetLine };
-  __property TLogLineType Type[int Index]  = { read=GetType };
-  __property OnChange;
-  __property TNotifyEvent OnStateChange = { read = FOnStateChange, write = FOnStateChange };
-  __property UnicodeString CurrentFileName = { read = FCurrentFileName };
-  __property bool LoggingToFile = { read = GetLoggingToFile };
-  __property int TopIndex = { read = FTopIndex };
-  __property UnicodeString SessionName = { read = GetSessionName };
-  __property UnicodeString Name = { read = FName, write = FName };
-  __property Count;
-#else
   TSessionLog * __fastcall GetParent() { return FParent; }
   void __fastcall SetParent(TSessionLog *value) { FParent = value; }
   bool __fastcall GetLogging() { return FLogging; }
-  TNotifyEvent & GetOnStateChange() { return FOnStateChange; }
-  void SetOnStateChange(TNotifyEvent value) { FOnStateChange = value; }
+  TNotifyEvent & __fastcall GetOnStateChange() { return FOnStateChange; }
+  void __fastcall SetOnStateChange(TNotifyEvent value) { FOnStateChange = value; }
   UnicodeString __fastcall GetCurrentFileName() { return FCurrentFileName; }
-  size_t __fastcall GetTopIndex() { return FTopIndex; }
+  int __fastcall GetTopIndex() { return FTopIndex; }
   UnicodeString __fastcall GetName() { return FName; }
   void __fastcall SetName(const UnicodeString value) { FName = value; }
-#endif
 
 protected:
   void __fastcall CloseLogFile();
@@ -294,13 +278,8 @@ public:
   void __fastcall BeginGroup(UnicodeString Name);
   void __fastcall EndGroup();
 
-#ifndef _MSC_VER
-  __property UnicodeString CurrentFileName = { read = FCurrentFileName };
-  __property bool Enabled = { read = FEnabled, write = SetEnabled };
-#else
   UnicodeString __fastcall GetCurrentFileName() const { return FCurrentFileName; };
   bool __fastcall GetEnabled() const { return FEnabled; }
-#endif
 
 protected:
   void __fastcall CloseLogFile();

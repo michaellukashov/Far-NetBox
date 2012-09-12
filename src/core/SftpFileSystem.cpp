@@ -839,28 +839,14 @@ public:
     return *this;
   }
 
-#ifndef _MSC_VER
-  __property unsigned int Length = { read = FLength };
-  __property unsigned int RemainingLength = { read = GetRemainingLength };
-  __property unsigned char * Data = { read = FData };
-  __property unsigned char * SendData = { read = GetSendData };
-  __property unsigned int SendLength = { read = GetSendLength };
-  __property unsigned int Capacity = { read = FCapacity, write = SetCapacity };
-  __property unsigned char Type = { read = FType };
-  __property unsigned char RequestType = { read = GetRequestType };
-  __property unsigned int MessageNumber = { read = FMessageNumber, write = FMessageNumber };
-  __property TSFTPFileSystem * ReservedBy = { read = FReservedBy, write = FReservedBy };
-  __property UnicodeString TypeName = { read = GetTypeName };
-#else
-  unsigned int GetLength() const { return FLength; }
-  unsigned char * GetData() const { return FData; }
-  unsigned int GetCapacity() const { return FCapacity; }
-  unsigned char GetType() const { return FType; }
-  unsigned int GetMessageNumber() const { return FMessageNumber; }
+  unsigned int __fastcall GetLength() const { return FLength; }
+  unsigned char * __fastcall GetData() const { return FData; }
+  unsigned int __fastcall GetCapacity() const { return FCapacity; }
+  unsigned char __fastcall GetType() const { return FType; }
+  unsigned int __fastcall GetMessageNumber() const { return FMessageNumber; }
   void __fastcall SetMessageNumber(unsigned int value) { FMessageNumber = value; }
-  TSFTPFileSystem * GetReservedBy() const { return FReservedBy; }
+  TSFTPFileSystem * __fastcall GetReservedBy() const { return FReservedBy; }
   void __fastcall SetReservedBy(TSFTPFileSystem * value) { FReservedBy = value; }
-#endif
 
 private:
   unsigned char * FData;
