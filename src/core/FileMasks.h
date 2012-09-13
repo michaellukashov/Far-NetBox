@@ -62,10 +62,10 @@ public:
   UnicodeString __fastcall GetMasks() const { return FStr; }
   void __fastcall SetMasks(const UnicodeString value);
 
-  TStrings * __fastcall GetIncludeFileMasksStr() { return GetMasksStr(MASK_INDEX(false, true)); };
-  TStrings * __fastcall GetExcludeFileMasksStr() { return GetMasksStr(MASK_INDEX(false, false)); };
-  TStrings * __fastcall GetIncludeDirectoryMasksStr() { return GetMasksStr(MASK_INDEX(true, true)); };
-  TStrings * __fastcall GetExcludeDirectoryMasksStr() { return GetMasksStr(MASK_INDEX(true, false)); };
+  TStrings * __fastcall GetIncludeFileMasksStr() const { return GetMasksStr(MASK_INDEX(false, true)); };
+  TStrings * __fastcall GetExcludeFileMasksStr() const { return GetMasksStr(MASK_INDEX(false, false)); };
+  TStrings * __fastcall GetIncludeDirectoryMasksStr() const { return GetMasksStr(MASK_INDEX(true, true)); };
+  TStrings * __fastcall GetExcludeDirectoryMasksStr() const { return GetMasksStr(MASK_INDEX(true, false)); };
 
 private:
   int FForceDirectoryMasks;

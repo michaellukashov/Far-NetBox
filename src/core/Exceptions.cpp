@@ -156,9 +156,9 @@ void __fastcall ExtException::AddMoreMessages(const Exception * E)
 
     // new exception does not have own message, this is in fact duplication of
     // the exception data, but the exception class may being changed
-    if (GetMessage().IsEmpty())
+    if (Message.get().IsEmpty())
     {
-      SetMessage(Msg);
+      Message = Msg;
     }
     else if (!Msg.IsEmpty())
     {
@@ -207,7 +207,7 @@ UnicodeString __fastcall LastSysErrorMessage()
   EFatal * F = dynamic_cast<EFatal *>(E);
   if (F != NULL)
   {
-    FReopenQueried = F->FReopenQueried;
+    FReopenQueried = F->GetReopenQueried();
   }
 }
 //---------------------------------------------------------------------------

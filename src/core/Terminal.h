@@ -245,6 +245,7 @@ public:
   void __fastcall SetExceptionOnFail(bool value);
   UnicodeString __fastcall GetUserName() const;
   bool __fastcall GetAreCachesEmpty() const;
+  bool __fastcall GetIsCapable(TFSCapability Capability) const;
   void __fastcall ClearCachedFileList(const UnicodeString Path, bool SubDirs);
   void __fastcall AddCachedFileList(TRemoteFileList * FileList);
   bool __fastcall GetCommandSessionOpened();
@@ -254,7 +255,6 @@ public:
   UnicodeString __fastcall GetPassword();
   UnicodeString __fastcall GetTunnelPassword();
   bool __fastcall GetStoredCredentialsTried();
-  bool __fastcall GetIsCapable(TFSCapability Capability) const;
 
 protected:
   bool FReadCurrentDirectoryPending;

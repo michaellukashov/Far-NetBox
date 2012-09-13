@@ -540,6 +540,56 @@ bool __fastcall TCopyParamType::operator==(const TCopyParamType & rhp) const
 }
 #undef C
 //---------------------------------------------------------------------------
+const TFileMasks & __fastcall TCopyParamType::GetAsciiFileMask() const
+{
+  return FAsciiFileMask;
+}
+//---------------------------------------------------------------------------
+TFileMasks & __fastcall TCopyParamType::GetAsciiFileMask()
+{
+  return FAsciiFileMask;
+}
+//---------------------------------------------------------------------------
+void __fastcall TCopyParamType::SetAsciiFileMask(TFileMasks value)
+{
+  FAsciiFileMask = value;
+}
+//---------------------------------------------------------------------------
+const TFileNameCase & __fastcall TCopyParamType::GetFileNameCase() const
+{
+  return FFileNameCase;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TCopyParamType::GetLocalInvalidChars() const
+{
+  return FLocalInvalidChars;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TCopyParamType::GetFileMask() const
+{
+  return FFileMask;
+}
+//---------------------------------------------------------------------------
+void __fastcall TCopyParamType::SetFileMask(const UnicodeString value)
+{
+  FFileMask = value;
+}
+//---------------------------------------------------------------------------
+const TFileMasks & __fastcall TCopyParamType::GetIncludeFileMask() const
+{
+  return FIncludeFileMask;
+}
+//---------------------------------------------------------------------------
+TFileMasks & __fastcall TCopyParamType::GetIncludeFileMask()
+{
+  return FIncludeFileMask;
+}
+//---------------------------------------------------------------------------
+void __fastcall TCopyParamType::SetIncludeFileMask(TFileMasks value)
+{
+  FIncludeFileMask = value;
+}
+//---------------------------------------------------------------------------
 unsigned long __fastcall GetSpeedLimit(const UnicodeString & Text)
 {
   unsigned long Speed = 0;

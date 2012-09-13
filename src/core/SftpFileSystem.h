@@ -5,7 +5,6 @@
 #include <FileSystems.h>
 //---------------------------------------------------------------------------
 class TSFTPPacket;
-struct TOpenRemoteFileParams;
 struct TOverwriteFileParams;
 struct TSFTPSupport;
 class TSecureShell;

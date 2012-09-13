@@ -424,8 +424,8 @@ public:
   int __fastcall GetSFTPUploadQueue() const { return FSFTPUploadQueue; }
   int __fastcall GetSFTPListingQueue() const { return FSFTPListingQueue; }
   int __fastcall GetSFTPMaxVersion() const { return FSFTPMaxVersion; }
-  int __fastcall GetSFTPMinPacketSize() const { return FSFTPMinPacketSize; }
-  int __fastcall GetSFTPMaxPacketSize() const { return FSFTPMaxPacketSize; }
+  unsigned long __fastcall GetSFTPMinPacketSize() const { return FSFTPMinPacketSize; }
+  unsigned long __fastcall GetSFTPMaxPacketSize() const { return FSFTPMaxPacketSize; }
   TAutoSwitch __fastcall GetSCPLsFullTime() const { return FSCPLsFullTime; }
   TAutoSwitch __fastcall GetFtpListAll() const { return FFtpListAll; }
   bool __fastcall GetSslSessionReuse() const { return FSslSessionReuse; }

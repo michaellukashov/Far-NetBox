@@ -2614,7 +2614,7 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
           {
             OperationProgress->Cancel = csCancel;
           }
-          FTerminal->FLog->AddException(&E);
+          FTerminal->GetLog()->AddException(&E);
         );
       }
       // this was inside above condition, but then transfer was considered

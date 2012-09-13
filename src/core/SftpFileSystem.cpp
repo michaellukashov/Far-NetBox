@@ -4,7 +4,6 @@
 
 #include "SftpFileSystem.h"
 
-#include "SftpFileSystem.h"
 #include "PuttyTools.h"
 #include "Common.h"
 #include "Exceptions.h"
@@ -279,7 +278,7 @@ public:
   {
     AssignNumber();
 
-    assert(FLength >= 5);
+    assert(GetLength() >= 5);
 
     // duplicated in AddCardinal()
     unsigned char Buf[4];
@@ -780,8 +779,8 @@ public:
 
   void LoadFromFile(const UnicodeString FileName)
   {
-    RawByteString Dump;
     TStringList * DumpLines = new TStringList();
+    RawByteString Dump;
     std::auto_ptr<TStringList> DumpLinesPtr(DumpLines);
     {
       DumpLines->LoadFromFile(FileName);
@@ -819,7 +818,7 @@ public:
   UnicodeString __fastcall Dump() const
   {
     UnicodeString Result;
-    for (unsigned int Index = 0; Index < FLength; Index++)
+    for (unsigned int Index = 0; Index < GetLength(); Index++)
     {
       Result += ByteToHex(GetData()[Index]) + L",";
       if (((Index + 1) % 25) == 0)
@@ -900,11 +899,11 @@ public:
 
   /* inline */ void Add(const void * AData, int ALength)
   {
-    if (FLength + ALength > FCapacity)
+    if (GetLength() + ALength > GetCapacity())
     {
-      SetCapacity(FLength + ALength + SFTP_PACKET_ALLOC_DELTA);
+      SetCapacity(GetLength() + ALength + SFTP_PACKET_ALLOC_DELTA);
     }
-    memmove(FData + FLength, AData, ALength);
+    memmove(FData + GetLength(), AData, ALength);
     FLength += ALength;
   }
 
@@ -974,18 +973,18 @@ public:
   {
     unsigned char * Result = FData - FSendPrefixLen;
     // this is not strictly const-object operation
-    PUT_32BIT(Result, FLength);
+    PUT_32BIT(Result, GetLength());
     return Result;
   }
 
   unsigned int GetSendLength() const
   {
-    return FSendPrefixLen + FLength;
+    return FSendPrefixLen + GetLength();
   }
 
   unsigned int GetRemainingLength() const
   {
-    return FLength - FPosition;
+    return GetLength() - FPosition;
   }
 
   /* inline */ void Need(unsigned int Size)

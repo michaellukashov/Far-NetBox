@@ -92,10 +92,10 @@ public:
 
   bool __fastcall operator==(const TCopyParamType & rhp) const;
 
-  const TFileMasks & __fastcall GetAsciiFileMask() const { return FAsciiFileMask; }
-  TFileMasks & __fastcall GetAsciiFileMask() { return FAsciiFileMask; }
-  void __fastcall SetAsciiFileMask(TFileMasks value) { FAsciiFileMask = value; }
-  const TFileNameCase & __fastcall GetFileNameCase() const { return FFileNameCase; }
+  const TFileMasks & __fastcall GetAsciiFileMask() const;
+  TFileMasks & __fastcall GetAsciiFileMask();
+  void __fastcall SetAsciiFileMask(TFileMasks value);
+  const TFileNameCase & __fastcall GetFileNameCase() const;
   void __fastcall SetFileNameCase(TFileNameCase value) { FFileNameCase = value; }
   bool __fastcall GetPreserveReadOnly() const { return FPreserveReadOnly; }
   void __fastcall SetPreserveReadOnly(bool value) { FPreserveReadOnly = value; }
@@ -119,14 +119,14 @@ public:
   void __fastcall SetResumeThreshold(__int64 value) { FResumeThreshold = value; }
   wchar_t __fastcall GetInvalidCharsReplacement() const { return FInvalidCharsReplacement; }
   void __fastcall SetInvalidCharsReplacement(char value) { FInvalidCharsReplacement = value; }
-  UnicodeString __fastcall GetLocalInvalidChars() const { return FLocalInvalidChars; }
+  UnicodeString __fastcall GetLocalInvalidChars() const;
   bool __fastcall GetCalculateSize() const { return FCalculateSize; }
   void __fastcall SetCalculateSize(bool value) { FCalculateSize = value; }
-  UnicodeString __fastcall GetFileMask() const { return FFileMask; }
-  void __fastcall SetFileMask(const UnicodeString value) { FFileMask = value; }
-  const TFileMasks & __fastcall GetIncludeFileMask() const { return FIncludeFileMask; }
-  TFileMasks & __fastcall GetIncludeFileMask() { return FIncludeFileMask; }
-  void __fastcall SetIncludeFileMask(TFileMasks value) { FIncludeFileMask = value; }
+  UnicodeString __fastcall GetFileMask() const;
+  void __fastcall SetFileMask(const UnicodeString value);
+  const TFileMasks & __fastcall GetIncludeFileMask() const;
+  TFileMasks & __fastcall GetIncludeFileMask();
+  void __fastcall SetIncludeFileMask(TFileMasks value);
   const TFileMasks & __fastcall GetExcludeFileMask() const { return FExcludeFileMask; }
   TFileMasks & __fastcall GetExcludeFileMask() { return FExcludeFileMask; }
   void SetExcludeFileMask(TFileMasks value) { FExcludeFileMask = value; }

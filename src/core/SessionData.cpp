@@ -2833,8 +2833,8 @@ void __fastcall TStoredSessionList::UpdateStaticUsage()
   std::auto_ptr<TSessionData> FactoryDefaults(new TSessionData(L""));
   for (int Index = 0; Index < Count; Index++)
   {
-    TSessionData * Data = Sessions[Index];
-    switch (Data->FSProtocol)
+    TSessionData * Data = AtSession(Index);
+    switch (Data->GetFSProtocol())
     {
       case fsSCPonly:
         SCP++;
@@ -2846,7 +2846,7 @@ void __fastcall TStoredSessionList::UpdateStaticUsage()
         break;
 
       case fsFTP:
-        if (Data->Ftps == ftpsNone)
+        if (Data->GetFtps() == ftpsNone)
         {
           FTP++;
         }
@@ -2862,7 +2862,7 @@ void __fastcall TStoredSessionList::UpdateStaticUsage()
       Password++;
     }
 
-    if (Data->Color != 0)
+    if (Data->GetColor() != 0)
     {
       Color++;
     }
@@ -2872,23 +2872,23 @@ void __fastcall TStoredSessionList::UpdateStaticUsage()
       Advanced++;
     }
 
-    if (Data->Name.Pos(L"/") > 0)
+    if (Data->GetName().Pos(L"/") > 0)
     {
       Folders = true;
     }
   }
 
-  Configuration->Usage->Set(L"StoredSessionsCountSCP", SCP);
-  Configuration->Usage->Set(L"StoredSessionsCountSFTP", SFTP);
-  Configuration->Usage->Set(L"StoredSessionsCountFTP", FTP);
-  Configuration->Usage->Set(L"StoredSessionsCountFTPS", FTPS);
-  Configuration->Usage->Set(L"StoredSessionsCountPassword", Password);
-  Configuration->Usage->Set(L"StoredSessionsCountColor", Color);
-  Configuration->Usage->Set(L"StoredSessionsCountAdvanced", Advanced);
+  Configuration->GetUsage()->Set(L"StoredSessionsCountSCP", SCP);
+  Configuration->GetUsage()->Set(L"StoredSessionsCountSFTP", SFTP);
+  Configuration->GetUsage()->Set(L"StoredSessionsCountFTP", FTP);
+  Configuration->GetUsage()->Set(L"StoredSessionsCountFTPS", FTPS);
+  Configuration->GetUsage()->Set(L"StoredSessionsCountPassword", Password);
+  Configuration->GetUsage()->Set(L"StoredSessionsCountColor", Color);
+  Configuration->GetUsage()->Set(L"StoredSessionsCountAdvanced", Advanced);
 
   bool CustomDefaultStoredSession = !FDefaultSettings->IsSame(FactoryDefaults.get(), false);
-  Configuration->Usage->Set(L"UsingDefaultStoredSession", CustomDefaultStoredSession);
-  Configuration->Usage->Set(L"UsingStoredSessionsFolders", Folders);
+  Configuration->GetUsage()->Set(L"UsingDefaultStoredSession", CustomDefaultStoredSession);
+  Configuration->GetUsage()->Set(L"UsingStoredSessionsFolders", Folders);
 */
 }
 //---------------------------------------------------------------------------
