@@ -264,7 +264,7 @@ void __fastcall TConfiguration::Export(const UnicodeString FileName)
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::LoadData(THierarchicalStorage * Storage)
 {
-  #define KEYEX(TYPE, VAR, NAME) Set##VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), Get##VAR()))
+  #define KEYEX(TYPE, VAR, NAME) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR()))
   #pragma warn -eas
   REGCONFIG(false);
   #pragma warn +eas
@@ -325,10 +325,10 @@ void __fastcall TConfiguration::CopyData(THierarchicalStorage * Source,
             Names->Clear();
             Source->GetValueNames(Names);
 
-            for (int Index = 0; Index < Names->GetCount(); Index++)
+            for (int Index = 0; Index < Names->Count; Index++)
             {
-              Target->WriteBinaryData(Names->GetStrings(Index),
-                Source->ReadBinaryData(Names->GetStrings(Index)));
+              Target->WriteBinaryData(Names->Strings[Index],
+                Source->ReadBinaryData(Names->Strings[Index]));
             }
 
             Target->CloseSubKey();
@@ -343,10 +343,10 @@ void __fastcall TConfiguration::CopyData(THierarchicalStorage * Source,
             Names->Clear();
             Source->GetValueNames(Names);
 
-            for (int Index = 0; Index < Names->GetCount(); Index++)
+            for (int Index = 0; Index < Names->Count; Index++)
             {
-              Target->WriteString(Names->GetStrings(Index),
-                Source->ReadString(Names->GetStrings(Index), L""));
+              Target->WriteString(Names->Strings[Index],
+                Source->ReadString(Names->Strings[Index], L""));
             }
 
             Target->CloseSubKey();
@@ -366,10 +366,10 @@ void __fastcall TConfiguration::CopyData(THierarchicalStorage * Source,
         Names->Clear();
         Source->GetValueNames(Names);
 
-        for (int Index = 0; Index < Names->GetCount(); Index++)
+        for (int Index = 0; Index < Names->Count; Index++)
         {
-          Target->WriteStringRaw(Names->GetStrings(Index),
-            Source->ReadStringRaw(Names->GetStrings(Index), L""));
+          Target->WriteStringRaw(Names->Strings[Index],
+            Source->ReadStringRaw(Names->Strings[Index], L""));
         }
 
         Target->CloseSubKey();

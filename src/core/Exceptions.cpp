@@ -90,7 +90,7 @@ TStrings * ExceptionToMoreMessages(Exception * E)
       {
         FMoreMessages = new TStringList();
       }
-      FMoreMessages->Append(GetMessage());
+      FMoreMessages->Append(Msg);
     }
   }
 }
@@ -165,7 +165,7 @@ void __fastcall ExtException::AddMoreMessages(const Exception * E)
       FMoreMessages->Insert(0, Msg);
     }
 
-    if (FMoreMessages->GetCount() == 0)
+    if (FMoreMessages->Count == 0)
     {
       delete FMoreMessages;
       FMoreMessages = NULL;

@@ -9,7 +9,7 @@
 // #include "Usage.h"
 //---------------------------------------------------------------------------
 #define SET_CONFIG_PROPERTY_EX(PROPERTY, APPLY) \
-  if (Get##PROPERTY() != value) { F ## PROPERTY = value; Changed(); APPLY; }
+  if (Get ## PROPERTY() != value) { F ## PROPERTY = value; Changed(); APPLY; }
 #define SET_CONFIG_PROPERTY(PROPERTY) \
   SET_CONFIG_PROPERTY_EX(PROPERTY, )
 //---------------------------------------------------------------------------

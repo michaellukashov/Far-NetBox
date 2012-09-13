@@ -3,11 +3,6 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <Classes.hpp>
-#include <Sysutils.hpp>
-
-#include "FarPlugin.h"
-
 #include "Common.h"
 #include "Exceptions.h"
 #include "TextsCore.h"
@@ -417,7 +412,7 @@ UnicodeString __fastcall ValidLocalFileName(
 
     if (IsReservedName(FileName))
     {
-      int P = FileName.Pos(L'.');
+      int P = FileName.Pos(L".");
       if (P == 0)
       {
         P = FileName.Length() + 1;

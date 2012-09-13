@@ -160,9 +160,9 @@ UnicodeString __fastcall TFileMasks::ComposeMaskStr(
   TStrings * MasksStr, bool Directory)
 {
   UnicodeString Result;
-  for (int I = 0; I < MasksStr->GetCount(); I++)
+  for (int I = 0; I < MasksStr->Count; I++)
   {
-    UnicodeString Str = MasksStr->GetStrings(I).Trim();
+    UnicodeString Str = MasksStr->Strings[I].Trim();
     if (!Str.IsEmpty())
     {
       for (int P = 1; P <= Str.Length(); P++)

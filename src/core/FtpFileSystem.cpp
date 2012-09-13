@@ -1698,9 +1698,9 @@ void __fastcall TFTPFileSystem::DoStartup()
   std::auto_ptr<TStrings> PostLoginCommandsPtr(PostLoginCommands);
   {
     PostLoginCommands->SetText(FTerminal->GetSessionData()->GetPostLoginCommands());
-    for (int Index = 0; Index < PostLoginCommands->GetCount(); Index++)
+    for (int Index = 0; Index < PostLoginCommands->Count; Index++)
     {
-      UnicodeString Command = PostLoginCommands->GetStrings(Index);
+      UnicodeString Command = PostLoginCommands->Strings[Index];
       if (!Command.IsEmpty())
       {
         FFileZillaIntf->CustomCommand(Command.c_str());
@@ -1792,7 +1792,7 @@ void __fastcall TFTPFileSystem::ReadCurrentDirectory()
 
       // the only allowed 2XX code to "PWD"
       if ((Code == 257) &&
-          (Response->GetCount() == 1))
+          (Response->Count == 1))
       {
         UnicodeString Path = Response->GetText();
 
