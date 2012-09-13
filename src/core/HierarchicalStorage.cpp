@@ -934,7 +934,7 @@ void __fastcall TCustomIniFileStorage::WriteBinaryData(const UnicodeString Name,
   TCustomIniFileStorage(AStorage, new TMemIniFile(AStorage))
 {
   FOriginal = new TStringList();
-  dynamic_cast<TMemIniFile *>(FIniFile)->Strings[FOriginal];
+  dynamic_cast<TMemIniFile *>(FIniFile)->GetStrings(FOriginal);
   ApplyOverrides();
 }
 //---------------------------------------------------------------------------
@@ -946,7 +946,7 @@ void __fastcall TIniFileStorage::Flush()
     std::auto_ptr<TStrings> StringsPtr(Strings);
     std::auto_ptr<TStrings> OriginalPtr(FOriginal);
     {
-      dynamic_cast<TMemIniFile *>(FIniFile)->Strings[Strings];
+      dynamic_cast<TMemIniFile *>(FIniFile)->GetStrings(Strings);
       if (!Strings->Equals(FOriginal))
       {
         int Attr;
