@@ -1377,3 +1377,4 @@ void __fastcall TActionLog::SetEnabled(bool value)
     ReflectSettings();
   }
 }
+

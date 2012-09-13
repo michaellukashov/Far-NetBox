@@ -884,6 +884,7 @@ static const TDateTimeParams * __fastcall GetDateTimeParams(unsigned short Year)
     TGetTimeZoneInformationForYear GetTimeZoneInformationForYear =
       (TGetTimeZoneInformationForYear)GetProcAddress(Kernel32, "GetTimeZoneInformationForYear");
 
+
     if ((Year == 0) || (GetTimeZoneInformationForYear == NULL))
     {
       GTZI = GetTimeZoneInformation(&TZI);
@@ -917,23 +918,28 @@ static const TDateTimeParams * __fastcall GetDateTimeParams(unsigned short Year)
     Result->BaseDifference = double(TZI.Bias) / MinsPerDay;
     Result->BaseDifferenceSec *= SecsPerMin;
 
+
     Result->CurrentDifferenceSec = TZI.Bias +
       Result->CurrentDaylightDifferenceSec;
     Result->CurrentDifference =
       double(Result->CurrentDifferenceSec) / MinsPerDay;
     Result->CurrentDifferenceSec *= SecsPerMin;
 
+
     Result->CurrentDaylightDifference =
       double(Result->CurrentDaylightDifferenceSec) / MinsPerDay;
     Result->CurrentDaylightDifferenceSec *= SecsPerMin;
+
 
     Result->DaylightDifferenceSec = TZI.DaylightBias * SecsPerMin;
     Result->DaylightDifference = double(TZI.DaylightBias) / MinsPerDay;
     Result->StandardDifferenceSec = TZI.StandardBias * SecsPerMin;
     Result->StandardDifference = double(TZI.StandardBias) / MinsPerDay;
 
+
     Result->SystemStandardDate = TZI.StandardDate;
     Result->SystemDaylightDate = TZI.DaylightDate;
+
 
     unsigned short AYear = (Year != 0) ? Year : DecodeYear(Now());
     if (Result->SystemStandardDate.wMonth != 0)
@@ -945,6 +951,7 @@ static const TDateTimeParams * __fastcall GetDateTimeParams(unsigned short Year)
       EncodeDSTMargin(Result->SystemDaylightDate, AYear, Result->DaylightDate);
     }
     Result->SummerDST = (Result->DaylightDate < Result->StandardDate);
+
 
     Result->DaylightHack = !IsWin7() || IsExactly2008R2();
   }
@@ -1002,6 +1009,7 @@ static bool __fastcall IsDateInDST(const TDateTime & DateTime)
   }
   else
   {
+
 
     if (Params->SummerDST)
     {
@@ -1138,6 +1146,7 @@ FILETIME __fastcall DateTimeToFileTime(const TDateTime DateTime,
   FILETIME Result;
   (*(__int64*)&(Result) = (__int64(UnixTimeStamp) + 11644473600LL) * 10000000LL);
 
+
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1178,6 +1187,7 @@ __int64 __fastcall ConvertTimestampToUnix(const FILETIME & FileTime,
       const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
       Result += (IsDateInDST(DateTime) ?
         Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
+
 
       if (DSTMode == dstmKeep)
       {

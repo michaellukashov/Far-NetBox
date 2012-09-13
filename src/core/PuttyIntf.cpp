@@ -226,6 +226,7 @@ static void SSHFatalError(const char * Format, va_list Param)
   vsnprintf(Buf, LENOF(Buf), Format, Param);
   Buf[LENOF(Buf) - 1] = '\0';
 
+
   // Only few calls from putty\winnet.c might be connected with specific
   // TSecureShell. Otherwise called only for really fatal errors
   // like 'out of memory' from putty\ssh.c.

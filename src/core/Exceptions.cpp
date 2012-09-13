@@ -80,9 +80,9 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   // and append message to the end to more messages
   if (!Msg.IsEmpty())
   {
-    if (FMessage.IsEmpty())
+    if (Message.get().IsEmpty())
     {
-      SetMessage(Msg);
+      Message = Msg;
     }
     else
     {
@@ -156,6 +156,7 @@ void __fastcall ExtException::AddMoreMessages(const Exception * E)
 
     // new exception does not have own message, this is in fact duplication of
     // the exception data, but the exception class may being changed
+
     if (Message.get().IsEmpty())
     {
       Message = Msg;

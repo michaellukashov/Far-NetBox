@@ -109,7 +109,7 @@ void __fastcall TConfiguration::Default()
   FCacheDirectoryChangesMaxSize = 100;
   FShowFtpWelcomeMessage = false;
   FExternalIpAddress = L"";
-  // CollectUsage = FDefaultCollectUsage;
+  SetCollectUsage(FDefaultCollectUsage);
   FSessionReopenAutoMaximumNumberOfRetries = CONST_DEFAULT_NUMBER_OF_RETRIES;
   FDefaultCollectUsage = false;
 
@@ -144,7 +144,7 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
     return new TRegistryStorage(GetRegistryStorageKey());
   }
 #ifndef _MSC_VER
-  else if (Storage == stNul)
+  else if (GetStorage() == stNul)
   {
     return new TIniFileStorage(L"nul");
   }
@@ -187,7 +187,6 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
     KEY(Bool,    LogFileAppend); \
     KEY(Integer, LogWindowLines); \
     KEY(Integer, LogProtocol); \
-    KEYEX(Bool,  PermanentLogActions, LogActions); \
     KEYEX(Bool,  LogActions, LogActions); \
     KEYEX(String,PermanentActionsLogFileName, ActionsLogFileName); \
   );
@@ -264,7 +263,7 @@ void __fastcall TConfiguration::Export(const UnicodeString FileName)
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::LoadData(THierarchicalStorage * Storage)
 {
-  #define KEYEX(TYPE, VAR, NAME) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR()))
+  #define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(TEXT(#NAME))), Get ## VAR()))
   #pragma warn -eas
   REGCONFIG(false);
   #pragma warn +eas
@@ -1191,6 +1190,26 @@ void __fastcall TConfiguration::SetCacheDirectoryChangesMaxSize(int value)
 void __fastcall TConfiguration::SetShowFtpWelcomeMessage(bool value)
 {
   SET_CONFIG_PROPERTY(ShowFtpWelcomeMessage);
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetPermanentLogFileName()
+{
+  return FPermanentLogFileName;
+}
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SetPermanentLogFileName(const UnicodeString value)
+{
+  FPermanentLogFileName = value;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetPermanentActionsLogFileName()
+{
+  return FPermanentActionsLogFileName;
+}
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SetPermanentActionsLogFileName(const UnicodeString value)
+{
+  FPermanentActionsLogFileName = value;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------

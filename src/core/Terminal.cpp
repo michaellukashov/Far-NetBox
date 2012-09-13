@@ -723,7 +723,7 @@ void __fastcall TTerminal::Open()
             }
 
             assert(FTunnel == NULL);
-            if (GetSessionData()->GetTunnel())
+            if (FSessionData->GetTunnel())
             {
               DoInformation(LoadStr(OPEN_TUNNEL), true);
               LogEvent(L"Opening tunnel.");
@@ -2721,10 +2721,10 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
   try
   {
     TFileOperationProgressType Progress(MAKE_CALLBACK0(TTerminal::DoProgress, this), MAKE_CALLBACK6(TTerminal::DoFinished, this));
-    TFileOperationProgressType * OperationProgress(&Progress);
     Progress.Start(Operation, Side, FileList->Count);
 
     FOperationProgress = &Progress;
+    TFileOperationProgressType * OperationProgress(&Progress);
     TRY_FINALLY2 (Self, Progress,
     {
       if (Side == osRemote)
@@ -4398,6 +4398,7 @@ void /* __fastcall */ TTerminal::SynchronizeCollectFile(const UnicodeString & Fi
 
           ChecklistItem->Local.Modification =
             ReduceDateTimePrecision(ChecklistItem->Local.Modification, File->GetModificationFmt());
+
 
           bool LocalModified = false;
           // for spTimestamp+spBySize require that the file sizes are the same

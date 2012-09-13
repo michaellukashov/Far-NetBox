@@ -108,3 +108,4 @@ bool GetExternalEncryptedPassword(RawByteString Encrypted, RawByteString & Passw
   return Result;
 }
 //---------------------------------------------------------------------------
+

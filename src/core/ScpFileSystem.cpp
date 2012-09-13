@@ -747,13 +747,13 @@ void __fastcall TSCPFileSystem::ExecCommand(TFSCommand Cmd, const TVarRec * args
   ExecCommand(FullCommand, Params, Command);
   if (Params & ecRaiseExcept)
   {
-    Integer MinL = FCommandSet->MinLines[Cmd];
-    Integer MaxL = FCommandSet->MaxLines[Cmd];
+    Integer MinL = FCommandSet->GetMinLines(Cmd);
+    Integer MaxL = FCommandSet->GetMaxLines(Cmd);
     if (((MinL >= 0) && (MinL > FOutput->Count)) ||
         ((MaxL >= 0) && (MaxL > FOutput->Count)))
     {
       FTerminal->TerminalError(FmtLoadStr(INVALID_OUTPUT_ERROR,
-        ARRAYOFCONST((FullCommand, Output->Text))));
+        ARRAYOFCONST((FullCommand, GetOutput()->Text))));
     }
   }
 }
@@ -2574,7 +2574,7 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
             }
             ,
             {
-              if (FileHandle) { CloseHandle(FileHandle); }
+              if (FileHandle) { ::CloseHandle(FileHandle); }
               if (FileStream) { delete FileStream; }
             }
             );

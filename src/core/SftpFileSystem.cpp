@@ -987,6 +987,7 @@ public:
     return GetLength() - FPosition;
   }
 
+private:
   /* inline */ void Need(unsigned int Size)
   {
     if (FPosition + Size > FLength)
@@ -2799,7 +2800,7 @@ void __fastcall TSFTPFileSystem::DoStartup()
         FTerminal->LogEvent(FORMAT(L"Unknown server extension %s=%s",
           ExtensionName.c_str(), ExtensionDisplayData.c_str()));
       }
-      FExtensions->SetValue(ExtensionName, ExtensionDisplayData);
+      FExtensions->Values(ExtensionName, ExtensionDisplayData);
     }
 
     if (SupportsExtension(SFTP_EXT_VENDOR_ID))
@@ -4425,7 +4426,7 @@ void __fastcall TSFTPFileSystem::SFTPSource(const UnicodeString FileName,
   {
     if (FileHandle != NULL)
     {
-      CloseHandle(FileHandle);
+      ::CloseHandle(FileHandle);
     }
   }
   );

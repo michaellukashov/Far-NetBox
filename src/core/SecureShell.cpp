@@ -1078,7 +1078,7 @@ int __fastcall TSecureShell::TranslateAuthenticationMessage(UnicodeString & Mess
 
   if ((Result == 2) || (Result == 3) || (Result == 4))
   {
-    // Configuration->Usage->Inc(L"OpenedSessionsPrivateKey");
+    // Configuration->GetUsage()->Inc(L"OpenedSessionsPrivateKey");
   }
 
   return Result;

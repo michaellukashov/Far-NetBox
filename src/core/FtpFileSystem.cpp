@@ -1273,6 +1273,7 @@ void __fastcall TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     FileName = FilesToCopy->Strings[Index];
     TRemoteFile * File = dynamic_cast<TRemoteFile *>(FilesToCopy->Objects[Index]);
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
+
     FileNameOnly = ExtractFileName(RealFileName, false);
 
     TRY_FINALLY5 (OperationProgress, FileName, RealFileName, Success, OnceDoneOperation,
@@ -1500,6 +1501,7 @@ void __fastcall TFTPFileSystem::DirectorySource(const UnicodeString DirectoryNam
     ExtractFileName(ExcludeTrailingBackslash(DirectoryName), false), osLocal,
     FLAGSET(Flags, tfFirstLevel));
   UnicodeString DestFullName = UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
+
 
   OperationProgress->SetFile(DirectoryName);
 
@@ -2756,7 +2758,7 @@ void __fastcall TFTPFileSystem::HandleReplyStatus(UnicodeString Response)
     }
     else if (FLastCommand == PASS)
     {
-      // 530 = "Login or password incorrect"
+      // 530 = "Not logged in."
       if (FLastCode == 530)
       {
         FPasswordFailed = true;

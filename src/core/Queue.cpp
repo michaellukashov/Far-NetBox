@@ -495,7 +495,7 @@ void __fastcall TSignalThread::Terminate()
 
   assert(Terminal != NULL);
   FSessionData = new TSessionData(L"");
-  FSessionData->Assign(Terminal->SessionData);
+  FSessionData->Assign(Terminal->GetSessionData());
 
   FItems = new TList();
   FTerminals = new TList();
@@ -2344,6 +2344,7 @@ void __fastcall TTerminalThread::WaitForUserAction(TUserAction * UserAction)
       while (true)
       {
 
+
         {
           TGuard Guard(FSection);
           // If idle exception is already set, we are only waiting
@@ -2377,6 +2378,7 @@ void __fastcall TTerminalThread::WaitForUserAction(TUserAction * UserAction)
           break;
         }
       }
+
 
 
       Rethrow(FException);

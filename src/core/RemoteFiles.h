@@ -34,8 +34,8 @@ public:
 
   int __fastcall Compare(const TRemoteToken & rht) const;
 
-  UnicodeString __fastcall GetName() const { return FName; }
-  void __fastcall SetName(const UnicodeString value) { FName = value; }
+  UnicodeString __fastcall GetName() const;
+  void __fastcall SetName(const UnicodeString value);
   bool __fastcall GetNameValid() const;
   unsigned int GetID() const { return FID; }
   void __fastcall SetID(unsigned int value);

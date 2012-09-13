@@ -438,6 +438,7 @@ int __fastcall FakeFileImageIndex(UnicodeString FileName, unsigned long Attrs,
     Icon = -1;
   }
 
+
   return Icon;
 }
 //---------------------------------------------------------------------------
@@ -568,6 +569,16 @@ UnicodeString __fastcall TRemoteToken::GetDisplayText() const
 UnicodeString __fastcall TRemoteToken::GetLogText() const
 {
   return FORMAT(L"\"%s\" [%d]", FName.c_str(), static_cast<int>(FID));
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TRemoteToken::GetName() const
+{
+  return FName;
+}
+//---------------------------------------------------------------------------
+void __fastcall TRemoteToken::SetName(const UnicodeString value)
+{
+  FName = value;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -1909,7 +1920,7 @@ void __fastcall TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data)
   }
   else
   {
-    Data += GetText();
+    Data += Text;
   }
 }
 //---------------------------------------------------------------------------
@@ -1917,11 +1928,11 @@ void __fastcall TRemoteDirectoryChangesCache::Deserialize(const UnicodeString Da
 {
   if (Data.IsEmpty())
   {
-    SetText(L"");
+    Text = L"";
   }
   else
   {
-    SetText(Data.c_str() + 1);
+    Text = Data.c_str() + 1;
   }
 }
 //---------------------------------------------------------------------------

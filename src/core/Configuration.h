@@ -151,12 +151,12 @@ public:
 
   bool __fastcall GetPermanentLogging() { return FPermanentLogging; }
   void __fastcall SetPermanentLogging(bool value) { FPermanentLogging = value; }
-  UnicodeString __fastcall GetPermanentLogFileName() { return FPermanentLogFileName; }
-  void __fastcall SetPermanentLogFileName(const UnicodeString value) { FPermanentLogFileName = value; }
+  UnicodeString __fastcall GetPermanentLogFileName();
+  void __fastcall SetPermanentLogFileName(const UnicodeString value);
   bool __fastcall GetPermanentLogActions() { return FPermanentLogActions; }
   void __fastcall SetPermanentLogActions(bool value) { FPermanentLogActions = value; }
-  UnicodeString __fastcall GetPermanentActionsLogFileName() { return FPermanentActionsLogFileName; }
-  void __fastcall SetPermanentActionsLogFileName(const UnicodeString value) { FPermanentActionsLogFileName = value; }
+  UnicodeString __fastcall GetPermanentActionsLogFileName();
+  void __fastcall SetPermanentActionsLogFileName(const UnicodeString value);
 
 public:
   /* __fastcall */ TConfiguration();
