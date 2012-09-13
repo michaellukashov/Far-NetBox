@@ -576,7 +576,8 @@ public:
   void __fastcall ReadBuffer(void * Buffer, __int64 Count);
   void __fastcall WriteBuffer(const void * Buffer, __int64 Count);
   __int64 __fastcall CopyFrom(TStream * Source, __int64 Count);
-public:
+
+protected:
   __int64 __fastcall GetPosition() { return Seek(0, soFromCurrent); }
   __int64 __fastcall GetSize()
   {
@@ -585,12 +586,21 @@ public:
     Seek(Pos, soFromBeginning);
     return Result;
   }
-public:
   virtual void __fastcall SetSize(const __int64 NewSize) = 0;
   void __fastcall SetPosition(const __int64 Pos)
   {
     Seek(Pos, soFromBeginning);
   }
+
+private:
+  __int64 PropertyGetPosition() { return GetPosition(); }
+  void PropertySetPosition(__int64 Value) { SetPosition(Value); }
+  __int64 PropertyGetSize() { return GetSize(); }
+  void PropertySetSize(__int64 Value) { SetSize(Value); }
+
+public:
+  RWProperty<__int64, TStream, &TStream::PropertyGetPosition, &TStream::PropertySetPosition> Position;
+  RWProperty<__int64, TStream, &TStream::PropertyGetSize, &TStream::PropertySetSize> Size;
 };
 
 //---------------------------------------------------------------------------

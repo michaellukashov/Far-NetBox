@@ -32,19 +32,19 @@ void __fastcall TFileBuffer::SetSize(__int64 value)
 {
   if (FSize != value)
   {
-    FMemory->SetSize(value);
+    FMemory->Size = value;
     FSize = value;
   }
 }
 //---------------------------------------------------------------------------
 void __fastcall TFileBuffer::SetPosition(__int64 value)
 {
-  FMemory->SetPosition(value);
+  FMemory->Position = value;
 }
 //---------------------------------------------------------------------------
 __int64 __fastcall TFileBuffer::GetPosition() const
 {
-  return FMemory->GetPosition();
+  return FMemory->Position;
 }
 //---------------------------------------------------------------------------
 void __fastcall TFileBuffer::SetMemory(TMemoryStream * value)

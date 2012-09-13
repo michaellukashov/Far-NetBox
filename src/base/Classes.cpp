@@ -1295,6 +1295,15 @@ public:
 };
 */
 //---------------------------------------------------------------------------
+TStream::TStream()
+{
+  Position(this);
+  Size(this);
+}
+
+TStream::~TStream()
+{
+}
 
 void TStream::ReadBuffer(void * Buffer, __int64 Count)
 {
@@ -1319,14 +1328,6 @@ void ReadError(const UnicodeString Name)
   throw std::exception("InvalidRegType"); // FIXME ERegistryException.CreateResFmt(@SInvalidRegType, [Name]);
 }
 
-//---------------------------------------------------------------------------
-TStream::TStream()
-{
-}
-
-TStream::~TStream()
-{
-}
 //---------------------------------------------------------------------------
 THandleStream::THandleStream(HANDLE AHandle) :
   FHandle(AHandle)
