@@ -772,8 +772,8 @@ void __fastcall TSCPFileSystem::ExecCommand2(TFSCommand Cmd, ...)
   {
     int MinL = FCommandSet->GetMinLines(Cmd);
     int MaxL = FCommandSet->GetMaxLines(Cmd);
-    if (((MinL >= 0) && (MinL > static_cast<int>(FOutput->GetCount()))) ||
-        ((MaxL >= 0) && (MaxL > static_cast<int>(FOutput->GetCount()))))
+    if (((MinL >= 0) && (MinL > static_cast<int>(FOutput->Count))) ||
+        ((MaxL >= 0) && (MaxL > static_cast<int>(FOutput->Count))))
     {
       FTerminal->TerminalError(::FmtLoadStr(INVALID_OUTPUT_ERROR,
         FullCommand.c_str(), GetOutput()->GetText().c_str()));
@@ -1490,7 +1490,7 @@ void __fastcall TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
       !OperationProgress->Cancel; IFile++)
     {
       UnicodeString FileName = FilesToCopy->Strings[IFile];
-      TRemoteFile * File = dynamic_cast<TRemoteFile *>(FilesToCopy->GetObjects(IFile));
+      TRemoteFile * File = dynamic_cast<TRemoteFile *>(FilesToCopy->Objects[IFile]);
       UnicodeString RealFileName = File ? File->GetFileName() : FileName;
       bool CanProceed = false;
 

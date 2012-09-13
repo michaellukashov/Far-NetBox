@@ -239,7 +239,7 @@ UnicodeString __fastcall ItemsFormatString(const UnicodeString SingleItemFormat,
   const UnicodeString MultiItemsFormat, TStrings * Items)
 {
   return ItemsFormatString(SingleItemFormat, MultiItemsFormat,
-    Items->GetCount(), (Items->GetCount() > 0 ? Items->GetStrings(0) : UnicodeString()));
+    Items->Count, (Items->Count > 0 ? Items->Strings[0] : UnicodeString()));
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall FileNameFormatString(const UnicodeString SingleFileFormat,
@@ -247,13 +247,13 @@ UnicodeString __fastcall FileNameFormatString(const UnicodeString SingleFileForm
 {
   assert(Files != NULL);
   UnicodeString Item;
-  if (Files->GetCount() > 0)
+  if (Files->Count > 0)
   {
-    Item = Remote ? UnixExtractFileName(Files->GetStrings(0)) :
-      ExtractFileName(Files->GetStrings(0), true);
+    Item = Remote ? UnixExtractFileName(Files->Strings[0]) :
+      ExtractFileName(Files->Strings[0], true);
   }
   return ItemsFormatString(SingleFileFormat, MultiFilesFormat,
-    Files->GetCount(), Item);
+    Files->Count, Item);
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall UniqTempDir(const UnicodeString BaseDir, const UnicodeString Identity,

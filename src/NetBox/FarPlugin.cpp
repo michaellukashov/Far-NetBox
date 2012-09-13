@@ -80,7 +80,7 @@ TFarMessageParams::TFarMessageParams()
   FConsoleOutput = INVALID_HANDLE_VALUE;
 
   ClearPluginInfo(FPluginInfo);
-  assert(FOpenedPlugins->GetCount() == 0);
+  assert(FOpenedPlugins->Count == 0);
   delete FOpenedPlugins;
   delete FSavedTitles;
   delete FCriticalSection;
@@ -148,14 +148,14 @@ void __fastcall TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
                     &PluginConfigStrings, &CommandPrefixes);
 
     #define COMPOSESTRINGARRAY(NAME) \
-        if (NAME.GetCount()) \
+        if (NAME.Count) \
         { \
-          wchar_t ** StringArray = new wchar_t *[NAME.GetCount()]; \
+          wchar_t ** StringArray = new wchar_t *[NAME.Count]; \
           FPluginInfo.NAME = StringArray; \
-          FPluginInfo.NAME ## Number = static_cast<int>(NAME.GetCount()); \
-          for (int Index = 0; Index < NAME.GetCount(); Index++) \
+          FPluginInfo.NAME ## Number = static_cast<int>(NAME.Count); \
+          for (int Index = 0; Index < NAME.Count; Index++) \
           { \
-            StringArray[Index] = DuplicateStr(NAME.GetStrings(Index)); \
+            StringArray[Index] = DuplicateStr(NAME.Strings[Index]); \
           } \
         }
 
@@ -178,10 +178,10 @@ void __fastcall TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
     */
 
     UnicodeString CommandPrefix;
-    for (int Index = 0; Index < CommandPrefixes.GetCount(); Index++)
+    for (int Index = 0; Index < CommandPrefixes.Count; Index++)
     {
       CommandPrefix = CommandPrefix + (CommandPrefix.IsEmpty() ? L"" : L":") +
-                      CommandPrefixes.GetStrings(Index);
+                      CommandPrefixes.Strings[Index];
     }
     // DEBUG_PRINTF(L"CommandPrefix = %s", CommandPrefix.c_str());
     FPluginInfo.CommandPrefix = DuplicateStr(CommandPrefix);
@@ -266,7 +266,7 @@ TCustomFarFileSystem * __fastcall TCustomFarPlugin::GetPanelFileSystem(bool Anot
 
   TCustomFarFileSystem * FileSystem = NULL;
   int Index = 0;
-  while (!Result && (Index < FOpenedPlugins->GetCount()))
+  while (!Result && (Index < FOpenedPlugins->Count))
   {
     FileSystem = dynamic_cast<TCustomFarFileSystem *>(FOpenedPlugins->GetItem(Index));
     assert(FileSystem);
@@ -287,7 +287,7 @@ TCustomFarFileSystem * __fastcall TCustomFarPlugin::GetPanelFileSystem(bool Anot
 //---------------------------------------------------------------------------
 void __fastcall TCustomFarPlugin::InvalidateOpenPluginInfo()
 {
-  for (int Index = 0; Index < FOpenedPlugins->GetCount(); Index++)
+  for (int Index = 0; Index < FOpenedPlugins->Count; Index++)
   {
     TCustomFarFileSystem * FileSystem =
       dynamic_cast<TCustomFarFileSystem *>(FOpenedPlugins->GetItem(Index));
@@ -712,11 +712,11 @@ int __fastcall TCustomFarPlugin::MaxMenuItemLength()
 int __fastcall TCustomFarPlugin::MaxLength(TStrings * Strings)
 {
   int Result = 0;
-  for (int Index = 0; Index < Strings->GetCount(); Index++)
+  for (int Index = 0; Index < Strings->Count; Index++)
   {
-    if (Result < Strings->GetStrings(Index).Length())
+    if (Result < Strings->Strings[Index].Length())
     {
-      Result = Strings->GetStrings(Index).Length();
+      Result = Strings->Strings[Index].Length();
     }
   }
   return Result;
@@ -801,10 +801,10 @@ void __fastcall TFarMessageDialog::Init(unsigned int AFlags,
     SetFlags(GetFlags() |
              FLAGMASK(FLAGSET(AFlags, FMSG_WARNING), FDLG_WARNING));
 
-    for (int Index = 0; Index < MessageLines->GetCount(); Index++)
+    for (int Index = 0; Index < MessageLines->Count; Index++)
     {
       TFarText * Text = new TFarText(this);
-      Text->SetCaption(MessageLines->GetStrings(Index));
+      Text->SetCaption(MessageLines->Strings[Index]);
     }
 
     TFarLister * MoreMessagesLister = NULL;
@@ -825,14 +825,14 @@ void __fastcall TFarMessageDialog::Init(unsigned int AFlags,
     int ButtonLines = 1;
     TFarButton * Button = NULL;
     FTimeoutButton = NULL;
-    for (int Index = 0; Index < Buttons->GetCount(); Index++)
+    for (int Index = 0; Index < Buttons->Count; Index++)
     {
       TFarButton * PrevButton = Button;
       Button = new TFarButton(this);
       Button->SetDefault(Index == 0);
       Button->SetBrackets(brNone);
       Button->SetOnClick(MAKE_CALLBACK2(TFarMessageDialog::ButtonClick, this));
-      UnicodeString Caption = Buttons->GetStrings(Index);
+      UnicodeString Caption = Buttons->Strings[Index];
       if ((FParams->Timeout > 0) &&
           (FParams->TimeoutButton == (size_t)Index))
       {
@@ -845,7 +845,7 @@ void __fastcall TFarMessageDialog::Init(unsigned int AFlags,
       Button->SetBottom(Button->GetTop());
       Button->SetResult(Index + 1);
       Button->SetCenterGroup(true);
-      Button->SetTag(reinterpret_cast<size_t>(Buttons->GetObjects(Index)));
+      Button->SetTag(reinterpret_cast<size_t>(Buttons->Objects[Index]));
       if (PrevButton != NULL)
       {
         Button->Move(PrevButton->GetRight() - Button->GetLeft() + 1, 0);
@@ -897,7 +897,7 @@ void __fastcall TFarMessageDialog::Init(unsigned int AFlags,
     TPoint S(
       // rect.Left + MaxLen + (-(rect.Right + 1)),
       rect.Left + MaxLen - rect.Right,
-      rect.Top + MessageLines->GetCount() +
+      rect.Top + MessageLines->Count +
       (FParams->MoreMessages != NULL ? 1 : 0) + ButtonLines +
       (!FParams->CheckBoxLabel.IsEmpty() ? 1 : 0) +
       (-(rect.Bottom + 1)));
@@ -906,9 +906,9 @@ void __fastcall TFarMessageDialog::Init(unsigned int AFlags,
     {
       int MoreMessageHeight = GetFarPlugin()->TerminalInfo().y - S.y - 1;
       assert(MoreMessagesLister != NULL);
-      if (MoreMessageHeight > MoreMessagesLister->GetItems()->GetCount())
+      if (MoreMessageHeight > MoreMessagesLister->GetItems()->Count)
       {
-        MoreMessageHeight = MoreMessagesLister->GetItems()->GetCount();
+        MoreMessageHeight = MoreMessagesLister->GetItems()->Count;
       }
       MoreMessagesLister->SetHeight(MoreMessageHeight);
       MoreMessagesLister->SetRight(
@@ -1068,28 +1068,28 @@ int __fastcall TCustomFarPlugin::FarMessage(unsigned int Flags,
     // When there is too many lines to fit on screen, far uses not-shown
     // lines as button captions instead of real captions at the end of the list
     int MaxLines = MaxMessageLines();
-    while (MessageLines->GetCount() > MaxLines)
+    while (MessageLines->Count > MaxLines)
     {
-      MessageLines->Delete(MessageLines->GetCount() - 1);
+      MessageLines->Delete(MessageLines->Count - 1);
     }
 
-    for (int Index = 0; Index < Buttons->GetCount(); Index++)
+    for (int Index = 0; Index < Buttons->Count; Index++)
     {
-      MessageLines->Add(Buttons->GetStrings(Index));
+      MessageLines->Add(Buttons->Strings[Index]);
     }
 
-    Items = new wchar_t *[MessageLines->GetCount()];
-    for (int Index = 0; Index < MessageLines->GetCount(); Index++)
+    Items = new wchar_t *[MessageLines->Count];
+    for (int Index = 0; Index < MessageLines->Count; Index++)
     {
-      UnicodeString S = MessageLines->GetStrings(Index);
-      MessageLines->PutString(Index, UnicodeString(S));
-      Items[Index] = const_cast<wchar_t *>(MessageLines->GetStrings(Index).c_str());
+      UnicodeString S = MessageLines->Strings[Index];
+      MessageLines->Strings(Index, UnicodeString(S));
+      Items[Index] = const_cast<wchar_t *>(MessageLines->Strings[Index].c_str());
     }
 
     TFarEnvGuard Guard;
     Result = FStartupInfo.Message(FStartupInfo.ModuleNumber,
-      Flags | FMSG_LEFTALIGN, NULL, Items, static_cast<int>(MessageLines->GetCount()),
-      static_cast<int>(Buttons->GetCount()));
+      Flags | FMSG_LEFTALIGN, NULL, Items, static_cast<int>(MessageLines->Count),
+      static_cast<int>(Buttons->Count));
   }
   ,
   {
@@ -1150,20 +1150,20 @@ int __fastcall TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeString Ti
   const UnicodeString Bottom, TStrings * Items, const int * BreakKeys,
   int & BreakCode)
 {
-  assert(Items && Items->GetCount());
+  assert(Items && Items->Count);
   int Result = 0;
-  FarMenuItemEx * MenuItems = new FarMenuItemEx[Items->GetCount()];
+  FarMenuItemEx * MenuItems = new FarMenuItemEx[Items->Count];
   TRY_FINALLY1 (MenuItems,
   {
     int Selected = NPOS;
     int Count = 0;
-    for (int i = 0; i < Items->GetCount(); i++)
+    for (int i = 0; i < Items->Count; i++)
     {
-      size_t flags = reinterpret_cast<size_t>(Items->GetObjects(i));
+      size_t flags = reinterpret_cast<size_t>(Items->Objects[i]);
       if (FLAGCLEAR(Flags, MIF_HIDDEN))
       {
         memset(&MenuItems[Count], 0, sizeof(MenuItems[Count]));
-        UnicodeString Text = Items->GetStrings(i).c_str();
+        UnicodeString Text = Items->Strings[i].c_str();
         MenuItems[Count].Flags = flags;
         if (MenuItems[Count].Flags & MIF_SELECTED)
         {
@@ -1185,9 +1185,9 @@ int __fastcall TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeString Ti
       Result = MenuItems[ResultItem].UserData;
       if (Selected >= 0)
       {
-        Items->PutObject(Selected, (TObject *)(reinterpret_cast<size_t>(Items->GetObjects(Selected)) & ~MIF_SELECTED));
+        Items->Objects(Selected, (TObject *)(reinterpret_cast<size_t>(Items->Objects[Selected]) & ~MIF_SELECTED));
       }
-      Items->PutObject(Result, (TObject *)(reinterpret_cast<size_t>(Items->GetObjects(Result)) | MIF_SELECTED));
+      Items->Objects(Result, (TObject *)(reinterpret_cast<size_t>(Items->Objects[Result]) | MIF_SELECTED));
     }
     else
     {
@@ -1285,11 +1285,11 @@ void __fastcall TCustomFarPlugin::FarCopyToClipboard(const UnicodeString Str)
 //---------------------------------------------------------------------------
 void __fastcall TCustomFarPlugin::FarCopyToClipboard(TStrings * Strings)
 {
-  if (Strings->GetCount() > 0)
+  if (Strings->Count > 0)
   {
-    if (Strings->GetCount() == 1)
+    if (Strings->Count == 1)
     {
-      FarCopyToClipboard(Strings->GetStrings(0));
+      FarCopyToClipboard(Strings->Strings[0]);
     }
     else
     {
@@ -1467,9 +1467,9 @@ void __fastcall TCustomFarPlugin::ShowConsoleTitle(const UnicodeString Title)
 //---------------------------------------------------------------------------
 void __fastcall TCustomFarPlugin::ClearConsoleTitle()
 {
-  assert(FSavedTitles->GetCount() > 0);
-  UnicodeString Title = FSavedTitles->GetStrings(FSavedTitles->GetCount()-1);
-  TObject * Object = static_cast<TObject *>(FSavedTitles->GetObjects(FSavedTitles->GetCount()-1));
+  assert(FSavedTitles->Count > 0);
+  UnicodeString Title = FSavedTitles->Strings[FSavedTitles->Count-1];
+  TObject * Object = static_cast<TObject *>(FSavedTitles->Objects[FSavedTitles->Count-1]);
   TConsoleTitleParam Param = *reinterpret_cast<TConsoleTitleParam *>(&Object);
   if (Param.Own)
   {
@@ -1484,7 +1484,7 @@ void __fastcall TCustomFarPlugin::ClearConsoleTitle()
     SetConsoleTitle(Title.c_str());
     UpdateProgress(PS_NOPROGRESS, 0);
   }
-  FSavedTitles->Delete(FSavedTitles->GetCount() - 1);
+  FSavedTitles->Delete(FSavedTitles->Count - 1);
 }
 //---------------------------------------------------------------------------
 void __fastcall TCustomFarPlugin::UpdateConsoleTitle(const UnicodeString Title)
@@ -1902,13 +1902,13 @@ int __fastcall TCustomFarFileSystem::GetFindData(
   std::auto_ptr<TObjectList> PanelItemsPtr(PanelItems);
   {
     Result = !FClosed && GetFindDataEx(PanelItems, OpMode);
-    // DEBUG_PRINTF(L"Result = %d, PanelItems->GetCount = %d", Result, PanelItems->GetCount());
-    if (Result && PanelItems->GetCount())
+    // DEBUG_PRINTF(L"Result = %d, PanelItems->Count = %d", Result, PanelItems->Count);
+    if (Result && PanelItems->Count)
     {
-      *PanelItem = new PluginPanelItem[PanelItems->GetCount()];
-      memset(*PanelItem, 0, PanelItems->GetCount() * sizeof(PluginPanelItem));
-      *ItemsNumber = static_cast<int>(PanelItems->GetCount());
-      for (int Index = 0; Index < PanelItems->GetCount(); Index++)
+      *PanelItem = new PluginPanelItem[PanelItems->Count];
+      memset(*PanelItem, 0, PanelItems->Count * sizeof(PluginPanelItem));
+      *ItemsNumber = static_cast<int>(PanelItems->Count);
+      for (int Index = 0; Index < PanelItems->Count; Index++)
       {
         static_cast<TCustomFarPanelItem *>(PanelItems->GetItem(Index))->FillPanelItem(
           &((*PanelItem)[Index]));
@@ -2234,7 +2234,7 @@ void __fastcall TFarPanelModes::SetPanelMode(size_t Mode, const UnicodeString Co
 {
   int ColumnTypesCount = !ColumnTypes.IsEmpty() ? CommaCount(ColumnTypes) + 1 : 0;
   assert(Mode != NPOS && Mode < LENOF(FPanelModes));
-  assert(!ColumnTitles || (ColumnTitles->GetCount() == ColumnTypesCount));
+  assert(!ColumnTitles || (ColumnTitles->Count == ColumnTypesCount));
 
   ClearPanelMode(FPanelModes[Mode]);
   static wchar_t * Titles[PANEL_MODES_COUNT];
@@ -2246,8 +2246,8 @@ void __fastcall TFarPanelModes::SetPanelMode(size_t Mode, const UnicodeString Co
     for (int Index = 0; Index < ColumnTypesCount; Index++)
     {
       // FPanelModes[Mode].ColumnTitles[Index] =
-      //    TCustomFarPlugin::DuplicateStr(ColumnTitles->GetStrings(Index));
-      Titles[Index] = TCustomFarPlugin::DuplicateStr(ColumnTitles->GetStrings(Index));
+      //    TCustomFarPlugin::DuplicateStr(ColumnTitles->Strings[Index]);
+      Titles[Index] = TCustomFarPlugin::DuplicateStr(ColumnTitles->Strings[Index]);
     }
     FPanelModes[Mode].ColumnTitles = Titles;
   }
@@ -2629,7 +2629,7 @@ TFarPanelItem * __fastcall TFarPanelInfo::FindFileName(const UnicodeString FileN
 {
   TObjectList * AItems = GetItems();
   TFarPanelItem * PanelItem;
-  for (int Index = 0; Index < AItems->GetCount(); Index++)
+  for (int Index = 0; Index < AItems->Count; Index++)
   {
     PanelItem = static_cast<TFarPanelItem *>(AItems->GetItem(Index));
     if (PanelItem->GetFileName() == FileName)
@@ -2644,7 +2644,7 @@ TFarPanelItem * __fastcall TFarPanelInfo::FindUserData(void * UserData)
 {
   TObjectList * AItems = GetItems();
   TFarPanelItem * PanelItem;
-  for (int Index = 0; Index < AItems->GetCount(); Index++)
+  for (int Index = 0; Index < AItems->Count; Index++)
   {
     PanelItem = static_cast<TFarPanelItem *>(AItems->GetItem(Index));
     if (PanelItem->GetUserData() == UserData)
@@ -2666,10 +2666,10 @@ TFarPanelItem * __fastcall TFarPanelInfo::GetFocusedItem()
 {
   int Index = GetFocusedIndex();
   TObjectList * Items = GetItems();
-  // DEBUG_PRINTF(L"Index = %d, Items = %x, Items->GetCount = %d", Index, Items, Items->GetCount());
-  if (Items->GetCount() > 0)
+  // DEBUG_PRINTF(L"Index = %d, Items = %x, Items->Count = %d", Index, Items, Items->Count);
+  if (Items->Count > 0)
   {
-    assert(Index < Items->GetCount());
+    assert(Index < Items->Count);
     return static_cast<TFarPanelItem *>(Items->GetItem(Index));
   }
   else
@@ -2840,7 +2840,7 @@ void __fastcall TFarMenuItems::SetFlag(size_t Index, size_t Flag, bool Value)
 {
   if (GetFlag(Index, Flag) != Value)
   {
-    int F = reinterpret_cast<size_t>(GetObjects(Index));
+    int F = reinterpret_cast<size_t>(Objects[Index]);
     if (Value)
     {
       F |= Flag;
@@ -2855,7 +2855,7 @@ void __fastcall TFarMenuItems::SetFlag(size_t Index, size_t Flag, bool Value)
 //---------------------------------------------------------------------------
 bool __fastcall TFarMenuItems::GetFlag(size_t Index, size_t Flag)
 {
-  return (reinterpret_cast<size_t>(GetObjects(Index)) & Flag) > 0;
+  return (reinterpret_cast<size_t>(Objects[Index]) & Flag) > 0;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -2937,9 +2937,9 @@ void __fastcall FarWrapText(const UnicodeString Text, TStrings * Result, size_t 
   TStringList Lines;
   Lines.SetText(Text);
   TStringList WrappedLines;
-  for (int Index = 0; Index < Lines.GetCount(); Index++)
+  for (int Index = 0; Index < Lines.Count; Index++)
   {
-    UnicodeString WrappedLine = Lines.GetStrings(Index);
+    UnicodeString WrappedLine = Lines.Strings[Index];
     if (!WrappedLine.IsEmpty())
     {
       WrappedLine = ::ReplaceChar(WrappedLine, '\'', '\3');
@@ -2948,9 +2948,9 @@ void __fastcall FarWrapText(const UnicodeString Text, TStrings * Result, size_t 
       WrappedLine = ::ReplaceChar(WrappedLine, '\3', '\'');
       WrappedLine = ::ReplaceChar(WrappedLine, '\4', '\"');
       WrappedLines.SetText(WrappedLine);
-      for (int WrappedIndex = 0; WrappedIndex < WrappedLines.GetCount(); WrappedIndex++)
+      for (int WrappedIndex = 0; WrappedIndex < WrappedLines.Count; WrappedIndex++)
       {
-        UnicodeString FullLine = WrappedLines.GetStrings(WrappedIndex);
+        UnicodeString FullLine = WrappedLines.Strings[WrappedIndex];
         do
         {
             // WrapText does not wrap when not possible, enforce it

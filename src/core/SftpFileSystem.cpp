@@ -1507,7 +1507,7 @@ protected:
     bool Result = false;
     while (!Result && (FIndex < FFileList->Count))
     {
-      TRemoteFile * File = static_cast<TRemoteFile *>(FFileList->GetObjects(FIndex));
+      TRemoteFile * File = static_cast<TRemoteFile *>(FFileList->Objects[FIndex]);
       FIndex++;
 
       bool MissingRights =
@@ -1595,7 +1595,7 @@ protected:
     bool Result = false;
     while (!Result && (FIndex < FFileList->Count))
     {
-      TRemoteFile * File = static_cast<TRemoteFile *>(FFileList->GetObjects(FIndex));
+      TRemoteFile * File = static_cast<TRemoteFile *>(FFileList->Objects[FIndex]);
       assert(File != NULL);
       FIndex++;
 
@@ -2722,7 +2722,7 @@ void __fastcall TSFTPFileSystem::DoStartup()
             FTerminal->LogEvent(
               FORMAT(L"    %s", FSupport->AttribExtensions->Strings[Index].c_str()));
           }
-          FTerminal->LogEvent(FORMAT(L"  Extensions (%d)\n", FSupport->Extensions->GetCount()));
+          FTerminal->LogEvent(FORMAT(L"  Extensions (%d)\n", FSupport->Extensions->Count));
           for (int Index = 0; Index < FSupport->Extensions->Count; Index++)
           {
             FTerminal->LogEvent(
@@ -3697,7 +3697,7 @@ void __fastcall TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   {
     bool Success = false;
     FileName = FilesToCopy->Strings[Index];
-    TRemoteFile * File = dynamic_cast<TRemoteFile *>(FilesToCopy->GetObjects(Index));
+    TRemoteFile * File = dynamic_cast<TRemoteFile *>(FilesToCopy->Objects[Index]);
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     FileNameOnly = ExtractFileName(RealFileName, false);
     assert(!FAvoidBusy);

@@ -266,9 +266,7 @@ public:
   TStrings();
   virtual ~TStrings();
   int __fastcall Add(const UnicodeString S);
-  virtual int __fastcall GetCount() const = 0;
   virtual void __fastcall Delete(int Index) = 0;
-  virtual UnicodeString __fastcall GetStrings(int Index) const = 0;
   virtual UnicodeString __fastcall GetText();
   virtual UnicodeString __fastcall GetTextStr();
   virtual void __fastcall SetText(const UnicodeString Text);
@@ -277,20 +275,15 @@ public:
   virtual void __fastcall BeginUpdate();
   virtual void __fastcall EndUpdate();
   virtual void __fastcall SetUpdateState(bool Updating);
-  virtual TObject * __fastcall GetObjects(int Index);
   int __fastcall AddObject(const UnicodeString S, TObject * AObject);
   virtual void __fastcall InsertObject(int Index, const UnicodeString Key, TObject * AObject);
   bool __fastcall Equals(TStrings * value) const;
   virtual void __fastcall Clear() = 0;
-  virtual void __fastcall PutObject(int Index, TObject * AObject);
-  virtual void __fastcall PutString(int Index, const UnicodeString S) = 0;
   void __fastcall SetDuplicates(TDuplicatesEnum value);
   void __fastcall Move(int CurIndex, int NewIndex);
   int __fastcall IndexOf(const UnicodeString S);
   virtual int __fastcall IndexOfName(const UnicodeString Name);
-  const UnicodeString __fastcall GetName(int Index) const;
   UnicodeString __fastcall ExtractName(const UnicodeString S) const;
-  const UnicodeString __fastcall GetValue(const UnicodeString Name);
   void __fastcall SetValue(const UnicodeString Name, const UnicodeString Value);
   UnicodeString __fastcall GetCommaText();
   void __fastcall AddStrings(TStrings * Strings);
@@ -313,6 +306,15 @@ public:
   int __fastcall GetUpdateCount() const { return FUpdateCount; }
   virtual void __fastcall Assign(TPersistent * Source);
 
+protected:
+  virtual int __fastcall GetCount() const = 0;
+  virtual UnicodeString __fastcall GetStrings(int Index) const = 0;
+  virtual void __fastcall PutString(int Index, const UnicodeString S) = 0;
+  virtual TObject * __fastcall GetObjects(int Index);
+  virtual void __fastcall PutObject(int Index, TObject * AObject);
+  const UnicodeString __fastcall GetName(int Index) const;
+  const UnicodeString __fastcall GetValue(const UnicodeString Name);
+  
 private:
   int PropertyGetCount() { return GetCount(); }
   UnicodeString PropertyGetString(int Index)
@@ -384,18 +386,14 @@ public:
   /* __fastcall */ TStringList();
   virtual /* __fastcall */ ~TStringList();
   virtual void __fastcall Assign(TPersistent * Source);
-  virtual int __fastcall GetCount() const;
   virtual void __fastcall Clear();
   int __fastcall Add(const UnicodeString S);
   int __fastcall AddObject(const UnicodeString S, TObject * AObject);
   virtual bool __fastcall Find(const UnicodeString S, int & Index);
   virtual int __fastcall IndexOf(const UnicodeString S);
-  virtual void __fastcall PutString(int Index, const UnicodeString S);
   virtual void __fastcall Delete(int Index);
-  virtual TObject * __fastcall GetObjects(int Index);
   virtual void __fastcall InsertObject(int Index, const UnicodeString Key, TObject * AObject);
   void __fastcall InsertItem(int Index, const UnicodeString S, TObject * AObject);
-  virtual UnicodeString __fastcall GetStrings(int Index) const;
   bool __fastcall GetCaseSensitive() const;
   void __fastcall SetCaseSensitive(bool value);
   bool __fastcall GetSorted() const;
@@ -410,12 +408,18 @@ public:
   TNotifyEvent & __fastcall GetOnChanging() { return FOnChanging; }
   void __fastcall SetOnChanging(TNotifyEvent onChanging) { FOnChanging = onChanging; }
 
-  virtual void __fastcall PutObject(int Index, TObject * AObject);
   virtual void __fastcall SetUpdateState(bool Updating);
   virtual void __fastcall Changing();
   virtual void __fastcall Changed();
   virtual void __fastcall Insert(int Index, const UnicodeString S);
   virtual int __fastcall CompareStrings(const UnicodeString S1, const UnicodeString S2);
+
+protected:
+  virtual int __fastcall GetCount() const;
+  virtual UnicodeString __fastcall GetStrings(int Index) const;
+  virtual void __fastcall PutString(int Index, const UnicodeString S);
+  virtual TObject * __fastcall GetObjects(int Index);
+  virtual void __fastcall PutObject(int Index, TObject * AObject);
 
 private:
   TNotifyEvent FOnChange;

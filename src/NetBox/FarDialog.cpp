@@ -2118,7 +2118,7 @@ void __fastcall TFarText::SetData(const UnicodeString value)
 {
   for (int i = 0; i < GetCount(); i++)
   {
-    UnicodeString value = GetStrings(i);
+    UnicodeString value = Strings[i];
     delete[] FListItems->Items[i].Text;
   }
   delete[] FListItems->Items;
@@ -2142,7 +2142,7 @@ void __fastcall TFarList::Assign(TPersistent * Source)
 void __fastcall TFarList::UpdateItem(int Index)
 {
   FarListItem * ListItem = &FListItems->Items[Index];
-  UnicodeString value = GetStrings(Index).c_str();
+  UnicodeString value = Strings[Index].c_str();
   ListItem->Text = TCustomFarPlugin::DuplicateStr(value, true);
 
   FarListUpdate ListUpdate;
@@ -2214,7 +2214,7 @@ void __fastcall TFarList::Changed()
     }
     for (int i = 0; i < GetCount(); i++)
     {
-      UnicodeString value = GetStrings(i);
+      UnicodeString value = Strings[i];
       delete[] FListItems->Items[i].Text;
       FListItems->Items[i].Text = TCustomFarPlugin::DuplicateStr(value);
     }
@@ -2251,7 +2251,7 @@ void __fastcall TFarList::SetSelected(int value)
     }
     else
     {
-      GetDialogItem()->SetData(GetStrings(value));
+      GetDialogItem()->SetData(Strings[value]);
     }
   }
 }
@@ -2320,9 +2320,9 @@ int __fastcall TFarList::GetMaxLength()
   int Result = 0;
   for (int i = 0; i < GetCount(); i++)
   {
-    if (Result < GetStrings(i).Length())
+    if (Result < Strings[i].Length())
     {
-      Result = GetStrings(i).Length();
+      Result = Strings[i].Length();
     }
   }
   return Result;
@@ -2414,7 +2414,7 @@ intptr_t __fastcall TFarList::ItemProc(int Msg, intptr_t Param)
     else
     {
       assert(Param >= 0 && Param < GetCount());
-      GetDialogItem()->UpdateData(GetStrings(Param));
+      GetDialogItem()->UpdateData(Strings[Param]);
     }
   }
   return static_cast<intptr_t>(false);
@@ -2563,7 +2563,7 @@ void /* __fastcall */ TFarLister::ItemsChange(TObject * /*Sender*/)
 //---------------------------------------------------------------------------
 bool __fastcall TFarLister::GetScrollBar()
 {
-  return (GetItems()->GetCount() > GetHeight());
+  return (GetItems()->Count > GetHeight());
 }
 //---------------------------------------------------------------------------
 void __fastcall TFarLister::SetTopIndex(int value)
@@ -2602,9 +2602,9 @@ intptr_t __fastcall TFarLister::ItemProc(int Msg, intptr_t Param)
   {
     bool AScrollBar = GetScrollBar();
     int ScrollBarPos = 0;
-    if (GetItems()->GetCount() > GetHeight())
+    if (GetItems()->Count > GetHeight())
     {
-      ScrollBarPos = static_cast<int>((static_cast<float>(GetHeight() - 3) * (static_cast<float>(FTopIndex) / (GetItems()->GetCount() - GetHeight())))) + 1;
+      ScrollBarPos = static_cast<int>((static_cast<float>(GetHeight() - 3) * (static_cast<float>(FTopIndex) / (GetItems()->Count - GetHeight())))) + 1;
     }
     int DisplayWidth = GetWidth() - (AScrollBar ? 1 : 0);
     int Color = GetDialog()->GetSystemColor(
@@ -2614,9 +2614,9 @@ intptr_t __fastcall TFarLister::ItemProc(int Msg, intptr_t Param)
     {
       int Index = GetTopIndex() + Row;
       Buf = L" ";
-      if (Index < GetItems()->GetCount())
+      if (Index < GetItems()->Count)
       {
-        UnicodeString value = GetItems()->GetStrings(Index).SubString(1, DisplayWidth - 1);
+        UnicodeString value = GetItems()->Strings[Index].SubString(1, DisplayWidth - 1);
         Buf += value;
       }
       UnicodeString value = ::StringOfChar(' ', DisplayWidth - Buf.Length());
@@ -2663,7 +2663,7 @@ intptr_t __fastcall TFarLister::ItemProc(int Msg, intptr_t Param)
     }
     else if ((Param == KEY_DOWN) || (Param == KEY_RIGHT))
     {
-      if (NewTopIndex < GetItems()->GetCount() - GetHeight())
+      if (NewTopIndex < GetItems()->Count - GetHeight())
       {
         NewTopIndex++;
       }
@@ -2686,13 +2686,13 @@ intptr_t __fastcall TFarLister::ItemProc(int Msg, intptr_t Param)
     }
     else if (Param == KEY_PGDN)
     {
-      if (NewTopIndex < GetItems()->GetCount() - GetHeight() - GetHeight() + 1)
+      if (NewTopIndex < GetItems()->Count - GetHeight() - GetHeight() + 1)
       {
         NewTopIndex += GetHeight() - 1;
       }
       else
       {
-        NewTopIndex = GetItems()->GetCount() - GetHeight();
+        NewTopIndex = GetItems()->Count - GetHeight();
       }
     }
     else if (Param == KEY_HOME)
@@ -2701,7 +2701,7 @@ intptr_t __fastcall TFarLister::ItemProc(int Msg, intptr_t Param)
     }
     else if (Param == KEY_END)
     {
-      NewTopIndex = GetItems()->GetCount() - GetHeight();
+      NewTopIndex = GetItems()->Count - GetHeight();
     }
     else
     {
@@ -2740,7 +2740,7 @@ intptr_t __fastcall TFarLister::ItemProc(int Msg, intptr_t Param)
       else if (((P.x == GetWidth() - 1) && (P.y == static_cast<int>(GetHeight() - 1))) ||
           ((P.x < GetWidth() - 1) && (P.y >= static_cast<int>(GetHeight() / 2))))
       {
-        if (NewTopIndex < GetItems()->GetCount() - GetHeight())
+        if (NewTopIndex < GetItems()->Count - GetHeight())
         {
           NewTopIndex++;
         }
@@ -2749,7 +2749,7 @@ intptr_t __fastcall TFarLister::ItemProc(int Msg, intptr_t Param)
       {
         assert(P.x == GetWidth() - 1);
         assert((P.y > 0) && (P.y < static_cast<int>(GetHeight() - 1)));
-        NewTopIndex = static_cast<int>(ceil(static_cast<float>(P.y - 1) / (GetHeight() - 2) * (GetItems()->GetCount() - GetHeight() + 1)));
+        NewTopIndex = static_cast<int>(ceil(static_cast<float>(P.y - 1) / (GetHeight() - 2) * (GetItems()->Count - GetHeight() + 1)));
       }
 
       Result = (int)true;

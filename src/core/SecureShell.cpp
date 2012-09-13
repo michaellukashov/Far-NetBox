@@ -542,7 +542,7 @@ bool __fastcall TSecureShell::PromptUser(bool /*ToServer*/,
     assert(false);
   }
 
-  LogEvent(FORMAT(L"Prompt (%d, %s, %s, %s)", PromptKind, AName.c_str(), Instructions.c_str(), (Prompts->GetCount() > 0 ? Prompts->GetStrings(0).c_str() : UnicodeString(L"<no prompt>").c_str())).c_str());
+  LogEvent(FORMAT(L"Prompt (%d, %s, %s, %s)", PromptKind, AName.c_str(), Instructions.c_str(), (Prompts->Count > 0 ? Prompts->Strings[0].c_str() : UnicodeString(L"<no prompt>").c_str())).c_str());
 
   Name = Name.Trim();
 
@@ -592,7 +592,7 @@ bool __fastcall TSecureShell::PromptUser(bool /*ToServer*/,
       Results->Strings(0, FSessionData->GetPassword());
       FStoredPasswordTriedForKI = true;
     }
-    else if (Instructions.IsEmpty() && !InstructionsRequired && (Prompts->GetCount() == 0))
+    else if (Instructions.IsEmpty() && !InstructionsRequired && (Prompts->Count == 0))
     {
       LogEvent(L"Ignoring empty SSH server authentication request");
       Result = true;

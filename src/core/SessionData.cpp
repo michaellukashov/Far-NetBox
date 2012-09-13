@@ -2104,25 +2104,25 @@ void __fastcall TSessionData::ParseIEProxyConfig() const
   UnicodeString ProxyUrlTmp;
   int ProxyPortTmp = 0;
   TProxyMethod ProxyMethodTmp = pmNone;
-  for (int Index = 0; Index < ProxyServerList.GetCount(); Index++)
+  for (int Index = 0; Index < ProxyServerList.Count; Index++)
   {
-    UnicodeString ProxyServer = ProxyServerList.GetStrings(Index).Trim();
+    UnicodeString ProxyServer = ProxyServerList.Strings[Index].Trim();
     TStringList ProxyServerForScheme;
     ProxyServerForScheme.SetDelimiter(L'=');
     ProxyServerForScheme.SetDelimitedText(ProxyServer);
     UnicodeString ProxyScheme;
     UnicodeString ProxyURI;
-    if (ProxyServerForScheme.GetCount() == 2)
+    if (ProxyServerForScheme.Count == 2)
     {
-      ProxyScheme = ProxyServerList.GetStrings(0).Trim();
-      ProxyURI = ProxyServerList.GetStrings(1).Trim();
+      ProxyScheme = ProxyServerList.Strings[0].Trim();
+      ProxyURI = ProxyServerList.Strings[1].Trim();
     }
     else
     {
-      if (ProxyServerForScheme.GetCount() == 1)
+      if (ProxyServerForScheme.Count == 1)
       {
         ProxyScheme = L"http";
-        ProxyURI = ProxyServerList.GetStrings(0).Trim();
+        ProxyURI = ProxyServerList.Strings[0].Trim();
         ProxyMethodTmp = pmHTTP;
       }
     }

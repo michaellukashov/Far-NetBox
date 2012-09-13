@@ -649,11 +649,11 @@ int __fastcall TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
         if ((Params != NULL) && (Params->Timeout != 0) && \
             (Params->TimeoutAnswer == qa ## TYPE)) \
         { \
-          TimeoutButton = ButtonLabels->GetCount() - 1; \
+          TimeoutButton = ButtonLabels->Count - 1; \
         } \
         if (NeverAskAgainPending && CANNEVERASK) \
         { \
-          ButtonLabels->PutObject(ButtonLabels->GetCount() - 1, reinterpret_cast<TObject *>((size_t)true)); \
+          ButtonLabels->Objects(ButtonLabels->Count - 1, reinterpret_cast<TObject *>((size_t)true)); \
           NeverAskAgainPending = false; \
         } \
       }
@@ -689,7 +689,7 @@ int __fastcall TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
         {
           if (static_cast<int>(Params->Aliases[ai].Button) == Data.Buttons[bi])
           {
-            ButtonLabels->PutString(bi, Params->Aliases[ai].Alias);
+            ButtonLabels->Strings(bi, Params->Aliases[ai].Alias);
             break;
           }
         }
@@ -726,7 +726,7 @@ int __fastcall TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
     FarParams.ClickEvent = MAKE_CALLBACK3(TWinSCPPlugin::MessageClick, this);
 
     UnicodeString DialogStr = Str;
-    if (MoreMessages && (MoreMessages->GetCount() > 0))
+    if (MoreMessages && (MoreMessages->Count > 0))
     {
       FarParams.MoreMessages = MoreMessages;
     }
