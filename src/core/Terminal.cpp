@@ -1894,11 +1894,11 @@ unsigned int __fastcall TTerminal::CommandError(Exception * E, const UnicodeStri
   // from within OnShowExtendedException handler
   assert(FCallbackGuard == NULL);
   unsigned int Result = 0;
-  if (E && E->InheritsFrom<EFatal>())
+  if (E && (dynamic_cast<EFatal *>(E) != NULL))
   {
     FatalError(E, Msg);
   }
-  else if (E && E->InheritsFrom<EAbort>())
+  else if (E && (dynamic_cast<EAbort*>(E) != NULL))
   {
     // resent EAbort exception
     Abort();
@@ -3758,7 +3758,7 @@ void /* __fastcall */ TTerminal::DoAnyCommand(const UnicodeString Command,
     {
       RollbackAction(*Action, NULL, &E);
     }
-    if (GetExceptionOnFail() || E.InheritsFrom<EFatal>()) { throw; }
+    if (GetExceptionOnFail() || (dynamic_cast<EFatal *>(&E) != NULL)) { throw; }
     else { HandleExtendedException(&E); }
   }
 }

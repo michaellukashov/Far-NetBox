@@ -3136,7 +3136,7 @@ void __fastcall TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         }
         catch(Exception &E)
         {
-          if (E.InheritsFrom<EFatal>())
+          if ((dynamic_cast<EFatal *>(&E) != NULL))
           {
             throw;
           }

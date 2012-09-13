@@ -325,7 +325,7 @@ void __fastcall TSessionData::NonPersistant()
 //---------------------------------------------------------------------
 void __fastcall TSessionData::Assign(TPersistent * Source)
 {
-  if (Source && ::InheritsFrom<TPersistent, TSessionData>(Source))
+  if (Source && (dynamic_cast<TSessionData *>(Source) != NULL))
   {
     #define PROPERTY(P) Set ## P((static_cast<TSessionData *>(Source))->Get ## P())
     PROPERTY(Name);

@@ -266,7 +266,7 @@ UnicodeString ShellDelimitStr(UnicodeString Str, wchar_t Quote)
 UnicodeString ExceptionLogString(Exception *E)
 {
   assert(E);
-  if (E->InheritsFrom<Exception>())
+  if (dynamic_cast<Exception *>(E) != NULL)
   {
     UnicodeString Msg;
 #ifndef _MSC_VER
@@ -274,7 +274,7 @@ UnicodeString ExceptionLogString(Exception *E)
 #else
     Msg = FORMAT(L"%s", ::MB2W(E->what()).c_str());
 #endif
-    if (E->InheritsFrom<ExtException>())
+    if (dynamic_cast<ExtException *>(E) != NULL)
     {
       TStrings * MoreMessages = dynamic_cast<ExtException *>(E)->GetMoreMessages();
       if (MoreMessages)

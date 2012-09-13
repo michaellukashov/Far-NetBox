@@ -1313,7 +1313,7 @@ void __fastcall TRemoteFile::FindLinkedFile()
     }
     catch (Exception &E)
     {
-      if (E.InheritsFrom<EFatal>()) throw;
+      if (dynamic_cast<EFatal *>(&E) != NULL) throw;
       else
       {
         GetTerminal()->GetLog()->AddException(&E);
