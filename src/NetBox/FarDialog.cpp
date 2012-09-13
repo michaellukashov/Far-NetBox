@@ -282,7 +282,7 @@ UnicodeString __fastcall TFarDialog::GetCaption()
 //---------------------------------------------------------------------------
 int __fastcall TFarDialog::GetItemCount()
 {
-  return FItems->GetCount();
+  return FItems->Count;
 }
 //---------------------------------------------------------------------------
 TFarDialogItem * __fastcall TFarDialog::GetItem(int Index)
@@ -290,7 +290,7 @@ TFarDialogItem * __fastcall TFarDialog::GetItem(int Index)
   TFarDialogItem * DialogItem;
   if (GetItemCount())
   {
-    assert(Index >= 0 && Index < FItems->GetCount());
+    assert(Index >= 0 && Index < FItems->Count);
     DialogItem = dynamic_cast<TFarDialogItem *>((*GetItems())[Index]);
     assert(DialogItem);
   }
@@ -309,11 +309,11 @@ void __fastcall TFarDialog::Add(TFarDialogItem * DialogItem)
   R.Left = Left;
   R.Top = Top;
 
-  if (FDialogItemsCapacity == GetItems()->GetCount())
+  if (FDialogItemsCapacity == GetItems()->Count)
   {
     int DialogItemsDelta = 10;
     FarDialogItem * NewDialogItems;
-    NewDialogItems = new FarDialogItem[GetItems()->GetCount() + DialogItemsDelta];
+    NewDialogItems = new FarDialogItem[GetItems()->Count + DialogItemsDelta];
     if (FDialogItems)
     {
       memmove(NewDialogItems, FDialogItems, FDialogItemsCapacity * sizeof(FarDialogItem));
@@ -824,7 +824,7 @@ void __fastcall TFarDialog::Change()
         }
       }
 
-      for (int Index = 0; Index < NotifiedContainers->GetCount(); Index++)
+      for (int Index = 0; Index < NotifiedContainers->Count; Index++)
       {
         (static_cast<TFarDialogContainer *>((*NotifiedContainers)[Index]))->Change();
       }
@@ -991,7 +991,7 @@ void __fastcall TFarDialogContainer::Remove(TFarDialogItem * Item)
   assert(FItems->IndexOf(Item) != NPOS);
   Item->SetContainer(NULL);
   FItems->Remove(Item);
-  if (FItems->GetCount() == 0)
+  if (FItems->Count == 0)
   {
     delete this;
   }
@@ -1028,7 +1028,7 @@ void __fastcall TFarDialogContainer::SetEnabled(bool value)
 //---------------------------------------------------------------------------
 int __fastcall TFarDialogContainer::GetItemCount()
 {
-  return FItems->GetCount();
+  return FItems->Count;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -2132,7 +2132,7 @@ void __fastcall TFarList::Assign(TPersistent * Source)
   TFarList * FarList = dynamic_cast<TFarList *>(Source);
   if (FarList != NULL)
   {
-    for (int Index = 0; Index < FarList->GetCount(); Index++)
+    for (int Index = 0; Index < FarList->Count; Index++)
     {
       SetFlags(Index, FarList->GetFlags(Index));
     }

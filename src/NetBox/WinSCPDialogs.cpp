@@ -1399,7 +1399,7 @@ void /* __fastcall */ TPasswordDialog::ShowPromptClick(TFarButton * /*Sender*/,
 //---------------------------------------------------------------------------
 bool __fastcall TPasswordDialog::Execute(TStrings * Results)
 {
-  for (int Index = 0; Index < FEdits->GetCount(); Index++)
+  for (int Index = 0; Index < FEdits->Count; Index++)
   {
     reinterpret_cast<TFarEdit *>(FEdits->GetItem(Index))->SetText(Results->Strings[Index]);
   }
@@ -1407,7 +1407,7 @@ bool __fastcall TPasswordDialog::Execute(TStrings * Results)
   bool Result = (ShowModal() != brCancel);
   if (Result)
   {
-    for (int Index = 0; Index < FEdits->GetCount(); Index++)
+    for (int Index = 0; Index < FEdits->Count; Index++)
     {
       UnicodeString Text = reinterpret_cast<TFarEdit *>(FEdits->GetItem(Index))->GetText();
       Results->Strings(Index, Text);
@@ -3296,7 +3296,7 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
   TStrings * PostLoginCommands = new TStringList();
   std::auto_ptr<TStrings> PostLoginCommandsPtr(PostLoginCommands);
   {
-    PostLoginCommands->SetText(SessionData->GetPostLoginCommands());
+    PostLoginCommands->Text = SessionData->GetPostLoginCommands();
     for (int Index = 0; (Index < PostLoginCommands->Count) &&
          (Index < LENOF(PostLoginCommandsEdits)); Index++)
     {
@@ -3611,7 +3611,7 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
         }
       }
 
-      SessionData->SetPostLoginCommands(PostLoginCommands->GetText());
+      SessionData->SetPostLoginCommands(PostLoginCommands->Text);
     }
     if ((GetFSProtocol() == fsFTP) && (GetFtps() != ftpsNone))
     {
@@ -4603,15 +4603,15 @@ private:
     if ((GroupList == NULL) || (GroupList->Count() == 0))
     {
       UsedGroupList = new TStringList();
-      UsedGroupList->SetDuplicates(dupIgnore);
-      UsedGroupList->SetSorted(true);
+      UsedGroupList->Duplicates = dupIgnore;
+      UsedGroupList->Sorted = true;
       UsedGroupListPtr.reset(UsedGroupList);
     }
     if ((UserList == NULL) || (UserList->Count() == 0))
     {
       UsedUserList = new TStringList();
-      UsedUserList->SetDuplicates(dupIgnore);
-      UsedUserList->SetSorted(true);
+      UsedUserList->Duplicates = dupIgnore;
+      UsedUserList->Sorted = true;
       UsedUserListPtr.reset(UsedUserList);
     }
 
@@ -6101,7 +6101,7 @@ void /* __fastcall */ TFileSystemInfoDialog::ControlsAddItem(TObject * Control,
   }
   else if (Control == InfoLister)
   {
-    InfoLister->GetItems()->SetText(Value);
+    InfoLister->GetItems()->Text = Value;
     InfoLister->SetEnabled(!Value.IsEmpty());
     if (!InfoLister->GetEnabled())
     {
@@ -6370,7 +6370,7 @@ bool __fastcall TWinSCPFileSystem::OpenDirectoryDialog(
       TStringList * BookmarkDirectories = new TStringList();
       std::auto_ptr<TStringList> BookmarkDirectoriesPtr(BookmarkDirectories);
       {
-        BookmarkDirectories->SetSorted(true);
+        BookmarkDirectories->Sorted = true;
         for (int i = 0; i < BookmarkList->GetCount(); i++)
         {
           TBookmark * Bookmark = BookmarkList->GetBookmarks(i);

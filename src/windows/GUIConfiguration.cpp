@@ -544,8 +544,8 @@ bool __fastcall TCopyParamList::GetAnyRule() const
   FLocale = 0;
   FLocales = new TStringList();
   FLastLocalesExts = L"*";
-  dynamic_cast<TStringList *>(FLocales)->SetSorted(true);
-  dynamic_cast<TStringList *>(FLocales)->SetCaseSensitive(false);
+  dynamic_cast<TStringList *>(FLocales)->Sorted = true;
+  dynamic_cast<TStringList *>(FLocales)->CaseSensitive = false;
   FCopyParamList = new TCopyParamList();
   CoreSetResourceModule(0);
 }
@@ -960,8 +960,8 @@ TStrings * __fastcall TGUIConfiguration::GetLocales()
   TStringList * Exts = new TStringList();
   std::auto_ptr<TStringList> ExtsPtr(Exts);
   {
-    Exts->SetSorted(true);
-    Exts->SetCaseSensitive(false);
+    Exts->Sorted = true;
+    Exts->CaseSensitive = false;
 
     int FindAttrs = faReadOnly | faArchive;
     TSearchRec SearchRec;

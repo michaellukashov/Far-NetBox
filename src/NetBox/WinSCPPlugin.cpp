@@ -97,7 +97,7 @@ void __fastcall TWinSCPPlugin::GetPluginInfoEx(long unsigned & Flags,
     PluginMenuStrings->Add(GetMsg(MENU_COMMANDS));
   }
   PluginConfigStrings->Add(GetMsg(PLUGIN_NAME));
-  CommandPrefixes->SetCommaText(FarConfiguration->GetCommandPrefixes());
+  CommandPrefixes->CommaText = FarConfiguration->GetCommandPrefixes();
 }
 //---------------------------------------------------------------------------
 bool __fastcall TWinSCPPlugin::ConfigureEx(int /*Item*/)
@@ -209,7 +209,7 @@ int __fastcall TWinSCPPlugin::ProcessEditorEventEx(int Event, void * Param)
       FarConfiguration->GetEditorMultiple())
   {
     TWinSCPFileSystem * FileSystem = NULL;
-    for (int Index = 0; Index < FOpenedPlugins->GetCount(); Index++)
+    for (int Index = 0; Index < FOpenedPlugins->Count; Index++)
     {
       FileSystem = dynamic_cast<TWinSCPFileSystem *>(FOpenedPlugins->GetItem(Index));
       FileSystem->ProcessEditorEvent(Event, Param);

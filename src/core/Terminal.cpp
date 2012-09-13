@@ -1161,7 +1161,7 @@ unsigned int /* __fastcall */ TTerminal::QueryUser(const UnicodeString Query,
   TStrings * MoreMessages, unsigned int Answers, const TQueryParams * Params,
   TQueryType QueryType)
 {
-  LogEvent(FORMAT(L"Asking user:\n%s (%s)", Query.c_str(), MoreMessages ? MoreMessages->GetCommaText().c_str() : L""));
+  LogEvent(FORMAT(L"Asking user:\n%s (%s)", Query.c_str(), MoreMessages ? MoreMessages->CommaText.get().c_str() : L""));
   unsigned int Answer = AbortAnswer(Answers);
   if (FOnQueryUser)
   {
@@ -4165,8 +4165,8 @@ void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeStri
     bool Found = false;
     TSearchRec SearchRec = {0};
     Data.LocalFileList = new TStringList();
-    Data.LocalFileList->SetSorted(true);
-    Data.LocalFileList->SetCaseSensitive(false);
+    Data.LocalFileList->Sorted = true;
+    Data.LocalFileList->CaseSensitive = false;
 
     FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()),
       int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;

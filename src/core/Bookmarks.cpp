@@ -14,9 +14,9 @@
 {
   FSharedKey = TNamedObjectList::HiddenPrefix + L"shared";
   FBookmarkLists = new TStringList();
-  FBookmarkLists->SetSorted(true);
-  FBookmarkLists->SetCaseSensitive(false);
-  FBookmarkLists->SetDuplicates(dupError);
+  FBookmarkLists->Sorted = true;
+  FBookmarkLists->CaseSensitive = false;
+  FBookmarkLists->Duplicates = dupError;
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TBookmarks::~TBookmarks()
@@ -276,10 +276,10 @@ void __fastcall TBookmarks::SetSharedBookmarks(TBookmarkList * value)
 {
   FModified = false;
   FBookmarks = new TStringList();
-  FBookmarks->SetCaseSensitive(false);
+  FBookmarks->CaseSensitive = false;
   FOpenedNodes = new TStringList();
-  FOpenedNodes->SetCaseSensitive(false);
-  FOpenedNodes->SetSorted(true);
+  FOpenedNodes->CaseSensitive = false;
+  FOpenedNodes->Sorted = true;
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TBookmarkList::~TBookmarkList()
@@ -323,12 +323,12 @@ void __fastcall TBookmarkList::Assign(TPersistent * Source)
 //---------------------------------------------------------------------------
 void __fastcall TBookmarkList::LoadOptions(THierarchicalStorage * Storage)
 {
-  FOpenedNodes->SetCommaText(Storage->ReadString(L"OpenedNodes", L""));
+  FOpenedNodes->CommaText = Storage->ReadString(L"OpenedNodes", L"");
 }
 //---------------------------------------------------------------------------
 void __fastcall TBookmarkList::SaveOptions(THierarchicalStorage * Storage)
 {
-  Storage->WriteString(L"OpenedNodes", FOpenedNodes->GetCommaText());
+  Storage->WriteString(L"OpenedNodes", FOpenedNodes->CommaText);
 }
 //---------------------------------------------------------------------------
 void __fastcall TBookmarkList::Add(TBookmark * Bookmark)

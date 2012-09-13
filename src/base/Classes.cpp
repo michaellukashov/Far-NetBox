@@ -353,6 +353,11 @@ TStrings::TStrings() :
   FUpdateCount(0)
 {
   Count(this);
+  Text(this);
+  CommaText(this);
+  CaseSensitive(this);
+  Sorted(this);
+  Duplicates(this);
   Strings(this);
   Objects(this);
   Names(this);
@@ -596,7 +601,6 @@ void TStrings::InsertObject(int Index, const UnicodeString Key, TObject * AObjec
 bool TStrings::Equals(TStrings * Strings) const
 {
   bool Result = false;
-  int Count = GetCount();
   if (Count != Strings->GetCount())
   {
     return false;
@@ -964,7 +968,7 @@ void TStringList::SetCaseSensitive(bool value)
   if (value != FCaseSensitive)
   {
     FCaseSensitive = value;
-    if (GetSorted())
+    if (Sorted)
     {
       Sort();
     }

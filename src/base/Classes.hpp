@@ -177,8 +177,6 @@ class TList : public TObject
 public:
   TList();
   virtual ~TList();
-  int GetCount() const;
-  void SetCount(int value);
   void * operator [](int Index) const;
   void * GetItem(int Index) const;
   void SetItem(int Index, void * Item);
@@ -194,8 +192,13 @@ public:
   virtual void __fastcall Notify(void * Ptr, int Action);
   virtual void __fastcall Sort();
 
+protected:
+  int GetCount() const;
+  void SetCount(int value);
+
 private:
   int PropertyGetCount() { return GetCount(); }
+  void PropertySetCount(int Value) { SetCount(Value); }
   void * PropertyGetItem(int Index)
   {
     return GetItem(Index);
@@ -206,8 +209,8 @@ private:
   }
 
 public:
-  ROProperty<int, TList, &TList::PropertyGetCount> Count;
-  IndexedProperty2<int, TList, &TList::PropertyGetItem, &TList::PropertySetItem > Items;
+  RWProperty<int, TList, &TList::PropertyGetCount, &TList::PropertySetCount> Count;
+  IndexedProperty2<int, TList, &TList::PropertyGetItem, &TList::PropertySetItem> Items;
 
 private:
   std::vector<void *> FList;
@@ -267,11 +270,8 @@ public:
   virtual ~TStrings();
   int __fastcall Add(const UnicodeString S);
   virtual void __fastcall Delete(int Index) = 0;
-  virtual UnicodeString __fastcall GetText();
   virtual UnicodeString __fastcall GetTextStr();
-  virtual void __fastcall SetText(const UnicodeString Text);
   virtual void __fastcall SetTextStr(const UnicodeString Text);
-  void __fastcall SetCommaText(const UnicodeString Value);
   virtual void __fastcall BeginUpdate();
   virtual void __fastcall EndUpdate();
   virtual void __fastcall SetUpdateState(bool Updating);
@@ -279,13 +279,11 @@ public:
   virtual void __fastcall InsertObject(int Index, const UnicodeString Key, TObject * AObject);
   bool __fastcall Equals(TStrings * value) const;
   virtual void __fastcall Clear() = 0;
-  void __fastcall SetDuplicates(TDuplicatesEnum value);
   void __fastcall Move(int CurIndex, int NewIndex);
   int __fastcall IndexOf(const UnicodeString S);
   virtual int __fastcall IndexOfName(const UnicodeString Name);
   UnicodeString __fastcall ExtractName(const UnicodeString S) const;
   void __fastcall SetValue(const UnicodeString Name, const UnicodeString Value);
-  UnicodeString __fastcall GetCommaText();
   void __fastcall AddStrings(TStrings * Strings);
   void __fastcall Append(const UnicodeString value);
   virtual void __fastcall Insert(int Index, const UnicodeString AString) = 0;
@@ -307,6 +305,15 @@ public:
   virtual void __fastcall Assign(TPersistent * Source);
 
 protected:
+  virtual UnicodeString __fastcall GetText();
+  virtual void __fastcall SetText(const UnicodeString Text);
+  UnicodeString __fastcall GetCommaText();
+  void __fastcall SetCommaText(const UnicodeString Value);
+  virtual bool __fastcall GetCaseSensitive() const = 0;
+  virtual void __fastcall SetCaseSensitive(bool value) = 0;
+  virtual bool __fastcall GetSorted() const = 0;
+  virtual void __fastcall SetSorted(bool value) = 0;
+  void __fastcall SetDuplicates(TDuplicatesEnum value);
   virtual int __fastcall GetCount() const = 0;
   virtual UnicodeString __fastcall GetStrings(int Index) const = 0;
   virtual void __fastcall PutString(int Index, const UnicodeString S) = 0;
@@ -317,6 +324,15 @@ protected:
   
 private:
   int PropertyGetCount() { return GetCount(); }
+  UnicodeString PropertyGetText() { return GetText(); }
+  void PropertySetText(UnicodeString Value) { SetText(Value); }
+  UnicodeString PropertyGetCommaText() { return GetCommaText(); }
+  void PropertySetCommaText(UnicodeString Value) { SetCommaText(Value); }
+  bool PropertyGetCaseSensitive() { return GetCaseSensitive(); }
+  void PropertySetCaseSensitive(bool Value) { SetCaseSensitive(Value); }
+  bool PropertyGetSorted() { return GetSorted(); }
+  void PropertySetSorted(bool Value) { SetSorted(Value); }
+  void PropertySetDuplicates(TDuplicatesEnum Value) { SetDuplicates(Value); }
   UnicodeString PropertyGetString(int Index)
   {
     return GetStrings(Index);
@@ -354,8 +370,13 @@ private:
 
 public:
   ROProperty<int, TStrings, &TStrings::PropertyGetCount> Count;
-  IndexedProperty<int, UnicodeString, TStrings, &TStrings::PropertyGetString, &TStrings::PropertySetString > Strings;
-  IndexedProperty<int, TObject *, TStrings, &TStrings::PropertyGetObject, &TStrings::PropertySetObject > Objects;
+  RWProperty<UnicodeString, TStrings, &TStrings::PropertyGetText, &TStrings::PropertySetText> Text;
+  RWProperty<UnicodeString, TStrings, &TStrings::PropertyGetCommaText, &TStrings::PropertySetCommaText> CommaText;
+  RWProperty<bool, TStrings, &TStrings::PropertyGetCaseSensitive, &TStrings::PropertySetCaseSensitive> CaseSensitive;
+  RWProperty<bool, TStrings, &TStrings::PropertyGetSorted, &TStrings::PropertySetSorted> Sorted;
+  WOProperty<TDuplicatesEnum, TStrings, &TStrings::PropertySetDuplicates> Duplicates;
+  IndexedProperty<int, UnicodeString, TStrings, &TStrings::PropertyGetString, &TStrings::PropertySetString> Strings;
+  IndexedProperty<int, TObject *, TStrings, &TStrings::PropertyGetObject, &TStrings::PropertySetObject> Objects;
   IndexedProperty<int, UnicodeString, TStrings, &TStrings::PropertyGetName, &TStrings::PropertySetName> Names;
   IndexedProperty<UnicodeString, UnicodeString, TStrings, &TStrings::PropertyGetValue, &TStrings::PropertySetValue> Values;
 
@@ -394,10 +415,6 @@ public:
   virtual void __fastcall Delete(int Index);
   virtual void __fastcall InsertObject(int Index, const UnicodeString Key, TObject * AObject);
   void __fastcall InsertItem(int Index, const UnicodeString S, TObject * AObject);
-  bool __fastcall GetCaseSensitive() const;
-  void __fastcall SetCaseSensitive(bool value);
-  bool __fastcall GetSorted() const;
-  void __fastcall SetSorted(bool value);
   virtual void __fastcall Sort();
   virtual void __fastcall CustomSort(TStringListSortCompare ACompareFunc);
   void __fastcall QuickSort(int L, int R, TStringListSortCompare SCompare);
@@ -415,6 +432,10 @@ public:
   virtual int __fastcall CompareStrings(const UnicodeString S1, const UnicodeString S2);
 
 protected:
+  virtual bool __fastcall GetCaseSensitive() const;
+  virtual void __fastcall SetCaseSensitive(bool value);
+  virtual bool __fastcall GetSorted() const;
+  virtual void __fastcall SetSorted(bool value);
   virtual int __fastcall GetCount() const;
   virtual UnicodeString __fastcall GetStrings(int Index) const;
   virtual void __fastcall PutString(int Index, const UnicodeString S);

@@ -696,7 +696,7 @@ bool __fastcall TCustomIniFileStorage::DoOpenSubKey(const UnicodeString SubKey, 
     TStringList * Sections = new TStringList();
     std::auto_ptr<TStringList> SectionsPtr(Sections);
     {
-      Sections->SetSorted(true);
+      Sections->Sorted = true;
       FIniFile->ReadSections(Sections);
       UnicodeString NewKey = ExcludeTrailingBackslash(GetCurrentSubKey()+SubKey);
       if (Sections->Count)

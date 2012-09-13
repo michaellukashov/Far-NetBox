@@ -785,7 +785,7 @@ public:
     std::auto_ptr<TStringList> DumpLinesPtr(DumpLines);
     {
       DumpLines->LoadFromFile(FileName);
-      Dump = AnsiString(DumpLines->GetText());
+      Dump = AnsiString(DumpLines->Text);
     }
 
     SetCapacity(1 * 1024 * 1024); // 20480);

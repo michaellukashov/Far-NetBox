@@ -679,7 +679,7 @@ void __fastcall TSCPFileSystem::ReadCommandOutput(int Params, const UnicodeStrin
       if ((Params & coExpectNoOutput) && FOutput->Count)
       {
         if (!Message.IsEmpty()) { Message += L"\n"; }
-        Message += FOutput->GetText();
+        Message += FOutput->Text;
       }
       while (!Message.IsEmpty() && (Message.LastDelimiter(L"\n\r") == Message.Length()))
       {
@@ -776,7 +776,7 @@ void __fastcall TSCPFileSystem::ExecCommand2(TFSCommand Cmd, ...)
         ((MaxL >= 0) && (MaxL > static_cast<int>(FOutput->Count))))
     {
       FTerminal->TerminalError(::FmtLoadStr(INVALID_OUTPUT_ERROR,
-        FullCommand.c_str(), GetOutput()->GetText().c_str()));
+        FullCommand.c_str(), GetOutput()->Text.get().c_str()));
     }
   }
 }

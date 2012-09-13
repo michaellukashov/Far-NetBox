@@ -280,7 +280,7 @@ UnicodeString ExceptionLogString(Exception *E)
       if (MoreMessages)
       {
         Msg += L"\n" +
-          StringReplace(MoreMessages->GetText(), L"\r", L"", TReplaceFlags::Init(rfReplaceAll));
+          StringReplace(MoreMessages->Text, L"\r", L"", TReplaceFlags::Init(rfReplaceAll));
       }
     }
     return Msg;

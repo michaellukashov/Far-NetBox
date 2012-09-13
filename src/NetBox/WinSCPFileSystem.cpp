@@ -500,7 +500,7 @@ bool __fastcall TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int O
     TSessionData * Data = NULL;
     std::auto_ptr<TStringList> ChildPaths(new TStringList());
     {
-      ChildPaths->SetCaseSensitive(false);
+      ChildPaths->CaseSensitive = false;
       for (int Index = 0; Index < StoredSessions->Count; Index++)
       {
         Data = StoredSessions->GetSession(Index);
@@ -1418,8 +1418,8 @@ void /* __fastcall */ TWinSCPFileSystem::GetSynchronizeOptions(
   if (FLAGSET(Params, spSelectedOnly) && SynchronizeAllowSelectedOnly())
   {
     Options.Filter = new TStringList();
-    Options.Filter->SetCaseSensitive(false);
-    Options.Filter->SetDuplicates(dupAccept);
+    Options.Filter->CaseSensitive = false;
+    Options.Filter->Duplicates = dupAccept;
 
     if (GetPanelInfo()->GetSelectedCount() > 0)
     {
@@ -3070,7 +3070,7 @@ void __fastcall TWinSCPFileSystem::LogAuthentication(
   {
     int Width = 42;
     int Height = 11;
-    FarWrapText(::TrimRight(FAuthenticationLog->GetText()), AuthenticationLogLines, Width);
+    FarWrapText(::TrimRight(FAuthenticationLog->Text), AuthenticationLogLines, Width);
     int Count;
     UnicodeString Message;
     if (AuthenticationLogLines->Count == 0)
@@ -3086,7 +3086,7 @@ void __fastcall TWinSCPFileSystem::LogAuthentication(
       }
       AuthenticationLogLines->Strings(0, AuthenticationLogLines->Strings[0] +
         ::StringOfChar(' ', Width - AuthenticationLogLines->Strings[0].Length()));
-      Message = AnsiReplaceStr(AuthenticationLogLines->GetText(), L"\r", L"");
+      Message = AnsiReplaceStr(AuthenticationLogLines->Text, L"\r", L"");
       Count = AuthenticationLogLines->Count;
     }
 

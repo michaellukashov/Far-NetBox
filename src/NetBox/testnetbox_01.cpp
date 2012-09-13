@@ -219,16 +219,16 @@ BOOST_FIXTURE_TEST_CASE(test6, base_fixture_t)
   Lines.Add(L"aaa");
   // BOOST_TEST_MESSAGE("Lines = " << W2MB(Lines.GetText().c_str()).c_str());
   {
-    Lines.SetSorted(true);
+    Lines.Sorted = true;
     // BOOST_TEST_MESSAGE("Lines = " << W2MB(Lines.GetText().c_str()).c_str());
     BOOST_CHECK_EQUAL("aaa", W2MB(Lines.Strings[0].c_str()).c_str());
     BOOST_CHECK_EQUAL(2, Lines.GetCount());
   }
   {
-    Lines.SetSorted(false);
+    Lines.Sorted = false;
     Lines.Add(L"Aaa");
-    Lines.SetCaseSensitive(true);
-    Lines.SetSorted(true);
+    Lines.CaseSensitive = true;
+    Lines.Sorted = true;
     BOOST_CHECK_EQUAL(3, Lines.GetCount());
     // BOOST_TEST_MESSAGE("Lines = " << W2MB(Lines.GetText().c_str()).c_str());
     BOOST_CHECK_EQUAL("aaa", W2MB(Lines.Strings[0].c_str()).c_str());

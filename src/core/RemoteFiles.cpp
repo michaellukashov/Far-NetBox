@@ -1639,9 +1639,9 @@ void __fastcall TRemoteDirectory::SetIncludeThisDirectory(Boolean value)
 /* __fastcall */ TRemoteDirectoryCache::TRemoteDirectoryCache(): TStringList()
 {
   FSection = new TCriticalSection();
-  SetSorted(true);
-  SetDuplicates(dupError);
-  SetCaseSensitive(true);
+  Sorted = true;
+  Duplicates = dupError;
+  CaseSensitive = true;
   Self = this;
 }
 //---------------------------------------------------------------------------
@@ -1904,7 +1904,7 @@ void __fastcall TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data)
         Limited->Add(Strings[Index]);
         Index++;
       }
-      Data += Limited->GetText();
+      Data += Limited->Text;
     }
   }
   else

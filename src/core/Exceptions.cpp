@@ -104,7 +104,7 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   if (!MoreMessages.IsEmpty())
   {
     FMoreMessages = new TStringList();
-    FMoreMessages->SetText(MoreMessages);
+    FMoreMessages->Text = MoreMessages;
   }
 }
 //---------------------------------------------------------------------------

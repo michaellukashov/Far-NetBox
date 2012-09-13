@@ -780,7 +780,7 @@ void __fastcall TFarMessageDialog::Init(unsigned int AFlags,
     {
       MoreMessageLines = new TStringList();
       MoreMessageLinesPtr.reset(MoreMessageLines);
-      UnicodeString MoreMessages = FParams->MoreMessages->GetText();
+      UnicodeString MoreMessages = FParams->MoreMessages->Text;
       while (MoreMessages[MoreMessages.Length()] == L'\n' ||
              MoreMessages[MoreMessages.Length()] == L'\r')
       {
@@ -1050,7 +1050,7 @@ int __fastcall TCustomFarPlugin::FarMessage(unsigned int Flags,
     UnicodeString FullMessage = Message;
     if (Params->MoreMessages != NULL)
     {
-      FullMessage += UnicodeString(L"\n\x01\n") + Params->MoreMessages->GetText();
+      FullMessage += UnicodeString(L"\n\x01\n") + Params->MoreMessages->Text;
       while (FullMessage[FullMessage.Length()] == L'\n' ||
              FullMessage[FullMessage.Length()] == L'\r')
       {
@@ -1293,7 +1293,7 @@ void __fastcall TCustomFarPlugin::FarCopyToClipboard(TStrings * Strings)
     }
     else
     {
-      FarCopyToClipboard(Strings->GetText());
+      FarCopyToClipboard(Strings->Text);
     }
   }
 }
@@ -2935,7 +2935,7 @@ void __fastcall FarWrapText(const UnicodeString Text, TStrings * Result, size_t 
 {
   size_t TabSize = 8;
   TStringList Lines;
-  Lines.SetText(Text);
+  Lines.Text = Text;
   TStringList WrappedLines;
   for (int Index = 0; Index < Lines.Count; Index++)
   {
@@ -2947,7 +2947,7 @@ void __fastcall FarWrapText(const UnicodeString Text, TStrings * Result, size_t 
       // FIXME WrappedLine = ::WrapText(WrappedLine, MaxWidth);
       WrappedLine = ::ReplaceChar(WrappedLine, '\3', '\'');
       WrappedLine = ::ReplaceChar(WrappedLine, '\4', '\"');
-      WrappedLines.SetText(WrappedLine);
+      WrappedLines.Text = WrappedLine;
       for (int WrappedIndex = 0; WrappedIndex < WrappedLines.Count; WrappedIndex++)
       {
         UnicodeString FullLine = WrappedLines.Strings[WrappedIndex];

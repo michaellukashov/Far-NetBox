@@ -95,7 +95,7 @@ public:
 template <
   class T,
   class Object,
-  typename T (Object::*real_setter)(T)
+  typename void (Object::*real_setter)(T)
   >
 class WOProperty
 {
