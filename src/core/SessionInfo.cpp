@@ -1171,7 +1171,7 @@ void __fastcall TSessionLog::SetName(const UnicodeString value)
 //---------------------------------------------------------------------------
 int __fastcall TSessionLog::GetCount()
 {
-  return TStringList::Count;
+  return TStringList::GetCount();
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
