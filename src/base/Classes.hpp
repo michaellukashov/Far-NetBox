@@ -283,7 +283,6 @@ public:
   int __fastcall IndexOf(const UnicodeString S);
   virtual int __fastcall IndexOfName(const UnicodeString Name);
   UnicodeString __fastcall ExtractName(const UnicodeString S) const;
-  void __fastcall SetValue(const UnicodeString Name, const UnicodeString Value);
   void __fastcall AddStrings(TStrings * Strings);
   void __fastcall Append(const UnicodeString value);
   virtual void __fastcall Insert(int Index, const UnicodeString AString) = 0;
@@ -321,6 +320,7 @@ protected:
   virtual void __fastcall PutObject(int Index, TObject * AObject);
   const UnicodeString __fastcall GetName(int Index) const;
   const UnicodeString __fastcall GetValue(const UnicodeString Name);
+  void __fastcall SetValue(const UnicodeString Name, const UnicodeString Value);
   
 private:
   int PropertyGetCount() { return GetCount(); }
@@ -364,8 +364,7 @@ private:
   }
   void PropertySetValue(UnicodeString Index, UnicodeString Value)
   {
-    // SetValue(Index, Value);
-    Classes::Error(SNotImplemented, 2011);
+    SetValue(Index, Value);
   }
 
 public:
