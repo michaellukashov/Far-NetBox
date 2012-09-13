@@ -25,35 +25,41 @@ const TDayTable MonthDays[] =
   std::exception(E ? E->what() : ""),
   FMessage(E ? E->GetMessage() : L"")
 {
+  Message(this);
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ Exception::Exception(UnicodeString Msg) :
   std::exception(""),
   FMessage(Msg)
 {
+  Message(this);
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ Exception::Exception(const wchar_t *Msg) :
   std::exception(""),
   FMessage(Msg)
 {
+  Message(this);
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ Exception::Exception(std::exception * E) :
   std::exception(E ? E->what() : "")
 {
+  Message(this);
 }
 /* __fastcall */ Exception::Exception(UnicodeString Msg, int AHelpContext) :
   std::exception(""),
   FMessage(Msg)
 {
   // TODO: FHelpContext = AHelpContext
+  Message(this);
 }
 
 /* __fastcall */ Exception::Exception(int Ident) :
   std::exception()
 {
   // TODO: Fident = Ident;
+  Message(this);
 }
 
 //---------------------------------------------------------------------------
@@ -698,7 +704,7 @@ UnicodeString TranslateExceptionMessage(std::exception * E)
   {
     if (dynamic_cast<Exception *>(E) != NULL)
     {
-      return dynamic_cast<Exception *>(E)->GetMessage();
+      return dynamic_cast<Exception *>(E)->Message;
     }
     else
     {

@@ -513,7 +513,7 @@ void __fastcall TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 //---------------------------------------------------------------------------
 void __fastcall TWinSCPPlugin::ShowExtendedException(Exception * E)
 {
-  if (!E->GetMessage().IsEmpty())
+  if (!E->Message.get().IsEmpty())
   {
     if (E->InheritsFrom<Exception>())
     {

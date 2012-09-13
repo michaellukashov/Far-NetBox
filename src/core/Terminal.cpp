@@ -798,7 +798,7 @@ void __fastcall TTerminal::Open()
                     if (!FSecureShell->GetActive() && !FTunnelError.IsEmpty())
                     {
                       // the only case where we expect this to happen
-                      assert(E.GetMessage() == LoadStr(UNEXPECTED_CLOSE_ERROR));
+                      assert(E.Message.get() == LoadStr(UNEXPECTED_CLOSE_ERROR));
                       FatalError(&E, FMTLOAD(TUNNEL_ERROR, FTunnelError.c_str()));
                     }
                     else
@@ -909,7 +909,7 @@ void __fastcall TTerminal::Open()
     // }
     catch(Exception & E)
     {
-      LogEvent(FORMAT(L"Got error: \"%s\"", E.GetMessage().c_str()));
+      LogEvent(FORMAT(L"Got error: \"%s\"", E.Message.get().c_str()));
       // any exception while opening session is fatal
       FatalError(&E, L"");
     }
@@ -1182,9 +1182,9 @@ unsigned int __fastcall TTerminal::QueryUserException(const UnicodeString Query,
   {
     if (E != NULL)
     {
-      if (!E->GetMessage().IsEmpty() && !Query.IsEmpty())
+      if (!E->Message.get().IsEmpty() && !Query.IsEmpty())
       {
-        MoreMessages->Add(E->GetMessage());
+        MoreMessages->Add(E->Message);
       }
 
       ExtException * EE = dynamic_cast<ExtException*>(E);
@@ -1193,7 +1193,7 @@ unsigned int __fastcall TTerminal::QueryUserException(const UnicodeString Query,
         MoreMessages->AddStrings(EE->GetMoreMessages());
       }
     }
-    Result = QueryUser(!Query.IsEmpty() ? Query : UnicodeString(E ? E->GetMessage() : L""),
+    Result = QueryUser(!Query.IsEmpty() ? Query : UnicodeString(E ? E->Message.get() : L""),
       MoreMessages->Count ? MoreMessages : NULL,
       Answers, Params, QueryType);
   }

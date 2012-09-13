@@ -19,13 +19,13 @@ bool __fastcall ExceptionMessage(const Exception * E, UnicodeString & Message)
   {
     Message = LoadStr(ACCESS_VIOLATION_ERROR);
   }
-  else if (E->GetMessage().IsEmpty())
+  else if (E->Message.get().IsEmpty())
   {
     Result = false;
   }
   else
   {
-    Message = E->GetMessage();
+    Message = E->Message;
   }
   return Result;
 }
@@ -238,11 +238,11 @@ Exception * __fastcall CloneException(Exception * E)
   }
   else if (dynamic_cast<EAbort *>(E) != NULL)
   {
-    return new EAbort(E->GetMessage());
+    return new EAbort(E->Message.get());
   }
   else
   {
-    return new Exception(E->GetMessage());
+    return new Exception(E->Message);
   }
 }
 //---------------------------------------------------------------------------
@@ -258,7 +258,7 @@ void __fastcall RethrowException(Exception * E)
   }
   else if (dynamic_cast<EAbort *>(E) != NULL)
   {
-    throw EAbort(E->GetMessage());
+    throw EAbort(E->Message.get());
   }
   else
   {

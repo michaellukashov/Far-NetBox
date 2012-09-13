@@ -270,7 +270,7 @@ UnicodeString ExceptionLogString(Exception *E)
   {
     UnicodeString Msg;
 #ifndef _MSC_VER
-    Msg = FORMAT(L"(%s) %s", (E->ClassName(), E->GetMessage().c_str()));
+    Msg = FORMAT(L"(%s) %s", (E->ClassName(), E->Message.c_str()));
 #else
     Msg = FORMAT(L"%s", ::MB2W(E->what()).c_str());
 #endif
@@ -807,7 +807,7 @@ TDateTime __fastcall EncodeDateVerbose(Word Year, Word Month, Word Day)
   }
   catch (EConvertError & E)
   {
-    throw EConvertError(FORMAT(L"%s [%04u-%02u-%02u]", E.GetMessage().c_str(), int(Year), int(Month), int(Day)));
+    throw EConvertError(FORMAT(L"%s [%04u-%02u-%02u]", E.Message.get().c_str(), int(Year), int(Month), int(Day)));
   }
   return TDateTime();
 }
@@ -820,7 +820,7 @@ TDateTime __fastcall EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec)
   }
   catch (EConvertError & E)
   {
-    throw EConvertError(FORMAT(L"%s [%02u:%02u:%02u.%04u]", E.GetMessage().c_str(), int(Hour), int(Min), int(Sec), int(MSec)));
+    throw EConvertError(FORMAT(L"%s [%02u:%02u:%02u.%04u]", E.Message.get().c_str(), int(Hour), int(Min), int(Sec), int(MSec)));
   }
   return TDateTime();
 }

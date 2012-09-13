@@ -2482,7 +2482,7 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
               catch (Exception &E)
               {
                 // In this step we can still cancel transfer, so we do it
-                SCPError(E.GetMessage(), false);
+                SCPError(E.Message, false);
                 throw;
               }
 
@@ -2623,7 +2623,7 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
     }
     catch (EScpSkipFile &E)
     {
-      SCPSendError(E.GetMessage(), false);
+      SCPSendError(E.Message, false);
       Success = false;
       if (!FTerminal->HandleException(&E)) { throw; }
     }

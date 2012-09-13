@@ -27,9 +27,18 @@ public:
   template<typename T>
   bool InheritsFrom() const { return dynamic_cast<const T *>(this) != NULL; }
 
+protected:
   // UnicodeString GetHelpKeyword() const { return FHelpKeyword; }
   const UnicodeString GetMessage() const { return FMessage; }
   void SetMessage(const UnicodeString & Value) { FMessage = Value; }
+
+private:
+  UnicodeString PropertyGetMessage() { return GetMessage(); }
+  void PropertySetMessage(UnicodeString Value) { SetMessage(Value); }
+
+public:
+  RWProperty<UnicodeString, Exception, &Exception::PropertyGetMessage, &Exception::PropertySetMessage> Message;
+
 protected:
   UnicodeString FMessage;
   // UnicodeString FHelpKeyword;
