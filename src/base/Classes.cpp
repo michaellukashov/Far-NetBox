@@ -1607,9 +1607,13 @@ TRegistry::TRegistry() :
   FCloseRootKey(false),
   FAccess(KEY_ALL_ACCESS)
 {
+  // LazyWrite = True;
+  Access(this);
+  CurrentKey(this);
+  RootKey(this);
+
   SetRootKey(HKEY_CURRENT_USER);
   SetAccess(KEY_ALL_ACCESS);
-  // LazyWrite = True;
 }
 
 TRegistry::~TRegistry()

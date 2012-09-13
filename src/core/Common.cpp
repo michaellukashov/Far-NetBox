@@ -1786,10 +1786,10 @@ UnicodeString __fastcall WindowsProductName()
 {
   UnicodeString Result;
   TRegistry * Registry = new TRegistry();
-  Registry->SetAccess(KEY_READ);
+  Registry->Access = KEY_READ;
   try
   {
-    Registry->SetRootKey(HKEY_LOCAL_MACHINE);
+    Registry->RootKey = HKEY_LOCAL_MACHINE;
     if (Registry->OpenKey("SOFTWARE", false) &&
         Registry->OpenKey("Microsoft", false) &&
         Registry->OpenKey("Windows NT", false) &&

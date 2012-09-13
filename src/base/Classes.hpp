@@ -703,12 +703,8 @@ class TRegistry
 public:
   TRegistry();
   ~TRegistry();
-  void SetAccess(int access);
-  void SetRootKey(HKEY ARootKey);
   void GetValueNames(TStrings * Names) const;
   void GetKeyNames(TStrings * Names) const;
-  HKEY GetCurrentKey() const;
-  HKEY GetRootKey() const;
   void CloseKey();
   bool OpenKey(const UnicodeString key, bool CanCreate);
   bool DeleteKey(const UnicodeString key);
@@ -747,6 +743,23 @@ private:
               DWORD BufSize, TRegDataType & RegData) const;
   void PutData(const UnicodeString Name, const void * Buffer,
                int BufSize, TRegDataType RegData);
+protected:
+  void SetAccess(int Value);
+  HKEY GetCurrentKey() const;
+  HKEY GetRootKey() const;
+  void SetRootKey(HKEY ARootKey);
+
+private:
+  void PropertySetAccess(int Value) { SetAccess(Value); }
+  HKEY PropertyGetCurrentKey() { return GetCurrentKey(); }
+  HKEY PropertyGetRootKey() { return GetRootKey(); }
+  void PropertySetRootKey(HKEY Value) { SetRootKey(Value); }
+
+public:
+  WOProperty<int, TRegistry, &TRegistry::PropertySetAccess> Access;
+  ROProperty<HKEY, TRegistry, &TRegistry::PropertyGetCurrentKey> CurrentKey;
+  RWProperty<HKEY, TRegistry, &TRegistry::PropertyGetRootKey, &TRegistry::PropertySetRootKey> RootKey;
+
 private:
   HKEY FCurrentKey;
   HKEY FRootKey;
