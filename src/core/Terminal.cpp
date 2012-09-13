@@ -3297,7 +3297,7 @@ void /* __fastcall */ TTerminal::RenameFile(const TRemoteFile * File,
       UnicodeString QuestionFmt;
       if (DuplicateFile->GetIsDirectory())
       {
-        QuestionFmt = LoadStr(PROMPT_DIRECTORY_OVERWRITE);
+        QuestionFmt = LoadStr(DIRECTORY_OVERWRITE);
       }
       else
       {

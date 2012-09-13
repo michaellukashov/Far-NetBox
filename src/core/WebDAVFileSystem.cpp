@@ -13367,7 +13367,7 @@ void __fastcall TWebDAVFileSystem::WebDAVSource(const UnicodeString FileName,
       unsigned int Answer = 0;
       if (File->GetIsDirectory())
       {
-        UnicodeString Message = FMTLOAD(PROMPT_DIRECTORY_OVERWRITE, RealFileName.c_str());
+        UnicodeString Message = FMTLOAD(DIRECTORY_OVERWRITE, RealFileName.c_str());
         TQueryParams QueryParams(qpNeverAskAgainCheck);
         SUSPEND_OPERATION (
           Answer = FTerminal->ConfirmFileOverwrite(
@@ -13779,7 +13779,7 @@ void __fastcall TWebDAVFileSystem::Sink(const UnicodeString FileName,
     if (DirectoryExists(DestFullName))
     {
       unsigned int Answer = 0;
-      UnicodeString Message = FMTLOAD(PROMPT_DIRECTORY_OVERWRITE, FileNameOnly.c_str());
+      UnicodeString Message = FMTLOAD(DIRECTORY_OVERWRITE, FileNameOnly.c_str());
       TQueryParams QueryParams(qpNeverAskAgainCheck);
       SUSPEND_OPERATION (
         Answer = FTerminal->ConfirmFileOverwrite(

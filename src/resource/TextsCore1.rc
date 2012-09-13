@@ -187,7 +187,7 @@ BEGIN
   CONFIRM_PROLONG_TIMEOUT3, "Host is not communicating for %d seconds.\n\nWait for another %d seconds?"
   PROMPT_KEY_PASSPHRASE, "&Passphrase for key '%s':"
   PROMPT_FILE_OVERWRITE, "File '%s' already exists. Overwrite?"
-  PROMPT_DIRECTORY_OVERWRITE, "Directory '%s' already exists. Overwrite?"
+  DIRECTORY_OVERWRITE, "Directory '%s' already exists. Overwrite?"
   CIPHER_BELOW_TRESHOLD, "The first %scipher supported by the server is %s, which is below the configured warning threshold.\n\nDo you want to continue with this connection?"
   CIPHER_TYPE_BOTH, ""
   CIPHER_TYPE_CS, "client-to-server "

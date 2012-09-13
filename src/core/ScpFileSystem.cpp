@@ -1509,7 +1509,7 @@ void __fastcall TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
           unsigned int Answer;
           if (File->GetIsDirectory())
           {
-            UnicodeString Message = FMTLOAD(PROMPT_DIRECTORY_OVERWRITE, FileNameOnly.c_str());
+            UnicodeString Message = FMTLOAD(DIRECTORY_OVERWRITE, FileNameOnly.c_str());
             TQueryParams QueryParams(qpNeverAskAgainCheck);
             SUSPEND_OPERATION
             (
