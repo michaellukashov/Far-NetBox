@@ -1244,7 +1244,7 @@ void /* __fastcall */ TTerminal::ShowExtendedException(Exception * E)
   }
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ void TTerminal::DoInformation(const UnicodeString & Str, bool Status,
+void /* __fastcall */ TTerminal::DoInformation(const UnicodeString & Str, bool Status,
   int Phase)
 {
   if (GetOnInformation())
@@ -3759,7 +3759,7 @@ void /* __fastcall */ TTerminal::DoAnyCommand(const UnicodeString Command,
       RollbackAction(*Action, NULL, &E);
     }
     if (GetExceptionOnFail() || E.InheritsFrom<EFatal>()) { throw; }
-      else { HandleExtendedException(&E); }
+    else { HandleExtendedException(&E); }
   }
 }
 //---------------------------------------------------------------------------

@@ -11733,7 +11733,7 @@ server_ssl_callback(void * userdata,
   apr_uint32_t * webdav_failures = static_cast<apr_uint32_t *>(apr_pcalloc(ras->pool, sizeof(*webdav_failures)));
 
   /* Construct the realmstring, e.g. https://svn.collab.net:80 */
-  const char * realmstring = apr_pstrdup(ras->pool, FORMAT("%s://%s:%d", ras->root.scheme,
+  const char * realmstring = apr_pstrdup(ras->pool, Format("%s://%s:%d", ras->root.scheme,
                                          ras->root.host, ras->root.port).c_str());
 
   *webdav_failures = convert_neon_failures(failures);
