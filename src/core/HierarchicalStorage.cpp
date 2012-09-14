@@ -125,8 +125,14 @@ void __fastcall THierarchicalStorage::SetAccessMode(TStorageAccessMode value)
 //---------------------------------------------------------------------------
 UnicodeString __fastcall THierarchicalStorage::GetCurrentSubKeyMunged()
 {
-  if (FKeyHistory->Count) { return FKeyHistory->Strings[FKeyHistory->Count-1]; }
-  else { return L""; }
+  if (FKeyHistory->Count)
+  {
+    return FKeyHistory->Strings[FKeyHistory->Count-1];
+  }
+  else
+  {
+    return L"";
+  }
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall THierarchicalStorage::GetCurrentSubKey()
@@ -191,8 +197,10 @@ bool __fastcall THierarchicalStorage::OpenSubKey(UnicodeString Key, bool CanCrea
 //---------------------------------------------------------------------------
 void __fastcall THierarchicalStorage::CloseSubKey()
 {
-  if (FKeyHistory->Count == 0) throw Exception(L"");
-  else FKeyHistory->Delete(FKeyHistory->Count-1);
+  if (FKeyHistory->Count == 0)
+    throw Exception(L"");
+  else
+    FKeyHistory->Delete(FKeyHistory->Count-1);
 }
 //---------------------------------------------------------------------------
 void __fastcall THierarchicalStorage::ClearSubKeys()
@@ -988,7 +996,7 @@ void __fastcall TIniFileStorage::Flush()
           }
           ,
           {
-            CloseHandle(Handle);
+            ::CloseHandle(Handle);
             delete Stream;
           }
           );

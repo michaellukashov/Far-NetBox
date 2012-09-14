@@ -400,8 +400,7 @@ int __fastcall FakeFileImageIndex(UnicodeString FileName, unsigned long Attrs,
 {
   Attrs |= FILE_ATTRIBUTE_NORMAL;
 
-  // TSHFileInfo SHFileInfo;
-  SHFILEINFOW SHFileInfo = {0};
+  TSHFileInfoW SHFileInfo = {0};
   // On Win2k we get icon of "ZIP drive" for ".." (parent directory)
   if ((FileName == L"..") ||
       ((FileName.Length() == 2) && (FileName[2] == L':') &&

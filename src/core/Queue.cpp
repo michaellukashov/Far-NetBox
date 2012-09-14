@@ -41,6 +41,7 @@ public:
 
   TNotifyEvent OnNotify;
   TObject * Sender;
+
 private:
   TNotifyAction(const TNotifyAction &);
   TNotifyAction & operator = (const TNotifyAction &);
@@ -105,6 +106,7 @@ public:
   const TQueryParams * Params;
   unsigned int Answer;
   TQueryType Type;
+
 private:
   TQueryUserAction(const TQueryUserAction &);
   TQueryUserAction & operator = (const TQueryUserAction &);
@@ -144,6 +146,7 @@ public:
   TStrings * Prompts;
   TStrings * Results;
   bool Result;
+
 private:
   TPromptUserAction(const TPromptUserAction &);
   TPromptUserAction & operator = (const TPromptUserAction &);
@@ -170,6 +173,7 @@ public:
   TExtendedExceptionEvent OnShowExtendedException;
   TTerminal * Terminal;
   Exception * E;
+
 private:
   TShowExtendedExceptionAction(const TShowExtendedExceptionAction &);
   TShowExtendedExceptionAction & operator = (const TShowExtendedExceptionAction &);
@@ -200,6 +204,7 @@ public:
   UnicodeString Banner;
   bool NeverShowAgain;
   int Options;
+
 private:
   TDisplayBannerAction(const TDisplayBannerAction &);
   TDisplayBannerAction & operator = (const TDisplayBannerAction &);
@@ -226,6 +231,7 @@ public:
   TReadDirectoryEvent OnReadDirectory;
   TObject * Sender;
   bool ReloadOnly;
+
 private:
   TReadDirectoryAction(const TReadDirectoryAction &);
   TReadDirectoryAction & operator = (const TReadDirectoryAction &);
@@ -254,6 +260,7 @@ public:
   TObject * Sender;
   int Progress;
   bool Cancel;
+
 private:
   TReadDirectoryProgressAction(const TReadDirectoryProgressAction &);
   TReadDirectoryProgressAction & operator = (const TReadDirectoryProgressAction &);
@@ -329,10 +336,6 @@ int __fastcall TSimpleThread::ThreadProc(void * Thread)
 /* __fastcall */ TSimpleThread::TSimpleThread() :
   FThread(NULL), FFinished(true)
 {
-#ifndef _MSC_VER
-  FThread = reinterpret_cast<HANDLE>(
-    StartThread(NULL, 0, ThreadProc, this, CREATE_SUSPENDED, FThreadId));
-#endif
 }
 //---------------------------------------------------------------------------
 void __fastcall TSimpleThread::Init()
@@ -340,7 +343,6 @@ void __fastcall TSimpleThread::Init()
   FThread = reinterpret_cast<HANDLE>(
     StartThread(NULL, 0, this, CREATE_SUSPENDED, FThreadId));
 }
-
 //---------------------------------------------------------------------------
 /* __fastcall */ TSimpleThread::~TSimpleThread()
 {
@@ -390,15 +392,6 @@ void __fastcall TSimpleThread::WaitFor(unsigned int Milliseconds)
   FEvent(NULL),
   FTerminated(true)
 {
-#ifndef _MSC_VER
-  FEvent = CreateEvent(NULL, false, false, NULL);
-  assert(FEvent != NULL);
-
-  if (LowPriority)
-  {
-    ::SetThreadPriority(FThread, THREAD_PRIORITY_BELOW_NORMAL);
-  }
-#endif
 }
 //---------------------------------------------------------------------------
 void __fastcall TSignalThread::Init(bool LowPriority)
@@ -483,28 +476,6 @@ void __fastcall TSignalThread::Terminate()
   FOverallTerminals(0), FTransfersLimit(2), FEnabled(true)
 {
   Self = this;
-#ifndef _MSC_VER
-  FOnQueryUser = NULL;
-  FOnPromptUser = NULL;
-  FOnShowExtendedException = NULL;
-  FOnQueueItemUpdate = NULL;
-  FOnListUpdate = NULL;
-  FOnEvent = NULL;
-  FLastIdle = Now();
-  FIdleInterval = EncodeTimeVerbose(0, 0, 2, 0);
-
-  assert(Terminal != NULL);
-  FSessionData = new TSessionData(L"");
-  FSessionData->Assign(Terminal->GetSessionData());
-
-  FItems = new TList();
-  FTerminals = new TList();
-  FForcedItems = new TList();
-
-  FItemsSection = new TCriticalSection();
-
-  Start();
-#endif
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminalQueue::Init()
@@ -1645,9 +1616,11 @@ void __fastcall TQueueItem::Execute(TTerminalItem * TerminalItem)
   }
   ,
   {
-    TGuard Guard(Self->FSection);
-    delete Self->FProgressData;
-    Self->FProgressData = NULL;
+    {
+      TGuard Guard(Self->FSection);
+      delete Self->FProgressData;
+      Self->FProgressData = NULL;
+    }
   }
   );
 }
@@ -2095,27 +2068,6 @@ void __fastcall TTerminalThread::Init()
 
   CloseHandle(FActionEvent);
 
-#ifndef _MSC_VER
-  assert(FTerminal->OnInformation == TerminalInformation);
-  assert(FTerminal->OnQueryUser == TerminalQueryUser);
-  assert(FTerminal->OnPromptUser == TerminalPromptUser);
-  assert(FTerminal->OnShowExtendedException == TerminalShowExtendedException);
-  assert(FTerminal->OnDisplayBanner == TerminalDisplayBanner);
-  assert(FTerminal->OnChangeDirectory == TerminalChangeDirectory);
-  assert(FTerminal->OnReadDirectory == TerminalReadDirectory);
-  assert(FTerminal->OnStartReadDirectory == TerminalStartReadDirectory);
-  assert(FTerminal->OnReadDirectoryProgress == TerminalReadDirectoryProgress);
-
-  FTerminal->OnInformation = FOnInformation;
-  FTerminal->OnQueryUser = FOnQueryUser;
-  FTerminal->OnPromptUser = FOnPromptUser;
-  FTerminal->OnShowExtendedException = FOnShowExtendedException;
-  FTerminal->OnDisplayBanner = FOnDisplayBanner;
-  FTerminal->OnChangeDirectory = FOnChangeDirectory;
-  FTerminal->OnReadDirectory = FOnReadDirectory;
-  FTerminal->OnStartReadDirectory = FOnStartReadDirectory;
-  FTerminal->OnReadDirectoryProgress = FOnReadDirectoryProgress;
-#else
   assert(FTerminal->GetOnInformation() == MAKE_CALLBACK4(TTerminalThread::TerminalInformation, this));
   assert(FTerminal->GetOnQueryUser() == MAKE_CALLBACK8(TTerminalThread::TerminalQueryUser, this));
   assert(FTerminal->GetOnPromptUser() == MAKE_CALLBACK8(TTerminalThread::TerminalPromptUser, this));
@@ -2135,7 +2087,6 @@ void __fastcall TTerminalThread::Init()
   FTerminal->SetOnReadDirectory(FOnReadDirectory);
   FTerminal->SetOnStartReadDirectory(FOnStartReadDirectory);
   FTerminal->SetOnReadDirectoryProgress(FOnReadDirectoryProgress);
-#endif
 
   delete FSection;
 }

@@ -173,6 +173,7 @@
   }
 
 #define TShellExecuteInfoW _SHELLEXECUTEINFOW
+#define TSHFileInfoW SHFILEINFOW
 
 #endif /* _MSC_VER */
 

@@ -7,7 +7,7 @@
 enum TStorage { stDetect, stRegistry, stIniFile, stNul, stXmlFile };
 enum TStorageAccessMode { smRead, smReadWrite };
 //---------------------------------------------------------------------------
-class THierarchicalStorage : private boost::noncopyable
+class THierarchicalStorage
 {
 public:
   explicit /* __fastcall */ THierarchicalStorage(const UnicodeString AStorage);
@@ -135,9 +135,7 @@ private:
   TRegistry * FRegistry;
   int FFailed;
 
-#ifndef _MSC_VER
-  void __fastcall Init();
-#endif
+  // void __fastcall Init();
 };
 #ifndef _MSC_VER
 //---------------------------------------------------------------------------

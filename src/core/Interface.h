@@ -5,7 +5,7 @@
 #include "coredefines.hpp"
 #include "Configuration.h"
 #include "SessionData.h"
-#define HELP_NONE L""
+#define HELP_NONE ""
 //---------------------------------------------------------------------------
 TConfiguration * __fastcall CreateConfiguration();
 
@@ -16,8 +16,8 @@ void __fastcall Busy(bool Start);
 UnicodeString __fastcall AppNameString();
 UnicodeString __fastcall SshVersionString();
 void __fastcall CopyToClipboard(UnicodeString Text);
-int __fastcall StartThread(void * SecurityAttributes, unsigned int StackSize,
-  /* TThreadFunc ThreadFunc, */ void * Parameter, unsigned int CreationFlags,
+int __fastcall StartThread(void * SecurityAttributes, unsigned StackSize,
+  /* TThreadFunc ThreadFunc, */ void * Parameter, unsigned CreationFlags,
   TThreadID & ThreadId);
 
 const unsigned int qaYes =      0x00000001;
