@@ -465,7 +465,7 @@ public:
       if (Properties->Valid.Contains(vpRights))
       {
         Valid = (TValid)(Valid | valRights);
-        TRights Rights(BaseRights);
+        TRights Rights = TRights(BaseRights);
         Rights |= Properties->Rights.GetNumberSet();
         Rights &= static_cast<unsigned short>(~Properties->Rights.GetNumberUnset());
         if (IsDirectory && Properties->AddXToDirectories)
@@ -874,8 +874,7 @@ private:
     Self = this;
   }
 
-public:
-  void __fastcall AssignNumber()
+  void AssignNumber()
   {
     // this is not strictly thread-safe, but as it is accessed from multiple
     // threads only for multiple connection, it is not problem if two threads get
@@ -884,6 +883,7 @@ public:
     FMessageCounter++;
   }
 
+public:
   unsigned char GetRequestType()
   {
     if (FMessageNumber != SFTPNoMessageNumber)
@@ -2380,7 +2380,7 @@ void __fastcall TSFTPFileSystem::UnreserveResponse(TSFTPPacket * Response)
       // we probably do not remove the item at all, because
       // we must remember that the response was expected, so we skip it
       // in receivepacket()
-      FPacketReservations->Items(Reservation, NULL);
+      FPacketReservations->Items[Reservation] = NULL;
     }
   }
 }

@@ -247,7 +247,7 @@ public:
   void __fastcall SetPuttySession(UnicodeString value);
   TDateTime __fastcall GetIgnoreCancelBeforeFinish() { return FIgnoreCancelBeforeFinish; }
   void __fastcall SetIgnoreCancelBeforeFinish(TDateTime value) { FIgnoreCancelBeforeFinish = value; }
-  TGUICopyParamType & __fastcall GetDefaultCopyParam() { return FDefaultCopyParam; }
+  TGUICopyParamType __fastcall GetDefaultCopyParam() { return FDefaultCopyParam; }
   bool __fastcall GetBeepOnFinish() { return FBeepOnFinish; }
   void __fastcall SetBeepOnFinish(bool value) { FBeepOnFinish = value; }
   TDateTime __fastcall GetBeepOnFinishAfter() { return FBeepOnFinishAfter; }

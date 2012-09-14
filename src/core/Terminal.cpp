@@ -1138,7 +1138,7 @@ bool /* __fastcall */ TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKi
   }
 
   if (AResult && (Configuration->GetRememberPassword()) &&
-      (Prompts->Count == 1) && !(Prompts->Objects[0] != NULL) &&
+      (Prompts->Count == 1) && !(Prompts->Objects[0]) &&
       ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
        (Kind == pkTIS) || (Kind == pkCryptoCard)))
   {
@@ -5045,7 +5045,7 @@ bool /* __fastcall */ TTerminal::CopyToLocal(TStrings * FilesToCopy,
         );
       }
       OperationProgress.Start(((Params & cpDelete) != 0 ? foMove : foCopy), osRemote,
-        FilesToCopy->Count, (Params & cpTemporary) > 0, TargetDir, CopyParam->GetCPSLimit());
+        FilesToCopy->Count, (Params & cpTemporary) != 0, TargetDir, CopyParam->GetCPSLimit());
 
       FOperationProgress = &OperationProgress;
       TRY_FINALLY2 (Self, OperationProgress,
@@ -5256,7 +5256,7 @@ bool /* __fastcall */ TSecondaryTerminal::DoPromptUser(TSessionData * Data,
   bool AResult = false;
 
 
-  if ((Prompts->Count == 1) && !(Prompts->Objects[0] != NULL) &&
+  if ((Prompts->Count == 1) && !(Prompts->Objects[0]) &&
       ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
        (Kind == pkTIS) || (Kind == pkCryptoCard)))
   {
