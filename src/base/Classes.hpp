@@ -859,6 +859,11 @@ public:
     return S;
   }
 
+  DelphiSet<T>& operator << (T Item)
+  {
+    return DelphiSet<T>::Init(Item);
+  }
+
   DelphiSet<T>& Add(const T Value)
   {
     FSet.insert(Value);
