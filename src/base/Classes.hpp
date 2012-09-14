@@ -317,7 +317,7 @@ protected:
   virtual UnicodeString & __fastcall GetString(int Index) = 0;
   virtual UnicodeString __fastcall GetStrings(int Index) const = 0;
   virtual void __fastcall PutString(int Index, const UnicodeString S) = 0;
-  virtual TObject * __fastcall GetObjects(int Index);
+  virtual TObject *& __fastcall GetObjects(int Index) = 0;
   virtual void __fastcall PutObject(int Index, TObject * AObject);
   const UnicodeString __fastcall GetName(int Index) const;
   const UnicodeString __fastcall GetValue(const UnicodeString Name);
@@ -342,7 +342,7 @@ private:
   {
     PutString(Index, Value);
   }
-  TObject * PropertyGetObject(int Index)
+  TObject *& PropertyGetObject(int Index)
   {
     return GetObjects(Index);
   }
@@ -376,7 +376,7 @@ public:
   RWProperty<bool, TStrings, &TStrings::PropertyGetSorted, &TStrings::PropertySetSorted> Sorted;
   WOProperty<TDuplicatesEnum, TStrings, &TStrings::PropertySetDuplicates> Duplicates;
   IndexedProperty2<int, UnicodeString, TStrings, &TStrings::PropertyGetString, &TStrings::PropertySetString> Strings;
-  IndexedProperty<int, TObject *, TStrings, &TStrings::PropertyGetObject, &TStrings::PropertySetObject> Objects;
+  IndexedProperty2<int, TObject *, TStrings, &TStrings::PropertyGetObject, &TStrings::PropertySetObject> Objects;
   IndexedProperty<int, UnicodeString, TStrings, &TStrings::PropertyGetName, &TStrings::PropertySetName> Names;
   IndexedProperty<UnicodeString, UnicodeString, TStrings, &TStrings::PropertyGetValue, &TStrings::PropertySetValue> Values;
 
@@ -440,7 +440,7 @@ protected:
   virtual UnicodeString & __fastcall GetString(int Index);
   virtual UnicodeString __fastcall GetStrings(int Index) const;
   virtual void __fastcall PutString(int Index, const UnicodeString S);
-  virtual TObject * __fastcall GetObjects(int Index);
+  virtual TObject *& __fastcall GetObjects(int Index);
   virtual void __fastcall PutObject(int Index, TObject * AObject);
 
 private:

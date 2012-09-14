@@ -1185,9 +1185,9 @@ int __fastcall TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeString Ti
       Result = MenuItems[ResultItem].UserData;
       if (Selected >= 0)
       {
-        Items->Objects(Selected, (TObject *)(reinterpret_cast<size_t>(Items->Objects[Selected]) & ~MIF_SELECTED));
+        Items->Objects[Selected] = reinterpret_cast<TObject *>(reinterpret_cast<size_t>(Items->Objects[Selected]) & ~MIF_SELECTED);
       }
-      Items->Objects(Result, (TObject *)(reinterpret_cast<size_t>(Items->Objects[Result]) | MIF_SELECTED));
+      Items->Objects[Result] = reinterpret_cast<TObject *>(reinterpret_cast<size_t>(Items->Objects[Result]) | MIF_SELECTED);
     }
     else
     {

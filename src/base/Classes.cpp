@@ -579,12 +579,6 @@ void TStrings::SetUpdateState(bool Updating)
   (void)Updating;
 }
 
-TObject * TStrings::GetObjects(int Index)
-{
-  (void)Index;
-  return NULL;
-}
-
 int TStrings::AddObject(const UnicodeString S, TObject * AObject)
 {
   int Result = Add(S);
@@ -915,7 +909,7 @@ void TStringList::Delete(int Index)
   FList.erase(FList.begin() + Index);
   Changed();
 }
-TObject * TStringList::GetObjects(int Index)
+TObject *& TStringList::GetObjects(int Index)
 {
   if ((Index == NPOS) || ((size_t)Index >= FList.size()))
   {
