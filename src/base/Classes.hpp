@@ -178,7 +178,7 @@ public:
   TList();
   virtual ~TList();
   void * operator [](int Index) const;
-  void * GetItem(int Index) const;
+  void *& GetItem(int Index);
   void SetItem(int Index, void * Item);
   int Add(void * value);
   void * Extract(void * item);
@@ -199,7 +199,7 @@ protected:
 private:
   int PropertyGetCount() { return GetCount(); }
   void PropertySetCount(int Value) { SetCount(Value); }
-  void * PropertyGetItem(int Index)
+  void *& PropertyGetItem(int Index)
   {
     return GetItem(Index);
   }
@@ -210,7 +210,7 @@ private:
 
 public:
   RWProperty<int, TList, &TList::PropertyGetCount, &TList::PropertySetCount> Count;
-  IndexedProperty2<int, TList, &TList::PropertyGetItem, &TList::PropertySetItem> Items;
+  IndexedPropertyVoid<int, TList, &TList::PropertyGetItem, &TList::PropertySetItem> Items;
 
 private:
   std::vector<void *> FList;
@@ -223,7 +223,7 @@ public:
   TObjectList();
   virtual ~TObjectList();
   TObject * operator [](int Index) const;
-  TObject * GetItem(int Index) const;
+  TObject *& GetItem(int Index);
   void SetItem(int Index, TObject * Value);
   int Add(TObject * value);
   int Remove(TObject * value);
@@ -239,7 +239,7 @@ public:
   virtual void __fastcall Notify(void * Ptr, int Action);
 
 private:
-  TObject * PropertyGetItem(int Index)
+  TObject *& PropertyGetItem(int Index)
   {
     return GetItem(Index);
   }
@@ -249,7 +249,7 @@ private:
   }
 
 public:
-  IndexedProperty<int, TObject *, TObjectList, &TObjectList::PropertyGetItem, &TObjectList::PropertySetItem > Items;
+  IndexedProperty2<int, TObject *, TObjectList, &TObjectList::PropertyGetItem, &TObjectList::PropertySetItem > Items;
 private:
   bool FOwnsObjects;
 };
@@ -314,6 +314,7 @@ protected:
   virtual void __fastcall SetSorted(bool value) = 0;
   void __fastcall SetDuplicates(TDuplicatesEnum value);
   virtual int __fastcall GetCount() const = 0;
+  virtual UnicodeString & __fastcall GetString(int Index) = 0;
   virtual UnicodeString __fastcall GetStrings(int Index) const = 0;
   virtual void __fastcall PutString(int Index, const UnicodeString S) = 0;
   virtual TObject * __fastcall GetObjects(int Index);
@@ -333,9 +334,9 @@ private:
   bool PropertyGetSorted() { return GetSorted(); }
   void PropertySetSorted(bool Value) { SetSorted(Value); }
   void PropertySetDuplicates(TDuplicatesEnum Value) { SetDuplicates(Value); }
-  UnicodeString PropertyGetString(int Index)
+  UnicodeString & PropertyGetString(int Index)
   {
-    return GetStrings(Index);
+    return GetString(Index);
   }
   void PropertySetString(int Index, UnicodeString Value)
   {
@@ -374,7 +375,7 @@ public:
   RWProperty<bool, TStrings, &TStrings::PropertyGetCaseSensitive, &TStrings::PropertySetCaseSensitive> CaseSensitive;
   RWProperty<bool, TStrings, &TStrings::PropertyGetSorted, &TStrings::PropertySetSorted> Sorted;
   WOProperty<TDuplicatesEnum, TStrings, &TStrings::PropertySetDuplicates> Duplicates;
-  IndexedProperty<int, UnicodeString, TStrings, &TStrings::PropertyGetString, &TStrings::PropertySetString> Strings;
+  IndexedProperty2<int, UnicodeString, TStrings, &TStrings::PropertyGetString, &TStrings::PropertySetString> Strings;
   IndexedProperty<int, TObject *, TStrings, &TStrings::PropertyGetObject, &TStrings::PropertySetObject> Objects;
   IndexedProperty<int, UnicodeString, TStrings, &TStrings::PropertyGetName, &TStrings::PropertySetName> Names;
   IndexedProperty<UnicodeString, UnicodeString, TStrings, &TStrings::PropertyGetValue, &TStrings::PropertySetValue> Values;
@@ -436,6 +437,7 @@ protected:
   virtual bool __fastcall GetSorted() const;
   virtual void __fastcall SetSorted(bool value);
   virtual int __fastcall GetCount() const;
+  virtual UnicodeString & __fastcall GetString(int Index);
   virtual UnicodeString __fastcall GetStrings(int Index) const;
   virtual void __fastcall PutString(int Index, const UnicodeString S);
   virtual TObject * __fastcall GetObjects(int Index);

@@ -320,10 +320,10 @@ bool __fastcall TCopyParamList::CompareItem(int Index,
 //---------------------------------------------------------------------------
 void __fastcall TCopyParamList::Clear()
 {
-  for (int i = GetCount() - 1; i != -1; i--)
+  for (int i = 0; i < GetCount(); i++)
   {
-    FCopyParams->Delete(i);
-    FRules->Delete(i);
+    delete GetCopyParam(i);
+    delete GetRule(i);
   }
   FCopyParams->Clear();
   FRules->Clear();
@@ -352,11 +352,11 @@ void __fastcall TCopyParamList::Change(int Index, const UnicodeString Name,
 {
   if ((Name != GetName(Index)) || !CompareItem(Index, CopyParam, Rule))
   {
-    FNames->Strings(Index, Name);
+    FNames->Strings[Index] = Name;
     delete GetCopyParam(Index);
-    FCopyParams->Items(Index, (reinterpret_cast<TObject *>(CopyParam)));
+    FCopyParams->Items[Index] = (reinterpret_cast<TObject *>(CopyParam));
     delete GetRule(Index);
-    FRules->Items(Index, (reinterpret_cast<TObject *>(Rule)));
+    FRules->Items[Index] = (reinterpret_cast<TObject *>(Rule));
     Modify();
   }
   else
@@ -1006,7 +1006,7 @@ TStrings * __fastcall TGUIConfiguration::GetLocales()
             char LocaleStr[255];
             LCID Locale;
 
-            Count = Langs->GetCount();
+            Count = Langs->Count;
             Index = -1;
             while (Index < Count)
             {
@@ -1016,7 +1016,7 @@ TStrings * __fastcall TGUIConfiguration::GetLocales()
                 Ext = Exts->IndexOf(Langs->Ext[Index]);
                 if (Ext < 0)
                 {
-                  Ext = Exts->IndexOf(Langs->Ext[Index].substr(0, 2));
+                  Ext = Exts->IndexOf(Langs->Ext[Index].SubString(1, 2));
                   if (Ext >= 0)
                   {
                     Locale = MAKELANGID(PRIMARYLANGID(Locale), SUBLANG_DEFAULT);
@@ -1026,6 +1026,7 @@ TStrings * __fastcall TGUIConfiguration::GetLocales()
                 if (Ext >= 0)
                 {
                   Exts->SetObject(Ext, reinterpret_cast<TObject*>(Locale));
+            Exts->Objects[Ext] = reinterpret_cast<TObject*>(Locale);
                 }
                 else
                 {

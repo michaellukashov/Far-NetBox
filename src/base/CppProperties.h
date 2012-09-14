@@ -208,7 +208,7 @@ public:
     my_object = obj;
   }
   // function call syntax
-  T operator()(Key & AKey)
+  T operator()(Key AKey)
   {
     return (my_object->*real_getter)(AKey);
   }
@@ -234,9 +234,10 @@ public:
 
 template <
   class Key,
+  class T,
   class Object,
-  void * (Object::*real_getter)(Key),
-  typename void (Object::*real_setter)(Key, void *)
+  typename T & (Object::*real_getter)(Key),
+  typename void (Object::*real_setter)(Key, T)
   >
 class IndexedProperty2
 {
@@ -250,7 +251,49 @@ public:
     my_object = obj;
   }
   // function call syntax
-  void * operator()(Key & AKey)
+  T & operator()(Key AKey)
+  {
+    return (my_object->*real_getter)(AKey);
+  }
+  void operator()(Key AKey, T AValue)
+  {
+     (my_object->*real_setter)(AKey, AValue);
+  }
+  // get/set syntax
+  T & get_Item(Key AKey)
+  {
+    return (my_object->*real_getter)(AKey);
+  }
+  void set_Item(Key AKey, T AValue)
+  {
+    (my_object->*real_setter)(AKey, AValue);
+  }
+  // operator [] syntax
+  T & operator[](Key AKey)
+  {
+    return (my_object->*real_getter)(AKey);
+  }
+};
+
+template <
+  class Key,
+  class Object,
+  void *& (Object::*real_getter)(Key),
+  typename void (Object::*real_setter)(Key, void *)
+  >
+class IndexedPropertyVoid
+{
+  Object * my_object;
+public:
+  // this function must be called by the containing class, normally in a
+  // constructor, to initialize the ROProperty so it knows where its
+  // real implementation code can be found
+  void operator()(Object * obj)
+  {
+    my_object = obj;
+  }
+  // function call syntax
+  void *& operator()(Key AKey)
   {
     return (my_object->*real_getter)(AKey);
   }
@@ -259,7 +302,7 @@ public:
      (my_object->*real_setter)(AKey, AValue);
   }
   // get/set syntax
-  void * get_Item(Key AKey)
+  void *& get_Item(Key AKey)
   {
     return (my_object->*real_getter)(AKey);
   }
@@ -268,7 +311,7 @@ public:
     (my_object->*real_setter)(AKey, AValue);
   }
   // operator [] syntax
-  void * operator[](Key AKey)
+  void *& operator[](Key AKey)
   {
     return (my_object->*real_getter)(AKey);
   }

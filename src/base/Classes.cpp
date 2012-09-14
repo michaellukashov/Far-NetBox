@@ -131,7 +131,7 @@ void * TList::operator [](int Index) const
 {
   return FList[Index];
 }
-void * TList::GetItem(int Index) const
+void *& TList::GetItem(int Index)
 {
   return FList[Index];
 }
@@ -261,9 +261,9 @@ TObject * TObjectList::operator [](int Index) const
 {
   return static_cast<TObject *>(parent::operator[](Index));
 }
-TObject * TObjectList::GetItem(int Index) const
+TObject *& TObjectList::GetItem(int Index)
 {
-  return static_cast<TObject *>(parent::GetItem(Index));
+  return reinterpret_cast<TObject *&>(parent::GetItem(Index));
 }
 void TObjectList::SetItem(int Index, TObject * Value)
 {
@@ -949,6 +949,15 @@ void TStringList::InsertItem(int Index, const UnicodeString S, TObject * AObject
   FList.insert(FList.begin() + Index, item);
   Changed();
 }
+UnicodeString & TStringList::GetString(int Index)
+{
+  // DEBUG_PRINTF(L"Index = %d, FList.size = %d", Index, FList.size());
+  if ((Index == NPOS) || ((size_t)Index >= FList.size()))
+  {
+    Classes::Error(SListIndexError, Index);
+  }
+  return FList[Index].FString;
+}
 UnicodeString TStringList::GetStrings(int Index) const
 {
   // DEBUG_PRINTF(L"Index = %d, FList.size = %d", Index, FList.size());
@@ -956,8 +965,7 @@ UnicodeString TStringList::GetStrings(int Index) const
   {
     Classes::Error(SListIndexError, Index);
   }
-  UnicodeString Result = FList[Index].FString;
-  return Result;
+  return FList[Index].FString;
 }
 bool TStringList::GetCaseSensitive() const
 {
