@@ -1017,7 +1017,7 @@ void __fastcall TSessionData::Remove()
 }
 //---------------------------------------------------------------------
 bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
-  TStoredSessionList * AStoredSessions, bool & DefaultsOnly, UnicodeString * FileName,
+  TStoredSessionList * StoredSessions, bool & DefaultsOnly, UnicodeString * FileName,
   bool * AProtocolDefined)
 {
   bool ProtocolDefined = false;
@@ -1102,10 +1102,10 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
     // (this allows setting for example default username for host
     // by creating stored session named by host)
     TSessionData * Data = NULL;
-    for (Integer Index = 0; Index < AStoredSessions->Count + AStoredSessions->GetHiddenCount(); Index++)
+    for (Integer Index = 0; Index < StoredSessions->Count + StoredSessions->GetHiddenCount(); Index++)
     {
 
-      TSessionData * AData = static_cast<TSessionData *>(AStoredSessions->Items[Index]);
+      TSessionData * AData = static_cast<TSessionData *>(StoredSessions->Items[Index]);
       if (
           AnsiSameText(AData->GetName(), DecodedUrl) ||
           AnsiSameText(AData->GetName() + L"/", DecodedUrl.SubString(1, AData->GetName().Length() + 1)))
@@ -1132,14 +1132,14 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
       if (Data->GetHidden())
       {
         Data->Remove();
-        AStoredSessions->Remove(Data);
+        StoredSessions->Remove(Data);
         // only modified, implicit
-        AStoredSessions->Save(false, false);
+        StoredSessions->Save(false, false);
       }
     }
     else
     {
-      Assign(AStoredSessions->GetDefaultSettings());
+      Assign(StoredSessions->GetDefaultSettings());
       SetName(L"");
 
       int PSlash = Url.Pos(L"/");
@@ -1219,7 +1219,7 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
   }
   else
   {
-    Assign(AStoredSessions->GetDefaultSettings());
+    Assign(StoredSessions->GetDefaultSettings());
 
     DefaultsOnly = true;
   }
@@ -1490,8 +1490,7 @@ void __fastcall TSessionData::SetPassword(UnicodeString avalue)
 //---------------------------------------------------------------------
 UnicodeString __fastcall TSessionData::GetPassword() const
 {
-  UnicodeString Password = DecryptPassword(FPassword, GetUserName() + GetHostName());
-  return Password;
+  return DecryptPassword(FPassword, GetUserName() + GetHostName());
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionData::SetPingInterval(int value)
@@ -2882,13 +2881,14 @@ void __fastcall TStoredSessionList::UpdateStaticUsage()
   Configuration->GetUsage()->Set(L"StoredSessionsCountSFTP", SFTP);
   Configuration->GetUsage()->Set(L"StoredSessionsCountFTP", FTP);
   Configuration->GetUsage()->Set(L"StoredSessionsCountFTPS", FTPS);
-  Configuration->GetUsage()->Set(L"StoredSessionsCountPassword", Password);
-  Configuration->GetUsage()->Set(L"StoredSessionsCountColor", Color);
+  Configuration->GetUsage()->Set(L"StoredSessionsCountWebDAV", WebDAV);
+  Configuration->GetUsage()->Set(L"StoredSessionsCountWebDAVS", WebDAVS);
   Configuration->GetUsage()->Set(L"StoredSessionsCountAdvanced", Advanced);
 
   bool CustomDefaultStoredSession = !FDefaultSettings->IsSame(FactoryDefaults.get(), false);
   Configuration->GetUsage()->Set(L"UsingDefaultStoredSession", CustomDefaultStoredSession);
   Configuration->GetUsage()->Set(L"UsingStoredSessionsFolders", Folders);
+  Configuration->GetUsage()->Set(L"UsingWorkspaces", Workspaces);
 */
 }
 //---------------------------------------------------------------------------

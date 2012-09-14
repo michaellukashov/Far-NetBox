@@ -604,12 +604,12 @@ FILE * __fastcall OpenFile(UnicodeString LogFileName, TSessionData * SessionData
 //---------------------------------------------------------------------------
 const wchar_t *LogLineMarks = L"<>!.*";
 /* __fastcall */ TSessionLog::TSessionLog(TSessionUI* UI, TSessionData * SessionData,
-  TConfiguration * AConfiguration):
+  TConfiguration * Configuration):
   TStringList()
 {
   FCriticalSection = new TCriticalSection();
   FLogging = false;
-  FConfiguration = AConfiguration;
+  FConfiguration = Configuration;
   FParent = NULL;
   FUI = UI;
   FSessionData = SessionData;
@@ -891,14 +891,12 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
   BeginUpdate();
   // try
   {
-#ifdef _MSC_VER
     BOOST_SCOPE_EXIT ( (&Self) )
     {
       Self->DeleteUnnecessary();
 
       Self->EndUpdate();
     } BOOST_SCOPE_EXIT_END
-#endif
     // #define ADF(S, F) DoAdd(llMessage, FORMAT(S, F), DoAddToSelf);
     #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), MAKE_CALLBACK2(TSessionLog::DoAddToSelf, this));
     AddSeparator();

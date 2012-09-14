@@ -3,7 +3,6 @@
 #define SecureShellH
 
 #include <set>
-
 #include "PuttyIntf.h"
 #include "Configuration.h"
 #include "SessionData.h"

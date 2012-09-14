@@ -584,7 +584,7 @@ bool __fastcall TSecureShell::PromptUser(bool /*ToServer*/,
   {
     if (FSessionData->GetAuthKIPassword() && !FSessionData->GetPassword().IsEmpty() &&
         !FStoredPasswordTriedForKI && (Prompts->Count == 1) &&
-        !(Prompts->Objects[0] != NULL))
+        !(Prompts->Objects[0]))
     {
       LogEvent(L"Using stored password.");
       FUI->Information(LoadStr(AUTH_PASSWORD), false);
@@ -1439,7 +1439,7 @@ void __fastcall TSecureShell::WaitForData()
 //---------------------------------------------------------------------------
 bool __fastcall TSecureShell::SshFallbackCmd() const
 {
-  return ssh_fallback_cmd(FBackendHandle) != 0;
+  return ssh_fallback_cmd(FBackendHandle);
 }
 //---------------------------------------------------------------------------
 bool __fastcall TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
@@ -1807,10 +1807,10 @@ void __fastcall TSecureShell::VerifyHostKey(UnicodeString Host, int Port,
   UnicodeString StoredKeys;
   if (!Result)
   {
-    std::string AnsiStoredKeys;
-    AnsiStoredKeys.resize(10240);
+    AnsiString AnsiStoredKeys;
+    AnsiStoredKeys.SetLength(10240);
     if (retrieve_host_key(W2MB(Host.c_str(), FSessionData->GetCodePageAsNumber()).c_str(), Port, W2MB(KeyType.c_str(), FSessionData->GetCodePageAsNumber()).c_str(),
-          const_cast<char *>(AnsiStoredKeys.c_str()), static_cast<int>(AnsiStoredKeys.size())) == 0)
+          const_cast<char *>(AnsiStoredKeys.c_str()), static_cast<int>(AnsiStoredKeys.Length())) == 0)
     {
       StoredKeys = AnsiStoredKeys.c_str();
       UnicodeString Buf2 = StoredKeys;

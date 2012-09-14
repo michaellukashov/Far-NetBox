@@ -206,7 +206,7 @@ public:
   explicit /* __fastcall */ TSessionLog(TSessionUI* UI, TSessionData * SessionData,
     TConfiguration * Configuration);
   virtual /* __fastcall */ ~TSessionLog();
-  HIDESBASE  void __fastcall Add(TLogLineType Type, const UnicodeString & Line);
+  HIDESBASE void __fastcall Add(TLogLineType Type, const UnicodeString & Line);
   void __fastcall AddStartupInfo();
   void __fastcall AddException(Exception * E);
   void __fastcall AddSeparator();
