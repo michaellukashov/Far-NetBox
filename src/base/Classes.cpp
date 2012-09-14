@@ -610,12 +610,6 @@ bool TStrings::Equals(TStrings * Strings) const
   return Result;
 }
 
-void TStrings::PutObject(int Index, TObject * AObject)
-{
-  (void)Index;
-  (void)AObject;
-}
-
 void TStrings::PutString(int Index, const UnicodeString S)
 {
   TObject * TempObject = GetObjects(Index);
@@ -946,9 +940,13 @@ void TStringList::InsertItem(int Index, const UnicodeString S, TObject * AObject
 UnicodeString & TStringList::GetString(int Index)
 {
   // DEBUG_PRINTF(L"Index = %d, FList.size = %d", Index, FList.size());
-  if ((Index == NPOS) || ((size_t)Index >= FList.size()))
+  if ((Index == NPOS) || ((size_t)Index > FList.size()))
   {
     Classes::Error(SListIndexError, Index);
+  }
+  if ((size_t)Index == FList.size())
+  {
+    InsertItem(Index, UnicodeString(), NULL);
   }
   return FList[Index].FString;
 }
