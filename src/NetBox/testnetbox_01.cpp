@@ -156,8 +156,9 @@ BOOST_FIXTURE_TEST_CASE(test2, base_fixture_t)
     strings.Add(L"line 1");
     str = strings.Text;
     BOOST_TEST_MESSAGE("str = " << W2MB(str.c_str()).c_str());
-    // DEBUG_PRINTF(L"str = %s", BytesToHex(str.c_str(), str.Length(), false));
-    BOOST_CHECK(_wcsicmp(str.c_str(), L"line 1\n") == 0);
+    // DEBUG_PRINTF(L"str = %s", BytesToHex(RawByteString(str.c_str(),  str.Length()), true, L',').c_str());
+    BOOST_TEST_MESSAGE("str = " << W2MB(BytesToHex(RawByteString(str.c_str(),  str.Length()), true, L',').c_str()).c_str());
+    BOOST_CHECK(_wcsicmp(str.c_str(), L"line 1\x0D\x0A") == 0);
   }
   if (1)
   {
@@ -165,14 +166,19 @@ BOOST_FIXTURE_TEST_CASE(test2, base_fixture_t)
     BOOST_CHECK_EQUAL(2, strings.Count);
     str = strings.Text;
     BOOST_TEST_MESSAGE(L"str = " << str.c_str());
-    BOOST_CHECK_EQUAL(W2MB(str.c_str()).c_str(), "line 1\nline 2\n");
+    BOOST_CHECK_EQUAL(W2MB(str.c_str()).c_str(), "line 1\r\nline 2\r\n");
     strings.Insert(0, L"line 0");
     BOOST_CHECK_EQUAL(3, strings.Count);
     str = strings.Text;
-    BOOST_CHECK_EQUAL(W2MB(str.c_str()).c_str(), "line 0\nline 1\nline 2\n");
+    BOOST_TEST_MESSAGE(L"str = " << str.c_str());
+    BOOST_CHECK_EQUAL(W2MB(str.c_str()).c_str(), "line 0\r\nline 1\r\nline 2\r\n");
     strings.Objects(0, NULL);
     UnicodeString str = strings.Strings[0];
     BOOST_CHECK_EQUAL(W2MB(str.c_str()), "line 0");
+  }
+  {
+    strings.Strings[0] = L"line 12";
+    BOOST_CHECK_EQUAL(W2MB(strings.Strings[0].c_str()), "line 12");
   }
 }
 
