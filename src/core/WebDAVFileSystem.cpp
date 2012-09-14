@@ -1860,6 +1860,63 @@ time_from_cstring(apr_time_t * when, const char * data, apr_pool_t * pool)
   return error_createf(WEBDAV_ERR_BAD_DATE, NULL, "error parsing date: %s", data);
 
 fail:
+
+  // 2012-09-11T14:18:40+07:00
+  char gmt_shift = 0;
+  int gmt_hour = 0;
+  int gmt_min = 0;
+  if (sscanf(data,
+        "%04d-%02d-%02dT%02d:%02d:%02d%c%02d:%02d",
+        &exploded_time.tm_year,
+        &exploded_time.tm_mon,
+        &exploded_time.tm_mday,
+        &exploded_time.tm_hour,
+        &exploded_time.tm_min,
+        &exploded_time.tm_sec,
+        &gmt_shift,
+        &gmt_hour,
+        &gmt_min) == 9)
+  {
+    exploded_time.tm_year -= 1900;
+    exploded_time.tm_mon   -= 1;
+    exploded_time.tm_wday   = 0;
+    exploded_time.tm_yday   = 0;
+    exploded_time.tm_isdst  = 0;
+    exploded_time.tm_gmtoff = (gmt_shift == '-' ? -1 : 1) * gmt_hour * SecsPerHour + gmt_min * SecsPerMin;
+    exploded_time.tm_usec = 0;
+
+    apr_err = apr_time_exp_gmt_get(when, &exploded_time);
+    if (apr_err != APR_SUCCESS)
+      return error_createf(WEBDAV_ERR_BAD_DATE, NULL, "error parsing date: %s", data);
+
+    return WEBDAV_NO_ERROR;
+  }
+
+  // 2012-09-11T03:56:20
+  if (sscanf(data,
+        "%04d-%02d-%02dT%02d:%02d:%02d",
+        &exploded_time.tm_year,
+        &exploded_time.tm_mon,
+        &exploded_time.tm_mday,
+        &exploded_time.tm_hour,
+        &exploded_time.tm_min,
+        &exploded_time.tm_sec) == 6)
+  {
+    exploded_time.tm_year -= 1900;
+    exploded_time.tm_mon   -= 1;
+    exploded_time.tm_wday   = 0;
+    exploded_time.tm_yday   = 0;
+    exploded_time.tm_isdst  = 0;
+    exploded_time.tm_gmtoff = 0;
+    exploded_time.tm_usec = 0;
+
+    apr_err = apr_time_exp_gmt_get(when, &exploded_time);
+    if (apr_err != APR_SUCCESS)
+      return error_createf(WEBDAV_ERR_BAD_DATE, NULL, "error parsing date: %s", data);
+
+    return WEBDAV_NO_ERROR;
+  }
+
   /* Try the compatibility option.  This does not need to be fast,
      as this format is no longer generated and the client will convert
      an old-format entries file the first time it reads it.  */
@@ -1890,9 +1947,11 @@ fail:
 
     return WEBDAV_NO_ERROR;
   }
+
   /* Timestamp is something we do not recognize. */
-  else
-    return error_createf(WEBDAV_ERR_BAD_DATE, NULL, "error parsing date: %s", data);
+  // return error_createf(WEBDAV_ERR_BAD_DATE, NULL, "error parsing date: %s", data);
+  *when = apr_time_now();
+  return WEBDAV_NO_ERROR;
 }
 
 //------------------------------------------------------------------------------
