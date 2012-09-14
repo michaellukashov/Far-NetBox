@@ -2878,32 +2878,41 @@ void __fastcall TSessionDialog::Change()
   }
 }
 //---------------------------------------------------------------------------
-void AdjustRemoteDir(TFarEdit * HostNameEdit,
-                     TFarEdit * RemoteDirectoryEdit,
-                     TFarCheckBox * UpdateDirectoriesCheck)
+void AdjustRemoteDir(
+  TFarEdit * HostNameEdit,
+  TFarEdit * PortNumberEdit,
+  TFarEdit * RemoteDirectoryEdit,
+  TFarCheckBox * UpdateDirectoriesCheck)
 {
-  UnicodeString hostName = HostNameEdit->GetText();
-  if (LowerCase(hostName.SubString(1, 7)) == L"http://")
+  UnicodeString HostName = HostNameEdit->GetText();
+  if (LowerCase(HostName.SubString(1, 7)) == L"http://")
   {
-    hostName.Delete(1, 7);
+    HostName.Delete(1, 7);
   }
-  else if (LowerCase(hostName.SubString(1, 8)) == L"https://")
+  else if (LowerCase(HostName.SubString(1, 8)) == L"https://")
   {
-    hostName.Delete(1, 8);
+    HostName.Delete(1, 8);
   }
-  UnicodeString dir;
-  int P = hostName.Pos(L'/');
+  UnicodeString Dir;
+  int P = HostName.Pos(L'/');
   if (P > 0)
   {
-    dir = hostName.SubString(P, hostName.Length() - P + 1);
-    hostName.SetLength(hostName.Length() - dir.Length());
+    Dir = HostName.SubString(P, HostName.Length() - P + 1);
+    int P2 = Dir.Pos(L':');
+    if (P2 > 0)
+    {
+      UnicodeString Port = Dir.SubString(P2 + 1, Dir.Length() - P2);
+      Dir.SetLength(P2 - 1);
+      if (Port.ToInt())
+        PortNumberEdit->SetAsInteger(Port.ToInt());
+    }
+    HostName.SetLength(P - 1);
   }
-  UnicodeString remotedir = RemoteDirectoryEdit->GetText();
-  if (remotedir.IsEmpty() && !dir.IsEmpty())
+  UnicodeString RemoteDir = RemoteDirectoryEdit->GetText();
+  if (RemoteDir.IsEmpty() && !Dir.IsEmpty())
   {
-    // UpdateDirectoriesCheck->SetChecked(true);
-    RemoteDirectoryEdit->SetText(dir);
-    HostNameEdit->SetText(hostName);
+    RemoteDirectoryEdit->SetText(Dir);
+    HostNameEdit->SetText(HostName);
   }
 }
 //---------------------------------------------------------------------------
@@ -2945,7 +2954,7 @@ void __fastcall TSessionDialog::TransferProtocolComboChange()
     if ((Port == FtpPortNumber) || (Port == FtpsImplicitPortNumber) || (Port == HTTPSPortNumber))
     {
       PortNumberEdit->SetAsInteger(HTTPPortNumber);
-      ::AdjustRemoteDir(HostNameEdit, RemoteDirectoryEdit, UpdateDirectoriesCheck);
+      ::AdjustRemoteDir(HostNameEdit, PortNumberEdit, RemoteDirectoryEdit, UpdateDirectoriesCheck);
     }
   }
   else if ((GetFSProtocol() == fsWebDAV) && (Ftps != ftpsNone))
@@ -2953,7 +2962,7 @@ void __fastcall TSessionDialog::TransferProtocolComboChange()
     if ((Port == FtpPortNumber) || (Port == FtpsImplicitPortNumber) || (Port == HTTPPortNumber))
     {
       PortNumberEdit->SetAsInteger(HTTPSPortNumber);
-      ::AdjustRemoteDir(HostNameEdit, RemoteDirectoryEdit, UpdateDirectoriesCheck);
+      ::AdjustRemoteDir(HostNameEdit, PortNumberEdit, RemoteDirectoryEdit, UpdateDirectoriesCheck);
     }
   }
 }
@@ -3500,7 +3509,7 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
 
     if (GetFSProtocol() == fsWebDAV)
     {
-      ::AdjustRemoteDir(HostNameEdit, RemoteDirectoryEdit, UpdateDirectoriesCheck);
+      ::AdjustRemoteDir(HostNameEdit, PortNumberEdit, RemoteDirectoryEdit, UpdateDirectoriesCheck);
     }
 
     // save session data
