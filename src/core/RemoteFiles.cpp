@@ -2,6 +2,8 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#define TRACE_IMAGEINDEX NOTRACING
+
 #include "RemoteFiles.h"
 
 #include <SysUtils.hpp>
@@ -398,8 +400,10 @@ UnicodeString __fastcall UserModificationStr(TDateTime DateTime,
 int __fastcall FakeFileImageIndex(UnicodeString FileName, unsigned long Attrs,
   UnicodeString * TypeName)
 {
+  CCALLSTACK(TRACE_IMAGEINDEX);
   Attrs |= FILE_ATTRIBUTE_NORMAL;
 
+  CTRACE(TRACE_IMAGEINDEX, "FakeFileImageIndex 1");
   TSHFileInfoW SHFileInfo = {0};
   // On Win2k we get icon of "ZIP drive" for ".." (parent directory)
   if ((FileName == L"..") ||
@@ -417,11 +421,13 @@ int __fastcall FakeFileImageIndex(UnicodeString FileName, unsigned long Attrs,
     FileName.SetLength(FileName.Length() - PartialExtLen);
   }
 
+  CTRACEFMT(TRACE_IMAGEINDEX, "FakeFileImageIndex 2 [%s] [%d]", (FileName, int(Attrs)));
   int Icon;
   if (SHGetFileInfo(UnicodeString(FileName).c_str(),
         Attrs, &SHFileInfo, sizeof(SHFileInfo),
         SHGFI_SYSICONINDEX | SHGFI_USEFILEATTRIBUTES | SHGFI_TYPENAME) != 0)
   {
+    CTRACE(TRACE_IMAGEINDEX, "FakeFileImageIndex 2");
     if (TypeName != NULL)
     {
       *TypeName = SHFileInfo.szTypeName;
@@ -430,13 +436,14 @@ int __fastcall FakeFileImageIndex(UnicodeString FileName, unsigned long Attrs,
   }
   else
   {
+    CTRACE(TRACE_IMAGEINDEX, "FakeFileImageIndex 3");
     if (TypeName != NULL)
     {
       *TypeName = L"";
     }
     Icon = -1;
   }
-
+  CTRACEFMT(TRACE_IMAGEINDEX, "FakeFileImageIndex 4 [%d]", (Icon));
 
   return Icon;
 }
@@ -756,12 +763,15 @@ const TRemoteToken * __fastcall TRemoteTokenList::Token(int Index) const
 //---------------------------------------------------------------------------
 TRemoteFile * __fastcall TRemoteFile::Duplicate(bool Standalone) const
 {
+  CALLSTACK;
   TRemoteFile * Result;
   Result = new TRemoteFile();
   try
   {
+    TRACE("1");
     if (FLinkedFile)
     {
+      TRACE("2");
       Result->FLinkedFile = FLinkedFile->Duplicate(true);
       Result->FLinkedFile->FLinkedByFile = Result;
     }
@@ -786,19 +796,23 @@ TRemoteFile * __fastcall TRemoteFile::Duplicate(bool Standalone) const
     #undef COPY_FP
     if (Standalone && (!FFullFileName.IsEmpty() || (GetDirectory() != NULL)))
     {
+      TRACE("3");
       Result->FFullFileName = GetFullFileName();
     }
   }
   catch(...)
   {
+    TRACE("4");
     delete Result;
     throw;
   }
+  TRACE("/");
   return Result;
 }
 //---------------------------------------------------------------------------
 void __fastcall TRemoteFile::LoadTypeInfo()
 {
+  CCALLSTACK(TRACE_IMAGEINDEX);
   /* TODO : If file is link: Should be attributes taken from linked file? */
   unsigned long Attrs = 0;
   if (GetIsDirectory()) { Attrs |= FILE_ATTRIBUTE_DIRECTORY; }
@@ -811,6 +825,7 @@ void __fastcall TRemoteFile::LoadTypeInfo()
 //---------------------------------------------------------------------------
 Integer __fastcall TRemoteFile::GetIconIndex() const
 {
+  CCALLSTACK(TRACE_IMAGEINDEX);
   if (FIconIndex == -1)
   {
     const_cast<TRemoteFile *>(this)->LoadTypeInfo();
@@ -998,6 +1013,7 @@ UnicodeString __fastcall TRemoteFile::GetRightsStr()
 //---------------------------------------------------------------------------
 void __fastcall TRemoteFile::SetListingStr(UnicodeString value)
 {
+  CALLSTACK;
   // Value stored in 'value' can be used for error message
   UnicodeString Line = value;
   FIconIndex = -1;
@@ -1461,14 +1477,17 @@ void __fastcall TRemoteFileList::AddFile(TRemoteFile * File)
 //---------------------------------------------------------------------------
 void __fastcall TRemoteFileList::DuplicateTo(TRemoteFileList * Copy)
 {
+  CALLSTACK;
   Copy->Clear();
   for (int Index = 0; Index < Count; Index++)
   {
     TRemoteFile * File = GetFiles(Index);
     Copy->AddFile(File->Duplicate(false));
   }
+  TRACE("1");
   Copy->FDirectory = GetDirectory();
   Copy->FTimestamp = FTimestamp;
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void __fastcall TRemoteFileList::Clear()
@@ -1572,6 +1591,7 @@ void __fastcall TRemoteDirectory::AddFile(TRemoteFile * File)
 //---------------------------------------------------------------------------
 void __fastcall TRemoteDirectory::DuplicateTo(TRemoteFileList * Copy)
 {
+  CALLSTACK;
   TRemoteFileList::DuplicateTo(Copy);
   if (GetThisDirectory() && !GetIncludeThisDirectory())
   {
@@ -1581,6 +1601,7 @@ void __fastcall TRemoteDirectory::DuplicateTo(TRemoteFileList * Copy)
   {
     Copy->AddFile(GetParentDirectory()->Duplicate(false));
   }
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 bool __fastcall TRemoteDirectory::GetLoaded()
@@ -1648,6 +1669,7 @@ void __fastcall TRemoteDirectory::SetIncludeThisDirectory(Boolean value)
 //===========================================================================
 /* __fastcall */ TRemoteDirectoryCache::TRemoteDirectoryCache(): TStringList()
 {
+  CALLSTACK;
   FSection = new TCriticalSection();
   Sorted = true;
   Duplicates = dupError;
@@ -1657,6 +1679,7 @@ void __fastcall TRemoteDirectory::SetIncludeThisDirectory(Boolean value)
 //---------------------------------------------------------------------------
 /* __fastcall */ TRemoteDirectoryCache::~TRemoteDirectoryCache()
 {
+  CALLSTACK;
   Clear();
   delete FSection;
   FSection = NULL;
@@ -1665,6 +1688,7 @@ void __fastcall TRemoteDirectory::SetIncludeThisDirectory(Boolean value)
 void __fastcall TRemoteDirectoryCache::Clear()
 {
   TGuard Guard(FSection);
+
   TRY_FINALLY1 (Self,
   {
     for (int Index = 0; Index < Count; Index++)
@@ -1729,6 +1753,7 @@ bool __fastcall TRemoteDirectoryCache::GetFileList(const UnicodeString Directory
 //---------------------------------------------------------------------------
 void __fastcall TRemoteDirectoryCache::AddFileList(TRemoteFileList * FileList)
 {
+  CALLSTACK;
   assert(FileList);
   TRemoteFileList * Copy = new TRemoteFileList();
   FileList->DuplicateTo(Copy);
@@ -1741,6 +1766,7 @@ void __fastcall TRemoteDirectoryCache::AddFileList(TRemoteFileList * FileList)
     DoClearFileList(FileList->GetDirectory(), false);
     AddObject(Copy->GetDirectory(), Copy);
   }
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void __fastcall TRemoteDirectoryCache::ClearFileList(UnicodeString Directory, bool SubDirs)
@@ -2125,6 +2151,7 @@ void __fastcall TRights::SetAllowUndef(bool value)
 //---------------------------------------------------------------------------
 void __fastcall TRights::SetText(const UnicodeString & value)
 {
+  CALLSTACK;
   if (value != GetText())
   {
     if ((value.Length() != TextLen) ||
@@ -2181,6 +2208,7 @@ void __fastcall TRights::SetText(const UnicodeString & value)
     FText = KeepText ? value : UnicodeString();
   }
   FUnknown = false;
+  TRACEFMT("Rights [%x] [%x] [%s]", (int(FSet), int(FUnset), GetText()));
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TRights::GetText() const

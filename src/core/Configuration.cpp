@@ -2,6 +2,8 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#define TRACE_FILE_APPL_INFO NOTRACING
+
 #include <FileInfo.h>
 
 #include "Exceptions.h"
@@ -50,6 +52,7 @@
   FSessionReopenAutoMaximumNumberOfRetries(0),
   FCriticalSection(NULL)
 {
+  CALLSTACK;
   FCriticalSection = new TCriticalSection();
   FUpdating = 0;
   FStorage = stRegistry;
@@ -78,6 +81,7 @@
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::Default()
 {
+  CALLSTACK;
   TGuard Guard(FCriticalSection);
 
   FDisablePasswordStoring = false;
@@ -139,6 +143,7 @@ void __fastcall TConfiguration::Default()
 //---------------------------------------------------------------------------
 THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
 {
+  CALLSTACK;
   if (GetStorage() == stRegistry)
   {
     return new TRegistryStorage(GetRegistryStorageKey());
@@ -263,6 +268,7 @@ void __fastcall TConfiguration::Export(const UnicodeString FileName)
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::LoadData(THierarchicalStorage * Storage)
 {
+  CALLSTACK;
   #define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(TEXT(#NAME))), Get ## VAR()))
   #pragma warn -eas
   REGCONFIG(false);
@@ -282,10 +288,12 @@ void __fastcall TConfiguration::LoadData(THierarchicalStorage * Storage)
      FPermanentLogging = false;
      FPermanentLogFileName = L"";
   }
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::LoadAdmin(THierarchicalStorage * Storage)
 {
+  CALLSTACK;
   FDisablePasswordStoring = Storage->ReadBool(L"DisablePasswordStoring", FDisablePasswordStoring);
   FForceBanners = Storage->ReadBool(L"ForceBanners", FForceBanners);
   FDisableAcceptingHostKeys = Storage->ReadBool(L"DisableAcceptingHostKeys", FDisableAcceptingHostKeys);
@@ -294,6 +302,7 @@ void __fastcall TConfiguration::LoadAdmin(THierarchicalStorage * Storage)
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::Load()
 {
+  CALLSTACK;
   TGuard Guard(FCriticalSection);
 
   THierarchicalStorage * Storage = CreateScpStorage(false);
@@ -302,9 +311,12 @@ void __fastcall TConfiguration::Load()
     Storage->SetAccessMode(smRead);
     if (Storage->OpenSubKey(GetConfigurationSubKey(), false))
     {
+      TRACE("1");
       LoadData(Storage);
     }
+    TRACE("2");
   }
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::CopyData(THierarchicalStorage * Source,
@@ -381,6 +393,7 @@ void __fastcall TConfiguration::CopyData(THierarchicalStorage * Source,
 void __fastcall TConfiguration::LoadDirectoryChangesCache(const UnicodeString SessionKey,
   TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
+  CALLSTACK;
   THierarchicalStorage * Storage = CreateScpStorage(false);
   std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
   {
@@ -630,23 +643,29 @@ int __fastcall TConfiguration::GetCompoundVersion()
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TConfiguration::ModuleFileName()
 {
+  CALLSTACK;
   Error(SNotImplemented, 204);
   return L""; // FIXME ParamStr(0);
 }
 //---------------------------------------------------------------------------
 void * __fastcall TConfiguration::GetFileApplicationInfo(const UnicodeString FileName)
 {
+  CCALLSTACK(TRACE_FILE_APPL_INFO);
   void * Result;
   if (FileName.IsEmpty())
   {
+    CTRACE(TRACE_FILE_APPL_INFO, "1");
     if (!FApplicationInfo)
     {
+      CTRACE(TRACE_FILE_APPL_INFO, "2");
       FApplicationInfo = CreateFileInfo(ModuleFileName());
     }
+    CTRACE(TRACE_FILE_APPL_INFO, "3");
     Result = FApplicationInfo;
   }
   else
   {
+    CTRACE(TRACE_FILE_APPL_INFO, "4");
     Result = CreateFileInfo(FileName);
   }
   return Result;
@@ -654,6 +673,7 @@ void * __fastcall TConfiguration::GetFileApplicationInfo(const UnicodeString Fil
 //---------------------------------------------------------------------------
 void * __fastcall TConfiguration::GetApplicationInfo()
 {
+  CCALLSTACK(TRACE_FILE_APPL_INFO);
   return GetFileApplicationInfo("");
 }
 //---------------------------------------------------------------------------
@@ -679,6 +699,7 @@ UnicodeString __fastcall TConfiguration::GetCompanyName()
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TConfiguration::GetFileProductVersion(const UnicodeString FileName)
 {
+  CALLSTACK;
   return TrimVersion(GetFileFileInfoString(L"ProductVersion", FileName));
 }
 //---------------------------------------------------------------------------
@@ -738,6 +759,7 @@ UnicodeString __fastcall TConfiguration::GetVersion()
 UnicodeString __fastcall TConfiguration::GetFileFileInfoString(const UnicodeString Key,
   const UnicodeString FileName)
 {
+  CALLSTACK;
   TGuard Guard(FCriticalSection);
 
   UnicodeString Result;
@@ -746,6 +768,7 @@ UnicodeString __fastcall TConfiguration::GetFileFileInfoString(const UnicodeStri
   {
     if ((Info != NULL) && (GetTranslationCount(Info) > 0))
     {
+      TRACE("1");
       TTranslation Translation;
       Translation = GetTranslation(Info, 0);
       try
@@ -765,6 +788,7 @@ UnicodeString __fastcall TConfiguration::GetFileFileInfoString(const UnicodeStri
   }
   ,
   {
+    TRACE("2");
     if (!FileName.IsEmpty())
     {
       FreeFileInfo(Info);
@@ -786,16 +810,19 @@ UnicodeString __fastcall TConfiguration::GetRegistryStorageKey()
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::SetNulStorage()
 {
+  CALLSTACK;
   FStorage = stNul;
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::SetDefaultStorage()
 {
+  CALLSTACK;
   FStorage = stDetect;
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::SetIniFileStorageName(UnicodeString value)
 {
+  CALLSTACK;
   Error(SNotImplemented, 3006);
   FIniFileStorageName = value;
   // FStorage = stIniFile;
@@ -907,14 +934,17 @@ void __fastcall TConfiguration::Saved()
 //---------------------------------------------------------------------------
 TStorage __fastcall TConfiguration::GetStorage()
 {
+  CALLSTACK;
   if (FStorage == stDetect)
   {
     /* if (FileExists(IniFileStorageName))
     {
+      TRACE("2");
       FStorage = stIniFile;
     }
     else*/
     {
+      TRACE("3");
       FStorage = stRegistry;
     }
   }

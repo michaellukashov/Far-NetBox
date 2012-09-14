@@ -293,18 +293,21 @@ void __fastcall TFileMasks::Clear(TMasks & Masks)
 bool __fastcall TFileMasks::MatchesMasks(const UnicodeString FileName, bool Directory,
   const UnicodeString Path, const TParams * Params, const TMasks & Masks, bool Recurse)
 {
+  CALLSTACK;
   bool Result = false;
 
   TMasks::const_iterator I = Masks.begin();
   while (!Result && (I != Masks.end()))
   {
     const TMask & Mask = *I;
+    TRACEFMT("1 [%s]", (Mask.MaskStr));
     Result =
       MatchesMaskMask(Mask.DirectoryMask, Path) &&
       MatchesMaskMask(Mask.FileNameMask, FileName);
 
     if (Result)
     {
+      TRACE("2");
       bool HasSize = (Params != NULL);
 
       switch (Mask.HighSizeMask)
@@ -324,6 +327,7 @@ bool __fastcall TFileMasks::MatchesMasks(const UnicodeString FileName, bool Dire
 
       if (Result)
       {
+        TRACE("3");
         switch (Mask.LowSizeMask)
         {
           case TMask::None:
@@ -344,6 +348,7 @@ bool __fastcall TFileMasks::MatchesMasks(const UnicodeString FileName, bool Dire
 
       if (Result)
       {
+        TRACE("4");
         switch (Mask.HighModificationMask)
         {
           case TMask::None:
@@ -362,6 +367,7 @@ bool __fastcall TFileMasks::MatchesMasks(const UnicodeString FileName, bool Dire
 
       if (Result)
       {
+        TRACE("5");
         switch (Mask.LowModificationMask)
         {
           case TMask::None:
@@ -379,6 +385,7 @@ bool __fastcall TFileMasks::MatchesMasks(const UnicodeString FileName, bool Dire
       }
     }
 
+    TRACEFMT("6 [%d]", (int(Result)));
     I++;
   }
 
@@ -407,12 +414,14 @@ bool __fastcall TFileMasks::Matches(const UnicodeString FileName, bool Directory
   const UnicodeString Path, const TParams * Params,
   bool & ImplicitMatch) const
 {
+  TRACEFMT("1 [%s] [%d] [%s] [%d] %s", (FileName, int(Directory), Path, int(FNoImplicitMatch), ((Params == NULL) ? L"<null>" : Params->ToString().c_str())));
   bool ImplicitIncludeMatch = (!FNoImplicitMatch && FMasks[MASK_INDEX(Directory, true)].empty());
   bool ExplicitIncludeMatch = MatchesMasks(FileName, Directory, Path, Params, FMasks[MASK_INDEX(Directory, true)], true);
   bool Result =
     (ImplicitIncludeMatch || ExplicitIncludeMatch) &&
     !MatchesMasks(FileName, Directory, Path, Params, FMasks[MASK_INDEX(Directory, false)], false);
   ImplicitMatch = Result && ImplicitIncludeMatch && !ExplicitIncludeMatch;
+  TRACEFMT("2 [%d]", (int(Result)));
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -426,9 +435,11 @@ bool __fastcall TFileMasks::Matches(const UnicodeString FileName, bool Local,
 bool __fastcall TFileMasks::Matches(const UnicodeString FileName, bool Local,
   bool Directory, const TParams * Params, bool & ImplicitMatch) const
 {
+  CALLSTACK;
   bool Result;
   if (Local)
   {
+    TRACE("1");
     UnicodeString Path = ExtractFilePath(FileName);
     if (!Path.IsEmpty())
     {
@@ -439,6 +450,7 @@ bool __fastcall TFileMasks::Matches(const UnicodeString FileName, bool Local,
   }
   else
   {
+    TRACE("2");
     Result = Matches(UnixExtractFileName(FileName), Directory,
       UnixExcludeTrailingBackslash(UnixExtractFilePath(FileName)), Params,
       ImplicitMatch);

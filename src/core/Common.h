@@ -164,6 +164,116 @@ private:
   TCriticalSection * FCriticalSection;
 };
 //---------------------------------------------------------------------------
+//!CLEANBEGIN
+#undef TRACE_IN_MEMORY
+#include <tchar.h>
+#undef TEXT
+#define TEXT(x) (wchar_t *)MB2W(x).c_str()
+#define TRACING  (_TRACE,_TRACEFMT,Callstack,__callstack)
+#define NOTRACING  (_TRACE_FAKE, _TRACEFMT_FAKE, , )
+#define _TRACING_TRACE(TRACE, TRACEFMT, CALLSTACK, CALLSTACKI) TRACE
+#define _TRACING_TRACEFMT(TRACE, TRACEFMT, CALLSTACK, CALLSTACKI) TRACEFMT
+#define _TRACING_CALLSTACK(TRACE, TRACEFMT, CALLSTACK, CALLSTACKI) CALLSTACK
+#define _TRACING_CALLSTACKI(TRACE, TRACEFMT, CALLSTACK, CALLSTACKI) CALLSTACKI
+#define _TRACE(SOURCE, FUNC, LINE, MESSAGE) \
+  if (IsTracing) Trace(TEXT(__FILE__), TEXT(__FUNCTION__), __LINE__, (MESSAGE))
+#define _TRACEFMT(SOURCE, FUNC, LINE, FORMAT, PARAMS) \
+  if (IsTracing) TraceFmt(TEXT(__FILE__), TEXT(__FUNCTION__), __LINE__, (FORMAT), PARAMS)
+#define _TRACE_FAKE(SOURCE, FUNC, LINE, MESSAGE)
+#define _TRACEFMT_FAKE(SOURCE, FUNC, LINE, FORMAT, PARAMS)
+
+#ifdef _DEBUG
+void __fastcall SetTraceFile(HANDLE TraceFile);
+void __fastcall CleanupTracing();
+#define TRACEENV "WINSCPTRACE"
+extern bool IsTracing;
+const unsigned int CallstackTlsOff = (unsigned int)-1;
+extern unsigned int CallstackTls;
+void __fastcall Trace(const wchar_t * SourceFile, const wchar_t * Func,
+  int Line, const wchar_t * Message);
+#ifndef _MSC_VER
+void __fastcall TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
+  int Line, const wchar_t * Format, TVarRec * Args, const int Args_Size);
+#else
+void __fastcall TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
+  int Line, const wchar_t * Format, ...);
+#endif
+#ifdef TRACE_IN_MEMORY
+void __fastcall TraceDumpToFile();
+void __fastcall TraceInMemoryCallback(System::UnicodeString Msg);
+#endif
+#define CTRACEIMPL(TRACING, MESSAGE) \
+  _TRACING_TRACE TRACING (TEXT(__FILE__), TEXT(__FUNCTION__), __LINE__, (MESSAGE))
+#define CTRACEFMTIMPL(TRACING, MESSAGE, PARAMS) \
+  _TRACING_TRACEFMT TRACING (TEXT(__FILE__), TEXT(__FUNCTION__), __LINE__, (MESSAGE), PARAMS)
+class Callstack
+{
+public:
+  inline Callstack(const wchar_t * File, const wchar_t * Func, unsigned int Line, const wchar_t * Message) :
+    FFile(File), FFunc(Func), FLine(Line), FMessage(Message), FDepth(0)
+  {
+    if (IsTracing)
+    {
+      #ifndef TRACE_IN_MEMORY
+      if (CallstackTls != CallstackTlsOff)
+      {
+        FDepth = reinterpret_cast<unsigned int>(TlsGetValue(CallstackTls)) + 1;
+        TlsSetValue(CallstackTls, reinterpret_cast<void *>(FDepth));
+      }
+      #endif
+#ifndef _MSC_VER
+      TraceFmt(FFile, FFunc, FLine, L"Entry: %s [%d]", ARRAYOFCONST((FMessage, int(FDepth))));
+#else
+      TraceFmt(FFile, FFunc, FLine, L"Entry: %s [%d]", FMessage, int(FDepth));
+#endif
+    }
+  }
+
+  inline ~Callstack()
+  {
+    if (IsTracing)
+    {
+      #ifndef TRACE_IN_MEMORY
+      if (FDepth > 0)
+      {
+        TlsSetValue(CallstackTls, reinterpret_cast<void *>(FDepth - 1));
+      }
+      #endif
+#ifndef _MSC_VER
+      TraceFmt(FFile, FFunc, FLine, L"Exit: %s [%d]", ARRAYOFCONST((FMessage, int(FDepth))));
+#else
+      TraceFmt(FFile, FFunc, FLine, L"Exit: %s [%d]", FMessage, int(FDepth));
+#endif
+    }
+  }
+
+private:
+  const wchar_t * FFile;
+  const wchar_t * FFunc;
+  unsigned int FLine;
+  const wchar_t * FMessage;
+  unsigned int FDepth;
+};
+void __callstack(const wchar_t*, const wchar_t*, unsigned int, const wchar_t*);
+#define __callstack1 __callstack
+#define CCALLSTACKIMPL(TRACING, X) _TRACING_CALLSTACK TRACING X(TEXT(__FILE__), TEXT(__FUNCTION__), __LINE__, L"")
+#else // ifdef _DEBUG
+#define CTRACEIMPL(TRACING, PARAMS)
+#define CTRACEFMTIMPL(TRACING, MESSAGE, PARAMS)
+#define CCALLSTACKIMPL(TRACING, X)
+#endif // ifdef _DEBUG
+
+#undef TRACE
+#define TRACE(MESSAGE) CTRACEIMPL(TRACING, (_T(MESSAGE)))
+#define TRACEFMT(MESSAGE, PARAMS) CTRACEFMTIMPL(TRACING, _T(MESSAGE), PARAMS)
+#define CTRACE(TRACING, MESSAGE) CTRACEIMPL(TRACING, _T(MESSAGE))
+#define CTRACEFMT(TRACING, MESSAGE, PARAMS) CTRACEFMTIMPL(TRACING, _T(MESSAGE), PARAMS)
+
+#define CCALLSTACK(TRACING) CCALLSTACKIMPL(TRACING, _TRACING_CALLSTACKI TRACING)
+#define CCALLSTACK1(TRACING) CCALLSTACKIMPL(TRACING ,_TRACING_CALLSTACKI TRACING ## 1)
+#define CALLSTACK CCALLSTACK(TRACING)
+#define CALLSTACK1 CCALLSTACK1(TRACING)
+//!CLEANEND
 //---------------------------------------------------------------------------
 #include <assert.h>
 #ifndef _DEBUG
@@ -171,9 +281,40 @@ private:
 #define assert(p)   ((void)0)
 #define CHECK(p) p
 #define FAIL
+#define TRACE_EXCEPT_BEGIN
+#define TRACE_EXCEPT_END
+#define TRACE_CATCH_ALL catch(...)
+#define CLEAN_INLINE
+#define TRACEE_(E)
+#define TRACEE
+#define TRACE_EXCEPT
+#define ALWAYS_TRUE(p) p
 #else
+//!CLEANBEGIN
+#ifndef DESIGN_ONLY
+#undef assert
+void __fastcall DoAssert(wchar_t * Message, wchar_t * Filename, int LineNumber);
+inline bool __fastcall DoAlwaysTrue(bool Value, wchar_t * Message, wchar_t * Filename, int LineNumber)
+{
+  if (!Value)
+  {
+    DoAssert(Message, Filename, LineNumber);
+  }
+  return Value;
+}
+#define assert(p) ((p) ? (void)0 : DoAssert(TEXT(#p), TEXT(__FILE__), __LINE__))
+#endif // ifndef DESIGN_ONLY
+//!CLEANEND
 #define CHECK(p) { bool __CHECK_RESULT__ = (p); assert(__CHECK_RESULT__); }
 #define FAIL assert(false)
+#define TRACE_EXCEPT_BEGIN try {
+#define TRACE_EXCEPT_END } catch (Exception & TraceE) { TRACEFMT("E [%s]", (TraceE.Message)); throw; }
+#define TRACE_CATCH_ALL catch (Exception & TraceE)
+#define TRACEE_(E) TRACEFMT(#E" [%s]", (E.Message))
+#define TRACEE TRACEE_(E)
+#define TRACE_EXCEPT TRACEE_(TraceE)
+#define ALWAYS_TRUE(p) DoAlwaysTrue(p, TEXT(#p), TEXT(__FILE__), __LINE__)
+#define CLEAN_INLINE
 #endif
 #ifndef USEDPARAM
 #define USEDPARAM(p) void(p);

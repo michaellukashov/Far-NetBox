@@ -2,6 +2,8 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#define TRACE_PROGRESS TRACING
+
 #include "Common.h"
 #include "FileOperationProgress.h"
 //---------------------------------------------------------------------------
@@ -96,6 +98,7 @@ void __fastcall TFileOperationProgressType::Start(TFileOperation AOperation,
   TOperationSide ASide, int ACount, bool ATemp,
   const UnicodeString ADirectory, unsigned long ACPSLimit)
 {
+  CALLSTACK;
   Clear();
   Operation = AOperation;
   Side = ASide;
@@ -110,11 +113,13 @@ void __fastcall TFileOperationProgressType::Start(TFileOperation AOperation,
 //---------------------------------------------------------------------------
 void __fastcall TFileOperationProgressType::Reset()
 {
+  CALLSTACK;
   FReset = true;
 }
 //---------------------------------------------------------------------------
 void __fastcall TFileOperationProgressType::Stop()
 {
+  CALLSTACK;
   // added to include remaining bytes to TotalSkipped, in case
   // the progress happes to update before closing
   ClearTransfer();
@@ -124,6 +129,7 @@ void __fastcall TFileOperationProgressType::Stop()
 //---------------------------------------------------------------------------
 void __fastcall TFileOperationProgressType::Suspend()
 {
+  CALLSTACK;
   assert(!Suspended);
   Suspended = true;
   FSuspendTime = GetTickCount();
@@ -132,6 +138,7 @@ void __fastcall TFileOperationProgressType::Suspend()
 //---------------------------------------------------------------------------
 void __fastcall TFileOperationProgressType::Resume()
 {
+  CALLSTACK;
   assert(Suspended);
   Suspended = false;
 
@@ -150,13 +157,16 @@ void __fastcall TFileOperationProgressType::Resume()
 //---------------------------------------------------------------------------
 int __fastcall TFileOperationProgressType::OperationProgress() const
 {
+  CCALLSTACK(TRACE_PROGRESS);
   assert(Count);
   int Result = (FFilesFinished * 100)/Count;
+  CTRACEFMT(TRACE_PROGRESS, "[%d]", (Result));
   return Result;
 }
 //---------------------------------------------------------------------------
 int __fastcall TFileOperationProgressType::TransferProgress() const
 {
+  CCALLSTACK(TRACE_PROGRESS);
   int Result;
   if (TransferSize)
   {
@@ -166,18 +176,22 @@ int __fastcall TFileOperationProgressType::TransferProgress() const
   {
     Result = 0;
   }
+  CTRACEFMT(TRACE_PROGRESS, "[%d]", (Result));
   return Result;
 }
 //---------------------------------------------------------------------------
 int __fastcall TFileOperationProgressType::TotalTransferProgress() const
 {
+  CCALLSTACK(TRACE_PROGRESS);
   assert(TotalSizeSet);
   int Result = TotalSize > 0 ? static_cast<int>(((TotalTransfered + TotalSkipped) * 100) / TotalSize) : 0;
+  CTRACEFMT(TRACE_PROGRESS, "[%d]", (Result));
   return Result < 100 ? Result : 100;
 }
 //---------------------------------------------------------------------------
 int __fastcall TFileOperationProgressType::OverallProgress() const
 {
+  CCALLSTACK(TRACE_PROGRESS);
   if (TotalSizeSet)
   {
     assert((Operation == foCopy) || (Operation == foMove));
@@ -209,6 +223,7 @@ void __fastcall TFileOperationProgressType::Finish(UnicodeString FileName,
 //---------------------------------------------------------------------------
 void __fastcall TFileOperationProgressType::SetFile(UnicodeString AFileName, bool AFileInProgress)
 {
+  CALLSTACK;
   FileName = AFileName;
   FileInProgress = AFileInProgress;
   ClearTransfer();

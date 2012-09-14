@@ -330,6 +330,8 @@ UnicodeString TCopyParamType::Untokenize(const UnicodeString FileName)
 UnicodeString __fastcall TCopyParamType::ChangeFileName(UnicodeString FileName,
   TOperationSide Side, bool FirstLevel) const
 {
+  CALLSTACK;
+  TRACEFMT("1 [%s] [%d] [%d]", (FileName, int(Side), int(FirstLevel)));
   if (FirstLevel)
   {
     FileName = MaskFileName(FileName, GetFileMask());
@@ -359,6 +361,7 @@ UnicodeString __fastcall TCopyParamType::ChangeFileName(UnicodeString FileName,
   {
     FileName = RestoreChars(FileName);
   }
+  TRACEFMT("2 [%s]", (FileName));
   return FileName;
 }
 //---------------------------------------------------------------------------
@@ -377,9 +380,11 @@ bool __fastcall TCopyParamType::UseAsciiTransfer(UnicodeString FileName,
 //---------------------------------------------------------------------------
 TRights __fastcall TCopyParamType::RemoteFileRights(Integer Attrs) const
 {
+  CALLSTACK;
   TRights R = GetRights();
   if ((Attrs & faDirectory) && GetAddXToDirectories())
     R.AddExecute();
+  TRACEFMT("Rights [%x] [%x] [%x] [%d]", (int(GetRights().GetNumberSet()), int(GetRights().GetNumberUnset()), int(R.GetNumberSet()), int(R.GetNumberUnset())));
   return R;
 }
 //---------------------------------------------------------------------------
@@ -440,17 +445,20 @@ bool __fastcall TCopyParamType::AllowAnyTransfer() const
 bool __fastcall TCopyParamType::AllowTransfer(UnicodeString FileName,
   TOperationSide Side, bool Directory, const TFileMasks::TParams & Params) const
 {
+  CALLSTACK;
   bool Result = true;
   if (!GetIncludeFileMask().GetMasks().IsEmpty())
   {
     Result = GetIncludeFileMask().Matches(FileName, (Side == osLocal),
       Directory, &Params);
   }
+  TRACEFMT("1 [%s] [%d] [%d] [=%d]", (FileName, int(Side), int(Directory), int(Result)));
   return Result;
 }
 //---------------------------------------------------------------------------
 void __fastcall TCopyParamType::Load(THierarchicalStorage * Storage)
 {
+  CALLSTACK;
   SetAddXToDirectories(Storage->ReadBool(L"AddXToDirectories", GetAddXToDirectories()));
   GetAsciiFileMask().SetMasks(Storage->ReadString(L"Masks", GetAsciiFileMask().GetMasks()));
   SetFileNameCase(static_cast<TFileNameCase>(Storage->ReadInteger(L"FileNameCase", GetFileNameCase())));
