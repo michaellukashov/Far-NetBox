@@ -144,7 +144,7 @@ bool __fastcall ExecuteShell(const UnicodeString Path, const UnicodeString Param
 {
   bool Result = false;
 
-  _SHELLEXECUTEINFOW ExecuteInfo;
+  TShellExecuteInfoW ExecuteInfo;
   memset(&ExecuteInfo, 0, sizeof(ExecuteInfo));
   ExecuteInfo.cbSize = sizeof(ExecuteInfo);
   ExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
@@ -165,7 +165,7 @@ bool __fastcall ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString Path,
   const UnicodeString Params, TProcessMessagesEvent ProcessMessages)
 {
   bool Result = false;
-  _SHELLEXECUTEINFOW ExecuteInfo;
+  TShellExecuteInfoW ExecuteInfo;
   memset(&ExecuteInfo, 0, sizeof(ExecuteInfo));
   ExecuteInfo.cbSize = sizeof(ExecuteInfo);
   ExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS;

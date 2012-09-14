@@ -41,7 +41,7 @@ void /* __fastcall */ TSynchronizeController::StartStop(TObject * Sender,
 {
   if (Start)
   {
-    // Configuration->Usage->Inc(L"KeepUpToDates");
+    // Configuration->GetUsage()->Inc(L"KeepUpToDates");
 
     try
     {

@@ -172,5 +172,7 @@
     TRY_FINALLY(CODE, CLEANUP) \
   }
 
+#define TShellExecuteInfoW _SHELLEXECUTEINFOW
+
 #endif /* _MSC_VER */
 
