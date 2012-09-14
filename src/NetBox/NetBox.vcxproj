@@ -193,11 +193,11 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="UnityBuildCore.cpp">
+    </ClCompile>
     <ClCompile Include="UnityBuildMain.cpp">
     </ClCompile>
     <ClCompile Include="UnityBuildFilezilla.cpp">
-    </ClCompile>
-    <ClCompile Include="UnityBuildCore.cpp">
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
