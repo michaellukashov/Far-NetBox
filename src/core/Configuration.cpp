@@ -193,7 +193,7 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::SaveData(THierarchicalStorage * Storage, bool /*All*/)
 {
-  #define KEYEX(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR())
+  #define KEYEX(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(TEXT(#NAME))), Get ## VAR())
   REGCONFIG(true);
   #undef KEYEX
 
@@ -720,8 +720,8 @@ UnicodeString __fastcall TConfiguration::GetVersion()
   TGuard Guard(FCriticalSection);
   try
   {
-    UnicodeString Result;
     TVSFixedFileInfo * Info = GetFixedApplicationInfo();
+    UnicodeString Result;
     Result = // TrimVersion(
       FORMAT(L"%d.%d.%d",
       HIWORD(Info->dwFileVersionMS),

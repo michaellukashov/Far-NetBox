@@ -121,7 +121,6 @@ private:
   void __fastcall CreateMask(const UnicodeString & MaskStr, int MaskStart,
     int MaskEnd, bool Include);
   TStrings * __fastcall GetMasksStr(int Index) const;
-
 private:
   static UnicodeString __fastcall MakeDirectoryMask(UnicodeString Str);
   static inline void __fastcall ReleaseMaskMask(TMaskMask & MaskMask);

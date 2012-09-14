@@ -472,7 +472,7 @@ TDateTime __fastcall TFileOperationProgressType::TotalTimeExpected()
   if ((CurCps > 0) && (TotalSize > TotalSkipped))
   {
     return TDateTime(static_cast<double>(static_cast<double>(TotalSize - TotalSkipped) / CurCps) /
-     SecsPerDay);
+      SecsPerDay);
   }
   else
   {

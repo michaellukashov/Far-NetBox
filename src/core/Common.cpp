@@ -412,7 +412,7 @@ UnicodeString __fastcall ValidLocalFileName(
 
     if (IsReservedName(FileName))
     {
-      int P = FileName.Pos(L".");
+      int P = FileName.Pos(".");
       if (P == 0)
       {
         P = FileName.Length() + 1;
@@ -1396,7 +1396,7 @@ bool __fastcall RecursiveDeleteFile(const UnicodeString FileName, bool ToRecycle
   FileList[FileList.Length() - 1] = L'\0';
   FileList[FileList.Length()] = L'\0';
   Data.pFrom = FileList.c_str();
-  Data.pTo = NULL;
+  Data.pTo = L"";
   Data.fFlags = FOF_NOCONFIRMATION | FOF_RENAMEONCOLLISION | FOF_NOCONFIRMMKDIR |
     FOF_NOERRORUI | FOF_SILENT;
   if (ToRecycleBin)
