@@ -80,7 +80,7 @@ public:
   bool __fastcall operator ==(const TCopyParamRule & rhp) const;
 
   TCopyParamRuleData __fastcall GetData() const { return FData; }
-  void __fastcall SetData(TCopyParamRuleData value) { FData = value; }
+  void __fastcall SetData(TCopyParamRuleData value);
   bool __fastcall GetEmpty() const;
 
 private:
@@ -234,17 +234,17 @@ public:
   void __fastcall SetQueueAutoPopup(bool value) { FQueueAutoPopup = value; }
   bool __fastcall GetQueueRememberPassword() { return FQueueRememberPassword; }
   void __fastcall SetQueueRememberPassword(bool value) { FQueueRememberPassword = value; }
-  UnicodeString __fastcall GetPuttyPath() { return FPuttyPath; }
-  void __fastcall SetPuttyPath(const UnicodeString value) { FPuttyPath = value; }
-  UnicodeString __fastcall GetDefaultPuttyPath() { return FDefaultPuttyPath; }
-  UnicodeString __fastcall GetPSftpPath() { return FPSftpPath; }
-  void __fastcall SetPSftpPath(const UnicodeString value) { FPSftpPath = value; }
+  UnicodeString __fastcall GetPuttyPath();
+  void __fastcall SetPuttyPath(const UnicodeString value);
+  UnicodeString __fastcall GetDefaultPuttyPath();
+  UnicodeString __fastcall GetPSftpPath();
+  void __fastcall SetPSftpPath(const UnicodeString value);
   bool __fastcall GetPuttyPassword() { return FPuttyPassword; }
   void __fastcall SetPuttyPassword(bool value) { FPuttyPassword = value; }
   bool __fastcall GetTelnetForFtpInPutty() { return FTelnetForFtpInPutty; }
   void __fastcall SetTelnetForFtpInPutty(bool value) { FTelnetForFtpInPutty = value; }
-  UnicodeString __fastcall GetPuttySession() { return FPuttySession; }
-  void __fastcall SetPuttySession(UnicodeString value) { FPuttySession = value; }
+  UnicodeString __fastcall GetPuttySession();
+  void __fastcall SetPuttySession(UnicodeString value);
   TDateTime __fastcall GetIgnoreCancelBeforeFinish() { return FIgnoreCancelBeforeFinish; }
   void __fastcall SetIgnoreCancelBeforeFinish(TDateTime value) { FIgnoreCancelBeforeFinish = value; }
   TGUICopyParamType & __fastcall GetDefaultCopyParam() { return FDefaultCopyParam; }
@@ -252,12 +252,12 @@ public:
   void __fastcall SetBeepOnFinish(bool value) { FBeepOnFinish = value; }
   TDateTime __fastcall GetBeepOnFinishAfter() { return FBeepOnFinishAfter; }
   void __fastcall SetBeepOnFinishAfter(TDateTime value) { FBeepOnFinishAfter = value; }
-  UnicodeString __fastcall GetCopyParamCurrent() { return FCopyParamCurrent; }
+  UnicodeString __fastcall GetCopyParamCurrent();
   TRemoteProperties __fastcall GetNewDirectoryProperties() { return FNewDirectoryProperties; }
   int __fastcall GetKeepUpToDateChangeDelay() { return FKeepUpToDateChangeDelay; }
   void __fastcall SetKeepUpToDateChangeDelay(int value) { FKeepUpToDateChangeDelay = value; }
-  UnicodeString __fastcall GetChecksumAlg() { return FChecksumAlg; }
-  void __fastcall SetChecksumAlg(const UnicodeString value) { FChecksumAlg = value; }
+  UnicodeString __fastcall GetChecksumAlg();
+  void __fastcall SetChecksumAlg(const UnicodeString value);
   int __fastcall GetSessionReopenAutoIdle() { return FSessionReopenAutoIdle; }
   void __fastcall SetSessionReopenAutoIdle(int value) { FSessionReopenAutoIdle = value; }
 };

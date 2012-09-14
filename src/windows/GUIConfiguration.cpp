@@ -215,6 +215,11 @@ UnicodeString __fastcall TCopyParamRule::GetInfoStr(UnicodeString Separator) con
   return Result;
 }
 //---------------------------------------------------------------------------
+void __fastcall TCopyParamRule::SetData(TCopyParamRuleData value)
+{
+  FData = value;
+}
+//---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 UnicodeString TCopyParamList::FInvalidChars(L"/\\[]");
 //---------------------------------------------------------------------------
@@ -1164,5 +1169,55 @@ void __fastcall TGUIConfiguration::SetNewDirectoryProperties(
   const TRemoteProperties & value)
 {
   SET_CONFIG_PROPERTY(NewDirectoryProperties);
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TGUIConfiguration::GetPuttyPath()
+{
+  return FPuttyPath;
+}
+//---------------------------------------------------------------------------
+void __fastcall TGUIConfiguration::SetPuttyPath(const UnicodeString value)
+{
+  FPuttyPath = value;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TGUIConfiguration::GetDefaultPuttyPath()
+{
+  return FDefaultPuttyPath;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TGUIConfiguration::GetPSftpPath()
+{
+  return FPSftpPath;
+}
+//---------------------------------------------------------------------------
+void __fastcall TGUIConfiguration::SetPSftpPath(const UnicodeString value)
+{
+  FPSftpPath = value;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TGUIConfiguration::GetPuttySession()
+{
+  return FPuttySession;
+}
+//---------------------------------------------------------------------------
+void __fastcall TGUIConfiguration::SetPuttySession(UnicodeString value)
+{
+  FPuttySession = value;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TGUIConfiguration::GetCopyParamCurrent()
+{
+  return FCopyParamCurrent;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TGUIConfiguration::GetChecksumAlg()
+{
+  return FChecksumAlg;
+}
+//---------------------------------------------------------------------------
+void __fastcall TGUIConfiguration::SetChecksumAlg(const UnicodeString value)
+{
+  FChecksumAlg = value;
 }
 //---------------------------------------------------------------------------
