@@ -615,17 +615,17 @@ UnicodeString __fastcall TConfiguration::GetOSVersionStr()
   return Result;
 }
 //---------------------------------------------------------------------------
-VS_FIXEDFILEINFO __fastcall TConfiguration::GetFixedApplicationInfo()
+TVSFixedFileInfo *__fastcall TConfiguration::GetFixedApplicationInfo()
 {
   return GetFixedFileInfo(GetApplicationInfo());
 }
 //---------------------------------------------------------------------------
 int __fastcall TConfiguration::GetCompoundVersion()
 {
-  VS_FIXEDFILEINFO FileInfo = GetFixedApplicationInfo();
+  TVSFixedFileInfo * FileInfo = GetFixedApplicationInfo();
   return CalculateCompoundVersion(
-    HIWORD(FileInfo.dwFileVersionMS), LOWORD(FileInfo.dwFileVersionMS),
-    HIWORD(FileInfo.dwFileVersionLS), LOWORD(FileInfo.dwFileVersionLS));
+    HIWORD(FileInfo->dwFileVersionMS), LOWORD(FileInfo->dwFileVersionMS),
+    HIWORD(FileInfo->dwFileVersionLS), LOWORD(FileInfo->dwFileVersionLS));
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TConfiguration::ModuleFileName()
@@ -654,7 +654,7 @@ void * __fastcall TConfiguration::GetFileApplicationInfo(const UnicodeString Fil
 //---------------------------------------------------------------------------
 void * __fastcall TConfiguration::GetApplicationInfo()
 {
-  return GetFileApplicationInfo(L"");
+  return GetFileApplicationInfo("");
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TConfiguration::GetFileProductName(const UnicodeString FileName)
@@ -702,12 +702,12 @@ UnicodeString __fastcall TConfiguration::GetVersionStr()
   TGuard Guard(FCriticalSection);
   try
   {
-    VS_FIXEDFILEINFO Info = GetFixedApplicationInfo();
+    TVSFixedFileInfo * Info = GetFixedApplicationInfo();
     return FMTLOAD(VERSION,
-      HIWORD(Info.dwFileVersionMS),
-      LOWORD(Info.dwFileVersionMS),
-      HIWORD(Info.dwFileVersionLS),
-      LOWORD(Info.dwFileVersionLS));
+      HIWORD(Info->dwFileVersionMS),
+      LOWORD(Info->dwFileVersionMS),
+      HIWORD(Info->dwFileVersionLS),
+      LOWORD(Info->dwFileVersionLS));
   }
   catch (Exception &E)
   {
@@ -721,12 +721,12 @@ UnicodeString __fastcall TConfiguration::GetVersion()
   try
   {
     UnicodeString Result;
-    VS_FIXEDFILEINFO Info = GetFixedApplicationInfo();
+    TVSFixedFileInfo * Info = GetFixedApplicationInfo();
     Result = // TrimVersion(
       FORMAT(L"%d.%d.%d",
-      HIWORD(Info.dwFileVersionMS),
-      LOWORD(Info.dwFileVersionMS),
-      HIWORD(Info.dwFileVersionLS));
+      HIWORD(Info->dwFileVersionMS),
+      LOWORD(Info->dwFileVersionMS),
+      HIWORD(Info->dwFileVersionLS));
     return Result;
   }
   catch (Exception &E)

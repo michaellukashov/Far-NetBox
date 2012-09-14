@@ -66,7 +66,7 @@ private:
 
 public:
   UnicodeString __fastcall GetOSVersionStr();
-  VS_FIXEDFILEINFO __fastcall GetFixedApplicationInfo();
+  TVSFixedFileInfo *__fastcall GetFixedApplicationInfo();
   void * __fastcall GetApplicationInfo();
   virtual UnicodeString __fastcall GetVersionStr();
   virtual UnicodeString __fastcall GetVersion();

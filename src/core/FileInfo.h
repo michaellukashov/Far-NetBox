@@ -12,7 +12,7 @@ void * __fastcall CreateFileInfo(UnicodeString FileName);
 void __fastcall FreeFileInfo(void * FileInfo);
 
 // Return pointer to fixed file version info
-VS_FIXEDFILEINFO __fastcall GetFixedFileInfo(void * FileInfo);
+PVSFixedFileInfo __fastcall GetFixedFileInfo(void * FileInfo);
 
 // Return number of available file version info translations
 unsigned __fastcall GetTranslationCount(void * FileInfo);

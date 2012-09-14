@@ -2810,7 +2810,7 @@ void __fastcall TSFTPFileSystem::DoStartup()
       Packet.AddString(FTerminal->GetConfiguration()->GetCompanyName());
       Packet.AddString(FTerminal->GetConfiguration()->GetProductName());
       Packet.AddString(FTerminal->GetConfiguration()->GetProductVersion());
-      Packet.AddInt64(LOWORD(FTerminal->GetConfiguration()->GetFixedApplicationInfo().dwFileVersionLS));
+      Packet.AddInt64(LOWORD(FTerminal->GetConfiguration()->GetFixedApplicationInfo()->dwFileVersionLS));
       SendPacket(&Packet);
       // we are not interested in the response, do not wait for it
       ReserveResponse(&Packet, NULL);

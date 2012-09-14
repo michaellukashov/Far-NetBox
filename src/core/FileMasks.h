@@ -48,7 +48,7 @@ public:
   void __fastcall SetMask(const UnicodeString & Mask);
 
   bool __fastcall Matches(const UnicodeString FileName, bool Directory = false,
-    const UnicodeString Path = L"", const TParams * Params = NULL) const;
+    const UnicodeString Path = "", const TParams * Params = NULL) const;
   bool __fastcall Matches(const UnicodeString FileName, bool Directory,
     const UnicodeString Path, const TParams * Params,
     bool & ImplicitMatch) const;

@@ -584,8 +584,8 @@ void __fastcall TFileMasks::CreateMask(
       TFormatSettings FormatSettings = TFormatSettings::Create(GetDefaultLCID());
       FormatSettings.DateSeparator = L'-';
       FormatSettings.TimeSeparator = L':';
-      FormatSettings.ShortDateFormat = L"yyyy/mm/dd";
-      FormatSettings.ShortTimeFormat = L"hh:nn:ss";
+      FormatSettings.ShortDateFormat = "yyyy/mm/dd";
+      FormatSettings.ShortTimeFormat = "hh:nn:ss";
 
       TDateTime Modification;
       if (TryStrToDateTime(PartStr, Modification, FormatSettings) ||
@@ -712,7 +712,7 @@ bool __fastcall TFileMasks::MatchesMaskMask(const TMaskMask & MaskMask, const Un
   }
   else
   {
-    Result = MaskMask.Mask->GetMatches(Str);
+    Result = MaskMask.Mask->Matches(Str);
   }
   return Result;
 }

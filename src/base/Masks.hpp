@@ -12,7 +12,7 @@ public:
     FMask(Mask)
   {
   }
-  bool GetMatches(const UnicodeString Str)
+  bool Matches(const UnicodeString Str)
   {
     return Sysutils::AnsiCompareIC(FMask, Str) == 0;
   }

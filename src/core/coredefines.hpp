@@ -174,6 +174,8 @@
 
 #define TShellExecuteInfoW _SHELLEXECUTEINFOW
 #define TSHFileInfoW SHFILEINFOW
+#define TVSFixedFileInfo VS_FIXEDFILEINFO
+#define PVSFixedFileInfo VS_FIXEDFILEINFO*
 
 #endif /* _MSC_VER */
 
