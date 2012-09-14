@@ -5143,73 +5143,73 @@ void __fastcall TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
 HANDLE __fastcall TTerminal::CreateLocalFile(const UnicodeString & LocalFileName, DWORD DesiredAccess,
     DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes)
 {
-  if (!GetOnCreateLocalFile())
+  if (GetOnCreateLocalFile())
   {
-    return ::CreateFile(LocalFileName.c_str(), DesiredAccess, ShareMode, NULL, CreationDisposition, FlagsAndAttributes, 0);
+    return GetOnCreateLocalFile()(LocalFileName, DesiredAccess, ShareMode, CreationDisposition, FlagsAndAttributes);
   }
   else
   {
-    return GetOnCreateLocalFile()(LocalFileName, DesiredAccess, ShareMode, CreationDisposition, FlagsAndAttributes);
+    return ::CreateFile(LocalFileName.c_str(), DesiredAccess, ShareMode, NULL, CreationDisposition, FlagsAndAttributes, 0);
   }
 }
 //---------------------------------------------------------------------------
 DWORD __fastcall TTerminal::GetLocalFileAttributes(const UnicodeString & LocalFileName)
 {
-  if (!GetOnGetLocalFileAttributes())
+  if (GetOnGetLocalFileAttributes())
   {
-    return ::GetFileAttributes(LocalFileName.c_str());
+    return GetOnGetLocalFileAttributes()(LocalFileName);
   }
   else
   {
-    return GetOnGetLocalFileAttributes()(LocalFileName);
+    return ::GetFileAttributes(LocalFileName.c_str());
   }
 }
 //---------------------------------------------------------------------------
 BOOL __fastcall TTerminal::SetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes)
 {
-  if (!GetOnSetLocalFileAttributes())
+  if (GetOnSetLocalFileAttributes())
   {
-    return ::SetFileAttributes(LocalFileName.c_str(), FileAttributes);
+    return GetOnSetLocalFileAttributes()(LocalFileName, FileAttributes);
   }
   else
   {
-    return GetOnSetLocalFileAttributes()(LocalFileName, FileAttributes);
+    return ::SetFileAttributes(LocalFileName.c_str(), FileAttributes);
   }
 }
 //---------------------------------------------------------------------------
 BOOL __fastcall TTerminal::MoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags)
 {
-  if (!GetOnMoveLocalFile())
+  if (GetOnMoveLocalFile())
   {
-    return ::MoveFileEx(LocalFileName.c_str(), NewLocalFileName.c_str(), Flags) != 0;
+    return GetOnMoveLocalFile()(LocalFileName, NewLocalFileName, Flags);
   }
   else
   {
-    return GetOnMoveLocalFile()(LocalFileName, NewLocalFileName, Flags);
+    return ::MoveFileEx(LocalFileName.c_str(), NewLocalFileName.c_str(), Flags) != 0;
   }
 }
 //---------------------------------------------------------------------------
 BOOL __fastcall TTerminal::RemoveLocalDirectory(const UnicodeString & LocalDirName)
 {
-  if (!GetOnRemoveLocalDirectory())
+  if (GetOnRemoveLocalDirectory())
   {
-    return ::RemoveDirectory(LocalDirName) != 0;
+    return GetOnRemoveLocalDirectory()(LocalDirName);
   }
   else
   {
-    return GetOnRemoveLocalDirectory()(LocalDirName);
+    return ::RemoveDirectory(LocalDirName) != 0;
   }
 }
 //---------------------------------------------------------------------------
 BOOL __fastcall TTerminal::CreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
 {
-  if (!GetOnCreateLocalDirectory())
+  if (GetOnCreateLocalDirectory())
   {
-    return ::CreateDirectory(LocalDirName.c_str(), SecurityAttributes) != 0;
+    return GetOnCreateLocalDirectory()(LocalDirName, SecurityAttributes);
   }
   else
   {
-    return GetOnCreateLocalDirectory()(LocalDirName, SecurityAttributes);
+    return ::CreateDirectory(LocalDirName.c_str(), SecurityAttributes) != 0;
   }
 }
 //---------------------------------------------------------------------------
