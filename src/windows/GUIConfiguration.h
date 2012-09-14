@@ -127,8 +127,8 @@ public:
 
 private:
   static UnicodeString FInvalidChars;
-  TObjectList * FRules;
-  TObjectList * FCopyParams;
+  TList * FRules;
+  TList * FCopyParams;
   TStrings * FNames;
   mutable TStrings * FNameList;
   bool FModified;

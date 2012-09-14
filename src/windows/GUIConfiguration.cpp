@@ -225,8 +225,8 @@ UnicodeString TCopyParamList::FInvalidChars(L"/\\[]");
 //---------------------------------------------------------------------------
 void __fastcall TCopyParamList::Init()
 {
-  FCopyParams = new TObjectList();
-  FRules = new TObjectList();
+  FCopyParams = new TList();
+  FRules = new TList();
   FNames = new TStringList();
   FNameList = NULL;
   FModified = false;
