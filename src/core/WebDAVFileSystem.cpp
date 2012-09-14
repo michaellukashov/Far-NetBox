@@ -12798,6 +12798,8 @@ void __fastcall TWebDAVFileSystem::Open()
     }
     catch (...)
     {
+      if (FFileTransferCancelled)
+        break;
       apr_sleep(200000); // 0.2 sec
     }
   }
@@ -14630,6 +14632,13 @@ webdav::error_t TWebDAVFileSystem::VerifyCertificate(
     FMTLOAD(VERIFY_CERT_PROMPT2, UnicodeString(Prompt).c_str()),
     NULL, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);
   RequestResult = Answer;
+  switch (RequestResult)
+  {
+    case qaCancel:
+      FFileTransferCancelled = true;
+      FFileTransferAbort = ftaCancel;
+      break;
+  }
   return WEBDAV_NO_ERROR;
 }
 
