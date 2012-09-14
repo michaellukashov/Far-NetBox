@@ -1082,7 +1082,7 @@ int __fastcall TCustomFarPlugin::FarMessage(unsigned int Flags,
     for (int Index = 0; Index < MessageLines->Count; Index++)
     {
       UnicodeString S = MessageLines->Strings[Index];
-      MessageLines->Strings(Index, UnicodeString(S));
+      MessageLines->Strings[Index] = UnicodeString(S);
       Items[Index] = const_cast<wchar_t *>(MessageLines->Strings[Index].c_str());
     }
 

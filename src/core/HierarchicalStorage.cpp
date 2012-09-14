@@ -510,7 +510,7 @@ void __fastcall TRegistryStorage::GetSubKeyNames(Classes::TStrings* Strings)
   FRegistry->GetKeyNames(Strings);
   for (int Index = 0; Index < Strings->Count; Index++)
   {
-    Strings->Strings(Index, UnMungeStr(Strings->Strings[Index]));
+    Strings->Strings[Index] = UnMungeStr(Strings->Strings[Index]);
   }
 }
 //---------------------------------------------------------------------------
@@ -764,7 +764,7 @@ void __fastcall TCustomIniFileStorage::GetValueNames(Classes::TStrings* Strings)
   FIniFile->ReadSection(GetCurrentSection(), Strings);
   for (int Index = 0; Index < Strings->Count; Index++)
   {
-    Strings->Strings(Index, UnMungeIniName(Strings->Strings[Index]));
+    Strings->Strings[Index] = UnMungeIniName(Strings->Strings[Index]);
   }
 }
 //---------------------------------------------------------------------------

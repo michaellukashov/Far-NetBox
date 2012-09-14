@@ -689,7 +689,7 @@ int __fastcall TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
         {
           if (static_cast<int>(Params->Aliases[ai].Button) == Data.Buttons[bi])
           {
-            ButtonLabels->Strings(bi, Params->Aliases[ai].Alias);
+            ButtonLabels->Strings[bi] = Params->Aliases[ai].Alias;
             break;
           }
         }

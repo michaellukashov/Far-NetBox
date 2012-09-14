@@ -1410,7 +1410,7 @@ bool __fastcall TPasswordDialog::Execute(TStrings * Results)
     for (int Index = 0; Index < FEdits->Count; Index++)
     {
       UnicodeString Text = reinterpret_cast<TFarEdit *>(FEdits->GetItem(Index))->GetText();
-      Results->Strings(Index, Text);
+      Results->Strings[Index] = Text;
     }
 
     if ((SavePasswordCheck != NULL) && SavePasswordCheck->GetChecked())
@@ -7528,7 +7528,7 @@ void __fastcall TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
         const TSynchronizeChecklist::TItem * ChecklistItem =
           reinterpret_cast<TSynchronizeChecklist::TItem *>(List->Objects[Index]);
 
-        List->Strings(Index, ItemLine(ChecklistItem));
+        List->Strings[Index] = ItemLine(ChecklistItem);
       }
     }
   }
@@ -8538,7 +8538,7 @@ void __fastcall TQueueDialog::RefreshQueue()
         if (QueueListBox->GetItems()->Strings[Index] != Line)
         {
           Change = true;
-          QueueListBox->GetItems()->Strings(Index, Line);
+          QueueListBox->GetItems()->Strings[Index] = Line;
         }
       }
 

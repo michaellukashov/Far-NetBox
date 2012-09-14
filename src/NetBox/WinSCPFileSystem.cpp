@@ -2738,7 +2738,7 @@ int __fastcall TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move
         else
         {
           // just in case file was saved under different name
-          FFileList->Strings(0, FLastEditFile);
+          FFileList->Strings[0] = FLastEditFile;
 
           FOriginalEditFile = L"";
           FLastEditFile = L"";
@@ -3084,8 +3084,8 @@ void __fastcall TWinSCPFileSystem::LogAuthentication(
       {
         AuthenticationLogLines->Delete(0);
       }
-      AuthenticationLogLines->Strings(0, AuthenticationLogLines->Strings[0] +
-        ::StringOfChar(' ', Width - AuthenticationLogLines->Strings[0].Length()));
+      AuthenticationLogLines->Strings[0] = AuthenticationLogLines->Strings[0] +
+        ::StringOfChar(' ', Width - AuthenticationLogLines->Strings[0].Length());
       Message = AnsiReplaceStr(AuthenticationLogLines->Text, L"\r", L"");
       Count = AuthenticationLogLines->Count;
     }
@@ -3292,7 +3292,7 @@ void /* __fastcall */ TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal
     Result = WinSCPPlugin()->InputBox(Name, StripHotKey(Prompts->Strings[0]), AResult, FIB_NOUSELASTHISTORY);
     if (Result)
     {
-      Results->Strings(0, AResult);
+      Results->Strings[0] = AResult;
     }
   }
   else

@@ -405,7 +405,7 @@ void __fastcall TBookmarkList::KeyChanged(int Index)
   {
     throw Exception(FMTLOAD(DUPLICATE_BOOKMARK, Bookmark->GetName().c_str()));
   }
-  FBookmarks->Strings(Index, Bookmark->GetKey());
+  FBookmarks->Strings[Index] = Bookmark->GetKey();
 }
 //---------------------------------------------------------------------------
 TBookmark * __fastcall TBookmarkList::FindByName(const UnicodeString Node, const UnicodeString Name)
