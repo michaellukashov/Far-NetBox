@@ -1003,7 +1003,7 @@ TStrings * __fastcall TGUIConfiguration::GetLocales()
       /* // FIXME
             TLanguages * Langs = NULL; // FIXME LanguagesDEPF();
             int Ext, Index, Count;
-            char LocaleStr[255];
+            wchar_t LocaleStr[255];
             LCID Locale;
 
             Count = Langs->Count;
@@ -1025,8 +1025,7 @@ TStrings * __fastcall TGUIConfiguration::GetLocales()
 
                 if (Ext >= 0)
                 {
-                  Exts->SetObject(Ext, reinterpret_cast<TObject*>(Locale));
-            Exts->Objects[Ext] = reinterpret_cast<TObject*>(Locale);
+                  Exts->Objects[Ext] = reinterpret_cast<TObject*>(Locale);
                 }
                 else
                 {
