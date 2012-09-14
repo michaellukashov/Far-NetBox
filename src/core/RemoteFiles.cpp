@@ -200,12 +200,12 @@ UnicodeString __fastcall AbsolutePath(const UnicodeString & Base, const UnicodeS
 //---------------------------------------------------------------------------
 UnicodeString __fastcall FromUnixPath(const UnicodeString Path)
 {
-  return StringReplace(Path, L"/", L"\\", TReplaceFlags::Init(rfReplaceAll));
+  return StringReplace(Path, L"/", L"\\", TReplaceFlags() << rfReplaceAll);
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall ToUnixPath(const UnicodeString Path)
 {
-  return StringReplace(Path, L"\\", L"/", TReplaceFlags::Init(rfReplaceAll));
+  return StringReplace(Path, L"\\", L"/", TReplaceFlags() << rfReplaceAll);
 }
 //---------------------------------------------------------------------------
 static void __fastcall CutFirstDirectory(UnicodeString & S, bool Unix)

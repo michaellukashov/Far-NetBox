@@ -280,7 +280,7 @@ UnicodeString ExceptionLogString(Exception *E)
       if (MoreMessages)
       {
         Msg += L"\n" +
-          StringReplace(MoreMessages->Text, L"\r", L"", TReplaceFlags::Init(rfReplaceAll));
+          StringReplace(MoreMessages->Text, L"\r", L"", TReplaceFlags() << rfReplaceAll);
       }
     }
     return Msg;
@@ -1629,7 +1629,7 @@ UnicodeString __fastcall EncodeUrlString(UnicodeString S)
 //---------------------------------------------------------------------------
 UnicodeString __fastcall EscapeHotkey(const UnicodeString & Caption)
 {
-  return StringReplace(Caption, L"&", L"&&", TReplaceFlags::Init(rfReplaceAll));
+  return StringReplace(Caption, L"&", L"&&", TReplaceFlags() << rfReplaceAll);
 }
 //---------------------------------------------------------------------------
 // duplicated in console's Main.cpp

@@ -462,7 +462,7 @@ BOOST_FIXTURE_TEST_CASE(test13, base_fixture_t)
 BOOST_FIXTURE_TEST_CASE(test14, base_fixture_t)
 {
   {
-    UnicodeString str = ::StringReplace(L"AA", L"A", L"B", TReplaceFlags::Init(rfReplaceAll));
+    UnicodeString str = ::StringReplace(L"AA", L"A", L"B", TReplaceFlags() << rfReplaceAll);
     BOOST_CHECK_EQUAL(W2MB(str.c_str()).c_str(), "BB");
   }
   {

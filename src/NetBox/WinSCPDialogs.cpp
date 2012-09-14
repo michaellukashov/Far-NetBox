@@ -1051,7 +1051,7 @@ private:
 //---------------------------------------------------------------------------
 UnicodeString __fastcall ReplaceCopyright(UnicodeString S)
 {
-  return ::StringReplace(S, L"©", L"(c)", TReplaceFlags::Init(rfReplaceAll));
+  return ::StringReplace(S, L"©", L"(c)", TReplaceFlags() << rfReplaceAll);
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :

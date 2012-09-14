@@ -896,7 +896,7 @@ UnicodeString __fastcall TCustomCommand::Complete(const UnicodeString & Command,
         if (!LastPass)
         {
           Replacement = StringReplace(Replacement, L"!", L"!!",
-            TReplaceFlags::Init(rfReplaceAll));
+            TReplaceFlags() << rfReplaceAll);
         }
         if (Delimit)
         {
