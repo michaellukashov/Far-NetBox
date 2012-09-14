@@ -1,9 +1,6 @@
 //---------------------------------------------------------------------------
-#include "stdafx.h"
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#endif
 
 #include "Common.h"
 #include "FileOperationProgress.h"
@@ -204,7 +201,7 @@ void __fastcall TFileOperationProgressType::Finish(UnicodeString FileName,
   assert(InProgress);
 
   FOnFinished(Operation, Side, Temp, FileName,
-    // TODO : There wasn't 'Success' condition, was it by mistake or by purpose?
+    /* TODO : There wasn't 'Success' condition, was it by mistake or by purpose? */
     Success && (Cancel == csContinue), OnceDoneOperation);
   FFilesFinished++;
   DoProgress();
@@ -463,7 +460,7 @@ TDateTime __fastcall TFileOperationProgressType::TimeExpected()
   }
   else
   {
-    return TDateTime(0);
+    return TDateTime(0.0);
   }
 }
 //---------------------------------------------------------------------------
@@ -479,7 +476,7 @@ TDateTime __fastcall TFileOperationProgressType::TotalTimeExpected()
   }
   else
   {
-    return TDateTime(0);
+    return TDateTime(0.0);
   }
 }
 //---------------------------------------------------------------------------
@@ -495,6 +492,6 @@ TDateTime __fastcall TFileOperationProgressType::TotalTimeLeft()
   }
   else
   {
-    return TDateTime(0);
+    return TDateTime(0.0);
   }
 }

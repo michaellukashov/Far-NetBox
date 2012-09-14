@@ -1,25 +1,14 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#else
-#include "stdafx.h"
-#include <Windows.h>
-
-#include "boostdefines.hpp"
-#include <boost/scope_exit.hpp>
-#endif
 
 #include <Common.h>
 #include <Exceptions.h>
-#include <Windows.h>
+#include <Windows.hpp>
 #include "FileInfo.h"
 #include "FileBuffer.h"
-#include "SysUtils.h"
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #pragma package(smart_init)
-#endif
 //---------------------------------------------------------------------------
 #define DWORD_ALIGN( base, ptr ) \
     ( (LPBYTE)(base) + ((((LPBYTE)(ptr) - (LPBYTE)(base)) + 3) & ~3) )
@@ -47,16 +36,9 @@ unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, unsigned in
   }
   else
   {
-    // try
+    TRY_FINALLY2 (NeedFree, Module,
     {
-      BOOST_SCOPE_EXIT ( (&NeedFree) (&Module) )
-      {
-        if (NeedFree)
-        {
-          FreeLibrary(Module);
-        }
-      } BOOST_SCOPE_EXIT_END
-      HANDLE Rsrc = FindResource(Module, MAKEINTRESOURCE(VS_VERSION_INFO),
+      HRSRC Rsrc = FindResource(Module, MAKEINTRESOURCE(VS_VERSION_INFO),
         MAKEINTRESOURCE(VS_FILE_INFO));
       if (Rsrc == NULL)
       {
@@ -70,12 +52,8 @@ unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, unsigned in
         }
         else
         {
-          // try
+          TRY_FINALLY1 (Mem,
           {
-            BOOST_SCOPE_EXIT ( (&Mem) )
-            {
-              FreeResource(Mem);
-            } BOOST_SCOPE_EXIT_END
             VS_VERSION_INFO_STRUCT32 * VersionInfo = static_cast<VS_VERSION_INFO_STRUCT32 *>(LockResource(Mem));
             const VS_FIXEDFILEINFO * FixedInfo =
               (VS_FIXEDFILEINFO *)DWORD_ALIGN(VersionInfo, VersionInfo->szKey + wcslen(VersionInfo->szKey) + 1);
@@ -99,24 +77,22 @@ unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, unsigned in
               }
             }
           }
-#ifndef _MSC_VER
-          __finally
+          ,
           {
             FreeResource(Mem);
           }
-#endif
+          );
         }
       }
     }
-#ifndef _MSC_VER
-    __finally
+    ,
     {
       if (NeedFree)
       {
         FreeLibrary(Module);
       }
     }
-#endif
+    );
   }
 
   return Len;
@@ -184,6 +160,7 @@ void * __fastcall CreateFileInfo(UnicodeString FileName)
   void * Result = NULL;
 
 
+
   // Get file version info block size
   Size = GetFileVersionInfoSizeFix(FileName.c_str(), &Handle);
   // If size is valid
@@ -213,15 +190,15 @@ typedef TTranslation TTranslations[65536];
 typedef TTranslation *PTranslations;
 //---------------------------------------------------------------------------
 // Return pointer to fixed file version info
-VS_FIXEDFILEINFO __fastcall GetFixedFileInfo(void * FileInfo)
+PVSFixedFileInfo __fastcall GetFixedFileInfo(void * FileInfo)
 {
   UINT Len;
-  VS_FIXEDFILEINFO * pResult = NULL;
-  if (!VerQueryValue(FileInfo, L"\\", reinterpret_cast<void **>(&pResult), &Len))
+  PVSFixedFileInfo Result = NULL;
+  if (!VerQueryValue(FileInfo, L"\\", reinterpret_cast<void **>(&Result), &Len))
   {
     throw Exception(L"Fixed file info not available");
   }
-  return *pResult;
+  return Result;
 }
 //---------------------------------------------------------------------------
 // Return number of available file version info translations
@@ -272,7 +249,7 @@ UnicodeString __fastcall GetFileInfoString(void * FileInfo,
     IntToHex(Translation.CharSet, 4) +
     L"\\" + StringName).c_str(), (void**)&P, &Len))
   {
-    throw Exception(L"Specified file info string not available");
+    throw Exception("Specified file info string not available");
   }
   UnicodeString Result = UnicodeString(P, Len);
   PackStr(Result);

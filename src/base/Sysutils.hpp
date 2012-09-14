@@ -2,14 +2,10 @@
 #ifndef SysutilsH
 #define SysutilsH
 
-#ifdef _MSC_VER
 #include <WinBase.h>
 
-#include "boostdefines.hpp"
-
-#include "Classes.h"
-#include "UnicodeString.hpp"
-#endif
+#include <Classes.hpp>
+#include <headers.hpp>
 
 namespace Sysutils {
 
@@ -31,9 +27,18 @@ public:
   template<typename T>
   bool InheritsFrom() const { return dynamic_cast<const T *>(this) != NULL; }
 
+protected:
   // UnicodeString GetHelpKeyword() const { return FHelpKeyword; }
   const UnicodeString GetMessage() const { return FMessage; }
   void SetMessage(const UnicodeString & Value) { FMessage = Value; }
+
+private:
+  UnicodeString PropertyGetMessage() { return GetMessage(); }
+  void PropertySetMessage(UnicodeString Value) { SetMessage(Value); }
+
+public:
+  RWProperty<UnicodeString, Exception, &Exception::PropertyGetMessage, &Exception::PropertySetMessage> Message;
+
 protected:
   UnicodeString FMessage;
   // UnicodeString FHelpKeyword;
@@ -88,6 +93,7 @@ private:
   // typedef StaticArray<UnicodeString, 7> _TFormatSettings__4;
 public:
   TFormatSettings(int /* LCID */) {}
+  static TFormatSettings Create(int LCID ) { return TFormatSettings(LCID); }
   unsigned char CurrencyFormat;
   unsigned char NegCurrFormat;
   wchar_t ThousandSeparator;

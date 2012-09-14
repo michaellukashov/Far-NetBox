@@ -1,17 +1,11 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#else
-#include "stdafx.h"
-#endif
+
 #include "Common.h"
-#include "SysUtils.h"
 #include "FileBuffer.h"
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #pragma package(smart_init)
-#endif
 //---------------------------------------------------------------------------
 char * __fastcall EOLToStr(TEOLType EOLType)
 {
@@ -38,19 +32,19 @@ void __fastcall TFileBuffer::SetSize(__int64 value)
 {
   if (FSize != value)
   {
-    FMemory->SetSize(value);
+    FMemory->Size = value;
     FSize = value;
   }
 }
 //---------------------------------------------------------------------------
 void __fastcall TFileBuffer::SetPosition(__int64 value)
 {
-  FMemory->SetPosition(value);
+  FMemory->Position = value;
 }
 //---------------------------------------------------------------------------
 __int64 __fastcall TFileBuffer::GetPosition() const
 {
-  return FMemory->GetPosition();
+  return FMemory->Position;
 }
 //---------------------------------------------------------------------------
 void __fastcall TFileBuffer::SetMemory(TMemoryStream * value)
@@ -145,7 +139,7 @@ void __fastcall TFileBuffer::Convert(char * Source, char * Dest, int Params,
       }
       else if (*Ptr == Source[0])
       {
-                if ((*Ptr == Dest[0]) && (Index == GetSize() - 1))
+        if ((*Ptr == Dest[0]) && (Index == GetSize() - 1))
         {
           Token = true;
         }

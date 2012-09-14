@@ -94,7 +94,7 @@ void __fastcall TFar3Storage::CloseSubKey()
   // DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
   THierarchicalStorage::CloseSubKey();
   // assert(FKeyHistory->GetCount() == FSubKeyIds.size() - 1);
-  if (FKeyHistory->GetCount() && FSubKeyIds.size())
+  if (FKeyHistory->Count && FSubKeyIds.size())
   {
     FRoot = FSubKeyIds.back();
     FSubKeyIds.pop_back();
@@ -109,7 +109,7 @@ void __fastcall TFar3Storage::CloseSubKey()
 bool __fastcall TFar3Storage::DeleteSubKey(const UnicodeString SubKey)
 {
   UnicodeString K;
-  if (FKeyHistory->GetCount() == 0)
+  if (FKeyHistory->Count == 0)
   {
     K = GetFullCurrentSubKey();
     FRoot = FPluginSettings.OpenSubKey(FRoot, K.c_str());
@@ -134,7 +134,7 @@ void __fastcall TFar3Storage::GetSubKeyNames(TStrings * Strings)
       // DEBUG_PRINTF(L"settings.Items[%d].Type = %d", Index, settings.Items[Index].Type);
       if (settings.Items[Index].Type == FST_SUBKEY)
       {
-        Strings->PutString(Index, PuttyUnMungeStr(settings.Items[Index].Name));
+        Strings->Strings[Index] = PuttyUnMungeStr(settings.Items[Index].Name);
       }
     }
   }
@@ -143,7 +143,7 @@ void __fastcall TFar3Storage::GetSubKeyNames(TStrings * Strings)
 //---------------------------------------------------------------------------
 void __fastcall TFar3Storage::GetValueNames(TStrings * Strings)
 {
-  DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
+  // DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
   Strings->Clear();
   FarSettingsEnum settings = {0};
   settings.Root = FRoot;
@@ -155,7 +155,7 @@ void __fastcall TFar3Storage::GetValueNames(TStrings * Strings)
       Strings->Add(Item->Name);
     }
   }
-  DEBUG_PRINTF(L"end, Strings->GetCount() = %d", Strings->GetCount());
+  // DEBUG_PRINTF(L"end, Strings->GetCount() = %d", Strings->Count);
 }
 //---------------------------------------------------------------------------
 bool __fastcall TFar3Storage::DeleteValue(const UnicodeString Name)

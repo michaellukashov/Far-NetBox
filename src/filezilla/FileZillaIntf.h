@@ -6,10 +6,8 @@
 
 #include <time.h>
 #include <FileZillaOpt.h>
-#ifdef _MSC_VER
-#include "Classes.h"
-#include "Sysutils.h"
-#endif
+#include <Classes.hpp>
+#include <Sysutils.hpp>
 //---------------------------------------------------------------------------
 class CFileZillaApi;
 class TFileZillaIntern;

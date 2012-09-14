@@ -187,7 +187,7 @@ BEGIN
   CONFIRM_PROLONG_TIMEOUT3, "Host is not communicating for %d seconds.\n\nWait for another %d seconds?"
   PROMPT_KEY_PASSPHRASE, "&Passphrase for key '%s':"
   PROMPT_FILE_OVERWRITE, "File '%s' already exists. Overwrite?"
-  PROMPT_DIRECTORY_OVERWRITE, "Directory '%s' already exists. Overwrite?"
+  DIRECTORY_OVERWRITE, "Directory '%s' already exists. Overwrite?"
   CIPHER_BELOW_TRESHOLD, "The first %scipher supported by the server is %s, which is below the configured warning threshold.\n\nDo you want to continue with this connection?"
   CIPHER_TYPE_BOTH, ""
   CIPHER_TYPE_CS, "client-to-server "
@@ -360,7 +360,7 @@ BEGIN
   OPENSSL_URL, "http://www.openssl.org/"
 
   WINSCPFAR_NAME, "WinSCP"
-  WINSCP_VERSION, "5.0.8"
+  WINSCP_VERSION, "5.0.9"
   WINSCPFAR_VERSION, "1.6.2"
   WINSCPFAR_BASED_ON, "Based on WinSCP: SFTP/FTP/SCP client for FAR"
   WINSCPFAR_BASED_VERSION, " Version %s"

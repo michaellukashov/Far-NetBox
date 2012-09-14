@@ -1,17 +1,11 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#else
-#include "stdafx.h"
-#endif
 
 #include "Common.h"
 #include "WinSCPSecurity.h"
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #pragma package(smart_init)
-#endif
 //---------------------------------------------------------------------------
 #define PWALG_SIMPLE_INTERNAL 0x00
 #define PWALG_SIMPLE_EXTERNAL 0x01
@@ -114,3 +108,4 @@ bool GetExternalEncryptedPassword(RawByteString Encrypted, RawByteString & Passw
   return Result;
 }
 //---------------------------------------------------------------------------
+

@@ -1,22 +1,12 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#else
-#include "stdafx.h"
-#endif
 
 #include "Common.h"
 #include "Exceptions.h"
-#include "Common.h"
 #include "TextsCore.h"
-#include "Terminal.h"
-#include "SysUtils.h"
-
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #pragma package(smart_init)
-#endif
 //---------------------------------------------------------------------------
 bool __fastcall ExceptionMessage(const Exception * E, UnicodeString & Message)
 {
@@ -29,13 +19,13 @@ bool __fastcall ExceptionMessage(const Exception * E, UnicodeString & Message)
   {
     Message = LoadStr(ACCESS_VIOLATION_ERROR);
   }
-  else if (E->GetMessage().IsEmpty())
+  else if (E->Message.get().IsEmpty())
   {
     Result = false;
   }
   else
   {
-    Message = E->GetMessage();
+    Message = E->Message;
   }
   return Result;
 }
@@ -90,9 +80,9 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   // and append message to the end to more messages
   if (!Msg.IsEmpty())
   {
-    if (FMessage.IsEmpty())
+    if (Message.get().IsEmpty())
     {
-      SetMessage(Msg);
+      Message = Msg;
     }
     else
     {
@@ -100,7 +90,7 @@ TStrings * ExceptionToMoreMessages(Exception * E)
       {
         FMoreMessages = new TStringList();
       }
-      FMoreMessages->Append(GetMessage());
+      FMoreMessages->Append(Msg);
     }
   }
 }
@@ -114,7 +104,7 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   if (!MoreMessages.IsEmpty())
   {
     FMoreMessages = new TStringList();
-    FMoreMessages->SetText(MoreMessages);
+    FMoreMessages->Text = MoreMessages;
   }
 }
 //---------------------------------------------------------------------------
@@ -166,16 +156,17 @@ void __fastcall ExtException::AddMoreMessages(const Exception * E)
 
     // new exception does not have own message, this is in fact duplication of
     // the exception data, but the exception class may being changed
-    if (GetMessage().IsEmpty())
+
+    if (Message.get().IsEmpty())
     {
-      SetMessage(Msg);
+      Message = Msg;
     }
     else if (!Msg.IsEmpty())
     {
       FMoreMessages->Insert(0, Msg);
     }
 
-    if (FMoreMessages->GetCount() == 0)
+    if (FMoreMessages->Count == 0)
     {
       delete FMoreMessages;
       FMoreMessages = NULL;
@@ -217,7 +208,7 @@ UnicodeString __fastcall LastSysErrorMessage()
   EFatal * F = dynamic_cast<EFatal *>(E);
   if (F != NULL)
   {
-    FReopenQueried = F->FReopenQueried;
+    FReopenQueried = F->GetReopenQueried();
   }
 }
 //---------------------------------------------------------------------------
@@ -248,11 +239,11 @@ Exception * __fastcall CloneException(Exception * E)
   }
   else if (dynamic_cast<EAbort *>(E) != NULL)
   {
-    return new EAbort(E->GetMessage());
+    return new EAbort(E->Message.get());
   }
   else
   {
-    return new Exception(E->GetMessage());
+    return new Exception(E->Message);
   }
 }
 //---------------------------------------------------------------------------
@@ -268,7 +259,7 @@ void __fastcall RethrowException(Exception * E)
   }
   else if (dynamic_cast<EAbort *>(E) != NULL)
   {
-    throw EAbort(E->GetMessage());
+    throw EAbort(E->Message.get());
   }
   else
   {

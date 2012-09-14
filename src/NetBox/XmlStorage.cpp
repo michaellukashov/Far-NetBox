@@ -1,12 +1,8 @@
 //---------------------------------------------------------------------------
-#include "nbafx.h"
-
 #include <vector>
 
-#include "boostdefines.hpp"
-#include <boost/scope_exit.hpp>
-
-#include "Common.h"
+#include <Classes.hpp>
+#include <Common.h>
 #include "XmlStorage.h"
 #include "TextsCore.h"
 #include "FarUtil.h"
@@ -176,7 +172,7 @@ bool __fastcall TXmlStorage::DoOpenSubKey(const UnicodeString MungedSubKey, bool
 void TXmlStorage::CloseSubKey()
 {
   THierarchicalStorage::CloseSubKey();
-  if (FKeyHistory->GetCount() && FSubElements.size())
+  if (FKeyHistory->Count && FSubElements.size())
   {
     FCurrentElement = FSubElements.back();
     FSubElements.pop_back();

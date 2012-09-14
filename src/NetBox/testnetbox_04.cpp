@@ -4,7 +4,7 @@
 // testnetbox_04 --run_test=testnetbox_04/test1 --log_level=all 2>&1 | tee res.txt
 //------------------------------------------------------------------------------
 
-#include "nbafx.h"
+#include <Classes.hpp>
 #include <time.h>
 #include <stdio.h>
 #include <iostream>
@@ -14,7 +14,6 @@
 #define BOOST_TEST_MODULE "testnetbox_04"
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
-#include <boost/scope_exit.hpp>
 
 #include "TestTexts.h"
 #include "Common.h"

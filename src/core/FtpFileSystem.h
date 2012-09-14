@@ -82,9 +82,7 @@ public:
   virtual UnicodeString __fastcall GetUserName();
 
 protected:
-#ifndef _MSC_VER
-  enum TOverwriteMode { omOverwrite, omResume };
-#endif
+  // enum TOverwriteMode { omOverwrite, omResume };
 
   virtual UnicodeString __fastcall GetCurrentDirectory();
 
@@ -109,7 +107,7 @@ protected:
   void __fastcall PoolForFatalNonCommandReply();
   void __fastcall GotNonCommandReply(unsigned int Reply);
   void __fastcall GotReply(unsigned int Reply, unsigned int Flags = 0,
-    UnicodeString Error = L"", unsigned int * Code = NULL,
+    UnicodeString Error = "", unsigned int * Code = NULL,
     TStrings ** Response = NULL);
   void __fastcall ResetReply();
   void __fastcall HandleReplyStatus(UnicodeString Response);
@@ -149,7 +147,7 @@ protected:
     const TRemoteFile * File, const UnicodeString TargetDir,
     const TCopyParamType * CopyParam, int Params,
     TFileOperationProgressType * OperationProgress, unsigned int Flags);
-  void /* __fastcall */ SinkFile(UnicodeString FileName, const TRemoteFile * File, void * Param);
+  void /* __fastcall */ SinkFile(const UnicodeString & FileName, const TRemoteFile * File, void * Param);
   void __fastcall SourceRobust(const UnicodeString FileName,
     const TRemoteFile * File,
     const UnicodeString TargetDir, const TCopyParamType * CopyParam, int Params,
@@ -172,11 +170,7 @@ protected:
   void __fastcall ReadDirectoryProgress(__int64 Bytes);
   void __fastcall ResetFileTransfer();
   void __fastcall DoFileTransferProgress(__int64 TransferSize, __int64 Bytes);
-#ifdef _MSC_VER
-public:
   void __fastcall FileTransferProgress(__int64 TransferSize, __int64 Bytes);
-protected:
-#endif
   void __fastcall ResetCaches();
   void __fastcall CaptureOutput(const UnicodeString & Str);
   void __fastcall DoReadDirectory(TRemoteFileList * FileList);

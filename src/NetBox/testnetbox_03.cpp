@@ -4,7 +4,8 @@
 // testnetbox_03 --run_test=testnetbox_03/test1 --log_level=all 2>&1 | tee res.txt
 //------------------------------------------------------------------------------
 
-#include "nbafx.h"
+#include <Classes.hpp>
+#include <CppProperties.h>
 #include <time.h>
 #include <stdio.h>
 #include <iostream>
@@ -15,13 +16,13 @@
 #define BOOST_TEST_MAIN
 // #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
-#include <boost/scope_exit.hpp>
 
 #include "TestTexts.h"
 #include "Common.h"
 #include "FarPlugin.h"
 #include "testutils.h"
 #include "FileBuffer.h"
+#include "Bookmarks.h"
 
 using namespace boost::unit_test;
 
@@ -57,33 +58,33 @@ BOOST_AUTO_TEST_SUITE(testnetbox_03)
 BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
 {
   TList list;
-  BOOST_CHECK_EQUAL(0, list.GetCount());
+  BOOST_CHECK_EQUAL(0, list.Count);
   TObject obj1;
   TObject obj2;
   if (1)
   {
     list.Add(&obj1);
-    BOOST_CHECK_EQUAL(1, list.GetCount());
+    BOOST_CHECK_EQUAL(1, list.Count);
     list.Add(&obj2);
-    BOOST_CHECK_EQUAL(2, list.GetCount());
+    BOOST_CHECK_EQUAL(2, list.Count);
     BOOST_CHECK_EQUAL(0, list.IndexOf(&obj1));
     BOOST_CHECK_EQUAL(1, list.IndexOf(&obj2));
   }
   list.Clear();
   if (1)
   {
-    BOOST_CHECK_EQUAL(0, list.GetCount());
+    BOOST_CHECK_EQUAL(0, list.Count);
     list.Insert(0, &obj1);
-    BOOST_CHECK_EQUAL(1, list.GetCount());
+    BOOST_CHECK_EQUAL(1, list.Count);
     list.Insert(0, &obj2);
-    BOOST_CHECK_EQUAL(2, list.GetCount());
+    BOOST_CHECK_EQUAL(2, list.Count);
     BOOST_CHECK_EQUAL(1, list.IndexOf(&obj1));
     BOOST_CHECK_EQUAL(0, list.IndexOf(&obj2));
   }
   if (1)
   {
     list.Delete(1);
-    BOOST_CHECK_EQUAL(1, list.GetCount());
+    BOOST_CHECK_EQUAL(1, list.Count);
     BOOST_CHECK_EQUAL(-1, list.IndexOf(&obj1));
     BOOST_CHECK_EQUAL(0, list.IndexOf(&obj2));
     BOOST_CHECK_EQUAL(1, list.Add(&obj1));
@@ -91,17 +92,17 @@ BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
     BOOST_CHECK_EQUAL(0, list.IndexOf(&obj1));
     BOOST_CHECK_EQUAL(0, list.Remove(&obj1));
     BOOST_CHECK_EQUAL(-1, list.IndexOf(&obj1));
-    BOOST_CHECK_EQUAL(0, list.GetCount());
+    BOOST_CHECK_EQUAL(0, list.Count);
   }
   if (1)
   {
     list.Add(&obj1);
     list.Add(&obj2);
     list.Extract(&obj1);
-    BOOST_CHECK_EQUAL(1, list.GetCount());
+    BOOST_CHECK_EQUAL(1, list.Count);
     BOOST_CHECK_EQUAL(0, list.IndexOf(&obj2));
     list.Add(&obj1);
-    BOOST_CHECK_EQUAL(2, list.GetCount());
+    BOOST_CHECK_EQUAL(2, list.Count);
     list.Move(0, 1);
     BOOST_CHECK_EQUAL(0, list.IndexOf(&obj1));
     BOOST_CHECK_EQUAL(1, list.IndexOf(&obj2));
@@ -114,47 +115,47 @@ BOOST_FIXTURE_TEST_CASE(test2, base_fixture_t)
   if (1)
   {
     TStringList strings;
-    BOOST_CHECK_EQUAL(0, strings.GetCount());
+    BOOST_CHECK_EQUAL(0, strings.Count);
     BOOST_CHECK_EQUAL(0, strings.Add(L"line 1"));
-    BOOST_CHECK_EQUAL(1, strings.GetCount());
-    str = strings.GetStrings(0);
+    BOOST_CHECK_EQUAL(1, strings.Count);
+    str = strings.Strings[0];
     // DEBUG_PRINTF(L"str = %s", str.c_str());
     BOOST_CHECK_EQUAL(W2MB(str.c_str()), "line 1");
-    strings.PutString(0, L"line 0");
-    BOOST_CHECK_EQUAL(1, strings.GetCount());
-    str = strings.GetStrings(0);
+    strings.Strings(0, L"line 0");
+    BOOST_CHECK_EQUAL(1, strings.Count);
+    str = strings.Strings[0];
     BOOST_CHECK_EQUAL(W2MB(str.c_str()), "line 0");
-    strings.PutString(0, L"line 00");
-    BOOST_CHECK_EQUAL(1, strings.GetCount());
-    BOOST_CHECK_EQUAL(W2MB(strings.GetStrings(0).c_str()), "line 00");
+    strings.Strings(0, L"line 00");
+    BOOST_CHECK_EQUAL(1, strings.Count);
+    BOOST_CHECK_EQUAL(W2MB(strings.Strings[0].c_str()), "line 00");
     strings.Add(L"line 11");
-    BOOST_CHECK_EQUAL(2, strings.GetCount());
-    BOOST_CHECK_EQUAL(W2MB(strings.GetStrings(1).c_str()), "line 11");
+    BOOST_CHECK_EQUAL(2, strings.Count);
+    BOOST_CHECK_EQUAL(W2MB(strings.Strings[1].c_str()), "line 11");
     strings.Delete(1);
-    BOOST_CHECK_EQUAL(1, strings.GetCount());
+    BOOST_CHECK_EQUAL(1, strings.Count);
   }
   TStringList strings;
   if (1)
   {
-    BOOST_CHECK_EQUAL(0, strings.GetCount());
+    BOOST_CHECK_EQUAL(0, strings.Count);
     strings.Add(L"line 1");
-    str = strings.GetText();
+    str = strings.Text;
     // DEBUG_PRINTF(L"str = %s", str.c_str());
     BOOST_CHECK_EQUAL(W2MB(str.c_str()).c_str(), "line 1\n");
   }
   if (1)
   {
     strings.Add(L"line 2");
-    BOOST_CHECK_EQUAL(2, strings.GetCount());
-    str = strings.GetText();
+    BOOST_CHECK_EQUAL(2, strings.Count);
+    str = strings.Text;
     // DEBUG_PRINTF(L"str = %s", str.c_str());
     BOOST_CHECK_EQUAL(W2MB(str.c_str()).c_str(), "line 1\nline 2\n");
     strings.Insert(0, L"line 0");
-    BOOST_CHECK_EQUAL(3, strings.GetCount());
-    str = strings.GetText();
+    BOOST_CHECK_EQUAL(3, strings.Count);
+    str = strings.Text;
     BOOST_CHECK_EQUAL(W2MB(str.c_str()).c_str(), "line 0\nline 1\nline 2\n");
-    strings.PutObject(0, NULL);
-    UnicodeString str = strings.GetStrings(0);
+    strings.Objects(0, NULL);
+    UnicodeString str = strings.Strings[0];
     BOOST_CHECK_EQUAL(W2MB(str.c_str()), "line 0");
   }
 }
@@ -163,26 +164,26 @@ BOOST_FIXTURE_TEST_CASE(test3, base_fixture_t)
 {
   UnicodeString Text = L"text text text text text1\ntext text text text text2\n";
   TStringList Lines;
-  Lines.SetText(Text);
-  BOOST_CHECK_EQUAL(2, Lines.GetCount());
-  BOOST_TEST_MESSAGE("Lines 0 = " << W2MB(Lines.GetStrings(0).c_str()));
-  BOOST_TEST_MESSAGE("Lines 1 = " << W2MB(Lines.GetStrings(1).c_str()));
-  BOOST_CHECK_EQUAL("text text text text text1", W2MB(Lines.GetStrings(0).c_str()).c_str());
-  BOOST_CHECK_EQUAL("text text text text text2", W2MB(Lines.GetStrings(1).c_str()).c_str());
+  Lines.Text = Text;
+  BOOST_CHECK_EQUAL(2, Lines.Count);
+  BOOST_TEST_MESSAGE("Lines 0 = " << W2MB(Lines.Strings[0].c_str()));
+  BOOST_TEST_MESSAGE("Lines 1 = " << W2MB(Lines.Strings[1].c_str()));
+  BOOST_CHECK_EQUAL("text text text text text1", W2MB(Lines.Strings[0].c_str()).c_str());
+  BOOST_CHECK_EQUAL("text text text text text2", W2MB(Lines.Strings[1].c_str()).c_str());
 }
 
 BOOST_FIXTURE_TEST_CASE(test4, base_fixture_t)
 {
   UnicodeString Text = L"text, text text, text text1\ntext text text, text text2\n";
   TStringList Lines;
-  Lines.SetCommaText(Text);
-  BOOST_CHECK_EQUAL(6, Lines.GetCount());
-  BOOST_CHECK_EQUAL("text", W2MB(Lines.GetStrings(0).c_str()).c_str());
-  BOOST_CHECK_EQUAL(" text text", W2MB(Lines.GetStrings(1).c_str()).c_str());
-  BOOST_CHECK_EQUAL(" text text1", W2MB(Lines.GetStrings(2).c_str()).c_str());
-  BOOST_CHECK_EQUAL("text text text", W2MB(Lines.GetStrings(3).c_str()).c_str());
-  BOOST_CHECK_EQUAL(" text text2", W2MB(Lines.GetStrings(4).c_str()).c_str());
-  UnicodeString Text2 = Lines.GetCommaText();
+  Lines.CommaText = Text;
+  BOOST_CHECK_EQUAL(6, Lines.Count);
+  BOOST_CHECK_EQUAL("text", W2MB(Lines.Strings[0].c_str()).c_str());
+  BOOST_CHECK_EQUAL(" text text", W2MB(Lines.Strings[1].c_str()).c_str());
+  BOOST_CHECK_EQUAL(" text text1", W2MB(Lines.Strings[2].c_str()).c_str());
+  BOOST_CHECK_EQUAL("text text text", W2MB(Lines.Strings[3].c_str()).c_str());
+  BOOST_CHECK_EQUAL(" text text2", W2MB(Lines.Strings[4].c_str()).c_str());
+  UnicodeString Text2 = Lines.CommaText;
   BOOST_TEST_MESSAGE("Text2 = " << W2MB(Text2.c_str()));
   BOOST_CHECK_EQUAL("\"text\",\" text text\",\" text text1\",\"text text text\",\" text text2\",\"\"", W2MB(Text2.c_str()).c_str());
 }
@@ -192,7 +193,7 @@ BOOST_FIXTURE_TEST_CASE(test5, base_fixture_t)
   TStringList Lines;
   TObject obj1;
   Lines.InsertObject(0, L"line 1", &obj1);
-  BOOST_CHECK(&obj1 == Lines.GetObjects(0));
+  BOOST_CHECK(&obj1 == Lines.Objects[0]);
 }
 
 BOOST_FIXTURE_TEST_CASE(test6, base_fixture_t)
@@ -200,23 +201,23 @@ BOOST_FIXTURE_TEST_CASE(test6, base_fixture_t)
   TStringList Lines;
   Lines.Add(L"bbb");
   Lines.Add(L"aaa");
-  // BOOST_TEST_MESSAGE("Lines = " << W2MB(Lines.GetText().c_str()).c_str());
+  // BOOST_TEST_MESSAGE("Lines = " << W2MB(Lines.Text.c_str()).c_str());
   {
-    Lines.SetSorted(true);
-    // BOOST_TEST_MESSAGE("Lines = " << W2MB(Lines.GetText().c_str()).c_str());
-    BOOST_CHECK_EQUAL("aaa", W2MB(Lines.GetStrings(0).c_str()).c_str());
-    BOOST_CHECK_EQUAL(2, Lines.GetCount());
+    Lines.Sorted = true;
+    // BOOST_TEST_MESSAGE("Lines = " << W2MB(Lines.Text.c_str()).c_str());
+    BOOST_CHECK_EQUAL("aaa", W2MB(Lines.Strings[0].c_str()).c_str());
+    BOOST_CHECK_EQUAL(2, Lines.Count);
   }
   {
-    Lines.SetSorted(false);
+    Lines.Sorted = false;
     Lines.Add(L"Aaa");
-    Lines.SetCaseSensitive(true);
-    Lines.SetSorted(true);
-    BOOST_CHECK_EQUAL(3, Lines.GetCount());
-    // BOOST_TEST_MESSAGE("Lines = " << W2MB(Lines.GetText().c_str()).c_str());
-    BOOST_CHECK_EQUAL("aaa", W2MB(Lines.GetStrings(0).c_str()).c_str());
-    BOOST_CHECK_EQUAL("Aaa", W2MB(Lines.GetStrings(1).c_str()).c_str());
-    BOOST_CHECK_EQUAL("bbb", W2MB(Lines.GetStrings(2).c_str()).c_str());
+    Lines.CaseSensitive = true;
+    Lines.Sorted = true;
+    BOOST_CHECK_EQUAL(3, Lines.Count);
+    // BOOST_TEST_MESSAGE("Lines = " << W2MB(Lines.Text.c_str()).c_str());
+    BOOST_CHECK_EQUAL("aaa", W2MB(Lines.Strings[0].c_str()).c_str());
+    BOOST_CHECK_EQUAL("Aaa", W2MB(Lines.Strings[1].c_str()).c_str());
+    BOOST_CHECK_EQUAL("bbb", W2MB(Lines.Strings[2].c_str()).c_str());
   }
 }
 
@@ -232,7 +233,7 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
       BOOST_SCOPE_EXIT( (&Lines) )
       {
         BOOST_TEST_MESSAGE("in BOOST_SCOPE_EXIT");
-        BOOST_CHECK(1 == Lines.GetCount());
+        BOOST_CHECK(1 == Lines.Count);
       } BOOST_SCOPE_EXIT_END
       // throw std::exception("");
       BOOST_TEST_MESSAGE("after BOOST_SCOPE_EXIT_END");
@@ -243,7 +244,7 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
     }
     BOOST_TEST_MESSAGE("after try");
     Lines.Add(L"aaa");
-    BOOST_CHECK(2 == Lines.GetCount());
+    BOOST_CHECK(2 == Lines.Count);
   }
   Lines.Clear();
   Lines.BeginUpdate();
@@ -255,7 +256,7 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
       BOOST_SCOPE_EXIT( (&Lines) )
       {
         BOOST_TEST_MESSAGE("in BOOST_SCOPE_EXIT");
-        BOOST_CHECK(1 == Lines.GetCount());
+        BOOST_CHECK(1 == Lines.Count);
         Lines.EndUpdate();
       } BOOST_SCOPE_EXIT_END
       // throw std::exception("");
@@ -263,7 +264,7 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
     }
     BOOST_TEST_MESSAGE("after block");
     Lines.Add(L"aaa");
-    BOOST_CHECK(2 == Lines.GetCount());
+    BOOST_CHECK(2 == Lines.Count);
   }
   Lines.Clear();
   int cnt = 0;
@@ -294,7 +295,7 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
       } BOOST_SCOPE_EXIT_END
       BOOST_CHECK(1 == cnt);
       BOOST_CHECK(1 == cnt1);
-      BOOST_CHECK(1 == Lines2->GetCount());
+      BOOST_CHECK(1 == Lines2->Count);
       throw std::exception("");
       BOOST_TEST_MESSAGE("after BOOST_SCOPE_EXIT_END");
     }
@@ -388,11 +389,11 @@ BOOST_FIXTURE_TEST_CASE(test14, base_fixture_t)
   TStringList Strings1;
   TStringList Strings2;
   Strings1.AddStrings(&Strings2);
-  BOOST_CHECK(0 == Strings1.GetCount());
+  BOOST_CHECK(0 == Strings1.Count);
   Strings2.Add(L"lalalla");
   Strings1.AddStrings(&Strings2);
-  BOOST_CHECK(1 == Strings1.GetCount());
-  BOOST_CHECK(L"lalalla" == Strings1.GetStrings(0));
+  BOOST_CHECK(1 == Strings1.Count);
+  BOOST_CHECK(L"lalalla" == Strings1.Strings[0]);
 }
 
 BOOST_FIXTURE_TEST_CASE(test15, base_fixture_t)
@@ -434,17 +435,17 @@ BOOST_FIXTURE_TEST_CASE(test16, base_fixture_t)
 BOOST_FIXTURE_TEST_CASE(test17, base_fixture_t)
 {
   TStringList List1;
-  List1.SetText(L"123\n456");
-  BOOST_CHECK(2 == List1.GetCount());
-  BOOST_TEST_MESSAGE("List1.GetString(0) = " << W2MB(List1.GetStrings(0).c_str()));
-  BOOST_CHECK("123" == W2MB(List1.GetStrings(0).c_str()));
-  BOOST_TEST_MESSAGE("List1.GetString(1) = " << W2MB(List1.GetStrings(1).c_str()));
-  BOOST_CHECK("456" == W2MB(List1.GetStrings(1).c_str()));
+  List1.Text = L"123\n456";
+  BOOST_CHECK(2 == List1.Count);
+  BOOST_TEST_MESSAGE("List1.GetString(0) = " << W2MB(List1.Strings[0].c_str()));
+  BOOST_CHECK("123" == W2MB(List1.Strings[0].c_str()));
+  BOOST_TEST_MESSAGE("List1.GetString(1) = " << W2MB(List1.Strings[1].c_str()));
+  BOOST_CHECK("456" == W2MB(List1.Strings[1].c_str()));
   List1.Move(0, 1);
-  BOOST_TEST_MESSAGE("List1.GetString(0) = " << W2MB(List1.GetStrings(0).c_str()));
-  BOOST_CHECK("456" == W2MB(List1.GetStrings(0).c_str()));
-  BOOST_TEST_MESSAGE("List1.GetString(1) = " << W2MB(List1.GetStrings(1).c_str()));
-  BOOST_CHECK("123" == W2MB(List1.GetStrings(1).c_str()));
+  BOOST_TEST_MESSAGE("List1.GetString(0) = " << W2MB(List1.Strings[0].c_str()));
+  BOOST_CHECK("456" == W2MB(List1.Strings[0].c_str()));
+  BOOST_TEST_MESSAGE("List1.GetString(1) = " << W2MB(List1.Strings[1].c_str()));
+  BOOST_CHECK("123" == W2MB(List1.Strings[1].c_str()));
 }
 
 BOOST_FIXTURE_TEST_CASE(test18, base_fixture_t)
@@ -571,5 +572,72 @@ BOOST_FIXTURE_TEST_CASE(test25, base_fixture_t)
   CHECK_LEAKS();
 #endif
 }
+
+BOOST_FIXTURE_TEST_CASE(test26, base_fixture_t)
+{
+  TBookmarks Bookmarks;
+}
+
+//------------------------------------------------------------------------------
+class TestPropsClass
+{
+private:
+  std::map<std::string, std::string> FAssignments;
+  Property<std::string> FKey;
+  int GetNumber() { return 42; }
+  void AddWeight(float value) { }
+  std::string GetKey()
+  {
+    // extra processing steps here
+    return FKey();
+  }
+  void SetKey(std::string AKey)
+  {
+    // extra processing steps here
+    FKey = AKey;
+  }
+  std::string GetAssignment(std::string AKey)
+  {
+    // extra processing steps here
+    return FAssignments[Key];
+  }
+  void SetAssignment(std::string Key, std::string Value)
+  {
+    // extra processing steps here
+    FAssignments[Key] = Value;
+  }
+public:
+  TestPropsClass()
+  {
+    Number(this);
+    WeightedValue(this);
+    Key(this);
+    Assignments(this);
+  }
+  Property<std::string> Name;
+  Property<int> ID;
+  ROProperty<int, TestPropsClass, &TestPropsClass::GetNumber> Number;
+  WOProperty<float, TestPropsClass, &TestPropsClass::AddWeight> WeightedValue;
+  RWProperty<std::string, TestPropsClass, &TestPropsClass::GetKey, &TestPropsClass::SetKey> Key;
+  IndexedProperty<std::string, std::string, TestPropsClass, &TestPropsClass::GetAssignment, &TestPropsClass::SetAssignment > Assignments;
+};
+
+BOOST_FIXTURE_TEST_CASE(test27, base_fixture_t)
+{
+  TestPropsClass obj;
+  obj.Name = "Name";
+  obj.WeightedValue = 1234;
+  obj.Key = "Key";
+  obj.Assignments["Hours"] = "23";
+  obj.Assignments["Minutes"] = "59";
+  BOOST_TEST_MESSAGE("Name = " << obj.Name);
+  BOOST_TEST_MESSAGE("Number = " << obj.Number);
+  BOOST_TEST_MESSAGE("Key = " << obj.Key);
+  // BOOST_TEST_MESSAGE("Assignments = " << obj.Assignments);
+  BOOST_TEST_MESSAGE("Hours = " << obj.Assignments["Hours"]);
+  BOOST_TEST_MESSAGE("Minutes = " << obj.Assignments["Minutes"]);
+}
+
+//------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

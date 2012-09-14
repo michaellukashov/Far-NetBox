@@ -1,9 +1,6 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#endif
-#include "stdafx.h"
 
 #include "Common.h"
 #include "PuttyIntf.h"

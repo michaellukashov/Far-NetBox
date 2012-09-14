@@ -1,13 +1,6 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#else
-#include "stdafx.h"
-
-#include "boostdefines.hpp"
-#include <boost/scope_exit.hpp>
-#endif
 
 #include <FileInfo.h>
 
@@ -20,10 +13,11 @@
 #include "CoreMain.h"
 #include "WinSCPSecurity.h"
 #include <shlobj.h>
-//---------------------------------------------------------------------------
 #ifndef _MSC_VER
-#pragma package(smart_init)
+#include <System.IOUtils.hpp>
 #endif
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
 //---------------------------------------------------------------------------
 /* __fastcall */ TConfiguration::TConfiguration() :
   FDontSave(false),
@@ -92,24 +86,14 @@ void __fastcall TConfiguration::Default()
 
   TRegistryStorage * AdminStorage = NULL;
   AdminStorage = new TRegistryStorage(GetRegistryStorageKey(), HKEY_LOCAL_MACHINE);
-  // try
+  std::auto_ptr<TRegistryStorage> AdminStoragePtr(AdminStorage);
   {
-    BOOST_SCOPE_EXIT ( (&AdminStorage) )
-    {
-      delete AdminStorage;
-    } BOOST_SCOPE_EXIT_END
     if (AdminStorage->OpenRootKey(false))
     {
       LoadAdmin(AdminStorage);
       AdminStorage->CloseSubKey();
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete AdminStorage;
-  }
-#endif
 
   SetRandomSeedFile(FDefaultRandomSeedFile);
   SetPuttyRegistryStorageKey(L"Software\\SimonTatham\\PuTTY");
@@ -125,7 +109,7 @@ void __fastcall TConfiguration::Default()
   FCacheDirectoryChangesMaxSize = 100;
   FShowFtpWelcomeMessage = false;
   FExternalIpAddress = L"";
-  // CollectUsage = FDefaultCollectUsage;
+  SetCollectUsage(FDefaultCollectUsage);
   FSessionReopenAutoMaximumNumberOfRetries = CONST_DEFAULT_NUMBER_OF_RETRIES;
   FDefaultCollectUsage = false;
 
@@ -160,7 +144,7 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
     return new TRegistryStorage(GetRegistryStorageKey());
   }
 #ifndef _MSC_VER
-  else if (Storage == stNul)
+  else if (GetStorage() == stNul)
   {
     return new TIniFileStorage(L"nul");
   }
@@ -175,15 +159,8 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
 #define LASTELEM(ELEM) \
   ELEM.SubString(ELEM.LastDelimiter(L".>") + 1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
-  if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
-  { \
-      BOOST_SCOPE_EXIT ( (&Storage) ) \
-      { \
-        Storage->CloseSubKey(); \
-      } BOOST_SCOPE_EXIT_END \
-      BLOCK \
-  }
-#define KEY(TYPE, VAR) KEYEX(TYPE, VAR, VAR)
+  if (Storage->OpenSubKey(KEY, CANCREATE, true)) TRY_FINALLY1 (Storage, { BLOCK }, { Storage->CloseSubKey(); } );
+#define KEY(TYPE, NAME) KEYEX(TYPE, NAME, NAME)
 #undef REGCONFIG
 #define REGCONFIG(CANCREATE) \
   BLOCK(L"Interface", CANCREATE, \
@@ -210,15 +187,13 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
     KEY(Bool,    LogFileAppend); \
     KEY(Integer, LogWindowLines); \
     KEY(Integer, LogProtocol); \
-    KEYEX(Bool,  PermanentLogActions, LogActions); \
     KEYEX(Bool,  LogActions, LogActions); \
     KEYEX(String,PermanentActionsLogFileName, ActionsLogFileName); \
   );
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::SaveData(THierarchicalStorage * Storage, bool /*All*/)
 {
-  // #define KEYEX(TYPE, VAR, NAME) Storage->Write ## TYPE(LASTELEM(UnicodeString(TEXT(#NAME))), VAR)
-  #define KEYEX(TYPE, VAR, NAME) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), Get##VAR())
+  #define KEYEX(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR())
   REGCONFIG(true);
   #undef KEYEX
 
@@ -234,12 +209,8 @@ void __fastcall TConfiguration::Save(bool All, bool Explicit)
   if (FDontSave) { return; }
 
   THierarchicalStorage * AStorage = CreateScpStorage(false);
-  // try
+  std::auto_ptr<THierarchicalStorage> AStoragePtr(AStorage);
   {
-    BOOST_SCOPE_EXIT ( (&AStorage) )
-    {
-      delete AStorage;
-    } BOOST_SCOPE_EXIT_END
     if (AStorage)
     {
       AStorage->SetAccessMode(smReadWrite);
@@ -250,12 +221,6 @@ void __fastcall TConfiguration::Save(bool All, bool Explicit)
       }
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete AStorage;
-  }
-#endif
 
   Saved();
 
@@ -276,19 +241,17 @@ void __fastcall TConfiguration::Export(const UnicodeString FileName)
   Error(SNotImplemented, 3004);
   THierarchicalStorage * Storage = NULL;
   THierarchicalStorage * ExportStorage = NULL;
-  // try
+  std::auto_ptr<THierarchicalStorage> StoragePtr(NULL);
+  std::auto_ptr<THierarchicalStorage> ExportStoragePtr(NULL);
   {
-    BOOST_SCOPE_EXIT ( (&ExportStorage) (&Storage) )
-    {
-      delete ExportStorage;
-      delete Storage;
-    } BOOST_SCOPE_EXIT_END
     ExportStorage = NULL; // new TIniFileStorage(FileName);
     ExportStorage->SetAccessMode(smReadWrite);
     ExportStorage->SetExplicit(true);
+    ExportStoragePtr.reset(ExportStorage);
 
     Storage = CreateScpStorage(false);
     Storage->SetAccessMode(smRead);
+    StoragePtr.reset(Storage);
 
     CopyData(Storage, ExportStorage);
 
@@ -297,23 +260,16 @@ void __fastcall TConfiguration::Export(const UnicodeString FileName)
       SaveData(ExportStorage, true);
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete ExportStorage;
-    delete Storage;
-  }
-#endif
 
   StoredSessions->Export(FileName);
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::LoadData(THierarchicalStorage * Storage)
 {
-  #define KEYEX(TYPE, VAR, NAME) Set##VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), Get##VAR()))
-  // #pragma warn -eas
+  #define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(TEXT(#NAME))), Get ## VAR()))
+  #pragma warn -eas
   REGCONFIG(false);
-  // #pragma warn +eas
+  #pragma warn +eas
   #undef KEYEX
 
   if (Storage->OpenSubKey(L"Usage", false))
@@ -344,36 +300,22 @@ void __fastcall TConfiguration::Load()
   TGuard Guard(FCriticalSection);
 
   THierarchicalStorage * Storage = CreateScpStorage(false);
-  // try
+  std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
   {
-    BOOST_SCOPE_EXIT ( (&Storage) )
-    {
-      delete Storage;
-    } BOOST_SCOPE_EXIT_END
     Storage->SetAccessMode(smRead);
     if (Storage->OpenSubKey(GetConfigurationSubKey(), false))
     {
       LoadData(Storage);
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Storage;
-  }
-#endif
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::CopyData(THierarchicalStorage * Source,
   THierarchicalStorage * Target)
 {
   TStrings * Names = new TStringList();
-  // try
+  std::auto_ptr<TStrings> NamesPtr(Names);
   {
-    BOOST_SCOPE_EXIT ( (&Names) )
-    {
-      delete Names;
-    } BOOST_SCOPE_EXIT_END
     if (Source->OpenSubKey(GetConfigurationSubKey(), false))
     {
       if (Target->OpenSubKey(GetConfigurationSubKey(), true))
@@ -385,10 +327,10 @@ void __fastcall TConfiguration::CopyData(THierarchicalStorage * Source,
             Names->Clear();
             Source->GetValueNames(Names);
 
-            for (int Index = 0; Index < Names->GetCount(); Index++)
+            for (int Index = 0; Index < Names->Count; Index++)
             {
-              Target->WriteBinaryData(Names->GetStrings(Index),
-                Source->ReadBinaryData(Names->GetStrings(Index)));
+              Target->WriteBinaryData(Names->Strings[Index],
+                Source->ReadBinaryData(Names->Strings[Index]));
             }
 
             Target->CloseSubKey();
@@ -403,10 +345,10 @@ void __fastcall TConfiguration::CopyData(THierarchicalStorage * Source,
             Names->Clear();
             Source->GetValueNames(Names);
 
-            for (int Index = 0; Index < Names->GetCount(); Index++)
+            for (int Index = 0; Index < Names->Count; Index++)
             {
-              Target->WriteString(Names->GetStrings(Index),
-                Source->ReadString(Names->GetStrings(Index), L""));
+              Target->WriteString(Names->Strings[Index],
+                Source->ReadString(Names->Strings[Index], L""));
             }
 
             Target->CloseSubKey();
@@ -426,10 +368,10 @@ void __fastcall TConfiguration::CopyData(THierarchicalStorage * Source,
         Names->Clear();
         Source->GetValueNames(Names);
 
-        for (int Index = 0; Index < Names->GetCount(); Index++)
+        for (int Index = 0; Index < Names->Count; Index++)
         {
-          Target->WriteStringRaw(Names->GetStrings(Index),
-            Source->ReadStringRaw(Names->GetStrings(Index), L""));
+          Target->WriteStringRaw(Names->Strings[Index],
+            Source->ReadStringRaw(Names->Strings[Index], L""));
         }
 
         Target->CloseSubKey();
@@ -437,24 +379,14 @@ void __fastcall TConfiguration::CopyData(THierarchicalStorage * Source,
       Source->CloseSubKey();
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Names;
-  }
-#endif
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::LoadDirectoryChangesCache(const UnicodeString SessionKey,
   TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
   THierarchicalStorage * Storage = CreateScpStorage(false);
-  // try
+  std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
   {
-    BOOST_SCOPE_EXIT ( (&Storage) )
-    {
-      delete Storage;
-    } BOOST_SCOPE_EXIT_END
     Storage->SetAccessMode(smRead);
     if (Storage->OpenSubKey(GetConfigurationSubKey(), false) &&
         Storage->OpenSubKey(L"CDCache", false) &&
@@ -463,24 +395,14 @@ void __fastcall TConfiguration::LoadDirectoryChangesCache(const UnicodeString Se
       DirectoryChangesCache->Deserialize(Storage->ReadBinaryData(SessionKey));
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Storage;
-  }
-#endif
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::SaveDirectoryChangesCache(const UnicodeString SessionKey,
   TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
   THierarchicalStorage * Storage = CreateScpStorage(false);
-  // try
+  std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
   {
-    BOOST_SCOPE_EXIT ( (&Storage) )
-    {
-      delete Storage;
-    } BOOST_SCOPE_EXIT_END
     Storage->SetAccessMode(smReadWrite);
     if (Storage->OpenSubKey(GetConfigurationSubKey(), true) &&
         Storage->OpenSubKey(L"CDCache", true))
@@ -490,12 +412,6 @@ void __fastcall TConfiguration::SaveDirectoryChangesCache(const UnicodeString Se
       Storage->WriteBinaryData(SessionKey, Data);
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Storage;
-  }
-#endif
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TConfiguration::BannerHash(const UnicodeString & Banner)
@@ -513,12 +429,8 @@ bool __fastcall TConfiguration::ShowBanner(const UnicodeString SessionKey,
 {
   bool Result;
   THierarchicalStorage * Storage = CreateScpStorage(false);
-  // try
+  std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
   {
-    BOOST_SCOPE_EXIT ( (&Storage) )
-    {
-      delete Storage;
-    } BOOST_SCOPE_EXIT_END
     Storage->SetAccessMode(smRead);
     Result =
       !Storage->OpenSubKey(GetConfigurationSubKey(), false) ||
@@ -526,12 +438,6 @@ bool __fastcall TConfiguration::ShowBanner(const UnicodeString SessionKey,
       !Storage->ValueExists(SessionKey) ||
       (Storage->ReadString(SessionKey, L"") != BannerHash(Banner));
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Storage;
-  }
-#endif
 
   return Result;
 }
@@ -540,12 +446,8 @@ void __fastcall TConfiguration::NeverShowBanner(const UnicodeString SessionKey,
   const UnicodeString & Banner)
 {
   THierarchicalStorage * Storage = CreateScpStorage(false);
-  // try
+  std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
   {
-    BOOST_SCOPE_EXIT ( (&Storage) )
-    {
-      delete Storage;
-    } BOOST_SCOPE_EXIT_END
     Storage->SetAccessMode(smReadWrite);
 
     if (Storage->OpenSubKey(GetConfigurationSubKey(), true) &&
@@ -554,12 +456,6 @@ void __fastcall TConfiguration::NeverShowBanner(const UnicodeString SessionKey,
       Storage->WriteString(SessionKey, BannerHash(Banner));
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Storage;
-  }
-#endif
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::Changed()
@@ -618,20 +514,10 @@ void __fastcall TConfiguration::CleanupConfiguration()
 void __fastcall TConfiguration::CleanupRegistry(UnicodeString CleanupSubKey)
 {
   TRegistryStorage *Registry = new TRegistryStorage(GetRegistryStorageKey());
-  // try
+  std::auto_ptr<TRegistryStorage> RegistryPtr(Registry);
   {
-    BOOST_SCOPE_EXIT ( (&Registry) )
-    {
-      delete Registry;
-    } BOOST_SCOPE_EXIT_END
     Registry->RecursiveDeleteSubKey(CleanupSubKey);
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Registry;
-  }
-#endif
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::CleanupHostKeys()
@@ -732,17 +618,17 @@ UnicodeString __fastcall TConfiguration::GetOSVersionStr()
   return Result;
 }
 //---------------------------------------------------------------------------
-VS_FIXEDFILEINFO __fastcall TConfiguration::GetFixedApplicationInfo()
+TVSFixedFileInfo *__fastcall TConfiguration::GetFixedApplicationInfo()
 {
   return GetFixedFileInfo(GetApplicationInfo());
 }
 //---------------------------------------------------------------------------
 int __fastcall TConfiguration::GetCompoundVersion()
 {
-  VS_FIXEDFILEINFO FileInfo = GetFixedApplicationInfo();
+  TVSFixedFileInfo * FileInfo = GetFixedApplicationInfo();
   return CalculateCompoundVersion(
-    HIWORD(FileInfo.dwFileVersionMS), LOWORD(FileInfo.dwFileVersionMS),
-    HIWORD(FileInfo.dwFileVersionLS), LOWORD(FileInfo.dwFileVersionLS));
+    HIWORD(FileInfo->dwFileVersionMS), LOWORD(FileInfo->dwFileVersionMS),
+    HIWORD(FileInfo->dwFileVersionLS), LOWORD(FileInfo->dwFileVersionLS));
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TConfiguration::ModuleFileName()
@@ -771,7 +657,7 @@ void * __fastcall TConfiguration::GetFileApplicationInfo(const UnicodeString Fil
 //---------------------------------------------------------------------------
 void * __fastcall TConfiguration::GetApplicationInfo()
 {
-  return GetFileApplicationInfo(L"");
+  return GetFileApplicationInfo("");
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TConfiguration::GetFileProductName(const UnicodeString FileName)
@@ -819,12 +705,12 @@ UnicodeString __fastcall TConfiguration::GetVersionStr()
   TGuard Guard(FCriticalSection);
   try
   {
-    VS_FIXEDFILEINFO Info = GetFixedApplicationInfo();
+    TVSFixedFileInfo * Info = GetFixedApplicationInfo();
     return FMTLOAD(VERSION,
-      HIWORD(Info.dwFileVersionMS),
-      LOWORD(Info.dwFileVersionMS),
-      HIWORD(Info.dwFileVersionLS),
-      LOWORD(Info.dwFileVersionLS));
+      HIWORD(Info->dwFileVersionMS),
+      LOWORD(Info->dwFileVersionMS),
+      HIWORD(Info->dwFileVersionLS),
+      LOWORD(Info->dwFileVersionLS));
   }
   catch (Exception &E)
   {
@@ -838,12 +724,12 @@ UnicodeString __fastcall TConfiguration::GetVersion()
   try
   {
     UnicodeString Result;
-    VS_FIXEDFILEINFO Info = GetFixedApplicationInfo();
+    TVSFixedFileInfo * Info = GetFixedApplicationInfo();
     Result = // TrimVersion(
       FORMAT(L"%d.%d.%d",
-      HIWORD(Info.dwFileVersionMS),
-      LOWORD(Info.dwFileVersionMS),
-      HIWORD(Info.dwFileVersionLS));
+      HIWORD(Info->dwFileVersionMS),
+      LOWORD(Info->dwFileVersionMS),
+      HIWORD(Info->dwFileVersionLS));
     return Result;
   }
   catch (Exception &E)
@@ -859,15 +745,8 @@ UnicodeString __fastcall TConfiguration::GetFileFileInfoString(const UnicodeStri
 
   UnicodeString Result;
   void * Info = GetFileApplicationInfo(FileName);
-  // try
+  TRY_FINALLY2 (FileName, Info,
   {
-    BOOST_SCOPE_EXIT ( (&FileName) (&Info) )
-    {
-      if (!FileName.IsEmpty())
-      {
-        FreeFileInfo(Info);
-      }
-    } BOOST_SCOPE_EXIT_END
     if ((Info != NULL) && (GetTranslationCount(Info) > 0))
     {
       TTranslation Translation;
@@ -887,15 +766,14 @@ UnicodeString __fastcall TConfiguration::GetFileFileInfoString(const UnicodeStri
       assert(!FileName.IsEmpty());
     }
   }
-#ifndef _MSC_VER
-  __finally
+  ,
   {
     if (!FileName.IsEmpty())
     {
       FreeFileInfo(Info);
     }
   }
-#endif
+  );
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1001,33 +879,24 @@ void __fastcall TConfiguration::SetStorage(TStorage value)
     THierarchicalStorage * SourceStorage = NULL;
     THierarchicalStorage * TargetStorage = NULL;
 
-    // try
+    std::auto_ptr<THierarchicalStorage> SourceStoragePtr(NULL);
+    std::auto_ptr<THierarchicalStorage> TargetStoragePtr(NULL);
     {
-      BOOST_SCOPE_EXIT ( (&SourceStorage) (&TargetStorage) )
-      {
-        delete SourceStorage;
-        delete TargetStorage;
-      } BOOST_SCOPE_EXIT_END
       SourceStorage = CreateScpStorage(false);
       SourceStorage->SetAccessMode(smRead);
+      SourceStoragePtr.reset(SourceStorage);
 
       FStorage = value;
 
       TargetStorage = CreateScpStorage(false);
       TargetStorage->SetAccessMode(smReadWrite);
       TargetStorage->SetExplicit(true);
+      TargetStoragePtr.reset(TargetStorage);
 
       // copy before save as it removes the ini file,
       // when switching from ini to registry
       CopyData(SourceStorage, TargetStorage);
     }
-#ifndef _MSC_VER
-    __finally
-    {
-      delete SourceStorage;
-      delete TargetStorage;
-    }
-#endif
 
     // save all and explicit
     Save(true, true);
@@ -1222,7 +1091,7 @@ bool __fastcall TConfiguration::GetLogWindowComplete()
 UnicodeString __fastcall TConfiguration::GetDefaultLogFileName()
 {
   // return IncludeTrailingBackslash(SystemTemporaryDirectory()) + L"winscp.log";
-  return L"%TEMP%\\!S.log";
+  return L"%TEMP%\\&S.log";
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::SetConfirmOverwriting(bool value)
@@ -1324,6 +1193,26 @@ void __fastcall TConfiguration::SetCacheDirectoryChangesMaxSize(int value)
 void __fastcall TConfiguration::SetShowFtpWelcomeMessage(bool value)
 {
   SET_CONFIG_PROPERTY(ShowFtpWelcomeMessage);
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetPermanentLogFileName()
+{
+  return FPermanentLogFileName;
+}
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SetPermanentLogFileName(const UnicodeString value)
+{
+  FPermanentLogFileName = value;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetPermanentActionsLogFileName()
+{
+  return FPermanentActionsLogFileName;
+}
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SetPermanentActionsLogFileName(const UnicodeString value)
+{
+  FPermanentActionsLogFileName = value;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------

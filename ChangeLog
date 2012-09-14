@@ -1,3 +1,9 @@
+NetBox 2.1.13 ??.09.2012
+--------------------
+ * Bugfix: Issue #37: Fix date format parsing
+   (https://github.com/michaellukashov/Far-NetBox/issues/37)
+ * Minor bugfix in "Edit session" dialog
+
 NetBox 2.1.12 06.09.2012
 --------------------
   * WinSCP core upgraded to 5.0.9 RC

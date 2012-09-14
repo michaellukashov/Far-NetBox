@@ -1,13 +1,6 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#else
-#include "nbafx.h"
-
-#include "boostdefines.hpp"
-#include <boost/scope_exit.hpp>
-#endif
 
 #include "Common.h"
 #include "Bookmarks.h"
@@ -15,9 +8,7 @@
 #include "Far3Storage.h"
 #include "FarPlugin.h"
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #pragma package(smart_init)
-#endif
 //---------------------------------------------------------------------------
 enum NetBoxConfirmationsSettings
 {
@@ -106,13 +97,15 @@ void __fastcall TFarConfiguration::Saved()
   ELEM.SubString(ELEM.LastDelimiter(L".>")+1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
+  TRY_FINALLY1 (Storage, \
   { \
-      BOOST_SCOPE_EXIT ( (&Storage) ) \
-      { \
-        Storage->CloseSubKey(); \
-      } BOOST_SCOPE_EXIT_END \
-      BLOCK \
-  }
+    BLOCK \
+  } \
+  , \
+  { \
+    Storage->CloseSubKey(); \
+  } \
+  );
 #define REGCONFIG(CANCREATE) \
   BLOCK(L"Far", CANCREATE, \
     KEY(Bool,     DisksMenu); \
@@ -164,9 +157,9 @@ void __fastcall TFarConfiguration::LoadData(THierarchicalStorage * Storage)
 
   // duplicated from core\configuration.cpp
   #define KEY(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(LASTELEM(MB2W(#VAR)), Get##VAR()))
-  // #pragma warn -eas
+  #pragma warn -eas
   REGCONFIG(false);
-  // #pragma warn +eas
+  #pragma warn +eas
   #undef KEY
 
   if (Storage->OpenSubKey(L"Bookmarks", false))
@@ -179,39 +172,29 @@ void __fastcall TFarConfiguration::LoadData(THierarchicalStorage * Storage)
 void __fastcall TFarConfiguration::Load()
 {
   FForceInheritance = true;
-  // try
+  TRY_FINALLY1 (Self,
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
-    {
-      Self->FForceInheritance = false;
-    } BOOST_SCOPE_EXIT_END
     TGUIConfiguration::Load();
   }
-#ifndef _MSC_VER
-  __finally
+  ,
   {
-    FForceInheritance = false;
+    Self->FForceInheritance = false;
   }
-#endif
+  );
 }
 //---------------------------------------------------------------------------
 void __fastcall TFarConfiguration::Save(bool All, bool Explicit)
 {
   FForceInheritance = true;
-  // try
+  TRY_FINALLY1 (Self,
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
-    {
-      Self->FForceInheritance = false;
-    } BOOST_SCOPE_EXIT_END
     TGUIConfiguration::Save(All, Explicit);
   }
-#ifndef _MSC_VER
-  __finally
+  ,
   {
-    FForceInheritance = false;
+    Self->FForceInheritance = false;
   }
-#endif
+  );
 }
 //---------------------------------------------------------------------------
 void __fastcall TFarConfiguration::SetPlugin(TCustomFarPlugin * value)

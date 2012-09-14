@@ -1,18 +1,10 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#else
-#include "stdafx.h"
-#endif
 
 #include "NamedObjs.h"
-#include "Common.h"
-#include "SysUtils.h"
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #pragma package(smart_init)
-#endif
 //---------------------------------------------------------------------------
 int /* __fastcall */ NamedObjectSortProc(void * Item1, void * Item2)
 {
@@ -44,11 +36,11 @@ Integer __fastcall TNamedObject::CompareName(UnicodeString aName,
 {
   if (CaseSensitive)
   {
-    return ::AnsiCompare(GetName(), aName);
+    return GetName().Compare(aName);
   }
   else
   {
-    return ::AnsiCompareIC(GetName(), aName);
+    return GetName().CompareIC(aName);
   }
 }
 //---------------------------------------------------------------------------
@@ -72,7 +64,7 @@ void __fastcall TNamedObject::MakeUniqueIn(TNamedObjectList * List)
         {
           N = 0;
         }
-      Name += L" (" + IntToStr(static_cast<int>(N+1)) + L")";
+      SetName(Name + L" (" + IntToStr(static_cast<int>(N+1)) + L")");
     }
 }
 //--- TNamedObjectList ------------------------------------------------------
@@ -88,13 +80,13 @@ const UnicodeString TNamedObjectList::HiddenPrefix = L"_!_";
 //---------------------------------------------------------------------------
 TNamedObject * __fastcall TNamedObjectList::AtObject(Integer Index)
 {
-  return static_cast<TNamedObject *>(GetItem(Index + GetHiddenCount()));
+  return static_cast<TNamedObject *>(Items[Index + GetHiddenCount()]);
 }
 //---------------------------------------------------------------------------
 void __fastcall TNamedObjectList::Recount()
 {
   int i = 0;
-  while ((i < TObjectList::GetCount()) && (static_cast<TNamedObject *>(GetItem(i)))->GetHidden()) { i++; }
+  while ((i < TObjectList::Count) && (static_cast<TNamedObject *>(Items[i])->GetHidden())) { i++; }
   FHiddenCount = i;
 }
 //---------------------------------------------------------------------------
@@ -113,10 +105,10 @@ void __fastcall TNamedObjectList::Notify(void *Ptr, TListNotification Action)
 TNamedObject * __fastcall TNamedObjectList::FindByName(UnicodeString Name,
   Boolean CaseSensitive)
 {
-  for (Integer Index = 0; Index < TObjectList::GetCount(); Index++)
-    if (!(static_cast<TNamedObject *>(GetItem(Index)))->CompareName(Name, CaseSensitive))
+  for (Integer Index = 0; Index < TObjectList::Count; Index++)
+    if (!(static_cast<TNamedObject *>(Items[Index]))->CompareName(Name, CaseSensitive))
     {
-      return static_cast<TNamedObject *>(GetItem(Index));
+      return static_cast<TNamedObject *>(Items[Index]);
     }
   return NULL;
 }
@@ -128,6 +120,6 @@ void __fastcall TNamedObjectList::SetCount(int value)
 //---------------------------------------------------------------------------
 int __fastcall TNamedObjectList::GetCount()
 {
-  return TObjectList::GetCount() - GetHiddenCount();
+  return TObjectList::Count - GetHiddenCount();
 }
 

@@ -1,11 +1,10 @@
 //---------------------------------------------------------------------------
-#include "stdafx.h"
-#include <wincrypt.h>
-#include <stdio.h>
-#include <winhttp.h>
+#include <vcl.h>
+#pragma hdrstop
 
-#include "boostdefines.hpp"
-#include <boost/algorithm/string.hpp>
+#include <malloc.h>
+#include <stdio.h>
+#include <wincrypt.h>
 
 #include <apr_hash.h>
 #include <apr_strings.h>
@@ -38,9 +37,77 @@
 #include "version.h"
 
 //---------------------------------------------------------------------------
+#pragma package(smart_init)
+//---------------------------------------------------------------------------
+#ifndef _MSC_VER
+const int tfFirstLevel = 0x01;
+const int tfAutoResume = 0x02;
+//---------------------------------------------------------------------------
+struct TSinkFileParams
+{
+  UnicodeString TargetDir;
+  const TCopyParamType * CopyParam;
+  int Params;
+  TFileOperationProgressType * OperationProgress;
+  bool Skipped;
+  unsigned int Flags;
+};
+//---------------------------------------------------------------------------
+struct TFileTransferData
+{
+  TFileTransferData()
+  {
+    Params = 0;
+    AutoResume = false;
+    OverwriteResult = -1;
+    CopyParam = NULL;
+  }
+
+  UnicodeString FileName;
+  int Params;
+  bool AutoResume;
+  int OverwriteResult;
+  const TCopyParamType * CopyParam;
+};
+//---------------------------------------------------------------------------
+struct TClipboardHandler
+{
+  UnicodeString Text;
+
+  void __fastcall Copy(TObject * /*Sender*/)
+  {
+    CopyToClipboard(Text);
+  }
+};
+#endif
+//---------------------------------------------------------------------------
 
 namespace webdav {
 
+#ifndef _MSC_VER
+
+#pragma warn -8004
+
+const AnsiString __cdecl Format(const char * format, va_list args)
+{
+  int len = AnsiString().vprintf(format, args);
+  AnsiString Result;
+  Result.SetLength(len + 1);
+  vsprintf(&Result[1], format, args);
+  return Result.c_str();
+}
+
+const AnsiString __cdecl Format(const char * format, ...)
+{
+  va_list args;
+  va_start(args, format);
+  AnsiString Result = Format(format, args);
+  va_end(args);
+  return Result;
+}
+#endif
+
+//---------------------------------------------------------------------------
 struct auth_baton_t;
 struct vtable_t;
 struct stream_t;
@@ -417,15 +484,16 @@ error_createf(apr_status_t apr_err,
               ...)
 {
   error_t err = 0;
-  va_list ap;
+  va_list args;
 
   err = make_error_internal(apr_err, child);
 
-  va_start(ap, fmt);
-  AnsiString Message = Format(fmt, ap);
-  va_end(ap);
+  va_start(args, fmt);
+  AnsiString Message = Format(fmt, args);
+  va_end(args);
+
   AnsiString Message2 = Format("Error, code: %d, message: %s", apr_err, Message.c_str());
-  throw ExtException(Message2, NULL);
+  throw ExtException(UnicodeString(Message2), NULL);
 
   return err;
 }
@@ -436,13 +504,13 @@ error_wrap_apr(apr_status_t status,
                ...)
 {
   error_t err = 0;
-  va_list ap;
+  va_list args;
 
   err = make_error_internal(status, NULL);
 
-  va_start(ap, fmt);
-  AnsiString Message = Format(fmt, ap);
-  va_end(ap);
+  va_start(args, fmt);
+  AnsiString Message = Format(fmt, args);
+  va_end(args);
 
   err = error_create(err, NULL, Message.c_str());
 
@@ -1792,6 +1860,63 @@ time_from_cstring(apr_time_t * when, const char * data, apr_pool_t * pool)
   return error_createf(WEBDAV_ERR_BAD_DATE, NULL, "error parsing date: %s", data);
 
 fail:
+
+  // 2012-09-11T14:18:40+07:00
+  char gmt_shift = 0;
+  int gmt_hour = 0;
+  int gmt_min = 0;
+  if (sscanf(data,
+        "%04d-%02d-%02dT%02d:%02d:%02d%c%02d:%02d",
+        &exploded_time.tm_year,
+        &exploded_time.tm_mon,
+        &exploded_time.tm_mday,
+        &exploded_time.tm_hour,
+        &exploded_time.tm_min,
+        &exploded_time.tm_sec,
+        &gmt_shift,
+        &gmt_hour,
+        &gmt_min) == 9)
+  {
+    exploded_time.tm_year -= 1900;
+    exploded_time.tm_mon   -= 1;
+    exploded_time.tm_wday   = 0;
+    exploded_time.tm_yday   = 0;
+    exploded_time.tm_isdst  = 0;
+    exploded_time.tm_gmtoff = (gmt_shift == '-' ? -1 : 1) * gmt_hour * SecsPerHour + gmt_min * SecsPerMin;
+    exploded_time.tm_usec = 0;
+
+    apr_err = apr_time_exp_gmt_get(when, &exploded_time);
+    if (apr_err != APR_SUCCESS)
+      return error_createf(WEBDAV_ERR_BAD_DATE, NULL, "error parsing date: %s", data);
+
+    return WEBDAV_NO_ERROR;
+  }
+
+  // 2012-09-11T03:56:20
+  if (sscanf(data,
+        "%04d-%02d-%02dT%02d:%02d:%02d",
+        &exploded_time.tm_year,
+        &exploded_time.tm_mon,
+        &exploded_time.tm_mday,
+        &exploded_time.tm_hour,
+        &exploded_time.tm_min,
+        &exploded_time.tm_sec) == 6)
+  {
+    exploded_time.tm_year -= 1900;
+    exploded_time.tm_mon   -= 1;
+    exploded_time.tm_wday   = 0;
+    exploded_time.tm_yday   = 0;
+    exploded_time.tm_isdst  = 0;
+    exploded_time.tm_gmtoff = 0;
+    exploded_time.tm_usec = 0;
+
+    apr_err = apr_time_exp_gmt_get(when, &exploded_time);
+    if (apr_err != APR_SUCCESS)
+      return error_createf(WEBDAV_ERR_BAD_DATE, NULL, "error parsing date: %s", data);
+
+    return WEBDAV_NO_ERROR;
+  }
+
   /* Try the compatibility option.  This does not need to be fast,
      as this format is no longer generated and the client will convert
      an old-format entries file the first time it reads it.  */
@@ -1822,9 +1947,11 @@ fail:
 
     return WEBDAV_NO_ERROR;
   }
+
   /* Timestamp is something we do not recognize. */
-  else
-    return error_createf(WEBDAV_ERR_BAD_DATE, NULL, "error parsing date: %s", data);
+  // return error_createf(WEBDAV_ERR_BAD_DATE, NULL, "error parsing date: %s", data);
+  *when = apr_time_now();
+  return WEBDAV_NO_ERROR;
 }
 
 //------------------------------------------------------------------------------
@@ -2998,28 +3125,21 @@ config_read_auth_data(apr_hash_t ** hash,
   const char * subkey = CertificateStorageKey;
   THierarchicalStorage * Storage = NULL;
   WEBDAV_ERR(fs->CreateStorage(Storage));
-  // try
+  assert(Storage);
+  std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
   {
-    BOOST_SCOPE_EXIT ( (&Storage) )
-    {
-      delete Storage;
-    } BOOST_SCOPE_EXIT_END
     Storage->SetAccessMode(smRead);
     if (!Storage->OpenSubKey(UnicodeString(subkey), false))
       return WEBDAV_ERR_BAD_PARAM;
 
     *hash = apr_hash_make(pool);
     TStrings * Keys = new TStringList();
-    // try
+    std::auto_ptr<TStrings> KeysPtr(Keys);
     {
-      BOOST_SCOPE_EXIT ( (&Keys) )
-      {
-        delete Keys;
-      } BOOST_SCOPE_EXIT_END
       Storage->GetValueNames(Keys);
-      for (int Index = 0; Index < Keys->GetCount(); Index++)
+      for (int Index = 0; Index < Keys->Count; Index++)
       {
-        UnicodeString Key = Keys->GetStrings(Index);
+        UnicodeString Key = Keys->Strings[Index];
         UnicodeString Value = Storage->ReadStringRaw(Key, L"");
         apr_hash_set(*hash, AUTHN_ASCII_CERT_KEY, APR_HASH_KEY_STRING,
                      string_create(AnsiString(Key).c_str(), pool));
@@ -3028,19 +3148,7 @@ config_read_auth_data(apr_hash_t ** hash,
                                     StrToIntDef(Value, 0)));
       }
     }
-#ifndef _MSC_VER
-    __finally
-    {
-      delete Keys;
-    }
-#endif
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Storage;
-  }
-#endif
   return WEBDAV_NO_ERROR;
 }
 
@@ -3055,12 +3163,9 @@ config_write_auth_data(apr_hash_t * hash,
   assert(fs);
   THierarchicalStorage * Storage = NULL;
   WEBDAV_ERR(fs->CreateStorage(Storage));
-  // try
+  assert(Storage);
+  std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
   {
-    BOOST_SCOPE_EXIT ( (&Storage) )
-    {
-      delete Storage;
-    } BOOST_SCOPE_EXIT_END
     Storage->SetAccessMode(smReadWrite);
 
     if (!Storage->OpenSubKey(UnicodeString(subkey), true))
@@ -3072,12 +3177,6 @@ config_write_auth_data(apr_hash_t * hash,
     if (trusted_cert && failstr)
       Storage->WriteString(UnicodeString(trusted_cert->data), UnicodeString(failstr->data));
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Storage;
-  }
-#endif
   return WEBDAV_NO_ERROR;
 }
 
@@ -6442,8 +6541,8 @@ atomic_init_once(volatile atomic_t * global_status,
 #define RETRY_INITIAL_SLEEP 1000
 #define RETRY_MAX_SLEEP 128000
 
-// Suppress warning Condition is always true
-// #pragma warn -8008
+// Suppress warning: Condition is always true
+#pragma warn -8008
 #define RETRY_LOOP(err, expr, retry_test, sleep_test)                      \
   do                                                                       \
     {                                                                      \
@@ -6531,7 +6630,7 @@ file_open(apr_file_t ** file,
   }
   return status;
 }
-// #pragma warn +8008
+#pragma warn +8008
 
 static error_t
 io_file_open(apr_file_t ** new_file, const char * fname,
@@ -11693,7 +11792,7 @@ server_ssl_callback(void * userdata,
   apr_uint32_t * webdav_failures = static_cast<apr_uint32_t *>(apr_pcalloc(ras->pool, sizeof(*webdav_failures)));
 
   /* Construct the realmstring, e.g. https://svn.collab.net:80 */
-  const char * realmstring = apr_pstrdup(ras->pool, FORMAT("%s://%s:%d", ras->root.scheme,
+  const char * realmstring = apr_pstrdup(ras->pool, Format("%s://%s:%d", ras->root.scheme,
                                          ras->root.host, ras->root.port).c_str());
 
   *webdav_failures = convert_neon_failures(failures);
@@ -12699,6 +12798,8 @@ void __fastcall TWebDAVFileSystem::Open()
     }
     catch (...)
     {
+      if (FFileTransferCancelled)
+        break;
       apr_sleep(200000); // 0.2 sec
     }
   }
@@ -12747,7 +12848,7 @@ UnicodeString __fastcall TWebDAVFileSystem::GetUserName()
 //---------------------------------------------------------------------------
 void __fastcall TWebDAVFileSystem::Idle()
 {
-  // Keep session alive
+  // TODO: Keep session alive
   return;
 }
 //---------------------------------------------------------------------------
@@ -13174,7 +13275,7 @@ void /* __fastcall */ TWebDAVFileSystem::CustomCommandOnFile(const UnicodeString
     AParams.Command = Command;
     AParams.Params = Params;
     AParams.OutputEvent = OutputEvent;
-    FTerminal->ProcessDirectory(FileName, fastdelegate::bind(&TTerminal::CustomCommandOnFile, FTerminal, _1, _2, _3), &AParams);
+    FTerminal->ProcessDirectory(FileName, MAKE_CALLBACK3(TTerminal::CustomCommandOnFile, FTerminal), &AParams);
   }
 
   if (!Dir || (Params & ccApplyToDirectories))
@@ -13223,20 +13324,16 @@ void __fastcall TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
   UnicodeString TargetDir = AbsolutePath(ATargetDir, false);
   UnicodeString FullTargetDir = UnixIncludeTrailingBackslash(TargetDir);
   int Index = 0;
-  while ((Index < FilesToCopy->GetCount()) && !OperationProgress->Cancel)
+  while ((Index < FilesToCopy->Count) && !OperationProgress->Cancel)
   {
     bool Success = false;
-    FileName = FilesToCopy->GetStrings(Index);
-    TRemoteFile * File = dynamic_cast<TRemoteFile *>(FilesToCopy->GetObjects(Index));
+    FileName = FilesToCopy->Strings[Index];
+    TRemoteFile * File = dynamic_cast<TRemoteFile *>(FilesToCopy->Objects[Index]);
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     FileNameOnly = ExtractFileName(RealFileName, false);
 
-    // try
+    TRY_FINALLY4 (OperationProgress, RealFileName, Success, OnceDoneOperation,
     {
-      BOOST_SCOPE_EXIT ( (&OperationProgress) (&RealFileName) (&Success) (&OnceDoneOperation) )
-      {
-        OperationProgress->Finish(RealFileName, Success, OnceDoneOperation);
-      } BOOST_SCOPE_EXIT_END
       try
       {
         if (FTerminal->GetSessionData()->GetCacheDirectories())
@@ -13259,12 +13356,11 @@ void __fastcall TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
         );
       }
     }
-#ifndef _MSC_VER
-    __finally
+    ,
     {
       OperationProgress->Finish(RealFileName, Success, OnceDoneOperation);
     }
-#endif // #ifndef _MSC_VER
+    );
     Index++;
   }
 }
@@ -13332,7 +13428,7 @@ void __fastcall TWebDAVFileSystem::WebDAVSource(const UnicodeString FileName,
       unsigned int Answer = 0;
       if (File->GetIsDirectory())
       {
-        UnicodeString Message = FMTLOAD(PROMPT_DIRECTORY_OVERWRITE, RealFileName.c_str());
+        UnicodeString Message = FMTLOAD(DIRECTORY_OVERWRITE, RealFileName.c_str());
         TQueryParams QueryParams(qpNeverAskAgainCheck);
         SUSPEND_OPERATION (
           Answer = FTerminal->ConfirmFileOverwrite(
@@ -13524,12 +13620,8 @@ void __fastcall TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString Dir
 
   bool CreateDir = true;
 
-  // try
+  TRY_FINALLY2 (SearchRec, findHandle,
   {
-    BOOST_SCOPE_EXIT ( (&SearchRec) (&findHandle) )
-    {
-      ::FindClose(findHandle);
-    } BOOST_SCOPE_EXIT_END
     while (FindOK && !OperationProgress->Cancel)
     {
       UnicodeString FileName = DirectoryName + SearchRec.cFileName;
@@ -13562,12 +13654,11 @@ void __fastcall TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString Dir
       );
     }
   }
-#ifndef _MSC_VER
-  __finally
+  ,
   {
     ::FindClose(findHandle);
   }
-#endif // #ifndef _MSC_VER
+  );
 
   if (CreateDir)
   {
@@ -13581,20 +13672,15 @@ void __fastcall TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString Dir
     try
     {
       FTerminal->SetExceptionOnFail(true);
-      // try
+      TRY_FINALLY1 (Self,
       {
-        BOOST_SCOPE_EXIT ( (&Self) )
-        {
-          Self->FTerminal->SetExceptionOnFail(false);
-        } BOOST_SCOPE_EXIT_END
         FTerminal->CreateDirectory(DestFullName, &Properties);
       }
-#ifndef _MSC_VER
-      __finally
+      ,
       {
         Self->FTerminal->SetExceptionOnFail(false);
       }
-#endif // #ifndef _MSC_VER
+      );
     }
     catch (...)
     {
@@ -13644,19 +13730,14 @@ void __fastcall TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
   UnicodeString FullTargetDir = IncludeTrailingBackslash(TargetDir);
 
   int Index = 0;
-  while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
+  while (Index < FilesToCopy->Count && !OperationProgress->Cancel)
   {
-    UnicodeString FileName = FilesToCopy->GetStrings(Index);
-    const TRemoteFile * File = dynamic_cast<const TRemoteFile *>(FilesToCopy->GetObjects(Index));
+    UnicodeString FileName = FilesToCopy->Strings[Index];
+    const TRemoteFile * File = dynamic_cast<const TRemoteFile *>(FilesToCopy->Objects[Index]);
     bool Success = false;
     FTerminal->SetExceptionOnFail(true);
-    // try
+    TRY_FINALLY5 (Self, OperationProgress, FileName, Success, OnceDoneOperation,
     {
-      BOOST_SCOPE_EXIT ( (&Self) (&OperationProgress) (&FileName) (&Success) (&OnceDoneOperation) )
-      {
-        OperationProgress->Finish(FileName, Success, OnceDoneOperation);
-        Self->FTerminal->SetExceptionOnFail(false);
-      } BOOST_SCOPE_EXIT_END
       try
       {
         SinkRobust(AbsolutePath(FileName, false), File, FullTargetDir, CopyParam, Params,
@@ -13670,13 +13751,12 @@ void __fastcall TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
         );
       }
     }
-#ifndef _MSC_VER
-    __finally
+    ,
     {
       OperationProgress->Finish(FileName, Success, OnceDoneOperation);
       Self->FTerminal->SetExceptionOnFail(false);
     }
-#endif // #ifndef _MSC_VER
+    );
     Index++;
   }
 }
@@ -13760,7 +13840,7 @@ void __fastcall TWebDAVFileSystem::Sink(const UnicodeString FileName,
     if (DirectoryExists(DestFullName))
     {
       unsigned int Answer = 0;
-      UnicodeString Message = FMTLOAD(PROMPT_DIRECTORY_OVERWRITE, FileNameOnly.c_str());
+      UnicodeString Message = FMTLOAD(DIRECTORY_OVERWRITE, FileNameOnly.c_str());
       TQueryParams QueryParams(qpNeverAskAgainCheck);
       SUSPEND_OPERATION (
         Answer = FTerminal->ConfirmFileOverwrite(
@@ -13801,7 +13881,7 @@ void __fastcall TWebDAVFileSystem::Sink(const UnicodeString FileName,
         SinkFileParams.Skipped = false;
         SinkFileParams.Flags = Flags & ~(tfFirstLevel | tfAutoResume);
 
-        FTerminal->ProcessDirectory(FileName, fastdelegate::bind(&TWebDAVFileSystem::SinkFile, this, _1, _2, _3), &SinkFileParams);
+        FTerminal->ProcessDirectory(FileName, MAKE_CALLBACK3(TWebDAVFileSystem::SinkFile, this), &SinkFileParams);
 
         // Do not delete directory if some of its files were skip.
         // Throw "skip file" for the directory to avoid attempt to deletion
@@ -13926,7 +14006,7 @@ void __fastcall TWebDAVFileSystem::Sink(const UnicodeString FileName,
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWebDAVFileSystem::SinkFile(const UnicodeString FileName,
+void /* __fastcall */ TWebDAVFileSystem::SinkFile(const UnicodeString & FileName,
     const TRemoteFile * File, void * Param)
 {
   TSinkFileParams * Params = static_cast<TSinkFileParams *>(Param);
@@ -13998,12 +14078,12 @@ bool __fastcall TWebDAVFileSystem::HandleListData(const wchar_t * Path,
         const wchar_t * Space = wcschr(own.c_str(), ' ');
         if (Space != NULL)
         {
-          File->GetOwner().SetName(UnicodeString(own.c_str(), Space - own.c_str()));
-          File->GetGroup().SetName(Space + 1);
+          File->GetFileOwner().SetName(UnicodeString(own.c_str(), Space - own.c_str()));
+          File->GetFileGroup().SetName(Space + 1);
         }
         else
         {
-          File->GetOwner().SetName(Entry->OwnerGroup);
+          File->GetFileOwner().SetName(Entry->OwnerGroup);
         }
 
         File->SetSize(Entry->Size);
@@ -14541,7 +14621,7 @@ webdav::error_t TWebDAVFileSystem::VerifyCertificate(
   TQueryButtonAlias Aliases[1];
   Aliases[0].Button = qaRetry;
   Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);
-  Aliases[0].OnClick = fastdelegate::bind(&TClipboardHandler::Copy, &ClipboardHandler, _1);
+  Aliases[0].OnClick = MAKE_CALLBACK1(TClipboardHandler::Copy, &ClipboardHandler);
 
   TQueryParams Params;
   Params.HelpKeyword = HELP_VERIFY_CERTIFICATE;
@@ -14552,6 +14632,13 @@ webdav::error_t TWebDAVFileSystem::VerifyCertificate(
     FMTLOAD(VERIFY_CERT_PROMPT2, UnicodeString(Prompt).c_str()),
     NULL, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);
   RequestResult = Answer;
+  switch (RequestResult)
+  {
+    case qaCancel:
+      FFileTransferCancelled = true;
+      FFileTransferAbort = ftaCancel;
+      break;
+  }
   return WEBDAV_NO_ERROR;
 }
 
@@ -14636,24 +14723,14 @@ webdav::error_t TWebDAVFileSystem::SimplePrompt(
   TSessionData * Data = FTerminal->GetSessionData();
   UnicodeString Text = Data->GetUserNameExpanded();
   TStrings * MoreMessages = new TStringList();
-  // try
+  std::auto_ptr<TStrings> MoreMessagesPtr(MoreMessages);
   {
-    BOOST_SCOPE_EXIT ( (&MoreMessages) )
-    {
-      delete MoreMessages;
-    } BOOST_SCOPE_EXIT_END
     MoreMessages->Add(UnicodeString(prompt_string));
     unsigned int Answer = FTerminal->QueryUser(
                             UnicodeString(prompt_text),
                             MoreMessages, qaYes | qaNo | qaCancel, NULL, qtConfirmation);
     RequestResult = Answer;
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete MoreMessages;
-  }
-#endif // #ifndef _MSC_VER
   return RequestResult == qaCancel ? WEBDAV_ERR_CANCELLED : WEBDAV_NO_ERROR;
 }
 

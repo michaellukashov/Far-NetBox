@@ -4,7 +4,7 @@
 // testnetbox_02 --run_test=testnetbox_02/test1 --log_level=all 2>&1 | tee res.txt
 //------------------------------------------------------------------------------
 
-#include "nbafx.h"
+#include <Classes.hpp>
 #include <time.h>
 #include <stdio.h>
 #include <iostream>
@@ -15,7 +15,6 @@
 #define BOOST_TEST_MAIN
 // #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
-#include <boost/bind.hpp>
 
 #include "winstuff.h"
 #include "puttyexp.h"
@@ -111,11 +110,11 @@ BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
     TStringList MessageLines;
     int MaxMessageWidth = 20;
     FarWrapText(Message, &MessageLines, MaxMessageWidth);
-    BOOST_TEST_MESSAGE("MessageLines = " << W2MB(MessageLines.GetText().c_str()));
-    BOOST_CHECK_EQUAL(3, MessageLines.GetCount());
-    BOOST_CHECK_EQUAL("long long long long ", W2MB(MessageLines.GetStrings(0).c_str()).c_str());
-    BOOST_CHECK_EQUAL("long long long long ", W2MB(MessageLines.GetStrings(1).c_str()).c_str());
-    BOOST_CHECK_EQUAL("long text", W2MB(MessageLines.GetStrings(2).c_str()).c_str());
+    BOOST_TEST_MESSAGE("MessageLines = " << W2MB(MessageLines.Text.get().c_str()));
+    BOOST_CHECK_EQUAL(3, MessageLines.Count);
+    BOOST_CHECK_EQUAL("long long long long ", W2MB(MessageLines.Strings[0].c_str()).c_str());
+    BOOST_CHECK_EQUAL("long long long long ", W2MB(MessageLines.Strings[1].c_str()).c_str());
+    BOOST_CHECK_EQUAL("long text", W2MB(MessageLines.Strings[2].c_str()).c_str());
   }
 }
 
@@ -148,7 +147,7 @@ private:
 
 class TClass2
 {
-  typedef fastdelegate::FastDelegate2<void, TClass2 *, int> TClickEvent;
+  DEFINE_CALLBACK_TYPE2(TClickEvent, void, TClass2 *, int);
 
 public:
   TClass2() :
@@ -201,7 +200,7 @@ BOOST_FIXTURE_TEST_CASE(test2, base_fixture_t)
   {
     TClass2 cl2;
     TClass3 cl3;
-    cl2.SetOnClick(fastdelegate::bind(&TClass3::ClickEventHandler, &cl3, _1, _2));
+    cl2.SetOnClick(MAKE_CALLBACK2(TClass3::ClickEventHandler, &cl3));
     BOOST_CHECK(!cl2.GetOnClick().empty());
     cl2.Click();
     BOOST_CHECK_EQUAL(true, cl2.OnClickTriggered);
@@ -215,7 +214,7 @@ BOOST_FIXTURE_TEST_CASE(test3, base_fixture_t)
   {
     TClass1 cl1;
     BOOST_CHECK_EQUAL(false, cl1.OnChangeNotifyEventTriggered);
-    cl1.SetOnChange(fastdelegate::bind(&base_fixture_t::OnChangeNotifyEvent, this, _1));
+    cl1.SetOnChange(MAKE_CALLBACK1(base_fixture_t::OnChangeNotifyEvent, this));
     cl1.Change(L"line 1");
     BOOST_CHECK_EQUAL(true, cl1.OnChangeNotifyEventTriggered);
   }
@@ -226,7 +225,7 @@ BOOST_FIXTURE_TEST_CASE(test4, base_fixture_t)
   if (1)
   {
     TStringList strings;
-    strings.SetOnChange(fastdelegate::bind(&base_fixture_t::onStringListChange, this, _1));
+    strings.SetOnChange(MAKE_CALLBACK1(base_fixture_t::onStringListChange, this));
     strings.Add(L"line 1");
     // BOOST_CHECK_EQUAL(true, OnChangeNotifyEventTriggered);
     BOOST_CHECK_EQUAL(true, onStringListChangeTriggered);
@@ -249,31 +248,31 @@ BOOST_FIXTURE_TEST_CASE(test6, base_fixture_t)
 BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
 {
   TStringList Lines;
-  Lines.SetSorted(true);
+  Lines.Sorted = true;
   if (1)
   {
-    Lines.SetDuplicates(dupAccept);
+    Lines.Duplicates = dupAccept;
     Lines.Add(L"aaa");
     Lines.Add(L"aaa");
     Lines.Add(L"bbb");
-    BOOST_CHECK(3 == Lines.GetCount());
+    BOOST_CHECK(3 == Lines.Count);
     BOOST_CHECK(0 == Lines.IndexOf(L"aaa"));
     BOOST_CHECK(2 == Lines.IndexOf(L"bbb"));
   }
   Lines.Clear();
   if (1)
   {
-    Lines.SetDuplicates(dupIgnore);
+    Lines.Duplicates = dupIgnore;
     Lines.Add(L"aaa");
     Lines.Add(L"aaa");
     Lines.Add(L"bbb");
-    BOOST_CHECK(2 == Lines.GetCount());
+    BOOST_CHECK(2 == Lines.Count);
     BOOST_CHECK(1 == Lines.IndexOf(L"bbb"));
   }
   Lines.Clear();
   if (1)
   {
-    Lines.SetDuplicates(dupError);
+    Lines.Duplicates = dupError;
     Lines.Add(L"aaa");
     Lines.Add(L"bbb");
     BOOST_CHECK_THROW(Lines.Add(L"aaa"), std::exception);
@@ -463,7 +462,7 @@ BOOST_FIXTURE_TEST_CASE(test13, base_fixture_t)
 BOOST_FIXTURE_TEST_CASE(test14, base_fixture_t)
 {
   {
-    UnicodeString str = ::StringReplace(L"AA", L"A", L"B", TReplaceFlags::Init(rfReplaceAll));
+    UnicodeString str = ::StringReplace(L"AA", L"A", L"B", TReplaceFlags() << rfReplaceAll);
     BOOST_CHECK_EQUAL(W2MB(str.c_str()).c_str(), "BB");
   }
   {

@@ -7,7 +7,6 @@
 #include "boostdefines.hpp"
 
 #include "FarPlugin.h"
-#include "nbafx.h"
 
 #define MAX_SIZE -1
 
@@ -31,12 +30,12 @@ typedef void __fastcall (__closure * TFarMouseClickEvent)
 typedef void __fastcall (__closure * TFarProcessGroupEvent)
   (TFarDialogItem * Item, void * Arg);
 #else
-typedef fastdelegate::FastDelegate4<void,
-  TFarDialog *, TFarDialogItem *, long, bool &> TFarKeyEvent;
-typedef fastdelegate::FastDelegate2<void,
-  TFarDialogItem *, MOUSE_EVENT_RECORD *> TFarMouseClickEvent;
-typedef fastdelegate::FastDelegate2<void,
-  TFarDialogItem *, void *> TFarProcessGroupEvent;
+DEFINE_CALLBACK_TYPE4(TFarKeyEvent, void,
+  TFarDialog *, TFarDialogItem *, long, bool &);
+DEFINE_CALLBACK_TYPE2(TFarMouseClickEvent, void,
+  TFarDialogItem *, MOUSE_EVENT_RECORD *);
+DEFINE_CALLBACK_TYPE2(TFarProcessGroupEvent, void,
+  TFarDialogItem *, void *);
 #endif
 //---------------------------------------------------------------------------
 class TFarDialog : public TObject
@@ -131,7 +130,7 @@ protected:
   void __fastcall RefreshBounds();
   virtual void __fastcall Idle();
   void __fastcall BreakSynchronize();
-  void __fastcall Synchronize(TThreadMethodEvent Method);
+  void __fastcall Synchronize(TThreadMethod Method);
   void __fastcall Close(TFarButton * Button);
   void __fastcall ProcessGroup(int Group, TFarProcessGroupEvent Callback, void * Arg);
   void /* __fastcall */ ShowItem(TFarDialogItem * Item, void * Arg);
@@ -164,7 +163,7 @@ private:
   int FResult;
   bool FNeedsSynchronize;
   HANDLE FSynchronizeObjects[2];
-  TThreadMethodEvent FSynchronizeMethod;
+  TThreadMethod FSynchronizeMethod;
   TFarDialog * Self;
 
 public:
@@ -433,7 +432,7 @@ public:
 #ifndef _MSC_VER
 typedef void __fastcall (__closure * TFarButtonClickEvent)(TFarButton * Sender, bool & Close);
 #else
-typedef fastdelegate::FastDelegate2<void, TFarButton *, bool &> TFarButtonClickEvent;
+DEFINE_CALLBACK_TYPE2(TFarButtonClickEvent, void, TFarButton *, bool &);
 #endif
 enum TFarButtonBrackets { brNone, brTight, brSpace, brNormal };
 //---------------------------------------------------------------------------
@@ -482,8 +481,8 @@ public:
 typedef void __fastcall (__closure * TFarAllowChangeEvent)(TFarDialogItem * Sender,
   long NewState, bool & AllowChange);
 #else
-typedef fastdelegate::FastDelegate3<void, TFarDialogItem *,
-  void *, bool &> TFarAllowChangeEvent;
+DEFINE_CALLBACK_TYPE3(TFarAllowChangeEvent, void, TFarDialogItem * /* Sender */,
+  void * /* NewState */, bool & /* AllowChange */);
 #endif
 //---------------------------------------------------------------------------
 class TFarCheckBox : public TFarDialogItem

@@ -1,14 +1,6 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#else
-#include "stdafx.h"
-
-#include "boostdefines.hpp"
-#include <boost/scope_exit.hpp>
-#include <boost/bind.hpp>
-#endif
 
 #include <stdio.h>
 #include <lmcons.h>
@@ -21,9 +13,7 @@
 #include "Exceptions.h"
 #include "TextsCore.h"
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #pragma package(smart_init)
-#endif
 //---------------------------------------------------------------------------
 UnicodeString __fastcall DoXmlEscape(UnicodeString Str, bool NewLine)
 {
@@ -99,7 +89,7 @@ TStrings * __fastcall ExceptionToMessages(Exception * E)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-// #pragma warn -inl
+#pragma warn -inl
 class TSessionActionRecord
 {
 public:
@@ -154,23 +144,23 @@ public:
           Attrs = L" recursive=\"true\"";
         }
         FLog->AddIndented(FORMAT(L"<%s%s>", Name,  Attrs.c_str()));
-        for (int Index = 0; Index < FNames->GetCount(); Index++)
+        for (int Index = 0; Index < FNames->Count; Index++)
         {
-          UnicodeString Value = FValues->GetStrings(Index);
+          UnicodeString Value = FValues->Strings[Index];
           if (Value.IsEmpty())
           {
-            FLog->AddIndented(FORMAT(L"  <%s />", FNames->GetStrings(Index).c_str()));
+            FLog->AddIndented(FORMAT(L"  <%s />", FNames->Strings[Index].c_str()));
           }
           else
           {
             FLog->AddIndented(FORMAT(L"  <%s value=\"%s\" />",
-              FNames->GetStrings(Index).c_str(), XmlAttributeEscape(Value).c_str()));
+              FNames->Strings[Index].c_str(), XmlAttributeEscape(Value).c_str()));
           }
         }
         if (FFileList != NULL)
         {
           FLog->AddIndented(L"  <files>");
-          for (int Index = 0; Index < FFileList->GetCount(); Index++)
+          for (int Index = 0; Index < FFileList->Count; Index++)
           {
             TRemoteFile * File = FFileList->GetFiles(Index);
 
@@ -276,7 +266,7 @@ public:
     int Index = FNames->IndexOf(Name);
     if (Index >= 0)
     {
-      FValues->PutString(Index, FValues->GetStrings(Index) + L"\r\n" + Output);
+      FValues->Strings[Index] = FValues->Strings[Index] + L"\r\n" + Output;
     }
     else
     {
@@ -347,7 +337,7 @@ private:
   TRemoteFileList * FFileList;
   TRemoteFile * FFile;
 };
-// #pragma warn .inl
+#pragma warn .inl
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 /* __fastcall */ TSessionAction::TSessionAction(TActionLog *Log, TLogAction Action)
@@ -595,7 +585,7 @@ TFileSystemInfo::TFileSystemInfo()
 FILE * __fastcall OpenFile(UnicodeString LogFileName, TSessionData * SessionData, bool Append, UnicodeString & NewFileName)
 {
   FILE * Result;
-  UnicodeString ANewFileName = GetExpandedLogFileName(LogFileName, SessionData);
+  UnicodeString ANewFileName = StripPathQuotes(GetExpandedLogFileName(LogFileName, SessionData));
   // Result = _wfopen(ANewFileName.c_str(), (Append ? L"a" : L"w"));
   Result = _fsopen(W2MB(ANewFileName.c_str()).c_str(),
     Append ? "a" : "w", SH_DENYWR); // _SH_DENYNO); // 
@@ -614,12 +604,12 @@ FILE * __fastcall OpenFile(UnicodeString LogFileName, TSessionData * SessionData
 //---------------------------------------------------------------------------
 const wchar_t *LogLineMarks = L"<>!.*";
 /* __fastcall */ TSessionLog::TSessionLog(TSessionUI* UI, TSessionData * SessionData,
-  TConfiguration * AConfiguration):
+  TConfiguration * Configuration):
   TStringList()
 {
   FCriticalSection = new TCriticalSection();
   FLogging = false;
-  FConfiguration = AConfiguration;
+  FConfiguration = Configuration;
   FParent = NULL;
   FUI = UI;
   FSessionData = SessionData;
@@ -658,12 +648,12 @@ UnicodeString __fastcall TSessionLog::GetSessionName()
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TSessionLog::GetLine(Integer Index)
 {
-  return GetStrings(Index - FTopIndex);
+  return Strings[Index - FTopIndex];
 }
 //---------------------------------------------------------------------------
 TLogLineType __fastcall TSessionLog::GetType(int Index)
 {
-  return static_cast<TLogLineType>(reinterpret_cast<size_t>(GetObjects(Index - FTopIndex)));
+  return static_cast<TLogLineType>(reinterpret_cast<size_t>(Objects[Index - FTopIndex]));
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TSessionLog::DoAddToParent(TLogLineType Type, const UnicodeString & Line)
@@ -707,7 +697,6 @@ void /* __fastcall */ TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeS
 }
 //---------------------------------------------------------------------------
 void __fastcall TSessionLog::DoAdd(TLogLineType Type, UnicodeString Line,
-  // void __fastcall (__closure *f)(TLogLineType Type, const UnicodeString & Line))
   TDoAddLogEvent Event)
 {
   UnicodeString Prefix;
@@ -732,30 +721,24 @@ void __fastcall TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
     {
       if (FParent != NULL)
       {
-        DoAdd(Type, Line, fastdelegate::bind(&TSessionLog::DoAddToParent, this, _1, _2));
+        DoAdd(Type, Line, MAKE_CALLBACK2(TSessionLog::DoAddToParent, this));
       }
       else
       {
         TGuard Guard(FCriticalSection);
 
         BeginUpdate();
-        // try
+        TRY_FINALLY1 (Self,
         {
-          BOOST_SCOPE_EXIT ( (&Self) )
-          {
-            Self->DeleteUnnecessary();
-            Self->EndUpdate();
-          } BOOST_SCOPE_EXIT_END
-          DoAdd(Type, Line, fastdelegate::bind(&TSessionLog::DoAddToSelf, this, _1, _2));
+          DoAdd(Type, Line, MAKE_CALLBACK2(TSessionLog::DoAddToSelf, this));
         }
-#ifndef _MSC_VER
-        __finally
+        ,
         {
-          DeleteUnnecessary();
+          Self->DeleteUnnecessary();
 
-          EndUpdate();
+          Self->EndUpdate();
         }
-#endif
+        );
       }
     }
     catch (Exception &E)
@@ -863,31 +846,26 @@ void __fastcall TSessionLog::StateChange()
 void __fastcall TSessionLog::DeleteUnnecessary()
 {
   BeginUpdate();
-  // try
+  TRY_FINALLY1 (Self,
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
-    {
-        Self->EndUpdate();
-    } BOOST_SCOPE_EXIT_END
     if (!GetLogging() || (FParent != NULL))
     {
-        Clear();
+      Clear();
     }
     else
     {
-      while (!FConfiguration->GetLogWindowComplete() && (GetCount() > FConfiguration->GetLogWindowLines()))
+      while (!FConfiguration->GetLogWindowComplete() && (Count > FConfiguration->GetLogWindowLines()))
       {
         Delete(0);
         FTopIndex++;
       }
     }
   }
-#ifndef _MSC_VER
-  __finally
+  ,
   {
-    EndUpdate();
+    Self->EndUpdate();
   }
-#endif
+  );
 }
 //---------------------------------------------------------------------------
 void __fastcall TSessionLog::AddStartupInfo()
@@ -913,36 +891,23 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
   BeginUpdate();
   // try
   {
-#ifdef _MSC_VER
     BOOST_SCOPE_EXIT ( (&Self) )
     {
       Self->DeleteUnnecessary();
 
       Self->EndUpdate();
     } BOOST_SCOPE_EXIT_END
-#endif
     // #define ADF(S, F) DoAdd(llMessage, FORMAT(S, F), DoAddToSelf);
-    #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), fastdelegate::bind(&TSessionLog::DoAddToSelf, this, _1, _2));
+    #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), MAKE_CALLBACK2(TSessionLog::DoAddToSelf, this));
     AddSeparator();
     ADF(L"NetBox %s (OS %s)", FConfiguration->GetVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
     THierarchicalStorage * Storage = FConfiguration->CreateScpStorage(false);
+    assert(Storage);
     Storage->SetAccessMode(smRead);
-    // try
+    std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
     {
-#ifdef _MSC_VER
-      BOOST_SCOPE_EXIT ( (&Storage) )
-      {
-        delete Storage;
-      } BOOST_SCOPE_EXIT_END
-#endif
       ADF(L"Configuration: %s", Storage->GetSource().c_str());
     }
-#ifndef _MSC_VER
-    __finally
-    {
-      delete Storage;
-    }
-#endif
 
     if (0)
     {
@@ -1117,9 +1082,9 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
 #ifndef _MSC_VER
   __finally
   {
-    DeleteUnnecessary();
+    Self->DeleteUnnecessary();
 
-    EndUpdate();
+    Self->EndUpdate();
   }
 #endif
 }
@@ -1131,7 +1096,7 @@ void __fastcall TSessionLog::AddSeparator()
 //---------------------------------------------------------------------------
 int __fastcall TSessionLog::GetBottomIndex()
 {
-  return (GetCount() > 0 ? (GetTopIndex() + GetCount() - 1) : -1);
+  return (Count > 0 ? (GetTopIndex() + Count - 1) : -1);
 }
 //---------------------------------------------------------------------------
 bool __fastcall TSessionLog::GetLoggingToFile()
@@ -1144,8 +1109,68 @@ void __fastcall TSessionLog::Clear()
 {
   TGuard Guard(FCriticalSection);
 
-  FTopIndex += GetCount();
+  FTopIndex += Count;
   TStringList::Clear();
+}
+//---------------------------------------------------------------------------
+TSessionLog * __fastcall TSessionLog::GetParent()
+{
+  return FParent;
+}
+//---------------------------------------------------------------------------
+void __fastcall TSessionLog::SetParent(TSessionLog *value)
+{
+  FParent = value;
+}
+//---------------------------------------------------------------------------
+bool __fastcall TSessionLog::GetLogging()
+{
+  return FLogging;
+}
+//---------------------------------------------------------------------------
+TNotifyEvent & __fastcall TSessionLog::GetOnChange()
+{
+  return TStringList::GetOnChange();
+}
+//---------------------------------------------------------------------------
+void __fastcall TSessionLog::SetOnChange(TNotifyEvent value)
+{
+  TStringList::SetOnChange(value);
+}
+//---------------------------------------------------------------------------
+TNotifyEvent & __fastcall TSessionLog::GetOnStateChange()
+{
+  return FOnStateChange;
+}
+//---------------------------------------------------------------------------
+void __fastcall TSessionLog::SetOnStateChange(TNotifyEvent value)
+{
+  FOnStateChange = value;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TSessionLog::GetCurrentFileName()
+{
+  return FCurrentFileName;
+}
+//---------------------------------------------------------------------------
+int __fastcall TSessionLog::GetTopIndex()
+{
+  return FTopIndex;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TSessionLog::GetName()
+{
+  return FName;
+}
+//---------------------------------------------------------------------------
+void __fastcall TSessionLog::SetName(const UnicodeString value)
+{
+  FName = value;
+}
+//---------------------------------------------------------------------------
+int __fastcall TSessionLog::GetCount()
+{
+  return TStringList::GetCount();
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -1169,7 +1194,7 @@ void __fastcall TSessionLog::Clear()
 //---------------------------------------------------------------------------
 /* __fastcall */ TActionLog::~TActionLog()
 {
-  assert(FPendingActions->GetCount() == 0);
+  assert(FPendingActions->Count == 0);
   delete FPendingActions;
   FClosed = true;
   ReflectSettings();
@@ -1230,31 +1255,19 @@ void __fastcall TActionLog::AddFailure(Exception * E)
   TStrings * Messages = ExceptionToMessages(E);
   if (Messages != NULL)
   {
-    // try
+    std::auto_ptr<TStrings> MessagesPtr(Messages);
     {
-#ifdef _MSC_VER
-      BOOST_SCOPE_EXIT ( (&Messages) )
-      {
-        delete Messages;
-      } BOOST_SCOPE_EXIT_END
-#endif
       AddFailure(Messages);
     }
-#ifndef _MSC_VER
-    __finally
-    {
-      delete Messages;
-    }
-#endif
   }
 }
 //---------------------------------------------------------------------------
 void __fastcall TActionLog::AddMessages(UnicodeString Indent, TStrings * Messages)
 {
-  for (int Index = 0; Index < Messages->GetCount(); Index++)
+  for (int Index = 0; Index < Messages->Count; Index++)
   {
     AddIndented(
-      FORMAT((Indent + L"<message>%s</message>").c_str(), XmlEscape(Messages->GetStrings(Index)).c_str()));
+      FORMAT((Indent + L"<message>%s</message>").c_str(), XmlEscape(Messages->Strings[Index]).c_str()));
   }
 }
 //---------------------------------------------------------------------------
@@ -1329,8 +1342,8 @@ void __fastcall TActionLog::AddPendingAction(TSessionActionRecord * Action)
 //---------------------------------------------------------------------------
 void __fastcall TActionLog::RecordPendingActions()
 {
-  while ((FPendingActions->GetCount() > 0) &&
-         static_cast<TSessionActionRecord *>(FPendingActions->GetItem(0))->Record())
+  while ((FPendingActions->Count > 0) &&
+         static_cast<TSessionActionRecord *>(FPendingActions->Items[0])->Record())
   {
     FPendingActions->Delete(0);
   }
@@ -1363,3 +1376,4 @@ void __fastcall TActionLog::SetEnabled(bool value)
     ReflectSettings();
   }
 }
+

@@ -1,4 +1,4 @@
-#include "nbafx.h"
+#include <vcl.h>
 
 #include "Common.h"
 #include "FarUtil.h"

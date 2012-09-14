@@ -4,10 +4,6 @@
 //---------------------------------------------------------------------------
 #include <vector>
 #include <map>
-
-#ifdef _MSC_VER
-#include "Classes.h"
-#endif
 //---------------------------------------------------------------------------
 enum TModificationFmt { mfNone, mfMDHM, mfMDY, mfFull };
 //---------------------------------------------------------------------------
@@ -38,38 +34,22 @@ public:
 
   int __fastcall Compare(const TRemoteToken & rht) const;
 
-#ifndef _MSC_VER
-  __property UnicodeString Name = { read = FName, write = FName };
-  __property bool NameValid = { read = GetNameValid };
-  __property unsigned int ID = { read = FID, write = SetID };
-  __property bool IDValid = { read = FIDValid };
-  __property bool IsSet  = { read = GetIsSet };
-  __property UnicodeString LogText = { read = GetLogText };
-  __property UnicodeString DisplayText = { read = GetDisplayText };
-#else
-  void __fastcall SetID(unsigned int value);
+  UnicodeString __fastcall GetName() const;
+  void __fastcall SetName(const UnicodeString value);
   bool __fastcall GetNameValid() const;
-  bool __fastcall GetIsSet() const;
-  UnicodeString __fastcall GetDisplayText() const;
-  UnicodeString __fastcall GetLogText() const;
-  UnicodeString __fastcall GetName() const { return FName; }
-  void __fastcall SetName(const UnicodeString value) { FName = value; }
   unsigned int GetID() const { return FID; }
+  void __fastcall SetID(unsigned int value);
   bool __fastcall GetIDValid() const { return FIDValid; }
-#endif
+  bool __fastcall GetIsSet() const;
+  UnicodeString __fastcall GetLogText() const;
+  UnicodeString __fastcall GetDisplayText() const;
 
 private:
   UnicodeString FName;
   unsigned int FID;
   bool FIDValid;
 
-#ifndef _MSC_VER
-  void __fastcall SetID(unsigned int value);
-  bool __fastcall GetNameValid() const;
-  bool __fastcall GetIsSet() const;
-  UnicodeString __fastcall GetDisplayText() const;
-  UnicodeString __fastcall GetLogText() const;
-#endif
+public:
 };
 //---------------------------------------------------------------------------
 class TRemoteTokenList
@@ -122,6 +102,7 @@ private:
   int FIsHidden;
   UnicodeString FTypeName;
   TRemoteFile * Self;
+
 public:
   int __fastcall GetAttr();
   bool __fastcall GetBrokenLink();
@@ -148,6 +129,8 @@ public:
   bool __fastcall GetIsInaccesibleDirectory() const;
   UnicodeString __fastcall GetExtension();
   UnicodeString __fastcall GetUserModificationStr();
+
+private:
   void __fastcall LoadTypeInfo();
 
 protected:
@@ -161,81 +144,46 @@ public:
   void __fastcall ShiftTime(const TDateTime & Difference);
   void __fastcall Complete();
 
-#ifndef _MSC_VER
-  __property int Attr = { read = GetAttr };
-  __property bool BrokenLink = { read = GetBrokenLink };
-  __property TRemoteFileList * Directory = { read = FDirectory, write = FDirectory };
-  __property UnicodeString RightsStr = { read = GetRightsStr };
-  __property __int64 Size = { read = FSize, write = FSize };
-  __property TRemoteToken Owner = { read = FOwner, write = FOwner };
-  __property TRemoteToken Group = { read = FGroup, write = FGroup };
-  __property UnicodeString FileName = { read = FFileName, write = FFileName };
-  __property int INodeBlocks = { read = FINodeBlocks };
-  __property TDateTime Modification = { read = FModification, write = SetModification };
-  __property UnicodeString ModificationStr = { read = GetModificationStr };
-  __property UnicodeString UserModificationStr = { read = GetUserModificationStr };
-  __property TModificationFmt ModificationFmt = { read = FModificationFmt, write = FModificationFmt };
-  __property TDateTime LastAccess = { read = FLastAccess, write = FLastAccess };
-  __property bool IsSymLink = { read = FIsSymLink };
-  __property bool IsDirectory = { read = GetIsDirectory };
-  __property TRemoteFile * LinkedFile = { read = GetLinkedFile, write = SetLinkedFile };
-  __property UnicodeString LinkTo = { read = FLinkTo, write = FLinkTo };
-  __property UnicodeString ListingStr = { read = GetListingStr, write = SetListingStr };
-  __property TRights * Rights = { read = FRights, write = SetRights };
-  __property TTerminal * Terminal = { read = FTerminal, write = SetTerminal };
-  __property wchar_t Type = { read = GetType, write = SetType };
-  __property bool Selected  = { read=FSelected, write=FSelected };
-  __property UnicodeString FullFileName  = { read = GetFullFileName, write = FFullFileName };
-  __property bool HaveFullFileName  = { read = GetHaveFullFileName };
-  __property int IconIndex = { read = GetIconIndex };
-  __property UnicodeString TypeName = { read = GetTypeName };
-  __property bool IsHidden = { read = GetIsHidden, write = SetIsHidden };
-  __property bool IsParentDirectory = { read = GetIsParentDirectory };
-  __property bool IsThisDirectory = { read = GetIsThisDirectory };
-  __property bool IsInaccesibleDirectory  = { read=GetIsInaccesibleDirectory };
-  __property UnicodeString Extension  = { read=GetExtension };
-#else
   TRemoteFileList * __fastcall GetDirectory() const { return FDirectory; }
   void __fastcall SetDirectory(TRemoteFileList * value) { FDirectory = value; }
   __int64 __fastcall GetSize() const { return FSize; }
   void __fastcall SetSize(__int64 value) { FSize = value; }
-  TRemoteToken __fastcall GetOwner() const { return FOwner; }
-  void __fastcall SetOwner(TRemoteToken value) { FOwner = value; }
-  TRemoteToken __fastcall GetGroup() const { return FGroup; }
-  void __fastcall SetGroup(TRemoteToken value) { FGroup = value; }
-  UnicodeString __fastcall GetFileName() const { return FFileName; }
-  void __fastcall SetFileName(const UnicodeString value) { FFileName = value; }
-  int __fastcall GetINodeBlocks() { return FINodeBlocks; };
+  const TRemoteToken & __fastcall GetFileOwner() const;
+  TRemoteToken & __fastcall GetFileOwner();
+  void __fastcall SetFileOwner(TRemoteToken value);
+  const TRemoteToken & __fastcall GetFileGroup() const;
+  TRemoteToken & __fastcall GetFileGroup();
+  void __fastcall SetFileGroup(TRemoteToken value);
+  UnicodeString __fastcall GetFileName() const;
+  void __fastcall SetFileName(const UnicodeString value);
+  int __fastcall GetINodeBlocks();
   TDateTime __fastcall GetModification() const { return FModification; }
   TModificationFmt __fastcall GetModificationFmt() const { return FModificationFmt; }
   void __fastcall SetModificationFmt(TModificationFmt value) { FModificationFmt = value; }
   TDateTime __fastcall GetLastAccess() const { return FLastAccess; }
   void __fastcall SetLastAccess(TDateTime value) { FLastAccess = value; }
   bool __fastcall GetIsSymLink() const { return FIsSymLink; }
-  UnicodeString __fastcall GetLinkTo() const { return FLinkTo; }
-  void __fastcall SetLinkTo(const UnicodeString value) { FLinkTo = value; }
+  UnicodeString __fastcall GetLinkTo() const;
+  void __fastcall SetLinkTo(const UnicodeString value);
   TRights * __fastcall GetRights() const { return FRights; }
   TTerminal * __fastcall GetTerminal() const { return FTerminal; }
   bool __fastcall GetSelected() { return FSelected; }
   void __fastcall SetSelected(bool value) { FSelected = value; }
-  void __fastcall SetFullFileName(const UnicodeString value) { FFullFileName = value; }
-#endif
+  void __fastcall SetFullFileName(const UnicodeString value);
 };
 //---------------------------------------------------------------------------
 class TRemoteDirectoryFile : public TRemoteFile
 {
 public:
   /* __fastcall */ TRemoteDirectoryFile();
-  virtual /* __fastcall */ ~TRemoteDirectoryFile()
-  {}
+  virtual /* __fastcall */ ~TRemoteDirectoryFile() {}
 };
 //---------------------------------------------------------------------------
 class TRemoteParentDirectory : public TRemoteDirectoryFile
 {
 public:
   explicit /* __fastcall */ TRemoteParentDirectory(TTerminal * Terminal);
-  virtual /* __fastcall */ ~TRemoteParentDirectory()
-  {}
+  virtual /* __fastcall */ ~TRemoteParentDirectory() {}
 };
 //---------------------------------------------------------------------------
 class TRemoteFileList : public TObjectList
@@ -247,45 +195,23 @@ friend class TWebDAVFileSystem;
 protected:
   UnicodeString FDirectory;
   TDateTime FTimestamp;
-#ifndef _MSC_VER
-  TRemoteFile * __fastcall GetFiles(Integer Index);
-  virtual void __fastcall SetDirectory(UnicodeString value);
-  UnicodeString __fastcall GetFullDirectory();
-  Boolean __fastcall GetIsRoot();
   TRemoteFile * __fastcall GetParentDirectory();
-  UnicodeString __fastcall GetParentPath();
-  __int64 __fastcall GetTotalSize();
-#endif
 
   virtual void __fastcall Clear();
 public:
   /* __fastcall */ TRemoteFileList();
-  virtual ~TRemoteFileList()
-  {
-    Clear();
-  }
+  virtual ~TRemoteFileList() { Clear(); }
   TRemoteFile * __fastcall FindFile(const UnicodeString &FileName);
   virtual void __fastcall DuplicateTo(TRemoteFileList * Copy);
   virtual void __fastcall AddFile(TRemoteFile * File);
-#ifndef _MSC_VER
-  __property UnicodeString Directory = { read = FDirectory, write = SetDirectory };
-  __property TRemoteFile * Files[Integer Index] = { read = GetFiles };
-  __property UnicodeString FullDirectory  = { read=GetFullDirectory };
-  __property Boolean IsRoot = { read = GetIsRoot };
-  __property UnicodeString ParentPath = { read = GetParentPath };
-  __property __int64 TotalSize = { read = GetTotalSize };
-  __property TDateTime Timestamp = { read = FTimestamp };
-#else
   UnicodeString GetDirectory() const { return FDirectory; }
-  TDateTime GetTimestamp() const { return FTimestamp; }
-  TRemoteFile * __fastcall GetFiles(Integer Index);
   virtual void __fastcall SetDirectory(UnicodeString value);
+  TRemoteFile * __fastcall GetFiles(Integer Index);
   UnicodeString __fastcall GetFullDirectory();
   Boolean __fastcall GetIsRoot();
-  TRemoteFile * __fastcall GetParentDirectory();
   UnicodeString __fastcall GetParentPath();
   __int64 __fastcall GetTotalSize();
-#endif
+  TDateTime GetTimestamp() const { return FTimestamp; }
 };
 //---------------------------------------------------------------------------
 class TRemoteDirectory : public TRemoteFileList
@@ -300,44 +226,24 @@ private:
   TStrings * FSelectedFiles;
   TRemoteFile * FParentDirectory;
   TRemoteFile * FThisDirectory;
-#ifndef _MSC_VER
-  virtual void __fastcall SetDirectory(UnicodeString value);
-  TStrings * __fastcall GetSelectedFiles();
-  Boolean __fastcall GetLoaded();
-  void __fastcall SetIncludeParentDirectory(Boolean value);
-  void __fastcall SetIncludeThisDirectory(Boolean value);
-#endif
 protected:
   virtual void __fastcall Clear();
 public:
   explicit /* __fastcall */ TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template = NULL);
-  virtual /* __fastcall */ ~TRemoteDirectory()
-  {
-    Clear();
-  }
+  virtual /* __fastcall */ ~TRemoteDirectory() { Clear(); }
   virtual void __fastcall AddFile(TRemoteFile * File);
   virtual void __fastcall DuplicateTo(TRemoteFileList * Copy);
-#ifndef _MSC_VER
-  __property TTerminal * Terminal = { read = FTerminal, write = FTerminal };
-  __property TStrings * SelectedFiles  = { read=GetSelectedFiles };
-  __property Boolean IncludeParentDirectory = { read = FIncludeParentDirectory, write = SetIncludeParentDirectory };
-  __property Boolean IncludeThisDirectory = { read = FIncludeThisDirectory, write = SetIncludeThisDirectory };
-  __property Boolean Loaded = { read = GetLoaded };
-  __property TRemoteFile * ParentDirectory = { read = FParentDirectory };
-  __property TRemoteFile * ThisDirectory = { read = FThisDirectory };
-#else
-  virtual void __fastcall SetDirectory(UnicodeString value);
-  TStrings * __fastcall GetSelectedFiles();
-  Boolean __fastcall GetLoaded();
-  void __fastcall SetIncludeParentDirectory(Boolean value);
-  void __fastcall SetIncludeThisDirectory(Boolean value);
   TTerminal * GetTerminal() { return FTerminal; }
   void SetTerminal(TTerminal * value) { FTerminal = value; }
-  bool GetIncludeParentDirectory() { return FIncludeParentDirectory; }
-  bool GetIncludeThisDirectory() { return FIncludeThisDirectory; }
+  TStrings * __fastcall GetSelectedFiles();
+  Boolean GetIncludeParentDirectory() { return FIncludeParentDirectory; }
+  void __fastcall SetIncludeParentDirectory(Boolean value);
+  Boolean GetIncludeThisDirectory() { return FIncludeThisDirectory; }
+  void __fastcall SetIncludeThisDirectory(Boolean value);
+  Boolean __fastcall GetLoaded();
   TRemoteFile * GetParentDirectory() { return FParentDirectory; }
   TRemoteFile * GetThisDirectory() { return FThisDirectory; }
-#endif
+  virtual void __fastcall SetDirectory(UnicodeString value);
 };
 //---------------------------------------------------------------------------
 class TRemoteDirectoryCache : private TStringList
@@ -353,17 +259,12 @@ public:
   void __fastcall ClearFileList(UnicodeString Directory, bool SubDirs);
   void __fastcall Clear();
 
-#ifndef _MSC_VER
-  __property bool IsEmpty = { read = GetIsEmpty };
-#else
   bool __fastcall GetIsEmpty() const;
-#endif
 protected:
   virtual void __fastcall Delete(int Index);
 private:
   TCriticalSection * FSection;
   TRemoteDirectoryCache * Self;
-  // bool __fastcall GetIsEmpty() const;
   void __fastcall DoClearFileList(UnicodeString Directory, bool SubDirs);
 };
 //---------------------------------------------------------------------------
@@ -371,8 +272,7 @@ class TRemoteDirectoryChangesCache : private TStringList
 {
 public:
   explicit /* __fastcall */ TRemoteDirectoryChangesCache(int MaxSize);
-  virtual /* __fastcall */ ~TRemoteDirectoryChangesCache()
-  {}
+  virtual /* __fastcall */ ~TRemoteDirectoryChangesCache(){}
 
   void __fastcall AddDirectoryChange(const UnicodeString SourceDir,
     const UnicodeString Change, const UnicodeString TargetDir);
@@ -385,16 +285,11 @@ public:
   void __fastcall Serialize(UnicodeString & Data);
   void __fastcall Deserialize(const UnicodeString Data);
 
-#ifndef _MSC_VER
-  __property bool IsEmpty = { read = GetIsEmpty };
-#else
   bool __fastcall GetIsEmpty() const;
-#endif
 
 private:
   static bool __fastcall DirectoryChangeKey(const UnicodeString SourceDir,
     const UnicodeString Change, UnicodeString & Key);
-  // bool __fastcall GetIsEmpty() const;
   void __fastcall SetValue(const UnicodeString & Name, const UnicodeString & Value);
   UnicodeString __fastcall GetValue(const UnicodeString & Name);
 
@@ -457,34 +352,6 @@ public:
   __fastcall operator unsigned short() const;
   __fastcall operator unsigned long() const;
 
-#ifndef _MSC_VER
-  __property bool AllowUndef = { read = FAllowUndef, write = SetAllowUndef };
-  __property bool IsUndef = { read = GetIsUndef };
-  __property UnicodeString ModeStr = { read = GetModeStr };
-  __property UnicodeString SimplestStr = { read = GetSimplestStr };
-  __property UnicodeString Octal = { read = GetOctal, write = SetOctal };
-  __property unsigned short Number = { read = GetNumber, write = SetNumber };
-  __property unsigned short NumberSet = { read = FSet };
-  __property unsigned short NumberUnset = { read = FUnset };
-  __property unsigned long NumberDecadic = { read = GetNumberDecadic };
-  __property bool ReadOnly = { read = GetReadOnly, write = SetReadOnly };
-  __property bool Right[TRight Right] = { read = GetRight, write = SetRight };
-  __property TState RightUndef[TRight Right] = { read = GetRightUndef, write = SetRightUndef };
-  __property UnicodeString Text = { read = GetText, write = SetText };
-  __property bool Unknown = { read = FUnknown };
-#else
-  bool __fastcall GetAllowUndef() const { return FAllowUndef; }
-  bool __fastcall GetUnknown() const { return FUnknown; }
-#endif
-
-private:
-  bool FAllowUndef;
-  unsigned short FSet;
-  unsigned short FUnset;
-  UnicodeString FText;
-  bool FUnknown;
-
-public:
   bool __fastcall GetIsUndef() const;
   UnicodeString __fastcall GetModeStr() const;
   UnicodeString __fastcall GetSimplestStr() const;
@@ -504,6 +371,15 @@ public:
   void __fastcall SetReadOnly(bool value);
   void __fastcall SetRight(TRight Right, bool value);
   void __fastcall SetRightUndef(TRight Right, TState value);
+  bool __fastcall GetAllowUndef() const { return FAllowUndef; }
+  bool __fastcall GetUnknown() const { return FUnknown; }
+
+private:
+  bool FAllowUndef;
+  unsigned short FSet;
+  unsigned short FUnset;
+  UnicodeString FText;
+  bool FUnknown;
 };
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER

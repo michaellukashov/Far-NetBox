@@ -2,17 +2,10 @@
 #ifndef ExceptionsH
 #define ExceptionsH
 
-#ifndef _MSC_VER
 #include <Classes.hpp>
 #include <SysUtils.hpp>
 #include <SysInit.hpp>
 #include <System.hpp>
-#else
-#include "stdafx.h"
-#include "Classes.h"
-#include "SysUtils.h"
-#endif
-
 //---------------------------------------------------------------------------
 bool __fastcall ExceptionMessage(const Exception * E, UnicodeString & Message);
 UnicodeString __fastcall LastSysErrorMessage();
@@ -31,13 +24,8 @@ public:
   explicit /* __fastcall */ ExtException(UnicodeString Msg, UnicodeString MoreMessages, UnicodeString HelpKeyword = L"");
   explicit /* __fastcall */ ExtException(UnicodeString Msg, TStrings* MoreMessages, bool Own, UnicodeString HelpKeyword = L"");
   virtual /* __fastcall */ ~ExtException(void);
-#ifndef _MSC_VER
-  __property TStrings* MoreMessages = {read=FMoreMessages};
-  __property UnicodeString HelpKeyword = {read=FHelpKeyword};
-#else
-  TStrings * /* __fastcall */ GetMoreMessages() const { return FMoreMessages; }
-  UnicodeString /* __fastcall */ GetHelpKeyword() const { return FHelpKeyword; }
-#endif
+  TStrings * __fastcall GetMoreMessages() const { return FMoreMessages; }
+  UnicodeString __fastcall GetHelpKeyword() const { return FHelpKeyword; }
 
   explicit /* __fastcall */ ExtException(UnicodeString Msg) : Sysutils::Exception(Msg), FMoreMessages(NULL) {}
   explicit /* __fastcall */ ExtException(int Ident) : Sysutils::Exception(Ident), FMoreMessages(NULL) {}
@@ -88,12 +76,8 @@ public:
   // fatal errors are always copied, new message is only appended
   explicit /* __fastcall */ EFatal(Exception* E, UnicodeString Msg);
 
-#ifndef _MSC_VER
-  __property bool ReopenQueried = { read = FReopenQueried, write = FReopenQueried };
-#else
-  bool /* __fastcall */ GetReopenQueried() { return FReopenQueried; }
-  void /* __fastcall */ SetReopenQueried(bool value) { FReopenQueried = value; }
-#endif
+  bool __fastcall GetReopenQueried() { return FReopenQueried; }
+  void __fastcall SetReopenQueried(bool value) { FReopenQueried = value; }
 
   virtual ExtException * __fastcall Clone();
 
@@ -119,7 +103,7 @@ public:
   explicit inline /* __fastcall */ ESshTerminate(Exception* E, UnicodeString Msg, TOnceDoneOperation AOperation) :
     EFatal(E, Msg),
     Operation(AOperation)
-  {}
+  { }
 
   virtual ExtException * __fastcall Clone();
 

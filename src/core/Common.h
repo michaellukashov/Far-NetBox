@@ -2,20 +2,11 @@
 #ifndef CommonH
 #define CommonH
 
-#ifdef _MSC_VER
-#include <WinBase.h>
-
-#include "boostdefines.hpp"
-
-#include "Classes.h"
-#include "UnicodeString.hpp"
+#include "coredefines.hpp"
 #include "Exceptions.h"
-#include "SysUtils.h"
 #include "version.h"
-
-#endif
 //---------------------------------------------------------------------------
-#define EXCEPTION throw ExtException(UnicodeString(), NULL)
+#define EXCEPTION throw ExtException((Exception* )NULL, UnicodeString(L""))
 #define THROWOSIFFALSE(C) if (!(C)) RaiseLastOSError();
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = NULL; delete PObj; }
 #define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
@@ -114,13 +105,8 @@ LCID __fastcall GetDefaultLCID();
 UnicodeString __fastcall DefaultEncodingName();
 UnicodeString __fastcall WindowsProductName();
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
-typedef void __fastcall (__closure* TProcessLocalFileEvent)
-  (const UnicodeString FileName, const TSearchRec Rec, void * Param);
-#else
-typedef fastdelegate::FastDelegate3<void,
-  const UnicodeString & /* FileName */, const TSearchRec & /* Rec */, void * /* Param */> TProcessLocalFileEvent;
-#endif
+DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
+  const UnicodeString & /* FileName */, const TSearchRec & /* Rec */, void * /* Param */);
 bool __fastcall FileSearchRec(const UnicodeString FileName, TSearchRec & Rec);
 void __fastcall ProcessLocalDirectory(UnicodeString DirName,
   TProcessLocalFileEvent CallBackFunc, void * Param = NULL, int FindAttrs = -1);
@@ -190,7 +176,7 @@ private:
 #define FAIL assert(false)
 #endif
 #ifndef USEDPARAM
-#define USEDPARAM(p) ((&p) == (&p))
+#define USEDPARAM(p) void(p);
 #endif
 //---------------------------------------------------------------------------
 struct TVersionInfo

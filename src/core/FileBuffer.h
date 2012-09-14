@@ -2,16 +2,11 @@
 #ifndef FileBufferH
 #define FileBufferH
 
-#include "Classes.h"
+#include <classes.hpp>
 //---------------------------------------------------------------------------
 enum TEOLType { eolLF /* \n */, eolCRLF /* \r\n */, eolCR /* \r */ };
 const int cpRemoveCtrlZ = 0x01;
 const int cpRemoveBOM =   0x02;
-//---------------------------------------------------------------------------
-#ifndef _MSC_VER
-class TStream;
-class TMemoryStream;
-#endif
 //---------------------------------------------------------------------------
 class TFileBuffer
 {
@@ -27,15 +22,8 @@ public:
   __int64 __fastcall LoadStream(TStream * Stream, const __int64 Len, bool ForceLen);
   __int64 __fastcall ReadStream(TStream * Stream, const __int64 Len, bool ForceLen);
   void __fastcall WriteToStream(TStream * Stream, const __int64 Len);
-#ifndef _MSC_VER
-  __property TMemoryStream * Memory  = { read=FMemory, write=SetMemory };
-  __property char * Data = { read=GetData };
-  __property int Size = { read=FSize, write=SetSize };
-  __property int Position = { read=GetPosition, write=SetPosition };
-#else
   TMemoryStream * __fastcall GetMemory() { return FMemory; }
   __int64 __fastcall GetSize() const { return FSize; }
-#endif
 
 private:
   TMemoryStream * FMemory;
@@ -48,9 +36,7 @@ public:
   void __fastcall SetPosition(__int64 value);
   __int64 __fastcall GetPosition() const;
 };
-
 //---------------------------------------------------------------------------
-
 class TSafeHandleStream : public THandleStream
 {
 public:
@@ -59,7 +45,6 @@ public:
   virtual __int64 __fastcall Read(void * Buffer, __int64 Count);
   virtual __int64 __fastcall Write(const void * Buffer, __int64 Count);
 };
-
 //---------------------------------------------------------------------------
 char * __fastcall EOLToStr(TEOLType EOLType);
 //---------------------------------------------------------------------------

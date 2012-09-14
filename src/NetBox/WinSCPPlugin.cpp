@@ -1,14 +1,6 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#else
-#include "nbafx.h"
-
-#include "boostdefines.hpp"
-#include <boost/scope_exit.hpp>
-#include <boost/bind.hpp>
-#endif
 
 #include "WinSCPPlugin.h"
 #include "WinSCPFileSystem.h"
@@ -23,9 +15,7 @@
 #include <Terminal.h>
 #include <GUITools.h>
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #pragma package(smart_init)
-#endif
 //---------------------------------------------------------------------------
 
 TCustomFarPlugin * __fastcall CreateFarPlugin(HINSTANCE HInst)
@@ -110,7 +100,7 @@ void __fastcall TWinSCPPlugin::GetPluginInfoEx(PLUGIN_FLAGS &Flags,
   }
   PluginConfigStrings->AddObject(GetMsg(PLUGIN_NAME),
       reinterpret_cast<TObject *>(const_cast<GUID *>(&PluginConfigGuid)));
-  CommandPrefixes->SetCommaText(FarConfiguration->GetCommandPrefixes());
+  CommandPrefixes->CommaText = FarConfiguration->GetCommandPrefixes();
 }
 //---------------------------------------------------------------------------
 bool __fastcall TWinSCPPlugin::ConfigureEx(int /*Item*/)
@@ -118,12 +108,8 @@ bool __fastcall TWinSCPPlugin::ConfigureEx(int /*Item*/)
   bool Change = false;
 
   TFarMenuItems * MenuItems = new TFarMenuItems();
-  // try
+  std::auto_ptr<TFarMenuItems> MenuItemsPtr(MenuItems);
   {
-    BOOST_SCOPE_EXIT ( (&MenuItems) )
-    {
-      delete MenuItems;
-    } BOOST_SCOPE_EXIT_END
     int MInterface = MenuItems->Add(GetMsg(CONFIG_INTERFACE));
     int MConfirmations = MenuItems->Add(GetMsg(CONFIG_CONFIRMATIONS));
     int MPanel = MenuItems->Add(GetMsg(CONFIG_PANEL));
@@ -215,12 +201,6 @@ bool __fastcall TWinSCPPlugin::ConfigureEx(int /*Item*/)
     }
     while (Result >= 0);
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete MenuItems;
-  }
-#endif
 
   return Change;
 }
@@ -232,7 +212,7 @@ int __fastcall TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEve
       FarConfiguration->GetEditorMultiple())
   {
     TWinSCPFileSystem * FileSystem = NULL;
-    for (int Index = 0; Index < FOpenedPlugins->GetCount(); Index++)
+    for (int Index = 0; Index < FOpenedPlugins->Count; Index++)
     {
       FileSystem = dynamic_cast<TWinSCPFileSystem *>(FOpenedPlugins->GetItem(Index));
       FileSystem->ProcessEditorEvent(Info->Event, Info->Param);
@@ -344,13 +324,8 @@ TCustomFarFileSystem * __fastcall TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom,
         const wchar_t * XmlFileName = Info->Info->FileName;
         TSessionData * Session = NULL;
         THierarchicalStorage * ImportStorage = NULL;
+        TRY_FINALLY2 (ImportStorage, Session,
         {
-          BOOST_SCOPE_EXIT ( (&ImportStorage) (&Session) )
-          {
-            delete ImportStorage;
-            delete Session;
-          } BOOST_SCOPE_EXIT_END
-
           ImportStorage = new TXmlStorage(XmlFileName, Configuration->GetStoredSessionsSubKey());
           ImportStorage->Init();
           ImportStorage->SetAccessMode(smRead);
@@ -371,6 +346,12 @@ TCustomFarFileSystem * __fastcall TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom,
           }
           FileSystem->Connect(Session);
         }
+        ,
+        {
+          delete ImportStorage;
+          delete Session;
+        }
+        );
       }
       else
       {
@@ -390,12 +371,8 @@ TCustomFarFileSystem * __fastcall TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom,
 void __fastcall TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 {
   TFarMenuItems * MenuItems = new TFarMenuItems();
-  // try
+  std::auto_ptr<TFarMenuItems> MenuItemsPtr(MenuItems);
   {
-    BOOST_SCOPE_EXIT ( (&MenuItems) )
-    {
-      delete MenuItems;
-    } BOOST_SCOPE_EXIT_END
     TWinSCPFileSystem * FileSystem;
     TWinSCPFileSystem * AnotherFileSystem;
     FileSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem());
@@ -545,17 +522,11 @@ void __fastcall TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
       }
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete MenuItems;
-  }
-#endif
 }
 //---------------------------------------------------------------------------
 void __fastcall TWinSCPPlugin::ShowExtendedException(Exception * E)
 {
-  if (!E->GetMessage().IsEmpty())
+  if (!E->Message.get().IsEmpty())
   {
     if (E->InheritsFrom<Exception>())
     {
@@ -616,7 +587,7 @@ void /* __fastcall */ TWinSCPPlugin::MessageClick(void * Token, int Result, bool
     for (int i = 0; i < Data.Params->AliasesCount; i++)
     {
       if ((static_cast<int>(Data.Params->Aliases[i].Button) == Data.Buttons[Result]) &&
-          (!Data.Params->Aliases[i].OnClick.empty()))
+          (Data.Params->Aliases[i].OnClick))
       {
         Data.Params->Aliases[i].OnClick(NULL);
         Close = false;
@@ -632,12 +603,8 @@ int __fastcall TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
 {
   int Result = 0;
   TStrings * ButtonLabels = new TStringList();
-  // try
+  std::auto_ptr<TStrings> ButtonLabelsPtr(ButtonLabels);
   {
-    BOOST_SCOPE_EXIT ( (&ButtonLabels) )
-    {
-      delete ButtonLabels;
-    } BOOST_SCOPE_EXIT_END
     unsigned int Flags = 0;
 
     if (Params != NULL)
@@ -695,11 +662,11 @@ int __fastcall TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
         if ((Params != NULL) && (Params->Timeout != 0) && \
             (Params->TimeoutAnswer == qa ## TYPE)) \
         { \
-          TimeoutButton = ButtonLabels->GetCount() - 1; \
+          TimeoutButton = ButtonLabels->Count - 1; \
         } \
         if (NeverAskAgainPending && CANNEVERASK) \
         { \
-          ButtonLabels->PutObject(ButtonLabels->GetCount() - 1, reinterpret_cast<TObject *>((size_t)true)); \
+          ButtonLabels->Objects(ButtonLabels->Count - 1, reinterpret_cast<TObject *>((size_t)true)); \
           NeverAskAgainPending = false; \
         } \
       }
@@ -735,7 +702,7 @@ int __fastcall TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
         {
           if (static_cast<int>(Params->Aliases[ai].Button) == Data.Buttons[bi])
           {
-            ButtonLabels->PutString(bi, Params->Aliases[ai].Alias);
+            ButtonLabels->Strings[bi] = Params->Aliases[ai].Alias;
             break;
           }
         }
@@ -769,10 +736,10 @@ int __fastcall TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
     }
 
     FarParams.Token = &Data;
-    FarParams.ClickEvent = fastdelegate::bind(&TWinSCPPlugin::MessageClick, this, _1, _2, _3);
+    FarParams.ClickEvent = MAKE_CALLBACK3(TWinSCPPlugin::MessageClick, this);
 
     UnicodeString DialogStr = Str;
-    if (MoreMessages && (MoreMessages->GetCount() > 0))
+    if (MoreMessages && (MoreMessages->Count > 0))
     {
       FarParams.MoreMessages = MoreMessages;
     }
@@ -802,12 +769,6 @@ int __fastcall TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
       Result = qaNeverAskAgain;
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete ButtonLabels;
-  }
-#endif
   return Result;
 }
 //---------------------------------------------------------------------------

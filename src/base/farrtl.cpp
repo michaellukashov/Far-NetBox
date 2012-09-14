@@ -4,12 +4,8 @@ farrtl.cpp
 Переопределение различных CRT функций
 */
 
-#include "headers.hpp"
+#include <headers.hpp>
 #pragma hdrstop
-
-// #include "console.hpp"
-// #include "colormix.hpp"
-// #include "imports.hpp"
 
 #ifdef _MSC_VER
 #pragma intrinsic (memcpy)
