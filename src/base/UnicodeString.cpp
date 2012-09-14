@@ -1,6 +1,6 @@
-#include "headers.hpp"
+#include <headers.hpp>
+#include <Sysutils.hpp>
 #include "UnicodeString.hpp"
-#include "Sysutils.h"
 #pragma hdrstop
 
 //------------------------------------------------------------------------------
@@ -291,6 +291,11 @@ UnicodeString & UnicodeString::Upper(int nStartPos, int nLength)
 {
   Data = Sysutils::UpperCase(SubString(nStartPos, nLength)).c_str();
   return *this;
+}
+
+int UnicodeString::Compare(const UnicodeString & Str) const
+{
+  return Sysutils::AnsiCompare(*this, Str);
 }
 
 int UnicodeString::CompareIC(const UnicodeString & Str) const

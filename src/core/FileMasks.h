@@ -3,14 +3,8 @@
 #define FileMasksH
 //---------------------------------------------------------------------------
 #include <vector>
-#ifndef  _MSC_VER
+#include "coredefines.hpp"
 #include <Masks.hpp>
-#else
-#include "boostdefines.hpp"
-
-#include "Classes.h"
-#include "Common.h"
-#endif
 //---------------------------------------------------------------------------
 class EFileMasksException : public Exception
 {
@@ -22,24 +16,6 @@ public:
 //---------------------------------------------------------------------------
 extern const wchar_t IncludeExcludeFileMasksDelimiter;
 #define MASK_INDEX(DIRECTORY, INCLUDE) ((DIRECTORY ? 2 : 0) + (INCLUDE ? 0 : 1))
-//---------------------------------------------------------------------------
-namespace Masks
-{
-
-class TMask
-{
-public:
-  explicit TMask(const UnicodeString Mask) :
-    FMask(Mask)
-  {
-  }
-  bool GetMatches(const UnicodeString Str);
-private:
-  UnicodeString FMask;
-};
-
-} // namespace Masks
-
 //---------------------------------------------------------------------------
 class TFileMasks
 {
@@ -72,7 +48,7 @@ public:
   void __fastcall SetMask(const UnicodeString & Mask);
 
   bool __fastcall Matches(const UnicodeString FileName, bool Directory = false,
-    const UnicodeString Path = L"", const TParams * Params = NULL) const;
+    const UnicodeString Path = "", const TParams * Params = NULL) const;
   bool __fastcall Matches(const UnicodeString FileName, bool Directory,
     const UnicodeString Path, const TParams * Params,
     bool & ImplicitMatch) const;
@@ -81,23 +57,15 @@ public:
   bool __fastcall Matches(const UnicodeString FileName, bool Local, bool Directory,
     const TParams * Params, bool & ImplicitMatch) const;
 
-#ifndef  _MSC_VER
-  __property UnicodeString Masks = { read = FStr, write = SetMasks };
-
-  __property TStrings * IncludeFileMasksStr = { read = GetMasksStr, index = MASK_INDEX(false, true) };
-  __property TStrings * ExcludeFileMasksStr = { read = GetMasksStr, index = MASK_INDEX(false, false) };
-  __property TStrings * IncludeDirectoryMasksStr = { read = GetMasksStr, index = MASK_INDEX(true, true) };
-  __property TStrings * ExcludeDirectoryMasksStr = { read = GetMasksStr, index = MASK_INDEX(true, false) };
-#else
   bool __fastcall GetIsValid() const;
   bool __fastcall GetIsValid(int & Start, int & Length) const;
   UnicodeString __fastcall GetMasks() const { return FStr; }
+  void __fastcall SetMasks(const UnicodeString value);
 
-  TStrings * __fastcall GetIncludeFileMasksStr() { return GetMasksStr(MASK_INDEX(false, true)); };
-  TStrings * __fastcall GetExcludeFileMasksStr() { return GetMasksStr(MASK_INDEX(false, false)); };
-  TStrings * __fastcall GetIncludeDirectoryMasksStr() { return GetMasksStr(MASK_INDEX(true, true)); };
-  TStrings * __fastcall GetExcludeDirectoryMasksStr() { return GetMasksStr(MASK_INDEX(true, false)); };
-#endif
+  TStrings * __fastcall GetIncludeFileMasksStr() const { return GetMasksStr(MASK_INDEX(false, true)); };
+  TStrings * __fastcall GetExcludeFileMasksStr() const { return GetMasksStr(MASK_INDEX(false, false)); };
+  TStrings * __fastcall GetIncludeDirectoryMasksStr() const { return GetMasksStr(MASK_INDEX(true, true)); };
+  TStrings * __fastcall GetExcludeDirectoryMasksStr() const { return GetMasksStr(MASK_INDEX(true, false)); };
 
 private:
   int FForceDirectoryMasks;
@@ -117,18 +85,12 @@ private:
   struct TMask
   {
     TMask() :
-      // FileNameMask
-      // DirectoryMask
       HighSizeMask(None),
       HighSize(0),
       LowSizeMask(None),
       LowSize(0),
       HighModificationMask(None),
-      // HighModification
       LowModificationMask(None)
-      // LowModification
-      // MaskStr
-      // UserStr
     {}
     TMaskMask FileNameMask;
     TMaskMask DirectoryMask;
@@ -154,14 +116,13 @@ private:
   mutable TStrings * FMasksStr[4];
 
   void __fastcall SetStr(const UnicodeString value, bool SingleMask);
-public:
-  void __fastcall SetMasks(const UnicodeString value);
-private:
   void __fastcall CreateMaskMask(const UnicodeString & Mask, int Start, int End,
     bool Ex, TMaskMask & MaskMask);
   void __fastcall CreateMask(const UnicodeString & MaskStr, int MaskStart,
     int MaskEnd, bool Include);
   TStrings * __fastcall GetMasksStr(int Index) const;
+
+private:
   static UnicodeString __fastcall MakeDirectoryMask(UnicodeString Str);
   static inline void __fastcall ReleaseMaskMask(TMaskMask & MaskMask);
   inline void __fastcall Init();
@@ -181,14 +142,9 @@ UnicodeString __fastcall MaskFileName(UnicodeString FileName, const UnicodeStrin
 bool __fastcall IsEffectiveFileNameMask(const UnicodeString & Mask);
 UnicodeString __fastcall DelimitFileNameMask(UnicodeString Mask);
 //---------------------------------------------------------------------------
-#ifndef  _MSC_VER
-typedef void __fastcall (__closure * TCustomCommandPatternEvent)
-  (int Index, const UnicodeString Pattern, void * Arg, UnicodeString & Replacement,
-   bool & LastPass);
-#else
-typedef fastdelegate::FastDelegate5<void, int /* Index */, UnicodeString /* Pattern */, void * /* Arg */, UnicodeString & /* Replacement */,
-   bool & /* LastPass */ > TCustomCommandPatternEvent;
-#endif
+DEFINE_CALLBACK_TYPE5(TCustomCommandPatternEvent, void,
+  int /* Index */, const UnicodeString /* Pattern */, void * /* Arg */, UnicodeString & /* Replacement */,
+  bool & /* LastPass */);
 //---------------------------------------------------------------------------
 class TCustomCommand
 {

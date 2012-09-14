@@ -70,13 +70,8 @@ public:
   virtual UnicodeString __fastcall GetUserName();
 
 protected:
-#ifndef _MSC_VER
-  __property TStrings * Output = { read = FOutput };
-  __property int ReturnCode = { read = FReturnCode };
-#else
   TStrings * __fastcall GetOutput() { return FOutput; };
   int __fastcall GetReturnCode() { return FReturnCode; }
-#endif
 
   virtual UnicodeString __fastcall GetCurrentDirectory();
 

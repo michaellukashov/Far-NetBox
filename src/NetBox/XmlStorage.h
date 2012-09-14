@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Classes.h"
+#include <vcl.h>
 #include "HierarchicalStorage.h"
 #include "tinyxml.h"
 

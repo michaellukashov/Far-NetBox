@@ -2,18 +2,9 @@
 #ifndef SessionInfoH
 #define SessionInfoH
 
-#ifdef _MSC_VER
-#include "UnicodeString.hpp"
-#endif
-
+#include "coredefines.hpp"
 #include "SessionData.h"
 #include "Interface.h"
-
-#ifdef _MSC_VER
-#include "boostdefines.hpp"
-
-#include "Exceptions.h"
-#endif
 //---------------------------------------------------------------------------
 enum TSessionStatus { ssClosed, ssOpening, ssOpened };
 //---------------------------------------------------------------------------
@@ -84,17 +75,10 @@ public:
 enum TLogLineType { llOutput, llInput, llStdError, llMessage, llException };
 enum TLogAction { laUpload, laDownload, laTouch, laChmod, laMkdir, laRm, laMv, laCall, laLs, laStat };
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
-typedef void __fastcall (__closure *TCaptureOutputEvent)(
-  const UnicodeString & Str, bool StdError);
-typedef void __fastcall (__closure *TCalculatedChecksumEvent)(
-  const UnicodeString & FileName, const UnicodeString & Alg, const UnicodeString & Hash);
-#else
-typedef fastdelegate::FastDelegate2<void,
-  const UnicodeString & /* Str */, bool /* StdError */> TCaptureOutputEvent;
-typedef fastdelegate::FastDelegate3<void,
-  const UnicodeString & /* FileName */, const UnicodeString & /* Alg */, const UnicodeString & /* Hash */> TCalculatedChecksumEvent;
-#endif
+DEFINE_CALLBACK_TYPE2(TCaptureOutputEvent, void,
+  const UnicodeString & /* Str */, bool /* StdError */);
+DEFINE_CALLBACK_TYPE3(TCalculatedChecksumEvent, void,
+  const UnicodeString & /* FileName */, const UnicodeString & /* Alg */, const UnicodeString & /* Hash */);
 //---------------------------------------------------------------------------
 class TSessionActionRecord;
 class TActionLog;
@@ -211,8 +195,8 @@ public:
   void __fastcall File(TRemoteFile * File);
 };
 //---------------------------------------------------------------------------
-typedef fastdelegate::FastDelegate2<void,
-  TLogLineType, const UnicodeString & > TDoAddLogEvent;
+DEFINE_CALLBACK_TYPE2(TDoAddLogEvent, void,
+  TLogLineType, const UnicodeString &);
 //---------------------------------------------------------------------------
 class TSessionLog : protected TStringList
 {
@@ -222,7 +206,7 @@ public:
   explicit /* __fastcall */ TSessionLog(TSessionUI* UI, TSessionData * SessionData,
     TConfiguration * Configuration);
   virtual /* __fastcall */ ~TSessionLog();
-  HIDESBASE  void __fastcall Add(TLogLineType Type, const UnicodeString & Line);
+  HIDESBASE void __fastcall Add(TLogLineType Type, const UnicodeString & Line);
   void __fastcall AddStartupInfo();
   void __fastcall AddException(Exception * E);
   void __fastcall AddSeparator();
@@ -232,31 +216,18 @@ public:
   void __fastcall Lock();
   void __fastcall Unlock();
 
-#ifndef _MSC_VER
-  __property TSessionLog * Parent = { read = FParent, write = FParent };
-  __property bool Logging = { read = FLogging };
-  __property int BottomIndex = { read = GetBottomIndex };
-  __property UnicodeString Line[int Index]  = { read=GetLine };
-  __property TLogLineType Type[int Index]  = { read=GetType };
-  __property OnChange;
-  __property TNotifyEvent OnStateChange = { read = FOnStateChange, write = FOnStateChange };
-  __property UnicodeString CurrentFileName = { read = FCurrentFileName };
-  __property bool LoggingToFile = { read = GetLoggingToFile };
-  __property int TopIndex = { read = FTopIndex };
-  __property UnicodeString SessionName = { read = GetSessionName };
-  __property UnicodeString Name = { read = FName, write = FName };
-  __property Count;
-#else
-  TSessionLog * __fastcall GetParent() { return FParent; }
-  void __fastcall SetParent(TSessionLog *value) { FParent = value; }
-  bool __fastcall GetLogging() { return FLogging; }
-  TNotifyEvent & GetOnStateChange() { return FOnStateChange; }
-  void SetOnStateChange(TNotifyEvent value) { FOnStateChange = value; }
-  UnicodeString __fastcall GetCurrentFileName() { return FCurrentFileName; }
-  size_t __fastcall GetTopIndex() { return FTopIndex; }
-  UnicodeString __fastcall GetName() { return FName; }
-  void __fastcall SetName(const UnicodeString value) { FName = value; }
-#endif
+  TSessionLog * __fastcall GetParent();
+  void __fastcall SetParent(TSessionLog *value);
+  bool __fastcall GetLogging();
+  TNotifyEvent & __fastcall GetOnChange();
+  void __fastcall SetOnChange(TNotifyEvent value);
+  TNotifyEvent & __fastcall GetOnStateChange();
+  void __fastcall SetOnStateChange(TNotifyEvent value);
+  UnicodeString __fastcall GetCurrentFileName();
+  int __fastcall GetTopIndex();
+  UnicodeString __fastcall GetName();
+  void __fastcall SetName(const UnicodeString value);
+  int __fastcall GetCount();
 
 protected:
   void __fastcall CloseLogFile();
@@ -289,8 +260,8 @@ public:
   UnicodeString __fastcall GetLogFileName();
   bool __fastcall GetLoggingToFile();
   UnicodeString __fastcall GetSessionName();
+private:
   void __fastcall DoAdd(TLogLineType Type, UnicodeString Line,
-    // void __fastcall (__closure *f)(TLogLineType Type, const UnicodeString & Line));
     TDoAddLogEvent Event);
   void /* __fastcall */ DoAddToParent(TLogLineType aType, const UnicodeString & aLine);
   void /* __fastcall */ DoAddToSelf(TLogLineType aType, const UnicodeString & aLine);
@@ -312,13 +283,8 @@ public:
   void __fastcall BeginGroup(UnicodeString Name);
   void __fastcall EndGroup();
 
-#ifndef _MSC_VER
-  __property UnicodeString CurrentFileName = { read = FCurrentFileName };
-  __property bool Enabled = { read = FEnabled, write = SetEnabled };
-#else
   UnicodeString __fastcall GetCurrentFileName() const { return FCurrentFileName; };
   bool __fastcall GetEnabled() const { return FEnabled; }
-#endif
 
 protected:
   void __fastcall CloseLogFile();
@@ -343,8 +309,8 @@ private:
   UnicodeString FIndent;
   bool FEnabled;
 
-public:
   void __fastcall OpenLogFile();
+public:
   UnicodeString __fastcall GetLogFileName();
   void __fastcall SetEnabled(bool value);
 };

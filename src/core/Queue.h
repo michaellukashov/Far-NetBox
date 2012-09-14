@@ -2,9 +2,6 @@
 #ifndef QueueH
 #define QueueH
 //---------------------------------------------------------------------------
-#include "boostdefines.hpp"
-#include <boost/noncopyable.hpp>
-
 #include "Terminal.h"
 #include "FileOperationProgress.h"
 //---------------------------------------------------------------------------
@@ -64,23 +61,13 @@ class TTerminalQueue;
 class TQueueItemProxy;
 class TTerminalQueueStatus;
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
-typedef void __fastcall (__closure * TQueueListUpdate)
-  (TTerminalQueue * Queue);
-typedef void __fastcall (__closure * TQueueItemUpdateEvent)
-  (TTerminalQueue * Queue, TQueueItem * Item);
+DEFINE_CALLBACK_TYPE1(TQueueListUpdateEvent, void,
+  TTerminalQueue * /* Queue */);
+DEFINE_CALLBACK_TYPE2(TQueueItemUpdateEvent, void,
+  TTerminalQueue * /* Queue */, TQueueItem * /* Item */);
 enum TQueueEvent { qeEmpty, qePendingUserAction };
-typedef void __fastcall (__closure * TQueueEventEvent)
-  (TTerminalQueue * Queue, TQueueEvent Event);
-#else
-typedef fastdelegate::FastDelegate1<void,
-  TTerminalQueue *> TQueueListUpdateEvent;
-typedef fastdelegate::FastDelegate2<void,
-  TTerminalQueue *, TQueueItem *> TQueueItemUpdateEvent;
-enum TQueueEvent { qeEmpty, qePendingUserAction };
-typedef fastdelegate::FastDelegate2<void,
-  TTerminalQueue *, TQueueEvent> TQueueEventEvent;
-#endif
+DEFINE_CALLBACK_TYPE2(TQueueEventEvent, void,
+  TTerminalQueue * /* Queue */, TQueueEvent /* Event */);
 //---------------------------------------------------------------------------
 class TTerminalQueue : public TSignalThread
 {
@@ -96,19 +83,8 @@ public:
   TTerminalQueueStatus * __fastcall CreateStatus(TTerminalQueueStatus * Current);
   void __fastcall Idle();
 
-#ifndef _MSC_VER
-  __property bool IsEmpty = { read = GetIsEmpty };
-  __property int TransfersLimit = { read = FTransfersLimit, write = SetTransfersLimit };
-  __property bool Enabled = { read = FEnabled, write = SetEnabled };
-  __property TQueryUserEvent OnQueryUser = { read = FOnQueryUser, write = FOnQueryUser };
-  __property TPromptUserEvent OnPromptUser = { read = FOnPromptUser, write = FOnPromptUser };
-  __property TExtendedExceptionEvent OnShowExtendedException = { read = FOnShowExtendedException, write = FOnShowExtendedException };
-  __property TQueueListUpdate OnListUpdate = { read = FOnListUpdate, write = FOnListUpdate };
-  __property TQueueItemUpdateEvent OnQueueItemUpdate = { read = FOnQueueItemUpdate, write = FOnQueueItemUpdate };
-  __property TQueueEventEvent OnEvent = { read = FOnEvent, write = FOnEvent };
-#else
   int __fastcall GetTransfersLimit() { return FTransfersLimit; }
-  // void __fastcall SetTransfersLimit(int value);
+  bool __fastcall GetEnabled() const { return FEnabled; }
   TQueryUserEvent & __fastcall GetOnQueryUser() { return FOnQueryUser; }
   void __fastcall SetOnQueryUser(TQueryUserEvent value) { FOnQueryUser = value; }
   TPromptUserEvent & __fastcall GetOnPromptUser() { return FOnPromptUser; }
@@ -121,7 +97,6 @@ public:
   void __fastcall SetOnQueueItemUpdate(TQueueItemUpdateEvent value) { FOnQueueItemUpdate = value; }
   TQueueEventEvent & __fastcall GetOnEvent() { return FOnEvent; }
   void __fastcall SetOnEvent(TQueueEventEvent value) { FOnEvent = value; }
-#endif
 
 protected:
   friend class TTerminalItem;
@@ -173,6 +148,8 @@ public:
   void __fastcall DoListUpdate();
   void __fastcall DoEvent(TQueueEvent Event);
 
+public:
+  void __fastcall SetMasks(const UnicodeString value);
   void __fastcall SetTransfersLimit(int value);
   void __fastcall SetEnabled(bool value);
   bool __fastcall GetIsEmpty();
@@ -202,14 +179,9 @@ public:
 
   static bool __fastcall IsUserActionStatus(TStatus Status);
 
-#ifndef _MSC_VER
-  __property TStatus Status = { read = GetStatus };
-  __property HANDLE CompleteEvent = { read = FCompleteEvent, write = FCompleteEvent };
-#else
   TStatus __fastcall GetStatus();
   HANDLE __fastcall GetCompleteEvent() { return FCompleteEvent; }
   void __fastcall SetCompleteEvent(HANDLE value) { FCompleteEvent = value; }
-#endif
 
 protected:
   TStatus FStatus;
@@ -225,17 +197,19 @@ protected:
   explicit /* __fastcall */ TQueueItem();
   virtual /* __fastcall */ ~TQueueItem();
 
+public:
+  void __fastcall SetMasks(const UnicodeString value);
   void __fastcall SetStatus(TStatus Status);
-  // TStatus __fastcall GetStatus();
-  void __fastcall Execute(TTerminalItem * TerminalItem);
-  virtual void __fastcall DoExecute(TTerminal * Terminal) = 0;
   void __fastcall SetProgress(TFileOperationProgressType & ProgressData);
   void __fastcall GetData(TQueueItemProxy * Proxy);
   void __fastcall SetCPSLimit(unsigned long CPSLimit);
+private:
+  void __fastcall Execute(TTerminalItem * TerminalItem);
+  virtual void __fastcall DoExecute(TTerminal * Terminal) = 0;
   virtual UnicodeString __fastcall StartupDirectory() = 0;
 };
 //---------------------------------------------------------------------------
-class TQueueItemProxy
+class TQueueItemProxy : public TObject
 {
 friend class TQueueItem;
 friend class TTerminalQueueStatus;
@@ -252,14 +226,6 @@ public:
   bool __fastcall Resume();
   bool __fastcall SetCPSLimit(unsigned long CPSLimit);
 
-#ifndef _MSC_VER
-  __property TFileOperationProgressType * ProgressData = { read = GetProgressData };
-  __property TQueueItem::TInfo * Info = { read = FInfo };
-  __property TQueueItem::TStatus Status = { read = FStatus };
-  __property bool ProcessingUserAction = { read = FProcessingUserAction };
-  __property int Index = { read = GetIndex };
-  __property void * UserData = { read = FUserData, write = FUserData };
-#else
   TFileOperationProgressType * __fastcall GetProgressData();
   TQueueItem::TInfo * __fastcall GetInfo() { return FInfo; }
   TQueueItem::TStatus __fastcall GetStatus() const { return FStatus; }
@@ -267,7 +233,6 @@ public:
   int __fastcall GetIndex();
   void * __fastcall GetUserData() { return FUserData; }
   void __fastcall SetUserData(void * value) { FUserData = value; }
-#endif
 
 private:
   TFileOperationProgressType * FProgressData;
@@ -282,10 +247,8 @@ private:
 
   explicit /* __fastcall */ TQueueItemProxy(TTerminalQueue * Queue, TQueueItem * QueueItem);
   virtual /* __fastcall */ ~TQueueItemProxy();
-#ifndef _MSC_VER
-  int __fastcall GetIndex();
-  TFileOperationProgressType * __fastcall GetProgressData();
-#endif
+public:
+  void __fastcall SetMasks(const UnicodeString value);
 };
 //---------------------------------------------------------------------------
 class TTerminalQueueStatus
@@ -298,15 +261,9 @@ public:
 
   TQueueItemProxy * __fastcall FindByQueueItem(TQueueItem * QueueItem);
 
-#ifndef _MSC_VER
-  __property int Count = { read = GetCount };
-  __property int ActiveCount = { read = GetActiveCount };
-  __property TQueueItemProxy * Items[int Index] = { read = GetItem };
-#else
   int __fastcall GetCount();
   int __fastcall GetActiveCount();
   TQueueItemProxy * __fastcall GetItem(int Index);
-#endif
 
 protected:
   /* __fastcall */ TTerminalQueueStatus();
@@ -319,11 +276,8 @@ private:
   TList * FList;
   int FActiveCount;
 
-#ifndef _MSC_VER
-  int __fastcall GetCount();
-  int __fastcall GetActiveCount();
-  TQueueItemProxy * __fastcall GetItem(int Index);
-#endif
+public:
+  void __fastcall SetMasks(const UnicodeString value);
 };
 //---------------------------------------------------------------------------
 class TLocatedQueueItem : public TQueueItem
@@ -390,14 +344,9 @@ public:
   void __fastcall Cancel();
   void __fastcall Idle();
 
-#ifndef _MSC_VER
-  __property TNotifyEvent OnIdle = { read = FOnIdle, write = FOnIdle };
-  __property bool Cancelling = { read = FCancel };
-#else
-  TNotifyEvent & GetOnIdle() { return FOnIdle; }
-  void SetOnIdle(TNotifyEvent Value) { FOnIdle = Value; }
-  bool GetCancelling() const { return FCancel; };
-#endif
+  TNotifyEvent & __fastcall GetOnIdle() { return FOnIdle; }
+  void __fastcall SetOnIdle(TNotifyEvent Value) { FOnIdle = Value; }
+  bool __fastcall GetCancelling() const { return FCancel; };
 
 protected:
   virtual void __fastcall ProcessEvent();
@@ -445,10 +394,10 @@ private:
   void /* __fastcall */ TerminalInformation(
     TTerminal * Terminal, const UnicodeString & Str, bool Status, int Phase);
   void /* __fastcall */ TerminalQueryUser(TObject * Sender,
-    const UnicodeString Query, TStrings * MoreMessages, unsigned int Answers,
+    const UnicodeString & Query, TStrings * MoreMessages, unsigned int Answers,
     const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * Arg);
   void /* __fastcall */ TerminalPromptUser(TTerminal * Terminal, TPromptKind Kind,
-    UnicodeString Name, UnicodeString Instructions,
+    const UnicodeString & Name, const UnicodeString & Instructions,
     TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
   void /* __fastcall */ TerminalShowExtendedException(TTerminal * Terminal,
     Exception * E, void * Arg);

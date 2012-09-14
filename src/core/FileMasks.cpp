@@ -1,10 +1,7 @@
 //---------------------------------------------------------------------------
-#ifndef  _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#else
-#include "stdafx.h"
-#endif
+
 #include "FileMasks.h"
 
 #include "Common.h"
@@ -18,18 +15,6 @@ static UnicodeString FileMasksDelimiters = L";,";
 static UnicodeString AllFileMasksDelimiters = FileMasksDelimiters + IncludeExcludeFileMasksDelimiter;
 static UnicodeString DirectoryMaskDelimiters = L"/\\";
 static UnicodeString FileMasksDelimiterStr = UnicodeString(FileMasksDelimiters[1]) + L' ';
-//---------------------------------------------------------------------------
-
-namespace Masks
-{
-
-bool TMask::GetMatches(const UnicodeString Str)
-{
-  return AnsiCompareIC(FMask, Str) == 0;
-}
-
-} // namespace Masks
-
 //---------------------------------------------------------------------------
 /* __fastcall */ EFileMasksException::EFileMasksException(
     UnicodeString Message, int AErrorStart, int AErrorLen) :
@@ -175,9 +160,9 @@ UnicodeString __fastcall TFileMasks::ComposeMaskStr(
   TStrings * MasksStr, bool Directory)
 {
   UnicodeString Result;
-  for (int I = 0; I < MasksStr->GetCount(); I++)
+  for (int I = 0; I < MasksStr->Count; I++)
   {
-    UnicodeString Str = MasksStr->GetStrings(I).Trim();
+    UnicodeString Str = MasksStr->Strings[I].Trim();
     if (!Str.IsEmpty())
     {
       for (int P = 1; P <= Str.Length(); P++)
@@ -596,11 +581,11 @@ void __fastcall TFileMasks::CreateMask(
         Boundary = TMask::Open;
       }
 
-      TFormatSettings FormatSettings(GetDefaultLCID());
+      TFormatSettings FormatSettings = TFormatSettings::Create(GetDefaultLCID());
       FormatSettings.DateSeparator = L'-';
       FormatSettings.TimeSeparator = L':';
-      FormatSettings.ShortDateFormat = L"yyyy/mm/dd";
-      FormatSettings.ShortTimeFormat = L"hh:nn:ss";
+      FormatSettings.ShortDateFormat = "yyyy/mm/dd";
+      FormatSettings.ShortTimeFormat = "hh:nn:ss";
 
       TDateTime Modification;
       if (TryStrToDateTime(PartStr, Modification, FormatSettings) ||
@@ -727,7 +712,7 @@ bool __fastcall TFileMasks::MatchesMaskMask(const TMaskMask & MaskMask, const Un
   }
   else
   {
-    Result = MaskMask.Mask->GetMatches(Str);
+    Result = MaskMask.Mask->Matches(Str);
   }
   return Result;
 }
@@ -911,7 +896,7 @@ UnicodeString __fastcall TCustomCommand::Complete(const UnicodeString & Command,
         if (!LastPass)
         {
           Replacement = StringReplace(Replacement, L"!", L"!!",
-            TReplaceFlags::Init(rfReplaceAll));
+            TReplaceFlags() << rfReplaceAll);
         }
         if (Delimit)
         {

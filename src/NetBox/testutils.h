@@ -1,12 +1,14 @@
 #pragma once
-#include "nbafx.h"
+
 #include <time.h>
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
 
+#include <vcl.h>
+#include <Sysutils.hpp>
+
 #include "FarPlugin.h"
-#include "SysUtils.h"
 #include "Cryptography.h"
 #include "WinSCPSecurity.h"
 

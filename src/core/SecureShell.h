@@ -3,7 +3,6 @@
 #define SecureShellH
 
 #include <set>
-
 #include "PuttyIntf.h"
 #include "Configuration.h"
 #include "SessionData.h"
@@ -88,7 +87,6 @@ public:
   bool __fastcall EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
     WSANETWORKEVENTS * Events);
   void __fastcall UpdateSessionInfo();
-  bool __fastcall GetReady() const;
   void __fastcall DispatchSendBuffer(int BufSize);
   void /* __fastcall */ SendBuffer(unsigned int & Result);
   unsigned int __fastcall TimeoutPrompt(TQueryParamsTimerEvent PoolEvent);
@@ -129,8 +127,8 @@ public:
 
   const TSessionInfo & __fastcall GetSessionInfo();
   bool __fastcall SshFallbackCmd() const;
-  unsigned int __fastcall MinPacketSize();
-  unsigned int __fastcall MaxPacketSize();
+  unsigned long __fastcall MinPacketSize();
+  unsigned long __fastcall MaxPacketSize();
   void __fastcall ClearStdError();
   bool __fastcall GetStoredCredentialsTried() const;
 
@@ -155,24 +153,15 @@ public:
   void __fastcall OldKeyfileWarning();
   void __fastcall PuttyLogEvent(const UnicodeString & Str);
 
-#ifndef _MSC_VER
-  __property bool Active = { read = FActive, write = SetActive };
-  __property bool Ready = { read = GetReady };
-  __property TCaptureOutputEvent OnCaptureOutput = { read = FOnCaptureOutput, write = FOnCaptureOutput };
-  __property TDateTime LastDataSent = { read = FLastDataSent };
-  __property UnicodeString LastTunnelError = { read = FLastTunnelError };
-  __property UnicodeString UserName = { read = FUserName };
-  __property bool Simple = { read = FSimple, write = FSimple };
-#else
+  bool __fastcall GetReady() const;
   bool __fastcall GetActive() const { return FActive; }
-  TCaptureOutputEvent & GetOnCaptureOutput() { return FOnCaptureOutput; }
-  void SetOnCaptureOutput(TCaptureOutputEvent value) { FOnCaptureOutput = value; }
-  TDateTime GetLastDataSent() const { return FLastDataSent; }
-  UnicodeString GetLastTunnelError() const { return FLastTunnelError; }
-  UnicodeString GetUserName() const { return FUserName; }
-  bool GetSimple() const { return FSimple; }
-  void SetSimple(bool value) { FSimple = value; }
-#endif
+  TCaptureOutputEvent & __fastcall GetOnCaptureOutput() { return FOnCaptureOutput; }
+  void __fastcall SetOnCaptureOutput(TCaptureOutputEvent value) { FOnCaptureOutput = value; }
+  TDateTime __fastcall GetLastDataSent() const { return FLastDataSent; }
+  UnicodeString __fastcall GetLastTunnelError() const { return FLastTunnelError; }
+  UnicodeString __fastcall GetUserName() const { return FUserName; }
+  bool __fastcall GetSimple() const { return FSimple; }
+  void __fastcall SetSimple(bool value) { FSimple = value; }
 private:
   TSecureShell(const TSecureShell &);
   void operator=(const TSecureShell &);

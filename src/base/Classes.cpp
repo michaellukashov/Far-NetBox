@@ -1,16 +1,9 @@
 #pragma once
 
-#include "stdafx.h"
-
-#include "boostdefines.hpp"
-#include <boost/algorithm/string.hpp>
-#include <boost/foreach.hpp>
-#include <boost/scope_exit.hpp>
-
-#include "Classes.h"
+#include <Classes.hpp>
 #include "Common.h"
 #include "Exceptions.h"
-#include "Sysutils.h"
+#include <Sysutils.hpp>
 
 namespace alg = boost::algorithm;
 
@@ -106,6 +99,8 @@ void __fastcall TPersistent::AssignError(TPersistent * Source)
 //---------------------------------------------------------------------------
 TList::TList()
 {
+  Count(this);
+  Items(this);
 }
 TList::~TList()
 {
@@ -136,7 +131,7 @@ void * TList::operator [](int Index) const
 {
   return FList[Index];
 }
-void * TList::GetItem(int Index) const
+void *& TList::GetItem(int Index)
 {
   return FList[Index];
 }
@@ -255,6 +250,7 @@ void TList::Sort()
 TObjectList::TObjectList() :
   FOwnsObjects(true)
 {
+  Items(this);
 }
 TObjectList::~TObjectList()
 {
@@ -265,9 +261,9 @@ TObject * TObjectList::operator [](int Index) const
 {
   return static_cast<TObject *>(parent::operator[](Index));
 }
-TObject * TObjectList::GetItem(int Index) const
+TObject *& TObjectList::GetItem(int Index)
 {
-  return static_cast<TObject *>(parent::GetItem(Index));
+  return reinterpret_cast<TObject *&>(parent::GetItem(Index));
 }
 void TObjectList::SetItem(int Index, TObject * Value)
 {
@@ -350,34 +346,57 @@ const int UnixDateDelta = 25569;
 const UnicodeString kernel32 = L"kernel32";
 static const int MemoryDelta = 0x2000;
 //---------------------------------------------------------------------------
-
+TStrings::TStrings() :
+  FDuplicates(dupAccept),
+  FDelimiter(L','),
+  FQuoteChar(L'"'),
+  FUpdateCount(0)
+{
+  Count(this);
+  Text(this);
+  CommaText(this);
+  CaseSensitive(this);
+  Sorted(this);
+  Duplicates(this);
+  Strings(this);
+  Objects(this);
+  Names(this);
+  Values(this);
+}
+TStrings::~TStrings()
+{
+}
 void TStrings::SetTextStr(const UnicodeString Text)
 {
   TStrings * Self = this;
   Self->BeginUpdate();
-  BOOST_SCOPE_EXIT( (&Self) )
+  TRY_FINALLY1 (Self,
   {
-    Self->EndUpdate();
-  } BOOST_SCOPE_EXIT_END
-  Clear();
-  const wchar_t * P = Text.c_str();
-  if (P != NULL)
-  {
-    while (*P != 0x00)
+    Clear();
+    const wchar_t * P = Text.c_str();
+    if (P != NULL)
     {
-      const wchar_t * Start = P;
-      while (!((*P == 0x00) || (*P == 0x0A) || (*P == 0x0D)))
+      while (*P != 0x00)
       {
-        P++;
+        const wchar_t * Start = P;
+        while (!((*P == 0x00) || (*P == 0x0A) || (*P == 0x0D)))
+        {
+          P++;
+        }
+        UnicodeString S;
+        S.SetLength(P - Start);
+        memmove(const_cast<wchar_t *>(S.c_str()), Start, (P - Start) * sizeof(wchar_t));
+        Add(S);
+        if (*P == 0x0D) { P++; }
+        if (*P == 0x0A) { P++; }
       }
-      UnicodeString S;
-      S.SetLength(P - Start);
-      memmove(const_cast<wchar_t *>(S.c_str()), Start, (P - Start) * sizeof(wchar_t));
-      Add(S);
-      if (*P == 0x0D) { P++; }
-      if (*P == 0x0A) { P++; }
     }
   }
+  ,
+  {
+    Self->EndUpdate();
+  }
+  );
 }
 
 UnicodeString TStrings::GetCommaText()
@@ -386,14 +405,18 @@ UnicodeString TStrings::GetCommaText()
   wchar_t LOldQuoteChar = GetQuoteChar();
   FDelimiter = L',';
   FQuoteChar = L'"';
+  UnicodeString Result;
   TStrings * Self = this;
-  BOOST_SCOPE_EXIT( (&Self) (&LOldDelimiter) (&LOldQuoteChar) )
+  TRY_FINALLY3 (Self, LOldDelimiter, LOldQuoteChar,
+  {
+    Result = GetDelimitedText();
+  }
+  ,
   {
     Self->FDelimiter = LOldDelimiter;
     Self->FQuoteChar = LOldQuoteChar;
-  } BOOST_SCOPE_EXIT_END
-
-  UnicodeString Result = GetDelimitedText();
+  }
+  );
   return Result;
 }
 UnicodeString TStrings::GetDelimitedText() const
@@ -420,21 +443,25 @@ void TStrings::SetDelimitedText(const UnicodeString Value)
 {
   TStrings * Self = this;
   Self->BeginUpdate();
-  BOOST_SCOPE_EXIT( (&Self) )
+  TRY_FINALLY1 (Self,
+  {
+    Clear();
+    std::vector<std::wstring> lines;
+    std::wstring delim = std::wstring(1, GetDelimiter());
+    delim.append(1, L'\n');
+    std::wstring value = Value.c_str();
+    alg::split(lines, value, alg::is_any_of(delim), alg::token_compress_on);
+    UnicodeString line;
+    BOOST_FOREACH(line, lines)
+    {
+      Add(line);
+    }
+  }
+  ,
   {
     Self->EndUpdate();
-  } BOOST_SCOPE_EXIT_END
-  Clear();
-  std::vector<std::wstring> lines;
-  std::wstring delim = std::wstring(1, GetDelimiter());
-  delim.append(1, L'\n');
-  std::wstring value = Value.c_str();
-  alg::split(lines, value, alg::is_any_of(delim), alg::token_compress_on);
-  UnicodeString line;
-  BOOST_FOREACH(line, lines)
-  {
-    Add(line);
   }
+  );
 }
 
 int TStrings::CompareStrings(const UnicodeString S1, const UnicodeString S2)
@@ -449,15 +476,19 @@ void TStrings::Assign(TPersistent * Source)
     BeginUpdate();
     {
       TStrings * Self = this;
-      BOOST_SCOPE_EXIT ( (&Self) )
+      TRY_FINALLY1 (Self,
+      {
+        Clear();
+        // FDefined = TStrings(Source).FDefined;
+        FQuoteChar = static_cast<TStrings *>(Source)->FQuoteChar;
+        FDelimiter = static_cast<TStrings *>(Source)->FDelimiter;
+        AddStrings(static_cast<TStrings *>(Source));
+      }
+      ,
       {
         Self->EndUpdate();
-      } BOOST_SCOPE_EXIT_END
-      Clear();
-      // FDefined = TStrings(Source).FDefined;
-      FQuoteChar = static_cast<TStrings *>(Source)->FQuoteChar;
-      FDelimiter = static_cast<TStrings *>(Source)->FDelimiter;
-      AddStrings(static_cast<TStrings *>(Source));
+      }
+      );
     }
     return;
   }
@@ -548,12 +579,6 @@ void TStrings::SetUpdateState(bool Updating)
   (void)Updating;
 }
 
-TObject * TStrings::GetObjects(int Index)
-{
-  (void)Index;
-  return NULL;
-}
-
 int TStrings::AddObject(const UnicodeString S, TObject * AObject)
 {
   int Result = Add(S);
@@ -570,7 +595,6 @@ void TStrings::InsertObject(int Index, const UnicodeString Key, TObject * AObjec
 bool TStrings::Equals(TStrings * Strings) const
 {
   bool Result = false;
-  int Count = GetCount();
   if (Count != Strings->GetCount())
   {
     return false;
@@ -611,14 +635,18 @@ void TStrings::Move(int CurIndex, int NewIndex)
     BeginUpdate();
     {
       TStrings * Self = this;
-      BOOST_SCOPE_EXIT ( (&Self) )
+      TRY_FINALLY1 (Self,
+      {
+        UnicodeString TempString = GetStrings(CurIndex);
+        TObject * TempObject = GetObjects(CurIndex);
+        Delete(CurIndex);
+        InsertObject(NewIndex, TempString, TempObject);
+      }
+      ,
       {
         Self->EndUpdate();
-      } BOOST_SCOPE_EXIT_END
-      UnicodeString TempString = GetStrings(CurIndex);
-      TObject * TempObject = GetObjects(CurIndex);
-      Delete(CurIndex);
-      InsertObject(NewIndex, TempString, TempObject);
+      }
+      );
     }
   }
 }
@@ -706,14 +734,18 @@ void TStrings::AddStrings(TStrings * Strings)
   BeginUpdate();
   {
     TStrings * Self = this;
-    BOOST_SCOPE_EXIT ( (&Self) )
+    TRY_FINALLY1 (Self,
+    {
+      for (int I = 0; I < Strings->GetCount(); I++)
+      {
+        AddObject(Strings->GetStrings(I), Strings->GetObjects(I));
+      }
+    }
+    ,
     {
       Self->EndUpdate();
-    } BOOST_SCOPE_EXIT_END
-    for (int I = 0; I < Strings->GetCount(); I++)
-    {
-      AddObject(Strings->GetStrings(I), Strings->GetObjects(I));
     }
+    );
   }
 }
 
@@ -877,7 +909,7 @@ void TStringList::Delete(int Index)
   FList.erase(FList.begin() + Index);
   Changed();
 }
-TObject * TStringList::GetObjects(int Index)
+TObject *& TStringList::GetObjects(int Index)
 {
   if ((Index == NPOS) || ((size_t)Index >= FList.size()))
   {
@@ -911,6 +943,15 @@ void TStringList::InsertItem(int Index, const UnicodeString S, TObject * AObject
   FList.insert(FList.begin() + Index, item);
   Changed();
 }
+UnicodeString & TStringList::GetString(int Index)
+{
+  // DEBUG_PRINTF(L"Index = %d, FList.size = %d", Index, FList.size());
+  if ((Index == NPOS) || ((size_t)Index >= FList.size()))
+  {
+    Classes::Error(SListIndexError, Index);
+  }
+  return FList[Index].FString;
+}
 UnicodeString TStringList::GetStrings(int Index) const
 {
   // DEBUG_PRINTF(L"Index = %d, FList.size = %d", Index, FList.size());
@@ -918,8 +959,7 @@ UnicodeString TStringList::GetStrings(int Index) const
   {
     Classes::Error(SListIndexError, Index);
   }
-  UnicodeString Result = FList[Index].FString;
-  return Result;
+  return FList[Index].FString;
 }
 bool TStringList::GetCaseSensitive() const
 {
@@ -930,7 +970,7 @@ void TStringList::SetCaseSensitive(bool value)
   if (value != FCaseSensitive)
   {
     FCaseSensitive = value;
-    if (GetSorted())
+    if (Sorted)
     {
       Sort();
     }
@@ -982,14 +1022,14 @@ void TStringList::SetUpdateState(bool Updating)
 }
 void TStringList::Changing()
 {
-  if (GetUpdateCount() == 0 && !FOnChanging.empty())
+  if (GetUpdateCount() == 0 && FOnChanging)
   {
     FOnChanging(this);
   }
 }
 void TStringList::Changed()
 {
-  if (GetUpdateCount() == 0 && !FOnChange.empty())
+  if (GetUpdateCount() == 0 && FOnChange)
   {
     FOnChange(this);
   }
@@ -1257,6 +1297,15 @@ public:
 };
 */
 //---------------------------------------------------------------------------
+TStream::TStream()
+{
+  Position(this);
+  Size(this);
+}
+
+TStream::~TStream()
+{
+}
 
 void TStream::ReadBuffer(void * Buffer, __int64 Count)
 {
@@ -1281,14 +1330,6 @@ void ReadError(const UnicodeString Name)
   throw std::exception("InvalidRegType"); // FIXME ERegistryException.CreateResFmt(@SInvalidRegType, [Name]);
 }
 
-//---------------------------------------------------------------------------
-TStream::TStream()
-{
-}
-
-TStream::~TStream()
-{
-}
 //---------------------------------------------------------------------------
 THandleStream::THandleStream(HANDLE AHandle) :
   FHandle(AHandle)
@@ -1568,9 +1609,13 @@ TRegistry::TRegistry() :
   FCloseRootKey(false),
   FAccess(KEY_ALL_ACCESS)
 {
+  // LazyWrite = True;
+  Access(this);
+  CurrentKey(this);
+  RootKey(this);
+
   SetRootKey(HKEY_CURRENT_USER);
   SetAccess(KEY_ALL_ACCESS);
-  // LazyWrite = True;
 }
 
 TRegistry::~TRegistry()
@@ -1688,27 +1733,31 @@ bool TRegistry::DeleteKey(const UnicodeString Key)
   if (DeleteKey != 0)
   {
     TRegistry * Self = this;
-    BOOST_SCOPE_EXIT( (&Self) (&OldKey) (&DeleteKey) )
+    TRY_FINALLY3 (Self, OldKey, DeleteKey,
     {
-      Self->SetCurrentKey(OldKey);
-      RegCloseKey(DeleteKey);
-    } BOOST_SCOPE_EXIT_END
-    SetCurrentKey(DeleteKey);
-    TRegKeyInfo Info;
-    if (GetKeyInfo(Info))
-    {
-      UnicodeString KeyName;
-      KeyName.SetLength(Info.MaxSubKeyLen + 1);
-      for (int I = Info.NumSubKeys - 1; I >= 0; I--)
+      SetCurrentKey(DeleteKey);
+      TRegKeyInfo Info;
+      if (GetKeyInfo(Info))
       {
-        DWORD Len = Info.MaxSubKeyLen + 1;
-        if (RegEnumKeyEx(DeleteKey, static_cast<DWORD>(I), &KeyName[1], &Len,
-                         NULL, NULL, NULL, NULL) == ERROR_SUCCESS)
+        UnicodeString KeyName;
+        KeyName.SetLength(Info.MaxSubKeyLen + 1);
+        for (int I = Info.NumSubKeys - 1; I >= 0; I--)
         {
-          this->DeleteKey(KeyName);
+          DWORD Len = Info.MaxSubKeyLen + 1;
+          if (RegEnumKeyEx(DeleteKey, static_cast<DWORD>(I), &KeyName[1], &Len,
+                           NULL, NULL, NULL, NULL) == ERROR_SUCCESS)
+          {
+            this->DeleteKey(KeyName);
+          }
         }
       }
     }
+    ,
+    {
+      Self->SetCurrentKey(OldKey);
+      RegCloseKey(DeleteKey);
+    }
+    );
   }
   Result = RegDeleteKey(GetBaseKey(Relative), S.c_str()) == ERROR_SUCCESS;
   return Result;
@@ -1725,18 +1774,19 @@ bool TRegistry::KeyExists(const UnicodeString Key)
   bool Result = false;
   // DEBUG_PRINTF(L"Key = %s", Key.c_str());
   unsigned OldAccess = FAccess;
+  TRegistry * Self = this;
+  TRY_FINALLY2 (Self, OldAccess,
   {
-    TRegistry * Self = this;
-    BOOST_SCOPE_EXIT( (&Self) (&OldAccess) )
-    {
-      Self->FAccess = OldAccess;
-    } BOOST_SCOPE_EXIT_END
-
     FAccess = STANDARD_RIGHTS_READ | KEY_QUERY_VALUE | KEY_ENUMERATE_SUB_KEYS;
     HKEY TempKey = GetKey(Key);
     if (TempKey != 0) { RegCloseKey(TempKey); }
     Result = TempKey != 0;
   }
+  ,
+  {
+    Self->FAccess = OldAccess;
+  }
+  );
   // DEBUG_PRINTF(L"Result = %d", Result);
   return Result;
 }

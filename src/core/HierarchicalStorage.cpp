@@ -1,13 +1,6 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#else
-#include "stdafx.h"
-
-#include "boostdefines.hpp"
-#include <boost/scope_exit.hpp>
-#endif
 
 #include "Common.h"
 #include "Exceptions.h"
@@ -16,9 +9,7 @@
 #include <TextsCore.h>
 #include <vector>
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #pragma package(smart_init)
-#endif
 //---------------------------------------------------------------------------
 #define READ_REGISTRY(Method) \
   if (FRegistry->ValueExists(Name)) \
@@ -45,7 +36,7 @@ UnicodeString __fastcall MungeStr(const UnicodeString Str, bool ForceAnsi)
   // should contain ASCII characters only
   RawByteString Dest;
   Dest.SetLength(Source.Length() * 3 + 1);
-  putty_mungestr(Source.c_str(), (char *)Dest.c_str());
+  putty_mungestr(Source.c_str(), const_cast<char *>(Dest.c_str()));
   PackStr(Dest);
   return UnicodeString(Dest.c_str(), Dest.Length());
 }
@@ -56,7 +47,7 @@ UnicodeString __fastcall UnMungeStr(const UnicodeString Str)
   RawByteString Source = Str;
   RawByteString Dest;
   Dest.SetLength(Source.Length() + 1);
-  putty_unmungestr(Source.c_str(), (char *)Dest.c_str(), Dest.Length());
+  putty_unmungestr(Source.c_str(), const_cast<char *>(Dest.c_str()), Dest.Length());
   UnicodeString Result;
   if (Dest.Pos(Bom.c_str()) == 1)
   {
@@ -86,7 +77,7 @@ UnicodeString __fastcall MungeIniName(const UnicodeString Str)
   // make this fast for now
   if (P > 0)
   {
-    return StringReplace(Str, L"=", L"%3D", TReplaceFlags::Init(rfReplaceAll));
+    return StringReplace(Str, L"=", L"%3D", TReplaceFlags() << rfReplaceAll);
   }
   else
   {
@@ -100,7 +91,7 @@ UnicodeString __fastcall UnMungeIniName(const UnicodeString Str)
   // make this fast for now
   if (P > 0)
   {
-    return StringReplace(Str, L"%3D", L"=", TReplaceFlags::Init(rfReplaceAll));
+    return StringReplace(Str, L"%3D", L"=", TReplaceFlags() << rfReplaceAll);
   }
   else
   {
@@ -134,8 +125,14 @@ void __fastcall THierarchicalStorage::SetAccessMode(TStorageAccessMode value)
 //---------------------------------------------------------------------------
 UnicodeString __fastcall THierarchicalStorage::GetCurrentSubKeyMunged()
 {
-  if (FKeyHistory->GetCount()) { return FKeyHistory->GetStrings(FKeyHistory->GetCount()-1); }
-    else { return L""; }
+  if (FKeyHistory->Count)
+  {
+    return FKeyHistory->Strings[FKeyHistory->Count-1];
+  }
+  else
+  {
+    return L"";
+  }
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall THierarchicalStorage::GetCurrentSubKey()
@@ -200,31 +197,23 @@ bool __fastcall THierarchicalStorage::OpenSubKey(UnicodeString Key, bool CanCrea
 //---------------------------------------------------------------------------
 void __fastcall THierarchicalStorage::CloseSubKey()
 {
-  if (FKeyHistory->GetCount() == 0) throw Exception(L"");
-    else FKeyHistory->Delete(FKeyHistory->GetCount()-1);
+  if (FKeyHistory->Count == 0)
+    throw Exception(L"");
+  else
+    FKeyHistory->Delete(FKeyHistory->Count-1);
 }
 //---------------------------------------------------------------------------
 void __fastcall THierarchicalStorage::ClearSubKeys()
 {
-  TStringList *SubKeys = new TStringList();
-  // try
+  TStringList * SubKeys = new TStringList();
+  std::auto_ptr<TStringList> SubKeysPtr(SubKeys);
   {
-    BOOST_SCOPE_EXIT ( (&SubKeys) )
-    {
-      delete SubKeys;
-    } BOOST_SCOPE_EXIT_END
     GetSubKeyNames(SubKeys);
-    for (int Index = 0; Index < SubKeys->GetCount(); Index++)
+    for (int Index = 0; Index < SubKeys->Count; Index++)
     {
-      RecursiveDeleteSubKey(SubKeys->GetStrings(Index));
+      RecursiveDeleteSubKey(SubKeys->Strings[Index]);
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete SubKeys;
-  }
-#endif
 }
 //---------------------------------------------------------------------------
 void __fastcall THierarchicalStorage::RecursiveDeleteSubKey(const UnicodeString Key)
@@ -241,21 +230,11 @@ bool __fastcall THierarchicalStorage::HasSubKeys()
 {
   bool Result;
   TStrings * SubKeys = new TStringList();
-  // try
+  std::auto_ptr<TStrings> SubKeysPtr(SubKeys);
   {
-    BOOST_SCOPE_EXIT ( (&SubKeys) )
-    {
-      delete SubKeys;
-    } BOOST_SCOPE_EXIT_END
     GetSubKeyNames(SubKeys);
-    Result = (SubKeys->GetCount() > 0);
+    Result = (SubKeys->Count > 0);
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete SubKeys;
-  }
-#endif
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -278,55 +257,35 @@ void __fastcall THierarchicalStorage::ReadValues(Classes::TStrings* Strings,
   bool MaintainKeys)
 {
   TStrings * Names = new TStringList();
-  // try
+  std::auto_ptr<TStrings> NamesPtr(Names);
   {
-    BOOST_SCOPE_EXIT ( (&Names) )
-    {
-      delete Names;
-    } BOOST_SCOPE_EXIT_END
     GetValueNames(Names);
-    for (int Index = 0; Index < Names->GetCount(); Index++)
+    for (int Index = 0; Index < Names->Count; Index++)
     {
       if (MaintainKeys)
       {
-        Strings->Add(FORMAT(L"%s=%s", Names->GetStrings(Index).c_str(),
-          ReadString(Names->GetStrings(Index), L"").c_str()));
+        Strings->Add(FORMAT(L"%s=%s", Names->Strings[Index].c_str(),
+          ReadString(Names->Strings[Index], L"").c_str()));
       }
       else
       {
-        Strings->Add(ReadString(Names->GetStrings(Index), L""));
+        Strings->Add(ReadString(Names->Strings[Index], L""));
       }
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Names;
-  }
-#endif
 }
 //---------------------------------------------------------------------------
 void __fastcall THierarchicalStorage::ClearValues()
 {
   TStrings * Names = new TStringList();
-  // try
+  std::auto_ptr<TStrings> NamesPtr(Names);
   {
-    BOOST_SCOPE_EXIT ( (&Names) )
-    {
-      delete Names;
-    } BOOST_SCOPE_EXIT_END
     GetValueNames(Names);
-    for (int Index = 0; Index < Names->GetCount(); Index++)
+    for (int Index = 0; Index < Names->Count; Index++)
     {
-      DeleteValue(Names->GetStrings(Index));
+      DeleteValue(Names->Strings[Index]);
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Names;
-  }
-#endif
 }
 //---------------------------------------------------------------------------
 void __fastcall THierarchicalStorage::WriteValues(Classes::TStrings * Strings,
@@ -336,16 +295,16 @@ void __fastcall THierarchicalStorage::WriteValues(Classes::TStrings * Strings,
 
   if (Strings)
   {
-    for (int Index = 0; Index < Strings->GetCount(); Index++)
+    for (int Index = 0; Index < Strings->Count; Index++)
     {
       if (MaintainKeys)
       {
-        assert(Strings->GetStrings(Index).Pos(L"=") > 1);
-        WriteString(Strings->GetName(Index), Strings->GetValue(Strings->GetName(Index)));
+        assert(Strings->Strings[Index].Pos(L"=") > 1);
+        WriteString(Strings->Names[Index], Strings->Values[Strings->Names[Index]]);
       }
       else
       {
-        WriteString(IntToStr(Index), Strings->GetStrings(Index));
+        WriteString(IntToStr(Index), Strings->Strings[Index]);
       }
     }
   }
@@ -370,7 +329,7 @@ RawByteString __fastcall THierarchicalStorage::ReadBinaryData(const UnicodeStrin
   size_t Size = BinaryDataSize(Name);
   RawByteString Value;
   Value.SetLength(Size);
-  ReadBinaryData(Name, (void *)Value.c_str(), Size);
+  ReadBinaryData(Name, static_cast<void *>(const_cast<char *>(Value.c_str())), Size);
   return Value;
 }
 //---------------------------------------------------------------------------
@@ -451,14 +410,14 @@ UnicodeString __fastcall THierarchicalStorage::ExcludeTrailingBackslash(const Un
   FRegistry(NULL)
 {
   Init();
-  FRegistry->SetRootKey(ARootKey);
+  FRegistry->RootKey = ARootKey;
 }
 //---------------------------------------------------------------------------
 void __fastcall TRegistryStorage::Init()
 {
   FFailed = 0;
   FRegistry = new TRegistry();
-  FRegistry->SetAccess(KEY_READ);
+  FRegistry->Access = KEY_READ;
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TRegistryStorage::~TRegistryStorage()
@@ -471,24 +430,20 @@ bool __fastcall TRegistryStorage::Copy(TRegistryStorage * Storage)
   TRegistry * Registry = Storage->FRegistry;
   bool Result = true;
   TStrings * Names = new TStringList();
-  // try
+  std::auto_ptr<TStrings> NamesPtr(Names);
   {
-    BOOST_SCOPE_EXIT ( (&Names) )
-    {
-      delete Names;
-    } BOOST_SCOPE_EXIT_END
     Registry->GetValueNames(Names);
     std::vector<unsigned char> Buffer(1024, 0);
     int Index = 0;
-    while ((Index < Names->GetCount()) && Result)
+    while ((Index < Names->Count) && Result)
     {
-      UnicodeString Name = MungeStr(Names->GetStrings(Index), GetForceAnsi());
+      UnicodeString Name = MungeStr(Names->Strings[Index], GetForceAnsi());
       unsigned long Size = Buffer.size();
       unsigned long Type;
       int RegResult = 0;
       do
       {
-        RegResult = RegQueryValueEx(Registry->GetCurrentKey(), Name.c_str(), NULL,
+        RegResult = RegQueryValueEx(Registry->CurrentKey.get(), Name.c_str(), NULL,
           &Type, &Buffer[0], &Size);
         if (RegResult == ERROR_MORE_DATA)
         {
@@ -499,7 +454,7 @@ bool __fastcall TRegistryStorage::Copy(TRegistryStorage * Storage)
       Result = (RegResult == ERROR_SUCCESS);
       if (Result)
       {
-        RegResult = RegSetValueEx(FRegistry->GetCurrentKey(), Name.c_str(), NULL, Type,
+        RegResult = RegSetValueEx(FRegistry->CurrentKey.get(), Name.c_str(), NULL, Type,
           &Buffer[0], Size);
         Result = (RegResult == ERROR_SUCCESS);
       }
@@ -507,18 +462,12 @@ bool __fastcall TRegistryStorage::Copy(TRegistryStorage * Storage)
       ++Index;
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Names;
-  }
-#endif
   return Result;
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TRegistryStorage::GetSource()
 {
-  return RootKeyToStr(FRegistry->GetRootKey()) + L"\\" + GetStorage();
+  return RootKeyToStr(FRegistry->RootKey.get()) + L"\\" + GetStorage();
 }
 //---------------------------------------------------------------------------
 void __fastcall TRegistryStorage::SetAccessMode(TStorageAccessMode value)
@@ -528,12 +477,12 @@ void __fastcall TRegistryStorage::SetAccessMode(TStorageAccessMode value)
   {
     switch (GetAccessMode()) {
       case smRead:
-        FRegistry->SetAccess(KEY_READ);
+        FRegistry->Access = KEY_READ;
         break;
 
       case smReadWrite:
       default:
-        FRegistry->SetAccess(KEY_READ | KEY_WRITE);
+        FRegistry->Access = KEY_READ | KEY_WRITE;
         break;
     }
   }
@@ -541,7 +490,7 @@ void __fastcall TRegistryStorage::SetAccessMode(TStorageAccessMode value)
 //---------------------------------------------------------------------------
 bool __fastcall TRegistryStorage::DoOpenSubKey(const UnicodeString SubKey, bool CanCreate)
 {
-  if (FKeyHistory->GetCount() > 0) { FRegistry->CloseKey(); }
+  if (FKeyHistory->Count > 0) { FRegistry->CloseKey(); }
   UnicodeString K = ExcludeTrailingBackslash(GetStorage() + GetCurrentSubKey() + SubKey);
   return FRegistry->OpenKey(K, CanCreate);
 }
@@ -550,7 +499,7 @@ void __fastcall TRegistryStorage::CloseSubKey()
 {
   FRegistry->CloseKey();
   THierarchicalStorage::CloseSubKey();
-  if (FKeyHistory->GetCount())
+  if (FKeyHistory->Count)
   {
     FRegistry->OpenKey(GetStorage() + GetCurrentSubKeyMunged(), True);
   }
@@ -559,7 +508,7 @@ void __fastcall TRegistryStorage::CloseSubKey()
 bool __fastcall TRegistryStorage::DeleteSubKey(const UnicodeString SubKey)
 {
   UnicodeString K;
-  if (FKeyHistory->GetCount() == 0) { K = GetStorage() + GetCurrentSubKey(); }
+  if (FKeyHistory->Count == 0) { K = GetStorage() + GetCurrentSubKey(); }
   K += MungeKeyName(SubKey);
   return FRegistry->DeleteKey(K);
 }
@@ -567,9 +516,9 @@ bool __fastcall TRegistryStorage::DeleteSubKey(const UnicodeString SubKey)
 void __fastcall TRegistryStorage::GetSubKeyNames(Classes::TStrings* Strings)
 {
   FRegistry->GetKeyNames(Strings);
-  for (int Index = 0; Index < Strings->GetCount(); Index++)
+  for (int Index = 0; Index < Strings->Count; Index++)
   {
-    Strings->PutString(Index, UnMungeStr(Strings->GetStrings(Index)));
+    Strings->Strings[Index] = UnMungeStr(Strings->Strings[Index]);
   }
 }
 //---------------------------------------------------------------------------
@@ -753,32 +702,22 @@ bool __fastcall TCustomIniFileStorage::DoOpenSubKey(const UnicodeString SubKey, 
   if (!Result)
   {
     TStringList * Sections = new TStringList();
-    // try
+    std::auto_ptr<TStringList> SectionsPtr(Sections);
     {
-      BOOST_SCOPE_EXIT ( (&Sections) )
-      {
-        delete Sections;
-      } BOOST_SCOPE_EXIT_END
-      Sections->SetSorted(true);
+      Sections->Sorted = true;
       FIniFile->ReadSections(Sections);
       UnicodeString NewKey = ExcludeTrailingBackslash(GetCurrentSubKey()+SubKey);
-      if (Sections->GetCount())
+      if (Sections->Count)
       {
         int Index = -1;
         Result = Sections->Find(NewKey, Index);
-        if (!Result && Index < Sections->GetCount() &&
-            Sections->GetStrings(Index).SubString(1, NewKey.Length()+1) == NewKey + L"\\")
+        if (!Result && Index < Sections->Count &&
+            Sections->Strings[Index].SubString(1, NewKey.Length()+1) == NewKey + L"\\")
         {
           Result = true;
         }
       }
     }
-#ifndef _MSC_VER
-    __finally
-    {
-      delete Sections;
-    }
-#endif
   }
 
   return Result;
@@ -802,17 +741,13 @@ bool __fastcall TCustomIniFileStorage::DeleteSubKey(const UnicodeString SubKey)
 void __fastcall TCustomIniFileStorage::GetSubKeyNames(Classes::TStrings* Strings)
 {
   TStrings * Sections = new TStringList();
-  // try
+  std::auto_ptr<TStrings> SectionsPtr(Sections);
   {
-    BOOST_SCOPE_EXIT ( (&Sections) )
-    {
-      delete Sections;
-    } BOOST_SCOPE_EXIT_END
     Strings->Clear();
     FIniFile->ReadSections(Sections);
-    for (int i = 0; i < Sections->GetCount(); i++)
+    for (int i = 0; i < Sections->Count; i++)
     {
-      UnicodeString Section = Sections->GetStrings(i);
+      UnicodeString Section = Sections->Strings[i];
       if (AnsiCompareText(GetCurrentSubKey(),
           Section.SubString(1, GetCurrentSubKey().Length())) == 0)
       {
@@ -830,20 +765,14 @@ void __fastcall TCustomIniFileStorage::GetSubKeyNames(Classes::TStrings* Strings
       }
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Sections;
-  }
-#endif
 }
 //---------------------------------------------------------------------------
 void __fastcall TCustomIniFileStorage::GetValueNames(Classes::TStrings* Strings)
 {
   FIniFile->ReadSection(GetCurrentSection(), Strings);
-  for (int Index = 0; Index < Strings->GetCount(); Index++)
+  for (int Index = 0; Index < Strings->Count; Index++)
   {
-    Strings->PutString(Index, UnMungeIniName(Strings->GetStrings(Index)));
+    Strings->Strings[Index] = UnMungeIniName(Strings->Strings[Index]);
   }
 }
 //---------------------------------------------------------------------------
@@ -1022,30 +951,31 @@ void __fastcall TIniFileStorage::Flush()
   if (FOriginal != NULL)
   {
     TStrings * Strings = new TStringList;
-    try
+    std::auto_ptr<TStrings> StringsPtr(Strings);
+    std::auto_ptr<TStrings> OriginalPtr(FOriginal);
     {
       dynamic_cast<TMemIniFile *>(FIniFile)->GetStrings(Strings);
       if (!Strings->Equals(FOriginal))
       {
         int Attr;
         // preserve attributes (especially hidden)
-        bool Exists = FileExists(Storage);
+        bool Exists = FileExists(GetStorage());
         if (Exists)
         {
-          Attr = GetFileAttributes(UnicodeString(Storage).c_str());
+          Attr = GetFileAttributes(UnicodeString(GetStorage()).c_str());
         }
         else
         {
           Attr = FILE_ATTRIBUTE_NORMAL;
         }
 
-        HANDLE Handle = CreateFile(UnicodeString(Storage).c_str(), GENERIC_READ | GENERIC_WRITE,
+        HANDLE Handle = CreateFile(UnicodeString(GetStorage()).c_str(), GENERIC_READ | GENERIC_WRITE,
           0, NULL, CREATE_ALWAYS, Attr, 0);
 
         if (Handle == INVALID_HANDLE_VALUE)
         {
           // "access denied" errors upon implicit saves to existing file are ignored
-          if (Explicit || !Exists || (GetLastError() != ERROR_ACCESS_DENIED))
+          if (GetExplicit() || !Exists || (GetLastError() != ERROR_ACCESS_DENIED))
           {
             try
             {
@@ -1060,24 +990,20 @@ void __fastcall TIniFileStorage::Flush()
         else
         {
           TStream * Stream = new THandleStream(Handle);
-          try
+          TRY_FINALLY2 (Handle, Stream,
           {
             Strings->SaveToStream(Stream);
           }
-          __finally
+          ,
           {
-            CloseHandle(Handle);
+            ::CloseHandle(Handle);
             delete Stream;
           }
+          );
         }
       }
     }
-    __finally
-    {
-      delete FOriginal;
-      FOriginal = NULL;
-      delete Strings;
-    }
+    FOriginal = NULL;
   }
 }
 //---------------------------------------------------------------------------
@@ -1091,12 +1017,8 @@ void __fastcall TIniFileStorage::ApplyOverrides()
   UnicodeString OverridesKey = IncludeTrailingBackslash(L"Override");
 
   TStrings * Sections = new TStringList();
-  // try
+  std::auto_ptr<TStrings> SectionsPtr(Sections);
   {
-    BOOST_SCOPE_EXIT ( (&Sections) )
-    {
-      delete Sections;
-    } BOOST_SCOPE_EXIT_END
     Sections->Clear();
     FIniFile->ReadSections(Sections);
     for (int i = 0; i < Sections->Count; i++)
@@ -1111,12 +1033,8 @@ void __fastcall TIniFileStorage::ApplyOverrides()
 
         // this all uses raw names (munged)
         TStrings * Names = new TStringList;
-        // try
+        std::auto_ptr<TStrings> NamesPtr(Names);
         {
-          BOOST_SCOPE_EXIT ( (&Names) )
-          {
-            delete Names;
-          } BOOST_SCOPE_EXIT_END
           FIniFile->ReadSection(Section, Names);
 
           for (int ii = 0; ii < Names->Count; ii++)
@@ -1126,23 +1044,11 @@ void __fastcall TIniFileStorage::ApplyOverrides()
             FIniFile->WriteString(SubKey, Name, Value);
           }
         }
-#ifndef _MSC_VER
-        __finally
-        {
-          delete Names;
-        }
-#endif
 
         FIniFile->EraseSection(Section);
       }
     }
   }
-#ifndef _MSC_VER
-  __finally
-  {
-    delete Sections;
-  }
-#endif
 }
 //===========================================================================
 #define NOT_IMPLEMENTED throw Exception(L"Not implemented")
@@ -1199,23 +1105,18 @@ void __fastcall TOptionsIniFile::ReadSection(const UnicodeString Section, TStrin
   assert(Section.IsEmpty());
   Strings->BeginUpdate();
 
-  // try
+  TRY_FINALLY1 (Strings,
   {
-    BOOST_SCOPE_EXIT ( (&Strings) )
-    {
-      Strings->EndUpdate();
-    } BOOST_SCOPE_EXIT_END
     for (int Index = 0; Index < FOptions->Count; Index++)
     {
       Strings->Add(FOptions->Names[Index]);
     }
   }
-#ifndef _MSC_VER
-  __finally
+  ,
   {
     Strings->EndUpdate();
   }
-#endif
+  );
 }
 //---------------------------------------------------------------------------
 void __fastcall TOptionsIniFile::ReadSections(TStrings * /*Strings*/)

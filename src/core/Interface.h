@@ -2,15 +2,10 @@
 #ifndef InterfaceH
 #define InterfaceH
 //---------------------------------------------------------------------------
+#include "coredefines.hpp"
 #include "Configuration.h"
 #include "SessionData.h"
-#define HELP_NONE L""
-
-#ifdef _MSC_VER
-#include "boostdefines.hpp"
-
-#include "Exceptions.h"
-#endif
+#define HELP_NONE ""
 //---------------------------------------------------------------------------
 TConfiguration * __fastcall CreateConfiguration();
 
@@ -21,8 +16,8 @@ void __fastcall Busy(bool Start);
 UnicodeString __fastcall AppNameString();
 UnicodeString __fastcall SshVersionString();
 void __fastcall CopyToClipboard(UnicodeString Text);
-int __fastcall StartThread(void * SecurityAttributes, unsigned int StackSize,
-  /* TThreadFunc ThreadFunc, */ void * Parameter, unsigned int CreationFlags,
+int __fastcall StartThread(void * SecurityAttributes, unsigned StackSize,
+  /* TThreadFunc ThreadFunc, */ void * Parameter, unsigned CreationFlags,
   TThreadID & ThreadId);
 
 const unsigned int qaYes =      0x00000001;
@@ -54,11 +49,8 @@ struct TQueryButtonAlias
   TNotifyEvent OnClick;
 };
 
-#ifndef _MSC_VER
-typedef void __fastcall (__closure *TQueryParamsTimerEvent)(unsigned int & Result);
-#else
-typedef fastdelegate::FastDelegate1<void, unsigned int & /* Result */> TQueryParamsTimerEvent;
-#endif
+DEFINE_CALLBACK_TYPE1(TQueryParamsTimerEvent, void,
+  unsigned int & /* Result */);
 
 struct TQueryParams
 {
@@ -94,18 +86,10 @@ enum TPromptKind
 
 bool __fastcall IsAuthenticationPrompt(TPromptKind Kind);
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
-typedef void __fastcall (__closure *TFileFoundEvent)
-  (TTerminal * Terminal, const UnicodeString FileName, const TRemoteFile * File,
-   bool & Cancel);
-typedef void __fastcall (__closure *TFindingFileEvent)
-  (TTerminal * Terminal, const UnicodeString Directory, bool & Cancel);
-#else
-typedef fastdelegate::FastDelegate4<void,
+DEFINE_CALLBACK_TYPE4(TFileFoundEvent, void,
   TTerminal * /* Terminal */, const UnicodeString /* FileName */, const TRemoteFile * /* File */,
-  bool & /* Cancel */> TFileFoundEvent;
-typedef fastdelegate::FastDelegate3<void,
-  TTerminal * /* Terminal */, const UnicodeString /* Directory */, bool & /* Cancel */> TFindingFileEvent;
-#endif
+  bool & /* Cancel */);
+DEFINE_CALLBACK_TYPE3(TFindingFileEvent, void,
+  TTerminal * /* Terminal */, const UnicodeString /* Directory */, bool & /* Cancel */);
 //---------------------------------------------------------------------------
 #endif

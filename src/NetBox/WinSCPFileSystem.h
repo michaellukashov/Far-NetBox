@@ -65,10 +65,10 @@ typedef void __fastcall (__closure *TGetSynchronizeOptionsEvent)
 typedef void __fastcall (__closure *TGetSpaceAvailable)
   (const AnsiString Path, TSpaceAvailable & ASpaceAvailable, bool & Close);
 #else
-typedef fastdelegate::FastDelegate2<void,
-  int /* Params */, TSynchronizeOptions & /* Options */ > TGetSynchronizeOptionsEvent;
-typedef fastdelegate::FastDelegate3<void,
-  const UnicodeString & /* Path */, TSpaceAvailable & /* ASpaceAvailable */, bool & /* Close */ > TGetSpaceAvailableEvent;
+DEFINE_CALLBACK_TYPE2(TGetSynchronizeOptionsEvent, void,
+  int /* Params */, TSynchronizeOptions & /* Options */);
+DEFINE_CALLBACK_TYPE3(TGetSpaceAvailableEvent, void,
+  const UnicodeString & /* Path */, TSpaceAvailable & /* ASpaceAvailable */, bool & /* Close */);
 #endif
 struct TMultipleEdit
 {
@@ -88,7 +88,7 @@ struct TEditHistory
 #ifndef _MSC_VER
 typedef void __fastcall (__closure * TProcessSessionEvent)(TSessionData * Data, void * Param);
 #else
-typedef fastdelegate::FastDelegate2<void, TSessionData *, void *> TProcessSessionEvent;
+DEFINE_CALLBACK_TYPE2(TProcessSessionEvent, void, TSessionData *, void *);
 #endif
 //---------------------------------------------------------------------------
 class TWinSCPFileSystem : public TCustomFarFileSystem
@@ -310,10 +310,10 @@ private:
   void /* __fastcall */ TerminalInformation(TTerminal * Terminal,
     const UnicodeString & Str, bool Status, int Phase);
   void /* __fastcall */ TerminalQueryUser(TObject * Sender,
-    UnicodeString Query, TStrings * MoreMessages, unsigned int Answers,
+    const UnicodeString & Query, TStrings * MoreMessages, unsigned int Answers,
     const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * Arg);
   void /* __fastcall */ TerminalPromptUser(TTerminal * Terminal,
-    TPromptKind Kind, UnicodeString Name, UnicodeString Instructions,
+    TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions,
     TStrings * Prompts, TStrings * Results, bool & Result,
     void * Arg);
   void /* __fastcall */ TerminalDisplayBanner(TTerminal * Terminal,

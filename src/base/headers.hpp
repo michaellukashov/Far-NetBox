@@ -65,7 +65,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #undef WIN32_NO_STATUS
 #include <winioctl.h>
 #include <mmsystem.h>
-// #include <wininet.h>
 #include <winspool.h>
 #include <setupapi.h>
 #include <aclapi.h>
@@ -80,7 +79,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <shellapi.h>
 
 #ifdef _MSC_VER
-// # include <ntstatus.h>
 # include <shobjidl.h>
 # include <winternl.h>
 # include <cfgmgr32.h>
@@ -163,19 +161,6 @@ enum LNGID:int;
 template <typename T>
 bool CheckStructSize(const T* s) {return s && (s->StructSize >= sizeof(T));}
 
-
-// #include "noncopyable.hpp"
-#include "farrtl.hpp"
-#include "UnicodeString.hpp"
-// #include "format.hpp"
-// #include "global.hpp"
-#include "local.hpp"
-// #include "farwinapi.hpp"
-// #include "cvtname.hpp"
-
-// #include "colors.hpp"
-// #include "palette.hpp"
-
 #ifdef _DEBUG
 #define SELF_TEST(code) \
 	namespace { \
@@ -188,3 +173,7 @@ bool CheckStructSize(const T* s) {return s && (s->StructSize >= sizeof(T));}
 #else
 #define SELF_TEST(code)
 #endif
+
+#include "farrtl.hpp"
+#include "UnicodeString.hpp"
+#include "local.hpp"

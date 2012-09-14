@@ -5,10 +5,8 @@
 #include "FileZillaIntern.h"
 #include "FzApiStructures.h"
 #include "structures.h"
-#ifdef _MSC_VER
-#include "Classes.h"
-#include "Common.h"
-#endif
+#include <Classes.hpp>
+#include <Common.h>
 //---------------------------------------------------------------------------
 #ifndef _DEBUG
 #pragma comment(lib, "uafxcw.lib")
@@ -18,9 +16,7 @@
 //---------------------------------------------------------------------------
 #define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #pragma package(smart_init)
-#endif
 //---------------------------------------------------------------------------
 void __fastcall TFileZillaIntf::Initialize()
 {

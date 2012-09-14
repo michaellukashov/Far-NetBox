@@ -3,8 +3,8 @@
 #include "boostdefines.hpp"
 
 #pragma warning(push, 1)
-#include "Classes.h"
-#include "SysUtils.h"
+#include <vcl.h>
+#include <Sysutils.hpp>
 #pragma warning(pop)
 #include "Common.h"
 #include "plugin.hpp"
@@ -31,16 +31,15 @@ enum THandlesFunction { hfProcessKey, hfProcessHostFile, hfProcessEvent };
 typedef void __fastcall (__closure * TFarInputBoxValidateEvent)
   (AnsiString & Text);
 #else
-typedef fastdelegate::FastDelegate1<void,
-  UnicodeString &> TFarInputBoxValidateEvent;
+DEFINE_CALLBACK_TYPE1(TFarInputBoxValidateEvent, void, UnicodeString &);
 #endif
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
 typedef void __fastcall (__closure *TFarMessageTimerEvent)(unsigned int & Result);
 typedef void __fastcall (__closure *TFarMessageClickEvent)(void * Token, int Result, bool & Close);
 #else
-typedef fastdelegate::FastDelegate1<void, unsigned int &> TFarMessageTimerEvent;
-typedef fastdelegate::FastDelegate3<void, void *, int, bool &> TFarMessageClickEvent;
+DEFINE_CALLBACK_TYPE1(TFarMessageTimerEvent, void, unsigned int &);
+DEFINE_CALLBACK_TYPE3(TFarMessageClickEvent, void, void *, int, bool &);
 #endif
 
 //---------------------------------------------------------------------------
@@ -340,6 +339,9 @@ class TFarPanelModes : public TObject
 {
   friend class TCustomFarFileSystem;
 public:
+  /* __fastcall */ TFarPanelModes();
+  virtual /* __fastcall */ ~TFarPanelModes();
+
   void __fastcall SetPanelMode(size_t Mode, const UnicodeString ColumnTypes = L"",
     const UnicodeString ColumnWidths = L"", TStrings * ColumnTitles = NULL,
     bool FullScreen = false, bool DetailedStatus = true, bool AlignExtensions = true,
@@ -350,9 +352,6 @@ private:
   PanelMode FPanelModes[PANEL_MODES_COUNT];
   bool FReferenced;
 
-  /* __fastcall */ TFarPanelModes();
-  virtual /* __fastcall */ ~TFarPanelModes();
-
   void __fastcall FillOpenPluginInfo(struct OpenPluginInfo * Info);
   static void __fastcall ClearPanelMode(PanelMode & Mode);
   static int __fastcall CommaCount(const UnicodeString ColumnTypes);
@@ -362,6 +361,9 @@ class TFarKeyBarTitles : public TObject
 {
 friend class TCustomFarFileSystem;
 public:
+  /* __fastcall */ TFarKeyBarTitles();
+  virtual /* __fastcall */ ~TFarKeyBarTitles();
+
   void __fastcall ClearFileKeyBarTitles();
   void __fastcall ClearKeyBarTitle(TFarShiftStatus ShiftStatus,
     int FunctionKeyStart, int FunctionKeyEnd = 0);
@@ -371,9 +373,6 @@ public:
 private:
   KeyBarTitles FKeyBarTitles;
   bool FReferenced;
-
-  /* __fastcall */ TFarKeyBarTitles();
-  virtual /* __fastcall */ ~TFarKeyBarTitles();
 
   void __fastcall FillOpenPluginInfo(struct OpenPluginInfo * Info);
   static void __fastcall ClearKeyBarTitles(KeyBarTitles & Titles);

@@ -1,17 +1,12 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#endif
-#include "stdafx.h"
 
 #include "Common.h"
 #include "Exceptions.h"
 #include "CopyParam.h"
 #include "HierarchicalStorage.h"
 #include "TextsCore.h"
-#include "Exceptions.h"
-#include "SysUtils.h"
 //---------------------------------------------------------------------------
 /* __fastcall */ TCopyParamType::TCopyParamType()
 {
@@ -190,7 +185,7 @@ UnicodeString __fastcall TCopyParamType::GetInfoStr(UnicodeString Separator, int
 void __fastcall TCopyParamType::Assign(const TCopyParamType * Source)
 {
   assert(Source != NULL);
-  #define COPY(Prop) Set##Prop(Source->Get##Prop())
+  #define COPY(Prop) Set ## Prop(Source->Get ## Prop())
   COPY(FileNameCase);
   COPY(PreserveReadOnly);
   COPY(PreserveTime);
@@ -520,7 +515,7 @@ void __fastcall TCopyParamType::Save(THierarchicalStorage * Storage) const
   Storage->WriteInteger(L"CPSLimit", GetCPSLimit());
 }
 //---------------------------------------------------------------------------
-#define C(Property) (Get##Property() == rhp.Get##Property())
+#define C(Property) (Get ## Property() == rhp.Get ## Property())
 bool __fastcall TCopyParamType::operator==(const TCopyParamType & rhp) const
 {
   return
@@ -544,6 +539,56 @@ bool __fastcall TCopyParamType::operator==(const TCopyParamType & rhp) const
     true;
 }
 #undef C
+//---------------------------------------------------------------------------
+const TFileMasks & __fastcall TCopyParamType::GetAsciiFileMask() const
+{
+  return FAsciiFileMask;
+}
+//---------------------------------------------------------------------------
+TFileMasks & __fastcall TCopyParamType::GetAsciiFileMask()
+{
+  return FAsciiFileMask;
+}
+//---------------------------------------------------------------------------
+void __fastcall TCopyParamType::SetAsciiFileMask(TFileMasks value)
+{
+  FAsciiFileMask = value;
+}
+//---------------------------------------------------------------------------
+const TFileNameCase & __fastcall TCopyParamType::GetFileNameCase() const
+{
+  return FFileNameCase;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TCopyParamType::GetLocalInvalidChars() const
+{
+  return FLocalInvalidChars;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TCopyParamType::GetFileMask() const
+{
+  return FFileMask;
+}
+//---------------------------------------------------------------------------
+void __fastcall TCopyParamType::SetFileMask(const UnicodeString value)
+{
+  FFileMask = value;
+}
+//---------------------------------------------------------------------------
+const TFileMasks & __fastcall TCopyParamType::GetIncludeFileMask() const
+{
+  return FIncludeFileMask;
+}
+//---------------------------------------------------------------------------
+TFileMasks & __fastcall TCopyParamType::GetIncludeFileMask()
+{
+  return FIncludeFileMask;
+}
+//---------------------------------------------------------------------------
+void __fastcall TCopyParamType::SetIncludeFileMask(TFileMasks value)
+{
+  FIncludeFileMask = value;
+}
 //---------------------------------------------------------------------------
 unsigned long __fastcall GetSpeedLimit(const UnicodeString & Text)
 {
@@ -574,7 +619,7 @@ UnicodeString __fastcall SetSpeedLimit(unsigned long Limit)
   }
   else
   {
-    Text = IntToStr(Limit / 1024);
+    Text = IntToStr(int(Limit / 1024));
   }
   return Text;
 }

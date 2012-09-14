@@ -290,7 +290,6 @@ public:
   TAutoSwitch __fastcall GetSFTPBug(TSftpBug Bug) const;
   void __fastcall SetSCPLsFullTime(TAutoSwitch value);
   void __fastcall SetFtpListAll(TAutoSwitch value);
-  bool __fastcall GetSslSessionReuse() const { return FSslSessionReuse; }
   void __fastcall SetSslSessionReuse(bool value);
   UnicodeString __fastcall GetStorageKey();
   UnicodeString __fastcall GetInternalStorageKey();
@@ -331,10 +330,6 @@ public:
   static UnicodeString __fastcall DecryptPassword(const RawByteString & Password, UnicodeString Key);
   static RawByteString __fastcall StronglyRecryptPassword(const RawByteString & Password, UnicodeString Key);
 
-#ifndef _MSC_VER
-  __property UnicodeString InternalStorageKey = { read = GetInternalStorageKey };
-#endif
-
 public:
   explicit /* __fastcall */ TSessionData(UnicodeString aName);
   virtual /* __fastcall */ ~TSessionData();
@@ -358,181 +353,55 @@ public:
   bool __fastcall IsSame(const TSessionData * Default, bool AdvancedOnly);
   static void __fastcall ValidatePath(const UnicodeString Path);
   static void __fastcall ValidateName(const UnicodeString Name);
-
-#ifndef _MSC_VER
-  __property UnicodeString HostName  = { read=FHostName, write=SetHostName };
-  __property UnicodeString HostNameExpanded  = { read=GetHostNameExpanded };
-  __property int PortNumber  = { read=FPortNumber, write=SetPortNumber };
-  __property UnicodeString UserName  = { read=FUserName, write=SetUserName };
-  __property UnicodeString UserNameExpanded  = { read=GetUserNameExpanded };
-  __property UnicodeString Password  = { read=GetPassword, write=SetPassword };
-  __property int PingInterval  = { read=FPingInterval, write=SetPingInterval };
-  __property bool TryAgent  = { read=FTryAgent, write=SetTryAgent };
-  __property bool AgentFwd  = { read=FAgentFwd, write=SetAgentFwd };
-  __property UnicodeString ListingCommand = { read = FListingCommand, write = SetListingCommand };
-  __property bool AuthTIS  = { read=FAuthTIS, write=SetAuthTIS };
-  __property bool AuthKI  = { read=FAuthKI, write=SetAuthKI };
-  __property bool AuthKIPassword  = { read=FAuthKIPassword, write=SetAuthKIPassword };
-  __property bool AuthGSSAPI  = { read=FAuthGSSAPI, write=SetAuthGSSAPI };
-  __property bool GSSAPIFwdTGT = { read=FGSSAPIFwdTGT, write=SetGSSAPIFwdTGT };
-  __property UnicodeString GSSAPIServerRealm = { read=FGSSAPIServerRealm, write=SetGSSAPIServerRealm };
-  __property bool ChangeUsername  = { read=FChangeUsername, write=SetChangeUsername };
-  __property bool Compression  = { read=FCompression, write=SetCompression };
-  __property TSshProt SshProt  = { read=FSshProt, write=SetSshProt };
-  __property bool UsesSsh = { read = GetUsesSsh };
-  __property bool Ssh2DES  = { read=FSsh2DES, write=SetSsh2DES };
-  __property bool SshNoUserAuth  = { read=FSshNoUserAuth, write=SetSshNoUserAuth };
-  __property TCipher Cipher[int Index] = { read=GetCipher, write=SetCipher };
-  __property TKex Kex[int Index] = { read=GetKex, write=SetKex };
-  __property UnicodeString PublicKeyFile  = { read=FPublicKeyFile, write=SetPublicKeyFile };
-  __property TProtocol Protocol  = { read=FProtocol, write=SetProtocol };
-  __property UnicodeString ProtocolStr  = { read=GetProtocolStr, write=SetProtocolStr };
-  __property TFSProtocol FSProtocol  = { read=FFSProtocol, write=SetFSProtocol  };
-  __property UnicodeString FSProtocolStr  = { read=GetFSProtocolStr };
-  __property bool Modified  = { read=FModified, write=FModified };
-  __property bool CanLogin  = { read=GetCanLogin };
-  __property bool ClearAliases = { read = FClearAliases, write = SetClearAliases };
-  __property TDateTime PingIntervalDT = { read = GetPingIntervalDT, write = SetPingIntervalDT };
-  __property TDateTime TimeDifference = { read = FTimeDifference, write = SetTimeDifference };
-  __property TPingType PingType = { read = FPingType, write = SetPingType };
-  __property UnicodeString SessionName  = { read=GetSessionName };
-  __property UnicodeString DefaultSessionName  = { read=GetDefaultSessionName };
-  __property UnicodeString SessionUrl  = { read=GetSessionUrl };
-  __property UnicodeString LocalDirectory  = { read=FLocalDirectory, write=SetLocalDirectory };
-  __property UnicodeString RemoteDirectory  = { read=FRemoteDirectory, write=SetRemoteDirectory };
-  __property bool SynchronizeBrowsing = { read=FSynchronizeBrowsing, write=SetSynchronizeBrowsing };
-  __property bool UpdateDirectories = { read=FUpdateDirectories, write=SetUpdateDirectories };
-  __property bool CacheDirectories = { read=FCacheDirectories, write=SetCacheDirectories };
-  __property bool CacheDirectoryChanges = { read=FCacheDirectoryChanges, write=SetCacheDirectoryChanges };
-  __property bool PreserveDirectoryChanges = { read=FPreserveDirectoryChanges, write=SetPreserveDirectoryChanges };
-  __property bool LockInHome = { read=FLockInHome, write=SetLockInHome };
-  __property bool Special = { read=FSpecial, write=SetSpecial };
-  __property bool Selected  = { read=FSelected, write=FSelected };
-  __property UnicodeString InfoTip  = { read=GetInfoTip };
-  __property bool DefaultShell = { read = GetDefaultShell, write = SetDefaultShell };
-  __property bool DetectReturnVar = { read = GetDetectReturnVar, write = SetDetectReturnVar };
-  __property TEOLType EOLType = { read = FEOLType, write = SetEOLType };
-  __property TAutoSwitch LookupUserGroups = { read = FLookupUserGroups, write = SetLookupUserGroups };
-  __property UnicodeString ReturnVar = { read = FReturnVar, write = SetReturnVar };
-  __property bool Scp1Compatibility = { read = FScp1Compatibility, write = SetScp1Compatibility };
-  __property UnicodeString Shell = { read = FShell, write = SetShell };
-  __property UnicodeString SftpServer = { read = FSftpServer, write = SetSftpServer };
-  __property int Timeout = { read = FTimeout, write = SetTimeout };
-  __property TDateTime TimeoutDT = { read = GetTimeoutDT };
-  __property bool UnsetNationalVars = { read = FUnsetNationalVars, write = SetUnsetNationalVars };
-  __property bool IgnoreLsWarnings  = { read=FIgnoreLsWarnings, write=SetIgnoreLsWarnings };
-  __property bool TcpNoDelay  = { read=FTcpNoDelay, write=SetTcpNoDelay };
-  __property int SendBuf  = { read=FSendBuf, write=SetSendBuf };
-  __property bool SshSimple  = { read=FSshSimple, write=SetSshSimple };
-  __property UnicodeString SshProtStr  = { read=GetSshProtStr };
-  __property UnicodeString CipherList  = { read=GetCipherList, write=SetCipherList };
-  __property UnicodeString KexList  = { read=GetKexList, write=SetKexList };
-  __property TProxyMethod ProxyMethod  = { read=FProxyMethod, write=SetProxyMethod };
-  __property UnicodeString ProxyHost  = { read=FProxyHost, write=SetProxyHost };
-  __property int ProxyPort  = { read=FProxyPort, write=SetProxyPort };
-  __property UnicodeString ProxyUsername  = { read=FProxyUsername, write=SetProxyUsername };
-  __property UnicodeString ProxyPassword  = { read=GetProxyPassword, write=SetProxyPassword };
-  __property UnicodeString ProxyTelnetCommand  = { read=FProxyTelnetCommand, write=SetProxyTelnetCommand };
-  __property UnicodeString ProxyLocalCommand  = { read=FProxyLocalCommand, write=SetProxyLocalCommand };
-  __property TAutoSwitch ProxyDNS  = { read=FProxyDNS, write=SetProxyDNS };
-  __property bool ProxyLocalhost  = { read=FProxyLocalhost, write=SetProxyLocalhost };
-  __property int FtpProxyLogonType  = { read=FFtpProxyLogonType, write=SetFtpProxyLogonType };
-  __property TAutoSwitch Bug[TSshBug Bug]  = { read=GetBug, write=SetBug };
-  __property UnicodeString CustomParam1 = { read = FCustomParam1, write = SetCustomParam1 };
-  __property UnicodeString CustomParam2 = { read = FCustomParam2, write = SetCustomParam2 };
-  __property UnicodeString SessionKey = { read = GetSessionKey };
-  __property bool ResolveSymlinks = { read = FResolveSymlinks, write = SetResolveSymlinks };
-  __property int SFTPDownloadQueue = { read = FSFTPDownloadQueue, write = SetSFTPDownloadQueue };
-  __property int SFTPUploadQueue = { read = FSFTPUploadQueue, write = SetSFTPUploadQueue };
-  __property int SFTPListingQueue = { read = FSFTPListingQueue, write = SetSFTPListingQueue };
-  __property int SFTPMaxVersion = { read = FSFTPMaxVersion, write = SetSFTPMaxVersion };
-  __property unsigned long SFTPMaxPacketSize = { read = FSFTPMaxPacketSize, write = SetSFTPMaxPacketSize };
-  __property TAutoSwitch SFTPBug[TSftpBug Bug]  = { read=GetSFTPBug, write=SetSFTPBug };
-  __property TAutoSwitch SCPLsFullTime = { read = FSCPLsFullTime, write = SetSCPLsFullTime };
-  __property TAutoSwitch FtpListAll = { read = FFtpListAll, write = SetFtpListAll };
-  __property bool SslSessionReuse = { read = FSslSessionReuse, write = SetSslSessionReuse };
-  __property TDSTMode DSTMode = { read = FDSTMode, write = SetDSTMode };
-  __property bool DeleteToRecycleBin = { read = FDeleteToRecycleBin, write = SetDeleteToRecycleBin };
-  __property bool OverwrittenToRecycleBin = { read = FOverwrittenToRecycleBin, write = SetOverwrittenToRecycleBin };
-  __property UnicodeString RecycleBinPath = { read = FRecycleBinPath, write = SetRecycleBinPath };
-  __property UnicodeString PostLoginCommands = { read = FPostLoginCommands, write = SetPostLoginCommands };
-  __property TAddressFamily AddressFamily = { read = FAddressFamily, write = SetAddressFamily };
-  __property UnicodeString RekeyData = { read = FRekeyData, write = SetRekeyData };
-  __property unsigned int RekeyTime = { read = FRekeyTime, write = SetRekeyTime };
-  __property int Color = { read = FColor, write = SetColor };
-  __property bool Tunnel = { read = FTunnel, write = SetTunnel };
-  __property UnicodeString TunnelHostName = { read = FTunnelHostName, write = SetTunnelHostName };
-  __property int TunnelPortNumber = { read = FTunnelPortNumber, write = SetTunnelPortNumber };
-  __property UnicodeString TunnelUserName = { read = FTunnelUserName, write = SetTunnelUserName };
-  __property UnicodeString TunnelPassword = { read = GetTunnelPassword, write = SetTunnelPassword };
-  __property UnicodeString TunnelPublicKeyFile = { read = FTunnelPublicKeyFile, write = SetTunnelPublicKeyFile };
-  __property bool TunnelAutoassignLocalPortNumber = { read = GetTunnelAutoassignLocalPortNumber };
-  __property int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber, write = SetTunnelLocalPortNumber };
-  __property UnicodeString TunnelPortFwd = { read = FTunnelPortFwd, write = SetTunnelPortFwd };
-  __property bool FtpPasvMode = { read = FFtpPasvMode, write = SetFtpPasvMode };
-  __property TAutoSwitch FtpForcePasvIp = { read = FFtpForcePasvIp, write = SetFtpForcePasvIp };
-  __property UnicodeString FtpAccount = { read = FFtpAccount, write = SetFtpAccount };
-  __property int FtpPingInterval  = { read=FFtpPingInterval, write=SetFtpPingInterval };
-  __property TDateTime FtpPingIntervalDT  = { read=GetFtpPingIntervalDT };
-  __property TPingType FtpPingType = { read = FFtpPingType, write = SetFtpPingType };
-  __property TFtps Ftps = { read = FFtps, write = SetFtps };
-  __property TAutoSwitch NotUtf = { read = FNotUtf, write = SetNotUtf };
-  __property UnicodeString HostKey = { read = FHostKey, write = SetHostKey };
-  __property UnicodeString StorageKey = { read = GetStorageKey };
-  __property UnicodeString OrigHostName = { read = FOrigHostName };
-  __property int OrigPortNumber = { read = FOrigPortNumber };
-  __property UnicodeString LocalName = { read = GetLocalName };
-  __property UnicodeString Source = { read = GetSource };
-#else
-  UnicodeString GetHostName() const { return FHostName; }
-  int GetPortNumber() const { return FPortNumber; }
+  UnicodeString __fastcall GetHostName() const { return FHostName; }
+  int __fastcall GetPortNumber() const { return FPortNumber; }
   TLoginType __fastcall GetLoginType() const;
   void __fastcall SetLoginType(TLoginType value);
-  UnicodeString GetUserName() const { return FUserName; }
-  int GetPingInterval() const { return FPingInterval; }
-  bool GetTryAgent() const { return FTryAgent; }
-  bool GetAgentFwd() const { return FAgentFwd; }
-  const UnicodeString GetListingCommand() const { return FListingCommand; }
-  bool GetAuthTIS() const { return FAuthTIS; }
-  bool GetAuthKI() const { return FAuthKI; }
-  bool GetAuthKIPassword() const { return FAuthKIPassword; }
-  bool GetAuthGSSAPI() const { return FAuthGSSAPI; }
-  bool GetGSSAPIFwdTGT() const { return FGSSAPIFwdTGT; }
-  const UnicodeString GetGSSAPIServerRealm() const { return FGSSAPIServerRealm; }
-  bool GetChangeUsername() const { return FChangeUsername; }
-  bool GetCompression() const { return FCompression; }
-  TSshProt GetSshProt() const { return FSshProt; }
-  bool GetSsh2DES() const { return FSsh2DES; }
-  bool GetSshNoUserAuth() const { return FSshNoUserAuth; }
-  const UnicodeString GetPublicKeyFile() const { return FPublicKeyFile; }
-  TProtocol GetProtocol() const { return FProtocol; }
-  TFSProtocol GetFSProtocol() const { return FFSProtocol; }
-  bool GetModified() const { return FModified; }
+  UnicodeString __fastcall GetUserName() const { return FUserName; }
+  int __fastcall GetPingInterval() const { return FPingInterval; }
+  bool __fastcall GetTryAgent() const { return FTryAgent; }
+  bool __fastcall GetAgentFwd() const { return FAgentFwd; }
+  const UnicodeString __fastcall GetListingCommand() const { return FListingCommand; }
+  bool __fastcall GetAuthTIS() const { return FAuthTIS; }
+  bool __fastcall GetAuthKI() const { return FAuthKI; }
+  bool __fastcall GetAuthKIPassword() const { return FAuthKIPassword; }
+  bool __fastcall GetAuthGSSAPI() const { return FAuthGSSAPI; }
+  bool __fastcall GetGSSAPIFwdTGT() const { return FGSSAPIFwdTGT; }
+  const UnicodeString __fastcall GetGSSAPIServerRealm() const { return FGSSAPIServerRealm; }
+  bool __fastcall GetChangeUsername() const { return FChangeUsername; }
+  bool __fastcall GetCompression() const { return FCompression; }
+  TSshProt __fastcall GetSshProt() const { return FSshProt; }
+  bool __fastcall GetSsh2DES() const { return FSsh2DES; }
+  bool __fastcall GetSshNoUserAuth() const { return FSshNoUserAuth; }
+  const UnicodeString __fastcall GetPublicKeyFile() const { return FPublicKeyFile; }
+  TProtocol __fastcall GetProtocol() const { return FProtocol; }
+  TFSProtocol __fastcall GetFSProtocol() const { return FFSProtocol; }
+  bool __fastcall GetModified() const { return FModified; }
   void __fastcall SetModified(bool value) { FModified = value; }
-  bool GetClearAliases() const { return FClearAliases; }
+  bool __fastcall GetClearAliases() const { return FClearAliases; }
   TDateTime __fastcall GetTimeDifference() const { return FTimeDifference; }
-  TPingType GetPingType() const { return FPingType; }
+  TPingType __fastcall GetPingType() const { return FPingType; }
   UnicodeString __fastcall GetLocalDirectory() const { return FLocalDirectory; }
   UnicodeString __fastcall GetRemoteDirectory() const { return FRemoteDirectory; }
   bool __fastcall GetSynchronizeBrowsing() const { return FSynchronizeBrowsing; }
-  bool GetUpdateDirectories() const { return FUpdateDirectories; }
-  bool GetCacheDirectories() const { return FCacheDirectories; }
-  bool GetCacheDirectoryChanges() const { return FCacheDirectoryChanges; }
-  bool GetPreserveDirectoryChanges() const { return FPreserveDirectoryChanges; }
-  bool GetLockInHome() const { return FLockInHome; }
-  bool GetSpecial() const { return FSpecial; }
-  bool GetSelected() const { return FSelected; }
+  bool __fastcall GetUpdateDirectories() const { return FUpdateDirectories; }
+  bool __fastcall GetCacheDirectories() const { return FCacheDirectories; }
+  bool __fastcall GetCacheDirectoryChanges() const { return FCacheDirectoryChanges; }
+  bool __fastcall GetPreserveDirectoryChanges() const { return FPreserveDirectoryChanges; }
+  bool __fastcall GetLockInHome() const { return FLockInHome; }
+  bool __fastcall GetSpecial() const { return FSpecial; }
+  bool __fastcall GetSelected() const { return FSelected; }
   void __fastcall SetSelected(bool value) { FSelected = value; }
-  TEOLType GetEOLType() const { return FEOLType; }
-  TAutoSwitch GetLookupUserGroups() const { return FLookupUserGroups; }
-  UnicodeString GetReturnVar() const { return FReturnVar; }
-  bool GetScp1Compatibility() const { return FScp1Compatibility; }
-  UnicodeString GetShell() const { return FShell; }
-  UnicodeString GetSftpServer() const { return FSftpServer; }
-  int GetTimeout() const { return FTimeout; }
-  bool GetUnsetNationalVars() const { return FUnsetNationalVars; }
-  bool GetIgnoreLsWarnings() const { return FIgnoreLsWarnings; }
-  bool GetTcpNoDelay() const { return FTcpNoDelay; }
+  TEOLType __fastcall GetEOLType() const { return FEOLType; }
+  TAutoSwitch __fastcall GetLookupUserGroups() const { return FLookupUserGroups; }
+  UnicodeString __fastcall GetReturnVar() const { return FReturnVar; }
+  bool __fastcall GetScp1Compatibility() const { return FScp1Compatibility; }
+  UnicodeString __fastcall GetShell() const { return FShell; }
+  UnicodeString __fastcall GetSftpServer() const { return FSftpServer; }
+  int __fastcall GetTimeout() const { return FTimeout; }
+  bool __fastcall GetUnsetNationalVars() const { return FUnsetNationalVars; }
+  bool __fastcall GetIgnoreLsWarnings() const { return FIgnoreLsWarnings; }
+  bool __fastcall GetTcpNoDelay() const { return FTcpNoDelay; }
   int __fastcall GetSendBuf() const { return FSendBuf; }
   bool __fastcall GetSshSimple() const { return FSshSimple; }
   TProxyMethod __fastcall GetProxyMethod() const { return FProxyMethod; }
@@ -555,10 +424,11 @@ public:
   int __fastcall GetSFTPUploadQueue() const { return FSFTPUploadQueue; }
   int __fastcall GetSFTPListingQueue() const { return FSFTPListingQueue; }
   int __fastcall GetSFTPMaxVersion() const { return FSFTPMaxVersion; }
-  int __fastcall GetSFTPMinPacketSize() const { return FSFTPMinPacketSize; }
-  int __fastcall GetSFTPMaxPacketSize() const { return FSFTPMaxPacketSize; }
+  unsigned long __fastcall GetSFTPMinPacketSize() const { return FSFTPMinPacketSize; }
+  unsigned long __fastcall GetSFTPMaxPacketSize() const { return FSFTPMaxPacketSize; }
   TAutoSwitch __fastcall GetSCPLsFullTime() const { return FSCPLsFullTime; }
   TAutoSwitch __fastcall GetFtpListAll() const { return FFtpListAll; }
+  bool __fastcall GetSslSessionReuse() const { return FSslSessionReuse; }
   TDSTMode __fastcall GetDSTMode() const { return FDSTMode; }
   bool __fastcall GetDeleteToRecycleBin() const { return FDeleteToRecycleBin; }
   bool __fastcall GetOverwrittenToRecycleBin() const { return FOverwrittenToRecycleBin; }
@@ -573,10 +443,10 @@ public:
   int __fastcall GetColor() const { return FColor; }
   bool __fastcall GetTunnel() const { return FTunnel; }
   UnicodeString __fastcall GetTunnelHostName() const { return FTunnelHostName; }
-  size_t __fastcall GetTunnelPortNumber() const { return FTunnelPortNumber; }
+  int __fastcall GetTunnelPortNumber() const { return FTunnelPortNumber; }
   UnicodeString __fastcall GetTunnelUserName() const { return FTunnelUserName; }
   UnicodeString __fastcall GetTunnelPublicKeyFile() const { return FTunnelPublicKeyFile; }
-  size_t __fastcall GetTunnelLocalPortNumber() const { return FTunnelLocalPortNumber; }
+  int __fastcall GetTunnelLocalPortNumber() const { return FTunnelLocalPortNumber; }
   UnicodeString __fastcall GetTunnelPortFwd() const { return FTunnelPortFwd; }
   bool __fastcall GetFtpPasvMode() const { return FFtpPasvMode; }
   bool __fastcall GetFtpAllowEmptyPassword() const { return FFtpAllowEmptyPassword; }
@@ -599,7 +469,6 @@ protected:
   DWORD __fastcall GetDefaultVersion() { return ::GetVersionNumber219(); }
   TFSProtocol __fastcall TranslateFSProtocolNumber(int FSProtocol);
   TFtps __fastcall TranslateFtpEncryptionNumber(int FtpEncryption);
-#endif
 private:
   mutable TIEProxyConfig * FIEProxyConfig;
 private:
@@ -638,15 +507,10 @@ public:
   TSessionData * __fastcall NewSession(UnicodeString SessionName, TSessionData * Session);
   TSessionData * __fastcall ParseUrl(UnicodeString Url, TOptions * Options, bool & DefaultsOnly,
     UnicodeString * FileName = NULL, bool * ProtocolDefined = NULL);
-#ifndef _MSC_VER
-  virtual __fastcall ~TStoredSessionList();
-  __property TSessionData * Sessions[int Index]  = { read=AtSession };
-  __property TSessionData * DefaultSettings  = { read=FDefaultSettings, write=SetDefaultSettings };
-#else
   TSessionData * __fastcall GetSession(int Index) { return static_cast<TSessionData *>(AtObject(Index)); }
   TSessionData * __fastcall GetDefaultSettings() const { return FDefaultSettings; }
+  void __fastcall SetDefaultSettings(TSessionData * value);
   TSessionData * __fastcall GetSessionByName(const UnicodeString SessionName);
-#endif
 
   static void __fastcall ImportHostKeys(const UnicodeString TargetKey,
     const UnicodeString SourceKey, TStoredSessionList * Sessions,
@@ -655,7 +519,6 @@ public:
 private:
   TSessionData * FDefaultSettings;
   bool FReadOnly;
-  void __fastcall SetDefaultSettings(TSessionData * value);
   void __fastcall DoSave(THierarchicalStorage * Storage, bool All, bool RecryptPasswordOnly);
   void __fastcall DoSave(bool All, bool Explicit, bool RecryptPasswordOnly);
   void __fastcall DoSave(THierarchicalStorage * Storage,

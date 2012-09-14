@@ -1,38 +1,23 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #define NO_WIN32_LEAN_AND_MEAN
 #include <vcl.h>
 #pragma hdrstop
-#else
-
-#include "stdafx.h"
-
-#include "boostdefines.hpp"
-#include <boost/scope_exit.hpp>
-#include <boost/algorithm/string.hpp>
-
-#include "Classes.h"
-#include "Sysutils.h"
-#include "FarPlugin.h"
-#endif
 
 #include "Common.h"
 #include "Exceptions.h"
 #include "TextsCore.h"
 #include "Interface.h"
-#ifndef _MSC_VER
 #include <StrUtils.hpp>
 #include <DateUtils.hpp>
-#endif
 #include <math.h>
 #include <shlobj.h>
-
-#ifdef _MSC_VER
-namespace alg = boost::algorithm;
-#endif
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #pragma package(smart_init)
+//---------------------------------------------------------------------------
+#ifdef _MSC_VER
+#include "FarPlugin.h"
+
+namespace alg = boost::algorithm;
 #endif
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -281,21 +266,21 @@ UnicodeString ShellDelimitStr(UnicodeString Str, wchar_t Quote)
 UnicodeString ExceptionLogString(Exception *E)
 {
   assert(E);
-  if (E->InheritsFrom<Exception>())
+  if (dynamic_cast<Exception *>(E) != NULL)
   {
     UnicodeString Msg;
 #ifndef _MSC_VER
-    Msg = FORMAT(L"(%s) %s", (E->ClassName(), E->GetMessage().c_str()));
+    Msg = FORMAT(L"(%s) %s", (E->ClassName(), E->Message.c_str()));
 #else
     Msg = FORMAT(L"%s", ::MB2W(E->what()).c_str());
 #endif
-    if (E->InheritsFrom<ExtException>())
+    if (dynamic_cast<ExtException *>(E) != NULL)
     {
       TStrings * MoreMessages = dynamic_cast<ExtException *>(E)->GetMoreMessages();
       if (MoreMessages)
       {
         Msg += L"\n" +
-          StringReplace(MoreMessages->GetText(), L"\r", L"", TReplaceFlags::Init(rfReplaceAll));
+          StringReplace(MoreMessages->Text, L"\r", L"", TReplaceFlags() << rfReplaceAll);
       }
     }
     return Msg;
@@ -427,7 +412,7 @@ UnicodeString __fastcall ValidLocalFileName(
 
     if (IsReservedName(FileName))
     {
-      int P = FileName.Pos(L'.');
+      int P = FileName.Pos(L".");
       if (P == 0)
       {
         P = FileName.Length() + 1;
@@ -794,16 +779,8 @@ void __fastcall ProcessLocalDirectory(UnicodeString DirName,
   DirName = IncludeTrailingBackslash(DirName);
   if (FindFirst(DirName + L"*.*", FindAttrs, SearchRec) == 0)
   {
-#ifndef _MSC_VER
-    try
-#endif
+    TRY_FINALLY1 (SearchRec,
     {
-#ifdef _MSC_VER
-      BOOST_SCOPE_EXIT ( (&SearchRec) )
-      {
-        FindClose(SearchRec);
-      } BOOST_SCOPE_EXIT_END
-#endif
       do
       {
         if ((SearchRec.Name != L".") && (SearchRec.Name != L".."))
@@ -814,12 +791,11 @@ void __fastcall ProcessLocalDirectory(UnicodeString DirName,
 
       } while (FindNext(SearchRec) == 0);
     }
-#ifndef _MSC_VER
-    __finally
+    ,
     {
       FindClose(SearchRec);
     }
-#endif
+    );
   }
 }
 //---------------------------------------------------------------------------
@@ -831,7 +807,7 @@ TDateTime __fastcall EncodeDateVerbose(Word Year, Word Month, Word Day)
   }
   catch (EConvertError & E)
   {
-    throw EConvertError(FORMAT(L"%s [%04u-%02u-%02u]", E.GetMessage().c_str(), int(Year), int(Month), int(Day)));
+    throw EConvertError(FORMAT(L"%s [%04u-%02u-%02u]", E.Message.get().c_str(), int(Year), int(Month), int(Day)));
   }
   return TDateTime();
 }
@@ -844,7 +820,7 @@ TDateTime __fastcall EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec)
   }
   catch (EConvertError & E)
   {
-    throw EConvertError(FORMAT(L"%s [%02u:%02u:%02u.%04u]", E.GetMessage().c_str(), int(Hour), int(Min), int(Sec), int(MSec)));
+    throw EConvertError(FORMAT(L"%s [%02u:%02u:%02u.%04u]", E.Message.get().c_str(), int(Hour), int(Min), int(Sec), int(MSec)));
   }
   return TDateTime();
 }
@@ -908,6 +884,7 @@ static const TDateTimeParams * __fastcall GetDateTimeParams(unsigned short Year)
     TGetTimeZoneInformationForYear GetTimeZoneInformationForYear =
       (TGetTimeZoneInformationForYear)GetProcAddress(Kernel32, "GetTimeZoneInformationForYear");
 
+
     if ((Year == 0) || (GetTimeZoneInformationForYear == NULL))
     {
       GTZI = GetTimeZoneInformation(&TZI);
@@ -941,23 +918,28 @@ static const TDateTimeParams * __fastcall GetDateTimeParams(unsigned short Year)
     Result->BaseDifference = double(TZI.Bias) / MinsPerDay;
     Result->BaseDifferenceSec *= SecsPerMin;
 
+
     Result->CurrentDifferenceSec = TZI.Bias +
       Result->CurrentDaylightDifferenceSec;
     Result->CurrentDifference =
       double(Result->CurrentDifferenceSec) / MinsPerDay;
     Result->CurrentDifferenceSec *= SecsPerMin;
 
+
     Result->CurrentDaylightDifference =
       double(Result->CurrentDaylightDifferenceSec) / MinsPerDay;
     Result->CurrentDaylightDifferenceSec *= SecsPerMin;
+
 
     Result->DaylightDifferenceSec = TZI.DaylightBias * SecsPerMin;
     Result->DaylightDifference = double(TZI.DaylightBias) / MinsPerDay;
     Result->StandardDifferenceSec = TZI.StandardBias * SecsPerMin;
     Result->StandardDifference = double(TZI.StandardBias) / MinsPerDay;
 
+
     Result->SystemStandardDate = TZI.StandardDate;
     Result->SystemDaylightDate = TZI.DaylightDate;
+
 
     unsigned short AYear = (Year != 0) ? Year : DecodeYear(Now());
     if (Result->SystemStandardDate.wMonth != 0)
@@ -969,6 +951,7 @@ static const TDateTimeParams * __fastcall GetDateTimeParams(unsigned short Year)
       EncodeDSTMargin(Result->SystemDaylightDate, AYear, Result->DaylightDate);
     }
     Result->SummerDST = (Result->DaylightDate < Result->StandardDate);
+
 
     Result->DaylightHack = !IsWin7() || IsExactly2008R2();
   }
@@ -1026,6 +1009,7 @@ static bool __fastcall IsDateInDST(const TDateTime & DateTime)
   }
   else
   {
+
 
     if (Params->SummerDST)
     {
@@ -1106,23 +1090,23 @@ bool __fastcall TryRelativeStrToDateTime(UnicodeString S, TDateTime & DateTime)
     S = S.Trim().UpperCase();
     DateTime = Now();
     // These may not overlap with ParseSize (K, M and G)
-    if (S == L"S")
+    if (S == "S")
     {
       DateTime = IncSecond(DateTime, -Number);
     }
-    else if (S == L"N")
+    else if (S == "N")
     {
       DateTime = IncMinute(DateTime, -Number);
     }
-    else if (S == L"H")
+    else if (S == "H")
     {
       DateTime = IncHour(DateTime, -Number);
     }
-    else if (S == L"D")
+    else if (S == "D")
     {
       DateTime = IncDay(DateTime, -Number);
     }
-    else if (S == L"Y")
+    else if (S == "Y")
     {
       DateTime = IncYear(DateTime, -Number);
     }
@@ -1161,6 +1145,7 @@ FILETIME __fastcall DateTimeToFileTime(const TDateTime DateTime,
 
   FILETIME Result;
   (*(__int64*)&(Result) = (__int64(UnixTimeStamp) + 11644473600LL) * 10000000LL);
+
 
   return Result;
 }
@@ -1202,6 +1187,7 @@ __int64 __fastcall ConvertTimestampToUnix(const FILETIME & FileTime,
       const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
       Result += (IsDateInDST(DateTime) ?
         Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
+
 
       if (DSTMode == dstmKeep)
       {
@@ -1643,7 +1629,7 @@ UnicodeString __fastcall EncodeUrlString(UnicodeString S)
 //---------------------------------------------------------------------------
 UnicodeString __fastcall EscapeHotkey(const UnicodeString & Caption)
 {
-  return StringReplace(Caption, L"&", L"&&", TReplaceFlags::Init(rfReplaceAll));
+  return StringReplace(Caption, L"&", L"&&", TReplaceFlags() << rfReplaceAll);
 }
 //---------------------------------------------------------------------------
 // duplicated in console's Main.cpp
@@ -1810,10 +1796,10 @@ UnicodeString __fastcall WindowsProductName()
 {
   UnicodeString Result;
   TRegistry * Registry = new TRegistry();
-  Registry->SetAccess(KEY_READ);
+  Registry->Access = KEY_READ;
   try
   {
-    Registry->SetRootKey(HKEY_LOCAL_MACHINE);
+    Registry->RootKey = HKEY_LOCAL_MACHINE;
     if (Registry->OpenKey("SOFTWARE", false) &&
         Registry->OpenKey("Microsoft", false) &&
         Registry->OpenKey("Windows NT", false) &&
@@ -1875,5 +1861,5 @@ UnicodeString __fastcall FormatBytes(__int64 Bytes, bool UseOrders)
 }
 //---------------------------------------------------------------------------
 // Suppress warning about unused constants in DateUtils.hpp
-// #pragma warn -8080
+#pragma warn -8080
 

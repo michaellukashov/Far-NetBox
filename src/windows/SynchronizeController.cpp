@@ -1,29 +1,18 @@
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#else
-#include "stdafx.h"
-
-#include "boostdefines.hpp"
-#include <boost/scope_exit.hpp>
-#endif
 
 #include <Common.h>
 #include <RemoteFiles.h>
 #include <Terminal.h>
-#ifndef _MSC_VER
 #include <DiscMon.hpp>
 #include <Exceptions.h>
-#endif
 #include "GUIConfiguration.h"
 #include "CoreMain.h"
 #include "TextsCore.h"
 #include "SynchronizeController.h"
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #pragma package(smart_init)
-#endif
 //---------------------------------------------------------------------------
 /* __fastcall */ TSynchronizeController::TSynchronizeController(
   TSynchronizeEvent AOnSynchronize, TSynchronizeInvalidEvent AOnSynchronizeInvalid,
@@ -52,7 +41,7 @@ void /* __fastcall */ TSynchronizeController::StartStop(TObject * Sender,
 {
   if (Start)
   {
-    // Configuration->Usage->Inc(L"KeepUpToDates");
+    // Configuration->GetUsage()->Inc(L"KeepUpToDates");
 
     try
     {
@@ -79,7 +68,6 @@ void /* __fastcall */ TSynchronizeController::StartStop(TObject * Sender,
         SynchronizeLog(slScan,
           FMTLOAD(SYNCHRONIZE_SCAN, FSynchronizeParams.LocalDirectory.c_str()));
       }
-      int Directories = 0;
       Error(SNotImplemented, 256);
       /*
       // FIXME
@@ -93,7 +81,7 @@ void /* __fastcall */ TSynchronizeController::StartStop(TObject * Sender,
       }
       FSynchronizeMonitor->Filters = Filters;
       FSynchronizeMonitor->MaxDirectories = 0;
-      FSynchronizeMonitor->ChangeDelay = GUIConfiguration->KeepUpToDateChangeDelay;
+      FSynchronizeMonitor->ChangeDelay = GUIConfiguration->GetKeepUpToDateChangeDelay();
       FSynchronizeMonitor->OnTooManyDirectories = SynchronizeTooManyDirectories;
       FSynchronizeMonitor->OnDirectoriesChange = SynchronizeDirectoriesChange;
       FSynchronizeMonitor->OnFilter = SynchronizeFilter;
@@ -103,14 +91,14 @@ void /* __fastcall */ TSynchronizeController::StartStop(TObject * Sender,
       FSynchronizeMonitor->OnInvalid = SynchronizeInvalid;
       FSynchronizeMonitor->OnSynchronize = OnSynchronizeThreads;
       // get count before open to avoid thread issues
-      Directories = FSynchronizeMonitor->Directories->GetCount();
+      int Directories = FSynchronizeMonitor->Directories->Count;
       FSynchronizeMonitor->Open();
-      */
       SynchronizeLog(slStart, FMTLOAD(SYNCHRONIZE_START, Directories));
+      */
     }
     catch(...)
     {
-      // FIXME SAFE_DESTROY((TObject *)FSynchronizeMonitor);
+      // FIXME SAFE_DESTROY(FSynchronizeMonitor);
       Error(SNotImplemented, 257);
       throw;
     }
@@ -118,7 +106,7 @@ void /* __fastcall */ TSynchronizeController::StartStop(TObject * Sender,
   else
   {
     FOptions = NULL;
-    // SAFE_DESTROY((TObject *)FSynchronizeMonitor);
+    // SAFE_DESTROY(FSynchronizeMonitor);
   }
 }
 //---------------------------------------------------------------------------
@@ -154,12 +142,8 @@ void __fastcall TSynchronizeController::SynchronizeChange(
         FSynchronizeParams, &Checklist, Options, false);
       if (Checklist != NULL)
       {
-        // try
+        std::auto_ptr<TSynchronizeChecklist> ChecklistPtr(Checklist);
         {
-          BOOST_SCOPE_EXIT ( (&Checklist) )
-          {
-            delete Checklist;
-          } BOOST_SCOPE_EXIT_END
           if (FLAGSET(FSynchronizeParams.Options, soRecurse))
           {
             SubdirsChanged = false;
@@ -189,12 +173,6 @@ void __fastcall TSynchronizeController::SynchronizeChange(
             SubdirsChanged = false;
           }
         }
-#ifndef _MSC_VER
-        __finally
-        {
-          delete Checklist;
-        }
-#endif
       }
     }
   }

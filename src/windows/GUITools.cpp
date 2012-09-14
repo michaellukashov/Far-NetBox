@@ -1,27 +1,18 @@
 //---------------------------------------------------------------------------
-#include "nbafx.h"
 #define NO_WIN32_LEAN_AND_MEAN
-#ifndef _MSC_VER
 #include <vcl.h>
 #pragma hdrstop
-#endif
 
 #include <shlobj.h>
 #include <Common.h>
-
-#include "boostdefines.hpp"
-#include <boost/scope_exit.hpp>
 
 #include "GUITools.h"
 #include "GUIConfiguration.h"
 #include <TextsCore.h>
 #include <CoreMain.h>
 #include <SessionData.h>
-#include <Exceptions.h>
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
 #pragma package(smart_init)
-#endif
 //---------------------------------------------------------------------------
 bool __fastcall FindFile(UnicodeString & Path)
 {
@@ -61,17 +52,14 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
   {
     UnicodeString SessionName;
     TRegistryStorage * Storage = NULL;
+    std::auto_ptr<TRegistryStorage> StoragePtr(NULL);
     TSessionData * ExportData = NULL;
+    std::auto_ptr<TSessionData> ExportDataPtr(NULL);
     TRegistryStorage * SourceStorage = NULL;
-    // try
+    std::auto_ptr<TRegistryStorage> SourceStoragePtr(NULL);
     {
-      BOOST_SCOPE_EXIT ( (&Storage) (&ExportData) (&SourceStorage) )
-      {
-        delete Storage;
-        delete ExportData;
-        delete SourceStorage;
-      } BOOST_SCOPE_EXIT_END
       Storage = new TRegistryStorage(Configuration->GetPuttySessionsKey());
+      StoragePtr.reset(Storage);
       Storage->SetAccessMode(smReadWrite);
       // make it compatible with putty
       Storage->SetMungeStringValues(false);
@@ -85,6 +73,7 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
         else
         {
           SourceStorage = new TRegistryStorage(Configuration->GetPuttySessionsKey());
+          SourceStoragePtr.reset(SourceStorage);
           SourceStorage->SetMungeStringValues(false);
           SourceStorage->SetForceAnsi(true);
           if (SourceStorage->OpenSubKey(StoredSessions->GetDefaultSettings()->GetName(), false) &&
@@ -95,6 +84,7 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
           }
 
           ExportData = new TSessionData(L"");
+          ExportDataPtr.reset(ExportData);
           ExportData->Assign(SessionData);
           ExportData->SetModified(true);
           ExportData->SetName(GUIConfiguration->GetPuttySession());
@@ -121,14 +111,6 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
         }
       }
     }
-#ifndef _MSC_VER
-    __finally
-    {
-      delete Storage;
-      delete ExportData;
-      delete SourceStorage;
-    }
-#endif
 
     if (!Params.IsEmpty())
     {
@@ -162,7 +144,7 @@ bool __fastcall ExecuteShell(const UnicodeString Path, const UnicodeString Param
 {
   bool Result = false;
 
-  _SHELLEXECUTEINFOW ExecuteInfo;
+  TShellExecuteInfoW ExecuteInfo;
   memset(&ExecuteInfo, 0, sizeof(ExecuteInfo));
   ExecuteInfo.cbSize = sizeof(ExecuteInfo);
   ExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
@@ -183,7 +165,7 @@ bool __fastcall ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString Path,
   const UnicodeString Params, TProcessMessagesEvent ProcessMessages)
 {
   bool Result = false;
-  _SHELLEXECUTEINFOW ExecuteInfo;
+  TShellExecuteInfoW ExecuteInfo;
   memset(&ExecuteInfo, 0, sizeof(ExecuteInfo));
   ExecuteInfo.cbSize = sizeof(ExecuteInfo);
   ExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
@@ -257,7 +239,7 @@ UnicodeString __fastcall ItemsFormatString(const UnicodeString SingleItemFormat,
   const UnicodeString MultiItemsFormat, TStrings * Items)
 {
   return ItemsFormatString(SingleItemFormat, MultiItemsFormat,
-    Items->GetCount(), (Items->GetCount() > 0 ? Items->GetStrings(0) : UnicodeString()));
+    Items->Count, (Items->Count > 0 ? Items->Strings[0] : UnicodeString()));
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall FileNameFormatString(const UnicodeString SingleFileFormat,
@@ -265,13 +247,13 @@ UnicodeString __fastcall FileNameFormatString(const UnicodeString SingleFileForm
 {
   assert(Files != NULL);
   UnicodeString Item;
-  if (Files->GetCount() > 0)
+  if (Files->Count > 0)
   {
-    Item = Remote ? UnixExtractFileName(Files->GetStrings(0)) :
-      ExtractFileName(Files->GetStrings(0), true);
+    Item = Remote ? UnixExtractFileName(Files->Strings[0]) :
+      ExtractFileName(Files->Strings[0], true);
   }
   return ItemsFormatString(SingleFileFormat, MultiFilesFormat,
-    Files->GetCount(), Item);
+    Files->Count, Item);
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall UniqTempDir(const UnicodeString BaseDir, const UnicodeString Identity,
