@@ -160,6 +160,7 @@ void * __fastcall CreateFileInfo(UnicodeString FileName)
   void * Result = NULL;
 
 
+
   // Get file version info block size
   Size = GetFileVersionInfoSizeFix(FileName.c_str(), &Handle);
   // If size is valid
