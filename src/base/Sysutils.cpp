@@ -621,9 +621,199 @@ UnicodeString FmtLoadStr(int id, ...)
 }
 
 //---------------------------------------------------------------------------
+/*
+ * return the next available word, ignoring whitespace
+ */
+static const wchar_t *
+NextWord(const wchar_t * input)
+{
+  static wchar_t buffer[1024];
+  static const wchar_t * text = 0;
+
+  wchar_t * endOfBuffer = buffer + sizeof(buffer) - 1;
+  wchar_t * pBuffer = buffer;
+
+  if (input)
+  {
+    text = input;
+  }
+
+  if (text)
+  {
+    /* skip leading spaces */
+    while (iswspace(*text))
+    {
+      ++text;
+    }
+
+    /* copy the word to our static buffer */
+    while (*text && !iswspace(*text) && pBuffer < endOfBuffer)
+    {
+      *(pBuffer++) = *(text++);
+    }
+  }
+
+  *pBuffer = 0;
+
+  return buffer;
+}
+//---------------------------------------------------------------------------
 UnicodeString WrapText(const UnicodeString & Line, int MaxWidth)
 {
-  UnicodeString Result = ::WrapText(Line.c_str(), MaxWidth, NULL, NULL);
+  UnicodeString Result; // = ::WrapText(Line.c_str(), MaxWidth, NULL, NULL);
+  const wchar_t * prefix = 0;
+  const wchar_t * s = 0;
+  wchar_t * w = 0;
+
+  int lineCount = 0;
+  int lenBuffer = 0;
+  int lenPrefixFirst = 0; // wcslen(prefixFirst ? prefixFirst : L"");
+  int lenPrefixRest = 0; // wcslen(prefixRest ? prefixRest : L"");
+  int spaceLeft = MaxWidth;
+  int wordsThisLine = 0;
+
+  if (MaxWidth == 0)
+  {
+    MaxWidth = 78;
+  }
+  if (lenPrefixFirst + 5 > MaxWidth)
+  {
+    MaxWidth = lenPrefixFirst + 5;
+  }
+  if (lenPrefixRest + 5 > MaxWidth)
+  {
+    MaxWidth = lenPrefixRest + 5;
+  }
+
+  /* two passes through the input. the first pass updates the buffer length.
+   * the second pass creates and populates the buffer
+   */
+  while (Result.Length() == 0)
+  {
+    lineCount = 0;
+
+    if (lenBuffer)
+    {
+      /* second pass, so create the wrapped buffer */
+      Result.SetLength(lenBuffer + 1);
+      if (Result.Length() == 0)
+      {
+        break;
+      }
+    }
+    w = const_cast<wchar_t *>(Result.c_str());
+
+    /* for each Word in Text
+     *   if Width(Word) > SpaceLeft
+     *     insert line break before Word in Text
+     *     SpaceLeft := LineWidth - Width(Word)
+     *   else
+     *     SpaceLeft := SpaceLeft - Width(Word) + SpaceWidth
+     */
+    s = NextWord(Line.c_str());
+    while (*s)
+    {
+      spaceLeft = MaxWidth;
+      wordsThisLine = 0;
+
+      /* copy the prefix */
+      // prefix = lineCount ? prefixRest : prefixFirst;
+      prefix = L""; // prefix ? prefix : L"";
+      while (*prefix)
+      {
+        if (w == 0)
+        {
+          ++lenBuffer;
+        }
+        else
+        {
+          *(w++) = *prefix == '\n' ? ' ' : *prefix;
+        }
+        --spaceLeft;
+        ++prefix;
+      }
+
+      /* force the first word to always be completely copied */
+      while (*s)
+      {
+        if (w == 0)
+        {
+          ++lenBuffer;
+        }
+        else
+        {
+          *(w++) = *s;
+        }
+        --spaceLeft;
+        ++s;
+      }
+      if (!*s)
+      {
+        s = NextWord(0);
+      }
+
+      /* copy as many words as will fit onto the current line */
+      while (*s && wcslen(s) + 1 <= spaceLeft)
+      {
+        /* will fit so add a space between the words */
+        if (w == 0)
+        {
+          ++lenBuffer;
+        }
+        else
+        {
+          *(w++) = ' ';
+        }
+        --spaceLeft;
+
+        /* then copy the word */
+        while (*s)
+        {
+          if (w == 0)
+          {
+            ++lenBuffer;
+          }
+          else
+          {
+            *(w++) = *s;
+          }
+          --spaceLeft;
+          ++s;
+        }
+        if (!*s)
+        {
+          s = NextWord(0);
+        }
+      }
+      if (!*s)
+      {
+        s = NextWord(0);
+      }
+
+      if (*s)
+      {
+        /* add a new line here */
+        if (w == 0)
+        {
+          ++lenBuffer;
+        }
+        else
+        {
+          *(w++) = '\n';
+        }
+      }
+
+      ++lineCount;
+    }
+
+    lenBuffer += 2;
+
+    if (w)
+    {
+      *w = 0;
+    }
+  }
+
   return Result;
 }
 
