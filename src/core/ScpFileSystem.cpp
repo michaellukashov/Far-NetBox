@@ -1836,10 +1836,9 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString FileName,
 
             if (CopyParam->GetPreserveTime())
             {
-              Buf.SetLength(40);
               // Send last file access and modification time
               // TVarRec don't understand 'unsigned int' -> we use sprintf()
-              swprintf_s(const_cast<wchar_t *>(Buf.c_str()), Buf.Length(), L"T%lu 0 %lu 0", static_cast<unsigned long>(MTime),
+              Buf.sprintf(L"T%lu 0 %lu 0", static_cast<unsigned long>(MTime),
                 static_cast<unsigned long>(ATime));
               FSecureShell->SendLine(Buf.c_str());
               SCPResponse();
@@ -1847,14 +1846,12 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString FileName,
 
             // Send file modes (rights), filesize and file name
             // TVarRec don't understand 'unsigned int' -> we use sprintf()
-            Buf.Clear();
-            Buf.SetLength(MAX_PATH * 2);
             __int64 sz = OperationProgress->AsciiTransfer ? AsciiBuf.GetSize() :
               OperationProgress->LocalSize;
-            swprintf_s(const_cast<wchar_t *>(Buf.c_str()), Buf.Length(), L"C%s %lld %s",
-              Rights.GetOctal().c_str(),
+            Buf.sprintf(L"C%s %lld %s",
+              Rights.GetOctal().data(),
               sz,
-              DestFileName.c_str());
+              DestFileName.data());
             FSecureShell->SendLine(Buf.c_str());
             SCPResponse();
             // Indicate we started transfering file, we need to finish it
