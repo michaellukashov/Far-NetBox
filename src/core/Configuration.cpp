@@ -744,7 +744,7 @@ UnicodeString __fastcall TConfiguration::GetVersion()
   {
     TVSFixedFileInfo * Info = GetFixedApplicationInfo();
     UnicodeString Result;
-    Result = // TrimVersion(FORMAT(L"%d.%d.%d",
+    Result = FORMAT(L"%d.%d.%d",
       HIWORD(Info->dwFileVersionMS),
       LOWORD(Info->dwFileVersionMS),
       HIWORD(Info->dwFileVersionLS));

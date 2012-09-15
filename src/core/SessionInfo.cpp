@@ -698,16 +698,20 @@ void /* __fastcall */ TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeS
 
     if (FFile != NULL)
     {
+#ifndef _MSC_VER
+      UnicodeString Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", Now());
+      UTF8String UtfLine = UTF8String(UnicodeString(LogLineMarks[Type]) + Timestamp + Line + "\n");
+      fwrite(UtfLine.c_str(), UtfLine.Length(), 1, (FILE *)FFile);
+#else
       unsigned short Y, M, D, H, N, S, MS;
       TDateTime DateTime = Now();
       DateTime.DecodeDate(Y, M, D);
       DateTime.DecodeTime(H, N, S, MS);
       UnicodeString dt = FORMAT(L" %04d-%02d-%02d %02d:%02d:%02d.%03d ", Y, M, D, H, N, S, MS);
-      // UnicodeString Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", Now());
       UnicodeString Timestamp = dt;
       UTF8String UtfLine = UTF8String(UnicodeString(LogLineMarks[Type]) + Timestamp + Line + "\n");
-      // fwrite(UtfLine.c_str(), UtfLine.Length(), 1, (FILE *)FFile);
       fprintf_s(static_cast<FILE *>(FFile), "%s", const_cast<char *>(AnsiString(UtfLine).c_str()));
+#endif
     }
   }
 }

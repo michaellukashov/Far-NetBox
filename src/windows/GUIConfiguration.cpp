@@ -1039,57 +1039,64 @@ TStrings * __fastcall TGUIConfiguration::GetLocales()
       FLocales->Clear();
 
       /* // FIXME
-            TLanguages * Langs = NULL; // FIXME LanguagesDEPF();
-            int Ext, Index, Count;
-            wchar_t LocaleStr[255];
-            LCID Locale;
+      TRACE("TGUIConfiguration::GetLocales 3");
+      TLanguages * Langs = NULL; // FIXME LanguagesDEPF();
+      int Ext, Index, Count;
+      wchar_t LocaleStr[255];
+      LCID Locale;
 
-            Count = Langs->Count;
-            Index = -1;
-            while (Index < Count)
+      TRACE("TGUIConfiguration::GetLocales 4");
+      Count = Langs->Count;
+      Index = -1;
+      while (Index < Count)
+      {
+        TRACE("TGUIConfiguration::GetLocales 5");
+        if (Index >= 0)
+        {
+          Locale = Langs->LocaleID[Index];
+          Ext = Exts->IndexOf(Langs->Ext[Index]);
+          if (Ext < 0)
+          {
+            TRACE("TGUIConfiguration::GetLocales 6");
+            Ext = Exts->IndexOf(Langs->Ext[Index].SubString(1, 2));
+            if (Ext >= 0)
             {
-              if (Index >= 0)
-              {
-                Locale = Langs->LocaleID[Index];
-                Ext = Exts->IndexOf(Langs->Ext[Index]);
-                if (Ext < 0)
-                {
-                  Ext = Exts->IndexOf(Langs->Ext[Index].SubString(1, 2));
-                  if (Ext >= 0)
-                  {
-                    Locale = MAKELANGID(PRIMARYLANGID(Locale), SUBLANG_DEFAULT);
-                  }
-                }
-
-                if (Ext >= 0)
-                {
-                  Exts->Objects[Ext] = reinterpret_cast<TObject*>(Locale);
-                }
-                else
-                {
-                  Locale = 0;
-                }
-              }
-              else
-              {
-                Locale = InternalLocale();
-              }
-
-              if (Locale)
-              {
-                UnicodeString Name;
-                GetLocaleInfo(Locale, LOCALE_SENGLANGUAGE,
-                  LocaleStr, sizeof(LocaleStr));
-                Name = LocaleStr;
-                Name += " - ";
-                // LOCALE_SNATIVELANGNAME
-                GetLocaleInfo(Locale, LOCALE_SLANGUAGE,
-                  LocaleStr, sizeof(LocaleStr));
-                Name += LocaleStr;
-                FLocales->AddObject(Name, reinterpret_cast<TObject*>(Locale));
-              }
-              Index++;
+              Locale = MAKELANGID(PRIMARYLANGID(Locale), SUBLANG_DEFAULT);
             }
+          }
+
+          if (Ext >= 0)
+          {
+            TRACE("TGUIConfiguration::GetLocales 7");
+            Exts->Objects[Ext] = reinterpret_cast<TObject*>(Locale);
+          }
+          else
+          {
+            Locale = 0;
+          }
+        }
+        else
+        {
+          TRACE("TGUIConfiguration::GetLocales 8");
+          Locale = InternalLocale();
+        }
+
+        if (Locale)
+        {
+          TRACE("TGUIConfiguration::GetLocales 9");
+          UnicodeString Name;
+          GetLocaleInfo(Locale, LOCALE_SENGLANGUAGE,
+            LocaleStr, sizeof(LocaleStr));
+          Name = LocaleStr;
+          Name += " - ";
+          // LOCALE_SNATIVELANGNAME
+          GetLocaleInfo(Locale, LOCALE_SLANGUAGE,
+            LocaleStr, sizeof(LocaleStr));
+          Name += LocaleStr;
+          FLocales->AddObject(Name, reinterpret_cast<TObject*>(Locale));
+        }
+        Index++;
+      }
       */
       TRACE("TGUIConfiguration::GetLocales 10");
       for (int Index = 0; Index < Exts->Count; Index++)

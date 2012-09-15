@@ -742,7 +742,6 @@ void __fastcall TTerminal::Open()
   FLog->ReflectSettings();
   FActionLog->ReflectSettings();
   bool Reopen = false;
-  // try
   do
   {
     TRACE("Open 1a");
