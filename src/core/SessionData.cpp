@@ -542,7 +542,7 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
   SetProxyLocalhost(Storage->ReadBool(L"ProxyLocalhost", GetProxyLocalhost()));
 
   #define READ_BUG(BUG) \
-    SetBug(sb##BUG, TAutoSwitch(2 - Storage->ReadInteger(L"Bug" + MB2W(#BUG), \
+    SetBug(sb##BUG, TAutoSwitch(2 - Storage->ReadInteger(TEXT("Bug"#BUG), \
       2 - GetBug(sb##BUG))));
   READ_BUG(Ignore1);
   READ_BUG(PlainPW1);
@@ -564,7 +564,7 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
 
   SetSftpServer(Storage->ReadString(L"SftpServer", GetSftpServer()));
   #define READ_SFTP_BUG(BUG) \
-    SetSFTPBug(sb##BUG, TAutoSwitch(Storage->ReadInteger(L"SFTP" + MB2W(#BUG) + L"Bug", GetSFTPBug(sb##BUG))));
+    SetSFTPBug(sb##BUG, TAutoSwitch(Storage->ReadInteger(TEXT("SFTP" #BUG "Bug"), GetSFTPBug(sb##BUG))));
   READ_SFTP_BUG(Symlink);
   READ_SFTP_BUG(SignedTS);
   #undef READ_SFTP_BUG
@@ -840,7 +840,7 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
     WRITE_DATA_EX(Bool, L"ProxyLocalhost", GetProxyLocalhost(), );
 
     #define WRITE_DATA_CONV_FUNC(X) (2 - (X))
-    #define WRITE_BUG(BUG) WRITE_DATA_CONV(Integer, MB2W("Bug" #BUG), GetBug(sb##BUG));
+    #define WRITE_BUG(BUG) WRITE_DATA_CONV(Integer, TEXT("Bug" #BUG), GetBug(sb##BUG));
     WRITE_BUG(Ignore1);
     WRITE_BUG(PlainPW1);
     WRITE_BUG(RSA1);
@@ -866,7 +866,7 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
     {
       WRITE_DATA(String, SftpServer);
 
-      #define WRITE_SFTP_BUG(BUG) WRITE_DATA_EX(Integer, MB2W("SFTP" #BUG "Bug"), GetSFTPBug(sb##BUG), );
+      #define WRITE_SFTP_BUG(BUG) WRITE_DATA_EX(Integer, TEXT("SFTP" #BUG "Bug"), GetSFTPBug(sb##BUG), );
       WRITE_SFTP_BUG(Symlink);
       WRITE_SFTP_BUG(SignedTS);
       #undef WRITE_SFTP_BUG
