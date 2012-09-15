@@ -683,7 +683,7 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
         Storage->Write ## TYPE(NAME, CONV(PROPERTY)); \
       }
     #define WRITE_DATA_CONV(TYPE, NAME, PROPERTY) WRITE_DATA_EX(TYPE, NAME, PROPERTY, WRITE_DATA_CONV_FUNC)
-    #define WRITE_DATA(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, #PROPERTY, Get ## PROPERTY(), )
+    #define WRITE_DATA(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, TEXT(#PROPERTY), Get ## PROPERTY(), )
 
     Storage->WriteString(L"Version", ::VersionNumberToStr(::GetCurrentVersionNumber()));
     WRITE_DATA(String, HostName);
@@ -2788,7 +2788,7 @@ void __fastcall TStoredSessionList::Saved()
 //---------------------------------------------------------------------
 void __fastcall TStoredSessionList::Export(const UnicodeString FileName)
 {
-  Error(SNotImplemented, 3003);
+  Classes::Error(SNotImplemented, 3003);
 /*
   THierarchicalStorage * Storage = new TIniFileStorage(FileName);
   std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
@@ -2856,7 +2856,7 @@ void __fastcall TStoredSessionList::Cleanup()
   }
   catch (Exception &E)
   {
-    throw ExtException(&E, FMTLOAD(CLEANUP_SESSIONS_ERROR));
+    throw ExtException(&E, CLEANUP_SESSIONS_ERROR);
   }
 }
 //---------------------------------------------------------------------------
@@ -2868,10 +2868,13 @@ void __fastcall TStoredSessionList::UpdateStaticUsage()
   int SFTP = 0;
   int FTP = 0;
   int FTPS = 0;
+  int WebDAV = 0;
+  int WebDAVS = 0;
   int Password = 0;
   int Advanced = 0;
   int Color = 0;
   bool Folders = false;
+  bool Workspaces = false;
   std::auto_ptr<TSessionData> FactoryDefaults(new TSessionData(L""));
   for (int Index = 0; Index < Count; Index++)
   {
@@ -2897,6 +2900,17 @@ void __fastcall TStoredSessionList::UpdateStaticUsage()
           FTPS++;
         }
         break;
+
+      case fsWebDAV:
+        if (Data->GetFtps() == ftpsNone)
+        {
+          WebDAV++;
+        }
+        else
+        {
+          WebDAVS++;
+        }
+        break;
     }
 
     if (Data->HasAnyPassword())
@@ -2914,7 +2928,11 @@ void __fastcall TStoredSessionList::UpdateStaticUsage()
       Advanced++;
     }
 
-    if (Data->GetName().Pos(L"/") > 0)
+    if (Data->GetIsWorkspace())
+    {
+      Workspaces = true;
+    }
+    else if (Data->GetName().Pos(L"/") > 0)
     {
       Folders = true;
     }

@@ -742,7 +742,6 @@ void __fastcall TTerminal::Open()
   FLog->ReflectSettings();
   FActionLog->ReflectSettings();
   bool Reopen = false;
-  // try
   do
   {
     TRACE("Open 1a");
@@ -843,12 +842,12 @@ void __fastcall TTerminal::Open()
                   }
                   catch (Exception & E)
                   {
-                    TRACEFMT("Open 9 [%s]", (E.Message.get().c_str()));
+                    TRACEFMT("Open 9 [%s]", (E.Message.c_str()));
                     assert(!FSecureShell->GetActive());
                     if (!FSecureShell->GetActive() && !FTunnelError.IsEmpty())
                     {
                       // the only case where we expect this to happen
-                      assert(E.Message.get() == LoadStr(UNEXPECTED_CLOSE_ERROR));
+                      assert(E.Message == LoadStr(UNEXPECTED_CLOSE_ERROR));
                       FatalError(&E, FMTLOAD(TUNNEL_ERROR, FTunnelError.c_str()));
                     }
                     else
@@ -973,7 +972,7 @@ void __fastcall TTerminal::Open()
     // }
     catch(Exception & E)
     {
-      LogEvent(FORMAT(L"Got error: \"%s\"", E.Message.get().c_str()));
+      LogEvent(FORMAT(L"Got error: \"%s\"", E.Message.c_str()));
       // any exception while opening session is fatal
       FatalError(&E, L"");
     }
@@ -1265,7 +1264,7 @@ unsigned int __fastcall TTerminal::QueryUserException(const UnicodeString Query,
   {
     if (E != NULL)
     {
-      if (!E->Message.get().IsEmpty() && !Query.IsEmpty())
+      if (!E->Message.IsEmpty() && !Query.IsEmpty())
       {
         MoreMessages->Add(E->Message);
       }
@@ -1276,7 +1275,7 @@ unsigned int __fastcall TTerminal::QueryUserException(const UnicodeString Query,
         MoreMessages->AddStrings(EE->GetMoreMessages());
       }
     }
-    Result = QueryUser(!Query.IsEmpty() ? Query : UnicodeString(E ? E->Message.get() : L""),
+    Result = QueryUser(!Query.IsEmpty() ? Query : UnicodeString(E ? E->Message : L""),
       MoreMessages->Count ? MoreMessages : NULL,
       Answers, Params, QueryType);
   }
@@ -1310,7 +1309,7 @@ void __fastcall TTerminal::DisplayBanner(const UnicodeString & Banner)
 void /* __fastcall */ TTerminal::HandleExtendedException(Exception * E)
 {
   CALLSTACK;
-  TRACEFMT("1 [%s]", (E->Message.get().c_str()));
+  TRACEFMT("1 [%s]", (E->Message.c_str()));
   GetLog()->AddException(E);
   if (GetOnShowExtendedException() != NULL)
   {
@@ -1326,7 +1325,7 @@ void /* __fastcall */ TTerminal::HandleExtendedException(Exception * E)
 void /* __fastcall */ TTerminal::ShowExtendedException(Exception * E)
 {
   CALLSTACK;
-  TRACEFMT("1 [%s]", (E->Message.get().c_str()));
+  TRACEFMT("1 [%s]", (E->Message.c_str()));
   GetLog()->AddException(E);
   if (GetOnShowExtendedException() != NULL)
   {

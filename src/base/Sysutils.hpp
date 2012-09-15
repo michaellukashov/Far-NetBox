@@ -22,25 +22,16 @@ public:
   explicit /* __fastcall */ Exception(Exception * E);
   explicit /* __fastcall */ Exception(std::exception * E);
   explicit /* __fastcall */ Exception(UnicodeString Msg, int AHelpContext);
+  explicit /* __fastcall */ Exception(Exception * E, int Ident);
   explicit /* __fastcall */ Exception(int Ident);
 
   template<typename T>
   bool InheritsFrom() const { return dynamic_cast<const T *>(this) != NULL; }
 
-protected:
-  // UnicodeString GetHelpKeyword() const { return FHelpKeyword; }
-  const UnicodeString GetMessage() const { return FMessage; }
-  void SetMessage(const UnicodeString & Value) { FMessage = Value; }
-
-private:
-  UnicodeString PropertyGetMessage() { return GetMessage(); }
-  void PropertySetMessage(UnicodeString Value) { SetMessage(Value); }
-
 public:
-  RWProperty<UnicodeString, Exception, &Exception::PropertyGetMessage, &Exception::PropertySetMessage> Message;
+  UnicodeString Message;
 
 protected:
-  UnicodeString FMessage;
   // UnicodeString FHelpKeyword;
 };
 
@@ -250,7 +241,7 @@ AnsiString Format(const char * format, ...);
 AnsiString Format(const char * format, va_list args);
 UnicodeString FmtLoadStr(int id, ...);
 //---------------------------------------------------------------------------
-UnicodeString WrapText(const UnicodeString Line, int MaxCol = 40);
+UnicodeString WrapText(const UnicodeString & Line, int MaxWidth = 40);
 //---------------------------------------------------------------------------
 UnicodeString TranslateExceptionMessage(std::exception * E);
 //---------------------------------------------------------------------------

@@ -1836,10 +1836,9 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString FileName,
 
             if (CopyParam->GetPreserveTime())
             {
-              Buf.SetLength(40);
               // Send last file access and modification time
               // TVarRec don't understand 'unsigned int' -> we use sprintf()
-              swprintf_s(const_cast<wchar_t *>(Buf.c_str()), Buf.Length(), L"T%lu 0 %lu 0", static_cast<unsigned long>(MTime),
+              Buf.sprintf(L"T%lu 0 %lu 0", static_cast<unsigned long>(MTime),
                 static_cast<unsigned long>(ATime));
               FSecureShell->SendLine(Buf.c_str());
               SCPResponse();
@@ -1847,14 +1846,12 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString FileName,
 
             // Send file modes (rights), filesize and file name
             // TVarRec don't understand 'unsigned int' -> we use sprintf()
-            Buf.Clear();
-            Buf.SetLength(MAX_PATH * 2);
             __int64 sz = OperationProgress->AsciiTransfer ? AsciiBuf.GetSize() :
               OperationProgress->LocalSize;
-            swprintf_s(const_cast<wchar_t *>(Buf.c_str()), Buf.Length(), L"C%s %lld %s",
-              Rights.GetOctal().c_str(),
+            Buf.sprintf(L"C%s %lld %s",
+              Rights.GetOctal().data(),
               sz,
-              DestFileName.c_str());
+              DestFileName.data());
             DEBUG_PRINTF(L"Buf = %s, DestFileName.c_str = %s", Buf.c_str(), DestFileName.c_str());
             FSecureShell->SendLine(Buf.c_str());
             SCPResponse();
@@ -2348,7 +2345,7 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
         }
         catch(Exception & E)
         {
-          TRACEFMT("5 [%s]", (E.Message.get().c_str()));
+          TRACEFMT("5 [%s]", (E.Message.c_str()));
           if (!Initialized && FTerminal->GetActive())
           {
             FTerminal->TerminalError(&E, LoadStr(SCP_INIT_ERROR));
@@ -2623,7 +2620,7 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
               }
               catch (Exception &E)
               {
-                TRACEFMT("19 [%s]", (E.Message.get().c_str()));
+                TRACEFMT("19 [%s]", (E.Message.c_str()));
                 // Every exception during file transfer is fatal
                 FTerminal->FatalError(&E,
                   FMTLOAD(COPY_FATAL, OperationProgress->FileName.c_str()));
@@ -2695,7 +2692,7 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
     }
     catch (EScpFileSkipped &E)
     {
-      TRACEFMT("27 [%s]", (E.Message.get().c_str()));
+      TRACEFMT("27 [%s]", (E.Message.c_str()));
       if (!SkipConfirmed)
       {
         TRACE("28");
@@ -2715,7 +2712,7 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
     }
     catch (EScpSkipFile &E)
     {
-      TRACEFMT("29 [%s]", (E.Message.get().c_str()));
+      TRACEFMT("29 [%s]", (E.Message.c_str()));
       SCPSendError(E.Message, false);
       Success = false;
       if (!FTerminal->HandleException(&E)) { throw; }

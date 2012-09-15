@@ -1,5 +1,7 @@
 NetBox 2.1.13 ??.09.2012
 --------------------
+ * Bugfix: Issue #27: Server Updated Key dialog box appearance
+   (https://github.com/michaellukashov/Far-NetBox/issues/27)
  * Bugfix: Issue #37: Fix date format parsing
    (https://github.com/michaellukashov/Far-NetBox/issues/37)
  * Minor bugfix in "Edit session" dialog

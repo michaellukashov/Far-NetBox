@@ -698,16 +698,20 @@ void /* __fastcall */ TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeS
 
     if (FFile != NULL)
     {
+#ifndef _MSC_VER
+      UnicodeString Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", Now());
+      UTF8String UtfLine = UTF8String(UnicodeString(LogLineMarks[Type]) + Timestamp + Line + "\n");
+      fwrite(UtfLine.c_str(), UtfLine.Length(), 1, (FILE *)FFile);
+#else
       unsigned short Y, M, D, H, N, S, MS;
       TDateTime DateTime = Now();
       DateTime.DecodeDate(Y, M, D);
       DateTime.DecodeTime(H, N, S, MS);
       UnicodeString dt = FORMAT(L" %04d-%02d-%02d %02d:%02d:%02d.%03d ", Y, M, D, H, N, S, MS);
-      // UnicodeString Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", Now());
       UnicodeString Timestamp = dt;
       UTF8String UtfLine = UTF8String(UnicodeString(LogLineMarks[Type]) + Timestamp + Line + "\n");
-      // fwrite(UtfLine.c_str(), UtfLine.Length(), 1, (FILE *)FFile);
       fprintf_s(static_cast<FILE *>(FFile), "%s", const_cast<char *>(AnsiString(UtfLine).c_str()));
+#endif
     }
   }
 }
@@ -772,11 +776,11 @@ void __fastcall TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
       FConfiguration->SetLogging(false);
       try
       {
-        throw ExtException(&E, FMTLOAD(LOG_GEN_ERROR));
+        throw ExtException(&E, LOG_GEN_ERROR);
       }
       catch (Exception &E)
       {
-        CTRACEFMT(TRACE_LOG_ADD, "E2 [%s]", (E.Message.get().c_str()));
+        CTRACEFMT(TRACE_LOG_ADD, "E2 [%s]", (E.Message.c_str()));
         AddException(&E);
         FUI->HandleExtendedException(&E);
       }
@@ -862,7 +866,7 @@ void __fastcall TSessionLog::OpenLogFile()
     FConfiguration->SetLogFileName(UnicodeString());
     try
     {
-      throw ExtException(&E, FMTLOAD(LOG_GEN_ERROR));
+      throw ExtException(&E, LOG_GEN_ERROR);
     }
     catch (Exception & E)
     {
@@ -954,8 +958,14 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
 
       Self->EndUpdate();
     } BOOST_SCOPE_EXIT_END
+    #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), MAKE_CALLBACK2(TSessionLog::DoAddToSelf, this));
+//!CLEANBEGIN
+    #ifdef _DEBUG
+    #undef ADF
     // #define ADF(S, F) DoAdd(llMessage, FORMAT(S, F), DoAddToSelf);
     #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), MAKE_CALLBACK2(TSessionLog::DoAddToSelf, this));
+    #endif
+//!CLEANEND
     AddSeparator();
     ADF(L"NetBox %s (OS %s)", FConfiguration->GetVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
     THierarchicalStorage * Storage = FConfiguration->CreateScpStorage(false);
@@ -1307,11 +1317,11 @@ void __fastcall TActionLog::Add(const UnicodeString & Line)
       FConfiguration->SetLogActions(false);
       try
       {
-        throw ExtException(&E, FMTLOAD(LOG_GEN_ERROR));
+        throw ExtException(&E, LOG_GEN_ERROR);
       }
       catch (Exception &E)
       {
-        CTRACEFMT(TRACE_LOG_ADD, "[%s]", (E.Message.get().c_str()));
+        CTRACEFMT(TRACE_LOG_ADD, "[%s]", (E.Message.c_str()));
         FUI->HandleExtendedException(&E);
       }
     }
@@ -1421,7 +1431,7 @@ void __fastcall TActionLog::OpenLogFile()
     FConfiguration->SetLogActions(false);
     try
     {
-      throw ExtException(&E, FMTLOAD(LOG_GEN_ERROR));
+      throw ExtException(&E, LOG_GEN_ERROR);
     }
     catch (Exception & E)
     {

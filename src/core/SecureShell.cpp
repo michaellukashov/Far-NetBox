@@ -1497,7 +1497,7 @@ void __fastcall TSecureShell::PoolForData(WSANETWORKEVENTS & Events, unsigned in
       }
       CTRACE(TRACE_TRANSMIT, "2");
     }
-    catch(...)
+    TRACE_CATCH_ALL
     {
       // TRACE_EXCEPT;
       // if we let the exception out, it may popup another message dialog

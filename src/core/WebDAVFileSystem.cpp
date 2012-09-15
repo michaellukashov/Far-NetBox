@@ -12959,7 +12959,7 @@ void __fastcall TWebDAVFileSystem::ReadCurrentDirectory()
 //---------------------------------------------------------------------------
 void __fastcall TWebDAVFileSystem::HomeDirectory()
 {
-  Error(SNotImplemented, 1009);
+  Classes::Error(SNotImplemented, 1009);
 }
 //---------------------------------------------------------------------------
 void __fastcall TWebDAVFileSystem::AnnounceFileListOperation()
@@ -13108,7 +13108,7 @@ void __fastcall TWebDAVFileSystem::RenameFile(const UnicodeString FileName,
 void __fastcall TWebDAVFileSystem::CopyFile(const UnicodeString FileName,
     const UnicodeString NewName)
 {
-  Error(SNotImplemented, 1012);
+  Classes::Error(SNotImplemented, 1012);
 }
 //---------------------------------------------------------------------------
 void __fastcall TWebDAVFileSystem::CreateDirectory(const UnicodeString DirName)
@@ -13141,14 +13141,14 @@ void __fastcall TWebDAVFileSystem::CreateDirectory(const UnicodeString DirName)
 void __fastcall TWebDAVFileSystem::CreateLink(const UnicodeString FileName,
     const UnicodeString PointTo, bool Symbolic)
 {
-  Error(SNotImplemented, 1014);
+  Classes::Error(SNotImplemented, 1014);
 }
 //---------------------------------------------------------------------------
 void __fastcall TWebDAVFileSystem::ChangeFileProperties(const UnicodeString FileName,
     const TRemoteFile * File, const TRemoteProperties * Properties,
     TChmodSessionAction & Action)
 {
-  Error(SNotImplemented, 1006);
+  Classes::Error(SNotImplemented, 1006);
   assert(Properties);
 }
 //---------------------------------------------------------------------------
@@ -13291,7 +13291,7 @@ void /* __fastcall */ TWebDAVFileSystem::CustomCommandOnFile(const UnicodeString
 void __fastcall TWebDAVFileSystem::AnyCommand(const UnicodeString Command,
     TCaptureOutputEvent OutputEvent)
 {
-  Error(SNotImplemented, 1008);
+  Classes::Error(SNotImplemented, 1008);
 }
 
 //---------------------------------------------------------------------------

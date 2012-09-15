@@ -18,6 +18,7 @@
   TSynchronizeEvent AOnSynchronize, TSynchronizeInvalidEvent AOnSynchronizeInvalid,
   TSynchronizeTooManyDirectoriesEvent AOnTooManyDirectories)
 {
+  CALLSTACK;
   FOnSynchronize = AOnSynchronize;
   FOnSynchronizeInvalid = AOnSynchronizeInvalid;
   FOnTooManyDirectories = AOnTooManyDirectories;
@@ -30,6 +31,7 @@
 //---------------------------------------------------------------------------
 /* __fastcall */ TSynchronizeController::~TSynchronizeController()
 {
+  CALLSTACK;
   assert(FSynchronizeMonitor == NULL);
 }
 //---------------------------------------------------------------------------
@@ -39,6 +41,7 @@ void /* __fastcall */ TSynchronizeController::StartStop(TObject * Sender,
   TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
   TSynchronizeLogEvent OnSynchronizeLog)
 {
+  CALLSTACK;
   if (Start)
   {
     // Configuration->GetUsage()->Inc(L"KeepUpToDates");
@@ -68,7 +71,7 @@ void /* __fastcall */ TSynchronizeController::StartStop(TObject * Sender,
         SynchronizeLog(slScan,
           FMTLOAD(SYNCHRONIZE_SCAN, FSynchronizeParams.LocalDirectory.c_str()));
       }
-      Error(SNotImplemented, 256);
+      Classes::Error(SNotImplemented, 256);
       /*
       // FIXME
       FSynchronizeMonitor = new TDiscMonitor(dynamic_cast<TComponent*>(Sender));
@@ -99,7 +102,7 @@ void /* __fastcall */ TSynchronizeController::StartStop(TObject * Sender,
     catch(...)
     {
       // FIXME SAFE_DESTROY(FSynchronizeMonitor);
-      Error(SNotImplemented, 257);
+      Classes::Error(SNotImplemented, 257);
       throw;
     }
   }
@@ -113,6 +116,7 @@ void /* __fastcall */ TSynchronizeController::StartStop(TObject * Sender,
 void __fastcall TSynchronizeController::SynchronizeChange(
   TObject * /*Sender*/, const UnicodeString Directory, bool & SubdirsChanged)
 {
+  CALLSTACK;
   try
   {
     UnicodeString RemoteDirectory;
@@ -133,6 +137,7 @@ void __fastcall TSynchronizeController::SynchronizeChange(
 
     if (FOnSynchronize != NULL)
     {
+      TRACEFMT("1 [%s] [%s] [%x] [%x]", (LocalDirectory, RemoteDirectory, FSynchronizeParams.Params, FSynchronizeParams.Options));
       // this is completelly wrong as the options structure
       // can contain non-root specific options in future
       TSynchronizeOptions * Options =
@@ -142,19 +147,23 @@ void __fastcall TSynchronizeController::SynchronizeChange(
         FSynchronizeParams, &Checklist, Options, false);
       if (Checklist != NULL)
       {
+        TRACE("2");
         std::auto_ptr<TSynchronizeChecklist> ChecklistPtr(Checklist);
         {
           if (FLAGSET(FSynchronizeParams.Options, soRecurse))
           {
+            TRACE("3");
             SubdirsChanged = false;
             assert(Checklist != NULL);
             for (int Index = 0; Index < Checklist->GetCount(); Index++)
             {
+              TRACE("4");
               const TSynchronizeChecklist::TItem * Item = Checklist->GetItem(Index);
               // note that there may be action saDeleteRemote even if nothing has changed
               // so this is sub-optimal
               if (Item->IsDirectory)
               {
+                TRACE("5");
                 if ((Item->Action == TSynchronizeChecklist::saUploadNew) ||
                     (Item->Action == TSynchronizeChecklist::saDeleteRemote))
                 {
@@ -163,6 +172,7 @@ void __fastcall TSynchronizeController::SynchronizeChange(
                 }
                 else
                 {
+                  TRACE("6");
                   assert(false);
                 }
               }
@@ -178,16 +188,18 @@ void __fastcall TSynchronizeController::SynchronizeChange(
   }
   catch(Exception & E)
   {
+    TRACE("E");
     SynchronizeAbort(dynamic_cast<EFatal*>(&E) != NULL);
   }
 }
 //---------------------------------------------------------------------------
 void __fastcall TSynchronizeController::SynchronizeAbort(bool Close)
 {
+  CALLSTACK;
   if (FSynchronizeMonitor != NULL)
   {
     // FIXME FSynchronizeMonitor->Close();
-    Error(SNotImplemented, 258);
+    Classes::Error(SNotImplemented, 258);
   }
   assert(FSynchronizeAbort);
   FSynchronizeAbort(NULL, Close);
@@ -196,6 +208,7 @@ void __fastcall TSynchronizeController::SynchronizeAbort(bool Close)
 void __fastcall TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
   const UnicodeString FileName)
 {
+  CALLSTACK;
   TSynchronizeLogEntry Entry;
   UnicodeString Message;
   switch (Operation)
@@ -220,6 +233,7 @@ void __fastcall TSynchronizeController::LogOperation(TSynchronizeOperation Opera
 void __fastcall TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
   const UnicodeString Message)
 {
+  CALLSTACK;
   if (FSynchronizeLog != NULL)
   {
     FSynchronizeLog(this, Entry, Message);
@@ -229,6 +243,7 @@ void __fastcall TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entr
 void __fastcall TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
   const UnicodeString DirectoryName, bool & Add)
 {
+  CALLSTACK;
   if ((FOptions != NULL) && (FOptions->Filter != NULL))
   {
     if (IncludeTrailingBackslash(ExtractFilePath(DirectoryName)) ==
@@ -245,6 +260,7 @@ void __fastcall TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
 void __fastcall TSynchronizeController::SynchronizeInvalid(
   TObject * /*Sender*/, const UnicodeString Directory, const UnicodeString ErrorStr)
 {
+  CALLSTACK;
   if (FOnSynchronizeInvalid != NULL)
   {
     FOnSynchronizeInvalid(this, Directory, ErrorStr);
@@ -256,6 +272,7 @@ void __fastcall TSynchronizeController::SynchronizeInvalid(
 void __fastcall TSynchronizeController::SynchronizeTooManyDirectories(
   TObject * /*Sender*/, int & MaxDirectories)
 {
+  CALLSTACK;
   if (FOnTooManyDirectories != NULL)
   {
     FOnTooManyDirectories(this, MaxDirectories);
@@ -265,5 +282,6 @@ void __fastcall TSynchronizeController::SynchronizeTooManyDirectories(
 void __fastcall TSynchronizeController::SynchronizeDirectoriesChange(
   TObject * /*Sender*/, int Directories)
 {
+  CALLSTACK;
   SynchronizeLog(slDirChange, FMTLOAD(SYNCHRONIZE_START, Directories));
 }

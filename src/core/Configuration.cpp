@@ -156,7 +156,7 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
 #endif
   else
   {
-    Error(SNotImplemented, 3005);
+    Classes::Error(SNotImplemented, 3005);
     return NULL; // new TIniFileStorage(GetIniFileStorageName());
   }
 }
@@ -243,7 +243,7 @@ void __fastcall TConfiguration::Save(bool All, bool Explicit)
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::Export(const UnicodeString FileName)
 {
-  Error(SNotImplemented, 3004);
+  Classes::Error(SNotImplemented, 3004);
   THierarchicalStorage * Storage = NULL;
   THierarchicalStorage * ExportStorage = NULL;
   std::auto_ptr<THierarchicalStorage> StoragePtr(NULL);
@@ -520,7 +520,7 @@ void __fastcall TConfiguration::CleanupConfiguration()
   }
   catch (Exception &E)
   {
-    throw ExtException(&E, FMTLOAD(CLEANUP_CONFIG_ERROR));
+    throw ExtException(&E, CLEANUP_CONFIG_ERROR);
   }
 }
 //---------------------------------------------------------------------------
@@ -541,7 +541,7 @@ void __fastcall TConfiguration::CleanupHostKeys()
   }
   catch (Exception &E)
   {
-    throw ExtException(&E, FMTLOAD(CLEANUP_HOSTKEYS_ERROR));
+    throw ExtException(&E, CLEANUP_HOSTKEYS_ERROR);
   }
 }
 //---------------------------------------------------------------------------
@@ -560,7 +560,7 @@ void __fastcall TConfiguration::CleanupRandomSeedFile()
   }
   catch (Exception &E)
   {
-    throw ExtException(&E, FMTLOAD(CLEANUP_SEEDFILE_ERROR));
+    throw ExtException(&E, CLEANUP_SEEDFILE_ERROR);
   }
 }
 //---------------------------------------------------------------------------
@@ -584,7 +584,7 @@ void __fastcall TConfiguration::CleanupIniFile()
   }
   catch (Exception &E)
   {
-    throw ExtException(&E, FMTLOAD(CLEANUP_INIFILE_ERROR));
+    throw ExtException(&E, CLEANUP_INIFILE_ERROR);
   }
 }
 //---------------------------------------------------------------------------
@@ -647,7 +647,8 @@ int __fastcall TConfiguration::GetCompoundVersion()
 UnicodeString __fastcall TConfiguration::ModuleFileName()
 {
   CALLSTACK;
-  Error(SNotImplemented, 204);
+  // TRACEFMT("[%s]", (ParamStr(0)));
+  Classes::Error(SNotImplemented, 204);
   return L""; // FIXME ParamStr(0);
 }
 //---------------------------------------------------------------------------
@@ -746,8 +747,7 @@ UnicodeString __fastcall TConfiguration::GetVersion()
   {
     TVSFixedFileInfo * Info = GetFixedApplicationInfo();
     UnicodeString Result;
-    Result = // TrimVersion(
-      FORMAT(L"%d.%d.%d",
+    Result = FORMAT(L"%d.%d.%d",
       HIWORD(Info->dwFileVersionMS),
       LOWORD(Info->dwFileVersionMS),
       HIWORD(Info->dwFileVersionLS));
@@ -798,6 +798,7 @@ UnicodeString __fastcall TConfiguration::GetFileFileInfoString(const UnicodeStri
     }
   }
   );
+  TRACEFMT("3 [%s] [%s] [%s]", (Key, FileName, Result));
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -826,7 +827,7 @@ void __fastcall TConfiguration::SetDefaultStorage()
 void __fastcall TConfiguration::SetIniFileStorageName(UnicodeString value)
 {
   CALLSTACK;
-  Error(SNotImplemented, 3006);
+  Classes::Error(SNotImplemented, 3006);
   FIniFileStorageName = value;
   // FStorage = stIniFile;
 }
@@ -940,6 +941,7 @@ TStorage __fastcall TConfiguration::GetStorage()
   CALLSTACK;
   if (FStorage == stDetect)
   {
+    TRACEFMT("1 [%s]", (GetIniFileStorageName()));
     /* if (FileExists(IniFileStorageName))
     {
       TRACE("2");
