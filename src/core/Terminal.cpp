@@ -1985,7 +1985,7 @@ bool /* __fastcall */ TTerminal::GetExceptionOnFail() const
 void __fastcall TTerminal::FatalAbort()
 {
   CALLSTACK;
-  FatalError(NULL, L"");
+  FatalError(NULL, "");
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminal::FatalError(Exception * E, UnicodeString Msg)
@@ -3023,8 +3023,12 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
 bool __fastcall TTerminal::ProcessFilesEx(TStrings * FileList, TFileOperation Operation,
   TProcessFileEventEx ProcessFile, void * Param, TOperationSide Side)
 {
-  return false; // ProcessFiles(FileList, Operation, TProcessFileEvent(ProcessFile),
-    // Param, Side, true);
+#ifndef _MSC_VER
+  return ProcessFiles(FileList, Operation, TProcessFileEvent(ProcessFile),
+    Param, Side, true);
+#else
+  return false;
+#endif
 }
 //---------------------------------------------------------------------------
 TStrings * /* __fastcall */ TTerminal::GetFixedPaths()
@@ -3087,6 +3091,9 @@ void /* __fastcall */ TTerminal::RecycleFile(UnicodeString FileName,
 
     TMoveFileParams Params;
     Params.Target = GetSessionData()->GetRecycleBinPath();
+#ifndef _MSC_VER
+    Params.FileMask = FORMAT(L"*-%s.*", (FormatDateTime(L"yyyymmdd-hhnnss", Now())));
+#else
     unsigned short Y, M, D, H, N, S, MS;
     TDateTime DateTime = Now();
     DateTime.DecodeDate(Y, M, D);
@@ -3094,7 +3101,7 @@ void /* __fastcall */ TTerminal::RecycleFile(UnicodeString FileName,
     UnicodeString dt = FORMAT(L"%04d%02d%02d-%02d%02d%02d", Y, M, D, H, N, S);
     // Params.FileMask = FORMAT(L"*-%s.*", FormatDateTime(L"yyyymmdd-hhnnss", Now()).c_str());
     Params.FileMask = FORMAT(L"*-%s.*", dt.c_str());
-
+#endif
     MoveFile(FileName, File, &Params);
   }
 }
@@ -4942,14 +4949,14 @@ void /* __fastcall */ TTerminal::SynchronizeApply(TSynchronizeChecklist * Checkl
                 DownloadList->AddObject(
                   UnixIncludeTrailingBackslash(ChecklistItem->Remote.Directory) +
                     ChecklistItem->Remote.FileName,
-                  static_cast<TObject *>(const_cast<void *>(static_cast<const void *>(ChecklistItem))));
+                  static_cast<TObject *>(const_cast<TSynchronizeChecklist::TItem *>(ChecklistItem)));
                 break;
 
               case TSynchronizeChecklist::saUploadUpdate:
                 UploadList->AddObject(
                   IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
                     ChecklistItem->Local.FileName,
-                  static_cast<TObject *>(const_cast<void *>(static_cast<const void *>(ChecklistItem))));
+                  static_cast<TObject *>(const_cast<TSynchronizeChecklist::TItem *>(ChecklistItem)));
                 break;
 
               default:

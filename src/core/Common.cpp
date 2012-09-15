@@ -1116,7 +1116,7 @@ static const TDateTimeParams * __fastcall GetDateTimeParams(unsigned short Year)
     typedef BOOL (WINAPI * TGetTimeZoneInformationForYear)(USHORT wYear, PDYNAMIC_TIME_ZONE_INFORMATION pdtzi, LPTIME_ZONE_INFORMATION ptzi);
     TGetTimeZoneInformationForYear GetTimeZoneInformationForYear =
       (TGetTimeZoneInformationForYear)GetProcAddress(Kernel32, "GetTimeZoneInformationForYear");
-
+    TRACEFMT("2 [%x]", (int(GetTimeZoneInformationForYear)));
 
     if ((Year == 0) || (GetTimeZoneInformationForYear == NULL))
     {
@@ -1150,31 +1150,31 @@ static const TDateTimeParams * __fastcall GetDateTimeParams(unsigned short Year)
     Result->BaseDifferenceSec = TZI.Bias;
     Result->BaseDifference = double(TZI.Bias) / MinsPerDay;
     Result->BaseDifferenceSec *= SecsPerMin;
-
+    TRACEFMT("BaseDifference [%g], BaseDifference [%d]", (Result->BaseDifference, int(Result->BaseDifferenceSec)));
 
     Result->CurrentDifferenceSec = TZI.Bias +
       Result->CurrentDaylightDifferenceSec;
     Result->CurrentDifference =
       double(Result->CurrentDifferenceSec) / MinsPerDay;
     Result->CurrentDifferenceSec *= SecsPerMin;
-
+    TRACEFMT("CurrentDifference [%g], CurrentDifferenceSec [%d]", (Result->CurrentDifference, int(Result->CurrentDifferenceSec)));
 
     Result->CurrentDaylightDifference =
       double(Result->CurrentDaylightDifferenceSec) / MinsPerDay;
     Result->CurrentDaylightDifferenceSec *= SecsPerMin;
-
+    TRACEFMT("CurrentDaylightDifference [%g], CurrentDaylightDifferenceSec [%d]", (Result->CurrentDaylightDifference, int(Result->CurrentDaylightDifferenceSec)));
 
     Result->DaylightDifferenceSec = TZI.DaylightBias * SecsPerMin;
     Result->DaylightDifference = double(TZI.DaylightBias) / MinsPerDay;
     TRACEFMT("DaylightDifference [%g], DaylightDifferenceSec [%d]", (Result->DaylightDifference, int(Result->DaylightDifferenceSec)));
     Result->StandardDifferenceSec = TZI.StandardBias * SecsPerMin;
     Result->StandardDifference = double(TZI.StandardBias) / MinsPerDay;
-
+    TRACEFMT("StandardDifference [%g], StandardDifferenceSec [%d]", (Result->StandardDifference, int(Result->StandardDifferenceSec)));
 
     Result->SystemStandardDate = TZI.StandardDate;
     TRACEFMT("[%d/%d/%d] [%d] [%d:%d:%d.%d]", (int(Result->SystemStandardDate.wYear), int(Result->SystemStandardDate.wMonth), int(Result->SystemStandardDate.wDay), int(Result->SystemStandardDate.wDayOfWeek), int(Result->SystemStandardDate.wHour), int(Result->SystemStandardDate.wMinute), int(Result->SystemStandardDate.wSecond), int(Result->SystemStandardDate.wMilliseconds)));
     Result->SystemDaylightDate = TZI.DaylightDate;
-
+    TRACEFMT("[%d/%d/%d] [%d] [%d:%d:%d.%d]", (int(Result->SystemDaylightDate.wYear), int(Result->SystemDaylightDate.wMonth), int(Result->SystemDaylightDate.wDay), int(Result->SystemDaylightDate.wDayOfWeek), int(Result->SystemDaylightDate.wHour), int(Result->SystemDaylightDate.wMinute), int(Result->SystemDaylightDate.wSecond), int(Result->SystemDaylightDate.wMilliseconds)));
 
     unsigned short AYear = (Year != 0) ? Year : DecodeYear(Now());
     if (Result->SystemStandardDate.wMonth != 0)
@@ -1186,7 +1186,7 @@ static const TDateTimeParams * __fastcall GetDateTimeParams(unsigned short Year)
       EncodeDSTMargin(Result->SystemDaylightDate, AYear, Result->DaylightDate);
     }
     Result->SummerDST = (Result->DaylightDate < Result->StandardDate);
-
+    TRACEFMT("Summer DST [%d]", (int(Result->SummerDST)));
 
     Result->DaylightHack = !IsWin7() || IsExactly2008R2();
     TRACEFMT("DaylightHack [%d]", (int(Result->DaylightHack)));
@@ -1251,7 +1251,7 @@ static bool __fastcall IsDateInDST(const TDateTime & DateTime)
   }
   else
   {
-
+    CTRACE(TRACE_TIMESTAMP, "2");
 
     if (Params->SummerDST)
     {
@@ -1401,7 +1401,7 @@ FILETIME __fastcall DateTimeToFileTime(const TDateTime DateTime,
   CTRACEFMT(TRACE_TIMESTAMP, "DateTimeToFileTime 2 [%s]", (IntToStr(UnixTimeStamp)));
   FILETIME Result;
   (*(__int64*)&(Result) = (__int64(UnixTimeStamp) + 11644473600LL) * 10000000LL);
-
+  CTRACEFMT(TRACE_TIMESTAMP, "DateTimeToFileTime 3 [%s] [%s]", (IntToStr(__int64(Result.dwLowDateTime)), IntToStr(__int64(Result.dwHighDateTime))));
 
   return Result;
 }
@@ -1450,7 +1450,7 @@ __int64 __fastcall ConvertTimestampToUnix(const FILETIME & FileTime,
       const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
       Result += (IsDateInDST(DateTime) ?
         Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
-
+      CTRACEFMT(TRACE_TIMESTAMP, "2 [%s]", (IntToStr(Result)));
 
       if (DSTMode == dstmKeep)
       {
@@ -2092,6 +2092,7 @@ UnicodeString __fastcall WindowsProductName()
   }
   catch(...)
   {
+    TRACE("E");
   }
   return Result;
 }

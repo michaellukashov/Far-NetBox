@@ -1346,7 +1346,7 @@ UnicodeString __fastcall TRemoteFile::GetListingStr()
   {
     LinkPart = UnicodeString(SYMLINKSTR) + GetLinkTo();
   }
-  return FORMAT(L"%s%s %3s %-8s %-8s %9s %-12s %s%s",
+  return Format(L"%s%s %3s %-8s %-8s %9s %-12s %s%s",
     GetType(), GetRights()->GetText().c_str(), IntToStr(FINodeBlocks).c_str(), GetFileOwner().GetName().c_str(),
     GetFileGroup().GetName().c_str(), Int64ToStr(GetSize()).c_str(), GetModificationStr().c_str(), GetFileName().c_str(),
     LinkPart.c_str());

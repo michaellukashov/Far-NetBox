@@ -2039,8 +2039,8 @@ void __fastcall TSCPFileSystem::SCPDirectorySource(const UnicodeString Directory
     memset(&SearchRec, 0, sizeof(SearchRec));
     bool FindOK = false;
     FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-      UnicodeString path = IncludeTrailingBackslash(DirectoryName) + L"*.*";
-      FindOK = FindFirst(path.c_str(),
+      UnicodeString Path = IncludeTrailingBackslash(DirectoryName) + L"*.*";
+      FindOK = FindFirst(Path.c_str(),
         FindAttrs, SearchRec) == 0;
     );
 

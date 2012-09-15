@@ -1951,13 +1951,13 @@ void __fastcall TLocatedQueueItem::DoExecute(TTerminal * Terminal)
   {
     if (FLAGSET(Params, cpTemporary))
     {
-      FInfo->Source = L"";
-      FInfo->ModifiedLocal = L"";
+      FInfo->Source = "";
+      FInfo->ModifiedLocal = "";
     }
     else
     {
       ExtractCommonPath(FilesToCopy, FInfo->Source);
-      // this way the trailing backslash is preserved for root directories like D:
+      // this way the trailing backslash is preserved for root directories like D:\\ 
       FInfo->Source = ExtractFileDir(IncludeTrailingBackslash(FInfo->Source));
       FInfo->ModifiedLocal = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
         IncludeTrailingBackslash(FInfo->Source);
@@ -2066,30 +2066,6 @@ void __fastcall TDownloadQueueItem::DoExecute(TTerminal * Terminal)
   FMainThread = GetCurrentThreadId();
   FSection = new TCriticalSection();
   Self = this;
-
-#ifndef _MSC_VER
-  FOnInformation = FTerminal->OnInformation;
-  FOnQueryUser = FTerminal->OnQueryUser;
-  FOnPromptUser = FTerminal->OnPromptUser;
-  FOnShowExtendedException = FTerminal->OnShowExtendedException;
-  FOnDisplayBanner = FTerminal->OnDisplayBanner;
-  FOnChangeDirectory = FTerminal->OnChangeDirectory;
-  FOnReadDirectory = FTerminal->OnReadDirectory;
-  FOnStartReadDirectory = FTerminal->OnStartReadDirectory;
-  FOnReadDirectoryProgress = FTerminal->OnReadDirectoryProgress;
-
-  FTerminal->OnInformation = TerminalInformation;
-  FTerminal->OnQueryUser = TerminalQueryUser;
-  FTerminal->OnPromptUser = TerminalPromptUser;
-  FTerminal->OnShowExtendedException = TerminalShowExtendedException;
-  FTerminal->OnDisplayBanner = TerminalDisplayBanner;
-  FTerminal->OnChangeDirectory = TerminalChangeDirectory;
-  FTerminal->OnReadDirectory = TerminalReadDirectory;
-  FTerminal->OnStartReadDirectory = TerminalStartReadDirectory;
-  FTerminal->OnReadDirectoryProgress = TerminalReadDirectoryProgress;
-
-  Start();
-#endif
 }
 
 void __fastcall TTerminalThread::Init()

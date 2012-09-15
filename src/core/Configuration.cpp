@@ -156,8 +156,11 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
 #endif
   else
   {
-    Classes::Error(SNotImplemented, 3005);
-    return NULL; // new TIniFileStorage(GetIniFileStorageName());
+#ifndef _MSC_VER
+    return new TIniFileStorage(GetIniFileStorageName());
+#else
+    return new TRegistryStorage(GetRegistryStorageKey());
+#endif
   }
 }
 //---------------------------------------------------------------------------
@@ -565,6 +568,7 @@ void __fastcall TConfiguration::CleanupIniFile()
 {
   try
   {
+#if 0
     if (FileExists(GetIniFileStorageName()))
     {
       if (!DeleteFile(GetIniFileStorageName()))
@@ -572,7 +576,6 @@ void __fastcall TConfiguration::CleanupIniFile()
         RaiseLastOSError();
       }
     }
-#if 0
     if (GetStorage() == stIniFile)
     {
       FDontSave = true;
@@ -644,9 +647,12 @@ int __fastcall TConfiguration::GetCompoundVersion()
 UnicodeString __fastcall TConfiguration::ModuleFileName()
 {
   CALLSTACK;
-  // TRACEFMT("[%s]", (ParamStr(0)));
+#ifndef _MSC_VER
+  TRACEFMT("[%s]", (ParamStr(0)));
+  return ParamStr(0);
+#endif
   Classes::Error(SNotImplemented, 204);
-  return L""; // FIXME ParamStr(0);
+  return L"";
 }
 //---------------------------------------------------------------------------
 void * __fastcall TConfiguration::GetFileApplicationInfo(const UnicodeString FileName)
@@ -821,20 +827,20 @@ void __fastcall TConfiguration::SetDefaultStorage()
   FStorage = stDetect;
 }
 //---------------------------------------------------------------------------
+/*
 void __fastcall TConfiguration::SetIniFileStorageName(UnicodeString value)
 {
   CALLSTACK;
-  Classes::Error(SNotImplemented, 3006);
   FIniFileStorageName = value;
-  // FStorage = stIniFile;
+  FStorage = stIniFile;
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TConfiguration::GetIniFileStorageName()
 {
   if (FIniFileStorageName.IsEmpty())
   {
-    UnicodeString IniPath = L""; // ChangeFileExt(ParamStr(0), L".ini");
-    /*
+    UnicodeString IniPath = ChangeFileExt(ParamStr(0), L".ini");
+
     if (FVirtualIniFileStorageName.IsEmpty() &&
         TPath::IsDriveRooted(IniPath))
     {
@@ -856,7 +862,7 @@ UnicodeString __fastcall TConfiguration::GetIniFileStorageName()
     {
       return FVirtualIniFileStorageName;
     }
-    else*/
+    else
     {
       return IniPath;
     }
@@ -866,6 +872,7 @@ UnicodeString __fastcall TConfiguration::GetIniFileStorageName()
     return FIniFileStorageName;
   }
 }
+*/
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TConfiguration::GetPuttySessionsKey()
 {
@@ -938,8 +945,8 @@ TStorage __fastcall TConfiguration::GetStorage()
   CALLSTACK;
   if (FStorage == stDetect)
   {
-    TRACEFMT("1 [%s]", (GetIniFileStorageName()));
-    /* if (FileExists(IniFileStorageName))
+    /*TRACEFMT("1 [%s]", (GetIniFileStorageName()));
+    if (FileExists(IniFileStorageName))
     {
       TRACE("2");
       FStorage = stIniFile;
