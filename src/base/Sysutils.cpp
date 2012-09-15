@@ -619,81 +619,11 @@ UnicodeString FmtLoadStr(int id, ...)
   }
   return result;
 }
+
 //---------------------------------------------------------------------------
-UnicodeString WrapText(const UnicodeString Line, int MaxCol)
+UnicodeString WrapText(const UnicodeString & Line, int MaxWidth)
 {
-  UnicodeString Result = Line;
-  /*
-  Col := 1;
-  Pos := 1;
-  LinePos := 1;
-  BreakPos := 0;
-  QuoteChar := ' ';
-  ExistingBreak := False;
-  LineLen := Length(Line);
-  BreakLen := Length(BreakStr);
-  Result := '';
-  while Pos <= LineLen do
-  begin
-  CurChar := Line[Pos];
-  if CurChar in LeadBytes then
-  begin
-    L := CharLength(Line, Pos) - 1;
-    Inc(Pos, L);
-    Inc(Col, L);
-  end
-  else
-  begin
-    if CurChar = BreakStr[1] then
-    begin
-      if QuoteChar = ' ' then
-      begin
-        ExistingBreak := CompareText(BreakStr, Copy(Line, Pos, BreakLen)) = 0;
-        if ExistingBreak then
-        begin
-          Inc(Pos, BreakLen-1);
-          BreakPos := Pos;
-        end;
-      end
-    end
-    else if CurChar in BreakChars then
-    begin
-      if QuoteChar = ' ' then BreakPos := Pos
-    end
-    else if CurChar in QuoteChars then
-    begin
-      if CurChar = QuoteChar then
-        QuoteChar := ' '
-      else if QuoteChar = ' ' then
-        QuoteChar := CurChar;
-    end;
-  end;
-  Inc(Pos);
-  Inc(Col);
-  if not (QuoteChar in QuoteChars) and (ExistingBreak or
-    ((Col > MaxCol) and (BreakPos > LinePos))) then
-  begin
-    Col := Pos - BreakPos;
-    Result := Result + Copy(Line, LinePos, BreakPos - LinePos + 1);
-    if not (CurChar in QuoteChars) then
-      while Pos <= LineLen do
-      begin
-        if Line[Pos] in BreakChars then
-          Inc(Pos)
-        else if Copy(Line, Pos, Length(sLineBreak)) = sLineBreak then
-          Inc(Pos, Length(sLineBreak))
-        else
-          break;
-      end;
-    if not ExistingBreak and (Pos < LineLen) then
-      Result := Result + BreakStr;
-    Inc(BreakPos);
-    LinePos := BreakPos;
-    ExistingBreak := False;
-  end;
-  end;
-  Result := Result + Copy(Line, LinePos, MaxInt);
-  */
+  UnicodeString Result = ::WrapText(Line.c_str(), MaxWidth, NULL, NULL);
   return Result;
 }
 
