@@ -2788,7 +2788,7 @@ void __fastcall TStoredSessionList::Saved()
 //---------------------------------------------------------------------
 void __fastcall TStoredSessionList::Export(const UnicodeString FileName)
 {
-  Error(SNotImplemented, 3003);
+  Classes::Error(SNotImplemented, 3003);
 /*
   THierarchicalStorage * Storage = new TIniFileStorage(FileName);
   std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);

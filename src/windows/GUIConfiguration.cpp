@@ -857,7 +857,7 @@ HINSTANCE __fastcall TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
     if (Internal)
     {
       TRACE("10");
-      Error(SNotImplemented, 90);
+      Classes::Error(SNotImplemented, 90);
       NewInstance = 0; // FIXME  HInstance;
     }
   }
@@ -995,7 +995,7 @@ void __fastcall TGUIConfiguration::SetResourceModule(HINSTANCE Instance)
 TStrings * __fastcall TGUIConfiguration::GetLocales()
 {
   CALLSTACK;
-  Error(SNotImplemented, 93);
+  Classes::Error(SNotImplemented, 93);
   UnicodeString LocalesExts;
   TStringList * Exts = new TStringList();
   std::auto_ptr<TStringList> ExtsPtr(Exts);

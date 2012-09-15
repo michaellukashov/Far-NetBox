@@ -782,7 +782,7 @@ char * StrNew(const char * str)
 
 wchar_t * AnsiStrScan(const wchar_t * Str, const wchar_t TokenPrefix)
 {
-  Error(SNotImplemented, 31);
+  Classes::Error(SNotImplemented, 31);
   wchar_t * result = NULL;
   return result;
 }
@@ -1316,26 +1316,26 @@ TDateTime EncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsi
 }
 TDateTime StrToDateTime(const UnicodeString Value)
 {
-  Error(SNotImplemented, 145);
+  Classes::Error(SNotImplemented, 145);
   return TDateTime();
 }
 
 bool TryStrToDateTime(const UnicodeString value, TDateTime & Value, TFormatSettings & FormatSettings)
 {
-  Error(SNotImplemented, 147);
+  Classes::Error(SNotImplemented, 147);
   return false;
 }
 
 UnicodeString DateTimeToStr(UnicodeString & Result, const UnicodeString & Format,
   TDateTime DateTime)
 {
-  Error(SNotImplemented, 148);
+  Classes::Error(SNotImplemented, 148);
   return L"";
 }
 
 UnicodeString DateTimeToString(TDateTime DateTime)
 {
-  Error(SNotImplemented, 146);
+  Classes::Error(SNotImplemented, 146);
   return L"";
 }
 
@@ -1360,7 +1360,7 @@ TDateTime Date()
 UnicodeString FormatDateTime(const UnicodeString fmt, TDateTime DateTime)
 {
   UnicodeString Result;
-  Error(SNotImplemented, 150);
+  Classes::Error(SNotImplemented, 150);
   return Result;
 }
 /*

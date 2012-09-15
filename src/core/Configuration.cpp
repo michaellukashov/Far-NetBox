@@ -156,7 +156,7 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
 #endif
   else
   {
-    Error(SNotImplemented, 3005);
+    Classes::Error(SNotImplemented, 3005);
     return NULL; // new TIniFileStorage(GetIniFileStorageName());
   }
 }
@@ -240,7 +240,7 @@ void __fastcall TConfiguration::Save(bool All, bool Explicit)
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::Export(const UnicodeString FileName)
 {
-  Error(SNotImplemented, 3004);
+  Classes::Error(SNotImplemented, 3004);
   THierarchicalStorage * Storage = NULL;
   THierarchicalStorage * ExportStorage = NULL;
   std::auto_ptr<THierarchicalStorage> StoragePtr(NULL);
@@ -645,7 +645,7 @@ UnicodeString __fastcall TConfiguration::ModuleFileName()
 {
   CALLSTACK;
   // TRACEFMT("[%s]", (ParamStr(0)));
-  Error(SNotImplemented, 204);
+  Classes::Error(SNotImplemented, 204);
   return L""; // FIXME ParamStr(0);
 }
 //---------------------------------------------------------------------------
@@ -824,7 +824,7 @@ void __fastcall TConfiguration::SetDefaultStorage()
 void __fastcall TConfiguration::SetIniFileStorageName(UnicodeString value)
 {
   CALLSTACK;
-  Error(SNotImplemented, 3006);
+  Classes::Error(SNotImplemented, 3006);
   FIniFileStorageName = value;
   // FStorage = stIniFile;
 }
