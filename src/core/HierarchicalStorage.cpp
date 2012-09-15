@@ -1138,6 +1138,7 @@ void __fastcall TIniFileStorage::ApplyOverrides()
       }
     }
   }
+  TRACE("/");
 }
 //===========================================================================
 #define NOT_IMPLEMENTED throw Exception(L"Not implemented")

@@ -2254,7 +2254,7 @@ void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
     }
     );
   }
-  catch(...)
+  TRACE_CATCH_ALL
   {
     if (FCancelled)
     {

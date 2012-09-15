@@ -644,6 +644,7 @@ int __fastcall TConfiguration::GetCompoundVersion()
 UnicodeString __fastcall TConfiguration::ModuleFileName()
 {
   CALLSTACK;
+  // TRACEFMT("[%s]", (ParamStr(0)));
   Error(SNotImplemented, 204);
   return L""; // FIXME ParamStr(0);
 }
@@ -795,6 +796,7 @@ UnicodeString __fastcall TConfiguration::GetFileFileInfoString(const UnicodeStri
     }
   }
   );
+  TRACEFMT("3 [%s] [%s] [%s]", (Key, FileName, Result));
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -937,6 +939,7 @@ TStorage __fastcall TConfiguration::GetStorage()
   CALLSTACK;
   if (FStorage == stDetect)
   {
+    TRACEFMT("1 [%s]", (GetIniFileStorageName()));
     /* if (FileExists(IniFileStorageName))
     {
       TRACE("2");

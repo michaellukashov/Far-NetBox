@@ -45,11 +45,13 @@ bool __fastcall FileExistsEx(UnicodeString Path)
 void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
   TSessionData * SessionData, UnicodeString Password)
 {
+  CALLSTACK;
   UnicodeString Program, Params, Dir;
   SplitCommand(PuttyPath, Program, Params, Dir);
   Program = ExpandEnvironmentVariables(Program);
   if (FindFile(Program))
   {
+    TRACE("1");
     UnicodeString SessionName;
     TRegistryStorage * Storage = NULL;
     std::auto_ptr<TRegistryStorage> StoragePtr(NULL);
@@ -58,6 +60,7 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
     TRegistryStorage * SourceStorage = NULL;
     std::auto_ptr<TRegistryStorage> SourceStoragePtr(NULL);
     {
+      TRACEFMT("1a [%s]", (Configuration->GetPuttySessionsKey()));
       Storage = new TRegistryStorage(Configuration->GetPuttySessionsKey());
       StoragePtr.reset(Storage);
       Storage->SetAccessMode(smReadWrite);
@@ -66,12 +69,15 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
       Storage->SetForceAnsi(true);
       if (Storage->OpenRootKey(true))
       {
+        TRACEFMT("2 [%s]", (SessionData->GetStorageKey()));
         if (Storage->KeyExists(SessionData->GetStorageKey()))
         {
           SessionName = SessionData->GetSessionName();
+          TRACEFMT("3 [%s]", (SessionName));
         }
         else
         {
+          TRACE("4");
           SourceStorage = new TRegistryStorage(Configuration->GetPuttySessionsKey());
           SourceStoragePtr.reset(SourceStorage);
           SourceStorage->SetMungeStringValues(false);
@@ -79,6 +85,7 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
           if (SourceStorage->OpenSubKey(StoredSessions->GetDefaultSettings()->GetName(), false) &&
               Storage->OpenSubKey(GUIConfiguration->GetPuttySession(), true))
           {
+            TRACE("5");
             Storage->Copy(SourceStorage);
             Storage->CloseSubKey();
           }
@@ -92,8 +99,10 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
 
           if (SessionData->GetFSProtocol() == fsFTP)
           {
+            TRACE("6");
             if (GUIConfiguration->GetTelnetForFtpInPutty())
             {
+              TRACE("7");
               ExportData->SetProtocol(ptTelnet);
               ExportData->SetPortNumber(23);
               // PuTTY  does not allow -pw for telnet
@@ -101,6 +110,7 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
             }
             else
             {
+              TRACE("8");
               ExportData->SetProtocol(ptSSH);
               ExportData->SetPortNumber(22);
             }
@@ -114,27 +124,34 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
 
     if (!Params.IsEmpty())
     {
+      TRACE("10");
       Params += L" ";
     }
     if (!Password.IsEmpty())
     {
+      TRACE("11");
       Params += FORMAT(L"-pw %s ", EscapePuttyCommandParam(Password).c_str());
     }
     Params += FORMAT(L"-load %s", EscapePuttyCommandParam(SessionName).c_str());
 
+    TRACEFMT("11a [%s] [%s]", (Program, Params));
     if (!ExecuteShell(Program, Params))
     {
+      TRACE("12");
       throw Exception(FMTLOAD(EXECUTE_APP_ERROR, Program.c_str()));
     }
   }
   else
   {
+    TRACE("13");
     throw Exception(FMTLOAD(FILE_NOT_FOUND, Program.c_str()));
   }
 }
 //---------------------------------------------------------------------------
 bool __fastcall ExecuteShell(const UnicodeString Path, const UnicodeString Params)
 {
+  CALLSTACK;
+  TRACEFMT("1 [%s] [%s]", (Path, Params));
   return ((int)::ShellExecute(NULL, L"open", const_cast<wchar_t*>(Path.data()),
     const_cast<wchar_t*>(Params.data()), NULL, SW_SHOWNORMAL) > 32);
 }
@@ -142,8 +159,10 @@ bool __fastcall ExecuteShell(const UnicodeString Path, const UnicodeString Param
 bool __fastcall ExecuteShell(const UnicodeString Path, const UnicodeString Params,
   HANDLE & Handle)
 {
+  CALLSTACK;
   bool Result = false;
 
+  TRACE("1");
   TShellExecuteInfoW ExecuteInfo;
   memset(&ExecuteInfo, 0, sizeof(ExecuteInfo));
   ExecuteInfo.cbSize = sizeof(ExecuteInfo);
@@ -153,11 +172,14 @@ bool __fastcall ExecuteShell(const UnicodeString Path, const UnicodeString Param
   ExecuteInfo.lpParameters = const_cast<wchar_t *>(Params.data());
   ExecuteInfo.nShow = SW_SHOW;
 
+  TRACE("2");
   Result = (::ShellExecuteEx(&ExecuteInfo) != 0);
   if (Result)
   {
+    TRACE("3");
     Handle = ExecuteInfo.hProcess;
   }
+  TRACE("/");
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -165,6 +187,7 @@ bool __fastcall ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString Path,
   const UnicodeString Params, TProcessMessagesEvent ProcessMessages)
 {
   bool Result = false;
+
   TShellExecuteInfoW ExecuteInfo;
   memset(&ExecuteInfo, 0, sizeof(ExecuteInfo));
   ExecuteInfo.cbSize = sizeof(ExecuteInfo);

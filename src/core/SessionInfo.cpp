@@ -954,8 +954,14 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
 
       Self->EndUpdate();
     } BOOST_SCOPE_EXIT_END
+    #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), MAKE_CALLBACK2(TSessionLog::DoAddToSelf, this));
+//!CLEANBEGIN
+    #ifdef _DEBUG
+    #undef ADF
     // #define ADF(S, F) DoAdd(llMessage, FORMAT(S, F), DoAddToSelf);
     #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), MAKE_CALLBACK2(TSessionLog::DoAddToSelf, this));
+    #endif
+//!CLEANEND
     AddSeparator();
     ADF(L"NetBox %s (OS %s)", FConfiguration->GetVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
     THierarchicalStorage * Storage = FConfiguration->CreateScpStorage(false);
