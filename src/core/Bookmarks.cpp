@@ -38,6 +38,7 @@ UnicodeString TBookmarks::Keys[] = { L"Local", L"Remote", L"ShortCuts", L"Option
 //---------------------------------------------------------------------------
 void __fastcall TBookmarks::Load(THierarchicalStorage * Storage)
 {
+  CALLSTACK;
   for (int i = 0; i <= 3; i++)
   {
     if (Storage->OpenSubKey(Keys[i], false))
@@ -79,6 +80,7 @@ void __fastcall TBookmarks::Load(THierarchicalStorage * Storage)
 void __fastcall TBookmarks::LoadLevel(THierarchicalStorage * Storage, const UnicodeString Key,
   int Index, TBookmarkList * BookmarkList)
 {
+  CALLSTACK;
   TStrings * Names = new TStringList();
   std::auto_ptr<TStrings> NamesPtr(Names);
   {
@@ -323,6 +325,7 @@ void __fastcall TBookmarkList::Assign(TPersistent * Source)
 //---------------------------------------------------------------------------
 void __fastcall TBookmarkList::LoadOptions(THierarchicalStorage * Storage)
 {
+  CALLSTACK;
   FOpenedNodes->CommaText = Storage->ReadString(L"OpenedNodes", L"");
 }
 //---------------------------------------------------------------------------
@@ -464,6 +467,8 @@ void __fastcall TBookmarkList::SetNodeOpened(UnicodeString Index, bool value)
 //---------------------------------------------------------------------------
 void __fastcall TBookmarkList::ShortCuts(TShortCuts & ShortCuts)
 {
+  CALLSTACK;
+  TRACE(">");
   for (int Index = 0; Index < GetCount(); Index++)
   {
     TBookmark * Bookmark = GetBookmarks(Index);
@@ -472,6 +477,7 @@ void __fastcall TBookmarkList::ShortCuts(TShortCuts & ShortCuts)
       ShortCuts.Add(Bookmark->GetShortCut());
     }
   }
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -575,3 +581,5 @@ UnicodeString __fastcall TBookmark::GetKey()
 {
   return BookmarkKey(GetNode(), GetName());
 }
+
+

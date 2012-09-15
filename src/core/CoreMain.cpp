@@ -49,6 +49,13 @@ bool __fastcall IsAuthenticationPrompt(TPromptKind Kind)
 //---------------------------------------------------------------------------
 void CoreInitialize()
 {
+  CALLSTACK;
+//!CLEANBEGIN
+#ifdef _DEBUG
+  CallstackTls = TlsAlloc();
+#endif
+//!CLEANEND
+  TRACE("CoreInitialize A");
   Randomize();
   CryptographyInitialize();
 
@@ -56,30 +63,40 @@ void CoreInitialize()
   // so that random seed path is known
   Configuration = CreateConfiguration();
 
+
+  TRACE("CoreInitialize E");
   try
   {
+    TRACE("CoreInitialize E1");
     Configuration->Load();
+    TRACE("CoreInitialize F");
   }
   catch (Exception & E)
   {
+    TRACE("CoreInitialize G");
     ShowExtendedException(&E);
   }
 
+  TRACE("CoreInitialize B");
   PuttyInitialize();
   #ifndef NO_FILEZILLA
   TFileZillaIntf::Initialize();
   #endif
 
+  TRACE("CoreInitialize H");
   StoredSessions = new TStoredSessionList();
 
   try
   {
+    TRACE("CoreInitialize I");
     StoredSessions->Load();
   }
   catch (Exception & E)
   {
+    TRACE("CoreInitialize J");
     ShowExtendedException(&E);
   }
+  TRACE("CoreInitialize K");
 }
 //---------------------------------------------------------------------------
 void CoreFinalize()
@@ -105,6 +122,11 @@ void CoreFinalize()
   Configuration = NULL;
 
   CryptographyFinalize();
+//!CLEANBEGIN
+#ifdef _DEBUG
+  TlsFree(CallstackTls);
+#endif
+//!CLEANEND
 }
 //---------------------------------------------------------------------------
 void CoreSetResourceModule(void * ResourceHandle)

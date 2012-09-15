@@ -2,6 +2,10 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#define TRACE_READING NOTRACING
+#define TRACE_WRITING NOTRACING
+#define TRACE_ACCESS NOTRACING
+
 #include "Common.h"
 #include "Exceptions.h"
 #include "PuttyIntf.h"
@@ -101,6 +105,7 @@ UnicodeString __fastcall UnMungeIniName(const UnicodeString Str)
 //===========================================================================
 /* __fastcall */ THierarchicalStorage::THierarchicalStorage(const UnicodeString AStorage)
 {
+  CALLSTACK;
   FStorage = AStorage;
   FKeyHistory = new TStringList();
   SetAccessMode(smRead);
@@ -402,6 +407,8 @@ UnicodeString __fastcall THierarchicalStorage::ExcludeTrailingBackslash(const Un
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
   FRegistry(NULL)
 {
+  CALLSTACK;
+  CTRACEFMT(TRACE_ACCESS, "1 [%s]", (AStorage));
   Init();
 }
 //---------------------------------------------------------------------------
@@ -411,11 +418,13 @@ UnicodeString __fastcall THierarchicalStorage::ExcludeTrailingBackslash(const Un
 {
   // DEBUG_PRINTF(L"AStorage = %s", AStorage.c_str());
   Init();
+  CTRACEFMT(TRACE_ACCESS, "1 [%s] [%x]", (AStorage, int(ARootKey)));
   FRegistry->RootKey = ARootKey;
 }
 //---------------------------------------------------------------------------
 void __fastcall TRegistryStorage::Init()
 {
+  CCALLSTACK(TRACE_ACCESS);
   FFailed = 0;
   FRegistry = new TRegistry();
   FRegistry->Access = KEY_READ;
@@ -423,11 +432,13 @@ void __fastcall TRegistryStorage::Init()
 //---------------------------------------------------------------------------
 /* __fastcall */ TRegistryStorage::~TRegistryStorage()
 {
+  CCALLSTACK(TRACE_ACCESS);
   delete FRegistry;
 };
 //---------------------------------------------------------------------------
 bool __fastcall TRegistryStorage::Copy(TRegistryStorage * Storage)
 {
+  CCALLSTACK(TRACE_ACCESS);
   TRegistry * Registry = Storage->FRegistry;
   bool Result = true;
   TStrings * Names = new TStringList();
@@ -473,6 +484,7 @@ UnicodeString __fastcall TRegistryStorage::GetSource()
 //---------------------------------------------------------------------------
 void __fastcall TRegistryStorage::SetAccessMode(TStorageAccessMode value)
 {
+  CCALLSTACK(TRACE_ACCESS);
   THierarchicalStorage::SetAccessMode(value);
   if (FRegistry)
   {
@@ -491,13 +503,16 @@ void __fastcall TRegistryStorage::SetAccessMode(TStorageAccessMode value)
 //---------------------------------------------------------------------------
 bool __fastcall TRegistryStorage::DoOpenSubKey(const UnicodeString SubKey, bool CanCreate)
 {
+  CCALLSTACK(TRACE_ACCESS);
   if (FKeyHistory->Count > 0) { FRegistry->CloseKey(); }
   UnicodeString K = ExcludeTrailingBackslash(GetStorage() + GetCurrentSubKey() + SubKey);
+  CTRACEFMT(TRACE_ACCESS, "1 [%s] [%d]", (K, int(CanCreate)));
   return FRegistry->OpenKey(K, CanCreate);
 }
 //---------------------------------------------------------------------------
 void __fastcall TRegistryStorage::CloseSubKey()
 {
+  CCALLSTACK(TRACE_ACCESS);
   FRegistry->CloseKey();
   THierarchicalStorage::CloseSubKey();
   if (FKeyHistory->Count)
@@ -508,72 +523,96 @@ void __fastcall TRegistryStorage::CloseSubKey()
 //---------------------------------------------------------------------------
 bool __fastcall TRegistryStorage::DeleteSubKey(const UnicodeString SubKey)
 {
+  CCALLSTACK(TRACE_ACCESS);
   UnicodeString K;
   if (FKeyHistory->Count == 0) { K = GetStorage() + GetCurrentSubKey(); }
   K += MungeKeyName(SubKey);
+  CTRACEFMT(TRACE_ACCESS, "1 [%s]", (K));
   return FRegistry->DeleteKey(K);
 }
 //---------------------------------------------------------------------------
 void __fastcall TRegistryStorage::GetSubKeyNames(Classes::TStrings* Strings)
 {
+  CCALLSTACK(TRACE_ACCESS);
   FRegistry->GetKeyNames(Strings);
   for (int Index = 0; Index < Strings->Count; Index++)
   {
     Strings->Strings[Index] = UnMungeStr(Strings->Strings[Index]);
+    CTRACEFMT(TRACE_ACCESS, "1 [%s]", (Strings->Strings[Index]));
   }
 }
 //---------------------------------------------------------------------------
 void __fastcall TRegistryStorage::GetValueNames(Classes::TStrings* Strings)
 {
+  CCALLSTACK(TRACE_ACCESS);
   FRegistry->GetValueNames(Strings);
+  CTRACEFMT(TRACE_ACCESS, "[%s]", (Strings->CommaText));
 }
 //---------------------------------------------------------------------------
 bool __fastcall TRegistryStorage::DeleteValue(const UnicodeString Name)
 {
+  CCALLSTACK(TRACE_ACCESS);
+  CTRACEFMT(TRACE_ACCESS, "[%s]", (Name));
   return FRegistry->DeleteValue(Name);
 }
 //---------------------------------------------------------------------------
 bool __fastcall TRegistryStorage::DoKeyExists(const UnicodeString SubKey, bool AForceAnsi)
 {
+  CCALLSTACK(TRACE_ACCESS);
   UnicodeString K = MungeStr(SubKey, AForceAnsi);
   bool Result = FRegistry->KeyExists(K);
+  CTRACEFMT(TRACE_ACCESS, "[%s] [%d]", (K, int(Result)));
   return Result;
 }
 //---------------------------------------------------------------------------
 bool __fastcall TRegistryStorage::ValueExists(const UnicodeString Value)
 {
+  CCALLSTACK(TRACE_ACCESS);
   bool Result = FRegistry->ValueExists(Value);
+  CTRACEFMT(TRACE_ACCESS, "[%s] [%d]", (Value, int(Result)));
   return Result;
 }
 //---------------------------------------------------------------------------
 size_t __fastcall TRegistryStorage::BinaryDataSize(const UnicodeString Name)
 {
+  CCALLSTACK(TRACE_ACCESS);
   size_t Result = FRegistry->GetDataSize(Name);
+  CTRACEFMT(TRACE_ACCESS, "[%s] [%d]", (Name, int(Result)));
   return Result;
 }
 //---------------------------------------------------------------------------
 bool __fastcall TRegistryStorage::ReadBool(const UnicodeString Name, bool Default)
 {
+  CCALLSTACK(TRACE_READING);
+  CTRACEFMT(TRACE_READING, "%s", (Name));
   READ_REGISTRY(ReadBool);
 }
 //---------------------------------------------------------------------------
 TDateTime __fastcall TRegistryStorage::ReadDateTime(const UnicodeString Name, TDateTime Default)
 {
+  CCALLSTACK(TRACE_READING);
+  CTRACEFMT(TRACE_READING, "%s", (Name));
   READ_REGISTRY(ReadDateTime);
 }
 //---------------------------------------------------------------------------
 double __fastcall TRegistryStorage::ReadFloat(const UnicodeString Name, double Default)
 {
+  CCALLSTACK(TRACE_READING);
+  CTRACEFMT(TRACE_READING, "%s", (Name));
   READ_REGISTRY(ReadFloat);
 }
 //---------------------------------------------------------------------------
 int __fastcall TRegistryStorage::ReadInteger(const UnicodeString Name, int Default)
 {
+  CCALLSTACK(TRACE_READING);
+  CTRACEFMT(TRACE_READING, "%s", (Name));
   READ_REGISTRY(ReadInteger);
 }
 //---------------------------------------------------------------------------
 __int64 __fastcall TRegistryStorage::ReadInt64(const UnicodeString Name, __int64 Default)
 {
+  CCALLSTACK(TRACE_READING);
+  CTRACEFMT(TRACE_READING, "%s", (Name));
   __int64 Result = Default;
   if (FRegistry->ValueExists(Name))
   {
@@ -591,12 +630,16 @@ __int64 __fastcall TRegistryStorage::ReadInt64(const UnicodeString Name, __int64
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TRegistryStorage::ReadStringRaw(const UnicodeString Name, const UnicodeString Default)
 {
+  CCALLSTACK(TRACE_READING);
+  CTRACEFMT(TRACE_READING, "%s", (Name));
   READ_REGISTRY(ReadString);
 }
 //---------------------------------------------------------------------------
 size_t __fastcall TRegistryStorage::ReadBinaryData(const UnicodeString Name,
   void * Buffer, size_t Size)
 {
+  CCALLSTACK(TRACE_READING);
+  CTRACEFMT(TRACE_READING, "%s", (Name));
   size_t Result;
   if (FRegistry->ValueExists(Name))
   {
@@ -619,6 +662,8 @@ size_t __fastcall TRegistryStorage::ReadBinaryData(const UnicodeString Name,
 //---------------------------------------------------------------------------
 void __fastcall TRegistryStorage::WriteBool(const UnicodeString Name, bool Value)
 {
+  CCALLSTACK(TRACE_WRITING);
+  CTRACEFMT(TRACE_WRITING, "[%s] [%s] [%d]", (FRegistry->CurrentPath, Name, int(Value)));
   WRITE_REGISTRY(WriteBool);
 }
 //---------------------------------------------------------------------------
@@ -629,23 +674,31 @@ void __fastcall TRegistryStorage::WriteDateTime(const UnicodeString Name, TDateT
 //---------------------------------------------------------------------------
 void __fastcall TRegistryStorage::WriteFloat(const UnicodeString Name, double Value)
 {
+  CCALLSTACK(TRACE_WRITING);
+  CTRACEFMT(TRACE_WRITING, "[%s] [%s] [%d]", (FRegistry->CurrentPath, Name, int(Value * 1000)));
   WRITE_REGISTRY(WriteFloat);
 }
 //---------------------------------------------------------------------------
 void __fastcall TRegistryStorage::WriteStringRaw(const UnicodeString Name, const UnicodeString Value)
 {
+  CCALLSTACK(TRACE_WRITING);
+  CTRACEFMT(TRACE_WRITING, "[%s] [%s] [%s]", (FRegistry->CurrentPath, Name, Value));
   WRITE_REGISTRY(WriteString);
 }
 //---------------------------------------------------------------------------
 void __fastcall TRegistryStorage::WriteInteger(const UnicodeString Name, int Value)
 {
+  CCALLSTACK(TRACE_WRITING);
+  CTRACEFMT(TRACE_WRITING, "[%s] [%s] [%d]", (FRegistry->CurrentPath, Name, Value));
   WRITE_REGISTRY(WriteInteger);
 }
 //---------------------------------------------------------------------------
 void __fastcall TRegistryStorage::WriteInt64(const UnicodeString Name, __int64 Value)
 {
+  CCALLSTACK(TRACE_WRITING);
   try
   {
+    CTRACEFMT(TRACE_WRITING, "[%s] [%s] [%d]", (FRegistry->CurrentPath, Name, int(Value)));
     FRegistry->WriteBinaryData(Name, &Value, sizeof(Value));
   }
   catch(...)
@@ -800,17 +853,23 @@ size_t __fastcall TCustomIniFileStorage::BinaryDataSize(const UnicodeString Name
 //---------------------------------------------------------------------------
 bool __fastcall TCustomIniFileStorage::ReadBool(const UnicodeString Name, bool Default)
 {
+  CCALLSTACK(TRACE_READING);
+  CTRACEFMT(TRACE_READING, "[%s] [%s]", (GetCurrentSection(), Name));
   return FIniFile->ReadBool(GetCurrentSection(), MungeIniName(Name), Default);
 }
 //---------------------------------------------------------------------------
 int __fastcall TCustomIniFileStorage::ReadInteger(const UnicodeString Name, int Default)
 {
+  CCALLSTACK(TRACE_READING);
   int Result = FIniFile->ReadInteger(GetCurrentSection(), MungeIniName(Name), Default);
+  CTRACEFMT(TRACE_READING, "[%s] [%s] [%d]", (GetCurrentSection(), Name, Result));
   return Result;
 }
 //---------------------------------------------------------------------------
 __int64 __fastcall TCustomIniFileStorage::ReadInt64(const UnicodeString Name, __int64 Default)
 {
+  CCALLSTACK(TRACE_READING);
+  CTRACEFMT(TRACE_READING, "[%s] [%s]", (GetCurrentSection(), Name));
   __int64 Result = Default;
   UnicodeString Str;
   Str = ReadStringRaw(Name, L"");
@@ -823,6 +882,8 @@ __int64 __fastcall TCustomIniFileStorage::ReadInt64(const UnicodeString Name, __
 //---------------------------------------------------------------------------
 TDateTime __fastcall TCustomIniFileStorage::ReadDateTime(const UnicodeString Name, TDateTime Default)
 {
+  CCALLSTACK(TRACE_READING);
+  CTRACEFMT(TRACE_READING, "[%s] [%s]", (GetCurrentSection(), Name));
   TDateTime Result;
   UnicodeString Value = FIniFile->ReadString(GetCurrentSection(), MungeIniName(Name), L"");
   if (Value.IsEmpty())
@@ -854,6 +915,8 @@ TDateTime __fastcall TCustomIniFileStorage::ReadDateTime(const UnicodeString Nam
 //---------------------------------------------------------------------------
 double __fastcall TCustomIniFileStorage::ReadFloat(const UnicodeString Name, double Default)
 {
+  CCALLSTACK(TRACE_READING);
+  CTRACEFMT(TRACE_READING, "[%s] [%s]", (GetCurrentSection(), Name));
   double Result;
   UnicodeString Value = FIniFile->ReadString(GetCurrentSection(), MungeIniName(Name), L"");
   if (Value.IsEmpty())
@@ -885,13 +948,17 @@ double __fastcall TCustomIniFileStorage::ReadFloat(const UnicodeString Name, dou
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TCustomIniFileStorage::ReadStringRaw(const UnicodeString Name, UnicodeString Default)
 {
+  CCALLSTACK(TRACE_READING);
   AnsiString Result = FIniFile->ReadString(GetCurrentSection(), MungeIniName(Name), Default);
+  CTRACEFMT(TRACE_READING, "[%s] [%s] [%s]", (GetCurrentSection(), Name, Result));
   return Result;
 }
 //---------------------------------------------------------------------------
 size_t __fastcall TCustomIniFileStorage::ReadBinaryData(const UnicodeString Name,
   void * Buffer, size_t Size)
 {
+  CCALLSTACK(TRACE_READING);
+  CTRACEFMT(TRACE_READING, "[%s] [%s]", (GetCurrentSection(), Name));
   RawByteString Value = HexToBytes(ReadStringRaw(Name, L""));
   size_t Len = Value.Length();
   if (Size > Len)
@@ -942,27 +1009,41 @@ void __fastcall TCustomIniFileStorage::WriteBinaryData(const UnicodeString Name,
 /* __fastcall */ TIniFileStorage::TIniFileStorage(const UnicodeString AStorage):
   TCustomIniFileStorage(AStorage, new TMemIniFile(AStorage))
 {
+  CALLSTACK;
+  TRACEFMT("1 [%s]", (GetStorage()));
   FOriginal = new TStringList();
   dynamic_cast<TMemIniFile *>(FIniFile)->GetStrings(FOriginal);
+//!CLEANBEGIN
+  for (int Index = 0; Index < FOriginal->Count; Index++)
+  {
+    TRACEFMT("ini [%s]", (FOriginal->Strings[Index]));
+  }
+//!CLEANEND
   ApplyOverrides();
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void __fastcall TIniFileStorage::Flush()
 {
+  CALLSTACK;
   if (FOriginal != NULL)
   {
     TStrings * Strings = new TStringList;
     std::auto_ptr<TStrings> StringsPtr(Strings);
     std::auto_ptr<TStrings> OriginalPtr(FOriginal);
     {
+      TRACE("0");
       dynamic_cast<TMemIniFile *>(FIniFile)->GetStrings(Strings);
+      TRACE("1");
       if (!Strings->Equals(FOriginal))
       {
+        TRACE("2");
         int Attr;
         // preserve attributes (especially hidden)
         bool Exists = FileExists(GetStorage());
         if (Exists)
         {
+          TRACE("3");
           Attr = GetFileAttributes(UnicodeString(GetStorage()).c_str());
         }
         else
@@ -975,21 +1056,26 @@ void __fastcall TIniFileStorage::Flush()
 
         if (Handle == INVALID_HANDLE_VALUE)
         {
+          TRACE("4");
           // "access denied" errors upon implicit saves to existing file are ignored
           if (GetExplicit() || !Exists || (GetLastError() != ERROR_ACCESS_DENIED))
           {
+            TRACE("5");
             try
             {
+              TRACE("6");
               RaiseLastOSError();
             }
             catch(Exception & E)
             {
+              TRACE("7");
               throw ExtException(&E, FMTLOAD(CREATE_FILE_ERROR, (Storage)));
             }
           }
         }
         else
         {
+          TRACE("8");
           TStream * Stream = new THandleStream(Handle);
           TRY_FINALLY2 (Handle, Stream,
           {
@@ -997,6 +1083,7 @@ void __fastcall TIniFileStorage::Flush()
           }
           ,
           {
+            TRACE("9");
             ::CloseHandle(Handle);
             delete Stream;
           }
@@ -1004,6 +1091,7 @@ void __fastcall TIniFileStorage::Flush()
         }
       }
     }
+    TRACE("/");
     FOriginal = NULL;
   }
 }
@@ -1015,6 +1103,7 @@ void __fastcall TIniFileStorage::Flush()
 //---------------------------------------------------------------------------
 void __fastcall TIniFileStorage::ApplyOverrides()
 {
+  CALLSTACK;
   UnicodeString OverridesKey = IncludeTrailingBackslash(L"Override");
 
   TStrings * Sections = new TStringList();
@@ -1153,5 +1242,6 @@ void __fastcall TOptionsIniFile::ReadSections(const UnicodeString Section, TStri
 /* __fastcall */ TOptionsStorage::TOptionsStorage(TStrings * Options) :
   TCustomIniFileStorage(UnicodeString(L"Command-line options")) // , new TOptionsIniFile(Options))
 {
+  CALLSTACK;
 }
 #endif

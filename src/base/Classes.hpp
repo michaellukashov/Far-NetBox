@@ -318,7 +318,7 @@ protected:
   virtual UnicodeString __fastcall GetStrings(int Index) const = 0;
   virtual void __fastcall PutString(int Index, const UnicodeString S) = 0;
   virtual TObject *& __fastcall GetObjects(int Index) = 0;
-  virtual void __fastcall PutObject(int Index, TObject * AObject);
+  virtual void __fastcall PutObject(int Index, TObject * AObject) = 0;
   const UnicodeString __fastcall GetName(int Index) const;
   const UnicodeString __fastcall GetValue(const UnicodeString Name);
   void __fastcall SetValue(const UnicodeString Name, const UnicodeString Value);
@@ -525,10 +525,9 @@ public:
   {
     return !(operator == (rhs));
   }
-  UnicodeString TimeString() const
-  {
-    return UnicodeString();
-  }
+  UnicodeString DateString() const;
+  UnicodeString TimeString() const;
+  UnicodeString FormatString(wchar_t * fmt) const;
   void DecodeDate(unsigned short & Y,
                   unsigned short & M, unsigned short & D) const;
   void DecodeTime(unsigned short & H,

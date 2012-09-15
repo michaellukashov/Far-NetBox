@@ -88,6 +88,7 @@ __int64 __fastcall TFileBuffer::ReadStream(TStream * Stream, const __int64 Len, 
 //---------------------------------------------------------------------------
 __int64 __fastcall TFileBuffer::LoadStream(TStream * Stream, const __int64 Len, bool ForceLen)
 {
+  CALLSTACK;
   FMemory->Seek(0, soFromBeginning);
   return ReadStream(Stream, Len, ForceLen);
 }

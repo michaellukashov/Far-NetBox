@@ -2,6 +2,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#define TRACE_ALL NOTRACING
 #include <Winhttp.h>
 
 #include "SessionData.h"
@@ -541,7 +542,7 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
   SetProxyLocalhost(Storage->ReadBool(L"ProxyLocalhost", GetProxyLocalhost()));
 
   #define READ_BUG(BUG) \
-    SetBug(sb##BUG, TAutoSwitch(2 - Storage->ReadInteger(L"Bug" + MB2W(#BUG), \
+    SetBug(sb##BUG, TAutoSwitch(2 - Storage->ReadInteger(TEXT("Bug"#BUG), \
       2 - GetBug(sb##BUG))));
   READ_BUG(Ignore1);
   READ_BUG(PlainPW1);
@@ -563,7 +564,7 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
 
   SetSftpServer(Storage->ReadString(L"SftpServer", GetSftpServer()));
   #define READ_SFTP_BUG(BUG) \
-    SetSFTPBug(sb##BUG, TAutoSwitch(Storage->ReadInteger(L"SFTP" + MB2W(#BUG) + L"Bug", GetSFTPBug(sb##BUG))));
+    SetSFTPBug(sb##BUG, TAutoSwitch(Storage->ReadInteger(TEXT("SFTP" #BUG "Bug"), GetSFTPBug(sb##BUG))));
   READ_SFTP_BUG(Symlink);
   READ_SFTP_BUG(SignedTS);
   #undef READ_SFTP_BUG
@@ -623,6 +624,7 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
 //---------------------------------------------------------------------
 void __fastcall TSessionData::Load(THierarchicalStorage * Storage)
 {
+  CCALLSTACK(TRACE_ALL);
   bool RewritePassword = false;
   if (Storage->OpenSubKey(GetInternalStorageKey(), False))
   {
@@ -838,7 +840,7 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
     WRITE_DATA_EX(Bool, L"ProxyLocalhost", GetProxyLocalhost(), );
 
     #define WRITE_DATA_CONV_FUNC(X) (2 - (X))
-    #define WRITE_BUG(BUG) WRITE_DATA_CONV(Integer, MB2W("Bug" #BUG), GetBug(sb##BUG));
+    #define WRITE_BUG(BUG) WRITE_DATA_CONV(Integer, TEXT("Bug" #BUG), GetBug(sb##BUG));
     WRITE_BUG(Ignore1);
     WRITE_BUG(PlainPW1);
     WRITE_BUG(RSA1);
@@ -864,7 +866,7 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
     {
       WRITE_DATA(String, SftpServer);
 
-      #define WRITE_SFTP_BUG(BUG) WRITE_DATA_EX(Integer, MB2W("SFTP" #BUG "Bug"), GetSFTPBug(sb##BUG), );
+      #define WRITE_SFTP_BUG(BUG) WRITE_DATA_EX(Integer, TEXT("SFTP" #BUG "Bug"), GetSFTPBug(sb##BUG), );
       WRITE_SFTP_BUG(Symlink);
       WRITE_SFTP_BUG(SignedTS);
       #undef WRITE_SFTP_BUG
@@ -1020,6 +1022,8 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
   TStoredSessionList * StoredSessions, bool & DefaultsOnly, UnicodeString * FileName,
   bool * AProtocolDefined)
 {
+  CALLSTACK;
+  TRACEFMT("0 [%s]", (Url));
   bool ProtocolDefined = false;
   bool PortNumberDefined = false;
   TFSProtocol AFSProtocol = fsSCPonly;
@@ -1040,6 +1044,7 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
   }
   if (Url.SubString(1, 4).LowerCase() == L"scp:")
   {
+    TRACE("1");
     AFSProtocol = fsSCPonly;
     APortNumber = SshPortNumber;
     Url.Delete(1, 4);
@@ -1047,6 +1052,7 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
   }
   else if (Url.SubString(1, 5).LowerCase() == L"sftp:")
   {
+    TRACE("2");
     AFSProtocol = fsSFTPonly;
     APortNumber = SshPortNumber;
     Url.Delete(1, 5);
@@ -1054,6 +1060,7 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
   }
   else if (Url.SubString(1, 4).LowerCase() == L"ftp:")
   {
+    TRACE("3");
     AFSProtocol = fsFTP;
     SetFtps(ftpsNone);
     APortNumber = FtpPortNumber;
@@ -1062,6 +1069,7 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
   }
   else if (Url.SubString(1, 5).LowerCase() == L"ftps:")
   {
+    TRACE("4");
     AFSProtocol = fsFTP;
     AFtps = ftpsImplicit;
     APortNumber = FtpsImplicitPortNumber;
@@ -1087,16 +1095,19 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
 
   if (ProtocolDefined && (Url.SubString(1, 2) == L"//"))
   {
+    TRACE("5");
     Url.Delete(1, 2);
   }
 
   if (AProtocolDefined != NULL)
   {
+    TRACE("6");
     *AProtocolDefined = ProtocolDefined;
   }
 
   if (!Url.IsEmpty())
   {
+    TRACE("7");
     UnicodeString DecodedUrl = DecodeUrlChars(Url);
     // lookup stored session even if protocol was defined
     // (this allows setting for example default username for host
@@ -1104,12 +1115,14 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
     TSessionData * Data = NULL;
     for (Integer Index = 0; Index < StoredSessions->Count + StoredSessions->GetHiddenCount(); Index++)
     {
+      TRACE("8");
 
       TSessionData * AData = static_cast<TSessionData *>(StoredSessions->Items[Index]);
       if (
           AnsiSameText(AData->GetName(), DecodedUrl) ||
           AnsiSameText(AData->GetName() + L"/", DecodedUrl.SubString(1, AData->GetName().Length() + 1)))
       {
+        TRACE("9");
         Data = AData;
         break;
       }
@@ -1117,8 +1130,10 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
 
     UnicodeString ARemoteDirectory;
 
+    TRACE("10");
     if (Data != NULL)
     {
+      TRACE("11");
       DefaultsOnly = false;
       Assign(Data);
       int P = 1;
@@ -1131,6 +1146,7 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
 
       if (Data->GetHidden())
       {
+        TRACE("12");
         Data->Remove();
         StoredSessions->Remove(Data);
         // only modified, implicit
@@ -1139,12 +1155,14 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
     }
     else
     {
+      TRACE("13");
       Assign(StoredSessions->GetDefaultSettings());
       SetName(L"");
 
       int PSlash = Url.Pos(L"/");
       if (PSlash == 0)
       {
+        TRACE("14");
         PSlash = Url.Length() + 1;
       }
 
@@ -1157,11 +1175,13 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
 
       if (P > 0)
       {
+        TRACE("15");
         UserInfo = ConnectInfo.SubString(1, P - 1);
         HostInfo = ConnectInfo.SubString(P + 1, ConnectInfo.Length() - P);
       }
       else
       {
+        TRACE("16");
         HostInfo = ConnectInfo;
       }
 
@@ -1182,16 +1202,19 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
       // expanded from ?: operator, as it caused strange "access violation" errors
       if (!HostInfo.IsEmpty())
       {
+        TRACE("17");
         SetPortNumber(StrToIntDef(DecodeUrlChars(HostInfo), -1));
         PortNumberDefined = true;
       }
       else if (ProtocolDefined)
       {
+        TRACE("18");
         SetPortNumber(APortNumber);
       }
 
       if (ProtocolDefined)
       {
+        TRACE("18a");
         SetFtps(AFtps);
       }
 
@@ -1204,11 +1227,14 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
       }
     }
 
+    TRACE("19");
     if (!ARemoteDirectory.IsEmpty() && (ARemoteDirectory != L"/"))
     {
+      TRACE("20");
       if ((ARemoteDirectory[ARemoteDirectory.Length()] != L'/') &&
           (FileName != NULL))
       {
+        TRACE("21");
         *FileName = DecodeUrlChars(UnixExtractFileName(ARemoteDirectory));
         ARemoteDirectory = UnixExtractFilePath(ARemoteDirectory);
       }
@@ -1219,6 +1245,7 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
   }
   else
   {
+    TRACE("22");
     Assign(StoredSessions->GetDefaultSettings());
 
     DefaultsOnly = true;
@@ -1226,58 +1253,70 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
 
   if (ProtocolDefined)
   {
+    TRACE("23");
     SetFSProtocol(AFSProtocol);
   }
 
   if (Options != NULL)
   {
+    TRACE("24");
     // we deliberately do keep defaultonly to false, in presence of any option,
     // as the option should not make session "connectable"
 
     UnicodeString Value;
     if (Options->FindSwitch(L"privatekey", Value))
     {
+      TRACE("25");
       SetPublicKeyFile(Value);
     }
     if (Options->FindSwitch(L"timeout", Value))
     {
+      TRACE("26");
       SetTimeout(StrToInt(Value));
     }
     if (Options->FindSwitch(L"hostkey", Value) ||
         Options->FindSwitch(L"certificate", Value))
     {
+      TRACE("27");
       SetHostKey(Value);
     }
     SetFtpPasvMode(Options->SwitchValue(L"passive", GetFtpPasvMode()));
     if (Options->FindSwitch(L"implicit"))
     {
+      TRACE("29");
       bool Enabled = Options->SwitchValue(L"implicit", true);
       SetFtps(Enabled ? ftpsImplicit : ftpsNone);
       if (!PortNumberDefined && Enabled)
       {
+        TRACE("29");
         SetPortNumber(FtpsImplicitPortNumber);
       }
     }
     if (Options->FindSwitch(L"explicitssl", Value))
     {
+      TRACE("30");
       bool Enabled = Options->SwitchValue(L"explicitssl", true);
       SetFtps(Enabled ? ftpsExplicitSsl : ftpsNone);
       if (!PortNumberDefined && Enabled)
       {
+        TRACE("31");
         SetPortNumber(FtpPortNumber);
       }
     }
     if (Options->FindSwitch(L"explicittls", Value))
     {
+      TRACE("32");
       bool Enabled = Options->SwitchValue(L"explicittls", true);
       SetFtps(Enabled ? ftpsExplicitTls : ftpsNone);
       if (!PortNumberDefined && Enabled)
       {
+        TRACE("33");
         SetPortNumber(FtpPortNumber);
       }
     }
     if (Options->FindSwitch(L"rawsettings"))
     {
+      TRACE("34");
       TStrings * RawSettings = NULL;
       // TOptionsStorage * OptionsStorage = NULL;
       TRegistryStorage * OptionsStorage = NULL;
@@ -1289,6 +1328,7 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
 
         if (Options->FindSwitch(L"rawsettings", RawSettings))
         {
+          TRACE("35");
           // OptionsStorage = new TOptionsStorage(RawSettings);
           OptionsStorage = new TRegistryStorage(Configuration->GetRegistryStorageKey());
           OptionsStoragePtr.reset(OptionsStorage);
@@ -2594,6 +2634,7 @@ TFtps __fastcall TSessionData::TranslateFtpEncryptionNumber(int FtpEncryption)
 void __fastcall TStoredSessionList::Load(THierarchicalStorage * Storage,
   bool AsModified, bool UseDefaults)
 {
+  CALLSTACK;
   TStringList *SubKeys = new TStringList();
   TList * Loaded = new TList;
   std::auto_ptr<TStringList> SubKeysPtr(SubKeys);
@@ -2662,6 +2703,7 @@ void __fastcall TStoredSessionList::Load(THierarchicalStorage * Storage,
 //---------------------------------------------------------------------
 void __fastcall TStoredSessionList::Load()
 {
+  CALLSTACK;
   THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
   std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
   {
@@ -2820,6 +2862,7 @@ void __fastcall TStoredSessionList::Cleanup()
 //---------------------------------------------------------------------------
 void __fastcall TStoredSessionList::UpdateStaticUsage()
 {
+  CALLSTACK;
 /*
   int SCP = 0;
   int SFTP = 0;

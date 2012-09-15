@@ -610,12 +610,6 @@ bool TStrings::Equals(TStrings * Strings) const
   return Result;
 }
 
-void TStrings::PutObject(int Index, TObject * AObject)
-{
-  (void)Index;
-  (void)AObject;
-}
-
 void TStrings::PutString(int Index, const UnicodeString S)
 {
   TObject * TempObject = GetObjects(Index);
@@ -946,9 +940,13 @@ void TStringList::InsertItem(int Index, const UnicodeString S, TObject * AObject
 UnicodeString & TStringList::GetString(int Index)
 {
   // DEBUG_PRINTF(L"Index = %d, FList.size = %d", Index, FList.size());
-  if ((Index == NPOS) || ((size_t)Index >= FList.size()))
+  if ((Index == NPOS) || ((size_t)Index > FList.size()))
   {
     Classes::Error(SListIndexError, Index);
+  }
+  if ((size_t)Index == FList.size())
+  {
+    InsertItem(Index, UnicodeString(), NULL);
   }
   return FList[Index].FString;
 }
@@ -1177,6 +1175,31 @@ TDateTime::TDateTime(unsigned short Hour,
 {
   FValue = ::EncodeTimeVerbose(Hour, Min, Sec, MSec);
 }
+//---------------------------------------------------------------------------
+UnicodeString TDateTime::DateString() const
+{
+  unsigned short Y, M, D;
+  DecodeDate(Y, M, D);
+  UnicodeString Result = FORMAT(L"%02d.%02d.%04d", D, M, Y);
+  return Result;
+}
+//---------------------------------------------------------------------------
+UnicodeString TDateTime::TimeString() const
+{
+  unsigned short H, N, S, MS;
+  DecodeTime(H, N, S, MS);
+  UnicodeString Result = FORMAT(L"%02d.%02d.%02d.%03d", H, N, S, MS);
+  return Result;
+}
+//---------------------------------------------------------------------------
+UnicodeString TDateTime::FormatString(wchar_t * fmt) const
+{
+  unsigned short H, N, S, MS;
+  DecodeTime(H, N, S, MS);
+  UnicodeString Result = FORMAT(L"%02d.%02d.%02d.%03d", H, N, S, MS);
+  return Result;
+}
+//---------------------------------------------------------------------------
 void TDateTime::DecodeDate(unsigned short & Y,
                            unsigned short & M, unsigned short & D) const
 {
@@ -1187,7 +1210,6 @@ void TDateTime::DecodeTime(unsigned short & H,
 {
   ::DecodeTime(*this, H, N, S, MS);
 }
-
 //---------------------------------------------------------------------------
 TDateTime Now()
 {

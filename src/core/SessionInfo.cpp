@@ -2,6 +2,9 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#define TRACE_LOG_ADD TRACING
+#define TRACE_LOG_ADD2 NOTRACING
+
 #include <stdio.h>
 #include <lmcons.h>
 #define SECURITY_WIN32
@@ -584,20 +587,26 @@ TFileSystemInfo::TFileSystemInfo()
 //---------------------------------------------------------------------------
 FILE * __fastcall OpenFile(UnicodeString LogFileName, TSessionData * SessionData, bool Append, UnicodeString & NewFileName)
 {
+  CALLSTACK;
   FILE * Result;
+  TRACEFMT("1 [%s]", (LogFileName));
   UnicodeString ANewFileName = StripPathQuotes(GetExpandedLogFileName(LogFileName, SessionData));
+  TRACEFMT("2 [%s]", (ANewFileName));
   // Result = _wfopen(ANewFileName.c_str(), (Append ? L"a" : L"w"));
   Result = _fsopen(W2MB(ANewFileName.c_str()).c_str(),
     Append ? "a" : "w", SH_DENYWR); // _SH_DENYNO); // 
   if (Result != NULL)
   {
+    TRACEFMT("3 [%d]", (int(FileExists(ANewFileName))));
     setvbuf(Result, NULL, _IONBF, BUFSIZ);
     NewFileName = ANewFileName;
   }
   else
   {
+    TRACE("4");
     throw Exception(FMTLOAD(LOG_OPENERROR, ANewFileName.c_str()));
   }
+  TRACE("/");
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -607,6 +616,7 @@ const wchar_t *LogLineMarks = L"<>!.*";
   TConfiguration * Configuration):
   TStringList()
 {
+  CALLSTACK;
   FCriticalSection = new TCriticalSection();
   FLogging = false;
   FConfiguration = Configuration;
@@ -619,15 +629,18 @@ const wchar_t *LogLineMarks = L"<>!.*";
   FCurrentLogFileName = L"";
   FCurrentFileName = L"";
   FClosed = false;
+  TRACE("/");
   Self = this;
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TSessionLog::~TSessionLog()
 {
+  CALLSTACK;
   FClosed = true;
   ReflectSettings();
   assert(FFile == NULL);
   delete FCriticalSection;
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void __fastcall TSessionLog::Lock()
@@ -658,12 +671,14 @@ TLogLineType __fastcall TSessionLog::GetType(int Index)
 //---------------------------------------------------------------------------
 void /* __fastcall */ TSessionLog::DoAddToParent(TLogLineType Type, const UnicodeString & Line)
 {
+  CCALLSTACK(TRACE_LOG_ADD);
   assert(FParent != NULL);
   FParent->Add(Type, Line);
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString & Line)
 {
+  CCALLSTACK(TRACE_LOG_ADD);
   if (static_cast<int>(FTopIndex) < 0)
   {
     FTopIndex = 0;
@@ -677,6 +692,7 @@ void /* __fastcall */ TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeS
   {
     if (FFile == NULL)
     {
+      TRACE("1");
       OpenLogFile();
     }
 
@@ -699,6 +715,7 @@ void /* __fastcall */ TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeS
 void __fastcall TSessionLog::DoAdd(TLogLineType Type, UnicodeString Line,
   TDoAddLogEvent Event)
 {
+  CCALLSTACK(TRACE_LOG_ADD);
   UnicodeString Prefix;
 
   if (!GetName().IsEmpty())
@@ -715,25 +732,32 @@ void __fastcall TSessionLog::DoAdd(TLogLineType Type, UnicodeString Line,
 void __fastcall TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
 {
   assert(FConfiguration);
+  CTRACEFMT(TRACE_LOG_ADD, "[%s]", (Line.c_str()));
   if (GetLogging())
   {
     try
     {
       if (FParent != NULL)
       {
+        CTRACE(TRACE_LOG_ADD, "Parent");
         DoAdd(Type, Line, MAKE_CALLBACK2(TSessionLog::DoAddToParent, this));
       }
       else
       {
+        CTRACE(TRACE_LOG_ADD, "Pre Guard");
         TGuard Guard(FCriticalSection);
 
+        CTRACE(TRACE_LOG_ADD, "Post Guard");
         BeginUpdate();
+
         TRY_FINALLY1 (Self,
         {
+          CTRACE(TRACE_LOG_ADD, "DoAdd");
           DoAdd(Type, Line, MAKE_CALLBACK2(TSessionLog::DoAddToSelf, this));
         }
         ,
         {
+          CTRACE(TRACE_LOG_ADD, "Finally");
           Self->DeleteUnnecessary();
 
           Self->EndUpdate();
@@ -743,6 +767,7 @@ void __fastcall TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
     }
     catch (Exception &E)
     {
+      CTRACE(TRACE_LOG_ADD, "E1");
       // We failed logging, turn it off and notify user.
       FConfiguration->SetLogging(false);
       try
@@ -751,11 +776,13 @@ void __fastcall TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
       }
       catch (Exception &E)
       {
+        CTRACEFMT(TRACE_LOG_ADD, "E2 [%s]", (E.Message.get().c_str()));
         AddException(&E);
         FUI->HandleExtendedException(&E);
       }
     }
   }
+  CTRACE(TRACE_LOG_ADD, "/");
 }
 //---------------------------------------------------------------------------
 void __fastcall TSessionLog::AddException(Exception * E)
@@ -768,6 +795,7 @@ void __fastcall TSessionLog::AddException(Exception * E)
 //---------------------------------------------------------------------------
 void __fastcall TSessionLog::ReflectSettings()
 {
+  CALLSTACK;
   TGuard Guard(FCriticalSection);
 
   bool ALogging =
@@ -776,6 +804,7 @@ void __fastcall TSessionLog::ReflectSettings()
 
   if (FLogging != ALogging)
   {
+    TRACE("3");
     FLogging = ALogging;
     StateChange();
   }
@@ -784,10 +813,12 @@ void __fastcall TSessionLog::ReflectSettings()
   if ((FFile != NULL) &&
       (!LogToFile() || (FCurrentLogFileName != FConfiguration->GetLogFileName())))
   {
+    TRACE("4");
     CloseLogFile();
   }
 
   DeleteUnnecessary();
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 bool __fastcall TSessionLog::LogToFile()
@@ -797,27 +828,34 @@ bool __fastcall TSessionLog::LogToFile()
 //---------------------------------------------------------------------------
 void __fastcall TSessionLog::CloseLogFile()
 {
+  CALLSTACK;
   if (FFile != NULL)
   {
+    TRACE("1");
     fclose(static_cast<FILE *>(FFile));
     FFile = NULL;
   }
   FCurrentLogFileName = L"";
   FCurrentFileName = L"";
   StateChange();
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void __fastcall TSessionLog::OpenLogFile()
 {
+  CALLSTACK;
   try
   {
     assert(FFile == NULL);
     assert(FConfiguration != NULL);
     FCurrentLogFileName = FConfiguration->GetLogFileName();
+    TRACEFMT("1 [%s]", (FCurrentLogFileName));
     FFile = OpenFile(FCurrentLogFileName, FSessionData, FConfiguration->GetLogFileAppend(), FCurrentFileName);
+    TRACEFMT("2 [%s]", (FCurrentFileName));
   }
   catch (Exception & E)
   {
+    // TRACEE;
     // We failed logging to file, turn it off and notify user.
     FCurrentLogFileName = L"";
     FCurrentFileName = L"";
@@ -828,11 +866,13 @@ void __fastcall TSessionLog::OpenLogFile()
     }
     catch (Exception & E)
     {
+      TRACEFMT("E2 [%s]", (E.Message));
       AddException(&E);
       FUI->HandleExtendedException(&E);
     }
   }
   StateChange();
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void __fastcall TSessionLog::StateChange()
@@ -845,15 +885,18 @@ void __fastcall TSessionLog::StateChange()
 //---------------------------------------------------------------------------
 void __fastcall TSessionLog::DeleteUnnecessary()
 {
+  CCALLSTACK(TRACE_LOG_ADD);
   BeginUpdate();
   TRY_FINALLY1 (Self,
   {
     if (!GetLogging() || (FParent != NULL))
     {
+      CTRACE(TRACE_LOG_ADD2, "1");
       Clear();
     }
     else
     {
+      CTRACE(TRACE_LOG_ADD2, "2");
       while (!FConfiguration->GetLogWindowComplete() && (Count > FConfiguration->GetLogWindowLines()))
       {
         Delete(0);
@@ -863,6 +906,7 @@ void __fastcall TSessionLog::DeleteUnnecessary()
   }
   ,
   {
+    CTRACE(TRACE_LOG_ADD2, "3");
     Self->EndUpdate();
   }
   );
@@ -870,6 +914,7 @@ void __fastcall TSessionLog::DeleteUnnecessary()
 //---------------------------------------------------------------------------
 void __fastcall TSessionLog::AddStartupInfo()
 {
+  CALLSTACK;
   if (GetLogging())
   {
     if (FParent != NULL)
@@ -882,10 +927,22 @@ void __fastcall TSessionLog::AddStartupInfo()
       DoAddStartupInfo(FSessionData);
     }
   }
+//!CLEANBEGIN
+  #ifdef _DEBUG
+  else
+  {
+    if (FParent == NULL)
+    {
+      DoAddStartupInfo(FSessionData);
+    }
+  }
+  #endif
+//!CLEANEND
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
 {
+  CALLSTACK;
   TGuard Guard(FCriticalSection);
 
   BeginUpdate();
@@ -1177,6 +1234,7 @@ int __fastcall TSessionLog::GetCount()
 /* __fastcall */ TActionLog::TActionLog(TSessionUI* UI, TSessionData * SessionData,
   TConfiguration * Configuration)
 {
+  CALLSTACK;
   FCriticalSection = new TCriticalSection;
   FConfiguration = Configuration;
   FUI = UI;
@@ -1190,21 +1248,25 @@ int __fastcall TSessionLog::GetCount()
   FIndent = L"  ";
   FInGroup = false;
   FEnabled = true;
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TActionLog::~TActionLog()
 {
+  CALLSTACK;
   assert(FPendingActions->Count == 0);
   delete FPendingActions;
   FClosed = true;
   ReflectSettings();
   assert(FFile == NULL);
   delete FCriticalSection;
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void __fastcall TActionLog::Add(const UnicodeString & Line)
 {
   assert(FConfiguration);
+  CTRACEFMT(TRACE_LOG_ADD, "[%s]", (Line.c_str()));
   if (FLogging)
   {
     try
@@ -1212,18 +1274,35 @@ void __fastcall TActionLog::Add(const UnicodeString & Line)
       TGuard Guard(FCriticalSection);
       if (FFile == NULL)
       {
+        TRACE("1");
         OpenLogFile();
       }
 
       if (FFile != NULL)
       {
         UTF8String UtfLine = UTF8String(Line);
+//!CLEANBEGIN
+        #ifdef _DEBUG
+        size_t Written =
+        #endif
+//!CLEANEND
         fwrite(UtfLine.c_str(), 1, UtfLine.Length(), (FILE *)FFile);
+//!CLEANBEGIN
+        #ifdef _DEBUG
+        Written +=
+        #endif
+//!CLEANEND
         fwrite("\n", 1, 1, (FILE *)FFile);
+//!CLEANBEGIN
+        #ifdef _DEBUG
+        TRACEFMT("2 [%d]", (int(Written)));
+        #endif
+//!CLEANEND
       }
     }
     catch (Exception &E)
     {
+      CTRACE(TRACE_LOG_ADD, "E");
       // We failed logging, turn it off and notify user.
       FConfiguration->SetLogActions(false);
       try
@@ -1232,10 +1311,12 @@ void __fastcall TActionLog::Add(const UnicodeString & Line)
       }
       catch (Exception &E)
       {
+        CTRACEFMT(TRACE_LOG_ADD, "[%s]", (E.Message.get().c_str()));
         FUI->HandleExtendedException(&E);
       }
     }
   }
+  CTRACE(TRACE_LOG_ADD, "/");
 }
 //---------------------------------------------------------------------------
 void __fastcall TActionLog::AddIndented(const UnicodeString & Line)
@@ -1245,6 +1326,7 @@ void __fastcall TActionLog::AddIndented(const UnicodeString & Line)
 //---------------------------------------------------------------------------
 void __fastcall TActionLog::AddFailure(TStrings * Messages)
 {
+  CALLSTACK;
   AddIndented(L"<failure>");
   AddMessages(L"  ", Messages);
   AddIndented(L"</failure>");
@@ -1252,6 +1334,7 @@ void __fastcall TActionLog::AddFailure(TStrings * Messages)
 //---------------------------------------------------------------------------
 void __fastcall TActionLog::AddFailure(Exception * E)
 {
+  CALLSTACK;
   TStrings * Messages = ExceptionToMessages(E);
   if (Messages != NULL)
   {
@@ -1264,6 +1347,7 @@ void __fastcall TActionLog::AddFailure(Exception * E)
 //---------------------------------------------------------------------------
 void __fastcall TActionLog::AddMessages(UnicodeString Indent, TStrings * Messages)
 {
+  CALLSTACK;
   for (int Index = 0; Index < Messages->Count; Index++)
   {
     AddIndented(
@@ -1273,6 +1357,7 @@ void __fastcall TActionLog::AddMessages(UnicodeString Indent, TStrings * Message
 //---------------------------------------------------------------------------
 void __fastcall TActionLog::ReflectSettings()
 {
+  CALLSTACK;
   TGuard Guard(FCriticalSection);
 
   bool ALogging =
@@ -1280,6 +1365,7 @@ void __fastcall TActionLog::ReflectSettings()
 
   if (ALogging && !FLogging)
   {
+    TRACE("1");
     FLogging = true;
     Add(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
     Add(FORMAT(L"<session xmlns=\"http://winscp.net/schema/session/1.0\" name=\"%s\" start=\"%s\">",
@@ -1291,35 +1377,44 @@ void __fastcall TActionLog::ReflectSettings()
     {
       EndGroup();
     }
+    TRACE("2");
     Add(L"</session>");
     CloseLogFile();
     FLogging = false;
   }
 
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void __fastcall TActionLog::CloseLogFile()
 {
+  CALLSTACK;
   if (FFile != NULL)
   {
+    TRACE("1");
     fclose((FILE *)FFile);
     FFile = NULL;
   }
   FCurrentLogFileName = L"";
   FCurrentFileName = L"";
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void __fastcall TActionLog::OpenLogFile()
 {
+  CALLSTACK;
   try
   {
     assert(FFile == NULL);
     assert(FConfiguration != NULL);
     FCurrentLogFileName = FConfiguration->GetActionsLogFileName();
+    TRACEFMT("1 [%s]", (FCurrentLogFileName));
     FFile = OpenFile(FCurrentLogFileName, FSessionData, false, FCurrentFileName);
+    TRACEFMT("2 [%s]", (FCurrentFileName));
   }
   catch (Exception & E)
   {
+    // TRACEE;
     // We failed logging to file, turn it off and notify user.
     FCurrentLogFileName = L"";
     FCurrentFileName = L"";
@@ -1330,9 +1425,11 @@ void __fastcall TActionLog::OpenLogFile()
     }
     catch (Exception & E)
     {
+      TRACEFMT("E2 [%s]", (E.Message));
       FUI->HandleExtendedException(&E);
     }
   }
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void __fastcall TActionLog::AddPendingAction(TSessionActionRecord * Action)

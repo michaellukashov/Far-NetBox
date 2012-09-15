@@ -2,6 +2,9 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#undef TRACE_TRANSMIT
+#define TRACE_TRANSMIT NOTRACING
+
 #define PUTTY_DO_GLOBALS
 #include "PuttyIntf.h"
 #include "Interface.h"
@@ -59,7 +62,9 @@ void __fastcall DontSaveRandomSeed()
 //---------------------------------------------------------------------------
 extern "C" char * do_select(Plug plug, SOCKET skt, int startup)
 {
+  CALLSTACK;
   void * frontend = NULL;
+
   if (!is_ssh(plug) && !is_pfwd(plug))
   {
     // If it is not SSH/PFwd plug, then it must be Proxy plug.
@@ -92,6 +97,7 @@ extern "C" char * do_select(Plug plug, SOCKET skt, int startup)
 //---------------------------------------------------------------------------
 int from_backend(void * frontend, int is_stderr, const char * data, int datalen)
 {
+  CCALLSTACK(TRACE_TRANSMIT);
   assert(frontend);
   if (is_stderr >= 0)
   {
@@ -103,6 +109,7 @@ int from_backend(void * frontend, int is_stderr, const char * data, int datalen)
     assert(is_stderr == -1);
     (static_cast<TSecureShell *>(frontend))->CWrite(data, datalen);
   }
+  CTRACE(TRACE_TRANSMIT, "/");
   return 0;
 }
 //---------------------------------------------------------------------------
@@ -115,6 +122,7 @@ int from_backend_untrusted(void * /*frontend*/, const char * /*data*/, int /*len
 //---------------------------------------------------------------------------
 int get_userpass_input(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
 {
+  CALLSTACK;
   assert(p != NULL);
   TSecureShell * SecureShell = reinterpret_cast<TSecureShell *>(p->frontend);
   assert(SecureShell != NULL);
@@ -125,6 +133,7 @@ int get_userpass_input(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
   std::auto_ptr<TStrings> PromptsPtr(Prompts);
   std::auto_ptr<TStrings> ResultsPtr(Results);
   {
+    TRACEFMT("1 [%d]", (int(p->n_prompts)));
     for (int Index = 0; Index < static_cast<int>(p->n_prompts); Index++)
     {
       prompt_t * Prompt = p->prompts[Index];
@@ -154,7 +163,7 @@ int get_userpass_input(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
       Result = 0;
     }
   }
-
+  TRACE("/");
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -167,15 +176,19 @@ char * get_ttymode(void * /*frontend*/, const char * /*mode*/)
 //---------------------------------------------------------------------------
 void logevent(void * frontend, const char * string)
 {
+  CALLSTACK;
+  TRACEFMT("[%s]", (string));
   // Frontend maybe NULL here
   if (frontend != NULL)
   {
     (static_cast<TSecureShell *>(frontend))->PuttyLogEvent(string);
   }
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void connection_fatal(void * frontend, char * fmt, ...)
 {
+  CALLSTACK;
   va_list Param;
   char Buf[200];
   va_start(Param, fmt);
@@ -191,9 +204,11 @@ int verify_ssh_host_key(void * frontend, char * host, int port, char * keytype,
   char * keystr, char * fingerprint, void (* /*callback*/)(void * ctx, int result),
   void * /*ctx*/)
 {
+  CALLSTACK;
   assert(frontend != NULL);
   (static_cast<TSecureShell *>(frontend))->VerifyHostKey(host, port, keytype, keystr, fingerprint);
 
+  TRACE("/");
   // We should return 0 when key was not confirmed, we throw exception instead.
   return 1;
 }
@@ -201,31 +216,37 @@ int verify_ssh_host_key(void * frontend, char * host, int port, char * keytype,
 int askalg(void * frontend, const char * algtype, const char * algname,
   void (* /*callback*/)(void * ctx, int result), void * /*ctx*/)
 {
+  CALLSTACK;
   assert(frontend != NULL);
   (static_cast<TSecureShell *>(frontend))->AskAlg(algtype, algname);
 
+  TRACE("/");
   // We should return 0 when alg was not confirmed, we throw exception instead.
   return 1;
 }
 //---------------------------------------------------------------------------
 void old_keyfile_warning(void)
 {
+  CALLSTACK;
   // no reference to TSecureShell instance available
 }
 //---------------------------------------------------------------------------
 void display_banner(void * frontend, const char * banner, int size)
 {
+  CALLSTACK;
   assert(frontend);
   UnicodeString Banner(banner, size);
   (static_cast<TSecureShell *>(frontend))->DisplayBanner(Banner);
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 static void SSHFatalError(const char * Format, va_list Param)
 {
+  CALLSTACK;
   char Buf[200];
   vsnprintf(Buf, LENOF(Buf), Format, Param);
   Buf[LENOF(Buf) - 1] = '\0';
-
+  TRACEFMT("[%s]", (Buf));
 
   // Only few calls from putty\winnet.c might be connected with specific
   // TSecureShell. Otherwise called only for really fatal errors
@@ -235,6 +256,7 @@ static void SSHFatalError(const char * Format, va_list Param)
 //---------------------------------------------------------------------------
 void fatalbox(char * fmt, ...)
 {
+  CALLSTACK;
   va_list Param;
   va_start(Param, fmt);
   SSHFatalError(fmt, Param);
@@ -243,6 +265,7 @@ void fatalbox(char * fmt, ...)
 //---------------------------------------------------------------------------
 void modalfatalbox(char * fmt, ...)
 {
+  CALLSTACK;
   va_list Param;
   va_start(Param, fmt);
   SSHFatalError(fmt, Param);
@@ -251,7 +274,7 @@ void modalfatalbox(char * fmt, ...)
 //---------------------------------------------------------------------------
 void cleanup_exit(int /*code*/)
 {
-  throw ESshFatal(NULL, L"");
+  throw ESshFatal(NULL, "");
 }
 //---------------------------------------------------------------------------
 int askappend(void * /*frontend*/, Filename /*filename*/,
@@ -275,6 +298,7 @@ void ldisc_send(void * /*handle*/, char * /*buf*/, int len, int /*interactive*/)
 void agent_schedule_callback(void (* /*callback*/)(void *, void *, int),
   void * /*callback_ctx*/, void * /*data*/, int /*len*/)
 {
+  CALLSTACK;
   assert(false);
 }
 //---------------------------------------------------------------------------
@@ -340,6 +364,7 @@ int get_remote_username(Config * cfg, char *user, size_t len)
 //---------------------------------------------------------------------------
 static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool CanCreate)
 {
+  CALLSTACK;
   long R;
   assert(Configuration != NULL);
 
@@ -348,6 +373,7 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
 
   UnicodeString RegKey = SubKey;
   int PuttyKeyLen = Configuration->GetPuttyRegistryStorageKey().Length();
+  TRACEFMT("RegKey [%s] [%s] PuttyRegistryStorageKey [%s] [%d]", (RegKey, RegKey.SubString(1, PuttyKeyLen), Configuration->GetPuttyRegistryStorageKey(), PuttyKeyLen));
   assert(RegKey.SubString(1, PuttyKeyLen) == Configuration->GetPuttyRegistryStorageKey());
   RegKey = RegKey.SubString(PuttyKeyLen + 1, RegKey.Length() - PuttyKeyLen);
   if (!RegKey.IsEmpty())
@@ -358,11 +384,13 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
 
   if (RegKey.IsEmpty())
   {
+    TRACE("1");
     *Result = static_cast<HKEY>(NULL);
     R = ERROR_SUCCESS;
   }
   else
   {
+    TRACEFMT("2 RegKey [%s]", (RegKey));
     // we expect this to be called only from verify_host_key() or store_host_key()
     assert(RegKey == L"SshHostKeys");
 
@@ -370,32 +398,38 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
     Storage->SetAccessMode((CanCreate ? smReadWrite : smRead));
     if (Storage->OpenSubKey(RegKey, CanCreate))
     {
+      TRACE("3");
       *Result = reinterpret_cast<HKEY>(Storage);
       R = ERROR_SUCCESS;
     }
     else
     {
+      TRACE("4");
       delete Storage;
       R = ERROR_CANTOPEN;
     }
   }
 
+  TRACE("/");
   return R;
 }
 //---------------------------------------------------------------------------
 long reg_open_winscp_key(HKEY Key, const char * SubKey, HKEY * Result)
 {
+  CALLSTACK;
   return OpenWinSCPKey(Key, SubKey, Result, false);
 }
 //---------------------------------------------------------------------------
 long reg_create_winscp_key(HKEY Key, const char * SubKey, HKEY * Result)
 {
+  CALLSTACK;
   return OpenWinSCPKey(Key, SubKey, Result, true);
 }
 //---------------------------------------------------------------------------
 long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long * /*Reserved*/,
   unsigned long * Type, unsigned char * Data, unsigned long * DataSize)
 {
+  CALLSTACK;
   long R;
   assert(Configuration != NULL);
 
@@ -443,6 +477,7 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
 long reg_set_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long /*Reserved*/,
   unsigned long Type, const unsigned char * Data, unsigned long DataSize)
 {
+  CALLSTACK;
   assert(Configuration != NULL);
 
   assert(Type == REG_SZ);
@@ -460,6 +495,7 @@ long reg_set_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long /*R
 //---------------------------------------------------------------------------
 long reg_close_winscp_key(HKEY Key)
 {
+  CALLSTACK;
   assert(Configuration != NULL);
 
   THierarchicalStorage * Storage = reinterpret_cast<THierarchicalStorage *>(Key);
@@ -524,4 +560,15 @@ bool __fastcall HasGSSAPI()
   }
   return (has > 0);
 }
+//!CLEANBEGIN
 //---------------------------------------------------------------------------
+void ptrace(const char* msg)
+{
+  USEDPARAM(msg);
+  TRACEFMT("%s", (msg));
+}
+//!CLEANEND
+//---------------------------------------------------------------------------
+
+
+

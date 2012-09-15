@@ -317,6 +317,7 @@ protected:
 //---------------------------------------------------------------------------
 int __fastcall TSimpleThread::ThreadProc(void * Thread)
 {
+  CALLSTACK;
   TSimpleThread * SimpleThread = reinterpret_cast<TSimpleThread*>(Thread);
   assert(SimpleThread != NULL);
   try
@@ -336,22 +337,27 @@ int __fastcall TSimpleThread::ThreadProc(void * Thread)
 /* __fastcall */ TSimpleThread::TSimpleThread() :
   FThread(NULL), FFinished(true)
 {
+  CALLSTACK;
 }
 //---------------------------------------------------------------------------
 void __fastcall TSimpleThread::Init()
 {
   FThread = reinterpret_cast<HANDLE>(
     StartThread(NULL, 0, this, CREATE_SUSPENDED, FThreadId));
+  TRACEFMT("[%x]", (int(FThread)));
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TSimpleThread::~TSimpleThread()
 {
+  CALLSTACK;
   Close();
 
   if (FThread != NULL)
   {
+    TRACEFMT("[%x]", (int(FThread)));
     CloseHandle(FThread);
   }
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 bool __fastcall TSimpleThread::IsFinished()
@@ -361,6 +367,8 @@ bool __fastcall TSimpleThread::IsFinished()
 //---------------------------------------------------------------------------
 void __fastcall TSimpleThread::Start()
 {
+  CALLSTACK;
+  TRACEFMT("[%x]", (int(FThread)));
   if (ResumeThread(FThread) == 1)
   {
     FFinished = false;
@@ -369,19 +377,24 @@ void __fastcall TSimpleThread::Start()
 //---------------------------------------------------------------------------
 void __fastcall TSimpleThread::Finished()
 {
+  CALLSTACK;
 }
 //---------------------------------------------------------------------------
 void __fastcall TSimpleThread::Close()
 {
+  CALLSTACK;
   if (!FFinished)
   {
     Terminate();
     WaitFor();
   }
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void __fastcall TSimpleThread::WaitFor(unsigned int Milliseconds)
 {
+  CALLSTACK;
+  TRACEFMT("[%x]", (int(FThread)));
   WaitForSingleObject(FThread, Milliseconds);
 }
 //---------------------------------------------------------------------------
@@ -392,6 +405,7 @@ void __fastcall TSimpleThread::WaitFor(unsigned int Milliseconds)
   FEvent(NULL),
   FTerminated(true)
 {
+  CALLSTACK;
 }
 //---------------------------------------------------------------------------
 void __fastcall TSignalThread::Init(bool LowPriority)
@@ -399,7 +413,9 @@ void __fastcall TSignalThread::Init(bool LowPriority)
   TSimpleThread::Init();
   FEvent = CreateEvent(NULL, false, false, NULL);
   assert(FEvent != NULL);
+  TRACEFMT("[%x]", (int(FEvent)));
 
+  TRACEFMT("[%x]", (int(FThread)));
   if (LowPriority)
   {
     ::SetThreadPriority(FThread, THREAD_PRIORITY_BELOW_NORMAL);
@@ -408,36 +424,47 @@ void __fastcall TSignalThread::Init(bool LowPriority)
 //---------------------------------------------------------------------------
 /* __fastcall */ TSignalThread::~TSignalThread()
 {
+  CALLSTACK;
   // cannot leave closing to TSimpleThread as we need to close it before
   // destroying the event
   Close();
 
+  TRACEFMT("[%x]", (int(FEvent)));
   if (FEvent)
   {
     CloseHandle(FEvent);
   }
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void __fastcall TSignalThread::Start()
 {
+  CALLSTACK;
   FTerminated = false;
   TSimpleThread::Start();
 }
 //---------------------------------------------------------------------------
 void __fastcall TSignalThread::TriggerEvent()
 {
+  CALLSTACK;
+  TRACEFMT("[%x] [%x]", (int(FEvent), int(FThread)));
   SetEvent(FEvent);
 }
 //---------------------------------------------------------------------------
 bool __fastcall TSignalThread::WaitForEvent()
 {
+  CALLSTACK;
+  TRACEFMT("[%x] [%x]", (int(FEvent), int(FThread)));
   // should never return -1, so it is only about 0 or 1
   return (WaitForEvent(INFINITE) > 0);
 }
 //---------------------------------------------------------------------------
 int __fastcall TSignalThread::WaitForEvent(unsigned int Timeout)
 {
+  CALLSTACK;
+  TRACEFMT("1 [%x] [%x] [%d]", (int(FEvent), int(FThread), int(Timeout)));
   unsigned int Result = WaitForSingleObject(FEvent, Timeout);
+  TRACEFMT("2 [%d] [%d]", (int(Result), int(FTerminated)));
   if ((Result == WAIT_TIMEOUT) && !FTerminated)
   {
     return -1;
@@ -450,6 +477,7 @@ int __fastcall TSignalThread::WaitForEvent(unsigned int Timeout)
 //---------------------------------------------------------------------------
 void __fastcall TSignalThread::Execute()
 {
+  CALLSTACK;
   while (!FTerminated)
   {
     if (WaitForEvent())
@@ -461,6 +489,7 @@ void __fastcall TSignalThread::Execute()
 //---------------------------------------------------------------------------
 void __fastcall TSignalThread::Terminate()
 {
+  CALLSTACK;
   FTerminated = true;
   TriggerEvent();
 }
@@ -475,6 +504,7 @@ void __fastcall TSignalThread::Terminate()
   FFreeTerminals(0), FTerminals(NULL), FForcedItems(NULL), FTemporaryTerminals(0),
   FOverallTerminals(0), FTransfersLimit(2), FEnabled(true)
 {
+  CALLSTACK;
   Self = this;
 }
 //---------------------------------------------------------------------------
@@ -505,6 +535,7 @@ void __fastcall TTerminalQueue::Init()
 //---------------------------------------------------------------------------
 /* __fastcall */ TTerminalQueue::~TTerminalQueue()
 {
+  CALLSTACK;
   Close();
 
   {
@@ -535,6 +566,7 @@ void __fastcall TTerminalQueue::Init()
 //---------------------------------------------------------------------------
 void __fastcall TTerminalQueue::TerminalFinished(TTerminalItem * TerminalItem)
 {
+  CALLSTACK;
   if (!FTerminated)
   {
     {
@@ -567,6 +599,7 @@ void __fastcall TTerminalQueue::TerminalFinished(TTerminalItem * TerminalItem)
 //---------------------------------------------------------------------------
 bool __fastcall TTerminalQueue::TerminalFree(TTerminalItem * TerminalItem)
 {
+  CALLSTACK;
   bool Result = true;
 
   if (!FTerminated)
@@ -594,6 +627,7 @@ bool __fastcall TTerminalQueue::TerminalFree(TTerminalItem * TerminalItem)
 //---------------------------------------------------------------------------
 void __fastcall TTerminalQueue::AddItem(TQueueItem * Item)
 {
+  CALLSTACK;
   assert(!FTerminated);
 
   Item->SetStatus(TQueueItem::qsPending);
@@ -612,6 +646,7 @@ void __fastcall TTerminalQueue::AddItem(TQueueItem * Item)
 //---------------------------------------------------------------------------
 void __fastcall TTerminalQueue::RetryItem(TQueueItem * Item)
 {
+  CALLSTACK;
   if (!FTerminated)
   {
     {
@@ -777,6 +812,7 @@ bool __fastcall TTerminalQueue::ItemProcessUserAction(TQueueItem * Item, void * 
 //---------------------------------------------------------------------------
 bool __fastcall TTerminalQueue::ItemMove(TQueueItem * Item, TQueueItem * BeforeItem)
 {
+  CALLSTACK;
   // to prevent deadlocks when closing queue from other thread
   bool Result = !FFinished;
   if (Result)
@@ -807,6 +843,7 @@ bool __fastcall TTerminalQueue::ItemMove(TQueueItem * Item, TQueueItem * BeforeI
 //---------------------------------------------------------------------------
 bool __fastcall TTerminalQueue::ItemExecuteNow(TQueueItem * Item)
 {
+  CALLSTACK;
   // to prevent deadlocks when closing queue from other thread
   bool Result = !FFinished;
   if (Result)
@@ -849,6 +886,7 @@ bool __fastcall TTerminalQueue::ItemExecuteNow(TQueueItem * Item)
 //---------------------------------------------------------------------------
 bool __fastcall TTerminalQueue::ItemDelete(TQueueItem * Item)
 {
+  CALLSTACK;
   // to prevent deadlocks when closing queue from other thread
   bool Result = !FFinished;
   if (Result)
@@ -887,6 +925,7 @@ bool __fastcall TTerminalQueue::ItemDelete(TQueueItem * Item)
 //---------------------------------------------------------------------------
 bool __fastcall TTerminalQueue::ItemPause(TQueueItem * Item, bool Pause)
 {
+  CALLSTACK;
   // to prevent deadlocks when closing queue from other thread
   bool Result = !FFinished;
   if (Result)
@@ -923,6 +962,7 @@ bool __fastcall TTerminalQueue::ItemPause(TQueueItem * Item, bool Pause)
 //---------------------------------------------------------------------------
 bool __fastcall TTerminalQueue::ItemSetCPSLimit(TQueueItem * Item, unsigned long CPSLimit)
 {
+  CALLSTACK;
   // to prevent deadlocks when closing queue from other thread
   bool Result = !FFinished;
   if (Result)
@@ -969,6 +1009,7 @@ void __fastcall TTerminalQueue::Idle()
 //---------------------------------------------------------------------------
 void __fastcall TTerminalQueue::ProcessEvent()
 {
+  CALLSTACK;
   TTerminalItem * TerminalItem;
   TQueueItem * Item;
 
@@ -1047,6 +1088,7 @@ void __fastcall TTerminalQueue::DoEvent(TQueueEvent Event)
 //---------------------------------------------------------------------------
 void __fastcall TTerminalQueue::SetTransfersLimit(int value)
 {
+  CALLSTACK;
   if (FTransfersLimit != value)
   {
     {
@@ -1069,6 +1111,7 @@ void __fastcall TTerminalQueue::SetTransfersLimit(int value)
 //---------------------------------------------------------------------------
 void __fastcall TTerminalQueue::SetEnabled(bool value)
 {
+  CALLSTACK;
   if (FEnabled != value)
   {
     {
@@ -1138,6 +1181,7 @@ bool __fastcall TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
   TSignalThread(), FQueue(Queue), FTerminal(NULL), FItem(NULL),
   FCriticalSection(NULL), FUserAction(NULL), FCancel(false), FPause(false)
 {
+  CALLSTACK;
   Self = this;
 }
 //---------------------------------------------------------------------------
@@ -1170,6 +1214,7 @@ void __fastcall TTerminalItem::Init(int Index)
 //---------------------------------------------------------------------------
 /* __fastcall */ TTerminalItem::~TTerminalItem()
 {
+  CALLSTACK;
   Close();
 
   assert(FItem == NULL);
@@ -1179,6 +1224,7 @@ void __fastcall TTerminalItem::Init(int Index)
 //---------------------------------------------------------------------------
 void __fastcall TTerminalItem::Process(TQueueItem * Item)
 {
+  CALLSTACK;
   {
     TGuard Guard(FCriticalSection);
 
@@ -1191,6 +1237,7 @@ void __fastcall TTerminalItem::Process(TQueueItem * Item)
 //---------------------------------------------------------------------------
 void __fastcall TTerminalItem::ProcessEvent()
 {
+  CALLSTACK;
   TGuard Guard(FCriticalSection);
 
   bool Retry = true;
@@ -1281,6 +1328,7 @@ void __fastcall TTerminalItem::Idle()
 //---------------------------------------------------------------------------
 void __fastcall TTerminalItem::Cancel()
 {
+  CALLSTACK;
   FCancel = true;
   if ((FItem->GetStatus() == TQueueItem::qsPaused) ||
       TQueueItem::IsUserActionStatus(FItem->GetStatus()))
@@ -1302,6 +1350,7 @@ bool __fastcall TTerminalItem::Pause()
 //---------------------------------------------------------------------------
 bool __fastcall TTerminalItem::Resume()
 {
+  CALLSTACK;
   assert(FItem != NULL);
   bool Result = (FItem->GetStatus() == TQueueItem::qsPaused);
   if (Result)
@@ -1313,6 +1362,7 @@ bool __fastcall TTerminalItem::Resume()
 //---------------------------------------------------------------------------
 bool __fastcall TTerminalItem::ProcessUserAction(void * Arg)
 {
+  CALLSTACK;
   // When status is changed twice quickly, the controller when responding
   // to the first change (non-user-action) can be so slow to check only after
   // the second (user-action) change occurs. Thus it responds it.
@@ -1436,6 +1486,7 @@ void /* __fastcall */ TTerminalItem::TerminalPromptUser(TTerminal * Terminal,
 void /* __fastcall */ TTerminalItem::TerminalShowExtendedException(
   TTerminal * Terminal, Exception * E, void * Arg)
 {
+  CALLSTACK;
   USEDPARAM(Arg);
   assert(Arg == NULL);
 
@@ -1520,6 +1571,7 @@ bool __fastcall TTerminalItem::OverrideItemStatus(TQueueItem::TStatus & ItemStat
   FQueue(NULL), FCompleteEvent(INVALID_HANDLE_VALUE),
   FCPSLimit(-1)
 {
+  CALLSTACK;
   FSection = new TCriticalSection();
   FInfo = new TInfo();
   Self = this;
@@ -1527,6 +1579,7 @@ bool __fastcall TTerminalItem::OverrideItemStatus(TQueueItem::TStatus & ItemStat
 //---------------------------------------------------------------------------
 /* __fastcall */ TQueueItem::~TQueueItem()
 {
+  CALLSTACK;
   if (FCompleteEvent != INVALID_HANDLE_VALUE)
   {
     SetEvent(FCompleteEvent);
@@ -1833,6 +1886,7 @@ TQueueItemProxy * __fastcall TTerminalQueueStatus::FindByQueueItem(
 /* __fastcall */ TLocatedQueueItem::TLocatedQueueItem(TTerminal * Terminal) :
   TQueueItem()
 {
+  CALLSTACK;
   assert(Terminal != NULL);
   FCurrentDir = Terminal->GetCurrentDirectory();
 }
@@ -1844,6 +1898,7 @@ UnicodeString __fastcall TLocatedQueueItem::StartupDirectory()
 //---------------------------------------------------------------------------
 void __fastcall TLocatedQueueItem::DoExecute(TTerminal * Terminal)
 {
+  CALLSTACK;
   assert(Terminal != NULL);
   Terminal->SetCurrentDirectory(FCurrentDir);
 }
@@ -1944,6 +1999,7 @@ void /* __fastcall */ TUploadQueueItem::DoExecute(TTerminal * Terminal)
   const TCopyParamType * CopyParam, int Params) :
   TTransferQueueItem(Terminal, FilesToCopy, TargetDir, CopyParam, Params, osRemote)
 {
+  CALLSTACK;
   if (FilesToCopy->Count > 1)
   {
     if (!UnixExtractCommonPath(FilesToCopy, FInfo->Source))
@@ -1997,6 +2053,7 @@ void __fastcall TDownloadQueueItem::DoExecute(TTerminal * Terminal)
 /* __fastcall */ TTerminalThread::TTerminalThread(TTerminal * Terminal) :
   TSignalThread(), FTerminal(Terminal)
 {
+  CALLSTACK;
   FAction = NULL;
   FActionEvent = CreateEvent(NULL, false, false, NULL);
   FException = NULL;
@@ -2064,6 +2121,7 @@ void __fastcall TTerminalThread::Init()
 //---------------------------------------------------------------------------
 /* __fastcall */ TTerminalThread::~TTerminalThread()
 {
+  CALLSTACK;
   Close();
 
   CloseHandle(FActionEvent);
@@ -2089,15 +2147,18 @@ void __fastcall TTerminalThread::Init()
   FTerminal->SetOnReadDirectoryProgress(FOnReadDirectoryProgress);
 
   delete FSection;
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminalThread::Cancel()
 {
+  CALLSTACK;
   FCancel = true;
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminalThread::Idle()
 {
+  CALLSTACK;
   TGuard Guard(FSection);
   // only when running user action already,
   // so that the exception is catched, saved and actually
@@ -2112,16 +2173,21 @@ void __fastcall TTerminalThread::Idle()
 //---------------------------------------------------------------------------
 void __fastcall TTerminalThread::TerminalOpen()
 {
+  CALLSTACK;
   RunAction(MAKE_CALLBACK1(TTerminalThread::TerminalOpenEvent, this));
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminalThread::TerminalReopen()
 {
+  CALLSTACK;
   RunAction(MAKE_CALLBACK1(TTerminalThread::TerminalReopenEvent, this));
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
 {
+  CALLSTACK;
   assert(FAction == NULL);
   assert(FException == NULL);
   assert(FIdleException == NULL);
@@ -2139,6 +2205,7 @@ void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
 
       do
       {
+        TRACE("1");
         switch (WaitForSingleObject(FActionEvent, 50))
         {
           case WAIT_OBJECT_0:
@@ -2175,12 +2242,13 @@ void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
       }
       while (!Done);
 
-
+      TRACE("1a");
 
       Rethrow(FException);
     }
     ,
     {
+      TRACE("2");
       Self->FAction = NULL;
       SAFE_DESTROY(Self->FException);
     }
@@ -2190,6 +2258,7 @@ void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
   {
     if (FCancelled)
     {
+      // TRACEFMT("3 [%s]", (TraceE.Message));
       // even if the abort thrown as result of Cancel() was wrapper into
       // some higher-level exception, normalize back to message-less fatal
       // exception here
@@ -2197,6 +2266,7 @@ void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
     }
     else
     {
+      // TRACEFMT("4 [%s]", (TraceE.Message));
       throw;
     }
   }
@@ -2204,16 +2274,19 @@ void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminalThread::TerminalOpenEvent(TObject * /*Sender*/)
 {
+  CALLSTACK;
   FTerminal->Open();
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminalThread::TerminalReopenEvent(TObject * /*Sender*/)
 {
+  CALLSTACK;
   FTerminal->Reopen(0);
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminalThread::ProcessEvent()
 {
+  CALLSTACK;
   assert(FEvent != NULL);
   assert(FException == NULL);
 
@@ -2231,8 +2304,10 @@ void __fastcall TTerminalThread::ProcessEvent()
 //---------------------------------------------------------------------------
 void __fastcall TTerminalThread::Rethrow(Exception *& Exception)
 {
+  CALLSTACK;
   if (Exception != NULL)
   {
+    TRACEFMT("1 [%s]", (Exception->Message));
     TRY_FINALLY1 (Exception,
     {
       RethrowException(Exception);
@@ -2247,6 +2322,7 @@ void __fastcall TTerminalThread::Rethrow(Exception *& Exception)
 //---------------------------------------------------------------------------
 void __fastcall TTerminalThread::SaveException(Exception & E, Exception *& Exception)
 {
+  CALLSTACK;
   assert(Exception == NULL);
 
   Exception = CloneException(&E);
@@ -2254,13 +2330,17 @@ void __fastcall TTerminalThread::SaveException(Exception & E, Exception *& Excep
 //---------------------------------------------------------------------------
 void __fastcall TTerminalThread::FatalAbort()
 {
+  CALLSTACK;
   FTerminal->FatalAbort();
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminalThread::CheckCancel()
 {
+  CALLSTACK;
   if (FCancel && !FCancelled)
   {
+    TRACE("1");
     FCancelled = true;
     FatalAbort();
   }
@@ -2268,11 +2348,14 @@ void __fastcall TTerminalThread::CheckCancel()
 //---------------------------------------------------------------------------
 void __fastcall TTerminalThread::WaitForUserAction(TUserAction * UserAction)
 {
+  CALLSTACK;
+  TRACEFMT("1 [%x]", (int(this)));
   DWORD Thread = GetCurrentThreadId();
   // we can get called from the main thread from within Idle,
   // should be only to call HandleExtendedException
   if (Thread == FMainThread)
   {
+    TRACE("2");
     if (UserAction != NULL)
     {
       UserAction->Execute(NULL);
@@ -2280,6 +2363,7 @@ void __fastcall TTerminalThread::WaitForUserAction(TUserAction * UserAction)
   }
   else
   {
+    TRACE("3");
     // we should be called from our thread only,
     // with exception noted above
     assert(Thread == FThreadId);
@@ -2294,7 +2378,7 @@ void __fastcall TTerminalThread::WaitForUserAction(TUserAction * UserAction)
 
       while (true)
       {
-
+        TRACE("3a");
 
         {
           TGuard Guard(FSection);
@@ -2306,6 +2390,7 @@ void __fastcall TTerminalThread::WaitForUserAction(TUserAction * UserAction)
           // is not active anyway.
           if (FTerminal->GetActive() && FPendingIdle && (FIdleException == NULL))
           {
+            TRACE("3b");
             FPendingIdle = false;
             try
             {
@@ -2313,6 +2398,7 @@ void __fastcall TTerminalThread::WaitForUserAction(TUserAction * UserAction)
             }
             catch (Exception & E)
             {
+              TRACEFMT("3c [%s]", (E.Message));
               SaveException(E, FIdleException);
             }
           }
@@ -2321,16 +2407,18 @@ void __fastcall TTerminalThread::WaitForUserAction(TUserAction * UserAction)
         int WaitResult = WaitForEvent(1000);
         if (WaitResult == 0)
         {
+          TRACE("3d");
           SAFE_DESTROY(FIdleException);
           FatalAbort();
         }
         else if (WaitResult > 0)
         {
+          TRACE("3e");
           break;
         }
       }
 
-
+      TRACE("4");
 
       Rethrow(FException);
 
@@ -2350,11 +2438,13 @@ void __fastcall TTerminalThread::WaitForUserAction(TUserAction * UserAction)
     );
     CheckCancel();
   }
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void  /* __fastcall */ TTerminalThread::TerminalInformation(
   TTerminal * Terminal, const UnicodeString & Str, bool Status, int Phase)
 {
+  CALLSTACK;
   TInformationUserAction Action(FOnInformation);
   Action.Terminal = Terminal;
   Action.Str = Str;
@@ -2368,6 +2458,7 @@ void /* __fastcall */ TTerminalThread::TerminalQueryUser(TObject * Sender,
   const UnicodeString & Query, TStrings * MoreMessages, unsigned int Answers,
   const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * Arg)
 {
+  CALLSTACK;
   USEDPARAM(Arg);
   assert(Arg == NULL);
 
@@ -2398,6 +2489,7 @@ void /* __fastcall */ TTerminalThread::TerminalPromptUser(TTerminal * Terminal,
   TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
   TStrings * Results, bool & Result, void * Arg)
 {
+  CALLSTACK;
   USEDPARAM(Arg);
   assert(Arg == NULL);
 
@@ -2419,6 +2511,7 @@ void /* __fastcall */ TTerminalThread::TerminalPromptUser(TTerminal * Terminal,
 void /* __fastcall */ TTerminalThread::TerminalShowExtendedException(
   TTerminal * Terminal, Exception * E, void * Arg)
 {
+  CALLSTACK;
   USEDPARAM(Arg);
   assert(Arg == NULL);
 
@@ -2433,6 +2526,7 @@ void /* __fastcall */ TTerminalThread::TerminalDisplayBanner(TTerminal * Termina
   UnicodeString SessionName, const UnicodeString & Banner,
   bool & NeverShowAgain, int Options)
 {
+  CALLSTACK;
   TDisplayBannerAction Action(FOnDisplayBanner);
   Action.Terminal = Terminal;
   Action.SessionName = SessionName;
@@ -2447,6 +2541,7 @@ void /* __fastcall */ TTerminalThread::TerminalDisplayBanner(TTerminal * Termina
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminalThread::TerminalChangeDirectory(TObject * Sender)
 {
+  CALLSTACK;
   TNotifyAction Action(FOnChangeDirectory);
   Action.Sender = Sender;
 
@@ -2455,6 +2550,7 @@ void /* __fastcall */ TTerminalThread::TerminalChangeDirectory(TObject * Sender)
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminalThread::TerminalReadDirectory(TObject * Sender, Boolean ReloadOnly)
 {
+  CALLSTACK;
   TReadDirectoryAction Action(FOnReadDirectory);
   Action.Sender = Sender;
   Action.ReloadOnly = ReloadOnly;
@@ -2464,6 +2560,7 @@ void /* __fastcall */ TTerminalThread::TerminalReadDirectory(TObject * Sender, B
 //---------------------------------------------------------------------------
 void /* __fastcall */ TTerminalThread::TerminalStartReadDirectory(TObject * Sender)
 {
+  CALLSTACK;
   TNotifyAction Action(FOnStartReadDirectory);
   Action.Sender = Sender;
 
@@ -2473,6 +2570,7 @@ void /* __fastcall */ TTerminalThread::TerminalStartReadDirectory(TObject * Send
 void /* __fastcall */ TTerminalThread::TerminalReadDirectoryProgress(
   TObject * Sender, int Progress, bool & Cancel)
 {
+  CALLSTACK;
   TReadDirectoryProgressAction Action(FOnReadDirectoryProgress);
   Action.Sender = Sender;
   Action.Progress = Progress;

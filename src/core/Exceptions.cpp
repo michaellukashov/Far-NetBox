@@ -52,7 +52,10 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   FMoreMessages(NULL),
   FHelpKeyword()
 {
+  CALLSTACK;
+  TRACEFMT("[%s]", ((E != NULL) ? E->Message : UnicodeString(L"<null>")));
   AddMoreMessages(E);
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ ExtException::ExtException(Exception* E, UnicodeString Msg):
@@ -67,7 +70,10 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   FMoreMessages(NULL),
   FHelpKeyword()
 {
+  CALLSTACK;
+  TRACEFMT("[%s] [%s]", (((E != NULL) ? E->Message : UnicodeString(L"<null>")), Msg));
   AddMoreMessages(E);
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ ExtException::ExtException(UnicodeString Msg, Exception* E) :
@@ -75,6 +81,8 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   FMoreMessages(NULL),
   FHelpKeyword()
 {
+  CALLSTACK;
+  TRACEFMT("[%s] [%s]", (Msg, ((E != NULL) ? E->Message : UnicodeString(L"<null>"))));
   // "copy exception"
   AddMoreMessages(E);
   // and append message to the end to more messages
@@ -93,6 +101,7 @@ TStrings * ExceptionToMoreMessages(Exception * E)
       FMoreMessages->Append(Msg);
     }
   }
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ ExtException::ExtException(UnicodeString Msg, UnicodeString MoreMessages,
@@ -101,11 +110,14 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   FMoreMessages(NULL),
   FHelpKeyword(HelpKeyword)
 {
+  CALLSTACK;
+  TRACEFMT("[%s] [%s]", (Msg, MoreMessages));
   if (!MoreMessages.IsEmpty())
   {
     FMoreMessages = new TStringList();
     FMoreMessages->Text = MoreMessages;
   }
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ ExtException::ExtException(UnicodeString Msg, TStrings* MoreMessages,
@@ -114,6 +126,8 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   FMoreMessages(NULL),
   FHelpKeyword(HelpKeyword)
 {
+  CALLSTACK;
+  TRACEFMT("[%s] [%s]", (Msg, ((MoreMessages != NULL) ? MoreMessages->Text : UnicodeString(L"<null>"))));
   if (Own)
   {
     FMoreMessages = MoreMessages;
@@ -123,10 +137,12 @@ TStrings * ExceptionToMoreMessages(Exception * E)
     FMoreMessages = new TStringList();
     FMoreMessages->Assign(MoreMessages);
   }
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 void __fastcall ExtException::AddMoreMessages(const Exception * E)
 {
+  CALLSTACK;
   if (E != NULL)
   {
     if (FMoreMessages == NULL)
@@ -147,6 +163,7 @@ void __fastcall ExtException::AddMoreMessages(const Exception * E)
 
       if (ExtE->GetMoreMessages() != NULL)
       {
+        TRACEFMT("1 [%s]", (ExtE->GetMoreMessages()->Text));
         FMoreMessages->Assign(ExtE->GetMoreMessages());
       }
     }
@@ -172,6 +189,7 @@ void __fastcall ExtException::AddMoreMessages(const Exception * E)
       FMoreMessages = NULL;
     }
   }
+  TRACE("/");
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ ExtException::~ExtException()
@@ -187,6 +205,7 @@ ExtException * __fastcall ExtException::Clone()
 //---------------------------------------------------------------------------
 UnicodeString __fastcall LastSysErrorMessage()
 {
+  CALLSTACK;
   int LastError = GetLastError();
   UnicodeString Result;
   if (LastError != 0)
@@ -199,6 +218,7 @@ UnicodeString __fastcall LastSysErrorMessage()
 /* __fastcall */ EOSExtException::EOSExtException(UnicodeString Msg) :
   ExtException(Msg, LastSysErrorMessage())
 {
+  CALLSTACK;
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ EFatal::EFatal(Exception * E, UnicodeString Msg) :
@@ -228,41 +248,51 @@ ExtException * __fastcall ESshTerminate::Clone()
 //---------------------------------------------------------------------------
 Exception * __fastcall CloneException(Exception * E)
 {
+  CALLSTACK;
   ExtException * Ext = dynamic_cast<ExtException *>(E);
   if (Ext != NULL)
   {
+    TRACE("1");
     return Ext->Clone();
   }
   else if (dynamic_cast<ECallbackGuardAbort *>(E) != NULL)
   {
+    TRACE("2");
     return new ECallbackGuardAbort();
   }
   else if (dynamic_cast<EAbort *>(E) != NULL)
   {
+    TRACE("3");
     return new EAbort(E->Message.get());
   }
   else
   {
+    TRACE("4");
     return new Exception(E->Message);
   }
 }
 //---------------------------------------------------------------------------
 void __fastcall RethrowException(Exception * E)
 {
+  CALLSTACK;
   if (dynamic_cast<EFatal *>(E) != NULL)
   {
+    TRACE("1");
     throw EFatal(E, L"");
   }
   else if (dynamic_cast<ECallbackGuardAbort *>(E) != NULL)
   {
+    TRACE("2");
     throw ECallbackGuardAbort();
   }
   else if (dynamic_cast<EAbort *>(E) != NULL)
   {
+    TRACE("3");
     throw EAbort(E->Message.get());
   }
   else
   {
+    TRACE("4");
     throw ExtException(E, L"");
   }
 }
