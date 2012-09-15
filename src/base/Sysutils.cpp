@@ -661,14 +661,11 @@ NextWord(const wchar_t * input)
 UnicodeString WrapText(const UnicodeString & Line, int MaxWidth)
 {
   UnicodeString Result; // = ::WrapText(Line.c_str(), MaxWidth, NULL, NULL);
-  const wchar_t * prefix = 0;
   const wchar_t * s = 0;
   wchar_t * w = 0;
 
   int lineCount = 0;
   int lenBuffer = 0;
-  int lenPrefixFirst = 0; // wcslen(prefixFirst ? prefixFirst : L"");
-  int lenPrefixRest = 0; // wcslen(prefixRest ? prefixRest : L"");
   int spaceLeft = MaxWidth;
   int wordsThisLine = 0;
 
@@ -676,13 +673,9 @@ UnicodeString WrapText(const UnicodeString & Line, int MaxWidth)
   {
     MaxWidth = 78;
   }
-  if (lenPrefixFirst + 5 > MaxWidth)
+  if (MaxWidth < 5)
   {
-    MaxWidth = lenPrefixFirst + 5;
-  }
-  if (lenPrefixRest + 5 > MaxWidth)
-  {
-    MaxWidth = lenPrefixRest + 5;
+    MaxWidth = 5;
   }
 
   /* two passes through the input. the first pass updates the buffer length.
@@ -716,27 +709,10 @@ UnicodeString WrapText(const UnicodeString & Line, int MaxWidth)
       spaceLeft = MaxWidth;
       wordsThisLine = 0;
 
-      /* copy the prefix */
-      // prefix = lineCount ? prefixRest : prefixFirst;
-      prefix = L""; // prefix ? prefix : L"";
-      while (*prefix)
-      {
-        if (w == 0)
-        {
-          ++lenBuffer;
-        }
-        else
-        {
-          *(w++) = *prefix == '\n' ? ' ' : *prefix;
-        }
-        --spaceLeft;
-        ++prefix;
-      }
-
       /* force the first word to always be completely copied */
       while (*s)
       {
-        if (w == 0)
+        if (Result.Length() == 0)
         {
           ++lenBuffer;
         }
@@ -756,7 +732,7 @@ UnicodeString WrapText(const UnicodeString & Line, int MaxWidth)
       while (*s && wcslen(s) + 1 <= spaceLeft)
       {
         /* will fit so add a space between the words */
-        if (w == 0)
+        if (Result.Length() == 0)
         {
           ++lenBuffer;
         }
@@ -769,7 +745,7 @@ UnicodeString WrapText(const UnicodeString & Line, int MaxWidth)
         /* then copy the word */
         while (*s)
         {
-          if (w == 0)
+          if (Result.Length() == 0)
           {
             ++lenBuffer;
           }
@@ -793,7 +769,7 @@ UnicodeString WrapText(const UnicodeString & Line, int MaxWidth)
       if (*s)
       {
         /* add a new line here */
-        if (w == 0)
+        if (Result.Length() == 0)
         {
           ++lenBuffer;
         }
