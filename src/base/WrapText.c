@@ -6,30 +6,30 @@
 /*----------------------------------------------------------------------------
  * return the next available word, ignoring whitespace
  */
-static const char *
-NextWord(const char * input)
+static const wchar_t *
+NextWord(const wchar_t * input)
 {
-  static char buffer[1024];
-  static const char * text = 0;
+  static wchar_t buffer[1024];
+  static const wchar_t * text = 0;
 
-  char * endOfBuffer = buffer + sizeof(buffer) - 1;
-  char * pBuffer = buffer;
+  wchar_t * endOfBuffer = buffer + sizeof(buffer) - 1;
+  wchar_t * pBuffer = buffer;
 
-  if(input)
+  if (input)
   {
     text = input;
   }
 
-  if(text)
+  if (text)
   {
     /* skip leading spaces */
-    while(isspace(*text))
+    while (iswspace(*text))
     {
       ++text;
     }
 
     /* copy the word to our static buffer */
-    while(*text && !isspace(*text) && pBuffer < endOfBuffer)
+    while (*text && !iswspace(*text) && pBuffer < endOfBuffer)
     {
       *(pBuffer++) = *(text++);
     }
@@ -42,33 +42,33 @@ NextWord(const char * input)
 
 /*----------------------------------------------------------------------------
  */
-const char *
-WrapText(const char * text,
+const wchar_t *
+WrapText(const wchar_t * text,
   int maxWidth,
-  const char * prefixFirst,
-  const char * prefixRest)
+  const wchar_t * prefixFirst,
+  const wchar_t * prefixRest)
 {
-  const char * prefix = 0;
-  const char * s = 0;
-  char * wrap = 0;
-  char * w = 0;
+  const wchar_t * prefix = 0;
+  const wchar_t * s = 0;
+  wchar_t * wrap = 0;
+  wchar_t * w = 0;
 
   int lineCount = 0;
   int lenBuffer = 0;
-  int lenPrefixFirst = strlen(prefixFirst? prefixFirst: "");
-  int lenPrefixRest = strlen(prefixRest ? prefixRest : "");
+  int lenPrefixFirst = wcslen(prefixFirst ? prefixFirst : L"");
+  int lenPrefixRest = wcslen(prefixRest ? prefixRest : L"");
   int spaceLeft = maxWidth;
   int wordsThisLine = 0;
 
-  if(maxWidth == 0)
+  if (maxWidth == 0)
   {
     maxWidth = 78;
   }
-  if(lenPrefixFirst + 5 > maxWidth)
+  if (lenPrefixFirst + 5 > maxWidth)
   {
     maxWidth = lenPrefixFirst + 5;
   }
-  if(lenPrefixRest + 5 > maxWidth)
+  if (lenPrefixRest + 5 > maxWidth)
   {
     maxWidth = lenPrefixRest + 5;
   }
@@ -76,15 +76,15 @@ WrapText(const char * text,
   /* two passes through the input. the first pass updates the buffer length.
    * the second pass creates and populates the buffer
    */
-  while(wrap == 0)
+  while (wrap == 0)
   {
     lineCount = 0;
 
-    if(lenBuffer)
+    if (lenBuffer)
     {
       /* second pass, so create the wrapped buffer */
-      wrap = (char *)malloc(sizeof(char) * (lenBuffer + 1));
-      if(wrap == 0)
+      wrap = (wchar_t *)malloc(sizeof(wchar_t) * (lenBuffer + 1));
+      if (wrap == 0)
       {
         break;
       }
@@ -99,17 +99,17 @@ WrapText(const char * text,
      *     SpaceLeft := SpaceLeft - Width(Word) + SpaceWidth
      */
     s = NextWord(text);
-    while(*s)
+    while (*s)
     {
       spaceLeft = maxWidth;
       wordsThisLine = 0;
 
       /* copy the prefix */
       prefix = lineCount ? prefixRest : prefixFirst;
-      prefix = prefix ? prefix : "";
-      while(*prefix)
+      prefix = prefix ? prefix : L"";
+      while (*prefix)
       {
-        if(w == 0)
+        if (w == 0)
         {
           ++lenBuffer;
         }
@@ -122,9 +122,9 @@ WrapText(const char * text,
       }
 
       /* force the first word to always be completely copied */
-      while(*s)
+      while (*s)
       {
-        if(w == 0)
+        if (w == 0)
         {
           ++lenBuffer;
         }
@@ -135,16 +135,16 @@ WrapText(const char * text,
         --spaceLeft;
         ++s;
       }
-      if(!*s)
+      if (!*s)
       {
         s = NextWord(0);
       }
 
       /* copy as many words as will fit onto the current line */
-      while(*s && strlen(s) + 1 <= spaceLeft)
+      while (*s && wcslen(s) + 1 <= spaceLeft)
       {
         /* will fit so add a space between the words */
-        if(w == 0)
+        if (w == 0)
         {
           ++lenBuffer;
         }
@@ -155,9 +155,9 @@ WrapText(const char * text,
         --spaceLeft;
 
         /* then copy the word */
-        while(*s)
+        while (*s)
         {
-          if(w == 0)
+          if (w == 0)
           {
             ++lenBuffer;
           }
@@ -168,20 +168,20 @@ WrapText(const char * text,
           --spaceLeft;
           ++s;
         }
-        if(!*s)
+        if (!*s)
         {
           s = NextWord(0);
         }
       }
-      if(!*s)
+      if (!*s)
       {
         s = NextWord(0);
       }
 
-      if(*s)
+      if (*s)
       {
         /* add a new line here */
-        if(w == 0)
+        if (w == 0)
         {
           ++lenBuffer;
         }
@@ -196,7 +196,7 @@ WrapText(const char * text,
 
     lenBuffer += 2;
 
-    if(w)
+    if (w)
     {
       *w = 0;
     }
