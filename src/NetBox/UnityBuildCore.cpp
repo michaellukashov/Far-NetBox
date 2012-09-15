@@ -6,7 +6,6 @@
 #pragma warning(disable: 4068) // unknown pragma
 
 #include "../base/Classes.cpp"
-// #include "../base/WrapText.c"
 #include "../base/SysUtils.cpp"
 #include "../base/UnicodeString.cpp"
 #include "../base/local.cpp"
