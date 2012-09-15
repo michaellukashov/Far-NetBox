@@ -364,6 +364,14 @@ UnicodeString UnicodeString::TrimRight() const
   return Sysutils::TrimRight(*this);
 }
 
+void UnicodeString::sprintf(const wchar_t * fmt, ...)
+{
+  va_list args;
+  va_start(args, fmt);
+  Data = ::Format(fmt, args).c_str();
+  va_end(args);
+}
+
 UnicodeString & UnicodeString::operator=(const UnicodeString & strCopy)
 {
   // Init(strCopy.c_str(), strCopy.Length());

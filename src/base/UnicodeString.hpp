@@ -157,6 +157,7 @@ public:
   UnicodeString TrimRight() const;
 
   void Unique() const {}
+  void sprintf(const wchar_t * fmt, ...);
 
 public:
   operator std::wstring () const { return Data; }
