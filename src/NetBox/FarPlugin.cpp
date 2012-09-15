@@ -868,7 +868,7 @@ void __fastcall TFarMessageDialog::Init(unsigned int AFlags,
       // DEBUG_PRINTF(L"Button->GetLeft = %d, Button->GetRight = %d, GetBorderBox()->GetLeft = %d", Button->GetLeft(), Button->GetRight(), GetBorderBox()->GetLeft());
       if (MaxLen < Button->GetRight() - GetBorderBox()->GetLeft())
       {
-        MaxLen = Button->GetRight() - GetBorderBox()->GetLeft();
+        MaxLen = Button->GetRight() - GetBorderBox()->GetLeft() + 2;
       }
       // DEBUG_PRINTF(L"MaxLen = %d", MaxLen);
 

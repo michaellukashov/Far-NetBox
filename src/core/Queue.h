@@ -408,6 +408,7 @@ private:
   void /* __fastcall */ TerminalReadDirectory(TObject * Sender, Boolean ReloadOnly);
   void /* __fastcall */ TerminalStartReadDirectory(TObject * Sender);
   void /* __fastcall */ TerminalReadDirectoryProgress(TObject * Sender, int Progress, bool & Cancel);
+
 private:
   TTerminalThread(const TTerminalThread &);
   TTerminalThread & operator = (const TTerminalThread &);

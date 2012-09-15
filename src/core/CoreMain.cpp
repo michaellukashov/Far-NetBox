@@ -62,7 +62,7 @@ void CoreInitialize()
   // configuration needs to be created and loaded before putty is initialized,
   // so that random seed path is known
   Configuration = CreateConfiguration();
-
+  TRACEFMT("CoreInitialize [%s]", (Configuration->GetVersionStr()));
 
   TRACE("CoreInitialize E");
   try

@@ -181,7 +181,7 @@ void __fastcall ExtException::AddMoreMessages(const Exception * E)
 
     // new exception does not have own message, this is in fact duplication of
     // the exception data, but the exception class may being changed
-
+    TRACEFMT("2 [%s]", (Msg));
     if (Message.IsEmpty())
     {
       Message = Msg;

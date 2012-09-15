@@ -544,6 +544,7 @@ public:
   TNotifyEvent & __fastcall GetOnClose() { return FOnClose; }
   void __fastcall SetOnClose(TNotifyEvent value) { FOnClose = value; }
   int __fastcall GetTunnelLocalPortNumber() { return FTunnelLocalPortNumber; }
+
 private:
   TTerminal(const TTerminal &);
   TTerminal & operator = (const TTerminal &);

@@ -1069,7 +1069,7 @@ void __fastcall TIniFileStorage::Flush()
             catch(Exception & E)
             {
               TRACE("7");
-              throw ExtException(&E, FMTLOAD(CREATE_FILE_ERROR, (Storage)));
+              throw ExtException(&E, FMTLOAD(CREATE_FILE_ERROR, (GetStorage())));
             }
           }
         }
@@ -1142,7 +1142,7 @@ void __fastcall TIniFileStorage::ApplyOverrides()
   TRACE("/");
 }
 //===========================================================================
-#define NOT_IMPLEMENTED throw Exception(L"Not implemented")
+#define NOT_IMPLEMENTED throw Exception("Not implemented")
 //===========================================================================
 class TOptionsIniFile : public TCustomIniFile
 {

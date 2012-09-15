@@ -126,17 +126,17 @@
 
 #define SFTP_MAX_PACKET_LEN   1024000
 //---------------------------------------------------------------------------
-#define SFTP_EXT_OWNER_GROUP L"owner-group-query@generic-extensions"
-#define SFTP_EXT_OWNER_GROUP_REPLY L"owner-group-query-reply@generic-extensions"
-#define SFTP_EXT_NEWLINE L"newline"
-#define SFTP_EXT_SUPPORTED L"supported"
-#define SFTP_EXT_SUPPORTED2 L"supported2"
-#define SFTP_EXT_FSROOTS L"fs-roots@vandyke.com"
-#define SFTP_EXT_VENDOR_ID L"vendor-id"
-#define SFTP_EXT_VERSIONS L"versions"
-#define SFTP_EXT_SPACE_AVAILABLE L"space-available"
-#define SFTP_EXT_CHECK_FILE L"check-file"
-#define SFTP_EXT_CHECK_FILE_NAME L"check-file-name"
+#define SFTP_EXT_OWNER_GROUP "owner-group-query@generic-extensions"
+#define SFTP_EXT_OWNER_GROUP_REPLY "owner-group-query-reply@generic-extensions"
+#define SFTP_EXT_NEWLINE "newline"
+#define SFTP_EXT_SUPPORTED "supported"
+#define SFTP_EXT_SUPPORTED2 "supported2"
+#define SFTP_EXT_FSROOTS "fs-roots@vandyke.com"
+#define SFTP_EXT_VENDOR_ID "vendor-id"
+#define SFTP_EXT_VERSIONS "versions"
+#define SFTP_EXT_SPACE_AVAILABLE "space-available"
+#define SFTP_EXT_CHECK_FILE "check-file"
+#define SFTP_EXT_CHECK_FILE_NAME "check-file-name"
 //---------------------------------------------------------------------------
 #define OGQ_LIST_OWNERS 0x01
 #define OGQ_LIST_GROUPS 0x02
@@ -577,7 +577,7 @@ public:
     return GetRawByteString();
   }
 
-  UnicodeString GetStringW()
+  inline UnicodeString GetStringW()
   {
     return MB2W(GetRawByteString().c_str(), FCodePage);
   }
@@ -1001,7 +1001,7 @@ public:
   }
 
 private:
-  /* inline */ void Need(unsigned int Size)
+  inline void Need(unsigned int Size)
   {
     if (FPosition + Size > FLength)
     {
@@ -1448,12 +1448,13 @@ protected:
         Request->ChangeType(SSH_FXP_WRITE);
         Request->AddString(FHandle);
         Request->AddInt64(FTransfered);
-        Request->AddData(BlockBuf.GetData(), (int)BlockBuf.GetSize());
-        FLastBlockSize = (int)BlockBuf.GetSize();
+        Request->AddData(BlockBuf.GetData(), BlockBuf.GetSize());
+        FLastBlockSize = BlockBuf.GetSize();
 
         FTransfered += BlockBuf.GetSize();
       }
     }
+
     FTerminal = NULL;
     return Result;
   }
@@ -1475,7 +1476,7 @@ protected:
     return Result;
   }
 
-  /* inline */ int __fastcall GetBlockSize()
+  inline int __fastcall GetBlockSize()
   {
     return FFileSystem->UploadBlockSize(FHandle, OperationProgress);
   }
@@ -1584,8 +1585,7 @@ public:
   {
     FIndex = 0;
   }
-  virtual ~TSFTPCalculateFilesChecksumQueue()
-  {}
+  virtual ~TSFTPCalculateFilesChecksumQueue() {}
 
   bool __fastcall Init(int QueueLen, const UnicodeString & Alg, TStrings * FileList)
   {
@@ -1967,7 +1967,7 @@ bool __fastcall TSFTPFileSystem::SupportsExtension(const UnicodeString & Extensi
   return FSupport->Loaded && (FSupport->Extensions->IndexOf(Extension.c_str()) >= 0);
 }
 //---------------------------------------------------------------------------
-/* inline */ void __fastcall TSFTPFileSystem::BusyStart()
+inline void __fastcall TSFTPFileSystem::BusyStart()
 {
   CALLSTACK;
   if (FBusy == 0 && FTerminal->GetUseBusyCursor() && !FAvoidBusy)
@@ -1978,7 +1978,7 @@ bool __fastcall TSFTPFileSystem::SupportsExtension(const UnicodeString & Extensi
   assert(FBusy < 10);
 }
 //---------------------------------------------------------------------------
-/* inline */ void __fastcall TSFTPFileSystem::BusyEnd()
+inline void __fastcall TSFTPFileSystem::BusyEnd()
 {
   CALLSTACK;
   assert(FBusy > 0);
@@ -2704,7 +2704,7 @@ void __fastcall TSFTPFileSystem::DoStartup()
   }
 
   FExtensions->Clear();
-  FEOL = L"\r\n";
+  FEOL = "\r\n";
   FSupport->Loaded = false;
   SAFE_DESTROY(FFixedPaths);
 

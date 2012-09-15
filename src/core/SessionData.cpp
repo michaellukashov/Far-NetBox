@@ -1318,7 +1318,6 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
     {
       TRACE("34");
       TStrings * RawSettings = NULL;
-      // TOptionsStorage * OptionsStorage = NULL;
       TRegistryStorage * OptionsStorage = NULL;
       std::auto_ptr<TStrings> RawSettingsPtr(NULL);
       std::auto_ptr<TRegistryStorage> OptionsStoragePtr(NULL);
@@ -1329,7 +1328,6 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
         if (Options->FindSwitch(L"rawsettings", RawSettings))
         {
           TRACE("35");
-          // OptionsStorage = new TOptionsStorage(RawSettings);
           OptionsStorage = new TRegistryStorage(Configuration->GetRegistryStorageKey());
           OptionsStoragePtr.reset(OptionsStorage);
 

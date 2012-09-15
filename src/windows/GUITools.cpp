@@ -293,11 +293,14 @@ UnicodeString __fastcall UniqTempDir(const UnicodeString BaseDir, const UnicodeS
     }
     else
     {
-      // TempDir += IncludeTrailingBackslash(FormatDateTime(L"nnzzz", Now()));
+#ifndef _MSC_VER
+      TempDir += IncludeTrailingBackslash(FormatDateTime(L"nnzzz", Now()));
+#else
       TDateTime dt = Now();
       unsigned short H, M, S, MS;
       dt.DecodeTime(H, M, S, MS);
       TempDir += IncludeTrailingBackslash(FORMAT(L"%02d%03d", M, MS));
+#endif
     };
   }
   while (!Mask && DirectoryExists(TempDir));
@@ -353,11 +356,14 @@ UnicodeString __fastcall FormatDateTimeSpan(const UnicodeString TimeFormat, TDat
   }
   // days are decremented, because when there are to many of them,
   // "integer overflow" error occurs
-  // Result += FormatDateTime(TimeFormat, System::TDateTime(DateTime - int(DateTime)));
+#ifndef _MSC_VER
+  Result += FormatDateTime(TimeFormat, DateTime - int(DateTime));
+#else
   TDateTime dt(DateTime - static_cast<int>(DateTime));
   unsigned short H, M, S, MS;
   dt.DecodeTime(H, M, S, MS);
   Result += FORMAT(L"%02d:%02d:%02d", H, M, S);
+#endif
   return Result;
 }
 //---------------------------------------------------------------------------

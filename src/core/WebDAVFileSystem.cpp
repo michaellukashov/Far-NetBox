@@ -14652,6 +14652,8 @@ webdav::error_t TWebDAVFileSystem::AskForClientCertificateFilename(
   if (!FTerminal->PromptUser(Data, pkFileName, LoadStr(CERT_FILENAME_PROMPT_TITLE), L"",
                             LoadStr(CERT_FILENAME_PROMPT), true, 0, FileName))
   {
+    FFileTransferCancelled = true;
+    FFileTransferAbort = ftaCancel;
     return WEBDAV_ERR_CANCELLED;
   }
   WEBDAV_ERR(webdav::path_cstring_to_utf8(cert_file, AnsiString(FileName).c_str(), pool));
@@ -14669,6 +14671,8 @@ webdav::error_t TWebDAVFileSystem::AskForUsername(
   if (!FTerminal->PromptUser(Data, pkUserName, LoadStr(USERNAME_TITLE), L"",
                             LoadStr(USERNAME_PROMPT2), true, 0, UserName))
   {
+    FFileTransferCancelled = true;
+    FFileTransferAbort = ftaCancel;
     return WEBDAV_ERR_CANCELLED;
   }
   WEBDAV_ERR(webdav::path_cstring_to_utf8(user_name, AnsiString(UserName).c_str(), pool));
@@ -14687,6 +14691,8 @@ webdav::error_t TWebDAVFileSystem::AskForUserPassword(
   if (!FTerminal->PromptUser(Data, pkPassword, LoadStr(PASSWORD_TITLE), L"",
                             LoadStr(PASSWORD_PROMPT), false, 0, Password))
   {
+    FFileTransferCancelled = true;
+    FFileTransferAbort = ftaCancel;
     return WEBDAV_ERR_CANCELLED;
   }
   WEBDAV_ERR(webdav::path_cstring_to_utf8(password, AnsiString(Password).c_str(), pool));
@@ -14707,6 +14713,8 @@ webdav::error_t TWebDAVFileSystem::AskForPassphrase(
   if (!FTerminal->PromptUser(Data, pkPassphrase, LoadStr(PASSPHRASE_TITLE), L"",
                             Prompt, false, 0, Passphrase))
   {
+    FFileTransferCancelled = true;
+    FFileTransferAbort = ftaCancel;
     return WEBDAV_ERR_CANCELLED;
   }
   WEBDAV_ERR(webdav::path_cstring_to_utf8(passphrase, AnsiString(Passphrase).c_str(), pool));
