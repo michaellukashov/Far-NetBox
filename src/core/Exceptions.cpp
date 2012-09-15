@@ -19,7 +19,7 @@ bool __fastcall ExceptionMessage(const Exception * E, UnicodeString & Message)
   {
     Message = LoadStr(ACCESS_VIOLATION_ERROR);
   }
-  else if (E->Message.get().IsEmpty())
+  else if (E->Message.IsEmpty())
   {
     Result = false;
   }
@@ -88,7 +88,7 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   // and append message to the end to more messages
   if (!Msg.IsEmpty())
   {
-    if (Message.get().IsEmpty())
+    if (Message.IsEmpty())
     {
       Message = Msg;
     }
@@ -174,7 +174,7 @@ void __fastcall ExtException::AddMoreMessages(const Exception * E)
     // new exception does not have own message, this is in fact duplication of
     // the exception data, but the exception class may being changed
 
-    if (Message.get().IsEmpty())
+    if (Message.IsEmpty())
     {
       Message = Msg;
     }
@@ -263,7 +263,7 @@ Exception * __fastcall CloneException(Exception * E)
   else if (dynamic_cast<EAbort *>(E) != NULL)
   {
     TRACE("3");
-    return new EAbort(E->Message.get());
+    return new EAbort(E->Message);
   }
   else
   {
@@ -288,7 +288,7 @@ void __fastcall RethrowException(Exception * E)
   else if (dynamic_cast<EAbort *>(E) != NULL)
   {
     TRACE("3");
-    throw EAbort(E->Message.get());
+    throw EAbort(E->Message);
   }
   else
   {

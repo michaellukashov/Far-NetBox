@@ -776,7 +776,7 @@ void __fastcall TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
       }
       catch (Exception &E)
       {
-        CTRACEFMT(TRACE_LOG_ADD, "E2 [%s]", (E.Message.get().c_str()));
+        CTRACEFMT(TRACE_LOG_ADD, "E2 [%s]", (E.Message.c_str()));
         AddException(&E);
         FUI->HandleExtendedException(&E);
       }
@@ -1310,7 +1310,7 @@ void __fastcall TActionLog::Add(const UnicodeString & Line)
       }
       catch (Exception &E)
       {
-        CTRACEFMT(TRACE_LOG_ADD, "[%s]", (E.Message.get().c_str()));
+        CTRACEFMT(TRACE_LOG_ADD, "[%s]", (E.Message.c_str()));
         FUI->HandleExtendedException(&E);
       }
     }
