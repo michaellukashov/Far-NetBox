@@ -2856,7 +2856,7 @@ void __fastcall TStoredSessionList::Cleanup()
   }
   catch (Exception &E)
   {
-    throw ExtException(&E, FMTLOAD(CLEANUP_SESSIONS_ERROR));
+    throw ExtException(&E, CLEANUP_SESSIONS_ERROR);
   }
 }
 //---------------------------------------------------------------------------

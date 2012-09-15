@@ -772,7 +772,7 @@ void __fastcall TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
       FConfiguration->SetLogging(false);
       try
       {
-        throw ExtException(&E, FMTLOAD(LOG_GEN_ERROR));
+        throw ExtException(&E, LOG_GEN_ERROR);
       }
       catch (Exception &E)
       {
@@ -862,7 +862,7 @@ void __fastcall TSessionLog::OpenLogFile()
     FConfiguration->SetLogFileName(UnicodeString());
     try
     {
-      throw ExtException(&E, FMTLOAD(LOG_GEN_ERROR));
+      throw ExtException(&E, LOG_GEN_ERROR);
     }
     catch (Exception & E)
     {
@@ -1312,7 +1312,7 @@ void __fastcall TActionLog::Add(const UnicodeString & Line)
       FConfiguration->SetLogActions(false);
       try
       {
-        throw ExtException(&E, FMTLOAD(LOG_GEN_ERROR));
+        throw ExtException(&E, LOG_GEN_ERROR);
       }
       catch (Exception &E)
       {
@@ -1426,7 +1426,7 @@ void __fastcall TActionLog::OpenLogFile()
     FConfiguration->SetLogActions(false);
     try
     {
-      throw ExtException(&E, FMTLOAD(LOG_GEN_ERROR));
+      throw ExtException(&E, LOG_GEN_ERROR);
     }
     catch (Exception & E)
     {

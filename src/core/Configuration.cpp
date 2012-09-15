@@ -517,7 +517,7 @@ void __fastcall TConfiguration::CleanupConfiguration()
   }
   catch (Exception &E)
   {
-    throw ExtException(&E, FMTLOAD(CLEANUP_CONFIG_ERROR));
+    throw ExtException(&E, CLEANUP_CONFIG_ERROR);
   }
 }
 //---------------------------------------------------------------------------
@@ -538,7 +538,7 @@ void __fastcall TConfiguration::CleanupHostKeys()
   }
   catch (Exception &E)
   {
-    throw ExtException(&E, FMTLOAD(CLEANUP_HOSTKEYS_ERROR));
+    throw ExtException(&E, CLEANUP_HOSTKEYS_ERROR);
   }
 }
 //---------------------------------------------------------------------------
@@ -557,7 +557,7 @@ void __fastcall TConfiguration::CleanupRandomSeedFile()
   }
   catch (Exception &E)
   {
-    throw ExtException(&E, FMTLOAD(CLEANUP_SEEDFILE_ERROR));
+    throw ExtException(&E, CLEANUP_SEEDFILE_ERROR);
   }
 }
 //---------------------------------------------------------------------------
@@ -581,7 +581,7 @@ void __fastcall TConfiguration::CleanupIniFile()
   }
   catch (Exception &E)
   {
-    throw ExtException(&E, FMTLOAD(CLEANUP_INIFILE_ERROR));
+    throw ExtException(&E, CLEANUP_INIFILE_ERROR);
   }
 }
 //---------------------------------------------------------------------------
@@ -744,8 +744,7 @@ UnicodeString __fastcall TConfiguration::GetVersion()
   {
     TVSFixedFileInfo * Info = GetFixedApplicationInfo();
     UnicodeString Result;
-    Result = // TrimVersion(
-      FORMAT(L"%d.%d.%d",
+    Result = // TrimVersion(FORMAT(L"%d.%d.%d",
       HIWORD(Info->dwFileVersionMS),
       LOWORD(Info->dwFileVersionMS),
       HIWORD(Info->dwFileVersionLS));
