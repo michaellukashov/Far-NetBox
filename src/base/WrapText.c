@@ -9,11 +9,11 @@
 static const char *
 NextWord(const char * input)
 {
-  static       char  buffer[1024];
+  static char buffer[1024];
   static const char * text = 0;
 
   char * endOfBuffer = buffer + sizeof(buffer) - 1;
-  char * pBuffer     = buffer;
+  char * pBuffer = buffer;
 
   if(input)
   {
@@ -43,22 +43,22 @@ NextWord(const char * input)
 /*----------------------------------------------------------------------------
  */
 const char *
-WrapText(const char * text
-         , int         maxWidth
-         , const char * prefixFirst
-         , const char * prefixRest)
+WrapText(const char * text,
+  int maxWidth,
+  const char * prefixFirst,
+  const char * prefixRest)
 {
   const char * prefix = 0;
-  const char * s      = 0;
-  char    *   wrap   = 0;
-  char    *   w      = 0;
+  const char * s = 0;
+  char * wrap = 0;
+  char * w = 0;
 
-  int lineCount      = 0;
-  int lenBuffer      = 0;
+  int lineCount = 0;
+  int lenBuffer = 0;
   int lenPrefixFirst = strlen(prefixFirst? prefixFirst: "");
-  int lenPrefixRest  = strlen(prefixRest ? prefixRest : "");
-  int spaceLeft      = maxWidth;
-  int wordsThisLine  = 0;
+  int lenPrefixRest = strlen(prefixRest ? prefixRest : "");
+  int spaceLeft = maxWidth;
+  int wordsThisLine = 0;
 
   if(maxWidth == 0)
   {
@@ -101,7 +101,7 @@ WrapText(const char * text
     s = NextWord(text);
     while(*s)
     {
-      spaceLeft     = maxWidth;
+      spaceLeft = maxWidth;
       wordsThisLine = 0;
 
       /* copy the prefix */
