@@ -619,81 +619,177 @@ UnicodeString FmtLoadStr(int id, ...)
   }
   return result;
 }
+
 //---------------------------------------------------------------------------
-UnicodeString WrapText(const UnicodeString Line, int MaxCol)
+/*
+ * return the next available word, ignoring whitespace
+ */
+static const wchar_t *
+NextWord(const wchar_t * input)
 {
-  UnicodeString Result = Line;
-  /*
-  Col := 1;
-  Pos := 1;
-  LinePos := 1;
-  BreakPos := 0;
-  QuoteChar := ' ';
-  ExistingBreak := False;
-  LineLen := Length(Line);
-  BreakLen := Length(BreakStr);
-  Result := '';
-  while Pos <= LineLen do
-  begin
-  CurChar := Line[Pos];
-  if CurChar in LeadBytes then
-  begin
-    L := CharLength(Line, Pos) - 1;
-    Inc(Pos, L);
-    Inc(Col, L);
-  end
-  else
-  begin
-    if CurChar = BreakStr[1] then
-    begin
-      if QuoteChar = ' ' then
-      begin
-        ExistingBreak := CompareText(BreakStr, Copy(Line, Pos, BreakLen)) = 0;
-        if ExistingBreak then
-        begin
-          Inc(Pos, BreakLen-1);
-          BreakPos := Pos;
-        end;
-      end
-    end
-    else if CurChar in BreakChars then
-    begin
-      if QuoteChar = ' ' then BreakPos := Pos
-    end
-    else if CurChar in QuoteChars then
-    begin
-      if CurChar = QuoteChar then
-        QuoteChar := ' '
-      else if QuoteChar = ' ' then
-        QuoteChar := CurChar;
-    end;
-  end;
-  Inc(Pos);
-  Inc(Col);
-  if not (QuoteChar in QuoteChars) and (ExistingBreak or
-    ((Col > MaxCol) and (BreakPos > LinePos))) then
-  begin
-    Col := Pos - BreakPos;
-    Result := Result + Copy(Line, LinePos, BreakPos - LinePos + 1);
-    if not (CurChar in QuoteChars) then
-      while Pos <= LineLen do
-      begin
-        if Line[Pos] in BreakChars then
-          Inc(Pos)
-        else if Copy(Line, Pos, Length(sLineBreak)) = sLineBreak then
-          Inc(Pos, Length(sLineBreak))
+  static wchar_t buffer[1024];
+  static const wchar_t * text = 0;
+
+  wchar_t * endOfBuffer = buffer + sizeof(buffer) - 1;
+  wchar_t * pBuffer = buffer;
+
+  if (input)
+  {
+    text = input;
+  }
+
+  if (text)
+  {
+    /* skip leading spaces */
+    while (iswspace(*text))
+    {
+      ++text;
+    }
+
+    /* copy the word to our static buffer */
+    while (*text && !iswspace(*text) && pBuffer < endOfBuffer)
+    {
+      *(pBuffer++) = *(text++);
+    }
+  }
+
+  *pBuffer = 0;
+
+  return buffer;
+}
+//---------------------------------------------------------------------------
+UnicodeString WrapText(const UnicodeString & Line, int MaxWidth)
+{
+  UnicodeString Result;
+  const wchar_t * s = 0;
+  wchar_t * w = 0;
+
+  int lineCount = 0;
+  int lenBuffer = 0;
+  int spaceLeft = MaxWidth;
+  int wordsThisLine = 0;
+
+  if (MaxWidth == 0)
+  {
+    MaxWidth = 78;
+  }
+  if (MaxWidth < 5)
+  {
+    MaxWidth = 5;
+  }
+
+  /* two passes through the input. the first pass updates the buffer length.
+   * the second pass creates and populates the buffer
+   */
+  while (Result.Length() == 0)
+  {
+    lineCount = 0;
+
+    if (lenBuffer)
+    {
+      /* second pass, so create the wrapped buffer */
+      Result.SetLength(lenBuffer + 1);
+      if (Result.Length() == 0)
+      {
+        break;
+      }
+    }
+    w = const_cast<wchar_t *>(Result.c_str());
+
+    /* for each Word in Text
+     *   if Width(Word) > SpaceLeft
+     *     insert line break before Word in Text
+     *     SpaceLeft := LineWidth - Width(Word)
+     *   else
+     *     SpaceLeft := SpaceLeft - Width(Word) + SpaceWidth
+     */
+    s = NextWord(Line.c_str());
+    while (*s)
+    {
+      spaceLeft = MaxWidth;
+      wordsThisLine = 0;
+
+      /* force the first word to always be completely copied */
+      while (*s)
+      {
+        if (Result.Length() == 0)
+        {
+          ++lenBuffer;
+        }
         else
-          break;
-      end;
-    if not ExistingBreak and (Pos < LineLen) then
-      Result := Result + BreakStr;
-    Inc(BreakPos);
-    LinePos := BreakPos;
-    ExistingBreak := False;
-  end;
-  end;
-  Result := Result + Copy(Line, LinePos, MaxInt);
-  */
+        {
+          *(w++) = *s;
+        }
+        --spaceLeft;
+        ++s;
+      }
+      if (!*s)
+      {
+        s = NextWord(0);
+      }
+
+      /* copy as many words as will fit onto the current line */
+      while (*s && wcslen(s) + 1 <= spaceLeft)
+      {
+        /* will fit so add a space between the words */
+        if (Result.Length() == 0)
+        {
+          ++lenBuffer;
+        }
+        else
+        {
+          *(w++) = ' ';
+        }
+        --spaceLeft;
+
+        /* then copy the word */
+        while (*s)
+        {
+          if (Result.Length() == 0)
+          {
+            ++lenBuffer;
+          }
+          else
+          {
+            *(w++) = *s;
+          }
+          --spaceLeft;
+          ++s;
+        }
+        if (!*s)
+        {
+          s = NextWord(0);
+        }
+      }
+      if (!*s)
+      {
+        s = NextWord(0);
+      }
+
+      if (*s)
+      {
+        /* add a new line here */
+        if (Result.Length() == 0)
+        {
+          ++lenBuffer;
+        }
+        else
+        {
+          *(w++) = '\n';
+        }
+      }
+
+      ++lineCount;
+    }
+
+    lenBuffer += 2;
+
+    if (w)
+    {
+      *w = 0;
+    }
+  }
+
   return Result;
 }
 
