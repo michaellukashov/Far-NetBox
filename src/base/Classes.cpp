@@ -1175,6 +1175,31 @@ TDateTime::TDateTime(unsigned short Hour,
 {
   FValue = ::EncodeTimeVerbose(Hour, Min, Sec, MSec);
 }
+//---------------------------------------------------------------------------
+UnicodeString TDateTime::DateString() const
+{
+  unsigned short Y, M, D;
+  DecodeDate(Y, M, D);
+  UnicodeString Result = FORMAT(L"%02d.%02d.%04d", D, M, Y);
+  return Result;
+}
+//---------------------------------------------------------------------------
+UnicodeString TDateTime::TimeString() const
+{
+  unsigned short H, N, S, MS;
+  DecodeTime(H, N, S, MS);
+  UnicodeString Result = FORMAT(L"%02d.%02d.%02d.%03d", H, N, S, MS);
+  return Result;
+}
+//---------------------------------------------------------------------------
+UnicodeString TDateTime::FormatString(wchar_t * fmt) const
+{
+  unsigned short H, N, S, MS;
+  DecodeTime(H, N, S, MS);
+  UnicodeString Result = FORMAT(L"%02d.%02d.%02d.%03d", H, N, S, MS);
+  return Result;
+}
+//---------------------------------------------------------------------------
 void TDateTime::DecodeDate(unsigned short & Y,
                            unsigned short & M, unsigned short & D) const
 {
@@ -1185,7 +1210,6 @@ void TDateTime::DecodeTime(unsigned short & H,
 {
   ::DecodeTime(*this, H, N, S, MS);
 }
-
 //---------------------------------------------------------------------------
 TDateTime Now()
 {

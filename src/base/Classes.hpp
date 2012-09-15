@@ -525,10 +525,9 @@ public:
   {
     return !(operator == (rhs));
   }
-  UnicodeString TimeString() const
-  {
-    return UnicodeString();
-  }
+  UnicodeString DateString() const;
+  UnicodeString TimeString() const;
+  UnicodeString FormatString(wchar_t * fmt) const;
   void DecodeDate(unsigned short & Y,
                   unsigned short & M, unsigned short & D) const;
   void DecodeTime(unsigned short & H,
