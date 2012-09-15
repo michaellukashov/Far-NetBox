@@ -2944,7 +2944,7 @@ void __fastcall FarWrapText(const UnicodeString Text, TStrings * Result, size_t 
     {
       WrappedLine = ::ReplaceChar(WrappedLine, '\'', '\3');
       WrappedLine = ::ReplaceChar(WrappedLine, '\"', '\4');
-      // FIXME WrappedLine = ::WrapText(WrappedLine, MaxWidth);
+      WrappedLine = Sysutils::WrapText(WrappedLine, MaxWidth);
       WrappedLine = ::ReplaceChar(WrappedLine, '\3', '\'');
       WrappedLine = ::ReplaceChar(WrappedLine, '\4', '\"');
       WrappedLines.Text = WrappedLine;
