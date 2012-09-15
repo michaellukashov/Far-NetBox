@@ -29,202 +29,239 @@
  * return the next available word, ignoring whitespace
  */
 static const char *
-NextWord(const char *input)
+NextWord(const char * input)
 {
-        static       char  buffer[1024];
-        static const char *text = 0;
+  static       char  buffer[1024];
+  static const char * text = 0;
 
-        char *endOfBuffer = buffer + sizeof(buffer) - 1;
-        char *pBuffer     = buffer;
+  char * endOfBuffer = buffer + sizeof(buffer) - 1;
+  char * pBuffer     = buffer;
 
-        if (input) {
-                text = input;
-        }
+  if(input)
+  {
+    text = input;
+  }
 
-        if (text) {
-                /* skip leading spaces */
-                while (isspace(*text)) {
-                        ++text;
-                }
+  if(text)
+  {
+    /* skip leading spaces */
+    while(isspace(*text))
+    {
+      ++text;
+    }
 
-                /* copy the word to our static buffer */
-                while (*text && !isspace(*text) && pBuffer < endOfBuffer) {
-                        *(pBuffer++) = *(text++);
-                }
-        }
+    /* copy the word to our static buffer */
+    while(*text && !isspace(*text) && pBuffer < endOfBuffer)
+    {
+      *(pBuffer++) = *(text++);
+    }
+  }
 
-        *pBuffer = 0;
+  *pBuffer = 0;
 
-        return buffer;
+  return buffer;
 }
 
 /*----------------------------------------------------------------------------
  */
 const char *
-WrapText( const char *text
-        , int         maxWidth
-        , const char *prefixFirst
-        , const char *prefixRest)
+WrapText(const char * text
+         , int         maxWidth
+         , const char * prefixFirst
+         , const char * prefixRest)
 {
-        const char *prefix = 0;
-        const char *s      = 0;
-        char       *wrap   = 0;
-        char       *w      = 0;
+  const char * prefix = 0;
+  const char * s      = 0;
+  char    *   wrap   = 0;
+  char    *   w      = 0;
 
-        int lineCount      = 0;
-        int lenBuffer      = 0;
-        int lenPrefixFirst = strlen(prefixFirst? prefixFirst: "");
-        int lenPrefixRest  = strlen(prefixRest ? prefixRest : "");
-        int spaceLeft      = maxWidth;
-        int wordsThisLine  = 0;
+  int lineCount      = 0;
+  int lenBuffer      = 0;
+  int lenPrefixFirst = strlen(prefixFirst? prefixFirst: "");
+  int lenPrefixRest  = strlen(prefixRest ? prefixRest : "");
+  int spaceLeft      = maxWidth;
+  int wordsThisLine  = 0;
 
-        if (maxWidth == 0) {
-                maxWidth = 78;
+  if(maxWidth == 0)
+  {
+    maxWidth = 78;
+  }
+  if(lenPrefixFirst + 5 > maxWidth)
+  {
+    maxWidth = lenPrefixFirst + 5;
+  }
+  if(lenPrefixRest + 5 > maxWidth)
+  {
+    maxWidth = lenPrefixRest + 5;
+  }
+
+  /* two passes through the input. the first pass updates the buffer length.
+   * the second pass creates and populates the buffer
+   */
+  while(wrap == 0)
+  {
+    lineCount = 0;
+
+    if(lenBuffer)
+    {
+      /* second pass, so create the wrapped buffer */
+      wrap = (char *)malloc(sizeof(char) * (lenBuffer + 1));
+      if(wrap == 0)
+      {
+        break;
+      }
+    }
+    w = wrap;
+
+    /* for each Word in Text
+     *   if Width(Word) > SpaceLeft
+     *     insert line break before Word in Text
+     *     SpaceLeft := LineWidth - Width(Word)
+     *   else
+     *     SpaceLeft := SpaceLeft - Width(Word) + SpaceWidth
+     */
+    s = NextWord(text);
+    while(*s)
+    {
+      spaceLeft     = maxWidth;
+      wordsThisLine = 0;
+
+      /* copy the prefix */
+      prefix = lineCount ? prefixRest : prefixFirst;
+      prefix = prefix ? prefix : "";
+      while(*prefix)
+      {
+        if(w == 0)
+        {
+          ++lenBuffer;
         }
-        if (lenPrefixFirst + 5 > maxWidth) {
-                maxWidth = lenPrefixFirst + 5;
+        else
+        {
+          *(w++) = *prefix == '\n' ? ' ' : *prefix;
         }
-        if (lenPrefixRest + 5 > maxWidth) {
-                maxWidth = lenPrefixRest + 5;
+        --spaceLeft;
+        ++prefix;
+      }
+
+      /* force the first word to always be completely copied */
+      while(*s)
+      {
+        if(w == 0)
+        {
+          ++lenBuffer;
         }
-
-        /* two passes through the input. the first pass updates the buffer length.
-         * the second pass creates and populates the buffer
-         */
-        while (wrap == 0) {
-                lineCount = 0;
-
-                if (lenBuffer) {
-                        /* second pass, so create the wrapped buffer */
-                        wrap = (char *)malloc(sizeof(char) * (lenBuffer + 1));
-                        if (wrap == 0) {
-                                break;
-                        }
-                }
-                w = wrap;
-
-                /* for each Word in Text
-                 *   if Width(Word) > SpaceLeft
-                 *     insert line break before Word in Text
-                 *     SpaceLeft := LineWidth - Width(Word)
-                 *   else
-                 *     SpaceLeft := SpaceLeft - Width(Word) + SpaceWidth
-                 */
-                s = NextWord(text);
-                while (*s) {
-                        spaceLeft     = maxWidth;
-                        wordsThisLine = 0;
-
-                        /* copy the prefix */
-                        prefix = lineCount ? prefixRest : prefixFirst;
-                        prefix = prefix ? prefix : "";
-                        while (*prefix) {
-                                if (w == 0) {
-                                        ++lenBuffer;
-                                } else {
-                                        *(w++) = *prefix == '\n' ? ' ' : *prefix;
-                                }
-                                --spaceLeft;
-                                ++prefix;
-                        }
-
-                        /* force the first word to always be completely copied */
-                        while (*s) {
-                                if (w == 0) {
-                                        ++lenBuffer;
-                                } else {
-                                        *(w++) = *s;
-                                }
-                                --spaceLeft;
-                                ++s;
-                        }
-                        if (!*s) {
-                                s = NextWord(0);
-                        }
-
-                        /* copy as many words as will fit onto the current line */
-                        while (*s && strlen(s) + 1 <= spaceLeft) {
-                                /* will fit so add a space between the words */
-                                if (w == 0) {
-                                        ++lenBuffer;
-                                } else {
-                                        *(w++) = ' ';
-                                }
-                                --spaceLeft;
-
-                                /* then copy the word */
-                                while (*s) {
-                                        if (w == 0) {
-                                                ++lenBuffer;
-                                        } else {
-                                                *(w++) = *s;
-                                        }
-                                        --spaceLeft;
-                                        ++s;
-                                }
-                                if (!*s) {
-                                        s = NextWord(0);
-                                }
-                        }
-                        if (!*s) {
-                                s = NextWord(0);
-                        }
-
-                        if (*s) {
-                                /* add a new line here */
-                                if (w == 0) {
-                                        ++lenBuffer;
-                                } else {
-                                        *(w++) = '\n';
-                                }
-                        }
-
-                        ++lineCount;
-                }
-
-                lenBuffer += 2;
-
-                if (w) {
-                        *w = 0;
-                }
+        else
+        {
+          *(w++) = *s;
         }
+        --spaceLeft;
+        ++s;
+      }
+      if(!*s)
+      {
+        s = NextWord(0);
+      }
 
-        return wrap;
+      /* copy as many words as will fit onto the current line */
+      while(*s && strlen(s) + 1 <= spaceLeft)
+      {
+        /* will fit so add a space between the words */
+        if(w == 0)
+        {
+          ++lenBuffer;
+        }
+        else
+        {
+          *(w++) = ' ';
+        }
+        --spaceLeft;
+
+        /* then copy the word */
+        while(*s)
+        {
+          if(w == 0)
+          {
+            ++lenBuffer;
+          }
+          else
+          {
+            *(w++) = *s;
+          }
+          --spaceLeft;
+          ++s;
+        }
+        if(!*s)
+        {
+          s = NextWord(0);
+        }
+      }
+      if(!*s)
+      {
+        s = NextWord(0);
+      }
+
+      if(*s)
+      {
+        /* add a new line here */
+        if(w == 0)
+        {
+          ++lenBuffer;
+        }
+        else
+        {
+          *(w++) = '\n';
+        }
+      }
+
+      ++lineCount;
+    }
+
+    lenBuffer += 2;
+
+    if(w)
+    {
+      *w = 0;
+    }
+  }
+
+  return wrap;
 }
 
 #ifdef TEST_MAIN
 /*----------------------------------------------------------------------------
  */
 int
-main( int argc
-    , const char *argv[])
+main(int argc
+     , const char * argv[])
 {
-        int idx;
+  int idx;
 
-        fprintf(stdout, "WrapText.c version 1, Copyright (C) 2006 Michael D Henderson"
-                        "\nWrapText.c comes with ABSOLUTELY NO WARRANTY; for details"
-                        "\nread the source code. This is free software, and you are welcome"
-                        "\nto redistribute it under certain conditions; read the source"
-                        "\ncode for details.\n\n");
+  fprintf(stdout, "WrapText.c version 1, Copyright (C) 2006 Michael D Henderson"
+          "\nWrapText.c comes with ABSOLUTELY NO WARRANTY; for details"
+          "\nread the source code. This is free software, and you are welcome"
+          "\nto redistribute it under certain conditions; read the source"
+          "\ncode for details.\n\n");
 
-        for (idx = 0; idx < argc; ++idx) {
-                const char *wrap = WrapText(argv[idx], 10, ">>", ">");
-                fprintf(stdout
-                       , "%s<<<\n0123456789a\n%s<<<\n0123456789a\n"
-                       , argv[idx]
-                       , wrap ? wrap : "(null)");
-                if (wrap) {
-                        free(wrap);
-                }
-        }
+  for(idx = 0; idx < argc; ++idx)
+  {
+    const char * wrap = WrapText(argv[idx], 10, ">>", ">");
+    fprintf(stdout
+            , "%s<<<\n0123456789a\n%s<<<\n0123456789a\n"
+            , argv[idx]
+            , wrap ? wrap : "(null)");
+    if(wrap)
+    {
+      free(wrap);
+    }
+  }
 
-        return 0;
+  return 0;
 }
 #endif
 
 /*
-		  GNU LESSER GENERAL PUBLIC LICENSE
-		       Version 2.1, February 1999
+          GNU LESSER GENERAL PUBLIC LICENSE
+               Version 2.1, February 1999
 
  Copyright (C) 1991, 1999 Free Software Foundation, Inc.
  51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -235,7 +272,7 @@ main( int argc
  as the successor of the GNU Library Public License, version 2, hence
  the version number 2.1.]
 
-			    Preamble
+                Preamble
 
   The licenses for most software are designed to take away your
 freedom to share and change it.  By contrast, the GNU General Public
@@ -337,7 +374,7 @@ modification follow.  Pay close attention to the difference between a
 former contains code derived from the library, whereas the latter must
 be combined with the library in order to run.
 
-		  GNU LESSER GENERAL PUBLIC LICENSE
+          GNU LESSER GENERAL PUBLIC LICENSE
    TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
   0. This License Agreement applies to any software library or other
@@ -371,7 +408,7 @@ such a program is covered only if its contents constitute a work based
 on the Library (independent of the use of the Library in a tool for
 writing it).  Whether that is true depends on what the Library does
 and what the program that uses the Library does.
-  
+
   1. You may copy and distribute verbatim copies of the Library's
 complete source code as you receive it, in any medium, provided that
 you conspicuously and appropriately publish on each copy an
@@ -657,7 +694,7 @@ decision will be guided by the two goals of preserving the free status
 of all derivatives of our free software and of promoting the sharing
 and reuse of software generally.
 
-			    NO WARRANTY
+                NO WARRANTY
 
   15. BECAUSE THE LIBRARY IS LICENSED FREE OF CHARGE, THERE IS NO
 WARRANTY FOR THE LIBRARY, TO THE EXTENT PERMITTED BY APPLICABLE LAW.
@@ -680,5 +717,5 @@ FAILURE OF THE LIBRARY TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF
 SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGES.
 
-		     END OF TERMS AND CONDITIONS
+             END OF TERMS AND CONDITIONS
  */
