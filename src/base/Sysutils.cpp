@@ -50,6 +50,12 @@ const TDayTable MonthDays[] =
   // TODO: FHelpContext = AHelpContext
 }
 
+/* __fastcall */ Exception::Exception(Exception * E, int Ident) :
+  std::exception(E ? E->what() : "")
+{
+  Message = FMTLOAD(Ident);
+}
+
 /* __fastcall */ Exception::Exception(int Ident) :
   std::exception()
 {

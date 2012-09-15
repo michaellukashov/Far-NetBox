@@ -19,6 +19,7 @@ public:
   explicit /* __fastcall */ ExtException(Exception* E);
   explicit /* __fastcall */ ExtException(Exception* E, UnicodeString Msg);
   explicit /* __fastcall */ ExtException(ExtException* E, UnicodeString Msg);
+  explicit /* __fastcall */ ExtException(Exception * E, int Ident);
   // "copy the exception", just append message to the end
   explicit /* __fastcall */ ExtException(UnicodeString Msg, Exception* E);
   explicit /* __fastcall */ ExtException(UnicodeString Msg, UnicodeString MoreMessages, UnicodeString HelpKeyword = L"");

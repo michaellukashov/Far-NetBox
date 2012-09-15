@@ -76,6 +76,14 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   TRACE("/");
 }
 //---------------------------------------------------------------------------
+/* __fastcall */ ExtException::ExtException(Exception * E, int Ident) :
+  Exception(E, Ident),
+  FMoreMessages(NULL),
+  FHelpKeyword()
+{
+  CALLSTACK;
+}
+//---------------------------------------------------------------------------
 /* __fastcall */ ExtException::ExtException(UnicodeString Msg, Exception* E) :
   Exception(L""),
   FMoreMessages(NULL),

@@ -22,6 +22,7 @@ public:
   explicit /* __fastcall */ Exception(Exception * E);
   explicit /* __fastcall */ Exception(std::exception * E);
   explicit /* __fastcall */ Exception(UnicodeString Msg, int AHelpContext);
+  explicit /* __fastcall */ Exception(Exception * E, int Ident);
   explicit /* __fastcall */ Exception(int Ident);
 
   template<typename T>
