@@ -1343,7 +1343,7 @@ void __fastcall TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
 
     FileNameOnly = ExtractFileName(RealFileName, false);
 
-    TRY_FINALLY5 (OperationProgress, FileName, RealFileName, Success, OnceDoneOperation,
+    TRY_FINALLY4 (OperationProgress, FileName, Success, OnceDoneOperation,
     {
       try
       {
