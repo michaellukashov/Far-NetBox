@@ -689,9 +689,12 @@ TVSFixedFileInfo *__fastcall TConfiguration::GetFixedApplicationInfo()
 int __fastcall TConfiguration::GetCompoundVersion()
 {
   TVSFixedFileInfo * FileInfo = GetFixedApplicationInfo();
-  return CalculateCompoundVersion(
-    HIWORD(FileInfo->dwFileVersionMS), LOWORD(FileInfo->dwFileVersionMS),
-    HIWORD(FileInfo->dwFileVersionLS), LOWORD(FileInfo->dwFileVersionLS));
+  if (FileInfo)
+    return CalculateCompoundVersion(
+      HIWORD(FileInfo->dwFileVersionMS), LOWORD(FileInfo->dwFileVersionMS),
+      HIWORD(FileInfo->dwFileVersionLS), LOWORD(FileInfo->dwFileVersionLS));
+  else
+    return 0;
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TConfiguration::ModuleFileName()
@@ -800,10 +803,13 @@ UnicodeString __fastcall TConfiguration::GetVersion()
   {
     TVSFixedFileInfo * Info = GetFixedApplicationInfo();
     UnicodeString Result;
-    Result = FORMAT(L"%d.%d.%d",
-      HIWORD(Info->dwFileVersionMS),
-      LOWORD(Info->dwFileVersionMS),
-      HIWORD(Info->dwFileVersionLS));
+    if (Info)
+    {
+      Result = FORMAT(L"%d.%d.%d",
+        HIWORD(Info->dwFileVersionMS),
+        LOWORD(Info->dwFileVersionMS),
+        HIWORD(Info->dwFileVersionLS));
+    }
     return Result;
   }
   catch (Exception &E)
@@ -837,15 +843,11 @@ UnicodeString __fastcall TConfiguration::GetFileFileInfoString(const UnicodeStri
         Result = L"";
       }
     }
-    else
-    {
-      assert(!FileName.IsEmpty());
-    }
   }
   ,
   {
     TRACE("2");
-    if (!FileName.IsEmpty())
+    if (!FileName.IsEmpty() && Info)
     {
       FreeFileInfo(Info);
     }

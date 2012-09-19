@@ -216,7 +216,8 @@ void * __fastcall CreateFileInfo(UnicodeString FileName)
 // Free file version info block memory
 void __fastcall FreeFileInfo(void * FileInfo)
 {
-  delete[] FileInfo;
+  if (FileInfo)
+    delete[] FileInfo;
 }
 //---------------------------------------------------------------------------
 typedef TTranslation TTranslations[65536];
@@ -233,7 +234,7 @@ PVSFixedFileInfo __fastcall GetFixedFileInfo(void * FileInfo)
 #ifdef TRACE_FILE_APPL_INFO
   TRACE("GetFixedFileInfo 1");
 #endif
-  if (!VerQueryValue(FileInfo, L"\\", reinterpret_cast<void **>(&Result), &Len))
+  if (FileInfo && !VerQueryValue(FileInfo, L"\\", reinterpret_cast<void **>(&Result), &Len))
   {
     throw Exception(L"Fixed file info not available");
   }
