@@ -2941,7 +2941,7 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
           TRACEFMT("4 [%s]", (FileName));
           try
           {
-            TRY_FINALLY5 (Self, Progress, FileName, Success, OnceDoneOperation,
+            TRY_FINALLY4 (Progress, FileName, Success, OnceDoneOperation,
             {
               Success = false;
               if (!Ex)
