@@ -27,21 +27,10 @@ const int MaxMessageWidth = 64;
 enum TFarShiftStatus { fsNone, fsCtrl, fsAlt, fsShift, fsCtrlShift,
   fsAltShift, fsCtrlAlt };
 enum THandlesFunction { hfProcessKey, hfProcessHostFile, hfProcessEvent };
-#ifndef _MSC_VER
-typedef void __fastcall (__closure * TFarInputBoxValidateEvent)
-  (AnsiString & Text);
-#else
-DEFINE_CALLBACK_TYPE1(TFarInputBoxValidateEvent, void, UnicodeString &);
-#endif
+DEFINE_CALLBACK_TYPE1(TFarInputBoxValidateEvent, void, UnicodeString & /* Text */);
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
-typedef void __fastcall (__closure *TFarMessageTimerEvent)(unsigned int & Result);
-typedef void __fastcall (__closure *TFarMessageClickEvent)(void * Token, int Result, bool & Close);
-#else
-DEFINE_CALLBACK_TYPE1(TFarMessageTimerEvent, void, unsigned int &);
-DEFINE_CALLBACK_TYPE3(TFarMessageClickEvent, void, void *, int, bool &);
-#endif
-
+DEFINE_CALLBACK_TYPE1(TFarMessageTimerEvent, void, unsigned int & /* Result */);
+DEFINE_CALLBACK_TYPE3(TFarMessageClickEvent, void, void * /* Token */, int /* Result */, bool & /* Close */);
 //---------------------------------------------------------------------------
 struct TFarMessageParams
 {

@@ -22,21 +22,12 @@ class TFarList;
 struct FarDialogItem;
 enum TItemPosition { ipNewLine, ipBelow, ipRight };
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
-typedef void __fastcall (__closure * TFarKeyEvent)
-  (TFarDialog * Sender, TFarDialogItem * Item, long KeyCode, bool & Handled);
-typedef void __fastcall (__closure * TFarMouseClickEvent)
-  (TFarDialogItem * Item, MOUSE_EVENT_RECORD * Event);
-typedef void __fastcall (__closure * TFarProcessGroupEvent)
-  (TFarDialogItem * Item, void * Arg);
-#else
 DEFINE_CALLBACK_TYPE4(TFarKeyEvent, void,
-  TFarDialog *, TFarDialogItem *, long, bool &);
+  TFarDialog * /* Sender */, TFarDialogItem * /* Item */, long /* KeyCode */, bool & /* Handled */);
 DEFINE_CALLBACK_TYPE2(TFarMouseClickEvent, void,
-  TFarDialogItem *, MOUSE_EVENT_RECORD *);
+  TFarDialogItem * /* Item */, MOUSE_EVENT_RECORD * /* Event */);
 DEFINE_CALLBACK_TYPE2(TFarProcessGroupEvent, void,
-  TFarDialogItem *, void *);
-#endif
+  TFarDialogItem * /* Item */, void * /* Arg */);
 //---------------------------------------------------------------------------
 class TFarDialog : public TObject
 {
@@ -343,11 +334,8 @@ public:
   virtual void SetDouble(bool value) { SetAlterType(DI_DOUBLEBOX, value); }
 };
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
-typedef void __fastcall (__closure * TFarButtonClickEvent)(TFarButton * Sender, bool & Close);
-#else
-DEFINE_CALLBACK_TYPE2(TFarButtonClickEvent, void, TFarButton *, bool &);
-#endif
+DEFINE_CALLBACK_TYPE2(TFarButtonClickEvent, void,
+  TFarButton * /* Sender */, bool & /* Close */);
 enum TFarButtonBrackets { brNone, brTight, brSpace, brNormal };
 //---------------------------------------------------------------------------
 class TFarButton : public TFarDialogItem
@@ -382,13 +370,8 @@ public:
   bool __fastcall GetDefault();
 };
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
-typedef void __fastcall (__closure * TFarAllowChangeEvent)(TFarDialogItem * Sender,
-  long NewState, bool & AllowChange);
-#else
-DEFINE_CALLBACK_TYPE3(TFarAllowChangeEvent, void, TFarDialogItem * /* Sender */,
-  long /* NewState */, bool & /* AllowChange */);
-#endif
+DEFINE_CALLBACK_TYPE3(TFarAllowChangeEvent, void,
+  TFarDialogItem * /* Sender */, long /* NewState */, bool & /* AllowChange */);
 //---------------------------------------------------------------------------
 class TFarCheckBox : public TFarDialogItem
 {

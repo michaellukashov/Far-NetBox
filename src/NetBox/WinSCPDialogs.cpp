@@ -5775,13 +5775,8 @@ bool __fastcall TWinSCPFileSystem::LinkDialog(UnicodeString & FileName,
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
-typedef void __fastcall (__closure *TFeedFileSystemData)
-  (TObject * Control, int Label, UnicodeString Value);
-#else
 DEFINE_CALLBACK_TYPE3(TFeedFileSystemDataEvent, void,
   TObject * /* Control */, int /* Label */, UnicodeString /* Value */);
-#endif
 //---------------------------------------------------------------------------
 class TLabelList;
 class TFileSystemInfoDialog : TTabbedDialog
