@@ -99,11 +99,8 @@ class TTabbedDialog : public TWinSCPDialog
 
 public:
   explicit /* __fastcall */ TTabbedDialog(TCustomFarPlugin * AFarPlugin, int TabCount);
-#ifndef _MSC_VER
-  __property int Tab = { read = FTab };
-#else
+
   int GetTab() { return FTab; }
-#endif
 
 protected:
   void __fastcall HideTabs();
@@ -124,14 +121,9 @@ class TTabButton : public TFarButton
 public:
   explicit /* __fastcall */ TTabButton(TTabbedDialog * Dialog);
 
-#ifndef _MSC_VER
-  __property int Tab = { read = FTab, write = FTab };
-  __property UnicodeString TabName = { read = FTabName, write = SetTabName };
-#else
   int GetTab() { return FTab; }
   void SetTab(int value) { FTab = value; }
   UnicodeString GetTabName() { return FTabName; }
-#endif
 
 private:
   UnicodeString FTabName;
@@ -4232,14 +4224,6 @@ public:
   explicit /* __fastcall */ TRightsContainer(TFarDialog * ADialog, bool AAnyDirectories,
                             bool ShowButtons, bool ShowSpecials,
                             TFarDialogItem * EnabledDependency);
-#ifndef _MSC_VER
-  __property bool AddXToDirectories = { read = GetAddXToDirectories, write = SetAddXToDirectories };
-  __property TRights Rights = { read = GetRights, write = SetRights };
-  __property TFarCheckBox * Checks[TRights::TRight Right] = { read = GetChecks };
-  __property TRights::TState States[TRights::TRight Right] = { read = GetStates, write = SetStates };
-  __property bool AllowUndef = { read = GetAllowUndef, write = SetAllowUndef };
-#endif
-
 protected:
   bool FAnyDirectories;
   TFarCheckBox * FCheckBoxes[12];
@@ -4881,11 +4865,6 @@ class TCopyParamsContainer : public TFarDialogContainer
 public:
   explicit /* __fastcall */ TCopyParamsContainer(TFarDialog * ADialog,
     int Options, int CopyParamAttrs);
-
-#ifndef _MSC_VER
-  __property TCopyParamType Params = { read = GetParams, write = SetParams };
-  __property int Height = { read = GetHeight };
-#endif
 
 protected:
   TFarRadioButton * TMTextButton;

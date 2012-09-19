@@ -245,11 +245,7 @@ protected:
   bool __fastcall IsLogging();
   void __fastcall ShowLog();
 
-#ifndef _MSC_VER
-  __property TTerminal * Terminal = { read = FTerminal };
-#else
   TTerminal * GetTerminal() { return FTerminal; }
-#endif
 
 private:
   TTerminal * FTerminal;
