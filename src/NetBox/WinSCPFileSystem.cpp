@@ -328,7 +328,7 @@ void __fastcall TWinSCPFileSystem::Init(TSecureShell * /* SecureShell */)
   FAuthenticationLog = NULL;
   FLastEditorID = -1;
   FLoadingSessionList = false;
-  FPathHistory = new TStringList;
+  FPathHistory = new TStringList();
 
   FLastMultipleEditReadOnly = false;
   FEditorPendingSave = false;
@@ -4067,7 +4067,7 @@ void __fastcall TWinSCPFileSystem::MultipleEdit(const UnicodeString Directory,
     TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
     EditViewCopyParam(CopyParam);
 
-    TStrings * FileList = new TStringList;
+    TStrings * FileList = new TStringList();
     assert(!FNoProgressFinish);
     FNoProgressFinish = true;
     TRY_FINALLY2 (Self, FileList,

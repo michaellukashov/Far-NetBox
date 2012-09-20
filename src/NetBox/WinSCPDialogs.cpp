@@ -3600,7 +3600,7 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
     // FTP tab
     SessionData->SetFtpAllowEmptyPassword(FtpAllowEmptyPasswordCheck->GetChecked());
     SessionData->SetSslSessionReuse(SslSessionReuseCheck->GetChecked());
-    TStrings * PostLoginCommands = new TStringList;
+    TStrings * PostLoginCommands = new TStringList();
     std::auto_ptr<TStrings> PostLoginCommandsPtr(PostLoginCommands);
     {
       for (int Index = 0; Index < LENOF(PostLoginCommandsEdits); Index++)
