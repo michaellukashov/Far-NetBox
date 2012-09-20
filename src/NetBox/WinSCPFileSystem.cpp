@@ -4188,8 +4188,8 @@ UnicodeString __fastcall TWinSCPFileSystem::GetFileNameHash(const UnicodeString 
   RawByteString Result;
   Result.SetLength(16);
   md5checksum(
-    reinterpret_cast<const char*>(FileName.c_str()), FileName.Length() * sizeof(wchar_t),
-    (unsigned char *)Result.c_str());
+    reinterpret_cast<const char *>(FileName.c_str()), FileName.Length() * sizeof(wchar_t),
+    reinterpret_cast<unsigned char *>(const_cast<char *>(Result.c_str())));
   return BytesToHex(Result);
 }
 //---------------------------------------------------------------------------
