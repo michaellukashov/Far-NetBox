@@ -1,7 +1,5 @@
 #pragma once
 
-#include "boostdefines.hpp"
-
 #pragma warning(push, 1)
 #include <vcl.h>
 #include <Sysutils.hpp>

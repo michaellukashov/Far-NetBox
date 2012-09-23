@@ -4,8 +4,6 @@
 //---------------------------------------------------------------------------
 #pragma once
 
-#include "boostdefines.hpp"
-
 #include "FarPlugin.h"
 
 #define MAX_SIZE -1
