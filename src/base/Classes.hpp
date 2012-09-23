@@ -180,9 +180,9 @@ public:
   void * operator [](int Index) const;
   void *& GetItem(int Index);
   void SetItem(int Index, void * Item);
-  int Add(void * value);
-  void * Extract(void * item);
-  int Remove(void * item);
+  int Add(void * Value);
+  void * Extract(void * Item);
+  int Remove(void * Item);
   void Move(int CurIndex, int NewIndex);
   void Delete(int Index);
   virtual void Insert(int Index, void * Item);
@@ -194,7 +194,7 @@ public:
 
 protected:
   int GetCount() const;
-  void SetCount(int value);
+  void SetCount(int Value);
 
 private:
   int PropertyGetCount() { return GetCount(); }
