@@ -579,7 +579,7 @@ public:
   void __fastcall WriteBuffer(const void * Buffer, __int64 Count);
   __int64 __fastcall CopyFrom(TStream * Source, __int64 Count);
 
-protected:
+public:
   __int64 __fastcall GetPosition() { return Seek(0, soFromCurrent); }
   __int64 __fastcall GetSize()
   {
@@ -588,6 +588,8 @@ protected:
     Seek(Pos, soFromBeginning);
     return Result;
   }
+
+protected:
   virtual void __fastcall SetSize(const __int64 NewSize) = 0;
   void __fastcall SetPosition(const __int64 Pos)
   {
