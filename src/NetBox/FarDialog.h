@@ -69,7 +69,7 @@ public:
   void __fastcall SetNextItemPosition(const TItemPosition & Value) { FNextItemPosition = Value; }
   int __fastcall GetDefaultGroup() const { return FDefaultGroup; }
   void __fastcall SetDefaultGroup(const int & Value) { FDefaultGroup = Value; }
-  size_t GetTag() const { return FTag; }
+  int GetTag() const { return FTag; }
   void SetTag(int Value) { FTag = Value; }
   TFarDialogItem * __fastcall GetItemFocused() { return FItemFocused; }
   void __fastcall SetItemFocused(TFarDialogItem * Value);
@@ -129,7 +129,7 @@ private:
   TFarBox * FBorderBox;
   TItemPosition FNextItemPosition;
   int FDefaultGroup;
-  size_t FTag;
+  int FTag;
   TFarDialogItem * FItemFocused;
   TFarKeyEvent FOnKey;
   FarDialogItem * FDialogItems;

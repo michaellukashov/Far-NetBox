@@ -372,9 +372,9 @@ LONG_PTR WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1
 {
   TFarPluginEnvGuard Guard;
 
-  static std::map<HANDLE, size_t> Dialogs;
+  static std::map<HANDLE, LONG_PTR> Dialogs;
   TFarDialog * Dialog = NULL;
-  intptr_t Result = 0;
+  LONG_PTR Result = 0;
   if (Msg == DN_INITDIALOG)
   {
     assert(Dialogs.find(Handle) == Dialogs.end());
@@ -389,7 +389,7 @@ LONG_PTR WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1
       // DM_CLOSE is sent after DN_CLOSE, if the dialog was closed programatically
       // by SendMessage(DM_CLOSE, ...)
       assert(Msg == DM_CLOSE);
-      Result = (int)false;
+      Result = (LONG_PTR)0;
     }
     else
     {
