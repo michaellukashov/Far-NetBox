@@ -665,7 +665,7 @@ int TStrings::IndexOfName(const UnicodeString Name)
   {
     UnicodeString S = GetStrings(Index);
     int P = ::AnsiPos(S, L'=');
-    if ((P > 0) && (CompareStrings(S.SubStr(1, P), Name) == 0))
+    if ((P > 0) && (CompareStrings(S.SubStr(1, P - 1), Name) == 0))
     {
       return Index;
     }
@@ -684,7 +684,7 @@ UnicodeString TStrings::ExtractName(const UnicodeString S) const
   int P = ::AnsiPos(Result, L'=');
   if (P > 0)
   {
-    Result.SetLength(P);
+    Result.SetLength(P - 1);
   }
   else
   {
@@ -697,10 +697,12 @@ const UnicodeString TStrings::GetValue(const UnicodeString Name)
 {
   UnicodeString Result;
   int I = IndexOfName(Name);
+  // DEBUG_PRINTF(L"Name = %s, I = %d", Name.c_str(), I);
   if (I >= 0)
   {
-    Result = GetStrings(I).SubStr(Name.Length() + 1, static_cast<int>(-1));
+    Result = GetStrings(I).SubStr(Name.Length() + 2, static_cast<int>(-1));
   }
+  // DEBUG_PRINTF(L"Result = %s", Result.c_str());
   return Result;
 }
 
