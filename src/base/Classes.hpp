@@ -659,6 +659,7 @@ public:
   void __fastcall Clear();
   void __fastcall LoadFromStream(TStream * Stream);
   void __fastcall LoadFromFile(const UnicodeString FileName);
+  __int64 __fastcall GetSize() const { return FSize; }
   virtual void __fastcall SetSize(const __int64 NewSize);
   virtual __int64 __fastcall Write(const void * Buffer, __int64 Count);
 

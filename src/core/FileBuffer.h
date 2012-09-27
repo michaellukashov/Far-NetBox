@@ -22,18 +22,17 @@ public:
   __int64 __fastcall LoadStream(TStream * Stream, const __int64 Len, bool ForceLen);
   __int64 __fastcall ReadStream(TStream * Stream, const __int64 Len, bool ForceLen);
   void __fastcall WriteToStream(TStream * Stream, const __int64 Len);
-  TMemoryStream * __fastcall GetMemory() { return FMemory; }
-  __int64 __fastcall GetSize() const { return FSize; }
 
 private:
   TMemoryStream * FMemory;
-  __int64 FSize;
 
 public:
-  void __fastcall SetMemory(TMemoryStream * value);
+  TMemoryStream * __fastcall GetMemory() { return FMemory; }
+  void __fastcall SetMemory(TMemoryStream * Value);
   char * __fastcall GetData() const { return static_cast<char *>(FMemory->GetMemory()); }
-  void __fastcall SetSize(__int64 value);
-  void __fastcall SetPosition(__int64 value);
+  __int64 __fastcall GetSize() const { return FMemory->Size; }
+  void __fastcall SetSize(__int64 Value);
+  void __fastcall SetPosition(__int64 Value);
   __int64 __fastcall GetPosition() const;
 };
 //---------------------------------------------------------------------------

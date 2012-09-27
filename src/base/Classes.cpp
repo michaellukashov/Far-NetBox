@@ -990,7 +990,6 @@ void TStringList::SetSorted(bool value)
 }
 void TStringList::LoadFromFile(const UnicodeString FileName)
 {
-  Classes::Error(SNotImplemented, 14);
   HANDLE FileHandle = ::CreateFile(FileName.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, 0);
   TSafeHandleStream Stream(FileHandle);
   __int64 Size = Stream.GetSize();
@@ -999,7 +998,10 @@ void TStringList::LoadFromFile(const UnicodeString FileName)
   bool ConvertToken;
   FileBuffer.Convert(eolCRLF, eolCRLF, cpRemoveCtrlZ | cpRemoveBOM, ConvertToken);
   ::CloseHandle(FileHandle);
-  /*FILE * f = NULL;
+  UnicodeString Str(FileBuffer.GetData(), FileBuffer.GetSize());
+  // DEBUG_PRINTF(L"Str = %s", Str.c_str());
+  SetTextStr(Str);
+  /* FILE * f = NULL;
   _wfopen_s(&f, FileName, L"rb");
   if (!f)
     return;
