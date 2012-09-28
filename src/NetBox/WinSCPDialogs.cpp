@@ -179,12 +179,12 @@ void __fastcall TTabbedDialog::SelectTab(int Tab)
     FTab = Tab;
   }
 
-  for (int i = 0; i < GetItemCount(); i++)
+  for (int I = 0; I < GetItemCount(); I++)
   {
-    TFarDialogItem * I = GetItem(i);
-    if ((I->GetGroup() == Tab) && I->CanFocus())
+    TFarDialogItem * Item = GetItem(I);
+    if ((Item->GetGroup() == Tab) && Item->CanFocus())
     {
-      I->SetFocus();
+      Item->SetFocus();
       break;
     }
   }
@@ -199,9 +199,9 @@ void __fastcall TTabbedDialog::SelectTab(int Tab)
 TTabButton * __fastcall TTabbedDialog::TabButton(int Tab)
 {
   TTabButton * Result = NULL;
-  for (int i = 0; i < GetItemCount(); i++)
+  for (int I = 0; I < GetItemCount(); I++)
   {
-    TTabButton * T = dynamic_cast<TTabButton *>(GetItem(i));
+    TTabButton * T = dynamic_cast<TTabButton *>(GetItem(I));
     if ((T != NULL) && (T->GetTab() == Tab))
     {
       Result = T;
@@ -209,6 +209,10 @@ TTabButton * __fastcall TTabbedDialog::TabButton(int Tab)
     }
   }
 
+  if (!Result)
+  {
+    DEBUG_PRINTF(L"Tab = %d", Tab);
+  }
   assert(Result != NULL);
 
   return Result;
@@ -1043,7 +1047,7 @@ private:
 //---------------------------------------------------------------------------
 UnicodeString __fastcall ReplaceCopyright(UnicodeString S)
 {
-  return ::StringReplace(S, L"©", L"(c)", TReplaceFlags() << rfReplaceAll);
+  return ::StringReplace(S, L"Â©", L"(c)", TReplaceFlags() << rfReplaceAll);
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
