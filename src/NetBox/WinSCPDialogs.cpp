@@ -265,22 +265,22 @@ bool __fastcall TTabbedDialog::Key(TFarDialogItem * /*Item*/, long KeyCode)
 //---------------------------------------------------------------------------
 void __fastcall TTabButton::SetTabName(const UnicodeString Value)
 {
-  UnicodeString value = Value;
-  if (FTabName != value)
+  UnicodeString Val = Value;
+  if (FTabName != Val)
   {
     UnicodeString C;
-    int P = ::Pos(value, L"|");
+    int P = ::Pos(Val, L"|");
     if (P > 0)
     {
-      C = value.SubString(1, P - 1);
-      value.Delete(1, P + 1);
+      C = Val.SubString(1, P - 1);
+      Val.Delete(1, P);
     }
     else
     {
-      C = value;
+      C = Val;
     }
     SetCaption(C);
-    FTabName = StripHotKey(value);
+    FTabName = StripHotKey(Val);
   }
 }
 //---------------------------------------------------------------------------
