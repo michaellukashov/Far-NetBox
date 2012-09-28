@@ -295,7 +295,7 @@ bool __fastcall TWinSCPPlugin::ConfigurationDialog()
 
     Dialog->SetSize(TPoint(67, 22));
     Dialog->SetCaption(FORMAT(L"%s - %s",
-                              GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_INTERFACE)).c_str()));
+      GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_INTERFACE)).c_str()));
 
     TFarCheckBox * DisksMenuCheck = new TFarCheckBox(Dialog);
     DisksMenuCheck->SetCaption(GetMsg(CONFIG_DISKS_MENU));
@@ -668,9 +668,9 @@ bool __fastcall TWinSCPPlugin::EnduranceConfigurationDialog()
 
     SessionReopenAutoCheck->SetChecked((Configuration->GetSessionReopenAuto() > 0));
     SessionReopenAutoEdit->SetAsInteger((Configuration->GetSessionReopenAuto() > 0 ?
-                                         (Configuration->GetSessionReopenAuto() / 1000) : 5));
+      (Configuration->GetSessionReopenAuto() / 1000) : 5));
     SessionReopenNumberOfRetriesEdit->SetAsInteger((Configuration->GetSessionReopenAutoMaximumNumberOfRetries() > 0 ?
-        Configuration->GetSessionReopenAutoMaximumNumberOfRetries() : CONST_DEFAULT_NUMBER_OF_RETRIES));
+      Configuration->GetSessionReopenAutoMaximumNumberOfRetries() : CONST_DEFAULT_NUMBER_OF_RETRIES));
 
     Result = (Dialog->ShowModal() == brOK);
 
@@ -806,7 +806,7 @@ private:
 
   SetSize(TPoint(55, 14));
   SetCaption(FORMAT(L"%s - %s",
-                    GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_TRANSFER_EDITOR)).c_str()));
+    GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_TRANSFER_EDITOR)).c_str()));
 
   EditorMultipleCheck = new TFarCheckBox(this);
   EditorMultipleCheck->SetCaption(GetMsg(TRANSFER_EDITOR_MULTIPLE));
@@ -932,8 +932,8 @@ bool __fastcall TWinSCPPlugin::ConfirmationsConfigurationDialog()
     Dialog->AddStandardButtons();
 
     ConfirmOverwritingCheck->SetSelected(!FarConfiguration->GetConfirmOverwritingOverride() ?
-                                         BSTATE_3STATE : (Configuration->GetConfirmOverwriting() ? BSTATE_CHECKED :
-                                             BSTATE_UNCHECKED));
+      BSTATE_3STATE : (Configuration->GetConfirmOverwriting() ? BSTATE_CHECKED :
+                         BSTATE_UNCHECKED));
     ConfirmCommandSessionCheck->SetChecked(GUIConfiguration->GetConfirmCommandSession());
     ConfirmResumeCheck->SetChecked(GUIConfiguration->GetConfirmResume());
     ConfirmSynchronizedBrowsingCheck->SetChecked(FarConfiguration->GetConfirmSynchronizedBrowsing());
@@ -975,7 +975,7 @@ bool __fastcall TWinSCPPlugin::IntegrationConfigurationDialog()
 
     Dialog->SetSize(TPoint(65, 14));
     Dialog->SetCaption(FORMAT(L"%s - %s",
-                              GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_INTEGRATION)).c_str()));
+      GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_INTEGRATION)).c_str()));
 
     Text = new TFarText(Dialog);
     Text->SetCaption(GetMsg(INTEGRATION_PUTTY));
@@ -1084,7 +1084,7 @@ UnicodeString __fastcall ReplaceCopyright(UnicodeString S)
   SetSize(TPoint(55, Height));
 
   SetCaption(FORMAT(L"%s - %s",
-                    GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_ABOUT)).c_str()));
+    GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_ABOUT)).c_str()));
   Text = new TFarText(this);
   Text->SetCaption(Configuration->GetFileInfoString(L"FileDescription"));
   Text->SetCenterGroup(true);
@@ -1106,8 +1106,8 @@ UnicodeString __fastcall ReplaceCopyright(UnicodeString S)
   {
     Text = new TFarText(this);
     Text->SetCaption(FORMAT(GetMsg(ABOUT_PRODUCT_VERSION).c_str(),
-                            ProductName.c_str(),
-                            LoadStr(WINSCP_VERSION).c_str()));
+      ProductName.c_str(),
+      LoadStr(WINSCP_VERSION).c_str()));
     Text->SetCenterGroup(true);
   }
 
@@ -3068,7 +3068,7 @@ void __fastcall TSessionDialog::UpdateControls()
 
   // Kex tab
   KexTab->SetEnabled(SshProtocol && !SshProt1onlyButton->GetChecked() &&
-                     (BugRekey2Combo->GetItemIndex() != 2));
+    (BugRekey2Combo->GetItemIndex() != 2));
   KexUpButton->SetEnabled((KexListBox->GetItems()->GetSelected() > 0));
   KexDownButton->SetEnabled(
     (KexListBox->GetItems()->GetSelected() < KexListBox->GetItems()->Count - 1));
@@ -3579,8 +3579,8 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
     SessionData->SetListingCommand(ListingCommandEdit->GetText());
     SessionData->SetSCPLsFullTime(SCPLsFullTimeAutoCheck->GetChecked() ? asAuto : asOff);
     SessionData->SetTimeDifference(TDateTime(
-                                     (static_cast<double>(TimeDifferenceEdit->GetAsInteger()) / 24) +
-                                     (static_cast<double>(TimeDifferenceMinutesEdit->GetAsInteger()) / 24 / 60)));
+      (static_cast<double>(TimeDifferenceEdit->GetAsInteger()) / 24) +
+      (static_cast<double>(TimeDifferenceMinutesEdit->GetAsInteger()) / 24 / 60)));
 
     // SFTP tab
 
@@ -3850,7 +3850,7 @@ void __fastcall TSessionDialog::SavePing(TSessionData * SessionData)
     PingType = ptOff;
   }
   TFSProtocol FSProtocol = IndexToFSProtocol(FTransferProtocolIndex,
-                           AllowScpFallbackCheck->GetChecked());
+    AllowScpFallbackCheck->GetChecked());
   if (FSProtocol == fsFTP)
   {
     SessionData->SetFtpPingType(PingType);
@@ -3927,7 +3927,7 @@ TFarComboBox * __fastcall TSessionDialog::GetProxyMethodCombo()
 TFSProtocol __fastcall TSessionDialog::GetFSProtocol()
 {
   return IndexToFSProtocol(TransferProtocolCombo->GetItemIndex(),
-                           AllowScpFallbackCheck->GetChecked());
+    AllowScpFallbackCheck->GetChecked());
 }
 //---------------------------------------------------------------------------
 int __fastcall TSessionDialog::LastSupportedFtpProxyMethod()
@@ -4189,7 +4189,7 @@ void __fastcall TSessionDialog::FillCodePageEdit()
   CodePageEditAdd(CP_ACP);
   // CodePageEditAdd(CP_UTF8);
   CodePageEdit->GetItems()->AddObject(L"65001 (UTF-8)",
-                                      static_cast<TObject *>(reinterpret_cast<void *>(65001)));
+    static_cast<TObject *>(reinterpret_cast<void *>(65001)));
   CodePageEditAdd(CP_OEMCP);
   CodePageEditAdd(20866); // KOI8-r
 }
@@ -4200,7 +4200,7 @@ void __fastcall TSessionDialog::CodePageEditAdd(unsigned int cp)
   if (::GetCodePageInfo(cp, cpInfoEx))
   {
     CodePageEdit->GetItems()->AddObject(cpInfoEx.CodePageName,
-                                        static_cast<TObject *>(reinterpret_cast<void *>(cpInfoEx.CodePage)));
+      static_cast<TObject *>(reinterpret_cast<void *>(cpInfoEx.CodePage)));
   }
 }
 //---------------------------------------------------------------------------
@@ -4222,8 +4222,8 @@ class TRightsContainer : public TFarDialogContainer
 {
 public:
   explicit /* __fastcall */ TRightsContainer(TFarDialog * ADialog, bool AAnyDirectories,
-                            bool ShowButtons, bool ShowSpecials,
-                            TFarDialogItem * EnabledDependency);
+    bool ShowButtons, bool ShowSpecials,
+    TFarDialogItem * EnabledDependency);
 protected:
   bool FAnyDirectories;
   TFarCheckBox * FCheckBoxes[12];
@@ -4706,7 +4706,7 @@ private:
     Separator->SetCaption(GetMsg(PROPERTIES_RIGHTS));
 
     RightsContainer = new TRightsContainer(this, FAnyDirectories,
-                                           true, true, NULL);
+      true, true, NULL);
     RightsContainer->SetEnabled(FAllowedChanges & cpMode);
 
     if (FAnyDirectories)
@@ -5071,7 +5071,7 @@ public:
   GetDialog()->SetNextItemPosition(ipBelow);
 
   RightsContainer = new TRightsContainer(GetDialog(), true, false,
-                                         false, PreserveRightsCheck);
+    false, PreserveRightsCheck);
   RightsContainer->SetLeft(PreserveRightsCheck->GetActualBounds().Left);
   RightsContainer->SetTop(PreserveRightsCheck->GetActualBounds().Top + 1);
 
@@ -5547,7 +5547,7 @@ bool __fastcall TCopyDialog::CloseQuery()
         TWinSCPPlugin * WinSCPPlugin = dynamic_cast<TWinSCPPlugin *>(FarPlugin);
 
         if (WinSCPPlugin->MoreMessageDialog(FORMAT(GetMsg(CREATE_LOCAL_DIRECTORY).c_str(), Directory.c_str()),
-                                            NULL, qtConfirmation, qaOK | qaCancel) != qaCancel)
+          NULL, qtConfirmation, qaOK | qaCancel) != qaCancel)
         {
           if (!ForceDirectories(Directory))
           {
@@ -5740,7 +5740,7 @@ void __fastcall TLinkDialog::Change()
   if (GetHandle())
   {
     OkButton->SetEnabled(!FileNameEdit->GetText().IsEmpty() &&
-                         !PointToEdit->GetText().IsEmpty());
+      !PointToEdit->GetText().IsEmpty());
   }
 }
 //---------------------------------------------------------------------------
@@ -6985,7 +6985,7 @@ bool __fastcall TFullSynchronizeDialog::CloseQuery()
     TWinSCPPlugin * WinSCPPlugin = dynamic_cast<TWinSCPPlugin *>(FarPlugin);
 
     switch (WinSCPPlugin->MoreMessageDialog(GetMsg(SAVE_SYNCHRONIZE_MODE), NULL,
-                                            qtConfirmation, qaYes | qaNo | qaCancel, 0))
+              qtConfirmation, qaYes | qaNo | qaCancel, 0))
     {
       case qaYes:
         FSaveMode = true;
@@ -7404,7 +7404,7 @@ UnicodeString __fastcall TSynchronizeChecklistDialog::ItemLine(
         AddColumn(Line, FormatSize(ChecklistItem->Local.Size, 2), 2);
       }
       AddColumn(Line, UserModificationStr(ChecklistItem->Local.Modification,
-                                          ChecklistItem->Local.ModificationFmt), 3);
+        ChecklistItem->Local.ModificationFmt), 3);
     }
   }
 
@@ -8304,13 +8304,13 @@ private:
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TQueueDialog::OperationButtonClick(TFarButton * Sender,
-                                        bool & /*Close*/)
+  bool & /*Close*/)
 {
   TQueueItemProxy * QueueItem = NULL;
   if (QueueListBox->GetItems()->GetSelected() != NPOS)
   {
     QueueItem = reinterpret_cast<TQueueItemProxy *>(
-                  QueueListBox->GetItems()->Objects[QueueListBox->GetItems()->GetSelected()]);
+      QueueListBox->GetItems()->Objects[QueueListBox->GetItems()->GetSelected()]);
 
     if (Sender == ExecuteButton)
     {
@@ -8425,13 +8425,13 @@ void __fastcall TQueueDialog::UpdateControls()
       (QueueItem != NULL) && (QueueItem->GetStatus() == TQueueItem::qsPending));
   }
   DeleteButton->SetEnabled((QueueItem != NULL) &&
-                           (QueueItem->GetStatus() != TQueueItem::qsDone));
+    (QueueItem->GetStatus() != TQueueItem::qsDone));
   MoveUpButton->SetEnabled((QueueItem != NULL) &&
-                           (QueueItem->GetStatus() == TQueueItem::qsPending) &&
-                           (QueueItem->GetIndex() > FStatus->GetActiveCount()));
+    (QueueItem->GetStatus() == TQueueItem::qsPending) &&
+    (QueueItem->GetIndex() > FStatus->GetActiveCount()));
   MoveDownButton->SetEnabled((QueueItem != NULL) &&
-                             (QueueItem->GetStatus() == TQueueItem::qsPending) &&
-                             (QueueItem->GetIndex() < FStatus->GetCount() - 1));
+    (QueueItem->GetStatus() == TQueueItem::qsPending) &&
+    (QueueItem->GetIndex() < FStatus->GetCount() - 1));
 }
 //---------------------------------------------------------------------------
 void __fastcall TQueueDialog::Idle()
@@ -8507,7 +8507,7 @@ void __fastcall TQueueDialog::RefreshQueue()
            (Index < TopIndex + QueueListBox->GetHeight()))
     {
       QueueItem = reinterpret_cast<TQueueItemProxy *>(
-                    QueueListBox->GetItems()->Objects[Index]);
+        QueueListBox->GetItems()->Objects[Index]);
       assert(QueueItem != NULL);
       if ((PrevQueueItem != NULL) && (QueueItem != PrevQueueItem))
       {
@@ -8600,8 +8600,8 @@ bool __fastcall TQueueDialog::FillQueueItemLine(UnicodeString & Line,
   }
 
   bool BlinkHide = QueueItemNeedsFrequentRefresh(QueueItem) &&
-                   !QueueItem->GetProcessingUserAction() &&
-                   ((GetTickCount() % 2000) >= 1000);
+    !QueueItem->GetProcessingUserAction() &&
+    ((GetTickCount() % 2000) >= 1000);
 
   UnicodeString Operation;
   UnicodeString Direction;
