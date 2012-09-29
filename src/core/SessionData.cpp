@@ -1008,7 +1008,7 @@ void __fastcall TSessionData::SaveRecryptedPasswords(THierarchicalStorage * Stor
 void __fastcall TSessionData::Remove()
 {
   THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
-  std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
+  TRY_FINALLY1 (Storage,
   {
     Storage->SetExplicit(true);
     if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), false))
@@ -1016,6 +1016,11 @@ void __fastcall TSessionData::Remove()
       Storage->RecursiveDeleteSubKey(GetInternalStorageKey());
     }
   }
+  ,
+  {
+    delete Storage;
+  }
+  );
 }
 //---------------------------------------------------------------------
 bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
@@ -1319,22 +1324,25 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
       TRACE("34");
       TStrings * RawSettings = NULL;
       TRegistryStorage * OptionsStorage = NULL;
-      std::auto_ptr<TStrings> RawSettingsPtr(NULL);
-      std::auto_ptr<TRegistryStorage> OptionsStoragePtr(NULL);
+      TRY_FINALLY2 (RawSettings, OptionsStorage,
       {
         RawSettings = new TStringList();
-        RawSettingsPtr.reset(RawSettings);
 
         if (Options->FindSwitch(L"rawsettings", RawSettings))
         {
           TRACE("35");
           OptionsStorage = new TRegistryStorage(Configuration->GetRegistryStorageKey());
-          OptionsStoragePtr.reset(OptionsStorage);
 
           bool Dummy;
           DoLoad(OptionsStorage, Dummy);
         }
       }
+      ,
+      {
+        delete RawSettings;
+        delete OptionsStorage;
+      }
+      );
     }
     if (Options->FindSwitch(L"allowemptypassword", Value))
     {
@@ -2635,8 +2643,7 @@ void __fastcall TStoredSessionList::Load(THierarchicalStorage * Storage,
   CALLSTACK;
   TStringList *SubKeys = new TStringList();
   TList * Loaded = new TList;
-  std::auto_ptr<TStringList> SubKeysPtr(SubKeys);
-  std::auto_ptr<TList> LoadedPtr(Loaded);
+  TRY_FINALLY2 (SubKeys, Loaded,
   {
     Storage->GetSubKeyNames(SubKeys);
     for (int Index = 0; Index < SubKeys->Count; Index++)
@@ -2697,19 +2704,30 @@ void __fastcall TStoredSessionList::Load(THierarchicalStorage * Storage,
       }
     }
   }
+  ,
+  {
+    delete SubKeys;
+    delete Loaded;
+  }
+  );
 }
 //---------------------------------------------------------------------
 void __fastcall TStoredSessionList::Load()
 {
   CALLSTACK;
   THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
-  std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
+  TRY_FINALLY1 (Storage,
   {
     if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), False))
     {
       Load(Storage);
     }
   }
+  ,
+  {
+    delete Storage;
+  }
+  );
 }
 //---------------------------------------------------------------------
 void __fastcall TStoredSessionList::DoSave(THierarchicalStorage * Storage,
@@ -2733,7 +2751,7 @@ void __fastcall TStoredSessionList::DoSave(THierarchicalStorage * Storage,
   bool All, bool RecryptPasswordOnly)
 {
   TSessionData * FactoryDefaults = new TSessionData(L"");
-  std::auto_ptr<TSessionData> FactoryDefaultsPtr(FactoryDefaults);
+  TRY_FINALLY1 (FactoryDefaults,
   {
     DoSave(Storage, FDefaultSettings, All, RecryptPasswordOnly, FactoryDefaults);
     for (int Index = 0; Index < Count + GetHiddenCount(); Index++)
@@ -2742,6 +2760,11 @@ void __fastcall TStoredSessionList::DoSave(THierarchicalStorage * Storage,
       DoSave(Storage, SessionData, All, RecryptPasswordOnly, FactoryDefaults);
     }
   }
+  ,
+  {
+    delete FactoryDefaults;
+  }
+  );
 }
 //---------------------------------------------------------------------
 void __fastcall TStoredSessionList::Save(THierarchicalStorage * Storage, bool All)
@@ -2752,7 +2775,7 @@ void __fastcall TStoredSessionList::Save(THierarchicalStorage * Storage, bool Al
 void __fastcall TStoredSessionList::DoSave(bool All, bool Explicit, bool RecryptPasswordOnly)
 {
   THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
-  std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
+  TRY_FINALLY1 (Storage,
   {
     Storage->SetAccessMode(smReadWrite);
     Storage->SetExplicit(Explicit);
@@ -2761,6 +2784,11 @@ void __fastcall TStoredSessionList::DoSave(bool All, bool Explicit, bool Recrypt
       DoSave(Storage, All, RecryptPasswordOnly);
     }
   }
+  ,
+  {
+    delete Storage;
+  }
+  );
 
   Saved();
 }
@@ -2789,7 +2817,7 @@ void __fastcall TStoredSessionList::Export(const UnicodeString FileName)
   Classes::Error(SNotImplemented, 3003);
 /*
   THierarchicalStorage * Storage = new TIniFileStorage(FileName);
-  std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
+  TRY_FINALLY1 (Storage,
   {
     Storage->SetAccessMode(smReadWrite);
     if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), true))
@@ -2797,6 +2825,11 @@ void __fastcall TStoredSessionList::Export(const UnicodeString FileName)
       Save(Storage, true);
     }
   }
+  ,
+  {
+    delete Storage;
+  }
+  );
 */
 }
 //---------------------------------------------------------------------
@@ -2843,7 +2876,7 @@ void __fastcall TStoredSessionList::Cleanup()
   {
     if (Configuration->GetStorage() == stRegistry) { Clear(); }
     TRegistryStorage * Storage = new TRegistryStorage(Configuration->GetRegistryStorageKey());
-    std::auto_ptr<TRegistryStorage> StoragePtr(Storage);
+    TRY_FINALLY1 (Storage,
     {
       Storage->SetAccessMode(smReadWrite);
       if (Storage->OpenRootKey(False))
@@ -2851,6 +2884,11 @@ void __fastcall TStoredSessionList::Cleanup()
         Storage->RecursiveDeleteSubKey(Configuration->GetStoredSessionsSubKey());
       }
     }
+    ,
+    {
+      delete Storage;
+    }
+    );
   }
   catch (Exception &E)
   {
@@ -3020,17 +3058,12 @@ void __fastcall TStoredSessionList::ImportHostKeys(const UnicodeString TargetKey
   TRegistryStorage * SourceStorage = NULL;
   TRegistryStorage * TargetStorage = NULL;
   TStringList * KeyList = NULL;
-  std::auto_ptr<TRegistryStorage> SourceStoragePtr(NULL);
-  std::auto_ptr<TRegistryStorage> TargetStoragePtr(NULL);
-  std::auto_ptr<TStringList> KeyListPtr(NULL);
+  TRY_FINALLY3 (SourceStorage, TargetStorage, KeyList,
   {
     SourceStorage = new TRegistryStorage(SourceKey);
-    SourceStoragePtr.reset(SourceStorage);
     TargetStorage = new TRegistryStorage(TargetKey);
-    TargetStoragePtr.reset(TargetStorage);
     TargetStorage->SetAccessMode(smReadWrite);
     KeyList = new TStringList();
-    KeyListPtr.reset(KeyList);
 
     if (SourceStorage->OpenRootKey(false) &&
         TargetStorage->OpenRootKey(true))
@@ -3061,6 +3094,13 @@ void __fastcall TStoredSessionList::ImportHostKeys(const UnicodeString TargetKey
       }
     }
   }
+  ,
+  {
+    delete SourceStorage;
+    delete TargetStorage;
+    delete KeyList;
+  }
+  );
 }
 //---------------------------------------------------------------------------
 TSessionData * __fastcall TStoredSessionList::ParseUrl(UnicodeString Url,

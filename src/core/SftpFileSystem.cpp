@@ -794,11 +794,16 @@ public:
   {
     TStringList * DumpLines = new TStringList();
     RawByteString Dump;
-    std::auto_ptr<TStringList> DumpLinesPtr(DumpLines);
+    TRY_FINALLY1 (DumpLines,
     {
       DumpLines->LoadFromFile(FileName);
       Dump = AnsiString(DumpLines->Text);
     }
+    ,
+    {
+      delete DumpLines;
+    }
+    );
 
     SetCapacity(1 * 1024 * 1024); // 20480);
     unsigned char Byte[3];
@@ -1113,13 +1118,11 @@ public:
     bool Result;
     TSFTPQueuePacket * Request = NULL;
     TSFTPPacket * Response = NULL;
-    std::auto_ptr<TSFTPQueuePacket> RequestPtr(NULL);
-    std::auto_ptr<TSFTPPacket> ResponsePtr(NULL);
+    TRY_FINALLY2 (Request, Response,
     {
       Request = static_cast<TSFTPQueuePacket*>(FRequests->Items[0]);
       FRequests->Delete(0);
       assert(Request);
-      RequestPtr.reset(Request);
       if (Token != NULL)
       {
         *Token = Request->Token;
@@ -1128,7 +1131,6 @@ public:
       Response = static_cast<TSFTPPacket*>(FResponses->Items[0]);
       FResponses->Delete(0);
       assert(Response);
-      ResponsePtr.reset(Response);
 
       FFileSystem->ReceiveResponse(Request, Response,
         ExpectedType, AllowStatus);
@@ -1144,6 +1146,12 @@ public:
         SendRequests();
       }
     }
+    ,
+    {
+      delete Request;
+      delete Response;
+    }
+    );
 
     return Result;
   }
@@ -3478,7 +3486,7 @@ void __fastcall TSFTPFileSystem::ChangeFileProperties(const UnicodeString FileNa
   UnicodeString RealFileName = LocalCanonify(FileName);
   ReadFile(RealFileName, File);
   assert(File);
-  std::auto_ptr<TRemoteFile> FilePtr(File);
+  TRY_FINALLY1 (File,
   {
     if (File->GetIsDirectory() && !File->GetIsSymLink() && AProperties->Recursive)
     {
@@ -3517,6 +3525,11 @@ void __fastcall TSFTPFileSystem::ChangeFileProperties(const UnicodeString FileNa
     Packet.AddProperties(&Properties, *File->GetRights(), File->GetIsDirectory(), FVersion, FUtfStrings, &Action);
     SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
   }
+  ,
+  {
+    delete File;
+  }
+  );
 }
 //---------------------------------------------------------------------------
 bool __fastcall TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)

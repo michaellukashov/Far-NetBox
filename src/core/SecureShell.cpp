@@ -2071,10 +2071,15 @@ void __fastcall TSecureShell::VerifyHostKey(UnicodeString Host, int Port,
     if (!Verified)
     {
       Exception * E = new Exception(LoadStr(KEY_NOT_VERIFIED));
-      std::auto_ptr<Exception> EPtr(E);
+      TRY_FINALLY1 (E,
       {
         FUI->FatalError(E, FMTLOAD(HOSTKEY, Fingerprint.c_str()));
       }
+      ,
+      {
+        delete E;
+      }
+      );
     }
   }
 }

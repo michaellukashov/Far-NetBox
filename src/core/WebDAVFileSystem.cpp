@@ -3126,7 +3126,7 @@ config_read_auth_data(apr_hash_t ** hash,
   THierarchicalStorage * Storage = NULL;
   WEBDAV_ERR(fs->CreateStorage(Storage));
   assert(Storage);
-  std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
+  TRY_FINALLY1 (Storage,
   {
     Storage->SetAccessMode(smRead);
     if (!Storage->OpenSubKey(UnicodeString(subkey), false))
@@ -3134,7 +3134,7 @@ config_read_auth_data(apr_hash_t ** hash,
 
     *hash = apr_hash_make(pool);
     TStrings * Keys = new TStringList();
-    std::auto_ptr<TStrings> KeysPtr(Keys);
+    TRY_FINALLY1 (Keys,
     {
       Storage->GetValueNames(Keys);
       for (int Index = 0; Index < Keys->Count; Index++)
@@ -3148,7 +3148,17 @@ config_read_auth_data(apr_hash_t ** hash,
                                     StrToIntDef(Value, 0)));
       }
     }
+    ,
+    {
+      delete Keys;
+    }
+    );
   }
+  ,
+  {
+    delete Storage;
+  }
+  );
   return WEBDAV_NO_ERROR;
 }
 
@@ -3164,7 +3174,7 @@ config_write_auth_data(apr_hash_t * hash,
   THierarchicalStorage * Storage = NULL;
   WEBDAV_ERR(fs->CreateStorage(Storage));
   assert(Storage);
-  std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
+  TRY_FINALLY1 (Storage,
   {
     Storage->SetAccessMode(smReadWrite);
 
@@ -3177,6 +3187,11 @@ config_write_auth_data(apr_hash_t * hash,
     if (trusted_cert && failstr)
       Storage->WriteString(UnicodeString(trusted_cert->data), UnicodeString(failstr->data));
   }
+  ,
+  {
+    delete Storage;
+  }
+  );
   return WEBDAV_NO_ERROR;
 }
 
@@ -14731,7 +14746,7 @@ webdav::error_t TWebDAVFileSystem::SimplePrompt(
   TSessionData * Data = FTerminal->GetSessionData();
   UnicodeString Text = Data->GetUserNameExpanded();
   TStrings * MoreMessages = new TStringList();
-  std::auto_ptr<TStrings> MoreMessagesPtr(MoreMessages);
+  TRY_FINALLY1 (MoreMessages,
   {
     MoreMessages->Add(UnicodeString(prompt_string));
     unsigned int Answer = FTerminal->QueryUser(
@@ -14739,6 +14754,11 @@ webdav::error_t TWebDAVFileSystem::SimplePrompt(
                             MoreMessages, qaYes | qaNo | qaCancel, NULL, qtConfirmation);
     RequestResult = Answer;
   }
+  ,
+  {
+    delete MoreMessages;
+  }
+  );
   return RequestResult == qaCancel ? WEBDAV_ERR_CANCELLED : WEBDAV_NO_ERROR;
 }
 

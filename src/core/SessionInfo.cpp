@@ -970,10 +970,15 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
     ADF(L"NetBox %s (OS %s)", FConfiguration->GetVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
     THierarchicalStorage * Storage = FConfiguration->CreateScpStorage(false);
     assert(Storage);
-    std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
+    TRY_FINALLY1 (Storage,
     {
       ADF(L"Configuration: %s", Storage->GetSource().c_str());
     }
+    ,
+    {
+      delete Storage;
+    }
+    );
 
     if (0)
     {
@@ -1347,10 +1352,15 @@ void __fastcall TActionLog::AddFailure(Exception * E)
   TStrings * Messages = ExceptionToMessages(E);
   if (Messages != NULL)
   {
-    std::auto_ptr<TStrings> MessagesPtr(Messages);
+    TRY_FINALLY1 (Messages,
     {
       AddFailure(Messages);
     }
+    ,
+    {
+      delete Messages;
+    }
+    );
   }
 }
 //---------------------------------------------------------------------------

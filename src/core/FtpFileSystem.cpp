@@ -574,7 +574,7 @@ void __fastcall TFTPFileSystem::Idle()
       FLastDataSent = Now();
 
       TRemoteDirectory * Files = new TRemoteDirectory(FTerminal);
-      std::auto_ptr<TRemoteDirectory> FilesPtr(Files);
+      TRY_FINALLY1 (Files,
       {
         try
         {
@@ -591,6 +591,11 @@ void __fastcall TFTPFileSystem::Idle()
           }
         }
       }
+      ,
+      {
+        delete Files;
+      }
+      );
     }
   }
 }
@@ -752,7 +757,7 @@ void __fastcall TFTPFileSystem::ChangeFileProperties(const UnicodeString AFileNa
   {
     TRemoteFile * OwnedFile = NULL;
 
-    std::auto_ptr<TRemoteFile> OwnedFilePtr(NULL);
+    TRY_FINALLY1 (OwnedFile,
     {
       UnicodeString FileName = AbsolutePath(AFileName, false);
 
@@ -761,7 +766,6 @@ void __fastcall TFTPFileSystem::ChangeFileProperties(const UnicodeString AFileNa
         ReadFile(FileName, OwnedFile);
         File = OwnedFile;
       }
-      OwnedFilePtr.reset(OwnedFile);
 
       if ((File != NULL) && File->GetIsDirectory() && !File->GetIsSymLink() && Properties->Recursive)
       {
@@ -798,6 +802,11 @@ void __fastcall TFTPFileSystem::ChangeFileProperties(const UnicodeString AFileNa
 
       GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
     }
+    ,
+    {
+      delete OwnedFile;
+    }
+    );
   }
   else
   {
@@ -1797,7 +1806,7 @@ void __fastcall TFTPFileSystem::DoStartup()
 {
   CALLSTACK;
   TStrings * PostLoginCommands = new TStringList();
-  std::auto_ptr<TStrings> PostLoginCommandsPtr(PostLoginCommands);
+  TRY_FINALLY1 (PostLoginCommands,
   {
     PostLoginCommands->Text = FTerminal->GetSessionData()->GetPostLoginCommands();
     for (int Index = 0; Index < PostLoginCommands->Count; Index++)
@@ -1811,6 +1820,11 @@ void __fastcall TFTPFileSystem::DoStartup()
       }
     }
   }
+  ,
+  {
+    delete PostLoginCommands;
+  }
+  );
 
   // retrieve initialize working directory to save it as home directory
   ReadCurrentDirectory();
@@ -1893,7 +1907,7 @@ void __fastcall TFTPFileSystem::ReadCurrentDirectory()
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE, L"", &Code, &Response);
 
     assert(Response != NULL);
-    std::auto_ptr<TStrings> ResponsePtr(Response);
+    TRY_FINALLY1 (Response,
     {
       bool Result = false;
 
@@ -1940,6 +1954,12 @@ void __fastcall TFTPFileSystem::ReadCurrentDirectory()
         throw Exception(FMTLOAD(FTP_PWD_RESPONSE_ERROR, Response->Text.get().c_str()));
       }
     }
+    ,
+    {
+      TRACE("7");
+      delete Response;
+    }
+    );
   }
   TRACE("/");
 }
@@ -2047,7 +2067,7 @@ void __fastcall TFTPFileSystem::DoReadFile(const UnicodeString & FileName,
   TRemoteFile *& AFile)
 {
   TRemoteFileList * FileList = new TRemoteFileList();
-  std::auto_ptr<TRemoteFileList> FileListPtr(FileList);
+  TRY_FINALLY1 (FileList,
   {
     TFTPFileListHelper Helper(this, FileList, false);
     FFileZillaIntf->ListFile(FileName.c_str());
@@ -2061,6 +2081,11 @@ void __fastcall TFTPFileSystem::DoReadFile(const UnicodeString & FileName,
 
     FLastDataSent = Now();
   }
+  ,
+  {
+    delete FileList;
+  }
+  );
 }
 //---------------------------------------------------------------------------
 void __fastcall TFTPFileSystem::ReadFile(const UnicodeString FileName,
@@ -2829,11 +2854,16 @@ void __fastcall TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
         // for fatal error, it is essential that there is some message
         assert(!Error.IsEmpty());
         ExtException * E = new ExtException(Error, MoreMessages, true);
-        std::auto_ptr<ExtException> EPtr(E);
+        TRY_FINALLY1 (E,
         {
           TRACE("19");
           FTerminal->FatalError(E, L"");
         }
+        ,
+        {
+          delete E;
+        }
+        );
       }
       else
       {
@@ -3459,7 +3489,7 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 
     THierarchicalStorage * Storage =
       FTerminal->GetConfiguration()->CreateScpStorage(false);
-    std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
+    TRY_FINALLY1 (Storage,
     {
       Storage->SetAccessMode(smRead);
 
@@ -3469,6 +3499,11 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
         RequestResult = 1;
       }
     }
+    ,
+    {
+      delete Storage;
+    }
+    );
 
     if (RequestResult == 0)
     {
@@ -3528,7 +3563,7 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       {
         THierarchicalStorage * Storage =
           FTerminal->GetConfiguration()->CreateScpStorage(false);
-        std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
+        TRY_FINALLY1 (Storage,
         {
           Storage->SetAccessMode(smReadWrite);
 
@@ -3537,6 +3572,11 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
             Storage->WriteString(FSessionInfo.CertificateFingerprint, L"");
           }
         }
+        ,
+        {
+          delete Storage;
+        }
+        );
       }
     }
 

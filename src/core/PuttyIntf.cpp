@@ -130,8 +130,7 @@ int get_userpass_input(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
   int Result;
   TStrings * Prompts = new TStringList();
   TStrings * Results = new TStringList();
-  std::auto_ptr<TStrings> PromptsPtr(Prompts);
-  std::auto_ptr<TStrings> ResultsPtr(Results);
+  TRY_FINALLY2 (Prompts, Results,
   {
     TRACEFMT("1 [%d]", (int(p->n_prompts)));
     for (int Index = 0; Index < static_cast<int>(p->n_prompts); Index++)
@@ -163,6 +162,13 @@ int get_userpass_input(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
       Result = 0;
     }
   }
+  ,
+  {
+    delete Prompts;
+    delete Results;
+  }
+  );
+
   TRACE("/");
   return Result;
 }

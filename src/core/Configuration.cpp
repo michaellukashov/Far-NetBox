@@ -90,7 +90,7 @@ void __fastcall TConfiguration::Default()
 
   TRegistryStorage * AdminStorage = NULL;
   AdminStorage = new TRegistryStorage(GetRegistryStorageKey(), HKEY_LOCAL_MACHINE);
-  std::auto_ptr<TRegistryStorage> AdminStoragePtr(AdminStorage);
+  TRY_FINALLY1 (AdminStorage,
   {
     if (AdminStorage->OpenRootKey(false))
     {
@@ -98,6 +98,11 @@ void __fastcall TConfiguration::Default()
       AdminStorage->CloseSubKey();
     }
   }
+  ,
+  {
+    delete AdminStorage;
+  }
+  );
 
   SetRandomSeedFile(FDefaultRandomSeedFile);
   SetPuttyRegistryStorageKey(L"Software\\SimonTatham\\PuTTY");
@@ -217,7 +222,7 @@ void __fastcall TConfiguration::Save(bool All, bool Explicit)
   if (FDontSave) { return; }
 
   THierarchicalStorage * AStorage = CreateScpStorage(false);
-  std::auto_ptr<THierarchicalStorage> AStoragePtr(AStorage);
+  TRY_FINALLY1 (AStorage,
   {
     AStorage->SetAccessMode(smReadWrite);
     AStorage->SetExplicit(Explicit);
@@ -226,6 +231,11 @@ void __fastcall TConfiguration::Save(bool All, bool Explicit)
       SaveData(AStorage, All);
     }
   }
+  ,
+  {
+    delete AStorage;
+  }
+  );
 
   Saved();
 
@@ -246,17 +256,14 @@ void __fastcall TConfiguration::Export(const UnicodeString FileName)
   Classes::Error(SNotImplemented, 3004);
   THierarchicalStorage * Storage = NULL;
   THierarchicalStorage * ExportStorage = NULL;
-  std::auto_ptr<THierarchicalStorage> StoragePtr(NULL);
-  std::auto_ptr<THierarchicalStorage> ExportStoragePtr(NULL);
+  TRY_FINALLY2 (Storage, ExportStorage,
   {
     ExportStorage = NULL; // new TIniFileStorage(FileName);
     ExportStorage->SetAccessMode(smReadWrite);
     ExportStorage->SetExplicit(true);
-    ExportStoragePtr.reset(ExportStorage);
 
     Storage = CreateScpStorage(false);
     Storage->SetAccessMode(smRead);
-    StoragePtr.reset(Storage);
 
     CopyData(Storage, ExportStorage);
 
@@ -265,6 +272,12 @@ void __fastcall TConfiguration::Export(const UnicodeString FileName)
       SaveData(ExportStorage, true);
     }
   }
+  ,
+  {
+    delete ExportStorage;
+    delete Storage;
+  }
+  );
 
   StoredSessions->Export(FileName);
 }
@@ -309,7 +322,7 @@ void __fastcall TConfiguration::Load()
   TGuard Guard(FCriticalSection);
 
   THierarchicalStorage * Storage = CreateScpStorage(false);
-  std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
+  TRY_FINALLY1 (Storage,
   {
     Storage->SetAccessMode(smRead);
     if (Storage->OpenSubKey(GetConfigurationSubKey(), false))
@@ -319,6 +332,13 @@ void __fastcall TConfiguration::Load()
     }
     TRACE("2");
   }
+  ,
+  {
+    TRACE("3");
+    delete Storage;
+    TRACE("4");
+  }
+  );
   TRACE("/");
 }
 //---------------------------------------------------------------------------
@@ -326,7 +346,7 @@ void __fastcall TConfiguration::CopyData(THierarchicalStorage * Source,
   THierarchicalStorage * Target)
 {
   TStrings * Names = new TStringList();
-  std::auto_ptr<TStrings> NamesPtr(Names);
+  TRY_FINALLY1 (Names,
   {
     if (Source->OpenSubKey(GetConfigurationSubKey(), false))
     {
@@ -391,6 +411,11 @@ void __fastcall TConfiguration::CopyData(THierarchicalStorage * Source,
       Source->CloseSubKey();
     }
   }
+  ,
+  {
+    delete Names;
+  }
+  );
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::LoadDirectoryChangesCache(const UnicodeString SessionKey,
@@ -398,7 +423,7 @@ void __fastcall TConfiguration::LoadDirectoryChangesCache(const UnicodeString Se
 {
   CALLSTACK;
   THierarchicalStorage * Storage = CreateScpStorage(false);
-  std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
+  TRY_FINALLY1 (Storage,
   {
     Storage->SetAccessMode(smRead);
     if (Storage->OpenSubKey(GetConfigurationSubKey(), false) &&
@@ -408,13 +433,18 @@ void __fastcall TConfiguration::LoadDirectoryChangesCache(const UnicodeString Se
       DirectoryChangesCache->Deserialize(Storage->ReadBinaryData(SessionKey));
     }
   }
+  ,
+  {
+    delete Storage;
+  }
+  );
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::SaveDirectoryChangesCache(const UnicodeString SessionKey,
   TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
   THierarchicalStorage * Storage = CreateScpStorage(false);
-  std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
+  TRY_FINALLY1 (Storage,
   {
     Storage->SetAccessMode(smReadWrite);
     if (Storage->OpenSubKey(GetConfigurationSubKey(), true) &&
@@ -425,6 +455,11 @@ void __fastcall TConfiguration::SaveDirectoryChangesCache(const UnicodeString Se
       Storage->WriteBinaryData(SessionKey, Data);
     }
   }
+  ,
+  {
+    delete Storage;
+  }
+  );
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TConfiguration::BannerHash(const UnicodeString & Banner)
@@ -442,7 +477,7 @@ bool __fastcall TConfiguration::ShowBanner(const UnicodeString SessionKey,
 {
   bool Result;
   THierarchicalStorage * Storage = CreateScpStorage(false);
-  std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
+  TRY_FINALLY1 (Storage,
   {
     Storage->SetAccessMode(smRead);
     Result =
@@ -451,6 +486,11 @@ bool __fastcall TConfiguration::ShowBanner(const UnicodeString SessionKey,
       !Storage->ValueExists(SessionKey) ||
       (Storage->ReadString(SessionKey, L"") != BannerHash(Banner));
   }
+  ,
+  {
+    delete Storage;
+  }
+  );
 
   return Result;
 }
@@ -459,7 +499,7 @@ void __fastcall TConfiguration::NeverShowBanner(const UnicodeString SessionKey,
   const UnicodeString & Banner)
 {
   THierarchicalStorage * Storage = CreateScpStorage(false);
-  std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
+  TRY_FINALLY1 (Storage,
   {
     Storage->SetAccessMode(smReadWrite);
 
@@ -469,6 +509,11 @@ void __fastcall TConfiguration::NeverShowBanner(const UnicodeString SessionKey,
       Storage->WriteString(SessionKey, BannerHash(Banner));
     }
   }
+  ,
+  {
+    delete Storage;
+  }
+  );
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::Changed()
@@ -527,10 +572,15 @@ void __fastcall TConfiguration::CleanupConfiguration()
 void __fastcall TConfiguration::CleanupRegistry(UnicodeString CleanupSubKey)
 {
   TRegistryStorage *Registry = new TRegistryStorage(GetRegistryStorageKey());
-  std::auto_ptr<TRegistryStorage> RegistryPtr(Registry);
+  TRY_FINALLY1 (Registry,
   {
     Registry->RecursiveDeleteSubKey(CleanupSubKey);
   }
+  ,
+  {
+    delete Registry;
+  }
+  );
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::CleanupHostKeys()
@@ -911,24 +961,27 @@ void __fastcall TConfiguration::SetStorage(TStorage value)
     THierarchicalStorage * SourceStorage = NULL;
     THierarchicalStorage * TargetStorage = NULL;
 
-    std::auto_ptr<THierarchicalStorage> SourceStoragePtr(NULL);
-    std::auto_ptr<THierarchicalStorage> TargetStoragePtr(NULL);
+    TRY_FINALLY2 (SourceStorage, TargetStorage,
     {
       SourceStorage = CreateScpStorage(false);
       SourceStorage->SetAccessMode(smRead);
-      SourceStoragePtr.reset(SourceStorage);
 
       FStorage = value;
 
       TargetStorage = CreateScpStorage(false);
       TargetStorage->SetAccessMode(smReadWrite);
       TargetStorage->SetExplicit(true);
-      TargetStoragePtr.reset(TargetStorage);
 
       // copy before save as it removes the ini file,
       // when switching from ini to registry
       CopyData(SourceStorage, TargetStorage);
     }
+    ,
+    {
+      delete SourceStorage;
+      delete TargetStorage;
+    }
+    );
 
     // save all and explicit
     Save(true, true);

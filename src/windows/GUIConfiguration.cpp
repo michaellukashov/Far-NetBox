@@ -998,7 +998,7 @@ TStrings * __fastcall TGUIConfiguration::GetLocales()
   Classes::Error(SNotImplemented, 93);
   UnicodeString LocalesExts;
   TStringList * Exts = new TStringList();
-  std::auto_ptr<TStringList> ExtsPtr(Exts);
+  TRY_FINALLY1 (Exts,
   {
     TRACE("TGUIConfiguration::GetLocales 1");
     Exts->Sorted = true;
@@ -1119,6 +1119,13 @@ TStrings * __fastcall TGUIConfiguration::GetLocales()
       }
     }
   }
+  ,
+  {
+    TRACE("TGUIConfiguration::GetLocales 14");
+    delete Exts;
+  }
+  );
+
   TRACE("TGUIConfiguration::GetLocales 15");
   return FLocales;
 }
