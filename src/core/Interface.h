@@ -2,7 +2,8 @@
 #ifndef InterfaceH
 #define InterfaceH
 //---------------------------------------------------------------------------
-#include "coredefines.hpp"
+#include <CoreDefs.hpp>
+
 #include "Configuration.h"
 #include "SessionData.h"
 #define HELP_NONE ""

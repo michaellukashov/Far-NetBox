@@ -2,7 +2,7 @@
 #ifndef GUIToolsH
 #define GUIToolsH
 
-#include "coredefines.hpp"
+#include <CoreDefs.hpp>
 //---------------------------------------------------------------------------
 // from shlobj.h
 #define CSIDL_DESKTOP                   0x0000        // <desktop>

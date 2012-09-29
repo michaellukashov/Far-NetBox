@@ -1,7 +1,7 @@
 #pragma once
 
 #include "stdafx.h"
-#include <coredefines.hpp>
+#include <CoreDefs.hpp>
 
 #include <WinDef.h>
 #include <CommCtrl.h>

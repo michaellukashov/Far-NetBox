@@ -3,7 +3,7 @@
 #define FileMasksH
 //---------------------------------------------------------------------------
 #include <vector>
-#include "coredefines.hpp"
+#include <CoreDefs.hpp>
 #include <Masks.hpp>
 //---------------------------------------------------------------------------
 class EFileMasksException : public Exception

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <assert.h>
-#include <coredefines.hpp>
+
+#include <CoreDefs.hpp>
 #include <Classes.hpp>
 
