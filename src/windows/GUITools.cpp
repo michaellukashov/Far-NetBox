@@ -54,15 +54,12 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
     TRACE("1");
     UnicodeString SessionName;
     TRegistryStorage * Storage = NULL;
-    std::auto_ptr<TRegistryStorage> StoragePtr(NULL);
     TSessionData * ExportData = NULL;
-    std::auto_ptr<TSessionData> ExportDataPtr(NULL);
     TRegistryStorage * SourceStorage = NULL;
-    std::auto_ptr<TRegistryStorage> SourceStoragePtr(NULL);
+    TRY_FINALLY3 (Storage, ExportData, SourceStorage,
     {
       TRACEFMT("1a [%s]", (Configuration->GetPuttySessionsKey()));
       Storage = new TRegistryStorage(Configuration->GetPuttySessionsKey());
-      StoragePtr.reset(Storage);
       Storage->SetAccessMode(smReadWrite);
       // make it compatible with putty
       Storage->SetMungeStringValues(false);
@@ -79,7 +76,6 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
         {
           TRACE("4");
           SourceStorage = new TRegistryStorage(Configuration->GetPuttySessionsKey());
-          SourceStoragePtr.reset(SourceStorage);
           SourceStorage->SetMungeStringValues(false);
           SourceStorage->SetForceAnsi(true);
           if (SourceStorage->OpenSubKey(StoredSessions->GetDefaultSettings()->GetName(), false) &&
@@ -91,7 +87,6 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
           }
 
           ExportData = new TSessionData(L"");
-          ExportDataPtr.reset(ExportData);
           ExportData->Assign(SessionData);
           ExportData->SetModified(true);
           ExportData->SetName(GUIConfiguration->GetPuttySession());
@@ -121,6 +116,14 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
         }
       }
     }
+    ,
+    {
+      TRACE("9");
+      delete Storage;
+      delete ExportData;
+      delete SourceStorage;
+    }
+    );
 
     if (!Params.IsEmpty())
     {

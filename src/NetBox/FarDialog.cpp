@@ -1600,7 +1600,7 @@ int __fastcall TFarDialogItem::GetHeight()
 //---------------------------------------------------------------------------
 bool __fastcall TFarDialogItem::CanFocus()
 {
-  size_t Type = GetType();
+  FARDIALOGITEMTYPES Type = GetType();
   return GetVisible() && GetEnabled() && GetTabStop() &&
     (Type == DI_EDIT || Type == DI_PSWEDIT || Type == DI_FIXEDIT ||
      Type == DI_BUTTON || Type == DI_CHECKBOX || Type == DI_RADIOBUTTON ||

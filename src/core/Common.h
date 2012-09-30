@@ -2,7 +2,8 @@
 #ifndef CommonH
 #define CommonH
 
-#include "coredefines.hpp"
+#include <CoreDefs.hpp>
+
 #include "Exceptions.h"
 #include "version.h"
 //---------------------------------------------------------------------------

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "boostdefines.hpp"
-
 #pragma warning(push, 1)
 #include <vcl.h>
 #include <Sysutils.hpp>
@@ -36,21 +34,10 @@ const int MaxMessageWidth = 64;
 enum TFarShiftStatus { fsNone, fsCtrl, fsAlt, fsShift, fsCtrlShift,
   fsAltShift, fsCtrlAlt };
 enum THandlesFunction { hfProcessKey, hfProcessHostFile, hfProcessPanelEvent };
-#ifndef _MSC_VER
-typedef void __fastcall (__closure * TFarInputBoxValidateEvent)
-  (AnsiString & Text);
-#else
-DEFINE_CALLBACK_TYPE1(TFarInputBoxValidateEvent, void, UnicodeString &);
-#endif
+DEFINE_CALLBACK_TYPE1(TFarInputBoxValidateEvent, void, UnicodeString & /* Text */);
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
-typedef void __fastcall (__closure *TFarMessageTimerEvent)(unsigned int & Result);
-typedef void __fastcall (__closure *TFarMessageClickEvent)(void * Token, int Result, bool & Close);
-#else
-DEFINE_CALLBACK_TYPE1(TFarMessageTimerEvent, void, unsigned int &);
-DEFINE_CALLBACK_TYPE3(TFarMessageClickEvent, void, void *, int, bool &);
-#endif
-
+DEFINE_CALLBACK_TYPE1(TFarMessageTimerEvent, void, unsigned int & /* Result */);
+DEFINE_CALLBACK_TYPE3(TFarMessageClickEvent, void, void * /* Token */, int /* Result */, bool & /* Close */);
 //---------------------------------------------------------------------------
 struct TFarMessageParams
 {
@@ -182,13 +169,6 @@ public:
   TCustomFarFileSystem * __fastcall GetPanelFileSystem(bool Another = false,
     HANDLE Plugin = INVALID_HANDLE_VALUE);
 
-#ifndef _MSC_VER
-  __property AnsiString ModuleName = { read = GetModuleName };
-  __property TFarDialog * TopDialog = { read = FTopDialog };
-  __property HWND Handle = { read = FHandle };
-  __property bool ANSIApis = { read = FANSIApis };
-  __property unsigned int FarThread = { read = FFarThread };
-#else
   UnicodeString __fastcall GetModuleName();
   TFarDialog * __fastcall GetTopDialog() const { return FTopDialog; }
   HINSTANCE GetHandle() const { return FHandle; };
@@ -196,7 +176,7 @@ public:
   unsigned int GetFarThread() const { return FFarThread; };
   FarStandardFunctions & GetFarStandardFunctions() { return FFarStandardFunctions; }
   const struct PluginStartupInfo * __fastcall GetStartupInfo() const { return &FStartupInfo; }
-#endif
+
 protected:
   PluginStartupInfo FStartupInfo;
   FarStandardFunctions FFarStandardFunctions;
@@ -238,11 +218,7 @@ protected:
     TFarMessageParams * Params);
   void __fastcall InvalidateOpenPanelInfo();
 
-#ifndef _MSC_VER
-  __property TCriticalSection * CriticalSection = { read = FCriticalSection };
-#else
   TCriticalSection * __fastcall GetCriticalSection() const { return FCriticalSection; }
-#endif
 
 #ifdef NETBOX_DEBUG
 public:
@@ -331,15 +307,9 @@ protected:
 
   virtual void __fastcall HandleException(Exception * E, int OpMode = 0);
 
-#ifndef _MSC_VER
-  __property TFarPanelInfo * PanelInfo = { read = GetPanelInfo, index = 0 };
-  __property TFarPanelInfo * AnotherPanelInfo = { read = GetPanelInfo, index = 1 };
-  __property TCriticalSection * CriticalSection = { read = FCriticalSection };
-#else
   TFarPanelInfo * GetPanelInfo() { return GetPanelInfo(0); };
   TFarPanelInfo * GetAnotherPanelInfo() { return GetPanelInfo(1); };
   TCriticalSection * GetCriticalSection() { return FCriticalSection; };
-#endif
 
 protected:
   TCriticalSection * FCriticalSection;
@@ -426,15 +396,15 @@ class TFarPanelItem : public TCustomFarPanelItem
 public:
   explicit /* __fastcall */ TFarPanelItem(PluginPanelItem * APanelItem);
   virtual /* __fastcall */ ~TFarPanelItem();
-#ifndef _MSC_VER
-  __property unsigned long Flags = { read = GetFlags };
-  __property unsigned long FileAttributes = { read = GetFileAttributes };
-  __property AnsiString FileName = { read = GetFileName };
-  __property void * UserData = { read = GetUserData };
-  __property bool Selected = { read = GetSelected, write = SetSelected };
-  __property bool IsParentDirectory = { read = GetIsParentDirectory };
-  __property bool IsFile = { read = GetIsFile };
-#endif
+
+  unsigned long __fastcall GetFlags();
+  unsigned long __fastcall GetFileAttributes();
+  UnicodeString __fastcall GetFileName();
+  void * __fastcall GetUserData();
+  bool __fastcall GetSelected();
+  void __fastcall SetSelected(bool value);
+  bool __fastcall GetIsParentDirectory();
+  bool __fastcall GetIsFile();
 
 protected:
   PluginPanelItem * FPanelItem;
@@ -446,16 +416,6 @@ protected:
     unsigned long & NumberOfLinks, UnicodeString & Description,
     UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber);
   virtual UnicodeString __fastcall GetCustomColumnData(int Column);
-
-public:
-  unsigned long __fastcall GetFlags();
-  UnicodeString __fastcall GetFileName();
-  void * __fastcall GetUserData();
-  bool __fastcall GetSelected();
-  void __fastcall SetSelected(bool value);
-  bool __fastcall GetIsParentDirectory();
-  bool __fastcall GetIsFile();
-  unsigned long __fastcall GetFileAttributes();
 };
 //---------------------------------------------------------------------------
 class THintPanelItem : public TCustomFarPanelItem
@@ -484,17 +444,17 @@ public:
   explicit /* __fastcall */ TFarPanelInfo(PanelInfo * APanelInfo, TCustomFarFileSystem * AOwner);
   virtual /* __fastcall */ ~TFarPanelInfo();
 
-#ifndef _MSC_VER
-  __property TList * Items = { read = GetItems };
-  __property int ItemCount = { read = GetItemCount };
-  __property int SelectedCount = { read = GetSelectedCount };
-  __property TFarPanelItem * FocusedItem = { read = GetFocusedItem, write = SetFocusedItem };
-  __property int FocusedIndex = { read = GetFocusedIndex, write = SetFocusedIndex };
-  __property TRect Bounds = { read = GetBounds };
-  __property TFarPanelType Type = { read = GetType };
-  __property bool IsPlugin = { read = GetIsPlugin };
-  __property AnsiString CurrentDirectory = { read = GetCurrentDirectory };
-#endif
+  TObjectList * __fastcall GetItems();
+  int __fastcall GetItemCount();
+  TFarPanelItem * __fastcall GetFocusedItem();
+  void __fastcall SetFocusedItem(TFarPanelItem * value);
+  int __fastcall GetFocusedIndex();
+  void __fastcall SetFocusedIndex(int value);
+  int __fastcall GetSelectedCount();
+  TRect __fastcall GetBounds();
+  TFarPanelType __fastcall GetType();
+  bool __fastcall GetIsPlugin();
+  UnicodeString __fastcall GetCurrentDirectory();
 
   void __fastcall ApplySelection();
   TFarPanelItem * __fastcall FindFileName(const UnicodeString FileName);
@@ -504,19 +464,6 @@ private:
   PanelInfo * FPanelInfo;
   TObjectList * FItems;
   TCustomFarFileSystem * FOwner;
-
-public:
-  TObjectList * __fastcall GetItems();
-  TFarPanelItem * __fastcall GetFocusedItem();
-  void __fastcall SetFocusedItem(TFarPanelItem * value);
-  int __fastcall GetFocusedIndex();
-  void __fastcall SetFocusedIndex(int value);
-  int __fastcall GetItemCount();
-  int __fastcall GetSelectedCount();
-  TRect __fastcall GetBounds();
-  TFarPanelType __fastcall GetType();
-  bool __fastcall GetIsPlugin();
-  UnicodeString __fastcall GetCurrentDirectory();
 };
 //---------------------------------------------------------------------------
 enum MENUITEMFLAGS_EX
@@ -535,30 +482,21 @@ public:
   virtual void __fastcall Clear();
   virtual void __fastcall Delete(int Index);
 
-#ifndef _MSC_VER
-  __property int ItemFocused = { read = FItemFocused, write = SetItemFocused };
-
-  __property bool Disabled[int Index] = { read = GetFlag, write = SetFlag, index = MIF_DISABLE };
-  __property bool Checked[int Index] = { read = GetFlag, write = SetFlag, index = MIF_CHECKED };
-#else
   int __fastcall GetItemFocused() { return FItemFocused; }
-
+  void __fastcall SetItemFocused(int value);
   bool __fastcall GetDisabled(size_t Index) { return GetFlag(Index, MIF_DISABLE); }
   void __fastcall SetDisabled(size_t Index, bool value) { SetFlag(Index, MIF_DISABLE, value); }
   bool __fastcall GetChecked(size_t Index) { return GetFlag(Index, MIF_CHECKED); }
   void __fastcall SetChecked(size_t Index, bool value) { SetFlag(Index, MIF_CHECKED, value); }
-#endif
+
+  void __fastcall SetFlag(size_t Index, size_t Flag, bool Value);
+  bool __fastcall GetFlag(size_t Index, size_t Flag);
 
 protected:
   virtual void __fastcall PutObject(int Index, TObject * AObject);
 
 private:
   int FItemFocused;
-
-public:
-  void __fastcall SetItemFocused(int value);
-  void __fastcall SetFlag(size_t Index, size_t Flag, bool Value);
-  bool __fastcall GetFlag(size_t Index, size_t Flag);
 };
 //---------------------------------------------------------------------------
 class TFarEditorInfo
@@ -567,17 +505,11 @@ public:
   explicit /* __fastcall */ TFarEditorInfo(EditorInfo * Info);
   /* __fastcall */ ~TFarEditorInfo();
 
-#ifndef _MSC_VER
-  __property int EditorID = { read = GetEditorID };
-  __property AnsiString FileName = { read = GetFileName };
-#endif
+  int __fastcall GetEditorID() const;
+  static UnicodeString __fastcall GetFileName();
 
 private:
   EditorInfo * FEditorInfo;
-
-public:
-  int __fastcall GetEditorID() const;
-  static UnicodeString __fastcall GetFileName();
 };
 //---------------------------------------------------------------------------
 class TFarEnvGuard

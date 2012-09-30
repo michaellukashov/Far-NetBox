@@ -59,17 +59,11 @@ const int fsoDisableTimestamp = 0x01;
 const int fsoAllowSelectedOnly = 0x02;
 enum TSessionActionEnum { saAdd, saEdit, saConnect };
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
-typedef void __fastcall (__closure *TGetSynchronizeOptionsEvent)
-  (int Params, TSynchronizeOptions & Options);
-typedef void __fastcall (__closure *TGetSpaceAvailable)
-  (const AnsiString Path, TSpaceAvailable & ASpaceAvailable, bool & Close);
-#else
 DEFINE_CALLBACK_TYPE2(TGetSynchronizeOptionsEvent, void,
   int /* Params */, TSynchronizeOptions & /* Options */);
 DEFINE_CALLBACK_TYPE3(TGetSpaceAvailableEvent, void,
   const UnicodeString & /* Path */, TSpaceAvailable & /* ASpaceAvailable */, bool & /* Close */);
-#endif
+
 struct TMultipleEdit
 {
   UnicodeString FileName;
@@ -85,11 +79,7 @@ struct TEditHistory
   bool operator==(const TEditHistory & rh) const { return (FileName == rh.FileName) && (Directory == rh.Directory); }
 };
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
-typedef void __fastcall (__closure * TProcessSessionEvent)(TSessionData * Data, void * Param);
-#else
-DEFINE_CALLBACK_TYPE2(TProcessSessionEvent, void, TSessionData *, void *);
-#endif
+DEFINE_CALLBACK_TYPE2(TProcessSessionEvent, void, TSessionData * /* Data */, void * /* Param */);
 //---------------------------------------------------------------------------
 class TWinSCPFileSystem : public TCustomFarFileSystem
 {
@@ -245,11 +235,7 @@ protected:
   bool __fastcall IsLogging();
   void __fastcall ShowLog();
 
-#ifndef _MSC_VER
-  __property TTerminal * Terminal = { read = FTerminal };
-#else
   TTerminal * GetTerminal() { return FTerminal; }
-#endif
 
 private:
   TTerminal * FTerminal;

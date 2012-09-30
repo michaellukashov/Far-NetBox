@@ -971,10 +971,15 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
     THierarchicalStorage * Storage = FConfiguration->CreateScpStorage(false);
     assert(Storage);
     Storage->SetAccessMode(smRead);
-    std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
+    TRY_FINALLY1 (Storage,
     {
       ADF(L"Configuration: %s", Storage->GetSource().c_str());
     }
+    ,
+    {
+      delete Storage;
+    }
+    );
 
     if (0)
     {
@@ -1348,10 +1353,15 @@ void __fastcall TActionLog::AddFailure(Exception * E)
   TStrings * Messages = ExceptionToMessages(E);
   if (Messages != NULL)
   {
-    std::auto_ptr<TStrings> MessagesPtr(Messages);
+    TRY_FINALLY1 (Messages,
     {
       AddFailure(Messages);
     }
+    ,
+    {
+      delete Messages;
+    }
+    );
   }
 }
 //---------------------------------------------------------------------------

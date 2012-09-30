@@ -2,9 +2,9 @@
 #ifndef TerminalH
 #define TerminalH
 
+#include <CoreDefs.hpp>
 #include <Classes.hpp>
 
-#include "coredefines.hpp"
 #include "SessionInfo.h"
 #include "Interface.h"
 #include "FileOperationProgress.h"

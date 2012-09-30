@@ -2,7 +2,8 @@
 #ifndef SessionInfoH
 #define SessionInfoH
 
-#include "coredefines.hpp"
+#include <CoreDefs.hpp>
+
 #include "SessionData.h"
 #include "Interface.h"
 //---------------------------------------------------------------------------

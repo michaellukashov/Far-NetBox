@@ -52,7 +52,7 @@ void Error(int ErrorID, int data)
   DEBUG_PRINTF(L"begin: ErrorID = %d, data = %d", ErrorID, data);
   UnicodeString Msg = FMTLOAD(ErrorID, data);
   // DEBUG_PRINTF(L"Msg = %s", Msg.c_str());
-  throw ExtException(Msg);
+  throw ExtException((Exception *)NULL, Msg);
 }
 
 //---------------------------------------------------------------------------
@@ -233,6 +233,7 @@ void TList::Clear()
 
 void TList::Sort(CompareFunc func)
 {
+  (void)func;
   Classes::Error(SNotImplemented, 1);
 }
 void TList::Notify(void * Ptr, int Action)
@@ -664,7 +665,7 @@ int TStrings::IndexOfName(const UnicodeString Name)
   {
     UnicodeString S = GetStrings(Index);
     int P = ::AnsiPos(S, L'=');
-    if ((P > 0) && (CompareStrings(S.SubStr(1, P), Name) == 0))
+    if ((P > 0) && (CompareStrings(S.SubStr(1, P - 1), Name) == 0))
     {
       return Index;
     }
@@ -683,7 +684,7 @@ UnicodeString TStrings::ExtractName(const UnicodeString S) const
   int P = ::AnsiPos(Result, L'=');
   if (P > 0)
   {
-    Result.SetLength(P);
+    Result.SetLength(P - 1);
   }
   else
   {
@@ -696,10 +697,12 @@ const UnicodeString TStrings::GetValue(const UnicodeString Name)
 {
   UnicodeString Result;
   int I = IndexOfName(Name);
+  // DEBUG_PRINTF(L"Name = %s, I = %d", Name.c_str(), I);
   if (I >= 0)
   {
-    Result = GetStrings(I).SubStr(Name.Length() + 1, static_cast<int>(-1));
+    Result = GetStrings(I).SubStr(Name.Length() + 2, static_cast<int>(-1));
   }
+  // DEBUG_PRINTF(L"Result = %s", Result.c_str());
   return Result;
 }
 
@@ -1194,6 +1197,7 @@ UnicodeString TDateTime::TimeString() const
 //---------------------------------------------------------------------------
 UnicodeString TDateTime::FormatString(wchar_t * fmt) const
 {
+  (void)fmt;
   unsigned short H, N, S, MS;
   DecodeTime(H, N, S, MS);
   UnicodeString Result = FORMAT(L"%02d.%02d.%02d.%03d", H, N, S, MS);
@@ -1297,7 +1301,7 @@ class EStreamError : public ExtException
 {
 public:
   EStreamError(const UnicodeString Msg) :
-    ExtException(Msg)
+    ExtException((Exception * )NULL, Msg)
   {}
 };
 
@@ -2071,22 +2075,25 @@ TShortCut::TShortCut()
 {
 }
 
-TShortCut::TShortCut(int value)
+TShortCut::TShortCut(int Value)
 {
+  FValue = Value;
 }
 TShortCut::operator int() const
 {
-  return 0;
+  return FValue;
 }
 bool TShortCut::operator < (const TShortCut & rhs) const
 {
-  return false;
+  return FValue < rhs.FValue;
 }
 
 //---------------------------------------------------------------------------
 
 void __fastcall GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings)
 {
+  (void)LCID;
+  (void)FormatSettings;
   Classes::Error(SNotImplemented, 1204);
 }
 

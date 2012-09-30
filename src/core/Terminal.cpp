@@ -1173,8 +1173,7 @@ bool __fastcall TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
   bool AResult;
   TStrings * Prompts = new TStringList();
   TStrings * Results = new TStringList();
-  std::auto_ptr<TStrings> PromptsPtr(Prompts);
-  std::auto_ptr<TStrings> ResultsPtr(Results);
+  TRY_FINALLY2 (Prompts, Results,
   {
     Prompts->AddObject(Prompt, reinterpret_cast<TObject *>(static_cast<size_t>(Echo)));
     Results->AddObject(Result, reinterpret_cast<TObject *>(MaxLen));
@@ -1183,6 +1182,12 @@ bool __fastcall TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
 
     Result = Results->Strings[0];
   }
+  ,
+  {
+    delete Prompts;
+    delete Results;
+  }
+  );
 
   return AResult;
 }
@@ -1260,7 +1265,7 @@ unsigned int __fastcall TTerminal::QueryUserException(const UnicodeString Query,
   CALLSTACK;
   unsigned int Result;
   TStrings * MoreMessages = new TStringList();
-  std::auto_ptr<TStrings> MoreMessagesPtr(MoreMessages);
+  TRY_FINALLY1 (MoreMessages,
   {
     if (E != NULL)
     {
@@ -1279,6 +1284,11 @@ unsigned int __fastcall TTerminal::QueryUserException(const UnicodeString Query,
       MoreMessages->Count ? MoreMessages : NULL,
       Answers, Params, QueryType);
   }
+  ,
+  {
+    delete MoreMessages;
+  }
+  );
   TRACE("/");
   return Result;
 }
@@ -2056,10 +2066,15 @@ unsigned int __fastcall TTerminal::CommandError(Exception * E, const UnicodeStri
   else if (!Answers)
   {
     ECommand * ECmd = new ECommand(E, Msg);
-    std::auto_ptr<ECommand> ECmdPtr(ECmd);
+    TRY_FINALLY1 (ECmd,
     {
       HandleExtendedException(ECmd);
     }
+    ,
+    {
+      delete ECmd;
+    }
+    );
   }
   else
   {
@@ -2785,7 +2800,7 @@ void /* __fastcall */ TTerminal::ProcessDirectory(const UnicodeString DirName,
   // skip if directory listing fails and user selects "skip"
   if (FileList)
   {
-    std::auto_ptr<TRemoteFileList> FileListPtr(FileList);
+    TRY_FINALLY1 (FileList,
     {
       UnicodeString Directory = UnixIncludeTrailingBackslash(DirName);
 
@@ -2799,6 +2814,11 @@ void /* __fastcall */ TTerminal::ProcessDirectory(const UnicodeString DirName,
         }
       }
     }
+    ,
+    {
+      delete FileList;
+    }
+    );
   }
 }
 //---------------------------------------------------------------------------
@@ -2941,7 +2961,7 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
           TRACEFMT("4 [%s]", (FileName));
           try
           {
-            TRY_FINALLY5 (Self, Progress, FileName, Success, OnceDoneOperation,
+            TRY_FINALLY4 (Progress, FileName, Success, OnceDoneOperation,
             {
               Success = false;
               if (!Ex)
@@ -4579,7 +4599,7 @@ void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeStri
         {
           TRACE("12");
           TSynchronizeChecklist::TItem * ChecklistItem = new TSynchronizeChecklist::TItem();
-          std::auto_ptr<TSynchronizeChecklist::TItem> ChecklistItemPtr(ChecklistItem);
+          TRY_FINALLY1 (ChecklistItem,
           {
             TRACE("13");
             ChecklistItem->IsDirectory = FileData->IsDirectory;
@@ -4626,6 +4646,12 @@ void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeStri
               ChecklistItem = NULL;
             }
           }
+          ,
+          {
+            TRACE("17");
+            delete ChecklistItem;
+          }
+          );
           TRACE("18");
         }
         else
@@ -4680,7 +4706,7 @@ void /* __fastcall */ TTerminal::SynchronizeCollectFile(const UnicodeString & Fi
   {
     CTRACE(TRACE_SYNCH, "00b");
     TSynchronizeChecklist::TItem * ChecklistItem = new TSynchronizeChecklist::TItem();
-    std::auto_ptr<TSynchronizeChecklist::TItem> ChecklistItemPtr(ChecklistItem);
+    TRY_FINALLY1 (ChecklistItem,
     {
       ChecklistItem->IsDirectory = File->GetIsDirectory();
       ChecklistItem->ImageIndex = File->GetIconIndex();
@@ -4865,6 +4891,12 @@ void /* __fastcall */ TTerminal::SynchronizeCollectFile(const UnicodeString & Fi
         }
       }
     }
+    ,
+    {
+      CTRACE(TRACE_SYNCH, "26");
+      delete ChecklistItem;
+    }
+    );
   }
   else
   {

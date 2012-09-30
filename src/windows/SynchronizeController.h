@@ -2,8 +2,8 @@
 #ifndef SynchronizeControllerH
 #define SynchronizeControllerH
 //---------------------------------------------------------------------------
+#include <CoreDefs.hpp>
 #include <CopyParam.h>
-#include "coredefines.hpp"
 //---------------------------------------------------------------------------
 struct TSynchronizeParamType
 {

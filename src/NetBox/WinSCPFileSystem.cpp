@@ -329,7 +329,7 @@ void __fastcall TWinSCPFileSystem::Init(TSecureShell * /* SecureShell */)
   FAuthenticationLog = NULL;
   FLastEditorID = -1;
   FLoadingSessionList = false;
-  FPathHistory = new TStringList;
+  FPathHistory = new TStringList();
 
   FLastMultipleEditReadOnly = false;
   FEditorPendingSave = false;
@@ -4122,7 +4122,7 @@ void __fastcall TWinSCPFileSystem::MultipleEdit(const UnicodeString Directory,
     TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
     EditViewCopyParam(CopyParam);
 
-    TStrings * FileList = new TStringList;
+    TStrings * FileList = new TStringList();
     assert(!FNoProgressFinish);
     FNoProgressFinish = true;
     TRY_FINALLY2 (Self, FileList,
@@ -4244,8 +4244,8 @@ UnicodeString __fastcall TWinSCPFileSystem::GetFileNameHash(const UnicodeString 
   RawByteString Result;
   Result.SetLength(16);
   md5checksum(
-    reinterpret_cast<const char*>(FileName.c_str()), FileName.Length() * sizeof(wchar_t),
-    (unsigned char *)Result.c_str());
+    reinterpret_cast<const char *>(FileName.c_str()), FileName.Length() * sizeof(wchar_t),
+    reinterpret_cast<unsigned char *>(const_cast<char *>(Result.c_str())));
   return BytesToHex(Result);
 }
 //---------------------------------------------------------------------------

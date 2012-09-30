@@ -44,7 +44,7 @@ void __fastcall TBookmarks::Load(THierarchicalStorage * Storage)
     if (Storage->OpenSubKey(Keys[i], false))
     {
       TStrings * BookmarkKeys = new TStringList();
-      std::auto_ptr<TStrings> BookmarkKeysPtr(BookmarkKeys);
+      TRY_FINALLY1 (BookmarkKeys,
       {
         Storage->GetSubKeyNames(BookmarkKeys);
         for (int Index = 0; Index < BookmarkKeys->Count; Index++)
@@ -70,6 +70,11 @@ void __fastcall TBookmarks::Load(THierarchicalStorage * Storage)
           }
         }
       }
+      ,
+      {
+        delete BookmarkKeys;
+      }
+      );
       Storage->CloseSubKey();
     }
   }
@@ -82,7 +87,7 @@ void __fastcall TBookmarks::LoadLevel(THierarchicalStorage * Storage, const Unic
 {
   CALLSTACK;
   TStrings * Names = new TStringList();
-  std::auto_ptr<TStrings> NamesPtr(Names);
+  TRY_FINALLY1 (Names,
   {
     Storage->GetValueNames(Names);
     UnicodeString Name;
@@ -150,6 +155,11 @@ void __fastcall TBookmarks::LoadLevel(THierarchicalStorage * Storage, const Unic
       }
     }
   }
+  ,
+  {
+    delete Names;
+  }
+  );
 }
 //---------------------------------------------------------------------------
 void __fastcall TBookmarks::Save(THierarchicalStorage * Storage, bool All)

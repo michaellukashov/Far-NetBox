@@ -1,7 +1,7 @@
 #pragma once
 
 #include "stdafx.h"
-#include <coredefines.hpp>
+#include <CoreDefs.hpp>
 
 #include <WinDef.h>
 #include <CommCtrl.h>
@@ -356,6 +356,7 @@ private:
   }
   void PropertySetName(int Index, UnicodeString Value)
   {
+    (void)Index;
     // SetName(Index, Value);
     Classes::Error(SNotImplemented, 2012);
   }
@@ -782,9 +783,11 @@ class TShortCut
 {
 public:
   explicit TShortCut();
-  explicit TShortCut(int value);
+  explicit TShortCut(int Value);
   operator int() const;
   bool operator < (const TShortCut & rhs) const;
+private:
+  int FValue;
 };
 
 //---------------------------------------------------------------------------

@@ -48,6 +48,7 @@ const TDayTable MonthDays[] =
   Message(Msg)
 {
   // TODO: FHelpContext = AHelpContext
+  (void)AHelpContext;
 }
 
 /* __fastcall */ Exception::Exception(Exception * E, int Ident) :
@@ -59,7 +60,7 @@ const TDayTable MonthDays[] =
 /* __fastcall */ Exception::Exception(int Ident) :
   std::exception()
 {
-  // TODO: Fident = Ident;
+  Message = FMTLOAD(Ident);
 }
 
 //---------------------------------------------------------------------------
@@ -630,7 +631,7 @@ NextWord(const wchar_t * input)
   static wchar_t buffer[1024];
   static const wchar_t * text = 0;
 
-  wchar_t * endOfBuffer = buffer + sizeof(buffer) - 1;
+  wchar_t * endOfBuffer = buffer + LENOF(buffer) - 1;
   wchar_t * pBuffer = buffer;
 
   if (input)
@@ -729,7 +730,7 @@ UnicodeString WrapText(const UnicodeString & Line, int MaxWidth)
       }
 
       /* copy as many words as will fit onto the current line */
-      while (*s && wcslen(s) + 1 <= spaceLeft)
+      while (*s && wcslen(s) + 1 <= (size_t)spaceLeft)
       {
         /* will fit so add a space between the words */
         if (Result.Length() == 0)
@@ -878,6 +879,8 @@ char * StrNew(const char * str)
 
 wchar_t * AnsiStrScan(const wchar_t * Str, const wchar_t TokenPrefix)
 {
+  (void)Str;
+  (void)TokenPrefix;
   Classes::Error(SNotImplemented, 31);
   wchar_t * result = NULL;
   return result;
@@ -1317,10 +1320,10 @@ static bool DecodeDateFully(const TDateTime & DateTime,
     if (I == 4)
     {
       I--;
-      D += D1;
+      D += (Word)D1;
     }
     Y += I;
-    Result = IsLeapYear(Y);
+    Result = IsLeapYear((Word)Y);
     const TDayTable * DayTable = &MonthDays[Result];
     M = 1;
     while (true)
@@ -1412,12 +1415,16 @@ TDateTime EncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsi
 }
 TDateTime StrToDateTime(const UnicodeString Value)
 {
+  (void)Value;
   Classes::Error(SNotImplemented, 145);
   return TDateTime();
 }
 
-bool TryStrToDateTime(const UnicodeString value, TDateTime & Value, TFormatSettings & FormatSettings)
+bool TryStrToDateTime(const UnicodeString StrValue, TDateTime & Value, TFormatSettings & FormatSettings)
 {
+  (void)StrValue;
+  (void)Value;
+  (void)FormatSettings;
   Classes::Error(SNotImplemented, 147);
   return false;
 }
@@ -1425,12 +1432,16 @@ bool TryStrToDateTime(const UnicodeString value, TDateTime & Value, TFormatSetti
 UnicodeString DateTimeToStr(UnicodeString & Result, const UnicodeString & Format,
   TDateTime DateTime)
 {
+  (void)Result;
+  (void)Format;
+  (void)DateTime;
   Classes::Error(SNotImplemented, 148);
   return L"";
 }
 
 UnicodeString DateTimeToString(TDateTime DateTime)
 {
+  (void)DateTime;
   Classes::Error(SNotImplemented, 146);
   return L"";
 }
@@ -1455,6 +1466,8 @@ TDateTime Date()
 
 UnicodeString FormatDateTime(const UnicodeString fmt, TDateTime DateTime)
 {
+  (void)fmt;
+  (void)DateTime;
   UnicodeString Result;
   Classes::Error(SNotImplemented, 150);
   return Result;

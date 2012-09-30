@@ -949,13 +949,18 @@ void __fastcall TSCPFileSystem::ClearAliases()
     FTerminal->LogEvent(L"Clearing all aliases.");
     ClearAlias(TCommandSet::ExtractCommand(FTerminal->GetSessionData()->GetListingCommand()));
     TStrings * CommandList = FCommandSet->CreateCommandList();
-    std::auto_ptr<TStrings> CommandListPtr(CommandList);
+    TRY_FINALLY1 (CommandList,
     {
       for (int Index = 0; Index < CommandList->Count; Index++)
       {
         ClearAlias(CommandList->Strings[Index]);
       }
     }
+    ,
+    {
+      delete CommandList;
+    }
+    );
   }
   catch (Exception &E)
   {
@@ -1068,7 +1073,7 @@ void __fastcall TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         // Copy LS command output, because eventual symlink analysis would
         // modify FTerminal->Output
         TStringList * OutputCopy = new TStringList();
-        std::auto_ptr<TStringList> OutputCopyPtr(OutputCopy);
+        TRY_FINALLY1 (OutputCopy,
         {
           OutputCopy->Assign(FOutput);
 
@@ -1086,6 +1091,11 @@ void __fastcall TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
             FileList->AddFile(File);
           }
         }
+        ,
+        {
+          delete OutputCopy;
+        }
+        );
       }
       else
       {

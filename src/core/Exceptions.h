@@ -32,8 +32,8 @@ public:
   explicit /* __fastcall */ ExtException(int Ident) : Sysutils::Exception(Ident), FMoreMessages(NULL) {}
   explicit /* __fastcall */ ExtException(UnicodeString Msg, int AHelpContext) : Sysutils::Exception(Msg, AHelpContext), FMoreMessages(NULL) {}
 
-  /* __fastcall */ ExtException(ExtException & E) : Sysutils::Exception(L""), FMoreMessages(NULL)
-  { AddMoreMessages(&E); }
+  // /* __fastcall */ ExtException(ExtException & E) : Sysutils::Exception(L""), FMoreMessages(NULL)
+  // { AddMoreMessages(&E); }
   ExtException & operator =(const ExtException &rhs)
   { Message = rhs.Message; AddMoreMessages(&rhs); return *this; }
 

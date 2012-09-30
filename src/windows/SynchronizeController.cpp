@@ -148,7 +148,7 @@ void __fastcall TSynchronizeController::SynchronizeChange(
       if (Checklist != NULL)
       {
         TRACE("2");
-        std::auto_ptr<TSynchronizeChecklist> ChecklistPtr(Checklist);
+        TRY_FINALLY1 (Checklist,
         {
           if (FLAGSET(FSynchronizeParams.Options, soRecurse))
           {
@@ -183,6 +183,11 @@ void __fastcall TSynchronizeController::SynchronizeChange(
             SubdirsChanged = false;
           }
         }
+        ,
+        {
+          delete Checklist;
+        }
+        );
       }
     }
   }
