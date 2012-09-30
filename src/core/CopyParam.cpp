@@ -41,6 +41,7 @@ void /* __fastcall */ TCopyParamType::Default()
   SetLocalInvalidChars(::LocalInvalidChars);
   SetCalculateSize(true);
   SetFileMask(L"*.*");
+  FNegativeExclude = false;
   GetIncludeFileMask().SetMasks(L"");
   SetClearArchive(false);
   SetCPSLimit(0);

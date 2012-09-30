@@ -351,7 +351,8 @@ TStrings::TStrings() :
   FDuplicates(dupAccept),
   FDelimiter(L','),
   FQuoteChar(L'"'),
-  FUpdateCount(0)
+  FUpdateCount(0),
+  Self(this)
 {
   Count(this);
   Text(this);
@@ -369,7 +370,6 @@ TStrings::~TStrings()
 }
 void TStrings::SetTextStr(const UnicodeString Text)
 {
-  TStrings * Self = this;
   Self->BeginUpdate();
   TRY_FINALLY1 (Self,
   {
@@ -407,7 +407,6 @@ UnicodeString TStrings::GetCommaText()
   FDelimiter = L',';
   FQuoteChar = L'"';
   UnicodeString Result;
-  TStrings * Self = this;
   TRY_FINALLY3 (Self, LOldDelimiter, LOldQuoteChar,
   {
     Result = GetDelimitedText();
@@ -442,7 +441,6 @@ UnicodeString TStrings::GetDelimitedText() const
 }
 void TStrings::SetDelimitedText(const UnicodeString Value)
 {
-  TStrings * Self = this;
   Self->BeginUpdate();
   TRY_FINALLY1 (Self,
   {
@@ -476,7 +474,6 @@ void TStrings::Assign(TPersistent * Source)
   {
     BeginUpdate();
     {
-      TStrings * Self = this;
       TRY_FINALLY1 (Self,
       {
         Clear();
@@ -629,7 +626,6 @@ void TStrings::Move(int CurIndex, int NewIndex)
   {
     BeginUpdate();
     {
-      TStrings * Self = this;
       TRY_FINALLY1 (Self,
       {
         UnicodeString TempString = GetStrings(CurIndex);
@@ -730,7 +726,6 @@ void TStrings::AddStrings(TStrings * Strings)
 {
   BeginUpdate();
   {
-    TStrings * Self = this;
     TRY_FINALLY1 (Self,
     {
       for (int I = 0; I < Strings->GetCount(); I++)
@@ -1633,7 +1628,8 @@ TRegistry::TRegistry() :
   FCurrentKey(0),
   FRootKey(0),
   FCloseRootKey(false),
-  FAccess(KEY_ALL_ACCESS)
+  FAccess(KEY_ALL_ACCESS),
+  Self(this)
 {
   // LazyWrite = True;
   Access(this);
@@ -1758,7 +1754,6 @@ bool TRegistry::DeleteKey(const UnicodeString Key)
   HKEY DeleteKey = GetKey(Key);
   if (DeleteKey != 0)
   {
-    TRegistry * Self = this;
     TRY_FINALLY3 (Self, OldKey, DeleteKey,
     {
       SetCurrentKey(DeleteKey);
@@ -1800,7 +1795,6 @@ bool TRegistry::KeyExists(const UnicodeString Key)
   bool Result = false;
   // DEBUG_PRINTF(L"Key = %s", Key.c_str());
   unsigned OldAccess = FAccess;
-  TRegistry * Self = this;
   TRY_FINALLY2 (Self, OldAccess,
   {
     FAccess = STANDARD_RIGHTS_READ | KEY_QUERY_VALUE | KEY_ENUMERATE_SUB_KEYS;
