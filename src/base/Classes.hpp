@@ -180,9 +180,9 @@ public:
   void * operator [](int Index) const;
   void *& GetItem(int Index);
   void SetItem(int Index, void * Item);
-  int Add(void * value);
-  void * Extract(void * item);
-  int Remove(void * item);
+  int Add(void * Value);
+  void * Extract(void * Item);
+  int Remove(void * Item);
   void Move(int CurIndex, int NewIndex);
   void Delete(int Index);
   virtual void Insert(int Index, void * Item);
@@ -194,7 +194,7 @@ public:
 
 protected:
   int GetCount() const;
-  void SetCount(int value);
+  void SetCount(int Value);
 
 private:
   int PropertyGetCount() { return GetCount(); }
@@ -386,6 +386,7 @@ protected:
   wchar_t FDelimiter;
   wchar_t FQuoteChar;
   int FUpdateCount;
+  TStrings * Self;
 };
 
 struct TStringItem
@@ -578,7 +579,7 @@ public:
   void __fastcall WriteBuffer(const void * Buffer, __int64 Count);
   __int64 __fastcall CopyFrom(TStream * Source, __int64 Count);
 
-protected:
+public:
   __int64 __fastcall GetPosition() { return Seek(0, soFromCurrent); }
   __int64 __fastcall GetSize()
   {
@@ -587,6 +588,8 @@ protected:
     Seek(Pos, soFromBeginning);
     return Result;
   }
+
+protected:
   virtual void __fastcall SetSize(const __int64 NewSize) = 0;
   void __fastcall SetPosition(const __int64 Pos)
   {
@@ -656,6 +659,7 @@ public:
   void __fastcall Clear();
   void __fastcall LoadFromStream(TStream * Stream);
   void __fastcall LoadFromFile(const UnicodeString FileName);
+  __int64 __fastcall GetSize() const { return FSize; }
   virtual void __fastcall SetSize(const __int64 NewSize);
   virtual __int64 __fastcall Write(const void * Buffer, __int64 Count);
 
@@ -768,6 +772,7 @@ private:
   UnicodeString FCurrentPath;
   bool FCloseRootKey;
   unsigned FAccess;
+  TRegistry * Self;
 };
 
 //---------------------------------------------------------------------------

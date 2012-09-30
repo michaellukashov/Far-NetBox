@@ -20,7 +20,6 @@ char * __fastcall EOLToStr(TEOLType EOLType)
 /* __fastcall */ TFileBuffer::TFileBuffer()
 {
   FMemory = new TMemoryStream();
-  FSize = 0;
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TFileBuffer::~TFileBuffer()
@@ -28,18 +27,17 @@ char * __fastcall EOLToStr(TEOLType EOLType)
   delete FMemory;
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileBuffer::SetSize(__int64 value)
+void __fastcall TFileBuffer::SetSize(__int64 Value)
 {
-  if (FSize != value)
+  if (FMemory->Size != Value)
   {
-    FMemory->Size = value;
-    FSize = value;
+    FMemory->Size = Value;
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileBuffer::SetPosition(__int64 value)
+void __fastcall TFileBuffer::SetPosition(__int64 Value)
 {
-  FMemory->Position = value;
+  FMemory->Position = Value;
 }
 //---------------------------------------------------------------------------
 __int64 __fastcall TFileBuffer::GetPosition() const
@@ -47,12 +45,12 @@ __int64 __fastcall TFileBuffer::GetPosition() const
   return FMemory->Position;
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileBuffer::SetMemory(TMemoryStream * value)
+void __fastcall TFileBuffer::SetMemory(TMemoryStream * Value)
 {
-  if (FMemory != value)
+  if (FMemory != Value)
   {
     if (FMemory) { delete FMemory; }
-    FMemory = value;
+    FMemory = Value;
   }
 }
 //---------------------------------------------------------------------------

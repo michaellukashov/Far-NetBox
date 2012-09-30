@@ -183,7 +183,7 @@ private:
   bool FFtpAllowEmptyPassword;
   TLoginType FLoginType;
   int FNumberOfRetries;
-  DWORD FSessionVersion;
+  uintptr_t FSessionVersion;
 
 public:
   void __fastcall SetHostName(UnicodeString value);

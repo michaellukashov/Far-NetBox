@@ -3,6 +3,7 @@
 #include <Classes.hpp>
 #include "Common.h"
 #include "Exceptions.h"
+#include <FileBuffer.h>
 #include <Sysutils.hpp>
 
 namespace alg = boost::algorithm;
@@ -351,7 +352,8 @@ TStrings::TStrings() :
   FDuplicates(dupAccept),
   FDelimiter(L','),
   FQuoteChar(L'"'),
-  FUpdateCount(0)
+  FUpdateCount(0),
+  Self(this)
 {
   Count(this);
   Text(this);
@@ -369,7 +371,6 @@ TStrings::~TStrings()
 }
 void TStrings::SetTextStr(const UnicodeString Text)
 {
-  TStrings * Self = this;
   Self->BeginUpdate();
   TRY_FINALLY1 (Self,
   {
@@ -407,7 +408,6 @@ UnicodeString TStrings::GetCommaText()
   FDelimiter = L',';
   FQuoteChar = L'"';
   UnicodeString Result;
-  TStrings * Self = this;
   TRY_FINALLY3 (Self, LOldDelimiter, LOldQuoteChar,
   {
     Result = GetDelimitedText();
@@ -442,7 +442,6 @@ UnicodeString TStrings::GetDelimitedText() const
 }
 void TStrings::SetDelimitedText(const UnicodeString Value)
 {
-  TStrings * Self = this;
   Self->BeginUpdate();
   TRY_FINALLY1 (Self,
   {
@@ -476,7 +475,6 @@ void TStrings::Assign(TPersistent * Source)
   {
     BeginUpdate();
     {
-      TStrings * Self = this;
       TRY_FINALLY1 (Self,
       {
         Clear();
@@ -629,7 +627,6 @@ void TStrings::Move(int CurIndex, int NewIndex)
   {
     BeginUpdate();
     {
-      TStrings * Self = this;
       TRY_FINALLY1 (Self,
       {
         UnicodeString TempString = GetStrings(CurIndex);
@@ -730,7 +727,6 @@ void TStrings::AddStrings(TStrings * Strings)
 {
   BeginUpdate();
   {
-    TStrings * Self = this;
     TRY_FINALLY1 (Self,
     {
       for (int I = 0; I < Strings->GetCount(); I++)
@@ -994,7 +990,35 @@ void TStringList::SetSorted(bool value)
 }
 void TStringList::LoadFromFile(const UnicodeString FileName)
 {
-  Classes::Error(SNotImplemented, 14);
+  HANDLE FileHandle = ::CreateFile(FileName.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, 0);
+  TSafeHandleStream Stream(FileHandle);
+  __int64 Size = Stream.GetSize();
+  TFileBuffer FileBuffer;
+  __int64 Read = FileBuffer.LoadStream(&Stream, Size, True);
+  bool ConvertToken;
+  FileBuffer.Convert(eolCRLF, eolCRLF, cpRemoveCtrlZ | cpRemoveBOM, ConvertToken);
+  ::CloseHandle(FileHandle);
+  UnicodeString Str(FileBuffer.GetData(), FileBuffer.GetSize());
+  // DEBUG_PRINTF(L"Str = %s", Str.c_str());
+  SetTextStr(Str);
+  /* FILE * f = NULL;
+  _wfopen_s(&f, FileName, L"rb");
+  if (!f)
+    return;
+  fseek(f, 0, SEEK_END);
+  size_t sz = ftell(f);
+  DEBUG_PRINTF(L"sz = %lu", sz);
+  void * content = calloc(sz, 1);
+  fseek(f, 0, SEEK_SET);
+  size_t read = fread(content, 1, sz, f);
+  DEBUG_PRINTF(L"read = %lu", read);
+  fclose(f);
+  if (read == sz)
+  {
+    // parse file content
+    // GDisk.Tab.Caption=&GDisk
+  }
+  free(content);*/
 }
 
 void TStringList::PutObject(int Index, TObject * AObject)
@@ -1633,7 +1657,8 @@ TRegistry::TRegistry() :
   FCurrentKey(0),
   FRootKey(0),
   FCloseRootKey(false),
-  FAccess(KEY_ALL_ACCESS)
+  FAccess(KEY_ALL_ACCESS),
+  Self(this)
 {
   // LazyWrite = True;
   Access(this);
@@ -1758,7 +1783,6 @@ bool TRegistry::DeleteKey(const UnicodeString Key)
   HKEY DeleteKey = GetKey(Key);
   if (DeleteKey != 0)
   {
-    TRegistry * Self = this;
     TRY_FINALLY3 (Self, OldKey, DeleteKey,
     {
       SetCurrentKey(DeleteKey);
@@ -1800,7 +1824,6 @@ bool TRegistry::KeyExists(const UnicodeString Key)
   bool Result = false;
   // DEBUG_PRINTF(L"Key = %s", Key.c_str());
   unsigned OldAccess = FAccess;
-  TRegistry * Self = this;
   TRY_FINALLY2 (Self, OldAccess,
   {
     FAccess = STANDARD_RIGHTS_READ | KEY_QUERY_VALUE | KEY_ENUMERATE_SUB_KEYS;

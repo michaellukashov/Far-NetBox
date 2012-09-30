@@ -178,12 +178,12 @@ void __fastcall TTabbedDialog::SelectTab(int Tab)
     FTab = Tab;
   }
 
-  for (int i = 0; i < GetItemCount(); i++)
+  for (int I = 0; I < GetItemCount(); I++)
   {
-    TFarDialogItem * I = GetItem(i);
-    if ((I->GetGroup() == Tab) && I->CanFocus())
+    TFarDialogItem * Item = GetItem(I);
+    if ((Item->GetGroup() == Tab) && Item->CanFocus())
     {
-      I->SetFocus();
+      Item->SetFocus();
       break;
     }
   }
@@ -198,9 +198,9 @@ void __fastcall TTabbedDialog::SelectTab(int Tab)
 TTabButton * __fastcall TTabbedDialog::TabButton(int Tab)
 {
   TTabButton * Result = NULL;
-  for (int i = 0; i < GetItemCount(); i++)
+  for (int I = 0; I < GetItemCount(); I++)
   {
-    TTabButton * T = dynamic_cast<TTabButton *>(GetItem(i));
+    TTabButton * T = dynamic_cast<TTabButton *>(GetItem(I));
     if ((T != NULL) && (T->GetTab() == Tab))
     {
       Result = T;
@@ -208,6 +208,10 @@ TTabButton * __fastcall TTabbedDialog::TabButton(int Tab)
     }
   }
 
+  if (!Result)
+  {
+    DEBUG_PRINTF(L"Tab = %d", Tab);
+  }
   assert(Result != NULL);
 
   return Result;
@@ -1045,7 +1049,7 @@ private:
 //---------------------------------------------------------------------------
 UnicodeString __fastcall ReplaceCopyright(UnicodeString S)
 {
-  return ::StringReplace(S, L"�", L"(c)", TReplaceFlags() << rfReplaceAll);
+  return ::StringReplace(S, L"©", L"(c)", TReplaceFlags() << rfReplaceAll);
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
@@ -1493,7 +1497,7 @@ class TSessionDialog : public TTabbedDialog
 {
 public:
   enum TSessionTab { tabSession = 1, tabEnvironment, tabDirectories, tabSFTP, tabSCP, tabFTP,
-    tabConnection, tabTunnel, tabProxy, tabSsh, tabKex, tabAuthentication, tabBugs, tabHttp, tabCount };
+    tabConnection, tabTunnel, tabProxy, tabSsh, tabKex, tabAuthentication, tabBugs, tabWebDAV, tabCount };
 
   explicit /* __fastcall */ TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum Action);
 
@@ -1514,7 +1518,7 @@ private:
   TTabButton * AuthenticatonTab;
   TTabButton * KexTab;
   TTabButton * BugsTab;
-  TTabButton * HttpTab;
+  TTabButton * WebDAVTab;
   TTabButton * ScpTab;
   TTabButton * SftpTab;
   TTabButton * FtpTab;
@@ -1628,7 +1632,7 @@ private:
   TFarCheckBox * SshBufferSizeCheck;
   TFarCheckBox * FtpAllowEmptyPasswordCheck;
   TFarCheckBox * SslSessionReuseCheck;
-  TFarCheckBox * HttpCompressionCheck;
+  TFarCheckBox * WebDAVCompressionCheck;
   TSessionDialog * Self;
 
   void __fastcall LoadPing(TSessionData * SessionData);
@@ -1801,10 +1805,10 @@ static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsWebDAV };
   BugsTab->SetTab(tabBugs);
   BugsTab->SetBrackets(TabBrackets);
 
-  HttpTab = new TTabButton(this);
-  HttpTab->SetTabName(GetMsg(LOGIN_TAB_HTTP));
-  HttpTab->SetTab(tabHttp);
-  HttpTab->SetBrackets(TabBrackets);
+  WebDAVTab = new TTabButton(this);
+  WebDAVTab->SetTabName(GetMsg(LOGIN_TAB_WEBDAV));
+  WebDAVTab->SetTab(tabWebDAV);
+  WebDAVTab->SetBrackets(TabBrackets);
 
   // Session tab
 
@@ -1831,7 +1835,7 @@ static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsWebDAV };
 #ifndef NO_FILEZILLA
   TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_FTP));
 #endif
-  TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_HTTP));
+  TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_WEBDAV));
 
   AllowScpFallbackCheck = new TFarCheckBox(this);
   AllowScpFallbackCheck->SetCaption(GetMsg(LOGIN_ALLOW_SCP_FALLBACK));
@@ -2799,17 +2803,17 @@ static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsWebDAV };
   BugPKSessID2Combo->SetEnabledDependencyNegative(SshProt1onlyButton);
   BugRekey2Combo->SetEnabledDependencyNegative(SshProt1onlyButton);
 
-  // Http tab
+  // WebDAV tab
 
   SetNextItemPosition(ipNewLine);
 
-  SetDefaultGroup(tabHttp);
+  SetDefaultGroup(tabWebDAV);
   Separator = new TFarSeparator(this);
   Separator->SetPosition(GroupTop);
-  Separator->SetCaption(GetMsg(LOGIN_HTTP_GROUP));
+  Separator->SetCaption(GetMsg(LOGIN_WEBDAV_GROUP));
 
-  HttpCompressionCheck = new TFarCheckBox(this);
-  HttpCompressionCheck->SetCaption(GetMsg(LOGIN_COMPRESSION));
+  WebDAVCompressionCheck = new TFarCheckBox(this);
+  WebDAVCompressionCheck->SetCaption(GetMsg(LOGIN_COMPRESSION));
 
   #undef TRISTATE
 
@@ -3078,8 +3082,8 @@ void __fastcall TSessionDialog::UpdateControls()
   // Bugs tab
   BugsTab->SetEnabled(SshProtocol);
 
-  // Http tab
-  HttpTab->SetEnabled(InternalWebDAVProtocol);
+  // WebDAV tab
+  WebDAVTab->SetEnabled(InternalWebDAVProtocol);
 
   // Scp/Shell tab
   ScpTab->SetEnabled(InternalSshProtocol);
@@ -3483,8 +3487,8 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
 
   BUGS();
 
-  // Http tab
-  HttpCompressionCheck->SetChecked(SessionData->GetCompression());
+  // WebDAV tab
+  WebDAVCompressionCheck->SetChecked(SessionData->GetCompression());
 
   #undef TRISTATE
 
@@ -3788,8 +3792,8 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
     // Bugs tab
     // BUGS();
 
-    // Http tab
-    SessionData->SetCompression(HttpCompressionCheck->GetChecked());
+    // WebDAV tab
+    SessionData->SetCompression(WebDAVCompressionCheck->GetChecked());
 
     #undef TRISTATE
     SessionData->SetBug(sbIgnore1, static_cast<TAutoSwitch>(2 - BugIgnore1Combo->GetItemIndex()));
@@ -3934,7 +3938,7 @@ TFSProtocol __fastcall TSessionDialog::GetFSProtocol()
 //---------------------------------------------------------------------------
 int __fastcall TSessionDialog::LastSupportedFtpProxyMethod()
 {
-  return pmSystem; // pmHTTP;
+  return pmSystem; // pmWebDAV;
 }
 //---------------------------------------------------------------------------
 bool __fastcall TSessionDialog::SupportedFtpProxyMethod(int Method)
