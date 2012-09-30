@@ -1,5 +1,6 @@
 NetBox 2.1.14 ??.??.2012
 --------------------
+  * Minor bugfixes
   * Far3: Adapt to Far 3.0 build 2852
   * WinSCP core upgraded to 5.1.0
 
