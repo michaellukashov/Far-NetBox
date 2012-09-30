@@ -368,7 +368,7 @@ void __fastcall TFarDialog::GetNextItemPosition(int & Left, int & Top)
   }
 }
 //---------------------------------------------------------------------------
-INT_PTR WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1, void * Param2)
+intptr_t WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, intptr_t Msg, intptr_t Param1, void * Param2)
 {
   TFarPluginEnvGuard Guard;
 
@@ -733,7 +733,7 @@ void __fastcall TFarDialog::Init()
   Change();
 }
 //---------------------------------------------------------------------------
-int __fastcall TFarDialog::ShowModal()
+intptr_t __fastcall TFarDialog::ShowModal()
 {
   FResult = -1;
 
@@ -746,7 +746,7 @@ int __fastcall TFarDialog::ShowModal()
     assert(GetDefaultButton()->GetDefault());
 
     UnicodeString AHelpTopic = GetHelpTopic();
-    int BResult = 0;
+    intptr_t BResult = 0;
     // try
     {
       TFarEnvGuard Guard;
@@ -2141,7 +2141,8 @@ void __fastcall TFarText::SetData(const UnicodeString value)
   Self = this;
   FDialogItem = ADialogItem;
   FListItems = new FarList;
-  memset(FListItems, 0, sizeof(*FListItems));
+  memset(FListItems, 0, sizeof(FarList));
+  FListItems->StructSize = sizeof(FarList);
   FNoDialogUpdate = false;
 }
 //---------------------------------------------------------------------------

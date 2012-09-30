@@ -39,7 +39,7 @@ public:
   explicit /* __fastcall */ TFarDialog(TCustomFarPlugin * AFarPlugin);
   virtual /* __fastcall */ ~TFarDialog();
 
-  int __fastcall ShowModal();
+  intptr_t __fastcall ShowModal();
   void __fastcall ShowGroup(int Group, bool Show);
   void __fastcall EnableGroup(int Group, bool Enable);
 
@@ -113,7 +113,7 @@ protected:
   bool __fastcall ChangesLocked();
   TFarDialogItem * __fastcall ItemAt(int X, int Y);
 
-  static INT_PTR WINAPI DialogProcGeneral(HANDLE Handle, int Msg, int Param1, void * Param2);
+  static intptr_t WINAPI DialogProcGeneral(HANDLE Handle, intptr_t Msg, intptr_t Param1, void * Param2);
 
 private:
   TCustomFarPlugin * FFarPlugin;
@@ -135,7 +135,7 @@ private:
   int FDialogItemsCapacity;
   int FChangesLocked;
   bool FChangesPending;
-  int FResult;
+  intptr_t FResult;
   bool FNeedsSynchronize;
   HANDLE FSynchronizeObjects[2];
   TThreadMethod FSynchronizeMethod;

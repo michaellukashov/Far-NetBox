@@ -58,10 +58,10 @@ void __fastcall TSessionPanelItem::SetKeyBarTitles(TFarKeyBarTitles * KeyBarTitl
 }
 //---------------------------------------------------------------------------
 void __fastcall TSessionPanelItem::GetData(
-  unsigned __int64 & /*Flags*/, UnicodeString & FileName, __int64 & /*Size*/,
-  unsigned long & /*FileAttributes*/,
+  PLUGINPANELITEMFLAGS & /*Flags*/, UnicodeString & FileName, __int64 & /*Size*/,
+  uintptr_t & /*FileAttributes*/,
   TDateTime & /*LastWriteTime*/, TDateTime & /*LastAccess*/,
-  unsigned long & /*NumberOfLinks*/, UnicodeString & /*Description*/,
+  uintptr_t & /*NumberOfLinks*/, UnicodeString & /*Description*/,
   UnicodeString & /*Owner*/, void *& UserData, size_t & /*CustomColumnNumber*/)
 {
   FileName = UnixExtractFileName(FSessionData->GetName());
@@ -75,10 +75,10 @@ void __fastcall TSessionPanelItem::GetData(
 }
 //---------------------------------------------------------------------------
 void __fastcall TSessionFolderPanelItem::GetData(
-  unsigned __int64 & /*Flags*/, UnicodeString & FileName, __int64 & /*Size*/,
-  unsigned long & FileAttributes,
+  PLUGINPANELITEMFLAGS & /*Flags*/, UnicodeString & FileName, __int64 & /*Size*/,
+  uintptr_t & FileAttributes,
   TDateTime & /*LastWriteTime*/, TDateTime & /*LastAccess*/,
-  unsigned long & /*NumberOfLinks*/, UnicodeString & /*Description*/,
+  uintptr_t & /*NumberOfLinks*/, UnicodeString & /*Description*/,
   UnicodeString & /*Owner*/, void *& /*UserData*/, size_t & /*CustomColumnNumber*/)
 {
   FileName = FFolder;
@@ -93,10 +93,10 @@ void __fastcall TSessionFolderPanelItem::GetData(
 }
 //---------------------------------------------------------------------------
 void __fastcall TRemoteFilePanelItem::GetData(
-  unsigned __int64 & /*Flags*/, UnicodeString & FileName, __int64 & Size,
-  unsigned long & FileAttributes,
+  PLUGINPANELITEMFLAGS & /*Flags*/, UnicodeString & FileName, __int64 & Size,
+  uintptr_t & FileAttributes,
   TDateTime & LastWriteTime, TDateTime & LastAccess,
-  unsigned long & /*NumberOfLinks*/, UnicodeString & /*Description*/,
+  uintptr_t & /*NumberOfLinks*/, UnicodeString & /*Description*/,
   UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber)
 {
   FileName = FRemoteFile->GetFileName();
@@ -416,7 +416,7 @@ void __fastcall TWinSCPFileSystem::Close()
 //---------------------------------------------------------------------------
 void __fastcall TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
     UnicodeString & /*HostFile*/, UnicodeString & CurDir, UnicodeString & Format,
-    UnicodeString & PanelTitle, TFarPanelModes * PanelModes, int & /*StartPanelMode*/,
+    UnicodeString & PanelTitle, TFarPanelModes * PanelModes, intptr_t & /*StartPanelMode*/,
     OPENPANELINFO_SORTMODES & /*StartSortMode*/, bool & /*StartSortOrder*/, TFarKeyBarTitles * KeyBarTitles,
     UnicodeString & ShortcutData)
 {
@@ -3871,7 +3871,8 @@ void __fastcall TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*
           {
             UnicodeString FullFileName = UnixIncludeTrailingBackslash(I->second.Directory) +
               I->second.FileTitle;
-            WinSCPPlugin()->FarEditorControl(ECTL_SETTITLE, static_cast<void *>(const_cast<wchar_t *>(FullFileName.c_str())));
+            WinSCPPlugin()->FarEditorControl(ECTL_SETTITLE, FullFileName.Length(),
+              static_cast<void *>(const_cast<wchar_t *>(FullFileName.c_str())));
           }
         }
       }
@@ -3915,9 +3916,10 @@ void __fastcall TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*
               {
                 EditorSetParameter Parameter;
                 memset(&Parameter, 0, sizeof(Parameter));
+                Parameter.StructSize = sizeof(EditorSetParameter);
                 Parameter.Type = ESPT_LOCKMODE;
                 Parameter.iParam = TRUE;
-                WinSCPPlugin()->FarEditorControl(ECTL_SETPARAM, &Parameter);
+                WinSCPPlugin()->FarEditorControl(ECTL_SETPARAM, 0, &Parameter);
               }
             }
           }
@@ -3997,7 +3999,8 @@ void __fastcall TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*
             UnicodeString FullFileName = UnixIncludeTrailingBackslash(I->second.Directory) +
                 I->second.FileTitle;
             // note that we need to reset the title periodically (see EE_REDRAW)
-            WinSCPPlugin()->FarEditorControl(ECTL_SETTITLE, static_cast<void *>(const_cast<wchar_t *>(FullFileName.c_str())));
+            WinSCPPlugin()->FarEditorControl(ECTL_SETTITLE, FullFileName.Length(),
+              static_cast<void *>(const_cast<wchar_t *>(FullFileName.c_str())));
           }
 
           if (FarConfiguration->GetEditorUploadOnSave())
@@ -4204,8 +4207,8 @@ void __fastcall TWinSCPFileSystem::EditHistory()
 
     const FarKey BreakKeys[] = { { VK_F4, 0 }, { 0 } };
     
-    int BreakCode = 0;
-    int Result = WinSCPPlugin()->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
+    intptr_t BreakCode = 0;
+    intptr_t Result = WinSCPPlugin()->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
       GetMsg(MENU_EDIT_HISTORY), L"", MenuItems, BreakKeys, BreakCode);
 
     if ((Result >= 0) && (Result < static_cast<int>(FEditHistories.size())))

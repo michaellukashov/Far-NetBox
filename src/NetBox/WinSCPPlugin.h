@@ -45,10 +45,10 @@ protected:
   virtual void __fastcall GetPluginInfoEx(PLUGIN_FLAGS &Flags, TStrings * DiskMenuStrings,
     TStrings * PluginMenuStrings, TStrings * PluginConfigStrings,
     TStrings * CommandPrefixes);
-  virtual TCustomFarFileSystem * __fastcall OpenPluginEx(OPENFROM OpenFrom, INT_PTR Item);
+  virtual TCustomFarFileSystem * __fastcall OpenPluginEx(OPENFROM OpenFrom, intptr_t Item);
   virtual bool __fastcall ConfigureEx(int Item);
-  virtual int __fastcall ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info);
-  virtual int __fastcall ProcessEditorInputEx(const INPUT_RECORD * Rec);
+  virtual intptr_t __fastcall ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info);
+  virtual intptr_t __fastcall ProcessEditorInputEx(const INPUT_RECORD * Rec);
   bool __fastcall CopyParamDialog(UnicodeString Caption, TCopyParamType & CopyParam,
     int CopyParamAttrs);
   void /* __fastcall */ MessageClick(void * Token, int Result, bool & Close);

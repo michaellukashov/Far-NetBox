@@ -6425,7 +6425,7 @@ bool __fastcall TWinSCPFileSystem::OpenDirectoryDialog(
         BookmarkItems->SetItemFocused(BookmarkItems->Count - 1);
       }
 
-      int BreakCode;
+      intptr_t BreakCode;
 
       Repeat = false;
       UnicodeString Caption = GetMsg(Add ? OPEN_DIRECTORY_ADD_BOOMARK_ACTION :

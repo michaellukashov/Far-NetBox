@@ -301,12 +301,12 @@ void __fastcall TCustomFarPlugin::InvalidateOpenPanelInfo()
   }
 }
 //---------------------------------------------------------------------------
-int __fastcall TCustomFarPlugin::Configure(const struct ConfigureInfo *Info)
+intptr_t __fastcall TCustomFarPlugin::Configure(const struct ConfigureInfo *Info)
 {
   try
   {
     ResetCachedInfo();
-    int Result = ConfigureEx(0);
+    intptr_t Result = ConfigureEx(0);
     InvalidateOpenPanelInfo();
 
     return Result;
@@ -324,7 +324,7 @@ void * __fastcall TCustomFarPlugin::OpenPlugin(const struct OpenInfo *Info)
   try
   {
     ResetCachedInfo();
-    INT_PTR Item = 0;
+    intptr_t Item = 0;
     if (*Info->Guid == MenuCommandsGuid)
       Item = 1;
     if ((Info->OpenFrom == OPEN_SHORTCUT) || 
@@ -422,7 +422,7 @@ void __fastcall TCustomFarPlugin::GetOpenPanelInfo(struct OpenPanelInfo *Info)
   }
 }
 //---------------------------------------------------------------------------
-int __fastcall TCustomFarPlugin::GetFindData(struct GetFindDataInfo *Info)
+intptr_t __fastcall TCustomFarPlugin::GetFindData(struct GetFindDataInfo *Info)
 {
   TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
   try
@@ -463,7 +463,7 @@ void __fastcall TCustomFarPlugin::FreeFindData(const struct FreeFindDataInfo *In
   }
 }
 //---------------------------------------------------------------------------
-int __fastcall TCustomFarPlugin::ProcessHostFile(const struct ProcessHostFileInfo *Info)
+intptr_t __fastcall TCustomFarPlugin::ProcessHostFile(const struct ProcessHostFileInfo *Info)
 {
   TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
   try
@@ -491,7 +491,7 @@ int __fastcall TCustomFarPlugin::ProcessHostFile(const struct ProcessHostFileInf
   }
 }
 //---------------------------------------------------------------------------
-int __fastcall TCustomFarPlugin::ProcessPanelInput(const struct ProcessPanelInputInfo *Info)
+intptr_t __fastcall TCustomFarPlugin::ProcessPanelInput(const struct ProcessPanelInputInfo *Info)
 {
   TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
   try
@@ -521,7 +521,7 @@ int __fastcall TCustomFarPlugin::ProcessPanelInput(const struct ProcessPanelInpu
   }
 }
 //---------------------------------------------------------------------------
-int __fastcall TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEventInfo *Info)
+intptr_t __fastcall TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEventInfo *Info)
 {
   TCustomFarFileSystem *FileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
   try
@@ -558,7 +558,7 @@ int __fastcall TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEven
   }
 }
 //---------------------------------------------------------------------------
-int __fastcall TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo *Info)
+intptr_t __fastcall TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo *Info)
 {
   TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
   try
@@ -579,7 +579,7 @@ int __fastcall TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo *Inf
   }
 }
 //---------------------------------------------------------------------------
-int __fastcall TCustomFarPlugin::MakeDirectory(struct MakeDirectoryInfo *Info)
+intptr_t __fastcall TCustomFarPlugin::MakeDirectory(struct MakeDirectoryInfo *Info)
 {
   TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
   try
@@ -600,7 +600,7 @@ int __fastcall TCustomFarPlugin::MakeDirectory(struct MakeDirectoryInfo *Info)
   }
 }
 //---------------------------------------------------------------------------
-int __fastcall TCustomFarPlugin::DeleteFiles(const struct DeleteFilesInfo *Info)
+intptr_t __fastcall TCustomFarPlugin::DeleteFiles(const struct DeleteFilesInfo *Info)
 {
   TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
   try
@@ -621,7 +621,7 @@ int __fastcall TCustomFarPlugin::DeleteFiles(const struct DeleteFilesInfo *Info)
   }
 }
 //---------------------------------------------------------------------------
-int __fastcall TCustomFarPlugin::GetFiles(struct GetFilesInfo *Info)
+intptr_t __fastcall TCustomFarPlugin::GetFiles(struct GetFilesInfo *Info)
 {
   TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
   try
@@ -643,7 +643,7 @@ int __fastcall TCustomFarPlugin::GetFiles(struct GetFilesInfo *Info)
   }
 }
 //---------------------------------------------------------------------------
-int __fastcall TCustomFarPlugin::PutFiles(const struct PutFilesInfo *Info)
+intptr_t __fastcall TCustomFarPlugin::PutFiles(const struct PutFilesInfo *Info)
 {
   TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
   try
@@ -664,7 +664,7 @@ int __fastcall TCustomFarPlugin::PutFiles(const struct PutFilesInfo *Info)
   }
 }
 //---------------------------------------------------------------------------
-int __fastcall TCustomFarPlugin::ProcessEditorEvent(const struct ProcessEditorEventInfo *Info)
+intptr_t __fastcall TCustomFarPlugin::ProcessEditorEvent(const struct ProcessEditorEventInfo *Info)
 {
   try
   {
@@ -680,7 +680,7 @@ int __fastcall TCustomFarPlugin::ProcessEditorEvent(const struct ProcessEditorEv
   }
 }
 //---------------------------------------------------------------------------
-int __fastcall TCustomFarPlugin::ProcessEditorInput(const struct ProcessEditorInputInfo *Info)
+intptr_t __fastcall TCustomFarPlugin::ProcessEditorInput(const struct ProcessEditorInputInfo *Info)
 {
   try
   {
@@ -730,7 +730,7 @@ public:
   void __fastcall Init(unsigned int AFlags,
     const UnicodeString Title, const UnicodeString Message, TStrings * Buttons);
 
-  int __fastcall Execute(bool & ACheckBox);
+  intptr_t __fastcall Execute(bool & ACheckBox);
 
 protected:
   virtual void __fastcall Change();
@@ -989,7 +989,7 @@ void __fastcall TFarMessageDialog::Change()
   }
 }
 //---------------------------------------------------------------------------
-int __fastcall TFarMessageDialog::Execute(bool & ACheckBox)
+intptr_t __fastcall TFarMessageDialog::Execute(bool & ACheckBox)
 {
   FStartTime = Now();
   FLastTimerTime = FStartTime;
@@ -999,7 +999,7 @@ int __fastcall TFarMessageDialog::Execute(bool & ACheckBox)
     FCheckBox->SetChecked(ACheckBox);
   }
 
-  int Result = ShowModal();
+  intptr_t Result = ShowModal();
   assert(Result != 0);
   if (Result > 0)
   {
@@ -1132,9 +1132,9 @@ int __fastcall TCustomFarPlugin::Message(unsigned int Flags,
   return Result;
 }
 //---------------------------------------------------------------------------
-int __fastcall TCustomFarPlugin::Menu(unsigned int Flags, UnicodeString Title,
+intptr_t __fastcall TCustomFarPlugin::Menu(unsigned int Flags, UnicodeString Title,
   UnicodeString Bottom, const FarMenuItem * Items, int Count,
-  const FarKey * BreakKeys, int & BreakCode)
+  const FarKey * BreakKeys, intptr_t & BreakCode)
 {
   assert(Items);
 
@@ -1153,12 +1153,12 @@ int __fastcall TCustomFarPlugin::Menu(unsigned int Flags, UnicodeString Title,
         Count);
 }
 //---------------------------------------------------------------------------
-int __fastcall TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeString Title,
+intptr_t __fastcall TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeString Title,
   const UnicodeString Bottom, TStrings * Items, const FarKey * BreakKeys,
-  int & BreakCode)
+  intptr_t & BreakCode)
 {
   assert(Items && Items->Count);
-  int Result = 0;
+  intptr_t Result = 0;
   FarMenuItem * MenuItems = new FarMenuItem[Items->Count];
   TRY_FINALLY1 (MenuItems,
   {
@@ -1184,7 +1184,7 @@ int __fastcall TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeString Ti
       }
     }
 
-    int ResultItem = Menu(Flags, Title, Bottom,
+    intptr_t ResultItem = Menu(Flags, Title, Bottom,
       reinterpret_cast<const FarMenuItem *>(MenuItems), Count, BreakKeys, BreakCode);
 
     if (ResultItem >= 0)
@@ -1209,15 +1209,15 @@ int __fastcall TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeString Ti
   return Result;
 }
 //---------------------------------------------------------------------------
-int __fastcall TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeString Title,
+intptr_t __fastcall TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeString Title,
   const UnicodeString Bottom, TStrings * Items)
 {
-  int BreakCode;
+  intptr_t BreakCode;
   return Menu(Flags, Title, Bottom, Items, NULL, BreakCode);
 }
 //---------------------------------------------------------------------------
 bool __fastcall TCustomFarPlugin::InputBox(const UnicodeString Title,
-  const UnicodeString Prompt, UnicodeString & Text, unsigned long Flags,
+  const UnicodeString Prompt, UnicodeString & Text, PLUGINPANELITEMFLAGS Flags,
   const UnicodeString HistoryName, size_t MaxLen, TFarInputBoxValidateEvent OnValidate)
 {
   bool Repeat = false;
@@ -1293,7 +1293,7 @@ void __fastcall TCustomFarPlugin::WriteConsole(const UnicodeString Str)
 void __fastcall TCustomFarPlugin::FarCopyToClipboard(const UnicodeString Str)
 {
   TFarEnvGuard Guard;
-  FFarStandardFunctions.CopyToClipboard(Str.c_str());
+  FFarStandardFunctions.CopyToClipboard(FCT_ANY, Str.c_str());
 }
 //---------------------------------------------------------------------------
 void __fastcall TCustomFarPlugin::FarCopyToClipboard(TStrings * Strings)
@@ -1535,6 +1535,7 @@ void __fastcall TCustomFarPlugin::UpdateProgress(int state, int progress)
   if (state == TBPS_NORMAL)
   {
     ProgressValue pv;
+    pv.StructSize = sizeof(ProgressValue);
     pv.Completed = progress < 0 ? 0 : progress > 100 ? 100 : progress;
     pv.Total = 100;
     FarAdvControl(ACTL_SETPROGRESSVALUE, 0, &pv);
@@ -1602,7 +1603,7 @@ bool __fastcall TCustomFarPlugin::Viewer(UnicodeString FileName,
   int Result = FStartupInfo.Viewer(
     FileName.c_str(),
     Title.c_str(), 0, 0, -1, -1, Flags,
-    CP_AUTODETECT);
+    CP_DEFAULT);
   return Result > 0;
 }
 //---------------------------------------------------------------------------
@@ -1613,7 +1614,7 @@ bool __fastcall TCustomFarPlugin::Editor(const UnicodeString FileName,
   int Result = FStartupInfo.Editor(
                  FileName.c_str(),
                  Title.c_str(), 0, 0, -1, -1, Flags, -1, -1,
-                 CP_AUTODETECT);
+                 CP_DEFAULT);
   return (Result == EEC_MODIFIED) || (Result == EEC_NOT_MODIFIED);
 }
 //---------------------------------------------------------------------------
@@ -1624,7 +1625,7 @@ void __fastcall TCustomFarPlugin::ResetCachedInfo()
 //---------------------------------------------------------------------------
 __int64 __fastcall TCustomFarPlugin::GetSystemSetting(HANDLE & Settings, const wchar_t * Name)
 {
-  FarSettingsItem item = {FSSF_SYSTEM, Name, FST_UNKNOWN, {0} };
+  FarSettingsItem item = {sizeof(FarSettingsItem), FSSF_SYSTEM, Name, FST_UNKNOWN, {0} };
   if (FStartupInfo.SettingsControl(Settings, SCTL_GET, 0, &item) && FST_QWORD == item.Type)
   {
     return item.Number;
@@ -1651,7 +1652,7 @@ __int64 __fastcall TCustomFarPlugin::FarSystemSettings()
   return FFarSystemSettings;
 }
 //---------------------------------------------------------------------------
-DWORD __fastcall TCustomFarPlugin::FarControl(FILE_CONTROL_COMMANDS Command, int Param1, void * Param2, HANDLE Plugin)
+uintptr_t __fastcall TCustomFarPlugin::FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2, HANDLE Plugin)
 {
   switch (Command)
   {
@@ -1672,13 +1673,13 @@ DWORD __fastcall TCustomFarPlugin::FarControl(FILE_CONTROL_COMMANDS Command, int
   return FStartupInfo.PanelControl(Plugin, Command, Param1, Param2);
 }
 //---------------------------------------------------------------------------
-__int64 __fastcall TCustomFarPlugin::FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, int Param1, void * Param2)
+__int64 __fastcall TCustomFarPlugin::FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2)
 {
   TFarEnvGuard Guard;
   return FStartupInfo.AdvControl(&MainGuid, Command, Param1, Param2);
 }
 //---------------------------------------------------------------------------
-int __fastcall TCustomFarPlugin::FarEditorControl(EDITOR_CONTROL_COMMANDS Command, void * Param)
+intptr_t __fastcall TCustomFarPlugin::FarEditorControl(EDITOR_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2)
 {
   UnicodeString Buf;
   switch (Command)
@@ -1701,16 +1702,18 @@ int __fastcall TCustomFarPlugin::FarEditorControl(EDITOR_CONTROL_COMMANDS Comman
   }
 
   TFarEnvGuard Guard;
-  return FStartupInfo.EditorControl(-1, Command, 0, Param);
+  return FStartupInfo.EditorControl(-1, Command, Param1, Param2);
 }
 //---------------------------------------------------------------------------
 TFarEditorInfo * __fastcall TCustomFarPlugin::EditorInfo()
 {
   TFarEditorInfo * Result;
   ::EditorInfo * Info = new ::EditorInfo;
+  memset(Info, 0, sizeof(::EditorInfo));
+  Info->StructSize = sizeof(::EditorInfo);
   try
   {
-    if (FarEditorControl(ECTL_GETINFO, Info))
+    if (FarEditorControl(ECTL_GETINFO, 0, Info))
     {
       Result = new TFarEditorInfo(Info);
     }
@@ -2125,12 +2128,12 @@ TFarPanelInfo * __fastcall TCustomFarFileSystem::GetPanelInfo(int Another)
   return FPanelInfo[another];
 }
 //---------------------------------------------------------------------------
-DWORD __fastcall TCustomFarFileSystem::FarControl(FILE_CONTROL_COMMANDS Command, int Param1, void * Param2)
+uintptr_t __fastcall TCustomFarFileSystem::FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2)
 {
   return FPlugin->FarControl(Command, Param1, Param2, this);
 }
 //---------------------------------------------------------------------------
-DWORD __fastcall TCustomFarFileSystem::FarControl(FILE_CONTROL_COMMANDS Command, int Param1, void * Param2, HANDLE Plugin)
+uintptr_t __fastcall TCustomFarFileSystem::FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2, HANDLE Plugin)
 {
   return FPlugin->FarControl(Command, Param1, Param2, Plugin);
 }
@@ -2465,11 +2468,11 @@ void __fastcall TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * Pane
   UnicodeString Description;
   UnicodeString Owner;
 
-  void * UserData = reinterpret_cast<void *>(PanelItem->UserData);
+  void * UserData = PanelItem->UserData.Data;
   GetData(PanelItem->Flags, FileName, Size, PanelItem->FileAttributes,
     LastWriteTime, LastAccess, PanelItem->NumberOfLinks, Description, Owner,
-    static_cast<void *>(UserData), PanelItem->CustomColumnNumber);
-  PanelItem->UserData = reinterpret_cast<uintptr_t>(UserData);
+    UserData, PanelItem->CustomColumnNumber);
+  PanelItem->UserData.Data = UserData;
   // DEBUG_PRINTF(L"LastWriteTime = %f, LastAccess = %f", LastWriteTime, LastAccess);
   FILETIME FileTime = DateTimeToFileTime(LastWriteTime, dstmWin);
   FILETIME FileTimeA = DateTimeToFileTime(LastAccess, dstmWin);
@@ -2510,10 +2513,10 @@ void __fastcall TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * Pane
 
 //---------------------------------------------------------------------------
 void __fastcall TFarPanelItem::GetData(
-  unsigned __int64 & /*Flags*/, UnicodeString & /*FileName*/, __int64 & /*Size*/,
-  unsigned long & /*FileAttributes*/,
+  PLUGINPANELITEMFLAGS & /*Flags*/, UnicodeString & /*FileName*/, __int64 & /*Size*/,
+  uintptr_t & /*FileAttributes*/,
   TDateTime & /*LastWriteTime*/, TDateTime & /*LastAccess*/,
-  unsigned long & /*NumberOfLinks*/, UnicodeString & /*Description*/,
+  uintptr_t & /*NumberOfLinks*/, UnicodeString & /*Description*/,
   UnicodeString & /*Owner*/, void *& /*UserData*/, size_t & /*CustomColumnNumber*/)
 {
   assert(false);
@@ -2525,7 +2528,7 @@ UnicodeString __fastcall TFarPanelItem::GetCustomColumnData(int /*Column*/)
   return L"";
 }
 //---------------------------------------------------------------------------
-unsigned long __fastcall TFarPanelItem::GetFlags()
+PLUGINPANELITEMFLAGS __fastcall TFarPanelItem::GetFlags()
 {
   return FPanelItem->Flags;
 }
@@ -2538,7 +2541,7 @@ UnicodeString __fastcall TFarPanelItem::GetFileName()
 //---------------------------------------------------------------------------
 void * __fastcall TFarPanelItem::GetUserData()
 {
-  return reinterpret_cast<void *>(FPanelItem->UserData);
+  return FPanelItem->UserData.Data;
 }
 //---------------------------------------------------------------------------
 bool __fastcall TFarPanelItem::GetSelected()
@@ -2558,7 +2561,7 @@ void __fastcall TFarPanelItem::SetSelected(bool value)
   }
 }
 //---------------------------------------------------------------------------
-unsigned long __fastcall TFarPanelItem::GetFileAttributes()
+uintptr_t __fastcall TFarPanelItem::GetFileAttributes()
 {
   return FPanelItem->FileAttributes;
 }
@@ -2581,10 +2584,10 @@ bool __fastcall TFarPanelItem::GetIsFile()
 }
 //---------------------------------------------------------------------------
 void __fastcall THintPanelItem::GetData(
-  unsigned __int64 & /*Flags*/, UnicodeString & FileName, __int64 & /*Size*/,
-  unsigned long & /*FileAttributes*/,
+  PLUGINPANELITEMFLAGS & /*Flags*/, UnicodeString & FileName, __int64 & /*Size*/,
+  uintptr_t & /*FileAttributes*/,
   TDateTime & /*LastWriteTime*/, TDateTime & /*LastAccess*/,
-  unsigned long & /*NumberOfLinks*/, UnicodeString & /*Description*/,
+  uintptr_t & /*NumberOfLinks*/, UnicodeString & /*Description*/,
   UnicodeString & /*Owner*/, void *& /*UserData*/, size_t & /*CustomColumnNumber*/)
 {
   FileName = FHint;
@@ -2658,8 +2661,9 @@ TObjectList * __fastcall TFarPanelInfo::GetItems()
     PluginPanelItem * ppi = static_cast<PluginPanelItem *>(malloc(size));
     memset(ppi, 0, size);
     FarGetPluginPanelItem gppi;
-    gppi.Item = ppi;
+    gppi.StructSize = sizeof(FarGetPluginPanelItem);
     gppi.Size = size;
+    gppi.Item = ppi;
     FOwner->FarControl(FCTL_GETPANELITEM, Index, static_cast<void *>(&gppi));
     // DEBUG_PRINTF(L"ppi.FileName = %s", ppi->FileName);
     FItems->Add(static_cast<TObject *>(new TFarPanelItem(ppi)));
@@ -2744,6 +2748,7 @@ void __fastcall TFarPanelInfo::SetFocusedIndex(int value)
     assert(value != NPOS && value < FPanelInfo->ItemsNumber);
     FPanelInfo->CurrentItem = value;
     PanelRedrawInfo PanelInfo;
+    PanelInfo.StructSize = sizeof(PanelRedrawInfo);
     PanelInfo.CurrentItem = FPanelInfo->CurrentItem;
     PanelInfo.TopPanelItem = FPanelInfo->TopPanelItem;
     FOwner->FarControl(FCTL_REDRAWPANEL, 0, reinterpret_cast<void *>(&PanelInfo));
@@ -2912,11 +2917,11 @@ int __fastcall TFarEditorInfo::GetEditorID() const
 UnicodeString __fastcall TFarEditorInfo::GetFileName()
 {
   UnicodeString Result = L"";
-  size_t buffLen = FarPlugin->FarEditorControl(ECTL_GETFILENAME, NULL);
+  size_t buffLen = FarPlugin->FarEditorControl(ECTL_GETFILENAME, 0, NULL);
   if (buffLen)
   {
     Result.SetLength(buffLen + 1);
-    FarPlugin->FarEditorControl(ECTL_GETFILENAME, (wchar_t *)Result.c_str());
+    FarPlugin->FarEditorControl(ECTL_GETFILENAME, buffLen, (wchar_t *)Result.c_str());
   }
   return Result.c_str();
 }

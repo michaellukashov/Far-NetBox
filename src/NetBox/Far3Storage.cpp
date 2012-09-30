@@ -125,7 +125,7 @@ bool __fastcall TFar3Storage::DeleteSubKey(const UnicodeString SubKey)
 void __fastcall TFar3Storage::GetSubKeyNames(TStrings * Strings)
 {
   // DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
-  FarSettingsEnum settings = {0};
+  FarSettingsEnum settings = {sizeof(FarSettingsEnum),0,0,0};
   settings.Root = FRoot;
   if (FPluginSettings.GetSubKeyNames(settings))
   {
@@ -145,7 +145,7 @@ void __fastcall TFar3Storage::GetValueNames(TStrings * Strings)
 {
   // DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
   Strings->Clear();
-  FarSettingsEnum settings = {0};
+  FarSettingsEnum settings = {sizeof(FarSettingsEnum),0,0,0};
   settings.Root = FRoot;
   if (FPluginSettings.GetSubKeyNames(settings))
   {

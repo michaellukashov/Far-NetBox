@@ -22,31 +22,34 @@ public:
 
   ~PluginSettings()
   {
-      SettingsControl(handle,SCTL_FREE,0,0);
+    SettingsControl(handle,SCTL_FREE,0,0);
   }
 
-  int CreateSubKey(int Root, const wchar_t *Name)
+  intptr_t CreateSubKey(intptr_t Root, const wchar_t *Name)
   {
     FarSettingsValue value={sizeof(FarSettingsValue),Root,Name};
-    return (int)SettingsControl(handle,SCTL_CREATESUBKEY,0,&value);
+    return SettingsControl(handle,SCTL_CREATESUBKEY,0,&value);
   }
 
-  int OpenSubKey(int Root, const wchar_t *Name)
+  intptr_t OpenSubKey(intptr_t Root, const wchar_t *Name)
   {
+    // DEBUG_PRINTF(L"handle = %d, Name = %s", (int)handle, Name);
     FarSettingsValue value={sizeof(FarSettingsValue),Root,Name};
-    return (int)SettingsControl(handle,SCTL_OPENSUBKEY,0,&value);
+    intptr_t Result = SettingsControl(handle,SCTL_OPENSUBKEY,0,&value);
+    // DEBUG_PRINTF(L"Result = %d", Result);
+    return Result;
   }
 
   bool DeleteSubKey(int Root)
   {
     FarSettingsValue value={sizeof(FarSettingsValue),Root,nullptr};
-    return (int)SettingsControl(handle,SCTL_DELETE,0,&value) ? true : false;
+    return SettingsControl(handle,SCTL_DELETE,0,&value) ? true : false;
   }
 
   bool DeleteValue(int Root, const wchar_t *Name)
   {
     FarSettingsValue value={sizeof(FarSettingsValue),Root,Name};
-    return (int)SettingsControl(handle,SCTL_DELETE,0,&value) ? true : false;
+    return SettingsControl(handle,SCTL_DELETE,0,&value) ? true : false;
   }
 
   const wchar_t *Get(int Root, const wchar_t *Name, const wchar_t *Default)
@@ -126,12 +129,12 @@ public:
   }
   bool ValueExists(int Root, const wchar_t *Name)
   {
-    FarSettingsItem item = {Root, Name, FST_DATA};
+    FarSettingsItem item = {sizeof(FarSettingsItem), Root, Name, FST_DATA};
     return SettingsControl(handle, SCTL_GET, 0, &item) != FALSE;
   }
   int BinaryDataSize(int Root, const wchar_t *Name)
   {
-    FarSettingsItem item = {Root, Name, FST_DATA};
+    FarSettingsItem item = {sizeof(FarSettingsItem), Root, Name, FST_DATA};
     if (SettingsControl(handle, SCTL_GET, 0, &item) != FALSE)
     {
        return item.Data.Size;

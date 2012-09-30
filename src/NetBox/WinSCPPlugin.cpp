@@ -205,7 +205,7 @@ bool __fastcall TWinSCPPlugin::ConfigureEx(int /*Item*/)
   return Change;
 }
 //---------------------------------------------------------------------------
-int __fastcall TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info)
+intptr_t __fastcall TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info)
 {
   // for performance reasons, do not pass the event to file systems on redraw
   if ((Info->Event != EE_REDRAW) || FarConfiguration->GetEditorUploadOnSave() ||
@@ -222,9 +222,9 @@ int __fastcall TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEve
   return 0;
 }
 //---------------------------------------------------------------------------
-int __fastcall TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
+intptr_t __fastcall TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
 {
-  int Result;
+  intptr_t Result;
   if ((Rec->EventType == KEY_EVENT) &&
       Rec->Event.KeyEvent.bKeyDown &&
      (Rec->Event.KeyEvent.uChar.AsciiChar == 'W') &&

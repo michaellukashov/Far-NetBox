@@ -101,7 +101,7 @@ protected:
 
   virtual void __fastcall GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
     UnicodeString & HostFile, UnicodeString & CurDir, UnicodeString & Format,
-    UnicodeString & PanelTitle, TFarPanelModes * PanelModes, int & StartPanelMode,
+    UnicodeString & PanelTitle, TFarPanelModes * PanelModes, intptr_t & StartPanelMode,
     OPENPANELINFO_SORTMODES &StartSortMode, bool &StartSortOrder, TFarKeyBarTitles *KeyBarTitles,
     UnicodeString & ShortcutData);
   virtual bool __fastcall GetFindDataEx(TObjectList * PanelItems, int OpMode);
@@ -355,10 +355,10 @@ protected:
   TSessionData * FSessionData;
 
   virtual void __fastcall GetData(
-    unsigned __int64 & Flags, UnicodeString & FileName, __int64 & Size,
-    unsigned long & FileAttributes,
+    PLUGINPANELITEMFLAGS & Flags, UnicodeString & FileName, __int64 & Size,
+    uintptr_t & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
-    unsigned long & NumberOfLinks, UnicodeString & Description,
+    uintptr_t & NumberOfLinks, UnicodeString & Description,
     UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber);
 };
 //---------------------------------------------------------------------------
@@ -371,10 +371,10 @@ protected:
   UnicodeString FFolder;
 
   virtual void __fastcall GetData(
-    unsigned __int64 & Flags, UnicodeString & FileName, __int64 & Size,
-    unsigned long & FileAttributes,
+    PLUGINPANELITEMFLAGS & Flags, UnicodeString & FileName, __int64 & Size,
+    uintptr_t & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
-    unsigned long & NumberOfLinks, UnicodeString & Description,
+    uintptr_t & NumberOfLinks, UnicodeString & Description,
     UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber);
 };
 //---------------------------------------------------------------------------
@@ -389,10 +389,10 @@ protected:
   TRemoteFile * FRemoteFile;
 
   virtual void __fastcall GetData(
-    unsigned __int64 & Flags, UnicodeString & FileName, __int64 & Size,
-    unsigned long & FileAttributes,
+    PLUGINPANELITEMFLAGS & Flags, UnicodeString & FileName, __int64 & Size,
+    uintptr_t & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
-    unsigned long & NumberOfLinks, UnicodeString & Description,
+    uintptr_t & NumberOfLinks, UnicodeString & Description,
     UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber);
     virtual UnicodeString __fastcall GetCustomColumnData(int Column);
     static void __fastcall TranslateColumnTypes(UnicodeString & ColumnTypes,

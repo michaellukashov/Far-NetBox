@@ -213,7 +213,7 @@ __int64 TFarConfiguration::GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_t
     HANDLE Settings = FFarPlugin->GetStartupInfo()->SettingsControl(INVALID_HANDLE_VALUE, SCTL_CREATE, 0, &settings) ? settings.Handle : 0;
     if (Settings)
     {
-        FarSettingsItem item = {Root, Name, FST_UNKNOWN, {0} };
+        FarSettingsItem item = {sizeof(FarSettingsItem), Root, Name, FST_UNKNOWN, {0} };
         if (FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_GET, 0, &item) && FST_QWORD == item.Type)
         {
             result = item.Number;
@@ -225,7 +225,7 @@ __int64 TFarConfiguration::GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_t
 //---------------------------------------------------------------------------
 __int64 TFarConfiguration::GetConfirmationsSetting(HANDLE &Settings, const wchar_t *Name)
 {
-    FarSettingsItem item = {FSSF_CONFIRMATIONS, Name, FST_UNKNOWN, {0} };
+    FarSettingsItem item = {sizeof(FarSettingsItem), FSSF_CONFIRMATIONS, Name, FST_UNKNOWN, {0} };
     if (FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_GET, 0, &item) && FST_QWORD == item.Type)
     {
         return item.Number;

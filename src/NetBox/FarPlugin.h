@@ -86,32 +86,32 @@ public:
   virtual struct PluginStartupInfo * GetStartupInfo() { return &FStartupInfo; }
   virtual void __fastcall ExitFAR();
   virtual void __fastcall GetPluginInfo(struct PluginInfo * Info);
-  virtual int __fastcall Configure(const struct ConfigureInfo *Info);
+  virtual intptr_t __fastcall Configure(const struct ConfigureInfo *Info);
   virtual void * __fastcall OpenPlugin(const struct OpenInfo *Info);
   virtual void __fastcall ClosePanel(void *Plugin);
   virtual void __fastcall GetOpenPanelInfo(struct OpenPanelInfo *Info);
-  virtual int __fastcall GetFindData(struct GetFindDataInfo *Info);
+  virtual intptr_t __fastcall GetFindData(struct GetFindDataInfo *Info);
 
   virtual void __fastcall FreeFindData(const struct FreeFindDataInfo *Info);
 
-  virtual int __fastcall ProcessHostFile(const struct ProcessHostFileInfo *Info);
+  virtual intptr_t __fastcall ProcessHostFile(const struct ProcessHostFileInfo *Info);
 
 
-  virtual int __fastcall ProcessPanelInput(const struct ProcessPanelInputInfo *Info);
+  virtual intptr_t __fastcall ProcessPanelInput(const struct ProcessPanelInputInfo *Info);
 
-  virtual int __fastcall ProcessPanelEvent(const struct ProcessPanelEventInfo *Info);
+  virtual intptr_t __fastcall ProcessPanelEvent(const struct ProcessPanelEventInfo *Info);
 
 
-  virtual int __fastcall SetDirectory(const struct SetDirectoryInfo *Info);
-  virtual int __fastcall MakeDirectory(struct MakeDirectoryInfo *Info);
-  virtual int __fastcall DeleteFiles(const struct DeleteFilesInfo *Info);
-  virtual int __fastcall GetFiles(struct GetFilesInfo *Info);
+  virtual intptr_t __fastcall SetDirectory(const struct SetDirectoryInfo *Info);
+  virtual intptr_t __fastcall MakeDirectory(struct MakeDirectoryInfo *Info);
+  virtual intptr_t __fastcall DeleteFiles(const struct DeleteFilesInfo *Info);
+  virtual intptr_t __fastcall GetFiles(struct GetFilesInfo *Info);
 
-  virtual int __fastcall PutFiles(const struct PutFilesInfo *Info);
+  virtual intptr_t __fastcall PutFiles(const struct PutFilesInfo *Info);
 
-  virtual int __fastcall ProcessEditorEvent(const struct ProcessEditorEventInfo *Info);
+  virtual intptr_t __fastcall ProcessEditorEvent(const struct ProcessEditorEventInfo *Info);
 
-  virtual int __fastcall ProcessEditorInput(const struct ProcessEditorInputInfo *Info);
+  virtual intptr_t __fastcall ProcessEditorInput(const struct ProcessEditorInputInfo *Info);
 
   virtual void __fastcall HandleException(Exception * E, int OpMode = 0);
 
@@ -121,16 +121,16 @@ public:
     TFarMessageParams * Params = NULL);
   int __fastcall MaxMessageLines();
   int __fastcall MaxMenuItemLength();
-  int __fastcall Menu(unsigned int Flags, const UnicodeString Title,
+  intptr_t __fastcall Menu(unsigned int Flags, const UnicodeString Title,
     const UnicodeString Bottom, TStrings * Items, const FarKey * BreakKeys,
-    int & BreakCode);
-  int __fastcall Menu(unsigned int Flags, const UnicodeString Title,
+    intptr_t & BreakCode);
+  intptr_t __fastcall Menu(unsigned int Flags, const UnicodeString Title,
     const UnicodeString Bottom, TStrings * Items);
-  int __fastcall Menu(unsigned int Flags, const UnicodeString Title,
+  intptr_t __fastcall Menu(unsigned int Flags, const UnicodeString Title,
     const UnicodeString Bottom, const FarMenuItem * Items, int Count,
-    const FarKey * BreakKeys, int & BreakCode);
+    const FarKey * BreakKeys, intptr_t & BreakCode);
   bool __fastcall InputBox(const UnicodeString Title, const UnicodeString Prompt,
-    UnicodeString & Text, unsigned long Flags, const UnicodeString HistoryName = L"",
+    UnicodeString & Text, PLUGINPANELITEMFLAGS Flags, const UnicodeString HistoryName = L"",
     size_t MaxLen = 255, TFarInputBoxValidateEvent OnValidate = NULL);
   UnicodeString __fastcall GetMsg(int MsgId);
   void __fastcall SaveScreen(HANDLE & Screen);
@@ -140,9 +140,9 @@ public:
     unsigned int Flags);
   bool __fastcall Editor(const UnicodeString FileName, const UnicodeString Title,
     unsigned int Flags);
-  DWORD __fastcall FarControl(FILE_CONTROL_COMMANDS Command, int Param1, void * Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
-  __int64 __fastcall FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, int Param1, void *Param2 = NULL);
-  int __fastcall FarEditorControl(EDITOR_CONTROL_COMMANDS Command, void * Param);
+  uintptr_t __fastcall FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
+  __int64 __fastcall FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, intptr_t Param1, void *Param2 = NULL);
+  intptr_t __fastcall FarEditorControl(EDITOR_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2);
   __int64 __fastcall FarSystemSettings();
   void __fastcall Text(int X, int Y, int Color, const UnicodeString Str);
   void __fastcall FlushText();
@@ -200,10 +200,10 @@ protected:
   virtual void __fastcall GetPluginInfoEx(PLUGIN_FLAGS & Flags,
     TStrings * DiskMenuStrings, TStrings * PluginMenuStrings,
     TStrings * PluginConfigStrings, TStrings * CommandPrefixes) = 0;
-  virtual TCustomFarFileSystem * __fastcall OpenPluginEx(OPENFROM OpenFrom, INT_PTR Item) = 0;
+  virtual TCustomFarFileSystem * __fastcall OpenPluginEx(OPENFROM OpenFrom, intptr_t Item) = 0;
   virtual bool __fastcall ConfigureEx(int Item) = 0;
-  virtual int __fastcall ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info) = 0;
-  virtual int __fastcall ProcessEditorInputEx(const INPUT_RECORD * Rec) = 0;
+  virtual intptr_t __fastcall ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info) = 0;
+  virtual intptr_t __fastcall ProcessEditorInputEx(const INPUT_RECORD * Rec) = 0;
   virtual void __fastcall HandleFileSystemException(TCustomFarFileSystem * FileSystem,
     Exception * E, int OpMode = 0);
   // virtual bool __fastcall IsOldFar();
@@ -279,7 +279,7 @@ protected:
 
   virtual void __fastcall GetOpenPanelInfoEx(OPENPANELINFO_FLAGS & Flags,
     UnicodeString & HostFile, UnicodeString & CurDir, UnicodeString & Format,
-    UnicodeString & PanelTitle, TFarPanelModes * PanelModes, int & StartPanelMode,
+    UnicodeString & PanelTitle, TFarPanelModes * PanelModes, intptr_t & StartPanelMode,
     OPENPANELINFO_SORTMODES & StartSortMode, bool & StartSortOrder, TFarKeyBarTitles * KeyBarTitles,
     UnicodeString & ShortcutData) = 0;
   virtual bool __fastcall GetFindDataEx(TObjectList * PanelItems, int OpMode) = 0;
@@ -294,8 +294,8 @@ protected:
   virtual int __fastcall PutFilesEx(TObjectList * PanelItems, bool Move, int OpMode);
 
   void __fastcall ResetCachedInfo();
-  DWORD __fastcall FarControl(FILE_CONTROL_COMMANDS Command, int Param1, void * Param2);
-  DWORD __fastcall FarControl(FILE_CONTROL_COMMANDS Command, int Param1, void * Param2, HANDLE Plugin);
+  uintptr_t __fastcall FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2);
+  uintptr_t __fastcall FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2, HANDLE Plugin);
   bool __fastcall UpdatePanel(bool ClearSelection = false, bool Another = false);
   void __fastcall RedrawPanel(bool Another = false);
   void __fastcall ClosePanel();
@@ -381,10 +381,10 @@ protected:
   virtual ~TCustomFarPanelItem()
   {}
   virtual void __fastcall GetData(
-    unsigned __int64 & Flags, UnicodeString & FileName, __int64 & Size,
-    unsigned long & FileAttributes,
+    PLUGINPANELITEMFLAGS & Flags, UnicodeString & FileName, __int64 & Size,
+    uintptr_t & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
-    unsigned long & NumberOfLinks, UnicodeString & Description,
+    uintptr_t & NumberOfLinks, UnicodeString & Description,
     UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber) = 0;
   virtual UnicodeString __fastcall GetCustomColumnData(int Column);
 
@@ -397,8 +397,8 @@ public:
   explicit /* __fastcall */ TFarPanelItem(PluginPanelItem * APanelItem);
   virtual /* __fastcall */ ~TFarPanelItem();
 
-  unsigned long __fastcall GetFlags();
-  unsigned long __fastcall GetFileAttributes();
+  PLUGINPANELITEMFLAGS __fastcall GetFlags();
+  uintptr_t __fastcall GetFileAttributes();
   UnicodeString __fastcall GetFileName();
   void * __fastcall GetUserData();
   bool __fastcall GetSelected();
@@ -410,10 +410,10 @@ protected:
   PluginPanelItem * FPanelItem;
 
   virtual void __fastcall GetData(
-    unsigned __int64 & Flags, UnicodeString & FileName, __int64 & Size,
-    unsigned long & FileAttributes,
+    PLUGINPANELITEMFLAGS & Flags, UnicodeString & FileName, __int64 & Size,
+    uintptr_t & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
-    unsigned long & NumberOfLinks, UnicodeString & Description,
+    uintptr_t & NumberOfLinks, UnicodeString & Description,
     UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber);
   virtual UnicodeString __fastcall GetCustomColumnData(int Column);
 };
@@ -426,10 +426,10 @@ public:
 
 protected:
   virtual void __fastcall GetData(
-    unsigned __int64 & Flags, UnicodeString & FileName, __int64 & Size,
-    unsigned long & FileAttributes,
+    PLUGINPANELITEMFLAGS & Flags, UnicodeString & FileName, __int64 & Size,
+    uintptr_t & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
-    unsigned long & NumberOfLinks, UnicodeString & Description,
+    uintptr_t & NumberOfLinks, UnicodeString & Description,
     UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber);
 
 private:
