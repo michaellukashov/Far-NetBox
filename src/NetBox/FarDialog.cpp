@@ -48,18 +48,18 @@ TRect __fastcall Rect(int Left, int Top, int Right, int Bottom)
   FHandle(0),
   FDefaultButton(NULL),
   FBorderBox(NULL),
-  // FNextItemPosition(0),
+  FNextItemPosition(ipNewLine),
   FDefaultGroup(0),
   FTag(0),
   FItemFocused(NULL),
-  // FOnKey(NULL),
+  FOnKey(NULL),
   FDialogItems(NULL),
   FDialogItemsCapacity(0),
   FChangesLocked(0),
   FChangesPending(false),
   FResult(0),
   FNeedsSynchronize(false),
-  // FSynchronizeMethod(NULL),
+  FSynchronizeMethod(NULL),
   Self(NULL)
 {
   assert(AFarPlugin);
@@ -1037,28 +1037,22 @@ int __fastcall TFarDialogContainer::GetItemCount()
   FDefaultType(0),
   FGroup(0),
   FTag(0),
+  FOnExit(NULL),
+  FOnMouseClick(NULL),
   FDialog(NULL),
   FEnabledFollow(NULL),
   FEnabledDependency(NULL),
   FEnabledDependencyNegative(NULL),
   FContainer(NULL),
   FItem(NPOS),
-  FEnabled(false),
-  FIsEnabled(false),
+  FEnabled(true),
+  FIsEnabled(true),
   FColors(0),
   FColorMask(0)
 {
   assert(ADialog);
   FDialog = ADialog;
   FDefaultType = AType;
-  FTag = 0;
-  // FOem = false;
-  FGroup = 0;
-  FEnabled = true;
-  FIsEnabled = true;
-  // FOnMouseClick = NULL;
-  FColors = 0;
-  FColorMask = 0;
 
   GetDialog()->Add(this);
 
