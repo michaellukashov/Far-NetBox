@@ -82,6 +82,8 @@ TFarMessageParams::TFarMessageParams()
   ClearPluginInfo(FPluginInfo);
   assert(FOpenedPlugins->Count == 0);
   delete FOpenedPlugins;
+  for (int I = 0; I < FSavedTitles->Count; I++)
+    delete FSavedTitles->Objects[I];
   delete FSavedTitles;
   delete FCriticalSection;
 }
@@ -1438,8 +1440,13 @@ void __fastcall TCustomFarPlugin::SaveTerminalScreen()
   FarControl(FCTL_SETUSERSCREEN, 0, NULL);
 }
 //---------------------------------------------------------------------------
-struct TConsoleTitleParam
+class TConsoleTitleParam : public TObject
 {
+public:
+  TConsoleTitleParam() :
+    Progress(0),
+    Own(0)
+  {}
   short Progress;
   short Own;
 };
@@ -1448,17 +1455,16 @@ void __fastcall TCustomFarPlugin::ShowConsoleTitle(const UnicodeString Title)
 {
   wchar_t SaveTitle[1024];
   GetConsoleTitle(SaveTitle, sizeof(SaveTitle));
-  TConsoleTitleParam Param;
-  Param.Progress = FCurrentProgress;
-  Param.Own = !FCurrentTitle.IsEmpty() && (FormatConsoleTitle() == SaveTitle);
-  assert(sizeof(Param) == sizeof(TObject *));
-  if (Param.Own)
+  TConsoleTitleParam * Param = new TConsoleTitleParam();
+  Param->Progress = FCurrentProgress;
+  Param->Own = !FCurrentTitle.IsEmpty() && (FormatConsoleTitle() == SaveTitle);
+  if (Param->Own)
   {
-    FSavedTitles->AddObject(FCurrentTitle, *reinterpret_cast<TObject **>(&Param));
+    FSavedTitles->AddObject(FCurrentTitle, Param);
   }
   else
   {
-    FSavedTitles->AddObject(SaveTitle, *reinterpret_cast<TObject **>(&Param));
+    FSavedTitles->AddObject(SaveTitle, Param);
   }
   FCurrentTitle = Title;
   FCurrentProgress = -1;
@@ -1469,12 +1475,12 @@ void __fastcall TCustomFarPlugin::ClearConsoleTitle()
 {
   assert(FSavedTitles->Count > 0);
   UnicodeString Title = FSavedTitles->Strings[FSavedTitles->Count-1];
-  TObject * Object = static_cast<TObject *>(FSavedTitles->Objects[FSavedTitles->Count-1]);
-  TConsoleTitleParam Param = *reinterpret_cast<TConsoleTitleParam *>(&Object);
-  if (Param.Own)
+  TObject * Object = FSavedTitles->Objects[FSavedTitles->Count-1];
+  TConsoleTitleParam * Param = dynamic_cast<TConsoleTitleParam *>(Object);
+  if (Param->Own)
   {
     FCurrentTitle = Title;
-    FCurrentProgress = Param.Progress;
+    FCurrentProgress = Param->Progress;
     UpdateConsoleTitle();
   }
   else
@@ -1484,6 +1490,7 @@ void __fastcall TCustomFarPlugin::ClearConsoleTitle()
     SetConsoleTitle(Title.c_str());
     UpdateProgress(PS_NOPROGRESS, 0);
   }
+  delete FSavedTitles->Objects(FSavedTitles->Count - 1);
   FSavedTitles->Delete(FSavedTitles->Count - 1);
 }
 //---------------------------------------------------------------------------
