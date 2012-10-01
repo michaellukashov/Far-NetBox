@@ -2411,7 +2411,7 @@ intptr_t __fastcall TFarList::ItemProc(intptr_t Msg, intptr_t Param)
       GetDialogItem()->UpdateData(Strings[Param]);
     }
   }
-  return static_cast<intptr_t>(false);
+  return 0;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -2518,7 +2518,7 @@ intptr_t __fastcall TFarComboBox::ItemProc(intptr_t Msg, intptr_t Param)
 
   if (FList->ItemProc(Msg, Param))
   {
-    return static_cast<intptr_t>(true);
+    return 1;
   }
   else
   {
