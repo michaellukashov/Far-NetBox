@@ -1911,7 +1911,7 @@ intptr_t __fastcall TFarCheckBox::ItemProc(intptr_t Msg, void * Param)
     }
     if (Allow)
     {
-      UpdateSelected(reinterpret_cast<int>(Param));
+      UpdateSelected(reinterpret_cast<intptr_t>(Param));
     }
     return static_cast<intptr_t>(Allow);
   }
@@ -2442,12 +2442,12 @@ intptr_t __fastcall TFarList::ItemProc(intptr_t Msg, void * Param)
     }
     else
     {
-      int param = reinterpret_cast<int>(Param);
+      intptr_t param = reinterpret_cast<intptr_t>(Param);
       assert(param >= 0 && param < Count);
       GetDialogItem()->UpdateData(Strings[param]);
     }
   }
-  return static_cast<intptr_t>(false);
+  return 0;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -2557,7 +2557,7 @@ intptr_t __fastcall TFarComboBox::ItemProc(intptr_t Msg, void * Param)
 
   if (FList->ItemProc(Msg, Param))
   {
-    return static_cast<intptr_t>(true);
+    return 1;
   }
   else
   {
