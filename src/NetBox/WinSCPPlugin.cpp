@@ -122,7 +122,7 @@ bool __fastcall TWinSCPPlugin::ConfigureEx(int /*Item*/)
     MenuItems->AddSeparator();
     int MAbout = MenuItems->Add(GetMsg(CONFIG_ABOUT));
 
-    int Result = 0;
+    intptr_t Result = 0;
 
     do
     {
@@ -416,7 +416,7 @@ void __fastcall TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
     MenuItems->SetDisabled(MPageant, !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->GetPageantPath()))));
     MenuItems->SetDisabled(MPuttygen, !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->GetPuttygenPath()))));
 
-    int Result = Menu(FMENU_WRAPMODE, GetMsg(MENU_COMMANDS), L"", MenuItems);
+    intptr_t Result = Menu(FMENU_WRAPMODE, GetMsg(MENU_COMMANDS), L"", MenuItems);
 
     if (Result >= 0)
     {

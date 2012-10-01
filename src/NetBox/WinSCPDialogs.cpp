@@ -8511,10 +8511,10 @@ void __fastcall TQueueDialog::RefreshQueue()
   if (QueueListBox->GetItems()->Count > 0)
   {
     bool Change = false;
-    int TopIndex = QueueListBox->GetItems()->GetTopIndex();
-    int Index = TopIndex;
+    intptr_t TopIndex = QueueListBox->GetItems()->GetTopIndex();
+    intptr_t Index = TopIndex;
 
-    int ILine = 0;
+    intptr_t ILine = 0;
     while ((Index > ILine) &&
            (QueueListBox->GetItems()->Objects[Index] ==
             QueueListBox->GetItems()->Objects[Index - ILine - 1]))
