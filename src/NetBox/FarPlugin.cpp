@@ -139,7 +139,6 @@ void __fastcall TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
   {
     ResetCachedInfo();
 
-    Info->StructSize = sizeof(PluginInfo);
     TStringList DiskMenu;
     TStringList PluginMenu;
     TStringList PluginConfig;
