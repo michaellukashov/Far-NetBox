@@ -38,7 +38,7 @@ public:
   virtual void __fastcall WriteInt64(const UnicodeString Name, __int64 Value);
   virtual void __fastcall WriteDateTime(const UnicodeString Name, TDateTime Value);
   virtual void __fastcall WriteFloat(const UnicodeString Name, double Value);
-  virtual void __fastcall WriteBinaryData(const UnicodeString Name, const void * Buffer, int Size);
+  virtual void __fastcall WriteBinaryData(const UnicodeString Name, const void * Buffer, size_t Size);
 
   virtual void __fastcall GetValueNames(TStrings * Strings);
   virtual void __fastcall SetAccessMode(TStorageAccessMode value);
@@ -48,12 +48,12 @@ public:
 
 private:
   UnicodeString __fastcall GetFullCurrentSubKey() { return /* GetStorage() + */ GetCurrentSubKey(); }
-  int __fastcall OpenSubKeyInternal(int Root, const UnicodeString SubKey, bool CanCreate);
+  intptr_t __fastcall OpenSubKeyInternal(intptr_t Root, const UnicodeString SubKey, bool CanCreate);
 
 private:
-  int FRoot;
+  intptr_t FRoot;
   PluginSettings FPluginSettings;
-  std::vector<int> FSubKeyIds;
+  std::vector<intptr_t> FSubKeyIds;
 
   void __fastcall Init();
 };

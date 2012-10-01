@@ -45,27 +45,27 @@ void __fastcall TFar3Storage::SetAccessMode(TStorageAccessMode value)
   THierarchicalStorage::SetAccessMode(value);
 }
 //---------------------------------------------------------------------------
-int __fastcall TFar3Storage::OpenSubKeyInternal(int Root, const UnicodeString SubKey, bool CanCreate)
+intptr_t __fastcall TFar3Storage::OpenSubKeyInternal(intptr_t Root, const UnicodeString SubKey, bool CanCreate)
 {
-  int root = 0;
+  intptr_t NewRoot = 0;
   UnicodeString UnmungedSubKey = PuttyUnMungeStr(SubKey);
   if (CanCreate)
   {
     // DEBUG_PRINTF(L"SubKey = %s", SubKey.c_str());
-    root = FPluginSettings.CreateSubKey(Root, UnmungedSubKey.c_str());
+    NewRoot = FPluginSettings.CreateSubKey(Root, UnmungedSubKey.c_str());
   }
   else
   {
-    root = FPluginSettings.OpenSubKey(Root, UnmungedSubKey.c_str());
+    NewRoot = FPluginSettings.OpenSubKey(Root, UnmungedSubKey.c_str());
   }
-  return root;
+  return NewRoot;
 }
 //---------------------------------------------------------------------------
 bool __fastcall TFar3Storage::DoOpenSubKey(const UnicodeString MungedSubKey, bool CanCreate)
 {
   // DEBUG_PRINTF(L"SubKey = %s, CanCreate = %d, Path = %d", SubKey.c_str(), CanCreate, Path);
-  int OldRoot = FRoot;
-  int root = FRoot;
+  intptr_t OldRoot = FRoot;
+  intptr_t Root = FRoot;
   bool Result = false;
   {
     UnicodeString subKey = MungedSubKey;
@@ -74,14 +74,14 @@ bool __fastcall TFar3Storage::DoOpenSubKey(const UnicodeString MungedSubKey, boo
     // CutToChar(subKey, L'\\', false);
     while (!subKey.IsEmpty())
     {
-      root = OpenSubKeyInternal(root, CutToChar(subKey, L'\\', false), CanCreate);
-      Result &= root != 0;
+      Root = OpenSubKeyInternal(Root, CutToChar(subKey, L'\\', false), CanCreate);
+      Result &= Root != 0;
       // DEBUG_PRINTF(L"SubKey = %s, Result = %d", SubKey.c_str(), Result);
     }
     if (Result)
     {
       FSubKeyIds.push_back(OldRoot);
-      FRoot = root;
+      FRoot = Root;
     }
     return Result;
   }
@@ -114,10 +114,10 @@ bool __fastcall TFar3Storage::DeleteSubKey(const UnicodeString SubKey)
     K = GetFullCurrentSubKey();
     FRoot = FPluginSettings.OpenSubKey(FRoot, K.c_str());
   }
-  int root = FPluginSettings.OpenSubKey(FRoot, SubKey.c_str());
-  if (root != 0)
+  intptr_t Root = FPluginSettings.OpenSubKey(FRoot, SubKey.c_str());
+  if (Root != 0)
   {
-    return FPluginSettings.DeleteSubKey(root);
+    return FPluginSettings.DeleteSubKey(Root);
   }
   return false;
 }
@@ -182,7 +182,7 @@ bool __fastcall TFar3Storage::ValueExists(const UnicodeString Value)
 //---------------------------------------------------------------------------
 size_t __fastcall TFar3Storage::BinaryDataSize(const UnicodeString Name)
 {
-  int Result = FPluginSettings.BinaryDataSize(FRoot, Name.c_str());
+  size_t Result = FPluginSettings.BinaryDataSize(FRoot, Name.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -285,7 +285,7 @@ void __fastcall TFar3Storage::WriteInt64(const UnicodeString Name, __int64 Value
 }
 //---------------------------------------------------------------------------
 void __fastcall TFar3Storage::WriteBinaryData(const UnicodeString Name,
-    const void * Buffer, int Size)
+  const void * Buffer, size_t Size)
 {
   FPluginSettings.Set(FRoot, Name.c_str(), Buffer, Size);
 }
