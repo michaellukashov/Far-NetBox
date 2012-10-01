@@ -733,7 +733,7 @@ void __fastcall TRegistryStorage::WriteInt64(const UnicodeString Name, __int64 V
 }
 //---------------------------------------------------------------------------
 void __fastcall TRegistryStorage::WriteBinaryData(const UnicodeString Name,
-  const void * Buffer, int Size)
+  const void * Buffer, size_t Size)
 {
   try
   {
@@ -1036,7 +1036,7 @@ void __fastcall TCustomIniFileStorage::WriteStringRaw(const UnicodeString Name, 
 }
 //---------------------------------------------------------------------------
 void __fastcall TCustomIniFileStorage::WriteBinaryData(const UnicodeString Name,
-  const void * Buffer, int Size)
+  const void * Buffer, size_t Size)
 {
   WriteStringRaw(Name, BytesToHex(RawByteString(static_cast<const char*>(Buffer), Size)));
 }

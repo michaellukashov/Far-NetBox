@@ -365,7 +365,7 @@ UnicodeString TXmlStorage::ReadStringRaw(const UnicodeString Name, const Unicode
 }
 //---------------------------------------------------------------------------
 size_t TXmlStorage::ReadBinaryData(const UnicodeString Name,
-                                   void * Buffer, size_t Size)
+  void * Buffer, size_t Size)
 {
   Classes::Error(SNotImplemented, 3028);
   size_t Result = 0;
@@ -407,7 +407,7 @@ void TXmlStorage::WriteInt64(const UnicodeString Name, __int64 Value)
 }
 //---------------------------------------------------------------------------
 void TXmlStorage::WriteBinaryData(const UnicodeString Name,
-                                  const void * Buffer, int Size)
+  const void * Buffer, size_t Size)
 {
   RemoveIfExists(Name);
   AddNewElement(Name, ::StrToHex(UnicodeString(reinterpret_cast<const wchar_t *>(Buffer), Size), true));

@@ -726,8 +726,8 @@ public:
   __int64 ReadInt64(const UnicodeString Name);
   UnicodeString ReadString(const UnicodeString Name);
   UnicodeString ReadStringRaw(const UnicodeString Name);
-  int ReadBinaryData(const UnicodeString Name,
-                     void * Buffer, int Size) const;
+  size_t ReadBinaryData(const UnicodeString Name,
+    void * Buffer, size_t Size) const;
 
   void WriteBool(const UnicodeString Name, bool Value);
   void WriteDateTime(const UnicodeString Name, TDateTime & Value);
@@ -737,7 +737,7 @@ public:
   void WriteInteger(const UnicodeString Name, int Value);
   void WriteInt64(const UnicodeString Name, __int64 Value);
   void WriteBinaryData(const UnicodeString Name,
-                       const void * Buffer, int Size);
+    const void * Buffer, size_t Size);
 private:
   void ChangeKey(HKEY Value, const UnicodeString Path);
   HKEY GetBaseKey(bool Relative);
