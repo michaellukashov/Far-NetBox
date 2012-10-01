@@ -499,8 +499,8 @@ public:
   int __fastcall GetTopIndex();
   void __fastcall SetTopIndex(int Value);
   inline int __fastcall GetSelectedInt(bool Init);
-  FARDIALOGITEMFLAGS __fastcall GetFlags(int Index);
-  void __fastcall SetFlags(int Index, FARDIALOGITEMFLAGS value);
+  LISTITEMFLAGS __fastcall GetFlags(int Index);
+  void __fastcall SetFlags(int Index, LISTITEMFLAGS value);
   int __fastcall GetMaxLength();
   int __fastcall GetVisibleCount();
   bool __fastcall GetDisabled(int Index) { return GetFlag(Index, LIF_DISABLE); }
@@ -526,8 +526,8 @@ private:
   TFarDialogItem * FDialogItem;
   bool FNoDialogUpdate;
   TFarList * Self;
-  bool __fastcall GetFlag(int Index, FARDIALOGITEMFLAGS Flag);
-  void __fastcall SetFlag(int Index, FARDIALOGITEMFLAGS Flag, bool value);
+  bool __fastcall GetFlag(int Index, LISTITEMFLAGS Flag);
+  void __fastcall SetFlag(int Index, LISTITEMFLAGS Flag, bool value);
 };
 //---------------------------------------------------------------------------
 enum TFarListBoxAutoSelect { asOnlyFocus, asAlways, asNever };

@@ -2399,12 +2399,12 @@ int __fastcall TFarList::GetSelected()
   return Result;
 }
 //---------------------------------------------------------------------------
-FARDIALOGITEMFLAGS __fastcall TFarList::GetFlags(int Index)
+LISTITEMFLAGS __fastcall TFarList::GetFlags(int Index)
 {
   return FListItems->Items[Index].Flags;
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarList::SetFlags(int Index, FARDIALOGITEMFLAGS Value)
+void __fastcall TFarList::SetFlags(int Index, LISTITEMFLAGS Value)
 {
   if (FListItems->Items[Index].Flags != Value)
   {
@@ -2416,12 +2416,12 @@ void __fastcall TFarList::SetFlags(int Index, FARDIALOGITEMFLAGS Value)
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFarList::GetFlag(int Index, FARDIALOGITEMFLAGS Flag)
+bool __fastcall TFarList::GetFlag(int Index, LISTITEMFLAGS Flag)
 {
   return FLAGSET(GetFlags(Index), Flag);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarList::SetFlag(int Index, FARDIALOGITEMFLAGS Flag, bool Value)
+void __fastcall TFarList::SetFlag(int Index, LISTITEMFLAGS Flag, bool Value)
 {
   SetFlags(Index, (GetFlags(Index) & ~Flag) | FLAGMASK(Value, Flag));
 }
