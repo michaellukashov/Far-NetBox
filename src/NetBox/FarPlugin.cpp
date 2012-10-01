@@ -2999,21 +2999,20 @@ void __fastcall FarWrapText(const UnicodeString Text, TStrings * Result, size_t 
         UnicodeString FullLine = WrappedLines.Strings[WrappedIndex];
         do
         {
-            // WrapText does not wrap when not possible, enforce it
-            // (it also does not wrap when the line is longer than maximum only
-            // because of trailing dot or similar)
-            UnicodeString Line = FullLine.SubString(1, MaxWidth);
-            FullLine.Delete(1, MaxWidth);
+          // WrapText does not wrap when not possible, enforce it
+          // (it also does not wrap when the line is longer than maximum only
+          // because of trailing dot or similar)
+          UnicodeString Line = FullLine.SubString(1, MaxWidth);
+          FullLine.Delete(1, MaxWidth);
 
-            int P = 0;
-            while ((P = Line.Pos(L'\t')) > 0)
-            {
-              Line.Delete(P, 1);
-              Line.Insert(P, ::StringOfChar(' ',
-                  ((P / TabSize) + ((P % TabSize) > 0 ? 1 : 0)) * TabSize - P + 1));
-              // UnicodeString s;
-              // s.SetLength(((P / TabSize) + ((P % TabSize) > 0 ? 1 : 0)) * TabSize - P + 1);
-              // Line.append(s.c_str(), P);
+          int P = 0;
+          while ((P = Line.Pos(L'\t')) > 0)
+          {
+            DEBUG_PRINTF(L"P = %d", P);
+            Line.Delete(P, 1);
+            Line.Insert(::StringOfChar(' ',
+                ((P / TabSize) + ((P % TabSize) > 0 ? 1 : 0)) * TabSize - P + 1),
+              P);
           }
           Result->Add(Line);
         }

@@ -641,10 +641,10 @@ NextWord(const wchar_t * input)
 
   if (text)
   {
-    /* skip leading spaces */
+    /* add leading spaces */
     while (iswspace(*text))
     {
-      ++text;
+      *(pBuffer++) = *(text++);
     }
 
     /* copy the word to our static buffer */
@@ -705,6 +705,7 @@ UnicodeString WrapText(const UnicodeString & Line, int MaxWidth)
      *     SpaceLeft := SpaceLeft - Width(Word) + SpaceWidth
      */
     s = NextWord(Line.c_str());
+    DEBUG_PRINTF(L"Line = %s, s = %s", Line.c_str(), s);
     while (*s)
     {
       spaceLeft = MaxWidth;
@@ -732,14 +733,9 @@ UnicodeString WrapText(const UnicodeString & Line, int MaxWidth)
       /* copy as many words as will fit onto the current line */
       while (*s && wcslen(s) + 1 <= (size_t)spaceLeft)
       {
-        /* will fit so add a space between the words */
         if (Result.Length() == 0)
         {
           ++lenBuffer;
-        }
-        else
-        {
-          *(w++) = ' ';
         }
         --spaceLeft;
 
