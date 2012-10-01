@@ -1962,10 +1962,10 @@ UnicodeString TRegistry::ReadStringRaw(const UnicodeString Name)
   return Result;
 }
 
-int TRegistry::ReadBinaryData(const UnicodeString Name,
-                              void * Buffer, int BufSize) const
+size_t TRegistry::ReadBinaryData(const UnicodeString Name,
+  void * Buffer, size_t BufSize) const
 {
-  int Result = 0;
+  size_t Result = 0;
   TRegDataInfo Info;
   if (GetDataInfo(Name, Info))
   {
@@ -2048,7 +2048,7 @@ void TRegistry::WriteInt64(const UnicodeString Name, __int64 Value)
   WriteBinaryData(Name, &Value, sizeof(Value));
 }
 void TRegistry::WriteBinaryData(const UnicodeString Name,
-                                const void * Buffer, int BufSize)
+                                const void * Buffer, size_t BufSize)
 {
   PutData(Name, Buffer, BufSize, rdBinary);
 }
