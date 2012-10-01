@@ -269,12 +269,14 @@ TCustomFarFileSystem * __fastcall TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom,
         UnicodeString Name;
         if (OpenFrom == OPEN_SHORTCUT)
         {
-          OpenShortcutInfo *Info = reinterpret_cast<OpenShortcutInfo *>(Item);
+          OpenShortcutInfo * Info = reinterpret_cast<OpenShortcutInfo *>(Item);
           Name = Info->ShortcutData;
         }
         else
         {
-          Name = reinterpret_cast<wchar_t *>(Item);
+          OpenCommandLineInfo * Info = reinterpret_cast<OpenCommandLineInfo *>(Item);
+          Name = Info->CommandLine;
+          // DEBUG_PRINTF(L"Name = %s", Name.c_str());
         }
         if (OpenFrom == OPEN_SHORTCUT)
         {
@@ -303,6 +305,7 @@ TCustomFarFileSystem * __fastcall TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom,
         assert(StoredSessions);
         bool DefaultsOnly;
         TSessionData * Session = StoredSessions->ParseUrl(Name, NULL, DefaultsOnly);
+        // DEBUG_PRINTF(L"Session->Name = %s", Session->GetName().c_str());
         if (DefaultsOnly)
         {
           Abort();
