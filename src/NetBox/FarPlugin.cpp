@@ -154,7 +154,7 @@ void __fastcall TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
         if (NAME.Count) \
         { \
           wchar_t ** StringArray = new wchar_t *[NAME.Count]; \
-          GUID *Guids = new GUID[NAME.Count()]; \
+          GUID *Guids = new GUID[NAME.Count]; \
           FPluginInfo.NAME.Guids = Guids; \
           FPluginInfo.NAME.Strings = StringArray; \
           FPluginInfo.NAME.Count = NAME.Count; \
