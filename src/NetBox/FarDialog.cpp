@@ -1846,7 +1846,7 @@ void TFarButton::SetBrackets(TFarButtonBrackets Value)
   }
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TFarButton::ItemProc(int Msg, void * Param)
+intptr_t __fastcall TFarButton::ItemProc(intptr_t Msg, void * Param)
 {
   if (Msg == DN_BTNCLICK)
   {
@@ -1900,7 +1900,7 @@ bool __fastcall TFarButton::HotKey(char HotKey)
 {
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TFarCheckBox::ItemProc(int Msg, void * Param)
+intptr_t __fastcall TFarCheckBox::ItemProc(intptr_t Msg, void * Param)
 {
   if (Msg == DN_BTNCLICK)
   {
@@ -1942,7 +1942,7 @@ void TFarCheckBox::SetData(const UnicodeString Value)
 {
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TFarRadioButton::ItemProc(int Msg, void * Param)
+intptr_t __fastcall TFarRadioButton::ItemProc(intptr_t Msg, void * Param)
 {
   if (Msg == DN_BTNCLICK)
   {
@@ -1993,7 +1993,7 @@ void __fastcall TFarEdit::Detach()
   TFarDialogItem::Detach();
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TFarEdit::ItemProc(int Msg, void * Param)
+intptr_t __fastcall TFarEdit::ItemProc(intptr_t Msg, void * Param)
 {
   if (Msg == DN_EDITCHANGE)
   {

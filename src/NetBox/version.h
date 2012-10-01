@@ -9,8 +9,8 @@
 #define PLUGIN_VERSION_MAJOR         2
 #define PLUGIN_VERSION_MINOR         1
 #define PLUGIN_VERSION_PATCH         14
-#define PLUGIN_VERSION_BUILD         168
+#define PLUGIN_VERSION_BUILD         169
 
 static const std::wstring NETBOX_VERSION_NUMBER(L"2.1.14");
-static const std::wstring NETBOX_COMPILATION_TIME(L"01.10.2012 02:08:35");
+static const std::wstring NETBOX_COMPILATION_TIME(L"01.10.2012 18:08:10");
 

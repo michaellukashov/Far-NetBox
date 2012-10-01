@@ -296,7 +296,7 @@ protected:
 public:
   virtual void __fastcall SetDataInternal(const UnicodeString Value);
   void __fastcall UpdateData(const UnicodeString Value);
-  void __fastcall UpdateSelected(intptr_t Param);
+  void __fastcall UpdateSelected(intptr_t Value);
 
   bool __fastcall GetFlag(FARDIALOGITEMFLAGS Index);
   void __fastcall SetFlag(FARDIALOGITEMFLAGS Index, bool Value);
@@ -356,7 +356,7 @@ public:
 
 protected:
   virtual void __fastcall SetDataInternal(const UnicodeString Value);
-  virtual intptr_t __fastcall ItemProc(int Msg, void * Param);
+  virtual intptr_t __fastcall ItemProc(intptr_t Msg, void * Param);
   virtual bool __fastcall HotKey(char HotKey);
 
 private:
@@ -389,7 +389,7 @@ public:
 
 protected:
   TFarAllowChangeEvent FOnAllowChange;
-  virtual intptr_t __fastcall ItemProc(int Msg, void * Param);
+  virtual intptr_t __fastcall ItemProc(intptr_t Msg, void * Param);
   virtual bool __fastcall GetIsEmpty();
   virtual void __fastcall SetData(const UnicodeString Value);
 };
@@ -408,7 +408,7 @@ public:
 
 protected:
   TFarAllowChangeEvent FOnAllowChange;
-  virtual intptr_t __fastcall ItemProc(int Msg, void * Param);
+  virtual intptr_t __fastcall ItemProc(intptr_t Msg, void * Param);
   virtual bool __fastcall GetIsEmpty();
   virtual void __fastcall SetData(const UnicodeString Value);
 };
@@ -438,7 +438,7 @@ public:
   void __fastcall SetReadOnly(bool Value) { SetFlag(DIF_READONLY, Value); }
 
 protected:
-  virtual intptr_t __fastcall ItemProc(int Msg, void * Param);
+  virtual intptr_t __fastcall ItemProc(intptr_t Msg, void * Param);
   virtual void __fastcall Detach();
 
 private:
