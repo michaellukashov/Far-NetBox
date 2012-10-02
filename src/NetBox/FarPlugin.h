@@ -146,7 +146,6 @@ public:
   UnicodeString __fastcall GetModuleName();
   TFarDialog * __fastcall GetTopDialog() const { return FTopDialog; }
   HINSTANCE GetHandle() const { return FHandle; };
-  bool GetANSIApis() const { return FANSIApis; };
   unsigned int GetFarThread() const { return FFarThread; };
   FarStandardFunctions & GetFarStandardFunctions() { return FFarStandardFunctions; }
 
@@ -154,7 +153,6 @@ protected:
   PluginStartupInfo FStartupInfo;
   FarStandardFunctions FFarStandardFunctions;
   HINSTANCE FHandle;
-  bool FANSIApis;
   TObjectList * FOpenedPlugins;
   TFarDialog * FTopDialog;
   HANDLE FConsoleInput;
@@ -498,9 +496,6 @@ class TFarPluginEnvGuard
 public:
   /* __fastcall */ TFarPluginEnvGuard();
   /* __fastcall */ ~TFarPluginEnvGuard();
-
-private:
-  bool FANSIApis;
 };
 //---------------------------------------------------------------------------
 void __fastcall FarWrapText(UnicodeString Text, TStrings * Result, size_t MaxWidth);

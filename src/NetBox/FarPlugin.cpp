@@ -39,7 +39,6 @@ TFarMessageParams::TFarMessageParams()
   FFarThread = GetCurrentThreadId();
   FCriticalSection = new TCriticalSection;
   FHandle = HInst;
-  FANSIApis = AreFileApisANSI() > 0;
   FFarVersion = 0;
   FTerminalScreenShowing = false;
 
@@ -2915,21 +2914,9 @@ UnicodeString __fastcall TFarEditorInfo::GetFileName()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-/* __fastcall */ TFarPluginEnvGuard::TFarPluginEnvGuard() : FANSIApis(false)
+/* __fastcall */ TFarPluginEnvGuard::TFarPluginEnvGuard()
 {
   assert(FarPlugin != NULL);
-
-  // keep the assertion, but be robust, in case we are called from incorrectly
-  // programmed plugin (e.g. EMenu)
-  /*
-  FANSIApis = AreFileApisANSI() > 0;
-  assert(FANSIApis == FarPlugin->GetANSIApis());
-
-  if (!FANSIApis)
-  {
-      SetFileApisToANSI();
-  }
-  */
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TFarPluginEnvGuard::~TFarPluginEnvGuard()
