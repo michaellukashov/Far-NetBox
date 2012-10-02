@@ -630,9 +630,9 @@ BOOST_FIXTURE_TEST_CASE(test26, base_fixture_t)
 
   CBaseClass a("Base A");
   sig = fastdelegate::MakeDelegate(&a, &CBaseClass::SimpleMemberFunctionReturnsInt);
-  int result = sig(10, "abc");
-  BOOST_TEST_MESSAGE("result = " << result);
-  BOOST_CHECK(result == -1);
+  int Result = sig(10, "abc");
+  BOOST_TEST_MESSAGE("Result = " << Result);
+  BOOST_CHECK(Result == -1);
 }
 //------------------------------------------------------------------------------
 BOOST_FIXTURE_TEST_CASE(test27, base_fixture_t)

@@ -121,16 +121,16 @@ extern "C"
   {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    int result = FarPlugin->SetDirectory(plugin, dir, opMode);
-    return result;
+    int Result = FarPlugin->SetDirectory(plugin, dir, opMode);
+    return Result;
   }
 
   int WINAPI MakeDirectoryW(HANDLE plugin, const wchar_t ** name, int opMode)
   {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    int result = FarPlugin->MakeDirectory(plugin, name, opMode);
-    return result;
+    int Result = FarPlugin->MakeDirectory(plugin, name, opMode);
+    return Result;
   }
 
   int WINAPI DeleteFilesW(HANDLE plugin, PluginPanelItem * panelItem, int itemsNumber, int opMode)
@@ -153,9 +153,9 @@ extern "C"
   {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    int result = FarPlugin->PutFiles(plugin, panelItem, itemsNumber,
+    int Result = FarPlugin->PutFiles(plugin, panelItem, itemsNumber,
       move, srcPath, opMode);
-    return result;
+    return Result;
   }
 
   int WINAPI ProcessEditorEventW(int Event, void * Param)

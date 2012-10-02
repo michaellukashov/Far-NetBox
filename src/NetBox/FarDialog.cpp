@@ -31,8 +31,8 @@ UnicodeString __fastcall StripHotKey(const UnicodeString Text)
 //---------------------------------------------------------------------------
 TRect __fastcall Rect(int Left, int Top, int Right, int Bottom)
 {
-  TRect result = TRect(Left, Top, Right, Bottom);
-  return result;
+  TRect Result = TRect(Left, Top, Right, Bottom);
+  return Result;
 }
 
 //---------------------------------------------------------------------------
@@ -757,7 +757,7 @@ intptr_t __fastcall TFarDialog::ShowModal()
     {
       TFarButton * Button = dynamic_cast<TFarButton *>(GetItem(BResult));
       assert(Button);
-      // correct result should be already set by TFarButton
+      // correct Result should be already set by TFarButton
       assert(FResult == Button->GetResult());
       FResult = Button->GetResult();
     }
