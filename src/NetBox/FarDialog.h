@@ -44,11 +44,11 @@ public:
   void __fastcall EnableGroup(int Group, bool Enable);
 
   TRect GetBounds() { return FBounds; }
-  FARDIALOGITEMFLAGS __fastcall GetFlags() const { return FFlags; }
-  void __fastcall SetFlags(const FARDIALOGITEMFLAGS value);
   TRect __fastcall GetClientRect();
   UnicodeString GetHelpTopic() { return FHelpTopic; }
   void __fastcall SetHelpTopic(UnicodeString Value);
+  FARDIALOGITEMFLAGS __fastcall GetFlags() const { return FFlags; }
+  void __fastcall SetFlags(const FARDIALOGITEMFLAGS value);
   bool __fastcall GetCentered();
   void __fastcall SetCentered(bool Value);
   TPoint __fastcall GetSize();
@@ -83,7 +83,7 @@ public:
   void __fastcall LockChanges();
   void __fastcall UnlockChanges();
   FarColor __fastcall GetSystemColor(PaletteColors colorId);
-  bool __fastcall HotKey(WORD Key, DWORD ControlState);
+  bool __fastcall HotKey(uintptr_t Key, uintptr_t ControlState);
 
 
 protected:
@@ -201,7 +201,6 @@ public:
   void __fastcall SetWidth(int Value);
   int __fastcall GetHeight();
   void __fastcall SetHeight(int Value);
-  void __fastcall SetFlags(unsigned int Value);
   bool __fastcall GetEnabled() { return FEnabled; }
   void __fastcall SetEnabled(bool Value);
   bool __fastcall GetIsEnabled() { return FIsEnabled; }
@@ -243,7 +242,7 @@ protected:
   TNotifyEvent FOnExit;
   TFarMouseClickEvent FOnMouseClick;
 
-  explicit /* __fastcall */ TFarDialogItem(TFarDialog *ADialog, FARDIALOGITEMTYPES AType);
+  explicit /* __fastcall */ TFarDialogItem(TFarDialog * ADialog, FARDIALOGITEMTYPES AType);
   virtual /* __fastcall */ ~TFarDialogItem();
 
   FarDialogItem * __fastcall GetDialogItem();
@@ -498,14 +497,16 @@ public:
   intptr_t __fastcall GetTopIndex();
   void __fastcall SetTopIndex(intptr_t Value);
   inline intptr_t __fastcall GetSelectedInt(bool Init);
+  bool __fastcall GetFlag(intptr_t Index, LISTITEMFLAGS Flag);
+  void __fastcall SetFlag(intptr_t Index, LISTITEMFLAGS Flag, bool Value);
   LISTITEMFLAGS __fastcall GetFlags(intptr_t Index);
-  void __fastcall SetFlags(intptr_t Index, LISTITEMFLAGS value);
+  void __fastcall SetFlags(intptr_t Index, LISTITEMFLAGS Value);
   intptr_t __fastcall GetMaxLength();
   intptr_t __fastcall GetVisibleCount();
-  bool __fastcall GetDisabled(intptr_t Index) { return GetFlag(Index, LIF_DISABLE); }
-  void __fastcall SetDisabled(intptr_t Index, bool Value) { SetFlag(Index, LIF_DISABLE, Value); }
-  bool __fastcall GetChecked(intptr_t Index) { return GetFlag(Index, LIF_CHECKED); }
-  void __fastcall SetChecked(intptr_t Index, bool Value) { SetFlag(Index, LIF_CHECKED, Value); }
+  bool GetDisabled(intptr_t Index) { return GetFlag(Index, LIF_DISABLE); }
+  void SetDisabled(intptr_t Index, bool Value) { SetFlag(Index, LIF_DISABLE, Value); }
+  bool GetChecked(intptr_t Index) { return GetFlag(Index, LIF_CHECKED); }
+  void SetChecked(intptr_t Index, bool Value) { SetFlag(Index, LIF_CHECKED, Value); }
 
 protected:
   virtual void __fastcall Changed();
@@ -525,8 +526,6 @@ private:
   TFarDialogItem * FDialogItem;
   bool FNoDialogUpdate;
   TFarList * Self;
-  bool __fastcall GetFlag(intptr_t Index, LISTITEMFLAGS Flag);
-  void __fastcall SetFlag(intptr_t Index, LISTITEMFLAGS Flag, bool value);
 };
 //---------------------------------------------------------------------------
 enum TFarListBoxAutoSelect { asOnlyFocus, asAlways, asNever };

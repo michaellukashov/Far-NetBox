@@ -201,7 +201,7 @@ protected:
     TStrings * DiskMenuStrings, TStrings * PluginMenuStrings,
     TStrings * PluginConfigStrings, TStrings * CommandPrefixes) = 0;
   virtual TCustomFarFileSystem * __fastcall OpenPluginEx(OPENFROM OpenFrom, intptr_t Item) = 0;
-  virtual bool __fastcall ConfigureEx(int Item) = 0;
+  virtual bool __fastcall ConfigureEx(intptr_t Item) = 0;
   virtual intptr_t __fastcall ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info) = 0;
   virtual intptr_t __fastcall ProcessEditorInputEx(const INPUT_RECORD * Rec) = 0;
   virtual void __fastcall HandleFileSystemException(TCustomFarFileSystem * FileSystem,

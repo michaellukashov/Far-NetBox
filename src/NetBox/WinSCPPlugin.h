@@ -46,7 +46,7 @@ protected:
     TStrings * PluginMenuStrings, TStrings * PluginConfigStrings,
     TStrings * CommandPrefixes);
   virtual TCustomFarFileSystem * __fastcall OpenPluginEx(OPENFROM OpenFrom, intptr_t Item);
-  virtual bool __fastcall ConfigureEx(int Item);
+  virtual bool __fastcall ConfigureEx(intptr_t Item);
   virtual intptr_t __fastcall ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info);
   virtual intptr_t __fastcall ProcessEditorInputEx(const INPUT_RECORD * Rec);
   bool __fastcall CopyParamDialog(UnicodeString Caption, TCopyParamType & CopyParam,

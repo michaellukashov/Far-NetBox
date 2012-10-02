@@ -657,7 +657,7 @@ bool __fastcall TFarDialog::Key(TFarDialogItem * Item, long KeyCode)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFarDialog::HotKey(WORD Key, DWORD ControlState)
+bool __fastcall TFarDialog::HotKey(uintptr_t Key, uintptr_t ControlState)
 {
   bool Result = false;
   char HotKey = 0;
@@ -739,8 +739,8 @@ intptr_t __fastcall TFarDialog::ShowModal()
 
   TFarDialog * PrevTopDialog = GetFarPlugin()->FTopDialog;
   GetFarPlugin()->FTopDialog = this;
-  HANDLE dlg = INVALID_HANDLE_VALUE;
-  TRY_FINALLY3 (Self, PrevTopDialog, dlg,
+  HANDLE Handle = INVALID_HANDLE_VALUE;
+  TRY_FINALLY3 (Self, PrevTopDialog, Handle,
   {
     assert(GetDefaultButton());
     assert(GetDefaultButton()->GetDefault());
@@ -751,15 +751,14 @@ intptr_t __fastcall TFarDialog::ShowModal()
     {
       TFarEnvGuard Guard;
       TRect Bounds = GetBounds();
-      dlg = GetFarPlugin()->GetStartupInfo()->DialogInit(
+      Handle = GetFarPlugin()->GetStartupInfo()->DialogInit(
               &MainGuid, &MainGuid,
               Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom,
               AHelpTopic.c_str(), FDialogItems,
               GetItemCount(), 0, GetFlags(),
               DialogProcGeneral,
               reinterpret_cast<void *>(this));
-
-      BResult = GetFarPlugin()->GetStartupInfo()->DialogRun(dlg);
+      BResult = GetFarPlugin()->GetStartupInfo()->DialogRun(Handle);
     }
 
     if (BResult >= 0)
@@ -779,8 +778,8 @@ intptr_t __fastcall TFarDialog::ShowModal()
   ,
   {
     Self->GetFarPlugin()->FTopDialog = PrevTopDialog;
-    if (dlg != INVALID_HANDLE_VALUE)
-      Self->GetFarPlugin()->GetStartupInfo()->DialogFree(dlg);
+    if (Handle != INVALID_HANDLE_VALUE)
+      Self->GetFarPlugin()->GetStartupInfo()->DialogFree(Handle);
   }
   );
 
