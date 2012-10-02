@@ -239,9 +239,9 @@ int Pos(const UnicodeString str, const UnicodeString substr)
   return result;
 }
 
-UnicodeString StringReplace(const UnicodeString str, const UnicodeString from, const UnicodeString to, TReplaceFlags Flags)
+UnicodeString StringReplace(const UnicodeString Str, const UnicodeString From, const UnicodeString To, TReplaceFlags Flags)
 {
-  return AnsiReplaceStr(str, from, to);
+  return AnsiReplaceStr(Str, From, To);
 }
 
 bool IsDelimiter(const UnicodeString delimiters, const UnicodeString str, int index)
