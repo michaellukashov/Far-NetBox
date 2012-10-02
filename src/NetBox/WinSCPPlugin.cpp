@@ -58,7 +58,7 @@ bool __fastcall TWinSCPPlugin::HandlesFunction(THandlesFunction Function)
   return (Function == hfProcessKey || Function == hfProcessEvent);
 }
 //---------------------------------------------------------------------------
-int __fastcall TWinSCPPlugin::GetMinFarVersion()
+intptr_t __fastcall TWinSCPPlugin::GetMinFarVersion()
 {
   return MAKEFARVERSION(2, 0, 1666);
 }
@@ -78,7 +78,7 @@ void __fastcall TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * I
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinSCPPlugin::GetPluginInfoEx(long unsigned & Flags,
+void __fastcall TWinSCPPlugin::GetPluginInfoEx(DWORD & Flags,
   TStrings * DiskMenuStrings, TStrings * PluginMenuStrings,
   TStrings * PluginConfigStrings, TStrings * CommandPrefixes)
 {
@@ -100,7 +100,7 @@ void __fastcall TWinSCPPlugin::GetPluginInfoEx(long unsigned & Flags,
   CommandPrefixes->CommaText = FarConfiguration->GetCommandPrefixes();
 }
 //---------------------------------------------------------------------------
-bool __fastcall TWinSCPPlugin::ConfigureEx(int /*Item*/)
+bool __fastcall TWinSCPPlugin::ConfigureEx(intptr_t /*Item*/)
 {
   bool Change = false;
 
@@ -202,7 +202,7 @@ bool __fastcall TWinSCPPlugin::ConfigureEx(int /*Item*/)
   return Change;
 }
 //---------------------------------------------------------------------------
-int __fastcall TWinSCPPlugin::ProcessEditorEventEx(int Event, void * Param)
+intptr_t __fastcall TWinSCPPlugin::ProcessEditorEventEx(intptr_t Event, void * Param)
 {
   // for performance reasons, do not pass the event to file systems on redraw
   if ((Event != EE_REDRAW) || FarConfiguration->GetEditorUploadOnSave() ||
@@ -219,9 +219,9 @@ int __fastcall TWinSCPPlugin::ProcessEditorEventEx(int Event, void * Param)
   return 0;
 }
 //---------------------------------------------------------------------------
-int __fastcall TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
+intptr_t __fastcall TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
 {
-  int Result;
+  intptr_t Result;
   if ((Rec->EventType == KEY_EVENT) &&
       Rec->Event.KeyEvent.bKeyDown &&
       (Rec->Event.KeyEvent.uChar.AsciiChar == 'W') &&
@@ -240,7 +240,7 @@ int __fastcall TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
   return Result;
 }
 //---------------------------------------------------------------------------
-TCustomFarFileSystem * __fastcall TWinSCPPlugin::OpenPluginEx(int OpenFrom, intptr_t Item)
+TCustomFarFileSystem * __fastcall TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t Item)
 {
   TWinSCPFileSystem * FileSystem = NULL;
   try

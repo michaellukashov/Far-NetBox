@@ -31,7 +31,7 @@ public:
         CryptographyFinalize();
     }
 protected:
-    virtual void __fastcall GetPluginInfoEx(long unsigned &Flags,
+    virtual void __fastcall GetPluginInfoEx(DWORD &Flags,
         TStrings *DiskMenuStrings, TStrings *PluginMenuStrings,
         TStrings *PluginConfigStrings, TStrings *CommandPrefixes)
     {

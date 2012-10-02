@@ -57,10 +57,10 @@ void __fastcall TSessionPanelItem::SetKeyBarTitles(TFarKeyBarTitles * KeyBarTitl
 }
 //---------------------------------------------------------------------------
 void __fastcall TSessionPanelItem::GetData(
-  unsigned long & /*Flags*/, UnicodeString & FileName, __int64 & /*Size*/,
-  unsigned long & /*FileAttributes*/,
+  DWORD & /*Flags*/, UnicodeString & FileName, __int64 & /*Size*/,
+  DWORD & /*FileAttributes*/,
   TDateTime & /*LastWriteTime*/, TDateTime & /*LastAccess*/,
-  unsigned long & /*NumberOfLinks*/, UnicodeString & /*Description*/,
+  DWORD & /*NumberOfLinks*/, UnicodeString & /*Description*/,
   UnicodeString & /*Owner*/, void *& UserData, int & /*CustomColumnNumber*/)
 {
   FileName = UnixExtractFileName(FSessionData->GetName());
@@ -74,10 +74,10 @@ void __fastcall TSessionPanelItem::GetData(
 }
 //---------------------------------------------------------------------------
 void __fastcall TSessionFolderPanelItem::GetData(
-  unsigned long & /*Flags*/, UnicodeString & FileName, __int64 & /*Size*/,
-  unsigned long & FileAttributes,
+  DWORD & /*Flags*/, UnicodeString & FileName, __int64 & /*Size*/,
+  DWORD & FileAttributes,
   TDateTime & /*LastWriteTime*/, TDateTime & /*LastAccess*/,
-  unsigned long & /*NumberOfLinks*/, UnicodeString & /*Description*/,
+  DWORD & /*NumberOfLinks*/, UnicodeString & /*Description*/,
   UnicodeString & /*Owner*/, void *& /*UserData*/, int & /*CustomColumnNumber*/)
 {
   FileName = FFolder;
@@ -92,10 +92,10 @@ void __fastcall TSessionFolderPanelItem::GetData(
 }
 //---------------------------------------------------------------------------
 void __fastcall TRemoteFilePanelItem::GetData(
-  unsigned long & /*Flags*/, UnicodeString & FileName, __int64 & Size,
-  unsigned long & FileAttributes,
+  DWORD & /*Flags*/, UnicodeString & FileName, __int64 & Size,
+  DWORD & FileAttributes,
   TDateTime & LastWriteTime, TDateTime & LastAccess,
-  unsigned long & /*NumberOfLinks*/, UnicodeString & /*Description*/,
+  DWORD & /*NumberOfLinks*/, UnicodeString & /*Description*/,
   UnicodeString & Owner, void *& UserData, int & CustomColumnNumber)
 {
   FileName = FRemoteFile->GetFileName();
@@ -413,7 +413,7 @@ void __fastcall TWinSCPFileSystem::Close()
 }
 
 //---------------------------------------------------------------------------
-void __fastcall TWinSCPFileSystem::GetOpenPluginInfoEx(long unsigned & Flags,
+void __fastcall TWinSCPFileSystem::GetOpenPluginInfoEx(DWORD & Flags,
     UnicodeString & /*HostFile*/, UnicodeString & CurDir, UnicodeString & Format,
     UnicodeString & PanelTitle, TFarPanelModes * PanelModes, int & /*StartPanelMode*/,
     int & /*StartSortMode*/, bool & /*StartSortOrder*/, TFarKeyBarTitles * KeyBarTitles,
@@ -723,7 +723,7 @@ void __fastcall TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool 
   );
 }
 //---------------------------------------------------------------------------
-bool __fastcall TWinSCPFileSystem::ProcessEventEx(int Event, void * Param)
+bool __fastcall TWinSCPFileSystem::ProcessEventEx(intptr_t Event, void * Param)
 {
   bool Result = false;
   if (Connected())
@@ -2312,7 +2312,7 @@ bool __fastcall TWinSCPFileSystem::SetDirectoryEx(const UnicodeString Dir, int O
   }
 }
 //---------------------------------------------------------------------------
-int __fastcall TWinSCPFileSystem::MakeDirectoryEx(UnicodeString & Name, int OpMode)
+intptr_t __fastcall TWinSCPFileSystem::MakeDirectoryEx(UnicodeString & Name, int OpMode)
 {
   if (Connected())
   {
@@ -2485,7 +2485,7 @@ struct TExportSessionParam
   UnicodeString DestPath;
 };
 //---------------------------------------------------------------------------
-int __fastcall TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
+intptr_t __fastcall TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
   UnicodeString & DestPath, int OpMode)
 {
   int Result;
@@ -2707,9 +2707,9 @@ int __fastcall TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
   return Result;
 }
 //---------------------------------------------------------------------------
-int __fastcall TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, int OpMode)
+intptr_t __fastcall TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, int OpMode)
 {
-  int Result;
+  intptr_t Result;
   if (Connected())
   {
     FFileList = CreateFileList(PanelItems, osLocal);
@@ -3788,7 +3788,7 @@ void __fastcall TWinSCPFileSystem::UploadOnSave(bool NoReload)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
+void __fastcall TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
 {
   // EE_REDRAW is the first for optimalisation
   if (Event == EE_REDRAW)

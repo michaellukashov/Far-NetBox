@@ -141,7 +141,7 @@ extern "C"
   }
 
   int WINAPI GetFilesW(HANDLE plugin, PluginPanelItem * panelItem, int itemsNumber,
-                       int move, const wchar_t ** destPath, int opMode)
+    int move, const wchar_t ** destPath, int opMode)
   {
     assert(FarPlugin);
     TFarPluginGuard Guard;
@@ -154,7 +154,7 @@ extern "C"
     assert(FarPlugin);
     TFarPluginGuard Guard;
     int result = FarPlugin->PutFiles(plugin, panelItem, itemsNumber,
-                                     move, srcPath, opMode);
+      move, srcPath, opMode);
     return result;
   }
 

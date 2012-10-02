@@ -99,7 +99,7 @@ protected:
   void __fastcall Disconnect();
   void __fastcall SaveSession();
 
-  virtual void __fastcall GetOpenPluginInfoEx(long unsigned & Flags,
+  virtual void __fastcall GetOpenPluginInfoEx(DWORD & Flags,
     UnicodeString & HostFile, UnicodeString & CurDir, UnicodeString & Format,
     UnicodeString & PanelTitle, TFarPanelModes * PanelModes, int & StartPanelMode,
     int & StartSortMode, bool & StartSortOrder, TFarKeyBarTitles * KeyBarTitles,
@@ -107,14 +107,14 @@ protected:
   virtual bool __fastcall GetFindDataEx(TObjectList * PanelItems, int OpMode);
   virtual bool __fastcall ProcessKeyEx(int Key, unsigned int ControlState);
   virtual bool __fastcall SetDirectoryEx(const UnicodeString Dir, int OpMode);
-  virtual int __fastcall MakeDirectoryEx(UnicodeString & Name, int OpMode);
+  virtual intptr_t __fastcall MakeDirectoryEx(UnicodeString & Name, int OpMode);
   virtual bool __fastcall DeleteFilesEx(TObjectList * PanelItems, int OpMode);
-  virtual int __fastcall GetFilesEx(TObjectList * PanelItems, bool Move,
+  virtual intptr_t __fastcall GetFilesEx(TObjectList * PanelItems, bool Move,
     UnicodeString & DestPath, int OpMode);
-  virtual int __fastcall PutFilesEx(TObjectList * PanelItems, bool Move, int OpMode);
-  virtual bool __fastcall ProcessEventEx(int Event, void * Param);
+  virtual intptr_t __fastcall PutFilesEx(TObjectList * PanelItems, bool Move, int OpMode);
+  virtual bool __fastcall ProcessEventEx(intptr_t Event, void * Param);
 
-  void __fastcall ProcessEditorEvent(int Event, void * Param);
+  void __fastcall ProcessEditorEvent(intptr_t Event, void * Param);
 
   virtual void __fastcall HandleException(Exception * E, int OpMode = 0);
   void /* __fastcall */ KeepaliveThreadCallback();
@@ -355,10 +355,10 @@ protected:
   TSessionData * FSessionData;
 
   virtual void __fastcall GetData(
-    unsigned long & Flags, UnicodeString & FileName, __int64 & Size,
-    unsigned long & FileAttributes,
+    DWORD & Flags, UnicodeString & FileName, __int64 & Size,
+    DWORD & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
-    unsigned long & NumberOfLinks, UnicodeString & Description,
+    DWORD & NumberOfLinks, UnicodeString & Description,
     UnicodeString & Owner, void *& UserData, int & CustomColumnNumber);
 };
 //---------------------------------------------------------------------------
@@ -371,10 +371,10 @@ protected:
   UnicodeString FFolder;
 
   virtual void __fastcall GetData(
-    unsigned long & Flags, UnicodeString & FileName, __int64 & Size,
-    unsigned long & FileAttributes,
+    DWORD & Flags, UnicodeString & FileName, __int64 & Size,
+    DWORD & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
-    unsigned long & NumberOfLinks, UnicodeString & Description,
+    DWORD & NumberOfLinks, UnicodeString & Description,
     UnicodeString & Owner, void *& UserData, int & CustomColumnNumber);
 };
 //---------------------------------------------------------------------------
@@ -389,10 +389,10 @@ protected:
   TRemoteFile * FRemoteFile;
 
   virtual void __fastcall GetData(
-    unsigned long & Flags, UnicodeString & FileName, __int64 & Size,
-    unsigned long & FileAttributes,
+    DWORD & Flags, UnicodeString & FileName, __int64 & Size,
+    DWORD & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
-    unsigned long & NumberOfLinks, UnicodeString & Description,
+    DWORD & NumberOfLinks, UnicodeString & Description,
     UnicodeString & Owner, void *& UserData, int & CustomColumnNumber);
   virtual UnicodeString __fastcall GetCustomColumnData(int Column);
   static void __fastcall TranslateColumnTypes(UnicodeString & ColumnTypes,

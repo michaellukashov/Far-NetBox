@@ -650,7 +650,7 @@ bool __fastcall TFarDialog::Key(TFarDialogItem * Item, long KeyCode)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFarDialog::HotKey(unsigned long Key)
+bool __fastcall TFarDialog::HotKey(uintptr_t Key)
 {
   bool Result = false;
   char HotKey = 0;
@@ -725,14 +725,14 @@ void __fastcall TFarDialog::Init()
   Change();
 }
 //---------------------------------------------------------------------------
-int __fastcall TFarDialog::ShowModal()
+intptr_t __fastcall TFarDialog::ShowModal()
 {
   FResult = -1;
 
   TFarDialog * PrevTopDialog = GetFarPlugin()->FTopDialog;
   GetFarPlugin()->FTopDialog = this;
-  HANDLE dlg = INVALID_HANDLE_VALUE;
-  TRY_FINALLY3 (Self, PrevTopDialog, dlg,
+  HANDLE Handle = INVALID_HANDLE_VALUE;
+  TRY_FINALLY3 (Self, PrevTopDialog, Handle,
   {
     assert(GetDefaultButton());
     assert(GetDefaultButton()->GetDefault());
@@ -743,14 +743,14 @@ int __fastcall TFarDialog::ShowModal()
     {
       TFarEnvGuard Guard;
       TRect Bounds = GetBounds();
-      dlg = GetFarPlugin()->GetStartupInfo()->DialogInit(
+      Handle = GetFarPlugin()->GetStartupInfo()->DialogInit(
               GetFarPlugin()->GetStartupInfo()->ModuleNumber,
               Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom,
               AHelpTopic.c_str(), FDialogItems,
-              static_cast<int>(GetItemCount()),
+              static_cast<unsigned int>(GetItemCount()),
               0, GetFlags(),
               DialogProcGeneral, reinterpret_cast<LONG_PTR>(this));
-      BResult = GetFarPlugin()->GetStartupInfo()->DialogRun(dlg);
+      BResult = GetFarPlugin()->GetStartupInfo()->DialogRun(Handle);
     }
 
     if (BResult >= 0)
@@ -770,8 +770,8 @@ int __fastcall TFarDialog::ShowModal()
   ,
   {
     Self->GetFarPlugin()->FTopDialog = PrevTopDialog;
-    if (dlg != INVALID_HANDLE_VALUE)
-      Self->GetFarPlugin()->GetStartupInfo()->DialogFree(dlg);
+    if (Handle != INVALID_HANDLE_VALUE)
+      Self->GetFarPlugin()->GetStartupInfo()->DialogFree(Handle);
   }
   );
 
@@ -839,9 +839,9 @@ intptr_t __fastcall TFarDialog::SendMessage(intptr_t Msg, intptr_t Param1, intpt
   return GetFarPlugin()->GetStartupInfo()->SendDlgMessage(GetHandle(), Msg, Param1, Param2);
 }
 //---------------------------------------------------------------------------
-int __fastcall TFarDialog::GetSystemColor(unsigned int Index)
+uintptr_t __fastcall TFarDialog::GetSystemColor(uintptr_t Index)
 {
-  return static_cast<int>(GetFarPlugin()->FarAdvControl(ACTL_GETCOLOR, reinterpret_cast<void *>(Index)));
+  return static_cast<uintptr_t>(GetFarPlugin()->FarAdvControl(ACTL_GETCOLOR, reinterpret_cast<void *>(Index)));
 }
 //---------------------------------------------------------------------------
 void __fastcall TFarDialog::Redraw()
@@ -1032,7 +1032,7 @@ size_t __fastcall TFarDialogContainer::GetItemCount()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-/* __fastcall */ TFarDialogItem::TFarDialogItem(TFarDialog * ADialog, int AType) :
+/* __fastcall */ TFarDialogItem::TFarDialogItem(TFarDialog * ADialog, uintptr_t AType) :
   TObject(),
   FDefaultType(0),
   FGroup(0),
@@ -1136,7 +1136,7 @@ void __fastcall TFarDialogItem::SetColor(int Index, char Value)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarDialogItem::SetFlags(unsigned int Value)
+void __fastcall TFarDialogItem::SetFlags(uintptr_t Value)
 {
   if (GetFlags() != Value)
   {
@@ -1145,7 +1145,7 @@ void __fastcall TFarDialogItem::SetFlags(unsigned int Value)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarDialogItem::UpdateFlags(unsigned int Value)
+void __fastcall TFarDialogItem::UpdateFlags(uintptr_t Value)
 {
   if (GetFlags() != Value)
   {
@@ -1160,7 +1160,7 @@ TRect __fastcall TFarDialogItem::GetActualBounds()
                GetDialogItem()->X2, GetDialogItem()->Y2);
 }
 //---------------------------------------------------------------------------
-unsigned int __fastcall TFarDialogItem::GetFlags()
+uintptr_t __fastcall TFarDialogItem::GetFlags()
 {
   return GetDialogItem()->Flags;
 }
@@ -1200,7 +1200,7 @@ UnicodeString __fastcall TFarDialogItem::GetData()
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarDialogItem::SetType(int Value)
+void __fastcall TFarDialogItem::SetType(uintptr_t Value)
 {
   if (GetType() != Value)
   {
@@ -1209,9 +1209,9 @@ void __fastcall TFarDialogItem::SetType(int Value)
   }
 }
 //---------------------------------------------------------------------------
-int __fastcall TFarDialogItem::GetType()
+uintptr_t __fastcall TFarDialogItem::GetType()
 {
-  return static_cast<size_t>(GetDialogItem()->Type);
+  return static_cast<uintptr_t>(GetDialogItem()->Type);
 }
 //---------------------------------------------------------------------------
 void __fastcall TFarDialogItem::SetAlterType(size_t Index, bool Value)
@@ -1222,12 +1222,12 @@ void __fastcall TFarDialogItem::SetAlterType(size_t Index, bool Value)
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFarDialogItem::GetAlterType(int Index)
+bool __fastcall TFarDialogItem::GetAlterType(uintptr_t Index)
 {
   return (GetType() == Index);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFarDialogItem::GetFlag(int Index)
+bool __fastcall TFarDialogItem::GetFlag(uintptr_t Index)
 {
   bool Result = (GetFlags() & (Index & 0xFFFFFF00UL)) != 0;
   if (Index & 0x000000FFUL)
@@ -1237,7 +1237,7 @@ bool __fastcall TFarDialogItem::GetFlag(int Index)
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarDialogItem::SetFlag(int Index, bool Value)
+void __fastcall TFarDialogItem::SetFlag(uintptr_t Index, bool Value)
 {
   if (GetFlag(Index) != Value)
   {
@@ -1246,8 +1246,8 @@ void __fastcall TFarDialogItem::SetFlag(int Index, bool Value)
       Value = !Value;
     }
 
-    size_t F = GetFlags();
-    size_t Flag = Index & 0xFFFFFF00UL;
+    uintptr_t F = GetFlags();
+    uintptr_t Flag = Index & 0xFFFFFF00UL;
     bool ToHandle = true;
 
     switch (Flag)

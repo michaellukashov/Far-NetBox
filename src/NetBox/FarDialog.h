@@ -39,7 +39,7 @@ public:
   explicit /* __fastcall */ TFarDialog(TCustomFarPlugin * AFarPlugin);
   virtual /* __fastcall */ ~TFarDialog();
 
-  int __fastcall ShowModal();
+  intptr_t __fastcall ShowModal();
   void __fastcall ShowGroup(int Group, bool Show);
   void __fastcall EnableGroup(int Group, bool Enable);
 
@@ -47,7 +47,7 @@ public:
   TRect __fastcall GetClientRect();
   UnicodeString GetHelpTopic() { return FHelpTopic; }
   void __fastcall SetHelpTopic(UnicodeString Value);
-  uintptr_t GetFlags() const { return FFlags; }
+  DWORD GetFlags() const { return FFlags; }
   void __fastcall SetFlags(uintptr_t Value);
   bool __fastcall GetCentered();
   void __fastcall SetCentered(bool Value);
@@ -82,14 +82,13 @@ public:
   void __fastcall Redraw();
   void __fastcall LockChanges();
   void __fastcall UnlockChanges();
-  int __fastcall GetSystemColor(unsigned int Index);
-  bool __fastcall HotKey(unsigned long Key);
+  uintptr_t __fastcall GetSystemColor(uintptr_t Index);
+  bool __fastcall HotKey(uintptr_t Key);
 
 
 protected:
   TCustomFarPlugin * __fastcall GetFarPlugin() { return FFarPlugin; }
   TObjectList * __fastcall GetItems() { return FItems; }
-
   void __fastcall Add(TFarDialogItem * Item);
   void __fastcall Add(TFarDialogContainer * Container);
   intptr_t __fastcall SendMessage(intptr_t Msg, intptr_t Param1, intptr_t Param2);
@@ -119,7 +118,7 @@ protected:
 private:
   TCustomFarPlugin * FFarPlugin;
   TRect FBounds;
-  size_t FFlags;
+  DWORD FFlags;
   UnicodeString FHelpTopic;
   bool FVisible;
   TObjectList * FItems;
@@ -136,7 +135,7 @@ private:
   int FDialogItemsCapacity;
   int FChangesLocked;
   bool FChangesPending;
-  int FResult;
+  intptr_t FResult;
   bool FNeedsSynchronize;
   HANDLE FSynchronizeObjects[2];
   TThreadMethod FSynchronizeMethod;
@@ -202,8 +201,6 @@ public:
   void __fastcall SetWidth(int Value);
   int __fastcall GetHeight();
   void __fastcall SetHeight(int Value);
-  unsigned int __fastcall GetFlags();
-  void __fastcall SetFlags(unsigned int Value);
   bool __fastcall GetEnabled() { return FEnabled; }
   void __fastcall SetEnabled(bool Value);
   bool __fastcall GetIsEnabled() { return FIsEnabled; }
@@ -239,13 +236,13 @@ public:
   void SetItem(int Value) { FItem = Value; }
 
 protected:
-  int FDefaultType;
+  uintptr_t FDefaultType;
   int FGroup;
   int FTag;
   TNotifyEvent FOnExit;
   TFarMouseClickEvent FOnMouseClick;
 
-  explicit /* __fastcall */ TFarDialogItem(TFarDialog * ADialog, int AType);
+  explicit /* __fastcall */ TFarDialogItem(TFarDialog * ADialog, uintptr_t AType);
   virtual /* __fastcall */ ~TFarDialogItem();
 
   FarDialogItem * __fastcall GetDialogItem();
@@ -253,8 +250,8 @@ protected:
   void __fastcall SetCenterGroup(bool Value) { SetFlag(DIF_CENTERGROUP, Value); }
   virtual UnicodeString __fastcall GetData();
   virtual void __fastcall SetData(const UnicodeString Value);
-  int __fastcall GetType();
-  void __fastcall SetType(int Value);
+  uintptr_t __fastcall GetType();
+  void __fastcall SetType(uintptr_t Value);
   intptr_t __fastcall  GetItem() { return FItem; }
   intptr_t __fastcall GetSelected();
   void __fastcall SetSelected(intptr_t Value);
@@ -263,7 +260,9 @@ protected:
   bool __fastcall GetChecked();
   void __fastcall SetChecked(bool Value);
   void __fastcall SetBounds(TRect Value);
-  void __fastcall UpdateFlags(unsigned int Value);
+  uintptr_t __fastcall GetFlags();
+  void __fastcall SetFlags(uintptr_t Value);
+  void __fastcall UpdateFlags(uintptr_t Value);
   int __fastcall GetCoordinate(int Index);
   void __fastcall SetCoordinate(int Index, int Value);
   TFarDialogItem * __fastcall GetPrevItem();
@@ -280,8 +279,8 @@ protected:
   virtual intptr_t __fastcall FailItemProc(intptr_t Msg, intptr_t Param);
   virtual void __fastcall Change();
   void __fastcall DialogChange();
-  void __fastcall SetAlterType(size_t Index, bool Value);
-  bool __fastcall GetAlterType(int Index);
+  void __fastcall SetAlterType(uintptr_t Index, bool Value);
+  bool __fastcall GetAlterType(uintptr_t Index);
   virtual void __fastcall UpdateBounds();
   virtual void __fastcall ResetBounds();
   virtual void __fastcall Init();
@@ -298,8 +297,8 @@ public:
   void __fastcall UpdateData(const UnicodeString Value);
   void __fastcall UpdateSelected(intptr_t Value);
 
-  bool __fastcall GetFlag(int Index);
-  void __fastcall SetFlag(int Index, bool Value);
+  bool __fastcall GetFlag(uintptr_t Index);
+  void __fastcall SetFlag(uintptr_t Index, bool Value);
 
   virtual void __fastcall DoFocus();
   virtual void __fastcall DoExit();
@@ -500,10 +499,10 @@ public:
   inline intptr_t __fastcall GetSelectedInt(bool Init);
   bool __fastcall GetFlag(intptr_t Index, uintptr_t Flag);
   void __fastcall SetFlag(intptr_t Index, uintptr_t Flag, bool Value);
-  intptr_t __fastcall GetMaxLength();
-  intptr_t __fastcall GetVisibleCount();
   uintptr_t __fastcall GetFlags(intptr_t Index);
   void __fastcall SetFlags(intptr_t Index, uintptr_t Value);
+  intptr_t __fastcall GetMaxLength();
+  intptr_t __fastcall GetVisibleCount();
   bool GetDisabled(intptr_t Index) { return GetFlag(Index, LIF_DISABLE); }
   void SetDisabled(intptr_t Index, bool Value) { SetFlag(Index, LIF_DISABLE, Value); }
   bool GetChecked(intptr_t Index) { return GetFlag(Index, LIF_CHECKED); }

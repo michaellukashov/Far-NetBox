@@ -30,7 +30,7 @@ class TWinSCPPlugin : public TCustomFarPlugin
 public:
   explicit /* __fastcall */ TWinSCPPlugin(HINSTANCE HInst);
   virtual /* __fastcall */ ~TWinSCPPlugin();
-  virtual int __fastcall GetMinFarVersion();
+  virtual intptr_t __fastcall GetMinFarVersion();
 
   virtual void __fastcall HandleException(Exception * E, int OpMode = 0);
   int __fastcall MoreMessageDialog(UnicodeString Str, TStrings * MoreMessages,
@@ -42,13 +42,13 @@ public:
 
 protected:
   virtual bool __fastcall HandlesFunction(THandlesFunction Function);
-  virtual void __fastcall GetPluginInfoEx(long unsigned & Flags, TStrings * DiskMenuStrings,
+  virtual void __fastcall GetPluginInfoEx(DWORD & Flags, TStrings * DiskMenuStrings,
     TStrings * PluginMenuStrings, TStrings * PluginConfigStrings,
     TStrings * CommandPrefixes);
-  virtual TCustomFarFileSystem * __fastcall OpenPluginEx(int OpenFrom, intptr_t Item);
-  virtual bool __fastcall ConfigureEx(int Item);
-  virtual int __fastcall ProcessEditorEventEx(int Event, void * Param);
-  virtual int __fastcall ProcessEditorInputEx(const INPUT_RECORD * Rec);
+  virtual TCustomFarFileSystem * __fastcall OpenPluginEx(intptr_t OpenFrom, intptr_t Item);
+  virtual bool __fastcall ConfigureEx(intptr_t Item);
+  virtual intptr_t __fastcall ProcessEditorEventEx(intptr_t Event, void * Param);
+  virtual intptr_t __fastcall ProcessEditorInputEx(const INPUT_RECORD * Rec);
   bool __fastcall CopyParamDialog(UnicodeString Caption, TCopyParamType & CopyParam,
     int CopyParamAttrs);
   void /* __fastcall */ MessageClick(void * Token, int Result, bool & Close);
