@@ -1515,9 +1515,9 @@ void __fastcall TFarDialogItem::MoveAt(int X, int Y)
 //---------------------------------------------------------------------------
 void __fastcall TFarDialogItem::SetCoordinate(int Index, int Value)
 {
-  assert(sizeof(TRect) == sizeof(intptr_t) * 4);
+  assert(sizeof(TRect) == sizeof(int) * 4);
   TRect R = GetBounds();
-  intptr_t * D = reinterpret_cast<intptr_t *>(&R);
+  int * D = reinterpret_cast<int *>(&R);
   D += Index;
   *D = Value;
   SetBounds(R);
@@ -1525,9 +1525,9 @@ void __fastcall TFarDialogItem::SetCoordinate(int Index, int Value)
 //---------------------------------------------------------------------------
 int __fastcall TFarDialogItem::GetCoordinate(int Index)
 {
-  assert(sizeof(TRect) == sizeof(intptr_t) * 4);
+  assert(sizeof(TRect) == sizeof(int) * 4);
   TRect R = GetBounds();
-  intptr_t * D = reinterpret_cast<intptr_t *>(&R);
+  int * D = reinterpret_cast<int *>(&R);
   D += Index;
   return *D;
 }
