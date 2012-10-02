@@ -46,7 +46,6 @@ TFarMessageParams::TFarMessageParams()
   FOpenedPlugins->SetOwnsObjects(false);
   FSavedTitles = new TStringList();
   FTopDialog = NULL;
-  // FOldFar = true;
   FValidFarSystemSettings = false;
 
   memset(&FPluginInfo, 0, sizeof(FPluginInfo));

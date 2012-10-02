@@ -161,7 +161,6 @@ protected:
   bool FTerminalScreenShowing;
   TCriticalSection * FCriticalSection;
   unsigned int FFarThread;
-  // bool FOldFar;
   bool FValidFarSystemSettings;
   intptr_t FFarSystemSettings;
   TPoint FNormalConsoleSize;
