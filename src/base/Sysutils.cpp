@@ -705,7 +705,7 @@ UnicodeString WrapText(const UnicodeString & Line, int MaxWidth)
      *     SpaceLeft := SpaceLeft - Width(Word) + SpaceWidth
      */
     s = NextWord(Line.c_str());
-    DEBUG_PRINTF(L"Line = %s, s = %s", Line.c_str(), s);
+    // DEBUG_PRINTF(L"Line = %s, s = %s", Line.c_str(), s);
     while (*s)
     {
       spaceLeft = MaxWidth;
