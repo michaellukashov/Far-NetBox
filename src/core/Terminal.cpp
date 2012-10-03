@@ -1792,11 +1792,11 @@ UnicodeString __fastcall TTerminal::GetCurrentDirectory()
   CALLSTACK;
   if (FFileSystem)
   {
-    UnicodeString currentDirectory = FFileSystem->GetCurrentDirectory();
-    if (FCurrentDirectory != currentDirectory)
+    UnicodeString CurrentDirectory = FFileSystem->GetCurrentDirectory();
+    if (FCurrentDirectory != CurrentDirectory)
     {
       TRACE("1");
-      FCurrentDirectory = currentDirectory;
+      FCurrentDirectory = CurrentDirectory;
       if (FCurrentDirectory.IsEmpty())
       {
         ReadCurrentDirectory();
@@ -2502,11 +2502,11 @@ void /* __fastcall */ TTerminal::ReadCurrentDirectory()
     if (GetSessionData()->GetCacheDirectoryChanges())
     {
       assert(FDirectoryChangesCache != NULL);
-      UnicodeString currentDirectory = GetCurrentDirectory();
-      if (!currentDirectory.IsEmpty() && !FLastDirectoryChange.IsEmpty() && (currentDirectory != OldDirectory))
+      UnicodeString CurrentDirectory = GetCurrentDirectory();
+      if (!CurrentDirectory.IsEmpty() && !FLastDirectoryChange.IsEmpty() && (CurrentDirectory != OldDirectory))
       {
         FDirectoryChangesCache->AddDirectoryChange(OldDirectory,
-          FLastDirectoryChange, currentDirectory);
+          FLastDirectoryChange, CurrentDirectory);
       }
       // not to broke the cache, if the next directory change would not
       // be initialited by ChangeDirectory(), which sets it
