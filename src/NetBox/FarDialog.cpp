@@ -1214,7 +1214,7 @@ uintptr_t __fastcall TFarDialogItem::GetType()
   return static_cast<uintptr_t>(GetDialogItem()->Type);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarDialogItem::SetAlterType(size_t Index, bool Value)
+void __fastcall TFarDialogItem::SetAlterType(uintptr_t Index, bool Value)
 {
   if (GetAlterType(Index) != Value)
   {
@@ -1229,7 +1229,7 @@ bool __fastcall TFarDialogItem::GetAlterType(uintptr_t Index)
 //---------------------------------------------------------------------------
 bool __fastcall TFarDialogItem::GetFlag(uintptr_t Index)
 {
-  bool Result = (GetFlags() & (Index & 0xFFFFFF00UL)) != 0;
+  bool Result = (GetFlags() & (Index & 0xFFFFFFFFFFFFFF00UL)) != 0;
   if (Index & 0x000000FFUL)
   {
     Result = !Result;
@@ -1247,7 +1247,7 @@ void __fastcall TFarDialogItem::SetFlag(uintptr_t Index, bool Value)
     }
 
     uintptr_t F = GetFlags();
-    uintptr_t Flag = Index & 0xFFFFFF00UL;
+    uintptr_t Flag = Index & 0xFFFFFFFFFFFFFF00UL;
     bool ToHandle = true;
 
     switch (Flag)
@@ -1574,7 +1574,7 @@ int __fastcall TFarDialogItem::GetHeight()
 //---------------------------------------------------------------------------
 bool __fastcall TFarDialogItem::CanFocus()
 {
-  size_t Type = GetType();
+  uintptr_t Type = GetType();
   return GetVisible() && GetEnabled() && GetTabStop() &&
     (Type == DI_EDIT || Type == DI_PSWEDIT || Type == DI_FIXEDIT ||
      Type == DI_BUTTON || Type == DI_CHECKBOX || Type == DI_RADIOBUTTON ||
@@ -2721,7 +2721,7 @@ intptr_t __fastcall TFarLister::ItemProc(intptr_t Msg, intptr_t Param)
     }
     else
     {
-      int NewTopIndex = GetTopIndex();
+      intptr_t NewTopIndex = GetTopIndex();
 
       if (((P.x == static_cast<int>(GetWidth()) - 1) && (P.y == 0)) ||
           ((P.x < static_cast<int>(GetWidth() - 1)) && (P.y < static_cast<int>(GetHeight() / 2))))
@@ -2743,7 +2743,7 @@ intptr_t __fastcall TFarLister::ItemProc(intptr_t Msg, intptr_t Param)
       {
         assert(P.x == GetWidth() - 1);
         assert((P.y > 0) && (P.y < static_cast<int>(GetHeight() - 1)));
-        NewTopIndex = static_cast<int>(ceil(static_cast<float>(P.y - 1) / (GetHeight() - 2) * (GetItems()->Count - GetHeight() + 1)));
+        NewTopIndex = static_cast<intptr_t>(ceil(static_cast<float>(P.y - 1) / (GetHeight() - 2) * (GetItems()->Count - GetHeight() + 1)));
       }
 
       Result = (int)true;

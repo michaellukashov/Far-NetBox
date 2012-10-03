@@ -299,7 +299,7 @@ intptr_t __fastcall TCustomFarPlugin::Configure(intptr_t Item)
   try
   {
     ResetCachedInfo();
-    int Result = ConfigureEx(Item);
+    intptr_t Result = ConfigureEx(Item);
     InvalidateOpenPluginInfo();
 
     return Result;
@@ -1153,7 +1153,7 @@ intptr_t __fastcall TCustomFarPlugin::Menu(DWORD Flags, const UnicodeString Titl
   UnicodeString ATitle = Title;
   UnicodeString ABottom = Bottom;
   TFarEnvGuard Guard;
-  return static_cast<size_t>(FStartupInfo.Menu(FStartupInfo.ModuleNumber, -1, -1, 0,
+  return static_cast<intptr_t>(FStartupInfo.Menu(FStartupInfo.ModuleNumber, -1, -1, 0,
     Flags, ATitle.c_str(), ABottom.c_str(), NULL, BreakKeys,
     &BreakCode, Items, Count));
 }
@@ -2765,7 +2765,7 @@ UnicodeString __fastcall TFarPanelInfo::GetCurrentDirectory()
   }
   */
   // FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<intptr_t>(&Info), Another ? PANEL_PASSIVE : PANEL_ACTIVE);
-  size_t Size = FarPlugin->FarControl(FCTL_GETPANELDIR,
+  intptr_t Size = FarPlugin->FarControl(FCTL_GETPANELDIR,
                                       0,
                                       NULL,
                                       FOwner != NULL ? PANEL_ACTIVE : PANEL_PASSIVE);
@@ -2894,7 +2894,7 @@ intptr_t __fastcall TFarEditorInfo::GetEditorID() const
 UnicodeString __fastcall TFarEditorInfo::GetFileName()
 {
   UnicodeString Result = L"";
-  size_t buffLen = FarPlugin->FarEditorControl(ECTL_GETFILENAME, NULL);
+  intptr_t buffLen = FarPlugin->FarEditorControl(ECTL_GETFILENAME, NULL);
   if (buffLen)
   {
     Result.SetLength(buffLen + 1);
