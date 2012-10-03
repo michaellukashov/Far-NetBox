@@ -1,5 +1,6 @@
 NetBox 2.1.15 ??.10.2012
 --------------------
+  * Bugfix: Issue #39: Empty listing for directory instead of permission denied
   * Bugfix: Issue #40: Access violation trying to change directory
   * Bugfix: Fix dialogs initialization in x64 version
 

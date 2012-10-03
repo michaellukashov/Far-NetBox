@@ -246,6 +246,9 @@ public:
   virtual void __fastcall Close();
 
 protected:
+  virtual UnicodeString GetCurrentDirectory() = 0;
+
+protected:
   TCustomFarPlugin * FPlugin;
   bool FClosed;
 
