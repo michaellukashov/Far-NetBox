@@ -585,12 +585,13 @@ AnsiString Format(const char * format, va_list args)
 //---------------------------------------------------------------------------
 UnicodeString FmtLoadStr(int id, ...)
 {
-  UnicodeString result;
-  UnicodeString format;
+  UnicodeString Result;
+  UnicodeString Format;
+  Format.SetLength(1024);
   HINSTANCE hInstance = FarPlugin ? FarPlugin->GetHandle() : GetModuleHandle(0);
-  format.SetLength(255);
-  size_t Length = ::LoadString(hInstance, id, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(format.c_str())), static_cast<int>(format.Length()));
-  format.SetLength(Length);
+  int Length = ::LoadString(hInstance, id, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Format.c_str())),
+    static_cast<int>(Format.Length()));
+  Format.SetLength(Length);
   if (!Length)
   {
     DEBUG_PRINTF(L"Unknown resource string id: %d\n", id);
@@ -612,13 +613,13 @@ UnicodeString FmtLoadStr(int id, ...)
     result = lpszTemp;
     ::LocalFree(lpszTemp);
     */
-    size_t len = _vscwprintf(format.c_str(), args);
+    size_t len = _vscwprintf(Format.c_str(), args);
     UnicodeString buf(len + sizeof(wchar_t), 0);
-    vswprintf_s(&buf[1], buf.Length(), format.c_str(), args);
+    vswprintf_s(&buf[1], buf.Length(), Format.c_str(), args);
     va_end(args);
-    result = buf;
+    Result = buf;
   }
-  return result;
+  return Result;
 }
 
 //---------------------------------------------------------------------------
