@@ -3816,7 +3816,8 @@ void __fastcall TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*P
           {
             UnicodeString FullFileName = UnixIncludeTrailingBackslash(I->second.Directory) +
               I->second.FileTitle;
-            WinSCPPlugin()->FarEditorControl(ECTL_SETTITLE, static_cast<void *>(const_cast<wchar_t *>(FullFileName.c_str())));
+            WinSCPPlugin()->FarEditorControl(ECTL_SETTITLE,
+              static_cast<void *>(const_cast<wchar_t *>(FullFileName.c_str())));
           }
         }
       }
@@ -3942,7 +3943,8 @@ void __fastcall TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*P
             UnicodeString FullFileName = UnixIncludeTrailingBackslash(I->second.Directory) +
                 I->second.FileTitle;
             // note that we need to reset the title periodically (see EE_REDRAW)
-            WinSCPPlugin()->FarEditorControl(ECTL_SETTITLE, static_cast<void *>(const_cast<wchar_t *>(FullFileName.c_str())));
+            WinSCPPlugin()->FarEditorControl(ECTL_SETTITLE,
+              static_cast<void *>(const_cast<wchar_t *>(FullFileName.c_str())));
           }
 
           if (FarConfiguration->GetEditorUploadOnSave())

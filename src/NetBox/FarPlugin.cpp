@@ -1780,13 +1780,13 @@ void TCustomFarPlugin::RunTests()
 unsigned int TCustomFarFileSystem::FInstances = 0;
 //---------------------------------------------------------------------------
 /* __fastcall */ TCustomFarFileSystem::TCustomFarFileSystem(TCustomFarPlugin * APlugin) :
-    TObject(),
-    FPlugin(APlugin),
-    FClosed(false),
-    FCriticalSection(NULL),
-    FOpenPluginInfoValid(false)
+  TObject(),
+  FPlugin(APlugin),
+  FClosed(false),
+  FCriticalSection(NULL),
+  FOpenPluginInfoValid(false)
 {
-    memset(FPanelInfo, 0, sizeof(FPanelInfo));
+  memset(FPanelInfo, 0, sizeof(FPanelInfo));
 }
 
 void __fastcall TCustomFarFileSystem::Init()
@@ -2445,8 +2445,8 @@ void __fastcall TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * Pane
 
   void * UserData = reinterpret_cast<void *>(PanelItem->UserData);
   GetData(PanelItem->Flags, FileName, Size, PanelItem->FindData.dwFileAttributes,
-          LastWriteTime, LastAccess, PanelItem->NumberOfLinks, Description, Owner,
-          static_cast<void *>(UserData), PanelItem->CustomColumnNumber);
+    LastWriteTime, LastAccess, PanelItem->NumberOfLinks, Description, Owner,
+    static_cast<void *>(UserData), PanelItem->CustomColumnNumber);
   PanelItem->UserData = reinterpret_cast<uintptr_t>(UserData);
   // DEBUG_PRINTF(L"LastWriteTime = %f, LastAccess = %f", LastWriteTime, LastAccess);
   FILETIME FileTime = DateTimeToFileTime(LastWriteTime, dstmWin);
@@ -2773,9 +2773,9 @@ UnicodeString __fastcall TFarPanelInfo::GetCurrentDirectory()
   {
     Result.SetLength(Size);
     FarPlugin->FarControl(FCTL_GETPANELDIR,
-                          static_cast<int>(Size),
-                          reinterpret_cast<intptr_t>(Result.c_str()),
-                          FOwner != NULL ? PANEL_ACTIVE : PANEL_PASSIVE);
+      Size,
+      reinterpret_cast<intptr_t>(Result.c_str()),
+      FOwner != NULL ? PANEL_ACTIVE : PANEL_PASSIVE);
   }
   return Result.c_str();
 }

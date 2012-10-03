@@ -96,7 +96,7 @@ extern "C"
   }
 
   int WINAPI ProcessHostFileW(HANDLE Plugin,
-                              struct PluginPanelItem * PanelItem, int ItemsNumber, int OpMode)
+    struct PluginPanelItem * PanelItem, int ItemsNumber, int OpMode)
   {
     assert(FarPlugin);
     TFarPluginGuard Guard;
@@ -191,7 +191,7 @@ extern "C"
       return INVALID_HANDLE_VALUE;
     }
     HANDLE handle = static_cast<HANDLE>(FarPlugin->OpenPlugin(OPEN_ANALYSE,
-                                        reinterpret_cast<intptr_t>(fileName)));
+      reinterpret_cast<intptr_t>(fileName)));
     return handle;
   }
 
