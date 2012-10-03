@@ -2592,16 +2592,16 @@ void /* __fastcall */ TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
         delete Self->FFiles;
         Self->FFiles = Files;
         Self->DoReadDirectory(ReloadOnly);
-        if (Self->GetActive())
-        {
-          if (Self->GetSessionData()->GetCacheDirectories())
-          {
-            TRACE("6a");
-            Self->DirectoryLoaded(Self->FFiles);
-          }
-        }
       }
       );
+      if (Self->GetActive())
+      {
+        if (Self->GetSessionData()->GetCacheDirectories())
+        {
+          TRACE("6a");
+          Self->DirectoryLoaded(Self->FFiles);
+        }
+      }
     }
     catch (Exception &E)
     {

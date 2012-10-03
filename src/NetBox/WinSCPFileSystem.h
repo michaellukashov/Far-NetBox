@@ -237,6 +237,9 @@ protected:
 
   TTerminal * GetTerminal() { return FTerminal; }
 
+protected:
+  virtual UnicodeString GetCurrentDirectory() { return FTerminal ? FTerminal->GetCurrentDirectory() : UnicodeString(); }
+
 private:
   TTerminal * FTerminal;
   TTerminalQueue * FQueue;

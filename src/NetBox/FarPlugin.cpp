@@ -556,11 +556,12 @@ intptr_t __fastcall TCustomFarPlugin::ProcessEvent(HANDLE Plugin, intptr_t Event
 intptr_t __fastcall TCustomFarPlugin::SetDirectory(HANDLE Plugin, const wchar_t * Dir, int OpMode)
 {
   TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Plugin);
+  UnicodeString PrevCurrentDirectory = FileSystem->GetCurrentDirectory();
+  // DEBUG_PRINTF(L"PrevCurrentDirectory = %s", PrevCurrentDirectory.c_str());
   try
   {
     ResetCachedInfo();
     assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
-
     {
       TGuard Guard(FileSystem->GetCriticalSection());
       return FileSystem->SetDirectory(Dir, OpMode);
@@ -570,6 +571,18 @@ intptr_t __fastcall TCustomFarPlugin::SetDirectory(HANDLE Plugin, const wchar_t 
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FileSystem, &E, OpMode);
+    if (!PrevCurrentDirectory.IsEmpty())
+    {
+      try
+      {
+        TGuard Guard(FileSystem->GetCriticalSection());
+        return FileSystem->SetDirectory(PrevCurrentDirectory, OpMode);
+      }
+      catch(Exception & E)
+      {
+        return 0;
+      }
+    }
     return 0;
   }
 }
