@@ -630,7 +630,7 @@ static const wchar_t *
 NextWord(const wchar_t * input)
 {
   static wchar_t buffer[1024];
-  static const wchar_t * text = 0;
+  static const wchar_t * text = NULL;
 
   wchar_t * endOfBuffer = buffer + LENOF(buffer) - 1;
   wchar_t * pBuffer = buffer;
@@ -706,7 +706,6 @@ UnicodeString WrapText(const UnicodeString & Line, int MaxWidth)
      *     SpaceLeft := SpaceLeft - Width(Word) + SpaceWidth
      */
     s = NextWord(Line.c_str());
-    // DEBUG_PRINTF(L"Line = %s, s = %s", Line.c_str(), s);
     while (*s)
     {
       spaceLeft = MaxWidth;
@@ -728,7 +727,7 @@ UnicodeString WrapText(const UnicodeString & Line, int MaxWidth)
       }
       if (!*s)
       {
-        s = NextWord(0);
+        s = NextWord(NULL);
       }
 
       /* copy as many words as will fit onto the current line */
@@ -756,12 +755,12 @@ UnicodeString WrapText(const UnicodeString & Line, int MaxWidth)
         }
         if (!*s)
         {
-          s = NextWord(0);
+          s = NextWord(NULL);
         }
       }
       if (!*s)
       {
-        s = NextWord(0);
+        s = NextWord(NULL);
       }
 
       if (*s)
@@ -773,7 +772,12 @@ UnicodeString WrapText(const UnicodeString & Line, int MaxWidth)
         }
         else
         {
-          *(w++) = '\n';
+          *(w++) = L'\n';
+        }
+        // Skip whitespace before first word on new line
+        while (iswspace(*s))
+        {
+          ++s;
         }
       }
 
