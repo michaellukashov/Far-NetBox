@@ -1797,10 +1797,10 @@ UnicodeString __fastcall LoadStr(int Ident, unsigned int MaxLength)
   assert(MainModule != NULL);
 #else
   UnicodeString Result;
-  Result.SetLength(MaxLength > 0 ? MaxLength : 255);
+  Result.SetLength(MaxLength > 0 ? MaxLength : 1024);
   HINSTANCE hInstance = FarPlugin ? FarPlugin->GetHandle() : GetModuleHandle(0);
   assert(hInstance != 0);
-  int Length = LoadString(hInstance, Ident, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Result.c_str())), Result.Length());
+  int Length = ::LoadString(hInstance, Ident, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Result.c_str())), Result.Length());
 #endif
   Result.SetLength(Length);
 
