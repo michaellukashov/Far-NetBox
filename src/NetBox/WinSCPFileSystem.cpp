@@ -868,7 +868,7 @@ bool __fastcall TWinSCPFileSystem::ExecuteCommand(const UnicodeString Command)
   return true;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TWinSCPFileSystem::ProcessKeyEx(WORD Key, DWORD ControlState)
+bool __fastcall TWinSCPFileSystem::ProcessKeyEx(intptr_t Key, uintptr_t ControlState)
 {
   bool Handled = false;
 
@@ -3871,7 +3871,8 @@ void __fastcall TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*
           {
             UnicodeString FullFileName = UnixIncludeTrailingBackslash(I->second.Directory) +
               I->second.FileTitle;
-            WinSCPPlugin()->FarEditorControl(ECTL_SETTITLE, FullFileName.Length(),
+            WinSCPPlugin()->FarEditorControl(ECTL_SETTITLE,
+              FullFileName.Length(),
               static_cast<void *>(const_cast<wchar_t *>(FullFileName.c_str())));
           }
         }
@@ -3999,7 +4000,8 @@ void __fastcall TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*
             UnicodeString FullFileName = UnixIncludeTrailingBackslash(I->second.Directory) +
                 I->second.FileTitle;
             // note that we need to reset the title periodically (see EE_REDRAW)
-            WinSCPPlugin()->FarEditorControl(ECTL_SETTITLE, FullFileName.Length(),
+            WinSCPPlugin()->FarEditorControl(ECTL_SETTITLE,
+              FullFileName.Length(),
               static_cast<void *>(const_cast<wchar_t *>(FullFileName.c_str())));
           }
 

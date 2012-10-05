@@ -105,7 +105,7 @@ protected:
     OPENPANELINFO_SORTMODES &StartSortMode, bool &StartSortOrder, TFarKeyBarTitles *KeyBarTitles,
     UnicodeString & ShortcutData);
   virtual bool __fastcall GetFindDataEx(TObjectList * PanelItems, int OpMode);
-  virtual bool __fastcall ProcessKeyEx(WORD Key, DWORD ControlState);
+  virtual bool __fastcall ProcessKeyEx(intptr_t Key, uintptr_t ControlState);
   virtual bool __fastcall SetDirectoryEx(const UnicodeString Dir, int OpMode);
   virtual int __fastcall MakeDirectoryEx(UnicodeString & Name, int OpMode);
   virtual bool __fastcall DeleteFilesEx(TObjectList * PanelItems, int OpMode);
@@ -236,6 +236,9 @@ protected:
   void __fastcall ShowLog();
 
   TTerminal * GetTerminal() { return FTerminal; }
+
+protected:
+  virtual UnicodeString GetCurrentDirectory() { return FTerminal ? FTerminal->GetCurrentDirectory() : UnicodeString(); }
 
 private:
   TTerminal * FTerminal;

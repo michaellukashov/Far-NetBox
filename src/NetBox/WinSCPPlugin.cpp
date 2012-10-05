@@ -103,7 +103,7 @@ void __fastcall TWinSCPPlugin::GetPluginInfoEx(PLUGIN_FLAGS &Flags,
   CommandPrefixes->CommaText = FarConfiguration->GetCommandPrefixes();
 }
 //---------------------------------------------------------------------------
-bool __fastcall TWinSCPPlugin::ConfigureEx(intptr_t /*Item*/)
+bool __fastcall TWinSCPPlugin::ConfigureEx(const GUID * /* Item */)
 {
   bool Change = false;
 
@@ -480,7 +480,7 @@ void __fastcall TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
       }
       else if (Result == MConfigure)
       {
-        ConfigureEx(0);
+        ConfigureEx(NULL);
       }
       else if (Result == MAbout)
       {

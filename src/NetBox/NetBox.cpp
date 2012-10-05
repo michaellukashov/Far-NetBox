@@ -142,8 +142,8 @@ extern "C"
       return FALSE;
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    intptr_t result = FarPlugin->SetDirectory(Info);
-    return result;
+    intptr_t Result = FarPlugin->SetDirectory(Info);
+    return Result;
   }
 
   intptr_t WINAPI MakeDirectoryW(struct MakeDirectoryInfo *Info)
@@ -152,8 +152,8 @@ extern "C"
       return FALSE;
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    intptr_t result = FarPlugin->MakeDirectory(Info);
-    return result;
+    intptr_t Result = FarPlugin->MakeDirectory(Info);
+    return Result;
   }
 
   intptr_t WINAPI DeleteFilesW(const struct DeleteFilesInfo *Info)
@@ -180,8 +180,8 @@ extern "C"
       return FALSE;
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    intptr_t result = FarPlugin->PutFiles(Info);
-    return result;
+    intptr_t Result = FarPlugin->PutFiles(Info);
+    return Result;
   }
 
   intptr_t WINAPI ProcessEditorEventW(const struct ProcessEditorEventInfo *Info)
@@ -222,18 +222,18 @@ extern "C"
     {
       return NULL;
     }
-      return HANDLE(1);
-    }
+    return HANDLE(1);
+  }
 
-    HANDLE WINAPI OpenW(const struct OpenInfo *Info)
-    {
-        if (Info->StructSize < sizeof(OpenInfo))
-            return NULL;
-        assert(FarPlugin);
-        // DEBUG_PRINTF(L"NetBox: OpenW: begin: OpenFrom = %d", Info->OpenFrom);
-        TFarPluginGuard Guard;
-        HANDLE handle = static_cast<HANDLE>(FarPlugin->OpenPlugin(Info));
-        // DEBUG_PRINTF(L"NetBox: end, handle = %u", handle);
+  HANDLE WINAPI OpenW(const struct OpenInfo *Info)
+  {
+    if (Info->StructSize < sizeof(OpenInfo))
+      return NULL;
+    assert(FarPlugin);
+    // DEBUG_PRINTF(L"NetBox: OpenW: begin: OpenFrom = %d", Info->OpenFrom);
+    TFarPluginGuard Guard;
+    HANDLE handle = static_cast<HANDLE>(FarPlugin->OpenPlugin(Info));
+    // DEBUG_PRINTF(L"NetBox: end, handle = %u", handle);
     return handle;
   }
 

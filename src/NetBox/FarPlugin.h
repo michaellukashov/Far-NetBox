@@ -172,7 +172,6 @@ public:
   UnicodeString __fastcall GetModuleName();
   TFarDialog * __fastcall GetTopDialog() const { return FTopDialog; }
   HINSTANCE GetHandle() const { return FHandle; };
-  bool GetANSIApis() const { return FANSIApis; };
   unsigned int GetFarThread() const { return FFarThread; };
   FarStandardFunctions & GetFarStandardFunctions() { return FFarStandardFunctions; }
   const struct PluginStartupInfo * __fastcall GetStartupInfo() const { return &FStartupInfo; }
@@ -181,7 +180,6 @@ protected:
   PluginStartupInfo FStartupInfo;
   FarStandardFunctions FFarStandardFunctions;
   HINSTANCE FHandle;
-  bool FANSIApis;
   TObjectList * FOpenedPlugins;
   TFarDialog * FTopDialog;
   HANDLE FConsoleInput;
@@ -190,7 +188,6 @@ protected:
   bool FTerminalScreenShowing;
   TCriticalSection * FCriticalSection;
   unsigned int FFarThread;
-  // bool FOldFar;
   bool FValidFarSystemSettings;
   intptr_t FFarSystemSettings;
   TPoint FNormalConsoleSize;
@@ -201,7 +198,7 @@ protected:
     TStrings * DiskMenuStrings, TStrings * PluginMenuStrings,
     TStrings * PluginConfigStrings, TStrings * CommandPrefixes) = 0;
   virtual TCustomFarFileSystem * __fastcall OpenPluginEx(OPENFROM OpenFrom, intptr_t Item) = 0;
-  virtual bool __fastcall ConfigureEx(intptr_t Item) = 0;
+  virtual bool __fastcall ConfigureEx(const GUID * Guid) = 0;
   virtual intptr_t __fastcall ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info) = 0;
   virtual intptr_t __fastcall ProcessEditorInputEx(const INPUT_RECORD * Rec) = 0;
   virtual void __fastcall HandleFileSystemException(TCustomFarFileSystem * FileSystem,
@@ -274,6 +271,9 @@ public:
   virtual void __fastcall Close();
 
 protected:
+  virtual UnicodeString GetCurrentDirectory() = 0;
+
+protected:
   TCustomFarPlugin * FPlugin;
   bool FClosed;
 
@@ -284,7 +284,7 @@ protected:
     UnicodeString & ShortcutData) = 0;
   virtual bool __fastcall GetFindDataEx(TObjectList * PanelItems, int OpMode) = 0;
   virtual bool __fastcall ProcessHostFileEx(TObjectList * PanelItems, int OpMode);
-  virtual bool __fastcall ProcessKeyEx(WORD Key, DWORD ControlState);
+  virtual bool __fastcall ProcessKeyEx(intptr_t Key, uintptr_t ControlState);
   virtual bool __fastcall ProcessPanelEventEx(int Event, void *Param);
   virtual bool __fastcall SetDirectoryEx(const UnicodeString Dir, int OpMode);
   virtual int __fastcall MakeDirectoryEx(UnicodeString & Name, int OpMode);
@@ -524,9 +524,6 @@ class TFarPluginEnvGuard
 public:
   /* __fastcall */ TFarPluginEnvGuard();
   /* __fastcall */ ~TFarPluginEnvGuard();
-
-private:
-  bool FANSIApis;
 };
 //---------------------------------------------------------------------------
 void __fastcall FarWrapText(UnicodeString Text, TStrings * Result, size_t MaxWidth);

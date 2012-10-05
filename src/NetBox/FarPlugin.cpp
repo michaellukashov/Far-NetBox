@@ -39,7 +39,6 @@ TFarMessageParams::TFarMessageParams()
   FFarThread = GetCurrentThreadId();
   FCriticalSection = new TCriticalSection;
   FHandle = HInst;
-  FANSIApis = AreFileApisANSI() > 0;
   FFarVersion = 0;
   FTerminalScreenShowing = false;
 
@@ -47,7 +46,6 @@ TFarMessageParams::TFarMessageParams()
   FOpenedPlugins->SetOwnsObjects(false);
   FSavedTitles = new TStringList();
   FTopDialog = NULL;
-  // FOldFar = true;
   FValidFarSystemSettings = false;
 
   memset(&FPluginInfo, 0, sizeof(FPluginInfo));
@@ -307,7 +305,7 @@ intptr_t __fastcall TCustomFarPlugin::Configure(const struct ConfigureInfo *Info
   try
   {
     ResetCachedInfo();
-    intptr_t Result = ConfigureEx(0);
+    intptr_t Result = ConfigureEx(Info->Guid);
     InvalidateOpenPanelInfo();
 
     return Result;
@@ -562,11 +560,12 @@ intptr_t __fastcall TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPane
 intptr_t __fastcall TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo *Info)
 {
   TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
+  UnicodeString PrevCurrentDirectory = FileSystem->GetCurrentDirectory();
+  // DEBUG_PRINTF(L"PrevCurrentDirectory = %s", PrevCurrentDirectory.c_str());
   try
   {
     ResetCachedInfo();
     assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
-
     {
       TGuard Guard(FileSystem->GetCriticalSection());
       return FileSystem->SetDirectory(Info);
@@ -576,6 +575,24 @@ intptr_t __fastcall TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FileSystem, &E, Info->OpMode);
+    if (!PrevCurrentDirectory.IsEmpty())
+    {
+      SetDirectoryInfo Info2;
+      Info2.StructSize = sizeof(Info2);
+      Info2.hPanel = Info->hPanel;
+      Info2.Dir = PrevCurrentDirectory.c_str();
+      Info2.UserData = Info->UserData;
+      Info2.OpMode = Info->OpMode;
+      try
+      {
+        TGuard Guard(FileSystem->GetCriticalSection());
+        return FileSystem->SetDirectory(&Info2);
+      }
+      catch(Exception & E)
+      {
+        return 0;
+      }
+    }
     return 0;
   }
 }
@@ -1143,15 +1160,15 @@ intptr_t __fastcall TCustomFarPlugin::Menu(unsigned int Flags, UnicodeString Tit
   UnicodeString ABottom = Bottom;
   TFarEnvGuard Guard;
     return FStartupInfo.Menu(&MainGuid, &MainGuid,
-        -1, -1, 0,
-        Flags,
-        ATitle.c_str(),
-        ABottom.c_str(),
-        NULL,
-        BreakKeys,
-        &BreakCode,
-        Items,
-        Count);
+      -1, -1, 0,
+      Flags,
+      ATitle.c_str(),
+      ABottom.c_str(),
+      NULL,
+      BreakKeys,
+      &BreakCode,
+      Items,
+      Count);
 }
 //---------------------------------------------------------------------------
 intptr_t __fastcall TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeString Title,
@@ -1806,12 +1823,12 @@ void TCustomFarPlugin::RunTests()
 unsigned int TCustomFarFileSystem::FInstances = 0;
 //---------------------------------------------------------------------------
 /* __fastcall */ TCustomFarFileSystem::TCustomFarFileSystem(TCustomFarPlugin * APlugin) :
-    TObject(),
-    FPlugin(APlugin),
-    FClosed(false),
-    FCriticalSection(NULL)
+  TObject(),
+  FPlugin(APlugin),
+  FClosed(false),
+  FCriticalSection(NULL)
 {
-    memset(FPanelInfo, 0, sizeof(FPanelInfo));
+  memset(FPanelInfo, 0, sizeof(FPanelInfo));
 }
 
 void __fastcall TCustomFarFileSystem::Init()
@@ -2195,7 +2212,7 @@ bool __fastcall TCustomFarFileSystem::ProcessHostFileEx(TObjectList * /* PanelIt
   return false;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCustomFarFileSystem::ProcessKeyEx(WORD /*Key*/, DWORD /*ControlState*/)
+bool __fastcall TCustomFarFileSystem::ProcessKeyEx(intptr_t /*Key*/, uintptr_t /*ControlState*/)
 {
   return false;
 }
@@ -2791,20 +2808,20 @@ bool __fastcall TFarPanelInfo::GetIsPlugin()
 UnicodeString __fastcall TFarPanelInfo::GetCurrentDirectory()
 {
   UnicodeString Result = L"";
-  int Size = FarPlugin->FarControl(FCTL_GETPANELDIRECTORY,
-                                   0,
-                                   NULL,
-                                   FOwner != NULL ? PANEL_ACTIVE : PANEL_PASSIVE);
+  intptr_t Size = FarPlugin->FarControl(FCTL_GETPANELDIRECTORY,
+    0,
+    NULL,
+    FOwner != NULL ? PANEL_ACTIVE : PANEL_PASSIVE);
   if (Size)
   {
     FarPanelDirectory * pfpd = static_cast<FarPanelDirectory *>(malloc(Size));
 
     FarPlugin->FarControl(FCTL_GETPANELDIRECTORY,
-                          static_cast<int>(Size),
-                          pfpd,
-                          FOwner != NULL ? PANEL_ACTIVE : PANEL_PASSIVE);
-        Result = pfpd->Name;
-        free(pfpd);
+      Size,      
+      pfpd,
+      FOwner != NULL ? PANEL_ACTIVE : PANEL_PASSIVE);
+    Result = pfpd->Name;
+    free(pfpd);
   }
   return Result.c_str();
 }
@@ -2923,7 +2940,7 @@ int __fastcall TFarEditorInfo::GetEditorID() const
 UnicodeString __fastcall TFarEditorInfo::GetFileName()
 {
   UnicodeString Result = L"";
-  size_t buffLen = FarPlugin->FarEditorControl(ECTL_GETFILENAME, 0, NULL);
+  intptr_t buffLen = FarPlugin->FarEditorControl(ECTL_GETFILENAME, 0, NULL);
   if (buffLen)
   {
     Result.SetLength(buffLen + 1);
@@ -2955,21 +2972,9 @@ UnicodeString __fastcall TFarEditorInfo::GetFileName()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-/* __fastcall */ TFarPluginEnvGuard::TFarPluginEnvGuard() : FANSIApis(false)
+/* __fastcall */ TFarPluginEnvGuard::TFarPluginEnvGuard()
 {
   assert(FarPlugin != NULL);
-
-  // keep the assertion, but be robust, in case we are called from incorrectly
-  // programmed plugin (e.g. EMenu)
-  /*
-  FANSIApis = AreFileApisANSI() > 0;
-  assert(FANSIApis == FarPlugin->GetANSIApis());
-
-  if (!FANSIApis)
-  {
-      SetFileApisToANSI();
-  }
-  */
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TFarPluginEnvGuard::~TFarPluginEnvGuard()

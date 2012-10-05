@@ -185,14 +185,14 @@ void TXmlStorage::CloseSubKey()
 //---------------------------------------------------------------------------
 bool TXmlStorage::DeleteSubKey(const UnicodeString SubKey)
 {
-  bool result = false;
+  bool Result = false;
   TiXmlElement * Element = FindElement(SubKey);
   if (Element != NULL)
   {
     FCurrentElement->RemoveChild(Element);
-    result = true;
+    Result = true;
   }
-  return result;
+  return Result;
 }
 //---------------------------------------------------------------------------
 void TXmlStorage::GetSubKeyNames(TStrings * Strings)
@@ -213,14 +213,14 @@ void TXmlStorage::GetValueNames(TStrings * Strings)
 //---------------------------------------------------------------------------
 bool TXmlStorage::DeleteValue(const UnicodeString Name)
 {
-  bool result = false;
+  bool Result = false;
   TiXmlElement * Element = FindElement(Name);
   if (Element != NULL)
   {
     FCurrentElement->RemoveChild(Element);
-    result = true;
+    Result = true;
   }
-  return result;
+  return Result;
 }
 //---------------------------------------------------------------------------
 void TXmlStorage::RemoveIfExists(const UnicodeString Name)
@@ -294,27 +294,27 @@ TiXmlElement * TXmlStorage::FindChildElement(const std::string & subKey)
 UnicodeString TXmlStorage::GetValue(TiXmlElement * Element)
 {
   assert(Element);
-  UnicodeString result;
+  UnicodeString Result;
   if (FStoredSessionsOpened && Element->Attribute(CONST_NAME_ATTR))
   {
-    result = ToUnicodeString(Element->Attribute(CONST_NAME_ATTR));
+    Result = ToUnicodeString(Element->Attribute(CONST_NAME_ATTR));
   }
   else
   {
-    result = ToUnicodeString(Element->ValueStr());
+    Result = ToUnicodeString(Element->ValueStr());
   }
-  return result;
+  return Result;
 }
 //---------------------------------------------------------------------------
 bool TXmlStorage::ValueExists(const UnicodeString Value)
 {
-  bool result = false;
+  bool Result = false;
   TiXmlElement * Element = FindElement(Value);
   if (Element != NULL)
   {
-    result = true;
+    Result = true;
   }
-  return result;
+  return Result;
 }
 //---------------------------------------------------------------------------
 size_t TXmlStorage::BinaryDataSize(const UnicodeString Name)

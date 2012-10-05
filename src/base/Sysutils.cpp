@@ -239,9 +239,9 @@ int Pos(const UnicodeString str, const UnicodeString substr)
   return result;
 }
 
-UnicodeString StringReplace(const UnicodeString str, const UnicodeString from, const UnicodeString to, TReplaceFlags Flags)
+UnicodeString StringReplace(const UnicodeString Str, const UnicodeString From, const UnicodeString To, TReplaceFlags Flags)
 {
-  return AnsiReplaceStr(str, from, to);
+  return AnsiReplaceStr(Str, From, To);
 }
 
 bool IsDelimiter(const UnicodeString delimiters, const UnicodeString str, int index)
@@ -585,12 +585,13 @@ AnsiString Format(const char * format, va_list args)
 //---------------------------------------------------------------------------
 UnicodeString FmtLoadStr(int id, ...)
 {
-  UnicodeString result;
-  UnicodeString format;
+  UnicodeString Result;
+  UnicodeString Format;
+  Format.SetLength(1024);
   HINSTANCE hInstance = FarPlugin ? FarPlugin->GetHandle() : GetModuleHandle(0);
-  format.SetLength(255);
-  size_t Length = ::LoadString(hInstance, id, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(format.c_str())), static_cast<int>(format.Length()));
-  format.SetLength(Length);
+  int Length = ::LoadString(hInstance, id, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Format.c_str())),
+    static_cast<int>(Format.Length()));
+  Format.SetLength(Length);
   if (!Length)
   {
     DEBUG_PRINTF(L"Unknown resource string id: %d\n", id);
@@ -612,13 +613,13 @@ UnicodeString FmtLoadStr(int id, ...)
     result = lpszTemp;
     ::LocalFree(lpszTemp);
     */
-    size_t len = _vscwprintf(format.c_str(), args);
+    size_t len = _vscwprintf(Format.c_str(), args);
     UnicodeString buf(len + sizeof(wchar_t), 0);
-    vswprintf_s(&buf[1], buf.Length(), format.c_str(), args);
+    vswprintf_s(&buf[1], buf.Length(), Format.c_str(), args);
     va_end(args);
-    result = buf;
+    Result = buf;
   }
-  return result;
+  return Result;
 }
 
 //---------------------------------------------------------------------------
@@ -629,7 +630,7 @@ static const wchar_t *
 NextWord(const wchar_t * input)
 {
   static wchar_t buffer[1024];
-  static const wchar_t * text = 0;
+  static const wchar_t * text = NULL;
 
   wchar_t * endOfBuffer = buffer + LENOF(buffer) - 1;
   wchar_t * pBuffer = buffer;
@@ -705,7 +706,6 @@ UnicodeString WrapText(const UnicodeString & Line, int MaxWidth)
      *     SpaceLeft := SpaceLeft - Width(Word) + SpaceWidth
      */
     s = NextWord(Line.c_str());
-    DEBUG_PRINTF(L"Line = %s, s = %s", Line.c_str(), s);
     while (*s)
     {
       spaceLeft = MaxWidth;
@@ -727,7 +727,7 @@ UnicodeString WrapText(const UnicodeString & Line, int MaxWidth)
       }
       if (!*s)
       {
-        s = NextWord(0);
+        s = NextWord(NULL);
       }
 
       /* copy as many words as will fit onto the current line */
@@ -755,12 +755,12 @@ UnicodeString WrapText(const UnicodeString & Line, int MaxWidth)
         }
         if (!*s)
         {
-          s = NextWord(0);
+          s = NextWord(NULL);
         }
       }
       if (!*s)
       {
-        s = NextWord(0);
+        s = NextWord(NULL);
       }
 
       if (*s)
@@ -772,7 +772,12 @@ UnicodeString WrapText(const UnicodeString & Line, int MaxWidth)
         }
         else
         {
-          *(w++) = '\n';
+          *(w++) = L'\n';
+        }
+        // Skip whitespace before first word on new line
+        while (iswspace(*s))
+        {
+          ++s;
         }
       }
 

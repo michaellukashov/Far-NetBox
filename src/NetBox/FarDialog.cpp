@@ -31,8 +31,8 @@ UnicodeString __fastcall StripHotKey(const UnicodeString Text)
 //---------------------------------------------------------------------------
 TRect __fastcall Rect(int Left, int Top, int Right, int Bottom)
 {
-  TRect result = TRect(Left, Top, Right, Bottom);
-  return result;
+  TRect Result = TRect(Left, Top, Right, Bottom);
+  return Result;
 }
 
 //---------------------------------------------------------------------------
@@ -765,7 +765,7 @@ intptr_t __fastcall TFarDialog::ShowModal()
     {
       TFarButton * Button = dynamic_cast<TFarButton *>(GetItem(BResult));
       assert(Button);
-      // correct result should be already set by TFarButton
+      // correct Result should be already set by TFarButton
       assert(FResult == Button->GetResult());
       FResult = Button->GetResult();
     }
@@ -2771,7 +2771,7 @@ intptr_t __fastcall TFarLister::ItemProc(intptr_t Msg, void * Param)
             }
             else
             {
-                size_t NewTopIndex = GetTopIndex();
+                intptr_t NewTopIndex = GetTopIndex();
 
                 if (((P.x == static_cast<int>(GetWidth()) - 1) && (P.y == 0)) ||
                         ((P.x < static_cast<int>(GetWidth() - 1)) && (P.y < static_cast<int>(GetHeight() / 2))))
@@ -2793,7 +2793,7 @@ intptr_t __fastcall TFarLister::ItemProc(intptr_t Msg, void * Param)
                 {
                     assert(P.x == GetWidth() - 1);
                     assert((P.y > 0) && (P.y < static_cast<int>(GetHeight() - 1)));
-                    NewTopIndex = static_cast<size_t>(ceil(static_cast<float>(P.y - 1) / (GetHeight() - 2) * (GetItems()->Count - GetHeight() + 1)));
+                    NewTopIndex = static_cast<intptr_t>(ceil(static_cast<float>(P.y - 1) / (GetHeight() - 2) * (GetItems()->Count - GetHeight() + 1)));
                 }
 
                 Result = (int)true;
