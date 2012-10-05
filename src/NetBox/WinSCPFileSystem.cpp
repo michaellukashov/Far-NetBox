@@ -866,7 +866,7 @@ bool __fastcall TWinSCPFileSystem::ExecuteCommand(const UnicodeString Command)
   return true;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TWinSCPFileSystem::ProcessKeyEx(int Key, unsigned int ControlState)
+bool __fastcall TWinSCPFileSystem::ProcessKeyEx(intptr_t Key, uintptr_t ControlState)
 {
   bool Handled = false;
 

@@ -105,7 +105,7 @@ protected:
     int & StartSortMode, bool & StartSortOrder, TFarKeyBarTitles * KeyBarTitles,
     UnicodeString & ShortcutData);
   virtual bool __fastcall GetFindDataEx(TObjectList * PanelItems, int OpMode);
-  virtual bool __fastcall ProcessKeyEx(int Key, unsigned int ControlState);
+  virtual bool __fastcall ProcessKeyEx(intptr_t Key, uintptr_t ControlState);
   virtual bool __fastcall SetDirectoryEx(const UnicodeString Dir, int OpMode);
   virtual intptr_t __fastcall MakeDirectoryEx(UnicodeString & Name, int OpMode);
   virtual bool __fastcall DeleteFilesEx(TObjectList * PanelItems, int OpMode);
