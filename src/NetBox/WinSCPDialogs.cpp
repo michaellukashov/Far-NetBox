@@ -6667,7 +6667,7 @@ public:
 protected:
   virtual bool __fastcall CloseQuery();
   virtual void __fastcall Change();
-  virtual intptr_t __fastcall DialogProc(int Msg, int Param1, intptr_t Param2);
+  virtual LONG_PTR __fastcall DialogProc(int Msg, int Param1, LONG_PTR Param2);
 
   void TransferSettingsButtonClick(TFarButton * Sender, bool & Close);
   void CopyParamListerClick(TFarDialogItem * Item, MOUSE_EVENT_RECORD * Event);
@@ -7003,7 +7003,7 @@ bool __fastcall TFullSynchronizeDialog::CloseQuery()
   return CanClose;
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TFullSynchronizeDialog::DialogProc(int Msg, int Param1, intptr_t Param2)
+LONG_PTR __fastcall TFullSynchronizeDialog::DialogProc(int Msg, int Param1, LONG_PTR Param2)
 {
   if (Msg == DN_RESIZECONSOLE)
   {
@@ -7104,7 +7104,7 @@ public:
   virtual bool __fastcall Execute(TSynchronizeChecklist * Checklist);
 
 protected:
-  virtual intptr_t __fastcall DialogProc(int Msg, int Param1, intptr_t Param2);
+  virtual LONG_PTR __fastcall DialogProc(int Msg, int Param1, LONG_PTR Param2);
   virtual bool __fastcall Key(TFarDialogItem * Item, long KeyCode);
   void CheckAllButtonClick(TFarButton * Sender, bool & Close);
   void VideoModeButtonClick(TFarButton * Sender, bool & Close);
@@ -7533,7 +7533,7 @@ void __fastcall TSynchronizeChecklistDialog::UpdateControls()
   UncheckAllButton->SetEnabled((FChecked > 0));
 }
 //---------------------------------------------------------------------------
-intptr_t TSynchronizeChecklistDialog::DialogProc(int Msg, int Param1, LONG_PTR Param2)
+LONG_PTR TSynchronizeChecklistDialog::DialogProc(int Msg, int Param1, LONG_PTR Param2)
 {
   if (Msg == DN_RESIZECONSOLE)
   {
@@ -7732,7 +7732,7 @@ protected:
   void DoLog(TSynchronizeController * Controller,
     TSynchronizeLogEntry Entry, const UnicodeString & Message);
   void DoSynchronizeThreads(TObject * Sender, TThreadMethod slot);
-  virtual intptr_t __fastcall DialogProc(int Msg, int Param1, LONG_PTR Param2);
+  virtual LONG_PTR __fastcall DialogProc(int Msg, int Param1, LONG_PTR Param2);
   virtual bool __fastcall CloseQuery();
   virtual bool __fastcall Key(TFarDialogItem * Item, long KeyCode);
   TCopyParamType __fastcall GetCopyParams();
@@ -7987,7 +7987,7 @@ void TSynchronizeDialog::DoSynchronizeThreads(TObject * /*Sender*/,
   }
 }
 //---------------------------------------------------------------------------
-intptr_t TSynchronizeDialog::DialogProc(int Msg, int Param1, LONG_PTR Param2)
+LONG_PTR TSynchronizeDialog::DialogProc(int Msg, int Param1, LONG_PTR Param2)
 {
   if (FAbort)
   {

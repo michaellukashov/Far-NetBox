@@ -47,8 +47,8 @@ public:
   TRect __fastcall GetClientRect();
   UnicodeString GetHelpTopic() { return FHelpTopic; }
   void __fastcall SetHelpTopic(UnicodeString Value);
-  uintptr_t GetFlags() const { return FFlags; }
-  void __fastcall SetFlags(uintptr_t Value);
+  DWORD GetFlags() const { return FFlags; }
+  void __fastcall SetFlags(DWORD Value);
   bool __fastcall GetCentered();
   void __fastcall SetCentered(bool Value);
   TPoint __fastcall GetSize();
@@ -82,7 +82,7 @@ public:
   void __fastcall Redraw();
   void __fastcall LockChanges();
   void __fastcall UnlockChanges();
-  uintptr_t __fastcall GetSystemColor(uintptr_t Index);
+  uintptr_t __fastcall GetSystemColor(int Index);
   bool __fastcall HotKey(uintptr_t Key);
 
 
@@ -91,10 +91,10 @@ protected:
   TObjectList * __fastcall GetItems() { return FItems; }
   void __fastcall Add(TFarDialogItem * Item);
   void __fastcall Add(TFarDialogContainer * Container);
-  intptr_t __fastcall SendMessage(intptr_t Msg, intptr_t Param1, intptr_t Param2);
-  virtual intptr_t __fastcall DialogProc(intptr_t Msg, intptr_t Param1, intptr_t Param2);
-  virtual intptr_t __fastcall FailDialogProc(intptr_t Msg, intptr_t Param1, intptr_t Param2);
-  intptr_t __fastcall DefaultDialogProc(intptr_t Msg, intptr_t Param1, intptr_t Param2);
+  LONG_PTR __fastcall SendMessage(int Msg, int Param1, LONG_PTR Param2);
+  virtual LONG_PTR __fastcall DialogProc(int Msg, int Param1, LONG_PTR Param2);
+  virtual LONG_PTR __fastcall FailDialogProc(int Msg, int Param1, LONG_PTR Param2);
+  LONG_PTR __fastcall DefaultDialogProc(int Msg, int Param1, LONG_PTR Param2);
   virtual bool __fastcall MouseEvent(MOUSE_EVENT_RECORD * Event);
   virtual bool __fastcall Key(TFarDialogItem * Item, long KeyCode);
   virtual void __fastcall Change();
@@ -118,7 +118,7 @@ protected:
 private:
   TCustomFarPlugin * FFarPlugin;
   TRect FBounds;
-  uintptr_t FFlags;
+  DWORD FFlags;
   UnicodeString FHelpTopic;
   bool FVisible;
   TObjectList * FItems;
@@ -260,9 +260,9 @@ protected:
   bool __fastcall GetChecked();
   void __fastcall SetChecked(bool Value);
   void __fastcall SetBounds(TRect Value);
-  uintptr_t __fastcall GetFlags();
-  void __fastcall SetFlags(uintptr_t Value);
-  void __fastcall UpdateFlags(uintptr_t Value);
+  DWORD __fastcall GetFlags();
+  void __fastcall SetFlags(DWORD Value);
+  void __fastcall UpdateFlags(DWORD Value);
   int __fastcall GetCoordinate(int Index);
   void __fastcall SetCoordinate(int Index, int Value);
   TFarDialogItem * __fastcall GetPrevItem();
@@ -271,16 +271,16 @@ protected:
 
   virtual void __fastcall Detach();
   void __fastcall DialogResized();
-  intptr_t __fastcall SendMessage(intptr_t Msg, intptr_t Param);
-  intptr_t __fastcall SendDialogMessage(intptr_t Msg, intptr_t Param1, intptr_t Param2);
-  virtual intptr_t __fastcall ItemProc(intptr_t Msg, intptr_t Param);
-  intptr_t __fastcall DefaultItemProc(intptr_t Msg, intptr_t Param);
-  intptr_t __fastcall DefaultDialogProc(intptr_t Msg, intptr_t Param1, intptr_t Param2);
-  virtual intptr_t __fastcall FailItemProc(intptr_t Msg, intptr_t Param);
+  LONG_PTR __fastcall SendMessage(int Msg, LONG_PTR Param);
+  LONG_PTR __fastcall SendDialogMessage(int Msg, int Param1, LONG_PTR Param2);
+  virtual LONG_PTR __fastcall ItemProc(int Msg, LONG_PTR Param);
+  LONG_PTR __fastcall DefaultItemProc(int Msg, LONG_PTR Param);
+  LONG_PTR __fastcall DefaultDialogProc(int Msg, int Param1, LONG_PTR Param2);
+  virtual LONG_PTR __fastcall FailItemProc(int Msg, LONG_PTR Param);
   virtual void __fastcall Change();
   void __fastcall DialogChange();
-  void __fastcall SetAlterType(uintptr_t Index, bool Value);
-  bool __fastcall GetAlterType(uintptr_t Index);
+  void __fastcall SetAlterType(int Index, bool Value);
+  bool __fastcall GetAlterType(int Index);
   virtual void __fastcall UpdateBounds();
   virtual void __fastcall ResetBounds();
   virtual void __fastcall Init();
@@ -297,8 +297,8 @@ public:
   void __fastcall UpdateData(const UnicodeString Value);
   void __fastcall UpdateSelected(intptr_t Value);
 
-  bool __fastcall GetFlag(uintptr_t Index);
-  void __fastcall SetFlag(uintptr_t Index, bool Value);
+  bool __fastcall GetFlag(int Index);
+  void __fastcall SetFlag(int Index, bool Value);
 
   virtual void __fastcall DoFocus();
   virtual void __fastcall DoExit();
@@ -355,7 +355,7 @@ public:
 
 protected:
   virtual void __fastcall SetDataInternal(const UnicodeString Value);
-  virtual intptr_t __fastcall ItemProc(intptr_t Msg, intptr_t Param);
+  virtual LONG_PTR __fastcall ItemProc(int Msg, LONG_PTR Param);
   virtual bool __fastcall HotKey(char HotKey);
 
 private:
@@ -388,7 +388,7 @@ public:
 
 protected:
   TFarAllowChangeEvent FOnAllowChange;
-  virtual intptr_t __fastcall ItemProc(intptr_t Msg, intptr_t Param);
+  virtual LONG_PTR __fastcall ItemProc(int Msg, LONG_PTR Param);
   virtual bool __fastcall GetIsEmpty();
   virtual void __fastcall SetData(const UnicodeString Value);
 };
@@ -407,7 +407,7 @@ public:
 
 protected:
   TFarAllowChangeEvent FOnAllowChange;
-  virtual intptr_t __fastcall ItemProc(intptr_t Msg, intptr_t Param);
+  virtual LONG_PTR __fastcall ItemProc(int Msg, LONG_PTR Param);
   virtual bool __fastcall GetIsEmpty();
   virtual void __fastcall SetData(const UnicodeString Value);
 };
@@ -437,7 +437,7 @@ public:
   void __fastcall SetReadOnly(bool Value) { SetFlag(DIF_READONLY, Value); }
 
 protected:
-  virtual intptr_t __fastcall ItemProc(intptr_t Msg, intptr_t Param);
+  virtual LONG_PTR __fastcall ItemProc(int Msg, LONG_PTR Param);
   virtual void __fastcall Detach();
 
 private:
@@ -497,26 +497,26 @@ public:
   intptr_t __fastcall GetTopIndex();
   void __fastcall SetTopIndex(intptr_t Value);
   inline intptr_t __fastcall GetSelectedInt(bool Init);
-  bool __fastcall GetFlag(intptr_t Index, uintptr_t Flag);
-  void __fastcall SetFlag(intptr_t Index, uintptr_t Flag, bool Value);
-  uintptr_t __fastcall GetFlags(intptr_t Index);
-  void __fastcall SetFlags(intptr_t Index, uintptr_t Value);
+  bool __fastcall GetFlag(int Index, DWORD Flag);
+  void __fastcall SetFlag(int Index, DWORD Flag, bool Value);
+  DWORD __fastcall GetFlags(int Index);
+  void __fastcall SetFlags(int Index, DWORD Value);
   intptr_t __fastcall GetMaxLength();
   intptr_t __fastcall GetVisibleCount();
-  bool GetDisabled(intptr_t Index) { return GetFlag(Index, LIF_DISABLE); }
-  void SetDisabled(intptr_t Index, bool Value) { SetFlag(Index, LIF_DISABLE, Value); }
-  bool GetChecked(intptr_t Index) { return GetFlag(Index, LIF_CHECKED); }
-  void SetChecked(intptr_t Index, bool Value) { SetFlag(Index, LIF_CHECKED, Value); }
+  bool GetDisabled(int Index) { return GetFlag(Index, LIF_DISABLE); }
+  void SetDisabled(int Index, bool Value) { SetFlag(Index, LIF_DISABLE, Value); }
+  bool GetChecked(int Index) { return GetFlag(Index, LIF_CHECKED); }
+  void SetChecked(int Index, bool Value) { SetFlag(Index, LIF_CHECKED, Value); }
 
 protected:
   virtual void __fastcall Changed();
-  virtual intptr_t __fastcall ItemProc(intptr_t Msg, intptr_t Param);
+  virtual LONG_PTR __fastcall ItemProc(int Msg, LONG_PTR Param);
   virtual void __fastcall Init();
   void __fastcall UpdatePosition(intptr_t Position);
   intptr_t __fastcall GetPosition();
-  virtual void __fastcall Put(intptr_t Index, const UnicodeString S);
-  void __fastcall SetCurPos(intptr_t Position, intptr_t TopIndex);
-  void __fastcall UpdateItem(intptr_t Index);
+  virtual void __fastcall Put(int Index, const UnicodeString S);
+  void __fastcall SetCurPos(uintptr_t Position, uintptr_t TopIndex);
+  void __fastcall UpdateItem(int Index);
 
   FarList * __fastcall GetListItems() { return FListItems; }
   TFarDialogItem * __fastcall GetDialogItem() { return FDialogItem; }
@@ -553,7 +553,7 @@ public:
   void __fastcall SetAutoSelect(TFarListBoxAutoSelect Value);
 
 protected:
-  virtual intptr_t __fastcall ItemProc(intptr_t Msg, intptr_t Param);
+  virtual LONG_PTR __fastcall ItemProc(int Msg, LONG_PTR Param);
   virtual void __fastcall Init();
   virtual bool __fastcall CloseQuery();
 
@@ -588,10 +588,10 @@ public:
   bool __fastcall GetDropDownList() { return GetFlag(DIF_DROPDOWNLIST); }
   void __fastcall SetDropDownList(bool Value) { SetFlag(DIF_DROPDOWNLIST, Value); }
   intptr_t __fastcall GetItemIndex() const { return FList->GetSelected(); }
-  void __fastcall SetItemIndex(intptr_t Index) { FList->SetSelected(Index); }
+  void __fastcall SetItemIndex(int Index) { FList->SetSelected(Index); }
 
 protected:
-  virtual intptr_t __fastcall ItemProc(intptr_t Msg, intptr_t Param);
+  virtual LONG_PTR __fastcall ItemProc(int Msg, LONG_PTR Param);
   virtual void __fastcall Init();
 
 private:
@@ -612,7 +612,7 @@ public:
   bool __fastcall GetScrollBar();
 
 protected:
-  virtual intptr_t __fastcall ItemProc(intptr_t Msg, intptr_t Param);
+  virtual LONG_PTR __fastcall ItemProc(int Msg, LONG_PTR Param);
   virtual void __fastcall DoFocus();
 
 private:

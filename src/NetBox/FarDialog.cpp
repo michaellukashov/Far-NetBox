@@ -119,10 +119,10 @@ void __fastcall TFarDialog::SetBounds(TRect Value)
         COORD Coord;
         Coord.X = static_cast<short int>(GetSize().x);
         Coord.Y = static_cast<short int>(GetSize().y);
-        SendMessage(DM_RESIZEDIALOG, 0, reinterpret_cast<intptr_t>(&Coord));
+        SendMessage(DM_RESIZEDIALOG, 0, reinterpret_cast<LONG_PTR>(&Coord));
         Coord.X = static_cast<short int>(FBounds.Left);
         Coord.Y = static_cast<short int>(FBounds.Top);
-        SendMessage(DM_MOVEDIALOG, (int)true, reinterpret_cast<intptr_t>(&Coord));
+        SendMessage(DM_MOVEDIALOG, (int)true, reinterpret_cast<LONG_PTR>(&Coord));
       }
       for (int  i = 0; i < GetItemCount(); i++)
       {
@@ -193,7 +193,7 @@ void __fastcall TFarDialog::SetHelpTopic(UnicodeString Value)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarDialog::SetFlags(uintptr_t Value)
+void __fastcall TFarDialog::SetFlags(DWORD Value)
 {
   if (GetFlags() != Value)
   {
@@ -413,7 +413,7 @@ LONG_PTR WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, intptr_t Param2)
+LONG_PTR  __fastcall TFarDialog::DialogProc(int Msg, int Param1, LONG_PTR Param2)
 {
   intptr_t Result = 0;
   bool Handled = false;
@@ -585,13 +585,13 @@ intptr_t __fastcall TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, intptr
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TFarDialog::DefaultDialogProc(intptr_t Msg, intptr_t Param1, intptr_t Param2)
+LONG_PTR __fastcall TFarDialog::DefaultDialogProc(int Msg, int Param1, LONG_PTR Param2)
 {
   TFarEnvGuard Guard;
   return GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetHandle(), Msg, Param1, Param2);
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TFarDialog::FailDialogProc(intptr_t Msg, intptr_t Param1, intptr_t Param2)
+LONG_PTR __fastcall TFarDialog::FailDialogProc(int Msg, int Param1, LONG_PTR Param2)
 {
   intptr_t Result = 0;
   switch (Msg)
@@ -706,7 +706,7 @@ bool __fastcall TFarDialog::CloseQuery()
 void __fastcall TFarDialog::RefreshBounds()
 {
   SMALL_RECT Rect;
-  SendMessage(DM_GETDLGRECT, 0, reinterpret_cast<intptr_t>(&Rect));
+  SendMessage(DM_GETDLGRECT, 0, reinterpret_cast<LONG_PTR>(&Rect));
   FBounds.Left = Rect.Left;
   FBounds.Top = Rect.Top;
   FBounds.Right = Rect.Right;
@@ -757,13 +757,13 @@ intptr_t __fastcall TFarDialog::ShowModal()
     {
       TFarButton * Button = dynamic_cast<TFarButton *>(GetItem(BResult));
       assert(Button);
-      // correct Result should be already set by TFarButton
+      // correct result should be already set by TFarButton
       assert(FResult == Button->GetResult());
       FResult = Button->GetResult();
     }
     else
     {
-      // allow only one negative Value = -1
+      // allow only one negative value = -1
       FResult = -1;
     }
   }
@@ -832,14 +832,15 @@ void __fastcall TFarDialog::Change()
   }
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TFarDialog::SendMessage(intptr_t Msg, intptr_t Param1, intptr_t Param2)
+LONG_PTR __fastcall TFarDialog::SendMessage(int Msg, int Param1, LONG_PTR Param2)
 {
   assert(GetHandle());
   TFarEnvGuard Guard;
-  return GetFarPlugin()->GetStartupInfo()->SendDlgMessage(GetHandle(), Msg, Param1, Param2);
+  return GetFarPlugin()->GetStartupInfo()->SendDlgMessage(GetHandle(),
+    Msg, Param1, Param2);
 }
 //---------------------------------------------------------------------------
-uintptr_t __fastcall TFarDialog::GetSystemColor(uintptr_t Index)
+uintptr_t __fastcall TFarDialog::GetSystemColor(int Index)
 {
   return static_cast<uintptr_t>(GetFarPlugin()->FarAdvControl(ACTL_GETCOLOR, reinterpret_cast<void *>(Index)));
 }
@@ -914,7 +915,7 @@ void __fastcall TFarDialog::LockChanges()
     assert(!FChangesPending);
     if (GetHandle())
     {
-      SendMessage(DM_ENABLEREDRAW, (int)false, 0);
+      SendMessage(DM_ENABLEREDRAW, static_cast<intptr_t>(false), 0);
     }
   }
 }
@@ -1118,7 +1119,7 @@ void __fastcall TFarDialogItem::UpdateBounds()
     Rect.Top = static_cast<short int>(B.Top);
     Rect.Right = static_cast<short int>(B.Right);
     Rect.Bottom = static_cast<short int>(B.Bottom);
-    SendMessage(DM_SETITEMPOSITION, reinterpret_cast<intptr_t>(&Rect));
+    SendMessage(DM_SETITEMPOSITION, reinterpret_cast<LONG_PTR>(&Rect));
   }
 }
 //---------------------------------------------------------------------------
@@ -1136,7 +1137,7 @@ void __fastcall TFarDialogItem::SetColor(int Index, char Value)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarDialogItem::SetFlags(uintptr_t Value)
+void __fastcall TFarDialogItem::SetFlags(DWORD Value)
 {
   if (GetFlags() != Value)
   {
@@ -1145,11 +1146,11 @@ void __fastcall TFarDialogItem::SetFlags(uintptr_t Value)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarDialogItem::UpdateFlags(uintptr_t Value)
+void __fastcall TFarDialogItem::UpdateFlags(DWORD Value)
 {
   if (GetFlags() != Value)
   {
-    GetDialogItem()->Flags = static_cast<DWORD>(Value);
+    GetDialogItem()->Flags = Value;
     DialogChange();
   }
 }
@@ -1160,7 +1161,7 @@ TRect __fastcall TFarDialogItem::GetActualBounds()
                GetDialogItem()->X2, GetDialogItem()->Y2);
 }
 //---------------------------------------------------------------------------
-uintptr_t __fastcall TFarDialogItem::GetFlags()
+DWORD __fastcall TFarDialogItem::GetFlags()
 {
   return GetDialogItem()->Flags;
 }
@@ -1170,7 +1171,7 @@ void __fastcall TFarDialogItem::SetDataInternal(const UnicodeString Value)
   UnicodeString FarData = Value.c_str();
   if (GetDialog()->GetHandle())
   {
-    SendMessage(DM_SETTEXTPTR, reinterpret_cast<intptr_t>(FarData.c_str()));
+    SendMessage(DM_SETTEXTPTR, reinterpret_cast<LONG_PTR>(FarData.c_str()));
   }
   GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(FarData, true);
   DialogChange();
@@ -1214,7 +1215,7 @@ uintptr_t __fastcall TFarDialogItem::GetType()
   return static_cast<uintptr_t>(GetDialogItem()->Type);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarDialogItem::SetAlterType(uintptr_t Index, bool Value)
+void __fastcall TFarDialogItem::SetAlterType(int Index, bool Value)
 {
   if (GetAlterType(Index) != Value)
   {
@@ -1222,14 +1223,14 @@ void __fastcall TFarDialogItem::SetAlterType(uintptr_t Index, bool Value)
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFarDialogItem::GetAlterType(uintptr_t Index)
+bool __fastcall TFarDialogItem::GetAlterType(int Index)
 {
   return (GetType() == Index);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFarDialogItem::GetFlag(uintptr_t Index)
+bool __fastcall TFarDialogItem::GetFlag(int Index)
 {
-  bool Result = (GetFlags() & (Index & 0xFFFFFFFFFFFFFF00UL)) != 0;
+  bool Result = (GetFlags() & (Index & 0xFFFFFFFFFFFFFF00ULL)) != 0;
   if (Index & 0x000000FFUL)
   {
     Result = !Result;
@@ -1237,7 +1238,7 @@ bool __fastcall TFarDialogItem::GetFlag(uintptr_t Index)
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarDialogItem::SetFlag(uintptr_t Index, bool Value)
+void __fastcall TFarDialogItem::SetFlag(int Index, bool Value)
 {
   if (GetFlag(Index) != Value)
   {
@@ -1246,8 +1247,8 @@ void __fastcall TFarDialogItem::SetFlag(uintptr_t Index, bool Value)
       Value = !Value;
     }
 
-    uintptr_t F = GetFlags();
-    uintptr_t Flag = Index & 0xFFFFFFFFFFFFFF00UL;
+    DWORD F = GetFlags();
+    DWORD Flag = Index & 0xFFFFFF00ULL;
     bool ToHandle = true;
 
     switch (Flag)
@@ -1321,7 +1322,7 @@ bool __fastcall TFarDialogItem::GetIsEmpty()
   return GetData().IsEmpty();
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TFarDialogItem::FailItemProc(intptr_t Msg, intptr_t Param)
+LONG_PTR __fastcall TFarDialogItem::FailItemProc(int Msg, LONG_PTR Param)
 {
   intptr_t Result = 0;
   switch (Msg)
@@ -1337,7 +1338,7 @@ intptr_t __fastcall TFarDialogItem::FailItemProc(intptr_t Msg, intptr_t Param)
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TFarDialogItem::ItemProc(intptr_t Msg, intptr_t Param)
+LONG_PTR __fastcall TFarDialogItem::ItemProc(int Msg, LONG_PTR Param)
 {
   intptr_t Result = 0;
   bool Handled = false;
@@ -1387,13 +1388,13 @@ void __fastcall TFarDialogItem::DoExit()
   }
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TFarDialogItem::DefaultItemProc(intptr_t Msg, intptr_t Param)
+LONG_PTR __fastcall TFarDialogItem::DefaultItemProc(int Msg, LONG_PTR Param)
 {
   TFarEnvGuard Guard;
   return GetDialog()->GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, GetItem(), Param);
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TFarDialogItem::DefaultDialogProc(intptr_t Msg, intptr_t Param1, intptr_t Param2)
+LONG_PTR __fastcall TFarDialogItem::DefaultDialogProc(int Msg, int Param1, LONG_PTR Param2)
 {
   TFarEnvGuard Guard;
   return GetDialog()->GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, Param1, Param2);
@@ -1440,12 +1441,12 @@ void __fastcall TFarDialogItem::DialogChange()
   GetDialog()->Change();
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TFarDialogItem::SendDialogMessage(intptr_t Msg, intptr_t Param1, intptr_t Param2)
+LONG_PTR __fastcall TFarDialogItem::SendDialogMessage(int Msg, int Param1, LONG_PTR Param2)
 {
   return GetDialog()->SendMessage(Msg, Param1, Param2);
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TFarDialogItem::SendMessage(intptr_t Msg, intptr_t Param)
+LONG_PTR __fastcall TFarDialogItem::SendMessage(int Msg, LONG_PTR Param)
 {
   return GetDialog()->SendMessage(Msg, GetItem(), Param);
 }
@@ -1621,7 +1622,7 @@ void __fastcall TFarDialogItem::Init()
     SMALL_RECT Rect;
 
     // at least for "text" item, returned item size is not correct (on 1.70 final)
-    SendMessage(DM_GETITEMPOSITION, reinterpret_cast<intptr_t>(&Rect));
+    SendMessage(DM_GETITEMPOSITION, reinterpret_cast<LONG_PTR>(&Rect));
 
     TRect B = GetBounds();
     B.Left = Rect.Left;
@@ -1661,13 +1662,13 @@ bool TFarDialogItem::MouseClick(MOUSE_EVENT_RECORD * Event)
   {
     FOnMouseClick(this, Event);
   }
-  return DefaultItemProc(DN_MOUSECLICK, reinterpret_cast<intptr_t>(Event)) != 0;
+  return DefaultItemProc(DN_MOUSECLICK, reinterpret_cast<LONG_PTR>(Event)) != 0;
 }
 //---------------------------------------------------------------------------
 bool TFarDialogItem::MouseMove(int /*X*/, int /*Y*/,
   MOUSE_EVENT_RECORD * Event)
 {
-  return DefaultDialogProc(DN_MOUSEEVENT, 0, reinterpret_cast<intptr_t>(Event)) != 0;
+  return DefaultDialogProc(DN_MOUSEEVENT, 0, reinterpret_cast<LONG_PTR>(Event)) != 0;
 }
 //---------------------------------------------------------------------------
 void __fastcall TFarDialogItem::Text(int X, int Y, int Color, const UnicodeString Str)
@@ -1820,7 +1821,7 @@ void TFarButton::SetBrackets(TFarButtonBrackets Value)
   }
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TFarButton::ItemProc(intptr_t Msg, intptr_t Param)
+LONG_PTR __fastcall TFarButton::ItemProc(int Msg, LONG_PTR Param)
 {
   if (Msg == DN_BTNCLICK)
   {
@@ -1874,7 +1875,7 @@ TFarCheckBox::TFarCheckBox(TFarDialog * ADialog) :
 {
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TFarCheckBox::ItemProc(intptr_t Msg, intptr_t Param)
+LONG_PTR __fastcall TFarCheckBox::ItemProc(int Msg, LONG_PTR Param)
 {
   if (Msg == DN_BTNCLICK)
   {
@@ -1916,7 +1917,7 @@ TFarRadioButton::TFarRadioButton(TFarDialog * ADialog) :
 {
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TFarRadioButton::ItemProc(intptr_t Msg, intptr_t Param)
+LONG_PTR __fastcall TFarRadioButton::ItemProc(int Msg, LONG_PTR Param)
 {
   if (Msg == DN_BTNCLICK)
   {
@@ -1967,7 +1968,7 @@ void __fastcall TFarEdit::Detach()
   TFarDialogItem::Detach();
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TFarEdit::ItemProc(intptr_t Msg, intptr_t Param)
+LONG_PTR __fastcall TFarEdit::ItemProc(int Msg, LONG_PTR Param)
 {
   if (Msg == DN_EDITCHANGE)
   {
@@ -2133,7 +2134,7 @@ void __fastcall TFarList::Assign(TPersistent * Source)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarList::UpdateItem(intptr_t Index)
+void __fastcall TFarList::UpdateItem(int Index)
 {
   FarListItem * ListItem = &FListItems->Items[Index];
   UnicodeString Value = Strings[Index].c_str();
@@ -2143,10 +2144,10 @@ void __fastcall TFarList::UpdateItem(intptr_t Index)
   memset(&ListUpdate, 0, sizeof(ListUpdate));
   ListUpdate.Index = static_cast<int>(Index);
   ListUpdate.Item = *ListItem;
-  GetDialogItem()->SendMessage(DM_LISTUPDATE, reinterpret_cast<intptr_t>(&ListUpdate));
+  GetDialogItem()->SendMessage(DM_LISTUPDATE, reinterpret_cast<LONG_PTR>(&ListUpdate));
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarList::Put(intptr_t Index, const UnicodeString S)
+void __fastcall TFarList::Put(int Index, const UnicodeString S)
 {
   if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle())
   {
@@ -2217,7 +2218,7 @@ void __fastcall TFarList::Changed()
       GetDialogItem()->GetDialog()->LockChanges();
       TRY_FINALLY1 (Self,
       {
-        GetDialogItem()->SendMessage(DM_LISTSET, reinterpret_cast<intptr_t>(FListItems));
+        GetDialogItem()->SendMessage(DM_LISTSET, reinterpret_cast<LONG_PTR>(FListItems));
         if (PrevTopIndex + GetDialogItem()->GetHeight() > GetCount())
         {
           PrevTopIndex = GetCount() > GetDialogItem()->GetHeight() ? GetCount() - GetDialogItem()->GetHeight() : 0;
@@ -2268,14 +2269,14 @@ void __fastcall TFarList::UpdatePosition(intptr_t Position)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarList::SetCurPos(intptr_t Position, intptr_t TopIndex)
+void __fastcall TFarList::SetCurPos(uintptr_t Position, uintptr_t TopIndex)
 {
   assert(GetDialogItem() != NULL);
   assert(GetDialogItem()->GetDialog()->GetHandle());
   FarListPos ListPos;
   ListPos.SelectPos = static_cast<int>(Position);
   ListPos.TopPos = static_cast<int>(TopIndex);
-  GetDialogItem()->SendMessage(DM_LISTSETCURPOS, reinterpret_cast<intptr_t>(&ListPos));
+  GetDialogItem()->SendMessage(DM_LISTSETCURPOS, reinterpret_cast<LONG_PTR>(&ListPos));
 }
 //---------------------------------------------------------------------------
 void __fastcall TFarList::SetTopIndex(intptr_t Value)
@@ -2303,7 +2304,7 @@ intptr_t __fastcall TFarList::GetTopIndex()
   {
     FarListPos ListPos;
     assert(GetDialogItem() != NULL);
-    GetDialogItem()->SendMessage(DM_LISTGETCURPOS, reinterpret_cast<intptr_t>(&ListPos));
+    GetDialogItem()->SendMessage(DM_LISTGETCURPOS, reinterpret_cast<LONG_PTR>(&ListPos));
     Result = ListPos.TopPos;
   }
   return Result;
@@ -2364,12 +2365,12 @@ intptr_t __fastcall TFarList::GetSelected()
   return Result;
 }
 //---------------------------------------------------------------------------
-uintptr_t __fastcall TFarList::GetFlags(intptr_t Index)
+DWORD __fastcall TFarList::GetFlags(int Index)
 {
   return FListItems->Items[Index].Flags;
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarList::SetFlags(intptr_t Index, uintptr_t Value)
+void __fastcall TFarList::SetFlags(int Index, DWORD Value)
 {
   if (FListItems->Items[Index].Flags != Value)
   {
@@ -2381,12 +2382,12 @@ void __fastcall TFarList::SetFlags(intptr_t Index, uintptr_t Value)
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFarList::GetFlag(intptr_t Index, uintptr_t Flag)
+bool TFarList::GetFlag(int Index, DWORD Flag)
 {
   return FLAGSET(GetFlags(Index), Flag);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarList::SetFlag(intptr_t Index, uintptr_t Flag, bool Value)
+void __fastcall TFarList::SetFlag(int Index, DWORD Flag, bool Value)
 {
   SetFlags(Index, (GetFlags(Index) & ~Flag) | FLAGMASK(Value, Flag));
 }
@@ -2396,7 +2397,7 @@ void __fastcall TFarList::Init()
   UpdatePosition(GetSelectedInt(true));
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TFarList::ItemProc(intptr_t Msg, intptr_t Param)
+LONG_PTR __fastcall TFarList::ItemProc(int Msg, LONG_PTR Param)
 {
   assert(GetDialogItem() != NULL);
   if (Msg == DN_LISTCHANGE)
@@ -2429,7 +2430,7 @@ TFarListBox::~TFarListBox()
   SAFE_DESTROY(FList);
 }
 //---------------------------------------------------------------------------
-intptr_t TFarListBox::ItemProc(intptr_t Msg, intptr_t Param)
+LONG_PTR TFarListBox::ItemProc(int Msg, LONG_PTR Param)
 {
   intptr_t Result = 0;
   // FAR WORKAROUND
@@ -2507,7 +2508,7 @@ void __fastcall TFarComboBox::ResizeToFitContent()
   SetWidth(FList->GetMaxLength());
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TFarComboBox::ItemProc(intptr_t Msg, intptr_t Param)
+LONG_PTR __fastcall TFarComboBox::ItemProc(int Msg, LONG_PTR Param)
 {
   if (Msg == DN_EDITCHANGE)
   {
@@ -2588,7 +2589,7 @@ void __fastcall TFarLister::DoFocus()
   // TODO: hide cursor
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TFarLister::ItemProc(intptr_t Msg, intptr_t Param)
+LONG_PTR __fastcall TFarLister::ItemProc(int Msg, LONG_PTR Param)
 {
   intptr_t Result = 0;
 
