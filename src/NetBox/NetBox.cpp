@@ -29,7 +29,7 @@ extern "C"
   {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    return FarPlugin->GetMinFarVersion();
+    return static_cast<int>(FarPlugin->GetMinFarVersion());
   }
 
   void WINAPI SetStartupInfoW(const struct PluginStartupInfo * psi)
@@ -57,7 +57,7 @@ extern "C"
   {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    return FarPlugin->Configure(item);
+    return static_cast<int>(FarPlugin->Configure(item));
   }
 
   HANDLE WINAPI OpenPluginW(int openFrom, intptr_t item)
@@ -85,7 +85,7 @@ extern "C"
   {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    return FarPlugin->GetFindData(plugin, panelItem, itemsNumber, opMode);
+    return static_cast<int>(FarPlugin->GetFindData(plugin, panelItem, itemsNumber, opMode));
   }
 
   void WINAPI FreeFindDataW(HANDLE plugin, PluginPanelItem * panelItem, int itemsNumber)
@@ -100,28 +100,28 @@ extern "C"
   {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    return FarPlugin->ProcessHostFile(Plugin, PanelItem, ItemsNumber, OpMode);
+    return static_cast<int>(FarPlugin->ProcessHostFile(Plugin, PanelItem, ItemsNumber, OpMode));
   }
 
   int WINAPI ProcessKeyW(HANDLE plugin, int key, unsigned int controlState)
   {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    return FarPlugin->ProcessKey(plugin, key, controlState);
+    return static_cast<int>(FarPlugin->ProcessKey(plugin, key, controlState));
   }
 
   int WINAPI ProcessEventW(HANDLE Plugin, int Event, void * Param)
   {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    return FarPlugin->ProcessEvent(Plugin, Event, Param);
+    return static_cast<int>(FarPlugin->ProcessEvent(Plugin, Event, Param));
   }
 
   int WINAPI SetDirectoryW(HANDLE plugin, const wchar_t * dir, int opMode)
   {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    int Result = FarPlugin->SetDirectory(plugin, dir, opMode);
+    int Result = static_cast<int>(FarPlugin->SetDirectory(plugin, dir, opMode));
     return Result;
   }
 
@@ -129,7 +129,7 @@ extern "C"
   {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    int Result = FarPlugin->MakeDirectory(plugin, name, opMode);
+    int Result = static_cast<int>(FarPlugin->MakeDirectory(plugin, name, opMode));
     return Result;
   }
 
@@ -137,7 +137,7 @@ extern "C"
   {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    return FarPlugin->DeleteFiles(plugin, panelItem, itemsNumber, opMode);
+    return static_cast<int>(FarPlugin->DeleteFiles(plugin, panelItem, itemsNumber, opMode));
   }
 
   int WINAPI GetFilesW(HANDLE plugin, PluginPanelItem * panelItem, int itemsNumber,
@@ -145,16 +145,16 @@ extern "C"
   {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    return FarPlugin->GetFiles(plugin, panelItem, itemsNumber,
-                               move, destPath, opMode);
+    return static_cast<int>(FarPlugin->GetFiles(plugin, panelItem, itemsNumber,
+      move, destPath, opMode));
   }
 
   int WINAPI PutFilesW(HANDLE plugin, PluginPanelItem * panelItem, int itemsNumber, int move, const wchar_t * srcPath, int opMode)
   {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    int Result = FarPlugin->PutFiles(plugin, panelItem, itemsNumber,
-      move, srcPath, opMode);
+    int Result = static_cast<int>(FarPlugin->PutFiles(plugin, panelItem, itemsNumber,
+      move, srcPath, opMode));
     return Result;
   }
 
@@ -162,14 +162,14 @@ extern "C"
   {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    return FarPlugin->ProcessEditorEvent(Event, Param);
+    return static_cast<int>(FarPlugin->ProcessEditorEvent(Event, Param));
   }
 
   int WINAPI ProcessEditorInputW(const INPUT_RECORD * Rec)
   {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    return FarPlugin->ProcessEditorInput(Rec);
+    return static_cast<int>(FarPlugin->ProcessEditorInput(Rec));
   }
 
   HANDLE WINAPI OpenFilePluginW(const wchar_t * fileName, const unsigned char * fileHeader, int fileHeaderSize, int /*opMode*/)

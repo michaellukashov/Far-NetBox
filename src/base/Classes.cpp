@@ -109,7 +109,7 @@ TList::~TList()
 }
 int TList::GetCount() const
 {
-  return FList.size();
+  return static_cast<int>(FList.size());
 }
 void TList::SetCount(int NewCount)
 {
@@ -119,7 +119,7 @@ void TList::SetCount(int NewCount)
   }
   if ((size_t)NewCount <= FList.size())
   {
-    int sz = FList.size();
+    int sz = static_cast<int>(FList.size());
     for (int I = sz - 1; (I != NPOS) && (I >= NewCount); I--)
     {
       Delete(I);
@@ -147,7 +147,7 @@ void TList::SetItem(int Index, void * Item)
 
 int TList::Add(void * value)
 {
-  int Result = FList.size();
+  int Result = static_cast<int>(FList.size());
   FList.push_back(value);
   return Result;
 }
