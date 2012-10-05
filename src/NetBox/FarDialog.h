@@ -47,7 +47,7 @@ public:
   TRect __fastcall GetClientRect();
   UnicodeString GetHelpTopic() { return FHelpTopic; }
   void __fastcall SetHelpTopic(UnicodeString Value);
-  DWORD GetFlags() const { return FFlags; }
+  uintptr_t GetFlags() const { return FFlags; }
   void __fastcall SetFlags(uintptr_t Value);
   bool __fastcall GetCentered();
   void __fastcall SetCentered(bool Value);
@@ -73,7 +73,7 @@ public:
   void SetTag(int Value) { FTag = Value; }
   TFarDialogItem * __fastcall GetItemFocused() { return FItemFocused; }
   void __fastcall SetItemFocused(TFarDialogItem * Value);
-  int __fastcall GetResult() { return FResult; }
+  intptr_t __fastcall GetResult() { return FResult; }
   TPoint __fastcall GetMaxSize();
 
   TFarKeyEvent & GetOnKey() { return FOnKey; }
@@ -118,7 +118,7 @@ protected:
 private:
   TCustomFarPlugin * FFarPlugin;
   TRect FBounds;
-  DWORD FFlags;
+  uintptr_t FFlags;
   UnicodeString FHelpTopic;
   bool FVisible;
   TObjectList * FItems;
