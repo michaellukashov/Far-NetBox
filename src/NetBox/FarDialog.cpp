@@ -1056,7 +1056,7 @@ size_t __fastcall TFarDialogContainer::GetItemCount()
 
   GetDialog()->Add(this);
 
-  GetDialogItem()->Type = AType;
+  GetDialogItem()->Type = static_cast<int>(AType);
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TFarDialogItem::~TFarDialogItem()
@@ -1149,7 +1149,7 @@ void __fastcall TFarDialogItem::UpdateFlags(uintptr_t Value)
 {
   if (GetFlags() != Value)
   {
-    GetDialogItem()->Flags = Value;
+    GetDialogItem()->Flags = static_cast<DWORD>(Value);
     DialogChange();
   }
 }
@@ -1205,7 +1205,7 @@ void __fastcall TFarDialogItem::SetType(uintptr_t Value)
   if (GetType() != Value)
   {
     assert(!GetDialog()->GetHandle());
-    GetDialogItem()->Type = Value;
+    GetDialogItem()->Type = static_cast<int>(Value);
   }
 }
 //---------------------------------------------------------------------------
@@ -1466,7 +1466,7 @@ void __fastcall TFarDialogItem::UpdateSelected(intptr_t Value)
 {
   if (GetSelected() != Value)
   {
-    GetDialogItem()->Selected = Value;
+    GetDialogItem()->Selected = static_cast<int>(Value);
     DialogChange();
   }
 }
@@ -2177,8 +2177,8 @@ void __fastcall TFarList::Changed()
 
   if ((GetUpdateCount() == 0) && !FNoDialogUpdate)
   {
-    int PrevSelected = 0;
-    int PrevTopIndex = 0;
+    intptr_t PrevSelected = 0;
+    intptr_t PrevTopIndex = 0;
     if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle())
     {
       PrevSelected = GetSelected();
@@ -2254,7 +2254,7 @@ void __fastcall TFarList::UpdatePosition(intptr_t Position)
 {
   if (Position >= 0)
   {
-    int ATopIndex = GetTopIndex();
+    intptr_t ATopIndex = GetTopIndex();
     // even if new position is visible already, FAR will scroll the view so
     // that the new selected item is the last one, following prevents the scroll
     if ((ATopIndex <= Position) && (Position < ATopIndex + GetVisibleCount()))
@@ -2273,8 +2273,8 @@ void __fastcall TFarList::SetCurPos(intptr_t Position, intptr_t TopIndex)
   assert(GetDialogItem() != NULL);
   assert(GetDialogItem()->GetDialog()->GetHandle());
   FarListPos ListPos;
-  ListPos.SelectPos = Position;
-  ListPos.TopPos = TopIndex;
+  ListPos.SelectPos = static_cast<int>(Position);
+  ListPos.TopPos = static_cast<int>(TopIndex);
   GetDialogItem()->SendMessage(DM_LISTSETCURPOS, reinterpret_cast<intptr_t>(&ListPos));
 }
 //---------------------------------------------------------------------------

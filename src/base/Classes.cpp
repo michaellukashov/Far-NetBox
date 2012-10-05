@@ -1988,12 +1988,13 @@ size_t TRegistry::ReadBinaryData(const UnicodeString Name,
 }
 
 int TRegistry::GetData(const UnicodeString Name, void * Buffer,
-                       DWORD BufSize, TRegDataType & RegData) const
+  intptr_t BufSize, TRegDataType & RegData) const
 {
   DWORD DataType = REG_NONE;
+  DWORD bufSize = BufSize;
   // DEBUG_PRINTF(L"GetCurrentKey = %d", GetCurrentKey());
   if (RegQueryValueEx(GetCurrentKey(), Name.c_str(), NULL, &DataType,
-    reinterpret_cast<BYTE *>(Buffer), &BufSize) != ERROR_SUCCESS)
+    reinterpret_cast<BYTE *>(Buffer), &bufSize) != ERROR_SUCCESS)
   {
     throw std::exception("RegQueryValueEx failed"); // FIXME ERegistryException.CreateResFmt(@SRegGetDataFailed, [Name]);
   }
@@ -2003,7 +2004,7 @@ int TRegistry::GetData(const UnicodeString Name, void * Buffer,
 }
 
 void TRegistry::PutData(const UnicodeString Name, const void * Buffer,
-  int BufSize, TRegDataType RegData)
+  intptr_t BufSize, TRegDataType RegData)
 {
   int DataType = Classes::RegDataToDataType(RegData);
   // DEBUG_PRINTF(L"GetCurrentKey = %d, Name = %s, REG_DWORD = %d, DataType = %d, BufSize = %d", GetCurrentKey(), Name.c_str(), REG_DWORD, DataType, BufSize);

@@ -266,7 +266,7 @@ private:
   UnicodeString FLastMultipleEditFileTitle;
   UnicodeString FLastMultipleEditDirectory;
   bool FLastMultipleEditReadOnly;
-  int FLastEditorID;
+  intptr_t FLastEditorID;
   bool FEditorPendingSave;
   TGUICopyParamType FLastEditCopyParam;
   bool FNoProgress;

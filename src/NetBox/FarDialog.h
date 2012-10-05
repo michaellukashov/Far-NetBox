@@ -368,7 +368,7 @@ public:
 };
 //---------------------------------------------------------------------------
 DEFINE_CALLBACK_TYPE3(TFarAllowChangeEvent, void,
-  TFarDialogItem * /* Sender */, long /* NewState */, bool & /* AllowChange */);
+  TFarDialogItem * /* Sender */, intptr_t /* NewState */, bool & /* AllowChange */);
 //---------------------------------------------------------------------------
 class TFarCheckBox : public TFarDialogItem
 {

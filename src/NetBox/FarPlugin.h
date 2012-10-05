@@ -100,7 +100,7 @@ public:
   intptr_t __fastcall Menu(DWORD Flags, const UnicodeString Title,
     const UnicodeString Bottom, TStrings * Items);
   intptr_t __fastcall Menu(DWORD Flags, const UnicodeString Title,
-    const UnicodeString Bottom, const FarMenuItem * Items, intptr_t Count,
+    const UnicodeString Bottom, const FarMenuItem * Items, int Count,
     const int * BreakKeys, int & BreakCode);
   bool __fastcall InputBox(const UnicodeString Title, const UnicodeString Prompt,
     UnicodeString & Text, DWORD Flags, const UnicodeString HistoryName = L"",
@@ -157,7 +157,7 @@ protected:
   TFarDialog * FTopDialog;
   HANDLE FConsoleInput;
   HANDLE FConsoleOutput;
-  int FFarVersion;
+  intptr_t FFarVersion;
   bool FTerminalScreenShowing;
   TCriticalSection * FCriticalSection;
   unsigned int FFarThread;
@@ -454,23 +454,23 @@ public:
   virtual intptr_t __fastcall Add(UnicodeString Text, bool Visible = true);
 
   virtual void __fastcall Clear();
-  virtual void __fastcall Delete(int Index);
+  virtual void __fastcall Delete(intptr_t Index);
 
-  int __fastcall GetItemFocused() { return FItemFocused; }
-  void __fastcall SetItemFocused(int value);
-  bool __fastcall GetDisabled(size_t Index) { return GetFlag(Index, MIF_DISABLE); }
-  void __fastcall SetDisabled(size_t Index, bool value) { SetFlag(Index, MIF_DISABLE, value); }
-  bool __fastcall GetChecked(size_t Index) { return GetFlag(Index, MIF_CHECKED); }
-  void __fastcall SetChecked(size_t Index, bool value) { SetFlag(Index, MIF_CHECKED, value); }
+  intptr_t __fastcall GetItemFocused() { return FItemFocused; }
+  void __fastcall SetItemFocused(intptr_t Value);
+  bool __fastcall GetDisabled(intptr_t Index) { return GetFlag(Index, MIF_DISABLE); }
+  void __fastcall SetDisabled(intptr_t Index, bool value) { SetFlag(Index, MIF_DISABLE, value); }
+  bool __fastcall GetChecked(intptr_t Index) { return GetFlag(Index, MIF_CHECKED); }
+  void __fastcall SetChecked(intptr_t Index, bool value) { SetFlag(Index, MIF_CHECKED, value); }
 
-  void __fastcall SetFlag(size_t Index, size_t Flag, bool Value);
-  bool __fastcall GetFlag(size_t Index, size_t Flag);
+  void __fastcall SetFlag(intptr_t Index, uintptr_t Flag, bool Value);
+  bool __fastcall GetFlag(intptr_t Index, uintptr_t Flag);
 
 protected:
-  virtual void __fastcall PutObject(int Index, TObject * AObject);
+  virtual void __fastcall PutObject(intptr_t Index, TObject * AObject);
 
 private:
-  int FItemFocused;
+  intptr_t FItemFocused;
 };
 //---------------------------------------------------------------------------
 class TFarEditorInfo

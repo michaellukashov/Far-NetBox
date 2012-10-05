@@ -330,11 +330,11 @@ struct TVersionInfo
   DWORD Build;
 };
 #define MAKEVERSIONNUMBER(major,minor,revision) ( ((major)<<16) | ((minor)<<8) | (revision))
-DWORD __fastcall StrToVersionNumber(const UnicodeString & VersionMumberStr);
-UnicodeString __fastcall VersionNumberToStr(DWORD VersionNumber);
-DWORD inline __fastcall GetVersionNumber219() { return MAKEVERSIONNUMBER(2,1,9); }
-DWORD inline __fastcall GetVersionNumber2110() { return MAKEVERSIONNUMBER(2,1,10); }
-DWORD inline __fastcall GetCurrentVersionNumber() { return StrToVersionNumber(NETBOX_VERSION_NUMBER); }
+uintptr_t __fastcall StrToVersionNumber(const UnicodeString & VersionMumberStr);
+UnicodeString __fastcall VersionNumberToStr(uintptr_t VersionNumber);
+uintptr_t inline __fastcall GetVersionNumber219() { return MAKEVERSIONNUMBER(2,1,9); }
+uintptr_t inline __fastcall GetVersionNumber2110() { return MAKEVERSIONNUMBER(2,1,10); }
+uintptr_t inline __fastcall GetCurrentVersionNumber() { return StrToVersionNumber(NETBOX_VERSION_NUMBER); }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall FormatBytes(__int64 Bytes, bool UseOrders = true);
 //---------------------------------------------------------------------------

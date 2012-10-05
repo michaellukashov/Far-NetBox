@@ -1508,9 +1508,9 @@ protected:
 private:
   TSessionActionEnum FAction;
   TSessionData * FSessionData;
-  int FTransferProtocolIndex;
-  int FLoginTypeIndex;
-  int FFtpEncryptionComboIndex;
+  intptr_t FTransferProtocolIndex;
+  intptr_t FLoginTypeIndex;
+  intptr_t FFtpEncryptionComboIndex;
 
   TTabButton * SshTab;
   TTabButton * AuthenticatonTab;
@@ -1653,7 +1653,7 @@ private:
   bool __fastcall VerifyKey(UnicodeString FileName, bool TypeOnly);
   void /* __fastcall */ CipherButtonClick(TFarButton * Sender, bool & Close);
   void /* __fastcall */ KexButtonClick(TFarButton * Sender, bool & Close);
-  void /* __fastcall */ AuthGSSAPICheckAllowChange(TFarDialogItem * Sender, long NewState, bool & Allow);
+  void /* __fastcall */ AuthGSSAPICheckAllowChange(TFarDialogItem * Sender, intptr_t NewState, bool & Allow);
   void /* __fastcall */ UnixEnvironmentButtonClick(TFarButton * Sender, bool & Close);
   void /* __fastcall */ WindowsEnvironmentButtonClick(TFarButton * Sender, bool & Close);
   void __fastcall UpdateControls();
@@ -4162,7 +4162,7 @@ void /* __fastcall */ TSessionDialog::KexButtonClick(TFarButton * Sender, bool &
 }
 //---------------------------------------------------------------------------
 void /* __fastcall */ TSessionDialog::AuthGSSAPICheckAllowChange(TFarDialogItem * /*Sender*/,
-    long NewState, bool & Allow)
+  intptr_t NewState, bool & Allow)
 {
   if ((NewState == BSTATE_CHECKED) && !Configuration->GetGSSAPIInstalled())
   {

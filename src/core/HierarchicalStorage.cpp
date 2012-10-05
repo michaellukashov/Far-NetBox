@@ -469,8 +469,8 @@ bool __fastcall TRegistryStorage::Copy(TRegistryStorage * Storage)
     while ((Index < Names->Count) && Result)
     {
       UnicodeString Name = MungeStr(Names->Strings[Index], GetForceAnsi());
-      unsigned long Size = Buffer.size();
-      unsigned long Type;
+      DWORD Size = Buffer.size();
+      DWORD Type;
       int RegResult = 0;
       do
       {

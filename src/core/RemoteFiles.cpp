@@ -1241,7 +1241,7 @@ void __fastcall TRemoteFile::SetListingStr(UnicodeString value)
         FLinkTo = L"";
         if (GetIsSymLink())
         {
-          int P = Line.Pos(SYMLINKSTR);
+          intptr_t P = Line.Pos(SYMLINKSTR);
           if (P)
           {
             FLinkTo = Line.SubString(
