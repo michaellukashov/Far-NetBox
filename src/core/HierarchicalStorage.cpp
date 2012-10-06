@@ -128,7 +128,7 @@ void __fastcall THierarchicalStorage::SetAccessMode(TStorageAccessMode value)
   FAccessMode = value;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall THierarchicalStorage::GetCurrentSubKeyMunged()
+UnicodeString __fastcall THierarchicalStorage::GetCurrentSubKeyMunged() const
 {
   if (FKeyHistory->Count)
   {

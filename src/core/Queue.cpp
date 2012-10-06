@@ -1856,7 +1856,7 @@ void __fastcall TTerminalQueueStatus::Delete(TQueueItemProxy * ItemProxy)
   ResetStats();
 }
 //---------------------------------------------------------------------------
-int __fastcall TTerminalQueueStatus::GetCount()
+int __fastcall TTerminalQueueStatus::GetCount() const
 {
   return FList->Count;
 }

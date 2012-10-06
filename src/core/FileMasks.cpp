@@ -512,7 +512,7 @@ void __fastcall TFileMasks::ThrowError(int Start, int End) const
 }
 //---------------------------------------------------------------------------
 void __fastcall TFileMasks::CreateMaskMask(const UnicodeString & Mask, int Start, int End,
-  bool Ex, TMaskMask & MaskMask)
+  bool Ex, TMaskMask & MaskMask) const
 {
   try
   {
