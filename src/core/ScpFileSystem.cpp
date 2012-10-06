@@ -2141,7 +2141,7 @@ void __fastcall TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
 
   TRACE("1");
   FTerminal->LogEvent(FORMAT(L"Copying %d files/directories to local directory "
-    L"\"%s\"", FilesToCopy->Count, TargetDir.c_str()));
+    L"\"%s\"", FilesToCopy->Count.get(), TargetDir.c_str()));
   FTerminal->LogEvent(CopyParam->GetLogStr());
 
   TRY_FINALLY3 (Self, CloseSCP, OperationProgress,

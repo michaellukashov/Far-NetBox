@@ -4651,7 +4651,7 @@ private:
     Text->SetCenterGroup(true);
     if (FileList->Count > 1)
     {
-      Text->SetCaption(FORMAT(GetMsg(PROPERTIES_PROMPT_FILES).c_str(), FileList->Count));
+      Text->SetCaption(FORMAT(GetMsg(PROPERTIES_PROMPT_FILES).c_str(), FileList->Count.get()));
     }
     else
     {
@@ -5400,7 +5400,7 @@ private:
     UnicodeString Prompt;
     if (FileList->Count > 1)
     {
-      Prompt = FORMAT(GetMsg(Move ? MOVE_FILES_PROMPT : COPY_FILES_PROMPT).c_str(), FileList->Count);
+      Prompt = FORMAT(GetMsg(Move ? MOVE_FILES_PROMPT : COPY_FILES_PROMPT).c_str(), FileList->Count.get());
     }
     else
     {

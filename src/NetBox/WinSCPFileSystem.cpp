@@ -2437,7 +2437,7 @@ bool __fastcall TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, int O
       if (PanelItems->Count > 1)
       {
         Query = FORMAT(GetMsg(Recycle ? RECYCLE_FILES_CONFIRM : DELETE_FILES_CONFIRM).c_str(),
-          PanelItems->Count);
+          PanelItems->Count.get());
       }
       else
       {
@@ -2579,7 +2579,7 @@ intptr_t __fastcall TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool
     }
     else
     {
-      Prompt = FORMAT(GetMsg(EXPORT_SESSIONS_PROMPT).c_str(), PanelItems->Count);
+      Prompt = FORMAT(GetMsg(EXPORT_SESSIONS_PROMPT).c_str(), PanelItems->Count.get());
     }
 
     bool AResult = (OpMode & OPM_SILENT) ||
