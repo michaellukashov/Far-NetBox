@@ -2937,7 +2937,7 @@ UnicodeString __fastcall TFarEditorInfo::GetFileName()
   assert(FarPlugin != NULL);
 }
 //---------------------------------------------------------------------------
-void __fastcall FarWrapText(const UnicodeString Text, TStrings * Result, size_t MaxWidth)
+void __fastcall FarWrapText(const UnicodeString Text, TStrings * Result, intptr_t MaxWidth)
 {
   size_t TabSize = 8;
   TStringList Lines;

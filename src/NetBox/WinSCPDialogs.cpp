@@ -3490,7 +3490,7 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
 
   #undef TRISTATE
 
-  int Button = ShowModal();
+  intptr_t Button = ShowModal();
   bool Result = (Button == brOK || Button == brConnect);
   if (Result)
   {
@@ -6324,7 +6324,7 @@ bool __fastcall TWinSCPFileSystem::OpenDirectoryDialog(
   bool Result = false;
   bool Repeat = false;
 
-  int ItemFocused = -1;
+  intptr_t ItemFocused = -1;
 
   do
   {
@@ -6335,11 +6335,11 @@ bool __fastcall TWinSCPFileSystem::OpenDirectoryDialog(
     TList * Bookmarks = new TList();
     std::auto_ptr<TList> BookmarksPtr(Bookmarks);
     {
-      int BookmarksOffset = -1;
+      intptr_t BookmarksOffset = -1;
 
-      int MaxLength = FPlugin->MaxMenuItemLength();
-      int MaxHistory = 40;
-      int FirstHistory = 0;
+      intptr_t MaxLength = FPlugin->MaxMenuItemLength();
+      intptr_t MaxHistory = 40;
+      intptr_t FirstHistory = 0;
 
       if (FPathHistory->Count > MaxHistory)
       {
@@ -6353,7 +6353,7 @@ bool __fastcall TWinSCPFileSystem::OpenDirectoryDialog(
         BookmarkItems->Add(MinimizeName(Path, MaxLength, true));
       }
 
-      int FirstItemFocused = -1;
+      intptr_t FirstItemFocused = -1;
       TStringList * BookmarkDirectories = new TStringList();
       std::auto_ptr<TStringList> BookmarkDirectoriesPtr(BookmarkDirectories);
       {
@@ -7202,13 +7202,13 @@ void TSynchronizeChecklistDialog::AddColumn(UnicodeString & List,
     UnicodeString Value, size_t Column, bool Header)
 {
   char Separator = '\xB3';
-  size_t Len = Value.Length();
-  size_t Width = static_cast<size_t>(FWidths[Column]);
+  intptr_t Len = Value.Length();
+  intptr_t Width = static_cast<size_t>(FWidths[Column]);
   bool Right = (Column == 2) || (Column == 3) || (Column == 6) || (Column == 7);
   bool LastCol = (Column == FColumns - 1);
   if (Len <= Width)
   {
-    size_t Added = 0;
+    intptr_t Added = 0;
     if (Header && (Len < Width))
     {
       Added += (Width - Len) / 2;
@@ -7230,7 +7230,7 @@ void TSynchronizeChecklistDialog::AddColumn(UnicodeString & List,
   }
   else
   {
-    size_t Scroll = FScroll;
+    intptr_t Scroll = FScroll;
     if ((Scroll > 0) && !Header)
     {
       if (List.IsEmpty())
@@ -7587,7 +7587,7 @@ void /* __fastcall */ TSynchronizeChecklistDialog::VideoModeButtonClick(
 void /* __fastcall */ TSynchronizeChecklistDialog::ListBoxClick(
   TFarDialogItem * /*Item*/, MOUSE_EVENT_RECORD * /*Event*/)
 {
-  int Index = ListBox->GetItems()->GetSelected();
+  intptr_t Index = ListBox->GetItems()->GetSelected();
   if (Index >= 0)
   {
     if (ListBox->GetItems()->GetChecked(Index))
@@ -7618,7 +7618,7 @@ bool __fastcall TSynchronizeChecklistDialog::Key(TFarDialogItem * Item, long Key
     else if ((KeyCode == KEY_SPACE) || (KeyCode == KEY_INS) ||
              (KeyCode == KEY_ADD) || (KeyCode == KEY_SUBTRACT))
     {
-      int Index = ListBox->GetItems()->GetSelected();
+      intptr_t Index = ListBox->GetItems()->GetSelected();
       if (Index >= 0)
       {
         if (ListBox->GetItems()->GetChecked(Index) && (KeyCode != KEY_ADD))

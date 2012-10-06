@@ -500,6 +500,6 @@ public:
   /* __fastcall */ ~TFarPluginEnvGuard();
 };
 //---------------------------------------------------------------------------
-void __fastcall FarWrapText(UnicodeString Text, TStrings * Result, size_t MaxWidth);
+void __fastcall FarWrapText(UnicodeString Text, TStrings * Result, intptr_t MaxWidth);
 //---------------------------------------------------------------------------
 extern TCustomFarPlugin * FarPlugin;

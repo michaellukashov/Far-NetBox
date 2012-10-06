@@ -7,7 +7,7 @@
 
 AnsiString::operator UnicodeString() const
 {
-  return UnicodeString(Data.c_str(), Data.size());
+  return UnicodeString(Data.c_str(), static_cast<int>(Data.size()));
 }
 
 int AnsiString::Pos(wchar_t Ch) const

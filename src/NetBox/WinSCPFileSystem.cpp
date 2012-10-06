@@ -1448,7 +1448,7 @@ void __fastcall TWinSCPFileSystem::FullSynchronize(bool Source)
   int Params = GUIConfiguration->GetSynchronizeParams();
   bool SaveSettings = false;
 
-  TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
+  TGUICopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
   TUsableCopyParamAttrs CopyParamAttrs = GetTerminal()->UsableCopyParamAttrs(0);
   int Options =
     FLAGMASK(!FTerminal->GetIsCapable(fcTimestampChanging), fsoDisableTimestamp) |
@@ -1604,7 +1604,7 @@ void __fastcall TWinSCPFileSystem::Synchronize()
   TRY_FINALLY1 (Self,
   {
     bool SaveSettings = false;
-    TCopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
+    TCopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
     int CopyParamAttrs = GetTerminal()->UsableCopyParamAttrs(0).Upload;
     int Options =
       FLAGMASK(SynchronizeAllowSelectedOnly(), soAllowSelectedOnly);
@@ -2499,7 +2499,7 @@ intptr_t __fastcall TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool
         (OpMode & OPM_SILENT) &&
         (!EditView || FarConfiguration->GetEditorDownloadDefaultMode());
 
-      TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
+      TGUICopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
       if (EditView)
       {
         EditViewCopyParam(CopyParam);
@@ -4151,7 +4151,7 @@ void __fastcall TWinSCPFileSystem::EditHistory()
     const int BreakKeys[] = { VK_F4, 0 };
 
     int BreakCode = 0;
-    int Result = WinSCPPlugin()->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
+    intptr_t Result = WinSCPPlugin()->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
       GetMsg(MENU_EDIT_HISTORY), L"", MenuItems, BreakKeys, BreakCode);
 
     if ((Result >= 0) && (Result < static_cast<int>(FEditHistories.size())))

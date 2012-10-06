@@ -446,7 +446,7 @@ bool DirectoryExists(const UnicodeString filename)
 
 UnicodeString FileSearch(const UnicodeString FileName, const UnicodeString DirectoryList)
 {
-  intptr_t I;
+  int I;
   UnicodeString Temp;
   UnicodeString Result;
   Temp = DirectoryList;
@@ -1057,7 +1057,7 @@ UnicodeString SysErrorMessage(int ErrorCode)
 UnicodeString ReplaceStrAll(const UnicodeString Str, const UnicodeString What, const UnicodeString ByWhat)
 {
   UnicodeString Result = Str;
-  intptr_t Pos = Result.Pos(What.c_str());
+  int Pos = Result.Pos(What.c_str());
   while (Pos > 0)
   {
     Result.Replace(Pos, What.Length(), ByWhat.c_str(), ByWhat.Length());

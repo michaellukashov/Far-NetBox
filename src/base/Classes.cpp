@@ -776,7 +776,7 @@ void TStringList::Assign(TPersistent * Source)
 
 int TStringList::GetCount() const
 {
-  return FList.size();
+  return static_cast<int>(FList.size());
 }
 
 void TStringList::Clear()
@@ -994,11 +994,11 @@ void TStringList::LoadFromFile(const UnicodeString FileName)
   TSafeHandleStream Stream(FileHandle);
   __int64 Size = Stream.GetSize();
   TFileBuffer FileBuffer;
-  __int64 Read = FileBuffer.LoadStream(&Stream, Size, True);
+  FileBuffer.LoadStream(&Stream, Size, True);
   bool ConvertToken;
   FileBuffer.Convert(eolCRLF, eolCRLF, cpRemoveCtrlZ | cpRemoveBOM, ConvertToken);
   ::CloseHandle(FileHandle);
-  UnicodeString Str(FileBuffer.GetData(), FileBuffer.GetSize());
+  UnicodeString Str(FileBuffer.GetData(), static_cast<int>(FileBuffer.GetSize()));
   // DEBUG_PRINTF(L"Str = %s", Str.c_str());
   SetTextStr(Str);
   /* FILE * f = NULL;
@@ -1991,7 +1991,7 @@ int TRegistry::GetData(const UnicodeString Name, void * Buffer,
   intptr_t BufSize, TRegDataType & RegData) const
 {
   DWORD DataType = REG_NONE;
-  DWORD bufSize = BufSize;
+  DWORD bufSize = static_cast<DWORD>(BufSize);
   // DEBUG_PRINTF(L"GetCurrentKey = %d", GetCurrentKey());
   if (RegQueryValueEx(GetCurrentKey(), Name.c_str(), NULL, &DataType,
     reinterpret_cast<BYTE *>(Buffer), &bufSize) != ERROR_SUCCESS)
@@ -1999,7 +1999,7 @@ int TRegistry::GetData(const UnicodeString Name, void * Buffer,
     throw std::exception("RegQueryValueEx failed"); // FIXME ERegistryException.CreateResFmt(@SRegGetDataFailed, [Name]);
   }
   RegData = DataTypeToRegData(DataType);
-  int Result = BufSize;
+  int Result = static_cast<int>(BufSize);
   return Result;
 }
 
