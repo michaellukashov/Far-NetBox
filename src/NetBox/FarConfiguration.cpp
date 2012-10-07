@@ -9,7 +9,7 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
-/* __fastcall */ TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
+TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
   TGUIConfiguration()
 {
   Self = this;
@@ -19,7 +19,7 @@
   Default();
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TFarConfiguration::~TFarConfiguration()
+TFarConfiguration::~TFarConfiguration()
 {
   delete FBookmarks;
 }

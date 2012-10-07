@@ -36,7 +36,7 @@ TRect __fastcall Rect(int Left, int Top, int Right, int Bottom)
 }
 
 //---------------------------------------------------------------------------
-/* __fastcall */ TFarDialog::TFarDialog(TCustomFarPlugin * AFarPlugin) :
+TFarDialog::TFarDialog(TCustomFarPlugin * AFarPlugin) :
   TObject(),
   FFarPlugin(NULL),
   FBounds(-1, -1, 40, 10),
@@ -86,7 +86,7 @@ TRect __fastcall Rect(int Left, int Top, int Right, int Bottom)
   FBorderBox->SetDouble(true);
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TFarDialog::~TFarDialog()
+TFarDialog::~TFarDialog()
 {
   for (int i = 0; i < GetItemCount(); i++)
   {
@@ -881,12 +881,12 @@ void __fastcall TFarDialog::ProcessGroup(int Group, TFarProcessGroupEvent Callba
   );
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TFarDialog::ShowItem(TFarDialogItem * Item, void * Arg)
+void TFarDialog::ShowItem(TFarDialogItem * Item, void * Arg)
 {
   Item->SetVisible(*static_cast<bool *>(Arg));
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TFarDialog::EnableItem(TFarDialogItem * Item, void * Arg)
+void TFarDialog::EnableItem(TFarDialogItem * Item, void * Arg)
 {
   Item->SetEnabled(*static_cast<bool *>(Arg));
 }
@@ -950,7 +950,7 @@ bool __fastcall TFarDialog::ChangesLocked()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-/* __fastcall */ TFarDialogContainer::TFarDialogContainer(TFarDialog * ADialog) :
+TFarDialogContainer::TFarDialogContainer(TFarDialog * ADialog) :
   TObject(),
   FLeft(0),
   FTop(0),
@@ -969,7 +969,7 @@ bool __fastcall TFarDialog::ChangesLocked()
   GetDialog()->GetNextItemPosition(FLeft, FTop);
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TFarDialogContainer::~TFarDialogContainer()
+TFarDialogContainer::~TFarDialogContainer()
 {
   delete FItems;
 }
@@ -1032,7 +1032,7 @@ size_t __fastcall TFarDialogContainer::GetItemCount()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-/* __fastcall */ TFarDialogItem::TFarDialogItem(TFarDialog * ADialog, uintptr_t AType) :
+TFarDialogItem::TFarDialogItem(TFarDialog * ADialog, uintptr_t AType) :
   TObject(),
   FDefaultType(0),
   FGroup(0),
@@ -1059,7 +1059,7 @@ size_t __fastcall TFarDialogContainer::GetItemCount()
   GetDialogItem()->Type = static_cast<int>(AType);
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TFarDialogItem::~TFarDialogItem()
+TFarDialogItem::~TFarDialogItem()
 {
   assert(!GetDialog());
   if (GetDialog())
@@ -1655,7 +1655,7 @@ TPoint __fastcall TFarDialogItem::MouseClientPosition(MOUSE_EVENT_RECORD * Event
   return Result;
 }
 //---------------------------------------------------------------------------
-bool /* __fastcall */ TFarDialogItem::MouseClick(MOUSE_EVENT_RECORD * Event)
+bool TFarDialogItem::MouseClick(MOUSE_EVENT_RECORD * Event)
 {
   if (FOnMouseClick)
   {
@@ -1664,7 +1664,7 @@ bool /* __fastcall */ TFarDialogItem::MouseClick(MOUSE_EVENT_RECORD * Event)
   return DefaultItemProc(DN_MOUSECLICK, reinterpret_cast<intptr_t>(Event)) != 0;
 }
 //---------------------------------------------------------------------------
-bool /* __fastcall */ TFarDialogItem::MouseMove(int /*X*/, int /*Y*/,
+bool TFarDialogItem::MouseMove(int /*X*/, int /*Y*/,
   MOUSE_EVENT_RECORD * Event)
 {
   return DefaultDialogProc(DN_MOUSEEVENT, 0, reinterpret_cast<intptr_t>(Event)) != 0;
@@ -1709,13 +1709,13 @@ bool __fastcall TFarDialogItem::HotKey(char /*HotKey*/)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-/* __fastcall */ TFarBox::TFarBox(TFarDialog * ADialog) :
+TFarBox::TFarBox(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_SINGLEBOX)
 {
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-/* __fastcall */ TFarButton::TFarButton(TFarDialog * ADialog) :
+TFarButton::TFarButton(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_BUTTON)
 {
   FResult = 0;
@@ -1868,7 +1868,7 @@ bool __fastcall TFarButton::HotKey(char HotKey)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-/* __fastcall */ TFarCheckBox::TFarCheckBox(TFarDialog * ADialog) :
+TFarCheckBox::TFarCheckBox(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_CHECKBOX),
   FOnAllowChange(NULL)
 {
@@ -1910,7 +1910,7 @@ void TFarCheckBox::SetData(const UnicodeString Value)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-/* __fastcall */ TFarRadioButton::TFarRadioButton(TFarDialog * ADialog) :
+TFarRadioButton::TFarRadioButton(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_RADIOBUTTON),
   FOnAllowChange(NULL)
 {
@@ -1955,7 +1955,7 @@ void __fastcall TFarRadioButton::SetData(const UnicodeString Value)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-/* __fastcall */ TFarEdit::TFarEdit(TFarDialog * ADialog) :
+TFarEdit::TFarEdit(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_EDIT)
 {
   SetAutoSelect(false);
@@ -2036,7 +2036,7 @@ int __fastcall TFarEdit::GetAsInteger()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-/* __fastcall */ TFarSeparator::TFarSeparator(TFarDialog * ADialog) :
+TFarSeparator::TFarSeparator(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_TEXT)
 {
   SetLeft(-1);
@@ -2081,7 +2081,7 @@ int __fastcall TFarSeparator::GetPosition()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-/* __fastcall */ TFarText::TFarText(TFarDialog * ADialog) :
+TFarText::TFarText(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_TEXT)
 {
 }
@@ -2096,7 +2096,7 @@ void __fastcall TFarText::SetData(const UnicodeString Value)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-/* __fastcall */ TFarList::TFarList(TFarDialogItem * ADialogItem) :
+TFarList::TFarList(TFarDialogItem * ADialogItem) :
   TStringList()
 {
   assert((ADialogItem == NULL) ||
@@ -2108,7 +2108,7 @@ void __fastcall TFarText::SetData(const UnicodeString Value)
   FNoDialogUpdate = false;
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TFarList::~TFarList()
+TFarList::~TFarList()
 {
   for (int i = 0; i < GetCount(); i++)
   {
@@ -2415,7 +2415,7 @@ intptr_t __fastcall TFarList::ItemProc(intptr_t Msg, intptr_t Param)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-/* __fastcall */ TFarListBox::TFarListBox(TFarDialog * ADialog) :
+TFarListBox::TFarListBox(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_LISTBOX),
   FDenyClose(NULL)
 {
@@ -2424,7 +2424,7 @@ intptr_t __fastcall TFarList::ItemProc(intptr_t Msg, intptr_t Param)
   FAutoSelect = asOnlyFocus;
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TFarListBox::~TFarListBox()
+TFarListBox::~TFarListBox()
 {
   SAFE_DESTROY(FList);
 }
@@ -2489,7 +2489,7 @@ bool __fastcall TFarListBox::CloseQuery()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-/* __fastcall */ TFarComboBox::TFarComboBox(TFarDialog * ADialog) :
+TFarComboBox::TFarComboBox(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_COMBOBOX)
 {
   FList = new TFarList(this);
@@ -2497,7 +2497,7 @@ bool __fastcall TFarListBox::CloseQuery()
   SetAutoSelect(false);
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TFarComboBox::~TFarComboBox()
+TFarComboBox::~TFarComboBox()
 {
   SAFE_DESTROY(FList);
 }
@@ -2533,7 +2533,7 @@ void __fastcall TFarComboBox::Init()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-/* __fastcall */ TFarLister::TFarLister(TFarDialog * ADialog) :
+TFarLister::TFarLister(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_USERCONTROL),
   FItems(new TStringList()),
   FTopIndex(0)
@@ -2541,12 +2541,12 @@ void __fastcall TFarComboBox::Init()
   FItems->SetOnChange(MAKE_CALLBACK1(TFarLister::ItemsChange, this));
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TFarLister::~TFarLister()
+TFarLister::~TFarLister()
 {
   delete FItems;
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TFarLister::ItemsChange(TObject * /*Sender*/)
+void TFarLister::ItemsChange(TObject * /*Sender*/)
 {
   FTopIndex = 0;
   if (GetDialog()->GetHandle())

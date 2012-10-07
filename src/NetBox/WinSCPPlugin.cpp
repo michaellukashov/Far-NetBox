@@ -37,14 +37,14 @@ TMessageParams::TMessageParams()
   TimeoutAnswer = 0;
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst): TCustomFarPlugin(HInst)
+TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst): TCustomFarPlugin(HInst)
 {
   FInitialized = false;
   Self = this;
   CreateMutex(NULL, false, L"NetBoxFar");
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TWinSCPPlugin::~TWinSCPPlugin()
+TWinSCPPlugin::~TWinSCPPlugin()
 {
   if (FInitialized)
   {
@@ -563,7 +563,7 @@ struct TFarMessageData
   int ButtonCount;
 };
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWinSCPPlugin::MessageClick(void * Token, int Result, bool & Close)
+void TWinSCPPlugin::MessageClick(void * Token, int Result, bool & Close)
 {
   TFarMessageData & Data = *static_cast<TFarMessageData *>(Token);
 

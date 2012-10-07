@@ -8,9 +8,9 @@
 class TXmlStorage : public THierarchicalStorage
 {
 public:
-  explicit /* __fastcall */ TXmlStorage(const UnicodeString AStorage, const UnicodeString StoredSessionsSubKey);
+  explicit TXmlStorage(const UnicodeString AStorage, const UnicodeString StoredSessionsSubKey);
   virtual void __fastcall Init();
-  virtual /* __fastcall */ ~TXmlStorage();
+  virtual ~TXmlStorage();
 
   bool Copy(TXmlStorage * Storage);
 

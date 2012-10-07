@@ -55,8 +55,8 @@ class TCustomFarPlugin : public TObject
   friend class TFarMessageDialog;
   friend class TFarPluginGuard;
 public:
-  explicit /* __fastcall */ TCustomFarPlugin(HINSTANCE HInst);
-  virtual /* __fastcall */ ~TCustomFarPlugin();
+  explicit TCustomFarPlugin(HINSTANCE HInst);
+  virtual ~TCustomFarPlugin();
   virtual intptr_t __fastcall GetMinFarVersion();
   virtual void __fastcall SetStartupInfo(const struct PluginStartupInfo * Info);
   virtual struct PluginStartupInfo * GetStartupInfo() { return &FStartupInfo; }
@@ -221,9 +221,9 @@ class TCustomFarFileSystem : public TObject
 friend class TFarPanelInfo;
 friend class TCustomFarPlugin;
 public:
-  /* __fastcall */ TCustomFarFileSystem(TCustomFarPlugin * APlugin);
+  TCustomFarFileSystem(TCustomFarPlugin * APlugin);
   virtual void __fastcall Init();
-  virtual /* __fastcall */ ~TCustomFarFileSystem();
+  virtual ~TCustomFarFileSystem();
 
   void __fastcall GetOpenPluginInfo(struct OpenPluginInfo * Info);
   intptr_t __fastcall GetFindData(struct PluginPanelItem ** PanelItem,
@@ -305,8 +305,8 @@ class TFarPanelModes : public TObject
 {
   friend class TCustomFarFileSystem;
 public:
-  /* __fastcall */ TFarPanelModes();
-  virtual /* __fastcall */ ~TFarPanelModes();
+  TFarPanelModes();
+  virtual ~TFarPanelModes();
 
   void __fastcall SetPanelMode(size_t Mode, const UnicodeString ColumnTypes = L"",
     const UnicodeString ColumnWidths = L"", TStrings * ColumnTitles = NULL,
@@ -327,8 +327,8 @@ class TFarKeyBarTitles : public TObject
 {
 friend class TCustomFarFileSystem;
 public:
-  /* __fastcall */ TFarKeyBarTitles();
-  virtual /* __fastcall */ ~TFarKeyBarTitles();
+  TFarKeyBarTitles();
+  virtual ~TFarKeyBarTitles();
 
   void __fastcall ClearFileKeyBarTitles();
   void __fastcall ClearKeyBarTitle(TFarShiftStatus ShiftStatus,
@@ -366,8 +366,8 @@ protected:
 class TFarPanelItem : public TCustomFarPanelItem
 {
 public:
-  explicit /* __fastcall */ TFarPanelItem(PluginPanelItem * APanelItem);
-  virtual /* __fastcall */ ~TFarPanelItem();
+  explicit TFarPanelItem(PluginPanelItem * APanelItem);
+  virtual ~TFarPanelItem();
 
   uintptr_t __fastcall GetFlags();
   uintptr_t __fastcall GetFileAttributes();
@@ -393,8 +393,8 @@ protected:
 class THintPanelItem : public TCustomFarPanelItem
 {
 public:
-  explicit /* __fastcall */ THintPanelItem(const UnicodeString AHint);
-  virtual /* __fastcall */ ~THintPanelItem() {}
+  explicit THintPanelItem(const UnicodeString AHint);
+  virtual ~THintPanelItem() {}
 
 protected:
   virtual void __fastcall GetData(
@@ -413,8 +413,8 @@ enum TFarPanelType { ptFile, ptTree, ptQuickView, ptInfo };
 class TFarPanelInfo : public TObject
 {
 public:
-  explicit /* __fastcall */ TFarPanelInfo(PanelInfo * APanelInfo, TCustomFarFileSystem * AOwner);
-  virtual /* __fastcall */ ~TFarPanelInfo();
+  explicit TFarPanelInfo(PanelInfo * APanelInfo, TCustomFarFileSystem * AOwner);
+  virtual ~TFarPanelInfo();
 
   TObjectList * __fastcall GetItems();
   intptr_t __fastcall GetItemCount();
@@ -441,8 +441,8 @@ private:
 class TFarMenuItems : public TStringList
 {
 public:
-  explicit /* __fastcall */ TFarMenuItems();
-  virtual /* __fastcall */ ~TFarMenuItems() {}
+  explicit TFarMenuItems();
+  virtual ~TFarMenuItems() {}
   void __fastcall AddSeparator(bool Visible = true);
   virtual intptr_t __fastcall Add(UnicodeString Text, bool Visible = true);
 
@@ -469,8 +469,8 @@ private:
 class TFarEditorInfo
 {
 public:
-  explicit /* __fastcall */ TFarEditorInfo(EditorInfo * Info);
-  /* __fastcall */ ~TFarEditorInfo();
+  explicit TFarEditorInfo(EditorInfo * Info);
+  ~TFarEditorInfo();
 
   intptr_t __fastcall GetEditorID() const;
   static UnicodeString __fastcall GetFileName();
@@ -482,8 +482,8 @@ private:
 class TFarEnvGuard
 {
 public:
-  inline /* __fastcall */ TFarEnvGuard();
-  inline /* __fastcall */ ~TFarEnvGuard();
+  inline TFarEnvGuard();
+  inline ~TFarEnvGuard();
 };
 //---------------------------------------------------------------------------
 class TFarPluginEnvGuard
