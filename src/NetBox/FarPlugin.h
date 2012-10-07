@@ -490,8 +490,8 @@ public:
 class TFarPluginEnvGuard
 {
 public:
-  /* __fastcall */ TFarPluginEnvGuard();
-  /* __fastcall */ ~TFarPluginEnvGuard();
+  inline TFarPluginEnvGuard();
+  inline ~TFarPluginEnvGuard();
 };
 //---------------------------------------------------------------------------
 void __fastcall FarWrapText(UnicodeString Text, TStrings * Result, intptr_t MaxWidth);
