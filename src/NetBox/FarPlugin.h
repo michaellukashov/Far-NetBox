@@ -15,7 +15,6 @@ class TFarPanelInfo;
 class TFarDialog;
 class TWinSCPFileSystem;
 class TFarDialogItem;
-class TCriticalSection;
 class TFarMessageDialog;
 class TFarEditorInfo;
 class TFarPluginGuard;

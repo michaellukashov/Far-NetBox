@@ -1613,5 +1613,32 @@ Boolean IsLeapYear(Word Year)
 }
 
 //---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+// TCriticalSection
+//---------------------------------------------------------------------------
+TCriticalSection::TCriticalSection()
+{
+  FAcquired = 0;
+  InitializeCriticalSection(&FSection);
+}
+//---------------------------------------------------------------------------
+TCriticalSection::~TCriticalSection()
+{
+  assert(FAcquired == 0);
+  DeleteCriticalSection(&FSection);
+}
+//---------------------------------------------------------------------------
+void TCriticalSection::Enter()
+{
+  EnterCriticalSection(&FSection);
+  FAcquired++;
+}
+//---------------------------------------------------------------------------
+void TCriticalSection::Leave()
+{
+  FAcquired--;
+  LeaveCriticalSection(&FSection);
+}
+//---------------------------------------------------------------------------
 
 } // namespace Sysutils

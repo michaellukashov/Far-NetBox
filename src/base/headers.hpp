@@ -174,6 +174,5 @@ bool CheckStructSize(const T* s) {return s && (s->StructSize >= sizeof(T));}
 #define SELF_TEST(code)
 #endif
 
-#include "farrtl.hpp"
 #include "UnicodeString.hpp"
 #include "local.hpp"
