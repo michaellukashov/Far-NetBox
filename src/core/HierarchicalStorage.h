@@ -58,13 +58,13 @@ public:
 
   virtual void __fastcall Flush();
 
-  UnicodeString __fastcall GetStorage() { return FStorage; }
-  TStorageAccessMode __fastcall GetAccessMode() { return FAccessMode; }
-  bool __fastcall GetExplicit() { return FExplicit; }
+  UnicodeString __fastcall GetStorage() const { return FStorage; }
+  TStorageAccessMode __fastcall GetAccessMode() const { return FAccessMode; }
+  bool __fastcall GetExplicit() const { return FExplicit; }
   void __fastcall SetExplicit(bool value) { FExplicit = value; }
-  bool __fastcall GetForceAnsi() { return FForceAnsi; }
+  bool __fastcall GetForceAnsi() const { return FForceAnsi; }
   void __fastcall SetForceAnsi(bool value) { FForceAnsi = value; }
-  bool __fastcall GetMungeStringValues() { return FMungeStringValues; }
+  bool __fastcall GetMungeStringValues() const { return FMungeStringValues; }
   void __fastcall SetMungeStringValues(bool value) { FMungeStringValues = value; }
 
   virtual void __fastcall SetAccessMode(TStorageAccessMode value);
@@ -79,7 +79,7 @@ protected:
   bool FForceAnsi;
 
   UnicodeString __fastcall GetCurrentSubKey();
-  UnicodeString __fastcall GetCurrentSubKeyMunged();
+  UnicodeString __fastcall GetCurrentSubKeyMunged() const;
   virtual bool __fastcall DoKeyExists(const UnicodeString SubKey, bool ForceAnsi) = 0;
   static UnicodeString __fastcall IncludeTrailingBackslash(const UnicodeString & S);
   static UnicodeString __fastcall ExcludeTrailingBackslash(const UnicodeString & S);

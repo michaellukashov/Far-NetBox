@@ -2783,13 +2783,13 @@ void __fastcall TSFTPFileSystem::DoStartup()
              int(FSupport->OpenBlockMasks),
              int(FSupport->BlockMasks),
              int(FSupport->MaxReadSize)));
-          FTerminal->LogEvent(FORMAT(L"  Attribute extensions (%d)\n", FSupport->AttribExtensions->Count));
+          FTerminal->LogEvent(FORMAT(L"  Attribute extensions (%d)\n", FSupport->AttribExtensions->Count.get()));
           for (int Index = 0; Index < FSupport->AttribExtensions->Count; Index++)
           {
             FTerminal->LogEvent(
               FORMAT(L"    %s", FSupport->AttribExtensions->Strings[Index].c_str()));
           }
-          FTerminal->LogEvent(FORMAT(L"  Extensions (%d)\n", FSupport->Extensions->Count));
+          FTerminal->LogEvent(FORMAT(L"  Extensions (%d)\n", FSupport->Extensions->Count.get()));
           for (int Index = 0; Index < FSupport->Extensions->Count; Index++)
           {
             FTerminal->LogEvent(

@@ -71,16 +71,16 @@ private:
   UnicodeString FReturnVar;
 public:
   void __fastcall SetMasks(const UnicodeString value);
-  int __fastcall GetMaxLines(TFSCommand Cmd);
-  int __fastcall GetMinLines(TFSCommand Cmd);
-  bool __fastcall GetModifiesFiles(TFSCommand Cmd);
-  bool __fastcall GetChangesDirectory(TFSCommand Cmd);
-  bool __fastcall GetOneLineCommand(TFSCommand Cmd);
+  int __fastcall GetMaxLines(TFSCommand Cmd) const;
+  int __fastcall GetMinLines(TFSCommand Cmd) const;
+  bool __fastcall GetModifiesFiles(TFSCommand Cmd) const;
+  bool __fastcall GetChangesDirectory(TFSCommand Cmd) const;
+  bool __fastcall GetOneLineCommand(TFSCommand Cmd) const;
   void __fastcall SetCommands(TFSCommand Cmd, UnicodeString value);
-  UnicodeString __fastcall GetCommands(TFSCommand Cmd);
-  UnicodeString __fastcall GetFirstLine();
-  bool __fastcall GetInteractiveCommand(TFSCommand Cmd);
-  UnicodeString __fastcall GetLastLine();
+  UnicodeString __fastcall GetCommands(TFSCommand Cmd) const;
+  UnicodeString __fastcall GetFirstLine() const;
+  bool __fastcall GetInteractiveCommand(TFSCommand Cmd) const;
+  UnicodeString __fastcall GetLastLine() const;
   UnicodeString __fastcall GetReturnVar();
 public:
   /* __fastcall */ TCommandSet(TSessionData *aSessionData);
@@ -162,37 +162,37 @@ void __fastcall TCommandSet::Default()
   memmove(&CommandSet, &DefaultCommandSet, sizeof(CommandSet));
 }
 //---------------------------------------------------------------------------
-int __fastcall TCommandSet::GetMaxLines(TFSCommand Cmd)
+int __fastcall TCommandSet::GetMaxLines(TFSCommand Cmd) const
 {
   CHECK_CMD;
   return CommandSet[Cmd].MaxLines;
 }
 //---------------------------------------------------------------------------
-int __fastcall TCommandSet::GetMinLines(TFSCommand Cmd)
+int __fastcall TCommandSet::GetMinLines(TFSCommand Cmd) const
 {
   CHECK_CMD;
   return CommandSet[Cmd].MinLines;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCommandSet::GetModifiesFiles(TFSCommand Cmd)
+bool __fastcall TCommandSet::GetModifiesFiles(TFSCommand Cmd) const
 {
   CHECK_CMD;
   return CommandSet[Cmd].ModifiesFiles;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCommandSet::GetChangesDirectory(TFSCommand Cmd)
+bool __fastcall TCommandSet::GetChangesDirectory(TFSCommand Cmd) const
 {
   CHECK_CMD;
   return CommandSet[Cmd].ChangesDirectory;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCommandSet::GetInteractiveCommand(TFSCommand Cmd)
+bool __fastcall TCommandSet::GetInteractiveCommand(TFSCommand Cmd) const
 {
   CHECK_CMD;
   return CommandSet[Cmd].InteractiveCommand;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCommandSet::GetOneLineCommand(TFSCommand /*Cmd*/)
+bool __fastcall TCommandSet::GetOneLineCommand(TFSCommand /*Cmd*/) const
 {
   //CHECK_CMD;
   // #56: we send "echo last line" from all commands on same line
@@ -206,7 +206,7 @@ void __fastcall TCommandSet::SetCommands(TFSCommand Cmd, UnicodeString value)
   wcscpy(const_cast<wchar_t *>(CommandSet[Cmd].Command), value.SubString(1, MaxCommandLen - 1).c_str());
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TCommandSet::GetCommands(TFSCommand Cmd)
+UnicodeString __fastcall TCommandSet::GetCommands(TFSCommand Cmd) const
 {
   CHECK_CMD;
   return CommandSet[Cmd].Command;
@@ -301,12 +301,12 @@ UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, va_list args)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TCommandSet::GetFirstLine()
+UnicodeString __fastcall TCommandSet::GetFirstLine() const
 {
   return FIRST_LINE;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TCommandSet::GetLastLine()
+UnicodeString __fastcall TCommandSet::GetLastLine() const
 {
   return LAST_LINE;
 }
@@ -2142,7 +2142,7 @@ void __fastcall TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
 
   TRACE("1");
   FTerminal->LogEvent(FORMAT(L"Copying %d files/directories to local directory "
-    L"\"%s\"", FilesToCopy->Count, TargetDir.c_str()));
+    L"\"%s\"", FilesToCopy->Count.get(), TargetDir.c_str()));
   FTerminal->LogEvent(CopyParam->GetLogStr());
 
   TRY_FINALLY3 (Self, CloseSCP, OperationProgress,

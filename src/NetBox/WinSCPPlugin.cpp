@@ -37,14 +37,14 @@ TMessageParams::TMessageParams()
   TimeoutAnswer = 0;
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst): TCustomFarPlugin(HInst)
+TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst): TCustomFarPlugin(HInst)
 {
   FInitialized = false;
   Self = this;
   CreateMutex(NULL, false, L"NetBoxFar");
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TWinSCPPlugin::~TWinSCPPlugin()
+TWinSCPPlugin::~TWinSCPPlugin()
 {
   if (FInitialized)
   {
@@ -110,17 +110,17 @@ bool __fastcall TWinSCPPlugin::ConfigureEx(const GUID * /* Item */)
   TFarMenuItems * MenuItems = new TFarMenuItems();
   std::auto_ptr<TFarMenuItems> MenuItemsPtr(MenuItems);
   {
-    int MInterface = MenuItems->Add(GetMsg(CONFIG_INTERFACE));
-    int MConfirmations = MenuItems->Add(GetMsg(CONFIG_CONFIRMATIONS));
-    int MPanel = MenuItems->Add(GetMsg(CONFIG_PANEL));
-    int MTransfer = MenuItems->Add(GetMsg(CONFIG_TRANSFER));
-    int MBackground = MenuItems->Add(GetMsg(CONFIG_BACKGROUND));
-    int MEndurance = MenuItems->Add(GetMsg(CONFIG_ENDURANCE));
-    int MTransferEditor = MenuItems->Add(GetMsg(CONFIG_TRANSFER_EDITOR));
-    int MLogging = MenuItems->Add(GetMsg(CONFIG_LOGGING));
-    int MIntegration = MenuItems->Add(GetMsg(CONFIG_INTEGRATION));
+    intptr_t MInterface = MenuItems->Add(GetMsg(CONFIG_INTERFACE));
+    intptr_t MConfirmations = MenuItems->Add(GetMsg(CONFIG_CONFIRMATIONS));
+    intptr_t MPanel = MenuItems->Add(GetMsg(CONFIG_PANEL));
+    intptr_t MTransfer = MenuItems->Add(GetMsg(CONFIG_TRANSFER));
+    intptr_t MBackground = MenuItems->Add(GetMsg(CONFIG_BACKGROUND));
+    intptr_t MEndurance = MenuItems->Add(GetMsg(CONFIG_ENDURANCE));
+    intptr_t MTransferEditor = MenuItems->Add(GetMsg(CONFIG_TRANSFER_EDITOR));
+    intptr_t MLogging = MenuItems->Add(GetMsg(CONFIG_LOGGING));
+    intptr_t MIntegration = MenuItems->Add(GetMsg(CONFIG_INTEGRATION));
     MenuItems->AddSeparator();
-    int MAbout = MenuItems->Add(GetMsg(CONFIG_ABOUT));
+    intptr_t MAbout = MenuItems->Add(GetMsg(CONFIG_ABOUT));
 
     intptr_t Result = 0;
 
@@ -579,7 +579,7 @@ struct TFarMessageData
   int ButtonCount;
 };
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWinSCPPlugin::MessageClick(void * Token, int Result, bool & Close)
+void TWinSCPPlugin::MessageClick(void * Token, int Result, bool & Close)
 {
   TFarMessageData & Data = *static_cast<TFarMessageData *>(Token);
 

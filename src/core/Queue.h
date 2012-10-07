@@ -261,7 +261,7 @@ public:
 
   TQueueItemProxy * __fastcall FindByQueueItem(TQueueItem * QueueItem);
 
-  int __fastcall GetCount();
+  int __fastcall GetCount() const;
   int __fastcall GetActiveCount();
   TQueueItemProxy * __fastcall GetItem(int Index);
 

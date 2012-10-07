@@ -117,7 +117,7 @@ private:
 
   void __fastcall SetStr(const UnicodeString value, bool SingleMask);
   void __fastcall CreateMaskMask(const UnicodeString & Mask, int Start, int End,
-    bool Ex, TMaskMask & MaskMask);
+    bool Ex, TMaskMask & MaskMask) const;
   void __fastcall CreateMask(const UnicodeString & MaskStr, int MaskStart,
     int MaskEnd, bool Include);
   TStrings * __fastcall GetMasksStr(int Index) const;

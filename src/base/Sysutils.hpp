@@ -337,6 +337,24 @@ TDateTime IncMilliSecond(const TDateTime AValue, const Int64 ANumberOfMilliSecon
 Boolean IsLeapYear(Word Year);
 
 //---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+
+class TCriticalSection
+{
+public:
+  TCriticalSection();
+  ~TCriticalSection();
+
+  void Enter();
+  void Leave();
+
+  int GetAcquired() { return FAcquired; }
+
+private:
+  CRITICAL_SECTION FSection;
+  int FAcquired;
+};
+//---------------------------------------------------------------------------
 } // namespace Sysutils
 
 using namespace Sysutils;

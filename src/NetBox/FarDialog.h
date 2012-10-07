@@ -36,8 +36,8 @@ friend TFarList;
 friend class TFarListBox;
 typedef TFarDialog self;
 public:
-  explicit /* __fastcall */ TFarDialog(TCustomFarPlugin * AFarPlugin);
-  virtual /* __fastcall */ ~TFarDialog();
+  explicit TFarDialog(TCustomFarPlugin * AFarPlugin);
+  virtual ~TFarDialog();
 
   intptr_t __fastcall ShowModal();
   void __fastcall ShowGroup(int Group, bool Show);
@@ -73,7 +73,7 @@ public:
   void SetTag(int Value) { FTag = Value; }
   TFarDialogItem * __fastcall GetItemFocused() { return FItemFocused; }
   void __fastcall SetItemFocused(TFarDialogItem * Value);
-  int __fastcall GetResult() { return FResult; }
+  intptr_t __fastcall GetResult() { return FResult; }
   TPoint __fastcall GetMaxSize();
 
   TFarKeyEvent & GetOnKey() { return FOnKey; }
@@ -108,8 +108,8 @@ protected:
   void __fastcall Synchronize(TThreadMethod Method);
   void __fastcall Close(TFarButton * Button);
   void __fastcall ProcessGroup(int Group, TFarProcessGroupEvent Callback, void * Arg);
-  void /* __fastcall */ ShowItem(TFarDialogItem * Item, void * Arg);
-  void /* __fastcall */ EnableItem(TFarDialogItem * Item, void * Arg);
+  void ShowItem(TFarDialogItem * Item, void * Arg);
+  void EnableItem(TFarDialogItem * Item, void * Arg);
   bool __fastcall ChangesLocked();
   TFarDialogItem * __fastcall ItemAt(int X, int Y);
 
@@ -161,8 +161,8 @@ public:
   size_t __fastcall GetItemCount();
 
 protected:
-  explicit /* __fastcall */ TFarDialogContainer(TFarDialog * ADialog);
-  virtual /* __fastcall */ ~TFarDialogContainer();
+  explicit TFarDialogContainer(TFarDialog * ADialog);
+  virtual ~TFarDialogContainer();
 
   TFarDialog * __fastcall GetDialog() { return FDialog; }
 
@@ -242,8 +242,8 @@ protected:
   TNotifyEvent FOnExit;
   TFarMouseClickEvent FOnMouseClick;
 
-  explicit /* __fastcall */ TFarDialogItem(TFarDialog * ADialog, FARDIALOGITEMTYPES AType);
-  virtual /* __fastcall */ ~TFarDialogItem();
+  explicit TFarDialogItem(TFarDialog * ADialog, FARDIALOGITEMTYPES AType);
+  virtual ~TFarDialogItem();
 
   FarDialogItem * __fastcall GetDialogItem();
   bool __fastcall GetCenterGroup() { return GetFlag(DIF_CENTERGROUP); }
@@ -285,8 +285,8 @@ protected:
   virtual void __fastcall ResetBounds();
   virtual void __fastcall Init();
   virtual bool __fastcall CloseQuery();
-  virtual bool /* __fastcall */ MouseMove(int X, int Y, MOUSE_EVENT_RECORD * Event);
-  virtual bool /* __fastcall */ MouseClick(MOUSE_EVENT_RECORD * Event);
+  virtual bool MouseMove(int X, int Y, MOUSE_EVENT_RECORD * Event);
+  virtual bool MouseClick(MOUSE_EVENT_RECORD * Event);
   TPoint __fastcall MouseClientPosition(MOUSE_EVENT_RECORD * Event);
   void __fastcall Text(int X, int Y, const FarColor & Color, const UnicodeString Str);
   void __fastcall Redraw();
@@ -323,7 +323,7 @@ private:
 class TFarBox : public TFarDialogItem
 {
 public:
-  explicit /* __fastcall */ TFarBox(TFarDialog * ADialog);
+  explicit TFarBox(TFarDialog * ADialog);
 
   virtual UnicodeString GetCaption() { return GetData(); }
   virtual void SetCaption(const UnicodeString Value) { SetData(Value); }
@@ -338,7 +338,7 @@ enum TFarButtonBrackets { brNone, brTight, brSpace, brNormal };
 class TFarButton : public TFarDialogItem
 {
 public:
-  explicit /* __fastcall */ TFarButton(TFarDialog * ADialog);
+  explicit TFarButton(TFarDialog * ADialog);
 
   virtual UnicodeString __fastcall GetCaption() { return GetData(); }
   virtual void __fastcall SetCaption(const UnicodeString Value) { SetData(Value); }
@@ -373,7 +373,7 @@ DEFINE_CALLBACK_TYPE3(TFarAllowChangeEvent, void,
 class TFarCheckBox : public TFarDialogItem
 {
 public:
-  explicit /* __fastcall */ TFarCheckBox(TFarDialog * ADialog);
+  explicit TFarCheckBox(TFarDialog * ADialog);
 
   virtual UnicodeString __fastcall GetCaption() { return GetData(); }
   virtual void __fastcall SetCaption(const UnicodeString Value) { SetData(Value); }
@@ -396,7 +396,7 @@ protected:
 class TFarRadioButton : public TFarDialogItem
 {
 public:
-  explicit /* __fastcall */ TFarRadioButton(TFarDialog * ADialog);
+  explicit TFarRadioButton(TFarDialog * ADialog);
 
   bool __fastcall GetChecked() { return TFarDialogItem::GetChecked(); }
   void __fastcall SetChecked(bool Value) { TFarDialogItem::SetChecked(Value); }
@@ -415,7 +415,7 @@ protected:
 class TFarEdit : public TFarDialogItem
 {
 public:
-  explicit /* __fastcall */ TFarEdit(TFarDialog * ADialog);
+  explicit TFarEdit(TFarDialog * ADialog);
 
   virtual UnicodeString __fastcall GetText() { return GetData(); }
   virtual void __fastcall SetText(const UnicodeString Value) { SetData(Value); }
@@ -448,7 +448,7 @@ private:
 class TFarSeparator : public TFarDialogItem
 {
 public:
-  explicit /* __fastcall */ TFarSeparator(TFarDialog * ADialog);
+  explicit TFarSeparator(TFarDialog * ADialog);
 
   bool __fastcall GetDouble();
   void __fastcall SetDouble(bool Value);
@@ -464,7 +464,7 @@ protected:
 class TFarText : public TFarDialogItem
 {
 public:
-  explicit  /* __fastcall */ TFarText(TFarDialog * ADialog);
+  explicit  TFarText(TFarDialog * ADialog);
 
   virtual UnicodeString __fastcall GetCaption() { return GetData(); }
   virtual void __fastcall SetCaption(const UnicodeString Value) { SetData(Value); }
@@ -487,8 +487,8 @@ class TFarList : public TStringList
   friend TFarLister;
   friend TFarComboBox;
 public:
-  explicit /* __fastcall */ TFarList(TFarDialogItem * ADialogItem = NULL);
-  virtual /* __fastcall */ ~TFarList();
+  explicit TFarList(TFarDialogItem * ADialogItem = NULL);
+  virtual ~TFarList();
 
   virtual void __fastcall Assign(TPersistent * Source);
 
@@ -534,8 +534,8 @@ class TFarListBox : public TFarDialogItem
 {
   typedef TFarListBox self;
 public:
-  explicit /* __fastcall */ TFarListBox(TFarDialog * ADialog);
-  virtual /* __fastcall */ ~TFarListBox();
+  explicit TFarListBox(TFarDialog * ADialog);
+  virtual ~TFarListBox();
 
   void __fastcall SetItems(TStrings * Value);
 
@@ -569,8 +569,8 @@ class TFarComboBox : public TFarDialogItem
 {
   typedef TFarComboBox self;
 public:
-  explicit /* __fastcall */ TFarComboBox(TFarDialog * ADialog);
-  virtual /* __fastcall */ ~TFarComboBox();
+  explicit TFarComboBox(TFarDialog * ADialog);
+  virtual ~TFarComboBox();
 
   void __fastcall ResizeToFitContent();
 
@@ -602,8 +602,8 @@ class TFarLister : public TFarDialogItem
 {
   typedef TFarLister self;
 public:
-  explicit /* __fastcall */ TFarLister(TFarDialog * ADialog);
-  virtual /* __fastcall */ ~TFarLister();
+  explicit TFarLister(TFarDialog * ADialog);
+  virtual ~TFarLister();
 
   TStrings * __fastcall GetItems();
   void __fastcall SetItems(TStrings * Value);
@@ -619,7 +619,7 @@ private:
   TStringList * FItems;
   int FTopIndex;
 
-  void /* __fastcall */ ItemsChange(TObject * Sender);
+  void ItemsChange(TObject * Sender);
 };
 //---------------------------------------------------------------------------
 UnicodeString __fastcall StripHotKey(const UnicodeString Text);

@@ -5352,7 +5352,7 @@ bool /* __fastcall */ TTerminal::CopyToRemote(TStrings * FilesToCopy,
         if (GetLog()->GetLogging())
         {
           LogEvent(FORMAT(L"Copying %d files/directories to remote directory "
-            L"\"%s\"", FilesToCopy->Count, TargetDir.c_str()));
+            L"\"%s\"", FilesToCopy->Count.get(), TargetDir.c_str()));
           LogEvent(CopyParam->GetLogStr());
         }
 

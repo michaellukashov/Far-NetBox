@@ -88,9 +88,9 @@ class TWinSCPFileSystem : public TCustomFarFileSystem
   friend class TKeepaliveThread;
   friend class TQueueDialog;
 public:
-  explicit /* __fastcall */ TWinSCPFileSystem(TCustomFarPlugin * APlugin);
+  explicit TWinSCPFileSystem(TCustomFarPlugin * APlugin);
   virtual void __fastcall Init(TSecureShell * SecureShell);
-  virtual /* __fastcall */ ~TWinSCPFileSystem();
+  virtual ~TWinSCPFileSystem();
 
   virtual void __fastcall Close();
 
@@ -117,7 +117,7 @@ protected:
   void __fastcall ProcessEditorEvent(int Event, void * Param);
 
   virtual void __fastcall HandleException(Exception * E, int OpMode = 0);
-  void /* __fastcall */ KeepaliveThreadCallback();
+  void KeepaliveThreadCallback();
 
   inline bool __fastcall SessionList();
   inline bool __fastcall Connected();
@@ -129,10 +129,10 @@ protected:
   void __fastcall DuplicateRenameSession(TSessionData * Data,
     bool Duplicate);
   void __fastcall FocusSession(TSessionData * Data);
-  void /* __fastcall */ DeleteSession(TSessionData * Data, void * Param);
+  void DeleteSession(TSessionData * Data, void * Param);
   void __fastcall ProcessSessions(TObjectList * PanelItems,
     TProcessSessionEvent ProcessSession, void * Param);
-  void /* __fastcall */ ExportSession(TSessionData * Data, void * Param);
+  void ExportSession(TSessionData * Data, void * Param);
   bool __fastcall ImportSessions(TObjectList * PanelItems, bool Move, int OpMode);
   void __fastcall FileProperties();
   void __fastcall CreateLink();
@@ -157,7 +157,7 @@ protected:
     const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
     TRemoteProperties * Properties, int AllowedChanges);
   bool __fastcall ExecuteCommand(const UnicodeString Command);
-  void /* __fastcall */ TerminalCaptureLog(const UnicodeString & AddedLine, bool StdError);
+  void TerminalCaptureLog(const UnicodeString & AddedLine, bool StdError);
   bool __fastcall CopyDialog(bool ToRemote, bool Move, TStrings * FileList,
     UnicodeString & TargetDirectory,
     TGUICopyParamType * Params,
@@ -195,20 +195,20 @@ protected:
     const TCopyParamType * CopyParams, TSynchronizeStartStopEvent OnStartStop,
     bool & SaveSettings, int Options, int CopyParamAttrs,
     TGetSynchronizeOptionsEvent OnGetOptions);
-  void /* __fastcall */ DoSynchronize(TSynchronizeController * Sender,
+  void DoSynchronize(TSynchronizeController * Sender,
     const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,
     const TCopyParamType & CopyParam, const TSynchronizeParamType & Params,
     TSynchronizeChecklist ** Checklist, TSynchronizeOptions * Options, bool Full);
-  void /* __fastcall */ DoSynchronizeInvalid(TSynchronizeController * Sender,
+  void DoSynchronizeInvalid(TSynchronizeController * Sender,
     const UnicodeString & Directory, const UnicodeString & ErrorStr);
-  void /* __fastcall */ DoSynchronizeTooManyDirectories(TSynchronizeController * Sender,
+  void DoSynchronizeTooManyDirectories(TSynchronizeController * Sender,
     int & MaxDirectories);
   void __fastcall Synchronize(const UnicodeString LocalDirectory,
     const UnicodeString RemoteDirectory, TTerminal::TSynchronizeMode Mode,
     const TCopyParamType & CopyParam, int Params, TSynchronizeChecklist ** Checklist,
     TSynchronizeOptions * Options);
   bool __fastcall SynchronizeAllowSelectedOnly();
-  void /* __fastcall */ GetSynchronizeOptions(int Params, TSynchronizeOptions & Options);
+  void GetSynchronizeOptions(int Params, TSynchronizeOptions & Options);
   void __fastcall RequireCapability(int Capability);
   void __fastcall RequireLocalPanel(TFarPanelInfo * Panel, const UnicodeString Message);
   bool __fastcall AreCachesEmpty();
@@ -266,7 +266,7 @@ private:
   UnicodeString FLastMultipleEditFileTitle;
   UnicodeString FLastMultipleEditDirectory;
   bool FLastMultipleEditReadOnly;
-  int FLastEditorID;
+  intptr_t FLastEditorID;
   bool FEditorPendingSave;
   TGUICopyParamType FLastEditCopyParam;
   bool FNoProgress;
@@ -289,38 +289,38 @@ private:
   UnicodeString FPrevSessionName;
   TWinSCPFileSystem * Self;
 
-  void /* __fastcall */ TerminalClose(TObject * Sender);
-  void /* __fastcall */ TerminalUpdateStatus(TTerminal * Terminal, bool Active);
-  void /* __fastcall */ TerminalChangeDirectory(TObject * Sender);
-  void /* __fastcall */ TerminalReadDirectory(TObject * Sender, bool ReloadOnly);
-  void /* __fastcall */ TerminalStartReadDirectory(TObject * Sender);
-  void /* __fastcall */ TerminalReadDirectoryProgress(TObject * Sender, int Progress,
+  void TerminalClose(TObject * Sender);
+  void TerminalUpdateStatus(TTerminal * Terminal, bool Active);
+  void TerminalChangeDirectory(TObject * Sender);
+  void TerminalReadDirectory(TObject * Sender, bool ReloadOnly);
+  void TerminalStartReadDirectory(TObject * Sender);
+  void TerminalReadDirectoryProgress(TObject * Sender, int Progress,
     bool & Cancel);
-  void /* __fastcall */ TerminalInformation(TTerminal * Terminal,
+  void TerminalInformation(TTerminal * Terminal,
     const UnicodeString & Str, bool Status, int Phase);
-  void /* __fastcall */ TerminalQueryUser(TObject * Sender,
+  void TerminalQueryUser(TObject * Sender,
     const UnicodeString & Query, TStrings * MoreMessages, unsigned int Answers,
     const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * Arg);
-  void /* __fastcall */ TerminalPromptUser(TTerminal * Terminal,
+  void TerminalPromptUser(TTerminal * Terminal,
     TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions,
     TStrings * Prompts, TStrings * Results, bool & Result,
     void * Arg);
-  void /* __fastcall */ TerminalDisplayBanner(TTerminal * Terminal,
+  void TerminalDisplayBanner(TTerminal * Terminal,
     UnicodeString SessionName, const UnicodeString & Banner, bool & NeverShowAgain,
     int Options);
-  void /* __fastcall */ TerminalShowExtendedException(TTerminal * Terminal,
+  void TerminalShowExtendedException(TTerminal * Terminal,
     Exception * E, void * Arg);
-  void /* __fastcall */ TerminalDeleteLocalFile(const UnicodeString & FileName, bool Alternative);
-  HANDLE /* __fastcall */ TerminalCreateLocalFile(const UnicodeString & LocalFileName,
+  void TerminalDeleteLocalFile(const UnicodeString & FileName, bool Alternative);
+  HANDLE TerminalCreateLocalFile(const UnicodeString & LocalFileName,
     DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
-  DWORD /* __fastcall */ TerminalGetLocalFileAttributes(const UnicodeString & LocalFileName);
-  BOOL /* __fastcall */ TerminalSetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes);
-  BOOL /* __fastcall */ TerminalMoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags);
-  BOOL /* __fastcall */ TerminalRemoveLocalDirectory(const UnicodeString & LocalDirName);
-  BOOL /* __fastcall */ TerminalCreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
-  void /* __fastcall */ OperationProgress(
+  DWORD TerminalGetLocalFileAttributes(const UnicodeString & LocalFileName);
+  BOOL TerminalSetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes);
+  BOOL TerminalMoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags);
+  BOOL TerminalRemoveLocalDirectory(const UnicodeString & LocalDirName);
+  BOOL TerminalCreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
+  void OperationProgress(
     TFileOperationProgressType & ProgressData, TCancelStatus & Cancel);
-  void /* __fastcall */ OperationFinished(TFileOperation Operation,
+  void OperationFinished(TFileOperation Operation,
     TOperationSide Side, bool DragDrop, const UnicodeString & FileName, bool Success,
     TOnceDoneOperation & DisconnectWhenComplete);
   void __fastcall CancelConfiguration(TFileOperationProgressType & ProgressData);
@@ -331,14 +331,14 @@ private:
     TFarPanelInfo * PanelInfo = NULL);
   TStrings * __fastcall CreateFocusedFileList(TOperationSide Side,
     TFarPanelInfo * PanelInfo = NULL);
-  void /* __fastcall */ CustomCommandGetParamValue(
+  void CustomCommandGetParamValue(
     const UnicodeString AName, UnicodeString & Value);
-  void /* __fastcall */ TerminalSynchronizeDirectory(const UnicodeString & LocalDirectory,
+  void TerminalSynchronizeDirectory(const UnicodeString & LocalDirectory,
     const UnicodeString & RemoteDirectory, bool & Continue, bool Collect);
-  void /* __fastcall */ QueueListUpdate(TTerminalQueue * Queue);
-  void /* __fastcall */ QueueItemUpdate(TTerminalQueue * Queue, TQueueItem * Item);
-  void /* __fastcall */ QueueEvent(TTerminalQueue * Queue, TQueueEvent Event);
-  void /* __fastcall */ GetSpaceAvailable(const UnicodeString & Path,
+  void QueueListUpdate(TTerminalQueue * Queue);
+  void QueueItemUpdate(TTerminalQueue * Queue, TQueueItem * Item);
+  void QueueEvent(TTerminalQueue * Queue, TQueueEvent Event);
+  void GetSpaceAvailable(const UnicodeString & Path,
     TSpaceAvailable & ASpaceAvailable, bool & Close);
   void __fastcall QueueAddItem(TQueueItem * Item);
 private:
@@ -348,8 +348,8 @@ private:
 class TSessionPanelItem : public TCustomFarPanelItem
 {
 public:
-  explicit /* __fastcall */ TSessionPanelItem(const UnicodeString Path);
-  explicit /* __fastcall */ TSessionPanelItem(TSessionData * ASessionData);
+  explicit TSessionPanelItem(const UnicodeString Path);
+  explicit TSessionPanelItem(TSessionData * ASessionData);
   static void __fastcall SetPanelModes(TFarPanelModes * PanelModes);
   static void __fastcall SetKeyBarTitles(TFarKeyBarTitles * KeyBarTitles);
 
@@ -368,7 +368,7 @@ protected:
 class TSessionFolderPanelItem : public TCustomFarPanelItem
 {
 public:
-  explicit /* __fastcall */ TSessionFolderPanelItem(const UnicodeString Folder);
+  explicit TSessionFolderPanelItem(const UnicodeString Folder);
 
 protected:
   UnicodeString FFolder;
@@ -384,7 +384,7 @@ protected:
 class TRemoteFilePanelItem : public TCustomFarPanelItem
 {
 public:
-  explicit /* __fastcall */ TRemoteFilePanelItem(TRemoteFile * ARemoteFile);
+  explicit TRemoteFilePanelItem(TRemoteFile * ARemoteFile);
   static void __fastcall SetPanelModes(TFarPanelModes * PanelModes);
   static void __fastcall SetKeyBarTitles(TFarKeyBarTitles * KeyBarTitles);
 

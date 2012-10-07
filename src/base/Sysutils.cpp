@@ -424,7 +424,7 @@ bool FileExists(const UnicodeString fileName)
 
 bool RenameFile(const UnicodeString from, const UnicodeString to)
 {
-  bool Result = ::MoveFile(from.c_str(), to.c_str());
+  bool Result = ::MoveFile(from.c_str(), to.c_str()) != 0;
   return Result;
 }
 
@@ -446,24 +446,24 @@ bool DirectoryExists(const UnicodeString filename)
 
 UnicodeString FileSearch(const UnicodeString FileName, const UnicodeString DirectoryList)
 {
-  size_t i;
+  int I;
   UnicodeString Temp;
   UnicodeString Result;
   Temp = DirectoryList;
   UnicodeString PathSeparators = L"/\\";
   do
   {
-    i = ::Pos(Temp, PathSeparators);
-    while ((Temp.Length() > 0) && (i == 0))
+    I = ::Pos(Temp, PathSeparators);
+    while ((Temp.Length() > 0) && (I == 0))
     {
       Temp.Delete(1, 1);
-      i = ::Pos(Temp, PathSeparators);
+      I = ::Pos(Temp, PathSeparators);
     }
-    i = ::Pos(Temp, PathSeparators);
-    if (i > 0)
+    I = ::Pos(Temp, PathSeparators);
+    if (I > 0)
     {
-      Result = Temp.SubString(1, i - 1);
-      Temp.Delete(1, i);
+      Result = Temp.SubString(1, I - 1);
+      Temp.Delete(1, I);
     }
     else
     {
@@ -544,16 +544,16 @@ UnicodeString Format(const wchar_t * format, ...)
 
 //---------------------------------------------------------------------------
 
-UnicodeString Format(const wchar_t * format, va_list args)
+UnicodeString Format(const wchar_t * Format, va_list args)
 {
-  UnicodeString result;
-  if (format && *format)
+  UnicodeString Result;
+  if (Format && *Format)
   {
-    size_t len = _vscwprintf(format, args);
-    result.SetLength(len + 1);
-    vswprintf_s(&result[1], len + 1, format, args);
+    intptr_t Len = _vscwprintf(Format, args);
+    Result.SetLength(Len + 1);
+    vswprintf_s(&Result[1], Len + 1, Format, args);
   }
-  return result.c_str();
+  return Result.c_str();
 }
 
 //---------------------------------------------------------------------------
@@ -570,16 +570,16 @@ AnsiString Format(const char * format, ...)
 
 //---------------------------------------------------------------------------
 
-AnsiString Format(const char * format, va_list args)
+AnsiString Format(const char * Format, va_list args)
 {
-  AnsiString result;
-  if (format && *format)
+  AnsiString Result;
+  if (Format && *Format)
   {
-    size_t len = _vscprintf(format, args);
-    result.SetLength(len + 1);
-    vsprintf_s(&result[1], len + 1, format, args);
+    intptr_t Len = _vscprintf(Format, args);
+    Result.SetLength(Len + 1);
+    vsprintf_s(&Result[1], Len + 1, Format, args);
   }
-  return result.c_str();
+  return Result.c_str();
 }
 
 //---------------------------------------------------------------------------
@@ -613,8 +613,8 @@ UnicodeString FmtLoadStr(int id, ...)
     result = lpszTemp;
     ::LocalFree(lpszTemp);
     */
-    size_t len = _vscwprintf(Format.c_str(), args);
-    UnicodeString buf(len + sizeof(wchar_t), 0);
+    intptr_t Len = _vscwprintf(Format.c_str(), args);
+    UnicodeString buf(Len + sizeof(wchar_t), 0);
     vswprintf_s(&buf[1], buf.Length(), Format.c_str(), args);
     va_end(args);
     Result = buf;
@@ -1056,14 +1056,14 @@ UnicodeString SysErrorMessage(int ErrorCode)
 
 UnicodeString ReplaceStrAll(const UnicodeString Str, const UnicodeString What, const UnicodeString ByWhat)
 {
-  UnicodeString result = Str;
-  size_t pos = result.Pos(What.c_str());
-  while (pos > 0)
+  UnicodeString Result = Str;
+  int Pos = Result.Pos(What.c_str());
+  while (Pos > 0)
   {
-    result.Replace(pos, What.Length(), ByWhat.c_str(), ByWhat.Length());
-    pos = result.Pos(What.c_str());
+    Result.Replace(Pos, What.Length(), ByWhat.c_str(), ByWhat.Length());
+    Pos = Result.Pos(What.c_str());
   }
-  return result;
+  return Result;
 }
 
 UnicodeString ExtractShortPathName(const UnicodeString Path1)
@@ -1612,6 +1612,33 @@ Boolean IsLeapYear(Word Year)
   return (Year % 4 == 0) && ((Year % 100 != 0) || (Year % 400 == 0));
 }
 
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+// TCriticalSection
+//---------------------------------------------------------------------------
+TCriticalSection::TCriticalSection()
+{
+  FAcquired = 0;
+  InitializeCriticalSection(&FSection);
+}
+//---------------------------------------------------------------------------
+TCriticalSection::~TCriticalSection()
+{
+  assert(FAcquired == 0);
+  DeleteCriticalSection(&FSection);
+}
+//---------------------------------------------------------------------------
+void TCriticalSection::Enter()
+{
+  EnterCriticalSection(&FSection);
+  FAcquired++;
+}
+//---------------------------------------------------------------------------
+void TCriticalSection::Leave()
+{
+  FAcquired--;
+  LeaveCriticalSection(&FSection);
+}
 //---------------------------------------------------------------------------
 
 } // namespace Sysutils

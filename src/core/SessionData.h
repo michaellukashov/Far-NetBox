@@ -463,10 +463,10 @@ public:
 
   int __fastcall GetNumberOfRetries() const { return FNumberOfRetries; }
   void __fastcall SetNumberOfRetries(int value) { FNumberOfRetries = value; }
-  DWORD __fastcall GetSessionVersion() const { return FSessionVersion; }
+  uintptr_t __fastcall GetSessionVersion() const { return FSessionVersion; }
   void __fastcall SetSessionVersion(DWORD value) { FSessionVersion = value; }
 protected:
-  DWORD __fastcall GetDefaultVersion() { return ::GetVersionNumber219(); }
+  uintptr_t __fastcall GetDefaultVersion() { return ::GetVersionNumber219(); }
   TFSProtocol __fastcall TranslateFSProtocolNumber(int FSProtocol);
   TFtps __fastcall TranslateFtpEncryptionNumber(int FtpEncryption);
 private:

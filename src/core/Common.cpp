@@ -616,7 +616,7 @@ UnicodeString __fastcall ValidLocalFileName(
     while ((InvalidChar = wcspbrk(InvalidChar, Chars)) != NULL)
     {
       TRACEFMT("2 [%s]", (InvalidChar));
-      int Pos = (InvalidChar - FileName.c_str() + 1);
+      intptr_t Pos = (InvalidChar - FileName.c_str() + 1);
       wchar_t Char;
       if (ATokenReplacement &&
           (*InvalidChar == TokenPrefix) &&
@@ -2097,9 +2097,9 @@ UnicodeString __fastcall WindowsProductName()
   return Result;
 }
 //---------------------------------------------------------------------------
-DWORD __fastcall StrToVersionNumber(const UnicodeString & VersionMumberStr)
+uintptr_t __fastcall StrToVersionNumber(const UnicodeString & VersionMumberStr)
 {
-  DWORD Result = 0;
+  uintptr_t Result = 0;
   UnicodeString Version = VersionMumberStr;
   int Shift = 16;
   while (!Version.IsEmpty())
@@ -2111,7 +2111,7 @@ DWORD __fastcall StrToVersionNumber(const UnicodeString & VersionMumberStr)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall VersionNumberToStr(DWORD VersionNumber)
+UnicodeString __fastcall VersionNumberToStr(uintptr_t VersionNumber)
 {
   DWORD Major = (VersionNumber>>16) & 0xFF;
   DWORD Minor = (VersionNumber>>8) & 0xFF; 

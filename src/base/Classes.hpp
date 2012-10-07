@@ -745,9 +745,9 @@ private:
   void SetCurrentKey(HKEY Value) { FCurrentKey = Value; }
   bool GetKeyInfo(TRegKeyInfo & Value) const;
   int GetData(const UnicodeString Name, void * Buffer,
-              DWORD BufSize, TRegDataType & RegData) const;
+    intptr_t BufSize, TRegDataType & RegData) const;
   void PutData(const UnicodeString Name, const void * Buffer,
-               int BufSize, TRegDataType RegData);
+    intptr_t BufSize, TRegDataType RegData);
 protected:
   void SetAccess(int Value);
   HKEY GetCurrentKey() const;

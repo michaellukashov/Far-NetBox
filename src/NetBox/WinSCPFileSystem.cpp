@@ -23,7 +23,7 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
-/* __fastcall */ TSessionPanelItem::TSessionPanelItem(TSessionData * ASessionData):
+TSessionPanelItem::TSessionPanelItem(TSessionData * ASessionData):
   TCustomFarPanelItem()
 {
   assert(ASessionData);
@@ -68,7 +68,7 @@ void __fastcall TSessionPanelItem::GetData(
   UserData = FSessionData;
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TSessionFolderPanelItem::TSessionFolderPanelItem(const UnicodeString Folder):
+TSessionFolderPanelItem::TSessionFolderPanelItem(const UnicodeString Folder):
   TCustomFarPanelItem(),
   FFolder(Folder)
 {
@@ -85,7 +85,7 @@ void __fastcall TSessionFolderPanelItem::GetData(
   FileAttributes = FILE_ATTRIBUTE_DIRECTORY;
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TRemoteFilePanelItem::TRemoteFilePanelItem(TRemoteFile * ARemoteFile):
+TRemoteFilePanelItem::TRemoteFilePanelItem(TRemoteFile * ARemoteFile):
   TCustomFarPanelItem()
 {
   assert(ARemoteFile);
@@ -244,8 +244,8 @@ void __fastcall TFarInteractiveCustomCommand::Prompt(int /*Index*/,
 class TKeepaliveThread : public TSimpleThread
 {
 public:
-  explicit /* __fastcall */ TKeepaliveThread(TWinSCPFileSystem * FileSystem, TDateTime Interval);
-  virtual /* __fastcall */ ~TKeepaliveThread()
+  explicit TKeepaliveThread(TWinSCPFileSystem * FileSystem, TDateTime Interval);
+  virtual ~TKeepaliveThread()
   {}
   virtual void __fastcall Init();
   virtual void __fastcall Execute();
@@ -257,7 +257,7 @@ private:
   HANDLE FEvent;
 };
 //---------------------------------------------------------------------------
-/* __fastcall */ TKeepaliveThread::TKeepaliveThread(TWinSCPFileSystem * FileSystem,
+TKeepaliveThread::TKeepaliveThread(TWinSCPFileSystem * FileSystem,
   TDateTime Interval) :
   TSimpleThread(),
   FFileSystem(FileSystem),
@@ -295,7 +295,7 @@ void __fastcall TKeepaliveThread::Execute()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-/* __fastcall */ TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
+TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
   TCustomFarFileSystem(APlugin)
 {
   Self = this;
@@ -337,7 +337,7 @@ void __fastcall TWinSCPFileSystem::Init(TSecureShell * /* SecureShell */)
 }
 
 //---------------------------------------------------------------------------
-/* __fastcall */ TWinSCPFileSystem::~TWinSCPFileSystem()
+TWinSCPFileSystem::~TWinSCPFileSystem()
 {
   Disconnect();
   delete FQueueStatusSection;
@@ -362,7 +362,7 @@ void __fastcall TWinSCPFileSystem::HandleException(Exception * E, int OpMode)
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */TWinSCPFileSystem::KeepaliveThreadCallback()
+void TWinSCPFileSystem::KeepaliveThreadCallback()
 {
   TGuard Guard(FCriticalSection);
 
@@ -756,7 +756,7 @@ bool __fastcall TWinSCPFileSystem::ProcessPanelEventEx(int Event, void *Param)
   return Result;
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWinSCPFileSystem::TerminalCaptureLog(
+void TWinSCPFileSystem::TerminalCaptureLog(
   const UnicodeString & AddedLine, bool /*StdError*/)
 {
   if (FOutputLog)
@@ -1414,7 +1414,7 @@ bool __fastcall TWinSCPFileSystem::SynchronizeAllowSelectedOnly()
     (GetAnotherPanelInfo()->GetSelectedCount() > 0);
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWinSCPFileSystem::GetSynchronizeOptions(
+void TWinSCPFileSystem::GetSynchronizeOptions(
   int Params, TSynchronizeOptions & Options)
 {
   if (FLAGSET(Params, spSelectedOnly) && SynchronizeAllowSelectedOnly())
@@ -1450,7 +1450,7 @@ void __fastcall TWinSCPFileSystem::FullSynchronize(bool Source)
   int Params = GUIConfiguration->GetSynchronizeParams();
   bool SaveSettings = false;
 
-  TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
+  TGUICopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
   TUsableCopyParamAttrs CopyParamAttrs = GetTerminal()->UsableCopyParamAttrs(0);
   int Options =
     FLAGMASK(!FTerminal->GetIsCapable(fcTimestampChanging), fsoDisableTimestamp) |
@@ -1533,7 +1533,7 @@ void __fastcall TWinSCPFileSystem::FullSynchronize(bool Source)
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWinSCPFileSystem::TerminalSynchronizeDirectory(
+void TWinSCPFileSystem::TerminalSynchronizeDirectory(
   const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,
   bool & Continue, bool Collect)
 {
@@ -1606,7 +1606,7 @@ void __fastcall TWinSCPFileSystem::Synchronize()
   TRY_FINALLY1 (Self,
   {
     bool SaveSettings = false;
-    TCopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
+    TCopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
     int CopyParamAttrs = GetTerminal()->UsableCopyParamAttrs(0).Upload;
     int Options =
       FLAGMASK(SynchronizeAllowSelectedOnly(), soAllowSelectedOnly);
@@ -1635,7 +1635,7 @@ void __fastcall TWinSCPFileSystem::Synchronize()
   );
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWinSCPFileSystem::DoSynchronize(
+void TWinSCPFileSystem::DoSynchronize(
   TSynchronizeController * /*Sender*/, const UnicodeString & LocalDirectory,
   const UnicodeString & RemoteDirectory, const TCopyParamType & CopyParam,
   const TSynchronizeParamType & Params, TSynchronizeChecklist ** Checklist,
@@ -1669,7 +1669,7 @@ void /* __fastcall */ TWinSCPFileSystem::DoSynchronize(
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWinSCPFileSystem::DoSynchronizeInvalid(
+void TWinSCPFileSystem::DoSynchronizeInvalid(
   TSynchronizeController * /*Sender*/, const UnicodeString & Directory,
   const UnicodeString & /* ErrorStr */)
 {
@@ -1686,7 +1686,7 @@ void /* __fastcall */ TWinSCPFileSystem::DoSynchronizeInvalid(
   MoreMessageDialog(Message, NULL, qtError, qaOK);
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWinSCPFileSystem::DoSynchronizeTooManyDirectories(
+void TWinSCPFileSystem::DoSynchronizeTooManyDirectories(
   TSynchronizeController * /*Sender*/, int & MaxDirectories)
 {
   if (MaxDirectories < GUIConfiguration->GetMaxWatchDirectories())
@@ -1716,7 +1716,7 @@ void /* __fastcall */ TWinSCPFileSystem::DoSynchronizeTooManyDirectories(
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWinSCPFileSystem::CustomCommandGetParamValue(
+void TWinSCPFileSystem::CustomCommandGetParamValue(
   const UnicodeString AName, UnicodeString & Value)
 {
   UnicodeString Name = AName;
@@ -1977,7 +1977,7 @@ void __fastcall TWinSCPFileSystem::CopyFullFileNamesToClipboard()
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWinSCPFileSystem::GetSpaceAvailable(const UnicodeString & Path,
+void TWinSCPFileSystem::GetSpaceAvailable(const UnicodeString & Path,
   TSpaceAvailable & ASpaceAvailable, bool & Close)
 {
   // terminal can be already closed (e.g. dropped connection)
@@ -2379,7 +2379,7 @@ int __fastcall TWinSCPFileSystem::MakeDirectoryEx(UnicodeString & Name, int OpMo
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWinSCPFileSystem::DeleteSession(TSessionData * Data, void * /*Param*/)
+void TWinSCPFileSystem::DeleteSession(TSessionData * Data, void * /*Param*/)
 {
   Data->Remove();
   StoredSessions->Remove(Data);
@@ -2442,7 +2442,7 @@ bool __fastcall TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, int O
       if (PanelItems->Count > 1)
       {
         Query = FORMAT(GetMsg(Recycle ? RECYCLE_FILES_CONFIRM : DELETE_FILES_CONFIRM).c_str(),
-          PanelItems->Count);
+          PanelItems->Count.get());
       }
       else
       {
@@ -2504,7 +2504,7 @@ int __fastcall TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move
         (OpMode & OPM_SILENT) &&
         (!EditView || FarConfiguration->GetEditorDownloadDefaultMode());
 
-      TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
+      TGUICopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
       if (EditView)
       {
         EditViewCopyParam(CopyParam);
@@ -2584,7 +2584,7 @@ int __fastcall TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move
     }
     else
     {
-      Prompt = FORMAT(GetMsg(EXPORT_SESSIONS_PROMPT).c_str(), PanelItems->Count);
+      Prompt = FORMAT(GetMsg(EXPORT_SESSIONS_PROMPT).c_str(), PanelItems->Count.get());
     }
 
     bool AResult = (OpMode & OPM_SILENT) ||
@@ -2608,7 +2608,7 @@ int __fastcall TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move
   return Result;
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
+void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
 {
   TExportSessionParam & Param = *static_cast<TExportSessionParam *>(AParam);
 
@@ -3060,7 +3060,7 @@ void __fastcall TWinSCPFileSystem::ConnectTerminal(TTerminal * Terminal)
   Terminal->Open();
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWinSCPFileSystem::TerminalClose(TObject * /*Sender*/)
+void TWinSCPFileSystem::TerminalClose(TObject * /*Sender*/)
 {
   // Plugin closure is now invoked from HandleException
 }
@@ -3101,7 +3101,7 @@ void __fastcall TWinSCPFileSystem::LogAuthentication(
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWinSCPFileSystem::TerminalInformation(
+void TWinSCPFileSystem::TerminalInformation(
   TTerminal * Terminal, const UnicodeString & Str, bool /*Status*/, int Phase)
 {
   if (Phase != 0)
@@ -3130,7 +3130,7 @@ void /* __fastcall */ TWinSCPFileSystem::TerminalInformation(
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWinSCPFileSystem::TerminalChangeDirectory(TObject * /*Sender*/)
+void TWinSCPFileSystem::TerminalChangeDirectory(TObject * /*Sender*/)
 {
   if (!FNoProgress)
   {
@@ -3150,7 +3150,7 @@ void /* __fastcall */ TWinSCPFileSystem::TerminalChangeDirectory(TObject * /*Sen
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWinSCPFileSystem::TerminalStartReadDirectory(TObject * /*Sender*/)
+void TWinSCPFileSystem::TerminalStartReadDirectory(TObject * /*Sender*/)
 {
   if (!FNoProgress)
   {
@@ -3158,7 +3158,7 @@ void /* __fastcall */ TWinSCPFileSystem::TerminalStartReadDirectory(TObject * /*
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWinSCPFileSystem::TerminalReadDirectoryProgress(
+void TWinSCPFileSystem::TerminalReadDirectoryProgress(
   TObject * /*Sender*/, int Progress, bool & Cancel)
 {
   if (Progress < 0)
@@ -3184,7 +3184,7 @@ void /* __fastcall */ TWinSCPFileSystem::TerminalReadDirectoryProgress(
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWinSCPFileSystem::TerminalReadDirectory(TObject * /*Sender*/,
+void TWinSCPFileSystem::TerminalReadDirectory(TObject * /*Sender*/,
   bool /*ReloadOnly*/)
 {
   if (!FNoProgress)
@@ -3193,7 +3193,7 @@ void /* __fastcall */ TWinSCPFileSystem::TerminalReadDirectory(TObject * /*Sende
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWinSCPFileSystem::TerminalDeleteLocalFile(const UnicodeString & FileName,
+void TWinSCPFileSystem::TerminalDeleteLocalFile(const UnicodeString & FileName,
   bool Alternative)
 {
   bool ToRecycleBin = FLAGSET(WinSCPPlugin()->FarSystemSettings(), NBSS_DELETETORECYCLEBIN) != Alternative;
@@ -3210,7 +3210,7 @@ void /* __fastcall */ TWinSCPFileSystem::TerminalDeleteLocalFile(const UnicodeSt
   }
 }
 //---------------------------------------------------------------------------
-HANDLE /* __fastcall */ TWinSCPFileSystem::TerminalCreateLocalFile(const UnicodeString & LocalFileName,
+HANDLE TWinSCPFileSystem::TerminalCreateLocalFile(const UnicodeString & LocalFileName,
   DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes)
 {
   if (!WinSCPPlugin()->GetSystemFunctions())
@@ -3224,7 +3224,7 @@ HANDLE /* __fastcall */ TWinSCPFileSystem::TerminalCreateLocalFile(const Unicode
   }
 }
 //---------------------------------------------------------------------------
-DWORD /* __fastcall */ TWinSCPFileSystem::TerminalGetLocalFileAttributes(const UnicodeString & LocalFileName)
+DWORD TWinSCPFileSystem::TerminalGetLocalFileAttributes(const UnicodeString & LocalFileName)
 {
   if (!WinSCPPlugin()->GetSystemFunctions())
   {
@@ -3236,7 +3236,7 @@ DWORD /* __fastcall */ TWinSCPFileSystem::TerminalGetLocalFileAttributes(const U
   }
 }
 //---------------------------------------------------------------------------
-BOOL /* __fastcall */ TWinSCPFileSystem::TerminalSetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes)
+BOOL TWinSCPFileSystem::TerminalSetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes)
 {
   if (!WinSCPPlugin()->GetSystemFunctions())
   {
@@ -3248,7 +3248,7 @@ BOOL /* __fastcall */ TWinSCPFileSystem::TerminalSetLocalFileAttributes(const Un
   }
 }
 //---------------------------------------------------------------------------
-BOOL /* __fastcall */ TWinSCPFileSystem::TerminalMoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags)
+BOOL TWinSCPFileSystem::TerminalMoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags)
 {
   if (!WinSCPPlugin()->GetSystemFunctions())
   {
@@ -3260,7 +3260,7 @@ BOOL /* __fastcall */ TWinSCPFileSystem::TerminalMoveLocalFile(const UnicodeStri
   }
 }
 //---------------------------------------------------------------------------
-BOOL /* __fastcall */ TWinSCPFileSystem::TerminalRemoveLocalDirectory(const UnicodeString & LocalDirName)
+BOOL TWinSCPFileSystem::TerminalRemoveLocalDirectory(const UnicodeString & LocalDirName)
 {
   if (!WinSCPPlugin()->GetSystemFunctions())
   {
@@ -3272,7 +3272,7 @@ BOOL /* __fastcall */ TWinSCPFileSystem::TerminalRemoveLocalDirectory(const Unic
   }
 }
 //---------------------------------------------------------------------------
-BOOL /* __fastcall */ TWinSCPFileSystem::TerminalCreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
+BOOL TWinSCPFileSystem::TerminalCreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
 {
   if (!WinSCPPlugin()->GetSystemFunctions())
   {
@@ -3304,7 +3304,7 @@ int __fastcall TWinSCPFileSystem::MoreMessageDialog(const UnicodeString Str,
          Answers, Params);
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWinSCPFileSystem::TerminalQueryUser(TObject * /*Sender*/,
+void TWinSCPFileSystem::TerminalQueryUser(TObject * /*Sender*/,
   const UnicodeString & Query, TStrings * MoreMessages, unsigned int Answers,
   const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * /*Arg*/)
 {
@@ -3332,7 +3332,7 @@ void /* __fastcall */ TWinSCPFileSystem::TerminalQueryUser(TObject * /*Sender*/,
   Answer = MoreMessageDialog(AQuery, MoreMessages, Type, Answers, &AParams);
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal,
+void TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal,
   TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions,
   TStrings * Prompts, TStrings * Results, bool & Result,
   void * /*Arg*/)
@@ -3357,20 +3357,20 @@ void /* __fastcall */ TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWinSCPFileSystem::TerminalDisplayBanner(
+void TWinSCPFileSystem::TerminalDisplayBanner(
   TTerminal * /*Terminal*/, UnicodeString SessionName,
   const UnicodeString & Banner, bool & NeverShowAgain, int Options)
 {
   BannerDialog(SessionName, Banner, NeverShowAgain, Options);
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWinSCPFileSystem::TerminalShowExtendedException(
+void TWinSCPFileSystem::TerminalShowExtendedException(
   TTerminal * /*Terminal*/, Exception * E, void * /*Arg*/)
 {
   WinSCPPlugin()->ShowExtendedException(E);
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWinSCPFileSystem::OperationProgress(
+void TWinSCPFileSystem::OperationProgress(
   TFileOperationProgressType & ProgressData, TCancelStatus & /*Cancel*/)
 {
   if (FNoProgress)
@@ -3397,7 +3397,7 @@ void /* __fastcall */ TWinSCPFileSystem::OperationProgress(
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
+void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
   TOperationSide Side, bool /*Temp*/, const UnicodeString & FileName, bool Success,
   TOnceDoneOperation & /*DisconnectWhenComplete*/)
 {
@@ -3682,7 +3682,7 @@ TTerminalQueueStatus * TWinSCPFileSystem::ProcessQueue(bool Hidden)
   return Result;
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWinSCPFileSystem::QueueListUpdate(TTerminalQueue * Queue)
+void TWinSCPFileSystem::QueueListUpdate(TTerminalQueue * Queue)
 {
   if (FQueue == Queue)
   {
@@ -3690,7 +3690,7 @@ void /* __fastcall */ TWinSCPFileSystem::QueueListUpdate(TTerminalQueue * Queue)
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWinSCPFileSystem::QueueItemUpdate(TTerminalQueue * Queue,
+void TWinSCPFileSystem::QueueItemUpdate(TTerminalQueue * Queue,
   TQueueItem * Item)
 {
   if (FQueue == Queue)
@@ -3717,7 +3717,7 @@ void /* __fastcall */ TWinSCPFileSystem::QueueItemUpdate(TTerminalQueue * Queue,
   }
 }
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWinSCPFileSystem::QueueEvent(TTerminalQueue * Queue,
+void TWinSCPFileSystem::QueueEvent(TTerminalQueue * Queue,
   TQueueEvent Event)
 {
   TGuard Guard(FQueueStatusSection);

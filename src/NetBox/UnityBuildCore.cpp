@@ -9,7 +9,6 @@
 #include "../base/SysUtils.cpp"
 #include "../base/UnicodeString.cpp"
 #include "../base/local.cpp"
-#include "../base/farrtl.cpp"
 
 #include "../core/Common.cpp"
 #include "../core/RemoteFiles.cpp"

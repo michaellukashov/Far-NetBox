@@ -1245,7 +1245,7 @@ void __fastcall TRemoteFile::SetListingStr(UnicodeString value)
           if (P)
           {
             FLinkTo = Line.SubString(
-              P + wcslen(SYMLINKSTR), Line.Length() - P + wcslen(SYMLINKSTR) + 1);
+              P + static_cast<int>(wcslen(SYMLINKSTR)), Line.Length() - P + static_cast<int>(wcslen(SYMLINKSTR)) + 1);
             Line.SetLength(P - 1);
           }
           else

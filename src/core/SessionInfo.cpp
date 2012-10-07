@@ -58,7 +58,7 @@ UnicodeString __fastcall DoXmlEscape(UnicodeString Str, bool NewLine)
     {
       Str[i] = L'&';
       Str.Insert(Repl, i + 1);
-      i += wcslen(Repl);
+      i += static_cast<int>(wcslen(Repl));
     }
   }
   return Str;

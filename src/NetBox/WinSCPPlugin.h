@@ -28,8 +28,8 @@ class TWinSCPPlugin : public TCustomFarPlugin
 {
   friend TWinSCPFileSystem;
 public:
-  explicit /* __fastcall */ TWinSCPPlugin(HINSTANCE HInst);
-  virtual /* __fastcall */ ~TWinSCPPlugin();
+  explicit TWinSCPPlugin(HINSTANCE HInst);
+  virtual ~TWinSCPPlugin();
   virtual VersionInfo __fastcall GetMinFarVersion();
 
   virtual void __fastcall HandleException(Exception * E, int OpMode = 0);
@@ -51,7 +51,7 @@ protected:
   virtual intptr_t __fastcall ProcessEditorInputEx(const INPUT_RECORD * Rec);
   bool __fastcall CopyParamDialog(UnicodeString Caption, TCopyParamType & CopyParam,
     int CopyParamAttrs);
-  void /* __fastcall */ MessageClick(void * Token, int Result, bool & Close);
+  void MessageClick(void * Token, int Result, bool & Close);
 
   void __fastcall CommandsMenu(bool FromFileSystem);
   bool __fastcall ConfigurationDialog();

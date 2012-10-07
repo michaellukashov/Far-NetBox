@@ -25,7 +25,7 @@ enum NetBoxConfirmationsSettings
 	// NBCS_OVERWRITEDELETEROFILES         = 0x00000400,
 };
 //---------------------------------------------------------------------------
-/* __fastcall */ TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
+TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
   TGUIConfiguration()
 {
   Self = this;
@@ -35,7 +35,7 @@ enum NetBoxConfirmationsSettings
   Default();
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TFarConfiguration::~TFarConfiguration()
+TFarConfiguration::~TFarConfiguration()
 {
   delete FBookmarks;
 }

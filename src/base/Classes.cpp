@@ -109,7 +109,7 @@ TList::~TList()
 }
 int TList::GetCount() const
 {
-  return FList.size();
+  return static_cast<int>(FList.size());
 }
 void TList::SetCount(int NewCount)
 {
@@ -119,7 +119,7 @@ void TList::SetCount(int NewCount)
   }
   if ((size_t)NewCount <= FList.size())
   {
-    int sz = FList.size();
+    int sz = static_cast<int>(FList.size());
     for (int I = sz - 1; (I != NPOS) && (I >= NewCount); I--)
     {
       Delete(I);
@@ -147,7 +147,7 @@ void TList::SetItem(int Index, void * Item)
 
 int TList::Add(void * value)
 {
-  int Result = FList.size();
+  int Result = static_cast<int>(FList.size());
   FList.push_back(value);
   return Result;
 }
@@ -776,7 +776,7 @@ void TStringList::Assign(TPersistent * Source)
 
 int TStringList::GetCount() const
 {
-  return FList.size();
+  return static_cast<int>(FList.size());
 }
 
 void TStringList::Clear()
@@ -994,11 +994,11 @@ void TStringList::LoadFromFile(const UnicodeString FileName)
   TSafeHandleStream Stream(FileHandle);
   __int64 Size = Stream.GetSize();
   TFileBuffer FileBuffer;
-  __int64 Read = FileBuffer.LoadStream(&Stream, Size, True);
+  FileBuffer.LoadStream(&Stream, Size, True);
   bool ConvertToken;
   FileBuffer.Convert(eolCRLF, eolCRLF, cpRemoveCtrlZ | cpRemoveBOM, ConvertToken);
   ::CloseHandle(FileHandle);
-  UnicodeString Str(FileBuffer.GetData(), FileBuffer.GetSize());
+  UnicodeString Str(FileBuffer.GetData(), static_cast<int>(FileBuffer.GetSize()));
   // DEBUG_PRINTF(L"Str = %s", Str.c_str());
   SetTextStr(Str);
   /* FILE * f = NULL;
@@ -1988,22 +1988,23 @@ size_t TRegistry::ReadBinaryData(const UnicodeString Name,
 }
 
 int TRegistry::GetData(const UnicodeString Name, void * Buffer,
-                       DWORD BufSize, TRegDataType & RegData) const
+  intptr_t BufSize, TRegDataType & RegData) const
 {
   DWORD DataType = REG_NONE;
+  DWORD bufSize = static_cast<DWORD>(BufSize);
   // DEBUG_PRINTF(L"GetCurrentKey = %d", GetCurrentKey());
   if (RegQueryValueEx(GetCurrentKey(), Name.c_str(), NULL, &DataType,
-    reinterpret_cast<BYTE *>(Buffer), &BufSize) != ERROR_SUCCESS)
+    reinterpret_cast<BYTE *>(Buffer), &bufSize) != ERROR_SUCCESS)
   {
     throw std::exception("RegQueryValueEx failed"); // FIXME ERegistryException.CreateResFmt(@SRegGetDataFailed, [Name]);
   }
   RegData = DataTypeToRegData(DataType);
-  int Result = BufSize;
+  int Result = static_cast<int>(BufSize);
   return Result;
 }
 
 void TRegistry::PutData(const UnicodeString Name, const void * Buffer,
-  int BufSize, TRegDataType RegData)
+  intptr_t BufSize, TRegDataType RegData)
 {
   int DataType = Classes::RegDataToDataType(RegData);
   // DEBUG_PRINTF(L"GetCurrentKey = %d, Name = %s, REG_DWORD = %d, DataType = %d, BufSize = %d", GetCurrentKey(), Name.c_str(), REG_DWORD, DataType, BufSize);
