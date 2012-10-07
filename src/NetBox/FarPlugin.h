@@ -203,7 +203,6 @@ private:
   short FCurrentProgress;
 
   void __fastcall ClearPluginInfo(PluginInfo & Info);
-  // UnicodeString __fastcall GetModuleName();
   void __fastcall UpdateConsoleTitle();
   UnicodeString __fastcall FormatConsoleTitle();
   HWND __fastcall GetConsoleWindow();
@@ -438,11 +437,6 @@ private:
   PanelInfo * FPanelInfo;
   TObjectList * FItems;
   TCustomFarFileSystem * FOwner;
-};
-//---------------------------------------------------------------------------
-enum MENUITEMFLAGS_EX
-{
-  // FIXME MIF_HIDDEN = 0x40000000UL,
 };
 //---------------------------------------------------------------------------
 class TFarMenuItems : public TStringList
