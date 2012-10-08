@@ -188,7 +188,7 @@ public:
   virtual void Insert(int Index, void * Item);
   int IndexOf(void * value) const;
   virtual void __fastcall Clear();
-  virtual void __fastcall Sort(CompareFunc func);
+  virtual void __fastcall Sort(CompareFunc Func);
   virtual void __fastcall Notify(void * Ptr, int Action);
   virtual void __fastcall Sort();
 

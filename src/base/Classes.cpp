@@ -232,9 +232,9 @@ void TList::Clear()
   SetCount(0);
 }
 
-void TList::Sort(CompareFunc func)
+void TList::Sort(CompareFunc Func)
 {
-  (void)func;
+  (void)Func;
   Classes::Error(SNotImplemented, 1);
 }
 void TList::Notify(void * Ptr, int Action)
