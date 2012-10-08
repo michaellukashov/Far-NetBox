@@ -185,10 +185,10 @@ void TSynchronizeChecklist::Add(TItem * Item)
   FList->Add(Item);
 }
 //---------------------------------------------------------------------------
-int /* __fastcall */ TSynchronizeChecklist::Compare(void * AItem1, void * AItem2)
+int /* __fastcall */ TSynchronizeChecklist::Compare(const void * AItem1, const void * AItem2)
 {
-  TItem * Item1 = static_cast<TItem *>(AItem1);
-  TItem * Item2 = static_cast<TItem *>(AItem2);
+  const TItem * Item1 = static_cast<const TItem *>(AItem1);
+  const TItem * Item2 = static_cast<const TItem *>(AItem2);
 
   int Result;
   if (!Item1->Local.Directory.IsEmpty())

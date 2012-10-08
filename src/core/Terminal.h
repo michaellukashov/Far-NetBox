@@ -710,7 +710,7 @@ public:
 private:
   TList * FList;
 
-  static int /* __fastcall */ Compare(void * Item1, void * Item2);
+  static int /* __fastcall */ Compare(const void * Item1, const void * Item2);
 };
 //---------------------------------------------------------------------------
 struct TSpaceAvailable

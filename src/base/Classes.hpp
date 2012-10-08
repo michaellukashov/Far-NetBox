@@ -170,7 +170,7 @@ enum TListNotification
   lnDeleted,
 };
 
-typedef int (CompareFunc)(void * Item1, void * Item2);
+typedef int (CompareFunc)(const void * Item1, const void * Item2);
 
 class TList : public TObject
 {

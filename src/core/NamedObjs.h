@@ -9,8 +9,8 @@ class TNamedObjectList;
 class TNamedObject : public TPersistent
 {
 public:
-  bool __fastcall GetHidden() { return FHidden; }
-  UnicodeString __fastcall GetName() { return FName; }
+  bool __fastcall GetHidden() const { return FHidden; }
+  UnicodeString __fastcall GetName() const { return FName; }
   void __fastcall SetName(UnicodeString value);
   explicit /* __fastcall */ TNamedObject() : TPersistent(), FHidden(false) {};
   Integer __fastcall CompareName(UnicodeString aName, Boolean CaseSensitive = False);
