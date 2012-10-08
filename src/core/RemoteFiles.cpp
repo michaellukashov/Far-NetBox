@@ -1825,7 +1825,7 @@ void __fastcall TRemoteDirectoryChangesCache::SetValue(const UnicodeString & Nam
   const UnicodeString & Value)
 {
   int Index = IndexOfName(Name);
-  if (Index > 0)
+  if (Index >= 0)
   {
     Delete(Index);
   }
