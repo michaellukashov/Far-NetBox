@@ -216,16 +216,16 @@ void TList::Insert(int Index, void * Item)
 }
 int TList::IndexOf(void * value) const
 {
-  int Result = 0;
-  while (((size_t)Result < FList.size()) && (FList[Result] != value))
+  size_t Result = 0;
+  while ((Result < FList.size()) && (FList[Result] != value))
   {
     Result++;
   }
-  if ((size_t)Result == FList.size())
+  if (Result == FList.size())
   {
     Result = NPOS;
   }
-  return Result;
+  return static_cast<int>(Result);
 }
 void TList::Clear()
 {
