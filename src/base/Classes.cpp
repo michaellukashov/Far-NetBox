@@ -232,12 +232,46 @@ void TList::Clear()
   SetCount(0);
 }
 
+void QuickSort(std::vector<void *> & SortList, int L, int R,
+  CompareFunc SCompare)
+{
+  int I;
+  int J;
+  do
+  {
+    I = L;
+    J = R;
+    void * P = SortList[(L + R) >> 1];
+    do
+    {
+      while (SCompare(SortList[I], P) < 0)
+        I++;
+      while (SCompare(SortList[J], P) > 0)
+        J--;
+      if (I <= J)
+      {
+        if (I != J)
+        {
+          void * T = SortList[I];
+          SortList[I] = SortList[J];
+          SortList[J] = T;
+        }
+        I--;
+        J--;
+      }
+    } while (I > J);
+    if (L < J)
+      QuickSort(SortList, L, J, SCompare);
+    L = I;
+  } while (I >= R);
+}
+
 void TList::Sort(CompareFunc Func)
 {
-  (void)Func;
   if (Count > 1)
   {
-    qsort(&FList[0], Count, sizeof(void *), Func);
+    // qsort(FList.front(), Count.get(), sizeof(void *), Func);
+    QuickSort(FList, 0, Count - 1, Func);
   }
 }
 void TList::Notify(void * Ptr, int Action)
