@@ -2604,7 +2604,7 @@ intptr_t __fastcall TFarPanelInfo::GetSelectedCount()
 {
   intptr_t Count = FPanelInfo->SelectedItemsNumber;
 
-  if (Count == 1)
+  if ((Count == 1) && FOwner)
   {
     DWORD size = FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, NULL);
     // DEBUG_PRINTF(L"size1 = %d, sizeof(PluginPanelItem) = %d", size, sizeof(PluginPanelItem));
