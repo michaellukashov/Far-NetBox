@@ -235,7 +235,10 @@ void TList::Clear()
 void TList::Sort(CompareFunc Func)
 {
   (void)Func;
-  Classes::Error(SNotImplemented, 1);
+  if (Count > 1)
+  {
+    qsort(&FList[0], Count, sizeof(void *), Func);
+  }
 }
 void TList::Notify(void * Ptr, int Action)
 {
@@ -245,7 +248,7 @@ void TList::Notify(void * Ptr, int Action)
 void TList::Sort()
 {
   // if (FList.size() > 1)
-  // QuickSort(FList, 0, GetCount() - 1, Compare);
+    // QuickSort(FList, 0, GetCount() - 1, Compare);
   Classes::Error(SNotImplemented, 15);
 }
 //---------------------------------------------------------------------------
