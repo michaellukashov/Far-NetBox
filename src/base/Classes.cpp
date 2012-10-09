@@ -216,26 +216,63 @@ void TList::Insert(int Index, void * Item)
 }
 int TList::IndexOf(void * value) const
 {
-  int Result = 0;
-  while (((size_t)Result < FList.size()) && (FList[Result] != value))
+  size_t Result = 0;
+  while ((Result < FList.size()) && (FList[Result] != value))
   {
     Result++;
   }
-  if ((size_t)Result == FList.size())
+  if (Result == FList.size())
   {
     Result = NPOS;
   }
-  return Result;
+  return static_cast<int>(Result);
 }
 void TList::Clear()
 {
   SetCount(0);
 }
 
-void TList::Sort(CompareFunc func)
+void QuickSort(std::vector<void *> & SortList, int L, int R,
+  CompareFunc SCompare)
 {
-  (void)func;
-  Classes::Error(SNotImplemented, 1);
+  int I;
+  int J;
+  do
+  {
+    I = L;
+    J = R;
+    void * P = SortList[(L + R) >> 1];
+    do
+    {
+      while (SCompare(SortList[I], P) < 0)
+        I++;
+      while (SCompare(SortList[J], P) > 0)
+        J--;
+      if (I <= J)
+      {
+        if (I != J)
+        {
+          void * T = SortList[I];
+          SortList[I] = SortList[J];
+          SortList[J] = T;
+        }
+        I--;
+        J--;
+      }
+    } while (I > J);
+    if (L < J)
+      QuickSort(SortList, L, J, SCompare);
+    L = I;
+  } while (I >= R);
+}
+
+void TList::Sort(CompareFunc Func)
+{
+  if (Count > 1)
+  {
+    // qsort(FList.front(), Count.get(), sizeof(void *), Func);
+    QuickSort(FList, 0, Count - 1, Func);
+  }
 }
 void TList::Notify(void * Ptr, int Action)
 {
@@ -245,7 +282,7 @@ void TList::Notify(void * Ptr, int Action)
 void TList::Sort()
 {
   // if (FList.size() > 1)
-  // QuickSort(FList, 0, GetCount() - 1, Compare);
+    // QuickSort(FList, 0, GetCount() - 1, Compare);
   Classes::Error(SNotImplemented, 15);
 }
 //---------------------------------------------------------------------------

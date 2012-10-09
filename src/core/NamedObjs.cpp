@@ -6,16 +6,21 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
-int /* __fastcall */ NamedObjectSortProc(void * Item1, void * Item2)
+int /* __fastcall */ NamedObjectSortProc(const void * Item1, const void * Item2)
 {
-  bool HasPrefix1 = (static_cast<TNamedObject *>(Item1))->GetHidden();
-  bool HasPrefix2 = (static_cast<TNamedObject *>(Item2))->GetHidden();
-  if (HasPrefix1 && !HasPrefix2) { return -1; }
-    else
-  if (!HasPrefix1 && HasPrefix2) { return 1; }
-    else
+  bool HasPrefix1 = (static_cast<const TNamedObject *>(Item1))->GetHidden();
+  bool HasPrefix2 = (static_cast<const TNamedObject *>(Item2))->GetHidden();
+  if (HasPrefix1 && !HasPrefix2)
   {
-    return AnsiCompareStr((static_cast<TNamedObject *>(Item1))->GetName(), (static_cast<TNamedObject *>(Item2))->GetName());
+    return -1;
+  }
+  else if (!HasPrefix1 && HasPrefix2)
+  {
+    return 1;
+  }
+  else
+  {
+    return AnsiCompareStr((static_cast<const TNamedObject *>(Item1))->GetName(), (static_cast<const TNamedObject *>(Item2))->GetName());
   }
 }
 //--- TNamedObject ----------------------------------------------------------

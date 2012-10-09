@@ -7152,14 +7152,12 @@ TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
   SetCaption(GetMsg(CHECKLIST_TITLE));
 
   Header = new TFarText(this);
-  // Header->Oem = true;
 
   ListBox = new TFarListBox(this);
   ListBox->SetNoBox(true);
   // align list with bottom of the window
   ListBox->SetBottom(-5);
   ListBox->SetOnMouseClick(MAKE_CALLBACK2(TSynchronizeChecklistDialog::ListBoxClick, this));
-  // ListBox->Oem = true;
 
   UnicodeString Actions = GetMsg(CHECKLIST_ACTIONS);
   int Action = 0;
@@ -7200,7 +7198,7 @@ TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
 void TSynchronizeChecklistDialog::AddColumn(UnicodeString & List,
     UnicodeString Value, size_t Column, bool Header)
 {
-  char Separator = '\xB3';
+  wchar_t Separator = L'|'; // '\xB3';
   intptr_t Len = Value.Length();
   intptr_t Width = static_cast<size_t>(FWidths[Column]);
   bool Right = (Column == 2) || (Column == 3) || (Column == 6) || (Column == 7);
@@ -7216,7 +7214,7 @@ void TSynchronizeChecklistDialog::AddColumn(UnicodeString & List,
     {
       Added += Width - Len;
     }
-    List += ::StringOfChar(' ', Added) + Value;
+    List += ::StringOfChar(L' ', Added) + Value;
     Added += Value.Length();
     if (Width > Added)
     {
@@ -7234,13 +7232,13 @@ void TSynchronizeChecklistDialog::AddColumn(UnicodeString & List,
     {
       if (List.IsEmpty())
       {
-        List += '{';
+        List += L'{';
         Width--;
         Scroll++;
       }
       else
       {
-        List[List.Length()] = '{';
+        List[List.Length()] = L'{';
       }
     }
     if (Scroll > Len - Width)
@@ -7254,7 +7252,7 @@ void TSynchronizeChecklistDialog::AddColumn(UnicodeString & List,
     List += Value.SubString(Scroll + 1, Width);
     if (!Header && (Len - Scroll > Width))
     {
-      List += '}';
+      List += L'}';
       FCanScrollRight = true;
     }
     else if (!LastCol)
@@ -7383,8 +7381,8 @@ UnicodeString __fastcall TSynchronizeChecklistDialog::ItemLine(
     S = ChecklistItem->Local.Directory;
     if (AnsiSameText(FLocalDirectory, S.SubString(1, FLocalDirectory.Length())))
     {
-      S[0] = '.';
-      S.Delete(1, FLocalDirectory.Length() - 1);
+      S[1] = '.';
+      S.Delete(2, FLocalDirectory.Length() - 1);
     }
     else
     {
@@ -7528,7 +7526,7 @@ void __fastcall TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
 void __fastcall TSynchronizeChecklistDialog::UpdateControls()
 {
   ButtonSeparator->SetCaption(
-    FORMAT(GetMsg(CHECKLIST_CHECKED).c_str(), FChecked, ListBox->GetItems()->Count));
+    FORMAT(GetMsg(CHECKLIST_CHECKED).c_str(), FChecked, ListBox->GetItems()->Count.get()));
   CheckAllButton->SetEnabled((FChecked < ListBox->GetItems()->Count));
   UncheckAllButton->SetEnabled((FChecked > 0));
 }

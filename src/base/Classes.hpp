@@ -170,7 +170,7 @@ enum TListNotification
   lnDeleted,
 };
 
-typedef int (CompareFunc)(void * Item1, void * Item2);
+typedef int (CompareFunc)(const void * Item1, const void * Item2);
 
 class TList : public TObject
 {
@@ -188,7 +188,7 @@ public:
   virtual void Insert(int Index, void * Item);
   int IndexOf(void * value) const;
   virtual void __fastcall Clear();
-  virtual void __fastcall Sort(CompareFunc func);
+  virtual void __fastcall Sort(CompareFunc Func);
   virtual void __fastcall Notify(void * Ptr, int Action);
   virtual void __fastcall Sort();
 
