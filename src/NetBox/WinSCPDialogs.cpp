@@ -7152,14 +7152,12 @@ TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
   SetCaption(GetMsg(CHECKLIST_TITLE));
 
   Header = new TFarText(this);
-  // Header->Oem = true;
 
   ListBox = new TFarListBox(this);
   ListBox->SetNoBox(true);
   // align list with bottom of the window
   ListBox->SetBottom(-5);
   ListBox->SetOnMouseClick(MAKE_CALLBACK2(TSynchronizeChecklistDialog::ListBoxClick, this));
-  // ListBox->Oem = true;
 
   UnicodeString Actions = GetMsg(CHECKLIST_ACTIONS);
   int Action = 0;
