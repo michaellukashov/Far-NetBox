@@ -2651,7 +2651,7 @@ int __fastcall TFarPanelInfo::GetSelectedCount()
 {
   intptr_t Count = FPanelInfo->SelectedItemsNumber;
 
-  if (Count == 1)
+  if ((Count == 1) && FOwner)
   {
     DWORD size = FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, NULL);
     // DEBUG_PRINTF(L"size1 = %d, sizeof(PluginPanelItem) = %d", size, sizeof(PluginPanelItem));
@@ -2676,20 +2676,23 @@ TObjectList * __fastcall TFarPanelInfo::GetItems()
     FItems = new TObjectList();
   }
   // DEBUG_PRINTF(L"FPanelInfo->ItemsNumber = %d", FPanelInfo->ItemsNumber);
-  for (int Index = 0; Index < FPanelInfo->ItemsNumber; Index++)
+  if (FOwner)
   {
-    // DEBUG_PRINTF(L"Index = %d", Index);
-    // TODO: move to common function
-    intptr_t size = FOwner->FarControl(FCTL_GETPANELITEM, Index, NULL);
-    PluginPanelItem * ppi = static_cast<PluginPanelItem *>(malloc(size));
-    memset(ppi, 0, size);
-    FarGetPluginPanelItem gppi;
-    gppi.StructSize = sizeof(FarGetPluginPanelItem);
-    gppi.Size = size;
-    gppi.Item = ppi;
-    FOwner->FarControl(FCTL_GETPANELITEM, Index, static_cast<void *>(&gppi));
-    // DEBUG_PRINTF(L"ppi.FileName = %s", ppi->FileName);
-    FItems->Add(static_cast<TObject *>(new TFarPanelItem(ppi)));
+    for (int Index = 0; Index < FPanelInfo->ItemsNumber; Index++)
+    {
+      // DEBUG_PRINTF(L"Index = %d", Index);
+      // TODO: move to common function
+      intptr_t size = FOwner->FarControl(FCTL_GETPANELITEM, Index, NULL);
+      PluginPanelItem * ppi = static_cast<PluginPanelItem *>(malloc(size));
+      memset(ppi, 0, size);
+      FarGetPluginPanelItem gppi;
+      gppi.StructSize = sizeof(FarGetPluginPanelItem);
+      gppi.Size = size;
+      gppi.Item = ppi;
+      FOwner->FarControl(FCTL_GETPANELITEM, Index, static_cast<void *>(&gppi));
+      // DEBUG_PRINTF(L"ppi.FileName = %s", ppi->FileName);
+      FItems->Add(static_cast<TObject *>(new TFarPanelItem(ppi)));
+    }
   }
   return FItems;
 }
