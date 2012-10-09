@@ -7383,8 +7383,8 @@ UnicodeString __fastcall TSynchronizeChecklistDialog::ItemLine(
     S = ChecklistItem->Local.Directory;
     if (AnsiSameText(FLocalDirectory, S.SubString(1, FLocalDirectory.Length())))
     {
-      S[0] = '.';
-      S.Delete(1, FLocalDirectory.Length() - 1);
+      S[1] = '.';
+      S.Delete(2, FLocalDirectory.Length() - 1);
     }
     else
     {
