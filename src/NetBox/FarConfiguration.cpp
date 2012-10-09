@@ -176,12 +176,12 @@ void __fastcall TFarConfiguration::Save(bool All, bool Explicit)
   );
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarConfiguration::SetPlugin(TCustomFarPlugin * value)
+void __fastcall TFarConfiguration::SetPlugin(TCustomFarPlugin * Value)
 {
-  if (GetPlugin() != value)
+  if (GetPlugin() != Value)
   {
-    assert(!GetPlugin() || !value);
-    FFarPlugin = value;
+    assert(!GetPlugin() || !Value);
+    FFarPlugin = Value;
   }
 }
 //---------------------------------------------------------------------------
@@ -216,18 +216,18 @@ bool __fastcall TFarConfiguration::GetConfirmOverwriting()
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarConfiguration::SetConfirmOverwriting(bool value)
+void __fastcall TFarConfiguration::SetConfirmOverwriting(bool Value)
 {
   if (FForceInheritance)
   {
-    TGUIConfiguration::SetConfirmOverwriting(value);
+    TGUIConfiguration::SetConfirmOverwriting(Value);
   }
   else
   {
-    if (GetConfirmOverwriting() != value)
+    if (GetConfirmOverwriting() != Value)
     {
       FConfirmOverwritingOverride = true;
-      TGUIConfiguration::SetConfirmOverwriting(value);
+      TGUIConfiguration::SetConfirmOverwriting(Value);
     }
   }
 }
@@ -245,9 +245,9 @@ UnicodeString __fastcall TFarConfiguration::ModuleFileName()
 }
 //---------------------------------------------------------------------------
 void __fastcall TFarConfiguration::SetBookmarks(UnicodeString Key,
-  TBookmarkList * value)
+  TBookmarkList * Value)
 {
-  FBookmarks->SetBookmarks(Key, value);
+  FBookmarks->SetBookmarks(Key, Value);
   Changed();
 }
 //---------------------------------------------------------------------------
