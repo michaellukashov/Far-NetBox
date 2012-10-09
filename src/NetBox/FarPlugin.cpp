@@ -1311,7 +1311,7 @@ void __fastcall TCustomFarPlugin::WriteConsole(const UnicodeString Str)
 void __fastcall TCustomFarPlugin::FarCopyToClipboard(const UnicodeString Str)
 {
   TFarEnvGuard Guard;
-  FFarStandardFunctions.CopyToClipboard(FCT_ANY, Str.c_str());
+  FFarStandardFunctions.CopyToClipboard(FCT_STREAM, Str.c_str());
 }
 //---------------------------------------------------------------------------
 void __fastcall TCustomFarPlugin::FarCopyToClipboard(TStrings * Strings)
