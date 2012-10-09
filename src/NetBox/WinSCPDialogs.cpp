@@ -6435,11 +6435,11 @@ bool __fastcall TWinSCPFileSystem::OpenDirectoryDialog(
         OPEN_DIRECTORY_BROWSE_CAPTION);
       const FarKey BreakKeys[] = {
         { VK_DELETE, 0 },
-        { VK_F8, 0},
-        { VK_RETURN + (LEFT_CTRL_PRESSED << 16), 0},
-        { 'C' + (LEFT_CTRL_PRESSED << 16), 0},
-        { VK_INSERT + (LEFT_CTRL_PRESSED << 16), 0},
-        { 0 }
+        { VK_F8, 0 },
+        { VK_RETURN, CTRLMASK },
+        { 'C', CTRLMASK},
+        { VK_INSERT, CTRLMASK },
+        { 0, 0 }
       };
 
       ItemFocused = FPlugin->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
