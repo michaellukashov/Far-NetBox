@@ -7526,7 +7526,7 @@ void __fastcall TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
 void __fastcall TSynchronizeChecklistDialog::UpdateControls()
 {
   ButtonSeparator->SetCaption(
-    FORMAT(GetMsg(CHECKLIST_CHECKED).c_str(), FChecked, ListBox->GetItems()->Count));
+    FORMAT(GetMsg(CHECKLIST_CHECKED).c_str(), FChecked, ListBox->GetItems()->Count.get()));
   CheckAllButton->SetEnabled((FChecked < ListBox->GetItems()->Count));
   UncheckAllButton->SetEnabled((FChecked > 0));
 }
