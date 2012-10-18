@@ -66,6 +66,9 @@ protected:
   void __fastcall AboutDialog();
 
 private:
+  void __fastcall CleanupConfiguration();
+
+private:
   bool FInitialized;
   TWinSCPPlugin * Self;
 };

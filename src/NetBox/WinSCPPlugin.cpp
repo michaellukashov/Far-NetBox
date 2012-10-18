@@ -70,6 +70,7 @@ void __fastcall TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * I
     TCustomFarPlugin::SetStartupInfo(Info);
     assert(!FInitialized);
     CoreInitialize();
+    CleanupConfiguration();
     FInitialized = true;
   }
   catch(Exception & E)
@@ -758,3 +759,28 @@ int __fastcall TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
   }
   return Result;
 }
+//---------------------------------------------------------------------------
+void __fastcall TWinSCPPlugin::CleanupConfiguration()
+{
+  // Check if key Configuration\Version exists
+  THierarchicalStorage * Storage = FarConfiguration->CreateScpStorage(false);
+  TRY_FINALLY1 (Storage,
+  {
+    Storage->SetAccessMode(smReadWrite);
+    if (Storage->OpenSubKey(FarConfiguration->GetConfigurationSubKey(), false))
+    {
+      if (!Storage->ValueExists(L"Version"))
+      {
+        Storage->DeleteSubKey(L"CDCache");
+        Storage->WriteStringRaw(L"Version", ::VersionNumberToStr(::GetCurrentVersionNumber()));
+        Storage->CloseSubKey();
+      }
+    }
+  }
+  ,
+  {
+    delete Storage;
+  }
+  );
+}
+//---------------------------------------------------------------------------
