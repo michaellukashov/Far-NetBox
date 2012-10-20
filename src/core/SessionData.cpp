@@ -181,6 +181,7 @@ void __fastcall TSessionData::Default()
   // FTP
   SetFtpPasvMode(true);
   SetFtpForcePasvIp(asAuto);
+  SetFtpUseMlsd(asAuto);
   SetFtpAccount(L"");
   SetFtpPingInterval(30);
   SetFtpPingType(ptDummyCommand);
@@ -309,6 +310,7 @@ void __fastcall TSessionData::NonPersistant()
   \
   PROPERTY(FtpPasvMode); \
   PROPERTY(FtpForcePasvIp); \
+  PROPERTY(FtpUseMlsd); \
   PROPERTY(FtpAccount); \
   PROPERTY(FtpPingInterval); \
   PROPERTY(FtpPingType); \
@@ -601,6 +603,7 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
   // Ftp prefix
   SetFtpPasvMode(Storage->ReadBool(L"FtpPasvMode", GetFtpPasvMode()));
   SetFtpForcePasvIp(TAutoSwitch(Storage->ReadInteger(L"FtpForcePasvIp2", GetFtpForcePasvIp())));
+  SetFtpUseMlsd(TAutoSwitch(Storage->ReadInteger(L"FtpFtpUseMlsd", GetFtpUseMlsd())));
   SetFtpAccount(Storage->ReadString(L"FtpAccount", GetFtpAccount()));
   SetFtpPingInterval(Storage->ReadInteger(L"FtpPingInterval", GetFtpPingInterval()));
   SetFtpPingType(static_cast<TPingType>(Storage->ReadInteger(L"FtpPingType", GetFtpPingType())));
@@ -886,6 +889,7 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
 
       WRITE_DATA(Bool, FtpPasvMode);
       WRITE_DATA_EX(Integer, L"FtpForcePasvIp2", GetFtpForcePasvIp(), );
+      WRITE_DATA(Integer, FtpUseMlsd);
       WRITE_DATA(String, FtpAccount);
       WRITE_DATA(Integer, FtpPingInterval);
       WRITE_DATA(Integer, FtpPingType);
@@ -2433,6 +2437,11 @@ void __fastcall TSessionData::SetFtpAllowEmptyPassword(bool value)
 void __fastcall TSessionData::SetFtpForcePasvIp(TAutoSwitch value)
 {
   SET_SESSION_PROPERTY(FtpForcePasvIp);
+}
+//---------------------------------------------------------------------
+void __fastcall TSessionData::SetFtpUseMlsd(TAutoSwitch value)
+{
+  SET_SESSION_PROPERTY(FtpUseMlsd);
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionData::SetFtpAccount(UnicodeString value)

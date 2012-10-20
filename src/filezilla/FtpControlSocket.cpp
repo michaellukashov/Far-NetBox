@@ -1498,6 +1498,25 @@ void CFtpControlSocket::FtpCommand(LPCTSTR pCommand)
 	Send(pCommand);
 }
 
+CString CFtpControlSocket::GetListingCmd()
+{
+	CString cmd;
+	// 0 = on, 1 = off, 2 = auto
+	if ((m_CurrentServer.iUseMlsd == 0) ||
+		((m_CurrentServer.iUseMlsd != 1) &&
+		 (m_serverCapabilities.GetCapability(mlsd_command) == yes)))
+	{
+		cmd = _T("MLSD");
+	}
+	else
+	{
+		cmd = _T("LIST");
+		if (COptions::GetOptionVal(OPTION_MPEXT_SHOWHIDDEN) && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
+			cmd += _T(" -a");
+	}
+	return cmd;
+}
+
 void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath path /*=CServerPath()*/, CString subdir /*=_MPT("")*/,int nListMode/*=0*/)
 {
 	LogMessage(__FILE__, __LINE__, this,FZ_LOG_DEBUG, _T("List(%s,%d,\"%s\",\"%s\",%d)  OpMode=%d OpState=%d"), bFinish?_T("TRUE"):_T("FALSE"), nError, path.GetPath(), subdir, nListMode,
@@ -2289,20 +2308,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 
 		m_pTransferSocket->SetActive();
 
-#ifdef MPEXT
-		if (m_serverCapabilities.GetCapability(mlsd_command) == yes)
-			cmd = _T("MLSD");
-#endif
-                else
-                {
-			cmd = _T("LIST");
-#ifdef MPEXT
-			if (COptions::GetOptionVal(OPTION_MPEXT_SHOWHIDDEN) && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
-#else
-			if (m_pOwner->GetOption(FZAPI_OPTION_SHOWHIDDEN) && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
-#endif
-				cmd += _T(" -a");
-		}
+		cmd = GetListingCmd();
 		if (!Send(cmd))
 			return;
 
@@ -4271,21 +4277,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 
 			m_pTransferSocket->SetActive();
 			pData->ListStartTime=CTime::GetCurrentTime();
-			CString cmd;
-#ifdef MPEXT
-			if (m_serverCapabilities.GetCapability(mlsd_command) == yes)
-				cmd = _T("MLSD");
-#endif
-			else
-			{
-				cmd=_MPT("LIST");
-#ifdef MPEXT
-				if ((COptions::GetOptionVal(OPTION_MPEXT_SHOWHIDDEN) || pData->transferfile.remotefile.Left(1)==_MPT(".")) && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
-#else
-				if ((m_pOwner->GetOption(FZAPI_OPTION_SHOWHIDDEN) || pData->transferfile.remotefile.Left(1)==_MPT(".")) && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
-#endif
-					cmd += _MPT(" -a");
-			}
+			CString cmd = GetListingCmd();
 			if(!Send(cmd))
 				bError=TRUE;
 			else if(pData->bPasv)
