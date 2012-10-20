@@ -603,7 +603,7 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
   // Ftp prefix
   SetFtpPasvMode(Storage->ReadBool(L"FtpPasvMode", GetFtpPasvMode()));
   SetFtpForcePasvIp(TAutoSwitch(Storage->ReadInteger(L"FtpForcePasvIp2", GetFtpForcePasvIp())));
-  SetFtpUseMlsd(TAutoSwitch(Storage->ReadInteger(L"FtpFtpUseMlsd", GetFtpUseMlsd())));
+  SetFtpUseMlsd(TAutoSwitch(Storage->ReadInteger(L"FtpUseMlsd", GetFtpUseMlsd())));
   SetFtpAccount(Storage->ReadString(L"FtpAccount", GetFtpAccount()));
   SetFtpPingInterval(Storage->ReadInteger(L"FtpPingInterval", GetFtpPingInterval()));
   SetFtpPingType(static_cast<TPingType>(Storage->ReadInteger(L"FtpPingType", GetFtpPingType())));
