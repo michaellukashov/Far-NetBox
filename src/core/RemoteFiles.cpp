@@ -2644,6 +2644,9 @@ TRemoteProperties __fastcall TRemoteProperties::ChangedProperties(
     {
       NewProperties.Valid >> vpOwner;
     }
+
+    NewProperties.Group.SetID(OriginalProperties.Group.GetID());
+    NewProperties.Owner.SetID(OriginalProperties.Owner.GetID());
   }
   return NewProperties;
 }
