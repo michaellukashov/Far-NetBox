@@ -5,8 +5,6 @@
 #include "FileZillaIntern.h"
 #include "FzApiStructures.h"
 #include "structures.h"
-#include <Classes.hpp>
-#include <Common.h>
 //---------------------------------------------------------------------------
 #ifndef _DEBUG
 #pragma comment(lib, "uafxcw.lib")
