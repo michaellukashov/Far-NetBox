@@ -1024,7 +1024,7 @@ extern const uint32_t * const ctype_table;
  * or less than @a b.
  *
  */
-int
+static int
 ctype_casecmp(int a, int b);
 
 //------------------------------------------------------------------------------
@@ -1764,7 +1764,7 @@ static const unsigned char casefold_table[256] =
   240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255
 };
 
-int
+static int
 ctype_casecmp(int a, int b)
 {
   const int A = casefold_table[(unsigned char)a];
