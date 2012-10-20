@@ -1,9 +1,11 @@
 NetBox 2.1.16 ??.10.2012
 --------------------
+  * Bugfix: Close file handle if error occcurs
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=99024#p99024)
   * Bugfix: "Netbox commands" - "Open directory" dialog: fix shortcuts
   * Bugfix: "Netbox commands" - "Syncronize" was not working
   * Bugfix: Issue #41: Cannot change directory when option "[x] Cache visited remote directories" is on
-
+    
 NetBox 2.1.15 07.10.2012
 --------------------
   * Fixed x64 issues
