@@ -1,5 +1,7 @@
-NetBox 2.1.16 ??.10.2012
+NetBox 2.1.16 20.10.2012
 --------------------
+  * Bugfix: Bug 927: Use of MLSD FTP command is configurable
+    (http://winscp.net/tracker/show_bug.cgi?id=927)
   * Bugfix: Bug 926: Error retrieving file stats using full path with FTP protocol.
     (http://winscp.net/tracker/show_bug.cgi?id=926)
   * Bugfix: Bug 923: Treat timestamps in FTP MLSD/MLST results as UTC
