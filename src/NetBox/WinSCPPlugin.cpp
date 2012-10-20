@@ -41,7 +41,6 @@ TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst): TCustomFarPlugin(HInst)
 {
   FInitialized = false;
   Self = this;
-  CreateMutex(NULL, false, L"NetBoxFar");
 }
 //---------------------------------------------------------------------------
 TWinSCPPlugin::~TWinSCPPlugin()
