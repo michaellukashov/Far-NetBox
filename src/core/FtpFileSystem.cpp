@@ -490,7 +490,8 @@ void __fastcall TFTPFileSystem::Open()
     FActive = FFileZillaIntf->Connect(
       HostName.c_str(), Data->GetPortNumber(), UserName.c_str(),
       Password.c_str(), Account.c_str(), false, Path.c_str(),
-      ServerType, Pasv, TimeZoneOffset, UTF8, Data->GetFtpForcePasvIp());
+      ServerType, Pasv, TimeZoneOffset, UTF8, Data->GetFtpForcePasvIp(),
+      Data->GetFtpUseMlsd());
 
     assert(FActive);
 

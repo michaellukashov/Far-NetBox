@@ -126,6 +126,7 @@ protected:
 	void DiscardLine(CStringA line);
 	bool NeedModeCommand();
 	bool NeedOptsCommand();
+	CString GetListingCmd();
 
 	bool InitConnect();
 

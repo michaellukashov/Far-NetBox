@@ -168,6 +168,7 @@ private:
   UnicodeString FTunnelPortFwd;
   bool FFtpPasvMode;
   TAutoSwitch FFtpForcePasvIp;
+  TAutoSwitch FFtpUseMlsd;
   UnicodeString FFtpAccount;
   int FFtpPingInterval;
   TPingType FFtpPingType;
@@ -314,6 +315,7 @@ public:
   bool __fastcall GetTunnelAutoassignLocalPortNumber();
   void __fastcall SetFtpPasvMode(bool value);
   void __fastcall SetFtpForcePasvIp(TAutoSwitch value);
+  void __fastcall SetFtpUseMlsd(TAutoSwitch value);
   void __fastcall SetFtpAccount(UnicodeString value);
   void __fastcall SetFtpPingInterval(int value);
   void __fastcall SetFtpPingType(TPingType value);
@@ -452,6 +454,7 @@ public:
   bool __fastcall GetFtpAllowEmptyPassword() const { return FFtpAllowEmptyPassword; }
   void __fastcall SetFtpAllowEmptyPassword(bool value);
   TAutoSwitch __fastcall GetFtpForcePasvIp() const { return FFtpForcePasvIp; }
+  TAutoSwitch __fastcall GetFtpUseMlsd() const { return FFtpUseMlsd; }
   UnicodeString __fastcall GetFtpAccount() const { return FFtpAccount; }
   int __fastcall GetFtpPingInterval() const { return FFtpPingInterval; }
   TPingType __fastcall GetFtpPingType() const { return FFtpPingType; }

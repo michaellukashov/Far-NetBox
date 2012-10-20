@@ -41,6 +41,7 @@ public:
 	int nUTF8;
 #ifdef MPEXT
 	int iForcePasvIp;
+	int iUseMlsd;
 #endif
 	bool operator<(const t_server &op) const; //Needed by STL map
 };
