@@ -10164,7 +10164,7 @@ cancel_callback(void * baton)
     CONST_FS_KEY,
     APR_HASH_KEY_STRING));
   assert(fs);
-  cancelled = (atomic_t)fs->GetIsCancelled();
+  cancelled = static_cast<atomic_t>(fs->GetIsCancelled());
   return error_trace((cb->ctx->cancel_func)(cb->ctx->cancel_baton));
 }
 
