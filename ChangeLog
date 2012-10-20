@@ -1,5 +1,9 @@
 NetBox 2.1.16 ??.10.2012
 --------------------
+  * Bugfix: Bug 926: Error retrieving file stats using full path with FTP protocol.
+    (http://winscp.net/tracker/show_bug.cgi?id=926)
+  * Bugfix: Bug 923: Treat timestamps in FTP MLSD/MLST results as UTC
+    (http://winscp.net/tracker/show_bug.cgi?id=923)
   * Bugfix: Bug 922: Failure when FTP server returns "parent" directory is MLSD directory listing
     (http://winscp.net/tracker/show_bug.cgi?id=922)
   * Bugfix: Close file handle if error occcurs
