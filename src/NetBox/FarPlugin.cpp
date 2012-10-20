@@ -2971,7 +2971,6 @@ void __fastcall FarWrapText(const UnicodeString Text, TStrings * Result, intptr_
           intptr_t P = 0;
           while ((P = Line.Pos(L'\t')) > 0)
           {
-            DEBUG_PRINTF(L"P = %d", P);
             Line.Delete(P, 1);
             Line.Insert(::StringOfChar(' ',
                 ((P / TabSize) + ((P % TabSize) > 0 ? 1 : 0)) * TabSize - P + 1),
