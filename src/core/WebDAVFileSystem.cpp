@@ -14250,13 +14250,20 @@ void __fastcall TWebDAVFileSystem::FileTransfer(const UnicodeString FileName,
       HANDLE LocalFileHandle = FTerminal->CreateLocalFile(LocalFile,
         GENERIC_WRITE, 0, CREATE_ALWAYS, 0);
       Result = WebDAVGetFile(FullRemoteFileName.c_str(), &LocalFileHandle);
+      if (!Result)
+      {
+        ::CloseHandle(LocalFileHandle);
+        /*FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, LocalFile.c_str()),
+          THROWOSIFFALSE(Sysutils::DeleteFile(LocalFile));
+        )*/
+      }
     }
     else
     {
       Result = WebDAVPutFile(FullRemoteFileName.c_str(), LocalFile.c_str(), Size);
     }
-    if (!Result)
-      EXCEPTION;
+    // if (!Result)
+      // EXCEPTION;
   );
 
   switch (FFileTransferAbort)
