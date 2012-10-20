@@ -1629,6 +1629,7 @@ private:
   TFarCheckBox * FtpPasvModeCheck;
   TFarCheckBox * SshBufferSizeCheck;
   TFarCheckBox * FtpAllowEmptyPasswordCheck;
+  TFarComboBox * FtpUseMlsdCombo;
   TFarCheckBox * SslSessionReuseCheck;
   TFarCheckBox * WebDAVCompressionCheck;
   TSessionDialog * Self;
@@ -2245,6 +2246,8 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   FtpAllowEmptyPasswordCheck = new TFarCheckBox(this);
   FtpAllowEmptyPasswordCheck->SetCaption(GetMsg(LOGIN_FTP_ALLOW_EMPTY_PASSWORD));
+
+  TRISTATE(FtpUseMlsdCombo, FtpUseMlsd, LOGIN_FTP_USE_MLSD);
 
   SslSessionReuseCheck = new TFarCheckBox(this);
   SslSessionReuseCheck->SetCaption(GetMsg(LOGIN_FTP_SSLSESSIONREUSE));
@@ -3297,6 +3300,7 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
 
   // FTP tab
   FtpAllowEmptyPasswordCheck->SetChecked(SessionData->GetFtpAllowEmptyPassword());
+  FtpUseMlsdCombo->SetItemIndex(2 - SessionData->GetFtpUseMlsd());
   TStrings * PostLoginCommands = new TStringList();
   std::auto_ptr<TStrings> PostLoginCommandsPtr(PostLoginCommands);
   {
@@ -3602,6 +3606,7 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
 
     // FTP tab
     SessionData->SetFtpAllowEmptyPassword(FtpAllowEmptyPasswordCheck->GetChecked());
+    SessionData->SetFtpUseMlsd(static_cast<TAutoSwitch>(2 - FtpUseMlsdCombo->GetItemIndex()));
     SessionData->SetSslSessionReuse(SslSessionReuseCheck->GetChecked());
     TStrings * PostLoginCommands = new TStringList();
     std::auto_ptr<TStrings> PostLoginCommandsPtr(PostLoginCommands);
