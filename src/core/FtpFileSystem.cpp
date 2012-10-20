@@ -2073,7 +2073,7 @@ void __fastcall TFTPFileSystem::DoReadFile(const UnicodeString & FileName,
     FFileZillaIntf->ListFile(FileName.c_str());
 
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_ALLOW_CANCEL);
-    TRemoteFile * File = FileList->FindFile(FileName);
+    TRemoteFile * File = FileList->FindFile(UnixExtractFileName(FileName));
     if (File != NULL)
     {
       AFile = File->Duplicate();
