@@ -2411,6 +2411,7 @@ void CFtpControlSocket::ListFile(CServerPath path /*=CServerPath()*/, CString fi
 			pData->pDirectoryListing->server = m_CurrentServer;
 			pData->pDirectoryListing->path.SetServer(pData->pDirectoryListing->server);
 			pData->pDirectoryListing->path = m_pOwner->GetCurrentPath();
+			delete pListResult;
 
 			ShowStatus(IDS_STATUSMSG_LISTFILESUCCESSFUL,0);
 			SetDirectoryListing(pData->pDirectoryListing);
