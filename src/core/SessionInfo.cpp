@@ -1127,9 +1127,10 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
           Ftps = L"None";
           break;
       }
-      ADF(L"FTP: FTPS: %s; Passive: %s [Force IP: %c]",
+      ADF(L"FTP: FTPS: %s; Passive: %s [Force IP: %c]; MLSD: %c",
          Ftps.c_str(), BooleanToEngStr(Data->GetFtpPasvMode()).c_str(),
-         BugFlags[Data->GetFtpForcePasvIp()]);
+         BugFlags[Data->GetFtpForcePasvIp()],
+         BugFlags[Data->GetFtpUseMlsd()]);
     }
     ADF(L"Local directory: %s, Remote directory: %s, Update: %s, Cache: %s",
       (Data->GetLocalDirectory().IsEmpty() ? UnicodeString(L"default").c_str() : Data->GetLocalDirectory().c_str()),

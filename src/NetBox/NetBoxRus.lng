@@ -371,6 +371,7 @@
 "&Passive mode"
 "Optimize connection &buffer size"
 "&Allow empty password"
+"Use &MLSD command for directory listing"
 " Protocol options "
 "&Session ID re-use"
 "&Encryption:"

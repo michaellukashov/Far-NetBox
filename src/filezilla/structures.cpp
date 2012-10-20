@@ -17,7 +17,6 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "stdafx.h"
-#include <structures.h>
 
 
 #ifndef _MSC_VER
@@ -74,7 +73,7 @@ t_directory::t_direntry::t_direntry()
 t_directory::t_direntry::t_date::t_date()
 {
 	year=month=day=hour=minute=second=0;
-	hasdate=hastime=hasseconds=FALSE;
+	hasdate=hastime=hasseconds=utc=FALSE;
 }
 
 void t_directory::Merge(const t_directory &directory, CTime MergeTime)

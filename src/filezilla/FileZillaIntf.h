@@ -6,8 +6,6 @@
 
 #include <time.h>
 #include <FileZillaOpt.h>
-#include <Classes.hpp>
-#include <Sysutils.hpp>
 //---------------------------------------------------------------------------
 class CFileZillaApi;
 class TFileZillaIntern;
@@ -29,6 +27,7 @@ struct TListDataEntry
   bool HasTime;
   bool HasSeconds;
   bool HasDate;
+  bool Utc;
   const wchar_t * LinkTarget;
 };
 //---------------------------------------------------------------------------
@@ -156,7 +155,7 @@ public:
   bool __fastcall Connect(const wchar_t * Host, int Port, const wchar_t * User,
     const wchar_t * Pass, const wchar_t * Account, bool FwByPass,
     const wchar_t * Path, int ServerType, int Pasv, int TimeZoneOffset, int UTF8,
-    int iForcePasvIp);
+    int iForcePasvIp, int iUseMlsd);
   bool __fastcall Close();
 
   bool __fastcall List();

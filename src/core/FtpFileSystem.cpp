@@ -490,7 +490,8 @@ void __fastcall TFTPFileSystem::Open()
     FActive = FFileZillaIntf->Connect(
       HostName.c_str(), Data->GetPortNumber(), UserName.c_str(),
       Password.c_str(), Account.c_str(), false, Path.c_str(),
-      ServerType, Pasv, TimeZoneOffset, UTF8, Data->GetFtpForcePasvIp());
+      ServerType, Pasv, TimeZoneOffset, UTF8, Data->GetFtpForcePasvIp(),
+      Data->GetFtpUseMlsd());
 
     assert(FActive);
 
@@ -2066,6 +2067,10 @@ void __fastcall TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 void __fastcall TFTPFileSystem::DoReadFile(const UnicodeString & FileName,
   TRemoteFile *& AFile)
 {
+  // end-user has right to expect that client current directory is really
+  // current directory for the server
+  EnsureLocation();
+
   TRemoteFileList * FileList = new TRemoteFileList();
   TRY_FINALLY1 (FileList,
   {
@@ -2073,7 +2078,7 @@ void __fastcall TFTPFileSystem::DoReadFile(const UnicodeString & FileName,
     FFileZillaIntf->ListFile(FileName.c_str());
 
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_ALLOW_CANCEL);
-    TRemoteFile * File = FileList->FindFile(FileName);
+    TRemoteFile * File = FileList->FindFile(UnixExtractFileName(FileName));
     if (File != NULL)
     {
       AFile = File->Duplicate();
@@ -3717,6 +3722,12 @@ bool __fastcall TFTPFileSystem::HandleListData(const wchar_t * Path,
             TRACE("4k");
             File->SetModification(Modification);
             File->SetModificationFmt(mfMDY);
+          }
+
+          if (Entry->Utc)
+          {
+            TRACE("4k1");
+            File->SetModification(ConvertFileTimestampFromUTC(File->GetModification()));
           }
           TRACEFMT("4k2 [%s] [%s]", (File->GetModification().DateString(), File->GetModification().TimeString()));
         }

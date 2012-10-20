@@ -77,6 +77,9 @@ protected:
   BOOL __fastcall CreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
 
 private:
+  void __fastcall CleanupConfiguration();
+
+private:
   bool FInitialized;
   TWinSCPPlugin * Self;
 };

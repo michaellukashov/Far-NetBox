@@ -5,8 +5,6 @@
 #include "FileZillaIntern.h"
 #include "FzApiStructures.h"
 #include "structures.h"
-#include <Classes.hpp>
-#include <Common.h>
 //---------------------------------------------------------------------------
 #ifndef _DEBUG
 #pragma comment(lib, "uafxcw.lib")
@@ -108,7 +106,7 @@ bool __fastcall TFileZillaIntf::Cancel()
 bool __fastcall TFileZillaIntf::Connect(const wchar_t * Host, int Port, const wchar_t * User,
   const wchar_t * Pass, const wchar_t * Account, bool FwByPass,
   const wchar_t * Path, int ServerType, int Pasv, int TimeZoneOffset, int UTF8,
-  int iForcePasvIp)
+  int iForcePasvIp, int iUseMlsd)
 {
   ASSERT(FFileZillaApi != NULL);
   ASSERT((ServerType & FZ_SERVERTYPE_HIGHMASK) == FZ_SERVERTYPE_FTP);
@@ -127,6 +125,7 @@ bool __fastcall TFileZillaIntf::Connect(const wchar_t * Host, int Port, const wc
   Server.nTimeZoneOffset = TimeZoneOffset;
   Server.nUTF8 = UTF8;
   Server.iForcePasvIp = iForcePasvIp;
+  Server.iUseMlsd = iUseMlsd;
 
   *FServer = Server;
 
@@ -440,6 +439,7 @@ bool __fastcall TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
           Dest.HasTime = Source.date.hastime;
           Dest.HasDate = Source.date.hasdate;
           Dest.HasSeconds = Source.date.hasseconds;
+          Dest.Utc = Source.date.utc;
           Dest.LinkTarget = Source.linkTarget;
         }
 

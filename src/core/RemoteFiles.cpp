@@ -577,16 +577,6 @@ UnicodeString __fastcall TRemoteToken::GetLogText() const
   return FORMAT(L"\"%s\" [%d]", FName.c_str(), static_cast<int>(FID));
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TRemoteToken::GetName() const
-{
-  return FName;
-}
-//---------------------------------------------------------------------------
-void __fastcall TRemoteToken::SetName(const UnicodeString value)
-{
-  FName = value;
-}
-//---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TRemoteTokenList * __fastcall TRemoteTokenList::Duplicate() const
 {
@@ -2654,6 +2644,9 @@ TRemoteProperties __fastcall TRemoteProperties::ChangedProperties(
     {
       NewProperties.Valid >> vpOwner;
     }
+
+    NewProperties.Group.SetID(OriginalProperties.Group.GetID());
+    NewProperties.Owner.SetID(OriginalProperties.Owner.GetID());
   }
   return NewProperties;
 }

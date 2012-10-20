@@ -37,11 +37,10 @@ TMessageParams::TMessageParams()
   TimeoutAnswer = 0;
 }
 //---------------------------------------------------------------------------
-TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst): TCustomFarPlugin(HInst)
+TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) : TCustomFarPlugin(HInst)
 {
   FInitialized = false;
   Self = this;
-  CreateMutex(NULL, false, L"NetBoxFar");
 }
 //---------------------------------------------------------------------------
 TWinSCPPlugin::~TWinSCPPlugin()
@@ -70,6 +69,7 @@ void __fastcall TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * I
     TCustomFarPlugin::SetStartupInfo(Info);
     assert(!FInitialized);
     CoreInitialize();
+    CleanupConfiguration();
     FInitialized = true;
   }
   catch(Exception & E)
@@ -812,3 +812,28 @@ BOOL __fastcall TWinSCPPlugin::CreateLocalDirectory(const UnicodeString & LocalD
   return GetSystemFunctions()->CreateDirectory(LocalDirName.c_str(), SecurityAttributes);
 }
 
+//---------------------------------------------------------------------------
+void __fastcall TWinSCPPlugin::CleanupConfiguration()
+{
+  // Check if key Configuration\Version exists
+  THierarchicalStorage * Storage = FarConfiguration->CreateScpStorage(false);
+  TRY_FINALLY1 (Storage,
+  {
+    Storage->SetAccessMode(smReadWrite);
+    if (Storage->OpenSubKey(FarConfiguration->GetConfigurationSubKey(), false))
+    {
+      if (!Storage->ValueExists(L"Version"))
+      {
+        Storage->DeleteSubKey(L"CDCache");
+        Storage->WriteStringRaw(L"Version", ::VersionNumberToStr(::GetCurrentVersionNumber()));
+        Storage->CloseSubKey();
+      }
+    }
+  }
+  ,
+  {
+    delete Storage;
+  }
+  );
+}
+//---------------------------------------------------------------------------

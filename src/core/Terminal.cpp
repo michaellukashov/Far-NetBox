@@ -2519,7 +2519,7 @@ void /* __fastcall */ TTerminal::ReadCurrentDirectory()
       FLockDirectory = (GetSessionData()->GetLockInHome() ?
         FFileSystem->GetCurrentDirectory() : UnicodeString(L""));
     }
-    if (OldDirectory != FFileSystem->GetCurrentDirectory()) { DoChangeDirectory(); }
+    /* if (OldDirectory != FFileSystem->GetCurrentDirectory()) */ { DoChangeDirectory(); }
   }
   catch (Exception &E)
   {

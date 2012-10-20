@@ -1631,6 +1631,7 @@ private:
   TFarCheckBox * FtpPasvModeCheck;
   TFarCheckBox * SshBufferSizeCheck;
   TFarCheckBox * FtpAllowEmptyPasswordCheck;
+  TFarComboBox * FtpUseMlsdCombo;
   TFarCheckBox * SslSessionReuseCheck;
   TFarCheckBox * WebDAVCompressionCheck;
   TSessionDialog * Self;
@@ -2244,6 +2245,8 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   Separator = new TFarSeparator(this);
   Separator->SetPosition(GroupTop);
   Separator->SetCaption(GetMsg(LOGIN_FTP_GROUP));
+
+  TRISTATE(FtpUseMlsdCombo, FtpUseMlsd, LOGIN_FTP_USE_MLSD);
 
   FtpAllowEmptyPasswordCheck = new TFarCheckBox(this);
   FtpAllowEmptyPasswordCheck->SetCaption(GetMsg(LOGIN_FTP_ALLOW_EMPTY_PASSWORD));
@@ -3298,6 +3301,7 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
   SFTPMaxPacketSizeEdit->SetAsInteger(SessionData->GetSFTPMaxPacketSize());
 
   // FTP tab
+  FtpUseMlsdCombo->SetItemIndex(2 - SessionData->GetFtpUseMlsd());
   FtpAllowEmptyPasswordCheck->SetChecked(SessionData->GetFtpAllowEmptyPassword());
   TStrings * PostLoginCommands = new TStringList();
   std::auto_ptr<TStrings> PostLoginCommandsPtr(PostLoginCommands);
@@ -3603,6 +3607,7 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
     SessionData->SetSFTPMaxPacketSize(SFTPMaxPacketSizeEdit->GetAsInteger());
 
     // FTP tab
+    SessionData->SetFtpUseMlsd(static_cast<TAutoSwitch>(2 - FtpUseMlsdCombo->GetItemIndex()));
     SessionData->SetFtpAllowEmptyPassword(FtpAllowEmptyPasswordCheck->GetChecked());
     SessionData->SetSslSessionReuse(SslSessionReuseCheck->GetChecked());
     TStrings * PostLoginCommands = new TStringList();
@@ -4574,7 +4579,6 @@ private:
 TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
   TStrings * FileList, const UnicodeString Directory,
   const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
-  // TStrings * GroupList, TStrings * UserList,
   int AAllowedChanges) :
   TFarDialog(AFarPlugin),
   RightsContainer(NULL),
@@ -4851,7 +4855,6 @@ bool __fastcall TPropertiesDialog::Execute(TRemoteProperties * Properties)
 bool __fastcall TWinSCPFileSystem::PropertiesDialog(TStrings * FileList,
     const UnicodeString Directory,
     const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
-    // TStrings * GroupList, TStrings * UserList,
     TRemoteProperties * Properties, int AllowedChanges)
 {
   bool Result = false;
