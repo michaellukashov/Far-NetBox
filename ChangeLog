@@ -8,7 +8,7 @@ NetBox 2.1.16 20.10.2012
     (http://winscp.net/tracker/show_bug.cgi?id=923)
   * Bugfix: Bug 922: Failure when FTP server returns "parent" directory is MLSD directory listing
     (http://winscp.net/tracker/show_bug.cgi?id=922)
-  * Bugfix: Close file handle if error occcurs
+  * Bugfix: Close file handle if error occurs
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=99024#p99024)
   * Bugfix: "Netbox commands" - "Open directory" dialog: fix shortcuts
   * Bugfix: "Netbox commands" - "Syncronize" was not working
