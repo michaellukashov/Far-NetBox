@@ -14743,8 +14743,6 @@ webdav::error_t TWebDAVFileSystem::SimplePrompt(
   unsigned int & RequestResult)
 {
   RequestResult = 0;
-  TSessionData * Data = FTerminal->GetSessionData();
-  UnicodeString Text = Data->GetUserNameExpanded();
   TStrings * MoreMessages = new TStringList();
   TRY_FINALLY1 (MoreMessages,
   {
