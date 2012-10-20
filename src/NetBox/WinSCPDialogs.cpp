@@ -4572,7 +4572,6 @@ private:
 TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
   TStrings * FileList, const UnicodeString Directory,
   const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
-  // TStrings * GroupList, TStrings * UserList,
   int AAllowedChanges) :
   TFarDialog(AFarPlugin),
   RightsContainer(NULL),
@@ -4849,7 +4848,6 @@ bool __fastcall TPropertiesDialog::Execute(TRemoteProperties * Properties)
 bool __fastcall TWinSCPFileSystem::PropertiesDialog(TStrings * FileList,
     const UnicodeString Directory,
     const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
-    // TStrings * GroupList, TStrings * UserList,
     TRemoteProperties * Properties, int AllowedChanges)
 {
   bool Result = false;
