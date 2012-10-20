@@ -2066,6 +2066,10 @@ void __fastcall TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 void __fastcall TFTPFileSystem::DoReadFile(const UnicodeString & FileName,
   TRemoteFile *& AFile)
 {
+  // end-user has right to expect that client current directory is really
+  // current directory for the server
+  EnsureLocation();
+
   TRemoteFileList * FileList = new TRemoteFileList();
   TRY_FINALLY1 (FileList,
   {
