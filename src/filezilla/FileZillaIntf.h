@@ -27,6 +27,7 @@ struct TListDataEntry
   bool HasTime;
   bool HasSeconds;
   bool HasDate;
+  bool Utc;
   const wchar_t * LinkTarget;
 };
 //---------------------------------------------------------------------------

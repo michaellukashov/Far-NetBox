@@ -438,6 +438,7 @@ bool __fastcall TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
           Dest.HasTime = Source.date.hastime;
           Dest.HasDate = Source.date.hasdate;
           Dest.HasSeconds = Source.date.hasseconds;
+          Dest.Utc = Source.date.utc;
           Dest.LinkTarget = Source.linkTarget;
         }
 

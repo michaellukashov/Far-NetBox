@@ -122,13 +122,13 @@ bool __fastcall UsesDaylightHack();
 TDateTime __fastcall EncodeDateVerbose(Word Year, Word Month, Word Day);
 TDateTime __fastcall EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec);
 TDateTime __fastcall UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode);
+TDateTime __fastcall ConvertFileTimestampFromUTC(TDateTime DateTime);
 FILETIME __fastcall DateTimeToFileTime(const TDateTime DateTime, TDSTMode DSTMode);
 TDateTime __fastcall AdjustDateTimeFromUnix(TDateTime DateTime, TDSTMode DSTMode);
 void __fastcall UnifyDateTimePrecision(TDateTime & DateTime1, TDateTime & DateTime2);
 TDateTime __fastcall FileTimeToDateTime(const FILETIME & FileTime);
 __int64 __fastcall ConvertTimestampToUnix(const FILETIME & FileTime,
   TDSTMode DSTMode);
-TDateTime __fastcall ConvertTimestampToUTC(TDateTime DateTime);
 __int64 __fastcall ConvertTimestampToUnixSafe(const FILETIME & FileTime,
   TDSTMode DSTMode);
 UnicodeString __fastcall FixedLenDateTimeFormat(const UnicodeString & Format);

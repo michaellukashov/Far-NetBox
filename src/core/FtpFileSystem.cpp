@@ -3718,6 +3718,12 @@ bool __fastcall TFTPFileSystem::HandleListData(const wchar_t * Path,
             File->SetModification(Modification);
             File->SetModificationFmt(mfMDY);
           }
+
+          if (Entry->Utc)
+          {
+            TRACE("4k1");
+            File->SetModification(ConvertFileTimestampFromUTC(File->GetModification()));
+          }
           TRACEFMT("4k2 [%s] [%s]", (File->GetModification().DateString(), File->GetModification().TimeString()));
         }
         else

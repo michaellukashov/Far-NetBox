@@ -1480,7 +1480,7 @@ __int64 __fastcall ConvertTimestampToUnix(const FILETIME & FileTime,
   return Result;
 }
 //---------------------------------------------------------------------------
-TDateTime __fastcall ConvertTimestampToUTC(TDateTime DateTime)
+static TDateTime __fastcall ConvertTimestampToUTC(TDateTime DateTime)
 {
   CCALLSTACK(TRACE_TIMESTAMP);
 
@@ -1494,6 +1494,28 @@ TDateTime __fastcall ConvertTimestampToUTC(TDateTime DateTime)
   {
     const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
     DateTime += CurrentParams->CurrentDaylightDifference;
+  }
+
+  return DateTime;
+}
+//---------------------------------------------------------------------------
+TDateTime __fastcall ConvertFileTimestampFromUTC(TDateTime DateTime)
+{
+  CCALLSTACK(TRACE_TIMESTAMP);
+
+  const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
+  DateTime -=
+    (IsDateInDST(DateTime) ?
+      // Note the difference to ConvertTimestampToUTC()
+      // This is to compensate CTime::GetGmtTm for MFMT FTP conversion
+      Params->DaylightDifference : -Params->DaylightDifference);
+
+  DateTime -= Params->BaseDifference;
+
+  if (Params->DaylightHack)
+  {
+    const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
+    DateTime -= CurrentParams->CurrentDaylightDifference;
   }
 
   return DateTime;
