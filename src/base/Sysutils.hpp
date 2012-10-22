@@ -186,8 +186,8 @@ __int64 ToInt(const UnicodeString value);
 int StrToIntDef(const UnicodeString value, int defval);
 __int64 StrToInt64(const UnicodeString value);
 __int64 StrToInt64Def(const UnicodeString value, __int64 defval);
-bool TryStrToInt(const std::wstring value, int & Value);
-bool TryStrToInt(const std::wstring value, __int64 & Value);
+bool TryStrToInt(const std::wstring & value, int & Value);
+bool TryStrToInt(const std::wstring & value, __int64 & Value);
 
 //---------------------------------------------------------------------------
 double StrToFloat(const UnicodeString Value);

@@ -133,7 +133,7 @@ __int64 StrToInt64Def(const UnicodeString value, __int64 defval)
   }
 }
 
-bool TryStrToInt(const std::wstring value, __int64 & Value)
+bool TryStrToInt(const std::wstring & value, __int64 & Value)
 {
   bool result = false;
   try
@@ -148,7 +148,7 @@ bool TryStrToInt(const std::wstring value, __int64 & Value)
   return result;
 }
 
-bool TryStrToInt(const std::wstring value, int & Value)
+bool TryStrToInt(const std::wstring & value, int & Value)
 {
   bool result = false;
   try
