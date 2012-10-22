@@ -3713,7 +3713,6 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
       UnicodeString() : CodePageEdit->GetText());
 
     // Proxy tab
-    TFarComboBox * ProxyMethodCombo = GetProxyMethodCombo();
     SessionData->SetProxyMethod(GetProxyMethod());
     SessionData->SetFtpProxyLogonType(GetFtpProxyLogonType());
     SessionData->SetProxyHost(ProxyHostEdit->GetText());
