@@ -140,7 +140,7 @@ UnicodeString __fastcall THierarchicalStorage::GetCurrentSubKeyMunged() const
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall THierarchicalStorage::GetCurrentSubKey()
+UnicodeString __fastcall THierarchicalStorage::GetCurrentSubKey() const
 {
   return UnMungeStr(GetCurrentSubKeyMunged());
 }
@@ -768,7 +768,7 @@ UnicodeString __fastcall TCustomIniFileStorage::GetSource()
   return GetStorage();
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TCustomIniFileStorage::GetCurrentSection()
+UnicodeString __fastcall TCustomIniFileStorage::GetCurrentSection() const
 {
   return ExcludeTrailingBackslash(GetCurrentSubKeyMunged());
 }

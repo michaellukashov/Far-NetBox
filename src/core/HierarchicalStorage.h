@@ -78,7 +78,7 @@ protected:
   bool FMungeStringValues;
   bool FForceAnsi;
 
-  UnicodeString __fastcall GetCurrentSubKey();
+  UnicodeString __fastcall GetCurrentSubKey() const;
   UnicodeString __fastcall GetCurrentSubKeyMunged() const;
   virtual bool __fastcall DoKeyExists(const UnicodeString SubKey, bool ForceAnsi) = 0;
   static UnicodeString __fastcall IncludeTrailingBackslash(const UnicodeString & S);
@@ -172,7 +172,8 @@ public:
   virtual void __fastcall GetValueNames(Classes::TStrings* Strings);
 
 private:
-  UnicodeString __fastcall GetCurrentSection();
+  UnicodeString __fastcall GetCurrentSection() const;
+
 protected:
   TCustomIniFile * FIniFile;
 
