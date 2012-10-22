@@ -3303,7 +3303,6 @@ auth_simple_first_creds_helper(void ** credentials,
   bool need_to_save = FALSE;
   apr_hash_t * creds_hash = NULL;
   error_t err = 0;
-  string_t * str = NULL;
 
   /* Try to load credentials from a file on disk, based on the
      realmstring.  Don't throw an error, though: if something went
@@ -3329,7 +3328,7 @@ auth_simple_first_creds_helper(void ** credentials,
     /* The password type in the auth data must match the
        mangler's type, otherwise the password must be
        interpreted by another provider. */
-    str = static_cast<string_t *>(apr_hash_get(creds_hash, AUTHN_PASSTYPE_KEY, APR_HASH_KEY_STRING));
+    string_t * str = static_cast<string_t *>(apr_hash_get(creds_hash, AUTHN_PASSTYPE_KEY, APR_HASH_KEY_STRING));
     if (str && str->data)
       if (passtype && (0 == strcmp(str->data, passtype)))
         have_passtype = TRUE;

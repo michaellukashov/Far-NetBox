@@ -4267,10 +4267,6 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
   Self = this;
   FAnyDirectories = AAnyDirectories;
 
-  TFarButton * Button;
-  TFarText * Text;
-  TFarCheckBox * CheckBox;
-
   GetDialog()->SetNextItemPosition(ipNewLine);
 
   static int RowLabels[] = { PROPERTIES_OWNER_RIGHTS, PROPERTIES_GROUP_RIGHTS,
@@ -4283,7 +4279,7 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
   for (int RowIndex = 0; RowIndex < 3; RowIndex++)
   {
     GetDialog()->SetNextItemPosition(ipNewLine);
-    Text = new TFarText(GetDialog());
+    TFarText * Text = new TFarText(GetDialog());
     if (RowIndex == 0)
     {
       Text->SetTop(0);
@@ -4297,7 +4293,7 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
 
     for (int ColIndex = 0; ColIndex < 3; ColIndex++)
     {
-      CheckBox = new TFarCheckBox(GetDialog());
+      TFarCheckBox * CheckBox = new TFarCheckBox(GetDialog());
       FCheckBoxes[(RowIndex + 1)* 3 + ColIndex] = CheckBox;
       Add(CheckBox);
       CheckBox->SetEnabledDependency(EnabledDependency);
@@ -4306,7 +4302,7 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
 
     if (ShowSpecials)
     {
-      CheckBox = new TFarCheckBox(GetDialog());
+      TFarCheckBox * CheckBox = new TFarCheckBox(GetDialog());
       Add(CheckBox);
       CheckBox->SetVisible(ShowSpecials);
       CheckBox->SetEnabledDependency(EnabledDependency);
@@ -4322,7 +4318,7 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
 
   GetDialog()->SetNextItemPosition(ipNewLine);
 
-  Text = new TFarText(GetDialog());
+  TFarText * Text = new TFarText(GetDialog());
   Add(Text);
   Text->SetEnabledDependency(EnabledDependency);
   Text->SetLeft(0);
@@ -4341,7 +4337,7 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
   {
     GetDialog()->SetNextItemPosition(ipRight);
 
-    Button = new TFarButton(GetDialog());
+    TFarButton * Button = new TFarButton(GetDialog());
     Add(Button);
     Button->SetEnabledDependency(EnabledDependency);
     Button->SetCaption(GetMsg(PROPERTIES_NONE_RIGHTS));
@@ -4592,14 +4588,12 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
   USEDPARAM(OnlyFile);
   assert(OnlyFile);
   FMultiple = (FileList->Count > 1);
-  TRemoteFile * File;
-
-  TStringList * UsedGroupList = NULL;
-  TStringList * UsedUserList = NULL;
-  std::auto_ptr<TStrings> UsedGroupListPtr(NULL);
-  std::auto_ptr<TStrings> UsedUserListPtr(NULL);
 
   {
+    TStringList * UsedGroupList = NULL;
+    TStringList * UsedUserList = NULL;
+    std::auto_ptr<TStrings> UsedGroupListPtr(NULL);
+    std::auto_ptr<TStrings> UsedUserListPtr(NULL);
     if ((GroupList == NULL) || (GroupList->Count() == 0))
     {
       UsedGroupList = new TStringList();
@@ -4618,7 +4612,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     int Directories = 0;
     for (int Index = 0; Index < FileList->Count; Index++)
     {
-      File = reinterpret_cast<TRemoteFile *>(FileList->Objects[Index]);
+      TRemoteFile * File = reinterpret_cast<TRemoteFile *>(FileList->Objects[Index]);
       assert(File);
       if (UsedGroupList && !File->GetFileGroup().GetName().IsEmpty())
       {
@@ -5388,9 +5382,6 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   FOptions = Options;
   FCopyParamAttrs = CopyParamAttrs;
 
-  TFarButton * Button;
-  TFarSeparator * Separator;
-  TFarText * Text;
   const int DlgLength = 78;
   SetSize(TPoint(DlgLength, 12 + (FLAGCLEAR(FOptions, coTempTransfer) ? 4 : 0)));
   TRect CRect = GetClientRect();
@@ -5414,14 +5405,14 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
       Prompt = FORMAT(PromptMsg.c_str(), MinimizedName.c_str());
     }
 
-    Text = new TFarText(this);
+    TFarText * Text = new TFarText(this);
     Text->SetCaption(Prompt);
 
     DirectoryEdit = new TFarEdit(this);
     DirectoryEdit->SetHistory(ToRemote ? REMOTE_DIR_HISTORY : L"Copy");
   }
 
-  Separator = new TFarSeparator(this);
+  TFarSeparator * Separator = new TFarSeparator(this);
   Separator->SetCaption(GetMsg(COPY_PARAM_GROUP));
 
   CopyParamLister = new TFarLister(this);
@@ -5459,7 +5450,7 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
 
   new TFarSeparator(this);
 
-  Button = new TFarButton(this);
+  TFarButton * Button = new TFarButton(this);
   Button->SetCaption(GetMsg(TRANSFER_SETTINGS_BUTTON));
   Button->SetResult(-1);
   Button->SetCenterGroup(true);
@@ -8310,10 +8301,9 @@ TQueueDialog::TQueueDialog(TCustomFarPlugin * AFarPlugin,
 void TQueueDialog::OperationButtonClick(TFarButton * Sender,
   bool & /*Close*/)
 {
-  TQueueItemProxy * QueueItem = NULL;
   if (QueueListBox->GetItems()->GetSelected() != NPOS)
   {
-    QueueItem = reinterpret_cast<TQueueItemProxy *>(
+    TQueueItemProxy * QueueItem = reinterpret_cast<TQueueItemProxy *>(
       QueueListBox->GetItems()->Objects[QueueListBox->GetItems()->GetSelected()]);
 
     if (Sender == ExecuteButton)
