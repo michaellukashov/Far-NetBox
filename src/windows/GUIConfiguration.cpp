@@ -120,9 +120,9 @@ void __fastcall TCopyParamRuleData::Default()
 {
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TCopyParamRule::TCopyParamRule(const TCopyParamRuleData & Data)
+/* __fastcall */ TCopyParamRule::TCopyParamRule(const TCopyParamRuleData & Data) :
+  FData(Data)
 {
-  FData = Data;
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TCopyParamRule::TCopyParamRule(const TCopyParamRule & Source)
