@@ -876,15 +876,6 @@ char * StrNew(const char * str)
   return Result;
 }
 
-wchar_t * AnsiStrScan(const wchar_t * Str, const wchar_t TokenPrefix)
-{
-  (void)Str;
-  (void)TokenPrefix;
-  Classes::Error(SNotImplemented, 31);
-  wchar_t * result = NULL;
-  return result;
-}
-
 UnicodeString ChangeFileExt(const UnicodeString FileName, const UnicodeString ext)
 {
   UnicodeString result = ::ChangeFileExtension(FileName, ext);

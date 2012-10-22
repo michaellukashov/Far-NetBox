@@ -260,8 +260,6 @@ UnicodeString StringOfChar(const wchar_t c, int len);
 
 char * StrNew(const char * str);
 
-wchar_t * AnsiStrScan(const wchar_t * Str, const wchar_t TokenPrefix);
-
 UnicodeString ChangeFileExt(const UnicodeString FileName, const UnicodeString ext);
 UnicodeString ExtractFileExt(const UnicodeString FileName);
 UnicodeString ExpandUNCFileName(const UnicodeString FileName);
