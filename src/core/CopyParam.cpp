@@ -296,38 +296,6 @@ UnicodeString __fastcall TCopyParamType::ValidLocalPath(UnicodeString Path) cons
   return Result;
 }
 //---------------------------------------------------------------------------
-// not used yet
-UnicodeString TCopyParamType::Untokenize(const UnicodeString FileName)
-{
-  wchar_t * Token;
-  UnicodeString Result = FileName;
-  while ((Token = AnsiStrScan(Result.c_str(), TokenPrefix)) != NULL)
-  {
-    int Index = Token - Result.c_str() + 1;
-    if (Index > Result.Length() - 2)
-    {
-      Result = FileName;
-      break;
-    }
-    else
-    {
-      // wchar_t Ch = static_cast<wchar_t>(HexToInt(Result.SubString(Index + 1, 2), -1));
-      wchar_t Ch = static_cast<wchar_t>(HexToInt(Result.SubString(Index + 1, 2), (size_t)-1));
-      if (Ch == '\0')
-      {
-        Result = FileName;
-        break;
-      }
-      else
-      {
-        Result[Index] = Ch;
-        Result.Delete(Index + 1, 2);
-      }
-    }
-  }
-  return Result;
-}
-//---------------------------------------------------------------------------
 UnicodeString __fastcall TCopyParamType::ChangeFileName(UnicodeString FileName,
   TOperationSide Side, bool FirstLevel) const
 {
