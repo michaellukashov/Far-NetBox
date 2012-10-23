@@ -2191,7 +2191,7 @@ static bool
 is_canonical(const char * path,
   apr_size_t len)
 {
-  return (!WEBDAV_PATH_IS_PLATFORM_EMPTY(path, len) 
+  return (!WEBDAV_PATH_IS_PLATFORM_EMPTY(path, len)
           && strstr(path, "/./") == NULL
           && (len == 0
               || (len == 1 && path[0] == '/')
@@ -6383,9 +6383,6 @@ dirent_get_absolute(const char ** pabsolute,
                                APR_FILEPATH_NOTRELATIVE,
                                pool);
   if (apr_err)
-    // return error_createf(WEBDAV_ERR_BAD_FILENAME,
-                         // NULL,
-                         // "Couldn't determine absolute path of '%s'", relative);
   {
     /* In some cases when the passed path or its ancestor(s) do not exist
        or no longer exist apr returns an error.
@@ -6408,9 +6405,8 @@ dirent_get_absolute(const char ** pabsolute,
       }
 
     return error_createf(WEBDAV_ERR_BAD_FILENAME,
-                             NULL,
-                             "Couldn't determine absolute path of '%s'",
-                             relative, pool);
+                         NULL,
+                         "Couldn't determine absolute path of '%s'", relative);
   }
 
   WEBDAV_ERR(path_cstring_to_utf8(pabsolute, buffer, pool));
