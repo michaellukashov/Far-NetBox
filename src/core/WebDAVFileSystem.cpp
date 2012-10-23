@@ -3941,8 +3941,8 @@ auth_ssl_client_cert_pw_file_first_creds_helper(void ** credentials_p,
 
   if (password)
   {
-    auth_cred_ssl_client_cert_pw_t * cred
-      = static_cast<auth_cred_ssl_client_cert_pw_t *>(apr_pcalloc(pool, sizeof(*cred)));
+    auth_cred_ssl_client_cert_pw_t * cred =
+      static_cast<auth_cred_ssl_client_cert_pw_t *>(apr_pcalloc(pool, sizeof(*cred)));
     cred->password = password;
     cred->may_save = FALSE;
     *credentials_p = cred;
@@ -5244,8 +5244,7 @@ auth_get_platform_specific_client_providers(apr_array_header_t ** providers,
 
   *providers = apr_array_make(pool, 12, sizeof(auth_provider_object_t *));
 
-  password_stores
-    = cstring_split(password_stores_config_option, " ,", TRUE, pool);
+  password_stores = cstring_split(password_stores_config_option, " ,", TRUE, pool);
 
   for (i = 0; i < password_stores->nelts; i++)
   {
@@ -8093,10 +8092,8 @@ static int
 start_err_element(void * baton, int parent,
   const char * nspace, const char * name, const char ** atts)
 {
-  const neon_xml_elm_t * elm
-    = neon_lookup_xml_elem(error_elements, nspace, name);
-  int acc = elm
-            ? validate_error_elements(parent, elm->id) : NEON__XML_DECLINE;
+  const neon_xml_elm_t * elm = neon_lookup_xml_elem(error_elements, nspace, name);
+  int acc = elm ? validate_error_elements(parent, elm->id) : NEON__XML_DECLINE;
   error_parser_baton_t * b = static_cast<error_parser_baton_t *>(baton);
   error_t * err = &(b->tmp_err);
 
@@ -8996,11 +8993,9 @@ session_open(
   /* Auth caching parameters. */
   bool store_passwords = WEBDAV_CONFIG_DEFAULT_OPTION_STORE_PASSWORDS;
   bool store_auth_creds = WEBDAV_CONFIG_DEFAULT_OPTION_STORE_AUTH_CREDS;
-  const char * store_plaintext_passwords
-    = WEBDAV_CONFIG_DEFAULT_OPTION_STORE_PLAINTEXT_PASSWORDS;
+  const char * store_plaintext_passwords = WEBDAV_CONFIG_DEFAULT_OPTION_STORE_PLAINTEXT_PASSWORDS;
   bool store_pp = WEBDAV_CONFIG_DEFAULT_OPTION_STORE_SSL_CLIENT_CERT_PP;
-  const char * store_pp_plaintext
-    = WEBDAV_CONFIG_DEFAULT_OPTION_STORE_SSL_CLIENT_CERT_PP_PLAINTEXT;
+  const char * store_pp_plaintext = WEBDAV_CONFIG_DEFAULT_OPTION_STORE_SSL_CLIENT_CERT_PP_PLAINTEXT;
 
   if (callbacks->auth_baton)
   {
@@ -10372,8 +10367,7 @@ options_start_element(int * elem, void * baton, int parent,
   const char * nspace, const char * name, const char ** atts)
 {
   options_ctx_t * oc = static_cast<options_ctx_t *>(baton);
-  const neon_xml_elm_t * elm
-    = neon_lookup_xml_elem(options_elements, nspace, name);
+  const neon_xml_elm_t * elm = neon_lookup_xml_elem(options_elements, nspace, name);
 
   *elem = elm ? options_validate_element(parent, elm->id) : NEON__XML_DECLINE;
   if (*elem < 1)  /* Not a valid element */
@@ -10889,8 +10883,7 @@ props_start_element(int * elem, void * baton, int parent,
   const char * nspace, const char * name, const char ** atts)
 {
   propfind_ctx_t * pc = static_cast<propfind_ctx_t *>(baton);
-  const neon_xml_elm_t * elm
-    = neon_lookup_xml_elem(propfind_elements, nspace, name);
+  const neon_xml_elm_t * elm = neon_lookup_xml_elem(propfind_elements, nspace, name);
 
 
   *elem = elm ? props_validate_element(parent, elm->id) : NEON__XML_DECLINE;
