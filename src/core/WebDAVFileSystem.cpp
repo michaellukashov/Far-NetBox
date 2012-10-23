@@ -113,7 +113,6 @@ struct vtable_t;
 struct stream_t;
 struct client_ctx_t;
 struct auth_iterstate_t;
-struct version_t;
 //---------------------------------------------------------------------------
 
 typedef enum tristate_t
@@ -168,8 +167,7 @@ typedef struct callback_baton_t
 //------------------------------------------------------------------------------
 // from ra_loader.h
 
-typedef error_t (*init_func_t)(const version_t * loader_version,
-  const vtable_t ** vtable,
+typedef error_t (*init_func_t)(const vtable_t ** vtable,
   apr_pool_t * pool);
 
 //------------------------------------------------------------------------------
@@ -360,7 +358,6 @@ typedef struct list_func_baton_t
 #define WEBDAV_ERR_IO_PIPE_WRITE_ERROR 1023
 #define WEBDAV_ERR_BAD_DATE 1024
 #define WEBDAV_ERR_CLIENT_UNRELATED_RESOURCES 1025
-#define WEBDAV_ERR_VERSION_MISMATCH 1026
 #define WEBDAV_ERR_ROOT_URL_MISMATCH 1027
 #define WEBDAV_ERR_BAD_FILENAME 1028
 #define WEBDAV_ERR_ENTRY_MISSING_URL 1029
@@ -803,9 +800,6 @@ neon_get_props_resource(neon_resource_t ** rsrc,
 /* The RA layer vtable. */
 typedef struct vtable_t
 {
-  /* This field should always remain first in the vtable. */
-  const version_t * (*get_version)(void);
-
   /* Return a short description of the RA implementation, as a localized
    * string. */
   const char * (*get_description)(void);
@@ -875,8 +869,7 @@ get_path_relative_to_root(session_t * session,
   apr_pool_t * pool);
 
 static error_t
-neon_init(const version_t * loader_version,
-  const vtable_t ** vtable,
+neon_init(const vtable_t ** vtable,
   apr_pool_t * pool);
 
 //------------------------------------------------------------------------------
@@ -8885,75 +8878,6 @@ custom_get_request(neon_session_t * ras,
 }
 
 //------------------------------------------------------------------------------
-// from version.c
-
-typedef struct version_t
-{
-  int major;                    /**< Major version number */
-  int minor;                    /**< Minor version number */
-  int patch;                    /**< Patch number */
-  const wchar_t * tag;
-} version_t;
-
-#define WEBDAV_VERSION_DEFINE(name) \
-  static const version_t name = \
-    { \
-      PLUGIN_VERSION_MAJOR, \
-      PLUGIN_VERSION_MINOR, \
-      PLUGIN_VERSION_PATCH, \
-      NETBOX_VERSION_NUMBER.c_str() \
-    } \
- 
-#define WEBDAV_VERSION_BODY \
-  WEBDAV_VERSION_DEFINE(versioninfo);              \
-  return &versioninfo
-
-bool ver_equal(const version_t * my_version,
-  const version_t * lib_version)
-{
-  return (my_version->major == lib_version->major
-          && my_version->minor == lib_version->minor
-          && my_version->patch == lib_version->patch);
-  // && 0 == strcmp(my_version->tag, lib_version->tag));
-}
-
-//---------------------------------------------------------------------------
-// from ra_loader.c
-
-/* Return the library version number. */
-const version_t *
-version(void)
-{
-  WEBDAV_VERSION_BODY;
-}
-
-/* Return an error if RA_VERSION doesn't match the version of this library.
-   Use SCHEME in the error message to describe the library that was loaded. */
-static error_t
-check_version(const version_t * ra_version, const char * scheme)
-{
-  const version_t * my_version = version();
-  if (!ver_equal(my_version, ra_version))
-    return error_createf(WEBDAV_ERR_VERSION_MISMATCH, NULL,
-                         "Mismatched RA version for '%s':"
-                         " found %d.%d.%d%s,"
-                         " expected %d.%d.%d%s",
-                         scheme,
-                         my_version->major, my_version->minor,
-                         my_version->patch, my_version->tag,
-                         ra_version->major, ra_version->minor,
-                         ra_version->patch, ra_version->tag);
-
-  return WEBDAV_NO_ERROR;
-}
-
-static const version_t *
-ra_neon_version(void)
-{
-  WEBDAV_VERSION_BODY;
-}
-
-//------------------------------------------------------------------------------
 
 static error_t
 get_file(session_t * session,
@@ -9114,8 +9038,7 @@ session_open(
   /* Find the library. */
   const vtable_t * vtable = NULL;
   init_func_t initfunc = neon_init;
-  WEBDAV_ERR(initfunc(version(), &vtable, sesspool));
-  WEBDAV_ERR(check_version(vtable->get_version(), ""));
+  WEBDAV_ERR(initfunc(&vtable, sesspool));
 
   /* Create the session object. */
   session_t * session = static_cast<session_t *>(apr_pcalloc(sesspool, sizeof(*session)));
@@ -9788,7 +9711,7 @@ cmdline_auth_plaintext_prompt(bool * may_save_plaintext,
     "   %s\n"
     "\n"
     "can only be stored to disk unencrypted!  You are advised to configure\n"
-    "your system so that Subversion can store passwords encrypted, if\n"
+    "your system so that system can store passwords encrypted, if\n"
     "possible.  See the documentation for details.\n"
     "\n"
     "You can avoid future appearances of this warning by setting the value\n"
@@ -9816,7 +9739,7 @@ cmdline_auth_plaintext_passphrase_prompt(bool * may_save_plaintext,
     "   %s\n"
     "\n"
     "can only be stored to disk unencrypted!  You are advised to configure\n"
-    "your system so that Subversion can store passphrase encrypted, if\n"
+    "your system so that system can store passphrase encrypted, if\n"
     "possible.  See the documentation for details.\n"
     "\n"
     "You can avoid future appearances of this warning by setting the value\n"
@@ -12726,7 +12649,6 @@ neon_get_webdav_resource_root(session_t * session,
 
 static const vtable_t neon_vtable =
 {
-  ra_neon_version, // get_version
   NULL, // get_description
   ra_neon_get_schemes, // get_schemes
   neon_open, // open_session
@@ -12740,20 +12662,9 @@ static const vtable_t neon_vtable =
 };
 
 static error_t
-neon_init(const version_t * loader_version,
-  const vtable_t ** vtable,
+neon_init(const vtable_t ** vtable,
   apr_pool_t * pool)
 {
-  /* Simplified version check to make sure we can safely use the
-     VTABLE parameter. The RA loader does a more exhaustive check. */
-  if (loader_version->major != PLUGIN_VERSION_MAJOR)
-  {
-    return error_createf
-           (WEBDAV_ERR_VERSION_MISMATCH, NULL,
-            "Unsupported RA loader version (%d) for ra_neon",
-            loader_version->major);
-  }
-
   *vtable = &neon_vtable;
 
   return WEBDAV_NO_ERROR;
