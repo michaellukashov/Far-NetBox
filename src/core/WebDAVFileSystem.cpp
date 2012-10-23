@@ -9221,8 +9221,8 @@ static void auth_baton_create(auth_baton_t ** auth_baton, apr_pool_t * pool)
 
 static void
 create_baton_open(auth_baton_t * auth_baton,
-          const apr_array_header_t * providers,
-          apr_pool_t * pool)
+  const apr_array_header_t * providers,
+  apr_pool_t * pool)
 {
   auth_provider_object_t * provider = NULL;
 
@@ -10231,10 +10231,10 @@ client_open_session_internal(
     {
       const char * corrected = NULL;
       WEBDAV_ERR(session_open(
-                  ra_session,
-                  attempts_left == 0 ? NULL : &corrected,
-                  base_url, cbtable, cb,
-                  pool));
+                   ra_session,
+                   attempts_left == 0 ? NULL : &corrected,
+                   base_url, cbtable, cb,
+                   pool));
       // No error and no corrected URL?  We're done here.
       if (!corrected)
         break;
@@ -10262,13 +10262,13 @@ client_open_session_internal(
 
 static error_t
 get_dir_contents(apr_uint32_t dirent_fields,
-                 const char * dir,
-                 session_t * ra_session,
-                 const char * fs_path,
-                 depth_t depth,
-                 client_list_func_t list_func,
-                 void * baton,
-                 apr_pool_t * pool)
+  const char * dir,
+  session_t * ra_session,
+  const char * fs_path,
+  depth_t depth,
+  client_list_func_t list_func,
+  void * baton,
+  apr_pool_t * pool)
 {
   apr_hash_t * tmpdirents = NULL;
   apr_pool_t * iterpool = webdav_pool_create(pool);
@@ -10801,7 +10801,7 @@ static const elem_defn * defn_from_id(neon_xml_elmid id)
 /* Assign URL to RSRC.  Use POOL for any allocations. */
 static error_t
 assign_rsrc_url(neon_resource_t * rsrc,
-                const char * url, apr_pool_t * pool)
+  const char * url, apr_pool_t * pool)
 {
   char * url_path = NULL;
   apr_size_t len = 0;
@@ -11308,8 +11308,7 @@ client_list2(
              webdav_root, TRUE, session,
              pool, pool));
 
-  err = stat(session, "",
-             &dirent, pool);
+  err = stat(session, "", &dirent, pool);
 
   if (err)
     return error_trace(err);
@@ -11322,10 +11321,9 @@ client_list2(
   /* Report the dirent for the target. */
   WEBDAV_ERR(list_func(baton, "", dirent, fs_path, pool));
 
-  if (dirent->kind == node_dir
-      && (depth == depth_files
-          || depth == depth_immediates
-          || depth == depth_infinity))
+  if (dirent->kind == node_dir && (depth == depth_files ||
+      depth == depth_immediates ||
+      depth == depth_infinity))
     WEBDAV_ERR(get_dir_contents(dirent_fields, "",
       session,
       fs_path, depth,
@@ -11874,10 +11872,10 @@ server_ssl_callback(void * userdata,
  */
 static int
 proxy_auth(void * userdata,
-           const char * realm,
-           int attempt,
-           char * username,
-           char * password)
+  const char * realm,
+  int attempt,
+  char * username,
+  char * password)
 {
   proxy_auth_baton_t * pab = static_cast<proxy_auth_baton_t *>(userdata);
 
