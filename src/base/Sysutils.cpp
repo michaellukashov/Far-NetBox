@@ -133,7 +133,7 @@ __int64 StrToInt64Def(const UnicodeString value, __int64 defval)
   }
 }
 
-bool TryStrToInt(const std::wstring value, __int64 & Value)
+bool TryStrToInt(const std::wstring & value, __int64 & Value)
 {
   bool result = false;
   try
@@ -148,7 +148,7 @@ bool TryStrToInt(const std::wstring value, __int64 & Value)
   return result;
 }
 
-bool TryStrToInt(const std::wstring value, int & Value)
+bool TryStrToInt(const std::wstring & value, int & Value)
 {
   bool result = false;
   try
@@ -669,7 +669,6 @@ UnicodeString WrapText(const UnicodeString & Line, int MaxWidth)
   int lineCount = 0;
   int lenBuffer = 0;
   int spaceLeft = MaxWidth;
-  int wordsThisLine = 0;
 
   if (MaxWidth == 0)
   {
@@ -709,7 +708,6 @@ UnicodeString WrapText(const UnicodeString & Line, int MaxWidth)
     while (*s)
     {
       spaceLeft = MaxWidth;
-      wordsThisLine = 0;
 
       /* force the first word to always be completely copied */
       while (*s)
@@ -876,15 +874,6 @@ char * StrNew(const char * str)
   char * Result = new char[sz];
   strncpy_s(Result, sz, str, sz);
   return Result;
-}
-
-wchar_t * AnsiStrScan(const wchar_t * Str, const wchar_t TokenPrefix)
-{
-  (void)Str;
-  (void)TokenPrefix;
-  Classes::Error(SNotImplemented, 31);
-  wchar_t * result = NULL;
-  return result;
 }
 
 UnicodeString ChangeFileExt(const UnicodeString FileName, const UnicodeString ext)
@@ -1205,14 +1194,13 @@ UnicodeString HexToStr(const UnicodeString Hex)
 {
   static std::wstring Digits = L"0123456789ABCDEF";
   std::wstring Result;
-  size_t L, P1, P2;
-  L = Hex.Length() - 1;
+  size_t L = Hex.Length() - 1;
   if (L % 2 == 0)
   {
     for (int i = 1; i <= Hex.Length(); i += 2)
     {
-      P1 = Digits.find_first_of(static_cast<char>(toupper(Hex[i])));
-      P2 = Digits.find_first_of(static_cast<char>(toupper(Hex[i + 1])));
+      size_t P1 = Digits.find_first_of(static_cast<char>(toupper(Hex[i])));
+      size_t P2 = Digits.find_first_of(static_cast<char>(toupper(Hex[i + 1])));
       if ((P1 == std::wstring::npos) || (P2 == std::wstring::npos))
       {
         Result = L"";
@@ -1286,10 +1274,6 @@ static bool DecodeDateFully(const TDateTime & DateTime,
   static const int D400 = D100 * 4 + 1;
   bool Result = false;
   unsigned int T = DateTimeToTimeStamp(DateTime).Date;
-  unsigned int Y = 0;
-  unsigned int M = 0;
-  unsigned int D = 0;
-  unsigned int I = 0;
   if ((int)T <= 0)
   {
     Year = 0;
@@ -1302,12 +1286,14 @@ static bool DecodeDateFully(const TDateTime & DateTime,
   {
     DOW = T % 7 + 1;
     T--;
-    Y = 1;
+    unsigned int Y = 1;
     while (T >= D400)
     {
       T -= D400;
       Y += 400;
     }
+    unsigned int D = 0;
+    unsigned int I = 0;
     DivMod(T, D100, I, D);
     if (I == 4)
     {
@@ -1326,7 +1312,7 @@ static bool DecodeDateFully(const TDateTime & DateTime,
     Y += I;
     Result = IsLeapYear((Word)Y);
     const TDayTable * DayTable = &MonthDays[Result];
-    M = 1;
+    unsigned int M = 1;
     while (true)
     {
       I = (*DayTable)[M - 1];

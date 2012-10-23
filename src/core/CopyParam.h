@@ -60,7 +60,6 @@ public:
   static const wchar_t TokenReplacement = wchar_t(true);
 
 public:
-  static UnicodeString Untokenize(const UnicodeString FileName);
   void __fastcall SetLocalInvalidChars(UnicodeString value);
   bool __fastcall GetReplaceInvalidChars() const;
   void __fastcall SetReplaceInvalidChars(bool value);

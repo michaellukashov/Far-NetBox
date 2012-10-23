@@ -782,12 +782,12 @@ void __fastcall TFarMessageDialog::Init(unsigned int AFlags,
 
   TStrings * MessageLines = new TStringList();
   std::auto_ptr<TStrings> MessageLinesPtr(MessageLines);
-  TStrings * MoreMessageLines = NULL;
-  std::auto_ptr<TStrings> MoreMessageLinesPtr(NULL);
   {
     FarWrapText(Message, MessageLines, MaxMessageWidth);
     intptr_t MaxLen = GetFarPlugin()->MaxLength(MessageLines);
     // DEBUG_PRINTF(L"MaxLen = %d, FParams->MoreMessages = %x", MaxLen, FParams->MoreMessages);
+    TStrings * MoreMessageLines = NULL;
+    std::auto_ptr<TStrings> MoreMessageLinesPtr(NULL);
     if (FParams->MoreMessages != NULL)
     {
       MoreMessageLines = new TStringList();
@@ -1876,11 +1876,11 @@ void __fastcall TCustomFarFileSystem::GetOpenPluginInfo(struct OpenPluginInfo * 
     {
       ClearOpenPluginInfo(FOpenPluginInfo);
       UnicodeString HostFile, CurDir, Format, PanelTitle, ShortcutData;
-      TFarPanelModes * PanelModes = NULL;
-      std::auto_ptr<TFarPanelModes> PanelModesPtr(NULL);
-      TFarKeyBarTitles * KeyBarTitles = NULL;
-      std::auto_ptr<TFarKeyBarTitles> KeyBarTitlesPtr(NULL);
       {
+        TFarPanelModes * PanelModes = NULL;
+        std::auto_ptr<TFarPanelModes> PanelModesPtr(NULL);
+        TFarKeyBarTitles * KeyBarTitles = NULL;
+        std::auto_ptr<TFarKeyBarTitles> KeyBarTitlesPtr(NULL);
         PanelModes = new TFarPanelModes();
         PanelModesPtr.reset(PanelModes);
         KeyBarTitles = new TFarKeyBarTitles();

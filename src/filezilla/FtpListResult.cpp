@@ -23,11 +23,8 @@
 #include "stdafx.h"
 #include "FtpListResult.h"
 #include "FileZillaApi.h"
-#include "FileZillaOpt.h"
 #include "Options.h"
 #include "misc/utf8.h"
-
-#include <TextsFileZilla.h>
 
 #ifdef _DEBUG
 #ifndef _MSC_VER

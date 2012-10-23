@@ -186,8 +186,8 @@ __int64 ToInt(const UnicodeString value);
 int StrToIntDef(const UnicodeString value, int defval);
 __int64 StrToInt64(const UnicodeString value);
 __int64 StrToInt64Def(const UnicodeString value, __int64 defval);
-bool TryStrToInt(const std::wstring value, int & Value);
-bool TryStrToInt(const std::wstring value, __int64 & Value);
+bool TryStrToInt(const std::wstring & value, int & Value);
+bool TryStrToInt(const std::wstring & value, __int64 & Value);
 
 //---------------------------------------------------------------------------
 double StrToFloat(const UnicodeString Value);
@@ -259,8 +259,6 @@ UnicodeString ExpandEnvVars(const UnicodeString str);
 UnicodeString StringOfChar(const wchar_t c, int len);
 
 char * StrNew(const char * str);
-
-wchar_t * AnsiStrScan(const wchar_t * Str, const wchar_t TokenPrefix);
 
 UnicodeString ChangeFileExt(const UnicodeString FileName, const UnicodeString ext);
 UnicodeString ExtractFileExt(const UnicodeString FileName);

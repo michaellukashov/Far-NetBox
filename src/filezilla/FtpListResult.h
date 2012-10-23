@@ -52,7 +52,6 @@ CRLF pairs and other variants.
 */
 
 #include "ApiLog.h"
-#include "structures.h"
 
 class CFtpListResult : public CApiLog
 {
