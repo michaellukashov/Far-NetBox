@@ -3007,7 +3007,8 @@ typedef error_t (*auth_plaintext_prompt_func_t)(bool * may_save_plaintext,
   void * baton,
   apr_pool_t * pool);
 
-typedef bool (*auth_password_get_t)(const char ** password,
+typedef error_t (*auth_password_get_t)(bool * done,
+  const char ** password,
   apr_hash_t * creds,
   const char * realmstring,
   const char * username,
@@ -3031,7 +3032,8 @@ typedef struct auth_cred_username_t
   bool may_save;
 } auth_cred_username_t;
 
-typedef bool (*auth_password_set_t)(apr_hash_t * creds,
+typedef error_t (*auth_password_set_t)(bool * done,
+  apr_hash_t * creds,
   const char * realmstring,
   const char * username,
   const char * password,
@@ -3242,8 +3244,9 @@ typedef struct simple_provider_baton_t
 
 /* Implementation of auth_password_get_t that retrieves
    the plaintext password from CREDS. */
-static bool
-auth_simple_password_get(const char ** password,
+static error_t
+auth_simple_password_get(bool * done,
+  const char ** password,
   apr_hash_t * creds,
   const char * realmstring,
   const char * username,
@@ -3251,6 +3254,8 @@ auth_simple_password_get(const char ** password,
   bool non_interactive,
   apr_pool_t * pool)
 {
+  *done = FALSE;
+
   string_t * str = static_cast<string_t *>(apr_hash_get(creds, AUTHN_USERNAME_KEY, APR_HASH_KEY_STRING));
   if (str && username && strcmp(str->data, username) == 0)
   {
@@ -3258,16 +3263,17 @@ auth_simple_password_get(const char ** password,
     if (str && str->data)
     {
       *password = str->data;
-      return TRUE;
+      *done = TRUE;
     }
   }
-  return FALSE;
+  return WEBDAV_NO_ERROR;
 }
 
 /* Implementation of auth_password_set_t that stores
    the plaintext password in CREDS. */
-static bool
-auth_simple_password_set(apr_hash_t * creds,
+static error_t
+auth_simple_password_set(bool * done,
+  apr_hash_t * creds,
   const char * realmstring,
   const char * username,
   const char * password,
@@ -3277,7 +3283,8 @@ auth_simple_password_set(apr_hash_t * creds,
 {
   apr_hash_set(creds, AUTHN_PASSWORD_KEY, APR_HASH_KEY_STRING,
     string_create(password, pool));
-  return TRUE;
+  *done = TRUE;
+  return WEBDAV_NO_ERROR;
 }
 
 /* Set **USERNAME to the username retrieved from CREDS; ignore
@@ -3383,8 +3390,10 @@ auth_simple_first_creds_helper(void ** credentials,
     {
       if (have_passtype)
       {
-        if (!password_get(&default_password, creds_hash, realmstring,
-          username, parameters, non_interactive, pool))
+        bool done;
+        WEBDAV_ERR(password_get(&done, &default_password, creds_hash, realmstring,
+          username, parameters, non_interactive, pool));
+        if (!done)
         {
           need_to_save = TRUE;
         }
@@ -3413,9 +3422,11 @@ auth_simple_first_creds_helper(void ** credentials,
           password = NULL;
         else
         {
-          if (!password_get(&password, creds_hash, realmstring,
+          bool done;
+          WEBDAV_ERR(password_get(&done, &password, creds_hash, realmstring,
                  username, parameters, non_interactive,
-                 pool))
+                 pool));
+          if (!done)
             password = NULL;
 
           /* If the auth data didn't contain a password type,
@@ -3586,9 +3597,9 @@ auth_simple_save_creds_helper(bool * saved,
 
     if (may_save_password)
     {
-      *saved = password_set(creds_hash, realmstring,
+      WEBDAV_ERR(password_set(saved, creds_hash, realmstring,
         creds->username, creds->password,
-        parameters, non_interactive, pool);
+        parameters, non_interactive, pool));
       if (*saved && passtype)
         /* Store the password type with the auth data, so that we
            know which provider owns the password. */
@@ -3895,8 +3906,9 @@ typedef struct ssl_client_cert_pw_file_provider_baton_t
 /* This implements the auth_password_get_t interface.
    Set **PASSPHRASE to the plaintext passphrase retrieved from CREDS;
    ignore other parameters. */
-static bool
-auth_ssl_client_cert_pw_get(const char ** passphrase,
+static error_t
+auth_ssl_client_cert_pw_get(bool * done,
+  const char ** passphrase,
   apr_hash_t * creds,
   const char * realmstring,
   const char * username,
@@ -3908,15 +3920,18 @@ auth_ssl_client_cert_pw_get(const char ** passphrase,
   if (str && str->data)
   {
     *passphrase = str->data;
-    return TRUE;
+    *done = TRUE;
+    return WEBDAV_NO_ERROR;
   }
-  return FALSE;
+  *done = FALSE;
+  return WEBDAV_NO_ERROR;
 }
 
 /* This implements the auth_password_set_t interface.
    Store PASSPHRASE in CREDS; ignore other parameters. */
-static bool
-auth_ssl_client_cert_pw_set(apr_hash_t * creds,
+static error_t
+auth_ssl_client_cert_pw_set(bool * done,
+  apr_hash_t * creds,
   const char * realmstring,
   const char * username,
   const char * passphrase,
@@ -3926,7 +3941,8 @@ auth_ssl_client_cert_pw_set(apr_hash_t * creds,
 {
   apr_hash_set(creds, AUTHN_PASSPHRASE_KEY, APR_HASH_KEY_STRING,
     string_create(passphrase, pool));
-  return TRUE;
+  *done = TRUE;
+  return WEBDAV_NO_ERROR;
 }
 
 static error_t
@@ -3959,8 +3975,10 @@ auth_ssl_client_cert_pw_file_first_creds_helper(void ** credentials_p,
     error_clear(&err);
     if (!err && creds_hash)
     {
-      if (!passphrase_get(&password, creds_hash, realmstring,
-             NULL, parameters, non_interactive, pool))
+      bool done;
+      WEBDAV_ERR(passphrase_get(&done, &password, creds_hash, realmstring,
+             NULL, parameters, non_interactive, pool));
+      if (!done)
         password = NULL;
     }
   }
@@ -4098,9 +4116,9 @@ auth_ssl_client_cert_pw_file_save_creds_helper(bool * saved,
 
     if (may_save_passphrase)
     {
-      *saved = passphrase_set(creds_hash, realmstring,
-         NULL, creds->password, parameters,
-         non_interactive, pool);
+      WEBDAV_ERR(passphrase_set(saved, creds_hash, realmstring,
+                   NULL, creds->password, parameters,
+                   non_interactive, pool));
 
       if (*saved && passtype)
       {
@@ -4322,8 +4340,9 @@ static const WCHAR description[] = L"auth_svn.simple.wincrypt";
 
 /* Implementation of auth_password_set_t that encrypts
    the incoming password using the Windows CryptoAPI. */
-static bool
-windows_password_encrypter(apr_hash_t * creds,
+static error_t
+windows_password_encrypter(bool * done,
+  apr_hash_t * creds,
   const char * realmstring,
   const char * username,
   const char * in,
@@ -4343,20 +4362,21 @@ windows_password_encrypter(apr_hash_t * creds,
   {
     char * coded = static_cast<char *>(apr_pcalloc(pool, apr_base64_encode_len(blobout.cbData)));
     apr_base64_encode(coded, (const char *)blobout.pbData, blobout.cbData);
-    crypted = auth_simple_password_set(creds, realmstring, username,
+    WEBDAV_ERR(auth_simple_password_set(done, creds, realmstring, username,
       coded, parameters,
-      non_interactive, pool);
+      non_interactive, pool));
     LocalFree(blobout.pbData);
   }
 
-  return crypted;
+  return WEBDAV_NO_ERROR;
 }
 
 /* Implementation of auth_password_get_t that decrypts
    the incoming password using the Windows CryptoAPI and verifies its
    validity. */
-static bool
-windows_password_decrypter(const char ** out,
+static error_t
+windows_password_decrypter(bool * done,
+  const char ** out,
   apr_hash_t * creds,
   const char * realmstring,
   const char * username,
@@ -4370,9 +4390,10 @@ windows_password_decrypter(const char ** out,
   bool decrypted = FALSE;
   const char * in = NULL;
 
-  if (!auth_simple_password_get(&in, creds, realmstring, username,
-         parameters, non_interactive, pool))
-    return FALSE;
+  WEBDAV_ERR(auth_simple_password_get(done, &in, creds, realmstring, username,
+         parameters, non_interactive, pool));
+  if (!done)
+    return WEBDAV_NO_ERROR;
 
   blobin.cbData = strlen(in);
   blobin.pbData = static_cast<BYTE *>(apr_pcalloc(pool, apr_base64_decode_len(in)));
@@ -4389,7 +4410,8 @@ windows_password_decrypter(const char ** out,
     LocalFree(descr);
   }
 
-  return decrypted;
+  *done = decrypted;
+  return WEBDAV_NO_ERROR;
 }
 
 /* Get cached encrypted credentials from the simple provider's cache. */
@@ -4456,8 +4478,9 @@ auth_get_windows_simple_provider(auth_provider_object_t ** provider,
 
 /* Implementation of auth_password_set_t that encrypts
    the incoming password using the Windows CryptoAPI. */
-static bool
-windows_ssl_client_cert_pw_encrypter(apr_hash_t * creds,
+static error_t
+windows_ssl_client_cert_pw_encrypter(bool * done,
+  apr_hash_t * creds,
   const char * realmstring,
   const char * username,
   const char * in,
@@ -4477,20 +4500,21 @@ windows_ssl_client_cert_pw_encrypter(apr_hash_t * creds,
   {
     char * coded = static_cast<char *>(apr_pcalloc(pool, apr_base64_encode_len(blobout.cbData)));
     apr_base64_encode(coded, (const char *)blobout.pbData, blobout.cbData);
-    crypted = auth_ssl_client_cert_pw_set(creds, realmstring, username,
+    WEBDAV_ERR(auth_ssl_client_cert_pw_set(done, creds, realmstring, username,
       coded, parameters,
-      non_interactive, pool);
+      non_interactive, pool));
     LocalFree(blobout.pbData);
   }
 
-  return crypted;
+  return WEBDAV_NO_ERROR;
 }
 
 /* Implementation of auth_password_get_t that decrypts
    the incoming password using the Windows CryptoAPI and verifies its
    validity. */
-static bool
-windows_ssl_client_cert_pw_decrypter(const char ** out,
+static error_t
+windows_ssl_client_cert_pw_decrypter(bool * done,
+  const char ** out,
   apr_hash_t * creds,
   const char * realmstring,
   const char * username,
@@ -4501,12 +4525,13 @@ windows_ssl_client_cert_pw_decrypter(const char ** out,
   DATA_BLOB blobin;
   DATA_BLOB blobout;
   LPWSTR descr;
-  bool decrypted = FALSE;
+  bool decrypted;
   const char * in = NULL;
 
-  if (!auth_ssl_client_cert_pw_get(&in, creds, realmstring, username,
-         parameters, non_interactive, pool))
-    return FALSE;
+  WEBDAV_ERR(auth_ssl_client_cert_pw_get(done, &in, creds, realmstring, username,
+         parameters, non_interactive, pool));
+  if (!done)
+    return WEBDAV_NO_ERROR;
 
   blobin.cbData = strlen(in);
   blobin.pbData = static_cast<BYTE *>(apr_pcalloc(pool, apr_base64_decode_len(in)));
@@ -4523,7 +4548,8 @@ windows_ssl_client_cert_pw_decrypter(const char ** out,
     LocalFree(descr);
   }
 
-  return decrypted;
+  *done = decrypted;
+  return WEBDAV_NO_ERROR;
 }
 
 /* Get cached encrypted credentials from the simple provider's cache. */
