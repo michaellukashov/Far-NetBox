@@ -749,6 +749,7 @@ static error_t
 neon_check_parse_error(const char * method,
   ne_xml_parser * xml_parser,
   const char * url);
+
 static error_t
 neon_request_create(neon_request_t ** request,
   neon_session_t * sess,
@@ -1052,7 +1053,7 @@ string_compare(const char * str1,
    generic realloc for memory pools, *not* for strings. */
 static void *
 my_realloc(char * data, apr_size_t oldsize, apr_size_t request,
-            apr_pool_t * pool)
+  apr_pool_t * pool)
 {
   void * new_area = NULL;
 
@@ -2083,8 +2084,7 @@ path_uri_decode(const char * path, apr_pool_t * pool)
        * RFC 2396, section 3.3  */
       c = ' ';
     }
-    else if (c == '%' && ctype_isxdigit(path[i + 1])
-            && ctype_isxdigit(path[i+2]))
+    else if (c == '%' && ctype_isxdigit(path[i + 1]) && ctype_isxdigit(path[i+2]))
     {
       char digitz[3];
       digitz[0] = path[++i];
@@ -2116,8 +2116,8 @@ path_uri_encode(const char * path, apr_pool_t * pool)
 
 static char *
 path_join(const char * base,
-          const char * component,
-          apr_pool_t * pool)
+  const char * component,
+  apr_pool_t * pool)
 {
   apr_size_t blen = strlen(base);
   apr_size_t clen = strlen(component);
@@ -2196,9 +2196,9 @@ path_cstring_to_utf8(const char ** path_utf8,
 
 static bool
 is_canonical(const char * path,
-             apr_size_t len)
+  apr_size_t len)
 {
-  return (!WEBDAV_PATH_IS_PLATFORM_EMPTY(path, len)
+  return (!WEBDAV_PATH_IS_PLATFORM_EMPTY(path, len) 
           && strstr(path, "/./") == NULL
           && (len == 0
               || (len == 1 && path[0] == '/')
@@ -4105,11 +4105,11 @@ auth_ssl_client_cert_pw_file_save_creds_helper(bool * saved,
    password provider's cache. */
 static error_t
 ssl_client_cert_pw_file_first_credentials(void ** credentials_p,
-    void ** iter_baton,
-    void * provider_baton,
-    apr_hash_t * parameters,
-    const char * realmstring,
-    apr_pool_t * pool)
+  void ** iter_baton,
+  void * provider_baton,
+  apr_hash_t * parameters,
+  const char * realmstring,
+  apr_pool_t * pool)
 {
   return auth_ssl_client_cert_pw_file_first_creds_helper
          (credentials_p,
@@ -4126,11 +4126,11 @@ ssl_client_cert_pw_file_first_credentials(void ** credentials_p,
    It saves the credentials unencrypted. */
 static error_t
 ssl_client_cert_pw_file_save_credentials(bool * saved,
-    void * credentials,
-    void * provider_baton,
-    apr_hash_t * parameters,
-    const char * realmstring,
-    apr_pool_t * pool)
+  void * credentials,
+  void * provider_baton,
+  apr_hash_t * parameters,
+  const char * realmstring,
+  apr_pool_t * pool)
 {
   return auth_ssl_client_cert_pw_file_save_creds_helper
          (saved, credentials,
@@ -4648,11 +4648,11 @@ windows_validate_certificate(bool * ok_p,
 /* Retrieve ssl server CA failure overrides (if any) from CryptoApi. */
 static error_t
 windows_ssl_server_trust_first_credentials(void ** credentials,
-    void ** iter_baton,
-    void * provider_baton,
-    apr_hash_t * parameters,
-    const char * realmstring,
-    apr_pool_t * pool)
+  void ** iter_baton,
+  void * provider_baton,
+  apr_hash_t * parameters,
+  const char * realmstring,
+  apr_pool_t * pool)
 {
   apr_uint32_t * failures = static_cast<apr_uint32_t *>(apr_hash_get(parameters,
     AUTH_PARAM_SSL_SERVER_FAILURES,
@@ -5825,7 +5825,7 @@ relpath_is_canonical(const char * relpath)
 
 static const char *
 relpath_basename(const char * relpath,
-                 apr_pool_t * pool)
+  apr_pool_t * pool)
 {
   apr_size_t len = strlen(relpath);
   apr_size_t start = 0;
@@ -5844,8 +5844,8 @@ relpath_basename(const char * relpath,
 
 static char *
 relpath_join(const char * base,
-             const char * component,
-             apr_pool_t * pool)
+  const char * component,
+  apr_pool_t * pool)
 {
   apr_size_t blen = strlen(base);
   apr_size_t clen = strlen(component);
@@ -6259,8 +6259,8 @@ is_child(path_type_t type, const char * path1, const char * path2,
 
 static const char *
 uri_is_child(const char * parent_uri,
-              const char * child_uri,
-              apr_pool_t * pool)
+  const char * child_uri,
+  apr_pool_t * pool)
 {
   const char * relpath = NULL;
 
@@ -6282,7 +6282,7 @@ fspath_is_canonical(const char * fspath)
 
 static const char *
 fspath_basename(const char * fspath,
-                 apr_pool_t * pool)
+  apr_pool_t * pool)
 {
   const char * result = NULL;
   assert(fspath_is_canonical(fspath));
@@ -6414,8 +6414,8 @@ dirent_root_length(const char * dirent, apr_size_t len)
 
 static char *
 dirent_join(const char * base,
-            const char * component,
-            apr_pool_t * pool)
+  const char * component,
+  apr_pool_t * pool)
 {
   apr_size_t blen = strlen(base);
   apr_size_t clen = strlen(component);
@@ -6498,9 +6498,9 @@ dirent_join(const char * base,
 
 static error_t
 atomic_init_once(volatile atomic_t * global_status,
-                 error_t (*init_func)(void *,apr_pool_t *),
-                 void * baton,
-                 apr_pool_t * pool)
+  error_t (*init_func)(void *,apr_pool_t *),
+  void * baton,
+  apr_pool_t * pool)
 {
   /* We have to call init_func exactly once.  Because APR
      doesn't have statically-initialized mutexes, we implement a poor
@@ -6619,8 +6619,8 @@ typedef enum io_file_del_t
  * operating systems where APR always uses utf-8 as native path format */
 static error_t
 cstring_to_utf8(const char ** path_utf8,
-                const char * path_apr,
-                apr_pool_t * pool)
+  const char * path_apr,
+  apr_pool_t * pool)
 {
   *path_utf8 = path_apr;
   return WEBDAV_NO_ERROR;
@@ -6629,11 +6629,11 @@ cstring_to_utf8(const char ** path_utf8,
 /* Wrapper for apr_file_open(), taking an APR-encoded filename. */
 static apr_status_t
 file_open(apr_file_t ** file,
-          const char * fname_apr,
-          apr_int32_t flags,
-          apr_fileperms_t perm,
-          bool retry_on_failure,
-          apr_pool_t * pool)
+  const char * fname_apr,
+  apr_int32_t flags,
+  apr_fileperms_t perm,
+  bool retry_on_failure,
+  apr_pool_t * pool)
 {
   apr_status_t status = apr_file_open(file, fname_apr, flags, perm, pool);
 
@@ -6647,8 +6647,8 @@ file_open(apr_file_t ** file,
 
 static error_t
 io_file_open(apr_file_t ** new_file, const char * fname,
-             apr_int32_t flags, apr_fileperms_t perms,
-             apr_pool_t * pool)
+  apr_int32_t flags, apr_fileperms_t perms,
+  apr_pool_t * pool)
 {
   const char * fname_apr = NULL;
   apr_status_t status = 0;
@@ -6685,8 +6685,8 @@ io_file_open_writable(apr_file_t ** new_file, apr_os_file_t * thefile,
 /* Wrapper for apr_file_name_get(), passing out a UTF8-encoded filename. */
 static error_t
 io_file_name_get(const char ** filename,
-                 apr_file_t * file,
-                 apr_pool_t * pool)
+  apr_file_t * file,
+  apr_pool_t * pool)
 {
   const char * fname_apr = NULL;
   apr_status_t status = 0;
@@ -6817,7 +6817,7 @@ io_file_putc(char ch, apr_file_t * file, apr_pool_t * pool)
 
 static error_t
 io_file_read(apr_file_t * file, void * buf,
-             apr_size_t * nbytes, apr_pool_t * pool)
+  apr_size_t * nbytes, apr_pool_t * pool)
 {
   return do_io_file_wrapper_cleanup
          (file, apr_file_read(file, buf, nbytes),
@@ -7240,7 +7240,7 @@ stream_supports_mark(stream_t * stream)
 
 static error_t
 stream_mark(stream_t * stream, stream_mark_t ** mark,
-            apr_pool_t * pool)
+  apr_pool_t * pool)
 {
   if (stream->mark_fn == NULL)
     return error_create(WEBDAV_ERR_STREAM_SEEK_NOT_SUPPORTED, NULL, NULL);
@@ -7487,7 +7487,7 @@ start_207_element(int * elem, void * baton, int parent,
 /* Implements neon_endelm_cb_t . */
 static error_t
 end_207_element(void * baton, int state,
-                const char * nspace, const char * name)
+  const char * nspace, const char * name)
 {
   multistatus_baton_t * b = static_cast<multistatus_baton_t *>(baton);
 
@@ -8640,7 +8640,7 @@ client_path_relative_to_root(const char ** rel_path,
 
 static const char *
 neon_uri_unparse(const ne_uri * uri,
-                 apr_pool_t * pool)
+  apr_pool_t * pool)
 {
   char * unparsed_uri = NULL;
   const char * result = NULL;
@@ -8833,7 +8833,7 @@ typedef struct version_t
   return &versioninfo
 
 bool ver_equal(const version_t * my_version,
-               const version_t * lib_version)
+  const version_t * lib_version)
 {
   return (my_version->major == lib_version->major
           && my_version->minor == lib_version->minor
@@ -9080,10 +9080,10 @@ session_open(
 /* This implements the client_list_func_t API */
 static error_t
 list_func(void * baton,
-          const char * path,
-          const dirent_t * dirent,
-          const char * abs_path,
-          apr_pool_t * pool)
+  const char * path,
+  const dirent_t * dirent,
+  const char * abs_path,
+  apr_pool_t * pool)
 {
   list_func_baton_t * pb = static_cast<list_func_baton_t *>(baton);
   assert(pb);
@@ -11192,9 +11192,9 @@ static void record_prop_change(apr_pool_t * pool,
 /* Helper function for neon_do_proppatch() below. */
 static error_t
 append_setprop(stringbuf_t * body,
-               const char * name,
-               const string_t * value,
-               apr_pool_t * pool)
+  const char * name,
+  const string_t * value,
+  apr_pool_t * pool)
 {
   const char * xml_safe = NULL;
   const char * xml_tag_name = NULL;
@@ -11895,7 +11895,7 @@ proxy_auth(void * userdata,
    callbacks if needed.  */
 static int
 request_auth(void * userdata, const char * realm, int attempt,
-             char * username, char * password)
+  char * username, char * password)
 {
   error_t err = 0;
   neon_session_t * ras = static_cast<neon_session_t *>(userdata);
@@ -11986,8 +11986,8 @@ cleanup_neon_debug_file(void * debug_file_baton)
 
 static void
 progress_func(off_t progress, off_t total,
-              void * baton,
-              apr_pool_t * pool)
+  void * baton,
+  apr_pool_t * pool)
 {
   client_ctx_t * ctx = static_cast<client_ctx_t *>(baton);
   TWebDAVFileSystem * fs = static_cast<TWebDAVFileSystem *>(apr_hash_get(ctx->auth_baton->parameters,
@@ -12337,8 +12337,8 @@ neon_open(
 
 static error_t
 neon_reparent(session_t * session,
-              const char * url,
-              apr_pool_t * pool)
+  const char * url,
+  apr_pool_t * pool)
 {
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
   ne_uri * uri = NULL;
@@ -12370,10 +12370,10 @@ static const ne_propname restype_props[] =
 
 static error_t
 neon_get_file(session_t * session,
-              const char * path,
-              stream_t * stream,
-              apr_hash_t ** props,
-              apr_pool_t * pool)
+  const char * path,
+  stream_t * stream,
+  apr_hash_t ** props,
+  apr_pool_t * pool)
 {
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
   assert(ras);
@@ -12418,10 +12418,10 @@ neon_get_file(session_t * session,
 
 static error_t
 neon_get_dir(session_t * session,
-             apr_hash_t ** dirents,
-             const char * path,
-             apr_uint32_t dirent_fields,
-             apr_pool_t * pool)
+  apr_hash_t ** dirents,
+  const char * path,
+  apr_uint32_t dirent_fields,
+  apr_pool_t * pool)
 {
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
   const char * url = path_url_add_component2(ras->url->data, path, pool);
@@ -12509,9 +12509,9 @@ neon_get_dir(session_t * session,
 
 static error_t
 neon_check_path(session_t * session,
-                const char * path,
-                node_kind_t * kind,
-                apr_pool_t * pool)
+  const char * path,
+  node_kind_t * kind,
+  apr_pool_t * pool)
 {
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
   assert(ras);
@@ -12554,9 +12554,9 @@ neon_check_path(session_t * session,
 
 static error_t
 neon_stat(session_t * session,
-          const char * path,
-          dirent_t ** dirent,
-          apr_pool_t * pool)
+  const char * path,
+  dirent_t ** dirent,
+  apr_pool_t * pool)
 {
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
   assert(ras);
@@ -12669,8 +12669,8 @@ static const vtable_t neon_vtable =
 
 static error_t
 neon_init(const version_t * loader_version,
-          const vtable_t ** vtable,
-          apr_pool_t * pool)
+  const vtable_t ** vtable,
+  apr_pool_t * pool)
 {
   /* Simplified version check to make sure we can safely use the
      VTABLE parameter. The RA loader does a more exhaustive check. */
