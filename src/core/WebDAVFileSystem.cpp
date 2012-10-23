@@ -2302,6 +2302,32 @@ path_cstring_from_utf8(const char ** path_apr,
     return utf_cstring_from_utf8(path_apr, path_utf8, pool);
 }
 
+static bool
+path_is_backpath_present(const char * path)
+{
+  size_t len;
+
+  /* 0 and 1-length paths do not have a backpath */
+  if (path[0] == '\0' || path[1] == '\0')
+    return FALSE;
+
+  /* Handle ".." or a leading "../" */
+  if (path[0] == '.' && path[1] == '.' && (path[2] == '\0' || path[2] == '/'))
+    return TRUE;
+
+  /* Paths of length 2 (at this point) have no backpath present. */
+  if (path[2] == '\0')
+    return FALSE;
+
+  /* If any segment is "..", then a backpath is present. */
+  if (strstr(path, "/../") != NULL)
+    return TRUE;
+
+  /* Does the path end in "/.." ? */
+  len = strlen(path);
+  return path[len - 3] == '/' && path[len - 2] == '.' && path[len - 1] == '.';
+}
+
 //------------------------------------------------------------------------------
 // from svn_client.h
 
@@ -6129,7 +6155,7 @@ uri_skip_ancestor(const char * parent_uri,
   assert(uri_is_canonical(parent_uri, NULL));
   assert(uri_is_canonical(child_uri, NULL));
 
-  if (0 != memcmp(parent_uri, child_uri, len))
+  if (0 != strncmp(parent_uri, child_uri, len))
     return NULL; /* parent_uri is no ancestor of child_uri */
 
   if (child_uri[len] == 0)
@@ -6293,6 +6319,32 @@ fspath_basename(const char * fspath,
   return result;
 }
 
+static bool
+dirent_is_absolute(const char * dirent)
+{
+  if (!dirent)
+    return FALSE;
+
+  /* dirent is absolute if it starts with '/' on non-Windows platforms
+     or with '//' on Windows platforms */
+  if (dirent[0] == '/'
+#ifdef WEBDAV_USE_DOS_PATHS
+      && dirent[1] == '/' /* Single '/' depends on current drive */
+#endif
+    )
+    return TRUE;
+
+  /* On Windows, dirent is also absolute when it starts with 'H:/'
+     where 'H' is any letter. */
+#ifdef WEBDAV_USE_DOS_PATHS
+  if (((dirent[0] >= 'A' && dirent[0] <= 'Z')) &&
+      (dirent[1] == ':') && (dirent[2] == '/'))
+    return TRUE;
+#endif /* WEBDAV_USE_DOS_PATHS */
+
+  return FALSE;
+}
+
 static error_t
 dirent_get_absolute(const char ** pabsolute,
   const char * relative,
@@ -6312,9 +6364,35 @@ dirent_get_absolute(const char ** pabsolute,
                                APR_FILEPATH_NOTRELATIVE,
                                pool);
   if (apr_err)
+    // return error_createf(WEBDAV_ERR_BAD_FILENAME,
+                         // NULL,
+                         // "Couldn't determine absolute path of '%s'", relative);
+  {
+    /* In some cases when the passed path or its ancestor(s) do not exist
+       or no longer exist apr returns an error.
+
+       In many of these cases we would like to return a path anyway, when the
+       passed path was already a safe absolute path. So check for that now to
+       avoid an error.
+
+       dirent_is_absolute() doesn't perform the necessary checks to see
+       if the path doesn't need post processing to be in the canonical absolute
+       format.
+       */
+
+    if (dirent_is_absolute(relative)
+        && dirent_is_canonical(relative, pool)
+        && !path_is_backpath_present(relative))
+      {
+        *pabsolute = apr_pstrdup(pool, relative);
+        return WEBDAV_NO_ERROR;
+      }
+
     return error_createf(WEBDAV_ERR_BAD_FILENAME,
-                         NULL,
-                         "Couldn't determine absolute path of '%s'", relative);
+                             NULL,
+                             "Couldn't determine absolute path of '%s'",
+                             relative, pool);
+  }
 
   WEBDAV_ERR(path_cstring_to_utf8(pabsolute, buffer, pool));
   *pabsolute = dirent_canonicalize(*pabsolute, pool);
@@ -6347,32 +6425,6 @@ static const char *
 dirent_internal_style(const char * dirent, apr_pool_t * pool)
 {
   return dirent_canonicalize(internal_style(dirent, pool), pool);
-}
-
-static bool
-dirent_is_absolute(const char * dirent)
-{
-  if (!dirent)
-    return FALSE;
-
-  /* dirent is absolute if it starts with '/' on non-Windows platforms
-     or with '//' on Windows platforms */
-  if (dirent[0] == '/'
-#ifdef WEBDAV_USE_DOS_PATHS
-      && dirent[1] == '/' /* Single '/' depends on current drive */
-#endif
-    )
-    return TRUE;
-
-  /* On Windows, dirent is also absolute when it starts with 'H:/'
-     where 'H' is any letter. */
-#ifdef WEBDAV_USE_DOS_PATHS
-  if (((dirent[0] >= 'A' && dirent[0] <= 'Z')) &&
-      (dirent[1] == ':') && (dirent[2] == '/'))
-    return TRUE;
-#endif /* WEBDAV_USE_DOS_PATHS */
-
-  return FALSE;
 }
 
 /* Calculates the length of the dirent absolute or non absolute root in
