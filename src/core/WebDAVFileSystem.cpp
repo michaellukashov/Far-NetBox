@@ -821,7 +821,7 @@ typedef struct vtable_t
      time this is called.  SESSION->priv may be set by this function. */
   error_t (*open_session)(session_t * session,
                           const char ** corrected_url,
-                          const char * webdav_URL,
+                          const char * session_URL,
                           const callbacks2_t * callbacks,
                           void * callback_baton,
                           apr_pool_t * pool);
@@ -5231,6 +5231,9 @@ auth_get_platform_specific_provider(auth_provider_object_t ** provider,
   return WEBDAV_NO_ERROR;
 }
 
+#define WEBDAV_MAYBE_ADD_PROVIDER(list, p) \
+  { if (p) APR_ARRAY_PUSH(list, auth_provider_object_t *) = p; }
+
 static error_t
 auth_get_platform_specific_client_providers(apr_array_header_t ** providers,
   apr_pool_t * pool)
@@ -5259,16 +5262,14 @@ auth_get_platform_specific_client_providers(apr_array_header_t ** providers,
                  "simple",
                  pool));
 
-      if (provider)
-        APR_ARRAY_PUSH(*providers, auth_provider_object_t *) = provider;
+      WEBDAV_MAYBE_ADD_PROVIDER(*providers, provider);
 
       WEBDAV_ERR(auth_get_platform_specific_provider(&provider,
                  "windows",
                  "ssl_client_cert_pw",
                  pool));
 
-      if (provider)
-        APR_ARRAY_PUSH(*providers, auth_provider_object_t *) = provider;
+      WEBDAV_MAYBE_ADD_PROVIDER(*providers, provider);
 
       continue;
     }
@@ -8971,7 +8972,7 @@ static error_t
 session_open(
   session_t ** session_p,
   const char ** corrected_url_p,
-  const char * webdav_URL,
+  const char * session_URL,
   const callbacks2_t * callbacks,
   void * callback_baton,
   apr_pool_t * pool)
@@ -8984,11 +8985,11 @@ session_open(
   *session_p = NULL;
 
   ne_uri * webdav_URI = NULL;
-  error_t err = parse_ne_uri(&webdav_URI, webdav_URL, sesspool);
+  error_t err = parse_ne_uri(&webdav_URI, session_URL, sesspool);
   if (err != WEBDAV_NO_ERROR || webdav_URI->host == NULL)
     return error_createf(WEBDAV_ERR_ILLEGAL_URL, NULL,
                          "Illegal URL '%s'",
-                         webdav_URL);
+                         session_URL);
 
   /* Auth caching parameters. */
   bool store_passwords = WEBDAV_CONFIG_DEFAULT_OPTION_STORE_PASSWORDS;
@@ -9046,18 +9047,18 @@ session_open(
 
   const char * corrected_url = NULL;
   /* Ask the library to open the session. */
-  WEBDAV_ERR_W(vtable->open_session(session, &corrected_url, webdav_URL,
+  WEBDAV_ERR_W(vtable->open_session(session, &corrected_url, session_URL,
                                     callbacks, callback_baton,
                                     sesspool),
                apr_psprintf(pool, "Unable to connect to a WebDAV resource at URL '%s'",
-                            webdav_URL));
+                            session_URL));
 
   if (corrected_url_p && corrected_url)
   {
     if (!path_is_url(corrected_url))
     {
       ne_uri * corrected_URI = NULL;
-      WEBDAV_ERR(parse_ne_uri(&corrected_URI, webdav_URL, sesspool));
+      WEBDAV_ERR(parse_ne_uri(&corrected_URI, session_URL, sesspool));
       if (corrected_URI->path) ne_free(corrected_URI->path);
       corrected_URI->path = (char *)strdup(corrected_url);
       corrected_url = neon_uri_unparse(corrected_URI, pool);
@@ -12064,7 +12065,7 @@ static error_t
 neon_open(
   session_t * session,
   const char ** corrected_url,
-  const char * webdav_URL,
+  const char * session_URL,
   const callbacks2_t * callbacks,
   void * callback_baton,
   apr_pool_t * pool)
@@ -12075,7 +12076,7 @@ neon_open(
   *corrected_url = NULL;
 
   ne_uri * uri = NULL;
-  WEBDAV_ERR(parse_ne_uri(&uri, webdav_URL, pool));
+  WEBDAV_ERR(parse_ne_uri(&uri, session_URL, pool));
 
   /* Initialize neon if required */
   WEBDAV_ERR(ensure_neon_initialized());
@@ -12213,7 +12214,7 @@ neon_open(
   {
     // canonicalize url
     const char * remote_url = NULL;
-    remote_url = urlpath_canonicalize(webdav_URL, pool);
+    remote_url = urlpath_canonicalize(session_URL, pool);
     ras->url = stringbuf_create(remote_url, pool);
   }
   /* copies uri pointer members, they get free'd in __close. */
@@ -14464,7 +14465,7 @@ bool TWebDAVFileSystem::WebDAVDeleteFile(const wchar_t * path)
   return err == WEBDAV_NO_ERROR;
 }
 
-webdav::error_t TWebDAVFileSystem::OpenURL(const UnicodeString & webdav_URL,
+webdav::error_t TWebDAVFileSystem::OpenURL(const UnicodeString & session_URL,
     apr_pool_t * pool)
 {
   // prepare callbacks, contexts
@@ -14501,7 +14502,7 @@ webdav::error_t TWebDAVFileSystem::OpenURL(const UnicodeString & webdav_URL,
   }
   webdav::session_t * session_p = NULL;
   const char * corrected_url = NULL;
-  AnsiString base_url = AnsiString(webdav_URL).c_str();
+  AnsiString base_url = AnsiString(session_URL).c_str();
   const char * base_url_encoded = webdav::path_uri_encode(base_url.c_str(), pool);
   WEBDAV_ERR(webdav::client_open_session_internal(
                &session_p,
