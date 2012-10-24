@@ -125,6 +125,6 @@ private:
   __int64 __fastcall FarConfirmations();
 };
 //---------------------------------------------------------------------------
-#define FarConfiguration ((TFarConfiguration *) Configuration)
+#define FarConfiguration (static_cast<TFarConfiguration *>(Configuration))
 //---------------------------------------------------------------------------
 #endif

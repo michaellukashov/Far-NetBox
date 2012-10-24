@@ -22,7 +22,6 @@
 
 #include "stdafx.h"
 #include "ApiLog.h"
-#include "FileZillaApi.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE

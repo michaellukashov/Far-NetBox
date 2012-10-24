@@ -2799,21 +2799,18 @@ bool __fastcall TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool
       FileName = PanelItem->GetFileName();
       if (PanelItem->GetIsFile())
       {
-        THierarchicalStorage * ImportStorage = NULL;
+        UnicodeString XmlFileName = ::IncludeTrailingBackslash(GetCurrentDir()) + FileName;
+        THierarchicalStorage * ImportStorage = new TXmlStorage(XmlFileName, Configuration->GetStoredSessionsSubKey());
+        std::auto_ptr<THierarchicalStorage> ImportStoragePtr(ImportStorage);
+        ImportStorage->Init();
+        ImportStorage->SetAccessMode(smRead);
+        if (ImportStorage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), false) &&
+            ImportStorage->HasSubKeys())
         {
-          UnicodeString XmlFileName = ::IncludeTrailingBackslash(GetCurrentDir()) + FileName;
-          ImportStorage = new TXmlStorage(XmlFileName, Configuration->GetStoredSessionsSubKey());
-          std::auto_ptr<THierarchicalStorage> ImportStoragePtr(ImportStorage);
-          ImportStorage->Init();
-          ImportStorage->SetAccessMode(smRead);
-          if (ImportStorage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), false) &&
-              ImportStorage->HasSubKeys())
-          {
-            AnyData = true;
-            StoredSessions->Load(ImportStorage, /* AsModified */ true, /* UseDefaults */ true);
-            // modified only, explicit
-            StoredSessions->Save(false, true);
-          }
+          AnyData = true;
+          StoredSessions->Load(ImportStorage, /* AsModified */ true, /* UseDefaults */ true);
+          // modified only, explicit
+          StoredSessions->Save(false, true);
         }
       }
       if (!AnyData)
