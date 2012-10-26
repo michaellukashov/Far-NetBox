@@ -1,5 +1,7 @@
 NetBox 2.1.17 ??.10.2012
 --------------------
+  * Bugfix: Syncronize: wrong 'changed' time in Synchronization checklist
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=99119#p99119)
 
 NetBox 2.1.16 20.10.2012
 --------------------
