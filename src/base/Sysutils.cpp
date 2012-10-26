@@ -1459,20 +1459,19 @@ UnicodeString FormatDateTime(const UnicodeString fmt, TDateTime DateTime)
   Classes::Error(SNotImplemented, 150);
   return Result;
 }
-/*
+
 TDateTime ComposeDateTime(TDateTime Date, TDateTime Time)
 {
-  TDateTime Result = Trunc(Date);
-  Result.Set(Time.GetHour(), Time.GetMinute(), Time.GetSecond(), Time.GetMillisecond());
+  TDateTime Result = TDateTime(double(Date));
+  Result += double(Time);
   return Result;
 }
-*/
 
 TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime)
 {
   TDateTime Result(0.0);
-  // ComposeDateTime(DoEncodeDate(SystemTime.Year, SystemTime.Month, SystemTime.Day), DoEncodeTime(SystemTime.Hour, SystemTime.Minute, SystemTime.Second, SystemTime.MilliSecond));
-  ::TryEncodeDate(SystemTime.wYear, SystemTime.wMonth, SystemTime.wDay, Result);
+  Result = ComposeDateTime(EncodeDate(SystemTime.wYear, SystemTime.wMonth, SystemTime.wDay),
+    EncodeTime(SystemTime.wHour, SystemTime.wMinute, SystemTime.wSecond, SystemTime.wMilliseconds));
   return Result;
 }
 
