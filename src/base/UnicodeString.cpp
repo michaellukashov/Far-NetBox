@@ -55,7 +55,7 @@ AnsiString & AnsiString::operator=(const char * lpszData)
 
 AnsiString & AnsiString::operator=(const wchar_t * lpszData)
 {
-  Init(lpszData, static_cast<int>(wcslen(lpszData)));
+  Init(lpszData, static_cast<int>(wcslen(NullToEmpty(lpszData))));
   return *this;
 }
 
@@ -168,7 +168,7 @@ RawByteString & RawByteString::operator=(const char * lpszData)
 
 RawByteString & RawByteString::operator=(const wchar_t * lpszData)
 {
-  Init(lpszData, static_cast<int>(wcslen(lpszData)));
+  Init(lpszData, static_cast<int>(wcslen(NullToEmpty(lpszData))));
   return *this;
 }
 
@@ -240,7 +240,7 @@ UTF8String & UTF8String::operator=(const char * lpszData)
 
 UTF8String & UTF8String::operator=(const wchar_t * lpszData)
 {
-  Init(lpszData, static_cast<int>(wcslen(lpszData)));
+  Init(lpszData, static_cast<int>(wcslen(NullToEmpty(lpszData))));
   return *this;
 }
 
@@ -406,7 +406,7 @@ UnicodeString & UnicodeString::operator=(const std::wstring & strCopy)
 
 UnicodeString & UnicodeString::operator=(const wchar_t * Str)
 {
-  Init(Str, static_cast<int>(wcslen(Str)));
+  Init(Str, static_cast<int>(wcslen(NullToEmpty(Str))));
   return *this;
 }
 
