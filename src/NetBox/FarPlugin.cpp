@@ -1175,15 +1175,13 @@ intptr_t __fastcall TCustomFarPlugin::Menu(DWORD Flags, const UnicodeString Titl
       if (FLAGCLEAR(Flags, MIF_HIDDEN))
       {
         memset(&MenuItems[Count], 0, sizeof(MenuItems[Count]));
-        UnicodeString Text = Items->Strings[i].c_str();
         MenuItems[Count].Flags = flags;
         if (MenuItems[Count].Flags & MIF_SELECTED)
         {
           assert(Selected == NPOS);
           Selected = i;
         }
-        UnicodeString Str = Text;
-        MenuItems[Count].Text = TCustomFarPlugin::DuplicateStr(Str);
+        MenuItems[Count].Text = Items->Strings[i].c_str();
         MenuItems[Count].UserData = i;
         Count++;
       }
