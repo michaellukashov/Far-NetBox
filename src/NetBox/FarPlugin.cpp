@@ -2484,6 +2484,7 @@ TFarPanelItem::TFarPanelItem(PluginPanelItem * APanelItem, bool OwnsItem):
   FPanelItem = APanelItem;
   FOwnsItem = OwnsItem;
 }
+
 TFarPanelItem::~TFarPanelItem()
 {
   if (FOwnsItem)
