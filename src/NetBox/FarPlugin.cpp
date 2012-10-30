@@ -2640,7 +2640,7 @@ TObjectList * __fastcall TFarPanelInfo::GetItems()
       memset(ppi, 0, size);
       FOwner->FarControl(FCTL_GETPANELITEM, Index, reinterpret_cast<intptr_t>(ppi));
       // DEBUG_PRINTF(L"ppi.FileName = %s", ppi->FindData.lpwszFileName);
-      FItems->Add(static_cast<TObject *>(new TFarPanelItem(ppi)));
+      FItems->Add(new TFarPanelItem(ppi));
     }
   }
   return FItems;
