@@ -2263,8 +2263,6 @@ void __fastcall TFarPanelModes::SetPanelMode(size_t Mode, const UnicodeString Co
     FPanelModes[Mode].ColumnTitles = new wchar_t *[ColumnTypesCount];
     for (intptr_t Index = 0; Index < ColumnTypesCount; Index++)
     {
-      // FPanelModes[Mode].ColumnTitles[Index] =
-      //    TCustomFarPlugin::DuplicateStr(ColumnTitles->Strings[Index]);
       Titles[Index] = TCustomFarPlugin::DuplicateStr(ColumnTitles->Strings[Index]);
     }
     FPanelModes[Mode].ColumnTitles = Titles;
