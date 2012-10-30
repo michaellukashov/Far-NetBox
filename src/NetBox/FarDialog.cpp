@@ -2142,6 +2142,7 @@ void __fastcall TFarList::UpdateItem(int Index)
 {
   FarListItem * ListItem = &FListItems->Items[Index];
   UnicodeString Value = Strings[Index].c_str();
+  delete[] ListItem->Text;
   ListItem->Text = TCustomFarPlugin::DuplicateStr(Value, true);
 
   FarListUpdate ListUpdate;
