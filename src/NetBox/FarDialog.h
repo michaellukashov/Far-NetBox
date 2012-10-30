@@ -339,12 +339,14 @@ class TFarButton : public TFarDialogItem
 {
 public:
   explicit TFarButton(TFarDialog * ADialog);
+  virtual ~TFarButton() {}
 
   virtual UnicodeString __fastcall GetCaption() { return GetData(); }
   virtual void __fastcall SetCaption(const UnicodeString Value) { SetData(Value); }
   virtual int __fastcall GetResult() { return FResult; }
   virtual void __fastcall SetResult(int Value) { FResult = Value; }
   virtual UnicodeString __fastcall GetData();
+  bool __fastcall GetDefault();
   void __fastcall SetDefault(bool Value);
   TFarButtonBrackets GetBrackets() { return FBrackets; }
   void __fastcall SetBrackets(TFarButtonBrackets Value);
@@ -362,9 +364,6 @@ private:
   int FResult;
   TFarButtonClickEvent FOnClick;
   TFarButtonBrackets FBrackets;
-
-public:
-  bool __fastcall GetDefault();
 };
 //---------------------------------------------------------------------------
 DEFINE_CALLBACK_TYPE3(TFarAllowChangeEvent, void,
