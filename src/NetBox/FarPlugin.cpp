@@ -2255,12 +2255,11 @@ void __fastcall TFarPanelModes::SetPanelMode(size_t Mode, const UnicodeString Co
   assert(!ColumnTitles || (ColumnTitles->Count == ColumnTypesCount));
 
   ClearPanelMode(FPanelModes[Mode]);
-  static wchar_t * Titles[PANEL_MODES_COUNT];
+  wchar_t ** Titles = new wchar_t *[ColumnTypesCount];
   FPanelModes[Mode].ColumnTypes = TCustomFarPlugin::DuplicateStr(ColumnTypes);
   FPanelModes[Mode].ColumnWidths = TCustomFarPlugin::DuplicateStr(ColumnWidths);
   if (ColumnTitles)
   {
-    FPanelModes[Mode].ColumnTitles = new wchar_t *[ColumnTypesCount];
     for (intptr_t Index = 0; Index < ColumnTypesCount; Index++)
     {
       Titles[Index] = TCustomFarPlugin::DuplicateStr(ColumnTitles->Strings[Index]);
@@ -2293,9 +2292,9 @@ void __fastcall TFarPanelModes::ClearPanelMode(PanelMode & Mode)
     {
       for (int Index = 0; Index < ColumnTypesCount; Index++)
       {
-        // delete[] Mode.ColumnTitles[Index];
+        delete[] Mode.ColumnTitles[Index];
       }
-      // delete[] Mode.ColumnTitles;
+      delete[] Mode.ColumnTitles;
     }
     delete[] Mode.StatusColumnTypes;
     delete[] Mode.StatusColumnWidths;
