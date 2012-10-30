@@ -58,26 +58,8 @@ public:
   friend bool __fastcall operator !=(const UTF8String & lhs, const UTF8String & rhs);
 
 private:
-  void Init(const wchar_t * Str, int Length)
-  {
-    Data.resize(Length);
-    if (Length > 0)
-    {
-        memmove(const_cast<wchar_t *>(Data.c_str()), Str, Length * sizeof(wchar_t));
-    }
-    Data = Data.c_str();
-  }
-  void Init(const char * Str, int Length)
-  {
-    int Size = MultiByteToWideChar(CP_UTF8, 0, Str, Length > 0 ? Length : -1, NULL, 0);
-    Data.resize(Size + 1);
-    if (Size > 0)
-    {
-      MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), Size + 1);
-      Data[Size] = 0;
-    }
-    Data = Data.c_str();
-  }
+  void Init(const wchar_t * Str, int Length);
+  void Init(const char * Str, int Length);
 
   typedef std::basic_string<wchar_t> wstring_t;
   wstring_t Data;
@@ -212,27 +194,8 @@ public:
   }
 
 private:
-  void Init(const wchar_t * Str, int Length)
-  {
-    Data.resize(Length);
-    if (Length > 0)
-    {
-        memmove(const_cast<wchar_t *>(Data.c_str()), Str, Length * sizeof(wchar_t));
-    }
-    Data = Data.c_str();
-  }
-  void Init(const char * Str, int Length)
-  {
-    int Size = MultiByteToWideChar(CP_UTF8, 0, Str, Length > 0 ? Length : -1, NULL, 0);
-    Data.resize(Size + 1);
-    if (Size > 0)
-    {
-      MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), Size + 1);
-      Data[Size] = 0;
-    }
-    Data = Data.c_str();
-  }
-
+  void Init(const wchar_t * Str, int Length);
+  void Init(const char * Str, int Length);
   void  __cdecl ThrowIfOutOfRange(int idx) const;
 
   std::wstring Data;
@@ -325,36 +288,9 @@ public:
   void Unique() const {}
 
 private:
-  void Init(const wchar_t * Str, int Length)
-  {
-    int Size = WideCharToMultiByte(CP_UTF8, 0, Str, Length, nullptr, 0, nullptr, nullptr) + 1;
-    Data.resize(Size);
-    if (Size > 0)
-    {
-      WideCharToMultiByte(CP_UTF8, 0, Str, Length,
-        reinterpret_cast<LPSTR>(const_cast<char *>(Data.c_str())), Size-1, nullptr, nullptr);
-      Data[Size-1] = 0;
-    }
-    Data = Data.c_str();
-  }
-  void Init(const char * Str, int Length)
-  {
-    Data.resize(Length);
-    if (Length > 0)
-    {
-      memmove(const_cast<char *>(Data.c_str()), Str, Length);
-    }
-    Data = Data.c_str();
-  }
-  void Init(const unsigned char * Str, int Length)
-  {
-    Data.resize(Length);
-    if (Length > 0)
-    {
-      memmove(const_cast<char *>(Data.c_str()), Str, Length);
-    }
-    Data = Data.c_str();
-  }
+  void Init(const wchar_t * Str, int Length);
+  void Init(const char * Str, int Length);
+  void Init(const unsigned char * Str, int Length);
   void  __cdecl ThrowIfOutOfRange(int idx) const;
 
   std::string Data;
@@ -431,35 +367,9 @@ public:
   void Unique() const {}
 
 private:
-  void Init(const wchar_t * Str, int Length)
-  {
-    int Size = WideCharToMultiByte(CP_ACP, 0, Str, Length, nullptr, 0, nullptr, nullptr) + 1;
-    Data.resize(Size);
-    if (Size > 0)
-    {
-      WideCharToMultiByte(CP_ACP, 0, Str, Length,
-        reinterpret_cast<LPSTR>(const_cast<unsigned char *>(Data.c_str())), Size-1, nullptr, nullptr);
-      Data.resize(Size - 1);
-    }
-  }
-  void Init(const char * Str, int Length)
-  {
-    Data.resize(Length);
-    if (Length > 0)
-    {
-      memmove(const_cast<unsigned char *>(Data.c_str()), Str, Length);
-      // Data[Length-1] = 0;
-    }
-  }
-  void Init(const unsigned char * Str, int Length)
-  {
-    Data.resize(Length);
-    if (Length > 0)
-    {
-      memmove(const_cast<unsigned char *>(Data.c_str()), Str, Length);
-      // Data[Length-1] = 0;
-    }
-  }
+  void Init(const wchar_t * Str, int Length);
+  void Init(const char * Str, int Length);
+  void Init(const unsigned char * Str, int Length);
 
   typedef std::basic_string<unsigned char> rawstring_t;
   rawstring_t Data;

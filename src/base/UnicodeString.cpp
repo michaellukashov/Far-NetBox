@@ -5,6 +5,39 @@
 
 //------------------------------------------------------------------------------
 
+void AnsiString::Init(const wchar_t * Str, int Length)
+{
+  int Size = WideCharToMultiByte(CP_UTF8, 0, Str, Length, nullptr, 0, nullptr, nullptr) + 1;
+  Data.resize(Size);
+  if (Size > 0)
+  {
+    WideCharToMultiByte(CP_UTF8, 0, Str, Length,
+      reinterpret_cast<LPSTR>(const_cast<char *>(Data.c_str())), Size-1, nullptr, nullptr);
+    Data[Size-1] = 0;
+  }
+  Data = Data.c_str();
+}
+
+void AnsiString::Init(const char * Str, int Length)
+{
+  Data.resize(Length);
+  if (Length > 0)
+  {
+    memmove(const_cast<char *>(Data.c_str()), Str, Length);
+  }
+  Data = Data.c_str();
+}
+
+void AnsiString::Init(const unsigned char * Str, int Length)
+{
+  Data.resize(Length);
+  if (Length > 0)
+  {
+    memmove(const_cast<char *>(Data.c_str()), Str, Length);
+  }
+  Data = Data.c_str();
+}
+
 AnsiString::operator UnicodeString() const
 {
   return UnicodeString(Data.c_str(), static_cast<int>(Data.size()));
@@ -96,6 +129,38 @@ void  __cdecl AnsiString::ThrowIfOutOfRange(int idx) const
 }
 
 //------------------------------------------------------------------------------
+
+void RawByteString::Init(const wchar_t * Str, int Length)
+{
+  int Size = WideCharToMultiByte(CP_ACP, 0, Str, Length, nullptr, 0, nullptr, nullptr) + 1;
+  Data.resize(Size);
+  if (Size > 0)
+  {
+    WideCharToMultiByte(CP_ACP, 0, Str, Length,
+      reinterpret_cast<LPSTR>(const_cast<unsigned char *>(Data.c_str())), Size-1, nullptr, nullptr);
+    Data.resize(Size - 1);
+  }
+}
+
+void RawByteString::Init(const char * Str, int Length)
+{
+  Data.resize(Length);
+  if (Length > 0)
+  {
+    memmove(const_cast<unsigned char *>(Data.c_str()), Str, Length);
+    // Data[Length-1] = 0;
+  }
+}
+
+void RawByteString::Init(const unsigned char * Str, int Length)
+{
+  Data.resize(Length);
+  if (Length > 0)
+  {
+    memmove(const_cast<unsigned char *>(Data.c_str()), Str, Length);
+    // Data[Length-1] = 0;
+  }
+}
 
 RawByteString::operator UnicodeString() const
 {
@@ -198,6 +263,28 @@ const RawByteString & __fastcall RawByteString::operator +=(const char Ch)
 
 //------------------------------------------------------------------------------
 
+void UTF8String::Init(const wchar_t * Str, int Length)
+{
+  Data.resize(Length);
+  if (Length > 0)
+  {
+      memmove(const_cast<wchar_t *>(Data.c_str()), Str, Length * sizeof(wchar_t));
+  }
+  Data = Data.c_str();
+}
+
+void UTF8String::Init(const char * Str, int Length)
+{
+  int Size = MultiByteToWideChar(CP_UTF8, 0, Str, Length > 0 ? Length : -1, NULL, 0);
+  Data.resize(Size + 1);
+  if (Size > 0)
+  {
+    MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), Size + 1);
+    Data[Size] = 0;
+  }
+  Data = Data.c_str();
+}
+
 UTF8String::UTF8String(const UnicodeString & Str)
 {
   Init(Str.c_str(), Str.GetLength());
@@ -280,6 +367,28 @@ bool __fastcall operator !=(const UTF8String & lhs, const UTF8String & rhs)
 }
 
 //------------------------------------------------------------------------------
+
+void UnicodeString::Init(const wchar_t * Str, int Length)
+{
+  Data.resize(Length);
+  if (Length > 0)
+  {
+      memmove(const_cast<wchar_t *>(Data.c_str()), Str, Length * sizeof(wchar_t));
+  }
+  Data = Data.c_str();
+}
+
+void UnicodeString::Init(const char * Str, int Length)
+{
+  int Size = MultiByteToWideChar(CP_UTF8, 0, Str, Length > 0 ? Length : -1, NULL, 0);
+  Data.resize(Size + 1);
+  if (Size > 0)
+  {
+    MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), Size + 1);
+    Data[Size] = 0;
+  }
+  Data = Data.c_str();
+}
 
 UnicodeString & UnicodeString::Lower(int nStartPos, int nLength)
 {
