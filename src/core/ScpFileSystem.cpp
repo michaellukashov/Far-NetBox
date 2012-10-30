@@ -1113,6 +1113,10 @@ void __fastcall TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
             assert(File->GetIsParentDirectory());
             FileList->AddFile(File);
           }
+          else
+          {
+            delete File;
+          }
         }
         else
         {
