@@ -1173,6 +1173,7 @@ void __fastcall TFarDialogItem::SetDataInternal(const UnicodeString Value)
   {
     SendMessage(DM_SETTEXTPTR, reinterpret_cast<LONG_PTR>(FarData.c_str()));
   }
+  delete[] GetDialogItem()->PtrData;
   GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(FarData, true);
   DialogChange();
 }
@@ -1188,6 +1189,7 @@ void __fastcall TFarDialogItem::SetData(const UnicodeString Value)
 void __fastcall TFarDialogItem::UpdateData(const UnicodeString Value)
 {
   UnicodeString FarData = Value.c_str();
+  delete[] GetDialogItem()->PtrData;
   GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(FarData, true);
 }
 //---------------------------------------------------------------------------
@@ -1973,6 +1975,7 @@ LONG_PTR __fastcall TFarEdit::ItemProc(int Msg, LONG_PTR Param)
   if (Msg == DN_EDITCHANGE)
   {
     UnicodeString Data = (reinterpret_cast<FarDialogItem *>(Param))->PtrData;
+    delete[] GetDialogItem()->PtrData;
     GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(Data, true);
     // GetDialogItem()->MaxLen = Data.Length();
   }
@@ -2513,6 +2516,7 @@ LONG_PTR __fastcall TFarComboBox::ItemProc(int Msg, LONG_PTR Param)
   if (Msg == DN_EDITCHANGE)
   {
     UnicodeString Data = (reinterpret_cast<FarDialogItem *>(Param))->PtrData;
+    delete[] GetDialogItem()->PtrData;
     GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(Data, true);
     // GetDialogItem()->MaxLen = Data.Length();
   }
