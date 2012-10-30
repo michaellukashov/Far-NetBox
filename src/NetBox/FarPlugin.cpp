@@ -2216,7 +2216,7 @@ TObjectList * __fastcall TCustomFarFileSystem::CreatePanelItemList(
   {
     for (int Index = 0; Index < ItemsNumber; Index++)
     {
-      PanelItems->Add(new TFarPanelItem(&PanelItem[Index]));
+      PanelItems->Add(new TFarPanelItem(&PanelItem[Index], false));
     }
   }
   catch(...)
@@ -2475,15 +2475,19 @@ void __fastcall TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * Pane
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TFarPanelItem::TFarPanelItem(PluginPanelItem * APanelItem):
-  TCustomFarPanelItem()
+TFarPanelItem::TFarPanelItem(PluginPanelItem * APanelItem, bool OwnsItem):
+  TCustomFarPanelItem(),
+  FPanelItem(NULL),
+  FOwnsItem(false)
 {
   assert(APanelItem);
   FPanelItem = APanelItem;
+  FOwnsItem = OwnsItem;
 }
 TFarPanelItem::~TFarPanelItem()
 {
-  delete FPanelItem;
+  if (FOwnsItem)
+    free(FPanelItem);
   FPanelItem = NULL;
 }
 
@@ -2640,7 +2644,7 @@ TObjectList * __fastcall TFarPanelInfo::GetItems()
       memset(ppi, 0, size);
       FOwner->FarControl(FCTL_GETPANELITEM, Index, reinterpret_cast<intptr_t>(ppi));
       // DEBUG_PRINTF(L"ppi.FileName = %s", ppi->FindData.lpwszFileName);
-      FItems->Add(new TFarPanelItem(ppi));
+      FItems->Add(new TFarPanelItem(ppi, true));
     }
   }
   return FItems;

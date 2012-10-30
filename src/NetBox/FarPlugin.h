@@ -366,7 +366,7 @@ protected:
 class TFarPanelItem : public TCustomFarPanelItem
 {
 public:
-  explicit TFarPanelItem(PluginPanelItem * APanelItem);
+  explicit TFarPanelItem(PluginPanelItem * APanelItem, bool OwnsItem);
   virtual ~TFarPanelItem();
 
   uintptr_t __fastcall GetFlags();
@@ -380,6 +380,7 @@ public:
 
 protected:
   PluginPanelItem * FPanelItem;
+  bool FOwnsItem;
 
   virtual void __fastcall GetData(
     DWORD & Flags, UnicodeString & FileName, __int64 & Size,
