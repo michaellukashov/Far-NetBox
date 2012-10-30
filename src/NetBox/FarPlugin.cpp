@@ -2211,7 +2211,7 @@ TObjectList * __fastcall TCustomFarFileSystem::CreatePanelItemList(
 {
   // DEBUG_PRINTF(L"ItemsNumber = %d", ItemsNumber);
   TObjectList * PanelItems = new TObjectList();
-  PanelItems->SetOwnsObjects(false);
+  PanelItems->SetOwnsObjects(true);
   try
   {
     for (int Index = 0; Index < ItemsNumber; Index++)
