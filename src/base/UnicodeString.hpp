@@ -223,7 +223,6 @@ public:
   operator std::string() const { return std::string(operator const char *()); }
   int size() const { return Data.size(); }
   const char * c_str() const { return Data.c_str(); }
-  // const unsigned char * c_str() const { return Data.c_str(); }
   int Length() const { return Data.size(); }
   int GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
@@ -255,7 +254,6 @@ public:
   AnsiString & Append(const AnsiString & Str) { return Append(Str.c_str(), Str.GetLength()); }
   AnsiString & Append(const char * Str) { return Append(Str, strlen(Str ? Str : "")); }
   AnsiString & Append(const char Ch) { return Append(&Ch, 1); }
-  // AnsiString & Append(const char * lpszAdd, UINT CodePage=CP_OEMCP);
 
 public:
   AnsiString & operator=(const UnicodeString & strCopy);
