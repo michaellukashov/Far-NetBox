@@ -1786,6 +1786,7 @@ TCustomFarFileSystem::TCustomFarFileSystem(TCustomFarPlugin * APlugin) :
   FCriticalSection(NULL),
   FOpenPluginInfoValid(false)
 {
+  Self = this;
   memset(FPanelInfo, 0, sizeof(FPanelInfo));
 }
 
@@ -2040,18 +2041,17 @@ intptr_t __fastcall TCustomFarFileSystem::GetFiles(struct PluginPanelItem * Pane
   ResetCachedInfo();
   TObjectList * PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
   intptr_t Result = 0;
-  UnicodeString DestPathStr = *DestPath;
-  TRY_FINALLY3 (DestPathStr, DestPath, PanelItems,
+  FDestPathStr = *DestPath;
+  TRY_FINALLY3 (Self, DestPath, PanelItems,
   {
-    Result = GetFilesEx(PanelItems, Move > 0, DestPathStr, OpMode);
+    Result = GetFilesEx(PanelItems, Move > 0, FDestPathStr, OpMode);
   }
   ,
   {
     // StrToFar(DestPathStr);
-    if (DestPathStr != *DestPath)
+    if (Self->FDestPathStr != *DestPath)
     {
-      // wcscpy_s(*DestPath, DestPathStr.size(), DestPathStr.c_str());
-      *DestPath = TCustomFarPlugin::DuplicateStr(DestPathStr, true);
+      *DestPath = Self->FDestPathStr.c_str();
     }
     delete PanelItems;
   }

@@ -289,6 +289,8 @@ protected:
   void __fastcall InvalidateOpenPluginInfo();
 
 private:
+  TCustomFarFileSystem * Self;
+  UnicodeString FDestPathStr;
   OpenPluginInfo FOpenPluginInfo;
   bool FOpenPluginInfoValid;
   TFarPanelInfo * FPanelInfo[2];
