@@ -12741,8 +12741,8 @@ void __fastcall TWebDAVFileSystem::Init()
   delete FTransferStatusCriticalSection;
   FTransferStatusCriticalSection = NULL;
 
-  // apr_pool_terminate();
   webdav_pool_destroy(webdav_pool);
+  apr_terminate();
   webdav_pool = NULL;
   ne_sock_exit();
 }
