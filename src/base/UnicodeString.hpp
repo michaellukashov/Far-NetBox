@@ -58,26 +58,8 @@ public:
   friend bool __fastcall operator !=(const UTF8String & lhs, const UTF8String & rhs);
 
 private:
-  void Init(const wchar_t * Str, int Length)
-  {
-    Data.resize(Length);
-    if (Length > 0)
-    {
-        memmove(const_cast<wchar_t *>(Data.c_str()), Str, Length * sizeof(wchar_t));
-    }
-    Data = Data.c_str();
-  }
-  void Init(const char * Str, int Length)
-  {
-    int Size = MultiByteToWideChar(CP_UTF8, 0, Str, Length > 0 ? Length : -1, NULL, 0);
-    Data.resize(Size + 1);
-    if (Size > 0)
-    {
-      MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), Size + 1);
-      Data[Size] = 0;
-    }
-    Data = Data.c_str();
-  }
+  void Init(const wchar_t * Str, int Length);
+  void Init(const char * Str, int Length);
 
   typedef std::basic_string<wchar_t> wstring_t;
   wstring_t Data;
@@ -136,7 +118,7 @@ public:
 
   UnicodeString & Insert(int Pos, const wchar_t * Str, int StrLen);
   UnicodeString & Insert(int Pos, const UnicodeString & Str) { return Insert(Pos, Str.c_str(), Str.Length()); }
-  UnicodeString & Insert(const wchar_t * Str, int Pos) { return Insert(Pos, Str, wcslen(Str)); }
+  UnicodeString & Insert(const wchar_t * Str, int Pos) { return Insert(Pos, Str, wcslen(NullToEmpty(Str))); }
   UnicodeString & Insert(const wchar_t Ch, int Pos) { return Insert(Pos, &Ch, 1); }
   UnicodeString & Insert(const UnicodeString & Str, int Pos) { return Insert(Pos, Str); }
 
@@ -212,27 +194,8 @@ public:
   }
 
 private:
-  void Init(const wchar_t * Str, int Length)
-  {
-    Data.resize(Length);
-    if (Length > 0)
-    {
-        memmove(const_cast<wchar_t *>(Data.c_str()), Str, Length * sizeof(wchar_t));
-    }
-    Data = Data.c_str();
-  }
-  void Init(const char * Str, int Length)
-  {
-    int Size = MultiByteToWideChar(CP_UTF8, 0, Str, Length > 0 ? Length : -1, NULL, 0);
-    Data.resize(Size + 1);
-    if (Size > 0)
-    {
-      MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), Size + 1);
-      Data[Size] = 0;
-    }
-    Data = Data.c_str();
-  }
-
+  void Init(const wchar_t * Str, int Length);
+  void Init(const char * Str, int Length);
   void  __cdecl ThrowIfOutOfRange(int idx) const;
 
   std::wstring Data;
@@ -260,7 +223,6 @@ public:
   operator std::string() const { return std::string(operator const char *()); }
   int size() const { return Data.size(); }
   const char * c_str() const { return Data.c_str(); }
-  // const unsigned char * c_str() const { return Data.c_str(); }
   int Length() const { return Data.size(); }
   int GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
@@ -292,7 +254,6 @@ public:
   AnsiString & Append(const AnsiString & Str) { return Append(Str.c_str(), Str.GetLength()); }
   AnsiString & Append(const char * Str) { return Append(Str, strlen(Str ? Str : "")); }
   AnsiString & Append(const char Ch) { return Append(&Ch, 1); }
-  // AnsiString & Append(const char * lpszAdd, UINT CodePage=CP_OEMCP);
 
 public:
   AnsiString & operator=(const UnicodeString & strCopy);
@@ -325,36 +286,9 @@ public:
   void Unique() const {}
 
 private:
-  void Init(const wchar_t * Str, int Length)
-  {
-    int Size = WideCharToMultiByte(CP_UTF8, 0, Str, Length, nullptr, 0, nullptr, nullptr) + 1;
-    Data.resize(Size);
-    if (Size > 0)
-    {
-      WideCharToMultiByte(CP_UTF8, 0, Str, Length,
-        reinterpret_cast<LPSTR>(const_cast<char *>(Data.c_str())), Size-1, nullptr, nullptr);
-      Data[Size-1] = 0;
-    }
-    Data = Data.c_str();
-  }
-  void Init(const char * Str, int Length)
-  {
-    Data.resize(Length);
-    if (Length > 0)
-    {
-      memmove(const_cast<char *>(Data.c_str()), Str, Length);
-    }
-    Data = Data.c_str();
-  }
-  void Init(const unsigned char * Str, int Length)
-  {
-    Data.resize(Length);
-    if (Length > 0)
-    {
-      memmove(const_cast<char *>(Data.c_str()), Str, Length);
-    }
-    Data = Data.c_str();
-  }
+  void Init(const wchar_t * Str, int Length);
+  void Init(const char * Str, int Length);
+  void Init(const unsigned char * Str, int Length);
   void  __cdecl ThrowIfOutOfRange(int idx) const;
 
   std::string Data;
@@ -431,35 +365,9 @@ public:
   void Unique() const {}
 
 private:
-  void Init(const wchar_t * Str, int Length)
-  {
-    int Size = WideCharToMultiByte(CP_ACP, 0, Str, Length, nullptr, 0, nullptr, nullptr) + 1;
-    Data.resize(Size);
-    if (Size > 0)
-    {
-      WideCharToMultiByte(CP_ACP, 0, Str, Length,
-        reinterpret_cast<LPSTR>(const_cast<unsigned char *>(Data.c_str())), Size-1, nullptr, nullptr);
-      Data.resize(Size - 1);
-    }
-  }
-  void Init(const char * Str, int Length)
-  {
-    Data.resize(Length);
-    if (Length > 0)
-    {
-      memmove(const_cast<unsigned char *>(Data.c_str()), Str, Length);
-      // Data[Length-1] = 0;
-    }
-  }
-  void Init(const unsigned char * Str, int Length)
-  {
-    Data.resize(Length);
-    if (Length > 0)
-    {
-      memmove(const_cast<unsigned char *>(Data.c_str()), Str, Length);
-      // Data[Length-1] = 0;
-    }
-  }
+  void Init(const wchar_t * Str, int Length);
+  void Init(const char * Str, int Length);
+  void Init(const unsigned char * Str, int Length);
 
   typedef std::basic_string<unsigned char> rawstring_t;
   rawstring_t Data;

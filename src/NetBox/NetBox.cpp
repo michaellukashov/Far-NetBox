@@ -230,11 +230,9 @@ extern "C"
     if (Info->StructSize < sizeof(OpenInfo))
       return NULL;
     assert(FarPlugin);
-    // DEBUG_PRINTF(L"NetBox: OpenW: begin: OpenFrom = %d", Info->OpenFrom);
     TFarPluginGuard Guard;
-    HANDLE handle = static_cast<HANDLE>(FarPlugin->OpenPlugin(Info));
-    // DEBUG_PRINTF(L"NetBox: end, handle = %u", handle);
-    return handle;
+    HANDLE Handle = static_cast<HANDLE>(FarPlugin->OpenPlugin(Info));
+    return Handle;
   }
 
 //---------------------------------------------------------------------------
