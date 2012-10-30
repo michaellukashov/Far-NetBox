@@ -1086,6 +1086,7 @@ void __fastcall TFarDialogItem::SetBounds(TRect Value)
 //---------------------------------------------------------------------------
 void __fastcall TFarDialogItem::Detach()
 {
+  delete[] GetDialogItem()->PtrData;
   FDialog = NULL;
 }
 //---------------------------------------------------------------------------
