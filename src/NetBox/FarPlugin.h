@@ -290,6 +290,7 @@ protected:
 
 private:
   TCustomFarFileSystem * Self;
+  UnicodeString FNameStr;
   UnicodeString FDestPathStr;
   OpenPluginInfo FOpenPluginInfo;
   bool FOpenPluginInfoValid;

@@ -2002,19 +2002,19 @@ intptr_t __fastcall TCustomFarFileSystem::SetDirectory(const wchar_t * Dir, int 
 intptr_t __fastcall TCustomFarFileSystem::MakeDirectory(const wchar_t ** Name, int OpMode)
 {
   ResetCachedInfo();
-  UnicodeString NameStr = *Name;
+  FNameStr = *Name;
   intptr_t Result = 0;
-  TRY_FINALLY2 (NameStr, Name,
+  TRY_FINALLY2 (Self, Name,
   {
-    Result = MakeDirectoryEx(NameStr, OpMode);
+    Result = MakeDirectoryEx(Self->FNameStr, OpMode);
   }
   ,
   {
     // StrToFar(NameStr);
-    if (NameStr != *Name)
+    if (Self->FNameStr != *Name)
     {
       // wcscpy_s(*Name, NameStr.size(), NameStr.c_str());
-      *Name = TCustomFarPlugin::DuplicateStr(NameStr, true);
+      *Name = Self->FNameStr;
     }
   }
   );
