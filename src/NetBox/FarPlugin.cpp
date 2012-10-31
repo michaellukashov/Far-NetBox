@@ -2012,7 +2012,7 @@ intptr_t __fastcall TCustomFarFileSystem::MakeDirectory(const wchar_t ** Name, i
     if (Self->FNameStr != *Name)
     {
       // wcscpy_s(*Name, NameStr.size(), NameStr.c_str());
-      *Name = Self->FNameStr;
+      *Name = Self->FNameStr.c_str();
     }
   }
   );
