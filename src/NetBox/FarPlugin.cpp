@@ -101,7 +101,6 @@ void __fastcall TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo 
   try
   {
     ResetCachedInfo();
-    // Info->StructSize = 336 for FAR 1.65
     memset(&FStartupInfo, 0, sizeof(FStartupInfo));
     memmove(&FStartupInfo, Info,
             Info->StructSize >= sizeof(FStartupInfo) ?
@@ -167,19 +166,6 @@ void __fastcall TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
     COMPOSESTRINGARRAY(PluginConfig);
 
     #undef COMPOSESTRINGARRAY
-    // FIXME
-    /*
-    if (DiskMenuStrings.GetCount())
-    {
-        wchar_t *NumberArray = new wchar_t[DiskMenuStrings.GetCount()];
-        FPluginInfo.DiskMenuNumbers = &NumberArray;
-        for (int Index = 0; Index < DiskMenuStrings.GetCount(); Index++)
-        {
-          NumberArray[Index] = (int)DiskMenu.GetObject(Index);
-        }
-    }
-    */
-
     UnicodeString CommandPrefix;
     for (int Index = 0; Index < CommandPrefixes.Count; Index++)
     {
@@ -1523,14 +1509,12 @@ void __fastcall TCustomFarPlugin::ClearConsoleTitle()
 //---------------------------------------------------------------------------
 void __fastcall TCustomFarPlugin::UpdateConsoleTitle(const UnicodeString Title)
 {
-  // assert(!FCurrentTitle.IsEmpty());
   FCurrentTitle = Title;
   UpdateConsoleTitle();
 }
 //---------------------------------------------------------------------------
 void __fastcall TCustomFarPlugin::UpdateConsoleTitleProgress(short Progress)
 {
-  // assert(!FCurrentTitle.IsEmpty());
   FCurrentProgress = Progress;
   UpdateConsoleTitle();
 }
@@ -1702,7 +1686,6 @@ __int64 __fastcall TCustomFarPlugin::FarAdvControl(ADVANCED_CONTROL_COMMANDS Com
 //---------------------------------------------------------------------------
 intptr_t __fastcall TCustomFarPlugin::FarEditorControl(EDITOR_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2)
 {
-  UnicodeString Buf;
   switch (Command)
   {
   case ECTL_GETINFO:
@@ -1712,8 +1695,6 @@ intptr_t __fastcall TCustomFarPlugin::FarEditorControl(EDITOR_CONTROL_COMMANDS C
     break;
 
   case ECTL_SETTITLE:
-    // Buf = static_cast<wchar_t *>(Param);
-    // Param = Buf.c_str();
     break;
 
   default:
@@ -2501,7 +2482,6 @@ void __fastcall TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * Pane
   PanelItem->FileSize = Size;
   // PanelItem->PackSize = (long int)Size;
 
-  // ASCOPY(PanelItem->FindData.lpwszFileName, FileName);
   PanelItem->FileName = TCustomFarPlugin::DuplicateStr(FileName);
   // DEBUG_PRINTF(L"PanelItem->FindData.lpwszFileName = %s", PanelItem->FindData.lpwszFileName);
   PanelItem->Description = TCustomFarPlugin::DuplicateStr(Description);
@@ -2813,9 +2793,9 @@ UnicodeString __fastcall TFarPanelInfo::GetCurrentDirectory()
 {
   UnicodeString Result = L"";
   intptr_t Size = FarPlugin->FarControl(FCTL_GETPANELDIRECTORY,
-    0,
-    NULL,
-    FOwner != NULL ? PANEL_ACTIVE : PANEL_PASSIVE);
+                                      0,
+                                      NULL,
+                                      FOwner != NULL ? PANEL_ACTIVE : PANEL_PASSIVE);
   if (Size)
   {
     FarPanelDirectory * pfpd = static_cast<FarPanelDirectory *>(malloc(Size));
