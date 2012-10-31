@@ -1687,7 +1687,7 @@ void __fastcall TQueueItem::SetCPSLimit(unsigned long CPSLimit)
 //---------------------------------------------------------------------------
 /* __fastcall */ TQueueItemProxy::TQueueItemProxy(TTerminalQueue * Queue,
   TQueueItem * QueueItem) :
-  FProgressData(NULL), FQueue(Queue), FQueueItem(QueueItem),
+  FProgressData(NULL), FStatus(TQueueItem::qsPending), FQueue(Queue), FQueueItem(QueueItem),
   FQueueStatus(NULL), FInfo(NULL),
   FProcessingUserAction(false), FUserData(NULL)
 {
