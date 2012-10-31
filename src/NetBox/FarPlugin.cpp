@@ -1188,15 +1188,13 @@ intptr_t __fastcall TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeStri
       if (FLAGCLEAR(Flags, MIF_HIDDEN))
       {
         memset(&MenuItems[Count], 0, sizeof(MenuItems[Count]));
-        UnicodeString Text = Items->Strings[i].c_str();
         MenuItems[Count].Flags = flags;
         if (MenuItems[Count].Flags & MIF_SELECTED)
         {
           assert(Selected == NPOS);
           Selected = i;
         }
-        UnicodeString Str = Text;
-        MenuItems[Count].Text = TCustomFarPlugin::DuplicateStr(Str);
+        MenuItems[Count].Text = Items->Strings[i].c_str();
         MenuItems[Count].UserData = i;
         Count++;
       }
@@ -1828,6 +1826,7 @@ TCustomFarFileSystem::TCustomFarFileSystem(TCustomFarPlugin * APlugin) :
   FClosed(false),
   FCriticalSection(NULL)
 {
+  Self = this;
   memset(FPanelInfo, 0, sizeof(FPanelInfo));
 }
 
@@ -2051,17 +2050,17 @@ int __fastcall TCustomFarFileSystem::SetDirectory(const struct SetDirectoryInfo 
 int __fastcall TCustomFarFileSystem::MakeDirectory(struct MakeDirectoryInfo *Info)
 {
   ResetCachedInfo();
-  UnicodeString NameStr = Info->Name;
+  FNameStr = Info->Name;
   intptr_t Result = 0;
-  TRY_FINALLY2 (NameStr, Info,
+  TRY_FINALLY2 (Self, Info,
   {
-    Result = MakeDirectoryEx(NameStr, Info->OpMode);
+    Result = MakeDirectoryEx(Self->FNameStr, Info->OpMode);
   }
   ,
   {
-    if (0 != wcscmp(NameStr.c_str(), Info->Name))
+    if (0 != wcscmp(Self->FNameStr.c_str(), Info->Name))
     {
-        Info->Name = TCustomFarPlugin::DuplicateStr(NameStr, true);
+      Info->Name = Self->FNameStr.c_str();
     }
   }
   );
@@ -2086,16 +2085,16 @@ int __fastcall TCustomFarFileSystem::GetFiles(struct GetFilesInfo * Info)
   ResetCachedInfo();
   TObjectList * PanelItems = CreatePanelItemList(Info->PanelItem, Info->ItemsNumber);
   intptr_t Result = 0;
-  UnicodeString DestPathStr = Info->DestPath;
-  TRY_FINALLY3 (DestPathStr, Info, PanelItems,
+  FDestPathStr = Info->DestPath;
+  TRY_FINALLY3 (Self, Info, PanelItems,
   {
-    Result = GetFilesEx(PanelItems, Info->Move > 0, DestPathStr, Info->OpMode);
+    Result = GetFilesEx(PanelItems, Info->Move > 0, FDestPathStr, Info->OpMode);
   }
   ,
   {
-      if (DestPathStr != Info->DestPath)
+    if (Self->FDestPathStr != Info->DestPath)
     {
-        Info->DestPath = TCustomFarPlugin::DuplicateStr(DestPathStr, true);
+      Info->DestPath = Self->FDestPathStr.c_str();
     }
     delete PanelItems;
 
@@ -2253,12 +2252,12 @@ TObjectList * __fastcall TCustomFarFileSystem::CreatePanelItemList(
 {
   // DEBUG_PRINTF(L"ItemsNumber = %d", ItemsNumber);
   TObjectList * PanelItems = new TObjectList();
-  PanelItems->SetOwnsObjects(false);
+  PanelItems->SetOwnsObjects(true);
   try
   {
     for (int Index = 0; Index < ItemsNumber; Index++)
     {
-      PanelItems->Add(new TFarPanelItem(&PanelItem[Index]));
+      PanelItems->Add(new TFarPanelItem(&PanelItem[Index], false));
     }
   }
   catch(...)
@@ -2297,16 +2296,13 @@ void __fastcall TFarPanelModes::SetPanelMode(size_t Mode, const UnicodeString Co
   assert(!ColumnTitles || (ColumnTitles->Count == ColumnTypesCount));
 
   ClearPanelMode(FPanelModes[Mode]);
-  static wchar_t * Titles[PANEL_MODES_COUNT];
+  wchar_t ** Titles = new wchar_t *[ColumnTypesCount];
   FPanelModes[Mode].ColumnTypes = TCustomFarPlugin::DuplicateStr(ColumnTypes);
   FPanelModes[Mode].ColumnWidths = TCustomFarPlugin::DuplicateStr(ColumnWidths);
   if (ColumnTitles)
   {
-    FPanelModes[Mode].ColumnTitles = new wchar_t *[ColumnTypesCount];
     for (intptr_t Index = 0; Index < ColumnTypesCount; Index++)
     {
-      // FPanelModes[Mode].ColumnTitles[Index] =
-      //    TCustomFarPlugin::DuplicateStr(ColumnTitles->Strings[Index]);
       Titles[Index] = TCustomFarPlugin::DuplicateStr(ColumnTitles->Strings[Index]);
     }
     FPanelModes[Mode].ColumnTitles = Titles;
@@ -2349,9 +2345,9 @@ void TFarPanelModes::ClearPanelMode(PanelMode &Mode)
     {
       for (int Index = 0; Index < ColumnTypesCount; Index++)
       {
-        // delete[] Mode.ColumnTitles[Index];
+        delete[] Mode.ColumnTitles[Index];
       }
-      // delete[] Mode.ColumnTitles;
+      delete[] Mode.ColumnTitles;
     }
     delete[] Mode.StatusColumnTypes;
     delete[] Mode.StatusColumnWidths;
@@ -2522,15 +2518,20 @@ void __fastcall TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * Pane
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TFarPanelItem::TFarPanelItem(PluginPanelItem * APanelItem):
-  TCustomFarPanelItem()
+TFarPanelItem::TFarPanelItem(PluginPanelItem * APanelItem, bool OwnsItem):
+  TCustomFarPanelItem(),
+  FPanelItem(NULL),
+  FOwnsItem(false)
 {
   assert(APanelItem);
   FPanelItem = APanelItem;
+  FOwnsItem = OwnsItem;
 }
+
 TFarPanelItem::~TFarPanelItem()
 {
-  delete FPanelItem;
+  if (FOwnsItem)
+    free(FPanelItem);
   FPanelItem = NULL;
 }
 
@@ -2691,7 +2692,7 @@ TObjectList * __fastcall TFarPanelInfo::GetItems()
       gppi.Item = ppi;
       FOwner->FarControl(FCTL_GETPANELITEM, Index, static_cast<void *>(&gppi));
       // DEBUG_PRINTF(L"ppi.FileName = %s", ppi->FileName);
-      FItems->Add(static_cast<TObject *>(new TFarPanelItem(ppi)));
+      FItems->Add(new TFarPanelItem(ppi, true));
     }
   }
   return FItems;

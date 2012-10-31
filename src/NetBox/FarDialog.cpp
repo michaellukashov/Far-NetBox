@@ -1099,6 +1099,7 @@ void __fastcall TFarDialogItem::SetBounds(TRect Value)
 //---------------------------------------------------------------------------
 void __fastcall TFarDialogItem::Detach()
 {
+  delete[] GetDialogItem()->Data;
   FDialog = NULL;
 }
 //---------------------------------------------------------------------------
@@ -1187,6 +1188,7 @@ void __fastcall TFarDialogItem::SetDataInternal(const UnicodeString Value)
   {
     SendMessage(DM_SETTEXTPTR, static_cast<void *>(const_cast<wchar_t *>(FarData.c_str())));
   }
+  delete[] GetDialogItem()->Data;
   GetDialogItem()->Data = TCustomFarPlugin::DuplicateStr(FarData, true);
 
   // DEBUG_PRINTF(L"GetDialogItem()->Data = %s", GetDialogItem()->Data);
@@ -1204,6 +1206,7 @@ void __fastcall TFarDialogItem::SetData(const UnicodeString Value)
 void __fastcall TFarDialogItem::UpdateData(const UnicodeString Value)
 {
   UnicodeString FarData = Value.c_str();
+  delete[] GetDialogItem()->Data;
   GetDialogItem()->Data = TCustomFarPlugin::DuplicateStr(FarData, true);
 
 }
@@ -1998,6 +2001,7 @@ intptr_t __fastcall TFarEdit::ItemProc(intptr_t Msg, void * Param)
   if (Msg == DN_EDITCHANGE)
   {
     UnicodeString Data = (reinterpret_cast<FarDialogItem *>(Param))->Data;
+    delete[] GetDialogItem()->Data;
     GetDialogItem()->Data = TCustomFarPlugin::DuplicateStr(Data, true);
     // GetDialogItem()->MaxLen = Data.Length();
   }
@@ -2144,7 +2148,6 @@ TFarList::~TFarList()
 {
   for (int i = 0; i < GetCount(); i++)
   {
-    UnicodeString Value = Strings[i];
     delete[] FListItems->Items[i].Text;
   }
   delete[] FListItems->Items;
@@ -2169,6 +2172,7 @@ void __fastcall TFarList::UpdateItem(intptr_t Index)
 {
   FarListItem * ListItem = &FListItems->Items[Index];
   UnicodeString Value = Strings[Index].c_str();
+  delete[] ListItem->Text;
   ListItem->Text = TCustomFarPlugin::DuplicateStr(Value, true);
 
   FarListUpdate ListUpdate;
@@ -2551,6 +2555,7 @@ intptr_t __fastcall TFarComboBox::ItemProc(intptr_t Msg, void * Param)
   if (Msg == DN_EDITCHANGE)
   {
     UnicodeString Data = (reinterpret_cast<FarDialogItem *>(Param))->Data;
+    delete[] GetDialogItem()->Data;
     GetDialogItem()->Data = TCustomFarPlugin::DuplicateStr(Data, true);
     // GetDialogItem()->MaxLen = Data.Length();
   }

@@ -3195,7 +3195,7 @@ void __fastcall TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       }
       else
       {
-        // Empty file list -> probably "permision denied", we
+        // Empty file list -> probably "permission denied", we
         // at least get link to parent directory ("..")
         try
         {

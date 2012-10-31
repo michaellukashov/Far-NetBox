@@ -991,9 +991,9 @@ UnicodeString __fastcall TRemoteFile::GetExtension()
   return UnixExtractFileExt(FFileName);
 }
 //---------------------------------------------------------------------------
-void __fastcall TRemoteFile::SetRights(TRights * value)
+void __fastcall TRemoteFile::SetRights(TRights * Value)
 {
-  FRights->Assign(value);
+  FRights->Assign(Value);
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TRemoteFile::GetRightsStr()

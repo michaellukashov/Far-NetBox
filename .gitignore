@@ -33,6 +33,7 @@ ipch/
 tags
 build/
 src/NetBox/NetBox/
+src/NetBox/My Inspector XE Results - NetBox/
 
 *.vsp
 *.psess

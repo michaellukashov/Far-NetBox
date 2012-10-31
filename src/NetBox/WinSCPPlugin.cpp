@@ -305,21 +305,28 @@ TCustomFarFileSystem * __fastcall TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom,
         assert(StoredSessions);
         bool DefaultsOnly;
         TSessionData * Session = StoredSessions->ParseUrl(Name, NULL, DefaultsOnly);
-        // DEBUG_PRINTF(L"Session->Name = %s", Session->GetName().c_str());
-        if (DefaultsOnly)
+        TRY_FINALLY1 (Session,
         {
-          Abort();
+          if (DefaultsOnly)
+          {
+            Abort();
+          }
+          if (!Session->GetCanLogin())
+          {
+            assert(false);
+            Abort();
+          }
+          FileSystem->Connect(Session);
+          if (!Directory.IsEmpty())
+          {
+            FileSystem->SetDirectoryEx(Directory, OPM_SILENT);
+          }
         }
-        if (!Session->GetCanLogin())
+        ,
         {
-          assert(false);
-          Abort();
+          delete Session;
         }
-        FileSystem->Connect(Session);
-        if (!Directory.IsEmpty())
-        {
-          FileSystem->SetDirectoryEx(Directory, OPM_SILENT);
-        }
+        );
       }
       else if (OpenFrom == OPEN_ANALYSE)
       {

@@ -870,7 +870,8 @@ public:
 
   DelphiSet<T>& operator << (T Item)
   {
-    return DelphiSet<T>::Init(Item);
+    Init(Item);
+    return *this;
   }
 
   DelphiSet<T>& Add(const T Value)
@@ -955,19 +956,18 @@ public:
     return *this;
   }
 
-  static DelphiSet<T>& Init(T FirstItem, ...)
+  DelphiSet<T>& Init(T FirstItem, ...)
   {
-    DelphiSet<T> *NewOne = new DelphiSet<T>();
     va_list argList;
-    NewOne->Add(FirstItem);
+    Add(FirstItem);
     va_start(argList, FirstItem);
     T NewItem;
     while ((NewItem = (T)va_arg(argList, int)) != 0)
     {
-      NewOne->Add(NewItem);
+      Add(NewItem);
     }
     va_end(argList);
-    return *NewOne;
+    return *this;
   }
 
   static DelphiSet<T>& InitRange(T FirstItem, T LastItem)

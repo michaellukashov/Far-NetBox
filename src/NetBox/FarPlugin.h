@@ -309,6 +309,9 @@ protected:
   void __fastcall InvalidateOpenPanelInfo();
 
 private:
+  TCustomFarFileSystem * Self;
+  UnicodeString FNameStr;
+  UnicodeString FDestPathStr;
   OpenPanelInfo FOpenPanelInfo;
   bool FOpenPanelInfoValid;
   TFarPanelInfo * FPanelInfo[2];
@@ -387,7 +390,7 @@ protected:
 class TFarPanelItem : public TCustomFarPanelItem
 {
 public:
-  explicit TFarPanelItem(PluginPanelItem * APanelItem);
+  explicit TFarPanelItem(PluginPanelItem * APanelItem, bool OwnsItem);
   virtual ~TFarPanelItem();
 
   PLUGINPANELITEMFLAGS __fastcall GetFlags();
@@ -401,6 +404,7 @@ public:
 
 protected:
   PluginPanelItem * FPanelItem;
+  bool FOwnsItem;
 
   virtual void __fastcall GetData(
     PLUGINPANELITEMFLAGS & Flags, UnicodeString & FileName, __int64 & Size,
