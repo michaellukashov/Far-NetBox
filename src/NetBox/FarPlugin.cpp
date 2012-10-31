@@ -101,7 +101,6 @@ void __fastcall TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo 
   try
   {
     ResetCachedInfo();
-    // Info->StructSize = 336 for FAR 1.65
     memset(&FStartupInfo, 0, sizeof(FStartupInfo));
     memmove(&FStartupInfo, Info,
             Info->StructSize >= sizeof(FStartupInfo) ?
@@ -164,19 +163,6 @@ void __fastcall TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
     COMPOSESTRINGARRAY(PluginConfigStrings);
 
     #undef COMPOSESTRINGARRAY
-    // FIXME
-    /*
-    if (DiskMenuStrings.GetCount())
-    {
-        wchar_t *NumberArray = new wchar_t[DiskMenuStrings.GetCount()];
-        FPluginInfo.DiskMenuNumbers = &NumberArray;
-        for (int Index = 0; Index < DiskMenuStrings.GetCount(); Index++)
-        {
-            NumberArray[Index] = (int)DiskMenuStrings.GetObject(Index);
-        }
-    }
-    */
-
     UnicodeString CommandPrefix;
     for (int Index = 0; Index < CommandPrefixes.Count; Index++)
     {
@@ -1504,14 +1490,12 @@ void __fastcall TCustomFarPlugin::ClearConsoleTitle()
 //---------------------------------------------------------------------------
 void __fastcall TCustomFarPlugin::UpdateConsoleTitle(const UnicodeString Title)
 {
-  // assert(!FCurrentTitle.IsEmpty());
   FCurrentTitle = Title;
   UpdateConsoleTitle();
 }
 //---------------------------------------------------------------------------
 void __fastcall TCustomFarPlugin::UpdateConsoleTitleProgress(short Progress)
 {
-  // assert(!FCurrentTitle.IsEmpty());
   FCurrentProgress = Progress;
   UpdateConsoleTitle();
 }
@@ -1663,7 +1647,6 @@ intptr_t __fastcall TCustomFarPlugin::FarAdvControl(uintptr_t Command, void * Pa
 //---------------------------------------------------------------------------
 intptr_t __fastcall TCustomFarPlugin::FarEditorControl(uintptr_t Command, void * Param)
 {
-  UnicodeString Buf;
   switch (Command)
   {
   case ECTL_GETINFO:
@@ -1673,8 +1656,6 @@ intptr_t __fastcall TCustomFarPlugin::FarEditorControl(uintptr_t Command, void *
     break;
 
   case ECTL_SETTITLE:
-    // Buf = static_cast<wchar_t *>(Param);
-    // Param = Buf.c_str();
     break;
 
   default:
@@ -1891,7 +1872,6 @@ void __fastcall TCustomFarFileSystem::GetOpenPluginInfo(struct OpenPluginInfo * 
           FOpenPluginInfo.StartSortMode, StartSortOrder, KeyBarTitles, ShortcutData);
 
         FOpenPluginInfo.HostFile = TCustomFarPlugin::DuplicateStr(HostFile);
-        // FOpenPluginInfo.CurDir = TCustomFarPlugin::DuplicateStr(::StringReplace(CurDir, L"/", L"\\", TReplaceFlags() << rfReplaceAll));
         FOpenPluginInfo.CurDir = TCustomFarPlugin::DuplicateStr(::StringReplace(CurDir, L"\\", L"/", TReplaceFlags() << rfReplaceAll));
         FOpenPluginInfo.Format = TCustomFarPlugin::DuplicateStr(Format);
         FOpenPluginInfo.PanelTitle = TCustomFarPlugin::DuplicateStr(PanelTitle);
@@ -2008,10 +1988,8 @@ intptr_t __fastcall TCustomFarFileSystem::MakeDirectory(const wchar_t ** Name, i
   }
   ,
   {
-    // StrToFar(NameStr);
     if (Self->FNameStr != *Name)
     {
-      // wcscpy_s(*Name, NameStr.size(), NameStr.c_str());
       *Name = Self->FNameStr.c_str();
     }
   }
@@ -2046,7 +2024,6 @@ intptr_t __fastcall TCustomFarFileSystem::GetFiles(struct PluginPanelItem * Pane
   }
   ,
   {
-    // StrToFar(DestPathStr);
     if (Self->FDestPathStr != *DestPath)
     {
       *DestPath = Self->FDestPathStr.c_str();
@@ -2092,7 +2069,6 @@ TFarPanelInfo * __fastcall TCustomFarFileSystem::GetPanelInfo(int Another)
   if (FPanelInfo[another] == NULL)
   {
     PanelInfo * Info = new PanelInfo;
-    // Info->StructSize = sizeof(PanelInfo);
     bool res = (FPlugin->FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<intptr_t>(Info),
                                     !another ? PANEL_ACTIVE : PANEL_PASSIVE) > 0);
     if (!res)
@@ -2453,7 +2429,6 @@ void __fastcall TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * Pane
   PanelItem->FindData.nFileSize = Size;
   // PanelItem->PackSize = (long int)Size;
 
-  // ASCOPY(PanelItem->FindData.lpwszFileName, FileName);
   PanelItem->FindData.lpwszFileName = TCustomFarPlugin::DuplicateStr(FileName);
   // DEBUG_PRINTF(L"PanelItem->FindData.lpwszFileName = %s", PanelItem->FindData.lpwszFileName);
   PanelItem->Description = TCustomFarPlugin::DuplicateStr(Description);
@@ -2759,16 +2734,6 @@ bool __fastcall TFarPanelInfo::GetIsPlugin()
 UnicodeString __fastcall TFarPanelInfo::GetCurrentDirectory()
 {
   UnicodeString Result = L"";
-  /*
-  size_t Size = FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(0, NULL);
-  if (Size)
-  {
-      Result.SetLength(Size);
-      FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(Size,
-          const_cast<wchar_t *>(Result.c_str()));
-  }
-  */
-  // FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<intptr_t>(&Info), Another ? PANEL_PASSIVE : PANEL_ACTIVE);
   intptr_t Size = FarPlugin->FarControl(FCTL_GETPANELDIR,
                                       0,
                                       NULL,
