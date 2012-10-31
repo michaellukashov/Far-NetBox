@@ -2146,10 +2146,6 @@ TFarList::TFarList(TFarDialogItem * ADialogItem) :
 //---------------------------------------------------------------------------
 TFarList::~TFarList()
 {
-  for (int i = 0; i < GetCount(); i++)
-  {
-    delete[] FListItems->Items[i].Text;
-  }
   delete[] FListItems->Items;
   delete FListItems;
 }
@@ -2246,8 +2242,7 @@ void __fastcall TFarList::Changed()
     for (int i = 0; i < GetCount(); i++)
     {
       UnicodeString Value = Strings[i];
-      delete[] FListItems->Items[i].Text;
-      FListItems->Items[i].Text = TCustomFarPlugin::DuplicateStr(Value);
+      FListItems->Items[i].Text = Strings[i].c_str();
     }
     if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle())
     {

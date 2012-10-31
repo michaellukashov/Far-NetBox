@@ -45,6 +45,7 @@ TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
   FOpenedPlugins = new TObjectList();
   FOpenedPlugins->SetOwnsObjects(false);
   FSavedTitles = new TStringList();
+  FCurrentProgress = -1;
   FTopDialog = NULL;
   FValidFarSystemSettings = false;
 
