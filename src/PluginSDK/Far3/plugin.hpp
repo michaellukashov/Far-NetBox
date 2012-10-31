@@ -5,7 +5,7 @@
 /*
   plugin.hpp
 
-  Plugin API for Far Manager 3.0 build 2852
+  Plugin API for Far Manager 3.0 build 2914
 */
 
 /*
@@ -43,7 +43,7 @@ other possible license with no implications from the above license on them.
 #define FARMANAGERVERSION_MAJOR 3
 #define FARMANAGERVERSION_MINOR 0
 #define FARMANAGERVERSION_REVISION 0
-#define FARMANAGERVERSION_BUILD 2852
+#define FARMANAGERVERSION_BUILD 2914
 #define FARMANAGERVERSION_STAGE VS_RELEASE
 
 #ifndef RC_INVOKED
@@ -1031,21 +1031,7 @@ enum FARMACROSTATE
 enum FARMACROPARSEERRORCODE
 {
 	MPEC_SUCCESS                = 0,
-	MPEC_UNRECOGNIZED_KEYWORD   = 1,
-	MPEC_UNRECOGNIZED_FUNCTION  = 2,
-	MPEC_FUNC_PARAM             = 3,
-	MPEC_NOT_EXPECTED_ELSE      = 4,
-	MPEC_NOT_EXPECTED_END       = 5,
-	MPEC_UNEXPECTED_EOS         = 6,
-	MPEC_EXPECTED_TOKEN         = 7,
-	MPEC_BAD_HEX_CONTROL_CHAR   = 8,
-	MPEC_BAD_CONTROL_CHAR       = 9,
-	MPEC_VAR_EXPECTED           =10,
-	MPEC_EXPR_EXPECTED          =11,
-	MPEC_ZEROLENGTHMACRO        =12,
-	MPEC_INTPARSERERROR         =13,
-	MPEC_CONTINUE_OTL           =14,
-	MPEC_BREAK_OTL              =15,
+	MPEC_ERROR   = 1,
 };
 
 struct MacroParseResult
@@ -1090,6 +1076,7 @@ enum FARMACROVARTYPE
 	FMVT_STRING                 = 2,
 	FMVT_DOUBLE                 = 3,
 	FMVT_BOOLEAN                = 4,
+	FMVT_BINARY                 = 5,
 };
 
 struct FarMacroValue
@@ -1098,8 +1085,14 @@ struct FarMacroValue
 	union
 	{
 		__int64  Integer;
+		__int64        Boolean;
 		double   Double;
 		const wchar_t *String;
+		struct
+		{
+			void *Data;
+			size_t Size;
+		} Binary;
 	}
 #ifndef __cplusplus
 	Value
@@ -1111,23 +1104,28 @@ enum MACROPLUGINRETURNTYPE
 {
 	MPRT_NORMALFINISH = 0,
 	MPRT_ERRORFINISH  = 1,
-	MPRT_KEYS         = 2,
-	MPRT_PRINT        = 3,
-	MPRT_PLUGINCALL   = 4,
+	MPRT_ERRORPARSE    = 2,
+	MPRT_KEYS          = 3,
+	MPRT_PRINT         = 4,
+	MPRT_PLUGINCALL    = 5,
+	MPRT_PLUGINMENU    = 6,
+	MPRT_PLUGINCONFIG  = 7,
+	MPRT_PLUGINCOMMAND = 8,
 };
 
 struct MacroPluginReturn
 {
-	struct FarMacroValue *Args;
-	int ArgNum;
+	size_t Count;
+	struct FarMacroValue *Values;
 	enum MACROPLUGINRETURNTYPE ReturnType;
 };
 
 struct FarMacroCall
 {
-	struct FarMacroValue *Args;
-	int ArgNum;
-	void (_cdecl *Callback)(void *CallbackData, struct FarMacroValue *Value);
+	size_t StructSize;
+	size_t Count;
+	struct FarMacroValue *Values;
+	void (WINAPI *Callback)(void *CallbackData, struct FarMacroValue *Values);
 	void *CallbackData;
 };
 
@@ -1508,8 +1506,8 @@ struct EditorInfo
 	intptr_t BlockStartLine;
 	uintptr_t Options;
 	intptr_t TabSize;
-	intptr_t BookmarkCount;
-	intptr_t SessionBookmarkCount;
+	size_t BookmarkCount;
+	size_t SessionBookmarkCount;
 	uintptr_t CurState;
 	uintptr_t CodePage;
 };
@@ -1897,18 +1895,18 @@ enum FARCLIPBOARD_TYPE
 };
 
 // <C&C++>
-typedef intptr_t (WINAPIV *FARSTDSPRINTF)(wchar_t *Buffer,const wchar_t *Format,...);
-typedef intptr_t (WINAPIV *FARSTDSNPRINTF)(wchar_t *Buffer,size_t Sizebuf,const wchar_t *Format,...);
-typedef intptr_t (WINAPIV *FARSTDSSCANF)(const wchar_t *Buffer, const wchar_t *Format,...);
+typedef int (WINAPIV *FARSTDSPRINTF)(wchar_t *Buffer,const wchar_t *Format,...);
+typedef int (WINAPIV *FARSTDSNPRINTF)(wchar_t *Buffer,size_t Sizebuf,const wchar_t *Format,...);
+typedef int (WINAPIV *FARSTDSSCANF)(const wchar_t *Buffer, const wchar_t *Format,...);
 // </C&C++>
-typedef void (WINAPI *FARSTDQSORT)(void *base, size_t nelem, size_t width, intptr_t (WINAPI *fcmp)(const void *, const void *,void *userparam),void *userparam);
-typedef void   *(WINAPI *FARSTDBSEARCH)(const void *key, const void *base, size_t nelem, size_t width, intptr_t (WINAPI *fcmp)(const void *, const void *,void *userparam),void *userparam);
+typedef void (WINAPI *FARSTDQSORT)(void *base, size_t nelem, size_t width, int (WINAPI *fcmp)(const void *, const void *,void *userparam),void *userparam);
+typedef void   *(WINAPI *FARSTDBSEARCH)(const void *key, const void *base, size_t nelem, size_t width, int (WINAPI *fcmp)(const void *, const void *,void *userparam),void *userparam);
 typedef size_t (WINAPI *FARSTDGETFILEOWNER)(const wchar_t *Computer,const wchar_t *Name,wchar_t *Owner,size_t Size);
 typedef size_t (WINAPI *FARSTDGETNUMBEROFLINKS)(const wchar_t *Name);
-typedef intptr_t (WINAPI *FARSTDATOI)(const wchar_t *s);
+typedef int (WINAPI *FARSTDATOI)(const wchar_t *s);
 typedef __int64(WINAPI *FARSTDATOI64)(const wchar_t *s);
-typedef wchar_t   *(WINAPI *FARSTDITOA64)(__int64 value, wchar_t *string, intptr_t radix);
-typedef wchar_t   *(WINAPI *FARSTDITOA)(intptr_t value, wchar_t *string, intptr_t radix);
+typedef wchar_t   *(WINAPI *FARSTDITOA64)(__int64 value, wchar_t *string, int radix);
+typedef wchar_t   *(WINAPI *FARSTDITOA)(int value, wchar_t *string, int radix);
 typedef wchar_t   *(WINAPI *FARSTDLTRIM)(wchar_t *Str);
 typedef wchar_t   *(WINAPI *FARSTDRTRIM)(wchar_t *Str);
 typedef wchar_t   *(WINAPI *FARSTDTRIM)(wchar_t *Str);
@@ -1919,18 +1917,18 @@ typedef const wchar_t*(WINAPI *FARSTDPOINTTONAME)(const wchar_t *Path);
 typedef BOOL (WINAPI *FARSTDADDENDSLASH)(wchar_t *Path);
 typedef BOOL (WINAPI *FARSTDCOPYTOCLIPBOARD)(enum FARCLIPBOARD_TYPE Type, const wchar_t *Data);
 typedef size_t (WINAPI *FARSTDPASTEFROMCLIPBOARD)(enum FARCLIPBOARD_TYPE Type, wchar_t *Data, size_t Size);
-typedef intptr_t (WINAPI *FARSTDLOCALISLOWER)(wchar_t Ch);
-typedef intptr_t (WINAPI *FARSTDLOCALISUPPER)(wchar_t Ch);
-typedef intptr_t (WINAPI *FARSTDLOCALISALPHA)(wchar_t Ch);
-typedef intptr_t (WINAPI *FARSTDLOCALISALPHANUM)(wchar_t Ch);
+typedef int (WINAPI *FARSTDLOCALISLOWER)(wchar_t Ch);
+typedef int (WINAPI *FARSTDLOCALISUPPER)(wchar_t Ch);
+typedef int (WINAPI *FARSTDLOCALISALPHA)(wchar_t Ch);
+typedef int (WINAPI *FARSTDLOCALISALPHANUM)(wchar_t Ch);
 typedef wchar_t (WINAPI *FARSTDLOCALUPPER)(wchar_t LowerChar);
 typedef wchar_t (WINAPI *FARSTDLOCALLOWER)(wchar_t UpperChar);
 typedef void (WINAPI *FARSTDLOCALUPPERBUF)(wchar_t *Buf,intptr_t Length);
 typedef void (WINAPI *FARSTDLOCALLOWERBUF)(wchar_t *Buf,intptr_t Length);
 typedef void (WINAPI *FARSTDLOCALSTRUPR)(wchar_t *s1);
 typedef void (WINAPI *FARSTDLOCALSTRLWR)(wchar_t *s1);
-typedef intptr_t (WINAPI *FARSTDLOCALSTRICMP)(const wchar_t *s1,const wchar_t *s2);
-typedef intptr_t (WINAPI *FARSTDLOCALSTRNICMP)(const wchar_t *s1,const wchar_t *s2,intptr_t n);
+typedef int (WINAPI *FARSTDLOCALSTRICMP)(const wchar_t *s1,const wchar_t *s2);
+typedef int (WINAPI *FARSTDLOCALSTRNICMP)(const wchar_t *s1,const wchar_t *s2,intptr_t n);
 
 typedef unsigned __int64 PROCESSNAME_FLAGS;
 static const PROCESSNAME_FLAGS
@@ -1963,7 +1961,7 @@ typedef wchar_t*(WINAPI *FARSTDXLAT)(wchar_t *Line,intptr_t StartPos,intptr_t En
 
 typedef BOOL (WINAPI *FARSTDKEYNAMETOINPUTRECORD)(const wchar_t *Name,INPUT_RECORD* Key);
 
-typedef intptr_t (WINAPI *FRSUSERFUNC)(
+typedef int (WINAPI *FRSUSERFUNC)(
     const struct PluginPanelItem *FData,
     const wchar_t *FullName,
     void *Param
@@ -2352,11 +2350,17 @@ struct OpenMacroInfo
 	struct FarMacroValue *Values;
 };
 
+typedef unsigned __int64 FAROPENSHORTCUTFLAGS;
+static const FAROPENSHORTCUTFLAGS
+	FOSF_ACTIVE = 0x0000000000000001ULL,
+	FOSF_NONE   = 0;
+
 struct OpenShortcutInfo
 {
 	size_t StructSize;
 	const wchar_t *HostFile;
 	const wchar_t *ShortcutData;
+	FAROPENSHORTCUTFLAGS Flags;
 };
 
 struct OpenCommandLineInfo
@@ -2390,6 +2394,14 @@ enum MACROCALLTYPE
 	MCT_MACROSTEP          = 1,
 	MCT_MACROFINAL         = 2,
 	MCT_MACROPARSE         = 3,
+};
+
+struct OpenMacroPluginInfo
+{
+	size_t StructSize;
+	enum MACROCALLTYPE CallType;
+	HANDLE Handle;
+	struct FarMacroCall *Data;
 };
 
 
