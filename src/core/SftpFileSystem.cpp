@@ -794,7 +794,7 @@ public:
   {
     TStringList * DumpLines = new TStringList();
     RawByteString Dump;
-    TRY_FINALLY1 (DumpLines,
+    TRY_FINALLY (
     {
       DumpLines->LoadFromFile(FileName);
       Dump = AnsiString(DumpLines->Text);
@@ -1118,7 +1118,7 @@ public:
     bool Result;
     TSFTPQueuePacket * Request = NULL;
     TSFTPPacket * Response = NULL;
-    TRY_FINALLY2 (Request, Response,
+    TRY_FINALLY (
     {
       Request = static_cast<TSFTPQueuePacket*>(FRequests->Items[0]);
       FRequests->Delete(0);
@@ -1607,7 +1607,7 @@ public:
   {
     void * Token;
     bool Result;
-    TRY_FINALLY2 (File, Token,
+    TRY_FINALLY (
     {
       Result = TSFTPFixedLenQueue::ReceivePacket(Packet, SSH_FXP_EXTENDED_REPLY, asNo, &Token);
     }
@@ -2088,7 +2088,7 @@ void __fastcall TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
 {
   CALLSTACK;
   BusyStart();
-  TRY_FINALLY1 (Self,
+  TRY_FINALLY (
   {
     if (FTerminal->GetLog()->GetLogging())
     {
@@ -2453,7 +2453,7 @@ int __fastcall TSFTPFileSystem::ReceiveResponse(
   int Result;
   unsigned int MessageNumber = Packet->GetMessageNumber();
   TSFTPPacket * AResponse = (Response ? Response : new TSFTPPacket(GetSessionData()->GetCodePageAsNumber()));
-  TRY_FINALLY2 (Response, AResponse,
+  TRY_FINALLY (
   {
     Result = ReceivePacket(AResponse, ExpectedType, AllowStatus);
     if (MessageNumber != AResponse->GetMessageNumber())
@@ -3113,7 +3113,7 @@ void __fastcall TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 
   TRACE("1");
   TSFTPPacket Response(GetSessionData()->GetCodePageAsNumber());
-  TRY_FINALLY3 (Self, Packet, Handle,
+  TRY_FINALLY (
   {
     bool isEOF = false;
     int Total = 0;
@@ -3200,7 +3200,7 @@ void __fastcall TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         try
         {
           FTerminal->SetExceptionOnFail(true);
-          TRY_FINALLY1 (Self,
+          TRY_FINALLY (
           {
             File = NULL;
             FTerminal->ReadFile(
@@ -3486,7 +3486,7 @@ void __fastcall TSFTPFileSystem::ChangeFileProperties(const UnicodeString FileNa
   UnicodeString RealFileName = LocalCanonify(FileName);
   ReadFile(RealFileName, File);
   assert(File);
-  TRY_FINALLY1 (File,
+  TRY_FINALLY (
   {
     if (File->GetIsDirectory() && !File->GetIsSymLink() && AProperties->Recursive)
     {
@@ -3545,7 +3545,7 @@ bool __fastcall TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
 
     static int LoadFilesPropertiesQueueLen = 5;
     TSFTPLoadFilesPropertiesQueue Queue(this, GetSessionData()->GetCodePageAsNumber());
-    TRY_FINALLY3 (Self, Queue, Progress,
+    TRY_FINALLY (
     {
       if (Queue.Init(LoadFilesPropertiesQueueLen, FileList))
       {
@@ -3613,7 +3613,7 @@ void __fastcall TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & 
         {
           TStrings * SubFileList = new TStringList();
           bool Success = false;
-          TRY_FINALLY8 (Self, SubFiles, SubFileList, FirstLevel, File, Success, OnceDoneOperation, OperationProgress,
+          TRY_FINALLY (
           {
             OperationProgress->SetFile(File->GetFileName());
 
@@ -3648,7 +3648,7 @@ void __fastcall TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & 
 
   static int CalculateFilesChecksumQueueLen = 5;
   TSFTPCalculateFilesChecksumQueue Queue(this, GetSessionData()->GetCodePageAsNumber());
-  TRY_FINALLY1 (Queue,
+  TRY_FINALLY (
   {
     if (Queue.Init(CalculateFilesChecksumQueueLen, Alg, FileList))
     {
@@ -3661,8 +3661,7 @@ void __fastcall TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & 
         UnicodeString Checksum;
         TRemoteFile * File = NULL;
 
-        TRY_FINALLY6 (Self, FirstLevel, File,
-            Success, OnceDoneOperation, OperationProgress,
+        TRY_FINALLY (
         {
           try
           {
@@ -3724,7 +3723,7 @@ void __fastcall TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Al
 
   FTerminal->FOperationProgress = &Progress;
 
-  TRY_FINALLY2 (Self, Progress,
+  TRY_FINALLY (
   {
     DoCalculateFilesChecksum(Alg, FileList, Checksums, OnCalculatedChecksum,
       &Progress, true);
@@ -3810,7 +3809,7 @@ void __fastcall TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     assert(!FAvoidBusy);
     FAvoidBusy = true;
 
-    TRY_FINALLY5 (Self, RealFileName, Success, OnceDoneOperation, OperationProgress,
+    TRY_FINALLY (
     {
       try
       {
@@ -4158,7 +4157,7 @@ void __fastcall TSFTPFileSystem::SFTPSource(const UnicodeString FileName,
 
   bool Dir = FLAGSET(OpenParams.LocalFileAttrs, faDirectory);
 
-  TRY_FINALLY1 (FileHandle,
+  TRY_FINALLY (
   {
     TRACE("7");
     OperationProgress->SetFileInProgress();
@@ -4367,8 +4366,7 @@ void __fastcall TSFTPFileSystem::SFTPSource(const UnicodeString FileName,
           NULL, false, FVersion, FUtfStrings);
       }
 
-      TRY_FINALLY7 (Self, TransferFinished, OpenParams,
-          CloseRequest, DoResume, DestFileName, OperationProgress,
+      TRY_FINALLY (
       {
         if (OpenParams.OverwriteMode == omAppend)
         {
@@ -4388,7 +4386,7 @@ void __fastcall TSFTPFileSystem::SFTPSource(const UnicodeString FileName,
 
         TRACE("10");
         TSFTPUploadQueue Queue(this, GetSessionData()->GetCodePageAsNumber());
-        TRY_FINALLY1 (Queue,
+        TRY_FINALLY (
         {
           Queue.Init(FileName, FileHandle, OperationProgress,
             OpenParams.RemoteFileHandle,
@@ -4915,7 +4913,7 @@ void __fastcall TSFTPFileSystem::SFTPDirectorySource(const UnicodeString Directo
       FindAttrs, SearchRec) == 0);
   );
 
-  TRY_FINALLY1 (SearchRec,
+  TRY_FINALLY (
   {
     while (FindOK && !OperationProgress->Cancel)
     {
@@ -4989,8 +4987,7 @@ void __fastcall TSFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
     assert(!FAvoidBusy);
     FAvoidBusy = true;
 
-    TRY_FINALLY5 (Self, FileName, Success, OnceDoneOperation,
-        OperationProgress,
+    TRY_FINALLY (
     {
       try
       {
@@ -5180,9 +5177,7 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
     RawByteString RemoteHandle;
     UnicodeString LocalFileName = DestFullName;
     TOverwriteMode OverwriteMode = omOverwrite;
-    TRY_FINALLY10 (Self, LocalHandle, FileStream, DeleteLocalFile,
-        ResumeAllowed, OverwriteMode, LocalFileName,
-        DestFileName, RemoteHandle, OperationProgress,
+    TRY_FINALLY (
     {
       if (ResumeAllowed)
       {
@@ -5248,7 +5243,7 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
       ReceiveResponse(&RemoteFilePacket, &RemoteFilePacket);
 
       const TRemoteFile * AFile = File;
-      TRY_FINALLY2 (AFile, File,
+      TRY_FINALLY (
       {
         // ignore errors
         if (RemoteFilePacket.GetType() == SSH_FXP_ATTRS)
@@ -5366,7 +5361,7 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
       {
         TRACE("3");
         TSFTPDownloadQueue Queue(this, GetSessionData()->GetCodePageAsNumber());
-        TRY_FINALLY1 (Queue,
+        TRY_FINALLY (
         {
           TSFTPPacket DataPacket(GetSessionData()->GetCodePageAsNumber());
 

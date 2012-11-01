@@ -409,7 +409,7 @@ TStrings::~TStrings()
 void TStrings::SetTextStr(const UnicodeString Text)
 {
   Self->BeginUpdate();
-  TRY_FINALLY1 (Self,
+  TRY_FINALLY (
   {
     Clear();
     const wchar_t * P = Text.c_str();
@@ -445,7 +445,7 @@ UnicodeString TStrings::GetCommaText()
   FDelimiter = L',';
   FQuoteChar = L'"';
   UnicodeString Result;
-  TRY_FINALLY3 (Self, LOldDelimiter, LOldQuoteChar,
+  TRY_FINALLY (
   {
     Result = GetDelimitedText();
   }
@@ -480,7 +480,7 @@ UnicodeString TStrings::GetDelimitedText() const
 void TStrings::SetDelimitedText(const UnicodeString Value)
 {
   Self->BeginUpdate();
-  TRY_FINALLY1 (Self,
+  TRY_FINALLY (
   {
     Clear();
     std::vector<std::wstring> lines;
@@ -512,7 +512,7 @@ void TStrings::Assign(TPersistent * Source)
   {
     BeginUpdate();
     {
-      TRY_FINALLY1 (Self,
+      TRY_FINALLY (
       {
         Clear();
         // FDefined = TStrings(Source).FDefined;
@@ -664,7 +664,7 @@ void TStrings::Move(int CurIndex, int NewIndex)
   {
     BeginUpdate();
     {
-      TRY_FINALLY1 (Self,
+      TRY_FINALLY (
       {
         UnicodeString TempString = GetStrings(CurIndex);
         TObject * TempObject = GetObjects(CurIndex);
@@ -764,7 +764,7 @@ void TStrings::AddStrings(TStrings * Strings)
 {
   BeginUpdate();
   {
-    TRY_FINALLY1 (Self,
+    TRY_FINALLY (
     {
       for (int I = 0; I < Strings->GetCount(); I++)
       {
@@ -1820,7 +1820,7 @@ bool TRegistry::DeleteKey(const UnicodeString Key)
   HKEY DeleteKey = GetKey(Key);
   if (DeleteKey != 0)
   {
-    TRY_FINALLY3 (Self, OldKey, DeleteKey,
+    TRY_FINALLY (
     {
       SetCurrentKey(DeleteKey);
       TRegKeyInfo Info;
@@ -1861,7 +1861,7 @@ bool TRegistry::KeyExists(const UnicodeString Key)
   bool Result = false;
   // DEBUG_PRINTF(L"Key = %s", Key.c_str());
   unsigned OldAccess = FAccess;
-  TRY_FINALLY2 (Self, OldAccess,
+  TRY_FINALLY (
   {
     FAccess = STANDARD_RIGHTS_READ | KEY_QUERY_VALUE | KEY_ENUMERATE_SUB_KEYS;
     HKEY TempKey = GetKey(Key);

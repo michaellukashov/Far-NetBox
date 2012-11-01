@@ -130,7 +130,7 @@ int get_userpass_input(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
   int Result;
   TStrings * Prompts = new TStringList();
   TStrings * Results = new TStringList();
-  TRY_FINALLY2 (Prompts, Results,
+  TRY_FINALLY (
   {
     TRACEFMT("1 [%d]", (int(p->n_prompts)));
     for (int Index = 0; Index < static_cast<int>(p->n_prompts); Index++)
@@ -541,7 +541,7 @@ bool __fastcall HasGSSAPI()
     Config cfg;
     memset(&cfg, 0, sizeof(cfg));
     ssh_gss_liblist * List = ssh_gss_setup(&cfg);
-    TRY_FINALLY1 (List,
+    TRY_FINALLY (
     {
       for (int Index = 0; (has <= 0) && (Index < List->nlibraries); Index++)
       {

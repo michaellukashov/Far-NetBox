@@ -3146,7 +3146,7 @@ config_read_auth_data(apr_hash_t ** hash,
   THierarchicalStorage * Storage = NULL;
   WEBDAV_ERR(fs->CreateStorage(Storage));
   assert(Storage);
-  TRY_FINALLY1 (Storage,
+  TRY_FINALLY (
   {
     Storage->SetAccessMode(smRead);
     if (!Storage->OpenSubKey(UnicodeString(subkey), false))
@@ -3154,7 +3154,7 @@ config_read_auth_data(apr_hash_t ** hash,
 
     *hash = apr_hash_make(pool);
     TStrings * Keys = new TStringList();
-    TRY_FINALLY1 (Keys,
+    TRY_FINALLY (
     {
       Storage->GetValueNames(Keys);
       for (int Index = 0; Index < Keys->Count; Index++)
@@ -3194,7 +3194,7 @@ config_write_auth_data(apr_hash_t * hash,
   THierarchicalStorage * Storage = NULL;
   WEBDAV_ERR(fs->CreateStorage(Storage));
   assert(Storage);
-  TRY_FINALLY1 (Storage,
+  TRY_FINALLY (
   {
     Storage->SetAccessMode(smReadWrite);
 
@@ -13318,7 +13318,7 @@ void __fastcall TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     FileNameOnly = ExtractFileName(RealFileName, false);
 
-    TRY_FINALLY4 (OperationProgress, RealFileName, Success, OnceDoneOperation,
+    TRY_FINALLY (
     {
       try
       {
@@ -13606,7 +13606,7 @@ void __fastcall TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString Dir
 
   bool CreateDir = true;
 
-  TRY_FINALLY2 (SearchRec, findHandle,
+  TRY_FINALLY (
   {
     while (FindOK && !OperationProgress->Cancel)
     {
@@ -13658,7 +13658,7 @@ void __fastcall TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString Dir
     try
     {
       FTerminal->SetExceptionOnFail(true);
-      TRY_FINALLY1 (Self,
+      TRY_FINALLY (
       {
         FTerminal->CreateDirectory(DestFullName, &Properties);
       }
@@ -13722,7 +13722,7 @@ void __fastcall TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
     const TRemoteFile * File = dynamic_cast<const TRemoteFile *>(FilesToCopy->Objects[Index]);
     bool Success = false;
     FTerminal->SetExceptionOnFail(true);
-    TRY_FINALLY5 (Self, OperationProgress, FileName, Success, OnceDoneOperation,
+    TRY_FINALLY (
     {
       try
       {
@@ -14722,7 +14722,7 @@ webdav::error_t TWebDAVFileSystem::SimplePrompt(
 {
   RequestResult = 0;
   TStrings * MoreMessages = new TStringList();
-  TRY_FINALLY1 (MoreMessages,
+  TRY_FINALLY (
   {
     MoreMessages->Add(UnicodeString(prompt_string));
     unsigned int Answer = FTerminal->QueryUser(

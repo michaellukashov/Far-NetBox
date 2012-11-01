@@ -805,7 +805,7 @@ void __fastcall TSecureShell::FromBackend(bool IsStdErr, const unsigned char * D
       {
         CTRACE(TRACE_TRANSMIT, "8");
         FFrozen = true;
-        TRY_FINALLY1 (Self,
+        TRY_FINALLY (
         {
           do
           {
@@ -857,7 +857,7 @@ Integer __fastcall TSecureShell::Receive(unsigned char * Buf, Integer Len)
     OutPtr = Buf;
     OutLen = Len;
 
-    TRY_FINALLY1 (OutPtr,
+    TRY_FINALLY (
     {
       /*
        * See if the pending-input block contains some of what we
@@ -987,7 +987,7 @@ unsigned int __fastcall TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolE
   FWaiting++;
 
   unsigned int Answer;
-  TRY_FINALLY1 (Self,
+  TRY_FINALLY (
   {
     TQueryParams Params(qpFatalAbort | qpAllowContinueOnError | qpIgnoreAbort);
     Params.HelpKeyword = HELP_MESSAGE_HOST_IS_NOT_COMMUNICATING;
@@ -1705,7 +1705,7 @@ bool __fastcall TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventR
     int HandleCount;
     // note that this returns all handles, not only the session-related handles
     HANDLE * Handles = handle_get_events(&HandleCount);
-    TRY_FINALLY1 (Handles,
+    TRY_FINALLY (
     {
       CTRACE(TRACE_TRANSMIT, "1a");
       Handles = sresize(Handles, static_cast<size_t>(HandleCount + 1), HANDLE);
@@ -2071,7 +2071,7 @@ void __fastcall TSecureShell::VerifyHostKey(UnicodeString Host, int Port,
     if (!Verified)
     {
       Exception * E = new Exception(LoadStr(KEY_NOT_VERIFIED));
-      TRY_FINALLY1 (E,
+      TRY_FINALLY (
       {
         FUI->FatalError(E, FMTLOAD(HOSTKEY, Fingerprint.c_str()));
       }

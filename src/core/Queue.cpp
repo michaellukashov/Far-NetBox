@@ -712,7 +712,7 @@ TTerminalQueueStatus * __fastcall TTerminalQueue::CreateStatus(TTerminalQueueSta
   TTerminalQueueStatus * Status = new TTerminalQueueStatus();
   try
   {
-    TRY_FINALLY1 (Current,
+    TRY_FINALLY (
     {
       TGuard Guard(FItemsSection);
 
@@ -1392,7 +1392,7 @@ bool __fastcall TTerminalItem::WaitForUserAction(
 
   TQueueItem::TStatus PrevStatus = FItem->GetStatus();
 
-  TRY_FINALLY2 (Self, PrevStatus,
+  TRY_FINALLY (
   {
     FUserAction = UserAction;
 
@@ -1522,7 +1522,7 @@ void /* __fastcall */ TTerminalItem::OperationProgress(
     FPause = false;
     ProgressData.Suspend();
 
-    TRY_FINALLY3 (Self, PrevStatus, ProgressData,
+    TRY_FINALLY (
     {
       FItem->SetStatus(TQueueItem::qsPaused);
 
@@ -1658,7 +1658,7 @@ void __fastcall TQueueItem::GetData(TQueueItemProxy * Proxy)
 //---------------------------------------------------------------------------
 void __fastcall TQueueItem::Execute(TTerminalItem * TerminalItem)
 {
-  TRY_FINALLY1 (Self,
+  TRY_FINALLY (
   {
     {
       assert(FProgressData == NULL);
@@ -1777,7 +1777,7 @@ bool __fastcall TQueueItemProxy::ProcessUserAction()
 
   bool Result = false;
   FProcessingUserAction = true;
-  TRY_FINALLY1 (Self,
+  TRY_FINALLY (
   {
     Result = FQueue->ItemProcessUserAction(FQueueItem, NULL);
   }
@@ -2173,7 +2173,7 @@ void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
   FAction = Action;
   try
   {
-    TRY_FINALLY1 (Self,
+    TRY_FINALLY (
     {
       TriggerEvent();
 
@@ -2284,7 +2284,7 @@ void __fastcall TTerminalThread::Rethrow(Exception *& Exception)
   if (Exception != NULL)
   {
     TRACEFMT("1 [%s]", (Exception->Message));
-    TRY_FINALLY1 (Exception,
+    TRY_FINALLY (
     {
       RethrowException(Exception);
     }
@@ -2348,7 +2348,7 @@ void __fastcall TTerminalThread::WaitForUserAction(TUserAction * UserAction)
     // have to save it as we can go recursive via TQueryParams::TimerEvent,
     // see TTerminalThread::TerminalQueryUser
     TUserAction * PrevUserAction = FUserAction;
-    TRY_FINALLY2 (Self, PrevUserAction,
+    TRY_FINALLY (
     {
       FUserAction = UserAction;
 

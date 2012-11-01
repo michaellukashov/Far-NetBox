@@ -1306,7 +1306,7 @@ void __fastcall TRemoteFile::FindLinkedFile()
     GetTerminal()->SetExceptionOnFail(true);
     try
     {
-      TRY_FINALLY1 (Self,
+      TRY_FINALLY (
       {
         GetTerminal()->ReadSymlink(this, FLinkedFile);
       }
@@ -1679,7 +1679,7 @@ void __fastcall TRemoteDirectoryCache::Clear()
 {
   TGuard Guard(FSection);
 
-  TRY_FINALLY1 (Self,
+  TRY_FINALLY (
   {
     for (int Index = 0; Index < Count; Index++)
     {
@@ -1922,7 +1922,7 @@ void __fastcall TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data)
   if (ACount > FMaxSize)
   {
     TStrings * Limited = new TStringList();
-    TRY_FINALLY1 (Limited,
+    TRY_FINALLY (
     {
       int Index = ACount - FMaxSize;
       while (Index < ACount)

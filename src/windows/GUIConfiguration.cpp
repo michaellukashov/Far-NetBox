@@ -420,7 +420,7 @@ void __fastcall TCopyParamList::Load(THierarchicalStorage * Storage, int ACount)
     {
       if (Storage->OpenSubKey(Name, false))
       {
-        TRY_FINALLY1 (Storage,
+        TRY_FINALLY (
         {
           Name = Storage->ReadString(L"Name", Name);
           CopyParam->Load(Storage);
@@ -459,7 +459,7 @@ void __fastcall TCopyParamList::Save(THierarchicalStorage * Storage) const
   {
     if (Storage->OpenSubKey(IntToStr(Index), true))
     {
-      TRY_FINALLY1 (Storage,
+      TRY_FINALLY (
       {
         const TCopyParamType * CopyParam = GetCopyParam(Index);
         const TCopyParamRule * Rule = GetRule(Index);
@@ -651,7 +651,7 @@ UnicodeString __fastcall TGUIConfiguration::PropertyToKey(const UnicodeString Pr
 // duplicated from core\configuration.cpp
 #undef BLOCK
 #define BLOCK(KEY, CANCREATE, BLOCK) \
-  if (Storage->OpenSubKey(KEY, CANCREATE, true)) TRY_FINALLY1 (Storage, { BLOCK  } , { Storage->CloseSubKey(); } );
+  if (Storage->OpenSubKey(KEY, CANCREATE, true)) TRY_FINALLY ( { BLOCK  } , { Storage->CloseSubKey(); } );
 #undef REGCONFIG
 #define REGCONFIG(CANCREATE) \
   BLOCK(L"Interface", CANCREATE, \
@@ -688,7 +688,7 @@ void __fastcall TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool
   #undef KEY
 
   if (Storage->OpenSubKey(L"Interface\\CopyParam", true, true))
-  TRY_FINALLY1 (Storage,
+  TRY_FINALLY (
   {
     FDefaultCopyParam.Save(Storage);
 
@@ -710,7 +710,7 @@ void __fastcall TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool
   );
 
   if (Storage->OpenSubKey(L"Interface\\NewDirectory", true, true))
-  TRY_FINALLY1 (Storage,
+  TRY_FINALLY (
   {
     FNewDirectoryProperties.Save(Storage);
   }
@@ -735,7 +735,7 @@ void __fastcall TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   #undef KEY
 
   if (Storage->OpenSubKey(L"Interface\\CopyParam", false, true))
-  TRY_FINALLY1 (Storage,
+  TRY_FINALLY (
   {
     // must be loaded before eventual setting defaults for CopyParamList
     FDefaultCopyParam.Load(Storage);
@@ -775,7 +775,7 @@ void __fastcall TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   }
 
   if (Storage->OpenSubKey(L"Interface\\NewDirectory", false, true))
-  TRY_FINALLY1 (Storage,
+  TRY_FINALLY (
   {
     FNewDirectoryProperties.Load(Storage);
   }
@@ -998,7 +998,7 @@ TStrings * __fastcall TGUIConfiguration::GetLocales()
   Classes::Error(SNotImplemented, 93);
   UnicodeString LocalesExts;
   TStringList * Exts = new TStringList();
-  TRY_FINALLY1 (Exts,
+  TRY_FINALLY (
   {
     TRACE("TGUIConfiguration::GetLocales 1");
     Exts->Sorted = true;
@@ -1010,7 +1010,7 @@ TStrings * __fastcall TGUIConfiguration::GetLocales()
 
     Found = (bool)(FindFirst(ChangeFileExt(ModuleFileName(), L".*"),
       FindAttrs, SearchRec) == 0);
-    TRY_FINALLY1 (SearchRec,
+    TRY_FINALLY (
     {
       UnicodeString Ext;
       while (Found)

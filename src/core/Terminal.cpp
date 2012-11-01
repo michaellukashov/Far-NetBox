@@ -750,13 +750,13 @@ void __fastcall TTerminal::Open()
     try
     {
       TRACE("Open 1b");
-      TRY_FINALLY1 (Self,
+      TRY_FINALLY (
       {
         try
         {
           ResetConnection();
           FStatus = ssOpening;
-          TRY_FINALLY1 (Self,
+          TRY_FINALLY (
           {
             TRACE("Open 2");
             if (FFileSystem == NULL)
@@ -831,7 +831,7 @@ void __fastcall TTerminal::Open()
               {
                 TRACE("Open 8");
                 assert(FSecureShell == NULL);
-                TRY_FINALLY1 (Self,
+                TRY_FINALLY (
                 {
                   FSecureShell = new TSecureShell(this, FSessionData, GetLog(), Configuration);
                   try
@@ -1052,7 +1052,7 @@ void __fastcall TTerminal::OpenTunnel()
     FTunnel = new TSecureShell(FTunnelUI, FTunnelData, FTunnelLog, Configuration);
 
     FTunnelOpening = true;
-    TRY_FINALLY1 (Self,
+    TRY_FINALLY (
     {
       FTunnel->Open();
     }
@@ -1115,9 +1115,7 @@ void /* __fastcall */ TTerminal::Reopen(int Params)
   // but it can happen, e.g. when we are downloading file to execute it.
   // however I'm not sure why we mind having excaption-on-fail enabled here
   int PrevExceptionOnFail = FExceptionOnFail;
-  TRY_FINALLY7 (Self, PrevRemoteDirectory,
-      OrigFSProtocol, PrevAutoReadDirectory, PrevReadCurrentDirectoryPending,
-      PrevReadDirectoryPending, PrevExceptionOnFail,
+  TRY_FINALLY (
   {
     TRACE("Reopen 1");
     FReadCurrentDirectoryPending = false;
@@ -1173,7 +1171,7 @@ bool __fastcall TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
   bool AResult;
   TStrings * Prompts = new TStringList();
   TStrings * Results = new TStringList();
-  TRY_FINALLY2 (Prompts, Results,
+  TRY_FINALLY (
   {
     Prompts->AddObject(Prompt, reinterpret_cast<TObject *>(static_cast<size_t>(Echo)));
     Results->AddObject(Result, reinterpret_cast<TObject *>(MaxLen));
@@ -1265,7 +1263,7 @@ unsigned int __fastcall TTerminal::QueryUserException(const UnicodeString Query,
   CALLSTACK;
   unsigned int Result;
   TStrings * MoreMessages = new TStringList();
-  TRY_FINALLY1 (MoreMessages,
+  TRY_FINALLY (
   {
     if (E != NULL)
     {
@@ -1944,7 +1942,7 @@ void /* __fastcall */ TTerminal::EndTransaction()
     TRACE("1");
     if (FInTransaction == 0)
     {
-      TRY_FINALLY1 (Self,
+      TRY_FINALLY (
       {
         TRACE("2");
         if (FReadCurrentDirectoryPending) { ReadCurrentDirectory(); }
@@ -2066,7 +2064,7 @@ unsigned int __fastcall TTerminal::CommandError(Exception * E, const UnicodeStri
   else if (!Answers)
   {
     ECommand * ECmd = new ECommand(E, Msg);
-    TRY_FINALLY1 (ECmd,
+    TRY_FINALLY (
     {
       HandleExtendedException(ECmd);
     }
@@ -2453,7 +2451,7 @@ void /* __fastcall */ TTerminal::DoStartup()
   CALLSTACK;
   LogEvent(L"Doing startup conversation with host.");
   BeginTransaction();
-  TRY_FINALLY1 (Self,
+  TRY_FINALLY (
   {
     TRACE("1");
     DoInformation(LoadStr(STATUS_STARTUP), true);
@@ -2545,7 +2543,7 @@ void /* __fastcall */ TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
     {
       TRACE("2");
       DoStartReadDirectory();
-      TRY_FINALLY2 (Self, ReloadOnly,
+      TRY_FINALLY (
       {
         LoadedFromCache = FDirectoryCache->GetFileList(GetCurrentDirectory(), FFiles);
       }
@@ -2579,7 +2577,7 @@ void /* __fastcall */ TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
     {
       TRACE("5");
       TRemoteDirectory * Files = new TRemoteDirectory(this, FFiles);
-      TRY_FINALLY4 (Self, Files, Cancel, ReloadOnly,
+      TRY_FINALLY (
       {
         Files->SetDirectory(GetCurrentDirectory());
         CustomReadDirectory(Files);
@@ -2739,7 +2737,7 @@ TRemoteFileList * /* __fastcall */ TTerminal::DoReadDirectoryListing(UnicodeStri
       FileList->SetDirectory(Directory);
 
       SetExceptionOnFail(true);
-      TRY_FINALLY1 (Self,
+      TRY_FINALLY (
       {
         ReadDirectory(FileList);
       }
@@ -2772,7 +2770,7 @@ void /* __fastcall */ TTerminal::ProcessDirectory(const UnicodeString DirName,
   if (IgnoreErrors)
   {
     SetExceptionOnFail(true);
-    TRY_FINALLY1 (Self,
+    TRY_FINALLY (
     {
       try
       {
@@ -2800,7 +2798,7 @@ void /* __fastcall */ TTerminal::ProcessDirectory(const UnicodeString DirName,
   // skip if directory listing fails and user selects "skip"
   if (FileList)
   {
-    TRY_FINALLY1 (FileList,
+    TRY_FINALLY (
     {
       UnicodeString Directory = UnixIncludeTrailingBackslash(DirName);
 
@@ -2883,7 +2881,7 @@ bool /* __fastcall */ TTerminal::FileExists(const UnicodeString FileName, TRemot
   try
   {
     SetExceptionOnFail(true);
-    TRY_FINALLY1 (Self,
+    TRY_FINALLY (
     {
       ReadFile(FileName, File);
     }
@@ -2941,7 +2939,7 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
 
     FOperationProgress = &Progress;
     TFileOperationProgressType * OperationProgress(&Progress);
-    TRY_FINALLY2 (Self, Progress,
+    TRY_FINALLY (
     {
       if (Side == osRemote)
       {
@@ -2949,7 +2947,7 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
         BeginTransaction();
       }
 
-      TRY_FINALLY2 (Self, Side,
+      TRY_FINALLY (
       {
         TRACE("3");
         int Index = 0;
@@ -2961,7 +2959,7 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
           TRACEFMT("4 [%s]", (FileName));
           try
           {
-            TRY_FINALLY4 (Progress, FileName, Success, OnceDoneOperation,
+            TRY_FINALLY (
             {
               Success = false;
               if (!Ex)
@@ -3624,7 +3622,7 @@ bool /* __fastcall */ TTerminal::MoveFiles(TStrings * FileList, const UnicodeStr
   DirectoryModified(Target, true);
   bool Result = false;
   BeginTransaction();
-  TRY_FINALLY2 (Self, FileList,
+  TRY_FINALLY (
   {
     Result = ProcessFiles(FileList, foRemoteMove, MAKE_CALLBACK3(TTerminal::MoveFile, this), &Params);
   }
@@ -4353,7 +4351,7 @@ void /* __fastcall */ TTerminal::CalculateLocalFilesSize(TStrings * FileList,
   TFileOperationProgressType OperationProgress(MAKE_CALLBACK2(TTerminal::DoProgress, this), MAKE_CALLBACK0(TTerminal::DoFinished, this));
   TOnceDoneOperation OnceDoneOperation = odoIdle;
   OperationProgress.Start(foCalculateSize, osLocal, FileList->Count);
-  TRY_FINALLY2 (Self, OperationProgress,
+  TRY_FINALLY (
   {
     TCalculateSizeParams Params;
     Params.Size = 0;
@@ -4473,7 +4471,7 @@ void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeStri
     DoSynchronizeProgress(Data, true);
   }
 
-  TRY_FINALLY1 (Data,
+  TRY_FINALLY (
   {
     TRACE("2");
     bool Found = false;
@@ -4490,7 +4488,7 @@ void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeStri
     if (Found)
     {
       TRACE("3");
-      TRY_FINALLY1 (SearchRec,
+      TRY_FINALLY (
       {
         UnicodeString FileName;
         while (Found)
@@ -4599,7 +4597,7 @@ void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeStri
         {
           TRACE("12");
           TSynchronizeChecklist::TItem * ChecklistItem = new TSynchronizeChecklist::TItem();
-          TRY_FINALLY1 (ChecklistItem,
+          TRY_FINALLY (
           {
             TRACE("13");
             ChecklistItem->IsDirectory = FileData->IsDirectory;
@@ -4706,7 +4704,7 @@ void /* __fastcall */ TTerminal::SynchronizeCollectFile(const UnicodeString & Fi
   {
     CTRACE(TRACE_SYNCH, "00b");
     TSynchronizeChecklist::TItem * ChecklistItem = new TSynchronizeChecklist::TItem();
-    TRY_FINALLY1 (ChecklistItem,
+    TRY_FINALLY (
     {
       ChecklistItem->IsDirectory = File->GetIsDirectory();
       ChecklistItem->ImageIndex = File->GetIconIndex();
@@ -4936,7 +4934,7 @@ void /* __fastcall */ TTerminal::SynchronizeApply(TSynchronizeChecklist * Checkl
   BeginTransaction();
 
   TRACE("TTerminal::SynchronizeApply 2");
-  TRY_FINALLY5 (Self, DownloadList, DeleteRemoteList, UploadList, DeleteLocalList,
+  TRY_FINALLY (
   {
     TRACE("TTerminal::SynchronizeApply 3");
     int IIndex = 0;
@@ -5204,7 +5202,7 @@ void /* __fastcall */ TTerminal::DoFilesFind(UnicodeString Directory, TFilesFind
     // of the directory listing, so we at least reset the handler in
     // FileFind
     FOnFindingFile = Params.OnFindingFile;
-    TRY_FINALLY1 (Self,
+    TRY_FINALLY (
     {
       ProcessDirectory(Directory, MAKE_CALLBACK3(TTerminal::FileFind, this), &Params, false, true);
     }
@@ -5337,7 +5335,7 @@ bool /* __fastcall */ TTerminal::CopyToRemote(TStrings * FilesToCopy,
       FilesToCopy->Count, (Params & cpTemporary) > 0, TargetDir, CopyParam->GetCPSLimit());
 
     FOperationProgress = &OperationProgress;
-    TRY_FINALLY2 (Self, OperationProgress,
+    TRY_FINALLY (
     {
       if (CopyParam->GetCalculateSize())
       {
@@ -5346,7 +5344,7 @@ bool /* __fastcall */ TTerminal::CopyToRemote(TStrings * FilesToCopy,
 
       UnicodeString UnlockedTargetDir = TranslateLockedPath(TargetDir, false);
       BeginTransaction();
-      TRY_FINALLY1 (Self,
+      TRY_FINALLY (
       {
         TRACE("3");
         if (GetLog()->GetLogging())
@@ -5416,7 +5414,7 @@ bool /* __fastcall */ TTerminal::CopyToLocal(TStrings * FilesToCopy,
   bool OwnsFileList = (FilesToCopy == NULL);
   TOnceDoneOperation OnceDoneOperation = odoIdle;
 
-  TRY_FINALLY2 (OwnsFileList, FilesToCopy,
+  TRY_FINALLY (
   {
     if (OwnsFileList)
     {
@@ -5426,7 +5424,7 @@ bool /* __fastcall */ TTerminal::CopyToLocal(TStrings * FilesToCopy,
 
     TRACE("1");
     BeginTransaction();
-    TRY_FINALLY1 (Self,
+    TRY_FINALLY (
     {
       __int64 TotalSize = 0;
       bool TotalSizeKnown = false;
@@ -5436,7 +5434,7 @@ bool /* __fastcall */ TTerminal::CopyToLocal(TStrings * FilesToCopy,
       {
         TRACE("2");
         SetExceptionOnFail(true);
-        TRY_FINALLY1 (Self,
+        TRY_FINALLY (
         {
           // dirty trick: when moving, do not pass copy param to avoid exclude mask
           TRACE("3");
@@ -5458,7 +5456,7 @@ bool /* __fastcall */ TTerminal::CopyToLocal(TStrings * FilesToCopy,
         FilesToCopy->Count, (Params & cpTemporary) != 0, TargetDir, CopyParam->GetCPSLimit());
 
       FOperationProgress = &OperationProgress;
-      TRY_FINALLY2 (Self, OperationProgress,
+      TRY_FINALLY (
       {
         if (TotalSizeKnown)
         {
@@ -5468,7 +5466,7 @@ bool /* __fastcall */ TTerminal::CopyToLocal(TStrings * FilesToCopy,
 
         try
         {
-          TRY_FINALLY1 (Self,
+          TRY_FINALLY (
           {
             TRACE("8");
             FFileSystem->CopyToLocal(FilesToCopy, TargetDir, CopyParam, Params,

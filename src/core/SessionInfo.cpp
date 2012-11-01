@@ -754,7 +754,7 @@ void __fastcall TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
         CTRACE(TRACE_LOG_ADD, "Post Guard");
         BeginUpdate();
 
-        TRY_FINALLY1 (Self,
+        TRY_FINALLY (
         {
           CTRACE(TRACE_LOG_ADD, "DoAdd");
           DoAdd(Type, Line, MAKE_CALLBACK2(TSessionLog::DoAddToSelf, this));
@@ -891,7 +891,7 @@ void __fastcall TSessionLog::DeleteUnnecessary()
 {
   CCALLSTACK(TRACE_LOG_ADD);
   BeginUpdate();
-  TRY_FINALLY1 (Self,
+  TRY_FINALLY (
   {
     if (!GetLogging() || (FParent != NULL))
     {
@@ -964,7 +964,7 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
     ADF(L"NetBox %s (OS %s)", FConfiguration->GetVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
     THierarchicalStorage * Storage = FConfiguration->CreateScpStorage(false);
     assert(Storage);
-    TRY_FINALLY1 (Storage,
+    TRY_FINALLY (
     {
       ADF(L"Configuration: %s", Storage->GetSource().c_str());
     }
@@ -1347,7 +1347,7 @@ void __fastcall TActionLog::AddFailure(Exception * E)
   TStrings * Messages = ExceptionToMessages(E);
   if (Messages != NULL)
   {
-    TRY_FINALLY1 (Messages,
+    TRY_FINALLY (
     {
       AddFailure(Messages);
     }

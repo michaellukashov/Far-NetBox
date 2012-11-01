@@ -1011,7 +1011,7 @@ void __fastcall ProcessLocalDirectory(UnicodeString DirName,
   DirName = IncludeTrailingBackslash(DirName);
   if (FindFirst(DirName + L"*.*", FindAttrs, SearchRec) == 0)
   {
-    TRY_FINALLY1 (SearchRec,
+    TRY_FINALLY (
     {
       do
       {

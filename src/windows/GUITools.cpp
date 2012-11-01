@@ -56,7 +56,7 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
     TRegistryStorage * Storage = NULL;
     TSessionData * ExportData = NULL;
     TRegistryStorage * SourceStorage = NULL;
-    TRY_FINALLY3 (Storage, ExportData, SourceStorage,
+    TRY_FINALLY (
     {
       TRACEFMT("1a [%s]", (Configuration->GetPuttySessionsKey()));
       Storage = new TRegistryStorage(Configuration->GetPuttySessionsKey());

@@ -415,7 +415,7 @@ const TFileSystemInfo & __fastcall TSCPFileSystem::GetFileSystemInfo(bool Retrie
   {
     UnicodeString UName;
     FTerminal->SetExceptionOnFail(true);
-    TRY_FINALLY1 (Self,
+    TRY_FINALLY (
     {
       try
       {
@@ -660,7 +660,7 @@ void __fastcall TSCPFileSystem::SkipFirstLine()
 void __fastcall TSCPFileSystem::ReadCommandOutput(int Params, const UnicodeString * Cmd)
 {
   CALLSTACK;
-  TRY_FINALLY1 (Self,
+  TRY_FINALLY (
   {
     if (Params & coWaitForLastLine)
     {
@@ -749,7 +749,7 @@ void __fastcall TSCPFileSystem::ExecCommand(const UnicodeString & Cmd, int Param
   {
     Busy(true);
   }
-  TRY_FINALLY1 (Self,
+  TRY_FINALLY (
   {
     SendCommand(Cmd);
 
@@ -949,7 +949,7 @@ void __fastcall TSCPFileSystem::ClearAliases()
     FTerminal->LogEvent(L"Clearing all aliases.");
     ClearAlias(TCommandSet::ExtractCommand(FTerminal->GetSessionData()->GetListingCommand()));
     TStrings * CommandList = FCommandSet->CreateCommandList();
-    TRY_FINALLY1 (CommandList,
+    TRY_FINALLY (
     {
       for (int Index = 0; Index < CommandList->Count; Index++)
       {
@@ -1073,7 +1073,7 @@ void __fastcall TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         // Copy LS command output, because eventual symlink analysis would
         // modify FTerminal->Output
         TStringList * OutputCopy = new TStringList();
-        TRY_FINALLY1 (OutputCopy,
+        TRY_FINALLY (
         {
           OutputCopy->Assign(FOutput);
 
@@ -1402,7 +1402,7 @@ void __fastcall TSCPFileSystem::AnyCommand(const UnicodeString Command,
     FOnCaptureOutput = OutputEvent;
   }
 
-  TRY_FINALLY1 (Self,
+  TRY_FINALLY (
   {
     ExecCommand2(fsAnyCommand, Command.c_str(),
       ecDefault | ecIgnoreWarnings);
@@ -1523,7 +1523,7 @@ void __fastcall TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     Options.c_str(), DelimitStr(UnixExcludeTrailingBackslash(TargetDir)).c_str()));
   SkipFirstLine();
 
-  TRY_FINALLY4 (Self, GotLastLine, CopyBatchStarted, Failed,
+  TRY_FINALLY (
   {
     try
     {
@@ -1748,7 +1748,7 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString FileName,
 
   bool Dir = FLAGSET(Attrs, faDirectory);
   TSafeHandleStream * Stream = new TSafeHandleStream(FileHandle);
-  TRY_FINALLY2 (FileHandle, Stream,
+  TRY_FINALLY (
   {
     OperationProgress->SetFileInProgress();
 
@@ -2046,7 +2046,7 @@ void __fastcall TSCPFileSystem::SCPDirectorySource(const UnicodeString Directory
   FSecureShell->SendLine(Buf);
   SCPResponse();
 
-  TRY_FINALLY2 (Self, DirectoryName,
+  TRY_FINALLY (
   {
     int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
     TSearchRec SearchRec;
@@ -2058,7 +2058,7 @@ void __fastcall TSCPFileSystem::SCPDirectorySource(const UnicodeString Directory
         FindAttrs, SearchRec) == 0;
     );
 
-    TRY_FINALLY1 (SearchRec,
+    TRY_FINALLY (
     {
       while (FindOK && !OperationProgress->Cancel)
       {
@@ -2148,7 +2148,7 @@ void __fastcall TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
     L"\"%s\"", FilesToCopy->Count.get(), TargetDir.c_str()));
   FTerminal->LogEvent(CopyParam->GetLogStr());
 
-  TRY_FINALLY3 (Self, CloseSCP, OperationProgress,
+  TRY_FINALLY (
   {
     for (int IFile = 0; (IFile < FilesToCopy->Count) &&
       !OperationProgress->Cancel; IFile++)
@@ -2186,7 +2186,7 @@ void __fastcall TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
           try
           {
             FTerminal->SetExceptionOnFail(true);
-            TRY_FINALLY1 (Self,
+            TRY_FINALLY (
             {
               TRACE("5");
               FILE_OPERATION_LOOP(FMTLOAD(DELETE_FILE_ERROR, FileName.c_str()),
@@ -2512,7 +2512,7 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
 
             /* TODO 1 : Turn off read-only attr */
 
-            TRY_FINALLY2 (FileHandle, FileStream,
+            TRY_FINALLY (
             {
               try
               {
