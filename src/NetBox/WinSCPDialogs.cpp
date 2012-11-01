@@ -796,7 +796,6 @@ private:
   TFarRadioButton * EditorDownloadOptionsButton;
   TFarRadioButton * EditorUploadSameButton;
   TFarRadioButton * EditorUploadOptionsButton;
-  TTransferEditorConfigurationDialog * Self;
 
   virtual void __fastcall UpdateControls();
 };
@@ -805,7 +804,6 @@ TTransferEditorConfigurationDialog::TTransferEditorConfigurationDialog(
   TCustomFarPlugin * AFarPlugin) :
   TWinSCPDialog(AFarPlugin)
 {
-  Self = this;
   TFarSeparator * Separator;
 
   SetSize(TPoint(55, 14));
@@ -883,7 +881,7 @@ void __fastcall TTransferEditorConfigurationDialog::Change()
     }
     ,
     {
-      Self->UnlockChanges();
+      UnlockChanges();
     }
     );
   }
@@ -1632,7 +1630,6 @@ private:
   TFarComboBox * FtpUseMlsdCombo;
   TFarCheckBox * SslSessionReuseCheck;
   TFarCheckBox * WebDAVCompressionCheck;
-  TSessionDialog * Self;
 
   void __fastcall LoadPing(TSessionData * SessionData);
   void __fastcall SavePing(TSessionData * SessionData);
@@ -1691,7 +1688,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   FLoginTypeIndex(0),
   FFtpEncryptionComboIndex(0)
 {
-  Self = this;
   TPoint S = TPoint(67, 23);
   bool Limited = (S.y > GetMaxSize().y);
   if (Limited)
@@ -2601,7 +2597,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   }
   ,
   {
-    Self->TunnelLocalPortNumberEdit->GetItems()->EndUpdate();
+    TunnelLocalPortNumberEdit->GetItems()->EndUpdate();
   }
   );
 
@@ -2871,7 +2867,7 @@ void __fastcall TSessionDialog::Change()
     }
     ,
     {
-      Self->UnlockChanges();
+      UnlockChanges();
     }
     );
   }
@@ -4237,7 +4233,6 @@ protected:
   TRights::TState FFixedStates[12];
   TFarEdit * OctalEdit;
   TFarCheckBox * DirectoriesXCheck;
-  TRightsContainer * Self;
 
   virtual void __fastcall Change();
   void __fastcall UpdateControls();
@@ -4263,7 +4258,6 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
   OctalEdit(NULL),
   DirectoriesXCheck(NULL)
 {
-  Self = this;
   FAnyDirectories = AAnyDirectories;
 
   GetDialog()->SetNextItemPosition(ipNewLine);
@@ -4504,7 +4498,7 @@ void __fastcall TRightsContainer::SetRights(const TRights & value)
     }
     ,
     {
-      Self->GetDialog()->UnlockChanges();
+      GetDialog()->UnlockChanges();
     }
     );
   }

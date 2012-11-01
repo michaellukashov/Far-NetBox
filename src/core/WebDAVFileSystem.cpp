@@ -12699,7 +12699,7 @@ private:
 //---------------------------------------------------------------------------
 #undef FILE_OPERATION_LOOP_EX
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
-  FILE_OPERATION_LOOP_CUSTOM(Self->FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
+  FILE_OPERATION_LOOP_CUSTOM(FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
 //---------------------------------------------------------------------------
 static const UnicodeString CONST_WEBDAV_PROTOCOL_BASE_NAME = L"WebDAV";
 
@@ -12723,7 +12723,6 @@ TWebDAVFileSystem::TWebDAVFileSystem(TTerminal * ATerminal) :
   webdav_pool(NULL),
   FSession(NULL)
 {
-  Self = this;
 }
 
 void __fastcall TWebDAVFileSystem::Init()
@@ -13664,7 +13663,7 @@ void __fastcall TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString Dir
       }
       ,
       {
-        Self->FTerminal->SetExceptionOnFail(false);
+        FTerminal->SetExceptionOnFail(false);
       }
       );
     }
@@ -13740,7 +13739,7 @@ void __fastcall TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
     ,
     {
       OperationProgress->Finish(FileName, Success, OnceDoneOperation);
-      Self->FTerminal->SetExceptionOnFail(false);
+      FTerminal->SetExceptionOnFail(false);
     }
     );
     Index++;

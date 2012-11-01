@@ -59,11 +59,9 @@ TFarDialog::TFarDialog(TCustomFarPlugin * AFarPlugin) :
   FChangesPending(false),
   FResult(0),
   FNeedsSynchronize(false),
-  FSynchronizeMethod(NULL),
-  Self(NULL)
+  FSynchronizeMethod(NULL)
 {
   assert(AFarPlugin);
-  Self = this;
   FItems = new TObjectList();
   FContainers = new TObjectList();
   FFarPlugin = AFarPlugin;
@@ -131,7 +129,7 @@ void __fastcall TFarDialog::SetBounds(TRect Value)
     }
     ,
     {
-      Self->UnlockChanges();
+      UnlockChanges();
     }
     );
   }
@@ -769,9 +767,9 @@ intptr_t __fastcall TFarDialog::ShowModal()
   }
   ,
   {
-    Self->GetFarPlugin()->FTopDialog = PrevTopDialog;
+    GetFarPlugin()->FTopDialog = PrevTopDialog;
     if (Handle != INVALID_HANDLE_VALUE)
-      Self->GetFarPlugin()->GetStartupInfo()->DialogFree(Handle);
+      GetFarPlugin()->GetStartupInfo()->DialogFree(Handle);
   }
   );
 
@@ -877,7 +875,7 @@ void __fastcall TFarDialog::ProcessGroup(int Group, TFarProcessGroupEvent Callba
   }
   ,
   {
-    Self->UnlockChanges();
+    UnlockChanges();
   }
   );
 }
@@ -936,9 +934,9 @@ void __fastcall TFarDialog::UnlockChanges()
     }
     ,
     {
-      if (Self->GetHandle())
+      if (GetHandle())
       {
-        Self->SendMessage(DM_ENABLEREDRAW, true, 0);
+        SendMessage(DM_ENABLEREDRAW, true, 0);
       }
     }
     );
@@ -2106,7 +2104,6 @@ TFarList::TFarList(TFarDialogItem * ADialogItem) :
 {
   assert((ADialogItem == NULL) ||
     (ADialogItem->GetType() == DI_COMBOBOX) || (ADialogItem->GetType() == DI_LISTBOX));
-  Self = this;
   FDialogItem = ADialogItem;
   FListItems = new FarList;
   memset(FListItems, 0, sizeof(*FListItems));
@@ -2162,7 +2159,7 @@ void __fastcall TFarList::Put(int Index, const UnicodeString S)
     }
     ,
     {
-      Self->FNoDialogUpdate = false;
+      FNoDialogUpdate = false;
     }
     );
   }
@@ -2227,7 +2224,7 @@ void __fastcall TFarList::Changed()
       }
       ,
       {
-        Self->GetDialogItem()->GetDialog()->UnlockChanges();
+        GetDialogItem()->GetDialog()->UnlockChanges();
       }
       );
     }

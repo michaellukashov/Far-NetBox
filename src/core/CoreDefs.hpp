@@ -50,8 +50,6 @@
     CLEANUP \
   }
 
-#define Self this
-
 #else
 
 #define DEFINE_CALLBACK_TYPE0(EVENT,     R) \

@@ -63,7 +63,6 @@ private:
   UnicodeString FAuthenticationLog;
   UnicodeString FLastTunnelError;
   UnicodeString FUserName;
-  TSecureShell * Self;
 
   static TCipher __fastcall FuncToSsh1Cipher(const void * Cipher);
   static TCipher __fastcall FuncToSsh2Cipher(const void * Cipher);

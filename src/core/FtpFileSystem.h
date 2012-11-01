@@ -238,7 +238,7 @@ private:
   TFTPServerCapabilities * FServerCapabilities;
   TDateTime FLastDataSent;
   mutable UnicodeString FOptionScratch;
-  TFTPFileSystem * Self;
+
 private:
   TFTPFileSystem(const TFTPFileSystem &);
   void operator=(const TFTPFileSystem &);

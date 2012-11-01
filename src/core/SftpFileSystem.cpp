@@ -21,7 +21,7 @@
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
-  FILE_OPERATION_LOOP_CUSTOM(Self->FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
+  FILE_OPERATION_LOOP_CUSTOM(FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
 //---------------------------------------------------------------------------
 #define SSH_FX_OK                                 0
 #define SSH_FX_EOF                                1
@@ -877,7 +877,6 @@ private:
   static int FMessageCounter;
   static const int FSendPrefixLen = 4;
   unsigned int FCodePage;
-  TSFTPPacket * Self;
 
   void Init(unsigned int codePage)
   {
@@ -889,7 +888,6 @@ private:
     FType = (unsigned char)-1;
     FReservedBy = NULL;
     FCodePage = codePage;
-    Self = this;
   }
 
   void AssignNumber()
@@ -1392,7 +1390,6 @@ public:
     FLastBlockSize = 0;
     FEnd = false;
     FConvertToken = false;
-    Self = this;
   }
 
   virtual /* __fastcall */ ~TSFTPUploadQueue()
@@ -1504,7 +1501,6 @@ private:
   RawByteString FHandle;
   bool FConvertToken;
   TTerminal * FTerminal;
-  TSFTPUploadQueue * Self;
 };
 //---------------------------------------------------------------------------
 class TSFTPLoadFilesPropertiesQueue : public TSFTPFixedLenQueue
@@ -1721,7 +1717,6 @@ struct TSinkFileParams
 /* __fastcall */ TSFTPFileSystem::TSFTPFileSystem(TTerminal * ATerminal) :
   TCustomFileSystem(ATerminal)
 {
-  Self = this;
 }
 
 void __fastcall TSFTPFileSystem::Init(TSecureShell * SecureShell)
@@ -2120,7 +2115,7 @@ void __fastcall TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
   }
   ,
   {
-    Self->BusyEnd();
+    BusyEnd();
   }
   );
   TRACE("/");
@@ -3208,7 +3203,7 @@ void __fastcall TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           }
           ,
           {
-            Self->FTerminal->SetExceptionOnFail(false);
+            FTerminal->SetExceptionOnFail(false);
           }
           );
         }
@@ -3247,14 +3242,14 @@ void __fastcall TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
   ,
   {
     TRACE("14");
-    if (Self->FTerminal->GetActive())
+    if (FTerminal->GetActive())
     {
       TRACE("15");
       Packet.ChangeType(SSH_FXP_CLOSE);
       Packet.AddString(Handle);
-      Self->SendPacket(&Packet);
+      SendPacket(&Packet);
       // we are not interested in the response, do not wait for it
-      Self->ReserveResponse(&Packet, NULL);
+      ReserveResponse(&Packet, NULL);
       TRACE("16");
     }
   }
@@ -3577,7 +3572,7 @@ bool __fastcall TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
     ,
     {
       Queue.DisposeSafe();
-      Self->FTerminal->FOperationProgress = NULL;
+      FTerminal->FOperationProgress = NULL;
       Progress.Stop();
     }
     );
@@ -3730,7 +3725,7 @@ void __fastcall TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Al
   }
   ,
   {
-    Self->FTerminal->FOperationProgress = NULL;
+    FTerminal->FOperationProgress = NULL;
     Progress.Stop();
   }
   );
@@ -3842,7 +3837,7 @@ void __fastcall TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     ,
     {
       TRACE("3");
-      Self->FAvoidBusy = false;
+      FAvoidBusy = false;
       OperationProgress->Finish(RealFileName, Success, OnceDoneOperation);
     }
     );
@@ -4428,16 +4423,16 @@ void __fastcall TSFTPFileSystem::SFTPSource(const UnicodeString FileName,
       ,
       {
         TRACE("14");
-        if (Self->FTerminal->GetActive())
+        if (FTerminal->GetActive())
         {
           // if file transfer was finished, the close request was already sent
           if (!OpenParams.RemoteFileHandle.IsEmpty())
           {
-            Self->SFTPCloseRemote(OpenParams.RemoteFileHandle, DestFileName,
+            SFTPCloseRemote(OpenParams.RemoteFileHandle, DestFileName,
               OperationProgress, TransferFinished, true, &CloseRequest);
           }
           // wait for the response
-          Self->SFTPCloseRemote(OpenParams.RemoteFileHandle, DestFileName,
+          SFTPCloseRemote(OpenParams.RemoteFileHandle, DestFileName,
             OperationProgress, TransferFinished, false, &CloseRequest);
 
           // delete file if transfer was not completed, resuming was not allowed and
@@ -4445,7 +4440,7 @@ void __fastcall TSFTPFileSystem::SFTPSource(const UnicodeString FileName,
           // shortly after plain transfer completes (eq. !ResumeAllowed)
           if (!TransferFinished && !DoResume && (OpenParams.OverwriteMode == omOverwrite))
           {
-            Self->DoDeleteFile(OpenParams.RemoteFileName, SSH_FXP_REMOVE);
+            DoDeleteFile(OpenParams.RemoteFileName, SSH_FXP_REMOVE);
           }
         }
       }
@@ -5009,7 +5004,7 @@ void __fastcall TSFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
     }
     ,
     {
-      Self->FAvoidBusy = false;
+      FAvoidBusy = false;
       OperationProgress->Finish(FileName, Success, OnceDoneOperation);
     }
     );
@@ -5560,10 +5555,10 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
       }
 
       // if the transfer was finished, the file is closed already
-      if (Self->FTerminal->GetActive() && !RemoteHandle.IsEmpty())
+      if (FTerminal->GetActive() && !RemoteHandle.IsEmpty())
       {
         // do not wait for response
-        Self->SFTPCloseRemote(RemoteHandle, DestFileName, OperationProgress,
+        SFTPCloseRemote(RemoteHandle, DestFileName, OperationProgress,
           true, true, NULL);
       }
       TRACE("3");

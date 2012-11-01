@@ -630,7 +630,6 @@ const wchar_t *LogLineMarks = L"<>!.*";
   FCurrentFileName = L"";
   FClosed = false;
   TRACE("/");
-  Self = this;
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TSessionLog::~TSessionLog()
@@ -762,9 +761,9 @@ void __fastcall TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
         ,
         {
           CTRACE(TRACE_LOG_ADD, "Finally");
-          Self->DeleteUnnecessary();
+          DeleteUnnecessary();
 
-          Self->EndUpdate();
+          EndUpdate();
         }
         );
       }
@@ -911,7 +910,7 @@ void __fastcall TSessionLog::DeleteUnnecessary()
   ,
   {
     CTRACE(TRACE_LOG_ADD2, "3");
-    Self->EndUpdate();
+    EndUpdate();
   }
   );
 }
@@ -1147,12 +1146,12 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
   }
   catch (...)
   {
-    Self->DeleteUnnecessary();
-    Self->EndUpdate();
+    DeleteUnnecessary();
+    EndUpdate();
     throw;
   }
-  Self->DeleteUnnecessary();
-  Self->EndUpdate();
+  DeleteUnnecessary();
+  EndUpdate();
 }
 //---------------------------------------------------------------------------
 void __fastcall TSessionLog::AddSeparator()

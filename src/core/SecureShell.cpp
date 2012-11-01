@@ -65,7 +65,6 @@ void __fastcall AnsiStrDispose(char * S)
   FSocketEvent = CreateEvent(NULL, false, false, NULL);
   FFrozen = false;
   FSimple = false;
-  Self = this;
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TSecureShell::~TSecureShell()
@@ -817,7 +816,7 @@ void __fastcall TSecureShell::FromBackend(bool IsStdErr, const unsigned char * D
         ,
         {
           CTRACE(TRACE_TRANSMIT, "9");
-          Self->FFrozen = false;
+          FFrozen = false;
         }
         );
       }
@@ -1005,7 +1004,7 @@ unsigned int __fastcall TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolE
   }
   ,
   {
-    Self->FWaiting--;
+    FWaiting--;
   }
   );
   return Answer;

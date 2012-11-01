@@ -35,7 +35,6 @@ TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
 {
   // DEBUG_PRINTF(L"TCustomFarPlugin: begin");
   InitPlatformId();
-  Self = this;
   FFarThread = GetCurrentThreadId();
   FCriticalSection = new TCriticalSection;
   FHandle = HInst;
@@ -349,7 +348,7 @@ void __fastcall TCustomFarPlugin::ClosePlugin(void * Plugin)
     }
     ,
     {
-      Self->FOpenedPlugins->Remove(FileSystem);
+      FOpenedPlugins->Remove(FileSystem);
     }
     );
     delete FileSystem;
@@ -1766,7 +1765,6 @@ TCustomFarFileSystem::TCustomFarFileSystem(TCustomFarPlugin * APlugin) :
   FCriticalSection(NULL),
   FOpenPluginInfoValid(false)
 {
-  Self = this;
   memset(FPanelInfo, 0, sizeof(FPanelInfo));
 }
 
@@ -1985,13 +1983,13 @@ intptr_t __fastcall TCustomFarFileSystem::MakeDirectory(const wchar_t ** Name, i
   intptr_t Result = 0;
   TRY_FINALLY (
   {
-    Result = MakeDirectoryEx(Self->FNameStr, OpMode);
+    Result = MakeDirectoryEx(FNameStr, OpMode);
   }
   ,
   {
-    if (Self->FNameStr != *Name)
+    if (FNameStr != *Name)
     {
-      *Name = Self->FNameStr.c_str();
+      *Name = FNameStr.c_str();
     }
   }
   );
@@ -2025,9 +2023,9 @@ intptr_t __fastcall TCustomFarFileSystem::GetFiles(struct PluginPanelItem * Pane
   }
   ,
   {
-    if (Self->FDestPathStr != *DestPath)
+    if (FDestPathStr != *DestPath)
     {
-      *DestPath = Self->FDestPathStr.c_str();
+      *DestPath = FDestPathStr.c_str();
     }
     delete PanelItems;
   }

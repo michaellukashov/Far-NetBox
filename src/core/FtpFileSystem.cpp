@@ -26,7 +26,7 @@
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
-  FILE_OPERATION_LOOP_CUSTOM(Self->FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
+  FILE_OPERATION_LOOP_CUSTOM(FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
 //---------------------------------------------------------------------------
 const int DummyCodeClass = 8;
 const int DummyTimeoutCode = 801;
@@ -260,7 +260,6 @@ private:
   FServerCapabilities(NULL)
 {
   CALLSTACK;
-  Self = this;
 }
 
 void __fastcall TFTPFileSystem::Init()
@@ -677,7 +676,7 @@ void __fastcall TFTPFileSystem::AnyCommand(const UnicodeString Command,
   }
   ,
   {
-    Self->FOnCaptureOutput = NULL;
+    FOnCaptureOutput = NULL;
   }
   );
 }
@@ -1676,7 +1675,7 @@ void __fastcall TFTPFileSystem::DirectorySource(const UnicodeString DirectoryNam
       }
       ,
       {
-        Self->FTerminal->SetExceptionOnFail(false);
+        FTerminal->SetExceptionOnFail(false);
       }
       );
     }
@@ -2547,12 +2546,12 @@ void __fastcall TFTPFileSystem::PoolForFatalNonCommandReply()
   }
   ,
   {
-    Self->FReply = 0;
-    assert(Self->FCommandReply == 0);
-    Self->FCommandReply = 0;
-    assert(Self->FWaitingForReply);
-    Self->FWaitingForReply = false;
-    TRACEFMT("3 [%x] FWaitingForReply [%d]", (int(Self), int(Self->FWaitingForReply)));
+    FReply = 0;
+    assert(FCommandReply == 0);
+    FCommandReply = 0;
+    assert(FWaitingForReply);
+    FWaitingForReply = false;
+    TRACEFMT("3 [%x] FWaitingForReply [%d]", (int(this), int(FWaitingForReply)));
   }
   );
 
@@ -2650,11 +2649,11 @@ unsigned int __fastcall TFTPFileSystem::WaitForReply(bool Command, bool WantLast
   ,
   {
     TRACE("5");
-    Self->FReply = 0;
-    Self->FCommandReply = 0;
-    assert(Self->FWaitingForReply);
-    Self->FWaitingForReply = false;
-    TRACEFMT("6 [%x] FWaitingForReply [%d]", (int(Self), int(Self->FWaitingForReply)));
+    FReply = 0;
+    FCommandReply = 0;
+    assert(FWaitingForReply);
+    FWaitingForReply = false;
+    TRACEFMT("6 [%x] FWaitingForReply [%d]", (int(this), int(FWaitingForReply)));
   }
   );
 
@@ -2893,7 +2892,7 @@ void __fastcall TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
   ,
   {
     TRACE("23");
-    Self->ResetReply();
+    ResetReply();
   }
   );
   TRACE("/");

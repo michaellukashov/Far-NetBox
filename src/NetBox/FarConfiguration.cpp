@@ -12,7 +12,6 @@
 TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
   TGUIConfiguration()
 {
-  Self = this;
   FFarConfirmations = -1;
   FFarPlugin = APlugin;
   FBookmarks = new TBookmarks();
@@ -157,7 +156,7 @@ void __fastcall TFarConfiguration::Load()
   }
   ,
   {
-    Self->FForceInheritance = false;
+    FForceInheritance = false;
   }
   );
 }
@@ -171,7 +170,7 @@ void __fastcall TFarConfiguration::Save(bool All, bool Explicit)
   }
   ,
   {
-    Self->FForceInheritance = false;
+    FForceInheritance = false;
   }
   );
 }

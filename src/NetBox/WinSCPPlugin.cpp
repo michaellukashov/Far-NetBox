@@ -40,7 +40,6 @@ TMessageParams::TMessageParams()
 TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) : TCustomFarPlugin(HInst)
 {
   FInitialized = false;
-  Self = this;
 }
 //---------------------------------------------------------------------------
 TWinSCPPlugin::~TWinSCPPlugin()

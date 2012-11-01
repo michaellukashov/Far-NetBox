@@ -730,8 +730,7 @@ const TRemoteToken * __fastcall TRemoteTokenList::Token(int Index) const
   FType(0),
   FSelected(false),
   FCyclicLink(false),
-  FIsHidden(0),
-  Self(NULL)
+  FIsHidden(0)
 {
   FLinkedFile = NULL;
   FRights = new TRights();
@@ -742,7 +741,6 @@ const TRemoteToken * __fastcall TRemoteTokenList::Token(int Index) const
   FTerminal = NULL;
   FDirectory = NULL;
   FIsHidden = -1;
-  Self = this;
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TRemoteFile::~TRemoteFile()
@@ -1312,7 +1310,7 @@ void __fastcall TRemoteFile::FindLinkedFile()
       }
       ,
       {
-        Self->GetTerminal()->SetExceptionOnFail(false);
+        GetTerminal()->SetExceptionOnFail(false);
       }
       );
     }
@@ -1664,7 +1662,6 @@ void __fastcall TRemoteDirectory::SetIncludeThisDirectory(Boolean value)
   Sorted = true;
   Duplicates = dupError;
   CaseSensitive = true;
-  Self = this;
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TRemoteDirectoryCache::~TRemoteDirectoryCache()
@@ -1689,7 +1686,7 @@ void __fastcall TRemoteDirectoryCache::Clear()
   }
   ,
   {
-    Self->TStringList::Clear();
+    TStringList::Clear();
   }
   );
 }

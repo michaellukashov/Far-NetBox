@@ -144,7 +144,6 @@ private:
   size_t FLastReadDirectoryProgress;
   TFileOperationProgressType * FCurrentOperationProgress;
   TCriticalSection * FTransferStatusCriticalSection;
-  TWebDAVFileSystem * Self;
 
 private:
   void __fastcall CustomReadFile(const UnicodeString FileName,

@@ -291,7 +291,6 @@ protected:
   TUserAction * FUserAction;
   bool FCancel;
   bool FPause;
-  TTerminalItem * Self;
 
   virtual void __fastcall ProcessEvent();
   virtual void __fastcall Finished();
@@ -505,7 +504,6 @@ void __fastcall TSignalThread::Terminate()
   FOverallTerminals(0), FTransfersLimit(2), FEnabled(true)
 {
   CALLSTACK;
-  Self = this;
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminalQueue::Init()
@@ -1182,7 +1180,6 @@ bool __fastcall TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
   FCriticalSection(NULL), FUserAction(NULL), FCancel(false), FPause(false)
 {
   CALLSTACK;
-  Self = this;
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminalItem::Init(int Index)
@@ -1403,8 +1400,8 @@ bool __fastcall TTerminalItem::WaitForUserAction(
   }
   ,
   {
-    Self->FUserAction = NULL;
-    Self->FItem->SetStatus(PrevStatus);
+    FUserAction = NULL;
+    FItem->SetStatus(PrevStatus);
   }
   );
 
@@ -1530,7 +1527,7 @@ void /* __fastcall */ TTerminalItem::OperationProgress(
     }
     ,
     {
-      Self->FItem->SetStatus(PrevStatus);
+      FItem->SetStatus(PrevStatus);
       ProgressData.Resume();
     }
     );
@@ -1574,7 +1571,6 @@ bool __fastcall TTerminalItem::OverrideItemStatus(TQueueItem::TStatus & ItemStat
   CALLSTACK;
   FSection = new TCriticalSection();
   FInfo = new TInfo();
-  Self = this;
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TQueueItem::~TQueueItem()
@@ -1670,9 +1666,9 @@ void __fastcall TQueueItem::Execute(TTerminalItem * TerminalItem)
   ,
   {
     {
-      TGuard Guard(Self->FSection);
-      delete Self->FProgressData;
-      Self->FProgressData = NULL;
+      TGuard Guard(FSection);
+      delete FProgressData;
+      FProgressData = NULL;
     }
   }
   );
@@ -1693,7 +1689,6 @@ void __fastcall TQueueItem::SetCPSLimit(unsigned long CPSLimit)
 {
   FProgressData = new TFileOperationProgressType();
   FInfo = new TQueueItem::TInfo();
-  Self = this;
 
   Update();
 }
@@ -1783,7 +1778,7 @@ bool __fastcall TQueueItemProxy::ProcessUserAction()
   }
   ,
   {
-    Self->FProcessingUserAction = false;
+    FProcessingUserAction = false;
   }
   );
   return Result;
@@ -2065,7 +2060,6 @@ void __fastcall TDownloadQueueItem::DoExecute(TTerminal * Terminal)
   FPendingIdle = false;
   FMainThread = GetCurrentThreadId();
   FSection = new TCriticalSection();
-  Self = this;
 }
 
 void __fastcall TTerminalThread::Init()
@@ -2225,8 +2219,8 @@ void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
     ,
     {
       TRACE("2");
-      Self->FAction = NULL;
-      SAFE_DESTROY(Self->FException);
+      FAction = NULL;
+      SAFE_DESTROY(FException);
     }
     );
   }
@@ -2408,8 +2402,8 @@ void __fastcall TTerminalThread::WaitForUserAction(TUserAction * UserAction)
     }
     ,
     {
-      Self->FUserAction = PrevUserAction;
-      SAFE_DESTROY(Self->FException);
+      FUserAction = PrevUserAction;
+      SAFE_DESTROY(FException);
     }
     );
     CheckCancel();

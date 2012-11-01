@@ -389,8 +389,7 @@ TStrings::TStrings() :
   FDuplicates(dupAccept),
   FDelimiter(L','),
   FQuoteChar(L'"'),
-  FUpdateCount(0),
-  Self(this)
+  FUpdateCount(0)
 {
   Count(this);
   Text(this);
@@ -408,7 +407,7 @@ TStrings::~TStrings()
 }
 void TStrings::SetTextStr(const UnicodeString Text)
 {
-  Self->BeginUpdate();
+  BeginUpdate();
   TRY_FINALLY (
   {
     Clear();
@@ -433,7 +432,7 @@ void TStrings::SetTextStr(const UnicodeString Text)
   }
   ,
   {
-    Self->EndUpdate();
+    EndUpdate();
   }
   );
 }
@@ -451,8 +450,8 @@ UnicodeString TStrings::GetCommaText()
   }
   ,
   {
-    Self->FDelimiter = LOldDelimiter;
-    Self->FQuoteChar = LOldQuoteChar;
+    FDelimiter = LOldDelimiter;
+    FQuoteChar = LOldQuoteChar;
   }
   );
   return Result;
@@ -479,7 +478,7 @@ UnicodeString TStrings::GetDelimitedText() const
 }
 void TStrings::SetDelimitedText(const UnicodeString Value)
 {
-  Self->BeginUpdate();
+  BeginUpdate();
   TRY_FINALLY (
   {
     Clear();
@@ -496,7 +495,7 @@ void TStrings::SetDelimitedText(const UnicodeString Value)
   }
   ,
   {
-    Self->EndUpdate();
+    EndUpdate();
   }
   );
 }
@@ -522,7 +521,7 @@ void TStrings::Assign(TPersistent * Source)
       }
       ,
       {
-        Self->EndUpdate();
+        EndUpdate();
       }
       );
     }
@@ -673,7 +672,7 @@ void TStrings::Move(int CurIndex, int NewIndex)
       }
       ,
       {
-        Self->EndUpdate();
+        EndUpdate();
       }
       );
     }
@@ -773,7 +772,7 @@ void TStrings::AddStrings(TStrings * Strings)
     }
     ,
     {
-      Self->EndUpdate();
+      EndUpdate();
     }
     );
   }
@@ -1694,8 +1693,7 @@ TRegistry::TRegistry() :
   FCurrentKey(0),
   FRootKey(0),
   FCloseRootKey(false),
-  FAccess(KEY_ALL_ACCESS),
-  Self(this)
+  FAccess(KEY_ALL_ACCESS)
 {
   // LazyWrite = True;
   Access(this);
@@ -1841,7 +1839,7 @@ bool TRegistry::DeleteKey(const UnicodeString Key)
     }
     ,
     {
-      Self->SetCurrentKey(OldKey);
+      SetCurrentKey(OldKey);
       RegCloseKey(DeleteKey);
     }
     );
@@ -1870,7 +1868,7 @@ bool TRegistry::KeyExists(const UnicodeString Key)
   }
   ,
   {
-    Self->FAccess = OldAccess;
+    FAccess = OldAccess;
   }
   );
   // DEBUG_PRINTF(L"Result = %d", Result);

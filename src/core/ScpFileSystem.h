@@ -86,7 +86,6 @@ private:
   bool FProcessingCommand;
   int FLsFullTime;
   TCaptureOutputEvent FOnCaptureOutput;
-  TSCPFileSystem * Self;
 
   void __fastcall ClearAliases();
   void __fastcall ClearAlias(UnicodeString Alias);

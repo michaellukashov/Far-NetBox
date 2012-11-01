@@ -125,7 +125,6 @@ protected:
   bool FEnabled;
   TDateTime FIdleInterval;
   TDateTime FLastIdle;
-  TTerminalQueue * Self;
 
 public:
   TQueueItem * __fastcall GetItem(int Index);
@@ -192,7 +191,6 @@ protected:
   TTerminalQueue * FQueue;
   HANDLE FCompleteEvent;
   long FCPSLimit;
-  TQueueItem * Self;
 
   explicit /* __fastcall */ TQueueItem();
   virtual /* __fastcall */ ~TQueueItem();
@@ -243,7 +241,6 @@ private:
   TQueueItem::TInfo * FInfo;
   bool FProcessingUserAction;
   void * FUserData;
-  TQueueItemProxy * Self;
 
   explicit /* __fastcall */ TQueueItemProxy(TTerminalQueue * Queue, TQueueItem * QueueItem);
   virtual /* __fastcall */ ~TQueueItemProxy();
@@ -378,7 +375,6 @@ private:
 
   DWORD FMainThread;
   TCriticalSection * FSection;
-  TTerminalThread * Self;
 
   void __fastcall WaitForUserAction(TUserAction * UserAction);
   void __fastcall RunAction(TNotifyEvent Action);

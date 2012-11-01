@@ -297,7 +297,6 @@ void __fastcall TKeepaliveThread::Execute()
 TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
   TCustomFarFileSystem(APlugin)
 {
-  Self = this;
 }
 //---------------------------------------------------------------------------
 void __fastcall TWinSCPFileSystem::Init(TSecureShell * /* SecureShell */)
@@ -407,7 +406,7 @@ void __fastcall TWinSCPFileSystem::Close()
   }
   ,
   {
-    Self->TCustomFarFileSystem::Close();
+    TCustomFarFileSystem::Close();
   }
   );
 }
@@ -482,7 +481,7 @@ bool __fastcall TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int O
     }
     ,
     {
-      Self->FNoProgress = false;
+      FNoProgress = false;
     }
     );
     Result = true;
@@ -548,7 +547,7 @@ bool __fastcall TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int O
       }
       ,
       {
-        Self->FLoadingSessionList = false;
+        FLoadingSessionList = false;
       }
       );
     }
@@ -842,23 +841,23 @@ bool __fastcall TWinSCPFileSystem::ExecuteCommand(const UnicodeString Command)
       }
       ,
       {
-        Self->WinSCPPlugin()->ScrollTerminalScreen(1);
-        Self->WinSCPPlugin()->SaveTerminalScreen();
-        Self->WinSCPPlugin()->ClearConsoleTitle();
+        WinSCPPlugin()->ScrollTerminalScreen(1);
+        WinSCPPlugin()->SaveTerminalScreen();
+        WinSCPPlugin()->ClearConsoleTitle();
       }
       );
     }
     ,
     {
-      if (Self->FTerminal->GetActive())
+      if (FTerminal->GetActive())
       {
-        Self->FTerminal->EndTransaction();
-        Self->UpdatePanel();
+        FTerminal->EndTransaction();
+        UpdatePanel();
       }
       else
       {
-        Self->RedrawPanel();
-        Self->RedrawPanel(true);
+        RedrawPanel();
+        RedrawPanel(true);
       }
     }
     );
@@ -1059,7 +1058,7 @@ void __fastcall TWinSCPFileSystem::CreateLink()
       }
       ,
       {
-        Self->GetTerminal()->SetExceptionOnFail(false);
+        GetTerminal()->SetExceptionOnFail(false);
       }
       );
     }
@@ -1105,7 +1104,7 @@ void __fastcall TWinSCPFileSystem::TemporarilyDownloadFiles(
   }
   ,
   {
-    Self->FTerminal->SetExceptionOnFail(false);
+    FTerminal->SetExceptionOnFail(false);
   }
   );
 }
@@ -1165,25 +1164,25 @@ void __fastcall TWinSCPFileSystem::ApplyCommand()
               {
                 if (FLAGSET(Params, ccShowResults))
                 {
-                  Self->FNoProgress = false;
-                  Self->WinSCPPlugin()->ScrollTerminalScreen(1);
-                  Self->WinSCPPlugin()->SaveTerminalScreen();
+                  FNoProgress = false;
+                  WinSCPPlugin()->ScrollTerminalScreen(1);
+                  WinSCPPlugin()->SaveTerminalScreen();
                 }
 
                 if (FLAGSET(Params, ccCopyResults))
                 {
-                  Self->WinSCPPlugin()->FarCopyToClipboard(Self->FCapturedLog);
-                  SAFE_DESTROY(Self->FCapturedLog);
+                  WinSCPPlugin()->FarCopyToClipboard(FCapturedLog);
+                  SAFE_DESTROY(FCapturedLog);
                 }
               }
               );
             }
             ,
             {
-              Self->GetPanelInfo()->ApplySelection();
-              if (Self->UpdatePanel())
+              GetPanelInfo()->ApplySelection();
+              if (UpdatePanel())
               {
-                Self->RedrawPanel();
+                RedrawPanel();
               }
             }
             );
@@ -1369,8 +1368,8 @@ void __fastcall TWinSCPFileSystem::Synchronize(const UnicodeString LocalDirector
     }
     ,
     {
-      Self->WinSCPPlugin()->ClearConsoleTitle();
-      Self->WinSCPPlugin()->RestoreScreen(Self->FSynchronizationSaveScreenHandle);
+      WinSCPPlugin()->ClearConsoleTitle();
+      WinSCPPlugin()->RestoreScreen(FSynchronizationSaveScreenHandle);
     }
     );
 
@@ -1386,8 +1385,8 @@ void __fastcall TWinSCPFileSystem::Synchronize(const UnicodeString LocalDirector
     }
     ,
     {
-      Self->WinSCPPlugin()->ClearConsoleTitle();
-      Self->WinSCPPlugin()->RestoreScreen(Self->FSynchronizationSaveScreenHandle);
+      WinSCPPlugin()->ClearConsoleTitle();
+      WinSCPPlugin()->RestoreScreen(FSynchronizationSaveScreenHandle);
     }
     );
   }
@@ -1483,8 +1482,8 @@ void __fastcall TWinSCPFileSystem::FullSynchronize(bool Source)
       }
       ,
       {
-        Self->WinSCPPlugin()->ClearConsoleTitle();
-        Self->WinSCPPlugin()->RestoreScreen(Self->FSynchronizationSaveScreenHandle);
+        WinSCPPlugin()->ClearConsoleTitle();
+        WinSCPPlugin()->RestoreScreen(FSynchronizationSaveScreenHandle);
       }
       );
 
@@ -1513,8 +1512,8 @@ void __fastcall TWinSCPFileSystem::FullSynchronize(bool Source)
         }
         ,
         {
-          Self->WinSCPPlugin()->ClearConsoleTitle();
-          Self->WinSCPPlugin()->RestoreScreen(Self->FSynchronizationSaveScreenHandle);
+          WinSCPPlugin()->ClearConsoleTitle();
+          WinSCPPlugin()->RestoreScreen(FSynchronizationSaveScreenHandle);
         }
         );
       }
@@ -1522,9 +1521,9 @@ void __fastcall TWinSCPFileSystem::FullSynchronize(bool Source)
     ,
     {
       delete Checklist;
-      if (Self->UpdatePanel())
+      if (UpdatePanel())
       {
-        Self->RedrawPanel();
+        RedrawPanel();
       }
     }
     );
@@ -1620,13 +1619,13 @@ void __fastcall TWinSCPFileSystem::Synchronize()
   }
   ,
   {
-    Self->FSynchronizeController = NULL;
+    FSynchronizeController = NULL;
     // plugin might have been closed during some synchronisation already
-    if (!Self->FClosed)
+    if (!FClosed)
     {
-      if (Self->UpdatePanel())
+      if (UpdatePanel())
       {
-        Self->RedrawPanel();
+        RedrawPanel();
       }
     }
   }
@@ -1761,10 +1760,10 @@ void __fastcall TWinSCPFileSystem::TransferFiles(bool Move)
           }
           ,
           {
-            Self->GetPanelInfo()->ApplySelection();
-            if (Self->UpdatePanel())
+            GetPanelInfo()->ApplySelection();
+            if (UpdatePanel())
             {
-              Self->RedrawPanel();
+              RedrawPanel();
             }
           }
           );
@@ -1793,9 +1792,9 @@ void __fastcall TWinSCPFileSystem::RenameFile()
       }
       ,
       {
-        if (Self->UpdatePanel())
+        if (UpdatePanel())
         {
-          Self->RedrawPanel();
+          RedrawPanel();
         }
       }
       );
@@ -1847,10 +1846,10 @@ void __fastcall TWinSCPFileSystem::FileProperties()
           }
           ,
           {
-            Self->GetPanelInfo()->ApplySelection();
-            if (Self->UpdatePanel())
+            GetPanelInfo()->ApplySelection();
+            if (UpdatePanel())
             {
-              Self->RedrawPanel();
+              RedrawPanel();
             }
           }
           );
@@ -2173,7 +2172,7 @@ bool __fastcall TWinSCPFileSystem::SetDirectoryEx(const UnicodeString Dir, int O
       }
       ,
       {
-        Self->FSavedFindFolder = "";
+        FSavedFindFolder = "";
       }
       );
       return Result;
@@ -2222,15 +2221,15 @@ bool __fastcall TWinSCPFileSystem::SetDirectoryEx(const UnicodeString Dir, int O
       }
       ,
       {
-        if (Self->FTerminal)
+        if (FTerminal)
         {
-          Self->FTerminal->SetExceptionOnFail(false);
+          FTerminal->SetExceptionOnFail(false);
         }
-        if (!Self->FNoProgress)
+        if (!FNoProgress)
         {
-          Self->WinSCPPlugin()->ClearConsoleTitle();
+          WinSCPPlugin()->ClearConsoleTitle();
         }
-        Self->FNoProgress = false;
+        FNoProgress = false;
       }
       );
 
@@ -2336,7 +2335,7 @@ intptr_t __fastcall TWinSCPFileSystem::MakeDirectoryEx(UnicodeString & Name, int
       }
       ,
       {
-        Self->WinSCPPlugin()->ClearConsoleTitle();
+        WinSCPPlugin()->ClearConsoleTitle();
       }
       );
       return 1;
@@ -2453,8 +2452,8 @@ bool __fastcall TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, int O
     }
     ,
     {
-      Self->FPanelItems = NULL;
-      SAFE_DESTROY(Self->FFileList);
+      FPanelItems = NULL;
+      SAFE_DESTROY(FFileList);
     }
     );
     return true;
@@ -2563,8 +2562,8 @@ intptr_t __fastcall TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool
     }
     ,
     {
-      Self->FPanelItems = NULL;
-      SAFE_DESTROY(Self->FFileList);
+      FPanelItems = NULL;
+      SAFE_DESTROY(FFileList);
     }
     );
   }
@@ -2696,7 +2695,7 @@ int __fastcall TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
     }
     ,
     {
-      Self->FNoProgressFinish = false;
+      FNoProgressFinish = false;
     }
     );
   }
@@ -2753,8 +2752,8 @@ intptr_t __fastcall TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool
     }
     ,
     {
-      Self->FPanelItems = NULL;
-      SAFE_DESTROY(Self->FFileList);
+      FPanelItems = NULL;
+      SAFE_DESTROY(FFileList);
     }
     );
   }
@@ -3740,8 +3739,8 @@ void __fastcall TWinSCPFileSystem::UploadFromEditor(bool NoReload,
   }
   ,
   {
-    Self->FTerminal->SetAutoReadDirectory(PrevAutoReadDirectory);
-    SAFE_DESTROY(Self->FFileList);
+    FTerminal->SetAutoReadDirectory(PrevAutoReadDirectory);
+    SAFE_DESTROY(FFileList);
     SAFE_DESTROY(File);
   }
   );
@@ -4076,7 +4075,7 @@ void __fastcall TWinSCPFileSystem::MultipleEdit(const UnicodeString Directory,
     }
     ,
     {
-      Self->FNoProgressFinish = false;
+      FNoProgressFinish = false;
       delete FileList;
     }
     );
