@@ -1,5 +1,7 @@
-NetBox 2.1.17 ??.10.2012
+NetBox 2.1.17 ??.11.2012
 --------------------
+  * Far3: Check OpenShortcutInfo.Flags when plugin is opened from Folders History
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=99392#p99339)
   * Fix memory leaks
   * Bugfix: Syncronize: wrong 'changed' time in Synchronization checklist
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=99119#p99119)
