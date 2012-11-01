@@ -267,10 +267,12 @@ TCustomFarFileSystem * __fastcall TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom,
       {
         UnicodeString Directory;
         UnicodeString Name;
+        FAROPENSHORTCUTFLAGS Flags = FOSF_NONE;
         if (OpenFrom == OPEN_SHORTCUT)
         {
           OpenShortcutInfo * Info = reinterpret_cast<OpenShortcutInfo *>(Item);
           Name = Info->ShortcutData;
+          Flags = Info->Flags;
         }
         else
         {
@@ -288,7 +290,7 @@ TCustomFarFileSystem * __fastcall TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom,
           }
 
           TWinSCPFileSystem * PanelSystem;
-          PanelSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem());
+          PanelSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem(Flags != FOSF_ACTIVE));
           if (PanelSystem && PanelSystem->Connected() &&
               PanelSystem->GetTerminal()->GetSessionData()->GetSessionUrl() == Name)
           {
