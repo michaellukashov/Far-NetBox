@@ -950,14 +950,8 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
   TGuard Guard(FCriticalSection);
 
   BeginUpdate();
-  // try
+  try
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
-    {
-      Self->DeleteUnnecessary();
-
-      Self->EndUpdate();
-    } BOOST_SCOPE_EXIT_END
     #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), MAKE_CALLBACK2(TSessionLog::DoAddToSelf, this));
 //!CLEANBEGIN
     #ifdef _DEBUG
@@ -1151,14 +1145,14 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
 
     #undef ADF
   }
-#ifndef _MSC_VER
-  __finally
+  catch (...)
   {
     Self->DeleteUnnecessary();
-
     Self->EndUpdate();
+    throw;
   }
-#endif
+  Self->DeleteUnnecessary();
+  Self->EndUpdate();
 }
 //---------------------------------------------------------------------------
 void __fastcall TSessionLog::AddSeparator()
