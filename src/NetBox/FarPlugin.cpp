@@ -35,7 +35,6 @@ TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
 {
   // DEBUG_PRINTF(L"TCustomFarPlugin: begin");
   InitPlatformId();
-  Self = this;
   FFarThread = GetCurrentThreadId();
   FCriticalSection = new TCriticalSection;
   FHandle = HInst;
@@ -347,7 +346,7 @@ void __fastcall TCustomFarPlugin::ClosePanel(void * Plugin)
     ResetCachedInfo();
     TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Plugin);
     assert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
-    TRY_FINALLY2 (Self, FileSystem,
+    TRY_FINALLY (
     {
       {
         TGuard Guard(FileSystem->GetCriticalSection());
@@ -356,7 +355,7 @@ void __fastcall TCustomFarPlugin::ClosePanel(void * Plugin)
     }
     ,
     {
-      Self->FOpenedPlugins->Remove(FileSystem);
+      FOpenedPlugins->Remove(FileSystem);
     }
     );
     delete FileSystem;
@@ -1050,7 +1049,7 @@ int __fastcall TCustomFarPlugin::FarMessage(unsigned int Flags,
   TStringList * MessageLines = NULL;
   std::auto_ptr<TStrings> MessageLinesPtr(NULL);
   wchar_t ** Items = NULL;
-  TRY_FINALLY1 (Items,
+  TRY_FINALLY (
   {
     UnicodeString FullMessage = Message;
     if (Params->MoreMessages != NULL)
@@ -1165,7 +1164,7 @@ intptr_t __fastcall TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeStri
   assert(Items && Items->Count);
   intptr_t Result = 0;
   FarMenuItem * MenuItems = new FarMenuItem[Items->Count];
-  TRY_FINALLY1 (MenuItems,
+  TRY_FINALLY (
   {
     int Selected = NPOS;
     int Count = 0;
@@ -1808,7 +1807,6 @@ TCustomFarFileSystem::TCustomFarFileSystem(TCustomFarPlugin * APlugin) :
   FClosed(false),
   FCriticalSection(NULL)
 {
-  Self = this;
   memset(FPanelInfo, 0, sizeof(FPanelInfo));
 }
 
@@ -2034,15 +2032,15 @@ int __fastcall TCustomFarFileSystem::MakeDirectory(struct MakeDirectoryInfo *Inf
   ResetCachedInfo();
   FNameStr = Info->Name;
   intptr_t Result = 0;
-  TRY_FINALLY2 (Self, Info,
+  TRY_FINALLY (
   {
-    Result = MakeDirectoryEx(Self->FNameStr, Info->OpMode);
+    Result = MakeDirectoryEx(FNameStr, Info->OpMode);
   }
   ,
   {
-    if (0 != wcscmp(Self->FNameStr.c_str(), Info->Name))
+    if (0 != wcscmp(FNameStr.c_str(), Info->Name))
     {
-      Info->Name = Self->FNameStr.c_str();
+      Info->Name = FNameStr.c_str();
     }
   }
   );
@@ -2068,18 +2066,17 @@ int __fastcall TCustomFarFileSystem::GetFiles(struct GetFilesInfo * Info)
   TObjectList * PanelItems = CreatePanelItemList(Info->PanelItem, Info->ItemsNumber);
   intptr_t Result = 0;
   FDestPathStr = Info->DestPath;
-  TRY_FINALLY3 (Self, Info, PanelItems,
+  TRY_FINALLY (
   {
     Result = GetFilesEx(PanelItems, Info->Move > 0, FDestPathStr, Info->OpMode);
   }
   ,
   {
-    if (Self->FDestPathStr != Info->DestPath)
+    if (FDestPathStr != Info->DestPath)
     {
-      Info->DestPath = Self->FDestPathStr.c_str();
+      Info->DestPath = FDestPathStr.c_str();
     }
     delete PanelItems;
-
   }
   );
 

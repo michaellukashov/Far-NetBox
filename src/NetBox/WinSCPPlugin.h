@@ -81,7 +81,6 @@ private:
 
 private:
   bool FInitialized;
-  TWinSCPPlugin * Self;
 };
 //---------------------------------------------------------------------------
 #endif

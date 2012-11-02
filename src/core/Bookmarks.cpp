@@ -44,7 +44,7 @@ void __fastcall TBookmarks::Load(THierarchicalStorage * Storage)
     if (Storage->OpenSubKey(Keys[i], false))
     {
       TStrings * BookmarkKeys = new TStringList();
-      TRY_FINALLY1 (BookmarkKeys,
+      TRY_FINALLY (
       {
         Storage->GetSubKeyNames(BookmarkKeys);
         for (int Index = 0; Index < BookmarkKeys->Count; Index++)
@@ -87,7 +87,7 @@ void __fastcall TBookmarks::LoadLevel(THierarchicalStorage * Storage, const Unic
 {
   CALLSTACK;
   TStrings * Names = new TStringList();
-  TRY_FINALLY1 (Names,
+  TRY_FINALLY (
   {
     Storage->GetValueNames(Names);
     UnicodeString Name;

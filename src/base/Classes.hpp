@@ -386,7 +386,6 @@ protected:
   wchar_t FDelimiter;
   wchar_t FQuoteChar;
   int FUpdateCount;
-  TStrings * Self;
 };
 
 struct TStringItem
@@ -772,7 +771,6 @@ private:
   UnicodeString FCurrentPath;
   bool FCloseRootKey;
   unsigned FAccess;
-  TRegistry * Self;
 };
 
 //---------------------------------------------------------------------------

@@ -232,7 +232,6 @@ private:
   unsigned int __fastcall CommandError(Exception * E, const UnicodeString Msg, unsigned int Answers);
   void __fastcall ReactOnCommand(int /*TFSCommand*/ Cmd);
   inline bool __fastcall InTransaction();
-  TTerminal *Self;
 
 public:
   void __fastcall SetMasks(const UnicodeString value);

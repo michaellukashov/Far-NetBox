@@ -148,7 +148,7 @@ void __fastcall TSynchronizeController::SynchronizeChange(
       if (Checklist != NULL)
       {
         TRACE("2");
-        TRY_FINALLY1 (Checklist,
+        TRY_FINALLY (
         {
           if (FLAGSET(FSynchronizeParams.Options, soRecurse))
           {

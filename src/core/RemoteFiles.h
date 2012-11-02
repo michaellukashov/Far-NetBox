@@ -99,7 +99,6 @@ private:
   UnicodeString FFullFileName;
   int FIsHidden;
   UnicodeString FTypeName;
-  TRemoteFile * Self;
 
 public:
   int __fastcall GetAttr();
@@ -262,7 +261,6 @@ protected:
   virtual void __fastcall Delete(int Index);
 private:
   TCriticalSection * FSection;
-  TRemoteDirectoryCache * Self;
   void __fastcall DoClearFileList(UnicodeString Directory, bool SubDirs);
 };
 //---------------------------------------------------------------------------

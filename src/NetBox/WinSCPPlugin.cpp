@@ -40,7 +40,6 @@ TMessageParams::TMessageParams()
 TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) : TCustomFarPlugin(HInst)
 {
   FInitialized = false;
-  Self = this;
 }
 //---------------------------------------------------------------------------
 TWinSCPPlugin::~TWinSCPPlugin()
@@ -307,7 +306,7 @@ TCustomFarFileSystem * __fastcall TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom,
         assert(StoredSessions);
         bool DefaultsOnly;
         TSessionData * Session = StoredSessions->ParseUrl(Name, NULL, DefaultsOnly);
-        TRY_FINALLY1 (Session,
+        TRY_FINALLY (
         {
           if (DefaultsOnly)
           {
@@ -336,7 +335,7 @@ TCustomFarFileSystem * __fastcall TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom,
         const wchar_t * XmlFileName = Info->Info->FileName;
         TSessionData * Session = NULL;
         THierarchicalStorage * ImportStorage = NULL;
-        TRY_FINALLY2 (ImportStorage, Session,
+        TRY_FINALLY (
         {
           ImportStorage = new TXmlStorage(XmlFileName, Configuration->GetStoredSessionsSubKey());
           ImportStorage->Init();
@@ -826,7 +825,7 @@ void __fastcall TWinSCPPlugin::CleanupConfiguration()
 {
   // Check if key Configuration\Version exists
   THierarchicalStorage * Storage = FarConfiguration->CreateScpStorage(false);
-  TRY_FINALLY1 (Storage,
+  TRY_FINALLY (
   {
     Storage->SetAccessMode(smReadWrite);
     if (Storage->OpenSubKey(FarConfiguration->GetConfigurationSubKey(), false))

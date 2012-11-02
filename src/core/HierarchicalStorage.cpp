@@ -211,7 +211,7 @@ void __fastcall THierarchicalStorage::CloseSubKey()
 void __fastcall THierarchicalStorage::ClearSubKeys()
 {
   TStringList * SubKeys = new TStringList();
-  TRY_FINALLY1 (SubKeys,
+  TRY_FINALLY (
   {
     GetSubKeyNames(SubKeys);
     for (int Index = 0; Index < SubKeys->Count; Index++)
@@ -240,7 +240,7 @@ bool __fastcall THierarchicalStorage::HasSubKeys()
 {
   bool Result;
   TStrings * SubKeys = new TStringList();
-  TRY_FINALLY1 (SubKeys,
+  TRY_FINALLY (
   {
     GetSubKeyNames(SubKeys);
     Result = (SubKeys->Count > 0);
@@ -272,7 +272,7 @@ void __fastcall THierarchicalStorage::ReadValues(Classes::TStrings* Strings,
   bool MaintainKeys)
 {
   TStrings * Names = new TStringList();
-  TRY_FINALLY1 (Names,
+  TRY_FINALLY (
   {
     GetValueNames(Names);
     for (int Index = 0; Index < Names->Count; Index++)
@@ -298,7 +298,7 @@ void __fastcall THierarchicalStorage::ReadValues(Classes::TStrings* Strings,
 void __fastcall THierarchicalStorage::ClearValues()
 {
   TStrings * Names = new TStringList();
-  TRY_FINALLY1 (Names,
+  TRY_FINALLY (
   {
     GetValueNames(Names);
     for (int Index = 0; Index < Names->Count; Index++)
@@ -462,7 +462,7 @@ bool __fastcall TRegistryStorage::Copy(TRegistryStorage * Storage)
   TRegistry * Registry = Storage->FRegistry;
   bool Result = true;
   TStrings * Names = new TStringList();
-  TRY_FINALLY1 (Names,
+  TRY_FINALLY (
   {
     Registry->GetValueNames(Names);
     std::vector<unsigned char> Buffer(1024, 0);
@@ -781,7 +781,7 @@ bool __fastcall TCustomIniFileStorage::DoOpenSubKey(const UnicodeString SubKey, 
   if (!Result)
   {
     TStringList * Sections = new TStringList();
-    TRY_FINALLY1 (Sections,
+    TRY_FINALLY (
     {
       Sections->Sorted = true;
       FIniFile->ReadSections(Sections);
@@ -825,7 +825,7 @@ bool __fastcall TCustomIniFileStorage::DeleteSubKey(const UnicodeString SubKey)
 void __fastcall TCustomIniFileStorage::GetSubKeyNames(Classes::TStrings* Strings)
 {
   TStrings * Sections = new TStringList();
-  TRY_FINALLY1 (Sections,
+  TRY_FINALLY (
   {
     Strings->Clear();
     FIniFile->ReadSections(Sections);
@@ -1064,7 +1064,7 @@ void __fastcall TIniFileStorage::Flush()
   if (FOriginal != NULL)
   {
     TStrings * Strings = new TStringList;
-    TRY_FINALLY2 (Strings, FOriginal,
+    TRY_FINALLY (
     {
       TRACE("0");
       dynamic_cast<TMemIniFile *>(FIniFile)->GetStrings(Strings);
@@ -1111,7 +1111,7 @@ void __fastcall TIniFileStorage::Flush()
         {
           TRACE("8");
           TStream * Stream = new THandleStream(Handle);
-          TRY_FINALLY2 (Handle, Stream,
+          TRY_FINALLY (
           {
             Strings->SaveToStream(Stream);
           }
@@ -1150,7 +1150,7 @@ void __fastcall TIniFileStorage::ApplyOverrides()
   UnicodeString OverridesKey = IncludeTrailingBackslash(L"Override");
 
   TStrings * Sections = new TStringList();
-  TRY_FINALLY1 (Sections,
+  TRY_FINALLY (
   {
     Sections->Clear();
     FIniFile->ReadSections(Sections);
@@ -1166,7 +1166,7 @@ void __fastcall TIniFileStorage::ApplyOverrides()
 
         // this all uses raw names (munged)
         TStrings * Names = new TStringList;
-        TRY_FINALLY1 (Names,
+        TRY_FINALLY (
         {
           FIniFile->ReadSection(Section, Names);
 
@@ -1249,7 +1249,7 @@ void __fastcall TOptionsIniFile::ReadSection(const UnicodeString Section, TStrin
   assert(Section.IsEmpty());
   Strings->BeginUpdate();
 
-  TRY_FINALLY1 (Strings,
+  TRY_FINALLY (
   {
     for (int Index = 0; Index < FOptions->Count; Index++)
     {

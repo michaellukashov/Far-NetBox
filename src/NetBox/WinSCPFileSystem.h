@@ -287,7 +287,6 @@ private:
   UnicodeString FSessionsFolder;
   UnicodeString FNewSessionsFolder;
   UnicodeString FPrevSessionName;
-  TWinSCPFileSystem * Self;
 
   void TerminalClose(TObject * Sender);
   void TerminalUpdateStatus(TTerminal * Terminal, bool Active);
