@@ -450,7 +450,7 @@ bool __fastcall TWinSCPPlugin::PanelConfigurationDialog()
     if (Result)
     {
       Configuration->BeginUpdate();
-      TRY_FINALLY1 (Configuration,
+      TRY_FINALLY (
       {
         Configuration->SetAutoReadDirectoryAfterOp(AutoReadDirectoryAfterOpCheck->GetChecked());
       }
@@ -545,7 +545,7 @@ bool __fastcall TWinSCPPlugin::LoggingConfigurationDialog()
     if (Result)
     {
       Configuration->BeginUpdate();
-      TRY_FINALLY1 (Configuration,
+      TRY_FINALLY (
       {
         Configuration->SetLogging(LoggingCheck->GetChecked());
         Configuration->SetLogProtocol(LogProtocolCombo->GetItemIndex());
@@ -681,7 +681,7 @@ bool __fastcall TWinSCPPlugin::EnduranceConfigurationDialog()
     if (Result)
     {
       Configuration->BeginUpdate();
-      TRY_FINALLY1 (Configuration,
+      TRY_FINALLY (
       {
         TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
 
@@ -756,7 +756,7 @@ bool __fastcall TWinSCPPlugin::QueueConfigurationDialog()
     if (Result)
     {
       Configuration->BeginUpdate();
-      TRY_FINALLY1 (Configuration,
+      TRY_FINALLY (
       {
         TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
 
@@ -796,7 +796,6 @@ private:
   TFarRadioButton * EditorDownloadOptionsButton;
   TFarRadioButton * EditorUploadSameButton;
   TFarRadioButton * EditorUploadOptionsButton;
-  TTransferEditorConfigurationDialog * Self;
 
   virtual void __fastcall UpdateControls();
 };
@@ -805,7 +804,6 @@ TTransferEditorConfigurationDialog::TTransferEditorConfigurationDialog(
   TCustomFarPlugin * AFarPlugin) :
   TWinSCPDialog(AFarPlugin)
 {
-  Self = this;
   TFarSeparator * Separator;
 
   SetSize(TPoint(55, 14));
@@ -853,7 +851,7 @@ bool __fastcall TTransferEditorConfigurationDialog::Execute()
   if (Result)
   {
     Configuration->BeginUpdate();
-    TRY_FINALLY1 (Configuration,
+    TRY_FINALLY (
     {
       FarConfiguration->SetEditorDownloadDefaultMode(EditorDownloadDefaultButton->GetChecked());
       FarConfiguration->SetEditorUploadSameOptions(EditorUploadSameButton->GetChecked());
@@ -877,13 +875,13 @@ void __fastcall TTransferEditorConfigurationDialog::Change()
   if (GetHandle())
   {
     LockChanges();
-    TRY_FINALLY1 (Self,
+    TRY_FINALLY (
     {
       UpdateControls();
     }
     ,
     {
-      Self->UnlockChanges();
+      UnlockChanges();
     }
     );
   }
@@ -947,7 +945,7 @@ bool __fastcall TWinSCPPlugin::ConfirmationsConfigurationDialog()
     if (Result)
     {
       Configuration->BeginUpdate();
-      TRY_FINALLY1 (Configuration,
+      TRY_FINALLY (
       {
         FarConfiguration->SetConfirmOverwritingOverride(
           ConfirmOverwritingCheck->GetSelected() != BSTATE_3STATE);
@@ -1017,7 +1015,7 @@ bool __fastcall TWinSCPPlugin::IntegrationConfigurationDialog()
     if (Result)
     {
       Configuration->BeginUpdate();
-      TRY_FINALLY1 (Configuration,
+      TRY_FINALLY (
       {
         GUIConfiguration->SetPuttyPath(PuttyPathEdit->GetText());
         GUIConfiguration->SetPuttyPassword(PuttyPasswordCheck->GetChecked());
@@ -1632,7 +1630,6 @@ private:
   TFarComboBox * FtpUseMlsdCombo;
   TFarCheckBox * SslSessionReuseCheck;
   TFarCheckBox * WebDAVCompressionCheck;
-  TSessionDialog * Self;
 
   void __fastcall LoadPing(TSessionData * SessionData);
   void __fastcall SavePing(TSessionData * SessionData);
@@ -1691,7 +1688,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   FLoginTypeIndex(0),
   FFtpEncryptionComboIndex(0)
 {
-  Self = this;
   TPoint S = TPoint(67, 23);
   bool Limited = (S.y > GetMaxSize().y);
   if (Limited)
@@ -1708,7 +1704,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
     COMBO->SetDropDownList(true); \
     COMBO->SetWidth(7); \
     COMBO->GetItems()->BeginUpdate(); \
-    TRY_FINALLY1 (COMBO, \
+    TRY_FINALLY ( \
     { \
       COMBO->GetItems()->Add(GetMsg(LOGIN_BUGS_AUTO)); \
       COMBO->GetItems()->Add(GetMsg(LOGIN_BUGS_OFF)); \
@@ -2590,7 +2586,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   TunnelLocalPortNumberEdit->SetLeft(TunnelPortNumberEdit->GetLeft());
   TunnelLocalPortNumberEdit->SetEnabledDependency(TunnelCheck);
   TunnelLocalPortNumberEdit->GetItems()->BeginUpdate();
-  TRY_FINALLY1 (Self,
+  TRY_FINALLY (
   {
     TunnelLocalPortNumberEdit->GetItems()->Add(GetMsg(LOGIN_TUNNEL_LOCAL_PORT_NUMBER_AUTOASSIGN));
     for (int Index = Configuration->GetTunnelLocalPortNumberLow();
@@ -2601,7 +2597,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   }
   ,
   {
-    Self->TunnelLocalPortNumberEdit->GetItems()->EndUpdate();
+    TunnelLocalPortNumberEdit->GetItems()->EndUpdate();
   }
   );
 
@@ -2865,13 +2861,13 @@ void __fastcall TSessionDialog::Change()
     }
 
     LockChanges();
-    TRY_FINALLY1 (Self,
+    TRY_FINALLY (
     {
       UpdateControls();
     }
     ,
     {
-      Self->UnlockChanges();
+      UnlockChanges();
     }
     );
   }
@@ -3433,7 +3429,7 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
   }
 
   CipherListBox->GetItems()->BeginUpdate();
-  TRY_FINALLY1 (CipherListBox,
+  TRY_FINALLY (
   {
     CipherListBox->GetItems()->Clear();
     assert(CIPHER_NAME_WARN+CIPHER_COUNT-1 == CIPHER_NAME_ARCFOUR);
@@ -3457,7 +3453,7 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
   RekeyDataEdit->SetText(SessionData->GetRekeyData());
 
   KexListBox->GetItems()->BeginUpdate();
-  TRY_FINALLY1 (KexListBox,
+  TRY_FINALLY (
   {
     KexListBox->GetItems()->Clear();
     assert(KEX_NAME_WARN+KEX_COUNT+1 == KEX_NAME_GSSGEX);
@@ -4237,7 +4233,6 @@ protected:
   TRights::TState FFixedStates[12];
   TFarEdit * OctalEdit;
   TFarCheckBox * DirectoriesXCheck;
-  TRightsContainer * Self;
 
   virtual void __fastcall Change();
   void __fastcall UpdateControls();
@@ -4263,7 +4258,6 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
   OctalEdit(NULL),
   DirectoriesXCheck(NULL)
 {
-  Self = this;
   FAnyDirectories = AAnyDirectories;
 
   GetDialog()->SetNextItemPosition(ipNewLine);
@@ -4492,7 +4486,7 @@ void __fastcall TRightsContainer::SetRights(const TRights & value)
   if (GetRights() != value)
   {
     GetDialog()->LockChanges();
-    TRY_FINALLY1 (Self,
+    TRY_FINALLY (
     {
       SetAllowUndef(true); // temporarily
       for (int Right = 0; Right < LENOF(FCheckBoxes); Right++)
@@ -4504,7 +4498,7 @@ void __fastcall TRightsContainer::SetRights(const TRights & value)
     }
     ,
     {
-      Self->GetDialog()->UnlockChanges();
+      GetDialog()->UnlockChanges();
     }
     );
   }
@@ -5513,7 +5507,7 @@ bool __fastcall TCopyDialog::Execute(UnicodeString & TargetDirectory,
     }
 
     Configuration->BeginUpdate();
-    TRY_FINALLY1 (Configuration,
+    TRY_FINALLY (
     {
       if (SaveSettingsCheck->GetChecked())
       {
@@ -7496,7 +7490,7 @@ void __fastcall TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
   FCanScrollRight = false;
   TFarList * List = ListBox->GetItems();
   List->BeginUpdate();
-  TRY_FINALLY1 (List,
+  TRY_FINALLY (
   {
     for (int Index = 0; Index < List->Count; Index++)
     {
@@ -7538,7 +7532,7 @@ void __fastcall TSynchronizeChecklistDialog::CheckAll(bool Check)
 {
   TFarList * List = ListBox->GetItems();
   List->BeginUpdate();
-  TRY_FINALLY1 (List,
+  TRY_FINALLY (
   {
     int Count = List->Count;
     for (int Index = 0; Index < Count; Index++)

@@ -291,7 +291,6 @@ protected:
   TUserAction * FUserAction;
   bool FCancel;
   bool FPause;
-  TTerminalItem * Self;
 
   virtual void __fastcall ProcessEvent();
   virtual void __fastcall Finished();
@@ -505,7 +504,6 @@ void __fastcall TSignalThread::Terminate()
   FOverallTerminals(0), FTransfersLimit(2), FEnabled(true)
 {
   CALLSTACK;
-  Self = this;
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminalQueue::Init()
@@ -712,7 +710,7 @@ TTerminalQueueStatus * __fastcall TTerminalQueue::CreateStatus(TTerminalQueueSta
   TTerminalQueueStatus * Status = new TTerminalQueueStatus();
   try
   {
-    TRY_FINALLY1 (Current,
+    TRY_FINALLY (
     {
       TGuard Guard(FItemsSection);
 
@@ -1182,7 +1180,6 @@ bool __fastcall TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
   FCriticalSection(NULL), FUserAction(NULL), FCancel(false), FPause(false)
 {
   CALLSTACK;
-  Self = this;
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminalItem::Init(int Index)
@@ -1392,7 +1389,7 @@ bool __fastcall TTerminalItem::WaitForUserAction(
 
   TQueueItem::TStatus PrevStatus = FItem->GetStatus();
 
-  TRY_FINALLY2 (Self, PrevStatus,
+  TRY_FINALLY (
   {
     FUserAction = UserAction;
 
@@ -1403,8 +1400,8 @@ bool __fastcall TTerminalItem::WaitForUserAction(
   }
   ,
   {
-    Self->FUserAction = NULL;
-    Self->FItem->SetStatus(PrevStatus);
+    FUserAction = NULL;
+    FItem->SetStatus(PrevStatus);
   }
   );
 
@@ -1522,7 +1519,7 @@ void /* __fastcall */ TTerminalItem::OperationProgress(
     FPause = false;
     ProgressData.Suspend();
 
-    TRY_FINALLY3 (Self, PrevStatus, ProgressData,
+    TRY_FINALLY (
     {
       FItem->SetStatus(TQueueItem::qsPaused);
 
@@ -1530,7 +1527,7 @@ void /* __fastcall */ TTerminalItem::OperationProgress(
     }
     ,
     {
-      Self->FItem->SetStatus(PrevStatus);
+      FItem->SetStatus(PrevStatus);
       ProgressData.Resume();
     }
     );
@@ -1574,7 +1571,6 @@ bool __fastcall TTerminalItem::OverrideItemStatus(TQueueItem::TStatus & ItemStat
   CALLSTACK;
   FSection = new TCriticalSection();
   FInfo = new TInfo();
-  Self = this;
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TQueueItem::~TQueueItem()
@@ -1658,7 +1654,7 @@ void __fastcall TQueueItem::GetData(TQueueItemProxy * Proxy)
 //---------------------------------------------------------------------------
 void __fastcall TQueueItem::Execute(TTerminalItem * TerminalItem)
 {
-  TRY_FINALLY1 (Self,
+  TRY_FINALLY (
   {
     {
       assert(FProgressData == NULL);
@@ -1670,9 +1666,9 @@ void __fastcall TQueueItem::Execute(TTerminalItem * TerminalItem)
   ,
   {
     {
-      TGuard Guard(Self->FSection);
-      delete Self->FProgressData;
-      Self->FProgressData = NULL;
+      TGuard Guard(FSection);
+      delete FProgressData;
+      FProgressData = NULL;
     }
   }
   );
@@ -1693,7 +1689,6 @@ void __fastcall TQueueItem::SetCPSLimit(unsigned long CPSLimit)
 {
   FProgressData = new TFileOperationProgressType();
   FInfo = new TQueueItem::TInfo();
-  Self = this;
 
   Update();
 }
@@ -1777,13 +1772,13 @@ bool __fastcall TQueueItemProxy::ProcessUserAction()
 
   bool Result = false;
   FProcessingUserAction = true;
-  TRY_FINALLY1 (Self,
+  TRY_FINALLY (
   {
     Result = FQueue->ItemProcessUserAction(FQueueItem, NULL);
   }
   ,
   {
-    Self->FProcessingUserAction = false;
+    FProcessingUserAction = false;
   }
   );
   return Result;
@@ -2065,7 +2060,6 @@ void __fastcall TDownloadQueueItem::DoExecute(TTerminal * Terminal)
   FPendingIdle = false;
   FMainThread = GetCurrentThreadId();
   FSection = new TCriticalSection();
-  Self = this;
 }
 
 void __fastcall TTerminalThread::Init()
@@ -2173,7 +2167,7 @@ void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
   FAction = Action;
   try
   {
-    TRY_FINALLY1 (Self,
+    TRY_FINALLY (
     {
       TriggerEvent();
 
@@ -2225,8 +2219,8 @@ void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
     ,
     {
       TRACE("2");
-      Self->FAction = NULL;
-      SAFE_DESTROY(Self->FException);
+      FAction = NULL;
+      SAFE_DESTROY(FException);
     }
     );
   }
@@ -2284,7 +2278,7 @@ void __fastcall TTerminalThread::Rethrow(Exception *& Exception)
   if (Exception != NULL)
   {
     TRACEFMT("1 [%s]", (Exception->Message));
-    TRY_FINALLY1 (Exception,
+    TRY_FINALLY (
     {
       RethrowException(Exception);
     }
@@ -2348,7 +2342,7 @@ void __fastcall TTerminalThread::WaitForUserAction(TUserAction * UserAction)
     // have to save it as we can go recursive via TQueryParams::TimerEvent,
     // see TTerminalThread::TerminalQueryUser
     TUserAction * PrevUserAction = FUserAction;
-    TRY_FINALLY2 (Self, PrevUserAction,
+    TRY_FINALLY (
     {
       FUserAction = UserAction;
 
@@ -2408,8 +2402,8 @@ void __fastcall TTerminalThread::WaitForUserAction(TUserAction * UserAction)
     }
     ,
     {
-      Self->FUserAction = PrevUserAction;
-      SAFE_DESTROY(Self->FException);
+      FUserAction = PrevUserAction;
+      SAFE_DESTROY(FException);
     }
     );
     CheckCancel();

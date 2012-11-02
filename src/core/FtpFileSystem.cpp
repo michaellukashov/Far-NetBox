@@ -26,7 +26,7 @@
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
-  FILE_OPERATION_LOOP_CUSTOM(Self->FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
+  FILE_OPERATION_LOOP_CUSTOM(FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
 //---------------------------------------------------------------------------
 const int DummyCodeClass = 8;
 const int DummyTimeoutCode = 801;
@@ -260,7 +260,6 @@ private:
   FServerCapabilities(NULL)
 {
   CALLSTACK;
-  Self = this;
 }
 
 void __fastcall TFTPFileSystem::Init()
@@ -575,7 +574,7 @@ void __fastcall TFTPFileSystem::Idle()
       FLastDataSent = Now();
 
       TRemoteDirectory * Files = new TRemoteDirectory(FTerminal);
-      TRY_FINALLY1 (Files,
+      TRY_FINALLY (
       {
         try
         {
@@ -669,7 +668,7 @@ void __fastcall TFTPFileSystem::AnyCommand(const UnicodeString Command,
 
   assert(FOnCaptureOutput == NULL);
   FOnCaptureOutput = OutputEvent;
-  TRY_FINALLY1 (Self,
+  TRY_FINALLY (
   {
     FFileZillaIntf->CustomCommand(Command.c_str());
 
@@ -677,7 +676,7 @@ void __fastcall TFTPFileSystem::AnyCommand(const UnicodeString Command,
   }
   ,
   {
-    Self->FOnCaptureOutput = NULL;
+    FOnCaptureOutput = NULL;
   }
   );
 }
@@ -758,7 +757,7 @@ void __fastcall TFTPFileSystem::ChangeFileProperties(const UnicodeString AFileNa
   {
     TRemoteFile * OwnedFile = NULL;
 
-    TRY_FINALLY1 (OwnedFile,
+    TRY_FINALLY (
     {
       UnicodeString FileName = AbsolutePath(AFileName, false);
 
@@ -1072,7 +1071,7 @@ void __fastcall TFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
     const TRemoteFile * File = dynamic_cast<const TRemoteFile *>(FilesToCopy->Objects[Index]);
     bool Success = false;
 
-    TRY_FINALLY4 (OperationProgress, FileName, Success, OnceDoneOperation,
+    TRY_FINALLY (
     {
       try
       {
@@ -1353,7 +1352,7 @@ void __fastcall TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
 
     FileNameOnly = ExtractFileName(RealFileName, false);
 
-    TRY_FINALLY4 (OperationProgress, FileName, Success, OnceDoneOperation,
+    TRY_FINALLY (
     {
       try
       {
@@ -1613,7 +1612,7 @@ void __fastcall TFTPFileSystem::DirectorySource(const UnicodeString DirectoryNam
 
   bool CreateDir = true;
 
-  TRY_FINALLY1 (SearchRec,
+  TRY_FINALLY (
   {
     while (FindOK && !OperationProgress->Cancel)
     {
@@ -1670,13 +1669,13 @@ void __fastcall TFTPFileSystem::DirectorySource(const UnicodeString DirectoryNam
     try
     {
       FTerminal->SetExceptionOnFail(true);
-      TRY_FINALLY1 (Self,
+      TRY_FINALLY (
       {
         FTerminal->CreateDirectory(DestFullName, &Properties);
       }
       ,
       {
-        Self->FTerminal->SetExceptionOnFail(false);
+        FTerminal->SetExceptionOnFail(false);
       }
       );
     }
@@ -1807,7 +1806,7 @@ void __fastcall TFTPFileSystem::DoStartup()
 {
   CALLSTACK;
   TStrings * PostLoginCommands = new TStringList();
-  TRY_FINALLY1 (PostLoginCommands,
+  TRY_FINALLY (
   {
     PostLoginCommands->Text = FTerminal->GetSessionData()->GetPostLoginCommands();
     for (int Index = 0; Index < PostLoginCommands->Count; Index++)
@@ -1908,7 +1907,7 @@ void __fastcall TFTPFileSystem::ReadCurrentDirectory()
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE, L"", &Code, &Response);
 
     assert(Response != NULL);
-    TRY_FINALLY1 (Response,
+    TRY_FINALLY (
     {
       bool Result = false;
 
@@ -2072,7 +2071,7 @@ void __fastcall TFTPFileSystem::DoReadFile(const UnicodeString & FileName,
   EnsureLocation();
 
   TRemoteFileList * FileList = new TRemoteFileList();
-  TRY_FINALLY1 (FileList,
+  TRY_FINALLY (
   {
     TFTPFileListHelper Helper(this, FileList, false);
     FFileZillaIntf->ListFile(FileName.c_str());
@@ -2538,7 +2537,7 @@ void __fastcall TFTPFileSystem::PoolForFatalNonCommandReply()
 
   unsigned int Reply = 0;
 
-  TRY_FINALLY1 (Self,
+  TRY_FINALLY (
   {
     // discard up to one reply
     // (it should not happen here that two replies are posted anyway)
@@ -2547,12 +2546,12 @@ void __fastcall TFTPFileSystem::PoolForFatalNonCommandReply()
   }
   ,
   {
-    Self->FReply = 0;
-    assert(Self->FCommandReply == 0);
-    Self->FCommandReply = 0;
-    assert(Self->FWaitingForReply);
-    Self->FWaitingForReply = false;
-    TRACEFMT("3 [%x] FWaitingForReply [%d]", (int(Self), int(Self->FWaitingForReply)));
+    FReply = 0;
+    assert(FCommandReply == 0);
+    FCommandReply = 0;
+    assert(FWaitingForReply);
+    FWaitingForReply = false;
+    TRACEFMT("3 [%x] FWaitingForReply [%d]", (int(this), int(FWaitingForReply)));
   }
   );
 
@@ -2638,7 +2637,7 @@ unsigned int __fastcall TFTPFileSystem::WaitForReply(bool Command, bool WantLast
 
   unsigned int Reply = 0;
 
-  TRY_FINALLY1 (Self,
+  TRY_FINALLY (
   {
     TRACE("3");
     unsigned int & ReplyToAwait = (Command ? FCommandReply : FReply);
@@ -2650,11 +2649,11 @@ unsigned int __fastcall TFTPFileSystem::WaitForReply(bool Command, bool WantLast
   ,
   {
     TRACE("5");
-    Self->FReply = 0;
-    Self->FCommandReply = 0;
-    assert(Self->FWaitingForReply);
-    Self->FWaitingForReply = false;
-    TRACEFMT("6 [%x] FWaitingForReply [%d]", (int(Self), int(Self->FWaitingForReply)));
+    FReply = 0;
+    FCommandReply = 0;
+    assert(FWaitingForReply);
+    FWaitingForReply = false;
+    TRACEFMT("6 [%x] FWaitingForReply [%d]", (int(this), int(FWaitingForReply)));
   }
   );
 
@@ -2700,7 +2699,7 @@ void __fastcall TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
 {
   CALLSTACK;
   TRACEFMT("Reply=%x Flags=%x Error='%s'", (int(Reply), int(Flags), Error));
-  TRY_FINALLY1 (Self,
+  TRY_FINALLY (
   {
     if (FLAGSET(Reply, TFileZillaIntf::REPLY_OK))
     {
@@ -2859,7 +2858,7 @@ void __fastcall TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
         // for fatal error, it is essential that there is some message
         assert(!Error.IsEmpty());
         ExtException * E = new ExtException(Error, MoreMessages, true);
-        TRY_FINALLY1 (E,
+        TRY_FINALLY (
         {
           TRACE("19");
           FTerminal->FatalError(E, L"");
@@ -2893,7 +2892,7 @@ void __fastcall TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
   ,
   {
     TRACE("23");
-    Self->ResetReply();
+    ResetReply();
   }
   );
   TRACE("/");
@@ -3494,7 +3493,7 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 
     THierarchicalStorage * Storage =
       FTerminal->GetConfiguration()->CreateScpStorage(false);
-    TRY_FINALLY1 (Storage,
+    TRY_FINALLY (
     {
       Storage->SetAccessMode(smRead);
 
@@ -3568,7 +3567,7 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       {
         THierarchicalStorage * Storage =
           FTerminal->GetConfiguration()->CreateScpStorage(false);
-        TRY_FINALLY1 (Storage,
+        TRY_FINALLY (
         {
           Storage->SetAccessMode(smReadWrite);
 

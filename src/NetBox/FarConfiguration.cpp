@@ -12,7 +12,6 @@
 TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
   TGUIConfiguration()
 {
-  Self = this;
   FFarConfirmations = -1;
   FFarPlugin = APlugin;
   FBookmarks = new TBookmarks();
@@ -76,7 +75,7 @@ void __fastcall TFarConfiguration::Saved()
   ELEM.SubString(ELEM.LastDelimiter(L".>")+1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
-  TRY_FINALLY1 (Storage, \
+  TRY_FINALLY (\
   { \
     BLOCK \
   } \
@@ -151,13 +150,13 @@ void __fastcall TFarConfiguration::LoadData(THierarchicalStorage * Storage)
 void __fastcall TFarConfiguration::Load()
 {
   FForceInheritance = true;
-  TRY_FINALLY1 (Self,
+  TRY_FINALLY (
   {
     TGUIConfiguration::Load();
   }
   ,
   {
-    Self->FForceInheritance = false;
+    FForceInheritance = false;
   }
   );
 }
@@ -165,13 +164,13 @@ void __fastcall TFarConfiguration::Load()
 void __fastcall TFarConfiguration::Save(bool All, bool Explicit)
 {
   FForceInheritance = true;
-  TRY_FINALLY1 (Self,
+  TRY_FINALLY (
   {
     TGUIConfiguration::Save(All, Explicit);
   }
   ,
   {
-    Self->FForceInheritance = false;
+    FForceInheritance = false;
   }
   );
 }

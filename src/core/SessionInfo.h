@@ -249,7 +249,6 @@ private:
   UnicodeString FName;
   bool FClosed;
   TNotifyEvent FOnStateChange;
-  TSessionLog *Self;
 
 public:
   UnicodeString __fastcall GetLine(int Index);

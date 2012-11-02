@@ -106,7 +106,6 @@ protected:
   bool FOpenSSH;
   TStrings * FFixedPaths;
   unsigned long FMaxPacketSize;
-  TSFTPFileSystem * Self;
 
   void __fastcall SendCustomReadFile(TSFTPPacket * Packet, TSFTPPacket * Response,
     unsigned long Flags);

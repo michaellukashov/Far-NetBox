@@ -163,7 +163,6 @@ protected:
   bool FValidFarSystemSettings;
   intptr_t FFarSystemSettings;
   TPoint FNormalConsoleSize;
-  TCustomFarPlugin * Self;
 
   virtual bool __fastcall HandlesFunction(THandlesFunction Function);
   virtual void __fastcall GetPluginInfoEx(DWORD & Flags,
@@ -289,7 +288,6 @@ protected:
   void __fastcall InvalidateOpenPluginInfo();
 
 private:
-  TCustomFarFileSystem * Self;
   UnicodeString FNameStr;
   UnicodeString FDestPathStr;
   OpenPluginInfo FOpenPluginInfo;

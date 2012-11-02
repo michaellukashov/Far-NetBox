@@ -115,7 +115,6 @@ private:
   UnicodeString FStatusColumnWidthsDetailed;
 
   TBookmarks * FBookmarks;
-  TFarConfiguration * Self;
 
   int __fastcall FarConfirmations();
 };

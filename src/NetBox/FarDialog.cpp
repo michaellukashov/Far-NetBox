@@ -59,11 +59,9 @@ TFarDialog::TFarDialog(TCustomFarPlugin * AFarPlugin) :
   FChangesPending(false),
   FResult(0),
   FNeedsSynchronize(false),
-  FSynchronizeMethod(NULL),
-  Self(NULL)
+  FSynchronizeMethod(NULL)
 {
   assert(AFarPlugin);
-  Self = this;
   FItems = new TObjectList();
   FContainers = new TObjectList();
   FFarPlugin = AFarPlugin;
@@ -111,7 +109,7 @@ void __fastcall TFarDialog::SetBounds(TRect Value)
   if (GetBounds() != Value)
   {
     LockChanges();
-    TRY_FINALLY1 (Self,
+    TRY_FINALLY (
     {
       FBounds = Value;
       if (GetHandle())
@@ -131,7 +129,7 @@ void __fastcall TFarDialog::SetBounds(TRect Value)
     }
     ,
     {
-      Self->UnlockChanges();
+      UnlockChanges();
     }
     );
   }
@@ -732,7 +730,7 @@ intptr_t __fastcall TFarDialog::ShowModal()
   TFarDialog * PrevTopDialog = GetFarPlugin()->FTopDialog;
   GetFarPlugin()->FTopDialog = this;
   HANDLE Handle = INVALID_HANDLE_VALUE;
-  TRY_FINALLY3 (Self, PrevTopDialog, Handle,
+  TRY_FINALLY (
   {
     assert(GetDefaultButton());
     assert(GetDefaultButton()->GetDefault());
@@ -769,9 +767,9 @@ intptr_t __fastcall TFarDialog::ShowModal()
   }
   ,
   {
-    Self->GetFarPlugin()->FTopDialog = PrevTopDialog;
+    GetFarPlugin()->FTopDialog = PrevTopDialog;
     if (Handle != INVALID_HANDLE_VALUE)
-      Self->GetFarPlugin()->GetStartupInfo()->DialogFree(Handle);
+      GetFarPlugin()->GetStartupInfo()->DialogFree(Handle);
   }
   );
 
@@ -864,7 +862,7 @@ void __fastcall TFarDialog::ProcessGroup(int Group, TFarProcessGroupEvent Callba
   void * Arg)
 {
   LockChanges();
-  TRY_FINALLY1 (Self,
+  TRY_FINALLY (
   {
     for (int i = 0; i < GetItemCount(); i++)
     {
@@ -877,7 +875,7 @@ void __fastcall TFarDialog::ProcessGroup(int Group, TFarProcessGroupEvent Callba
   }
   ,
   {
-    Self->UnlockChanges();
+    UnlockChanges();
   }
   );
 }
@@ -926,7 +924,7 @@ void __fastcall TFarDialog::UnlockChanges()
   FChangesLocked--;
   if (FChangesLocked == 0)
   {
-    TRY_FINALLY1 (Self,
+    TRY_FINALLY (
     {
       if (FChangesPending)
       {
@@ -936,9 +934,9 @@ void __fastcall TFarDialog::UnlockChanges()
     }
     ,
     {
-      if (Self->GetHandle())
+      if (GetHandle())
       {
-        Self->SendMessage(DM_ENABLEREDRAW, true, 0);
+        SendMessage(DM_ENABLEREDRAW, true, 0);
       }
     }
     );
@@ -2106,7 +2104,6 @@ TFarList::TFarList(TFarDialogItem * ADialogItem) :
 {
   assert((ADialogItem == NULL) ||
     (ADialogItem->GetType() == DI_COMBOBOX) || (ADialogItem->GetType() == DI_LISTBOX));
-  Self = this;
   FDialogItem = ADialogItem;
   FListItems = new FarList;
   memset(FListItems, 0, sizeof(*FListItems));
@@ -2152,7 +2149,7 @@ void __fastcall TFarList::Put(int Index, const UnicodeString S)
   if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle())
   {
     FNoDialogUpdate = true;
-    TRY_FINALLY1 (Self,
+    TRY_FINALLY (
     {
       TStringList::PutString(Index, S);
       if (GetUpdateCount() == 0)
@@ -2162,7 +2159,7 @@ void __fastcall TFarList::Put(int Index, const UnicodeString S)
     }
     ,
     {
-      Self->FNoDialogUpdate = false;
+      FNoDialogUpdate = false;
     }
     );
   }
@@ -2215,7 +2212,7 @@ void __fastcall TFarList::Changed()
     if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle())
     {
       GetDialogItem()->GetDialog()->LockChanges();
-      TRY_FINALLY1 (Self,
+      TRY_FINALLY (
       {
         GetDialogItem()->SendMessage(DM_LISTSET, reinterpret_cast<LONG_PTR>(FListItems));
         if (PrevTopIndex + GetDialogItem()->GetHeight() > GetCount())
@@ -2227,7 +2224,7 @@ void __fastcall TFarList::Changed()
       }
       ,
       {
-        Self->GetDialogItem()->GetDialog()->UnlockChanges();
+        GetDialogItem()->GetDialog()->UnlockChanges();
       }
       );
     }

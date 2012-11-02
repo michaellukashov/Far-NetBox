@@ -1012,7 +1012,7 @@ void __fastcall TSessionData::SaveRecryptedPasswords(THierarchicalStorage * Stor
 void __fastcall TSessionData::Remove()
 {
   THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
-  TRY_FINALLY1 (Storage,
+  TRY_FINALLY (
   {
     Storage->SetExplicit(true);
     if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), false))
@@ -1328,7 +1328,7 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
       TRACE("34");
       TStrings * RawSettings = NULL;
       TRegistryStorage * OptionsStorage = NULL;
-      TRY_FINALLY2 (RawSettings, OptionsStorage,
+      TRY_FINALLY (
       {
         RawSettings = new TStringList();
 
@@ -2652,7 +2652,7 @@ void __fastcall TStoredSessionList::Load(THierarchicalStorage * Storage,
   CALLSTACK;
   TStringList *SubKeys = new TStringList();
   TList * Loaded = new TList;
-  TRY_FINALLY2 (SubKeys, Loaded,
+  TRY_FINALLY (
   {
     Storage->GetSubKeyNames(SubKeys);
     for (int Index = 0; Index < SubKeys->Count; Index++)
@@ -2725,7 +2725,7 @@ void __fastcall TStoredSessionList::Load()
 {
   CALLSTACK;
   THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
-  TRY_FINALLY1 (Storage,
+  TRY_FINALLY (
   {
     if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), False))
     {
@@ -2760,7 +2760,7 @@ void __fastcall TStoredSessionList::DoSave(THierarchicalStorage * Storage,
   bool All, bool RecryptPasswordOnly)
 {
   TSessionData * FactoryDefaults = new TSessionData(L"");
-  TRY_FINALLY1 (FactoryDefaults,
+  TRY_FINALLY (
   {
     DoSave(Storage, FDefaultSettings, All, RecryptPasswordOnly, FactoryDefaults);
     for (int Index = 0; Index < Count + GetHiddenCount(); Index++)
@@ -2784,7 +2784,7 @@ void __fastcall TStoredSessionList::Save(THierarchicalStorage * Storage, bool Al
 void __fastcall TStoredSessionList::DoSave(bool All, bool Explicit, bool RecryptPasswordOnly)
 {
   THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
-  TRY_FINALLY1 (Storage,
+  TRY_FINALLY (
   {
     Storage->SetAccessMode(smReadWrite);
     Storage->SetExplicit(Explicit);
@@ -2826,7 +2826,7 @@ void __fastcall TStoredSessionList::Export(const UnicodeString FileName)
   Classes::Error(SNotImplemented, 3003);
 /*
   THierarchicalStorage * Storage = new TIniFileStorage(FileName);
-  TRY_FINALLY1 (Storage,
+  TRY_FINALLY (
   {
     Storage->SetAccessMode(smReadWrite);
     if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), true))
@@ -2885,7 +2885,7 @@ void __fastcall TStoredSessionList::Cleanup()
   {
     if (Configuration->GetStorage() == stRegistry) { Clear(); }
     TRegistryStorage * Storage = new TRegistryStorage(Configuration->GetRegistryStorageKey());
-    TRY_FINALLY1 (Storage,
+    TRY_FINALLY (
     {
       Storage->SetAccessMode(smReadWrite);
       if (Storage->OpenRootKey(False))
@@ -3067,7 +3067,7 @@ void __fastcall TStoredSessionList::ImportHostKeys(const UnicodeString TargetKey
   TRegistryStorage * SourceStorage = NULL;
   TRegistryStorage * TargetStorage = NULL;
   TStringList * KeyList = NULL;
-  TRY_FINALLY3 (SourceStorage, TargetStorage, KeyList,
+  TRY_FINALLY (
   {
     SourceStorage = new TRegistryStorage(SourceKey);
     TargetStorage = new TRegistryStorage(TargetKey);

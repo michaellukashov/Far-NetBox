@@ -46,7 +46,7 @@ unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, unsigned in
   }
   else
   {
-    TRY_FINALLY2 (NeedFree, Module,
+    TRY_FINALLY (
     {
       TRACE("2");
       HRSRC Rsrc = FindResource(Module, MAKEINTRESOURCE(VS_VERSION_INFO),
@@ -67,7 +67,7 @@ unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, unsigned in
         else
         {
           TRACE("4");
-          TRY_FINALLY1 (Mem,
+          TRY_FINALLY (
           {
             VS_VERSION_INFO_STRUCT32 * VersionInfo = static_cast<VS_VERSION_INFO_STRUCT32 *>(LockResource(Mem));
             const VS_FIXEDFILEINFO * FixedInfo =

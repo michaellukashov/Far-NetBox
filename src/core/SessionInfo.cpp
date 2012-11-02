@@ -630,7 +630,6 @@ const wchar_t *LogLineMarks = L"<>!.*";
   FCurrentFileName = L"";
   FClosed = false;
   TRACE("/");
-  Self = this;
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TSessionLog::~TSessionLog()
@@ -754,7 +753,7 @@ void __fastcall TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
         CTRACE(TRACE_LOG_ADD, "Post Guard");
         BeginUpdate();
 
-        TRY_FINALLY1 (Self,
+        TRY_FINALLY (
         {
           CTRACE(TRACE_LOG_ADD, "DoAdd");
           DoAdd(Type, Line, MAKE_CALLBACK2(TSessionLog::DoAddToSelf, this));
@@ -762,9 +761,9 @@ void __fastcall TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
         ,
         {
           CTRACE(TRACE_LOG_ADD, "Finally");
-          Self->DeleteUnnecessary();
+          DeleteUnnecessary();
 
-          Self->EndUpdate();
+          EndUpdate();
         }
         );
       }
@@ -891,7 +890,7 @@ void __fastcall TSessionLog::DeleteUnnecessary()
 {
   CCALLSTACK(TRACE_LOG_ADD);
   BeginUpdate();
-  TRY_FINALLY1 (Self,
+  TRY_FINALLY (
   {
     if (!GetLogging() || (FParent != NULL))
     {
@@ -911,7 +910,7 @@ void __fastcall TSessionLog::DeleteUnnecessary()
   ,
   {
     CTRACE(TRACE_LOG_ADD2, "3");
-    Self->EndUpdate();
+    EndUpdate();
   }
   );
 }
@@ -950,14 +949,8 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
   TGuard Guard(FCriticalSection);
 
   BeginUpdate();
-  // try
+  try
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
-    {
-      Self->DeleteUnnecessary();
-
-      Self->EndUpdate();
-    } BOOST_SCOPE_EXIT_END
     #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), MAKE_CALLBACK2(TSessionLog::DoAddToSelf, this));
 //!CLEANBEGIN
     #ifdef _DEBUG
@@ -970,7 +963,7 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
     ADF(L"NetBox %s (OS %s)", FConfiguration->GetVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
     THierarchicalStorage * Storage = FConfiguration->CreateScpStorage(false);
     assert(Storage);
-    TRY_FINALLY1 (Storage,
+    TRY_FINALLY (
     {
       ADF(L"Configuration: %s", Storage->GetSource().c_str());
     }
@@ -1151,14 +1144,14 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
 
     #undef ADF
   }
-#ifndef _MSC_VER
-  __finally
+  catch (...)
   {
-    Self->DeleteUnnecessary();
-
-    Self->EndUpdate();
+    DeleteUnnecessary();
+    EndUpdate();
+    throw;
   }
-#endif
+  DeleteUnnecessary();
+  EndUpdate();
 }
 //---------------------------------------------------------------------------
 void __fastcall TSessionLog::AddSeparator()
@@ -1353,7 +1346,7 @@ void __fastcall TActionLog::AddFailure(Exception * E)
   TStrings * Messages = ExceptionToMessages(E);
   if (Messages != NULL)
   {
-    TRY_FINALLY1 (Messages,
+    TRY_FINALLY (
     {
       AddFailure(Messages);
     }

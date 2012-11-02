@@ -90,7 +90,7 @@ void __fastcall TConfiguration::Default()
 
   TRegistryStorage * AdminStorage = NULL;
   AdminStorage = new TRegistryStorage(GetRegistryStorageKey(), HKEY_LOCAL_MACHINE);
-  TRY_FINALLY1 (AdminStorage,
+  TRY_FINALLY (
   {
     if (AdminStorage->OpenRootKey(false))
     {
@@ -172,7 +172,7 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
 #define LASTELEM(ELEM) \
   ELEM.SubString(ELEM.LastDelimiter(L".>") + 1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
-  if (Storage->OpenSubKey(KEY, CANCREATE, true)) TRY_FINALLY1 (Storage, { BLOCK }, { Storage->CloseSubKey(); } );
+  if (Storage->OpenSubKey(KEY, CANCREATE, true)) TRY_FINALLY ( { BLOCK }, { Storage->CloseSubKey(); } );
 #define KEY(TYPE, NAME) KEYEX(TYPE, NAME, NAME)
 #undef REGCONFIG
 #define REGCONFIG(CANCREATE) \
@@ -222,7 +222,7 @@ void __fastcall TConfiguration::Save(bool All, bool Explicit)
   if (FDontSave) { return; }
 
   THierarchicalStorage * AStorage = CreateScpStorage(false);
-  TRY_FINALLY1 (AStorage,
+  TRY_FINALLY (
   {
     AStorage->SetAccessMode(smReadWrite);
     AStorage->SetExplicit(Explicit);
@@ -256,7 +256,7 @@ void __fastcall TConfiguration::Export(const UnicodeString FileName)
   Classes::Error(SNotImplemented, 3004);
   THierarchicalStorage * Storage = NULL;
   THierarchicalStorage * ExportStorage = NULL;
-  TRY_FINALLY2 (Storage, ExportStorage,
+  TRY_FINALLY (
   {
     ExportStorage = NULL; // new TIniFileStorage(FileName);
     ExportStorage->SetAccessMode(smReadWrite);
@@ -322,7 +322,7 @@ void __fastcall TConfiguration::Load()
   TGuard Guard(FCriticalSection);
 
   THierarchicalStorage * Storage = CreateScpStorage(false);
-  TRY_FINALLY1 (Storage,
+  TRY_FINALLY (
   {
     Storage->SetAccessMode(smRead);
     if (Storage->OpenSubKey(GetConfigurationSubKey(), false))
@@ -346,7 +346,7 @@ void __fastcall TConfiguration::CopyData(THierarchicalStorage * Source,
   THierarchicalStorage * Target)
 {
   TStrings * Names = new TStringList();
-  TRY_FINALLY1 (Names,
+  TRY_FINALLY (
   {
     if (Source->OpenSubKey(GetConfigurationSubKey(), false))
     {
@@ -423,7 +423,7 @@ void __fastcall TConfiguration::LoadDirectoryChangesCache(const UnicodeString Se
 {
   CALLSTACK;
   THierarchicalStorage * Storage = CreateScpStorage(false);
-  TRY_FINALLY1 (Storage,
+  TRY_FINALLY (
   {
     Storage->SetAccessMode(smRead);
     if (Storage->OpenSubKey(GetConfigurationSubKey(), false) &&
@@ -444,7 +444,7 @@ void __fastcall TConfiguration::SaveDirectoryChangesCache(const UnicodeString Se
   TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
   THierarchicalStorage * Storage = CreateScpStorage(false);
-  TRY_FINALLY1 (Storage,
+  TRY_FINALLY (
   {
     Storage->SetAccessMode(smReadWrite);
     if (Storage->OpenSubKey(GetConfigurationSubKey(), true) &&
@@ -477,7 +477,7 @@ bool __fastcall TConfiguration::ShowBanner(const UnicodeString SessionKey,
 {
   bool Result;
   THierarchicalStorage * Storage = CreateScpStorage(false);
-  TRY_FINALLY1 (Storage,
+  TRY_FINALLY (
   {
     Storage->SetAccessMode(smRead);
     Result =
@@ -499,7 +499,7 @@ void __fastcall TConfiguration::NeverShowBanner(const UnicodeString SessionKey,
   const UnicodeString & Banner)
 {
   THierarchicalStorage * Storage = CreateScpStorage(false);
-  TRY_FINALLY1 (Storage,
+  TRY_FINALLY (
   {
     Storage->SetAccessMode(smReadWrite);
 
@@ -572,7 +572,7 @@ void __fastcall TConfiguration::CleanupConfiguration()
 void __fastcall TConfiguration::CleanupRegistry(UnicodeString CleanupSubKey)
 {
   TRegistryStorage *Registry = new TRegistryStorage(GetRegistryStorageKey());
-  TRY_FINALLY1 (Registry,
+  TRY_FINALLY (
   {
     Registry->RecursiveDeleteSubKey(CleanupSubKey);
   }
@@ -826,7 +826,7 @@ UnicodeString __fastcall TConfiguration::GetFileFileInfoString(const UnicodeStri
 
   UnicodeString Result;
   void * Info = GetFileApplicationInfo(FileName);
-  TRY_FINALLY2 (FileName, Info,
+  TRY_FINALLY (
   {
     if ((Info != NULL) && (GetTranslationCount(Info) > 0))
     {
@@ -963,7 +963,7 @@ void __fastcall TConfiguration::SetStorage(TStorage value)
     THierarchicalStorage * SourceStorage = NULL;
     THierarchicalStorage * TargetStorage = NULL;
 
-    TRY_FINALLY2 (SourceStorage, TargetStorage,
+    TRY_FINALLY (
     {
       SourceStorage = CreateScpStorage(false);
       SourceStorage->SetAccessMode(smRead);
