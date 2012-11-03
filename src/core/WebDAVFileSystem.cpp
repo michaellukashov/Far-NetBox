@@ -3146,37 +3146,30 @@ config_read_auth_data(apr_hash_t ** hash,
   THierarchicalStorage * Storage = NULL;
   WEBDAV_ERR(fs->CreateStorage(Storage));
   assert(Storage);
+  std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
+  Storage->SetAccessMode(smRead);
+  if (!Storage->OpenSubKey(UnicodeString(subkey), false))
+    return WEBDAV_ERR_BAD_PARAM;
+
+  *hash = apr_hash_make(pool);
+  TStrings * Keys = new TStringList();
   TRY_FINALLY (
   {
-    Storage->SetAccessMode(smRead);
-    if (!Storage->OpenSubKey(UnicodeString(subkey), false))
-      return WEBDAV_ERR_BAD_PARAM;
-
-    *hash = apr_hash_make(pool);
-    TStrings * Keys = new TStringList();
-    TRY_FINALLY (
+    Storage->GetValueNames(Keys);
+    for (int Index = 0; Index < Keys->Count; Index++)
     {
-      Storage->GetValueNames(Keys);
-      for (int Index = 0; Index < Keys->Count; Index++)
-      {
-        UnicodeString Key = Keys->Strings[Index];
-        UnicodeString Value = Storage->ReadStringRaw(Key, L"");
-        apr_hash_set(*hash, AUTHN_ASCII_CERT_KEY, APR_HASH_KEY_STRING,
-          string_create(AnsiString(Key).c_str(), pool));
-        apr_hash_set(*hash, AUTHN_FAILURES_KEY, APR_HASH_KEY_STRING,
-          string_createf(pool, "%lu", (unsigned long)
-            StrToIntDef(Value, 0)));
-      }
+      UnicodeString Key = Keys->Strings[Index];
+      UnicodeString Value = Storage->ReadStringRaw(Key, L"");
+      apr_hash_set(*hash, AUTHN_ASCII_CERT_KEY, APR_HASH_KEY_STRING,
+        string_create(AnsiString(Key).c_str(), pool));
+      apr_hash_set(*hash, AUTHN_FAILURES_KEY, APR_HASH_KEY_STRING,
+        string_createf(pool, "%lu", (unsigned long)
+          StrToIntDef(Value, 0)));
     }
-    ,
-    {
-      delete Keys;
-    }
-    );
   }
   ,
   {
-    delete Storage;
+    delete Keys;
   }
   );
   return WEBDAV_NO_ERROR;
