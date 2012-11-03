@@ -418,6 +418,7 @@ typedef struct list_func_baton_t
 
 /** Create a pool as a subpool of @a parent_pool */
 #define webdav_pool_create(parent_pool) webdav::pool_create_ex(parent_pool, NULL)
+#define webdav_pool_clear apr_pool_clear
 /** Destroy a @a pool and all of its children.
  *
  * This define for @c webdav_pool_destroy exists for symmetry and
@@ -1790,9 +1791,6 @@ pool_create_ex(apr_pool_t * parent_pool,
   apr_pool_create_ex(&pool, parent_pool, abort_on_pool_failure, allocator);
   return pool;
 }
-
-#define webdav_pool_clear apr_pool_clear
-#define webdav_pool_destroy apr_pool_destroy
 
 //------------------------------------------------------------------------------
 // from time.c
