@@ -3187,24 +3187,17 @@ config_write_auth_data(apr_hash_t * hash,
   THierarchicalStorage * Storage = NULL;
   WEBDAV_ERR(fs->CreateStorage(Storage));
   assert(Storage);
-  TRY_FINALLY (
-  {
-    Storage->SetAccessMode(smReadWrite);
+  std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
+  Storage->SetAccessMode(smReadWrite);
 
-    if (!Storage->OpenSubKey(UnicodeString(subkey), true))
-      return WEBDAV_ERR_BAD_PARAM;
-    string_t * trusted_cert = static_cast<string_t *>(apr_hash_get(hash, AUTHN_ASCII_CERT_KEY,
-      APR_HASH_KEY_STRING));
-    string_t * failstr = static_cast<string_t *>(apr_hash_get(hash, AUTHN_FAILURES_KEY,
-      APR_HASH_KEY_STRING));
-    if (trusted_cert && failstr)
-      Storage->WriteString(UnicodeString(trusted_cert->data), UnicodeString(failstr->data));
-  }
-  ,
-  {
-    delete Storage;
-  }
-  );
+  if (!Storage->OpenSubKey(UnicodeString(subkey), true))
+    return WEBDAV_ERR_BAD_PARAM;
+  string_t * trusted_cert = static_cast<string_t *>(apr_hash_get(hash, AUTHN_ASCII_CERT_KEY,
+    APR_HASH_KEY_STRING));
+  string_t * failstr = static_cast<string_t *>(apr_hash_get(hash, AUTHN_FAILURES_KEY,
+    APR_HASH_KEY_STRING));
+  if (trusted_cert && failstr)
+    Storage->WriteString(UnicodeString(trusted_cert->data), UnicodeString(failstr->data));
   return WEBDAV_NO_ERROR;
 }
 
