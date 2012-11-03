@@ -162,7 +162,7 @@ public:
   void __fastcall SetSimple(bool value) { FSimple = value; }
 private:
   TSecureShell(const TSecureShell &);
-  void operator=(const TSecureShell &);
+  TSecureShell & operator=(const TSecureShell &);
 };
 //---------------------------------------------------------------------------
 #endif

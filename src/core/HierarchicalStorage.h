@@ -85,6 +85,10 @@ protected:
   static UnicodeString __fastcall ExcludeTrailingBackslash(const UnicodeString & S);
   virtual bool __fastcall DoOpenSubKey(const UnicodeString SubKey, bool CanCreate) = 0;
   UnicodeString __fastcall MungeKeyName(UnicodeString Key);
+
+private:
+  THierarchicalStorage(const THierarchicalStorage &);
+  THierarchicalStorage & operator=(const THierarchicalStorage &);
 };
 //---------------------------------------------------------------------------
 class TRegistryStorage : public THierarchicalStorage
