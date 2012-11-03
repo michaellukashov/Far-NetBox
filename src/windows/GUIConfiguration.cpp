@@ -688,37 +688,41 @@ void __fastcall TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool
   #undef KEY
 
   if (Storage->OpenSubKey(L"Interface\\CopyParam", true, true))
-  TRY_FINALLY (
   {
-    FDefaultCopyParam.Save(Storage);
+    TRY_FINALLY (
+    {
+      FDefaultCopyParam.Save(Storage);
 
-    if (FCopyParamListDefaults)
-    {
-      assert(!FCopyParamList->GetModified());
-      Storage->WriteInteger(L"CopyParamList", -1);
+      if (FCopyParamListDefaults)
+      {
+        assert(!FCopyParamList->GetModified());
+        Storage->WriteInteger(L"CopyParamList", -1);
+      }
+      else if (All || FCopyParamList->GetModified())
+      {
+        Storage->WriteInteger(L"CopyParamList", static_cast<int>(FCopyParamList->GetCount()));
+        FCopyParamList->Save(Storage);
+      }
     }
-    else if (All || FCopyParamList->GetModified())
+    ,
     {
-      Storage->WriteInteger(L"CopyParamList", static_cast<int>(FCopyParamList->GetCount()));
-      FCopyParamList->Save(Storage);
+      Storage->CloseSubKey();
     }
+    );
   }
-  ,
-  {
-    Storage->CloseSubKey();
-  }
-  );
 
   if (Storage->OpenSubKey(L"Interface\\NewDirectory", true, true))
-  TRY_FINALLY (
   {
-    FNewDirectoryProperties.Save(Storage);
+    TRY_FINALLY (
+    {
+      FNewDirectoryProperties.Save(Storage);
+    }
+    ,
+    {
+      Storage->CloseSubKey();
+    }
+    );
   }
-  ,
-  {
-    Storage->CloseSubKey();
-  }
-  );
 }
 //---------------------------------------------------------------------------
 void __fastcall TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
@@ -775,15 +779,17 @@ void __fastcall TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   }
 
   if (Storage->OpenSubKey(L"Interface\\NewDirectory", false, true))
-  TRY_FINALLY (
   {
-    FNewDirectoryProperties.Load(Storage);
+    TRY_FINALLY (
+    {
+      FNewDirectoryProperties.Load(Storage);
+    }
+    ,
+    {
+      Storage->CloseSubKey();
+    }
+    );
   }
-  ,
-  {
-    Storage->CloseSubKey();
-  }
-  );
 }
 //---------------------------------------------------------------------------
 void __fastcall TGUIConfiguration::Saved()

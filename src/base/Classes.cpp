@@ -1939,7 +1939,7 @@ TDateTime TRegistry::ReadDateTime(const UnicodeString Name)
 double TRegistry::ReadFloat(const UnicodeString Name) const
 {
   double Result = 0.0;
-  TRegDataType RegData;
+  TRegDataType RegData = rdUnknown;
   int Len = GetData(Name, &Result, sizeof(double), RegData);
   if ((RegData != rdBinary) || (Len != sizeof(double)))
   {
