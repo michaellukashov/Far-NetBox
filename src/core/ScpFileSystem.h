@@ -134,7 +134,7 @@ private:
     int & ReturnCode, UnicodeString LastLine = L"");
 private:
   TSCPFileSystem(const TSCPFileSystem &);
-  void operator=(const TSCPFileSystem &);
+  TSCPFileSystem & operator=(const TSCPFileSystem &);
 };
 //---------------------------------------------------------------------------
 #endif // ScpFileSystemH

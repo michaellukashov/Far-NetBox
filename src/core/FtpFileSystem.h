@@ -241,7 +241,7 @@ private:
 
 private:
   TFTPFileSystem(const TFTPFileSystem &);
-  void operator=(const TFTPFileSystem &);
+  TFTPFileSystem & operator=(const TFTPFileSystem &);
 };
 //---------------------------------------------------------------------------
 #endif NO_FILEZILLA

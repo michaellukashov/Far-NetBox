@@ -207,7 +207,7 @@ private:
   webdav::session_t *FSession;
 private:
   TWebDAVFileSystem(const TWebDAVFileSystem &);
-  void __fastcall operator=(const TWebDAVFileSystem &);
+  TWebDAVFileSystem & operator=(const TWebDAVFileSystem &);
 };
 
 #endif

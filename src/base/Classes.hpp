@@ -454,7 +454,7 @@ private:
   void __fastcall ExchangeItems(int Index1, int Index2);
 private:
   TStringList(const TStringList &);
-  void operator=(const TStringList &);
+  TStringList & operator=(const TStringList &);
 };
 
 /// TDateTime: number of days since 12/30/1899
