@@ -1991,6 +1991,7 @@ TFarEdit::TFarEdit(TFarDialog * ADialog) :
 void __fastcall TFarEdit::Detach()
 {
   delete[] GetDialogItem()->Mask;
+  delete[] GetDialogItem()->History;
   TFarDialogItem::Detach();
 }
 //---------------------------------------------------------------------------

@@ -5778,7 +5778,7 @@ public:
 
   explicit TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
     TGetSpaceAvailableEvent OnGetSpaceAvailable);
-
+  virtual ~TFileSystemInfoDialog();
   void __fastcall Execute(const TSessionInfo & SessionInfo,
     const TFileSystemInfo & FileSystemInfo, UnicodeString SpaceAvailablePath);
 
@@ -5948,6 +5948,13 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
   OkButton->SetDefault(true);
   OkButton->SetResult(brOK);
   OkButton->SetCenterGroup(true);
+}
+//---------------------------------------------------------------------------
+TFileSystemInfoDialog::~TFileSystemInfoDialog()
+{
+  delete ServerLabels;
+  delete ProtocolLabels;
+  delete SpaceAvailableLabels;
 }
 //---------------------------------------------------------------------------
 TLabelList * __fastcall TFileSystemInfoDialog::CreateLabelArray(int Count)
