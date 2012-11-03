@@ -400,7 +400,7 @@ UnicodeString __fastcall UserModificationStr(TDateTime DateTime,
 int __fastcall FakeFileImageIndex(UnicodeString FileName, unsigned long Attrs,
   UnicodeString * TypeName)
 {
-  CCALLSTACK(TRACE_IMAGEINDEX);
+  /*CCALLSTACK(TRACE_IMAGEINDEX);
   Attrs |= FILE_ATTRIBUTE_NORMAL;
 
   CTRACE(TRACE_IMAGEINDEX, "FakeFileImageIndex 1");
@@ -445,7 +445,8 @@ int __fastcall FakeFileImageIndex(UnicodeString FileName, unsigned long Attrs,
   }
   CTRACEFMT(TRACE_IMAGEINDEX, "FakeFileImageIndex 4 [%d]", (Icon));
 
-  return Icon;
+  return Icon;*/
+  return -1;
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TRemoteToken::TRemoteToken() :
@@ -802,13 +803,13 @@ void __fastcall TRemoteFile::LoadTypeInfo()
 {
   CCALLSTACK(TRACE_IMAGEINDEX);
   /* TODO : If file is link: Should be attributes taken from linked file? */
-  unsigned long Attrs = 0;
+  /* unsigned long Attrs = 0;
   if (GetIsDirectory()) { Attrs |= FILE_ATTRIBUTE_DIRECTORY; }
   if (GetIsHidden()) { Attrs |= FILE_ATTRIBUTE_HIDDEN; }
 
   UnicodeString DumbFileName = (GetIsSymLink() && !GetLinkTo().IsEmpty() ? GetLinkTo() : GetFileName());
 
-  FIconIndex = FakeFileImageIndex(DumbFileName, Attrs, &FTypeName);
+  FIconIndex = FakeFileImageIndex(DumbFileName, Attrs, &FTypeName); */
 }
 //---------------------------------------------------------------------------
 Integer __fastcall TRemoteFile::GetIconIndex() const
