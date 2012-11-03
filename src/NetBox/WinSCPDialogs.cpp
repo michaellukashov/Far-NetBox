@@ -294,136 +294,134 @@ bool __fastcall TWinSCPPlugin::ConfigurationDialog()
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  TFarText * Text;
+
+  Dialog->SetSize(TPoint(67, 22));
+  Dialog->SetCaption(FORMAT(L"%s - %s",
+    GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_INTERFACE)).c_str()));
+
+  TFarCheckBox * DisksMenuCheck = new TFarCheckBox(Dialog);
+  DisksMenuCheck->SetCaption(GetMsg(CONFIG_DISKS_MENU));
+
+  Dialog->SetNextItemPosition(ipNewLine);
+
+  TFarCheckBox * PluginsMenuCheck = new TFarCheckBox(Dialog);
+  PluginsMenuCheck->SetCaption(GetMsg(CONFIG_PLUGINS_MENU));
+
+  TFarCheckBox * PluginsMenuCommandsCheck = new TFarCheckBox(Dialog);
+  PluginsMenuCommandsCheck->SetCaption(GetMsg(CONFIG_PLUGINS_MENU_COMMANDS));
+
+  TFarCheckBox * HostNameInTitleCheck = new TFarCheckBox(Dialog);
+  HostNameInTitleCheck->SetCaption(GetMsg(CONFIG_HOST_NAME_IN_TITLE));
+
+  new TFarSeparator(Dialog);
+
+  Text = new TFarText(Dialog);
+  Text->SetCaption(GetMsg(CONFIG_COMAND_PREFIXES));
+
+  TFarEdit * CommandPrefixesEdit = new TFarEdit(Dialog);
+
+  new TFarSeparator(Dialog);
+
+  TFarCheckBox * CustomPanelCheck = new TFarCheckBox(Dialog);
+  CustomPanelCheck->SetCaption(GetMsg(CONFIG_PANEL_MODE_CHECK));
+  CustomPanelCheck->SetEnabled(true);
+
+  Text = new TFarText(Dialog);
+  Text->SetLeft(Text->GetLeft() + 4);
+  Text->SetEnabledDependency(CustomPanelCheck);
+  Text->SetCaption(GetMsg(CONFIG_PANEL_MODE_TYPES));
+
+  Dialog->SetNextItemPosition(ipBelow);
+
+  TFarEdit * CustomPanelTypesEdit = new TFarEdit(Dialog);
+  CustomPanelTypesEdit->SetEnabledDependency(CustomPanelCheck);
+  CustomPanelTypesEdit->SetWidth(CustomPanelTypesEdit->GetWidth() / 2 - 1);
+
+  Dialog->SetNextItemPosition(ipRight);
+
+  Text = new TFarText(Dialog);
+  Text->SetEnabledDependency(CustomPanelCheck);
+  Text->Move(0, -1);
+  Text->SetCaption(GetMsg(CONFIG_PANEL_MODE_STATUS_TYPES));
+
+  Dialog->SetNextItemPosition(ipBelow);
+
+  TFarEdit * CustomPanelStatusTypesEdit = new TFarEdit(Dialog);
+  CustomPanelStatusTypesEdit->SetEnabledDependency(CustomPanelCheck);
+
+  Dialog->SetNextItemPosition(ipNewLine);
+
+  Text = new TFarText(Dialog);
+  Text->SetLeft(Text->GetLeft() + 4);
+  Text->SetEnabledDependency(CustomPanelCheck);
+  Text->SetCaption(GetMsg(CONFIG_PANEL_MODE_WIDTHS));
+
+  Dialog->SetNextItemPosition(ipBelow);
+
+  TFarEdit * CustomPanelWidthsEdit = new TFarEdit(Dialog);
+  CustomPanelWidthsEdit->SetEnabledDependency(CustomPanelCheck);
+  CustomPanelWidthsEdit->SetWidth(CustomPanelTypesEdit->GetWidth());
+
+  Dialog->SetNextItemPosition(ipRight);
+
+  Text = new TFarText(Dialog);
+  Text->SetEnabledDependency(CustomPanelCheck);
+  Text->Move(0, -1);
+  Text->SetCaption(GetMsg(CONFIG_PANEL_MODE_STATUS_WIDTHS));
+
+  Dialog->SetNextItemPosition(ipBelow);
+
+  TFarEdit * CustomPanelStatusWidthsEdit = new TFarEdit(Dialog);
+  CustomPanelStatusWidthsEdit->SetEnabledDependency(CustomPanelCheck);
+
+  Dialog->SetNextItemPosition(ipNewLine);
+
+  TFarCheckBox * CustomPanelFullScreenCheck = new TFarCheckBox(Dialog);
+  CustomPanelFullScreenCheck->SetLeft(CustomPanelFullScreenCheck->GetLeft() + 4);
+  CustomPanelFullScreenCheck->SetEnabledDependency(CustomPanelCheck);
+  CustomPanelFullScreenCheck->SetCaption(GetMsg(CONFIG_PANEL_MODE_FULL_SCREEN));
+
+  Text = new TFarText(Dialog);
+  Text->SetLeft(Text->GetLeft() + 4);
+  Text->SetEnabledDependency(CustomPanelCheck);
+  Text->SetCaption(GetMsg(CONFIG_PANEL_MODE_HINT));
+  Text = new TFarText(Dialog);
+  Text->SetLeft(Text->GetLeft() + 4);
+  Text->SetEnabledDependency(CustomPanelCheck);
+  Text->SetCaption(GetMsg(CONFIG_PANEL_MODE_HINT2));
+
+  Dialog->AddStandardButtons();
+
+  DisksMenuCheck->SetChecked(FarConfiguration->GetDisksMenu());
+  PluginsMenuCheck->SetChecked(FarConfiguration->GetPluginsMenu());
+  PluginsMenuCommandsCheck->SetChecked(FarConfiguration->GetPluginsMenuCommands());
+  HostNameInTitleCheck->SetChecked(FarConfiguration->GetHostNameInTitle());
+  CommandPrefixesEdit->SetText(FarConfiguration->GetCommandPrefixes());
+
+  CustomPanelCheck->SetChecked(FarConfiguration->GetCustomPanelModeDetailed());
+  CustomPanelTypesEdit->SetText(FarConfiguration->GetColumnTypesDetailed());
+  CustomPanelWidthsEdit->SetText(FarConfiguration->GetColumnWidthsDetailed());
+  CustomPanelStatusTypesEdit->SetText(FarConfiguration->GetStatusColumnTypesDetailed());
+  CustomPanelStatusWidthsEdit->SetText(FarConfiguration->GetStatusColumnWidthsDetailed());
+  CustomPanelFullScreenCheck->SetChecked(FarConfiguration->GetFullScreenDetailed());
+
+  Result = (Dialog->ShowModal() == brOK);
+  if (Result)
   {
-    TFarText * Text;
+    FarConfiguration->SetDisksMenu(DisksMenuCheck->GetChecked());
+    FarConfiguration->SetPluginsMenu(PluginsMenuCheck->GetChecked());
+    FarConfiguration->SetPluginsMenuCommands(PluginsMenuCommandsCheck->GetChecked());
+    FarConfiguration->SetHostNameInTitle(HostNameInTitleCheck->GetChecked());
 
-    Dialog->SetSize(TPoint(67, 22));
-    Dialog->SetCaption(FORMAT(L"%s - %s",
-      GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_INTERFACE)).c_str()));
+    FarConfiguration->SetCommandPrefixes(CommandPrefixesEdit->GetText());
 
-    TFarCheckBox * DisksMenuCheck = new TFarCheckBox(Dialog);
-    DisksMenuCheck->SetCaption(GetMsg(CONFIG_DISKS_MENU));
-
-    Dialog->SetNextItemPosition(ipNewLine);
-
-    TFarCheckBox * PluginsMenuCheck = new TFarCheckBox(Dialog);
-    PluginsMenuCheck->SetCaption(GetMsg(CONFIG_PLUGINS_MENU));
-
-    TFarCheckBox * PluginsMenuCommandsCheck = new TFarCheckBox(Dialog);
-    PluginsMenuCommandsCheck->SetCaption(GetMsg(CONFIG_PLUGINS_MENU_COMMANDS));
-
-    TFarCheckBox * HostNameInTitleCheck = new TFarCheckBox(Dialog);
-    HostNameInTitleCheck->SetCaption(GetMsg(CONFIG_HOST_NAME_IN_TITLE));
-
-    new TFarSeparator(Dialog);
-
-    Text = new TFarText(Dialog);
-    Text->SetCaption(GetMsg(CONFIG_COMAND_PREFIXES));
-
-    TFarEdit * CommandPrefixesEdit = new TFarEdit(Dialog);
-
-    new TFarSeparator(Dialog);
-
-    TFarCheckBox * CustomPanelCheck = new TFarCheckBox(Dialog);
-    CustomPanelCheck->SetCaption(GetMsg(CONFIG_PANEL_MODE_CHECK));
-    CustomPanelCheck->SetEnabled(true);
-
-    Text = new TFarText(Dialog);
-    Text->SetLeft(Text->GetLeft() + 4);
-    Text->SetEnabledDependency(CustomPanelCheck);
-    Text->SetCaption(GetMsg(CONFIG_PANEL_MODE_TYPES));
-
-    Dialog->SetNextItemPosition(ipBelow);
-
-    TFarEdit * CustomPanelTypesEdit = new TFarEdit(Dialog);
-    CustomPanelTypesEdit->SetEnabledDependency(CustomPanelCheck);
-    CustomPanelTypesEdit->SetWidth(CustomPanelTypesEdit->GetWidth() / 2 - 1);
-
-    Dialog->SetNextItemPosition(ipRight);
-
-    Text = new TFarText(Dialog);
-    Text->SetEnabledDependency(CustomPanelCheck);
-    Text->Move(0, -1);
-    Text->SetCaption(GetMsg(CONFIG_PANEL_MODE_STATUS_TYPES));
-
-    Dialog->SetNextItemPosition(ipBelow);
-
-    TFarEdit * CustomPanelStatusTypesEdit = new TFarEdit(Dialog);
-    CustomPanelStatusTypesEdit->SetEnabledDependency(CustomPanelCheck);
-
-    Dialog->SetNextItemPosition(ipNewLine);
-
-    Text = new TFarText(Dialog);
-    Text->SetLeft(Text->GetLeft() + 4);
-    Text->SetEnabledDependency(CustomPanelCheck);
-    Text->SetCaption(GetMsg(CONFIG_PANEL_MODE_WIDTHS));
-
-    Dialog->SetNextItemPosition(ipBelow);
-
-    TFarEdit * CustomPanelWidthsEdit = new TFarEdit(Dialog);
-    CustomPanelWidthsEdit->SetEnabledDependency(CustomPanelCheck);
-    CustomPanelWidthsEdit->SetWidth(CustomPanelTypesEdit->GetWidth());
-
-    Dialog->SetNextItemPosition(ipRight);
-
-    Text = new TFarText(Dialog);
-    Text->SetEnabledDependency(CustomPanelCheck);
-    Text->Move(0, -1);
-    Text->SetCaption(GetMsg(CONFIG_PANEL_MODE_STATUS_WIDTHS));
-
-    Dialog->SetNextItemPosition(ipBelow);
-
-    TFarEdit * CustomPanelStatusWidthsEdit = new TFarEdit(Dialog);
-    CustomPanelStatusWidthsEdit->SetEnabledDependency(CustomPanelCheck);
-
-    Dialog->SetNextItemPosition(ipNewLine);
-
-    TFarCheckBox * CustomPanelFullScreenCheck = new TFarCheckBox(Dialog);
-    CustomPanelFullScreenCheck->SetLeft(CustomPanelFullScreenCheck->GetLeft() + 4);
-    CustomPanelFullScreenCheck->SetEnabledDependency(CustomPanelCheck);
-    CustomPanelFullScreenCheck->SetCaption(GetMsg(CONFIG_PANEL_MODE_FULL_SCREEN));
-
-    Text = new TFarText(Dialog);
-    Text->SetLeft(Text->GetLeft() + 4);
-    Text->SetEnabledDependency(CustomPanelCheck);
-    Text->SetCaption(GetMsg(CONFIG_PANEL_MODE_HINT));
-    Text = new TFarText(Dialog);
-    Text->SetLeft(Text->GetLeft() + 4);
-    Text->SetEnabledDependency(CustomPanelCheck);
-    Text->SetCaption(GetMsg(CONFIG_PANEL_MODE_HINT2));
-
-    Dialog->AddStandardButtons();
-
-    DisksMenuCheck->SetChecked(FarConfiguration->GetDisksMenu());
-    PluginsMenuCheck->SetChecked(FarConfiguration->GetPluginsMenu());
-    PluginsMenuCommandsCheck->SetChecked(FarConfiguration->GetPluginsMenuCommands());
-    HostNameInTitleCheck->SetChecked(FarConfiguration->GetHostNameInTitle());
-    CommandPrefixesEdit->SetText(FarConfiguration->GetCommandPrefixes());
-
-    CustomPanelCheck->SetChecked(FarConfiguration->GetCustomPanelModeDetailed());
-    CustomPanelTypesEdit->SetText(FarConfiguration->GetColumnTypesDetailed());
-    CustomPanelWidthsEdit->SetText(FarConfiguration->GetColumnWidthsDetailed());
-    CustomPanelStatusTypesEdit->SetText(FarConfiguration->GetStatusColumnTypesDetailed());
-    CustomPanelStatusWidthsEdit->SetText(FarConfiguration->GetStatusColumnWidthsDetailed());
-    CustomPanelFullScreenCheck->SetChecked(FarConfiguration->GetFullScreenDetailed());
-
-    Result = (Dialog->ShowModal() == brOK);
-    if (Result)
-    {
-      FarConfiguration->SetDisksMenu(DisksMenuCheck->GetChecked());
-      FarConfiguration->SetPluginsMenu(PluginsMenuCheck->GetChecked());
-      FarConfiguration->SetPluginsMenuCommands(PluginsMenuCommandsCheck->GetChecked());
-      FarConfiguration->SetHostNameInTitle(HostNameInTitleCheck->GetChecked());
-
-      FarConfiguration->SetCommandPrefixes(CommandPrefixesEdit->GetText());
-
-      FarConfiguration->SetCustomPanelModeDetailed(CustomPanelCheck->GetChecked());
-      FarConfiguration->SetColumnTypesDetailed(CustomPanelTypesEdit->GetText());
-      FarConfiguration->SetColumnWidthsDetailed(CustomPanelWidthsEdit->GetText());
-      FarConfiguration->SetStatusColumnTypesDetailed(CustomPanelStatusTypesEdit->GetText());
-      FarConfiguration->SetStatusColumnWidthsDetailed(CustomPanelStatusWidthsEdit->GetText());
-      FarConfiguration->SetFullScreenDetailed(CustomPanelFullScreenCheck->GetChecked());
-    }
+    FarConfiguration->SetCustomPanelModeDetailed(CustomPanelCheck->GetChecked());
+    FarConfiguration->SetColumnTypesDetailed(CustomPanelTypesEdit->GetText());
+    FarConfiguration->SetColumnWidthsDetailed(CustomPanelWidthsEdit->GetText());
+    FarConfiguration->SetStatusColumnTypesDetailed(CustomPanelStatusTypesEdit->GetText());
+    FarConfiguration->SetStatusColumnWidthsDetailed(CustomPanelStatusWidthsEdit->GetText());
+    FarConfiguration->SetFullScreenDetailed(CustomPanelFullScreenCheck->GetChecked());
   }
   return Result;
 }
@@ -433,33 +431,31 @@ bool __fastcall TWinSCPPlugin::PanelConfigurationDialog()
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  Dialog->SetSize(TPoint(65, 7));
+  Dialog->SetCaption(FORMAT(L"%s - %s",
+    GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_PANEL)).c_str()));
+
+  TFarCheckBox * AutoReadDirectoryAfterOpCheck = new TFarCheckBox(Dialog);
+  AutoReadDirectoryAfterOpCheck->SetCaption(GetMsg(CONFIG_AUTO_READ_DIRECTORY_AFTER_OP));
+
+  Dialog->AddStandardButtons();
+
+  AutoReadDirectoryAfterOpCheck->SetChecked(Configuration->GetAutoReadDirectoryAfterOp());
+
+  Result = (Dialog->ShowModal() == brOK);
+
+  if (Result)
   {
-    Dialog->SetSize(TPoint(65, 7));
-    Dialog->SetCaption(FORMAT(L"%s - %s",
-      GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_PANEL)).c_str()));
-
-    TFarCheckBox * AutoReadDirectoryAfterOpCheck = new TFarCheckBox(Dialog);
-    AutoReadDirectoryAfterOpCheck->SetCaption(GetMsg(CONFIG_AUTO_READ_DIRECTORY_AFTER_OP));
-
-    Dialog->AddStandardButtons();
-
-    AutoReadDirectoryAfterOpCheck->SetChecked(Configuration->GetAutoReadDirectoryAfterOp());
-
-    Result = (Dialog->ShowModal() == brOK);
-
-    if (Result)
+    Configuration->BeginUpdate();
+    TRY_FINALLY (
     {
-      Configuration->BeginUpdate();
-      TRY_FINALLY (
-      {
-        Configuration->SetAutoReadDirectoryAfterOp(AutoReadDirectoryAfterOpCheck->GetChecked());
-      }
-      ,
-      {
-        Configuration->EndUpdate();
-      }
-      );
+      Configuration->SetAutoReadDirectoryAfterOp(AutoReadDirectoryAfterOpCheck->GetChecked());
     }
+    ,
+    {
+      Configuration->EndUpdate();
+    }
+    );
   }
   return Result;
 }
@@ -469,99 +465,97 @@ bool __fastcall TWinSCPPlugin::LoggingConfigurationDialog()
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  TFarSeparator * Separator;
+  TFarText * Text;
+
+  Dialog->SetSize(TPoint(65, 15));
+  Dialog->SetCaption(FORMAT(L"%s - %s",
+    GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_LOGGING)).c_str()));
+
+  TFarCheckBox * LoggingCheck = new TFarCheckBox(Dialog);
+  LoggingCheck->SetCaption(GetMsg(LOGGING_ENABLE));
+
+  Separator = new TFarSeparator(Dialog);
+  Separator->SetCaption(GetMsg(LOGGING_OPTIONS_GROUP));
+
+  Text = new TFarText(Dialog);
+  Text->SetCaption(GetMsg(LOGGING_LOG_PROTOCOL));
+  Text->SetEnabledDependency(LoggingCheck);
+
+  Dialog->SetNextItemPosition(ipRight);
+
+  TFarComboBox * LogProtocolCombo = new TFarComboBox(Dialog);
+  LogProtocolCombo->SetDropDownList(true);
+  LogProtocolCombo->SetWidth(10);
+  for (int i = 0; i <= 2; i++)
   {
-    TFarSeparator * Separator;
-    TFarText * Text;
+    LogProtocolCombo->GetItems()->Add(GetMsg(LOGGING_LOG_PROTOCOL_0 + i));
+  }
+  LogProtocolCombo->SetEnabledDependency(LoggingCheck);
 
-    Dialog->SetSize(TPoint(65, 15));
-    Dialog->SetCaption(FORMAT(L"%s - %s",
-      GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_LOGGING)).c_str()));
+  Dialog->SetNextItemPosition(ipNewLine);
 
-    TFarCheckBox * LoggingCheck = new TFarCheckBox(Dialog);
-    LoggingCheck->SetCaption(GetMsg(LOGGING_ENABLE));
+  new TFarSeparator(Dialog);
 
-    Separator = new TFarSeparator(Dialog);
-    Separator->SetCaption(GetMsg(LOGGING_OPTIONS_GROUP));
+  TFarCheckBox * LogToFileCheck = new TFarCheckBox(Dialog);
+  LogToFileCheck->SetCaption(GetMsg(LOGGING_LOG_TO_FILE));
+  LogToFileCheck->SetEnabledDependency(LoggingCheck);
 
-    Text = new TFarText(Dialog);
-    Text->SetCaption(GetMsg(LOGGING_LOG_PROTOCOL));
-    Text->SetEnabledDependency(LoggingCheck);
+  TFarEdit * LogFileNameEdit = new TFarEdit(Dialog);
+  LogFileNameEdit->SetLeft(LogFileNameEdit->GetLeft() + 4);
+  LogFileNameEdit->SetHistory(LOG_FILE_HISTORY);
+  LogFileNameEdit->SetEnabledDependency(LogToFileCheck);
 
-    Dialog->SetNextItemPosition(ipRight);
+  Dialog->SetNextItemPosition(ipBelow);
 
-    TFarComboBox * LogProtocolCombo = new TFarComboBox(Dialog);
-    LogProtocolCombo->SetDropDownList(true);
-    LogProtocolCombo->SetWidth(10);
-    for (int i = 0; i <= 2; i++)
+  Text = new TFarText(Dialog);
+  Text->SetCaption(GetMsg(LOGGING_LOG_FILE_HINT1));
+  Text = new TFarText(Dialog);
+  Text->SetCaption(GetMsg(LOGGING_LOG_FILE_HINT2));
+
+  TFarRadioButton * LogFileAppendButton = new TFarRadioButton(Dialog);
+  LogFileAppendButton->SetCaption(GetMsg(LOGGING_LOG_FILE_APPEND));
+  LogFileAppendButton->SetEnabledDependency(LogToFileCheck);
+
+  Dialog->SetNextItemPosition(ipRight);
+
+  TFarRadioButton * LogFileOverwriteButton = new TFarRadioButton(Dialog);
+  LogFileOverwriteButton->SetCaption(GetMsg(LOGGING_LOG_FILE_OVERWRITE));
+  LogFileOverwriteButton->SetEnabledDependency(LogToFileCheck);
+
+  Dialog->AddStandardButtons();
+
+  LoggingCheck->SetChecked(Configuration->GetLogging());
+  LogProtocolCombo->SetItemIndex(Configuration->GetLogProtocol());
+  LogToFileCheck->SetChecked(Configuration->GetLogToFile());
+  LogFileNameEdit->SetText(
+    (!Configuration->GetLogToFile() && Configuration->GetLogFileName().IsEmpty()) ?
+    IncludeTrailingBackslash(SystemTemporaryDirectory()) + L"&s.log" :
+    Configuration->GetLogFileName());
+  LogFileAppendButton->SetChecked(Configuration->GetLogFileAppend());
+  LogFileOverwriteButton->SetChecked(!Configuration->GetLogFileAppend());
+
+  Result = (Dialog->ShowModal() == brOK);
+
+  if (Result)
+  {
+    Configuration->BeginUpdate();
+    TRY_FINALLY (
     {
-      LogProtocolCombo->GetItems()->Add(GetMsg(LOGGING_LOG_PROTOCOL_0 + i));
+      Configuration->SetLogging(LoggingCheck->GetChecked());
+      Configuration->SetLogProtocol(LogProtocolCombo->GetItemIndex());
+      Configuration->SetLogToFile(LogToFileCheck->GetChecked());
+      if (LogToFileCheck->GetChecked())
+      {
+        Configuration->SetLogFileName(LogFileNameEdit->GetText());
+      }
+      Configuration->SetLogFileAppend(LogFileAppendButton->GetChecked());
     }
-    LogProtocolCombo->SetEnabledDependency(LoggingCheck);
-
-    Dialog->SetNextItemPosition(ipNewLine);
-
-    new TFarSeparator(Dialog);
-
-    TFarCheckBox * LogToFileCheck = new TFarCheckBox(Dialog);
-    LogToFileCheck->SetCaption(GetMsg(LOGGING_LOG_TO_FILE));
-    LogToFileCheck->SetEnabledDependency(LoggingCheck);
-
-    TFarEdit * LogFileNameEdit = new TFarEdit(Dialog);
-    LogFileNameEdit->SetLeft(LogFileNameEdit->GetLeft() + 4);
-    LogFileNameEdit->SetHistory(LOG_FILE_HISTORY);
-    LogFileNameEdit->SetEnabledDependency(LogToFileCheck);
-
-    Dialog->SetNextItemPosition(ipBelow);
-
-    Text = new TFarText(Dialog);
-    Text->SetCaption(GetMsg(LOGGING_LOG_FILE_HINT1));
-    Text = new TFarText(Dialog);
-    Text->SetCaption(GetMsg(LOGGING_LOG_FILE_HINT2));
-
-    TFarRadioButton * LogFileAppendButton = new TFarRadioButton(Dialog);
-    LogFileAppendButton->SetCaption(GetMsg(LOGGING_LOG_FILE_APPEND));
-    LogFileAppendButton->SetEnabledDependency(LogToFileCheck);
-
-    Dialog->SetNextItemPosition(ipRight);
-
-    TFarRadioButton * LogFileOverwriteButton = new TFarRadioButton(Dialog);
-    LogFileOverwriteButton->SetCaption(GetMsg(LOGGING_LOG_FILE_OVERWRITE));
-    LogFileOverwriteButton->SetEnabledDependency(LogToFileCheck);
-
-    Dialog->AddStandardButtons();
-
-    LoggingCheck->SetChecked(Configuration->GetLogging());
-    LogProtocolCombo->SetItemIndex(Configuration->GetLogProtocol());
-    LogToFileCheck->SetChecked(Configuration->GetLogToFile());
-    LogFileNameEdit->SetText(
-      (!Configuration->GetLogToFile() && Configuration->GetLogFileName().IsEmpty()) ?
-      IncludeTrailingBackslash(SystemTemporaryDirectory()) + L"&s.log" :
-      Configuration->GetLogFileName());
-    LogFileAppendButton->SetChecked(Configuration->GetLogFileAppend());
-    LogFileOverwriteButton->SetChecked(!Configuration->GetLogFileAppend());
-
-    Result = (Dialog->ShowModal() == brOK);
-
-    if (Result)
+    ,
     {
-      Configuration->BeginUpdate();
-      TRY_FINALLY (
-      {
-        Configuration->SetLogging(LoggingCheck->GetChecked());
-        Configuration->SetLogProtocol(LogProtocolCombo->GetItemIndex());
-        Configuration->SetLogToFile(LogToFileCheck->GetChecked());
-        if (LogToFileCheck->GetChecked())
-        {
-          Configuration->SetLogFileName(LogFileNameEdit->GetText());
-        }
-        Configuration->SetLogFileAppend(LogFileAppendButton->GetChecked());
-      }
-      ,
-      {
-        Configuration->EndUpdate();
-      }
-      );
+      Configuration->EndUpdate();
     }
+    );
   }
   return Result;
 }
@@ -586,123 +580,121 @@ bool __fastcall TWinSCPPlugin::EnduranceConfigurationDialog()
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  TFarSeparator * Separator;
+  TFarText * Text;
+
+  Dialog->SetSize(TPoint(76, 13));
+  Dialog->SetCaption(FORMAT(L"%s - %s",
+    GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_ENDURANCE)).c_str()));
+
+  Separator = new TFarSeparator(Dialog);
+  Separator->SetCaption(GetMsg(TRANSFER_RESUME));
+
+  TFarRadioButton * ResumeOnButton = new TFarRadioButton(Dialog);
+  ResumeOnButton->SetCaption(GetMsg(TRANSFER_RESUME_ON));
+
+  TFarRadioButton * ResumeSmartButton = new TFarRadioButton(Dialog);
+  ResumeSmartButton->SetCaption(GetMsg(TRANSFER_RESUME_SMART));
+  int ResumeThresholdLeft = ResumeSmartButton->GetRight();
+
+  TFarRadioButton * ResumeOffButton = new TFarRadioButton(Dialog);
+  ResumeOffButton->SetCaption(GetMsg(TRANSFER_RESUME_OFF));
+
+  TFarEdit * ResumeThresholdEdit = new TFarEdit(Dialog);
+  ResumeThresholdEdit->Move(0, -2);
+  ResumeThresholdEdit->SetLeft(ResumeThresholdLeft + 3);
+  ResumeThresholdEdit->SetFixed(true);
+  ResumeThresholdEdit->SetMask(L"9999999");
+  ResumeThresholdEdit->SetWidth(9);
+  ResumeThresholdEdit->SetEnabledDependency(ResumeSmartButton);
+
+  Dialog->SetNextItemPosition(ipRight);
+
+  Text = new TFarText(Dialog);
+  Text->SetCaption(GetMsg(TRANSFER_RESUME_THRESHOLD_UNIT));
+  Text->SetEnabledDependency(ResumeSmartButton);
+
+  Dialog->SetNextItemPosition(ipNewLine);
+
+  Separator = new TFarSeparator(Dialog);
+  Separator->SetCaption(GetMsg(TRANSFER_SESSION_REOPEN_GROUP));
+  Separator->Move(0, 1);
+
+  TFarCheckBox * SessionReopenAutoCheck = new TFarCheckBox(Dialog);
+  SessionReopenAutoCheck->SetCaption(GetMsg(TRANSFER_SESSION_REOPEN_AUTO_LABEL));
+
+  Dialog->SetNextItemPosition(ipRight);
+
+  TFarEdit * SessionReopenAutoEdit = new TFarEdit(Dialog);
+  SessionReopenAutoEdit->SetEnabledDependency(SessionReopenAutoCheck);
+  SessionReopenAutoEdit->SetFixed(true);
+  SessionReopenAutoEdit->SetMask(L"999");
+  SessionReopenAutoEdit->SetWidth(5);
+  SessionReopenAutoEdit->Move(12, 0);
+
+  Text = new TFarText(Dialog);
+  Text->SetCaption(GetMsg(TRANSFER_SESSION_REOPEN_AUTO_LABEL2));
+  Text->SetEnabledDependency(SessionReopenAutoCheck);
+
+  Dialog->SetNextItemPosition(ipNewLine);
+
+  Text = new TFarText(Dialog);
+  Text->SetCaption(GetMsg(TRANSFER_SESSION_REOPEN_NUMBER_OF_RETRIES_LABEL));
+  Text->SetEnabledDependency(SessionReopenAutoCheck);
+  Text->Move(4, 0);
+
+  Dialog->SetNextItemPosition(ipRight);
+
+  TFarEdit * SessionReopenNumberOfRetriesEdit = new TFarEdit(Dialog);
+  SessionReopenNumberOfRetriesEdit->SetEnabledDependency(SessionReopenAutoCheck);
+  SessionReopenNumberOfRetriesEdit->SetFixed(true);
+  SessionReopenNumberOfRetriesEdit->SetMask(L"999");
+  SessionReopenNumberOfRetriesEdit->SetWidth(5);
+
+  Text = new TFarText(Dialog);
+  Text->SetCaption(GetMsg(TRANSFER_SESSION_REOPEN_NUMBER_OF_RETRIES_LABEL2));
+  Text->SetEnabledDependency(SessionReopenAutoCheck);
+
+  Dialog->AddStandardButtons();
+
+  ResumeOnButton->SetChecked(GUIConfiguration->GetDefaultCopyParam().GetResumeSupport() == rsOn);
+  ResumeSmartButton->SetChecked(GUIConfiguration->GetDefaultCopyParam().GetResumeSupport() == rsSmart);
+  ResumeOffButton->SetChecked(GUIConfiguration->GetDefaultCopyParam().GetResumeSupport() == rsOff);
+  ResumeThresholdEdit->SetAsInteger(
+    static_cast<int>(GUIConfiguration->GetDefaultCopyParam().GetResumeThreshold() / 1024));
+
+  SessionReopenAutoCheck->SetChecked((Configuration->GetSessionReopenAuto() > 0));
+  SessionReopenAutoEdit->SetAsInteger((Configuration->GetSessionReopenAuto() > 0 ?
+    (Configuration->GetSessionReopenAuto() / 1000) : 5));
+  SessionReopenNumberOfRetriesEdit->SetAsInteger((Configuration->GetSessionReopenAutoMaximumNumberOfRetries() > 0 ?
+    Configuration->GetSessionReopenAutoMaximumNumberOfRetries() : CONST_DEFAULT_NUMBER_OF_RETRIES));
+
+  Result = (Dialog->ShowModal() == brOK);
+
+  if (Result)
   {
-    TFarSeparator * Separator;
-    TFarText * Text;
-
-    Dialog->SetSize(TPoint(76, 13));
-    Dialog->SetCaption(FORMAT(L"%s - %s",
-      GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_ENDURANCE)).c_str()));
-
-    Separator = new TFarSeparator(Dialog);
-    Separator->SetCaption(GetMsg(TRANSFER_RESUME));
-
-    TFarRadioButton * ResumeOnButton = new TFarRadioButton(Dialog);
-    ResumeOnButton->SetCaption(GetMsg(TRANSFER_RESUME_ON));
-
-    TFarRadioButton * ResumeSmartButton = new TFarRadioButton(Dialog);
-    ResumeSmartButton->SetCaption(GetMsg(TRANSFER_RESUME_SMART));
-    int ResumeThresholdLeft = ResumeSmartButton->GetRight();
-
-    TFarRadioButton * ResumeOffButton = new TFarRadioButton(Dialog);
-    ResumeOffButton->SetCaption(GetMsg(TRANSFER_RESUME_OFF));
-
-    TFarEdit * ResumeThresholdEdit = new TFarEdit(Dialog);
-    ResumeThresholdEdit->Move(0, -2);
-    ResumeThresholdEdit->SetLeft(ResumeThresholdLeft + 3);
-    ResumeThresholdEdit->SetFixed(true);
-    ResumeThresholdEdit->SetMask(L"9999999");
-    ResumeThresholdEdit->SetWidth(9);
-    ResumeThresholdEdit->SetEnabledDependency(ResumeSmartButton);
-
-    Dialog->SetNextItemPosition(ipRight);
-
-    Text = new TFarText(Dialog);
-    Text->SetCaption(GetMsg(TRANSFER_RESUME_THRESHOLD_UNIT));
-    Text->SetEnabledDependency(ResumeSmartButton);
-
-    Dialog->SetNextItemPosition(ipNewLine);
-
-    Separator = new TFarSeparator(Dialog);
-    Separator->SetCaption(GetMsg(TRANSFER_SESSION_REOPEN_GROUP));
-    Separator->Move(0, 1);
-
-    TFarCheckBox * SessionReopenAutoCheck = new TFarCheckBox(Dialog);
-    SessionReopenAutoCheck->SetCaption(GetMsg(TRANSFER_SESSION_REOPEN_AUTO_LABEL));
-
-    Dialog->SetNextItemPosition(ipRight);
-
-    TFarEdit * SessionReopenAutoEdit = new TFarEdit(Dialog);
-    SessionReopenAutoEdit->SetEnabledDependency(SessionReopenAutoCheck);
-    SessionReopenAutoEdit->SetFixed(true);
-    SessionReopenAutoEdit->SetMask(L"999");
-    SessionReopenAutoEdit->SetWidth(5);
-    SessionReopenAutoEdit->Move(12, 0);
-
-    Text = new TFarText(Dialog);
-    Text->SetCaption(GetMsg(TRANSFER_SESSION_REOPEN_AUTO_LABEL2));
-    Text->SetEnabledDependency(SessionReopenAutoCheck);
-
-    Dialog->SetNextItemPosition(ipNewLine);
-
-    Text = new TFarText(Dialog);
-    Text->SetCaption(GetMsg(TRANSFER_SESSION_REOPEN_NUMBER_OF_RETRIES_LABEL));
-    Text->SetEnabledDependency(SessionReopenAutoCheck);
-    Text->Move(4, 0);
-
-    Dialog->SetNextItemPosition(ipRight);
-
-    TFarEdit * SessionReopenNumberOfRetriesEdit = new TFarEdit(Dialog);
-    SessionReopenNumberOfRetriesEdit->SetEnabledDependency(SessionReopenAutoCheck);
-    SessionReopenNumberOfRetriesEdit->SetFixed(true);
-    SessionReopenNumberOfRetriesEdit->SetMask(L"999");
-    SessionReopenNumberOfRetriesEdit->SetWidth(5);
-
-    Text = new TFarText(Dialog);
-    Text->SetCaption(GetMsg(TRANSFER_SESSION_REOPEN_NUMBER_OF_RETRIES_LABEL2));
-    Text->SetEnabledDependency(SessionReopenAutoCheck);
-
-    Dialog->AddStandardButtons();
-
-    ResumeOnButton->SetChecked(GUIConfiguration->GetDefaultCopyParam().GetResumeSupport() == rsOn);
-    ResumeSmartButton->SetChecked(GUIConfiguration->GetDefaultCopyParam().GetResumeSupport() == rsSmart);
-    ResumeOffButton->SetChecked(GUIConfiguration->GetDefaultCopyParam().GetResumeSupport() == rsOff);
-    ResumeThresholdEdit->SetAsInteger(
-      static_cast<int>(GUIConfiguration->GetDefaultCopyParam().GetResumeThreshold() / 1024));
-
-    SessionReopenAutoCheck->SetChecked((Configuration->GetSessionReopenAuto() > 0));
-    SessionReopenAutoEdit->SetAsInteger((Configuration->GetSessionReopenAuto() > 0 ?
-      (Configuration->GetSessionReopenAuto() / 1000) : 5));
-    SessionReopenNumberOfRetriesEdit->SetAsInteger((Configuration->GetSessionReopenAutoMaximumNumberOfRetries() > 0 ?
-      Configuration->GetSessionReopenAutoMaximumNumberOfRetries() : CONST_DEFAULT_NUMBER_OF_RETRIES));
-
-    Result = (Dialog->ShowModal() == brOK);
-
-    if (Result)
+    Configuration->BeginUpdate();
+    TRY_FINALLY (
     {
-      Configuration->BeginUpdate();
-      TRY_FINALLY (
-      {
-        TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
+      TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
 
-        if (ResumeOnButton->GetChecked()) { CopyParam.SetResumeSupport(rsOn); }
-        if (ResumeSmartButton->GetChecked()) { CopyParam.SetResumeSupport(rsSmart); }
-        if (ResumeOffButton->GetChecked()) { CopyParam.SetResumeSupport(rsOff); }
-        CopyParam.SetResumeThreshold(ResumeThresholdEdit->GetAsInteger() * 1024);
+      if (ResumeOnButton->GetChecked()) { CopyParam.SetResumeSupport(rsOn); }
+      if (ResumeSmartButton->GetChecked()) { CopyParam.SetResumeSupport(rsSmart); }
+      if (ResumeOffButton->GetChecked()) { CopyParam.SetResumeSupport(rsOff); }
+      CopyParam.SetResumeThreshold(ResumeThresholdEdit->GetAsInteger() * 1024);
 
-        GUIConfiguration->SetDefaultCopyParam(CopyParam);
+      GUIConfiguration->SetDefaultCopyParam(CopyParam);
 
-        Configuration->SetSessionReopenAuto(
-          (SessionReopenAutoCheck->GetChecked() ? (SessionReopenAutoEdit->GetAsInteger() * 1000) : 0));
-        Configuration->SetSessionReopenAutoMaximumNumberOfRetries(
-          (SessionReopenAutoCheck->GetChecked() ? SessionReopenNumberOfRetriesEdit->GetAsInteger() : CONST_DEFAULT_NUMBER_OF_RETRIES));
-      }
-      ,
-      {
-        Configuration->EndUpdate();
-      }
-      );
+      Configuration->SetSessionReopenAuto(
+        (SessionReopenAutoCheck->GetChecked() ? (SessionReopenAutoEdit->GetAsInteger() * 1000) : 0));
+      Configuration->SetSessionReopenAutoMaximumNumberOfRetries(
+        (SessionReopenAutoCheck->GetChecked() ? SessionReopenNumberOfRetriesEdit->GetAsInteger() : CONST_DEFAULT_NUMBER_OF_RETRIES));
     }
+    ,
+    {
+      Configuration->EndUpdate();
+    }
+    );
   }
   return Result;
 }
@@ -712,68 +704,66 @@ bool __fastcall TWinSCPPlugin::QueueConfigurationDialog()
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  TFarText * Text;
+
+  Dialog->SetSize(TPoint(76, 11));
+  Dialog->SetCaption(FORMAT(L"%s - %s",
+    GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_BACKGROUND)).c_str()));
+
+  Text = new TFarText(Dialog);
+  Text->SetCaption(GetMsg(TRANSFER_QUEUE_LIMIT));
+
+  Dialog->SetNextItemPosition(ipRight);
+
+  TFarEdit * QueueTransferLimitEdit = new TFarEdit(Dialog);
+  QueueTransferLimitEdit->SetFixed(true);
+  QueueTransferLimitEdit->SetMask(L"9");
+  QueueTransferLimitEdit->SetWidth(3);
+
+  Dialog->SetNextItemPosition(ipNewLine);
+
+  TFarCheckBox * QueueCheck = new TFarCheckBox(Dialog);
+  QueueCheck->SetCaption(GetMsg(TRANSFER_QUEUE_DEFAULT));
+
+  TFarCheckBox * QueueAutoPopupCheck = new TFarCheckBox(Dialog);
+  QueueAutoPopupCheck->SetCaption(GetMsg(TRANSFER_AUTO_POPUP));
+
+  TFarCheckBox * RememberPasswordCheck = new TFarCheckBox(Dialog);
+  RememberPasswordCheck->SetCaption(GetMsg(TRANSFER_REMEMBER_PASSWORD));
+
+  TFarCheckBox * QueueBeepCheck = new TFarCheckBox(Dialog);
+  QueueBeepCheck->SetCaption(GetMsg(TRANSFER_QUEUE_BEEP));
+
+  Dialog->AddStandardButtons();
+
+  QueueTransferLimitEdit->SetAsInteger(FarConfiguration->GetQueueTransfersLimit());
+  QueueCheck->SetChecked(FarConfiguration->GetDefaultCopyParam().GetQueue());
+  QueueAutoPopupCheck->SetChecked(FarConfiguration->GetQueueAutoPopup());
+  RememberPasswordCheck->SetChecked(GUIConfiguration->GetQueueRememberPassword());
+  QueueBeepCheck->SetChecked(FarConfiguration->GetQueueBeep());
+
+  Result = (Dialog->ShowModal() == brOK);
+
+  if (Result)
   {
-    TFarText * Text;
-
-    Dialog->SetSize(TPoint(76, 11));
-    Dialog->SetCaption(FORMAT(L"%s - %s",
-      GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_BACKGROUND)).c_str()));
-
-    Text = new TFarText(Dialog);
-    Text->SetCaption(GetMsg(TRANSFER_QUEUE_LIMIT));
-
-    Dialog->SetNextItemPosition(ipRight);
-
-    TFarEdit * QueueTransferLimitEdit = new TFarEdit(Dialog);
-    QueueTransferLimitEdit->SetFixed(true);
-    QueueTransferLimitEdit->SetMask(L"9");
-    QueueTransferLimitEdit->SetWidth(3);
-
-    Dialog->SetNextItemPosition(ipNewLine);
-
-    TFarCheckBox * QueueCheck = new TFarCheckBox(Dialog);
-    QueueCheck->SetCaption(GetMsg(TRANSFER_QUEUE_DEFAULT));
-
-    TFarCheckBox * QueueAutoPopupCheck = new TFarCheckBox(Dialog);
-    QueueAutoPopupCheck->SetCaption(GetMsg(TRANSFER_AUTO_POPUP));
-
-    TFarCheckBox * RememberPasswordCheck = new TFarCheckBox(Dialog);
-    RememberPasswordCheck->SetCaption(GetMsg(TRANSFER_REMEMBER_PASSWORD));
-
-    TFarCheckBox * QueueBeepCheck = new TFarCheckBox(Dialog);
-    QueueBeepCheck->SetCaption(GetMsg(TRANSFER_QUEUE_BEEP));
-
-    Dialog->AddStandardButtons();
-
-    QueueTransferLimitEdit->SetAsInteger(FarConfiguration->GetQueueTransfersLimit());
-    QueueCheck->SetChecked(FarConfiguration->GetDefaultCopyParam().GetQueue());
-    QueueAutoPopupCheck->SetChecked(FarConfiguration->GetQueueAutoPopup());
-    RememberPasswordCheck->SetChecked(GUIConfiguration->GetQueueRememberPassword());
-    QueueBeepCheck->SetChecked(FarConfiguration->GetQueueBeep());
-
-    Result = (Dialog->ShowModal() == brOK);
-
-    if (Result)
+    Configuration->BeginUpdate();
+    TRY_FINALLY (
     {
-      Configuration->BeginUpdate();
-      TRY_FINALLY (
-      {
-        TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
+      TGUICopyParamType & CopyParam = GUIConfiguration->GetDefaultCopyParam();
 
-        FarConfiguration->SetQueueTransfersLimit(QueueTransferLimitEdit->GetAsInteger());
-        CopyParam.SetQueue(QueueCheck->GetChecked());
-        FarConfiguration->SetQueueAutoPopup(QueueAutoPopupCheck->GetChecked());
-        GUIConfiguration->SetQueueRememberPassword(RememberPasswordCheck->GetChecked());
-        FarConfiguration->SetQueueBeep(QueueBeepCheck->GetChecked());
+      FarConfiguration->SetQueueTransfersLimit(QueueTransferLimitEdit->GetAsInteger());
+      CopyParam.SetQueue(QueueCheck->GetChecked());
+      FarConfiguration->SetQueueAutoPopup(QueueAutoPopupCheck->GetChecked());
+      GUIConfiguration->SetQueueRememberPassword(RememberPasswordCheck->GetChecked());
+      FarConfiguration->SetQueueBeep(QueueBeepCheck->GetChecked());
 
-        GUIConfiguration->SetDefaultCopyParam(CopyParam);
-      }
-      ,
-      {
-        Configuration->EndUpdate();
-      }
-      );
+      GUIConfiguration->SetDefaultCopyParam(CopyParam);
     }
+    ,
+    {
+      Configuration->EndUpdate();
+    }
+    );
   }
   return Result;
 }
@@ -902,9 +892,7 @@ bool __fastcall TWinSCPPlugin::TransferEditorConfigurationDialog()
   bool Result = false;
   TTransferEditorConfigurationDialog * Dialog = new TTransferEditorConfigurationDialog(this);
   std::auto_ptr<TTransferEditorConfigurationDialog> DialogPtr(Dialog);
-  {
-    Result = Dialog->Execute();
-  }
+  Result = Dialog->Execute();
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -913,56 +901,54 @@ bool __fastcall TWinSCPPlugin::ConfirmationsConfigurationDialog()
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  Dialog->SetSize(TPoint(65, 10));
+  Dialog->SetCaption(FORMAT(L"%s - %s",
+    GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_CONFIRMATIONS)).c_str()));
+
+  TFarCheckBox * ConfirmOverwritingCheck = new TFarCheckBox(Dialog);
+  ConfirmOverwritingCheck->SetAllowGrayed(true);
+  ConfirmOverwritingCheck->SetCaption(GetMsg(CONFIRMATIONS_CONFIRM_OVERWRITING));
+
+  TFarCheckBox * ConfirmCommandSessionCheck = new TFarCheckBox(Dialog);
+  ConfirmCommandSessionCheck->SetCaption(GetMsg(CONFIRMATIONS_OPEN_COMMAND_SESSION));
+
+  TFarCheckBox * ConfirmResumeCheck = new TFarCheckBox(Dialog);
+  ConfirmResumeCheck->SetCaption(GetMsg(CONFIRMATIONS_CONFIRM_RESUME));
+
+  TFarCheckBox * ConfirmSynchronizedBrowsingCheck = new TFarCheckBox(Dialog);
+  ConfirmSynchronizedBrowsingCheck->SetCaption(GetMsg(CONFIRMATIONS_SYNCHRONIZED_BROWSING));
+
+  Dialog->AddStandardButtons();
+
+  ConfirmOverwritingCheck->SetSelected(!FarConfiguration->GetConfirmOverwritingOverride() ?
+    BSTATE_3STATE : (Configuration->GetConfirmOverwriting() ? BSTATE_CHECKED :
+                       BSTATE_UNCHECKED));
+  ConfirmCommandSessionCheck->SetChecked(GUIConfiguration->GetConfirmCommandSession());
+  ConfirmResumeCheck->SetChecked(GUIConfiguration->GetConfirmResume());
+  ConfirmSynchronizedBrowsingCheck->SetChecked(FarConfiguration->GetConfirmSynchronizedBrowsing());
+
+  Result = (Dialog->ShowModal() == brOK);
+
+  if (Result)
   {
-    Dialog->SetSize(TPoint(65, 10));
-    Dialog->SetCaption(FORMAT(L"%s - %s",
-      GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_CONFIRMATIONS)).c_str()));
-
-    TFarCheckBox * ConfirmOverwritingCheck = new TFarCheckBox(Dialog);
-    ConfirmOverwritingCheck->SetAllowGrayed(true);
-    ConfirmOverwritingCheck->SetCaption(GetMsg(CONFIRMATIONS_CONFIRM_OVERWRITING));
-
-    TFarCheckBox * ConfirmCommandSessionCheck = new TFarCheckBox(Dialog);
-    ConfirmCommandSessionCheck->SetCaption(GetMsg(CONFIRMATIONS_OPEN_COMMAND_SESSION));
-
-    TFarCheckBox * ConfirmResumeCheck = new TFarCheckBox(Dialog);
-    ConfirmResumeCheck->SetCaption(GetMsg(CONFIRMATIONS_CONFIRM_RESUME));
-
-    TFarCheckBox * ConfirmSynchronizedBrowsingCheck = new TFarCheckBox(Dialog);
-    ConfirmSynchronizedBrowsingCheck->SetCaption(GetMsg(CONFIRMATIONS_SYNCHRONIZED_BROWSING));
-
-    Dialog->AddStandardButtons();
-
-    ConfirmOverwritingCheck->SetSelected(!FarConfiguration->GetConfirmOverwritingOverride() ?
-      BSTATE_3STATE : (Configuration->GetConfirmOverwriting() ? BSTATE_CHECKED :
-                         BSTATE_UNCHECKED));
-    ConfirmCommandSessionCheck->SetChecked(GUIConfiguration->GetConfirmCommandSession());
-    ConfirmResumeCheck->SetChecked(GUIConfiguration->GetConfirmResume());
-    ConfirmSynchronizedBrowsingCheck->SetChecked(FarConfiguration->GetConfirmSynchronizedBrowsing());
-
-    Result = (Dialog->ShowModal() == brOK);
-
-    if (Result)
+    Configuration->BeginUpdate();
+    TRY_FINALLY (
     {
-      Configuration->BeginUpdate();
-      TRY_FINALLY (
+      FarConfiguration->SetConfirmOverwritingOverride(
+        ConfirmOverwritingCheck->GetSelected() != BSTATE_3STATE);
+      GUIConfiguration->SetConfirmCommandSession(ConfirmCommandSessionCheck->GetChecked());
+      GUIConfiguration->SetConfirmResume(ConfirmResumeCheck->GetChecked());
+      if (FarConfiguration->GetConfirmOverwritingOverride())
       {
-        FarConfiguration->SetConfirmOverwritingOverride(
-          ConfirmOverwritingCheck->GetSelected() != BSTATE_3STATE);
-        GUIConfiguration->SetConfirmCommandSession(ConfirmCommandSessionCheck->GetChecked());
-        GUIConfiguration->SetConfirmResume(ConfirmResumeCheck->GetChecked());
-        if (FarConfiguration->GetConfirmOverwritingOverride())
-        {
-          Configuration->SetConfirmOverwriting(ConfirmOverwritingCheck->GetChecked());
-        }
-        FarConfiguration->SetConfirmSynchronizedBrowsing(ConfirmSynchronizedBrowsingCheck->GetChecked());
+        Configuration->SetConfirmOverwriting(ConfirmOverwritingCheck->GetChecked());
       }
-      ,
-      {
-        Configuration->EndUpdate();
-      }
-      );
+      FarConfiguration->SetConfirmSynchronizedBrowsing(ConfirmSynchronizedBrowsingCheck->GetChecked());
     }
+    ,
+    {
+      Configuration->EndUpdate();
+    }
+    );
   }
   return Result;
 }
@@ -972,63 +958,61 @@ bool __fastcall TWinSCPPlugin::IntegrationConfigurationDialog()
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  TFarText * Text;
+
+  Dialog->SetSize(TPoint(65, 14));
+  Dialog->SetCaption(FORMAT(L"%s - %s",
+    GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_INTEGRATION)).c_str()));
+
+  Text = new TFarText(Dialog);
+  Text->SetCaption(GetMsg(INTEGRATION_PUTTY));
+
+  TFarEdit * PuttyPathEdit = new TFarEdit(Dialog);
+
+  TFarCheckBox * PuttyPasswordCheck = new TFarCheckBox(Dialog);
+  PuttyPasswordCheck->SetCaption(GetMsg(INTEGRATION_PUTTY_PASSWORD));
+  PuttyPasswordCheck->SetEnabledDependency(PuttyPathEdit);
+
+  TFarCheckBox * TelnetForFtpInPuttyCheck = new TFarCheckBox(Dialog);
+  TelnetForFtpInPuttyCheck->SetCaption(GetMsg(INTEGRATION_TELNET_FOR_FTP_IN_PUTTY));
+  TelnetForFtpInPuttyCheck->SetEnabledDependency(PuttyPathEdit);
+
+  Text = new TFarText(Dialog);
+  Text->SetCaption(GetMsg(INTEGRATION_PAGEANT));
+
+  TFarEdit * PageantPathEdit = new TFarEdit(Dialog);
+
+  Text = new TFarText(Dialog);
+  Text->SetCaption(GetMsg(INTEGRATION_PUTTYGEN));
+
+  TFarEdit * PuttygenPathEdit = new TFarEdit(Dialog);
+
+  Dialog->AddStandardButtons();
+
+  PuttyPathEdit->SetText(GUIConfiguration->GetPuttyPath());
+  PuttyPasswordCheck->SetChecked(GUIConfiguration->GetPuttyPassword());
+  TelnetForFtpInPuttyCheck->SetChecked(GUIConfiguration->GetTelnetForFtpInPutty());
+  PageantPathEdit->SetText(FarConfiguration->GetPageantPath());
+  PuttygenPathEdit->SetText(FarConfiguration->GetPuttygenPath());
+
+  Result = (Dialog->ShowModal() == brOK);
+
+  if (Result)
   {
-    TFarText * Text;
-
-    Dialog->SetSize(TPoint(65, 14));
-    Dialog->SetCaption(FORMAT(L"%s - %s",
-      GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_INTEGRATION)).c_str()));
-
-    Text = new TFarText(Dialog);
-    Text->SetCaption(GetMsg(INTEGRATION_PUTTY));
-
-    TFarEdit * PuttyPathEdit = new TFarEdit(Dialog);
-
-    TFarCheckBox * PuttyPasswordCheck = new TFarCheckBox(Dialog);
-    PuttyPasswordCheck->SetCaption(GetMsg(INTEGRATION_PUTTY_PASSWORD));
-    PuttyPasswordCheck->SetEnabledDependency(PuttyPathEdit);
-
-    TFarCheckBox * TelnetForFtpInPuttyCheck = new TFarCheckBox(Dialog);
-    TelnetForFtpInPuttyCheck->SetCaption(GetMsg(INTEGRATION_TELNET_FOR_FTP_IN_PUTTY));
-    TelnetForFtpInPuttyCheck->SetEnabledDependency(PuttyPathEdit);
-
-    Text = new TFarText(Dialog);
-    Text->SetCaption(GetMsg(INTEGRATION_PAGEANT));
-
-    TFarEdit * PageantPathEdit = new TFarEdit(Dialog);
-
-    Text = new TFarText(Dialog);
-    Text->SetCaption(GetMsg(INTEGRATION_PUTTYGEN));
-
-    TFarEdit * PuttygenPathEdit = new TFarEdit(Dialog);
-
-    Dialog->AddStandardButtons();
-
-    PuttyPathEdit->SetText(GUIConfiguration->GetPuttyPath());
-    PuttyPasswordCheck->SetChecked(GUIConfiguration->GetPuttyPassword());
-    TelnetForFtpInPuttyCheck->SetChecked(GUIConfiguration->GetTelnetForFtpInPutty());
-    PageantPathEdit->SetText(FarConfiguration->GetPageantPath());
-    PuttygenPathEdit->SetText(FarConfiguration->GetPuttygenPath());
-
-    Result = (Dialog->ShowModal() == brOK);
-
-    if (Result)
+    Configuration->BeginUpdate();
+    TRY_FINALLY (
     {
-      Configuration->BeginUpdate();
-      TRY_FINALLY (
-      {
-        GUIConfiguration->SetPuttyPath(PuttyPathEdit->GetText());
-        GUIConfiguration->SetPuttyPassword(PuttyPasswordCheck->GetChecked());
-        GUIConfiguration->SetTelnetForFtpInPutty(TelnetForFtpInPuttyCheck->GetChecked());
-        FarConfiguration->SetPageantPath(PageantPathEdit->GetText());
-        FarConfiguration->SetPuttygenPath(PuttygenPathEdit->GetText());
-      }
-      ,
-      {
-        Configuration->EndUpdate();
-      }
-      );
+      GUIConfiguration->SetPuttyPath(PuttyPathEdit->GetText());
+      GUIConfiguration->SetPuttyPassword(PuttyPasswordCheck->GetChecked());
+      GUIConfiguration->SetTelnetForFtpInPutty(TelnetForFtpInPuttyCheck->GetChecked());
+      FarConfiguration->SetPageantPath(PageantPathEdit->GetText());
+      FarConfiguration->SetPuttygenPath(PuttygenPathEdit->GetText());
     }
+    ,
+    {
+      Configuration->EndUpdate();
+    }
+    );
   }
   return Result;
 }
@@ -1216,9 +1200,7 @@ void __fastcall TWinSCPPlugin::AboutDialog()
 {
   TFarDialog * Dialog = new TAboutDialog(this);
   std::auto_ptr<TFarDialog> DialogPtr(Dialog);
-  {
-    Dialog->ShowModal();
-  }
+  Dialog->ShowModal();
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -1426,9 +1408,7 @@ bool __fastcall TWinSCPFileSystem::PasswordDialog(TSessionData * SessionData,
   TPasswordDialog * Dialog = new TPasswordDialog(FPlugin, SessionData->GetName(),
     Kind, Name, Instructions, Prompts, StoredCredentialsTried);
   std::auto_ptr<TPasswordDialog> DialogPtr(Dialog);
-  {
-    Result = Dialog->Execute(Results);
-  }
+  Result = Dialog->Execute(Results);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1439,50 +1419,48 @@ bool __fastcall TWinSCPFileSystem::BannerDialog(const UnicodeString SessionName,
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(FPlugin);
   std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  Dialog->SetSize(TPoint(70, 21));
+  Dialog->SetCaption(FORMAT(GetMsg(BANNER_TITLE).c_str(), SessionName.c_str()));
+
+  TFarLister * Lister = new TFarLister(Dialog);
+  FarWrapText(Banner, Lister->GetItems(), Dialog->GetBorderBox()->GetWidth() - 4);
+  Lister->SetHeight(15);
+  Lister->SetLeft(Dialog->GetBorderBox()->GetLeft() + 1);
+  Lister->SetRight(Dialog->GetBorderBox()->GetRight() - (Lister->GetScrollBar() ? 0 : 1));
+
+  new TFarSeparator(Dialog);
+
+  TFarCheckBox * NeverShowAgainCheck = NULL;
+  if (FLAGCLEAR(Options, boDisableNeverShowAgain))
   {
-    Dialog->SetSize(TPoint(70, 21));
-    Dialog->SetCaption(FORMAT(GetMsg(BANNER_TITLE).c_str(), SessionName.c_str()));
+    NeverShowAgainCheck = new TFarCheckBox(Dialog);
+    NeverShowAgainCheck->SetCaption(GetMsg(BANNER_NEVER_SHOW_AGAIN));
+    NeverShowAgainCheck->SetVisible(FLAGCLEAR(Options, boDisableNeverShowAgain));
+    NeverShowAgainCheck->SetChecked(NeverShowAgain);
 
-    TFarLister * Lister = new TFarLister(Dialog);
-    FarWrapText(Banner, Lister->GetItems(), Dialog->GetBorderBox()->GetWidth() - 4);
-    Lister->SetHeight(15);
-    Lister->SetLeft(Dialog->GetBorderBox()->GetLeft() + 1);
-    Lister->SetRight(Dialog->GetBorderBox()->GetRight() - (Lister->GetScrollBar() ? 0 : 1));
+    Dialog->SetNextItemPosition(ipRight);
+  }
 
-    new TFarSeparator(Dialog);
+  TFarButton * Button = new TFarButton(Dialog);
+  Button->SetCaption(GetMsg(BANNER_CONTINUE));
+  Button->SetDefault(true);
+  Button->SetResult(brOK);
+  if (NeverShowAgainCheck != NULL)
+  {
+    Button->SetLeft(Dialog->GetBorderBox()->GetRight() - Button->GetWidth() - 1);
+  }
+  else
+  {
+    Button->SetCenterGroup(true);
+  }
 
-    TFarCheckBox * NeverShowAgainCheck = NULL;
-    if (FLAGCLEAR(Options, boDisableNeverShowAgain))
-    {
-      NeverShowAgainCheck = new TFarCheckBox(Dialog);
-      NeverShowAgainCheck->SetCaption(GetMsg(BANNER_NEVER_SHOW_AGAIN));
-      NeverShowAgainCheck->SetVisible(FLAGCLEAR(Options, boDisableNeverShowAgain));
-      NeverShowAgainCheck->SetChecked(NeverShowAgain);
+  Result = (Dialog->ShowModal() == brOK);
 
-      Dialog->SetNextItemPosition(ipRight);
-    }
-
-    TFarButton * Button = new TFarButton(Dialog);
-    Button->SetCaption(GetMsg(BANNER_CONTINUE));
-    Button->SetDefault(true);
-    Button->SetResult(brOK);
+  if (Result)
+  {
     if (NeverShowAgainCheck != NULL)
     {
-      Button->SetLeft(Dialog->GetBorderBox()->GetRight() - Button->GetWidth() - 1);
-    }
-    else
-    {
-      Button->SetCenterGroup(true);
-    }
-
-    Result = (Dialog->ShowModal() == brOK);
-
-    if (Result)
-    {
-      if (NeverShowAgainCheck != NULL)
-      {
-        NeverShowAgain = NeverShowAgainCheck->GetChecked();
-      }
+      NeverShowAgain = NeverShowAgainCheck->GetChecked();
     }
   }
   return Result;
@@ -3299,13 +3277,11 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
   FtpAllowEmptyPasswordCheck->SetChecked(SessionData->GetFtpAllowEmptyPassword());
   TStrings * PostLoginCommands = new TStringList();
   std::auto_ptr<TStrings> PostLoginCommandsPtr(PostLoginCommands);
+  PostLoginCommands->Text = SessionData->GetPostLoginCommands();
+  for (int Index = 0; (Index < PostLoginCommands->Count) &&
+       (Index < LENOF(PostLoginCommandsEdits)); Index++)
   {
-    PostLoginCommands->Text = SessionData->GetPostLoginCommands();
-    for (int Index = 0; (Index < PostLoginCommands->Count) &&
-         (Index < LENOF(PostLoginCommandsEdits)); Index++)
-    {
-      PostLoginCommandsEdits[Index]->SetText(PostLoginCommands->Strings[Index]);
-    }
+    PostLoginCommandsEdits[Index]->SetText(PostLoginCommands->Strings[Index]);
   }
 
   SslSessionReuseCheck->SetChecked(SessionData->GetSslSessionReuse());
@@ -3606,18 +3582,16 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
     SessionData->SetSslSessionReuse(SslSessionReuseCheck->GetChecked());
     TStrings * PostLoginCommands = new TStringList();
     std::auto_ptr<TStrings> PostLoginCommandsPtr(PostLoginCommands);
+    for (int Index = 0; Index < LENOF(PostLoginCommandsEdits); Index++)
     {
-      for (int Index = 0; Index < LENOF(PostLoginCommandsEdits); Index++)
+      UnicodeString Text = PostLoginCommandsEdits[Index]->GetText();
+      if (!Text.IsEmpty())
       {
-        UnicodeString Text = PostLoginCommandsEdits[Index]->GetText();
-        if (!Text.IsEmpty())
-        {
-          PostLoginCommands->Add(PostLoginCommandsEdits[Index]->GetText());
-        }
+        PostLoginCommands->Add(PostLoginCommandsEdits[Index]->GetText());
       }
-
-      SessionData->SetPostLoginCommands(PostLoginCommands->Text);
     }
+
+    SessionData->SetPostLoginCommands(PostLoginCommands->Text);
     if ((GetFSProtocol() == fsFTP) && (GetFtps() != ftpsNone))
     {
       SessionData->SetFtps(GetFtps());
@@ -4214,9 +4188,7 @@ bool __fastcall TWinSCPFileSystem::SessionDialog(TSessionData * SessionData,
   bool Result = false;
   TSessionDialog * Dialog = new TSessionDialog(FPlugin, Action);
   std::auto_ptr<TSessionDialog> DialogPtr(Dialog);
-  {
-    Result = Dialog->Execute(SessionData, Action);
-  }
+  Result = Dialog->Execute(SessionData, Action);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -4846,9 +4818,7 @@ bool __fastcall TWinSCPFileSystem::PropertiesDialog(TStrings * FileList,
   TPropertiesDialog * Dialog = new TPropertiesDialog(FPlugin, FileList,
     Directory, GroupList, UserList, AllowedChanges);
   std::auto_ptr<TPropertiesDialog> DialogPtr(Dialog);
-  {
-    Result = Dialog->Execute(Properties);
-  }
+  Result = Dialog->Execute(Properties);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -5565,11 +5535,9 @@ void __fastcall TCopyDialog::Change()
     UnicodeString InfoStr = FCopyParams.GetInfoStr(L"; ", FCopyParamAttrs);
     TStringList * InfoStrLines = new TStringList();
     std::auto_ptr<TStrings> InfoStrLinesPtr(InfoStrLines);
-    {
-      FarWrapText(InfoStr, InfoStrLines, GetBorderBox()->GetWidth() - 4);
-      CopyParamLister->SetItems(InfoStrLines);
-      CopyParamLister->SetRight(GetBorderBox()->GetRight() - (CopyParamLister->GetScrollBar() ? 0 : 1));
-    }
+    FarWrapText(InfoStr, InfoStrLines, GetBorderBox()->GetWidth() - 4);
+    CopyParamLister->SetItems(InfoStrLines);
+    CopyParamLister->SetRight(GetBorderBox()->GetRight() - (CopyParamLister->GetScrollBar() ? 0 : 1));
   }
 }
 //---------------------------------------------------------------------------
@@ -5609,9 +5577,7 @@ bool __fastcall TWinSCPFileSystem::CopyDialog(bool ToRemote,
   TCopyDialog * Dialog = new TCopyDialog(FPlugin, ToRemote,
     Move, FileList, Options, CopyParamAttrs);
   std::auto_ptr<TCopyDialog> DialogPtr(Dialog);
-  {
-    Result = Dialog->Execute(TargetDirectory, Params);
-  }
+  Result = Dialog->Execute(TargetDirectory, Params);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -5621,29 +5587,27 @@ bool __fastcall TWinSCPPlugin::CopyParamDialog(const UnicodeString Caption,
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  Dialog->SetCaption(Caption);
+
+  // temporary
+  Dialog->SetSize(TPoint(78, 10));
+
+  TCopyParamsContainer * CopyParamsContainer = new TCopyParamsContainer(
+    Dialog, 0, CopyParamAttrs);
+
+  Dialog->SetSize(TPoint(78, 2 + CopyParamsContainer->GetHeight() + 3));
+
+  Dialog->SetNextItemPosition(ipNewLine);
+
+  Dialog->AddStandardButtons(2, true);
+
+  CopyParamsContainer->SetParams(CopyParam);
+
+  Result = (Dialog->ShowModal() == brOK);
+
+  if (Result)
   {
-    Dialog->SetCaption(Caption);
-
-    // temporary
-    Dialog->SetSize(TPoint(78, 10));
-
-    TCopyParamsContainer * CopyParamsContainer = new TCopyParamsContainer(
-      Dialog, 0, CopyParamAttrs);
-
-    Dialog->SetSize(TPoint(78, 2 + CopyParamsContainer->GetHeight() + 3));
-
-    Dialog->SetNextItemPosition(ipNewLine);
-
-    Dialog->AddStandardButtons(2, true);
-
-    CopyParamsContainer->SetParams(CopyParam);
-
-    Result = (Dialog->ShowModal() == brOK);
-
-    if (Result)
-    {
-      CopyParam = CopyParamsContainer->GetParams();
-    }
+    CopyParam = CopyParamsContainer->GetParams();
   }
   return Result;
 }
@@ -5758,9 +5722,7 @@ bool __fastcall TWinSCPFileSystem::LinkDialog(UnicodeString & FileName,
   bool Result = false;
   TLinkDialog * Dialog = new TLinkDialog(FPlugin, Edit, AllowSymbolic);
   std::auto_ptr<TLinkDialog> DialogPtr(Dialog);
-  {
-    Result = Dialog->Execute(FileName, PointTo, Symbolic);
-  }
+  Result = Dialog->Execute(FileName, PointTo, Symbolic);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -6305,9 +6267,7 @@ void __fastcall TWinSCPFileSystem::FileSystemInfoDialog(
 {
   TFileSystemInfoDialog * Dialog = new TFileSystemInfoDialog(FPlugin, OnGetSpaceAvailable);
   std::auto_ptr<TFileSystemInfoDialog> DialogPtr(Dialog);
-  {
-    Dialog->Execute(SessionInfo, FileSystemInfo, SpaceAvailablePath);
-  }
+  Dialog->Execute(SessionInfo, FileSystemInfo, SpaceAvailablePath);
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -6327,147 +6287,143 @@ bool __fastcall TWinSCPFileSystem::OpenDirectoryDialog(
     std::auto_ptr<TStrings> BookmarkItemsPtr(BookmarkItems);
     TList * Bookmarks = new TList();
     std::auto_ptr<TList> BookmarksPtr(Bookmarks);
+    intptr_t BookmarksOffset = -1;
+
+    intptr_t MaxLength = FPlugin->MaxMenuItemLength();
+    intptr_t MaxHistory = 40;
+    intptr_t FirstHistory = 0;
+
+    if (FPathHistory->Count > MaxHistory)
     {
-      intptr_t BookmarksOffset = -1;
+      FirstHistory = FPathHistory->Count - MaxHistory + 1;
+    }
 
-      intptr_t MaxLength = FPlugin->MaxMenuItemLength();
-      intptr_t MaxHistory = 40;
-      intptr_t FirstHistory = 0;
+    for (int i = FirstHistory; i < FPathHistory->Count; i++)
+    {
+      UnicodeString Path = FPathHistory->Strings[i];
+      BookmarkPaths->Add(Path);
+      BookmarkItems->Add(MinimizeName(Path, MaxLength, true));
+    }
 
-      if (FPathHistory->Count > MaxHistory)
+    intptr_t FirstItemFocused = -1;
+    TStringList * BookmarkDirectories = new TStringList();
+    std::auto_ptr<TStringList> BookmarkDirectoriesPtr(BookmarkDirectories);
+    BookmarkDirectories->Sorted = true;
+    for (int i = 0; i < BookmarkList->GetCount(); i++)
+    {
+      TBookmark * Bookmark = BookmarkList->GetBookmarks(i);
+      UnicodeString RemoteDirectory = Bookmark->GetRemote();
+      if (!RemoteDirectory.IsEmpty() && (BookmarkDirectories->IndexOf(RemoteDirectory.c_str()) == NPOS))
       {
-        FirstHistory = FPathHistory->Count - MaxHistory + 1;
-      }
-
-      for (int i = FirstHistory; i < FPathHistory->Count; i++)
-      {
-        UnicodeString Path = FPathHistory->Strings[i];
-        BookmarkPaths->Add(Path);
-        BookmarkItems->Add(MinimizeName(Path, MaxLength, true));
-      }
-
-      intptr_t FirstItemFocused = -1;
-      TStringList * BookmarkDirectories = new TStringList();
-      std::auto_ptr<TStringList> BookmarkDirectoriesPtr(BookmarkDirectories);
-      {
-        BookmarkDirectories->Sorted = true;
-        for (int i = 0; i < BookmarkList->GetCount(); i++)
+        int Pos = 0;
+        Pos = BookmarkDirectories->Add(RemoteDirectory);
+        if (RemoteDirectory == Directory)
         {
-          TBookmark * Bookmark = BookmarkList->GetBookmarks(i);
-          UnicodeString RemoteDirectory = Bookmark->GetRemote();
-          if (!RemoteDirectory.IsEmpty() && (BookmarkDirectories->IndexOf(RemoteDirectory.c_str()) == NPOS))
-          {
-            int Pos = 0;
-            Pos = BookmarkDirectories->Add(RemoteDirectory);
-            if (RemoteDirectory == Directory)
-            {
-              FirstItemFocused = Pos;
-            }
-            else if ((FirstItemFocused >= 0) && (FirstItemFocused >= Pos))
-            {
-              FirstItemFocused++;
-            }
-            Bookmarks->Insert(Pos, Bookmark);
-          }
+          FirstItemFocused = Pos;
         }
-
-        if (BookmarkDirectories->Count == 0)
+        else if ((FirstItemFocused >= 0) && (FirstItemFocused >= Pos))
         {
-          FirstItemFocused = BookmarkItems->Add(L"");
-          BookmarkPaths->Add(L"");
-          BookmarksOffset = BookmarkItems->Count;
+          FirstItemFocused++;
         }
-        else
-        {
-          if (BookmarkItems->Count > 0)
-          {
-            BookmarkItems->AddSeparator();
-            BookmarkPaths->Add(L"");
-          }
+        Bookmarks->Insert(Pos, Bookmark);
+      }
+    }
 
-          BookmarksOffset = BookmarkItems->Count;
-
-          if (FirstItemFocused >= 0)
-          {
-            FirstItemFocused += BookmarkItems->Count;
-          }
-          else
-          {
-            FirstItemFocused = BookmarkItems->Count;
-          }
-
-          for (int ii = 0; ii < BookmarkDirectories->Count; ii++)
-          {
-            UnicodeString Path = BookmarkDirectories->Strings[ii];
-            BookmarkItems->Add(Path);
-            BookmarkPaths->Add(MinimizeName(Path, MaxLength, true));
-          }
-        }
+    if (BookmarkDirectories->Count == 0)
+    {
+      FirstItemFocused = BookmarkItems->Add(L"");
+      BookmarkPaths->Add(L"");
+      BookmarksOffset = BookmarkItems->Count;
+    }
+    else
+    {
+      if (BookmarkItems->Count > 0)
+      {
+        BookmarkItems->AddSeparator();
+        BookmarkPaths->Add(L"");
       }
 
-      if (ItemFocused < 0)
+      BookmarksOffset = BookmarkItems->Count;
+
+      if (FirstItemFocused >= 0)
       {
-        BookmarkItems->SetItemFocused(FirstItemFocused);
-      }
-      else if (ItemFocused < BookmarkItems->Count)
-      {
-        BookmarkItems->SetItemFocused(ItemFocused);
+        FirstItemFocused += BookmarkItems->Count;
       }
       else
       {
-        BookmarkItems->SetItemFocused(BookmarkItems->Count - 1);
+        FirstItemFocused = BookmarkItems->Count;
       }
 
-      int BreakCode;
-
-      Repeat = false;
-      UnicodeString Caption = GetMsg(Add ? OPEN_DIRECTORY_ADD_BOOMARK_ACTION :
-        OPEN_DIRECTORY_BROWSE_CAPTION);
-      const int BreakKeys[] = { VK_DELETE, VK_F8, VK_RETURN + (PKF_CONTROL << 16),
-        'C' + (PKF_CONTROL << 16), VK_INSERT + (PKF_CONTROL << 16), 0 };
-
-      ItemFocused = FPlugin->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
-        Caption, GetMsg(OPEN_DIRECTORY_HELP), BookmarkItems, BreakKeys, BreakCode);
-      if (BreakCode >= 0)
+      for (int ii = 0; ii < BookmarkDirectories->Count; ii++)
       {
-        assert(BreakCode >= 0 && BreakCode <= 4);
-        if ((BreakCode == 0) || (BreakCode == 1))
-        {
-          assert(ItemFocused >= 0);
-          if (ItemFocused >= BookmarksOffset)
-          {
-            TBookmark * Bookmark = static_cast<TBookmark *>(Bookmarks->GetItem(ItemFocused - BookmarksOffset));
-            BookmarkList->Delete(Bookmark);
-          }
-          else
-          {
-            FPathHistory->Clear();
-            ItemFocused = -1;
-          }
-          Repeat = true;
-        }
-        else if (BreakCode == 2)
-        {
-          FarControl(FCTL_INSERTCMDLINE, 0, reinterpret_cast<intptr_t>(BookmarkPaths->Strings[ItemFocused].c_str()));
-        }
-        else if (BreakCode == 3 || BreakCode == 4)
-        {
-          FPlugin->FarCopyToClipboard(BookmarkPaths->Strings[ItemFocused]);
-          Repeat = true;
-        }
+        UnicodeString Path = BookmarkDirectories->Strings[ii];
+        BookmarkItems->Add(Path);
+        BookmarkPaths->Add(MinimizeName(Path, MaxLength, true));
       }
-      else if (ItemFocused >= 0)
+    }
+
+    if (ItemFocused < 0)
+    {
+      BookmarkItems->SetItemFocused(FirstItemFocused);
+    }
+    else if (ItemFocused < BookmarkItems->Count)
+    {
+      BookmarkItems->SetItemFocused(ItemFocused);
+    }
+    else
+    {
+      BookmarkItems->SetItemFocused(BookmarkItems->Count - 1);
+    }
+
+    int BreakCode;
+
+    Repeat = false;
+    UnicodeString Caption = GetMsg(Add ? OPEN_DIRECTORY_ADD_BOOMARK_ACTION :
+      OPEN_DIRECTORY_BROWSE_CAPTION);
+    const int BreakKeys[] = { VK_DELETE, VK_F8, VK_RETURN + (PKF_CONTROL << 16),
+      'C' + (PKF_CONTROL << 16), VK_INSERT + (PKF_CONTROL << 16), 0 };
+
+    ItemFocused = FPlugin->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
+      Caption, GetMsg(OPEN_DIRECTORY_HELP), BookmarkItems, BreakKeys, BreakCode);
+    if (BreakCode >= 0)
+    {
+      assert(BreakCode >= 0 && BreakCode <= 4);
+      if ((BreakCode == 0) || (BreakCode == 1))
       {
-        Directory = BookmarkPaths->Strings[ItemFocused];
-        if (Directory.IsEmpty())
+        assert(ItemFocused >= 0);
+        if (ItemFocused >= BookmarksOffset)
         {
-          // empty trailing line in no-bookmark mode selected
+          TBookmark * Bookmark = static_cast<TBookmark *>(Bookmarks->GetItem(ItemFocused - BookmarksOffset));
+          BookmarkList->Delete(Bookmark);
+        }
+        else
+        {
+          FPathHistory->Clear();
           ItemFocused = -1;
         }
+        Repeat = true;
       }
-
-      Result = (BreakCode < 0) && (ItemFocused >= 0);
+      else if (BreakCode == 2)
+      {
+        FarControl(FCTL_INSERTCMDLINE, 0, reinterpret_cast<intptr_t>(BookmarkPaths->Strings[ItemFocused].c_str()));
+      }
+      else if (BreakCode == 3 || BreakCode == 4)
+      {
+        FPlugin->FarCopyToClipboard(BookmarkPaths->Strings[ItemFocused]);
+        Repeat = true;
+      }
     }
+    else if (ItemFocused >= 0)
+    {
+      Directory = BookmarkPaths->Strings[ItemFocused];
+      if (Directory.IsEmpty())
+      {
+        // empty trailing line in no-bookmark mode selected
+        ItemFocused = -1;
+      }
+    }
+
+    Result = (BreakCode < 0) && (ItemFocused >= 0);
   }
   while (Repeat);
 
@@ -6641,9 +6597,7 @@ bool __fastcall TWinSCPFileSystem::ApplyCommandDialog(UnicodeString & Command,
   bool Result = false;
   TApplyCommandDialog * Dialog = new TApplyCommandDialog(FPlugin);
   std::auto_ptr<TApplyCommandDialog> DialogPtr(Dialog);
-  {
-    Result = Dialog->Execute(Command, Params);
-  }
+  Result = Dialog->Execute(Command, Params);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -6934,11 +6888,9 @@ void __fastcall TFullSynchronizeDialog::Change()
     UnicodeString InfoStr = FCopyParams.GetInfoStr(L"; ", ActualCopyParamAttrs());
     TStringList * InfoStrLines = new TStringList();
     std::auto_ptr<TStrings> InfoStrLinesPtr(InfoStrLines);
-    {
-      FarWrapText(InfoStr, InfoStrLines, GetBorderBox()->GetWidth() - 4);
-      CopyParamLister->SetItems(InfoStrLines);
-      CopyParamLister->SetRight(GetBorderBox()->GetRight() - (CopyParamLister->GetScrollBar() ? 0 : 1));
-    }
+    FarWrapText(InfoStr, InfoStrLines, GetBorderBox()->GetWidth() - 4);
+    CopyParamLister->SetItems(InfoStrLines);
+    CopyParamLister->SetRight(GetBorderBox()->GetRight() - (CopyParamLister->GetScrollBar() ? 0 : 1));
   }
 }
 //---------------------------------------------------------------------------
@@ -7080,10 +7032,8 @@ bool __fastcall TWinSCPFileSystem::FullSynchronizeDialog(TTerminal::TSynchronize
   TFullSynchronizeDialog * Dialog = new TFullSynchronizeDialog(
     FPlugin, Options, CopyParamAttrs);
   std::auto_ptr<TFullSynchronizeDialog> DialogPtr(Dialog);
-  {
-    Result = Dialog->Execute(Mode, Params, LocalDirectory, RemoteDirectory,
-      CopyParams, SaveSettings, SaveMode);
-  }
+  Result = Dialog->Execute(Mode, Params, LocalDirectory, RemoteDirectory,
+    CopyParams, SaveSettings, SaveMode);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -7454,31 +7404,29 @@ void __fastcall TSynchronizeChecklistDialog::LoadChecklist()
   FChecked = 0;
   TFarList * List = new TFarList();
   std::auto_ptr<TFarList> ListPtr(List);
+  List->BeginUpdate();
+  for (int Index = 0; Index < FChecklist->GetCount(); Index++)
   {
-    List->BeginUpdate();
-    for (int Index = 0; Index < FChecklist->GetCount(); Index++)
-    {
-      const TSynchronizeChecklist::TItem * ChecklistItem = FChecklist->GetItem(Index);
+    const TSynchronizeChecklist::TItem * ChecklistItem = FChecklist->GetItem(Index);
 
-      List->AddObject(ItemLine(ChecklistItem),
-        const_cast<TObject *>(reinterpret_cast<const TObject *>(ChecklistItem)));
-    }
-    List->EndUpdate();
-
-    // items must be checked in second pass once the internal array is allocated
-    for (int Index = 0; Index < FChecklist->GetCount(); Index++)
-    {
-      const TSynchronizeChecklist::TItem * ChecklistItem = FChecklist->GetItem(Index);
-
-      List->SetChecked(Index, ChecklistItem->Checked);
-      if (ChecklistItem->Checked)
-      {
-        FChecked++;
-      }
-    }
-
-    ListBox->SetItems(List);
+    List->AddObject(ItemLine(ChecklistItem),
+      const_cast<TObject *>(reinterpret_cast<const TObject *>(ChecklistItem)));
   }
+  List->EndUpdate();
+
+  // items must be checked in second pass once the internal array is allocated
+  for (int Index = 0; Index < FChecklist->GetCount(); Index++)
+  {
+    const TSynchronizeChecklist::TItem * ChecklistItem = FChecklist->GetItem(Index);
+
+    List->SetChecked(Index, ChecklistItem->Checked);
+    if (ChecklistItem->Checked)
+    {
+      FChecked++;
+    }
+  }
+
+  ListBox->SetItems(List);
 
   UpdateControls();
 }
@@ -7692,9 +7640,7 @@ bool __fastcall TWinSCPFileSystem::SynchronizeChecklistDialog(
   TSynchronizeChecklistDialog * Dialog = new TSynchronizeChecklistDialog(
     FPlugin, Mode, Params, LocalDirectory, RemoteDirectory);
   std::auto_ptr<TSynchronizeChecklistDialog> DialogPtr(Dialog);
-  {
-    Result = Dialog->Execute(Checklist);
-  }
+  Result = Dialog->Execute(Checklist);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -8104,11 +8050,9 @@ void __fastcall TSynchronizeDialog::Change()
     UnicodeString InfoStr = FCopyParams.GetInfoStr(L"; ", ActualCopyParamAttrs());
     TStringList * InfoStrLines = new TStringList();
     std::auto_ptr<TStrings> InfoStrLinesPtr(InfoStrLines);
-    {
-      FarWrapText(InfoStr, InfoStrLines, GetBorderBox()->GetWidth() - 4);
-      CopyParamLister->SetItems(InfoStrLines);
-      CopyParamLister->SetRight(GetBorderBox()->GetRight() - (CopyParamLister->GetScrollBar() ? 0 : 1));
-    }
+    FarWrapText(InfoStr, InfoStrLines, GetBorderBox()->GetWidth() - 4);
+    CopyParamLister->SetItems(InfoStrLines);
+    CopyParamLister->SetRight(GetBorderBox()->GetRight() - (CopyParamLister->GetScrollBar() ? 0 : 1));
   }
 }
 //---------------------------------------------------------------------------
@@ -8155,9 +8099,7 @@ bool __fastcall TWinSCPFileSystem::SynchronizeDialog(TSynchronizeParamType & Par
   TSynchronizeDialog * Dialog = new TSynchronizeDialog(FPlugin, OnStartStop,
       Options, CopyParamAttrs, OnGetOptions);
   std::auto_ptr<TSynchronizeDialog> DialogPtr(Dialog);
-  {
-    Result = Dialog->Execute(Params, CopyParams, SaveSettings);
-  }
+  Result = Dialog->Execute(Params, CopyParams, SaveSettings);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -8535,22 +8477,20 @@ void __fastcall TQueueDialog::LoadQueue()
 {
   TFarList * List = new TFarList();
   std::auto_ptr<TFarList> ListPtr(List);
+  UnicodeString Line;
+  TQueueItemProxy * QueueItem = NULL;
+  for (int Index = 0; Index < FStatus->GetCount(); Index++)
   {
-    UnicodeString Line;
-    TQueueItemProxy * QueueItem = NULL;
-    for (int Index = 0; Index < FStatus->GetCount(); Index++)
+    QueueItem = FStatus->GetItem(Index);
+    size_t ILine = 0;
+    while (FillQueueItemLine(Line, QueueItem, ILine))
     {
-      QueueItem = FStatus->GetItem(Index);
-      size_t ILine = 0;
-      while (FillQueueItemLine(Line, QueueItem, ILine))
-      {
-        List->AddObject(Line, reinterpret_cast<TObject *>(QueueItem));
-        List->SetDisabled(List->Count - 1, (ILine > 0));
-        ILine++;
-      }
+      List->AddObject(Line, reinterpret_cast<TObject *>(QueueItem));
+      List->SetDisabled(List->Count - 1, (ILine > 0));
+      ILine++;
     }
-    QueueListBox->SetItems(List);
   }
+  QueueListBox->SetItems(List);
 }
 //---------------------------------------------------------------------------
 bool __fastcall TQueueDialog::FillQueueItemLine(UnicodeString & Line,
@@ -8702,9 +8642,7 @@ bool __fastcall TWinSCPFileSystem::QueueDialog(
   bool Result = false;
   TQueueDialog * Dialog = new TQueueDialog(FPlugin, this, ClosingPlugin);
   std::auto_ptr<TQueueDialog> DialogPtr(Dialog);
-  {
-    Result = Dialog->Execute(Status);
-  }
+  Result = Dialog->Execute(Status);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -8714,56 +8652,54 @@ bool __fastcall TWinSCPFileSystem::CreateDirectoryDialog(UnicodeString & Directo
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(FPlugin);
   std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  TFarText * Text;
+  TFarSeparator * Separator;
+
+  Dialog->SetCaption(GetMsg(CREATE_FOLDER_TITLE));
+  Dialog->SetSize(TPoint(66, 15));
+
+  Text = new TFarText(Dialog);
+  Text->SetCaption(GetMsg(CREATE_FOLDER_PROMPT));
+
+  TFarEdit * DirectoryEdit = new TFarEdit(Dialog);
+  DirectoryEdit->SetHistory(L"NewFolder");
+
+  Separator = new TFarSeparator(Dialog);
+  Separator->SetCaption(GetMsg(CREATE_FOLDER_ATTRIBUTES));
+
+  TFarCheckBox * SetRightsCheck = new TFarCheckBox(Dialog);
+  SetRightsCheck->SetCaption(GetMsg(CREATE_FOLDER_SET_RIGHTS));
+
+  TRightsContainer * RightsContainer = new TRightsContainer(Dialog, false, true,
+      true, SetRightsCheck);
+
+  TFarCheckBox * SaveSettingsCheck = new TFarCheckBox(Dialog);
+  SaveSettingsCheck->SetCaption(GetMsg(CREATE_FOLDER_REUSE_SETTINGS));
+  SaveSettingsCheck->Move(0, 6);
+
+  Dialog->AddStandardButtons();
+
+  DirectoryEdit->SetText(Directory);
+  SaveSettingsCheck->SetChecked(SaveSettings);
+  assert(Properties != NULL);
+  SetRightsCheck->SetChecked(Properties->Valid.Contains(vpRights));
+  // expect sensible value even if rights are not set valid
+  RightsContainer->SetRights(Properties->Rights);
+
+  Result = (Dialog->ShowModal() == brOK);
+
+  if (Result)
   {
-    TFarText * Text;
-    TFarSeparator * Separator;
-
-    Dialog->SetCaption(GetMsg(CREATE_FOLDER_TITLE));
-    Dialog->SetSize(TPoint(66, 15));
-
-    Text = new TFarText(Dialog);
-    Text->SetCaption(GetMsg(CREATE_FOLDER_PROMPT));
-
-    TFarEdit * DirectoryEdit = new TFarEdit(Dialog);
-    DirectoryEdit->SetHistory(L"NewFolder");
-
-    Separator = new TFarSeparator(Dialog);
-    Separator->SetCaption(GetMsg(CREATE_FOLDER_ATTRIBUTES));
-
-    TFarCheckBox * SetRightsCheck = new TFarCheckBox(Dialog);
-    SetRightsCheck->SetCaption(GetMsg(CREATE_FOLDER_SET_RIGHTS));
-
-    TRightsContainer * RightsContainer = new TRightsContainer(Dialog, false, true,
-        true, SetRightsCheck);
-
-    TFarCheckBox * SaveSettingsCheck = new TFarCheckBox(Dialog);
-    SaveSettingsCheck->SetCaption(GetMsg(CREATE_FOLDER_REUSE_SETTINGS));
-    SaveSettingsCheck->Move(0, 6);
-
-    Dialog->AddStandardButtons();
-
-    DirectoryEdit->SetText(Directory);
-    SaveSettingsCheck->SetChecked(SaveSettings);
-    assert(Properties != NULL);
-    SetRightsCheck->SetChecked(Properties->Valid.Contains(vpRights));
-    // expect sensible value even if rights are not set valid
-    RightsContainer->SetRights(Properties->Rights);
-
-    Result = (Dialog->ShowModal() == brOK);
-
-    if (Result)
+    Directory = DirectoryEdit->GetText();
+    SaveSettings = SaveSettingsCheck->GetChecked();
+    if (SetRightsCheck->GetChecked())
     {
-      Directory = DirectoryEdit->GetText();
-      SaveSettings = SaveSettingsCheck->GetChecked();
-      if (SetRightsCheck->GetChecked())
-      {
-        Properties->Valid = Properties->Valid << vpRights;
-        Properties->Rights = RightsContainer->GetRights();
-      }
-      else
-      {
-        Properties->Valid = Properties->Valid >> vpRights;
-      }
+      Properties->Valid = Properties->Valid << vpRights;
+      Properties->Rights = RightsContainer->GetRights();
+    }
+    else
+    {
+      Properties->Valid = Properties->Valid >> vpRights;
     }
   }
   return Result;
