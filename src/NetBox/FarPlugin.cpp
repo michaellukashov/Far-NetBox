@@ -1826,7 +1826,6 @@ void __fastcall TCustomFarFileSystem::ClearOpenPluginInfo(OpenPluginInfo & Info)
       TFarPanelModes::ClearPanelMode(
         const_cast<PanelMode &>(Info.PanelModesArray[Index]));
     }
-    delete[] Info.PanelModesArray;
     if (Info.KeyBar)
     {
       TFarKeyBarTitles::ClearKeyBarTitles(const_cast<KeyBarTitles &>(*Info.KeyBar));
@@ -2279,7 +2278,7 @@ void __fastcall TFarPanelModes::FillOpenPluginInfo(struct OpenPluginInfo * Info)
 {
   assert(Info);
   Info->PanelModesNumber = LENOF(FPanelModes);
-  PanelMode * PanelModesArray = new PanelMode[LENOF(FPanelModes)];
+  static PanelMode PanelModesArray[LENOF(FPanelModes)];
   memmove(PanelModesArray, &FPanelModes, sizeof(FPanelModes));
   Info->PanelModesArray = PanelModesArray;
   FReferenced = true;
