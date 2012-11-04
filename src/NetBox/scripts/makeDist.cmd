@@ -23,18 +23,19 @@ if exist %PKGDIRARCH% rmdir /S /Q %PKGDIRARCH%
 if not exist %PKGDIR% ( mkdir %PKGDIR% > NUL )
 mkdir %PKGDIRARCH% > NUL
 
-if exist %~d0%~p0\*.lng copy %~d0%~p0\*.lng %PKGDIRARCH% > NUL
-if exist %~d0%~p0\*.hlf copy %~d0%~p0\*.hlf %PKGDIRARCH% > NUL
-if exist %~d0%~p0\..\..\ChangeLog copy %~d0%~p0\..\..\ChangeLog %PKGDIRARCH% > NUL
-if exist %~d0%~p0\..\..\*.md copy %~d0%~p0\..\..\*.md %PKGDIRARCH% > NUL
-if exist %~d0%~p0\..\..\LICENSE.txt copy %~d0%~p0\..\..\LICENSE.txt %PKGDIRARCH% > NUL
+if exist *.lng copy *.lng %PKGDIRARCH% > NUL
+if exist *.hlf copy *.hlf %PKGDIRARCH% > NUL
+if exist ..\..\ChangeLog copy ..\..\ChangeLog %PKGDIRARCH% > NUL
+if exist ..\..\*.md copy ..\..\*.md %PKGDIRARCH% > NUL
+if exist ..\..\LICENSE.txt copy ..\..\LICENSE.txt %PKGDIRARCH% > NUL
 
-copy ..\..\%FARVER%_%PLUGINARCH%\Plugins\%PLUGINNAME%\*.dll %PKGDIRARCH% > NUL
-@rem copy ..\..\dlls\%PLUGINARCH%\*.dll %PKGDIRARCH% > NUL
+if exist "C:\Program Files\PESuite\PETrim.exe" "C:\Program Files\PESuite\PETrim.exe" ..\..\%FARVER%_%PLUGINARCH%\Plugins\%PLUGINNAME%\%PLUGINNAME%.dll /Sf:Y /Sd:Y
+copy ..\..\%FARVER%_%PLUGINARCH%\Plugins\%PLUGINNAME%\%PLUGINNAME%.dll %PKGDIRARCH% > NUL
+@rem copy ..\..\dlls\%PLUGINARCH%\%PLUGINNAME%.dll %PKGDIRARCH% > NUL
 
 :: Make archive
 if exist %PKGNAME% del %PKGNAME%
-call "C:\Program Files\7-Zip\7z.exe" a -mx9 -t7z -r %PKGNAME% %PKGDIR%/* > NUL
+if exist "C:\Program Files\7-Zip\7z.exe" call "C:\Program Files\7-Zip\7z.exe" a -mx9 -t7z -r %PKGNAME% %PKGDIR%/* > NUL
 if errorlevel 1 echo Error creating archive & exit 1 /b
 
 @rem rmdir /S /Q %PKGDIRARCH%
