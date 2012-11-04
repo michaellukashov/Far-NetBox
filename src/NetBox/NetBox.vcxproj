@@ -82,11 +82,13 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\Far3_x86\Plugins\NetBox\</OutDir>
     <IntDir>..\..\Temp\$(SolutionName)\$(Configuration)\x86\</IntDir>
+    <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\Far3_x64\Plugins\NetBox\</OutDir>
     <IntDir>..\..\Temp\$(SolutionName)\$(Configuration)\x64\</IntDir>
+    <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -148,10 +150,16 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MinimalRebuild>false</MinimalRebuild>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <OmitFramePointers>true</OmitFramePointers>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <StringPooling>true</StringPooling>
+      <CallingConvention>Cdecl</CallingConvention>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\..\libs\openssl\x86;..\..\libs\boost\stage;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libputty;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libtinyxml;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libneon;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libapr;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libexpat;</AdditionalLibraryDirectories>
@@ -159,9 +167,10 @@
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <IgnoreSpecificDefaultLibraries>uafxcw.lib;mfc100u.lib;Atl.lib;comctl32.lib;msvcrt.lib;msvcurt.lib;msvcprt.lib;libc.lib;msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <DelayLoadDLLs>gdiplus.dll;gdi32.dll;msimg32.dll;winhttp.dll;ole32.dll;shell32.dll;crypt32.dll;version.dll;ws2_32.dll;oledlg.dll;winmm.dll;imm32.dll;oleacc.dll;shlwapi.dll;oleaut32.dll;comctl32.dll;winspool.drv;comdlg32.dll;</DelayLoadDLLs>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <PostBuildEvent>
-      <Command>makeDist.cmd x86 Far3</Command>
+      <Command>scripts\makeDist.cmd x86 Far3</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -176,10 +185,17 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MinimalRebuild>false</MinimalRebuild>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <OmitFramePointers>true</OmitFramePointers>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <StringPooling>true</StringPooling>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <CallingConvention>Cdecl</CallingConvention>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\..\libs\openssl\x64;..\..\libs\boost\stage\x64;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libputty;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libtinyxml;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libneon;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libapr;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libexpat;</AdditionalLibraryDirectories>
@@ -187,9 +203,10 @@
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <IgnoreSpecificDefaultLibraries>uafxcw.lib;mfc100u.lib;Atl.lib;comctl32.lib;msvcrt.lib;msvcurt.lib;msvcprt.lib;libc.lib;libcmt.lib;msvcrt.lib;libcmt.lib;mfc100u.lib;Atl.lib;comctl32.lib;mfcs100u.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <DelayLoadDLLs>gdiplus.dll;gdi32.dll;msimg32.dll;winhttp.dll;ole32.dll;shell32.dll;crypt32.dll;version.dll;ws2_32.dll;oledlg.dll;winmm.dll;imm32.dll;oleacc.dll;shlwapi.dll;oleaut32.dll;comctl32.dll;winspool.drv;comdlg32.dll;</DelayLoadDLLs>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <PostBuildEvent>
-      <Command>makeDist.cmd x64 Far3</Command>
+      <Command>scripts\makeDist.cmd x64 Far3</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
