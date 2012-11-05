@@ -1065,7 +1065,7 @@ intptr_t __fastcall TCustomFarPlugin::FarMessage(DWORD Flags,
     // FAR WORKAROUND
     // When there is too many lines to fit on screen, far uses not-shown
     // lines as button captions instead of real captions at the end of the list
-    int MaxLines = MaxMessageLines();
+    intptr_t MaxLines = MaxMessageLines();
     while (MessageLines->Count > MaxLines)
     {
       MessageLines->Delete(MessageLines->Count - 1);
@@ -1173,7 +1173,7 @@ intptr_t __fastcall TCustomFarPlugin::Menu(DWORD Flags, const UnicodeString Titl
       }
     }
 
-    int ResultItem = Menu(Flags | FMENU_USEEXT, Title, Bottom,
+    intptr_t ResultItem = Menu(Flags | FMENU_USEEXT, Title, Bottom,
       reinterpret_cast<const FarMenuItem *>(MenuItems), Count, BreakKeys, BreakCode);
 
     if (ResultItem >= 0)
