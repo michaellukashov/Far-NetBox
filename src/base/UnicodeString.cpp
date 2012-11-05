@@ -7,13 +7,13 @@
 
 void AnsiString::Init(const wchar_t * Str, int Length)
 {
-  int Size = WideCharToMultiByte(CP_UTF8, 0, Str, Length, nullptr, 0, nullptr, nullptr) + 1;
-  Data.resize(Size);
+  int Size = WideCharToMultiByte(CP_UTF8, 0, Str, Length > 0 ? Length : -1, nullptr, 0, nullptr, nullptr);
+  Data.resize(Size + 1);
   if (Size > 0)
   {
-    WideCharToMultiByte(CP_UTF8, 0, Str, Length,
-      reinterpret_cast<LPSTR>(const_cast<char *>(Data.c_str())), Size-1, nullptr, nullptr);
-    Data[Size-1] = 0;
+    WideCharToMultiByte(CP_UTF8, 0, Str, Length > 0 ? Length : -1,
+      reinterpret_cast<LPSTR>(const_cast<char *>(Data.c_str())), Size, nullptr, nullptr);
+    Data[Size] = 0;
   }
   Data = Data.c_str();
 }
@@ -132,13 +132,13 @@ void  __cdecl AnsiString::ThrowIfOutOfRange(int idx) const
 
 void RawByteString::Init(const wchar_t * Str, int Length)
 {
-  int Size = WideCharToMultiByte(CP_ACP, 0, Str, Length, nullptr, 0, nullptr, nullptr) + 1;
-  Data.resize(Size);
+  int Size = WideCharToMultiByte(CP_ACP, 0, Str, Length > 0 ? Length : -1, nullptr, 0, nullptr, nullptr);
+  Data.resize(Size + 1);
   if (Size > 0)
   {
-    WideCharToMultiByte(CP_ACP, 0, Str, Length,
-      reinterpret_cast<LPSTR>(const_cast<unsigned char *>(Data.c_str())), Size-1, nullptr, nullptr);
-    Data.resize(Size - 1);
+    WideCharToMultiByte(CP_ACP, 0, Str, Length > 0 ? Length : -1,
+      reinterpret_cast<LPSTR>(const_cast<unsigned char *>(Data.c_str())), Size, nullptr, nullptr);
+    Data[Size] = 0;
   }
 }
 
@@ -279,7 +279,7 @@ void UTF8String::Init(const char * Str, int Length)
   Data.resize(Size + 1);
   if (Size > 0)
   {
-    MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), Size + 1);
+    MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), Size);
     Data[Size] = 0;
   }
   Data = Data.c_str();
@@ -384,7 +384,7 @@ void UnicodeString::Init(const char * Str, int Length)
   Data.resize(Size + 1);
   if (Size > 0)
   {
-    MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), Size + 1);
+    MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), Size);
     Data[Size] = 0;
   }
   Data = Data.c_str();
