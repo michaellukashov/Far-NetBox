@@ -737,7 +737,7 @@ intptr_t __fastcall TFarDialog::ShowModal()
 
     UnicodeString AHelpTopic = GetHelpTopic();
     int BResult = 0;
-    // try
+
     {
       TFarEnvGuard Guard;
       TRect Bounds = GetBounds();
