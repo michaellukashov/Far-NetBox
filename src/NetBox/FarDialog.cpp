@@ -278,7 +278,7 @@ UnicodeString __fastcall TFarDialog::GetCaption()
   return FBorderBox->GetCaption();
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TFarDialog::GetItemCount()
+int __fastcall TFarDialog::GetItemCount()
 {
   return FItems->Count;
 }
@@ -1025,7 +1025,7 @@ void __fastcall TFarDialogContainer::SetEnabled(bool Value)
   }
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TFarDialogContainer::GetItemCount()
+int __fastcall TFarDialogContainer::GetItemCount()
 {
   return FItems->Count;
 }
