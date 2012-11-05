@@ -1591,7 +1591,6 @@ private:
   TFarComboBox * SftpServerEdit;
   TFarComboBox * SFTPBugSymlinkCombo;
   TFarComboBox * SFTPBugSignedTSCombo;
-  // TFarComboBox * UtfCombo;
   TFarListBox * KexListBox;
   TFarButton * KexUpButton;
   TFarButton * KexDownButton;
@@ -1653,8 +1652,6 @@ private:
 #define SFTP_BUGS() \
   BUG(Symlink, LOGIN_SFTP_BUGS_SYMLINK, SFTP); \
   BUG(SignedTS, LOGIN_SFTP_BUGS_SIGNED_TS, SFTP);
-#define UTF_TRISTATE() \
-  TRISTATE(UtfCombo, Utf, LOGIN_UTF);
 //---------------------------------------------------------------------------
 static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsWebDAV };
 //---------------------------------------------------------------------------
@@ -3036,7 +3033,6 @@ void __fastcall TSessionDialog::UpdateControls()
 
   // Environment tab
   DSTModeUnixCheck->SetEnabled(!FtpProtocol);
-  // UtfCombo->SetEnabled(FSProtocol != fsSCPonly);
   TimeDifferenceEdit->SetEnabled((FtpProtocol || (FSProtocol == fsSCPonly)));
 
   // Recycle bin tab
@@ -3185,22 +3181,6 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
   {
     EOLTypeCombo->SetItemIndex(1);
   }
-  /*
-  switch (SessionData->GetNotUtf())
-  {
-  case asOn:
-      UtfCombo->SetItemIndex(1);
-      break;
-
-  case asOff:
-      UtfCombo->SetItemIndex(2);
-      break;
-
-  default:
-      UtfCombo->SetItemIndex(0);
-      break;
-  }
-  */
 
   switch (SessionData->GetDSTMode())
   {
@@ -3524,22 +3504,6 @@ bool __fastcall TSessionDialog::Execute(TSessionData * SessionData, TSessionActi
     {
       SessionData->SetEOLType(eolCRLF);
     }
-    /*
-    switch (UtfCombo->GetItemIndex())
-    {
-    case 1:
-        SessionData->SetNotUtf(asOn);
-        break;
-
-    case 2:
-        SessionData->SetNotUtf(asOff);
-        break;
-
-    default:
-        SessionData->SetNotUtf(asAuto);
-        break;
-    }
-    */
 
     SessionData->SetDeleteToRecycleBin(DeleteToRecycleBinCheck->GetChecked());
     SessionData->SetOverwrittenToRecycleBin(OverwrittenToRecycleBinCheck->GetChecked());
