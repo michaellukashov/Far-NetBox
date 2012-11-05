@@ -647,9 +647,9 @@ void __fastcall TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool 
       Action = (FillInConnect ? saConnect : (OrigData == NULL ? saAdd : saEdit));
       if (SessionDialog(Data, Action))
       {
-        TSessionData * SelectSession = NULL;
         if ((!NewData && !FillInConnect) || (Action != saConnect))
         {
+          TSessionData * SelectSession = NULL;
           if (NewData)
           {
             // UnicodeString Name =

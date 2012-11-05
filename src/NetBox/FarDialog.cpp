@@ -278,7 +278,7 @@ UnicodeString __fastcall TFarDialog::GetCaption()
   return FBorderBox->GetCaption();
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TFarDialog::GetItemCount()
+int __fastcall TFarDialog::GetItemCount()
 {
   return FItems->Count;
 }
@@ -745,7 +745,7 @@ intptr_t __fastcall TFarDialog::ShowModal()
 
     UnicodeString AHelpTopic = GetHelpTopic();
     intptr_t BResult = 0;
-    // try
+
     {
       TFarEnvGuard Guard;
       TRect Bounds = GetBounds();
@@ -1038,7 +1038,7 @@ void __fastcall TFarDialogContainer::SetEnabled(bool Value)
   }
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TFarDialogContainer::GetItemCount()
+int __fastcall TFarDialogContainer::GetItemCount()
 {
   return FItems->Count;
 }

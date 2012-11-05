@@ -106,7 +106,6 @@ void __fastcall TBookmarks::LoadLevel(THierarchicalStorage * Storage, const Unic
         Directory = L""; // use only in cased of malformed config
         ShortCut = static_cast<TShortCut>(Storage->ReadInteger(Name, 0));
       }
-      TBookmark * Bookmark;
       if (IsNumber(Name))
       {
         assert(IsDirectory); // unless malformed
@@ -114,7 +113,7 @@ void __fastcall TBookmarks::LoadLevel(THierarchicalStorage * Storage, const Unic
       }
       if (!Name.IsEmpty())
       {
-        Bookmark = BookmarkList->FindByName(Key, Name);
+        TBookmark * Bookmark = BookmarkList->FindByName(Key, Name);
         bool New;
         New = (Bookmark == NULL);
         if (New)

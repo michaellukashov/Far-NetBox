@@ -1071,7 +1071,7 @@ int __fastcall TCustomFarPlugin::FarMessage(unsigned int Flags,
     // FAR WORKAROUND
     // When there is too many lines to fit on screen, far uses not-shown
     // lines as button captions instead of real captions at the end of the list
-    int MaxLines = MaxMessageLines();
+    intptr_t MaxLines = MaxMessageLines();
     while (MessageLines->Count > MaxLines)
     {
       MessageLines->Delete(MessageLines->Count - 1);

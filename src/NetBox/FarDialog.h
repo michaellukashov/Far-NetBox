@@ -43,7 +43,7 @@ public:
   void __fastcall ShowGroup(int Group, bool Show);
   void __fastcall EnableGroup(int Group, bool Enable);
 
-  TRect GetBounds() { return FBounds; }
+  TRect GetBounds() const { return FBounds; }
   TRect __fastcall GetClientRect();
   UnicodeString GetHelpTopic() { return FHelpTopic; }
   void __fastcall SetHelpTopic(UnicodeString Value);
@@ -64,11 +64,11 @@ public:
   TFarButton * __fastcall GetDefaultButton() const { return FDefaultButton; }
   TFarBox * __fastcall GetBorderBox() const { return FBorderBox; }
   TFarDialogItem * __fastcall GetItem(int Index);
-  size_t __fastcall GetItemCount();
+  int __fastcall GetItemCount();
   TItemPosition __fastcall GetNextItemPosition() { return FNextItemPosition; }
-  void __fastcall SetNextItemPosition(const TItemPosition & Value) { FNextItemPosition = Value; }
+  void __fastcall SetNextItemPosition(const TItemPosition Value) { FNextItemPosition = Value; }
   int __fastcall GetDefaultGroup() const { return FDefaultGroup; }
-  void __fastcall SetDefaultGroup(const int & Value) { FDefaultGroup = Value; }
+  void __fastcall SetDefaultGroup(const int Value) { FDefaultGroup = Value; }
   int GetTag() const { return FTag; }
   void SetTag(int Value) { FTag = Value; }
   TFarDialogItem * __fastcall GetItemFocused() { return FItemFocused; }
@@ -84,7 +84,6 @@ public:
   void __fastcall UnlockChanges();
   FarColor __fastcall GetSystemColor(PaletteColors colorId);
   bool __fastcall HotKey(uintptr_t Key, uintptr_t ControlState);
-
 
 protected:
   TCustomFarPlugin * __fastcall GetFarPlugin() { return FFarPlugin; }
@@ -115,6 +114,8 @@ protected:
 
   static intptr_t WINAPI DialogProcGeneral(HANDLE Handle, intptr_t Msg, intptr_t Param1, void * Param2);
 
+  virtual void __fastcall SetBounds(TRect Value);
+
 private:
   TCustomFarPlugin * FFarPlugin;
   TRect FBounds;
@@ -139,9 +140,6 @@ private:
   bool FNeedsSynchronize;
   HANDLE FSynchronizeObjects[2];
   TThreadMethod FSynchronizeMethod;
-
-public:
-  void __fastcall SetBounds(TRect Value);
 };
 //---------------------------------------------------------------------------
 class TFarDialogContainer : public TObject
@@ -157,7 +155,7 @@ public:
   bool __fastcall GetEnabled() { return FEnabled; }
   void __fastcall SetEnabled(bool Value);
   void __fastcall SetPosition(int Index, int Value);
-  size_t __fastcall GetItemCount();
+  int __fastcall GetItemCount();
 
 protected:
   explicit TFarDialogContainer(TFarDialog * ADialog);

@@ -215,8 +215,10 @@ UnicodeString __fastcall TCommandSet::GetCommands(TFSCommand Cmd) const
 #ifndef _MSC_VER
 UnicodeString __fastcall TCommandSet::Command(TFSCommand Cmd, const TVarRec * args, int size)
 {
-  if (args) return Format(GetCommands(Cmd), args, size);
-    else return GetCommands(Cmd);
+  if (args)
+    return Format(GetCommands(Cmd), args, size);
+  else
+    return GetCommands(Cmd);
 }
 #endif
 //---------------------------------------------------------------------------
