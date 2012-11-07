@@ -289,14 +289,15 @@ TCustomFarFileSystem * __fastcall TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom,
           }
 
           TWinSCPFileSystem * PanelSystem;
-          PanelSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem(Flags != FOSF_ACTIVE));
+          bool Another = !(Flags & FOSF_ACTIVE);
+          PanelSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem(Another));
           if (PanelSystem && PanelSystem->Connected() &&
               PanelSystem->GetTerminal()->GetSessionData()->GetSessionUrl() == Name)
           {
             PanelSystem->SetDirectoryEx(Directory, OPM_SILENT);
-            if (PanelSystem->UpdatePanel())
+            if (PanelSystem->UpdatePanel(false, Another))
             {
-              PanelSystem->RedrawPanel();
+              PanelSystem->RedrawPanel(Another);
             }
             Abort();
           }
