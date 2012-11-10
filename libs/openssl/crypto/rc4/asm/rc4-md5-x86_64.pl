@@ -40,15 +40,18 @@ my $D="#" if (!$md5);	# if set to "#", MD5 is stitched into RC4(),
 			# to be able to use 'openssl speed rc4' for
 			# benchmarking the stitched subroutine... 
 
+$0 =~ s/\\/\//gm;
 my $flavour = shift;
 my $output  = shift;
+$flavour =~ s/\\/\//gm;
+$output =~ s/\\/\//gm;
 if ($flavour =~ /\./) { $output = $flavour; undef $flavour; }
 
 my $win64=0; $win64=1 if ($flavour =~ /[nm]asm|mingw64/ || $output =~ /\.asm$/);
 
 $0 =~ m/(.*[\/\\])[^\/\\]+$/; my $dir=$1; my $xlate;
-( $xlate="${dir}x86_64-xlate.pl" and -f $xlate ) or
-( $xlate="${dir}../../perlasm/x86_64-xlate.pl" and -f $xlate) or
+( $xlate="${dir}/x86_64-xlate.pl" and -f $xlate ) or
+( $xlate="${dir}/../../perlasm/x86_64-xlate.pl" and -f $xlate) or
 die "can't locate x86_64-xlate.pl";
 
 open STDOUT,"| $^X $xlate $flavour $output";

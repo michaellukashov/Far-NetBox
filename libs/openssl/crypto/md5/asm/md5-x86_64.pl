@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
 #
 # MD5 optimized for AMD64.
 #
@@ -7,7 +7,7 @@
 # in the public domain.
 #
 
-use strict;
+# use strict;
 
 my $code;
 
@@ -108,16 +108,23 @@ sub round4_step
 EOF
 }
 
+$0 =~ m/(.*[\/\\])[^\/\\]+$/;
+$0 =~ s/\\/\//gm;
 my $flavour = shift;
 my $output  = shift;
+$flavour =~ s/\\/\//gm;
+$output =~ s/\\/\//gm;
 if ($flavour =~ /\./) { $output = $flavour; undef $flavour; }
-
 my $win64=0; $win64=1 if ($flavour =~ /[nm]asm|mingw64/ || $output =~ /\.asm$/);
 
 $0 =~ m/(.*[\/\\])[^\/\\]+$/; my $dir=$1; my $xlate;
-( $xlate="${dir}x86_64-xlate.pl" and -f $xlate ) or
-( $xlate="${dir}../../perlasm/x86_64-xlate.pl" and -f $xlate) or
+$dir =~ s/\\/\//gm;
+$flavour =~ s/\\/\//gm;
+$output =~ s/\\/\//gm;
+( $xlate="${dir}/x86_64-xlate.pl" and -f $xlate ) or
+( $xlate="${dir}/../../perlasm/x86_64-xlate.pl" and -f $xlate) or
 die "can't locate x86_64-xlate.pl";
+print "$xlate\n";
 
 no warnings qw(uninitialized);
 open STDOUT,"| $^X $xlate $flavour $output";

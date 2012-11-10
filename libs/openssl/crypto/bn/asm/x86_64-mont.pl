@@ -29,8 +29,11 @@
 # to *initial* version of this module from 2005 is ~0%/30%/40%/45%
 # for 512-/1024-/2048-/4096-bit RSA *sign* benchmarks respectively.
 
+$0 =~ s/\\/\//gm;
 $flavour = shift;
 $output  = shift;
+$flavour =~ s/\\/\//gm;
+$output =~ s/\\/\//gm;
 if ($flavour =~ /\./) { $output = $flavour; undef $flavour; }
 
 $win64=0; $win64=1 if ($flavour =~ /[nm]asm|mingw64/ || $output =~ /\.asm$/);
