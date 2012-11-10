@@ -134,6 +134,7 @@ __int64 __fastcall ConvertTimestampToUnixSafe(const FILETIME & FileTime,
 UnicodeString __fastcall FixedLenDateTimeFormat(const UnicodeString & Format);
 UnicodeString __fastcall StandardTimestamp(const TDateTime & DateTime);
 UnicodeString __fastcall StandardTimestamp();
+UnicodeString __fastcall GetTimeZoneLogString();
 int __fastcall CompareFileTime(TDateTime T1, TDateTime T2);
 //---------------------------------------------------------------------------
 template<class MethodT>
@@ -163,6 +164,35 @@ public:
 
 private:
   TCriticalSection * FCriticalSection;
+};
+//---------------------------------------------------------------------------
+template<class T>
+class TValueRestorer
+{
+public:
+  inline /* __fastcall */ TValueRestorer(T & Target, const T & Value) :
+    FTarget(Target),
+    FValue(Value)
+  {
+  }
+
+  inline /* __fastcall */ ~TValueRestorer()
+  {
+    FTarget = FValue;
+  }
+
+private:
+  T & FTarget;
+  const T & FValue;
+};
+//---------------------------------------------------------------------------
+class TBoolRestorer : TValueRestorer<bool>
+{
+public:
+  inline /* __fastcall */ TBoolRestorer(bool & Target) :
+    TValueRestorer<bool>(Target, !Target)
+  {
+  }
 };
 //---------------------------------------------------------------------------
 //!CLEANBEGIN

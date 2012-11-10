@@ -166,6 +166,7 @@ private:
   UnicodeString FTunnelPublicKeyFile;
   int FTunnelLocalPortNumber;
   UnicodeString FTunnelPortFwd;
+  UnicodeString FTunnelHostKey;
   bool FFtpPasvMode;
   TAutoSwitch FFtpForcePasvIp;
   TAutoSwitch FFtpUseMlsd;
@@ -313,6 +314,7 @@ public:
   void __fastcall SetTunnelPortFwd(UnicodeString value);
   void __fastcall SetTunnelLocalPortNumber(int value);
   bool __fastcall GetTunnelAutoassignLocalPortNumber();
+  void __fastcall SetTunnelHostKey(UnicodeString value);
   void __fastcall SetFtpPasvMode(bool value);
   void __fastcall SetFtpForcePasvIp(TAutoSwitch value);
   void __fastcall SetFtpUseMlsd(TAutoSwitch value);
@@ -450,6 +452,7 @@ public:
   UnicodeString __fastcall GetTunnelPublicKeyFile() const { return FTunnelPublicKeyFile; }
   int __fastcall GetTunnelLocalPortNumber() const { return FTunnelLocalPortNumber; }
   UnicodeString __fastcall GetTunnelPortFwd() const { return FTunnelPortFwd; }
+  UnicodeString __fastcall GetTunnelHostKey() const { return FTunnelHostKey; }
   bool __fastcall GetFtpPasvMode() const { return FFtpPasvMode; }
   bool __fastcall GetFtpAllowEmptyPassword() const { return FFtpAllowEmptyPassword; }
   void __fastcall SetFtpAllowEmptyPassword(bool value);

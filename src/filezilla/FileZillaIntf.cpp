@@ -132,7 +132,7 @@ bool __fastcall TFileZillaIntf::Connect(const wchar_t * Host, int Port, const wc
   return Check(FFileZillaApi->Connect(Server), L"connect");
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileZillaIntf::Close()
+bool __fastcall TFileZillaIntf::Close(bool AllowBusy)
 {
   bool Result;
   int ReturnCode = FFileZillaApi->Disconnect();
@@ -148,6 +148,15 @@ bool __fastcall TFileZillaIntf::Close()
     case FZ_REPLY_WOULDBLOCK:
       Result = true;
       break;
+
+    // allowing busy while opening, not sure if it safe,
+    // but we need it, when cancelling password prompt
+    case FZ_REPLY_BUSY:
+      if (AllowBusy)
+      {
+        Result = false;
+        break;
+      }
 
     case FZ_REPLY_NOTINITIALIZED:
     default:

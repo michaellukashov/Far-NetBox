@@ -246,6 +246,7 @@ private:
   FFileList(NULL),
   FFileListCache(NULL),
   FActive(false),
+  FOpening(false),
   FWaitingForReply(false),
   FFileTransferAbort(ftaNone),
   FIgnoreFileList(false),
@@ -484,6 +485,8 @@ void __fastcall TFTPFileSystem::Open()
     }
 
     FPasswordFailed = false;
+    FOpening = true;
+    TBoolRestorer OpeningRestorer(FOpening);
 
     TRACE("connect");
     FActive = FFileZillaIntf->Connect(
@@ -532,16 +535,23 @@ void __fastcall TFTPFileSystem::Close()
 {
   CALLSTACK;
   assert(FActive);
-  if (FFileZillaIntf->Close())
+  bool Result;
+  if (FFileZillaIntf->Close(FOpening))
   {
     CHECK(FLAGSET(WaitForCommandReply(false), TFileZillaIntf::REPLY_DISCONNECTED));
-    assert(FActive);
-    Discard();
-    FTerminal->Closed();
+    Result = true;
   }
   else
   {
-    assert(false);
+    // See TFileZillaIntf::Close
+    Result = FOpening;
+  }
+
+  if (Result)
+  {
+    assert(FActive);
+    Discard();
+    FTerminal->Closed();
   }
 }
 //---------------------------------------------------------------------------
@@ -1991,76 +2001,85 @@ void __fastcall TFTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)
 void __fastcall TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 {
   CALLSTACK;
-  bool GotNoFilesForAll = false;
-  bool Repeat = false;
-
-  do
+  // whole below "-a" logic is for LIST,
+  // if we know we are going to use MLSD, skip it
+  if (FServerCapabilities->GetCapability(mlsd_command) == yes)
   {
-    Repeat = false;
-    try
-    {
-      TRACE("1");
-      FDoListAll = (FListAll == asAuto) || (FListAll == asOn);
-      DoReadDirectory(FileList);
+    DoReadDirectory(FileList);
+  }
+  else
+  {
+    bool GotNoFilesForAll = false;
+    bool Repeat = false;
 
-      TRACEFMT("1a [%d]", (FListAll));
-      // We got no files with "-a", but again no files w/o "-a",
-      // so it was not "-a"'s problem, revert to auto and let it decide the next time
-      if (GotNoFilesForAll && (FileList->Count == 0))
+    do
+    {
+      Repeat = false;
+      try
       {
-        assert(FListAll == asOff);
-        FListAll = asAuto;
-      }
-      else if (FListAll == asAuto)
-      {
-        // some servers take "-a" as a mask and return empty directory listing
-        // (note that it's actually never empty here, there's always at least parent directory,
-        // added explicitly by DoReadDirectory)
-        if ((FileList->Count == 0) ||
-            ((FileList->Count == 1) && FileList->GetFiles(0)->GetIsParentDirectory()))
+        TRACE("1");
+        FDoListAll = (FListAll == asAuto) || (FListAll == asOn);
+        DoReadDirectory(FileList);
+
+        TRACEFMT("1a [%d]", (FListAll));
+        // We got no files with "-a", but again no files w/o "-a",
+        // so it was not "-a"'s problem, revert to auto and let it decide the next time
+        if (GotNoFilesForAll && (FileList->Count == 0))
         {
-          Repeat = true;
+          assert(FListAll == asOff);
+          FListAll = asAuto;
+        }
+        else if (FListAll == asAuto)
+        {
+          // some servers take "-a" as a mask and return empty directory listing
+          // (note that it's actually never empty here, there's always at least parent directory,
+          // added explicitly by DoReadDirectory)
+          if ((FileList->Count == 0) ||
+              ((FileList->Count == 1) && FileList->GetFiles(0)->GetIsParentDirectory()))
+          {
+            Repeat = true;
+            FListAll = asOff;
+            GotNoFilesForAll = true;
+          }
+          else
+          {
+            // reading first directory has succeeded, always use "-a"
+            FListAll = asOn;
+            TRACEFMT("1b [%d]", (FListAll));
+          }
+        }
+
+        // use "-a" even for implicit directory reading by FZAPI?
+        // (e.g. before file transfer)
+        FDoListAll = (FListAll == asOn);
+        TRACE("2");
+      }
+      catch(Exception & E)
+      {
+        FDoListAll = false;
+        TRACEFMT("3 [%d]", (int(FListAll)));
+        // reading the first directory has failed,
+        // further try without "-a" only as the server may not support it
+        if (FListAll == asAuto)
+        {
+          if (!FTerminal->GetActive())
+          {
+            TRACE("3b");
+            FTerminal->Reopen(ropNoReadDirectory);
+          }
+
           FListAll = asOff;
-          GotNoFilesForAll = true;
+          Repeat = true;
         }
         else
         {
-          // reading first directory has succeeded, always use "-a"
-          FListAll = asOn;
-          TRACEFMT("1b [%d]", (FListAll));
+          TRACE("4");
+          throw;
         }
       }
-
-      // use "-a" even for implicit directory reading by FZAPI?
-      // (e.g. before file transfer)
-      FDoListAll = (FListAll == asOn);
-      TRACE("2");
     }
-    catch(Exception & E)
-    {
-      FDoListAll = false;
-      TRACEFMT("3 [%d]", (int(FListAll)));
-      // reading the first directory has failed,
-      // further try without "-a" only as the server may not support it
-      if (FListAll == asAuto)
-      {
-        if (!FTerminal->GetActive())
-        {
-          TRACE("3b");
-          FTerminal->Reopen(ropNoReadDirectory);
-        }
-
-        FListAll = asOff;
-        Repeat = true;
-      }
-      else
-      {
-        TRACE("4");
-        throw;
-      }
-    }
+    while (Repeat);
   }
-  while (Repeat);
 }
 //---------------------------------------------------------------------------
 void __fastcall TFTPFileSystem::DoReadFile(const UnicodeString & FileName,
@@ -2377,8 +2396,7 @@ int __fastcall TFTPFileSystem::GetOptionVal(int OptionID) const
       break;
 
     case OPTION_DEBUGSHOWLISTING:
-      // Listing is logged on FZAPI level 5 (what is strangely LOG_APIERROR)
-      Result = (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1);
+      Result = true;
       break;
 
     case OPTION_PASV:

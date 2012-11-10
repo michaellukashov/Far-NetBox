@@ -995,6 +995,7 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
     // ADF(L"Login time: %s", FormatDateTime(L"dddddd tt", Now()).c_str());
     ADF(L"Working directory: %s", GetCurrentDir().c_str());
     // ADF(L"Command-line: %s", CmdLine.c_str());
+    // ADF(L"Time zone: %s", GetTimeZoneLogString().c_str());
     ADF(L"Login time: %s", dt.c_str());
     AddSeparator();
     if (0)

@@ -177,6 +177,7 @@ void __fastcall TSessionData::Default()
   SetTunnelPublicKeyFile(L"");
   SetTunnelLocalPortNumber(0);
   SetTunnelPortFwd(L"");
+  SetTunnelHostKey(L"");
 
   // FTP
   SetFtpPasvMode(true);
@@ -307,6 +308,7 @@ void __fastcall TSessionData::NonPersistant()
   PROPERTY(TunnelPublicKeyFile); \
   PROPERTY(TunnelLocalPortNumber); \
   PROPERTY(TunnelPortFwd); \
+  PROPERTY(TunnelHostKey); \
   \
   PROPERTY(FtpPasvMode); \
   PROPERTY(FtpForcePasvIp); \
@@ -2422,6 +2424,11 @@ bool __fastcall TSessionData::GetTunnelAutoassignLocalPortNumber()
 void __fastcall TSessionData::SetTunnelPortFwd(UnicodeString value)
 {
   SET_SESSION_PROPERTY(TunnelPortFwd);
+}
+//---------------------------------------------------------------------
+void __fastcall TSessionData::SetTunnelHostKey(UnicodeString value)
+{
+  SET_SESSION_PROPERTY(TunnelHostKey);
 }
 //---------------------------------------------------------------------
 void __fastcall TSessionData::SetFtpPasvMode(bool value)

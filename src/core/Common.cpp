@@ -1632,6 +1632,41 @@ UnicodeString __fastcall FixedLenDateTimeFormat(const UnicodeString & Format)
   return Result;
 }
 //---------------------------------------------------------------------------
+static UnicodeString __fastcall FormatTimeZone(long Sec)
+{
+  // TTimeSpan Span = TTimeSpan::FromSeconds(Sec);
+  UnicodeString Str;
+  /* if ((Span.Seconds == 0) && (Span.Minutes == 0))
+  {
+    Str = FORMAT(L"%d", -Span.Hours);
+  }
+  else if (Span.Seconds == 0)
+  {
+    Str = FORMAT(L"%d:%2.2d", -Span.Hours, abs(Span.Minutes));
+  }
+  else
+  {
+    Str = FORMAT(L"%d:%2.2d:%2.2d", -Span.Hours, abs(Span.Minutes), abs(Span.Seconds));
+  }
+  Str = ((Span <= TTimeSpan::Zero) ? L"+" : L"") + Str;
+  */
+  return Str;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall GetTimeZoneLogString()
+{
+  const TDateTimeParams * Params = GetDateTimeParams(0);
+
+  UnicodeString Result =
+    FORMAT("Current: GMT%s, Standard: GMT%s, DST: GMT%s, DST Start: %s, DST End: %s",
+      FormatTimeZone(Params->CurrentDifferenceSec),
+       FormatTimeZone(Params->BaseDifferenceSec + Params->StandardDifferenceSec),
+       FormatTimeZone(Params->BaseDifferenceSec + Params->DaylightDifferenceSec),
+       Params->DaylightDate.DateString(),
+       Params->StandardDate.DateString());
+  return Result;
+}
+//---------------------------------------------------------------------------
 UnicodeString __fastcall StandardTimestamp(const TDateTime & DateTime)
 {
 #ifndef _MSC_VER
