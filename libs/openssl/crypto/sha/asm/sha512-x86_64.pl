@@ -40,15 +40,18 @@
 # sha256_block:-( This is presumably because 64-bit shifts/rotates
 # apparently are not atomic instructions, but implemented in microcode.
 
+$0 =~ s/\\/\//gm;
 $flavour = shift;
 $output  = shift;
+$flavour =~ s/\\/\//gm;
+$output =~ s/\\/\//gm;
 if ($flavour =~ /\./) { $output = $flavour; undef $flavour; }
 
 $win64=0; $win64=1 if ($flavour =~ /[nm]asm|mingw64/ || $output =~ /\.asm$/);
 
 $0 =~ m/(.*[\/\\])[^\/\\]+$/; $dir=$1;
-( $xlate="${dir}x86_64-xlate.pl" and -f $xlate ) or
-( $xlate="${dir}../../perlasm/x86_64-xlate.pl" and -f $xlate) or
+( $xlate="${dir}/x86_64-xlate.pl" and -f $xlate ) or
+( $xlate="${dir}/../../perlasm/x86_64-xlate.pl" and -f $xlate) or
 die "can't locate x86_64-xlate.pl";
 
 open STDOUT,"| $^X $xlate $flavour $output";
