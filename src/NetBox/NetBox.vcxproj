@@ -144,13 +144,13 @@
       <Optimization>Full</Optimization>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN32;NDEBUG;_WINDOWS;_WINDLL;_USRDLL;MPEXT;NO_STRICT;_ATL_MIN_CRT;_ATL_NO_DEFAULT_LIBS;APR_DECLARE_STATIC;XML_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\openssl\x86\inc32;..\..\libs\boost;..\filezilla;..\filezilla\misc;..\..\libs\tinyXML;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\apr\include;..\..\libs\apr\include\arch;..\..\libs\apr\include\arch\win32;..\..\libs\apr\include\arch\unix;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MinimalRebuild>false</MinimalRebuild>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <OmitFramePointers>true</OmitFramePointers>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
