@@ -8,9 +8,6 @@ Far3_x64/
 res.txt
 svn.log
 libs/zlib/
-libs/openssl/
-libs/libssh2/
-libs/libcurl/
 libs/boost/
 libs/
 dlls/
@@ -33,7 +30,6 @@ ipch/
 tags
 build/
 src/NetBox/NetBox/
-src/NetBox/My Inspector XE Results - NetBox/
 
 *.vsp
 *.psess
