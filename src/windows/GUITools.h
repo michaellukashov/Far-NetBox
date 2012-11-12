@@ -20,6 +20,7 @@ class TSessionData;
 DEFINE_CALLBACK_TYPE0(TProcessMessagesEvent, void);
 //---------------------------------------------------------------------------
 bool __fastcall FindFile(UnicodeString & Path);
+bool __fastcall FindTool(const UnicodeString & Name, UnicodeString & Path);
 bool __fastcall FileExistsEx(UnicodeString Path);
 bool __fastcall ExecuteShell(const UnicodeString Path, const UnicodeString Params);
 bool __fastcall ExecuteShell(const UnicodeString Path, const UnicodeString Params,
@@ -64,5 +65,8 @@ protected:
 private:
   UnicodeString FLocalFileName;
 };
+//---------------------------------------------------------------------------
+extern const UnicodeString PageantTool;
+extern const UnicodeString PuttygenTool;
 //---------------------------------------------------------------------------
 #endif

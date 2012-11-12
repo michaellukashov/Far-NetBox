@@ -30,8 +30,11 @@
 # 3 on Opteron] and which is *unacceptably* slow with 64-bit
 # operand.
 
+$0 =~ s/\\/\//gm;
 $flavour = shift;
 $output  = shift;
+$flavour =~ s/\\/\//gm;
+$output =~ s/\\/\//gm;
 if ($flavour =~ /\./) { $output = $flavour; undef $flavour; }
 
 $win64=0; $win64=1 if ($flavour =~ /[nm]asm|mingw64/ || $output =~ /\.asm$/);
