@@ -2,10 +2,6 @@
 #ifndef WinSCPFileSystemH
 #define WinSCPFileSystemH
 //---------------------------------------------------------------------------
-#ifdef _MSC_VER
-#include "boostdefines.hpp"
-#endif
-
 #include <Interface.h>
 #include "FarPlugin.h"
 #include <FileOperationProgress.h>

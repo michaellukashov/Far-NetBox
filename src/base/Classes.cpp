@@ -1,12 +1,14 @@
 #pragma once
 
+#include <iostream>
+#include <string>
+#include <sstream>
+
 #include <Classes.hpp>
 #include "Common.h"
 #include "Exceptions.h"
 #include <FileBuffer.h>
 #include <Sysutils.hpp>
-
-namespace alg = boost::algorithm;
 
 namespace Classes {
 
@@ -476,6 +478,36 @@ UnicodeString TStrings::GetDelimitedText() const
   }
   return Result;
 }
+
+template <class ContainerT>
+void tokenize(const std::wstring & str, ContainerT & tokens,
+  const std::wstring & delimiters = L" ", const bool trimEmpty = false)
+{
+  std::string::size_type pos, lastPos = 0;
+  while(true)
+  {
+    pos = str.find_first_of(delimiters, lastPos);
+    if(pos == std::string::npos)
+    {
+       pos = str.length();
+
+       if(pos != lastPos || !trimEmpty)
+          tokens.push_back(ContainerT::value_type(str.data()+lastPos,
+                (ContainerT::value_type::size_type)pos-lastPos ));
+
+       break;
+    }
+    else
+    {
+       if(pos != lastPos || !trimEmpty)
+          tokens.push_back(ContainerT::value_type(str.data()+lastPos,
+                (ContainerT::value_type::size_type)pos-lastPos ));
+    }
+
+    lastPos = pos + 1;
+  }
+  };
+
 void TStrings::SetDelimitedText(const UnicodeString Value)
 {
   BeginUpdate();
@@ -486,11 +518,10 @@ void TStrings::SetDelimitedText(const UnicodeString Value)
     std::wstring delim = std::wstring(1, GetDelimiter());
     delim.append(1, L'\n');
     std::wstring value = Value.c_str();
-    alg::split(lines, value, alg::is_any_of(delim), alg::token_compress_on);
-    UnicodeString line;
-    BOOST_FOREACH(line, lines)
+    tokenize(value, lines, delim, true);
+    for (int i = 0; i < lines.size(); i++)
     {
-      Add(line);
+      Add(lines[i]);
     }
   }
   ,

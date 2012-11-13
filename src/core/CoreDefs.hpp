@@ -74,21 +74,21 @@
 #define MAKE_CALLBACK0(METHOD, OBJECT) \
   fastdelegate::bind(&METHOD, OBJECT)
 #define MAKE_CALLBACK1(METHOD, OBJECT) \
-  fastdelegate::bind(&METHOD, OBJECT, _1)
+  fastdelegate::bind(&METHOD, OBJECT)
 #define MAKE_CALLBACK2(METHOD, OBJECT) \
-  fastdelegate::bind(&METHOD, OBJECT, _1, _2)
+  fastdelegate::bind(&METHOD, OBJECT)
 #define MAKE_CALLBACK3(METHOD, OBJECT) \
-  fastdelegate::bind(&METHOD, OBJECT, _1, _2, _3)
+  fastdelegate::bind(&METHOD, OBJECT)
 #define MAKE_CALLBACK4(METHOD, OBJECT) \
-  fastdelegate::bind(&METHOD, OBJECT, _1, _2, _3, _4)
+  fastdelegate::bind(&METHOD, OBJECT)
 #define MAKE_CALLBACK5(METHOD, OBJECT) \
-  fastdelegate::bind(&METHOD, OBJECT, _1, _2, _3, _4, _5)
+  fastdelegate::bind(&METHOD, OBJECT)
 #define MAKE_CALLBACK6(METHOD, OBJECT) \
-  fastdelegate::bind(&METHOD, OBJECT, _1, _2, _3, _4, _5, _6)
+  fastdelegate::bind(&METHOD, OBJECT)
 #define MAKE_CALLBACK7(METHOD, OBJECT) \
-  fastdelegate::bind(&METHOD, OBJECT, _1, _2, _3, _4, _5, _6, _7)
+  fastdelegate::bind(&METHOD, OBJECT
 #define MAKE_CALLBACK8(METHOD, OBJECT) \
-  fastdelegate::bind(&METHOD, OBJECT, _1, _2, _3, _4, _5, _6, _7, _8)
+  fastdelegate::bind(&METHOD, OBJECT)
 
 #define TRY_FINALLY(CODE, CLEANUP) \
   try \

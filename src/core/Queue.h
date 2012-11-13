@@ -5,7 +5,7 @@
 #include "Terminal.h"
 #include "FileOperationProgress.h"
 //---------------------------------------------------------------------------
-class TSimpleThread : public TObject, private boost::noncopyable
+class TSimpleThread : public TObject
 {
 public:
   explicit /* __fastcall */ TSimpleThread();

@@ -13087,19 +13087,18 @@ void __fastcall TWebDAVFileSystem::CreateDirectory(const UnicodeString DirName)
   bool res = WebDAVMakeDirectory(FullDirName.c_str());
   if (!res)
   {
-    std::vector<std::wstring> dirnames;
-    std::wstring delim = L"/";
-    boost::algorithm::split(dirnames, std::wstring(DirName.c_str()), boost::algorithm::is_any_of(delim), boost::algorithm::token_compress_on);
-    UnicodeString curdir;
-    std::wstring dir;
-    BOOST_FOREACH(dir, dirnames)
+    TStringList Strings;
+    Strings.SetDelimiter(L'/');
+    Strings.SetDelimitedText(DirName);
+    UnicodeString CurDir;
+    for (int i = 0; i < Strings.Count; i++)
     {
-      if (dir.empty())
+      if (Strings.Strings[i].IsEmpty())
       {
         continue;
       }
-      curdir += L"/" + dir;
-      res = WebDAVMakeDirectory(curdir.c_str());
+      CurDir += L"/" + Strings.Strings[i];
+      res = WebDAVMakeDirectory(CurDir.c_str());
     }
     if (!res)
     {
