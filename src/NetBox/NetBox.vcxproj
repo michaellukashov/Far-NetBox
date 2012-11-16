@@ -171,7 +171,7 @@
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <PostBuildEvent>
-      <Command>scripts\makeDist.cmd x86 Far2</Command>
+      <Command>scripts\make_dist.cmd x86 Far2</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -207,7 +207,7 @@
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <PostBuildEvent>
-      <Command>scripts\makeDist.cmd x64 Far2</Command>
+      <Command>scripts\make_dist.cmd x64 Far2</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
