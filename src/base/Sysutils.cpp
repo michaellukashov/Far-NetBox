@@ -1248,6 +1248,14 @@ UnicodeString IntToHex(unsigned int Int, size_t MinChars)
 {
   UnicodeString Result;
   Result.sprintf(L"%X", Int);
+  int Pad = MinChars - Result.size();
+  if (Pad > 0)
+  {
+    for (int i = 0; i < Pad; i++)
+    {
+      Result.Insert(L'0', 1);
+    }
+  }
   return Result;
 }
 //---------------------------------------------------------------------------
