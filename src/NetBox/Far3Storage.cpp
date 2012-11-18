@@ -1,8 +1,5 @@
 #include "stdafx.h"
 
-#include "boostdefines.hpp"
-#include <boost/scope_exit.hpp>
-
 #include "Common.h"
 #include "Exceptions.h"
 #include "PuttyIntf.h"
