@@ -1,7 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #pragma warning(push)
-#pragma warning(disable: 4512) // assignment operator could not be generated
 #pragma warning(disable: 4068) // unknown pragma
 
 #include "..\filezilla\stdafx.cpp"
