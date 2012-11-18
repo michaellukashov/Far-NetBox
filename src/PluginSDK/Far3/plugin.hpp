@@ -5,7 +5,7 @@
 /*
   plugin.hpp
 
-  Plugin API for Far Manager 3.0 build 2914
+  Plugin API for Far Manager 3.0 build 2927
 */
 
 /*
@@ -43,7 +43,7 @@ other possible license with no implications from the above license on them.
 #define FARMANAGERVERSION_MAJOR 3
 #define FARMANAGERVERSION_MINOR 0
 #define FARMANAGERVERSION_REVISION 0
-#define FARMANAGERVERSION_BUILD 2914
+#define FARMANAGERVERSION_BUILD 2927
 #define FARMANAGERVERSION_STAGE VS_RELEASE
 
 #ifndef RC_INVOKED
@@ -1030,7 +1030,7 @@ enum FARMACROSTATE
 
 enum FARMACROPARSEERRORCODE
 {
-	MPEC_SUCCESS                = 0,
+	MPEC_SUCCESS = 0,
 	MPEC_ERROR   = 1,
 };
 
@@ -1084,9 +1084,9 @@ struct FarMacroValue
 	enum FARMACROVARTYPE Type;
 	union
 	{
-		__int64  Integer;
+		__int64        Integer;
 		__int64        Boolean;
-		double   Double;
+		double         Double;
 		const wchar_t *String;
 		struct
 		{
@@ -1102,8 +1102,8 @@ struct FarMacroValue
 
 enum MACROPLUGINRETURNTYPE
 {
-	MPRT_NORMALFINISH = 0,
-	MPRT_ERRORFINISH  = 1,
+	MPRT_NORMALFINISH  = 0,
+	MPRT_ERRORFINISH   = 1,
 	MPRT_ERRORPARSE    = 2,
 	MPRT_KEYS          = 3,
 	MPRT_PRINT         = 4,
@@ -1125,7 +1125,7 @@ struct FarMacroCall
 	size_t StructSize;
 	size_t Count;
 	struct FarMacroValue *Values;
-	void (WINAPI *Callback)(void *CallbackData, struct FarMacroValue *Values);
+	void (WINAPI *Callback)(void *CallbackData, struct FarMacroValue *Values, size_t Count);
 	void *CallbackData;
 };
 
@@ -1222,7 +1222,7 @@ static const VIEWER_OPTIONS
 
 enum VIEWER_SETMODE_TYPES
 {
-	VSMT_HEX                        = 0,
+	VSMT_VIEWMODE                   = 0,
 	VSMT_WRAP                       = 1,
 	VSMT_WORDWRAP                   = 2,
 };
@@ -1285,7 +1285,7 @@ struct ViewerMode
 {
 	uintptr_t CodePage;
 	VIEWER_MODE_FLAGS Flags;
-	enum VIEWER_MODE_TYPE Type;
+	enum VIEWER_MODE_TYPE ViewMode;
 };
 
 struct ViewerInfo
@@ -1904,7 +1904,7 @@ typedef void   *(WINAPI *FARSTDBSEARCH)(const void *key, const void *base, size_
 typedef size_t (WINAPI *FARSTDGETFILEOWNER)(const wchar_t *Computer,const wchar_t *Name,wchar_t *Owner,size_t Size);
 typedef size_t (WINAPI *FARSTDGETNUMBEROFLINKS)(const wchar_t *Name);
 typedef int (WINAPI *FARSTDATOI)(const wchar_t *s);
-typedef __int64(WINAPI *FARSTDATOI64)(const wchar_t *s);
+typedef __int64 (WINAPI *FARSTDATOI64)(const wchar_t *s);
 typedef wchar_t   *(WINAPI *FARSTDITOA64)(__int64 value, wchar_t *string, int radix);
 typedef wchar_t   *(WINAPI *FARSTDITOA)(int value, wchar_t *string, int radix);
 typedef wchar_t   *(WINAPI *FARSTDLTRIM)(wchar_t *Str);
@@ -2371,8 +2371,6 @@ struct OpenCommandLineInfo
 
 enum OPENFROM
 {
-	OPEN_FROM_MASK          = 0x000000FF,
-
 	OPEN_LEFTDISKMENU       = 0,
 	OPEN_PLUGINSMENU        = 1,
 	OPEN_FINDLIST           = 2,
@@ -2610,21 +2608,21 @@ extern "C"
 #endif
 // Exported Functions
 
-	HANDLE WINAPI AnalyseW(const struct AnalyseInfo *Info);
-	void   WINAPI CloseAnalyseW(const struct CloseAnalyseInfo *Info);
-	void   WINAPI ClosePanelW(const struct ClosePanelInfo *Info);
+	HANDLE   WINAPI AnalyseW(const struct AnalyseInfo *Info);
+	void     WINAPI CloseAnalyseW(const struct CloseAnalyseInfo *Info);
+	void     WINAPI ClosePanelW(const struct ClosePanelInfo *Info);
 	intptr_t WINAPI CompareW(const struct CompareInfo *Info);
 	intptr_t WINAPI ConfigureW(const struct ConfigureInfo *Info);
 	intptr_t WINAPI DeleteFilesW(const struct DeleteFilesInfo *Info);
-	void   WINAPI ExitFARW(const struct ExitInfo *Info);
-	void   WINAPI FreeFindDataW(const struct FreeFindDataInfo *Info);
+	void     WINAPI ExitFARW(const struct ExitInfo *Info);
+	void     WINAPI FreeFindDataW(const struct FreeFindDataInfo *Info);
 	intptr_t WINAPI GetFilesW(struct GetFilesInfo *Info);
 	intptr_t WINAPI GetFindDataW(struct GetFindDataInfo *Info);
-	void   WINAPI GetGlobalInfoW(struct GlobalInfo *Info);
-	void   WINAPI GetOpenPanelInfoW(struct OpenPanelInfo *Info);
-	void   WINAPI GetPluginInfoW(struct PluginInfo *Info);
+	void     WINAPI GetGlobalInfoW(struct GlobalInfo *Info);
+	void     WINAPI GetOpenPanelInfoW(struct OpenPanelInfo *Info);
+	void     WINAPI GetPluginInfoW(struct PluginInfo *Info);
 	intptr_t WINAPI MakeDirectoryW(struct MakeDirectoryInfo *Info);
-	HANDLE WINAPI OpenW(const struct OpenInfo *Info);
+	HANDLE   WINAPI OpenW(const struct OpenInfo *Info);
 	intptr_t WINAPI ProcessDialogEventW(const struct ProcessDialogEventInfo *Info);
 	intptr_t WINAPI ProcessEditorEventW(const struct ProcessEditorEventInfo *Info);
 	intptr_t WINAPI ProcessEditorInputW(const struct ProcessEditorInputInfo *Info);
@@ -2637,7 +2635,7 @@ extern "C"
 	intptr_t WINAPI PutFilesW(const struct PutFilesInfo *Info);
 	intptr_t WINAPI SetDirectoryW(const struct SetDirectoryInfo *Info);
 	intptr_t WINAPI SetFindListW(const struct SetFindListInfo *Info);
-	void   WINAPI SetStartupInfoW(const struct PluginStartupInfo *Info);
+	void     WINAPI SetStartupInfoW(const struct PluginStartupInfo *Info);
 
 #ifdef __cplusplus
 };
