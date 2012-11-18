@@ -52,7 +52,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef _MSC_VER
 # include <sdkddkver.h>
-# if _WIN32_WINNT < 0x0601
+# if _WIN32_WINNT < 0x0501
 #  error Windows SDK v7.0 (or higher) required
 # endif
 #endif //_MSC_VER
