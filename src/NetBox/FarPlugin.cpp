@@ -835,7 +835,7 @@ void __fastcall TFarMessageDialog::Init(unsigned int AFlags,
       Button = new TFarButton(this);
       Button->SetDefault(Index == 0);
       Button->SetBrackets(brNone);
-      Button->SetOnClick(MAKE_CALLBACK2(TFarMessageDialog::ButtonClick, this));
+      Button->SetOnClick(MAKE_CALLBACK(TFarMessageDialog::ButtonClick, this));
       UnicodeString Caption = Buttons->Strings[Index];
       if ((FParams->Timeout > 0) &&
           (FParams->TimeoutButton == (size_t)Index))

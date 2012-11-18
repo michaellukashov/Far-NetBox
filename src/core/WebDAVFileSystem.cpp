@@ -13244,7 +13244,7 @@ void /* __fastcall */ TWebDAVFileSystem::CustomCommandOnFile(const UnicodeString
     AParams.Command = Command;
     AParams.Params = Params;
     AParams.OutputEvent = OutputEvent;
-    FTerminal->ProcessDirectory(FileName, MAKE_CALLBACK3(TTerminal::CustomCommandOnFile, FTerminal), &AParams);
+    FTerminal->ProcessDirectory(FileName, MAKE_CALLBACK(TTerminal::CustomCommandOnFile, FTerminal), &AParams);
   }
 
   if (!Dir || (Params & ccApplyToDirectories))
@@ -13849,7 +13849,7 @@ void __fastcall TWebDAVFileSystem::Sink(const UnicodeString FileName,
         SinkFileParams.Skipped = false;
         SinkFileParams.Flags = Flags & ~(tfFirstLevel | tfAutoResume);
 
-        FTerminal->ProcessDirectory(FileName, MAKE_CALLBACK3(TWebDAVFileSystem::SinkFile, this), &SinkFileParams);
+        FTerminal->ProcessDirectory(FileName, MAKE_CALLBACK(TWebDAVFileSystem::SinkFile, this), &SinkFileParams);
 
         // Do not delete directory if some of its files were skip.
         // Throw "skip file" for the directory to avoid attempt to deletion
@@ -14596,7 +14596,7 @@ webdav::error_t TWebDAVFileSystem::VerifyCertificate(
   TQueryButtonAlias Aliases[1];
   Aliases[0].Button = qaRetry;
   Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);
-  Aliases[0].OnClick = MAKE_CALLBACK1(TClipboardHandler::Copy, &ClipboardHandler);
+  Aliases[0].OnClick = MAKE_CALLBACK(TClipboardHandler::Copy, &ClipboardHandler);
 
   TQueryParams Params;
   Params.HelpKeyword = HELP_VERIFY_CERTIFICATE;

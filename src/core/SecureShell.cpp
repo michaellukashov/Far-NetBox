@@ -1059,7 +1059,7 @@ void __fastcall TSecureShell::DispatchSendBuffer(int BufSize)
     if (Now() - Start > FSessionData->GetTimeoutDT())
     {
       LogEvent(L"Waiting for dispatching send buffer timed out, asking user what to do.");
-      unsigned int Answer = TimeoutPrompt(MAKE_CALLBACK1(TSecureShell::SendBuffer, this));
+      unsigned int Answer = TimeoutPrompt(MAKE_CALLBACK(TSecureShell::SendBuffer, this));
       switch (Answer)
       {
         case qaRetry:
@@ -1553,7 +1553,7 @@ void __fastcall TSecureShell::WaitForData()
 
       CTRACE(TRACE_TRANSMIT, "1");
       LogEvent(L"Waiting for data timed out, asking user what to do.");
-      unsigned int Answer = TimeoutPrompt(MAKE_CALLBACK1(TPoolForDataEvent::PoolForData, &Event));
+      unsigned int Answer = TimeoutPrompt(MAKE_CALLBACK(TPoolForDataEvent::PoolForData, &Event));
       CTRACE(TRACE_TRANSMIT, "2");
       switch (Answer)
       {
@@ -2021,7 +2021,7 @@ void __fastcall TSecureShell::VerifyHostKey(UnicodeString Host, int Port,
       TQueryButtonAlias Aliases[3];
       Aliases[0].Button = qaRetry;
       Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);
-      Aliases[0].OnClick = MAKE_CALLBACK1(TClipboardHandler::Copy, &ClipboardHandler);
+      Aliases[0].OnClick = MAKE_CALLBACK(TClipboardHandler::Copy, &ClipboardHandler);
       Answers = qaYes | qaCancel | qaRetry;
       AliasesCount = 1;
       if (!Unknown)

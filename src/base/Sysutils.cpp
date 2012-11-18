@@ -383,7 +383,7 @@ TTimeStamp DateTimeToTimeStamp(TDateTime DateTime)
   TTimeStamp result = {0, 0};
   double fractpart, intpart;
   fractpart = modf(DateTime, &intpart);
-  result.Time = static_cast<int>(fractpart * MSecsPerDay);
+  result.Time = static_cast<int>(fractpart * MSecsPerDay + 0.5);
   result.Date = static_cast<int>(intpart + DateDelta);
   return result;
 }

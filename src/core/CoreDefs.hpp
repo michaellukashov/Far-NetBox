@@ -21,23 +21,7 @@
 #define DEFINE_CALLBACK_TYPE8(EVENT, R, T1, T2, T3, T4, T5, T6, T7, T8) \
   typedef R __fastcall (__closure *EVENT)(T1, T2, T3, T4, T5, T6, T7, T8)
 
-#define MAKE_CALLBACK0(METHOD, OBJECT) \
-  (OBJECT)->METHOD
-#define MAKE_CALLBACK1(METHOD, OBJECT) \
-  (OBJECT)->METHOD
-#define MAKE_CALLBACK2(METHOD, OBJECT) \
-  (OBJECT)->METHOD
-#define MAKE_CALLBACK3(METHOD, OBJECT) \
-  (OBJECT)->METHOD
-#define MAKE_CALLBACK4(METHOD, OBJECT) \
-  (OBJECT)->METHOD
-#define MAKE_CALLBACK5(METHOD, OBJECT) \
-  (OBJECT)->METHOD
-#define MAKE_CALLBACK6(METHOD, OBJECT) \
-  (OBJECT)->METHOD
-#define MAKE_CALLBACK7(METHOD, OBJECT) \
-  (OBJECT)->METHOD
-#define MAKE_CALLBACK8(METHOD, OBJECT) \
+#define MAKE_CALLBACK(METHOD, OBJECT) \
   (OBJECT)->METHOD
 
 #define TRY_FINALLY(CODE, CLEANUP) \
@@ -71,23 +55,7 @@
 #define DEFINE_CALLBACK_TYPE8(EVENT,     R, T1, T2, T3, T4, T5, T6, T7, T8) \
   typedef fastdelegate::FastDelegate8<R, T1, T2, T3, T4, T5, T6, T7, T8> EVENT
 
-#define MAKE_CALLBACK0(METHOD, OBJECT) \
-  fastdelegate::bind(&METHOD, OBJECT)
-#define MAKE_CALLBACK1(METHOD, OBJECT) \
-  fastdelegate::bind(&METHOD, OBJECT)
-#define MAKE_CALLBACK2(METHOD, OBJECT) \
-  fastdelegate::bind(&METHOD, OBJECT)
-#define MAKE_CALLBACK3(METHOD, OBJECT) \
-  fastdelegate::bind(&METHOD, OBJECT)
-#define MAKE_CALLBACK4(METHOD, OBJECT) \
-  fastdelegate::bind(&METHOD, OBJECT)
-#define MAKE_CALLBACK5(METHOD, OBJECT) \
-  fastdelegate::bind(&METHOD, OBJECT)
-#define MAKE_CALLBACK6(METHOD, OBJECT) \
-  fastdelegate::bind(&METHOD, OBJECT)
-#define MAKE_CALLBACK7(METHOD, OBJECT) \
-  fastdelegate::bind(&METHOD, OBJECT
-#define MAKE_CALLBACK8(METHOD, OBJECT) \
+#define MAKE_CALLBACK(METHOD, OBJECT) \
   fastdelegate::bind(&METHOD, OBJECT)
 
 #define TRY_FINALLY(CODE, CLEANUP) \

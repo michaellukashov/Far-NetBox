@@ -743,7 +743,7 @@ void __fastcall TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
       if (FParent != NULL)
       {
         CTRACE(TRACE_LOG_ADD, "Parent");
-        DoAdd(Type, Line, MAKE_CALLBACK2(TSessionLog::DoAddToParent, this));
+        DoAdd(Type, Line, MAKE_CALLBACK(TSessionLog::DoAddToParent, this));
       }
       else
       {
@@ -756,7 +756,7 @@ void __fastcall TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
         TRY_FINALLY (
         {
           CTRACE(TRACE_LOG_ADD, "DoAdd");
-          DoAdd(Type, Line, MAKE_CALLBACK2(TSessionLog::DoAddToSelf, this));
+          DoAdd(Type, Line, MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
         }
         ,
         {
@@ -951,12 +951,12 @@ void /* __fastcall */ TSessionLog::DoAddStartupInfo(TSessionData * Data)
   BeginUpdate();
   try
   {
-    #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), MAKE_CALLBACK2(TSessionLog::DoAddToSelf, this));
+    #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
 //!CLEANBEGIN
     #ifdef _DEBUG
     #undef ADF
     // #define ADF(S, F) DoAdd(llMessage, FORMAT(S, F), DoAddToSelf);
-    #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), MAKE_CALLBACK2(TSessionLog::DoAddToSelf, this));
+    #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
     #endif
 //!CLEANEND
     AddSeparator();

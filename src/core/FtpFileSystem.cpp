@@ -781,7 +781,7 @@ void __fastcall TFTPFileSystem::ChangeFileProperties(const UnicodeString AFileNa
       {
         try
         {
-          FTerminal->ProcessDirectory(AFileName, MAKE_CALLBACK3(TTerminal::ChangeFileProperties, FTerminal),
+          FTerminal->ProcessDirectory(AFileName, MAKE_CALLBACK(TTerminal::ChangeFileProperties, FTerminal),
             static_cast<void *>(const_cast<TRemoteProperties *>(Properties)));
         }
         catch(...)
@@ -1210,7 +1210,7 @@ void __fastcall TFTPFileSystem::Sink(const UnicodeString FileName,
       SinkFileParams.Skipped = false;
       SinkFileParams.Flags = Flags & ~(tfFirstLevel | tfAutoResume);
 
-      FTerminal->ProcessDirectory(FileName, MAKE_CALLBACK3(TFTPFileSystem::SinkFile, this), &SinkFileParams);
+      FTerminal->ProcessDirectory(FileName, MAKE_CALLBACK(TFTPFileSystem::SinkFile, this), &SinkFileParams);
 
       // Do not delete directory if some of its files were skip.
       // Throw "skip file" for the directory to avoid attempt to deletion
@@ -1767,7 +1767,7 @@ void __fastcall TFTPFileSystem::DeleteFile(const UnicodeString AFileName,
   {
     try
     {
-      FTerminal->ProcessDirectory(FileName, MAKE_CALLBACK3(TTerminal::DeleteFile, FTerminal), &Params);
+      FTerminal->ProcessDirectory(FileName, MAKE_CALLBACK(TTerminal::DeleteFile, FTerminal), &Params);
     }
     catch(...)
     {
@@ -3212,7 +3212,7 @@ void __fastcall TFTPFileSystem::ConvertRemoteTimestamp(
         static_cast<unsigned short>(Tm->tm_hour),
         static_cast<unsigned short>(Tm->tm_min),
         static_cast<unsigned short>(Tm->tm_sec), 0);
-      ModificationFmt = (Tm->tm_sec != 0 ? mfFull : mfMDHM);
+      ModificationFmt = mfFull;
     }
     else
     {
@@ -3548,7 +3548,7 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       TQueryButtonAlias Aliases[1];
       Aliases[0].Button = qaRetry;
       Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);
-      Aliases[0].OnClick = MAKE_CALLBACK1(TClipboardHandler::Copy, &ClipboardHandler);
+      Aliases[0].OnClick = MAKE_CALLBACK(TClipboardHandler::Copy, &ClipboardHandler);
 
       TQueryParams Params;
       Params.HelpKeyword = HELP_VERIFY_CERTIFICATE;
