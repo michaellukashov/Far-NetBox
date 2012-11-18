@@ -1,6 +1,7 @@
 NetBox 2.1.18 ??.11.2012
 --------------------
-  * WinSCP core upgraded to 5.1.0
+  * Improvement: use tweaked VS2008 MFC sources to reduse plugin size
+  * WinSCP core upgraded to 5.1.1
   * Fix openssl compilation
 
 NetBox 2.1.17 03.11.2012

@@ -11,7 +11,7 @@
 //---------------------------------------------------------------------------
 class TBackgroundTerminal;
 //---------------------------------------------------------------------------
-class TUserAction : public TObject, private boost::noncopyable
+class TUserAction : public TObject
 {
 public:
   explicit /* __fastcall */ TUserAction() {}

@@ -7,7 +7,6 @@
 #include "FarPlugin.h"
 #include "RemoteFiles.h"
 
-namespace alg = boost::algorithm;
 //---------------------------------------------------------------------------
 
 namespace Sysutils {
@@ -66,14 +65,16 @@ const TDayTable MonthDays[] =
 //---------------------------------------------------------------------------
 UnicodeString IntToStr(int value)
 {
-  std::string result = boost::lexical_cast<std::string>(value);
-  return MB2W(result.c_str());
+  UnicodeString result;
+  result.sprintf(L"%d", value);
+  return result;
 }
 //---------------------------------------------------------------------------
 UnicodeString Int64ToStr(__int64 value)
 {
-  std::string result = boost::lexical_cast<std::string>(value);
-  return MB2W(result.c_str());
+  UnicodeString result;
+  result.sprintf(L"%lld", value);
+  return result;
 }
 //---------------------------------------------------------------------------
 int StrToInt(const UnicodeString value)
@@ -138,10 +139,10 @@ bool TryStrToInt(const std::wstring & value, __int64 & Value)
   bool result = false;
   try
   {
-    Value = boost::lexical_cast<__int64>(value);
+    Value = _wtoi64(value.c_str());
     result = true;
   }
-  catch (const boost::bad_lexical_cast &)
+  catch (...)
   {
     result = false;
   }
@@ -153,10 +154,10 @@ bool TryStrToInt(const std::wstring & value, int & Value)
   bool result = false;
   try
   {
-    Value = boost::lexical_cast<int>(value);
+    Value = _wtoi(value.c_str());
     result = true;
   }
-  catch (const boost::bad_lexical_cast &)
+  catch (...)
   {
     result = false;
   }
@@ -222,8 +223,12 @@ wchar_t LowCase(const wchar_t c)
 
 UnicodeString AnsiReplaceStr(const UnicodeString str, const UnicodeString from, const UnicodeString to)
 {
-  std::wstring result = str;
-  alg::replace_all(result, std::wstring(from.c_str()), std::wstring(to.c_str()));
+  UnicodeString result = str;
+  int Pos = 0;
+  while ((Pos = result.Pos(from)) > 0)
+  {
+    result.Replace(Pos, from.size(), to);
+  }
   return result;
 }
 
@@ -356,9 +361,9 @@ double StrToFloatDef(const UnicodeString Value, double defval)
   double result = 0.0;
   try
   {
-    result = boost::lexical_cast<double>(W2MB(Value.c_str()));
+    result = _wtof(Value.c_str());
   }
-  catch (const boost::bad_lexical_cast &)
+  catch (...)
   {
     result = defval;
   }
@@ -1241,9 +1246,17 @@ unsigned int HexToInt(const UnicodeString Hex, size_t MinChars)
 //---------------------------------------------------------------------------
 UnicodeString IntToHex(unsigned int Int, size_t MinChars)
 {
-  std::wstringstream ss;
-  ss << std::setfill(L'0') << std::setw(MinChars) << std::hex << Int;
-  return ss.str();
+  UnicodeString Result;
+  Result.sprintf(L"%X", Int);
+  int Pad = MinChars - Result.size();
+  if (Pad > 0)
+  {
+    for (int i = 0; i < Pad; i++)
+    {
+      Result.Insert(L'0', 1);
+    }
+  }
+  return Result;
 }
 //---------------------------------------------------------------------------
 char HexToChar(const UnicodeString Hex, size_t MinChars)

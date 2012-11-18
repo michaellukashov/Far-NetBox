@@ -17,14 +17,6 @@
 #include <algorithm>
 #include <assert.h>
 
-#include "boostdefines.hpp"
-#include <boost/noncopyable.hpp>
-#include <boost/scope_exit.hpp>
-#include <boost/algorithm/string.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/foreach.hpp>
-#include <boost/bind.hpp>
-
 #include <rtlconsts.h>
 #include <headers.hpp>
 #include <CppProperties.h>
@@ -399,7 +391,7 @@ class TStringList;
 typedef std::vector<TStringItem> TStringItemList;
 typedef int (TStringListSortCompare)(TStringList * List, int Index1, int Index2);
 
-class TStringList : public TStrings // , private boost::noncopyable
+class TStringList : public TStrings
 {
   typedef TStrings parent;
   friend int StringListCompareStrings(TStringList * List, int Index1, int Index2);

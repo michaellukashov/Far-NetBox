@@ -40,14 +40,6 @@ or from git repository:
 From now on, we assume that your source tree is C:/src/Far-NetBox
 
 
-Compile boost libraries:
-    
-Boost 1.48.0 or later is required to build NetBox.  
-You can download the source code for boost from [download page](http://sourceforge.net/projects/boost/files/boost/1.48.0/).
-
-Unpack archive to directory C:/src/Far-NetBox/libs  
-
-
 Compile openssl:
 
     cd libs/openssl  

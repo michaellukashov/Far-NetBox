@@ -9,7 +9,7 @@
 #endif
 
 #ifndef _WIN32_WINNT
-#define _WIN32_WINNT _WIN32_MAXVER
+#define _WIN32_WINNT 0x0501
 #endif
 
 #define MPEXT_NO_ZLIB
@@ -28,6 +28,14 @@
 #define GetOptionVal(OPTION) GetInstanceOptionVal(this->m_pApiLogParent, OPTION)
 #endif
 //---------------------------------------------------------------------------
+#define _ATL_MIN_CRT
+#define _ATL_NO_DEFAULT_LIBS
+
+#include "afxpriv.h"
+#include "afxole.h"
+#include "..\src\mfc\oleimpl2.h"
+#include "..\src\mfc\afximpl.h"
+ 
 #include <afx.h>
 #include "wtypes.h"
 #include <afxmt.h>
