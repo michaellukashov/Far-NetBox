@@ -1430,7 +1430,7 @@ bool CFtpListResult::parseMlsdDateTime(const CString value, t_directory::t_diren
 		direntry.date.hour = Hours;
 		direntry.date.minute = Minutes;
 		direntry.date.second = Seconds;
-		direntry.date.utc = TRUE;
+		direntry.date.utc = FALSE;
 		CTime dateTime(Year, Month, Day, Hours, Minutes, Seconds);
 		direntry.EntryTime = dateTime;
 	}

@@ -3212,7 +3212,7 @@ void __fastcall TFTPFileSystem::ConvertRemoteTimestamp(
         static_cast<unsigned short>(Tm->tm_hour),
         static_cast<unsigned short>(Tm->tm_min),
         static_cast<unsigned short>(Tm->tm_sec), 0);
-      ModificationFmt = (Tm->tm_sec != 0 ? mfFull : mfMDHM);
+      ModificationFmt = mfFull;
     }
     else
     {
