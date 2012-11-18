@@ -3,7 +3,7 @@ NetBox 2.1.18 18.11.2012
   * Fix timestamp issues
     (http://forum.farmanager.com/viewtopic.php?f=3&t=7491&start=60#p100002)
   * Far3: Adapt to Far 3.0 build 2927
-  * Improvement: use tweaked VS2008 MFC sources to reduse plugin size
+  * Improvement: use tweaked VS2008 MFC sources to reduce plugin size
   * WinSCP core upgraded to 5.1.1
   * Fix openssl compilation
 
