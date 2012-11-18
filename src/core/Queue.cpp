@@ -1194,11 +1194,11 @@ void __fastcall TTerminalItem::Init(int Index)
   {
     FTerminal->SetUseBusyCursor(false);
 
-    FTerminal->SetOnQueryUser(MAKE_CALLBACK8(TTerminalItem::TerminalQueryUser, this));
-    FTerminal->SetOnPromptUser(MAKE_CALLBACK8(TTerminalItem::TerminalPromptUser, this));
-    FTerminal->SetOnShowExtendedException(MAKE_CALLBACK3(TTerminalItem::TerminalShowExtendedException, this));
-    FTerminal->SetOnProgress(MAKE_CALLBACK2(TTerminalItem::OperationProgress, this));
-    FTerminal->SetOnFinished(MAKE_CALLBACK6(TTerminalItem::OperationFinished, this));
+    FTerminal->SetOnQueryUser(MAKE_CALLBACK(TTerminalItem::TerminalQueryUser, this));
+    FTerminal->SetOnPromptUser(MAKE_CALLBACK(TTerminalItem::TerminalPromptUser, this));
+    FTerminal->SetOnShowExtendedException(MAKE_CALLBACK(TTerminalItem::TerminalShowExtendedException, this));
+    FTerminal->SetOnProgress(MAKE_CALLBACK(TTerminalItem::OperationProgress, this));
+    FTerminal->SetOnFinished(MAKE_CALLBACK(TTerminalItem::OperationFinished, this));
   }
   catch(...)
   {
@@ -2076,15 +2076,15 @@ void __fastcall TTerminalThread::Init()
   FOnStartReadDirectory = FTerminal->GetOnStartReadDirectory();
   FOnReadDirectoryProgress = FTerminal->GetOnReadDirectoryProgress();
 
-  FTerminal->SetOnInformation(MAKE_CALLBACK4(TTerminalThread::TerminalInformation, this));
-  FTerminal->SetOnQueryUser(MAKE_CALLBACK8(TTerminalThread::TerminalQueryUser, this));
-  FTerminal->SetOnPromptUser(MAKE_CALLBACK8(TTerminalThread::TerminalPromptUser, this));
-  FTerminal->SetOnShowExtendedException(MAKE_CALLBACK3(TTerminalThread::TerminalShowExtendedException, this));
-  FTerminal->SetOnDisplayBanner(MAKE_CALLBACK5(TTerminalThread::TerminalDisplayBanner, this));
-  FTerminal->SetOnChangeDirectory(MAKE_CALLBACK1(TTerminalThread::TerminalChangeDirectory, this));
-  FTerminal->SetOnReadDirectory(MAKE_CALLBACK2(TTerminalThread::TerminalReadDirectory, this));
-  FTerminal->SetOnStartReadDirectory(MAKE_CALLBACK1(TTerminalThread::TerminalStartReadDirectory, this));
-  FTerminal->SetOnReadDirectoryProgress(MAKE_CALLBACK3(TTerminalThread::TerminalReadDirectoryProgress, this));
+  FTerminal->SetOnInformation(MAKE_CALLBACK(TTerminalThread::TerminalInformation, this));
+  FTerminal->SetOnQueryUser(MAKE_CALLBACK(TTerminalThread::TerminalQueryUser, this));
+  FTerminal->SetOnPromptUser(MAKE_CALLBACK(TTerminalThread::TerminalPromptUser, this));
+  FTerminal->SetOnShowExtendedException(MAKE_CALLBACK(TTerminalThread::TerminalShowExtendedException, this));
+  FTerminal->SetOnDisplayBanner(MAKE_CALLBACK(TTerminalThread::TerminalDisplayBanner, this));
+  FTerminal->SetOnChangeDirectory(MAKE_CALLBACK(TTerminalThread::TerminalChangeDirectory, this));
+  FTerminal->SetOnReadDirectory(MAKE_CALLBACK(TTerminalThread::TerminalReadDirectory, this));
+  FTerminal->SetOnStartReadDirectory(MAKE_CALLBACK(TTerminalThread::TerminalStartReadDirectory, this));
+  FTerminal->SetOnReadDirectoryProgress(MAKE_CALLBACK(TTerminalThread::TerminalReadDirectoryProgress, this));
 
   Start();
 }
@@ -2096,15 +2096,15 @@ void __fastcall TTerminalThread::Init()
 
   CloseHandle(FActionEvent);
 
-  assert(FTerminal->GetOnInformation() == MAKE_CALLBACK4(TTerminalThread::TerminalInformation, this));
-  assert(FTerminal->GetOnQueryUser() == MAKE_CALLBACK8(TTerminalThread::TerminalQueryUser, this));
-  assert(FTerminal->GetOnPromptUser() == MAKE_CALLBACK8(TTerminalThread::TerminalPromptUser, this));
-  assert(FTerminal->GetOnShowExtendedException() == MAKE_CALLBACK3(TTerminalThread::TerminalShowExtendedException, this));
-  assert(FTerminal->GetOnDisplayBanner() == MAKE_CALLBACK5(TTerminalThread::TerminalDisplayBanner, this));
-  assert(FTerminal->GetOnChangeDirectory() == MAKE_CALLBACK1(TTerminalThread::TerminalChangeDirectory, this));
-  assert(FTerminal->GetOnReadDirectory() == MAKE_CALLBACK2(TTerminalThread::TerminalReadDirectory, this));
-  assert(FTerminal->GetOnStartReadDirectory() == MAKE_CALLBACK1(TTerminalThread::TerminalStartReadDirectory, this));
-  assert(FTerminal->GetOnReadDirectoryProgress() == MAKE_CALLBACK3(TTerminalThread::TerminalReadDirectoryProgress, this));
+  assert(FTerminal->GetOnInformation() == MAKE_CALLBACK(TTerminalThread::TerminalInformation, this));
+  assert(FTerminal->GetOnQueryUser() == MAKE_CALLBACK(TTerminalThread::TerminalQueryUser, this));
+  assert(FTerminal->GetOnPromptUser() == MAKE_CALLBACK(TTerminalThread::TerminalPromptUser, this));
+  assert(FTerminal->GetOnShowExtendedException() == MAKE_CALLBACK(TTerminalThread::TerminalShowExtendedException, this));
+  assert(FTerminal->GetOnDisplayBanner() == MAKE_CALLBACK(TTerminalThread::TerminalDisplayBanner, this));
+  assert(FTerminal->GetOnChangeDirectory() == MAKE_CALLBACK(TTerminalThread::TerminalChangeDirectory, this));
+  assert(FTerminal->GetOnReadDirectory() == MAKE_CALLBACK(TTerminalThread::TerminalReadDirectory, this));
+  assert(FTerminal->GetOnStartReadDirectory() == MAKE_CALLBACK(TTerminalThread::TerminalStartReadDirectory, this));
+  assert(FTerminal->GetOnReadDirectoryProgress() == MAKE_CALLBACK(TTerminalThread::TerminalReadDirectoryProgress, this));
 
   FTerminal->SetOnInformation(FOnInformation);
   FTerminal->SetOnQueryUser(FOnQueryUser);
@@ -2144,14 +2144,14 @@ void __fastcall TTerminalThread::Idle()
 void __fastcall TTerminalThread::TerminalOpen()
 {
   CALLSTACK;
-  RunAction(MAKE_CALLBACK1(TTerminalThread::TerminalOpenEvent, this));
+  RunAction(MAKE_CALLBACK(TTerminalThread::TerminalOpenEvent, this));
   TRACE("/");
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminalThread::TerminalReopen()
 {
   CALLSTACK;
-  RunAction(MAKE_CALLBACK1(TTerminalThread::TerminalReopenEvent, this));
+  RunAction(MAKE_CALLBACK(TTerminalThread::TerminalReopenEvent, this));
   TRACE("/");
 }
 //---------------------------------------------------------------------------

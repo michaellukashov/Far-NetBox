@@ -730,7 +730,7 @@ int __fastcall TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
     }
 
     FarParams.Token = &Data;
-    FarParams.ClickEvent = MAKE_CALLBACK3(TWinSCPPlugin::MessageClick, this);
+    FarParams.ClickEvent = MAKE_CALLBACK(TWinSCPPlugin::MessageClick, this);
 
     UnicodeString DialogStr = Str;
     if (MoreMessages && (MoreMessages->Count > 0))

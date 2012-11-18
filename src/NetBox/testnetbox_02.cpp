@@ -200,7 +200,7 @@ BOOST_FIXTURE_TEST_CASE(test2, base_fixture_t)
   {
     TClass2 cl2;
     TClass3 cl3;
-    cl2.SetOnClick(MAKE_CALLBACK2(TClass3::ClickEventHandler, &cl3));
+    cl2.SetOnClick(MAKE_CALLBACK(TClass3::ClickEventHandler, &cl3));
     BOOST_CHECK(!cl2.GetOnClick().empty());
     cl2.Click();
     BOOST_CHECK_EQUAL(true, cl2.OnClickTriggered);
@@ -214,7 +214,7 @@ BOOST_FIXTURE_TEST_CASE(test3, base_fixture_t)
   {
     TClass1 cl1;
     BOOST_CHECK_EQUAL(false, cl1.OnChangeNotifyEventTriggered);
-    cl1.SetOnChange(MAKE_CALLBACK1(base_fixture_t::OnChangeNotifyEvent, this));
+    cl1.SetOnChange(MAKE_CALLBACK(base_fixture_t::OnChangeNotifyEvent, this));
     cl1.Change(L"line 1");
     BOOST_CHECK_EQUAL(true, cl1.OnChangeNotifyEventTriggered);
   }
@@ -225,7 +225,7 @@ BOOST_FIXTURE_TEST_CASE(test4, base_fixture_t)
   if (1)
   {
     TStringList strings;
-    strings.SetOnChange(MAKE_CALLBACK1(base_fixture_t::onStringListChange, this));
+    strings.SetOnChange(MAKE_CALLBACK(base_fixture_t::onStringListChange, this));
     strings.Add(L"line 1");
     // BOOST_CHECK_EQUAL(true, OnChangeNotifyEventTriggered);
     BOOST_CHECK_EQUAL(true, onStringListChangeTriggered);
