@@ -29,7 +29,7 @@ if exist ..\..\ChangeLog copy ..\..\ChangeLog %PKGDIRARCH% > NUL
 if exist ..\..\*.md copy ..\..\*.md %PKGDIRARCH% > NUL
 if exist ..\..\LICENSE.txt copy ..\..\LICENSE.txt %PKGDIRARCH% > NUL
 
-if exist "C:\Program Files\PESuite\PETrim.exe" "C:\Program Files\PESuite\PETrim.exe" ..\..\%FARVER%_%PLUGINARCH%\Plugins\%PLUGINNAME%\%PLUGINNAME%.dll /Sf:Y /Sd:Y
+REM if exist "C:\Program Files\PESuite\PETrim.exe" "C:\Program Files\PESuite\PETrim.exe" ..\..\%FARVER%_%PLUGINARCH%\Plugins\%PLUGINNAME%\%PLUGINNAME%.dll /Sf:Y /Sd:Y
 copy ..\..\%FARVER%_%PLUGINARCH%\Plugins\%PLUGINNAME%\%PLUGINNAME%.dll %PKGDIRARCH% > NUL
 @rem copy ..\..\dlls\%PLUGINARCH%\%PLUGINNAME%.dll %PKGDIRARCH% > NUL
 
