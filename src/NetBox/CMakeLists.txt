@@ -87,6 +87,7 @@ include_directories (
     ${SRC_ROOT}/filezilla
     ${SRC_ROOT}/filezilla/misc
     ${LIBS_ROOT}
+    ${LIBS_ROOT}/atlmfc
     ${LIBS_ROOT}/boost
     ${LIBS_ROOT}/Putty
     ${LIBS_ROOT}/Putty/windows
