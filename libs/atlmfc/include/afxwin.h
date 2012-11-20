@@ -102,7 +102,6 @@ AFX_INLINE short APIENTRY GetFileTitle(LPCTSTR lpszFile, LPTSTR lpszTitle, WORD 
 #if ((NTDDI_VERSION >= NTDDI_LONGHORN || defined(__VSSYM32_H__)) && !defined(SCHEMA_VERIFY_VSSYM32))
 #include <vssym32.h>
 #else
-#include <tmschema.h>
 #endif
 #endif	// (_WIN32_WINNT >= 0x501)
 
