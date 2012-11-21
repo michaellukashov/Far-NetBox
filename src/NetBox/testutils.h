@@ -5,6 +5,14 @@
 #include <iostream>
 #include <fstream>
 
+#include "boostdefines.hpp"
+#include <boost/noncopyable.hpp>
+#include <boost/scope_exit.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/foreach.hpp>
+#include <boost/bind.hpp>
+
 #include <vcl.h>
 #include <Sysutils.hpp>
 
