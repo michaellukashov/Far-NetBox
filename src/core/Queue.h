@@ -275,6 +275,10 @@ private:
 
 public:
   void __fastcall SetMasks(const UnicodeString value);
+
+private:
+  TTerminalQueueStatus(const TTerminalQueueStatus &);
+  TTerminalQueueStatus & operator = (const TTerminalQueueStatus &);
 };
 //---------------------------------------------------------------------------
 class TLocatedQueueItem : public TQueueItem
