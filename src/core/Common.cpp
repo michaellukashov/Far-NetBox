@@ -1657,11 +1657,11 @@ UnicodeString __fastcall GetTimeZoneLogString()
 
   UnicodeString Result =
     FORMAT("Current: GMT%s, Standard: GMT%s, DST: GMT%s, DST Start: %s, DST End: %s",
-      FormatTimeZone(Params->CurrentDifferenceSec),
-       FormatTimeZone(Params->BaseDifferenceSec + Params->StandardDifferenceSec),
-       FormatTimeZone(Params->BaseDifferenceSec + Params->DaylightDifferenceSec),
-       Params->DaylightDate.DateString(),
-       Params->StandardDate.DateString());
+      FormatTimeZone(Params->CurrentDifferenceSec).c_str(),
+       FormatTimeZone(Params->BaseDifferenceSec + Params->StandardDifferenceSec).c_str(),
+       FormatTimeZone(Params->BaseDifferenceSec + Params->DaylightDifferenceSec).c_str(),
+       Params->DaylightDate.DateString().c_str(),
+       Params->StandardDate.DateString().c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
