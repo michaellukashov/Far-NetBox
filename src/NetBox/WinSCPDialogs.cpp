@@ -4108,13 +4108,13 @@ void __fastcall TSessionDialog::SelectTab(int Tab)
 //---------------------------------------------------------------------------
 void TSessionDialog::PrevTabClick(TFarButton * /* Sender */, bool & Close)
 {
-  Key(NULL, KEY_CTRLPGUP);
+  Key(NULL, VK_PRIOR | (CTRLMASK << 16));
   Close = false;
 }
 //---------------------------------------------------------------------------
 void TSessionDialog::NextTabClick(TFarButton * /* Sender */, bool & Close)
 {
-  Key(NULL, KEY_CTRLPGDN);
+  Key(NULL, VK_NEXT | (CTRLMASK << 16));
   Close = false;
 }
 //---------------------------------------------------------------------------
@@ -8388,8 +8388,8 @@ void TQueueDialog::OperationButtonClick(TFarButton * Sender,
 bool __fastcall TQueueDialog::Key(TFarDialogItem * /*Item*/, long KeyCode)
 {
   bool Result = false;
-    WORD Key = KeyCode & 0xFFFF;
-    DWORD ControlState = KeyCode >> 16;
+  WORD Key = KeyCode & 0xFFFF;
+  DWORD ControlState = KeyCode >> 16;
   if (QueueListBox->Focused())
   {
     TFarButton * DoButton = NULL;
