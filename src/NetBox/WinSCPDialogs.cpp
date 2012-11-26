@@ -99,6 +99,7 @@ class TTabbedDialog : public TWinSCPDialog
 
 public:
   explicit TTabbedDialog(TCustomFarPlugin * AFarPlugin, int TabCount);
+  virtual ~TTabbedDialog() {}
 
   int GetTab() { return FTab; }
 
@@ -109,6 +110,7 @@ protected:
   virtual bool __fastcall Key(TFarDialogItem * Item, long KeyCode);
   virtual UnicodeString __fastcall TabName(int Tab);
   TTabButton * __fastcall TabButton(int Tab);
+  int __fastcall GetTabCount() const { return FTabCount; }
 
 private:
   UnicodeString FOrigCaption;
@@ -122,15 +124,15 @@ public:
   explicit TTabButton(TTabbedDialog * Dialog);
 
   int GetTab() { return FTab; }
-  void SetTab(int value) { FTab = value; }
-  UnicodeString GetTabName() { return FTabName; }
+  void SetTab(int Value) { FTab = Value; }
+  UnicodeString GetTabName() const { return FTabName; }
 
 private:
   UnicodeString FTabName;
   int FTab;
 
 public:
-  void __fastcall SetTabName(const UnicodeString value);
+  void __fastcall SetTabName(const UnicodeString Value);
 };
 //---------------------------------------------------------------------------
 TTabbedDialog::TTabbedDialog(TCustomFarPlugin * AFarPlugin, int TabCount) :
@@ -167,7 +169,7 @@ void __fastcall TTabbedDialog::SelectTab(int Tab)
   /*for (int i = FTabCount - 1; i >= 1; i--)
   {
     TTabButton * Button = TabButton(i);
-    Button->SetBrackets(Button->GetTab() == Tab ? brTight : brSpace);
+    Button->SetBrackets(Button->GetTab() == Tab ? brTight : brNone);
   }*/
   if (FTab != Tab)
   {
@@ -1474,12 +1476,14 @@ public:
     tabConnection, tabTunnel, tabProxy, tabSsh, tabKex, tabAuthentication, tabBugs, tabWebDAV, tabCount };
 
   explicit TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum Action);
+  virtual ~TSessionDialog();
 
   bool __fastcall Execute(TSessionData * Data, TSessionActionEnum & Action);
 
 protected:
   virtual void __fastcall Change();
   virtual bool __fastcall CloseQuery();
+  virtual void __fastcall SelectTab(int Tab);
 
 private:
   TSessionActionEnum FAction;
@@ -1497,6 +1501,8 @@ private:
   TTabButton * SftpTab;
   TTabButton * FtpTab;
   TTabButton * TunnelTab;
+  TTabButton * PrevTab;
+  TTabButton * NextTab;
   TFarButton * ConnectButton;
   TFarEdit * HostNameEdit;
   TFarEdit * PortNumberEdit;
@@ -1607,6 +1613,8 @@ private:
   TFarComboBox * FtpUseMlsdCombo;
   TFarCheckBox * SslSessionReuseCheck;
   TFarCheckBox * WebDAVCompressionCheck;
+  TObjectList * FTabs;
+  int FFirstVisibleTabIndex;
 
   void __fastcall LoadPing(TSessionData * SessionData);
   void __fastcall SavePing(TSessionData * SessionData);
@@ -1626,6 +1634,8 @@ private:
   TLoginType __fastcall IndexToLoginType(int Index);
   TLoginType __fastcall GetLoginType();
   bool __fastcall VerifyKey(UnicodeString FileName, bool TypeOnly);
+  void PrevTabClick(TFarButton * /* Sender */, bool & Close);
+  void NextTabClick(TFarButton * /* Sender */, bool & Close);
   void CipherButtonClick(TFarButton * Sender, bool & Close);
   void KexButtonClick(TFarButton * Sender, bool & Close);
   void AuthGSSAPICheckAllowChange(TFarDialogItem * Sender, intptr_t NewState, bool & Allow);
@@ -1636,6 +1646,11 @@ private:
   void __fastcall LoginTypeComboChange();
   void __fastcall FillCodePageEdit();
   void __fastcall CodePageEditAdd(unsigned int cp);
+
+  void __fastcall ChangeTabs(int FirstVisibleTabIndex);
+  int GetVisibleTabsCount(int TabIndex, bool Forward);
+
+  int AddTab(int TabID, const wchar_t * TabCaption);
 };
 //---------------------------------------------------------------------------
 #define BUG(BUGID, MSG, PREFIX) \
@@ -1671,6 +1686,11 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   }
   SetSize(S);
 
+
+  FTabs = new TObjectList();
+  FTabs->SetOwnsObjects(false);
+  FFirstVisibleTabIndex = 0;
+
 #define TRISTATE(COMBO, PROP, MSG) \
     Text = new TFarText(this); \
     Text->SetCaption(GetMsg(MSG)); \
@@ -1701,84 +1721,67 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   TFarText * Text;
   int GroupTop;
   int Pos;
+  int Index;
 
-  TFarButtonBrackets TabBrackets = brNone; // brSpace; // 
-
-  Tab = new TTabButton(this);
-  Tab->SetTabName(GetMsg(LOGIN_TAB_SESSION));
-  Tab->SetTab(tabSession);
-  Tab->SetBrackets(TabBrackets);
+  Index = AddTab(tabSession, GetMsg(LOGIN_TAB_SESSION).c_str());
+  Tab = dynamic_cast<TTabButton *>(GetItem(Index));
 
   SetNextItemPosition(ipRight);
 
-  Tab = new TTabButton(this);
-  Tab->SetTabName(GetMsg(LOGIN_TAB_ENVIRONMENT));
-  Tab->SetTab(tabEnvironment);
-  Tab->SetBrackets(TabBrackets);
+  Index = AddTab(tabEnvironment, GetMsg(LOGIN_TAB_ENVIRONMENT).c_str());
 
-  Tab = new TTabButton(this);
-  Tab->SetTabName(GetMsg(LOGIN_TAB_DIRECTORIES));
-  Tab->SetTab(tabDirectories);
-  Tab->SetBrackets(TabBrackets);
+  Index = AddTab(tabDirectories, GetMsg(LOGIN_TAB_DIRECTORIES).c_str());
 
-  SftpTab = new TTabButton(this);
-  SftpTab->SetTabName(GetMsg(LOGIN_TAB_SFTP));
-  SftpTab->SetTab(tabSFTP);
-  SftpTab->SetBrackets(TabBrackets);
+  Index = AddTab(tabSFTP, GetMsg(LOGIN_TAB_SFTP).c_str());
+  SftpTab = dynamic_cast<TTabButton *>(GetItem(Index));
 
-  ScpTab = new TTabButton(this);
-  ScpTab->SetTabName(GetMsg(LOGIN_TAB_SCP));
-  ScpTab->SetTab(tabSCP);
-  ScpTab->SetBrackets(TabBrackets);
+  Index = AddTab(tabSCP, GetMsg(LOGIN_TAB_SCP).c_str());
+  ScpTab = dynamic_cast<TTabButton *>(GetItem(Index));
 
-  FtpTab = new TTabButton(this);
-  FtpTab->SetTabName(GetMsg(LOGIN_TAB_FTP));
-  FtpTab->SetTab(tabFTP);
-  FtpTab->SetBrackets(TabBrackets);
+  PrevTab = new TTabButton(this);
+  PrevTab->SetTabName(UnicodeString(''));
+  PrevTab->SetBrackets(brNone);
+  PrevTab->SetCenterGroup(false);
+  PrevTab->SetOnClick(MAKE_CALLBACK(TSessionDialog::PrevTabClick, this));
 
-  SetNextItemPosition(ipNewLine);
+  NextTab = new TTabButton(this);
+  NextTab->SetTabName(UnicodeString(''));
+  NextTab->SetBrackets(brNone);
+  NextTab->SetCenterGroup(false);
+  NextTab->SetOnClick(MAKE_CALLBACK(TSessionDialog::NextTabClick, this));
 
-  Tab = new TTabButton(this);
-  Tab->SetTabName(GetMsg(LOGIN_TAB_CONNECTION));
-  Tab->SetTab(tabConnection);
-  Tab->SetBrackets(TabBrackets);
+  int PWidth = PrevTab->GetWidth();
+  int NWidth = NextTab->GetWidth();
+  int R = S.x - 4;
+  PrevTab->SetLeft(R - PWidth - NWidth - 2);
+  PrevTab->SetWidth(PWidth);
+  NextTab->SetLeft(R - NWidth - 1);
+  NextTab->SetWidth(PWidth);
 
-  SetNextItemPosition(ipRight);
+  Index = AddTab(tabFTP, GetMsg(LOGIN_TAB_FTP).c_str());
+  FtpTab = dynamic_cast<TTabButton *>(GetItem(Index));
 
-  Tab = new TTabButton(this);
-  Tab->SetTabName(GetMsg(LOGIN_TAB_PROXY));
-  Tab->SetTab(tabProxy);
-  Tab->SetBrackets(TabBrackets);
+  Index = AddTab(tabConnection, GetMsg(LOGIN_TAB_CONNECTION).c_str());
 
-  TunnelTab = new TTabButton(this);
-  TunnelTab->SetTabName(GetMsg(LOGIN_TAB_TUNNEL));
-  TunnelTab->SetTab(tabTunnel);
-  TunnelTab->SetBrackets(TabBrackets);
+  Index = AddTab(tabProxy, GetMsg(LOGIN_TAB_PROXY).c_str());
 
-  SshTab = new TTabButton(this);
-  SshTab->SetTabName(GetMsg(LOGIN_TAB_SSH));
-  SshTab->SetTab(tabSsh);
-  SshTab->SetBrackets(TabBrackets);
+  Index = AddTab(tabTunnel, GetMsg(LOGIN_TAB_TUNNEL).c_str());
+  TunnelTab = dynamic_cast<TTabButton *>(GetItem(Index));
 
-  KexTab = new TTabButton(this);
-  KexTab->SetTabName(GetMsg(LOGIN_TAB_KEX));
-  KexTab->SetTab(tabKex);
-  KexTab->SetBrackets(TabBrackets);
+  Index = AddTab(tabSsh, GetMsg(LOGIN_TAB_SSH).c_str());
+  SshTab = dynamic_cast<TTabButton *>(GetItem(Index));
 
-  AuthenticatonTab = new TTabButton(this);
-  AuthenticatonTab->SetTabName(GetMsg(LOGIN_TAB_AUTH));
-  AuthenticatonTab->SetTab(tabAuthentication);
-  AuthenticatonTab->SetBrackets(TabBrackets);
+  Index = AddTab(tabKex, GetMsg(LOGIN_TAB_KEX).c_str());
+  KexTab = dynamic_cast<TTabButton *>(GetItem(Index));
 
-  BugsTab = new TTabButton(this);
-  BugsTab->SetTabName(GetMsg(LOGIN_TAB_BUGS));
-  BugsTab->SetTab(tabBugs);
-  BugsTab->SetBrackets(TabBrackets);
+  Index = AddTab(tabAuthentication, GetMsg(LOGIN_TAB_AUTH).c_str());
+  AuthenticatonTab = dynamic_cast<TTabButton *>(GetItem(Index));
 
-  WebDAVTab = new TTabButton(this);
-  WebDAVTab->SetTabName(GetMsg(LOGIN_TAB_WEBDAV));
-  WebDAVTab->SetTab(tabWebDAV);
-  WebDAVTab->SetBrackets(TabBrackets);
+  Index = AddTab(tabBugs, GetMsg(LOGIN_TAB_BUGS).c_str());
+  BugsTab = dynamic_cast<TTabButton *>(GetItem(Index));
+
+  Index = AddTab(tabWebDAV, GetMsg(LOGIN_TAB_WEBDAV).c_str());
+  WebDAVTab = dynamic_cast<TTabButton *>(GetItem(Index));
 
   // Session tab
 
@@ -1788,9 +1791,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   Separator = new TFarSeparator(this);
   Separator->SetCaption(GetMsg(LOGIN_GROUP_SESSION));
   GroupTop = Separator->GetTop();
-
-  // Separator = new TFarSeparator(this);
-  // Separator->SetCaption(GetMsg(LOGIN_GROUP_PROTOCOL));
 
   Text = new TFarText(this);
   Text->SetCaption(GetMsg(LOGIN_TRANSFER_PROTOCOL));
@@ -1880,15 +1880,12 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   UserNameEdit->SetWidth(20);
   UserNameEdit->SetRight(CRect.Right - 12 - 2);
 
-  // SetNextItemPosition(ipRight);
   SetNextItemPosition(ipNewLine);
 
   Text = new TFarText(this);
   Text->SetCaption(GetMsg(LOGIN_PASSWORD));
   Text->SetWidth(20);
-  // Text->Move(0, -1);
 
-  // SetNextItemPosition(ipBelow);
   SetNextItemPosition(ipRight);
 
   PasswordEdit = new TFarEdit(this);
@@ -2817,6 +2814,11 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   Button->SetCaption(GetMsg(MSG_BUTTON_Cancel));
   Button->SetResult(brCancel);
   Button->SetCenterGroup(true);
+}
+//---------------------------------------------------------------------------
+TSessionDialog::~TSessionDialog()
+{
+  delete FTabs;
 }
 //---------------------------------------------------------------------------
 void __fastcall TSessionDialog::Change()
@@ -4070,6 +4072,114 @@ bool __fastcall TSessionDialog::CloseQuery()
   return CanClose;
 }
 //---------------------------------------------------------------------------
+void __fastcall TSessionDialog::SelectTab(int Tab)
+{
+  TTabbedDialog::SelectTab(Tab);
+  TTabButton * SelectedTabBtn = TabButton(Tab);
+  int Index;
+  /*for (Index = 0; Index < FTabs->Count; Index++)
+  {
+    TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->Items[Index]);
+    // Button->SetBrackets(Button->GetTab() == Tab ? brTight : brNone);
+    if (TabBtn == SelectedTabBtn)
+      TabBtn->SetColor(0, static_cast<char>((GetSystemColor(COL_DIALOGTEXT) & 0xF0) | 0x09));
+    else
+      TabBtn->SetColor(0, static_cast<char>((GetSystemColor(COL_DIALOGTEXT) & 0xF0)));
+  }*/
+  for (Index = 0; Index < FTabs->Count; Index++)
+  {
+    TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->Items[Index]);
+    if (TabBtn == SelectedTabBtn)
+    {
+      break;
+    }
+  }
+  int SelectedTabIndex = Index;
+  int VisibleTabsCount = GetVisibleTabsCount(SelectedTabIndex, false);
+  if ((FFirstVisibleTabIndex < SelectedTabIndex - VisibleTabsCount) ||
+      (SelectedTabIndex - VisibleTabsCount == 0))
+  {
+    FFirstVisibleTabIndex = SelectedTabIndex - VisibleTabsCount;
+    ChangeTabs(FFirstVisibleTabIndex);
+  }
+}
+//---------------------------------------------------------------------------
+void TSessionDialog::PrevTabClick(TFarButton * /* Sender */, bool & Close)
+{
+  Key(NULL, KEY_CTRLPGUP);
+  Close = false;
+}
+//---------------------------------------------------------------------------
+void TSessionDialog::NextTabClick(TFarButton * /* Sender */, bool & Close)
+{
+  Key(NULL, KEY_CTRLPGDN);
+  Close = false;
+}
+//---------------------------------------------------------------------------
+void __fastcall TSessionDialog::ChangeTabs(int FirstVisibleTabIndex)
+{
+  // Calculate which tabs are visible
+  int VisibleTabsCount = GetVisibleTabsCount(FirstVisibleTabIndex, true);
+  int LastVisibleTabIndex = FirstVisibleTabIndex + VisibleTabsCount;
+  // Change visibility
+  for (int i = 0; i < FirstVisibleTabIndex; i++)
+  {
+    TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->Items[i]);
+    TabBtn->SetVisible(false);
+  }
+  int LeftPos = GetBorderBox()->GetLeft() + 2;
+  for (int i = FirstVisibleTabIndex; i <= LastVisibleTabIndex; i++)
+  {
+    TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->Items[i]);
+    int Width = TabBtn->GetWidth();
+    TabBtn->SetLeft(LeftPos);
+    TabBtn->SetWidth(Width);
+    LeftPos += Width + 1;
+    TabBtn->SetVisible(true);
+  }
+  for (int i = LastVisibleTabIndex + 1; i < FTabs->Count; i++)
+  {
+    TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->Items[i]);
+    TabBtn->SetVisible(false);
+  }
+}
+//---------------------------------------------------------------------------
+int TSessionDialog::GetVisibleTabsCount(int TabIndex, bool Forward)
+{
+  int Result = 0;
+  int PWidth = PrevTab->GetWidth();
+  int NWidth = NextTab->GetWidth();
+  int DialogWidth = GetBorderBox()->GetWidth() - 2 - PWidth - NWidth - 2;
+  int TabsWidth = 0;
+  if (Forward)
+  {
+    for (int i = TabIndex; i < FTabs->Count - 1; i++)
+    {
+      TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->Items[i]);
+      TabsWidth += TabBtn->GetWidth() + 1;
+      TTabButton * NextTabBtn = dynamic_cast<TTabButton *>(FTabs->Items[i + 1]);
+      int NextTabWidth = NextTabBtn->GetWidth() + 1;
+      if (TabsWidth + NextTabWidth >= DialogWidth)
+        break;
+      Result++;
+    }
+  }
+  else
+  {
+    for (int i = TabIndex; i >= 1; i--)
+    {
+      TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->Items[i]);
+      TabsWidth += TabBtn->GetWidth() + 1;
+      TTabButton * PrevTabBtn = dynamic_cast<TTabButton *>(FTabs->Items[i - 1]);
+      int PrevTabWidth = PrevTabBtn->GetWidth() + 1;
+      if (TabsWidth + PrevTabWidth >= DialogWidth)
+        break;
+      Result++;
+    }
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
 void TSessionDialog::CipherButtonClick(TFarButton * Sender, bool & Close)
 {
   if (Sender->GetEnabled())
@@ -4145,6 +4255,19 @@ void __fastcall TSessionDialog::CodePageEditAdd(unsigned int cp)
   }
 }
 //---------------------------------------------------------------------------
+int TSessionDialog::AddTab(int TabID, const wchar_t * TabCaption)
+{
+  TFarButtonBrackets TabBrackets = brNone; // brSpace; // 
+  TTabButton * Tab = new TTabButton(this);
+  Tab->SetTabName(UnicodeString(TabCaption));
+  Tab->SetTab(TabID);
+  Tab->SetBrackets(TabBrackets);
+  // SetTabCount(GetTabCount() + 1);
+  Tab->SetCenterGroup(false);
+  FTabs->Add(Tab);
+  return GetItem(Tab);
+}
+//---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 bool __fastcall TWinSCPFileSystem::SessionDialog(TSessionData * SessionData,
   TSessionActionEnum & Action)
@@ -4167,22 +4290,22 @@ protected:
   bool FAnyDirectories;
   TFarCheckBox * FCheckBoxes[12];
   TRights::TState FFixedStates[12];
-  TFarEdit * OctalEdit;
-  TFarCheckBox * DirectoriesXCheck;
+  TFarEdit * FOctalEdit;
+  TFarCheckBox * FDirectoriesXCheck;
 
   virtual void __fastcall Change();
   void __fastcall UpdateControls();
 
 public:
   TRights __fastcall GetRights();
-  void __fastcall SetRights(const TRights & value);
-  void __fastcall SetAddXToDirectories(bool value);
+  void __fastcall SetRights(const TRights & Value);
+  void __fastcall SetAddXToDirectories(bool Value);
   bool __fastcall GetAddXToDirectories();
   TFarCheckBox * __fastcall GetChecks(TRights::TRight Right);
   TRights::TState __fastcall GetStates(TRights::TRight Right);
   bool __fastcall GetAllowUndef();
-  void __fastcall SetAllowUndef(bool value);
-  void __fastcall SetStates(TRights::TRight Flag, TRights::TState value);
+  void __fastcall SetAllowUndef(bool Value);
+  void __fastcall SetStates(TRights::TRight Flag, TRights::TState Value);
   void OctalEditExit(TObject * Sender);
   void RightsButtonClick(TFarButton * Sender, bool & Close);
 };
@@ -4191,8 +4314,8 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
   bool AAnyDirectories, bool ShowButtons,
   bool ShowSpecials, TFarDialogItem * EnabledDependency) :
   TFarDialogContainer(ADialog),
-  OctalEdit(NULL),
-  DirectoriesXCheck(NULL)
+  FOctalEdit(NULL),
+  FDirectoriesXCheck(NULL)
 {
   FAnyDirectories = AAnyDirectories;
 
@@ -4255,12 +4378,12 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
 
   GetDialog()->SetNextItemPosition(ipRight);
 
-  OctalEdit = new TFarEdit(GetDialog());
-  Add(OctalEdit);
-  OctalEdit->SetEnabledDependency(EnabledDependency);
-  OctalEdit->SetWidth(5);
-  OctalEdit->SetMask(L"9999");
-  OctalEdit->SetOnExit(MAKE_CALLBACK(TRightsContainer::OctalEditExit, this));
+  FOctalEdit = new TFarEdit(GetDialog());
+  Add(FOctalEdit);
+  FOctalEdit->SetEnabledDependency(EnabledDependency);
+  FOctalEdit->SetWidth(5);
+  FOctalEdit->SetMask(L"9999");
+  FOctalEdit->SetOnExit(MAKE_CALLBACK(TRightsContainer::OctalEditExit, this));
 
   if (ShowButtons)
   {
@@ -4292,15 +4415,15 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
 
   if (FAnyDirectories)
   {
-    DirectoriesXCheck = new TFarCheckBox(GetDialog());
-    Add(DirectoriesXCheck);
-    DirectoriesXCheck->SetEnabledDependency(EnabledDependency);
-    DirectoriesXCheck->SetLeft(0);
-    DirectoriesXCheck->SetCaption(GetMsg(PROPERTIES_DIRECTORIES_X));
+    FDirectoriesXCheck = new TFarCheckBox(GetDialog());
+    Add(FDirectoriesXCheck);
+    FDirectoriesXCheck->SetEnabledDependency(EnabledDependency);
+    FDirectoriesXCheck->SetLeft(0);
+    FDirectoriesXCheck->SetCaption(GetMsg(PROPERTIES_DIRECTORIES_X));
   }
   else
   {
-    DirectoriesXCheck = NULL;
+    FDirectoriesXCheck = NULL;
   }
 }
 //---------------------------------------------------------------------------
@@ -4314,10 +4437,10 @@ void TRightsContainer::RightsButtonClick(TFarButton * Sender,
 //---------------------------------------------------------------------------
 void TRightsContainer::OctalEditExit(TObject * /*Sender*/)
 {
-  if (!::Trim(OctalEdit->GetText()).IsEmpty())
+  if (!::Trim(FOctalEdit->GetText()).IsEmpty())
   {
     TRights R = GetRights();
-    R.SetOctal(::Trim(OctalEdit->GetText()));
+    R.SetOctal(::Trim(FOctalEdit->GetText()));
     SetRights(R);
   }
 }
@@ -4328,17 +4451,17 @@ void __fastcall TRightsContainer::UpdateControls()
   {
     TRights R = GetRights();
 
-    if (DirectoriesXCheck)
+    if (FDirectoriesXCheck)
     {
-      DirectoriesXCheck->SetEnabled(
+      FDirectoriesXCheck->SetEnabled(
         !((R.GetNumberSet() & TRights::rfExec) == TRights::rfExec));
     }
 
-    if (!OctalEdit->Focused())
+    if (!FOctalEdit->Focused())
     {
-      OctalEdit->SetText(R.GetIsUndef() ? UnicodeString() : R.GetOctal());
+      FOctalEdit->SetText(R.GetIsUndef() ? UnicodeString() : R.GetOctal());
     }
-    else if (::Trim(OctalEdit->GetText()).Length() >= 3)
+    else if (::Trim(FOctalEdit->GetText()).Length() >= 3)
     {
       try
       {
@@ -4387,12 +4510,12 @@ TRights::TState __fastcall TRightsContainer::GetStates(TRights::TRight Right)
 }
 //---------------------------------------------------------------------------
 void __fastcall TRightsContainer::SetStates(TRights::TRight Right,
-  TRights::TState value)
+  TRights::TState Value)
 {
   TFarCheckBox * CheckBox = GetChecks(Right);
   if (CheckBox != NULL)
   {
-    switch (value)
+    switch (Value)
     {
       case TRights::rsNo: CheckBox->SetSelected(BSTATE_UNCHECKED); break;
       case TRights::rsYes: CheckBox->SetSelected(BSTATE_CHECKED); break;
@@ -4401,7 +4524,7 @@ void __fastcall TRightsContainer::SetStates(TRights::TRight Right,
   }
   else
   {
-    FFixedStates[Right] = value;
+    FFixedStates[Right] = Value;
   }
 }
 //---------------------------------------------------------------------------
@@ -4417,9 +4540,9 @@ TRights __fastcall TRightsContainer::GetRights()
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TRightsContainer::SetRights(const TRights & value)
+void __fastcall TRightsContainer::SetRights(const TRights & Value)
 {
-  if (GetRights() != value)
+  if (GetRights() != Value)
   {
     GetDialog()->LockChanges();
     TRY_FINALLY (
@@ -4428,9 +4551,9 @@ void __fastcall TRightsContainer::SetRights(const TRights & value)
       for (int Right = 0; Right < LENOF(FCheckBoxes); Right++)
       {
         SetStates(static_cast<TRights::TRight>(Right),
-          value.GetRightUndef(static_cast<TRights::TRight>(Right)));
+          Value.GetRightUndef(static_cast<TRights::TRight>(Right)));
       }
-      SetAllowUndef(value.GetAllowUndef());
+      SetAllowUndef(Value.GetAllowUndef());
     }
     ,
     {
@@ -4442,14 +4565,14 @@ void __fastcall TRightsContainer::SetRights(const TRights & value)
 //---------------------------------------------------------------------------
 bool __fastcall TRightsContainer::GetAddXToDirectories()
 {
-  return DirectoriesXCheck ? DirectoriesXCheck->GetChecked() : false;
+  return FDirectoriesXCheck ? FDirectoriesXCheck->GetChecked() : false;
 }
 //---------------------------------------------------------------------------
-void __fastcall TRightsContainer::SetAddXToDirectories(bool value)
+void __fastcall TRightsContainer::SetAddXToDirectories(bool Value)
 {
-  if (DirectoriesXCheck)
+  if (FDirectoriesXCheck)
   {
-    DirectoriesXCheck->SetChecked(value);
+    FDirectoriesXCheck->SetChecked(Value);
   }
 }
 //---------------------------------------------------------------------------
@@ -4459,13 +4582,13 @@ bool __fastcall TRightsContainer::GetAllowUndef()
   return FCheckBoxes[LENOF(FCheckBoxes) - 1]->GetAllowGrayed();
 }
 //---------------------------------------------------------------------------
-void __fastcall TRightsContainer::SetAllowUndef(bool value)
+void __fastcall TRightsContainer::SetAllowUndef(bool Value)
 {
   for (int Right = 0; Right < LENOF(FCheckBoxes); Right++)
   {
     if (FCheckBoxes[Right] != NULL)
     {
-      FCheckBoxes[Right]->SetAllowGrayed(value);
+      FCheckBoxes[Right]->SetAllowGrayed(Value);
     }
   }
 }
@@ -4826,7 +4949,7 @@ private:
   TCopyParamType FParams;
 
 public:
-  void __fastcall SetParams(TCopyParamType value);
+  void __fastcall SetParams(TCopyParamType Value);
   TCopyParamType __fastcall GetParams();
   int __fastcall GetHeight();
 };
@@ -5124,11 +5247,11 @@ void __fastcall TCopyParamsContainer::Change()
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TCopyParamsContainer::SetParams(TCopyParamType value)
+void __fastcall TCopyParamsContainer::SetParams(TCopyParamType Value)
 {
   if (TMBinaryButton->GetEnabled())
   {
-    switch (value.GetTransferMode())
+    switch (Value.GetTransferMode())
     {
       case tmAscii:
         TMTextButton->SetChecked(true);
@@ -5148,9 +5271,9 @@ void __fastcall TCopyParamsContainer::SetParams(TCopyParamType value)
     TMBinaryButton->SetChecked(true);
   }
 
-  AsciiFileMaskEdit->SetText(value.GetAsciiFileMask().GetMasks());
+  AsciiFileMaskEdit->SetText(Value.GetAsciiFileMask().GetMasks());
 
-  switch (value.GetFileNameCase())
+  switch (Value.GetFileNameCase())
   {
     case ncLowerCase:
       CCLowerCaseButton->SetChecked(true);
@@ -5174,26 +5297,26 @@ void __fastcall TCopyParamsContainer::SetParams(TCopyParamType value)
       break;
   }
 
-  RightsContainer->SetAddXToDirectories(value.GetAddXToDirectories());
-  RightsContainer->SetRights(value.GetRights());
-  PreserveRightsCheck->SetChecked(value.GetPreserveRights());
-  IgnorePermErrorsCheck->SetChecked(value.GetIgnorePermErrors());
+  RightsContainer->SetAddXToDirectories(Value.GetAddXToDirectories());
+  RightsContainer->SetRights(Value.GetRights());
+  PreserveRightsCheck->SetChecked(Value.GetPreserveRights());
+  IgnorePermErrorsCheck->SetChecked(Value.GetIgnorePermErrors());
 
-  PreserveReadOnlyCheck->SetChecked(value.GetPreserveReadOnly());
+  PreserveReadOnlyCheck->SetChecked(Value.GetPreserveReadOnly());
   ReplaceInvalidCharsCheck->SetChecked(
-    value.GetInvalidCharsReplacement() != TCopyParamType::NoReplacement);
+    Value.GetInvalidCharsReplacement() != TCopyParamType::NoReplacement);
 
-  ClearArchiveCheck->SetChecked(value.GetClearArchive());
+  ClearArchiveCheck->SetChecked(Value.GetClearArchive());
 
-  NegativeExcludeCombo->SetItemIndex((value.GetNegativeExclude() ? 1 : 0));
-  ExcludeFileMaskCombo->SetText(value.GetExcludeFileMask().GetMasks());
+  NegativeExcludeCombo->SetItemIndex((Value.GetNegativeExclude() ? 1 : 0));
+  ExcludeFileMaskCombo->SetText(Value.GetExcludeFileMask().GetMasks());
 
-  PreserveTimeCheck->SetChecked(value.GetPreserveTime());
-  CalculateSizeCheck->SetChecked(value.GetCalculateSize());
+  PreserveTimeCheck->SetChecked(Value.GetPreserveTime());
+  CalculateSizeCheck->SetChecked(Value.GetCalculateSize());
 
-  SpeedCombo->SetText(SetSpeedLimit(value.GetCPSLimit()));
+  SpeedCombo->SetText(SetSpeedLimit(Value.GetCPSLimit()));
 
-  FParams = value;
+  FParams = Value;
 }
 //---------------------------------------------------------------------------
 TCopyParamType __fastcall TCopyParamsContainer::GetParams()

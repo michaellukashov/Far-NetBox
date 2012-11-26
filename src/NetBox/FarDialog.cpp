@@ -135,7 +135,7 @@ void __fastcall TFarDialog::SetBounds(TRect Value)
   }
 }
 //---------------------------------------------------------------------------
-TRect __fastcall TFarDialog::GetClientRect()
+TRect __fastcall TFarDialog::GetClientRect() const
 {
   TRect R;
   if (FBorderBox)
@@ -245,22 +245,22 @@ void __fastcall TFarDialog::SetSize(TPoint Value)
   SetBounds(B);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarDialog::SetWidth(intptr_t Value)
+void __fastcall TFarDialog::SetWidth(int Value)
 {
   SetSize(TPoint(Value, GetHeight()));
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TFarDialog::GetWidth()
+int __fastcall TFarDialog::GetWidth()
 {
   return GetSize().x;
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarDialog::SetHeight(intptr_t Value)
+void __fastcall TFarDialog::SetHeight(int Value)
 {
   SetSize(TPoint(GetWidth(), Value));
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TFarDialog::GetHeight()
+int __fastcall TFarDialog::GetHeight()
 {
   return GetSize().y;
 }
@@ -281,6 +281,12 @@ UnicodeString __fastcall TFarDialog::GetCaption()
 int __fastcall TFarDialog::GetItemCount()
 {
   return FItems->Count;
+}
+//---------------------------------------------------------------------------
+int __fastcall TFarDialog::GetItem(TFarDialogItem * Item) const
+{
+  if (!Item) return -1;
+  return Item->GetItem();
 }
 //---------------------------------------------------------------------------
 TFarDialogItem * __fastcall TFarDialog::GetItem(int Index)
@@ -982,7 +988,8 @@ void __fastcall TFarDialogContainer::Add(TFarDialogItem * Item)
 {
   assert(FItems->IndexOf(Item) == NPOS);
   Item->SetContainer(this);
-  FItems->Add(Item);
+  if (FItems->IndexOf(Item) == NPOS)
+    FItems->Add(Item);
 }
 //---------------------------------------------------------------------------
 void __fastcall TFarDialogContainer::Remove(TFarDialogItem * Item)
