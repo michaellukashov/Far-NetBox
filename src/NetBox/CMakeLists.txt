@@ -28,7 +28,6 @@ set ( CMAKE_CXX_FLAGS
     -DAPR_DECLARE_STATIC
     -D${LIBEXPAT_DEFS}
     -D${LIBNEON_DEFS}
-    -D_ATL_MIN_CRT;_ATL_NO_DEFAULT_LIBS
     -DMPEXT;NO_STRICT;NOCRYPT;_WINDLL;_USRDLL;_RTLDLL
 "
 )
@@ -87,6 +86,7 @@ include_directories (
     ${SRC_ROOT}/filezilla
     ${SRC_ROOT}/filezilla/misc
     ${LIBS_ROOT}
+    ${LIBS_ROOT}/atlmfc
     ${LIBS_ROOT}/boost
     ${LIBS_ROOT}/Putty
     ${LIBS_ROOT}/Putty/windows

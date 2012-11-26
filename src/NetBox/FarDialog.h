@@ -34,7 +34,6 @@ friend TFarDialogContainer;
 friend TFarButton;
 friend TFarList;
 friend class TFarListBox;
-typedef TFarDialog self;
 public:
   explicit TFarDialog(TCustomFarPlugin * AFarPlugin);
   virtual ~TFarDialog();
@@ -44,8 +43,8 @@ public:
   void __fastcall EnableGroup(int Group, bool Enable);
 
   TRect GetBounds() const { return FBounds; }
-  TRect __fastcall GetClientRect();
-  UnicodeString GetHelpTopic() { return FHelpTopic; }
+  TRect __fastcall GetClientRect() const;
+  UnicodeString GetHelpTopic() const { return FHelpTopic; }
   void __fastcall SetHelpTopic(UnicodeString Value);
   FARDIALOGITEMFLAGS __fastcall GetFlags() const { return FFlags; }
   void __fastcall SetFlags(const FARDIALOGITEMFLAGS value);
@@ -54,15 +53,17 @@ public:
   TPoint __fastcall GetSize();
   void __fastcall SetSize(TPoint Value);
   TPoint __fastcall GetClientSize();
-  intptr_t __fastcall GetWidth();
-  void __fastcall SetWidth(intptr_t Value);
-  intptr_t __fastcall GetHeight();
-  void __fastcall SetHeight(intptr_t Value);
+  int __fastcall GetWidth();
+  void __fastcall SetWidth(int Value);
+  int __fastcall GetHeight();
+  void __fastcall SetHeight(int Value);
   UnicodeString __fastcall GetCaption();
   void __fastcall SetCaption(UnicodeString Value);
   HANDLE __fastcall GetHandle() { return FHandle; }
   TFarButton * __fastcall GetDefaultButton() const { return FDefaultButton; }
   TFarBox * __fastcall GetBorderBox() const { return FBorderBox; }
+  int __fastcall GetType(TFarDialogItem * Item) const;
+  int __fastcall GetItem(TFarDialogItem * Item) const;
   TFarDialogItem * __fastcall GetItem(int Index);
   int __fastcall GetItemCount();
   TItemPosition __fastcall GetNextItemPosition() { return FNextItemPosition; }
@@ -146,7 +147,6 @@ class TFarDialogContainer : public TObject
 {
 friend TFarDialog;
 friend TFarDialogItem;
-typedef TFarDialogContainer self;
 public:
   int __fastcall GetLeft() { return FLeft; }
   void __fastcall SetLeft(int Value) { SetPosition(0, Value); }
@@ -527,7 +527,6 @@ enum TFarListBoxAutoSelect { asOnlyFocus, asAlways, asNever };
 //---------------------------------------------------------------------------
 class TFarListBox : public TFarDialogItem
 {
-  typedef TFarListBox self;
 public:
   explicit TFarListBox(TFarDialog * ADialog);
   virtual ~TFarListBox();
@@ -562,7 +561,6 @@ private:
 //---------------------------------------------------------------------------
 class TFarComboBox : public TFarDialogItem
 {
-  typedef TFarComboBox self;
 public:
   explicit TFarComboBox(TFarDialog * ADialog);
   virtual ~TFarComboBox();
@@ -595,7 +593,6 @@ private:
 //---------------------------------------------------------------------------
 class TFarLister : public TFarDialogItem
 {
-  typedef TFarLister self;
 public:
   explicit TFarLister(TFarDialog * ADialog);
   virtual ~TFarLister();
