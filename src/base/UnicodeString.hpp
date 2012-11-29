@@ -321,6 +321,7 @@ public:
   int GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
   void SetLength(int nLength) { Data.resize(nLength); }
+  RawByteString & Clear() { SetLength(0); return *this; }
   RawByteString & Delete(int Index, int Count) { Data.erase(Index - 1, Count); return *this; }
 
   RawByteString & Insert(const char * Str, int Pos);
