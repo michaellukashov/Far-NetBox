@@ -8,14 +8,18 @@
 void AnsiString::Init(const wchar_t * Str, int Length)
 {
   int Size = WideCharToMultiByte(CP_UTF8, 0, Str, Length > 0 ? Length : -1, nullptr, 0, nullptr, nullptr);
-  Data.resize(Size + 1);
-  if (Size > 0)
+  if (Length > 0)
   {
+    Data.resize(Size + 1);
     WideCharToMultiByte(CP_UTF8, 0, Str, Length > 0 ? Length : -1,
       reinterpret_cast<LPSTR>(const_cast<char *>(Data.c_str())), Size, nullptr, nullptr);
     Data[Size] = 0;
+    Data = Data.c_str();
   }
-  Data = Data.c_str();
+  else
+  {
+    Data.clear();
+  }
 }
 
 void AnsiString::Init(const char * Str, int Length)
@@ -86,9 +90,9 @@ AnsiString & AnsiString::operator=(const char * lpszData)
   return *this;
 }
 
-AnsiString & AnsiString::operator=(const wchar_t * lpszData)
+AnsiString & AnsiString::operator=(const wchar_t * lpwszData)
 {
-  Init(lpszData, static_cast<int>(wcslen(NullToEmpty(lpszData))));
+  Init(lpwszData, static_cast<int>(wcslen(NullToEmpty(lpwszData))));
   return *this;
 }
 
@@ -133,12 +137,16 @@ void  __cdecl AnsiString::ThrowIfOutOfRange(int idx) const
 void RawByteString::Init(const wchar_t * Str, int Length)
 {
   int Size = WideCharToMultiByte(CP_ACP, 0, Str, Length > 0 ? Length : -1, nullptr, 0, nullptr, nullptr);
-  Data.resize(Size + 1);
-  if (Size > 0)
+  if (Length > 0)
   {
+    Data.resize(Size + 1);
     WideCharToMultiByte(CP_ACP, 0, Str, Length > 0 ? Length : -1,
       reinterpret_cast<LPSTR>(const_cast<unsigned char *>(Data.c_str())), Size, nullptr, nullptr);
     Data[Size] = 0;
+  }
+  else
+  {
+    Data.clear();
   }
 }
 
@@ -231,9 +239,9 @@ RawByteString & RawByteString::operator=(const char * lpszData)
   return *this;
 }
 
-RawByteString & RawByteString::operator=(const wchar_t * lpszData)
+RawByteString & RawByteString::operator=(const wchar_t * lpwszData)
 {
-  Init(lpszData, static_cast<int>(wcslen(NullToEmpty(lpszData))));
+  Init(lpwszData, static_cast<int>(wcslen(NullToEmpty(lpwszData))));
   return *this;
 }
 
@@ -325,9 +333,9 @@ UTF8String & UTF8String::operator=(const char * lpszData)
   return *this;
 }
 
-UTF8String & UTF8String::operator=(const wchar_t * lpszData)
+UTF8String & UTF8String::operator=(const wchar_t * lpwszData)
 {
-  Init(lpszData, static_cast<int>(wcslen(NullToEmpty(lpszData))));
+  Init(lpwszData, static_cast<int>(wcslen(NullToEmpty(lpwszData))));
   return *this;
 }
 
