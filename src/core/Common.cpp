@@ -204,7 +204,7 @@ void __fastcall Trace(const wchar_t * SourceFile, const wchar_t * Func,
   {
     SourceFile = Slash + 1;
   }
-  UTF8String Buffer = UTF8String(FORMAT(L"[%s] [%.4X] [%s:%d:%s] %s\n",
+  UTF8String Buffer = UTF8String(FORMAT(L"NetBox: [%s] [%.4X] [%s:%d:%s] %s\n",
     TimeString.c_str(), int(GetCurrentThreadId()), SourceFile,
      Line, Func, Message));
   // DWORD Written;
