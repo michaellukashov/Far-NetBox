@@ -1434,16 +1434,12 @@ UnicodeString DateTimeToStr(UnicodeString & Result, const UnicodeString & Format
 {
   (void)Result;
   (void)Format;
-  (void)DateTime;
-  Classes::Error(SNotImplemented, 148);
-  return L"";
+  return DateTime.FormatString(L"");
 }
 
 UnicodeString DateTimeToString(TDateTime DateTime)
 {
-  (void)DateTime;
-  Classes::Error(SNotImplemented, 146);
-  return L"";
+  return DateTime.FormatString(L"");
 }
 
 
