@@ -69,28 +69,28 @@
     <LinkIncremental>true</LinkIncremental>
     <TargetExt>.lib</TargetExt>
     <OutDir>.\..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</OutDir>
-    <IntDir>..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)</IntDir>
+    <IntDir>..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</IntDir>
     <EnableManagedIncrementalBuild>false</EnableManagedIncrementalBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <TargetExt>.lib</TargetExt>
     <OutDir>.\..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</OutDir>
-    <IntDir>..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)</IntDir>
+    <IntDir>..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</IntDir>
     <EnableManagedIncrementalBuild>false</EnableManagedIncrementalBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <TargetExt>.lib</TargetExt>
     <OutDir>.\..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</OutDir>
-    <IntDir>..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)</IntDir>
+    <IntDir>..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</IntDir>
     <EnableManagedIncrementalBuild>false</EnableManagedIncrementalBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <TargetExt>.lib</TargetExt>
     <OutDir>.\..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</OutDir>
-    <IntDir>..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)</IntDir>
+    <IntDir>..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</IntDir>
     <EnableManagedIncrementalBuild>false</EnableManagedIncrementalBuild>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
