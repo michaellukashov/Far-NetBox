@@ -18,7 +18,7 @@
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
 
-TCustomFarPlugin * __fastcall CreateFarPlugin(HINSTANCE HInst)
+TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst)
 {
   return new TWinSCPPlugin(HInst);
 }
@@ -51,17 +51,17 @@ TWinSCPPlugin::~TWinSCPPlugin()
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TWinSCPPlugin::HandlesFunction(THandlesFunction Function)
+bool TWinSCPPlugin::HandlesFunction(THandlesFunction Function)
 {
   return (Function == hfProcessKey || Function == hfProcessEvent);
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TWinSCPPlugin::GetMinFarVersion()
+intptr_t TWinSCPPlugin::GetMinFarVersion()
 {
   return MAKEFARVERSION(2, 0, 1666);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
+void TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
 {
   try
   {
@@ -77,7 +77,7 @@ void __fastcall TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * I
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinSCPPlugin::GetPluginInfoEx(DWORD & Flags,
+void TWinSCPPlugin::GetPluginInfoEx(DWORD & Flags,
   TStrings * DiskMenuStrings, TStrings * PluginMenuStrings,
   TStrings * PluginConfigStrings, TStrings * CommandPrefixes)
 {
@@ -99,7 +99,7 @@ void __fastcall TWinSCPPlugin::GetPluginInfoEx(DWORD & Flags,
   CommandPrefixes->CommaText = FarConfiguration->GetCommandPrefixes();
 }
 //---------------------------------------------------------------------------
-bool __fastcall TWinSCPPlugin::ConfigureEx(intptr_t /*Item*/)
+bool TWinSCPPlugin::ConfigureEx(intptr_t /*Item*/)
 {
   bool Change = false;
 
@@ -201,7 +201,7 @@ bool __fastcall TWinSCPPlugin::ConfigureEx(intptr_t /*Item*/)
   return Change;
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TWinSCPPlugin::ProcessEditorEventEx(intptr_t Event, void * Param)
+intptr_t TWinSCPPlugin::ProcessEditorEventEx(intptr_t Event, void * Param)
 {
   // for performance reasons, do not pass the event to file systems on redraw
   if ((Event != EE_REDRAW) || FarConfiguration->GetEditorUploadOnSave() ||
@@ -218,7 +218,7 @@ intptr_t __fastcall TWinSCPPlugin::ProcessEditorEventEx(intptr_t Event, void * P
   return 0;
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
+intptr_t TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
 {
   intptr_t Result;
   if ((Rec->EventType == KEY_EVENT) &&
@@ -239,7 +239,7 @@ intptr_t __fastcall TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec
   return Result;
 }
 //---------------------------------------------------------------------------
-TCustomFarFileSystem * __fastcall TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t Item)
+TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t Item)
 {
   TWinSCPFileSystem * FileSystem = NULL;
   try
@@ -362,7 +362,7 @@ TCustomFarFileSystem * __fastcall TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom,
   return FileSystem;
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
+void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 {
   TFarMenuItems * MenuItems = new TFarMenuItems();
   std::auto_ptr<TFarMenuItems> MenuItemsPtr(MenuItems);
@@ -518,7 +518,7 @@ void __fastcall TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinSCPPlugin::ShowExtendedException(Exception * E)
+void TWinSCPPlugin::ShowExtendedException(Exception * E)
 {
   if (!E->Message.IsEmpty())
   {
@@ -548,7 +548,7 @@ void __fastcall TWinSCPPlugin::ShowExtendedException(Exception * E)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinSCPPlugin::HandleException(Exception * E, int OpMode)
+void TWinSCPPlugin::HandleException(Exception * E, int OpMode)
 {
   if (((OpMode & OPM_FIND) == 0) || ::InheritsFrom<std::exception, EFatal>(E))
   {
@@ -591,7 +591,7 @@ void TWinSCPPlugin::MessageClick(void * Token, int Result, bool & Close)
   }
 }
 //---------------------------------------------------------------------------
-int __fastcall TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
+int TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
   TStrings * MoreMessages, TQueryType Type, int Answers,
   const TMessageParams * Params)
 {
@@ -766,7 +766,7 @@ int __fastcall TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinSCPPlugin::CleanupConfiguration()
+void TWinSCPPlugin::CleanupConfiguration()
 {
   // Check if key Configuration\Version exists
   THierarchicalStorage * Storage = FarConfiguration->CreateScpStorage(false);

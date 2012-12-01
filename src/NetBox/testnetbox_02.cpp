@@ -91,7 +91,7 @@ bool base_fixture_t::scp_test(std::string host, int port, std::string user, std:
 
 //------------------------------------------------------------------------------
 
-TCustomFarPlugin * __fastcall CreateFarPlugin(HINSTANCE HInst);
+TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst);
 
 //------------------------------------------------------------------------------
 

@@ -23,7 +23,7 @@ TFarConfiguration::~TFarConfiguration()
   delete FBookmarks;
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarConfiguration::Default()
+void TFarConfiguration::Default()
 {
   TGUIConfiguration::Default();
 
@@ -64,7 +64,7 @@ THierarchicalStorage * TFarConfiguration::CreateScpStorage(bool SessionList)
   return TGUIConfiguration::CreateScpStorage(SessionList);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarConfiguration::Saved()
+void TFarConfiguration::Saved()
 {
   TGUIConfiguration::Saved();
   FBookmarks->ModifyAll(false);
@@ -111,7 +111,7 @@ void __fastcall TFarConfiguration::Saved()
     KEY(Bool,     ConfirmSynchronizedBrowsing); \
   );
 //---------------------------------------------------------------------------
-void __fastcall TFarConfiguration::SaveData(THierarchicalStorage * Storage,
+void TFarConfiguration::SaveData(THierarchicalStorage * Storage,
   bool All)
 {
   TGUIConfiguration::SaveData(Storage, All);
@@ -129,7 +129,7 @@ void __fastcall TFarConfiguration::SaveData(THierarchicalStorage * Storage,
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarConfiguration::LoadData(THierarchicalStorage * Storage)
+void TFarConfiguration::LoadData(THierarchicalStorage * Storage)
 {
   TGUIConfiguration::LoadData(Storage);
 
@@ -147,7 +147,7 @@ void __fastcall TFarConfiguration::LoadData(THierarchicalStorage * Storage)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarConfiguration::Load()
+void TFarConfiguration::Load()
 {
   FForceInheritance = true;
   TRY_FINALLY (
@@ -161,7 +161,7 @@ void __fastcall TFarConfiguration::Load()
   );
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarConfiguration::Save(bool All, bool Explicit)
+void TFarConfiguration::Save(bool All, bool Explicit)
 {
   FForceInheritance = true;
   TRY_FINALLY (
@@ -175,7 +175,7 @@ void __fastcall TFarConfiguration::Save(bool All, bool Explicit)
   );
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarConfiguration::SetPlugin(TCustomFarPlugin * Value)
+void TFarConfiguration::SetPlugin(TCustomFarPlugin * Value)
 {
   if (GetPlugin() != Value)
   {
@@ -184,12 +184,12 @@ void __fastcall TFarConfiguration::SetPlugin(TCustomFarPlugin * Value)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarConfiguration::CacheFarSettings()
+void TFarConfiguration::CacheFarSettings()
 {
   FFarConfirmations = GetPlugin()->FarAdvControl(ACTL_GETCONFIRMATIONS);
 }
 //---------------------------------------------------------------------------
-int __fastcall TFarConfiguration::FarConfirmations()
+int TFarConfiguration::FarConfirmations()
 {
   if (GetCurrentThreadId() == GetPlugin()->GetFarThread())
   {
@@ -202,7 +202,7 @@ int __fastcall TFarConfiguration::FarConfirmations()
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFarConfiguration::GetConfirmOverwriting()
+bool TFarConfiguration::GetConfirmOverwriting()
 {
   if (FForceInheritance || FConfirmOverwritingOverride)
   {
@@ -215,7 +215,7 @@ bool __fastcall TFarConfiguration::GetConfirmOverwriting()
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarConfiguration::SetConfirmOverwriting(bool Value)
+void TFarConfiguration::SetConfirmOverwriting(bool Value)
 {
   if (FForceInheritance)
   {
@@ -231,26 +231,26 @@ void __fastcall TFarConfiguration::SetConfirmOverwriting(bool Value)
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFarConfiguration::GetConfirmDeleting()
+bool TFarConfiguration::GetConfirmDeleting()
 {
   assert(GetPlugin());
   return (FarConfirmations() & FCS_DELETE) != 0;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TFarConfiguration::ModuleFileName()
+UnicodeString TFarConfiguration::ModuleFileName()
 {
   assert(GetPlugin());
   return GetPlugin()->GetModuleName();
 }
 //---------------------------------------------------------------------------
-void __fastcall TFarConfiguration::SetBookmarks(UnicodeString Key,
+void TFarConfiguration::SetBookmarks(UnicodeString Key,
   TBookmarkList * Value)
 {
   FBookmarks->SetBookmarks(Key, Value);
   Changed();
 }
 //---------------------------------------------------------------------------
-TBookmarkList * __fastcall TFarConfiguration::GetBookmarks(UnicodeString Key)
+TBookmarkList * TFarConfiguration::GetBookmarks(UnicodeString Key)
 {
   return FBookmarks->GetBookmarks(Key);
 }

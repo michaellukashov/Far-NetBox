@@ -14,66 +14,66 @@ public:
   explicit TFarConfiguration(TCustomFarPlugin * APlugin);
   virtual ~TFarConfiguration();
 
-  TCustomFarPlugin * __fastcall GetPlugin() { return FFarPlugin; }
-  void __fastcall SetPlugin(TCustomFarPlugin * Value);
-  bool __fastcall GetConfirmOverwritingOverride() { return FConfirmOverwritingOverride; }
-  void __fastcall SetConfirmOverwritingOverride(bool Value) { FConfirmOverwritingOverride = Value; }
-  bool __fastcall GetConfirmDeleting();
-  bool __fastcall GetConfirmSynchronizedBrowsing() { return FConfirmSynchronizedBrowsing; }
-  void __fastcall SetConfirmSynchronizedBrowsing(bool Value) { FConfirmSynchronizedBrowsing = Value; }
+  TCustomFarPlugin * GetPlugin() { return FFarPlugin; }
+  void SetPlugin(TCustomFarPlugin * Value);
+  bool GetConfirmOverwritingOverride() { return FConfirmOverwritingOverride; }
+  void SetConfirmOverwritingOverride(bool Value) { FConfirmOverwritingOverride = Value; }
+  bool GetConfirmDeleting();
+  bool GetConfirmSynchronizedBrowsing() { return FConfirmSynchronizedBrowsing; }
+  void SetConfirmSynchronizedBrowsing(bool Value) { FConfirmSynchronizedBrowsing = Value; }
   bool GetDisksMenu() { return FDisksMenu; }
   void SetDisksMenu(bool Value) { FDisksMenu = Value; }
-  int __fastcall GetDisksMenuHotKey() { return FDisksMenuHotKey; }
-  void __fastcall SetDisksMenuHotKey(int Value) { FDisksMenuHotKey = Value; }
-  bool __fastcall GetPluginsMenu() { return FPluginsMenu; }
-  void __fastcall SetPluginsMenu(bool Value) { FPluginsMenu = Value; }
-  bool __fastcall GetPluginsMenuCommands() { return FPluginsMenuCommands; }
-  void __fastcall SetPluginsMenuCommands(bool Value) { FPluginsMenuCommands = Value; }
-  UnicodeString __fastcall GetCommandPrefixes() { return FCommandPrefixes; }
-  void __fastcall SetCommandPrefixes(const UnicodeString Value) { FCommandPrefixes = Value; }
-  bool __fastcall GetHostNameInTitle() { return FHostNameInTitle; }
-  void __fastcall SetHostNameInTitle(bool Value) { FHostNameInTitle = Value; }
+  int GetDisksMenuHotKey() { return FDisksMenuHotKey; }
+  void SetDisksMenuHotKey(int Value) { FDisksMenuHotKey = Value; }
+  bool GetPluginsMenu() { return FPluginsMenu; }
+  void SetPluginsMenu(bool Value) { FPluginsMenu = Value; }
+  bool GetPluginsMenuCommands() { return FPluginsMenuCommands; }
+  void SetPluginsMenuCommands(bool Value) { FPluginsMenuCommands = Value; }
+  UnicodeString GetCommandPrefixes() { return FCommandPrefixes; }
+  void SetCommandPrefixes(const UnicodeString Value) { FCommandPrefixes = Value; }
+  bool GetHostNameInTitle() { return FHostNameInTitle; }
+  void SetHostNameInTitle(bool Value) { FHostNameInTitle = Value; }
 
-  bool __fastcall GetCustomPanelModeDetailed() { return FCustomPanelModeDetailed; }
-  void __fastcall SetCustomPanelModeDetailed(bool Value) { FCustomPanelModeDetailed = Value; }
-  bool __fastcall GetFullScreenDetailed() { return FFullScreenDetailed; }
-  void __fastcall SetFullScreenDetailed(bool Value) { FFullScreenDetailed = Value; }
-  UnicodeString __fastcall GetColumnTypesDetailed() { return FColumnTypesDetailed; }
-  void __fastcall SetColumnTypesDetailed(const UnicodeString Value) { FColumnTypesDetailed = Value; }
-  UnicodeString __fastcall GetColumnWidthsDetailed() { return FColumnWidthsDetailed; }
-  void __fastcall SetColumnWidthsDetailed(const UnicodeString Value) { FColumnWidthsDetailed = Value; }
-  UnicodeString __fastcall GetStatusColumnTypesDetailed() { return FStatusColumnTypesDetailed; }
-  void __fastcall SetStatusColumnTypesDetailed(const UnicodeString Value) { FStatusColumnTypesDetailed = Value; }
-  UnicodeString __fastcall GetStatusColumnWidthsDetailed() { return FStatusColumnWidthsDetailed; }
-  void __fastcall SetStatusColumnWidthsDetailed(const UnicodeString Value) { FStatusColumnWidthsDetailed = Value; }
-  bool __fastcall GetEditorDownloadDefaultMode() { return FEditorDownloadDefaultMode; }
-  void __fastcall SetEditorDownloadDefaultMode(bool Value) { FEditorDownloadDefaultMode = Value; }
-  bool __fastcall GetEditorUploadSameOptions() { return FEditorUploadSameOptions; }
-  void __fastcall SetEditorUploadSameOptions(bool Value) { FEditorUploadSameOptions = Value; }
-  bool __fastcall GetEditorUploadOnSave() { return FEditorUploadOnSave; }
-  void __fastcall SetEditorUploadOnSave(bool Value) { FEditorUploadOnSave = Value; }
-  bool __fastcall GetEditorMultiple() { return FEditorMultiple; }
-  void __fastcall SetEditorMultiple(bool Value) { FEditorMultiple = Value; }
-  bool __fastcall GetQueueBeep() { return FQueueBeep; }
-  void __fastcall SetQueueBeep(bool Value) { FQueueBeep = Value; }
+  bool GetCustomPanelModeDetailed() { return FCustomPanelModeDetailed; }
+  void SetCustomPanelModeDetailed(bool Value) { FCustomPanelModeDetailed = Value; }
+  bool GetFullScreenDetailed() { return FFullScreenDetailed; }
+  void SetFullScreenDetailed(bool Value) { FFullScreenDetailed = Value; }
+  UnicodeString GetColumnTypesDetailed() { return FColumnTypesDetailed; }
+  void SetColumnTypesDetailed(const UnicodeString Value) { FColumnTypesDetailed = Value; }
+  UnicodeString GetColumnWidthsDetailed() { return FColumnWidthsDetailed; }
+  void SetColumnWidthsDetailed(const UnicodeString Value) { FColumnWidthsDetailed = Value; }
+  UnicodeString GetStatusColumnTypesDetailed() { return FStatusColumnTypesDetailed; }
+  void SetStatusColumnTypesDetailed(const UnicodeString Value) { FStatusColumnTypesDetailed = Value; }
+  UnicodeString GetStatusColumnWidthsDetailed() { return FStatusColumnWidthsDetailed; }
+  void SetStatusColumnWidthsDetailed(const UnicodeString Value) { FStatusColumnWidthsDetailed = Value; }
+  bool GetEditorDownloadDefaultMode() { return FEditorDownloadDefaultMode; }
+  void SetEditorDownloadDefaultMode(bool Value) { FEditorDownloadDefaultMode = Value; }
+  bool GetEditorUploadSameOptions() { return FEditorUploadSameOptions; }
+  void SetEditorUploadSameOptions(bool Value) { FEditorUploadSameOptions = Value; }
+  bool GetEditorUploadOnSave() { return FEditorUploadOnSave; }
+  void SetEditorUploadOnSave(bool Value) { FEditorUploadOnSave = Value; }
+  bool GetEditorMultiple() { return FEditorMultiple; }
+  void SetEditorMultiple(bool Value) { FEditorMultiple = Value; }
+  bool GetQueueBeep() { return FQueueBeep; }
+  void SetQueueBeep(bool Value) { FQueueBeep = Value; }
 
-  UnicodeString __fastcall GetApplyCommandCommand() { return FApplyCommandCommand; }
-  void __fastcall SetApplyCommandCommand(const UnicodeString Value) { FApplyCommandCommand = Value; }
-  int __fastcall GetApplyCommandParams() { return FApplyCommandParams; }
-  void __fastcall SetApplyCommandParams(int Value) { FApplyCommandParams = Value; }
+  UnicodeString GetApplyCommandCommand() { return FApplyCommandCommand; }
+  void SetApplyCommandCommand(const UnicodeString Value) { FApplyCommandCommand = Value; }
+  int GetApplyCommandParams() { return FApplyCommandParams; }
+  void SetApplyCommandParams(int Value) { FApplyCommandParams = Value; }
 
-  UnicodeString __fastcall GetPageantPath() const { return FPageantPath; }
-  void __fastcall SetPageantPath(const UnicodeString Value) { FPageantPath = Value; }
-  UnicodeString __fastcall GetPuttygenPath() const { return FPuttygenPath; }
-  void __fastcall SetPuttygenPath(const UnicodeString Value) { FPuttygenPath = Value; }
-  TBookmarkList * __fastcall GetBookmarks(UnicodeString Key);
-  void __fastcall SetBookmarks(UnicodeString Key, TBookmarkList * Value);
+  UnicodeString GetPageantPath() const { return FPageantPath; }
+  void SetPageantPath(const UnicodeString Value) { FPageantPath = Value; }
+  UnicodeString GetPuttygenPath() const { return FPuttygenPath; }
+  void SetPuttygenPath(const UnicodeString Value) { FPuttygenPath = Value; }
+  TBookmarkList * GetBookmarks(UnicodeString Key);
+  void SetBookmarks(UnicodeString Key, TBookmarkList * Value);
 
   virtual void __fastcall Load();
   virtual void __fastcall Save(bool All, bool Explicit);
   virtual void __fastcall Default();
   virtual THierarchicalStorage * __fastcall CreateScpStorage(bool SessionList);
-  void __fastcall CacheFarSettings();
+  void CacheFarSettings();
 
 protected:
   virtual bool __fastcall GetConfirmOverwriting();
@@ -116,7 +116,7 @@ private:
 
   TBookmarks * FBookmarks;
 
-  int __fastcall FarConfirmations();
+  int FarConfirmations();
 };
 //---------------------------------------------------------------------------
 #define FarConfiguration (static_cast<TFarConfiguration *>(Configuration))
