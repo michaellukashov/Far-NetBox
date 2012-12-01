@@ -201,10 +201,11 @@ void __fastcall Trace(const wchar_t * SourceFile, const wchar_t * Func,
     SourceFile = Slash + 1;
   }
   UTF8String Buffer = UTF8String(FORMAT(L"[%s] [%.4X] [%s:%d:%s] %s\n",
-    (TimeString, int(GetCurrentThreadId()), SourceFile,
-     Line, Func, Message)));
-  DWORD Written;
-  WriteFile(TraceFile, Buffer.c_str(), Buffer.Length(), &Written, NULL);
+    TimeString.c_str(), int(GetCurrentThreadId()), SourceFile,
+     Line, Func, Message));
+  // DWORD Written;
+  // WriteFile(TraceFile, Buffer.c_str(), Buffer.Length(), &Written, NULL);
+  DEBUG_PRINTF(L"%s", Buffer.c_str());
 }
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
