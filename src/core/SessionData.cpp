@@ -1034,7 +1034,7 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
   bool * AProtocolDefined)
 {
   CALLSTACK;
-  TRACEFMT("0 [%s]", (Url));
+  TRACEFMT("0 [%s]", Url.c_str());
   bool ProtocolDefined = false;
   bool PortNumberDefined = false;
   TFSProtocol AFSProtocol = fsSCPonly;

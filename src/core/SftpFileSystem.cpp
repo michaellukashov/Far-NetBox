@@ -419,7 +419,7 @@ public:
 
     if (Rights != NULL)
     {
-      TRACEFMT("Rights [%x]", (int(*Rights)));
+      TRACEFMT("Rights [%x]", int(*Rights));
       AddCardinal(*Rights);
     }
 
@@ -480,7 +480,7 @@ public:
           Rights.AddExecute();
         }
         RightsNum = Rights;
-        TRACEFMT("Rights [%x] [%x] [%x] [%d] [%x]", (int(BaseRights), int(Properties->Rights.GetNumberSet()), int((unsigned short)~Properties->Rights.GetNumberUnset()), int(IsDirectory && Properties->AddXToDirectories), int(RightsNum)));
+        TRACEFMT("Rights [%x] [%x] [%x] [%d] [%x]", int(BaseRights), int(Properties->Rights.GetNumberSet()), int((unsigned short)~Properties->Rights.GetNumberUnset()), int(IsDirectory && Properties->AddXToDirectories), int(RightsNum));
 
         if (Action != NULL)
         {
@@ -554,7 +554,7 @@ public:
     Result.SetLength(Len);
     memmove((void *)Result.c_str(), FData + FPosition, Len);
     FPosition += Len;
-    CTRACEFMT(TRACE_STRINGS, "[%s]", (Result.c_str()));
+    CTRACEFMT(TRACE_STRINGS, "[%s]", Result.c_str());
     return Result;
   }
 
@@ -604,11 +604,11 @@ public:
     if (GetType() != SSH_FXP_ATTRS)
     {
       File->SetFileName(GetPathString(Utf));
-      TRACEFMT("1 [%s]", (File->GetFileName()));
+      TRACEFMT("1 [%s]", File->GetFileName().c_str());
       if (Version < 4)
       {
         ListingStr = GetAnsiString();
-        TRACEFMT("2 [%s]", (File->GetFileName()));
+        TRACEFMT("2 [%s]", File->GetFileName().c_str());
       }
     }
     Flags = GetCardinal();
@@ -3514,7 +3514,7 @@ void __fastcall TSFTPFileSystem::ChangeFileProperties(const UnicodeString FileNa
       Properties.Valid << vpGroup;
     }
 
-    TRACEFMT("Rights [%s]", (File->GetRights()->GetText()));
+    TRACEFMT("Rights [%s]", File->GetRights()->GetText().c_str());
     TSFTPPacket Packet(SSH_FXP_SETSTAT, GetSessionData()->GetCodePageAsNumber());
     Packet.AddPathString(RealFileName, FUtfStrings);
     Packet.AddProperties(&Properties, *File->GetRights(), File->GetIsDirectory(), FVersion, FUtfStrings, &Action);
@@ -3800,7 +3800,7 @@ void __fastcall TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     TRemoteFile * File = dynamic_cast<TRemoteFile *>(FilesToCopy->Objects[Index]);
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     FileNameOnly = ExtractFileName(RealFileName, false);
-    TRACEFMT("FileName [%s]", (FileName));
+    TRACEFMT("FileName [%s]", FileName.c_str());
     assert(!FAvoidBusy);
     FAvoidBusy = true;
 
@@ -5253,7 +5253,7 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
           FTerminal->GetSessionData()->GetDSTMode());
         WrTime = DateTimeToFileTime(AFile->GetModification(),
           FTerminal->GetSessionData()->GetDSTMode());
-        // TRACEFMT("WrTime %s/%s [%s %s]", (IntToStr(__int64(WrTime.dwLowDateTime)), IntToStr(__int64(WrTime.dwHighDateTime)), AFile->GetModification().DateString(), AFile->GetModification().TimeString()));
+        // TRACEFMT("WrTime %s/%s [%s %s]", IntToStr(__int64(WrTime.dwLowDateTime)).c_str(), IntToStr(__int64(WrTime.dwHighDateTime)), AFile->GetModification().DateString().c_str(), AFile->GetModification().TimeString().c_str());
       }
       ,
       {
@@ -5503,7 +5503,7 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
       if (CopyParam->GetPreserveTime())
       {
         SetFileTime(LocalHandle, NULL, &AcTime, &WrTime);
-        // TRACEFMT("FileTime %d [%s %s]", (FileGetDate(int(LocalHandle)), FileDateToDateTime(FileGetDate(int(LocalHandle))).DateString(), FileDateToDateTime(FileGetDate(int(LocalHandle))).TimeString()));
+        // TRACEFMT("FileTime %d [%s %s]", FileGetDate(int(LocalHandle)), FileDateToDateTime(FileGetDate(int(LocalHandle))).DateString().c_str(), FileDateToDateTime(FileGetDate(int(LocalHandle))).TimeString().c_str());
       }
 
       CloseHandle(LocalHandle);

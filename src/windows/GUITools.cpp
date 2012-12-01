@@ -61,7 +61,7 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
     TRegistryStorage * SourceStorage = NULL;
     TRY_FINALLY (
     {
-      TRACEFMT("1a [%s]", (Configuration->GetPuttySessionsKey()));
+      TRACEFMT("1a [%s]", Configuration->GetPuttySessionsKey().c_str());
       Storage = new TRegistryStorage(Configuration->GetPuttySessionsKey());
       Storage->SetAccessMode(smReadWrite);
       // make it compatible with putty
@@ -69,11 +69,11 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
       Storage->SetForceAnsi(true);
       if (Storage->OpenRootKey(true))
       {
-        TRACEFMT("2 [%s]", (SessionData->GetStorageKey()));
+        TRACEFMT("2 [%s]", SessionData->GetStorageKey().c_str());
         if (Storage->KeyExists(SessionData->GetStorageKey()))
         {
           SessionName = SessionData->GetSessionName();
-          TRACEFMT("3 [%s]", (SessionName));
+          TRACEFMT("3 [%s]", SessionName.c_str());
         }
         else
         {
@@ -140,7 +140,7 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
     }
     Params += FORMAT(L"-load %s", EscapePuttyCommandParam(SessionName).c_str());
 
-    TRACEFMT("11a [%s] [%s]", (Program, Params));
+    TRACEFMT("11a [%s] [%s]", Program.c_str(), Params.c_str());
     if (!ExecuteShell(Program, Params))
     {
       TRACE("12");
@@ -177,7 +177,7 @@ bool __fastcall FindTool(const UnicodeString & Name, UnicodeString & Path)
 bool __fastcall ExecuteShell(const UnicodeString Path, const UnicodeString Params)
 {
   CALLSTACK;
-  TRACEFMT("1 [%s] [%s]", (Path, Params));
+  TRACEFMT("1 [%s] [%s]", Path.c_str(), Params.c_str());
   return ((int)::ShellExecute(NULL, L"open", const_cast<wchar_t*>(Path.data()),
     const_cast<wchar_t*>(Params.data()), NULL, SW_SHOWNORMAL) > 32);
 }

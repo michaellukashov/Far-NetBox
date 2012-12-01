@@ -2201,7 +2201,7 @@ void __fastcall TRights::SetText(const UnicodeString & value)
     FText = KeepText ? value : UnicodeString();
   }
   FUnknown = false;
-  TRACEFMT("Rights [%x] [%x] [%s]", (int(FSet), int(FUnset), GetText()));
+  TRACEFMT("Rights [%x] [%x] [%s]", int(FSet), int(FUnset), GetText().c_str());
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TRights::GetText() const

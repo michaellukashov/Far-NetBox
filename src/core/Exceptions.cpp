@@ -53,7 +53,7 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   FHelpKeyword()
 {
   CALLSTACK;
-  TRACEFMT("[%s]", ((E != NULL) ? E->Message : UnicodeString(L"<null>")));
+  TRACEFMT("[%s]", ((E != NULL) ? E->Message : UnicodeString(L"<null>")).c_str());
   AddMoreMessages(E);
   TRACE("/");
 }
@@ -71,7 +71,7 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   FHelpKeyword()
 {
   CALLSTACK;
-  TRACEFMT("[%s] [%s]", (((E != NULL) ? E->Message : UnicodeString(L"<null>")), Msg));
+  TRACEFMT("[%s] [%s]", ((E != NULL) ? E->Message : UnicodeString(L"<null>")).c_str(), Msg.c_str());
   AddMoreMessages(E);
   TRACE("/");
 }
@@ -90,7 +90,7 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   FHelpKeyword()
 {
   CALLSTACK;
-  TRACEFMT("[%s] [%s]", (Msg, ((E != NULL) ? E->Message : UnicodeString(L"<null>"))));
+  TRACEFMT("[%s] [%s]", Msg.c_str(), ((E != NULL) ? E->Message : UnicodeString(L"<null>")).c_str());
   // "copy exception"
   AddMoreMessages(E);
   // and append message to the end to more messages
@@ -119,7 +119,7 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   FHelpKeyword(HelpKeyword)
 {
   CALLSTACK;
-  TRACEFMT("[%s] [%s]", (Msg, MoreMessages));
+  TRACEFMT("[%s] [%s]", Msg.c_str(), MoreMessages.c_str());
   if (!MoreMessages.IsEmpty())
   {
     FMoreMessages = new TStringList();
@@ -135,7 +135,7 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   FHelpKeyword(HelpKeyword)
 {
   CALLSTACK;
-  TRACEFMT("[%s] [%s]", (Msg, ((MoreMessages != NULL) ? MoreMessages->Text : UnicodeString(L"<null>"))));
+  TRACEFMT("[%s] [%s]", Msg.c_str(), ((MoreMessages != NULL) ? MoreMessages->Text : UnicodeString(L"<null>")).c_str());
   if (Own)
   {
     FMoreMessages = MoreMessages;
@@ -171,7 +171,7 @@ void __fastcall ExtException::AddMoreMessages(const Exception * E)
 
       if (ExtE->GetMoreMessages() != NULL)
       {
-        TRACEFMT("1 [%s]", (ExtE->GetMoreMessages()->Text));
+        TRACEFMT("1 [%s]", ExtE->GetMoreMessages()->Text.get().c_str());
         FMoreMessages->Assign(ExtE->GetMoreMessages());
       }
     }
@@ -181,7 +181,7 @@ void __fastcall ExtException::AddMoreMessages(const Exception * E)
 
     // new exception does not have own message, this is in fact duplication of
     // the exception data, but the exception class may being changed
-    TRACEFMT("2 [%s]", (Msg));
+    TRACEFMT("2 [%s]", Msg.c_str());
     if (Message.IsEmpty())
     {
       Message = Msg;

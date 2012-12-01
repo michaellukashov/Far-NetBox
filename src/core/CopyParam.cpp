@@ -330,7 +330,7 @@ UnicodeString __fastcall TCopyParamType::ChangeFileName(UnicodeString FileName,
   {
     FileName = RestoreChars(FileName);
   }
-  TRACEFMT("2 [%s]", (FileName));
+  TRACEFMT("2 [%s]", FileName.c_str());
   return FileName;
 }
 //---------------------------------------------------------------------------

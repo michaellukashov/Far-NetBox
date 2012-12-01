@@ -589,15 +589,15 @@ FILE * __fastcall OpenFile(UnicodeString LogFileName, TSessionData * SessionData
 {
   CALLSTACK;
   FILE * Result;
-  TRACEFMT("1 [%s]", (LogFileName));
+  TRACEFMT("1 [%s]", LogFileName.c_str());
   UnicodeString ANewFileName = StripPathQuotes(GetExpandedLogFileName(LogFileName, SessionData));
-  TRACEFMT("2 [%s]", (ANewFileName));
+  TRACEFMT("2 [%s]", ANewFileName.c_str());
   // Result = _wfopen(ANewFileName.c_str(), (Append ? L"a" : L"w"));
   Result = _fsopen(W2MB(ANewFileName.c_str()).c_str(),
     Append ? "a" : "w", SH_DENYWR); // _SH_DENYNO); // 
   if (Result != NULL)
   {
-    TRACEFMT("3 [%d]", (int(FileExists(ANewFileName))));
+    TRACEFMT("3 [%d]", int(FileExists(ANewFileName)));
     setvbuf(Result, NULL, _IONBF, BUFSIZ);
     NewFileName = ANewFileName;
   }
@@ -735,7 +735,7 @@ void __fastcall TSessionLog::DoAdd(TLogLineType Type, UnicodeString Line,
 void __fastcall TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
 {
   assert(FConfiguration);
-  CTRACEFMT(TRACE_LOG_ADD, "[%s]", (Line.c_str()));
+  CTRACEFMT(TRACE_LOG_ADD, "[%s]", Line.c_str());
   if (GetLogging())
   {
     try
@@ -779,7 +779,7 @@ void __fastcall TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
       }
       catch (Exception &E)
       {
-        CTRACEFMT(TRACE_LOG_ADD, "E2 [%s]", (E.Message.c_str()));
+        CTRACEFMT(TRACE_LOG_ADD, "E2 [%s]", E.Message.c_str());
         AddException(&E);
         FUI->HandleExtendedException(&E);
       }
@@ -852,9 +852,9 @@ void __fastcall TSessionLog::OpenLogFile()
     assert(FFile == NULL);
     assert(FConfiguration != NULL);
     FCurrentLogFileName = FConfiguration->GetLogFileName();
-    TRACEFMT("1 [%s]", (FCurrentLogFileName));
+    TRACEFMT("1 [%s]", FCurrentLogFileName.c_str());
     FFile = OpenFile(FCurrentLogFileName, FSessionData, FConfiguration->GetLogFileAppend(), FCurrentFileName);
-    TRACEFMT("2 [%s]", (FCurrentFileName));
+    TRACEFMT("2 [%s]", FCurrentFileName.c_str());
   }
   catch (Exception & E)
   {
@@ -869,7 +869,7 @@ void __fastcall TSessionLog::OpenLogFile()
     }
     catch (Exception & E)
     {
-      TRACEFMT("E2 [%s]", (E.Message));
+      TRACEFMT("E2 [%s]", E.Message.c_str());
       AddException(&E);
       FUI->HandleExtendedException(&E);
     }
@@ -1275,7 +1275,7 @@ int __fastcall TSessionLog::GetCount()
 void __fastcall TActionLog::Add(const UnicodeString & Line)
 {
   assert(FConfiguration);
-  CTRACEFMT(TRACE_LOG_ADD, "[%s]", (Line.c_str()));
+  CTRACEFMT(TRACE_LOG_ADD, "[%s]", Line.c_str());
   if (FLogging)
   {
     try
@@ -1304,7 +1304,7 @@ void __fastcall TActionLog::Add(const UnicodeString & Line)
         fwrite("\n", 1, 1, (FILE *)FFile);
 //!CLEANBEGIN
         #ifdef _DEBUG
-        TRACEFMT("2 [%d]", (int(Written)));
+        TRACEFMT("2 [%d]", int(Written));
         #endif
 //!CLEANEND
       }
@@ -1320,7 +1320,7 @@ void __fastcall TActionLog::Add(const UnicodeString & Line)
       }
       catch (Exception &E)
       {
-        CTRACEFMT(TRACE_LOG_ADD, "[%s]", (E.Message.c_str()));
+        CTRACEFMT(TRACE_LOG_ADD, "[%s]", E.Message.c_str());
         FUI->HandleExtendedException(&E);
       }
     }
@@ -1422,9 +1422,9 @@ void __fastcall TActionLog::OpenLogFile()
     assert(FFile == NULL);
     assert(FConfiguration != NULL);
     FCurrentLogFileName = FConfiguration->GetActionsLogFileName();
-    TRACEFMT("1 [%s]", (FCurrentLogFileName));
+    TRACEFMT("1 [%s]", FCurrentLogFileName.c_str());
     FFile = OpenFile(FCurrentLogFileName, FSessionData, false, FCurrentFileName);
-    TRACEFMT("2 [%s]", (FCurrentFileName));
+    TRACEFMT("2 [%s]", FCurrentFileName.c_str());
   }
   catch (Exception & E)
   {
@@ -1439,7 +1439,7 @@ void __fastcall TActionLog::OpenLogFile()
     }
     catch (Exception & E)
     {
-      TRACEFMT("E2 [%s]", (E.Message));
+      TRACEFMT("E2 [%s]", E.Message.c_str());
       FUI->HandleExtendedException(&E);
     }
   }

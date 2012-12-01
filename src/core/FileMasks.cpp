@@ -300,7 +300,7 @@ bool __fastcall TFileMasks::MatchesMasks(const UnicodeString FileName, bool Dire
   while (!Result && (I != Masks.end()))
   {
     const TMask & Mask = *I;
-    TRACEFMT("1 [%s]", (Mask.MaskStr));
+    TRACEFMT("1 [%s]", Mask.MaskStr.c_str());
     Result =
       MatchesMaskMask(Mask.DirectoryMask, Path) &&
       MatchesMaskMask(Mask.FileNameMask, FileName);

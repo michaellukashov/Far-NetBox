@@ -1197,8 +1197,8 @@ static void __fastcall EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Y
   TDateTime & Result)
 {
   CCALLSTACK(TRACE_TIMESTAMP);
-  CTRACEFMT(TRACE_TIMESTAMP, "Year [%d]; Month [%d]; DayOfWeek [%d]; Day [%d]", (int(Year), int(Date.wMonth), int(Date.wDayOfWeek), int(Date.wDay)));
-  CTRACEFMT(TRACE_TIMESTAMP, "Hour [%d]; Minute [%d]; Second [%d]; Milliseconds [%d]", (int(Date.wHour), int(Date.wMinute), int(Date.wSecond), int(Date.wMilliseconds)));
+  CTRACEFMT(TRACE_TIMESTAMP, "Year [%d]; Month [%d]; DayOfWeek [%d]; Day [%d]", int(Year), int(Date.wMonth), int(Date.wDayOfWeek), int(Date.wDay));
+  CTRACEFMT(TRACE_TIMESTAMP, "Hour [%d]; Minute [%d]; Second [%d]; Milliseconds [%d]", int(Date.wHour), int(Date.wMinute), int(Date.wSecond), int(Date.wMilliseconds));
   if (Date.wYear == 0)
   {
     TDateTime Temp = EncodeDateVerbose(Year, Date.wMonth, 1);
@@ -1226,7 +1226,7 @@ static void __fastcall EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Y
     Result = EncodeDateVerbose(Year, Date.wMonth, Date.wDay) +
       EncodeTimeVerbose(Date.wHour, Date.wMinute, Date.wSecond, Date.wMilliseconds);
   }
-  CTRACEFMT(TRACE_TIMESTAMP, "1 [%s]", (Result.FormatString(L"c")));
+  CTRACEFMT(TRACE_TIMESTAMP, "1 [%s]", Result.FormatString(L"c").c_str());
 }
 //---------------------------------------------------------------------------
 static bool __fastcall IsDateInDST(const TDateTime & DateTime)
@@ -1263,7 +1263,7 @@ static bool __fastcall IsDateInDST(const TDateTime & DateTime)
         (DateTime < Params->StandardDate) ||
         (DateTime >= Params->DaylightDate);
     }
-    CTRACEFMT(TRACE_TIMESTAMP, "5 [%d]", (int(Result)));
+    CTRACEFMT(TRACE_TIMESTAMP, "5 [%d]", int(Result));
   }
   return Result;
 }
@@ -1278,9 +1278,9 @@ TDateTime __fastcall UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode)
   CCALLSTACK(TRACE_TIMESTAMP);
   assert(int(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
 
-  CTRACEFMT(TRACE_TIMESTAMP, "0 [%s]", (IntToStr(TimeStamp)));
+  CTRACEFMT(TRACE_TIMESTAMP, "0 [%s]", IntToStr(TimeStamp).c_str());
   TDateTime Result = TDateTime(UnixDateDelta + (double(TimeStamp) / SecsPerDay));
-  CTRACEFMT(TRACE_TIMESTAMP, "1 [%s]", (Result.FormatString(L"c")));
+  CTRACEFMT(TRACE_TIMESTAMP, "1 [%s]", Result.FormatString(L"c").c_str());
 
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(Result));
 
@@ -1290,28 +1290,28 @@ TDateTime __fastcall UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode)
     {
       const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
       Result -= CurrentParams->CurrentDifference;
-      CTRACEFMT(TRACE_TIMESTAMP, "2 [%s]", (Result.FormatString(L"c")));
+      CTRACEFMT(TRACE_TIMESTAMP, "2 [%s]", Result.FormatString(L"c").c_str());
     }
     else if (DSTMode == dstmKeep)
     {
       Result -= Params->BaseDifference;
-      CTRACEFMT(TRACE_TIMESTAMP, "3 [%s]", (Result.FormatString(L"c")));
+      CTRACEFMT(TRACE_TIMESTAMP, "3 [%s]", Result.FormatString(L"c").c_str());
     }
   }
   else
   {
     Result -= Params->BaseDifference;
-    CTRACEFMT(TRACE_TIMESTAMP, "4 [%s]", (Result.FormatString(L"c")));
+    CTRACEFMT(TRACE_TIMESTAMP, "4 [%s]", Result.FormatString(L"c").c_str());
   }
 
   if ((DSTMode == dstmUnix) || (DSTMode == dstmKeep))
   {
     Result -= (IsDateInDST(Result) ?
       Params->DaylightDifference : Params->StandardDifference);
-    CTRACEFMT(TRACE_TIMESTAMP, "5 [%s]", (Result.FormatString(L"c")));
+    CTRACEFMT(TRACE_TIMESTAMP, "5 [%s]", Result.FormatString(L"c").c_str());
   }
 
-  CTRACEFMT(TRACE_TIMESTAMP, "6 [%s]", (Result.FormatString(L"c")));
+  CTRACEFMT(TRACE_TIMESTAMP, "6 [%s]", Result.FormatString(L"c").c_str());
   CTRACE(TRACE_TIMESTAMP, "/");
   return Result;
 }
@@ -1383,7 +1383,7 @@ FILETIME __fastcall DateTimeToFileTime(const TDateTime DateTime,
   TDSTMode /*DSTMode*/)
 {
   CCALLSTACK(TRACE_TIMESTAMP);
-  CTRACEFMT(TRACE_TIMESTAMP, "DateTimeToFileTime 1 [%s] [%s]", (DateTime.DateString(), DateTime.TimeString()));
+  CTRACEFMT(TRACE_TIMESTAMP, "DateTimeToFileTime 1 [%s] [%s]", DateTime.DateString().c_str(), DateTime.TimeString().c_str());
   __int64 UnixTimeStamp = ::DateTimeToUnix(DateTime);
 
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
@@ -1396,10 +1396,10 @@ FILETIME __fastcall DateTimeToFileTime(const TDateTime DateTime,
     UnixTimeStamp -= CurrentParams->CurrentDaylightDifferenceSec;
   }
 
-  CTRACEFMT(TRACE_TIMESTAMP, "DateTimeToFileTime 2 [%s]", (IntToStr(UnixTimeStamp)));
+  CTRACEFMT(TRACE_TIMESTAMP, "DateTimeToFileTime 2 [%s]", IntToStr(UnixTimeStamp).c_str());
   FILETIME Result;
   (*(__int64*)&(Result) = (__int64(UnixTimeStamp) + 11644473600LL) * 10000000LL);
-  CTRACEFMT(TRACE_TIMESTAMP, "DateTimeToFileTime 3 [%s] [%s]", (IntToStr(__int64(Result.dwLowDateTime)), IntToStr(__int64(Result.dwHighDateTime))));
+  CTRACEFMT(TRACE_TIMESTAMP, "DateTimeToFileTime 3 [%s] [%s]", IntToStr(__int64(Result.dwLowDateTime)).c_str(), IntToStr(__int64(Result.dwHighDateTime)).c_str());
 
   return Result;
 }
@@ -1423,9 +1423,9 @@ TDateTime __fastcall FileTimeToDateTime(const FILETIME & FileTime)
     TRACEFMT("2b [%d] [%d]", (int(LocalFileTime.dwLowDateTime), int(LocalFileTime.dwHighDateTime)));
     FileTimeToSystemTime(&LocalFileTime, &SysTime);
   }
-  CTRACEFMT(TRACE_TIMESTAMP, "2c [%d/%d/%d] [%d] [%d:%d:%d.%d]", (int(SysTime.wYear), int(SysTime.wMonth), int(SysTime.wDay), int(SysTime.wDayOfWeek), int(SysTime.wHour), int(SysTime.wMinute), int(SysTime.wSecond), int(SysTime.wMilliseconds)));
+  CTRACEFMT(TRACE_TIMESTAMP, "2c [%d/%d/%d] [%d] [%d:%d:%d.%d]", int(SysTime.wYear), int(SysTime.wMonth), int(SysTime.wDay), int(SysTime.wDayOfWeek), int(SysTime.wHour), int(SysTime.wMinute), int(SysTime.wSecond), int(SysTime.wMilliseconds));
   TDateTime Result = SystemTimeToDateTime(SysTime);
-  CTRACEFMT(TRACE_TIMESTAMP, "2d [%s] [%s]", (Result.DateString(), Result.TimeString()));
+  CTRACEFMT(TRACE_TIMESTAMP, "2d [%s] [%s]", Result.DateString().c_str(), Result.TimeString().c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1435,7 +1435,7 @@ __int64 __fastcall ConvertTimestampToUnix(const FILETIME & FileTime,
   CCALLSTACK(TRACE_TIMESTAMP);
   __int64 Result = ((*(__int64*)&(FileTime)) / 10000000LL - 11644473600LL);
 
-  CTRACEFMT(TRACE_TIMESTAMP, "1 [%s] [%d]", (IntToStr(Result), int(DSTMode)));
+  CTRACEFMT(TRACE_TIMESTAMP, "1 [%s] [%d]", IntToStr(Result).c_str(), int(DSTMode));
   if (UsesDaylightHack())
   {
     if ((DSTMode == dstmUnix) || (DSTMode == dstmKeep))
@@ -1448,13 +1448,13 @@ __int64 __fastcall ConvertTimestampToUnix(const FILETIME & FileTime,
       const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
       Result += (IsDateInDST(DateTime) ?
         Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
-      CTRACEFMT(TRACE_TIMESTAMP, "2 [%s]", (IntToStr(Result)));
+      CTRACEFMT(TRACE_TIMESTAMP, "2 [%s]", IntToStr(Result).c_str());
 
       if (DSTMode == dstmKeep)
       {
         const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
         Result -= CurrentParams->CurrentDaylightDifferenceSec;
-        CTRACEFMT(TRACE_TIMESTAMP, "3 [%s]", (IntToStr(Result)));
+        CTRACEFMT(TRACE_TIMESTAMP, "3 [%s]", IntToStr(Result).c_str());
       }
     }
   }
@@ -1470,11 +1470,11 @@ __int64 __fastcall ConvertTimestampToUnix(const FILETIME & FileTime,
       const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
       Result -= (IsDateInDST(DateTime) ?
         Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
-      CTRACEFMT(TRACE_TIMESTAMP, "4 [%s]", (IntToStr(Result)));
+      CTRACEFMT(TRACE_TIMESTAMP, "4 [%s]", IntToStr(Result).c_str());
     }
   }
 
-  CTRACEFMT(TRACE_TIMESTAMP, "5 [%s]", (IntToStr(Result)));
+  CTRACEFMT(TRACE_TIMESTAMP, "5 [%s]", IntToStr(Result).c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1692,7 +1692,7 @@ int __fastcall CompareFileTime(TDateTime T1, TDateTime T2)
   // we may have times like 12:00:00.000 and 12:00:01.999, which should
   // be treated the same)
   int Result;
-  CTRACEFMT(TRACE_TIMESTAMP, "2Sec [%.7f], T1 [%s] [%.7f], T2 [%s] [%.7f], T2-T1 [%.7f], T1-T2 [%.7f]", (double(TwoSeconds), T1.TimeString(), double(T1), T2.TimeString(), double(T2), double(T2-T1), double(T1-T2)));
+  CTRACEFMT(TRACE_TIMESTAMP, "2Sec [%.7f], T1 [%s] [%.7f], T2 [%s] [%.7f], T2-T1 [%.7f], T1-T2 [%.7f]", double(TwoSeconds), T1.TimeString().c_str(), double(T1), T2.TimeString().c_str(), double(T2), double(T2-T1), double(T1-T2));
   if (T1 == T2)
   {
     CTRACE(TRACE_TIMESTAMP, "1");

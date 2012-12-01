@@ -396,7 +396,7 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
   }
   else
   {
-    TRACEFMT("2 RegKey [%s]", (RegKey));
+    TRACEFMT("2 RegKey [%s]", RegKey.c_str());
     // we expect this to be called only from verify_host_key() or store_host_key()
     assert(RegKey == L"SshHostKeys");
 
