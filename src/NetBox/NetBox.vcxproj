@@ -109,11 +109,11 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\Temp\$(SolutionName)\$(Configuration)\x86\mfc;..\..\libs\openssl\x86;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libputty;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libtinyxml;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libneon;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libapr;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libexpat;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mfc.lib;gdi32.lib;libcmtd.lib;libcpmtd.lib;windowscodecs.lib;delayimp.lib;libtinyxml.lib;libeay32.lib;ssleay32.lib;libputty.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;comctl32.lib;Crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <IgnoreSpecificDefaultLibraries>uafxcwd.lib;mfcs100ud.lib;comctl32.lib;msvcrtd.lib;msvcurtd.lib;msvcprtd.lib;libc.lib;libcmt.lib;msvcrt.lib;libcmtd.lib;mfc100ud.lib;Atl.lib;comctl32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <AdditionalDependencies>mfc.lib;gdi32.lib;libcmtd.lib;libcpmtd.lib;windowscodecs.lib;delayimp.lib;libtinyxml.lib;libeay32.lib;ssleay32.lib;libputty.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>uafxcwd.lib;mfcs100ud.lib;msvcrtd.lib;msvcurtd.lib;msvcprtd.lib;libc.lib;libcmt.lib;msvcrt.lib;libcmtd.lib;mfc100ud.lib;Atl.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <AdditionalOptions>/verbose:lib /ignore:4099 /ignore:4204 %(AdditionalOptions)</AdditionalOptions>
-      <DelayLoadDLLs>gdiplus.dll;gdi32.dll;msimg32.dll;winhttp.dll;ole32.dll;shell32.dll;crypt32.dll;version.dll;ws2_32.dll;oledlg.dll;winmm.dll;imm32.dll;oleacc.dll;shlwapi.dll;oleaut32.dll;comctl32.dll;winspool.drv;comdlg32.dll</DelayLoadDLLs>
+      <DelayLoadDLLs>gdi32.dll;winhttp.dll;ole32.dll;shell32.dll;crypt32.dll;version.dll;ws2_32.dll;oleacc.dll;shlwapi.dll;oleaut32.dll;winspool.drv;comdlg32.dll</DelayLoadDLLs>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <ResourceCompile>
@@ -134,11 +134,11 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\Temp\$(SolutionName)\$(Configuration)\x64\mfc;..\..\libs\openssl\x64;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libputty;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libtinyxml;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libneon;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libapr;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libexpat;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mfc.lib;gdi32.lib;libcmtd.lib;libcpmtd.lib;windowscodecs.lib;delayimp.lib;libtinyxml.lib;libeay32.lib;ssleay32.lib;libputty.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;comctl32.lib;Crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <IgnoreSpecificDefaultLibraries>uafxcwd.lib;mfc100ud.lib;Atl.lib;comctl32.lib;msvcrtd.lib;msvcurtd.lib;msvcprtd.lib;libc.lib;libcmt.lib;msvcrt.lib;libcmtd.lib;Atl.lib;comctl32.lib;mfcs100ud.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <AdditionalDependencies>mfc.lib;gdi32.lib;libcmtd.lib;libcpmtd.lib;windowscodecs.lib;delayimp.lib;libtinyxml.lib;libeay32.lib;ssleay32.lib;libputty.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>uafxcwd.lib;mfc100ud.lib;Atl.lib;msvcrtd.lib;msvcurtd.lib;msvcprtd.lib;libc.lib;libcmt.lib;msvcrt.lib;libcmtd.lib;Atl.lib;mfcs100ud.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <AdditionalOptions>/verbose:lib /ignore:4099 /ignore:4204 %(AdditionalOptions)</AdditionalOptions>
-      <DelayLoadDLLs>gdiplus.dll;gdi32.dll;msimg32.dll;winhttp.dll;ole32.dll;shell32.dll;crypt32.dll;version.dll;ws2_32.dll;oledlg.dll;winmm.dll;imm32.dll;oleacc.dll;shlwapi.dll;oleaut32.dll;comctl32.dll;winspool.drv;comdlg32.dll;</DelayLoadDLLs>
+      <DelayLoadDLLs>gdi32.dll;winhttp.dll;ole32.dll;shell32.dll;crypt32.dll;version.dll;ws2_32.dll;oleacc.dll;shlwapi.dll;oleaut32.dll;winspool.drv;comdlg32.dll;</DelayLoadDLLs>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <EntryPointSymbol>
       </EntryPointSymbol>
@@ -169,10 +169,10 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\..\Temp\$(SolutionName)\$(Configuration)\x86\mfc;..\..\libs\openssl\x86;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libputty;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libtinyxml;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libneon;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libapr;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libexpat;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mfc.lib;gdi32.lib;libcmt.lib;libcpmt.lib;windowscodecs.lib;delayimp.lib;libtinyxml.lib;libeay32.lib;ssleay32.lib;libputty.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;comctl32.lib;Crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfc.lib;gdi32.lib;libcmt.lib;libcpmt.lib;windowscodecs.lib;delayimp.lib;libtinyxml.lib;libeay32.lib;ssleay32.lib;libputty.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
-      <IgnoreSpecificDefaultLibraries>uafxcw.lib;mfc100u.lib;Atl.lib;comctl32.lib;msvcrt.lib;msvcurt.lib;msvcprt.lib;libc.lib;msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <DelayLoadDLLs>gdiplus.dll;gdi32.dll;msimg32.dll;winhttp.dll;ole32.dll;shell32.dll;crypt32.dll;version.dll;ws2_32.dll;oledlg.dll;winmm.dll;imm32.dll;oleacc.dll;shlwapi.dll;oleaut32.dll;comctl32.dll;winspool.drv;comdlg32.dll;</DelayLoadDLLs>
+      <IgnoreSpecificDefaultLibraries>uafxcw.lib;mfc100u.lib;Atl.lib;msvcrt.lib;msvcurt.lib;msvcprt.lib;libc.lib;msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <DelayLoadDLLs>gdi32.dll;winhttp.dll;ole32.dll;shell32.dll;crypt32.dll;version.dll;ws2_32.dll;oleacc.dll;shlwapi.dll;oleaut32.dll;winspool.drv;comdlg32.dll;</DelayLoadDLLs>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <PostBuildEvent>
@@ -208,10 +208,10 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\..\Temp\$(SolutionName)\$(Configuration)\x64\mfc;..\..\libs\openssl\x64;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libputty;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libtinyxml;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libneon;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libapr;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libexpat;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mfc.lib;gdi32.lib;libcmt.lib;libcpmt.lib;windowscodecs.lib;delayimp.lib;libtinyxml.lib;libeay32.lib;ssleay32.lib;libputty.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;comctl32.lib;Crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfc.lib;gdi32.lib;libcmt.lib;libcpmt.lib;windowscodecs.lib;delayimp.lib;libtinyxml.lib;libeay32.lib;ssleay32.lib;libputty.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
-      <IgnoreSpecificDefaultLibraries>uafxcw.lib;mfc100u.lib;Atl.lib;comctl32.lib;msvcrt.lib;msvcurt.lib;msvcprt.lib;libc.lib;msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <DelayLoadDLLs>gdiplus.dll;gdi32.dll;msimg32.dll;winhttp.dll;ole32.dll;shell32.dll;crypt32.dll;version.dll;ws2_32.dll;oledlg.dll;winmm.dll;imm32.dll;oleacc.dll;shlwapi.dll;oleaut32.dll;comctl32.dll;winspool.drv;comdlg32.dll;</DelayLoadDLLs>
+      <IgnoreSpecificDefaultLibraries>uafxcw.lib;mfc100u.lib;Atl.lib;msvcrt.lib;msvcurt.lib;msvcprt.lib;libc.lib;msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <DelayLoadDLLs>gdi32.dll;winhttp.dll;ole32.dll;shell32.dll;crypt32.dll;version.dll;ws2_32.dll;oleacc.dll;shlwapi.dll;oleaut32.dll;winspool.drv;comdlg32.dll;</DelayLoadDLLs>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <PostBuildEvent>
