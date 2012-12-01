@@ -556,7 +556,7 @@ UnicodeString Format(const wchar_t * Format, va_list args)
   {
     intptr_t Len = _vscwprintf(Format, args);
     Result.SetLength(Len + 1);
-    vswprintf_s(&Result[1], Len + 1, Format, args);
+    vswprintf_s((wchar_t *)Result.c_str(), Len + 1, Format, args);
   }
   return Result.c_str();
 }
