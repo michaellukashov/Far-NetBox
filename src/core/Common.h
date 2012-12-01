@@ -237,7 +237,7 @@ void __fastcall TraceInMemoryCallback(System::UnicodeString Msg);
   _TRACING_TRACE TRACING (TEXT(__FILE__), TEXT(__FUNCTION__), __LINE__, (MESSAGE))
 // #define CTRACEIMPL(TRACING, MESSAGE) DEBUG_PRINTF(MESSAGE);
 #define CTRACEFMTIMPL(TRACING, MESSAGE, ...) \
-  _TRACING_TRACEFMT TRACING (TEXT(__FILE__), TEXT(__FUNCTION__), __LINE__, (MESSAGE), __VA_ARGS__)
+  _TRACING_TRACEFMT TRACING (TEXT(__FILE__), TEXT(__FUNCTION__), __LINE__, MESSAGE, __VA_ARGS__)
 class Callstack
 {
 public:

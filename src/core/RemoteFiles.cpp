@@ -443,7 +443,7 @@ int __fastcall FakeFileImageIndex(UnicodeString FileName, unsigned long Attrs,
     }
     Icon = -1;
   }
-  CTRACEFMT(TRACE_IMAGEINDEX, "FakeFileImageIndex 4 [%d]", (Icon));
+  CTRACEFMT(TRACE_IMAGEINDEX, "FakeFileImageIndex 4 [%d]", Icon);
 
   return Icon;*/
   return -1;

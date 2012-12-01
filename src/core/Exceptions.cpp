@@ -53,7 +53,7 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   FHelpKeyword()
 {
   CALLSTACK;
-  TRACEFMT("[%s]", ((E != NULL) ? E->Message : UnicodeString(L"<null>")).c_str());
+  TRACEFMT("[%s]", UnicodeString((E != NULL) ? E->Message : UnicodeString(L"<null>")).c_str());
   AddMoreMessages(E);
   TRACE("/");
 }
@@ -71,7 +71,7 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   FHelpKeyword()
 {
   CALLSTACK;
-  TRACEFMT("[%s] [%s]", ((E != NULL) ? E->Message : UnicodeString(L"<null>")).c_str(), Msg.c_str());
+  TRACEFMT("[%s] [%s]", UnicodeString((E != NULL) ? E->Message : UnicodeString(L"<null>")).c_str(), Msg.c_str());
   AddMoreMessages(E);
   TRACE("/");
 }
@@ -90,7 +90,7 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   FHelpKeyword()
 {
   CALLSTACK;
-  TRACEFMT("[%s] [%s]", Msg.c_str(), ((E != NULL) ? E->Message : UnicodeString(L"<null>")).c_str());
+  TRACEFMT("[%s] [%s]", Msg.c_str(), UnicodeString((E != NULL) ? E->Message : UnicodeString(L"<null>")).c_str());
   // "copy exception"
   AddMoreMessages(E);
   // and append message to the end to more messages
@@ -135,7 +135,7 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   FHelpKeyword(HelpKeyword)
 {
   CALLSTACK;
-  TRACEFMT("[%s] [%s]", Msg.c_str(), ((MoreMessages != NULL) ? MoreMessages->Text : UnicodeString(L"<null>")).c_str());
+  TRACEFMT("[%s] [%s]", Msg.c_str(), UnicodeString((MoreMessages != NULL) ? MoreMessages->Text : UnicodeString(L"<null>")).c_str());
   if (Own)
   {
     FMoreMessages = MoreMessages;

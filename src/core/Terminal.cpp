@@ -1997,7 +1997,7 @@ void __fastcall TTerminal::FatalAbort()
 void /* __fastcall */ TTerminal::FatalError(Exception * E, UnicodeString Msg)
 {
   CALLSTACK;
-  TRACEFMT("[%s] [%s]", (E != NULL ? E->Message : UnicodeString(L"NULL")).c_str(), Msg.c_str());
+  TRACEFMT("[%s] [%s]", UnicodeString(E != NULL ? E->Message : UnicodeString(L"NULL")).c_str(), Msg.c_str());
   bool SecureShellActive = (FSecureShell != NULL) && FSecureShell->GetActive();
   if (GetActive() || SecureShellActive)
   {
