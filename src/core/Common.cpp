@@ -24,7 +24,11 @@
 #ifdef _DEBUG
 #include <stdio.h>
 static HANDLE TraceFile = NULL;
+#ifdef NETBOX_DEBUG
+bool IsTracing = true;
+#else
 bool IsTracing = false;
+#endif
 unsigned int CallstackTls = CallstackTlsOff;
 TCriticalSection * TracingCriticalSection = NULL;
 //---------------------------------------------------------------------------
@@ -205,7 +209,8 @@ void __fastcall Trace(const wchar_t * SourceFile, const wchar_t * Func,
      Line, Func, Message));
   // DWORD Written;
   // WriteFile(TraceFile, Buffer.c_str(), Buffer.Length(), &Written, NULL);
-  DEBUG_PRINTF(L"%s", Buffer.c_str());
+  // DEBUG_PRINTF(L"%s", Buffer.c_str());
+  OutputDebugStringW(Buffer.c_str());
 }
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
