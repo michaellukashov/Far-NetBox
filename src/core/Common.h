@@ -207,9 +207,9 @@ public:
 #define _TRACING_CALLSTACK(TRACE, TRACEFMT, CALLSTACK, CALLSTACKI) CALLSTACK
 #define _TRACING_CALLSTACKI(TRACE, TRACEFMT, CALLSTACK, CALLSTACKI) CALLSTACKI
 #define _TRACE(SOURCE, FUNC, LINE, MESSAGE) \
-  if (IsTracing) Trace(TEXT(__FILE__), TEXT(__FUNCTION__), __LINE__, (MESSAGE))
+  if (IsTracing) Trace(TEXT(__FILE__), TEXT(__FUNCTION__), __LINE__, MESSAGE)
 #define _TRACEFMT(SOURCE, FUNC, LINE, FORMAT, ...) \
-  if (IsTracing) TraceFmt(TEXT(__FILE__), TEXT(__FUNCTION__), __LINE__, (FORMAT), __VA_ARGS__)
+  if (IsTracing) TraceFmt(TEXT(__FILE__), TEXT(__FUNCTION__), __LINE__, FORMAT, __VA_ARGS__)
 #define _TRACE_FAKE(SOURCE, FUNC, LINE, MESSAGE)
 #define _TRACEFMT_FAKE(SOURCE, FUNC, LINE, FORMAT, ...)
 
@@ -242,7 +242,7 @@ class Callstack
 {
 public:
   inline Callstack(const wchar_t * File, const wchar_t * Func, unsigned int Line, const wchar_t * Message) :
-    FFile(File), FFunc(Func), FLine(Line), FMessage(Message), FDepth(0)
+    FFile(File), FFunc(Func), FLine(Line), FMessage(Message ? Message : L""), FDepth(0)
   {
     if (IsTracing)
     {
@@ -288,7 +288,7 @@ private:
 };
 void __callstack(const wchar_t*, const wchar_t*, unsigned int, const wchar_t*);
 #define __callstack1 __callstack
-#define CCALLSTACKIMPL(TRACING, X) _TRACING_CALLSTACK TRACING X(TEXT(__FILE__), TEXT(__FUNCTION__), __LINE__, L"")
+#define CCALLSTACKIMPL(TRACING, X) // _TRACING_CALLSTACK TRACING X(TEXT(__FILE__), TEXT(__FUNCTION__), __LINE__, L"")
 #else // ifdef _DEBUG
 #define CTRACEIMPL(TRACING, ...)
 #define CTRACEFMTIMPL(TRACING, MESSAGE, ...)
@@ -340,9 +340,9 @@ inline bool __fastcall DoAlwaysTrue(bool Value, wchar_t * Message, wchar_t * Fil
 #define CHECK(p) { bool __CHECK_RESULT__ = (p); assert(__CHECK_RESULT__); }
 #define FAIL assert(false)
 #define TRACE_EXCEPT_BEGIN try {
-#define TRACE_EXCEPT_END } catch (Exception & TraceE) { TRACEFMT("E [%s]", (TraceE.Message)); throw; }
+#define TRACE_EXCEPT_END } catch (Exception & TraceE) { TRACEFMT("E [%s]", TraceE.Message.c_str()); throw; }
 #define TRACE_CATCH_ALL catch (Exception & TraceE)
-#define TRACEE_(E) TRACEFMT(#E" [%s]", (E.Message))
+#define TRACEE_(E) TRACEFMT(#E" [%s]", E.Message.c_str())
 #define TRACEE TRACEE_(E)
 #define TRACE_EXCEPT TRACEE_(TraceE)
 #define ALWAYS_TRUE(p) DoAlwaysTrue(p, TEXT(#p), TEXT(__FILE__), __LINE__)

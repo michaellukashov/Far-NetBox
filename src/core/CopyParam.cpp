@@ -300,7 +300,7 @@ UnicodeString __fastcall TCopyParamType::ChangeFileName(UnicodeString FileName,
   TOperationSide Side, bool FirstLevel) const
 {
   CALLSTACK;
-  TRACEFMT("1 [%s] [%d] [%d]", (FileName, int(Side), int(FirstLevel)));
+  TRACEFMT("1 [%s] [%d] [%d]", FileName.c_str(), int(Side), int(FirstLevel));
   if (FirstLevel)
   {
     FileName = MaskFileName(FileName, GetFileMask());
@@ -353,7 +353,7 @@ TRights __fastcall TCopyParamType::RemoteFileRights(Integer Attrs) const
   TRights R = GetRights();
   if ((Attrs & faDirectory) && GetAddXToDirectories())
     R.AddExecute();
-  TRACEFMT("Rights [%x] [%x] [%x] [%d]", (int(GetRights().GetNumberSet()), int(GetRights().GetNumberUnset()), int(R.GetNumberSet()), int(R.GetNumberUnset())));
+  TRACEFMT("Rights [%x] [%x] [%x] [%d]", int(GetRights().GetNumberSet()), int(GetRights().GetNumberUnset()), int(R.GetNumberSet()), int(R.GetNumberUnset()));
   return R;
 }
 //---------------------------------------------------------------------------
@@ -421,7 +421,7 @@ bool __fastcall TCopyParamType::AllowTransfer(UnicodeString FileName,
     Result = GetIncludeFileMask().Matches(FileName, (Side == osLocal),
       Directory, &Params);
   }
-  TRACEFMT("1 [%s] [%d] [%d] [=%d]", (FileName, int(Side), int(Directory), int(Result)));
+  TRACEFMT("1 [%s] [%d] [%d] [=%d]", FileName.c_str(), int(Side), int(Directory), int(Result));
   return Result;
 }
 //---------------------------------------------------------------------------

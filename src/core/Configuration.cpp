@@ -701,7 +701,7 @@ UnicodeString __fastcall TConfiguration::ModuleFileName()
 {
   CALLSTACK;
 #ifndef _MSC_VER
-  TRACEFMT("[%s]", (ParamStr(0)));
+  TRACEFMT("[%s]", ParamStr(0).c_str());
   return ParamStr(0);
 #endif
   Classes::Error(SNotImplemented, 204);
@@ -853,7 +853,7 @@ UnicodeString __fastcall TConfiguration::GetFileFileInfoString(const UnicodeStri
     }
   }
   );
-  TRACEFMT("3 [%s] [%s] [%s]", (Key, FileName, Result));
+  TRACEFMT("3 [%s] [%s] [%s]", Key.c_str(), FileName.c_str(), Result.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1000,7 +1000,7 @@ TStorage __fastcall TConfiguration::GetStorage()
   CALLSTACK;
   if (FStorage == stDetect)
   {
-    /*TRACEFMT("1 [%s]", (GetIniFileStorageName()));
+    /*TRACEFMT("1 [%s]", GetIniFileStorageName().c_str());
     if (FileExists(IniFileStorageName))
     {
       TRACE("2");

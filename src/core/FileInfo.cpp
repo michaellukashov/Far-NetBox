@@ -303,7 +303,7 @@ UnicodeString __fastcall GetFileInfoString(void * FileInfo,
   }
   UnicodeString Result = UnicodeString(P, Len);
   PackStr(Result);
-  TRACEFMT("1 [%s] [%s]", (StringName, Result));
+  TRACEFMT("1 [%s] [%s]", StringName.c_str(), Result.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------

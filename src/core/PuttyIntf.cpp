@@ -132,7 +132,7 @@ int get_userpass_input(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
   TStrings * Results = new TStringList();
   TRY_FINALLY (
   {
-    TRACEFMT("1 [%d]", (int(p->n_prompts)));
+    TRACEFMT("1 [%d]", int(p->n_prompts));
     for (int Index = 0; Index < static_cast<int>(p->n_prompts); Index++)
     {
       prompt_t * Prompt = p->prompts[Index];
@@ -183,7 +183,7 @@ char * get_ttymode(void * /*frontend*/, const char * /*mode*/)
 void logevent(void * frontend, const char * string)
 {
   CALLSTACK;
-  TRACEFMT("[%s]", (string));
+  TRACEFMT("[%s]", UnicodeString(string).c_str());
   // Frontend maybe NULL here
   if (frontend != NULL)
   {
@@ -252,7 +252,7 @@ static void SSHFatalError(const char * Format, va_list Param)
   char Buf[200];
   vsnprintf(Buf, LENOF(Buf), Format, Param);
   Buf[LENOF(Buf) - 1] = '\0';
-  TRACEFMT("[%s]", (Buf));
+  TRACEFMT("[%s]", Buf);
 
   // Only few calls from putty\winnet.c might be connected with specific
   // TSecureShell. Otherwise called only for really fatal errors
@@ -379,7 +379,7 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
 
   UnicodeString RegKey = SubKey;
   int PuttyKeyLen = Configuration->GetPuttyRegistryStorageKey().Length();
-  TRACEFMT("RegKey [%s] [%s] PuttyRegistryStorageKey [%s] [%d]", (RegKey, RegKey.SubString(1, PuttyKeyLen), Configuration->GetPuttyRegistryStorageKey(), PuttyKeyLen));
+  TRACEFMT("RegKey [%s] [%s] PuttyRegistryStorageKey [%s] [%d]", RegKey.c_str(), RegKey.SubString(1, PuttyKeyLen).c_str(), Configuration->GetPuttyRegistryStorageKey().c_str(), PuttyKeyLen);
   assert(RegKey.SubString(1, PuttyKeyLen) == Configuration->GetPuttyRegistryStorageKey());
   RegKey = RegKey.SubString(PuttyKeyLen + 1, RegKey.Length() - PuttyKeyLen);
   if (!RegKey.IsEmpty())
@@ -571,7 +571,7 @@ bool __fastcall HasGSSAPI()
 void ptrace(const char* msg)
 {
   USEDPARAM(msg);
-  TRACEFMT("%s", (msg));
+  TRACEFMT("%s", UnicodeString(msg).c_str());
 }
 //!CLEANEND
 //---------------------------------------------------------------------------

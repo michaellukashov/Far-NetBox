@@ -421,7 +421,7 @@ int __fastcall FakeFileImageIndex(UnicodeString FileName, unsigned long Attrs,
     FileName.SetLength(FileName.Length() - PartialExtLen);
   }
 
-  CTRACEFMT(TRACE_IMAGEINDEX, "FakeFileImageIndex 2 [%s] [%d]", (FileName, int(Attrs)));
+  CTRACEFMT(TRACE_IMAGEINDEX, "FakeFileImageIndex 2 [%s] [%d]", FileName.c_str(), int(Attrs));
   int Icon;
   if (SHGetFileInfo(UnicodeString(FileName).c_str(),
         Attrs, &SHFileInfo, sizeof(SHFileInfo),

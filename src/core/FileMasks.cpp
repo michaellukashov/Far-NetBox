@@ -385,7 +385,7 @@ bool __fastcall TFileMasks::MatchesMasks(const UnicodeString FileName, bool Dire
       }
     }
 
-    TRACEFMT("6 [%d]", (int(Result)));
+    TRACEFMT("6 [%d]", int(Result));
     I++;
   }
 
@@ -414,14 +414,14 @@ bool __fastcall TFileMasks::Matches(const UnicodeString FileName, bool Directory
   const UnicodeString Path, const TParams * Params,
   bool & ImplicitMatch) const
 {
-  TRACEFMT("1 [%s] [%d] [%s] [%d] %s", (FileName, int(Directory), Path, int(FNoImplicitMatch), ((Params == NULL) ? L"<null>" : Params->ToString().c_str())));
+  TRACEFMT("1 [%s] [%d] [%s] [%d] %s", FileName.c_str(), int(Directory), Path.c_str(), int(FNoImplicitMatch), UnicodeString((Params == NULL) ? L"<null>" : Params->ToString()).c_str());
   bool ImplicitIncludeMatch = (!FNoImplicitMatch && FMasks[MASK_INDEX(Directory, true)].empty());
   bool ExplicitIncludeMatch = MatchesMasks(FileName, Directory, Path, Params, FMasks[MASK_INDEX(Directory, true)], true);
   bool Result =
     (ImplicitIncludeMatch || ExplicitIncludeMatch) &&
     !MatchesMasks(FileName, Directory, Path, Params, FMasks[MASK_INDEX(Directory, false)], false);
   ImplicitMatch = Result && ImplicitIncludeMatch && !ExplicitIncludeMatch;
-  TRACEFMT("2 [%d]", (int(Result)));
+  TRACEFMT("2 [%d]", int(Result));
   return Result;
 }
 //---------------------------------------------------------------------------

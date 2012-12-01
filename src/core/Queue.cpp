@@ -343,7 +343,7 @@ void __fastcall TSimpleThread::Init()
 {
   FThread = reinterpret_cast<HANDLE>(
     StartThread(NULL, 0, this, CREATE_SUSPENDED, FThreadId));
-  TRACEFMT("[%x]", (int(FThread)));
+  TRACEFMT("[%x]", int(FThread));
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TSimpleThread::~TSimpleThread()
@@ -353,7 +353,7 @@ void __fastcall TSimpleThread::Init()
 
   if (FThread != NULL)
   {
-    TRACEFMT("[%x]", (int(FThread)));
+    TRACEFMT("[%x]", int(FThread));
     CloseHandle(FThread);
   }
   TRACE("/");
@@ -367,7 +367,7 @@ bool __fastcall TSimpleThread::IsFinished()
 void __fastcall TSimpleThread::Start()
 {
   CALLSTACK;
-  TRACEFMT("[%x]", (int(FThread)));
+  TRACEFMT("[%x]", int(FThread));
   if (ResumeThread(FThread) == 1)
   {
     FFinished = false;
@@ -393,7 +393,7 @@ void __fastcall TSimpleThread::Close()
 void __fastcall TSimpleThread::WaitFor(unsigned int Milliseconds)
 {
   CALLSTACK;
-  TRACEFMT("[%x]", (int(FThread)));
+  TRACEFMT("[%x]", int(FThread));
   WaitForSingleObject(FThread, Milliseconds);
 }
 //---------------------------------------------------------------------------
@@ -412,9 +412,9 @@ void __fastcall TSignalThread::Init(bool LowPriority)
   TSimpleThread::Init();
   FEvent = CreateEvent(NULL, false, false, NULL);
   assert(FEvent != NULL);
-  TRACEFMT("[%x]", (int(FEvent)));
+  TRACEFMT("[%x]", int(FEvent));
 
-  TRACEFMT("[%x]", (int(FThread)));
+  TRACEFMT("[%x]", int(FThread));
   if (LowPriority)
   {
     ::SetThreadPriority(FThread, THREAD_PRIORITY_BELOW_NORMAL);
@@ -428,7 +428,7 @@ void __fastcall TSignalThread::Init(bool LowPriority)
   // destroying the event
   Close();
 
-  TRACEFMT("[%x]", (int(FEvent)));
+  TRACEFMT("[%x]", int(FEvent));
   if (FEvent)
   {
     CloseHandle(FEvent);
@@ -446,14 +446,14 @@ void __fastcall TSignalThread::Start()
 void __fastcall TSignalThread::TriggerEvent()
 {
   CALLSTACK;
-  TRACEFMT("[%x] [%x]", (int(FEvent), int(FThread)));
+  TRACEFMT("[%x] [%x]", int(FEvent), int(FThread));
   SetEvent(FEvent);
 }
 //---------------------------------------------------------------------------
 bool __fastcall TSignalThread::WaitForEvent()
 {
   CALLSTACK;
-  TRACEFMT("[%x] [%x]", (int(FEvent), int(FThread)));
+  TRACEFMT("[%x] [%x]", int(FEvent), int(FThread));
   // should never return -1, so it is only about 0 or 1
   return (WaitForEvent(INFINITE) > 0);
 }
@@ -461,9 +461,9 @@ bool __fastcall TSignalThread::WaitForEvent()
 int __fastcall TSignalThread::WaitForEvent(unsigned int Timeout)
 {
   CALLSTACK;
-  TRACEFMT("1 [%x] [%x] [%d]", (int(FEvent), int(FThread), int(Timeout)));
+  TRACEFMT("1 [%x] [%x] [%d]", int(FEvent), int(FThread), int(Timeout));
   unsigned int Result = WaitForSingleObject(FEvent, Timeout);
-  TRACEFMT("2 [%d] [%d]", (int(Result), int(FTerminated)));
+  TRACEFMT("2 [%d] [%d]", int(Result), int(FTerminated));
   if ((Result == WAIT_TIMEOUT) && !FTerminated)
   {
     return -1;
@@ -2228,7 +2228,7 @@ void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
   {
     if (FCancelled)
     {
-      // TRACEFMT("3 [%s]", (TraceE.Message));
+      // TRACEFMT("3 [%s]", TraceE.Message.c_str());
       // even if the abort thrown as result of Cancel() was wrapper into
       // some higher-level exception, normalize back to message-less fatal
       // exception here
@@ -2236,7 +2236,7 @@ void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
     }
     else
     {
-      // TRACEFMT("4 [%s]", (TraceE.Message));
+      // TRACEFMT("4 [%s]", TraceE.Message.c_str());
       throw;
     }
   }
@@ -2277,7 +2277,7 @@ void __fastcall TTerminalThread::Rethrow(Exception *& Exception)
   CALLSTACK;
   if (Exception != NULL)
   {
-    TRACEFMT("1 [%s]", (Exception->Message));
+    TRACEFMT("1 [%s]", Exception->Message.c_str());
     TRY_FINALLY (
     {
       RethrowException(Exception);
@@ -2319,7 +2319,7 @@ void __fastcall TTerminalThread::CheckCancel()
 void __fastcall TTerminalThread::WaitForUserAction(TUserAction * UserAction)
 {
   CALLSTACK;
-  TRACEFMT("1 [%x]", (int(this)));
+  TRACEFMT("1 [%x]", int(this));
   DWORD Thread = GetCurrentThreadId();
   // we can get called from the main thread from within Idle,
   // should be only to call HandleExtendedException
@@ -2368,7 +2368,7 @@ void __fastcall TTerminalThread::WaitForUserAction(TUserAction * UserAction)
             }
             catch (Exception & E)
             {
-              TRACEFMT("3c [%s]", (E.Message));
+              TRACEFMT("3c [%s]", E.Message.c_str());
               SaveException(E, FIdleException);
             }
           }

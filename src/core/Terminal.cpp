@@ -113,7 +113,7 @@ bool __fastcall TSynchronizeOptions::MatchesFilter(const UnicodeString & FileNam
   {
     int FoundIndex = 0;
     Result = Filter->Find(FileName, FoundIndex);
-    TRACEFMT("[%s] [%d]", (FileName, int(Result)));
+    TRACEFMT("[%s] [%d]", FileName.c_str(), int(Result));
   }
   return Result;
 }
@@ -1212,7 +1212,7 @@ bool /* __fastcall */ TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKi
     TRACE("02");
   }
 
-  TRACEFMT("1 [%d] [%d] [%d] [%d] [%d]", (int(AResult), int(Configuration->GetRememberPassword()), int(Prompts->Count), (Prompts->Count > 0 ? int(!bool(Prompts->Objects[0])) : 0), int(Kind)));
+  TRACEFMT("1 [%d] [%d] [%d] [%d] [%d]", int(AResult), int(Configuration->GetRememberPassword()), int(Prompts->Count), (Prompts->Count > 0 ? int(!bool(Prompts->Objects[0])) : 0), int(Kind));
   if (AResult && (Configuration->GetRememberPassword()) &&
       (Prompts->Count == 1) && !(Prompts->Objects[0]) &&
       ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
@@ -5254,7 +5254,7 @@ UnicodeString /* __fastcall */ TTerminal::GetPassword()
   CALLSTACK;
   UnicodeString Result;
   // FPassword is empty also when stored password was used
-  TRACEFMT("1 [%x] [%d]", (int(this), FPassword.Length()));
+  TRACEFMT("1 [%x] [%d]", int(this), FPassword.Length());
   if (FPassword.IsEmpty())
   {
     TRACE("1");

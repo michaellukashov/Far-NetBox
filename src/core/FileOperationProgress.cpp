@@ -160,7 +160,7 @@ int __fastcall TFileOperationProgressType::OperationProgress() const
   CCALLSTACK(TRACE_PROGRESS);
   assert(Count);
   int Result = (FFilesFinished * 100)/Count;
-  CTRACEFMT(TRACE_PROGRESS, "[%d]", (Result));
+  CTRACEFMT(TRACE_PROGRESS, "[%d]", Result);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -176,7 +176,7 @@ int __fastcall TFileOperationProgressType::TransferProgress() const
   {
     Result = 0;
   }
-  CTRACEFMT(TRACE_PROGRESS, "[%d]", (Result));
+  CTRACEFMT(TRACE_PROGRESS, "[%d]", Result);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -185,7 +185,7 @@ int __fastcall TFileOperationProgressType::TotalTransferProgress() const
   CCALLSTACK(TRACE_PROGRESS);
   assert(TotalSizeSet);
   int Result = TotalSize > 0 ? static_cast<int>(((TotalTransfered + TotalSkipped) * 100) / TotalSize) : 0;
-  CTRACEFMT(TRACE_PROGRESS, "[%d]", (Result));
+  CTRACEFMT(TRACE_PROGRESS, "[%d]", Result);
   return Result < 100 ? Result : 100;
 }
 //---------------------------------------------------------------------------
