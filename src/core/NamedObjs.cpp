@@ -67,6 +67,7 @@ void __fastcall TNamedObject::MakeUniqueIn(TNamedObjectList * List)
         }
         catch (Exception &E)
         {
+          (void)E;
           N = 0;
         }
       SetName(Name + L" (" + IntToStr(static_cast<int>(N+1)) + L")");

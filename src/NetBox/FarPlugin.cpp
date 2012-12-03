@@ -566,6 +566,7 @@ intptr_t TCustomFarPlugin::SetDirectory(HANDLE Plugin, const wchar_t * Dir, int 
       }
       catch(Exception & E)
       {
+        (void)E;
         return 0;
       }
     }

@@ -2074,7 +2074,7 @@ void __fastcall TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         else
         {
           TRACE("4");
-          throw;
+          throw E;
         }
       }
     }

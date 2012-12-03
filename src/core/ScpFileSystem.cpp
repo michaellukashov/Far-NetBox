@@ -900,10 +900,11 @@ void __fastcall TSCPFileSystem::DetectReturnVar()
       catch (EFatal &E)
       {
         // if fatal error occurs, we need to exit ...
-        throw;
+        throw E;
       }
       catch (Exception &E)
       {
+        (void)E;
         // ...otherwise, we will try next variable (if any)
         Success = false;
       }
@@ -1934,13 +1935,13 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString FileName,
         {
           // SCP protocol fatal error
           OperationProgress->TransferingFile = false;
-          throw;
+          throw E;
         }
         catch (EScpFileSkipped &E)
         {
           // SCP protocol non-fatal error
           OperationProgress->TransferingFile = false;
-          throw;
+          throw E;
         }
 
         // We succeded transfering file, from now we can handle exceptions
@@ -1967,7 +1968,7 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString FileName,
         }
         else
         {
-          throw;
+          throw E;
         }
       }
 
@@ -2205,7 +2206,7 @@ void __fastcall TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
           catch (EFatal &E)
           {
             TRACE("6");
-            throw;
+            throw E;
           }
           catch (...)
           {
@@ -2653,13 +2654,13 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
               {
                 TRACE("21");
                 FSecureShell->SendNull();
-                throw;
+                throw E;
               }
               catch (EScpFileSkipped &E)
               {
                 TRACE("22");
                 FSecureShell->SendNull();
-                throw;
+                throw E;
               }
 
               FSecureShell->SendNull();
