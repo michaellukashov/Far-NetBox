@@ -7,11 +7,11 @@
 
 void AnsiString::Init(const wchar_t * Str, intptr_t Length)
 {
-  int Size = WideCharToMultiByte(CP_UTF8, 0, Str, Length > 0 ? Length : -1, nullptr, 0, nullptr, nullptr);
+  int Size = WideCharToMultiByte(CP_UTF8, 0, Str, (int)(Length > 0 ? Length : -1), nullptr, 0, nullptr, nullptr);
   if (Length > 0)
   {
     Data.resize(Size + 1);
-    WideCharToMultiByte(CP_UTF8, 0, Str, Length > 0 ? Length : -1,
+    WideCharToMultiByte(CP_UTF8, 0, Str, (int)(Length > 0 ? Length : -1),
       reinterpret_cast<LPSTR>(const_cast<char *>(Data.c_str())), Size, nullptr, nullptr);
     Data[Size] = 0;
     Data = Data.c_str();
@@ -136,11 +136,11 @@ void  __cdecl AnsiString::ThrowIfOutOfRange(intptr_t Idx) const
 
 void RawByteString::Init(const wchar_t * Str, intptr_t Length)
 {
-  int Size = WideCharToMultiByte(CP_ACP, 0, Str, Length > 0 ? Length : -1, nullptr, 0, nullptr, nullptr);
+  int Size = WideCharToMultiByte(CP_ACP, 0, Str, (int)(Length > 0 ? Length : -1), nullptr, 0, nullptr, nullptr);
   if (Length > 0)
   {
     Data.resize(Size + 1);
-    WideCharToMultiByte(CP_ACP, 0, Str, Length > 0 ? Length : -1,
+    WideCharToMultiByte(CP_ACP, 0, Str, (int)(Length > 0 ? Length : -1),
       reinterpret_cast<LPSTR>(const_cast<unsigned char *>(Data.c_str())), Size, nullptr, nullptr);
     Data[Size] = 0;
   }
@@ -283,7 +283,7 @@ void UTF8String::Init(const wchar_t * Str, intptr_t Length)
 
 void UTF8String::Init(const char * Str, intptr_t Length)
 {
-  int Size = MultiByteToWideChar(CP_UTF8, 0, Str, Length > 0 ? Length : -1, NULL, 0);
+  int Size = MultiByteToWideChar(CP_UTF8, 0, Str, (int)(Length > 0 ? Length : -1), NULL, 0);
   Data.resize(Size + 1);
   if (Size > 0)
   {
@@ -388,7 +388,7 @@ void UnicodeString::Init(const wchar_t * Str, intptr_t Length)
 
 void UnicodeString::Init(const char * Str, intptr_t Length)
 {
-  int Size = MultiByteToWideChar(CP_UTF8, 0, Str, Length > 0 ? Length : -1, NULL, 0);
+  int Size = MultiByteToWideChar(CP_UTF8, 0, Str, (int)(Length > 0 ? Length : -1), NULL, 0);
   Data.resize(Size + 1);
   if (Size > 0)
   {

@@ -63,7 +63,7 @@ public:
   TFarButton * GetDefaultButton() const { return FDefaultButton; }
   TFarBox * GetBorderBox() const { return FBorderBox; }
   int GetType(TFarDialogItem * Item) const;
-  int GetItem(TFarDialogItem * Item) const;
+  intptr_t GetItem(TFarDialogItem * Item) const;
   TFarDialogItem * GetItem(int Index);
   int GetItemCount();
   TItemPosition GetNextItemPosition() { return FNextItemPosition; }
@@ -91,12 +91,12 @@ protected:
   TObjectList * GetItems() { return FItems; }
   void Add(TFarDialogItem * Item);
   void Add(TFarDialogContainer * Container);
-  LONG_PTR SendMessage(int Msg, int Param1, LONG_PTR Param2);
-  virtual LONG_PTR DialogProc(int Msg, int Param1, LONG_PTR Param2);
-  virtual LONG_PTR FailDialogProc(int Msg, int Param1, LONG_PTR Param2);
-  LONG_PTR DefaultDialogProc(int Msg, int Param1, LONG_PTR Param2);
+  LONG_PTR SendMessage(int Msg, intptr_t Param1, LONG_PTR Param2);
+  virtual LONG_PTR DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2);
+  virtual LONG_PTR FailDialogProc(int Msg, intptr_t Param1, LONG_PTR Param2);
+  LONG_PTR DefaultDialogProc(int Msg, intptr_t Param1, LONG_PTR Param2);
   virtual bool MouseEvent(MOUSE_EVENT_RECORD * Event);
-  virtual bool Key(TFarDialogItem * Item, long KeyCode);
+  virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
   virtual void __fastcall Change();
   virtual void Init();
   virtual bool CloseQuery();
@@ -195,7 +195,7 @@ public:
   int GetBottom() { return GetCoordinate(3); }
   void SetBottom(int Value) { SetCoordinate(3, Value); }
   int GetWidth();
-  void SetWidth(int Value);
+  void SetWidth(intptr_t Value);
   int GetHeight();
   void SetHeight(int Value);
   bool GetEnabled() { return FEnabled; }
@@ -269,10 +269,10 @@ protected:
   virtual void Detach();
   void DialogResized();
   LONG_PTR SendMessage(int Msg, LONG_PTR Param);
-  LONG_PTR SendDialogMessage(int Msg, int Param1, LONG_PTR Param2);
+  LONG_PTR SendDialogMessage(int Msg, intptr_t Param1, LONG_PTR Param2);
   virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
   LONG_PTR DefaultItemProc(int Msg, LONG_PTR Param);
-  LONG_PTR DefaultDialogProc(int Msg, int Param1, LONG_PTR Param2);
+  LONG_PTR DefaultDialogProc(int Msg, intptr_t Param1, LONG_PTR Param2);
   virtual LONG_PTR FailItemProc(int Msg, LONG_PTR Param);
   virtual void __fastcall Change();
   void DialogChange();

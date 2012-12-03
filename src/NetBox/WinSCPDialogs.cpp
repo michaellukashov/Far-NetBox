@@ -6702,7 +6702,7 @@ public:
 protected:
   virtual bool CloseQuery();
   virtual void __fastcall Change();
-  virtual LONG_PTR DialogProc(int Msg, int Param1, LONG_PTR Param2);
+  virtual LONG_PTR DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2);
 
   void TransferSettingsButtonClick(TFarButton * Sender, bool & Close);
   void CopyParamListerClick(TFarDialogItem * Item, MOUSE_EVENT_RECORD * Event);
@@ -7036,7 +7036,7 @@ bool TFullSynchronizeDialog::CloseQuery()
   return CanClose;
 }
 //---------------------------------------------------------------------------
-LONG_PTR TFullSynchronizeDialog::DialogProc(int Msg, int Param1, LONG_PTR Param2)
+LONG_PTR TFullSynchronizeDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
 {
   if (Msg == DN_RESIZECONSOLE)
   {
@@ -7135,8 +7135,8 @@ public:
   virtual bool Execute(TSynchronizeChecklist * Checklist);
 
 protected:
-  virtual LONG_PTR DialogProc(int Msg, int Param1, LONG_PTR Param2);
-  virtual bool Key(TFarDialogItem * Item, long KeyCode);
+  virtual LONG_PTR DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2);
+  virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
   void CheckAllButtonClick(TFarButton * Sender, bool & Close);
   void VideoModeButtonClick(TFarButton * Sender, bool & Close);
   void ListBoxClick(TFarDialogItem * Item, MOUSE_EVENT_RECORD * Event);
@@ -7560,7 +7560,7 @@ void TSynchronizeChecklistDialog::UpdateControls()
   UncheckAllButton->SetEnabled((FChecked > 0));
 }
 //---------------------------------------------------------------------------
-LONG_PTR TSynchronizeChecklistDialog::DialogProc(int Msg, int Param1, LONG_PTR Param2)
+LONG_PTR TSynchronizeChecklistDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
 {
   if (Msg == DN_RESIZECONSOLE)
   {
@@ -7631,7 +7631,7 @@ void TSynchronizeChecklistDialog::ListBoxClick(
   }
 }
 //---------------------------------------------------------------------------
-bool TSynchronizeChecklistDialog::Key(TFarDialogItem * Item, long KeyCode)
+bool TSynchronizeChecklistDialog::Key(TFarDialogItem * Item, LONG_PTR KeyCode)
 {
   bool Result = false;
   if (ListBox->Focused())
@@ -7757,7 +7757,7 @@ protected:
   void DoLog(TSynchronizeController * Controller,
     TSynchronizeLogEntry Entry, const UnicodeString & Message);
   void DoSynchronizeThreads(TObject * Sender, TThreadMethod slot);
-  virtual LONG_PTR DialogProc(int Msg, int Param1, LONG_PTR Param2);
+  virtual LONG_PTR DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2);
   virtual bool CloseQuery();
   virtual bool Key(TFarDialogItem * Item, long KeyCode);
   TCopyParamType GetCopyParams();
@@ -8012,7 +8012,7 @@ void TSynchronizeDialog::DoSynchronizeThreads(TObject * /*Sender*/,
   }
 }
 //---------------------------------------------------------------------------
-LONG_PTR TSynchronizeDialog::DialogProc(int Msg, int Param1, LONG_PTR Param2)
+LONG_PTR TSynchronizeDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
 {
   if (FAbort)
   {

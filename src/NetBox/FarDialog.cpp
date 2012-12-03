@@ -283,7 +283,7 @@ int TFarDialog::GetItemCount()
   return FItems->Count;
 }
 //---------------------------------------------------------------------------
-int TFarDialog::GetItem(TFarDialogItem * Item) const
+intptr_t TFarDialog::GetItem(TFarDialogItem * Item) const
 {
   if (!Item) return -1;
   return Item->GetItem();
@@ -417,7 +417,7 @@ LONG_PTR WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1
   return Result;
 }
 //---------------------------------------------------------------------------
-LONG_PTR  TFarDialog::DialogProc(int Msg, int Param1, LONG_PTR Param2)
+LONG_PTR TFarDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
 {
   intptr_t Result = 0;
   bool Handled = false;
@@ -589,13 +589,13 @@ LONG_PTR  TFarDialog::DialogProc(int Msg, int Param1, LONG_PTR Param2)
   return Result;
 }
 //---------------------------------------------------------------------------
-LONG_PTR TFarDialog::DefaultDialogProc(int Msg, int Param1, LONG_PTR Param2)
+LONG_PTR TFarDialog::DefaultDialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
 {
   TFarEnvGuard Guard;
   return GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetHandle(), Msg, Param1, Param2);
 }
 //---------------------------------------------------------------------------
-LONG_PTR TFarDialog::FailDialogProc(int Msg, int Param1, LONG_PTR Param2)
+LONG_PTR TFarDialog::FailDialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
 {
   intptr_t Result = 0;
   switch (Msg)
@@ -644,7 +644,7 @@ bool TFarDialog::MouseEvent(MOUSE_EVENT_RECORD * Event)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TFarDialog::Key(TFarDialogItem * Item, long KeyCode)
+bool TFarDialog::Key(TFarDialogItem * Item, LONG_PTR KeyCode)
 {
   bool Result = false;
   if (FOnKey)
@@ -836,7 +836,7 @@ void TFarDialog::Change()
   }
 }
 //---------------------------------------------------------------------------
-LONG_PTR TFarDialog::SendMessage(int Msg, int Param1, LONG_PTR Param2)
+LONG_PTR TFarDialog::SendMessage(int Msg, intptr_t Param1, LONG_PTR Param2)
 {
   assert(GetHandle());
   TFarEnvGuard Guard;
@@ -1402,7 +1402,7 @@ LONG_PTR TFarDialogItem::DefaultItemProc(int Msg, LONG_PTR Param)
   return GetDialog()->GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, GetItem(), Param);
 }
 //---------------------------------------------------------------------------
-LONG_PTR TFarDialogItem::DefaultDialogProc(int Msg, int Param1, LONG_PTR Param2)
+LONG_PTR TFarDialogItem::DefaultDialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
 {
   TFarEnvGuard Guard;
   return GetDialog()->GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, Param1, Param2);
@@ -1449,7 +1449,7 @@ void TFarDialogItem::DialogChange()
   GetDialog()->Change();
 }
 //---------------------------------------------------------------------------
-LONG_PTR TFarDialogItem::SendDialogMessage(int Msg, int Param1, LONG_PTR Param2)
+LONG_PTR TFarDialogItem::SendDialogMessage(int Msg, intptr_t Param1, LONG_PTR Param2)
 {
   return GetDialog()->SendMessage(Msg, Param1, Param2);
 }
@@ -1541,7 +1541,7 @@ int TFarDialogItem::GetCoordinate(int Index)
   return *D;
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::SetWidth(int Value)
+void TFarDialogItem::SetWidth(intptr_t Value)
 {
   TRect R = GetBounds();
   if (R.Left >= 0)
