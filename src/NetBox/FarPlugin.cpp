@@ -703,21 +703,21 @@ intptr_t TCustomFarPlugin::ProcessEditorInput(const struct ProcessEditorInputInf
   }
 }
 //---------------------------------------------------------------------------
-int TCustomFarPlugin::MaxMessageLines()
+intptr_t TCustomFarPlugin::MaxMessageLines()
 {
   return TerminalInfo().y - 5;
 }
 //---------------------------------------------------------------------------
-int TCustomFarPlugin::MaxMenuItemLength()
+intptr_t TCustomFarPlugin::MaxMenuItemLength()
 {
   // got from maximal length of path in FAR's folders history
   return TerminalInfo().x - 13;
 }
 //---------------------------------------------------------------------------
-int TCustomFarPlugin::MaxLength(TStrings * Strings)
+intptr_t TCustomFarPlugin::MaxLength(TStrings * Strings)
 {
   intptr_t Result = 0;
-  for (int Index = 0; Index < Strings->Count; Index++)
+  for (intptr_t Index = 0; Index < Strings->Count; Index++)
   {
     if (Result < Strings->Strings[Index].Length())
     {
@@ -777,7 +777,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
   std::auto_ptr<TStrings> MessageLinesPtr(MessageLines);
   {
     FarWrapText(Message, MessageLines, MaxMessageWidth);
-    int MaxLen = GetFarPlugin()->MaxLength(MessageLines);
+    intptr_t MaxLen = GetFarPlugin()->MaxLength(MessageLines);
     // DEBUG_PRINTF(L"MaxLen = %d, FParams->MoreMessages = %x", MaxLen, FParams->MoreMessages);
     TStrings * MoreMessageLines = NULL;
     std::auto_ptr<TStrings> MoreMessageLinesPtr(NULL);
@@ -1078,7 +1078,7 @@ intptr_t TCustomFarPlugin::FarMessage(unsigned int Flags,
       MessageLines->Delete(MessageLines->Count - 1);
     }
 
-    for (int Index = 0; Index < Buttons->Count; Index++)
+    for (intptr_t Index = 0; Index < Buttons->Count; Index++)
     {
       MessageLines->Add(Buttons->Strings[Index]);
     }
@@ -1734,7 +1734,7 @@ TFarEditorInfo * TCustomFarPlugin::EditorInfo()
   return Result;
 }
 //---------------------------------------------------------------------------
-int TCustomFarPlugin::FarVersion()
+intptr_t TCustomFarPlugin::FarVersion()
 {
   if (FFarVersion == 0)
   {
@@ -1935,7 +1935,7 @@ void TCustomFarFileSystem::GetOpenPanelInfo(struct OpenPanelInfo * Info)
   }
 }
 //---------------------------------------------------------------------------
-int TCustomFarFileSystem::GetFindData(struct GetFindDataInfo *Info)
+intptr_t TCustomFarFileSystem::GetFindData(struct GetFindDataInfo *Info)
 {
   // DEBUG_PRINTF(L"begin");
   ResetCachedInfo();
@@ -2360,9 +2360,9 @@ intptr_t TFarPanelModes::CommaCount(const UnicodeString ColumnTypes)
 TFarKeyBarTitles::TFarKeyBarTitles()
 {
   memset(&FKeyBarTitles, 0, sizeof(FKeyBarTitles));
-    FKeyBarTitles.CountLabels = 7 * 12;
-    FKeyBarTitles.Labels = new KeyBarLabel[7 * 12];
-    memset(FKeyBarTitles.Labels, 0, 7 * 12 * sizeof(KeyBarLabel));
+  FKeyBarTitles.CountLabels = 7 * 12;
+  FKeyBarTitles.Labels = new KeyBarLabel[7 * 12];
+  memset(FKeyBarTitles.Labels, 0, 7 * 12 * sizeof(KeyBarLabel));
   FReferenced = false;
 }
 //---------------------------------------------------------------------------
@@ -2799,7 +2799,7 @@ UnicodeString TFarPanelInfo::GetCurrentDirectory()
     FarPanelDirectory * pfpd = static_cast<FarPanelDirectory *>(malloc(Size));
 
     FarPlugin->FarControl(FCTL_GETPANELDIRECTORY,
-      Size,      
+      Size,
       pfpd,
       FOwner != NULL ? PANEL_ACTIVE : PANEL_PASSIVE);
     Result = pfpd->Name;

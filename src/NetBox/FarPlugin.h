@@ -112,7 +112,7 @@ public:
   virtual void HandleException(Exception * E, int OpMode = 0);
 
   static wchar_t * DuplicateStr(const UnicodeString Str, bool AllowEmpty = false);
-  int Message(unsigned int Flags, const UnicodeString Title,
+  intptr_t Message(unsigned int Flags, const UnicodeString Title,
     const UnicodeString Message, TStrings * Buttons = NULL,
     TFarMessageParams * Params = NULL);
   intptr_t MaxMessageLines();
@@ -444,7 +444,7 @@ public:
   TFarPanelItem * GetFocusedItem();
   void SetFocusedItem(TFarPanelItem * value);
   intptr_t GetFocusedIndex();
-  void SetFocusedIndex(int value);
+  void SetFocusedIndex(intptr_t value);
   intptr_t GetSelectedCount();
   TRect GetBounds();
   TFarPanelType GetType();
@@ -452,7 +452,7 @@ public:
   UnicodeString GetCurrentDirectory();
 
   void ApplySelection();
-  TFarPanelItem *FindFileName(const UnicodeString FileName);
+  TFarPanelItem * FindFileName(const UnicodeString FileName);
   TFarPanelItem * FindUserData(void * UserData);
 
 private:
@@ -466,21 +466,21 @@ class TFarMenuItems : public TStringList
 public:
   explicit TFarMenuItems();
   virtual ~TFarMenuItems() {}
-  void __fastcall AddSeparator(bool Visible = true);
-  virtual intptr_t __fastcall Add(UnicodeString Text, bool Visible = true);
+  void AddSeparator(bool Visible = true);
+  virtual intptr_t Add(UnicodeString Text, bool Visible = true);
 
   virtual void __fastcall Clear();
   virtual void __fastcall Delete(intptr_t Index);
 
-  intptr_t __fastcall GetItemFocused() { return FItemFocused; }
-  void __fastcall SetItemFocused(intptr_t Value);
-  bool __fastcall GetDisabled(intptr_t Index) { return GetFlag(Index, MIF_DISABLE); }
-  void __fastcall SetDisabled(intptr_t Index, bool value) { SetFlag(Index, MIF_DISABLE, value); }
-  bool __fastcall GetChecked(intptr_t Index) { return GetFlag(Index, MIF_CHECKED); }
-  void __fastcall SetChecked(intptr_t Index, bool value) { SetFlag(Index, MIF_CHECKED, value); }
+  intptr_t GetItemFocused() { return FItemFocused; }
+  void SetItemFocused(intptr_t Value);
+  bool GetDisabled(intptr_t Index) { return GetFlag(Index, MIF_DISABLE); }
+  void SetDisabled(intptr_t Index, bool value) { SetFlag(Index, MIF_DISABLE, value); }
+  bool GetChecked(intptr_t Index) { return GetFlag(Index, MIF_CHECKED); }
+  void SetChecked(intptr_t Index, bool value) { SetFlag(Index, MIF_CHECKED, value); }
 
-  void __fastcall SetFlag(intptr_t Index, uintptr_t Flag, bool Value);
-  bool __fastcall GetFlag(intptr_t Index, uintptr_t Flag);
+  void SetFlag(intptr_t Index, uintptr_t Flag, bool Value);
+  bool GetFlag(intptr_t Index, uintptr_t Flag);
 
 protected:
   virtual void __fastcall PutObject(intptr_t Index, TObject * AObject);
@@ -495,7 +495,7 @@ public:
   explicit TFarEditorInfo(EditorInfo * Info);
   ~TFarEditorInfo();
 
-  int GetEditorID() const;
+  intptr_t GetEditorID() const;
   static UnicodeString GetFileName();
 
 private:
