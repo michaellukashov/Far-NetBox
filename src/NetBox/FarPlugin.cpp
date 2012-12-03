@@ -709,7 +709,7 @@ intptr_t TCustomFarPlugin::MaxMenuItemLength()
 //---------------------------------------------------------------------------
 intptr_t TCustomFarPlugin::MaxLength(TStrings * Strings)
 {
-  int Result = 0;
+  intptr_t Result = 0;
   for (int Index = 0; Index < Strings->Count; Index++)
   {
     if (Result < Strings->Strings[Index].Length())
@@ -902,7 +902,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
 
     if (FParams->MoreMessages != NULL)
     {
-      int MoreMessageHeight = GetFarPlugin()->TerminalInfo().y - S.y - 1;
+      intptr_t MoreMessageHeight = GetFarPlugin()->TerminalInfo().y - S.y - 1;
       assert(MoreMessagesLister != NULL);
       if (MoreMessageHeight > MoreMessagesLister->GetItems()->Count)
       {
@@ -959,7 +959,7 @@ void TFarMessageDialog::Idle()
       UnicodeString Caption =
         FORMAT(L" %s ", FORMAT(FParams->TimeoutStr.c_str(),
                                FTimeoutButtonCaption.c_str(), static_cast<int>((FParams->Timeout - Running) / 1000)).c_str()).c_str();
-      int sz = FTimeoutButton->GetCaption().Length() > Caption.Length() ? FTimeoutButton->GetCaption().Length() - Caption.Length() : 0;
+      intptr_t sz = FTimeoutButton->GetCaption().Length() > Caption.Length() ? FTimeoutButton->GetCaption().Length() - Caption.Length() : 0;
       Caption += ::StringOfChar(L' ', sz);
       FTimeoutButton->SetCaption(Caption);
     }
@@ -1207,7 +1207,7 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, const UnicodeString Title,
 //---------------------------------------------------------------------------
 bool TCustomFarPlugin::InputBox(const UnicodeString Title,
   const UnicodeString Prompt, UnicodeString & Text, DWORD Flags,
-  const UnicodeString HistoryName, size_t MaxLen, TFarInputBoxValidateEvent OnValidate)
+  const UnicodeString HistoryName, intptr_t MaxLen, TFarInputBoxValidateEvent OnValidate)
 {
   bool Repeat = false;
   int Result = 0;
@@ -1713,7 +1713,7 @@ UnicodeString TCustomFarPlugin::TemporaryDir()
   {
     Result.SetLength(MAX_PATH);
     TFarEnvGuard Guard;
-    FFarStandardFunctions.MkTemp(const_cast<wchar_t *>(Result.c_str()), Result.Length(), NULL);
+    FFarStandardFunctions.MkTemp(const_cast<wchar_t *>(Result.c_str()), (DWORD)Result.Length(), NULL);
     PackStr(Result);
     FTemporaryDir = Result;
   }
@@ -2675,7 +2675,7 @@ TFarPanelItem * TFarPanelInfo::GetFocusedItem()
 void TFarPanelInfo::SetFocusedItem(TFarPanelItem * value)
 {
   TObjectList * Items = GetItems();
-  int Index = Items->IndexOf(static_cast<TObject *>(value));
+  intptr_t Index = Items->IndexOf(static_cast<TObject *>(value));
   assert(Index != NPOS);
   SetFocusedIndex(Index);
   // delete Items;

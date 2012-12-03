@@ -1170,7 +1170,7 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
       Assign(StoredSessions->GetDefaultSettings());
       SetName(L"");
 
-      int PSlash = Url.Pos(L"/");
+      intptr_t PSlash = Url.Pos(L"/");
       if (PSlash == 0)
       {
         TRACE("14");
@@ -3201,7 +3201,7 @@ UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TSessionData * S
 {
   UnicodeString ANewFileName = StripPathQuotes(ExpandEnvironmentVariables(LogFileName));
   TDateTime N = Now();
-  for (int Index = 1; Index < ANewFileName.Length(); Index++)
+  for (intptr_t Index = 1; Index < ANewFileName.Length(); Index++)
   {
     if (ANewFileName[Index] == L'&')
     {

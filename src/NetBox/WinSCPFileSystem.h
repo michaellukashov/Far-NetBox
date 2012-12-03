@@ -227,7 +227,7 @@ protected:
   bool SynchronizeBrowsing(const UnicodeString NewPath);
   bool IsEditHistoryEmpty();
   void EditHistory();
-  UnicodeString ProgressBar(int Percentage, int Width);
+  UnicodeString ProgressBar(intptr_t Percentage, intptr_t Width);
   bool IsLogging();
   void ShowLog();
 

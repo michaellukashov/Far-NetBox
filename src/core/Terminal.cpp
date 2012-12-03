@@ -111,7 +111,7 @@ bool __fastcall TSynchronizeOptions::MatchesFilter(const UnicodeString & FileNam
   }
   else
   {
-    int FoundIndex = 0;
+    intptr_t FoundIndex = 0;
     Result = Filter->Find(FileName, FoundIndex);
     TRACEFMT("[%s] [%d]", FileName.c_str(), int(Result));
   }
@@ -214,12 +214,12 @@ void TSynchronizeChecklist::Sort()
   FList->Sort(Compare);
 }
 //---------------------------------------------------------------------------
-int __fastcall TSynchronizeChecklist::GetCount() const
+intptr_t __fastcall TSynchronizeChecklist::GetCount() const
 {
   return FList->Count;
 }
 //---------------------------------------------------------------------------
-const TSynchronizeChecklist::TItem * __fastcall TSynchronizeChecklist::GetItem(int Index) const
+const TSynchronizeChecklist::TItem * __fastcall TSynchronizeChecklist::GetItem(intptr_t Index) const
 {
   return static_cast<TItem *>(FList->Items[Index]);
 }

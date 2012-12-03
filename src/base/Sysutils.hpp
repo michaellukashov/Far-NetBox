@@ -241,7 +241,7 @@ AnsiString Format(const char * format, ...);
 AnsiString Format(const char * format, va_list args);
 UnicodeString FmtLoadStr(int id, ...);
 //---------------------------------------------------------------------------
-UnicodeString WrapText(const UnicodeString & Line, int MaxWidth = 40);
+UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth = 40);
 //---------------------------------------------------------------------------
 UnicodeString TranslateExceptionMessage(std::exception * E);
 //---------------------------------------------------------------------------
@@ -256,7 +256,7 @@ UnicodeString ExpandEnvVars(const UnicodeString str);
 
 //---------------------------------------------------------------------------
 
-UnicodeString StringOfChar(const wchar_t c, int len);
+UnicodeString StringOfChar(const wchar_t c, intptr_t len);
 
 char * StrNew(const char * str);
 

@@ -694,8 +694,8 @@ public:
 
   ~TSynchronizeChecklist();
 
-  int __fastcall GetCount() const;
-  const TItem * __fastcall GetItem(int Index) const;
+  intptr_t __fastcall GetCount() const;
+  const TItem * __fastcall GetItem(intptr_t Index) const;
 
 protected:
   TSynchronizeChecklist();

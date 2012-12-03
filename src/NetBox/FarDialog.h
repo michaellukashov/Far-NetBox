@@ -62,13 +62,13 @@ public:
   HANDLE GetHandle() { return FHandle; }
   TFarButton * GetDefaultButton() const { return FDefaultButton; }
   TFarBox * GetBorderBox() const { return FBorderBox; }
-  int GetType(TFarDialogItem * Item) const;
+  intptr_t GetType(TFarDialogItem * Item) const;
   intptr_t GetItem(TFarDialogItem * Item) const;
-  TFarDialogItem * GetItem(int Index);
-  int GetItemCount();
+  TFarDialogItem * GetItem(intptr_t Index);
+  intptr_t GetItemCount();
   TItemPosition GetNextItemPosition() { return FNextItemPosition; }
   void SetNextItemPosition(const TItemPosition Value) { FNextItemPosition = Value; }
-  int GetDefaultGroup() const { return FDefaultGroup; }
+  intptr_t GetDefaultGroup() const { return FDefaultGroup; }
   void SetDefaultGroup(const int Value) { FDefaultGroup = Value; }
   int GetTag() const { return FTag; }
   void SetTag(int Value) { FTag = Value; }
@@ -155,7 +155,7 @@ public:
   bool GetEnabled() { return FEnabled; }
   void SetEnabled(bool Value);
   void SetPosition(int Index, int Value);
-  int GetItemCount();
+  intptr_t GetItemCount() const;
 
 protected:
   explicit TFarDialogContainer(TFarDialog * ADialog);
@@ -196,7 +196,7 @@ public:
   void SetBottom(int Value) { SetCoordinate(3, Value); }
   int GetWidth();
   void SetWidth(intptr_t Value);
-  int GetHeight();
+  intptr_t GetHeight();
   void SetHeight(int Value);
   bool GetEnabled() { return FEnabled; }
   void SetEnabled(bool Value);
@@ -208,8 +208,8 @@ public:
   TFarDialogItem * GetEnabledDependencyNegative() { return FEnabledDependencyNegative; }
   void SetEnabledDependencyNegative(TFarDialogItem * Value);
   virtual bool GetIsEmpty();
-  int GetGroup() { return FGroup; }
-  void SetGroup(int Value) { FGroup = Value; }
+  intptr_t GetGroup() { return FGroup; }
+  void SetGroup(intptr_t Value) { FGroup = Value; }
   bool GetVisible() { return GetFlag(DIF_HIDDEN | DIF_INVERSE); }
   void SetVisible(bool Value) { SetFlag(DIF_HIDDEN | DIF_INVERSE, Value); }
   bool GetTabStop() { return GetFlag(DIF_NOFOCUS | DIF_INVERSE); }
@@ -230,11 +230,11 @@ public:
   virtual bool CanFocus();
   bool Focused();
   void SetFocus();
-  void SetItem(int Value) { FItem = Value; }
+  void SetItem(intptr_t Value) { FItem = Value; }
 
 protected:
   uintptr_t FDefaultType;
-  int FGroup;
+  intptr_t FGroup;
   int FTag;
   TNotifyEvent FOnExit;
   TFarMouseClickEvent FOnMouseClick;
@@ -511,8 +511,8 @@ protected:
   void UpdatePosition(intptr_t Position);
   intptr_t GetPosition();
   virtual void Put(int Index, const UnicodeString S);
-  void SetCurPos(uintptr_t Position, uintptr_t TopIndex);
-  void UpdateItem(int Index);
+  void SetCurPos(intptr_t Position, intptr_t TopIndex);
+  void UpdateItem(intptr_t Index);
 
   FarList * GetListItems() { return FListItems; }
   TFarDialogItem * GetDialogItem() { return FDialogItem; }
@@ -581,7 +581,7 @@ public:
   bool GetDropDownList() { return GetFlag(DIF_DROPDOWNLIST); }
   void SetDropDownList(bool Value) { SetFlag(DIF_DROPDOWNLIST, Value); }
   intptr_t GetItemIndex() const { return FList->GetSelected(); }
-  void SetItemIndex(int Index) { FList->SetSelected(Index); }
+  void SetItemIndex(intptr_t Index) { FList->SetSelected(Index); }
 
 protected:
   virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
@@ -599,8 +599,8 @@ public:
 
   TStrings * GetItems();
   void SetItems(TStrings * Value);
-  int GetTopIndex() { return FTopIndex; }
-  void SetTopIndex(int Value);
+  intptr_t GetTopIndex() const { return FTopIndex; }
+  void SetTopIndex(intptr_t Value);
   bool GetScrollBar();
 
 protected:
@@ -609,7 +609,7 @@ protected:
 
 private:
   TStringList * FItems;
-  int FTopIndex;
+  intptr_t FTopIndex;
 
   void ItemsChange(TObject * Sender);
 };

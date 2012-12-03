@@ -644,7 +644,7 @@ int TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
     int AAnswers = Answers;
     bool NeverAskAgainCheck = (Params != NULL) && FLAGSET(Params->Params, qpNeverAskAgainCheck);
     bool NeverAskAgainPending = NeverAskAgainCheck;
-    int TimeoutButton = 0;
+    intptr_t TimeoutButton = 0;
 
     #define ADD_BUTTON_EX(TYPE, CANNEVERASK) \
       if (AAnswers & qa ## TYPE) \

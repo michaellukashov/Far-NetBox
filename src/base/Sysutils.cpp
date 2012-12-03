@@ -224,7 +224,7 @@ wchar_t LowCase(const wchar_t c)
 UnicodeString AnsiReplaceStr(const UnicodeString str, const UnicodeString from, const UnicodeString to)
 {
   UnicodeString result = str;
-  int Pos = 0;
+  intptr_t Pos = 0;
   while ((Pos = result.Pos(from)) > 0)
   {
     result.Replace(Pos, from.size(), to);
@@ -269,7 +269,7 @@ int LastDelimiter(const UnicodeString delimiters, const UnicodeString str)
 {
   if (str.Length())
   {
-    for (int i = str.Length(); i >= 1; --i)
+    for (intptr_t i = str.Length(); i >= 1; --i)
     {
       if (str.IsDelimiter(delimiters, i))
       {
@@ -665,7 +665,7 @@ NextWord(const wchar_t * input)
   return buffer;
 }
 //---------------------------------------------------------------------------
-UnicodeString WrapText(const UnicodeString & Line, int MaxWidth)
+UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
 {
   UnicodeString Result;
   const wchar_t * s = 0;
@@ -673,7 +673,7 @@ UnicodeString WrapText(const UnicodeString & Line, int MaxWidth)
 
   int lineCount = 0;
   int lenBuffer = 0;
-  int spaceLeft = MaxWidth;
+  intptr_t spaceLeft = MaxWidth;
 
   if (MaxWidth == 0)
   {
@@ -860,12 +860,12 @@ UnicodeString ExpandEnvVars(const UnicodeString & str)
   return result;
 }
 
-UnicodeString StringOfChar(const wchar_t c, int len)
+UnicodeString StringOfChar(const wchar_t c, intptr_t len)
 {
   UnicodeString Result;
-  if (int(len) < 0) len = 0;
+  if (len < 0) len = 0;
   Result.SetLength(len);
-  for (int i = 1; i <= len; i++) Result[i] = c;
+  for (intptr_t i = 1; i <= len; i++) Result[i] = c;
   return Result;
 }
 
@@ -1051,7 +1051,7 @@ UnicodeString SysErrorMessage(int ErrorCode)
 UnicodeString ReplaceStrAll(const UnicodeString Str, const UnicodeString What, const UnicodeString ByWhat)
 {
   UnicodeString Result = Str;
-  int Pos = Result.Pos(What.c_str());
+  intptr_t Pos = Result.Pos(What.c_str());
   while (Pos > 0)
   {
     Result.Replace(Pos, What.Length(), ByWhat.c_str(), ByWhat.Length());

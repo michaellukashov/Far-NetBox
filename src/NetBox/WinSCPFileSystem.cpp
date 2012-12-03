@@ -1540,7 +1540,7 @@ void TWinSCPFileSystem::TerminalSynchronizeDirectory(
   {
     LastTicks = Ticks;
 
-    static const int ProgressWidth = 48;
+    static const intptr_t ProgressWidth = 48;
     static UnicodeString ProgressTitle;
     static UnicodeString ProgressTitleCompare;
     static UnicodeString LocalLabel;
@@ -3064,10 +3064,10 @@ void TWinSCPFileSystem::LogAuthentication(
   TStringList * AuthenticationLogLines = new TStringList();
   std::auto_ptr<TStringList> AuthenticationLogLinesPtr(AuthenticationLogLines);
   {
-    int Width = 42;
-    int Height = 11;
+    intptr_t Width = 42;
+    intptr_t Height = 11;
     FarWrapText(::TrimRight(FAuthenticationLog->Text), AuthenticationLogLines, Width);
-    int Count;
+    intptr_t Count;
     UnicodeString Message;
     if (AuthenticationLogLines->Count == 0)
     {
@@ -3126,7 +3126,7 @@ void TWinSCPFileSystem::TerminalChangeDirectory(TObject * /*Sender*/)
   if (!FNoProgress)
   {
     UnicodeString Directory = FTerminal->GetCurrentDirectory();
-    int Index = FPathHistory->IndexOf(Directory.c_str());
+    intptr_t Index = FPathHistory->IndexOf(Directory.c_str());
     if (Index >= 0)
     {
       FPathHistory->Delete(Index);
@@ -3368,7 +3368,7 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
     {
       assert(FFileList);
       assert(FPanelItems->Count == FFileList->Count);
-      int Index = FFileList->IndexOf(FileName.c_str());
+      intptr_t Index = FFileList->IndexOf(FileName.c_str());
       assert(Index >= 0);
       PanelItem = static_cast<TFarPanelItem *>(FPanelItems->GetItem(Index));
     }
@@ -3406,7 +3406,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
   {
     LastTicks = Ticks;
 
-    static const int ProgressWidth = 48;
+    static const intptr_t ProgressWidth = 48;
     static const int Captions[] = {PROGRESS_COPY, PROGRESS_MOVE, PROGRESS_DELETE,
       PROGRESS_SETPROPERTIES, 0, 0, PROGRESS_CALCULATE_SIZE,
       PROGRESS_REMOTE_MOVE, PROGRESS_REMOTE_COPY, PROGRESS_GETPROPERTIES,
@@ -3479,8 +3479,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
       }
       StatusLine = StatusLine + LabelText +
                    ::StringOfChar(' ', ProgressWidth - StatusLine.Length() -
-                                  LabelText.Length() - Value.Length()) +
-                   Value;
+                                  LabelText.Length() - Value.Length()) + Value;
       Message2 += StatusLine + L"\n";
 
       Value = FormatBytes(ProgressData.TotalTransfered);
@@ -3490,8 +3489,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
       Value = FORMAT(L"%s/s", FormatBytes(ProgressData.CPS()).c_str());
       StatusLine = StatusLine + CPSLabel +
                    ::StringOfChar(' ', ProgressWidth - StatusLine.Length() -
-                                  CPSLabel.Length() - Value.Length()) +
-                   Value;
+                                  CPSLabel.Length() - Value.Length()) + Value;
       Message2 += StatusLine + L"\n";
       ProgressBar2 += ProgressBar(ProgressData.TransferProgress(), ProgressWidth) + L"\n";
     }
@@ -3516,7 +3514,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString TWinSCPFileSystem::ProgressBar(int Percentage, int Width)
+UnicodeString TWinSCPFileSystem::ProgressBar(intptr_t Percentage, intptr_t Width)
 {
   UnicodeString Result;
   // 0xB0 - 0x2591
@@ -3758,7 +3756,7 @@ void TWinSCPFileSystem::UploadOnSave(bool NoReload)
         (FLastEditorID == Info->GetEditorID()) &&
         !FLastEditFile.IsEmpty();
 
-      TMultipleEdits::iterator I = FMultipleEdits.find(Info->GetEditorID());
+      TMultipleEdits::iterator I = FMultipleEdits.find((int)Info->GetEditorID());
       bool MultipleEdit = (I != FMultipleEdits.end());
 
       if (NativeEdit || MultipleEdit)
@@ -3807,7 +3805,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
       {
         std::auto_ptr<TFarEditorInfo> InfoPtr(Info);
         {
-          TMultipleEdits::iterator I = FMultipleEdits.find(Info->GetEditorID());
+          TMultipleEdits::iterator I = FMultipleEdits.find((int)Info->GetEditorID());
           if (I != FMultipleEdits.end())
           {
             UnicodeString FullFileName = UnixIncludeTrailingBackslash(I->second.Directory) +
@@ -3885,7 +3883,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
           FLastEditorID = -1;
         }
 
-        TMultipleEdits::iterator I = FMultipleEdits.find(Info->GetEditorID());
+        TMultipleEdits::iterator I = FMultipleEdits.find((int)Info->GetEditorID());
         if (I != FMultipleEdits.end())
         {
           if (I->second.PendingSave)
@@ -3927,7 +3925,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
           }
         }
 
-        TMultipleEdits::iterator I = FMultipleEdits.find(Info->GetEditorID());
+        TMultipleEdits::iterator I = FMultipleEdits.find((int)Info->GetEditorID());
         if (I != FMultipleEdits.end())
         {
           if (I->second.LocalFileName != Info->GetFileName())
@@ -4186,7 +4184,7 @@ UnicodeString TWinSCPFileSystem::GetFileNameHash(const UnicodeString FileName)
   RawByteString Result;
   Result.SetLength(16);
   md5checksum(
-    reinterpret_cast<const char *>(FileName.c_str()), FileName.Length() * sizeof(wchar_t),
+    reinterpret_cast<const char *>(FileName.c_str()), (int)(FileName.Length() * sizeof(wchar_t)),
     reinterpret_cast<unsigned char *>(const_cast<char *>(Result.c_str())));
   return BytesToHex(Result);
 }

@@ -648,7 +648,7 @@ UnicodeString __fastcall ValidLocalFileName(
 
     if (IsReservedName(FileName))
     {
-      int P = FileName.Pos(".");
+      intptr_t P = FileName.Pos(".");
       if (P == 0)
       {
         P = FileName.Length() + 1;
@@ -833,8 +833,8 @@ bool __fastcall ComparePaths(const UnicodeString & Path1, const UnicodeString & 
 //---------------------------------------------------------------------------
 bool __fastcall IsReservedName(UnicodeString FileName)
 {
-  int P = FileName.Pos(L".");
-  int Len = (P > 0) ? P - 1 : FileName.Length();
+  intptr_t P = FileName.Pos(L".");
+  intptr_t Len = (P > 0) ? P - 1 : FileName.Length();
   if ((Len == 3) || (Len == 4))
   {
     if (P > 0)
@@ -957,11 +957,11 @@ RawByteString __fastcall HexToBytes(const UnicodeString Hex)
 {
   static UnicodeString Digits = L"0123456789ABCDEF";
   RawByteString Result;
-  int L, P1, P2;
+  intptr_t L, P1, P2;
   L = Hex.Length();
   if (L % 2 == 0)
   {
-    for (int i = 1; i <= Hex.Length(); i += 2)
+    for (intptr_t i = 1; i <= Hex.Length(); i += 2)
     {
       P1 = Digits.Pos((wchar_t)toupper(Hex[i]));
       P2 = Digits.Pos((wchar_t)toupper(Hex[i + 1]));
@@ -1284,7 +1284,7 @@ TDateTime __fastcall UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode)
   CCALLSTACK(TRACE_TIMESTAMP);
   assert(int(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
 
-  CTRACEFMT(TRACE_TIMESTAMP, "0 [%s]", IntToStr(TimeStamp).c_str());
+  CTRACEFMT(TRACE_TIMESTAMP, "0 [%s]", Int64ToStr(TimeStamp).c_str());
   TDateTime Result = TDateTime(UnixDateDelta + (double(TimeStamp) / SecsPerDay));
   CTRACEFMT(TRACE_TIMESTAMP, "1 [%s]", Result.FormatString(L"c").c_str());
 
@@ -1402,7 +1402,7 @@ FILETIME __fastcall DateTimeToFileTime(const TDateTime DateTime,
     UnixTimeStamp -= CurrentParams->CurrentDaylightDifferenceSec;
   }
 
-  CTRACEFMT(TRACE_TIMESTAMP, "DateTimeToFileTime 2 [%s]", IntToStr(UnixTimeStamp).c_str());
+  CTRACEFMT(TRACE_TIMESTAMP, "DateTimeToFileTime 2 [%s]", Int64ToStr(UnixTimeStamp).c_str());
   FILETIME Result;
   (*(__int64*)&(Result) = (__int64(UnixTimeStamp) + 11644473600LL) * 10000000LL);
   CTRACEFMT(TRACE_TIMESTAMP, "DateTimeToFileTime 3 [%s] [%s]", IntToStr(__int64(Result.dwLowDateTime)).c_str(), IntToStr(__int64(Result.dwHighDateTime)).c_str());
@@ -1441,7 +1441,7 @@ __int64 __fastcall ConvertTimestampToUnix(const FILETIME & FileTime,
   CCALLSTACK(TRACE_TIMESTAMP);
   __int64 Result = ((*(__int64*)&(FileTime)) / 10000000LL - 11644473600LL);
 
-  CTRACEFMT(TRACE_TIMESTAMP, "1 [%s] [%d]", IntToStr(Result).c_str(), int(DSTMode));
+  CTRACEFMT(TRACE_TIMESTAMP, "1 [%s] [%d]", Int64ToStr(Result).c_str(), int(DSTMode));
   if (UsesDaylightHack())
   {
     if ((DSTMode == dstmUnix) || (DSTMode == dstmKeep))
@@ -1454,13 +1454,13 @@ __int64 __fastcall ConvertTimestampToUnix(const FILETIME & FileTime,
       const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
       Result += (IsDateInDST(DateTime) ?
         Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
-      CTRACEFMT(TRACE_TIMESTAMP, "2 [%s]", IntToStr(Result).c_str());
+      CTRACEFMT(TRACE_TIMESTAMP, "2 [%s]", Int64ToStr(Result).c_str());
 
       if (DSTMode == dstmKeep)
       {
         const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
         Result -= CurrentParams->CurrentDaylightDifferenceSec;
-        CTRACEFMT(TRACE_TIMESTAMP, "3 [%s]", IntToStr(Result).c_str());
+        CTRACEFMT(TRACE_TIMESTAMP, "3 [%s]", Int64ToStr(Result).c_str());
       }
     }
   }
@@ -1911,7 +1911,7 @@ UnicodeString __fastcall DecodeUrlChars(UnicodeString S)
 //---------------------------------------------------------------------------
 UnicodeString __fastcall DoEncodeUrl(UnicodeString S, UnicodeString Chars)
 {
-  int i = 1;
+  intptr_t i = 1;
   while (i <= S.Length())
   {
     if (Chars.Pos(S[i]) > 0)

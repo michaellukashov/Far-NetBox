@@ -12,8 +12,8 @@
 UnicodeString StripHotKey(const UnicodeString Text)
 {
   UnicodeString Result = Text;
-  int Len = Result.Length();
-  int Pos = 1;
+  intptr_t Len = Result.Length();
+  intptr_t Pos = 1;
   while (Pos <= Len)
   {
     if (Result[Pos] == L'&')
@@ -278,7 +278,7 @@ UnicodeString TFarDialog::GetCaption()
   return FBorderBox->GetCaption();
 }
 //---------------------------------------------------------------------------
-int TFarDialog::GetItemCount()
+intptr_t TFarDialog::GetItemCount()
 {
   return FItems->Count;
 }
@@ -289,7 +289,7 @@ intptr_t TFarDialog::GetItem(TFarDialogItem * Item) const
   return Item->GetItem();
 }
 //---------------------------------------------------------------------------
-TFarDialogItem * TFarDialog::GetItem(int Index)
+TFarDialogItem * TFarDialog::GetItem(intptr_t Index)
 {
   TFarDialogItem * DialogItem;
   if (GetItemCount())
@@ -1032,7 +1032,7 @@ void TFarDialogContainer::SetEnabled(bool Value)
   }
 }
 //---------------------------------------------------------------------------
-int TFarDialogContainer::GetItemCount()
+intptr_t TFarDialogContainer::GetItemCount() const
 {
   return FItems->Count;
 }
@@ -1576,7 +1576,7 @@ void TFarDialogItem::SetHeight(int Value)
   SetBounds(R);
 }
 //---------------------------------------------------------------------------
-int TFarDialogItem::GetHeight()
+intptr_t TFarDialogItem::GetHeight()
 {
   return GetActualBounds().Height() + 1;
 }
@@ -2138,7 +2138,7 @@ void TFarList::Assign(TPersistent * Source)
   }
 }
 //---------------------------------------------------------------------------
-void TFarList::UpdateItem(int Index)
+void TFarList::UpdateItem(intptr_t Index)
 {
   FarListItem * ListItem = &FListItems->Items[Index];
   UnicodeString Value = Strings[Index].c_str();
@@ -2273,7 +2273,7 @@ void TFarList::UpdatePosition(intptr_t Position)
   }
 }
 //---------------------------------------------------------------------------
-void TFarList::SetCurPos(uintptr_t Position, uintptr_t TopIndex)
+void TFarList::SetCurPos(intptr_t Position, intptr_t TopIndex)
 {
   assert(GetDialogItem() != NULL);
   assert(GetDialogItem()->GetDialog()->GetHandle());
@@ -2566,7 +2566,7 @@ bool TFarLister::GetScrollBar()
   return (GetItems()->Count > GetHeight());
 }
 //---------------------------------------------------------------------------
-void TFarLister::SetTopIndex(int Value)
+void TFarLister::SetTopIndex(intptr_t Value)
 {
   if (GetTopIndex() != Value)
   {
@@ -2606,8 +2606,8 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
     {
       ScrollBarPos = static_cast<int>((static_cast<float>(GetHeight() - 3) * (static_cast<float>(FTopIndex) / (GetItems()->Count - GetHeight())))) + 1;
     }
-    int DisplayWidth = GetWidth() - (AScrollBar ? 1 : 0);
-    int Color = GetDialog()->GetSystemColor(
+    intptr_t DisplayWidth = GetWidth() - (AScrollBar ? 1 : 0);
+    uintptr_t Color = GetDialog()->GetSystemColor(
       FLAGSET(GetDialog()->GetFlags(), FDLG_WARNING) ? COL_WARNDIALOGLISTTEXT : COL_DIALOGLISTTEXT);
     UnicodeString Buf;
     for (int Row = 0; Row < GetHeight(); Row++)
@@ -2648,7 +2648,7 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
   {
     Result = (int)true;
 
-    int NewTopIndex = GetTopIndex();
+    intptr_t NewTopIndex = GetTopIndex();
     if ((Param == KEY_UP) || (Param == KEY_LEFT))
     {
       if (NewTopIndex > 0)

@@ -545,7 +545,7 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
     TRY_FINALLY (
     {
       Configuration->SetLogging(LoggingCheck->GetChecked());
-      Configuration->SetLogProtocol(LogProtocolCombo->GetItemIndex());
+      Configuration->SetLogProtocol((int)LogProtocolCombo->GetItemIndex());
       Configuration->SetLogToFile(LogToFileCheck->GetChecked());
       if (LogToFileCheck->GetChecked())
       {
@@ -1620,18 +1620,18 @@ private:
   void SavePing(TSessionData * SessionData);
   int LoginTypeToIndex(TLoginType LoginType);
   int ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Items);
-  TProxyMethod IndexToProxyMethod(int Index, TFarList * Items);
+  TProxyMethod IndexToProxyMethod(intptr_t Index, TFarList * Items);
   TFarComboBox * GetProxyMethodCombo();
   int FSProtocolToIndex(TFSProtocol FSProtocol, bool & AllowScpFallback);
-  TFSProtocol IndexToFSProtocol(int Index, bool AllowScpFallback);
+  TFSProtocol IndexToFSProtocol(intptr_t Index, bool AllowScpFallback);
   TFSProtocol GetFSProtocol();
-  int LastSupportedFtpProxyMethod();
+  intptr_t LastSupportedFtpProxyMethod();
   bool SupportedFtpProxyMethod(int Method);
   TProxyMethod GetProxyMethod();
   int GetFtpProxyLogonType();
   TFtps IndexToFtps(int Index);
   TFtps GetFtps();
-  TLoginType IndexToLoginType(int Index);
+  TLoginType IndexToLoginType(intptr_t Index);
   TLoginType GetLoginType();
   bool VerifyKey(UnicodeString FileName, bool TypeOnly);
   void PrevTabClick(TFarButton * /* Sender */, bool & Close);
@@ -1650,7 +1650,7 @@ private:
   void ChangeTabs(int FirstVisibleTabIndex);
   int GetVisibleTabsCount(int TabIndex, bool Forward);
 
-  int AddTab(int TabID, const wchar_t * TabCaption);
+  intptr_t AddTab(int TabID, const wchar_t * TabCaption);
 };
 //---------------------------------------------------------------------------
 #define BUG(BUGID, MSG, PREFIX) \
@@ -1721,7 +1721,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   TFarText * Text;
   int GroupTop;
   int Pos;
-  int Index;
+  intptr_t Index;
 
   Index = AddTab(tabSession, GetMsg(LOGIN_TAB_SESSION).c_str());
   Tab = dynamic_cast<TTabButton *>(GetItem(Index));
@@ -3538,7 +3538,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetSftpServer(
       (SftpServerEdit->GetText() == SftpServerEdit->GetItems()->Strings[0]) ?
       UnicodeString() : SftpServerEdit->GetText());
-    SessionData->SetSFTPMaxVersion(SFTPMaxVersionCombo->GetItemIndex());
+    SessionData->SetSFTPMaxVersion((int)SFTPMaxVersionCombo->GetItemIndex());
     SessionData->SetSFTPMinPacketSize(SFTPMinPacketSizeEdit->GetAsInteger());
     SessionData->SetSFTPMaxPacketSize(SFTPMaxPacketSizeEdit->GetAsInteger());
 
@@ -3847,7 +3847,7 @@ int TSessionDialog::ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Item
   return -1;
 }
 //---------------------------------------------------------------------------
-TProxyMethod TSessionDialog::IndexToProxyMethod(int Index, TFarList * Items)
+TProxyMethod TSessionDialog::IndexToProxyMethod(intptr_t Index, TFarList * Items)
 {
   TProxyMethod Result = pmNone;
   if (Index >= 0 && Index < Items->Count)
@@ -3873,7 +3873,7 @@ TFSProtocol TSessionDialog::GetFSProtocol()
     AllowScpFallbackCheck->GetChecked());
 }
 //---------------------------------------------------------------------------
-int TSessionDialog::LastSupportedFtpProxyMethod()
+intptr_t TSessionDialog::LastSupportedFtpProxyMethod()
 {
   return pmSystem; // pmWebDAV;
 }
@@ -3967,7 +3967,7 @@ TLoginType TSessionDialog::GetLoginType()
   return IndexToLoginType(LoginTypeCombo->GetItemIndex());
 }
 //---------------------------------------------------------------------------
-TFSProtocol TSessionDialog::IndexToFSProtocol(int Index, bool AllowScpFallback)
+TFSProtocol TSessionDialog::IndexToFSProtocol(intptr_t Index, bool AllowScpFallback)
 {
   bool InBounds = (Index >= 0) && (Index < static_cast<int>(LENOF(FSOrder)));
   assert(InBounds || (Index == -1));
@@ -3983,7 +3983,7 @@ TFSProtocol TSessionDialog::IndexToFSProtocol(int Index, bool AllowScpFallback)
   return Result;
 }
 //---------------------------------------------------------------------------
-TLoginType TSessionDialog::IndexToLoginType(int Index)
+TLoginType TSessionDialog::IndexToLoginType(intptr_t Index)
 {
   bool InBounds = (Index != NPOS) && (Index <= ltNormal);
   assert(InBounds);
@@ -4198,8 +4198,8 @@ void TSessionDialog::KexButtonClick(TFarButton * Sender, bool & Close)
 {
   if (Sender->GetEnabled())
   {
-    size_t Source = KexListBox->GetItems()->GetSelected();
-    size_t Dest = Source + Sender->GetResult();
+    intptr_t Source = KexListBox->GetItems()->GetSelected();
+    intptr_t Dest = Source + Sender->GetResult();
 
     KexListBox->GetItems()->Move(Source, Dest);
     KexListBox->GetItems()->SetSelected(Dest);
@@ -4255,7 +4255,7 @@ void TSessionDialog::CodePageEditAdd(unsigned int cp)
   }
 }
 //---------------------------------------------------------------------------
-int TSessionDialog::AddTab(int TabID, const wchar_t * TabCaption)
+intptr_t TSessionDialog::AddTab(int TabID, const wchar_t * TabCaption)
 {
   TFarButtonBrackets TabBrackets = brNone; // brSpace; // 
   TTabButton * Tab = new TTabButton(this);
@@ -5432,7 +5432,7 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   FOptions = Options;
   FCopyParamAttrs = CopyParamAttrs;
 
-  const int DlgLength = 78;
+  const intptr_t DlgLength = 78;
   SetSize(TPoint(DlgLength, 12 + (FLAGCLEAR(FOptions, coTempTransfer) ? 4 : 0)));
   TRect CRect = GetClientRect();
 
@@ -5881,7 +5881,7 @@ public:
   {
   }
 
-  int MaxLen;
+  intptr_t MaxLen;
 };
 //---------------------------------------------------------------------------
 TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
@@ -6385,7 +6385,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
       FirstHistory = FPathHistory->Count - MaxHistory + 1;
     }
 
-    for (int i = FirstHistory; i < FPathHistory->Count; i++)
+    for (intptr_t i = FirstHistory; i < FPathHistory->Count; i++)
     {
       UnicodeString Path = FPathHistory->Strings[i];
       BookmarkPaths->Add(Path);

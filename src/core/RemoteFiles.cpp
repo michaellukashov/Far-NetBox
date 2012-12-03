@@ -117,7 +117,7 @@ bool __fastcall ExtractCommonPath(TStrings * Files, UnicodeString & Path)
       while (!Path.IsEmpty() &&
         (Files->Strings[Index].SubString(1, Path.Length()) != Path))
       {
-        int PrevLen = Path.Length();
+        intptr_t PrevLen = Path.Length();
         Path = ExtractFilePath(ExcludeTrailingBackslash(Path));
         if (Path.Length() == PrevLen)
         {
@@ -144,7 +144,7 @@ bool __fastcall UnixExtractCommonPath(TStrings * Files, UnicodeString & Path)
       while (!Path.IsEmpty() &&
         (Files->Strings[Index].SubString(1, Path.Length()) != Path))
       {
-        int PrevLen = Path.Length();
+        intptr_t PrevLen = Path.Length();
         Path = UnixExtractFilePath(UnixExcludeTrailingBackslash(Path));
         if (Path.Length() == PrevLen)
         {
@@ -251,7 +251,7 @@ static void __fastcall CutFirstDirectory(UnicodeString & S, bool Unix)
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall MinimizeName(const UnicodeString FileName, int MaxLen, bool Unix)
+UnicodeString __fastcall MinimizeName(const UnicodeString FileName, intptr_t MaxLen, bool Unix)
 {
   UnicodeString Drive, Dir, Name, Result;
   UnicodeString Sep = Unix ? L"/" : L"\\";
@@ -1703,7 +1703,7 @@ bool __fastcall TRemoteDirectoryCache::HasFileList(const UnicodeString Directory
 {
   TGuard Guard(FSection);
 
-  int Index = IndexOf(UnixExcludeTrailingBackslash(Directory));
+  intptr_t Index = IndexOf(UnixExcludeTrailingBackslash(Directory));
   return (Index >= 0);
 }
 //---------------------------------------------------------------------------
@@ -1712,7 +1712,7 @@ bool __fastcall TRemoteDirectoryCache::HasNewerFileList(const UnicodeString Dire
 {
   TGuard Guard(FSection);
 
-  int Index = IndexOf(UnixExcludeTrailingBackslash(Directory));
+  intptr_t Index = IndexOf(UnixExcludeTrailingBackslash(Directory));
   if (Index >= 0)
   {
     TRemoteFileList * FileList = dynamic_cast<TRemoteFileList *>(Objects[Index]);
@@ -1729,7 +1729,7 @@ bool __fastcall TRemoteDirectoryCache::GetFileList(const UnicodeString Directory
 {
   TGuard Guard(FSection);
 
-  int Index = IndexOf(UnixExcludeTrailingBackslash(Directory));
+  intptr_t Index = IndexOf(UnixExcludeTrailingBackslash(Directory));
   bool Result = (Index >= 0);
   if (Result)
   {
@@ -1766,7 +1766,7 @@ void __fastcall TRemoteDirectoryCache::ClearFileList(UnicodeString Directory, bo
 void __fastcall TRemoteDirectoryCache::DoClearFileList(UnicodeString Directory, bool SubDirs)
 {
   Directory = UnixExcludeTrailingBackslash(Directory);
-  int Index = IndexOf(Directory);
+  intptr_t Index = IndexOf(Directory);
   if (Index >= 0)
   {
     Delete(Index);
@@ -1786,14 +1786,14 @@ void __fastcall TRemoteDirectoryCache::DoClearFileList(UnicodeString Directory, 
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TRemoteDirectoryCache::Delete(int Index)
+void __fastcall TRemoteDirectoryCache::Delete(intptr_t Index)
 {
   delete static_cast<TRemoteFileList *>(Objects[Index]);
   TStringList::Delete(Index);
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-/* __fastcall */ TRemoteDirectoryChangesCache::TRemoteDirectoryChangesCache(int MaxSize) :
+/* __fastcall */ TRemoteDirectoryChangesCache::TRemoteDirectoryChangesCache(intptr_t MaxSize) :
   TStringList(),
   FMaxSize(MaxSize)
 {
@@ -1812,7 +1812,7 @@ bool __fastcall TRemoteDirectoryChangesCache::GetIsEmpty() const
 void __fastcall TRemoteDirectoryChangesCache::SetValue(const UnicodeString & Name,
   const UnicodeString & Value)
 {
-  int Index = IndexOfName(Name);
+  intptr_t Index = IndexOfName(Name);
   if (Index >= 0)
   {
     Delete(Index);
@@ -1916,7 +1916,7 @@ bool __fastcall TRemoteDirectoryChangesCache::GetDirectoryChange(
 void __fastcall TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data)
 {
   Data = L"A";
-  int ACount = Count;
+  intptr_t ACount = Count;
   if (ACount > FMaxSize)
   {
     TStrings * Limited = new TStringList();

@@ -266,7 +266,7 @@ public:
   void __fastcall AddOutput(UnicodeString Output, bool StdError)
   {
     const wchar_t * Name = (StdError ? L"erroroutput" : L"output");
-    int Index = FNames->IndexOf(Name);
+    intptr_t Index = FNames->IndexOf(Name);
     if (Index >= 0)
     {
       FValues->Strings[Index] = FValues->Strings[Index] + L"\r\n" + Output;
@@ -1160,7 +1160,7 @@ void __fastcall TSessionLog::AddSeparator()
   Add(llMessage, L"--------------------------------------------------------------------------");
 }
 //---------------------------------------------------------------------------
-int __fastcall TSessionLog::GetBottomIndex()
+intptr_t __fastcall TSessionLog::GetBottomIndex()
 {
   return (Count > 0 ? (GetTopIndex() + Count - 1) : -1);
 }
@@ -1234,7 +1234,7 @@ void __fastcall TSessionLog::SetName(const UnicodeString value)
   FName = value;
 }
 //---------------------------------------------------------------------------
-int __fastcall TSessionLog::GetCount()
+intptr_t __fastcall TSessionLog::GetCount()
 {
   return TStringList::GetCount();
 }

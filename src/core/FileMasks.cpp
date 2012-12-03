@@ -27,7 +27,7 @@ static UnicodeString FileMasksDelimiterStr = UnicodeString(FileMasksDelimiters[1
 UnicodeString __fastcall MaskFilePart(const UnicodeString Part, const UnicodeString Mask, bool& Masked)
 {
   UnicodeString Result;
-  int RestStart = 1;
+  intptr_t RestStart = 1;
   bool Delim = false;
   for (int Index = 1; Index <= Mask.Length(); Index++)
   {

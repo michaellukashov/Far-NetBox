@@ -228,7 +228,7 @@ public:
   int __fastcall GetTopIndex();
   UnicodeString __fastcall GetName();
   void __fastcall SetName(const UnicodeString value);
-  int __fastcall GetCount();
+  intptr_t __fastcall GetCount();
 
 protected:
   void __fastcall CloseLogFile();
@@ -243,7 +243,7 @@ private:
   UnicodeString FCurrentLogFileName;
   UnicodeString FCurrentFileName;
   int FLoggedLines;
-  int FTopIndex;
+  intptr_t FTopIndex;
   TSessionUI * FUI;
   TSessionData * FSessionData;
   UnicodeString FName;
@@ -256,7 +256,7 @@ public:
   void __fastcall DeleteUnnecessary();
   void __fastcall StateChange();
   void __fastcall OpenLogFile();
-  int __fastcall GetBottomIndex();
+  intptr_t __fastcall GetBottomIndex();
   UnicodeString __fastcall GetLogFileName();
   bool __fastcall GetLoggingToFile();
   UnicodeString __fastcall GetSessionName();

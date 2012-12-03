@@ -87,7 +87,7 @@ protected:
   virtual UnicodeString __fastcall GetCurrentDirectory();
 
   bool __fastcall HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
-    unsigned int Count);
+    intptr_t Count);
   void __fastcall EnsureLocation();
   void __fastcall DoChangeDirectory(const UnicodeString Directory);
 
@@ -197,7 +197,7 @@ public:
     const char *prompt_string,
     unsigned int & RequestResult);
   webdav::error_t CreateStorage(THierarchicalStorage *& Storage);
-  size_t AdjustToCPSLimit(size_t len);
+  uintptr_t AdjustToCPSLimit(uintptr_t len);
   bool GetIsCancelled();
 private:
   webdav::error_t OpenURL(const UnicodeString & repos_URL,

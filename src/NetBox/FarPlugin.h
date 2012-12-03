@@ -103,7 +103,7 @@ public:
     const int * BreakKeys, int & BreakCode);
   bool InputBox(const UnicodeString Title, const UnicodeString Prompt,
     UnicodeString & Text, DWORD Flags, const UnicodeString HistoryName = L"",
-    size_t MaxLen = 255, TFarInputBoxValidateEvent OnValidate = NULL);
+    intptr_t MaxLen = 255, TFarInputBoxValidateEvent OnValidate = NULL);
   UnicodeString GetMsg(int MsgId);
   void SaveScreen(HANDLE & Screen);
   void RestoreScreen(HANDLE & Screen);

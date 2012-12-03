@@ -3671,7 +3671,7 @@ bool __fastcall TFTPFileSystem::HandleListData(const wchar_t * Path,
         TRACEFMT("4c [%s]", File->GetFileName().c_str());
         try
         {
-          int PermissionsLen = wcslen(Entry->Permissions);
+          intptr_t PermissionsLen = wcslen(Entry->Permissions);
           if (PermissionsLen >= 10)
           {
             File->GetRights()->SetText(Entry->Permissions + 1);

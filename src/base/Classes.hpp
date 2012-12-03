@@ -64,7 +64,7 @@ DEFINE_CALLBACK_TYPE0(TThreadMethod, void);
 DEFINE_CALLBACK_TYPE1(TNotifyEvent, void, TObject * /* Sender */);
 //---------------------------------------------------------------------------
 void Abort();
-void Error(int ErrorID, int data);
+void Error(int ErrorID, intptr_t data);
 //---------------------------------------------------------------------------
 class TObject
 {
@@ -169,40 +169,40 @@ class TList : public TObject
 public:
   TList();
   virtual ~TList();
-  void * operator [](int Index) const;
-  void *& GetItem(int Index);
-  void SetItem(int Index, void * Item);
+  void * operator [](intptr_t Index) const;
+  void *& GetItem(intptr_t Index);
+  void SetItem(intptr_t Index, void * Item);
   int Add(void * Value);
   void * Extract(void * Item);
-  int Remove(void * Item);
-  void Move(int CurIndex, int NewIndex);
-  void Delete(int Index);
-  virtual void Insert(int Index, void * Item);
-  int IndexOf(void * value) const;
+  intptr_t Remove(void * Item);
+  void Move(intptr_t CurIndex, intptr_t NewIndex);
+  void Delete(intptr_t Index);
+  virtual void Insert(intptr_t Index, void * Item);
+  intptr_t IndexOf(void * value) const;
   virtual void __fastcall Clear();
   virtual void __fastcall Sort(CompareFunc Func);
   virtual void __fastcall Notify(void * Ptr, int Action);
   virtual void __fastcall Sort();
 
 protected:
-  int GetCount() const;
-  void SetCount(int Value);
+  intptr_t GetCount() const;
+  void SetCount(intptr_t Value);
 
 private:
-  int PropertyGetCount() { return GetCount(); }
-  void PropertySetCount(int Value) { SetCount(Value); }
-  void *& PropertyGetItem(int Index)
+  intptr_t PropertyGetCount() { return GetCount(); }
+  void PropertySetCount(intptr_t Value) { SetCount(Value); }
+  void *& PropertyGetItem(intptr_t Index)
   {
     return GetItem(Index);
   }
-  void PropertySetItem(int Index, void * Value)
+  void PropertySetItem(intptr_t Index, void * Value)
   {
     SetItem(Index, Value);
   }
 
 public:
-  RWProperty<int, TList, &TList::PropertyGetCount, &TList::PropertySetCount> Count;
-  IndexedPropertyVoid<int, TList, &TList::PropertyGetItem, &TList::PropertySetItem> Items;
+  RWProperty<intptr_t, TList, &TList::PropertyGetCount, &TList::PropertySetCount> Count;
+  IndexedPropertyVoid<intptr_t, TList, &TList::PropertyGetItem, &TList::PropertySetItem> Items;
 
 private:
   std::vector<void *> FList;
@@ -214,16 +214,16 @@ class TObjectList : public TList
 public:
   TObjectList();
   virtual ~TObjectList();
-  TObject * operator [](int Index) const;
-  TObject *& GetItem(int Index);
-  void SetItem(int Index, TObject * Value);
-  int Add(TObject * value);
-  int Remove(TObject * value);
+  TObject * operator [](intptr_t Index) const;
+  TObject *& GetItem(intptr_t Index);
+  void SetItem(intptr_t Index, TObject * Value);
+  intptr_t Add(TObject * value);
+  intptr_t Remove(TObject * value);
   void Extract(TObject * value);
-  void Move(int Index, int To);
-  void Delete(int Index);
-  virtual void __fastcall Insert(int Index, TObject * value);
-  int IndexOf(TObject * value) const;
+  void Move(intptr_t Index, intptr_t To);
+  void Delete(intptr_t Index);
+  virtual void __fastcall Insert(intptr_t Index, TObject * value);
+  intptr_t IndexOf(TObject * value) const;
   virtual void __fastcall Clear();
   bool GetOwnsObjects() const;
   void SetOwnsObjects(bool value);
@@ -231,17 +231,17 @@ public:
   virtual void __fastcall Notify(void * Ptr, int Action);
 
 private:
-  TObject *& PropertyGetItem(int Index)
+  TObject *& PropertyGetItem(intptr_t Index)
   {
     return GetItem(Index);
   }
-  void PropertySetItem(int Index, TObject * Value)
+  void PropertySetItem(intptr_t Index, TObject * Value)
   {
     Insert(Index, Value);
   }
 
 public:
-  IndexedProperty2<int, TObject *, TObjectList, &TObjectList::PropertyGetItem, &TObjectList::PropertySetItem > Items;
+  IndexedProperty2<intptr_t, TObject *, TObjectList, &TObjectList::PropertyGetItem, &TObjectList::PropertySetItem > Items;
 private:
   bool FOwnsObjects;
 };
@@ -261,23 +261,23 @@ public:
   TStrings();
   virtual ~TStrings();
   int __fastcall Add(const UnicodeString S);
-  virtual void __fastcall Delete(int Index) = 0;
+  virtual void __fastcall Delete(intptr_t Index) = 0;
   virtual UnicodeString __fastcall GetTextStr();
   virtual void __fastcall SetTextStr(const UnicodeString Text);
   virtual void __fastcall BeginUpdate();
   virtual void __fastcall EndUpdate();
   virtual void __fastcall SetUpdateState(bool Updating);
-  int __fastcall AddObject(const UnicodeString S, TObject * AObject);
-  virtual void __fastcall InsertObject(int Index, const UnicodeString Key, TObject * AObject);
+  intptr_t __fastcall AddObject(const UnicodeString S, TObject * AObject);
+  virtual void __fastcall InsertObject(intptr_t Index, const UnicodeString Key, TObject * AObject);
   bool __fastcall Equals(TStrings * value) const;
   virtual void __fastcall Clear() = 0;
-  void __fastcall Move(int CurIndex, int NewIndex);
-  int __fastcall IndexOf(const UnicodeString S);
-  virtual int __fastcall IndexOfName(const UnicodeString Name);
+  void __fastcall Move(intptr_t CurIndex, intptr_t NewIndex);
+  intptr_t __fastcall IndexOf(const UnicodeString S);
+  virtual intptr_t __fastcall IndexOfName(const UnicodeString Name);
   UnicodeString __fastcall ExtractName(const UnicodeString S) const;
   void __fastcall AddStrings(TStrings * Strings);
   void __fastcall Append(const UnicodeString value);
-  virtual void __fastcall Insert(int Index, const UnicodeString AString) = 0;
+  virtual void __fastcall Insert(intptr_t Index, const UnicodeString AString) = 0;
   void __fastcall SaveToStream(TStream * Stream) const;
   wchar_t __fastcall GetDelimiter() const { return FDelimiter; }
   void __fastcall SetDelimiter(wchar_t value)
@@ -291,7 +291,7 @@ public:
   }
   UnicodeString __fastcall GetDelimitedText() const;
   void __fastcall SetDelimitedText(const UnicodeString Value);
-  virtual int __fastcall CompareStrings(const UnicodeString S1, const UnicodeString S2);
+  virtual intptr_t __fastcall CompareStrings(const UnicodeString S1, const UnicodeString S2);
   int __fastcall GetUpdateCount() const { return FUpdateCount; }
   virtual void __fastcall Assign(TPersistent * Source);
 
@@ -305,18 +305,18 @@ protected:
   virtual bool __fastcall GetSorted() const = 0;
   virtual void __fastcall SetSorted(bool value) = 0;
   void __fastcall SetDuplicates(TDuplicatesEnum value);
-  virtual int __fastcall GetCount() const = 0;
-  virtual UnicodeString & __fastcall GetString(int Index) = 0;
-  virtual UnicodeString __fastcall GetStrings(int Index) const = 0;
-  virtual void __fastcall PutString(int Index, const UnicodeString S) = 0;
-  virtual TObject *& __fastcall GetObjects(int Index) = 0;
-  virtual void __fastcall PutObject(int Index, TObject * AObject) = 0;
-  const UnicodeString __fastcall GetName(int Index) const;
+  virtual intptr_t __fastcall GetCount() const = 0;
+  virtual UnicodeString & __fastcall GetString(intptr_t Index) = 0;
+  virtual UnicodeString __fastcall GetStrings(intptr_t Index) const = 0;
+  virtual void __fastcall PutString(intptr_t Index, const UnicodeString S) = 0;
+  virtual TObject *& __fastcall GetObjects(intptr_t Index) = 0;
+  virtual void __fastcall PutObject(intptr_t Index, TObject * AObject) = 0;
+  const UnicodeString __fastcall GetName(intptr_t Index) const;
   const UnicodeString __fastcall GetValue(const UnicodeString Name);
   void __fastcall SetValue(const UnicodeString Name, const UnicodeString Value);
 
 private:
-  int PropertyGetCount() { return GetCount(); }
+  intptr_t PropertyGetCount() { return GetCount(); }
   UnicodeString PropertyGetText() { return GetText(); }
   void PropertySetText(UnicodeString Value) { SetText(Value); }
   UnicodeString PropertyGetCommaText() { return GetCommaText(); }
@@ -326,27 +326,27 @@ private:
   bool PropertyGetSorted() { return GetSorted(); }
   void PropertySetSorted(bool Value) { SetSorted(Value); }
   void PropertySetDuplicates(TDuplicatesEnum Value) { SetDuplicates(Value); }
-  UnicodeString & PropertyGetString(int Index)
+  UnicodeString & PropertyGetString(intptr_t Index)
   {
     return GetString(Index);
   }
-  void PropertySetString(int Index, UnicodeString Value)
+  void PropertySetString(intptr_t Index, UnicodeString Value)
   {
     PutString(Index, Value);
   }
-  TObject *& PropertyGetObject(int Index)
+  TObject *& PropertyGetObject(intptr_t Index)
   {
     return GetObjects(Index);
   }
-  void PropertySetObject(int Index, TObject * Value)
+  void PropertySetObject(intptr_t Index, TObject * Value)
   {
     PutObject(Index, Value);
   }
-  UnicodeString PropertyGetName(int Index)
+  UnicodeString PropertyGetName(intptr_t Index)
   {
     return GetName(Index);
   }
-  void PropertySetName(int Index, UnicodeString Value)
+  void PropertySetName(intptr_t Index, UnicodeString Value)
   {
     (void)Index;
     // SetName(Index, Value);
@@ -362,15 +362,15 @@ private:
   }
 
 public:
-  ROProperty<int, TStrings, &TStrings::PropertyGetCount> Count;
+  ROProperty<intptr_t, TStrings, &TStrings::PropertyGetCount> Count;
   RWProperty<UnicodeString, TStrings, &TStrings::PropertyGetText, &TStrings::PropertySetText> Text;
   RWProperty<UnicodeString, TStrings, &TStrings::PropertyGetCommaText, &TStrings::PropertySetCommaText> CommaText;
   RWProperty<bool, TStrings, &TStrings::PropertyGetCaseSensitive, &TStrings::PropertySetCaseSensitive> CaseSensitive;
   RWProperty<bool, TStrings, &TStrings::PropertyGetSorted, &TStrings::PropertySetSorted> Sorted;
   WOProperty<TDuplicatesEnum, TStrings, &TStrings::PropertySetDuplicates> Duplicates;
-  IndexedProperty2<int, UnicodeString, TStrings, &TStrings::PropertyGetString, &TStrings::PropertySetString> Strings;
-  IndexedProperty2<int, TObject *, TStrings, &TStrings::PropertyGetObject, &TStrings::PropertySetObject> Objects;
-  IndexedProperty<int, UnicodeString, TStrings, &TStrings::PropertyGetName, &TStrings::PropertySetName> Names;
+  IndexedProperty2<intptr_t, UnicodeString, TStrings, &TStrings::PropertyGetString, &TStrings::PropertySetString> Strings;
+  IndexedProperty2<intptr_t, TObject *, TStrings, &TStrings::PropertyGetObject, &TStrings::PropertySetObject> Objects;
+  IndexedProperty<intptr_t, UnicodeString, TStrings, &TStrings::PropertyGetName, &TStrings::PropertySetName> Names;
   IndexedProperty<UnicodeString, UnicodeString, TStrings, &TStrings::PropertyGetValue, &TStrings::PropertySetValue> Values;
 
 protected:
@@ -389,12 +389,12 @@ struct TStringItem
 
 class TStringList;
 typedef std::vector<TStringItem> TStringItemList;
-typedef int (TStringListSortCompare)(TStringList * List, int Index1, int Index2);
+typedef intptr_t (TStringListSortCompare)(TStringList * List, intptr_t Index1, intptr_t Index2);
 
 class TStringList : public TStrings
 {
   typedef TStrings parent;
-  friend int StringListCompareStrings(TStringList * List, int Index1, int Index2);
+  friend intptr_t StringListCompareStrings(TStringList * List, intptr_t Index1, intptr_t Index2);
 
 public:
   /* __fastcall */ TStringList();
@@ -403,14 +403,14 @@ public:
   virtual void __fastcall Clear();
   int __fastcall Add(const UnicodeString S);
   int __fastcall AddObject(const UnicodeString S, TObject * AObject);
-  virtual bool __fastcall Find(const UnicodeString S, int & Index);
-  virtual int __fastcall IndexOf(const UnicodeString S);
-  virtual void __fastcall Delete(int Index);
-  virtual void __fastcall InsertObject(int Index, const UnicodeString Key, TObject * AObject);
-  void __fastcall InsertItem(int Index, const UnicodeString S, TObject * AObject);
+  virtual bool __fastcall Find(const UnicodeString S, intptr_t & Index);
+  virtual intptr_t __fastcall IndexOf(const UnicodeString S);
+  virtual void __fastcall Delete(intptr_t Index);
+  virtual void __fastcall InsertObject(intptr_t Index, const UnicodeString Key, TObject * AObject);
+  void __fastcall InsertItem(intptr_t Index, const UnicodeString S, TObject * AObject);
   virtual void __fastcall Sort();
   virtual void __fastcall CustomSort(TStringListSortCompare ACompareFunc);
-  void __fastcall QuickSort(int L, int R, TStringListSortCompare SCompare);
+  void __fastcall QuickSort(intptr_t L, intptr_t R, TStringListSortCompare SCompare);
 
   void __fastcall LoadFromFile(const UnicodeString FileName);
   TNotifyEvent & __fastcall GetOnChange() { return FOnChange; }
@@ -421,20 +421,20 @@ public:
   virtual void __fastcall SetUpdateState(bool Updating);
   virtual void __fastcall Changing();
   virtual void __fastcall Changed();
-  virtual void __fastcall Insert(int Index, const UnicodeString S);
-  virtual int __fastcall CompareStrings(const UnicodeString S1, const UnicodeString S2);
+  virtual void __fastcall Insert(intptr_t Index, const UnicodeString S);
+  virtual intptr_t __fastcall CompareStrings(const UnicodeString S1, const UnicodeString S2);
 
 protected:
   virtual bool __fastcall GetCaseSensitive() const;
   virtual void __fastcall SetCaseSensitive(bool value);
   virtual bool __fastcall GetSorted() const;
   virtual void __fastcall SetSorted(bool value);
-  virtual int __fastcall GetCount() const;
-  virtual UnicodeString & __fastcall GetString(int Index);
-  virtual UnicodeString __fastcall GetStrings(int Index) const;
-  virtual void __fastcall PutString(int Index, const UnicodeString S);
-  virtual TObject *& __fastcall GetObjects(int Index);
-  virtual void __fastcall PutObject(int Index, TObject * AObject);
+  virtual intptr_t __fastcall GetCount() const;
+  virtual UnicodeString & __fastcall GetString(intptr_t Index);
+  virtual UnicodeString __fastcall GetStrings(intptr_t Index) const;
+  virtual void __fastcall PutString(intptr_t Index, const UnicodeString S);
+  virtual TObject *& __fastcall GetObjects(intptr_t Index);
+  virtual void __fastcall PutObject(intptr_t Index, TObject * AObject);
 
 private:
   TNotifyEvent FOnChange;
@@ -443,7 +443,7 @@ private:
   bool FSorted;
   bool FCaseSensitive;
 private:
-  void __fastcall ExchangeItems(int Index1, int Index2);
+  void __fastcall ExchangeItems(intptr_t Index1, intptr_t Index2);
 private:
   TStringList(const TStringList &);
   TStringList & operator=(const TStringList &);

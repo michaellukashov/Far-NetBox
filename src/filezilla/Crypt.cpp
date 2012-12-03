@@ -56,7 +56,7 @@ CString CCrypt::decrypt(CString str)
 	USES_CONVERSION;
 
 	LPCSTR lpszAscii=T2CA(str);
-	int pos=(strlen(lpszAscii)/3)%strlen(m_key);
+	intptr_t pos=(strlen(lpszAscii)/3)%strlen(m_key);
 	CString ret;
 	TCHAR tmp[2];
 	tmp[1] = 0;

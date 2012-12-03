@@ -161,7 +161,7 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Handle,
     if (Result)
     {
       static const char Signature[] = "FE2X";
-      unsigned int BufSize = VersionInfo->wLength + strlen(Signature);
+      unsigned int BufSize = (unsigned int)(VersionInfo->wLength + strlen(Signature));
       unsigned int ConvBuf;
 
       if (DataSize >= BufSize)

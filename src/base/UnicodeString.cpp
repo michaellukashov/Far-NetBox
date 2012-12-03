@@ -53,13 +53,13 @@ int AnsiString::Pos(wchar_t Ch) const
   return static_cast<int>(Data.find(s.c_str(), 0, 1)) + 1;
 }
 
-AnsiString & AnsiString::Insert(const char * Str, int Pos)
+AnsiString & AnsiString::Insert(const char * Str, intptr_t Pos)
 {
   Data.insert(Pos - 1, Str);
   return *this;
 }
 
-AnsiString AnsiString::SubString(int Pos, int Len) const
+AnsiString AnsiString::SubString(intptr_t Pos, intptr_t Len) const
 {
   std::string s = Data.substr(Pos - 1, Len);
   AnsiString Result(s.c_str(), static_cast<int>(s.size()));
@@ -190,13 +190,13 @@ int RawByteString::Pos(const char * Str) const
   return static_cast<int>(Data.find((const unsigned char *)Str)) + 1;
 }
 
-RawByteString & RawByteString::Insert(const char * Str, int Pos)
+RawByteString & RawByteString::Insert(const char * Str, intptr_t Pos)
 {
   Data.insert(Pos - 1, reinterpret_cast<const unsigned char *>(Str));
   return *this;
 }
 
-RawByteString RawByteString::SubString(int Pos, int Len) const
+RawByteString RawByteString::SubString(intptr_t Pos, intptr_t Len) const
 {
   rawstring_t s = Data.substr(Pos - 1, Len);
   RawByteString Result(s.c_str(), static_cast<int>(s.size()));
@@ -303,7 +303,7 @@ int UTF8String::Pos(wchar_t Ch) const
   return static_cast<int>(Data.find(Ch)) + 1;
 }
 
-UTF8String & UTF8String::Insert(const wchar_t * Str, int Pos)
+UTF8String & UTF8String::Insert(const wchar_t * Str, intptr_t Pos)
 {
   Data.insert(Pos - 1, Str);
   return *this;
@@ -425,7 +425,7 @@ int UnicodeString::ToInt() const
   return Sysutils::StrToIntDef(*this, 0);
 }
 
-UnicodeString & UnicodeString::Replace(int Pos, int Len, const wchar_t * Str, int DataLen)
+UnicodeString & UnicodeString::Replace(intptr_t Pos, intptr_t Len, const wchar_t * Str, intptr_t DataLen)
 {
   Data.replace(Pos - 1, Len, std::wstring(Str, DataLen));
   return *this;
@@ -437,7 +437,7 @@ UnicodeString & UnicodeString::Append(const char * lpszAdd, UINT CodePage)
   return *this;
 }
 
-UnicodeString & UnicodeString::Insert(int Pos, const wchar_t * Str, int StrLen)
+UnicodeString & UnicodeString::Insert(intptr_t Pos, const wchar_t * Str, intptr_t StrLen)
 {
   Data.insert(Pos - 1, Str, StrLen);
   return *this;
@@ -456,14 +456,14 @@ UnicodeString UnicodeString::SubStr(intptr_t Pos, intptr_t Len) const
   return UnicodeString(S);
 }
 
-bool UnicodeString::IsDelimiter(UnicodeString Chars, int Pos) const
+bool UnicodeString::IsDelimiter(UnicodeString Chars, intptr_t Pos) const
 {
   return Sysutils::IsDelimiter(Chars, *this, Pos);
 }
 
-int UnicodeString::LastDelimiter(const UnicodeString & delimiters) const
+intptr_t UnicodeString::LastDelimiter(const UnicodeString & Delimiters) const
 {
-  return Sysutils::LastDelimiter(delimiters, *this);
+  return Sysutils::LastDelimiter(Delimiters, *this);
 }
 
 UnicodeString UnicodeString::Trim() const
