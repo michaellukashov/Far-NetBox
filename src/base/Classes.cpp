@@ -764,7 +764,7 @@ const UnicodeString TStrings::GetValue(const UnicodeString Name)
   // DEBUG_PRINTF(L"Name = %s, I = %d", Name.c_str(), I);
   if (I >= 0)
   {
-    Result = GetStrings(I).SubStr(Name.Length() + 2, static_cast<int>(-1));
+    Result = GetStrings(I).SubStr(Name.Length() + 2, -1);
   }
   // DEBUG_PRINTF(L"Result = %s", Result.c_str());
   return Result;
