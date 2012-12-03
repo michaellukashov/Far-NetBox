@@ -490,7 +490,7 @@ bool __fastcall TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
         {
           Result = HandleTransferStatus(true, Status->transfersize, Status->bytes,
             Status->percent, Status->timeelapsed, Status->timeleft,
-            Status->transferrate, Status->bFileTransfer);
+            Status->transferrate, Status->bFileTransfer != 0);
           delete Status;
         }
         else

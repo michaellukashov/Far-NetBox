@@ -4387,7 +4387,7 @@ windows_password_decrypter(bool * done,
     LocalFree(descr);
   }
 
-  *done = decrypted;
+  *done = decrypted != 0;
   return WEBDAV_NO_ERROR;
 }
 
@@ -4525,7 +4525,7 @@ windows_ssl_client_cert_pw_decrypter(bool * done,
     LocalFree(descr);
   }
 
-  *done = decrypted;
+  *done = decrypted != 0;
   return WEBDAV_NO_ERROR;
 }
 

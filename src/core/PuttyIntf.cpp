@@ -73,7 +73,7 @@ extern "C" char * do_select(Plug plug, SOCKET skt, int startup)
     plug = ProxySocket->plug;
   }
 
-  bool pfwd = is_pfwd(plug);
+  bool pfwd = is_pfwd(plug) != 0;
   if (pfwd)
   {
     plug = static_cast<Plug>(get_pfwd_backend(plug));
@@ -85,11 +85,11 @@ extern "C" char * do_select(Plug plug, SOCKET skt, int startup)
   TSecureShell * SecureShell = reinterpret_cast<TSecureShell *>(frontend);
   if (!pfwd)
   {
-    SecureShell->UpdateSocket(skt, startup);
+    SecureShell->UpdateSocket(skt, startup != 0);
   }
   else
   {
-    SecureShell->UpdatePortFwdSocket(skt, startup);
+    SecureShell->UpdatePortFwdSocket(skt, startup != 0);
   }
 
   return NULL;

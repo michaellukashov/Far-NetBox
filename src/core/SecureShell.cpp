@@ -1586,7 +1586,7 @@ void __fastcall TSecureShell::WaitForData()
 //---------------------------------------------------------------------------
 bool __fastcall TSecureShell::SshFallbackCmd() const
 {
-  return ssh_fallback_cmd(FBackendHandle);
+  return ssh_fallback_cmd(FBackendHandle) != 0;
 }
 //---------------------------------------------------------------------------
 bool __fastcall TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
