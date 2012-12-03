@@ -2867,7 +2867,7 @@ void __fastcall TSFTPFileSystem::DoStartup()
 
     if (SupportsExtension(SFTP_EXT_VENDOR_ID))
     {
-      TSFTPPacket Packet(char(SSH_FXP_EXTENDED), GetSessionData()->GetCodePageAsNumber());
+      TSFTPPacket Packet((unsigned char)SSH_FXP_EXTENDED, GetSessionData()->GetCodePageAsNumber());
       Packet.AddString(RawByteString(SFTP_EXT_VENDOR_ID));
       Packet.AddString(FTerminal->GetConfiguration()->GetCompanyName());
       Packet.AddString(FTerminal->GetConfiguration()->GetProductName());
