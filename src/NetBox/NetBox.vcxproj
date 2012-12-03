@@ -75,7 +75,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\Far2_x64\Plugins\NetBox\</OutDir>
     <IntDir>..\..\Temp\$(SolutionName)\$(Configuration)\x64\</IntDir>
   </PropertyGroup>
