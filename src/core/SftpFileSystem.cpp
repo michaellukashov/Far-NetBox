@@ -249,7 +249,7 @@ public:
   explicit TSFTPPacket(const RawByteString & Source, unsigned int codePage)
   {
     Init(codePage);
-    FLength = Source.Length();
+    FLength = (uintptr_t)Source.Length();
     SetCapacity(FLength);
     memmove(GetData(), Source.c_str(), Source.Length());
   }
@@ -775,7 +775,7 @@ public:
     return FPosition < FLength ? FData + FPosition : NULL;
   }
 
-  void DataUpdated(int ALength)
+  void DataUpdated(uintptr_t ALength)
   {
     FPosition = 0;
     FLength = ALength;
@@ -856,22 +856,22 @@ public:
     return *this;
   }
 
-  unsigned int __fastcall GetLength() const { return FLength; }
+  uintptr_t __fastcall GetLength() const { return FLength; }
   unsigned char * __fastcall GetData() const { return FData; }
-  unsigned int __fastcall GetCapacity() const { return FCapacity; }
+  uintptr_t __fastcall GetCapacity() const { return FCapacity; }
   unsigned char __fastcall GetType() const { return FType; }
-  unsigned int __fastcall GetMessageNumber() const { return FMessageNumber; }
-  void __fastcall SetMessageNumber(unsigned int value) { FMessageNumber = value; }
+  uintptr_t __fastcall GetMessageNumber() const { return FMessageNumber; }
+  void __fastcall SetMessageNumber(uintptr_t value) { FMessageNumber = value; }
   TSFTPFileSystem * __fastcall GetReservedBy() const { return FReservedBy; }
   void __fastcall SetReservedBy(TSFTPFileSystem * value) { FReservedBy = value; }
 
 private:
   unsigned char * FData;
-  unsigned int FLength;
-  unsigned int FCapacity;
-  unsigned int FPosition;
+  uintptr_t FLength;
+  uintptr_t FCapacity;
+  uintptr_t FPosition;
   unsigned char FType;
-  unsigned int FMessageNumber;
+  uintptr_t FMessageNumber;
   TSFTPFileSystem * FReservedBy;
 
   static int FMessageCounter;
@@ -913,7 +913,7 @@ public:
     }
   }
 
-  /* inline */ void Add(const void * AData, int ALength)
+  /* inline */ void Add(const void * AData, intptr_t ALength)
   {
     if (GetLength() + ALength > GetCapacity())
     {
@@ -923,7 +923,7 @@ public:
     FLength += ALength;
   }
 
-  void SetCapacity(unsigned int ACapacity)
+  void SetCapacity(uintptr_t ACapacity)
   {
     if (ACapacity != GetCapacity())
     {
@@ -993,12 +993,12 @@ public:
     return Result;
   }
 
-  unsigned int GetSendLength() const
+  uintptr_t GetSendLength() const
   {
     return FSendPrefixLen + GetLength();
   }
 
-  unsigned int GetRemainingLength() const
+  uintptr_t GetRemainingLength() const
   {
     return GetLength() - FPosition;
   }
@@ -1453,8 +1453,8 @@ protected:
         Request->ChangeType(SSH_FXP_WRITE);
         Request->AddString(FHandle);
         Request->AddInt64(FTransfered);
-        Request->AddData(BlockBuf.GetData(), BlockBuf.GetSize());
-        FLastBlockSize = BlockBuf.GetSize();
+        Request->AddData(BlockBuf.GetData(), (int)BlockBuf.GetSize());
+        FLastBlockSize = (unsigned long)BlockBuf.GetSize();
 
         FTransfered += BlockBuf.GetSize();
       }
@@ -1994,8 +1994,8 @@ inline void __fastcall TSFTPFileSystem::BusyEnd()
 //---------------------------------------------------------------------------
 unsigned long __fastcall TSFTPFileSystem::TransferBlockSize(unsigned long Overhead,
   TFileOperationProgressType * OperationProgress,
-    unsigned long MinPacketSize,
-    unsigned long MaxPacketSize)
+  unsigned long MinPacketSize,
+  unsigned long MaxPacketSize)
 {
   const unsigned long minPacketSize = MinPacketSize ? MinPacketSize : 4096;
 
@@ -2111,7 +2111,7 @@ void __fastcall TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
         FNotLoggedPackets++;
       }
     }
-    FSecureShell->Send(Packet->GetSendData(), Packet->GetSendLength());
+    FSecureShell->Send(Packet->GetSendData(), (int)Packet->GetSendLength());
   }
   ,
   {
@@ -2228,9 +2228,9 @@ unsigned long __fastcall TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::RemoveReservation(int Reservation)
+void __fastcall TSFTPFileSystem::RemoveReservation(intptr_t Reservation)
 {
-  for (int Index = Reservation+1; Index < FPacketReservations->Count; Index++)
+  for (intptr_t Index = Reservation+1; Index < FPacketReservations->Count; Index++)
   {
     FPacketNumbers[Index-1] = FPacketNumbers[Index];
   }
@@ -2281,7 +2281,7 @@ int __fastcall TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
   TSFTPBusy Busy(this);
 
   int Result = SSH_FX_OK;
-  int Reservation = FPacketReservations->IndexOf(Packet);
+  intptr_t Reservation = FPacketReservations->IndexOf(Packet);
 
   if ((Reservation < 0) || (Packet->GetCapacity() == 0))
   {
@@ -2419,7 +2419,7 @@ void __fastcall TSFTPFileSystem::ReserveResponse(const TSFTPPacket * Packet,
 //---------------------------------------------------------------------------
 void __fastcall TSFTPFileSystem::UnreserveResponse(TSFTPPacket * Response)
 {
-  int Reservation = FPacketReservations->IndexOf(Response);
+  intptr_t Reservation = FPacketReservations->IndexOf(Response);
   if (Response->GetCapacity() != 0)
   {
     // added check for already received packet
@@ -2440,13 +2440,13 @@ void __fastcall TSFTPFileSystem::UnreserveResponse(TSFTPPacket * Response)
   }
 }
 //---------------------------------------------------------------------------
-int __fastcall TSFTPFileSystem::ReceiveResponse(
+uintptr_t __fastcall TSFTPFileSystem::ReceiveResponse(
   const TSFTPPacket * Packet, TSFTPPacket * Response, int ExpectedType,
   int AllowStatus)
 {
   CALLSTACK;
   int Result;
-  unsigned int MessageNumber = Packet->GetMessageNumber();
+  uintptr_t MessageNumber = Packet->GetMessageNumber();
   TSFTPPacket * AResponse = (Response ? Response : new TSFTPPacket(GetSessionData()->GetCodePageAsNumber()));
   TRY_FINALLY (
   {
@@ -2470,12 +2470,12 @@ int __fastcall TSFTPFileSystem::ReceiveResponse(
   return Result;
 }
 //---------------------------------------------------------------------------
-int __fastcall TSFTPFileSystem::SendPacketAndReceiveResponse(
+uintptr_t __fastcall TSFTPFileSystem::SendPacketAndReceiveResponse(
   const TSFTPPacket * Packet, TSFTPPacket * Response, int ExpectedType,
   int AllowStatus)
 {
   CALLSTACK;
-  int Result;
+  uintptr_t Result;
   TSFTPBusy Busy(this);
   SendPacket(Packet);
   Result = ReceiveResponse(Packet, Response, ExpectedType, AllowStatus);
@@ -5381,7 +5381,7 @@ void __fastcall TSFTPFileSystem::SFTPSink(const UnicodeString FileName,
           int GapCount = 0;
           unsigned long Missing = 0;
           unsigned long DataLen = 0;
-          unsigned long BlockSize;
+          unsigned long BlockSize = 0;
           bool ConvertToken = false;
 
           while (!Eof)

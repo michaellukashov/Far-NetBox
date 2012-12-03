@@ -361,7 +361,7 @@ static int fcrypt_end(unsigned char mac[], fcrypt_ctx cx[1])
 //---------------------------------------------------------------------------
 #define PASSWORD_MANAGER_AES_MODE 3
 //---------------------------------------------------------------------------
-static void __fastcall FillBufferWithRandomData(char * Buf, int Len)
+static void __fastcall FillBufferWithRandomData(char * Buf, intptr_t Len)
 {
   while (Len > 0)
   {
@@ -502,7 +502,7 @@ RawByteString __fastcall ScramblePassword(UnicodeString Password)
 {
   #define SCRAMBLE_LENGTH_EXTENSION 50
   UTF8String UtfPassword = Password;
-  int Len = UtfPassword.Length();
+  intptr_t Len = UtfPassword.Length();
   char * Buf = new char[Len + SCRAMBLE_LENGTH_EXTENSION];
   int Padding = (((Len + 3) / 17) * 17 + 17) - 3 - Len;
   for (int Index = 0; Index < Padding; Index++)

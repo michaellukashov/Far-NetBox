@@ -289,7 +289,7 @@ private:
   void __fastcall SetValue(const UnicodeString & Name, const UnicodeString & Value);
   UnicodeString __fastcall GetValue(const UnicodeString & Name);
 
-  int FMaxSize;
+  intptr_t FMaxSize;
 };
 //---------------------------------------------------------------------------
 class TRights

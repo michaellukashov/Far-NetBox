@@ -1212,7 +1212,7 @@ bool /* __fastcall */ TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKi
     TRACE("02");
   }
 
-  TRACEFMT("1 [%d] [%d] [%d] [%d] [%d]", int(AResult), int(Configuration->GetRememberPassword()), int(Prompts->Count), (Prompts->Count > 0 ? int(!bool(Prompts->Objects[0])) : 0), int(Kind));
+  TRACEFMT("1 [%d] [%d] [%d] [%d] [%d]", int(AResult), int(Configuration->GetRememberPassword()), int(Prompts->Count), (Prompts->Count > 0 ? int(!bool(Prompts->Objects[0] != NULL)) : 0), int(Kind));
   if (AResult && (Configuration->GetRememberPassword()) &&
       (Prompts->Count == 1) && !(Prompts->Objects[0]) &&
       ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
@@ -4714,7 +4714,7 @@ void /* __fastcall */ TTerminal::SynchronizeCollectFile(const UnicodeString & Fi
       ChecklistItem->Remote.Size = File->GetSize();
 
       bool Modified = false;
-      int LocalIndex = Data->LocalFileList->IndexOf(LocalFileName.c_str());
+      intptr_t LocalIndex = Data->LocalFileList->IndexOf(LocalFileName.c_str());
       bool New = (LocalIndex < 0);
       CTRACEFMT(TRACE_SYNCH, "00b1 [%d] [%d] [%s]", LocalIndex, int(New), LocalFileName.c_str());
       if (!New)

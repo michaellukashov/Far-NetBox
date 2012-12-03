@@ -270,7 +270,7 @@ bool __fastcall SpecialFolderLocation(int PathID, UnicodeString & Path)
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall ItemsFormatString(const UnicodeString SingleItemFormat,
-  const UnicodeString MultiItemsFormat, int Count, const UnicodeString FirstItem)
+  const UnicodeString MultiItemsFormat, intptr_t Count, const UnicodeString FirstItem)
 {
   UnicodeString Result;
   if (Count == 1)
@@ -411,9 +411,9 @@ TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
   FLocalFileName = LocalFileName;
 }
 //---------------------------------------------------------------------------
-int __fastcall TLocalCustomCommand::PatternLen(int Index, wchar_t PatternCmd)
+intptr_t __fastcall TLocalCustomCommand::PatternLen(intptr_t Index, wchar_t PatternCmd)
 {
-  int Len = 0;
+  intptr_t Len = 0;
   if (PatternCmd == L'^')
   {
     Len = 3;
@@ -425,7 +425,7 @@ int __fastcall TLocalCustomCommand::PatternLen(int Index, wchar_t PatternCmd)
   return Len;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TLocalCustomCommand::PatternReplacement(int Index,
+bool __fastcall TLocalCustomCommand::PatternReplacement(intptr_t Index,
   const UnicodeString & Pattern, UnicodeString & Replacement, bool & Delimit)
 {
   bool Result = false;

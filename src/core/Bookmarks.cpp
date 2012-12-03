@@ -244,7 +244,7 @@ void __fastcall TBookmarks::ModifyAll(bool Modify)
 //---------------------------------------------------------------------------
 TBookmarkList * __fastcall TBookmarks::GetBookmarks(UnicodeString Index)
 {
-  int I = FBookmarkLists->IndexOf(Index.c_str());
+  intptr_t I = FBookmarkLists->IndexOf(Index.c_str());
   if (I >= 0)
   {
     return dynamic_cast<TBookmarkList *>(FBookmarkLists->Objects[I]);
@@ -257,7 +257,7 @@ TBookmarkList * __fastcall TBookmarks::GetBookmarks(UnicodeString Index)
 //---------------------------------------------------------------------------
 void __fastcall TBookmarks::SetBookmarks(UnicodeString Index, TBookmarkList * value)
 {
-  int I = FBookmarkLists->IndexOf(Index.c_str());
+  intptr_t I = FBookmarkLists->IndexOf(Index.c_str());
   if (I >= 0)
   {
     TBookmarkList * BookmarkList;
@@ -351,7 +351,7 @@ void __fastcall TBookmarkList::Add(TBookmark * Bookmark)
 void __fastcall TBookmarkList::InsertBefore(TBookmark * BeforeBookmark, TBookmark * Bookmark)
 {
   assert(BeforeBookmark);
-  int I = FBookmarks->IndexOf(BeforeBookmark->GetKey().c_str());
+  intptr_t I = FBookmarks->IndexOf(BeforeBookmark->GetKey().c_str());
   assert(I >= 0);
   Insert(I, Bookmark);
 }
@@ -360,9 +360,9 @@ void __fastcall TBookmarkList::MoveTo(TBookmark * ToBookmark,
   TBookmark * Bookmark, bool Before)
 {
   assert(ToBookmark != NULL);
-  int NewIndex = FBookmarks->IndexOf(ToBookmark->GetKey().c_str());
+  intptr_t NewIndex = FBookmarks->IndexOf(ToBookmark->GetKey().c_str());
   assert(Bookmark != NULL);
-  int OldIndex = FBookmarks->IndexOf(Bookmark->GetKey().c_str());
+  intptr_t OldIndex = FBookmarks->IndexOf(Bookmark->GetKey().c_str());
   if (Before && (NewIndex > OldIndex))
   {
     // otherwise item is moved after the item in the target index
@@ -376,7 +376,7 @@ void __fastcall TBookmarkList::MoveTo(TBookmark * ToBookmark,
   FBookmarks->Move(OldIndex, NewIndex);
 }
 //---------------------------------------------------------------------------
-void __fastcall TBookmarkList::Insert(int Index, TBookmark * Bookmark)
+void __fastcall TBookmarkList::Insert(intptr_t Index, TBookmark * Bookmark)
 {
   assert(Bookmark);
   assert(!Bookmark->FOwner);
@@ -395,7 +395,7 @@ void __fastcall TBookmarkList::Delete(TBookmark * Bookmark)
 {
   assert(Bookmark);
   assert(Bookmark->FOwner == this);
-  int I = IndexOf(Bookmark);
+  intptr_t I = IndexOf(Bookmark);
   assert(I >= 0);
   FModified = true;
   Bookmark->FOwner = NULL;
@@ -403,12 +403,12 @@ void __fastcall TBookmarkList::Delete(TBookmark * Bookmark)
   delete Bookmark;
 }
 //---------------------------------------------------------------------------
-int __fastcall TBookmarkList::IndexOf(TBookmark * Bookmark)
+intptr_t __fastcall TBookmarkList::IndexOf(TBookmark * Bookmark)
 {
   return FBookmarks->IndexOf(Bookmark->GetKey().c_str());
 }
 //---------------------------------------------------------------------------
-void __fastcall TBookmarkList::KeyChanged(int Index)
+void __fastcall TBookmarkList::KeyChanged(intptr_t Index)
 {
   assert(Index < GetCount());
   TBookmark * Bookmark = dynamic_cast<TBookmark *>(FBookmarks->Objects[Index]);
@@ -422,7 +422,7 @@ void __fastcall TBookmarkList::KeyChanged(int Index)
 //---------------------------------------------------------------------------
 TBookmark * __fastcall TBookmarkList::FindByName(const UnicodeString Node, const UnicodeString Name)
 {
-  int I = FBookmarks->IndexOf(TBookmark::BookmarkKey(Node, Name).c_str());
+  intptr_t I = FBookmarks->IndexOf(TBookmark::BookmarkKey(Node, Name).c_str());
   TBookmark * Bookmark = ((I >= 0) ? dynamic_cast<TBookmark *>(FBookmarks->Objects[I]) : NULL);
   assert(!Bookmark || (Bookmark->GetNode() == Node && Bookmark->GetName() == Name));
   return Bookmark;
@@ -440,12 +440,12 @@ TBookmark * __fastcall TBookmarkList::FindByShortCut(TShortCut ShortCut)
   return NULL;
 }
 //---------------------------------------------------------------------------
-int __fastcall TBookmarkList::GetCount()
+intptr_t __fastcall TBookmarkList::GetCount()
 {
   return FBookmarks->Count;
 }
 //---------------------------------------------------------------------------
-TBookmark * __fastcall TBookmarkList::GetBookmarks(int Index)
+TBookmark * __fastcall TBookmarkList::GetBookmarks(intptr_t Index)
 {
   TBookmark * Bookmark = dynamic_cast<TBookmark *>(FBookmarks->Objects[Index]);
   assert(Bookmark);
@@ -459,7 +459,7 @@ bool __fastcall TBookmarkList::GetNodeOpened(UnicodeString Index)
 //---------------------------------------------------------------------------
 void __fastcall TBookmarkList::SetNodeOpened(UnicodeString Index, bool value)
 {
-  int I = FOpenedNodes->IndexOf(Index.c_str());
+  intptr_t I = FOpenedNodes->IndexOf(Index.c_str());
   if ((I >= 0) != value)
   {
     if (value)
@@ -517,7 +517,7 @@ void __fastcall TBookmark::SetName(const UnicodeString value)
 {
   if (GetName() != value)
   {
-    int OldIndex = FOwner ? FOwner->IndexOf(this) : -1;
+    intptr_t OldIndex = FOwner ? FOwner->IndexOf(this) : -1;
     UnicodeString OldName = FName;
     FName = value;
     try
@@ -554,7 +554,7 @@ void __fastcall TBookmark::SetNode(const UnicodeString value)
 {
   if (GetNode() != value)
   {
-    int OldIndex = FOwner ? FOwner->IndexOf(this) : -1;
+    intptr_t OldIndex = FOwner ? FOwner->IndexOf(this) : -1;
     FNode = value;
     Modify(OldIndex);
   }
@@ -569,7 +569,7 @@ void __fastcall TBookmark::SetShortCut(TShortCut value)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TBookmark::Modify(int OldIndex)
+void __fastcall TBookmark::Modify(intptr_t OldIndex)
 {
   if (FOwner)
   {

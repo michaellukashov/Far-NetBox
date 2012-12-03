@@ -89,13 +89,13 @@ void __fastcall TFileOperationProgressType::ClearTransfer()
 }
 //---------------------------------------------------------------------------
 void __fastcall TFileOperationProgressType::Start(TFileOperation AOperation,
-  TOperationSide ASide, int ACount)
+  TOperationSide ASide, intptr_t ACount)
 {
   Start(AOperation, ASide, ACount, false, L"", 0);
 }
 //---------------------------------------------------------------------------
 void __fastcall TFileOperationProgressType::Start(TFileOperation AOperation,
-  TOperationSide ASide, int ACount, bool ATemp,
+  TOperationSide ASide, intptr_t ACount, bool ATemp,
   const UnicodeString ADirectory, unsigned long ACPSLimit)
 {
   CALLSTACK;
@@ -155,22 +155,22 @@ void __fastcall TFileOperationProgressType::Resume()
   DoProgress();
 }
 //---------------------------------------------------------------------------
-int __fastcall TFileOperationProgressType::OperationProgress() const
+intptr_t __fastcall TFileOperationProgressType::OperationProgress() const
 {
   CCALLSTACK(TRACE_PROGRESS);
   assert(Count);
-  int Result = (FFilesFinished * 100)/Count;
+  intptr_t Result = (FFilesFinished * 100)/Count;
   CTRACEFMT(TRACE_PROGRESS, "[%d]", Result);
   return Result;
 }
 //---------------------------------------------------------------------------
-int __fastcall TFileOperationProgressType::TransferProgress() const
+intptr_t __fastcall TFileOperationProgressType::TransferProgress() const
 {
   CCALLSTACK(TRACE_PROGRESS);
-  int Result;
+  intptr_t Result;
   if (TransferSize)
   {
-    Result = static_cast<int>((TransferedSize * 100) / TransferSize);
+    Result = static_cast<intptr_t>((TransferedSize * 100) / TransferSize);
   }
   else
   {
@@ -180,16 +180,16 @@ int __fastcall TFileOperationProgressType::TransferProgress() const
   return Result;
 }
 //---------------------------------------------------------------------------
-int __fastcall TFileOperationProgressType::TotalTransferProgress() const
+intptr_t __fastcall TFileOperationProgressType::TotalTransferProgress() const
 {
   CCALLSTACK(TRACE_PROGRESS);
   assert(TotalSizeSet);
-  int Result = TotalSize > 0 ? static_cast<int>(((TotalTransfered + TotalSkipped) * 100) / TotalSize) : 0;
+  intptr_t Result = TotalSize > 0 ? static_cast<intptr_t>(((TotalTransfered + TotalSkipped) * 100) / TotalSize) : 0;
   CTRACEFMT(TRACE_PROGRESS, "[%d]", Result);
   return Result < 100 ? Result : 100;
 }
 //---------------------------------------------------------------------------
-int __fastcall TFileOperationProgressType::OverallProgress() const
+intptr_t __fastcall TFileOperationProgressType::OverallProgress() const
 {
   CCALLSTACK(TRACE_PROGRESS);
   if (TotalSizeSet)

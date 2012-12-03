@@ -27,8 +27,8 @@ private:
   int FHiddenCount;
   virtual void __fastcall Notify(void *Ptr, TListNotification Action);
 public:
-  int __fastcall GetCount();
-  void __fastcall SetCount(int value);
+  intptr_t __fastcall GetCount();
+  void __fastcall SetCount(intptr_t value);
 protected:
   void __fastcall Recount();
 public:

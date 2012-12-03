@@ -71,7 +71,7 @@ bool TXmlStorage::LoadXml()
   if (strcmp(value, CONST_ROOT_NODE) != 0) return false;
   const char * attr = xmlRoot->Attribute(CONST_VERSION_ATTR);
   if (!attr) return false;
-  DWORD Version = StrToVersionNumber(UnicodeString(attr));
+  uintptr_t Version = StrToVersionNumber(UnicodeString(attr));
   if (Version < MAKEVERSIONNUMBER(2,0,0)) return false;
   TiXmlElement * Element = xmlRoot->FirstChildElement(ToStdString(FStoredSessionsSubKey).c_str());
   if (Element != NULL)

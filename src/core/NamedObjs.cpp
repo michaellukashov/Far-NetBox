@@ -118,12 +118,12 @@ TNamedObject * __fastcall TNamedObjectList::FindByName(UnicodeString Name,
   return NULL;
 }
 //---------------------------------------------------------------------------
-void __fastcall TNamedObjectList::SetCount(int value)
+void __fastcall TNamedObjectList::SetCount(intptr_t value)
 {
   TObjectList::SetCount(value/*+HiddenCount*/);
 }
 //---------------------------------------------------------------------------
-int __fastcall TNamedObjectList::GetCount()
+intptr_t __fastcall TNamedObjectList::GetCount()
 {
   return TObjectList::Count - GetHiddenCount();
 }

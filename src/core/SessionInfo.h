@@ -225,7 +225,7 @@ public:
   TNotifyEvent & __fastcall GetOnStateChange();
   void __fastcall SetOnStateChange(TNotifyEvent value);
   UnicodeString __fastcall GetCurrentFileName();
-  int __fastcall GetTopIndex();
+  intptr_t __fastcall GetTopIndex();
   UnicodeString __fastcall GetName();
   void __fastcall SetName(const UnicodeString value);
   intptr_t __fastcall GetCount();

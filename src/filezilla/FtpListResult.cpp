@@ -493,7 +493,7 @@ t_directory::t_direntry *CFtpListResult::getList(int &num, CTime EntryTime)
 	delete [] line;
 	m_curline=0;
 
-	num=m_EntryList.size();
+	num=(int)m_EntryList.size();
 	if (!num)
 		return 0;
 	t_directory::t_direntry *res=new t_directory::t_direntry[num];
@@ -606,7 +606,7 @@ void CFtpListResult::AddData(char *data, int size)
 		int tmp;
 		char *tmpline = new char[strlen(line) + 1];
 		strcpy(tmpline, line); 
-		if (parseLine(tmpline, strlen(tmpline), direntry, tmp))
+		if (parseLine(tmpline, (const int)strlen(tmpline), direntry, tmp))
 		{
 			delete [] tmpline;
 			if (tmp)

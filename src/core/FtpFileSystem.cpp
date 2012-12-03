@@ -3907,7 +3907,7 @@ bool __fastcall TFTPFileSystem::Unquote(UnicodeString & Str)
   assert((Str.Length() > 0) && ((Str[1] == L'"') || (Str[1] == L'\'')));
 
   int Index = 1;
-  wchar_t Quote;
+  wchar_t Quote = 0;
   while (Index <= Str.Length())
   {
     switch (State)

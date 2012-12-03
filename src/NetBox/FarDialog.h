@@ -285,7 +285,7 @@ protected:
   virtual bool MouseMove(int X, int Y, MOUSE_EVENT_RECORD * Event);
   virtual bool MouseClick(MOUSE_EVENT_RECORD * Event);
   TPoint MouseClientPosition(MOUSE_EVENT_RECORD * Event);
-  void Text(int X, int Y, int Color, const UnicodeString Str);
+  void Text(int X, int Y, uintptr_t Color, const UnicodeString Str);
   void Redraw();
   virtual bool HotKey(char HotKey);
 
@@ -493,16 +493,16 @@ public:
   intptr_t GetTopIndex();
   void SetTopIndex(intptr_t Value);
   inline intptr_t GetSelectedInt(bool Init);
-  bool GetFlag(int Index, DWORD Flag);
-  void SetFlag(int Index, DWORD Flag, bool Value);
-  DWORD GetFlags(int Index);
-  void SetFlags(int Index, DWORD Value);
+  bool GetFlag(intptr_t Index, DWORD Flag);
+  void SetFlag(intptr_t Index, DWORD Flag, bool Value);
+  DWORD GetFlags(intptr_t Index);
+  void SetFlags(intptr_t Index, DWORD Value);
   intptr_t GetMaxLength();
   intptr_t GetVisibleCount();
-  bool GetDisabled(int Index) { return GetFlag(Index, LIF_DISABLE); }
-  void SetDisabled(int Index, bool Value) { SetFlag(Index, LIF_DISABLE, Value); }
-  bool GetChecked(int Index) { return GetFlag(Index, LIF_CHECKED); }
-  void SetChecked(int Index, bool Value) { SetFlag(Index, LIF_CHECKED, Value); }
+  bool GetDisabled(intptr_t Index) { return GetFlag(Index, LIF_DISABLE); }
+  void SetDisabled(intptr_t Index, bool Value) { SetFlag(Index, LIF_DISABLE, Value); }
+  bool GetChecked(intptr_t Index) { return GetFlag(Index, LIF_CHECKED); }
+  void SetChecked(intptr_t Index, bool Value) { SetFlag(Index, LIF_CHECKED, Value); }
 
 protected:
   virtual void __fastcall Changed();

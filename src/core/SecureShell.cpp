@@ -935,7 +935,7 @@ UnicodeString __fastcall TSecureShell::ReceiveLine()
         Index++;
       }
       EOL = static_cast<Boolean>(Index && (Pending[Index-1] == '\n'));
-      Integer PrevLen = Line.Length();
+      intptr_t PrevLen = Line.Length();
       Line.SetLength(PrevLen + Index);
       Receive(reinterpret_cast<unsigned char *>(const_cast<char *>(Line.c_str())) + PrevLen, Index);
     }
@@ -1117,7 +1117,7 @@ void __fastcall TSecureShell::SendStr(UnicodeString Str)
 {
   CheckConnection();
   std::string AnsiStr = W2MB(Str.c_str(), FSessionData->GetCodePageAsNumber());
-  Send(reinterpret_cast<const unsigned char *>(AnsiStr.c_str()), AnsiStr.size());
+  Send(reinterpret_cast<const unsigned char *>(AnsiStr.c_str()), (int)AnsiStr.size());
 }
 //---------------------------------------------------------------------------
 void __fastcall TSecureShell::SendLine(UnicodeString Line)

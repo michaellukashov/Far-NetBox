@@ -275,7 +275,7 @@ void TTabButton::SetTabName(const UnicodeString Value)
   if (FTabName != Val)
   {
     UnicodeString C;
-    int P = ::Pos(Val, L"|");
+    intptr_t P = ::Pos(Val, L"|");
     if (P > 0)
     {
       C = Val.SubString(1, P - 1);
@@ -1626,9 +1626,9 @@ private:
   TFSProtocol IndexToFSProtocol(intptr_t Index, bool AllowScpFallback);
   TFSProtocol GetFSProtocol();
   intptr_t LastSupportedFtpProxyMethod();
-  bool SupportedFtpProxyMethod(int Method);
+  bool SupportedFtpProxyMethod(intptr_t Method);
   TProxyMethod GetProxyMethod();
-  int GetFtpProxyLogonType();
+  intptr_t GetFtpProxyLogonType();
   TFtps IndexToFtps(int Index);
   TFtps GetFtps();
   TLoginType IndexToLoginType(intptr_t Index);
@@ -3650,7 +3650,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
     // Proxy tab
     SessionData->SetProxyMethod(GetProxyMethod());
-    SessionData->SetFtpProxyLogonType(GetFtpProxyLogonType());
+    SessionData->SetFtpProxyLogonType((int)GetFtpProxyLogonType());
     SessionData->SetProxyHost(ProxyHostEdit->GetText());
     SessionData->SetProxyPort(ProxyPortEdit->GetAsInteger());
     SessionData->SetProxyUsername(ProxyUsernameEdit->GetText());
@@ -3878,7 +3878,7 @@ intptr_t TSessionDialog::LastSupportedFtpProxyMethod()
   return pmSystem; // pmWebDAV;
 }
 //---------------------------------------------------------------------------
-bool TSessionDialog::SupportedFtpProxyMethod(int Method)
+bool TSessionDialog::SupportedFtpProxyMethod(intptr_t Method)
 {
   return (Method >= 0) && (Method <= LastSupportedFtpProxyMethod());
 }
@@ -3904,7 +3904,7 @@ TProxyMethod TSessionDialog::GetProxyMethod()
   return Result;
 }
 //---------------------------------------------------------------------------
-int TSessionDialog::GetFtpProxyLogonType()
+intptr_t TSessionDialog::GetFtpProxyLogonType()
 {
   int Result;
   if (IndexToFSProtocol(TransferProtocolCombo->GetItemIndex(), AllowScpFallbackCheck->GetChecked()) != fsFTP)
@@ -3919,7 +3919,7 @@ int TSessionDialog::GetFtpProxyLogonType()
     }
     else
     {
-      Result = FtpProxyMethodCombo->GetItemIndex() - LastSupportedFtpProxyMethod();
+      Result = (int)(FtpProxyMethodCombo->GetItemIndex() - LastSupportedFtpProxyMethod());
     }
   }
   return Result;
@@ -3959,7 +3959,7 @@ TFtps TSessionDialog::IndexToFtps(int Index)
 //---------------------------------------------------------------------------
 TFtps TSessionDialog::GetFtps()
 {
-  return IndexToFtps(FtpEncryptionCombo->GetItemIndex());
+  return (TFtps)IndexToFtps((int)FtpEncryptionCombo->GetItemIndex());
 }
 //---------------------------------------------------------------------------
 TLoginType TSessionDialog::GetLoginType()
@@ -5331,7 +5331,7 @@ TCopyParamType TCopyParamsContainer::GetParams()
   if (Result.GetTransferMode() == tmAutomatic)
   {
     Result.GetAsciiFileMask().SetMasks(AsciiFileMaskEdit->GetText());
-    int Start, Length;
+    intptr_t Start, Length;
     assert(Result.GetAsciiFileMask().GetIsValid(Start, Length));
   }
 
@@ -5367,7 +5367,7 @@ void TCopyParamsContainer::ValidateMaskComboExit(TObject * Sender)
   TFarEdit * Edit = dynamic_cast<TFarEdit *>(Sender);
   assert(Edit != NULL);
   TFileMasks Masks(Edit->GetText());
-  int Start = 0, Length = 0;
+  intptr_t Start = 0, Length = 0;
   if (!Masks.GetIsValid(Start, Length))
   {
     Edit->SetFocus();
@@ -6402,8 +6402,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
       UnicodeString RemoteDirectory = Bookmark->GetRemote();
       if (!RemoteDirectory.IsEmpty() && (BookmarkDirectories->IndexOf(RemoteDirectory.c_str()) == NPOS))
       {
-        int Pos = 0;
-        Pos = BookmarkDirectories->Add(RemoteDirectory);
+        intptr_t Pos = BookmarkDirectories->Add(RemoteDirectory);
         if (RemoteDirectory == Directory)
         {
           FirstItemFocused = Pos;
@@ -6878,7 +6877,7 @@ void TFullSynchronizeDialog::AdaptSize()
   if (ShowCopyParam != CopyParamLister->GetVisible())
   {
     ShowGroup(1, ShowCopyParam);
-    SetHeight(FFullHeight - (ShowCopyParam ? 0 : CopyParamLister->GetHeight() + 1));
+    SetHeight(FFullHeight - (int)(ShowCopyParam ? 0 : CopyParamLister->GetHeight() + 1));
   }
 }
 //---------------------------------------------------------------------------
@@ -7576,13 +7575,13 @@ void TSynchronizeChecklistDialog::CheckAll(bool Check)
   List->BeginUpdate();
   TRY_FINALLY (
   {
-    int Count = List->Count;
-    for (int Index = 0; Index < Count; Index++)
+    intptr_t Count = List->Count;
+    for (intptr_t Index = 0; Index < Count; Index++)
     {
       List->SetChecked(Index, Check);
     }
 
-    FChecked = (Check ? Count : 0);
+    FChecked = (int)(Check ? Count : 0);
   }
   ,
   {
@@ -7707,7 +7706,7 @@ bool TSynchronizeChecklistDialog::Execute(TSynchronizeChecklist * Checklist)
   if (Result)
   {
     TFarList * List = ListBox->GetItems();
-    int Count = List->Count;
+    intptr_t Count = List->Count;
     for (int Index = 0; Index < Count; Index++)
     {
       TSynchronizeChecklist::TItem * ChecklistItem =

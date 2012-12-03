@@ -47,10 +47,10 @@ AnsiString::operator UnicodeString() const
   return UnicodeString(Data.c_str(), static_cast<int>(Data.size()));
 }
 
-int AnsiString::Pos(wchar_t Ch) const
+intptr_t AnsiString::Pos(wchar_t Ch) const
 {
   AnsiString s(&Ch, 1);
-  return static_cast<int>(Data.find(s.c_str(), 0, 1)) + 1;
+  return static_cast<intptr_t>(Data.find(s.c_str(), 0, 1)) + 1;
 }
 
 AnsiString & AnsiString::Insert(const char * Str, intptr_t Pos)
@@ -298,7 +298,7 @@ UTF8String::UTF8String(const UnicodeString & Str)
   Init(Str.c_str(), Str.GetLength());
 }
 
-int UTF8String::Pos(wchar_t Ch) const
+intptr_t UTF8String::Pos(wchar_t Ch) const
 {
   return static_cast<int>(Data.find(Ch)) + 1;
 }

@@ -147,9 +147,9 @@ void TList::SetItem(intptr_t Index, void * Item)
   FList.insert(FList.begin() + Index, Item);
 }
 
-int TList::Add(void * value)
+intptr_t TList::Add(void * value)
 {
-  int Result = static_cast<int>(FList.size());
+  intptr_t Result = static_cast<intptr_t>(FList.size());
   FList.push_back(value);
   return Result;
 }
@@ -561,7 +561,7 @@ void TStrings::Assign(TPersistent * Source)
   TPersistent::Assign(Source);
 }
 
-int TStrings::Add(const UnicodeString S)
+intptr_t TStrings::Add(const UnicodeString S)
 {
   intptr_t Result = GetCount();
   Insert(Result, S);
@@ -728,7 +728,7 @@ intptr_t TStrings::IndexOfName(const UnicodeString Name)
   for (intptr_t Index = 0; Index < GetCount(); Index++)
   {
     UnicodeString S = GetStrings(Index);
-    int P = ::AnsiPos(S, L'=');
+    intptr_t P = ::AnsiPos(S, L'=');
     if ((P > 0) && (CompareStrings(S.SubStr(1, P - 1), Name) == 0))
     {
       return Index;
@@ -745,7 +745,7 @@ const UnicodeString TStrings::GetName(intptr_t Index) const
 UnicodeString TStrings::ExtractName(const UnicodeString S) const
 {
   UnicodeString Result = S;
-  int P = ::AnsiPos(Result, L'=');
+  intptr_t P = ::AnsiPos(Result, L'=');
   if (P > 0)
   {
     Result.SetLength(P - 1);
@@ -772,7 +772,7 @@ const UnicodeString TStrings::GetValue(const UnicodeString Name)
 
 void TStrings::SetValue(const UnicodeString Name, const UnicodeString Value)
 {
-  int I = IndexOfName(Name);
+  intptr_t I = IndexOfName(Name);
   if (!Value.IsEmpty())
   {
     if (I < 0)
@@ -822,7 +822,7 @@ void TStrings::SaveToStream(TStream * /*Stream*/) const
 //---------------------------------------------------------------------------
 intptr_t StringListCompareStrings(TStringList * List, intptr_t Index1, intptr_t Index2)
 {
-  int Result = List->CompareStrings(List->FList[Index1].FString,
+  intptr_t Result = List->CompareStrings(List->FList[Index1].FString,
                                     List->FList[Index2].FString);
   return Result;
 }
@@ -853,12 +853,12 @@ void TStringList::Clear()
   // SetCapacity(0);
 }
 
-int TStringList::Add(const UnicodeString S)
+intptr_t TStringList::Add(const UnicodeString S)
 {
   return AddObject(S, NULL);
 }
 
-int TStringList::AddObject(const UnicodeString S, TObject * AObject)
+intptr_t TStringList::AddObject(const UnicodeString S, TObject * AObject)
 {
   // DEBUG_PRINTF(L"S = %s, Duplicates = %d", S.c_str(), FDuplicates);
   intptr_t Result = 0;

@@ -248,7 +248,7 @@ UnicodeString __fastcall TCopyParamType::RestoreChars(UnicodeString FileName) co
     wchar_t * InvalidChar = const_cast<wchar_t *>(FileName.c_str());
     while ((InvalidChar = wcschr(InvalidChar, TokenPrefix)) != NULL)
     {
-      int Index = InvalidChar - FileName.c_str() + 1;
+      intptr_t Index = InvalidChar - FileName.c_str() + 1;
       if (FileName.Length() >= Index + 2)
       {
         UnicodeString Hex = FileName.SubString(Index + 1, 2);

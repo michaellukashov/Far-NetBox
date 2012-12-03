@@ -173,7 +173,7 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Handle,
   }
   else
   {
-    Result = GetFileVersionInfo(const_cast<wchar_t *>(FileName), Handle, DataSize, Data);
+    Result = GetFileVersionInfo(const_cast<wchar_t *>(FileName), Handle, DataSize, Data) != 0;
   }
 
   return Result;

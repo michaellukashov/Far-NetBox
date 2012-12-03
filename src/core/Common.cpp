@@ -411,12 +411,12 @@ UnicodeString CutToChar(UnicodeString &Str, wchar_t Ch, bool Trim)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString CopyToChars(const UnicodeString & Str, int & From, UnicodeString Chs, bool Trim,
+UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From, UnicodeString Chs, bool Trim,
   wchar_t * Delimiter, bool DoubleDelimiterEscapes)
 {
   UnicodeString Result;
 
-  int P;
+  intptr_t P;
   for (P = From; P <= Str.Length(); P++)
   {
     if (IsDelimiter(Chs, Str, P))
@@ -681,7 +681,7 @@ void __fastcall SplitCommand(UnicodeString Command, UnicodeString &Program,
   }
   else
   {
-    int P = Command.Pos(L" ");
+    intptr_t P = Command.Pos(L" ");
     if (P)
     {
       Program = Command.SubString(1, P).Trim();
@@ -692,7 +692,7 @@ void __fastcall SplitCommand(UnicodeString Command, UnicodeString &Program,
       Program = Command;
     }
   }
-  int B = Program.LastDelimiter(L"\\/");
+  intptr_t B = Program.LastDelimiter(L"\\/");
   if (B)
   {
     Dir = Program.SubString(1, B).Trim();
@@ -1861,7 +1861,7 @@ UnicodeString __fastcall LoadStr(int Ident, unsigned int MaxLength)
   Result.SetLength(MaxLength > 0 ? MaxLength : 1024);
   HINSTANCE hInstance = FarPlugin ? FarPlugin->GetHandle() : GetModuleHandle(0);
   assert(hInstance != 0);
-  int Length = ::LoadString(hInstance, Ident, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Result.c_str())), Result.Length());
+  intptr_t Length = ::LoadString(hInstance, Ident, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Result.c_str())), (int)Result.Length());
 #endif
   Result.SetLength(Length);
 

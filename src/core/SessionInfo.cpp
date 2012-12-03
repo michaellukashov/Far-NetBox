@@ -1219,7 +1219,7 @@ UnicodeString __fastcall TSessionLog::GetCurrentFileName()
   return FCurrentFileName;
 }
 //---------------------------------------------------------------------------
-int __fastcall TSessionLog::GetTopIndex()
+intptr_t __fastcall TSessionLog::GetTopIndex()
 {
   return FTopIndex;
 }

@@ -33,7 +33,7 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
   TSessionData * SessionData, UnicodeString Password);
 bool __fastcall SpecialFolderLocation(int PathID, UnicodeString & Path);
 UnicodeString __fastcall ItemsFormatString(const UnicodeString SingleItemFormat,
-  const UnicodeString MultiItemsFormat, int Count, const UnicodeString FirstItem);
+  const UnicodeString MultiItemsFormat, intptr_t Count, const UnicodeString FirstItem);
 UnicodeString __fastcall ItemsFormatString(const UnicodeString SingleItemFormat,
   const UnicodeString MultiItemsFormat, TStrings * Items);
 UnicodeString __fastcall FileNameFormatString(const UnicodeString SingleFileFormat,
@@ -57,8 +57,8 @@ public:
   bool __fastcall HasLocalFileName(const UnicodeString & Command);
 
 protected:
-  virtual int __fastcall PatternLen(int Index, wchar_t PatternCmd);
-  virtual bool __fastcall PatternReplacement(int Index, const UnicodeString & Pattern,
+  virtual intptr_t __fastcall PatternLen(intptr_t Index, wchar_t PatternCmd);
+  virtual bool __fastcall PatternReplacement(intptr_t Index, const UnicodeString & Pattern,
     UnicodeString & Replacement, bool & Delimit);
   virtual void __fastcall DelimitReplacement(UnicodeString & Replacement, wchar_t Quote);
 

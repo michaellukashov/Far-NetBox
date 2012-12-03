@@ -1805,7 +1805,7 @@ find_matching_string(char * str, apr_size_t size, const char strings[][4])
     if (strings[i] && (strcmp(str, strings[i]) == 0))
       return i;
 
-  return -1;
+  return (apr_size_t)-1;
 }
 
 static error_t
@@ -1929,8 +1929,8 @@ fail:
     exploded_time.tm_yday -= 1;
     /* Using hard coded limits for the arrays - they are going away
        soon in any case. */
-    exploded_time.tm_wday = find_matching_string(wday, 7, apr_day_snames);
-    exploded_time.tm_mon = find_matching_string(month, 12, apr_month_snames);
+    exploded_time.tm_wday = (apr_int32_t)find_matching_string(wday, 7, apr_day_snames);
+    exploded_time.tm_mon = (apr_int32_t)find_matching_string(month, 12, apr_month_snames);
 
     apr_err = apr_time_exp_gmt_get(when, &exploded_time);
     if (apr_err != APR_SUCCESS)
@@ -4331,7 +4331,7 @@ windows_password_encrypter(bool * done,
   DATA_BLOB blobout;
   BOOL crypted = FALSE;
 
-  blobin.cbData = strlen(in);
+  blobin.cbData = (DWORD)strlen(in);
   blobin.pbData = (BYTE *) in;
   crypted = CryptProtectData(&blobin, description, NULL, NULL, NULL,
     CRYPTPROTECT_UI_FORBIDDEN, &blobout);
@@ -4372,7 +4372,7 @@ windows_password_decrypter(bool * done,
   if (!done)
     return WEBDAV_NO_ERROR;
 
-  blobin.cbData = strlen(in);
+  blobin.cbData = (DWORD)strlen(in);
   blobin.pbData = static_cast<BYTE *>(apr_pcalloc(pool, apr_base64_decode_len(in)));
   apr_base64_decode((char *)blobin.pbData, in);
   decrypted = CryptUnprotectData(&blobin, &descr, NULL, NULL, NULL,
@@ -4469,7 +4469,7 @@ windows_ssl_client_cert_pw_encrypter(bool * done,
   DATA_BLOB blobout;
   BOOL crypted;
 
-  blobin.cbData = strlen(in);
+  blobin.cbData = (DWORD)strlen(in);
   blobin.pbData = (BYTE *) in;
   crypted = CryptProtectData(&blobin, description, NULL, NULL, NULL,
     CRYPTPROTECT_UI_FORBIDDEN, &blobout);
@@ -4510,7 +4510,7 @@ windows_ssl_client_cert_pw_decrypter(bool * done,
   if (!done)
     return WEBDAV_NO_ERROR;
 
-  blobin.cbData = strlen(in);
+  blobin.cbData = (DWORD)strlen(in);
   blobin.pbData = static_cast<BYTE *>(apr_pcalloc(pool, apr_base64_decode_len(in)));
   apr_base64_decode((char *)blobin.pbData, in);
   decrypted = CryptUnprotectData(&blobin, &descr, NULL, NULL, NULL,
@@ -5786,7 +5786,7 @@ dirent_is_root(const char * dirent, apr_size_t len)
       && dirent[len - 1] != '/')
   {
     int segments = 0;
-    int i;
+    size_t i;
     for (i = len; i >= 2; i--)
     {
       if (dirent[i] == '/')
@@ -14021,7 +14021,7 @@ bool __fastcall TWebDAVFileSystem::HandleListData(const wchar_t * Path,
     assert(UnixComparePaths(AbsolutePath(FFileList->GetDirectory(), false), Path));
     USEDPARAM(Path);
 
-    for (size_t Index = 0; Index < Count; Index++)
+    for (intptr_t Index = 0; Index < Count; Index++)
     {
       const TListDataEntry * Entry = &Entries[Index];
       TRemoteFile * File = new TRemoteFile();
@@ -14730,7 +14730,7 @@ webdav::error_t TWebDAVFileSystem::CreateStorage(
 
 uintptr_t TWebDAVFileSystem::AdjustToCPSLimit(uintptr_t len)
 {
-  return FCurrentOperationProgress ? FCurrentOperationProgress->AdjustToCPSLimit(len) : len;
+  return FCurrentOperationProgress ? (uintptr_t)FCurrentOperationProgress->AdjustToCPSLimit(len) : len;
 }
 
 bool TWebDAVFileSystem::GetIsCancelled()

@@ -93,7 +93,7 @@ protected:
   UnicodeString FHomeDirectory;
   AnsiString FEOL;
   TList * FPacketReservations;
-  std::vector<int> FPacketNumbers;
+  std::vector<uintptr_t> FPacketNumbers;
   char FPreviousLoggedPacket;
   int FNotLoggedPackets;
   int FBusy;
@@ -131,11 +131,11 @@ protected:
   int __fastcall ReceivePacket(TSFTPPacket * Packet, int ExpectedType = -1,
     int AllowStatus = -1);
   bool __fastcall PeekPacket();
-  void __fastcall RemoveReservation(int Reservation);
+  void __fastcall RemoveReservation(intptr_t Reservation);
   void __fastcall SendPacket(const TSFTPPacket * Packet);
-  int __fastcall ReceiveResponse(const TSFTPPacket * Packet,
+  uintptr_t __fastcall ReceiveResponse(const TSFTPPacket * Packet,
     TSFTPPacket * Response, int ExpectedType = -1, int AllowStatus = -1);
-  int __fastcall SendPacketAndReceiveResponse(const TSFTPPacket * Packet,
+  uintptr_t __fastcall SendPacketAndReceiveResponse(const TSFTPPacket * Packet,
     TSFTPPacket * Response, int ExpectedType = -1, int AllowStatus = -1);
   void __fastcall UnreserveResponse(TSFTPPacket * Response);
   void __fastcall TryOpenDirectory(const UnicodeString Directory);

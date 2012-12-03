@@ -15,8 +15,8 @@ class UTF8String
 public:
   UTF8String() {}
   UTF8String(const wchar_t * Str) { Init(Str, StrLength(Str)); }
-  UTF8String(const wchar_t * Str, int Size) { Init(Str, Size); }
-  UTF8String(const char * Str, int Size) { Init(Str, Size); }
+  UTF8String(const wchar_t * Str, intptr_t Size) { Init(Str, Size); }
+  UTF8String(const char * Str, intptr_t Size) { Init(Str, Size); }
   UTF8String(const UnicodeString & Str);
   UTF8String(const std::wstring & Str) { Init(Str.c_str(), Str.size()); }
 
@@ -36,7 +36,7 @@ public:
 
   UTF8String SubString(intptr_t Pos, intptr_t Len = -1) const { return std::wstring(Data.substr(Pos - 1, Len)); }
 
-  int Pos(wchar_t Ch) const;
+  intptr_t Pos(wchar_t Ch) const;
 
 public:
   UTF8String & operator=(const UnicodeString & strCopy);
@@ -209,11 +209,11 @@ class AnsiString
 public:
   AnsiString() {}
   AnsiString(const wchar_t * Str) { Init(Str, StrLength(Str)); }
-  AnsiString(const wchar_t * Str, int Size) { Init(Str, Size); }
+  AnsiString(const wchar_t * Str, intptr_t Size) { Init(Str, Size); }
   AnsiString(const char * Str) { Init(Str, Str ? strlen(Str) : 0); }
-  AnsiString(const char * Str, int Size) { Init(Str, Size); }
+  AnsiString(const char * Str, intptr_t Size) { Init(Str, Size); }
   AnsiString(const unsigned char * Str) { Init(Str, Str ? strlen(reinterpret_cast<const char *>(Str)) : 0); }
-  AnsiString(const unsigned char * Str, int Size) { Init(Str, Size); }
+  AnsiString(const unsigned char * Str, intptr_t Size) { Init(Str, Size); }
   AnsiString(const UnicodeString & Str) { Init(Str.c_str(), Str.GetLength()); }
   AnsiString(const UTF8String & Str) { Init(Str.c_str(), Str.GetLength()); }
   ~AnsiString() {}
@@ -234,8 +234,8 @@ public:
 
   AnsiString SubString(intptr_t Pos, intptr_t Len = -1) const;
 
-  int Pos(wchar_t Ch) const;
-  int Pos(const wchar_t * Str) const;
+  intptr_t Pos(wchar_t Ch) const;
+  intptr_t Pos(const wchar_t * Str) const;
 
   char __fastcall operator [](intptr_t Idx) const
   {
@@ -301,11 +301,11 @@ class RawByteString
 public:
   RawByteString() {}
   RawByteString(const wchar_t * Str) { Init(Str, StrLength(Str)); }
-  RawByteString(const wchar_t * Str, int Size) { Init(Str, Size); }
+  RawByteString(const wchar_t * Str, intptr_t Size) { Init(Str, Size); }
   RawByteString(const char * Str) { Init(Str, Str ? strlen(Str) : 0); }
-  RawByteString(const char * Str, int Size) { Init(Str, Size); }
+  RawByteString(const char * Str, intptr_t Size) { Init(Str, Size); }
   RawByteString(const unsigned char * Str) { Init(Str, Str ? strlen(reinterpret_cast<const char *>(Str)) : 0); }
-  RawByteString(const unsigned char * Str, int Size) { Init(Str, Size); }
+  RawByteString(const unsigned char * Str, intptr_t Size) { Init(Str, Size); }
   RawByteString(const UnicodeString & Str) { Init(Str.c_str(), Str.GetLength()); }
   RawByteString(const RawByteString & Str) { Init(Str.c_str(), Str.GetLength()); }
   RawByteString(const AnsiString & Str) { Init(Str.c_str(), Str.GetLength()); }

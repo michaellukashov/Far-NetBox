@@ -159,11 +159,11 @@ UnicodeString LowerCase(const UnicodeString str);
 wchar_t UpCase(const wchar_t c);
 wchar_t LowCase(const wchar_t c);
 UnicodeString AnsiReplaceStr(const UnicodeString str, const UnicodeString from, const UnicodeString to);
-int AnsiPos(const UnicodeString str, wchar_t c);
-int Pos(const UnicodeString str, const UnicodeString substr);
+intptr_t AnsiPos(const UnicodeString str, wchar_t c);
+intptr_t Pos(const UnicodeString str, const UnicodeString substr);
 UnicodeString StringReplace(const UnicodeString str, const UnicodeString from, const UnicodeString to, TReplaceFlags Flags);
-bool IsDelimiter(const UnicodeString delimiters, const UnicodeString str, int index);
-int LastDelimiter(const UnicodeString delimiters, const UnicodeString str);
+bool IsDelimiter(const UnicodeString delimiters, const UnicodeString str, intptr_t index);
+intptr_t LastDelimiter(const UnicodeString delimiters, const UnicodeString str);
 //---------------------------------------------------------------------------
 
 int CompareText(const UnicodeString str1, const UnicodeString str2);

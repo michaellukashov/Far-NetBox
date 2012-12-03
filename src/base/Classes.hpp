@@ -172,7 +172,7 @@ public:
   void * operator [](intptr_t Index) const;
   void *& GetItem(intptr_t Index);
   void SetItem(intptr_t Index, void * Item);
-  int Add(void * Value);
+  intptr_t Add(void * Value);
   void * Extract(void * Item);
   intptr_t Remove(void * Item);
   void Move(intptr_t CurIndex, intptr_t NewIndex);
@@ -260,7 +260,7 @@ class TStrings : public TPersistent
 public:
   TStrings();
   virtual ~TStrings();
-  int __fastcall Add(const UnicodeString S);
+  intptr_t __fastcall Add(const UnicodeString S);
   virtual void __fastcall Delete(intptr_t Index) = 0;
   virtual UnicodeString __fastcall GetTextStr();
   virtual void __fastcall SetTextStr(const UnicodeString Text);
@@ -401,8 +401,8 @@ public:
   virtual /* __fastcall */ ~TStringList();
   virtual void __fastcall Assign(TPersistent * Source);
   virtual void __fastcall Clear();
-  int __fastcall Add(const UnicodeString S);
-  int __fastcall AddObject(const UnicodeString S, TObject * AObject);
+  intptr_t __fastcall Add(const UnicodeString S);
+  intptr_t __fastcall AddObject(const UnicodeString S, TObject * AObject);
   virtual bool __fastcall Find(const UnicodeString S, intptr_t & Index);
   virtual intptr_t __fastcall IndexOf(const UnicodeString S);
   virtual void __fastcall Delete(intptr_t Index);

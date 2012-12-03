@@ -58,7 +58,7 @@ public:
     const TParams * Params, bool & ImplicitMatch) const;
 
   bool __fastcall GetIsValid() const;
-  bool __fastcall GetIsValid(int & Start, int & Length) const;
+  bool __fastcall GetIsValid(intptr_t & Start, intptr_t & Length) const;
   UnicodeString __fastcall GetMasks() const { return FStr; }
   void __fastcall SetMasks(const UnicodeString value);
 
@@ -116,11 +116,11 @@ private:
   mutable TStrings * FMasksStr[4];
 
   void __fastcall SetStr(const UnicodeString value, bool SingleMask);
-  void __fastcall CreateMaskMask(const UnicodeString & Mask, int Start, int End,
+  void __fastcall CreateMaskMask(const UnicodeString & Mask, intptr_t Start, intptr_t End,
     bool Ex, TMaskMask & MaskMask) const;
-  void __fastcall CreateMask(const UnicodeString & MaskStr, int MaskStart,
-    int MaskEnd, bool Include);
-  TStrings * __fastcall GetMasksStr(int Index) const;
+  void __fastcall CreateMask(const UnicodeString & MaskStr, intptr_t MaskStart,
+    intptr_t MaskEnd, bool Include);
+  TStrings * __fastcall GetMasksStr(intptr_t Index) const;
 private:
   static UnicodeString __fastcall MakeDirectoryMask(UnicodeString Str);
   static inline void __fastcall ReleaseMaskMask(TMaskMask & MaskMask);
@@ -128,13 +128,13 @@ private:
   void __fastcall DoInit(bool Delete);
   void __fastcall Clear();
   static void __fastcall Clear(TMasks & Masks);
-  static void __fastcall TrimEx(UnicodeString & Str, int & Start, int & End);
+  static void __fastcall TrimEx(UnicodeString & Str, intptr_t & Start, intptr_t & End);
   static bool __fastcall MatchesMasks(const UnicodeString FileName, bool Directory,
     const UnicodeString Path, const TParams * Params, const TMasks & Masks, bool Recurse);
   static inline bool __fastcall MatchesMaskMask(const TMaskMask & MaskMask, const UnicodeString & Str);
   static inline bool __fastcall IsAnyMask(const UnicodeString & Mask);
   static UnicodeString __fastcall ComposeMaskStr(TStrings * MasksStr, bool Directory);
-  void __fastcall ThrowError(int Start, int End) const;
+  void __fastcall ThrowError(intptr_t Start, intptr_t End) const;
 };
 //---------------------------------------------------------------------------
 UnicodeString __fastcall MaskFileName(UnicodeString FileName, const UnicodeString Mask);
@@ -160,15 +160,15 @@ protected:
   static const wchar_t NoQuote;
   static const UnicodeString Quotes;
   void __fastcall GetToken(const UnicodeString & Command,
-    int Index, int & Len, wchar_t & PatternCmd);
+    intptr_t Index, intptr_t & Len, wchar_t & PatternCmd);
   void __fastcall CustomValidate(const UnicodeString & Command, void * Arg);
   bool __fastcall FindPattern(const UnicodeString & Command, wchar_t PatternCmd);
 
   virtual void __fastcall ValidatePattern(const UnicodeString & Command,
-    int Index, int Len, wchar_t PatternCmd, void * Arg);
+    intptr_t Index, intptr_t Len, wchar_t PatternCmd, void * Arg);
 
-  virtual int __fastcall PatternLen(int Index, wchar_t PatternCmd) = 0;
-  virtual bool __fastcall PatternReplacement(int Index, const UnicodeString & Pattern,
+  virtual intptr_t __fastcall PatternLen(intptr_t Index, wchar_t PatternCmd) = 0;
+  virtual bool __fastcall PatternReplacement(intptr_t Index, const UnicodeString & Pattern,
     UnicodeString & Replacement, bool & Delimit) = 0;
   virtual void __fastcall DelimitReplacement(UnicodeString & Replacement, wchar_t Quote);
 };
@@ -179,10 +179,10 @@ public:
   explicit /* __fastcall */ TInteractiveCustomCommand(TCustomCommand * ChildCustomCommand);
 
 protected:
-  virtual void __fastcall Prompt(int Index, const UnicodeString & Prompt,
+  virtual void __fastcall Prompt(intptr_t Index, const UnicodeString & Prompt,
     UnicodeString & Value);
-  virtual int __fastcall PatternLen(int Index, wchar_t PatternCmd);
-  virtual bool __fastcall PatternReplacement(int Index, const UnicodeString & Pattern,
+  virtual intptr_t __fastcall PatternLen(intptr_t Index, wchar_t PatternCmd);
+  virtual bool __fastcall PatternReplacement(intptr_t Index, const UnicodeString & Pattern,
     UnicodeString & Replacement, bool & Delimit);
 
 private:
@@ -211,14 +211,14 @@ public:
 
   virtual void __fastcall Validate(const UnicodeString & Command);
   virtual void __fastcall ValidatePattern(const UnicodeString & Command,
-    int Index, int Len, wchar_t PatternCmd, void * Arg);
+    intptr_t Index, intptr_t Len, wchar_t PatternCmd, void * Arg);
 
   bool __fastcall IsFileListCommand(const UnicodeString & Command);
   virtual bool __fastcall IsFileCommand(const UnicodeString & Command);
 
 protected:
-  virtual int __fastcall PatternLen(int Index, wchar_t PatternCmd);
-  virtual bool __fastcall PatternReplacement(int Index, const UnicodeString & Pattern,
+  virtual intptr_t __fastcall PatternLen(intptr_t Index, wchar_t PatternCmd);
+  virtual bool __fastcall PatternReplacement(intptr_t Index, const UnicodeString & Pattern,
     UnicodeString & Replacement, bool & Delimit);
 
 private:

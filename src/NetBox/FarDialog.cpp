@@ -1546,12 +1546,12 @@ void TFarDialogItem::SetWidth(intptr_t Value)
   TRect R = GetBounds();
   if (R.Left >= 0)
   {
-    R.Right = R.Left + Value - 1;
+    R.Right = R.Left + (int)Value - 1;
   }
   else
   {
     assert(R.Right < 0);
-    R.Left = R.Right - Value + 1;
+    R.Left = R.Right - (int)Value + 1;
   }
   SetBounds(R);
 }
@@ -1679,7 +1679,7 @@ bool TFarDialogItem::MouseMove(int /*X*/, int /*Y*/,
   return DefaultDialogProc(DN_MOUSEEVENT, 0, reinterpret_cast<LONG_PTR>(Event)) != 0;
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::Text(int X, int Y, int Color, const UnicodeString Str)
+void TFarDialogItem::Text(int X, int Y, uintptr_t Color, const UnicodeString Str)
 {
   TFarEnvGuard Guard;
   GetDialog()->GetFarPlugin()->GetStartupInfo()->Text(
@@ -2369,12 +2369,12 @@ intptr_t TFarList::GetSelected()
   return Result;
 }
 //---------------------------------------------------------------------------
-DWORD TFarList::GetFlags(int Index)
+DWORD TFarList::GetFlags(intptr_t Index)
 {
   return FListItems->Items[Index].Flags;
 }
 //---------------------------------------------------------------------------
-void TFarList::SetFlags(int Index, DWORD Value)
+void TFarList::SetFlags(intptr_t Index, DWORD Value)
 {
   if (FListItems->Items[Index].Flags != Value)
   {
@@ -2386,12 +2386,12 @@ void TFarList::SetFlags(int Index, DWORD Value)
   }
 }
 //---------------------------------------------------------------------------
-bool TFarList::GetFlag(int Index, DWORD Flag)
+bool TFarList::GetFlag(intptr_t Index, DWORD Flag)
 {
   return FLAGSET(GetFlags(Index), Flag);
 }
 //---------------------------------------------------------------------------
-void TFarList::SetFlag(int Index, DWORD Flag, bool Value)
+void TFarList::SetFlag(intptr_t Index, DWORD Flag, bool Value)
 {
   SetFlags(Index, (GetFlags(Index) & ~Flag) | FLAGMASK(Value, Flag));
 }
@@ -2612,7 +2612,7 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
     UnicodeString Buf;
     for (int Row = 0; Row < GetHeight(); Row++)
     {
-      int Index = GetTopIndex() + Row;
+      intptr_t Index = GetTopIndex() + Row;
       Buf = L" ";
       if (Index < GetItems()->Count)
       {

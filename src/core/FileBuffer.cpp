@@ -56,7 +56,7 @@ void __fastcall TFileBuffer::SetMemory(TMemoryStream * Value)
 //---------------------------------------------------------------------------
 __int64 __fastcall TFileBuffer::ReadStream(TStream * Stream, const __int64 Len, bool ForceLen)
 {
-  __int64 Result;
+  __int64 Result = 0;
   try
   {
     SetSize(GetPosition() + Len);

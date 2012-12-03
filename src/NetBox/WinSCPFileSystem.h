@@ -177,7 +177,7 @@ protected:
   bool RemoteTransferDialog(TStrings * FileList, UnicodeString & Target,
     UnicodeString & FileMask, bool Move);
   bool RenameFileDialog(TRemoteFile * File, UnicodeString & NewName);
-  int MoreMessageDialog(const UnicodeString Str, TStrings * MoreMessages,
+  intptr_t MoreMessageDialog(const UnicodeString Str, TStrings * MoreMessages,
     TQueryType Type, int Answers, const TMessageParams * Params = NULL);
   bool PasswordDialog(TSessionData * SessionData,
     TPromptKind Kind, const UnicodeString Name, const UnicodeString Instructions, TStrings * Prompts,
@@ -273,7 +273,7 @@ private:
   TStrings * FCapturedLog;
   bool FOutputLog;
   TStrings * FAuthenticationLog;
-  typedef std::map<int, TMultipleEdit> TMultipleEdits;
+  typedef std::map<intptr_t, TMultipleEdit> TMultipleEdits;
   TMultipleEdits FMultipleEdits;
   bool FLoadingSessionList;
   typedef std::vector<TEditHistory> TEditHistories;

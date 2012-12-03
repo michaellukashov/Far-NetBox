@@ -570,7 +570,7 @@ void __fastcall TTerminalQueue::TerminalFinished(TTerminalItem * TerminalItem)
     {
       TGuard Guard(FItemsSection);
 
-      int Index = FTerminals->IndexOf(TerminalItem);
+      intptr_t Index = FTerminals->IndexOf(TerminalItem);
       assert(Index >= 0);
 
       if (Index < FFreeTerminals)
@@ -605,7 +605,7 @@ bool __fastcall TTerminalQueue::TerminalFree(TTerminalItem * TerminalItem)
     {
       TGuard Guard(FItemsSection);
 
-      int Index = FTerminals->IndexOf(TerminalItem);
+      intptr_t Index = FTerminals->IndexOf(TerminalItem);
       assert(Index >= 0);
       assert(Index >= FFreeTerminals);
 
@@ -650,7 +650,7 @@ void __fastcall TTerminalQueue::RetryItem(TQueueItem * Item)
     {
       TGuard Guard(FItemsSection);
 
-      int Index = FItems->Remove(Item);
+      intptr_t Index = FItems->Remove(Item);
       assert(Index < FItemsInProcess);
       USEDPARAM(Index);
       FItemsInProcess--;
@@ -674,7 +674,7 @@ void __fastcall TTerminalQueue::DeleteItem(TQueueItem * Item)
 
       // does this need to be within guard?
       Monitored = (Item->GetCompleteEvent() != INVALID_HANDLE_VALUE);
-      int Index = FItems->Remove(Item);
+      intptr_t Index = FItems->Remove(Item);
       assert(Index < FItemsInProcess);
       USEDPARAM(Index);
       FItemsInProcess--;
@@ -700,7 +700,7 @@ void __fastcall TTerminalQueue::DeleteItem(TQueueItem * Item)
   }
 }
 //---------------------------------------------------------------------------
-TQueueItem * __fastcall TTerminalQueue::GetItem(int Index)
+TQueueItem * __fastcall TTerminalQueue::GetItem(intptr_t Index)
 {
   return reinterpret_cast<TQueueItem*>(FItems->Items[Index]);
 }
@@ -818,8 +818,8 @@ bool __fastcall TTerminalQueue::ItemMove(TQueueItem * Item, TQueueItem * BeforeI
     {
       TGuard Guard(FItemsSection);
 
-      int Index = FItems->IndexOf(Item);
-      int IndexDest = FItems->IndexOf(BeforeItem);
+      intptr_t Index = FItems->IndexOf(Item);
+      intptr_t IndexDest = FItems->IndexOf(BeforeItem);
       Result = (Index >= 0) && (IndexDest >= 0) &&
         (Item->GetStatus() == TQueueItem::qsPending) &&
         (BeforeItem->GetStatus() == TQueueItem::qsPending);
@@ -849,7 +849,7 @@ bool __fastcall TTerminalQueue::ItemExecuteNow(TQueueItem * Item)
     {
       TGuard Guard(FItemsSection);
 
-      int Index = FItems->IndexOf(Item);
+      intptr_t Index = FItems->IndexOf(Item);
       Result = (Index >= 0) && (Item->GetStatus() == TQueueItem::qsPending) &&
         // prevent double-initiation when "execute" is clicked twice too fast
         (Index >= FItemsInProcess);
@@ -894,7 +894,7 @@ bool __fastcall TTerminalQueue::ItemDelete(TQueueItem * Item)
     {
       TGuard Guard(FItemsSection);
 
-      int Index = FItems->IndexOf(Item);
+      intptr_t Index = FItems->IndexOf(Item);
       Result = (Index >= 0);
       if (Result)
       {
@@ -1021,7 +1021,7 @@ void __fastcall TTerminalQueue::ProcessEvent()
       TGuard Guard(FItemsSection);
 
       Item = GetItem(FItemsInProcess);
-      int ForcedIndex = FForcedItems->IndexOf(Item);
+      intptr_t ForcedIndex = FForcedItems->IndexOf(Item);
 
       if (FEnabled || (ForcedIndex >= 0))
       {
@@ -1728,7 +1728,7 @@ bool __fastcall TQueueItemProxy::ExecuteNow()
 bool __fastcall TQueueItemProxy::Move(bool Sooner)
 {
   bool Result = false;
-  int I = GetIndex();
+  intptr_t I = GetIndex();
   if (Sooner)
   {
     if (I > 0)
@@ -1789,10 +1789,10 @@ bool __fastcall TQueueItemProxy::SetCPSLimit(unsigned long CPSLimit)
   return FQueue->ItemSetCPSLimit(FQueueItem, CPSLimit);
 }
 //---------------------------------------------------------------------------
-int __fastcall TQueueItemProxy::GetIndex()
+intptr_t __fastcall TQueueItemProxy::GetIndex()
 {
   assert(FQueueStatus != NULL);
-  int Index = FQueueStatus->FList->IndexOf(this);
+  intptr_t Index = FQueueStatus->FList->IndexOf(this);
   assert(Index >= 0);
   return Index;
 }
@@ -1821,7 +1821,7 @@ void __fastcall TTerminalQueueStatus::ResetStats()
   FActiveCount = -1;
 }
 //---------------------------------------------------------------------------
-int __fastcall TTerminalQueueStatus::GetActiveCount()
+intptr_t __fastcall TTerminalQueueStatus::GetActiveCount()
 {
   if (FActiveCount < 0)
   {
@@ -1851,12 +1851,12 @@ void __fastcall TTerminalQueueStatus::Delete(TQueueItemProxy * ItemProxy)
   ResetStats();
 }
 //---------------------------------------------------------------------------
-int __fastcall TTerminalQueueStatus::GetCount() const
+intptr_t __fastcall TTerminalQueueStatus::GetCount() const
 {
   return FList->Count;
 }
 //---------------------------------------------------------------------------
-TQueueItemProxy * __fastcall TTerminalQueueStatus::GetItem(int Index)
+TQueueItemProxy * __fastcall TTerminalQueueStatus::GetItem(intptr_t Index)
 {
   return reinterpret_cast<TQueueItemProxy *>(FList->Items[Index]);
 }

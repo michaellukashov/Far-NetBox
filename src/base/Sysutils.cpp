@@ -232,16 +232,16 @@ UnicodeString AnsiReplaceStr(const UnicodeString str, const UnicodeString from, 
   return result;
 }
 
-int AnsiPos(const UnicodeString str, wchar_t c)
+intptr_t AnsiPos(const UnicodeString str, wchar_t c)
 {
-  int result = str.Pos(c);
-  return result;
+  intptr_t Result = str.Pos(c);
+  return Result;
 }
 
-int Pos(const UnicodeString str, const UnicodeString substr)
+intptr_t Pos(const UnicodeString str, const UnicodeString substr)
 {
-  int result = str.Pos(substr.c_str());
-  return result;
+  intptr_t Result = str.Pos(substr.c_str());
+  return Result;
 }
 
 UnicodeString StringReplace(const UnicodeString Str, const UnicodeString From, const UnicodeString To, TReplaceFlags Flags)
@@ -249,7 +249,7 @@ UnicodeString StringReplace(const UnicodeString Str, const UnicodeString From, c
   return AnsiReplaceStr(Str, From, To);
 }
 
-bool IsDelimiter(const UnicodeString delimiters, const UnicodeString str, int index)
+bool IsDelimiter(const UnicodeString delimiters, const UnicodeString str, intptr_t index)
 {
   if (index <= str.Length())
   {
@@ -265,7 +265,7 @@ bool IsDelimiter(const UnicodeString delimiters, const UnicodeString str, int in
   return false;
 }
 
-int LastDelimiter(const UnicodeString delimiters, const UnicodeString str)
+intptr_t LastDelimiter(const UnicodeString delimiters, const UnicodeString str)
 {
   if (str.Length())
   {
@@ -451,7 +451,7 @@ bool DirectoryExists(const UnicodeString filename)
 
 UnicodeString FileSearch(const UnicodeString FileName, const UnicodeString DirectoryList)
 {
-  int I;
+  intptr_t I;
   UnicodeString Temp;
   UnicodeString Result;
   Temp = DirectoryList;
@@ -1145,7 +1145,7 @@ UnicodeString IncludeTrailingBackslash(const UnicodeString str)
 UnicodeString ExtractFileDir(const UnicodeString str)
 {
   UnicodeString result;
-  int Pos = str.LastDelimiter(L"/\\");
+  intptr_t Pos = str.LastDelimiter(L"/\\");
   // it used to return Path when no slash was found
   if (Pos > 0)
   {

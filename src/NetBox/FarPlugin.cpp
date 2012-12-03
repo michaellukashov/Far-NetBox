@@ -908,7 +908,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
       {
         MoreMessageHeight = MoreMessagesLister->GetItems()->Count;
       }
-      MoreMessagesLister->SetHeight(MoreMessageHeight);
+      MoreMessagesLister->SetHeight((int)MoreMessageHeight);
       MoreMessagesLister->SetRight(
         GetBorderBox()->GetRight() - (MoreMessagesLister->GetScrollBar() ? 0 : 1));
       MoreMessagesLister->SetTabStop(MoreMessagesLister->GetScrollBar());
@@ -1149,15 +1149,15 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, const UnicodeString Title,
   int & BreakCode)
 {
   assert(Items && Items->Count);
-  int Result = 0;
+  intptr_t Result = 0;
   FarMenuItemEx * MenuItems = new FarMenuItemEx[Items->Count];
   TRY_FINALLY (
   {
     int Selected = NPOS;
-    int Count = 0;
-    for (int i = 0; i < Items->Count; i++)
+    intptr_t Count = 0;
+    for (intptr_t i = 0; i < Items->Count; i++)
     {
-      size_t flags = reinterpret_cast<size_t>(Items->Objects[i]);
+      int flags = reinterpret_cast<int>(Items->Objects[i]);
       if (FLAGCLEAR(Flags, MIF_HIDDEN))
       {
         memset(&MenuItems[Count], 0, sizeof(MenuItems[Count]));
@@ -1226,7 +1226,7 @@ bool TCustomFarPlugin::InputBox(const UnicodeString Title,
         HistoryName.c_str(),
         AText.c_str(),
         const_cast<wchar_t *>(DestText.c_str()),
-        MaxLen,
+        (int)MaxLen,
         NULL,
         FIB_ENABLEEMPTY | FIB_BUTTONS | Flags);
     }
@@ -2579,7 +2579,7 @@ intptr_t TFarPanelInfo::GetSelectedCount()
 
   if ((Count == 1) && FOwner)
   {
-    DWORD size = FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, NULL);
+    intptr_t size = FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, NULL);
     // DEBUG_PRINTF(L"size1 = %d, sizeof(PluginPanelItem) = %d", size, sizeof(PluginPanelItem));
     PluginPanelItem * ppi = static_cast<PluginPanelItem *>(malloc(size));
     memset(ppi, 0, size);
@@ -2686,7 +2686,7 @@ intptr_t TFarPanelInfo::GetFocusedIndex()
   return FPanelInfo->CurrentItem;
 }
 //---------------------------------------------------------------------------
-void TFarPanelInfo::SetFocusedIndex(int value)
+void TFarPanelInfo::SetFocusedIndex(intptr_t value)
 {
   // for "another panel info", there's no owner
   assert(FOwner != NULL);
@@ -2789,7 +2789,7 @@ void TFarMenuItems::PutObject(intptr_t Index, TObject * AObject)
 //---------------------------------------------------------------------------
 intptr_t TFarMenuItems::Add(const UnicodeString Text, bool Visible)
 {
-  int Result = TStringList::Add(Text);
+  intptr_t Result = TStringList::Add(Text);
   if (!Visible)
   {
     SetFlag(GetCount() - 1, MIF_HIDDEN, true);

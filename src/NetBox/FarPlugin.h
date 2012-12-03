@@ -423,7 +423,7 @@ public:
   TFarPanelItem * GetFocusedItem();
   void SetFocusedItem(TFarPanelItem * value);
   intptr_t GetFocusedIndex();
-  void SetFocusedIndex(int value);
+  void SetFocusedIndex(intptr_t value);
   intptr_t GetSelectedCount();
   TRect GetBounds();
   TFarPanelType GetType();

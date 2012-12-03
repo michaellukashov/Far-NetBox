@@ -798,7 +798,7 @@ bool TWinSCPFileSystem::EnsureCommandSessionFallback(TFSCapability Capability)
     {
       TMessageParams Params;
       Params.Params = qpNeverAskAgainCheck;
-      int Answer = MoreMessageDialog(FORMAT(GetMsg(PERFORM_ON_COMMAND_SESSION).c_str(),
+      intptr_t Answer = MoreMessageDialog(FORMAT(GetMsg(PERFORM_ON_COMMAND_SESSION).c_str(),
         FTerminal->GetFileSystemInfo().ProtocolName.c_str(),
          FTerminal->GetFileSystemInfo().ProtocolName.c_str()), NULL,
         qtConfirmation, qaOK | qaCancel, &Params);
@@ -1694,7 +1694,7 @@ void TWinSCPFileSystem::DoSynchronizeTooManyDirectories(
   {
     TMessageParams Params;
     Params.Params = qpNeverAskAgainCheck;
-    int Result = MoreMessageDialog(
+    intptr_t Result = MoreMessageDialog(
       FORMAT(GetMsg(TOO_MANY_WATCH_DIRECTORIES).c_str(), MaxDirectories, MaxDirectories), NULL,
       qtConfirmation, qaYes | qaNo, &Params);
 
@@ -3225,7 +3225,7 @@ BOOL TWinSCPFileSystem::TerminalCreateLocalDirectory(const UnicodeString & Local
   return ::CreateDirectory(LocalDirName.c_str(), SecurityAttributes) != 0;
 }
 //---------------------------------------------------------------------------
-int TWinSCPFileSystem::MoreMessageDialog(const UnicodeString Str,
+intptr_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString Str,
   TStrings * MoreMessages, TQueryType Type, int Answers, const TMessageParams * Params)
 {
   TMessageParams AParams;
@@ -3675,7 +3675,7 @@ void TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressType & Progres
     TRY_FINALLY (
     {
       TCancelStatus ACancel;
-      int Result;
+      intptr_t Result;
       if (ProgressData.TransferingFile &&
           (ProgressData.TimeExpected() > GUIConfiguration->GetIgnoreCancelBeforeFinish()))
       {

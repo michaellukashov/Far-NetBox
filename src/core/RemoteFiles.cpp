@@ -50,7 +50,7 @@ bool __fastcall UnixIsChildPath(UnicodeString Parent, UnicodeString Child)
 //---------------------------------------------------------------------------
 UnicodeString __fastcall UnixExtractFileDir(const UnicodeString Path)
 {
-  int Pos = Path.LastDelimiter(L'/');
+  intptr_t Pos = Path.LastDelimiter(L'/');
   // it used to return Path when no slash was found
   if (Pos > 1)
   {
@@ -65,14 +65,14 @@ UnicodeString __fastcall UnixExtractFileDir(const UnicodeString Path)
 // must return trailing backslash
 UnicodeString __fastcall UnixExtractFilePath(const UnicodeString Path)
 {
-  int Pos = Path.LastDelimiter(L'/');
+  intptr_t Pos = Path.LastDelimiter(L'/');
   // it used to return Path when no slash was found
   return (Pos > 0) ? Path.SubString(1, Pos) : UnicodeString();
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall UnixExtractFileName(const UnicodeString Path)
 {
-  int Pos = Path.LastDelimiter(L'/');
+  intptr_t Pos = Path.LastDelimiter(L'/');
   UnicodeString Result;
   if (Pos > 0)
   {
@@ -88,7 +88,7 @@ UnicodeString __fastcall UnixExtractFileName(const UnicodeString Path)
 UnicodeString __fastcall UnixExtractFileExt(const UnicodeString Path)
 {
   UnicodeString FileName = UnixExtractFileName(Path);
-  int Pos = FileName.LastDelimiter(L".");
+  intptr_t Pos = FileName.LastDelimiter(L".");
   return (Pos > 0) ? Path.SubString(Pos, Path.Length() - Pos + 1) : UnicodeString();
 }
 //---------------------------------------------------------------------------
@@ -184,10 +184,10 @@ UnicodeString __fastcall AbsolutePath(const UnicodeString & Base, const UnicodeS
   {
     Result = UnixIncludeTrailingBackslash(
       UnixIncludeTrailingBackslash(Base) + Path);
-    int P;
+    intptr_t P;
     while ((P = Result.Pos(L"/../")) > 0)
     {
-      int P2 = Result.SubString(1, P-1).LastDelimiter(L"/");
+      intptr_t P2 = Result.SubString(1, P-1).LastDelimiter(L"/");
       assert(P2 > 0);
       Result.Delete(P2, P - P2 + 3);
     }
@@ -259,7 +259,7 @@ UnicodeString __fastcall MinimizeName(const UnicodeString FileName, intptr_t Max
   Result = FileName;
   if (Unix)
   {
-    int P = Result.LastDelimiter(L"/");
+    intptr_t P = Result.LastDelimiter(L"/");
     if (P)
     {
       Dir = Result.SubString(1, P);
@@ -1922,7 +1922,7 @@ void __fastcall TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data)
     TStrings * Limited = new TStringList();
     TRY_FINALLY (
     {
-      int Index = ACount - FMaxSize;
+      intptr_t Index = ACount - FMaxSize;
       while (Index < ACount)
       {
         Limited->Add(Strings[Index]);
