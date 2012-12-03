@@ -577,7 +577,7 @@ static wchar_t * __fastcall ReplaceChar(
   UnicodeString & FileName, wchar_t * InvalidChar, wchar_t InvalidCharsReplacement)
 {
   CALLSTACK;
-  int Index = InvalidChar - FileName.c_str() + 1;
+  intptr_t Index = InvalidChar - FileName.c_str() + 1;
   if (InvalidCharsReplacement == TokenReplacement)
   {
     TRACE("1");
@@ -1476,11 +1476,11 @@ __int64 __fastcall ConvertTimestampToUnix(const FILETIME & FileTime,
       const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
       Result -= (IsDateInDST(DateTime) ?
         Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
-      CTRACEFMT(TRACE_TIMESTAMP, "4 [%s]", IntToStr(Result).c_str());
+      CTRACEFMT(TRACE_TIMESTAMP, "4 [%s]", Int64ToStr(Result).c_str());
     }
   }
 
-  CTRACEFMT(TRACE_TIMESTAMP, "5 [%s]", IntToStr(Result).c_str());
+  CTRACEFMT(TRACE_TIMESTAMP, "5 [%s]", Int64ToStr(Result).c_str());
   return Result;
 }
 //---------------------------------------------------------------------------

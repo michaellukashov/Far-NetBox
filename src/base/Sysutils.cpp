@@ -1248,7 +1248,7 @@ UnicodeString IntToHex(unsigned int Int, size_t MinChars)
 {
   UnicodeString Result;
   Result.sprintf(L"%X", Int);
-  int Pad = MinChars - Result.size();
+  intptr_t Pad = MinChars - Result.size();
   if (Pad > 0)
   {
     for (int i = 0; i < Pad; i++)

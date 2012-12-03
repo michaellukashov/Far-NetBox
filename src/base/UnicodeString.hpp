@@ -58,8 +58,8 @@ public:
   friend bool __fastcall operator !=(const UTF8String & lhs, const UTF8String & rhs);
 
 private:
-  void Init(const wchar_t * Str, int Length);
-  void Init(const char * Str, int Length);
+  void Init(const wchar_t * Str, intptr_t Length);
+  void Init(const char * Str, intptr_t Length);
 
   typedef std::basic_string<wchar_t> wstring_t;
   wstring_t Data;
@@ -76,7 +76,7 @@ public:
   UnicodeString(const wchar_t Src) { Init(&Src, 1); }
   UnicodeString(const char * Str, int Size) { Init(Str, Size); }
   UnicodeString(const char * Str) { Init(Str, Str ? strlen(Str) : 0); }
-  UnicodeString(int Size, wchar_t Ch) : Data(Size, Ch) {}
+  UnicodeString(intptr_t Size, wchar_t Ch) : Data(Size, Ch) {}
 
   UnicodeString(const UnicodeString & Str) { Init(Str.c_str(), Str.GetLength()); }
   UnicodeString(const UTF8String & Str) { Init(Str.c_str(), Str.GetLength()); }
@@ -90,7 +90,7 @@ public:
   int Length() const { return Data.size(); }
   int GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
-  void SetLength(int nLength) { Data.resize(nLength); }
+  void SetLength(intptr_t nLength) { Data.resize(nLength); }
   UnicodeString & Delete(int Index, int Count) { Data.erase(Index - 1, Count); return *this; }
   UnicodeString & Clear() { Data.clear(); return *this; }
 
@@ -128,8 +128,8 @@ public:
   int RPos(wchar_t Ch) const { return (int)Data.find_last_of(Ch) + 1; }
   bool RPos(int & nPos, wchar_t Ch, int nStartPos = 0) const;
 
-  UnicodeString SubStr(int Pos, int Len = -1) const;
-  UnicodeString SubString(int Pos, int Len = -1) const { return SubStr(Pos, Len); }
+  UnicodeString SubStr(intptr_t Pos, intptr_t Len = -1) const;
+  UnicodeString SubString(intptr_t Pos, intptr_t Len = -1) const { return SubStr(Pos, Len); }
 
   bool IsDelimiter(UnicodeString Chars, int Pos) const;
   int LastDelimiter(const UnicodeString & delimiters) const;
@@ -180,23 +180,23 @@ public:
   bool operator !=(const UnicodeString & Str) const { return Data != Str.Data; }
   bool operator !=(const wchar_t * Str) const { return wcscmp(Data.c_str(), Str) != 0; }
 
-  wchar_t __fastcall operator [](const int idx) const
+  wchar_t __fastcall operator [](intptr_t Idx) const
   {
-    ThrowIfOutOfRange(idx);   // Should Range-checking be optional to avoid overhead ??
-    return Data[idx-1];
+    ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
+    return Data[Idx-1];
   }
 
-  wchar_t & __fastcall operator [](const int idx)
+  wchar_t & __fastcall operator [](intptr_t Idx)
   {
-    ThrowIfOutOfRange(idx);   // Should Range-checking be optional to avoid overhead ??
+    ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
     Unique();                 // Ensure we're not ref-counted (and Unicode)
-    return Data[idx-1];
+    return Data[Idx-1];
   }
 
 private:
-  void Init(const wchar_t * Str, int Length);
-  void Init(const char * Str, int Length);
-  void  __cdecl ThrowIfOutOfRange(int idx) const;
+  void Init(const wchar_t * Str, intptr_t Length);
+  void Init(const char * Str, intptr_t Length);
+  void  __cdecl ThrowIfOutOfRange(intptr_t Idx) const;
 
   std::wstring Data;
 };
@@ -286,10 +286,10 @@ public:
   void Unique() const {}
 
 private:
-  void Init(const wchar_t * Str, int Length);
-  void Init(const char * Str, int Length);
-  void Init(const unsigned char * Str, int Length);
-  void  __cdecl ThrowIfOutOfRange(int idx) const;
+  void Init(const wchar_t * Str, intptr_t Length);
+  void Init(const char * Str, intptr_t Length);
+  void Init(const unsigned char * Str, intptr_t Length);
+  void  __cdecl ThrowIfOutOfRange(intptr_t Idx) const;
 
   std::string Data;
 };
@@ -366,9 +366,9 @@ public:
   void Unique() const {}
 
 private:
-  void Init(const wchar_t * Str, int Length);
-  void Init(const char * Str, int Length);
-  void Init(const unsigned char * Str, int Length);
+  void Init(const wchar_t * Str, intptr_t Length);
+  void Init(const char * Str, intptr_t Length);
+  void Init(const unsigned char * Str, intptr_t Length);
 
   typedef std::basic_string<unsigned char> rawstring_t;
   rawstring_t Data;

@@ -5,7 +5,7 @@
 
 //------------------------------------------------------------------------------
 
-void AnsiString::Init(const wchar_t * Str, int Length)
+void AnsiString::Init(const wchar_t * Str, intptr_t Length)
 {
   int Size = WideCharToMultiByte(CP_UTF8, 0, Str, Length > 0 ? Length : -1, nullptr, 0, nullptr, nullptr);
   if (Length > 0)
@@ -22,7 +22,7 @@ void AnsiString::Init(const wchar_t * Str, int Length)
   }
 }
 
-void AnsiString::Init(const char * Str, int Length)
+void AnsiString::Init(const char * Str, intptr_t Length)
 {
   Data.resize(Length);
   if (Length > 0)
@@ -32,7 +32,7 @@ void AnsiString::Init(const char * Str, int Length)
   Data = Data.c_str();
 }
 
-void AnsiString::Init(const unsigned char * Str, int Length)
+void AnsiString::Init(const unsigned char * Str, intptr_t Length)
 {
   Data.resize(Length);
   if (Length > 0)
@@ -126,15 +126,15 @@ const AnsiString & __fastcall AnsiString::operator +=(const char Ch)
   return *this;
 }
 
-void  __cdecl AnsiString::ThrowIfOutOfRange(int idx) const
+void  __cdecl AnsiString::ThrowIfOutOfRange(intptr_t Idx) const
 {
-  if (idx < 1 || idx > Length()) // NOTE: UnicodeString is 1-based !!
+  if (Idx < 1 || Idx > Length()) // NOTE: UnicodeString is 1-based !!
     throw std::runtime_error("Index is out of range"); // ERangeError(Sysconst_SRangeError);
 }
 
 //------------------------------------------------------------------------------
 
-void RawByteString::Init(const wchar_t * Str, int Length)
+void RawByteString::Init(const wchar_t * Str, intptr_t Length)
 {
   int Size = WideCharToMultiByte(CP_ACP, 0, Str, Length > 0 ? Length : -1, nullptr, 0, nullptr, nullptr);
   if (Length > 0)
@@ -150,7 +150,7 @@ void RawByteString::Init(const wchar_t * Str, int Length)
   }
 }
 
-void RawByteString::Init(const char * Str, int Length)
+void RawByteString::Init(const char * Str, intptr_t Length)
 {
   Data.resize(Length);
   if (Length > 0)
@@ -160,7 +160,7 @@ void RawByteString::Init(const char * Str, int Length)
   }
 }
 
-void RawByteString::Init(const unsigned char * Str, int Length)
+void RawByteString::Init(const unsigned char * Str, intptr_t Length)
 {
   Data.resize(Length);
   if (Length > 0)
@@ -271,7 +271,7 @@ const RawByteString & __fastcall RawByteString::operator +=(const char Ch)
 
 //------------------------------------------------------------------------------
 
-void UTF8String::Init(const wchar_t * Str, int Length)
+void UTF8String::Init(const wchar_t * Str, intptr_t Length)
 {
   Data.resize(Length);
   if (Length > 0)
@@ -281,7 +281,7 @@ void UTF8String::Init(const wchar_t * Str, int Length)
   Data = Data.c_str();
 }
 
-void UTF8String::Init(const char * Str, int Length)
+void UTF8String::Init(const char * Str, intptr_t Length)
 {
   int Size = MultiByteToWideChar(CP_UTF8, 0, Str, Length > 0 ? Length : -1, NULL, 0);
   Data.resize(Size + 1);
@@ -376,7 +376,7 @@ bool __fastcall operator !=(const UTF8String & lhs, const UTF8String & rhs)
 
 //------------------------------------------------------------------------------
 
-void UnicodeString::Init(const wchar_t * Str, int Length)
+void UnicodeString::Init(const wchar_t * Str, intptr_t Length)
 {
   Data.resize(Length);
   if (Length > 0)
@@ -386,7 +386,7 @@ void UnicodeString::Init(const wchar_t * Str, int Length)
   Data = Data.c_str();
 }
 
-void UnicodeString::Init(const char * Str, int Length)
+void UnicodeString::Init(const char * Str, intptr_t Length)
 {
   int Size = MultiByteToWideChar(CP_UTF8, 0, Str, Length > 0 ? Length : -1, NULL, 0);
   Data.resize(Size + 1);
@@ -450,7 +450,7 @@ bool UnicodeString::RPos(int & nPos, wchar_t Ch, int nStartPos) const
   return pos != std::wstring::npos;
 }
 
-UnicodeString UnicodeString::SubStr(int Pos, int Len) const
+UnicodeString UnicodeString::SubStr(intptr_t Pos, intptr_t Len) const
 {
   std::wstring S(Data.substr(Pos - 1, Len));
   return UnicodeString(S);
@@ -582,9 +582,9 @@ const UnicodeString & __fastcall UnicodeString::operator +=(const wchar_t Ch)
   return *this;
 }
 
-void  __cdecl UnicodeString::ThrowIfOutOfRange(int idx) const
+void  __cdecl UnicodeString::ThrowIfOutOfRange(intptr_t Idx) const
 {
-  if (idx < 1 || idx > Length()) // NOTE: UnicodeString is 1-based !!
+  if (Idx < 1 || Idx > Length()) // NOTE: UnicodeString is 1-based !!
     throw std::runtime_error("Index is out of range"); // ERangeError(Sysconst_SRangeError);
 }
 
