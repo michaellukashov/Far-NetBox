@@ -521,7 +521,7 @@ void CAsyncSslSocketLayer::OnReceive(int nErrorCode)
 		m_mayTriggerRead = false;
 		
 		//Get number of bytes we can receive and store in the network input bio
-		int len = pBIO_ctrl_get_write_guarantee(m_nbio);
+		size_t len = pBIO_ctrl_get_write_guarantee(m_nbio);
 		if (len > 16384)
 			len = 16384;
 		else if (!len)

@@ -258,7 +258,7 @@ public:
 
   bool __fastcall GetIsEmpty() const;
 protected:
-  virtual void __fastcall Delete(int Index);
+  virtual void __fastcall Delete(intptr_t Index);
 private:
   TCriticalSection * FSection;
   void __fastcall DoClearFileList(UnicodeString Directory, bool SubDirs);
@@ -267,7 +267,7 @@ private:
 class TRemoteDirectoryChangesCache : private TStringList
 {
 public:
-  explicit /* __fastcall */ TRemoteDirectoryChangesCache(int MaxSize);
+  explicit /* __fastcall */ TRemoteDirectoryChangesCache(intptr_t MaxSize);
   virtual /* __fastcall */ ~TRemoteDirectoryChangesCache(){}
 
   void __fastcall AddDirectoryChange(const UnicodeString SourceDir,
@@ -289,7 +289,7 @@ private:
   void __fastcall SetValue(const UnicodeString & Name, const UnicodeString & Value);
   UnicodeString __fastcall GetValue(const UnicodeString & Name);
 
-  int FMaxSize;
+  intptr_t FMaxSize;
 };
 //---------------------------------------------------------------------------
 class TRights
@@ -475,7 +475,7 @@ bool __fastcall IsUnixHiddenFile(const UnicodeString Path);
 UnicodeString __fastcall AbsolutePath(const UnicodeString & Base, const UnicodeString & Path);
 UnicodeString __fastcall FromUnixPath(const UnicodeString Path);
 UnicodeString __fastcall ToUnixPath(const UnicodeString Path);
-UnicodeString __fastcall MinimizeName(const UnicodeString FileName, int MaxLen, bool Unix);
+UnicodeString __fastcall MinimizeName(const UnicodeString FileName, intptr_t MaxLen, bool Unix);
 UnicodeString __fastcall MakeFileList(TStrings * FileList);
 TDateTime __fastcall ReduceDateTimePrecision(TDateTime DateTime,
   TModificationFmt Precision);

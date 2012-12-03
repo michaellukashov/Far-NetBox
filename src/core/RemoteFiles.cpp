@@ -50,7 +50,7 @@ bool __fastcall UnixIsChildPath(UnicodeString Parent, UnicodeString Child)
 //---------------------------------------------------------------------------
 UnicodeString __fastcall UnixExtractFileDir(const UnicodeString Path)
 {
-  int Pos = Path.LastDelimiter(L'/');
+  intptr_t Pos = Path.LastDelimiter(L'/');
   // it used to return Path when no slash was found
   if (Pos > 1)
   {
@@ -65,14 +65,14 @@ UnicodeString __fastcall UnixExtractFileDir(const UnicodeString Path)
 // must return trailing backslash
 UnicodeString __fastcall UnixExtractFilePath(const UnicodeString Path)
 {
-  int Pos = Path.LastDelimiter(L'/');
+  intptr_t Pos = Path.LastDelimiter(L'/');
   // it used to return Path when no slash was found
   return (Pos > 0) ? Path.SubString(1, Pos) : UnicodeString();
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall UnixExtractFileName(const UnicodeString Path)
 {
-  int Pos = Path.LastDelimiter(L'/');
+  intptr_t Pos = Path.LastDelimiter(L'/');
   UnicodeString Result;
   if (Pos > 0)
   {
@@ -88,7 +88,7 @@ UnicodeString __fastcall UnixExtractFileName(const UnicodeString Path)
 UnicodeString __fastcall UnixExtractFileExt(const UnicodeString Path)
 {
   UnicodeString FileName = UnixExtractFileName(Path);
-  int Pos = FileName.LastDelimiter(L".");
+  intptr_t Pos = FileName.LastDelimiter(L".");
   return (Pos > 0) ? Path.SubString(Pos, Path.Length() - Pos + 1) : UnicodeString();
 }
 //---------------------------------------------------------------------------
@@ -117,7 +117,7 @@ bool __fastcall ExtractCommonPath(TStrings * Files, UnicodeString & Path)
       while (!Path.IsEmpty() &&
         (Files->Strings[Index].SubString(1, Path.Length()) != Path))
       {
-        int PrevLen = Path.Length();
+        intptr_t PrevLen = Path.Length();
         Path = ExtractFilePath(ExcludeTrailingBackslash(Path));
         if (Path.Length() == PrevLen)
         {
@@ -144,7 +144,7 @@ bool __fastcall UnixExtractCommonPath(TStrings * Files, UnicodeString & Path)
       while (!Path.IsEmpty() &&
         (Files->Strings[Index].SubString(1, Path.Length()) != Path))
       {
-        int PrevLen = Path.Length();
+        intptr_t PrevLen = Path.Length();
         Path = UnixExtractFilePath(UnixExcludeTrailingBackslash(Path));
         if (Path.Length() == PrevLen)
         {
@@ -184,10 +184,10 @@ UnicodeString __fastcall AbsolutePath(const UnicodeString & Base, const UnicodeS
   {
     Result = UnixIncludeTrailingBackslash(
       UnixIncludeTrailingBackslash(Base) + Path);
-    int P;
+    intptr_t P;
     while ((P = Result.Pos(L"/../")) > 0)
     {
-      int P2 = Result.SubString(1, P-1).LastDelimiter(L"/");
+      intptr_t P2 = Result.SubString(1, P-1).LastDelimiter(L"/");
       assert(P2 > 0);
       Result.Delete(P2, P - P2 + 3);
     }
@@ -251,7 +251,7 @@ static void __fastcall CutFirstDirectory(UnicodeString & S, bool Unix)
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall MinimizeName(const UnicodeString FileName, int MaxLen, bool Unix)
+UnicodeString __fastcall MinimizeName(const UnicodeString FileName, intptr_t MaxLen, bool Unix)
 {
   UnicodeString Drive, Dir, Name, Result;
   UnicodeString Sep = Unix ? L"/" : L"\\";
@@ -259,7 +259,7 @@ UnicodeString __fastcall MinimizeName(const UnicodeString FileName, int MaxLen, 
   Result = FileName;
   if (Unix)
   {
-    int P = Result.LastDelimiter(L"/");
+    intptr_t P = Result.LastDelimiter(L"/");
     if (P)
     {
       Dir = Result.SubString(1, P);
@@ -421,7 +421,7 @@ int __fastcall FakeFileImageIndex(UnicodeString FileName, unsigned long Attrs,
     FileName.SetLength(FileName.Length() - PartialExtLen);
   }
 
-  CTRACEFMT(TRACE_IMAGEINDEX, "FakeFileImageIndex 2 [%s] [%d]", (FileName, int(Attrs)));
+  CTRACEFMT(TRACE_IMAGEINDEX, "FakeFileImageIndex 2 [%s] [%d]", FileName.c_str(), int(Attrs));
   int Icon;
   if (SHGetFileInfo(UnicodeString(FileName).c_str(),
         Attrs, &SHFileInfo, sizeof(SHFileInfo),
@@ -443,7 +443,7 @@ int __fastcall FakeFileImageIndex(UnicodeString FileName, unsigned long Attrs,
     }
     Icon = -1;
   }
-  CTRACEFMT(TRACE_IMAGEINDEX, "FakeFileImageIndex 4 [%d]", (Icon));
+  CTRACEFMT(TRACE_IMAGEINDEX, "FakeFileImageIndex 4 [%d]", Icon);
 
   return Icon;*/
   return -1;
@@ -1703,7 +1703,7 @@ bool __fastcall TRemoteDirectoryCache::HasFileList(const UnicodeString Directory
 {
   TGuard Guard(FSection);
 
-  int Index = IndexOf(UnixExcludeTrailingBackslash(Directory));
+  intptr_t Index = IndexOf(UnixExcludeTrailingBackslash(Directory));
   return (Index >= 0);
 }
 //---------------------------------------------------------------------------
@@ -1712,7 +1712,7 @@ bool __fastcall TRemoteDirectoryCache::HasNewerFileList(const UnicodeString Dire
 {
   TGuard Guard(FSection);
 
-  int Index = IndexOf(UnixExcludeTrailingBackslash(Directory));
+  intptr_t Index = IndexOf(UnixExcludeTrailingBackslash(Directory));
   if (Index >= 0)
   {
     TRemoteFileList * FileList = dynamic_cast<TRemoteFileList *>(Objects[Index]);
@@ -1729,7 +1729,7 @@ bool __fastcall TRemoteDirectoryCache::GetFileList(const UnicodeString Directory
 {
   TGuard Guard(FSection);
 
-  int Index = IndexOf(UnixExcludeTrailingBackslash(Directory));
+  intptr_t Index = IndexOf(UnixExcludeTrailingBackslash(Directory));
   bool Result = (Index >= 0);
   if (Result)
   {
@@ -1766,7 +1766,7 @@ void __fastcall TRemoteDirectoryCache::ClearFileList(UnicodeString Directory, bo
 void __fastcall TRemoteDirectoryCache::DoClearFileList(UnicodeString Directory, bool SubDirs)
 {
   Directory = UnixExcludeTrailingBackslash(Directory);
-  int Index = IndexOf(Directory);
+  intptr_t Index = IndexOf(Directory);
   if (Index >= 0)
   {
     Delete(Index);
@@ -1786,14 +1786,14 @@ void __fastcall TRemoteDirectoryCache::DoClearFileList(UnicodeString Directory, 
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TRemoteDirectoryCache::Delete(int Index)
+void __fastcall TRemoteDirectoryCache::Delete(intptr_t Index)
 {
   delete static_cast<TRemoteFileList *>(Objects[Index]);
   TStringList::Delete(Index);
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-/* __fastcall */ TRemoteDirectoryChangesCache::TRemoteDirectoryChangesCache(int MaxSize) :
+/* __fastcall */ TRemoteDirectoryChangesCache::TRemoteDirectoryChangesCache(intptr_t MaxSize) :
   TStringList(),
   FMaxSize(MaxSize)
 {
@@ -1812,7 +1812,7 @@ bool __fastcall TRemoteDirectoryChangesCache::GetIsEmpty() const
 void __fastcall TRemoteDirectoryChangesCache::SetValue(const UnicodeString & Name,
   const UnicodeString & Value)
 {
-  int Index = IndexOfName(Name);
+  intptr_t Index = IndexOfName(Name);
   if (Index >= 0)
   {
     Delete(Index);
@@ -1916,13 +1916,13 @@ bool __fastcall TRemoteDirectoryChangesCache::GetDirectoryChange(
 void __fastcall TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data)
 {
   Data = L"A";
-  int ACount = Count;
+  intptr_t ACount = Count;
   if (ACount > FMaxSize)
   {
     TStrings * Limited = new TStringList();
     TRY_FINALLY (
     {
-      int Index = ACount - FMaxSize;
+      intptr_t Index = ACount - FMaxSize;
       while (Index < ACount)
       {
         Limited->Add(Strings[Index]);
@@ -2201,7 +2201,7 @@ void __fastcall TRights::SetText(const UnicodeString & value)
     FText = KeepText ? value : UnicodeString();
   }
   FUnknown = false;
-  TRACEFMT("Rights [%x] [%x] [%s]", (int(FSet), int(FUnset), GetText()));
+  TRACEFMT("Rights [%x] [%x] [%s]", int(FSet), int(FUnset), GetText().c_str());
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TRights::GetText() const

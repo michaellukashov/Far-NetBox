@@ -900,10 +900,11 @@ void __fastcall TSCPFileSystem::DetectReturnVar()
       catch (EFatal &E)
       {
         // if fatal error occurs, we need to exit ...
-        throw;
+        throw E;
       }
       catch (Exception &E)
       {
+        (void)E;
         // ...otherwise, we will try next variable (if any)
         Success = false;
       }
@@ -1935,13 +1936,13 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString FileName,
         {
           // SCP protocol fatal error
           OperationProgress->TransferingFile = false;
-          throw;
+          throw E;
         }
         catch (EScpFileSkipped &E)
         {
           // SCP protocol non-fatal error
           OperationProgress->TransferingFile = false;
-          throw;
+          throw E;
         }
 
         // We succeded transfering file, from now we can handle exceptions
@@ -1968,7 +1969,7 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString FileName,
         }
         else
         {
-          throw;
+          throw E;
         }
       }
 
@@ -2206,7 +2207,7 @@ void __fastcall TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
           catch (EFatal &E)
           {
             TRACE("6");
-            throw;
+            throw E;
           }
           catch (...)
           {
@@ -2360,7 +2361,7 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
         }
         catch(Exception & E)
         {
-          TRACEFMT("5 [%s]", (E.Message.c_str()));
+          TRACEFMT("5 [%s]", E.Message.c_str());
           if (!Initialized && FTerminal->GetActive())
           {
             FTerminal->TerminalError(&E, LoadStr(SCP_INIT_ERROR));
@@ -2635,7 +2636,7 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
               }
               catch (Exception &E)
               {
-                TRACEFMT("19 [%s]", (E.Message.c_str()));
+                TRACEFMT("19 [%s]", E.Message.c_str());
                 // Every exception during file transfer is fatal
                 FTerminal->FatalError(&E,
                   FMTLOAD(COPY_FATAL, OperationProgress->FileName.c_str()));
@@ -2654,13 +2655,13 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
               {
                 TRACE("21");
                 FSecureShell->SendNull();
-                throw;
+                throw E;
               }
               catch (EScpFileSkipped &E)
               {
                 TRACE("22");
                 FSecureShell->SendNull();
-                throw;
+                throw E;
               }
 
               FSecureShell->SendNull();
@@ -2707,7 +2708,7 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
     }
     catch (EScpFileSkipped &E)
     {
-      TRACEFMT("27 [%s]", (E.Message.c_str()));
+      TRACEFMT("27 [%s]", E.Message.c_str());
       if (!SkipConfirmed)
       {
         TRACE("28");
@@ -2727,7 +2728,7 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
     }
     catch (EScpSkipFile &E)
     {
-      TRACEFMT("29 [%s]", (E.Message.c_str()));
+      TRACEFMT("29 [%s]", E.Message.c_str());
       SCPSendError(E.Message, false);
       Success = false;
       if (!FTerminal->HandleException(&E)) { throw; }

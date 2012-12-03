@@ -10,7 +10,7 @@
 #include "version.h"
 
 //---------------------------------------------------------------------------
-extern TCustomFarPlugin * __fastcall CreateFarPlugin(HINSTANCE HInst);
+extern TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst);
 
 //---------------------------------------------------------------------------
 class TFarPluginGuard : public TFarPluginEnvGuard, public TGuard

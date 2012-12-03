@@ -489,8 +489,8 @@ BOOL CAsyncSocketExLayer::GetPeerNameNext( CString& rPeerAddress, UINT& rPeerPor
 		return m_pNextLayer->GetPeerName(rPeerAddress, rPeerPort);
 	else
 	{
-		SOCKADDR* sockAddr;
-		int nSockAddrLen;
+		SOCKADDR* sockAddr = NULL;
+		int nSockAddrLen = 0;
 
 		if (m_nFamily == AF_INET6)
 		{
@@ -568,8 +568,8 @@ BOOL CAsyncSocketExLayer::GetSockNameNext( CString& rSockAddress, UINT& rSockPor
 		return m_pNextLayer->GetSockName(rSockAddress, rSockPort);
 	else
 	{
-		SOCKADDR* sockAddr;
-		int nSockAddrLen;
+		SOCKADDR* sockAddr = NULL;
+		int nSockAddrLen = 0;
 
 		if (m_nFamily == AF_INET6)
 		{

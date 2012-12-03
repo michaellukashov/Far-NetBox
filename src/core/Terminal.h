@@ -93,23 +93,23 @@ DEFINE_CALLBACK_TYPE2(TCreateLocalDirectoryEvent, BOOL,
     }                                                                       \
     catch (EAbort & E)                                                      \
     {                                                                       \
-      throw;                                                                \
+      throw E;                                                                \
     }                                                                       \
     catch (EScpSkipFile & E)                                                \
     {                                                                       \
-      throw;                                                                \
+      throw E;                                                                \
     }                                                                       \
     catch (EFatal & E)                                                      \
     {                                                                       \
-      throw;                                                                \
+      throw E;                                                                \
     }                                                                       \
-    catch (EFileNotFoundError &)                                                      \
+    catch (EFileNotFoundError & E)                                                      \
     {                                                                       \
-      throw;                                                                \
+      throw E;                                                                \
     }                                                                       \
-    catch (EOSError &)                                                      \
+    catch (EOSError & E)                                                      \
     {                                                                       \
-      throw;                                                                \
+      throw E;                                                                \
     }                                                                       \
     catch (Exception & E)                                                   \
     {                                                                       \
@@ -694,8 +694,8 @@ public:
 
   ~TSynchronizeChecklist();
 
-  int __fastcall GetCount() const;
-  const TItem * __fastcall GetItem(int Index) const;
+  intptr_t __fastcall GetCount() const;
+  const TItem * __fastcall GetItem(intptr_t Index) const;
 
 protected:
   TSynchronizeChecklist();

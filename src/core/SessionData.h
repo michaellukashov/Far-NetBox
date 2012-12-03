@@ -470,7 +470,7 @@ public:
   int __fastcall GetNumberOfRetries() const { return FNumberOfRetries; }
   void __fastcall SetNumberOfRetries(int value) { FNumberOfRetries = value; }
   uintptr_t __fastcall GetSessionVersion() const { return FSessionVersion; }
-  void __fastcall SetSessionVersion(DWORD value) { FSessionVersion = value; }
+  void __fastcall SetSessionVersion(uintptr_t value) { FSessionVersion = value; }
 protected:
   uintptr_t __fastcall GetDefaultVersion() { return ::GetVersionNumber219(); }
   TFSProtocol __fastcall TranslateFSProtocolNumber(int FSProtocol);

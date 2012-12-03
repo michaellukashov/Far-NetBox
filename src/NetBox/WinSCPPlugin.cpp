@@ -18,7 +18,7 @@
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
 
-TCustomFarPlugin * __fastcall CreateFarPlugin(HINSTANCE HInst)
+TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst)
 {
   return new TWinSCPPlugin(HInst);
 }
@@ -51,17 +51,17 @@ TWinSCPPlugin::~TWinSCPPlugin()
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TWinSCPPlugin::HandlesFunction(THandlesFunction Function)
+bool TWinSCPPlugin::HandlesFunction(THandlesFunction Function)
 {
   return (Function == hfProcessKey || Function == hfProcessPanelEvent);
 }
 //---------------------------------------------------------------------------
-VersionInfo __fastcall TWinSCPPlugin::GetMinFarVersion()
+VersionInfo TWinSCPPlugin::GetMinFarVersion()
 {
   return MAKEFARVERSION(FARMANAGERVERSION_MAJOR, FARMANAGERVERSION_MINOR, FARMANAGERVERSION_REVISION, FARMANAGERVERSION_BUILD, FARMANAGERVERSION_STAGE);
 }  
 //---------------------------------------------------------------------------
-void __fastcall TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
+void TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
 {
   try
   {
@@ -77,7 +77,7 @@ void __fastcall TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * I
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinSCPPlugin::GetPluginInfoEx(PLUGIN_FLAGS &Flags,
+void TWinSCPPlugin::GetPluginInfoEx(PLUGIN_FLAGS &Flags,
   TStrings * DiskMenuStrings, TStrings * PluginMenuStrings,
   TStrings * PluginConfigStrings, TStrings * CommandPrefixes)
 {
@@ -102,7 +102,7 @@ void __fastcall TWinSCPPlugin::GetPluginInfoEx(PLUGIN_FLAGS &Flags,
   CommandPrefixes->CommaText = FarConfiguration->GetCommandPrefixes();
 }
 //---------------------------------------------------------------------------
-bool __fastcall TWinSCPPlugin::ConfigureEx(const GUID * /* Item */)
+bool TWinSCPPlugin::ConfigureEx(const GUID * /* Item */)
 {
   bool Change = false;
 
@@ -204,7 +204,7 @@ bool __fastcall TWinSCPPlugin::ConfigureEx(const GUID * /* Item */)
   return Change;
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info)
+intptr_t TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info)
 {
   // for performance reasons, do not pass the event to file systems on redraw
   if ((Info->Event != EE_REDRAW) || FarConfiguration->GetEditorUploadOnSave() ||
@@ -221,7 +221,7 @@ intptr_t __fastcall TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEdit
   return 0;
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
+intptr_t TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
 {
   intptr_t Result;
   if ((Rec->EventType == KEY_EVENT) &&
@@ -241,7 +241,7 @@ intptr_t __fastcall TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec
   return Result;
 }
 //---------------------------------------------------------------------------
-TCustomFarFileSystem * __fastcall TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t Item)
+TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t Item)
 {
   TWinSCPFileSystem * FileSystem = NULL;
   try
@@ -380,7 +380,7 @@ TCustomFarFileSystem * __fastcall TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom,
   return FileSystem;
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
+void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 {
   TFarMenuItems * MenuItems = new TFarMenuItems();
   std::auto_ptr<TFarMenuItems> MenuItemsPtr(MenuItems);
@@ -394,28 +394,28 @@ void __fastcall TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
     bool FSVisible = FSConnected && FromFileSystem;
     bool AnyFSVisible = (FSConnected || AnotherFSConnected) && FromFileSystem;
 
-    int MAttributes = MenuItems->Add(GetMsg(MENU_COMMANDS_ATTRIBUTES), FSVisible);
-    int MLink = MenuItems->Add(GetMsg(MENU_COMMANDS_LINK), FSVisible);
-    int MApplyCommand = MenuItems->Add(GetMsg(MENU_COMMANDS_APPLY_COMMAND), FSVisible);
-    int MFullSynchronize = MenuItems->Add(GetMsg(MENU_COMMANDS_FULL_SYNCHRONIZE), AnyFSVisible);
-    int MSynchronize = MenuItems->Add(GetMsg(MENU_COMMANDS_SYNCHRONIZE), AnyFSVisible);
-    int MQueue = MenuItems->Add(GetMsg(MENU_COMMANDS_QUEUE), FSVisible);
-    int MInformation = MenuItems->Add(GetMsg(MENU_COMMANDS_INFORMATION), FSVisible);
-    int MLog = MenuItems->Add(GetMsg(MENU_COMMANDS_LOG), FSVisible);
-    int MClearCaches = MenuItems->Add(GetMsg(MENU_COMMANDS_CLEAR_CACHES), FSVisible);
-    int MPutty = MenuItems->Add(GetMsg(MENU_COMMANDS_PUTTY), FSVisible);
-    int MEditHistory = MenuItems->Add(GetMsg(MENU_COMMANDS_EDIT_HISTORY), FSConnected);
+    intptr_t MAttributes = MenuItems->Add(GetMsg(MENU_COMMANDS_ATTRIBUTES), FSVisible);
+    intptr_t MLink = MenuItems->Add(GetMsg(MENU_COMMANDS_LINK), FSVisible);
+    intptr_t MApplyCommand = MenuItems->Add(GetMsg(MENU_COMMANDS_APPLY_COMMAND), FSVisible);
+    intptr_t MFullSynchronize = MenuItems->Add(GetMsg(MENU_COMMANDS_FULL_SYNCHRONIZE), AnyFSVisible);
+    intptr_t MSynchronize = MenuItems->Add(GetMsg(MENU_COMMANDS_SYNCHRONIZE), AnyFSVisible);
+    intptr_t MQueue = MenuItems->Add(GetMsg(MENU_COMMANDS_QUEUE), FSVisible);
+    intptr_t MInformation = MenuItems->Add(GetMsg(MENU_COMMANDS_INFORMATION), FSVisible);
+    intptr_t MLog = MenuItems->Add(GetMsg(MENU_COMMANDS_LOG), FSVisible);
+    intptr_t MClearCaches = MenuItems->Add(GetMsg(MENU_COMMANDS_CLEAR_CACHES), FSVisible);
+    intptr_t MPutty = MenuItems->Add(GetMsg(MENU_COMMANDS_PUTTY), FSVisible);
+    intptr_t MEditHistory = MenuItems->Add(GetMsg(MENU_COMMANDS_EDIT_HISTORY), FSConnected);
     MenuItems->AddSeparator(FSConnected || FSVisible);
-    int MAddBookmark = MenuItems->Add(GetMsg(MENU_COMMANDS_ADD_BOOKMARK), FSVisible);
-    int MOpenDirectory = MenuItems->Add(GetMsg(MENU_COMMANDS_OPEN_DIRECTORY), FSVisible);
-    int MHomeDirectory = MenuItems->Add(GetMsg(MENU_COMMANDS_HOME_DIRECTORY), FSVisible);
-    int MSynchronizeBrowsing = MenuItems->Add(GetMsg(MENU_COMMANDS_SYNCHRONIZE_BROWSING), FSVisible);
+    intptr_t MAddBookmark = MenuItems->Add(GetMsg(MENU_COMMANDS_ADD_BOOKMARK), FSVisible);
+    intptr_t MOpenDirectory = MenuItems->Add(GetMsg(MENU_COMMANDS_OPEN_DIRECTORY), FSVisible);
+    intptr_t MHomeDirectory = MenuItems->Add(GetMsg(MENU_COMMANDS_HOME_DIRECTORY), FSVisible);
+    intptr_t MSynchronizeBrowsing = MenuItems->Add(GetMsg(MENU_COMMANDS_SYNCHRONIZE_BROWSING), FSVisible);
     MenuItems->AddSeparator(FSVisible);
-    int MPageant = MenuItems->Add(GetMsg(MENU_COMMANDS_PAGEANT), FromFileSystem);
-    int MPuttygen = MenuItems->Add(GetMsg(MENU_COMMANDS_PUTTYGEN), FromFileSystem);
+    intptr_t MPageant = MenuItems->Add(GetMsg(MENU_COMMANDS_PAGEANT), FromFileSystem);
+    intptr_t MPuttygen = MenuItems->Add(GetMsg(MENU_COMMANDS_PUTTYGEN), FromFileSystem);
     MenuItems->AddSeparator(FromFileSystem);
-    int MConfigure = MenuItems->Add(GetMsg(MENU_COMMANDS_CONFIGURE));
-    int MAbout = MenuItems->Add(GetMsg(CONFIG_ABOUT));
+    intptr_t MConfigure = MenuItems->Add(GetMsg(MENU_COMMANDS_CONFIGURE));
+    intptr_t MAbout = MenuItems->Add(GetMsg(CONFIG_ABOUT));
 
     MenuItems->SetDisabled(MLog, !FSVisible || (FileSystem && !FileSystem->IsLogging()));
     MenuItems->SetDisabled(MClearCaches, !FSVisible || (FileSystem && FileSystem->AreCachesEmpty()));
@@ -536,7 +536,7 @@ void __fastcall TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinSCPPlugin::ShowExtendedException(Exception * E)
+void TWinSCPPlugin::ShowExtendedException(Exception * E)
 {
   if (!E->Message.IsEmpty())
   {
@@ -566,7 +566,7 @@ void __fastcall TWinSCPPlugin::ShowExtendedException(Exception * E)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinSCPPlugin::HandleException(Exception * E, int OpMode)
+void TWinSCPPlugin::HandleException(Exception * E, int OpMode)
 {
   if (((OpMode & OPM_FIND) == 0) || ::InheritsFrom<std::exception, EFatal>(E))
   {
@@ -609,11 +609,11 @@ void TWinSCPPlugin::MessageClick(void * Token, int Result, bool & Close)
   }
 }
 //---------------------------------------------------------------------------
-int __fastcall TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
+intptr_t TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
   TStrings * MoreMessages, TQueryType Type, int Answers,
   const TMessageParams * Params)
 {
-  int Result = 0;
+  intptr_t Result = 0;
   TStrings * ButtonLabels = new TStringList();
   std::auto_ptr<TStrings> ButtonLabelsPtr(ButtonLabels);
   {
@@ -662,7 +662,7 @@ int __fastcall TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
     int AAnswers = Answers;
     bool NeverAskAgainCheck = (Params != NULL) && FLAGSET(Params->Params, qpNeverAskAgainCheck);
     bool NeverAskAgainPending = NeverAskAgainCheck;
-    int TimeoutButton = 0;
+    intptr_t TimeoutButton = 0;
 
     #define ADD_BUTTON_EX(TYPE, CANNEVERASK) \
       if (AAnswers & qa ## TYPE) \
@@ -742,7 +742,7 @@ int __fastcall TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
       if (Params->Timeout > 0)
       {
         FarParams.Timeout = Params->Timeout;
-        FarParams.TimeoutButton = TimeoutButton;
+        FarParams.TimeoutButton = (unsigned int)TimeoutButton;
         FarParams.TimeoutStr = GetMsg(MSG_BUTTON_TIMEOUT);
       }
     }
@@ -822,7 +822,7 @@ BOOL __fastcall TWinSCPPlugin::CreateLocalDirectory(const UnicodeString & LocalD
 }
 
 //---------------------------------------------------------------------------
-void __fastcall TWinSCPPlugin::CleanupConfiguration()
+void TWinSCPPlugin::CleanupConfiguration()
 {
   // Check if key Configuration\Version exists
   THierarchicalStorage * Storage = FarConfiguration->CreateScpStorage(false);

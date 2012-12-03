@@ -127,7 +127,7 @@ protected:
   TDateTime FLastIdle;
 
 public:
-  TQueueItem * __fastcall GetItem(int Index);
+  TQueueItem * __fastcall GetItem(intptr_t Index);
   bool __fastcall ItemGetData(TQueueItem * Item, TQueueItemProxy * Proxy);
   bool __fastcall ItemProcessUserAction(TQueueItem * Item, void * Arg);
   bool __fastcall ItemMove(TQueueItem * Item, TQueueItem * BeforeItem);
@@ -228,7 +228,7 @@ public:
   TQueueItem::TInfo * __fastcall GetInfo() { return FInfo; }
   TQueueItem::TStatus __fastcall GetStatus() const { return FStatus; }
   bool __fastcall GetProcessingUserAction() const { return FProcessingUserAction; }
-  int __fastcall GetIndex();
+  intptr_t __fastcall GetIndex();
   void * __fastcall GetUserData() { return FUserData; }
   void __fastcall SetUserData(void * value) { FUserData = value; }
 
@@ -258,9 +258,9 @@ public:
 
   TQueueItemProxy * __fastcall FindByQueueItem(TQueueItem * QueueItem);
 
-  int __fastcall GetCount() const;
-  int __fastcall GetActiveCount();
-  TQueueItemProxy * __fastcall GetItem(int Index);
+  intptr_t __fastcall GetCount() const;
+  intptr_t __fastcall GetActiveCount();
+  TQueueItemProxy * __fastcall GetItem(intptr_t Index);
 
 protected:
   /* __fastcall */ TTerminalQueueStatus();
@@ -271,7 +271,7 @@ protected:
 
 private:
   TList * FList;
-  int FActiveCount;
+  intptr_t FActiveCount;
 
 public:
   void __fastcall SetMasks(const UnicodeString value);

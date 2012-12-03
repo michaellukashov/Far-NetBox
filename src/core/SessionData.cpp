@@ -1034,7 +1034,7 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
   bool * AProtocolDefined)
 {
   CALLSTACK;
-  TRACEFMT("0 [%s]", (Url));
+  TRACEFMT("0 [%s]", Url.c_str());
   bool ProtocolDefined = false;
   bool PortNumberDefined = false;
   TFSProtocol AFSProtocol = fsSCPonly;
@@ -1170,7 +1170,7 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
       Assign(StoredSessions->GetDefaultSettings());
       SetName(L"");
 
-      int PSlash = Url.Pos(L"/");
+      intptr_t PSlash = Url.Pos(L"/");
       if (PSlash == 0)
       {
         TRACE("14");
@@ -1179,7 +1179,7 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
 
       UnicodeString ConnectInfo = Url.SubString(1, PSlash - 1);
 
-      int P = ConnectInfo.LastDelimiter(L"@");
+      intptr_t P = ConnectInfo.LastDelimiter(L"@");
 
       UnicodeString UserInfo;
       UnicodeString HostInfo;
@@ -1466,7 +1466,7 @@ void __fastcall TSessionData::SetHostName(UnicodeString value)
     // HostName is key for password encryption
     UnicodeString XPassword = GetPassword();
 
-    int P = value.LastDelimiter(L"@");
+    intptr_t P = value.LastDelimiter(L"@");
     if (P > 0)
     {
       SetUserName(value.SubString(1, P - 1));
@@ -2363,7 +2363,7 @@ void __fastcall TSessionData::SetTunnelHostName(UnicodeString value)
     // HostName is key for password encryption
     UnicodeString XTunnelPassword = GetTunnelPassword();
 
-    int P = value.LastDelimiter(L"@");
+    intptr_t P = value.LastDelimiter(L"@");
     if (P > 0)
     {
       SetTunnelUserName(value.SubString(1, P - 1));
@@ -2518,7 +2518,7 @@ UnicodeString __fastcall TSessionData::GetLocalName()
   if (HasSessionName())
   {
     Result = GetName();
-    int P = Result.LastDelimiter(L"/");
+    intptr_t P = Result.LastDelimiter(L"/");
     if (P > 0)
     {
       Result.Delete(1, P);
@@ -2563,8 +2563,8 @@ void __fastcall TSessionData::AdjustHostName(UnicodeString & hostName, const Uni
   if (::LowerCase(hostName.SubString(1, prefix.Length())) == prefix)
   {
     hostName.Delete(1, prefix.Length());
-    int pos = 1;
-    hostName = CopyToChars(hostName, pos, L"/", true, NULL, false);
+    intptr_t Pos = 1;
+    hostName = CopyToChars(hostName, Pos, L"/", true, NULL, false);
   }
 }
 //---------------------------------------------------------------------
@@ -3201,7 +3201,7 @@ UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TSessionData * S
 {
   UnicodeString ANewFileName = StripPathQuotes(ExpandEnvironmentVariables(LogFileName));
   TDateTime N = Now();
-  for (int Index = 1; Index < ANewFileName.Length(); Index++)
+  for (intptr_t Index = 1; Index < ANewFileName.Length(); Index++)
   {
     if (ANewFileName[Index] == L'&')
     {

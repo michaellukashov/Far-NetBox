@@ -343,7 +343,7 @@ void __fastcall TSimpleThread::Init()
 {
   FThread = reinterpret_cast<HANDLE>(
     StartThread(NULL, 0, this, CREATE_SUSPENDED, FThreadId));
-  TRACEFMT("[%x]", (int(FThread)));
+  TRACEFMT("[%x]", int(FThread));
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TSimpleThread::~TSimpleThread()
@@ -353,7 +353,7 @@ void __fastcall TSimpleThread::Init()
 
   if (FThread != NULL)
   {
-    TRACEFMT("[%x]", (int(FThread)));
+    TRACEFMT("[%x]", int(FThread));
     CloseHandle(FThread);
   }
   TRACE("/");
@@ -367,7 +367,7 @@ bool __fastcall TSimpleThread::IsFinished()
 void __fastcall TSimpleThread::Start()
 {
   CALLSTACK;
-  TRACEFMT("[%x]", (int(FThread)));
+  TRACEFMT("[%x]", int(FThread));
   if (ResumeThread(FThread) == 1)
   {
     FFinished = false;
@@ -393,7 +393,7 @@ void __fastcall TSimpleThread::Close()
 void __fastcall TSimpleThread::WaitFor(unsigned int Milliseconds)
 {
   CALLSTACK;
-  TRACEFMT("[%x]", (int(FThread)));
+  TRACEFMT("[%x]", int(FThread));
   WaitForSingleObject(FThread, Milliseconds);
 }
 //---------------------------------------------------------------------------
@@ -412,9 +412,9 @@ void __fastcall TSignalThread::Init(bool LowPriority)
   TSimpleThread::Init();
   FEvent = CreateEvent(NULL, false, false, NULL);
   assert(FEvent != NULL);
-  TRACEFMT("[%x]", (int(FEvent)));
+  TRACEFMT("[%x]", int(FEvent));
 
-  TRACEFMT("[%x]", (int(FThread)));
+  TRACEFMT("[%x]", int(FThread));
   if (LowPriority)
   {
     ::SetThreadPriority(FThread, THREAD_PRIORITY_BELOW_NORMAL);
@@ -428,7 +428,7 @@ void __fastcall TSignalThread::Init(bool LowPriority)
   // destroying the event
   Close();
 
-  TRACEFMT("[%x]", (int(FEvent)));
+  TRACEFMT("[%x]", int(FEvent));
   if (FEvent)
   {
     CloseHandle(FEvent);
@@ -446,14 +446,14 @@ void __fastcall TSignalThread::Start()
 void __fastcall TSignalThread::TriggerEvent()
 {
   CALLSTACK;
-  TRACEFMT("[%x] [%x]", (int(FEvent), int(FThread)));
+  TRACEFMT("[%x] [%x]", int(FEvent), int(FThread));
   SetEvent(FEvent);
 }
 //---------------------------------------------------------------------------
 bool __fastcall TSignalThread::WaitForEvent()
 {
   CALLSTACK;
-  TRACEFMT("[%x] [%x]", (int(FEvent), int(FThread)));
+  TRACEFMT("[%x] [%x]", int(FEvent), int(FThread));
   // should never return -1, so it is only about 0 or 1
   return (WaitForEvent(INFINITE) > 0);
 }
@@ -461,9 +461,9 @@ bool __fastcall TSignalThread::WaitForEvent()
 int __fastcall TSignalThread::WaitForEvent(unsigned int Timeout)
 {
   CALLSTACK;
-  TRACEFMT("1 [%x] [%x] [%d]", (int(FEvent), int(FThread), int(Timeout)));
+  TRACEFMT("1 [%x] [%x] [%d]", int(FEvent), int(FThread), int(Timeout));
   unsigned int Result = WaitForSingleObject(FEvent, Timeout);
-  TRACEFMT("2 [%d] [%d]", (int(Result), int(FTerminated)));
+  TRACEFMT("2 [%d] [%d]", int(Result), int(FTerminated));
   if ((Result == WAIT_TIMEOUT) && !FTerminated)
   {
     return -1;
@@ -570,7 +570,7 @@ void __fastcall TTerminalQueue::TerminalFinished(TTerminalItem * TerminalItem)
     {
       TGuard Guard(FItemsSection);
 
-      int Index = FTerminals->IndexOf(TerminalItem);
+      intptr_t Index = FTerminals->IndexOf(TerminalItem);
       assert(Index >= 0);
 
       if (Index < FFreeTerminals)
@@ -605,7 +605,7 @@ bool __fastcall TTerminalQueue::TerminalFree(TTerminalItem * TerminalItem)
     {
       TGuard Guard(FItemsSection);
 
-      int Index = FTerminals->IndexOf(TerminalItem);
+      intptr_t Index = FTerminals->IndexOf(TerminalItem);
       assert(Index >= 0);
       assert(Index >= FFreeTerminals);
 
@@ -650,7 +650,7 @@ void __fastcall TTerminalQueue::RetryItem(TQueueItem * Item)
     {
       TGuard Guard(FItemsSection);
 
-      int Index = FItems->Remove(Item);
+      intptr_t Index = FItems->Remove(Item);
       assert(Index < FItemsInProcess);
       USEDPARAM(Index);
       FItemsInProcess--;
@@ -674,7 +674,7 @@ void __fastcall TTerminalQueue::DeleteItem(TQueueItem * Item)
 
       // does this need to be within guard?
       Monitored = (Item->GetCompleteEvent() != INVALID_HANDLE_VALUE);
-      int Index = FItems->Remove(Item);
+      intptr_t Index = FItems->Remove(Item);
       assert(Index < FItemsInProcess);
       USEDPARAM(Index);
       FItemsInProcess--;
@@ -700,7 +700,7 @@ void __fastcall TTerminalQueue::DeleteItem(TQueueItem * Item)
   }
 }
 //---------------------------------------------------------------------------
-TQueueItem * __fastcall TTerminalQueue::GetItem(int Index)
+TQueueItem * __fastcall TTerminalQueue::GetItem(intptr_t Index)
 {
   return reinterpret_cast<TQueueItem*>(FItems->Items[Index]);
 }
@@ -818,8 +818,8 @@ bool __fastcall TTerminalQueue::ItemMove(TQueueItem * Item, TQueueItem * BeforeI
     {
       TGuard Guard(FItemsSection);
 
-      int Index = FItems->IndexOf(Item);
-      int IndexDest = FItems->IndexOf(BeforeItem);
+      intptr_t Index = FItems->IndexOf(Item);
+      intptr_t IndexDest = FItems->IndexOf(BeforeItem);
       Result = (Index >= 0) && (IndexDest >= 0) &&
         (Item->GetStatus() == TQueueItem::qsPending) &&
         (BeforeItem->GetStatus() == TQueueItem::qsPending);
@@ -849,7 +849,7 @@ bool __fastcall TTerminalQueue::ItemExecuteNow(TQueueItem * Item)
     {
       TGuard Guard(FItemsSection);
 
-      int Index = FItems->IndexOf(Item);
+      intptr_t Index = FItems->IndexOf(Item);
       Result = (Index >= 0) && (Item->GetStatus() == TQueueItem::qsPending) &&
         // prevent double-initiation when "execute" is clicked twice too fast
         (Index >= FItemsInProcess);
@@ -894,7 +894,7 @@ bool __fastcall TTerminalQueue::ItemDelete(TQueueItem * Item)
     {
       TGuard Guard(FItemsSection);
 
-      int Index = FItems->IndexOf(Item);
+      intptr_t Index = FItems->IndexOf(Item);
       Result = (Index >= 0);
       if (Result)
       {
@@ -1021,7 +1021,7 @@ void __fastcall TTerminalQueue::ProcessEvent()
       TGuard Guard(FItemsSection);
 
       Item = GetItem(FItemsInProcess);
-      int ForcedIndex = FForcedItems->IndexOf(Item);
+      intptr_t ForcedIndex = FForcedItems->IndexOf(Item);
 
       if (FEnabled || (ForcedIndex >= 0))
       {
@@ -1728,7 +1728,7 @@ bool __fastcall TQueueItemProxy::ExecuteNow()
 bool __fastcall TQueueItemProxy::Move(bool Sooner)
 {
   bool Result = false;
-  int I = GetIndex();
+  intptr_t I = GetIndex();
   if (Sooner)
   {
     if (I > 0)
@@ -1789,10 +1789,10 @@ bool __fastcall TQueueItemProxy::SetCPSLimit(unsigned long CPSLimit)
   return FQueue->ItemSetCPSLimit(FQueueItem, CPSLimit);
 }
 //---------------------------------------------------------------------------
-int __fastcall TQueueItemProxy::GetIndex()
+intptr_t __fastcall TQueueItemProxy::GetIndex()
 {
   assert(FQueueStatus != NULL);
-  int Index = FQueueStatus->FList->IndexOf(this);
+  intptr_t Index = FQueueStatus->FList->IndexOf(this);
   assert(Index >= 0);
   return Index;
 }
@@ -1821,7 +1821,7 @@ void __fastcall TTerminalQueueStatus::ResetStats()
   FActiveCount = -1;
 }
 //---------------------------------------------------------------------------
-int __fastcall TTerminalQueueStatus::GetActiveCount()
+intptr_t __fastcall TTerminalQueueStatus::GetActiveCount()
 {
   if (FActiveCount < 0)
   {
@@ -1851,12 +1851,12 @@ void __fastcall TTerminalQueueStatus::Delete(TQueueItemProxy * ItemProxy)
   ResetStats();
 }
 //---------------------------------------------------------------------------
-int __fastcall TTerminalQueueStatus::GetCount() const
+intptr_t __fastcall TTerminalQueueStatus::GetCount() const
 {
   return FList->Count;
 }
 //---------------------------------------------------------------------------
-TQueueItemProxy * __fastcall TTerminalQueueStatus::GetItem(int Index)
+TQueueItemProxy * __fastcall TTerminalQueueStatus::GetItem(intptr_t Index)
 {
   return reinterpret_cast<TQueueItemProxy *>(FList->Items[Index]);
 }
@@ -2228,7 +2228,7 @@ void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
   {
     if (FCancelled)
     {
-      // TRACEFMT("3 [%s]", (TraceE.Message));
+      // TRACEFMT("3 [%s]", TraceE.Message.c_str());
       // even if the abort thrown as result of Cancel() was wrapper into
       // some higher-level exception, normalize back to message-less fatal
       // exception here
@@ -2236,7 +2236,7 @@ void __fastcall TTerminalThread::RunAction(TNotifyEvent Action)
     }
     else
     {
-      // TRACEFMT("4 [%s]", (TraceE.Message));
+      // TRACEFMT("4 [%s]", TraceE.Message.c_str());
       throw;
     }
   }
@@ -2277,7 +2277,7 @@ void __fastcall TTerminalThread::Rethrow(Exception *& Exception)
   CALLSTACK;
   if (Exception != NULL)
   {
-    TRACEFMT("1 [%s]", (Exception->Message));
+    TRACEFMT("1 [%s]", Exception->Message.c_str());
     TRY_FINALLY (
     {
       RethrowException(Exception);
@@ -2319,7 +2319,7 @@ void __fastcall TTerminalThread::CheckCancel()
 void __fastcall TTerminalThread::WaitForUserAction(TUserAction * UserAction)
 {
   CALLSTACK;
-  TRACEFMT("1 [%x]", (int(this)));
+  TRACEFMT("1 [%x]", int(this));
   DWORD Thread = GetCurrentThreadId();
   // we can get called from the main thread from within Idle,
   // should be only to call HandleExtendedException
@@ -2368,7 +2368,7 @@ void __fastcall TTerminalThread::WaitForUserAction(TUserAction * UserAction)
             }
             catch (Exception & E)
             {
-              TRACEFMT("3c [%s]", (E.Message));
+              TRACEFMT("3c [%s]", E.Message.c_str());
               SaveException(E, FIdleException);
             }
           }

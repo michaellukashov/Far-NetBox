@@ -27,7 +27,7 @@ private:
   unsigned int FSuspendTime;
   // when current file was started being transfered
   TDateTime FFileStartTime;
-  int FFilesFinished;
+  intptr_t FFilesFinished;
   TFileOperationProgressEvent FOnProgress;
   TFileOperationFinishedEvent FOnFinished;
   bool FReset;
@@ -61,7 +61,7 @@ public:
   bool InProgress;
   bool FileInProgress;
   TCancelStatus Cancel;
-  int Count;
+  intptr_t Count;
   // when operation started
   TDateTime StartTime;
   // bytes transfered
@@ -93,7 +93,7 @@ public:
   bool __fastcall IsTransferDone() const;
   void __fastcall SetFile(UnicodeString AFileName, bool AFileInProgress = true);
   void __fastcall SetFileInProgress();
-  int __fastcall OperationProgress() const;
+  intptr_t __fastcall OperationProgress() const;
   unsigned long __fastcall TransferBlockSize();
   unsigned long __fastcall AdjustToCPSLimit(unsigned long Size);
   static unsigned long __fastcall StaticBlockSize();
@@ -106,9 +106,9 @@ public:
   void __fastcall ChangeTransferSize(__int64 ASize);
   void __fastcall RollbackTransfer();
   void __fastcall SetTotalSize(__int64 ASize);
-  void __fastcall Start(TFileOperation AOperation, TOperationSide ASide, int ACount);
+  void __fastcall Start(TFileOperation AOperation, TOperationSide ASide, intptr_t ACount);
   void __fastcall Start(TFileOperation AOperation,
-    TOperationSide ASide, int ACount, bool ATemp, const UnicodeString ADirectory,
+    TOperationSide ASide, intptr_t ACount, bool ATemp, const UnicodeString ADirectory,
     unsigned long ACPSLimit);
   void __fastcall Stop();
   void __fastcall Suspend();
@@ -118,9 +118,9 @@ public:
   TDateTime __fastcall TimeExpected();
   TDateTime __fastcall TotalTimeExpected();
   TDateTime __fastcall TotalTimeLeft();
-  int __fastcall TransferProgress() const;
-  int __fastcall OverallProgress() const;
-  int __fastcall TotalTransferProgress() const;
+  intptr_t __fastcall TransferProgress() const;
+  intptr_t __fastcall OverallProgress() const;
+  intptr_t __fastcall TotalTransferProgress() const;
 };
 //---------------------------------------------------------------------------
 class TSuspendFileOperationProgress

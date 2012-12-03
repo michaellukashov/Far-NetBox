@@ -45,7 +45,7 @@ void __fastcall AnsiStrDispose(char * S)
   PendLen(0)
 {
   CALLSTACK;
-  TRACEFMT("1 [%x]", (int(this)));
+  TRACEFMT("1 [%x]", int(this));
   FUI = UI;
   FSessionData = SessionData;
   FLog = Log;
@@ -70,7 +70,7 @@ void __fastcall AnsiStrDispose(char * S)
 /* __fastcall */ TSecureShell::~TSecureShell()
 {
   CALLSTACK;
-  TRACEFMT("1 [%x]", (int(this)));
+  TRACEFMT("1 [%x]", int(this));
   assert(FWaiting == 0);
   SetActive(false);
   ResetConnection();
@@ -349,11 +349,11 @@ void __fastcall TSecureShell::Open()
 
   char * RealHost = NULL;
   FreeBackend(); // in case we are reconnecting
-  TRACEFMT("2 [%x]", (int(FBackendHandle)));
+  TRACEFMT("2 [%x]", int(FBackendHandle));
   const char * InitError = FBackend->init(this, &FBackendHandle, FConfig,
     const_cast<char *>(W2MB(FSessionData->GetHostNameExpanded().c_str(), FSessionData->GetCodePageAsNumber()).c_str()), FSessionData->GetPortNumber(), &RealHost, 0,
     FConfig->tcp_keepalives);
-  TRACEFMT("2b [%x]", (int(FBackendHandle)));
+  TRACEFMT("2b [%x]", int(FBackendHandle));
   sfree(RealHost);
   if (InitError)
   {
@@ -589,11 +589,11 @@ bool __fastcall TSecureShell::PromptUser(bool /*ToServer*/,
   // on terminal console
   Instructions = Instructions.Trim();
 
-  TRACEFMT("8a [%d]", (Prompts->Count));
+  TRACEFMT("8a [%d]", Prompts->Count.get());
   for (int Index = 0; Index < Prompts->Count; Index++)
   {
     UnicodeString Prompt = Prompts->Strings[Index];
-    TRACEFMT("8b [%s]", (Prompt));
+    TRACEFMT("8b [%s]", Prompt.c_str());
     if (PromptTranslation != NULL)
     {
       TranslatePuttyMessage(PromptTranslation, PromptTranslationCount, Prompt);
@@ -661,7 +661,7 @@ bool __fastcall TSecureShell::PromptUser(bool /*ToServer*/,
   }
   else if (PromptKind == pkPassword)
   {
-    TRACEFMT("15 [%d] [%d]", (int(!FSessionData->GetPassword().IsEmpty()), int(!FStoredPasswordTried)));
+    TRACEFMT("15 [%d] [%d]", int(!FSessionData->GetPassword().IsEmpty()), int(!FStoredPasswordTried));
     if (!FSessionData->GetPassword().IsEmpty() && !FStoredPasswordTried)
     {
       TRACE("16");
@@ -750,7 +750,7 @@ void __fastcall TSecureShell::FromBackend(bool IsStdErr, const unsigned char * D
   CCALLSTACK(TRACE_TRANSMIT);
   CheckConnection();
 
-  CTRACEFMT(TRACE_TRANSMIT, "1 [%d] [%d]", (int(Length), int(IsStdErr)));
+  CTRACEFMT(TRACE_TRANSMIT, "1 [%d] [%d]", int(Length), int(IsStdErr));
   if (Configuration->GetActualLogProtocol() >= 1)
   {
     LogEvent(FORMAT(L"Received %u bytes (%d)", Length, static_cast<int>(IsStdErr)));
@@ -886,7 +886,7 @@ Integer __fastcall TSecureShell::Receive(unsigned char * Buf, Integer Len)
 
       while (OutLen > 0)
       {
-        CTRACEFMT(TRACE_TRANSMIT, "4a [%d]", (int(OutLen)));
+        CTRACEFMT(TRACE_TRANSMIT, "4a [%d]", int(OutLen));
         if (Configuration->GetActualLogProtocol() >= 1)
         {
           LogEvent(FORMAT(L"Waiting for another %u bytes", static_cast<int>(OutLen)));
@@ -905,7 +905,7 @@ Integer __fastcall TSecureShell::Receive(unsigned char * Buf, Integer Len)
     }
     );
   }
-  CTRACEFMT(TRACE_TRANSMIT, "7 [%d] [%d]", (int(Len), int(PendLen)));
+  CTRACEFMT(TRACE_TRANSMIT, "7 [%d] [%d]", int(Len), int(PendLen));
   if (Configuration->GetActualLogProtocol() >= 1)
   {
     LogEvent(FORMAT(L"Read %u bytes (%d pending)",
@@ -935,7 +935,7 @@ UnicodeString __fastcall TSecureShell::ReceiveLine()
         Index++;
       }
       EOL = static_cast<Boolean>(Index && (Pending[Index-1] == '\n'));
-      Integer PrevLen = Line.Length();
+      intptr_t PrevLen = Line.Length();
       Line.SetLength(PrevLen + Index);
       Receive(reinterpret_cast<unsigned char *>(const_cast<char *>(Line.c_str())) + PrevLen, Index);
     }
@@ -1041,7 +1041,7 @@ void __fastcall TSecureShell::DispatchSendBuffer(int BufSize)
   do
   {
     CheckConnection();
-    CTRACEFMT(TRACE_TRANSMIT, "1 [%d] [%d]", (BufSize, BufSize - MAX_BUFSIZE));
+    CTRACEFMT(TRACE_TRANSMIT, "1 [%d] [%d]", BufSize, BufSize - MAX_BUFSIZE);
     if (Configuration->GetActualLogProtocol() >= 1)
     {
       LogEvent(FORMAT(L"There are %u bytes remaining in the send buffer, "
@@ -1050,7 +1050,7 @@ void __fastcall TSecureShell::DispatchSendBuffer(int BufSize)
     }
     EventSelectLoop(100, false, NULL);
     BufSize = FBackend->sendbuffer(FBackendHandle);
-    CTRACEFMT(TRACE_TRANSMIT, "2 [%d]", (BufSize));
+    CTRACEFMT(TRACE_TRANSMIT, "2 [%d]", BufSize);
     if (Configuration->GetActualLogProtocol() >= 1)
     {
       LogEvent(FORMAT(L"There are %u bytes remaining in the send buffer", BufSize));
@@ -1088,7 +1088,7 @@ void __fastcall TSecureShell::Send(const unsigned char * Buf, Integer Len)
   CCALLSTACK(TRACE_TRANSMIT);
   CheckConnection();
   int BufSize = FBackend->send(FBackendHandle, const_cast<char *>(reinterpret_cast<const char *>(Buf)), Len);
-  CTRACEFMT(TRACE_TRANSMIT, "1 [%d] [%d]", (int(Len), int(BufSize)));
+  CTRACEFMT(TRACE_TRANSMIT, "1 [%d] [%d]", int(Len), int(BufSize));
   if (Configuration->GetActualLogProtocol() >= 1)
   {
     LogEvent(FORMAT(L"Sent %u bytes", (static_cast<int>(Len))));
@@ -1117,7 +1117,7 @@ void __fastcall TSecureShell::SendStr(UnicodeString Str)
 {
   CheckConnection();
   std::string AnsiStr = W2MB(Str.c_str(), FSessionData->GetCodePageAsNumber());
-  Send(reinterpret_cast<const unsigned char *>(AnsiStr.c_str()), AnsiStr.size());
+  Send(reinterpret_cast<const unsigned char *>(AnsiStr.c_str()), (int)AnsiStr.size());
 }
 //---------------------------------------------------------------------------
 void __fastcall TSecureShell::SendLine(UnicodeString Line)
@@ -1266,7 +1266,7 @@ int __fastcall TSecureShell::TranslateErrorMessage(UnicodeString & Message) cons
 void __fastcall TSecureShell::PuttyFatalError(UnicodeString Error)
 {
   CALLSTACK;
-  TRACEFMT("[%s]", (Error));
+  TRACEFMT("[%s]", Error.c_str());
   TranslateErrorMessage(Error);
 
   FatalError(Error);
@@ -1275,13 +1275,13 @@ void __fastcall TSecureShell::PuttyFatalError(UnicodeString Error)
 void __fastcall TSecureShell::FatalError(UnicodeString Error)
 {
   CALLSTACK;
-  TRACEFMT("[%s]", (Error));
+  TRACEFMT("[%s]", Error.c_str());
   FUI->FatalError(NULL, Error);
 }
 //---------------------------------------------------------------------------
 void __fastcall /* inline */ TSecureShell::LogEvent(const UnicodeString & Str)
 {
-  TRACEFMT("[%s]", (Str));
+  TRACEFMT("[%s]", Str.c_str());
   if (FLog->GetLogging())
   {
     FLog->Add(llMessage, Str);
@@ -1302,7 +1302,7 @@ void __fastcall TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, boo
     Events = 0;
   }
 
-  CTRACEFMT(TRACE_TRANSMIT, "1 [%d] [%d]", (int(Events), int(Socket)));
+  CTRACEFMT(TRACE_TRANSMIT, "1 [%d] [%d]", int(Events), int(Socket));
   if (Configuration->GetActualLogProtocol() >= 2)
   {
     LogEvent(FORMAT(L"Selecting events %d for socket %d", static_cast<int>(Events), static_cast<int>(Socket)));
@@ -1310,7 +1310,7 @@ void __fastcall TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, boo
 
   if (WSAEventSelect(Socket, (WSAEVENT)Event, Events) == SOCKET_ERROR)
   {
-    CTRACEFMT(TRACE_TRANSMIT, "1 [%d] [%d]", (int(Events), int(Socket)));
+    CTRACEFMT(TRACE_TRANSMIT, "1 [%d] [%d]", int(Events), int(Socket));
     if (Configuration->GetActualLogProtocol() >= 2)
     {
       LogEvent(FORMAT(L"Error selecting events %d for socket %d", static_cast<int>(Events), static_cast<int>(Socket)));
@@ -1372,7 +1372,7 @@ void __fastcall TSecureShell::UpdateSocket(SOCKET value, bool Startup)
 void __fastcall TSecureShell::UpdatePortFwdSocket(SOCKET value, bool Startup)
 {
   CCALLSTACK(TRACE_TRANSMIT);
-  CTRACEFMT(TRACE_TRANSMIT, "1 [%d] [%d]", (int(value), int(Startup)));
+  CTRACEFMT(TRACE_TRANSMIT, "1 [%d] [%d]", int(value), int(Startup));
   if (Configuration->GetActualLogProtocol() >= 2)
   {
     LogEvent(FORMAT(L"Updating forwarding socket %d (%d)", static_cast<int>(value), static_cast<int>(Startup)));
@@ -1408,14 +1408,14 @@ void __fastcall TSecureShell::SetActive(bool value)
 void __fastcall TSecureShell::FreeBackend()
 {
   CALLSTACK;
-  TRACEFMT("1 [%x]", (int(FBackendHandle)));
+  TRACEFMT("1 [%x]", int(FBackendHandle));
   if (FBackendHandle != NULL)
   {
     TRACE("1");
     FBackend->bfree(FBackendHandle);
     TRACE("2");
     FBackendHandle = NULL;
-    TRACEFMT("3 [%x]", (int(FBackendHandle)));
+    TRACEFMT("3 [%x]", int(FBackendHandle));
   }
   TRACE("/");
 }
@@ -1586,13 +1586,13 @@ void __fastcall TSecureShell::WaitForData()
 //---------------------------------------------------------------------------
 bool __fastcall TSecureShell::SshFallbackCmd() const
 {
-  return ssh_fallback_cmd(FBackendHandle);
+  return ssh_fallback_cmd(FBackendHandle) != 0;
 }
 //---------------------------------------------------------------------------
 bool __fastcall TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 {
   CCALLSTACK(TRACE_TRANSMIT);
-  CTRACEFMT(TRACE_TRANSMIT, "1 [%d]", (int(Socket)));
+  CTRACEFMT(TRACE_TRANSMIT, "1 [%d]", int(Socket));
   if (Configuration->GetActualLogProtocol() >= 2)
   {
     LogEvent(FORMAT(L"Enumerating network events for socket %d", static_cast<int>(Socket)));
@@ -1614,7 +1614,7 @@ bool __fastcall TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS 
       }
     }
 
-    CTRACEFMT(TRACE_TRANSMIT, "2 [%d] [%d] [%d]", (int(AEvents.lNetworkEvents), int(Events.lNetworkEvents), int(Socket)));
+    CTRACEFMT(TRACE_TRANSMIT, "2 [%d] [%d] [%d]", int(AEvents.lNetworkEvents), int(Events.lNetworkEvents), int(Socket));
     if (Configuration->GetActualLogProtocol() >= 2)
     {
       LogEvent(FORMAT(L"Enumerated %d network events making %d cumulative events for socket %d",
@@ -1623,7 +1623,7 @@ bool __fastcall TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS 
   }
   else
   {
-    CTRACEFMT(TRACE_TRANSMIT, "3 [%d]", (int(Socket)));
+    CTRACEFMT(TRACE_TRANSMIT, "3 [%d]", int(Socket));
     if (Configuration->GetActualLogProtocol() >= 2)
     {
       LogEvent(FORMAT(L"Error enumerating network events for socket %d", static_cast<int>(Socket)));
@@ -1654,7 +1654,7 @@ void __fastcall TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENT
     if (FLAGSET(Events.lNetworkEvents, EventTypes[Event].Mask))
     {
       int Err = Events.iErrorCode[EventTypes[Event].Bit];
-      CTRACEFMT(TRACE_TRANSMIT, "2 [%s] [%d] [%d]", (EventTypes[Event].Desc, int(Socket), Err));
+      CTRACEFMT(TRACE_TRANSMIT, "2 [%s] [%d] [%d]", EventTypes[Event].Desc, int(Socket), Err);
       if (Configuration->GetActualLogProtocol() >= 2)
       {
         LogEvent(FORMAT(L"Handling network %s event on socket %d with error %d",
@@ -1695,7 +1695,7 @@ bool __fastcall TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventR
 
   do
   {
-    CTRACEFMT(TRACE_TRANSMIT, "1 [%d] [%d]", (int(MSec), int(ReadEventRequired)));
+    CTRACEFMT(TRACE_TRANSMIT, "1 [%d] [%d]", int(MSec), int(ReadEventRequired));
     if (Configuration->GetActualLogProtocol() >= 2)
     {
       // LogEvent(L"Looking for network events");
@@ -1761,7 +1761,7 @@ bool __fastcall TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventR
       }
       else
       {
-        CTRACEFMT(TRACE_TRANSMIT, "4 [%d]", (int(WaitResult)));
+        CTRACEFMT(TRACE_TRANSMIT, "4 [%d]", int(WaitResult));
         if (Configuration->GetActualLogProtocol() >= 2)
         {
           LogEvent(FORMAT(L"Unknown waiting result %d", static_cast<int>(WaitResult)));

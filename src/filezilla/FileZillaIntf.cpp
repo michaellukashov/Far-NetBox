@@ -5,6 +5,7 @@
 #include "FileZillaIntern.h"
 #include "FzApiStructures.h"
 #include "structures.h"
+#include "Common.h"
 //---------------------------------------------------------------------------
 #ifndef _DEBUG
 #pragma comment(lib, "uafxcw.lib")
@@ -43,6 +44,7 @@ void __fastcall TFileZillaIntf::SetResourceModule(void * ResourceHandle)
 //---------------------------------------------------------------------------
 /* __fastcall */ TFileZillaIntf::~TFileZillaIntf()
 {
+  TRACE("1");
   ASSERT(FFileZillaApi == NULL);
 
   delete FIntern;
@@ -70,6 +72,7 @@ bool __fastcall TFileZillaIntf::Init()
 //---------------------------------------------------------------------------
 void __fastcall TFileZillaIntf::Destroying()
 {
+  TRACE("1");
   // need to close FZAPI before calling destructor as it in turn post messages
   // back while being destroyed, what may result in calling virtual methods
   // of already destroyed descendants
@@ -305,6 +308,7 @@ bool __fastcall TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
 
   CString a;
   unsigned int MessageID = FZ_MSG_ID(wParam);
+  TRACEFMT("1 [%x] (%d) [%x]", wParam, MessageID, lParam);
 
   switch (MessageID)
   {
@@ -320,8 +324,10 @@ bool __fastcall TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
       break;
 
     case FZ_MSG_ASYNCREQUEST:
+      TRACE("AsyncRequest");
       if (FZ_MSG_PARAM(wParam) == FZ_ASYNCREQUEST_OVERWRITE)
       {
+        TRACE("Overwrite");
         int RequestResult;
         wchar_t FileName1[MAX_PATH];
         COverwriteRequestData * Data = (COverwriteRequestData *)lParam;
@@ -330,6 +336,20 @@ bool __fastcall TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
           ASSERT(Data != NULL);
           wcsncpy(FileName1, Data->FileName1, LENOF(FileName1));
           FileName1[LENOF(FileName1) - 1] = L'\0';
+          TRACE("Before HandleAsynchRequestOverwrite");
+          TRACEFMT("FileName1 [%s]", FileName1);
+          TRACEFMT("FileName2 [%s]", (const wchar_t*)Data->FileName2);
+          TRACEFMT("path1 [%s]", (const wchar_t*)Data->path1);
+          TRACEFMT("path2 [%s]", (const wchar_t*)Data->path2);
+          TRACEFMT("size1 [%d]", (int)Data->size1);
+          TRACEFMT("size2 [%d]", (int)Data->size2);
+          TRACEFMT("time1 [%x]", Data->time1);
+          TRACEFMT("time1 [%d]", Data->time1->GetTime());
+          TRACEFMT("time2 [%x]", Data->time2);
+          TRACEFMT("time2 [%d]", ((Data->time2 != NULL) ? Data->time2->GetTime() : 0));
+          TRACEFMT("HasTime1 [%d]", (Data->time1 != NULL) && ((Data->time1->GetHour() != 0) || (Data->time1->GetMinute() != 0)));
+          TRACEFMT("HasTime2 [%d]", (Data->time2 != NULL) && ((Data->time2->GetHour() != 0) || (Data->time2->GetMinute() != 0)));
+          TRACEFMT("nUserData [%x]", reinterpret_cast<void*>(Data->pTransferFile->UserData));
           Result = HandleAsynchRequestOverwrite(
             FileName1, LENOF(FileName1), Data->FileName2, Data->path1, Data->path2,
             Data->size1, Data->size2,
@@ -341,6 +361,7 @@ bool __fastcall TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
         }
         catch(...)
         {
+          TRACE("overwrite exception");
           FFileZillaApi->SetAsyncRequestResult(FILEEXISTS_SKIP, Data);
           throw;
         }
@@ -372,6 +393,7 @@ bool __fastcall TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
         }
         catch(...)
         {
+          TRACE("cert exception");
           FFileZillaApi->SetAsyncRequestResult(0, AData);
           throw;
         }
@@ -468,7 +490,7 @@ bool __fastcall TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
         {
           Result = HandleTransferStatus(true, Status->transfersize, Status->bytes,
             Status->percent, Status->timeelapsed, Status->timeleft,
-            Status->transferrate, Status->bFileTransfer);
+            Status->transferrate, Status->bFileTransfer != 0);
           delete Status;
         }
         else

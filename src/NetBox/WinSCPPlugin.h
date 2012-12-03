@@ -30,40 +30,40 @@ class TWinSCPPlugin : public TCustomFarPlugin
 public:
   explicit TWinSCPPlugin(HINSTANCE HInst);
   virtual ~TWinSCPPlugin();
-  virtual VersionInfo __fastcall GetMinFarVersion();
+  virtual VersionInfo GetMinFarVersion();
 
-  virtual void __fastcall HandleException(Exception * E, int OpMode = 0);
-  int __fastcall MoreMessageDialog(UnicodeString Str, TStrings * MoreMessages,
+  virtual void HandleException(Exception * E, int OpMode = 0);
+  intptr_t MoreMessageDialog(UnicodeString Str, TStrings * MoreMessages,
     TQueryType Type, int Answers, const TMessageParams * Params = NULL);
-  void __fastcall ShowExtendedException(Exception * E);
-  bool __fastcall CopyParamCustomDialog(TCopyParamType & CopyParam,
+  void ShowExtendedException(Exception * E);
+  bool CopyParamCustomDialog(TCopyParamType & CopyParam,
     int CopyParamAttrs);
-  virtual void __fastcall SetStartupInfo(const struct PluginStartupInfo * Info);
+  virtual void SetStartupInfo(const struct PluginStartupInfo * Info);
 
 protected:
-  virtual bool __fastcall HandlesFunction(THandlesFunction Function);
-  virtual void __fastcall GetPluginInfoEx(PLUGIN_FLAGS &Flags, TStrings * DiskMenuStrings,
+  virtual bool HandlesFunction(THandlesFunction Function);
+  virtual void GetPluginInfoEx(PLUGIN_FLAGS &Flags, TStrings * DiskMenuStrings,
     TStrings * PluginMenuStrings, TStrings * PluginConfigStrings,
     TStrings * CommandPrefixes);
-  virtual TCustomFarFileSystem * __fastcall OpenPluginEx(OPENFROM OpenFrom, intptr_t Item);
-  virtual bool __fastcall ConfigureEx(const GUID * Guid);
-  virtual intptr_t __fastcall ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info);
-  virtual intptr_t __fastcall ProcessEditorInputEx(const INPUT_RECORD * Rec);
-  bool __fastcall CopyParamDialog(UnicodeString Caption, TCopyParamType & CopyParam,
+  virtual TCustomFarFileSystem * OpenPluginEx(OPENFROM OpenFrom, intptr_t Item);
+  virtual bool ConfigureEx(const GUID * Guid);
+  virtual intptr_t ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info);
+  virtual intptr_t ProcessEditorInputEx(const INPUT_RECORD * Rec);
+  bool CopyParamDialog(UnicodeString Caption, TCopyParamType & CopyParam,
     int CopyParamAttrs);
   void MessageClick(void * Token, int Result, bool & Close);
 
-  void __fastcall CommandsMenu(bool FromFileSystem);
-  bool __fastcall ConfigurationDialog();
-  bool __fastcall PanelConfigurationDialog();
-  bool __fastcall TransferConfigurationDialog();
-  bool __fastcall QueueConfigurationDialog();
-  bool __fastcall EnduranceConfigurationDialog();
-  bool __fastcall TransferEditorConfigurationDialog();
-  bool __fastcall LoggingConfigurationDialog();
-  bool __fastcall ConfirmationsConfigurationDialog();
-  bool __fastcall IntegrationConfigurationDialog();
-  void __fastcall AboutDialog();
+  void CommandsMenu(bool FromFileSystem);
+  bool ConfigurationDialog();
+  bool PanelConfigurationDialog();
+  bool TransferConfigurationDialog();
+  bool QueueConfigurationDialog();
+  bool EnduranceConfigurationDialog();
+  bool TransferEditorConfigurationDialog();
+  bool LoggingConfigurationDialog();
+  bool ConfirmationsConfigurationDialog();
+  bool IntegrationConfigurationDialog();
+  void AboutDialog();
 
 protected:
   ArclitePrivateInfo * __fastcall GetSystemFunctions() { return static_cast<ArclitePrivateInfo *>(FStartupInfo.Private); }
@@ -77,7 +77,7 @@ protected:
   BOOL __fastcall CreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
 
 private:
-  void __fastcall CleanupConfiguration();
+  void CleanupConfiguration();
 
 private:
   bool FInitialized;

@@ -1798,14 +1798,14 @@ pool_create_ex(apr_pool_t * parent_pool,
 #define OLD_TIMESTAMP_FORMAT \
         "%3s %d %3s %d %02d:%02d:%02d.%06d (day %03d, dst %d, gmt_off %06d)"
 
-static int
+static apr_size_t
 find_matching_string(char * str, apr_size_t size, const char strings[][4])
 {
   for (apr_size_t i = 0; i < size; i++)
     if (strings[i] && (strcmp(str, strings[i]) == 0))
       return i;
 
-  return -1;
+  return (apr_size_t)-1;
 }
 
 static error_t
@@ -1929,8 +1929,8 @@ fail:
     exploded_time.tm_yday -= 1;
     /* Using hard coded limits for the arrays - they are going away
        soon in any case. */
-    exploded_time.tm_wday = find_matching_string(wday, 7, apr_day_snames);
-    exploded_time.tm_mon = find_matching_string(month, 12, apr_month_snames);
+    exploded_time.tm_wday = (apr_int32_t)find_matching_string(wday, 7, apr_day_snames);
+    exploded_time.tm_mon = (apr_int32_t)find_matching_string(month, 12, apr_month_snames);
 
     apr_err = apr_time_exp_gmt_get(when, &exploded_time);
     if (apr_err != APR_SUCCESS)
@@ -2360,7 +2360,7 @@ subr_win32_xlate_to_stringbuf(// win32_xlate_t *handle,
   }
   int from_page_id = CP_ACP;
   retval = MultiByteToWideChar(from_page_id, // CP_UTF8, // handle->from_page_id,
-    0, src_data, src_length, NULL, 0);
+    0, src_data, (int)src_length, NULL, 0);
   if (retval == 0)
     return apr_get_os_error();
 
@@ -2377,7 +2377,7 @@ subr_win32_xlate_to_stringbuf(// win32_xlate_t *handle,
   }
 
   retval = MultiByteToWideChar(from_page_id, // handle->from_page_id,
-    0, src_data, src_length, wide_str, wide_size);
+    0, src_data, (int)src_length, wide_str, wide_size);
 
   if (retval == 0)
     return apr_get_os_error();
@@ -2395,7 +2395,7 @@ subr_win32_xlate_to_stringbuf(// win32_xlate_t *handle,
   (*dest)->len = retval;
 
   retval = WideCharToMultiByte(to_page_id, // handle->to_page_id,
-    0, wide_str, wide_size, (*dest)->data, (*dest)->len, NULL, NULL);
+    0, wide_str, wide_size, (*dest)->data, (int)(*dest)->len, NULL, NULL);
   if (retval == 0)
     return apr_get_os_error();
 
@@ -2420,7 +2420,7 @@ utf8_to_unicode(WCHAR ** retstr,
   }*/
   WCHAR * wide_str = NULL;
   int retval = 0, wide_size = 0;
-  int src_length = strlen(srcstr);
+  apr_size_t src_length = strlen(srcstr);
 
   if (src_length == 0)
   {
@@ -2429,7 +2429,7 @@ utf8_to_unicode(WCHAR ** retstr,
   }
 
   retval = MultiByteToWideChar(CP_UTF8, // handle->from_page_id,
-    0, srcstr, src_length, NULL, 0);
+    0, srcstr, (int)src_length, NULL, 0);
   if (retval == 0)
     return apr_get_os_error();
 
@@ -2438,7 +2438,7 @@ utf8_to_unicode(WCHAR ** retstr,
   wide_str = static_cast<WCHAR *>(apr_pcalloc(pool, (wide_size + 1) * sizeof(WCHAR)));
 
   retval = MultiByteToWideChar(CP_UTF8, // handle->from_page_id,
-    0, srcstr, src_length, wide_str, wide_size);
+    0, srcstr, (int)src_length, wide_str, wide_size);
 
   if (retval == 0)
     return apr_get_os_error();
@@ -4329,9 +4329,9 @@ windows_password_encrypter(bool * done,
 {
   DATA_BLOB blobin;
   DATA_BLOB blobout;
-  bool crypted = FALSE;
+  BOOL crypted = FALSE;
 
-  blobin.cbData = strlen(in);
+  blobin.cbData = (DWORD)strlen(in);
   blobin.pbData = (BYTE *) in;
   crypted = CryptProtectData(&blobin, description, NULL, NULL, NULL,
     CRYPTPROTECT_UI_FORBIDDEN, &blobout);
@@ -4364,7 +4364,7 @@ windows_password_decrypter(bool * done,
   DATA_BLOB blobin;
   DATA_BLOB blobout;
   LPWSTR descr;
-  bool decrypted = FALSE;
+  BOOL decrypted = FALSE;
   const char * in = NULL;
 
   WEBDAV_ERR(auth_simple_password_get(done, &in, creds, realmstring, username,
@@ -4372,7 +4372,7 @@ windows_password_decrypter(bool * done,
   if (!done)
     return WEBDAV_NO_ERROR;
 
-  blobin.cbData = strlen(in);
+  blobin.cbData = (DWORD)strlen(in);
   blobin.pbData = static_cast<BYTE *>(apr_pcalloc(pool, apr_base64_decode_len(in)));
   apr_base64_decode((char *)blobin.pbData, in);
   decrypted = CryptUnprotectData(&blobin, &descr, NULL, NULL, NULL,
@@ -4387,7 +4387,7 @@ windows_password_decrypter(bool * done,
     LocalFree(descr);
   }
 
-  *done = decrypted;
+  *done = decrypted != 0;
   return WEBDAV_NO_ERROR;
 }
 
@@ -4467,9 +4467,9 @@ windows_ssl_client_cert_pw_encrypter(bool * done,
 {
   DATA_BLOB blobin;
   DATA_BLOB blobout;
-  bool crypted;
+  BOOL crypted;
 
-  blobin.cbData = strlen(in);
+  blobin.cbData = (DWORD)strlen(in);
   blobin.pbData = (BYTE *) in;
   crypted = CryptProtectData(&blobin, description, NULL, NULL, NULL,
     CRYPTPROTECT_UI_FORBIDDEN, &blobout);
@@ -4502,7 +4502,7 @@ windows_ssl_client_cert_pw_decrypter(bool * done,
   DATA_BLOB blobin;
   DATA_BLOB blobout;
   LPWSTR descr;
-  bool decrypted;
+  BOOL decrypted;
   const char * in = NULL;
 
   WEBDAV_ERR(auth_ssl_client_cert_pw_get(done, &in, creds, realmstring, username,
@@ -4510,7 +4510,7 @@ windows_ssl_client_cert_pw_decrypter(bool * done,
   if (!done)
     return WEBDAV_NO_ERROR;
 
-  blobin.cbData = strlen(in);
+  blobin.cbData = (DWORD)strlen(in);
   blobin.pbData = static_cast<BYTE *>(apr_pcalloc(pool, apr_base64_decode_len(in)));
   apr_base64_decode((char *)blobin.pbData, in);
   decrypted = CryptUnprotectData(&blobin, &descr, NULL, NULL, NULL,
@@ -4525,7 +4525,7 @@ windows_ssl_client_cert_pw_decrypter(bool * done,
     LocalFree(descr);
   }
 
-  *done = decrypted;
+  *done = decrypted != 0;
   return WEBDAV_NO_ERROR;
 }
 
@@ -5786,7 +5786,7 @@ dirent_is_root(const char * dirent, apr_size_t len)
       && dirent[len - 1] != '/')
   {
     int segments = 0;
-    int i;
+    size_t i;
     for (i = len; i >= 2; i--)
     {
       if (dirent[i] == '/')
@@ -7769,7 +7769,7 @@ ra_neon_body_provider(void * userdata,
       return -1;
     }
     else
-      return nbytes;
+      return (ssize_t)nbytes;
   }
 }
 
@@ -11108,7 +11108,7 @@ neon_get_props_resource(neon_resource_t ** rsrc,
 {
   apr_hash_t * props = NULL;
   char * url_path = apr_pstrdup(pool, url);
-  int len = strlen(url);
+  apr_size_t len = strlen(url);
   /* Clean up any trailing slashes. */
   if (len > 1 && url[len - 1] == '/')
     url_path[len - 1] = '\0';
@@ -11458,7 +11458,7 @@ client_check_path(
   char * target = apr_pstrdup(pool, path_uri_encode(remote_path, pool));
 
   const char * rel_path = NULL;
-  int len = strlen(target);
+  apr_size_t len = strlen(target);
   if (len > 1 && (target)[len - 1] == '/')
     (target)[len - 1] = '\0';
   if (*target == '/')
@@ -12185,7 +12185,7 @@ neon_open(
   }
 
   /* clean up trailing slashes from the URL */
-  int len = strlen(uri->path);
+  apr_size_t len = strlen(uri->path);
   if (len > 1 && (uri->path)[len - 1] == '/')
     (uri->path)[len - 1] = '\0';
 
@@ -12507,7 +12507,7 @@ neon_check_path(session_t * session,
     /* query the DAV:resourcetype of the full, assembled URL. */
     err = neon_get_starting_props(&rsrc, ras, full_bc_url, pool);
     if (!err)
-      is_dir = rsrc->is_collection;
+      is_dir = rsrc->is_collection != 0;
   }
 
   if (err == WEBDAV_NO_ERROR)
@@ -13017,7 +13017,7 @@ void __fastcall TWebDAVFileSystem::ReadDirectory(TRemoteFileList * FileList)
       }
       else
       {
-        throw;
+        throw E;
       }
     }
   }
@@ -14001,7 +14001,7 @@ void /* __fastcall */ TWebDAVFileSystem::SinkFile(const UnicodeString & FileName
 }
 //---------------------------------------------------------------------------
 bool __fastcall TWebDAVFileSystem::HandleListData(const wchar_t * Path,
-    const TListDataEntry * Entries, unsigned int Count)
+    const TListDataEntry * Entries, intptr_t Count)
 {
   if (!FActive)
   {
@@ -14021,7 +14021,7 @@ bool __fastcall TWebDAVFileSystem::HandleListData(const wchar_t * Path,
     assert(UnixComparePaths(AbsolutePath(FFileList->GetDirectory(), false), Path));
     USEDPARAM(Path);
 
-    for (size_t Index = 0; Index < Count; Index++)
+    for (intptr_t Index = 0; Index < Count; Index++)
     {
       const TListDataEntry * Entry = &Entries[Index];
       TRemoteFile * File = new TRemoteFile();
@@ -14046,7 +14046,7 @@ bool __fastcall TWebDAVFileSystem::HandleListData(const wchar_t * Path,
         const wchar_t * Space = wcschr(own.c_str(), ' ');
         if (Space != NULL)
         {
-          File->GetFileOwner().SetName(UnicodeString(own.c_str(), Space - own.c_str()));
+          File->GetFileOwner().SetName(UnicodeString(own.c_str(), (intptr_t)(Space - own.c_str())));
           File->GetFileGroup().SetName(Space + 1);
         }
         else
@@ -14140,7 +14140,7 @@ void __fastcall TWebDAVFileSystem::ReadDirectoryProgress(__int64 Bytes)
   // with WebDAV we do not know exactly how many entries we have received,
   // instead we know number of bytes received only.
   // so we report approximation based on average size of entry.
-  size_t Progress = static_cast<size_t>(Bytes / 80);
+  int Progress = static_cast<int>(Bytes / 80);
   if (Progress - FLastReadDirectoryProgress >= 10)
   {
     bool Cancel = false;
@@ -14728,9 +14728,9 @@ webdav::error_t TWebDAVFileSystem::CreateStorage(
   return WEBDAV_NO_ERROR;
 }
 
-size_t TWebDAVFileSystem::AdjustToCPSLimit(size_t len)
+uintptr_t TWebDAVFileSystem::AdjustToCPSLimit(uintptr_t len)
 {
-  return FCurrentOperationProgress ? FCurrentOperationProgress->AdjustToCPSLimit(len) : len;
+  return FCurrentOperationProgress ? (uintptr_t)FCurrentOperationProgress->AdjustToCPSLimit(len) : len;
 }
 
 bool TWebDAVFileSystem::GetIsCancelled()

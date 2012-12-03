@@ -111,9 +111,9 @@ bool __fastcall TSynchronizeOptions::MatchesFilter(const UnicodeString & FileNam
   }
   else
   {
-    int FoundIndex = 0;
+    intptr_t FoundIndex = 0;
     Result = Filter->Find(FileName, FoundIndex);
-    TRACEFMT("[%s] [%d]", (FileName, int(Result)));
+    TRACEFMT("[%s] [%d]", FileName.c_str(), int(Result));
   }
   return Result;
 }
@@ -214,12 +214,12 @@ void TSynchronizeChecklist::Sort()
   FList->Sort(Compare);
 }
 //---------------------------------------------------------------------------
-int __fastcall TSynchronizeChecklist::GetCount() const
+intptr_t __fastcall TSynchronizeChecklist::GetCount() const
 {
   return FList->Count;
 }
 //---------------------------------------------------------------------------
-const TSynchronizeChecklist::TItem * __fastcall TSynchronizeChecklist::GetItem(int Index) const
+const TSynchronizeChecklist::TItem * __fastcall TSynchronizeChecklist::GetItem(intptr_t Index) const
 {
   return static_cast<TItem *>(FList->Items[Index]);
 }
@@ -490,7 +490,7 @@ void __fastcall TCallbackGuard::Verify()
 
     if (FFatalError != NULL)
     {
-      TRACEFMT("1 [%s]", (FFatalError->Message));
+      TRACEFMT("1 [%s]", FFatalError->Message.c_str());
       throw ESshFatal(FFatalError, L"");
     }
   }
@@ -839,7 +839,7 @@ void __fastcall TTerminal::Open()
                   }
                   catch (Exception & E)
                   {
-                    TRACEFMT("Open 9 [%s]", (E.Message.c_str()));
+                    TRACEFMT("Open 9 [%s]", E.Message.c_str());
                     assert(!FSecureShell->GetActive());
                     if (!FSecureShell->GetActive() && !FTunnelError.IsEmpty())
                     {
@@ -1212,7 +1212,7 @@ bool /* __fastcall */ TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKi
     TRACE("02");
   }
 
-  TRACEFMT("1 [%d] [%d] [%d] [%d] [%d]", (int(AResult), int(Configuration->GetRememberPassword()), int(Prompts->Count), (Prompts->Count > 0 ? int(!bool(Prompts->Objects[0])) : 0), int(Kind)));
+  TRACEFMT("1 [%d] [%d] [%d] [%d] [%d]", int(AResult), int(Configuration->GetRememberPassword()), int(Prompts->Count), (Prompts->Count > 0 ? int(!bool(Prompts->Objects[0] != NULL)) : 0), int(Kind));
   if (AResult && (Configuration->GetRememberPassword()) &&
       (Prompts->Count == 1) && !(Prompts->Objects[0]) &&
       ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
@@ -1220,7 +1220,7 @@ bool /* __fastcall */ TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKi
   {
     TRACE("2");
     RawByteString EncryptedPassword = EncryptPassword(Results->Strings[0]);
-    TRACEFMT("2a [%x] [%d] [%d]", (int(this), Results->Strings[0].Length(), EncryptedPassword.Length()));
+    TRACEFMT("2a [%x] [%d] [%d]", int(this), Results->Strings[0].Length(), EncryptedPassword.Length());
     if (FTunnelOpening)
     {
       TRACE("3");
@@ -1315,7 +1315,7 @@ void __fastcall TTerminal::DisplayBanner(const UnicodeString & Banner)
 void /* __fastcall */ TTerminal::HandleExtendedException(Exception * E)
 {
   CALLSTACK;
-  TRACEFMT("1 [%s]", (E->Message.c_str()));
+  TRACEFMT("1 [%s]", E->Message.c_str());
   GetLog()->AddException(E);
   if (GetOnShowExtendedException() != NULL)
   {
@@ -1331,7 +1331,7 @@ void /* __fastcall */ TTerminal::HandleExtendedException(Exception * E)
 void /* __fastcall */ TTerminal::ShowExtendedException(Exception * E)
 {
   CALLSTACK;
-  TRACEFMT("1 [%s]", (E->Message.c_str()));
+  TRACEFMT("1 [%s]", E->Message.c_str());
   GetLog()->AddException(E);
   if (GetOnShowExtendedException() != NULL)
   {
@@ -1997,7 +1997,7 @@ void __fastcall TTerminal::FatalAbort()
 void /* __fastcall */ TTerminal::FatalError(Exception * E, UnicodeString Msg)
 {
   CALLSTACK;
-  TRACEFMT("[%s] [%s]", ((E != NULL ? E->Message : UnicodeString(L"NULL")), Msg));
+  TRACEFMT("[%s] [%s]", UnicodeString(E != NULL ? E->Message : UnicodeString(L"NULL")).c_str(), Msg.c_str());
   bool SecureShellActive = (FSecureShell != NULL) && FSecureShell->GetActive();
   if (GetActive() || SecureShellActive)
   {
@@ -2418,7 +2418,7 @@ void /* __fastcall */ TTerminal::EnsureNonExistence(const UnicodeString FileName
 //---------------------------------------------------------------------------
 void __fastcall /* inline */ TTerminal::LogEvent(const UnicodeString & Str)
 {
-  TRACEFMT("[%s]", (Str));
+  TRACEFMT("[%s]", Str.c_str());
   if (GetLog()->GetLogging())
   {
     GetLog()->Add(llMessage, Str);
@@ -2954,7 +2954,7 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
         while ((Index < FileList->Count) && (Progress.Cancel == csContinue))
         {
           FileName = FileList->Strings[Index];
-          TRACEFMT("4 [%s]", (FileName));
+          TRACEFMT("4 [%s]", FileName.c_str());
           try
           {
             TRY_FINALLY (
@@ -4516,14 +4516,14 @@ void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeStri
                Options->MatchesFilter(FileName) ||
                Options->MatchesFilter(RemoteFileName)))
           {
-            TRACEFMT("5 [%s]", (FileName));
+            TRACEFMT("5 [%s]", FileName.c_str());
             TSynchronizeFileData * FileData = new TSynchronizeFileData;
 
             FileData->IsDirectory = FLAGSET(SearchRec.Attr, faDirectory);
             FileData->Info.FileName = FileName;
             FileData->Info.Directory = Data.LocalDirectory;
             FileData->Info.Modification = Modification;
-            TRACEFMT("5d [%.7f] [%s]", (double(FileData->Info.Modification), FileData->Info.Modification.TimeString()));
+            TRACEFMT("5d [%.7f] [%s]", double(FileData->Info.Modification), FileData->Info.Modification.TimeString().c_str());
             FileData->Info.ModificationFmt = mfFull;
             FileData->Info.Size = Size;
             FileData->LocalLastWriteTime = SearchRec.FindData.ftLastWriteTime;
@@ -4574,7 +4574,7 @@ void /* __fastcall */ TTerminal::DoSynchronizeCollectDirectory(const UnicodeStri
       {
         FileData = reinterpret_cast<TSynchronizeFileData *>
           (Data.LocalFileList->Objects[Index]);
-        TRACEFMT("11 [%s]", (FileData->Info.FileName));
+        TRACEFMT("11 [%s]", FileData->Info.FileName.c_str());
         // add local file either if we are going to upload it
         // (i.e. if it is updated or we want to upload even new files)
         // or if we are going to delete it (i.e. all "new"=obsolete files)
@@ -4714,9 +4714,9 @@ void /* __fastcall */ TTerminal::SynchronizeCollectFile(const UnicodeString & Fi
       ChecklistItem->Remote.Size = File->GetSize();
 
       bool Modified = false;
-      int LocalIndex = Data->LocalFileList->IndexOf(LocalFileName.c_str());
+      intptr_t LocalIndex = Data->LocalFileList->IndexOf(LocalFileName.c_str());
       bool New = (LocalIndex < 0);
-      CTRACEFMT(TRACE_SYNCH, "00b1 [%d] [%d] [%s]", (LocalIndex, int(New), LocalFileName));
+      CTRACEFMT(TRACE_SYNCH, "00b1 [%d] [%d] [%s]", LocalIndex, int(New), LocalFileName.c_str());
       if (!New)
       {
         CTRACE(TRACE_SYNCH, "00c");
@@ -4736,10 +4736,10 @@ void /* __fastcall */ TTerminal::SynchronizeCollectFile(const UnicodeString & Fi
           CTRACE(TRACE_SYNCH, "02");
           ChecklistItem->Local = LocalData->Info;
 
-          CTRACEFMT(TRACE_SYNCH, "03 [%s] [%.7f] [%d]", (ChecklistItem->Local.Modification.TimeString(), double(ChecklistItem->Local.Modification), File->GetModificationFmt()));
+          CTRACEFMT(TRACE_SYNCH, "03 [%s] [%.7f] [%d]", ChecklistItem->Local.Modification.TimeString().c_str(), double(ChecklistItem->Local.Modification), File->GetModificationFmt());
           ChecklistItem->Local.Modification =
             ReduceDateTimePrecision(ChecklistItem->Local.Modification, File->GetModificationFmt());
-          CTRACEFMT(TRACE_SYNCH, "04 [%s] [%.7f] [%d]", (ChecklistItem->Local.Modification.TimeString(), double(ChecklistItem->Local.Modification), File->GetModificationFmt()));
+          CTRACEFMT(TRACE_SYNCH, "04 [%s] [%.7f] [%d]", ChecklistItem->Local.Modification.TimeString().c_str(), double(ChecklistItem->Local.Modification), File->GetModificationFmt());
 
           bool LocalModified = false;
           // for spTimestamp+spBySize require that the file sizes are the same
@@ -4759,7 +4759,7 @@ void /* __fastcall */ TTerminal::SynchronizeCollectFile(const UnicodeString & Fi
             CTRACE(TRACE_SYNCH, "12");
             TimeCompare = 0;
           }
-          CTRACEFMT(TRACE_SYNCH, "[%s] TimeCompare [%d]", (File->GetFileName(), TimeCompare));
+          CTRACEFMT(TRACE_SYNCH, "[%s] TimeCompare [%d]", File->GetFileName().c_str(), TimeCompare);
           if (TimeCompare < 0)
           {
             if ((FLAGCLEAR(Data->Params, spTimestamp) && FLAGCLEAR(Data->Params, spMirror)) ||
@@ -5254,7 +5254,7 @@ UnicodeString /* __fastcall */ TTerminal::GetPassword()
   CALLSTACK;
   UnicodeString Result;
   // FPassword is empty also when stored password was used
-  TRACEFMT("1 [%x] [%d]", (int(this), FPassword.Length()));
+  TRACEFMT("1 [%x] [%d]", int(this), FPassword.Length());
   if (FPassword.IsEmpty())
   {
     TRACE("1");
@@ -5310,7 +5310,7 @@ bool /* __fastcall */ TTerminal::CopyToRemote(TStrings * FilesToCopy,
   assert(FFileSystem);
   assert(FilesToCopy);
 
-  TRACEFMT("0 [%s] [%x]", (TargetDir, Params));
+  TRACEFMT("0 [%s] [%x]", TargetDir.c_str(), Params);
   assert(GetIsCapable(fcNewerOnlyUpload) || FLAGCLEAR(Params, cpNewerOnly));
 
   bool Result = false;
@@ -5405,7 +5405,7 @@ bool /* __fastcall */ TTerminal::CopyToLocal(TStrings * FilesToCopy,
   CALLSTACK;
   assert(FFileSystem);
 
-  TRACEFMT("0 [%s] [%s] [%x]", (TargetDir, CopyParam->GetLogStr(), Params));
+  TRACEFMT("0 [%s] [%s] [%x]", TargetDir.c_str(), CopyParam->GetLogStr().c_str(), Params);
   // see scp.c: sink(), tolocal()
 
   bool Result = false;
@@ -5675,14 +5675,14 @@ bool /* __fastcall */ TSecondaryTerminal::DoPromptUser(TSessionData * Data,
   CALLSTACK;
   bool AResult = false;
 
-  TRACEFMT("1 [%d] [%d]", (Prompts->Count, int(Prompts->Objects[0]), int(Kind)));
+  TRACEFMT("1 [%d] [%d] [%d]", Prompts->Count.get(), int(Prompts->Objects[0]), int(Kind));
   if ((Prompts->Count == 1) && !(Prompts->Objects[0]) &&
       ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
        (Kind == pkTIS) || (Kind == pkCryptoCard)))
   {
     bool & PasswordTried =
       FTunnelOpening ? FMasterTunnelPasswordTried : FMasterPasswordTried;
-    TRACEFMT("2 [%d] [%d]", (int(FTunnelOpening), int(PasswordTried)));
+    TRACEFMT("2 [%d] [%d]", int(FTunnelOpening), int(PasswordTried));
     if (!PasswordTried)
     {
       TRACE("3");

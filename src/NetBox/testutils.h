@@ -39,28 +39,28 @@ public:
         CryptographyFinalize();
     }
 protected:
-    virtual void __fastcall GetPluginInfoEx(DWORD &Flags,
+    virtual void GetPluginInfoEx(DWORD &Flags,
         TStrings *DiskMenuStrings, TStrings *PluginMenuStrings,
         TStrings *PluginConfigStrings, TStrings *CommandPrefixes)
     {
         DEBUG_PRINTF(L"call");
     }
-    virtual TCustomFarFileSystem * __fastcall OpenPluginEx(int OpenFrom, intptr_t Item)
+    virtual TCustomFarFileSystem * OpenPluginEx(int OpenFrom, intptr_t Item)
     {
         DEBUG_PRINTF(L"call");
         return NULL;
     }
-    virtual bool __fastcall ConfigureEx(const struct ConfigureInfo *Info)
+    virtual bool ConfigureEx(const struct ConfigureInfo *Info)
     {
         DEBUG_PRINTF(L"call");
         return false;
     }
-    virtual int __fastcall ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info)
+    virtual int ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info)
     {
         DEBUG_PRINTF(L"call");
         return -1;
     }
-    virtual int __fastcall ProcessEditorInputEx(const INPUT_RECORD *Rec)
+    virtual int ProcessEditorInputEx(const INPUT_RECORD *Rec)
     {
         DEBUG_PRINTF(L"call");
         return -1;

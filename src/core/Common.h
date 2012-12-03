@@ -49,7 +49,7 @@ UnicodeString BooleanToStr(bool B);
 UnicodeString BooleanToEngStr(bool B);
 UnicodeString DefaultStr(const UnicodeString & Str, const UnicodeString & Default);
 UnicodeString CutToChar(UnicodeString &Str, wchar_t Ch, bool Trim);
-UnicodeString CopyToChars(const UnicodeString & Str, int & From, UnicodeString Chs, bool Trim,
+UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From, UnicodeString Chs, bool Trim,
   wchar_t * Delimiter = NULL, bool DoubleDelimiterEscapes = false);
 UnicodeString DelimitStr(UnicodeString Str, UnicodeString Chars);
 UnicodeString ShellDelimitStr(UnicodeString Str, wchar_t Quote);
@@ -207,11 +207,11 @@ public:
 #define _TRACING_CALLSTACK(TRACE, TRACEFMT, CALLSTACK, CALLSTACKI) CALLSTACK
 #define _TRACING_CALLSTACKI(TRACE, TRACEFMT, CALLSTACK, CALLSTACKI) CALLSTACKI
 #define _TRACE(SOURCE, FUNC, LINE, MESSAGE) \
-  if (IsTracing) Trace(TEXT(__FILE__), TEXT(__FUNCTION__), __LINE__, (MESSAGE))
-#define _TRACEFMT(SOURCE, FUNC, LINE, FORMAT, PARAMS) \
-  if (IsTracing) TraceFmt(TEXT(__FILE__), TEXT(__FUNCTION__), __LINE__, (FORMAT), PARAMS)
+  if (IsTracing) Trace(TEXT(__FILE__), TEXT(__FUNCTION__), __LINE__, MESSAGE)
+#define _TRACEFMT(SOURCE, FUNC, LINE, FORMAT, ...) \
+  if (IsTracing) TraceFmt(TEXT(__FILE__), TEXT(__FUNCTION__), __LINE__, FORMAT, __VA_ARGS__)
 #define _TRACE_FAKE(SOURCE, FUNC, LINE, MESSAGE)
-#define _TRACEFMT_FAKE(SOURCE, FUNC, LINE, FORMAT, PARAMS)
+#define _TRACEFMT_FAKE(SOURCE, FUNC, LINE, FORMAT, ...)
 
 #ifdef _DEBUG
 void __fastcall SetTraceFile(HANDLE TraceFile);
@@ -236,13 +236,13 @@ void __fastcall TraceInMemoryCallback(System::UnicodeString Msg);
 #define CTRACEIMPL(TRACING, MESSAGE) \
   _TRACING_TRACE TRACING (TEXT(__FILE__), TEXT(__FUNCTION__), __LINE__, (MESSAGE))
 // #define CTRACEIMPL(TRACING, MESSAGE) DEBUG_PRINTF(MESSAGE);
-#define CTRACEFMTIMPL(TRACING, MESSAGE, PARAMS) \
-  _TRACING_TRACEFMT TRACING (TEXT(__FILE__), TEXT(__FUNCTION__), __LINE__, (MESSAGE), PARAMS)
+#define CTRACEFMTIMPL(TRACING, MESSAGE, ...) \
+  _TRACING_TRACEFMT TRACING (TEXT(__FILE__), TEXT(__FUNCTION__), __LINE__, MESSAGE, __VA_ARGS__)
 class Callstack
 {
 public:
   inline Callstack(const wchar_t * File, const wchar_t * Func, unsigned int Line, const wchar_t * Message) :
-    FFile(File), FFunc(Func), FLine(Line), FMessage(Message), FDepth(0)
+    FFile(File), FFunc(Func), FLine(Line), FMessage(Message ? Message : L""), FDepth(0)
   {
     if (IsTracing)
     {
@@ -288,18 +288,18 @@ private:
 };
 void __callstack(const wchar_t*, const wchar_t*, unsigned int, const wchar_t*);
 #define __callstack1 __callstack
-#define CCALLSTACKIMPL(TRACING, X) _TRACING_CALLSTACK TRACING X(TEXT(__FILE__), TEXT(__FUNCTION__), __LINE__, L"")
+#define CCALLSTACKIMPL(TRACING, X) // _TRACING_CALLSTACK TRACING X(TEXT(__FILE__), TEXT(__FUNCTION__), __LINE__, L"")
 #else // ifdef _DEBUG
-#define CTRACEIMPL(TRACING, PARAMS)
-#define CTRACEFMTIMPL(TRACING, MESSAGE, PARAMS)
+#define CTRACEIMPL(TRACING, ...)
+#define CTRACEFMTIMPL(TRACING, MESSAGE, ...)
 #define CCALLSTACKIMPL(TRACING, X)
 #endif // ifdef _DEBUG
 
 #undef TRACE
 #define TRACE(MESSAGE) CTRACEIMPL(TRACING, _T(MESSAGE))
-#define TRACEFMT(MESSAGE, PARAMS) CTRACEFMTIMPL(TRACING, _T(MESSAGE), PARAMS)
+#define TRACEFMT(MESSAGE, ...) CTRACEFMTIMPL(TRACING, _T(MESSAGE), __VA_ARGS__)
 #define CTRACE(TRACING, MESSAGE) CTRACEIMPL(TRACING, _T(MESSAGE))
-#define CTRACEFMT(TRACING, MESSAGE, PARAMS) CTRACEFMTIMPL(TRACING, _T(MESSAGE), PARAMS)
+#define CTRACEFMT(TRACING, MESSAGE, ...) CTRACEFMTIMPL(TRACING, _T(MESSAGE), __VA_ARGS__)
 
 #define CCALLSTACK(TRACING) CCALLSTACKIMPL(TRACING, _TRACING_CALLSTACKI TRACING)
 #define CCALLSTACK1(TRACING) CCALLSTACKIMPL(TRACING ,_TRACING_CALLSTACKI TRACING ## 1)
@@ -340,9 +340,9 @@ inline bool __fastcall DoAlwaysTrue(bool Value, wchar_t * Message, wchar_t * Fil
 #define CHECK(p) { bool __CHECK_RESULT__ = (p); assert(__CHECK_RESULT__); }
 #define FAIL assert(false)
 #define TRACE_EXCEPT_BEGIN try {
-#define TRACE_EXCEPT_END } catch (Exception & TraceE) { TRACEFMT("E [%s]", (TraceE.Message)); throw; }
+#define TRACE_EXCEPT_END } catch (Exception & TraceE) { TRACEFMT("E [%s]", TraceE.Message.c_str()); throw; }
 #define TRACE_CATCH_ALL catch (Exception & TraceE)
-#define TRACEE_(E) TRACEFMT(#E" [%s]", (E.Message))
+#define TRACEE_(E) TRACEFMT(#E" [%s]", E.Message.c_str())
 #define TRACEE TRACEE_(E)
 #define TRACE_EXCEPT TRACEE_(TraceE)
 #define ALWAYS_TRUE(p) DoAlwaysTrue(p, TEXT(#p), TEXT(__FILE__), __LINE__)

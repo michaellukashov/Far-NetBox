@@ -1433,8 +1433,8 @@ BOOL CAsyncSocketEx::GetPeerName( CString& rPeerAddress, UINT& rPeerPort )
 		return m_pFirstLayer->GetPeerName(rPeerAddress, rPeerPort);
 #endif NOLAYERS
 
-	SOCKADDR* sockAddr;
-	int nSockAddrLen;
+	SOCKADDR* sockAddr = NULL;
+	int nSockAddrLen = 0;
 
 	if (m_SocketData.nFamily == AF_INET6)
 	{
@@ -1497,8 +1497,8 @@ BOOL CAsyncSocketEx::GetPeerName( SOCKADDR* lpSockAddr, int* lpSockAddrLen )
 #ifdef _AFX
 BOOL CAsyncSocketEx::GetSockName(CString& rSocketAddress, UINT& rSocketPort)
 {
-	SOCKADDR* sockAddr;
-	int nSockAddrLen;
+	SOCKADDR* sockAddr = NULL;
+	int nSockAddrLen = 0;
 
 	if (m_SocketData.nFamily == AF_INET6)
 	{

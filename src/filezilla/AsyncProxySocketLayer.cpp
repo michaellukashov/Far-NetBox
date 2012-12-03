@@ -435,7 +435,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
 					buffer[0]=1;
 					buffer[1]=static_cast<unsigned char>(strlen(lpszAsciiUser));
 					buffer[2+strlen(lpszAsciiUser)]=static_cast<unsigned char>(strlen(lpszAsciiPass));
-					int len=3+strlen(lpszAsciiUser)+strlen(lpszAsciiPass);
+					intptr_t len=3+strlen(lpszAsciiUser)+strlen(lpszAsciiPass);
 					int res=SendNext(buffer,len);
 					delete [] buffer;
 					if (res==SOCKET_ERROR || res<len)

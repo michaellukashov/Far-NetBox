@@ -109,18 +109,18 @@ public:
   void __fastcall Clear();
   void __fastcall Add(const UnicodeString Name,
     TCopyParamType * CopyParam, TCopyParamRule * Rule);
-  void __fastcall Insert(int Index, const UnicodeString Name,
+  void __fastcall Insert(intptr_t Index, const UnicodeString Name,
     TCopyParamType * CopyParam, TCopyParamRule * Rule);
-  void __fastcall Change(int Index, const UnicodeString Name,
+  void __fastcall Change(intptr_t Index, const UnicodeString Name,
     TCopyParamType * CopyParam, TCopyParamRule * Rule);
-  void __fastcall Move(int CurIndex, int NewIndex);
-  void __fastcall Delete(int Index);
-  int __fastcall IndexOfName(const UnicodeString Name) const;
+  void __fastcall Move(intptr_t CurIndex, intptr_t NewIndex);
+  void __fastcall Delete(intptr_t Index);
+  intptr_t __fastcall IndexOfName(const UnicodeString Name) const;
 
-  int __fastcall GetCount() const;
-  UnicodeString __fastcall GetName(int Index) const;
-  const TCopyParamRule * __fastcall GetRule(int Index) const;
-  const TCopyParamType * __fastcall GetCopyParam(int Index) const;
+  intptr_t __fastcall GetCount() const;
+  UnicodeString __fastcall GetName(intptr_t Index) const;
+  const TCopyParamRule * __fastcall GetRule(intptr_t Index) const;
+  const TCopyParamType * __fastcall GetCopyParam(intptr_t Index) const;
   bool __fastcall GetModified() const { return FModified; }
   TStrings * __fastcall GetNameList() const;
   bool __fastcall GetAnyRule() const;
@@ -136,7 +136,7 @@ private:
   void __fastcall Init();
   void __fastcall Reset();
   void __fastcall Modify();
-  bool __fastcall CompareItem(int Index, const TCopyParamType * CopyParam,
+  bool __fastcall CompareItem(intptr_t Index, const TCopyParamType * CopyParam,
     const TCopyParamRule * Rule) const;
 };
 //---------------------------------------------------------------------------
@@ -197,7 +197,7 @@ public:
   void __fastcall SetCopyParamList(const TCopyParamList * value);
   static UnicodeString __fastcall PropertyToKey(const UnicodeString Property);
   virtual void __fastcall DefaultLocalized();
-  int __fastcall GetCopyParamIndex();
+  intptr_t __fastcall GetCopyParamIndex();
   TGUICopyParamType __fastcall GetCurrentCopyParam();
   TGUICopyParamType __fastcall GetCopyParamPreset(UnicodeString Name);
   bool __fastcall GetHasCopyParamPreset(UnicodeString Name);
@@ -247,7 +247,7 @@ public:
   void __fastcall SetPuttySession(UnicodeString value);
   TDateTime __fastcall GetIgnoreCancelBeforeFinish() { return FIgnoreCancelBeforeFinish; }
   void __fastcall SetIgnoreCancelBeforeFinish(TDateTime value) { FIgnoreCancelBeforeFinish = value; }
-  TGUICopyParamType __fastcall GetDefaultCopyParam() { return FDefaultCopyParam; }
+  TGUICopyParamType & __fastcall GetDefaultCopyParam() { return FDefaultCopyParam; }
   bool __fastcall GetBeepOnFinish() { return FBeepOnFinish; }
   void __fastcall SetBeepOnFinish(bool value) { FBeepOnFinish = value; }
   TDateTime __fastcall GetBeepOnFinishAfter() { return FBeepOnFinishAfter; }

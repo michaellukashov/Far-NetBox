@@ -224,7 +224,7 @@ wchar_t LowCase(const wchar_t c)
 UnicodeString AnsiReplaceStr(const UnicodeString str, const UnicodeString from, const UnicodeString to)
 {
   UnicodeString result = str;
-  int Pos = 0;
+  intptr_t Pos = 0;
   while ((Pos = result.Pos(from)) > 0)
   {
     result.Replace(Pos, from.size(), to);
@@ -232,16 +232,16 @@ UnicodeString AnsiReplaceStr(const UnicodeString str, const UnicodeString from, 
   return result;
 }
 
-int AnsiPos(const UnicodeString str, wchar_t c)
+intptr_t AnsiPos(const UnicodeString str, wchar_t c)
 {
-  int result = str.Pos(c);
-  return result;
+  intptr_t Result = str.Pos(c);
+  return Result;
 }
 
-int Pos(const UnicodeString str, const UnicodeString substr)
+intptr_t Pos(const UnicodeString str, const UnicodeString substr)
 {
-  int result = str.Pos(substr.c_str());
-  return result;
+  intptr_t Result = str.Pos(substr.c_str());
+  return Result;
 }
 
 UnicodeString StringReplace(const UnicodeString Str, const UnicodeString From, const UnicodeString To, TReplaceFlags Flags)
@@ -249,7 +249,7 @@ UnicodeString StringReplace(const UnicodeString Str, const UnicodeString From, c
   return AnsiReplaceStr(Str, From, To);
 }
 
-bool IsDelimiter(const UnicodeString delimiters, const UnicodeString str, int index)
+bool IsDelimiter(const UnicodeString delimiters, const UnicodeString str, intptr_t index)
 {
   if (index <= str.Length())
   {
@@ -265,11 +265,11 @@ bool IsDelimiter(const UnicodeString delimiters, const UnicodeString str, int in
   return false;
 }
 
-int LastDelimiter(const UnicodeString delimiters, const UnicodeString str)
+intptr_t LastDelimiter(const UnicodeString delimiters, const UnicodeString str)
 {
   if (str.Length())
   {
-    for (int i = str.Length(); i >= 1; --i)
+    for (intptr_t i = str.Length(); i >= 1; --i)
     {
       if (str.IsDelimiter(delimiters, i))
       {
@@ -451,7 +451,7 @@ bool DirectoryExists(const UnicodeString filename)
 
 UnicodeString FileSearch(const UnicodeString FileName, const UnicodeString DirectoryList)
 {
-  int I;
+  intptr_t I;
   UnicodeString Temp;
   UnicodeString Result;
   Temp = DirectoryList;
@@ -556,7 +556,7 @@ UnicodeString Format(const wchar_t * Format, va_list args)
   {
     intptr_t Len = _vscwprintf(Format, args);
     Result.SetLength(Len + 1);
-    vswprintf_s(&Result[1], Len + 1, Format, args);
+    vswprintf_s((wchar_t *)Result.c_str(), Len + 1, Format, args);
   }
   return Result.c_str();
 }
@@ -665,7 +665,7 @@ NextWord(const wchar_t * input)
   return buffer;
 }
 //---------------------------------------------------------------------------
-UnicodeString WrapText(const UnicodeString & Line, int MaxWidth)
+UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
 {
   UnicodeString Result;
   const wchar_t * s = 0;
@@ -673,7 +673,7 @@ UnicodeString WrapText(const UnicodeString & Line, int MaxWidth)
 
   int lineCount = 0;
   int lenBuffer = 0;
-  int spaceLeft = MaxWidth;
+  intptr_t spaceLeft = MaxWidth;
 
   if (MaxWidth == 0)
   {
@@ -860,12 +860,12 @@ UnicodeString ExpandEnvVars(const UnicodeString & str)
   return result;
 }
 
-UnicodeString StringOfChar(const wchar_t c, int len)
+UnicodeString StringOfChar(const wchar_t c, intptr_t len)
 {
   UnicodeString Result;
-  if (int(len) < 0) len = 0;
+  if (len < 0) len = 0;
   Result.SetLength(len);
-  for (int i = 1; i <= len; i++) Result[i] = c;
+  for (intptr_t i = 1; i <= len; i++) Result[i] = c;
   return Result;
 }
 
@@ -1051,7 +1051,7 @@ UnicodeString SysErrorMessage(int ErrorCode)
 UnicodeString ReplaceStrAll(const UnicodeString Str, const UnicodeString What, const UnicodeString ByWhat)
 {
   UnicodeString Result = Str;
-  int Pos = Result.Pos(What.c_str());
+  intptr_t Pos = Result.Pos(What.c_str());
   while (Pos > 0)
   {
     Result.Replace(Pos, What.Length(), ByWhat.c_str(), ByWhat.Length());
@@ -1145,7 +1145,7 @@ UnicodeString IncludeTrailingBackslash(const UnicodeString str)
 UnicodeString ExtractFileDir(const UnicodeString str)
 {
   UnicodeString result;
-  int Pos = str.LastDelimiter(L"/\\");
+  intptr_t Pos = str.LastDelimiter(L"/\\");
   // it used to return Path when no slash was found
   if (Pos > 0)
   {
@@ -1248,7 +1248,7 @@ UnicodeString IntToHex(unsigned int Int, size_t MinChars)
 {
   UnicodeString Result;
   Result.sprintf(L"%X", Int);
-  int Pad = MinChars - Result.size();
+  intptr_t Pad = MinChars - Result.size();
   if (Pad > 0)
   {
     for (int i = 0; i < Pad; i++)
@@ -1434,16 +1434,12 @@ UnicodeString DateTimeToStr(UnicodeString & Result, const UnicodeString & Format
 {
   (void)Result;
   (void)Format;
-  (void)DateTime;
-  Classes::Error(SNotImplemented, 148);
-  return L"";
+  return DateTime.FormatString(L"");
 }
 
 UnicodeString DateTimeToString(TDateTime DateTime)
 {
-  (void)DateTime;
-  Classes::Error(SNotImplemented, 146);
-  return L"";
+  return DateTime.FormatString(L"");
 }
 
 

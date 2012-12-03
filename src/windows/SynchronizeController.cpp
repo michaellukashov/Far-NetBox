@@ -137,7 +137,7 @@ void __fastcall TSynchronizeController::SynchronizeChange(
 
     if (FOnSynchronize != NULL)
     {
-      TRACEFMT("1 [%s] [%s] [%x] [%x]", (LocalDirectory, RemoteDirectory, FSynchronizeParams.Params, FSynchronizeParams.Options));
+      TRACEFMT("1 [%s] [%s] [%x] [%x]", LocalDirectory.c_str(), RemoteDirectory.c_str(), FSynchronizeParams.Params, FSynchronizeParams.Options);
       // this is completelly wrong as the options structure
       // can contain non-root specific options in future
       TSynchronizeOptions * Options =
@@ -254,7 +254,7 @@ void __fastcall TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
     if (IncludeTrailingBackslash(ExtractFilePath(DirectoryName)) ==
           IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory))
     {
-      int FoundIndex;
+      intptr_t FoundIndex;
       Add = FOptions->Filter->Find(ExtractFileName(DirectoryName, true), FoundIndex);
     }
   }

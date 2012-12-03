@@ -55,7 +55,7 @@ void __fastcall TNamedObject::MakeUniqueIn(TNamedObjectList * List)
   if (List && (List->IndexOf(this) == -1))
     while (List->FindByName(GetName()))
     {
-      Integer N = 0, P = 0;
+      intptr_t N = 0, P = 0;
       // If name already contains number parenthesis remove it (and remember it)
       UnicodeString Name = GetName();
       if ((Name[Name.Length()] == L')') && ((P = Name.LastDelimiter(L'(')) > 0))
@@ -67,6 +67,7 @@ void __fastcall TNamedObject::MakeUniqueIn(TNamedObjectList * List)
         }
         catch (Exception &E)
         {
+          (void)E;
           N = 0;
         }
       SetName(Name + L" (" + IntToStr(static_cast<int>(N+1)) + L")");
@@ -118,12 +119,12 @@ TNamedObject * __fastcall TNamedObjectList::FindByName(UnicodeString Name,
   return NULL;
 }
 //---------------------------------------------------------------------------
-void __fastcall TNamedObjectList::SetCount(int value)
+void __fastcall TNamedObjectList::SetCount(intptr_t value)
 {
   TObjectList::SetCount(value/*+HiddenCount*/);
 }
 //---------------------------------------------------------------------------
-int __fastcall TNamedObjectList::GetCount()
+intptr_t __fastcall TNamedObjectList::GetCount()
 {
   return TObjectList::Count - GetHiddenCount();
 }

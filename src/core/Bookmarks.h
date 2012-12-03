@@ -42,7 +42,7 @@ public:
 
   void __fastcall Clear();
   void __fastcall Add(TBookmark * Bookmark);
-  void __fastcall Insert(int Index, TBookmark * Bookmark);
+  void __fastcall Insert(intptr_t Index, TBookmark * Bookmark);
   void __fastcall InsertBefore(TBookmark * BeforeBookmark, TBookmark * Bookmark);
   void __fastcall MoveTo(TBookmark * ToBookmark, TBookmark * Bookmark, bool Before);
   void __fastcall Delete(TBookmark * Bookmark);
@@ -53,14 +53,14 @@ public:
   void __fastcall SaveOptions(THierarchicalStorage * Storage);
   void __fastcall ShortCuts(TShortCuts & ShortCuts);
 
-  int __fastcall GetCount();
-  TBookmark * __fastcall GetBookmarks(int Index);
+  intptr_t __fastcall GetCount();
+  TBookmark * __fastcall GetBookmarks(intptr_t Index);
   bool __fastcall GetNodeOpened(UnicodeString Index);
   void __fastcall SetNodeOpened(UnicodeString Index, bool value);
 
 protected:
-  int __fastcall IndexOf(TBookmark * Bookmark);
-  void __fastcall KeyChanged(int Index);
+  intptr_t __fastcall IndexOf(TBookmark * Bookmark);
+  void __fastcall KeyChanged(intptr_t Index);
 
   bool __fastcall GetModified() { return FModified; }
   void __fastcall SetModified(bool value) { FModified = value; }
@@ -103,7 +103,7 @@ private:
   TShortCut FShortCut;
 
   UnicodeString __fastcall GetKey();
-  void __fastcall Modify(int OldIndex);
+  void __fastcall Modify(intptr_t OldIndex);
 };
 //---------------------------------------------------------------------------
 #endif

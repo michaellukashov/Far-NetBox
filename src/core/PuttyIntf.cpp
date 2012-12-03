@@ -73,7 +73,7 @@ extern "C" char * do_select(Plug plug, SOCKET skt, int startup)
     plug = ProxySocket->plug;
   }
 
-  bool pfwd = is_pfwd(plug);
+  bool pfwd = is_pfwd(plug) != 0;
   if (pfwd)
   {
     plug = static_cast<Plug>(get_pfwd_backend(plug));
@@ -85,11 +85,11 @@ extern "C" char * do_select(Plug plug, SOCKET skt, int startup)
   TSecureShell * SecureShell = reinterpret_cast<TSecureShell *>(frontend);
   if (!pfwd)
   {
-    SecureShell->UpdateSocket(skt, startup);
+    SecureShell->UpdateSocket(skt, startup != 0);
   }
   else
   {
-    SecureShell->UpdatePortFwdSocket(skt, startup);
+    SecureShell->UpdatePortFwdSocket(skt, startup != 0);
   }
 
   return NULL;
@@ -132,7 +132,7 @@ int get_userpass_input(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
   TStrings * Results = new TStringList();
   TRY_FINALLY (
   {
-    TRACEFMT("1 [%d]", (int(p->n_prompts)));
+    TRACEFMT("1 [%d]", int(p->n_prompts));
     for (int Index = 0; Index < static_cast<int>(p->n_prompts); Index++)
     {
       prompt_t * Prompt = p->prompts[Index];
@@ -183,7 +183,7 @@ char * get_ttymode(void * /*frontend*/, const char * /*mode*/)
 void logevent(void * frontend, const char * string)
 {
   CALLSTACK;
-  TRACEFMT("[%s]", (string));
+  TRACEFMT("[%s]", UnicodeString(string).c_str());
   // Frontend maybe NULL here
   if (frontend != NULL)
   {
@@ -252,7 +252,7 @@ static void SSHFatalError(const char * Format, va_list Param)
   char Buf[200];
   vsnprintf(Buf, LENOF(Buf), Format, Param);
   Buf[LENOF(Buf) - 1] = '\0';
-  TRACEFMT("[%s]", (Buf));
+  TRACEFMT("[%s]", Buf);
 
   // Only few calls from putty\winnet.c might be connected with specific
   // TSecureShell. Otherwise called only for really fatal errors
@@ -379,7 +379,7 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
 
   UnicodeString RegKey = SubKey;
   int PuttyKeyLen = Configuration->GetPuttyRegistryStorageKey().Length();
-  TRACEFMT("RegKey [%s] [%s] PuttyRegistryStorageKey [%s] [%d]", (RegKey, RegKey.SubString(1, PuttyKeyLen), Configuration->GetPuttyRegistryStorageKey(), PuttyKeyLen));
+  TRACEFMT("RegKey [%s] [%s] PuttyRegistryStorageKey [%s] [%d]", RegKey.c_str(), RegKey.SubString(1, PuttyKeyLen).c_str(), Configuration->GetPuttyRegistryStorageKey().c_str(), PuttyKeyLen);
   assert(RegKey.SubString(1, PuttyKeyLen) == Configuration->GetPuttyRegistryStorageKey());
   RegKey = RegKey.SubString(PuttyKeyLen + 1, RegKey.Length() - PuttyKeyLen);
   if (!RegKey.IsEmpty())
@@ -396,7 +396,7 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
   }
   else
   {
-    TRACEFMT("2 RegKey [%s]", (RegKey));
+    TRACEFMT("2 RegKey [%s]", RegKey.c_str());
     // we expect this to be called only from verify_host_key() or store_host_key()
     assert(RegKey == L"SshHostKeys");
 
@@ -571,7 +571,7 @@ bool __fastcall HasGSSAPI()
 void ptrace(const char* msg)
 {
   USEDPARAM(msg);
-  TRACEFMT("%s", (msg));
+  TRACEFMT("%s", UnicodeString(msg).c_str());
 }
 //!CLEANEND
 //---------------------------------------------------------------------------

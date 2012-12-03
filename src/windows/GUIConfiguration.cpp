@@ -305,12 +305,12 @@ bool __fastcall TCopyParamList::operator==(const TCopyParamList & rhl) const
   return Result;
 }
 //---------------------------------------------------------------------------
-int __fastcall TCopyParamList::IndexOfName(const UnicodeString Name) const
+intptr_t __fastcall TCopyParamList::IndexOfName(const UnicodeString Name) const
 {
   return FNames->IndexOf(Name.c_str());
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCopyParamList::CompareItem(int Index,
+bool __fastcall TCopyParamList::CompareItem(intptr_t Index,
   const TCopyParamType * CopyParam, const TCopyParamRule * Rule) const
 {
   return
@@ -322,7 +322,7 @@ bool __fastcall TCopyParamList::CompareItem(int Index,
 //---------------------------------------------------------------------------
 void __fastcall TCopyParamList::Clear()
 {
-  for (int i = 0; i < GetCount(); i++)
+  for (intptr_t i = 0; i < GetCount(); i++)
   {
     delete GetCopyParam(i);
     delete GetRule(i);
@@ -338,7 +338,7 @@ void __fastcall TCopyParamList::Add(const UnicodeString Name,
   Insert(GetCount(), Name, CopyParam, Rule);
 }
 //---------------------------------------------------------------------------
-void __fastcall TCopyParamList::Insert(int Index, const UnicodeString Name,
+void __fastcall TCopyParamList::Insert(intptr_t Index, const UnicodeString Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
   assert(FNames->IndexOf(Name) < 0);
@@ -349,7 +349,7 @@ void __fastcall TCopyParamList::Insert(int Index, const UnicodeString Name,
   Modify();
 }
 //---------------------------------------------------------------------------
-void __fastcall TCopyParamList::Change(int Index, const UnicodeString Name,
+void __fastcall TCopyParamList::Change(intptr_t Index, const UnicodeString Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
   if ((Name != GetName(Index)) || !CompareItem(Index, CopyParam, Rule))
@@ -368,7 +368,7 @@ void __fastcall TCopyParamList::Change(int Index, const UnicodeString Name,
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TCopyParamList::Move(int CurIndex, int NewIndex)
+void __fastcall TCopyParamList::Move(intptr_t CurIndex, intptr_t NewIndex)
 {
   if (CurIndex != NewIndex)
   {
@@ -379,7 +379,7 @@ void __fastcall TCopyParamList::Move(int CurIndex, int NewIndex)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TCopyParamList::Delete(int Index)
+void __fastcall TCopyParamList::Delete(intptr_t Index)
 {
   assert((Index >= 0) && (Index < GetCount()));
   FNames->Delete(Index);
@@ -455,9 +455,9 @@ void __fastcall TCopyParamList::Load(THierarchicalStorage * Storage, int ACount)
 void __fastcall TCopyParamList::Save(THierarchicalStorage * Storage) const
 {
   Storage->ClearSubKeys();
-  for (int Index = 0; Index < GetCount(); Index++)
+  for (intptr_t Index = 0; Index < GetCount(); Index++)
   {
-    if (Storage->OpenSubKey(IntToStr(Index), true))
+    if (Storage->OpenSubKey(IntToStr((int)Index), true))
     {
       TRY_FINALLY (
       {
@@ -481,22 +481,22 @@ void __fastcall TCopyParamList::Save(THierarchicalStorage * Storage) const
   }
 }
 //---------------------------------------------------------------------------
-int __fastcall TCopyParamList::GetCount() const
+intptr_t __fastcall TCopyParamList::GetCount() const
 {
   return FCopyParams->Count;
 }
 //---------------------------------------------------------------------------
-const TCopyParamRule * __fastcall TCopyParamList::GetRule(int Index) const
+const TCopyParamRule * __fastcall TCopyParamList::GetRule(intptr_t Index) const
 {
   return reinterpret_cast<TCopyParamRule *>(FRules->Items[Index]);
 }
 //---------------------------------------------------------------------------
-const TCopyParamType * __fastcall TCopyParamList::GetCopyParam(int Index) const
+const TCopyParamType * __fastcall TCopyParamList::GetCopyParam(intptr_t Index) const
 {
   return reinterpret_cast<TCopyParamType *>(FCopyParams->Items[Index]);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TCopyParamList::GetName(int Index) const
+UnicodeString __fastcall TCopyParamList::GetName(intptr_t Index) const
 {
   return FNames->Strings[Index];
 }
@@ -644,7 +644,7 @@ void __fastcall TGUIConfiguration::UpdateStaticUsage()
 UnicodeString __fastcall TGUIConfiguration::PropertyToKey(const UnicodeString Property)
 {
   // no longer useful
-  int P = Property.LastDelimiter(L".>");
+  intptr_t P = Property.LastDelimiter(L".>");
   return Property.SubString(P + 1, Property.Length() - P);
 }
 //---------------------------------------------------------------------------
@@ -814,7 +814,7 @@ HINSTANCE __fastcall TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
     UnicodeString LocaleName;
 
     Module = ModuleFileName();
-    TRACEFMT("2 [%s]", (Module));
+    TRACEFMT("2 [%s]", Module.c_str());
     if ((ALocale & AdditionaLanguageMask) != AdditionaLanguageMask)
     {
       TRACE("3");
@@ -831,7 +831,7 @@ HINSTANCE __fastcall TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
     }
 
     Module = ChangeFileExt(Module, UnicodeString(L".") + LocaleName);
-    TRACEFMT("5 [%s]", (Module));
+    TRACEFMT("5 [%s]", Module.c_str());
     // Look for a potential language/country translation
     NewInstance = LoadLibraryEx(Module.c_str(), 0, LOAD_LIBRARY_AS_DATAFILE);
     if (!NewInstance)
@@ -1162,9 +1162,9 @@ void __fastcall TGUIConfiguration::SetCopyParamList(const TCopyParamList * value
   }
 }
 //---------------------------------------------------------------------------
-int __fastcall TGUIConfiguration::GetCopyParamIndex()
+intptr_t __fastcall TGUIConfiguration::GetCopyParamIndex()
 {
-  int Result;
+  intptr_t Result;
   if (FCopyParamCurrent.IsEmpty())
   {
     Result = -1;
@@ -1205,7 +1205,7 @@ TGUICopyParamType __fastcall TGUIConfiguration::GetCopyParamPreset(UnicodeString
   TGUICopyParamType Result = FDefaultCopyParam;
   if (!Name.IsEmpty())
   {
-    int Index = FCopyParamList->IndexOfName(Name);
+    intptr_t Index = FCopyParamList->IndexOfName(Name);
     assert(Index >= 0);
     if (Index >= 0)
     {

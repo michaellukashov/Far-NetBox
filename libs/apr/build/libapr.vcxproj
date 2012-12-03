@@ -137,7 +137,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>..\..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</OutDir>
-    <IntDir>..\..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)</IntDir>
+    <IntDir>..\..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>..\..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</OutDir>
@@ -145,7 +145,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IntDir>..\..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)</IntDir>
+    <IntDir>..\..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</IntDir>
     <OutDir>..\..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -153,7 +153,7 @@
     <OutDir>..\..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IntDir>..\..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)</IntDir>
+    <IntDir>..\..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</IntDir>
     <OutDir>..\..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -161,7 +161,7 @@
     <OutDir>..\..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IntDir>..\..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)</IntDir>
+    <IntDir>..\..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</IntDir>
     <OutDir>..\..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

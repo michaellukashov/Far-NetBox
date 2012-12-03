@@ -30,7 +30,7 @@ unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, unsigned in
   CALLSTACK;
   unsigned int Len = 0;
 
-  TRACEFMT("[%s]", (FileName));
+  TRACEFMT("[%s]", FileName);
   bool NeedFree = false;
   HMODULE Module = GetModuleHandle(FileName);
   TRACE("0");
@@ -42,7 +42,7 @@ unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, unsigned in
   }
   if (Module == NULL)
   {
-    TRACEFMT("Could not load %s", (FileName));
+    TRACEFMT("Could not load %s", FileName);
   }
   else
   {
@@ -53,7 +53,7 @@ unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, unsigned in
         MAKEINTRESOURCE(VS_FILE_INFO));
       if (Rsrc == NULL)
       {
-        TRACEFMT("Could not find VS_VERSION_INFO in %s", (FileName));
+        TRACEFMT("Could not find VS_VERSION_INFO in %s", FileName);
       }
       else
       {
@@ -62,7 +62,7 @@ unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, unsigned in
         HANDLE Mem = LoadResource(Module, static_cast<HRSRC>(Rsrc));
         if (Mem == NULL)
         {
-          TRACEFMT("Could not load VS_VERSION_INFO from %s", (FileName));
+          TRACEFMT("Could not load VS_VERSION_INFO from %s", FileName);
         }
         else
         {
@@ -75,7 +75,7 @@ unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, unsigned in
 
             if (FixedInfo->dwSignature != VS_FFI_SIGNATURE)
             {
-              TRACEFMT("vffi->dwSignature is %x, but not %x!\n",  (int(FixedInfo->dwSignature), int(VS_FFI_SIGNATURE)));
+              TRACEFMT("vffi->dwSignature is %x, but not %x!\n",  int(FixedInfo->dwSignature), int(VS_FFI_SIGNATURE));
               Len = 0;
             }
             else
@@ -126,7 +126,7 @@ unsigned int GetFileVersionInfoSizeFix(const wchar_t * FileName, unsigned long *
   unsigned int Len;
   if (IsWin7())
   {
-    TRACEFMT("(%s,%x)", (FileName, int(Handle)));
+    TRACEFMT("(%s,%x)", FileName, int(Handle));
     *Handle = 0;
     Len = VERSION_GetFileVersionInfo_PE(FileName, 0, NULL);
 
@@ -153,7 +153,7 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Handle,
   {
     VS_VERSION_INFO_STRUCT32 * VersionInfo = static_cast<VS_VERSION_INFO_STRUCT32 *>(Data);
 
-    TRACEFMT("(%s,%d,size=%d,data=%x)", (FileName, (int)Handle, (int)DataSize, (int)Data));
+    TRACEFMT("(%s,%d,size=%d,data=%x)", FileName, (int)Handle, (int)DataSize, (int)Data);
 
     unsigned int Len = VERSION_GetFileVersionInfo_PE(FileName, DataSize, Data);
 
@@ -161,7 +161,7 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Handle,
     if (Result)
     {
       static const char Signature[] = "FE2X";
-      unsigned int BufSize = VersionInfo->wLength + strlen(Signature);
+      unsigned int BufSize = (unsigned int)(VersionInfo->wLength + strlen(Signature));
       unsigned int ConvBuf;
 
       if (DataSize >= BufSize)
@@ -173,7 +173,7 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Handle,
   }
   else
   {
-    Result = GetFileVersionInfo(const_cast<wchar_t *>(FileName), Handle, DataSize, Data);
+    Result = GetFileVersionInfo(const_cast<wchar_t *>(FileName), Handle, DataSize, Data) != 0;
   }
 
   return Result;
@@ -187,7 +187,7 @@ void * __fastcall CreateFileInfo(UnicodeString FileName)
   unsigned int Size;
   void * Result = NULL;
 
-  TRACEFMT("CreateFileInfo 1 [%s]", (FileName));
+  TRACEFMT("CreateFileInfo 1 [%s]", FileName.c_str());
 
   // Get file version info block size
   Size = GetFileVersionInfoSizeFix(FileName.c_str(), &Handle);
@@ -208,7 +208,7 @@ void * __fastcall CreateFileInfo(UnicodeString FileName)
   }
   else
   {
-    TRACEFMT("CreateFileInfo E [%x]", ((int)GetLastError()));
+    TRACEFMT("CreateFileInfo E [%x]", (int)GetLastError());
   }
   return Result;
 }
@@ -303,7 +303,7 @@ UnicodeString __fastcall GetFileInfoString(void * FileInfo,
   }
   UnicodeString Result = UnicodeString(P, Len);
   PackStr(Result);
-  TRACEFMT("1 [%s] [%s]", (StringName, Result));
+  TRACEFMT("1 [%s] [%s]", StringName.c_str(), Result.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
