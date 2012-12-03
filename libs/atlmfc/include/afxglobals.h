@@ -10,11 +10,6 @@
 //
 #pragma once
 
-#include "afxcontrolbarutil.h"
-
-#include "afxaccessibility.h"
-#include <oleacc.h>
-
 #if (NTDDI_VERSION >= NTDDI_WIN7)
 #include <shobjidl.h>
 #endif
@@ -109,8 +104,6 @@ class CMFCToolBarImages;
 
 struct AFX_GLOBAL_DATA
 {
-	friend class CMemDC;
-
 	BOOL m_bUseSystemFont;	// Use system font for menu/toolbar/ribbons
 	BOOL m_bInSettingChange;
 
@@ -231,7 +224,6 @@ struct AFX_GLOBAL_DATA
 	~AFX_GLOBAL_DATA();
 
 	void UpdateSysColors();
-	void UpdateFonts();
 	void OnSettingChange();
 
 	BOOL SetMenuFont(LPLOGFONT lpLogFont, BOOL bHorz);

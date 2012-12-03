@@ -13,7 +13,6 @@
 #include "sal.h"
 
 #include "afxglobals.h"
-#include "afxdatarecovery.h"
 
 AFX_STATIC_DATA const TCHAR _afxFileSection[] = _T("Recent File List");
 AFX_STATIC_DATA const TCHAR _afxFileEntry[] = _T("File%d");
