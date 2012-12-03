@@ -597,7 +597,7 @@ UnicodeString __fastcall operator +(const wchar_t lhs, const UnicodeString & rhs
 
 UnicodeString __fastcall operator +(const UnicodeString & lhs, const wchar_t rhs)
 {
-  return lhs + UnicodeString(&rhs);
+  return lhs + UnicodeString(rhs);
 }
 
 UnicodeString __fastcall operator +(const wchar_t * lhs, const UnicodeString & rhs)
