@@ -3221,7 +3221,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   {
     ReturnVarEdit->SetText(SessionData->GetReturnVar());
   }
-  LookupUserGroupsCheck->SetChecked(SessionData->GetLookupUserGroups());
+  LookupUserGroupsCheck->SetChecked(SessionData->GetLookupUserGroups() != asOff);
   ClearAliasesCheck->SetChecked(SessionData->GetClearAliases());
   IgnoreLsWarningsCheck->SetChecked(SessionData->GetIgnoreLsWarnings());
   Scp1CompatibilityCheck->SetChecked(SessionData->GetScp1Compatibility());
