@@ -133,7 +133,7 @@ char HexToChar(const UnicodeString Hex, size_t MinChars = 0);
 UnicodeString ReplaceStrAll(const UnicodeString Str, const UnicodeString What, const UnicodeString ByWhat);
 UnicodeString SysErrorMessage(int code);
 
-bool TryStrToDateTime(const UnicodeString value, TDateTime & Value, TFormatSettings & FormatSettings);
+bool TryStrToDateTime(const UnicodeString StrValue, TDateTime & Value, TFormatSettings & FormatSettings);
 UnicodeString DateTimeToStr(UnicodeString & Result, const UnicodeString & Format,
                             TDateTime DateTime);
 UnicodeString DateTimeToString(TDateTime DateTime);
@@ -179,20 +179,20 @@ int StringCmp(const wchar_t * s1, const wchar_t * s2);
 int StringCmpI(const wchar_t * s1, const wchar_t * s2);
 
 //---------------------------------------------------------------------------
-UnicodeString IntToStr(int value);
-UnicodeString Int64ToStr(__int64 value);
-int StrToInt(const UnicodeString value);
-__int64 ToInt(const UnicodeString value);
-int StrToIntDef(const UnicodeString value, int defval);
-__int64 StrToInt64(const UnicodeString value);
-__int64 StrToInt64Def(const UnicodeString value, __int64 defval);
-bool TryStrToInt(const std::wstring & value, int & Value);
-bool TryStrToInt(const std::wstring & value, __int64 & Value);
+UnicodeString IntToStr(int Value);
+UnicodeString Int64ToStr(__int64 Value);
+int StrToInt(const UnicodeString Value);
+__int64 ToInt(const UnicodeString Value);
+int StrToIntDef(const UnicodeString Value, int defval);
+__int64 StrToInt64(const UnicodeString Value);
+__int64 StrToInt64Def(const UnicodeString Value, __int64 defval);
+bool TryStrToInt(const std::wstring & StrValue, int & Value);
+bool TryStrToInt(const std::wstring & StrValue, __int64 & Value);
 
 //---------------------------------------------------------------------------
 double StrToFloat(const UnicodeString Value);
 double StrToFloatDef(const UnicodeString Value, double defval);
-UnicodeString FormatFloat(const UnicodeString Format, double value);
+UnicodeString FormatFloat(const UnicodeString Format, double Value);
 //---------------------------------------------------------------------------
 TTimeStamp DateTimeToTimeStamp(TDateTime DateTime);
 //---------------------------------------------------------------------------

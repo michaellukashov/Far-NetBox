@@ -178,7 +178,7 @@ public:
   void Move(intptr_t CurIndex, intptr_t NewIndex);
   void Delete(intptr_t Index);
   virtual void Insert(intptr_t Index, void * Item);
-  intptr_t IndexOf(void * value) const;
+  intptr_t IndexOf(void * Value) const;
   virtual void __fastcall Clear();
   virtual void __fastcall Sort(CompareFunc Func);
   virtual void __fastcall Notify(void * Ptr, int Action);
@@ -217,16 +217,16 @@ public:
   TObject * operator [](intptr_t Index) const;
   TObject *& GetItem(intptr_t Index);
   void SetItem(intptr_t Index, TObject * Value);
-  intptr_t Add(TObject * value);
-  intptr_t Remove(TObject * value);
-  void Extract(TObject * value);
+  intptr_t Add(TObject * Value);
+  intptr_t Remove(TObject * Value);
+  void Extract(TObject * Value);
   void Move(intptr_t Index, intptr_t To);
   void Delete(intptr_t Index);
-  virtual void __fastcall Insert(intptr_t Index, TObject * value);
-  intptr_t IndexOf(TObject * value) const;
+  virtual void __fastcall Insert(intptr_t Index, TObject * Value);
+  intptr_t IndexOf(TObject * Value) const;
   virtual void __fastcall Clear();
   bool GetOwnsObjects() const;
-  void SetOwnsObjects(bool value);
+  void SetOwnsObjects(bool Value);
   virtual void __fastcall Sort(CompareFunc func);
   virtual void __fastcall Notify(void * Ptr, int Action);
 
@@ -269,25 +269,25 @@ public:
   virtual void __fastcall SetUpdateState(bool Updating);
   intptr_t __fastcall AddObject(const UnicodeString S, TObject * AObject);
   virtual void __fastcall InsertObject(intptr_t Index, const UnicodeString Key, TObject * AObject);
-  bool __fastcall Equals(TStrings * value) const;
+  bool __fastcall Equals(TStrings * Value) const;
   virtual void __fastcall Clear() = 0;
   void __fastcall Move(intptr_t CurIndex, intptr_t NewIndex);
   intptr_t __fastcall IndexOf(const UnicodeString S);
   virtual intptr_t __fastcall IndexOfName(const UnicodeString Name);
   UnicodeString __fastcall ExtractName(const UnicodeString S) const;
   void __fastcall AddStrings(TStrings * Strings);
-  void __fastcall Append(const UnicodeString value);
+  void __fastcall Append(const UnicodeString Value);
   virtual void __fastcall Insert(intptr_t Index, const UnicodeString AString) = 0;
   void __fastcall SaveToStream(TStream * Stream) const;
   wchar_t __fastcall GetDelimiter() const { return FDelimiter; }
-  void __fastcall SetDelimiter(wchar_t value)
+  void __fastcall SetDelimiter(wchar_t Value)
   {
-    FDelimiter = value;
+    FDelimiter = Value;
   }
   wchar_t __fastcall GetQuoteChar() const { return FQuoteChar; }
-  void __fastcall SetQuoteChar(wchar_t value)
+  void __fastcall SetQuoteChar(wchar_t Value)
   {
-    FQuoteChar = value;
+    FQuoteChar = Value;
   }
   UnicodeString __fastcall GetDelimitedText() const;
   void __fastcall SetDelimitedText(const UnicodeString Value);
@@ -301,10 +301,10 @@ protected:
   UnicodeString __fastcall GetCommaText();
   void __fastcall SetCommaText(const UnicodeString Value);
   virtual bool __fastcall GetCaseSensitive() const = 0;
-  virtual void __fastcall SetCaseSensitive(bool value) = 0;
+  virtual void __fastcall SetCaseSensitive(bool Value) = 0;
   virtual bool __fastcall GetSorted() const = 0;
-  virtual void __fastcall SetSorted(bool value) = 0;
-  void __fastcall SetDuplicates(TDuplicatesEnum value);
+  virtual void __fastcall SetSorted(bool Value) = 0;
+  void __fastcall SetDuplicates(TDuplicatesEnum Value);
   virtual intptr_t __fastcall GetCount() const = 0;
   virtual UnicodeString & __fastcall GetString(intptr_t Index) = 0;
   virtual UnicodeString __fastcall GetStrings(intptr_t Index) const = 0;
@@ -426,9 +426,9 @@ public:
 
 protected:
   virtual bool __fastcall GetCaseSensitive() const;
-  virtual void __fastcall SetCaseSensitive(bool value);
+  virtual void __fastcall SetCaseSensitive(bool Value);
   virtual bool __fastcall GetSorted() const;
-  virtual void __fastcall SetSorted(bool value);
+  virtual void __fastcall SetSorted(bool Value);
   virtual intptr_t __fastcall GetCount() const;
   virtual UnicodeString & __fastcall GetString(intptr_t Index);
   virtual UnicodeString __fastcall GetStrings(intptr_t Index) const;
@@ -456,9 +456,9 @@ public:
   TDateTime() :
     FValue(0.0)
   {}
-  explicit TDateTime(double value)
+  explicit TDateTime(double Value)
   {
-    FValue = value;
+    FValue = Value;
   }
   explicit TDateTime(unsigned short Hour,
                      unsigned short Min, unsigned short Sec, unsigned short MSec);
@@ -505,9 +505,9 @@ public:
     FValue -= val;
     return *this;
   }
-  TDateTime & operator = (double value)
+  TDateTime & operator = (double Value)
   {
-    FValue = value;
+    FValue = Value;
     return *this;
   }
   bool operator == (const TDateTime & rhs)
@@ -704,7 +704,7 @@ public:
   void CloseKey();
   bool OpenKey(const UnicodeString key, bool CanCreate);
   bool DeleteKey(const UnicodeString key);
-  bool DeleteValue(const UnicodeString value) const;
+  bool DeleteValue(const UnicodeString Value) const;
   bool KeyExists(const UnicodeString SubKey);
   bool ValueExists(const UnicodeString Value) const;
   bool GetDataInfo(const UnicodeString ValueName, TRegDataInfo & Value) const;
@@ -1004,9 +1004,9 @@ typedef HANDLE THandle;
 typedef DWORD TThreadID;
 
 //---------------------------------------------------------------------------
-inline double Trunc(double value) { double intpart; modf(value, &intpart); return intpart; }
-inline double Frac(double value) { double intpart; return modf(value, &intpart); }
-inline double Abs(double value) { return fabs(value); }
+inline double Trunc(double Value) { double intpart; modf(Value, &intpart); return intpart; }
+inline double Frac(double Value) { double intpart; return modf(Value, &intpart); }
+inline double Abs(double Value) { return fabs(Value); }
 //---------------------------------------------------------------------------
 class TCustomIniFile
 {

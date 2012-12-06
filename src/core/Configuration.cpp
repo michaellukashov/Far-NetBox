@@ -541,7 +541,7 @@ void __fastcall TConfiguration::BeginUpdate()
     FChanged = false;
   }
   FUpdating++;
-  // Greater value would probably indicate some nesting problem in code
+  // Greater Value would probably indicate some nesting problem in code
   assert(FUpdating < 6);
 }
 //---------------------------------------------------------------------------
@@ -883,10 +883,10 @@ void __fastcall TConfiguration::SetDefaultStorage()
 }
 //---------------------------------------------------------------------------
 /*
-void __fastcall TConfiguration::SetIniFileStorageName(UnicodeString value)
+void __fastcall TConfiguration::SetIniFileStorageName(UnicodeString Value)
 {
   CALLSTACK;
-  FIniFileStorageName = value;
+  FIniFileStorageName = Value;
   FStorage = stIniFile;
 }
 //---------------------------------------------------------------------------
@@ -959,9 +959,9 @@ bool __fastcall TConfiguration::GetGSSAPIInstalled()
   return HasGSSAPI();
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::SetStorage(TStorage value)
+void __fastcall TConfiguration::SetStorage(TStorage Value)
 {
-  if (FStorage != value)
+  if (FStorage != Value)
   {
     THierarchicalStorage * SourceStorage = NULL;
     THierarchicalStorage * TargetStorage = NULL;
@@ -971,7 +971,7 @@ void __fastcall TConfiguration::SetStorage(TStorage value)
       SourceStorage = CreateScpStorage(false);
       SourceStorage->SetAccessMode(smRead);
 
-      FStorage = value;
+      FStorage = Value;
 
       TargetStorage = CreateScpStorage(false);
       TargetStorage->SetAccessMode(smReadWrite);
@@ -1018,13 +1018,13 @@ TStorage __fastcall TConfiguration::GetStorage()
   return FStorage;
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::SetRandomSeedFile(UnicodeString value)
+void __fastcall TConfiguration::SetRandomSeedFile(UnicodeString Value)
 {
-  if (GetRandomSeedFile() != value)
+  if (GetRandomSeedFile() != Value)
   {
     UnicodeString PrevRandomSeedFileName = GetRandomSeedFileName();
 
-    FRandomSeedFile = value;
+    FRandomSeedFile = Value;
 
     // never allow empty seed file to avoid Putty trying to reinitialize the path
     if (GetRandomSeedFileName().IsEmpty())
@@ -1047,12 +1047,12 @@ UnicodeString __fastcall TConfiguration::GetRandomSeedFileName()
   return StripPathQuotes(ExpandEnvironmentVariables(FRandomSeedFile)).Trim();
 }
 //---------------------------------------------------------------------
-void __fastcall TConfiguration::SetExternalIpAddress(UnicodeString value)
+void __fastcall TConfiguration::SetExternalIpAddress(UnicodeString Value)
 {
   SET_CONFIG_PROPERTY(ExternalIpAddress);
 }
 //---------------------------------------------------------------------
-void __fastcall TConfiguration::SetPuttyRegistryStorageKey(UnicodeString value)
+void __fastcall TConfiguration::SetPuttyRegistryStorageKey(UnicodeString Value)
 {
   SET_CONFIG_PROPERTY(PuttyRegistryStorageKey);
 }
@@ -1067,9 +1067,9 @@ bool __fastcall TConfiguration::GetCollectUsage()
   return false; // FUsage->Collect;
 }
 //---------------------------------------------------------------------
-void __fastcall TConfiguration::SetCollectUsage(bool value)
+void __fastcall TConfiguration::SetCollectUsage(bool Value)
 {
-  // FUsage->Collect = value;
+  // FUsage->Collect = Value;
 }
 //---------------------------------------------------------------------
 void __fastcall TConfiguration::TemporaryLogging(const UnicodeString ALogFileName)
@@ -1092,42 +1092,42 @@ void __fastcall TConfiguration::TemporaryActionsLogging(const UnicodeString ALog
   FActionsLogFileName = ALogFileName;
 }
 //---------------------------------------------------------------------
-void __fastcall TConfiguration::SetLogging(bool value)
+void __fastcall TConfiguration::SetLogging(bool Value)
 {
-  if (GetLogging() != value)
+  if (GetLogging() != Value)
   {
-    FPermanentLogging = value;
-    FLogging = value;
+    FPermanentLogging = Value;
+    FLogging = Value;
     UpdateActualLogProtocol();
     Changed();
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TConfiguration::SetLogFileName(UnicodeString value)
+void __fastcall TConfiguration::SetLogFileName(UnicodeString Value)
 {
-  if (GetLogFileName() != value)
+  if (GetLogFileName() != Value)
   {
-    FPermanentLogFileName = value;
-    FLogFileName = value;
+    FPermanentLogFileName = Value;
+    FLogFileName = Value;
     Changed();
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TConfiguration::SetActionsLogFileName(UnicodeString value)
+void __fastcall TConfiguration::SetActionsLogFileName(UnicodeString Value)
 {
-  if (GetActionsLogFileName() != value)
+  if (GetActionsLogFileName() != Value)
   {
-    FPermanentActionsLogFileName = value;
-    FActionsLogFileName = value;
+    FPermanentActionsLogFileName = Value;
+    FActionsLogFileName = Value;
     Changed();
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TConfiguration::SetLogToFile(bool value)
+void __fastcall TConfiguration::SetLogToFile(bool Value)
 {
-  if (value != GetLogToFile())
+  if (Value != GetLogToFile())
   {
-    SetLogFileName(value ? GetDefaultLogFileName() : UnicodeString(L""));
+    SetLogFileName(Value ? GetDefaultLogFileName() : UnicodeString(L""));
     Changed();
   }
 }
@@ -1142,37 +1142,37 @@ void __fastcall TConfiguration::UpdateActualLogProtocol()
   FActualLogProtocol = FLogging ? FLogProtocol : 0;
 }
 //---------------------------------------------------------------------
-void __fastcall TConfiguration::SetLogProtocol(int value)
+void __fastcall TConfiguration::SetLogProtocol(int Value)
 {
   SET_CONFIG_PROPERTY(LogProtocol);
   UpdateActualLogProtocol();
 }
 //---------------------------------------------------------------------
-void __fastcall TConfiguration::SetLogActions(bool value)
+void __fastcall TConfiguration::SetLogActions(bool Value)
 {
-  if (GetLogActions() != value)
+  if (GetLogActions() != Value)
   {
-    FPermanentLogActions = value;
-    FLogActions = value;
+    FPermanentLogActions = Value;
+    FLogActions = Value;
     Changed();
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TConfiguration::SetLogFileAppend(bool value)
+void __fastcall TConfiguration::SetLogFileAppend(bool Value)
 {
   SET_CONFIG_PROPERTY(LogFileAppend);
 }
 //---------------------------------------------------------------------
-void __fastcall TConfiguration::SetLogWindowLines(int value)
+void __fastcall TConfiguration::SetLogWindowLines(int Value)
 {
   SET_CONFIG_PROPERTY(LogWindowLines);
 }
 //---------------------------------------------------------------------
-void __fastcall TConfiguration::SetLogWindowComplete(bool value)
+void __fastcall TConfiguration::SetLogWindowComplete(bool Value)
 {
-  if (value != GetLogWindowComplete())
+  if (Value != GetLogWindowComplete())
   {
-    SetLogWindowLines(value ? 0 : 50);
+    SetLogWindowLines(Value ? 0 : 50);
     Changed();
   }
 }
@@ -1188,7 +1188,7 @@ UnicodeString __fastcall TConfiguration::GetDefaultLogFileName()
   return L"%TEMP%\\&S.log";
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::SetConfirmOverwriting(bool value)
+void __fastcall TConfiguration::SetConfirmOverwriting(bool Value)
 {
   TGuard Guard(FCriticalSection);
   SET_CONFIG_PROPERTY(ConfirmOverwriting);
@@ -1200,7 +1200,7 @@ bool __fastcall TConfiguration::GetConfirmOverwriting()
   return FConfirmOverwriting;
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::SetConfirmResume(bool value)
+void __fastcall TConfiguration::SetConfirmResume(bool Value)
 {
   TGuard Guard(FCriticalSection);
   SET_CONFIG_PROPERTY(ConfirmResume);
@@ -1212,7 +1212,7 @@ bool __fastcall TConfiguration::GetConfirmResume()
   return FConfirmResume;
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::SetAutoReadDirectoryAfterOp(bool value)
+void __fastcall TConfiguration::SetAutoReadDirectoryAfterOp(bool Value)
 {
   TGuard Guard(FCriticalSection);
   SET_CONFIG_PROPERTY(AutoReadDirectoryAfterOp);
@@ -1244,47 +1244,47 @@ bool __fastcall TConfiguration::GetRememberPassword()
   return false;
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::SetSessionReopenAuto(int value)
+void __fastcall TConfiguration::SetSessionReopenAuto(int Value)
 {
   SET_CONFIG_PROPERTY(SessionReopenAuto);
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::SetSessionReopenAutoMaximumNumberOfRetries(int value)
+void __fastcall TConfiguration::SetSessionReopenAutoMaximumNumberOfRetries(int Value)
 {
   SET_CONFIG_PROPERTY(SessionReopenAutoMaximumNumberOfRetries);
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::SetSessionReopenBackground(int value)
+void __fastcall TConfiguration::SetSessionReopenBackground(int Value)
 {
   SET_CONFIG_PROPERTY(SessionReopenBackground);
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::SetSessionReopenTimeout(int value)
+void __fastcall TConfiguration::SetSessionReopenTimeout(int Value)
 {
   SET_CONFIG_PROPERTY(SessionReopenTimeout);
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::SetSessionReopenAutoStall(int value)
+void __fastcall TConfiguration::SetSessionReopenAutoStall(int Value)
 {
   SET_CONFIG_PROPERTY(SessionReopenAutoStall);
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::SetTunnelLocalPortNumberLow(int value)
+void __fastcall TConfiguration::SetTunnelLocalPortNumberLow(int Value)
 {
   SET_CONFIG_PROPERTY(TunnelLocalPortNumberLow);
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::SetTunnelLocalPortNumberHigh(int value)
+void __fastcall TConfiguration::SetTunnelLocalPortNumberHigh(int Value)
 {
   SET_CONFIG_PROPERTY(TunnelLocalPortNumberHigh);
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::SetCacheDirectoryChangesMaxSize(int value)
+void __fastcall TConfiguration::SetCacheDirectoryChangesMaxSize(int Value)
 {
   SET_CONFIG_PROPERTY(CacheDirectoryChangesMaxSize);
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::SetShowFtpWelcomeMessage(bool value)
+void __fastcall TConfiguration::SetShowFtpWelcomeMessage(bool Value)
 {
   SET_CONFIG_PROPERTY(ShowFtpWelcomeMessage);
 }
@@ -1294,9 +1294,9 @@ UnicodeString __fastcall TConfiguration::GetPermanentLogFileName()
   return FPermanentLogFileName;
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::SetPermanentLogFileName(const UnicodeString value)
+void __fastcall TConfiguration::SetPermanentLogFileName(const UnicodeString Value)
 {
-  FPermanentLogFileName = value;
+  FPermanentLogFileName = Value;
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TConfiguration::GetPermanentActionsLogFileName()
@@ -1304,9 +1304,9 @@ UnicodeString __fastcall TConfiguration::GetPermanentActionsLogFileName()
   return FPermanentActionsLogFileName;
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::SetPermanentActionsLogFileName(const UnicodeString value)
+void __fastcall TConfiguration::SetPermanentActionsLogFileName(const UnicodeString Value)
 {
-  FPermanentActionsLogFileName = value;
+  FPermanentActionsLogFileName = Value;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------

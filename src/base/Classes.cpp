@@ -147,10 +147,10 @@ void TList::SetItem(intptr_t Index, void * Item)
   FList.insert(FList.begin() + Index, Item);
 }
 
-intptr_t TList::Add(void * value)
+intptr_t TList::Add(void * Value)
 {
   intptr_t Result = static_cast<intptr_t>(FList.size());
-  FList.push_back(value);
+  FList.push_back(Value);
   return Result;
 }
 void * TList::Extract(void * item)
@@ -216,10 +216,10 @@ void TList::Insert(intptr_t Index, void * Item)
     Notify(Item, lnAdded);
   }
 }
-intptr_t TList::IndexOf(void * value) const
+intptr_t TList::IndexOf(void * Value) const
 {
   int Result = 0;
-  while (((size_t)Result < FList.size()) && (FList[Result] != value))
+  while (((size_t)Result < FList.size()) && (FList[Result] != Value))
   {
     Result++;
   }
@@ -311,17 +311,17 @@ void TObjectList::SetItem(intptr_t Index, TObject * Value)
   parent::SetItem(Index, Value);
 }
 
-intptr_t TObjectList::Add(TObject * value)
+intptr_t TObjectList::Add(TObject * Value)
 {
-  return parent::Add(value);
+  return parent::Add(Value);
 }
-intptr_t TObjectList::Remove(TObject * value)
+intptr_t TObjectList::Remove(TObject * Value)
 {
-  return parent::Remove(value);
+  return parent::Remove(Value);
 }
-void TObjectList::Extract(TObject * value)
+void TObjectList::Extract(TObject * Value)
 {
-  parent::Extract(value);
+  parent::Extract(Value);
 }
 void TObjectList::Move(intptr_t Index, intptr_t To)
 {
@@ -331,13 +331,13 @@ void TObjectList::Delete(intptr_t Index)
 {
   parent::Delete(Index);
 }
-void TObjectList::Insert(intptr_t Index, TObject * value)
+void TObjectList::Insert(intptr_t Index, TObject * Value)
 {
-  parent::Insert(Index, value);
+  parent::Insert(Index, Value);
 }
-intptr_t TObjectList::IndexOf(TObject * value) const
+intptr_t TObjectList::IndexOf(TObject * Value) const
 {
-  return parent::IndexOf(value);
+  return parent::IndexOf(Value);
 }
 void TObjectList::Clear()
 {
@@ -348,9 +348,9 @@ bool TObjectList::GetOwnsObjects() const
   return FOwnsObjects;
 }
 
-void TObjectList::SetOwnsObjects(bool value)
+void TObjectList::SetOwnsObjects(bool Value)
 {
-  FOwnsObjects = value;
+  FOwnsObjects = Value;
 }
 
 void TObjectList::Sort(CompareFunc func)
@@ -517,8 +517,8 @@ void TStrings::SetDelimitedText(const UnicodeString Value)
     std::vector<std::wstring> lines;
     std::wstring delim = std::wstring(1, GetDelimiter());
     delim.append(1, L'\n');
-    std::wstring value = Value.c_str();
-    tokenize(value, lines, delim, true);
+    std::wstring StrValue = Value.c_str();
+    tokenize(StrValue, lines, delim, true);
     for (int i = 0; i < lines.size(); i++)
     {
       Add(lines[i]);
@@ -683,9 +683,9 @@ void TStrings::PutString(intptr_t Index, const UnicodeString S)
   InsertObject(Index, S, TempObject);
 }
 
-void TStrings::SetDuplicates(TDuplicatesEnum value)
+void TStrings::SetDuplicates(TDuplicatesEnum Value)
 {
-  FDuplicates = value;
+  FDuplicates = Value;
 }
 
 void TStrings::Move(intptr_t CurIndex, intptr_t NewIndex)
@@ -809,9 +809,9 @@ void TStrings::AddStrings(TStrings * Strings)
   }
 }
 
-void TStrings::Append(const UnicodeString value)
+void TStrings::Append(const UnicodeString Value)
 {
-  Insert(GetCount(), value);
+  Insert(GetCount(), Value);
 }
 
 void TStrings::SaveToStream(TStream * /*Stream*/) const
@@ -1029,11 +1029,11 @@ bool TStringList::GetCaseSensitive() const
 {
   return FCaseSensitive;
 }
-void TStringList::SetCaseSensitive(bool value)
+void TStringList::SetCaseSensitive(bool Value)
 {
-  if (value != FCaseSensitive)
+  if (Value != FCaseSensitive)
   {
-    FCaseSensitive = value;
+    FCaseSensitive = Value;
     if (Sorted)
     {
       Sort();
@@ -1044,15 +1044,15 @@ bool TStringList::GetSorted() const
 {
   return FSorted;
 }
-void TStringList::SetSorted(bool value)
+void TStringList::SetSorted(bool Value)
 {
-  if (value != FSorted)
+  if (Value != FSorted)
   {
-    if (value)
+    if (Value)
     {
       Sort();
     }
-    FSorted = value;
+    FSorted = Value;
   }
 }
 void TStringList::LoadFromFile(const UnicodeString FileName)

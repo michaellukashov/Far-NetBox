@@ -66,9 +66,9 @@ bool TXmlStorage::LoadXml()
   // Get and check root node
   TiXmlElement * xmlRoot = FXmlDoc->RootElement();
   if (!xmlRoot) return false;
-  const char * value = xmlRoot->Value();
-  if (!value) return false;
-  if (strcmp(value, CONST_ROOT_NODE) != 0) return false;
+  const char * Value = xmlRoot->Value();
+  if (!Value) return false;
+  if (strcmp(Value, CONST_ROOT_NODE) != 0) return false;
   const char * attr = xmlRoot->Attribute(CONST_VERSION_ATTR);
   if (!attr) return false;
   uintptr_t Version = StrToVersionNumber(UnicodeString(attr));
@@ -109,9 +109,9 @@ UnicodeString TXmlStorage::GetSource()
   return GetStorage();
 }
 //---------------------------------------------------------------------------
-void TXmlStorage::SetAccessMode(TStorageAccessMode value)
+void TXmlStorage::SetAccessMode(TStorageAccessMode Value)
 {
-  THierarchicalStorage::SetAccessMode(value);
+  THierarchicalStorage::SetAccessMode(Value);
   switch (GetAccessMode())
   {
     case smRead:
@@ -235,9 +235,9 @@ void TXmlStorage::RemoveIfExists(const UnicodeString Name)
 void TXmlStorage::AddNewElement(const UnicodeString Name, const UnicodeString Value)
 {
   std::string name = ToStdString(Name);
-  std::string value = ToStdString(Value);
+  std::string StrValue = ToStdString(Value);
   TiXmlElement * Element = new TiXmlElement(name);
-  Element->LinkEndChild(new TiXmlText(value.c_str()));
+  Element->LinkEndChild(new TiXmlText(StrValue.c_str()));
   FCurrentElement->LinkEndChild(Element);
 }
 //---------------------------------------------------------------------------

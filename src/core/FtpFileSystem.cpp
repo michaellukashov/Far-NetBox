@@ -2396,7 +2396,7 @@ int __fastcall TFTPFileSystem::GetOptionVal(int OptionID) const
       break;
 
     case OPTION_DEBUGSHOWLISTING:
-      Result = true;
+      Result = TRUE;
       break;
 
     case OPTION_PASV:

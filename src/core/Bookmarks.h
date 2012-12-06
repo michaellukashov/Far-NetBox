@@ -18,9 +18,9 @@ public:
   void __fastcall Clear();
 
   TBookmarkList * __fastcall GetBookmarks(UnicodeString Index);
-  void __fastcall SetBookmarks(UnicodeString Index, TBookmarkList * value);
+  void __fastcall SetBookmarks(UnicodeString Index, TBookmarkList * Value);
   TBookmarkList * __fastcall GetSharedBookmarks();
-  void __fastcall SetSharedBookmarks(TBookmarkList * value);
+  void __fastcall SetSharedBookmarks(TBookmarkList * Value);
 
 private:
   TStringList * FBookmarkLists;
@@ -56,14 +56,14 @@ public:
   intptr_t __fastcall GetCount();
   TBookmark * __fastcall GetBookmarks(intptr_t Index);
   bool __fastcall GetNodeOpened(UnicodeString Index);
-  void __fastcall SetNodeOpened(UnicodeString Index, bool value);
+  void __fastcall SetNodeOpened(UnicodeString Index, bool Value);
 
 protected:
   intptr_t __fastcall IndexOf(TBookmark * Bookmark);
   void __fastcall KeyChanged(intptr_t Index);
 
   bool __fastcall GetModified() { return FModified; }
-  void __fastcall SetModified(bool value) { FModified = value; }
+  void __fastcall SetModified(bool Value) { FModified = Value; }
 
 private:
   TStringList * FBookmarks;
@@ -80,15 +80,15 @@ public:
   virtual void __fastcall Assign(TPersistent * Source);
 
   UnicodeString __fastcall GetName() { return FName; }
-  void __fastcall SetName(const UnicodeString value);
+  void __fastcall SetName(const UnicodeString Value);
   UnicodeString __fastcall GetLocal() { return FLocal; }
-  void __fastcall SetLocal(const UnicodeString value);
+  void __fastcall SetLocal(const UnicodeString Value);
   UnicodeString __fastcall GetRemote() { return FRemote; }
-  void __fastcall SetRemote(const UnicodeString value);
+  void __fastcall SetRemote(const UnicodeString Value);
   UnicodeString __fastcall GetNode() { return FNode; }
-  void __fastcall SetNode(const UnicodeString value);
+  void __fastcall SetNode(const UnicodeString Value);
   TShortCut __fastcall GetShortCut() { return FShortCut; }
-  void __fastcall SetShortCut(TShortCut value);
+  void __fastcall SetShortCut(TShortCut Value);
 
 protected:
   TBookmarkList * FOwner;
