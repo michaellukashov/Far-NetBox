@@ -1176,21 +1176,21 @@ intptr_t __fastcall TGUIConfiguration::GetCopyParamIndex()
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TGUIConfiguration::SetCopyParamIndex(int value)
+void __fastcall TGUIConfiguration::SetCopyParamIndex(int Value)
 {
   UnicodeString Name;
-  if (value < 0)
+  if (Value < 0)
   {
     Name = L"";
   }
   else
   {
-    Name = FCopyParamList->GetName(value);
+    Name = FCopyParamList->GetName(Value);
   }
   SetCopyParamCurrent(Name);
 }
 //---------------------------------------------------------------------------
-void __fastcall TGUIConfiguration::SetCopyParamCurrent(UnicodeString value)
+void __fastcall TGUIConfiguration::SetCopyParamCurrent(UnicodeString Value)
 {
   SET_CONFIG_PROPERTY(CopyParamCurrent);
 }
@@ -1228,7 +1228,7 @@ bool __fastcall TGUIConfiguration::GetHasCopyParamPreset(UnicodeString Name)
 }
 //---------------------------------------------------------------------------
 void __fastcall TGUIConfiguration::SetNewDirectoryProperties(
-  const TRemoteProperties & value)
+  const TRemoteProperties & Value)
 {
   SET_CONFIG_PROPERTY(NewDirectoryProperties);
 }
@@ -1238,9 +1238,9 @@ UnicodeString __fastcall TGUIConfiguration::GetPuttyPath()
   return FPuttyPath;
 }
 //---------------------------------------------------------------------------
-void __fastcall TGUIConfiguration::SetPuttyPath(const UnicodeString value)
+void __fastcall TGUIConfiguration::SetPuttyPath(const UnicodeString Value)
 {
-  FPuttyPath = value;
+  FPuttyPath = Value;
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TGUIConfiguration::GetDefaultPuttyPath()
@@ -1253,9 +1253,9 @@ UnicodeString __fastcall TGUIConfiguration::GetPSftpPath()
   return FPSftpPath;
 }
 //---------------------------------------------------------------------------
-void __fastcall TGUIConfiguration::SetPSftpPath(const UnicodeString value)
+void __fastcall TGUIConfiguration::SetPSftpPath(const UnicodeString Value)
 {
-  FPSftpPath = value;
+  FPSftpPath = Value;
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TGUIConfiguration::GetPuttySession()
@@ -1263,9 +1263,9 @@ UnicodeString __fastcall TGUIConfiguration::GetPuttySession()
   return FPuttySession;
 }
 //---------------------------------------------------------------------------
-void __fastcall TGUIConfiguration::SetPuttySession(UnicodeString value)
+void __fastcall TGUIConfiguration::SetPuttySession(UnicodeString Value)
 {
-  FPuttySession = value;
+  FPuttySession = Value;
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TGUIConfiguration::GetCopyParamCurrent()
@@ -1278,8 +1278,8 @@ UnicodeString __fastcall TGUIConfiguration::GetChecksumAlg()
   return FChecksumAlg;
 }
 //---------------------------------------------------------------------------
-void __fastcall TGUIConfiguration::SetChecksumAlg(const UnicodeString value)
+void __fastcall TGUIConfiguration::SetChecksumAlg(const UnicodeString Value)
 {
-  FChecksumAlg = value;
+  FChecksumAlg = Value;
 }
 //---------------------------------------------------------------------------

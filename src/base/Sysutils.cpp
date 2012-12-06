@@ -63,26 +63,26 @@ const TDayTable MonthDays[] =
 }
 
 //---------------------------------------------------------------------------
-UnicodeString IntToStr(int value)
+UnicodeString IntToStr(int Value)
 {
-  UnicodeString result;
-  result.sprintf(L"%d", value);
-  return result;
+  UnicodeString Result;
+  Result.sprintf(L"%d", Value);
+  return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString Int64ToStr(__int64 value)
+UnicodeString Int64ToStr(__int64 Value)
 {
-  UnicodeString result;
-  result.sprintf(L"%lld", value);
-  return result;
+  UnicodeString Result;
+  Result.sprintf(L"%lld", Value);
+  return Result;
 }
 //---------------------------------------------------------------------------
-int StrToInt(const UnicodeString value)
+int StrToInt(const UnicodeString Value)
 {
-  __int64 Value = 0;
-  if (TryStrToInt(value, Value))
+  __int64 Result = 0;
+  if (TryStrToInt(Value, Result))
   {
-    return static_cast<int>(Value);
+    return static_cast<int>(Result);
   }
   else
   {
@@ -90,12 +90,12 @@ int StrToInt(const UnicodeString value)
   }
 }
 
-__int64 ToInt(const UnicodeString value)
+__int64 ToInt(const UnicodeString Value)
 {
-  __int64 Value = 0;
-  if (TryStrToInt(value, Value))
+  __int64 Result = 0;
+  if (TryStrToInt(Value, Result))
   {
-    return Value;
+    return Result;
   }
   else
   {
@@ -103,12 +103,12 @@ __int64 ToInt(const UnicodeString value)
   }
 }
 
-int StrToIntDef(const UnicodeString value, int defval)
+int StrToIntDef(const UnicodeString Value, int defval)
 {
-  __int64 Value = 0;
-  if (TryStrToInt(value, Value))
+  __int64 Result = 0;
+  if (TryStrToInt(Value, Result))
   {
-    return static_cast<int>(Value);
+    return static_cast<int>(Result);
   }
   else
   {
@@ -116,17 +116,17 @@ int StrToIntDef(const UnicodeString value, int defval)
   }
 }
 
-__int64 StrToInt64(const UnicodeString value)
+__int64 StrToInt64(const UnicodeString Value)
 {
-  return ToInt(value);
+  return ToInt(Value);
 }
 
-__int64 StrToInt64Def(const UnicodeString value, __int64 defval)
+__int64 StrToInt64Def(const UnicodeString Value, __int64 defval)
 {
-  __int64 Value = 0;
-  if (TryStrToInt(value, Value))
+  __int64 Result = 0;
+  if (TryStrToInt(Value, Result))
   {
-    return Value;
+    return Result;
   }
   else
   {
@@ -134,42 +134,42 @@ __int64 StrToInt64Def(const UnicodeString value, __int64 defval)
   }
 }
 
-bool TryStrToInt(const std::wstring & value, __int64 & Value)
+bool TryStrToInt(const std::wstring & StrValue, __int64 & Value)
 {
-  bool result = false;
+  bool Result = false;
   try
   {
-    Value = _wtoi64(value.c_str());
-    result = true;
+    Value = _wtoi64(StrValue.c_str());
+    Result = true;
   }
   catch (...)
   {
-    result = false;
+    Result = false;
   }
-  return result;
+  return Result;
 }
 
-bool TryStrToInt(const std::wstring & value, int & Value)
+bool TryStrToInt(const std::wstring & StrValue, int & Value)
 {
-  bool result = false;
+  bool Result = false;
   try
   {
-    Value = _wtoi(value.c_str());
-    result = true;
+    Value = _wtoi(StrValue.c_str());
+    Result = true;
   }
   catch (...)
   {
-    result = false;
+    Result = false;
   }
-  return result;
+  return Result;
 }
 
 //---------------------------------------------------------------------------
 
 UnicodeString Trim(const UnicodeString str)
 {
-  UnicodeString result = TrimRight(TrimLeft(str));
-  return result;
+  UnicodeString Result = TrimRight(TrimLeft(str));
+  return Result;
 }
 
 UnicodeString TrimLeft(const UnicodeString str)
@@ -370,10 +370,10 @@ double StrToFloatDef(const UnicodeString Value, double defval)
   return result;
 }
 //---------------------------------------------------------------------------
-UnicodeString FormatFloat(const UnicodeString Format, double value)
+UnicodeString FormatFloat(const UnicodeString Format, double Value)
 {
   UnicodeString result(20, 0);
-  swprintf_s(&result[1], result.Length(), L"%.2f", value);
+  swprintf_s(&result[1], result.Length(), L"%.2f", Value);
   return result.c_str();
 }
 

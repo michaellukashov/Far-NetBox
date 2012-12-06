@@ -2499,9 +2499,9 @@ bool TFarPanelItem::GetSelected()
   return (FPanelItem->Flags & PPIF_SELECTED) != 0;
 }
 //---------------------------------------------------------------------------
-void TFarPanelItem::SetSelected(bool value)
+void TFarPanelItem::SetSelected(bool Value)
 {
-  if (value)
+  if (Value)
   {
     FPanelItem->Flags |= PPIF_SELECTED;
   }
@@ -2673,10 +2673,10 @@ TFarPanelItem * TFarPanelInfo::GetFocusedItem()
   }
 }
 //---------------------------------------------------------------------------
-void TFarPanelInfo::SetFocusedItem(TFarPanelItem * value)
+void TFarPanelInfo::SetFocusedItem(TFarPanelItem * Value)
 {
   TObjectList * Items = GetItems();
-  intptr_t Index = Items->IndexOf(static_cast<TObject *>(value));
+  intptr_t Index = Items->IndexOf(static_cast<TObject *>(Value));
   assert(Index != NPOS);
   SetFocusedIndex(Index);
   // delete Items;
@@ -2687,15 +2687,15 @@ intptr_t TFarPanelInfo::GetFocusedIndex()
   return FPanelInfo->CurrentItem;
 }
 //---------------------------------------------------------------------------
-void TFarPanelInfo::SetFocusedIndex(intptr_t value)
+void TFarPanelInfo::SetFocusedIndex(intptr_t Value)
 {
   // for "another panel info", there's no owner
   assert(FOwner != NULL);
-  // DEBUG_PRINTF(L"GetFocusedIndex = %d, value = %d", GetFocusedIndex(), value);
-  if (GetFocusedIndex() != value)
+  // DEBUG_PRINTF(L"GetFocusedIndex = %d, Value = %d", GetFocusedIndex(), Value);
+  if (GetFocusedIndex() != Value)
   {
-    assert(value != NPOS && value < FPanelInfo->ItemsNumber);
-    FPanelInfo->CurrentItem = value;
+    assert(Value != NPOS && Value < FPanelInfo->ItemsNumber);
+    FPanelInfo->CurrentItem = Value;
     PanelRedrawInfo PanelInfo;
     PanelInfo.CurrentItem = FPanelInfo->CurrentItem;
     PanelInfo.TopPanelItem = FPanelInfo->TopPanelItem;

@@ -375,7 +375,7 @@ public:
   UnicodeString GetFileName();
   void * GetUserData();
   bool GetSelected();
-  void SetSelected(bool value);
+  void SetSelected(bool Value);
   bool GetIsParentDirectory();
   bool GetIsFile();
 
@@ -421,9 +421,9 @@ public:
   TObjectList * GetItems();
   intptr_t GetItemCount();
   TFarPanelItem * GetFocusedItem();
-  void SetFocusedItem(TFarPanelItem * value);
+  void SetFocusedItem(TFarPanelItem * Value);
   intptr_t GetFocusedIndex();
-  void SetFocusedIndex(intptr_t value);
+  void SetFocusedIndex(intptr_t Value);
   intptr_t GetSelectedCount();
   TRect GetBounds();
   TFarPanelType GetType();
@@ -454,9 +454,9 @@ public:
   intptr_t GetItemFocused() { return FItemFocused; }
   void SetItemFocused(intptr_t Value);
   bool GetDisabled(intptr_t Index) { return GetFlag(Index, MIF_DISABLE); }
-  void SetDisabled(intptr_t Index, bool value) { SetFlag(Index, MIF_DISABLE, value); }
+  void SetDisabled(intptr_t Index, bool Value) { SetFlag(Index, MIF_DISABLE, Value); }
   bool GetChecked(intptr_t Index) { return GetFlag(Index, MIF_CHECKED); }
-  void SetChecked(intptr_t Index, bool value) { SetFlag(Index, MIF_CHECKED, value); }
+  void SetChecked(intptr_t Index, bool Value) { SetFlag(Index, MIF_CHECKED, Value); }
 
   void SetFlag(intptr_t Index, uintptr_t Flag, bool Value);
   bool GetFlag(intptr_t Index, uintptr_t Flag);

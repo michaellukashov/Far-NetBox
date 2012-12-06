@@ -40,7 +40,7 @@ public:
 
   virtual void __fastcall GetValueNames(TStrings * Strings);
 
-  virtual void __fastcall SetAccessMode(TStorageAccessMode value);
+  virtual void __fastcall SetAccessMode(TStorageAccessMode Value);
   virtual bool __fastcall DoKeyExists(const UnicodeString SubKey, bool ForceAnsi);
   virtual bool __fastcall DoOpenSubKey(const UnicodeString MungedSubKey, bool CanCreate);
 
@@ -48,7 +48,7 @@ protected:
   virtual UnicodeString __fastcall GetSource();
 
   int __fastcall GetFailed();
-  void __fastcall SetFailed(int value) { FFailed = value; }
+  void __fastcall SetFailed(int Value) { FFailed = Value; }
 
 private:
   UnicodeString GetSubKeyText(const UnicodeString Name);

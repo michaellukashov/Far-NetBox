@@ -24,9 +24,9 @@ public:
   {
     return data;
   }
-  T operator()(T value)
+  T operator()(T Value)
   {
-    data = value;
+    data = Value;
     return data;
   }
   // access with get()/set() syntax
@@ -34,9 +34,9 @@ public:
   {
     return data;
   }
-  T set(T value)
+  T set(T Value)
   {
-    data = value;
+    data = Value;
     return data;
   }
   // access with '=' sign
@@ -47,9 +47,9 @@ public:
   {
     return data;
   }
-  void operator = (T value)
+  void operator = (T Value)
   {
-    data = value;
+    data = Value;
   }
   typedef T value_type; // might be useful for template deductions
 };
@@ -82,7 +82,7 @@ public:
   {
     return (my_object->*real_getter)();
   }
-  void set(T value);   // reserved but not implemented, per C++/CLI
+  void set(T Value);   // reserved but not implemented, per C++/CLI
   // use on rhs of '='
   operator T() const
   {
@@ -109,20 +109,20 @@ public:
     my_object = obj;
   }
   // function call syntax
-  T operator()(T value)
+  T operator()(T Value)
   {
-    return (my_object->*real_setter)(value);
+    return (my_object->*real_setter)(Value);
   }
   // get/set syntax
   T get() const; // name reserved but not implemented per C++/CLI
-  void set(T value)
+  void set(T Value)
   {
-    void (my_object->*real_setter)(value);
+    void (my_object->*real_setter)(Value);
   }
   // access with '=' sign
-  void operator = (T value)
+  void operator = (T Value)
   {
-    (my_object->*real_setter)(value);
+    (my_object->*real_setter)(Value);
   }
   typedef T value_type; // might be useful for template deductions
 };
@@ -150,27 +150,27 @@ public:
   {
     return (my_object->*real_getter)();
   }
-  void operator()(T value)
+  void operator()(T Value)
   {
-    (my_object->*real_setter)(value);
+    (my_object->*real_setter)(Value);
   }
   // get/set syntax
   T get() const
   {
     return (my_object->*real_getter)();
   }
-  void set(T value)
+  void set(T Value)
   {
-    return (my_object->*real_setter)(value);
+    return (my_object->*real_setter)(Value);
   }
   // access with '=' sign
   operator T() const
   {
     return (my_object->*real_getter)();
   }
-  void operator = (T value)
+  void operator = (T Value)
   {
-    (my_object->*real_setter)(value);
+    (my_object->*real_setter)(Value);
   }
   typedef T value_type; // might be useful for template deductions
 };
@@ -181,7 +181,7 @@ public:
 // note that the interface combines certain limitations of std::map with
 // some others from indexed properties as I understand them.
 // an example of the first is that operator[] on a map will insert a
-// key/value pair if it isn't already there. A consequence of this is that
+// key/Value pair if it isn't already there. A consequence of this is that
 // it can't be a const member function (and therefore you cannot access
 // a const map using operator [].)
 // an example of the second is that indexed properties do not appear
