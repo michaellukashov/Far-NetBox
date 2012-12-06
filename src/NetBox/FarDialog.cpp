@@ -942,7 +942,7 @@ void TFarDialog::UnlockChanges()
     {
       if (GetHandle())
       {
-        SendMessage(DM_ENABLEREDRAW, true, 0);
+        SendMessage(DM_ENABLEREDRAW, TRUE, 0);
       }
     }
     );
