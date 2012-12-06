@@ -210,7 +210,7 @@ void __fastcall Trace(const wchar_t * SourceFile, const wchar_t * Func,
   // DWORD Written;
   // WriteFile(TraceFile, Buffer.c_str(), Buffer.Length(), &Written, NULL);
   // DEBUG_PRINTF(L"%s", Buffer.c_str());
-  OutputDebugStringW(Buffer.c_str());
+  // OutputDebugStringW(Buffer.c_str());
 }
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
