@@ -1,4 +1,4 @@
-NetBox 2.1.19 ??.11.2012
+NetBox 2.1.19 06.12.2012
 --------------------
   * Bugfix: SFTP: cannot copy files to remote server
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=100597#p100515)
