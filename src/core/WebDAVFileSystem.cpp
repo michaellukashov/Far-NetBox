@@ -12755,6 +12755,7 @@ void __fastcall TWebDAVFileSystem::Open()
 
   FPasswordFailed = false;
 
+  FTerminal->Information(LoadStr(STATUS_CONNECT), true);
   for (int i = 0; i < 5; i++)
   {
     FActive = false;
