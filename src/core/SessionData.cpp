@@ -406,6 +406,7 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
       FPassword = Storage->ReadStringAsBinaryData(L"Password", FPassword);
     }
   }
+  SetHostKey(Storage->ReadString(L"HostKey", GetHostKey()));
   // Putty uses PingIntervalSecs
   int PingIntervalSecs = Storage->ReadInteger(L"PingIntervalSecs", -1);
   if (PingIntervalSecs < 0)
@@ -601,6 +602,7 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
   }
   SetTunnelPublicKeyFile(Storage->ReadString(L"TunnelPublicKeyFile", GetTunnelPublicKeyFile()));
   SetTunnelLocalPortNumber(Storage->ReadInteger(L"TunnelLocalPortNumber", GetTunnelLocalPortNumber()));
+  SetTunnelHostKey(Storage->ReadString(L"TunnelHostKey", GetTunnelHostKey()));
 
   // Ftp prefix
   SetFtpPasvMode(Storage->ReadBool(L"FtpPasvMode", GetFtpPasvMode()));

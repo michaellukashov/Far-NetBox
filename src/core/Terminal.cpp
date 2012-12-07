@@ -2585,19 +2585,24 @@ void /* __fastcall */ TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
         TRACE("6");
         DoReadDirectoryProgress(-1, Cancel);
         FReadingCurrentDirectory = false;
-        delete FFiles;
+        TRemoteDirectory * OldFiles = FFiles;
         FFiles = Files;
         DoReadDirectory(ReloadOnly);
-      }
-      );
-      if (GetActive())
-      {
-        if (GetSessionData()->GetCacheDirectories())
+        // delete only after loading new files to dir view,
+        // not to destroy the fil objects that the view holds
+        // (can be issue in multi threaded environment, such as when the
+        // terminal is reconnecting in the terminal thread)
+        delete OldFiles;
+        if (GetActive())
         {
-          TRACE("6a");
-          DirectoryLoaded(FFiles);
+          if (GetSessionData()->GetCacheDirectories())
+          {
+            TRACE("6a");
+            DirectoryLoaded(FFiles);
+          }
         }
       }
+      );
     }
     catch (Exception &E)
     {
