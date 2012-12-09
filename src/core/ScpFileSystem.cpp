@@ -2202,10 +2202,10 @@ void __fastcall TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
             }
             );
           }
-          catch (EFatal &E)
+          catch (EFatal &)
           {
             TRACE("6");
-            throw E;
+            throw;
           }
           catch (...)
           {
@@ -2649,17 +2649,17 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
                 // If one of following exception occurs, we still need
                 // to send confirmation to other side
               }
-              catch (EScp &E)
+              catch (EScp &)
               {
                 TRACE("21");
                 FSecureShell->SendNull();
-                throw E;
+                throw;
               }
-              catch (EScpFileSkipped &E)
+              catch (EScpFileSkipped &)
               {
                 TRACE("22");
                 FSecureShell->SendNull();
-                throw E;
+                throw;
               }
 
               FSecureShell->SendNull();
