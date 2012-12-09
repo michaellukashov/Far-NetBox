@@ -3101,7 +3101,7 @@ void __fastcall TStoredSessionList::ImportHostKeys(const UnicodeString TargetKey
           for (int KeyIndex = 0; KeyIndex < KeyList->Count; KeyIndex++)
           {
             KeyName = KeyList->Strings[KeyIndex];
-            int P = KeyName.Pos(HostKeyName);
+            intptr_t P = KeyName.Pos(HostKeyName);
             if ((P > 0) && (P == KeyName.Length() - HostKeyName.Length() + 1))
             {
               TargetStorage->WriteStringRaw(KeyName,
@@ -3156,8 +3156,9 @@ TSessionData * TStoredSessionList::GetSessionByName(const UnicodeString SessionN
 void __fastcall TStoredSessionList::Load(const UnicodeString aKey, bool UseDefaults)
 {
   TRegistryStorage * Storage = new TRegistryStorage(aKey);
-  std::auto_ptr<TRegistryStorage> StoragePtr(Storage);
   {
+    std::auto_ptr<TRegistryStorage> StoragePtr;
+    StoragePtr.reset(Storage);
     if (Storage->OpenRootKey(false)) { Load(Storage, false, UseDefaults); }
   }
 }

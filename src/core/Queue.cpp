@@ -455,7 +455,7 @@ bool __fastcall TSignalThread::WaitForEvent()
   CALLSTACK;
   TRACEFMT("[%x] [%x]", int(FEvent), int(FThread));
   // should never return -1, so it is only about 0 or 1
-  return (WaitForEvent(INFINITE) > 0);
+  return WaitForEvent(INFINITE) > 0;
 }
 //---------------------------------------------------------------------------
 int __fastcall TSignalThread::WaitForEvent(unsigned int Timeout)

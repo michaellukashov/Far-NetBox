@@ -1928,7 +1928,7 @@ void __fastcall TFTPFileSystem::ReadCurrentDirectory()
         TRACE("1");
         UnicodeString Path = Response->Text;
 
-        int P = Path.Pos(L"\"");
+        intptr_t P = Path.Pos(L"\"");
         if (P == 0)
         {
           TRACE("2");
