@@ -897,14 +897,13 @@ void __fastcall TSCPFileSystem::DetectReturnVar()
           Abort();
         }
       }
-      catch (EFatal &E)
+      catch (EFatal &)
       {
         // if fatal error occurs, we need to exit ...
-        throw E;
+        throw;
       }
-      catch (Exception &E)
+      catch (Exception &)
       {
-        (void)E;
         // ...otherwise, we will try next variable (if any)
         Success = false;
       }

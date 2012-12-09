@@ -13009,7 +13009,7 @@ void __fastcall TWebDAVFileSystem::ReadDirectory(TRemoteFileList * FileList)
     {
       DoReadDirectory(FileList);
     }
-    catch (Exception & E)
+    catch (Exception &)
     {
       if (!FTerminal->GetActive())
       {
@@ -13018,7 +13018,7 @@ void __fastcall TWebDAVFileSystem::ReadDirectory(TRemoteFileList * FileList)
       }
       else
       {
-        throw E;
+        throw;
       }
     }
   }
