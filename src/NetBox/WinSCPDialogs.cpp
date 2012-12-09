@@ -7516,7 +7516,8 @@ void TSynchronizeChecklistDialog::LoadChecklist()
 {
   FChecked = 0;
   TFarList * List = new TFarList();
-  std::auto_ptr<TFarList> ListPtr(List);
+  std::auto_ptr<TFarList> ListPtr;
+  ListPtr.reset(List);
   List->BeginUpdate();
   for (int Index = 0; Index < FChecklist->GetCount(); Index++)
   {

@@ -3144,7 +3144,8 @@ config_read_auth_data(apr_hash_t ** hash,
   THierarchicalStorage * Storage = NULL;
   WEBDAV_ERR(fs->CreateStorage(Storage));
   assert(Storage);
-  std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
+  std::auto_ptr<THierarchicalStorage> StoragePtr;
+  StoragePtr.reset(Storage);
   Storage->SetAccessMode(smRead);
   if (!Storage->OpenSubKey(UnicodeString(subkey), false))
     return WEBDAV_ERR_BAD_PARAM;
@@ -3185,7 +3186,8 @@ config_write_auth_data(apr_hash_t * hash,
   THierarchicalStorage * Storage = NULL;
   WEBDAV_ERR(fs->CreateStorage(Storage));
   assert(Storage);
-  std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
+  std::auto_ptr<THierarchicalStorage> StoragePtr;
+  StoragePtr.reset(Storage);
   Storage->SetAccessMode(smReadWrite);
 
   if (!Storage->OpenSubKey(UnicodeString(subkey), true))

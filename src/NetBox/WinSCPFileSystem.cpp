@@ -2628,8 +2628,9 @@ void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
   UnicodeString XmlFileName = IncludeTrailingBackslash(Param.DestPath) +
     ::ValidLocalFileName(::ExtractFilename(ExportData->GetName())) + L".netbox";
   THierarchicalStorage * ExportStorage = new TXmlStorage(XmlFileName, Configuration->GetStoredSessionsSubKey());
-  std::auto_ptr<THierarchicalStorage> ExportStoragePtr(ExportStorage);
   ExportStorage->Init();
+  std::auto_ptr<THierarchicalStorage> ExportStoragePtr;
+  ExportStoragePtr.reset(ExportStorage);
   ExportStorage->SetAccessMode(smReadWrite);
   {
     if (ExportStorage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), true))
@@ -4149,8 +4150,9 @@ bool TWinSCPFileSystem::IsEditHistoryEmpty()
 void TWinSCPFileSystem::EditHistory()
 {
   TFarMenuItems * MenuItems = new TFarMenuItems();
-  std::auto_ptr<TFarMenuItems> MenuItemsPtr(MenuItems);
   {
+    std::auto_ptr<TFarMenuItems> MenuItemsPtr;
+    MenuItemsPtr.reset(MenuItems);
     TEditHistories::const_iterator i = FEditHistories.begin();
     while (i != FEditHistories.end())
     {
@@ -4174,8 +4176,9 @@ void TWinSCPFileSystem::EditHistory()
       UnicodeString FullFileName =
         UnixIncludeTrailingBackslash(FEditHistories[Result].Directory) + FEditHistories[Result].FileName;
       FTerminal->ReadFile(FullFileName, File);
-      std::auto_ptr<TRemoteFile> FilePtr(File);
       {
+        std::auto_ptr<TRemoteFile> FilePtr;
+        FilePtr.reset(File);
         if (!File->GetHaveFullFileName())
         {
           File->SetFullFileName(FullFileName);
