@@ -319,9 +319,14 @@ private:
   bool FEnabled;
 
   void __fastcall OpenLogFile();
+
 public:
   UnicodeString __fastcall GetLogFileName();
   void __fastcall SetEnabled(bool value);
+
+private:
+  TActionLog(const TActionLog &);
+  TActionLog & operator=(const TActionLog &);
 };
 //---------------------------------------------------------------------------
 #endif
