@@ -1930,17 +1930,17 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString FileName,
           // side already know, that file transfer finished, even if it failed
           // so we don't have to throw EFatal
         }
-        catch (EScp &E)
+        catch (EScp &)
         {
           // SCP protocol fatal error
           OperationProgress->TransferingFile = false;
-          throw E;
+          throw;
         }
-        catch (EScpFileSkipped &E)
+        catch (EScpFileSkipped &)
         {
           // SCP protocol non-fatal error
           OperationProgress->TransferingFile = false;
-          throw E;
+          throw;
         }
 
         // We succeded transfering file, from now we can handle exceptions
