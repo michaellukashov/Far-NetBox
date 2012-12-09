@@ -88,8 +88,7 @@ void __fastcall TConfiguration::Default()
   FForceBanners = false;
   FDisableAcceptingHostKeys = false;
 
-  TRegistryStorage * AdminStorage = NULL;
-  AdminStorage = new TRegistryStorage(GetRegistryStorageKey(), HKEY_LOCAL_MACHINE);
+  TRegistryStorage * AdminStorage = new TRegistryStorage(GetRegistryStorageKey(), HKEY_LOCAL_MACHINE);
   TRY_FINALLY (
   {
     if (AdminStorage->OpenRootKey(false))

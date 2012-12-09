@@ -297,7 +297,8 @@ bool TWinSCPPlugin::ConfigurationDialog()
 {
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
-  std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  std::auto_ptr<TWinSCPDialog> DialogPtr;
+  DialogPtr.reset(Dialog);
   TFarText * Text;
 
   Dialog->SetSize(TPoint(67, 22));
@@ -434,7 +435,8 @@ bool TWinSCPPlugin::PanelConfigurationDialog()
 {
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
-  std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  std::auto_ptr<TWinSCPDialog> DialogPtr;
+  DialogPtr.reset(Dialog);
   Dialog->SetSize(TPoint(65, 7));
   Dialog->SetCaption(FORMAT(L"%s - %s",
     GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_PANEL)).c_str()));
@@ -468,7 +470,8 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
 {
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
-  std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  std::auto_ptr<TWinSCPDialog> DialogPtr;
+  DialogPtr.reset(Dialog);
   TFarSeparator * Separator;
   TFarText * Text;
 
@@ -583,7 +586,8 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
 {
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
-  std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  std::auto_ptr<TWinSCPDialog> DialogPtr;
+  DialogPtr.reset(Dialog);
   TFarSeparator * Separator;
   TFarText * Text;
 
@@ -707,7 +711,8 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
 {
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
-  std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  std::auto_ptr<TWinSCPDialog> DialogPtr;
+  DialogPtr.reset(Dialog);
   TFarText * Text;
 
   Dialog->SetSize(TPoint(76, 11));
@@ -895,7 +900,8 @@ bool TWinSCPPlugin::TransferEditorConfigurationDialog()
 {
   bool Result = false;
   TTransferEditorConfigurationDialog * Dialog = new TTransferEditorConfigurationDialog(this);
-  std::auto_ptr<TTransferEditorConfigurationDialog> DialogPtr(Dialog);
+  std::auto_ptr<TTransferEditorConfigurationDialog> DialogPtr;
+  DialogPtr.reset(Dialog);
   Result = Dialog->Execute();
   return Result;
 }
@@ -904,7 +910,8 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
 {
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
-  std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  std::auto_ptr<TWinSCPDialog> DialogPtr;
+  DialogPtr.reset(Dialog);
   Dialog->SetSize(TPoint(65, 10));
   Dialog->SetCaption(FORMAT(L"%s - %s",
     GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_CONFIRMATIONS)).c_str()));
@@ -961,7 +968,8 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
 {
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
-  std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  std::auto_ptr<TWinSCPDialog> DialogPtr;
+  DialogPtr.reset(Dialog);
   TFarText * Text;
 
   Dialog->SetSize(TPoint(65, 14));
@@ -1203,7 +1211,8 @@ void TAboutDialog::UrlButtonClick(TFarButton * Sender, bool & /*Close*/)
 void TWinSCPPlugin::AboutDialog()
 {
   TFarDialog * Dialog = new TAboutDialog(this);
-  std::auto_ptr<TFarDialog> DialogPtr(Dialog);
+  std::auto_ptr<TFarDialog> DialogPtr;
+  DialogPtr.reset(Dialog);
   Dialog->ShowModal();
 }
 //---------------------------------------------------------------------------
@@ -1411,7 +1420,8 @@ bool TWinSCPFileSystem::PasswordDialog(TSessionData * SessionData,
   bool Result = false;
   TPasswordDialog * Dialog = new TPasswordDialog(FPlugin, SessionData->GetName(),
     Kind, Name, Instructions, Prompts, StoredCredentialsTried);
-  std::auto_ptr<TPasswordDialog> DialogPtr(Dialog);
+  std::auto_ptr<TPasswordDialog> DialogPtr;
+  DialogPtr.reset(Dialog);
   Result = Dialog->Execute(Results);
   return Result;
 }
@@ -1422,7 +1432,8 @@ bool TWinSCPFileSystem::BannerDialog(const UnicodeString SessionName,
 {
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(FPlugin);
-  std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  std::auto_ptr<TWinSCPDialog> DialogPtr;
+  DialogPtr.reset(Dialog);
   Dialog->SetSize(TPoint(70, 21));
   Dialog->SetCaption(FORMAT(GetMsg(BANNER_TITLE).c_str(), SessionName.c_str()));
 
@@ -3260,7 +3271,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   FtpUseMlsdCombo->SetItemIndex(2 - SessionData->GetFtpUseMlsd());
   FtpAllowEmptyPasswordCheck->SetChecked(SessionData->GetFtpAllowEmptyPassword());
   TStrings * PostLoginCommands = new TStringList();
-  std::auto_ptr<TStrings> PostLoginCommandsPtr(PostLoginCommands);
+  std::auto_ptr<TStrings> PostLoginCommandsPtr;
+  PostLoginCommandsPtr.reset(PostLoginCommands);
   PostLoginCommands->Text = SessionData->GetPostLoginCommands();
   for (int Index = 0; (Index < PostLoginCommands->Count) &&
        (Index < LENOF(PostLoginCommandsEdits)); Index++)
@@ -3549,7 +3561,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetFtpAllowEmptyPassword(FtpAllowEmptyPasswordCheck->GetChecked());
     SessionData->SetSslSessionReuse(SslSessionReuseCheck->GetChecked());
     TStrings * PostLoginCommands = new TStringList();
-    std::auto_ptr<TStrings> PostLoginCommandsPtr(PostLoginCommands);
+    std::auto_ptr<TStrings> PostLoginCommandsPtr;
+    PostLoginCommandsPtr.reset(PostLoginCommands);
     for (int Index = 0; Index < LENOF(PostLoginCommandsEdits); Index++)
     {
       UnicodeString Text = PostLoginCommandsEdits[Index]->GetText();
@@ -4276,7 +4289,8 @@ bool TWinSCPFileSystem::SessionDialog(TSessionData * SessionData,
 {
   bool Result = false;
   TSessionDialog * Dialog = new TSessionDialog(FPlugin, Action);
-  std::auto_ptr<TSessionDialog> DialogPtr(Dialog);
+  std::auto_ptr<TSessionDialog> DialogPtr;
+  DialogPtr.reset(Dialog);
   Result = Dialog->Execute(SessionData, Action);
   return Result;
 }
@@ -4906,7 +4920,8 @@ bool TWinSCPFileSystem::PropertiesDialog(TStrings * FileList,
   bool Result = false;
   TPropertiesDialog * Dialog = new TPropertiesDialog(FPlugin, FileList,
     Directory, GroupList, UserList, AllowedChanges);
-  std::auto_ptr<TPropertiesDialog> DialogPtr(Dialog);
+  std::auto_ptr<TPropertiesDialog> DialogPtr;
+  DialogPtr.reset(Dialog);
   Result = Dialog->Execute(Properties);
   return Result;
 }
@@ -5623,7 +5638,8 @@ void TCopyDialog::Change()
   {
     UnicodeString InfoStr = FCopyParams.GetInfoStr(L"; ", FCopyParamAttrs);
     TStringList * InfoStrLines = new TStringList();
-    std::auto_ptr<TStrings> InfoStrLinesPtr(InfoStrLines);
+    std::auto_ptr<TStrings> InfoStrLinesPtr;
+    InfoStrLinesPtr.reset(InfoStrLines);
     FarWrapText(InfoStr, InfoStrLines, GetBorderBox()->GetWidth() - 4);
     CopyParamLister->SetItems(InfoStrLines);
     CopyParamLister->SetRight(GetBorderBox()->GetRight() - (CopyParamLister->GetScrollBar() ? 0 : 1));
@@ -5665,7 +5681,8 @@ bool TWinSCPFileSystem::CopyDialog(bool ToRemote,
   bool Result = false;
   TCopyDialog * Dialog = new TCopyDialog(FPlugin, ToRemote,
     Move, FileList, Options, CopyParamAttrs);
-  std::auto_ptr<TCopyDialog> DialogPtr(Dialog);
+  std::auto_ptr<TCopyDialog> DialogPtr;
+  DialogPtr.reset(Dialog);
   Result = Dialog->Execute(TargetDirectory, Params);
   return Result;
 }
@@ -5675,7 +5692,8 @@ bool TWinSCPPlugin::CopyParamDialog(const UnicodeString Caption,
 {
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
-  std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  std::auto_ptr<TWinSCPDialog> DialogPtr;
+  DialogPtr.reset(Dialog);
   Dialog->SetCaption(Caption);
 
   // temporary
@@ -5810,7 +5828,8 @@ bool TWinSCPFileSystem::LinkDialog(UnicodeString & FileName,
 {
   bool Result = false;
   TLinkDialog * Dialog = new TLinkDialog(FPlugin, Edit, AllowSymbolic);
-  std::auto_ptr<TLinkDialog> DialogPtr(Dialog);
+  std::auto_ptr<TLinkDialog> DialogPtr;
+  DialogPtr.reset(Dialog);
   Result = Dialog->Execute(FileName, PointTo, Symbolic);
   return Result;
 }
@@ -6357,7 +6376,8 @@ void TWinSCPFileSystem::FileSystemInfoDialog(
   UnicodeString SpaceAvailablePath, TGetSpaceAvailableEvent OnGetSpaceAvailable)
 {
   TFileSystemInfoDialog * Dialog = new TFileSystemInfoDialog(FPlugin, OnGetSpaceAvailable);
-  std::auto_ptr<TFileSystemInfoDialog> DialogPtr(Dialog);
+  std::auto_ptr<TFileSystemInfoDialog> DialogPtr;
+  DialogPtr.reset(Dialog);
   Dialog->Execute(SessionInfo, FileSystemInfo, SpaceAvailablePath);
 }
 //---------------------------------------------------------------------------
@@ -6373,11 +6393,14 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
   do
   {
     TStrings * BookmarkPaths = new TStringList();
-    std::auto_ptr<TStrings> BookmarkPathsPtr(BookmarkPaths);
+    std::auto_ptr<TStrings> BookmarkPathsPtr;
+    BookmarkPathsPtr.reset(BookmarkPaths);
     TFarMenuItems * BookmarkItems = new TFarMenuItems();
-    std::auto_ptr<TStrings> BookmarkItemsPtr(BookmarkItems);
+    std::auto_ptr<TStrings> BookmarkItemsPtr;
+    BookmarkItemsPtr.reset(BookmarkItems);
     TList * Bookmarks = new TList();
-    std::auto_ptr<TList> BookmarksPtr(Bookmarks);
+    std::auto_ptr<TList> BookmarksPtr;
+    BookmarksPtr.reset(Bookmarks);
     intptr_t BookmarksOffset = -1;
 
     intptr_t MaxLength = FPlugin->MaxMenuItemLength();
@@ -6398,7 +6421,8 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
 
     intptr_t FirstItemFocused = -1;
     TStringList * BookmarkDirectories = new TStringList();
-    std::auto_ptr<TStringList> BookmarkDirectoriesPtr(BookmarkDirectories);
+    std::auto_ptr<TStringList> BookmarkDirectoriesPtr;
+    BookmarkDirectoriesPtr.reset(BookmarkDirectories);
     BookmarkDirectories->Sorted = true;
     for (int i = 0; i < BookmarkList->GetCount(); i++)
     {
@@ -6693,7 +6717,8 @@ bool TWinSCPFileSystem::ApplyCommandDialog(UnicodeString & Command,
 {
   bool Result = false;
   TApplyCommandDialog * Dialog = new TApplyCommandDialog(FPlugin);
-  std::auto_ptr<TApplyCommandDialog> DialogPtr(Dialog);
+  std::auto_ptr<TApplyCommandDialog> DialogPtr;
+  DialogPtr.reset(Dialog);
   Result = Dialog->Execute(Command, Params);
   return Result;
 }
@@ -6984,7 +7009,8 @@ void TFullSynchronizeDialog::Change()
 
     UnicodeString InfoStr = FCopyParams.GetInfoStr(L"; ", ActualCopyParamAttrs());
     TStringList * InfoStrLines = new TStringList();
-    std::auto_ptr<TStrings> InfoStrLinesPtr(InfoStrLines);
+    std::auto_ptr<TStrings> InfoStrLinesPtr;
+    InfoStrLinesPtr.reset(InfoStrLines);
     FarWrapText(InfoStr, InfoStrLines, GetBorderBox()->GetWidth() - 4);
     CopyParamLister->SetItems(InfoStrLines);
     CopyParamLister->SetRight(GetBorderBox()->GetRight() - (CopyParamLister->GetScrollBar() ? 0 : 1));
@@ -7128,7 +7154,8 @@ bool TWinSCPFileSystem::FullSynchronizeDialog(TTerminal::TSynchronizeMode & Mode
   bool Result = false;
   TFullSynchronizeDialog * Dialog = new TFullSynchronizeDialog(
     FPlugin, Options, CopyParamAttrs);
-  std::auto_ptr<TFullSynchronizeDialog> DialogPtr(Dialog);
+  std::auto_ptr<TFullSynchronizeDialog> DialogPtr;
+  DialogPtr.reset(Dialog);
   Result = Dialog->Execute(Mode, Params, LocalDirectory, RemoteDirectory,
     CopyParams, SaveSettings, SaveMode);
   return Result;
@@ -7500,7 +7527,8 @@ void TSynchronizeChecklistDialog::LoadChecklist()
 {
   FChecked = 0;
   TFarList * List = new TFarList();
-  std::auto_ptr<TFarList> ListPtr(List);
+  std::auto_ptr<TFarList> ListPtr;
+  ListPtr.reset(List);
   List->BeginUpdate();
   for (int Index = 0; Index < FChecklist->GetCount(); Index++)
   {
@@ -7739,7 +7767,8 @@ bool TWinSCPFileSystem::SynchronizeChecklistDialog(
   bool Result = false;
   TSynchronizeChecklistDialog * Dialog = new TSynchronizeChecklistDialog(
     FPlugin, Mode, Params, LocalDirectory, RemoteDirectory);
-  std::auto_ptr<TSynchronizeChecklistDialog> DialogPtr(Dialog);
+  std::auto_ptr<TSynchronizeChecklistDialog> DialogPtr;
+  DialogPtr.reset(Dialog);
   Result = Dialog->Execute(Checklist);
   return Result;
 }
@@ -8149,7 +8178,8 @@ void TSynchronizeDialog::Change()
 
     UnicodeString InfoStr = FCopyParams.GetInfoStr(L"; ", ActualCopyParamAttrs());
     TStringList * InfoStrLines = new TStringList();
-    std::auto_ptr<TStrings> InfoStrLinesPtr(InfoStrLines);
+    std::auto_ptr<TStrings> InfoStrLinesPtr;
+    InfoStrLinesPtr.reset(InfoStrLines);
     FarWrapText(InfoStr, InfoStrLines, GetBorderBox()->GetWidth() - 4);
     CopyParamLister->SetItems(InfoStrLines);
     CopyParamLister->SetRight(GetBorderBox()->GetRight() - (CopyParamLister->GetScrollBar() ? 0 : 1));
@@ -8200,7 +8230,8 @@ bool TWinSCPFileSystem::SynchronizeDialog(TSynchronizeParamType & Params,
   bool Result = false;
   TSynchronizeDialog * Dialog = new TSynchronizeDialog(FPlugin, OnStartStop,
       Options, CopyParamAttrs, OnGetOptions);
-  std::auto_ptr<TSynchronizeDialog> DialogPtr(Dialog);
+  std::auto_ptr<TSynchronizeDialog> DialogPtr;
+  DialogPtr.reset(Dialog);
   Result = Dialog->Execute(Params, CopyParams, SaveSettings);
   return Result;
 }
@@ -8580,7 +8611,8 @@ void TQueueDialog::RefreshQueue()
 void TQueueDialog::LoadQueue()
 {
   TFarList * List = new TFarList();
-  std::auto_ptr<TFarList> ListPtr(List);
+  std::auto_ptr<TFarList> ListPtr;
+  ListPtr.reset(List);
   UnicodeString Line;
   TQueueItemProxy * QueueItem = NULL;
   for (int Index = 0; Index < FStatus->GetCount(); Index++)
@@ -8745,7 +8777,8 @@ bool TWinSCPFileSystem::QueueDialog(
 {
   bool Result = false;
   TQueueDialog * Dialog = new TQueueDialog(FPlugin, this, ClosingPlugin);
-  std::auto_ptr<TQueueDialog> DialogPtr(Dialog);
+  std::auto_ptr<TQueueDialog> DialogPtr;
+  DialogPtr.reset(Dialog);
   Result = Dialog->Execute(Status);
   return Result;
 }
@@ -8755,7 +8788,8 @@ bool TWinSCPFileSystem::CreateDirectoryDialog(UnicodeString & Directory,
 {
   bool Result = false;
   TWinSCPDialog * Dialog = new TWinSCPDialog(FPlugin);
-  std::auto_ptr<TWinSCPDialog> DialogPtr(Dialog);
+  std::auto_ptr<TWinSCPDialog> DialogPtr;
+  DialogPtr.reset(Dialog);
   TFarText * Text;
   TFarSeparator * Separator;
 

@@ -98,6 +98,10 @@ public:
 
 protected:
   TSessionActionRecord * FRecord;
+
+private:
+  TSessionAction(const TSessionAction &);
+  TSessionAction & operator=(const TSessionAction &);
 };
 //---------------------------------------------------------------------------
 class TFileSessionAction : public TSessionAction
@@ -260,12 +264,17 @@ public:
   UnicodeString __fastcall GetLogFileName();
   bool __fastcall GetLoggingToFile();
   UnicodeString __fastcall GetSessionName();
+
 private:
   void __fastcall DoAdd(TLogLineType Type, UnicodeString Line,
     TDoAddLogEvent Event);
   void /* __fastcall */ DoAddToParent(TLogLineType aType, const UnicodeString & aLine);
   void /* __fastcall */ DoAddToSelf(TLogLineType aType, const UnicodeString & aLine);
   void /* __fastcall */ DoAddStartupInfo(TSessionData * Data);
+
+private:
+  TSessionLog(const TSessionLog &);
+  TSessionLog & operator=(const TSessionLog &);
 };
 //---------------------------------------------------------------------------
 class TActionLog
@@ -310,9 +319,14 @@ private:
   bool FEnabled;
 
   void __fastcall OpenLogFile();
+
 public:
   UnicodeString __fastcall GetLogFileName();
   void __fastcall SetEnabled(bool value);
+
+private:
+  TActionLog(const TActionLog &);
+  TActionLog & operator=(const TActionLog &);
 };
 //---------------------------------------------------------------------------
 #endif

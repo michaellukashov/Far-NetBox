@@ -20,6 +20,8 @@
 {
   CALLSTACK;
   FOnSynchronize = AOnSynchronize;
+  FSynchronizeParams.Params = 0;
+  FSynchronizeParams.Options = 0;
   FOnSynchronizeInvalid = AOnSynchronizeInvalid;
   FOnTooManyDirectories = AOnTooManyDirectories;
   FSynchronizeMonitor = NULL;

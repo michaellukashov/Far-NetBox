@@ -85,31 +85,31 @@ DEFINE_CALLBACK_TYPE2(TCreateLocalDirectoryEvent, BOOL,
 
 /* TODO : Better user interface (query to user) */
 #define FILE_OPERATION_LOOP_CUSTOM(TERMINAL, ALLOW_SKIP, MESSAGE, OPERATION) { \
-  bool DoRepeat; \
-  do { \
-    DoRepeat = false; \
-    try { \
+  bool DoRepeat;                                                            \
+  do {                                                                      \
+    DoRepeat = false;                                                       \
+    try {                                                                   \
       OPERATION;                                                            \
     }                                                                       \
-    catch (EAbort & E)                                                      \
+    catch (EAbort &)                                                        \
     {                                                                       \
-      throw E;                                                                \
+      throw;                                                                \
     }                                                                       \
-    catch (EScpSkipFile & E)                                                \
+    catch (EScpSkipFile &)                                                  \
     {                                                                       \
-      throw E;                                                                \
+      throw;                                                                \
     }                                                                       \
-    catch (EFatal & E)                                                      \
+    catch (EFatal &)                                                        \
     {                                                                       \
-      throw E;                                                                \
+      throw;                                                                \
     }                                                                       \
-    catch (EFileNotFoundError & E)                                                      \
+    catch (EFileNotFoundError &)                                            \
     {                                                                       \
-      throw E;                                                                \
+      throw;                                                                \
     }                                                                       \
-    catch (EOSError & E)                                                      \
+    catch (EOSError &)                                                      \
     {                                                                       \
-      throw E;                                                                \
+      throw;                                                                \
     }                                                                       \
     catch (Exception & E)                                                   \
     {                                                                       \

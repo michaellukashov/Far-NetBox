@@ -3144,7 +3144,8 @@ config_read_auth_data(apr_hash_t ** hash,
   THierarchicalStorage * Storage = NULL;
   WEBDAV_ERR(fs->CreateStorage(Storage));
   assert(Storage);
-  std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
+  std::auto_ptr<THierarchicalStorage> StoragePtr;
+  StoragePtr.reset(Storage);
   Storage->SetAccessMode(smRead);
   if (!Storage->OpenSubKey(UnicodeString(subkey), false))
     return WEBDAV_ERR_BAD_PARAM;
@@ -3185,7 +3186,8 @@ config_write_auth_data(apr_hash_t * hash,
   THierarchicalStorage * Storage = NULL;
   WEBDAV_ERR(fs->CreateStorage(Storage));
   assert(Storage);
-  std::auto_ptr<THierarchicalStorage> StoragePtr(Storage);
+  std::auto_ptr<THierarchicalStorage> StoragePtr;
+  StoragePtr.reset(Storage);
   Storage->SetAccessMode(smReadWrite);
 
   if (!Storage->OpenSubKey(UnicodeString(subkey), true))
@@ -12755,6 +12757,7 @@ void __fastcall TWebDAVFileSystem::Open()
 
   FPasswordFailed = false;
 
+  FTerminal->Information(LoadStr(STATUS_CONNECT), true);
   for (int i = 0; i < 5; i++)
   {
     FActive = false;
@@ -13008,7 +13011,7 @@ void __fastcall TWebDAVFileSystem::ReadDirectory(TRemoteFileList * FileList)
     {
       DoReadDirectory(FileList);
     }
-    catch (Exception & E)
+    catch (Exception &)
     {
       if (!FTerminal->GetActive())
       {
@@ -13017,7 +13020,7 @@ void __fastcall TWebDAVFileSystem::ReadDirectory(TRemoteFileList * FileList)
       }
       else
       {
-        throw E;
+        throw;
       }
     }
   }
@@ -14332,7 +14335,7 @@ bool TWebDAVFileSystem::WebDAVGetList(const UnicodeString Directory)
           baton.pool
         );
 
-  TListDataEntry * pEntries = Entries.size() > 0 ? &Entries[0] : NULL;
+  TListDataEntry * pEntries = !Entries.empty() ? &Entries[0] : NULL;
   HandleListData(Directory.c_str(), pEntries, Entries.size());
   webdav_pool_destroy(baton.pool);
   return err == WEBDAV_NO_ERROR;

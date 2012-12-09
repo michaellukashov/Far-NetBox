@@ -51,6 +51,8 @@ static char THIS_FILE[] = __FILE__;
 
 CMainThread::CMainThread()
 {
+	m_LastCommand.id = 0;
+	m_LastCommand.param4 = 0;
 	m_hOwnerWnd = 0;
 	m_nReplyMessageID = 0;
 	m_nInternalMessageID = 0;

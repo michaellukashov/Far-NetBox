@@ -107,8 +107,9 @@ bool TWinSCPPlugin::ConfigureEx(const GUID * /* Item */)
   bool Change = false;
 
   TFarMenuItems * MenuItems = new TFarMenuItems();
-  std::auto_ptr<TFarMenuItems> MenuItemsPtr(MenuItems);
   {
+    std::auto_ptr<TFarMenuItems> MenuItemsPtr;
+    MenuItemsPtr.reset(MenuItems);
     intptr_t MInterface = MenuItems->Add(GetMsg(CONFIG_INTERFACE));
     intptr_t MConfirmations = MenuItems->Add(GetMsg(CONFIG_CONFIRMATIONS));
     intptr_t MPanel = MenuItems->Add(GetMsg(CONFIG_PANEL));
@@ -383,8 +384,9 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
 void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 {
   TFarMenuItems * MenuItems = new TFarMenuItems();
-  std::auto_ptr<TFarMenuItems> MenuItemsPtr(MenuItems);
   {
+    std::auto_ptr<TFarMenuItems> MenuItemsPtr;
+    MenuItemsPtr.reset(MenuItems);
     TWinSCPFileSystem * FileSystem;
     TWinSCPFileSystem * AnotherFileSystem;
     FileSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem());
@@ -615,8 +617,9 @@ intptr_t TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
 {
   intptr_t Result = 0;
   TStrings * ButtonLabels = new TStringList();
-  std::auto_ptr<TStrings> ButtonLabelsPtr(ButtonLabels);
   {
+    std::auto_ptr<TStrings> ButtonLabelsPtr;
+    ButtonLabelsPtr.reset(ButtonLabels);
     unsigned int Flags = 0;
 
     if (Params != NULL)

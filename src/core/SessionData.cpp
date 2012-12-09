@@ -406,6 +406,7 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
       FPassword = Storage->ReadStringAsBinaryData(L"Password", FPassword);
     }
   }
+  SetHostKey(Storage->ReadString(L"HostKey", GetHostKey()));
   // Putty uses PingIntervalSecs
   int PingIntervalSecs = Storage->ReadInteger(L"PingIntervalSecs", -1);
   if (PingIntervalSecs < 0)
@@ -601,6 +602,7 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
   }
   SetTunnelPublicKeyFile(Storage->ReadString(L"TunnelPublicKeyFile", GetTunnelPublicKeyFile()));
   SetTunnelLocalPortNumber(Storage->ReadInteger(L"TunnelLocalPortNumber", GetTunnelLocalPortNumber()));
+  SetTunnelHostKey(Storage->ReadString(L"TunnelHostKey", GetTunnelHostKey()));
 
   // Ftp prefix
   SetFtpPasvMode(Storage->ReadBool(L"FtpPasvMode", GetFtpPasvMode()));
@@ -3099,7 +3101,7 @@ void __fastcall TStoredSessionList::ImportHostKeys(const UnicodeString TargetKey
           for (int KeyIndex = 0; KeyIndex < KeyList->Count; KeyIndex++)
           {
             KeyName = KeyList->Strings[KeyIndex];
-            int P = KeyName.Pos(HostKeyName);
+            intptr_t P = KeyName.Pos(HostKeyName);
             if ((P > 0) && (P == KeyName.Length() - HostKeyName.Length() + 1))
             {
               TargetStorage->WriteStringRaw(KeyName,
@@ -3154,8 +3156,9 @@ TSessionData * TStoredSessionList::GetSessionByName(const UnicodeString SessionN
 void __fastcall TStoredSessionList::Load(const UnicodeString aKey, bool UseDefaults)
 {
   TRegistryStorage * Storage = new TRegistryStorage(aKey);
-  std::auto_ptr<TRegistryStorage> StoragePtr(Storage);
   {
+    std::auto_ptr<TRegistryStorage> StoragePtr;
+    StoragePtr.reset(Storage);
     if (Storage->OpenRootKey(false)) { Load(Storage, false, UseDefaults); }
   }
 }

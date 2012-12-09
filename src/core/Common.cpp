@@ -957,14 +957,13 @@ RawByteString __fastcall HexToBytes(const UnicodeString Hex)
 {
   static UnicodeString Digits = L"0123456789ABCDEF";
   RawByteString Result;
-  intptr_t L, P1, P2;
-  L = Hex.Length();
+  intptr_t L = Hex.Length();
   if (L % 2 == 0)
   {
     for (intptr_t i = 1; i <= Hex.Length(); i += 2)
     {
-      P1 = Digits.Pos((wchar_t)toupper(Hex[i]));
-      P2 = Digits.Pos((wchar_t)toupper(Hex[i + 1]));
+      intptr_t P1 = Digits.Pos((wchar_t)toupper(Hex[i]));
+      intptr_t P2 = Digits.Pos((wchar_t)toupper(Hex[i + 1]));
       if (P1 <= 0 || P2 <= 0)
       {
         Result = L"";

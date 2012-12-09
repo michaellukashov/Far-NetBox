@@ -823,8 +823,9 @@ void TFarDialog::Change()
   else
   {
     TList * NotifiedContainers = new TList();
-    std::auto_ptr<TList> NotifiedContainersPtr(NotifiedContainers);
     {
+      std::auto_ptr<TList> NotifiedContainersPtr;
+      NotifiedContainersPtr.reset(NotifiedContainers);
       TFarDialogItem * DItem;
       for (int i = 0; i < GetItemCount(); i++)
       {

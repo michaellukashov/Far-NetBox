@@ -897,14 +897,13 @@ void __fastcall TSCPFileSystem::DetectReturnVar()
           Abort();
         }
       }
-      catch (EFatal &E)
+      catch (EFatal &)
       {
         // if fatal error occurs, we need to exit ...
-        throw E;
+        throw;
       }
-      catch (Exception &E)
+      catch (Exception &)
       {
-        (void)E;
         // ...otherwise, we will try next variable (if any)
         Success = false;
       }
@@ -1932,17 +1931,17 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString FileName,
           // side already know, that file transfer finished, even if it failed
           // so we don't have to throw EFatal
         }
-        catch (EScp &E)
+        catch (EScp &)
         {
           // SCP protocol fatal error
           OperationProgress->TransferingFile = false;
-          throw E;
+          throw;
         }
-        catch (EScpFileSkipped &E)
+        catch (EScpFileSkipped &)
         {
           // SCP protocol non-fatal error
           OperationProgress->TransferingFile = false;
-          throw E;
+          throw;
         }
 
         // We succeded transfering file, from now we can handle exceptions
@@ -2204,10 +2203,10 @@ void __fastcall TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
             }
             );
           }
-          catch (EFatal &E)
+          catch (EFatal &)
           {
             TRACE("6");
-            throw E;
+            throw;
           }
           catch (...)
           {
@@ -2651,17 +2650,17 @@ void __fastcall TSCPFileSystem::SCPSink(const UnicodeString FileName,
                 // If one of following exception occurs, we still need
                 // to send confirmation to other side
               }
-              catch (EScp &E)
+              catch (EScp &)
               {
                 TRACE("21");
                 FSecureShell->SendNull();
-                throw E;
+                throw;
               }
-              catch (EScpFileSkipped &E)
+              catch (EScpFileSkipped &)
               {
                 TRACE("22");
                 FSecureShell->SendNull();
-                throw E;
+                throw;
               }
 
               FSecureShell->SendNull();
