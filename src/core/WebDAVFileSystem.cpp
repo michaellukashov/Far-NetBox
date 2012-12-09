@@ -14333,7 +14333,7 @@ bool TWebDAVFileSystem::WebDAVGetList(const UnicodeString Directory)
           baton.pool
         );
 
-  TListDataEntry * pEntries = Entries.size() > 0 ? &Entries[0] : NULL;
+  TListDataEntry * pEntries = !Entries.empty() ? &Entries[0] : NULL;
   HandleListData(Directory.c_str(), pEntries, Entries.size());
   webdav_pool_destroy(baton.pool);
   return err == WEBDAV_NO_ERROR;
