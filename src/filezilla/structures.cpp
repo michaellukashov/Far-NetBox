@@ -125,7 +125,7 @@ void t_directory::Merge(const t_directory &directory, CTime MergeTime)
 	for (i=0; i<num; i++)
 		direntry[i] = tmp[i];
 
-	for (std::list<t_direntry>::iterator iter=AddList.begin(); iter!=AddList.end(); iter++, i++)
+	for (std::list<t_direntry>::iterator iter=AddList.begin(); iter!=AddList.end(); ++iter, i++)
 		direntry[i] = *iter;
 
 	num+=(int)AddList.size();
