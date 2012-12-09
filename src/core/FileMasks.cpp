@@ -285,7 +285,7 @@ void __fastcall TFileMasks::Clear(TMasks & Masks)
   {
     ReleaseMaskMask((*I).FileNameMask);
     ReleaseMaskMask((*I).DirectoryMask);
-    I++;
+    ++I;
   }
   Masks.clear();
 }
@@ -386,7 +386,7 @@ bool __fastcall TFileMasks::MatchesMasks(const UnicodeString FileName, bool Dire
     }
 
     TRACEFMT("6 [%d]", int(Result));
-    I++;
+    ++I;
   }
 
   if (!Result && Directory && !IsUnixRootPath(Path) && Recurse)
@@ -691,7 +691,7 @@ TStrings * __fastcall TFileMasks::GetMasksStr(intptr_t Index) const
     while (I != FMasks[Index].end())
     {
       FMasksStr[Index]->Add((*I).UserStr);
-      I++;
+      ++I;
     }
   }
 
