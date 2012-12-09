@@ -34,6 +34,10 @@ public:
   void __fastcall SetSize(__int64 Value);
   void __fastcall SetPosition(__int64 Value);
   __int64 __fastcall GetPosition() const;
+
+private:
+  TFileBuffer(const TFileBuffer &);
+  TFileBuffer & operator=(const TFileBuffer &);
 };
 //---------------------------------------------------------------------------
 class TSafeHandleStream : public THandleStream
