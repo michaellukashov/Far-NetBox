@@ -238,26 +238,6 @@ struct AFX_GLOBAL_DATA
 		return bHorz ? m_nTextWidthHorz : m_nTextWidthVert;
 	}
 
-	double GetRibbonImageScale()
-	{
-		return m_bIsRibbonImageScale ? m_dblRibbonImageScale : 1.;
-	}
-
-	void EnableRibbonImageScale(BOOL bEnable = TRUE)
-	{
-		m_bIsRibbonImageScale = bEnable;
-	}
-
-	BOOL IsRibbonImageScaleEnabled()
-	{
-		return m_bIsRibbonImageScale;
-	}
-
-	BOOL IsWindowsThemingDrawParentBackground() const
-	{
-		return m_pfDrawThemeBackground != NULL;
-	}
-
 	BOOL DrawParentBackground(CWnd* pWnd, CDC* pDC, LPRECT lpRect = NULL);
 	void CleanUp();
 
@@ -380,13 +360,6 @@ protected:
 	int m_nTextHeightVert;
 	int m_nTextWidthHorz;
 	int m_nTextWidthVert;
-
-	double m_dblRibbonImageScale;
-	BOOL   m_bIsRibbonImageScale;
-	BOOL   m_bBufferedPaintInited;
-
-	HINSTANCE m_hinstUXThemeDLL;
-	HINSTANCE m_hinstDwmapiDLL;
 
 	DRAWTHEMEPARENTBACKGROUND    m_pfDrawThemeBackground;
 	DRAWTHEMETEXTEX              m_pfDrawThemeTextEx;

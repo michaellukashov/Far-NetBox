@@ -31,28 +31,11 @@ AFX_GLOBAL_DATA::AFX_GLOBAL_DATA()
 	bIsWindows7 = (osvi.dwMajorVersion == 6) && (osvi.dwMinorVersion >= 1) || (osvi.dwMajorVersion > 6) ;
 	bDisableAero = FALSE;
 
-	m_bIsRibbonImageScale = TRUE;
-
 	// Cached system values(updated in CWnd::OnSysColorChange)
 	hbrBtnShadow = NULL;
 	hbrBtnHilite = NULL;
 	hbrWindow = NULL;
 
-	UpdateSysColors();
-
-	m_hinstUXThemeDLL = ::AfxCtxLoadLibraryW(L"UxTheme.dll");
-	if (m_hinstUXThemeDLL != NULL)
-	{
-		m_pfDrawThemeBackground = (DRAWTHEMEPARENTBACKGROUND)::GetProcAddress(m_hinstUXThemeDLL, "DrawThemeParentBackground");
-		m_pfDrawThemeTextEx = (DRAWTHEMETEXTEX)::GetProcAddress(m_hinstUXThemeDLL, "DrawThemeTextEx");
-
-		m_pfBufferedPaintInit = (BUFFEREDPAINTINIT)::GetProcAddress(m_hinstUXThemeDLL, "BufferedPaintInit");
-		m_pfBufferedPaintUnInit = (BUFFEREDPAINTUNINIT)::GetProcAddress(m_hinstUXThemeDLL, "BufferedPaintUnInit");
-
-		m_pfBeginBufferedPaint = (BEGINBUFFEREDPAINT)::GetProcAddress(m_hinstUXThemeDLL, "BeginBufferedPaint");
-		m_pfEndBufferedPaint = (ENDBUFFEREDPAINT)::GetProcAddress(m_hinstUXThemeDLL, "EndBufferedPaint");
-	}
-	else
 	{
 		m_pfDrawThemeBackground = NULL;
 		m_pfDrawThemeTextEx = NULL;
@@ -64,14 +47,6 @@ AFX_GLOBAL_DATA::AFX_GLOBAL_DATA()
 		m_pfEndBufferedPaint = NULL;
 	}
 
-	m_hinstDwmapiDLL = ::AfxCtxLoadLibraryW(L"dwmapi.dll");
-	if (m_hinstDwmapiDLL != NULL)
-	{
-		m_pfDwmExtendFrameIntoClientArea = (DWMEXTENDFRAMEINTOCLIENTAREA)::GetProcAddress(m_hinstDwmapiDLL, "DwmExtendFrameIntoClientArea");
-		m_pfDwmDefWindowProc = (DWMDEFWINDOWPROC) ::GetProcAddress(m_hinstDwmapiDLL, "DwmDefWindowProc");
-		m_pfDwmIsCompositionEnabled = (DWMISCOMPOSITIONENABLED)::GetProcAddress(m_hinstDwmapiDLL, "DwmIsCompositionEnabled");
-	}
-	else
 	{
 		m_pfDwmExtendFrameIntoClientArea = NULL;
 		m_pfDwmDefWindowProc = NULL;
@@ -94,7 +69,6 @@ AFX_GLOBAL_DATA::AFX_GLOBAL_DATA()
 	OnSettingChange();
 
 	m_bIsRTL = FALSE;
-	m_bBufferedPaintInited = FALSE;
 
 	m_nDragFrameThicknessFloat = 4;  // pixels
 	m_nDragFrameThicknessDock = 3;   // pixels
@@ -179,120 +153,6 @@ void AFX_GLOBAL_DATA::OnSettingChange()
 	m_bUnderlineKeyboardShortcuts = m_bSysUnderlineKeyboardShortcuts;
 
 	m_bInSettingChange = FALSE;
-}
-
-void AFX_GLOBAL_DATA::UpdateSysColors()
-{
-	m_bIsBlackHighContrast = ::GetSysColor(COLOR_3DLIGHT) == RGB(255, 255, 255) && ::GetSysColor(COLOR_3DFACE) == RGB(0, 0, 0);
-	m_bIsWhiteHighContrast = ::GetSysColor(COLOR_3DDKSHADOW) == RGB(0, 0, 0) && ::GetSysColor(COLOR_3DFACE) == RGB(255, 255, 255);
-
-	CWindowDC dc(NULL);
-	m_nBitsPerPixel = dc.GetDeviceCaps(BITSPIXEL);
-
-	clrBarFace = clrBtnFace = ::GetSysColor(COLOR_BTNFACE);
-	clrBarShadow = clrBtnShadow = ::GetSysColor(COLOR_BTNSHADOW);
-	clrBarDkShadow = clrBtnDkShadow = ::GetSysColor(COLOR_3DDKSHADOW);
-	clrBarLight = clrBtnLight = ::GetSysColor(COLOR_3DLIGHT);
-	clrBarHilite = clrBtnHilite = ::GetSysColor(COLOR_BTNHIGHLIGHT);
-	clrBarText = clrBtnText = ::GetSysColor(COLOR_BTNTEXT);
-	clrGrayedText = ::GetSysColor(COLOR_GRAYTEXT);
-	clrWindowFrame = ::GetSysColor(COLOR_WINDOWFRAME);
-
-	clrHilite = ::GetSysColor(COLOR_HIGHLIGHT);
-	clrTextHilite = ::GetSysColor(COLOR_HIGHLIGHTTEXT);
-
-	clrBarWindow = clrWindow = ::GetSysColor(COLOR_WINDOW);
-	clrWindowText = ::GetSysColor(COLOR_WINDOWTEXT);
-
-	clrCaptionText = ::GetSysColor(COLOR_CAPTIONTEXT);
-	clrMenuText = ::GetSysColor(COLOR_MENUTEXT);
-
-	clrActiveCaption = ::GetSysColor(COLOR_ACTIVECAPTION);
-	clrInactiveCaption = ::GetSysColor(COLOR_INACTIVECAPTION);
-
-	clrActiveCaptionGradient = ::GetSysColor(COLOR_GRADIENTACTIVECAPTION);
-	clrInactiveCaptionGradient = ::GetSysColor(COLOR_GRADIENTINACTIVECAPTION);
-
-	clrActiveBorder = ::GetSysColor(COLOR_ACTIVEBORDER);
-	clrInactiveBorder = ::GetSysColor(COLOR_INACTIVEBORDER);
-
-	clrInactiveCaptionText = ::GetSysColor(COLOR_INACTIVECAPTIONTEXT);
-
-	if (m_bIsBlackHighContrast)
-	{
-		clrHotLinkNormalText = clrWindowText;
-		clrHotLinkHoveredText = clrWindowText;
-		clrHotLinkVisitedText = clrWindowText;
-	}
-	else
-	{
-		clrHotLinkNormalText = ::GetSysColor(COLOR_HOTLIGHT);
-		clrHotLinkHoveredText = RGB(0, 0, 255);   // Bright blue
-		clrHotLinkVisitedText = RGB(128, 0, 128); // Violet
-	}
-
-	hbrBtnShadow = ::GetSysColorBrush(COLOR_BTNSHADOW);
-	ENSURE(hbrBtnShadow != NULL);
-
-	hbrBtnHilite = ::GetSysColorBrush(COLOR_BTNHIGHLIGHT);
-	ENSURE(hbrBtnHilite != NULL);
-
-	hbrWindow = ::GetSysColorBrush(COLOR_WINDOW);
-	ENSURE(hbrWindow != NULL);
-
-	brBtnFace.DeleteObject();
-	brBtnFace.CreateSolidBrush(clrBtnFace);
-
-	brBarFace.DeleteObject();
-	brBarFace.CreateSolidBrush(clrBarFace);
-
-	brActiveCaption.DeleteObject();
-	brActiveCaption.CreateSolidBrush(clrActiveCaption);
-
-	brInactiveCaption.DeleteObject();
-	brInactiveCaption.CreateSolidBrush(clrInactiveCaption);
-
-	brHilite.DeleteObject();
-	brHilite.CreateSolidBrush(clrHilite);
-
-	brBlack.DeleteObject();
-	brBlack.CreateSolidBrush(clrBtnDkShadow);
-
-	brWindow.DeleteObject();
-	brWindow.CreateSolidBrush(clrWindow);
-
-	penHilite.DeleteObject();
-	penHilite.CreatePen(PS_SOLID, 1, afxGlobalData.clrHilite);
-
-	penBarFace.DeleteObject();
-	penBarFace.CreatePen(PS_SOLID, 1, afxGlobalData.clrBarFace);
-
-	penBarShadow.DeleteObject();
-	penBarShadow.CreatePen(PS_SOLID, 1, afxGlobalData.clrBarShadow);
-
-	if (brLight.GetSafeHandle())
-	{
-		brLight.DeleteObject();
-	}
-
-	if (m_nBitsPerPixel > 8)
-	{
-		COLORREF clrLight = RGB(GetRValue(clrBtnFace) +((GetRValue(clrBtnHilite) - GetRValue(clrBtnFace)) / 2 ),
-			GetGValue(clrBtnFace) +((GetGValue(clrBtnHilite) - GetGValue(clrBtnFace)) / 2),
-			GetBValue(clrBtnFace) +((GetBValue(clrBtnHilite) - GetBValue(clrBtnFace)) / 2));
-
-		brLight.CreateSolidBrush(clrLight);
-	}
-	else
-	{
-		HBITMAP hbmGray = CreateDitherBitmap(dc.GetSafeHdc());
-		ENSURE(hbmGray != NULL);
-
-		CBitmap bmp;
-		bmp.Attach(hbmGray);
-
-		brLight.CreatePatternBrush(&bmp);
-	}
 }
 
 BOOL AFX_GLOBAL_DATA::SetMenuFont(LPLOGFONT lpLogFont, BOOL bHorz)
@@ -512,24 +372,6 @@ void AFX_GLOBAL_DATA::CleanUp()
 	fontTooltip.DeleteObject();
 
 	ReleaseTaskBarRefs();
-
-	if (m_bBufferedPaintInited && m_pfBufferedPaintUnInit != NULL)
-	{
-		m_pfBufferedPaintUnInit();
-		m_bBufferedPaintInited = FALSE;
-	}
-
-	if (m_hinstUXThemeDLL != NULL)
-	{
-		::FreeLibrary(m_hinstUXThemeDLL);
-		m_hinstUXThemeDLL = NULL;
-	}
-
-	if (m_hinstDwmapiDLL != NULL)
-	{
-		::FreeLibrary(m_hinstDwmapiDLL);
-		m_hinstDwmapiDLL = NULL;
-	}
 
 	m_bEnableAccessibility = FALSE;
 }
@@ -882,31 +724,11 @@ HCURSOR AFX_GLOBAL_DATA::GetHandCursor()
 
 BOOL AFX_GLOBAL_DATA::Resume()
 {
-	m_hinstUXThemeDLL = ::AfxCtxLoadLibraryW(L"UxTheme.dll");
-
-	if (m_hinstUXThemeDLL != NULL)
-	{
-		m_pfDrawThemeBackground = (DRAWTHEMEPARENTBACKGROUND)::GetProcAddress (m_hinstUXThemeDLL, "DrawThemeParentBackground");
-		m_pfDrawThemeTextEx = (DRAWTHEMETEXTEX)::GetProcAddress (m_hinstUXThemeDLL, "DrawThemeTextEx");
-		m_pfBeginBufferedPaint = (BEGINBUFFEREDPAINT)::GetProcAddress (m_hinstUXThemeDLL, "BeginBufferedPaint");
-		m_pfEndBufferedPaint = (ENDBUFFEREDPAINT)::GetProcAddress (m_hinstUXThemeDLL, "EndBufferedPaint");
-	}
-	else
 	{
 		m_pfDrawThemeBackground = NULL;
 		m_pfDrawThemeTextEx = NULL;
 		m_pfBeginBufferedPaint = NULL;
 		m_pfEndBufferedPaint = NULL;
-	}
-
-	if (m_hinstDwmapiDLL != NULL)
-	{
-		m_hinstDwmapiDLL = ::AfxCtxLoadLibraryW(L"dwmapi.dll");
-		ENSURE(m_hinstDwmapiDLL != NULL);
-
-		m_pfDwmExtendFrameIntoClientArea = (DWMEXTENDFRAMEINTOCLIENTAREA)::GetProcAddress (m_hinstDwmapiDLL, "DwmExtendFrameIntoClientArea");
-		m_pfDwmDefWindowProc = (DWMDEFWINDOWPROC) ::GetProcAddress (m_hinstDwmapiDLL, "DwmDefWindowProc");
-		m_pfDwmIsCompositionEnabled = (DWMISCOMPOSITIONENABLED)::GetProcAddress (m_hinstDwmapiDLL, "DwmIsCompositionEnabled");
 	}
 
 	if (m_bEnableAccessibility)
