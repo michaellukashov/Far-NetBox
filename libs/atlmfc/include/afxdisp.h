@@ -1181,7 +1181,7 @@ void AFXAPI DDX_OCFloatRO(CDataExchange* pDX, int nIDC, DISPID dispid,
 #ifndef _AFX_NO_OCC_SUPPORT
 
 #ifndef __AFXOCC_H__
-	#include <afxocc.h>
+	// #include <afxocc.h>
 #endif
 
 void AFX_CDECL AfxEnableControlContainer(COccManager* pOccManager=NULL);
