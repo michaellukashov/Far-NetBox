@@ -30,7 +30,7 @@
 #endif
 
 #ifndef __shobjidl_h__
-	#include <shobjidl.h>
+	// #include <shobjidl.h>
 #endif
 
 #pragma once

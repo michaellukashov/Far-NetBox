@@ -11,7 +11,7 @@
 #pragma once
 
 #if (NTDDI_VERSION >= NTDDI_WIN7)
-#include <shobjidl.h>
+// #include <shobjidl.h>
 #endif
 
 #ifdef _AFX_PACKING

@@ -91,7 +91,7 @@
 #include <atlsimpcoll.h>
 #include <atltrace.h>
 #include <atlexcept.h>
-#include <atltransactionmanager.h>
+// #include <atltransactionmanager.h>
 
 #define _ATL_TYPELIB_INDEX_LENGTH 10
 #define _ATL_QUOTES_SPACE 2

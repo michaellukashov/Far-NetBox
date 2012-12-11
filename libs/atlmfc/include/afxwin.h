@@ -47,7 +47,7 @@
 	#include <commdlg.h>    // common dialog APIs
 #endif
 
-#include <afxctrlcontainer.h>
+// #include <afxctrlcontainer.h>
 
 #if WINVER >= 0x0600
 #ifndef _WIN32_IE
@@ -58,7 +58,7 @@
 #endif
 
 #ifndef __shobjidl_h__
-	#include <shobjidl.h>    // for IPreviewHandler, IPreviewHandlerVisuals
+	// #include <shobjidl.h>    // for IPreviewHandler, IPreviewHandlerVisuals
 #endif
 
 #ifndef __IThumbnailProvider_INTERFACE_DEFINED__
