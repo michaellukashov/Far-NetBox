@@ -149,8 +149,6 @@ AFX_INLINE short APIENTRY GetFileTitle(LPCTSTR lpszFile, LPTSTR lpszTitle, WORD 
 #pragma warning( push )
 #pragma warning( disable: 4121 )
 
-using ATL::CAtlTransactionManager;
-
 /////////////////////////////////////////////////////////////////////////////
 // Classes declared in this file
 
@@ -4109,8 +4107,7 @@ HINSTANCE AFXAPI AfxFindResourceHandle(LPCTSTR lpszName, LPCTSTR lpszType);
 /// If the function succeeds, the return value is ERROR_SUCCESS. If the function fails, the return value is a nonzero error code defined in Winerror.h</returns>
 /// <param name="hKey">A handle to an open registry key.</param>
 /// <param name="lpSubKey">The name of the key to be deleted.</param>
-/// <param name="pTM">Pointer to CAtlTransactionManager object</param>
-LONG AFXAPI AfxDelRegTreeHelper(HKEY hParentKey, const CString& strKeyName, CAtlTransactionManager* pTM = NULL);
+LONG AFXAPI AfxDelRegTreeHelper(HKEY hParentKey, const CString& strKeyName);
 
 class CRecentFileList;          // forward reference (see afxadv.h)
 
@@ -4318,8 +4315,7 @@ public:
 	/// If the function succeeds, the return value is ERROR_SUCCESS. If the function fails, the return value is a nonzero error code defined in Winerror.h</returns>
 	/// <param name="hParentKey">A handle to an open registry key.</param>
 	/// <param name="strKeyName">The name of the key to be deleted.</param>
-	/// <param name="pTM">Pointer to CAtlTransactionManager object</param>
-	LONG DelRegTree(HKEY hParentKey, const CString& strKeyName, CAtlTransactionManager* pTM = NULL);
+	LONG DelRegTree(HKEY hParentKey, const CString& strKeyName);
 
 // Running Operations - to be done on a running application
 	// Dealing with document templates
@@ -4429,15 +4425,13 @@ public:
 	/// <returns> 
 	/// Section key if the function succeeds, NULL - otherwise</returns>
 	/// <param name="lpszSection">The name of the key to be obtained.</param>
-	/// <param name="pTM">Pointer to CAtlTransactionManager object</param>
-	HKEY GetSectionKey(LPCTSTR lpszSection, CAtlTransactionManager* pTM = NULL);
+	HKEY GetSectionKey(LPCTSTR lpszSection);
 
 	/// <summary>
 	/// returns key for HKEY_CURRENT_USER\"Software"\RegistryKey\ProfileName.</summary>
 	/// <returns> 
 	/// Applixation key if the function succeeds, NULL - otherwise</returns>
-	/// <param name="pTM">Pointer to CAtlTransactionManager object</param>
-	HKEY GetAppRegistryKey(CAtlTransactionManager* pTM = NULL);
+	HKEY GetAppRegistryKey();
 
 protected:
 	//{{AFX_MSG(CWinApp)

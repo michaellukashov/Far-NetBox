@@ -19,16 +19,6 @@ CFileFind::CFileFind()
 	m_pNextInfo = NULL;
 	m_hContext = NULL;
 	m_chDirSeparator = '\\';
-	m_pTM = NULL;
-}
-
-CFileFind::CFileFind(CAtlTransactionManager* pTM)
-{
-	m_pFoundInfo = NULL;
-	m_pNextInfo = NULL;
-	m_hContext = NULL;
-	m_chDirSeparator = '\\';
-	m_pTM = pTM;
 }
 
 CFileFind::~CFileFind()
@@ -84,9 +74,7 @@ BOOL CFileFind::FindFile(LPCTSTR pstrName /* = NULL */,
 
 	Checked::tcscpy_s(pFindData->cFileName, _countof(pFindData->cFileName), pstrName);
 
-	m_hContext = m_pTM != NULL ?
-		m_pTM->FindFirstFile(pstrName, (WIN32_FIND_DATA*) m_pNextInfo) :
-		::FindFirstFile(pstrName, (WIN32_FIND_DATA*) m_pNextInfo);
+	m_hContext = ::FindFirstFile(pstrName, (WIN32_FIND_DATA*) m_pNextInfo);
 
 	if (m_hContext == INVALID_HANDLE_VALUE)
 	{

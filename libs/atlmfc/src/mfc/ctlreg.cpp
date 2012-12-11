@@ -567,7 +567,7 @@ Error:
 	return bSuccess;
 }
 
-LONG AFXAPI AfxRegCreateKey(HKEY hKey, LPCTSTR lpSubKey, PHKEY phkResult, CAtlTransactionManager* pTM)
+LONG AFXAPI AfxRegCreateKey(HKEY hKey, LPCTSTR lpSubKey, PHKEY phkResult)
 {
 	CString strSubKey = lpSubKey;
 
@@ -575,31 +575,25 @@ LONG AFXAPI AfxRegCreateKey(HKEY hKey, LPCTSTR lpSubKey, PHKEY phkResult, CAtlTr
 
 	DWORD dw = 0;
 
-	return pTM != NULL ? 
-		pTM->RegCreateKeyEx(hKey, strSubKey, 0, REG_NONE, REG_OPTION_NON_VOLATILE, KEY_WRITE | KEY_READ, NULL, phkResult, &dw) : 
-		::RegCreateKeyEx(hKey, strSubKey, 0, REG_NONE, REG_OPTION_NON_VOLATILE, KEY_WRITE | KEY_READ, NULL, phkResult, &dw);
+	return ::RegCreateKeyEx(hKey, strSubKey, 0, REG_NONE, REG_OPTION_NON_VOLATILE, KEY_WRITE | KEY_READ, NULL, phkResult, &dw);
 }
 
-LONG AFXAPI AfxRegOpenKey(HKEY hKey, LPCTSTR lpSubKey, PHKEY phkResult, CAtlTransactionManager* pTM)
+LONG AFXAPI AfxRegOpenKey(HKEY hKey, LPCTSTR lpSubKey, PHKEY phkResult)
 {
 	CString strSubKey = lpSubKey;
 
 	_AFX_REDIRECT_REGISTRY_HIVE(hKey, strSubKey)
 
-	return pTM != NULL ? 
-		pTM->RegOpenKeyEx(hKey, strSubKey, 0, KEY_WRITE | KEY_READ, phkResult) : 
-		::RegOpenKeyEx(hKey, strSubKey, 0, KEY_WRITE | KEY_READ, phkResult);
+	return ::RegOpenKeyEx(hKey, strSubKey, 0, KEY_WRITE | KEY_READ, phkResult);
 }
 
-LONG AFXAPI AfxRegOpenKeyEx(HKEY hKey, LPCTSTR lpSubKey,  DWORD ulOptions, REGSAM samDesired, PHKEY phkResult, CAtlTransactionManager* pTM)
+LONG AFXAPI AfxRegOpenKeyEx(HKEY hKey, LPCTSTR lpSubKey,  DWORD ulOptions, REGSAM samDesired, PHKEY phkResult)
 {
 	CString strSubKey = lpSubKey;
 
 	_AFX_REDIRECT_REGISTRY_HIVE(hKey, strSubKey)
 
-	return pTM != NULL ? 
-		pTM->RegOpenKeyEx(hKey, strSubKey, ulOptions, samDesired, phkResult) :
-		::RegOpenKeyEx(hKey, strSubKey, ulOptions, samDesired, phkResult);
+	return ::RegOpenKeyEx(hKey, strSubKey, ulOptions, samDesired, phkResult);
 }
 
 LONG AFXAPI AfxRegQueryValue(HKEY hKey, LPCTSTR lpSubKey,  LPTSTR lpValue,  PLONG lpcbValue)
@@ -620,15 +614,13 @@ LONG AFXAPI AfxRegSetValue(HKEY hKey, LPCTSTR lpSubKey,  DWORD dwType, LPCTSTR l
 	return ::RegSetValue(hKey, strSubKey, dwType, lpData, cbData);
 }
 
-LONG AFXAPI AfxRegDeleteKey(HKEY hKey, LPCTSTR lpSubKey, CAtlTransactionManager* pTM)
+LONG AFXAPI AfxRegDeleteKey(HKEY hKey, LPCTSTR lpSubKey)
 {
 	CString strSubKey = lpSubKey;
 
 	_AFX_REDIRECT_REGISTRY_HIVE(hKey, strSubKey)
 
-	return pTM != NULL ? 
-		pTM->RegDeleteKey(hKey, strSubKey) : 
-		::RegDeleteKey(hKey, strSubKey);
+	return ::RegDeleteKey(hKey, strSubKey);
 }
 
 /////////////////////////////////////////////////////////////////////////////

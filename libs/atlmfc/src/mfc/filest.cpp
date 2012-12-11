@@ -111,9 +111,7 @@ BOOL CFile::GetStatus(CFileStatus& rStatus) const
 			rStatus.m_attribute = 0;
 		else
 		{
-			DWORD dwAttribute = m_pTM != NULL ? 
-				m_pTM->GetFileAttributes(m_strFileName) :
-				::GetFileAttributes(m_strFileName);
+			DWORD dwAttribute = ::GetFileAttributes(m_strFileName);
 
 			// don't return an error for this because previous versions of MFC didn't
 			if (dwAttribute == 0xFFFFFFFF)
@@ -167,7 +165,7 @@ BOOL CFile::GetStatus(CFileStatus& rStatus) const
 	return TRUE;
 }
 
-BOOL PASCAL CFile::GetStatus(LPCTSTR lpszFileName, CFileStatus& rStatus, CAtlTransactionManager* pTM)
+BOOL PASCAL CFile::GetStatus(LPCTSTR lpszFileName, CFileStatus& rStatus)
 {
 	ASSERT( lpszFileName != NULL );
 
@@ -191,12 +189,6 @@ BOOL PASCAL CFile::GetStatus(LPCTSTR lpszFileName, CFileStatus& rStatus, CAtlTra
 
 	WIN32_FILE_ATTRIBUTE_DATA fileAttributeData;
 
-	if (pTM != NULL)
-	{
-		if (!pTM->GetFileAttributesEx(lpszFileName, GetFileExInfoStandard, &fileAttributeData))
-			return FALSE;
-	}
-	else
 	{
 		if (!GetFileAttributesEx(lpszFileName, GetFileExInfoStandard, &fileAttributeData))
 			return FALSE;
@@ -275,7 +267,7 @@ void AFX_CDECL AfxTimeToFileTime(const CTime& time, LPFILETIME pFileTime)
 		CFileException::ThrowOsError((LONG)::GetLastError());
 }
 
-void PASCAL CFile::SetStatus(LPCTSTR lpszFileName, const CFileStatus& status, CAtlTransactionManager* pTM)
+void PASCAL CFile::SetStatus(LPCTSTR lpszFileName, const CFileStatus& status)
 {
 	FILETIME creationTime;
 	FILETIME lastAccessTime;
@@ -284,7 +276,7 @@ void PASCAL CFile::SetStatus(LPCTSTR lpszFileName, const CFileStatus& status, CA
 	LPFILETIME lpLastAccessTime = NULL;
 	LPFILETIME lpLastWriteTime = NULL;
 
-	DWORD wAttr = (pTM != NULL) ? pTM->GetFileAttributes((LPTSTR)lpszFileName) : GetFileAttributes((LPTSTR)lpszFileName);
+	DWORD wAttr = GetFileAttributes((LPTSTR)lpszFileName);
 	if (wAttr == (DWORD)-1L)
 		CFileException::ThrowOsError((LONG)GetLastError(), lpszFileName);
 
@@ -294,7 +286,7 @@ void PASCAL CFile::SetStatus(LPCTSTR lpszFileName, const CFileStatus& status, CA
 		// This way we will be able to modify the time assuming the
 		// caller changed the file from readonly.
 
-		BOOL bRes = (pTM != NULL) ? pTM->SetFileAttributes((LPTSTR)lpszFileName, (DWORD)status.m_attribute) : SetFileAttributes((LPTSTR)lpszFileName, (DWORD)status.m_attribute);
+		BOOL bRes = SetFileAttributes((LPTSTR)lpszFileName, (DWORD)status.m_attribute);
 		if (!bRes)
 			CFileException::ThrowOsError((LONG)GetLastError(), lpszFileName);
 	}
@@ -319,10 +311,7 @@ void PASCAL CFile::SetStatus(LPCTSTR lpszFileName, const CFileStatus& status, CA
 			lpCreationTime = &creationTime;
 		}
 
-		HANDLE hFile = pTM != NULL ?
-			pTM->CreateFile (lpszFileName, GENERIC_READ|GENERIC_WRITE,
-				FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL) :
-			::CreateFile(lpszFileName, GENERIC_READ|GENERIC_WRITE,
+		HANDLE hFile = ::CreateFile(lpszFileName, GENERIC_READ|GENERIC_WRITE,
 				FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 
 		if (hFile == INVALID_HANDLE_VALUE)
@@ -341,9 +330,7 @@ void PASCAL CFile::SetStatus(LPCTSTR lpszFileName, const CFileStatus& status, CA
 
 	if ((DWORD)status.m_attribute != wAttr && !(wAttr & readOnly))
 	{
-		BOOL bRes = (pTM != NULL) ?
-			pTM->SetFileAttributes((LPTSTR)lpszFileName, (DWORD)status.m_attribute) :
-			SetFileAttributes((LPTSTR)lpszFileName, (DWORD)status.m_attribute);
+		BOOL bRes = SetFileAttributes((LPTSTR)lpszFileName, (DWORD)status.m_attribute);
 
 		if (!bRes)
 			CFileException::ThrowOsError((LONG)GetLastError(), lpszFileName);

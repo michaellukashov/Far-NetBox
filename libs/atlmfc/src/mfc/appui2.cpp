@@ -157,12 +157,12 @@ BOOL CWinApp::Unregister()
 // Thus, to delete a tree,  one must recursively enumerate and
 // delete all of the sub-keys.
 
-LONG CWinApp::DelRegTree(HKEY hParentKey, const CString& strKeyName, CAtlTransactionManager* pTM)
+LONG CWinApp::DelRegTree(HKEY hParentKey, const CString& strKeyName)
 {
-	return AfxDelRegTreeHelper(hParentKey, strKeyName, pTM);
+	return AfxDelRegTreeHelper(hParentKey, strKeyName);
 }
 
-LONG AFXAPI AfxDelRegTreeHelper(HKEY hParentKey, const CString& strKeyName, CAtlTransactionManager* pTM)
+LONG AFXAPI AfxDelRegTreeHelper(HKEY hParentKey, const CString& strKeyName)
 {
 	TCHAR   szSubKeyName[MAX_PATH + 1];
 	HKEY    hCurrentKey;
@@ -175,9 +175,7 @@ LONG AFXAPI AfxDelRegTreeHelper(HKEY hParentKey, const CString& strKeyName, CAtl
 		hParentKey = HKEY_CURRENT_USER;
 	}
 
-	dwResult = pTM != NULL ? 
-		pTM->RegOpenKeyEx(hParentKey, strRedirectedKeyName, 0, KEY_WRITE | KEY_READ, &hCurrentKey) : 
-		::RegOpenKeyEx(hParentKey, strRedirectedKeyName, 0, KEY_WRITE | KEY_READ, &hCurrentKey);
+	dwResult = ::RegOpenKeyEx(hParentKey, strRedirectedKeyName, 0, KEY_WRITE | KEY_READ, &hCurrentKey);
 	if (dwResult == ERROR_SUCCESS)
 	{
 		// Remove all subkeys of the key to delete
@@ -186,7 +184,7 @@ LONG AFXAPI AfxDelRegTreeHelper(HKEY hParentKey, const CString& strKeyName, CAtl
 			try
 			{
 				// temp CString constructed from szSubKeyName can throw in Low Memory condition.
-				if ((dwResult = AfxDelRegTreeHelper(hCurrentKey, szSubKeyName, pTM)) != ERROR_SUCCESS)
+				if ((dwResult = AfxDelRegTreeHelper(hCurrentKey, szSubKeyName)) != ERROR_SUCCESS)
 					break;
 			}
 			catch(CMemoryException* e)
@@ -200,9 +198,7 @@ LONG AFXAPI AfxDelRegTreeHelper(HKEY hParentKey, const CString& strKeyName, CAtl
 		// If all went well, we should now be able to delete the requested key
 		if ((dwResult == ERROR_NO_MORE_ITEMS) || (dwResult == ERROR_BADKEY))
 		{
-			dwResult = pTM != NULL ? 
-				pTM->RegDeleteKey(hParentKey, strRedirectedKeyName) :
-				::RegDeleteKey(hParentKey, strRedirectedKeyName);
+			dwResult = ::RegDeleteKey(hParentKey, strRedirectedKeyName);
 		}
 		RegCloseKey(hCurrentKey);
 	}
