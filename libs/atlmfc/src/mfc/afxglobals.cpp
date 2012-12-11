@@ -36,23 +36,6 @@ AFX_GLOBAL_DATA::AFX_GLOBAL_DATA()
 	hbrBtnHilite = NULL;
 	hbrWindow = NULL;
 
-	{
-		m_pfDrawThemeBackground = NULL;
-		m_pfDrawThemeTextEx = NULL;
-
-		m_pfBufferedPaintInit = NULL;
-		m_pfBufferedPaintUnInit = NULL;
-
-		m_pfBeginBufferedPaint = NULL;
-		m_pfEndBufferedPaint = NULL;
-	}
-
-	{
-		m_pfDwmExtendFrameIntoClientArea = NULL;
-		m_pfDwmDefWindowProc = NULL;
-		m_pfDwmIsCompositionEnabled = NULL;
-	}
-
 	m_hcurStretch = NULL;
 	m_hcurStretchVert = NULL;
 	m_hcurHand = NULL;
@@ -83,12 +66,6 @@ AFX_GLOBAL_DATA::AFX_GLOBAL_DATA()
 	m_bIsWhiteHighContrast = FALSE;
 
 	m_bUseBuiltIn32BitIcons = TRUE;
-
-	m_bComInitialized = FALSE;
-
-	m_pTaskbarList = NULL;
-	m_pTaskbarList3 = NULL;
-	m_bTaskBarInterfacesAvailable = TRUE;
 
 	EnableAccessibilitySupport();
 }
@@ -159,47 +136,6 @@ BOOL AFX_GLOBAL_DATA::SetMenuFont(LPLOGFONT lpLogFont, BOOL bHorz)
 {
 	ENSURE(lpLogFont != NULL);
 
-	if (bHorz)
-	{
-		// Create regular font:
-		fontRegular.DeleteObject();
-		if (!fontRegular.CreateFontIndirect(lpLogFont))
-		{
-			ASSERT(FALSE);
-			return FALSE;
-		}
-
-		// Create underline font:
-		lpLogFont->lfUnderline = TRUE;
-		fontUnderline.DeleteObject();
-		fontUnderline.CreateFontIndirect(lpLogFont);
-		lpLogFont->lfUnderline = FALSE;
-
-		// Create bold font(used in the default menu items):
-		long lSavedWeight = lpLogFont->lfWeight;
-		lpLogFont->lfWeight = 700;
-
-		fontBold.DeleteObject();
-		BOOL bResult = fontBold.CreateFontIndirect(lpLogFont);
-
-		lpLogFont->lfWeight = lSavedWeight; // Restore weight
-
-		if (!bResult)
-		{
-			ASSERT(FALSE);
-			return FALSE;
-		}
-	}
-	else // Vertical font
-	{
-		fontVert.DeleteObject();
-		if (!fontVert.CreateFontIndirect(lpLogFont))
-		{
-			ASSERT(FALSE);
-			return FALSE;
-		}
-	}
-
 	UpdateTextMetrics();
 	return TRUE;
 }
@@ -207,9 +143,6 @@ BOOL AFX_GLOBAL_DATA::SetMenuFont(LPLOGFONT lpLogFont, BOOL bHorz)
 void AFX_GLOBAL_DATA::UpdateTextMetrics()
 {
 	CWindowDC dc(NULL);
-
-	CFont* pOldFont = dc.SelectObject(&fontRegular);
-	ENSURE(pOldFont != NULL);
 
 	TEXTMETRIC tm;
 	dc.GetTextMetrics(&tm);
@@ -219,7 +152,6 @@ void AFX_GLOBAL_DATA::UpdateTextMetrics()
 	m_nTextHeightHorz = tm.tmHeight + nExtra;
 	m_nTextWidthHorz = tm.tmMaxCharWidth + nExtra;
 
-	dc.SelectObject(&fontVert);
 	dc.GetTextMetrics(&tm);
 
 	nExtra = tm.tmHeight < 15 ? 2 : 5;
@@ -227,134 +159,7 @@ void AFX_GLOBAL_DATA::UpdateTextMetrics()
 	m_nTextHeightVert = tm.tmHeight + nExtra;
 	m_nTextWidthVert = tm.tmMaxCharWidth + nExtra;
 
-	dc.SelectObject(pOldFont);
 }
-
-HBITMAP AFX_GLOBAL_DATA::CreateDitherBitmap(HDC hDC)
-{
-	struct  // BITMAPINFO with 16 colors
-	{
-		BITMAPINFOHEADER bmiHeader;
-		RGBQUAD      bmiColors[16];
-	}
-	bmi;
-	memset(&bmi, 0, sizeof(bmi));
-
-	bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-	bmi.bmiHeader.biWidth = 8;
-	bmi.bmiHeader.biHeight = 8;
-	bmi.bmiHeader.biPlanes = 1;
-	bmi.bmiHeader.biBitCount = 1;
-	bmi.bmiHeader.biCompression = BI_RGB;
-
-	COLORREF clr = afxGlobalData.clrBtnFace;
-
-	bmi.bmiColors[0].rgbBlue = GetBValue(clr);
-	bmi.bmiColors[0].rgbGreen = GetGValue(clr);
-	bmi.bmiColors[0].rgbRed = GetRValue(clr);
-
-	clr = ::GetSysColor(COLOR_BTNHIGHLIGHT);
-	bmi.bmiColors[1].rgbBlue = GetBValue(clr);
-	bmi.bmiColors[1].rgbGreen = GetGValue(clr);
-	bmi.bmiColors[1].rgbRed = GetRValue(clr);
-
-	// initialize the brushes
-	long patGray[8];
-	for (int i = 0; i < 8; i++)
-		patGray[i] = (i & 1) ? 0xAAAA5555L : 0x5555AAAAL;
-
-	HBITMAP hbm = CreateDIBitmap(hDC, &bmi.bmiHeader, CBM_INIT, (LPBYTE)patGray, (LPBITMAPINFO)&bmi, DIB_RGB_COLORS);
-	return hbm;
-}
-
-#if (WINVER >= 0x0601)
-ITaskbarList* AFX_GLOBAL_DATA::GetITaskbarList()
-{
-	HRESULT hr = S_OK;
-
-	if (!bIsWindows7 || !m_bTaskBarInterfacesAvailable)
-	{
-		return NULL;
-	}
-
-	if (m_pTaskbarList != NULL)
-	{
-		return m_pTaskbarList;
-	}
-
-	if (!m_bComInitialized)
-	{
-		hr = CoInitialize(NULL);
-		if (SUCCEEDED(hr))
-		{
-			m_bComInitialized = TRUE;
-		}
-	}
-
-	if (SUCCEEDED(hr))
-	{
-		hr = CoCreateInstance(CLSID_TaskbarList, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&m_pTaskbarList));
-	}
-
-	ASSERT(SUCCEEDED(hr));
-	return m_pTaskbarList;
-}
-
-ITaskbarList3* AFX_GLOBAL_DATA::GetITaskbarList3()
-{
-	HRESULT hr = S_OK;
-
-	if (!bIsWindows7 || !m_bTaskBarInterfacesAvailable)
-	{
-		return NULL;
-	}
-
-	if (m_pTaskbarList3 != NULL)
-	{
-		return m_pTaskbarList3;
-	}
-
-	if (!m_bComInitialized)
-	{
-		hr = CoInitialize(NULL);
-		if (SUCCEEDED(hr))
-		{
-			m_bComInitialized = TRUE;
-		}
-	}
-
-	if (SUCCEEDED(hr))
-	{
-		hr = CoCreateInstance(CLSID_TaskbarList, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&m_pTaskbarList3));
-	}
-
-	ASSERT(SUCCEEDED(hr));
-	return m_pTaskbarList3;
-}
-
-void AFX_GLOBAL_DATA::ReleaseTaskBarRefs()
-{
-	m_bTaskBarInterfacesAvailable = FALSE;
-
-	if (m_pTaskbarList != NULL)
-	{
-		RELEASE(m_pTaskbarList);
-		m_pTaskbarList = NULL;
-	}
-
-	if (m_pTaskbarList3 != NULL)
-	{
-		RELEASE(m_pTaskbarList3);
-		m_pTaskbarList3 = NULL;
-	}
-
-	if (m_bComInitialized)
-	{
-		CoUninitialize();
-		m_bComInitialized = FALSE;
-	}
-}
-#endif
 
 void AFX_GLOBAL_DATA::CleanUp()
 {
@@ -362,16 +167,6 @@ void AFX_GLOBAL_DATA::CleanUp()
 	{
 		brLight.DeleteObject();
 	}
-
-	// cleanup fonts:
-	fontRegular.DeleteObject();
-	fontBold.DeleteObject();
-	fontUnderline.DeleteObject();
-	fontVert.DeleteObject();
-	fontVertCaption.DeleteObject();
-	fontTooltip.DeleteObject();
-
-	ReleaseTaskBarRefs();
 
 	m_bEnableAccessibility = FALSE;
 }
@@ -397,13 +192,6 @@ BOOL AFX_GLOBAL_DATA::DrawParentBackground(CWnd* pWnd, CDC* pDC, LPRECT rectClip
 
 	CWnd* pParent = pWnd->GetParent();
 	ASSERT_VALID(pParent);
-
-	// In Windows XP, we need to call DrawThemeParentBackground function to implement
-	// transparent controls
-	if (m_pfDrawThemeBackground != NULL)
-	{
-		bRes = (*m_pfDrawThemeBackground)(pWnd->GetSafeHwnd(), pDC->GetSafeHdc(), rectClip) == S_OK;
-	}
 
 	if (!bRes)
 	{
@@ -537,200 +325,8 @@ CString AFX_GLOBAL_DATA::RegisterWindowClass(LPCTSTR lpszClassNamePrefix)
 	return strClassName;
 }
 
-BOOL AFX_GLOBAL_DATA::ExcludeTag(CString& strBuffer, LPCTSTR lpszTag, CString& strTag, BOOL bIsCharsList /* = FALSE*/)
-{
-	const int iBufLen = strBuffer.GetLength();
-
-	CString strTagStart = _T("<");
-	strTagStart += lpszTag;
-	strTagStart += _T(">");
-
-	const int iTagStartLen = strTagStart.GetLength();
-
-	int iStart = -1;
-
-	int iIndexStart = strBuffer.Find(strTagStart);
-	if (iIndexStart < 0)
-	{
-		return FALSE;
-	}
-
-	iStart = iIndexStart + iTagStartLen;
-
-	CString strTagEnd = _T("</");
-	strTagEnd += lpszTag;
-	strTagEnd += _T('>');
-
-	const int iTagEndLen = strTagEnd.GetLength();
-
-	int iIndexEnd =  -1;
-	int nBalanse = 1;
-	for (int i = iStart; i < iBufLen - iTagEndLen + 1; i ++)
-	{
-		if (strBuffer [i] != '<')
-		{
-			continue;
-		}
-
-		if (i < iBufLen - iTagStartLen && _tcsncmp(strBuffer.Mid(i), strTagStart, iTagStartLen) == 0)
-		{
-			i += iTagStartLen - 1;
-			nBalanse ++;
-			continue;
-		}
-
-		if (_tcsncmp(strBuffer.Mid(i), strTagEnd, iTagEndLen) == 0)
-		{
-			nBalanse --;
-			if (nBalanse == 0)
-			{
-				iIndexEnd = i;
-				break;
-			}
-
-			i += iTagEndLen - 1;
-		}
-	}
-
-	if (iIndexEnd == -1 || iStart > iIndexEnd)
-	{
-		return FALSE;
-	}
-
-	strTag = strBuffer.Mid(iStart, iIndexEnd - iStart);
-	strTag.TrimLeft();
-	strTag.TrimRight();
-
-	strBuffer.Delete(iIndexStart, iIndexEnd + iTagEndLen - iIndexStart);
-
-	if (bIsCharsList)
-	{
-		if (strTag.GetLength() > 1 && strTag [0] == _T('\"'))
-		{
-			strTag = strTag.Mid(1, strTag.GetLength() - 2);
-		}
-
-		strTag.Replace(_T("\\t"), _T("\t"));
-		strTag.Replace(_T("\\n"), _T("\n"));
-		strTag.Replace(_T("\\r"), _T("\r"));
-		strTag.Replace(_T("\\b"), _T("\b"));
-		strTag.Replace(_T("LT"), _T("<"));
-		strTag.Replace(_T("GT"), _T(">"));
-		strTag.Replace(_T("AMP"), _T("&"));
-	}
-
-	return TRUE;
-}
-
-BOOL AFX_GLOBAL_DATA::DwmExtendFrameIntoClientArea(HWND hWnd, AFX_MARGINS* pMargins)
-{
-	if (m_pfDwmExtendFrameIntoClientArea == NULL)
-	{
-		return FALSE;
-	}
-
-	HRESULT hres = (*m_pfDwmExtendFrameIntoClientArea)(hWnd, pMargins);
-	return hres == S_OK;
-}
-
-LRESULT AFX_GLOBAL_DATA::DwmDefWindowProc(HWND hWnd, UINT message, WPARAM wp, LPARAM lp)
-{
-	if (m_pfDwmDefWindowProc == NULL)
-	{
-		return(LRESULT)-1;
-	}
-
-	LRESULT lres = 0;
-	(*m_pfDwmDefWindowProc)(hWnd, message, wp, lp, &lres);
-
-	return lres;
-}
-
-BOOL AFX_GLOBAL_DATA::DwmIsCompositionEnabled()
-{
-	if (m_pfDwmIsCompositionEnabled == NULL || bDisableAero)
-	{
-		return FALSE;
-	}
-
-	BOOL bEnabled = FALSE;
-
-	(*m_pfDwmIsCompositionEnabled)(&bEnabled);
-	return bEnabled;
-}
-
-BOOL AFX_GLOBAL_DATA::DrawTextOnGlass(HTHEME hTheme, CDC* pDC, int iPartId, int iStateId, CString strText, CRect rect, DWORD dwFlags, int nGlowSize, COLORREF clrText)
-{
-	//---- bits used in dwFlags of DTTOPTS ----
-#define AFX_DTT_TEXTCOLOR    (1UL << 0)      // crText has been specified
-#define AFX_DTT_BORDERCOLOR  (1UL << 1)      // crBorder has been specified
-#define AFX_DTT_SHADOWCOLOR  (1UL << 2)      // crShadow has been specified
-#define AFX_DTT_SHADOWTYPE   (1UL << 3)      // iTextShadowType has been specified
-#define AFX_DTT_SHADOWOFFSET (1UL << 4)      // ptShadowOffset has been specified
-#define AFX_DTT_BORDERSIZE   (1UL << 5)      // nBorderSize has been specified
-#define AFX_DTT_FONTPROP     (1UL << 6)      // iFontPropId has been specified
-#define AFX_DTT_COLORPROP    (1UL << 7)      // iColorPropId has been specified
-#define AFX_DTT_STATEID      (1UL << 8)      // IStateId has been specified
-#define AFX_DTT_CALCRECT     (1UL << 9)      // Use pRect as and in/out parameter
-#define AFX_DTT_APPLYOVERLAY (1UL << 10)     // fApplyOverlay has been specified
-#define AFX_DTT_GLOWSIZE     (1UL << 11)     // iGlowSize has been specified
-#define AFX_DTT_CALLBACK     (1UL << 12)     // pfnDrawTextCallback has been specified
-#define AFX_DTT_COMPOSITED   (1UL << 13)     // Draws text with antialiased alpha(needs a DIB section)
-
-	if (hTheme == NULL || m_pfDrawThemeTextEx == NULL || !DwmIsCompositionEnabled())
-	{
-		pDC->DrawText(strText, rect, dwFlags);
-		return FALSE;
-	}
-
-	CComBSTR bstmp = (LPCTSTR)strText;
-
-	wchar_t* wbuf = new wchar_t[bstmp.Length() + 1];
-	wcscpy_s(wbuf, bstmp.Length() + 1, bstmp);
-
-	AFX_DTTOPTS dto;
-	memset(&dto, 0, sizeof(AFX_DTTOPTS));
-	dto.dwSize = sizeof(AFX_DTTOPTS);
-	dto.dwFlags = AFX_DTT_COMPOSITED;
-
-	if (nGlowSize > 0)
-	{
-		dto.dwFlags |= AFX_DTT_GLOWSIZE;
-		dto.iGlowSize = nGlowSize;
-	}
-
-	if (clrText != (COLORREF)-1)
-	{
-		dto.dwFlags |= AFX_DTT_TEXTCOLOR;
-		dto.crText = clrText;
-	}
-
-	(*m_pfDrawThemeTextEx)(hTheme, pDC->GetSafeHdc(), iPartId, iStateId, wbuf, -1, dwFlags, rect, &dto);
-
-	delete [] wbuf;
-
-	return TRUE;
-}
-
-HCURSOR AFX_GLOBAL_DATA::GetHandCursor()
-{
-	if (m_hcurHand == NULL)
-	{
-		m_hcurHand = ::LoadCursorW(NULL, MAKEINTRESOURCEW(IDC_HAND));
-	}
-
-	return m_hcurHand;
-}
-
 BOOL AFX_GLOBAL_DATA::Resume()
 {
-	{
-		m_pfDrawThemeBackground = NULL;
-		m_pfDrawThemeTextEx = NULL;
-		m_pfBeginBufferedPaint = NULL;
-		m_pfEndBufferedPaint = NULL;
-	}
-
 	if (m_bEnableAccessibility)
 	{
 		EnableAccessibilitySupport();
@@ -779,24 +375,3 @@ BOOL AFXAPI AfxIsMFCToolBar(CWnd* pWnd)
 	return FALSE;
 }
 
-HRESULT AFX_GLOBAL_DATA::ShellCreateItemFromParsingName(PCWSTR pszPath, IBindCtx *pbc, REFIID riid, void **ppv)
-{
-	static HMODULE hShellDll = AfxCtxLoadLibrary(_T("Shell32.dll"));
-	ENSURE(hShellDll != NULL);
-
-	typedef	HRESULT (__stdcall *PFNSHCREATEITEMFROMPARSINGNAME)(
-		PCWSTR,
-		IBindCtx*,
-		REFIID,
-		void**
-		);
-
-	PFNSHCREATEITEMFROMPARSINGNAME pSHCreateItemFromParsingName =
-		(PFNSHCREATEITEMFROMPARSINGNAME)GetProcAddress(hShellDll, "SHCreateItemFromParsingName");
-	if (pSHCreateItemFromParsingName == NULL)
-	{
-		return E_FAIL;
-	}
-
-	return (*pSHCreateItemFromParsingName)(pszPath, pbc, riid, ppv);
-}

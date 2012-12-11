@@ -74,10 +74,6 @@ typedef struct _AFX_MARGINS {
 	int cyBottomHeight;
 } AFX_MARGINS;
 
-typedef HRESULT (__stdcall * DWMEXTENDFRAMEINTOCLIENTAREA)(HWND hWnd, const AFX_MARGINS* pMargins);
-typedef HRESULT (__stdcall * DWMDEFWINDOWPROC)(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, LRESULT *plResult);
-typedef HRESULT (__stdcall * DWMISCOMPOSITIONENABLED)(BOOL* pfEnabled);
-
 typedef int (WINAPI *AFX_DTT_CALLBACK_PROC)(HDC hdc, LPWSTR pszText, int cchText, LPRECT prc, UINT dwFlags, LPARAM lParam);
 
 typedef struct _AFX_DTTOPTS {
@@ -177,17 +173,6 @@ struct AFX_GLOBAL_DATA
 	// Shell icon sizes:
 	CSize m_sizeSmallIcon;
 
-	// Toolbar and menu fonts:
-	CFont fontRegular;
-	CFont fontTooltip;
-	CFont fontBold;
-	CFont fontDefaultGUIBold;
-	CFont fontUnderline;
-	CFont fontDefaultGUIUnderline;
-	CFont fontVert;
-	CFont fontVertCaption;
-	CFont fontSmall;
-	CFont fontMarlett;	// Standard Windows menu symbols
 	CRect m_rectVirtual;
 
 	BOOL  bIsWindowsVista;
@@ -310,46 +295,9 @@ struct AFX_GLOBAL_DATA
 	void EnableAccessibilitySupport(BOOL bEnable = TRUE);
 
 	CString RegisterWindowClass(LPCTSTR lpszClassNamePrefix);
-	BOOL ExcludeTag(CString& strBuffer, LPCTSTR lpszTag, CString& strTag, BOOL bIsCharsList = FALSE);
-
-	BOOL DwmExtendFrameIntoClientArea(HWND hWnd, AFX_MARGINS* pMargins);
-	LRESULT DwmDefWindowProc(HWND hWnd, UINT message, WPARAM wp, LPARAM lp);
-	BOOL DwmIsCompositionEnabled();
-
-	BOOL DrawTextOnGlass(HTHEME hTheme, CDC* pDC, int iPartId, int iStateId, CString strText,
-		CRect rect, DWORD dwFlags, int nGlowSize = 0, COLORREF clrText = (COLORREF)-1);
 
 	BOOL Resume();
 	BOOL GetNonClientMetrics (NONCLIENTMETRICS& info);
-
-#if (WINVER >= 0x0600)
-	/// <summary>
-	/// Creates and initializes a Shell item object from a parsing name.</summary>
-	/// <param name="pszPath">[in] A pointer to a display name.</param> 
-	/// <param name="pbc">A pointer to a bind context that controls the parsing operation.</param> 
-	/// <param name="riid">A reference to an interface ID.</param> 
-	/// <param name="ppv">[out] When this function returns, contains the interface pointer requested in riid. This will typically be IShellItem or IShellItem2.</param> 
-	/// <returns>Returns S_OK if successful, or an error value otherwise. </returns>
-	HRESULT ShellCreateItemFromParsingName(PCWSTR pszPath, IBindCtx *pbc, REFIID riid, void **ppv);
-#endif
-
-#if (NTDDI_VERSION >= NTDDI_WIN7)
-	/// <summary>
-	/// Creates and stores in the global data a pointer to ITaskBarList interface.</summary>
-	/// <returns>A pointer to ITaskbarList interface if creation of a task bar list object succeeds, or NULL if creation fails or current
-	/// Operation System is less than Windows 7.</returns>
-	ITaskbarList  *GetITaskbarList();
-
-	/// <summary>
-	/// Creates and stores in the global data a pointer to ITaskBarList3 interface.</summary>
-	/// <returns>A pointer to ITaskbarList3 interface if creation creation of a task bar list object succeeds, or NULL if creation fails or current
-	/// Operation System is less than Windows 7.</returns>
-	ITaskbarList3 *GetITaskbarList3();
-
-	/// <summary>
-	/// Releases interfaces obtained through GetITaskbarList and GetITaskbarList3 methods.</summary>
-	void ReleaseTaskBarRefs();
-#endif
 
 protected:
 
@@ -361,22 +309,6 @@ protected:
 	int m_nTextWidthHorz;
 	int m_nTextWidthVert;
 
-	DRAWTHEMEPARENTBACKGROUND    m_pfDrawThemeBackground;
-	DRAWTHEMETEXTEX              m_pfDrawThemeTextEx;
-	BUFFEREDPAINTINIT            m_pfBufferedPaintInit;
-	BUFFEREDPAINTUNINIT          m_pfBufferedPaintUnInit;
-	BEGINBUFFEREDPAINT           m_pfBeginBufferedPaint;
-	ENDBUFFEREDPAINT             m_pfEndBufferedPaint;
-	DWMEXTENDFRAMEINTOCLIENTAREA m_pfDwmExtendFrameIntoClientArea;
-	DWMDEFWINDOWPROC             m_pfDwmDefWindowProc;
-	DWMISCOMPOSITIONENABLED      m_pfDwmIsCompositionEnabled;
-
-#if (NTDDI_VERSION >= NTDDI_WIN7)
-	BOOL m_bComInitialized;
-	BOOL m_bTaskBarInterfacesAvailable;
-	ITaskbarList*  m_pTaskbarList;
-	ITaskbarList3* m_pTaskbarList3;
-#endif
 };
 
 AFX_IMPORT_DATA extern AFX_GLOBAL_DATA afxGlobalData;
