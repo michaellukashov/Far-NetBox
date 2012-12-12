@@ -220,7 +220,7 @@ static void __fastcall CutFirstDirectory(UnicodeString & S, bool Unix)
   else
   {
     bool Root = false;
-    int P = 0;
+    intptr_t P = 0;
     if (S[1] == Sep[1])
     {
       Root = true;
@@ -1018,7 +1018,7 @@ void __fastcall TRemoteFile::SetListingStr(UnicodeString value)
 
     #define GETNCOL  \
       { if (Line.IsEmpty()) throw Exception(L""); \
-        Integer P = Line.Pos(L' '); \
+        intptr_t P = Line.Pos(L' '); \
         if (P) { Col = Line.SubString(1, P-1); Line.Delete(1, P); } \
           else { Col = Line; Line = L""; } \
       }
@@ -1230,11 +1230,11 @@ void __fastcall TRemoteFile::SetListingStr(UnicodeString value)
         FLinkTo = L"";
         if (GetIsSymLink())
         {
-          int P = Line.Pos(SYMLINKSTR);
+          intptr_t P = Line.Pos(SYMLINKSTR);
           if (P)
           {
             FLinkTo = Line.SubString(
-              P + static_cast<int>(wcslen(SYMLINKSTR)), Line.Length() - P + static_cast<int>(wcslen(SYMLINKSTR)) + 1);
+              P + wcslen(SYMLINKSTR)), Line.Length() - P + static_cast<int>(wcslen(SYMLINKSTR)) + 1;
             Line.SetLength(P - 1);
           }
           else

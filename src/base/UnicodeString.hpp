@@ -122,11 +122,11 @@ public:
   UnicodeString & Insert(const wchar_t Ch, intptr_t Pos) { return Insert(Pos, &Ch, 1); }
   UnicodeString & Insert(const UnicodeString & Str, intptr_t Pos) { return Insert(Pos, Str); }
 
-  int Pos(wchar_t Ch) const { return (int)Data.find(Ch) + 1; }
-  int Pos(UnicodeString Str) const { return (int)Data.find(Str.Data) + 1; }
+  intptr_t Pos(wchar_t Ch) const { return Data.find(Ch) + 1; }
+  intptr_t Pos(UnicodeString Str) const { return Data.find(Str.Data) + 1; }
 
-  int RPos(wchar_t Ch) const { return (int)Data.find_last_of(Ch) + 1; }
-  bool RPos(int & nPos, wchar_t Ch, int nStartPos = 0) const;
+  intptr_t RPos(wchar_t Ch) const { return Data.find_last_of(Ch) + 1; }
+  bool RPos(intptr_t & nPos, wchar_t Ch, intptr_t nStartPos = 0) const;
 
   UnicodeString SubStr(intptr_t Pos, intptr_t Len = -1) const;
   UnicodeString SubString(intptr_t Pos, intptr_t Len = -1) const { return SubStr(Pos, Len); }
@@ -328,10 +328,11 @@ public:
 
   RawByteString SubString(intptr_t Pos, intptr_t Len = -1) const;
 
-  int Pos(wchar_t Ch) const;
-  int Pos(const wchar_t * Str) const;
-  int Pos(const char Ch) const;
-  int Pos(const char * Ch) const;
+  intptr_t Pos(wchar_t Ch) const;
+  intptr_t Pos(const wchar_t * Str) const;
+  intptr_t Pos(const char Ch) const;
+  intptr_t Pos(const char * Ch) const;
+
 public:
   RawByteString & operator=(const UnicodeString & strCopy);
   RawByteString & operator=(const RawByteString & strCopy);
