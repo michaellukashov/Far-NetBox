@@ -1018,7 +1018,7 @@ bool __fastcall TInteractiveCustomCommand::PatternReplacement(intptr_t Index, co
   if ((Pattern.Length() >= 3) && (Pattern[2] == L'?'))
   {
     UnicodeString PromptStr;
-    int Pos = Pattern.SubString(3, Pattern.Length() - 2).Pos(L"?");
+    intptr_t Pos = Pattern.SubString(3, Pattern.Length() - 2).Pos(L"?");
     if (Pos > 0)
     {
       Replacement = Pattern.SubString(3 + Pos, Pattern.Length() - 3 - Pos);

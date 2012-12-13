@@ -445,7 +445,7 @@ UnicodeString & UnicodeString::Insert(intptr_t Pos, const wchar_t * Str, intptr_
 
 bool UnicodeString::RPos(intptr_t & nPos, wchar_t Ch, intptr_t nStartPos) const
 {
-  intptr_t pos = Data.find_last_of(Ch, Data.size() - nStartPos);
+  size_t pos = Data.find_last_of(Ch, Data.size() - nStartPos);
   nPos = pos + 1;
   return pos != std::wstring::npos;
 }
