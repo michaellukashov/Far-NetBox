@@ -2497,7 +2497,7 @@ struct TExportSessionParam
 intptr_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
   UnicodeString & DestPath, int OpMode)
 {
-  int Result;
+  intptr_t Result;
   if (Connected())
   {
     FFileList = CreateFileList(PanelItems, osRemote);

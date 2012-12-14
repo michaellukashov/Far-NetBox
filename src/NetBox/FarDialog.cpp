@@ -86,7 +86,7 @@ TFarDialog::TFarDialog(TCustomFarPlugin * AFarPlugin) :
 //---------------------------------------------------------------------------
 TFarDialog::~TFarDialog()
 {
-  for (int i = 0; i < GetItemCount(); i++)
+  for (intptr_t i = 0; i < GetItemCount(); i++)
   {
     GetItem(i)->Detach();
   }
@@ -122,7 +122,7 @@ void TFarDialog::SetBounds(TRect Value)
         Coord.Y = static_cast<short int>(FBounds.Top);
         SendMessage(DM_MOVEDIALOG, (int)true, reinterpret_cast<LONG_PTR>(&Coord));
       }
-      for (int  i = 0; i < GetItemCount(); i++)
+      for (intptr_t i = 0; i < GetItemCount(); i++)
       {
         GetItem(i)->DialogResized();
       }
@@ -403,7 +403,7 @@ LONG_PTR WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1
 
   if (Dialog != NULL)
   {
-    Result = Dialog->DialogProc(Msg, Param1, Param2);
+    Result = Dialog->DialogProc(Msg, static_cast<intptr_t>(Param1), Param2);
   }
 
   if ((Msg == DN_CLOSE) && Result)
@@ -667,7 +667,7 @@ bool TFarDialog::HotKey(uintptr_t Key)
   if (Result)
   {
     Result = false;
-    for (int i = 0; i < GetItemCount(); i++)
+    for (intptr_t i = 0; i < GetItemCount(); i++)
     {
       if (GetItem(i)->HotKey(HotKey))
       {
@@ -682,7 +682,7 @@ bool TFarDialog::HotKey(uintptr_t Key)
 TFarDialogItem * TFarDialog::ItemAt(int X, int Y)
 {
   TFarDialogItem * Result = NULL;
-  for (int  i = 0; i < GetItemCount(); i++)
+  for (intptr_t i = 0; i < GetItemCount(); i++)
   {
     TRect Bounds = GetItem(i)->GetActualBounds();
     if ((Bounds.Left <= X) && (X <= Bounds.Right) &&
@@ -697,7 +697,7 @@ TFarDialogItem * TFarDialog::ItemAt(int X, int Y)
 bool TFarDialog::CloseQuery()
 {
   bool Result = true;
-  for (int  i = 0; i < GetItemCount() && Result; i++)
+  for (intptr_t i = 0; i < GetItemCount() && Result; i++)
   {
     if (!GetItem(i)->CloseQuery())
     {
@@ -719,7 +719,7 @@ void TFarDialog::RefreshBounds()
 //---------------------------------------------------------------------------
 void TFarDialog::Init()
 {
-  for (int  i = 0; i < GetItemCount(); i++)
+  for (intptr_t i = 0; i < GetItemCount(); i++)
   {
     GetItem(i)->Init();
   }
@@ -742,7 +742,7 @@ intptr_t TFarDialog::ShowModal()
     assert(GetDefaultButton()->GetDefault());
 
     UnicodeString AHelpTopic = GetHelpTopic();
-    int BResult = 0;
+    intptr_t BResult = 0;
 
     {
       TFarEnvGuard Guard;
@@ -819,7 +819,7 @@ void TFarDialog::Change()
       std::auto_ptr<TList> NotifiedContainersPtr;
       NotifiedContainersPtr.reset(NotifiedContainers);
       TFarDialogItem * DItem;
-      for (int i = 0; i < GetItemCount(); i++)
+      for (intptr_t i = 0; i < GetItemCount(); i++)
       {
         DItem = GetItem(i);
         DItem->Change();
@@ -871,7 +871,7 @@ void TFarDialog::ProcessGroup(int Group, TFarProcessGroupEvent Callback,
   LockChanges();
   TRY_FINALLY (
   {
-    for (int i = 0; i < GetItemCount(); i++)
+    for (intptr_t i = 0; i < GetItemCount(); i++)
     {
       TFarDialogItem * I = GetItem(i);
       if (I->GetGroup() == Group)
@@ -1483,7 +1483,7 @@ void TFarDialogItem::UpdateSelected(intptr_t Value)
 //---------------------------------------------------------------------------
 intptr_t TFarDialogItem::GetSelected()
 {
-  return GetDialogItem()->Selected;
+  return static_cast<intptr_t>(GetDialogItem()->Selected);
 }
 //---------------------------------------------------------------------------
 bool TFarDialogItem::GetFocused()
@@ -1557,9 +1557,9 @@ void TFarDialogItem::SetWidth(intptr_t Value)
   SetBounds(R);
 }
 //---------------------------------------------------------------------------
-int TFarDialogItem::GetWidth()
+intptr_t TFarDialogItem::GetWidth()
 {
-  return GetActualBounds().Width() + 1;
+  return static_cast<intptr_t>(GetActualBounds().Width() + 1);
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::SetHeight(int Value)
@@ -1579,7 +1579,7 @@ void TFarDialogItem::SetHeight(int Value)
 //---------------------------------------------------------------------------
 intptr_t TFarDialogItem::GetHeight()
 {
-  return GetActualBounds().Height() + 1;
+  return static_cast<intptr_t>(GetActualBounds().Height() + 1);
 }
 //---------------------------------------------------------------------------
 bool TFarDialogItem::CanFocus()
@@ -2132,7 +2132,7 @@ void TFarList::Assign(TPersistent * Source)
   TFarList * FarList = dynamic_cast<TFarList *>(Source);
   if (FarList != NULL)
   {
-    for (int Index = 0; Index < FarList->Count; Index++)
+    for (intptr_t Index = 0; Index < FarList->Count; Index++)
     {
       SetFlags(Index, FarList->GetFlags(Index));
     }
@@ -2153,7 +2153,7 @@ void TFarList::UpdateItem(intptr_t Index)
   GetDialogItem()->SendMessage(DM_LISTUPDATE, reinterpret_cast<LONG_PTR>(&ListUpdate));
 }
 //---------------------------------------------------------------------------
-void TFarList::Put(int Index, const UnicodeString S)
+void TFarList::Put(intptr_t Index, const UnicodeString S)
 {
   if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle())
   {
@@ -2476,7 +2476,7 @@ void TFarListBox::SetAutoSelect(TFarListBoxAutoSelect Value)
 //---------------------------------------------------------------------------
 void TFarListBox::UpdateMouseReaction()
 {
-  SendMessage(DM_LISTSETMOUSEREACTION, GetAutoSelect());
+  SendMessage(DM_LISTSETMOUSEREACTION, static_cast<int>(GetAutoSelect()));
 }
 //---------------------------------------------------------------------------
 void TFarListBox::SetItems(TStrings * Value)

@@ -250,7 +250,7 @@ TCustomFarFileSystem * TCustomFarPlugin::GetPanelFileSystem(bool Another,
   RECT PassivePanelBounds = GetPanelBounds(PANEL_PASSIVE);
 
   TCustomFarFileSystem * FileSystem = NULL;
-  int Index = 0;
+  intptr_t Index = 0;
   while (!Result && (Index < FOpenedPlugins->Count))
   {
     FileSystem = dynamic_cast<TCustomFarFileSystem *>(FOpenedPlugins->GetItem(Index));
@@ -272,7 +272,7 @@ TCustomFarFileSystem * TCustomFarPlugin::GetPanelFileSystem(bool Another,
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::InvalidateOpenPluginInfo()
 {
-  for (int Index = 0; Index < FOpenedPlugins->Count; Index++)
+  for (intptr_t Index = 0; Index < FOpenedPlugins->Count; Index++)
   {
     TCustomFarFileSystem * FileSystem =
       dynamic_cast<TCustomFarFileSystem *>(FOpenedPlugins->GetItem(Index));
@@ -298,7 +298,7 @@ intptr_t TCustomFarPlugin::Configure(intptr_t Item)
   }
 }
 //---------------------------------------------------------------------------
-void * TCustomFarPlugin::OpenPlugin(intptr_t OpenFrom, intptr_t Item)
+void * TCustomFarPlugin::OpenPlugin(int OpenFrom, intptr_t Item)
 {
   try
   {
@@ -473,8 +473,8 @@ intptr_t TCustomFarPlugin::ProcessHostFile(HANDLE Plugin,
   }
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarPlugin::ProcessKey(HANDLE Plugin, intptr_t Key,
-  uintptr_t ControlState)
+intptr_t TCustomFarPlugin::ProcessKey(HANDLE Plugin, int Key,
+  unsigned int ControlState)
 {
   TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Plugin);
   try
@@ -504,7 +504,7 @@ intptr_t TCustomFarPlugin::ProcessKey(HANDLE Plugin, intptr_t Key,
   }
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarPlugin::ProcessEvent(HANDLE Plugin, intptr_t Event, void * Param)
+intptr_t TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void * Param)
 {
   TCustomFarFileSystem * FileSystem = static_cast<TCustomFarFileSystem *>(Plugin);
   try
@@ -663,7 +663,7 @@ intptr_t TCustomFarPlugin::PutFiles(HANDLE Plugin,
   }
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarPlugin::ProcessEditorEvent(intptr_t Event, void * Param)
+intptr_t TCustomFarPlugin::ProcessEditorEvent(int Event, void * Param)
 {
   try
   {
@@ -699,13 +699,13 @@ intptr_t TCustomFarPlugin::ProcessEditorInput(const INPUT_RECORD * Rec)
 //---------------------------------------------------------------------------
 intptr_t TCustomFarPlugin::MaxMessageLines()
 {
-  return TerminalInfo().y - 5;
+  return static_cast<intptr_t>(TerminalInfo().y - 5);
 }
 //---------------------------------------------------------------------------
 intptr_t TCustomFarPlugin::MaxMenuItemLength()
 {
   // got from maximal length of path in FAR's folders history
-  return TerminalInfo().x - 13;
+  return static_cast<intptr_t>(TerminalInfo().x - 13);
 }
 //---------------------------------------------------------------------------
 intptr_t TCustomFarPlugin::MaxLength(TStrings * Strings)
@@ -853,7 +853,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
 
       if (MaxMessageWidth < Button->GetRight() - GetBorderBox()->GetLeft())
       {
-        for (int PIndex = 0; PIndex < GetItemCount(); PIndex++)
+        for (intptr_t PIndex = 0; PIndex < GetItemCount(); PIndex++)
         {
           TFarButton * PrevButton = dynamic_cast<TFarButton *>(GetItem(PIndex));
           if ((PrevButton != NULL) && (PrevButton != Button))
@@ -976,7 +976,7 @@ void TFarMessageDialog::Change()
   {
     if ((FCheckBox != NULL) && (FCheckBoxChecked != FCheckBox->GetChecked()))
     {
-      for (int Index = 0; Index < GetItemCount(); Index++)
+      for (intptr_t Index = 0; Index < GetItemCount(); Index++)
       {
         TFarButton * Button = dynamic_cast<TFarButton *>(GetItem(Index));
         if ((Button != NULL) && (Button->GetTag() == 0))
@@ -1042,7 +1042,7 @@ intptr_t TCustomFarPlugin::FarMessage(DWORD Flags,
 {
   assert(Params != NULL);
 
-  int Result;
+  intptr_t Result;
   TStringList * MessageLines = NULL;
   std::auto_ptr<TStrings> MessageLinesPtr(NULL);
   wchar_t ** Items = NULL;
@@ -1088,9 +1088,9 @@ intptr_t TCustomFarPlugin::FarMessage(DWORD Flags,
     }
 
     TFarEnvGuard Guard;
-    Result = FStartupInfo.Message(FStartupInfo.ModuleNumber,
+    Result = static_cast<intptr_t>(FStartupInfo.Message(FStartupInfo.ModuleNumber,
       Flags | FMSG_LEFTALIGN, NULL, Items, static_cast<int>(MessageLines->Count),
-      static_cast<int>(Buttons->Count));
+      static_cast<int>(Buttons->Count)));
   }
   ,
   {
@@ -1416,7 +1416,7 @@ void TCustomFarPlugin::ShowTerminalScreen()
   TPoint Size, Cursor;
   TerminalInfo(&Size, &Cursor);
 
-  UnicodeString Blank = ::StringOfChar(L' ', Size.x);
+  UnicodeString Blank = ::StringOfChar(L' ', static_cast<intptr_t>(Size.x));
   // Blank.SetLength(static_cast<size_t>(Size.x));
   for (int Y = 0; Y < Size.y; Y++)
   {
@@ -1668,7 +1668,7 @@ intptr_t TCustomFarPlugin::FarEditorControl(uintptr_t Command, void * Param)
   }
 
   TFarEnvGuard Guard;
-  return FStartupInfo.EditorControl(static_cast<int>(Command), Param);
+  return static_cast<intptr_t>(FStartupInfo.EditorControl(static_cast<int>(Command), Param));
 }
 //---------------------------------------------------------------------------
 TFarEditorInfo * TCustomFarPlugin::EditorInfo()
@@ -1739,7 +1739,7 @@ intptr_t TCustomFarPlugin::InputRecordToKey(const INPUT_RECORD * Rec)
   {
     Result = 0;
   }
-  return Result;
+  return static_cast<intptr_t>(Result);
 }
 //---------------------------------------------------------------------------
 #ifdef NETBOX_DEBUG
@@ -1904,7 +1904,7 @@ intptr_t TCustomFarFileSystem::GetFindData(
       *PanelItem = new PluginPanelItem[PanelItems->Count];
       memset(*PanelItem, 0, PanelItems->Count * sizeof(PluginPanelItem));
       *ItemsNumber = static_cast<int>(PanelItems->Count);
-      for (int Index = 0; Index < PanelItems->Count; Index++)
+      for (intptr_t Index = 0; Index < PanelItems->Count; Index++)
       {
         static_cast<TCustomFarPanelItem *>(PanelItems->GetItem(Index))->FillPanelItem(
           &((*PanelItem)[Index]));
@@ -2291,7 +2291,7 @@ void TFarPanelModes::FillOpenPluginInfo(struct OpenPluginInfo * Info)
 //---------------------------------------------------------------------------
 intptr_t TFarPanelModes::CommaCount(const UnicodeString ColumnTypes)
 {
-  int Count = 0;
+  intptr_t Count = 0;
   for (int Index = 1; Index <= ColumnTypes.Length(); Index++)
   {
     if (ColumnTypes[Index] == ',')
@@ -2484,7 +2484,7 @@ UnicodeString TFarPanelItem::GetCustomColumnData(int /*Column*/)
 //---------------------------------------------------------------------------
 uintptr_t TFarPanelItem::GetFlags()
 {
-  return FPanelItem->Flags;
+  return static_cast<uintptr_t>(FPanelItem->Flags);
 }
 //---------------------------------------------------------------------------
 UnicodeString TFarPanelItem::GetFileName()
@@ -2517,7 +2517,7 @@ void TFarPanelItem::SetSelected(bool Value)
 //---------------------------------------------------------------------------
 uintptr_t TFarPanelItem::GetFileAttributes()
 {
-  return FPanelItem->FindData.dwFileAttributes;
+  return static_cast<uintptr_t>(FPanelItem->FindData.dwFileAttributes);
 }
 //---------------------------------------------------------------------------
 bool TFarPanelItem::GetIsParentDirectory()
@@ -2569,7 +2569,7 @@ TFarPanelInfo::~TFarPanelInfo()
 //---------------------------------------------------------------------------
 intptr_t TFarPanelInfo::GetItemCount()
 {
-  return FPanelInfo->ItemsNumber;
+  return static_cast<intptr_t>(FPanelInfo->ItemsNumber);
 }
 //---------------------------------------------------------------------------
 TRect TFarPanelInfo::GetBounds()
@@ -2609,7 +2609,7 @@ TObjectList * TFarPanelInfo::GetItems()
   // DEBUG_PRINTF(L"FPanelInfo->ItemsNumber = %d", FPanelInfo->ItemsNumber);
   if (FOwner)
   {
-    for (int Index = 0; Index < FPanelInfo->ItemsNumber; Index++)
+    for (intptr_t Index = 0; Index < FPanelInfo->ItemsNumber; Index++)
     {
       // DEBUG_PRINTF(L"Index = %d", Index);
       // TODO: move to common function
@@ -2628,7 +2628,7 @@ TFarPanelItem * TFarPanelInfo::FindFileName(const UnicodeString FileName)
 {
   TObjectList * AItems = GetItems();
   TFarPanelItem * PanelItem;
-  for (int Index = 0; Index < AItems->Count; Index++)
+  for (intptr_t Index = 0; Index < AItems->Count; Index++)
   {
     PanelItem = static_cast<TFarPanelItem *>(AItems->GetItem(Index));
     if (PanelItem->GetFileName() == FileName)
@@ -2643,7 +2643,7 @@ TFarPanelItem * TFarPanelInfo::FindUserData(void * UserData)
 {
   TObjectList * AItems = GetItems();
   TFarPanelItem * PanelItem;
-  for (int Index = 0; Index < AItems->Count; Index++)
+  for (intptr_t Index = 0; Index < AItems->Count; Index++)
   {
     PanelItem = static_cast<TFarPanelItem *>(AItems->GetItem(Index));
     if (PanelItem->GetUserData() == UserData)
@@ -2688,7 +2688,7 @@ void TFarPanelInfo::SetFocusedItem(TFarPanelItem * Value)
 //---------------------------------------------------------------------------
 intptr_t TFarPanelInfo::GetFocusedIndex()
 {
-  return FPanelInfo->CurrentItem;
+  return static_cast<intptr_t>(FPanelInfo->CurrentItem);
 }
 //---------------------------------------------------------------------------
 void TFarPanelInfo::SetFocusedIndex(intptr_t Value)
@@ -2860,7 +2860,7 @@ TFarEditorInfo::~TFarEditorInfo()
 //---------------------------------------------------------------------------
 intptr_t TFarEditorInfo::GetEditorID() const
 {
-  return FEditorInfo->EditorID;
+  return static_cast<intptr_t>(FEditorInfo->EditorID);
 }
 //---------------------------------------------------------------------------
 UnicodeString TFarEditorInfo::GetFileName()

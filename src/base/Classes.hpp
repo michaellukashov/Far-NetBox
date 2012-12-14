@@ -23,7 +23,7 @@
 
 #pragma warning(pop)
 
-#define NPOS static_cast<int>(-1)
+#define NPOS static_cast<intptr_t>(-1)
 
 namespace Classes {
 

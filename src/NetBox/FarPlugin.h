@@ -63,7 +63,7 @@ public:
   virtual void ExitFAR();
   virtual void GetPluginInfo(struct PluginInfo * Info);
   virtual intptr_t Configure(intptr_t Item);
-  virtual void * OpenPlugin(intptr_t OpenFrom, intptr_t Item);
+  virtual void * OpenPlugin(int OpenFrom, intptr_t Item);
   virtual void ClosePlugin(void * Plugin);
   virtual void GetOpenPluginInfo(HANDLE Plugin, struct OpenPluginInfo * Info);
   virtual intptr_t GetFindData(HANDLE Plugin,
@@ -72,8 +72,8 @@ public:
     int ItemsNumber);
   virtual intptr_t ProcessHostFile(HANDLE Plugin,
     struct PluginPanelItem * PanelItem, int ItemsNumber, int OpMode);
-  virtual intptr_t ProcessKey(HANDLE Plugin, intptr_t Key, uintptr_t ControlState);
-  virtual intptr_t ProcessEvent(HANDLE Plugin, intptr_t Event, void * Param);
+  virtual intptr_t ProcessKey(HANDLE Plugin, int Key, unsigned int ControlState);
+  virtual intptr_t ProcessEvent(HANDLE Plugin, int Event, void * Param);
   virtual intptr_t SetDirectory(HANDLE Plugin, const wchar_t * Dir, int OpMode);
   virtual intptr_t MakeDirectory(HANDLE Plugin, const wchar_t ** Name, int OpMode);
   virtual intptr_t DeleteFiles(HANDLE Plugin, struct PluginPanelItem * PanelItem,
@@ -82,7 +82,7 @@ public:
     int ItemsNumber, int Move, const wchar_t ** DestPath, int OpMode);
   virtual intptr_t PutFiles(HANDLE Plugin, struct PluginPanelItem * PanelItem,
     int ItemsNumber, int Move, const wchar_t * srcPath, int OpMode);
-  virtual intptr_t ProcessEditorEvent(intptr_t Event, void * Param);
+  virtual intptr_t ProcessEditorEvent(int Event, void * Param);
   virtual intptr_t ProcessEditorInput(const INPUT_RECORD * Rec);
 
   virtual void HandleException(Exception * E, int OpMode = 0);

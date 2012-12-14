@@ -14,7 +14,7 @@ class UTF8String
 {
 public:
   UTF8String() {}
-  UTF8String(const wchar_t * Str) { Init(Str, StrLength(Str)); }
+  UTF8String(const wchar_t * Str) { Init(Str, ::StrLength(Str)); }
   UTF8String(const wchar_t * Str, intptr_t Size) { Init(Str, Size); }
   UTF8String(const char * Str, intptr_t Size) { Init(Str, Size); }
   UTF8String(const UnicodeString & Str);
@@ -71,7 +71,7 @@ class UnicodeString
 {
 public:
   UnicodeString() {}
-  UnicodeString(const wchar_t * Str) { Init(Str, StrLength(Str)); }
+  UnicodeString(const wchar_t * Str) { Init(Str, ::StrLength(Str)); }
   UnicodeString(const wchar_t * Str, intptr_t Size) { Init(Str, Size); }
   UnicodeString(const wchar_t Src) { Init(&Src, 1); }
   UnicodeString(const char * Str, intptr_t Size) { Init(Str, Size); }
@@ -106,13 +106,13 @@ public:
 
   UnicodeString & Replace(intptr_t Pos, intptr_t Len, const wchar_t * Str, intptr_t DataLen);
   UnicodeString & Replace(intptr_t Pos, intptr_t Len, const UnicodeString & Str) { return Replace(Pos, Len, Str.c_str(), Str.GetLength()); }
-  UnicodeString & Replace(intptr_t Pos, intptr_t Len, const wchar_t * Str) { return Replace(Pos, Len, Str, StrLength(NullToEmpty(Str))); }
+  UnicodeString & Replace(intptr_t Pos, intptr_t Len, const wchar_t * Str) { return Replace(Pos, Len, Str, ::StrLength(NullToEmpty(Str))); }
   UnicodeString & Replace(intptr_t Pos, intptr_t Len, wchar_t Ch) { return Replace(Pos, Len, &Ch, 1); }
   UnicodeString & Replace(intptr_t Pos, wchar_t Ch) { return Replace(Pos, 1, &Ch, 1); }
 
   UnicodeString & Append(const wchar_t * Str, intptr_t StrLen) { return Replace(GetLength(), 0, Str, StrLen); }
   UnicodeString & Append(const UnicodeString & Str) { return Append(Str.c_str(), Str.GetLength()); }
-  UnicodeString & Append(const wchar_t * Str) { return Append(Str, StrLength(NullToEmpty(Str))); }
+  UnicodeString & Append(const wchar_t * Str) { return Append(Str, ::StrLength(NullToEmpty(Str))); }
   UnicodeString & Append(const wchar_t Ch) { return Append(&Ch, 1); }
   UnicodeString & Append(const char * lpszAdd, UINT CodePage=CP_OEMCP);
 
@@ -208,7 +208,7 @@ class AnsiString
 {
 public:
   AnsiString() {}
-  AnsiString(const wchar_t * Str) { Init(Str, StrLength(Str)); }
+  AnsiString(const wchar_t * Str) { Init(Str, ::StrLength(Str)); }
   AnsiString(const wchar_t * Str, intptr_t Size) { Init(Str, Size); }
   AnsiString(const char * Str) { Init(Str, Str ? strlen(Str) : 0); }
   AnsiString(const char * Str, intptr_t Size) { Init(Str, Size); }
@@ -300,7 +300,7 @@ class RawByteString
 {
 public:
   RawByteString() {}
-  RawByteString(const wchar_t * Str) { Init(Str, StrLength(Str)); }
+  RawByteString(const wchar_t * Str) { Init(Str, ::StrLength(Str)); }
   RawByteString(const wchar_t * Str, intptr_t Size) { Init(Str, Size); }
   RawByteString(const char * Str) { Init(Str, Str ? strlen(Str) : 0); }
   RawByteString(const char * Str, intptr_t Size) { Init(Str, Size); }

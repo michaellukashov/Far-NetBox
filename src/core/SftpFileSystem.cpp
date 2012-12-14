@@ -862,7 +862,7 @@ public:
   unsigned char * __fastcall GetData() const { return FData; }
   uintptr_t __fastcall GetCapacity() const { return FCapacity; }
   unsigned char __fastcall GetType() const { return FType; }
-  uintptr_t __fastcall GetMessageNumber() const { return FMessageNumber; }
+  uintptr_t __fastcall GetMessageNumber() const { return static_cast<uintptr_t>(FMessageNumber); }
   void __fastcall SetMessageNumber(unsigned long  value) { FMessageNumber = value; }
   TSFTPFileSystem * __fastcall GetReservedBy() const { return FReservedBy; }
   void __fastcall SetReservedBy(TSFTPFileSystem * value) { FReservedBy = value; }
@@ -2276,13 +2276,13 @@ bool __fastcall TSFTPFileSystem::PeekPacket()
   return Result;
 }
 //---------------------------------------------------------------------------
-int __fastcall TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
+uintptr_t __fastcall TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
   int ExpectedType, int AllowStatus)
 {
   CALLSTACK;
   TSFTPBusy Busy(this);
 
-  int Result = SSH_FX_OK;
+  uintptr_t Result = SSH_FX_OK;
   intptr_t Reservation = FPacketReservations->IndexOf(Packet);
 
   if ((Reservation < 0) || (Packet->GetCapacity() == 0))
@@ -2447,7 +2447,7 @@ uintptr_t __fastcall TSFTPFileSystem::ReceiveResponse(
   int AllowStatus)
 {
   CALLSTACK;
-  int Result;
+  uintptr_t Result;
   uintptr_t MessageNumber = Packet->GetMessageNumber();
   TSFTPPacket * AResponse = (Response ? Response : new TSFTPPacket(GetSessionData()->GetCodePageAsNumber()));
   TRY_FINALLY (

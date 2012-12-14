@@ -1460,7 +1460,7 @@ bool TWinSCPFileSystem::BannerDialog(const UnicodeString SessionName,
   Button->SetResult(brOK);
   if (NeverShowAgainCheck != NULL)
   {
-    Button->SetLeft(Dialog->GetBorderBox()->GetRight() - Button->GetWidth() - 1);
+    Button->SetLeft(static_cast<int>(Dialog->GetBorderBox()->GetRight() - Button->GetWidth() - 1));
   }
   else
   {
@@ -1761,8 +1761,8 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   NextTab->SetCenterGroup(false);
   NextTab->SetOnClick(MAKE_CALLBACK(TSessionDialog::NextTabClick, this));
 
-  int PWidth = PrevTab->GetWidth();
-  int NWidth = NextTab->GetWidth();
+  intptr_t PWidth = PrevTab->GetWidth();
+  intptr_t NWidth = NextTab->GetWidth();
   int R = S.x - 4;
   PrevTab->SetLeft(R - PWidth - NWidth - 2);
   PrevTab->SetWidth(PWidth);
@@ -3821,7 +3821,7 @@ void TSessionDialog::SavePing(TSessionData * SessionData)
 //---------------------------------------------------------------------------
 int TSessionDialog::LoginTypeToIndex(TLoginType LoginType)
 {
-  return static_cast<size_t>(LoginType);
+  return static_cast<int>(LoginType);
 }
 //---------------------------------------------------------------------------
 int TSessionDialog::FSProtocolToIndex(TFSProtocol FSProtocol,
@@ -3919,7 +3919,7 @@ TProxyMethod TSessionDialog::GetProxyMethod()
 //---------------------------------------------------------------------------
 intptr_t TSessionDialog::GetFtpProxyLogonType()
 {
-  int Result;
+  intptr_t Result;
   if (IndexToFSProtocol(TransferProtocolCombo->GetItemIndex(), AllowScpFallbackCheck->GetChecked()) != fsFTP)
   {
     Result = 0;
@@ -3932,7 +3932,7 @@ intptr_t TSessionDialog::GetFtpProxyLogonType()
     }
     else
     {
-      Result = (int)(FtpProxyMethodCombo->GetItemIndex() - LastSupportedFtpProxyMethod());
+      Result = FtpProxyMethodCombo->GetItemIndex() - LastSupportedFtpProxyMethod();
     }
   }
   return Result;
@@ -4144,7 +4144,7 @@ void TSessionDialog::ChangeTabs(int FirstVisibleTabIndex)
   for (int i = FirstVisibleTabIndex; i <= LastVisibleTabIndex; i++)
   {
     TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->Items[i]);
-    int Width = TabBtn->GetWidth();
+    intptr_t Width = TabBtn->GetWidth();
     TabBtn->SetLeft(LeftPos);
     TabBtn->SetWidth(Width);
     LeftPos += Width + 1;
@@ -4160,10 +4160,10 @@ void TSessionDialog::ChangeTabs(int FirstVisibleTabIndex)
 int TSessionDialog::GetVisibleTabsCount(int TabIndex, bool Forward)
 {
   int Result = 0;
-  int PWidth = PrevTab->GetWidth();
-  int NWidth = NextTab->GetWidth();
-  int DialogWidth = GetBorderBox()->GetWidth() - 2 - PWidth - NWidth - 2;
-  int TabsWidth = 0;
+  intptr_t PWidth = PrevTab->GetWidth();
+  intptr_t NWidth = NextTab->GetWidth();
+  intptr_t DialogWidth = GetBorderBox()->GetWidth() - 2 - PWidth - NWidth - 2;
+  intptr_t TabsWidth = 0;
   if (Forward)
   {
     for (int i = TabIndex; i < FTabs->Count - 1; i++)
@@ -4171,7 +4171,7 @@ int TSessionDialog::GetVisibleTabsCount(int TabIndex, bool Forward)
       TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->Items[i]);
       TabsWidth += TabBtn->GetWidth() + 1;
       TTabButton * NextTabBtn = dynamic_cast<TTabButton *>(FTabs->Items[i + 1]);
-      int NextTabWidth = NextTabBtn->GetWidth() + 1;
+      intptr_t NextTabWidth = NextTabBtn->GetWidth() + 1;
       if (TabsWidth + NextTabWidth >= DialogWidth)
         break;
       Result++;
@@ -4184,7 +4184,7 @@ int TSessionDialog::GetVisibleTabsCount(int TabIndex, bool Forward)
       TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->Items[i]);
       TabsWidth += TabBtn->GetWidth() + 1;
       TTabButton * PrevTabBtn = dynamic_cast<TTabButton *>(FTabs->Items[i - 1]);
-      int PrevTabWidth = PrevTabBtn->GetWidth() + 1;
+      intptr_t PrevTabWidth = PrevTabBtn->GetWidth() + 1;
       if (TabsWidth + PrevTabWidth >= DialogWidth)
         break;
       Result++;
@@ -7330,7 +7330,7 @@ void TSynchronizeChecklistDialog::AdaptSize()
 
   static const int Ratio[FColumns] = { 140, 100, 80, 150, -2, 100, 80, 150 };
 
-  int Width = ListBox->GetWidth() - 2 /*checkbox*/ - 1 /*scrollbar*/ - FColumns;
+  intptr_t Width = ListBox->GetWidth() - 2 /*checkbox*/ - 1 /*scrollbar*/ - FColumns;
   double Temp[FColumns];
 
   int TotalRatio = 0;

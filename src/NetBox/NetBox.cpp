@@ -57,7 +57,7 @@ extern "C"
   {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    return static_cast<int>(FarPlugin->Configure(item));
+    return static_cast<int>(FarPlugin->Configure(static_cast<intptr_t>(item)));
   }
 
   HANDLE WINAPI OpenPluginW(int openFrom, intptr_t item)
