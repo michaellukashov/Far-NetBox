@@ -1760,7 +1760,7 @@ bool __fastcall RecursiveDeleteFile(const UnicodeString FileName, bool ToRecycle
 //---------------------------------------------------------------------------
 unsigned int __fastcall CancelAnswer(unsigned int Answers)
 {
-  unsigned int Result;
+  intptr_t Result;
   if ((Answers & qaCancel) != 0)
   {
     Result = qaCancel;
@@ -1860,7 +1860,7 @@ UnicodeString __fastcall LoadStr(int Ident, unsigned int MaxLength)
   Result.SetLength(MaxLength > 0 ? MaxLength : 1024);
   HINSTANCE hInstance = FarPlugin ? FarPlugin->GetHandle() : GetModuleHandle(0);
   assert(hInstance != 0);
-  intptr_t Length = ::LoadString(hInstance, Ident, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Result.c_str())), (int)Result.Length());
+  intptr_t Length = static_cast<intptr_t>(::LoadString(hInstance, Ident, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Result.c_str())), (int)Result.Length()));
 #endif
   Result.SetLength(Length);
 
@@ -2165,7 +2165,7 @@ uintptr_t __fastcall StrToVersionNumber(const UnicodeString & VersionMumberStr)
   while (!Version.IsEmpty())
   {
     UnicodeString Num = CutToChar(Version, L'.', true);
-    Result += Num.ToInt() << Shift;
+    Result += static_cast<uintptr_t>(Num.ToInt()) << Shift;
     if (Shift >= 8) Shift -= 8;
   }
   return Result;

@@ -2035,7 +2035,7 @@ size_t TRegistry::ReadBinaryData(const UnicodeString Name,
   TRegDataInfo Info;
   if (GetDataInfo(Name, Info))
   {
-    Result = Info.DataSize;
+    Result = static_cast<size_t>(Info.DataSize);
     TRegDataType RegData = Info.RegData;
     if (((RegData == rdBinary) || (RegData == rdUnknown)) && (Result <= BufSize))
     {

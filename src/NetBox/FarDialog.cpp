@@ -540,11 +540,11 @@ LONG_PTR TFarDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
             if (Button == NULL)
             {
               assert(dynamic_cast<TFarListBox *>(GetItem(Param1)) != NULL);
-              Result = (int)false;
+              Result = (intptr_t)false;
             }
             else
             {
-              FResult = Button->GetResult();
+              FResult = static_cast<intptr_t>(Button->GetResult());
             }
           }
           else
@@ -1562,7 +1562,7 @@ intptr_t TFarDialogItem::GetWidth()
   return static_cast<intptr_t>(GetActualBounds().Width() + 1);
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::SetHeight(int Value)
+void TFarDialogItem::SetHeight(intptr_t Value)
 {
   TRect R = GetBounds();
   if (R.Top >= 0)
@@ -2310,7 +2310,7 @@ intptr_t TFarList::GetTopIndex()
     FarListPos ListPos;
     assert(GetDialogItem() != NULL);
     GetDialogItem()->SendMessage(DM_LISTGETCURPOS, reinterpret_cast<LONG_PTR>(&ListPos));
-    Result = ListPos.TopPos;
+    Result = static_cast<intptr_t>(ListPos.TopPos);
   }
   return Result;
 }

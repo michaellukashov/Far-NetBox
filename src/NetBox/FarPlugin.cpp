@@ -868,7 +868,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
       // DEBUG_PRINTF(L"Button->GetLeft = %d, Button->GetRight = %d, GetBorderBox()->GetLeft = %d", Button->GetLeft(), Button->GetRight(), GetBorderBox()->GetLeft());
       if (MaxLen < Button->GetRight() - GetBorderBox()->GetLeft())
       {
-        MaxLen = Button->GetRight() - GetBorderBox()->GetLeft() + 2;
+        MaxLen = static_cast<intptr_t>(Button->GetRight() - GetBorderBox()->GetLeft() + 2);
       }
       // DEBUG_PRINTF(L"MaxLen = %d", MaxLen);
 
@@ -884,7 +884,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
 
       if (MaxLen < FCheckBox->GetRight() - GetBorderBox()->GetLeft())
       {
-        MaxLen = FCheckBox->GetRight() - GetBorderBox()->GetLeft();
+        MaxLen = static_cast<intptr_t>(FCheckBox->GetRight() - GetBorderBox()->GetLeft());
       }
     }
     else
@@ -904,7 +904,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
 
     if (FParams->MoreMessages != NULL)
     {
-      intptr_t MoreMessageHeight = GetFarPlugin()->TerminalInfo().y - S.y - 1;
+      intptr_t MoreMessageHeight = static_cast<intptr_t>(GetFarPlugin()->TerminalInfo().y - S.y - 1);
       assert(MoreMessagesLister != NULL);
       if (MoreMessageHeight > MoreMessagesLister->GetItems()->Count)
       {
@@ -1125,10 +1125,10 @@ intptr_t TCustomFarPlugin::Message(DWORD Flags,
     assert(Params == NULL);
     UnicodeString Items = Title + L"\n" + Message;
     TFarEnvGuard Guard;
-    Result = FStartupInfo.Message(FStartupInfo.ModuleNumber,
+    Result = static_cast<intptr_t>(FStartupInfo.Message(FStartupInfo.ModuleNumber,
       Flags | FMSG_ALLINONE | FMSG_LEFTALIGN,
       NULL,
-      static_cast<const wchar_t * const *>(static_cast<const void *>(Items.c_str())), 0, 0);
+      static_cast<const wchar_t * const *>(static_cast<const void *>(Items.c_str())), 0, 0));
   }
   return Result;
 }
@@ -2580,7 +2580,7 @@ TRect TFarPanelInfo::GetBounds()
 //---------------------------------------------------------------------------
 intptr_t TFarPanelInfo::GetSelectedCount()
 {
-  intptr_t Count = FPanelInfo->SelectedItemsNumber;
+  intptr_t Count = static_cast<intptr_t>(FPanelInfo->SelectedItemsNumber);
 
   if ((Count == 1) && FOwner)
   {

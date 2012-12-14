@@ -197,7 +197,7 @@ public:
   intptr_t GetWidth();
   void SetWidth(intptr_t Value);
   intptr_t GetHeight();
-  void SetHeight(int Value);
+  void SetHeight(intptr_t Value);
   bool GetEnabled() { return FEnabled; }
   void SetEnabled(bool Value);
   bool GetIsEnabled() { return FIsEnabled; }
