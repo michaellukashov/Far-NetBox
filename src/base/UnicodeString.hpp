@@ -357,8 +357,8 @@ public:
   const RawByteString & __fastcall operator +=(const char Ch);
   const RawByteString & __fastcall operator +=(const char * rhs);
 
-  bool __fastcall operator ==(char * rhs) const
-  { return (char *)Data.c_str() == rhs; }
+  bool __fastcall operator ==(const char * rhs) const
+  { return strcmp(reinterpret_cast<const char *>(Data.c_str()), rhs) == 0; }
   friend bool __fastcall operator ==(RawByteString & lhs, RawByteString & rhs)
   { return lhs.Data == rhs.Data; }
   friend bool __fastcall operator !=(RawByteString & lhs, RawByteString & rhs)

@@ -556,7 +556,7 @@ UnicodeString Format(const wchar_t * Format, va_list args)
   {
     intptr_t Len = _vscwprintf(Format, args);
     Result.SetLength(Len + 1);
-    vswprintf_s((wchar_t *)Result.c_str(), Len + 1, Format, args);
+    vswprintf_s(const_cast<wchar_t *>(Result.c_str()), Len + 1, Format, args);
   }
   return Result.c_str();
 }
@@ -734,7 +734,7 @@ UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
       }
 
       /* copy as many words as will fit onto the current line */
-      while (*s && wcslen(s) + 1 <= (size_t)spaceLeft)
+      while (*s && wcslen(s) + 1 <= spaceLeft)
       {
         if (Result.Length() == 0)
         {
