@@ -929,10 +929,10 @@ UnicodeString __fastcall ByteToHex(unsigned char B, bool UpperCase)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall BytesToHex(const unsigned char * B, size_t Length, bool UpperCase, wchar_t Separator)
+UnicodeString __fastcall BytesToHex(const unsigned char * B, uintptr_t Length, bool UpperCase, wchar_t Separator)
 {
   UnicodeString Result;
-  for (size_t i = 0; i < Length; i++)
+  for (uintptr_t i = 0; i < Length; i++)
   {
     Result += ByteToHex(B[i], UpperCase);
     if ((Separator != L'\0') && (i < Length - 1))

@@ -17,7 +17,7 @@ static UnicodeString DirectoryMaskDelimiters = L"/\\";
 static UnicodeString FileMasksDelimiterStr = UnicodeString(FileMasksDelimiters[1]) + L' ';
 //---------------------------------------------------------------------------
 /* __fastcall */ EFileMasksException::EFileMasksException(
-    UnicodeString Message, int AErrorStart, int AErrorLen) :
+    UnicodeString Message, intptr_t AErrorStart, intptr_t AErrorLen) :
   Exception(Message)
 {
   ErrorStart = AErrorStart;

@@ -9,9 +9,9 @@
 class EFileMasksException : public Exception
 {
 public:
-  explicit /* __fastcall */ EFileMasksException(UnicodeString Message, int ErrorStart, int ErrorLen);
-  int ErrorStart;
-  int ErrorLen;
+  explicit /* __fastcall */ EFileMasksException(UnicodeString Message, intptr_t ErrorStart, intptr_t ErrorLen);
+  intptr_t ErrorStart;
+  intptr_t ErrorLen;
 };
 //---------------------------------------------------------------------------
 extern const wchar_t IncludeExcludeFileMasksDelimiter;
