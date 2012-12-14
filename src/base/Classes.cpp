@@ -2039,7 +2039,7 @@ size_t TRegistry::ReadBinaryData(const UnicodeString Name,
     TRegDataType RegData = Info.RegData;
     if (((RegData == rdBinary) || (RegData == rdUnknown)) && (Result <= BufSize))
     {
-      GetData(Name, Buffer, static_cast<DWORD>(Result), RegData);
+      GetData(Name, Buffer, Result, RegData);
     }
     else
     {

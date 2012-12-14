@@ -2329,7 +2329,7 @@ int __fastcall TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
       }
 
       if ((Reservation < 0) ||
-          Packet->GetMessageNumber() != (unsigned int)FPacketNumbers[Reservation])
+          Packet->GetMessageNumber() != FPacketNumbers[Reservation])
       {
         TRACE("4");
         TSFTPPacket * ReservedPacket;
@@ -2376,7 +2376,7 @@ int __fastcall TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
   if (Reservation >= 0)
   {
     TRACE("5");
-    assert(Packet->GetMessageNumber() == (unsigned int)FPacketNumbers[Reservation]);
+    assert(Packet->GetMessageNumber() == FPacketNumbers[Reservation]);
     RemoveReservation(Reservation);
   }
 

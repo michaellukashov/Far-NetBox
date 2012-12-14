@@ -4170,7 +4170,7 @@ void TWinSCPFileSystem::EditHistory()
     intptr_t Result = WinSCPPlugin()->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
       GetMsg(MENU_EDIT_HISTORY), L"", MenuItems, BreakKeys, BreakCode);
 
-    if ((Result >= 0) && (Result < static_cast<int>(FEditHistories.size())))
+    if ((Result >= 0) && (Result < FEditHistories.size()))
     {
       TRemoteFile * File;
       UnicodeString FullFileName =

@@ -193,7 +193,7 @@ intptr_t TFarConfiguration::FarConfirmations()
 {
   if (GetCurrentThreadId() == GetPlugin()->GetFarThread())
   {
-    return static_cast<int>(GetPlugin()->FarAdvControl(ACTL_GETCONFIRMATIONS));
+    return GetPlugin()->FarAdvControl(ACTL_GETCONFIRMATIONS);
   }
   else
   {

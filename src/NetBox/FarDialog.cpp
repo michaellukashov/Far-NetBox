@@ -1771,7 +1771,7 @@ void TFarButton::SetDataInternal(const UnicodeString Value)
         Margin = 2;
         break;
     }
-    SetWidth(static_cast<int>(Margin + StripHotKey(AValue).Length() + Margin));
+    SetWidth(Margin + StripHotKey(AValue).Length() + Margin);
   }
 }
 //---------------------------------------------------------------------------
