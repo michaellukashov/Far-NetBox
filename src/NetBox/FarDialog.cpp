@@ -592,7 +592,7 @@ LONG_PTR TFarDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
 LONG_PTR TFarDialog::DefaultDialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
 {
   TFarEnvGuard Guard;
-  return GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetHandle(), Msg, Param1, Param2);
+  return GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetHandle(), Msg, static_cast<int>(Param1), Param2);
 }
 //---------------------------------------------------------------------------
 LONG_PTR TFarDialog::FailDialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
@@ -649,7 +649,7 @@ bool TFarDialog::Key(TFarDialogItem * Item, LONG_PTR KeyCode)
   bool Result = false;
   if (FOnKey)
   {
-    FOnKey(this, Item, KeyCode, Result);
+    FOnKey(this, Item, static_cast<long>(KeyCode), Result);
   }
   return Result;
 }
@@ -842,7 +842,7 @@ LONG_PTR TFarDialog::SendMessage(int Msg, intptr_t Param1, LONG_PTR Param2)
   assert(GetHandle());
   TFarEnvGuard Guard;
   return GetFarPlugin()->GetStartupInfo()->SendDlgMessage(GetHandle(),
-    Msg, Param1, Param2);
+    Msg, static_cast<int>(Param1), Param2);
 }
 //---------------------------------------------------------------------------
 uintptr_t TFarDialog::GetSystemColor(int Index)
@@ -1400,13 +1400,13 @@ void TFarDialogItem::DoExit()
 LONG_PTR TFarDialogItem::DefaultItemProc(int Msg, LONG_PTR Param)
 {
   TFarEnvGuard Guard;
-  return GetDialog()->GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, GetItem(), Param);
+  return GetDialog()->GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, static_cast<int>(GetItem()), Param);
 }
 //---------------------------------------------------------------------------
 LONG_PTR TFarDialogItem::DefaultDialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
 {
   TFarEnvGuard Guard;
-  return GetDialog()->GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, Param1, Param2);
+  return GetDialog()->GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, static_cast<int>(Param1), Param2);
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::Change()
@@ -1685,7 +1685,7 @@ void TFarDialogItem::Text(int X, int Y, uintptr_t Color, const UnicodeString Str
   TFarEnvGuard Guard;
   GetDialog()->GetFarPlugin()->GetStartupInfo()->Text(
     GetDialog()->GetBounds().Left + GetLeft() + X, GetDialog()->GetBounds().Top + GetTop() + Y,
-    Color, Str.c_str());
+    static_cast<int>(Color), Str.c_str());
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::Redraw()
@@ -1856,7 +1856,7 @@ LONG_PTR TFarButton::ItemProc(int Msg, LONG_PTR Param)
 //---------------------------------------------------------------------------
 bool TFarButton::HotKey(char HotKey)
 {
-  int P = GetCaption().Pos(L'&');
+  intptr_t P = GetCaption().Pos(L'&');
   bool Result =
     GetVisible() && GetEnabled() &&
     (P > 0) && (P < GetCaption().Length()) &&

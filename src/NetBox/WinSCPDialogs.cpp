@@ -107,7 +107,7 @@ protected:
   void HideTabs();
   virtual void SelectTab(int Tab);
   void TabButtonClick(TFarButton * Sender, bool & Close);
-  virtual bool Key(TFarDialogItem * Item, long KeyCode);
+  virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
   virtual UnicodeString TabName(int Tab);
   TTabButton * TabButton(int Tab);
   int GetTabCount() const { return FTabCount; }
@@ -236,7 +236,7 @@ void TTabbedDialog::TabButtonClick(TFarButton * Sender, bool & Close)
   Close = false;
 }
 //---------------------------------------------------------------------------
-bool TTabbedDialog::Key(TFarDialogItem * /*Item*/, long KeyCode)
+bool TTabbedDialog::Key(TFarDialogItem * /*Item*/, LONG_PTR KeyCode)
 {
   bool Result = false;
   if (KeyCode == KEY_CTRLPGDN || KeyCode == KEY_CTRLPGUP)
@@ -2876,11 +2876,11 @@ void AdjustRemoteDir(
     HostName.Delete(1, 8);
   }
   UnicodeString Dir;
-  int P = HostName.Pos(L'/');
+  intptr_t P = HostName.Pos(L'/');
   if (P > 0)
   {
     Dir = HostName.SubString(P, HostName.Length() - P + 1);
-    int P2 = Dir.Pos(L':');
+    intptr_t P2 = Dir.Pos(L':');
     if (P2 > 0)
     {
       UnicodeString Port = Dir.SubString(P2 + 1, Dir.Length() - P2);
@@ -5867,7 +5867,7 @@ protected:
   void CheckSpaceAvailable();
   void NeedSpaceAvailable();
   bool SpaceAvailableSupported();
-  virtual bool Key(TFarDialogItem * Item, long KeyCode);
+  virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
 
 private:
   TGetSpaceAvailableEvent FOnGetSpaceAvailable;
@@ -6288,7 +6288,7 @@ void TFileSystemInfoDialog::Execute(
   ShowModal();
 }
 //---------------------------------------------------------------------------
-bool TFileSystemInfoDialog::Key(TFarDialogItem * Item, long KeyCode)
+bool TFileSystemInfoDialog::Key(TFarDialogItem * Item, LONG_PTR KeyCode)
 {
   bool Result = false;
   if ((Item == SpaceAvailablePathEdit) && (KeyCode == KEY_ENTER))
@@ -7787,7 +7787,7 @@ protected:
   void DoSynchronizeThreads(TObject * Sender, TThreadMethod slot);
   virtual LONG_PTR DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2);
   virtual bool CloseQuery();
-  virtual bool Key(TFarDialogItem * Item, long KeyCode);
+  virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
   TCopyParamType GetCopyParams();
   int ActualCopyParamAttrs();
   void CustomCopyParam();
@@ -8172,7 +8172,7 @@ void TSynchronizeDialog::Change()
   }
 }
 //---------------------------------------------------------------------------
-bool TSynchronizeDialog::Key(TFarDialogItem * /*Item*/, long KeyCode)
+bool TSynchronizeDialog::Key(TFarDialogItem * /*Item*/, LONG_PTR KeyCode)
 {
   bool Result = false;
   if ((KeyCode == KEY_ESC) && FSynchronizing)
@@ -8268,7 +8268,7 @@ protected:
     TQueueItemProxy * QueueItem, size_t Index);
   bool QueueItemNeedsFrequentRefresh(TQueueItemProxy * QueueItem);
   void UpdateControls();
-  virtual bool Key(TFarDialogItem * Item, long KeyCode);
+  virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
   virtual bool CloseQuery();
 
 private:
@@ -8399,7 +8399,7 @@ void TQueueDialog::OperationButtonClick(TFarButton * Sender,
   }
 }
 //---------------------------------------------------------------------------
-bool TQueueDialog::Key(TFarDialogItem * /*Item*/, long KeyCode)
+bool TQueueDialog::Key(TFarDialogItem * /*Item*/, LONG_PTR KeyCode)
 {
   bool Result = false;
   if (QueueListBox->Focused())

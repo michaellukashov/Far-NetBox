@@ -896,11 +896,11 @@ void TFarMessageDialog::Init(unsigned int AFlags,
     // DEBUG_PRINTF(L"rect.Left = %d, MaxLen = %d, rect.Right = %d", rect.Left, MaxLen, rect.Right);
     TPoint S(
       // rect.Left + MaxLen + (-(rect.Right + 1)),
-      rect.Left + MaxLen - rect.Right,
-      rect.Top + MessageLines->Count +
+      static_cast<int>(rect.Left + MaxLen - rect.Right),
+      static_cast<int>(rect.Top + MessageLines->Count +
       (FParams->MoreMessages != NULL ? 1 : 0) + ButtonLines +
       (!FParams->CheckBoxLabel.IsEmpty() ? 1 : 0) +
-      (-(rect.Bottom + 1)));
+      (-(rect.Bottom + 1))));
 
     if (FParams->MoreMessages != NULL)
     {
@@ -916,7 +916,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
       MoreMessagesLister->SetTabStop(MoreMessagesLister->GetScrollBar());
       assert(MoreMessagesSeparator != NULL);
       MoreMessagesSeparator->SetPosition(
-        MoreMessagesLister->GetTop() + MoreMessagesLister->GetHeight());
+        static_cast<int>(MoreMessagesLister->GetTop() + MoreMessagesLister->GetHeight()));
       S.y += static_cast<int>(MoreMessagesLister->GetHeight()) + 1;
     }
     // DEBUG_PRINTF(L"S.x = %d, S.y = %d", S.x, S.y);
@@ -1156,7 +1156,7 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, const UnicodeString Title,
   FarMenuItemEx * MenuItems = new FarMenuItemEx[Items->Count];
   TRY_FINALLY (
   {
-    int Selected = NPOS;
+    intptr_t Selected = NPOS;
     intptr_t Count = 0;
     for (intptr_t i = 0; i < Items->Count; i++)
     {
@@ -1177,7 +1177,7 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, const UnicodeString Title,
     }
 
     intptr_t ResultItem = Menu(Flags | FMENU_USEEXT, Title, Bottom,
-      reinterpret_cast<const FarMenuItem *>(MenuItems), Count, BreakKeys, BreakCode);
+      reinterpret_cast<const FarMenuItem *>(MenuItems), static_cast<int>(Count), BreakKeys, BreakCode);
 
     if (ResultItem >= 0)
     {
@@ -1639,7 +1639,7 @@ intptr_t TCustomFarPlugin::FarControl(uintptr_t Command, intptr_t Param1, intptr
   }
 
   TFarEnvGuard Guard;
-  return FStartupInfo.Control(Plugin, Command, Param1, Param2);
+  return FStartupInfo.Control(Plugin, static_cast<int>(Command), static_cast<int>(Param1), Param2);
 }
 //---------------------------------------------------------------------------
 intptr_t TCustomFarPlugin::FarAdvControl(uintptr_t Command, void * Param)
@@ -2699,7 +2699,7 @@ void TFarPanelInfo::SetFocusedIndex(intptr_t Value)
   if (GetFocusedIndex() != Value)
   {
     assert(Value != NPOS && Value < FPanelInfo->ItemsNumber);
-    FPanelInfo->CurrentItem = Value;
+    FPanelInfo->CurrentItem = static_cast<int>(Value);
     PanelRedrawInfo PanelInfo;
     PanelInfo.CurrentItem = FPanelInfo->CurrentItem;
     PanelInfo.TopPanelItem = FPanelInfo->TopPanelItem;

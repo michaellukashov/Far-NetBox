@@ -87,7 +87,7 @@ protected:
 
 private:
   TCustomFarPlugin * FFarPlugin;
-  int FFarConfirmations;
+  intptr_t FFarConfirmations;
   bool FConfirmOverwritingOverride;
   bool FConfirmSynchronizedBrowsing;
   bool FForceInheritance;
@@ -116,7 +116,7 @@ private:
 
   TBookmarks * FBookmarks;
 
-  int FarConfirmations();
+  intptr_t FarConfirmations();
 };
 //---------------------------------------------------------------------------
 #define FarConfiguration (static_cast<TFarConfiguration *>(Configuration))

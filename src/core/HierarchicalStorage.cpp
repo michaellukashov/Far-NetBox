@@ -51,7 +51,7 @@ UnicodeString __fastcall UnMungeStr(const UnicodeString Str)
   RawByteString Source = Str;
   RawByteString Dest;
   Dest.SetLength(Source.Length() + 1);
-  putty_unmungestr(Source.c_str(), const_cast<char *>(Dest.c_str()), Dest.Length());
+  putty_unmungestr(Source.c_str(), const_cast<char *>(Dest.c_str()), static_cast<int>(Dest.Length()));
   UnicodeString Result;
   if (Dest.Pos(Bom.c_str()) == 1)
   {
@@ -469,7 +469,7 @@ bool __fastcall TRegistryStorage::Copy(TRegistryStorage * Storage)
     while ((Index < Names->Count) && Result)
     {
       UnicodeString Name = MungeStr(Names->Strings[Index], GetForceAnsi());
-      DWORD Size = Buffer.size();
+      DWORD Size = static_cast<DWORD>(Buffer.size());
       DWORD Type;
       int RegResult = 0;
       do

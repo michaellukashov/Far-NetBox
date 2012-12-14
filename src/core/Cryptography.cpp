@@ -392,11 +392,11 @@ void __fastcall AES256EncyptWithMAC(RawByteString Input, UnicodeString Password,
   assert(Salt.Length() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
   UTF8String UtfPassword = Password;
   fcrypt_init(PASSWORD_MANAGER_AES_MODE,
-    reinterpret_cast<const unsigned char *>(UtfPassword.c_str()), UtfPassword.Length(),
+    reinterpret_cast<const unsigned char *>(UtfPassword.c_str()), static_cast<unsigned int>(UtfPassword.Length()),
     reinterpret_cast<const unsigned char *>(Salt.c_str()), NULL, &aes);
   Output = Input;
   Output.Unique();
-  fcrypt_encrypt(reinterpret_cast<unsigned char *>(const_cast<char *>(Output.c_str())), Output.Length(), &aes);
+  fcrypt_encrypt(reinterpret_cast<unsigned char *>(const_cast<char *>(Output.c_str())), static_cast<unsigned int>(Output.Length()), &aes);
   Mac.SetLength(MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
   fcrypt_end(reinterpret_cast<unsigned char *>(const_cast<char *>(Mac.c_str())), &aes);
 }
@@ -418,11 +418,11 @@ bool __fastcall AES256DecryptWithMAC(RawByteString Input, UnicodeString Password
   assert(Salt.Length() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
   UTF8String UtfPassword = Password;
   fcrypt_init(PASSWORD_MANAGER_AES_MODE,
-    reinterpret_cast<const unsigned char *>(UtfPassword.c_str()), UtfPassword.Length(),
+    reinterpret_cast<const unsigned char *>(UtfPassword.c_str()), static_cast<unsigned int>(UtfPassword.Length()),
     reinterpret_cast<const unsigned char *>(Salt.c_str()), NULL, &aes);
   Output = Input;
   Output.Unique();
-  fcrypt_decrypt(reinterpret_cast<unsigned char *>(const_cast<char *>(Output.c_str())), Output.Length(), &aes);
+  fcrypt_decrypt(reinterpret_cast<unsigned char *>(const_cast<char *>(Output.c_str())), static_cast<unsigned int>(Output.Length()), &aes);
   RawByteString Mac2;
   Mac2.SetLength(MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
   assert(Mac.Length() == Mac2.Length());

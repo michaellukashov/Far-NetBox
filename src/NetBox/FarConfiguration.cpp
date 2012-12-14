@@ -189,11 +189,11 @@ void TFarConfiguration::CacheFarSettings()
   FFarConfirmations = GetPlugin()->FarAdvControl(ACTL_GETCONFIRMATIONS);
 }
 //---------------------------------------------------------------------------
-int TFarConfiguration::FarConfirmations()
+intptr_t TFarConfiguration::FarConfirmations()
 {
   if (GetCurrentThreadId() == GetPlugin()->GetFarThread())
   {
-    return GetPlugin()->FarAdvControl(ACTL_GETCONFIRMATIONS);
+    return static_cast<int>(GetPlugin()->FarAdvControl(ACTL_GETCONFIRMATIONS));
   }
   else
   {

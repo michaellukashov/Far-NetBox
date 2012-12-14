@@ -322,7 +322,7 @@ public:
 
   void AddString(const RawByteString & Value)
   {
-    AddCardinal(Value.Length());
+    AddCardinal(static_cast<unsigned long >(Value.Length()));
     Add(Value.c_str(), Value.Length());
   }
 
@@ -338,6 +338,7 @@ public:
 
   inline void AddString(const UnicodeString Value, bool Utf)
   {
+	(void)Utf;
     AddStringW(Value);
   }
 
@@ -584,6 +585,7 @@ public:
 
   inline UnicodeString GetString(bool Utf)
   {
+	(void)Utf;
     return GetStringW();
   }
 
@@ -766,7 +768,7 @@ public:
     }
   }
 
-  unsigned char * GetNextData(unsigned int Size = 0)
+  unsigned char * GetNextData(uintptr_t Size = 0)
   {
     if (Size > 0)
     {
@@ -861,7 +863,7 @@ public:
   uintptr_t __fastcall GetCapacity() const { return FCapacity; }
   unsigned char __fastcall GetType() const { return FType; }
   uintptr_t __fastcall GetMessageNumber() const { return FMessageNumber; }
-  void __fastcall SetMessageNumber(uintptr_t value) { FMessageNumber = value; }
+  void __fastcall SetMessageNumber(unsigned long  value) { FMessageNumber = value; }
   TSFTPFileSystem * __fastcall GetReservedBy() const { return FReservedBy; }
   void __fastcall SetReservedBy(TSFTPFileSystem * value) { FReservedBy = value; }
 
@@ -871,7 +873,7 @@ private:
   uintptr_t FCapacity;
   uintptr_t FPosition;
   unsigned char FType;
-  uintptr_t FMessageNumber;
+  unsigned long FMessageNumber;
   TSFTPFileSystem * FReservedBy;
 
   static int FMessageCounter;
@@ -1004,7 +1006,7 @@ public:
   }
 
 private:
-  inline void Need(unsigned int Size)
+  inline void Need(uintptr_t Size)
   {
     if (FPosition + Size > FLength)
     {
@@ -2060,7 +2062,7 @@ unsigned long __fastcall TSFTPFileSystem::UploadBlockSize(const RawByteString & 
   // handle length + offset + data size
   const unsigned long UploadPacketOverhead =
     sizeof(unsigned long) + sizeof(__int64) + sizeof(unsigned long);
-  return TransferBlockSize(UploadPacketOverhead + Handle.Length(), OperationProgress,
+  return TransferBlockSize(UploadPacketOverhead + static_cast<unsigned long >(Handle.Length()), OperationProgress,
     GetSessionData()->GetSFTPMinPacketSize(),
     GetSessionData()->GetSFTPMaxPacketSize());
 }

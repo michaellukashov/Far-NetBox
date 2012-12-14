@@ -1910,7 +1910,7 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString FileName,
               FTerminal->LogEvent(FORMAT(L"Sending BINARY data (%u bytes)",
                 BlockBuf.GetSize()));
             }
-            FSecureShell->Send(reinterpret_cast<const unsigned char *>(BlockBuf.GetData()), BlockBuf.GetSize());
+            FSecureShell->Send(reinterpret_cast<const unsigned char *>(BlockBuf.GetData()), static_cast<int>(BlockBuf.GetSize()));
             OperationProgress->AddTransfered(BlockBuf.GetSize());
           }
 

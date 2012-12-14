@@ -440,7 +440,7 @@ void __fastcall TCopyParamType::Load(THierarchicalStorage * Storage)
   SetResumeSupport(static_cast<TResumeSupport>(Storage->ReadInteger(L"ResumeSupport", GetResumeSupport())));
   SetResumeThreshold(Storage->ReadInt64(L"ResumeThreshold", GetResumeThreshold()));
   SetInvalidCharsReplacement(static_cast<wchar_t>(Storage->ReadInteger(L"ReplaceInvalidChars",
-    static_cast<unsigned int>(GetInvalidCharsReplacement()))));
+    static_cast<int>(GetInvalidCharsReplacement()))));
   SetLocalInvalidChars(Storage->ReadString(L"LocalInvalidChars", GetLocalInvalidChars()));
   SetCalculateSize(Storage->ReadBool(L"CalculateSize", GetCalculateSize()));
   if (Storage->ValueExists(L"IncludeFileMask"))

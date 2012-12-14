@@ -509,7 +509,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
         {
           UnicodeString Name = Data->GetName().SubString(
             Folder.Length() + 1, Data->GetName().Length() - Folder.Length());
-          int Slash = Name.Pos(L'/');
+          intptr_t Slash = Name.Pos(L'/');
           if (Slash > 0)
           {
             Name.SetLength(Slash - 1);
@@ -3285,7 +3285,7 @@ void TWinSCPFileSystem::TerminalQueryUser(TObject * /*Sender*/,
     AParams.TimeoutAnswer = Params->TimeoutAnswer;
   }
 
-  Answer = MoreMessageDialog(AQuery, MoreMessages, Type, Answers, &AParams);
+  Answer = static_cast<unsigned int>(MoreMessageDialog(AQuery, MoreMessages, Type, Answers, &AParams));
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal,

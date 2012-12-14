@@ -117,7 +117,7 @@ public:
   __int64 GetResumeThreshold() const { return FResumeThreshold; }
   void __fastcall SetResumeThreshold(__int64 value) { FResumeThreshold = value; }
   wchar_t __fastcall GetInvalidCharsReplacement() const { return FInvalidCharsReplacement; }
-  void __fastcall SetInvalidCharsReplacement(char value) { FInvalidCharsReplacement = value; }
+  void __fastcall SetInvalidCharsReplacement(wchar_t value) { FInvalidCharsReplacement = value; }
   UnicodeString __fastcall GetLocalInvalidChars() const;
   bool __fastcall GetCalculateSize() const { return FCalculateSize; }
   void __fastcall SetCalculateSize(bool value) { FCalculateSize = value; }

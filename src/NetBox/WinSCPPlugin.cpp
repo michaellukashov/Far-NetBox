@@ -266,7 +266,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
         UnicodeString Name = reinterpret_cast<wchar_t *>(Item);
         if (OpenFrom == OPEN_SHORTCUT)
         {
-          int P = Name.Pos(L"\1");
+          intptr_t P = Name.Pos(L"\1");
           if (P > 0)
           {
             Directory = Name.SubString(P + 1, Name.Length() - P);

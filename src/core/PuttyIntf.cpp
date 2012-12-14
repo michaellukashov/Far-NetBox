@@ -140,8 +140,8 @@ int get_userpass_input(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
       Results->AddObject(L"", reinterpret_cast<TObject *>(Prompt->result_len));
     }
 
-    if (SecureShell->PromptUser(p->to_server, p->name, p->name_reqd,
-          p->instruction, p->instr_reqd, Prompts, Results))
+    if (SecureShell->PromptUser(p->to_server != 0, p->name, p->name_reqd != 0,
+          p->instruction, p->instr_reqd != 0, Prompts, Results))
     {
       for (int Index = 0; Index < int(p->n_prompts); Index++)
       {

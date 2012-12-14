@@ -14724,7 +14724,7 @@ webdav::error_t TWebDAVFileSystem::CreateStorage(
 
 uintptr_t TWebDAVFileSystem::AdjustToCPSLimit(uintptr_t len)
 {
-  return FCurrentOperationProgress ? (uintptr_t)FCurrentOperationProgress->AdjustToCPSLimit(len) : len;
+  return FCurrentOperationProgress ? (uintptr_t)FCurrentOperationProgress->AdjustToCPSLimit(static_cast<unsigned long>(len)) : len;
 }
 
 bool TWebDAVFileSystem::GetIsCancelled()
