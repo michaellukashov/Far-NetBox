@@ -2413,19 +2413,19 @@ void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
       assert(PanelItem->GetUserData() == NULL);
       UnicodeString Folder = UnixIncludeTrailingBackslash(
         UnixIncludeTrailingBackslash(FSessionsFolder) + PanelItem->GetFileName());
-      intptr_t Index = 0;
-      while (Index < StoredSessions->Count)
+      intptr_t Index2 = 0;
+      while (Index2 < StoredSessions->Count)
       {
-        TSessionData * Data = StoredSessions->GetSession(Index);
+        TSessionData * Data = StoredSessions->GetSession(Index2);
         if (Data->GetName().SubString(1, Folder.Length()) == Folder)
         {
-          if (StoredSessions->GetSession(Index) != Data)
-          {
-            Index--;
-          }
           ProcessSession(Data, Param);
+          if (StoredSessions->GetSession(Index2) != Data)
+          {
+            Index2--;
+          }
         }
-        Index++;
+        Index2++;
       }
       PanelItem->SetSelected(false);
     }
@@ -4170,7 +4170,7 @@ void TWinSCPFileSystem::EditHistory()
     intptr_t Result = WinSCPPlugin()->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
       GetMsg(MENU_EDIT_HISTORY), L"", MenuItems, BreakKeys, BreakCode);
 
-    if ((Result >= 0) && (Result < FEditHistories.size()))
+    if ((Result >= 0) && (Result < static_cast<intptr_t>(FEditHistories.size())))
     {
       TRemoteFile * File;
       UnicodeString FullFileName =
