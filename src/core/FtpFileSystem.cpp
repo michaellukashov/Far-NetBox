@@ -3053,13 +3053,13 @@ UnicodeString __fastcall TFTPFileSystem::ExtractStatusMessage(UnicodeString Stat
   TRACEFMT("Status [%s]", Status.c_str());
   // CApiLog::LogMessage
   // (note that the formatting may not be present when LogMessageRaw is used)
-  int P1 = Status.Pos(L"): ");
+  intptr_t P1 = Status.Pos(L"): ");
   if (P1 > 0)
   {
-    int P2 = Status.Pos(L".cpp(");
+    intptr_t P2 = Status.Pos(L".cpp(");
     if ((P2 > 0) && (P2 < P1))
     {
-      int P3 = Status.Pos(L"   caller=0x");
+      intptr_t P3 = Status.Pos(L"   caller=0x");
       if ((P3 > 0) && (P3 > P1))
       {
         Status = Status.SubString(P1 + 3, P3 - P1 - 3);

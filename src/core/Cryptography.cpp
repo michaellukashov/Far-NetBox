@@ -506,7 +506,7 @@ RawByteString __fastcall ScramblePassword(UnicodeString Password)
   UTF8String UtfPassword = Password;
   intptr_t Len = UtfPassword.Length();
   char * Buf = new char[Len + SCRAMBLE_LENGTH_EXTENSION];
-  int Padding = (((Len + 3) / 17) * 17 + 17) - 3 - Len;
+  intptr_t Padding = (((Len + 3) / 17) * 17 + 17) - 3 - Len;
   for (int Index = 0; Index < Padding; Index++)
   {
     int P = 0;

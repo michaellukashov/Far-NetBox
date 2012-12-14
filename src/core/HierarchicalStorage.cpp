@@ -77,7 +77,7 @@ UnicodeString __fastcall PuttyUnMungeStr(const UnicodeString Str)
 //---------------------------------------------------------------------------
 UnicodeString __fastcall MungeIniName(const UnicodeString Str)
 {
-  int P = Str.Pos(L"=");
+  intptr_t P = Str.Pos(L"=");
   // make this fast for now
   if (P > 0)
   {
@@ -91,7 +91,7 @@ UnicodeString __fastcall MungeIniName(const UnicodeString Str)
 //---------------------------------------------------------------------------
 UnicodeString __fastcall UnMungeIniName(const UnicodeString Str)
 {
-  int P = Str.Pos(L"%3D");
+  intptr_t P = Str.Pos(L"%3D");
   // make this fast for now
   if (P > 0)
   {
