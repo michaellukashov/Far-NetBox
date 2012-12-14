@@ -77,7 +77,7 @@ bool __fastcall CompareFileName(const UnicodeString & Path1, const UnicodeString
 bool __fastcall IsReservedName(UnicodeString FileName);
 UnicodeString __fastcall DisplayableStr(const RawByteString & Str);
 UnicodeString __fastcall ByteToHex(unsigned char B, bool UpperCase = true);
-UnicodeString __fastcall BytesToHex(const unsigned char * B, size_t Length, bool UpperCase = true, wchar_t Separator = L'\0');
+UnicodeString __fastcall BytesToHex(const unsigned char * B, uintptr_t Length, bool UpperCase = true, wchar_t Separator = L'\0');
 UnicodeString __fastcall BytesToHex(RawByteString Str, bool UpperCase = true, wchar_t Separator = L'\0');
 UnicodeString __fastcall CharToHex(wchar_t Ch, bool UpperCase = true);
 RawByteString __fastcall HexToBytes(const UnicodeString Hex);

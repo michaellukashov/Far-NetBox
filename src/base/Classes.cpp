@@ -119,7 +119,7 @@ void TList::SetCount(intptr_t NewCount)
   {
     Classes::Error(SListCountError, NewCount);
   }
-  if ((size_t)NewCount <= FList.size())
+  if (NewCount <= FList.size())
   {
     int sz = static_cast<int>(FList.size());
     for (int I = sz - 1; (I != NPOS) && (I >= NewCount); I--)
@@ -140,7 +140,7 @@ void *& TList::GetItem(intptr_t Index)
 }
 void TList::SetItem(intptr_t Index, void * Item)
 {
-  if ((Index == NPOS) || ((size_t)Index >= FList.size()))
+  if ((Index == NPOS) || (Index >= FList.size()))
   {
     Classes::Error(SListIndexError, Index);
   }
@@ -177,7 +177,7 @@ void TList::Move(intptr_t CurIndex, intptr_t NewIndex)
 {
   if (CurIndex != NewIndex)
   {
-    if ((NewIndex == NPOS) || ((size_t)NewIndex >= FList.size()))
+    if ((NewIndex == NPOS) || (NewIndex >= FList.size()))
     {
       Classes::Error(SListIndexError, NewIndex);
     }
@@ -190,7 +190,7 @@ void TList::Move(intptr_t CurIndex, intptr_t NewIndex)
 }
 void TList::Delete(intptr_t Index)
 {
-  if ((Index == NPOS) || ((size_t)Index >= FList.size()))
+  if ((Index == NPOS) || (Index >= FList.size()))
   {
     Classes::Error(SListIndexError, Index);
   }
@@ -203,11 +203,11 @@ void TList::Delete(intptr_t Index)
 }
 void TList::Insert(intptr_t Index, void * Item)
 {
-  if ((Index == NPOS) || ((size_t)Index > FList.size()))
+  if ((Index == NPOS) || (Index > FList.size()))
   {
     Classes::Error(SListIndexError, Index);
   }
-  if ((size_t)Index <= FList.size())
+  if (Index <= FList.size())
   {
     FList.insert(FList.begin() + Index, Item);
   }
@@ -218,12 +218,12 @@ void TList::Insert(intptr_t Index, void * Item)
 }
 intptr_t TList::IndexOf(void * Value) const
 {
-  int Result = 0;
-  while (((size_t)Result < FList.size()) && (FList[Result] != Value))
+  intptr_t Result = 0;
+  while ((Result < FList.size()) && (FList[Result] != Value))
   {
     Result++;
   }
-  if ((size_t)Result == FList.size())
+  if (Result == FList.size())
   {
     Result = NPOS;
   }
@@ -533,7 +533,7 @@ void TStrings::SetDelimitedText(const UnicodeString Value)
 
 intptr_t TStrings::CompareStrings(const UnicodeString S1, const UnicodeString S2)
 {
-  return ::AnsiCompareText(S1, S2);
+  return static_cast<intptr_t>(::AnsiCompareText(S1, S2));
 }
 
 void TStrings::Assign(TPersistent * Source)
@@ -938,13 +938,13 @@ void TStringList::PutString(intptr_t Index, const UnicodeString S)
   {
     Classes::Error(SSortedListError, 0);
   }
-  if ((Index == NPOS) || ((size_t)Index > FList.size()))
+  if ((Index == NPOS) || (Index > FList.size()))
   {
     Classes::Error(SListIndexError, Index);
   }
   Changing();
   // DEBUG_PRINTF(L"Index = %d, size = %d", Index, FList.size());
-  if ((size_t)Index < FList.size())
+  if (Index < FList.size())
   {
     TObject * Temp = GetObjects(Index);
     TStringItem item;
@@ -960,7 +960,7 @@ void TStringList::PutString(intptr_t Index, const UnicodeString S)
 }
 void TStringList::Delete(intptr_t Index)
 {
-  if ((Index == NPOS) || ((size_t)Index >= FList.size()))
+  if ((Index == NPOS) || (Index >= FList.size()))
   {
     Classes::Error(SListIndexError, Index);
   }
@@ -971,7 +971,7 @@ void TStringList::Delete(intptr_t Index)
 }
 TObject *& TStringList::GetObjects(intptr_t Index)
 {
-  if ((Index == NPOS) || ((size_t)Index >= FList.size()))
+  if ((Index == NPOS) || (Index >= FList.size()))
   {
     Classes::Error(SListIndexError, Index);
   }
@@ -1006,11 +1006,11 @@ void TStringList::InsertItem(intptr_t Index, const UnicodeString S, TObject * AO
 UnicodeString & TStringList::GetString(intptr_t Index)
 {
   // DEBUG_PRINTF(L"Index = %d, FList.size = %d", Index, FList.size());
-  if ((Index == NPOS) || ((size_t)Index > FList.size()))
+  if ((Index == NPOS) || (Index > FList.size()))
   {
     Classes::Error(SListIndexError, Index);
   }
-  if ((size_t)Index == FList.size())
+  if (Index == FList.size())
   {
     InsertItem(Index, UnicodeString(), NULL);
   }
@@ -1019,7 +1019,7 @@ UnicodeString & TStringList::GetString(intptr_t Index)
 UnicodeString TStringList::GetStrings(intptr_t Index) const
 {
   // DEBUG_PRINTF(L"Index = %d, FList.size = %d", Index, FList.size());
-  if ((Index == NPOS) || ((size_t)Index >= FList.size()))
+  if ((Index == NPOS) || (Index >= FList.size()))
   {
     Classes::Error(SListIndexError, Index);
   }
@@ -1090,7 +1090,7 @@ void TStringList::LoadFromFile(const UnicodeString FileName)
 
 void TStringList::PutObject(intptr_t Index, TObject * AObject)
 {
-  if ((Index == NPOS) || ((size_t)Index >= FList.size()))
+  if ((Index == NPOS) || (Index >= FList.size()))
   {
     Classes::Error(SListIndexError, Index);
   }
@@ -1128,7 +1128,7 @@ void TStringList::Changed()
 }
 void TStringList::Insert(intptr_t Index, const UnicodeString S)
 {
-  if ((Index == NPOS) || ((size_t)Index > FList.size()))
+  if ((Index == NPOS) || (Index > FList.size()))
   {
     Classes::Error(SListIndexError, Index);
   }
@@ -1203,11 +1203,11 @@ intptr_t TStringList::CompareStrings(const UnicodeString S1, const UnicodeString
 {
   if (GetCaseSensitive())
   {
-    return ::AnsiCompareStr(S1, S2);
+    return static_cast<intptr_t>(::AnsiCompareStr(S1, S2));
   }
   else
   {
-    return ::AnsiCompareText(S1, S2);
+    return static_cast<intptr_t>(::AnsiCompareText(S1, S2));
   }
 }
 
@@ -2035,11 +2035,11 @@ size_t TRegistry::ReadBinaryData(const UnicodeString Name,
   TRegDataInfo Info;
   if (GetDataInfo(Name, Info))
   {
-    Result = Info.DataSize;
+    Result = static_cast<size_t>(Info.DataSize);
     TRegDataType RegData = Info.RegData;
     if (((RegData == rdBinary) || (RegData == rdUnknown)) && (Result <= BufSize))
     {
-      GetData(Name, Buffer, static_cast<DWORD>(Result), RegData);
+      GetData(Name, Buffer, Result, RegData);
     }
     else
     {

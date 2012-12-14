@@ -69,7 +69,7 @@ public:
   TItemPosition GetNextItemPosition() { return FNextItemPosition; }
   void SetNextItemPosition(const TItemPosition Value) { FNextItemPosition = Value; }
   intptr_t GetDefaultGroup() const { return FDefaultGroup; }
-  void SetDefaultGroup(const int Value) { FDefaultGroup = Value; }
+  void SetDefaultGroup(intptr_t Value) { FDefaultGroup = Value; }
   int GetTag() const { return FTag; }
   void SetTag(int Value) { FTag = Value; }
   TFarDialogItem * GetItemFocused() { return FItemFocused; }
@@ -129,7 +129,7 @@ private:
   TFarButton * FDefaultButton;
   TFarBox * FBorderBox;
   TItemPosition FNextItemPosition;
-  int FDefaultGroup;
+  intptr_t FDefaultGroup;
   int FTag;
   TFarDialogItem * FItemFocused;
   TFarKeyEvent FOnKey;
@@ -194,10 +194,10 @@ public:
   void SetRight(int Value) { SetCoordinate(2, Value); }
   int GetBottom() { return GetCoordinate(3); }
   void SetBottom(int Value) { SetCoordinate(3, Value); }
-  int GetWidth();
+  intptr_t GetWidth();
   void SetWidth(intptr_t Value);
   intptr_t GetHeight();
-  void SetHeight(int Value);
+  void SetHeight(intptr_t Value);
   bool GetEnabled() { return FEnabled; }
   void SetEnabled(bool Value);
   bool GetIsEnabled() { return FIsEnabled; }

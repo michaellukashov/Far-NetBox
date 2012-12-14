@@ -53,7 +53,7 @@ extern int Win32BuildNumber;
 
 //---------------------------------------------------------------------------
 
-inline int __cdecl StrLength(const wchar_t *str) { return (int) wcslen(str ? str : L""); }
+inline intptr_t __cdecl StrLength(const wchar_t *str) { return (int) wcslen(str ? str : L""); }
 
 inline int IsSpace(wchar_t x) { return x==L' ' || x==L'\t';  }
 

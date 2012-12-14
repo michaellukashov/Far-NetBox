@@ -31,7 +31,7 @@
 #define _WIN32_IE 0x0700
 #endif
 #ifndef __shobjidl_h__
-	#include <shobjidl.h>    // for IFileDialog/IFileOpenDialog/IFileSaveDialog
+	// #include <shobjidl.h>    // for IFileDialog/IFileOpenDialog/IFileSaveDialog
 #endif
 #endif
 

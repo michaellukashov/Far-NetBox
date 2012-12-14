@@ -21,12 +21,7 @@
 
 CStdioFile::CStdioFile()
 {
-	CommonBaseInit(NULL, NULL);
-}
-
-CStdioFile::CStdioFile(CAtlTransactionManager* pTM)
-{
-	CommonBaseInit(NULL, pTM);
+	CommonBaseInit(NULL);
 }
 
 CStdioFile::CStdioFile(FILE* pOpenStream)
@@ -37,23 +32,17 @@ CStdioFile::CStdioFile(FILE* pOpenStream)
 		AfxThrowInvalidArgException();
 	}
 
-	CommonBaseInit(pOpenStream, NULL);
+	CommonBaseInit(pOpenStream);
 }
 
 CStdioFile::CStdioFile(LPCTSTR lpszFileName, UINT nOpenFlags)
 {
-	CommonInit(lpszFileName, nOpenFlags, NULL);
+	CommonInit(lpszFileName, nOpenFlags);
 }
 
-CStdioFile::CStdioFile(LPCTSTR lpszFileName, UINT nOpenFlags, CAtlTransactionManager* pTM)
-{
-	CommonInit(lpszFileName, nOpenFlags, pTM);
-}
-
-void CStdioFile::CommonBaseInit(FILE* pOpenStream, CAtlTransactionManager* pTM)
+void CStdioFile::CommonBaseInit(FILE* pOpenStream)
 {
 	m_pStream = pOpenStream;
-	m_pTM = pTM;
 
 	if (pOpenStream != NULL)
 	{
@@ -62,7 +51,7 @@ void CStdioFile::CommonBaseInit(FILE* pOpenStream, CAtlTransactionManager* pTM)
 	}
 }
 
-void CStdioFile::CommonInit(LPCTSTR lpszFileName, UINT nOpenFlags, CAtlTransactionManager* pTM)
+void CStdioFile::CommonInit(LPCTSTR lpszFileName, UINT nOpenFlags)
 {
 	ASSERT(lpszFileName != NULL);
 	ASSERT(AfxIsValidString(lpszFileName));
@@ -71,7 +60,7 @@ void CStdioFile::CommonInit(LPCTSTR lpszFileName, UINT nOpenFlags, CAtlTransacti
 		AfxThrowInvalidArgException();
 	}
 
-	CommonBaseInit(NULL, pTM);
+	CommonBaseInit(NULL);
 
 	CFileException e;
 	if (!Open(lpszFileName, nOpenFlags, &e))
@@ -92,12 +81,6 @@ CStdioFile::~CStdioFile()
 	}
 
 	AFX_END_DESTRUCTOR
-}
-
-BOOL CStdioFile::Open(LPCTSTR lpszFileName, UINT nOpenFlags, CAtlTransactionManager* pTM, CFileException* pException)
-{
-	m_pTM = pTM;
-	return Open(lpszFileName, nOpenFlags, pException);
 }
 
 BOOL CStdioFile::Open(LPCTSTR lpszFileName, UINT nOpenFlags, CFileException* pException)

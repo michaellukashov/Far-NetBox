@@ -140,8 +140,8 @@ int get_userpass_input(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
       Results->AddObject(L"", reinterpret_cast<TObject *>(Prompt->result_len));
     }
 
-    if (SecureShell->PromptUser(p->to_server, p->name, p->name_reqd,
-          p->instruction, p->instr_reqd, Prompts, Results))
+    if (SecureShell->PromptUser(p->to_server != 0, p->name, p->name_reqd != 0,
+          p->instruction, p->instr_reqd != 0, Prompts, Results))
     {
       for (int Index = 0; Index < int(p->n_prompts); Index++)
       {
@@ -378,7 +378,7 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
   USEDPARAM(Key);
 
   UnicodeString RegKey = SubKey;
-  int PuttyKeyLen = Configuration->GetPuttyRegistryStorageKey().Length();
+  intptr_t PuttyKeyLen = Configuration->GetPuttyRegistryStorageKey().Length();
   TRACEFMT("RegKey [%s] [%s] PuttyRegistryStorageKey [%s] [%d]", RegKey.c_str(), RegKey.SubString(1, PuttyKeyLen).c_str(), Configuration->GetPuttyRegistryStorageKey().c_str(), PuttyKeyLen);
   assert(RegKey.SubString(1, PuttyKeyLen) == Configuration->GetPuttyRegistryStorageKey());
   RegKey = RegKey.SubString(PuttyKeyLen + 1, RegKey.Length() - PuttyKeyLen);

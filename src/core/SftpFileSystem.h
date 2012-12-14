@@ -128,7 +128,7 @@ protected:
   UnicodeString __fastcall RealPath(const UnicodeString Path, const UnicodeString BaseDir);
   void __fastcall ReserveResponse(const TSFTPPacket * Packet,
     TSFTPPacket * Response);
-  int __fastcall ReceivePacket(TSFTPPacket * Packet, int ExpectedType = -1,
+  uintptr_t __fastcall ReceivePacket(TSFTPPacket * Packet, int ExpectedType = -1,
     int AllowStatus = -1);
   bool __fastcall PeekPacket();
   void __fastcall RemoveReservation(intptr_t Reservation);

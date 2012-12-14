@@ -50,6 +50,8 @@
 #endif
 #endif
 
+#define __ATLTRANSACTIONMANAGER_H__
+
 #ifndef _INC_NEW
 	#include <new.h>
 #endif
@@ -980,12 +982,6 @@ public:
 /////////////////////////////////////////////////////////////////////////////
 // File - raw unbuffered disk file I/O
 
-#ifndef __ATLTRANSACTIONMANAGER_H__
-#include <atltransactionmanager.h>
-#endif
-
-using ATL::CAtlTransactionManager;
-
 class CFile : public CObject
 {
 	DECLARE_DYNAMIC(CFile)
@@ -1029,20 +1025,8 @@ public:
 // Constructors
 	CFile();
 
-	/// <summary>
-	/// CFile constructor</summary>
-	/// <param name="pTM">Pointer to CAtlTransactionManager object</param>
-	CFile(CAtlTransactionManager* pTM);
-
 	CFile(HANDLE hFile);
 	CFile(LPCTSTR lpszFileName, UINT nOpenFlags);
-
-	/// <summary>
-	/// CFile constructor</summary>
-	/// <param name="lpszFileName">A string that is the path to the desired file. The path can be relative or absolute.</param>
-	/// <param name="nOpenFlags">Sharing and access mode. Specifies the action to take when opening the file. You can combine options listed below by using the bitwise-OR (|) operator. One access permission and one share option are required; the modeCreate and modeNoInherit modes are optional.</param>
-	/// <param name="pTM">Pointer to CAtlTransactionManager object</param>
-	CFile(LPCTSTR lpszFileName, UINT nOpenFlags, CAtlTransactionManager* pTM);
 
 // Attributes
 	HANDLE m_hFile;
@@ -1059,27 +1043,15 @@ public:
 	virtual BOOL Open(LPCTSTR lpszFileName, UINT nOpenFlags, CFileException* pError = NULL);
 
 	/// <summary>
-	/// Open is designed for use with the default CFile constructor</summary>
-	/// <returns> 
-	/// TRUE if succeeds; otherwise FALSE.</returns>
-	/// <param name="lpszFileName">A string that is the path to the desired file. The path can be relative or absolute.</param>
-	/// <param name="nOpenFlags">Sharing and access mode. Specifies the action to take when opening the file. You can combine options listed below by using the bitwise-OR (|) operator. One access permission and one share option are required; the modeCreate and modeNoInherit modes are optional.</param>
-	/// <param name="pTM">Pointer to CAtlTransactionManager object</param>
-	/// <param name="pError">A pointer to an existing file-exception object that will receive the status of a failed operation</param>
-	virtual BOOL Open(LPCTSTR lpszFileName, UINT nOpenFlags, CAtlTransactionManager* pTM, CFileException* pError);
-
-	/// <summary>
 	/// This static function renames the specified file.</summary>
 	/// <param name="lpszOldName">The old path.</param>
 	/// <param name="lpszNewName">The new path.</param>
-	/// <param name="pTM">Pointer to CAtlTransactionManager object</param>
-	static void PASCAL Rename(LPCTSTR lpszOldName, LPCTSTR lpszNewName, CAtlTransactionManager* pTM = NULL);
+	static void PASCAL Rename(LPCTSTR lpszOldName, LPCTSTR lpszNewName);
 
 	/// <summary>
 	/// This static function deletes the file specified by the path.</summary>
 	/// <param name="lpszFileName">A string that is the path to the desired file. The path can be relative or absolute.</param>
-	/// <param name="pTM">Pointer to CAtlTransactionManager object</param>
-	static void PASCAL Remove(LPCTSTR lpszFileName, CAtlTransactionManager* pTM = NULL); 
+	static void PASCAL Remove(LPCTSTR lpszFileName); 
 
 	/// <summary>
 	/// This method retrieves status information related to a given CFile object instance or a given file path.</summary>
@@ -1087,15 +1059,13 @@ public:
 	/// TRUE if succeeds; otherwise FALSE.</returns>
 	/// <param name="lpszFileName">A string that is the path to the desired file. The path can be relative or absolute.</param>
 	/// <param name="rStatus">A reference to a user-supplied CFileStatus structure that will receive the status information.</param>
-	/// <param name="pTM">Pointer to CAtlTransactionManager object</param>
-	static BOOL PASCAL GetStatus(LPCTSTR lpszFileName, CFileStatus& rStatus, CAtlTransactionManager* pTM = NULL);
+	static BOOL PASCAL GetStatus(LPCTSTR lpszFileName, CFileStatus& rStatus);
 
 	/// <summary>
 	/// Sets the status of the file associated with this file location.</summary>
 	/// <param name="lpszFileName">A string that is the path to the desired file. The path can be relative or absolute.</param>
 	/// <param name="rStatus">The buffer containing the new status information.</param>
-	/// <param name="pTM">Pointer to CAtlTransactionManager object</param>
-	static void PASCAL SetStatus(LPCTSTR lpszFileName, const CFileStatus& status, CAtlTransactionManager* pTM = NULL);
+	static void PASCAL SetStatus(LPCTSTR lpszFileName, const CFileStatus& status);
 
 	ULONGLONG SeekToEnd();
 	void SeekToBegin();
@@ -1134,15 +1104,11 @@ public:
 		void** ppBufStart = NULL, void** ppBufMax = NULL);
 
 protected:
-	void CommonBaseInit(HANDLE hFile, CAtlTransactionManager* pTM);
-	void CommonInit(LPCTSTR lpszFileName, UINT nOpenFlags, CAtlTransactionManager* pTM);
+	void CommonBaseInit(HANDLE hFile);
+	void CommonInit(LPCTSTR lpszFileName, UINT nOpenFlags);
 
 	BOOL m_bCloseOnDelete;
 	CString m_strFileName;
-	
-	/// <summary>
-	/// Pointer to CAtlTransactionManager object</summary>
-	CAtlTransactionManager* m_pTM;
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1156,21 +1122,9 @@ public:
 // Constructors
 	CStdioFile();
 
-	/// <summary>
-	/// CStdioFile constructor</summary>
-	/// <param name="pTM">Pointer to CAtlTransactionManager object</param>
-	CStdioFile(CAtlTransactionManager* pTM);
-
 	CStdioFile(FILE* pOpenStream);
 	CStdioFile(LPCTSTR lpszFileName, UINT nOpenFlags);
 	
-	/// <summary>
-	/// CStdioFile constructor</summary>
-	/// <param name="lpszFileName">A string that is the path to the desired file. The path can be relative or absolute.</param>
-	/// <param name="nOpenFlags">Sharing and access mode. Specifies the action to take when opening the file. You can combine options listed below by using the bitwise-OR (|) operator. One access permission and one share option are required; the modeCreate and modeNoInherit modes are optional.</param>
-	/// <param name="pTM">Pointer to CAtlTransactionManager object</param>
-	CStdioFile(LPCTSTR lpszFileName, UINT nOpenFlags, CAtlTransactionManager* pTM);
-
 // Attributes
 	FILE* m_pStream;    // stdio FILE
 						// m_hFile from base class is _fileno(m_pStream)
@@ -1191,16 +1145,6 @@ public:
 	virtual ULONGLONG GetLength() const;
 	virtual BOOL Open(LPCTSTR lpszFileName, UINT nOpenFlags, CFileException* pError = NULL);
 
-	/// <summary>
-	/// Open is designed for use with the default CStdioFile constructor</summary>
-	/// <returns> 
-	/// TRUE if succeeds; otherwise FALSE.</returns>
-	/// <param name="lpszFileName">A string that is the path to the desired file. The path can be relative or absolute.</param>
-	/// <param name="nOpenFlags">Sharing and access mode. Specifies the action to take when opening the file. You can combine options listed below by using the bitwise-OR (|) operator. One access permission and one share option are required; the modeCreate and modeNoInherit modes are optional.</param>
-	/// <param name="pTM">Pointer to CAtlTransactionManager object</param>
-	/// <param name="pError">A pointer to an existing file-exception object that will receive the status of a failed operation</param>
-	virtual BOOL Open(LPCTSTR lpszFileName, UINT nOpenFlags, CAtlTransactionManager* pTM, CFileException* pError);
-
 	virtual UINT Read(void* lpBuf, UINT nCount);
 	virtual void Write(const void* lpBuf, UINT nCount);
 	virtual ULONGLONG Seek(LONGLONG lOff, UINT nFrom);
@@ -1214,8 +1158,8 @@ public:
 	virtual void UnlockRange(ULONGLONG dwPos, ULONGLONG dwCount);
 
 protected:
-	void CommonBaseInit(FILE* pOpenStream, CAtlTransactionManager* pTM);
-	void CommonInit(LPCTSTR lpszFileName, UINT nOpenFlags, CAtlTransactionManager* pTM);
+	void CommonBaseInit(FILE* pOpenStream);
+	void CommonInit(LPCTSTR lpszFileName, UINT nOpenFlags);
 };
 
 ////////////////////////////////////////////////////////////////////////////
@@ -1288,10 +1232,6 @@ class CFileFind : public CObject
 public:
 	CFileFind();
 
-	/// <summary>
-	/// CFileFind constructor</summary>
-	/// <param name="pTM">Pointer to CAtlTransactionManager object</param>
-	CFileFind(CAtlTransactionManager* pTM);
 	virtual ~CFileFind();
 
 // Attributes
@@ -1338,10 +1278,6 @@ protected:
 	HANDLE m_hContext;
 	CString m_strRoot;
 	TCHAR m_chDirSeparator;     // not '\\' for Internet classes
-
-	/// <summary>
-	/// Pointer to CAtlTransactionManager object</summary>
-	CAtlTransactionManager* m_pTM;
 
 #ifdef _DEBUG
 	void Dump(CDumpContext& dc) const;

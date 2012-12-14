@@ -76,12 +76,7 @@ const HANDLE CFile::hFileNull = INVALID_HANDLE_VALUE;
 
 CFile::CFile()
 {
-	CommonBaseInit(INVALID_HANDLE_VALUE, NULL);
-}
-
-CFile::CFile(CAtlTransactionManager* pTM)
-{
-	CommonBaseInit(INVALID_HANDLE_VALUE, pTM);
+	CommonBaseInit(INVALID_HANDLE_VALUE);
 }
 
 CFile::CFile(HANDLE hFile)
@@ -91,27 +86,21 @@ CFile::CFile(HANDLE hFile)
 	DWORD dwFlags = 0;
 	ASSERT(GetHandleInformation(hFile, &dwFlags) != 0);
 #endif
-	CommonBaseInit(hFile, NULL);
+	CommonBaseInit(hFile);
 }
 
 CFile::CFile(LPCTSTR lpszFileName, UINT nOpenFlags)
 {
-	CommonInit(lpszFileName, nOpenFlags, NULL);
+	CommonInit(lpszFileName, nOpenFlags);
 }
 
-CFile::CFile(LPCTSTR lpszFileName, UINT nOpenFlags, CAtlTransactionManager* pTM)
-{
-	CommonInit(lpszFileName, nOpenFlags, pTM);
-}
-
-void CFile::CommonBaseInit(HANDLE hFile, CAtlTransactionManager* pTM)
+void CFile::CommonBaseInit(HANDLE hFile)
 {
 	m_hFile = hFile;
 	m_bCloseOnDelete = FALSE;
-	m_pTM = pTM;
 }
 
-void CFile::CommonInit(LPCTSTR lpszFileName, UINT nOpenFlags, CAtlTransactionManager* pTM)
+void CFile::CommonInit(LPCTSTR lpszFileName, UINT nOpenFlags)
 {
 	ASSERT(lpszFileName != NULL);
 	ASSERT(AfxIsValidString(lpszFileName));
@@ -120,7 +109,7 @@ void CFile::CommonInit(LPCTSTR lpszFileName, UINT nOpenFlags, CAtlTransactionMan
 		AfxThrowInvalidArgException();
 	}
 
-	CommonBaseInit(INVALID_HANDLE_VALUE, pTM);
+	CommonBaseInit(INVALID_HANDLE_VALUE);
 
 	CFileException e;
 	if (!Open(lpszFileName, nOpenFlags, &e))
@@ -157,17 +146,8 @@ CFile* CFile::Duplicate() const
 	pFile->m_hFile = hFile;
 	ASSERT(pFile->m_hFile != INVALID_HANDLE_VALUE);
 	pFile->m_bCloseOnDelete = m_bCloseOnDelete;
-	pFile->m_pTM = m_pTM;
 
 	return pFile;
-}
-
-BOOL CFile::Open(LPCTSTR lpszFileName, UINT nOpenFlags, CAtlTransactionManager* pTM, CFileException* pException)
-{
-	ASSERT_VALID(this);
-
-	m_pTM = pTM;
-	return Open(lpszFileName, nOpenFlags, pException);
 }
 
 BOOL CFile::Open(LPCTSTR lpszFileName, UINT nOpenFlags, CFileException* pException)
@@ -286,9 +266,7 @@ BOOL CFile::Open(LPCTSTR lpszFileName, UINT nOpenFlags, CFileException* pExcepti
 		dwFlags |= FILE_FLAG_SEQUENTIAL_SCAN;
 
 	// attempt file creation
-	HANDLE hFile = m_pTM != NULL ? 
-		m_pTM->CreateFile(lpszFileName, dwAccess, dwShareMode, &sa, dwCreateFlag, dwFlags, NULL) :
-		::CreateFile(lpszFileName, dwAccess, dwShareMode, &sa, dwCreateFlag, dwFlags, NULL);
+	HANDLE hFile = ::CreateFile(lpszFileName, dwAccess, dwShareMode, &sa, dwCreateFlag, dwFlags, NULL);
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
 		_AfxFillExceptionInfo(pException,lpszFileName);		
@@ -478,16 +456,16 @@ UINT CFile::GetBufferPtr(UINT nCommand, UINT /*nCount*/,
 	return 0;   // no support
 }
 
-void PASCAL CFile::Rename(LPCTSTR lpszOldName, LPCTSTR lpszNewName, CAtlTransactionManager* pTM)
+void PASCAL CFile::Rename(LPCTSTR lpszOldName, LPCTSTR lpszNewName)
 {
-	BOOL bRes = (pTM != NULL) ? pTM->MoveFile(lpszOldName, lpszNewName) : ::MoveFile((LPTSTR)lpszOldName, (LPTSTR)lpszNewName);
+	BOOL bRes = ::MoveFile((LPTSTR)lpszOldName, (LPTSTR)lpszNewName);
 	if (!bRes)
 		CFileException::ThrowOsError((LONG)::GetLastError(), lpszOldName);
 }
 
-void PASCAL CFile::Remove(LPCTSTR lpszFileName, CAtlTransactionManager* pTM)
+void PASCAL CFile::Remove(LPCTSTR lpszFileName)
 {
-	BOOL bRes = (pTM != NULL) ? pTM->DeleteFile(lpszFileName) : ::DeleteFile((LPTSTR)lpszFileName);
+	BOOL bRes = ::DeleteFile((LPTSTR)lpszFileName);
 	if (!bRes)
 		CFileException::ThrowOsError((LONG)::GetLastError(), lpszFileName);
 }

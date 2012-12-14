@@ -1193,7 +1193,7 @@ void __fastcall TSecureShell::AddStdError(UnicodeString Str)
 {
   FStdError += Str;
 
-  Integer P;
+  intptr_t P;
   Str = DeleteChar(Str, L'\r');
   // We send only whole line at once to log, so we have to cache
   // incoming std error data

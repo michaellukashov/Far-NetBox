@@ -167,7 +167,7 @@
 #endif
 
 #if (0x0600 <= WINVER) && defined(_UNICODE)
-	#include "afxtaskdialog.h"
+	// #include "afxtaskdialog.h"
 #endif 
 
 #include <winreg.h>

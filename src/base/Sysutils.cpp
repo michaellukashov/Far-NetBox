@@ -1094,7 +1094,7 @@ UnicodeString ExtractFilename(const UnicodeString path, wchar_t delimiter)
 UnicodeString ExtractFileExtension(const UnicodeString path, wchar_t delimiter)
 {
   UnicodeString filename = ExtractFilename(path, delimiter);
-  int n = filename.RPos(L'.');
+  intptr_t n = filename.RPos(L'.');
   if (n > 0)
   {
     return filename.SubString(n);

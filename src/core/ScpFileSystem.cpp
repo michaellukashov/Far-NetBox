@@ -332,7 +332,7 @@ UnicodeString __fastcall TCommandSet::GetReturnVar()
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TCommandSet::ExtractCommand(UnicodeString Command)
 {
-  int P = Command.Pos(L" ");
+  intptr_t P = Command.Pos(L" ");
   if (P > 0)
   {
     Command.SetLength(P-1);
@@ -617,7 +617,7 @@ bool __fastcall TSCPFileSystem::RemoveLastLine(UnicodeString & Line,
   if (LastLine.IsEmpty()) { LastLine = LAST_LINE; }
   // #55: fixed so, even when last line of command output does not
   // contain CR/LF, we can recognize last line
-  int Pos = Line.Pos(LastLine);
+  intptr_t Pos = Line.Pos(LastLine);
   if (Pos)
   {
     // 2003-07-14: There must be nothing after return code number to
@@ -1911,7 +1911,7 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString FileName,
               FTerminal->LogEvent(FORMAT(L"Sending BINARY data (%u bytes)",
                 BlockBuf.GetSize()));
             }
-            FSecureShell->Send(reinterpret_cast<const unsigned char *>(BlockBuf.GetData()), BlockBuf.GetSize());
+            FSecureShell->Send(reinterpret_cast<const unsigned char *>(BlockBuf.GetData()), static_cast<int>(BlockBuf.GetSize()));
             OperationProgress->AddTransfered(BlockBuf.GetSize());
           }
 

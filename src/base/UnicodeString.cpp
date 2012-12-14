@@ -44,7 +44,7 @@ void AnsiString::Init(const unsigned char * Str, intptr_t Length)
 
 AnsiString::operator UnicodeString() const
 {
-  return UnicodeString(Data.c_str(), static_cast<int>(Data.size()));
+  return UnicodeString(Data.c_str(), Data.size());
 }
 
 intptr_t AnsiString::Pos(wchar_t Ch) const
@@ -62,7 +62,7 @@ AnsiString & AnsiString::Insert(const char * Str, intptr_t Pos)
 AnsiString AnsiString::SubString(intptr_t Pos, intptr_t Len) const
 {
   std::string s = Data.substr(Pos - 1, Len);
-  AnsiString Result(s.c_str(), static_cast<int>(s.size()));
+  AnsiString Result(s.c_str(), s.size());
   return Result;
 }
 
@@ -86,20 +86,20 @@ AnsiString & AnsiString::operator=(const UTF8String & strCopy)
 
 AnsiString & AnsiString::operator=(const char * lpszData)
 {
-  Init(lpszData, static_cast<int>(strlen(lpszData ? lpszData : "")));
+  Init(lpszData, strlen(lpszData ? lpszData : ""));
   return *this;
 }
 
 AnsiString & AnsiString::operator=(const wchar_t * lpwszData)
 {
-  Init(lpwszData, static_cast<int>(wcslen(NullToEmpty(lpwszData))));
+  Init(lpwszData, wcslen(NullToEmpty(lpwszData)));
   return *this;
 }
 
 AnsiString __fastcall AnsiString::operator +(const RawByteString & rhs) const
 {
   std::string Result = Data + rhs.c_str();
-  return AnsiString(Result.c_str(), static_cast<int>(Result.size()));
+  return AnsiString(Result.c_str(), Result.size());
 }
 
 const AnsiString & __fastcall AnsiString::operator +=(const RawByteString & rhs)
@@ -172,22 +172,22 @@ void RawByteString::Init(const unsigned char * Str, intptr_t Length)
 
 RawByteString::operator UnicodeString() const
 {
-  return UnicodeString(reinterpret_cast<const char *>(Data.c_str()), static_cast<int>(Data.size()));
+  return UnicodeString(reinterpret_cast<const char *>(Data.c_str()), Data.size());
 }
 
-int RawByteString::Pos(wchar_t Ch) const
+intptr_t RawByteString::Pos(wchar_t Ch) const
 {
-  return static_cast<int>(Data.find((unsigned char)Ch)) + 1;
+  return Data.find((unsigned char)Ch) + 1;
 }
 
-int RawByteString::Pos(const char Ch) const
+intptr_t RawByteString::Pos(const char Ch) const
 {
-  return static_cast<int>(Data.find((unsigned char)Ch)) + 1;
+  return Data.find((unsigned char)Ch) + 1;
 }
 
-int RawByteString::Pos(const char * Str) const
+intptr_t RawByteString::Pos(const char * Str) const
 {
-  return static_cast<int>(Data.find((const unsigned char *)Str)) + 1;
+  return Data.find((const unsigned char *)Str) + 1;
 }
 
 RawByteString & RawByteString::Insert(const char * Str, intptr_t Pos)
@@ -199,7 +199,7 @@ RawByteString & RawByteString::Insert(const char * Str, intptr_t Pos)
 RawByteString RawByteString::SubString(intptr_t Pos, intptr_t Len) const
 {
   rawstring_t s = Data.substr(Pos - 1, Len);
-  RawByteString Result(s.c_str(), static_cast<int>(s.size()));
+  RawByteString Result(s.c_str(), s.size());
   return Result;
 }
 
@@ -229,26 +229,26 @@ RawByteString & RawByteString::operator=(const UTF8String & strCopy)
 
 RawByteString & RawByteString::operator=(const std::wstring & strCopy)
 {
-  Init(strCopy.c_str(), static_cast<int>(strCopy.size()));
+  Init(strCopy.c_str(), strCopy.size());
   return *this;
 }
 
 RawByteString & RawByteString::operator=(const char * lpszData)
 {
-  Init(lpszData, static_cast<int>(strlen(lpszData ? lpszData : "")));
+  Init(lpszData, strlen(lpszData ? lpszData : ""));
   return *this;
 }
 
 RawByteString & RawByteString::operator=(const wchar_t * lpwszData)
 {
-  Init(lpwszData, static_cast<int>(wcslen(NullToEmpty(lpwszData))));
+  Init(lpwszData, wcslen(NullToEmpty(lpwszData)));
   return *this;
 }
 
 RawByteString __fastcall RawByteString::operator +(const RawByteString & rhs) const
 {
   rawstring_t Result = Data + rhs.Data;
-  return RawByteString(reinterpret_cast<const char *>(Result.c_str()), static_cast<int>(Result.size()));
+  return RawByteString(reinterpret_cast<const char *>(Result.c_str()), Result.size());
 }
 
 const RawByteString & __fastcall RawByteString::operator +=(const RawByteString & rhs)
@@ -300,7 +300,7 @@ UTF8String::UTF8String(const UnicodeString & Str)
 
 intptr_t UTF8String::Pos(wchar_t Ch) const
 {
-  return static_cast<int>(Data.find(Ch)) + 1;
+  return Data.find(Ch) + 1;
 }
 
 UTF8String & UTF8String::Insert(const wchar_t * Str, intptr_t Pos)
@@ -329,20 +329,20 @@ UTF8String & UTF8String::operator=(const RawByteString & strCopy)
 
 UTF8String & UTF8String::operator=(const char * lpszData)
 {
-  Init(lpszData, static_cast<int>(strlen(lpszData ? lpszData : "")));
+  Init(lpszData, strlen(lpszData ? lpszData : ""));
   return *this;
 }
 
 UTF8String & UTF8String::operator=(const wchar_t * lpwszData)
 {
-  Init(lpwszData, static_cast<int>(wcslen(NullToEmpty(lpwszData))));
+  Init(lpwszData, wcslen(NullToEmpty(lpwszData)));
   return *this;
 }
 
 UTF8String __fastcall UTF8String::operator +(const UTF8String & rhs) const
 {
   wstring_t Result = Data + rhs.Data;
-  return UTF8String(Result.c_str(), static_cast<int>(Result.size()));
+  return UTF8String(Result.c_str(), Result.size());
 }
 
 const UTF8String & __fastcall UTF8String::operator +=(const UTF8String & rhs)
@@ -443,10 +443,10 @@ UnicodeString & UnicodeString::Insert(intptr_t Pos, const wchar_t * Str, intptr_
   return *this;
 }
 
-bool UnicodeString::RPos(int & nPos, wchar_t Ch, int nStartPos) const
+bool UnicodeString::RPos(intptr_t & nPos, wchar_t Ch, intptr_t nStartPos) const
 {
   size_t pos = Data.find_last_of(Ch, Data.size() - nStartPos);
-  nPos = static_cast<int>(pos + 1);
+  nPos = pos + 1;
   return pos != std::wstring::npos;
 }
 
@@ -517,13 +517,13 @@ UnicodeString & UnicodeString::operator=(const UTF8String & strCopy)
 
 UnicodeString & UnicodeString::operator=(const std::wstring & strCopy)
 {
-  Init(strCopy.c_str(), static_cast<int>(strCopy.size()));
+  Init(strCopy.c_str(), strCopy.size());
   return *this;
 }
 
 UnicodeString & UnicodeString::operator=(const wchar_t * Str)
 {
-  Init(Str, static_cast<int>(wcslen(NullToEmpty(Str))));
+  Init(Str, wcslen(NullToEmpty(Str)));
   return *this;
 }
 
@@ -535,14 +535,14 @@ UnicodeString & UnicodeString::operator=(const wchar_t Ch)
 
 UnicodeString & UnicodeString::operator=(const char * lpszData)
 {
-  Init(lpszData, static_cast<int>(strlen(lpszData ? lpszData : "")));
+  Init(lpszData, strlen(lpszData ? lpszData : ""));
   return *this;
 }
 
 UnicodeString __fastcall UnicodeString::operator +(const UnicodeString & rhs) const
 {
   std::wstring Result = Data + rhs.Data;
-  return UnicodeString(Result.c_str(), static_cast<int>(Result.size()));
+  return UnicodeString(Result.c_str(), Result.size());
 }
 
 const UnicodeString & __fastcall UnicodeString::operator +=(const UnicodeString & rhs)

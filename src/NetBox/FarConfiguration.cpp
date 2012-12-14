@@ -270,7 +270,7 @@ void TFarConfiguration::CacheFarSettings()
   FFarConfirmations = GetConfirmationsSettings();
 }
 //---------------------------------------------------------------------------
-__int64 TFarConfiguration::FarConfirmations()
+intptr_t TFarConfiguration::FarConfirmations()
 {
   if (GetCurrentThreadId() == GetPlugin()->GetFarThread())
   {

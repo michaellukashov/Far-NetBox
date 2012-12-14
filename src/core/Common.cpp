@@ -289,14 +289,14 @@ const UnicodeString LocalInvalidChars = L"/\\:*?\"<>|";
 //---------------------------------------------------------------------------
 UnicodeString ReplaceChar(UnicodeString Str, wchar_t A, wchar_t B)
 {
-  for (Integer Index = 0; Index < Str.Length(); Index++)
+  for (intptr_t Index = 0; Index < Str.Length(); Index++)
     if (Str[Index+1] == A) Str[Index+1] = B;
   return Str;
 }
 //---------------------------------------------------------------------------
 UnicodeString DeleteChar(UnicodeString Str, wchar_t C)
 {
-  int P;
+  intptr_t P;
   while ((P = Str.Pos(C)) > 0)
   {
     Str.Delete(P, 1);
@@ -391,7 +391,7 @@ UnicodeString DefaultStr(const UnicodeString & Str, const UnicodeString & Defaul
 //---------------------------------------------------------------------------
 UnicodeString CutToChar(UnicodeString &Str, wchar_t Ch, bool Trim)
 {
-  Integer P = Str.Pos(Ch);
+  intptr_t P = Str.Pos(Ch);
   UnicodeString Result;
   if (P)
   {
@@ -668,7 +668,7 @@ void __fastcall SplitCommand(UnicodeString Command, UnicodeString &Program,
   if (!Command.IsEmpty() && (Command[1] == L'\"'))
   {
     Command.Delete(1, 1);
-    int P = Command.Pos(L'"');
+    intptr_t P = Command.Pos(L'"');
     if (P)
     {
       Program = Command.SubString(1, P-1).Trim();
@@ -929,10 +929,10 @@ UnicodeString __fastcall ByteToHex(unsigned char B, bool UpperCase)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall BytesToHex(const unsigned char * B, size_t Length, bool UpperCase, wchar_t Separator)
+UnicodeString __fastcall BytesToHex(const unsigned char * B, uintptr_t Length, bool UpperCase, wchar_t Separator)
 {
   UnicodeString Result;
-  for (size_t i = 0; i < Length; i++)
+  for (uintptr_t i = 0; i < Length; i++)
   {
     Result += ByteToHex(B[i], UpperCase);
     if ((Separator != L'\0') && (i < Length - 1))
@@ -982,8 +982,8 @@ unsigned char __fastcall HexToByte(const UnicodeString Hex)
 {
   static UnicodeString Digits = L"0123456789ABCDEF";
   assert(Hex.Length() == 2);
-  int P1 = Digits.Pos((wchar_t)toupper(Hex[1]));
-  int P2 = Digits.Pos((wchar_t)toupper(Hex[2]));
+  intptr_t P1 = Digits.Pos((wchar_t)toupper(Hex[1]));
+  intptr_t P2 = Digits.Pos((wchar_t)toupper(Hex[2]));
 
   return
     static_cast<unsigned char>(((P1 <= 0) || (P2 <= 0)) ? 0 : (((P1 - 1) << 4) + (P2 - 1)));
@@ -1760,7 +1760,7 @@ bool __fastcall RecursiveDeleteFile(const UnicodeString FileName, bool ToRecycle
 //---------------------------------------------------------------------------
 unsigned int __fastcall CancelAnswer(unsigned int Answers)
 {
-  unsigned int Result;
+  intptr_t Result;
   if ((Answers & qaCancel) != 0)
   {
     Result = qaCancel;
@@ -1860,7 +1860,7 @@ UnicodeString __fastcall LoadStr(int Ident, unsigned int MaxLength)
   Result.SetLength(MaxLength > 0 ? MaxLength : 1024);
   HINSTANCE hInstance = FarPlugin ? FarPlugin->GetHandle() : GetModuleHandle(0);
   assert(hInstance != 0);
-  intptr_t Length = ::LoadString(hInstance, Ident, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Result.c_str())), (int)Result.Length());
+  intptr_t Length = static_cast<intptr_t>(::LoadString(hInstance, Ident, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Result.c_str())), (int)Result.Length()));
 #endif
   Result.SetLength(Length);
 
@@ -2165,7 +2165,7 @@ uintptr_t __fastcall StrToVersionNumber(const UnicodeString & VersionMumberStr)
   while (!Version.IsEmpty())
   {
     UnicodeString Num = CutToChar(Version, L'.', true);
-    Result += Num.ToInt() << Shift;
+    Result += static_cast<uintptr_t>(Num.ToInt()) << Shift;
     if (Shift >= 8) Shift -= 8;
   }
   return Result;

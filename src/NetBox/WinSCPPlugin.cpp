@@ -212,7 +212,7 @@ intptr_t TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEventInfo
       FarConfiguration->GetEditorMultiple())
   {
     TWinSCPFileSystem * FileSystem = NULL;
-    for (int Index = 0; Index < FOpenedPlugins->Count; Index++)
+    for (intptr_t Index = 0; Index < FOpenedPlugins->Count; Index++)
     {
       FileSystem = dynamic_cast<TWinSCPFileSystem *>(FOpenedPlugins->GetItem(Index));
       FileSystem->ProcessEditorEvent(Info->Event, Info->Param);
@@ -282,7 +282,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
         }
         if (OpenFrom == OPEN_SHORTCUT)
         {
-          int P = Name.Pos(L"\1");
+          intptr_t P = Name.Pos(L"\1");
           if (P > 0)
           {
             Directory = Name.SubString(P + 1, Name.Length() - P);
@@ -766,16 +766,16 @@ intptr_t TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
     Result = Message(Flags, GetMsg(TitleId), DialogStr, ButtonLabels, &FarParams);
     if (FarParams.TimerAnswer > 0)
     {
-      Result = static_cast<int>(FarParams.TimerAnswer);
+      Result = static_cast<intptr_t>(FarParams.TimerAnswer);
     }
     else if (Result < 0)
     {
-      Result = CancelAnswer(Answers);
+      Result = static_cast<intptr_t>(CancelAnswer(Answers));
     }
     else
     {
       assert(Result >= 0 && Result < Data.ButtonCount);
-      Result = Data.Buttons[Result];
+      Result = static_cast<intptr_t>(Data.Buttons[Result]);
     }
 
     if (FarParams.CheckBox)

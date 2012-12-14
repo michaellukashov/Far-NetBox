@@ -9635,45 +9635,36 @@ plaintext_prompt_helper(bool * may_save_plaintext,
   void * baton,
   apr_pool_t * pool)
 {
-  bool answered = FALSE;
   cmdline_prompt_baton2_t * pb = static_cast<cmdline_prompt_baton2_t *>(baton);
 
-  do
+  auth_baton_t * ab = static_cast<auth_baton_t *>(pb->cancel_baton);
+  assert(ab);
+  TWebDAVFileSystem * fs = static_cast<TWebDAVFileSystem *>(apr_hash_get(ab->parameters,
+    CONST_FS_KEY,
+    APR_HASH_KEY_STRING));
+  assert(fs);
+
+  unsigned int RequestResult = 0;
+  error_t err = fs->SimplePrompt(prompt_text, prompt_string, RequestResult);
+  if (err)
   {
-    auth_baton_t * ab = static_cast<auth_baton_t *>(pb->cancel_baton);
-    assert(ab);
-    TWebDAVFileSystem * fs = static_cast<TWebDAVFileSystem *>(apr_hash_get(ab->parameters,
-      CONST_FS_KEY,
-      APR_HASH_KEY_STRING));
-    assert(fs);
-
-    unsigned int RequestResult = 0;
-    error_t err = fs->SimplePrompt(prompt_text, prompt_string, RequestResult);
-    if (err)
+    if (err == WEBDAV_ERR_CANCELLED)
     {
-      if (err == WEBDAV_ERR_CANCELLED)
-      {
-        error_clear(&err);
-        *may_save_plaintext = FALSE;
-        return WEBDAV_NO_ERROR;
-      }
-      else
-        return err;
-    }
-    if (RequestResult == qaYes)
-    {
-      *may_save_plaintext = TRUE;
-      answered = TRUE;
-    }
-    else if (RequestResult == qaNo)
-    {
+      error_clear(&err);
       *may_save_plaintext = FALSE;
-      answered = TRUE;
+      return WEBDAV_NO_ERROR;
     }
-
-    answered = TRUE;
+    else
+      return err;
   }
-  while (!answered);
+  if (RequestResult == qaYes)
+  {
+    *may_save_plaintext = TRUE;
+  }
+  else if (RequestResult == qaNo)
+  {
+    *may_save_plaintext = FALSE;
+  }
 
   return WEBDAV_NO_ERROR;
 }
@@ -14733,7 +14724,7 @@ webdav::error_t TWebDAVFileSystem::CreateStorage(
 
 uintptr_t TWebDAVFileSystem::AdjustToCPSLimit(uintptr_t len)
 {
-  return FCurrentOperationProgress ? (uintptr_t)FCurrentOperationProgress->AdjustToCPSLimit(len) : len;
+  return FCurrentOperationProgress ? (uintptr_t)FCurrentOperationProgress->AdjustToCPSLimit(static_cast<unsigned long>(len)) : len;
 }
 
 bool TWebDAVFileSystem::GetIsCancelled()

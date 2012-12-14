@@ -41,8 +41,8 @@ extern "C"
 
   void WINAPI SetStartupInfoW(const struct PluginStartupInfo *Info)
   {
-        if (Info->StructSize < sizeof(PluginStartupInfo))
-            return;
+    if (Info->StructSize < sizeof(PluginStartupInfo))
+      return;
     assert(FarPlugin);
     TFarPluginGuard Guard;
     FarPlugin->SetStartupInfo(Info);
@@ -50,8 +50,8 @@ extern "C"
 
   void WINAPI ExitFARW(const struct ExitInfo *Info)
   {
-        if (Info->StructSize < sizeof(ExitInfo))
-            return;
+    if (Info->StructSize < sizeof(ExitInfo))
+      return;
     assert(FarPlugin);
     TFarPluginGuard Guard;
     FarPlugin->ExitFAR();
@@ -59,8 +59,8 @@ extern "C"
 
   void WINAPI GetPluginInfoW(PluginInfo * Info)
   {
-   if (Info->StructSize < sizeof(PluginInfo))
-     return;
+    if (Info->StructSize < sizeof(PluginInfo))
+      return;
     assert(FarPlugin);
     TFarPluginGuard Guard;
     FarPlugin->GetPluginInfo(Info);

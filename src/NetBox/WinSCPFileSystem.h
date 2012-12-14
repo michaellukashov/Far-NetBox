@@ -216,7 +216,7 @@ protected:
   void ConnectTerminal(TTerminal * Terminal);
   void TemporarilyDownloadFiles(TStrings * FileList,
     TCopyParamType CopyParam, UnicodeString & TempDir);
-  int UploadFiles(bool Move, int OpMode, bool Edit, UnicodeString DestPath);
+  intptr_t UploadFiles(bool Move, int OpMode, bool Edit, UnicodeString DestPath);
   void UploadOnSave(bool NoReload);
   void UploadFromEditor(bool NoReload, const UnicodeString FileName,
     const UnicodeString RealFileName, const UnicodeString DestPath);

@@ -17,7 +17,7 @@ static UnicodeString DirectoryMaskDelimiters = L"/\\";
 static UnicodeString FileMasksDelimiterStr = UnicodeString(FileMasksDelimiters[1]) + L' ';
 //---------------------------------------------------------------------------
 /* __fastcall */ EFileMasksException::EFileMasksException(
-    UnicodeString Message, int AErrorStart, int AErrorLen) :
+    UnicodeString Message, intptr_t AErrorStart, intptr_t AErrorLen) :
   Exception(Message)
 {
   ErrorStart = AErrorStart;
@@ -1018,7 +1018,7 @@ bool __fastcall TInteractiveCustomCommand::PatternReplacement(intptr_t Index, co
   if ((Pattern.Length() >= 3) && (Pattern[2] == L'?'))
   {
     UnicodeString PromptStr;
-    int Pos = Pattern.SubString(3, Pattern.Length() - 2).Pos(L"?");
+    intptr_t Pos = Pattern.SubString(3, Pattern.Length() - 2).Pos(L"?");
     if (Pos > 0)
     {
       Replacement = Pattern.SubString(3 + Pos, Pattern.Length() - 3 - Pos);

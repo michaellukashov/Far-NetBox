@@ -79,7 +79,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <shellapi.h>
 
 #ifdef _MSC_VER
-# include <shobjidl.h>
+// # include <shobjidl.h>
 # include <winternl.h>
 # include <cfgmgr32.h>
 # include <ntddscsi.h>

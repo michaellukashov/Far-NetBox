@@ -2217,7 +2217,7 @@ void __fastcall TSessionData::FromURI(const UnicodeString & ProxyURI,
   ProxyUrl.Clear();
   ProxyPort = 0;
   ProxyMethod = pmNone;
-  int Pos = ProxyURI.RPos(L':');
+  intptr_t Pos = ProxyURI.RPos(L':');
   if (Pos > 0)
   {
     ProxyUrl = ProxyURI.SubString(1, Pos - 1).Trim();

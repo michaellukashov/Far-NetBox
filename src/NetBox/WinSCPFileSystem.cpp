@@ -511,7 +511,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
         {
           UnicodeString Name = Data->GetName().SubString(
             Folder.Length() + 1, Data->GetName().Length() - Folder.Length());
-          int Slash = Name.Pos(L'/');
+          intptr_t Slash = Name.Pos(L'/');
           if (Slash > 0)
           {
             Name.SetLength(Slash - 1);
@@ -1256,7 +1256,7 @@ void TWinSCPFileSystem::ApplyCommand()
 
               TFileOperationProgressType Progress(MAKE_CALLBACK(TWinSCPFileSystem::OperationProgress, this), MAKE_CALLBACK(TWinSCPFileSystem::OperationFinished, this));
 
-              Progress.Start(foCustomCommand, osRemote, FileListCommand ? 1 : FileList->Count);
+              Progress.Start(foCustomCommand, osRemote, static_cast<intptr_t>(FileListCommand ? 1 : FileList->Count));
               TRY_FINALLY (
               {
                 if (FileListCommand)
@@ -2397,7 +2397,7 @@ void TWinSCPFileSystem::DeleteSession(TSessionData * Data, void * /*Param*/)
 void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
   TProcessSessionEvent ProcessSession, void * Param)
 {
-  for (int Index = 0; Index < PanelItems->Count; Index++)
+  for (intptr_t Index = 0; Index < PanelItems->Count; Index++)
   {
     TFarPanelItem * PanelItem = static_cast<TFarPanelItem *>(PanelItems->GetItem(Index));
     assert(PanelItem);
@@ -2418,7 +2418,7 @@ void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
       assert(PanelItem->GetUserData() == NULL);
       UnicodeString Folder = UnixIncludeTrailingBackslash(
         UnixIncludeTrailingBackslash(FSessionsFolder) + PanelItem->GetFileName());
-      int Index = 0;
+      intptr_t Index = 0;
       while (Index < StoredSessions->Count)
       {
         TSessionData * Data = StoredSessions->GetSession(Index);
@@ -2502,7 +2502,7 @@ struct TExportSessionParam
 intptr_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
   UnicodeString & DestPath, int OpMode)
 {
-  int Result;
+  intptr_t Result;
   if (Connected())
   {
     FFileList = CreateFileList(PanelItems, osRemote);
@@ -2645,7 +2645,7 @@ void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
   }
 }
 //---------------------------------------------------------------------------
-int TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
+intptr_t TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
                                    UnicodeString DestPath)
 {
   int Result = 1;
@@ -2804,7 +2804,7 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
   {
     UnicodeString FileName;
     TFarPanelItem * PanelItem;
-    for (int i = 0; i < PanelItems->Count; i++)
+    for (intptr_t i = 0; i < PanelItems->Count; i++)
     {
       PanelItem = static_cast<TFarPanelItem *>(PanelItems->GetItem(i));
       bool AnyData = false;
@@ -2894,7 +2894,7 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
     UnicodeString FileName;
     TFarPanelItem * PanelItem;
     TObject * Data = NULL;
-    for (int Index = 0; Index < PanelItems->Count; Index++)
+    for (intptr_t Index = 0; Index < PanelItems->Count; Index++)
     {
       PanelItem = static_cast<TFarPanelItem *>(PanelItems->GetItem(Index));
       assert(PanelItem);
@@ -3340,7 +3340,7 @@ void TWinSCPFileSystem::TerminalQueryUser(TObject * /*Sender*/,
     AParams.TimeoutAnswer = Params->TimeoutAnswer;
   }
 
-  Answer = MoreMessageDialog(AQuery, MoreMessages, Type, Answers, &AParams);
+  Answer = static_cast<unsigned int>(MoreMessageDialog(AQuery, MoreMessages, Type, Answers, &AParams));
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal,
@@ -3425,7 +3425,7 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
     if (!FPanelItems)
     {
       TObjectList * PanelItems = GetPanelInfo()->GetItems();
-      for (int Index = 0; Index < PanelItems->Count; Index++)
+      for (intptr_t Index = 0; Index < PanelItems->Count; Index++)
       {
         if ((static_cast<TFarPanelItem *>(PanelItems->GetItem(Index)))->GetFileName() == FileName)
         {
@@ -3617,7 +3617,7 @@ TTerminalQueueStatus * TWinSCPFileSystem::ProcessQueue(bool Hidden)
     FQueueItemInvalidated = false;
 
     TQueueItemProxy * QueueItem;
-    for (int Index = 0; Index < FQueueStatus->GetActiveCount(); Index++)
+    for (intptr_t Index = 0; Index < FQueueStatus->GetActiveCount(); Index++)
     {
       QueueItem = FQueueStatus->GetItem(Index);
       if (QueueItem->GetUserData() != NULL)
@@ -4229,7 +4229,7 @@ void TWinSCPFileSystem::EditHistory()
     intptr_t Result = WinSCPPlugin()->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
       GetMsg(MENU_EDIT_HISTORY), L"", MenuItems, BreakKeys, BreakCode);
 
-    if ((Result >= 0) && (Result < static_cast<int>(FEditHistories.size())))
+    if ((Result >= 0) && (Result < FEditHistories.size()))
     {
       TRemoteFile * File;
       UnicodeString FullFileName =

@@ -1031,7 +1031,7 @@ void __fastcall TTerminal::OpenTunnel()
     FTunnelData->SetPublicKeyFile(FSessionData->GetTunnelPublicKeyFile());
     FTunnelData->SetTunnelPortFwd(FORMAT(L"L%d\t%s:%d",
       FTunnelLocalPortNumber, FSessionData->GetHostName().c_str(), FSessionData->GetPortNumber()));
-    FTunnelData->SetHostKey(FTunnelData->GetTunnelHostKey());
+    FTunnelData->SetHostKey(FSessionData->GetTunnelHostKey());
     FTunnelData->SetProxyMethod(FSessionData->GetProxyMethod());
     FTunnelData->SetProxyHost(FSessionData->GetProxyHost());
     FTunnelData->SetProxyPort(FSessionData->GetProxyPort());

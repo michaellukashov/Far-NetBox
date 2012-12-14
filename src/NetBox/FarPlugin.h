@@ -87,28 +87,17 @@ public:
   virtual void ClosePanel(void *Plugin);
   virtual void GetOpenPanelInfo(struct OpenPanelInfo *Info);
   virtual intptr_t GetFindData(struct GetFindDataInfo *Info);
-
   virtual void FreeFindData(const struct FreeFindDataInfo *Info);
-
   virtual intptr_t ProcessHostFile(const struct ProcessHostFileInfo *Info);
-
-
   virtual intptr_t ProcessPanelInput(const struct ProcessPanelInputInfo *Info);
-
   virtual intptr_t ProcessPanelEvent(const struct ProcessPanelEventInfo *Info);
-
-
   virtual intptr_t SetDirectory(const struct SetDirectoryInfo *Info);
   virtual intptr_t MakeDirectory(struct MakeDirectoryInfo *Info);
   virtual intptr_t DeleteFiles(const struct DeleteFilesInfo *Info);
   virtual intptr_t GetFiles(struct GetFilesInfo *Info);
-
   virtual intptr_t PutFiles(const struct PutFilesInfo *Info);
-
   virtual intptr_t ProcessEditorEvent(const struct ProcessEditorEventInfo *Info);
-
   virtual intptr_t ProcessEditorInput(const struct ProcessEditorInputInfo *Info);
-
   virtual void HandleException(Exception * E, int OpMode = 0);
 
   static wchar_t * DuplicateStr(const UnicodeString Str, bool AllowEmpty = false);
