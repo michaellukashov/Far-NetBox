@@ -407,7 +407,7 @@ TStrings::TStrings() :
 TStrings::~TStrings()
 {
 }
-void TStrings::SetTextStr(const UnicodeString Text)
+void TStrings::SetTextStr(const UnicodeString & Text)
 {
   BeginUpdate();
   TRY_FINALLY (
@@ -531,7 +531,7 @@ void TStrings::SetDelimitedText(const UnicodeString Value)
   );
 }
 
-intptr_t TStrings::CompareStrings(const UnicodeString S1, const UnicodeString S2)
+intptr_t TStrings::CompareStrings(const UnicodeString & S1, const UnicodeString & S2)
 {
   return static_cast<intptr_t>(::AnsiCompareText(S1, S2));
 }
@@ -610,12 +610,12 @@ UnicodeString TStrings::GetTextStr()
   return Result;
 }
 
-void TStrings::SetText(const UnicodeString Text)
+void TStrings::SetText(const UnicodeString & Text)
 {
   SetTextStr(Text);
 }
 
-void TStrings::SetCommaText(const UnicodeString Value)
+void TStrings::SetCommaText(const UnicodeString & Value)
 {
   SetDelimiter(L',');
   SetQuoteChar(L'"');
@@ -645,14 +645,14 @@ void TStrings::SetUpdateState(bool Updating)
   (void)Updating;
 }
 
-intptr_t TStrings::AddObject(const UnicodeString S, TObject * AObject)
+intptr_t TStrings::AddObject(const UnicodeString & S, TObject * AObject)
 {
   intptr_t Result = Add(S);
   PutObject(Result, AObject);
   return Result;
 }
 
-void TStrings::InsertObject(intptr_t Index, const UnicodeString Key, TObject * AObject)
+void TStrings::InsertObject(intptr_t Index, const UnicodeString & Key, TObject * AObject)
 {
   Insert(Index, Key);
   PutObject(Index, AObject);
@@ -676,7 +676,7 @@ bool TStrings::Equals(TStrings * Strings) const
   return Result;
 }
 
-void TStrings::PutString(intptr_t Index, const UnicodeString S)
+void TStrings::PutString(intptr_t Index, const UnicodeString & S)
 {
   TObject * TempObject = GetObjects(Index);
   Delete(Index);
@@ -710,7 +710,7 @@ void TStrings::Move(intptr_t CurIndex, intptr_t NewIndex)
   }
 }
 
-intptr_t TStrings::IndexOf(const UnicodeString S)
+intptr_t TStrings::IndexOf(const UnicodeString & S)
 {
   // DEBUG_PRINTF(L"begin");
   for (intptr_t Result = 0; Result < GetCount(); Result++)
@@ -723,7 +723,7 @@ intptr_t TStrings::IndexOf(const UnicodeString S)
   // DEBUG_PRINTF(L"end");
   return NPOS;
 }
-intptr_t TStrings::IndexOfName(const UnicodeString Name)
+intptr_t TStrings::IndexOfName(const UnicodeString & Name)
 {
   for (intptr_t Index = 0; Index < GetCount(); Index++)
   {
@@ -742,7 +742,7 @@ const UnicodeString TStrings::GetName(intptr_t Index) const
   return ExtractName(GetStrings(Index));
 }
 
-UnicodeString TStrings::ExtractName(const UnicodeString S) const
+UnicodeString TStrings::ExtractName(const UnicodeString & S) const
 {
   UnicodeString Result = S;
   intptr_t P = ::AnsiPos(Result, L'=');
@@ -757,7 +757,7 @@ UnicodeString TStrings::ExtractName(const UnicodeString S) const
   return Result;
 }
 
-const UnicodeString TStrings::GetValue(const UnicodeString Name)
+const UnicodeString TStrings::GetValue(const UnicodeString & Name)
 {
   UnicodeString Result;
   intptr_t I = IndexOfName(Name);
@@ -770,7 +770,7 @@ const UnicodeString TStrings::GetValue(const UnicodeString Name)
   return Result;
 }
 
-void TStrings::SetValue(const UnicodeString Name, const UnicodeString Value)
+void TStrings::SetValue(const UnicodeString & Name, const UnicodeString & Value)
 {
   intptr_t I = IndexOfName(Name);
   if (!Value.IsEmpty())
@@ -809,7 +809,7 @@ void TStrings::AddStrings(TStrings * Strings)
   }
 }
 
-void TStrings::Append(const UnicodeString Value)
+void TStrings::Append(const UnicodeString & Value)
 {
   Insert(GetCount(), Value);
 }
@@ -915,7 +915,7 @@ bool TStringList::Find(const UnicodeString S, intptr_t & Index)
   return Result;
 }
 
-intptr_t TStringList::IndexOf(const UnicodeString S)
+intptr_t TStringList::IndexOf(const UnicodeString & S)
 {
   // DEBUG_PRINTF(L"begin");
   intptr_t Result = NPOS;
@@ -934,7 +934,7 @@ intptr_t TStringList::IndexOf(const UnicodeString S)
   return Result;
 }
 
-void TStringList::PutString(intptr_t Index, const UnicodeString S)
+void TStringList::PutString(intptr_t Index, const UnicodeString & S)
 {
   if (GetSorted())
   {
@@ -982,7 +982,7 @@ TObject *& TStringList::GetObjects(intptr_t Index)
   return FList[Index].FObject;
 }
 
-void TStringList::InsertObject(intptr_t Index, const UnicodeString Key, TObject * AObject)
+void TStringList::InsertObject(intptr_t Index, const UnicodeString & Key, TObject * AObject)
 {
   if (GetSorted())
   {
@@ -995,7 +995,7 @@ void TStringList::InsertObject(intptr_t Index, const UnicodeString Key, TObject 
   InsertItem(Index, Key, AObject);
 }
 
-void TStringList::InsertItem(intptr_t Index, const UnicodeString S, TObject * AObject)
+void TStringList::InsertItem(intptr_t Index, const UnicodeString & S, TObject * AObject)
 {
   if ((Index == NPOS) || (Index > GetCount()))
   {
@@ -1142,7 +1142,7 @@ void TStringList::Changed()
   }
 }
 
-void TStringList::Insert(intptr_t Index, const UnicodeString S)
+void TStringList::Insert(intptr_t Index, const UnicodeString & S)
 {
   if ((Index == NPOS) || (Index > static_cast<intptr_t>(FList.size())))
   {
@@ -1217,7 +1217,7 @@ void TStringList::ExchangeItems(intptr_t Index1, intptr_t Index2)
   Item2->FObject = Temp2;
 }
 
-intptr_t TStringList::CompareStrings(const UnicodeString S1, const UnicodeString S2)
+intptr_t TStringList::CompareStrings(const UnicodeString & S1, const UnicodeString & S2)
 {
   if (GetCaseSensitive())
   {
@@ -1823,7 +1823,7 @@ void TRegistry::CloseKey()
   }
 }
 
-bool TRegistry::OpenKey(const UnicodeString Key, bool CanCreate)
+bool TRegistry::OpenKey(const UnicodeString & Key, bool CanCreate)
 {
   // DEBUG_PRINTF(L"key = %s, CanCreate = %d", Key.c_str(), CanCreate);
   bool Result = false;
@@ -1857,7 +1857,7 @@ bool TRegistry::OpenKey(const UnicodeString Key, bool CanCreate)
   return Result;
 }
 
-bool TRegistry::DeleteKey(const UnicodeString Key)
+bool TRegistry::DeleteKey(const UnicodeString & Key)
 {
   bool Result = false;
   UnicodeString S = Key;
@@ -1897,13 +1897,13 @@ bool TRegistry::DeleteKey(const UnicodeString Key)
   return Result;
 }
 
-bool TRegistry::DeleteValue(const UnicodeString Name) const
+bool TRegistry::DeleteValue(const UnicodeString & Name) const
 {
   bool Result = RegDeleteValue(GetCurrentKey(), Name.c_str()) == ERROR_SUCCESS;
   return Result;
 }
 
-bool TRegistry::KeyExists(const UnicodeString Key)
+bool TRegistry::KeyExists(const UnicodeString & Key)
 {
   bool Result = false;
   // DEBUG_PRINTF(L"Key = %s", Key.c_str());
@@ -1924,7 +1924,7 @@ bool TRegistry::KeyExists(const UnicodeString Key)
   return Result;
 }
 
-bool TRegistry::ValueExists(const UnicodeString Name) const
+bool TRegistry::ValueExists(const UnicodeString & Name) const
 {
   TRegDataInfo Info;
   bool Result = GetDataInfo(Name, Info);
@@ -1932,7 +1932,7 @@ bool TRegistry::ValueExists(const UnicodeString Name) const
   return Result;
 }
 
-bool TRegistry::GetDataInfo(const UnicodeString ValueName, TRegDataInfo & Value) const
+bool TRegistry::GetDataInfo(const UnicodeString & ValueName, TRegDataInfo & Value) const
 {
   DWORD DataType;
   memset(&Value, 0, sizeof(Value));
@@ -1943,7 +1943,7 @@ bool TRegistry::GetDataInfo(const UnicodeString ValueName, TRegDataInfo & Value)
   return Result;
 }
 
-TRegDataType TRegistry::GetDataType(const UnicodeString ValueName) const
+TRegDataType TRegistry::GetDataType(const UnicodeString & ValueName) const
 {
   TRegDataType Result;
   TRegDataInfo Info;
@@ -1958,7 +1958,7 @@ TRegDataType TRegistry::GetDataType(const UnicodeString ValueName) const
   return Result;
 }
 
-int TRegistry::GetDataSize(const UnicodeString ValueName) const
+int TRegistry::GetDataSize(const UnicodeString & ValueName) const
 {
   int Result = 0;
   TRegDataInfo Info;
@@ -1973,19 +1973,19 @@ int TRegistry::GetDataSize(const UnicodeString ValueName) const
   return Result;
 }
 
-bool TRegistry::ReadBool(const UnicodeString Name)
+bool TRegistry::ReadBool(const UnicodeString & Name)
 {
   bool Result = ReadInteger(Name) != 0;
   return Result;
 }
 
-TDateTime TRegistry::ReadDateTime(const UnicodeString Name)
+TDateTime TRegistry::ReadDateTime(const UnicodeString & Name)
 {
   TDateTime Result = TDateTime(ReadFloat(Name));
   return Result;
 }
 
-double TRegistry::ReadFloat(const UnicodeString Name) const
+double TRegistry::ReadFloat(const UnicodeString & Name) const
 {
   double Result = 0.0;
   TRegDataType RegData = rdUnknown;
@@ -1997,7 +1997,7 @@ double TRegistry::ReadFloat(const UnicodeString Name) const
   return Result;
 }
 
-int TRegistry::ReadInteger(const UnicodeString Name) const
+int TRegistry::ReadInteger(const UnicodeString & Name) const
 {
   DWORD Result = 0;
   TRegDataType RegData = rdUnknown;
@@ -2011,14 +2011,14 @@ int TRegistry::ReadInteger(const UnicodeString Name) const
   return Result;
 }
 
-__int64 TRegistry::ReadInt64(const UnicodeString Name)
+__int64 TRegistry::ReadInt64(const UnicodeString & Name)
 {
   __int64 Result = 0;
   ReadBinaryData(Name, &Result, sizeof(Result));
   return Result;
 }
 
-UnicodeString TRegistry::ReadString(const UnicodeString Name)
+UnicodeString TRegistry::ReadString(const UnicodeString & Name)
 {
   UnicodeString Result = L"";
   TRegDataType RegData = rdUnknown;
@@ -2040,13 +2040,13 @@ UnicodeString TRegistry::ReadString(const UnicodeString Name)
   return Result;
 }
 
-UnicodeString TRegistry::ReadStringRaw(const UnicodeString Name)
+UnicodeString TRegistry::ReadStringRaw(const UnicodeString & Name)
 {
   UnicodeString Result = ReadString(Name);
   return Result;
 }
 
-size_t TRegistry::ReadBinaryData(const UnicodeString Name,
+size_t TRegistry::ReadBinaryData(const UnicodeString & Name,
   void * Buffer, size_t BufSize) const
 {
   size_t Result = 0;
@@ -2071,7 +2071,7 @@ size_t TRegistry::ReadBinaryData(const UnicodeString Name,
   return Result;
 }
 
-int TRegistry::GetData(const UnicodeString Name, void * Buffer,
+int TRegistry::GetData(const UnicodeString & Name, void * Buffer,
   intptr_t BufSize, TRegDataType & RegData) const
 {
   DWORD DataType = REG_NONE;
@@ -2087,7 +2087,7 @@ int TRegistry::GetData(const UnicodeString Name, void * Buffer,
   return Result;
 }
 
-void TRegistry::PutData(const UnicodeString Name, const void * Buffer,
+void TRegistry::PutData(const UnicodeString & Name, const void * Buffer,
   intptr_t BufSize, TRegDataType RegData)
 {
   int DataType = Classes::RegDataToDataType(RegData);
@@ -2099,46 +2099,46 @@ void TRegistry::PutData(const UnicodeString Name, const void * Buffer,
   }
 }
 
-void TRegistry::WriteBool(const UnicodeString Name, bool Value)
+void TRegistry::WriteBool(const UnicodeString & Name, bool Value)
 {
   WriteInteger(Name, Value);
 }
-void TRegistry::WriteDateTime(const UnicodeString Name, TDateTime & Value)
+void TRegistry::WriteDateTime(const UnicodeString & Name, TDateTime & Value)
 {
   double Val = Value.operator double();
   PutData(Name, &Val, sizeof(double), rdBinary);
 }
-void TRegistry::WriteFloat(const UnicodeString Name, double Value)
+void TRegistry::WriteFloat(const UnicodeString & Name, double Value)
 {
   PutData(Name, &Value, sizeof(double), rdBinary);
 }
-void TRegistry::WriteString(const UnicodeString Name, const UnicodeString Value)
+void TRegistry::WriteString(const UnicodeString & Name, const UnicodeString & Value)
 {
   // DEBUG_PRINTF(L"Value = %s, Value.size = %d", Value.c_str(), Value.size());
   PutData(Name, static_cast<const void *>(Value.c_str()), Value.Length() * sizeof(wchar_t) + 1, rdString);
 }
-void TRegistry::WriteStringRaw(const UnicodeString Name, const UnicodeString Value)
+void TRegistry::WriteStringRaw(const UnicodeString & Name, const UnicodeString & Value)
 {
   PutData(Name, Value.c_str(), Value.Length() * sizeof(wchar_t) + 1, rdString);
 }
-void TRegistry::WriteInteger(const UnicodeString Name, int Value)
+void TRegistry::WriteInteger(const UnicodeString & Name, int Value)
 {
   DWORD Val = Value;
   PutData(Name, &Val, sizeof(DWORD), rdInteger);
   // WriteInt64(Name, Value);
 }
 
-void TRegistry::WriteInt64(const UnicodeString Name, __int64 Value)
+void TRegistry::WriteInt64(const UnicodeString & Name, __int64 Value)
 {
   WriteBinaryData(Name, &Value, sizeof(Value));
 }
-void TRegistry::WriteBinaryData(const UnicodeString Name,
+void TRegistry::WriteBinaryData(const UnicodeString & Name,
                                 const void * Buffer, size_t BufSize)
 {
   PutData(Name, Buffer, BufSize, rdBinary);
 }
 
-void TRegistry::ChangeKey(HKEY Value, const UnicodeString Path)
+void TRegistry::ChangeKey(HKEY Value, const UnicodeString & Path)
 {
   CloseKey();
   FCurrentKey = Value;
@@ -2159,7 +2159,7 @@ HKEY TRegistry::GetBaseKey(bool Relative)
   return Result;
 }
 
-HKEY TRegistry::GetKey(const UnicodeString Key)
+HKEY TRegistry::GetKey(const UnicodeString & Key)
 {
   UnicodeString S = Key;
   bool Relative = Classes::IsRelative(S);
