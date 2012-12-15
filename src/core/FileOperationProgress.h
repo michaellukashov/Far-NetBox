@@ -108,7 +108,7 @@ public:
   void __fastcall SetTotalSize(__int64 ASize);
   void __fastcall Start(TFileOperation AOperation, TOperationSide ASide, intptr_t ACount);
   void __fastcall Start(TFileOperation AOperation,
-    TOperationSide ASide, intptr_t ACount, bool ATemp, const UnicodeString ADirectory,
+    TOperationSide ASide, intptr_t ACount, bool ATemp, const UnicodeString & ADirectory,
     unsigned long ACPSLimit);
   void __fastcall Stop();
   void __fastcall Suspend();

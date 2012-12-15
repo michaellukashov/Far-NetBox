@@ -148,7 +148,7 @@ public:
   void __fastcall DoEvent(TQueueEvent Event);
 
 public:
-  void __fastcall SetMasks(const UnicodeString value);
+  void __fastcall SetMasks(const UnicodeString & Value);
   void __fastcall SetTransfersLimit(int value);
   void __fastcall SetEnabled(bool value);
   bool __fastcall GetIsEmpty();
@@ -196,7 +196,7 @@ protected:
   virtual /* __fastcall */ ~TQueueItem();
 
 public:
-  void __fastcall SetMasks(const UnicodeString value);
+  void __fastcall SetMasks(const UnicodeString & Value);
   void __fastcall SetStatus(TStatus Status);
   void __fastcall SetProgress(TFileOperationProgressType & ProgressData);
   void __fastcall GetData(TQueueItemProxy * Proxy);
@@ -245,7 +245,7 @@ private:
   explicit /* __fastcall */ TQueueItemProxy(TTerminalQueue * Queue, TQueueItem * QueueItem);
   virtual /* __fastcall */ ~TQueueItemProxy();
 public:
-  void __fastcall SetMasks(const UnicodeString value);
+  void __fastcall SetMasks(const UnicodeString & Value);
 };
 //---------------------------------------------------------------------------
 class TTerminalQueueStatus
@@ -274,7 +274,7 @@ private:
   intptr_t FActiveCount;
 
 public:
-  void __fastcall SetMasks(const UnicodeString value);
+  void __fastcall SetMasks(const UnicodeString & Value);
 
 private:
   TTerminalQueueStatus(const TTerminalQueueStatus &);

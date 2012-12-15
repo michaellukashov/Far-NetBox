@@ -141,7 +141,7 @@ int get_userpass_input(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
     }
 
     if (SecureShell->PromptUser(p->to_server != 0, p->name, p->name_reqd != 0,
-          p->instruction, p->instr_reqd != 0, Prompts, Results))
+          UnicodeString(p->instruction), p->instr_reqd != 0, Prompts, Results))
     {
       for (int Index = 0; Index < int(p->n_prompts); Index++)
       {
@@ -203,7 +203,7 @@ void connection_fatal(void * frontend, char * fmt, ...)
   va_end(Param);
 
   assert(frontend != NULL);
-  (static_cast<TSecureShell *>(frontend))->PuttyFatalError(Buf);
+  (static_cast<TSecureShell *>(frontend))->PuttyFatalError(UnicodeString(Buf));
 }
 //---------------------------------------------------------------------------
 int verify_ssh_host_key(void * frontend, char * host, int port, char * keytype,
@@ -212,7 +212,7 @@ int verify_ssh_host_key(void * frontend, char * host, int port, char * keytype,
 {
   CALLSTACK;
   assert(frontend != NULL);
-  (static_cast<TSecureShell *>(frontend))->VerifyHostKey(host, port, keytype, keystr, fingerprint);
+  (static_cast<TSecureShell *>(frontend))->VerifyHostKey(UnicodeString(host), port, keytype, keystr, fingerprint);
 
   TRACE("/");
   // We should return 0 when key was not confirmed, we throw exception instead.

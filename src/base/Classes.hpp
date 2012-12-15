@@ -260,7 +260,7 @@ class TStrings : public TPersistent
 public:
   TStrings();
   virtual ~TStrings();
-  intptr_t __fastcall Add(const UnicodeString S);
+  intptr_t __fastcall Add(const UnicodeString & S);
   virtual void __fastcall Delete(intptr_t Index) = 0;
   virtual UnicodeString __fastcall GetTextStr();
   virtual void __fastcall SetTextStr(const UnicodeString & Text);
@@ -290,7 +290,7 @@ public:
     FQuoteChar = Value;
   }
   UnicodeString __fastcall GetDelimitedText() const;
-  void __fastcall SetDelimitedText(const UnicodeString Value);
+  void __fastcall SetDelimitedText(const UnicodeString & Value);
   virtual intptr_t __fastcall CompareStrings(const UnicodeString & S1, const UnicodeString & S2);
   int __fastcall GetUpdateCount() const { return FUpdateCount; }
   virtual void __fastcall Assign(TPersistent * Source);
@@ -401,9 +401,9 @@ public:
   virtual /* __fastcall */ ~TStringList();
   virtual void __fastcall Assign(TPersistent * Source);
   virtual void __fastcall Clear();
-  intptr_t __fastcall Add(const UnicodeString S);
-  intptr_t __fastcall AddObject(const UnicodeString S, TObject * AObject);
-  virtual bool __fastcall Find(const UnicodeString S, intptr_t & Index);
+  intptr_t __fastcall Add(const UnicodeString & S);
+  intptr_t __fastcall AddObject(const UnicodeString & S, TObject * AObject);
+  virtual bool __fastcall Find(const UnicodeString & S, intptr_t & Index);
   virtual intptr_t __fastcall IndexOf(const UnicodeString & S);
   virtual void __fastcall Delete(intptr_t Index);
   virtual void __fastcall InsertObject(intptr_t Index, const UnicodeString & Key, TObject * AObject);
@@ -412,7 +412,7 @@ public:
   virtual void __fastcall CustomSort(TStringListSortCompare ACompareFunc);
   void __fastcall QuickSort(intptr_t L, intptr_t R, TStringListSortCompare SCompare);
 
-  void __fastcall LoadFromFile(const UnicodeString FileName);
+  void __fastcall LoadFromFile(const UnicodeString & FileName);
   TNotifyEvent & __fastcall GetOnChange() { return FOnChange; }
   void __fastcall SetOnChange(TNotifyEvent onChange) { FOnChange = onChange; }
   TNotifyEvent & __fastcall GetOnChanging() { return FOnChanging; }
@@ -544,7 +544,7 @@ public:
   int GetDirIconIndex(BOOL bSmallIcon);
 
   //get file type
-  UnicodeString GetFileType(const UnicodeString strFileName);
+  UnicodeString GetFileType(const UnicodeString & StrFileName);
 };
 
 //---------------------------------------------------------------------------
@@ -645,11 +645,11 @@ public:
   virtual __int64 __fastcall Seek(__int64 Offset, int Origin);
   virtual __int64 __fastcall Seek(const __int64 Offset, TSeekOrigin Origin);
   void __fastcall SaveToStream(TStream * Stream);
-  void __fastcall SaveToFile(const UnicodeString FileName);
+  void __fastcall SaveToFile(const UnicodeString & FileName);
 
   void __fastcall Clear();
   void __fastcall LoadFromStream(TStream * Stream);
-  void __fastcall LoadFromFile(const UnicodeString FileName);
+  void __fastcall LoadFromFile(const UnicodeString & FileName);
   __int64 __fastcall GetSize() const { return FSize; }
   virtual void __fastcall SetSize(const __int64 NewSize);
   virtual __int64 __fastcall Write(const void * Buffer, __int64 Count);

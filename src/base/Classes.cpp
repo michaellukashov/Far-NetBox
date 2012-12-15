@@ -508,7 +508,7 @@ void tokenize(const std::wstring & str, ContainerT & tokens,
   }
   };
 
-void TStrings::SetDelimitedText(const UnicodeString Value)
+void TStrings::SetDelimitedText(const UnicodeString & Value)
 {
   BeginUpdate();
   TRY_FINALLY (
@@ -561,7 +561,7 @@ void TStrings::Assign(TPersistent * Source)
   TPersistent::Assign(Source);
 }
 
-intptr_t TStrings::Add(const UnicodeString S)
+intptr_t TStrings::Add(const UnicodeString & S)
 {
   intptr_t Result = GetCount();
   Insert(Result, S);
@@ -853,12 +853,12 @@ void TStringList::Clear()
   // SetCapacity(0);
 }
 
-intptr_t TStringList::Add(const UnicodeString S)
+intptr_t TStringList::Add(const UnicodeString & S)
 {
   return AddObject(S, NULL);
 }
 
-intptr_t TStringList::AddObject(const UnicodeString S, TObject * AObject)
+intptr_t TStringList::AddObject(const UnicodeString & S, TObject * AObject)
 {
   // DEBUG_PRINTF(L"S = %s, Duplicates = %d", S.c_str(), FDuplicates);
   intptr_t Result = 0;
@@ -885,7 +885,7 @@ intptr_t TStringList::AddObject(const UnicodeString S, TObject * AObject)
   return Result;
 }
 
-bool TStringList::Find(const UnicodeString S, intptr_t & Index)
+bool TStringList::Find(const UnicodeString & S, intptr_t & Index)
 {
   bool Result = false;
   intptr_t L = 0;
@@ -1067,7 +1067,7 @@ void TStringList::SetSorted(bool Value)
   }
 }
 
-void TStringList::LoadFromFile(const UnicodeString FileName)
+void TStringList::LoadFromFile(const UnicodeString & FileName)
 {
   HANDLE FileHandle = ::CreateFile(FileName.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, 0);
   TSafeHandleStream Stream(FileHandle);
@@ -1391,12 +1391,12 @@ int TSHFileInfo::GetDirIconIndex(BOOL bSmallIcon)
   return sfi.iIcon;
 }
 
-UnicodeString TSHFileInfo::GetFileType(const UnicodeString strFileName)
+UnicodeString TSHFileInfo::GetFileType(const UnicodeString & StrFileName)
 {
   SHFILEINFO sfi;
 
   SHGetFileInfo(
-    reinterpret_cast<LPCTSTR>(strFileName.c_str()),
+    reinterpret_cast<LPCTSTR>(StrFileName.c_str()),
     FILE_ATTRIBUTE_NORMAL,
     &sfi,
     sizeof(SHFILEINFO),
@@ -1409,7 +1409,7 @@ UnicodeString TSHFileInfo::GetFileType(const UnicodeString strFileName)
 class EStreamError : public ExtException
 {
 public:
-  EStreamError(const UnicodeString Msg) :
+  EStreamError(const UnicodeString & Msg) :
     ExtException((Exception * )NULL, Msg)
   {}
 };
@@ -1418,7 +1418,7 @@ public:
 class EWriteError : public ExtException
 {
 public:
-    EWriteError(const UnicodeString Msg) :
+    EWriteError(const UnicodeString & Msg) :
         ExtException(Msg)
     {}
 };
@@ -1426,7 +1426,7 @@ public:
 class EReadError : public ExtException
 {
 public:
-    EReadError(const UnicodeString Msg) :
+    EReadError(const UnicodeString & Msg) :
         ExtException(Msg)
     {}
 };
@@ -1460,7 +1460,7 @@ void TStream::WriteBuffer(const void * Buffer, __int64 Count)
 }
 
 //---------------------------------------------------------------------------
-void ReadError(const UnicodeString Name)
+void ReadError(const UnicodeString & Name)
 {
   throw std::exception("InvalidRegType"); // FIXME ERegistryException.CreateResFmt(@SInvalidRegType, [Name]);
 }
@@ -1583,7 +1583,7 @@ void TMemoryStream::SaveToStream(TStream * Stream)
   if (FSize != 0) { Stream->WriteBuffer(FMemory, FSize); }
 }
 
-void __fastcall TMemoryStream::SaveToFile(const UnicodeString FileName)
+void __fastcall TMemoryStream::SaveToFile(const UnicodeString & FileName)
 {
   // TFileStream Stream(FileName, fmCreate);
   // SaveToStream(Stream);
@@ -1677,7 +1677,7 @@ __int64 __fastcall TMemoryStream::Write(const void * Buffer, __int64 Count)
 
 //---------------------------------------------------------------------------
 
-bool IsRelative(const UnicodeString Value)
+bool IsRelative(const UnicodeString & Value)
 {
   return  !(!Value.IsEmpty() && (Value[1] == L'\\'));
 }

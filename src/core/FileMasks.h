@@ -29,7 +29,7 @@ public:
     UnicodeString ToString() const;
   };
 
-  static bool __fastcall IsMask(const UnicodeString Mask);
+  static bool __fastcall IsMask(const UnicodeString & Mask);
   static UnicodeString __fastcall NormalizeMask(const UnicodeString & Mask, const UnicodeString & AnyMask = "");
   static UnicodeString __fastcall ComposeMaskStr(
     TStrings * IncludeFileMasksStr, TStrings * ExcludeFileMasksStr,
@@ -47,20 +47,20 @@ public:
 
   void __fastcall SetMask(const UnicodeString & Mask);
 
-  bool __fastcall Matches(const UnicodeString FileName, bool Directory = false,
-    const UnicodeString Path = "", const TParams * Params = NULL) const;
-  bool __fastcall Matches(const UnicodeString FileName, bool Directory,
-    const UnicodeString Path, const TParams * Params,
+  bool __fastcall Matches(const UnicodeString & FileName, bool Directory = false,
+    const UnicodeString & Path = "", const TParams * Params = NULL) const;
+  bool __fastcall Matches(const UnicodeString & FileName, bool Directory,
+    const UnicodeString & Path, const TParams * Params,
     bool & ImplicitMatch) const;
-  bool __fastcall Matches(const UnicodeString FileName, bool Local, bool Directory,
+  bool __fastcall Matches(const UnicodeString & FileName, bool Local, bool Directory,
     const TParams * Params = NULL) const;
-  bool __fastcall Matches(const UnicodeString FileName, bool Local, bool Directory,
+  bool __fastcall Matches(const UnicodeString & FileName, bool Local, bool Directory,
     const TParams * Params, bool & ImplicitMatch) const;
 
   bool __fastcall GetIsValid() const;
   bool __fastcall GetIsValid(intptr_t & Start, intptr_t & Length) const;
   UnicodeString __fastcall GetMasks() const { return FStr; }
-  void __fastcall SetMasks(const UnicodeString value);
+  void __fastcall SetMasks(const UnicodeString & Value);
 
   TStrings * __fastcall GetIncludeFileMasksStr() const { return GetMasksStr(MASK_INDEX(false, true)); };
   TStrings * __fastcall GetExcludeFileMasksStr() const { return GetMasksStr(MASK_INDEX(false, false)); };
@@ -115,7 +115,7 @@ private:
   TMasks FMasks[4];
   mutable TStrings * FMasksStr[4];
 
-  void __fastcall SetStr(const UnicodeString value, bool SingleMask);
+  void __fastcall SetStr(const UnicodeString & Value, bool SingleMask);
   void __fastcall CreateMaskMask(const UnicodeString & Mask, intptr_t Start, intptr_t End,
     bool Ex, TMaskMask & MaskMask) const;
   void __fastcall CreateMask(const UnicodeString & MaskStr, intptr_t MaskStart,
@@ -129,20 +129,20 @@ private:
   void __fastcall Clear();
   static void __fastcall Clear(TMasks & Masks);
   static void __fastcall TrimEx(UnicodeString & Str, intptr_t & Start, intptr_t & End);
-  static bool __fastcall MatchesMasks(const UnicodeString FileName, bool Directory,
-    const UnicodeString Path, const TParams * Params, const TMasks & Masks, bool Recurse);
+  static bool __fastcall MatchesMasks(const UnicodeString & FileName, bool Directory,
+    const UnicodeString & Path, const TParams * Params, const TMasks & Masks, bool Recurse);
   static inline bool __fastcall MatchesMaskMask(const TMaskMask & MaskMask, const UnicodeString & Str);
   static inline bool __fastcall IsAnyMask(const UnicodeString & Mask);
   static UnicodeString __fastcall ComposeMaskStr(TStrings * MasksStr, bool Directory);
   void __fastcall ThrowError(intptr_t Start, intptr_t End) const;
 };
 //---------------------------------------------------------------------------
-UnicodeString __fastcall MaskFileName(UnicodeString FileName, const UnicodeString Mask);
+UnicodeString __fastcall MaskFileName(const UnicodeString & FileName, const UnicodeString & Mask);
 bool __fastcall IsEffectiveFileNameMask(const UnicodeString & Mask);
 UnicodeString __fastcall DelimitFileNameMask(UnicodeString Mask);
 //---------------------------------------------------------------------------
 DEFINE_CALLBACK_TYPE5(TCustomCommandPatternEvent, void,
-  int /* Index */, const UnicodeString /* Pattern */, void * /* Arg */, UnicodeString & /* Replacement */,
+  int /* Index */, const UnicodeString & /* Pattern */, void * /* Arg */, UnicodeString & /* Replacement */,
   bool & /* LastPass */);
 //---------------------------------------------------------------------------
 class TCustomCommand

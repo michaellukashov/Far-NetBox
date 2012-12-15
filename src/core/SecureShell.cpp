@@ -358,7 +358,7 @@ void __fastcall TSecureShell::Open()
   if (InitError)
   {
     TRACE("3");
-    PuttyFatalError(InitError);
+    PuttyFatalError(UnicodeString(InitError));
   }
   TRACE("4");
   FUI->Information(LoadStr(STATUS_CONNECT), true);
@@ -463,8 +463,8 @@ void __fastcall TSecureShell::PuttyLogEvent(const UnicodeString & Str)
 }
 //---------------------------------------------------------------------------
 bool __fastcall TSecureShell::PromptUser(bool /*ToServer*/,
-  UnicodeString AName, bool /*NameRequired*/,
-  UnicodeString Instructions, bool InstructionsRequired,
+  const UnicodeString & AName, bool /*NameRequired*/,
+  const UnicodeString & Instructions, bool InstructionsRequired,
   TStrings * Prompts, TStrings * Results)
 {
   CALLSTACK;
@@ -580,17 +580,18 @@ bool __fastcall TSecureShell::PromptUser(bool /*ToServer*/,
 
   Name = Name.Trim();
 
+  UnicodeString Instructions2 = Instructions;
   if (InstructionTranslation != NULL)
   {
-    TranslatePuttyMessage(InstructionTranslation, 1, Instructions);
+    TranslatePuttyMessage(InstructionTranslation, 1, Instructions2);
   }
 
   // some servers add leading blank line to make the prompt look prettier
   // on terminal console
-  Instructions = Instructions.Trim();
+  Instructions2 = Instructions2.Trim();
 
   TRACEFMT("8a [%d]", Prompts->Count.get());
-  for (int Index = 0; Index < Prompts->Count; Index++)
+  for (intptr_t Index = 0; Index < Prompts->Count; Index++)
   {
     UnicodeString Prompt = Prompts->Strings[Index];
     TRACEFMT("8b [%s]", Prompt.c_str());
@@ -607,8 +608,8 @@ bool __fastcall TSecureShell::PromptUser(bool /*ToServer*/,
 /*
   PromptKind = pkKeybInteractive;
   Name = "Server prompt";
-  //Instructions = "Using keyboard-interactive authentication.";
-  Instructions = "Using keyboard-interactive authentication.\nYour Kerberos password will expire in 16 days.";//"Using keyboard-interactive authentication.";
+  //Instructions2 = "Using keyboard-interactive authentication.";
+  Instructions2 = "Using keyboard-interactive authentication.\nYour Kerberos password will expire in 16 days.";//"Using keyboard-interactive authentication.";
   Prompts = new TStringList();
 */
 //  Prompts->AddObject("The challenge is '14315716'", (TObject *)true);
@@ -652,7 +653,7 @@ bool __fastcall TSecureShell::PromptUser(bool /*ToServer*/,
       Results->Strings[0] = FSessionData->GetPassword();
       FStoredPasswordTriedForKI = true;
     }
-    else if (Instructions.IsEmpty() && !InstructionsRequired && (Prompts->Count == 0))
+    else if (Instructions2.IsEmpty() && !InstructionsRequired && (Prompts->Count == 0))
     {
       TRACE("14");
       LogEvent(L"Ignoring empty SSH server authentication request");
@@ -677,7 +678,7 @@ bool __fastcall TSecureShell::PromptUser(bool /*ToServer*/,
   {
     TRACE("17");
     Result = FUI->PromptUser(FSessionData,
-      PromptKind, Name, Instructions, Prompts, Results);
+      PromptKind, Name, Instructions2, Prompts, Results);
 
     if (Result)
     {
@@ -1113,14 +1114,14 @@ void __fastcall TSecureShell::SendNull()
   Send(&Null, 1);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSecureShell::SendStr(UnicodeString Str)
+void __fastcall TSecureShell::SendStr(const UnicodeString & Str)
 {
   CheckConnection();
   std::string AnsiStr = W2MB(Str.c_str(), FSessionData->GetCodePageAsNumber());
   Send(reinterpret_cast<const unsigned char *>(AnsiStr.c_str()), (int)AnsiStr.size());
 }
 //---------------------------------------------------------------------------
-void __fastcall TSecureShell::SendLine(UnicodeString Line)
+void __fastcall TSecureShell::SendLine(const UnicodeString & Line)
 {
   SendStr(Line);
   Send(reinterpret_cast<const unsigned char *>("\n"), 1);
@@ -1189,15 +1190,15 @@ int __fastcall TSecureShell::TranslateAuthenticationMessage(UnicodeString & Mess
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TSecureShell::AddStdError(UnicodeString Str)
+void __fastcall TSecureShell::AddStdError(const UnicodeString & Str)
 {
   FStdError += Str;
 
-  intptr_t P;
-  Str = DeleteChar(Str, L'\r');
+  intptr_t P = 0;
+  UnicodeString Str2 = DeleteChar(Str, L'\r');
   // We send only whole line at once to log, so we have to cache
   // incoming std error data
-  FStdErrorTemp += Str;
+  FStdErrorTemp += Str2;
   UnicodeString Line;
   // Do we have at least one complete line in std error cache?
   while ((P = FStdErrorTemp.Pos(L"\n")) > 0)
@@ -1263,16 +1264,17 @@ int __fastcall TSecureShell::TranslateErrorMessage(UnicodeString & Message) cons
   return TranslatePuttyMessage(Translation, LENOF(Translation), Message);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSecureShell::PuttyFatalError(UnicodeString Error)
+void __fastcall TSecureShell::PuttyFatalError(const UnicodeString & Error)
 {
   CALLSTACK;
   TRACEFMT("[%s]", Error.c_str());
-  TranslateErrorMessage(Error);
+  UnicodeString Error2 = Error;
+  TranslateErrorMessage(Error2);
 
-  FatalError(Error);
+  FatalError(Error2);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSecureShell::FatalError(UnicodeString Error)
+void __fastcall TSecureShell::FatalError(const UnicodeString & Error)
 {
   CALLSTACK;
   TRACEFMT("[%s]", Error.c_str());
@@ -1932,16 +1934,18 @@ struct TClipboardHandler
 
   void __fastcall Copy(TObject * /*Sender*/)
   {
-    CopyToClipboard(Text);
+    CopyToClipboard(Text.c_str();
   }
 };
 #endif
 //---------------------------------------------------------------------------
-void __fastcall TSecureShell::VerifyHostKey(UnicodeString Host, int Port,
-  const UnicodeString KeyType, UnicodeString KeyStr, const UnicodeString Fingerprint)
+void __fastcall TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
+  const UnicodeString & KeyType, const UnicodeString & KeyStr, const UnicodeString & Fingerprint)
 {
   LogEvent(FORMAT(L"Verifying host key %s %s with fingerprint %s", KeyType.c_str(), KeyStr.c_str(), Fingerprint.c_str()));
 
+  UnicodeString Host2 = Host;
+  UnicodeString KeyStr2 = KeyStr;
   GotHostKey();
 
   wchar_t Delimiter = L';';
@@ -1949,7 +1953,7 @@ void __fastcall TSecureShell::VerifyHostKey(UnicodeString Host, int Port,
 
   if (FSessionData->GetTunnel())
   {
-    Host = FSessionData->GetOrigHostName();
+    Host2 = FSessionData->GetOrigHostName();
     Port = FSessionData->GetOrigPortNumber();
   }
 
@@ -1977,7 +1981,7 @@ void __fastcall TSecureShell::VerifyHostKey(UnicodeString Host, int Port,
   {
     AnsiString AnsiStoredKeys;
     AnsiStoredKeys.SetLength(10240);
-    if (retrieve_host_key(W2MB(Host.c_str(), FSessionData->GetCodePageAsNumber()).c_str(), Port, W2MB(KeyType.c_str(), FSessionData->GetCodePageAsNumber()).c_str(),
+    if (retrieve_host_key(W2MB(Host2.c_str(), FSessionData->GetCodePageAsNumber()).c_str(), Port, W2MB(KeyType.c_str(), FSessionData->GetCodePageAsNumber()).c_str(),
           const_cast<char *>(AnsiStoredKeys.c_str()), static_cast<int>(AnsiStoredKeys.Length())) == 0)
     {
       StoredKeys = AnsiStoredKeys.c_str();
@@ -2050,10 +2054,10 @@ void __fastcall TSecureShell::VerifyHostKey(UnicodeString Host, int Port,
       switch (R) {
         case qaOK:
           assert(!Unknown);
-          KeyStr = (StoredKeys + Delimiter + KeyStr);
+          KeyStr2 = (StoredKeys + Delimiter + KeyStr);
           // fall thru
         case qaYes:
-          store_host_key(AnsiString(Host).c_str(), Port, AnsiString(KeyType).c_str(), AnsiString(KeyStr).c_str());
+          store_host_key(AnsiString(Host2).c_str(), Port, AnsiString(KeyType).c_str(), AnsiString(KeyStr2).c_str());
           Verified = true;
           break;
 
@@ -2083,8 +2087,8 @@ void __fastcall TSecureShell::VerifyHostKey(UnicodeString Host, int Port,
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSecureShell::AskAlg(const UnicodeString AlgType,
-  const UnicodeString AlgName)
+void __fastcall TSecureShell::AskAlg(const UnicodeString & AlgType,
+  const UnicodeString & AlgName)
 {
   UnicodeString Msg;
   if (AlgType == L"key-exchange algorithm")

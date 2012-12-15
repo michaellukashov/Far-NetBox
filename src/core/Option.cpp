@@ -100,7 +100,7 @@ bool __fastcall TOptions::GetEmpty() const
   return FOptions.empty();
 }
 //---------------------------------------------------------------------------
-bool __fastcall TOptions::FindSwitch(const UnicodeString Switch,
+bool __fastcall TOptions::FindSwitch(const UnicodeString & Switch,
   UnicodeString & Value, int & ParamsStart, int & ParamsCount)
 {
   ParamsStart = 0;
@@ -142,14 +142,14 @@ bool __fastcall TOptions::FindSwitch(const UnicodeString Switch,
   return Found;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TOptions::FindSwitch(const UnicodeString Switch, UnicodeString & Value)
+bool __fastcall TOptions::FindSwitch(const UnicodeString & Switch, UnicodeString & Value)
 {
   int ParamsStart;
   int ParamsCount;
   return FindSwitch(Switch, Value, ParamsStart, ParamsCount);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TOptions::FindSwitch(const UnicodeString Switch)
+bool __fastcall TOptions::FindSwitch(const UnicodeString & Switch)
 {
   UnicodeString Value;
   int ParamsStart;
@@ -157,7 +157,7 @@ bool __fastcall TOptions::FindSwitch(const UnicodeString Switch)
   return FindSwitch(Switch, Value, ParamsStart, ParamsCount);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TOptions::FindSwitch(const UnicodeString Switch,
+bool __fastcall TOptions::FindSwitch(const UnicodeString & Switch,
   TStrings * Params, int ParamsMax)
 {
   UnicodeString Value;
@@ -182,7 +182,7 @@ bool __fastcall TOptions::FindSwitch(const UnicodeString Switch,
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TOptions::SwitchValue(const UnicodeString Switch,
+UnicodeString __fastcall TOptions::SwitchValue(const UnicodeString & Switch,
   const UnicodeString Default)
 {
   UnicodeString Value;
@@ -194,7 +194,7 @@ UnicodeString __fastcall TOptions::SwitchValue(const UnicodeString Switch,
   return Value;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TOptions::SwitchValue(const UnicodeString Switch, bool Default, bool DefaultOnNonExistence)
+bool __fastcall TOptions::SwitchValue(const UnicodeString & Switch, bool Default, bool DefaultOnNonExistence)
 {
   bool Result;
   int IntValue;
@@ -226,7 +226,7 @@ bool __fastcall TOptions::SwitchValue(const UnicodeString Switch, bool Default, 
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TOptions::SwitchValue(const UnicodeString Switch, bool Default)
+bool __fastcall TOptions::SwitchValue(const UnicodeString & Switch, bool Default)
 {
   return SwitchValue(Switch, Default, Default);
 }

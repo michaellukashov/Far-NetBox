@@ -76,7 +76,7 @@ struct TClipboardHandler
 
   void __fastcall Copy(TObject * /*Sender*/)
   {
-    CopyToClipboard(Text);
+    CopyToClipboard(Text.c_str());
   }
 };
 #endif
@@ -12816,7 +12816,7 @@ void __fastcall TWebDAVFileSystem::Idle()
   return;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TWebDAVFileSystem::AbsolutePath(const UnicodeString Path, bool /*Local*/)
+UnicodeString __fastcall TWebDAVFileSystem::AbsolutePath(const UnicodeString & Path, bool /*Local*/)
 {
   return ::AbsolutePath(GetCurrentDirectory(), Path);
 }
@@ -12931,11 +12931,11 @@ void __fastcall TWebDAVFileSystem::AnnounceFileListOperation()
   // noop
 }
 //---------------------------------------------------------------------------
-void __fastcall TWebDAVFileSystem::DoChangeDirectory(const UnicodeString Directory)
+void __fastcall TWebDAVFileSystem::DoChangeDirectory(const UnicodeString & Directory)
 {
 }
 //---------------------------------------------------------------------------
-void __fastcall TWebDAVFileSystem::ChangeDirectory(const UnicodeString ADirectory)
+void __fastcall TWebDAVFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
 {
   UnicodeString Directory = ADirectory;
   try
@@ -12967,7 +12967,7 @@ void __fastcall TWebDAVFileSystem::ChangeDirectory(const UnicodeString ADirector
   FCachedDirectoryChange = L"";
 }
 //---------------------------------------------------------------------------
-void __fastcall TWebDAVFileSystem::CachedChangeDirectory(const UnicodeString Directory)
+void __fastcall TWebDAVFileSystem::CachedChangeDirectory(const UnicodeString & Directory)
 {
   FCachedDirectoryChange = UnixExcludeTrailingBackslash(Directory);
 }
@@ -13024,13 +13024,13 @@ void __fastcall TWebDAVFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   CustomReadFile(SymlinkFile->GetLinkTo(), File, SymlinkFile);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWebDAVFileSystem::ReadFile(const UnicodeString FileName,
+void __fastcall TWebDAVFileSystem::ReadFile(const UnicodeString & FileName,
     TRemoteFile *& File)
 {
   CustomReadFile(FileName, File, NULL);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWebDAVFileSystem::CustomReadFile(const UnicodeString FileName,
+void __fastcall TWebDAVFileSystem::CustomReadFile(const UnicodeString & FileName,
     TRemoteFile *& File, TRemoteFile * ALinkedByFile)
 {
   File = NULL;
@@ -13045,7 +13045,7 @@ void __fastcall TWebDAVFileSystem::CustomReadFile(const UnicodeString FileName,
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWebDAVFileSystem::DeleteFile(const UnicodeString FileName,
+void __fastcall TWebDAVFileSystem::DeleteFile(const UnicodeString & FileName,
     const TRemoteFile * File, int Params, TRmSessionAction & Action)
 {
   USEDPARAM(File);
@@ -13058,8 +13058,8 @@ void __fastcall TWebDAVFileSystem::DeleteFile(const UnicodeString FileName,
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWebDAVFileSystem::RenameFile(const UnicodeString FileName,
-    const UnicodeString NewName)
+void __fastcall TWebDAVFileSystem::RenameFile(const UnicodeString & FileName,
+    const UnicodeString & NewName)
 {
   UnicodeString FullFileName = ::UnixIncludeTrailingBackslash(FCurrentDirectory) + FileName;
   bool res = WebDAVRenameFile(FullFileName.c_str(), NewName.c_str());
@@ -13069,13 +13069,13 @@ void __fastcall TWebDAVFileSystem::RenameFile(const UnicodeString FileName,
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWebDAVFileSystem::CopyFile(const UnicodeString FileName,
-    const UnicodeString NewName)
+void __fastcall TWebDAVFileSystem::CopyFile(const UnicodeString & FileName,
+    const UnicodeString & NewName)
 {
   Classes::Error(SNotImplemented, 1012);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWebDAVFileSystem::CreateDirectory(const UnicodeString DirName)
+void __fastcall TWebDAVFileSystem::CreateDirectory(const UnicodeString & DirName)
 {
   UnicodeString FullDirName = AbsolutePath(DirName, true);
   bool res = WebDAVMakeDirectory(FullDirName.c_str());
@@ -13101,13 +13101,13 @@ void __fastcall TWebDAVFileSystem::CreateDirectory(const UnicodeString DirName)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWebDAVFileSystem::CreateLink(const UnicodeString FileName,
-    const UnicodeString PointTo, bool Symbolic)
+void __fastcall TWebDAVFileSystem::CreateLink(const UnicodeString & FileName,
+    const UnicodeString & PointTo, bool Symbolic)
 {
   Classes::Error(SNotImplemented, 1014);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWebDAVFileSystem::ChangeFileProperties(const UnicodeString FileName,
+void __fastcall TWebDAVFileSystem::ChangeFileProperties(const UnicodeString & FileName,
     const TRemoteFile * File, const TRemoteProperties * Properties,
     TChmodSessionAction & Action)
 {
@@ -13227,8 +13227,8 @@ bool __fastcall TWebDAVFileSystem::ConfirmOverwrite(UnicodeString & FileName,
 }
 
 //---------------------------------------------------------------------------
-void /* __fastcall */ TWebDAVFileSystem::CustomCommandOnFile(const UnicodeString FileName,
-    const TRemoteFile * File, UnicodeString Command, int Params, TCaptureOutputEvent OutputEvent)
+void /* __fastcall */ TWebDAVFileSystem::CustomCommandOnFile(const UnicodeString & FileName,
+    const TRemoteFile * File, const UnicodeString & Command, int Params, TCaptureOutputEvent OutputEvent)
 {
   assert(File);
   bool Dir = File->GetIsDirectory() && !File->GetIsSymLink();
@@ -13250,14 +13250,14 @@ void /* __fastcall */ TWebDAVFileSystem::CustomCommandOnFile(const UnicodeString
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWebDAVFileSystem::AnyCommand(const UnicodeString Command,
+void __fastcall TWebDAVFileSystem::AnyCommand(const UnicodeString & Command,
     TCaptureOutputEvent OutputEvent)
 {
   Classes::Error(SNotImplemented, 1008);
 }
 
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TWebDAVFileSystem::FileUrl(const UnicodeString FileName)
+UnicodeString __fastcall TWebDAVFileSystem::FileUrl(const UnicodeString & FileName)
 {
   return FTerminal->FileUrl(FTerminal->GetSessionData()->GetFtps() == ftpsNone ?
     L"http" : L"https", FileName);
@@ -13268,14 +13268,14 @@ TStrings * __fastcall TWebDAVFileSystem::GetFixedPaths()
   return NULL;
 }
 //---------------------------------------------------------------------------
-void __fastcall TWebDAVFileSystem::SpaceAvailable(const UnicodeString Path,
+void __fastcall TWebDAVFileSystem::SpaceAvailable(const UnicodeString & Path,
     TSpaceAvailable & /*ASpaceAvailable*/)
 {
   assert(false);
 }
 //---------------------------------------------------------------------------
 void __fastcall TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
-    const UnicodeString ATargetDir, const TCopyParamType * CopyParam,
+    const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
     int Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation)
 {
@@ -13328,9 +13328,9 @@ void __fastcall TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
 }
 
 //---------------------------------------------------------------------------
-void __fastcall TWebDAVFileSystem::WebDAVSourceRobust(const UnicodeString FileName,
+void __fastcall TWebDAVFileSystem::WebDAVSourceRobust(const UnicodeString & FileName,
   const TRemoteFile * File,
-  const UnicodeString TargetDir, const TCopyParamType * CopyParam, int Params,
+  const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int Params,
   TFileOperationProgressType * OperationProgress, unsigned int Flags)
 {
   bool Retry = false;
@@ -13369,9 +13369,9 @@ void __fastcall TWebDAVFileSystem::WebDAVSourceRobust(const UnicodeString FileNa
   while (Retry);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWebDAVFileSystem::WebDAVSource(const UnicodeString FileName,
+void __fastcall TWebDAVFileSystem::WebDAVSource(const UnicodeString & FileName,
   const TRemoteFile * File,
-  const UnicodeString TargetDir, const TCopyParamType * CopyParam, int Params,
+  const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int Params,
   TFileOperationProgressType * OperationProgress, unsigned int Flags,
   TUploadSessionAction & Action)
 {
@@ -13550,8 +13550,8 @@ void __fastcall TWebDAVFileSystem::WebDAVSource(const UnicodeString FileName,
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString DirectoryName,
-    const UnicodeString TargetDir, int Attrs, const TCopyParamType * CopyParam,
+void __fastcall TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryName,
+    const UnicodeString & TargetDir, int Attrs, const TCopyParamType * CopyParam,
     int Params, TFileOperationProgressType * OperationProgress, unsigned int Flags)
 {
   UnicodeString DestDirectoryName = CopyParam->ChangeFileName(
@@ -13684,7 +13684,7 @@ void __fastcall TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString Dir
 
 //---------------------------------------------------------------------------
 void __fastcall TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
-    const UnicodeString TargetDir, const TCopyParamType * CopyParam,
+    const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
     int Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation)
 {
@@ -13723,8 +13723,8 @@ void __fastcall TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWebDAVFileSystem::SinkRobust(const UnicodeString FileName,
-    const TRemoteFile * File, const UnicodeString TargetDir,
+void __fastcall TWebDAVFileSystem::SinkRobust(const UnicodeString & FileName,
+    const TRemoteFile * File, const UnicodeString & TargetDir,
     const TCopyParamType * CopyParam, int Params,
     TFileOperationProgressType * OperationProgress, unsigned int Flags)
 {
@@ -13768,8 +13768,8 @@ void __fastcall TWebDAVFileSystem::SinkRobust(const UnicodeString FileName,
   while (Retry);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWebDAVFileSystem::Sink(const UnicodeString FileName,
-  const TRemoteFile * File, const UnicodeString TargetDir,
+void __fastcall TWebDAVFileSystem::Sink(const UnicodeString & FileName,
+  const TRemoteFile * File, const UnicodeString & TargetDir,
   const TCopyParamType * CopyParam, int Params,
   TFileOperationProgressType * OperationProgress, unsigned int Flags,
   TDownloadSessionAction & Action)
@@ -14188,9 +14188,9 @@ void __fastcall TWebDAVFileSystem::FileTransferProgress(__int64 TransferSize,
 }
 
 //---------------------------------------------------------------------------
-void __fastcall TWebDAVFileSystem::FileTransfer(const UnicodeString FileName,
-    const UnicodeString LocalFile, const UnicodeString RemoteFile,
-    const UnicodeString RemotePath, bool Get, __int64 Size, int Type,
+void __fastcall TWebDAVFileSystem::FileTransfer(const UnicodeString & FileName,
+    const UnicodeString & LocalFile, const UnicodeString & RemoteFile,
+    const UnicodeString & RemotePath, bool Get, __int64 Size, int Type,
     TFileTransferData & UserData, TFileOperationProgressType * OperationProgress)
 {
   FCurrentOperationProgress = OperationProgress;
@@ -14302,7 +14302,7 @@ bool TWebDAVFileSystem::WebDAVMakeDirectory(const wchar_t * path)
   return err == WEBDAV_NO_ERROR;
 }
 
-bool TWebDAVFileSystem::WebDAVGetList(const UnicodeString Directory)
+bool TWebDAVFileSystem::WebDAVGetList(const UnicodeString & Directory)
 {
   webdav::listdataentry_vector_t Entries;
 

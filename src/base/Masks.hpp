@@ -8,11 +8,11 @@ namespace Masks
 class TMask
 {
 public:
-  explicit TMask(const UnicodeString Mask)
+  explicit TMask(const UnicodeString & Mask)
   {
     FMask = ::ExtractFileExtension(Mask, L'\\');
   }
-  bool Matches(const UnicodeString Str)
+  bool Matches(const UnicodeString & Str)
   {
     UnicodeString Ext = ::ExtractFileExtension(Str, L'\\');
     return Sysutils::AnsiCompareIC(FMask, Ext) == 0;

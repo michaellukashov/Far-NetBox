@@ -250,7 +250,7 @@ void __fastcall TConfiguration::Save(bool All, bool Explicit)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::Export(const UnicodeString FileName)
+void __fastcall TConfiguration::Export(const UnicodeString & FileName)
 {
   Classes::Error(SNotImplemented, 3004);
   THierarchicalStorage * Storage = NULL;
@@ -417,7 +417,7 @@ void __fastcall TConfiguration::CopyData(THierarchicalStorage * Source,
   );
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::LoadDirectoryChangesCache(const UnicodeString SessionKey,
+void __fastcall TConfiguration::LoadDirectoryChangesCache(const UnicodeString & SessionKey,
   TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
   CALLSTACK;
@@ -439,7 +439,7 @@ void __fastcall TConfiguration::LoadDirectoryChangesCache(const UnicodeString Se
   );
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::SaveDirectoryChangesCache(const UnicodeString SessionKey,
+void __fastcall TConfiguration::SaveDirectoryChangesCache(const UnicodeString & SessionKey,
   TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
   THierarchicalStorage * Storage = CreateScpStorage(false);
@@ -471,7 +471,7 @@ UnicodeString __fastcall TConfiguration::BannerHash(const UnicodeString & Banner
   return BytesToHex(Result);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TConfiguration::ShowBanner(const UnicodeString SessionKey,
+bool __fastcall TConfiguration::ShowBanner(const UnicodeString & SessionKey,
   const UnicodeString & Banner)
 {
   bool Result;
@@ -494,7 +494,7 @@ bool __fastcall TConfiguration::ShowBanner(const UnicodeString SessionKey,
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::NeverShowBanner(const UnicodeString SessionKey,
+void __fastcall TConfiguration::NeverShowBanner(const UnicodeString & SessionKey,
   const UnicodeString & Banner)
 {
   THierarchicalStorage * Storage = CreateScpStorage(false);
@@ -568,7 +568,7 @@ void __fastcall TConfiguration::CleanupConfiguration()
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::CleanupRegistry(UnicodeString CleanupSubKey)
+void __fastcall TConfiguration::CleanupRegistry(const UnicodeString & CleanupSubKey)
 {
   TRegistryStorage *Registry = new TRegistryStorage(GetRegistryStorageKey());
   TRY_FINALLY (
@@ -637,7 +637,7 @@ void __fastcall TConfiguration::CleanupIniFile()
   }
 }
 //---------------------------------------------------------------------------
-RawByteString __fastcall TConfiguration::EncryptPassword(UnicodeString Password, UnicodeString Key)
+RawByteString __fastcall TConfiguration::EncryptPassword(const UnicodeString & Password, const UnicodeString & Key)
 {
   if (Password.IsEmpty())
   {
@@ -649,7 +649,7 @@ RawByteString __fastcall TConfiguration::EncryptPassword(UnicodeString Password,
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TConfiguration::DecryptPassword(RawByteString Password, UnicodeString Key)
+UnicodeString __fastcall TConfiguration::DecryptPassword(const RawByteString & Password, const UnicodeString & Key)
 {
   if (Password.IsEmpty())
   {
@@ -661,7 +661,7 @@ UnicodeString __fastcall TConfiguration::DecryptPassword(RawByteString Password,
   }
 }
 //---------------------------------------------------------------------------
-RawByteString __fastcall TConfiguration::StronglyRecryptPassword(RawByteString Password, UnicodeString /*Key*/)
+RawByteString __fastcall TConfiguration::StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & /*Key*/)
 {
   return Password;
 }
@@ -707,7 +707,7 @@ UnicodeString __fastcall TConfiguration::ModuleFileName()
   return L"";
 }
 //---------------------------------------------------------------------------
-void * __fastcall TConfiguration::GetFileApplicationInfo(const UnicodeString FileName)
+void * __fastcall TConfiguration::GetFileApplicationInfo(const UnicodeString & FileName)
 {
   CCALLSTACK(TRACE_FILE_APPL_INFO);
   void * Result;
@@ -736,12 +736,12 @@ void * __fastcall TConfiguration::GetApplicationInfo()
   return GetFileApplicationInfo("");
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TConfiguration::GetFileProductName(const UnicodeString FileName)
+UnicodeString __fastcall TConfiguration::GetFileProductName(const UnicodeString & FileName)
 {
   return GetFileFileInfoString(L"ProductName", FileName);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TConfiguration::GetFileCompanyName(const UnicodeString FileName)
+UnicodeString __fastcall TConfiguration::GetFileCompanyName(const UnicodeString & FileName)
 {
   return GetFileFileInfoString(L"CompanyName", FileName);
 }
@@ -756,7 +756,7 @@ UnicodeString __fastcall TConfiguration::GetCompanyName()
   return GetFileCompanyName(L"");
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TConfiguration::GetFileProductVersion(const UnicodeString FileName)
+UnicodeString __fastcall TConfiguration::GetFileProductVersion(const UnicodeString & FileName)
 {
   CALLSTACK;
   return TrimVersion(GetFileFileInfoString(L"ProductVersion", FileName));
@@ -767,14 +767,15 @@ UnicodeString __fastcall TConfiguration::GetProductVersion()
   return GetFileProductVersion(L"");
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TConfiguration::TrimVersion(UnicodeString Version)
+UnicodeString __fastcall TConfiguration::TrimVersion(const UnicodeString & Version)
 {
-  while ((Version.Pos(L".") != Version.LastDelimiter(L".")) &&
-    (Version.SubString(Version.Length() - 1, 2) == L".0"))
+  UnicodeString Result = Version;
+  while ((Result.Pos(L".") != Result.LastDelimiter(L".")) &&
+    (Result.SubString(Result.Length() - 1, 2) == L".0"))
   {
-    Version.SetLength(Version.Length() - 2);
+    Result.SetLength(Result.Length() - 2);
   }
-  return Version;
+  return Result;
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TConfiguration::GetVersionStr()
@@ -817,8 +818,8 @@ UnicodeString __fastcall TConfiguration::GetVersion()
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TConfiguration::GetFileFileInfoString(const UnicodeString Key,
-  const UnicodeString FileName)
+UnicodeString __fastcall TConfiguration::GetFileFileInfoString(const UnicodeString & Key,
+  const UnicodeString & FileName)
 {
   CALLSTACK;
   TGuard Guard(FCriticalSection);
@@ -856,7 +857,7 @@ UnicodeString __fastcall TConfiguration::GetFileFileInfoString(const UnicodeStri
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TConfiguration::GetFileInfoString(const UnicodeString Key)
+UnicodeString __fastcall TConfiguration::GetFileInfoString(const UnicodeString & Key)
 {
   return GetFileFileInfoString(Key, L"");
 }
@@ -879,7 +880,7 @@ void __fastcall TConfiguration::SetDefaultStorage()
 }
 //---------------------------------------------------------------------------
 /*
-void __fastcall TConfiguration::SetIniFileStorageName(UnicodeString Value)
+void __fastcall TConfiguration::SetIniFileStorageName(const UnicodeString & Value)
 {
   CALLSTACK;
   FIniFileStorageName = Value;
@@ -1014,7 +1015,7 @@ TStorage __fastcall TConfiguration::GetStorage()
   return FStorage;
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::SetRandomSeedFile(UnicodeString Value)
+void __fastcall TConfiguration::SetRandomSeedFile(const UnicodeString & Value)
 {
   if (GetRandomSeedFile() != Value)
   {
@@ -1043,12 +1044,12 @@ UnicodeString __fastcall TConfiguration::GetRandomSeedFileName()
   return StripPathQuotes(ExpandEnvironmentVariables(FRandomSeedFile)).Trim();
 }
 //---------------------------------------------------------------------
-void __fastcall TConfiguration::SetExternalIpAddress(UnicodeString Value)
+void __fastcall TConfiguration::SetExternalIpAddress(const UnicodeString & Value)
 {
   SET_CONFIG_PROPERTY(ExternalIpAddress);
 }
 //---------------------------------------------------------------------
-void __fastcall TConfiguration::SetPuttyRegistryStorageKey(UnicodeString Value)
+void __fastcall TConfiguration::SetPuttyRegistryStorageKey(const UnicodeString & Value)
 {
   SET_CONFIG_PROPERTY(PuttyRegistryStorageKey);
 }
@@ -1068,7 +1069,7 @@ void __fastcall TConfiguration::SetCollectUsage(bool Value)
   // FUsage->Collect = Value;
 }
 //---------------------------------------------------------------------
-void __fastcall TConfiguration::TemporaryLogging(const UnicodeString ALogFileName)
+void __fastcall TConfiguration::TemporaryLogging(const UnicodeString & ALogFileName)
 {
   if (SameText(ExtractFileExt(ALogFileName), L".xml"))
   {
@@ -1082,7 +1083,7 @@ void __fastcall TConfiguration::TemporaryLogging(const UnicodeString ALogFileNam
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TConfiguration::TemporaryActionsLogging(const UnicodeString ALogFileName)
+void __fastcall TConfiguration::TemporaryActionsLogging(const UnicodeString & ALogFileName)
 {
   FLogActions = true;
   FActionsLogFileName = ALogFileName;
@@ -1099,7 +1100,7 @@ void __fastcall TConfiguration::SetLogging(bool Value)
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TConfiguration::SetLogFileName(UnicodeString Value)
+void __fastcall TConfiguration::SetLogFileName(const UnicodeString & Value)
 {
   if (GetLogFileName() != Value)
   {
@@ -1109,7 +1110,7 @@ void __fastcall TConfiguration::SetLogFileName(UnicodeString Value)
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TConfiguration::SetActionsLogFileName(UnicodeString Value)
+void __fastcall TConfiguration::SetActionsLogFileName(const UnicodeString & Value)
 {
   if (GetActionsLogFileName() != Value)
   {
@@ -1290,7 +1291,7 @@ UnicodeString __fastcall TConfiguration::GetPermanentLogFileName()
   return FPermanentLogFileName;
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::SetPermanentLogFileName(const UnicodeString Value)
+void __fastcall TConfiguration::SetPermanentLogFileName(const UnicodeString & Value)
 {
   FPermanentLogFileName = Value;
 }
@@ -1300,7 +1301,7 @@ UnicodeString __fastcall TConfiguration::GetPermanentActionsLogFileName()
   return FPermanentActionsLogFileName;
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::SetPermanentActionsLogFileName(const UnicodeString Value)
+void __fastcall TConfiguration::SetPermanentActionsLogFileName(const UnicodeString & Value)
 {
   FPermanentActionsLogFileName = Value;
 }

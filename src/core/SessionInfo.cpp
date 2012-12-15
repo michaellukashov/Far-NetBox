@@ -1229,9 +1229,9 @@ UnicodeString __fastcall TSessionLog::GetName()
   return FName;
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionLog::SetName(const UnicodeString value)
+void __fastcall TSessionLog::SetName(const UnicodeString & Value)
 {
-  FName = value;
+  FName = Value;
 }
 //---------------------------------------------------------------------------
 intptr_t __fastcall TSessionLog::GetCount()

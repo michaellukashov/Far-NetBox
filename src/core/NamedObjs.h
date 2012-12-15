@@ -11,7 +11,7 @@ class TNamedObject : public TPersistent
 public:
   bool __fastcall GetHidden() const { return FHidden; }
   UnicodeString __fastcall GetName() const { return FName; }
-  void __fastcall SetName(UnicodeString value);
+  void __fastcall SetName(const UnicodeString & Value);
   explicit /* __fastcall */ TNamedObject() : TPersistent(), FHidden(false) {};
   Integer __fastcall CompareName(UnicodeString aName, Boolean CaseSensitive = False);
   explicit /* __fastcall */ TNamedObject(UnicodeString aName);

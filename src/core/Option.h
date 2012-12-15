@@ -11,16 +11,16 @@ class TOptions
 public:
   /* __fastcall */ TOptions();
 
-  bool __fastcall FindSwitch(const UnicodeString Switch);
-  bool __fastcall FindSwitch(const UnicodeString Switch, UnicodeString & Value);
-  bool __fastcall FindSwitch(const UnicodeString Switch, int & ParamsStart,
+  bool __fastcall FindSwitch(const UnicodeString & Switch);
+  bool __fastcall FindSwitch(const UnicodeString & Switch, UnicodeString & Value);
+  bool __fastcall FindSwitch(const UnicodeString & Switch, int & ParamsStart,
     int & ParamsCount);
-  bool __fastcall FindSwitch(const UnicodeString Switch, TStrings * Params,
+  bool __fastcall FindSwitch(const UnicodeString & Switch, TStrings * Params,
     int ParamsMax = -1);
   void __fastcall ParamsProcessed(int Position, int Count);
-  UnicodeString __fastcall SwitchValue(const UnicodeString Switch, const UnicodeString Default = L"");
-  bool __fastcall SwitchValue(const UnicodeString Switch, bool Default);
-  bool __fastcall SwitchValue(const UnicodeString Switch, bool Default, bool DefaultOnNonExistence);
+  UnicodeString __fastcall SwitchValue(const UnicodeString & Switch, const UnicodeString Default = L"");
+  bool __fastcall SwitchValue(const UnicodeString & Switch, bool Default);
+  bool __fastcall SwitchValue(const UnicodeString & Switch, bool Default, bool DefaultOnNonExistence);
   bool __fastcall UnusedSwitch(UnicodeString & Switch) const;
 
   int __fastcall GetParamCount() const { return FParamCount; }
@@ -33,7 +33,7 @@ protected:
 
   void __fastcall Add(UnicodeString Option);
 
-  bool __fastcall FindSwitch(const UnicodeString Switch,
+  bool __fastcall FindSwitch(const UnicodeString & Switch,
     UnicodeString & Value, int & ParamsStart, int & ParamsCount);
 
 private:

@@ -395,7 +395,7 @@ UnicodeString DefaultStr(const UnicodeString & Str, const UnicodeString & Defaul
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString CutToChar(UnicodeString &Str, wchar_t Ch, bool Trim)
+UnicodeString CutToChar(UnicodeString & Str, wchar_t Ch, bool Trim)
 {
   intptr_t P = Str.Pos(Ch);
   UnicodeString Result;
@@ -477,12 +477,12 @@ UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From, UnicodeStr
 UnicodeString DelimitStr(const UnicodeString & Str, const UnicodeString & Chars)
 {
   UnicodeString Result = Str;
-  for (intptr_t I = 1; I <= Result.Length(); i++)
+  for (intptr_t I = 1; I <= Result.Length(); I++)
   {
-    if (Result.IsDelimiter(Chars, i))
+    if (Result.IsDelimiter(Chars, I))
     {
-      Result.Insert(L"\\", i);
-      i++;
+      Result.Insert(L"\\", I);
+      I++;
     }
   }
   return Result;
@@ -607,16 +607,17 @@ static wchar_t * __fastcall ReplaceChar(
   return InvalidChar;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall ValidLocalFileName(UnicodeString FileName)
+UnicodeString __fastcall ValidLocalFileName(const UnicodeString & FileName)
 {
   return ValidLocalFileName(FileName, L'_', L"", LocalInvalidChars);
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall ValidLocalFileName(
-  UnicodeString FileName, wchar_t InvalidCharsReplacement,
+  const UnicodeString & FileName, wchar_t InvalidCharsReplacement,
   const UnicodeString & TokenizibleChars, const UnicodeString & LocalInvalidChars)
 {
   CALLSTACK;
+  UnicodeString FileName2 = FileName;
   if (InvalidCharsReplacement != NoReplacement)
   {
     bool ATokenReplacement = (InvalidCharsReplacement == TokenReplacement);
@@ -627,43 +628,43 @@ UnicodeString __fastcall ValidLocalFileName(
     while ((InvalidChar = wcspbrk(InvalidChar, Chars)) != NULL)
     {
       TRACEFMT("2 [%s]", InvalidChar);
-      intptr_t Pos = (InvalidChar - FileName.c_str() + 1);
+      intptr_t Pos = (InvalidChar - FileName2.c_str() + 1);
       wchar_t Char;
       if (ATokenReplacement &&
           (*InvalidChar == TokenPrefix) &&
-          (((FileName.Length() - Pos) <= 1) ||
-           (((Char = static_cast<wchar_t>(HexToByte(FileName.SubString(Pos + 1, 2)))) == L'\0') ||
+          (((FileName2.Length() - Pos) <= 1) ||
+           (((Char = static_cast<wchar_t>(HexToByte(FileName2.SubString(Pos + 1, 2)))) == L'\0') ||
             (TokenizibleChars.Pos(Char) == 0))))
       {
         InvalidChar++;
       }
       else
       {
-        InvalidChar = ReplaceChar(FileName, InvalidChar, InvalidCharsReplacement);
+        InvalidChar = ReplaceChar(FileName2, InvalidChar, InvalidCharsReplacement);
       }
       TRACEFMT("3 [%s]", InvalidChar);
     }
 
     // Windows trim trailing space or dot, hence we must encode it to preserve it
-    if (!FileName.IsEmpty() &&
-        ((FileName[FileName.Length()] == L' ') ||
-         (FileName[FileName.Length()] == L'.')))
+    if (!FileName2.IsEmpty() &&
+        ((FileName2[FileName2.Length()] == L' ') ||
+         (FileName2[FileName2.Length()] == L'.')))
     {
       TRACE("4");
-      ReplaceChar(FileName, const_cast<wchar_t *>(FileName.c_str() + FileName.Length() - 1), InvalidCharsReplacement);
+      ReplaceChar(FileName2, const_cast<wchar_t *>(FileName2.c_str() + FileName2.Length() - 1), InvalidCharsReplacement);
     }
 
     if (IsReservedName(FileName))
     {
-      intptr_t P = FileName.Pos(".");
+      intptr_t P = FileName2.Pos(".");
       if (P == 0)
       {
-        P = FileName.Length() + 1;
+        P = FileName2.Length() + 1;
       }
-      FileName.Insert(L"%00", P);
+      FileName2.Insert(L"%00", P);
     }
   }
-  return FileName;
+  return FileName2;
 }
 //---------------------------------------------------------------------------
 void __fastcall SplitCommand(const UnicodeString & Command, UnicodeString & Program,
@@ -719,11 +720,11 @@ UnicodeString __fastcall ExtractProgram(const UnicodeString & Command)
 //---------------------------------------------------------------------------
 UnicodeString __fastcall FormatCommand(const UnicodeString & Program, const UnicodeString & Params)
 {
-  Program = Program.Trim();
-  Params = Params.Trim();
-  if (!Params.IsEmpty()) Params = L" " + Params;
-  if (Program.Pos(L" ")) Program = L"\"" + Program + L"\"";
-  return Program + Params;
+  UnicodeString Result = Program.Trim();
+  UnicodeString Params2 = Params.Trim();
+  if (!Params2.IsEmpty()) Params2 = L" " + Params2;
+  if (Result.Pos(L" ")) Result = L"\"" + Result + L"\"";
+  return Result + Params2;
 }
 //---------------------------------------------------------------------------
 const wchar_t ShellCommandFileNamePattern[] = L"!.!";
@@ -951,7 +952,7 @@ UnicodeString __fastcall BytesToHex(const unsigned char * B, uintptr_t Length, b
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall BytesToHex(RawByteString Str, bool UpperCase, wchar_t Separator)
+UnicodeString __fastcall BytesToHex(const RawByteString & Str, bool UpperCase, wchar_t Separator)
 {
   return BytesToHex(reinterpret_cast<const unsigned char *>(Str.c_str()), Str.Length(), UpperCase, Separator);
 }
@@ -961,7 +962,7 @@ UnicodeString __fastcall CharToHex(wchar_t Ch, bool UpperCase)
   return BytesToHex(reinterpret_cast<const unsigned char *>(&Ch), sizeof(Ch), UpperCase);
 }
 //---------------------------------------------------------------------------
-RawByteString __fastcall HexToBytes(const UnicodeString Hex)
+RawByteString __fastcall HexToBytes(const UnicodeString & Hex)
 {
   static UnicodeString Digits = L"0123456789ABCDEF";
   RawByteString Result;
@@ -1008,7 +1009,7 @@ bool __fastcall FileSearchRec(const UnicodeString & FileName, TSearchRec & Rec)
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall ProcessLocalDirectory(UnicodeString DirName,
+void __fastcall ProcessLocalDirectory(const UnicodeString & DirName,
   TProcessLocalFileEvent CallBackFunc, void * Param,
   int FindAttrs)
 {
@@ -1019,8 +1020,8 @@ void __fastcall ProcessLocalDirectory(UnicodeString DirName,
   }
   TSearchRec SearchRec = {0};
 
-  DirName = IncludeTrailingBackslash(DirName);
-  if (FindFirst(DirName + L"*.*", FindAttrs, SearchRec) == 0)
+  UnicodeString DirName2 = IncludeTrailingBackslash(DirName);
+  if (FindFirst(DirName2 + L"*.*", FindAttrs, SearchRec) == 0)
   {
     TRY_FINALLY (
     {
@@ -1028,7 +1029,7 @@ void __fastcall ProcessLocalDirectory(UnicodeString DirName,
       {
         if ((SearchRec.Name != L".") && (SearchRec.Name != L".."))
         {
-          UnicodeString FileName = DirName + SearchRec.Name;
+          UnicodeString FileName = DirName2 + SearchRec.Name;
           CallBackFunc(FileName, SearchRec, Param);
         }
 
@@ -1934,7 +1935,7 @@ UnicodeString __fastcall DoEncodeUrl(UnicodeString S, UnicodeString Chars)
   return S;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall EncodeUrlChars(UnicodeString S, UnicodeString Ignore)
+UnicodeString __fastcall EncodeUrlChars(const UnicodeString & S, const UnicodeString & Ignore)
 {
   UnicodeString Chars;
   if (Ignore.Pos(L' ') == 0)

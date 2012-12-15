@@ -30,10 +30,10 @@ int /* __fastcall */ NamedObjectSortProc(const void * Item1, const void * Item2)
   SetName(AName);
 }
 //---------------------------------------------------------------------------
-void __fastcall TNamedObject::SetName(UnicodeString value)
+void __fastcall TNamedObject::SetName(const UnicodeString & Value)
 {
-  FHidden = (value.SubString(1, TNamedObjectList::HiddenPrefix.Length()) == TNamedObjectList::HiddenPrefix);
-  FName = value;
+  FHidden = (Value.SubString(1, TNamedObjectList::HiddenPrefix.Length()) == TNamedObjectList::HiddenPrefix);
+  FName = Value;
 }
 //---------------------------------------------------------------------------
 Integer __fastcall TNamedObject::CompareName(UnicodeString aName,

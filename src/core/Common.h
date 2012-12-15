@@ -54,7 +54,7 @@ UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From, UnicodeStr
 UnicodeString DelimitStr(const UnicodeString & Str, const UnicodeString & Chars);
 UnicodeString ShellDelimitStr(const UnicodeString & Str, wchar_t Quote);
 UnicodeString ExceptionLogString(Exception *E);
-bool IsNumber(const UnicodeString Str);
+bool IsNumber(const UnicodeString & Str);
 UnicodeString __fastcall SystemTemporaryDirectory();
 UnicodeString __fastcall GetShellFolderPath(int CSIdl);
 UnicodeString __fastcall StripPathQuotes(const UnicodeString & Path);
@@ -63,14 +63,14 @@ void __fastcall SplitCommand(const UnicodeString & Command, UnicodeString & Prog
   UnicodeString & Params, UnicodeString & Dir);
 UnicodeString __fastcall ValidLocalFileName(const UnicodeString & FileName);
 UnicodeString __fastcall ValidLocalFileName(
-  UnicodeString FileName, wchar_t InvalidCharsReplacement,
+  const UnicodeString & FileName, wchar_t InvalidCharsReplacement,
   const UnicodeString & TokenizibleChars, const UnicodeString & LocalInvalidChars);
 UnicodeString __fastcall ExtractProgram(const UnicodeString & Command);
 UnicodeString __fastcall FormatCommand(const UnicodeString & Program, const UnicodeString & Params);
 UnicodeString __fastcall ExpandFileNameCommand(const UnicodeString & Command,
   const UnicodeString & FileName);
 void __fastcall ReformatFileNameCommand(UnicodeString & Command);
-UnicodeString __fastcall EscapePuttyCommandParam(UnicodeString Param);
+UnicodeString __fastcall EscapePuttyCommandParam(const UnicodeString & Param);
 UnicodeString __fastcall ExpandEnvironmentVariables(const UnicodeString & Str);
 bool __fastcall ComparePaths(const UnicodeString & Path1, const UnicodeString & Path2);
 bool __fastcall CompareFileName(const UnicodeString & Path1, const UnicodeString & Path2);
@@ -108,8 +108,8 @@ UnicodeString __fastcall WindowsProductName();
 //---------------------------------------------------------------------------
 DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
   const UnicodeString & /* FileName */, const TSearchRec & /* Rec */, void * /* Param */);
-bool __fastcall FileSearchRec(const UnicodeString FileName, TSearchRec & Rec);
-void __fastcall ProcessLocalDirectory(UnicodeString DirName,
+bool __fastcall FileSearchRec(const UnicodeString & FileName, TSearchRec & Rec);
+void __fastcall ProcessLocalDirectory(const UnicodeString & DirName,
   TProcessLocalFileEvent CallBackFunc, void * Param = NULL, int FindAttrs = -1);
 //---------------------------------------------------------------------------
 enum TDSTMode
