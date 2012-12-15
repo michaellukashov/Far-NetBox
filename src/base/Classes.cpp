@@ -914,6 +914,7 @@ bool TStringList::Find(const UnicodeString S, intptr_t & Index)
   Index = L;
   return Result;
 }
+
 intptr_t TStringList::IndexOf(const UnicodeString S)
 {
   // DEBUG_PRINTF(L"begin");
@@ -932,6 +933,7 @@ intptr_t TStringList::IndexOf(const UnicodeString S)
   // DEBUG_PRINTF(L"end");
   return Result;
 }
+
 void TStringList::PutString(intptr_t Index, const UnicodeString S)
 {
   if (GetSorted())
@@ -1030,10 +1032,12 @@ UnicodeString TStringList::GetStrings(intptr_t Index) const
   }
   return FList[Index].FString;
 }
+
 bool TStringList::GetCaseSensitive() const
 {
   return FCaseSensitive;
 }
+
 void TStringList::SetCaseSensitive(bool Value)
 {
   if (Value != FCaseSensitive)
@@ -1045,10 +1049,12 @@ void TStringList::SetCaseSensitive(bool Value)
     }
   }
 }
+
 bool TStringList::GetSorted() const
 {
   return FSorted;
 }
+
 void TStringList::SetSorted(bool Value)
 {
   if (Value != FSorted)
@@ -1060,6 +1066,7 @@ void TStringList::SetSorted(bool Value)
     FSorted = Value;
   }
 }
+
 void TStringList::LoadFromFile(const UnicodeString FileName)
 {
   HANDLE FileHandle = ::CreateFile(FileName.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, 0);
@@ -1106,6 +1113,7 @@ void TStringList::PutObject(intptr_t Index, TObject * AObject)
   FList[Index] = item;
   Changed();
 }
+
 void TStringList::SetUpdateState(bool Updating)
 {
   if (Updating)
@@ -1117,6 +1125,7 @@ void TStringList::SetUpdateState(bool Updating)
     Changed();
   }
 }
+
 void TStringList::Changing()
 {
   if (GetUpdateCount() == 0 && FOnChanging)
@@ -1124,6 +1133,7 @@ void TStringList::Changing()
     FOnChanging(this);
   }
 }
+
 void TStringList::Changed()
 {
   if (GetUpdateCount() == 0 && FOnChange)
@@ -1131,6 +1141,7 @@ void TStringList::Changed()
     FOnChange(this);
   }
 }
+
 void TStringList::Insert(intptr_t Index, const UnicodeString S)
 {
   if ((Index == NPOS) || (Index > static_cast<intptr_t>(FList.size())))
@@ -1143,10 +1154,12 @@ void TStringList::Insert(intptr_t Index, const UnicodeString S)
   FList.insert(FList.begin() + Index, item);
   Changed();
 }
+
 void TStringList::Sort()
 {
   CustomSort(StringListCompareStrings);
 }
+
 void TStringList::CustomSort(TStringListSortCompare ACompareFunc)
 {
   if (!GetSorted() && (GetCount() > 1))
