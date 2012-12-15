@@ -38,12 +38,12 @@ extern const wchar_t NoReplacement;
 extern const wchar_t TokenReplacement;
 extern const UnicodeString LocalInvalidChars;
 //---------------------------------------------------------------------------
-UnicodeString ReplaceChar(UnicodeString Str, wchar_t A, wchar_t B);
-UnicodeString DeleteChar(UnicodeString Str, wchar_t C);
-void PackStr(UnicodeString &Str);
-void PackStr(RawByteString &Str);
+UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B);
+UnicodeString DeleteChar(const UnicodeString & Str, wchar_t C);
+void PackStr(UnicodeString & Str);
+void PackStr(RawByteString & Str);
 void __fastcall Shred(UnicodeString & Str);
-UnicodeString MakeValidFileName(UnicodeString FileName);
+UnicodeString MakeValidFileName(const UnicodeString & FileName);
 UnicodeString RootKeyToStr(HKEY RootKey);
 UnicodeString BooleanToStr(bool B);
 UnicodeString BooleanToEngStr(bool B);
@@ -51,24 +51,24 @@ UnicodeString DefaultStr(const UnicodeString & Str, const UnicodeString & Defaul
 UnicodeString CutToChar(UnicodeString &Str, wchar_t Ch, bool Trim);
 UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From, UnicodeString Chs, bool Trim,
   wchar_t * Delimiter = NULL, bool DoubleDelimiterEscapes = false);
-UnicodeString DelimitStr(UnicodeString Str, UnicodeString Chars);
-UnicodeString ShellDelimitStr(UnicodeString Str, wchar_t Quote);
+UnicodeString DelimitStr(const UnicodeString & Str, const UnicodeString & Chars);
+UnicodeString ShellDelimitStr(const UnicodeString & Str, wchar_t Quote);
 UnicodeString ExceptionLogString(Exception *E);
 bool IsNumber(const UnicodeString Str);
 UnicodeString __fastcall SystemTemporaryDirectory();
 UnicodeString __fastcall GetShellFolderPath(int CSIdl);
-UnicodeString __fastcall StripPathQuotes(const UnicodeString Path);
-UnicodeString __fastcall AddPathQuotes(UnicodeString Path);
-void __fastcall SplitCommand(UnicodeString Command, UnicodeString &Program,
+UnicodeString __fastcall StripPathQuotes(const UnicodeString & Path);
+UnicodeString __fastcall AddPathQuotes(const UnicodeString & Path);
+void __fastcall SplitCommand(const UnicodeString & Command, UnicodeString & Program,
   UnicodeString & Params, UnicodeString & Dir);
-UnicodeString __fastcall ValidLocalFileName(UnicodeString FileName);
+UnicodeString __fastcall ValidLocalFileName(const UnicodeString & FileName);
 UnicodeString __fastcall ValidLocalFileName(
   UnicodeString FileName, wchar_t InvalidCharsReplacement,
   const UnicodeString & TokenizibleChars, const UnicodeString & LocalInvalidChars);
-UnicodeString __fastcall ExtractProgram(UnicodeString Command);
-UnicodeString __fastcall FormatCommand(UnicodeString Program, UnicodeString Params);
-UnicodeString __fastcall ExpandFileNameCommand(const UnicodeString Command,
-  const UnicodeString FileName);
+UnicodeString __fastcall ExtractProgram(const UnicodeString & Command);
+UnicodeString __fastcall FormatCommand(const UnicodeString & Program, const UnicodeString & Params);
+UnicodeString __fastcall ExpandFileNameCommand(const UnicodeString & Command,
+  const UnicodeString & FileName);
 void __fastcall ReformatFileNameCommand(UnicodeString & Command);
 UnicodeString __fastcall EscapePuttyCommandParam(UnicodeString Param);
 UnicodeString __fastcall ExpandEnvironmentVariables(const UnicodeString & Str);
@@ -78,14 +78,14 @@ bool __fastcall IsReservedName(UnicodeString FileName);
 UnicodeString __fastcall DisplayableStr(const RawByteString & Str);
 UnicodeString __fastcall ByteToHex(unsigned char B, bool UpperCase = true);
 UnicodeString __fastcall BytesToHex(const unsigned char * B, uintptr_t Length, bool UpperCase = true, wchar_t Separator = L'\0');
-UnicodeString __fastcall BytesToHex(RawByteString Str, bool UpperCase = true, wchar_t Separator = L'\0');
+UnicodeString __fastcall BytesToHex(const RawByteString & Str, bool UpperCase = true, wchar_t Separator = L'\0');
 UnicodeString __fastcall CharToHex(wchar_t Ch, bool UpperCase = true);
-RawByteString __fastcall HexToBytes(const UnicodeString Hex);
-unsigned char __fastcall HexToByte(const UnicodeString Hex);
-UnicodeString __fastcall DecodeUrlChars(UnicodeString S);
-UnicodeString __fastcall EncodeUrlChars(UnicodeString S, UnicodeString Ignore = L"");
+RawByteString __fastcall HexToBytes(const UnicodeString & Hex);
+unsigned char __fastcall HexToByte(const UnicodeString & Hex);
+UnicodeString __fastcall DecodeUrlChars(const UnicodeString & S);
+UnicodeString __fastcall EncodeUrlChars(const UnicodeString & S, const UnicodeString & Ignore = UnicodeString());
 UnicodeString __fastcall EncodeUrlString(UnicodeString S);
-bool __fastcall RecursiveDeleteFile(const UnicodeString FileName, bool ToRecycleBin);
+bool __fastcall RecursiveDeleteFile(const UnicodeString & FileName, bool ToRecycleBin);
 unsigned int __fastcall CancelAnswer(unsigned int Answers);
 unsigned int __fastcall AbortAnswer(unsigned int Answers);
 unsigned int __fastcall ContinueAnswer(unsigned int Answers);
