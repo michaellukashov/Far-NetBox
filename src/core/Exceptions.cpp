@@ -58,14 +58,14 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   TRACE("/");
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ ExtException::ExtException(Exception* E, UnicodeString Msg):
+/* __fastcall */ ExtException::ExtException(Exception* E, const UnicodeString & Msg):
   Exception(Msg),
   FMoreMessages(NULL),
   FHelpKeyword()
 {
   AddMoreMessages(E);
 }
-/* __fastcall */ ExtException::ExtException(ExtException* E, UnicodeString Msg):
+/* __fastcall */ ExtException::ExtException(ExtException* E, const UnicodeString & Msg):
   Exception(Msg),
   FMoreMessages(NULL),
   FHelpKeyword()
@@ -84,7 +84,7 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   CALLSTACK;
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ ExtException::ExtException(UnicodeString Msg, Exception* E) :
+/* __fastcall */ ExtException::ExtException(const UnicodeString & Msg, Exception* E) :
   Exception(L""),
   FMoreMessages(NULL),
   FHelpKeyword()
@@ -112,8 +112,8 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   TRACE("/");
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ ExtException::ExtException(UnicodeString Msg, UnicodeString MoreMessages,
-    UnicodeString HelpKeyword) :
+/* __fastcall */ ExtException::ExtException(const UnicodeString & Msg, const UnicodeString & MoreMessages,
+    const UnicodeString & HelpKeyword) :
   Exception(Msg),
   FMoreMessages(NULL),
   FHelpKeyword(HelpKeyword)
@@ -128,8 +128,8 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   TRACE("/");
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ ExtException::ExtException(UnicodeString Msg, TStrings* MoreMessages,
-  bool Own, UnicodeString HelpKeyword) :
+/* __fastcall */ ExtException::ExtException(const UnicodeString & Msg, TStrings* MoreMessages,
+  bool Own, const UnicodeString & HelpKeyword) :
   Exception(Msg),
   FMoreMessages(NULL),
   FHelpKeyword(HelpKeyword)

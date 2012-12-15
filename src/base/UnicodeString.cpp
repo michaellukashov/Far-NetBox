@@ -61,26 +61,26 @@ AnsiString & AnsiString::Insert(const char * Str, intptr_t Pos)
 
 AnsiString AnsiString::SubString(intptr_t Pos, intptr_t Len) const
 {
-  std::string s = Data.substr(Pos - 1, Len);
-  AnsiString Result(s.c_str(), s.size());
+  std::string S = Data.substr(Pos - 1, Len);
+  AnsiString Result(S.c_str(), S.size());
   return Result;
 }
 
-AnsiString & AnsiString::operator=(const UnicodeString & strCopy)
+AnsiString & AnsiString::operator=(const UnicodeString & StrCopy)
 {
-  Init(strCopy.c_str(), strCopy.Length());
+  Init(StrCopy.c_str(), StrCopy.Length());
   return *this;
 }
 
-AnsiString & AnsiString::operator=(const AnsiString & strCopy)
+AnsiString & AnsiString::operator=(const AnsiString & StrCopy)
 {
-  Init(strCopy.c_str(), strCopy.Length());
+  Init(StrCopy.c_str(), StrCopy.Length());
   return *this;
 }
 
-AnsiString & AnsiString::operator=(const UTF8String & strCopy)
+AnsiString & AnsiString::operator=(const UTF8String & StrCopy)
 {
-  Init(strCopy.c_str(), strCopy.Length());
+  Init(StrCopy.c_str(), StrCopy.Length());
   return *this;
 }
 
@@ -203,33 +203,33 @@ RawByteString RawByteString::SubString(intptr_t Pos, intptr_t Len) const
   return Result;
 }
 
-RawByteString & RawByteString::operator=(const UnicodeString & strCopy)
+RawByteString & RawByteString::operator=(const UnicodeString & StrCopy)
 {
-  Init(strCopy.c_str(), strCopy.Length());
+  Init(StrCopy.c_str(), StrCopy.Length());
   return *this;
 }
 
-RawByteString & RawByteString::operator=(const RawByteString & strCopy)
+RawByteString & RawByteString::operator=(const RawByteString & StrCopy)
 {
-  Init(strCopy.c_str(), strCopy.Length());
+  Init(StrCopy.c_str(), StrCopy.Length());
   return *this;
 }
 
-RawByteString & RawByteString::operator=(const AnsiString & strCopy)
+RawByteString & RawByteString::operator=(const AnsiString & StrCopy)
 {
-  Init(strCopy.c_str(), strCopy.Length());
+  Init(StrCopy.c_str(), StrCopy.Length());
   return *this;
 }
 
-RawByteString & RawByteString::operator=(const UTF8String & strCopy)
+RawByteString & RawByteString::operator=(const UTF8String & StrCopy)
 {
-  Init(strCopy.c_str(), strCopy.Length());
+  Init(StrCopy.c_str(), StrCopy.Length());
   return *this;
 }
 
-RawByteString & RawByteString::operator=(const std::wstring & strCopy)
+RawByteString & RawByteString::operator=(const std::wstring & StrCopy)
 {
-  Init(strCopy.c_str(), strCopy.size());
+  Init(StrCopy.c_str(), StrCopy.size());
   return *this;
 }
 
@@ -309,21 +309,21 @@ UTF8String & UTF8String::Insert(const wchar_t * Str, intptr_t Pos)
   return *this;
 }
 
-UTF8String & UTF8String::operator=(const UnicodeString & strCopy)
+UTF8String & UTF8String::operator=(const UnicodeString & StrCopy)
 {
-  Init(strCopy.c_str(), strCopy.Length());
+  Init(StrCopy.c_str(), StrCopy.Length());
   return *this;
 }
 
-UTF8String & UTF8String::operator=(const UTF8String & strCopy)
+UTF8String & UTF8String::operator=(const UTF8String & StrCopy)
 {
-  Init(strCopy.c_str(), strCopy.Length());
+  Init(StrCopy.c_str(), StrCopy.Length());
   return *this;
 }
 
-UTF8String & UTF8String::operator=(const RawByteString & strCopy)
+UTF8String & UTF8String::operator=(const RawByteString & StrCopy)
 {
-  Init(strCopy.c_str(), strCopy.Length());
+  Init(StrCopy.c_str(), StrCopy.Length());
   return *this;
 }
 
@@ -489,35 +489,35 @@ void UnicodeString::sprintf(const wchar_t * fmt, ...)
   va_end(args);
 }
 
-UnicodeString & UnicodeString::operator=(const UnicodeString & strCopy)
+UnicodeString & UnicodeString::operator=(const UnicodeString & StrCopy)
 {
-  // Init(strCopy.c_str(), strCopy.Length());
-  Data = strCopy.Data;
+  // Init(StrCopy.c_str(), StrCopy.Length());
+  Data = StrCopy.Data;
   return *this;
 }
 
-UnicodeString & UnicodeString::operator=(const RawByteString & strCopy)
+UnicodeString & UnicodeString::operator=(const RawByteString & StrCopy)
 {
-  Init(strCopy.c_str(), strCopy.Length());
+  Init(StrCopy.c_str(), StrCopy.Length());
   return *this;
 }
 
-UnicodeString & UnicodeString::operator=(const AnsiString & strCopy)
+UnicodeString & UnicodeString::operator=(const AnsiString & StrCopy)
 {
-  Init(strCopy.c_str(), strCopy.Length());
-  // Data = strCopy.Data;
+  Init(StrCopy.c_str(), StrCopy.Length());
+  // Data = StrCopy.Data;
   return *this;
 }
 
-UnicodeString & UnicodeString::operator=(const UTF8String & strCopy)
+UnicodeString & UnicodeString::operator=(const UTF8String & StrCopy)
 {
-  Init(strCopy.c_str(), strCopy.Length());
+  Init(StrCopy.c_str(), StrCopy.Length());
   return *this;
 }
 
-UnicodeString & UnicodeString::operator=(const std::wstring & strCopy)
+UnicodeString & UnicodeString::operator=(const std::wstring & StrCopy)
 {
-  Init(strCopy.c_str(), strCopy.size());
+  Init(StrCopy.c_str(), StrCopy.size());
   return *this;
 }
 

@@ -17,20 +17,20 @@ class ExtException : public Sysutils::Exception
 {
 public:
   explicit /* __fastcall */ ExtException(Exception* E);
-  explicit /* __fastcall */ ExtException(Exception* E, UnicodeString Msg);
-  explicit /* __fastcall */ ExtException(ExtException* E, UnicodeString Msg);
+  explicit /* __fastcall */ ExtException(Exception* E, const UnicodeString & Msg);
+  explicit /* __fastcall */ ExtException(ExtException* E, const UnicodeString & Msg);
   explicit /* __fastcall */ ExtException(Exception * E, int Ident);
   // "copy the exception", just append message to the end
-  explicit /* __fastcall */ ExtException(UnicodeString Msg, Exception* E);
-  explicit /* __fastcall */ ExtException(UnicodeString Msg, UnicodeString MoreMessages, UnicodeString HelpKeyword = L"");
-  explicit /* __fastcall */ ExtException(UnicodeString Msg, TStrings* MoreMessages, bool Own, UnicodeString HelpKeyword = L"");
+  explicit /* __fastcall */ ExtException(const UnicodeString & Msg, Exception* E);
+  explicit /* __fastcall */ ExtException(const UnicodeString & Msg, const UnicodeString & MoreMessages, const UnicodeString & HelpKeyword = UnicodeString());
+  explicit /* __fastcall */ ExtException(const UnicodeString & Msg, TStrings* MoreMessages, bool Own, const UnicodeString & HelpKeyword = UnicodeString());
   virtual /* __fastcall */ ~ExtException(void);
   TStrings * __fastcall GetMoreMessages() const { return FMoreMessages; }
   UnicodeString __fastcall GetHelpKeyword() const { return FHelpKeyword; }
 
-  explicit /* __fastcall */ ExtException(UnicodeString Msg) : Sysutils::Exception(Msg), FMoreMessages(NULL) {}
+  explicit /* __fastcall */ ExtException(const UnicodeString & Msg) : Sysutils::Exception(Msg), FMoreMessages(NULL) {}
   explicit /* __fastcall */ ExtException(int Ident) : Sysutils::Exception(Ident), FMoreMessages(NULL) {}
-  explicit /* __fastcall */ ExtException(UnicodeString Msg, int AHelpContext) : Sysutils::Exception(Msg, AHelpContext), FMoreMessages(NULL) {}
+  explicit /* __fastcall */ ExtException(const UnicodeString & Msg, int AHelpContext) : Sysutils::Exception(Msg, AHelpContext), FMoreMessages(NULL) {}
 
   /* __fastcall */ ExtException(const ExtException & E) : Sysutils::Exception(L""), FMoreMessages(NULL)
   { AddMoreMessages(&E); }
@@ -51,9 +51,9 @@ private:
   class NAME : public BASE \
   { \
   public: \
-    explicit inline /* __fastcall */ NAME(Exception* E, UnicodeString Msg) : BASE(E, Msg) {} \
+    explicit inline /* __fastcall */ NAME(Exception* E, const UnicodeString & Msg) : BASE(E, Msg) {} \
     virtual inline /* __fastcall */ ~NAME(void) { } \
-    explicit inline  /* __fastcall */ NAME(const UnicodeString Msg, int AHelpContext) : BASE(Msg, AHelpContext) { } \
+    explicit inline  /* __fastcall */ NAME(const UnicodeString & Msg, int AHelpContext) : BASE(Msg, AHelpContext) { } \
     virtual ExtException * __fastcall Clone() { return new NAME(this, L""); } \
   };
 //---------------------------------------------------------------------------

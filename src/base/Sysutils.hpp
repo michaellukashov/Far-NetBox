@@ -18,10 +18,10 @@ class Exception : public std::exception, public TObject
 {
 public:
   explicit /* __fastcall */ Exception(const wchar_t * Msg);
-  explicit /* __fastcall */ Exception(UnicodeString Msg);
+  explicit /* __fastcall */ Exception(const UnicodeString & Msg);
   explicit /* __fastcall */ Exception(Exception * E);
   explicit /* __fastcall */ Exception(std::exception * E);
-  explicit /* __fastcall */ Exception(UnicodeString Msg, int AHelpContext);
+  explicit /* __fastcall */ Exception(const UnicodeString & Msg, int AHelpContext);
   explicit /* __fastcall */ Exception(Exception * E, int Ident);
   explicit /* __fastcall */ Exception(int Ident);
 
@@ -112,28 +112,28 @@ void __fastcall GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettin
 
 //---------------------------------------------------------------------------
 
-UnicodeString ExtractShortPathName(const UnicodeString Path1);
-UnicodeString ExtractDirectory(const UnicodeString path, wchar_t delimiter = '/');
-UnicodeString ExtractFilename(const UnicodeString path, wchar_t delimiter = '/');
-UnicodeString ExtractFileExtension(const UnicodeString path, wchar_t delimiter = '/');
-UnicodeString ChangeFileExtension(const UnicodeString path, const UnicodeString ext, wchar_t delimiter = '/');
+UnicodeString ExtractShortPathName(const UnicodeString & Path1);
+UnicodeString ExtractDirectory(const UnicodeString & Path, wchar_t delimiter = '/');
+UnicodeString ExtractFilename(const UnicodeString & Path, wchar_t delimiter = '/');
+UnicodeString ExtractFileExtension(const UnicodeString & Path, wchar_t delimiter = '/');
+UnicodeString ChangeFileExtension(const UnicodeString & Path, const UnicodeString & Ext, wchar_t delimiter = '/');
 
-UnicodeString IncludeTrailingBackslash(const UnicodeString Str);
-UnicodeString ExcludeTrailingBackslash(const UnicodeString Str);
-UnicodeString ExtractFileDir(const UnicodeString Str);
-UnicodeString ExtractFilePath(const UnicodeString Str);
+UnicodeString IncludeTrailingBackslash(const UnicodeString & Str);
+UnicodeString ExcludeTrailingBackslash(const UnicodeString & Str);
+UnicodeString ExtractFileDir(const UnicodeString & Str);
+UnicodeString ExtractFilePath(const UnicodeString & Str);
 UnicodeString GetCurrentDir();
 
-UnicodeString StrToHex(const UnicodeString Str, bool UpperCase = true, char Separator = '\0');
-UnicodeString HexToStr(const UnicodeString Hex);
-unsigned int HexToInt(const UnicodeString Hex, size_t MinChars = 0);
+UnicodeString StrToHex(const UnicodeString & Str, bool UpperCase = true, char Separator = '\0');
+UnicodeString HexToStr(const UnicodeString & Hex);
+unsigned int HexToInt(const UnicodeString & Hex, size_t MinChars = 0);
 UnicodeString IntToHex(unsigned int Int, size_t MinChars = 0);
-char HexToChar(const UnicodeString Hex, size_t MinChars = 0);
+char HexToChar(const UnicodeString & Hex, size_t MinChars = 0);
 
-UnicodeString ReplaceStrAll(const UnicodeString Str, const UnicodeString What, const UnicodeString ByWhat);
+UnicodeString ReplaceStrAll(const UnicodeString & Str, const UnicodeString & What, const UnicodeString & ByWhat);
 UnicodeString SysErrorMessage(int code);
 
-bool TryStrToDateTime(const UnicodeString StrValue, TDateTime & Value, TFormatSettings & FormatSettings);
+bool TryStrToDateTime(const UnicodeString & StrValue, TDateTime & Value, TFormatSettings & FormatSettings);
 UnicodeString DateTimeToStr(UnicodeString & Result, const UnicodeString & Format,
                             TDateTime DateTime);
 UnicodeString DateTimeToString(TDateTime DateTime);
@@ -145,35 +145,35 @@ void DecodeDate(const TDateTime & DateTime, unsigned short & Y,
 void DecodeTime(const TDateTime & DateTime, unsigned short & H,
                 unsigned short & N, unsigned short & S, unsigned short & MS);
 
-UnicodeString FormatDateTime(const UnicodeString fmt, TDateTime DateTime);
+UnicodeString FormatDateTime(const UnicodeString & Fmt, TDateTime DateTime);
 TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime);
 
 TDateTime EncodeDate(int Year, int Month, int Day);
 TDateTime EncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec);
 
-UnicodeString Trim(const UnicodeString str);
-UnicodeString TrimLeft(const UnicodeString str);
-UnicodeString TrimRight(const UnicodeString str);
-UnicodeString UpperCase(const UnicodeString str);
-UnicodeString LowerCase(const UnicodeString str);
+UnicodeString Trim(const UnicodeString & Str);
+UnicodeString TrimLeft(const UnicodeString & Str);
+UnicodeString TrimRight(const UnicodeString & Str);
+UnicodeString UpperCase(const UnicodeString & Str);
+UnicodeString LowerCase(const UnicodeString & Str);
 wchar_t UpCase(const wchar_t c);
 wchar_t LowCase(const wchar_t c);
-UnicodeString AnsiReplaceStr(const UnicodeString str, const UnicodeString from, const UnicodeString to);
-intptr_t AnsiPos(const UnicodeString str, wchar_t c);
-intptr_t Pos(const UnicodeString str, const UnicodeString substr);
-UnicodeString StringReplace(const UnicodeString str, const UnicodeString from, const UnicodeString to, TReplaceFlags Flags);
-bool IsDelimiter(const UnicodeString delimiters, const UnicodeString str, intptr_t index);
-intptr_t LastDelimiter(const UnicodeString delimiters, const UnicodeString str);
+UnicodeString AnsiReplaceStr(const UnicodeString & Str, const UnicodeString & From, const UnicodeString & To);
+intptr_t AnsiPos(const UnicodeString & Str2, wchar_t c);
+intptr_t Pos(const UnicodeString & Str2, const UnicodeString & Substr);
+UnicodeString StringReplace(const UnicodeString & Str, const UnicodeString & From, const UnicodeString & To, TReplaceFlags Flags);
+bool IsDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str, intptr_t index);
+intptr_t LastDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str);
 //---------------------------------------------------------------------------
 
-int CompareText(const UnicodeString str1, const UnicodeString str2);
-int AnsiCompare(const UnicodeString str1, const UnicodeString str2);
-int AnsiCompareStr(const UnicodeString str1, const UnicodeString str2);
-bool AnsiSameText(const UnicodeString str1, const UnicodeString str2);
-bool SameText(const UnicodeString str1, const UnicodeString str2);
-int AnsiCompareText(const UnicodeString str1, const UnicodeString str2);
-int AnsiCompareIC(const UnicodeString str1, const UnicodeString str2);
-bool AnsiContainsText(const UnicodeString str1, const UnicodeString str2);
+int CompareText(const UnicodeString & Str1, const UnicodeString & Str2);
+int AnsiCompare(const UnicodeString & Str1, const UnicodeString & Str2);
+int AnsiCompareStr(const UnicodeString & Str1, const UnicodeString & Str2);
+bool AnsiSameText(const UnicodeString & Str1, const UnicodeString & Str2);
+bool SameText(const UnicodeString & Str1, const UnicodeString & Str2);
+int AnsiCompareText(const UnicodeString & Str1, const UnicodeString & Str2);
+int AnsiCompareIC(const UnicodeString & Str1, const UnicodeString & Str2);
+bool AnsiContainsText(const UnicodeString & Str1, const UnicodeString & Str2);
 
 int StringCmp(const wchar_t * s1, const wchar_t * s2);
 int StringCmpI(const wchar_t * s1, const wchar_t * s2);
@@ -181,18 +181,18 @@ int StringCmpI(const wchar_t * s1, const wchar_t * s2);
 //---------------------------------------------------------------------------
 UnicodeString IntToStr(int Value);
 UnicodeString Int64ToStr(__int64 Value);
-int StrToInt(const UnicodeString Value);
-__int64 ToInt(const UnicodeString Value);
-int StrToIntDef(const UnicodeString Value, int defval);
-__int64 StrToInt64(const UnicodeString Value);
-__int64 StrToInt64Def(const UnicodeString Value, __int64 defval);
+int StrToInt(const UnicodeString & Value);
+__int64 ToInt(const UnicodeString & Value);
+int StrToIntDef(const UnicodeString & Value, int DefVal);
+__int64 StrToInt64(const UnicodeString & Value);
+__int64 StrToInt64Def(const UnicodeString & Value, __int64 DefVal);
 bool TryStrToInt(const std::wstring & StrValue, int & Value);
 bool TryStrToInt(const std::wstring & StrValue, __int64 & Value);
 
 //---------------------------------------------------------------------------
-double StrToFloat(const UnicodeString Value);
-double StrToFloatDef(const UnicodeString Value, double defval);
-UnicodeString FormatFloat(const UnicodeString Format, double Value);
+double StrToFloat(const UnicodeString & Value);
+double StrToFloatDef(const UnicodeString & Value, double DefVal);
+UnicodeString FormatFloat(const UnicodeString & Format, double Value);
 //---------------------------------------------------------------------------
 TTimeStamp DateTimeToTimeStamp(TDateTime DateTime);
 //---------------------------------------------------------------------------
@@ -214,18 +214,18 @@ enum FileAttributesEnum
   faAnyFile = 0x0000003f,
 };
 
-bool FileExists(const UnicodeString filename);
-bool RenameFile(const UnicodeString from, const UnicodeString to);
-bool DirectoryExists(const UnicodeString dir);
-UnicodeString FileSearch(const UnicodeString FileName, const UnicodeString DirectoryList);
+bool FileExists(const UnicodeString & Filename);
+bool RenameFile(const UnicodeString & From, const UnicodeString & To);
+bool DirectoryExists(const UnicodeString & Dir);
+UnicodeString FileSearch(const UnicodeString & FileName, const UnicodeString & DirectoryList);
 
-int FileGetAttr(const UnicodeString filename);
-int FileSetAttr(const UnicodeString filename, int attrs);
+int FileGetAttr(const UnicodeString & Filename);
+int FileSetAttr(const UnicodeString & Filename, int attrs);
 
-bool ForceDirectories(const UnicodeString Dir);
-bool DeleteFile(const UnicodeString File);
-bool CreateDir(const UnicodeString Dir);
-bool RemoveDir(const UnicodeString Dir);
+bool ForceDirectories(const UnicodeString & Dir);
+bool DeleteFile(const UnicodeString & File);
+bool CreateDir(const UnicodeString & Dir);
+bool RemoveDir(const UnicodeString & Dir);
 
 //---------------------------------------------------------------------------
 template <class Base, class Derived>
@@ -246,23 +246,23 @@ UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth = 40);
 UnicodeString TranslateExceptionMessage(std::exception * E);
 //---------------------------------------------------------------------------
 
-void AppendWChar(UnicodeString & str, const wchar_t ch);
-void AppendChar(std::string & str, const char ch);
+void AppendWChar(UnicodeString & Str2, const wchar_t ch);
+void AppendChar(std::string & Str2, const char ch);
 
-void AppendPathDelimiterW(UnicodeString & str);
-void AppendPathDelimiterA(std::string & str);
+void AppendPathDelimiterW(UnicodeString & Str2);
+void AppendPathDelimiterA(std::string & Str2);
 
-UnicodeString ExpandEnvVars(const UnicodeString str);
+UnicodeString ExpandEnvVars(const UnicodeString & Str2);
 
 //---------------------------------------------------------------------------
 
 UnicodeString StringOfChar(const wchar_t c, intptr_t len);
 
-char * StrNew(const char * str);
+char * StrNew(const char * Str2);
 
-UnicodeString ChangeFileExt(const UnicodeString FileName, const UnicodeString ext);
-UnicodeString ExtractFileExt(const UnicodeString FileName);
-UnicodeString ExpandUNCFileName(const UnicodeString FileName);
+UnicodeString ChangeFileExt(const UnicodeString & FileName, const UnicodeString & Ext);
+UnicodeString ExtractFileExt(const UnicodeString & FileName);
+UnicodeString ExpandUNCFileName(const UnicodeString & FileName);
 
 __int64 FileSeek(HANDLE file, __int64 offset, int Origin);
 
@@ -301,7 +301,7 @@ struct TSearchRec
 
 //---------------------------------------------------------------------------
 
-int FindFirst(const UnicodeString FileName, int FindAttrs, TSearchRec & Rec);
+int FindFirst(const UnicodeString & FileName, int FindAttrs, TSearchRec & Rec);
 int FindNext(TSearchRec & Rec);
 int FindClose(TSearchRec & Rec);
 
