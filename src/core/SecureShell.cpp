@@ -937,7 +937,7 @@ UnicodeString __fastcall TSecureShell::ReceiveLine()
       EOL = static_cast<Boolean>(Index && (Pending[Index-1] == '\n'));
       intptr_t PrevLen = Line.Length();
       Line.SetLength(PrevLen + Index);
-      Receive(reinterpret_cast<unsigned char *>(const_cast<char *>(Line.c_str())) + PrevLen, Index);
+      Receive(reinterpret_cast<unsigned char *>(const_cast<char *>(Line.c_str()) + PrevLen), Index);
     }
 
     // If buffer don't contain end-of-line character
