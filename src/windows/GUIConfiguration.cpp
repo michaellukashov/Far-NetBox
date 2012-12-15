@@ -260,7 +260,7 @@ void __fastcall TCopyParamList::Modify()
   FModified = true;
 }
 //---------------------------------------------------------------------
-void __fastcall TCopyParamList::ValidateName(const UnicodeString Name)
+void __fastcall TCopyParamList::ValidateName(const UnicodeString & Name)
 {
   if (Name.LastDelimiter(FInvalidChars) > 0)
   {
@@ -305,7 +305,7 @@ bool __fastcall TCopyParamList::operator==(const TCopyParamList & rhl) const
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TCopyParamList::IndexOfName(const UnicodeString Name) const
+intptr_t __fastcall TCopyParamList::IndexOfName(const UnicodeString & Name) const
 {
   return FNames->IndexOf(Name.c_str());
 }
@@ -332,13 +332,13 @@ void __fastcall TCopyParamList::Clear()
   FNames->Clear();
 }
 //---------------------------------------------------------------------------
-void __fastcall TCopyParamList::Add(const UnicodeString Name,
+void __fastcall TCopyParamList::Add(const UnicodeString & Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
   Insert(GetCount(), Name, CopyParam, Rule);
 }
 //---------------------------------------------------------------------------
-void __fastcall TCopyParamList::Insert(intptr_t Index, const UnicodeString Name,
+void __fastcall TCopyParamList::Insert(intptr_t Index, const UnicodeString & Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
   assert(FNames->IndexOf(Name) < 0);
@@ -349,7 +349,7 @@ void __fastcall TCopyParamList::Insert(intptr_t Index, const UnicodeString Name,
   Modify();
 }
 //---------------------------------------------------------------------------
-void __fastcall TCopyParamList::Change(intptr_t Index, const UnicodeString Name,
+void __fastcall TCopyParamList::Change(intptr_t Index, const UnicodeString & Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
   if ((Name != GetName(Index)) || !CompareItem(Index, CopyParam, Rule))
@@ -641,7 +641,7 @@ void __fastcall TGUIConfiguration::UpdateStaticUsage()
   // Usage->Set(L"CopyParamsCount", (FCopyParamListDefaults ? 0 : FCopyParamList->Count));
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TGUIConfiguration::PropertyToKey(const UnicodeString Property)
+UnicodeString __fastcall TGUIConfiguration::PropertyToKey(const UnicodeString & Property)
 {
   // no longer useful
   intptr_t P = Property.LastDelimiter(L".>");
@@ -1238,7 +1238,7 @@ UnicodeString __fastcall TGUIConfiguration::GetPuttyPath()
   return FPuttyPath;
 }
 //---------------------------------------------------------------------------
-void __fastcall TGUIConfiguration::SetPuttyPath(const UnicodeString Value)
+void __fastcall TGUIConfiguration::SetPuttyPath(const UnicodeString & Value)
 {
   FPuttyPath = Value;
 }
@@ -1253,7 +1253,7 @@ UnicodeString __fastcall TGUIConfiguration::GetPSftpPath()
   return FPSftpPath;
 }
 //---------------------------------------------------------------------------
-void __fastcall TGUIConfiguration::SetPSftpPath(const UnicodeString Value)
+void __fastcall TGUIConfiguration::SetPSftpPath(const UnicodeString & Value)
 {
   FPSftpPath = Value;
 }
@@ -1278,7 +1278,7 @@ UnicodeString __fastcall TGUIConfiguration::GetChecksumAlg()
   return FChecksumAlg;
 }
 //---------------------------------------------------------------------------
-void __fastcall TGUIConfiguration::SetChecksumAlg(const UnicodeString Value)
+void __fastcall TGUIConfiguration::SetChecksumAlg(const UnicodeString & Value)
 {
   FChecksumAlg = Value;
 }

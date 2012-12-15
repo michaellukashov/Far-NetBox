@@ -102,7 +102,7 @@ protected:
     UnicodeString & ShortcutData);
   virtual bool GetFindDataEx(TObjectList * PanelItems, int OpMode);
   virtual bool ProcessKeyEx(intptr_t Key, uintptr_t ControlState);
-  virtual bool SetDirectoryEx(const UnicodeString Dir, int OpMode);
+  virtual bool SetDirectoryEx(const UnicodeString & Dir, int OpMode);
   virtual intptr_t MakeDirectoryEx(UnicodeString & Name, int OpMode);
   virtual bool DeleteFilesEx(TObjectList * PanelItems, int OpMode);
   virtual intptr_t GetFilesEx(TObjectList * PanelItems, bool Move,
@@ -148,11 +148,11 @@ protected:
   void ToggleSynchronizeBrowsing();
   bool IsSynchronizedBrowsing();
   bool PropertiesDialog(TStrings * FileList,
-    const UnicodeString Directory,
+    const UnicodeString & Directory,
     // TStrings * GroupList, TStrings * UserList,
     const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
     TRemoteProperties * Properties, int AllowedChanges);
-  bool ExecuteCommand(const UnicodeString Command);
+  bool ExecuteCommand(const UnicodeString & Command);
   void TerminalCaptureLog(const UnicodeString & AddedLine, bool StdError);
   bool CopyDialog(bool ToRemote, bool Move, TStrings * FileList,
     UnicodeString & TargetDirectory,
@@ -162,7 +162,7 @@ protected:
   bool LinkDialog(UnicodeString & FileName, UnicodeString & PointTo, bool & Symbolic,
     bool Edit, bool AllowSymbolic);
   void FileSystemInfoDialog(const TSessionInfo & SessionInfo,
-    const TFileSystemInfo & FileSystemInfo, UnicodeString SpaceAvailablePath,
+    const TFileSystemInfo & FileSystemInfo, const UnicodeString & SpaceAvailablePath,
     TGetSpaceAvailableEvent OnGetSpaceAvailable);
   bool OpenDirectoryDialog(bool Add, UnicodeString & Directory,
     TBookmarkList * BookmarkList);
@@ -173,16 +173,16 @@ protected:
     const TUsableCopyParamAttrs & CopyParamAttrs);
   bool SynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
     TTerminal::TSynchronizeMode Mode, int Params,
-    const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory);
+    const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory);
   bool RemoteTransferDialog(TStrings * FileList, UnicodeString & Target,
     UnicodeString & FileMask, bool Move);
   bool RenameFileDialog(TRemoteFile * File, UnicodeString & NewName);
-  intptr_t MoreMessageDialog(const UnicodeString Str, TStrings * MoreMessages,
+  intptr_t MoreMessageDialog(const UnicodeString & Str, TStrings * MoreMessages,
     TQueryType Type, int Answers, const TMessageParams * Params = NULL);
   bool PasswordDialog(TSessionData * SessionData,
-    TPromptKind Kind, const UnicodeString Name, const UnicodeString Instructions, TStrings * Prompts,
+    TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
     TStrings * Results, bool StoredCredentialsTried);
-  bool BannerDialog(const UnicodeString SessionName, const UnicodeString & Banner,
+  bool BannerDialog(const UnicodeString & SessionName, const UnicodeString & Banner,
     bool & NeverShowAgain, int Options);
   bool CreateDirectoryDialog(UnicodeString & Directory,
     TRemoteProperties * Properties, bool & SaveSettings);
@@ -199,14 +199,14 @@ protected:
     const UnicodeString & Directory, const UnicodeString & ErrorStr);
   void DoSynchronizeTooManyDirectories(TSynchronizeController * Sender,
     int & MaxDirectories);
-  void Synchronize(const UnicodeString LocalDirectory,
-    const UnicodeString RemoteDirectory, TTerminal::TSynchronizeMode Mode,
+  void Synchronize(const UnicodeString & LocalDirectory,
+    const UnicodeString & RemoteDirectory, TTerminal::TSynchronizeMode Mode,
     const TCopyParamType & CopyParam, int Params, TSynchronizeChecklist ** Checklist,
     TSynchronizeOptions * Options);
   bool SynchronizeAllowSelectedOnly();
   void GetSynchronizeOptions(int Params, TSynchronizeOptions & Options);
   void RequireCapability(int Capability);
-  void RequireLocalPanel(TFarPanelInfo * Panel, const UnicodeString Message);
+  void RequireLocalPanel(TFarPanelInfo * Panel, const UnicodeString & Message);
   bool AreCachesEmpty();
   void ClearCaches();
   void OpenSessionInPutty();
@@ -216,15 +216,15 @@ protected:
   void ConnectTerminal(TTerminal * Terminal);
   void TemporarilyDownloadFiles(TStrings * FileList,
     TCopyParamType CopyParam, UnicodeString & TempDir);
-  intptr_t UploadFiles(bool Move, int OpMode, bool Edit, UnicodeString DestPath);
+  intptr_t UploadFiles(bool Move, int OpMode, bool Edit, UnicodeString & DestPath);
   void UploadOnSave(bool NoReload);
-  void UploadFromEditor(bool NoReload, const UnicodeString FileName,
-    const UnicodeString RealFileName, const UnicodeString DestPath);
-  void LogAuthentication(TTerminal * Terminal, const UnicodeString Msg);
+  void UploadFromEditor(bool NoReload, const UnicodeString & FileName,
+    const UnicodeString & RealFileName, UnicodeString & DestPath);
+  void LogAuthentication(TTerminal * Terminal, const UnicodeString & Msg);
   void MultipleEdit();
-  void MultipleEdit(const UnicodeString Directory, const UnicodeString FileName, TRemoteFile * File);
+  void MultipleEdit(const UnicodeString & Directory, const UnicodeString & FileName, TRemoteFile * File);
   void EditViewCopyParam(TCopyParamType & CopyParam);
-  bool SynchronizeBrowsing(const UnicodeString NewPath);
+  bool SynchronizeBrowsing(const UnicodeString & NewPath);
   bool IsEditHistoryEmpty();
   void EditHistory();
   UnicodeString ProgressBar(intptr_t Percentage, intptr_t Width);
@@ -327,7 +327,7 @@ private:
   TStrings * CreateFocusedFileList(TOperationSide Side,
     TFarPanelInfo * PanelInfo = NULL);
   void CustomCommandGetParamValue(
-    const UnicodeString AName, UnicodeString & Value);
+    const UnicodeString & AName, UnicodeString & Value);
   void TerminalSynchronizeDirectory(const UnicodeString & LocalDirectory,
     const UnicodeString & RemoteDirectory, bool & Continue, bool Collect);
   void QueueListUpdate(TTerminalQueue * Queue);
@@ -337,13 +337,13 @@ private:
     TSpaceAvailable & ASpaceAvailable, bool & Close);
   void QueueAddItem(TQueueItem * Item);
 private:
-  UnicodeString GetFileNameHash(const UnicodeString FileName);
+  UnicodeString GetFileNameHash(const UnicodeString & FileName);
 };
 //---------------------------------------------------------------------------
 class TSessionPanelItem : public TCustomFarPanelItem
 {
 public:
-  explicit TSessionPanelItem(const UnicodeString Path);
+  explicit TSessionPanelItem(const UnicodeString & Path);
   explicit TSessionPanelItem(TSessionData * ASessionData);
   static void SetPanelModes(TFarPanelModes * PanelModes);
   static void SetKeyBarTitles(TFarKeyBarTitles * KeyBarTitles);
@@ -363,7 +363,7 @@ protected:
 class TSessionFolderPanelItem : public TCustomFarPanelItem
 {
 public:
-  explicit TSessionFolderPanelItem(const UnicodeString Folder);
+  explicit TSessionFolderPanelItem(const UnicodeString & Folder);
 
 protected:
   UnicodeString FFolder;

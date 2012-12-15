@@ -45,7 +45,7 @@ public:
   TRect GetBounds() const { return FBounds; }
   TRect GetClientRect() const;
   UnicodeString GetHelpTopic() const { return FHelpTopic; }
-  void SetHelpTopic(UnicodeString Value);
+  void SetHelpTopic(const UnicodeString & Value);
   DWORD GetFlags() const { return FFlags; }
   void SetFlags(DWORD Value);
   bool GetCentered();
@@ -58,7 +58,7 @@ public:
   int GetHeight();
   void SetHeight(int Value);
   UnicodeString GetCaption();
-  void SetCaption(UnicodeString Value);
+  void SetCaption(const UnicodeString &  Value);
   HANDLE GetHandle() { return FHandle; }
   TFarButton * GetDefaultButton() const { return FDefaultButton; }
   TFarBox * GetBorderBox() const { return FBorderBox; }
@@ -246,9 +246,9 @@ protected:
   bool GetCenterGroup() { return GetFlag(DIF_CENTERGROUP); }
   void SetCenterGroup(bool Value) { SetFlag(DIF_CENTERGROUP, Value); }
   virtual UnicodeString GetData();
-  virtual void SetData(const UnicodeString Value);
-  uintptr_t GetType();
-  void SetType(uintptr_t Value);
+  virtual void SetData(const UnicodeString & Value);
+  intptr_t GetType();
+  void SetType(intptr_t Value);
   intptr_t  GetItem() { return FItem; }
   intptr_t GetSelected();
   void SetSelected(intptr_t Value);
@@ -276,8 +276,8 @@ protected:
   virtual LONG_PTR FailItemProc(int Msg, LONG_PTR Param);
   virtual void __fastcall Change();
   void DialogChange();
-  void SetAlterType(int Index, bool Value);
-  bool GetAlterType(int Index);
+  void SetAlterType(intptr_t Index, bool Value);
+  bool GetAlterType(intptr_t Index);
   virtual void UpdateBounds();
   virtual void ResetBounds();
   virtual void Init();
@@ -285,13 +285,13 @@ protected:
   virtual bool MouseMove(int X, int Y, MOUSE_EVENT_RECORD * Event);
   virtual bool MouseClick(MOUSE_EVENT_RECORD * Event);
   TPoint MouseClientPosition(MOUSE_EVENT_RECORD * Event);
-  void Text(int X, int Y, uintptr_t Color, const UnicodeString Str);
+  void Text(int X, int Y, uintptr_t Color, const UnicodeString & Str);
   void Redraw();
   virtual bool HotKey(char HotKey);
 
 public:
-  virtual void SetDataInternal(const UnicodeString Value);
-  void UpdateData(const UnicodeString Value);
+  virtual void SetDataInternal(const UnicodeString & Value);
+  void UpdateData(const UnicodeString & Value);
   void UpdateSelected(intptr_t Value);
 
   bool GetFlag(int Index);
@@ -323,7 +323,7 @@ public:
   explicit TFarBox(TFarDialog * ADialog);
 
   virtual UnicodeString GetCaption() { return GetData(); }
-  virtual void SetCaption(const UnicodeString Value) { SetData(Value); }
+  virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
   virtual bool GetDouble() { return GetAlterType(DI_DOUBLEBOX); }
   virtual void SetDouble(bool Value) { SetAlterType(DI_DOUBLEBOX, Value); }
 };
@@ -339,7 +339,7 @@ public:
   virtual ~TFarButton() {}
 
   virtual UnicodeString GetCaption() { return GetData(); }
-  virtual void SetCaption(const UnicodeString Value) { SetData(Value); }
+  virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
   virtual int GetResult() { return FResult; }
   virtual void SetResult(int Value) { FResult = Value; }
   virtual UnicodeString GetData();
@@ -353,7 +353,7 @@ public:
   virtual void SetOnClick(TFarButtonClickEvent Value) { FOnClick = Value; }
 
 protected:
-  virtual void SetDataInternal(const UnicodeString Value);
+  virtual void SetDataInternal(const UnicodeString & Value);
   virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
   virtual bool HotKey(char HotKey);
 
@@ -372,7 +372,7 @@ public:
   explicit TFarCheckBox(TFarDialog * ADialog);
 
   virtual UnicodeString GetCaption() { return GetData(); }
-  virtual void SetCaption(const UnicodeString Value) { SetData(Value); }
+  virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
   bool GetAllowGrayed() { return GetFlag(DIF_3STATE); }
   void SetAllowGrayed(bool Value) { SetFlag(DIF_3STATE, Value); }
   virtual TFarAllowChangeEvent & GetOnAllowChange() { return FOnAllowChange; }
@@ -386,7 +386,7 @@ protected:
   TFarAllowChangeEvent FOnAllowChange;
   virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
   virtual bool GetIsEmpty();
-  virtual void SetData(const UnicodeString Value);
+  virtual void SetData(const UnicodeString & Value);
 };
 //---------------------------------------------------------------------------
 class TFarRadioButton : public TFarDialogItem
@@ -397,7 +397,7 @@ public:
   bool GetChecked() { return TFarDialogItem::GetChecked(); }
   void SetChecked(bool Value) { TFarDialogItem::SetChecked(Value); }
   virtual UnicodeString GetCaption() { return GetData(); }
-  virtual void SetCaption(const UnicodeString Value) { SetData(Value); }
+  virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
   virtual TFarAllowChangeEvent & GetOnAllowChange() { return FOnAllowChange; }
   virtual void SetOnAllowChange(TFarAllowChangeEvent Value) { FOnAllowChange = Value; }
 
@@ -405,7 +405,7 @@ protected:
   TFarAllowChangeEvent FOnAllowChange;
   virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
   virtual bool GetIsEmpty();
-  virtual void SetData(const UnicodeString Value);
+  virtual void SetData(const UnicodeString & Value);
 };
 //---------------------------------------------------------------------------
 class TFarEdit : public TFarDialogItem
@@ -414,7 +414,7 @@ public:
   explicit TFarEdit(TFarDialog * ADialog);
 
   virtual UnicodeString GetText() { return GetData(); }
-  virtual void SetText(const UnicodeString Value) { SetData(Value); }
+  virtual void SetText(const UnicodeString & Value) { SetData(Value); }
   int GetAsInteger();
   void SetAsInteger(int Value);
   virtual bool GetPassword() { return GetAlterType(DI_PSWEDIT); }
@@ -422,9 +422,9 @@ public:
   virtual bool GetFixed() { return GetAlterType(DI_FIXEDIT); }
   virtual void SetFixed(bool Value) { SetAlterType(DI_FIXEDIT, Value); }
   virtual UnicodeString GetMask() { return GetHistoryMask(1); }
-  virtual void SetMask(const UnicodeString Value) { SetHistoryMask(1, Value); }
+  virtual void SetMask(const UnicodeString & Value) { SetHistoryMask(1, Value); }
   virtual UnicodeString GetHistory() { return GetHistoryMask(0); }
-  virtual void SetHistory(const UnicodeString Value) { SetHistoryMask(0, Value); }
+  virtual void SetHistory(const UnicodeString & Value) { SetHistoryMask(0, Value); }
   bool GetExpandEnvVars() { return GetFlag(DIF_EDITEXPAND); }
   void SetExpandEnvVars(bool Value) { SetFlag(DIF_EDITEXPAND, Value); }
   bool GetAutoSelect() { return GetFlag(DIF_SELECTONENTRY); }
@@ -438,7 +438,7 @@ protected:
 
 private:
   UnicodeString GetHistoryMask(size_t Index);
-  void SetHistoryMask(size_t Index, const UnicodeString Value);
+  void SetHistoryMask(size_t Index, const UnicodeString & Value);
 };
 //---------------------------------------------------------------------------
 class TFarSeparator : public TFarDialogItem
@@ -449,7 +449,7 @@ public:
   bool GetDouble();
   void SetDouble(bool Value);
   virtual UnicodeString GetCaption() { return GetData(); }
-  virtual void SetCaption(const UnicodeString Value) { SetData(Value); }
+  virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
   void SetPosition(int Value);
   int GetPosition();
 
@@ -463,14 +463,14 @@ public:
   explicit  TFarText(TFarDialog * ADialog);
 
   virtual UnicodeString GetCaption() { return GetData(); }
-  virtual void SetCaption(const UnicodeString Value) { SetData(Value); }
+  virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
   bool GetCenterGroup() { return TFarDialogItem::GetCenterGroup(); }
   void SetCenterGroup(bool Value) { TFarDialogItem::SetCenterGroup(Value); }
   char GetColor() { return TFarDialogItem::GetColor(0); }
   void SetColor(char Value) { TFarDialogItem::SetColor(0, Value); }
 
 protected:
-  virtual void SetData(const UnicodeString Value);
+  virtual void SetData(const UnicodeString & Value);
 };
 //---------------------------------------------------------------------------
 class TFarListBox;
@@ -510,7 +510,7 @@ protected:
   virtual void Init();
   void UpdatePosition(intptr_t Position);
   intptr_t GetPosition();
-  virtual void Put(intptr_t Index, const UnicodeString S);
+  virtual void Put(intptr_t Index, const UnicodeString & S);
   void SetCurPos(intptr_t Position, intptr_t TopIndex);
   void UpdateItem(intptr_t Index);
 
@@ -575,7 +575,7 @@ public:
   void SetWrapMode(bool Value) { SetFlag(DIF_LISTWRAPMODE, Value); }
   TFarList * GetItems() { return FList; }
   virtual UnicodeString GetText() { return GetData(); }
-  virtual void SetText(const UnicodeString Value) { SetData(Value); }
+  virtual void SetText(const UnicodeString & Value) { SetData(Value); }
   bool GetAutoSelect() { return GetFlag(DIF_SELECTONENTRY); }
   void SetAutoSelect(bool Value) { SetFlag(DIF_SELECTONENTRY, Value); }
   bool GetDropDownList() { return GetFlag(DIF_DROPDOWNLIST); }
@@ -614,7 +614,7 @@ private:
   void ItemsChange(TObject * Sender);
 };
 //---------------------------------------------------------------------------
-UnicodeString StripHotKey(const UnicodeString Text);
+UnicodeString StripHotKey(const UnicodeString & Text);
 TRect Rect(int Left, int Top, int Right, int Bottom);
 //---------------------------------------------------------------------------
 #endif

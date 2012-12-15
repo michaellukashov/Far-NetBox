@@ -77,7 +77,7 @@ int __fastcall StartThread(void * SecurityAttributes, unsigned int StackSize,
     CreationFlags, ThreadId);
 }
 //---------------------------------------------------------------------------
-void __fastcall CopyToClipboard(const UnicodeString Text)
+void __fastcall CopyToClipboard(const UnicodeString & Text)
 {
   assert(FarPlugin != NULL);
   FarPlugin->FarCopyToClipboard(Text);

@@ -132,7 +132,7 @@ private:
   int FTab;
 
 public:
-  void SetTabName(const UnicodeString Value);
+  void SetTabName(const UnicodeString & Value);
 };
 //---------------------------------------------------------------------------
 TTabbedDialog::TTabbedDialog(TCustomFarPlugin * AFarPlugin, int TabCount) :
@@ -269,7 +269,7 @@ TTabButton::TTabButton(TTabbedDialog * Dialog) :
   SetOnClick(MAKE_CALLBACK(TTabbedDialog::TabButtonClick, Dialog));
 }
 //---------------------------------------------------------------------------
-void TTabButton::SetTabName(const UnicodeString Value)
+void TTabButton::SetTabName(const UnicodeString & Value)
 {
   UnicodeString Val = Value;
   if (FTabName != Val)
@@ -1219,8 +1219,8 @@ class TPasswordDialog : public TFarDialog
 {
 public:
   explicit TPasswordDialog(TCustomFarPlugin * AFarPlugin,
-    const UnicodeString SessionName, TPromptKind Kind, const UnicodeString Name,
-    const UnicodeString Instructions, TStrings * Prompts, bool StoredCredentialsTried);
+    const UnicodeString & SessionName, TPromptKind Kind, const UnicodeString & Name,
+    const UnicodeString & Instructions, TStrings * Prompts, bool StoredCredentialsTried);
 
   bool Execute(TStrings * Results);
 
@@ -1231,15 +1231,15 @@ private:
   TFarCheckBox * SavePasswordCheck;
 
   void ShowPromptClick(TFarButton * Sender, bool & Close);
-  void GenerateLabel(const UnicodeString Caption, bool & Truncated);
+  void GenerateLabel(const UnicodeString & Caption, bool & Truncated);
   TFarEdit * GenerateEdit(bool Echo);
   void GeneratePrompt(bool ShowSavePassword,
-    UnicodeString Instructions, TStrings * Prompts, bool & Truncated);
+    const UnicodeString & Instructions, TStrings * Prompts, bool & Truncated);
 };
 //---------------------------------------------------------------------------
 TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
-  const UnicodeString SessionName, TPromptKind Kind, const UnicodeString Name,
-  const UnicodeString Instructions, TStrings * Prompts, bool StoredCredentialsTried) :
+  const UnicodeString & SessionName, TPromptKind Kind, const UnicodeString & Name,
+  const UnicodeString & Instructions, TStrings * Prompts, bool StoredCredentialsTried) :
   TFarDialog(AFarPlugin),
   FSessionData(NULL),
   FEdits(NULL),
@@ -1298,7 +1298,7 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
   Button->SetCenterGroup(true);
 }
 //---------------------------------------------------------------------------
-void TPasswordDialog::GenerateLabel(const UnicodeString Caption,
+void TPasswordDialog::GenerateLabel(const UnicodeString & Caption,
   bool & Truncated)
 {
   UnicodeString caption = Caption;
@@ -1328,7 +1328,7 @@ TFarEdit * TPasswordDialog::GenerateEdit(bool Echo)
 }
 //---------------------------------------------------------------------------
 void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
-  UnicodeString Instructions, TStrings * Prompts, bool & Truncated)
+  const UnicodeString & Instructions, TStrings * Prompts, bool & Truncated)
 {
   FEdits = new TList;
 
@@ -1344,7 +1344,7 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
     S.y += 2;
   }
 
-  for (int Index = 0; Index < Prompts->Count; Index++)
+  for (intptr_t Index = 0; Index < Prompts->Count; Index++)
   {
     int x = static_cast<int>(Prompts->Strings[Index].Length());
     if (S.x < x)
@@ -1412,7 +1412,7 @@ bool TPasswordDialog::Execute(TStrings * Results)
 }
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::PasswordDialog(TSessionData * SessionData,
-  TPromptKind Kind, const UnicodeString Name, const UnicodeString Instructions, TStrings * Prompts,
+  TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
   TStrings * Results, bool StoredCredentialsTried)
 {
   bool Result = false;
@@ -1425,7 +1425,7 @@ bool TWinSCPFileSystem::PasswordDialog(TSessionData * SessionData,
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-bool TWinSCPFileSystem::BannerDialog(const UnicodeString SessionName,
+bool TWinSCPFileSystem::BannerDialog(const UnicodeString & SessionName,
   const UnicodeString & Banner, bool & NeverShowAgain, int Options)
 {
   bool Result = false;
@@ -4612,7 +4612,7 @@ class TPropertiesDialog : public TFarDialog
 {
 public:
   explicit TPropertiesDialog(TCustomFarPlugin * AFarPlugin, TStrings * FileList,
-    const UnicodeString Directory,
+    const UnicodeString & Directory,
     // TStrings * GroupList, TStrings * UserList,
     const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
     int AllowedChanges);
@@ -4637,7 +4637,7 @@ private:
 };
 //---------------------------------------------------------------------------
 TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
-  TStrings * FileList, const UnicodeString Directory,
+  TStrings * FileList, const UnicodeString & Directory,
   const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
   int AAllowedChanges) :
   TFarDialog(AFarPlugin),
@@ -4911,7 +4911,7 @@ bool TPropertiesDialog::Execute(TRemoteProperties * Properties)
 }
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::PropertiesDialog(TStrings * FileList,
-    const UnicodeString Directory,
+    const UnicodeString & Directory,
     const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
     TRemoteProperties * Properties, int AllowedChanges)
 {
@@ -5685,7 +5685,7 @@ bool TWinSCPFileSystem::CopyDialog(bool ToRemote,
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TWinSCPPlugin::CopyParamDialog(const UnicodeString Caption,
+bool TWinSCPPlugin::CopyParamDialog(const UnicodeString & Caption,
   TCopyParamType & CopyParam, int CopyParamAttrs)
 {
   bool Result = false;
@@ -6369,7 +6369,7 @@ bool TFileSystemInfoDialog::SpaceAvailableSupported()
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::FileSystemInfoDialog(
   const TSessionInfo & SessionInfo, const TFileSystemInfo & FileSystemInfo,
-  UnicodeString SpaceAvailablePath, TGetSpaceAvailableEvent OnGetSpaceAvailable)
+  const UnicodeString & SpaceAvailablePath, TGetSpaceAvailableEvent OnGetSpaceAvailable)
 {
   TFileSystemInfoDialog * Dialog = new TFileSystemInfoDialog(FPlugin, OnGetSpaceAvailable);
   std::auto_ptr<TFileSystemInfoDialog> DialogPtr;
@@ -7156,7 +7156,7 @@ class TSynchronizeChecklistDialog : public TWinSCPDialog
 public:
   explicit TSynchronizeChecklistDialog(
     TCustomFarPlugin * AFarPlugin, TTerminal::TSynchronizeMode Mode, int Params,
-    const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory);
+    const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory);
 
   virtual bool Execute(TSynchronizeChecklist * Checklist);
 
@@ -7191,14 +7191,14 @@ private:
   void UpdateControls();
   void CheckAll(bool Check);
   UnicodeString ItemLine(const TSynchronizeChecklist::TItem * ChecklistItem);
-  void AddColumn(UnicodeString & List, UnicodeString Value, size_t Column,
+  void AddColumn(UnicodeString & List, const UnicodeString & Value, size_t Column,
     bool Header = false);
   UnicodeString FormatSize(__int64 Size, int Column);
 };
 //---------------------------------------------------------------------------
 TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
   TCustomFarPlugin * AFarPlugin, TTerminal::TSynchronizeMode /*Mode*/, int /*Params*/,
-  const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory) :
+  const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory) :
   TWinSCPDialog(AFarPlugin),
   FChecklist(NULL),
   FLocalDirectory(LocalDirectory),
@@ -7253,7 +7253,7 @@ TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
 }
 //---------------------------------------------------------------------------
 void TSynchronizeChecklistDialog::AddColumn(UnicodeString & List,
-    UnicodeString Value, size_t Column, bool Header)
+  const UnicodeString & Value, size_t Column, bool Header)
 {
   wchar_t Separator = L'|'; // '\xB3';
   intptr_t Len = Value.Length();
@@ -7748,7 +7748,7 @@ bool TSynchronizeChecklistDialog::Execute(TSynchronizeChecklist * Checklist)
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::SynchronizeChecklistDialog(
   TSynchronizeChecklist * Checklist, TTerminal::TSynchronizeMode Mode, int Params,
-  const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory)
+  const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory)
 {
   bool Result = false;
   TSynchronizeChecklistDialog * Dialog = new TSynchronizeChecklistDialog(

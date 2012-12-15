@@ -243,14 +243,14 @@ UnicodeString TFarConfiguration::ModuleFileName()
   return GetPlugin()->GetModuleName();
 }
 //---------------------------------------------------------------------------
-void TFarConfiguration::SetBookmarks(UnicodeString Key,
+void TFarConfiguration::SetBookmarks(const UnicodeString & Key,
   TBookmarkList * Value)
 {
   FBookmarks->SetBookmarks(Key, Value);
   Changed();
 }
 //---------------------------------------------------------------------------
-TBookmarkList * TFarConfiguration::GetBookmarks(UnicodeString Key)
+TBookmarkList * TFarConfiguration::GetBookmarks(const UnicodeString & Key)
 {
   return FBookmarks->GetBookmarks(Key);
 }
