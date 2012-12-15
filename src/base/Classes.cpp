@@ -119,7 +119,7 @@ void TList::SetCount(intptr_t NewCount)
   {
     Classes::Error(SListCountError, NewCount);
   }
-  if (NewCount <= FList.size())
+  if (NewCount <= static_cast<intptr_t>(FList.size()))
   {
     int sz = static_cast<int>(FList.size());
     for (int I = sz - 1; (I != NPOS) && (I >= NewCount); I--)
@@ -140,7 +140,7 @@ void *& TList::GetItem(intptr_t Index)
 }
 void TList::SetItem(intptr_t Index, void * Item)
 {
-  if ((Index == NPOS) || (Index >= FList.size()))
+  if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FList.size())))
   {
     Classes::Error(SListIndexError, Index);
   }
@@ -177,7 +177,7 @@ void TList::Move(intptr_t CurIndex, intptr_t NewIndex)
 {
   if (CurIndex != NewIndex)
   {
-    if ((NewIndex == NPOS) || (NewIndex >= FList.size()))
+    if ((NewIndex == NPOS) || (NewIndex >= static_cast<intptr_t>(FList.size())))
     {
       Classes::Error(SListIndexError, NewIndex);
     }
@@ -190,7 +190,7 @@ void TList::Move(intptr_t CurIndex, intptr_t NewIndex)
 }
 void TList::Delete(intptr_t Index)
 {
-  if ((Index == NPOS) || (Index >= FList.size()))
+  if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FList.size())))
   {
     Classes::Error(SListIndexError, Index);
   }
@@ -203,11 +203,11 @@ void TList::Delete(intptr_t Index)
 }
 void TList::Insert(intptr_t Index, void * Item)
 {
-  if ((Index == NPOS) || (Index > FList.size()))
+  if ((Index == NPOS) || (Index > static_cast<intptr_t>(FList.size())))
   {
     Classes::Error(SListIndexError, Index);
   }
-  if (Index <= FList.size())
+  if (Index <= static_cast<intptr_t>(FList.size()))
   {
     FList.insert(FList.begin() + Index, Item);
   }
@@ -219,11 +219,11 @@ void TList::Insert(intptr_t Index, void * Item)
 intptr_t TList::IndexOf(void * Value) const
 {
   intptr_t Result = 0;
-  while ((Result < FList.size()) && (FList[Result] != Value))
+  while ((Result < static_cast<intptr_t>(FList.size())) && (FList[Result] != Value))
   {
     Result++;
   }
-  if (Result == FList.size())
+  if (Result == static_cast<intptr_t>(FList.size()))
   {
     Result = NPOS;
   }
@@ -519,7 +519,7 @@ void TStrings::SetDelimitedText(const UnicodeString Value)
     delim.append(1, L'\n');
     std::wstring StrValue = Value.c_str();
     tokenize(StrValue, lines, delim, true);
-    for (int i = 0; i < lines.size(); i++)
+    for (size_t i = 0; i < lines.size(); i++)
     {
       Add(lines[i]);
     }
@@ -938,13 +938,13 @@ void TStringList::PutString(intptr_t Index, const UnicodeString S)
   {
     Classes::Error(SSortedListError, 0);
   }
-  if ((Index == NPOS) || (Index > FList.size()))
+  if ((Index == NPOS) || (Index > static_cast<intptr_t>(FList.size())))
   {
     Classes::Error(SListIndexError, Index);
   }
   Changing();
   // DEBUG_PRINTF(L"Index = %d, size = %d", Index, FList.size());
-  if (Index < FList.size())
+  if (Index < static_cast<intptr_t>(FList.size()))
   {
     TObject * Temp = GetObjects(Index);
     TStringItem item;
@@ -958,9 +958,10 @@ void TStringList::PutString(intptr_t Index, const UnicodeString S)
   }
   Changed();
 }
+
 void TStringList::Delete(intptr_t Index)
 {
-  if ((Index == NPOS) || (Index >= FList.size()))
+  if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FList.size())))
   {
     Classes::Error(SListIndexError, Index);
   }
@@ -969,14 +970,16 @@ void TStringList::Delete(intptr_t Index)
   FList.erase(FList.begin() + Index);
   Changed();
 }
+
 TObject *& TStringList::GetObjects(intptr_t Index)
 {
-  if ((Index == NPOS) || (Index >= FList.size()))
+  if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FList.size())))
   {
     Classes::Error(SListIndexError, Index);
   }
   return FList[Index].FObject;
 }
+
 void TStringList::InsertObject(intptr_t Index, const UnicodeString Key, TObject * AObject)
 {
   if (GetSorted())
@@ -989,6 +992,7 @@ void TStringList::InsertObject(intptr_t Index, const UnicodeString Key, TObject 
   }
   InsertItem(Index, Key, AObject);
 }
+
 void TStringList::InsertItem(intptr_t Index, const UnicodeString S, TObject * AObject)
 {
   if ((Index == NPOS) || (Index > GetCount()))
@@ -1006,20 +1010,21 @@ void TStringList::InsertItem(intptr_t Index, const UnicodeString S, TObject * AO
 UnicodeString & TStringList::GetString(intptr_t Index)
 {
   // DEBUG_PRINTF(L"Index = %d, FList.size = %d", Index, FList.size());
-  if ((Index == NPOS) || (Index > FList.size()))
+  if ((Index == NPOS) || (Index > static_cast<intptr_t>(FList.size())))
   {
     Classes::Error(SListIndexError, Index);
   }
-  if (Index == FList.size())
+  if (Index == static_cast<intptr_t>(FList.size()))
   {
     InsertItem(Index, UnicodeString(), NULL);
   }
   return FList[Index].FString;
 }
+
 UnicodeString TStringList::GetStrings(intptr_t Index) const
 {
   // DEBUG_PRINTF(L"Index = %d, FList.size = %d", Index, FList.size());
-  if ((Index == NPOS) || (Index >= FList.size()))
+  if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FList.size())))
   {
     Classes::Error(SListIndexError, Index);
   }
@@ -1090,7 +1095,7 @@ void TStringList::LoadFromFile(const UnicodeString FileName)
 
 void TStringList::PutObject(intptr_t Index, TObject * AObject)
 {
-  if ((Index == NPOS) || (Index >= FList.size()))
+  if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FList.size())))
   {
     Classes::Error(SListIndexError, Index);
   }
@@ -1128,7 +1133,7 @@ void TStringList::Changed()
 }
 void TStringList::Insert(intptr_t Index, const UnicodeString S)
 {
-  if ((Index == NPOS) || (Index > FList.size()))
+  if ((Index == NPOS) || (Index > static_cast<intptr_t>(FList.size())))
   {
     Classes::Error(SListIndexError, Index);
   }
