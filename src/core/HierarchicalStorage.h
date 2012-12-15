@@ -53,8 +53,8 @@ public:
   virtual void __fastcall WriteBinaryData(const UnicodeString & Name, const void * Buffer, size_t Size) = 0;
 
   virtual void __fastcall WriteString(const UnicodeString & Name, const UnicodeString & Value);
-  void __fastcall WriteBinaryData(const UnicodeString & Name, const RawByteString Value);
-  void __fastcall WriteBinaryDataAsString(const UnicodeString & Name, const RawByteString Value);
+  void __fastcall WriteBinaryData(const UnicodeString & Name, const RawByteString & Value);
+  void __fastcall WriteBinaryDataAsString(const UnicodeString & Name, const RawByteString & Value);
 
   virtual void __fastcall Flush();
 

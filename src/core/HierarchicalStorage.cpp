@@ -384,12 +384,12 @@ void __fastcall THierarchicalStorage::WriteString(const UnicodeString & Name, co
 }
 //---------------------------------------------------------------------------
 void __fastcall THierarchicalStorage::WriteBinaryData(const UnicodeString & Name,
-  const RawByteString Value)
+  const RawByteString & Value)
 {
   WriteBinaryData(Name, Value.c_str(), Value.Length());
 }
 //---------------------------------------------------------------------------
-void __fastcall THierarchicalStorage::WriteBinaryDataAsString(const UnicodeString & Name, const RawByteString Value)
+void __fastcall THierarchicalStorage::WriteBinaryDataAsString(const UnicodeString & Name, const RawByteString & Value)
 {
   // This should be exactly the same operation as calling WriteString in
   // C++Builder 6 (non-Unicode) on Unicode-based OS

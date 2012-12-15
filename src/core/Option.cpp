@@ -183,7 +183,7 @@ bool __fastcall TOptions::FindSwitch(const UnicodeString & Switch,
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TOptions::SwitchValue(const UnicodeString & Switch,
-  const UnicodeString Default)
+  const UnicodeString & Default)
 {
   UnicodeString Value;
   FindSwitch(Switch, Value);
