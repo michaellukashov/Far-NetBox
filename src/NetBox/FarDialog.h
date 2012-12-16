@@ -70,8 +70,8 @@ public:
   void SetNextItemPosition(const TItemPosition Value) { FNextItemPosition = Value; }
   intptr_t GetDefaultGroup() const { return FDefaultGroup; }
   void SetDefaultGroup(intptr_t Value) { FDefaultGroup = Value; }
-  int GetTag() const { return FTag; }
-  void SetTag(int Value) { FTag = Value; }
+  intptr_t GetTag() const { return FTag; }
+  void SetTag(intptr_t Value) { FTag = Value; }
   TFarDialogItem * GetItemFocused() { return FItemFocused; }
   void SetItemFocused(TFarDialogItem * Value);
   intptr_t GetResult() { return FResult; }
@@ -215,7 +215,7 @@ public:
   bool GetTabStop() { return GetFlag(DIF_NOFOCUS | DIF_INVERSE); }
   void SetTabStop(bool Value) { SetFlag(DIF_NOFOCUS | DIF_INVERSE, Value); }
   int GetTag() { return FTag; }
-  void SetTag(int Value) { FTag = Value; }
+  void SetTag(intptr_t Value) { FTag = Value; }
   TFarDialog * GetDialog() { return FDialog; }
 
   TNotifyEvent & GetOnExit() { return FOnExit; }
@@ -235,7 +235,7 @@ public:
 protected:
   uintptr_t FDefaultType;
   intptr_t FGroup;
-  int FTag;
+  intptr_t FTag;
   TNotifyEvent FOnExit;
   TFarMouseClickEvent FOnMouseClick;
 

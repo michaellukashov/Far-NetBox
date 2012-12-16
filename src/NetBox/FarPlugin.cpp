@@ -845,7 +845,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
       Button->SetBottom(Button->GetTop());
       Button->SetResult(Index + 1);
       Button->SetCenterGroup(true);
-      Button->SetTag(reinterpret_cast<int>(Buttons->Objects[Index]));
+      Button->SetTag(Buttons->Objects[Index]);
       if (PrevButton != NULL)
       {
         Button->Move(PrevButton->GetRight() - Button->GetLeft() + 1, 0);
@@ -1160,7 +1160,7 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, const UnicodeString & Title,
     intptr_t Count = 0;
     for (intptr_t i = 0; i < Items->Count; i++)
     {
-      int flags = reinterpret_cast<int>(Items->Objects[i]);
+      intptr_t flags = Items->Objects[i];
       if (FLAGCLEAR(Flags, MIF_HIDDEN))
       {
         memset(&MenuItems[Count], 0, sizeof(MenuItems[Count]));
