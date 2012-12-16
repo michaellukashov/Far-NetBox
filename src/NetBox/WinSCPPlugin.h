@@ -49,7 +49,7 @@ protected:
   virtual bool ConfigureEx(const GUID * Guid);
   virtual intptr_t ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info);
   virtual intptr_t ProcessEditorInputEx(const INPUT_RECORD * Rec);
-  bool CopyParamDialog(UnicodeString Caption, TCopyParamType & CopyParam,
+  bool CopyParamDialog(const UnicodeString & Caption, TCopyParamType & CopyParam,
     int CopyParamAttrs);
   void MessageClick(void * Token, int Result, bool & Close);
 

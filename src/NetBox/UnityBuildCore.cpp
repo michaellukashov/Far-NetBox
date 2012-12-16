@@ -3,6 +3,7 @@
 
 #pragma warning(push)
 #pragma warning(disable: 4068) // unknown pragma
+#pragma warning(disable: 4100) // unreferenced formal parameter
 
 #include "../base/Classes.cpp"
 #include "../base/SysUtils.cpp"

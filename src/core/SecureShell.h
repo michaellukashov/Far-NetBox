@@ -97,11 +97,11 @@ protected:
     size_t Count, UnicodeString & Message) const;
   int __fastcall TranslateAuthenticationMessage(UnicodeString & Message) const;
   int __fastcall TranslateErrorMessage(UnicodeString & Message) const;
-  void __fastcall AddStdError(UnicodeString Str);
+  void __fastcall AddStdError(const UnicodeString & Str);
   void __fastcall AddStdErrorLine(const UnicodeString & Str);
-  void __fastcall FatalError(Exception * E, UnicodeString Msg);
+  void __fastcall FatalError(Exception * E, const UnicodeString & Msg);
   void __fastcall /* inline */ LogEvent(const UnicodeString & Str);
-  void __fastcall FatalError(UnicodeString Error);
+  void __fastcall FatalError(const UnicodeString & Error);
   static void __fastcall ClearConfig(Config * cfg);
   static void __fastcall StoreToConfig(TSessionData * Data, Config * cfg, bool Simple);
 
@@ -116,11 +116,11 @@ public:
   bool __fastcall Peek(unsigned char *& Buf, int Len) const;
   UnicodeString __fastcall ReceiveLine();
   void __fastcall Send(const unsigned char * Buf, int Len);
-  void __fastcall SendStr(UnicodeString Str);
+  void __fastcall SendStr(const UnicodeString & Str);
   void __fastcall SendSpecial(int Code);
   void __fastcall Idle(unsigned int MSec = 0);
   void __fastcall SendEOF();
-  void __fastcall SendLine(UnicodeString Line);
+  void __fastcall SendLine(const UnicodeString & Line);
   void __fastcall SendNull();
 
   const TSessionInfo & __fastcall GetSessionInfo();
@@ -136,17 +136,17 @@ public:
   // interface to PuTTY core
   void __fastcall UpdateSocket(SOCKET value, bool Startup);
   void __fastcall UpdatePortFwdSocket(SOCKET value, bool Startup);
-  void __fastcall PuttyFatalError(UnicodeString Error);
+  void __fastcall PuttyFatalError(const UnicodeString & Error);
   bool __fastcall PromptUser(bool ToServer,
-    UnicodeString AName, bool NameRequired,
-    UnicodeString Instructions, bool InstructionsRequired,
+    const UnicodeString & AName, bool NameRequired,
+    const UnicodeString & Instructions, bool InstructionsRequired,
     TStrings * Prompts, TStrings * Results);
   void __fastcall FromBackend(bool IsStdErr, const unsigned char * Data, int Length);
   void __fastcall CWrite(const char * Data, int Length);
   const UnicodeString & __fastcall GetStdError() const;
-  void __fastcall VerifyHostKey(UnicodeString Host, int Port,
-    const UnicodeString KeyType, UnicodeString KeyStr, const UnicodeString Fingerprint);
-  void __fastcall AskAlg(const UnicodeString AlgType, const UnicodeString AlgName);
+  void __fastcall VerifyHostKey(const UnicodeString & Host, int Port,
+    const UnicodeString & KeyType, const UnicodeString & KeyStr, const UnicodeString & Fingerprint);
+  void __fastcall AskAlg(const UnicodeString & AlgType, const UnicodeString & AlgName);
   void __fastcall DisplayBanner(const UnicodeString & Banner);
   void __fastcall OldKeyfileWarning();
   void __fastcall PuttyLogEvent(const UnicodeString & Str);

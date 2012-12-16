@@ -57,17 +57,17 @@ public:
   explicit /* __fastcall */ TSessionUI() {}
   virtual /* __fastcall */ ~TSessionUI() {}
   virtual void __fastcall Information(const UnicodeString & Str, bool Status) = 0;
-  virtual unsigned int __fastcall QueryUser(const UnicodeString Query,
+  virtual unsigned int __fastcall QueryUser(const UnicodeString & Query,
     TStrings * MoreMessages, unsigned int Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation) = 0;
-  virtual unsigned int __fastcall QueryUserException(const UnicodeString Query,
+  virtual unsigned int __fastcall QueryUserException(const UnicodeString & Query,
     Exception * E, unsigned int Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation) = 0;
   virtual bool __fastcall PromptUser(TSessionData * Data, TPromptKind Kind,
-    UnicodeString Name, UnicodeString Instructions, TStrings * Prompts,
+    const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
     TStrings * Results) = 0;
   virtual void __fastcall DisplayBanner(const UnicodeString & Banner) = 0;
-  virtual void __fastcall FatalError(Exception * E, UnicodeString Msg) = 0;
+  virtual void __fastcall FatalError(Exception * E, const UnicodeString & Msg) = 0;
   virtual void __fastcall HandleExtendedException(Exception * E) = 0;
   virtual void __fastcall Closed() = 0;
 };
@@ -222,16 +222,16 @@ public:
   void __fastcall Unlock();
 
   TSessionLog * __fastcall GetParent();
-  void __fastcall SetParent(TSessionLog *value);
+  void __fastcall SetParent(TSessionLog *Value);
   bool __fastcall GetLogging();
   TNotifyEvent & __fastcall GetOnChange();
-  void __fastcall SetOnChange(TNotifyEvent value);
+  void __fastcall SetOnChange(TNotifyEvent Value);
   TNotifyEvent & __fastcall GetOnStateChange();
-  void __fastcall SetOnStateChange(TNotifyEvent value);
+  void __fastcall SetOnStateChange(TNotifyEvent Value);
   UnicodeString __fastcall GetCurrentFileName();
   intptr_t __fastcall GetTopIndex();
   UnicodeString __fastcall GetName();
-  void __fastcall SetName(const UnicodeString value);
+  void __fastcall SetName(const UnicodeString & Value);
   intptr_t __fastcall GetCount();
 
 protected:
@@ -322,7 +322,7 @@ private:
 
 public:
   UnicodeString __fastcall GetLogFileName();
-  void __fastcall SetEnabled(bool value);
+  void __fastcall SetEnabled(bool Value);
 
 private:
   TActionLog(const TActionLog &);

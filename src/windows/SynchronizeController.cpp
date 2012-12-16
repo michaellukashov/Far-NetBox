@@ -116,7 +116,7 @@ void /* __fastcall */ TSynchronizeController::StartStop(TObject * Sender,
 }
 //---------------------------------------------------------------------------
 void __fastcall TSynchronizeController::SynchronizeChange(
-  TObject * /*Sender*/, const UnicodeString Directory, bool & SubdirsChanged)
+  TObject * /*Sender*/, const UnicodeString & Directory, bool & SubdirsChanged)
 {
   CALLSTACK;
   try
@@ -213,7 +213,7 @@ void __fastcall TSynchronizeController::SynchronizeAbort(bool Close)
 }
 //---------------------------------------------------------------------------
 void __fastcall TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
-  const UnicodeString FileName)
+  const UnicodeString & FileName)
 {
   CALLSTACK;
   TSynchronizeLogEntry Entry;
@@ -238,7 +238,7 @@ void __fastcall TSynchronizeController::LogOperation(TSynchronizeOperation Opera
 }
 //---------------------------------------------------------------------------
 void __fastcall TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
-  const UnicodeString Message)
+  const UnicodeString & Message)
 {
   CALLSTACK;
   if (FSynchronizeLog != NULL)
@@ -248,7 +248,7 @@ void __fastcall TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entr
 }
 //---------------------------------------------------------------------------
 void __fastcall TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
-  const UnicodeString DirectoryName, bool & Add)
+  const UnicodeString & DirectoryName, bool & Add)
 {
   CALLSTACK;
   if ((FOptions != NULL) && (FOptions->Filter != NULL))
@@ -265,7 +265,7 @@ void __fastcall TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
 }
 //---------------------------------------------------------------------------
 void __fastcall TSynchronizeController::SynchronizeInvalid(
-  TObject * /*Sender*/, const UnicodeString Directory, const UnicodeString ErrorStr)
+  TObject * /*Sender*/, const UnicodeString & Directory, const UnicodeString & ErrorStr)
 {
   CALLSTACK;
   if (FOnSynchronizeInvalid != NULL)

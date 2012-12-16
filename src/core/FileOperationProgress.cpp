@@ -96,7 +96,7 @@ void __fastcall TFileOperationProgressType::Start(TFileOperation AOperation,
 //---------------------------------------------------------------------------
 void __fastcall TFileOperationProgressType::Start(TFileOperation AOperation,
   TOperationSide ASide, intptr_t ACount, bool ATemp,
-  const UnicodeString ADirectory, unsigned long ACPSLimit)
+  const UnicodeString & ADirectory, unsigned long ACPSLimit)
 {
   CALLSTACK;
   Clear();

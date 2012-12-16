@@ -39,7 +39,7 @@ public:
   intptr_t Pos(wchar_t Ch) const;
 
 public:
-  UTF8String & operator=(const UnicodeString & strCopy);
+  UTF8String & operator=(const UnicodeString & StrCopy);
   UTF8String & operator=(const UTF8String & strCopy);
   UTF8String & operator=(const RawByteString & strCopy);
   UTF8String & operator=(const char * lpszData);
@@ -145,11 +145,11 @@ public:
   operator std::wstring () const { return Data; }
   operator LPCWSTR () const { return Data.c_str(); }
 
-  UnicodeString & operator=(const UnicodeString & strCopy);
-  UnicodeString & operator=(const RawByteString & strCopy);
-  UnicodeString & operator=(const AnsiString & strCopy);
-  UnicodeString & operator=(const UTF8String & strCopy);
-  UnicodeString & operator=(const std::wstring & strCopy);
+  UnicodeString & operator=(const UnicodeString & StrCopy);
+  UnicodeString & operator=(const RawByteString & StrCopy);
+  UnicodeString & operator=(const AnsiString & StrCopy);
+  UnicodeString & operator=(const UTF8String & StrCopy);
+  UnicodeString & operator=(const std::wstring & StrCopy);
   UnicodeString & operator=(const wchar_t * lpwszData);
   UnicodeString & operator=(const char * lpszData);
   UnicodeString & operator=(const wchar_t Ch);
@@ -357,8 +357,8 @@ public:
   const RawByteString & __fastcall operator +=(const char Ch);
   const RawByteString & __fastcall operator +=(const char * rhs);
 
-  bool __fastcall operator ==(char * rhs) const
-  { return (char *)Data.c_str() == rhs; }
+  bool __fastcall operator ==(const char * rhs) const
+  { return strcmp(reinterpret_cast<const char *>(Data.c_str()), rhs) == 0; }
   friend bool __fastcall operator ==(RawByteString & lhs, RawByteString & rhs)
   { return lhs.Data == rhs.Data; }
   friend bool __fastcall operator !=(RawByteString & lhs, RawByteString & rhs)

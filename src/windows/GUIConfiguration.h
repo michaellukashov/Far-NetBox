@@ -101,21 +101,21 @@ public:
   void __fastcall Load(THierarchicalStorage * Storage, int Count);
   void __fastcall Save(THierarchicalStorage * Storage) const;
 
-  static void __fastcall ValidateName(const UnicodeString Name);
+  static void __fastcall ValidateName(const UnicodeString & Name);
 
   TCopyParamList & __fastcall operator=(const TCopyParamList & rhl);
   bool __fastcall operator==(const TCopyParamList & rhl) const;
 
   void __fastcall Clear();
-  void __fastcall Add(const UnicodeString Name,
+  void __fastcall Add(const UnicodeString & Name,
     TCopyParamType * CopyParam, TCopyParamRule * Rule);
-  void __fastcall Insert(intptr_t Index, const UnicodeString Name,
+  void __fastcall Insert(intptr_t Index, const UnicodeString & Name,
     TCopyParamType * CopyParam, TCopyParamRule * Rule);
-  void __fastcall Change(intptr_t Index, const UnicodeString Name,
+  void __fastcall Change(intptr_t Index, const UnicodeString & Name,
     TCopyParamType * CopyParam, TCopyParamRule * Rule);
   void __fastcall Move(intptr_t CurIndex, intptr_t NewIndex);
   void __fastcall Delete(intptr_t Index);
-  intptr_t __fastcall IndexOfName(const UnicodeString Name) const;
+  intptr_t __fastcall IndexOfName(const UnicodeString & Name) const;
 
   intptr_t __fastcall GetCount() const;
   UnicodeString __fastcall GetName(intptr_t Index) const;
@@ -195,7 +195,7 @@ public:
   virtual bool __fastcall GetRememberPassword();
   const TCopyParamList * __fastcall GetCopyParamList();
   void __fastcall SetCopyParamList(const TCopyParamList * Value);
-  static UnicodeString __fastcall PropertyToKey(const UnicodeString Property);
+  static UnicodeString __fastcall PropertyToKey(const UnicodeString & Property);
   virtual void __fastcall DefaultLocalized();
   intptr_t __fastcall GetCopyParamIndex();
   TGUICopyParamType __fastcall GetCurrentCopyParam();
@@ -235,10 +235,10 @@ public:
   bool __fastcall GetQueueRememberPassword() { return FQueueRememberPassword; }
   void __fastcall SetQueueRememberPassword(bool Value) { FQueueRememberPassword = Value; }
   UnicodeString __fastcall GetPuttyPath();
-  void __fastcall SetPuttyPath(const UnicodeString Value);
+  void __fastcall SetPuttyPath(const UnicodeString & Value);
   UnicodeString __fastcall GetDefaultPuttyPath();
   UnicodeString __fastcall GetPSftpPath();
-  void __fastcall SetPSftpPath(const UnicodeString Value);
+  void __fastcall SetPSftpPath(const UnicodeString & Value);
   bool __fastcall GetPuttyPassword() { return FPuttyPassword; }
   void __fastcall SetPuttyPassword(bool Value) { FPuttyPassword = Value; }
   bool __fastcall GetTelnetForFtpInPutty() { return FTelnetForFtpInPutty; }
@@ -257,7 +257,7 @@ public:
   int __fastcall GetKeepUpToDateChangeDelay() { return FKeepUpToDateChangeDelay; }
   void __fastcall SetKeepUpToDateChangeDelay(int Value) { FKeepUpToDateChangeDelay = Value; }
   UnicodeString __fastcall GetChecksumAlg();
-  void __fastcall SetChecksumAlg(const UnicodeString Value);
+  void __fastcall SetChecksumAlg(const UnicodeString & Value);
   int __fastcall GetSessionReopenAutoIdle() { return FSessionReopenAutoIdle; }
   void __fastcall SetSessionReopenAutoIdle(int Value) { FSessionReopenAutoIdle = Value; }
 };

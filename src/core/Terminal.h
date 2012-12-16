@@ -56,7 +56,7 @@ DEFINE_CALLBACK_TYPE4(TSynchronizeDirectoryEvent, void,
 DEFINE_CALLBACK_TYPE2(TDeleteLocalFileEvent, void,
   const UnicodeString & /* FileName */, bool /* Alternative */);
 DEFINE_CALLBACK_TYPE3(TDirectoryModifiedEvent, int,
-  TTerminal * /* Terminal */, const UnicodeString /* Directory */, bool /* SubDirs */);
+  TTerminal * /* Terminal */, const UnicodeString & /* Directory */, bool /* SubDirs */);
 DEFINE_CALLBACK_TYPE4(TInformationEvent, void,
   TTerminal * /* Terminal */, const UnicodeString & /* Str */, bool /* Status */, int /* Phase */);
 DEFINE_CALLBACK_TYPE5(TCreateLocalFileEvent, HANDLE,
@@ -228,24 +228,24 @@ private:
   TCallbackGuard * FCallbackGuard;
   TFindingFileEvent FOnFindingFile;
 
-  void __fastcall CommandError(Exception * E, const UnicodeString Msg);
-  unsigned int __fastcall CommandError(Exception * E, const UnicodeString Msg, unsigned int Answers);
+  void __fastcall CommandError(Exception * E, const UnicodeString & Msg);
+  unsigned int __fastcall CommandError(Exception * E, const UnicodeString & Msg, unsigned int Answers);
   void __fastcall ReactOnCommand(int /*TFSCommand*/ Cmd);
   inline bool __fastcall InTransaction();
 
 public:
-  void __fastcall SetMasks(const UnicodeString value);
+  void __fastcall SetMasks(const UnicodeString & Value);
   UnicodeString __fastcall GetCurrentDirectory();
   bool __fastcall GetExceptionOnFail() const;
   const TRemoteTokenList * __fastcall GetGroups();
   const TRemoteTokenList * __fastcall GetUsers();
   const TRemoteTokenList * __fastcall GetMembership();
-  void __fastcall SetCurrentDirectory(UnicodeString value);
-  void __fastcall SetExceptionOnFail(bool value);
+  void __fastcall SetCurrentDirectory(const UnicodeString & Value);
+  void __fastcall SetExceptionOnFail(bool Value);
   UnicodeString __fastcall GetUserName() const;
   bool __fastcall GetAreCachesEmpty() const;
   bool __fastcall GetIsCapable(TFSCapability Capability) const;
-  void __fastcall ClearCachedFileList(const UnicodeString Path, bool SubDirs);
+  void __fastcall ClearCachedFileList(const UnicodeString & Path, bool SubDirs);
   void __fastcall AddCachedFileList(TRemoteFileList * FileList);
   bool __fastcall GetCommandSessionOpened();
   TTerminal * __fastcall GetCommandSession();
@@ -263,48 +263,48 @@ protected:
   void /* __fastcall */ DoStartReadDirectory();
   void /* __fastcall */ DoReadDirectoryProgress(int Progress, bool & Cancel);
   void /* __fastcall */ DoReadDirectory(bool ReloadOnly);
-  void /* __fastcall */ DoCreateDirectory(const UnicodeString DirName);
-  void /* __fastcall */ DoDeleteFile(const UnicodeString FileName, const TRemoteFile * File,
+  void /* __fastcall */ DoCreateDirectory(const UnicodeString & DirName);
+  void /* __fastcall */ DoDeleteFile(const UnicodeString & FileName, const TRemoteFile * File,
     int Params);
   void /* __fastcall */ DoCustomCommandOnFile(UnicodeString FileName,
     const TRemoteFile * File, UnicodeString Command, int Params, TCaptureOutputEvent OutputEvent);
-  void /* __fastcall */ DoRenameFile(const UnicodeString FileName,
-    const UnicodeString NewName, bool Move);
-  void /* __fastcall */ DoCopyFile(const UnicodeString FileName, const UnicodeString NewName);
-  void /* __fastcall */ DoChangeFileProperties(const UnicodeString FileName,
+  void /* __fastcall */ DoRenameFile(const UnicodeString & FileName,
+    const UnicodeString & NewName, bool Move);
+  void /* __fastcall */ DoCopyFile(const UnicodeString & FileName, const UnicodeString & NewName);
+  void /* __fastcall */ DoChangeFileProperties(const UnicodeString & vFileName,
     const TRemoteFile * File, const TRemoteProperties * Properties);
   void /* __fastcall */ DoChangeDirectory();
-  void /* __fastcall */ EnsureNonExistence(const UnicodeString FileName);
+  void /* __fastcall */ EnsureNonExistence(const UnicodeString & FileName);
   void /* __fastcall */ LookupUsersGroups();
   void /* __fastcall */ FileModified(const TRemoteFile * File,
-    const UnicodeString FileName, bool ClearDirectoryChange = false);
+    const UnicodeString & FileName, bool ClearDirectoryChange = false);
   int /* __fastcall */ FileOperationLoop(TFileOperationEvent CallBackFunc,
     TFileOperationProgressType * OperationProgress, bool AllowSkip,
-    const UnicodeString Message, void * Param1 = NULL, void * Param2 = NULL);
+    const UnicodeString & Message, void * Param1 = NULL, void * Param2 = NULL);
   bool /* __fastcall */ ProcessFiles(TStrings * FileList, TFileOperation Operation,
     TProcessFileEvent ProcessFile, void * Param = NULL, TOperationSide Side = osRemote,
     bool Ex = false);
   bool __fastcall ProcessFilesEx(TStrings * FileList, TFileOperation Operation,
     TProcessFileEventEx ProcessFile, void * Param = NULL, TOperationSide Side = osRemote);
-  void /* __fastcall */ ProcessDirectory(const UnicodeString DirName,
+  void /* __fastcall */ ProcessDirectory(const UnicodeString & DirName,
     TProcessFileEvent CallBackFunc, void * Param = NULL, bool UseCache = false,
     bool IgnoreErrors = false);
   void /* __fastcall */ AnnounceFileListOperation();
   UnicodeString /* __fastcall */ TranslateLockedPath(UnicodeString Path, bool Lock);
   void /* __fastcall */ ReadDirectory(TRemoteFileList * FileList);
   void /* __fastcall */ CustomReadDirectory(TRemoteFileList * FileList);
-  void /* __fastcall */ DoCreateLink(const UnicodeString FileName, const UnicodeString PointTo, bool Symbolic);
-  bool /* __fastcall */ CreateLocalFile(const UnicodeString FileName,
+  void /* __fastcall */ DoCreateLink(const UnicodeString & FileName, const UnicodeString & PointTo, bool Symbolic);
+  bool /* __fastcall */ CreateLocalFile(const UnicodeString & FileName,
     TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
     bool NoConfirmation);
-  void /* __fastcall */ OpenLocalFile(const UnicodeString FileName, unsigned int Access,
+  void /* __fastcall */ OpenLocalFile(const UnicodeString & FileName, unsigned int Access,
     int * Attrs, HANDLE * Handle, __int64 * ACTime, __int64 * MTime,
     __int64 * ATime, __int64 * Size, bool TryWriteReadOnly = true);
-  bool /* __fastcall */ AllowLocalFileTransfer(UnicodeString FileName, const TCopyParamType *CopyParam);
+  bool /* __fastcall */ AllowLocalFileTransfer(const UnicodeString & FileName, const TCopyParamType *CopyParam);
   bool /* __fastcall */ HandleException(Exception * E);
   void /* __fastcall */ CalculateFileSize(const UnicodeString & FileName,
     const TRemoteFile * File, /*TCalculateSizeParams*/ void * Size);
-  void /* __fastcall */ DoCalculateDirectorySize(const UnicodeString FileName,
+  void /* __fastcall */ DoCalculateDirectorySize(const UnicodeString & FileName,
     const TRemoteFile * File, TCalculateSizeParams * Params);
   void /* __fastcall */ CalculateLocalFileSize(const UnicodeString & FileName,
     const TSearchRec & Rec, /*__int64*/ void * Params);
@@ -313,12 +313,12 @@ protected:
   TBatchOverwrite /* __fastcall */ EffectiveBatchOverwrite(
     int Params, TFileOperationProgressType * OperationProgress, bool Special);
   bool /* __fastcall */ CheckRemoteFile(int Params, TFileOperationProgressType * OperationProgress);
-  unsigned int /* __fastcall */ ConfirmFileOverwrite(const UnicodeString FileName,
+  unsigned int /* __fastcall */ ConfirmFileOverwrite(const UnicodeString & FileName,
     const TOverwriteFileParams * FileParams, unsigned int Answers, const TQueryParams * QueryParams,
     TOperationSide Side, int Params, TFileOperationProgressType * OperationProgress,
     UnicodeString Message = L"");
-  void /* __fastcall */ DoSynchronizeCollectDirectory(const UnicodeString LocalDirectory,
-    const UnicodeString RemoteDirectory, TSynchronizeMode Mode,
+  void /* __fastcall */ DoSynchronizeCollectDirectory(const UnicodeString & LocalDirectory,
+    const UnicodeString & RemoteDirectory, TSynchronizeMode Mode,
     const TCopyParamType * CopyParam, int Params,
     TSynchronizeDirectoryEvent OnSynchronizeDirectory,
     TSynchronizeOptions * Options, int Level, TSynchronizeChecklist * Checklist);
@@ -331,36 +331,36 @@ protected:
   void /* __fastcall */ DoSynchronizeProgress(const TSynchronizeData & Data, bool Collect);
   void /* __fastcall */ DeleteLocalFile(const UnicodeString & FileName,
     const TRemoteFile * File, void * Param);
-  void /* __fastcall */ RecycleFile(UnicodeString FileName, const TRemoteFile * File);
+  void /* __fastcall */ RecycleFile(const UnicodeString & FileName, const TRemoteFile * File);
   void /* __fastcall */ DoStartup();
   virtual bool __fastcall DoQueryReopen(Exception * E);
-  virtual void __fastcall FatalError(Exception * E, UnicodeString Msg);
+  virtual void __fastcall FatalError(Exception * E, const UnicodeString & Msg);
   void __fastcall ResetConnection();
   virtual bool __fastcall DoPromptUser(TSessionData * Data, TPromptKind Kind,
-    UnicodeString Name, UnicodeString Instructions, TStrings * Prompts,
+    const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
     TStrings * Response);
   void __fastcall OpenTunnel();
   void __fastcall CloseTunnel();
   void /* __fastcall */ DoInformation(const UnicodeString & Str, bool Status, int Phase = -1);
-  UnicodeString __fastcall FileUrl(const UnicodeString Protocol, const UnicodeString FileName);
+  UnicodeString __fastcall FileUrl(const UnicodeString & Protocol, const UnicodeString & FileName);
   bool __fastcall PromptUser(TSessionData * Data, TPromptKind Kind,
-    UnicodeString Name, UnicodeString Instructions, UnicodeString Prompt, bool Echo,
+    const UnicodeString & Name, const UnicodeString & Instructions, const UnicodeString & Prompt, bool Echo,
     int MaxLen, UnicodeString & Result);
   void /* __fastcall */ FileFind(const UnicodeString & FileName, const TRemoteFile * File, void * Param);
   void /* __fastcall */ DoFilesFind(UnicodeString Directory, TFilesFindParams & Params);
-  bool /* __fastcall */ DoCreateLocalFile(const UnicodeString FileName,
+  bool /* __fastcall */ DoCreateLocalFile(const UnicodeString & FileName,
     TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
     bool NoConfirmation);
 
   virtual void __fastcall Information(const UnicodeString & Str, bool Status);
-  virtual unsigned int __fastcall QueryUser(const UnicodeString Query,
+  virtual unsigned int __fastcall QueryUser(const UnicodeString & Query,
     TStrings * MoreMessages, unsigned int Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation);
-  virtual unsigned int __fastcall QueryUserException(const UnicodeString Query,
+  virtual unsigned int __fastcall QueryUserException(const UnicodeString & Query,
     Exception * E, unsigned int Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation);
   virtual bool __fastcall PromptUser(TSessionData * Data, TPromptKind Kind,
-    UnicodeString Name, UnicodeString Instructions, TStrings * Prompts, TStrings * Results);
+    const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts, TStrings * Results);
   virtual void __fastcall DisplayBanner(const UnicodeString & Banner);
   virtual void __fastcall Closed();
   virtual void __fastcall HandleExtendedException(Exception * E);
@@ -370,7 +370,7 @@ protected:
     const UnicodeString & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
   void __fastcall RollbackAction(TSessionAction & Action,
     TFileOperationProgressType * OperationProgress, Exception * E = NULL);
-  void /* __fastcall */ DoAnyCommand(const UnicodeString Command, TCaptureOutputEvent OutputEvent,
+  void /* __fastcall */ DoAnyCommand(const UnicodeString & Command, TCaptureOutputEvent OutputEvent,
     TCallSessionAction * Action);
   TRemoteFileList * /* __fastcall */ DoReadDirectoryListing(UnicodeString Directory, bool UseCache);
   RawByteString __fastcall EncryptPassword(const UnicodeString & Password);
@@ -397,41 +397,41 @@ public:
   void __fastcall Open();
   void __fastcall Close();
   void __fastcall Reopen(int Params);
-  virtual void __fastcall DirectoryModified(const UnicodeString Path, bool SubDirs);
+  virtual void __fastcall DirectoryModified(const UnicodeString & Path, bool SubDirs);
   virtual void __fastcall DirectoryLoaded(TRemoteFileList * FileList);
   void __fastcall ShowExtendedException(Exception * E);
   void __fastcall Idle();
   void __fastcall RecryptPasswords();
-  bool __fastcall AllowedAnyCommand(const UnicodeString Command);
-  void __fastcall AnyCommand(const UnicodeString Command, TCaptureOutputEvent OutputEvent);
-  void __fastcall CloseOnCompletion(TOnceDoneOperation Operation = odoDisconnect, const UnicodeString Message = L"");
-  UnicodeString __fastcall AbsolutePath(UnicodeString Path, bool Local);
+  bool __fastcall AllowedAnyCommand(const UnicodeString & Command);
+  void __fastcall AnyCommand(const UnicodeString & Command, TCaptureOutputEvent OutputEvent);
+  void __fastcall CloseOnCompletion(TOnceDoneOperation Operation = odoDisconnect, const UnicodeString & Message = L"");
+  UnicodeString __fastcall AbsolutePath(const UnicodeString & Path, bool Local);
   void __fastcall BeginTransaction();
   void __fastcall ReadCurrentDirectory();
   void __fastcall ReadDirectory(bool ReloadOnly, bool ForceCache = false);
-  TRemoteFileList * __fastcall ReadDirectoryListing(UnicodeString Directory, const TFileMasks & Mask);
-  TRemoteFileList * __fastcall CustomReadDirectoryListing(UnicodeString Directory, bool UseCache);
-  TRemoteFile * __fastcall ReadFileListing(UnicodeString Path);
-  void __fastcall ReadFile(const UnicodeString FileName, TRemoteFile *& File);
-  bool __fastcall FileExists(const UnicodeString FileName, TRemoteFile ** File = NULL);
+  TRemoteFileList * __fastcall ReadDirectoryListing(const UnicodeString & Directory, const TFileMasks & Mask);
+  TRemoteFileList * __fastcall CustomReadDirectoryListing(const UnicodeString & Directory, bool UseCache);
+  TRemoteFile * __fastcall ReadFileListing(const UnicodeString & Path);
+  void __fastcall ReadFile(const UnicodeString & FileName, TRemoteFile *& File);
+  bool __fastcall FileExists(const UnicodeString & FileName, TRemoteFile ** File = NULL);
   void __fastcall ReadSymlink(TRemoteFile * SymlinkFile, TRemoteFile *& File);
   bool __fastcall CopyToLocal(TStrings * FilesToCopy,
-    const UnicodeString TargetDir, const TCopyParamType * CopyParam, int Params);
+    const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int Params);
   bool __fastcall CopyToRemote(TStrings * FilesToCopy,
-    const UnicodeString TargetDir, const TCopyParamType * CopyParam, int Params);
-  void __fastcall CreateDirectory(const UnicodeString DirName,
+    const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int Params);
+  void __fastcall CreateDirectory(const UnicodeString & DirName,
     const TRemoteProperties * Properties = NULL);
-  void __fastcall CreateLink(const UnicodeString FileName, const UnicodeString PointTo, bool Symbolic);
+  void __fastcall CreateLink(const UnicodeString & FileName, const UnicodeString & PointTo, bool Symbolic);
   void /* __fastcall */ DeleteFile(const UnicodeString & FileName,
     const TRemoteFile * File = NULL, void * Params = NULL);
   bool __fastcall DeleteFiles(TStrings * FilesToDelete, int Params = 0);
   bool __fastcall DeleteLocalFiles(TStrings * FileList, int Params = 0);
-  bool __fastcall IsRecycledFile(UnicodeString FileName);
+  bool __fastcall IsRecycledFile(const UnicodeString & FileName);
   void /* __fastcall */ CustomCommandOnFile(const UnicodeString & FileName,
     const TRemoteFile * File, void * AParams);
   void __fastcall CustomCommandOnFiles(UnicodeString Command, int Params,
     TStrings * Files, TCaptureOutputEvent OutputEvent);
-  void __fastcall ChangeDirectory(const UnicodeString Directory);
+  void __fastcall ChangeDirectory(const UnicodeString & Directory);
   void __fastcall EndTransaction();
   void __fastcall HomeDirectory();
   void /* __fastcall */ ChangeFileProperties(const UnicodeString & FileName,
@@ -447,36 +447,36 @@ public:
   void __fastcall RenameFile(const TRemoteFile * File, const UnicodeString & NewName, bool CheckExistence);
   void /* __fastcall */ MoveFile(const UnicodeString & FileName, const TRemoteFile * File,
     /* const TMoveFileParams */ void * Param);
-  bool __fastcall MoveFiles(TStrings * FileList, const UnicodeString Target,
-    const UnicodeString FileMask);
+  bool __fastcall MoveFiles(TStrings * FileList, const UnicodeString & Target,
+    const UnicodeString & FileMask);
   void /* __fastcall */ CopyFile(const UnicodeString & FileName, const TRemoteFile * File,
     /* const TMoveFileParams */ void * Param);
-  bool __fastcall CopyFiles(TStrings * FileList, const UnicodeString Target,
-    const UnicodeString FileMask);
+  bool __fastcall CopyFiles(TStrings * FileList, const UnicodeString & Target,
+    const UnicodeString & FileMask);
   void __fastcall CalculateFilesSize(TStrings * FileList, __int64 & Size,
     int Params, const TCopyParamType * CopyParam = NULL, TCalculateSizeStats * Stats = NULL);
   void __fastcall CalculateFilesChecksum(const UnicodeString & Alg, TStrings * FileList,
     TStrings * Checksums, TCalculatedChecksumEvent OnCalculatedChecksum);
   void __fastcall ClearCaches();
-  TSynchronizeChecklist * __fastcall SynchronizeCollect(const UnicodeString LocalDirectory,
-    const UnicodeString RemoteDirectory, TSynchronizeMode Mode,
+  TSynchronizeChecklist * __fastcall SynchronizeCollect(const UnicodeString & LocalDirectory,
+    const UnicodeString & RemoteDirectory, TSynchronizeMode Mode,
     const TCopyParamType * CopyParam, int Params,
     TSynchronizeDirectoryEvent OnSynchronizeDirectory, TSynchronizeOptions * Options);
   void __fastcall SynchronizeApply(TSynchronizeChecklist * Checklist,
-    const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
+    const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,
     const TCopyParamType * CopyParam, int Params,
     TSynchronizeDirectoryEvent OnSynchronizeDirectory);
   void __fastcall FilesFind(UnicodeString Directory, const TFileMasks & FileMask,
     TFileFoundEvent OnFileFound, TFindingFileEvent OnFindingFile);
-  void __fastcall SpaceAvailable(const UnicodeString Path, TSpaceAvailable & ASpaceAvailable);
-  bool __fastcall DirectoryFileList(const UnicodeString Path,
+  void __fastcall SpaceAvailable(const UnicodeString & Path, TSpaceAvailable & ASpaceAvailable);
+  bool __fastcall DirectoryFileList(const UnicodeString & Path,
     TRemoteFileList *& FileList, bool CanLoad);
   void /* __fastcall */ MakeLocalFileList(const UnicodeString & FileName,
     const TSearchRec & Rec, void * Param);
-  UnicodeString __fastcall FileUrl(const UnicodeString FileName);
+  UnicodeString __fastcall FileUrl(const UnicodeString & FileName);
   bool __fastcall FileOperationLoopQuery(Exception & E,
-    TFileOperationProgressType * OperationProgress, const UnicodeString Message,
-    bool AllowSkip, UnicodeString SpecialRetry = L"");
+    TFileOperationProgressType * OperationProgress, const UnicodeString & Message,
+    bool AllowSkip, const UnicodeString & SpecialRetry = UnicodeString());
   TUsableCopyParamAttrs __fastcall UsableCopyParamAttrs(int Params);
   bool __fastcall QueryReopen(Exception * E, int Params,
     TFileOperationProgressType * OperationProgress);
@@ -487,9 +487,9 @@ public:
   const TFileSystemInfo & __fastcall GetFileSystemInfo(bool Retrieve = false);
   void __fastcall /* inline */ LogEvent(const UnicodeString & Str);
 
-  static bool __fastcall IsAbsolutePath(const UnicodeString Path);
-  static UnicodeString __fastcall ExpandFileName(UnicodeString Path,
-    const UnicodeString BasePath);
+  static bool __fastcall IsAbsolutePath(const UnicodeString & Path);
+  static UnicodeString __fastcall ExpandFileName(const UnicodeString & Path,
+    const UnicodeString & BasePath);
 
   TSessionData * __fastcall GetSessionData() { return FSessionData; }
   TSessionData * __fastcall GetSessionData() const { return FSessionData; }
@@ -499,49 +499,49 @@ public:
   TSessionStatus __fastcall GetStatus() { return FStatus; }
   TRemoteDirectory * __fastcall GetFiles() { return FFiles; }
   TNotifyEvent & __fastcall GetOnChangeDirectory() { return FOnChangeDirectory; }
-  void __fastcall SetOnChangeDirectory(TNotifyEvent value) { FOnChangeDirectory = value; }
+  void __fastcall SetOnChangeDirectory(TNotifyEvent Value) { FOnChangeDirectory = Value; }
   TReadDirectoryEvent & __fastcall GetOnReadDirectory() { return FOnReadDirectory; }
-  void __fastcall SetOnReadDirectory(TReadDirectoryEvent value) { FOnReadDirectory = value; }
+  void __fastcall SetOnReadDirectory(TReadDirectoryEvent Value) { FOnReadDirectory = Value; }
   TNotifyEvent & __fastcall GetOnStartReadDirectory() { return FOnStartReadDirectory; }
-  void __fastcall SetOnStartReadDirectory(TNotifyEvent value) { FOnStartReadDirectory = value; }
+  void __fastcall SetOnStartReadDirectory(TNotifyEvent Value) { FOnStartReadDirectory = Value; }
   TReadDirectoryProgressEvent & __fastcall GetOnReadDirectoryProgress() { return FOnReadDirectoryProgress; }
-  void SetOnReadDirectoryProgress(TReadDirectoryProgressEvent value) { FOnReadDirectoryProgress = value; }
+  void SetOnReadDirectoryProgress(TReadDirectoryProgressEvent Value) { FOnReadDirectoryProgress = Value; }
   TDeleteLocalFileEvent & __fastcall GetOnDeleteLocalFile() { return FOnDeleteLocalFile; }
-  void __fastcall SetOnDeleteLocalFile(TDeleteLocalFileEvent value) { FOnDeleteLocalFile = value; }
+  void __fastcall SetOnDeleteLocalFile(TDeleteLocalFileEvent Value) { FOnDeleteLocalFile = Value; }
   TCreateLocalFileEvent & __fastcall GetOnCreateLocalFile() { return FOnCreateLocalFile; }
-  void __fastcall SetOnCreateLocalFile(TCreateLocalFileEvent value) { FOnCreateLocalFile = value; }
+  void __fastcall SetOnCreateLocalFile(TCreateLocalFileEvent Value) { FOnCreateLocalFile = Value; }
   TGetLocalFileAttributesEvent & __fastcall GetOnGetLocalFileAttributes() { return FOnGetLocalFileAttributes; }
-  void __fastcall SetOnGetLocalFileAttributes(TGetLocalFileAttributesEvent value) { FOnGetLocalFileAttributes = value; }
+  void __fastcall SetOnGetLocalFileAttributes(TGetLocalFileAttributesEvent Value) { FOnGetLocalFileAttributes = Value; }
   TSetLocalFileAttributesEvent & __fastcall GetOnSetLocalFileAttributes() { return FOnSetLocalFileAttributes; }
-  void __fastcall SetOnSetLocalFileAttributes(TSetLocalFileAttributesEvent value) { FOnSetLocalFileAttributes = value; }
+  void __fastcall SetOnSetLocalFileAttributes(TSetLocalFileAttributesEvent Value) { FOnSetLocalFileAttributes = Value; }
   TMoveLocalFileEvent & __fastcall GetOnMoveLocalFile() { return FOnMoveLocalFile; }
-  void __fastcall SetOnMoveLocalFile(TMoveLocalFileEvent value) { FOnMoveLocalFile = value; }
+  void __fastcall SetOnMoveLocalFile(TMoveLocalFileEvent Value) { FOnMoveLocalFile = Value; }
   TRemoveLocalDirectoryEvent & __fastcall GetOnRemoveLocalDirectory() { return FOnRemoveLocalDirectory; }
-  void __fastcall SetOnRemoveLocalDirectory(TRemoveLocalDirectoryEvent value) { FOnRemoveLocalDirectory = value; }
+  void __fastcall SetOnRemoveLocalDirectory(TRemoveLocalDirectoryEvent Value) { FOnRemoveLocalDirectory = Value; }
   TCreateLocalDirectoryEvent & __fastcall GetOnCreateLocalDirectory() { return FOnCreateLocalDirectory; }
-  void __fastcall SetOnCreateLocalDirectory(TCreateLocalDirectoryEvent value) { FOnCreateLocalDirectory = value; }
+  void __fastcall SetOnCreateLocalDirectory(TCreateLocalDirectoryEvent Value) { FOnCreateLocalDirectory = Value; }
   TFileOperationProgressEvent & __fastcall GetOnProgress() { return FOnProgress; }
-  void __fastcall SetOnProgress(TFileOperationProgressEvent value) { FOnProgress = value; }
+  void __fastcall SetOnProgress(TFileOperationProgressEvent Value) { FOnProgress = Value; }
   TFileOperationFinishedEvent & __fastcall  GetOnFinished() { return FOnFinished; }
-  void __fastcall SetOnFinished(TFileOperationFinishedEvent value) { FOnFinished = value; }
+  void __fastcall SetOnFinished(TFileOperationFinishedEvent Value) { FOnFinished = Value; }
   TCurrentFSProtocol __fastcall  GetFSProtocol() { return FFSProtocol; }
   bool __fastcall GetUseBusyCursor() { return FUseBusyCursor; }
-  void __fastcall SetUseBusyCursor(bool value) { FUseBusyCursor = value; }
+  void __fastcall SetUseBusyCursor(bool Value) { FUseBusyCursor = Value; }
   bool __fastcall GetAutoReadDirectory() { return FAutoReadDirectory; }
-  void __fastcall SetAutoReadDirectory(bool value) { FAutoReadDirectory = value; }
+  void __fastcall SetAutoReadDirectory(bool Value) { FAutoReadDirectory = Value; }
   TStrings * __fastcall GetFixedPaths();
   TQueryUserEvent & __fastcall GetOnQueryUser() { return FOnQueryUser; }
-  void __fastcall SetOnQueryUser(TQueryUserEvent value) { FOnQueryUser = value; }
+  void __fastcall SetOnQueryUser(TQueryUserEvent Value) { FOnQueryUser = Value; }
   TPromptUserEvent & __fastcall GetOnPromptUser() { return FOnPromptUser; }
-  void __fastcall SetOnPromptUser(TPromptUserEvent value) { FOnPromptUser = value; }
+  void __fastcall SetOnPromptUser(TPromptUserEvent Value) { FOnPromptUser = Value; }
   TDisplayBannerEvent & __fastcall GetOnDisplayBanner() { return FOnDisplayBanner; }
-  void __fastcall SetOnDisplayBanner(TDisplayBannerEvent value) { FOnDisplayBanner = value; }
+  void __fastcall SetOnDisplayBanner(TDisplayBannerEvent Value) { FOnDisplayBanner = Value; }
   TExtendedExceptionEvent & __fastcall GetOnShowExtendedException() { return FOnShowExtendedException; }
-  void __fastcall SetOnShowExtendedException(TExtendedExceptionEvent value) { FOnShowExtendedException = value; }
+  void __fastcall SetOnShowExtendedException(TExtendedExceptionEvent Value) { FOnShowExtendedException = Value; }
   TInformationEvent & __fastcall GetOnInformation() { return FOnInformation; }
-  void __fastcall SetOnInformation(TInformationEvent value) { FOnInformation = value; }
+  void __fastcall SetOnInformation(TInformationEvent Value) { FOnInformation = Value; }
   TNotifyEvent & __fastcall GetOnClose() { return FOnClose; }
-  void __fastcall SetOnClose(TNotifyEvent value) { FOnClose = value; }
+  void __fastcall SetOnClose(TNotifyEvent Value) { FOnClose = Value; }
   int __fastcall GetTunnelLocalPortNumber() { return FTunnelLocalPortNumber; }
 
 private:
@@ -561,10 +561,10 @@ public:
 
 protected:
   virtual void __fastcall DirectoryLoaded(TRemoteFileList * FileList);
-  virtual void __fastcall DirectoryModified(const UnicodeString Path,
+  virtual void __fastcall DirectoryModified(const UnicodeString & Path,
     bool SubDirs);
   virtual bool __fastcall DoPromptUser(TSessionData * Data, TPromptKind Kind,
-    UnicodeString Name, UnicodeString Instructions, TStrings * Prompts, TStrings * Results);
+    const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts, TStrings * Results);
 
 private:
   bool FMasterPasswordTried;
@@ -594,7 +594,7 @@ private:
   TConfiguration * FConfiguration;
 
 public:
-  void __fastcall SetMasks(const UnicodeString value);
+  void __fastcall SetMasks(const UnicodeString & Value);
 };
 //---------------------------------------------------------------------------
 struct TCustomCommandParams
@@ -704,7 +704,7 @@ protected:
   void Add(TItem * Item);
 
 public:
-  void __fastcall SetMasks(const UnicodeString value);
+  void __fastcall SetMasks(const UnicodeString & Value);
 
 private:
   TList * FList;

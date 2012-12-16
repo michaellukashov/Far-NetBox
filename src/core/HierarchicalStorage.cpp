@@ -22,7 +22,7 @@
 #define WRITE_REGISTRY(Method) \
   try { FRegistry->Method(Name, Value); } catch(...) { FFailed++; }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall MungeStr(const UnicodeString Str, bool ForceAnsi)
+UnicodeString __fastcall MungeStr(const UnicodeString & Str, bool ForceAnsi)
 {
   RawByteString Source;
   if (ForceAnsi)
@@ -45,7 +45,7 @@ UnicodeString __fastcall MungeStr(const UnicodeString Str, bool ForceAnsi)
   return UnicodeString(Dest.c_str(), Dest.Length());
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall UnMungeStr(const UnicodeString Str)
+UnicodeString __fastcall UnMungeStr(const UnicodeString & Str)
 {
   // Str should contain ASCII characters only
   RawByteString Source = Str;
@@ -65,17 +65,17 @@ UnicodeString __fastcall UnMungeStr(const UnicodeString Str)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall PuttyMungeStr(const UnicodeString Str)
+UnicodeString __fastcall PuttyMungeStr(const UnicodeString & Str)
 {
   return MungeStr(Str, false);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall PuttyUnMungeStr(const UnicodeString Str)
+UnicodeString __fastcall PuttyUnMungeStr(const UnicodeString & Str)
 {
   return UnMungeStr(Str);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall MungeIniName(const UnicodeString Str)
+UnicodeString __fastcall MungeIniName(const UnicodeString & Str)
 {
   intptr_t P = Str.Pos(L"=");
   // make this fast for now
@@ -89,7 +89,7 @@ UnicodeString __fastcall MungeIniName(const UnicodeString Str)
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall UnMungeIniName(const UnicodeString Str)
+UnicodeString __fastcall UnMungeIniName(const UnicodeString & Str)
 {
   intptr_t P = Str.Pos(L"%3D");
   // make this fast for now
@@ -103,7 +103,7 @@ UnicodeString __fastcall UnMungeIniName(const UnicodeString Str)
   }
 }
 //===========================================================================
-/* __fastcall */ THierarchicalStorage::THierarchicalStorage(const UnicodeString AStorage)
+/* __fastcall */ THierarchicalStorage::THierarchicalStorage(const UnicodeString & AStorage)
 {
   CALLSTACK;
   FStorage = AStorage;
@@ -150,7 +150,7 @@ bool __fastcall THierarchicalStorage::OpenRootKey(bool CanCreate)
   return OpenSubKey(L"", CanCreate);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall THierarchicalStorage::MungeKeyName(UnicodeString Key)
+UnicodeString __fastcall THierarchicalStorage::MungeKeyName(const UnicodeString & Key)
 {
   UnicodeString Result = MungeStr(Key, GetForceAnsi());
   // if there's already ANSI-munged subkey, keep ANSI munging
@@ -161,40 +161,41 @@ UnicodeString __fastcall THierarchicalStorage::MungeKeyName(UnicodeString Key)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall THierarchicalStorage::OpenSubKey(UnicodeString Key, bool CanCreate, bool Path)
+bool __fastcall THierarchicalStorage::OpenSubKey(const UnicodeString & SubKey, bool CanCreate, bool Path)
 {
   bool Result;
   UnicodeString MungedKey;
+  UnicodeString SubKey2 = SubKey;
   if (Path)
   {
-    assert(Key.IsEmpty() || (Key[Key.Length()] != L'\\'));
+    assert(SubKey2.IsEmpty() || (SubKey2[SubKey2.Length()] != L'\\'));
     Result = true;
-    while (!Key.IsEmpty() && Result)
+    while (!SubKey2.IsEmpty() && Result)
     {
       if (!MungedKey.IsEmpty())
       {
         MungedKey += L'\\';
       }
-      MungedKey += MungeKeyName(CutToChar(Key, L'\\', false));
+      MungedKey += MungeKeyName(CutToChar(SubKey2, L'\\', false));
       Result = DoOpenSubKey(MungedKey, CanCreate);
     }
 
     // hack to restore last opened key for registry storage
     if (!Result)
     {
-      FKeyHistory->Add(IncludeTrailingBackslash(GetCurrentSubKey()+MungedKey));
+      FKeyHistory->Add(IncludeTrailingBackslash(GetCurrentSubKey() + MungedKey));
       CloseSubKey();
     }
   }
   else
   {
-    MungedKey = MungeKeyName(Key);
+    MungedKey = MungeKeyName(SubKey2);
     Result = DoOpenSubKey(MungedKey, CanCreate);
   }
 
   if (Result)
   {
-    FKeyHistory->Add(IncludeTrailingBackslash(GetCurrentSubKey()+MungedKey));
+    FKeyHistory->Add(IncludeTrailingBackslash(GetCurrentSubKey() + MungedKey));
   }
 
   return Result;
@@ -226,7 +227,7 @@ void __fastcall THierarchicalStorage::ClearSubKeys()
   );
 }
 //---------------------------------------------------------------------------
-void __fastcall THierarchicalStorage::RecursiveDeleteSubKey(const UnicodeString Key)
+void __fastcall THierarchicalStorage::RecursiveDeleteSubKey(const UnicodeString & Key)
 {
   if (OpenSubKey(Key, false))
   {
@@ -253,7 +254,7 @@ bool __fastcall THierarchicalStorage::HasSubKeys()
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall THierarchicalStorage::HasSubKey(const UnicodeString SubKey)
+bool __fastcall THierarchicalStorage::HasSubKey(const UnicodeString & SubKey)
 {
   bool Result = OpenSubKey(SubKey, false);
   if (Result)
@@ -263,7 +264,7 @@ bool __fastcall THierarchicalStorage::HasSubKey(const UnicodeString SubKey)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall THierarchicalStorage::KeyExists(const UnicodeString SubKey)
+bool __fastcall THierarchicalStorage::KeyExists(const UnicodeString & SubKey)
 {
   return DoKeyExists(SubKey, GetForceAnsi());
 }
@@ -335,7 +336,7 @@ void __fastcall THierarchicalStorage::WriteValues(Classes::TStrings * Strings,
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall THierarchicalStorage::ReadString(const UnicodeString Name, const UnicodeString Default)
+UnicodeString __fastcall THierarchicalStorage::ReadString(const UnicodeString & Name, const UnicodeString & Default)
 {
   UnicodeString Result;
   if (GetMungeStringValues())
@@ -349,7 +350,7 @@ UnicodeString __fastcall THierarchicalStorage::ReadString(const UnicodeString Na
   return Result;
 }
 //---------------------------------------------------------------------------
-RawByteString __fastcall THierarchicalStorage::ReadBinaryData(const UnicodeString Name)
+RawByteString __fastcall THierarchicalStorage::ReadBinaryData(const UnicodeString & Name)
 {
   size_t Size = BinaryDataSize(Name);
   RawByteString Value;
@@ -358,7 +359,7 @@ RawByteString __fastcall THierarchicalStorage::ReadBinaryData(const UnicodeStrin
   return Value;
 }
 //---------------------------------------------------------------------------
-RawByteString __fastcall THierarchicalStorage::ReadStringAsBinaryData(const UnicodeString Name, const RawByteString Default)
+RawByteString __fastcall THierarchicalStorage::ReadStringAsBinaryData(const UnicodeString & Name, const RawByteString & Default)
 {
   UnicodeString UnicodeDefault = UnicodeString(AnsiString(Default.c_str(), Default.Length()));
   // This should be exactly the same operation as calling ReadString in
@@ -370,7 +371,7 @@ RawByteString __fastcall THierarchicalStorage::ReadStringAsBinaryData(const Unic
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall THierarchicalStorage::WriteString(const UnicodeString Name, const UnicodeString Value)
+void __fastcall THierarchicalStorage::WriteString(const UnicodeString & Name, const UnicodeString & Value)
 {
   if (GetMungeStringValues())
   {
@@ -382,13 +383,13 @@ void __fastcall THierarchicalStorage::WriteString(const UnicodeString Name, cons
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall THierarchicalStorage::WriteBinaryData(const UnicodeString Name,
-  const RawByteString Value)
+void __fastcall THierarchicalStorage::WriteBinaryData(const UnicodeString & Name,
+  const RawByteString & Value)
 {
   WriteBinaryData(Name, Value.c_str(), Value.Length());
 }
 //---------------------------------------------------------------------------
-void __fastcall THierarchicalStorage::WriteBinaryDataAsString(const UnicodeString Name, const RawByteString Value)
+void __fastcall THierarchicalStorage::WriteBinaryDataAsString(const UnicodeString & Name, const RawByteString & Value)
 {
   // This should be exactly the same operation as calling WriteString in
   // C++Builder 6 (non-Unicode) on Unicode-based OS
@@ -423,7 +424,7 @@ UnicodeString __fastcall THierarchicalStorage::ExcludeTrailingBackslash(const Un
   }
 }
 //===========================================================================
-/* __fastcall */ TRegistryStorage::TRegistryStorage(const UnicodeString AStorage):
+/* __fastcall */ TRegistryStorage::TRegistryStorage(const UnicodeString & AStorage) :
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
   FRegistry(NULL)
 {
@@ -432,7 +433,7 @@ UnicodeString __fastcall THierarchicalStorage::ExcludeTrailingBackslash(const Un
   Init();
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TRegistryStorage::TRegistryStorage(const UnicodeString AStorage, HKEY ARootKey):
+/* __fastcall */ TRegistryStorage::TRegistryStorage(const UnicodeString & AStorage, HKEY ARootKey):
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
   FRegistry(NULL)
 {
@@ -526,7 +527,7 @@ void __fastcall TRegistryStorage::SetAccessMode(TStorageAccessMode value)
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TRegistryStorage::DoOpenSubKey(const UnicodeString SubKey, bool CanCreate)
+bool __fastcall TRegistryStorage::DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate)
 {
   CCALLSTACK(TRACE_ACCESS);
   if (FKeyHistory->Count > 0) { FRegistry->CloseKey(); }
@@ -546,7 +547,7 @@ void __fastcall TRegistryStorage::CloseSubKey()
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TRegistryStorage::DeleteSubKey(const UnicodeString SubKey)
+bool __fastcall TRegistryStorage::DeleteSubKey(const UnicodeString & SubKey)
 {
   CCALLSTACK(TRACE_ACCESS);
   UnicodeString K;
@@ -574,14 +575,14 @@ void __fastcall TRegistryStorage::GetValueNames(Classes::TStrings* Strings)
   CTRACEFMT(TRACE_ACCESS, "[%s]", Strings->CommaText.c_str());
 }
 //---------------------------------------------------------------------------
-bool __fastcall TRegistryStorage::DeleteValue(const UnicodeString Name)
+bool __fastcall TRegistryStorage::DeleteValue(const UnicodeString & Name)
 {
   CCALLSTACK(TRACE_ACCESS);
   CTRACEFMT(TRACE_ACCESS, "[%s]", Name.c_str());
   return FRegistry->DeleteValue(Name);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TRegistryStorage::DoKeyExists(const UnicodeString SubKey, bool AForceAnsi)
+bool __fastcall TRegistryStorage::DoKeyExists(const UnicodeString & SubKey, bool AForceAnsi)
 {
   CCALLSTACK(TRACE_ACCESS);
   UnicodeString K = MungeStr(SubKey, AForceAnsi);
@@ -590,7 +591,7 @@ bool __fastcall TRegistryStorage::DoKeyExists(const UnicodeString SubKey, bool A
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TRegistryStorage::ValueExists(const UnicodeString Value)
+bool __fastcall TRegistryStorage::ValueExists(const UnicodeString & Value)
 {
   CCALLSTACK(TRACE_ACCESS);
   bool Result = FRegistry->ValueExists(Value);
@@ -598,7 +599,7 @@ bool __fastcall TRegistryStorage::ValueExists(const UnicodeString Value)
   return Result;
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TRegistryStorage::BinaryDataSize(const UnicodeString Name)
+size_t __fastcall TRegistryStorage::BinaryDataSize(const UnicodeString & Name)
 {
   CCALLSTACK(TRACE_ACCESS);
   size_t Result = FRegistry->GetDataSize(Name);
@@ -606,35 +607,35 @@ size_t __fastcall TRegistryStorage::BinaryDataSize(const UnicodeString Name)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TRegistryStorage::ReadBool(const UnicodeString Name, bool Default)
+bool __fastcall TRegistryStorage::ReadBool(const UnicodeString & Name, bool Default)
 {
   CCALLSTACK(TRACE_READING);
   CTRACEFMT(TRACE_READING, "%s", Name.c_str());
   READ_REGISTRY(ReadBool);
 }
 //---------------------------------------------------------------------------
-TDateTime __fastcall TRegistryStorage::ReadDateTime(const UnicodeString Name, TDateTime Default)
+TDateTime __fastcall TRegistryStorage::ReadDateTime(const UnicodeString & Name, TDateTime Default)
 {
   CCALLSTACK(TRACE_READING);
   CTRACEFMT(TRACE_READING, "%s", Name.c_str());
   READ_REGISTRY(ReadDateTime);
 }
 //---------------------------------------------------------------------------
-double __fastcall TRegistryStorage::ReadFloat(const UnicodeString Name, double Default)
+double __fastcall TRegistryStorage::ReadFloat(const UnicodeString & Name, double Default)
 {
   CCALLSTACK(TRACE_READING);
   CTRACEFMT(TRACE_READING, "%s", Name.c_str());
   READ_REGISTRY(ReadFloat);
 }
 //---------------------------------------------------------------------------
-int __fastcall TRegistryStorage::ReadInteger(const UnicodeString Name, int Default)
+int __fastcall TRegistryStorage::ReadInteger(const UnicodeString & Name, int Default)
 {
   CCALLSTACK(TRACE_READING);
   CTRACEFMT(TRACE_READING, "%s", Name.c_str());
   READ_REGISTRY(ReadInteger);
 }
 //---------------------------------------------------------------------------
-__int64 __fastcall TRegistryStorage::ReadInt64(const UnicodeString Name, __int64 Default)
+__int64 __fastcall TRegistryStorage::ReadInt64(const UnicodeString & Name, __int64 Default)
 {
   CCALLSTACK(TRACE_READING);
   CTRACEFMT(TRACE_READING, "%s", Name.c_str());
@@ -653,14 +654,14 @@ __int64 __fastcall TRegistryStorage::ReadInt64(const UnicodeString Name, __int64
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TRegistryStorage::ReadStringRaw(const UnicodeString Name, const UnicodeString Default)
+UnicodeString __fastcall TRegistryStorage::ReadStringRaw(const UnicodeString & Name, const UnicodeString & Default)
 {
   CCALLSTACK(TRACE_READING);
   CTRACEFMT(TRACE_READING, "%s", Name.c_str());
   READ_REGISTRY(ReadString);
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TRegistryStorage::ReadBinaryData(const UnicodeString Name,
+size_t __fastcall TRegistryStorage::ReadBinaryData(const UnicodeString & Name,
   void * Buffer, size_t Size)
 {
   CCALLSTACK(TRACE_READING);
@@ -685,40 +686,40 @@ size_t __fastcall TRegistryStorage::ReadBinaryData(const UnicodeString Name,
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TRegistryStorage::WriteBool(const UnicodeString Name, bool Value)
+void __fastcall TRegistryStorage::WriteBool(const UnicodeString & Name, bool Value)
 {
   CCALLSTACK(TRACE_WRITING);
   CTRACEFMT(TRACE_WRITING, "[%s] [%s] [%d]", FRegistry->CurrentPath.c_str(), Name.c_str(), int(Value));
   WRITE_REGISTRY(WriteBool);
 }
 //---------------------------------------------------------------------------
-void __fastcall TRegistryStorage::WriteDateTime(const UnicodeString Name, TDateTime Value)
+void __fastcall TRegistryStorage::WriteDateTime(const UnicodeString & Name, TDateTime Value)
 {
   WRITE_REGISTRY(WriteDateTime);
 }
 //---------------------------------------------------------------------------
-void __fastcall TRegistryStorage::WriteFloat(const UnicodeString Name, double Value)
+void __fastcall TRegistryStorage::WriteFloat(const UnicodeString & Name, double Value)
 {
   CCALLSTACK(TRACE_WRITING);
   CTRACEFMT(TRACE_WRITING, "[%s] [%s] [%d]", FRegistry->CurrentPath.c_str(), Name.c_str(), int(Value * 1000));
   WRITE_REGISTRY(WriteFloat);
 }
 //---------------------------------------------------------------------------
-void __fastcall TRegistryStorage::WriteStringRaw(const UnicodeString Name, const UnicodeString Value)
+void __fastcall TRegistryStorage::WriteStringRaw(const UnicodeString & Name, const UnicodeString & Value)
 {
   CCALLSTACK(TRACE_WRITING);
   CTRACEFMT(TRACE_WRITING, "[%s] [%s] [%s]", FRegistry->CurrentPath.c_str(), Name.c_str(), Value);
   WRITE_REGISTRY(WriteString);
 }
 //---------------------------------------------------------------------------
-void __fastcall TRegistryStorage::WriteInteger(const UnicodeString Name, int Value)
+void __fastcall TRegistryStorage::WriteInteger(const UnicodeString & Name, int Value)
 {
   CCALLSTACK(TRACE_WRITING);
   CTRACEFMT(TRACE_WRITING, "[%s] [%s] [%d]", FRegistry->CurrentPath.c_str(), Name.c_str(), Value);
   WRITE_REGISTRY(WriteInteger);
 }
 //---------------------------------------------------------------------------
-void __fastcall TRegistryStorage::WriteInt64(const UnicodeString Name, __int64 Value)
+void __fastcall TRegistryStorage::WriteInt64(const UnicodeString & Name, __int64 Value)
 {
   CCALLSTACK(TRACE_WRITING);
   try
@@ -732,7 +733,7 @@ void __fastcall TRegistryStorage::WriteInt64(const UnicodeString Name, __int64 V
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TRegistryStorage::WriteBinaryData(const UnicodeString Name,
+void __fastcall TRegistryStorage::WriteBinaryData(const UnicodeString & Name,
   const void * Buffer, size_t Size)
 {
   try
@@ -753,7 +754,7 @@ int __fastcall TRegistryStorage::GetFailed()
 }
 #ifndef _MSC_VER
 //===========================================================================
-__fastcall TCustomIniFileStorage::TCustomIniFileStorage(const UnicodeString Storage, TCustomIniFile * IniFile) :
+__fastcall TCustomIniFileStorage::TCustomIniFileStorage(const UnicodeString & Storage, TCustomIniFile * IniFile) :
   THierarchicalStorage(Storage),
   FIniFile(IniFile)
 {
@@ -774,7 +775,7 @@ UnicodeString __fastcall TCustomIniFileStorage::GetCurrentSection() const
   return ExcludeTrailingBackslash(GetCurrentSubKeyMunged());
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCustomIniFileStorage::DoOpenSubKey(const UnicodeString SubKey, bool CanCreate)
+bool __fastcall TCustomIniFileStorage::DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate)
 {
   bool Result = CanCreate;
 
@@ -807,7 +808,7 @@ bool __fastcall TCustomIniFileStorage::DoOpenSubKey(const UnicodeString SubKey, 
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCustomIniFileStorage::DeleteSubKey(const UnicodeString SubKey)
+bool __fastcall TCustomIniFileStorage::DeleteSubKey(const UnicodeString & SubKey)
 {
   bool Result;
   try
@@ -865,35 +866,35 @@ void __fastcall TCustomIniFileStorage::GetValueNames(Classes::TStrings* Strings)
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCustomIniFileStorage::DoKeyExists(const UnicodeString SubKey, bool AForceAnsi)
+bool __fastcall TCustomIniFileStorage::DoKeyExists(const UnicodeString & SubKey, bool AForceAnsi)
 {
   return FIniFile->SectionExists(GetCurrentSubKey() + MungeStr(SubKey, AForceAnsi));
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCustomIniFileStorage::ValueExists(const UnicodeString Value)
+bool __fastcall TCustomIniFileStorage::ValueExists(const UnicodeString & Value)
 {
   return FIniFile->ValueExists(GetCurrentSection(), MungeIniName(Value));
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCustomIniFileStorage::DeleteValue(const UnicodeString Name)
+bool __fastcall TCustomIniFileStorage::DeleteValue(const UnicodeString & Name)
 {
   FIniFile->DeleteKey(GetCurrentSection(), MungeIniName(Name));
   return true;
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TCustomIniFileStorage::BinaryDataSize(const UnicodeString Name)
+size_t __fastcall TCustomIniFileStorage::BinaryDataSize(const UnicodeString & Name)
 {
   return ReadStringRaw(Name, L"").Length() / 2;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCustomIniFileStorage::ReadBool(const UnicodeString Name, bool Default)
+bool __fastcall TCustomIniFileStorage::ReadBool(const UnicodeString & Name, bool Default)
 {
   CCALLSTACK(TRACE_READING);
   CTRACEFMT(TRACE_READING, "[%s] [%s]", GetCurrentSection().c_str(), Name.c_str());
   return FIniFile->ReadBool(GetCurrentSection(), MungeIniName(Name), Default);
 }
 //---------------------------------------------------------------------------
-int __fastcall TCustomIniFileStorage::ReadInteger(const UnicodeString Name, int Default)
+int __fastcall TCustomIniFileStorage::ReadInteger(const UnicodeString & Name, int Default)
 {
   CCALLSTACK(TRACE_READING);
   int Result = FIniFile->ReadInteger(GetCurrentSection(), MungeIniName(Name), Default);
@@ -901,7 +902,7 @@ int __fastcall TCustomIniFileStorage::ReadInteger(const UnicodeString Name, int 
   return Result;
 }
 //---------------------------------------------------------------------------
-__int64 __fastcall TCustomIniFileStorage::ReadInt64(const UnicodeString Name, __int64 Default)
+__int64 __fastcall TCustomIniFileStorage::ReadInt64(const UnicodeString & Name, __int64 Default)
 {
   CCALLSTACK(TRACE_READING);
   CTRACEFMT(TRACE_READING, "[%s] [%s]", GetCurrentSection().c_str(), Name.c_str());
@@ -915,7 +916,7 @@ __int64 __fastcall TCustomIniFileStorage::ReadInt64(const UnicodeString Name, __
   return Result;
 }
 //---------------------------------------------------------------------------
-TDateTime __fastcall TCustomIniFileStorage::ReadDateTime(const UnicodeString Name, TDateTime Default)
+TDateTime __fastcall TCustomIniFileStorage::ReadDateTime(const UnicodeString & Name, TDateTime Default)
 {
   CCALLSTACK(TRACE_READING);
   CTRACEFMT(TRACE_READING, "[%s] [%s]", GetCurrentSection().c_str(), Name.c_str());
@@ -948,7 +949,7 @@ TDateTime __fastcall TCustomIniFileStorage::ReadDateTime(const UnicodeString Nam
   return Result;
 }
 //---------------------------------------------------------------------------
-double __fastcall TCustomIniFileStorage::ReadFloat(const UnicodeString Name, double Default)
+double __fastcall TCustomIniFileStorage::ReadFloat(const UnicodeString & Name, double Default)
 {
   CCALLSTACK(TRACE_READING);
   CTRACEFMT(TRACE_READING, "[%s] [%s]", GetCurrentSection().c_str(), Name.c_str());
@@ -981,7 +982,7 @@ double __fastcall TCustomIniFileStorage::ReadFloat(const UnicodeString Name, dou
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TCustomIniFileStorage::ReadStringRaw(const UnicodeString Name, UnicodeString Default)
+UnicodeString __fastcall TCustomIniFileStorage::ReadStringRaw(const UnicodeString & Name, UnicodeString & Default)
 {
   CCALLSTACK(TRACE_READING);
   AnsiString Result = FIniFile->ReadString(GetCurrentSection(), MungeIniName(Name), Default);
@@ -989,7 +990,7 @@ UnicodeString __fastcall TCustomIniFileStorage::ReadStringRaw(const UnicodeStrin
   return Result;
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TCustomIniFileStorage::ReadBinaryData(const UnicodeString Name,
+size_t __fastcall TCustomIniFileStorage::ReadBinaryData(const UnicodeString & Name,
   void * Buffer, size_t Size)
 {
   CCALLSTACK(TRACE_READING);
@@ -1005,43 +1006,43 @@ size_t __fastcall TCustomIniFileStorage::ReadBinaryData(const UnicodeString Name
   return Size;
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomIniFileStorage::WriteBool(const UnicodeString Name, bool Value)
+void __fastcall TCustomIniFileStorage::WriteBool(const UnicodeString & Name, bool Value)
 {
   FIniFile->WriteBool(GetCurrentSection(), MungeIniName(Name), Value);
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomIniFileStorage::WriteInteger(const UnicodeString Name, int Value)
+void __fastcall TCustomIniFileStorage::WriteInteger(const UnicodeString & Name, int Value)
 {
   FIniFile->WriteInteger(GetCurrentSection(), MungeIniName(Name), Value);
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomIniFileStorage::WriteInt64(const UnicodeString Name, __int64 Value)
+void __fastcall TCustomIniFileStorage::WriteInt64(const UnicodeString & Name, __int64 Value)
 {
   WriteStringRaw(Name, IntToStr(Value));
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomIniFileStorage::WriteDateTime(const UnicodeString Name, TDateTime Value)
+void __fastcall TCustomIniFileStorage::WriteDateTime(const UnicodeString & Name, TDateTime Value)
 {
   WriteBinaryData(Name, &Value, sizeof(Value));
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomIniFileStorage::WriteFloat(const UnicodeString Name, double Value)
+void __fastcall TCustomIniFileStorage::WriteFloat(const UnicodeString & Name, double Value)
 {
   WriteBinaryData(Name, &Value, sizeof(Value));
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomIniFileStorage::WriteStringRaw(const UnicodeString Name, const UnicodeString Value)
+void __fastcall TCustomIniFileStorage::WriteStringRaw(const UnicodeString & Name, const UnicodeString & Value)
 {
   FIniFile->WriteString(GetCurrentSection(), MungeIniName(Name), Value);
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomIniFileStorage::WriteBinaryData(const UnicodeString Name,
+void __fastcall TCustomIniFileStorage::WriteBinaryData(const UnicodeString & Name,
   const void * Buffer, size_t Size)
 {
   WriteStringRaw(Name, BytesToHex(RawByteString(static_cast<const char*>(Buffer), Size)));
 }
 //===========================================================================
-/* __fastcall */ TIniFileStorage::TIniFileStorage(const UnicodeString AStorage):
+/* __fastcall */ TIniFileStorage::TIniFileStorage(const UnicodeString & AStorage):
   TCustomIniFileStorage(AStorage, new TMemIniFile(AStorage))
 {
   CALLSTACK;
@@ -1202,16 +1203,16 @@ class TOptionsIniFile : public TCustomIniFile
 public:
   /* __fastcall */ TOptionsIniFile(TStrings * Options);
 
-  virtual UnicodeString __fastcall ReadString(const UnicodeString Section, const UnicodeString Ident, const UnicodeString Default);
-  virtual void __fastcall WriteString(const UnicodeString Section, const UnicodeString Ident, const UnicodeString Value);
-  virtual void __fastcall ReadSection(const UnicodeString Section, TStrings * Strings);
+  virtual UnicodeString __fastcall ReadString(const UnicodeString & Section, const UnicodeString & Ident, const UnicodeString & Default);
+  virtual void __fastcall WriteString(const UnicodeString & Section, const UnicodeString & Ident, const UnicodeString & Value);
+  virtual void __fastcall ReadSection(const UnicodeString & Section, TStrings * Strings);
   virtual void __fastcall ReadSections(TStrings* Strings);
-  virtual void __fastcall ReadSectionValues(const UnicodeString Section, TStrings* Strings);
-  virtual void __fastcall EraseSection(const UnicodeString Section);
-  virtual void __fastcall DeleteKey(const UnicodeString Section, const UnicodeString Ident);
+  virtual void __fastcall ReadSectionValues(const UnicodeString & Section, TStrings* Strings);
+  virtual void __fastcall EraseSection(const UnicodeString & Section);
+  virtual void __fastcall DeleteKey(const UnicodeString & Section, const UnicodeString & Ident);
   virtual void __fastcall UpdateFile();
   // Hoisted overload
-  void __fastcall ReadSections(const UnicodeString Section, TStrings* Strings);
+  void __fastcall ReadSections(const UnicodeString & Section, TStrings* Strings);
 
 private:
   TStrings * FOptions;
@@ -1223,7 +1224,7 @@ private:
   FOptions = Options;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TOptionsIniFile::ReadString(const UnicodeString Section, const UnicodeString Ident, const UnicodeString Default)
+UnicodeString __fastcall TOptionsIniFile::ReadString(const UnicodeString & Section, const UnicodeString & Ident, const UnicodeString & Default)
 {
   assert(Section.IsEmpty());
   int Index = FOptions->IndexOfName(Ident);
@@ -1239,12 +1240,12 @@ UnicodeString __fastcall TOptionsIniFile::ReadString(const UnicodeString Section
   return Value;
 }
 //---------------------------------------------------------------------------
-void __fastcall TOptionsIniFile::WriteString(const UnicodeString Section, const UnicodeString Ident, const UnicodeString Value)
+void __fastcall TOptionsIniFile::WriteString(const UnicodeString & Section, const UnicodeString & Ident, const UnicodeString & Value)
 {
   NOT_IMPLEMENTED;
 }
 //---------------------------------------------------------------------------
-void __fastcall TOptionsIniFile::ReadSection(const UnicodeString Section, TStrings * Strings)
+void __fastcall TOptionsIniFile::ReadSection(const UnicodeString & Section, TStrings * Strings)
 {
   assert(Section.IsEmpty());
   Strings->BeginUpdate();
@@ -1268,17 +1269,17 @@ void __fastcall TOptionsIniFile::ReadSections(TStrings * /*Strings*/)
   NOT_IMPLEMENTED;
 }
 //---------------------------------------------------------------------------
-void __fastcall TOptionsIniFile::ReadSectionValues(const UnicodeString Section, TStrings * /*Strings*/)
+void __fastcall TOptionsIniFile::ReadSectionValues(const UnicodeString & Section, TStrings * /*Strings*/)
 {
   NOT_IMPLEMENTED;
 }
 //---------------------------------------------------------------------------
-void __fastcall TOptionsIniFile::EraseSection(const UnicodeString Section)
+void __fastcall TOptionsIniFile::EraseSection(const UnicodeString & Section)
 {
   NOT_IMPLEMENTED;
 }
 //---------------------------------------------------------------------------
-void __fastcall TOptionsIniFile::DeleteKey(const UnicodeString Section, const UnicodeString Ident)
+void __fastcall TOptionsIniFile::DeleteKey(const UnicodeString & Section, const UnicodeString & Ident)
 {
   NOT_IMPLEMENTED;
 }
@@ -1288,7 +1289,7 @@ void __fastcall TOptionsIniFile::UpdateFile()
   NOT_IMPLEMENTED;
 }
 //---------------------------------------------------------------------------
-void __fastcall TOptionsIniFile::ReadSections(const UnicodeString Section, TStrings* Strings)
+void __fastcall TOptionsIniFile::ReadSections(const UnicodeString & Section, TStrings* Strings)
 {
   TCustomIniFile::ReadSections(Section, Strings);
 }

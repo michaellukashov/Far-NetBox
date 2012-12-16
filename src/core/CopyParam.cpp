@@ -47,7 +47,7 @@ void /* __fastcall */ TCopyParamType::Default()
   SetCPSLimit(0);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TCopyParamType::GetInfoStr(UnicodeString Separator, int Options) const
+UnicodeString __fastcall TCopyParamType::GetInfoStr(const UnicodeString & Separator, int Options) const
 {
   TCopyParamType Defaults;
   UnicodeString Result;
@@ -214,11 +214,11 @@ TCopyParamType & __fastcall TCopyParamType::operator =(const TCopyParamType & rh
   return *this;
 }
 //---------------------------------------------------------------------------
-void __fastcall TCopyParamType::SetLocalInvalidChars(UnicodeString value)
+void __fastcall TCopyParamType::SetLocalInvalidChars(const UnicodeString & Value)
 {
-  if (value != GetLocalInvalidChars())
+  if (Value != GetLocalInvalidChars())
   {
-    FLocalInvalidChars = value;
+    FLocalInvalidChars = Value;
     FTokenizibleChars = FLocalInvalidChars + TokenPrefix;
   }
 }
@@ -228,45 +228,46 @@ bool __fastcall TCopyParamType::GetReplaceInvalidChars() const
   return (GetInvalidCharsReplacement() != NoReplacement);
 }
 //---------------------------------------------------------------------------
-void __fastcall TCopyParamType::SetReplaceInvalidChars(bool value)
+void __fastcall TCopyParamType::SetReplaceInvalidChars(bool Value)
 {
-  if (GetReplaceInvalidChars() != value)
+  if (GetReplaceInvalidChars() != Value)
   {
-    SetInvalidCharsReplacement((value ? TokenReplacement : NoReplacement));
+    SetInvalidCharsReplacement((Value ? TokenReplacement : NoReplacement));
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TCopyParamType::ValidLocalFileName(UnicodeString FileName) const
+UnicodeString __fastcall TCopyParamType::ValidLocalFileName(const UnicodeString & FileName) const
 {
   return ::ValidLocalFileName(FileName, GetInvalidCharsReplacement(), FTokenizibleChars, LocalInvalidChars);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TCopyParamType::RestoreChars(UnicodeString FileName) const
+UnicodeString __fastcall TCopyParamType::RestoreChars(const UnicodeString & FileName) const
 {
+  UnicodeString FileName2 = FileName; 
   if (GetInvalidCharsReplacement() == TokenReplacement)
   {
-    wchar_t * InvalidChar = const_cast<wchar_t *>(FileName.c_str());
+    wchar_t * InvalidChar = const_cast<wchar_t *>(FileName2.c_str());
     while ((InvalidChar = wcschr(InvalidChar, TokenPrefix)) != NULL)
     {
-      intptr_t Index = InvalidChar - FileName.c_str() + 1;
-      if (FileName.Length() >= Index + 2)
+      intptr_t Index = InvalidChar - FileName2.c_str() + 1;
+      if (FileName2.Length() >= Index + 2)
       {
-        UnicodeString Hex = FileName.SubString(Index + 1, 2);
+        UnicodeString Hex = FileName2.SubString(Index + 1, 2);
         wchar_t Char = static_cast<wchar_t>(HexToByte(Hex));
         if ((Char != L'\0') &&
             ((FTokenizibleChars.Pos(Char) > 0) ||
-             (((Char == L' ') || (Char == L'.')) && (Index == FileName.Length() - 2))))
+             (((Char == L' ') || (Char == L'.')) && (Index == FileName2.Length() - 2))))
         {
-          FileName[Index] = Char;
-          FileName.Delete(Index + 1, 2);
-          InvalidChar = const_cast<wchar_t *>(FileName.c_str() + Index);
+          FileName2[Index] = Char;
+          FileName2.Delete(Index + 1, 2);
+          InvalidChar = const_cast<wchar_t *>(FileName2.c_str() + Index);
         }
         else if ((Hex == L"00") &&
-                 ((Index == FileName.Length() - 2) || (FileName[Index + 3] == L'.')) &&
-                 IsReservedName(FileName.SubString(1, Index - 1) + FileName.SubString(Index + 3, FileName.Length() - Index - 3 + 1)))
+                 ((Index == FileName2.Length() - 2) || (FileName2[Index + 3] == L'.')) &&
+                 IsReservedName(FileName2.SubString(1, Index - 1) + FileName2.SubString(Index + 3, FileName2.Length() - Index - 3 + 1)))
         {
-          FileName.Delete(Index, 3);
-          InvalidChar = const_cast<wchar_t *>(FileName.c_str() + Index - 1);
+          FileName2.Delete(Index, 3);
+          InvalidChar = const_cast<wchar_t *>(FileName2.c_str() + Index - 1);
         }
         else
         {
@@ -279,42 +280,44 @@ UnicodeString __fastcall TCopyParamType::RestoreChars(UnicodeString FileName) co
       }
     }
   }
-  return FileName;
+  return FileName2;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TCopyParamType::ValidLocalPath(UnicodeString Path) const
+UnicodeString __fastcall TCopyParamType::ValidLocalPath(const UnicodeString & Path) const
 {
   UnicodeString Result;
-  while (!Path.IsEmpty())
+  UnicodeString Path2 = Path;
+  while (!Path2.IsEmpty())
   {
     if (!Result.IsEmpty())
     {
       Result += L"\\";
     }
-    Result += ValidLocalFileName(CutToChar(Path, L'\\', false));
+    Result += ValidLocalFileName(CutToChar(Path2, L'\\', false));
   }
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TCopyParamType::ChangeFileName(UnicodeString FileName,
+UnicodeString __fastcall TCopyParamType::ChangeFileName(const UnicodeString & FileName,
   TOperationSide Side, bool FirstLevel) const
 {
   CALLSTACK;
   TRACEFMT("1 [%s] [%d] [%d]", FileName.c_str(), int(Side), int(FirstLevel));
+  UnicodeString FileName2 = FileName;
   if (FirstLevel)
   {
-    FileName = MaskFileName(FileName, GetFileMask());
+    FileName2 = MaskFileName(FileName2, GetFileMask());
   }
   switch (GetFileNameCase()) {
-    case ncUpperCase: FileName = FileName.UpperCase(); break;
-    case ncLowerCase: FileName = FileName.LowerCase(); break;
-    case ncFirstUpperCase: FileName = FileName.SubString(1, 1).UpperCase() +
-      FileName.SubString(2, FileName.Length()-1).LowerCase(); break;
+    case ncUpperCase: FileName2 = FileName2.UpperCase(); break;
+    case ncLowerCase: FileName2 = FileName2.LowerCase(); break;
+    case ncFirstUpperCase: FileName2 = FileName2.SubString(1, 1).UpperCase() +
+      FileName2.SubString(2, FileName2.Length()-1).LowerCase(); break;
     case ncLowerCaseShort:
-      if ((FileName.Length() <= 12) && (FileName.Pos(L".") <= 9) &&
-          (FileName == FileName.UpperCase()))
+      if ((FileName2.Length() <= 12) && (FileName2.Pos(L".") <= 9) &&
+          (FileName2 == FileName2.UpperCase()))
       {
-        FileName = FileName.LowerCase();
+        FileName2 = FileName2.LowerCase();
       }
       break;
     case ncNoChange:
@@ -324,17 +327,17 @@ UnicodeString __fastcall TCopyParamType::ChangeFileName(UnicodeString FileName,
   }
   if (Side == osRemote)
   {
-    FileName = ValidLocalFileName(FileName);
+    FileName2 = ValidLocalFileName(FileName2);
   }
   else
   {
-    FileName = RestoreChars(FileName);
+    FileName2 = RestoreChars(FileName2);
   }
-  TRACEFMT("2 [%s]", FileName.c_str());
-  return FileName;
+  TRACEFMT("2 [%s]", FileName2.c_str());
+  return FileName2;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCopyParamType::UseAsciiTransfer(UnicodeString FileName,
+bool __fastcall TCopyParamType::UseAsciiTransfer(const UnicodeString & FileName,
   TOperationSide Side, const TFileMasks::TParams & Params) const
 {
   switch (GetTransferMode())
@@ -411,7 +414,7 @@ bool __fastcall TCopyParamType::AllowAnyTransfer() const
   return GetIncludeFileMask().GetMasks().IsEmpty();
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCopyParamType::AllowTransfer(UnicodeString FileName,
+bool __fastcall TCopyParamType::AllowTransfer(const UnicodeString & FileName,
   TOperationSide Side, bool Directory, const TFileMasks::TParams & Params) const
 {
   CALLSTACK;
@@ -449,7 +452,7 @@ void __fastcall TCopyParamType::Load(THierarchicalStorage * Storage)
   }
   else if (Storage->ValueExists(L"ExcludeFileMask"))
   {
-    UnicodeString ExcludeFileMask = Storage->ReadString(L"ExcludeFileMask", L"");
+    UnicodeString ExcludeFileMask = Storage->ReadString(L"ExcludeFileMask", UnicodeString());
     if (!ExcludeFileMask.IsEmpty())
     {
       bool NegativeExclude = Storage->ReadBool(L"NegativeExclude", GetNegativeExclude());
@@ -527,9 +530,9 @@ TFileMasks & __fastcall TCopyParamType::GetAsciiFileMask()
   return FAsciiFileMask;
 }
 //---------------------------------------------------------------------------
-void __fastcall TCopyParamType::SetAsciiFileMask(TFileMasks value)
+void __fastcall TCopyParamType::SetAsciiFileMask(TFileMasks Value)
 {
-  FAsciiFileMask = value;
+  FAsciiFileMask = Value;
 }
 //---------------------------------------------------------------------------
 const TFileNameCase & __fastcall TCopyParamType::GetFileNameCase() const
@@ -547,9 +550,9 @@ UnicodeString __fastcall TCopyParamType::GetFileMask() const
   return FFileMask;
 }
 //---------------------------------------------------------------------------
-void __fastcall TCopyParamType::SetFileMask(const UnicodeString value)
+void __fastcall TCopyParamType::SetFileMask(const UnicodeString & Value)
 {
-  FFileMask = value;
+  FFileMask = Value;
 }
 //---------------------------------------------------------------------------
 const TFileMasks & __fastcall TCopyParamType::GetIncludeFileMask() const
@@ -562,9 +565,9 @@ TFileMasks & __fastcall TCopyParamType::GetIncludeFileMask()
   return FIncludeFileMask;
 }
 //---------------------------------------------------------------------------
-void __fastcall TCopyParamType::SetIncludeFileMask(TFileMasks value)
+void __fastcall TCopyParamType::SetIncludeFileMask(TFileMasks Value)
 {
-  FIncludeFileMask = value;
+  FIncludeFileMask = Value;
 }
 //---------------------------------------------------------------------------
 unsigned long __fastcall GetSpeedLimit(const UnicodeString & Text)

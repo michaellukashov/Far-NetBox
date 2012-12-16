@@ -28,8 +28,8 @@ private:
   static UnicodeString Keys[];
 
 private:
-  void __fastcall LoadLevel(THierarchicalStorage * Storage, const UnicodeString Key,
-    int Index, TBookmarkList * BookmarkList);
+  void __fastcall LoadLevel(THierarchicalStorage * Storage, const UnicodeString & Key,
+    intptr_t Index, TBookmarkList * BookmarkList);
 };
 //---------------------------------------------------------------------------
 class TBookmarkList : public TPersistent
@@ -46,7 +46,7 @@ public:
   void __fastcall InsertBefore(TBookmark * BeforeBookmark, TBookmark * Bookmark);
   void __fastcall MoveTo(TBookmark * ToBookmark, TBookmark * Bookmark, bool Before);
   void __fastcall Delete(TBookmark * Bookmark);
-  TBookmark * __fastcall FindByName(const UnicodeString Node, const UnicodeString Name);
+  TBookmark * __fastcall FindByName(const UnicodeString & Node, const UnicodeString & Name);
   TBookmark * __fastcall FindByShortCut(TShortCut ShortCut);
   virtual void __fastcall Assign(TPersistent * Source);
   void __fastcall LoadOptions(THierarchicalStorage * Storage);
@@ -80,20 +80,20 @@ public:
   virtual void __fastcall Assign(TPersistent * Source);
 
   UnicodeString __fastcall GetName() { return FName; }
-  void __fastcall SetName(const UnicodeString Value);
+  void __fastcall SetName(const UnicodeString & Value);
   UnicodeString __fastcall GetLocal() { return FLocal; }
-  void __fastcall SetLocal(const UnicodeString Value);
+  void __fastcall SetLocal(const UnicodeString & Value);
   UnicodeString __fastcall GetRemote() { return FRemote; }
-  void __fastcall SetRemote(const UnicodeString Value);
+  void __fastcall SetRemote(const UnicodeString & Value);
   UnicodeString __fastcall GetNode() { return FNode; }
-  void __fastcall SetNode(const UnicodeString Value);
+  void __fastcall SetNode(const UnicodeString & Value);
   TShortCut __fastcall GetShortCut() { return FShortCut; }
   void __fastcall SetShortCut(TShortCut Value);
 
 protected:
   TBookmarkList * FOwner;
 
-  static UnicodeString __fastcall BookmarkKey(const UnicodeString Node, const UnicodeString Name);
+  static UnicodeString __fastcall BookmarkKey(const UnicodeString & Node, const UnicodeString & Name);
 
 private:
   UnicodeString FName;

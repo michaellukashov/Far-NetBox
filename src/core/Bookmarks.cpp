@@ -82,8 +82,8 @@ void __fastcall TBookmarks::Load(THierarchicalStorage * Storage)
   ModifyAll(false);
 }
 //---------------------------------------------------------------------------
-void __fastcall TBookmarks::LoadLevel(THierarchicalStorage * Storage, const UnicodeString Key,
-  int Index, TBookmarkList * BookmarkList)
+void __fastcall TBookmarks::LoadLevel(THierarchicalStorage * Storage, const UnicodeString & Key,
+  intptr_t Index, TBookmarkList * BookmarkList)
 {
   CALLSTACK;
   TStrings * Names = new TStringList();
@@ -93,7 +93,7 @@ void __fastcall TBookmarks::LoadLevel(THierarchicalStorage * Storage, const Unic
     UnicodeString Name;
     UnicodeString Directory;
     TShortCut ShortCut(0);
-    for (int i = 0; i < Names->Count; i++)
+    for (intptr_t i = 0; i < Names->Count; i++)
     {
       Name = Names->Strings[i];
       bool IsDirectory = (Index == 0) || (Index == 1);
@@ -420,7 +420,7 @@ void __fastcall TBookmarkList::KeyChanged(intptr_t Index)
   FBookmarks->Strings[Index] = Bookmark->GetKey();
 }
 //---------------------------------------------------------------------------
-TBookmark * __fastcall TBookmarkList::FindByName(const UnicodeString Node, const UnicodeString Name)
+TBookmark * __fastcall TBookmarkList::FindByName(const UnicodeString & Node, const UnicodeString & Name)
 {
   intptr_t I = FBookmarks->IndexOf(TBookmark::BookmarkKey(Node, Name).c_str());
   TBookmark * Bookmark = ((I >= 0) ? dynamic_cast<TBookmark *>(FBookmarks->Objects[I]) : NULL);
@@ -513,7 +513,7 @@ void __fastcall TBookmark::Assign(TPersistent * Source)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TBookmark::SetName(const UnicodeString Value)
+void __fastcall TBookmark::SetName(const UnicodeString & Value)
 {
   if (GetName() != Value)
   {
@@ -532,7 +532,7 @@ void __fastcall TBookmark::SetName(const UnicodeString Value)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TBookmark::SetLocal(const UnicodeString Value)
+void __fastcall TBookmark::SetLocal(const UnicodeString & Value)
 {
   if (GetLocal() != Value)
   {
@@ -541,7 +541,7 @@ void __fastcall TBookmark::SetLocal(const UnicodeString Value)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TBookmark::SetRemote(const UnicodeString Value)
+void __fastcall TBookmark::SetRemote(const UnicodeString & Value)
 {
   if (GetRemote() != Value)
   {
@@ -550,7 +550,7 @@ void __fastcall TBookmark::SetRemote(const UnicodeString Value)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TBookmark::SetNode(const UnicodeString Value)
+void __fastcall TBookmark::SetNode(const UnicodeString & Value)
 {
   if (GetNode() != Value)
   {
@@ -581,7 +581,7 @@ void __fastcall TBookmark::Modify(intptr_t OldIndex)
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TBookmark::BookmarkKey(const UnicodeString Node, const UnicodeString Name)
+UnicodeString __fastcall TBookmark::BookmarkKey(const UnicodeString & Node, const UnicodeString & Name)
 {
   return FORMAT(L"%s\1%s", Node.c_str(), Name.c_str());
 }

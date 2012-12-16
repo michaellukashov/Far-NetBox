@@ -60,10 +60,10 @@ public:
   static const wchar_t TokenReplacement = wchar_t(true);
 
 public:
-  void __fastcall SetLocalInvalidChars(UnicodeString value);
+  void __fastcall SetLocalInvalidChars(const UnicodeString & Value);
   bool __fastcall GetReplaceInvalidChars() const;
   void __fastcall SetReplaceInvalidChars(bool value);
-  UnicodeString __fastcall RestoreChars(UnicodeString FileName) const;
+  UnicodeString __fastcall RestoreChars(const UnicodeString & FileName) const;
 
 public:
   /* __fastcall */ TCopyParamType();
@@ -72,22 +72,22 @@ public:
   TCopyParamType & __fastcall operator =(const TCopyParamType & rhp);
   virtual void __fastcall Assign(const TCopyParamType * Source);
   virtual void __fastcall Default();
-  UnicodeString __fastcall ChangeFileName(UnicodeString FileName,
+  UnicodeString __fastcall ChangeFileName(const UnicodeString & FileName,
     TOperationSide Side, bool FirstLevel) const;
   int __fastcall LocalFileAttrs(const TRights & Rights) const;
   TRights __fastcall RemoteFileRights(int Attrs) const;
-  bool __fastcall UseAsciiTransfer(UnicodeString FileName, TOperationSide Side,
+  bool __fastcall UseAsciiTransfer(const UnicodeString & FileName, TOperationSide Side,
     const TFileMasks::TParams & Params) const;
   bool __fastcall AllowResume(__int64 Size) const;
-  UnicodeString __fastcall ValidLocalFileName(UnicodeString FileName) const;
-  UnicodeString __fastcall ValidLocalPath(UnicodeString Path) const;
+  UnicodeString __fastcall ValidLocalFileName(const UnicodeString & FileName) const;
+  UnicodeString __fastcall ValidLocalPath(const UnicodeString & Path) const;
   bool __fastcall AllowAnyTransfer() const;
-  bool __fastcall AllowTransfer(UnicodeString FileName, TOperationSide Side,
+  bool __fastcall AllowTransfer(const UnicodeString & FileName, TOperationSide Side,
     bool Directory, const TFileMasks::TParams & Params) const;
 
   void __fastcall Load(THierarchicalStorage * Storage);
   void __fastcall Save(THierarchicalStorage * Storage) const;
-  UnicodeString __fastcall GetInfoStr(UnicodeString Separator, int Attrs) const;
+  UnicodeString __fastcall GetInfoStr(const UnicodeString & Separator, int Attrs) const;
 
   bool __fastcall operator==(const TCopyParamType & rhp) const;
 
@@ -122,7 +122,7 @@ public:
   bool __fastcall GetCalculateSize() const { return FCalculateSize; }
   void __fastcall SetCalculateSize(bool value) { FCalculateSize = value; }
   UnicodeString __fastcall GetFileMask() const;
-  void __fastcall SetFileMask(const UnicodeString value);
+  void __fastcall SetFileMask(const UnicodeString & Value);
   const TFileMasks & __fastcall GetIncludeFileMask() const;
   TFileMasks & __fastcall GetIncludeFileMask();
   void __fastcall SetIncludeFileMask(TFileMasks value);

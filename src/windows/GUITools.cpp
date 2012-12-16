@@ -45,7 +45,7 @@ bool __fastcall FileExistsEx(UnicodeString Path)
   return FindFile(Path);
 }
 //---------------------------------------------------------------------------
-void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
+void __fastcall OpenSessionInPutty(const UnicodeString & PuttyPath,
   TSessionData * SessionData, UnicodeString Password)
 {
   CALLSTACK;
@@ -174,7 +174,7 @@ bool __fastcall FindTool(const UnicodeString & Name, UnicodeString & Path)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall ExecuteShell(const UnicodeString Path, const UnicodeString Params)
+bool __fastcall ExecuteShell(const UnicodeString & Path, const UnicodeString & Params)
 {
   CALLSTACK;
   TRACEFMT("1 [%s] [%s]", Path.c_str(), Params.c_str());
@@ -182,7 +182,7 @@ bool __fastcall ExecuteShell(const UnicodeString Path, const UnicodeString Param
     const_cast<wchar_t*>(Params.data()), NULL, SW_SHOWNORMAL) > 32);
 }
 //---------------------------------------------------------------------------
-bool __fastcall ExecuteShell(const UnicodeString Path, const UnicodeString Params,
+bool __fastcall ExecuteShell(const UnicodeString & Path, const UnicodeString & Params,
   HANDLE & Handle)
 {
   CALLSTACK;
@@ -209,8 +209,8 @@ bool __fastcall ExecuteShell(const UnicodeString Path, const UnicodeString Param
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString Path,
-  const UnicodeString Params, TProcessMessagesEvent ProcessMessages)
+bool __fastcall ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString & Path,
+  const UnicodeString & Params, TProcessMessagesEvent ProcessMessages)
 {
   bool Result = false;
 
@@ -248,7 +248,7 @@ bool __fastcall ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString Path,
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString Command,
+bool __fastcall ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString & Command,
   TProcessMessagesEvent ProcessMessages)
 {
   UnicodeString Program, Params, Dir;
@@ -269,8 +269,8 @@ bool __fastcall SpecialFolderLocation(int PathID, UnicodeString & Path)
   return false;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall ItemsFormatString(const UnicodeString SingleItemFormat,
-  const UnicodeString MultiItemsFormat, intptr_t Count, const UnicodeString FirstItem)
+UnicodeString __fastcall ItemsFormatString(const UnicodeString & SingleItemFormat,
+  const UnicodeString & MultiItemsFormat, intptr_t Count, const UnicodeString & FirstItem)
 {
   UnicodeString Result;
   if (Count == 1)
@@ -284,15 +284,15 @@ UnicodeString __fastcall ItemsFormatString(const UnicodeString SingleItemFormat,
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall ItemsFormatString(const UnicodeString SingleItemFormat,
-  const UnicodeString MultiItemsFormat, TStrings * Items)
+UnicodeString __fastcall ItemsFormatString(const UnicodeString & SingleItemFormat,
+  const UnicodeString & MultiItemsFormat, TStrings * Items)
 {
   return ItemsFormatString(SingleItemFormat, MultiItemsFormat,
     Items->Count, (Items->Count > 0 ? Items->Strings[0] : UnicodeString()));
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall FileNameFormatString(const UnicodeString SingleFileFormat,
-  const UnicodeString MultiFilesFormat, TStrings * Files, bool Remote)
+UnicodeString __fastcall FileNameFormatString(const UnicodeString & SingleFileFormat,
+  const UnicodeString & MultiFilesFormat, TStrings * Files, bool Remote)
 {
   assert(Files != NULL);
   UnicodeString Item;
@@ -305,7 +305,7 @@ UnicodeString __fastcall FileNameFormatString(const UnicodeString SingleFileForm
     Files->Count, Item);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall UniqTempDir(const UnicodeString BaseDir, const UnicodeString Identity,
+UnicodeString __fastcall UniqTempDir(const UnicodeString & BaseDir, const UnicodeString & Identity,
   bool Mask)
 {
   UnicodeString TempDir;
@@ -334,7 +334,7 @@ UnicodeString __fastcall UniqTempDir(const UnicodeString BaseDir, const UnicodeS
   return TempDir;
 }
 //---------------------------------------------------------------------------
-bool __fastcall DeleteDirectory(const UnicodeString DirName)
+bool __fastcall DeleteDirectory(const UnicodeString & DirName)
 {
   TSearchRec sr = {0};
   bool retval = true;
@@ -373,7 +373,7 @@ bool __fastcall DeleteDirectory(const UnicodeString DirName)
   return retval;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall FormatDateTimeSpan(const UnicodeString TimeFormat, TDateTime DateTime)
+UnicodeString __fastcall FormatDateTimeSpan(const UnicodeString & TimeFormat, TDateTime DateTime)
 {
   UnicodeString Result;
   if (static_cast<int>(DateTime) > 0)

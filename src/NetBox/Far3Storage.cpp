@@ -7,7 +7,7 @@
 #include "TextsCore.h"
 
 //---------------------------------------------------------------------------
-TFar3Storage::TFar3Storage(const UnicodeString AStorage,
+TFar3Storage::TFar3Storage(const UnicodeString & AStorage,
                            const GUID & guid, FARAPISETTINGSCONTROL SettingsControl) :
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
   FPluginSettings(guid, SettingsControl)
@@ -42,7 +42,7 @@ void __fastcall TFar3Storage::SetAccessMode(TStorageAccessMode value)
   THierarchicalStorage::SetAccessMode(value);
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TFar3Storage::OpenSubKeyInternal(intptr_t Root, const UnicodeString SubKey, bool CanCreate)
+intptr_t __fastcall TFar3Storage::OpenSubKeyInternal(intptr_t Root, const UnicodeString & SubKey, bool CanCreate)
 {
   intptr_t NewRoot = 0;
   UnicodeString UnmungedSubKey = PuttyUnMungeStr(SubKey);
@@ -58,7 +58,7 @@ intptr_t __fastcall TFar3Storage::OpenSubKeyInternal(intptr_t Root, const Unicod
   return NewRoot;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFar3Storage::DoOpenSubKey(const UnicodeString MungedSubKey, bool CanCreate)
+bool __fastcall TFar3Storage::DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCreate)
 {
   // DEBUG_PRINTF(L"SubKey = %s, CanCreate = %d, Path = %d", SubKey.c_str(), CanCreate, Path);
   intptr_t OldRoot = FRoot;
@@ -103,7 +103,7 @@ void __fastcall TFar3Storage::CloseSubKey()
   // DEBUG_PRINTF(L"end, FRoot = %d", FRoot);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFar3Storage::DeleteSubKey(const UnicodeString SubKey)
+bool __fastcall TFar3Storage::DeleteSubKey(const UnicodeString & SubKey)
 {
   UnicodeString K;
   if (FKeyHistory->Count == 0)
@@ -155,12 +155,12 @@ void __fastcall TFar3Storage::GetValueNames(TStrings * Strings)
   // DEBUG_PRINTF(L"end, Strings->GetCount() = %d", Strings->Count);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFar3Storage::DeleteValue(const UnicodeString Name)
+bool __fastcall TFar3Storage::DeleteValue(const UnicodeString & Name)
 {
   return FPluginSettings.DeleteValue(FRoot, Name.c_str());
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFar3Storage::DoKeyExists(const UnicodeString SubKey, bool ForceAnsi)
+bool __fastcall TFar3Storage::DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi)
 {
   Error(SNotImplemented, 3011);
   // DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
@@ -170,25 +170,25 @@ bool __fastcall TFar3Storage::DoKeyExists(const UnicodeString SubKey, bool Force
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFar3Storage::ValueExists(const UnicodeString Value)
+bool __fastcall TFar3Storage::ValueExists(const UnicodeString & Value)
 {
   // DEBUG_PRINTF(L"begin, FRoot = %d, Value = %s", FRoot, Value.c_str());
   bool Result = FPluginSettings.ValueExists(FRoot, Value.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TFar3Storage::BinaryDataSize(const UnicodeString Name)
+size_t __fastcall TFar3Storage::BinaryDataSize(const UnicodeString & Name)
 {
   size_t Result = FPluginSettings.BinaryDataSize(FRoot, Name.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFar3Storage::ReadBool(const UnicodeString Name, bool Default)
+bool __fastcall TFar3Storage::ReadBool(const UnicodeString & Name, bool Default)
 {
   return FPluginSettings.Get(FRoot, Name.c_str(), Default);
 }
 //---------------------------------------------------------------------------
-TDateTime __fastcall TFar3Storage::ReadDateTime(const UnicodeString Name, TDateTime Default)
+TDateTime __fastcall TFar3Storage::ReadDateTime(const UnicodeString & Name, TDateTime Default)
 {
   TDateTime Result;
   double val = 0.0;
@@ -201,7 +201,7 @@ TDateTime __fastcall TFar3Storage::ReadDateTime(const UnicodeString Name, TDateT
   return Result;
 }
 //---------------------------------------------------------------------------
-double __fastcall TFar3Storage::ReadFloat(const UnicodeString Name, double Default)
+double __fastcall TFar3Storage::ReadFloat(const UnicodeString & Name, double Default)
 {
   double Result = 0.0;
   double val = 0.0;
@@ -214,35 +214,35 @@ double __fastcall TFar3Storage::ReadFloat(const UnicodeString Name, double Defau
   return Result;
 }
 //---------------------------------------------------------------------------
-int __fastcall TFar3Storage::ReadInteger(const UnicodeString Name, int Default)
+int __fastcall TFar3Storage::ReadInteger(const UnicodeString & Name, int Default)
 {
   return FPluginSettings.Get(FRoot, Name.c_str(), Default);
 }
 //---------------------------------------------------------------------------
-__int64 __fastcall TFar3Storage::ReadInt64(const UnicodeString Name, __int64 Default)
+__int64 __fastcall TFar3Storage::ReadInt64(const UnicodeString & Name, __int64 Default)
 {
   return FPluginSettings.Get(FRoot, Name.c_str(), Default);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TFar3Storage::ReadStringRaw(const UnicodeString Name, const UnicodeString Default)
+UnicodeString __fastcall TFar3Storage::ReadStringRaw(const UnicodeString & Name, const UnicodeString & Default)
 {
   UnicodeString Result = FPluginSettings.Get(FRoot, Name.c_str(), Default.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
-size_t __fastcall TFar3Storage::ReadBinaryData(const UnicodeString Name,
+size_t __fastcall TFar3Storage::ReadBinaryData(const UnicodeString & Name,
     void * Buffer, size_t Size)
 {
   return FPluginSettings.Get(FRoot, Name.c_str(), Buffer, Size);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFar3Storage::WriteBool(const UnicodeString Name, bool Value)
+void __fastcall TFar3Storage::WriteBool(const UnicodeString & Name, bool Value)
 {
   // DEBUG_PRINTF(L"begin, FRoot = %d, Name = %s", FRoot, Name.c_str());
   FPluginSettings.Set(FRoot, Name.c_str(), Value);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFar3Storage::WriteDateTime(const UnicodeString Name, TDateTime Value)
+void __fastcall TFar3Storage::WriteDateTime(const UnicodeString & Name, TDateTime Value)
 {
   double val = Value.operator double();
   void * value = reinterpret_cast<void *>(&val);
@@ -253,7 +253,7 @@ void __fastcall TFar3Storage::WriteDateTime(const UnicodeString Name, TDateTime 
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFar3Storage::WriteFloat(const UnicodeString Name, double Value)
+void __fastcall TFar3Storage::WriteFloat(const UnicodeString & Name, double Value)
 {
   double val = Value.operator double();
   void * value = reinterpret_cast<void *>(&val);
@@ -264,24 +264,24 @@ void __fastcall TFar3Storage::WriteFloat(const UnicodeString Name, double Value)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFar3Storage::WriteStringRaw(const UnicodeString Name, const UnicodeString Value)
+void __fastcall TFar3Storage::WriteStringRaw(const UnicodeString & Name, const UnicodeString & Value)
 {
   FPluginSettings.Set(FRoot, Name.c_str(), Value.c_str());
 }
 //---------------------------------------------------------------------------
-void __fastcall TFar3Storage::WriteInteger(const UnicodeString Name, int Value)
+void __fastcall TFar3Storage::WriteInteger(const UnicodeString & Name, int Value)
 {
   // DEBUG_PRINTF(L"begin, FRoot = %d, Name = %s", FRoot, Name.c_str());
   FPluginSettings.Set(FRoot, Name.c_str(), Value);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFar3Storage::WriteInt64(const UnicodeString Name, __int64 Value)
+void __fastcall TFar3Storage::WriteInt64(const UnicodeString & Name, __int64 Value)
 {
   // DEBUG_PRINTF(L"begin, FRoot = %d, Name = %s", FRoot, Name.c_str());
   FPluginSettings.Set(FRoot, Name.c_str(), Value);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFar3Storage::WriteBinaryData(const UnicodeString Name,
+void __fastcall TFar3Storage::WriteBinaryData(const UnicodeString & Name,
   const void * Buffer, size_t Size)
 {
   FPluginSettings.Set(FRoot, Name.c_str(), Buffer, Size);

@@ -24,7 +24,7 @@ static UnicodeString FileMasksDelimiterStr = UnicodeString(FileMasksDelimiters[1
   ErrorLen = AErrorLen;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall MaskFilePart(const UnicodeString Part, const UnicodeString Mask, bool& Masked)
+UnicodeString __fastcall MaskFilePart(const UnicodeString & Part, const UnicodeString & Mask, bool& Masked)
 {
   UnicodeString Result;
   intptr_t RestStart = 1;
@@ -72,36 +72,37 @@ UnicodeString __fastcall MaskFilePart(const UnicodeString Part, const UnicodeStr
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall MaskFileName(UnicodeString FileName, const UnicodeString Mask)
+UnicodeString __fastcall MaskFileName(const UnicodeString & FileName, const UnicodeString & Mask)
 {
+  UnicodeString Result = FileName;
   if (IsEffectiveFileNameMask(Mask))
   {
     bool Masked;
     intptr_t P = Mask.LastDelimiter(L".");
     if (P > 0)
     {
-      intptr_t P2 = FileName.LastDelimiter(".");
+      intptr_t P2 = Result.LastDelimiter(".");
       // only dot at beginning of file name is not considered as
       // name/ext separator
       UnicodeString FileExt = P2 > 1 ?
-        FileName.SubString(P2 + 1, FileName.Length() - P2) : UnicodeString();
+        Result.SubString(P2 + 1, Result.Length() - P2) : UnicodeString();
       FileExt = MaskFilePart(FileExt, Mask.SubString(P + 1, Mask.Length() - P), Masked);
       if (P2 > 1)
       {
-        FileName.SetLength(P2 - 1);
+        Result.SetLength(P2 - 1);
       }
-      FileName = MaskFilePart(FileName, Mask.SubString(1, P - 1), Masked);
+      Result = MaskFilePart(Result, Mask.SubString(1, P - 1), Masked);
       if (!FileExt.IsEmpty())
       {
-        FileName += L"." + FileExt;
+        Result += L"." + FileExt;
       }
     }
     else
     {
-      FileName = MaskFilePart(FileName, Mask, Masked);
+      Result = MaskFilePart(Result, Mask, Masked);
     }
   }
-  return FileName;
+  return Result;
 }
 //---------------------------------------------------------------------------
 bool __fastcall IsEffectiveFileNameMask(const UnicodeString & Mask)
@@ -134,7 +135,7 @@ UnicodeString TFileMasks::TParams::ToString() const
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-bool __fastcall TFileMasks::IsMask(const UnicodeString Mask)
+bool __fastcall TFileMasks::IsMask(const UnicodeString & Mask)
 {
   return (Mask.LastDelimiter(L"?*[") > 0);
 }
@@ -290,8 +291,8 @@ void __fastcall TFileMasks::Clear(TMasks & Masks)
   Masks.clear();
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileMasks::MatchesMasks(const UnicodeString FileName, bool Directory,
-  const UnicodeString Path, const TParams * Params, const TMasks & Masks, bool Recurse)
+bool __fastcall TFileMasks::MatchesMasks(const UnicodeString & FileName, bool Directory,
+  const UnicodeString & Path, const TParams * Params, const TMasks & Masks, bool Recurse)
 {
   CALLSTACK;
   bool Result = false;
@@ -403,15 +404,15 @@ bool __fastcall TFileMasks::MatchesMasks(const UnicodeString FileName, bool Dire
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileMasks::Matches(const UnicodeString FileName, bool Directory,
-  const UnicodeString Path, const TParams * Params) const
+bool __fastcall TFileMasks::Matches(const UnicodeString & FileName, bool Directory,
+  const UnicodeString & Path, const TParams * Params) const
 {
   bool ImplicitMatch;
   return Matches(FileName, Directory, Path, Params, ImplicitMatch);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileMasks::Matches(const UnicodeString FileName, bool Directory,
-  const UnicodeString Path, const TParams * Params,
+bool __fastcall TFileMasks::Matches(const UnicodeString & FileName, bool Directory,
+  const UnicodeString & Path, const TParams * Params,
   bool & ImplicitMatch) const
 {
   TRACEFMT("1 [%s] [%d] [%s] [%d] %s", FileName.c_str(), int(Directory), Path.c_str(), int(FNoImplicitMatch), UnicodeString((Params == NULL) ? L"<null>" : Params->ToString()).c_str());
@@ -425,14 +426,14 @@ bool __fastcall TFileMasks::Matches(const UnicodeString FileName, bool Directory
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileMasks::Matches(const UnicodeString FileName, bool Local,
+bool __fastcall TFileMasks::Matches(const UnicodeString & FileName, bool Local,
   bool Directory, const TParams * Params) const
 {
   bool ImplicitMatch;
   return Matches(FileName, Local, Directory, Params, ImplicitMatch);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileMasks::Matches(const UnicodeString FileName, bool Local,
+bool __fastcall TFileMasks::Matches(const UnicodeString & FileName, bool Local,
   bool Directory, const TParams * Params, bool & ImplicitMatch) const
 {
   CALLSTACK;
@@ -729,11 +730,11 @@ bool __fastcall TFileMasks::MatchesMaskMask(const TMaskMask & MaskMask, const Un
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileMasks::SetMasks(const UnicodeString value)
+void __fastcall TFileMasks::SetMasks(const UnicodeString & Value)
 {
-  if (FStr != value)
+  if (FStr != Value)
   {
-    SetStr(value, false);
+    SetStr(Value, false);
   }
 }
 //---------------------------------------------------------------------------
@@ -742,7 +743,7 @@ void __fastcall TFileMasks::SetMask(const UnicodeString & Mask)
   SetStr(Mask, true);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileMasks::SetStr(const UnicodeString Str, bool SingleMask)
+void __fastcall TFileMasks::SetStr(const UnicodeString & Str, bool SingleMask)
 {
   UnicodeString Backup = FStr;
   try

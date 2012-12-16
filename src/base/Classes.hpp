@@ -260,24 +260,24 @@ class TStrings : public TPersistent
 public:
   TStrings();
   virtual ~TStrings();
-  intptr_t __fastcall Add(const UnicodeString S);
+  intptr_t __fastcall Add(const UnicodeString & S);
   virtual void __fastcall Delete(intptr_t Index) = 0;
   virtual UnicodeString __fastcall GetTextStr();
-  virtual void __fastcall SetTextStr(const UnicodeString Text);
+  virtual void __fastcall SetTextStr(const UnicodeString & Text);
   virtual void __fastcall BeginUpdate();
   virtual void __fastcall EndUpdate();
   virtual void __fastcall SetUpdateState(bool Updating);
-  intptr_t __fastcall AddObject(const UnicodeString S, TObject * AObject);
-  virtual void __fastcall InsertObject(intptr_t Index, const UnicodeString Key, TObject * AObject);
+  intptr_t __fastcall AddObject(const UnicodeString & S, TObject * AObject);
+  virtual void __fastcall InsertObject(intptr_t Index, const UnicodeString & Key, TObject * AObject);
   bool __fastcall Equals(TStrings * Value) const;
   virtual void __fastcall Clear() = 0;
   void __fastcall Move(intptr_t CurIndex, intptr_t NewIndex);
-  intptr_t __fastcall IndexOf(const UnicodeString S);
-  virtual intptr_t __fastcall IndexOfName(const UnicodeString Name);
-  UnicodeString __fastcall ExtractName(const UnicodeString S) const;
+  intptr_t __fastcall IndexOf(const UnicodeString & S);
+  virtual intptr_t __fastcall IndexOfName(const UnicodeString & Name);
+  UnicodeString __fastcall ExtractName(const UnicodeString & S) const;
   void __fastcall AddStrings(TStrings * Strings);
-  void __fastcall Append(const UnicodeString Value);
-  virtual void __fastcall Insert(intptr_t Index, const UnicodeString AString) = 0;
+  void __fastcall Append(const UnicodeString & Value);
+  virtual void __fastcall Insert(intptr_t Index, const UnicodeString & AString) = 0;
   void __fastcall SaveToStream(TStream * Stream) const;
   wchar_t __fastcall GetDelimiter() const { return FDelimiter; }
   void __fastcall SetDelimiter(wchar_t Value)
@@ -290,16 +290,16 @@ public:
     FQuoteChar = Value;
   }
   UnicodeString __fastcall GetDelimitedText() const;
-  void __fastcall SetDelimitedText(const UnicodeString Value);
-  virtual intptr_t __fastcall CompareStrings(const UnicodeString S1, const UnicodeString S2);
+  void __fastcall SetDelimitedText(const UnicodeString & Value);
+  virtual intptr_t __fastcall CompareStrings(const UnicodeString & S1, const UnicodeString & S2);
   int __fastcall GetUpdateCount() const { return FUpdateCount; }
   virtual void __fastcall Assign(TPersistent * Source);
 
 protected:
   virtual UnicodeString __fastcall GetText();
-  virtual void __fastcall SetText(const UnicodeString Text);
+  virtual void __fastcall SetText(const UnicodeString & Text);
   UnicodeString __fastcall GetCommaText();
-  void __fastcall SetCommaText(const UnicodeString Value);
+  void __fastcall SetCommaText(const UnicodeString & Value);
   virtual bool __fastcall GetCaseSensitive() const = 0;
   virtual void __fastcall SetCaseSensitive(bool Value) = 0;
   virtual bool __fastcall GetSorted() const = 0;
@@ -308,12 +308,12 @@ protected:
   virtual intptr_t __fastcall GetCount() const = 0;
   virtual UnicodeString & __fastcall GetString(intptr_t Index) = 0;
   virtual UnicodeString __fastcall GetStrings(intptr_t Index) const = 0;
-  virtual void __fastcall PutString(intptr_t Index, const UnicodeString S) = 0;
+  virtual void __fastcall PutString(intptr_t Index, const UnicodeString & S) = 0;
   virtual TObject *& __fastcall GetObjects(intptr_t Index) = 0;
   virtual void __fastcall PutObject(intptr_t Index, TObject * AObject) = 0;
   const UnicodeString __fastcall GetName(intptr_t Index) const;
-  const UnicodeString __fastcall GetValue(const UnicodeString Name);
-  void __fastcall SetValue(const UnicodeString Name, const UnicodeString Value);
+  const UnicodeString __fastcall GetValue(const UnicodeString & Name);
+  void __fastcall SetValue(const UnicodeString & Name, const UnicodeString & Value);
 
 private:
   intptr_t PropertyGetCount() { return GetCount(); }
@@ -401,18 +401,18 @@ public:
   virtual /* __fastcall */ ~TStringList();
   virtual void __fastcall Assign(TPersistent * Source);
   virtual void __fastcall Clear();
-  intptr_t __fastcall Add(const UnicodeString S);
-  intptr_t __fastcall AddObject(const UnicodeString S, TObject * AObject);
-  virtual bool __fastcall Find(const UnicodeString S, intptr_t & Index);
-  virtual intptr_t __fastcall IndexOf(const UnicodeString S);
+  intptr_t __fastcall Add(const UnicodeString & S);
+  intptr_t __fastcall AddObject(const UnicodeString & S, TObject * AObject);
+  virtual bool __fastcall Find(const UnicodeString & S, intptr_t & Index);
+  virtual intptr_t __fastcall IndexOf(const UnicodeString & S);
   virtual void __fastcall Delete(intptr_t Index);
-  virtual void __fastcall InsertObject(intptr_t Index, const UnicodeString Key, TObject * AObject);
-  void __fastcall InsertItem(intptr_t Index, const UnicodeString S, TObject * AObject);
+  virtual void __fastcall InsertObject(intptr_t Index, const UnicodeString & Key, TObject * AObject);
+  void __fastcall InsertItem(intptr_t Index, const UnicodeString & S, TObject * AObject);
   virtual void __fastcall Sort();
   virtual void __fastcall CustomSort(TStringListSortCompare ACompareFunc);
   void __fastcall QuickSort(intptr_t L, intptr_t R, TStringListSortCompare SCompare);
 
-  void __fastcall LoadFromFile(const UnicodeString FileName);
+  void __fastcall LoadFromFile(const UnicodeString & FileName);
   TNotifyEvent & __fastcall GetOnChange() { return FOnChange; }
   void __fastcall SetOnChange(TNotifyEvent onChange) { FOnChange = onChange; }
   TNotifyEvent & __fastcall GetOnChanging() { return FOnChanging; }
@@ -421,8 +421,8 @@ public:
   virtual void __fastcall SetUpdateState(bool Updating);
   virtual void __fastcall Changing();
   virtual void __fastcall Changed();
-  virtual void __fastcall Insert(intptr_t Index, const UnicodeString S);
-  virtual intptr_t __fastcall CompareStrings(const UnicodeString S1, const UnicodeString S2);
+  virtual void __fastcall Insert(intptr_t Index, const UnicodeString & S);
+  virtual intptr_t __fastcall CompareStrings(const UnicodeString & S1, const UnicodeString & S2);
 
 protected:
   virtual bool __fastcall GetCaseSensitive() const;
@@ -432,7 +432,7 @@ protected:
   virtual intptr_t __fastcall GetCount() const;
   virtual UnicodeString & __fastcall GetString(intptr_t Index);
   virtual UnicodeString __fastcall GetStrings(intptr_t Index) const;
-  virtual void __fastcall PutString(intptr_t Index, const UnicodeString S);
+  virtual void __fastcall PutString(intptr_t Index, const UnicodeString & S);
   virtual TObject *& __fastcall GetObjects(intptr_t Index);
   virtual void __fastcall PutObject(intptr_t Index, TObject * AObject);
 
@@ -544,7 +544,7 @@ public:
   int GetDirIconIndex(BOOL bSmallIcon);
 
   //get file type
-  UnicodeString GetFileType(const UnicodeString strFileName);
+  UnicodeString GetFileType(const UnicodeString & StrFileName);
 };
 
 //---------------------------------------------------------------------------
@@ -645,11 +645,11 @@ public:
   virtual __int64 __fastcall Seek(__int64 Offset, int Origin);
   virtual __int64 __fastcall Seek(const __int64 Offset, TSeekOrigin Origin);
   void __fastcall SaveToStream(TStream * Stream);
-  void __fastcall SaveToFile(const UnicodeString FileName);
+  void __fastcall SaveToFile(const UnicodeString & FileName);
 
   void __fastcall Clear();
   void __fastcall LoadFromStream(TStream * Stream);
-  void __fastcall LoadFromFile(const UnicodeString FileName);
+  void __fastcall LoadFromFile(const UnicodeString & FileName);
   __int64 __fastcall GetSize() const { return FSize; }
   virtual void __fastcall SetSize(const __int64 NewSize);
   virtual __int64 __fastcall Write(const void * Buffer, __int64 Count);
@@ -702,42 +702,42 @@ public:
   void GetValueNames(TStrings * Names) const;
   void GetKeyNames(TStrings * Names) const;
   void CloseKey();
-  bool OpenKey(const UnicodeString key, bool CanCreate);
-  bool DeleteKey(const UnicodeString key);
-  bool DeleteValue(const UnicodeString Value) const;
-  bool KeyExists(const UnicodeString SubKey);
-  bool ValueExists(const UnicodeString Value) const;
-  bool GetDataInfo(const UnicodeString ValueName, TRegDataInfo & Value) const;
-  TRegDataType GetDataType(const UnicodeString ValueName) const;
-  int GetDataSize(const UnicodeString Name) const;
-  bool ReadBool(const UnicodeString Name);
-  TDateTime ReadDateTime(const UnicodeString Name);
-  double ReadFloat(const UnicodeString Name) const;
-  int ReadInteger(const UnicodeString Name) const;
-  __int64 ReadInt64(const UnicodeString Name);
-  UnicodeString ReadString(const UnicodeString Name);
-  UnicodeString ReadStringRaw(const UnicodeString Name);
-  size_t ReadBinaryData(const UnicodeString Name,
+  bool OpenKey(const UnicodeString & Key, bool CanCreate);
+  bool DeleteKey(const UnicodeString & Key);
+  bool DeleteValue(const UnicodeString & Value) const;
+  bool KeyExists(const UnicodeString & SubKey);
+  bool ValueExists(const UnicodeString & Value) const;
+  bool GetDataInfo(const UnicodeString & ValueName, TRegDataInfo & Value) const;
+  TRegDataType GetDataType(const UnicodeString & ValueName) const;
+  int GetDataSize(const UnicodeString & Name) const;
+  bool ReadBool(const UnicodeString & Name);
+  TDateTime ReadDateTime(const UnicodeString & Name);
+  double ReadFloat(const UnicodeString & Name) const;
+  int ReadInteger(const UnicodeString & Name) const;
+  __int64 ReadInt64(const UnicodeString & Name);
+  UnicodeString ReadString(const UnicodeString & Name);
+  UnicodeString ReadStringRaw(const UnicodeString & Name);
+  size_t ReadBinaryData(const UnicodeString & Name,
     void * Buffer, size_t Size) const;
 
-  void WriteBool(const UnicodeString Name, bool Value);
-  void WriteDateTime(const UnicodeString Name, TDateTime & Value);
-  void WriteFloat(const UnicodeString Name, double Value);
-  void WriteString(const UnicodeString Name, const UnicodeString Value);
-  void WriteStringRaw(const UnicodeString Name, const UnicodeString Value);
-  void WriteInteger(const UnicodeString Name, int Value);
-  void WriteInt64(const UnicodeString Name, __int64 Value);
-  void WriteBinaryData(const UnicodeString Name,
+  void WriteBool(const UnicodeString & Name, bool Value);
+  void WriteDateTime(const UnicodeString & Name, TDateTime & Value);
+  void WriteFloat(const UnicodeString & Name, double Value);
+  void WriteString(const UnicodeString & Name, const UnicodeString & Value);
+  void WriteStringRaw(const UnicodeString & Name, const UnicodeString & Value);
+  void WriteInteger(const UnicodeString & Name, int Value);
+  void WriteInt64(const UnicodeString & Name, __int64 Value);
+  void WriteBinaryData(const UnicodeString & Name,
     const void * Buffer, size_t Size);
 private:
-  void ChangeKey(HKEY Value, const UnicodeString Path);
+  void ChangeKey(HKEY Value, const UnicodeString & Path);
   HKEY GetBaseKey(bool Relative);
-  HKEY GetKey(const UnicodeString Key);
+  HKEY GetKey(const UnicodeString & Key);
   void SetCurrentKey(HKEY Value) { FCurrentKey = Value; }
   bool GetKeyInfo(TRegKeyInfo & Value) const;
-  int GetData(const UnicodeString Name, void * Buffer,
+  int GetData(const UnicodeString & Name, void * Buffer,
     intptr_t BufSize, TRegDataType & RegData) const;
-  void PutData(const UnicodeString Name, const void * Buffer,
+  void PutData(const UnicodeString & Name, const void * Buffer,
     intptr_t BufSize, TRegDataType RegData);
 protected:
   void SetAccess(int Value);

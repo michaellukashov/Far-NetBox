@@ -341,8 +341,7 @@ int __fastcall TSimpleThread::ThreadProc(void * Thread)
 //---------------------------------------------------------------------------
 void __fastcall TSimpleThread::Init()
 {
-  FThread = reinterpret_cast<HANDLE>(
-    StartThread(NULL, 0, this, CREATE_SUSPENDED, FThreadId));
+  FThread = StartThread(NULL, 0, this, CREATE_SUSPENDED, FThreadId);
   TRACEFMT("[%x]", int(FThread));
 }
 //---------------------------------------------------------------------------

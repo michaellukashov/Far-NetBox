@@ -10,7 +10,7 @@
 #include "Configuration.h"
 //---------------------------------------------------------------------------
 #define SET_SESSION_PROPERTY(Property) \
-  if (F##Property != value) { F##Property = value; Modify(); }
+  if (F##Property != Value) { F##Property = Value; Modify(); }
 //---------------------------------------------------------------------------
 enum TCipher { cipWarn, cip3DES, cipBlowfish, cipAES, cipDES, cipArcfour };
 #define CIPHER_COUNT (cipArcfour+1)
@@ -188,142 +188,142 @@ private:
   uintptr_t FSessionVersion;
 
 public:
-  void __fastcall SetHostName(UnicodeString value);
+  void __fastcall SetHostName(const UnicodeString & Value);
   UnicodeString __fastcall GetHostNameExpanded();
-  void __fastcall SetPortNumber(int value);
-  void __fastcall SetUserName(UnicodeString value);
+  void __fastcall SetPortNumber(int Value);
+  void __fastcall SetUserName(const UnicodeString & Value);
   UnicodeString __fastcall GetUserNameExpanded();
-  void __fastcall SetPassword(UnicodeString value);
+  void __fastcall SetPassword(const UnicodeString & Value);
   UnicodeString __fastcall GetPassword() const;
-  void __fastcall SetPasswordless(bool value);
-  void __fastcall SetPingInterval(int value);
-  void __fastcall SetTryAgent(bool value);
-  void __fastcall SetAgentFwd(bool value);
-  void __fastcall SetAuthTIS(bool value);
-  void __fastcall SetAuthKI(bool value);
-  void __fastcall SetAuthKIPassword(bool value);
-  void __fastcall SetAuthGSSAPI(bool value);
-  void __fastcall SetGSSAPIFwdTGT(bool value);
-  void __fastcall SetGSSAPIServerRealm(UnicodeString value);
-  void __fastcall SetChangeUsername(bool value);
-  void __fastcall SetCompression(bool value);
-  void __fastcall SetSshProt(TSshProt value);
-  void __fastcall SetSsh2DES(bool value);
-  void __fastcall SetSshNoUserAuth(bool value);
-  void __fastcall SetCipher(int Index, TCipher value);
+  void __fastcall SetPasswordless(bool Value);
+  void __fastcall SetPingInterval(int Value);
+  void __fastcall SetTryAgent(bool Value);
+  void __fastcall SetAgentFwd(bool Value);
+  void __fastcall SetAuthTIS(bool Value);
+  void __fastcall SetAuthKI(bool Value);
+  void __fastcall SetAuthKIPassword(bool Value);
+  void __fastcall SetAuthGSSAPI(bool Value);
+  void __fastcall SetGSSAPIFwdTGT(bool Value);
+  void __fastcall SetGSSAPIServerRealm(const UnicodeString & Value);
+  void __fastcall SetChangeUsername(bool Value);
+  void __fastcall SetCompression(bool Value);
+  void __fastcall SetSshProt(TSshProt Value);
+  void __fastcall SetSsh2DES(bool Value);
+  void __fastcall SetSshNoUserAuth(bool Value);
+  void __fastcall SetCipher(int Index, TCipher Value);
   TCipher __fastcall GetCipher(int Index) const;
-  void __fastcall SetKex(int Index, TKex value);
+  void __fastcall SetKex(int Index, TKex Value);
   TKex __fastcall GetKex(int Index) const;
-  void __fastcall SetPublicKeyFile(UnicodeString value);
+  void __fastcall SetPublicKeyFile(const UnicodeString & Value);
 
-  void __fastcall SetProtocolStr(UnicodeString value);
+  void __fastcall SetProtocolStr(const UnicodeString & Value);
   UnicodeString __fastcall GetProtocolStr() const;
   bool __fastcall GetCanLogin();
-  void __fastcall SetPingIntervalDT(TDateTime value);
+  void __fastcall SetPingIntervalDT(TDateTime Value);
   TDateTime __fastcall GetPingIntervalDT() const;
   TDateTime __fastcall GetFtpPingIntervalDT();
-  void __fastcall SetTimeDifference(TDateTime value);
-  void __fastcall SetPingType(TPingType value);
+  void __fastcall SetTimeDifference(TDateTime Value);
+  void __fastcall SetPingType(TPingType Value);
   UnicodeString __fastcall GetSessionName();
   bool __fastcall HasSessionName();
   UnicodeString __fastcall GetDefaultSessionName();
   UnicodeString __fastcall GetSessionUrl();
-  void __fastcall SetProtocol(TProtocol value);
-  void __fastcall SetFSProtocol(TFSProtocol value);
+  void __fastcall SetProtocol(TProtocol Value);
+  void __fastcall SetFSProtocol(TFSProtocol Value);
   UnicodeString __fastcall GetFSProtocolStr();
-  void __fastcall SetLocalDirectory(UnicodeString value);
-  void __fastcall SetRemoteDirectory(UnicodeString value);
-  void __fastcall SetSynchronizeBrowsing(bool value);
-  void __fastcall SetUpdateDirectories(bool value);
-  void __fastcall SetCacheDirectories(bool value);
-  void __fastcall SetCacheDirectoryChanges(bool value);
-  void __fastcall SetPreserveDirectoryChanges(bool value);
-  void __fastcall SetLockInHome(bool value);
-  void __fastcall SetSpecial(bool value);
+  void __fastcall SetLocalDirectory(const UnicodeString & Value);
+  void __fastcall SetRemoteDirectory(const UnicodeString & Value);
+  void __fastcall SetSynchronizeBrowsing(bool Value);
+  void __fastcall SetUpdateDirectories(bool Value);
+  void __fastcall SetCacheDirectories(bool Value);
+  void __fastcall SetCacheDirectoryChanges(bool Value);
+  void __fastcall SetPreserveDirectoryChanges(bool Value);
+  void __fastcall SetLockInHome(bool Value);
+  void __fastcall SetSpecial(bool Value);
   UnicodeString __fastcall GetInfoTip();
   bool __fastcall GetDefaultShell();
-  void __fastcall SetDetectReturnVar(bool value);
+  void __fastcall SetDetectReturnVar(bool Value);
   bool __fastcall GetDetectReturnVar();
-  void __fastcall SetListingCommand(UnicodeString value);
-  void __fastcall SetClearAliases(bool value);
-  void __fastcall SetDefaultShell(bool value);
-  void __fastcall SetEOLType(TEOLType value);
-  void __fastcall SetLookupUserGroups(TAutoSwitch value);
-  void __fastcall SetReturnVar(UnicodeString value);
-  void __fastcall SetScp1Compatibility(bool value);
-  void __fastcall SetShell(UnicodeString value);
-  void __fastcall SetSftpServer(UnicodeString value);
-  void __fastcall SetTimeout(int value);
-  void __fastcall SetUnsetNationalVars(bool value);
-  void __fastcall SetIgnoreLsWarnings(bool value);
-  void __fastcall SetTcpNoDelay(bool value);
-  void __fastcall SetSendBuf(int value);
-  void __fastcall SetSshSimple(bool value);
+  void __fastcall SetListingCommand(const UnicodeString & Value);
+  void __fastcall SetClearAliases(bool Value);
+  void __fastcall SetDefaultShell(bool Value);
+  void __fastcall SetEOLType(TEOLType Value);
+  void __fastcall SetLookupUserGroups(TAutoSwitch Value);
+  void __fastcall SetReturnVar(const UnicodeString & Value);
+  void __fastcall SetScp1Compatibility(bool Value);
+  void __fastcall SetShell(const UnicodeString & Value);
+  void __fastcall SetSftpServer(const UnicodeString & Value);
+  void __fastcall SetTimeout(int Value);
+  void __fastcall SetUnsetNationalVars(bool Value);
+  void __fastcall SetIgnoreLsWarnings(bool Value);
+  void __fastcall SetTcpNoDelay(bool Value);
+  void __fastcall SetSendBuf(int Value);
+  void __fastcall SetSshSimple(bool Value);
   UnicodeString __fastcall GetSshProtStr();
   bool __fastcall GetUsesSsh();
-  void __fastcall SetCipherList(UnicodeString value);
+  void __fastcall SetCipherList(const UnicodeString & Value);
   UnicodeString __fastcall GetCipherList() const;
-  void __fastcall SetKexList(UnicodeString value);
+  void __fastcall SetKexList(const UnicodeString & Value);
   UnicodeString __fastcall GetKexList() const;
-  void __fastcall SetProxyMethod(TProxyMethod value);
-  void __fastcall SetProxyHost(UnicodeString value);
-  void __fastcall SetProxyPort(int value);
-  void __fastcall SetProxyUsername(UnicodeString value);
-  void __fastcall SetProxyPassword(UnicodeString value);
-  void __fastcall SetProxyTelnetCommand(UnicodeString value);
-  void __fastcall SetProxyLocalCommand(UnicodeString value);
-  void __fastcall SetProxyDNS(TAutoSwitch value);
-  void __fastcall SetProxyLocalhost(bool value);
+  void __fastcall SetProxyMethod(TProxyMethod Value);
+  void __fastcall SetProxyHost(const UnicodeString & Value);
+  void __fastcall SetProxyPort(int Value);
+  void __fastcall SetProxyUsername(const UnicodeString & Value);
+  void __fastcall SetProxyPassword(const UnicodeString & Value);
+  void __fastcall SetProxyTelnetCommand(const UnicodeString & Value);
+  void __fastcall SetProxyLocalCommand(const UnicodeString & Value);
+  void __fastcall SetProxyDNS(TAutoSwitch Value);
+  void __fastcall SetProxyLocalhost(bool Value);
   UnicodeString __fastcall GetProxyPassword() const;
-  void __fastcall SetFtpProxyLogonType(int value);
-  void __fastcall SetBug(TSshBug Bug, TAutoSwitch value);
+  void __fastcall SetFtpProxyLogonType(int Value);
+  void __fastcall SetBug(TSshBug Bug, TAutoSwitch Value);
   TAutoSwitch __fastcall GetBug(TSshBug Bug) const;
   UnicodeString __fastcall GetSessionKey();
-  void __fastcall SetCustomParam1(UnicodeString value);
-  void __fastcall SetCustomParam2(UnicodeString value);
-  void __fastcall SetResolveSymlinks(bool value);
-  void __fastcall SetSFTPDownloadQueue(int value);
-  void __fastcall SetSFTPUploadQueue(int value);
-  void __fastcall SetSFTPListingQueue(int value);
-  void __fastcall SetSFTPMaxVersion(int value);
-  void __fastcall SetSFTPMinPacketSize(unsigned long value);
-  void __fastcall SetSFTPMaxPacketSize(unsigned long value);
-  void __fastcall SetSFTPBug(TSftpBug Bug, TAutoSwitch value);
+  void __fastcall SetCustomParam1(const UnicodeString & Value);
+  void __fastcall SetCustomParam2(const UnicodeString & Value);
+  void __fastcall SetResolveSymlinks(bool Value);
+  void __fastcall SetSFTPDownloadQueue(int Value);
+  void __fastcall SetSFTPUploadQueue(int Value);
+  void __fastcall SetSFTPListingQueue(int Value);
+  void __fastcall SetSFTPMaxVersion(int Value);
+  void __fastcall SetSFTPMinPacketSize(unsigned long Value);
+  void __fastcall SetSFTPMaxPacketSize(unsigned long Value);
+  void __fastcall SetSFTPBug(TSftpBug Bug, TAutoSwitch Value);
   TAutoSwitch __fastcall GetSFTPBug(TSftpBug Bug) const;
-  void __fastcall SetSCPLsFullTime(TAutoSwitch value);
-  void __fastcall SetFtpListAll(TAutoSwitch value);
-  void __fastcall SetSslSessionReuse(bool value);
+  void __fastcall SetSCPLsFullTime(TAutoSwitch Value);
+  void __fastcall SetFtpListAll(TAutoSwitch Value);
+  void __fastcall SetSslSessionReuse(bool Value);
   UnicodeString __fastcall GetStorageKey();
   UnicodeString __fastcall GetInternalStorageKey();
-  void __fastcall SetDSTMode(TDSTMode value);
-  void __fastcall SetDeleteToRecycleBin(bool value);
-  void __fastcall SetOverwrittenToRecycleBin(bool value);
-  void __fastcall SetRecycleBinPath(UnicodeString value);
-  void __fastcall SetPostLoginCommands(UnicodeString value);
-  void __fastcall SetAddressFamily(TAddressFamily value);
-  void __fastcall SetRekeyData(UnicodeString value);
-  void __fastcall SetRekeyTime(unsigned int value);
-  void __fastcall SetColor(int value);
-  void __fastcall SetTunnel(bool value);
-  void __fastcall SetTunnelHostName(UnicodeString value);
-  void __fastcall SetTunnelPortNumber(int value);
-  void __fastcall SetTunnelUserName(UnicodeString value);
-  void __fastcall SetTunnelPassword(UnicodeString value);
+  void __fastcall SetDSTMode(TDSTMode Value);
+  void __fastcall SetDeleteToRecycleBin(bool Value);
+  void __fastcall SetOverwrittenToRecycleBin(bool Value);
+  void __fastcall SetRecycleBinPath(const UnicodeString & Value);
+  void __fastcall SetPostLoginCommands(const UnicodeString & Value);
+  void __fastcall SetAddressFamily(TAddressFamily Value);
+  void __fastcall SetRekeyData(const UnicodeString & Value);
+  void __fastcall SetRekeyTime(unsigned int Value);
+  void __fastcall SetColor(int Value);
+  void __fastcall SetTunnel(bool Value);
+  void __fastcall SetTunnelHostName(const UnicodeString & Value);
+  void __fastcall SetTunnelPortNumber(int Value);
+  void __fastcall SetTunnelUserName(const UnicodeString & Value);
+  void __fastcall SetTunnelPassword(const UnicodeString & Value);
   UnicodeString __fastcall GetTunnelPassword() const;
-  void __fastcall SetTunnelPublicKeyFile(UnicodeString value);
-  void __fastcall SetTunnelPortFwd(UnicodeString value);
-  void __fastcall SetTunnelLocalPortNumber(int value);
+  void __fastcall SetTunnelPublicKeyFile(const UnicodeString & Value);
+  void __fastcall SetTunnelPortFwd(const UnicodeString & Value);
+  void __fastcall SetTunnelLocalPortNumber(int Value);
   bool __fastcall GetTunnelAutoassignLocalPortNumber();
-  void __fastcall SetTunnelHostKey(UnicodeString value);
-  void __fastcall SetFtpPasvMode(bool value);
-  void __fastcall SetFtpForcePasvIp(TAutoSwitch value);
-  void __fastcall SetFtpUseMlsd(TAutoSwitch value);
-  void __fastcall SetFtpAccount(UnicodeString value);
-  void __fastcall SetFtpPingInterval(int value);
-  void __fastcall SetFtpPingType(TPingType value);
-  void __fastcall SetFtps(TFtps value);
-  void __fastcall SetNotUtf(TAutoSwitch value);
-  void __fastcall SetHostKey(UnicodeString value);
+  void __fastcall SetTunnelHostKey(const UnicodeString & Value);
+  void __fastcall SetFtpPasvMode(bool Value);
+  void __fastcall SetFtpForcePasvIp(TAutoSwitch Value);
+  void __fastcall SetFtpUseMlsd(TAutoSwitch Value);
+  void __fastcall SetFtpAccount(const UnicodeString & Value);
+  void __fastcall SetFtpPingInterval(int Value);
+  void __fastcall SetFtpPingType(TPingType Value);
+  void __fastcall SetFtps(TFtps Value);
+  void __fastcall SetNotUtf(TAutoSwitch Value);
+  void __fastcall SetHostKey(const UnicodeString & Value);
   TDateTime __fastcall GetTimeoutDT();
   void __fastcall SavePasswords(THierarchicalStorage * Storage, bool PuttyExport);
   UnicodeString __fastcall GetLocalName();
@@ -355,12 +355,12 @@ public:
   void __fastcall RollbackTunnel();
   void __fastcall ExpandEnvironmentVariables();
   bool __fastcall IsSame(const TSessionData * Default, bool AdvancedOnly);
-  static void __fastcall ValidatePath(const UnicodeString Path);
-  static void __fastcall ValidateName(const UnicodeString Name);
+  static void __fastcall ValidatePath(const UnicodeString & Path);
+  static void __fastcall ValidateName(const UnicodeString & Name);
   UnicodeString __fastcall GetHostName() const { return FHostName; }
   int __fastcall GetPortNumber() const { return FPortNumber; }
   TLoginType __fastcall GetLoginType() const;
-  void __fastcall SetLoginType(TLoginType value);
+  void __fastcall SetLoginType(TLoginType Value);
   UnicodeString __fastcall GetUserName() const { return FUserName; }
   int __fastcall GetPingInterval() const { return FPingInterval; }
   bool __fastcall GetTryAgent() const { return FTryAgent; }
@@ -381,7 +381,7 @@ public:
   TProtocol __fastcall GetProtocol() const { return FProtocol; }
   TFSProtocol __fastcall GetFSProtocol() const { return FFSProtocol; }
   bool __fastcall GetModified() const { return FModified; }
-  void __fastcall SetModified(bool value) { FModified = value; }
+  void __fastcall SetModified(bool Value) { FModified = Value; }
   bool __fastcall GetClearAliases() const { return FClearAliases; }
   TDateTime __fastcall GetTimeDifference() const { return FTimeDifference; }
   TPingType __fastcall GetPingType() const { return FPingType; }
@@ -395,7 +395,7 @@ public:
   bool __fastcall GetLockInHome() const { return FLockInHome; }
   bool __fastcall GetSpecial() const { return FSpecial; }
   bool __fastcall GetSelected() const { return FSelected; }
-  void __fastcall SetSelected(bool value) { FSelected = value; }
+  void __fastcall SetSelected(bool Value) { FSelected = Value; }
   TEOLType __fastcall GetEOLType() const { return FEOLType; }
   TAutoSwitch __fastcall GetLookupUserGroups() const { return FLookupUserGroups; }
   UnicodeString __fastcall GetReturnVar() const { return FReturnVar; }
@@ -440,7 +440,7 @@ public:
   UnicodeString __fastcall GetPostLoginCommands() const { return FPostLoginCommands; }
   TAddressFamily __fastcall GetAddressFamily() const { return FAddressFamily; }
   UnicodeString __fastcall GetCodePage() const { return FCodePage; }
-  void __fastcall SetCodePage(const UnicodeString value);
+  void __fastcall SetCodePage(const UnicodeString & Value);
   unsigned int __fastcall GetCodePageAsNumber() const;
   UnicodeString __fastcall GetRekeyData() const { return FRekeyData; }
   unsigned int __fastcall GetRekeyTime() const { return FRekeyTime; }
@@ -455,7 +455,7 @@ public:
   UnicodeString __fastcall GetTunnelHostKey() const { return FTunnelHostKey; }
   bool __fastcall GetFtpPasvMode() const { return FFtpPasvMode; }
   bool __fastcall GetFtpAllowEmptyPassword() const { return FFtpAllowEmptyPassword; }
-  void __fastcall SetFtpAllowEmptyPassword(bool value);
+  void __fastcall SetFtpAllowEmptyPassword(bool Value);
   TAutoSwitch __fastcall GetFtpForcePasvIp() const { return FFtpForcePasvIp; }
   TAutoSwitch __fastcall GetFtpUseMlsd() const { return FFtpUseMlsd; }
   UnicodeString __fastcall GetFtpAccount() const { return FFtpAccount; }
@@ -468,9 +468,9 @@ public:
   int __fastcall GetOrigPortNumber() const { return FOrigPortNumber; }
 
   int __fastcall GetNumberOfRetries() const { return FNumberOfRetries; }
-  void __fastcall SetNumberOfRetries(int value) { FNumberOfRetries = value; }
+  void __fastcall SetNumberOfRetries(int Value) { FNumberOfRetries = Value; }
   uintptr_t __fastcall GetSessionVersion() const { return FSessionVersion; }
-  void __fastcall SetSessionVersion(uintptr_t value) { FSessionVersion = value; }
+  void __fastcall SetSessionVersion(uintptr_t Value) { FSessionVersion = Value; }
 protected:
   uintptr_t __fastcall GetDefaultVersion() { return ::GetVersionNumber219(); }
   TFSProtocol __fastcall TranslateFSProtocolNumber(int FSProtocol);
@@ -483,7 +483,7 @@ private:
   void __fastcall ParseIEProxyConfig() const;
   void __fastcall FromURI(const UnicodeString & ProxyURI,
     UnicodeString & ProxyUrl, int & ProxyPort, TProxyMethod & ProxyMethod) const;
-  void __fastcall AdjustHostName(UnicodeString & hostName, const UnicodeString prefix);
+  void __fastcall AdjustHostName(UnicodeString & hostName, const UnicodeString & Prefix);
   void __fastcall RemoveProtocolPrefix(UnicodeString & hostName);
 };
 //---------------------------------------------------------------------------
@@ -492,11 +492,11 @@ class TStoredSessionList : public TNamedObjectList
 public:
   explicit /* __fastcall */ TStoredSessionList(bool aReadOnly = false);
   virtual /* __fastcall */ ~TStoredSessionList();
-  void __fastcall Load(const UnicodeString aKey, bool UseDefaults);
+  void __fastcall Load(const UnicodeString & AKey, bool UseDefaults);
   void __fastcall Load();
   void __fastcall Save(bool All, bool Explicit);
   void __fastcall Saved();
-  void __fastcall Export(const UnicodeString FileName);
+  void __fastcall Export(const UnicodeString & FileName);
   void __fastcall Load(THierarchicalStorage * Storage, bool AsModified = false,
     bool UseDefaults = false);
   void __fastcall Save(THierarchicalStorage * Storage, bool All = false);
@@ -515,11 +515,11 @@ public:
     UnicodeString * FileName = NULL, bool * ProtocolDefined = NULL);
   TSessionData * __fastcall GetSession(int Index) { return static_cast<TSessionData *>(AtObject(Index)); }
   TSessionData * __fastcall GetDefaultSettings() const { return FDefaultSettings; }
-  void __fastcall SetDefaultSettings(TSessionData * value);
-  TSessionData * __fastcall GetSessionByName(const UnicodeString SessionName);
+  void __fastcall SetDefaultSettings(TSessionData * Value);
+  TSessionData * __fastcall GetSessionByName(const UnicodeString & SessionName);
 
-  static void __fastcall ImportHostKeys(const UnicodeString TargetKey,
-    const UnicodeString SourceKey, TStoredSessionList * Sessions,
+  static void __fastcall ImportHostKeys(const UnicodeString & TargetKey,
+    const UnicodeString & SourceKey, TStoredSessionList * Sessions,
     bool OnlySelected);
 
 private:
@@ -533,7 +533,7 @@ private:
 };
 //---------------------------------------------------------------------------
 bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx);
-unsigned int GetCodePageAsNumber(const UnicodeString CodePage);
+unsigned int GetCodePageAsNumber(const UnicodeString & CodePage);
 UnicodeString GetCodePageAsString(unsigned int cp);
 //---------------------------------------------------------------------------
 UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TSessionData * SessionData);
