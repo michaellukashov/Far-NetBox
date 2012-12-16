@@ -51,7 +51,7 @@ DWORD WINAPI threadstartroutine(void * Parameter)
   return TSimpleThread::ThreadProc(SimpleThread);
 }
 //---------------------------------------------------------------------------
-int BeginThread(void * SecurityAttributes, DWORD StackSize,
+HANDLE BeginThread(void * SecurityAttributes, DWORD StackSize,
   void * Parameter, DWORD CreationFlags,
   DWORD & ThreadId)
 {
@@ -60,7 +60,7 @@ int BeginThread(void * SecurityAttributes, DWORD StackSize,
     static_cast<LPTHREAD_START_ROUTINE>(&threadstartroutine),
     Parameter,
     CreationFlags, &ThreadId);
-  return reinterpret_cast<int>(Result);
+  return Result;
 }
 
 void EndThread(int ExitCode)
@@ -69,7 +69,7 @@ void EndThread(int ExitCode)
 }
 
 //---------------------------------------------------------------------------
-int __fastcall StartThread(void * SecurityAttributes, unsigned int StackSize,
+HANDLE __fastcall StartThread(void * SecurityAttributes, unsigned int StackSize,
   void * Parameter, unsigned int CreationFlags,
   DWORD & ThreadId)
 {
