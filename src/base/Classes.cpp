@@ -1077,7 +1077,7 @@ void TStringList::LoadFromFile(const UnicodeString & FileName)
   bool ConvertToken;
   FileBuffer.Convert(eolCRLF, eolCRLF, cpRemoveCtrlZ | cpRemoveBOM, ConvertToken);
   ::CloseHandle(FileHandle);
-  UnicodeString Str(FileBuffer.GetData(), static_cast<int>(FileBuffer.GetSize()));
+  UnicodeString Str(FileBuffer.GetData(), static_cast<intptr_t>(FileBuffer.GetSize()));
   // DEBUG_PRINTF(L"Str = %s", Str.c_str());
   SetTextStr(Str);
   /* FILE * f = NULL;
