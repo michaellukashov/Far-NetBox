@@ -14515,28 +14515,30 @@ webdav::error_t TWebDAVFileSystem::GetServerSettings(
   *pk11_provider = NULL;
   *ssl_authority_file = NULL;
 
+  TSessionData * Data = FTerminal->GetSessionData();
+  TConfiguration * Configuration = FTerminal->GetConfiguration();
   {
-    TProxyMethod ProxyMethod = FTerminal->GetSessionData()->GetProxyMethod();
+    TProxyMethod ProxyMethod = Data->GetProxyMethod();
     *proxy_method = (int)ProxyMethod;
     if (ProxyMethod != (TProxyMethod)::pmNone)
     {
-      WEBDAV_ERR(webdav::path_cstring_to_utf8(proxy_host, AnsiString(FTerminal->GetSessionData()->GetProxyHost()).c_str(), pool));
-      WEBDAV_ERR(webdav::path_cstring_to_utf8(proxy_username, AnsiString(FTerminal->GetSessionData()->GetProxyUsername()).c_str(), pool));
-      WEBDAV_ERR(webdav::path_cstring_to_utf8(proxy_password, AnsiString(FTerminal->GetSessionData()->GetProxyPassword()).c_str(), pool));
+      WEBDAV_ERR(webdav::path_cstring_to_utf8(proxy_host, AnsiString(Data->GetProxyHost()).c_str(), pool));
+      WEBDAV_ERR(webdav::path_cstring_to_utf8(proxy_username, AnsiString(Data->GetProxyUsername()).c_str(), pool));
+      WEBDAV_ERR(webdav::path_cstring_to_utf8(proxy_password, AnsiString(Data->GetProxyPassword()).c_str(), pool));
     }
   }
 
   /* Apply non-proxy-specific settings regardless of exceptions: */
   if (compression)
-    *compression = FTerminal->GetSessionData()->GetCompression();
+    *compression = Data->GetCompression();
 
-  int l_debug = FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1 ? 1 : 0;
+  int l_debug = Configuration->GetActualLogProtocol() >= 1 ? 1 : 0;
   *pk11_provider = "";
 
-  *ssl_authority_file = apr_pstrdup(pool, AnsiString(FTerminal->GetSessionData()->GetPublicKeyFile()).c_str());
+  *ssl_authority_file = apr_pstrdup(pool, AnsiString(Data->GetPublicKeyFile()).c_str());
 
   {
-    int l_proxy_port = FTerminal->GetSessionData()->GetProxyPort();
+    int l_proxy_port = Data->GetProxyPort();
     if (l_proxy_port < 0)
       return webdav::error_create(WEBDAV_ERR_ILLEGAL_URL, NULL,
         "Invalid URL: negative proxy port number");
@@ -14548,7 +14550,7 @@ webdav::error_t TWebDAVFileSystem::GetServerSettings(
   }
 
   {
-    int l_timeout = FTerminal->GetSessionData()->GetTimeout();
+    int l_timeout = Data->GetTimeout();
     if (l_timeout < 0)
       return webdav::error_create(WEBDAV_ERR_BAD_CONFIG_VALUE, NULL,
         "Invalid config: negative timeout value");
@@ -14558,12 +14560,12 @@ webdav::error_t TWebDAVFileSystem::GetServerSettings(
   if (l_debug)
   {
     *neon_debug = l_debug;
-    if (FTerminal->GetConfiguration()->GetLogToFile())
+    if (Configuration->GetLogToFile())
     {
       WEBDAV_ERR(webdav::path_cstring_to_utf8(neon_debug_file_name,
         AnsiString(GetExpandedLogFileName(
-          FTerminal->GetConfiguration()->GetLogFileName(),
-          FTerminal->GetSessionData())).c_str(), pool));
+          Configuration->GetLogFileName(),
+          Data)).c_str(), pool));
     }
     else
     {
