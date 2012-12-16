@@ -825,7 +825,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
     int ButtonLines = 1;
     TFarButton * Button = NULL;
     FTimeoutButton = NULL;
-    for (int Index = 0; Index < Buttons->Count; Index++)
+    for (intptr_t Index = 0; Index < Buttons->Count; Index++)
     {
       TFarButton * PrevButton = Button;
       Button = new TFarButton(this);
@@ -845,7 +845,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
       Button->SetBottom(Button->GetTop());
       Button->SetResult(Index + 1);
       Button->SetCenterGroup(true);
-      Button->SetTag(Buttons->Objects[Index]);
+      Button->SetTag(reinterpret_cast<intptr_t>(Buttons->Objects[Index]));
       if (PrevButton != NULL)
       {
         Button->Move(PrevButton->GetRight() - Button->GetLeft() + 1, 0);
@@ -910,7 +910,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
       {
         MoreMessageHeight = MoreMessagesLister->GetItems()->Count;
       }
-      MoreMessagesLister->SetHeight((int)MoreMessageHeight);
+      MoreMessagesLister->SetHeight(MoreMessageHeight);
       MoreMessagesLister->SetRight(
         GetBorderBox()->GetRight() - (MoreMessagesLister->GetScrollBar() ? 0 : 1));
       MoreMessagesLister->SetTabStop(MoreMessagesLister->GetScrollBar());
@@ -1134,7 +1134,7 @@ intptr_t TCustomFarPlugin::Message(DWORD Flags,
 }
 //---------------------------------------------------------------------------
 intptr_t TCustomFarPlugin::Menu(DWORD Flags, const UnicodeString & Title,
-  const UnicodeString & Bottom, const FarMenuItem * Items, int Count,
+  const UnicodeString & Bottom, const FarMenuItem * Items, intptr_t Count,
   const int * BreakKeys, int & BreakCode)
 {
   assert(Items);
@@ -1160,11 +1160,11 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, const UnicodeString & Title,
     intptr_t Count = 0;
     for (intptr_t i = 0; i < Items->Count; i++)
     {
-      intptr_t flags = Items->Objects[i];
+      intptr_t Flags = reinterpret_cast<intptr_t>(Items->Objects[i]);
       if (FLAGCLEAR(Flags, MIF_HIDDEN))
       {
-        memset(&MenuItems[Count], 0, sizeof(MenuItems[Count]));
-        MenuItems[Count].Flags = flags;
+        memset(&MenuItems[Count], 0, sizeof(FarMenuItemEx));
+        MenuItems[Count].Flags = Flags;
         if (MenuItems[Count].Flags & MIF_SELECTED)
         {
           assert(Selected == NPOS);
@@ -1177,7 +1177,7 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, const UnicodeString & Title,
     }
 
     intptr_t ResultItem = Menu(Flags | FMENU_USEEXT, Title, Bottom,
-      reinterpret_cast<const FarMenuItem *>(MenuItems), static_cast<int>(Count), BreakKeys, BreakCode);
+      reinterpret_cast<const FarMenuItem *>(MenuItems), Count, BreakKeys, BreakCode);
 
     if (ResultItem >= 0)
     {
@@ -1518,13 +1518,13 @@ UnicodeString TCustomFarPlugin::FormatConsoleTitle()
   return Title;
 }
 //---------------------------------------------------------------------------
-void TCustomFarPlugin::UpdateProgress(int state, int progress)
+void TCustomFarPlugin::UpdateProgress(intptr_t State, intptr_t Progress)
 {
-  FarAdvControl(ACTL_SETPROGRESSSTATE, (void *)state);
-  if (state == PS_NORMAL)
+  FarAdvControl(ACTL_SETPROGRESSSTATE, reinterpret_cast<void *>(State));
+  if (State == PS_NORMAL)
   {
     PROGRESSVALUE pv;
-    pv.Completed = progress < 0 ? 0 : progress > 100 ? 100 : progress;
+    pv.Completed = Progress < 0 ? 0 : Progress > 100 ? 100 : Progress;
     pv.Total = 100;
     FarAdvControl(ACTL_SETPROGRESSVALUE, (void *)&pv);
   }

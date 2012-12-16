@@ -3982,7 +3982,7 @@ TLoginType TSessionDialog::GetLoginType()
 //---------------------------------------------------------------------------
 TFSProtocol TSessionDialog::IndexToFSProtocol(intptr_t Index, bool AllowScpFallback)
 {
-  bool InBounds = (Index >= 0) && (Index < static_cast<int>(LENOF(FSOrder)));
+  bool InBounds = (Index >= 0) && (Index < LENOF(FSOrder));
   assert(InBounds || (Index == -1));
   TFSProtocol Result = fsSFTP;
   if (InBounds)
@@ -7609,7 +7609,7 @@ void TSynchronizeChecklistDialog::CheckAll(bool Check)
       List->SetChecked(Index, Check);
     }
 
-    FChecked = (int)(Check ? Count : 0);
+    FChecked = Check ? Count : 0;
   }
   ,
   {

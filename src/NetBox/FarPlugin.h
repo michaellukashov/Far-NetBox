@@ -99,7 +99,7 @@ public:
   intptr_t Menu(DWORD Flags, const UnicodeString & Title,
     const UnicodeString & Bottom, TStrings * Items);
   intptr_t Menu(DWORD Flags, const UnicodeString & Title,
-    const UnicodeString & Bottom, const FarMenuItem * Items, int Count,
+    const UnicodeString & Bottom, const FarMenuItem * Items, intptr_t Count,
     const int * BreakKeys, int & BreakCode);
   bool InputBox(const UnicodeString & Title, const UnicodeString & Prompt,
     UnicodeString & Text, DWORD Flags, const UnicodeString & HistoryName = UnicodeString(),
@@ -108,10 +108,8 @@ public:
   void SaveScreen(HANDLE & Screen);
   void RestoreScreen(HANDLE & Screen);
   bool CheckForEsc();
-  bool Viewer(const UnicodeString & FileName, const UnicodeString & Title,
-    DWORD Flags);
-  bool Editor(const UnicodeString & FileName, const UnicodeString & Title,
-    DWORD Flags);
+  bool Viewer(const UnicodeString & FileName, const UnicodeString & Title, DWORD Flags);
+  bool Editor(const UnicodeString & FileName, const UnicodeString & Title, DWORD Flags);
 
   intptr_t FarControl(uintptr_t Command, intptr_t Param1, intptr_t Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
   intptr_t FarAdvControl(uintptr_t Command, void * Param = NULL);
@@ -191,7 +189,7 @@ public:
   void RunTests();
 #endif
 private:
-  void UpdateProgress(int state, int progress);
+  void UpdateProgress(intptr_t State, intptr_t Progress);
 
 private:
   PluginInfo FPluginInfo;

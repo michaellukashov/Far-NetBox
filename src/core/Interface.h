@@ -17,7 +17,7 @@ void __fastcall Busy(bool Start);
 UnicodeString __fastcall AppNameString();
 UnicodeString __fastcall SshVersionString();
 void __fastcall CopyToClipboard(const UnicodeString & Text);
-int __fastcall StartThread(void * SecurityAttributes, unsigned StackSize,
+HANDLE __fastcall StartThread(void * SecurityAttributes, unsigned StackSize,
   /* TThreadFunc ThreadFunc, */ void * Parameter, unsigned CreationFlags,
   TThreadID & ThreadId);
 

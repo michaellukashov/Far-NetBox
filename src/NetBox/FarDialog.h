@@ -83,7 +83,7 @@ public:
   void Redraw();
   void LockChanges();
   void UnlockChanges();
-  uintptr_t GetSystemColor(int Index);
+  uintptr_t GetSystemColor(intptr_t Index);
   bool HotKey(uintptr_t Key);
 
 protected:
