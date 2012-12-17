@@ -493,9 +493,9 @@ int FileGetAttr(const UnicodeString & Filename)
   return attr;
 }
 
-int FileSetAttr(const UnicodeString & Filename, int attrs)
+int FileSetAttr(const UnicodeString & Filename, int Attrs)
 {
-  int res = SetFileAttributes(Filename.c_str(), attrs);
+  int res = SetFileAttributes(Filename.c_str(), Attrs);
   return res;
 }
 
@@ -1485,13 +1485,14 @@ TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime)
 }
 
 //---------------------------------------------------------------------------
-UnicodeString UnixExcludeLeadingBackslash(UnicodeString Path)
+UnicodeString UnixExcludeLeadingBackslash(const UnicodeString & Path)
 {
-  while (!Path.IsEmpty() && Path[1] == L'/')
+  UnicodeString Result = Path;
+  while (!Result.IsEmpty() && Result[1] == L'/')
   {
-    Path.Delete(1, 1);
+    Result.Delete(1, 1);
   }
-  return Path;
+  return Result;
 }
 
 //---------------------------------------------------------------------------

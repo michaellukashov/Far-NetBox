@@ -2,7 +2,7 @@
 
 #include <vcl.h>
 #include "HierarchicalStorage.h"
-#include "tinyxml.h"
+#include "tinyxml2.h"
 
 //---------------------------------------------------------------------------
 class TXmlStorage : public THierarchicalStorage
@@ -52,21 +52,21 @@ protected:
 
 private:
   UnicodeString GetSubKeyText(const UnicodeString & Name);
-  TiXmlElement * FindElement(const UnicodeString & Value);
+  tinyxml2::XMLElement * FindElement(const UnicodeString & Value);
   std::string ToStdString(const UnicodeString & String) { return W2MB(String.c_str()); }
   UnicodeString ToUnicodeString(const std::string & String) { return MB2W(String.c_str()); }
   void RemoveIfExists(const UnicodeString & Name);
   void AddNewElement(const UnicodeString & Name, const UnicodeString & Value);
-  TiXmlElement * FindChildElement(const std::string & subKey);
-  UnicodeString GetValue(TiXmlElement * Element);
+  tinyxml2::XMLElement * FindChildElement(const std::string & subKey);
+  UnicodeString GetValue(tinyxml2::XMLElement * Element);
 
-  bool LoadXml();
+  bool ReadXml();
   bool WriteXml();
 
 private:
-  TiXmlDocument * FXmlDoc;
-  std::vector<TiXmlElement *> FSubElements;
-  TiXmlElement * FCurrentElement;
+  tinyxml2::XMLDocument * FXmlDoc;
+  std::vector<tinyxml2::XMLElement *> FSubElements;
+  tinyxml2::XMLElement * FCurrentElement;
   UnicodeString FStoredSessionsSubKey;
   int FFailed;
   bool FStoredSessionsOpened;

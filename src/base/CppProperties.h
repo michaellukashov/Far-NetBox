@@ -1,7 +1,7 @@
 #pragma once
 
-#include <map>
-#include <iostream>
+// #include <map>
+// #include <iostream>
 
 //------------------------------------------------------------------------------
 // Some utility templates for emulating properties --
@@ -319,47 +319,3 @@ public:
 
 //------------------------------------------------------------------------------
 
-template <
-  class T
-  >
-inline std::ostream& operator<<(std::ostream& os, const Property< T >& prop)
-{
-    os << prop();
-    return os;
-}
-
-template <
-  class T,
-  class Object,
-  typename T (Object::*real_getter)()
-  >
-inline std::ostream& operator<<(std::ostream& os, const ROProperty< T, Object, real_getter >& prop)
-{
-    os << prop();
-    return os;
-}
-
-template <
-  class T, class Object,
-  typename T (Object::*real_getter)(),
-  typename void (Object::*real_setter)(T)
-  >
-inline std::ostream& operator<<(std::ostream& os, const RWProperty< T, Object, real_getter, real_setter >& prop)
-{
-    os << prop();
-    return os;
-}
-
-/*template <
-  class Key,
-  class T,
-  class Object,
-  typename T (Object::*real_getter)(Key),
-  typename void (Object::*real_setter)(Key, T)
-  >
-inline std::ostream& operator<<(std::ostream& os, const IndexedProperty< Key, T, Object, real_getter, real_setter >& prop)
-{
-    os << "size: " << prop.size();
-    return os;
-}
-*/

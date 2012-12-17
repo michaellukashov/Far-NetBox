@@ -540,7 +540,7 @@ public:
   virtual ~TSHFileInfo();
 
   //get the image's index in the system's image list
-  int GetFileIconIndex(UnicodeString strFileName, BOOL bSmallIcon) const;
+  int GetFileIconIndex(const UnicodeString & StrFileName, BOOL bSmallIcon) const;
   int GetDirIconIndex(BOOL bSmallIcon);
 
   //get file type

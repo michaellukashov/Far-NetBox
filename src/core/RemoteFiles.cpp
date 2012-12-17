@@ -1682,7 +1682,7 @@ void __fastcall TRemoteDirectoryCache::Clear()
     for (int Index = 0; Index < Count; Index++)
     {
       delete dynamic_cast<TRemoteFileList *>(Objects[Index]);
-      Objects[Index] = NULL;
+      Objects(Index, NULL);
     }
   }
   ,

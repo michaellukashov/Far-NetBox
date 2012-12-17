@@ -356,9 +356,9 @@ void __fastcall TCopyParamList::Change(intptr_t Index, const UnicodeString & Nam
   {
     FNames->Strings[Index] = Name;
     delete GetCopyParam(Index);
-    FCopyParams->Items[Index] = (reinterpret_cast<TObject *>(CopyParam));
+    FCopyParams->Items(Index, reinterpret_cast<TObject *>(CopyParam));
     delete GetRule(Index);
-    FRules->Items[Index] = (reinterpret_cast<TObject *>(Rule));
+    FRules->Items(Index, reinterpret_cast<TObject *>(Rule));
     Modify();
   }
   else
