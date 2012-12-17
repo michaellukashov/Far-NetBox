@@ -2437,7 +2437,7 @@ void __fastcall TSFTPFileSystem::UnreserveResponse(TSFTPPacket * Response)
       // we probably do not remove the item at all, because
       // we must remember that the response was expected, so we skip it
       // in receivepacket()
-      FPacketReservations->Items[Reservation] = NULL;
+      FPacketReservations->Items(Reservation, NULL);
     }
   }
 }

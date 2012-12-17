@@ -1184,9 +1184,9 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, const UnicodeString & Title,
       Result = MenuItems[ResultItem].UserData;
       if (Selected >= 0)
       {
-        Items->Objects[Selected] = reinterpret_cast<TObject *>(reinterpret_cast<size_t>(Items->Objects[Selected]) & ~MIF_SELECTED);
+        Items->Objects(Selected, reinterpret_cast<TObject *>(reinterpret_cast<size_t>(Items->Objects[Selected]) & ~MIF_SELECTED));
       }
-      Items->Objects[Result] = reinterpret_cast<TObject *>(reinterpret_cast<size_t>(Items->Objects[Result]) | MIF_SELECTED);
+      Items->Objects(Result, reinterpret_cast<TObject *>(reinterpret_cast<size_t>(Items->Objects[Result]) | MIF_SELECTED));
     }
     else
     {
