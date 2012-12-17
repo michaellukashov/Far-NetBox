@@ -1140,7 +1140,7 @@ intptr_t TCustomFarPlugin::Message(unsigned int Flags,
 }
 //---------------------------------------------------------------------------
 intptr_t TCustomFarPlugin::Menu(unsigned int Flags, const UnicodeString & Title,
-  const UnicodeString & Bottom, const FarMenuItem * Items, int Count,
+  const UnicodeString & Bottom, const FarMenuItem * Items, intptr_t Count,
   const FarKey * BreakKeys, intptr_t & BreakCode)
 {
   assert(Items);

@@ -107,7 +107,8 @@ public:
   intptr_t MaxMessageLines();
   intptr_t MaxMenuItemLength();
   intptr_t Menu(unsigned int Flags, const UnicodeString & Title,
-    const UnicodeString & Bottom, TStrings * Items, const FarKey * BreakKeys,
+    const UnicodeString & Bottom, TStrings * Items,
+    const FarKey * BreakKeys,
     intptr_t & BreakCode);
   intptr_t Menu(unsigned int Flags, const UnicodeString & Title,
     const UnicodeString & Bottom, TStrings * Items);
