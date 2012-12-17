@@ -27,7 +27,7 @@ TXmlStorage::TXmlStorage(const UnicodeString & AStorage,
 void TXmlStorage::Init()
 {
   THierarchicalStorage::Init();
-  FXmlDoc = new TiXmlDocument();
+  FXmlDoc = new tinyxml2::XMLDocument();
 }
 //---------------------------------------------------------------------------
 TXmlStorage::~TXmlStorage()
@@ -64,7 +64,7 @@ bool TXmlStorage::LoadXml()
   }
 
   // Get and check root node
-  TiXmlElement * xmlRoot = FXmlDoc->RootElement();
+  tinyxml2::XMLElement * xmlRoot = FXmlDoc->RootElement();
   if (!xmlRoot) return false;
   const char * Value = xmlRoot->Value();
   if (!Value) return false;
@@ -73,7 +73,7 @@ bool TXmlStorage::LoadXml()
   if (!attr) return false;
   uintptr_t Version = StrToVersionNumber(UnicodeString(attr));
   if (Version < MAKEVERSIONNUMBER(2,0,0)) return false;
-  TiXmlElement * Element = xmlRoot->FirstChildElement(ToStdString(FStoredSessionsSubKey).c_str());
+  tinyxml2::XMLElement * Element = xmlRoot->FirstChildElement(ToStdString(FStoredSessionsSubKey).c_str());
   if (Element != NULL)
   {
     FCurrentElement = FXmlDoc->RootElement();
@@ -84,9 +84,9 @@ bool TXmlStorage::LoadXml()
 //---------------------------------------------------------------------------
 bool TXmlStorage::WriteXml()
 {
-  TiXmlPrinter xmlPrinter;
-  xmlPrinter.SetIndent("  ");
-  xmlPrinter.SetLineBreak("\r\n");
+  tinyxml2::XMLPrinter xmlPrinter;
+  // xmlPrinter.SetIndent("  ");
+  // xmlPrinter.SetLineBreak("\r\n");
   FXmlDoc->Accept(&xmlPrinter);
   const char * xmlContent = xmlPrinter.CStr();
   if (!xmlContent || !*xmlContent)
@@ -120,9 +120,9 @@ void TXmlStorage::SetAccessMode(TStorageAccessMode Value)
 
     case smReadWrite:
     default:
-      FXmlDoc->LinkEndChild(new TiXmlDeclaration("1.0", "UTF-8", ""));
+      FXmlDoc->LinkEndChild(FXmlDoc->NewDeclaration());
       assert(FCurrentElement == NULL);
-      FCurrentElement = new TiXmlElement(CONST_ROOT_NODE);
+      FCurrentElement = FXmlDoc->NewElement(CONST_ROOT_NODE);
       FCurrentElement->SetAttribute(CONST_VERSION_ATTR, CONST_XML_VERSION21);
       FXmlDoc->LinkEndChild(FCurrentElement);
       break;
@@ -139,19 +139,19 @@ bool __fastcall TXmlStorage::DoKeyExists(const UnicodeString & SubKey, bool Forc
 //---------------------------------------------------------------------------
 bool __fastcall TXmlStorage::DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCreate)
 {
-  TiXmlElement * OldCurrentElement = FCurrentElement;
-  TiXmlElement * Element = NULL;
+  tinyxml2::XMLElement * OldCurrentElement = FCurrentElement;
+  tinyxml2::XMLElement * Element = NULL;
   std::string subKey = ToStdString(MungedSubKey);
   if (CanCreate)
   {
     if (FStoredSessionsOpened)
     {
-      Element = new TiXmlElement(CONST_SESSION_NODE);
-      Element->SetAttribute(CONST_NAME_ATTR, subKey);
+      Element = FXmlDoc->NewElement(CONST_SESSION_NODE);
+      Element->SetAttribute(CONST_NAME_ATTR, subKey.c_str());
     }
     else
     {
-      Element = new TiXmlElement(subKey);
+      Element = FXmlDoc->NewElement(subKey.c_str());
     }
     FCurrentElement->LinkEndChild(Element);
   }
@@ -186,10 +186,10 @@ void TXmlStorage::CloseSubKey()
 bool TXmlStorage::DeleteSubKey(const UnicodeString & SubKey)
 {
   bool Result = false;
-  TiXmlElement * Element = FindElement(SubKey);
+  tinyxml2::XMLElement * Element = FindElement(SubKey);
   if (Element != NULL)
   {
-    FCurrentElement->RemoveChild(Element);
+    FCurrentElement->DeleteChild(Element);
     Result = true;
   }
   return Result;
@@ -197,7 +197,7 @@ bool TXmlStorage::DeleteSubKey(const UnicodeString & SubKey)
 //---------------------------------------------------------------------------
 void TXmlStorage::GetSubKeyNames(TStrings * Strings)
 {
-  for (TiXmlElement * Element = FCurrentElement->FirstChildElement();
+  for (tinyxml2::XMLElement * Element = FCurrentElement->FirstChildElement();
        Element != NULL; Element = Element->NextSiblingElement())
   {
     UnicodeString val = GetValue(Element);
@@ -214,10 +214,10 @@ void TXmlStorage::GetValueNames(TStrings * Strings)
 bool TXmlStorage::DeleteValue(const UnicodeString & Name)
 {
   bool Result = false;
-  TiXmlElement * Element = FindElement(Name);
+  tinyxml2::XMLElement * Element = FindElement(Name);
   if (Element != NULL)
   {
-    FCurrentElement->RemoveChild(Element);
+    FCurrentElement->DeleteChild(Element);
     Result = true;
   }
   return Result;
@@ -225,10 +225,10 @@ bool TXmlStorage::DeleteValue(const UnicodeString & Name)
 //---------------------------------------------------------------------------
 void TXmlStorage::RemoveIfExists(const UnicodeString & Name)
 {
-  TiXmlElement * Element = FindElement(Name);
+  tinyxml2::XMLElement * Element = FindElement(Name);
   if (Element != NULL)
   {
-    FCurrentElement->RemoveChild(Element);
+    FCurrentElement->DeleteChild(Element);
   }
 }
 //---------------------------------------------------------------------------
@@ -236,14 +236,14 @@ void TXmlStorage::AddNewElement(const UnicodeString & Name, const UnicodeString 
 {
   std::string name = ToStdString(Name);
   std::string StrValue = ToStdString(Value);
-  TiXmlElement * Element = new TiXmlElement(name);
-  Element->LinkEndChild(new TiXmlText(StrValue.c_str()));
+  tinyxml2::XMLElement * Element = FXmlDoc->NewElement(name.c_str());
+  Element->LinkEndChild(FXmlDoc->NewText(StrValue.c_str()));
   FCurrentElement->LinkEndChild(Element);
 }
 //---------------------------------------------------------------------------
 UnicodeString TXmlStorage::GetSubKeyText(const UnicodeString & Name)
 {
-  TiXmlElement * Element = FindElement(Name);
+  tinyxml2::XMLElement * Element = FindElement(Name);
   if (!Element)
   {
     return UnicodeString();
@@ -258,27 +258,27 @@ UnicodeString TXmlStorage::GetSubKeyText(const UnicodeString & Name)
   }
 }
 //---------------------------------------------------------------------------
-TiXmlElement * TXmlStorage::FindElement(const UnicodeString & Name)
+tinyxml2::XMLElement * TXmlStorage::FindElement(const UnicodeString & Name)
 {
-  for (const TiXmlElement * Element = FCurrentElement->FirstChildElement();
+  for (const tinyxml2::XMLElement * Element = FCurrentElement->FirstChildElement();
        Element != NULL; Element = Element->NextSiblingElement())
   {
-    UnicodeString name = ToUnicodeString(Element->ValueStr());
+    UnicodeString name = ToUnicodeString(Element->GetText());
     if (name == Name)
     {
-      return const_cast<TiXmlElement *>(Element);
+      return const_cast<tinyxml2::XMLElement *>(Element);
     }
   }
   return NULL;
 }
 //---------------------------------------------------------------------------
-TiXmlElement * TXmlStorage::FindChildElement(const std::string & subKey)
+tinyxml2::XMLElement * TXmlStorage::FindChildElement(const std::string & subKey)
 {
-  TiXmlElement * Result = NULL;
+  tinyxml2::XMLElement * Result = NULL;
   // assert(FCurrentElement);
   if (FStoredSessionsOpened)
   {
-    TiXmlElement * Element = FCurrentElement->FirstChildElement(CONST_SESSION_NODE);
+    tinyxml2::XMLElement * Element = FCurrentElement->FirstChildElement(CONST_SESSION_NODE);
     if (Element && !strcmp(Element->Attribute(CONST_NAME_ATTR), subKey.c_str()))
     {
       Result = Element;
@@ -291,7 +291,7 @@ TiXmlElement * TXmlStorage::FindChildElement(const std::string & subKey)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString TXmlStorage::GetValue(TiXmlElement * Element)
+UnicodeString TXmlStorage::GetValue(tinyxml2::XMLElement * Element)
 {
   assert(Element);
   UnicodeString Result;
@@ -301,7 +301,7 @@ UnicodeString TXmlStorage::GetValue(TiXmlElement * Element)
   }
   else
   {
-    Result = ToUnicodeString(Element->ValueStr());
+    Result = ToUnicodeString(Element->GetText());
   }
   return Result;
 }
@@ -309,7 +309,7 @@ UnicodeString TXmlStorage::GetValue(TiXmlElement * Element)
 bool TXmlStorage::ValueExists(const UnicodeString & Value)
 {
   bool Result = false;
-  TiXmlElement * Element = FindElement(Value);
+  tinyxml2::XMLElement * Element = FindElement(Value);
   if (Element != NULL)
   {
     Result = true;
