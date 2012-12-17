@@ -60,7 +60,7 @@ private:
   tinyxml2::XMLElement * FindChildElement(const std::string & subKey);
   UnicodeString GetValue(tinyxml2::XMLElement * Element);
 
-  bool LoadXml();
+  bool ReadXml();
   bool WriteXml();
 
 private:

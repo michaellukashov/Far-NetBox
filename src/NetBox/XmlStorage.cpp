@@ -39,7 +39,7 @@ TXmlStorage::~TXmlStorage()
   delete FXmlDoc;
 }
 //---------------------------------------------------------------------------
-bool TXmlStorage::LoadXml()
+bool TXmlStorage::ReadXml()
 {
   CNBFile xmlFile;
   if (!xmlFile.OpenRead(GetStorage().c_str()))
@@ -115,7 +115,7 @@ void TXmlStorage::SetAccessMode(TStorageAccessMode Value)
   switch (GetAccessMode())
   {
     case smRead:
-      LoadXml();
+      ReadXml();
       break;
 
     case smReadWrite:
