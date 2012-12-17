@@ -17,8 +17,8 @@ public:
   void __fastcall ModifyAll(bool Modify);
   void __fastcall Clear();
 
-  TBookmarkList * __fastcall GetBookmarks(UnicodeString Index);
-  void __fastcall SetBookmarks(UnicodeString Index, TBookmarkList * Value);
+  TBookmarkList * __fastcall GetBookmarks(const UnicodeString & Index);
+  void __fastcall SetBookmarks(const UnicodeString & Index, TBookmarkList * Value);
   TBookmarkList * __fastcall GetSharedBookmarks();
   void __fastcall SetSharedBookmarks(TBookmarkList * Value);
 
@@ -55,8 +55,8 @@ public:
 
   intptr_t __fastcall GetCount();
   TBookmark * __fastcall GetBookmarks(intptr_t Index);
-  bool __fastcall GetNodeOpened(UnicodeString Index);
-  void __fastcall SetNodeOpened(UnicodeString Index, bool Value);
+  bool __fastcall GetNodeOpened(const UnicodeString & Index);
+  void __fastcall SetNodeOpened(const UnicodeString & Index, bool Value);
 
 protected:
   intptr_t __fastcall IndexOf(TBookmark * Bookmark);

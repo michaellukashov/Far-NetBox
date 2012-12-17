@@ -123,7 +123,7 @@ public:
   UnicodeString & Insert(const UnicodeString & Str, intptr_t Pos) { return Insert(Pos, Str); }
 
   intptr_t Pos(wchar_t Ch) const { return Data.find(Ch) + 1; }
-  intptr_t Pos(UnicodeString Str) const { return Data.find(Str.Data) + 1; }
+  intptr_t Pos(const UnicodeString & Str) const { return Data.find(Str.Data) + 1; }
 
   intptr_t RPos(wchar_t Ch) const { return Data.find_last_of(Ch) + 1; }
   bool RPos(intptr_t & nPos, wchar_t Ch, intptr_t nStartPos = 0) const;
@@ -131,7 +131,7 @@ public:
   UnicodeString SubStr(intptr_t Pos, intptr_t Len = -1) const;
   UnicodeString SubString(intptr_t Pos, intptr_t Len = -1) const { return SubStr(Pos, Len); }
 
-  bool IsDelimiter(UnicodeString Chars, intptr_t Pos) const;
+  bool IsDelimiter(const UnicodeString & Chars, intptr_t Pos) const;
   intptr_t LastDelimiter(const UnicodeString & Delimiters) const;
 
   UnicodeString Trim() const;

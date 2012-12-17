@@ -220,7 +220,7 @@ bool DirectoryExists(const UnicodeString & Dir);
 UnicodeString FileSearch(const UnicodeString & FileName, const UnicodeString & DirectoryList);
 
 int FileGetAttr(const UnicodeString & Filename);
-int FileSetAttr(const UnicodeString & Filename, int attrs);
+int FileSetAttr(const UnicodeString & Filename, int Attrs);
 
 bool ForceDirectories(const UnicodeString & Dir);
 bool DeleteFile(const UnicodeString & File);
@@ -318,7 +318,7 @@ public:
 };
 
 //---------------------------------------------------------------------------
-UnicodeString UnixExcludeLeadingBackslash(UnicodeString Path);
+UnicodeString UnixExcludeLeadingBackslash(const UnicodeString & Path);
 //---------------------------------------------------------------------------
 extern int RandSeed;
 extern void __fastcall Randomize();

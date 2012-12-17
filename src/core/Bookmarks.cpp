@@ -242,7 +242,7 @@ void __fastcall TBookmarks::ModifyAll(bool Modify)
   }
 }
 //---------------------------------------------------------------------------
-TBookmarkList * __fastcall TBookmarks::GetBookmarks(UnicodeString Index)
+TBookmarkList * __fastcall TBookmarks::GetBookmarks(const UnicodeString & Index)
 {
   intptr_t I = FBookmarkLists->IndexOf(Index.c_str());
   if (I >= 0)
@@ -255,7 +255,7 @@ TBookmarkList * __fastcall TBookmarks::GetBookmarks(UnicodeString Index)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TBookmarks::SetBookmarks(UnicodeString Index, TBookmarkList * Value)
+void __fastcall TBookmarks::SetBookmarks(const UnicodeString & Index, TBookmarkList * Value)
 {
   intptr_t I = FBookmarkLists->IndexOf(Index.c_str());
   if (I >= 0)
@@ -452,12 +452,12 @@ TBookmark * __fastcall TBookmarkList::GetBookmarks(intptr_t Index)
   return Bookmark;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TBookmarkList::GetNodeOpened(UnicodeString Index)
+bool __fastcall TBookmarkList::GetNodeOpened(const UnicodeString & Index)
 {
   return (FOpenedNodes->IndexOf(Index.c_str()) >= 0);
 }
 //---------------------------------------------------------------------------
-void __fastcall TBookmarkList::SetNodeOpened(UnicodeString Index, bool Value)
+void __fastcall TBookmarkList::SetNodeOpened(const UnicodeString & Index, bool Value)
 {
   intptr_t I = FOpenedNodes->IndexOf(Index.c_str());
   if ((I >= 0) != Value)

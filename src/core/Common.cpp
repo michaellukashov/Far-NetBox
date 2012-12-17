@@ -309,7 +309,7 @@ UnicodeString DeleteChar(const UnicodeString & Str, wchar_t C)
   return Result;
 }
 //---------------------------------------------------------------------------
-void PackStr(UnicodeString &Str)
+void PackStr(UnicodeString & Str)
 {
   // Following will free unnecessary bytes
   Str = Str.c_str();
@@ -840,15 +840,16 @@ bool __fastcall ComparePaths(const UnicodeString & Path1, const UnicodeString & 
   return AnsiSameText(IncludeTrailingBackslash(Path1), IncludeTrailingBackslash(Path2));
 }
 //---------------------------------------------------------------------------
-bool __fastcall IsReservedName(UnicodeString FileName)
+bool __fastcall IsReservedName(const UnicodeString & FileName)
 {
-  intptr_t P = FileName.Pos(L".");
-  intptr_t Len = (P > 0) ? P - 1 : FileName.Length();
+  UnicodeString fileName = FileName;
+  intptr_t P = fileName.Pos(L".");
+  intptr_t Len = (P > 0) ? P - 1 : fileName.Length();
   if ((Len == 3) || (Len == 4))
   {
     if (P > 0)
     {
-      FileName.SetLength(P - 1);
+      fileName.SetLength(P - 1);
     }
     static UnicodeString Reserved[] = {
       L"CON", L"PRN", L"AUX", L"NUL",
@@ -856,7 +857,7 @@ bool __fastcall IsReservedName(UnicodeString FileName)
       L"LPT1", L"LPT2", L"LPT3", L"LPT4", L"LPT5", L"LPT6", L"LPT7", L"LPT8", L"LPT9" };
     for (unsigned int Index = 0; Index < LENOF(Reserved); Index++)
     {
-      if (SameText(FileName, Reserved[Index]))
+      if (SameText(fileName, Reserved[Index]))
       {
         return true;
       }
@@ -1337,40 +1338,40 @@ __int64 __fastcall Round(double Number)
   return static_cast<__int64>(((Number - Floor) > (Ceil - Number)) ? Ceil : Floor);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TryRelativeStrToDateTime(UnicodeString S, TDateTime & DateTime)
+bool __fastcall TryRelativeStrToDateTime(const UnicodeString & S, TDateTime & DateTime)
 {
-  S = S.Trim();
+  UnicodeString  s = S.Trim();
   int Index = 1;
-  while ((Index <= S.Length()) && (S[Index] >= '0') && (S[Index] <= '9'))
+  while ((Index <= s.Length()) && (s[Index] >= '0') && (s[Index] <= '9'))
   {
     Index++;
   }
-  UnicodeString NumberStr = S.SubString(1, Index - 1);
+  UnicodeString NumberStr = s.SubString(1, Index - 1);
   int Number;
   bool Result = TryStrToInt(NumberStr, Number);
   if (Result)
   {
-    S.Delete(1, Index - 1);
-    S = S.Trim().UpperCase();
+    s.Delete(1, Index - 1);
+    s = s.Trim().UpperCase();
     DateTime = Now();
     // These may not overlap with ParseSize (K, M and G)
-    if (S == "S")
+    if (s == "S")
     {
       DateTime = IncSecond(DateTime, -Number);
     }
-    else if (S == "N")
+    else if (s == "N")
     {
       DateTime = IncMinute(DateTime, -Number);
     }
-    else if (S == "H")
+    else if (s == "H")
     {
       DateTime = IncHour(DateTime, -Number);
     }
-    else if (S == "D")
+    else if (s == "D")
     {
       DateTime = IncDay(DateTime, -Number);
     }
-    else if (S == "Y")
+    else if (s == "Y")
     {
       DateTime = IncYear(DateTime, -Number);
     }
@@ -1918,21 +1919,22 @@ UnicodeString __fastcall DecodeUrlChars(const UnicodeString & S)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall DoEncodeUrl(UnicodeString S, UnicodeString Chars)
+UnicodeString __fastcall DoEncodeUrl(const UnicodeString & S, const UnicodeString & Chars)
 {
+  UnicodeString Result = S;
   intptr_t i = 1;
-  while (i <= S.Length())
+  while (i <= Result.Length())
   {
-    if (Chars.Pos(S[i]) > 0)
+    if (Chars.Pos(Result[i]) > 0)
     {
-      UnicodeString H = ByteToHex(AnsiString(UnicodeString(S[i]))[1]);
-      S.Insert(H, i + 1);
-      S[i] = '%';
+      UnicodeString H = ByteToHex(AnsiString(UnicodeString(Result[i]))[1]);
+      Result.Insert(H, i + 1);
+      Result[i] = '%';
       i += H.Length();
     }
     i++;
   }
-  return S;
+  return Result;
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall EncodeUrlChars(const UnicodeString & S, const UnicodeString & Ignore)
@@ -1970,7 +1972,7 @@ UnicodeString __fastcall NonUrlChars()
   return S;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall EncodeUrlString(UnicodeString S)
+UnicodeString __fastcall EncodeUrlString(const UnicodeString & S)
 {
   return DoEncodeUrl(S, NonUrlChars());
 }

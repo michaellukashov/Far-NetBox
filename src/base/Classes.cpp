@@ -723,6 +723,7 @@ intptr_t TStrings::IndexOf(const UnicodeString & S)
   // DEBUG_PRINTF(L"end");
   return NPOS;
 }
+
 intptr_t TStrings::IndexOfName(const UnicodeString & Name)
 {
   for (intptr_t Index = 0; Index < GetCount(); Index++)
@@ -1342,14 +1343,14 @@ TSHFileInfo::~TSHFileInfo()
 {
 }
 
-int TSHFileInfo::GetFileIconIndex(UnicodeString strFileName, BOOL bSmallIcon) const
+int TSHFileInfo::GetFileIconIndex(const UnicodeString & StrFileName, BOOL bSmallIcon) const
 {
   SHFILEINFO sfi;
 
   if (bSmallIcon)
   {
     SHGetFileInfo(
-      static_cast<LPCTSTR>(strFileName.c_str()),
+      static_cast<LPCTSTR>(StrFileName.c_str()),
       FILE_ATTRIBUTE_NORMAL,
       &sfi,
       sizeof(SHFILEINFO),
@@ -1358,7 +1359,7 @@ int TSHFileInfo::GetFileIconIndex(UnicodeString strFileName, BOOL bSmallIcon) co
   else
   {
     SHGetFileInfo(
-      static_cast<LPCTSTR>(strFileName.c_str()),
+      static_cast<LPCTSTR>(StrFileName.c_str()),
       FILE_ATTRIBUTE_NORMAL,
       &sfi,
       sizeof(SHFILEINFO),

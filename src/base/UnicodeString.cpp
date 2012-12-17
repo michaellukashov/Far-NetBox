@@ -456,7 +456,7 @@ UnicodeString UnicodeString::SubStr(intptr_t Pos, intptr_t Len) const
   return UnicodeString(S);
 }
 
-bool UnicodeString::IsDelimiter(UnicodeString Chars, intptr_t Pos) const
+bool UnicodeString::IsDelimiter(const UnicodeString & Chars, intptr_t Pos) const
 {
   return Sysutils::IsDelimiter(Chars, *this, Pos);
 }
