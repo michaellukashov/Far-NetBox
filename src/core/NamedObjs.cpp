@@ -84,7 +84,7 @@ const UnicodeString TNamedObjectList::HiddenPrefix = L"_!_";
   AutoSort = True;
 }
 //---------------------------------------------------------------------------
-TNamedObject * __fastcall TNamedObjectList::AtObject(Integer Index)
+TNamedObject * __fastcall TNamedObjectList::AtObject(intptr_t Index)
 {
   return static_cast<TNamedObject *>(Items[Index + GetHiddenCount()]);
 }
@@ -119,9 +119,9 @@ TNamedObject * __fastcall TNamedObjectList::FindByName(UnicodeString Name,
   return NULL;
 }
 //---------------------------------------------------------------------------
-void __fastcall TNamedObjectList::SetCount(intptr_t value)
+void __fastcall TNamedObjectList::SetCount(intptr_t Value)
 {
-  TObjectList::SetCount(value/*+HiddenCount*/);
+  TObjectList::SetCount(Value/*+HiddenCount*/);
 }
 //---------------------------------------------------------------------------
 intptr_t __fastcall TNamedObjectList::GetCount()

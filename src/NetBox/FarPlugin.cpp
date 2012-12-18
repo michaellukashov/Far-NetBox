@@ -1144,7 +1144,7 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, const UnicodeString & Title,
   TFarEnvGuard Guard;
   return static_cast<intptr_t>(FStartupInfo.Menu(FStartupInfo.ModuleNumber, -1, -1, 0,
     Flags, ATitle.c_str(), ABottom.c_str(), NULL, BreakKeys,
-    &BreakCode, Items, Count));
+    &BreakCode, Items, static_cast<int>(Count)));
 }
 //---------------------------------------------------------------------------
 intptr_t TCustomFarPlugin::Menu(DWORD Flags, const UnicodeString & Title,

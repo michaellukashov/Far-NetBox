@@ -544,7 +544,7 @@ LONG_PTR TFarDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
             }
             else
             {
-              FResult = static_cast<intptr_t>(Button->GetResult());
+              FResult = Button->GetResult();
             }
           }
           else

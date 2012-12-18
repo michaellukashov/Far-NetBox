@@ -340,8 +340,8 @@ public:
 
   virtual UnicodeString GetCaption() { return GetData(); }
   virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
-  virtual int GetResult() { return FResult; }
-  virtual void SetResult(int Value) { FResult = Value; }
+  virtual intptr_t GetResult() { return FResult; }
+  virtual void SetResult(intptr_t Value) { FResult = Value; }
   virtual UnicodeString GetData();
   bool GetDefault();
   void SetDefault(bool Value);
@@ -358,7 +358,7 @@ protected:
   virtual bool HotKey(char HotKey);
 
 private:
-  int FResult;
+  intptr_t FResult;
   TFarButtonClickEvent FOnClick;
   TFarButtonBrackets FBrackets;
 };
