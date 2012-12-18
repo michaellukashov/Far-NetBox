@@ -535,18 +535,19 @@ void __fastcall TFileMasks::CreateMaskMask(const UnicodeString & Mask, intptr_t 
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TFileMasks::MakeDirectoryMask(UnicodeString Str)
+UnicodeString __fastcall TFileMasks::MakeDirectoryMask(const UnicodeString & Str)
 {
   assert(!Str.IsEmpty());
-  if (Str.IsEmpty() || !Str.IsDelimiter(DirectoryMaskDelimiters, Str.Length()))
+  UnicodeString Result = Str;
+  if (Result.IsEmpty() || !Result.IsDelimiter(DirectoryMaskDelimiters, Result.Length()))
   {
-    intptr_t D = Str.LastDelimiter(DirectoryMaskDelimiters);
+    intptr_t D = Result.LastDelimiter(DirectoryMaskDelimiters);
     // if there's any [back]slash anywhere in str,
     // add the same [back]slash at the end, otherwise add slash
-    wchar_t Delimiter = (D > 0) ? Str[D] : DirectoryMaskDelimiters[1];
-    Str += Delimiter;
+    wchar_t Delimiter = (D > 0) ? Result[D] : DirectoryMaskDelimiters[1];
+    Result += Delimiter;
   }
-  return Str;
+  return Result;
 }
 //---------------------------------------------------------------------------
 void __fastcall TFileMasks::CreateMask(
