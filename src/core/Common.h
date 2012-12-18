@@ -89,7 +89,7 @@ bool __fastcall RecursiveDeleteFile(const UnicodeString & FileName, bool ToRecyc
 unsigned int __fastcall CancelAnswer(unsigned int Answers);
 unsigned int __fastcall AbortAnswer(unsigned int Answers);
 unsigned int __fastcall ContinueAnswer(unsigned int Answers);
-UnicodeString __fastcall LoadStr(int Ident, unsigned int MaxLength = 0);
+UnicodeString __fastcall LoadStr(int Ident, intptr_t MaxLength = 0);
 UnicodeString __fastcall LoadStrPart(int Ident, int Part);
 UnicodeString __fastcall EscapeHotkey(const UnicodeString & Caption);
 bool __fastcall CutToken(UnicodeString & Str, UnicodeString & Token);

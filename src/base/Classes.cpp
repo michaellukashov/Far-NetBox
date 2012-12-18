@@ -1249,7 +1249,7 @@ UnicodeString MB2W(const char * src, const UINT cp)
   const int reqLength = MultiByteToWideChar(cp, 0, src, -1, NULL, 0);
   if (reqLength)
   {
-    wide.resize(static_cast<int>(reqLength));
+    wide.resize(reqLength);
     MultiByteToWideChar(cp, 0, src, -1, &wide[0], reqLength);
     wide.resize(wide.size() - 1);  //remove NULL character
   }
@@ -1274,7 +1274,7 @@ std::string W2MB(const wchar_t * src, const UINT cp)
   const int reqLength = WideCharToMultiByte(cp, 0, src, -1, 0, 0, NULL, NULL);
   if (reqLength)
   {
-    mb.resize(static_cast<int>(reqLength));
+    mb.resize(reqLength);
     WideCharToMultiByte(cp, 0, src, -1, &mb[0], reqLength, NULL, NULL);
     mb.erase(mb.length() - 1);  //remove NULL character
   }
@@ -1547,7 +1547,7 @@ __int64 __fastcall TMemoryStream::Read(void * Buffer, __int64 Count)
     if (Result > 0)
     {
       if (Result > Count) { Result = Count; }
-      memmove(Buffer, reinterpret_cast<char *>(FMemory) + FPosition, static_cast<int>(Result));
+      memmove(Buffer, reinterpret_cast<char *>(FMemory) + FPosition, static_cast<size_t>(Result));
       FPosition += Result;
       return Result;
     }
@@ -1630,11 +1630,11 @@ void * __fastcall TMemoryStream::Realloc(__int64 & NewCapacity)
     {
       if (FCapacity == 0)
       {
-        Result = malloc(static_cast<int>(NewCapacity));
+        Result = malloc(static_cast<size_t>(NewCapacity));
       }
       else
       {
-        Result = realloc(FMemory, static_cast<int>(NewCapacity));
+        Result = realloc(FMemory, static_cast<size_t>(NewCapacity));
       }
       if (Result == NULL)
       {
@@ -1668,7 +1668,7 @@ __int64 __fastcall TMemoryStream::Write(const void * Buffer, __int64 Count)
         FSize = Pos;
       }
       memmove(static_cast<char *>(FMemory) + FPosition,
-              Buffer, static_cast<int>(Count));
+              Buffer, static_cast<size_t>(Count));
       FPosition = Pos;
       Result = Count;
     }
@@ -2023,11 +2023,11 @@ UnicodeString TRegistry::ReadString(const UnicodeString & Name)
 {
   UnicodeString Result = L"";
   TRegDataType RegData = rdUnknown;
-  int Len = GetDataSize(Name);
+  intptr_t Len = GetDataSize(Name);
   if (Len > 0)
   {
     Result.SetLength(Len);
-    GetData(Name, static_cast<void *>(const_cast<wchar_t *>(Result.c_str())), static_cast<DWORD>(Len), RegData);
+    GetData(Name, static_cast<void *>(const_cast<wchar_t *>(Result.c_str())), Len, RegData);
     if ((RegData == rdString) || (RegData == rdExpandString))
     {
       PackStr(Result);
