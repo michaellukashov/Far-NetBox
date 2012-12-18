@@ -125,11 +125,11 @@ extern "C"
     return Result;
   }
 
-  int WINAPI MakeDirectoryW(HANDLE Plugin, const wchar_t ** name, int OpMode)
+  int WINAPI MakeDirectoryW(HANDLE Plugin, const wchar_t ** Name, int OpMode)
   {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    int Result = static_cast<int>(FarPlugin->MakeDirectory(Plugin, name, OpMode));
+    int Result = static_cast<int>(FarPlugin->MakeDirectory(Plugin, Name, OpMode));
     return Result;
   }
 
