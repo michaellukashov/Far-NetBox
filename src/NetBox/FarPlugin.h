@@ -257,7 +257,7 @@ protected:
   virtual bool ProcessKeyEx(intptr_t Key, uintptr_t ControlState);
   virtual bool ProcessEventEx(intptr_t Event, void * Param);
   virtual bool SetDirectoryEx(const UnicodeString & Dir, int OpMode);
-  virtual intptr_t MakeDirectoryEx(const UnicodeString & Name, int OpMode);
+  virtual intptr_t MakeDirectoryEx(UnicodeString & Name, int OpMode);
   virtual bool DeleteFilesEx(TObjectList * PanelItems, int OpMode);
   virtual intptr_t GetFilesEx(TObjectList * PanelItems, bool Move,
     UnicodeString & DestPath, int OpMode);

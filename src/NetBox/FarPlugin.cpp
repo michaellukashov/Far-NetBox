@@ -2141,44 +2141,44 @@ bool TCustomFarFileSystem::IsRight()
   return !IsLeft();
 }
 //---------------------------------------------------------------------------
-bool TCustomFarFileSystem::ProcessHostFileEx(TObjectList * /*PanelItems*/, int /*OpMode*/)
+bool TCustomFarFileSystem::ProcessHostFileEx(TObjectList * /* PanelItems */, int /* OpMode */)
 {
   return false;
 }
 //---------------------------------------------------------------------------
-bool TCustomFarFileSystem::ProcessKeyEx(intptr_t /*Key*/, uintptr_t /*ControlState*/)
+bool TCustomFarFileSystem::ProcessKeyEx(intptr_t /* Key */, uintptr_t /* ControlState */)
 {
   return false;
 }
 //---------------------------------------------------------------------------
-bool TCustomFarFileSystem::ProcessEventEx(intptr_t /*Event*/, void * /*Param*/)
+bool TCustomFarFileSystem::ProcessEventEx(intptr_t /* Event */, void * /* Param */)
 {
   return false;
 }
 //---------------------------------------------------------------------------
-bool TCustomFarFileSystem::SetDirectoryEx(const UnicodeString & /*Dir*/, int /*OpMode*/)
+bool TCustomFarFileSystem::SetDirectoryEx(const UnicodeString & /* Dir */, int /* OpMode */)
 {
   return false;
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarFileSystem::MakeDirectoryEx(const UnicodeString & /*Name*/, int /*OpMode*/)
+intptr_t TCustomFarFileSystem::MakeDirectoryEx(UnicodeString & /* Name */, int /* OpMode */)
 {
   return -1;
 }
 //---------------------------------------------------------------------------
-bool TCustomFarFileSystem::DeleteFilesEx(TObjectList * /*PanelItems*/, int /*OpMode*/)
+bool TCustomFarFileSystem::DeleteFilesEx(TObjectList * /* PanelItems */, int /* OpMode */)
 {
   return false;
 }
 //---------------------------------------------------------------------------
-intptr_t TCustomFarFileSystem::GetFilesEx(TObjectList * /*PanelItems*/, bool /*Move*/,
-  UnicodeString & /*DestPath*/, int /*OpMode*/)
+intptr_t TCustomFarFileSystem::GetFilesEx(TObjectList * /* PanelItems */, bool /* Move */,
+  UnicodeString & /* DestPath */, int /* OpMode */)
 {
   return 0;
 }
 //---------------------------------------------------------------------------
 intptr_t TCustomFarFileSystem::PutFilesEx(TObjectList * /*PanelItems*/,
-  bool /*Move*/, int /*OpMode*/)
+  bool /* Move */, int /* OpMode */)
 {
   return 0;
 }
