@@ -798,7 +798,7 @@ UnicodeString __fastcall EscapePuttyCommandParam(const UnicodeString & Param)
 UnicodeString __fastcall ExpandEnvironmentVariables(const UnicodeString & Str)
 {
   UnicodeString Buf;
-  unsigned int Size = 1024;
+  intptr_t Size = 1024;
 
   Buf.SetLength(Size);
   Buf.Unique();
