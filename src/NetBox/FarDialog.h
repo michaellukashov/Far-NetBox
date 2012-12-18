@@ -130,7 +130,7 @@ private:
   TFarBox * FBorderBox;
   TItemPosition FNextItemPosition;
   intptr_t FDefaultGroup;
-  int FTag;
+  intptr_t FTag;
   TFarDialogItem * FItemFocused;
   TFarKeyEvent FOnKey;
   FarDialogItem * FDialogItems;
@@ -214,7 +214,7 @@ public:
   void SetVisible(bool Value) { SetFlag(DIF_HIDDEN | DIF_INVERSE, Value); }
   bool GetTabStop() { return GetFlag(DIF_NOFOCUS | DIF_INVERSE); }
   void SetTabStop(bool Value) { SetFlag(DIF_NOFOCUS | DIF_INVERSE, Value); }
-  int GetTag() { return FTag; }
+  intptr_t GetTag() { return FTag; }
   void SetTag(intptr_t Value) { FTag = Value; }
   TFarDialog * GetDialog() { return FDialog; }
 

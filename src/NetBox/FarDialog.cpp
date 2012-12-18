@@ -1567,12 +1567,12 @@ void TFarDialogItem::SetHeight(intptr_t Value)
   TRect R = GetBounds();
   if (R.Top >= 0)
   {
-    R.Bottom = R.Top + Value - 1;
+    R.Bottom = static_cast<int>(R.Top + Value - 1);
   }
   else
   {
     assert(R.Bottom < 0);
-    R.Top = R.Bottom - Value + 1;
+    R.Top = static_cast<int>(R.Bottom - Value + 1);
   }
   SetBounds(R);
 }
