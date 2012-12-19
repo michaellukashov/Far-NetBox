@@ -347,7 +347,7 @@ public:
   bool __fastcall HasAnyPassword();
   void __fastcall Remove();
   virtual void __fastcall Assign(TPersistent * Source);
-  bool __fastcall ParseUrl(UnicodeString Url, TOptions * Options,
+  bool __fastcall ParseUrl(const UnicodeString & Url, TOptions * Options,
     TStoredSessionList * StoredSessions, bool & DefaultsOnly,
     UnicodeString * FileName, bool * AProtocolDefined);
   bool __fastcall ParseOptions(TOptions * Options);
@@ -511,7 +511,7 @@ public:
   int __fastcall IndexOf(TSessionData * Data);
   TSessionData * __fastcall FindSame(TSessionData * Data);
   TSessionData * __fastcall NewSession(UnicodeString SessionName, TSessionData * Session);
-  TSessionData * __fastcall ParseUrl(UnicodeString Url, TOptions * Options, bool & DefaultsOnly,
+  TSessionData * __fastcall ParseUrl(const UnicodeString & Url, TOptions * Options, bool & DefaultsOnly,
     UnicodeString * FileName = NULL, bool * ProtocolDefined = NULL);
   TSessionData * __fastcall GetSession(intptr_t Index) { return static_cast<TSessionData *>(AtObject(Index)); }
   TSessionData * __fastcall GetDefaultSettings() const { return FDefaultSettings; }
