@@ -105,7 +105,7 @@ __int64 ToInt(const UnicodeString & Value)
 
 int StrToIntDef(const UnicodeString & Value, int DefVal)
 {
-  __int64 Result = 0;
+  __int64 Result = DefVal;
   if (TryStrToInt(Value, Result))
   {
     return static_cast<int>(Result);
@@ -123,7 +123,7 @@ __int64 StrToInt64(const UnicodeString & Value)
 
 __int64 StrToInt64Def(const UnicodeString & Value, __int64 DefVal)
 {
-  __int64 Result = 0;
+  __int64 Result = DefVal;
   if (TryStrToInt(Value, Result))
   {
     return Result;
@@ -136,30 +136,20 @@ __int64 StrToInt64Def(const UnicodeString & Value, __int64 DefVal)
 
 bool TryStrToInt(const std::wstring & StrValue, __int64 & Value)
 {
-  bool Result = false;
-  try
+  bool Result = !StrValue.empty();
+  if (Result)
   {
     Value = _wtoi64(StrValue.c_str());
-    Result = true;
-  }
-  catch (...)
-  {
-    Result = false;
   }
   return Result;
 }
 
 bool TryStrToInt(const std::wstring & StrValue, int & Value)
 {
-  bool Result = false;
-  try
+  bool Result = !StrValue.empty();
+  if (Result)
   {
     Value = _wtoi(StrValue.c_str());
-    Result = true;
-  }
-  catch (...)
-  {
-    Result = false;
   }
   return Result;
 }
