@@ -139,8 +139,6 @@ protected:
 private:
   TRegistry * FRegistry;
   int FFailed;
-
-  // void __fastcall Init();
 };
 #ifndef _MSC_VER
 //---------------------------------------------------------------------------
