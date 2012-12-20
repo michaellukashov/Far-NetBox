@@ -630,9 +630,9 @@ BOOST_FIXTURE_TEST_CASE(test27, base_fixture_t)
   obj.Key = "Key";
   obj.Assignments["Hours"] = "23";
   obj.Assignments["Minutes"] = "59";
-  BOOST_TEST_MESSAGE("Name = " << obj.Name);
-  BOOST_TEST_MESSAGE("Number = " << obj.Number);
-  BOOST_TEST_MESSAGE("Key = " << obj.Key);
+  BOOST_TEST_MESSAGE("Name = " << obj.Name.get());
+  BOOST_TEST_MESSAGE("Number = " << obj.Number.get());
+  BOOST_TEST_MESSAGE("Key = " << obj.Key.get());
   // BOOST_TEST_MESSAGE("Assignments = " << obj.Assignments);
   BOOST_TEST_MESSAGE("Hours = " << obj.Assignments["Hours"]);
   BOOST_TEST_MESSAGE("Minutes = " << obj.Assignments["Minutes"]);
