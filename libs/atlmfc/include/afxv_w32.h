@@ -225,22 +225,6 @@ AFX_INLINE BOOL WINAPI DrawState(HDC hdc, HBRUSH hbr, DRAWSTATEPROC lpOutputFunc
 #endif
 #endif
 
-// Avoid mapping CStatusBar::DrawStatusText to DrawStatusText[A/W]
-#ifdef DrawStatusText
-#undef DrawStatusText
-AFX_INLINE void WINAPI AfxDrawStatusTextA(HDC hDC, LPRECT lprc, LPCTSTR szText,
-	UINT uFlags);
-AFX_INLINE void WINAPI AfxDrawStatusTextW(HDC hDC, LPRECT lprc, LPCTSTR szText,
-	UINT uFlags);
-AFX_INLINE void WINAPI DrawStatusText(HDC hDC, LPRECT lprc, LPCTSTR szText,
-	UINT uFlags) 
-#ifdef UNICODE
-	{ ::AfxDrawStatusTextW(hDC, lprc, szText, uFlags); }
-#else
-	{ ::AfxDrawStatusTextA(hDC, lprc, szText, uFlags); }
-#endif
-#endif
-
 // FreeResource is not required on Win32 platforms
 #undef FreeResource
 AFX_INLINE BOOL WINAPI FreeResource(HGLOBAL) { return TRUE; }
