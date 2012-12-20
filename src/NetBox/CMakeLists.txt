@@ -11,12 +11,19 @@ IF(NOT DEFINED CMAKE_BUILD_TYPE)
 ENDIF(NOT DEFINED CMAKE_BUILD_TYPE)
 
 set ( FAR_VERSION Far2 )
-set ( PLATFORM x86 )
+IF(NOT DEFINED PLATFORM)
+  set ( PLATFORM x86 )
+ENDIF(NOT DEFINED PLATFORM)
+  
 
 set ( OUTPUT_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
+# set ( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
+# set ( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
+# set ( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
 
 set ( LIBS_ROOT ${PROJECT_ROOT}/libs )
 set ( SRC_ROOT ${PROJECT_ROOT}/src )
+set ( TESTS_ROOT ${SRC_ROOT}/NetBox )
 
 #-------------------------------------------------------------------------------
 
@@ -69,15 +76,10 @@ include ( ${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake )
 
 #-------------------------------------------------------
 
-set ( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
-set ( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
-set ( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
-
-#-------------------------------------------------------------------------------
-
 include_directories (
     ${SRC_ROOT}/NetBox
     ${SRC_ROOT}/PluginSDK/${FAR_VERSION}
+    ${SRC_ROOT}/include
     ${SRC_ROOT}/base
     ${SRC_ROOT}/core
     ${SRC_ROOT}/windows
@@ -91,7 +93,7 @@ include_directories (
     ${LIBS_ROOT}/Putty
     ${LIBS_ROOT}/Putty/windows
     ${LIBS_ROOT}/Putty/charset
-    ${LIBS_ROOT}/tinyXML
+    ${LIBS_ROOT}/tinyxml2
     ${LIBS_ROOT}/openssl/${PLATFORM}/inc32
     ${LIBS_ROOT}/zlib/src
     ${LIBS_ROOT}/expat/lib
@@ -189,6 +191,11 @@ set ( NETBOX_SOURCES # ${COMMON_SOURCES}
     ${SRC_ROOT}/NetBox/UnityBuildMain.cpp
     ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
     # ${SRC_ROOT}/NetBox/NetBox.cpp
+    ${SRC_ROOT}/resource/TextsCore1.rc
+    ${SRC_ROOT}/resource/TextsCore2.rc
+    ${SRC_ROOT}/resource/rtlconsts.rc
+    ${SRC_ROOT}/resource/TextsFileZilla.rc
+    ${SRC_ROOT}/NetBox/NetBox.rc
     ${SRC_ROOT}/NetBox/NetBox.def
 )
 
@@ -201,6 +208,71 @@ set_property (TARGET ssleay32
     PROPERTY IMPORTED_LOCATION ${LIBS_ROOT}/openssl/${PLATFORM}/ssleay32.lib )
 
 #-------------------------------------------------------------------------------
+
+set ( NETBOX_LIBRARIES
+    mfcs100ud.lib
+    Atlsd.lib
+    uafxcwd.lib
+    libcmtd.lib
+    libcpmtd.lib
+    windowscodecs.lib
+    delayimp.lib
+    libputty
+    zlib
+    libtinyxml2
+    libeay32
+    ssleay32
+    libneon
+    libapr
+    libexpat
+    Ws2_32.lib
+    kernel32.lib
+    user32.lib
+    gdi32.lib
+    comdlg32.lib
+    advapi32.lib
+    Version.lib
+    winhttp.lib
+    winspool.lib
+    comctl32.lib
+    Crypt32.lib
+)
+
+add_library ( NetBox SHARED ${NETBOX_SOURCES} )
+set_target_properties ( NetBox
+    PROPERTIES
+    COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
+    LINK_FLAGS ${CMAKE_LINK_FLAGS}
+)
+
+#-------------------------------------------------------------------------------
+
+# move from NetBox/Debug to NetBox/
+# string(REPLACE "/" "\\" outdir ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+# add_custom_command ( TARGET NetBox
+#     POST_BUILD
+#     COMMAND copy /Y ${outdir}\\${CMAKE_BUILD_TYPE}\\ ${outdir}
+#     COMMAND del /F /Q ${outdir}\\${CMAKE_BUILD_TYPE}\\NetBox.dll_
+#     COMMAND ren ${outdir}\\${CMAKE_BUILD_TYPE}\\NetBox.dll NetBox.dll_
+#     WORKING_DIRECTORY ${outdir}
+#     VERBATIM
+# )
+#TODO: COMMAND create_ver.py
+
+target_link_libraries ( NetBox ${NETBOX_LIBRARIES} )
+
+add_dependencies ( NetBox
+    libputty
+    libtinyxml2
+    libneon
+    libapr
+    libexpat
+    zlib
+)
+
+#-------------------------------------------------------------------------------
+
+# use_precompiled_header ( NETBOX_SOURCES stdafx.h stdafx.cpp netbox )
 
 add_library (libputty STATIC
     ${LIBS_ROOT}/Putty/CPROXY.C
@@ -245,18 +317,15 @@ add_library (libputty STATIC
     ${LIBS_ROOT}/Putty/X11FWD.C
 )
 
-set_target_properties( libputty
+set_target_properties ( libputty
     PROPERTIES
-    COMPILE_FLAGS "/TC -D_CRTIMP= -DLibrary;SECURITY_WIN32"
+    COMPILE_FLAGS "/TC -D_CRTIMP= -DLibrary;SECURITY_WIN32;_MT;NET_SETUP_DIAGNOSTICS;NO_SECURITY /U_UNICODE;UNICODE"
 )
 
 #-------------------------------------------------------------------------------
 
-add_library (libtinyxml STATIC
-    ${LIBS_ROOT}/tinyXML/tinyxml.cpp
-    ${LIBS_ROOT}/tinyXML/tinystr.cpp
-    ${LIBS_ROOT}/tinyXML/tinyxmlerror.cpp
-    ${LIBS_ROOT}/tinyXML/tinyxmlparser.cpp
+add_library (libtinyxml2 STATIC
+    ${LIBS_ROOT}/tinyxml2/tinyxml2.cpp
 )
 
 #-------------------------------------------------------------------------------
@@ -289,7 +358,7 @@ add_library (libneon STATIC
     ${LIBS_ROOT}/neon/src/ne_openssl.c
 )
 
-set_target_properties( libneon
+set_target_properties ( libneon
     PROPERTIES
     COMPILE_FLAGS "-D_CRTIMP= -D_LIB;NOCRYPT -D${LIBNEON_DEFS} -D${LIBEXPAT_DEFS}"
     LINK_FLAGS ${CMAKE_LINK_FLAGS}
@@ -371,7 +440,7 @@ add_library (libapr STATIC
     ${LIBS_ROOT}/apr/user/win32/userinfo.c
 )
 
-set_target_properties( libapr
+set_target_properties ( libapr
     PROPERTIES
     COMPILE_FLAGS "-D_CRTIMP= -D_LIB;APR_DECLARE_STATIC;"
     LINK_FLAGS ${CMAKE_LINK_FLAGS}
@@ -387,7 +456,7 @@ add_library (libexpat STATIC
     ${LIBS_ROOT}/expat/lib/xmltok_ns.c
 )
 
-set_target_properties( libexpat
+set_target_properties ( libexpat
     PROPERTIES
     COMPILE_FLAGS "/TC -D_CRTIMP= -D_LIB -D${LIBEXPAT_DEFS}"
     LINK_FLAGS ${CMAKE_LINK_FLAGS}
@@ -413,79 +482,16 @@ add_library (zlib STATIC
     ${LIBS_ROOT}/zlib/src/zutil.c
 )
 
-set_target_properties( zlib
+set_target_properties ( zlib
     PROPERTIES
     COMPILE_FLAGS "-D_CRTIMP= -D_LIB"
     LINK_FLAGS ${CMAKE_LINK_FLAGS}
 )
 
-#-------------------------------------------------------------------------------
-
-set ( NETBOX_LIBRARIES
-    mfcs100ud.lib
-    Atlsd.lib
-    uafxcwd.lib
-    libcmtd.lib
-    libcpmtd.lib
-    windowscodecs.lib
-    delayimp.lib
-    libputty
-    zlib
-    libtinyxml
-    libeay32
-    ssleay32
-    libneon
-    libapr
-    libexpat
-    Ws2_32.lib
-    kernel32.lib
-    user32.lib
-    gdi32.lib
-    comdlg32.lib
-    advapi32.lib
-    Version.lib
-    winhttp.lib
-    winspool.lib
-    comctl32.lib
-    Crypt32.lib
-)
-
-add_library ( NetBox SHARED ${NETBOX_SOURCES} )
-set_target_properties( NetBox
-    PROPERTIES
-    COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
-    LINK_FLAGS ${CMAKE_LINK_FLAGS}
-)
-
-# move from NetBox/Debug to NetBox/
-# string(REPLACE "/" "\\" outdir ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-# add_custom_command ( TARGET NetBox
-#     POST_BUILD
-#     COMMAND copy /Y ${outdir}\\${CMAKE_BUILD_TYPE}\\ ${outdir}
-#     COMMAND del /F /Q ${outdir}\\${CMAKE_BUILD_TYPE}\\NetBox.dll_
-#     COMMAND ren ${outdir}\\${CMAKE_BUILD_TYPE}\\NetBox.dll NetBox.dll_
-#     WORKING_DIRECTORY ${outdir}
-#     VERBATIM
-# )
-#TODO: COMMAND create_ver.py
-
-target_link_libraries ( NetBox ${NETBOX_LIBRARIES} )
-
-add_dependencies ( NetBox
-    libputty
-    libtinyxml
-    libneon
-    libapr
-    libexpat
-    zlib
-)
-
-# use_precompiled_header ( NETBOX_SOURCES stdafx.h stdafx.cpp netbox )
-
 #-------------------------------------------------------
 # target testnetbox_01
 
-set ( TESTNETBOX_01_DIR ${SRC_ROOT}/NetBox )
+set ( TESTNETBOX_01_DIR ${TESTS_ROOT} )
 
 set ( TESTNETBOX_01_SOURCES
     ${SRC_ROOT}/base/Classes.cpp
@@ -495,13 +501,13 @@ set ( TESTNETBOX_01_SOURCES
     ${SRC_ROOT}/core/Common.cpp
     ${SRC_ROOT}/core/Exceptions.cpp
     ${SRC_ROOT}/core/FileBuffer.cpp
-    ${TESTNETBOX_01_DIR}/testnetbox_01.cpp
     ${SRC_ROOT}/resource/TextsCore1.rc
     ${SRC_ROOT}/resource/rtlconsts.rc
+    ${TESTNETBOX_01_DIR}/testnetbox_01.cpp
 )
 
-add_executable( testnetbox_01 ${TESTNETBOX_01_SOURCES} )
-set_target_properties( testnetbox_01
+add_executable ( testnetbox_01 ${TESTNETBOX_01_SOURCES} )
+set_target_properties ( testnetbox_01
     PROPERTIES
     COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
     LINK_FLAGS "${CMAKE_LINK_FLAGS}"
@@ -509,7 +515,7 @@ set_target_properties( testnetbox_01
 
 add_dependencies ( testnetbox_01
     libputty
-    libtinyxml
+    libtinyxml2
 )
 
 target_link_libraries ( testnetbox_01 ${NETBOX_LIBRARIES} )
@@ -517,25 +523,25 @@ target_link_libraries ( testnetbox_01 ${NETBOX_LIBRARIES} )
 #-------------------------------------------------------
 # target testnetbox_02
 
-set ( TESTNETBOX_02_DIR ${SRC_ROOT}/NetBox )
+set ( TESTNETBOX_02_DIR ${TESTS_ROOT} )
 
 set ( TESTNETBOX_02_SOURCES
-    ${TESTNETBOX_02_DIR}/UnityBuildCore.cpp
-    ${TESTNETBOX_02_DIR}/UnityBuildMain.cpp
-    ${TESTNETBOX_02_DIR}/UnityBuildFilezilla.cpp
-    ${SRC_ROOT}/resource/testnetbox_02.rc
+    ${SRC_ROOT}/NetBox/UnityBuildCore.cpp
+    ${SRC_ROOT}/NetBox/UnityBuildMain.cpp
+    ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
+    # ${TESTNETBOX_02_DIR}/testnetbox_02.rc
     ${TESTNETBOX_02_DIR}/testnetbox_02.cpp
 )
 
-add_executable( testnetbox_02 ${TESTNETBOX_02_SOURCES} )
-set_target_properties( testnetbox_02
+add_executable ( testnetbox_02 ${TESTNETBOX_02_SOURCES} )
+set_target_properties ( testnetbox_02
     PROPERTIES
     COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
     LINK_FLAGS "${CMAKE_LINK_FLAGS} /verbose:lib"
 )
 add_dependencies ( testnetbox_02
     libputty
-    libtinyxml
+    libtinyxml2
     libneon
     libapr
     libexpat
@@ -547,24 +553,24 @@ target_link_libraries ( testnetbox_02 ${NETBOX_LIBRARIES} )
 #-------------------------------------------------------
 # target testnetbox_03
 
-set ( TESTNETBOX_03_DIR ${SRC_ROOT}/NetBox )
+set ( TESTNETBOX_03_DIR ${TESTS_ROOT} )
 
 set ( TESTNETBOX_03_SOURCES
-    ${TESTNETBOX_03_DIR}/UnityBuildCore.cpp
-    ${TESTNETBOX_03_DIR}/UnityBuildMain.cpp
-    ${TESTNETBOX_03_DIR}/UnityBuildFilezilla.cpp
+    ${SRC_ROOT}/NetBox/UnityBuildCore.cpp
+    ${SRC_ROOT}/NetBox/UnityBuildMain.cpp
+    ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
     ${TESTNETBOX_03_DIR}/testnetbox_03.cpp
 )
 
-add_executable( testnetbox_03 ${TESTNETBOX_03_SOURCES} )
-set_target_properties( testnetbox_03
+add_executable ( testnetbox_03 ${TESTNETBOX_03_SOURCES} )
+set_target_properties ( testnetbox_03
     PROPERTIES
     COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
     LINK_FLAGS "${CMAKE_LINK_FLAGS}"
 )
 add_dependencies ( testnetbox_03
     libputty
-    libtinyxml
+    libtinyxml2
     libneon
     libapr
     libexpat
@@ -576,20 +582,21 @@ target_link_libraries ( testnetbox_03 ${NETBOX_LIBRARIES} )
 #-------------------------------------------------------
 # target testnetbox_04
 
-set ( TESTNETBOX_04_DIR ${SRC_ROOT}/NetBox )
+set ( TESTNETBOX_04_DIR ${TESTS_ROOT} )
 set ( TESTNETBOX_04_SOURCES
-    ${TESTNETBOX_04_DIR}/UnityBuildCore.cpp
-    ${TESTNETBOX_04_DIR}/UnityBuildMain.cpp
-    ${TESTNETBOX_04_DIR}/UnityBuildFilezilla.cpp
+    ${SRC_ROOT}/NetBox/UnityBuildCore.cpp
+    ${SRC_ROOT}/NetBox/UnityBuildMain.cpp
+    ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
     ${TESTNETBOX_04_DIR}/testnetbox_04.cpp
 )
-add_executable( testnetbox_04 ${TESTNETBOX_04_SOURCES} )
-set_target_properties( testnetbox_04
+add_executable ( testnetbox_04 ${TESTNETBOX_04_SOURCES} )
+set_target_properties ( testnetbox_04
     PROPERTIES
     COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
     LINK_FLAGS "${CMAKE_LINK_FLAGS} /verbose:lib"
 )
 add_dependencies ( testnetbox_04 ${NETBOX_LIBRARIES}
+    calculator_dll
 )
 target_link_libraries ( testnetbox_04 ${NETBOX_LIBRARIES}
 )
