@@ -250,11 +250,11 @@ UnicodeString TXmlStorage::GetSubKeyText(const UnicodeString & Name)
   }
   if (ToUnicodeString(CONST_SESSION_NODE) == Name)
   {
-    return ToUnicodeString(std::string(Element->Attribute(CONST_NAME_ATTR)));
+    return ToUnicodeString(Element->Attribute(CONST_NAME_ATTR));
   }
   else
   {
-    return ToUnicodeString(Element->GetText() ? std::string(Element->GetText()) : std::string());
+    return ToUnicodeString(Element->GetText());
   }
 }
 //---------------------------------------------------------------------------
@@ -263,8 +263,8 @@ tinyxml2::XMLElement * TXmlStorage::FindElement(const UnicodeString & Name)
   for (const tinyxml2::XMLElement * Element = FCurrentElement->FirstChildElement();
        Element != NULL; Element = Element->NextSiblingElement())
   {
-    UnicodeString name = ToUnicodeString(Element->GetText());
-    if (name == Name)
+    UnicodeString ElementName = ToUnicodeString(Element->Name());
+    if (ElementName == Name)
     {
       return const_cast<tinyxml2::XMLElement *>(Element);
     }

@@ -2648,7 +2648,7 @@ void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
 intptr_t TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
   UnicodeString & DestPath)
 {
-  int Result = 1;
+  intptr_t Result = 1;
   bool Confirmed = (OpMode & OPM_SILENT);
   bool Ask = !Confirmed;
 

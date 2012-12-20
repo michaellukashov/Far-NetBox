@@ -798,11 +798,11 @@ UnicodeString __fastcall EscapePuttyCommandParam(const UnicodeString & Param)
 UnicodeString __fastcall ExpandEnvironmentVariables(const UnicodeString & Str)
 {
   UnicodeString Buf;
-  unsigned int Size = 1024;
+  intptr_t Size = 1024;
 
   Buf.SetLength(Size);
   Buf.Unique();
-  unsigned int Len = ExpandEnvironmentStrings(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), Size);
+  intptr_t Len = ExpandEnvironmentStrings(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), Size);
 
   if (Len > Size)
   {
@@ -1338,40 +1338,40 @@ __int64 __fastcall Round(double Number)
   return static_cast<__int64>(((Number - Floor) > (Ceil - Number)) ? Ceil : Floor);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TryRelativeStrToDateTime(const UnicodeString & S, TDateTime & DateTime)
+bool __fastcall TryRelativeStrToDateTime(const UnicodeString & Str, TDateTime & DateTime)
 {
-  UnicodeString  s = S.Trim();
-  int Index = 1;
-  while ((Index <= s.Length()) && (s[Index] >= '0') && (s[Index] <= '9'))
+  UnicodeString S = Str.Trim();
+  intptr_t Index = 1;
+  while ((Index <= S.Length()) && (S[Index] >= '0') && (S[Index] <= '9'))
   {
     Index++;
   }
-  UnicodeString NumberStr = s.SubString(1, Index - 1);
+  UnicodeString NumberStr = S.SubString(1, Index - 1);
   int Number;
   bool Result = TryStrToInt(NumberStr, Number);
   if (Result)
   {
-    s.Delete(1, Index - 1);
-    s = s.Trim().UpperCase();
+    S.Delete(1, Index - 1);
+    S = S.Trim().UpperCase();
     DateTime = Now();
     // These may not overlap with ParseSize (K, M and G)
-    if (s == "S")
+    if (S == "S")
     {
       DateTime = IncSecond(DateTime, -Number);
     }
-    else if (s == "N")
+    else if (S == "N")
     {
       DateTime = IncMinute(DateTime, -Number);
     }
-    else if (s == "H")
+    else if (S == "H")
     {
       DateTime = IncHour(DateTime, -Number);
     }
-    else if (s == "D")
+    else if (S == "D")
     {
       DateTime = IncDay(DateTime, -Number);
     }
-    else if (s == "Y")
+    else if (S == "Y")
     {
       DateTime = IncYear(DateTime, -Number);
     }
@@ -1599,7 +1599,7 @@ UnicodeString __fastcall FixedLenDateTimeFormat(const UnicodeString & Format)
   UnicodeString Result = Format;
   bool AsIs = false;
 
-  int Index = 1;
+  intptr_t Index = 1;
   while (Index <= Result.Length())
   {
     wchar_t F = Result[Index];
@@ -1860,7 +1860,7 @@ TLibModule * __fastcall FindModule(void * Instance)
 }
 #endif
 //---------------------------------------------------------------------------
-UnicodeString __fastcall LoadStr(int Ident, unsigned int MaxLength)
+UnicodeString __fastcall LoadStr(int Ident, intptr_t MaxLength)
 {
 #ifndef _MSC_VER
   TLibModule * MainModule = FindModule(HInstance);

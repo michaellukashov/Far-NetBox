@@ -130,7 +130,7 @@ private:
   TFarBox * FBorderBox;
   TItemPosition FNextItemPosition;
   intptr_t FDefaultGroup;
-  int FTag;
+  intptr_t FTag;
   TFarDialogItem * FItemFocused;
   TFarKeyEvent FOnKey;
   FarDialogItem * FDialogItems;
@@ -214,7 +214,7 @@ public:
   void SetVisible(bool Value) { SetFlag(DIF_HIDDEN | DIF_INVERSE, Value); }
   bool GetTabStop() { return GetFlag(DIF_NOFOCUS | DIF_INVERSE); }
   void SetTabStop(bool Value) { SetFlag(DIF_NOFOCUS | DIF_INVERSE, Value); }
-  int GetTag() { return FTag; }
+  intptr_t GetTag() { return FTag; }
   void SetTag(intptr_t Value) { FTag = Value; }
   TFarDialog * GetDialog() { return FDialog; }
 
@@ -340,8 +340,8 @@ public:
 
   virtual UnicodeString GetCaption() { return GetData(); }
   virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
-  virtual int GetResult() { return FResult; }
-  virtual void SetResult(int Value) { FResult = Value; }
+  virtual intptr_t GetResult() { return FResult; }
+  virtual void SetResult(intptr_t Value) { FResult = Value; }
   virtual UnicodeString GetData();
   bool GetDefault();
   void SetDefault(bool Value);
@@ -358,7 +358,7 @@ protected:
   virtual bool HotKey(char HotKey);
 
 private:
-  int FResult;
+  intptr_t FResult;
   TFarButtonClickEvent FOnClick;
   TFarButtonBrackets FBrackets;
 };

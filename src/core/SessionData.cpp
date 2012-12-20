@@ -1031,85 +1031,86 @@ void __fastcall TSessionData::Remove()
   );
 }
 //---------------------------------------------------------------------
-bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
+bool __fastcall TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
   TStoredSessionList * StoredSessions, bool & DefaultsOnly, UnicodeString * FileName,
   bool * AProtocolDefined)
 {
   CALLSTACK;
-  TRACEFMT("0 [%s]", Url.c_str());
+  UnicodeString url = Url;
+  TRACEFMT("0 [%s]", url.c_str());
   bool ProtocolDefined = false;
   bool PortNumberDefined = false;
   TFSProtocol AFSProtocol = fsSCPonly;
   int APortNumber = 0;
   TFtps AFtps = ftpsNone;
-  if (Url.SubString(1, 7).LowerCase() == L"netbox:")
+  if (url.SubString(1, 7).LowerCase() == L"netbox:")
   {
     // Remove "netbox:" prefix
-    Url.Delete(1, 7);
+    url.Delete(1, 7);
   }
-  if (Url.SubString(1, 7).LowerCase() == L"webdav:")
+  if (url.SubString(1, 7).LowerCase() == L"webdav:")
   {
     AFSProtocol = fsWebDAV;
     AFtps = ftpsNone;
     APortNumber = HTTPPortNumber;
-    Url.Delete(1, 7);
+    url.Delete(1, 7);
     ProtocolDefined = true;
   }
-  if (Url.SubString(1, 4).LowerCase() == L"scp:")
+  if (url.SubString(1, 4).LowerCase() == L"scp:")
   {
     TRACE("1");
     AFSProtocol = fsSCPonly;
     APortNumber = SshPortNumber;
-    Url.Delete(1, 4);
+    url.Delete(1, 4);
     ProtocolDefined = true;
   }
-  else if (Url.SubString(1, 5).LowerCase() == L"sftp:")
+  else if (url.SubString(1, 5).LowerCase() == L"sftp:")
   {
     TRACE("2");
     AFSProtocol = fsSFTPonly;
     APortNumber = SshPortNumber;
-    Url.Delete(1, 5);
+    url.Delete(1, 5);
     ProtocolDefined = true;
   }
-  else if (Url.SubString(1, 4).LowerCase() == L"ftp:")
+  else if (url.SubString(1, 4).LowerCase() == L"ftp:")
   {
     TRACE("3");
     AFSProtocol = fsFTP;
     SetFtps(ftpsNone);
     APortNumber = FtpPortNumber;
-    Url.Delete(1, 4);
+    url.Delete(1, 4);
     ProtocolDefined = true;
   }
-  else if (Url.SubString(1, 5).LowerCase() == L"ftps:")
+  else if (url.SubString(1, 5).LowerCase() == L"ftps:")
   {
     TRACE("4");
     AFSProtocol = fsFTP;
     AFtps = ftpsImplicit;
     APortNumber = FtpsImplicitPortNumber;
-    Url.Delete(1, 5);
+    url.Delete(1, 5);
     ProtocolDefined = true;
   }
-  else if (Url.SubString(1, 5).LowerCase() == L"http:")
+  else if (url.SubString(1, 5).LowerCase() == L"http:")
   {
     AFSProtocol = fsWebDAV;
     AFtps = ftpsNone;
     APortNumber = HTTPPortNumber;
-    Url.Delete(1, 5);
+    url.Delete(1, 5);
     ProtocolDefined = true;
   }
-  else if (Url.SubString(1, 6).LowerCase() == L"https:")
+  else if (url.SubString(1, 6).LowerCase() == L"https:")
   {
     AFSProtocol = fsWebDAV;
     AFtps = ftpsImplicit;
     APortNumber = HTTPSPortNumber;
-    Url.Delete(1, 6);
+    url.Delete(1, 6);
     ProtocolDefined = true;
   }
 
-  if (ProtocolDefined && (Url.SubString(1, 2) == L"//"))
+  if (ProtocolDefined && (url.SubString(1, 2) == L"//"))
   {
     TRACE("5");
-    Url.Delete(1, 2);
+    url.Delete(1, 2);
   }
 
   if (AProtocolDefined != NULL)
@@ -1118,10 +1119,10 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
     *AProtocolDefined = ProtocolDefined;
   }
 
-  if (!Url.IsEmpty())
+  if (!url.IsEmpty())
   {
     TRACE("7");
-    UnicodeString DecodedUrl = DecodeUrlChars(Url);
+    UnicodeString DecodedUrl = DecodeUrlChars(url);
     // lookup stored session even if protocol was defined
     // (this allows setting for example default username for host
     // by creating stored session named by host)
@@ -1150,12 +1151,12 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
       DefaultsOnly = false;
       Assign(Data);
       int P = 1;
-      while (!AnsiSameText(DecodeUrlChars(Url.SubString(1, P)), Data->GetName()))
+      while (!AnsiSameText(DecodeUrlChars(url.SubString(1, P)), Data->GetName()))
       {
         P++;
-        assert(P <= Url.Length());
+        assert(P <= url.Length());
       }
-      ARemoteDirectory = Url.SubString(P + 1, Url.Length() - P);
+      ARemoteDirectory = url.SubString(P + 1, url.Length() - P);
 
       if (Data->GetHidden())
       {
@@ -1172,14 +1173,14 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
       Assign(StoredSessions->GetDefaultSettings());
       SetName(L"");
 
-      intptr_t PSlash = Url.Pos(L"/");
+      intptr_t PSlash = url.Pos(L"/");
       if (PSlash == 0)
       {
         TRACE("14");
-        PSlash = Url.Length() + 1;
+        PSlash = url.Length() + 1;
       }
 
-      UnicodeString ConnectInfo = Url.SubString(1, PSlash - 1);
+      UnicodeString ConnectInfo = url.SubString(1, PSlash - 1);
 
       intptr_t P = ConnectInfo.LastDelimiter(L"@");
 
@@ -1234,9 +1235,9 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
       SetUserName(DecodeUrlChars(CutToChar(UserInfo, L':', false)));
       SetPassword(DecodeUrlChars(UserInfo));
 
-      if (PSlash <= Url.Length())
+      if (PSlash <= url.Length())
       {
-        ARemoteDirectory = Url.SubString(PSlash, Url.Length() - PSlash + 1);
+        ARemoteDirectory = url.SubString(PSlash, url.Length() - PSlash + 1);
       }
     }
 
@@ -2663,8 +2664,8 @@ void __fastcall TStoredSessionList::Load(THierarchicalStorage * Storage,
   bool AsModified, bool UseDefaults)
 {
   CALLSTACK;
-  TStringList *SubKeys = new TStringList();
-  TList * Loaded = new TList;
+  TStringList * SubKeys = new TStringList();
+  TList * Loaded = new TList();
   TRY_FINALLY (
   {
     Storage->GetSubKeyNames(SubKeys);
@@ -3125,7 +3126,7 @@ void __fastcall TStoredSessionList::ImportHostKeys(const UnicodeString & TargetK
   );
 }
 //---------------------------------------------------------------------------
-TSessionData * __fastcall TStoredSessionList::ParseUrl(UnicodeString Url,
+TSessionData * __fastcall TStoredSessionList::ParseUrl(const UnicodeString & Url,
   TOptions * Options, bool & DefaultsOnly, UnicodeString * FileName,
   bool * AProtocolDefined)
 {

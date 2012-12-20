@@ -24,11 +24,11 @@ private:
 class TNamedObjectList : public TObjectList
 {
 private:
-  int FHiddenCount;
+  intptr_t FHiddenCount;
   virtual void __fastcall Notify(void *Ptr, TListNotification Action);
 public:
   intptr_t __fastcall GetCount();
-  void __fastcall SetCount(intptr_t value);
+  void __fastcall SetCount(intptr_t Value);
 protected:
   void __fastcall Recount();
 public:
@@ -40,10 +40,10 @@ public:
   /* __fastcall */ TNamedObjectList();
 
   void __fastcall AlphaSort();
-  virtual TNamedObject * __fastcall AtObject(Integer Index);
+  virtual TNamedObject * __fastcall AtObject(intptr_t Index);
   TNamedObject * __fastcall FindByName(UnicodeString Name, Boolean CaseSensitive = False);
-  int __fastcall GetHiddenCount() { return FHiddenCount; }
-  void __fastcall SetHiddenCount(int value) { FHiddenCount = value; }
+  intptr_t __fastcall GetHiddenCount() { return FHiddenCount; }
+  void __fastcall SetHiddenCount(intptr_t Value) { FHiddenCount = Value; }
 };
 //---------------------------------------------------------------------------
 int /* __fastcall */ NamedObjectSortProc(void * Item1, void * Item2);

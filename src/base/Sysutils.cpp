@@ -105,7 +105,7 @@ __int64 ToInt(const UnicodeString & Value)
 
 int StrToIntDef(const UnicodeString & Value, int DefVal)
 {
-  __int64 Result = 0;
+  __int64 Result = DefVal;
   if (TryStrToInt(Value, Result))
   {
     return static_cast<int>(Result);
@@ -123,7 +123,7 @@ __int64 StrToInt64(const UnicodeString & Value)
 
 __int64 StrToInt64Def(const UnicodeString & Value, __int64 DefVal)
 {
-  __int64 Result = 0;
+  __int64 Result = DefVal;
   if (TryStrToInt(Value, Result))
   {
     return Result;
@@ -136,30 +136,20 @@ __int64 StrToInt64Def(const UnicodeString & Value, __int64 DefVal)
 
 bool TryStrToInt(const std::wstring & StrValue, __int64 & Value)
 {
-  bool Result = false;
-  try
+  bool Result = !StrValue.empty();
+  if (Result)
   {
     Value = _wtoi64(StrValue.c_str());
-    Result = true;
-  }
-  catch (...)
-  {
-    Result = false;
   }
   return Result;
 }
 
 bool TryStrToInt(const std::wstring & StrValue, int & Value)
 {
-  bool Result = false;
-  try
+  bool Result = !StrValue.empty();
+  if (Result)
   {
     Value = _wtoi(StrValue.c_str());
-    Result = true;
-  }
-  catch (...)
-  {
-    Result = false;
   }
   return Result;
 }
@@ -594,7 +584,7 @@ UnicodeString FmtLoadStr(int id, ...)
   UnicodeString Format;
   Format.SetLength(1024);
   HINSTANCE hInstance = FarPlugin ? FarPlugin->GetHandle() : GetModuleHandle(0);
-  int Length = ::LoadString(hInstance, id, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Format.c_str())),
+  intptr_t Length = ::LoadString(hInstance, id, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Format.c_str())),
     static_cast<int>(Format.Length()));
   Format.SetLength(Length);
   if (!Length)
@@ -671,8 +661,8 @@ UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
   const wchar_t * s = 0;
   wchar_t * w = 0;
 
-  int lineCount = 0;
-  int lenBuffer = 0;
+  intptr_t lineCount = 0;
+  intptr_t lenBuffer = 0;
   intptr_t spaceLeft = MaxWidth;
 
   if (MaxWidth == 0)
@@ -855,7 +845,7 @@ void AppendPathDelimiterA(std::string & Str)
 UnicodeString ExpandEnvVars(const UnicodeString & Str)
 {
   wchar_t buf[MAX_PATH];
-  unsigned size = ExpandEnvironmentStringsW(Str.c_str(), buf, static_cast<DWORD>(sizeof(buf) - 1));
+  intptr_t size = ExpandEnvironmentStringsW(Str.c_str(), buf, static_cast<DWORD>(sizeof(buf) - 1));
   UnicodeString Result = UnicodeString(buf, size - 1);
   return Result;
 }
@@ -896,14 +886,14 @@ UnicodeString ExtractFileExt(const UnicodeString & FileName)
 UnicodeString get_full_path_name(const UnicodeString & Path)
 {
   UnicodeString Buf(MAX_PATH, 0);
-  int size = GetFullPathNameW(Path.c_str(), static_cast<DWORD>(Buf.Length() - 1),
+  intptr_t Size = GetFullPathNameW(Path.c_str(), static_cast<DWORD>(Buf.Length() - 1),
                                  reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Buf.c_str())), NULL);
-  if (size > Buf.Length())
+  if (Size > Buf.Length())
   {
-    Buf.SetLength(size);
-    size = GetFullPathNameW(Path.c_str(), static_cast<DWORD>(Buf.Length() - 1), reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Buf.c_str())), NULL);
+    Buf.SetLength(Size);
+    Size = GetFullPathNameW(Path.c_str(), static_cast<DWORD>(Buf.Length() - 1), reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Buf.c_str())), NULL);
   }
-  return UnicodeString(Buf.c_str(), size);
+  return UnicodeString(Buf.c_str(), Size);
 }
 
 UnicodeString ExpandFileName(const UnicodeString & FileName)
@@ -1034,7 +1024,7 @@ UnicodeString SysErrorMessage(int ErrorCode)
 {
   UnicodeString Result;
   wchar_t Buffer[255];
-  int Len = ::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM |
+  intptr_t Len = ::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM |
     FORMAT_MESSAGE_ARGUMENT_ARRAY, NULL, ErrorCode, 0,
     static_cast<LPTSTR>(Buffer),
     sizeof(Buffer), NULL);

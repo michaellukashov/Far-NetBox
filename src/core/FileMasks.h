@@ -122,7 +122,7 @@ private:
     intptr_t MaskEnd, bool Include);
   TStrings * __fastcall GetMasksStr(intptr_t Index) const;
 private:
-  static UnicodeString __fastcall MakeDirectoryMask(UnicodeString Str);
+  static UnicodeString __fastcall MakeDirectoryMask(const UnicodeString & Str);
   static inline void __fastcall ReleaseMaskMask(TMaskMask & MaskMask);
   inline void __fastcall Init();
   void __fastcall DoInit(bool Delete);
