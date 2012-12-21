@@ -181,7 +181,7 @@ public:
   intptr_t IndexOf(void * Value) const;
   virtual void __fastcall Clear();
   virtual void __fastcall Sort(CompareFunc Func);
-  virtual void __fastcall Notify(void * Ptr, int Action);
+  virtual void __fastcall Notify(void * Ptr, TListNotification Action);
   virtual void __fastcall Sort();
 
 protected:
@@ -228,7 +228,7 @@ public:
   bool GetOwnsObjects() const;
   void SetOwnsObjects(bool Value);
   virtual void __fastcall Sort(CompareFunc func);
-  virtual void __fastcall Notify(void * Ptr, int Action);
+  virtual void __fastcall Notify(void * Ptr, TListNotification Action);
 
 private:
   TObject *& PropertyGetItem(intptr_t Index)

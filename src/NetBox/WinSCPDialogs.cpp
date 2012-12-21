@@ -2238,7 +2238,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   Text = new TFarText(this);
   Text->SetCaption(GetMsg(LOGIN_FTP_POST_LOGIN_COMMANDS));
 
-  for (int Index = 0; Index < LENOF(PostLoginCommandsEdits); Index++)
+  for (intptr_t Index = 0; Index < LENOF(PostLoginCommandsEdits); Index++)
   {
     TFarEdit * Edit = new TFarEdit(this);
     PostLoginCommandsEdits[Index] = Edit;
@@ -3272,7 +3272,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   std::auto_ptr<TStrings> PostLoginCommandsPtr;
   PostLoginCommandsPtr.reset(PostLoginCommands);
   PostLoginCommands->Text = SessionData->GetPostLoginCommands();
-  for (int Index = 0; (Index < PostLoginCommands->Count) &&
+  for (intptr_t Index = 0; (Index < PostLoginCommands->Count) &&
        (Index < LENOF(PostLoginCommandsEdits)); Index++)
   {
     PostLoginCommandsEdits[Index]->SetText(PostLoginCommands->Strings[Index]);
@@ -3561,7 +3561,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     TStrings * PostLoginCommands = new TStringList();
     std::auto_ptr<TStrings> PostLoginCommandsPtr;
     PostLoginCommandsPtr.reset(PostLoginCommands);
-    for (int Index = 0; Index < LENOF(PostLoginCommandsEdits); Index++)
+    for (intptr_t Index = 0; Index < LENOF(PostLoginCommandsEdits); Index++)
     {
       UnicodeString Text = PostLoginCommandsEdits[Index]->GetText();
       if (!Text.IsEmpty())
@@ -7217,7 +7217,7 @@ TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
   ListBox->SetOnMouseClick(MAKE_CALLBACK(TSynchronizeChecklistDialog::ListBoxClick, this));
 
   UnicodeString Actions = GetMsg(CHECKLIST_ACTIONS);
-  int Action = 0;
+  intptr_t Action = 0;
   while (!Actions.IsEmpty() && (Action < LENOF(FActions)))
   {
     FActions[Action] = CutToChar(Actions, '|', false);

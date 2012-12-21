@@ -684,7 +684,7 @@ void __fastcall SplitCommand(const UnicodeString & Command, UnicodeString & Prog
     }
     else
     {
-      throw Exception(FMTLOAD(INVALID_SHELL_COMMAND, (L"\"" + Cmd)));
+      throw Exception(FMTLOAD(INVALID_SHELL_COMMAND, UnicodeString(L"\"" + Cmd).c_str()));
     }
   }
   else

@@ -232,7 +232,7 @@ public:
   intptr_t __fastcall GetTopIndex();
   UnicodeString __fastcall GetName();
   void __fastcall SetName(const UnicodeString & Value);
-  intptr_t __fastcall GetCount();
+  virtual intptr_t __fastcall GetCount() const;
 
 protected:
   void __fastcall CloseLogFile();

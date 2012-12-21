@@ -2518,6 +2518,7 @@ UnicodeString __fastcall TSFTPFileSystem::RealPath(const UnicodeString & Path)
       throw;
     }
   }
+  return UnicodeString();
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TSFTPFileSystem::RealPath(const UnicodeString & Path,
@@ -3905,7 +3906,7 @@ void __fastcall TSFTPFileSystem::SFTPConfirmOverwrite(UnicodeString & FileName,
     }
     // duplicated in TTerminal::ConfirmFileOverwrite
     bool CanAlternateResume =
-      (FileParams->DestSize < FileParams->SourceSize) && !OperationProgress->AsciiTransfer;
+      FileParams ? (FileParams->DestSize < FileParams->SourceSize) && !OperationProgress->AsciiTransfer : false;
     TBatchOverwrite BatchOverwrite =
       FTerminal->EffectiveBatchOverwrite(Params, OperationProgress, true);
     // when mode is forced by batch, never query user
