@@ -1176,7 +1176,7 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, const UnicodeString & Title,
       }
     }
 
-    intptr_t ResultItem = Menu(Flags | FMENU_USEEXT, Title, Bottom,
+    intptr_t ResultItem = Menu((DWORD)(Flags | FMENU_USEEXT), Title, Bottom,
       reinterpret_cast<const FarMenuItem *>(MenuItems), Count, BreakKeys, BreakCode);
 
     if (ResultItem >= 0)
