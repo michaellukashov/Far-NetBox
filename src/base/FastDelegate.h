@@ -561,8 +561,8 @@ protected:
 	// the data is protected, not private, because many
 	// compilers have problems with template friends.
 	typedef void (detail::GenericClass::*GenericMemFuncType)(); // arbitrary MFP.
-	detail::GenericClass *m_pthis;
 	GenericMemFuncType m_pFunction;
+	detail::GenericClass *m_pthis;
 
 #if !defined(FASTDELEGATE_USESTATICFUNCTIONHACK)
 	typedef void (*GenericFuncPtr)(); // arbitrary code pointer
@@ -576,7 +576,7 @@ public:
 		m_pthis=0; m_pFunction=0; m_pStaticFunction=0;
 	}
 #else
-	DelegateMemento() : m_pthis(0), m_pFunction(0) {};
+	DelegateMemento() : m_pFunction(0), m_pthis(0) {};
 	void clear() {	m_pthis=0; m_pFunction=0;	}
 #endif
 public:

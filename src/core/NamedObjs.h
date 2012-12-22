@@ -25,7 +25,6 @@ class TNamedObjectList : public TObjectList
 {
 private:
   intptr_t FHiddenCount;
-  virtual void __fastcall Notify(void *Ptr, TListNotification Action);
 public:
   intptr_t __fastcall GetCount();
   void __fastcall SetCount(intptr_t Value);
@@ -39,6 +38,7 @@ public:
 
   /* __fastcall */ TNamedObjectList();
 
+  virtual void __fastcall Notify(void *Ptr, TListNotification Action);
   void __fastcall AlphaSort();
   virtual TNamedObject * __fastcall AtObject(intptr_t Index);
   TNamedObject * __fastcall FindByName(UnicodeString Name, Boolean CaseSensitive = False);

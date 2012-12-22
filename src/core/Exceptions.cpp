@@ -19,11 +19,11 @@ bool __fastcall ExceptionMessage(const Exception * E, UnicodeString & Message)
   {
     Message = LoadStr(ACCESS_VIOLATION_ERROR);
   }
-  else if (E->Message.IsEmpty())
+  else if (E && E->Message.IsEmpty())
   {
     Result = false;
   }
-  else
+  else if (E)
   {
     Message = E->Message;
   }

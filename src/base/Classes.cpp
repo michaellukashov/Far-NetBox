@@ -276,7 +276,7 @@ void TList::Sort(CompareFunc Func)
     QuickSort(FList, 0, Count - 1, Func);
   }
 }
-void TList::Notify(void * Ptr, int Action)
+void TList::Notify(void * Ptr, TListNotification Action)
 {
   (void)Ptr;
   (void)Action;
@@ -357,7 +357,7 @@ void TObjectList::Sort(CompareFunc func)
 {
   parent::Sort(func);
 }
-void TObjectList::Notify(void * Ptr, int Action)
+void TObjectList::Notify(void * Ptr, TListNotification Action)
 {
   if (GetOwnsObjects())
   {

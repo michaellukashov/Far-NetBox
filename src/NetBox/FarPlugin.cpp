@@ -2432,7 +2432,7 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
 //---------------------------------------------------------------------------
 void TFarKeyBarTitles::ClearKeyBarTitles(KeyBarTitles & Titles)
 {
-  for (int Index = 0; Index < Titles.CountLabels; Index++)
+  for (intptr_t Index = 0; Index < Titles.CountLabels; Index++)
   {
     delete[] Titles.Labels[Index].Text;
     delete[] Titles.Labels[Index].LongText;

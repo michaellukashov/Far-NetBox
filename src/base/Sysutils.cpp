@@ -865,7 +865,7 @@ UnicodeString StringOfChar(const wchar_t c, intptr_t len)
 
 char * StrNew(const char * Str)
 {
-  const size_t sz = strlen(Str) + 1;
+  size_t sz = strlen(Str) + 1;
   char * Result = new char[sz];
   strncpy_s(Result, sz, Str, sz);
   return Result;

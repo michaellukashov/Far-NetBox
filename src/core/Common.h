@@ -249,7 +249,7 @@ public:
       #ifndef TRACE_IN_MEMORY
       if (CallstackTls != CallstackTlsOff)
       {
-        FDepth = reinterpret_cast<unsigned int>(TlsGetValue(CallstackTls)) + 1;
+        FDepth = reinterpret_cast<intptr_t>(TlsGetValue(CallstackTls)) + 1;
         TlsSetValue(CallstackTls, reinterpret_cast<void *>(FDepth));
       }
       #endif
@@ -284,7 +284,7 @@ private:
   const wchar_t * FFunc;
   unsigned int FLine;
   const wchar_t * FMessage;
-  unsigned int FDepth;
+  intptr_t FDepth;
 };
 void __callstack(const wchar_t*, const wchar_t*, unsigned int, const wchar_t*);
 #define __callstack1 __callstack

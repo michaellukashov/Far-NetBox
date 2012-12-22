@@ -904,7 +904,7 @@ bool __fastcall TFTPFileSystem::ConfirmOverwrite(UnicodeString & FileName,
       OverwriteMode = omResume;
       assert(FileParams != NULL);
       assert(CanResume);
-      FFileTransferResumed = FileParams->DestSize;
+      FFileTransferResumed = FileParams ? FileParams->DestSize : 0;
       break;
 
     // rename

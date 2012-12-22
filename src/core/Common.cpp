@@ -684,7 +684,7 @@ void __fastcall SplitCommand(const UnicodeString & Command, UnicodeString & Prog
     }
     else
     {
-      throw Exception(FMTLOAD(INVALID_SHELL_COMMAND, (L"\"" + Cmd)));
+      throw Exception(FMTLOAD(INVALID_SHELL_COMMAND, UnicodeString(L"\"" + Cmd).c_str()));
     }
   }
   else
@@ -802,13 +802,13 @@ UnicodeString __fastcall ExpandEnvironmentVariables(const UnicodeString & Str)
 
   Buf.SetLength(Size);
   Buf.Unique();
-  intptr_t Len = ExpandEnvironmentStrings(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), Size);
+  intptr_t Len = ExpandEnvironmentStrings(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), (DWORD)Size);
 
   if (Len > Size)
   {
     Buf.SetLength(Len);
     Buf.Unique();
-    ExpandEnvironmentStrings(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), Len);
+    ExpandEnvironmentStrings(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), (DWORD)Len);
   }
 
   PackStr(Buf);

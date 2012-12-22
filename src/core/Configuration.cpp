@@ -797,15 +797,16 @@ UnicodeString __fastcall TConfiguration::GetVersionStr()
   {
     throw ExtException(&E, L"Can't get application version");
   }
+  return UnicodeString();
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TConfiguration::GetVersion()
 {
   TGuard Guard(FCriticalSection);
+  UnicodeString Result;
   try
   {
     TVSFixedFileInfo * Info = GetFixedApplicationInfo();
-    UnicodeString Result;
     if (Info)
     {
       Result = FORMAT(L"%d.%d.%d",
@@ -813,12 +814,12 @@ UnicodeString __fastcall TConfiguration::GetVersion()
         LOWORD(Info->dwFileVersionMS),
         HIWORD(Info->dwFileVersionLS));
     }
-    return Result;
   }
   catch (Exception &E)
   {
     throw ExtException(&E, L"Can't get application version");
   }
+  return Result;
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TConfiguration::GetFileFileInfoString(const UnicodeString & Key,
