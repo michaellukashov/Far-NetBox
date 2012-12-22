@@ -1,5 +1,6 @@
-NetBox 2.1.20 ??.12.2012
+NetBox 2.1.20 22.12.2012
 --------------------
+  * Minor bugfixes
   * Bugfix: Netbox Session import/export doesn't restore default values
   * WinSCP core upgraded to 5.1.2
 
