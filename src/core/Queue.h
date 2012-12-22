@@ -9,7 +9,7 @@ class TSimpleThread : public TObject
 {
 public:
   explicit /* __fastcall */ TSimpleThread();
-  virtual void __fastcall Init();
+  void __fastcall Init();
   virtual /* __fastcall */ ~TSimpleThread();
 
   virtual void __fastcall Start();
@@ -37,7 +37,7 @@ private:
 class TSignalThread : public TSimpleThread
 {
 public:
-  virtual void __fastcall Init(bool LowPriority);
+  void __fastcall Init(bool LowPriority);
   virtual void __fastcall Start();
   virtual void __fastcall Terminate();
   void __fastcall TriggerEvent();
@@ -78,7 +78,7 @@ public:
   explicit /* __fastcall */ TTerminalQueue(TTerminal * Terminal, TConfiguration * Configuration);
   virtual /* __fastcall */ ~TTerminalQueue();
 
-  virtual void __fastcall Init();
+  void __fastcall Init();
   void __fastcall AddItem(TQueueItem * Item);
   TTerminalQueueStatus * __fastcall CreateStatus(TTerminalQueueStatus * Current);
   void __fastcall Idle();
@@ -336,7 +336,7 @@ class TTerminalThread : public TSignalThread
 {
 public:
   explicit /* __fastcall */ TTerminalThread(TTerminal * Terminal);
-  virtual void __fastcall Init();
+  void __fastcall Init();
   virtual /* __fastcall */ ~TTerminalThread();
 
   void __fastcall TerminalOpen();

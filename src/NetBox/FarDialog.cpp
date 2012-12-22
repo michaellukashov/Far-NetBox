@@ -2197,7 +2197,7 @@ void TFarList::Changed()
       if (GetCount())
       {
         FListItems->Items = new FarListItem[GetCount()];
-        for (int Index = 0; Index < GetCount(); Index++)
+        for (size_t Index = 0; Index < (size_t)GetCount(); Index++)
         {
           memset(&FListItems->Items[Index], 0, sizeof(FListItems->Items[Index]));
           if (Index < FListItems->ItemsNumber)

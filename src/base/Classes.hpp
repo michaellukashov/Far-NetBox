@@ -177,7 +177,7 @@ public:
   intptr_t Remove(void * Item);
   void Move(intptr_t CurIndex, intptr_t NewIndex);
   void Delete(intptr_t Index);
-  virtual void Insert(intptr_t Index, void * Item);
+  void Insert(intptr_t Index, void * Item);
   intptr_t IndexOf(void * Value) const;
   virtual void __fastcall Clear();
   virtual void __fastcall Sort(CompareFunc Func);
@@ -222,7 +222,7 @@ public:
   void Extract(TObject * Value);
   void Move(intptr_t Index, intptr_t To);
   void Delete(intptr_t Index);
-  virtual void __fastcall Insert(intptr_t Index, TObject * Value);
+  void __fastcall Insert(intptr_t Index, TObject * Value);
   intptr_t IndexOf(TObject * Value) const;
   virtual void __fastcall Clear();
   bool GetOwnsObjects() const;

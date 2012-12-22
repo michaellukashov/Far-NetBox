@@ -219,7 +219,7 @@ friend class TFarPanelInfo;
 friend class TCustomFarPlugin;
 public:
   TCustomFarFileSystem(TCustomFarPlugin * APlugin);
-  virtual void Init();
+  void Init();
   virtual ~TCustomFarFileSystem();
 
   void GetOpenPluginInfo(struct OpenPluginInfo * Info);
@@ -357,7 +357,7 @@ protected:
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     DWORD & NumberOfLinks, UnicodeString & Description,
     UnicodeString & Owner, void *& UserData, int & CustomColumnNumber) = 0;
-  virtual UnicodeString GetCustomColumnData(int Column);
+  virtual UnicodeString GetCustomColumnData(size_t Column);
 
   void FillPanelItem(struct PluginPanelItem * PanelItem);
 };
@@ -387,7 +387,7 @@ protected:
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     DWORD & NumberOfLinks, UnicodeString & Description,
     UnicodeString & Owner, void *& UserData, int & CustomColumnNumber);
-  virtual UnicodeString GetCustomColumnData(int Column);
+  virtual UnicodeString GetCustomColumnData(size_t Column);
 };
 //---------------------------------------------------------------------------
 class THintPanelItem : public TCustomFarPanelItem

@@ -25,7 +25,7 @@ friend class TSFTPCalculateFilesChecksumQueue;
 friend class TSFTPBusy;
 public:
   explicit /* __fastcall */ TSFTPFileSystem(TTerminal * ATermina);
-  virtual void __fastcall Init(TSecureShell * SecureShell);
+  void __fastcall Init(TSecureShell * SecureShell);
   virtual /* __fastcall */ ~TSFTPFileSystem();
 
   virtual void __fastcall Open();

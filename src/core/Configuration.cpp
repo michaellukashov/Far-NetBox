@@ -840,6 +840,7 @@ UnicodeString __fastcall TConfiguration::GetFileFileInfoString(const UnicodeStri
       }
       catch (const std::exception & e)
       {
+		(void)e;
         DEBUG_PRINTF(L"Error: %s", MB2W(e.what()).c_str());
         Result = L"";
       }

@@ -1134,7 +1134,7 @@ class TBackgroundTerminal : public TSecondaryTerminal
   friend class TTerminalItem;
 public:
   explicit /* __fastcall */ TBackgroundTerminal(TTerminal * MainTerminal);
-  virtual void __fastcall Init(
+  void __fastcall Init(
     TSessionData * SessionData, TConfiguration * Configuration,
     TTerminalItem * Item, const UnicodeString & Name);
   virtual /* __fastcall */ ~TBackgroundTerminal() {}

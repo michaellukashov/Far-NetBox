@@ -98,7 +98,7 @@ protected:
   virtual bool MouseEvent(MOUSE_EVENT_RECORD * Event);
   virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
   virtual void __fastcall Change();
-  virtual void Init();
+  void Init();
   virtual bool CloseQuery();
   UnicodeString GetMsg(int MsgId);
   void GetNextItemPosition(int & Left, int & Top);

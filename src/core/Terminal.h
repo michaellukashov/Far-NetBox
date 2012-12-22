@@ -392,7 +392,7 @@ protected:
 
 public:
   explicit /* __fastcall */ TTerminal();
-  virtual void __fastcall Init(TSessionData * SessionData, TConfiguration * Configuration);
+  void __fastcall Init(TSessionData * SessionData, TConfiguration * Configuration);
   virtual /* __fastcall */ ~TTerminal();
   void __fastcall Open();
   void __fastcall Close();
@@ -553,7 +553,7 @@ class TSecondaryTerminal : public TTerminal
 {
 public:
   explicit /* __fastcall */ TSecondaryTerminal(TTerminal * MainTerminal);
-  virtual void __fastcall Init(TSessionData * SessionData, TConfiguration * Configuration,
+  void __fastcall Init(TSessionData * SessionData, TConfiguration * Configuration,
     const UnicodeString & Name);
   virtual /* __fastcall */ ~TSecondaryTerminal() {}
 
