@@ -4371,7 +4371,7 @@ windows_password_decrypter(bool * done,
 
   WEBDAV_ERR(auth_simple_password_get(done, &in, creds, realmstring, username,
          parameters, non_interactive, pool));
-  if (!done)
+  if (!*done)
     return WEBDAV_NO_ERROR;
 
   blobin.cbData = (DWORD)strlen(in);
@@ -4509,7 +4509,7 @@ windows_ssl_client_cert_pw_decrypter(bool * done,
 
   WEBDAV_ERR(auth_ssl_client_cert_pw_get(done, &in, creds, realmstring, username,
          parameters, non_interactive, pool));
-  if (!done)
+  if (!*done)
     return WEBDAV_NO_ERROR;
 
   blobin.cbData = (DWORD)strlen(in);
