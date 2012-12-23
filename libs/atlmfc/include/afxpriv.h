@@ -60,10 +60,6 @@ struct AFX_CMDHANDLERINFO;      // Command routing implementation
 		//CWnd
 			//CView
 				class CPreviewView;     // Print preview view
-		//CFrameWnd
-			class COleCntrFrameWnd;
-			//CMiniFrameWnd
-				class CMiniDockFrameWnd;
 
 class CDockContext;                     // for dragging control bars
 
@@ -282,8 +278,6 @@ public:
 
 // Mapping Functions
 	virtual int SetMapMode(int nMapMode);
-	virtual CPoint SetViewportOrg(int x, int y);
-	virtual CPoint OffsetViewportOrg(int nWidth, int nHeight);
 	virtual CSize SetViewportExt(int x, int y);
 	virtual CSize ScaleViewportExt(int xNum, int xDenom, int yNum, int yDenom);
 	virtual CSize SetWindowExt(int x, int y);
@@ -380,7 +374,6 @@ public:
 	explicit CDockContext(CControlBar* pBar);
 
 // Attributes
-	CPoint m_ptLast;            // last mouse position during drag
 	CRect m_rectLast;
 	CSize m_sizeLast;
 	BOOL m_bDitherLast;
@@ -392,7 +385,6 @@ public:
 	CRect m_rectFrameDragVert;
 
 	CControlBar* m_pBar;        // the toolbar that created this context
-	CFrameWnd* m_pDockSite;     // the controlling frame of the CControlBar
 	DWORD m_dwDockStyle;        // allowable dock styles for bar
 	DWORD m_dwOverDockStyle;    // style of dock that rect is over
 	DWORD m_dwStyle;            // style of control bar
@@ -407,17 +399,11 @@ public:
 	CRect m_rectMRUDockPos;
 
 	DWORD m_dwMRUFloatStyle;
-	CPoint m_ptMRUFloatPos;
 
 // Drag Operations
-	virtual void StartDrag(CPoint pt);
-	void Move(CPoint pt);       // called when mouse has moved
-	void EndDrag();             // drop
 	void OnKey(int nChar, BOOL bDown);
 
 // Resize Operations
-	virtual void StartResize(int nHitTest, CPoint pt);
-	void Stretch(CPoint pt);
 	void EndResize();
 
 // Double Click Operations
@@ -435,7 +421,6 @@ public:
 		// draws the correct outline
 	void UpdateState(BOOL* pFlag, BOOL bNewValue);
 	DWORD CanDock();
-	CDockBar* GetDockBar(DWORD dwOverDockStyle);
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -453,14 +438,12 @@ public:
 	BOOL m_bFloating;   // whether floating or not
 	BOOL m_bHorz;       // orientation of floating dockbar
 	BOOL m_bDockBar;    // TRUE if a dockbar
-	CPoint m_pointPos;  // topleft point of window
 
 	UINT m_nMRUWidth;   // MRUWidth for Dynamic Toolbars
 	BOOL m_bDocking;    // TRUE if this bar has a DockContext
 	UINT m_uMRUDockID;  // most recent docked dockbar
 	CRect m_rectMRUDockPos; // most recent docked position
 	DWORD m_dwMRUFloatStyle; // most recent floating orientation
-	CPoint m_ptMRUFloatPos; // most recent floating position
 
 	CUIntArray m_arrBarID;   // bar IDs for bars contained within this one
 	CControlBar* m_pBar;    // bar which this refers to (transient)
@@ -524,25 +507,18 @@ struct AFX_NOTIFY
 class CPushRoutingFrame
 {
 protected:
-	CFrameWnd* pOldRoutingFrame;
 	_AFX_THREAD_STATE* pThreadState;
    CPushRoutingFrame* pOldPushRoutingFrame;
 
 public:
-	explicit CPushRoutingFrame(CFrameWnd* pNewRoutingFrame)
+	explicit CPushRoutingFrame()
 	{ 
-		pThreadState = AfxGetThreadState();
-	  pOldPushRoutingFrame = pThreadState->m_pPushRoutingFrame;
-		pOldRoutingFrame = pThreadState->m_pRoutingFrame;
-		pThreadState->m_pRoutingFrame = pNewRoutingFrame;
-	  pThreadState->m_pPushRoutingFrame = this;
 	}
 	~CPushRoutingFrame()
 	{ 
 	  if (pThreadState != NULL)
 	  {
 		 ASSERT( pThreadState->m_pPushRoutingFrame == this );
-		 pThreadState->m_pRoutingFrame = pOldRoutingFrame;
 		 pThreadState->m_pPushRoutingFrame = pOldPushRoutingFrame;
 	  }
    }
@@ -550,7 +526,6 @@ public:
    {
 	  ENSURE( pThreadState != NULL );
 	  ASSERT( pThreadState->m_pPushRoutingFrame == this );
-	  pThreadState->m_pRoutingFrame = pOldRoutingFrame;
 	  pThreadState->m_pPushRoutingFrame = pOldPushRoutingFrame;
 	  pThreadState = NULL;
    }

@@ -162,10 +162,6 @@ public:
 // Printer Escape Functions
 	virtual int Escape(int nEscape, int nCount, LPCSTR lpszInData, LPVOID lpOutData);
 
-// Viewport Functions
-	virtual CPoint SetViewportOrg(int x, int y);
-			CPoint SetViewportOrg(POINT point);
-	virtual CPoint OffsetViewportOrg(int nWidth, int nHeight);
 	virtual CSize SetViewportExt(int x, int y);
 			CSize SetViewportExt(SIZE size);
 	virtual CSize ScaleViewportExt(int xNum, int xDenom, int yNum, int yDenom);

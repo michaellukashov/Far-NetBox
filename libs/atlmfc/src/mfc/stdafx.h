@@ -111,7 +111,7 @@
 	#include "afxcom_.h"
 #include "afxole.h"
 #include "afxdtctl.h"
-#include "afxocc.h"
+// #include "afxocc.h"
 
 #ifndef _AFX_NO_DAO_SUPPORT
 	#include "afxdao.h"

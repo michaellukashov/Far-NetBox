@@ -246,10 +246,10 @@ const long maxDaysInSpan  =	3615897L;
 
 } // namespace ATL
 
-#ifndef _DEBUG
+// #ifndef _DEBUG
 #define ATLTIME_INLINE inline
 #include <atltime.inl>
-#endif
+// #endif
 
 namespace ATL
 {

@@ -67,8 +67,6 @@ set ( CMAKE_LINK_FLAGS
     /NODEFAULTLIB:MSVCRTD.LIB
     /NODEFAULTLIB:MFCS100U.LIB
     /NODEFAULTLIB:MFCS100UD.LIB
-    /NODEFAULTLIB:ATLS.LIB
-    /NODEFAULTLIB:ATLSD.LIB
     /NODEFAULTLIB:UAFXCW.LIB
     /NODEFAULTLIB:UAFXCWD.LIB
     /NODEFAULTLIB:LIBCMT.LIB
@@ -93,6 +91,7 @@ set ( CMAKE_LINK_FLAGS
     /DELAYLOAD:winhttp.dll
     /DELAYLOAD:ole32.dll
     /DELAYLOAD:shell32.dll
+    /DELAYLOAD:shlwapi.dll
     /DELAYLOAD:crypt32.dll
     /DELAYLOAD:version.dll
     /DELAYLOAD:ws2_32.dll
@@ -262,17 +261,17 @@ set ( NETBOX_LIBRARIES
     winhttp.lib
     winspool.lib
     Crypt32.lib
+    shell32.lib
+    shlwapi.lib
 )
 
 IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
   set ( NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
-    Atlsd.lib
     libcmtd.lib
     libcpmtd.lib
   )
 ELSE()
   set ( NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
-    Atls.lib
     libcmt.lib
     libcpmt.lib
   )
@@ -335,10 +334,9 @@ add_library (atlmfc STATIC
 
 set_target_properties ( atlmfc
     PROPERTIES
-    COMPILE_FLAGS "/D_WIN32_WINNT=0x0501;_ATL_NO_DEBUG_CRT;_ATL_NO_UUIDOF;_ATL_NO_CONNECTION_POINTS;_ATL_NO_DATETIME_RESOURCES_;"
+    COMPILE_FLAGS "/D_WIN32_WINNT=0x0501;_ATL_NO_DEBUG_CRT;_ATL_NO_UUIDOF;_ATL_NO_CONNECTION_POINTS;_ATL_NO_DATETIME_RESOURCES_;_ATL_NO_DEFAULT_LIBS;"
     LINK_FLAGS ${CMAKE_LINK_FLAGS}
 )
-#_ATL_NO_DEFAULT_LIBS;
 
 #-------------------------------------------------------------------------------
 

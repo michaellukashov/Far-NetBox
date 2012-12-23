@@ -70,12 +70,6 @@
 	#include <atlhandler.h> // for IFilterChunkValue and IDocument
 #endif
 
-#if (_WIN32_WINNT >= 0x601)
-#ifndef __tpcshrd_h__
-	#include <tpcshrd.h>	// for touch and gesture features
-#endif
-#endif
-
 // Avoid mapping GetFileTitle to GetFileTitle[A/W]
 #ifdef GetFileTitle
 #undef GetFileTitle
@@ -179,16 +173,6 @@ AFX_INLINE short APIENTRY GetFileTitle(LPCTSTR lpszFile, LPTSTR lpszTitle, WORD 
 
 			// standard windows controls
 			class CStatic;          // Static control
-
-			// frame windows
-			class CFrameWnd;        // standard SDI frame
-				class CMDIFrameWnd; // standard MDI frame
-				class CMDIChildWnd; // standard MDI child
-				class CMiniFrameWnd;// half-height caption frame wnd
-
-			// views on a document
-			class CView;            // a view on a document
-				class CScrollView;  // a scrolling view
 
 		class CWinThread;           // thread base class
 			class CWinApp;          // application base class
@@ -609,9 +593,6 @@ public:
 	BOOL ResetDC(const DEVMODE* lpDevMode);
 
 // Drawing-Tool Functions
-	CPoint GetBrushOrg() const;
-	CPoint SetBrushOrg(int x, int y);
-	CPoint SetBrushOrg(POINT point);
 	int EnumObjects(int nObjectType,
 			int (CALLBACK* lpfn)(LPVOID, LPARAM), LPARAM lpData);
 
@@ -671,24 +652,13 @@ public:
 
 	// Mapping Functions
 	int GetMapMode() const;
-	CPoint GetViewportOrg() const;
 	virtual int SetMapMode(int nMapMode);
-	// Viewport Origin
-	virtual CPoint SetViewportOrg(int x, int y);
-			CPoint SetViewportOrg(POINT point);
-	virtual CPoint OffsetViewportOrg(int nWidth, int nHeight);
 
 	// Viewport Extent
 	CSize GetViewportExt() const;
 	virtual CSize SetViewportExt(int cx, int cy);
 			CSize SetViewportExt(SIZE size);
 	virtual CSize ScaleViewportExt(int xNum, int xDenom, int yNum, int yDenom);
-
-	// Window Origin
-	CPoint GetWindowOrg() const;
-	CPoint SetWindowOrg(int x, int y);
-	CPoint SetWindowOrg(POINT point);
-	CPoint OffsetWindowOrg(int nWidth, int nHeight);
 
 	// Window extent
 	CSize GetWindowExt() const;
@@ -732,9 +702,6 @@ public:
 	int SelectClipRgn(CRgn* pRgn, int nMode);
 
 // Line-Output Functions
-	CPoint GetCurrentPosition() const;
-	CPoint MoveTo(int x, int y);
-	CPoint MoveTo(POINT point);
 	BOOL LineTo(int x, int y);
 	BOOL LineTo(POINT point);
 	BOOL Arc(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4);
@@ -761,22 +728,6 @@ public:
 	void InvertRect(LPCRECT lpRect);
 	BOOL DrawIcon(int x, int y, HICON hIcon);
 	BOOL DrawIcon(POINT point, HICON hIcon);
-	BOOL DrawState(CPoint pt, CSize size, HBITMAP hBitmap, UINT nFlags,
-		HBRUSH hBrush = NULL);
-	BOOL DrawState(CPoint pt, CSize size, CBitmap* pBitmap, UINT nFlags,
-		CBrush* pBrush = NULL);
-	BOOL DrawState(CPoint pt, CSize size, HICON hIcon, UINT nFlags,
-		HBRUSH hBrush = NULL);
-	BOOL DrawState(CPoint pt, CSize size, HICON hIcon, UINT nFlags,
-		CBrush* pBrush = NULL);
-	BOOL DrawState(CPoint pt, CSize size, LPCTSTR lpszText, UINT nFlags,
-		BOOL bPrefixText = TRUE, int nTextLen = 0, HBRUSH hBrush = NULL);
-	BOOL DrawState(CPoint pt, CSize size, LPCTSTR lpszText, UINT nFlags,
-		BOOL bPrefixText = TRUE, int nTextLen = 0, CBrush* pBrush = NULL);
-	BOOL DrawState(CPoint pt, CSize size, DRAWSTATEPROC lpDrawProc,
-		LPARAM lData, UINT nFlags, HBRUSH hBrush = NULL);
-	BOOL DrawState(CPoint pt, CSize size, DRAWSTATEPROC lpDrawProc,
-		LPARAM lData, UINT nFlags, CBrush* pBrush = NULL);
 
 // Ellipse and Polygon Functions
 	BOOL Chord(int x1, int y1, int x2, int y2, int x3, int y3,
@@ -1126,13 +1077,7 @@ public:
 #endif
 
 // Drag APIs
-	BOOL BeginDrag(int nImage, CPoint ptHotSpot);
-	static void PASCAL EndDrag();
-	static BOOL PASCAL DragMove(CPoint pt);
-	BOOL SetDragCursorImage(int nDrag, CPoint ptHotSpot);
-	static BOOL PASCAL DragShowNolock(BOOL bShow);
 	static CImageList* PASCAL GetDragImage(LPPOINT lpPoint, LPPOINT lpPointHotSpot);
-	static BOOL PASCAL DragEnter(CWnd* pWndLock, CPoint point);
 	static BOOL PASCAL DragLeave(CWnd* pWndLock);
 
 // Implementation
@@ -1273,7 +1218,6 @@ struct ITypeLib;
 typedef ITypeLib* LPTYPELIB;
 
 struct IAccessible;
-struct IAccessibleProxy;
 struct IAccessibleServer;
 struct IEnumVARIANT;
 
@@ -1753,9 +1697,7 @@ protected:
 	friend class CView;
 
 	CView* GetRoutingView();
-	CFrameWnd* GetRoutingFrame();
 	static CView* PASCAL GetRoutingView_();
-	static CFrameWnd* PASCAL GetRoutingFrame_();
 	DECLARE_MESSAGE_MAP()       // base class - no {{ }} macros
 
 #ifndef _AFX_NO_DOCOBJECT_SUPPORT
@@ -1835,8 +1777,6 @@ protected:
 		void* pResult, VARTYPE vtResult, DISPPARAMS* pDispParams,
 		UINT* puArgErr, VARIANT* rgTempVars,CVariantBoolConverter* pTempStackArgs = NULL);
 #endif
-	SCODE CallMemberFunc(const AFX_DISPMAP_ENTRY* pEntry, WORD wFlags,
-		VARIANT* pvarResult, DISPPARAMS* pDispParams, UINT* puArgErr);
 
 	friend class COleDispatchImpl;
 
@@ -1963,135 +1903,6 @@ enum DSCREASON
 /////////////////////////////////////////////////////////////////////////////
 // CWnd implementation
 
-#if (WINVER >= 0x0601)
-
-/// <summary>
-/// CGestureConfig class allows to customize Windows gesture features such as zoom, pan or rotate. This class is used in CWnd::SetGestureConfig and CWnd::GetGestureConfig methods.</summary>
-class CGestureConfig : public CObject
-{
-	friend class CWnd;
-
-public:
-	/// <summary>
-	/// CGestureConfig constructor</summary>
-	CGestureConfig();
-
-	/// <summary>
-	/// CGestureConfig destructor</summary>
-	virtual ~CGestureConfig();
-
-	/// <summary>
-	/// Enable/disable gesture zoom</summary>
-	/// <param name="bEnable">TRUE - enable the feature. FALSE - disable it</param>
-	void EnableZoom(BOOL bEnable = TRUE);
-
-	/// <summary>
-	/// Enable/disable gesture rotate</summary>
-	/// <param name="bEnable">TRUE - enable the feature. FALSE - disable it</param>
-	void EnableRotate(BOOL bEnable = TRUE);
-
-	/// <summary>
-	/// Enable/disable gesture 2 finger tap</summary>
-	/// <param name="bEnable">TRUE - enable the feature. FALSE - disable it</param>
-	void EnableTwoFingerTap(BOOL bEnable = TRUE);
-
-	/// <summary>
-	/// Enable/disable gesture press and tap</summary>
-	/// <param name="bEnable">TRUE - enable the feature. FALSE - disable it</param>
-	void EnablePressAndTap(BOOL bEnable = TRUE);
-
-	/// <summary>
-	/// Enable/disable gesture pan</summary>
-	/// <param name="bEnable">TRUE - enable the feature. FALSE - disable it</param>
-	/// <param name="dwFlags">Gesture pan flags. Can be either GC_PAN (all pan gestures) or combination of the following flags: GC_PAN_WITH_SINGLE_FINGER_VERTICALLY, GC_PAN_WITH_SINGLE_FINGER_HORIZONTALLY, GC_PAN_WITH_GUTTER and GC_PAN_WITH_INTERTIA</param>
-	void EnablePan(BOOL bEnable = TRUE, DWORD dwFlags = GC_PAN_WITH_GUTTER | GC_PAN_WITH_INERTIA);
-
-	/// <summary>
-	/// Determines whether the gesture zoom feature is enabled</summary>
-	/// <returns> 
-	/// TRUE if the feature is enabled; otherwise FALSE.</returns>
-	BOOL IsZoomEnabled() const { return (Get(GID_ZOOM) & GC_ZOOM) == GC_ZOOM; }
-
-	/// <summary>
-	/// Determines whether the gesture rotate feature is enabled</summary>
-	/// <returns> 
-	/// TRUE if the feature is enabled; otherwise FALSE.</returns>
-	BOOL IsRotateEnabled() const { return (Get(GID_ROTATE) & GC_ROTATE) == GC_ROTATE; }
-
-	/// <summary>
-	/// Determines whether the gesture 2 finger tap feature is enabled</summary>
-	/// <returns> 
-	/// TRUE if the feature is enabled; otherwise FALSE.</returns>
-	BOOL IsTwoFingerTapEnabled() const { return (Get(GID_TWOFINGERTAP) & GC_TWOFINGERTAP) == GC_TWOFINGERTAP; }
-
-#if defined(GID_PRESSANDTAP) && defined(GC_PRESSANDTAP)
-	/// <summary>
-	/// Determines whether the gesture "press and tap" feature is enabled</summary>
-	/// <returns> 
-	/// TRUE if the feature is enabled; otherwise FALSE.</returns>
-	BOOL IsPressAndTapEnabled() const { return (Get(GID_PRESSANDTAP) & GC_PRESSANDTAP) == GC_PRESSANDTAP; }
-#endif
-
-	/// <summary>
-	/// Determines whether the gesture pan feature is enabled</summary>
-	/// <returns> 
-	/// TRUE if the feature is enabled; otherwise FALSE.</returns>
-	BOOL IsPanAllEnabled() const { return (Get(GID_PAN) & GC_PAN) == GC_PAN; }
-
-	/// <summary>
-	/// Determines whether the gesture pan vertical feature is enabled</summary>
-	/// <returns> 
-	/// TRUE if the feature is enabled; otherwise FALSE.</returns>
-	BOOL IsPanVerticalEnabled() const { return (Get(GID_PAN) & GC_PAN_WITH_SINGLE_FINGER_VERTICALLY) == GC_PAN_WITH_SINGLE_FINGER_VERTICALLY; }
-
-	/// <summary>
-	/// Determines whether the gesture pan horizontal feature is enabled</summary>
-	/// <returns> 
-	/// TRUE if the feature is enabled; otherwise FALSE.</returns>
-	BOOL IsPanHorizontalEnabled() const { return (Get(GID_PAN) & GC_PAN_WITH_SINGLE_FINGER_HORIZONTALLY) == GC_PAN_WITH_SINGLE_FINGER_HORIZONTALLY; }
-
-	/// <summary>
-	/// Determines whether the gesture pan with gutter feature is enabled</summary>
-	/// <returns> 
-	/// TRUE if the feature is enabled; otherwise FALSE.</returns>
-	BOOL IsPanWithGutterEnabled() const { return (Get(GID_PAN) & GC_PAN_WITH_GUTTER) == GC_PAN_WITH_GUTTER; }
-
-	/// <summary>
-	/// Determines whether the gesture pan with inertia feature is enabled</summary>
-	/// <returns> 
-	/// TRUE if the feature is enabled; otherwise FALSE.</returns>
-	BOOL IsPanWithInertiaEnabled() const { return (Get(GID_PAN) & GC_PAN_WITH_INERTIA) == GC_PAN_WITH_INERTIA; }
-
-	/// <summary>
-	/// Modify specific gesture touch paramaters</summary>
-	/// <returns> 
-	/// TRUE if succeeds; otherwise FALSE.</returns>
-	/// <param name="dwID">Gesture feature ID. Can be one of the following: GID_ZOOM, GID_PAN, GID_ROTATE, GID_TWOFINGERTAP or GID_PRESSANDTAP</param>
-	/// <param name="dwWant">Gesture features to enable. Can be 0 or GC_ALLGESTURES for all features except GID_PAN and GC_PAN or combination of the following flags: GC_PAN_WITH_SINGLE_FINGER_VERTICALLY, GC_PAN_WITH_SINGLE_FINGER_HORIZONTALLY, GC_PAN_WITH_GUTTER and GC_PAN_WITH_INTERTIA for gesture pan</param>
-	BOOL Modify(DWORD dwID, DWORD dwWant = GC_ALLGESTURES, DWORD dwBlock = 0);
-
-	/// <summary>
-	/// Obtains a specific gesture touch paramaters</summary>
-	/// <returns> 
-	/// Gesture features. Can be 0 or GC_ALLGESTURES for all features except GID_PAN and GC_PAN or combination of the following flags: GC_PAN_WITH_SINGLE_FINGER_VERTICALLY, GC_PAN_WITH_SINGLE_FINGER_HORIZONTALLY, GC_PAN_WITH_GUTTER and GC_PAN_WITH_INTERTIA for gesture pan</returns>
-	/// <param name="dwID">Gesture feature ID. Can be one of the following: GID_ZOOM, GID_PAN, GID_ROTATE, GID_TWOFINGERTAP or GID_PRESSANDTAP</param>
-	/// <param name="bWant">TRUE - the method returns the enabled features; FALSE - disabled</param>
-	DWORD Get(DWORD dwID, BOOL bWant = TRUE) const;
-
-#ifdef _DEBUG
-	virtual void Dump(CDumpContext& dc) const;
-#endif
-
-protected:
-	PGESTURECONFIG m_pConfigs;
-	int	m_nConfigs;
-};
-#endif
-
-
-/////////////////////////////////////////////////////////////////////////////
-// CWnd implementation
-
 // structures (see afxext.h)
 struct CCreateContext;      // context for creating things
 struct CPrintInfo;          // print preview customization info
@@ -2120,13 +1931,6 @@ class COleDropTarget;   // for more information see AFXOLE.H
 #define WF_OLECTLCONTAINER  0x0100  // some descendant is an OLE control
 #define WF_TRACKINGTOOLTIPS 0x0400  // window is enabled for tracking tooltips
 
-// CWnd::m_nFlags (specific to CFrameWnd)
-#define WF_STAYACTIVE       0x0020  // look active even though not active
-#define WF_NOPOPMSG         0x0040  // ignore WM_POPMESSAGESTRING calls
-#define WF_MODALDISABLE     0x0080  // window is disabled
-#define WF_KEEPMINIACTIVE   0x0200  // stay activate even though you are deactivated
-
-
 #define WF_NOWIN32ISDIALOGMSG   0x0800
 #define WF_ISWINFORMSVIEWWND    0x1000
 
@@ -2138,13 +1942,6 @@ class COleDropTarget;   // for more information see AFXOLE.H
 // extra MFC defined TTF_ flags for TOOLINFO::uFlags
 #define TTF_NOTBUTTON       0x80000000L // no status help on buttondown
 #define TTF_ALWAYSTIP       0x40000000L // always show the tip even if not active
-
-#if (WINVER < 0x0601)
-typedef struct tagTOUCHINPUT {
-} TOUCHINPUT, *PTOUCHINPUT;
-typedef struct tagGESTUREINFO {
-} GESTUREINFO, *PGESTUREINFO;
-#endif
 
 class CWnd : public CCmdTarget
 {
@@ -2261,13 +2058,10 @@ public:
 		// like GetDlgItem but recursive
 	void SendMessageToDescendants(UINT message, WPARAM wParam = 0,
 		LPARAM lParam = 0, BOOL bDeep = TRUE, BOOL bOnlyPerm = FALSE);
-	CFrameWnd* GetParentFrame() const;
-	CFrameWnd* EnsureParentFrame() const;
 	CWnd* GetTopLevelParent() const;
 	CWnd* EnsureTopLevelParent() const;
 	CWnd* GetTopLevelOwner() const;
 	CWnd* GetParentOwner() const;
-	CFrameWnd* GetTopLevelFrame() const;
 	static CWnd* PASCAL GetSafeOwner(CWnd* pParent = NULL, HWND* pWndTop = NULL);
 
 #if(WINVER >= 0x0500)
@@ -2406,9 +2200,6 @@ public:
 	static void PASCAL CancelToolTips(BOOL bKeys = FALSE);
 	void FilterToolTipMessage(MSG* pMsg);
 
-	// for command hit testing (used for automatic tooltips)
-	virtual INT_PTR OnToolHitTest(CPoint point, TOOLINFO* pTI) const;
-
 // Window State Functions
 	BOOL IsWindowEnabled() const;
 	BOOL EnableWindow(BOOL bEnable = TRUE);
@@ -2539,7 +2330,6 @@ public:
 	void CreateCaret(CBitmap* pBitmap);
 	void CreateSolidCaret(int nWidth, int nHeight);
 	void CreateGrayCaret(int nWidth, int nHeight);
-	static CPoint PASCAL GetCaretPos();
 	static void PASCAL SetCaretPos(POINT point);
 	void HideCaret();
 	void ShowCaret();
@@ -2619,12 +2409,10 @@ public :
 
 protected :
 	bool m_bEnableActiveAccessibility;
-	IAccessible* m_pStdObject;
 	friend BOOL AFXAPI AfxWinInit(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 		_In_z_ LPTSTR lpCmdLine, _In_ int nCmdShow);
 
 protected:
-	IAccessibleProxy* m_pProxy;
 	afx_msg LRESULT OnGetObject(WPARAM, LPARAM);
 
 #ifndef _AFX_NO_OLE_SUPPORT
@@ -2646,27 +2434,6 @@ protected:
 		virtual HRESULT __stdcall GetIDsOfNames(REFIID, LPOLESTR *, UINT, LCID, DISPID *);
 		virtual HRESULT __stdcall GetTypeInfoCount(unsigned int *);
 		virtual HRESULT __stdcall GetTypeInfo(unsigned int, LCID, ITypeInfo**);
-		virtual HRESULT __stdcall get_accParent(IDispatch **ppdispParent);
-		virtual HRESULT __stdcall get_accChildCount(long *pcountChildren);
-		virtual HRESULT __stdcall get_accChild(VARIANT varChild, IDispatch **ppdispChild);
-		virtual HRESULT __stdcall get_accName(VARIANT varChild, BSTR *pszName);
-		virtual HRESULT __stdcall get_accValue(VARIANT varChild, BSTR *pszValue);
-		virtual HRESULT __stdcall get_accDescription(VARIANT varChild, BSTR *pszDescription);
-		virtual HRESULT __stdcall get_accRole(VARIANT varChild, VARIANT *pvarRole);
-		virtual HRESULT __stdcall get_accState(VARIANT varChild, VARIANT *pvarState);
-		virtual HRESULT __stdcall get_accHelp(VARIANT varChild, BSTR *pszHelp);
-		virtual HRESULT __stdcall get_accHelpTopic(BSTR *pszHelpFile, VARIANT varChild, long *pidTopic);
-		virtual HRESULT __stdcall get_accKeyboardShortcut(VARIANT varChild, BSTR *pszKeyboardShortcut);
-		virtual HRESULT __stdcall get_accFocus(VARIANT *pvarChild);
-		virtual HRESULT __stdcall get_accSelection(VARIANT *pvarChildren);
-		virtual HRESULT __stdcall get_accDefaultAction(VARIANT varChild, BSTR *pszDefaultAction);
-		virtual HRESULT __stdcall accSelect(long flagsSelect, VARIANT varChild);
-		virtual HRESULT __stdcall accLocation(long *pxLeft, long *pyTop, long *pcxWidth, long *pcyHeight, VARIANT varChild);
-		virtual HRESULT __stdcall accNavigate(long navDir, VARIANT varStart, VARIANT *pvarEndUpAt);
-		virtual HRESULT __stdcall accHitTest(long xLeft, long yTop, VARIANT *pvarChild);
-		virtual HRESULT __stdcall accDoDefaultAction(VARIANT varChild);
-		virtual HRESULT __stdcall put_accName(VARIANT varChild, BSTR szName);
-		virtual HRESULT __stdcall put_accValue(VARIANT varChild, BSTR szValue);
 	} m_xAccessible;
 	friend class XAccessible; 
 
@@ -2681,41 +2448,12 @@ protected:
 		virtual ULONG __stdcall AddRef(); 
 		virtual ULONG __stdcall Release(); 
 		virtual HRESULT __stdcall QueryInterface(REFIID iid, LPVOID* ppvObj); 
-		virtual HRESULT __stdcall SetProxy(IAccessibleProxy *pProxy);
 		virtual HRESULT __stdcall GetHWND(HWND *phWnd);
 		virtual HRESULT __stdcall GetEnumVariant(IEnumVARIANT **ppEnumVariant);
 	} m_xAccessibleServer;
 	friend class XAccessibleServer;
 
 public :
-	virtual HRESULT EnsureStdObj();
-
-	virtual HRESULT get_accParent(IDispatch **ppdispParent);
-	virtual HRESULT get_accChildCount(long *pcountChildren);
-	virtual HRESULT get_accChild(VARIANT varChild, IDispatch **ppdispChild);
-	virtual HRESULT get_accName(VARIANT varChild, BSTR *pszName);
-	virtual HRESULT get_accValue(VARIANT varChild, BSTR *pszValue);
-	virtual HRESULT get_accDescription(VARIANT varChild, BSTR *pszDescription);
-	virtual HRESULT get_accRole(VARIANT varChild, VARIANT *pvarRole);
-	virtual HRESULT get_accState(VARIANT varChild, VARIANT *pvarState);
-	virtual HRESULT get_accHelp(VARIANT varChild, BSTR *pszHelp);
-	virtual HRESULT get_accHelpTopic(BSTR *pszHelpFile, VARIANT varChild, long *pidTopic);
-	virtual HRESULT get_accKeyboardShortcut(VARIANT varChild, BSTR *pszKeyboardShortcut);
-	virtual HRESULT get_accFocus(VARIANT *pvarChild);
-	virtual HRESULT get_accSelection(VARIANT *pvarChildren);
-	virtual HRESULT get_accDefaultAction(VARIANT varChild, BSTR *pszDefaultAction);
-	virtual HRESULT accSelect(long flagsSelect, VARIANT varChild);
-	virtual HRESULT accLocation(long *pxLeft, long *pyTop, long *pcxWidth, long *pcyHeight, VARIANT varChild);
-	virtual HRESULT accNavigate(long navDir, VARIANT varStart, VARIANT *pvarEndUpAt);
-	virtual HRESULT accHitTest(long xLeft, long yTop, VARIANT *pvarChild);
-	virtual HRESULT accDoDefaultAction(VARIANT varChild);
-	//Obsolete
-	virtual HRESULT put_accName(VARIANT varChild, BSTR szName);
-	//Obsolete
-	virtual HRESULT put_accValue(VARIANT varChild, BSTR szValue);
-	virtual HRESULT SetProxy(IAccessibleProxy *pProxy);
-	virtual HRESULT CreateAccessibleProxy(WPARAM wParam, LPARAM lParam, LRESULT *pResult);
-
 	// Helpers for windows that contain windowless controls
 	long GetWindowLessChildCount();
 	long GetWindowedChildCount();
@@ -2737,7 +2475,6 @@ protected:
 	afx_msg void OnCancelMode();
 	afx_msg void OnChildActivate();
 	afx_msg void OnClose();
-	afx_msg void OnContextMenu(CWnd* pWnd, CPoint pos);
 	afx_msg BOOL OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCopyDataStruct);
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 
@@ -2778,23 +2515,7 @@ protected:
 	afx_msg void OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp);
 	afx_msg BOOL OnNcCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnNcDestroy();
-	afx_msg LRESULT OnNcHitTest(CPoint point);
-	afx_msg void OnNcLButtonDblClk(UINT nHitTest, CPoint point);
-	afx_msg void OnNcLButtonDown(UINT nHitTest, CPoint point);
-	afx_msg void OnNcLButtonUp(UINT nHitTest, CPoint point);
-	afx_msg void OnNcMButtonDblClk(UINT nHitTest, CPoint point);
-	afx_msg void OnNcMButtonDown(UINT nHitTest, CPoint point);
-	afx_msg void OnNcMButtonUp(UINT nHitTest, CPoint point);
-	afx_msg void OnNcMouseHover(UINT nHitTest, CPoint point);
-	afx_msg void OnNcMouseLeave();
-	afx_msg void OnNcMouseMove(UINT nHitTest, CPoint point);
 	afx_msg void OnNcPaint();
-	afx_msg void OnNcRButtonDblClk(UINT nHitTest, CPoint point);
-	afx_msg void OnNcRButtonDown(UINT nHitTest, CPoint point);
-	afx_msg void OnNcRButtonUp(UINT nHitTest, CPoint point);
-	afx_msg void OnNcXButtonDown(short zHitTest, UINT nButton, CPoint point);
-	afx_msg void OnNcXButtonUp(short zHitTest, UINT nButton, CPoint point);
-	afx_msg void OnNcXButtonDblClk(short zHitTest, UINT nButton, CPoint point);
 
 // System message handler member functions
 	afx_msg void OnDropFiles(HDROP hDropInfo);
@@ -2829,24 +2550,7 @@ protected:
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2);
-	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnMButtonDblClk(UINT nFlags, CPoint point);
-	afx_msg void OnMButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnMButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnXButtonDblClk(UINT nFlags, UINT nButton, CPoint point);
-	afx_msg void OnXButtonDown(UINT nFlags, UINT nButton, CPoint point);
-	afx_msg void OnXButtonUp(UINT nFlags, UINT nButton, CPoint point);
-	afx_msg int OnMouseActivate(CWnd* pDesktopWnd, UINT nHitTest, UINT message);
-	afx_msg void OnMouseHover(UINT nFlags, CPoint point);
 	afx_msg void OnMouseLeave();
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnMouseHWheel(UINT nFlags, short zDelta, CPoint pt);
-	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
-	afx_msg void OnRButtonDblClk(UINT nFlags, CPoint point);
-	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 
@@ -2892,13 +2596,6 @@ protected:
 	afx_msg void OnColorizationColorChanged(DWORD dwColorizationColor, BOOL bOpacity);
 	afx_msg void OnWindowMaximizedChange(BOOL bIsMaximized);
 
-// touch and gesture messages:
-#if (WINVER >= 0x0601)
-	afx_msg LRESULT OnTouchMessage(WPARAM wParam, LPARAM lParam);
-	afx_msg LRESULT OnTabletQuerySystemGestureStatus(WPARAM wParam, LPARAM lParam);
-	afx_msg LRESULT OnGesture(WPARAM wParam, LPARAM lParam);
-#endif
-
 // Overridables and other helpers (for implementation of derived classes)
 protected:
 	// for deriving from a standard control
@@ -2937,32 +2634,6 @@ public:
 	/// TRUE if CWnd has touch support; otherwise FALSE.</returns>
 	BOOL IsTouchWindow() const;
 
-	// gesture:
-#if (WINVER >= 0x0601)
-	/// <summary>
-	/// Set gesture touch paramaters</summary>
-	/// <returns> 
-	/// TRUE if succeeds; otherwise FALSE.</returns>
-	/// <param name="pConfig">Pointer to CGestureConfig. Cannot be NULL.</param>
-	BOOL SetGestureConfig(CGestureConfig* pConfig);
-
-	/// <summary>
-	/// Get gesture touch paramaters</summary>
-	/// <returns> 
-	/// TRUE if succeeds; otherwise FALSE.</returns>
-	/// <param name="pConfig">Pointer to CGestureConfig. Cannot be NULL.</param>
-	BOOL GetGestureConfig(CGestureConfig* pConfig);
-
-	/// <summary>
-	/// Returns the current gesture information (PGESTUREINFO)</summary>
-	/// <returns> 
-	/// Pointer to the current gesture info.</returns>
-	const PGESTUREINFO GetCurrentGestureInfo() const
-	{
-		return m_pCurrentGestureInfo;
-	}
-#endif
-
 protected:
 	// for processing Windows messages
 	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
@@ -2984,76 +2655,6 @@ protected:
 	// for touch:
 	BOOL m_bIsTouchWindowRegistered;
 	
-	/// <summary>
-	/// Process inputs from Windows touch</summary>
-	/// <returns> 
-	/// TRUE if application processes Windows touch inputs; otherwise FALSE.</returns>
-	/// <param name="nInputsCount">total number of Windows touch inputs.</param>
-	/// <param name="pInputs">array of TOUCHINPUT.</param>
-	virtual BOOL OnTouchInputs(UINT nInputsCount, PTOUCHINPUT pInputs);
-
-	/// <summary>
-	/// Process single input from Windows touch</summary>
-	/// <returns> 
-	/// TRUE if application processes Windows touch input; otherwise FALSE.</returns>
-	/// <param name="pt">point where screen has been tocuhed (in the client coordinates).</param>
-	/// <param name="nInputNumber">number of touch input.</param>
-	/// <param name="nInputsCount">total number of touch inputs.</param>
-	/// <param name="pInput">pointer to TOUCHINPUT structure.</param>
-	virtual BOOL OnTouchInput(CPoint pt, int nInputNumber, int nInputsCount, PTOUCHINPUT pInput);
-
-	/// <summary>
-	/// The methods is called when the system asks a window which system gestures it would like to receive</summary>
-	/// <returns> 
-	/// A value indicating which system gestures the window would like to receive (TABLET_* flags, see WM_TABLET_QUERYSYSTEMGESTURESTATUS message).</returns>
-	/// <param name="ptTouch">point where screen has been tocuhed (in the client coordinates).</param>
-	virtual ULONG GetGestureStatus(CPoint ptTouch);
-
-	// for gesture:
-	CPoint		 m_ptGestureFrom;
-	ULONGLONG	 m_ulGestureArg;
-	BOOL		 m_bGestureInited;
-	PGESTUREINFO m_pCurrentGestureInfo;
-
-	/// <summary>
-	/// The method is called upon gesture zoom event</summary>
-	/// <returns> 
-	/// TRUE if application processes this event; otherwise FALSE.</returns>
-	/// <param name="ptCenter">Zoom center point. In client coordinates</param>
-	/// <param name="lDelta">The distance from the center point. In pixels</param>
-	virtual BOOL OnGestureZoom(CPoint ptCenter, long lDelta);
-
-	/// <summary>
-	/// The method is called upon gesture pan event</summary>
-	/// <returns> 
-	/// TRUE if application processes this event; otherwise FALSE.</returns>
-	/// <param name="ptFrom">Pan starting point. In client coordinates</param>
-	/// <param name="ptTo">Pan current point. In client coordinates</param>
-	virtual BOOL OnGesturePan(CPoint ptFrom, CPoint ptTo);
-
-	/// <summary>
-	/// The method is called upon gesture rotate event</summary>
-	/// <returns> 
-	/// TRUE if application processes this event; otherwise FALSE.</returns>
-	/// <param name="ptCenter">Rotation center point. In client coordinates</param>
-	/// <param name="dblAngle">Rotation angle. In radians</param>
-	virtual BOOL OnGestureRotate(CPoint ptCenter, double dblAngle);
-
-	/// <summary>
-	/// The method is called upon gesture 2 finger tap event</summary>
-	/// <returns> 
-	/// TRUE if application processes this event; otherwise FALSE.</returns>
-	/// <param name="ptCenter">Center point between 2 fingers. In client coordinates</param>
-	virtual BOOL OnGestureTwoFingerTap(CPoint ptCenter);
-
-	/// <summary>
-	/// The method is called upon gesture press and tap event</summary>
-	/// <returns> 
-	/// TRUE if application processes this event; otherwise FALSE.</returns>
-	/// <param name="ptPress">"Pressed" point. In client coordinates</param>
-	/// <param name="lDelta">The distance from the "pressed" point. In pixels</param>
-	virtual BOOL OnGesturePressAndTap(CPoint ptPress, long lDelta);
-
 // Implementation
 public:
 	virtual ~CWnd();
@@ -3074,7 +2675,6 @@ public:
 		BOOL bOnlyPerm);
 	static void PASCAL SendMessageToDescendants(HWND hWnd, UINT message,
 		WPARAM wParam, LPARAM lParam, BOOL bDeep, BOOL bOnlyPerm);
-	virtual BOOL IsFrameWnd() const; // IsKindOf(RUNTIME_CLASS(CFrameWnd)))
 	virtual void OnFinalRelease();
 	BOOL PreTranslateInput(LPMSG lpMsg);
 	static BOOL PASCAL ModifyStyle(HWND hWnd, DWORD dwRemove, DWORD dwAdd,
@@ -3097,7 +2697,6 @@ protected:
 
 	COleDropTarget* m_pDropTarget;  // for automatic cleanup of drop target
 	friend class COleDropTarget;
-	friend class CFrameWnd;
 
 	// for creating dialogs and dialog-like windows
 	BOOL CreateDlg(LPCTSTR lpszTemplateName, CWnd* pParentWnd);
@@ -3462,464 +3061,6 @@ protected:
 	CFont    m_font;
 	/// <summary> A pointer to a document whose content is previewed in the control.</summary>
 	ATL::IDocument* m_pDocument;
-};
-
-/////////////////////////////////////////////////////////////////////////////
-// CFrameWnd - base class for SDI and other frame windows
-
-// Frame window styles
-#define FWS_ADDTOTITLE  0x00008000L // modify title based on content
-#define FWS_PREFIXTITLE 0x00004000L // show document name before app name
-#define FWS_SNAPTOBARS  0x00002000L // snap size to size of contained bars
-
-// Frame window menu bar visibility styles
-#define AFX_MBV_KEEPVISIBLE    0x01L // always visible
-#define AFX_MBV_DISPLAYONFOCUS 0x02L // toggle state on ALT
-#define AFX_MBV_DISPLAYONF10   0x04L // display on F10
-
-// Frame window menu bar visibility states
-#define AFX_MBS_VISIBLE 0x01L // visible
-#define AFX_MBS_HIDDEN  0x02L // hidden
-
-struct CPrintPreviewState;  // forward reference (see afxext.h)
-class CControlBar;          // forward reference (see afxext.h)
-class CReBar;               // forward reference (see afxext.h)
-
-class CDockBar;             // forward reference (see afxpriv.h)
-class CMiniDockFrameWnd;    // forward reference (see afxpriv.h)
-class CDockState;           // forward reference (see afxpriv.h)
-
-class COleFrameHook;        // forward reference (see ..\src\oleimpl2.h)
-
-class CFrameWnd : public CWnd
-{
-	DECLARE_DYNCREATE(CFrameWnd)
-
-// Constructors
-public:
-	static AFX_DATA const CRect rectDefault;
-	CFrameWnd();
-
-	BOOL LoadAccelTable(LPCTSTR lpszResourceName);
-	virtual BOOL Create(LPCTSTR lpszClassName,
-				LPCTSTR lpszWindowName,
-				DWORD dwStyle = WS_OVERLAPPEDWINDOW,
-				const RECT& rect = rectDefault,
-				CWnd* pParentWnd = NULL,        // != NULL for popups
-				LPCTSTR lpszMenuName = NULL,
-				DWORD dwExStyle = 0,
-				CCreateContext* pContext = NULL);
-
-	// dynamic creation - load frame and associated resources
-	virtual BOOL LoadFrame(UINT nIDResource,
-				DWORD dwDefaultStyle = WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE,
-				CWnd* pParentWnd = NULL,
-				CCreateContext* pContext = NULL);
-
-	// special helper for view creation
-	CWnd* CreateView(CCreateContext* pContext, UINT nID = AFX_IDW_PANE_FIRST);
-
-	// Active child view maintenance
-	CView* GetActiveView() const;           // active view or NULL
-	void SetActiveView(CView* pViewNew, BOOL bNotify = TRUE);
-		// active view or NULL, bNotify == FALSE if focus should not be set
-
-	// Active frame (for frames within frames -- MDI)
-	virtual CFrameWnd* GetActiveFrame();
-
-	// For customizing the default messages on the status bar
-	virtual void GetMessageString(UINT nID, CString& rMessage) const;
-
-	BOOL m_bAutoMenuEnable;
-		// TRUE => menu items without handlers will be disabled
-
-	BOOL IsTracking() const;
-
-// Operations
-	virtual void RecalcLayout(BOOL bNotify = TRUE);
-	virtual void ActivateFrame(int nCmdShow = -1);
-	void SetTitle(LPCTSTR lpszTitle);
-	CString GetTitle() const;
-
-	// to set text of standard status bar
-	void SetMessageText(LPCTSTR lpszText);
-	void SetMessageText(UINT nID);
-
-	// control bar docking
-	void EnableDocking(DWORD dwDockStyle);
-	void DockControlBar(CControlBar* pBar, UINT nDockBarID = 0,
-		LPCRECT lpRect = NULL);
-	void FloatControlBar(CControlBar* pBar, CPoint point,
-		DWORD dwStyle = CBRS_ALIGN_TOP);
-	CControlBar* GetControlBar(UINT nID);
-
-	// frame window based modality
-	virtual void BeginModalState();
-	virtual void EndModalState();
-	BOOL InModalState() const;
-	void ShowOwnedWindows(BOOL bShow);
-
-	// saving and loading control bar state
-	void LoadBarState(LPCTSTR lpszProfileName);
-	void SaveBarState(LPCTSTR lpszProfileName) const;
-	void ShowControlBar(CControlBar* pBar, BOOL bShow, BOOL bDelay);
-	void SetDockState(const CDockState& state);
-	void GetDockState(CDockState& state) const;
-
-// Overridables
-	virtual void OnSetPreviewMode(BOOL bPreview, CPrintPreviewState* pState);
-	virtual CWnd* GetMessageBar();
-
-	// border space negotiation
-	enum BorderCmd
-		{ borderGet = 1, borderRequest = 2, borderSet = 3 };
-	virtual BOOL NegotiateBorderSpace(UINT nBorderCmd, LPRECT lpRectBorder);
-
-protected:
-	virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext);
-
-// Command Handlers
-public:
-	afx_msg void OnContextHelp();   // for Shift+F1 help
-	afx_msg void OnUpdateControlBarMenu(CCmdUI* pCmdUI);
-	afx_msg BOOL OnBarCheck(UINT nID);
-
-// Implementation
-public:
-	virtual ~CFrameWnd();
-	int m_nWindow;  // general purpose window number - display as ":n"
-					// -1 => unknown, 0 => only window viewing document
-					// 1 => first of many windows viewing document, 2=> second
-
-	HMENU m_hMenuDefault;       // default menu resource for this frame
-	HACCEL m_hAccelTable;       // accelerator table
-	DWORD m_dwPromptContext;    // current help prompt context for message box
-	BOOL m_bHelpMode;           // if TRUE, then Shift+F1 help mode is active
-	CFrameWnd* m_pNextFrameWnd; // next CFrameWnd in app global list
-	CRect m_rectBorder;         // for OLE border space negotiation
-	COleFrameHook* m_pNotifyHook;
-
-	CPtrList m_listControlBars; // array of all control bars that have this
-								// window as their dock site
-	int m_nShowDelay;           // SW_ command for delay show/hide
-
-	CMiniDockFrameWnd* CreateFloatingFrame(DWORD dwStyle);
-	DWORD CanDock(CRect rect, DWORD dwDockStyle,
-		CDockBar** ppDockBar = NULL); // called by CDockContext
-	void AddControlBar(CControlBar *pBar);
-	void RemoveControlBar(CControlBar *pBar);
-	void DockControlBar(CControlBar* pBar, CDockBar* pDockBar,
-		LPCRECT lpRect = NULL);
-	void ReDockControlBar(CControlBar* pBar, CDockBar* pDockBar,
-		LPCRECT lpRect = NULL);
-	void NotifyFloatingWindows(DWORD dwFlags);
-	void DestroyDockBars();
-
-protected:
-	UINT m_nIDHelp;             // Help ID (0 for none, see HID_BASE_RESOURCE)
-	UINT m_nIDTracking;         // tracking command ID or string IDS
-	UINT m_nIDLastMessage;      // last displayed message string IDS
-	CView* m_pViewActive;       // current active view
-	BOOL (CALLBACK* m_lpfnCloseProc)(CFrameWnd* pFrameWnd);
-	UINT m_cModalStack;         // BeginModalState depth
-	HWND* m_phWndDisable;       // windows disabled because of BeginModalState
-	HMENU m_hMenuAlt;           // menu to update to (NULL means default)
-	CString m_strTitle;         // default title (original)
-	BOOL m_bInRecalcLayout;     // avoid recursion in RecalcLayout
-	CRuntimeClass* m_pFloatingFrameClass;
-	static const DWORD dwDockBarMap[4][2];
-    DWORD m_dwMenuBarVisibility;      // menu bar visibility style
-	DWORD m_dwMenuBarState;           // menu bar visibility state
-	HMENU m_hMenu;                    // backed menu for restoring from the hidden state
-	BOOL  m_bTempShowMenu;            // temporarily show the menu bar to enable menu access keys
-	BOOL  m_bMouseHitMenu;            // if TRUE, the mouse is hitting the menu bar
-
-	int m_nProgressBarRangeMin; // Win7 taskbar support - min progress range
-	int m_nProgressBarRangeMax; // Win7 taskbar support - max progress range
-
-public:
-#ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
-#endif
-	virtual BOOL IsFrameWnd() const;
-	virtual BOOL OnCmdMsg(UINT nID, int nCode, void* pExtra,
-		AFX_CMDHANDLERINFO* pHandlerInfo);
-	virtual void OnUpdateFrameTitle(BOOL bAddToTitle);
-	virtual void OnUpdateFrameMenu(HMENU hMenuAlt);
-	virtual HACCEL GetDefaultAccelerator();
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-
-	// idle update of frame user interface
-	enum IdleFlags
-		{ idleMenu = 1, idleTitle = 2, idleNotify = 4, idleLayout = 8 };
-	UINT m_nIdleFlags;          // set of bit flags for idle processing
-	virtual void DelayUpdateFrameMenu(HMENU hMenuAlt);
-	void DelayUpdateFrameTitle();
-	void DelayRecalcLayout(BOOL bNotify = TRUE);
-
-	// for Shift+F1 help support
-	BOOL CanEnterHelpMode();
-	virtual void ExitHelpMode();
-
-	// implementation helpers
-public:
-	void UpdateFrameTitleForDocument(LPCTSTR lpszDocName);
-protected:
-	LPCTSTR GetIconWndClass(DWORD dwDefaultStyle, UINT nIDResource);
-	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
-	virtual void PostNcDestroy();   // default to delete this.
-	int OnCreateHelper(LPCREATESTRUCT lpcs, CCreateContext* pContext);
-	void BringToTop(int nCmdShow);
-		// bring window to top for SW_ commands which affect z-order
-
-	// implementation helpers for Shift+F1 help mode
-	BOOL ProcessHelpMsg(MSG& msg, DWORD* pContext);
-	HWND SetHelpCapture(POINT point, BOOL* pbDescendant);
-
-	// CFrameWnd list management
-	void AddFrameWnd();
-	void RemoveFrameWnd();
-
-	// called before changing the menu bar visibility state
-	virtual void OnShowMenuBar();
-	virtual void OnHideMenuBar();
-
-	friend class CWnd;  // for access to m_bModalDisable
-	friend class CReBar; // for access to m_bInRecalcLayout
-
-	//{{AFX_MSG(CFrameWnd)
-	// Windows messages
-	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-	afx_msg void OnDestroy();
-	afx_msg void OnClose();
-	afx_msg LRESULT OnPopMessageString(WPARAM wParam, LPARAM lParam);
-	afx_msg LRESULT OnSetMessageString(WPARAM wParam, LPARAM lParam);
-	afx_msg LRESULT OnHelpPromptAddr(WPARAM wParam, LPARAM lParam);
-	afx_msg void OnIdleUpdateCmdUI();
-	afx_msg void OnEnterIdle(UINT nWhy, CWnd* pWho);
-	afx_msg void OnSetFocus(CWnd* pOldWnd);
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
-	afx_msg void OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized);
-	afx_msg BOOL OnNcActivate(BOOL bActive);
-	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
-	afx_msg BOOL OnQueryEndSession();
-	afx_msg void OnEndSession(BOOL bEnding);
-	afx_msg void OnDropFiles(HDROP hDropInfo);
-	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
-	afx_msg LRESULT OnCommandHelp(WPARAM wParam, LPARAM lParam);
-	afx_msg LRESULT OnHelpHitTest(WPARAM wParam, LPARAM lParam);
-	afx_msg LRESULT OnActivateTopLevel(WPARAM wParam, LPARAM lParam);
-	afx_msg void OnEnable(BOOL bEnable);
-	afx_msg void OnPaletteChanged(CWnd* pFocusWnd);
-	afx_msg BOOL OnQueryNewPalette();
-	// standard commands
-	afx_msg BOOL OnToolTipText(UINT nID, NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnUpdateKeyIndicator(CCmdUI* pCmdUI);
-	afx_msg void OnHelp();
-	afx_msg void OnUpdateContextHelp(CCmdUI* pCmdUI);
-	afx_msg BOOL OnChevronPushed(UINT id, NMHDR *pnm, LRESULT *result);
-	//}}AFX_MSG
-protected:
-	afx_msg LRESULT OnDDEInitiate(WPARAM wParam, LPARAM lParam);
-	afx_msg LRESULT OnDDEExecute(WPARAM wParam, LPARAM lParam);
-	afx_msg LRESULT OnDDETerminate(WPARAM wParam, LPARAM lParam);
-	DECLARE_MESSAGE_MAP()
-
-	friend class CWinApp;
-};
-
-/////////////////////////////////////////////////////////////////////////////
-// MDI Support
-
-class CMDIFrameWnd : public CFrameWnd
-{
-	DECLARE_DYNCREATE(CMDIFrameWnd)
-
-public:
-// Constructors
-	CMDIFrameWnd();
-
-// Operations
-	void MDIActivate(CWnd* pWndActivate);
-	CMDIChildWnd* MDIGetActive(BOOL* pbMaximized = NULL) const;
-	void MDIIconArrange();
-	void MDIMaximize(CWnd* pWnd);
-	void MDINext();
-	void MDIPrev();
-	void MDIRestore(CWnd* pWnd);
-	void MDITile();
-	void MDICascade();
-	void MDITile(int nType);
-	void MDICascade(int nType);
-	CMDIChildWnd* CreateNewChild(CRuntimeClass* pClass, UINT nResource,
-		HMENU hMenu = NULL, HACCEL hAccel = NULL);
-
-// Implementation
-public:
-	HWND m_hWndMDIClient;       // MDI Client window handle
-
-#ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
-#endif
-	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-	virtual BOOL LoadFrame(UINT nIDResource,
-				DWORD dwDefaultStyle = WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE,
-				CWnd* pParentWnd = NULL,
-				CCreateContext* pContext = NULL);
-	virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext);
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	virtual void OnUpdateFrameTitle(BOOL bAddToTitle);
-	virtual BOOL OnCmdMsg(UINT nID, int nCode, void* pExtra,
-		AFX_CMDHANDLERINFO* pHandlerInfo);
-	virtual void OnUpdateFrameMenu(HMENU hMenuAlt);
-	virtual void DelayUpdateFrameMenu(HMENU hMenuAlt);
-	virtual CFrameWnd* GetActiveFrame();
-	virtual void SetMenuBarVisibility(DWORD dwStyle);
-	virtual BOOL SetMenuBarState(DWORD dwState);
-
-protected:
-	virtual LRESULT DefWindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam);
-	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
-
-	//{{AFX_MSG(CMDIFrameWnd)
-	afx_msg void OnDestroy();
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnUpdateMDIWindowCmd(CCmdUI* pCmdUI);
-	afx_msg BOOL OnMDIWindowCmd(UINT nID);
-	afx_msg void OnWindowNew();
-	afx_msg LRESULT OnCommandHelp(WPARAM wParam, LPARAM lParam);
-	afx_msg void OnIdleUpdateCmdUI();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
-};
-
-class CMDIChildWnd : public CFrameWnd
-{
-	DECLARE_DYNCREATE(CMDIChildWnd)
-
-// Constructors
-public:
-	CMDIChildWnd();
-
-	virtual BOOL Create(LPCTSTR lpszClassName,
-				LPCTSTR lpszWindowName,
-				DWORD dwStyle = WS_CHILD | WS_VISIBLE | WS_OVERLAPPEDWINDOW,
-				const RECT& rect = rectDefault,
-				CMDIFrameWnd* pParentWnd = NULL,
-				CCreateContext* pContext = NULL);
-
-// Attributes
-	CMDIFrameWnd* GetMDIFrame();
-
-// Operations
-	void MDIDestroy();
-	void MDIActivate();
-	void MDIMaximize();
-	void MDIRestore();
-	void SetHandles(HMENU hMenu, HACCEL hAccel);
-
-// Implementation
-protected:
-	HMENU m_hMenuShared;        // menu when we are active
-
-public:
-#ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
-#endif
-
-	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-	virtual BOOL LoadFrame(UINT nIDResource, DWORD dwDefaultStyle,
-					CWnd* pParentWnd, CCreateContext* pContext = NULL);
-		// 'pParentWnd' parameter is required for MDI Child
-	virtual BOOL DestroyWindow();
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	virtual void ActivateFrame(int nCmdShow = -1);
-	virtual void OnUpdateFrameMenu(BOOL bActive, CWnd* pActivateWnd,
-		HMENU hMenuAlt);
-
-	BOOL m_bPseudoInactive;     // TRUE if window is MDI active according to
-								//  windows, but not according to MFC...
-
-protected:
-	virtual CWnd* GetMessageBar();
-	virtual void OnUpdateFrameTitle(BOOL bAddToTitle);
-	virtual LRESULT DefWindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam);
-	BOOL UpdateClientEdge(LPRECT lpRect = NULL);
-
-	//{{AFX_MSG(CMDIChildWnd)
-	afx_msg void OnMDIActivate(BOOL bActivate, CWnd*, CWnd*);
-	afx_msg int OnMouseActivate(CWnd* pDesktopWnd, UINT nHitTest, UINT message);
-	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-	afx_msg BOOL OnNcCreate(LPCREATESTRUCT lpCreateStruct);
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnWindowPosChanging(LPWINDOWPOS lpWndPos);
-	afx_msg BOOL OnNcActivate(BOOL bActive);
-	afx_msg void OnDestroy();
-	afx_msg BOOL OnToolTipText(UINT nID, NMHDR* pNMHDR, LRESULT* pResult);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
-};
-
-/////////////////////////////////////////////////////////////////////////////
-// CMiniFrameWnd
-
-// MiniFrame window styles
-#define MFS_SYNCACTIVE      0x00000100L // syncronize activation w/ parent
-#define MFS_4THICKFRAME     0x00000200L // thick frame all around (no tiles)
-#define MFS_THICKFRAME      0x00000400L // use instead of WS_THICKFRAME
-#define MFS_MOVEFRAME       0x00000800L // no sizing, just moving
-#define MFS_BLOCKSYSMENU    0x00001000L // block hit testing on system menu
-
-#pragma warning( push )
-
-#pragma warning( disable: 4263 )
-#pragma warning( disable: 4264 )
-class CMiniFrameWnd : public CFrameWnd
-{
-	DECLARE_DYNCREATE(CMiniFrameWnd)
-
-// Constructors
-public:
-	CMiniFrameWnd();
-	virtual BOOL Create(LPCTSTR lpClassName, LPCTSTR lpWindowName,
-		DWORD dwStyle, const RECT& rect,
-		CWnd* pParentWnd = NULL, UINT nID = 0);
-	virtual BOOL CreateEx(DWORD dwExStyle, LPCTSTR lpClassName, LPCTSTR lpWindowName,
-		DWORD dwStyle, const RECT& rect,
-		CWnd* pParentWnd = NULL, UINT nID = 0);
-
-// Implementation
-public:
-	~CMiniFrameWnd();
-
-	//{{AFX_MSG(CMiniFrameWnd)
-	afx_msg BOOL OnNcActivate(BOOL bActive);
-	afx_msg LRESULT OnNcHitTest(CPoint point);
-	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
-	afx_msg void OnGetMinMaxInfo(MINMAXINFO* pMMI);
-	afx_msg LRESULT OnFloatStatus(WPARAM wParam, LPARAM lParam);
-	afx_msg LRESULT OnQueryCenterWnd(WPARAM wParam, LPARAM lParam);
-	afx_msg BOOL OnNcCreate(LPCREATESTRUCT lpcs);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
-
-public:
-	static void PASCAL CalcBorders(LPRECT lpClientRect,
-		DWORD dwStyle = WS_THICKFRAME | WS_CAPTION, DWORD dwExStyle = 0);
-
-protected:
-	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-
-protected:
-	BOOL m_bSysTracking;
-	BOOL m_bInSys;
-	BOOL m_bActive;
-	CString m_strCaption;
 };
 
 #pragma warning( pop )

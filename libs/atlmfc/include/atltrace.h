@@ -173,10 +173,10 @@ public:
 		_In_ DWORD_PTR dwCategory,
 		_In_ UINT nLevel)
 	{
-		return _IsTracingEnabled(s_trace.m_dwModule, dwCategory, nLevel);
+		return false;
 	}
 public:
-	static CTrace s_trace;
+	// static CTrace s_trace;
 
 protected:
 	HINSTANCE m_hInst;
@@ -212,7 +212,7 @@ inline void __cdecl CTrace::TraceV(
 	AtlTraceVU(m_dwModule, pszFileName, nLine, dwCategory, nLevel, pszFmt, args);
 }
 
-extern CTraceCategory atlTraceGeneral;
+// extern CTraceCategory atlTraceGeneral;
 
 class CTraceFileAndLineInfo
 {
@@ -233,7 +233,7 @@ public:
 		...) const
 	{
 		va_list ptr; va_start(ptr, pszFmt);
-		ATL::CTrace::s_trace.TraceV(m_pszFileName, m_nLineNo, dwCategory, nLevel, pszFmt, ptr);
+		// ATL::CTrace::s_trace.TraceV(m_pszFileName, m_nLineNo, dwCategory, nLevel, pszFmt, ptr);
 		va_end(ptr);
 	}
 #pragma warning(pop)
@@ -247,7 +247,7 @@ public:
 		...) const
 	{
 		va_list ptr; va_start(ptr, pszFmt);
-		ATL::CTrace::s_trace.TraceV(m_pszFileName, m_nLineNo, dwCategory, nLevel, pszFmt, ptr);
+		// ATL::CTrace::s_trace.TraceV(m_pszFileName, m_nLineNo, dwCategory, nLevel, pszFmt, ptr);
 		va_end(ptr);
 	}
 #pragma warning(pop)
@@ -259,7 +259,7 @@ public:
 		...) const
 	{
 		va_list ptr; va_start(ptr, pszFmt);
-		ATL::CTrace::s_trace.TraceV(m_pszFileName, m_nLineNo, atlTraceGeneral, 0, pszFmt, ptr);
+		// ATL::CTrace::s_trace.TraceV(m_pszFileName, m_nLineNo, atlTraceGeneral, 0, pszFmt, ptr);
 		va_end(ptr);
 	}
 #pragma warning(pop)
@@ -271,7 +271,7 @@ public:
 		...) const
 	{
 		va_list ptr; va_start(ptr, pszFmt);
-		ATL::CTrace::s_trace.TraceV(m_pszFileName, m_nLineNo, atlTraceGeneral, 0, pszFmt, ptr);
+		// ATL::CTrace::s_trace.TraceV(m_pszFileName, m_nLineNo, atlTraceGeneral, 0, pszFmt, ptr);
 		va_end(ptr);
 	}
 #pragma warning(pop)
@@ -293,8 +293,8 @@ inline CTraceCategory::CTraceCategory(
 		_In_ UINT nStartingLevel) throw() :
 	m_dwCategory( 0 )
 {
-	m_dwCategory = ATL::CTrace::s_trace.RegisterCategory( pszCategoryName );
-	ATL::CTrace::s_trace.ChangeCategory( m_dwCategory, nStartingLevel, ATLTRACESTATUS_INHERIT);
+	// m_dwCategory = ATL::CTrace::s_trace.RegisterCategory( pszCategoryName );
+	// ATL::CTrace::s_trace.ChangeCategory( m_dwCategory, nStartingLevel, ATLTRACESTATUS_INHERIT);
 }
 
 inline CTraceCategory::operator DWORD_PTR() const throw()
@@ -306,21 +306,21 @@ inline UINT CTraceCategory::GetLevel() const throw()
 {
 	UINT nLevel;
 	ATLTRACESTATUS eStatus;
-	ATL::CTrace::s_trace.GetCategory( m_dwCategory, &nLevel, &eStatus );
+	// ATL::CTrace::s_trace.GetCategory( m_dwCategory, &nLevel, &eStatus );
 
 	return( nLevel );
 }
 
 inline void CTraceCategory::SetLevel(_In_ UINT nLevel) throw()
 {
-	ATL::CTrace::s_trace.ChangeCategory( m_dwCategory, nLevel, ATLTRACESTATUS_ENABLED );
+	// ATL::CTrace::s_trace.ChangeCategory( m_dwCategory, nLevel, ATLTRACESTATUS_ENABLED );
 }
 
 inline ATLTRACESTATUS CTraceCategory::GetStatus() const throw()
 {
 	UINT nLevel;
 	ATLTRACESTATUS eStatus;
-	ATL::CTrace::s_trace.GetCategory( m_dwCategory, &nLevel, &eStatus );
+	// ATL::CTrace::s_trace.GetCategory( m_dwCategory, &nLevel, &eStatus );
 
 	return( eStatus );
 }
@@ -329,8 +329,8 @@ inline void CTraceCategory::SetStatus(_In_ ATLTRACESTATUS eStatus) throw()
 {
 	UINT nLevel;
 	ATLTRACESTATUS eOldStatus;
-	ATL::CTrace::s_trace.GetCategory( m_dwCategory, &nLevel, &eOldStatus );
-	ATL::CTrace::s_trace.ChangeCategory( m_dwCategory, nLevel, eStatus );
+	// ATL::CTrace::s_trace.GetCategory( m_dwCategory, &nLevel, &eOldStatus );
+	// ATL::CTrace::s_trace.ChangeCategory( m_dwCategory, nLevel, eStatus );
 }
 
 #else  // !_DEBUG
@@ -356,7 +356,8 @@ namespace ATL
 {
 
 #ifdef _DEBUG
-#define DECLARE_TRACE_CATEGORY( name ) extern ATL::CTraceCategory name;
+// #define DECLARE_TRACE_CATEGORY( name ) extern ATL::CTraceCategory name;
+#define DECLARE_TRACE_CATEGORY( name ) const DWORD_PTR name = 0;
 #else
 #define DECLARE_TRACE_CATEGORY( name ) const DWORD_PTR name = 0;
 #endif
@@ -463,7 +464,7 @@ inline void __cdecl AtlTrace(_In_z_ _Printf_format_string_ LPCSTR pszFormat, ...
 {
 	va_list ptr;
 	va_start(ptr, pszFormat);
-	ATL::CTrace::s_trace.TraceV(NULL, -1, atlTraceGeneral, 0, pszFormat, ptr);
+	// ATL::CTrace::s_trace.TraceV(NULL, -1, atlTraceGeneral, 0, pszFormat, ptr);
 	va_end(ptr);
 }
 #pragma warning(pop)
@@ -474,7 +475,7 @@ inline void __cdecl AtlTrace(_In_z_ _Printf_format_string_ LPCWSTR pszFormat, ..
 {
 	va_list ptr;
 	va_start(ptr, pszFormat);
-	ATL::CTrace::s_trace.TraceV(NULL, -1, atlTraceGeneral, 0, pszFormat, ptr);
+	// ATL::CTrace::s_trace.TraceV(NULL, -1, atlTraceGeneral, 0, pszFormat, ptr);
 	va_end(ptr);
 }
 #pragma warning(pop)
@@ -488,7 +489,7 @@ inline void __cdecl AtlTrace2(
 {
 	va_list ptr;
 	va_start(ptr, pszFormat);
-	ATL::CTrace::s_trace.TraceV(NULL, -1, dwCategory, nLevel, pszFormat, ptr);
+	// ATL::CTrace::s_trace.TraceV(NULL, -1, dwCategory, nLevel, pszFormat, ptr);
 	va_end(ptr);
 }
 #pragma warning(pop)
@@ -502,7 +503,7 @@ inline void __cdecl AtlTrace2(
 {
 	va_list ptr;
 	va_start(ptr, pszFormat);
-	ATL::CTrace::s_trace.TraceV(NULL, -1, dwCategory, nLevel, pszFormat, ptr);
+	// ATL::CTrace::s_trace.TraceV(NULL, -1, dwCategory, nLevel, pszFormat, ptr);
 	va_end(ptr);
 }
 #pragma warning(pop)

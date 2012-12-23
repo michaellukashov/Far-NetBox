@@ -25,19 +25,7 @@ void CWinApp::DoEnableModeless(BOOL bEnable)
 #ifdef _AFX_NO_OLE_SUPPORT
 	UNUSED(bEnable);
 #endif
-
-	// no-op if main window is NULL or not a CFrameWnd
-	CWnd* pMainWnd = AfxGetMainWnd();
-	if (pMainWnd == NULL || !pMainWnd->IsFrameWnd())
-		return;
-
-#ifndef _AFX_NO_OLE_SUPPORT
-	/* // check if notify hook installed
-	ASSERT_KINDOF(CFrameWnd, pMainWnd);
-	CFrameWnd* pFrameWnd = (CFrameWnd*)pMainWnd;
-	if (pFrameWnd->m_pNotifyHook != NULL)
-		pFrameWnd->m_pNotifyHook->OnEnableModeless(bEnable); */
-#endif
+	return;
 }
 
 int AFXAPI AfxMessageBox(LPCTSTR lpszText, UINT nType, UINT nIDHelp)
@@ -67,14 +55,6 @@ HWND PASCAL CWnd::GetSafeOwner_(HWND hParent, HWND* pWndTop)
 {
 	// get window to start with
 	HWND hWnd = hParent;
-	/*if (hWnd == NULL)
-	{
-		CFrameWnd* pFrame = CCmdTarget::GetRoutingFrame_();
-		if (pFrame != NULL)
-			hWnd = pFrame->GetSafeHwnd();
-		else
-			hWnd = AfxGetMainWnd()->GetSafeHwnd();
-	}*/
 
 	// a popup window cannot be owned by a child window
 	while (hWnd != NULL && (::GetWindowLong(hWnd, GWL_STYLE) & WS_CHILD))
@@ -117,13 +97,6 @@ CView* PASCAL CCmdTarget::GetRoutingView_()
 {
 	CView* pView = AfxGetThreadState()->m_pRoutingView;
 	return pView;
-}
-
-CFrameWnd* PASCAL CCmdTarget::GetRoutingFrame_()
-{
-	/* CFrameWnd* pFrame = AfxGetThreadState()->m_pRoutingFrame;
-	return pFrame; */
-  return NULL;
 }
 
 /////////////////////////////////////////////////////////////////////////////

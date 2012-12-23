@@ -337,26 +337,6 @@ _AFXWIN_INLINE int CDC::ExcludeUpdateRgn(CWnd* pWnd)
 	{ ASSERT(m_hDC != NULL); return ::ExcludeUpdateRgn(m_hDC, pWnd->m_hWnd); }
 _AFXWIN_INLINE int CDC::GetDeviceCaps(int nIndex) const
 	{ ASSERT(m_hAttribDC != NULL); return ::GetDeviceCaps(m_hAttribDC, nIndex); }
-_AFXWIN_INLINE CPoint CDC::GetBrushOrg() const
-	{
-		ASSERT(m_hDC != NULL);
-		POINT point;
-		VERIFY(::GetBrushOrgEx(m_hDC, &point));
-		return point;
-	}
-_AFXWIN_INLINE CPoint CDC::SetBrushOrg(int x, int y)
-	{
-		ASSERT(m_hDC != NULL);
-		POINT point;
-		VERIFY(::SetBrushOrgEx(m_hDC, x, y, &point));
-		return point;
-	}
-_AFXWIN_INLINE CPoint CDC::SetBrushOrg(POINT point)
-	{
-		ASSERT(m_hDC != NULL);
-		VERIFY(::SetBrushOrgEx(m_hDC, point.x, point.y, &point));
-		return point;
-	}
 
 _AFXWIN_INLINE int CDC::EnumObjects(int nObjectType,
 		int (CALLBACK* lpfn)(LPVOID, LPARAM), LPARAM lpData)
@@ -394,26 +374,12 @@ _AFXWIN_INLINE int CDC::GetGraphicsMode() const
 _AFXWIN_INLINE BOOL CDC::GetWorldTransform(XFORM* pXform) const
 	{ ASSERT(m_hAttribDC != NULL); return ::GetWorldTransform(m_hAttribDC,pXform); }
 
-_AFXWIN_INLINE CPoint CDC::GetViewportOrg() const
-	{
-		ASSERT(m_hAttribDC != NULL);
-		POINT point;
-		VERIFY(::GetViewportOrgEx(m_hAttribDC, &point));
-		return point;
-	}
 _AFXWIN_INLINE CSize CDC::GetViewportExt() const
 	{
 		ASSERT(m_hAttribDC != NULL);
 		SIZE size;
 		VERIFY(::GetViewportExtEx(m_hAttribDC, &size));
 		return size;
-	}
-_AFXWIN_INLINE CPoint CDC::GetWindowOrg() const
-	{
-		ASSERT(m_hAttribDC != NULL);
-		POINT point;
-		VERIFY(::GetWindowOrgEx(m_hAttribDC, &point));
-		return point;
 	}
 _AFXWIN_INLINE CSize CDC::GetWindowExt() const
 	{
@@ -424,12 +390,8 @@ _AFXWIN_INLINE CSize CDC::GetWindowExt() const
 	}
 
 // non-virtual helpers calling virtual mapping functions
-_AFXWIN_INLINE CPoint CDC::SetViewportOrg(POINT point)
-	{ ASSERT(m_hDC != NULL); return SetViewportOrg(point.x, point.y); }
 _AFXWIN_INLINE CSize CDC::SetViewportExt(SIZE size)
 	{ ASSERT(m_hDC != NULL); return SetViewportExt(size.cx, size.cy); }
-_AFXWIN_INLINE CPoint CDC::SetWindowOrg(POINT point)
-	{ ASSERT(m_hDC != NULL); return SetWindowOrg(point.x, point.y); }
 _AFXWIN_INLINE CSize CDC::SetWindowExt(SIZE size)
 	{ ASSERT(m_hDC != NULL); return SetWindowExt(size.cx, size.cy); }
 
@@ -457,16 +419,7 @@ _AFXWIN_INLINE BOOL CDC::PtVisible(POINT point) const
 	{ ASSERT(m_hDC != NULL); return PtVisible(point.x, point.y); } // call virtual
 _AFXWIN_INLINE BOOL CDC::RectVisible(LPCRECT lpRect) const
 	{ ASSERT(m_hDC != NULL); return ::RectVisible(m_hDC, lpRect); }
-_AFXWIN_INLINE CPoint CDC::GetCurrentPosition() const
-	{
-		ASSERT(m_hAttribDC != NULL);
-		POINT point;
-		VERIFY(::GetCurrentPositionEx(m_hAttribDC, &point));
-		return point;
-	}
 
-_AFXWIN_INLINE CPoint CDC::MoveTo(POINT point)
-	{ ASSERT(m_hDC != NULL); return MoveTo(point.x, point.y); }
 _AFXWIN_INLINE BOOL CDC::LineTo(POINT point)
 	{ ASSERT(m_hDC != NULL); return LineTo(point.x, point.y); }
 _AFXWIN_INLINE BOOL CDC::Arc(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4)
@@ -487,30 +440,6 @@ _AFXWIN_INLINE BOOL CDC::DrawIcon(int x, int y, HICON hIcon)
 	{ ASSERT(m_hDC != NULL); return ::DrawIcon(m_hDC, x, y, hIcon); }
 _AFXWIN_INLINE BOOL CDC::DrawIcon(POINT point, HICON hIcon)
 	{ ASSERT(m_hDC != NULL); return ::DrawIcon(m_hDC, point.x, point.y, hIcon); }
-_AFXWIN_INLINE BOOL CDC::DrawState(CPoint pt, CSize size, HBITMAP hBitmap, UINT nFlags, HBRUSH hBrush)
-	{ ASSERT(m_hDC != NULL); return ::DrawState(m_hDC, hBrush,
-		NULL, (LPARAM)hBitmap, 0, pt.x, pt.y, size.cx, size.cy, nFlags|DST_BITMAP); }
-_AFXWIN_INLINE BOOL CDC::DrawState(CPoint pt, CSize size, CBitmap* pBitmap, UINT nFlags, CBrush* pBrush)
-	{ ASSERT(m_hDC != NULL); return ::DrawState(m_hDC, (HBRUSH)pBrush->GetSafeHandle(),
-		NULL, (LPARAM)pBitmap->GetSafeHandle(), 0, pt.x, pt.y, size.cx, size.cy, nFlags|DST_BITMAP); }
-_AFXWIN_INLINE BOOL CDC::DrawState(CPoint pt, CSize size, HICON hIcon, UINT nFlags, HBRUSH hBrush)
-	{ ASSERT(m_hDC != NULL); return ::DrawState(m_hDC, hBrush, NULL,
-		(LPARAM)hIcon, 0, pt.x, pt.y, size.cx, size.cy, nFlags|DST_ICON); }
-_AFXWIN_INLINE BOOL CDC::DrawState(CPoint pt, CSize size, HICON hIcon, UINT nFlags, CBrush* pBrush)
-	{ ASSERT(m_hDC != NULL); return ::DrawState(m_hDC, (HBRUSH)pBrush->GetSafeHandle(), NULL,
-		(LPARAM)hIcon, 0, pt.x, pt.y, size.cx, size.cy, nFlags|DST_ICON); }
-_AFXWIN_INLINE BOOL CDC::DrawState(CPoint pt, CSize size, LPCTSTR lpszText, UINT nFlags, BOOL bPrefixText, int nTextLen, HBRUSH hBrush)
-	{ ASSERT(m_hDC != NULL); return ::DrawState(m_hDC, hBrush,
-		NULL, (LPARAM)lpszText, (WPARAM)nTextLen, pt.x, pt.y, size.cx, size.cy, nFlags|(bPrefixText ? DST_PREFIXTEXT : DST_TEXT)); }
-_AFXWIN_INLINE BOOL CDC::DrawState(CPoint pt, CSize size, LPCTSTR lpszText, UINT nFlags, BOOL bPrefixText, int nTextLen, CBrush* pBrush)
-	{ ASSERT(m_hDC != NULL); return ::DrawState(m_hDC, (HBRUSH)pBrush->GetSafeHandle(),
-		NULL, (LPARAM)lpszText, (WPARAM)nTextLen, pt.x, pt.y, size.cx, size.cy, nFlags|(bPrefixText ? DST_PREFIXTEXT : DST_TEXT)); }
-_AFXWIN_INLINE BOOL CDC::DrawState(CPoint pt, CSize size, DRAWSTATEPROC lpDrawProc, LPARAM lData, UINT nFlags, HBRUSH hBrush)
-	{ ASSERT(m_hDC != NULL); return ::DrawState(m_hDC, hBrush,
-		lpDrawProc, lData, 0, pt.x, pt.y, size.cx, size.cy, nFlags|DST_COMPLEX); }
-_AFXWIN_INLINE BOOL CDC::DrawState(CPoint pt, CSize size, DRAWSTATEPROC lpDrawProc, LPARAM lData, UINT nFlags, CBrush* pBrush)
-	{ ASSERT(m_hDC != NULL); return ::DrawState(m_hDC, (HBRUSH)pBrush->GetSafeHandle(),
-		lpDrawProc, lData, 0, pt.x, pt.y, size.cx, size.cy, nFlags|DST_COMPLEX); }
 _AFXWIN_INLINE BOOL CDC::DrawEdge(LPRECT lpRect, UINT nEdge, UINT nFlags)
 	{ ASSERT(m_hDC != NULL); return ::DrawEdge(m_hDC, lpRect, nEdge, nFlags); }
 _AFXWIN_INLINE BOOL CDC::DrawFrameControl(LPRECT lpRect, UINT nType, UINT nState)
@@ -884,22 +813,6 @@ _AFXWIN_INLINE BOOL CImageList::SetOverlayImage(int nImage, int nOverlay)
 	{ ASSERT(m_hImageList != NULL); return 0; }
 _AFXWIN_INLINE BOOL CImageList::GetImageInfo(int nImage, IMAGEINFO* pImageInfo) const
 	{ ASSERT(m_hImageList != NULL); return 0; }
-_AFXWIN_INLINE BOOL CImageList::BeginDrag(int nImage, CPoint ptHotSpot)
-	{ ASSERT(m_hImageList != NULL); return 0; }
-_AFXWIN_INLINE void PASCAL CImageList::EndDrag()
-	{ 0; }
-_AFXWIN_INLINE BOOL PASCAL CImageList::DragMove(CPoint pt)
-	{ return 0; }
-_AFXWIN_INLINE BOOL CImageList::SetDragCursorImage(int nDrag, CPoint ptHotSpot)
-	{ ASSERT(m_hImageList != NULL); return 0; }
-_AFXWIN_INLINE BOOL PASCAL CImageList::DragShowNolock(BOOL bShow)
-	{return 0;}
-_AFXWIN_INLINE CImageList* PASCAL CImageList::GetDragImage(LPPOINT lpPoint, LPPOINT lpPointHotSpot)
-	{return NULL;}
-_AFXWIN_INLINE BOOL PASCAL CImageList::DragEnter(CWnd* pWndLock, CPoint point)
-	{ return 0; }
-_AFXWIN_INLINE BOOL PASCAL CImageList::DragLeave(CWnd* pWndLock)
-	{ return 0; }
 
 /////////////////////////////////////////////////////////////////////////////	
 

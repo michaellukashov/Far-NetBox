@@ -13,7 +13,7 @@
 #include "occimpl.h"
 #endif
 
-#include <atlacc.h>	// Accessible Proxy from ATL
+// #include <atlacc.h>	// Accessible Proxy from ATL
 #include "sal.h"
 
 // #include "afxctrlcontainer.h"
@@ -50,8 +50,6 @@ CWnd::CWnd()
 	m_hWnd = NULL;
 	m_bEnableActiveAccessibility = false;
 	m_bIsTouchWindowRegistered = FALSE;
-	m_pProxy = NULL;
-	m_pStdObject = NULL;
 	m_hWndOwner = NULL;
 	m_nFlags = 0;
 	m_pfnSuper = NULL;
@@ -61,11 +59,6 @@ CWnd::CWnd()
 	m_pCtrlCont = NULL;
 	m_pCtrlSite = NULL;
 #endif
-
-	m_ptGestureFrom = CPoint(-1, -1);
-	m_ulGestureArg = 0;
-	m_bGestureInited = FALSE;
-	m_pCurrentGestureInfo = NULL;
 }
 
 CWnd::CWnd(HWND hWnd)
@@ -73,7 +66,6 @@ CWnd::CWnd(HWND hWnd)
 	m_hWnd = hWnd;
 	m_bEnableActiveAccessibility = false;
 	m_bIsTouchWindowRegistered = FALSE;
-	m_pProxy = NULL;
 	m_hWndOwner = NULL;
 	m_nFlags = 0;
 	m_pfnSuper = NULL;
@@ -84,10 +76,6 @@ CWnd::CWnd(HWND hWnd)
 	m_pCtrlSite = NULL;
 #endif
 
-	m_ptGestureFrom = CPoint(-1, -1);
-	m_ulGestureArg = 0;
-	m_bGestureInited = FALSE;
-	m_pCurrentGestureInfo = NULL;
 }
 
 // Change a window's style
@@ -267,7 +255,6 @@ const MSG* PASCAL CWnd::GetCurrentMessage()
 	// fill in time and position when asked for
 	_AFX_THREAD_STATE* pThreadState = _afxThreadState.GetData();
 	pThreadState->m_lastSentMsg.time = ::GetMessageTime();
-	pThreadState->m_lastSentMsg.pt = CPoint(::GetMessagePos());
 	return &pThreadState->m_lastSentMsg;
 }
 
@@ -494,32 +481,6 @@ _AfxCbtFilterHook(int code, WPARAM wParam, LPARAM lParam)
 	BOOL bContextIsDLL = afxContextIsDLL;
 	if (pWndInit != NULL || (!(lpcs->style & WS_CHILD) && !bContextIsDLL))
 	{
-		// Note: special check to avoid subclassing the IME window
-		if (_afxDBCS)
-		{
-			// check for cheap CS_IME style first...
-			if (GetClassLong((HWND)wParam, GCL_STYLE) & CS_IME)
-				goto lCallNextHook;
-
-			// get class name of the window that is being created
-			LPCTSTR pszClassName;
-			TCHAR szClassName[_countof("ime")+1];
-			if (DWORD_PTR(lpcs->lpszClass) > 0xffff)
-			{
-				pszClassName = lpcs->lpszClass;
-			}
-			else
-			{
-				szClassName[0] = '\0';
-				GlobalGetAtomName((ATOM)lpcs->lpszClass, szClassName, _countof(szClassName));
-				pszClassName = szClassName;
-			}
-
-			// a little more expensive to test this way, but necessary...
-			if (::AfxInvariantStrICmp(pszClassName, _T("ime")) == 0)
-				goto lCallNextHook;
-		}
-
 		ASSERT(wParam != NULL); // should be non-NULL HWND
 		HWND hWnd = (HWND)wParam;
 		WNDPROC oldWndProc;
@@ -776,10 +737,6 @@ CWnd::~CWnd()
 		m_pCtrlSite->m_pWndCtrl = NULL;
 #endif
 
-	if (m_pCurrentGestureInfo != NULL)
-	{
-		delete m_pCurrentGestureInfo;
-	}
 }
 
 void CWnd::OnDestroy()
@@ -789,12 +746,6 @@ void CWnd::OnDestroy()
 	delete m_pCtrlCont;
 	m_pCtrlCont = NULL;
 #endif
-
-	// Active Accessibility
-	if (m_pProxy != NULL)
-		m_pProxy->SetServer(NULL, NULL);
-	if (m_pStdObject != NULL)
-		m_pStdObject->Release();
 
 	if (m_bIsTouchWindowRegistered)
 	{
@@ -1075,34 +1026,6 @@ void PASCAL CWnd::CancelToolTips(BOOL bKeys)
 	// check for active tooltip
 	AFX_MODULE_THREAD_STATE* pModuleThreadState = AfxGetModuleThreadState();
 
-}
-
-INT_PTR CWnd::OnToolHitTest(CPoint point, TOOLINFO* pTI) const
-{
-	// find child window which hits the point
-	// (don't use WindowFromPoint, because it ignores disabled windows)
-	HWND hWndChild = _AfxTopChildWindowFromPoint(m_hWnd, point);
-	if (hWndChild != NULL)
-	{
-		// return positive hit if control ID isn't -1
-		INT_PTR nHit = _AfxGetDlgCtrlID(hWndChild);
-
-		// hits against child windows always center the tip
-		if (pTI != NULL && pTI->cbSize >= sizeof(AFX_OLDTOOLINFO))
-		{
-			// setup the TOOLINFO structure
-			pTI->hwnd = m_hWnd;
-			pTI->uId = (UINT_PTR)hWndChild;
-			pTI->uFlags |= TTF_IDISHWND;
-			pTI->lpszText = LPSTR_TEXTCALLBACK;
-
-			// set TTF_NOTBUTTON and TTF_CENTERTIP if it isn't a button
-			if (!(::SendMessage(hWndChild, WM_GETDLGCODE, 0, 0) & DLGC_BUTTON))
-				pTI->uFlags |= TTF_NOTBUTTON|TTF_CENTERTIP;
-		}
-		return nHit;
-	}
-	return -1;  // not found
 }
 
 void CWnd::GetWindowText(CString& rString) const
@@ -1397,243 +1320,6 @@ BOOL CWnd::IsTouchWindow() const
 	return (*pfIsTouchWindow)(GetSafeHwnd());
 }
 
-LRESULT CWnd::OnTabletQuerySystemGestureStatus(WPARAM /*wParam*/, LPARAM lParam)
-{
-	CPoint ptTouch(GET_X_LPARAM (lParam), GET_Y_LPARAM(lParam));
-	ScreenToClient(&ptTouch);
-
-	return (LRESULT)GetGestureStatus(ptTouch);
-}
-
-ULONG CWnd::GetGestureStatus(CPoint /*ptTouch*/)
-{
-	return TABLET_DISABLE_PRESSANDHOLD;
-}
-
-LRESULT CWnd::OnTouchMessage(WPARAM wParam, LPARAM lParam)
-{
-	HANDLE hTouchInput = (HANDLE)lParam;
-
-	UINT nInputsCount = LOWORD(wParam);
-	if (nInputsCount == 0)
-	{
-		return Default();
-	}
-
-	static HMODULE hUserDll = AfxCtxLoadLibrary(_T("user32.dll"));
-	ENSURE(hUserDll != NULL);
-
-	typedef	BOOL (__stdcall *PFNGETTOUCHINPUTINFO)(HANDLE, UINT, PTOUCHINPUT, int);
-	static PFNGETTOUCHINPUTINFO pfGetTouchInputInfo = (PFNGETTOUCHINPUTINFO)GetProcAddress(hUserDll, "GetTouchInputInfo");
-
-	typedef	BOOL (__stdcall *PFNCLOSETOUCHINPUTHANDLE)(HANDLE);
-	static PFNCLOSETOUCHINPUTHANDLE pfCloseTouchInputHandle = (PFNCLOSETOUCHINPUTHANDLE)GetProcAddress(hUserDll, "CloseTouchInputHandle");
-
-	if (pfGetTouchInputInfo == NULL || pfCloseTouchInputHandle == NULL)
-	{
-		return Default();
-	}
-
-	PTOUCHINPUT pInputs = new TOUCHINPUT[nInputsCount];
-	if (pInputs == NULL)
-	{
-		ASSERT(FALSE);
-		return Default();
-	}
-
-	if (!(*pfGetTouchInputInfo)(hTouchInput, nInputsCount, pInputs, sizeof(TOUCHINPUT)))
-	{
-		ASSERT(FALSE);
-		return Default();
-	}
-
-	BOOL bRes = OnTouchInputs(nInputsCount, pInputs);
-
-	delete [] pInputs;
-	(*pfCloseTouchInputHandle)(hTouchInput);
-
-	return bRes ? 0 : Default ();
-}
-
-BOOL CWnd::OnTouchInputs(UINT nInputsCount, PTOUCHINPUT pInputs)
-{
-    for (UINT i = 0; i < nInputsCount; i++)
-	{
-		CPoint ptCurr(TOUCH_COORD_TO_PIXEL(pInputs[i].x), TOUCH_COORD_TO_PIXEL(pInputs[i].y));
-		ScreenToClient(&ptCurr);
-
-		if (!OnTouchInput(ptCurr, i, nInputsCount, &pInputs[i]))
-		{
-			return FALSE;
-		}
-	}
-
-	return TRUE;
-}
-
-BOOL CWnd::OnTouchInput(CPoint /* pt */, int /* nInputNumber */, int /* nInputsCount */, PTOUCHINPUT /* pInput */)
-{
-	ASSERT(FALSE);	// Should be implemented in derived class
-	return FALSE;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-// Gesture support:
-
-BOOL CWnd::SetGestureConfig(CGestureConfig* pConfig)
-{
-	ASSERT_VALID(this);
-	ASSERT_VALID(pConfig);
-
-	GESTURECONFIG* pConfigs = pConfig->m_pConfigs;
-	UINT cIDs = (UINT)pConfig->m_nConfigs;
-
-	static HMODULE hUserDll = AfxCtxLoadLibrary(_T("user32.dll"));
-	ENSURE(hUserDll != NULL);
-
-	typedef	BOOL (__stdcall *SETGESTURECONFIG)(HWND, DWORD, UINT, PGESTURECONFIG, UINT);
-	static SETGESTURECONFIG pfSetGestureConfig = (SETGESTURECONFIG)GetProcAddress(hUserDll, "SetGestureConfig");
-	if (pfSetGestureConfig == NULL)
-	{
-		return FALSE;
-	}
-
-	return (*pfSetGestureConfig)(GetSafeHwnd(), 0, cIDs, pConfigs, sizeof(GESTURECONFIG));
-}
-
-BOOL CWnd::GetGestureConfig(CGestureConfig* pConfig)
-{
-	ASSERT_VALID(this);
-	ASSERT_VALID(pConfig);
-
-	if (!m_bGestureInited)
-	{
-		CGestureConfig configDefault;
-		SetGestureConfig(&configDefault);
-		m_bGestureInited = TRUE;
-	}
-
-	GESTURECONFIG* pConfigs = pConfig->m_pConfigs;
-	UINT cIDs = (UINT)pConfig->m_nConfigs;
-
-	static HMODULE hUserDll = AfxCtxLoadLibrary(_T("user32.dll"));
-	ENSURE(hUserDll != NULL);
-
-	typedef	BOOL (__stdcall *GETGESTURECONFIG)(HWND, DWORD, DWORD, PUINT, PGESTURECONFIG, UINT);
-	static GETGESTURECONFIG pfGetGestureConfig = (GETGESTURECONFIG)GetProcAddress(hUserDll, "GetGestureConfig");
-	if (pfGetGestureConfig == NULL)
-	{
-		return FALSE;
-	}
-
-	return (*pfGetGestureConfig)(GetSafeHwnd(), 0, 0, &cIDs, pConfigs, sizeof(GESTURECONFIG));
-}
-
-LRESULT CWnd::OnGesture(WPARAM /*wParam*/, LPARAM lParam)
-{
-	static HMODULE hUserDll = AfxCtxLoadLibrary(_T("user32.dll"));
-	ENSURE(hUserDll != NULL);
-
-	typedef	BOOL (__stdcall *GETGESTUREINFO)(HGESTUREINFO, PGESTUREINFO);
-	typedef	BOOL (__stdcall *CLOSEGESTUREINFOHANDLE)(HGESTUREINFO);
-
-	static GETGESTUREINFO pfGetGestureInfo = (GETGESTUREINFO)GetProcAddress(hUserDll, "GetGestureInfo");
-	static CLOSEGESTUREINFOHANDLE pfCloseGestureInfoHandle = (CLOSEGESTUREINFOHANDLE)GetProcAddress(hUserDll, "CloseGestureInfoHandle");
-
-	if (pfGetGestureInfo == NULL || pfCloseGestureInfoHandle == NULL)
-	{
-		return Default ();
-	}
-
-	if (m_pCurrentGestureInfo == NULL)
-	{
-		m_pCurrentGestureInfo = new GESTUREINFO;
-	}
-
-	ZeroMemory(m_pCurrentGestureInfo, sizeof(GESTUREINFO));
-	m_pCurrentGestureInfo->cbSize = sizeof(GESTUREINFO);
-
-	if (!(*pfGetGestureInfo)((HGESTUREINFO)lParam, m_pCurrentGestureInfo) || m_pCurrentGestureInfo->hwndTarget != GetSafeHwnd())
-	{
-		ZeroMemory(m_pCurrentGestureInfo, sizeof(GESTUREINFO));
-		return Default ();
-	}
-
-	CPoint pt(m_pCurrentGestureInfo->ptsLocation.x, m_pCurrentGestureInfo->ptsLocation.y);
-	ScreenToClient(&pt);
-
-	BOOL bDefaultProcessing = TRUE;
-
-	switch (m_pCurrentGestureInfo->dwID)
-	{
-	case GID_BEGIN:
-		m_ptGestureFrom = pt;
-		m_ulGestureArg = m_pCurrentGestureInfo->ullArguments;
-		return Default();
-
-	case GID_END:
-		m_ptGestureFrom = CPoint(-1, -1);
-		m_ulGestureArg = 0;
-		ZeroMemory(m_pCurrentGestureInfo, sizeof(GESTUREINFO));
-		return Default();
-
-	case GID_ZOOM:
-		bDefaultProcessing = !OnGestureZoom(pt, (long)(m_pCurrentGestureInfo->ullArguments - m_ulGestureArg));
-		break;
-
-	case GID_PAN:
-		bDefaultProcessing = !OnGesturePan(m_ptGestureFrom, pt);
-		break;
-
-	case GID_ROTATE:
-		bDefaultProcessing = !OnGestureRotate(pt, GID_ROTATE_ANGLE_FROM_ARGUMENT(m_pCurrentGestureInfo->ullArguments));
-		break;
-
-	case GID_TWOFINGERTAP:
-		bDefaultProcessing = !OnGestureTwoFingerTap(pt);
-		break;
-
-	case GID_PRESSANDTAP:
-		bDefaultProcessing = !OnGesturePressAndTap(pt, (long)m_pCurrentGestureInfo->ullArguments);
-		break;
-	}
-
-	if (!bDefaultProcessing)
-	{
-		(*pfCloseGestureInfoHandle)((HGESTUREINFO)lParam);
-	}
-
-	m_ptGestureFrom = pt;
-	m_ulGestureArg = m_pCurrentGestureInfo->ullArguments;
-
-	return bDefaultProcessing ? Default() : 0;
-}
-
-BOOL CWnd::OnGestureZoom(CPoint /*ptCenter*/, long /*lDelta*/)
-{
-	return FALSE;	// Default processing
-}
-
-BOOL CWnd::OnGesturePan(CPoint /*ptFrom*/, CPoint /*ptTo*/)
-{
-	return FALSE;	// Default processing
-}
-
-BOOL CWnd::OnGestureRotate(CPoint /*ptCenter*/, double /*dblAngle*/)
-{
-	return FALSE;	// Default processing
-}
-
-BOOL CWnd::OnGestureTwoFingerTap(CPoint /*ptCenter*/)
-{
-	return FALSE;	// Default processing
-}
-
-BOOL CWnd::OnGesturePressAndTap(CPoint /*ptPress*/, long /*lDelta*/)
-{
-	return FALSE;	// Default processing
-}
-
 /////////////////////////////////////////////////////////////////////////////
 // CWnd extensions for help support
 
@@ -1678,9 +1364,6 @@ BEGIN_MESSAGE_MAP(CWnd, CCmdTarget)
 	ON_MESSAGE(WM_DISPLAYCHANGE, &CWnd::OnDisplayChange)
 	ON_REGISTERED_MESSAGE(CWnd::m_nMsgDragList, &CWnd::OnDragList)
 	ON_MESSAGE(WM_GETOBJECT, &CWnd::OnGetObject)
-	ON_MESSAGE(WM_TOUCH, &CWnd::OnTouchMessage)
-	ON_MESSAGE(WM_TABLET_QUERYSYSTEMGESTURESTATUS, &CWnd::OnTabletQuerySystemGestureStatus)
-	ON_MESSAGE(WM_GESTURE, &CWnd::OnGesture)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1913,12 +1596,6 @@ LDispatch:
 	default:
 		ASSERT(FALSE);
 		break;
-	case AfxSig_l_p:
-		{
-			CPoint point(lParam);		
-			lResult = (this->*mmf.pfn_l_p)(point);
-			break;
-		}		
 	case AfxSig_b_D_v:
 		lResult = (this->*mmf.pfn_b_D)(CDC::FromHandle(reinterpret_cast<HDC>(wParam)));
 		break;
@@ -2119,13 +1796,6 @@ LDispatch:
 			HIWORD(lParam));
 		break;
 
-	case AfxSig_v_W_p:
-		{
-			CPoint point(lParam);
-			(this->*mmf.pfn_v_W_p)(CWnd::FromHandle(reinterpret_cast<HWND>(wParam)), point);
-		}
-		break;
-
 	case AfxSig_v_W_h:
 		(this->*mmf.pfn_v_W_h)(CWnd::FromHandle(reinterpret_cast<HWND>(wParam)),
 				reinterpret_cast<HANDLE>(lParam));
@@ -2169,13 +1839,6 @@ LDispatch:
 		lResult = (this->*mmf.pfn_i_i_s)(static_cast<int>(wParam), reinterpret_cast<LPTSTR>(lParam));
 		break;
 
-	case AfxSig_u_v_p:
-		{
-			CPoint point(lParam);
-			lResult = (this->*mmf.pfn_u_p)(point);
-		}
-		break;
-
 	case AfxSig_u_v_v:
 		lResult = (this->*mmf.pfn_u_v)();
 		break;
@@ -2193,69 +1856,16 @@ LDispatch:
 		(this->*mmf.pfn_v_u_u_M)(LOWORD(wParam), HIWORD(wParam), reinterpret_cast<HMENU>(lParam));
 		break;
 
-	case AfxSig_v_u_p:
-		{
-			CPoint point(lParam);
-			(this->*mmf.pfn_v_u_p)(static_cast<UINT>(wParam), point);
-		}
-		break;
-
 	case AfxSig_SIZING:
 		(this->*mmf.pfn_v_u_pr)(static_cast<UINT>(wParam), reinterpret_cast<LPRECT>(lParam));
 		lResult = TRUE;
 		break;
 
-	case AfxSig_MOUSEWHEEL:
-		lResult = (this->*mmf.pfn_b_u_s_p)(LOWORD(wParam), (short)HIWORD(wParam),
-			CPoint(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
-		if (!lResult)
-			return FALSE;
-		break;
-	case AfxSig_MOUSEHWHEEL:
-		(this->*mmf.pfn_MOUSEHWHEEL)(LOWORD(wParam), (short)HIWORD(wParam),
-			CPoint(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
-		break;
-	case AfxSig_l:
-		lResult = (this->*mmf.pfn_l_v)();
-		if (lResult != 0)
-			return FALSE;
-		break;
-	case AfxSig_u_W_u:
-		lResult = (this->*mmf.pfn_u_W_u)(CWnd::FromHandle(reinterpret_cast<HWND>(wParam)), static_cast<UINT>(lParam));
-		break;
-	case AfxSig_v_u_M:
-		break;
-	case AfxSig_u_u_M:
-		break;
-	case AfxSig_u_v_MENUGETOBJECTINFO:
-		lResult = (this->*mmf.pfn_u_v_MENUGETOBJECTINFO)(reinterpret_cast<MENUGETOBJECTINFO*>(lParam));
-		break;
-	case AfxSig_v_M_u:
-		break;
-	case AfxSig_v_u_LPMDINEXTMENU:
-		(this->*mmf.pfn_v_u_LPMDINEXTMENU)(static_cast<UINT>(wParam), reinterpret_cast<LPMDINEXTMENU>(lParam));
-		break;
-	case AfxSig_APPCOMMAND:
-		(this->*mmf.pfn_APPCOMMAND)(CWnd::FromHandle(reinterpret_cast<HWND>(wParam)), static_cast<UINT>(GET_APPCOMMAND_LPARAM(lParam)), static_cast<UINT>(GET_DEVICE_LPARAM(lParam)), static_cast<UINT>(GET_KEYSTATE_LPARAM(lParam)));
-		lResult = TRUE;
-		break;
 	case AfxSig_RAWINPUT:
 		(this->*mmf.pfn_RAWINPUT)(static_cast<UINT>(GET_RAWINPUT_CODE_WPARAM(wParam)), reinterpret_cast<HRAWINPUT>(lParam));
 		break;
 	case AfxSig_u_u_u:
 		lResult = (this->*mmf.pfn_u_u_u)(static_cast<UINT>(wParam), static_cast<UINT>(lParam));
-		break;
-	case AfxSig_MOUSE_XBUTTON:
-		(this->*mmf.pfn_MOUSE_XBUTTON)(static_cast<UINT>(GET_KEYSTATE_WPARAM(wParam)), static_cast<UINT>(GET_XBUTTON_WPARAM(wParam)), CPoint(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
-		lResult = TRUE;
-		break;
-	case AfxSig_MOUSE_NCXBUTTON:
-		(this->*mmf.pfn_MOUSE_NCXBUTTON)(static_cast<short>(GET_NCHITTEST_WPARAM(wParam)), static_cast<UINT>(GET_XBUTTON_WPARAM(wParam)), CPoint(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
-		lResult = TRUE;
-		break;
-	case AfxSig_INPUTLANGCHANGE:
-		(this->*mmf.pfn_INPUTLANGCHANGE)(static_cast<UINT>(wParam), static_cast<UINT>(lParam));
-		lResult = TRUE;
 		break;
 	case AfxSig_INPUTDEVICECHANGE:
 		(this->*mmf.pfn_INPUTDEVICECHANGE)(GET_DEVICE_CHANGE_WPARAM(wParam), reinterpret_cast<HANDLE>(lParam));
@@ -2404,30 +2014,6 @@ BOOL CWnd::OnNotify(WPARAM, LPARAM lParam, LRESULT* pResult)
 	return OnCmdMsg((UINT)nID, MAKELONG(nCode, WM_NOTIFY), &notify, NULL);
 }
 
-/////////////////////////////////////////////////////////////////////////////
-// CWnd extensions
-
-CFrameWnd* CWnd::GetParentFrame() const
-{
-	if (GetSafeHwnd() == NULL) // no Window attached
-	{
-		return NULL;
-	}
-
-	ASSERT_VALID(this);
-
-	CWnd* pParentWnd = GetParent();  // start with one parent up
-	while (pParentWnd != NULL)
-	{
-		if (pParentWnd->IsFrameWnd())
-		{
-			return (CFrameWnd*)pParentWnd;
-		}
-		pParentWnd = pParentWnd->GetParent();
-	}
-	return NULL;
-}
-
 HWND AFXAPI AfxGetParentOwner(HWND hWnd)
 {
 	// check for permanent-owned window first
@@ -2505,26 +2091,6 @@ void CWnd::ActivateTopParent()
 		// clicking on floating frame when it does not have
 		// focus itself -- activate the toplevel frame instead.
 	}
-}
-
-CFrameWnd* CWnd::GetTopLevelFrame() const
-{
-	if (GetSafeHwnd() == NULL) // no Window attached
-		return NULL;
-
-	ASSERT_VALID(this);
-
-	CFrameWnd* pFrameWnd = (CFrameWnd*)this;
-	if (!IsFrameWnd())
-		pFrameWnd = GetParentFrame();
-
-	if (pFrameWnd != NULL)
-	{
-		CFrameWnd* pTemp;
-		while ((pTemp = pFrameWnd->GetParentFrame()) != NULL)
-			pFrameWnd = pTemp;
-	}
-	return pFrameWnd;
 }
 
 CWnd* PASCAL CWnd::GetSafeOwner(CWnd* pParent, HWND* pWndTop)
@@ -2813,8 +2379,6 @@ void AFXAPI AfxRepositionWindow(AFX_SIZEPARENTPARAMS* lpLayout,
 	// first check if the new rectangle is the same as the current
 	CRect rectOld;
 	::GetWindowRect(hWnd, rectOld);
-	::ScreenToClient(hWndParent, &rectOld.TopLeft());
-	::ScreenToClient(hWndParent, &rectOld.BottomRight());
 	if (::EqualRect(rectOld, lpRect))
 		return;     // nothing to do
 
@@ -3183,9 +2747,6 @@ LRESULT CWnd::OnGetObject(WPARAM wParam, LPARAM lParam)
 		return Default();
 
 	LRESULT lRet = 0;
-	HRESULT hr = CreateAccessibleProxy(wParam, lParam, &lRet);
-	if (FAILED(hr))
-		return Default();
 	return lRet;
 }
 
@@ -3300,7 +2861,7 @@ HRESULT CWnd::XAccessible::Invoke(
 			/* [out] */ UINT *puArgErr) 
 {
 	METHOD_PROLOGUE(CWnd, Accessible)
-	return AtlIAccessibleInvokeHelper((IAccessible*)(void*)this, dispIdMember, refiid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr);
+	return 0;
 } 
 
 HRESULT CWnd::XAccessible::GetIDsOfNames(
@@ -3310,7 +2871,7 @@ HRESULT CWnd::XAccessible::GetIDsOfNames(
 	LCID lcid,
 	DISPID *rgDispId) 
 {
-	return AtlIAccessibleGetIDsOfNamesHelper(refiid, rgszNames, cNames, lcid, rgDispId);
+	return 0;
 }
 
 HRESULT CWnd::XAccessible::GetTypeInfoCount(unsigned int*  pctinfo) 
@@ -3325,114 +2886,6 @@ HRESULT CWnd::XAccessible::GetTypeInfoCount(unsigned int*  pctinfo)
 HRESULT CWnd::XAccessible::GetTypeInfo(unsigned int /*iTInfo*/, LCID /*lcid*/, ITypeInfo** /*ppTInfo*/) 
 {
 	return E_NOTIMPL;
-}
-
-HRESULT CWnd::XAccessible::get_accParent(IDispatch **ppdispParent)
-{
-	METHOD_PROLOGUE(CWnd, Accessible)
-	return pThis->get_accParent(ppdispParent);
-}
-HRESULT CWnd::XAccessible::get_accChildCount(long *pcountChildren)
-{
-	METHOD_PROLOGUE(CWnd, Accessible)
-	return pThis->get_accChildCount(pcountChildren);
-}
-HRESULT CWnd::XAccessible::get_accChild(VARIANT varChild, IDispatch **ppdispChild)
-{
-	METHOD_PROLOGUE(CWnd, Accessible)
-	return pThis->get_accChild(varChild, ppdispChild);
-}
-HRESULT CWnd::XAccessible::get_accName(VARIANT varChild, BSTR *pszName)
-{
-	METHOD_PROLOGUE(CWnd, Accessible)
-	return pThis->get_accName(varChild, pszName);
-}
-HRESULT CWnd::XAccessible::get_accValue(VARIANT varChild, BSTR *pszValue)
-{
-	METHOD_PROLOGUE(CWnd, Accessible)
-	return pThis->get_accValue(varChild, pszValue);
-}
-HRESULT CWnd::XAccessible::get_accDescription(VARIANT varChild, BSTR *pszDescription)
-{
-	METHOD_PROLOGUE(CWnd, Accessible)
-	return pThis->get_accDescription(varChild, pszDescription);
-}
-HRESULT CWnd::XAccessible::get_accRole(VARIANT varChild, VARIANT *pvarRole)
-{
-	METHOD_PROLOGUE(CWnd, Accessible)
-	return pThis->get_accRole(varChild, pvarRole);
-}
-HRESULT CWnd::XAccessible::get_accState(VARIANT varChild, VARIANT *pvarState)
-{
-	METHOD_PROLOGUE(CWnd, Accessible)
-	return pThis->get_accState(varChild, pvarState);
-}
-HRESULT CWnd::XAccessible::get_accHelp(VARIANT varChild, BSTR *pszHelp)
-{
-	METHOD_PROLOGUE(CWnd, Accessible)
-	return pThis->get_accHelp(varChild, pszHelp);
-}
-HRESULT CWnd::XAccessible::get_accHelpTopic(BSTR *pszHelpFile, VARIANT varChild, long *pidTopic)
-{
-	METHOD_PROLOGUE(CWnd, Accessible)
-	return pThis->get_accHelpTopic(pszHelpFile, varChild, pidTopic);
-}
-HRESULT CWnd::XAccessible::get_accKeyboardShortcut(VARIANT varChild, BSTR *pszKeyboardShortcut)
-{
-	METHOD_PROLOGUE(CWnd, Accessible)
-	return pThis->get_accKeyboardShortcut(varChild, pszKeyboardShortcut);
-}
-HRESULT CWnd::XAccessible::get_accFocus(VARIANT *pvarChild)
-{
-	METHOD_PROLOGUE(CWnd, Accessible)
-	return pThis->get_accFocus(pvarChild);
-}
-HRESULT CWnd::XAccessible::get_accSelection(VARIANT *pvarChildren)
-{
-	METHOD_PROLOGUE(CWnd, Accessible)
-	return pThis->get_accSelection(pvarChildren);
-}
-HRESULT CWnd::XAccessible::get_accDefaultAction(VARIANT varChild, BSTR *pszDefaultAction)
-{
-	METHOD_PROLOGUE(CWnd, Accessible)
-	return pThis->get_accDefaultAction(varChild, pszDefaultAction);
-}
-HRESULT CWnd::XAccessible::accSelect(long flagsSelect, VARIANT varChild)
-{
-	METHOD_PROLOGUE(CWnd, Accessible)
-	return pThis->accSelect(flagsSelect, varChild);
-}
-HRESULT CWnd::XAccessible::accLocation(long *pxLeft, long *pyTop, long *pcxWidth, long *pcyHeight, VARIANT varChild)
-{
-	METHOD_PROLOGUE(CWnd, Accessible)
-	return pThis->accLocation(pxLeft, pyTop, pcxWidth, pcyHeight, varChild);
-}
-HRESULT CWnd::XAccessible::accNavigate(long navDir, VARIANT varStart, VARIANT *pvarEndUpAt)
-{
-	METHOD_PROLOGUE(CWnd, Accessible)
-	return pThis->accNavigate(navDir, varStart, pvarEndUpAt);
-}
-HRESULT CWnd::XAccessible::accHitTest(long xLeft, long yTop, VARIANT *pvarChild)
-{
-	METHOD_PROLOGUE(CWnd, Accessible)
-	return pThis->accHitTest(xLeft, yTop, pvarChild);
-}
-HRESULT CWnd::XAccessible::accDoDefaultAction(VARIANT varChild)
-{
-	METHOD_PROLOGUE(CWnd, Accessible)
-	return pThis->accDoDefaultAction(varChild);
-}
-//Obsolete
-HRESULT CWnd::XAccessible::put_accName(VARIANT varChild, BSTR szName)
-{
-	METHOD_PROLOGUE(CWnd, Accessible)
-	return pThis->put_accName(varChild, szName);
-}
-//Obsolete
-HRESULT CWnd::XAccessible::put_accValue(VARIANT varChild, BSTR szValue)
-{
-	METHOD_PROLOGUE(CWnd, Accessible)
-	return pThis->put_accValue(varChild, szValue);
 }
 
 ULONG FAR EXPORT CWnd::XAccessibleServer::AddRef()
@@ -3454,12 +2907,6 @@ HRESULT FAR EXPORT CWnd::XAccessibleServer::QueryInterface(
 	return (HRESULT)pThis->ExternalQueryInterface(&iid, ppvObj);
 }
 
-HRESULT CWnd::XAccessibleServer::SetProxy(IAccessibleProxy *pProxy)
-{
-	METHOD_PROLOGUE(CWnd, AccessibleServer)
-	return pThis->SetProxy(pProxy);
-}
-
 HRESULT CWnd::XAccessibleServer::GetHWND(HWND *phWnd)
 {
 	if (phWnd == NULL)
@@ -3477,207 +2924,6 @@ HRESULT CWnd::XAccessibleServer::GetEnumVariant(IEnumVARIANT **ppEnumVariant)
 	return E_NOTIMPL;
 }
 
-
-HRESULT CWnd::EnsureStdObj()
-{
-	if (m_pStdObject == NULL)
-	{
-		HRESULT hr = CreateStdAccessibleObject(m_hWnd, OBJID_CLIENT, __uuidof(IAccessible), (void**)&m_pStdObject);
-		if (FAILED(hr))
-			return hr;
-	}
-	return S_OK;
-}
-
-// Delegate to standard helper?
-HRESULT CWnd::get_accParent(IDispatch **ppdispParent)
-{
-	ASSERT(m_pStdObject != NULL);
-	return m_pStdObject->get_accParent(ppdispParent);
-}
-
-// Delegate to standard helper?
-HRESULT CWnd::get_accChildCount(long *pcountChildren)
-{
-	ASSERT(m_pStdObject != NULL);
-	return m_pStdObject->get_accChildCount(pcountChildren);
-}
-
-// Delegate to standard helper?
-HRESULT CWnd::get_accChild(VARIANT varChild, IDispatch **ppdispChild)
-{
-	ASSERT(m_pStdObject != NULL);
-	return m_pStdObject->get_accChild(varChild, ppdispChild);
-}
-
-// Override in users code
-HRESULT CWnd::get_accName(VARIANT varChild, BSTR *pszName)
-{
-	ASSERT(m_pStdObject != NULL);
-	return m_pStdObject->get_accName(varChild, pszName);
-}
-
-// Override in users code
-// Default inplementation will get window text and return it.
-HRESULT CWnd::get_accValue(VARIANT varChild, BSTR *pszValue)
-{
-	return m_pStdObject->get_accValue(varChild, pszValue);
-}
-
-// Override in users code
-HRESULT CWnd::get_accDescription(VARIANT varChild, BSTR *pszDescription)
-{
-	return m_pStdObject->get_accDescription(varChild, pszDescription);
-}
-
-// Investigate
-HRESULT CWnd::get_accRole(VARIANT varChild, VARIANT *pvarRole)
-{
-	ASSERT(m_pStdObject != NULL);
-	return m_pStdObject->get_accRole(varChild, pvarRole);
-}
-
-// Investigate
-HRESULT CWnd::get_accState(VARIANT varChild, VARIANT *pvarState)
-{
-	ASSERT(m_pStdObject != NULL);
-	return m_pStdObject->get_accState(varChild, pvarState);
-}
-
-// Override in User's code?
-HRESULT CWnd::get_accHelp(VARIANT varChild, BSTR *pszHelp)
-{
-	ASSERT(m_pStdObject != NULL);
-	return m_pStdObject->get_accHelp(varChild, pszHelp);
-}
-
-// Override in user's code?
-HRESULT CWnd::get_accHelpTopic(BSTR *pszHelpFile, VARIANT varChild, long *pidTopic)
-{
-	ASSERT(m_pStdObject != NULL);
-	return m_pStdObject->get_accHelpTopic(pszHelpFile, varChild, pidTopic);
-}
-
-// Override in user's code?
-HRESULT CWnd::get_accKeyboardShortcut(VARIANT varChild, BSTR *pszKeyboardShortcut)
-{
-	ASSERT(m_pStdObject != NULL);
-	return m_pStdObject->get_accKeyboardShortcut(varChild, pszKeyboardShortcut);
-}
-
-// Delegate to standard implementation?
-HRESULT CWnd::get_accFocus(VARIANT *pvarChild)
-{
-	ASSERT(m_pStdObject != NULL);
-	return m_pStdObject->get_accFocus(pvarChild);
-}
-
-// Investigate
-HRESULT CWnd::get_accSelection(VARIANT *pvarChildren)
-{
-	ASSERT(m_pStdObject != NULL);
-	return m_pStdObject->get_accSelection(pvarChildren);
-}
-
-// Override in user's code
-HRESULT CWnd::get_accDefaultAction(VARIANT varChild, BSTR *pszDefaultAction)
-{
-	ASSERT(m_pStdObject != NULL);
-	return m_pStdObject->get_accDefaultAction(varChild, pszDefaultAction);
-}
-
-// Investigate
-HRESULT CWnd::accSelect(long flagsSelect, VARIANT varChild)
-{
-	ASSERT(m_pStdObject != NULL);
-	return m_pStdObject->accSelect(flagsSelect, varChild);
-}
-
-// Delegate?
-HRESULT CWnd::accLocation(long *pxLeft, long *pyTop, long *pcxWidth, long *pcyHeight, VARIANT varChild)
-{
-	ASSERT(m_pStdObject != NULL);
-	return m_pStdObject->accLocation(pxLeft, pyTop, pcxWidth, pcyHeight, varChild);
-}
-
-// Delegate? May have to implement for COM children
-HRESULT CWnd::accNavigate(long navDir, VARIANT varStart, VARIANT *pvarEndUpAt)
-{
-	ASSERT(m_pStdObject != NULL);
-	return m_pStdObject->accNavigate(navDir, varStart, pvarEndUpAt);
-}
-
-// Delegate?
-HRESULT CWnd::accHitTest(long xLeft, long yTop, VARIANT *pvarChild)
-{
-	ASSERT(m_pStdObject != NULL);
-	return m_pStdObject->accHitTest(xLeft, yTop, pvarChild);
-}
-
-// Override in user's code
-HRESULT CWnd::accDoDefaultAction(VARIANT varChild)
-{
-	ASSERT(m_pStdObject != NULL);
-	return m_pStdObject->accDoDefaultAction(varChild);
-}
-
-//Obsolete
-HRESULT CWnd::put_accName(VARIANT varChild, BSTR szName)
-{
-	ASSERT(m_pStdObject != NULL);
-	return m_pStdObject->put_accName(varChild, szName);
-}
-
-//Obsolete
-HRESULT CWnd::put_accValue(VARIANT varChild, BSTR szValue)
-{
-	ASSERT(m_pStdObject != NULL);
-	return m_pStdObject->put_accName(varChild, szValue);
-}
-
-HRESULT CWnd::SetProxy(IAccessibleProxy *pProxy)
-{
-	m_pProxy = pProxy;
-	return S_OK;
-}
-
-HRESULT CWnd::CreateAccessibleProxy(WPARAM wParam, LPARAM lParam, LRESULT *pResult)
-{
-	ASSERT(pResult != NULL);
-	DWORD dwObjId = (DWORD) lParam;
-	HRESULT hr = E_FAIL;
-
-	if (dwObjId == OBJID_CLIENT)
-	{
-		hr = EnsureStdObj();
-		if (SUCCEEDED(hr))
-		{
-			if (m_pProxy == NULL)
-			{
-				CMFCComObject<CAccessibleProxy> *p;
-				hr = CMFCComObject<CAccessibleProxy>::CreateInstance(&p);
-				if (SUCCEEDED(hr))
-				{
-					CComPtr<IAccessibleProxy> spProx;
-					hr = p->QueryInterface(&spProx);
-					if (SUCCEEDED(hr))
-					{
-						m_pProxy = spProx;
-						spProx->SetServer(static_cast<IAccessible*>((void*)&m_xAccessible), static_cast<IAccessibleServer*>((void*)&m_xAccessibleServer));
-						*pResult = LresultFromObject (__uuidof(IAccessible), wParam, m_pProxy);
-					}
-					hr = S_OK;
-				}
-			}
-			else
-			{
-				*pResult = LresultFromObject (__uuidof(IAccessible), wParam, m_pProxy);
-				hr = S_OK;
-			}
-		}
-	}
-	return hr;
-}
 
 // Helpers for CWnd or derived class that contains Windowless Active X controls
 // Used by CView, CFormView, CDialog and CDialogBar
@@ -3725,7 +2971,7 @@ HRESULT CWnd::GetAccessibleChild(VARIANT varChild, IDispatch** ppdispChild)
 	if (pChild != NULL)
 	{
 		// Found HWND
-		return AccessibleObjectFromWindow(pChild->m_hWnd, OBJID_WINDOW, IID_IAccessible, (void**)ppdispChild);
+		return 0;
 	}
 	// Windowless controls don't support accessibility.
 	return S_FALSE;
@@ -3775,76 +3021,12 @@ HRESULT CWnd::GetAccessibleName(VARIANT varChild, BSTR* pszName)
 }
 HRESULT CWnd::GetAccessibilityLocation(VARIANT varChild, long *pxLeft, long *pyTop, long *pcxWidth, long *pcyHeight)
 {
-	HRESULT hr = CWnd::accLocation(pxLeft, pyTop, pcxWidth, pcyHeight, varChild);
-	if (FAILED(hr))
-	{
-		// Get Number of windowed children
-		long lCount;
-		CWnd::get_accChildCount(&lCount);
-		long lWindowlessCount = GetWindowLessChildCount();
-		if (varChild.lVal <= lCount + lWindowlessCount)
-		{
-			// Add to the count the number of windowless active X controls.
-			/* POSITION pos;
-			pos = m_pCtrlCont->m_listSitesOrWnds.GetHeadPosition();
-			COleControlSiteOrWnd *pSiteOrWnd;
-			while(pos)
-			{
-				pSiteOrWnd = m_pCtrlCont->m_listSitesOrWnds.GetNext(pos);
-				ASSERT(pSiteOrWnd);
-				if(pSiteOrWnd->m_pSite)
-				{
-					if(pSiteOrWnd->m_pSite->m_bIsWindowless)
-						lCount++;
-
-					if (lCount == varChild.lVal)
-					{
-						CRect rect(pSiteOrWnd->m_pSite->m_rect);
-						ClientToScreen(&rect);
-						*pxLeft = rect.left;
-						*pyTop = rect.top;
-						*pcxWidth = rect.Width();
-						*pcyHeight = rect.Height();
-						hr = S_OK;
-					}
-				}
-			}*/
-		}
-	}
-	return hr;
+	return 0;
 }
 
 HRESULT CWnd::GetAccessibilityHitTest(long xLeft, long yTop, VARIANT *pvarChild)
 {
-	// Check if it is one of the Windowless controls
- 	/*if (m_pCtrlCont != NULL)
-	{
-		CPoint pt(xLeft, yTop);
-		ScreenToClient(&pt);
-		long lCount = GetWindowedChildCount();
-		// If windowed child then let the standard object handle it.
- 		if (m_pCtrlCont != NULL)
-		{
-			POSITION pos;
-			pos = m_pCtrlCont->m_listSitesOrWnds.GetHeadPosition();
-			while(pos)
-			{
-				COleControlSiteOrWnd *pSiteOrWnd = m_pCtrlCont->m_listSitesOrWnds.GetNext(pos);
-				ASSERT(pSiteOrWnd);
-				if (pSiteOrWnd->m_pSite && pSiteOrWnd->m_pSite->m_bIsWindowless)
-				{
-					lCount ++;
-					if (pSiteOrWnd->m_pSite->m_rect.PtInRect(pt))
-					{
-						pvarChild->vt = VT_I4;
-						pvarChild->lVal = lCount;
-						return S_OK;
-					}
-				}
-			}
-		}			
-	}*/
-	return CWnd::accHitTest(xLeft, yTop, pvarChild);
+	return 0;
 }
 
 void CWnd::OnPaint()
@@ -4614,26 +3796,6 @@ BOOL AFXAPI AfxInitNetworkAddressControl()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// CFrameWnd (here for library granularity)
-
-BOOL CWnd::IsFrameWnd() const
-{
-	return FALSE;
-}
-
-BOOL CFrameWnd::IsFrameWnd() const
-{
-	return TRUE;
-}
-
-BOOL CFrameWnd::IsTracking() const
-{
-	return m_nIDTracking != 0 &&
-		m_nIDTracking != AFX_IDS_HELPMODEMESSAGE &&
-		m_nIDTracking != AFX_IDS_IDLEMESSAGE;
-}
-
-/////////////////////////////////////////////////////////////////////////////
 // Extra CWnd support for dynamic subclassing of controls
 
 BOOL CWnd::SubclassWindow(HWND hWnd)
@@ -4722,140 +3884,3 @@ HWND CWnd::UnsubclassWindow()
 IMPLEMENT_DYNCREATE(CWnd, CCmdTarget)
 
 /////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
-// CGestureConfig functions
-
-CGestureConfig::CGestureConfig()
-{
-	m_nConfigs = GID_PRESSANDTAP - GID_ZOOM + 1;
-	m_pConfigs = new GESTURECONFIG[m_nConfigs];
-
-	// Enable all gesture features by default:
-	for (int i = 0; i < m_nConfigs; i++)
-	{
-		m_pConfigs[i].dwID = GID_ZOOM + i;
-		m_pConfigs[i].dwWant = GC_ALLGESTURES;
-		m_pConfigs[i].dwBlock = 0;
-	}
-
-	// Disable rotate:
-	EnableRotate(FALSE);
-
-	// By default Pan supports Gutter, Inertia only and Single Finger Vertically:
-	EnablePan(TRUE,  GC_PAN_WITH_GUTTER | GC_PAN_WITH_INERTIA | GC_PAN_WITH_SINGLE_FINGER_VERTICALLY);
-}
-
-CGestureConfig::~CGestureConfig()
-{
-	delete[] m_pConfigs;
-}
-
-#ifdef _DEBUG
-void CGestureConfig::Dump(CDumpContext& dc) const
-{
-	CObject::Dump(dc);
-
-	for (int i = 0; i < m_nConfigs; i++)
-	{
-		dc << m_pConfigs[i].dwID;
-		dc << _T(" Want: ");
-		dc << m_pConfigs[i].dwWant;
-		dc << _T(" Block: ");
-		dc << m_pConfigs[i].dwBlock;
-		dc << _T("\n");
-	}
-}
-#endif
-
-BOOL CGestureConfig::Modify(DWORD dwID, DWORD dwWant, DWORD dwBlock)
-{
-	ASSERT_VALID(this);
-
-	ASSERT((dwWant & dwBlock) == 0);	// Should be exclusive!
-
-	for (int i = 0; i < m_nConfigs; i++)
-	{
-		if (m_pConfigs[i].dwID == dwID)
-		{
-			m_pConfigs[i].dwWant |= dwWant;
-			m_pConfigs[i].dwBlock |= dwBlock;
-
-			// Clean-up dwWant from block and dwBlock from want:
-			m_pConfigs[i].dwWant &= ((~dwBlock) & (DWORD)-1);
-			m_pConfigs[i].dwBlock &= ((~dwWant) & (DWORD)-1);
-
-			return TRUE;
-		}
-	}
-
-	// Unknown or unsupported ID
-	ASSERT(FALSE);
-	return FALSE;
-}
-
-DWORD CGestureConfig::Get(DWORD dwID, BOOL bWant) const
-{
-	ASSERT_VALID(this);
-
-	for (int i = 0; i < m_nConfigs; i++)
-	{
-		if (m_pConfigs[i].dwID == dwID)
-		{
-			return bWant ? m_pConfigs[i].dwWant : m_pConfigs[i].dwBlock;
-		}
-	}
-
-	// Unknown or unsupported ID
-	ASSERT(FALSE);
-	return (UINT)-1;
-}
-
-void CGestureConfig::EnableZoom(BOOL bEnable)
-{
-	Modify(GID_ZOOM, bEnable ? GC_ZOOM : 0, bEnable ? 0 : GC_ZOOM);
-}
-
-void CGestureConfig::EnableRotate(BOOL bEnable)
-{
-	Modify(GID_ROTATE, bEnable ? GC_ROTATE : 0, bEnable ? 0 : GC_ROTATE);
-}
-
-void CGestureConfig::EnableTwoFingerTap(BOOL bEnable)
-{
-	Modify(GID_TWOFINGERTAP, bEnable ? GC_TWOFINGERTAP : 0, bEnable ? 0 : GC_TWOFINGERTAP);
-}
-
-void CGestureConfig::EnablePressAndTap(BOOL bEnable)
-{
-	Modify(GID_PRESSANDTAP, bEnable ? GC_PRESSANDTAP : 0, bEnable ? 0 : GC_PRESSANDTAP);
-}
-
-void CGestureConfig::EnablePan(BOOL bEnable, DWORD dwFlags)
-{
-	if (!bEnable)
-	{
-		Modify(GID_PAN, 0, GC_PAN);	// Disable all pan features
-		return;
-	}
-
-	DWORD dwWant = GC_PAN;
-	DWORD dwBlock = 0;
-
-	DWORD dwAllFlags[] = { GC_PAN_WITH_SINGLE_FINGER_VERTICALLY, GC_PAN_WITH_SINGLE_FINGER_HORIZONTALLY, GC_PAN_WITH_GUTTER, GC_PAN_WITH_INERTIA };
-
-	for (int i = 0; i < sizeof(dwAllFlags) / sizeof(DWORD); i++)
-	{
-		if ((dwFlags & dwAllFlags[i]) == dwAllFlags[i])
-		{
-			dwWant |= dwAllFlags[i];
-		}
-		else
-		{
-			dwBlock |= dwAllFlags[i];
-		}
-	}
-
-	Modify(GID_PAN, dwWant, dwBlock);
-}

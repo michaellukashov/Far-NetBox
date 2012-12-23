@@ -664,11 +664,6 @@ CView* CCmdTarget::GetRoutingView()
 	return GetRoutingView_();
 }
 
-CFrameWnd* CCmdTarget::GetRoutingFrame()
-{
-	return GetRoutingFrame_();
-}
-
 /////////////////////////////////////////////////////////////////////////////
 // CCmdUI - User Interface for a command
 

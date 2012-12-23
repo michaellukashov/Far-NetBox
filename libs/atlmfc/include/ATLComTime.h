@@ -230,10 +230,10 @@ protected:
 
 }	// namespace ATL
  
-#ifndef _DEBUG
+// #ifndef _DEBUG
 #define ATLCOMTIME_INLINE inline
 #include <atlcomtime.inl>
-#endif
+// #endif
  
 namespace ATL
 {

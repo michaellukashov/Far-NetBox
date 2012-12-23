@@ -190,7 +190,6 @@ public:
 	virtual void Serialize(CArchive& ar);
 
 	// scaling implementation
-	void ScalePoint(CPoint& pt);
 	void ScaleRectPos(CRect& rect);
 	CSize GetScreenSize();
 	void SetScreenSize(CSize& size);

@@ -29,8 +29,6 @@ _AFXEXT_INLINE BOOL CMetaFileDC::CreateEnhanced(CDC* pDCRef,
 		lpszFileName, lpBounds, lpszDescription)); }
 _AFXEXT_INLINE HENHMETAFILE CMetaFileDC::CloseEnhanced()
 	{ return ::CloseEnhMetaFile(Detach()); }
-_AFXEXT_INLINE CPoint CMetaFileDC::SetViewportOrg(POINT point)
-	{ ASSERT(m_hDC != NULL); return SetViewportOrg(point.x, point.y); }
 _AFXEXT_INLINE CSize CMetaFileDC::SetViewportExt(SIZE size)
 	{ ASSERT(m_hDC != NULL); return SetViewportExt(size.cx, size.cy); }
 _AFXEXT_INLINE BOOL CMetaFileDC::TextOut(int x, int y, const CString& str)
