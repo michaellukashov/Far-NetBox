@@ -194,7 +194,7 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo & Info)
   if (Info.StructSize)
   {
     #define FREESTRINGARRAY(NAME) \
-      for (int Index = 0; Index < Info.NAME.Count; Index++) \
+      for (size_t Index = 0; Index < Info.NAME.Count; Index++) \
       { \
         delete[] Info.NAME.Strings[Index]; \
       } \
@@ -1978,7 +1978,7 @@ void TCustomFarFileSystem::FreeFindData(const struct FreeFindDataInfo *Info)
       delete[] Info->PanelItem[Index].FileName;
       delete[] Info->PanelItem[Index].Description;
       delete[] Info->PanelItem[Index].Owner;
-      for (int CustomIndex = 0; CustomIndex < Info->PanelItem[Index].CustomColumnNumber; CustomIndex++)
+      for (size_t CustomIndex = 0; CustomIndex < Info->PanelItem[Index].CustomColumnNumber; CustomIndex++)
       {
         delete[] Info->PanelItem[Index].CustomColumnData[CustomIndex];
       }
@@ -2261,7 +2261,7 @@ TFarPanelModes::~TFarPanelModes()
 {
   if (!FReferenced)
   {
-    for (int Index = 0; Index < LENOF(FPanelModes); Index++)
+    for (size_t Index = 0; Index < LENOF(FPanelModes); Index++)
     {
       ClearPanelMode(FPanelModes[Index]);
     }
@@ -2432,7 +2432,7 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
 //---------------------------------------------------------------------------
 void TFarKeyBarTitles::ClearKeyBarTitles(KeyBarTitles & Titles)
 {
-  for (intptr_t Index = 0; Index < Titles.CountLabels; Index++)
+  for (size_t Index = 0; Index < Titles.CountLabels; Index++)
   {
     delete[] Titles.Labels[Index].Text;
     delete[] Titles.Labels[Index].LongText;
@@ -2452,7 +2452,7 @@ void TFarKeyBarTitles::FillOpenPanelInfo(struct OpenPanelInfo *Info)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-UnicodeString TCustomFarPanelItem::GetCustomColumnData(int /*Column*/)
+UnicodeString TCustomFarPanelItem::GetCustomColumnData(size_t /*Column*/)
 {
   assert(false);
   return L"";
@@ -2528,7 +2528,7 @@ void TFarPanelItem::GetData(
   assert(false);
 }
 //---------------------------------------------------------------------------
-UnicodeString TFarPanelItem::GetCustomColumnData(int /*Column*/)
+UnicodeString TFarPanelItem::GetCustomColumnData(size_t /*Column*/)
 {
   assert(false);
   return L"";

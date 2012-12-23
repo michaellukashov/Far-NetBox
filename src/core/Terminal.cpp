@@ -329,16 +329,16 @@ unsigned int __fastcall TTunnelUI::QueryUser(const UnicodeString & Query,
   TStrings * MoreMessages, unsigned int Answers, const TQueryParams * Params,
   TQueryType QueryType)
 {
-  unsigned int Result;
+  intptr_t Result;
   if (GetCurrentThreadId() == FTerminalThread)
   {
     Result = FTerminal->QueryUser(Query, MoreMessages, Answers, Params, QueryType);
   }
   else
   {
-    Result = AbortAnswer(Answers);
+    Result = AbortAnswer(static_cast<intptr_t>(Answers));
   }
-  return Result;
+  return static_cast<unsigned int>(Result);
 }
 //---------------------------------------------------------------------------
 unsigned int __fastcall TTunnelUI::QueryUserException(const UnicodeString & Query,
@@ -346,16 +346,16 @@ unsigned int __fastcall TTunnelUI::QueryUserException(const UnicodeString & Quer
   TQueryType QueryType)
 {
   CALLSTACK;
-  unsigned int Result;
+  intptr_t Result;
   if (GetCurrentThreadId() == FTerminalThread)
   {
     Result = FTerminal->QueryUserException(Query, E, Answers, Params, QueryType);
   }
   else
   {
-    Result = AbortAnswer(Answers);
+    Result = AbortAnswer(static_cast<intptr_t>(Answers));
   }
-  return Result;
+  return static_cast<unsigned int>(Result);
 }
 //---------------------------------------------------------------------------
 bool __fastcall TTunnelUI::PromptUser(TSessionData * Data, TPromptKind Kind,

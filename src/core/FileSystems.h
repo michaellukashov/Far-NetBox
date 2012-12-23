@@ -175,7 +175,7 @@ public:
   virtual UnicodeString __fastcall GetCurrentDirectory() = 0;
 
 public:
-  virtual void __fastcall Init() {}
+  void __fastcall Init() {}
   virtual void __fastcall FileTransferProgress(__int64 TransferSize, __int64 Bytes) {}
 
 protected:

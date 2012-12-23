@@ -11,7 +11,7 @@ class TSCPFileSystem : public TCustomFileSystem
 {
 public:
   explicit /* __fastcall */ TSCPFileSystem(TTerminal * ATerminal);
-  virtual void __fastcall Init(TSecureShell * SecureShell);
+  void Init(TSecureShell * SecureShell);
   virtual /* __fastcall */ ~TSCPFileSystem();
 
   virtual void __fastcall Open();

@@ -1768,7 +1768,7 @@ bool __fastcall RecursiveDeleteFile(const UnicodeString & FileName, bool ToRecyc
   return Result;
 }
 //---------------------------------------------------------------------------
-unsigned int __fastcall CancelAnswer(unsigned int Answers)
+intptr_t __fastcall CancelAnswer(intptr_t Answers)
 {
   intptr_t Result;
   if ((Answers & qaCancel) != 0)
@@ -1795,9 +1795,9 @@ unsigned int __fastcall CancelAnswer(unsigned int Answers)
   return Result;
 }
 //---------------------------------------------------------------------------
-unsigned int __fastcall AbortAnswer(unsigned int Answers)
+intptr_t __fastcall AbortAnswer(intptr_t Answers)
 {
-  unsigned int Result;
+  intptr_t Result;
   if (FLAGSET(Answers, qaAbort))
   {
     Result = qaAbort;
@@ -1809,9 +1809,9 @@ unsigned int __fastcall AbortAnswer(unsigned int Answers)
   return Result;
 }
 //---------------------------------------------------------------------------
-unsigned int __fastcall ContinueAnswer(unsigned int Answers)
+intptr_t __fastcall ContinueAnswer(intptr_t Answers)
 {
-  unsigned int Result;
+  intptr_t Result;
   if (FLAGSET(Answers, qaSkip))
   {
     Result = qaSkip;

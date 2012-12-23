@@ -2240,7 +2240,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   Text = new TFarText(this);
   Text->SetCaption(GetMsg(LOGIN_FTP_POST_LOGIN_COMMANDS));
 
-  for (intptr_t Index = 0; Index < LENOF(PostLoginCommandsEdits); Index++)
+  for (size_t Index = 0; Index < LENOF(PostLoginCommandsEdits); Index++)
   {
     TFarEdit * Edit = new TFarEdit(this);
     PostLoginCommandsEdits[Index] = Edit;
@@ -3275,7 +3275,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   PostLoginCommandsPtr.reset(PostLoginCommands);
   PostLoginCommands->Text = SessionData->GetPostLoginCommands();
   for (intptr_t Index = 0; (Index < PostLoginCommands->Count) &&
-       (Index < LENOF(PostLoginCommandsEdits)); Index++)
+       (Index < static_cast<intptr_t>(LENOF(PostLoginCommandsEdits))); Index++)
   {
     PostLoginCommandsEdits[Index]->SetText(PostLoginCommands->Strings[Index]);
   }
@@ -3563,7 +3563,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     TStrings * PostLoginCommands = new TStringList();
     std::auto_ptr<TStrings> PostLoginCommandsPtr;
     PostLoginCommandsPtr.reset(PostLoginCommands);
-    for (intptr_t Index = 0; Index < LENOF(PostLoginCommandsEdits); Index++)
+    for (size_t Index = 0; Index < LENOF(PostLoginCommandsEdits); Index++)
     {
       UnicodeString Text = PostLoginCommandsEdits[Index]->GetText();
       if (!Text.IsEmpty())
@@ -3728,7 +3728,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
     for (int Index = 0; Index < KEX_COUNT; Index++)
     {
-      SessionData->SetKex(Index, (TKex)(int)KexListBox->GetItems()->Objects[Index]);
+      SessionData->SetKex(Index, (TKex)(intptr_t)KexListBox->GetItems()->Objects[Index]);
     }
 
     // Authentication tab
@@ -3984,7 +3984,7 @@ TLoginType TSessionDialog::GetLoginType()
 //---------------------------------------------------------------------------
 TFSProtocol TSessionDialog::IndexToFSProtocol(intptr_t Index, bool AllowScpFallback)
 {
-  bool InBounds = (Index >= 0) && (Index < LENOF(FSOrder));
+  bool InBounds = (Index >= 0) && (Index < static_cast<intptr_t>(LENOF(FSOrder)));
   assert(InBounds || (Index == -1));
   TFSProtocol Result = fsSFTP;
   if (InBounds)
@@ -4548,7 +4548,7 @@ TRights TRightsContainer::GetRights()
 {
   TRights Result;
   Result.SetAllowUndef(GetAllowUndef());
-  for (int Right = 0; Right < LENOF(FCheckBoxes); Right++)
+  for (size_t Right = 0; Right < LENOF(FCheckBoxes); Right++)
   {
     Result.SetRightUndef(static_cast<TRights::TRight>(Right),
       GetStates(static_cast<TRights::TRight>(Right)));
@@ -4564,7 +4564,7 @@ void TRightsContainer::SetRights(const TRights & Value)
     TRY_FINALLY (
     {
       SetAllowUndef(true); // temporarily
-      for (int Right = 0; Right < LENOF(FCheckBoxes); Right++)
+      for (size_t Right = 0; Right < LENOF(FCheckBoxes); Right++)
       {
         SetStates(static_cast<TRights::TRight>(Right),
           Value.GetRightUndef(static_cast<TRights::TRight>(Right)));
@@ -4600,7 +4600,7 @@ bool TRightsContainer::GetAllowUndef()
 //---------------------------------------------------------------------------
 void TRightsContainer::SetAllowUndef(bool Value)
 {
-  for (int Right = 0; Right < LENOF(FCheckBoxes); Right++)
+  for (size_t Right = 0; Right < LENOF(FCheckBoxes); Right++)
   {
     if (FCheckBoxes[Right] != NULL)
     {
@@ -7228,7 +7228,7 @@ TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
   ListBox->SetOnMouseClick(MAKE_CALLBACK(TSynchronizeChecklistDialog::ListBoxClick, this));
 
   UnicodeString Actions = GetMsg(CHECKLIST_ACTIONS);
-  intptr_t Action = 0;
+  size_t Action = 0;
   while (!Actions.IsEmpty() && (Action < LENOF(FActions)))
   {
     FActions[Action] = CutToChar(Actions, '|', false);

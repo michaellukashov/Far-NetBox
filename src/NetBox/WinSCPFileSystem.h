@@ -85,7 +85,7 @@ class TWinSCPFileSystem : public TCustomFarFileSystem
   friend class TQueueDialog;
 public:
   explicit TWinSCPFileSystem(TCustomFarPlugin * APlugin);
-  virtual void Init(TSecureShell * SecureShell);
+  void Init(TSecureShell * SecureShell);
   virtual ~TWinSCPFileSystem();
 
   virtual void Close();
@@ -392,7 +392,7 @@ protected:
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     uintptr_t & NumberOfLinks, UnicodeString & Description,
     UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber);
-  virtual UnicodeString GetCustomColumnData(int Column);
+  virtual UnicodeString GetCustomColumnData(size_t Column);
   static void TranslateColumnTypes(UnicodeString & ColumnTypes,
     TStrings * ColumnTitles);
 };

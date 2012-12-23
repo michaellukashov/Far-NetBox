@@ -361,7 +361,7 @@ TStrings * __fastcall TCommandSet::CreateCommandList()
 {
 }
 
-void __fastcall TSCPFileSystem::Init(TSecureShell * SecureShell)
+void TSCPFileSystem::Init(TSecureShell * SecureShell)
 {
   FSecureShell = SecureShell;
   FCommandSet = new TCommandSet(FTerminal->GetSessionData());
@@ -1968,7 +1968,7 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString & FileName,
         }
         else
         {
-          throw E;
+          throw;
         }
       }
 
