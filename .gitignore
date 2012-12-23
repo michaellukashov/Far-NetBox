@@ -29,6 +29,8 @@ ipch/
 *.orig
 tags
 build/
+Release/
+Debug/
 src/NetBox/NetBox/
 
 *.vsp
