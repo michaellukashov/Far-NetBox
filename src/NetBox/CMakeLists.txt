@@ -73,8 +73,6 @@ set ( CMAKE_LINK_FLAGS
     /NODEFAULTLIB:LIBCMTD.LIB
     /NODEFAULTLIB:LIBCPMT.LIB
     /NODEFAULTLIB:LIBCPMTD.LIB
-    /NODEFAULTLIB:WINDOWSCODECS.LIB
-    /NODEFAULTLIB:DELAYIMP.LIB
     /NODEFAULTLIB:LIBEAY32.LIB
     /NODEFAULTLIB:SSLEAY32.LIB
     /NODEFAULTLIB:LIBPUTTY.LIB
@@ -242,8 +240,6 @@ set_property (TARGET ssleay32
 #-------------------------------------------------------------------------------
 
 set ( NETBOX_LIBRARIES
-    windowscodecs.lib
-    delayimp.lib
     atlmfc
     libputty
     zlib
