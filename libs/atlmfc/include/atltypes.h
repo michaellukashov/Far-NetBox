@@ -290,10 +290,10 @@ public:
 		_In_ int nDivisor) const throw();
 };
 
-#ifndef _DEBUG
+// #ifndef _DEBUG
 #define ATLTYPES_INLINE inline
 #include <atltypes.inl>
-#endif
+// #endif
 
 
 #endif // __ATLTYPES_H__

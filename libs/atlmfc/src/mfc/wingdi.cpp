@@ -426,30 +426,6 @@ int CDC::SetMapMode(int nMapMode)
 	return nRetVal;
 }
 
-CPoint CDC::SetViewportOrg(int x, int y)
-{
-	ASSERT(m_hDC != NULL);
-	CPoint point;
-
-	if (m_hDC != m_hAttribDC)
-		VERIFY(::SetViewportOrgEx(m_hDC, x, y, &point));
-	if (m_hAttribDC != NULL)
-		VERIFY(::SetViewportOrgEx(m_hAttribDC, x, y, &point));
-	return point;
-}
-
-CPoint CDC::OffsetViewportOrg(int nWidth, int nHeight)
-{
-	ASSERT(m_hDC != NULL);
-	CPoint point;
-
-	if (m_hDC != m_hAttribDC)
-		VERIFY(::OffsetViewportOrgEx(m_hDC, nWidth, nHeight, &point));
-	if (m_hAttribDC != NULL)
-		VERIFY(::OffsetViewportOrgEx(m_hAttribDC, nWidth, nHeight, &point));
-	return point;
-}
-
 CSize CDC::SetViewportExt(int x, int y)
 {
 	ASSERT(m_hDC != NULL);
@@ -472,30 +448,6 @@ CSize CDC::ScaleViewportExt(int xNum, int xDenom, int yNum, int yDenom)
 	if (m_hAttribDC != NULL)
 		VERIFY(::ScaleViewportExtEx(m_hAttribDC, xNum, xDenom, yNum, yDenom, &size));
 	return size;
-}
-
-CPoint CDC::SetWindowOrg(int x, int y)
-{
-	ASSERT(m_hDC != NULL);
-	CPoint point;
-
-	if (m_hDC != m_hAttribDC)
-		VERIFY(::SetWindowOrgEx(m_hDC, x, y, &point));
-	if (m_hAttribDC != NULL)
-		VERIFY(::SetWindowOrgEx(m_hAttribDC, x, y, &point));
-	return point;
-}
-
-CPoint CDC::OffsetWindowOrg(int nWidth, int nHeight)
-{
-	ASSERT(m_hDC != NULL);
-	CPoint point;
-
-	if (m_hDC != m_hAttribDC)
-		VERIFY(::OffsetWindowOrgEx(m_hDC, nWidth, nHeight, &point));
-	if (m_hAttribDC != NULL)
-		VERIFY(::OffsetWindowOrgEx(m_hAttribDC, nWidth, nHeight, &point));
-	return point;
 }
 
 CSize CDC::SetWindowExt(int x, int y)
@@ -616,18 +568,6 @@ int CDC::OffsetClipRgn(SIZE size)
 	return nRetVal;
 }
 
-CPoint CDC::MoveTo(int x, int y)
-{
-	ASSERT(m_hDC != NULL);
-	CPoint point;
-
-	if (m_hDC != m_hAttribDC)
-		VERIFY(::MoveToEx(m_hDC, x, y, &point));
-	if (m_hAttribDC != NULL)
-		VERIFY(::MoveToEx(m_hAttribDC, x, y, &point));
-	return point;
-}
-
 BOOL CDC::LineTo(int x, int y)
 {
 	ASSERT(m_hDC != NULL);
@@ -727,9 +667,6 @@ BOOL CDC::ArcTo(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4)
 	BOOL bResult = ::ArcTo(m_hDC, x1, y1, x2, y2, x3, y3, x4, y4);
 	if (m_hDC != m_hAttribDC)
 	{
-		CPoint pt;
-		VERIFY(::GetCurrentPositionEx(m_hDC, &pt));
-		VERIFY(::MoveToEx(m_hAttribDC, pt.x, pt.y, NULL));
 	}
 	return bResult;
 }
@@ -751,22 +688,6 @@ BOOL CDC::PolyDraw(const POINT* lpPoints, const BYTE* lpTypes, int nCount)
 	BOOL bResult = ::PolyDraw(m_hDC, lpPoints, lpTypes, nCount);
 	if (m_hDC != m_hAttribDC)
 	{
-		CPoint pt;
-		VERIFY(::GetCurrentPositionEx(m_hDC, &pt));
-		VERIFY(::MoveToEx(m_hAttribDC, pt.x, pt.y, NULL));
-	}
-	return bResult;
-}
-
-BOOL CDC::PolylineTo(const POINT* lpPoints, int nCount)
-{
-	ASSERT(m_hDC != NULL);
-	BOOL bResult = ::PolylineTo(m_hDC, lpPoints, nCount);
-	if (m_hDC != m_hAttribDC)
-	{
-		CPoint pt;
-		VERIFY(::GetCurrentPositionEx(m_hDC, &pt));
-		VERIFY(::MoveToEx(m_hAttribDC, pt.x, pt.y, NULL));
 	}
 	return bResult;
 }
@@ -788,9 +709,6 @@ BOOL CDC::PolyBezierTo(const POINT* lpPoints, int nCount)
 	BOOL bResult = ::PolyBezierTo(m_hDC, lpPoints, nCount);
 	if (m_hDC != m_hAttribDC)
 	{
-		CPoint pt;
-		VERIFY(::GetCurrentPositionEx(m_hDC, &pt));
-		VERIFY(::MoveToEx(m_hAttribDC, pt.x, pt.y, NULL));
 	}
 	return bResult;
 }
@@ -846,32 +764,6 @@ int CALLBACK AfxEnumMetaFileProc(HDC hDC,
 		break;
 	case META_SETWINDOWEXT:
 		pDC->SetWindowExt(
-			(int)(short)pMetaRec->rdParm[1], (int)(short)pMetaRec->rdParm[0]);
-		break;
-	case META_SETWINDOWORG:
-		pDC->SetWindowOrg(
-			(int)(short)pMetaRec->rdParm[1], (int)(short)pMetaRec->rdParm[0]);
-		break;
-	case META_SETVIEWPORTEXT:
-		pDC->SetViewportExt(
-			(int)(short)pMetaRec->rdParm[1], (int)(short)pMetaRec->rdParm[0]);
-		break;
-	case META_SETVIEWPORTORG:
-		pDC->SetViewportOrg(
-			(int)(short)pMetaRec->rdParm[1], (int)(short)pMetaRec->rdParm[0]);
-		break;
-	case META_SCALEWINDOWEXT:
-		pDC->ScaleWindowExt(
-			(int)(short)pMetaRec->rdParm[3], (int)(short)pMetaRec->rdParm[2],
-			(int)(short)pMetaRec->rdParm[1], (int)(short)pMetaRec->rdParm[0]);
-		break;
-	case META_SCALEVIEWPORTEXT:
-		pDC->ScaleViewportExt(
-			(int)(short)pMetaRec->rdParm[3], (int)(short)pMetaRec->rdParm[2],
-			(int)(short)pMetaRec->rdParm[1], (int)(short)pMetaRec->rdParm[0]);
-		break;
-	case META_OFFSETVIEWPORTORG:
-		pDC->OffsetViewportOrg(
 			(int)(short)pMetaRec->rdParm[1], (int)(short)pMetaRec->rdParm[0]);
 		break;
 	case META_SAVEDC:

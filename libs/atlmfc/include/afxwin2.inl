@@ -70,12 +70,6 @@ _AFXWIN_INLINE int CWnd::GetDlgCtrlID() const
 _AFXWIN_INLINE int CWnd::SetDlgCtrlID(int nID)
 	{ ASSERT(::IsWindow(m_hWnd)); return (int)::SetWindowLong(m_hWnd, GWL_ID, nID); }
 #endif //_AFX_NO_OCC_SUPPORT
-_AFXWIN_INLINE CFrameWnd* CWnd::EnsureParentFrame() const
-{
-    CFrameWnd *pFrameWnd=GetParentFrame();
-    ENSURE_VALID(pFrameWnd);
-    return pFrameWnd;
-}
 _AFXWIN_INLINE CWnd* CWnd::EnsureTopLevelParent() const
 {
     CWnd *pWnd=GetTopLevelParent();
@@ -319,8 +313,6 @@ _AFXWIN_INLINE void CWnd::CreateSolidCaret(int nWidth, int nHeight)
 	{ ASSERT(::IsWindow(m_hWnd)); ::CreateCaret(m_hWnd, (HBITMAP)0, nWidth, nHeight); }
 _AFXWIN_INLINE void CWnd::CreateGrayCaret(int nWidth, int nHeight)
 	{ ASSERT(::IsWindow(m_hWnd)); ::CreateCaret(m_hWnd, (HBITMAP)1, nWidth, nHeight); }
-_AFXWIN_INLINE CPoint PASCAL CWnd::GetCaretPos()
-	{ CPoint point; ::GetCaretPos((LPPOINT)&point); return point; }
 _AFXWIN_INLINE void PASCAL CWnd::SetCaretPos(POINT point)
 	{ ::SetCaretPos(point.x, point.y); }
 _AFXWIN_INLINE void CWnd::HideCaret()
@@ -418,40 +410,6 @@ _AFXWIN_INLINE void CWnd::OnNcCalcSize(BOOL, NCCALCSIZE_PARAMS*)
 	{ Default(); }
 _AFXWIN_INLINE BOOL CWnd::OnNcCreate(LPCREATESTRUCT)
 	{ return (BOOL)Default(); }
-_AFXWIN_INLINE LRESULT CWnd::OnNcHitTest(CPoint)
-	{ return Default(); }
-_AFXWIN_INLINE void CWnd::OnNcLButtonDblClk(UINT, CPoint)
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnNcLButtonDown(UINT, CPoint)
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnNcLButtonUp(UINT, CPoint)
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnNcMButtonDblClk(UINT, CPoint)
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnNcMButtonDown(UINT, CPoint)
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnNcMButtonUp(UINT, CPoint)
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnNcMouseHover(UINT, CPoint)
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnNcMouseLeave()
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnNcMouseMove(UINT, CPoint)
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnNcPaint()
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnNcRButtonDblClk(UINT, CPoint)
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnNcRButtonDown(UINT, CPoint)
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnNcRButtonUp(UINT, CPoint)
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnNcXButtonDown(short, UINT, CPoint)
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnNcXButtonUp(short, UINT, CPoint)
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnNcXButtonDblClk(short, UINT, CPoint)
-	{ Default(); }
 _AFXWIN_INLINE void CWnd::OnSysChar(UINT, UINT, UINT)
 	{ Default(); }
 _AFXWIN_INLINE void CWnd::OnSysCommand(UINT, LPARAM)
@@ -499,44 +457,6 @@ _AFXWIN_INLINE void CWnd::OnKeyDown(UINT, UINT, UINT)
 _AFXWIN_INLINE void CWnd::OnKeyUp(UINT, UINT, UINT)
 	{ Default(); }
 _AFXWIN_INLINE void CWnd::OnHotKey(UINT, UINT, UINT)
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnLButtonDblClk(UINT, CPoint)
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnLButtonDown(UINT, CPoint)
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnLButtonUp(UINT, CPoint)
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnMButtonDblClk(UINT, CPoint)
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnMButtonDown(UINT, CPoint)
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnMButtonUp(UINT, CPoint)
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnXButtonDblClk(UINT, UINT, CPoint)
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnXButtonDown(UINT, UINT, CPoint)
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnXButtonUp(UINT, UINT, CPoint)
-	{ Default(); }
-_AFXWIN_INLINE int CWnd::OnMouseActivate(CWnd*, UINT, UINT)
-	{ return (int)Default(); }
-_AFXWIN_INLINE void CWnd::OnMouseHover(UINT, CPoint)
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnMouseLeave()
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnMouseMove(UINT, CPoint)
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnMouseHWheel(UINT, short, CPoint)
-	{ Default(); }
-_AFXWIN_INLINE BOOL CWnd::OnMouseWheel(UINT, short, CPoint)
-	{ return (BOOL)Default(); }
-_AFXWIN_INLINE void CWnd::OnRButtonDblClk(UINT, CPoint)
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnRButtonDown(UINT, CPoint)
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnRButtonUp(UINT, CPoint)
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnTimer(UINT_PTR)
 	{ Default(); }
 _AFXWIN_INLINE void CWnd::OnAskCbFormatName(_In_ UINT nMaxCount, _Out_z_cap_(nMaxCount) LPTSTR pszName)
 {

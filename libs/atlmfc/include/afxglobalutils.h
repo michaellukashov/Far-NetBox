@@ -31,18 +31,11 @@ public:
 	CGlobalUtils();
 	virtual ~CGlobalUtils();
 
-	BOOL CheckAlignment(CPoint point, CBasePane* pBar, int nSensitivity, const CDockingManager* pDockManager,
-		BOOL bOuterEdge, DWORD& dwAlignment, DWORD dwEnabledDockBars = CBRS_ALIGN_ANY, LPCRECT lpRectBounds = NULL) const;
-
 	CDockingManager* GetDockingManager(CWnd* pWnd);
 	
 	void FlipRect(CRect& rect, int nDegrees);
 	DWORD GetOppositeAlignment(DWORD dwAlign);
 	void SetNewParent(CObList& lstControlBars, CWnd* pNewParent, BOOL bCheckVisibility = TRUE);
-	void CalcExpectedDockedRect(CPaneContainerManager& barContainerManager, CWnd* pWndToDock,
-		CPoint ptMouse, CRect& rectResult, BOOL& bDrawTab, CDockablePane** ppTargetBar);
-	BOOL GetPaneAndAlignFromPoint(CPaneContainerManager& barContainerManager, CPoint pt,
-		CDockablePane** ppTargetControlBar, DWORD& dwAlignment, BOOL& bTabArea, BOOL& bCaption);
 	void ForceAdjustLayout(CDockingManager* pDockManager, BOOL bForce = FALSE, BOOL bForceInvisible = FALSE);
 	BOOL CanPaneBeInFloatingMultiPaneFrameWnd(CWnd* pWnd) const;
 	void AdjustRectToWorkArea(CRect& rect, CRect* pRectDelta = NULL);

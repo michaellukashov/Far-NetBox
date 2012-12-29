@@ -132,7 +132,6 @@ _AFX_THREAD_STATE::_AFX_THREAD_STATE()
 	m_msgCur.message = WM_NULL;
 	m_nMsgLast = WM_NULL;
 	//::GetCursorPos(&(m_ptCursorLast));
-	m_ptCursorLast = CPoint(0,0);
 }
 
 _AFX_THREAD_STATE::~_AFX_THREAD_STATE()
@@ -356,8 +355,6 @@ AFX_MODULE_THREAD_STATE::AFX_MODULE_THREAD_STATE()
 	m_nLastHit = static_cast<INT_PTR>(-1);
 	m_nLastStatus = static_cast<INT_PTR>(-1);
 	m_pLastInfo = NULL;
-
-	m_frameList.Construct(offsetof(CFrameWnd, m_pNextFrameWnd));
 
 	// Note: it is only necessary to initialize non-zero data
 	m_pfnNewHandler = &AfxNewHandler;

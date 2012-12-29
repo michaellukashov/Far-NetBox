@@ -77,7 +77,7 @@ void TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
   }
 }
 //---------------------------------------------------------------------------
-void TWinSCPPlugin::GetPluginInfoEx(PLUGIN_FLAGS &Flags,
+void TWinSCPPlugin::GetPluginInfoEx(PLUGIN_FLAGS & Flags,
   TStrings * DiskMenuStrings, TStrings * PluginMenuStrings,
   TStrings * PluginConfigStrings, TStrings * CommandPrefixes)
 {

@@ -266,11 +266,6 @@ BOOL AfxInternalIsIdleMessage(MSG* pMsg)
 	{
 		// mouse move at same position as last mouse move?
 	  _AFX_THREAD_STATE *pState = AfxGetThreadState();
-		if (pState->m_ptCursorLast == pMsg->pt && pMsg->message == pState->m_nMsgLast)
-			return FALSE;
-
-		pState->m_ptCursorLast = pMsg->pt;  // remember for next time
-		pState->m_nMsgLast = pMsg->message;
 		return TRUE;
 	}
 
@@ -488,7 +483,6 @@ void CWinThread::CommonConstruct()
 #endif
 	pState->m_msgCur.message = WM_NULL;
 	pState->m_nMsgLast = WM_NULL;
-	::GetCursorPos(&(pState->m_ptCursorLast));
 
 	// most threads are deleted when not needed
 	m_bAutoDelete = TRUE;
@@ -671,27 +665,6 @@ BOOL CWinThread::OnIdle(LONG lCount)
 		}
 		// send WM_IDLEUPDATECMDUI to all frame windows
 		AFX_MODULE_THREAD_STATE* pState = _AFX_CMDTARGET_GETSTATE()->m_thread;
-		CFrameWnd* pFrameWnd = pState->m_frameList;
-		while (pFrameWnd != NULL)
-		{
-			if (pFrameWnd->m_hWnd != NULL && pFrameWnd != pMainWnd)
-			{
-				if (pFrameWnd->m_nShowDelay == SW_HIDE)
-					pFrameWnd->ShowWindow(pFrameWnd->m_nShowDelay);
-				if (pFrameWnd->IsWindowVisible() ||
-					pFrameWnd->m_nShowDelay >= 0)
-				{
-					AfxCallWndProc(pFrameWnd, pFrameWnd->m_hWnd,
-						WM_IDLEUPDATECMDUI, (WPARAM)TRUE, 0);
-					pFrameWnd->SendMessageToDescendants(WM_IDLEUPDATECMDUI,
-						(WPARAM)TRUE, 0, TRUE, TRUE);
-				}
-				if (pFrameWnd->m_nShowDelay > SW_HIDE)
-					pFrameWnd->ShowWindow(pFrameWnd->m_nShowDelay);
-				pFrameWnd->m_nShowDelay = -1;
-			}
-			pFrameWnd = pFrameWnd->m_pNextFrameWnd;
-		}
 	}
 	else if (lCount >= 0)
 	{
@@ -813,7 +786,6 @@ BOOL CWinThread::ProcessMessageFilter(int code, LPMSG lpMsg)
 	if (lpMsg == NULL)
 		return FALSE;   // not handled
 
-	CFrameWnd* pTopFrameWnd;
 	CWnd* pMainWnd;
 	CWnd* pMsgWnd;
 	switch (code)
@@ -829,17 +801,6 @@ BOOL CWinThread::ProcessMessageFilter(int code, LPMSG lpMsg)
 		pMsgWnd = CWnd::FromHandle(lpMsg->hwnd);
 		if (pMsgWnd != NULL)
 		{
-			pTopFrameWnd = pMsgWnd->GetTopLevelFrame();
-			if (pTopFrameWnd != NULL && pTopFrameWnd->IsTracking() &&
-				pTopFrameWnd->m_bHelpMode)
-			{
-				pMainWnd = AfxGetMainWnd();
-				if ((m_pMainWnd != NULL) && (IsEnterKey(lpMsg) || IsButtonUp(lpMsg)))
-				{
-					pMainWnd->SendMessage(WM_COMMAND, ID_HELP);
-					return TRUE;
-				}
-			}
 		}
 		// fall through...
 
@@ -921,12 +882,10 @@ void CWinThread::Dump(CDumpContext& dc) const
 	dc << "\n\twParam = " << (UINT)pState->m_msgCur.wParam;
 	dc << "\n\tlParam = " << (void*)pState->m_msgCur.lParam;
 	dc << "\n\ttime = " << pState->m_msgCur.time;
-	dc << "\n\tpt = " << CPoint(pState->m_msgCur.pt);
 	dc << "\n}";
 
 	dc << "\nm_pThreadParams = " << m_pThreadParams;
 	dc << "\nm_pfnThreadProc = " << (void*)m_pfnThreadProc;
-	dc << "\nm_ptCursorLast = " << pState->m_ptCursorLast;
 	dc << "\nm_nMsgLast = " << pState->m_nMsgLast;
 
 	dc << "\n";

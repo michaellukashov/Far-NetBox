@@ -176,69 +176,6 @@ void ControlBarCleanUp()
 	afxGlobalData.CleanUp();
 }
 
-BOOL AFX_GLOBAL_DATA::DrawParentBackground(CWnd* pWnd, CDC* pDC, LPRECT rectClip)
-{
-	ASSERT_VALID(pDC);
-	ASSERT_VALID(pWnd);
-
-	BOOL bRes = FALSE;
-
-	CRgn rgn;
-	if (rectClip != NULL)
-	{
-		rgn.CreateRectRgnIndirect(rectClip);
-		pDC->SelectClipRgn(&rgn);
-	}
-
-	CWnd* pParent = pWnd->GetParent();
-	ASSERT_VALID(pParent);
-
-	if (!bRes)
-	{
-		CPoint pt(0, 0);
-		pWnd->MapWindowPoints(pParent, &pt, 1);
-		pt = pDC->OffsetWindowOrg(pt.x, pt.y);
-
-		bRes = (BOOL) pParent->SendMessage(WM_ERASEBKGND, (WPARAM)pDC->m_hDC);
-
-		pDC->SetWindowOrg(pt.x, pt.y);
-	}
-
-	pDC->SelectClipRgn(NULL);
-
-	return bRes;
-}
-
-CFrameWnd* AFXGetParentFrame(const CWnd* pWnd)
-{
-	if (pWnd->GetSafeHwnd() == NULL)
-	{
-		return NULL;
-	}
-	ASSERT_VALID(pWnd);
-
-	const CWnd* pParentWnd = pWnd;
-
-	while (pParentWnd != NULL)
-	{
-		{
-			pParentWnd = pParentWnd->GetParent();
-		}
-
-		if (pParentWnd == NULL)
-		{
-			return NULL;
-		}
-
-		if (pParentWnd->IsFrameWnd())
-		{
-			return(CFrameWnd*)pParentWnd;
-		}
-	}
-
-	return NULL;
-}
-
 COLORREF AFX_GLOBAL_DATA::GetColor(int nColor)
 {
 	switch(nColor)

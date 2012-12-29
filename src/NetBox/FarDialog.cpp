@@ -487,7 +487,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
         // DN_BTNCLICK on default button. This fixes the scenario.
         // (first check if focused dialog item is not another button)
         if (!Result && (Msg == DN_CONTROLINPUT) &&
-            (reinterpret_cast<long>(Param2) == VK_RETURN) &&
+            (reinterpret_cast<intptr_t>(Param2) == VK_RETURN) &&
             ((Param1 < 0) ||
              ((Param1 >= 0) && (dynamic_cast<TFarButton *>(GetItem(Param1)) == NULL))) &&
             GetDefaultButton()->GetEnabled() &&

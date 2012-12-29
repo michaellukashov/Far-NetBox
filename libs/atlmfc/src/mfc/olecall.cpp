@@ -43,18 +43,6 @@ _AfxDispatchCall(AFX_PMSG /*pfn*/, void* /*pArgs*/, UINT /*nSizeArgs*/)
 #endif // _X86_
 
 /////////////////////////////////////////////////////////////////////////////
-// AMD 64 version
-
-#ifdef _AMD64_
-
-// Note: AMD64 version is in src\x8664\olecall_.s
-
-// The AMD64 compiler does not support inline assembly, so it
-//  must be built separately with the MASM assembler.
-
-#endif // _AMD64_
-
-/////////////////////////////////////////////////////////////////////////////
 // MIPS R4000 version
 
 #ifdef _MIPS_

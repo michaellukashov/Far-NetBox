@@ -42,7 +42,7 @@ public:
 
 protected:
   virtual bool HandlesFunction(THandlesFunction Function);
-  virtual void GetPluginInfoEx(PLUGIN_FLAGS &Flags, TStrings * DiskMenuStrings,
+  virtual void GetPluginInfoEx(PLUGIN_FLAGS & Flags, TStrings * DiskMenuStrings,
     TStrings * PluginMenuStrings, TStrings * PluginConfigStrings,
     TStrings * CommandPrefixes);
   virtual TCustomFarFileSystem * OpenPluginEx(OPENFROM OpenFrom, intptr_t Item);

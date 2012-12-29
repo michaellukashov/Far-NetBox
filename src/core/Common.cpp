@@ -5,14 +5,16 @@
 
 #define TRACE_TIMESTAMP TRACING
 
+#include <assert.h>
+#include <math.h>
+#include <shlobj.h>
+
 #include "Common.h"
 #include "Exceptions.h"
 #include "TextsCore.h"
 #include "Interface.h"
 #include <StrUtils.hpp>
 #include <DateUtils.hpp>
-#include <math.h>
-#include <shlobj.h>
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------

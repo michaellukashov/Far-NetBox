@@ -914,9 +914,6 @@ protected:
 	// Stock events
 	void KeyDown(USHORT* pnChar);
 	void KeyUp(USHORT* pnChar);
-	void ButtonDown(USHORT iButton, UINT nFlags, CPoint point);
-	void ButtonUp(USHORT iButton, UINT nFlags, CPoint point);
-	void ButtonDblClk(USHORT iButton, UINT nFlags, CPoint point);
 
 	// Masks to identify which stock events and properties are used
 	void InitStockEventMask();
@@ -987,7 +984,6 @@ protected:
 	};
 	CRect m_rcPos;                      // Control's position rectangle
 	CRect m_rcBounds;                   // Bounding rectangle for drawing
-	CPoint m_ptOffset;                  // Child window origin
 	long m_cxExtent;                    // Control's width in HIMETRIC units
 	long m_cyExtent;                    // Control's height in HIMETRIC units
 	class CReflectorWnd* m_pReflect;    // Reflector window
@@ -1069,16 +1065,6 @@ protected:
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
-	afx_msg void OnMButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnMButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnMButtonDblClk(UINT nFlags, CPoint point);
-	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnRButtonDblClk(UINT nFlags, CPoint point);
 	afx_msg void OnInitMenuPopup(CMenu*, UINT, BOOL);
 	afx_msg void OnMenuSelect(UINT nItemID, UINT nFlags, HMENU hSysMenu);
 	afx_msg LRESULT OnSetMessageString(WPARAM wParam, LPARAM lParam);
@@ -1096,8 +1082,6 @@ protected:
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
 	afx_msg void OnNcPaint();
 	afx_msg void OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp);
-	afx_msg LRESULT OnNcHitTest(CPoint point);
-	afx_msg void OnNcLButtonDown(UINT nHitTest, CPoint point);
 	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
 	afx_msg UINT OnGetDlgCode();
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
@@ -1115,11 +1099,6 @@ protected:
 	afx_msg LRESULT OnOcmCtlColorStatic(WPARAM wParam, LPARAM lParam);
 
 	DECLARE_MESSAGE_MAP()
-
-	// button handler helpers
-	void OnButtonUp(USHORT nButton, UINT nFlags, CPoint point);
-	void OnButtonDown(USHORT nButton, UINT nFlags, CPoint point);
-	void OnButtonDblClk(USHORT nButton, UINT nFlags, CPoint point);
 
 // Interface Maps
 public:

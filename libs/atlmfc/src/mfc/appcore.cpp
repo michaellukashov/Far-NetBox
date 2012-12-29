@@ -911,7 +911,6 @@ void CWinApp::Dump(CDumpContext& dc) const
 	dc << "\n\twParam = " << (UINT)pState->m_msgCur.wParam;
 	dc << "\n\tlParam = " << (void*)pState->m_msgCur.lParam;
 	dc << "\n\ttime = " << pState->m_msgCur.time;
-	dc << "\n\tpt = " << CPoint(pState->m_msgCur.pt);
 	dc << "\n}";
 
 	dc << "\n";

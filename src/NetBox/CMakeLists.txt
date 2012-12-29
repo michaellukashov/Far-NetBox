@@ -8,18 +8,21 @@ project ( NetBox )
 
 IF(NOT DEFINED CMAKE_BUILD_TYPE)
   set ( CMAKE_BUILD_TYPE Debug )
-ENDIF(NOT DEFINED CMAKE_BUILD_TYPE)
+ENDIF()
 
-set ( FAR_VERSION Far2 )
-IF(NOT DEFINED PLATFORM)
-  set ( PLATFORM x86 )
-ENDIF(NOT DEFINED PLATFORM)
-  
-
-set ( OUTPUT_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
-# set ( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
-# set ( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
-# set ( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
+IF(NOT DEFINED FAR_VERSION)
+  set ( FAR_VERSION Far3 )
+ENDIF()
+IF(NOT DEFINED CONF)
+  set ( CONF x86 )
+ENDIF()
+IF (CONF EQUAL x86)
+  set ( PLATFORM "Win32" )
+ELSE()
+  set ( PLATFORM "x64" )
+ENDIF()
+set ( OUTPUT_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${CONF}/Plugins/NetBox )
+set ( OUTPUT_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${CONF}/Plugins/NetBox )
 
 set ( LIBS_ROOT ${PROJECT_ROOT}/libs )
 set ( SRC_ROOT ${PROJECT_ROOT}/src )
@@ -31,34 +34,59 @@ set ( LIBNEON_DEFS "NE_HAVE_SSL;HAVE_OPENSSL;HAVE_EXPAT;HAVE_EXPAT_H;NE_HAVE_DAV
 set ( LIBEXPAT_DEFS "COMPILED_FROM_DSP;XML_STATIC" )
 
 set ( CMAKE_CXX_FLAGS
-    "-DWIN32;_WINDOWS /EHsc /MP2 /MTd -D_SCL_SECURE_NO_WARNINGS -D_UNICODE;UNICODE
+    "-DWIN32;_WINDOWS;_WINDLL;_USRDL /EHsc /MP2 -D_SCL_SECURE_NO_WARNINGS -D_UNICODE;UNICODE
     -DAPR_DECLARE_STATIC
     -D${LIBEXPAT_DEFS}
     -D${LIBNEON_DEFS}
-    -DMPEXT;NO_STRICT;NOCRYPT;_WINDLL;_USRDLL;_RTLDLL
+    -DMPEXT;NO_STRICT;NOCRYPT
 "
 )
 
+IF (PLATFORM STREQUAL "x64")
+    set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}
+        -DWIN64
+"
+    )
+ENDIF()
+
+IF (CONF EQUAL x64)
+    set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}
+        -DWIN64
+"
+    )
+ENDIF()
+
+IF (CONF EQUAL x64)
+    set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}
+        -DWIN64
+"
+    )
+ENDIF()
+
 set ( CMAKE_CXX_FLAGS_DEBUG "-D_DEBUG;NETBOX_DEBUG;"
-     " /Gm- /EHsc /MTd /GS" )
-set ( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG;BOOST_DISABLE_ASSERTS" )
+     " /Gm- /MTd /GS"
+)
+set ( CMAKE_CXX_FLAGS_RELEASE "-U_DEBUG;NETBOX_DEBUG; -DNDEBUG;BOOST_DISABLE_ASSERTS"
+    " /Gm- /MT -Ob2 -Oi -Os -Oy -GF -GS- -Gy"
+)
 
 set ( CMAKE_LINK_FLAGS
-    "/INCREMENTAL:NO /NODEFAULTLIB:LIBCMT.LIB
+    "/INCREMENTAL:NO
+    /NODEFAULTLIB:LIBCRT.LIB
     /NODEFAULTLIB:LIBCRTD.LIB
     /NODEFAULTLIB:MSVCRT.LIB
     /NODEFAULTLIB:MSVCRTD.LIB
+    /NODEFAULTLIB:MFCS100U.LIB
     /NODEFAULTLIB:MFCS100UD.LIB
-    /NODEFAULTLIB:ATLSD.LIB
+    /NODEFAULTLIB:UAFXCW.LIB
     /NODEFAULTLIB:UAFXCWD.LIB
+    /NODEFAULTLIB:LIBCMT.LIB
     /NODEFAULTLIB:LIBCMTD.LIB
+    /NODEFAULTLIB:LIBCPMT.LIB
     /NODEFAULTLIB:LIBCPMTD.LIB
-    /NODEFAULTLIB:WINDOWSCODECS.LIB
-    /NODEFAULTLIB:DELAYIMP.LIB
     /NODEFAULTLIB:LIBEAY32.LIB
     /NODEFAULTLIB:SSLEAY32.LIB
     /NODEFAULTLIB:LIBPUTTY.LIB
-    /NODEFAULTLIB:WS2_32.LIB
     /NODEFAULTLIB:KERNEL32.LIB
     /NODEFAULTLIB:USER32.LIB
     /NODEFAULTLIB:GDI32.LIB
@@ -68,11 +96,25 @@ set ( CMAKE_LINK_FLAGS
     /NODEFAULTLIB:WINHTTP.LIB
     /NODEFAULTLIB:WINSPOOL.LIB
     /NODEFAULTLIB:COMCTL32.LIB
+    /DELAYLOAD:gdi32.dll
+    /DELAYLOAD:winhttp.dll
+    /DELAYLOAD:ole32.dll
+    /DELAYLOAD:shell32.dll
+    /DELAYLOAD:shlwapi.dll
+    /DELAYLOAD:crypt32.dll
+    /DELAYLOAD:version.dll
+    /DELAYLOAD:ws2_32.dll
+    /DELAYLOAD:oleaut32.dll
+    /DELAYLOAD:winspool.drv
+    /DELAYLOAD:comdlg32.dll
+    /MANIFEST:NO
+    /TLBID:1 /DYNAMICBASE
+    /TLBID:1 /DYNAMICBASE
 "
 )
 
 include ( ${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake )
-# message ( "system: ${CMAKE_SYSTEM_NAME}" )
+message ( "system: ${CMAKE_SYSTEM_NAME}" )
 
 #-------------------------------------------------------
 
@@ -88,13 +130,13 @@ include_directories (
     ${SRC_ROOT}/filezilla
     ${SRC_ROOT}/filezilla/misc
     ${LIBS_ROOT}
-    ${LIBS_ROOT}/atlmfc
+    ${LIBS_ROOT}/atlmfc/include
     ${LIBS_ROOT}/boost
     ${LIBS_ROOT}/Putty
     ${LIBS_ROOT}/Putty/windows
     ${LIBS_ROOT}/Putty/charset
     ${LIBS_ROOT}/tinyxml2
-    ${LIBS_ROOT}/openssl/${PLATFORM}/inc32
+    ${LIBS_ROOT}/openssl/${CONF}/inc32
     ${LIBS_ROOT}/zlib/src
     ${LIBS_ROOT}/expat/lib
     ${LIBS_ROOT}/neon/src
@@ -201,22 +243,16 @@ set ( NETBOX_SOURCES # ${COMMON_SOURCES}
 
 add_library (libeay32 STATIC IMPORTED)
 set_property (TARGET libeay32
-    # PROPERTY IMPORTED_IMPLIB ${LIBS_ROOT}/openssl/${PLATFORM}/libeay32.lib )
-    PROPERTY IMPORTED_LOCATION ${LIBS_ROOT}/openssl/${PLATFORM}/libeay32.lib )
+    # PROPERTY IMPORTED_IMPLIB ${LIBS_ROOT}/openssl/${CONF}/libeay32.lib )
+    PROPERTY IMPORTED_LOCATION ${LIBS_ROOT}/openssl/${CONF}/libeay32.lib )
 add_library (ssleay32 STATIC IMPORTED)
 set_property (TARGET ssleay32
-    PROPERTY IMPORTED_LOCATION ${LIBS_ROOT}/openssl/${PLATFORM}/ssleay32.lib )
+    PROPERTY IMPORTED_LOCATION ${LIBS_ROOT}/openssl/${CONF}/ssleay32.lib )
 
 #-------------------------------------------------------------------------------
 
 set ( NETBOX_LIBRARIES
-    mfcs100ud.lib
-    Atlsd.lib
-    uafxcwd.lib
-    libcmtd.lib
-    libcpmtd.lib
-    windowscodecs.lib
-    delayimp.lib
+    atlmfc
     libputty
     zlib
     libtinyxml2
@@ -228,15 +264,50 @@ set ( NETBOX_LIBRARIES
     Ws2_32.lib
     kernel32.lib
     user32.lib
-    gdi32.lib
-    comdlg32.lib
     advapi32.lib
     Version.lib
     winhttp.lib
     winspool.lib
-    comctl32.lib
     Crypt32.lib
+    shell32.lib
+    shlwapi.lib
 )
+
+IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set ( NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
+    libcmtd.lib
+    libcpmtd.lib
+  )
+ELSE()
+  set ( NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
+    libcmt.lib
+    libcpmt.lib
+  )
+ENDIF()
+
+IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set ( NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
+    libcmtd.lib
+    libcpmtd.lib
+  )
+ELSE()
+  set ( NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
+    libcmt.lib
+    libcpmt.lib
+  )
+ENDIF()
+
+IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set ( NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
+    libcmtd.lib
+    libcpmtd.lib
+  )
+ELSE()
+  set ( NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
+    libcmt.lib
+    libcpmt.lib
+  )
+ENDIF()
 
 add_library ( NetBox SHARED ${NETBOX_SOURCES} )
 set_target_properties ( NetBox
@@ -245,6 +316,10 @@ set_target_properties ( NetBox
     LINK_FLAGS ${CMAKE_LINK_FLAGS}
 )
 
+#-------------------------------------------------------------------------------
+
+string (REPLACE "/" "\\" BUILD_DIR ${PROJECT_ROOT}/${CMAKE_BUILD_TYPE}/${CONF}/${CMAKE_BUILD_TYPE} )
+message ( "BUILD_DIR: ${BUILD_DIR}" )
 #-------------------------------------------------------------------------------
 
 # move from NetBox/Debug to NetBox/
@@ -262,6 +337,7 @@ set_target_properties ( NetBox
 target_link_libraries ( NetBox ${NETBOX_LIBRARIES} )
 
 add_dependencies ( NetBox
+    atlmfc
     libputty
     libtinyxml2
     libneon
@@ -270,9 +346,31 @@ add_dependencies ( NetBox
     zlib
 )
 
+# use_precompiled_header ( NETBOX_SOURCES stdafx.h stdafx.cpp netbox )
+
 #-------------------------------------------------------------------------------
 
-# use_precompiled_header ( NETBOX_SOURCES stdafx.h stdafx.cpp netbox )
+add_library (atlmfc STATIC
+    ${LIBS_ROOT}/atlmfc/mfc1.cpp
+    ${LIBS_ROOT}/atlmfc/mfc2.cpp
+    ${LIBS_ROOT}/atlmfc/mfc3.cpp
+    ${LIBS_ROOT}/atlmfc/mfc4.cpp
+    ${LIBS_ROOT}/atlmfc/mfc5.cpp
+    ${LIBS_ROOT}/atlmfc/src/mfc/map_so.cpp
+    ${LIBS_ROOT}/atlmfc/src/mfc/map_sp.cpp
+    ${LIBS_ROOT}/atlmfc/src/mfc/map_ss.cpp
+    ${LIBS_ROOT}/atlmfc/src/mfc/thrdcore.cpp
+    ${LIBS_ROOT}/atlmfc/src/mfc/olecli1.cpp
+    ${LIBS_ROOT}/atlmfc/src/mfc/inet.cpp
+)
+
+set_target_properties ( atlmfc
+    PROPERTIES
+    COMPILE_FLAGS "/D_WIN32_WINNT=0x0501;_ATL_NO_DEBUG_CRT;_ATL_NO_UUIDOF;_ATL_NO_CONNECTION_POINTS;_ATL_NO_DATETIME_RESOURCES_;_ATL_NO_DEFAULT_LIBS;"
+    LINK_FLAGS ${CMAKE_LINK_FLAGS}
+)
+
+#-------------------------------------------------------------------------------
 
 add_library (libputty STATIC
     ${LIBS_ROOT}/Putty/CPROXY.C
@@ -514,6 +612,7 @@ set_target_properties ( testnetbox_01
 )
 
 add_dependencies ( testnetbox_01
+    atlmfc
     libputty
     libtinyxml2
 )
@@ -540,6 +639,7 @@ set_target_properties ( testnetbox_02
     LINK_FLAGS "${CMAKE_LINK_FLAGS} /verbose:lib"
 )
 add_dependencies ( testnetbox_02
+    atlmfc
     libputty
     libtinyxml2
     libneon

@@ -108,7 +108,6 @@ protected:
 // forward references required for AFX_MODULE_THREAD_STATE definition
 class CWinThread;
 class CHandleMap;
-class CFrameWnd;
 class CToolTipCtrl;
 class CControlBar;
 class CWnd;
@@ -136,9 +135,6 @@ public:
 
 	// current CWinThread pointer
 	CWinThread* m_pCurrentWinThread;
-
-	// list of CFrameWnd objects for thread
-	CTypedSimpleList<CFrameWnd*> m_frameList;
 
 	// temporary/permanent map state
 	DWORD m_nTempMapLock;           // if not 0, temp maps locked
@@ -388,7 +384,6 @@ public:
 
 	// message pump for Run
 	MSG m_msgCur;                   // current message
-	CPoint m_ptCursorLast;          // last mouse position
 	UINT m_nMsgLast;                // last mouse message
 
 #ifdef _DEBUG
@@ -406,7 +401,6 @@ public:
 	// other framework modal data
 	CView* m_pRoutingView;          // see CCmdTarget::GetRoutingView
    CPushRoutingView* m_pPushRoutingView;
-	CFrameWnd* m_pRoutingFrame;     // see CCmdTarget::GetRoutingFrame
    CPushRoutingFrame* m_pPushRoutingFrame;
 
 	// MFC/DB thread-local data

@@ -6737,7 +6737,7 @@ public:
 protected:
   virtual bool CloseQuery();
   virtual void __fastcall Change();
-  virtual intptr_t DialogProc(int Msg, intptr_t Param1, void * Param2);
+  virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void * Param2);
 
   void TransferSettingsButtonClick(TFarButton * Sender, bool & Close);
   void CopyParamListerClick(TFarDialogItem * Item, MOUSE_EVENT_RECORD * Event);
@@ -7072,7 +7072,7 @@ bool TFullSynchronizeDialog::CloseQuery()
   return CanClose;
 }
 //---------------------------------------------------------------------------
-intptr_t TFullSynchronizeDialog::DialogProc(int Msg, intptr_t Param1, void * Param2)
+intptr_t TFullSynchronizeDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
 {
   if (Msg == DN_RESIZECONSOLE)
   {
@@ -7172,7 +7172,7 @@ public:
   virtual bool Execute(TSynchronizeChecklist * Checklist);
 
 protected:
-  virtual intptr_t DialogProc(int Msg, intptr_t Param1, void * Param2);
+  virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void * Param2);
   virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
   void CheckAllButtonClick(TFarButton * Sender, bool & Close);
   void VideoModeButtonClick(TFarButton * Sender, bool & Close);
@@ -7598,7 +7598,7 @@ void TSynchronizeChecklistDialog::UpdateControls()
   UncheckAllButton->SetEnabled((FChecked > 0));
 }
 //---------------------------------------------------------------------------
-intptr_t TSynchronizeChecklistDialog::DialogProc(int Msg, intptr_t Param1, void * Param2)
+intptr_t TSynchronizeChecklistDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
 {
   if (Msg == DN_RESIZECONSOLE)
   {
@@ -7799,7 +7799,7 @@ protected:
   void DoLog(TSynchronizeController * Controller,
     TSynchronizeLogEntry Entry, const UnicodeString & Message);
   void DoSynchronizeThreads(TObject * Sender, TThreadMethod slot);
-  virtual intptr_t DialogProc(int Msg, intptr_t Param1, void * Param2);
+  virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void * Param2);
   virtual bool CloseQuery();
   virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
   TCopyParamType GetCopyParams();
@@ -8054,7 +8054,7 @@ void TSynchronizeDialog::DoSynchronizeThreads(TObject * /*Sender*/,
   }
 }
 //---------------------------------------------------------------------------
-intptr_t TSynchronizeDialog::DialogProc(int Msg, intptr_t Param1, void * Param2)
+intptr_t TSynchronizeDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
 {
   if (FAbort)
   {

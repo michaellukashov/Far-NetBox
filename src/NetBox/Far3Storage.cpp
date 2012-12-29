@@ -63,11 +63,10 @@ bool __fastcall TFar3Storage::DoOpenSubKey(const UnicodeString & MungedSubKey, b
   // DEBUG_PRINTF(L"SubKey = %s, CanCreate = %d, Path = %d", SubKey.c_str(), CanCreate, Path);
   intptr_t OldRoot = FRoot;
   intptr_t Root = FRoot;
-  bool Result = false;
+  bool Result = true;
   {
     UnicodeString subKey = MungedSubKey;
     assert(subKey.IsEmpty() || (subKey[subKey.size()] != '\\'));
-    bool Result = true;
     // CutToChar(subKey, L'\\', false);
     while (!subKey.IsEmpty())
     {
@@ -80,7 +79,6 @@ bool __fastcall TFar3Storage::DoOpenSubKey(const UnicodeString & MungedSubKey, b
       FSubKeyIds.push_back(OldRoot);
       FRoot = Root;
     }
-    return Result;
   }
   // DEBUG_PRINTF(L"end, Result = %d", Result);
   return Result;
@@ -255,10 +253,10 @@ void __fastcall TFar3Storage::WriteDateTime(const UnicodeString & Name, TDateTim
 //---------------------------------------------------------------------------
 void __fastcall TFar3Storage::WriteFloat(const UnicodeString & Name, double Value)
 {
-  double val = Value.operator double();
-  void * value = reinterpret_cast<void *>(&val);
+  double val = Value;
+  void * vval = reinterpret_cast<void *>(&val);
   size_t sz = sizeof(val);
-  if (!FPluginSettings.Set(FRoot, Name.c_str(), value, sz))
+  if (!FPluginSettings.Set(FRoot, Name.c_str(), vval, sz))
   {
     // TODO: report error
   }

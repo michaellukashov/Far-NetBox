@@ -1865,7 +1865,7 @@ void TCustomFarFileSystem::ClearOpenPanelInfo(OpenPanelInfo & Info)
     assert(!Info.DescrFiles);
     assert(!Info.DescrFilesNumber);
     assert(Info.PanelModesNumber == 0 || Info.PanelModesNumber == PANEL_MODES_COUNT);
-    for (int Index = 0; Index < Info.PanelModesNumber; Index++)
+    for (size_t Index = 0; Index < Info.PanelModesNumber; Index++)
     {
       assert(Info.PanelModesArray);
       TFarPanelModes::ClearPanelMode(
@@ -1973,7 +1973,7 @@ void TCustomFarFileSystem::FreeFindData(const struct FreeFindDataInfo *Info)
   if (Info->PanelItem)
   {
     assert(Info->ItemsNumber > 0);
-    for (int Index = 0; Index < Info->ItemsNumber; Index++)
+    for (size_t Index = 0; Index < Info->ItemsNumber; Index++)
     {
       delete[] Info->PanelItem[Index].FileName;
       delete[] Info->PanelItem[Index].Description;
@@ -2490,7 +2490,7 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * PanelItem)
   PanelItem->Owner = TCustomFarPlugin::DuplicateStr(Owner);
   // PanelItem->CustomColumnData = new wchar_t *[PanelItem->CustomColumnNumber];
   wchar_t ** CustomColumnData = new wchar_t *[PanelItem->CustomColumnNumber];
-  for (int Index = 0; Index < PanelItem->CustomColumnNumber; Index++)
+  for (size_t Index = 0; Index < PanelItem->CustomColumnNumber; Index++)
   {
     CustomColumnData[Index] =
       TCustomFarPlugin::DuplicateStr(GetCustomColumnData(Index));

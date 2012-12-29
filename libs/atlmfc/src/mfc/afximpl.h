@@ -97,7 +97,6 @@ public:
 	_AFX_EDIT_STATE();
 	virtual ~_AFX_EDIT_STATE();
 
-	CFindReplaceDialog* pFindReplaceDlg; // find or replace dialog
 	BOOL bFindOnly; // Is pFindReplace the find or replace?
 	CString strFind;    // last find string
 	CString strReplace; // last replace string
@@ -387,13 +386,6 @@ DWORD AFXAPI _AfxGetComCtlVersion();
 #undef AFX_DATA
 #define AFX_DATA AFX_CORE_DATA
 
-// UNICODE/MBCS abstractions
-#ifdef _MBCS
-	extern AFX_DATA const BOOL _afxDBCS;
-#else
-	#define _afxDBCS FALSE
-#endif
-
 #undef AFX_DATA
 #define AFX_DATA
 
@@ -603,7 +595,6 @@ union MessageMapFunctions
 	void (AFX_MSG_CALL CWnd::*pfn_v_D)(CDC*);
 	void (AFX_MSG_CALL CWnd::*pfn_v_W)(CWnd*);
 	void (AFX_MSG_CALL CWnd::*pfn_v_W_u_u)(CWnd*, UINT, UINT);
-	void (AFX_MSG_CALL CWnd::*pfn_v_W_p)(CWnd*, CPoint);
 	void (AFX_MSG_CALL CWnd::*pfn_v_W_h)(CWnd*, HANDLE);
 	void (AFX_MSG_CALL CWnd::*pfn_v_u_W)(UINT, CWnd*);
 	void (AFX_MSG_CALL CWnd::*pfn_v_u_W_b)(UINT, CWnd*, BOOL);
@@ -612,16 +603,11 @@ union MessageMapFunctions
 	void (AFX_MSG_CALL CWnd::*pfn_v_u_cs)(UINT, LPCTSTR);
 	void (AFX_MSG_CALL CWnd::*pfn_v_i_s)(int, LPTSTR);
 	int (AFX_MSG_CALL CWnd::*pfn_i_i_s)(int, LPTSTR);
-	UINT (AFX_MSG_CALL CWnd::*pfn_u_p)(CPoint);
-	LRESULT (AFX_MSG_CALL CWnd::*pfn_l_p)(CPoint);
 	UINT (AFX_MSG_CALL CWnd::*pfn_u_v)();
 	void (AFX_MSG_CALL CWnd::*pfn_v_b_NCCALCSIZEPARAMS)(BOOL, NCCALCSIZE_PARAMS*);
 	void (AFX_MSG_CALL CWnd::*pfn_v_v_WINDOWPOS)(WINDOWPOS*);
 	void (AFX_MSG_CALL CWnd::*pfn_v_u_u_M)(UINT, UINT, HMENU);
-	void (AFX_MSG_CALL CWnd::*pfn_v_u_p)(UINT, CPoint);
 	void (AFX_MSG_CALL CWnd::*pfn_v_u_pr)(UINT, LPRECT);
-	BOOL (AFX_MSG_CALL CWnd::*pfn_b_u_s_p)(UINT, short, CPoint);
-	void (AFX_MSG_CALL CWnd::*pfn_MOUSEHWHEEL)(UINT, short, CPoint);
 	LRESULT (AFX_MSG_CALL CWnd::*pfn_l_v)();
 	UINT (AFX_MSG_CALL CWnd::*pfn_u_W_u)(CWnd*, UINT);
 	UINT (AFX_MSG_CALL CWnd::*pfn_u_v_MENUGETOBJECTINFO)(MENUGETOBJECTINFO*);
@@ -629,8 +615,6 @@ union MessageMapFunctions
 	void (AFX_MSG_CALL CWnd::*pfn_APPCOMMAND)(CWnd*, UINT, UINT, UINT);
 	BOOL (AFX_MSG_CALL CWnd::*pfn_RAWINPUT)(UINT, HRAWINPUT);
 	UINT (AFX_MSG_CALL CWnd::*pfn_u_u_u)(UINT, UINT);
-	void (AFX_MSG_CALL CWnd::*pfn_MOUSE_XBUTTON)(UINT, UINT, CPoint);
-	void (AFX_MSG_CALL CWnd::*pfn_MOUSE_NCXBUTTON)(short, UINT, CPoint);
 	void (AFX_MSG_CALL CWnd::*pfn_INPUTLANGCHANGE)(UINT, UINT);
 	BOOL (AFX_MSG_CALL CWnd::*pfn_v_u_h)(UINT, HANDLE);
 	void (AFX_MSG_CALL CWnd::*pfn_INPUTDEVICECHANGE)(unsigned short, HANDLE);
@@ -654,53 +638,9 @@ union MessageMapFunctions
 	void (AFX_MSG_CALL CCmdTarget::*pfnCmd_v_pv)(void*);
 	BOOL (AFX_MSG_CALL CCmdTarget::*pfnCmd_b_pv)(void*);
 
-//OLD
-	// specific type safe variants for WM-style messages
-//	BOOL    (AFX_MSG_CALL CWnd::*pfn_bD)(CDC*);
-//	BOOL    (AFX_MSG_CALL CWnd::*pfn_bb)(BOOL);
-//	BOOL    (AFX_MSG_CALL CWnd::*pfn_bWww)(CWnd*, UINT, UINT);
-//	BOOL    (AFX_MSG_CALL CWnd::*pfn_bHELPINFO)(HELPINFO*);
-//	BOOL    (AFX_MSG_CALL CWnd::*pfn_bWCDS)(CWnd*, COPYDATASTRUCT*);
-//	HBRUSH  (AFX_MSG_CALL CWnd::*pfn_hDWw)(CDC*, CWnd*, UINT);
-//	HBRUSH  (AFX_MSG_CALL CWnd::*pfn_hDw)(CDC*, UINT);
-//	int     (AFX_MSG_CALL CWnd::*pfn_iwWw)(UINT, CWnd*, UINT);
-//	int     (AFX_MSG_CALL CWnd::*pfn_iww)(UINT, UINT);
-//	int     (AFX_MSG_CALL CWnd::*pfn_iWww)(CWnd*, UINT, UINT);
-//	int     (AFX_MSG_CALL CWnd::*pfn_is)(LPTSTR);
-//	LRESULT (AFX_MSG_CALL CWnd::*pfn_lwl)(WPARAM, LPARAM);
-//	LRESULT (AFX_MSG_CALL CWnd::*pfn_lwwM)(UINT, UINT, CMenu*);
-//	void    (AFX_MSG_CALL CWnd::*pfn_vv)(void);
-
-//	void    (AFX_MSG_CALL CWnd::*pfn_vw)(UINT);
-//	void    (AFX_MSG_CALL CWnd::*pfn_vww)(UINT, UINT);
-//	void    (AFX_MSG_CALL CWnd::*pfn_vvii)(int, int);
-//	void    (AFX_MSG_CALL CWnd::*pfn_vwww)(UINT, UINT, UINT);
-//	void    (AFX_MSG_CALL CWnd::*pfn_vwii)(UINT, int, int);
-//	void    (AFX_MSG_CALL CWnd::*pfn_vwl)(WPARAM, LPARAM);
-//	void    (AFX_MSG_CALL CWnd::*pfn_vbWW)(BOOL, CWnd*, CWnd*);
-//	void    (AFX_MSG_CALL CWnd::*pfn_vD)(CDC*);
-//	void    (AFX_MSG_CALL CWnd::*pfn_vM)(CMenu*);
-//	void    (AFX_MSG_CALL CWnd::*pfn_vMwb)(CMenu*, UINT, BOOL);
-
-//	void    (AFX_MSG_CALL CWnd::*pfn_vW)(CWnd*);
-//	void    (AFX_MSG_CALL CWnd::*pfn_vWww)(CWnd*, UINT, UINT);
-//	void    (AFX_MSG_CALL CWnd::*pfn_vWp)(CWnd*, CPoint);
-//	void    (AFX_MSG_CALL CWnd::*pfn_vWh)(CWnd*, HANDLE);
-//	void    (AFX_MSG_CALL CWnd::*pfn_vwW)(UINT, CWnd*);
-//	void    (AFX_MSG_CALL CWnd::*pfn_vwWb)(UINT, CWnd*, BOOL);
-//	void    (AFX_MSG_CALL CWnd::*pfn_vwwW)(UINT, UINT, CWnd*);
-//	void    (AFX_MSG_CALL CWnd::*pfn_vwwx)(UINT, UINT);
-//	void    (AFX_MSG_CALL CWnd::*pfn_vs)(LPTSTR);
-//	void    (AFX_MSG_CALL CWnd::*pfn_vOWNER)(int, LPTSTR);   // force return TRUE
-//	int     (AFX_MSG_CALL CWnd::*pfn_iis)(int, LPTSTR);
-//	UINT    (AFX_MSG_CALL CWnd::*pfn_wp)(CPoint);
-//	UINT    (AFX_MSG_CALL CWnd::*pfn_wv)(void);
 	void    (AFX_MSG_CALL CWnd::*pfn_vPOS)(WINDOWPOS*);
 	void    (AFX_MSG_CALL CWnd::*pfn_vCALC)(BOOL, NCCALCSIZE_PARAMS*);
-	void    (AFX_MSG_CALL CWnd::*pfn_vwp)(UINT, CPoint);
 	void    (AFX_MSG_CALL CWnd::*pfn_vwwh)(UINT, UINT, HANDLE);
-	BOOL    (AFX_MSG_CALL CWnd::*pfn_bwsp)(UINT, short, CPoint);
-//	void    (AFX_MSG_CALL CWnd::*pfn_vws)(UINT, LPCTSTR);
 };
 
 CHandleMap* PASCAL afxMapHWND(BOOL bCreate = FALSE);

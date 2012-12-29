@@ -147,10 +147,6 @@ void CDC::DrawDragRect(LPCRECT lpRect, SIZE size,
 	CRgn rgnNew;
 	CRgn rgnOutside, rgnInside;
 	rgnOutside.CreateRectRgnIndirect(lpRect);
-	CRect rect = *lpRect;
-	rect.InflateRect(-size.cx, -size.cy);
-	rect.IntersectRect(rect, lpRect);
-	rgnInside.CreateRectRgnIndirect(rect);
 	rgnNew.CreateRectRgn(0, 0, 0, 0);
 	rgnNew.CombineRgn(&rgnOutside, &rgnInside, RGN_XOR);
 
@@ -173,10 +169,6 @@ void CDC::DrawDragRect(LPCRECT lpRect, SIZE size,
 		// find difference between new region and old region
 		rgnLast.CreateRectRgn(0, 0, 0, 0);
 		rgnOutside.SetRectRgn(lpRectLast);
-		rect = *lpRectLast;
-		rect.InflateRect(-sizeLast.cx, -sizeLast.cy);
-		rect.IntersectRect(rect, lpRectLast);
-		rgnInside.SetRectRgn(rect);
 		rgnLast.CombineRgn(&rgnOutside, &rgnInside, RGN_XOR);
 
 		// only diff them if brushes are the same
@@ -190,18 +182,12 @@ void CDC::DrawDragRect(LPCRECT lpRect, SIZE size,
 	{
 		// brushes are different -- erase old region first
 		SelectClipRgn(&rgnLast);
-		GetClipBox(&rect);
-		pBrushOld = SelectObject(pBrushLast);
-		PatBlt(rect.left, rect.top, rect.Width(), rect.Height(), PATINVERT);
-		SelectObject(pBrushOld);
 		pBrushOld = NULL;
 	}
 
 	// draw into the update/new region
 	SelectClipRgn(rgnUpdate.m_hObject != NULL ? &rgnUpdate : &rgnNew);
-	GetClipBox(&rect);
 	pBrushOld = SelectObject(pBrush);
-	PatBlt(rect.left, rect.top, rect.Width(), rect.Height(), PATINVERT);
 
 	// cleanup DC
 	if (pBrushOld != NULL)

@@ -63,7 +63,6 @@
 // v - void
 // l - LPARAM
 // M - CMenu*
-// p - CPoint
 // POS - WINDOWPOS*
 // CALC - NCCALCSIZE_PARAMS*
 // NMHDR - NMHDR*
@@ -115,7 +114,6 @@ enum AfxSig
 	AfxSig_v_W_v,				// void (CWnd*)
 	AfxSig_v_v_W,				// void (CWnd*)
 	AfxSig_v_W_uu,				// void (CWnd*, UINT, UINT)
-	AfxSig_v_W_p,				// void (CWnd*, CPoint)
 	AfxSig_v_W_h,				// void (CWnd*, HANDLE)
 	AfxSig_C_v_v,				// HCURSOR ()
 	AfxSig_ACTIVATE,			// void (UINT, CWnd*, BOOL)
@@ -125,15 +123,11 @@ enum AfxSig
 	AfxSig_v_u_cs,				// void (UINT, LPCTSTR)
 	AfxSig_OWNERDRAW,			// void (int, LPTSTR) force return TRUE
 	AfxSig_i_i_s,				// int (int, LPTSTR)
-	AfxSig_u_v_p,				// UINT (CPoint)
 	AfxSig_u_v_v,				// UINT ()
 	AfxSig_v_b_NCCALCSIZEPARAMS,		// void (BOOL, NCCALCSIZE_PARAMS*)
 	AfxSig_v_v_WINDOWPOS,			// void (WINDOWPOS*)
 	AfxSig_v_uu_M,				// void (UINT, UINT, HMENU)
-	AfxSig_v_u_p,				// void (UINT, CPoint)
 	AfxSig_SIZING,				// void (UINT, LPRECT)
-	AfxSig_MOUSEWHEEL,			// BOOL (UINT, short, CPoint)
-	AfxSig_MOUSEHWHEEL,			// void (UINT, short, CPoint)
 	AfxSigCmd_v,				// void ()
 	AfxSigCmd_b,				// BOOL ()
 	AfxSigCmd_RANGE,			// void (UINT)
@@ -147,7 +141,6 @@ enum AfxSig
 	AfxSigCmd_v_pv,				// void (void*)
 	AfxSigCmd_b_pv,				// BOOL (void*)
 	AfxSig_l,				// LRESULT ()
-	AfxSig_l_p,				// LRESULT (CPOINT)	
 	AfxSig_u_W_u,				// UINT (CWnd*, UINT)
 	AfxSig_v_u_M,				// void (UINT, CMenu* )
 	AfxSig_u_u_M,				// UINT (UINT, CMenu* )
@@ -157,8 +150,6 @@ enum AfxSig
 	AfxSig_APPCOMMAND,			// void (CWnd*, UINT, UINT, UINT)
 	AfxSig_RAWINPUT,			// void (UINT, HRAWINPUT)
 	AfxSig_u_u_u,				// UINT (UINT, UINT)
-	AfxSig_MOUSE_XBUTTON,			// void (UINT, UINT, CPoint)
-	AfxSig_MOUSE_NCXBUTTON,			// void (short, UINT, CPoint)
 	AfxSig_INPUTLANGCHANGE,			// void (UINT, UINT)
 	AfxSig_v_u_hkl,					// void (UINT, HKL)
 	AfxSig_INPUTDEVICECHANGE,		// void (unsigned short, HANDLE)
@@ -190,7 +181,6 @@ enum AfxSig
 
 	AfxSig_vW = AfxSig_v_W_v,      // void (CWnd*)
 	AfxSig_vWww = AfxSig_v_W_uu,    // void (CWnd*, UINT, UINT)
-	AfxSig_vWp = AfxSig_v_W_p,     // void (CWnd*, CPoint)
 	AfxSig_vWh = AfxSig_v_W_h,     // void (CWnd*, HANDLE)
 	AfxSig_vwW = AfxSig_v_u_W,     // void (UINT, CWnd*)
 	AfxSig_vwWb = AfxSig_ACTIVATE,    // void (UINT, CWnd*, BOOL)
@@ -199,7 +189,6 @@ enum AfxSig
 	AfxSig_vs = AfxSig_v_v_s,      // void (LPTSTR)
 	AfxSig_vOWNER = AfxSig_OWNERDRAW,  // void (int, LPTSTR), force return TRUE
 	AfxSig_iis = AfxSig_i_i_s,     // int (int, LPTSTR)
-	AfxSig_wp = AfxSig_u_v_p,      // UINT (CPoint)
 	AfxSig_wv = AfxSig_u_v_v,      // UINT (void)
 	AfxSig_vPOS = AfxSig_v_v_WINDOWPOS,    // void (WINDOWPOS*)
 	AfxSig_vCALC = AfxSig_v_b_NCCALCSIZEPARAMS,   // void (BOOL, NCCALCSIZE_PARAMS*)
@@ -218,7 +207,6 @@ enum AfxSig
 
 	// Other aliases (based on implementation)
 	AfxSig_vwwh = AfxSig_v_uu_M,                // void (UINT, UINT, HMENU)
-	AfxSig_vwp = AfxSig_v_u_p,                 // void (UINT, CPoint)
 	AfxSig_bw = AfxSig_b_u_v,      // BOOL (UINT)
 	AfxSig_bh = AfxSig_b_h_v,      // BOOL (HANDLE)
 	AfxSig_iw = AfxSig_i_u_v,      // int (UINT)
@@ -236,7 +224,6 @@ enum AfxSig
 
 	AfxSig_vW2 = AfxSig_v_v_W,                 // void (CWnd*) (CWnd* comes from lParam)
 	AfxSig_bWCDS = AfxSig_b_W_COPYDATASTRUCT,               // BOOL (CWnd*, COPYDATASTRUCT*)
-	AfxSig_bwsp = AfxSig_MOUSEWHEEL,                // BOOL (UINT, short, CPoint)
 	AfxSig_vws = AfxSig_v_u_cs,
 };
 
@@ -609,11 +596,6 @@ enum AfxSig
 		(AFX_PMSG)(AFX_PMSGW) \
 		(static_cast< void (AFX_MSG_CALL CWnd::*)(BOOL, NCCALCSIZE_PARAMS*) > ( &ThisClass :: OnNcCalcSize)) },
 
-#define ON_WM_NCHITTEST() \
-	{ WM_NCHITTEST, 0, 0, 0, AfxSig_l_p, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< LRESULT (AFX_MSG_CALL CWnd::*)(CPoint) > (&ThisClass :: OnNcHitTest)) },
-
 #define ON_WM_NCPAINT() \
 	{ WM_NCPAINT, 0, 0, 0, AfxSig_vv, \
 		(AFX_PMSG)(AFX_PMSGW) \
@@ -628,105 +610,6 @@ enum AfxSig
 	{ WM_GETDLGCODE, 0, 0, 0, AfxSig_wv, \
 		(AFX_PMSG)(AFX_PMSGW) \
 		(static_cast< UINT (AFX_MSG_CALL CWnd::*)(void) > ( &ThisClass :: OnGetDlgCode)) },
-
-#define ON_WM_NCMOUSEMOVE() \
-	{ WM_NCMOUSEMOVE, 0, 0, 0, AfxSig_vwp, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, CPoint) > ( &ThisClass :: OnNcMouseMove)) },
-
-#define ON_WM_NCMOUSEHOVER() \
-	{ WM_NCMOUSEHOVER, 0, 0, 0, AfxSig_vwp, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, CPoint) > ( &ThisClass :: OnNcMouseHover)) },
-
-#define ON_WM_NCMOUSELEAVE() \
-	{ WM_NCMOUSELEAVE, 0, 0, 0, AfxSig_vv, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(void) > ( &ThisClass :: OnNcMouseLeave)) },
-
-#define ON_WM_NCLBUTTONDOWN() \
-	{ WM_NCLBUTTONDOWN, 0, 0, 0, AfxSig_vwp, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, CPoint) > ( &ThisClass :: OnNcLButtonDown)) },
-
-#define ON_WM_NCLBUTTONUP() \
-	{ WM_NCLBUTTONUP, 0, 0, 0, AfxSig_vwp, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, CPoint) > ( &ThisClass :: OnNcLButtonUp)) },
-
-#define ON_WM_NCLBUTTONDBLCLK() \
-	{ WM_NCLBUTTONDBLCLK, 0, 0, 0, AfxSig_vwp, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, CPoint) > ( &ThisClass :: OnNcLButtonDblClk)) },
-
-#define ON_WM_NCRBUTTONDOWN() \
-	{ WM_NCRBUTTONDOWN, 0, 0, 0, AfxSig_vwp, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, CPoint) > ( &ThisClass :: OnNcRButtonDown)) },
-
-#define ON_WM_NCRBUTTONUP() \
-	{ WM_NCRBUTTONUP, 0, 0, 0, AfxSig_vwp, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, CPoint) > ( &ThisClass :: OnNcRButtonUp)) },
-
-#define ON_WM_NCRBUTTONDBLCLK() \
-	{ WM_NCRBUTTONDBLCLK, 0, 0, 0, AfxSig_vwp, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, CPoint) > ( &ThisClass :: OnNcRButtonDblClk)) },
-
-#define ON_WM_NCMBUTTONDOWN() \
-	{ WM_NCMBUTTONDOWN, 0, 0, 0, AfxSig_vwp, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, CPoint) > ( &ThisClass :: OnNcMButtonDown)) },
-
-#define ON_WM_NCMBUTTONUP() \
-	{ WM_NCMBUTTONUP, 0, 0, 0, AfxSig_vwp, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, CPoint) > ( &ThisClass :: OnNcMButtonUp)) },
-
-#define ON_WM_NCMBUTTONDBLCLK() \
-	{ WM_NCMBUTTONDBLCLK, 0, 0, 0, AfxSig_vwp, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, CPoint) > ( &ThisClass :: OnNcMButtonDblClk)) },
-
-#if(_WIN32_WINNT >= 0x0500)
-
-#define ON_WM_NCXBUTTONDOWN() \
-	{ WM_NCXBUTTONDOWN, 0, 0, 0, AfxSig_MOUSE_NCXBUTTON, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(short, UINT, CPoint) > ( &ThisClass :: OnNcXButtonDown)) },
-
-#define ON_WM_NCXBUTTONUP() \
-	{ WM_NCXBUTTONUP, 0, 0, 0, AfxSig_MOUSE_NCXBUTTON, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(short, UINT, CPoint) > ( &ThisClass :: OnNcXButtonUp)) },
-
-#define ON_WM_NCXBUTTONDBLCLK() \
-	{ WM_NCXBUTTONDBLCLK, 0, 0, 0, AfxSig_MOUSE_NCXBUTTON, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(short, UINT, CPoint) > ( &ThisClass :: OnNcXButtonDblClk)) },
-
-#else
-
-#define ON_WM_NCXBUTTONDOWN() \
-	__pragma(message("WM_NCXBUTTONDOWN requires _WIN32_WINNT to be >= 0x500")) \
-	{ WM_NCXBUTTONDOWN, 0, 0, 0, AfxSig_MOUSE_NCXBUTTON, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(short, UINT, CPoint) > ( &ThisClass :: OnNcXButtonDown)) },
-
-#define ON_WM_NCXBUTTONUP() \
-	__pragma(message("WM_NCXBUTTONUP requires _WIN32_WINNT to be >= 0x500")) \
-	{ WM_NCXBUTTONUP, 0, 0, 0, AfxSig_MOUSE_NCXBUTTON, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(short, UINT, CPoint) > ( &ThisClass :: OnNcXButtonUp)) },
-
-#define ON_WM_NCXBUTTONDBLCLK() \
-	__pragma(message("WM_NCXBUTTONDBLCLK requires _WIN32_WINNT to be >= 0x500")) \
-	{ WM_NCXBUTTONDBLCLK, 0, 0, 0, AfxSig_MOUSE_NCXBUTTON, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(short, UINT, CPoint) > ( &ThisClass :: OnNcXButtonDblClk)) },
-
-#endif
 
 #define ON_WM_KEYDOWN() \
 	{ WM_KEYDOWN, 0, 0, 0, AfxSig_vwww, \
@@ -871,127 +754,6 @@ enum AfxSig
 		(AFX_PMSG)(AFX_PMSGW) \
 		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, CWnd*) > ( &ThisClass :: OnEnterIdle)) },
 
-#define ON_WM_MOUSEMOVE() \
-	{ WM_MOUSEMOVE, 0, 0, 0, AfxSig_vwp, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, CPoint) > ( &ThisClass :: OnMouseMove)) },
-
-#define ON_WM_MOUSEHOVER() \
-	{ WM_MOUSEHOVER, 0, 0, 0, AfxSig_vwp, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, CPoint) > ( &ThisClass :: OnMouseHover)) },
-
-#define ON_WM_MOUSELEAVE() \
-	{ WM_MOUSELEAVE, 0, 0, 0, AfxSig_vv, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(void) > ( &ThisClass :: OnMouseLeave)) },
-
-#define ON_WM_MOUSEWHEEL() \
-	{ WM_MOUSEWHEEL, 0, 0, 0, AfxSig_bwsp, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< BOOL (AFX_MSG_CALL CWnd::*)(UINT, short, CPoint) > ( &ThisClass :: OnMouseWheel)) },
-
-#if (_WIN32_WINNT >= 0x0600)
-
-#define ON_WM_MOUSEHWHEEL() \
-	{ WM_MOUSEHWHEEL, 0, 0, 0, AfxSig_MOUSEHWHEEL, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, short, CPoint) > ( &ThisClass :: OnMouseHWheel)) },
-
-#else
-
-#define ON_WM_MOUSEHWHEEL() \
-	__pragma(message("WM_MOUSEHWHEEL requires _WIN32_WINNT to be >= 0x600")) \
-	{ WM_MOUSEHWHEEL, 0, 0, 0, AfxSig_MOUSEHWHEEL, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, short, CPoint) > ( &ThisClass :: OnMouseHWheel)) },
-
-#endif
-
-#define ON_WM_LBUTTONDOWN() \
-	{ WM_LBUTTONDOWN, 0, 0, 0, AfxSig_vwp, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, CPoint) > ( &ThisClass :: OnLButtonDown)) },
-
-#define ON_WM_LBUTTONUP() \
-	{ WM_LBUTTONUP, 0, 0, 0, AfxSig_vwp, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, CPoint) > ( &ThisClass :: OnLButtonUp)) },
-
-#define ON_WM_LBUTTONDBLCLK() \
-	{ WM_LBUTTONDBLCLK, 0, 0, 0, AfxSig_vwp, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, CPoint) > ( &ThisClass :: OnLButtonDblClk)) },
-
-#define ON_WM_RBUTTONDOWN() \
-	{ WM_RBUTTONDOWN, 0, 0, 0, AfxSig_vwp, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, CPoint) > ( &ThisClass :: OnRButtonDown)) },
-
-#define ON_WM_RBUTTONUP() \
-	{ WM_RBUTTONUP, 0, 0, 0, AfxSig_vwp, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, CPoint) > ( &ThisClass :: OnRButtonUp)) },
-
-#define ON_WM_RBUTTONDBLCLK() \
-	{ WM_RBUTTONDBLCLK, 0, 0, 0, AfxSig_vwp, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, CPoint) > ( &ThisClass :: OnRButtonDblClk)) },
-
-#define ON_WM_MBUTTONDOWN() \
-	{ WM_MBUTTONDOWN, 0, 0, 0, AfxSig_vwp, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, CPoint) > ( &ThisClass :: OnMButtonDown)) },
-
-#define ON_WM_MBUTTONUP() \
-	{ WM_MBUTTONUP, 0, 0, 0, AfxSig_vwp, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, CPoint) > ( &ThisClass :: OnMButtonUp)) },
-
-#define ON_WM_MBUTTONDBLCLK() \
-	{ WM_MBUTTONDBLCLK, 0, 0, 0, AfxSig_vwp, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, CPoint) > ( &ThisClass :: OnMButtonDblClk)) },
-
-#if (_WIN32_WINNT >= 0x0500)
-
-#define ON_WM_XBUTTONDOWN() \
-	{ WM_XBUTTONDOWN, 0, 0, 0, AfxSig_MOUSE_XBUTTON, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, UINT, CPoint) > ( &ThisClass :: OnXButtonDown)) },
-
-#define ON_WM_XBUTTONUP() \
-	{ WM_XBUTTONUP, 0, 0, 0, AfxSig_MOUSE_XBUTTON, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, UINT, CPoint) > ( &ThisClass :: OnXButtonUp)) },
-
-#define ON_WM_XBUTTONDBLCLK() \
-	{ WM_XBUTTONDBLCLK, 0, 0, 0, AfxSig_MOUSE_XBUTTON, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, UINT, CPoint) > ( &ThisClass :: OnXButtonDblClk)) },
-
-#else
-
-#define ON_WM_XBUTTONDOWN() \
-	__pragma(message("WM_XBUTTONDOWN requires _WIN32_WINNT to be >= 0x500")) \
-	{ WM_XBUTTONDOWN, 0, 0, 0, AfxSig_MOUSE_XBUTTON, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, UINT, CPoint) > ( &ThisClass :: OnXButtonDown)) },
-
-#define ON_WM_XBUTTONUP() \
-	__pragma(message("WM_XBUTTONUP requires _WIN32_WINNT to be >= 0x500")) \
-	{ WM_XBUTTONUP, 0, 0, 0, AfxSig_MOUSE_XBUTTON, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, UINT, CPoint) > ( &ThisClass :: OnXButtonUp)) },
-
-#define ON_WM_XBUTTONDBLCLK() \
-	__pragma(message("WM_XBUTTONDBLCLK requires _WIN32_WINNT to be >= 0x500")) \
-	{ WM_XBUTTONDBLCLK, 0, 0, 0, AfxSig_MOUSE_XBUTTON, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, UINT, CPoint) > ( &ThisClass :: OnXButtonDblClk)) },
-
-#endif
-
 #define ON_WM_PARENTNOTIFY() \
 	{ WM_PARENTNOTIFY, 0, 0, 0, AfxSig_vwl, \
 		(AFX_PMSG)(AFX_PMSGW) \
@@ -1040,11 +802,6 @@ enum AfxSig
 	{ WM_VSCROLLCLIPBOARD, 0, 0, 0, AfxSig_vWww, \
 		(AFX_PMSG)(AFX_PMSGW) \
 		(static_cast< void (AFX_MSG_CALL CWnd::*)(CWnd*, UINT, UINT) > ( &ThisClass :: OnVScrollClipboard)) },
-
-#define ON_WM_CONTEXTMENU() \
-	{ WM_CONTEXTMENU, 0, 0, 0, AfxSig_vWp, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(CWnd*, CPoint) > ( &ThisClass :: OnContextMenu)) },
 
 #define ON_WM_SIZECLIPBOARD() \
 	{ WM_SIZECLIPBOARD, 0, 0, 0, AfxSig_vWh, \
