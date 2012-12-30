@@ -49,12 +49,16 @@ IF (CONF EQUAL x64)
     set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}
         -DWIN64
 "
+    set ( BOOST_LINK_DIR ${LIBS_ROOT}/boost/stage/x64 )
     )
+ELSE()
+    set ( BOOST_LINK_DIR ${LIBS_ROOT}/boost/stage )
 ENDIF()
 
 set ( CMAKE_CXX_FLAGS_DEBUG "-D_DEBUG;NETBOX_DEBUG;"
      " /Gm- /MTd /GS"
 )
+
 set ( CMAKE_CXX_FLAGS_RELEASE "-U_DEBUG;NETBOX_DEBUG; -DNDEBUG;BOOST_DISABLE_ASSERTS"
     " /Gm- /MT -Ob2 -Oi -Os -Oy -GF -GS- -Gy"
 )
@@ -133,9 +137,7 @@ include_directories (
     ${LIBS_ROOT}/apr/include/arch/unix
 )
 
-link_directories (
-    ${LIBS_ROOT}/boost/stage
-)
+link_directories ( ${BOOST_LINK_DIR} )
 
 #-------------------------------------------------------------------------------
 
