@@ -1,4 +1,5 @@
 #include <vcl.h>
+#pragma hdrstop
 
 #include "Common.h"
 #include "FarUtil.h"
