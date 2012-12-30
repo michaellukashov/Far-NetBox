@@ -29,7 +29,7 @@ set ( OUTPUT_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${CONF}/Plugins/NetBox )
 
 set ( LIBS_ROOT ${PROJECT_ROOT}/libs )
 set ( SRC_ROOT ${PROJECT_ROOT}/src )
-set ( TESTS_ROOT ${SRC_ROOT}/NetBox )
+set ( TESTS_ROOT ${SRC_ROOT}/tests )
 
 #-------------------------------------------------------------------------------
 
@@ -592,7 +592,7 @@ set ( TESTNETBOX_02_SOURCES
     ${SRC_ROOT}/NetBox/UnityBuildCore.cpp
     ${SRC_ROOT}/NetBox/UnityBuildMain.cpp
     ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
-    # ${TESTNETBOX_02_DIR}/testnetbox_02.rc
+    ${TESTNETBOX_02_DIR}/testnetbox_02.rc
     ${TESTNETBOX_02_DIR}/testnetbox_02.cpp
 )
 

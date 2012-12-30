@@ -45,22 +45,22 @@ protected:
     {
         DEBUG_PRINTF(L"call");
     }
-    virtual TCustomFarFileSystem * OpenPluginEx(int OpenFrom, intptr_t Item)
+    virtual TCustomFarFileSystem * OpenPluginEx(intptr_t OpenFrom, intptr_t Item)
     {
         DEBUG_PRINTF(L"call");
         return NULL;
     }
-    virtual bool ConfigureEx(int Item)
+    virtual bool ConfigureEx(intptr_t Item)
     {
         DEBUG_PRINTF(L"call");
         return false;
     }
-    virtual int ProcessEditorEventEx(int Event, void *Param)
+    virtual intptr_t ProcessEditorEventEx(intptr_t Event, void *Param)
     {
         DEBUG_PRINTF(L"call");
         return -1;
     }
-    virtual int ProcessEditorInputEx(const INPUT_RECORD *Rec)
+    virtual intptr_t ProcessEditorInputEx(const INPUT_RECORD *Rec)
     {
         DEBUG_PRINTF(L"call");
         return -1;

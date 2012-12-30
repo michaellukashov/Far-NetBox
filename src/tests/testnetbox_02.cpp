@@ -510,7 +510,7 @@ BOOST_FIXTURE_TEST_CASE(test15, base_fixture_t)
     TFileMasks m(L"*.txt;*.log");
     BOOST_CHECK_EQUAL(true, m.Matches(L"test.log"));
 
-    int Start, Length;
+    intptr_t Start, Length;
     BOOST_CHECK_EQUAL(true, m.GetIsValid(Start, Length));
     m.SetMask(L"*.exe");
     BOOST_CHECK_EQUAL(true, m.Matches(L"test.exe"));
