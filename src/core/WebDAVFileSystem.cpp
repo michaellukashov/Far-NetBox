@@ -34,7 +34,7 @@
 #include "SecureShell.h"
 #include "FileZillaIntf.h"
 #include "HelpCore.h"
-#include "version.h"
+#include "plugin_version.hpp"
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)

@@ -5,7 +5,7 @@
 #include <CoreDefs.hpp>
 
 #include "Exceptions.h"
-#include "version.h"
+#include "plugin_version.hpp"
 //---------------------------------------------------------------------------
 #define EXCEPTION throw ExtException((Exception* )NULL, UnicodeString(L""))
 #define THROWOSIFFALSE(C) if (!(C)) RaiseLastOSError();
