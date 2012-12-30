@@ -131,7 +131,7 @@ void __fastcall TConfiguration::Default()
   UpdateActualLogProtocol();
   FLogActions = false;
   FPermanentLogActions = false;
-  FActionsLogFileName = L"%TEMP%\\!S.xml";
+  FActionsLogFileName = L"%TEMP%\\&S.xml";
   FPermanentActionsLogFileName = FActionsLogFileName;
 
   Changed();

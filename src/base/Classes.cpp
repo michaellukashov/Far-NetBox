@@ -1071,16 +1071,19 @@ void TStringList::SetSorted(bool Value)
 void TStringList::LoadFromFile(const UnicodeString & FileName)
 {
   HANDLE FileHandle = ::CreateFile(FileName.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, 0);
-  TSafeHandleStream Stream(FileHandle);
-  __int64 Size = Stream.GetSize();
-  TFileBuffer FileBuffer;
-  FileBuffer.LoadStream(&Stream, Size, True);
-  bool ConvertToken;
-  FileBuffer.Convert(eolCRLF, eolCRLF, cpRemoveCtrlZ | cpRemoveBOM, ConvertToken);
-  ::CloseHandle(FileHandle);
-  UnicodeString Str(FileBuffer.GetData(), static_cast<intptr_t>(FileBuffer.GetSize()));
-  // DEBUG_PRINTF(L"Str = %s", Str.c_str());
-  SetTextStr(Str);
+  if (FileHandle != INVALID_HANDLE_VALUE)
+  {
+    TSafeHandleStream Stream(FileHandle);
+    __int64 Size = Stream.GetSize();
+    TFileBuffer FileBuffer;
+    __int64 Read = FileBuffer.LoadStream(&Stream, Size, True);
+    bool ConvertToken;
+    FileBuffer.Convert(eolCRLF, eolCRLF, cpRemoveCtrlZ | cpRemoveBOM, ConvertToken);
+    ::CloseHandle(FileHandle);
+    UnicodeString Str(FileBuffer.GetData(), static_cast<intptr_t>(FileBuffer.GetSize()));
+    // DEBUG_PRINTF(L"Str = %s", Str.c_str());
+    SetTextStr(Str);
+  }
   /* FILE * f = NULL;
   _wfopen_s(&f, FileName, L"rb");
   if (!f)

@@ -21,12 +21,12 @@ IF (CONF EQUAL x86)
 ELSE()
   set ( PLATFORM "x64" )
 ENDIF()
-set ( OUTPUT_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${CONF}/Plugins/NetBox )
+
 set ( OUTPUT_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${CONF}/Plugins/NetBox )
 
 set ( LIBS_ROOT ${PROJECT_ROOT}/libs )
 set ( SRC_ROOT ${PROJECT_ROOT}/src )
-set ( TESTS_ROOT ${SRC_ROOT}/NetBox )
+set ( TESTS_ROOT ${SRC_ROOT}/tests )
 
 #-------------------------------------------------------------------------------
 
@@ -63,9 +63,20 @@ IF (CONF EQUAL x64)
     )
 ENDIF()
 
+IF (CONF EQUAL x64)
+    set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}
+        -DWIN64
+"
+    set ( BOOST_LINK_DIR ${LIBS_ROOT}/boost/stage/x64 )
+    )
+ELSE()
+    set ( BOOST_LINK_DIR ${LIBS_ROOT}/boost/stage )
+ENDIF()
+
 set ( CMAKE_CXX_FLAGS_DEBUG "-D_DEBUG;NETBOX_DEBUG;"
      " /Gm- /MTd /GS"
 )
+
 set ( CMAKE_CXX_FLAGS_RELEASE "-U_DEBUG;NETBOX_DEBUG; -DNDEBUG;BOOST_DISABLE_ASSERTS"
     " /Gm- /MT -Ob2 -Oi -Os -Oy -GF -GS- -Gy"
 )
@@ -145,9 +156,7 @@ include_directories (
     ${LIBS_ROOT}/apr/include/arch/unix
 )
 
-link_directories (
-    ${LIBS_ROOT}/boost/stage
-)
+link_directories ( ${BOOST_LINK_DIR} )
 
 #-------------------------------------------------------------------------------
 
@@ -272,6 +281,18 @@ set ( NETBOX_LIBRARIES
     shell32.lib
     shlwapi.lib
 )
+
+IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set ( NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
+    libcmtd.lib
+    libcpmtd.lib
+  )
+ELSE()
+  set ( NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
+    libcmt.lib
+    libcpmt.lib
+  )
+ENDIF()
 
 IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
   set ( NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
@@ -628,7 +649,7 @@ set ( TESTNETBOX_02_SOURCES
     ${SRC_ROOT}/NetBox/UnityBuildCore.cpp
     ${SRC_ROOT}/NetBox/UnityBuildMain.cpp
     ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
-    # ${TESTNETBOX_02_DIR}/testnetbox_02.rc
+    ${TESTNETBOX_02_DIR}/testnetbox_02.rc
     ${TESTNETBOX_02_DIR}/testnetbox_02.cpp
 )
 

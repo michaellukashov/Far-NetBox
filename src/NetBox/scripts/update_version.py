@@ -4,33 +4,34 @@
 import os, sys, string
 import re, time
 
-version_h = \
+plugin_version_h = \
 """\
 //------------------------------------------------------------------------------
-// version.h
+// plugin_version.hpp
 //
 //------------------------------------------------------------------------------
 #pragma once
 
 #include <string>
 
-#define PLUGIN_VERSION_MAJOR         %(version_major)s
-#define PLUGIN_VERSION_MINOR         %(version_minor)s
-#define PLUGIN_VERSION_PATCH         %(patch)s
-#define PLUGIN_VERSION_BUILD         %(build)s
+#define NETBOX_VERSION_MAJOR         %(version_major)s
+#define NETBOX_VERSION_MINOR         %(version_minor)s
+#define NETBOX_VERSION_PATCH         %(patch)s
+#define NETBOX_VERSION_BUILD         %(build)s
 
 static const std::wstring NETBOX_VERSION_NUMBER(L"%(version_major)s.%(version_minor)s.%(patch)s");
 static const std::wstring NETBOX_COMPILATION_TIME(L"%(compile_time)s");
 
 """
 
+PLUGIN_VERSION_FILE = 'plugin_version.hpp'
+
 def write_header(version_major, version_minor, patch, build, git_revision):
-    f = 'version.h'
-    file_h = open(f, "w")
+    f = open(PLUGIN_VERSION_FILE, "w")
     compile_time = time.strftime('%d.%m.%Y %H:%M:%S')
-    version_h_content = version_h % locals()
-    file_h.write(version_h_content)
-    file_h.close()
+    plugin_version_h_content = plugin_version_h % locals()
+    f.write(plugin_version_h_content)
+    f.close()
     return
 
 ###############################################################################
@@ -112,11 +113,11 @@ def get_revision():
     return git_revision
 
 def get_build_number():
-    """ read build number from version.h """
+    """ read build number from plugin_version.hpp """
     build_number = "0"
-    build_re = re.compile(r'^\#define PLUGIN_VERSION_BUILD\s+(\d+).*$')
+    build_re = re.compile(r'^\#define NETBOX_VERSION_BUILD\s+(\d+).*$')
     try :
-        f = open('version.h')
+        f = open(PLUGIN_VERSION_FILE)
         for line in f.readlines():
             context = build_re.match(line)
             if context:

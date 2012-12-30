@@ -1,6 +1,5 @@
 //------------------------------------------------------------------------------
 // testnetbox_04.cpp
-// Тесты для NetBox
 // testnetbox_04 --run_test=testnetbox_04/test1 --log_level=all 2>&1 | tee res.txt
 //------------------------------------------------------------------------------
 
@@ -24,6 +23,10 @@
 #include "ne_session.h"
 #include "ne_request.h"
 
+#include "dl/include.hpp"
+
+#include "calculator.hpp"
+
 using namespace boost::unit_test;
 
 /*******************************************************************************
@@ -35,17 +38,12 @@ class base_fixture_t
 public:
   base_fixture_t()
   {
-    // BOOST_TEST_MESSAGE("base_fixture_t ctor");
     InitPlatformId();
-    WSADATA wsaData;
-    WSAStartup(MAKEWORD(2, 2), &wsaData);
-    // ne_sock_init();
   }
-
   virtual ~base_fixture_t()
   {
-    WSACleanup();
   }
+
 public:
 protected:
   static int read_block(void * udata, const char * data, size_t len)
@@ -62,6 +60,9 @@ BOOST_AUTO_TEST_SUITE(testnetbox_04)
 
 BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
 {
+  WSADATA wsaData;
+  WSAStartup(MAKEWORD(2, 2), &wsaData);
+
   ne_session * sess = ne_session_create("http", "farmanager.com", 80);
   ne_request * req = ne_request_create(sess, "GET", "/svn/trunk/unicode_far/vbuild.m4");
   std::vector<unsigned char> vec;
@@ -82,25 +83,16 @@ BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
   }
   ne_request_destroy(req);
   ne_session_destroy(sess);
+  
+  WSACleanup();
 }
 
 BOOST_FIXTURE_TEST_CASE(test2, base_fixture_t)
 {
-  UnicodeString FileName("vbuild.m4");
-  DeleteFile(FileName);
-  // std::ofstream o(AnsiString(FileName).c_str(), std::ios::binary);
-  // Neon::Request r("farmanager.com", "/svn/trunk/unicode_far/vbuild.m4");
-  // o << r; 
-  // o.close();
-  BOOST_CHECK(::FileExists(FileName));
-}
-
-BOOST_FIXTURE_TEST_CASE(test3, base_fixture_t)
-{
-  std::string hostname = "farmanager.com";
-  std::string scheme = "http";
-  // Neon::HttpPort port = 80;
-  // Neon::Session session(hostname, scheme, port);
+  team::calculator calc("calculator_dll.dll");
+  BOOST_TEST_MESSAGE("sum = " << calc.sum(10, 20));
+  BOOST_TEST_MESSAGE("mul = " << calc.mul(10, 20));
+  BOOST_TEST_MESSAGE("sqrt = " << calc.sqrt(25));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

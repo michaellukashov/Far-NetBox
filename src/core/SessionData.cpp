@@ -15,7 +15,7 @@
 #include "PuttyIntf.h"
 #include "RemoteFiles.h"
 #include <StrUtils.hpp>
-#include "version.h"
+#include "plugin_version.hpp"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------

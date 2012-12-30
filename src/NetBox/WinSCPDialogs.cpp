@@ -19,7 +19,7 @@
 #include <Bookmarks.h>
 #include <Queue.h>
 #include <farcolor.hpp>
-#include "version.h"
+#include "plugin_version.hpp"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
@@ -1088,7 +1088,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
-  Text->SetCaption(FORMAT(GetMsg(ABOUT_VERSION).c_str(), Configuration->GetVersion().c_str(), PLUGIN_VERSION_BUILD));
+  Text->SetCaption(FORMAT(GetMsg(ABOUT_VERSION).c_str(), Configuration->GetVersion().c_str(), NETBOX_VERSION_BUILD));
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);

@@ -7,7 +7,7 @@
 #include "FarUtil.h"
 #include "resource.h"
 #include "Common.h"
-#include "version.h"
+#include "plugin_version.hpp"
 
 //---------------------------------------------------------------------------
 extern TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst);
@@ -32,7 +32,7 @@ extern "C"
       return;
     Info->StructSize = sizeof(*Info);
     Info->MinFarVersion = MAKEFARVERSION(FARMANAGERVERSION_MAJOR, FARMANAGERVERSION_MINOR, FARMANAGERVERSION_REVISION, FARMANAGERVERSION_BUILD, FARMANAGERVERSION_STAGE);
-    Info->Version = MAKEFARVERSION(PLUGIN_VERSION_MAJOR, PLUGIN_VERSION_MINOR, PLUGIN_VERSION_PATCH, PLUGIN_VERSION_BUILD, VS_RELEASE);
+    Info->Version = MAKEFARVERSION(NETBOX_VERSION_MAJOR, NETBOX_VERSION_MINOR, NETBOX_VERSION_PATCH, NETBOX_VERSION_BUILD, VS_RELEASE);
     Info->Guid = MainGuid;
     Info->Title = L"NetBox";
     Info->Description = PLUGIN_DESCR;
