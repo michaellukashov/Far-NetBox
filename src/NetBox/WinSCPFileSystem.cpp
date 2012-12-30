@@ -4147,12 +4147,12 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
   }
   delete FileDuplicate;
 }
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool TWinSCPFileSystem::IsEditHistoryEmpty()
 {
   return FEditHistories.empty();
 }
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void TWinSCPFileSystem::EditHistory()
 {
   TFarMenuItems * MenuItems = new TFarMenuItems();
@@ -4195,13 +4195,13 @@ void TWinSCPFileSystem::EditHistory()
     }
   }
 }
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 bool TWinSCPFileSystem::IsLogging()
 {
   return
     Connected() && FTerminal->GetLog()->GetLoggingToFile();
 }
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void TWinSCPFileSystem::ShowLog()
 {
   assert(Connected() && FTerminal->GetLog()->GetLoggingToFile());
@@ -4217,4 +4217,4 @@ UnicodeString TWinSCPFileSystem::GetFileNameHash(const UnicodeString & FileName)
     reinterpret_cast<unsigned char *>(const_cast<char *>(Result.c_str())));
   return BytesToHex(Result);
 }
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
