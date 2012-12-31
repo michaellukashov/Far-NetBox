@@ -17,13 +17,13 @@ extern const TDayTable MonthDays[];
 class Exception : public std::exception, public TObject
 {
 public:
-  explicit /* __fastcall */ Exception(const wchar_t * Msg);
-  explicit /* __fastcall */ Exception(const UnicodeString & Msg);
-  explicit /* __fastcall */ Exception(Exception * E);
-  explicit /* __fastcall */ Exception(std::exception * E);
-  explicit /* __fastcall */ Exception(const UnicodeString & Msg, int AHelpContext);
-  explicit /* __fastcall */ Exception(Exception * E, int Ident);
-  explicit /* __fastcall */ Exception(int Ident);
+  explicit Exception(const wchar_t * Msg);
+  explicit Exception(const UnicodeString & Msg);
+  explicit Exception(Exception * E);
+  explicit Exception(std::exception * E);
+  explicit Exception(const UnicodeString & Msg, int AHelpContext);
+  explicit Exception(Exception * E, int Ident);
+  explicit Exception(int Ident);
 
   template<typename T>
   bool InheritsFrom() const { return dynamic_cast<const T *>(this) != NULL; }

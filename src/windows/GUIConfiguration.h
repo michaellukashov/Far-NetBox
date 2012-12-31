@@ -21,10 +21,10 @@ const int soSynchronizeAsk = 0x04;
 class TGUICopyParamType : public TCopyParamType
 {
 public:
-  /* __fastcall */ TGUICopyParamType();
-  /* __fastcall */ TGUICopyParamType(const TCopyParamType & Source);
-  /* __fastcall */ TGUICopyParamType(const TGUICopyParamType & Source);
-  virtual /* __fastcall */ ~TGUICopyParamType() {}
+  TGUICopyParamType();
+  TGUICopyParamType(const TCopyParamType & Source);
+  TGUICopyParamType(const TGUICopyParamType & Source);
+  virtual ~TGUICopyParamType() {}
 
   void __fastcall Load(THierarchicalStorage * Storage);
   void __fastcall Save(THierarchicalStorage * Storage);
@@ -67,9 +67,9 @@ struct TCopyParamRuleData
 class TCopyParamRule
 {
 public:
-  explicit /* __fastcall */ TCopyParamRule();
-  explicit /* __fastcall */ TCopyParamRule(const TCopyParamRuleData & Data);
-  explicit /* __fastcall */ TCopyParamRule(const TCopyParamRule & Source);
+  explicit TCopyParamRule();
+  explicit TCopyParamRule(const TCopyParamRuleData & Data);
+  explicit TCopyParamRule(const TCopyParamRule & Source);
 
   bool __fastcall Matches(const TCopyParamRuleData & Value) const;
   void __fastcall Load(THierarchicalStorage * Storage);
@@ -94,8 +94,8 @@ class TCopyParamList
 {
 friend class TGUIConfiguration;
 public:
-  explicit /* __fastcall */ TCopyParamList();
-  virtual /* __fastcall */ ~TCopyParamList();
+  explicit TCopyParamList();
+  virtual ~TCopyParamList();
   int __fastcall Find(const TCopyParamRuleData & Value) const;
 
   void __fastcall Load(THierarchicalStorage * Storage, int Count);
@@ -207,8 +207,8 @@ public:
   virtual void __fastcall Saved();
 
 public:
-  explicit /* __fastcall */ TGUIConfiguration();
-  virtual /* __fastcall */ ~TGUIConfiguration();
+  explicit TGUIConfiguration();
+  virtual ~TGUIConfiguration();
   virtual void __fastcall Default();
   virtual void __fastcall UpdateStaticUsage();
 

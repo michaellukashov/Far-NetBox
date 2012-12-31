@@ -17,12 +17,12 @@ char * __fastcall EOLToStr(TEOLType EOLType)
   }
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TFileBuffer::TFileBuffer()
+TFileBuffer::TFileBuffer()
 {
   FMemory = new TMemoryStream();
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TFileBuffer::~TFileBuffer()
+TFileBuffer::~TFileBuffer()
 {
   delete FMemory;
 }

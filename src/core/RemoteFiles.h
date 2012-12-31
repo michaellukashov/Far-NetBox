@@ -23,8 +23,8 @@ class THierarchicalStorage;
 class TRemoteToken
 {
 public:
-  /* __fastcall */ TRemoteToken();
-  explicit /* __fastcall */ TRemoteToken(const UnicodeString & Name);
+  TRemoteToken();
+  explicit TRemoteToken(const UnicodeString & Name);
 
   void __fastcall Clear();
 
@@ -172,15 +172,15 @@ public:
 class TRemoteDirectoryFile : public TRemoteFile
 {
 public:
-  /* __fastcall */ TRemoteDirectoryFile();
-  virtual /* __fastcall */ ~TRemoteDirectoryFile() {}
+  TRemoteDirectoryFile();
+  virtual ~TRemoteDirectoryFile() {}
 };
 //---------------------------------------------------------------------------
 class TRemoteParentDirectory : public TRemoteDirectoryFile
 {
 public:
-  explicit /* __fastcall */ TRemoteParentDirectory(TTerminal * Terminal);
-  virtual /* __fastcall */ ~TRemoteParentDirectory() {}
+  explicit TRemoteParentDirectory(TTerminal * Terminal);
+  virtual ~TRemoteParentDirectory() {}
 };
 //---------------------------------------------------------------------------
 class TRemoteFileList : public TObjectList

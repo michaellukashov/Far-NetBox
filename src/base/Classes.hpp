@@ -397,8 +397,8 @@ class TStringList : public TStrings
   friend intptr_t StringListCompareStrings(TStringList * List, intptr_t Index1, intptr_t Index2);
 
 public:
-  /* __fastcall */ TStringList();
-  virtual /* __fastcall */ ~TStringList();
+  TStringList();
+  virtual ~TStringList();
   virtual void __fastcall Assign(TPersistent * Source);
   virtual void __fastcall Clear();
   intptr_t __fastcall Add(const UnicodeString & S);

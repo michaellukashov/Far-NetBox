@@ -46,12 +46,12 @@ UnicodeString __fastcall FormatDateTimeSpan(const UnicodeString & TimeFormat, TD
 class TLocalCustomCommand : public TFileCustomCommand
 {
 public:
-  /* __fastcall */ TLocalCustomCommand();
-  explicit /* __fastcall */ TLocalCustomCommand(const TCustomCommandData & Data, const UnicodeString & Path);
-  explicit /* __fastcall */ TLocalCustomCommand(const TCustomCommandData & Data, const UnicodeString & Path,
+  TLocalCustomCommand();
+  explicit TLocalCustomCommand(const TCustomCommandData & Data, const UnicodeString & Path);
+  explicit TLocalCustomCommand(const TCustomCommandData & Data, const UnicodeString & Path,
     const UnicodeString & FileName, const UnicodeString & LocalFileName,
     const UnicodeString & FileList);
-  virtual /* __fastcall */ ~TLocalCustomCommand() {}
+  virtual ~TLocalCustomCommand() {}
 
   virtual bool __fastcall IsFileCommand(const UnicodeString & Command);
   bool __fastcall HasLocalFileName(const UnicodeString & Command);

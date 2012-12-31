@@ -9,8 +9,8 @@ class TShortCuts;
 class TBookmarks : public TObject
 {
 public:
-  /* __fastcall */ TBookmarks();
-  virtual /* __fastcall */ ~TBookmarks();
+  TBookmarks();
+  virtual ~TBookmarks();
 
   void __fastcall Load(THierarchicalStorage * Storage);
   void __fastcall Save(THierarchicalStorage * Storage, bool All);
@@ -37,8 +37,8 @@ class TBookmarkList : public TPersistent
 friend class TBookmarks;
 friend class TBookmark;
 public:
-  /* __fastcall */ TBookmarkList();
-  virtual /* __fastcall */ ~TBookmarkList();
+  TBookmarkList();
+  virtual ~TBookmarkList();
 
   void __fastcall Clear();
   void __fastcall Add(TBookmark * Bookmark);
@@ -75,7 +75,7 @@ class TBookmark : public TPersistent
 {
 friend class TBookmarkList;
 public:
-  /* __fastcall */ TBookmark();
+  TBookmark();
 
   virtual void __fastcall Assign(TPersistent * Source);
 

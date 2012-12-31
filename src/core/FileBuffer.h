@@ -11,8 +11,8 @@ const int cpRemoveBOM =   0x02;
 class TFileBuffer
 {
 public:
-  /* __fastcall */ TFileBuffer();
-  virtual /* __fastcall */ ~TFileBuffer();
+  TFileBuffer();
+  virtual ~TFileBuffer();
   void __fastcall Convert(char * Source, char * Dest, int Params, bool & Token);
   void __fastcall Convert(TEOLType Source, TEOLType Dest, int Params, bool & Token);
   void __fastcall Convert(char * Source, TEOLType Dest, int Params, bool & Token);
