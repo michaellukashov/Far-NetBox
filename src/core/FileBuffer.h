@@ -43,12 +43,12 @@ private:
 class TSafeHandleStream : public THandleStream
 {
 public:
-  explicit /* __fastcall */ TSafeHandleStream(THandle AHandle);
-  virtual /* __fastcall */ ~TSafeHandleStream() {}
-  virtual __int64 __fastcall Read(void * Buffer, __int64 Count);
-  virtual __int64 __fastcall Write(const void * Buffer, __int64 Count);
+  explicit TSafeHandleStream(THandle AHandle);
+  virtual ~TSafeHandleStream() {}
+  virtual __int64 Read(void * Buffer, __int64 Count);
+  virtual __int64 Write(const void * Buffer, __int64 Count);
 };
 //---------------------------------------------------------------------------
-char * __fastcall EOLToStr(TEOLType EOLType);
+char * EOLToStr(TEOLType EOLType);
 //---------------------------------------------------------------------------
 #endif

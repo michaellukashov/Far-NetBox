@@ -328,7 +328,7 @@ void __fastcall TSessionData::NonPersistant()
   PROPERTY(LoginType); \
   PROPERTY(FtpAllowEmptyPassword);
 //---------------------------------------------------------------------
-void __fastcall TSessionData::Assign(TPersistent * Source)
+void TSessionData::Assign(TPersistent * Source)
 {
   if (Source && (dynamic_cast<TSessionData *>(Source) != NULL))
   {

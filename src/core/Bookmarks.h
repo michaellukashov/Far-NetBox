@@ -48,7 +48,7 @@ public:
   void __fastcall Delete(TBookmark * Bookmark);
   TBookmark * __fastcall FindByName(const UnicodeString & Node, const UnicodeString & Name);
   TBookmark * __fastcall FindByShortCut(TShortCut ShortCut);
-  virtual void __fastcall Assign(TPersistent * Source);
+  virtual void Assign(TPersistent * Source);
   void __fastcall LoadOptions(THierarchicalStorage * Storage);
   void __fastcall SaveOptions(THierarchicalStorage * Storage);
   void __fastcall ShortCuts(TShortCuts & ShortCuts);
@@ -77,7 +77,7 @@ friend class TBookmarkList;
 public:
   TBookmark();
 
-  virtual void __fastcall Assign(TPersistent * Source);
+  virtual void Assign(TPersistent * Source);
 
   UnicodeString __fastcall GetName() { return FName; }
   void __fastcall SetName(const UnicodeString & Value);

@@ -9,13 +9,13 @@ class TNamedObjectList;
 class TNamedObject : public TPersistent
 {
 public:
-  bool __fastcall GetHidden() const { return FHidden; }
-  UnicodeString __fastcall GetName() const { return FName; }
-  void __fastcall SetName(const UnicodeString & Value);
-  explicit /* __fastcall */ TNamedObject() : TPersistent(), FHidden(false) {};
-  Integer __fastcall CompareName(UnicodeString aName, Boolean CaseSensitive = False);
-  explicit /* __fastcall */ TNamedObject(UnicodeString aName);
-  void __fastcall MakeUniqueIn(TNamedObjectList * List);
+  bool GetHidden() const { return FHidden; }
+  UnicodeString GetName() const { return FName; }
+  void SetName(const UnicodeString & Value);
+  explicit TNamedObject() : TPersistent(), FHidden(false) {};
+  Integer CompareName(UnicodeString aName, Boolean CaseSensitive = False);
+  explicit TNamedObject(UnicodeString aName);
+  void MakeUniqueIn(TNamedObjectList * List);
 private:
   UnicodeString FName;
   bool FHidden;
@@ -26,26 +26,26 @@ class TNamedObjectList : public TObjectList
 private:
   intptr_t FHiddenCount;
 public:
-  intptr_t __fastcall GetCount();
-  void __fastcall SetCount(intptr_t Value);
+  intptr_t GetCount();
+  void SetCount(intptr_t Value);
 protected:
-  void __fastcall Recount();
+  void Recount();
 public:
   static const UnicodeString HiddenPrefix;
   static bool IsHidden(TNamedObject * Object);
 
   bool AutoSort;
 
-  /* __fastcall */ TNamedObjectList();
+  TNamedObjectList();
 
-  virtual void __fastcall Notify(void *Ptr, TListNotification Action);
-  void __fastcall AlphaSort();
-  virtual TNamedObject * __fastcall AtObject(intptr_t Index);
-  TNamedObject * __fastcall FindByName(UnicodeString Name, Boolean CaseSensitive = False);
-  intptr_t __fastcall GetHiddenCount() { return FHiddenCount; }
-  void __fastcall SetHiddenCount(intptr_t Value) { FHiddenCount = Value; }
+  virtual void Notify(void *Ptr, TListNotification Action);
+  void AlphaSort();
+  virtual TNamedObject * AtObject(intptr_t Index);
+  TNamedObject * FindByName(UnicodeString Name, Boolean CaseSensitive = False);
+  intptr_t GetHiddenCount() { return FHiddenCount; }
+  void SetHiddenCount(intptr_t Value) { FHiddenCount = Value; }
 };
 //---------------------------------------------------------------------------
-int /* __fastcall */ NamedObjectSortProc(void * Item1, void * Item2);
+int NamedObjectSortProc(void * Item1, void * Item2);
 //---------------------------------------------------------------------------
 #endif

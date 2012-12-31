@@ -107,8 +107,8 @@ public:
   unsigned short TwoDigitYearCenturyWindow;
 };
 
-void __fastcall GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings);
-// int __fastcall GetDefaultLCID();
+void GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings);
+// int GetDefaultLCID();
 
 //---------------------------------------------------------------------------
 
@@ -321,7 +321,7 @@ public:
 UnicodeString UnixExcludeLeadingBackslash(const UnicodeString & Path);
 //---------------------------------------------------------------------------
 extern int RandSeed;
-extern void __fastcall Randomize();
+extern void Randomize();
 //---------------------------------------------------------------------------
 TDateTime IncYear(const TDateTime AValue, const Int64 ANumberOfYears = 1);
 TDateTime IncMonth(const TDateTime AValue, const Int64 NumberOfMonths = 1);

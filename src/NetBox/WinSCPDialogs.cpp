@@ -784,7 +784,7 @@ public:
   bool Execute();
 
 protected:
-  virtual void __fastcall Change();
+  virtual void Change();
 
 private:
   TFarCheckBox * EditorMultipleCheck;
@@ -1492,7 +1492,7 @@ public:
   bool Execute(TSessionData * Data, TSessionActionEnum & Action);
 
 protected:
-  virtual void __fastcall Change();
+  virtual void Change();
   virtual bool CloseQuery();
   virtual void SelectTab(int Tab);
 
@@ -4307,7 +4307,7 @@ protected:
   TFarEdit * FOctalEdit;
   TFarCheckBox * FDirectoriesXCheck;
 
-  virtual void __fastcall Change();
+  virtual void Change();
   void UpdateControls();
 
 public:
@@ -4620,7 +4620,7 @@ public:
   bool Execute(TRemoteProperties * Properties);
 
 protected:
-  virtual void __fastcall Change();
+  virtual void Change();
   void UpdateProperties(TRemoteProperties & Properties);
 
 private:
@@ -4955,7 +4955,7 @@ protected:
 
   void ValidateMaskComboExit(TObject * Sender);
   void ValidateSpeedComboExit(TObject * Sender);
-  virtual void __fastcall Change();
+  virtual void Change();
   void UpdateControls();
 
 private:
@@ -5419,7 +5419,7 @@ public:
 
 protected:
   virtual bool CloseQuery();
-  virtual void __fastcall Change();
+  virtual void Change();
   void CustomCopyParam();
 
   void CopyParamListerClick(TFarDialogItem * Item, MOUSE_EVENT_RECORD * Event);
@@ -5734,7 +5734,7 @@ public:
                bool & Symbolic);
 
 protected:
-  virtual void __fastcall Change();
+  virtual void Change();
 
 private:
   TFarEdit * FileNameEdit;
@@ -5861,7 +5861,7 @@ protected:
   void UpdateControls();
   TLabelList * CreateLabelArray(int Count);
   virtual void SelectTab(int Tab);
-  virtual void __fastcall Change();
+  virtual void Change();
   void SpaceAvailableButtonClick(TFarButton * Sender, bool & Close);
   void ClipboardButtonClick(TFarButton * Sender, bool & Close);
   void CheckSpaceAvailable();
@@ -6549,7 +6549,7 @@ public:
   bool Execute(UnicodeString & Command, int & Params);
 
 protected:
-  virtual void __fastcall Change();
+  virtual void Change();
 
 private:
   int FParams;
@@ -6725,7 +6725,7 @@ public:
 
 protected:
   virtual bool CloseQuery();
-  virtual void __fastcall Change();
+  virtual void Change();
   virtual LONG_PTR DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2);
 
   void TransferSettingsButtonClick(TFarButton * Sender, bool & Close);
@@ -7772,7 +7772,7 @@ public:
     const TCopyParamType * CopyParams, bool & SaveSettings);
 
 protected:
-  virtual void __fastcall Change();
+  virtual void Change();
   void UpdateControls();
   void StartButtonClick(TFarButton * Sender, bool & Close);
   void StopButtonClick(TFarButton * Sender, bool & Close);
@@ -8259,7 +8259,7 @@ public:
   bool Execute(TTerminalQueueStatus * Status);
 
 protected:
-  virtual void __fastcall Change();
+  virtual void Change();
   virtual void Idle();
   bool UpdateQueue();
   void LoadQueue();

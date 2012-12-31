@@ -1486,7 +1486,7 @@ UnicodeString UnixExcludeLeadingBackslash(const UnicodeString & Path)
 }
 
 //---------------------------------------------------------------------------
-void __fastcall Randomize()
+void Randomize()
 {
   srand(static_cast<unsigned int>(time(NULL)));
 }

@@ -732,7 +732,7 @@ public:
   intptr_t Execute(bool & ACheckBox);
 
 protected:
-  virtual void __fastcall Change();
+  virtual void Change();
   virtual void Idle();
 
 private:

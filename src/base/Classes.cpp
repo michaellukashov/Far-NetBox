@@ -65,7 +65,7 @@ TPersistent::TPersistent()
 TPersistent::~TPersistent()
 {}
 
-void __fastcall TPersistent::Assign(TPersistent * Source)
+void TPersistent::Assign(TPersistent * Source)
 {
   if (Source != NULL)
   {
@@ -77,17 +77,17 @@ void __fastcall TPersistent::Assign(TPersistent * Source)
   }
 }
 
-void __fastcall TPersistent::AssignTo(TPersistent * Dest)
+void TPersistent::AssignTo(TPersistent * Dest)
 {
   Dest->AssignError(this);
 }
 
-TPersistent * __fastcall TPersistent::GetOwner()
+TPersistent * TPersistent::GetOwner()
 {
   return NULL;
 }
 
-void __fastcall TPersistent::AssignError(TPersistent * Source)
+void TPersistent::AssignError(TPersistent * Source)
 {
   (void)Source;
   UnicodeString SourceName = L"nil";
@@ -1480,7 +1480,7 @@ THandleStream::~THandleStream()
   //   CloseHandle(FHandle);
 }
 
-__int64 __fastcall THandleStream::Read(void * Buffer, __int64 Count)
+__int64 THandleStream::Read(void * Buffer, __int64 Count)
 {
   __int64 Result = ::FileRead(FHandle, Buffer, Count);
   // DEBUG_PRINTF(L"Result = %d, FHandle = %d, Count = %d", Result, FHandle, Count);
@@ -1488,18 +1488,18 @@ __int64 __fastcall THandleStream::Read(void * Buffer, __int64 Count)
   return Result;
 }
 
-__int64 __fastcall THandleStream::Write(const void * Buffer, __int64 Count)
+__int64 THandleStream::Write(const void * Buffer, __int64 Count)
 {
   __int64 Result = ::FileWrite(FHandle, Buffer, Count);
   if (Result == -1) { Result = 0; }
   return Result;
 }
-__int64 __fastcall THandleStream::Seek(__int64 Offset, int Origin)
+__int64 THandleStream::Seek(__int64 Offset, int Origin)
 {
   __int64 Result = ::FileSeek(FHandle, Offset, Origin);
   return Result;
 }
-__int64 __fastcall THandleStream::Seek(const __int64 Offset, TSeekOrigin Origin)
+__int64 THandleStream::Seek(const __int64 Offset, TSeekOrigin Origin)
 {
   int origin = FILE_BEGIN;
   switch (Origin)
@@ -1517,7 +1517,7 @@ __int64 __fastcall THandleStream::Seek(const __int64 Offset, TSeekOrigin Origin)
   return Seek(Offset, origin);
 }
 
-void __fastcall THandleStream::SetSize(const __int64 NewSize)
+void THandleStream::SetSize(const __int64 NewSize)
 {
   Seek(NewSize, Classes::soFromBeginning);
   // LARGE_INTEGER li;
@@ -1541,7 +1541,7 @@ TMemoryStream::~TMemoryStream()
   Clear();
 }
 
-__int64 __fastcall TMemoryStream::Read(void * Buffer, __int64 Count)
+__int64 TMemoryStream::Read(void * Buffer, __int64 Count)
 {
   __int64 Result = 0;
   if ((FPosition >= 0) && (Count >= 0))
@@ -1559,12 +1559,12 @@ __int64 __fastcall TMemoryStream::Read(void * Buffer, __int64 Count)
   return Result;
 }
 
-__int64 __fastcall TMemoryStream::Seek(__int64 Offset, int Origin)
+__int64 TMemoryStream::Seek(__int64 Offset, int Origin)
 {
   return Seek(Offset, (TSeekOrigin)Origin);
 }
 
-__int64 __fastcall TMemoryStream::Seek(const __int64 Offset, TSeekOrigin Origin)
+__int64 TMemoryStream::Seek(const __int64 Offset, TSeekOrigin Origin)
 {
   switch (Origin)
   {
@@ -1587,21 +1587,21 @@ void TMemoryStream::SaveToStream(TStream * Stream)
   if (FSize != 0) { Stream->WriteBuffer(FMemory, FSize); }
 }
 
-void __fastcall TMemoryStream::SaveToFile(const UnicodeString & FileName)
+void TMemoryStream::SaveToFile(const UnicodeString & FileName)
 {
   // TFileStream Stream(FileName, fmCreate);
   // SaveToStream(Stream);
   Classes::Error(SNotImplemented, 1203);
 }
 
-void __fastcall TMemoryStream::Clear()
+void TMemoryStream::Clear()
 {
   SetCapacity(0);
   FSize = 0;
   FPosition = 0;
 }
 
-void __fastcall TMemoryStream::SetSize(const __int64 NewSize)
+void TMemoryStream::SetSize(const __int64 NewSize)
 {
   __int64 OldPosition = FPosition;
   SetCapacity(NewSize);
@@ -1609,13 +1609,13 @@ void __fastcall TMemoryStream::SetSize(const __int64 NewSize)
   if (OldPosition > NewSize) { Seek(0, Classes::soFromEnd); }
 }
 
-void __fastcall TMemoryStream::SetCapacity(__int64 NewCapacity)
+void TMemoryStream::SetCapacity(__int64 NewCapacity)
 {
   SetPointer(Realloc(NewCapacity), FSize);
   FCapacity = NewCapacity;
 }
 
-void * __fastcall TMemoryStream::Realloc(__int64 & NewCapacity)
+void * TMemoryStream::Realloc(__int64 & NewCapacity)
 {
   if ((NewCapacity > 0) && (NewCapacity != FSize))
   {
@@ -1648,13 +1648,13 @@ void * __fastcall TMemoryStream::Realloc(__int64 & NewCapacity)
   return Result;
 }
 
-void __fastcall TMemoryStream::SetPointer(void * Ptr, __int64 Size)
+void TMemoryStream::SetPointer(void * Ptr, __int64 Size)
 {
   FMemory = Ptr;
   FSize = Size;
 }
 
-__int64 __fastcall TMemoryStream::Write(const void * Buffer, __int64 Count)
+__int64 TMemoryStream::Write(const void * Buffer, __int64 Count)
 {
   __int64 Result = 0;
   if ((FPosition >= 0) && (Count >= 0))
@@ -2202,7 +2202,7 @@ bool TShortCut::operator < (const TShortCut & rhs) const
 
 //---------------------------------------------------------------------------
 
-void __fastcall GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings)
+void GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings)
 {
   (void)LCID;
   (void)FormatSettings;

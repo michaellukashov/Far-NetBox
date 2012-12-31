@@ -71,7 +71,7 @@ class TObject
 public:
   TObject() {}
   virtual ~TObject() {}
-  virtual void __fastcall Change() {}
+  virtual void Change() {}
 };
 
 //---------------------------------------------------------------------------
@@ -145,12 +145,12 @@ class TPersistent : public TObject
 public:
   TPersistent();
   virtual ~TPersistent();
-  virtual void __fastcall Assign(TPersistent * Source);
+  virtual void Assign(TPersistent * Source);
 protected:
-  virtual void __fastcall AssignTo(TPersistent * Dest);
-  virtual TPersistent * __fastcall GetOwner();
+  virtual void AssignTo(TPersistent * Dest);
+  virtual TPersistent * GetOwner();
 private:
-  void __fastcall AssignError(TPersistent * Source);
+  void AssignError(TPersistent * Source);
 };
 
 //---------------------------------------------------------------------------
@@ -179,10 +179,10 @@ public:
   void Delete(intptr_t Index);
   void Insert(intptr_t Index, void * Item);
   intptr_t IndexOf(void * Value) const;
-  virtual void __fastcall Clear();
-  virtual void __fastcall Sort(CompareFunc Func);
-  virtual void __fastcall Notify(void * Ptr, TListNotification Action);
-  virtual void __fastcall Sort();
+  virtual void Clear();
+  virtual void Sort(CompareFunc Func);
+  virtual void Notify(void * Ptr, TListNotification Action);
+  virtual void Sort();
 
 protected:
   intptr_t GetCount() const;
@@ -222,13 +222,13 @@ public:
   void Extract(TObject * Value);
   void Move(intptr_t Index, intptr_t To);
   void Delete(intptr_t Index);
-  void __fastcall Insert(intptr_t Index, TObject * Value);
+  void Insert(intptr_t Index, TObject * Value);
   intptr_t IndexOf(TObject * Value) const;
-  virtual void __fastcall Clear();
+  virtual void Clear();
   bool GetOwnsObjects() const;
   void SetOwnsObjects(bool Value);
-  virtual void __fastcall Sort(CompareFunc func);
-  virtual void __fastcall Notify(void * Ptr, TListNotification Action);
+  virtual void Sort(CompareFunc func);
+  virtual void Notify(void * Ptr, TListNotification Action);
 
 private:
   TObject *& PropertyGetItem(intptr_t Index)
@@ -260,60 +260,60 @@ class TStrings : public TPersistent
 public:
   TStrings();
   virtual ~TStrings();
-  intptr_t __fastcall Add(const UnicodeString & S);
-  virtual void __fastcall Delete(intptr_t Index) = 0;
-  virtual UnicodeString __fastcall GetTextStr();
-  virtual void __fastcall SetTextStr(const UnicodeString & Text);
-  virtual void __fastcall BeginUpdate();
-  virtual void __fastcall EndUpdate();
-  virtual void __fastcall SetUpdateState(bool Updating);
-  intptr_t __fastcall AddObject(const UnicodeString & S, TObject * AObject);
-  virtual void __fastcall InsertObject(intptr_t Index, const UnicodeString & Key, TObject * AObject);
-  bool __fastcall Equals(TStrings * Value) const;
-  virtual void __fastcall Clear() = 0;
-  void __fastcall Move(intptr_t CurIndex, intptr_t NewIndex);
-  intptr_t __fastcall IndexOf(const UnicodeString & S);
-  virtual intptr_t __fastcall IndexOfName(const UnicodeString & Name);
-  UnicodeString __fastcall ExtractName(const UnicodeString & S) const;
-  void __fastcall AddStrings(TStrings * Strings);
-  void __fastcall Append(const UnicodeString & Value);
-  virtual void __fastcall Insert(intptr_t Index, const UnicodeString & AString) = 0;
-  void __fastcall SaveToStream(TStream * Stream) const;
-  wchar_t __fastcall GetDelimiter() const { return FDelimiter; }
-  void __fastcall SetDelimiter(wchar_t Value)
+  intptr_t Add(const UnicodeString & S);
+  virtual void Delete(intptr_t Index) = 0;
+  virtual UnicodeString GetTextStr();
+  virtual void SetTextStr(const UnicodeString & Text);
+  virtual void BeginUpdate();
+  virtual void EndUpdate();
+  virtual void SetUpdateState(bool Updating);
+  intptr_t AddObject(const UnicodeString & S, TObject * AObject);
+  virtual void InsertObject(intptr_t Index, const UnicodeString & Key, TObject * AObject);
+  bool Equals(TStrings * Value) const;
+  virtual void Clear() = 0;
+  void Move(intptr_t CurIndex, intptr_t NewIndex);
+  intptr_t IndexOf(const UnicodeString & S);
+  virtual intptr_t IndexOfName(const UnicodeString & Name);
+  UnicodeString ExtractName(const UnicodeString & S) const;
+  void AddStrings(TStrings * Strings);
+  void Append(const UnicodeString & Value);
+  virtual void Insert(intptr_t Index, const UnicodeString & AString) = 0;
+  void SaveToStream(TStream * Stream) const;
+  wchar_t GetDelimiter() const { return FDelimiter; }
+  void SetDelimiter(wchar_t Value)
   {
     FDelimiter = Value;
   }
-  wchar_t __fastcall GetQuoteChar() const { return FQuoteChar; }
-  void __fastcall SetQuoteChar(wchar_t Value)
+  wchar_t GetQuoteChar() const { return FQuoteChar; }
+  void SetQuoteChar(wchar_t Value)
   {
     FQuoteChar = Value;
   }
-  UnicodeString __fastcall GetDelimitedText() const;
-  void __fastcall SetDelimitedText(const UnicodeString & Value);
-  virtual intptr_t __fastcall CompareStrings(const UnicodeString & S1, const UnicodeString & S2);
-  int __fastcall GetUpdateCount() const { return FUpdateCount; }
-  virtual void __fastcall Assign(TPersistent * Source);
+  UnicodeString GetDelimitedText() const;
+  void SetDelimitedText(const UnicodeString & Value);
+  virtual intptr_t CompareStrings(const UnicodeString & S1, const UnicodeString & S2);
+  int GetUpdateCount() const { return FUpdateCount; }
+  virtual void Assign(TPersistent * Source);
 
 protected:
-  virtual UnicodeString __fastcall GetText();
-  virtual void __fastcall SetText(const UnicodeString & Text);
-  UnicodeString __fastcall GetCommaText();
-  void __fastcall SetCommaText(const UnicodeString & Value);
-  virtual bool __fastcall GetCaseSensitive() const = 0;
-  virtual void __fastcall SetCaseSensitive(bool Value) = 0;
-  virtual bool __fastcall GetSorted() const = 0;
-  virtual void __fastcall SetSorted(bool Value) = 0;
-  void __fastcall SetDuplicates(TDuplicatesEnum Value);
-  virtual intptr_t __fastcall GetCount() const = 0;
-  virtual UnicodeString & __fastcall GetString(intptr_t Index) = 0;
-  virtual UnicodeString __fastcall GetStrings(intptr_t Index) const = 0;
-  virtual void __fastcall PutString(intptr_t Index, const UnicodeString & S) = 0;
-  virtual TObject *& __fastcall GetObjects(intptr_t Index) = 0;
-  virtual void __fastcall PutObject(intptr_t Index, TObject * AObject) = 0;
-  const UnicodeString __fastcall GetName(intptr_t Index) const;
-  const UnicodeString __fastcall GetValue(const UnicodeString & Name);
-  void __fastcall SetValue(const UnicodeString & Name, const UnicodeString & Value);
+  virtual UnicodeString GetText();
+  virtual void SetText(const UnicodeString & Text);
+  UnicodeString GetCommaText();
+  void SetCommaText(const UnicodeString & Value);
+  virtual bool GetCaseSensitive() const = 0;
+  virtual void SetCaseSensitive(bool Value) = 0;
+  virtual bool GetSorted() const = 0;
+  virtual void SetSorted(bool Value) = 0;
+  void SetDuplicates(TDuplicatesEnum Value);
+  virtual intptr_t GetCount() const = 0;
+  virtual UnicodeString & GetString(intptr_t Index) = 0;
+  virtual UnicodeString GetStrings(intptr_t Index) const = 0;
+  virtual void PutString(intptr_t Index, const UnicodeString & S) = 0;
+  virtual TObject *& GetObjects(intptr_t Index) = 0;
+  virtual void PutObject(intptr_t Index, TObject * AObject) = 0;
+  const UnicodeString GetName(intptr_t Index) const;
+  const UnicodeString GetValue(const UnicodeString & Name);
+  void SetValue(const UnicodeString & Name, const UnicodeString & Value);
 
 private:
   intptr_t PropertyGetCount() { return GetCount(); }
@@ -399,42 +399,42 @@ class TStringList : public TStrings
 public:
   TStringList();
   virtual ~TStringList();
-  virtual void __fastcall Assign(TPersistent * Source);
-  virtual void __fastcall Clear();
-  intptr_t __fastcall Add(const UnicodeString & S);
-  intptr_t __fastcall AddObject(const UnicodeString & S, TObject * AObject);
-  virtual bool __fastcall Find(const UnicodeString & S, intptr_t & Index);
-  virtual intptr_t __fastcall IndexOf(const UnicodeString & S);
-  virtual void __fastcall Delete(intptr_t Index);
-  virtual void __fastcall InsertObject(intptr_t Index, const UnicodeString & Key, TObject * AObject);
-  void __fastcall InsertItem(intptr_t Index, const UnicodeString & S, TObject * AObject);
-  virtual void __fastcall Sort();
-  virtual void __fastcall CustomSort(TStringListSortCompare ACompareFunc);
-  void __fastcall QuickSort(intptr_t L, intptr_t R, TStringListSortCompare SCompare);
+  virtual void Assign(TPersistent * Source);
+  virtual void Clear();
+  intptr_t Add(const UnicodeString & S);
+  intptr_t AddObject(const UnicodeString & S, TObject * AObject);
+  virtual bool Find(const UnicodeString & S, intptr_t & Index);
+  virtual intptr_t IndexOf(const UnicodeString & S);
+  virtual void Delete(intptr_t Index);
+  virtual void InsertObject(intptr_t Index, const UnicodeString & Key, TObject * AObject);
+  void InsertItem(intptr_t Index, const UnicodeString & S, TObject * AObject);
+  virtual void Sort();
+  virtual void CustomSort(TStringListSortCompare ACompareFunc);
+  void QuickSort(intptr_t L, intptr_t R, TStringListSortCompare SCompare);
 
-  void __fastcall LoadFromFile(const UnicodeString & FileName);
-  TNotifyEvent & __fastcall GetOnChange() { return FOnChange; }
-  void __fastcall SetOnChange(TNotifyEvent onChange) { FOnChange = onChange; }
-  TNotifyEvent & __fastcall GetOnChanging() { return FOnChanging; }
-  void __fastcall SetOnChanging(TNotifyEvent onChanging) { FOnChanging = onChanging; }
+  void LoadFromFile(const UnicodeString & FileName);
+  TNotifyEvent & GetOnChange() { return FOnChange; }
+  void SetOnChange(TNotifyEvent onChange) { FOnChange = onChange; }
+  TNotifyEvent & GetOnChanging() { return FOnChanging; }
+  void SetOnChanging(TNotifyEvent onChanging) { FOnChanging = onChanging; }
 
-  virtual void __fastcall SetUpdateState(bool Updating);
-  virtual void __fastcall Changing();
-  virtual void __fastcall Changed();
-  virtual void __fastcall Insert(intptr_t Index, const UnicodeString & S);
-  virtual intptr_t __fastcall CompareStrings(const UnicodeString & S1, const UnicodeString & S2);
+  virtual void SetUpdateState(bool Updating);
+  virtual void Changing();
+  virtual void Changed();
+  virtual void Insert(intptr_t Index, const UnicodeString & S);
+  virtual intptr_t CompareStrings(const UnicodeString & S1, const UnicodeString & S2);
 
 protected:
-  virtual bool __fastcall GetCaseSensitive() const;
-  virtual void __fastcall SetCaseSensitive(bool Value);
-  virtual bool __fastcall GetSorted() const;
-  virtual void __fastcall SetSorted(bool Value);
-  virtual intptr_t __fastcall GetCount() const;
-  virtual UnicodeString & __fastcall GetString(intptr_t Index);
-  virtual UnicodeString __fastcall GetStrings(intptr_t Index) const;
-  virtual void __fastcall PutString(intptr_t Index, const UnicodeString & S);
-  virtual TObject *& __fastcall GetObjects(intptr_t Index);
-  virtual void __fastcall PutObject(intptr_t Index, TObject * AObject);
+  virtual bool GetCaseSensitive() const;
+  virtual void SetCaseSensitive(bool Value);
+  virtual bool GetSorted() const;
+  virtual void SetSorted(bool Value);
+  virtual intptr_t GetCount() const;
+  virtual UnicodeString & GetString(intptr_t Index);
+  virtual UnicodeString GetStrings(intptr_t Index) const;
+  virtual void PutString(intptr_t Index, const UnicodeString & S);
+  virtual TObject *& GetObjects(intptr_t Index);
+  virtual void PutObject(intptr_t Index, TObject * AObject);
 
 private:
   TNotifyEvent FOnChange;
@@ -443,7 +443,7 @@ private:
   bool FSorted;
   bool FCaseSensitive;
 private:
-  void __fastcall ExchangeItems(intptr_t Index1, intptr_t Index2);
+  void ExchangeItems(intptr_t Index1, intptr_t Index2);
 private:
   TStringList(const TStringList &);
   TStringList & operator=(const TStringList &);
@@ -562,17 +562,17 @@ class TStream
 public:
   TStream();
   virtual ~TStream();
-  virtual __int64 __fastcall Read(void * Buffer, __int64 Count) = 0;
-  virtual __int64 __fastcall Write(const void * Buffer, __int64 Count) = 0;
-  virtual __int64 __fastcall Seek(__int64 Offset, int Origin) = 0;
-  virtual __int64 __fastcall Seek(const __int64 Offset, TSeekOrigin Origin) = 0;
-  void __fastcall ReadBuffer(void * Buffer, __int64 Count);
-  void __fastcall WriteBuffer(const void * Buffer, __int64 Count);
-  __int64 __fastcall CopyFrom(TStream * Source, __int64 Count);
+  virtual __int64 Read(void * Buffer, __int64 Count) = 0;
+  virtual __int64 Write(const void * Buffer, __int64 Count) = 0;
+  virtual __int64 Seek(__int64 Offset, int Origin) = 0;
+  virtual __int64 Seek(const __int64 Offset, TSeekOrigin Origin) = 0;
+  void ReadBuffer(void * Buffer, __int64 Count);
+  void WriteBuffer(const void * Buffer, __int64 Count);
+  __int64 CopyFrom(TStream * Source, __int64 Count);
 
 public:
-  __int64 __fastcall GetPosition() { return Seek(0, soFromCurrent); }
-  __int64 __fastcall GetSize()
+  __int64 GetPosition() { return Seek(0, soFromCurrent); }
+  __int64 GetSize()
   {
     __int64 Pos = Seek(0, soFromCurrent);
     __int64 Result = Seek(0, soFromEnd);
@@ -581,8 +581,8 @@ public:
   }
 
 protected:
-  virtual void __fastcall SetSize(const __int64 NewSize) = 0;
-  void __fastcall SetPosition(const __int64 Pos)
+  virtual void SetSize(const __int64 NewSize) = 0;
+  void SetPosition(const __int64 Pos)
   {
     Seek(Pos, soFromBeginning);
   }
@@ -605,14 +605,14 @@ class THandleStream : public TStream
 public:
   explicit THandleStream(HANDLE AHandle);
   virtual ~THandleStream();
-  virtual __int64 __fastcall Read(void * Buffer, __int64 Count);
-  virtual __int64 __fastcall Write(const void * Buffer, __int64 Count);
-  virtual __int64 __fastcall Seek(__int64 Offset, int Origin);
-  virtual __int64 __fastcall Seek(const __int64 Offset, TSeekOrigin Origin);
+  virtual __int64 Read(void * Buffer, __int64 Count);
+  virtual __int64 Write(const void * Buffer, __int64 Count);
+  virtual __int64 Seek(__int64 Offset, int Origin);
+  virtual __int64 Seek(const __int64 Offset, TSeekOrigin Origin);
 
-  HANDLE __fastcall GetHandle() { return FHandle; }
+  HANDLE GetHandle() { return FHandle; }
 protected:
-  virtual void __fastcall SetSize(const __int64 NewSize);
+  virtual void SetSize(const __int64 NewSize);
 protected:
   HANDLE FHandle;
 };
@@ -641,26 +641,26 @@ class TMemoryStream : public TStream
 public:
   TMemoryStream();
   virtual  ~TMemoryStream();
-  virtual __int64 __fastcall Read(void * Buffer, __int64 Count);
-  virtual __int64 __fastcall Seek(__int64 Offset, int Origin);
-  virtual __int64 __fastcall Seek(const __int64 Offset, TSeekOrigin Origin);
-  void __fastcall SaveToStream(TStream * Stream);
-  void __fastcall SaveToFile(const UnicodeString & FileName);
+  virtual __int64 Read(void * Buffer, __int64 Count);
+  virtual __int64 Seek(__int64 Offset, int Origin);
+  virtual __int64 Seek(const __int64 Offset, TSeekOrigin Origin);
+  void SaveToStream(TStream * Stream);
+  void SaveToFile(const UnicodeString & FileName);
 
-  void __fastcall Clear();
-  void __fastcall LoadFromStream(TStream * Stream);
-  void __fastcall LoadFromFile(const UnicodeString & FileName);
-  __int64 __fastcall GetSize() const { return FSize; }
-  virtual void __fastcall SetSize(const __int64 NewSize);
-  virtual __int64 __fastcall Write(const void * Buffer, __int64 Count);
+  void Clear();
+  void LoadFromStream(TStream * Stream);
+  void LoadFromFile(const UnicodeString & FileName);
+  __int64 GetSize() const { return FSize; }
+  virtual void SetSize(const __int64 NewSize);
+  virtual __int64 Write(const void * Buffer, __int64 Count);
 
-  void * __fastcall GetMemory() { return FMemory; }
+  void * GetMemory() { return FMemory; }
 protected:
-  void __fastcall SetPointer(void * Ptr, __int64 Size);
-  virtual void * __fastcall Realloc(__int64 & NewCapacity);
-  __int64 __fastcall GetCapacity() const { return FCapacity; }
+  void SetPointer(void * Ptr, __int64 Size);
+  virtual void * Realloc(__int64 & NewCapacity);
+  __int64 GetCapacity() const { return FCapacity; }
 private:
-  void __fastcall SetCapacity(__int64 NewCapacity);
+  void SetCapacity(__int64 NewCapacity);
 private:
   void * FMemory;
   __int64 FSize;

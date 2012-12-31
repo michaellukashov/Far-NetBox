@@ -96,31 +96,31 @@ AnsiString & AnsiString::operator=(const wchar_t * lpwszData)
   return *this;
 }
 
-AnsiString __fastcall AnsiString::operator +(const RawByteString & rhs) const
+AnsiString AnsiString::operator +(const RawByteString & rhs) const
 {
   std::string Result = Data + rhs.c_str();
   return AnsiString(Result.c_str(), Result.size());
 }
 
-const AnsiString & __fastcall AnsiString::operator +=(const RawByteString & rhs)
+const AnsiString & AnsiString::operator +=(const RawByteString & rhs)
 {
   Data.append(reinterpret_cast<const char *>(rhs.c_str()), rhs.size());
   return *this;
 }
 
-const AnsiString & __fastcall AnsiString::operator +=(const AnsiString & rhs)
+const AnsiString & AnsiString::operator +=(const AnsiString & rhs)
 {
   Data.append(rhs.c_str(), rhs.size());
   return *this;
 }
 
-const AnsiString & __fastcall AnsiString::operator +=(const UTF8String & rhs)
+const AnsiString & AnsiString::operator +=(const UTF8String & rhs)
 {
   Data.append(reinterpret_cast<const char *>(rhs.c_str()), rhs.size());
   return *this;
 }
 
-const AnsiString & __fastcall AnsiString::operator +=(const char Ch)
+const AnsiString & AnsiString::operator +=(const char Ch)
 {
   Data.append(1, Ch);
   return *this;
@@ -245,24 +245,24 @@ RawByteString & RawByteString::operator=(const wchar_t * lpwszData)
   return *this;
 }
 
-RawByteString __fastcall RawByteString::operator +(const RawByteString & rhs) const
+RawByteString RawByteString::operator +(const RawByteString & rhs) const
 {
   rawstring_t Result = Data + rhs.Data;
   return RawByteString(reinterpret_cast<const char *>(Result.c_str()), Result.size());
 }
 
-const RawByteString & __fastcall RawByteString::operator +=(const RawByteString & rhs)
+const RawByteString & RawByteString::operator +=(const RawByteString & rhs)
 {
   Data.append(reinterpret_cast<const unsigned char *>(rhs.c_str()), rhs.size());
   return *this;
 }
-const RawByteString & __fastcall RawByteString::operator +=(const UTF8String & rhs)
+const RawByteString & RawByteString::operator +=(const UTF8String & rhs)
 {
   Data.append(reinterpret_cast<const unsigned char *>(rhs.c_str()), rhs.size());
   return *this;
 }
 
-const RawByteString & __fastcall RawByteString::operator +=(const char Ch)
+const RawByteString & RawByteString::operator +=(const char Ch)
 {
   unsigned char ch(static_cast<unsigned char>(Ch));
   Data.append(1, ch);
@@ -339,37 +339,37 @@ UTF8String & UTF8String::operator=(const wchar_t * lpwszData)
   return *this;
 }
 
-UTF8String __fastcall UTF8String::operator +(const UTF8String & rhs) const
+UTF8String UTF8String::operator +(const UTF8String & rhs) const
 {
   wstring_t Result = Data + rhs.Data;
   return UTF8String(Result.c_str(), Result.size());
 }
 
-const UTF8String & __fastcall UTF8String::operator +=(const UTF8String & rhs)
+const UTF8String & UTF8String::operator +=(const UTF8String & rhs)
 {
   Data.append(rhs.Data.c_str(), rhs.size());
   return *this;
 }
-const UTF8String & __fastcall UTF8String::operator +=(const RawByteString & rhs)
+const UTF8String & UTF8String::operator +=(const RawByteString & rhs)
 {
   UTF8String s(rhs.c_str(), rhs.size());
   Data.append(s.Data.c_str(), s.size());
   return *this;
 }
 
-const UTF8String & __fastcall UTF8String::operator +=(const char Ch)
+const UTF8String & UTF8String::operator +=(const char Ch)
 {
   unsigned char ch(static_cast<unsigned char>(Ch));
   Data.append(1, ch);
   return *this;
 }
 
-bool __fastcall operator ==(const UTF8String & lhs, const UTF8String & rhs)
+bool operator ==(const UTF8String & lhs, const UTF8String & rhs)
 {
   return lhs.Data == rhs.Data;
 }
 
-bool __fastcall operator !=(const UTF8String & lhs, const UTF8String & rhs)
+bool operator !=(const UTF8String & lhs, const UTF8String & rhs)
 {
   return lhs.Data != rhs.Data;
 }
@@ -539,44 +539,44 @@ UnicodeString & UnicodeString::operator=(const char * lpszData)
   return *this;
 }
 
-UnicodeString __fastcall UnicodeString::operator +(const UnicodeString & rhs) const
+UnicodeString UnicodeString::operator +(const UnicodeString & rhs) const
 {
   std::wstring Result = Data + rhs.Data;
   return UnicodeString(Result.c_str(), Result.size());
 }
 
-const UnicodeString & __fastcall UnicodeString::operator +=(const UnicodeString & rhs)
+const UnicodeString & UnicodeString::operator +=(const UnicodeString & rhs)
 {
   Data.append(rhs.Data.c_str(), rhs.size());
   return *this;
 }
 
-const UnicodeString & __fastcall UnicodeString::operator +=(const wchar_t * rhs)
+const UnicodeString & UnicodeString::operator +=(const wchar_t * rhs)
 {
   Data.append(rhs);
   return *this;
 }
 
-const UnicodeString & __fastcall UnicodeString::operator +=(const RawByteString & rhs)
+const UnicodeString & UnicodeString::operator +=(const RawByteString & rhs)
 {
   UnicodeString s(rhs.c_str(), rhs.size());
   Data.append(s.Data.c_str(), s.size());
   return *this;
 }
 
-const UnicodeString & __fastcall UnicodeString::operator +=(const std::wstring & rhs)
+const UnicodeString & UnicodeString::operator +=(const std::wstring & rhs)
 {
   Data.append(rhs.c_str(), rhs.size());
   return *this;
 }
 
-const UnicodeString & __fastcall UnicodeString::operator +=(const char Ch)
+const UnicodeString & UnicodeString::operator +=(const char Ch)
 {
   Data.append(1, Ch);
   return *this;
 }
 
-const UnicodeString & __fastcall UnicodeString::operator +=(const wchar_t Ch)
+const UnicodeString & UnicodeString::operator +=(const wchar_t Ch)
 {
   Data += Ch;
   return *this;
@@ -590,27 +590,27 @@ void  __cdecl UnicodeString::ThrowIfOutOfRange(intptr_t Idx) const
 
 //------------------------------------------------------------------------------
 
-UnicodeString __fastcall operator +(const wchar_t lhs, const UnicodeString & rhs)
+UnicodeString operator +(const wchar_t lhs, const UnicodeString & rhs)
 {
   return UnicodeString(&lhs, 1) + rhs;
 }
 
-UnicodeString __fastcall operator +(const UnicodeString & lhs, const wchar_t rhs)
+UnicodeString operator +(const UnicodeString & lhs, const wchar_t rhs)
 {
   return lhs + UnicodeString(rhs);
 }
 
-UnicodeString __fastcall operator +(const wchar_t * lhs, const UnicodeString & rhs)
+UnicodeString operator +(const wchar_t * lhs, const UnicodeString & rhs)
 {
   return UnicodeString(lhs) + rhs;
 }
 
-UnicodeString __fastcall operator +(const UnicodeString & lhs, const wchar_t * rhs)
+UnicodeString operator +(const UnicodeString & lhs, const wchar_t * rhs)
 {
   return lhs + UnicodeString(rhs);
 }
 
-UnicodeString __fastcall operator +(const UnicodeString & lhs, const char * rhs)
+UnicodeString operator +(const UnicodeString & lhs, const char * rhs)
 {
   return lhs + UnicodeString(rhs);
 }
