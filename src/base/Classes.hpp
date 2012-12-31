@@ -50,8 +50,8 @@ int __cdecl debug_printf(const wchar_t * format, ...);
 int __cdecl debug_printf2(const char * format, ...);
 
 #ifdef NETBOX_DEBUG
-#define DEBUG_PRINTF(format, ...) do { debug_printf(L"NetBox: [%s:%d] %s: "format L"\n", Sysutils::ExtractFilename(MB2W(__FILE__).c_str(), L'\\').c_str(), __LINE__, MB2W(__FUNCTION__).c_str(), __VA_ARGS__); } while (0)
-#define DEBUG_PRINTF2(format, ...) do { debug_printf2("NetBox: [%s:%d] %s: "format "\n", W2MB(Sysutils::ExtractFilename(MB2W(__FILE__).c_str(), '\\').c_str()).c_str(), __LINE__, __FUNCTION__, __VA_ARGS__); } while (0)
+#define DEBUG_PRINTF(format, ...) do { debug_printf(L"NetBox: [%s:%d] %s: "format L"\n", Sysutils::ExtractFilename(__FILEW__, L'\\').c_str(), __LINE__, MB2W(__FUNCTION__).c_str(), __VA_ARGS__); } while (0)
+#define DEBUG_PRINTF2(format, ...) do { debug_printf2("NetBox: [%s:%d] %s: "format "\n", W2MB(Sysutils::ExtractFilename(__FILEW__, '\\').c_str()).c_str(), __LINE__, __FUNCTION__, __VA_ARGS__); } while (0)
 #else
 #define DEBUG_PRINTF(format, ...)
 #define DEBUG_PRINTF2(format, ...)
