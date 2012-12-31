@@ -1172,7 +1172,7 @@ bool __fastcall TSessionLog::GetLoggingToFile()
   return (FFile != NULL);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionLog::Clear()
+void TSessionLog::Clear()
 {
   TGuard Guard(FCriticalSection);
 
@@ -1235,7 +1235,7 @@ void __fastcall TSessionLog::SetName(const UnicodeString & Value)
   FName = Value;
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TSessionLog::GetCount() const
+intptr_t TSessionLog::GetCount() const
 {
   return TStringList::GetCount();
 }

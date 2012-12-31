@@ -11,8 +11,8 @@ const int cpRemoveBOM =   0x02;
 class TFileBuffer
 {
 public:
-  /* __fastcall */ TFileBuffer();
-  virtual /* __fastcall */ ~TFileBuffer();
+  TFileBuffer();
+  virtual ~TFileBuffer();
   void __fastcall Convert(char * Source, char * Dest, int Params, bool & Token);
   void __fastcall Convert(TEOLType Source, TEOLType Dest, int Params, bool & Token);
   void __fastcall Convert(char * Source, TEOLType Dest, int Params, bool & Token);
@@ -43,12 +43,12 @@ private:
 class TSafeHandleStream : public THandleStream
 {
 public:
-  explicit /* __fastcall */ TSafeHandleStream(THandle AHandle);
-  virtual /* __fastcall */ ~TSafeHandleStream() {}
-  virtual __int64 __fastcall Read(void * Buffer, __int64 Count);
-  virtual __int64 __fastcall Write(const void * Buffer, __int64 Count);
+  explicit TSafeHandleStream(THandle AHandle);
+  virtual ~TSafeHandleStream() {}
+  virtual __int64 Read(void * Buffer, __int64 Count);
+  virtual __int64 Write(const void * Buffer, __int64 Count);
 };
 //---------------------------------------------------------------------------
-char * __fastcall EOLToStr(TEOLType EOLType);
+char * EOLToStr(TEOLType EOLType);
 //---------------------------------------------------------------------------
 #endif

@@ -310,7 +310,7 @@ void __fastcall TBookmarkList::Clear()
   FOpenedNodes->Clear();
 }
 //---------------------------------------------------------------------------
-void __fastcall TBookmarkList::Assign(TPersistent * Source)
+void TBookmarkList::Assign(TPersistent * Source)
 {
   TBookmarkList * SourceList;
   SourceList = dynamic_cast<TBookmarkList *>(Source);
@@ -495,7 +495,7 @@ void __fastcall TBookmarkList::ShortCuts(TShortCuts & ShortCuts)
   FOwner = NULL;
 }
 //---------------------------------------------------------------------------
-void __fastcall TBookmark::Assign(TPersistent * Source)
+void TBookmark::Assign(TPersistent * Source)
 {
   TBookmark * SourceBookmark;
   SourceBookmark = dynamic_cast<TBookmark *>(Source);

@@ -48,12 +48,12 @@ enum TSynchronizeOperation { soUpload, soDelete };
 class TSynchronizeController
 {
 public:
-  explicit /* __fastcall */ TSynchronizeController(TSynchronizeEvent AOnSynchronize,
+  explicit TSynchronizeController(TSynchronizeEvent AOnSynchronize,
     TSynchronizeInvalidEvent AOnSynchronizeInvalid,
     TSynchronizeTooManyDirectoriesEvent AOnTooManyDirectories);
-  /* __fastcall */ ~TSynchronizeController();
+  ~TSynchronizeController();
 
-  void /* __fastcall */ StartStop(TObject * Sender, bool Start,
+  void StartStop(TObject * Sender, bool Start,
     const TSynchronizeParamType & Params, const TCopyParamType & CopyParam,
     TSynchronizeOptions * Options,
     TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,

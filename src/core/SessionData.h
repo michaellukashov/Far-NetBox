@@ -346,7 +346,7 @@ public:
   void __fastcall RecryptPasswords();
   bool __fastcall HasAnyPassword();
   void __fastcall Remove();
-  virtual void __fastcall Assign(TPersistent * Source);
+  virtual void Assign(TPersistent * Source);
   bool __fastcall ParseUrl(const UnicodeString & Url, TOptions * Options,
     TStoredSessionList * StoredSessions, bool & DefaultsOnly,
     UnicodeString * FileName, bool * AProtocolDefined);

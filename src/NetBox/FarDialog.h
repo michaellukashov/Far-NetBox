@@ -97,7 +97,7 @@ protected:
   intptr_t DefaultDialogProc(intptr_t Msg, intptr_t Param1, void * Param2);
   virtual bool MouseEvent(MOUSE_EVENT_RECORD * Event);
   virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
-  virtual void __fastcall Change();
+  virtual void Change();
   void Init();
   virtual bool CloseQuery();
   UnicodeString GetMsg(int MsgId);
@@ -165,7 +165,7 @@ protected:
 
   void Add(TFarDialogItem * Item);
   void Remove(TFarDialogItem * Item);
-  virtual void __fastcall Change();
+  virtual void Change();
   UnicodeString GetMsg(int MsgId);
 
 private:
@@ -274,7 +274,7 @@ protected:
   intptr_t DefaultItemProc(intptr_t Msg, void * Param);
   intptr_t DefaultDialogProc(intptr_t Msg, intptr_t Param1, void * Param2);
   virtual intptr_t FailItemProc(intptr_t Msg, void * Param);
-  virtual void __fastcall Change();
+  virtual void Change();
   void DialogChange();
   void SetAlterType(FARDIALOGITEMTYPES Index, bool Value);
   bool GetAlterType(FARDIALOGITEMTYPES Index);
@@ -486,7 +486,7 @@ public:
   explicit TFarList(TFarDialogItem * ADialogItem = NULL);
   virtual ~TFarList();
 
-  virtual void __fastcall Assign(TPersistent * Source);
+  virtual void Assign(TPersistent * Source);
 
   intptr_t GetSelected();
   void SetSelected(intptr_t Value);
@@ -505,7 +505,7 @@ public:
   void SetChecked(intptr_t Index, bool Value) { SetFlag(Index, LIF_CHECKED, Value); }
 
 protected:
-  virtual void __fastcall Changed();
+  virtual void Changed();
   virtual intptr_t ItemProc(intptr_t Msg, void * Param);
   virtual void Init();
   void UpdatePosition(intptr_t Position);

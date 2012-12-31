@@ -216,7 +216,7 @@ public:
   void __fastcall AddException(Exception * E);
   void __fastcall AddSeparator();
 
-  virtual void __fastcall Clear();
+  virtual void Clear();
   void __fastcall ReflectSettings();
   void __fastcall Lock();
   void __fastcall Unlock();
@@ -232,7 +232,7 @@ public:
   intptr_t __fastcall GetTopIndex();
   UnicodeString __fastcall GetName();
   void __fastcall SetName(const UnicodeString & Value);
-  virtual intptr_t __fastcall GetCount() const;
+  virtual intptr_t GetCount() const;
 
 protected:
   void __fastcall CloseLogFile();

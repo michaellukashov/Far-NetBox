@@ -23,26 +23,26 @@ class THierarchicalStorage;
 class TRemoteToken
 {
 public:
-  /* __fastcall */ TRemoteToken();
-  explicit /* __fastcall */ TRemoteToken(const UnicodeString & Name);
+  TRemoteToken();
+  explicit TRemoteToken(const UnicodeString & Name);
 
-  void __fastcall Clear();
+  void Clear();
 
-  bool __fastcall operator ==(const TRemoteToken & rht) const;
-  bool __fastcall operator !=(const TRemoteToken & rht) const;
-  TRemoteToken & __fastcall operator =(const TRemoteToken & rht);
+  bool operator ==(const TRemoteToken & rht) const;
+  bool operator !=(const TRemoteToken & rht) const;
+  TRemoteToken & operator =(const TRemoteToken & rht);
 
-  int __fastcall Compare(const TRemoteToken & rht) const;
+  int Compare(const TRemoteToken & rht) const;
 
-  UnicodeString __fastcall GetName() const { return FName; }
-  void __fastcall SetName(const UnicodeString & Value) { FName = Value; }
-  bool __fastcall GetNameValid() const;
+  UnicodeString GetName() const { return FName; }
+  void SetName(const UnicodeString & Value) { FName = Value; }
+  bool GetNameValid() const;
   unsigned int GetID() const { return FID; }
-  void __fastcall SetID(unsigned int Value);
-  bool __fastcall GetIDValid() const { return FIDValid; }
-  bool __fastcall GetIsSet() const;
-  UnicodeString __fastcall GetLogText() const;
-  UnicodeString __fastcall GetDisplayText() const;
+  void SetID(unsigned int Value);
+  bool GetIDValid() const { return FIDValid; }
+  bool GetIsSet() const;
+  UnicodeString GetLogText() const;
+  UnicodeString GetDisplayText() const;
 
 private:
   UnicodeString FName;
@@ -53,17 +53,17 @@ private:
 class TRemoteTokenList
 {
 public:
-  TRemoteTokenList * __fastcall Duplicate() const;
-  void __fastcall Clear();
-  void __fastcall Add(const TRemoteToken & Token);
-  void __fastcall AddUnique(const TRemoteToken & Token);
-  bool __fastcall Exists(const UnicodeString & Name) const;
+  TRemoteTokenList * Duplicate() const;
+  void Clear();
+  void Add(const TRemoteToken & Token);
+  void AddUnique(const TRemoteToken & Token);
+  bool Exists(const UnicodeString & Name) const;
   const TRemoteToken * Find(unsigned int ID) const;
   const TRemoteToken * Find(const UnicodeString & Name) const;
-  void __fastcall Log(TTerminal * Terminal, const wchar_t * Title);
+  void Log(TTerminal * Terminal, const wchar_t * Title);
 
-  int __fastcall Count() const;
-  const TRemoteToken * __fastcall Token(int Index) const;
+  int Count() const;
+  const TRemoteToken * Token(int Index) const;
 
 private:
   typedef std::vector<TRemoteToken> TTokens;
@@ -101,86 +101,86 @@ private:
   UnicodeString FTypeName;
 
 public:
-  int __fastcall GetAttr();
-  bool __fastcall GetBrokenLink();
-  bool __fastcall GetIsDirectory() const;
-  TRemoteFile * __fastcall GetLinkedFile();
-  void __fastcall SetLinkedFile(TRemoteFile * Value);
-  UnicodeString __fastcall GetModificationStr();
-  void __fastcall SetModification(const TDateTime & Value);
-  void __fastcall SetListingStr(const UnicodeString & Value);
-  UnicodeString __fastcall GetListingStr();
-  UnicodeString __fastcall GetRightsStr();
-  wchar_t __fastcall GetType() const;
-  void __fastcall SetType(wchar_t AType);
-  void __fastcall SetTerminal(TTerminal * Value);
-  void __fastcall SetRights(TRights * Value);
-  UnicodeString __fastcall GetFullFileName() const;
-  bool __fastcall GetHaveFullFileName() const;
-  int __fastcall GetIconIndex() const;
-  UnicodeString __fastcall GetTypeName();
-  bool __fastcall GetIsHidden();
-  void __fastcall SetIsHidden(bool Value);
-  bool __fastcall GetIsParentDirectory() const;
-  bool __fastcall GetIsThisDirectory() const;
-  bool __fastcall GetIsInaccesibleDirectory() const;
-  UnicodeString __fastcall GetExtension();
-  UnicodeString __fastcall GetUserModificationStr();
+  int GetAttr();
+  bool GetBrokenLink();
+  bool GetIsDirectory() const;
+  TRemoteFile * GetLinkedFile();
+  void SetLinkedFile(TRemoteFile * Value);
+  UnicodeString GetModificationStr();
+  void SetModification(const TDateTime & Value);
+  void SetListingStr(const UnicodeString & Value);
+  UnicodeString GetListingStr();
+  UnicodeString GetRightsStr();
+  wchar_t GetType() const;
+  void SetType(wchar_t AType);
+  void SetTerminal(TTerminal * Value);
+  void SetRights(TRights * Value);
+  UnicodeString GetFullFileName() const;
+  bool GetHaveFullFileName() const;
+  int GetIconIndex() const;
+  UnicodeString GetTypeName();
+  bool GetIsHidden();
+  void SetIsHidden(bool Value);
+  bool GetIsParentDirectory() const;
+  bool GetIsThisDirectory() const;
+  bool GetIsInaccesibleDirectory() const;
+  UnicodeString GetExtension();
+  UnicodeString GetUserModificationStr();
 
 private:
-  void __fastcall LoadTypeInfo();
+  void LoadTypeInfo();
 
 protected:
-  void __fastcall FindLinkedFile();
+  void FindLinkedFile();
 
 public:
-  explicit /* __fastcall */ TRemoteFile(TRemoteFile * ALinkedByFile = NULL);
-  virtual /* __fastcall */ ~TRemoteFile();
-  TRemoteFile * __fastcall Duplicate(bool Standalone = true) const;
+  explicit TRemoteFile(TRemoteFile * ALinkedByFile = NULL);
+  virtual ~TRemoteFile();
+  TRemoteFile * Duplicate(bool Standalone = true) const;
 
-  void __fastcall ShiftTime(const TDateTime & Difference);
-  void __fastcall Complete();
+  void ShiftTime(const TDateTime & Difference);
+  void Complete();
 
-  TRemoteFileList * __fastcall GetDirectory() const { return FDirectory; }
-  void __fastcall SetDirectory(TRemoteFileList * Value) { FDirectory = Value; }
-  __int64 __fastcall GetSize() const { return FSize; }
-  void __fastcall SetSize(__int64 Value) { FSize = Value; }
-  const TRemoteToken & __fastcall GetFileOwner() const;
-  TRemoteToken & __fastcall GetFileOwner();
-  void __fastcall SetFileOwner(TRemoteToken Value);
-  const TRemoteToken & __fastcall GetFileGroup() const;
-  TRemoteToken & __fastcall GetFileGroup();
-  void __fastcall SetFileGroup(TRemoteToken Value);
-  UnicodeString __fastcall GetFileName() const;
-  void __fastcall SetFileName(const UnicodeString & Value);
-  int __fastcall GetINodeBlocks();
-  TDateTime __fastcall GetModification() const { return FModification; }
-  TModificationFmt __fastcall GetModificationFmt() const { return FModificationFmt; }
-  void __fastcall SetModificationFmt(TModificationFmt Value) { FModificationFmt = Value; }
-  TDateTime __fastcall GetLastAccess() const { return FLastAccess; }
-  void __fastcall SetLastAccess(TDateTime Value) { FLastAccess = Value; }
-  bool __fastcall GetIsSymLink() const { return FIsSymLink; }
-  UnicodeString __fastcall GetLinkTo() const;
-  void __fastcall SetLinkTo(const UnicodeString & Value);
-  TRights * __fastcall GetRights() const { return FRights; }
-  TTerminal * __fastcall GetTerminal() const { return FTerminal; }
-  bool __fastcall GetSelected() { return FSelected; }
-  void __fastcall SetSelected(bool Value) { FSelected = Value; }
-  void __fastcall SetFullFileName(const UnicodeString & Value);
+  TRemoteFileList * GetDirectory() const { return FDirectory; }
+  void SetDirectory(TRemoteFileList * Value) { FDirectory = Value; }
+  __int64 GetSize() const { return FSize; }
+  void SetSize(__int64 Value) { FSize = Value; }
+  const TRemoteToken & GetFileOwner() const;
+  TRemoteToken & GetFileOwner();
+  void SetFileOwner(TRemoteToken Value);
+  const TRemoteToken & GetFileGroup() const;
+  TRemoteToken & GetFileGroup();
+  void SetFileGroup(TRemoteToken Value);
+  UnicodeString GetFileName() const;
+  void SetFileName(const UnicodeString & Value);
+  int GetINodeBlocks();
+  TDateTime GetModification() const { return FModification; }
+  TModificationFmt GetModificationFmt() const { return FModificationFmt; }
+  void SetModificationFmt(TModificationFmt Value) { FModificationFmt = Value; }
+  TDateTime GetLastAccess() const { return FLastAccess; }
+  void SetLastAccess(TDateTime Value) { FLastAccess = Value; }
+  bool GetIsSymLink() const { return FIsSymLink; }
+  UnicodeString GetLinkTo() const;
+  void SetLinkTo(const UnicodeString & Value);
+  TRights * GetRights() const { return FRights; }
+  TTerminal * GetTerminal() const { return FTerminal; }
+  bool GetSelected() { return FSelected; }
+  void SetSelected(bool Value) { FSelected = Value; }
+  void SetFullFileName(const UnicodeString & Value);
 };
 //---------------------------------------------------------------------------
 class TRemoteDirectoryFile : public TRemoteFile
 {
 public:
-  /* __fastcall */ TRemoteDirectoryFile();
-  virtual /* __fastcall */ ~TRemoteDirectoryFile() {}
+  TRemoteDirectoryFile();
+  virtual ~TRemoteDirectoryFile() {}
 };
 //---------------------------------------------------------------------------
 class TRemoteParentDirectory : public TRemoteDirectoryFile
 {
 public:
-  explicit /* __fastcall */ TRemoteParentDirectory(TTerminal * Terminal);
-  virtual /* __fastcall */ ~TRemoteParentDirectory() {}
+  explicit TRemoteParentDirectory(TTerminal * Terminal);
+  virtual ~TRemoteParentDirectory() {}
 };
 //---------------------------------------------------------------------------
 class TRemoteFileList : public TObjectList
@@ -192,22 +192,22 @@ friend class TWebDAVFileSystem;
 protected:
   UnicodeString FDirectory;
   TDateTime FTimestamp;
-  TRemoteFile * __fastcall GetParentDirectory();
+  TRemoteFile * GetParentDirectory();
 
-  virtual void __fastcall Clear();
+  virtual void Clear();
 public:
-  /* __fastcall */ TRemoteFileList();
+  TRemoteFileList();
   virtual ~TRemoteFileList() { Clear(); }
-  TRemoteFile * __fastcall FindFile(const UnicodeString & FileName);
-  virtual void __fastcall DuplicateTo(TRemoteFileList * Copy);
-  virtual void __fastcall AddFile(TRemoteFile * File);
+  TRemoteFile * FindFile(const UnicodeString & FileName);
+  virtual void DuplicateTo(TRemoteFileList * Copy);
+  virtual void AddFile(TRemoteFile * File);
   UnicodeString GetDirectory() const { return FDirectory; }
-  virtual void __fastcall SetDirectory(const UnicodeString & Value);
-  TRemoteFile * __fastcall GetFiles(Integer Index);
-  UnicodeString __fastcall GetFullDirectory();
-  Boolean __fastcall GetIsRoot();
-  UnicodeString __fastcall GetParentPath();
-  __int64 __fastcall GetTotalSize();
+  virtual void SetDirectory(const UnicodeString & Value);
+  TRemoteFile * GetFiles(Integer Index);
+  UnicodeString GetFullDirectory();
+  Boolean GetIsRoot();
+  UnicodeString GetParentPath();
+  __int64 GetTotalSize();
   TDateTime GetTimestamp() const { return FTimestamp; }
 };
 //---------------------------------------------------------------------------
@@ -224,70 +224,70 @@ private:
   TRemoteFile * FParentDirectory;
   TRemoteFile * FThisDirectory;
 protected:
-  virtual void __fastcall Clear();
+  virtual void Clear();
 public:
-  explicit /* __fastcall */ TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template = NULL);
-  virtual /* __fastcall */ ~TRemoteDirectory() { Clear(); }
-  virtual void __fastcall AddFile(TRemoteFile * File);
-  virtual void __fastcall DuplicateTo(TRemoteFileList * Copy);
+  explicit TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template = NULL);
+  virtual ~TRemoteDirectory() { Clear(); }
+  virtual void AddFile(TRemoteFile * File);
+  virtual void DuplicateTo(TRemoteFileList * Copy);
   TTerminal * GetTerminal() { return FTerminal; }
   void SetTerminal(TTerminal * Value) { FTerminal = Value; }
-  TStrings * __fastcall GetSelectedFiles();
+  TStrings * GetSelectedFiles();
   Boolean GetIncludeParentDirectory() { return FIncludeParentDirectory; }
-  void __fastcall SetIncludeParentDirectory(Boolean Value);
+  void SetIncludeParentDirectory(Boolean Value);
   Boolean GetIncludeThisDirectory() { return FIncludeThisDirectory; }
-  void __fastcall SetIncludeThisDirectory(Boolean Value);
-  Boolean __fastcall GetLoaded();
+  void SetIncludeThisDirectory(Boolean Value);
+  Boolean GetLoaded();
   TRemoteFile * GetParentDirectory() { return FParentDirectory; }
   TRemoteFile * GetThisDirectory() { return FThisDirectory; }
-  virtual void __fastcall SetDirectory(const UnicodeString & Value);
+  virtual void SetDirectory(const UnicodeString & Value);
 };
 //---------------------------------------------------------------------------
 class TRemoteDirectoryCache : private TStringList
 {
 public:
-  /* __fastcall */ TRemoteDirectoryCache();
-  virtual /* __fastcall */ ~TRemoteDirectoryCache();
-  bool __fastcall HasFileList(const UnicodeString & Directory);
-  bool __fastcall HasNewerFileList(const UnicodeString & Directory, TDateTime Timestamp);
-  bool __fastcall GetFileList(const UnicodeString & Directory,
+  TRemoteDirectoryCache();
+  virtual ~TRemoteDirectoryCache();
+  bool HasFileList(const UnicodeString & Directory);
+  bool HasNewerFileList(const UnicodeString & Directory, TDateTime Timestamp);
+  bool GetFileList(const UnicodeString & Directory,
     TRemoteFileList * FileList);
-  void __fastcall AddFileList(TRemoteFileList * FileList);
-  void __fastcall ClearFileList(const UnicodeString & Directory, bool SubDirs);
-  void __fastcall Clear();
+  void AddFileList(TRemoteFileList * FileList);
+  void ClearFileList(const UnicodeString & Directory, bool SubDirs);
+  void Clear();
 
-  bool __fastcall GetIsEmpty() const;
+  bool GetIsEmpty() const;
 protected:
-  virtual void __fastcall Delete(intptr_t Index);
+  virtual void Delete(intptr_t Index);
 private:
   TCriticalSection * FSection;
-  void __fastcall DoClearFileList(const UnicodeString & Directory, bool SubDirs);
+  void DoClearFileList(const UnicodeString & Directory, bool SubDirs);
 };
 //---------------------------------------------------------------------------
 class TRemoteDirectoryChangesCache : private TStringList
 {
 public:
-  explicit /* __fastcall */ TRemoteDirectoryChangesCache(intptr_t MaxSize);
-  virtual /* __fastcall */ ~TRemoteDirectoryChangesCache(){}
+  explicit TRemoteDirectoryChangesCache(intptr_t MaxSize);
+  virtual ~TRemoteDirectoryChangesCache(){}
 
-  void __fastcall AddDirectoryChange(const UnicodeString & SourceDir,
+  void AddDirectoryChange(const UnicodeString & SourceDir,
     const UnicodeString & Change, const UnicodeString & TargetDir);
-  void __fastcall ClearDirectoryChange(const UnicodeString & SourceDir);
-  void __fastcall ClearDirectoryChangeTarget(const UnicodeString & TargetDir);
-  bool __fastcall GetDirectoryChange(const UnicodeString & SourceDir,
+  void ClearDirectoryChange(const UnicodeString & SourceDir);
+  void ClearDirectoryChangeTarget(const UnicodeString & TargetDir);
+  bool GetDirectoryChange(const UnicodeString & SourceDir,
     const UnicodeString & Change, UnicodeString & TargetDir);
-  void __fastcall Clear();
+  void Clear();
 
-  void __fastcall Serialize(UnicodeString & Data);
-  void __fastcall Deserialize(const UnicodeString & Data);
+  void Serialize(UnicodeString & Data);
+  void Deserialize(const UnicodeString & Data);
 
-  bool __fastcall GetIsEmpty() const;
+  bool GetIsEmpty() const;
 
 private:
-  static bool __fastcall DirectoryChangeKey(const UnicodeString & SourceDir,
+  static bool DirectoryChangeKey(const UnicodeString & SourceDir,
     const UnicodeString & Change, UnicodeString & Key);
-  void __fastcall SetValue(const UnicodeString & Name, const UnicodeString & Value);
-  UnicodeString __fastcall GetValue(const UnicodeString & Name);
+  void SetValue(const UnicodeString & Name, const UnicodeString & Value);
+  UnicodeString GetValue(const UnicodeString & Name);
 
   intptr_t FMaxSize;
 };
@@ -321,54 +321,54 @@ public:
   enum TState { rsNo, rsYes, rsUndef };
 
 public:
-  static TFlag __fastcall RightToFlag(TRight Right);
+  static TFlag RightToFlag(TRight Right);
 
-  /* __fastcall */ TRights();
-  /* __fastcall */ TRights(const TRights & Source);
-  explicit /* __fastcall */ TRights(unsigned short Number);
+  TRights();
+  TRights(const TRights & Source);
+  explicit TRights(unsigned short Number);
 
-  void __fastcall Assign(const TRights * Source);
-  void __fastcall AddExecute();
-  void __fastcall AllUndef();
+  void Assign(const TRights * Source);
+  void AddExecute();
+  void AllUndef();
 
-  bool __fastcall operator ==(const TRights & rhr) const;
-  bool __fastcall operator ==(unsigned short rhr) const;
-  bool __fastcall operator !=(const TRights & rhr) const;
-  TRights & __fastcall operator =(const TRights & rhr);
-  TRights & __fastcall operator =(unsigned short rhr);
-  TRights __fastcall operator ~() const;
-  TRights __fastcall operator &(unsigned short rhr) const;
-  TRights __fastcall operator &(const TRights & rhr) const;
-  TRights & __fastcall operator &=(unsigned short rhr);
-  TRights & __fastcall operator &=(const TRights & rhr);
-  TRights __fastcall operator |(unsigned short rhr) const;
-  TRights __fastcall operator |(const TRights & rhr) const;
-  TRights & __fastcall operator |=(unsigned short rhr);
-  TRights & __fastcall operator |=(const TRights & rhr);
-  __fastcall operator unsigned short() const;
-  __fastcall operator unsigned long() const;
+  bool operator ==(const TRights & rhr) const;
+  bool operator ==(unsigned short rhr) const;
+  bool operator !=(const TRights & rhr) const;
+  TRights & operator =(const TRights & rhr);
+  TRights & operator =(unsigned short rhr);
+  TRights operator ~() const;
+  TRights operator &(unsigned short rhr) const;
+  TRights operator &(const TRights & rhr) const;
+  TRights & operator &=(unsigned short rhr);
+  TRights & operator &=(const TRights & rhr);
+  TRights operator |(unsigned short rhr) const;
+  TRights operator |(const TRights & rhr) const;
+  TRights & operator |=(unsigned short rhr);
+  TRights & operator |=(const TRights & rhr);
+  operator unsigned short() const;
+  operator unsigned long() const;
 
-  bool __fastcall GetIsUndef() const;
-  UnicodeString __fastcall GetModeStr() const;
-  UnicodeString __fastcall GetSimplestStr() const;
-  void __fastcall SetNumber(unsigned short Value);
-  UnicodeString __fastcall GetText() const;
-  void __fastcall SetText(const UnicodeString & Value);
-  void __fastcall SetOctal(const UnicodeString & Value);
-  unsigned short __fastcall GetNumber() const;
-  unsigned short __fastcall GetNumberSet() const { return FSet; }
-  unsigned short __fastcall GetNumberUnset() const { return FUnset; }
-  unsigned long __fastcall GetNumberDecadic() const;
-  UnicodeString __fastcall GetOctal() const;
-  bool __fastcall GetReadOnly() const;
-  bool __fastcall GetRight(TRight Right) const;
-  TState __fastcall GetRightUndef(TRight Right) const;
-  void __fastcall SetAllowUndef(bool Value);
-  void __fastcall SetReadOnly(bool Value);
-  void __fastcall SetRight(TRight Right, bool Value);
-  void __fastcall SetRightUndef(TRight Right, TState Value);
-  bool __fastcall GetAllowUndef() const { return FAllowUndef; }
-  bool __fastcall GetUnknown() const { return FUnknown; }
+  bool GetIsUndef() const;
+  UnicodeString GetModeStr() const;
+  UnicodeString GetSimplestStr() const;
+  void SetNumber(unsigned short Value);
+  UnicodeString GetText() const;
+  void SetText(const UnicodeString & Value);
+  void SetOctal(const UnicodeString & Value);
+  unsigned short GetNumber() const;
+  unsigned short GetNumberSet() const { return FSet; }
+  unsigned short GetNumberUnset() const { return FUnset; }
+  unsigned long GetNumberDecadic() const;
+  UnicodeString GetOctal() const;
+  bool GetReadOnly() const;
+  bool GetRight(TRight Right) const;
+  TState GetRightUndef(TRight Right) const;
+  void SetAllowUndef(bool Value);
+  void SetReadOnly(bool Value);
+  void SetRight(TRight Right, bool Value);
+  void SetRightUndef(TRight Right, TState Value);
+  bool GetAllowUndef() const { return FAllowUndef; }
+  bool GetUnknown() const { return FUnknown; }
 
 private:
   bool FAllowUndef;
@@ -446,44 +446,44 @@ public:
   __int64 Modification; // unix time
   __int64 LastAccess; // unix time
 
-  /* __fastcall */ TRemoteProperties();
-  /* __fastcall */ TRemoteProperties(const TRemoteProperties & rhp);
-  bool __fastcall operator ==(const TRemoteProperties & rhp) const;
-  bool __fastcall operator !=(const TRemoteProperties & rhp) const;
-  void __fastcall Default();
-  void __fastcall Load(THierarchicalStorage * Storage);
-  void __fastcall Save(THierarchicalStorage * Storage) const;
+  TRemoteProperties();
+  TRemoteProperties(const TRemoteProperties & rhp);
+  bool operator ==(const TRemoteProperties & rhp) const;
+  bool operator !=(const TRemoteProperties & rhp) const;
+  void Default();
+  void Load(THierarchicalStorage * Storage);
+  void Save(THierarchicalStorage * Storage) const;
 
-  static TRemoteProperties __fastcall CommonProperties(TStrings * FileList);
-  static TRemoteProperties __fastcall ChangedProperties(
+  static TRemoteProperties CommonProperties(TStrings * FileList);
+  static TRemoteProperties ChangedProperties(
     const TRemoteProperties & OriginalProperties, TRemoteProperties NewProperties);
 };
 //---------------------------------------------------------------------------
-UnicodeString __fastcall UnixIncludeTrailingBackslash(const UnicodeString & Path);
-UnicodeString __fastcall UnixExcludeTrailingBackslash(const UnicodeString & Path);
-UnicodeString __fastcall UnixExtractFileDir(const UnicodeString & Path);
-UnicodeString __fastcall UnixExtractFilePath(const UnicodeString & Path);
-UnicodeString __fastcall UnixExtractFileName(const UnicodeString & Path);
-UnicodeString __fastcall UnixExtractFileExt(const UnicodeString & Path);
-Boolean __fastcall UnixComparePaths(const UnicodeString & Path1, const UnicodeString & Path2);
-bool __fastcall UnixIsChildPath(const UnicodeString & Parent, const UnicodeString & Child);
-bool __fastcall ExtractCommonPath(TStrings * Files, UnicodeString & Path);
-bool __fastcall UnixExtractCommonPath(TStrings * Files, UnicodeString & Path);
-UnicodeString __fastcall ExtractFileName(const UnicodeString & Path, bool Unix);
-bool __fastcall IsUnixRootPath(const UnicodeString & Path);
-bool __fastcall IsUnixHiddenFile(const UnicodeString & Path);
-UnicodeString __fastcall AbsolutePath(const UnicodeString & Base, const UnicodeString & Path);
-UnicodeString __fastcall FromUnixPath(const UnicodeString & Path);
-UnicodeString __fastcall ToUnixPath(const UnicodeString & Path);
-UnicodeString __fastcall MinimizeName(const UnicodeString & FileName, intptr_t MaxLen, bool Unix);
-UnicodeString __fastcall MakeFileList(TStrings * FileList);
-TDateTime __fastcall ReduceDateTimePrecision(TDateTime DateTime,
+UnicodeString UnixIncludeTrailingBackslash(const UnicodeString & Path);
+UnicodeString UnixExcludeTrailingBackslash(const UnicodeString & Path);
+UnicodeString UnixExtractFileDir(const UnicodeString & Path);
+UnicodeString UnixExtractFilePath(const UnicodeString & Path);
+UnicodeString UnixExtractFileName(const UnicodeString & Path);
+UnicodeString UnixExtractFileExt(const UnicodeString & Path);
+Boolean UnixComparePaths(const UnicodeString & Path1, const UnicodeString & Path2);
+bool UnixIsChildPath(const UnicodeString & Parent, const UnicodeString & Child);
+bool ExtractCommonPath(TStrings * Files, UnicodeString & Path);
+bool UnixExtractCommonPath(TStrings * Files, UnicodeString & Path);
+UnicodeString ExtractFileName(const UnicodeString & Path, bool Unix);
+bool IsUnixRootPath(const UnicodeString & Path);
+bool IsUnixHiddenFile(const UnicodeString & Path);
+UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & Path);
+UnicodeString FromUnixPath(const UnicodeString & Path);
+UnicodeString ToUnixPath(const UnicodeString & Path);
+UnicodeString MinimizeName(const UnicodeString & FileName, intptr_t MaxLen, bool Unix);
+UnicodeString MakeFileList(TStrings * FileList);
+TDateTime ReduceDateTimePrecision(TDateTime DateTime,
   TModificationFmt Precision);
-TModificationFmt __fastcall LessDateTimePrecision(
+TModificationFmt LessDateTimePrecision(
   TModificationFmt Precision1, TModificationFmt Precision2);
-UnicodeString __fastcall UserModificationStr(TDateTime DateTime,
+UnicodeString UserModificationStr(TDateTime DateTime,
   TModificationFmt Precision);
-int __fastcall FakeFileImageIndex(const UnicodeString & FileName, unsigned long Attrs = 0,
+int FakeFileImageIndex(const UnicodeString & FileName, unsigned long Attrs = 0,
   UnicodeString * TypeName = NULL);
 //---------------------------------------------------------------------------
 #endif

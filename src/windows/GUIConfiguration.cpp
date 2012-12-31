@@ -20,19 +20,19 @@ const int ccSet = 0x80000000;
 static const unsigned int AdditionaLanguageMask = 0xFFFFFF00;
 static const UnicodeString AdditionaLanguagePrefix(L"XX");
 //---------------------------------------------------------------------------
-/* __fastcall */ TGUICopyParamType::TGUICopyParamType()
+TGUICopyParamType::TGUICopyParamType()
   : TCopyParamType()
 {
   GUIDefault();
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TGUICopyParamType::TGUICopyParamType(const TCopyParamType & Source)
+TGUICopyParamType::TGUICopyParamType(const TCopyParamType & Source)
   : TCopyParamType(Source)
 {
   GUIDefault();
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TGUICopyParamType::TGUICopyParamType(const TGUICopyParamType & Source)
+TGUICopyParamType::TGUICopyParamType(const TGUICopyParamType & Source)
   : TCopyParamType(Source)
 {
   GUIAssign(&Source);
@@ -116,16 +116,16 @@ void __fastcall TCopyParamRuleData::Default()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-/* __fastcall */ TCopyParamRule::TCopyParamRule()
+TCopyParamRule::TCopyParamRule()
 {
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TCopyParamRule::TCopyParamRule(const TCopyParamRuleData & Data) :
+TCopyParamRule::TCopyParamRule(const TCopyParamRuleData & Data) :
   FData(Data)
 {
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TCopyParamRule::TCopyParamRule(const TCopyParamRule & Source)
+TCopyParamRule::TCopyParamRule(const TCopyParamRule & Source)
 {
   FData.HostName = Source.FData.HostName;
   FData.UserName = Source.FData.UserName;
@@ -225,7 +225,7 @@ void __fastcall TCopyParamRule::SetData(TCopyParamRuleData value)
 //---------------------------------------------------------------------------
 UnicodeString TCopyParamList::FInvalidChars(L"/\\[]");
 //---------------------------------------------------------------------------
-/* __fastcall */ TCopyParamList::TCopyParamList()
+TCopyParamList::TCopyParamList()
 {
   Init();
 }
@@ -239,7 +239,7 @@ void __fastcall TCopyParamList::Init()
   FModified = false;
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TCopyParamList::~TCopyParamList()
+TCopyParamList::~TCopyParamList()
 {
   Clear();
   delete FCopyParams;
@@ -528,7 +528,7 @@ bool __fastcall TCopyParamList::GetAnyRule() const
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-/* __fastcall */ TGUIConfiguration::TGUIConfiguration(): TConfiguration(),
+TGUIConfiguration::TGUIConfiguration(): TConfiguration(),
   FLocales(NULL),
   FContinueOnError(false),
   FConfirmCommandSession(false),
@@ -558,7 +558,7 @@ bool __fastcall TCopyParamList::GetAnyRule() const
   CoreSetResourceModule(0);
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TGUIConfiguration::~TGUIConfiguration()
+TGUIConfiguration::~TGUIConfiguration()
 {
   delete FLocales;
   delete FCopyParamList;

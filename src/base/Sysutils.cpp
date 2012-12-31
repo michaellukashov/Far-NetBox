@@ -20,29 +20,29 @@ const TDayTable MonthDays[] =
 
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-/* __fastcall */ Exception::Exception(Exception * E) :
+Exception::Exception(Exception * E) :
   std::exception(E ? E->what() : ""),
   Message(E ? E->Message : L"")
 {
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ Exception::Exception(const UnicodeString & Msg) :
+Exception::Exception(const UnicodeString & Msg) :
   std::exception(""),
   Message(Msg)
 {
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ Exception::Exception(const wchar_t *Msg) :
+Exception::Exception(const wchar_t *Msg) :
   std::exception(""),
   Message(Msg)
 {
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ Exception::Exception(std::exception * E) :
+Exception::Exception(std::exception * E) :
   std::exception(E ? E->what() : "")
 {
 }
-/* __fastcall */ Exception::Exception(const UnicodeString & Msg, int AHelpContext) :
+Exception::Exception(const UnicodeString & Msg, int AHelpContext) :
   std::exception(""),
   Message(Msg)
 {
@@ -50,13 +50,13 @@ const TDayTable MonthDays[] =
   (void)AHelpContext;
 }
 
-/* __fastcall */ Exception::Exception(Exception * E, int Ident) :
+Exception::Exception(Exception * E, int Ident) :
   std::exception(E ? E->what() : "")
 {
   Message = FMTLOAD(Ident);
 }
 
-/* __fastcall */ Exception::Exception(int Ident) :
+Exception::Exception(int Ident) :
   std::exception()
 {
   Message = FMTLOAD(Ident);
@@ -1486,7 +1486,7 @@ UnicodeString UnixExcludeLeadingBackslash(const UnicodeString & Path)
 }
 
 //---------------------------------------------------------------------------
-void __fastcall Randomize()
+void Randomize()
 {
   srand(static_cast<unsigned int>(time(NULL)));
 }

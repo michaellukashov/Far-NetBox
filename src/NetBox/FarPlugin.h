@@ -457,8 +457,8 @@ public:
   void AddSeparator(bool Visible = true);
   virtual intptr_t Add(const UnicodeString & Text, bool Visible = true);
 
-  virtual void __fastcall Clear();
-  virtual void __fastcall Delete(intptr_t Index);
+  virtual void Clear();
+  virtual void Delete(intptr_t Index);
 
   intptr_t GetItemFocused() { return FItemFocused; }
   void SetItemFocused(intptr_t Value);
@@ -471,7 +471,7 @@ public:
   bool GetFlag(intptr_t Index, uintptr_t Flag);
 
 protected:
-  virtual void __fastcall PutObject(intptr_t Index, TObject * AObject);
+  virtual void PutObject(intptr_t Index, TObject * AObject);
 
 private:
   intptr_t FItemFocused;

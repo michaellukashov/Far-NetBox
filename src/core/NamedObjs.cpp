@@ -30,13 +30,13 @@ int /* __fastcall */ NamedObjectSortProc(const void * Item1, const void * Item2)
   SetName(AName);
 }
 //---------------------------------------------------------------------------
-void __fastcall TNamedObject::SetName(const UnicodeString & Value)
+void TNamedObject::SetName(const UnicodeString & Value)
 {
   FHidden = (Value.SubString(1, TNamedObjectList::HiddenPrefix.Length()) == TNamedObjectList::HiddenPrefix);
   FName = Value;
 }
 //---------------------------------------------------------------------------
-Integer __fastcall TNamedObject::CompareName(UnicodeString aName,
+Integer TNamedObject::CompareName(UnicodeString aName,
   Boolean CaseSensitive)
 {
   if (CaseSensitive)
@@ -49,7 +49,7 @@ Integer __fastcall TNamedObject::CompareName(UnicodeString aName,
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TNamedObject::MakeUniqueIn(TNamedObjectList * List)
+void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
 {
   // This object can't be item of list, it would create infinite loop
   if (List && (List->IndexOf(this) == -1))
@@ -84,31 +84,31 @@ const UnicodeString TNamedObjectList::HiddenPrefix = L"_!_";
   AutoSort = True;
 }
 //---------------------------------------------------------------------------
-TNamedObject * __fastcall TNamedObjectList::AtObject(intptr_t Index)
+TNamedObject * TNamedObjectList::AtObject(intptr_t Index)
 {
   return static_cast<TNamedObject *>(Items[Index + GetHiddenCount()]);
 }
 //---------------------------------------------------------------------------
-void __fastcall TNamedObjectList::Recount()
+void TNamedObjectList::Recount()
 {
   int i = 0;
   while ((i < TObjectList::Count) && (static_cast<TNamedObject *>(Items[i])->GetHidden())) { i++; }
   FHiddenCount = i;
 }
 //---------------------------------------------------------------------------
-void __fastcall TNamedObjectList::AlphaSort()
+void TNamedObjectList::AlphaSort()
 {
   Sort(NamedObjectSortProc);
 }
 //---------------------------------------------------------------------------
-void __fastcall TNamedObjectList::Notify(void *Ptr, TListNotification Action)
+void TNamedObjectList::Notify(void *Ptr, TListNotification Action)
 {
   TObjectList::Notify(Ptr, Action);
   if (AutoSort && (Action == lnAdded)) { AlphaSort(); }
   Recount();
 }
 //---------------------------------------------------------------------------
-TNamedObject * __fastcall TNamedObjectList::FindByName(UnicodeString Name,
+TNamedObject * TNamedObjectList::FindByName(UnicodeString Name,
   Boolean CaseSensitive)
 {
   for (Integer Index = 0; Index < TObjectList::Count; Index++)
@@ -119,12 +119,12 @@ TNamedObject * __fastcall TNamedObjectList::FindByName(UnicodeString Name,
   return NULL;
 }
 //---------------------------------------------------------------------------
-void __fastcall TNamedObjectList::SetCount(intptr_t Value)
+void TNamedObjectList::SetCount(intptr_t Value)
 {
   TObjectList::SetCount(Value/*+HiddenCount*/);
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TNamedObjectList::GetCount()
+intptr_t TNamedObjectList::GetCount()
 {
   return TObjectList::Count - GetHiddenCount();
 }

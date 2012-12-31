@@ -46,16 +46,16 @@ public:
   UTF8String & operator=(const wchar_t * lpwszData);
   UTF8String & operator=(wchar_t chData);
 
-  UTF8String __fastcall operator +(const UTF8String & rhs) const;
-  UTF8String __fastcall operator +(const std::wstring & rhs) const;
-  UTF8String __fastcall operator +(const RawByteString & rhs) const;
-  const UTF8String & __fastcall operator +=(const UTF8String & rhs);
-  const UTF8String & __fastcall operator +=(const RawByteString & rhs);
-  const UTF8String & __fastcall operator +=(const char rhs);
-  const UTF8String & __fastcall operator +=(const char * rhs);
+  UTF8String operator +(const UTF8String & rhs) const;
+  UTF8String operator +(const std::wstring & rhs) const;
+  UTF8String operator +(const RawByteString & rhs) const;
+  const UTF8String & operator +=(const UTF8String & rhs);
+  const UTF8String & operator +=(const RawByteString & rhs);
+  const UTF8String & operator +=(const char rhs);
+  const UTF8String & operator +=(const char * rhs);
 
-  friend bool __fastcall operator ==(const UTF8String & lhs, const UTF8String & rhs);
-  friend bool __fastcall operator !=(const UTF8String & lhs, const UTF8String & rhs);
+  friend bool operator ==(const UTF8String & lhs, const UTF8String & rhs);
+  friend bool operator !=(const UTF8String & lhs, const UTF8String & rhs);
 
 private:
   void Init(const wchar_t * Str, intptr_t Length);
@@ -155,39 +155,39 @@ public:
   UnicodeString & operator=(const char * lpszData);
   UnicodeString & operator=(const wchar_t Ch);
 
-  UnicodeString __fastcall operator +(const UnicodeString & rhs) const;
-  UnicodeString __fastcall operator +(const RawByteString & rhs) const;
-  UnicodeString __fastcall operator +(const AnsiString & rhs) const;
-  UnicodeString __fastcall operator +(const UTF8String & rhs) const;
-  UnicodeString __fastcall operator +(const std::wstring & rhs) const;
+  UnicodeString operator +(const UnicodeString & rhs) const;
+  UnicodeString operator +(const RawByteString & rhs) const;
+  UnicodeString operator +(const AnsiString & rhs) const;
+  UnicodeString operator +(const UTF8String & rhs) const;
+  UnicodeString operator +(const std::wstring & rhs) const;
 
-  friend UnicodeString __fastcall operator +(const wchar_t lhs, const UnicodeString & rhs);
-  friend UnicodeString __fastcall operator +(const UnicodeString & lhs, wchar_t rhs);
-  friend UnicodeString __fastcall operator +(const wchar_t * lhs, const UnicodeString & rhs);
-  friend UnicodeString __fastcall operator +(const UnicodeString & lhs, const wchar_t * rhs);
-  friend UnicodeString __fastcall operator +(const UnicodeString & lhs, const char * rhs);
+  friend UnicodeString operator +(const wchar_t lhs, const UnicodeString & rhs);
+  friend UnicodeString operator +(const UnicodeString & lhs, wchar_t rhs);
+  friend UnicodeString operator +(const wchar_t * lhs, const UnicodeString & rhs);
+  friend UnicodeString operator +(const UnicodeString & lhs, const wchar_t * rhs);
+  friend UnicodeString operator +(const UnicodeString & lhs, const char * rhs);
 
-  const UnicodeString & __fastcall operator +=(const UnicodeString & rhs);
-  const UnicodeString & __fastcall operator +=(const wchar_t * rhs);
-  const UnicodeString & __fastcall operator +=(const UTF8String & rhs);
-  const UnicodeString & __fastcall operator +=(const RawByteString & rhs);
-  const UnicodeString & __fastcall operator +=(const std::wstring & rhs);
-  const UnicodeString & __fastcall operator +=(const char rhs);
-  const UnicodeString & __fastcall operator +=(const char * rhs);
-  const UnicodeString & __fastcall operator +=(const wchar_t rhs);
+  const UnicodeString & operator +=(const UnicodeString & rhs);
+  const UnicodeString & operator +=(const wchar_t * rhs);
+  const UnicodeString & operator +=(const UTF8String & rhs);
+  const UnicodeString & operator +=(const RawByteString & rhs);
+  const UnicodeString & operator +=(const std::wstring & rhs);
+  const UnicodeString & operator +=(const char rhs);
+  const UnicodeString & operator +=(const char * rhs);
+  const UnicodeString & operator +=(const wchar_t rhs);
 
   bool operator ==(const UnicodeString & Str) const { return Data == Str.Data; }
   bool operator ==(const wchar_t * Str) const { return wcscmp(Data.c_str(), Str) == 0; }
   bool operator !=(const UnicodeString & Str) const { return Data != Str.Data; }
   bool operator !=(const wchar_t * Str) const { return wcscmp(Data.c_str(), Str) != 0; }
 
-  wchar_t __fastcall operator [](intptr_t Idx) const
+  wchar_t operator [](intptr_t Idx) const
   {
     ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
     return Data[Idx-1];
   }
 
-  wchar_t & __fastcall operator [](intptr_t Idx)
+  wchar_t & operator [](intptr_t Idx)
   {
     ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
     Unique();                 // Ensure we're not ref-counted (and Unicode)
@@ -238,13 +238,13 @@ public:
   intptr_t Pos(wchar_t Ch) const;
   intptr_t Pos(const wchar_t * Str) const;
 
-  char __fastcall operator [](intptr_t Idx) const
+  char operator [](intptr_t Idx) const
   {
     ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
     return Data[Idx-1];
   }
 
-  char & __fastcall operator [](intptr_t Idx)
+  char & operator [](intptr_t Idx)
   {
     ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
     Unique();                 // Ensure we're not ref-counted (and Unicode)
@@ -266,22 +266,22 @@ public:
   AnsiString & operator=(const wchar_t * lpwszData);
   AnsiString & operator=(wchar_t chData);
 
-  AnsiString __fastcall operator +(const UnicodeString & rhs) const;
-  AnsiString __fastcall operator +(const RawByteString & rhs) const;
-  AnsiString __fastcall operator +(const AnsiString & rhs) const;
-  AnsiString __fastcall operator +(const UTF8String & rhs) const;
-  AnsiString __fastcall operator +(const std::wstring & rhs) const;
+  AnsiString operator +(const UnicodeString & rhs) const;
+  AnsiString operator +(const RawByteString & rhs) const;
+  AnsiString operator +(const AnsiString & rhs) const;
+  AnsiString operator +(const UTF8String & rhs) const;
+  AnsiString operator +(const std::wstring & rhs) const;
 
-  const AnsiString & __fastcall operator +=(const UnicodeString & rhs);
-  const AnsiString & __fastcall operator +=(const RawByteString & rhs);
-  const AnsiString & __fastcall operator +=(const AnsiString & rhs);
-  const AnsiString & __fastcall operator +=(const UTF8String & rhs);
-  const AnsiString & __fastcall operator +=(const char Ch);
-  const AnsiString & __fastcall operator +=(const char * rhs);
+  const AnsiString & operator +=(const UnicodeString & rhs);
+  const AnsiString & operator +=(const RawByteString & rhs);
+  const AnsiString & operator +=(const AnsiString & rhs);
+  const AnsiString & operator +=(const UTF8String & rhs);
+  const AnsiString & operator +=(const char Ch);
+  const AnsiString & operator +=(const char * rhs);
 
-  friend bool __fastcall operator ==(const AnsiString & lhs, const AnsiString & rhs)
+  friend bool operator ==(const AnsiString & lhs, const AnsiString & rhs)
   { return lhs.Data == rhs.Data; }
-  friend bool __fastcall operator !=(const AnsiString & lhs, const AnsiString & rhs)
+  friend bool operator !=(const AnsiString & lhs, const AnsiString & rhs)
   { return lhs.Data != rhs.Data; }
 
   void Unique() const {}
@@ -344,25 +344,25 @@ public:
   RawByteString & operator=(const wchar_t * lpwszData);
   RawByteString & operator=(wchar_t chData);
 
-  RawByteString __fastcall operator +(const UnicodeString & rhs) const;
-  RawByteString __fastcall operator +(const RawByteString & rhs) const;
-  RawByteString __fastcall operator +(const AnsiString & rhs) const;
-  RawByteString __fastcall operator +(const UTF8String & rhs) const;
-  RawByteString __fastcall operator +(const std::wstring & rhs) const;
+  RawByteString operator +(const UnicodeString & rhs) const;
+  RawByteString operator +(const RawByteString & rhs) const;
+  RawByteString operator +(const AnsiString & rhs) const;
+  RawByteString operator +(const UTF8String & rhs) const;
+  RawByteString operator +(const std::wstring & rhs) const;
 
-  const RawByteString & __fastcall operator +=(const UnicodeString & rhs);
-  const RawByteString & __fastcall operator +=(const RawByteString & rhs);
-  const RawByteString & __fastcall operator +=(const AnsiString & rhs);
-  const RawByteString & __fastcall operator +=(const UTF8String & rhs);
-  const RawByteString & __fastcall operator +=(const std::wstring & rhs);
-  const RawByteString & __fastcall operator +=(const char Ch);
-  const RawByteString & __fastcall operator +=(const char * rhs);
+  const RawByteString & operator +=(const UnicodeString & rhs);
+  const RawByteString & operator +=(const RawByteString & rhs);
+  const RawByteString & operator +=(const AnsiString & rhs);
+  const RawByteString & operator +=(const UTF8String & rhs);
+  const RawByteString & operator +=(const std::wstring & rhs);
+  const RawByteString & operator +=(const char Ch);
+  const RawByteString & operator +=(const char * rhs);
 
-  bool __fastcall operator ==(const char * rhs) const
+  bool operator ==(const char * rhs) const
   { return strcmp(reinterpret_cast<const char *>(Data.c_str()), rhs) == 0; }
-  friend bool __fastcall operator ==(RawByteString & lhs, RawByteString & rhs)
+  friend bool operator ==(RawByteString & lhs, RawByteString & rhs)
   { return lhs.Data == rhs.Data; }
-  friend bool __fastcall operator !=(RawByteString & lhs, RawByteString & rhs)
+  friend bool operator !=(RawByteString & lhs, RawByteString & rhs)
   { return lhs.Data != rhs.Data; }
 
   void Unique() const {}
