@@ -1004,10 +1004,10 @@ void TStringList::InsertItem(intptr_t Index, const UnicodeString & S, TObject * 
   }
   Changing();
   // if (FCount == FCapacity) Grow();
-  TStringItem item;
-  item.FString = S;
-  item.FObject = AObject;
-  FList.insert(FList.begin() + Index, item);
+  TStringItem Item;
+  Item.FString = S;
+  Item.FObject = AObject;
+  FList.insert(FList.begin() + Index, Item);
   Changed();
 }
 UnicodeString & TStringList::GetString(intptr_t Index)
