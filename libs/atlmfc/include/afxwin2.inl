@@ -538,26 +538,6 @@ _AFXWIN_INLINE void CWnd::BeginModalState()
 _AFXWIN_INLINE void CWnd::EndModalState()
 	{ ::EnableWindow(m_hWnd, TRUE); }
 
-// Window control functions
-_AFXWIN_INLINE CStatic::CStatic()
-	{ }
-_AFXWIN_INLINE HICON CStatic::SetIcon(HICON hIcon)
-	{ ASSERT(::IsWindow(m_hWnd)); return (HICON)::SendMessage(m_hWnd, STM_SETICON, (WPARAM)hIcon, 0L); }
-_AFXWIN_INLINE HICON CStatic::GetIcon() const
-	{ ASSERT(::IsWindow(m_hWnd)); return (HICON)::SendMessage(m_hWnd, STM_GETICON, 0, 0L); }
-_AFXWIN_INLINE HENHMETAFILE CStatic::SetEnhMetaFile(HENHMETAFILE hMetaFile)
-	{ ASSERT(::IsWindow(m_hWnd)); return (HENHMETAFILE)::SendMessage(m_hWnd, STM_SETIMAGE, IMAGE_ENHMETAFILE, (LPARAM)hMetaFile); }
-_AFXWIN_INLINE HENHMETAFILE CStatic::GetEnhMetaFile() const
-	{ ASSERT(::IsWindow(m_hWnd)); return (HENHMETAFILE)::SendMessage(m_hWnd, STM_GETIMAGE, IMAGE_ENHMETAFILE, 0L); }
-_AFXWIN_INLINE HBITMAP CStatic::SetBitmap(HBITMAP hBitmap)
-	{ ASSERT(::IsWindow(m_hWnd)); return (HBITMAP)::SendMessage(m_hWnd, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBitmap); }
-_AFXWIN_INLINE HBITMAP CStatic::GetBitmap() const
-	{ ASSERT(::IsWindow(m_hWnd)); return (HBITMAP)::SendMessage(m_hWnd, STM_GETIMAGE, IMAGE_BITMAP, 0L); }
-_AFXWIN_INLINE HCURSOR CStatic::SetCursor(HCURSOR hCursor)
-	{ ASSERT(::IsWindow(m_hWnd)); return (HCURSOR)::SendMessage(m_hWnd, STM_SETIMAGE, IMAGE_CURSOR, (LPARAM)hCursor); }
-_AFXWIN_INLINE HCURSOR CStatic::GetCursor()
-	{ ASSERT(::IsWindow(m_hWnd)); return (HCURSOR)::SendMessage(m_hWnd, STM_GETIMAGE, IMAGE_CURSOR, 0L); }
-
 // CWinThread
 _AFXWIN_INLINE CWinThread::operator HANDLE() const
 	{ return this == NULL ? NULL : m_hThread; }

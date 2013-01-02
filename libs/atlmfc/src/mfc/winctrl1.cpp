@@ -17,40 +17,6 @@
 
 #define new DEBUG_NEW
 
-/////////////////////////////////////////////////////////////////////////////
-// CStatic
-
-BOOL CStatic::Create(LPCTSTR lpszText, DWORD dwStyle,
-		const RECT& rect, CWnd* pParentWnd, UINT nID)
-{
-	CWnd* pWnd = this;
-	return pWnd->Create(_T("STATIC"), lpszText, dwStyle, rect, pParentWnd, nID);
-}
-
-CStatic::~CStatic()
-{
-	DestroyWindow();
-}
-
-// Derived class is responsible for implementing all of these handlers
-//   for owner/self draw controls
-void CStatic::DrawItem(LPDRAWITEMSTRUCT)
-{
-	ASSERT(FALSE);
-}
-
-BOOL CStatic::OnChildNotify(UINT message, WPARAM wParam, LPARAM lParam,
-	LRESULT* pResult)
-{
-	if (message != WM_DRAWITEM)
-		return CWnd::OnChildNotify(message, wParam, lParam, pResult);
-
-	ASSERT(pResult == NULL);       // no return value expected
-	UNUSED(pResult); // unused in release builds
-	DrawItem((LPDRAWITEMSTRUCT)lParam);
-	return TRUE;
-}
-
 // Helper for radio buttons
 int CWnd::GetCheckedRadioButton(int nIDFirstButton, int nIDLastButton) const
 {
@@ -61,7 +27,5 @@ int CWnd::GetCheckedRadioButton(int nIDFirstButton, int nIDLastButton) const
 	}
 	return 0; // invalid ID
 }
-
-IMPLEMENT_DYNAMIC(CStatic, CWnd)
 
 /////////////////////////////////////////////////////////////////////////////
