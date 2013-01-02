@@ -4607,7 +4607,25 @@ windows_validate_certificate(bool * ok_p,
     memset(&chain_para, 0, sizeof(chain_para));
     chain_para.cbSize = sizeof(chain_para);
 
-    if (CertGetCertificateChain(NULL, cert_context, NULL, NULL, &chain_para,
+    HCERTCHAINENGINE chain_engine;
+    CERT_CHAIN_ENGINE_CONFIG chain_config;
+
+    chain_config.cbSize = sizeof(CERT_CHAIN_ENGINE_CONFIG);
+    chain_config.hRestrictedRoot = NULL;
+    chain_config.hRestrictedTrust = NULL;
+    chain_config.hRestrictedOther = NULL;
+    chain_config.cAdditionalStore = 0;
+    chain_config.rghAdditionalStore = NULL;
+    chain_config.dwFlags = CERT_CHAIN_CACHE_END_CERT;
+    chain_config.dwUrlRetrievalTimeout = 0;
+    chain_config.MaximumCachedCertificates =0;
+    chain_config.CycleDetectionModulus = 0;
+
+    CertCreateCertificateChainEngine(
+        &chain_config,
+        &chain_engine);
+
+    if (CertGetCertificateChain(chain_engine, cert_context, NULL, NULL, &chain_para,
           CERT_CHAIN_CACHE_END_CERT |
           CERT_CHAIN_REVOCATION_CHECK_CHAIN_EXCLUDE_ROOT,
           NULL, &chain_context))
@@ -4635,6 +4653,7 @@ windows_validate_certificate(bool * ok_p,
       CertFreeCertificateChain(chain_context);
     }
     CertFreeCertificateContext(cert_context);
+    CertFreeCertificateChainEngine(chain_engine);
   }
 
   return WEBDAV_NO_ERROR;
