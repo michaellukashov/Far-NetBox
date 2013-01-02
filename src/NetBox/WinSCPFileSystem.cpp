@@ -3987,9 +3987,7 @@ void TWinSCPFileSystem::EditViewCopyParam(TCopyParamType & CopyParam)
   CopyParam.SetFileNameCase(ncNoChange);
   CopyParam.SetPreserveReadOnly(false);
   CopyParam.SetResumeSupport(rsOff);
-  // we have no way to give FAR back the modified filename, so make sure we
-  // fail downloading file not valid on windows
-  CopyParam.SetReplaceInvalidChars(false);
+  CopyParam.SetReplaceInvalidChars(true);
   CopyParam.SetFileMask(L"");
   CopyParam.SetExcludeFileMask(TFileMasks());
 }
