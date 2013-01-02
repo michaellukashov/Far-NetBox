@@ -11298,6 +11298,8 @@ client_ssl_callback(void * userdata, ne_session * sess,
               clicert))
         {
           ne_ssl_set_clicert(sess, clicert);
+          ne_ssl_clicert_free(clicert);
+          clicert = NULL;
         }
         break;
       }
@@ -11821,6 +11823,8 @@ neon_open(
             "Invalid config: unable to load certificate file '%s'", file);
         }
         ne_ssl_trust_cert(sess, ca_cert);
+        ne_ssl_cert_free(ca_cert);
+        ca_cert = NULL;
       }
     }
 
