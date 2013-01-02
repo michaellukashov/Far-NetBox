@@ -515,15 +515,8 @@ error_wrap_apr(apr_status_t status,
   return err;
 }
 
-static void
-error_compose(error_t * chain, error_t * new_err)
-{
-  error_createf(WEBDAV_ERR_DAV_NOT_IMPLEMENTED, NULL,
-                "not implemented: 'error_compose'");
-}
-
 //------------------------------------------------------------------------------
-// utils
+// from utils.c
 
 /* a cleanup routine attached to the pool that contains the RA session
    root URI. */
@@ -1232,12 +1225,6 @@ string_create(const char * cstring, apr_pool_t * pool)
 }
 
 static string_t *
-string_create_from_buf(const stringbuf_t * strbuf, apr_pool_t * pool)
-{
-  return string_ncreate(strbuf->data, strbuf->len, pool);
-}
-
-static string_t *
 string_createv(apr_pool_t * pool, const char * fmt, va_list ap)
 {
   char * data = apr_pvsprintf(pool, fmt, ap);
@@ -1257,12 +1244,6 @@ string_createf(apr_pool_t * pool, const char * fmt, ...)
   va_end(ap);
 
   return str;
-}
-
-static bool
-string_isempty(const string_t * str)
-{
-  return (str->len == 0);
 }
 
 static string_t *
@@ -1322,13 +1303,6 @@ stringbuf_dup(const stringbuf_t * original_string, apr_pool_t * pool)
     original_string->len, pool));
 }
 
-static bool
-stringbuf_compare(const stringbuf_t * str1,
-  const stringbuf_t * str2)
-{
-  return string_compare(str1->data, str2->data, str1->len, str2->len);
-}
-
 static error_t
 cstring_strtoi64(apr_int64_t * n, const char * str,
   apr_int64_t minval, apr_int64_t maxval,
@@ -1361,16 +1335,6 @@ cstring_atoi64(apr_int64_t * n, const char * str)
 {
   return error_trace(cstring_strtoi64(n, str, APR_INT64_MIN,
     APR_INT64_MAX, 10));
-}
-
-static error_t
-cstring_atoi(int * n, const char * str)
-{
-  apr_int64_t val = 0;
-
-  WEBDAV_ERR(cstring_strtoi64(&val, str, APR_INT32_MIN, APR_INT32_MAX, 10));
-  *n = (int)val;
-  return WEBDAV_NO_ERROR;
 }
 
 static int
@@ -6172,12 +6136,6 @@ uri_skip_ancestor(const char * parent_uri,
   return NULL;
 }
 
-static bool
-uri_is_ancestor(const char * parent_uri, const char * child_uri)
-{
-  return uri_skip_ancestor(parent_uri, child_uri) != NULL;
-}
-
 static const char *
 uri_skip_ancestor(const char * parent_uri,
   const char * child_uri,
@@ -6400,143 +6358,6 @@ dirent_get_absolute(const char ** pabsolute,
   return WEBDAV_NO_ERROR;
 }
 
-/* Return an internal-style new path based on PATH, allocated in POOL.
- *
- * "Internal-style" means that separators are all '/'.
- */
-static const char *
-internal_style(const char * path, apr_pool_t * pool)
-{
-#if '/' != WEBDAV_PATH_LOCAL_SEPARATOR
-  {
-    char * p = apr_pstrdup(pool, path);
-    path = p;
-
-    /* Convert all local-style separators to the canonical ones. */
-    for (; *p != '\0'; ++p)
-      if (*p == WEBDAV_PATH_LOCAL_SEPARATOR)
-        *p = '/';
-  }
-#endif
-
-  return path;
-}
-
-static const char *
-dirent_internal_style(const char * dirent, apr_pool_t * pool)
-{
-  return dirent_canonicalize(internal_style(dirent, pool), pool);
-}
-
-/* Calculates the length of the dirent absolute or non absolute root in
-   DIRENT, return 0 if dirent is not rooted  */
-static apr_size_t
-dirent_root_length(const char * dirent, apr_size_t len)
-{
-#ifdef WEBDAV_USE_DOS_PATHS
-  if (len >= 2 && dirent[1] == ':' &&
-      ((dirent[0] >= 'A' && dirent[0] <= 'Z') ||
-       (dirent[0] >= 'a' && dirent[0] <= 'z')))
-  {
-    return (len > 2 && dirent[2] == '/') ? 3 : 2;
-  }
-
-  if (len > 2 && dirent[0] == '/' && dirent[1] == '/')
-  {
-    apr_size_t i = 2;
-
-    while (i < len && dirent[i] != '/')
-      i++;
-
-    if (i == len)
-      return len; /* Cygwin drive alias, invalid path on WIN32 */
-
-    i++; /* Skip '/' */
-
-    while (i < len && dirent[i] != '/')
-      i++;
-
-    return i;
-  }
-#endif /* WEBDAV_USE_DOS_PATHS */
-  if (len >= 1 && dirent[0] == '/')
-    return 1;
-
-  return 0;
-}
-
-static char *
-dirent_join(const char * base,
-  const char * component,
-  apr_pool_t * pool)
-{
-  apr_size_t blen = strlen(base);
-  apr_size_t clen = strlen(component);
-  char * dirent = NULL;
-  int add_separator = 0;
-
-  assert(dirent_is_canonical(base, pool));
-  assert(dirent_is_canonical(component, pool));
-
-  /* If the component is absolute, then return it.  */
-  if (dirent_is_absolute(component))
-    return static_cast<char *>(apr_pmemdup(pool, component, clen + 1));
-
-  /* If either is empty return the other */
-  if (WEBDAV_PATH_IS_EMPTY(base))
-    return static_cast<char *>(apr_pmemdup(pool, component, clen + 1));
-  if (WEBDAV_PATH_IS_EMPTY(component))
-    return static_cast<char *>(apr_pmemdup(pool, base, blen + 1));
-
-#ifdef WEBDAV_USE_DOS_PATHS
-  if (component[0] == '/')
-  {
-    /* '/' is drive relative on Windows, not absolute like on Posix */
-    if (dirent_is_rooted(base))
-    {
-      /* Join component without '/' to root-of(base) */
-      blen = dirent_root_length(base, blen);
-      component++;
-      clen--;
-
-      if (blen == 2 && base[1] == ':')  /* "C:" case */
-      {
-        char * root = static_cast<char *>(apr_pmemdup(pool, base, 3));
-        root[2] = '/'; /* We don't need the final '\0' */
-
-        base = root;
-        blen = 3;
-      }
-
-      if (clen == 0)
-        return apr_pstrndup(pool, base, blen);
-    }
-    else
-      return static_cast<char *>(apr_pmemdup(pool, component, clen + 1));
-  }
-  else if (dirent_is_rooted(component))
-    return static_cast<char *>(apr_pmemdup(pool, component, clen + 1));
-#endif /* WEBDAV_USE_DOS_PATHS */
-
-  /* if last character of base is already a separator, don't add a '/' */
-  add_separator = 1;
-  if (base[blen - 1] == '/'
-#ifdef WEBDAV_USE_DOS_PATHS
-      || base[blen - 1] == ':'
-#endif
-    )
-    add_separator = 0;
-
-  /* Construct the new, combined dirent. */
-  dirent = static_cast<char *>(apr_pcalloc(pool, blen + add_separator + clen + 1));
-  memcpy(dirent, base, blen);
-  if (add_separator)
-    dirent[blen] = '/';
-  memcpy(dirent + blen + add_separator, component, clen + 1);
-
-  return dirent;
-}
-
 //------------------------------------------------------------------------------
 // from atomic.c
 
@@ -6667,17 +6488,6 @@ typedef enum io_file_del_t
   /** Remove when the associated pool is cleared */
   io_file_del_on_pool_cleanup
 } io_file_del_t;
-
-/* Local wrapper of path_cstring_to_utf8() that does no copying on
- * operating systems where APR always uses utf-8 as native path format */
-static error_t
-cstring_to_utf8(const char ** path_utf8,
-  const char * path_apr,
-  apr_pool_t * pool)
-{
-  *path_utf8 = path_apr;
-  return WEBDAV_NO_ERROR;
-}
 
 /* Wrapper for apr_file_open(), taking an APR-encoded filename. */
 static apr_status_t
@@ -6915,23 +6725,6 @@ io_file_read_full2(apr_file_t * file, void * buf,
           pool);
 }
 
-static error_t
-io_set_file_affected_time(apr_time_t apr_time,
-  const char * path,
-  apr_pool_t * pool)
-{
-  apr_status_t status = 0;
-  const char * native_path = NULL;
-
-  WEBDAV_ERR(cstring_from_utf8(&native_path, path, pool));
-  status = apr_file_mtime_set(native_path, apr_time, pool);
-
-  if (status)
-    return error_wrap_apr(status, "Can't set access time of '%s'", path);
-
-  return WEBDAV_NO_ERROR;
-}
-
 //------------------------------------------------------------------------------
 // from svn_io.h
 
@@ -7101,31 +6894,6 @@ stream_create(void * baton, apr_pool_t * pool)
   return stream;
 }
 
-/* Skip data from any stream by reading and simply discarding it. */
-static error_t
-skip_default_handler(void * baton, apr_size_t len, read_fn_t read_fn)
-{
-  apr_size_t bytes_read = 1;
-  char buffer[4096] = {0};
-  apr_size_t to_read = len;
-
-  while ((to_read > 0) && (bytes_read > 0))
-  {
-    bytes_read = sizeof(buffer) < to_read ? sizeof(buffer) : to_read;
-    WEBDAV_ERR(read_fn(baton, buffer, &bytes_read));
-    to_read -= bytes_read;
-  }
-
-  return WEBDAV_NO_ERROR;
-}
-
-static void
-stream_set_baton(stream_t * stream, void * baton)
-{
-  stream->baton = baton;
-}
-
-
 static void
 stream_set_read(stream_t * stream, read_fn_t read_fn)
 {
@@ -7261,62 +7029,10 @@ stream_open_writable(stream_t ** stream,
 }
 
 static error_t
-stream_read(stream_t * stream, char * buffer, apr_size_t * len)
-{
-  WEBDAV_ERR_ASSERT(stream->read_fn != NULL);
-  return stream->read_fn(stream->baton, buffer, len);
-}
-
-
-static error_t
-stream_skip(stream_t * stream, apr_size_t len)
-{
-  if (stream->skip_fn == NULL)
-    return skip_default_handler(stream->baton, len, stream->read_fn);
-
-  return stream->skip_fn(stream->baton, len);
-}
-
-
-static error_t
 stream_write(stream_t * stream, const char * data, apr_size_t * len)
 {
   WEBDAV_ERR_ASSERT(stream->write_fn != NULL);
   return stream->write_fn(stream->baton, data, len);
-}
-
-static bool
-stream_supports_mark(stream_t * stream)
-{
-  return stream->mark_fn == NULL ? FALSE : TRUE;
-}
-
-static error_t
-stream_mark(stream_t * stream, stream_mark_t ** mark,
-  apr_pool_t * pool)
-{
-  if (stream->mark_fn == NULL)
-    return error_create(WEBDAV_ERR_STREAM_SEEK_NOT_SUPPORTED, NULL, NULL);
-
-  return stream->mark_fn(stream->baton, mark, pool);
-}
-
-static error_t
-stream_seek(stream_t * stream, const stream_mark_t * mark)
-{
-  if (stream->seek_fn == NULL)
-    return error_create(WEBDAV_ERR_STREAM_SEEK_NOT_SUPPORTED, NULL, NULL);
-
-  return stream->seek_fn(stream->baton, mark);
-}
-
-static bool
-stream_is_buffered(stream_t * stream)
-{
-  if (stream->is_buffered_fn == NULL)
-    return FALSE;
-
-  return stream->is_buffered_fn(stream->baton);
 }
 
 static error_t
@@ -7325,28 +7041,6 @@ stream_close(stream_t * stream)
   if (stream->close_fn == NULL)
     return WEBDAV_NO_ERROR;
   return stream->close_fn(stream->baton);
-}
-
-static error_t
-stream_reset(stream_t * stream)
-{
-  return error_trace(
-           stream_seek(stream, NULL));
-}
-
-static error_t
-stream_for_stderr(stream_t ** err, apr_pool_t * pool)
-{
-  apr_file_t * stderr_file = NULL;
-  apr_status_t apr_err = 0;
-
-  apr_err = apr_file_open_stderr(&stderr_file, pool);
-  if (apr_err)
-    return error_wrap_apr(apr_err, "Can't open stderr");
-
-  *err = stream_from_aprfile2(stderr_file, TRUE, pool);
-
-  return WEBDAV_NO_ERROR;
 }
 
 //------------------------------------------------------------------------------
@@ -11138,108 +10832,6 @@ neon_get_props_resource(neon_resource_t ** rsrc,
   return WEBDAV_NO_ERROR;
 }
 
-static void record_prop_change(apr_pool_t * pool,
-  apr_hash_t ** prop_changes,
-  const char * name,
-  const string_t * value)
-{
-  /* copy the name into the pool so we get the right lifetime (who knows
-     what the caller will do with it) */
-  name = apr_pstrdup(pool, name);
-
-  if (value)
-  {
-    /* changed/new property */
-    if (*prop_changes == NULL)
-      *prop_changes = apr_hash_make(pool);
-    apr_hash_set(*prop_changes, name, APR_HASH_KEY_STRING,
-                 string_dup(value, pool));
-  }
-}
-
-/* Helper function for neon_do_proppatch() below. */
-static error_t
-append_setprop(stringbuf_t * body,
-  const char * name,
-  const string_t * value,
-  apr_pool_t * pool)
-{
-  const char * xml_safe = NULL;
-  const char * xml_tag_name = NULL;
-
-  /* Map property names to namespaces */
-  xml_tag_name = apr_pstrcat(pool, /*"C:", */name, (char *)NULL);
-
-  xml_safe = value->data;
-  stringbuf_appendcstr(body,
-    apr_psprintf(pool,"<%s>%s</%s>",
-    xml_tag_name,
-    xml_safe, xml_tag_name));
-  return WEBDAV_NO_ERROR;
-}
-
-static error_t
-neon_do_proppatch(neon_session_t * ras,
-  const char * url,
-  apr_hash_t * prop_changes,
-  apr_hash_t * extra_headers,
-  apr_pool_t * pool)
-{
-  error_t err = 0;
-  stringbuf_t * body = NULL;
-  int code = 0;
-  apr_pool_t * subpool = webdav_pool_create(pool);
-
-  /* just put if there are no changes to make. */
-  if (prop_changes == NULL || (!apr_hash_count(prop_changes)))
-    return WEBDAV_NO_ERROR;
-
-  /* easier to roll our own PROPPATCH here than use ne_proppatch(), which
-   * doesn't really do anything clever. */
-  body = stringbuf_create
-         ("<?xml version=\"1.0\" encoding=\"utf-8\" ?>" DEBUG_CR
-          "<D:propertyupdate xmlns:D=\"DAV:\">" DEBUG_CR, pool);
-
-  /* Handle property changes. */
-  if (prop_changes)
-  {
-    apr_hash_index_t * hi;
-    stringbuf_appendcstr(body, "<D:set><D:prop>");
-    for (hi = apr_hash_first(pool, prop_changes); hi; hi = apr_hash_next(hi))
-    {
-      const void * key;
-      void * val;
-      webdav_pool_clear(subpool);
-      apr_hash_this(hi, &key, NULL, &val);
-      WEBDAV_ERR(append_setprop(body, static_cast<const char *>(key), // NULL,
-        static_cast<const string_t *>(val), subpool));
-    }
-    stringbuf_appendcstr(body, "</D:prop></D:set>");
-  }
-
-  webdav_pool_destroy(subpool);
-
-  /* Finish up the body. */
-  stringbuf_appendcstr(body, "</D:propertyupdate>");
-
-  /* Finish up the headers. */
-  if (!extra_headers)
-    extra_headers = apr_hash_make(pool);
-  apr_hash_set(extra_headers, "Content-Type", APR_HASH_KEY_STRING,
-               "text/xml; charset=UTF-8");
-
-  err = neon_simple_request(&code, ras, "PROPPATCH", url,
-    extra_headers, body->data,
-    200, 207, pool);
-
-  if (err)
-    return error_create
-           (WEBDAV_ERR_DAV_PROPPATCH_FAILED, &err,
-            "At least one property change failed; WebDAV resource is unchanged");
-
-  return WEBDAV_NO_ERROR;
-}
-
 //------------------------------------------------------------------------------
 
 static error_t
@@ -11938,6 +11530,8 @@ cleanup_p11provider(void * provider)
   return APR_SUCCESS;
 }
 
+#ifdef NETBOX_DEBUG
+
 typedef struct debug_file_baton_t
 {
   FILE * file;
@@ -11951,6 +11545,7 @@ cleanup_neon_debug_file(void * debug_file_baton)
   if (baton->file) fclose(baton->file);
   return APR_SUCCESS;
 }
+#endif
 
 static void
 progress_func(off_t progress, off_t total,
