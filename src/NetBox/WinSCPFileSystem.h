@@ -136,7 +136,7 @@ protected:
   void RenameFile();
   void ApplyCommand();
   void ShowInformation();
-  void InsertTokenOnCommandLine(UnicodeString Token, bool Separate);
+  void InsertTokenOnCommandLine(const UnicodeString & Token, bool Separate);
   void InsertSessionNameOnCommandLine();
   void InsertFileNameOnCommandLine(bool Full);
   void InsertPathOnCommandLine();

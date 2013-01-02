@@ -1866,21 +1866,22 @@ void TWinSCPFileSystem::FileProperties()
   }
 }
 //---------------------------------------------------------------------------
-void TWinSCPFileSystem::InsertTokenOnCommandLine(UnicodeString Token, bool Separate)
+void TWinSCPFileSystem::InsertTokenOnCommandLine(const UnicodeString & Token, bool Separate)
 {
-  if (!Token.IsEmpty())
+  UnicodeString Token2 = Token;
+  if (!Token2.IsEmpty())
   {
-    if (Token.Pos(L' ') > 0)
+    if (Token2.Pos(L' ') > 0)
     {
-      Token = FORMAT(L"\"%s\"", Token.c_str());
+      Token2 = FORMAT(L"\"%s\"", Token2.c_str());
     }
 
     if (Separate)
     {
-      Token += L" ";
+      Token2 += L" ";
     }
 
-    FarControl(FCTL_INSERTCMDLINE, 0, reinterpret_cast<intptr_t>(Token.c_str()));
+    FarControl(FCTL_INSERTCMDLINE, 0, reinterpret_cast<intptr_t>(Token2.c_str()));
   }
 }
 //---------------------------------------------------------------------------

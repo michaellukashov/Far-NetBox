@@ -513,7 +513,7 @@ long reg_close_winscp_key(HKEY Key)
   return ERROR_SUCCESS;
 }
 //---------------------------------------------------------------------------
-TKeyType KeyType(UnicodeString FileName)
+TKeyType KeyType(const UnicodeString & FileName)
 {
   assert(ktUnopenable == SSH_KEYTYPE_UNOPENABLE);
   assert(ktSSHCom == SSH_KEYTYPE_SSHCOM);
@@ -527,7 +527,7 @@ UnicodeString KeyTypeName(TKeyType KeyType)
   return key_type_to_str(KeyType);
 }
 //---------------------------------------------------------------------------
-__int64 __fastcall ParseSize(UnicodeString SizeStr)
+__int64 __fastcall ParseSize(const UnicodeString & SizeStr)
 {
   AnsiString AnsiSizeStr = SizeStr;
   return parse_blocksize(AnsiSizeStr.c_str());
