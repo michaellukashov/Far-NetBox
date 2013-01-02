@@ -1039,7 +1039,7 @@ private:
   void UrlTextClick(TFarDialogItem * Item, MOUSE_EVENT_RECORD * Event);
 };
 //---------------------------------------------------------------------------
-UnicodeString ReplaceCopyright(UnicodeString S)
+UnicodeString ReplaceCopyright(const UnicodeString & S)
 {
   return ::StringReplace(S, L"©", L"(c)", TReplaceFlags() << rfReplaceAll);
 }
@@ -1646,7 +1646,7 @@ private:
   TFtps GetFtps();
   TLoginType IndexToLoginType(intptr_t Index);
   TLoginType GetLoginType();
-  bool VerifyKey(UnicodeString FileName, bool TypeOnly);
+  bool VerifyKey(const UnicodeString & FileName, bool TypeOnly);
   void PrevTabClick(TFarButton * /* Sender */, bool & Close);
   void NextTabClick(TFarButton * /* Sender */, bool & Close);
   void CipherButtonClick(TFarButton * Sender, bool & Close);
@@ -4010,7 +4010,7 @@ TLoginType TSessionDialog::IndexToLoginType(intptr_t Index)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TSessionDialog::VerifyKey(UnicodeString FileName, bool TypeOnly)
+bool TSessionDialog::VerifyKey(const UnicodeString & FileName, bool TypeOnly)
 {
   bool Result = true;
 

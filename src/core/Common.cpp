@@ -623,9 +623,9 @@ UnicodeString __fastcall ValidLocalFileName(
   if (InvalidCharsReplacement != NoReplacement)
   {
     bool ATokenReplacement = (InvalidCharsReplacement == TokenReplacement);
-    const wchar_t * Chars =
-      (ATokenReplacement ? TokenizibleChars : LocalInvalidChars).c_str();
-    wchar_t * InvalidChar = const_cast<wchar_t *>(FileName.c_str());
+    UnicodeString CharsStr = ATokenReplacement ? TokenizibleChars : LocalInvalidChars;
+    const wchar_t * Chars = CharsStr.c_str();
+    wchar_t * InvalidChar = const_cast<wchar_t *>(FileName2.c_str());
     TRACEFMT("1 [%d] [%s] [%s]", int(ATokenReplacement), Chars, InvalidChar);
     while ((InvalidChar = wcspbrk(InvalidChar, Chars)) != NULL)
     {
@@ -656,7 +656,7 @@ UnicodeString __fastcall ValidLocalFileName(
       ReplaceChar(FileName2, const_cast<wchar_t *>(FileName2.c_str() + FileName2.Length() - 1), InvalidCharsReplacement);
     }
 
-    if (IsReservedName(FileName))
+    if (IsReservedName(FileName2))
     {
       intptr_t P = FileName2.Pos(".");
       if (P == 0)

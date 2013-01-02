@@ -33,7 +33,7 @@ public:
   virtual VersionInfo GetMinFarVersion();
 
   virtual void HandleException(Exception * E, int OpMode = 0);
-  intptr_t MoreMessageDialog(UnicodeString Str, TStrings * MoreMessages,
+  intptr_t MoreMessageDialog(const UnicodeString & Str, TStrings * MoreMessages,
     TQueryType Type, int Answers, const TMessageParams * Params = NULL);
   void ShowExtendedException(Exception * E);
   bool CopyParamCustomDialog(TCopyParamType & CopyParam,

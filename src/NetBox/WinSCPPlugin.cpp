@@ -611,11 +611,12 @@ void TWinSCPPlugin::MessageClick(void * Token, intptr_t Result, bool & Close)
   }
 }
 //---------------------------------------------------------------------------
-intptr_t TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
+intptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
   TStrings * MoreMessages, TQueryType Type, int Answers,
   const TMessageParams * Params)
 {
   intptr_t Result = 0;
+  UnicodeString DialogStr = Str;
   TStrings * ButtonLabels = new TStringList();
   {
     std::auto_ptr<TStrings> ButtonLabelsPtr;
@@ -657,7 +658,7 @@ intptr_t TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
         }
         if (!Params->TimerMessage.IsEmpty())
         {
-          Str = Params->TimerMessage;
+          DialogStr = Params->TimerMessage;
         }
       }
     }
@@ -753,7 +754,6 @@ intptr_t TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
     FarParams.Token = &Data;
     FarParams.ClickEvent = MAKE_CALLBACK(TWinSCPPlugin::MessageClick, this);
 
-    UnicodeString DialogStr = Str;
     if (MoreMessages && (MoreMessages->Count > 0))
     {
       FarParams.MoreMessages = MoreMessages;
