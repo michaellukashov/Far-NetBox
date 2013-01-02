@@ -340,7 +340,7 @@ bool __fastcall TFileMasks::MatchesMasks(const UnicodeString & FileName, bool Di
             break;
 
           case TMask::Close:
-            Result = HasSize && (Params->Size >= Mask.LowSize);
+            Result = HasSize && (Params->Size >= Mask.LowSize); //-V595
             break;
         }
       }

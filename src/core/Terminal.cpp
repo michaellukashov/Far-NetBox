@@ -2941,7 +2941,7 @@ bool /* __fastcall */ TTerminal::ProcessFiles(TStrings * FileList,
     TFileOperationProgressType Progress(MAKE_CALLBACK(TTerminal::DoProgress, this), MAKE_CALLBACK(TTerminal::DoFinished, this));
     Progress.Start(Operation, Side, FileList->Count);
 
-    FOperationProgress = &Progress;
+    FOperationProgress = &Progress; //-V506
     TFileOperationProgressType * OperationProgress(&Progress);
     TRY_FINALLY (
     {
@@ -4356,7 +4356,7 @@ void /* __fastcall */ TTerminal::CalculateLocalFilesSize(TStrings * FileList,
   TFileOperationProgressType OperationProgress(MAKE_CALLBACK(TTerminal::DoProgress, this), MAKE_CALLBACK(TTerminal::DoFinished, this));
   TOnceDoneOperation OnceDoneOperation = odoIdle;
   OperationProgress.Start(foCalculateSize, osLocal, FileList->Count);
-  TRY_FINALLY (
+  TRY_FINALLY ( //-V506
   {
     TCalculateSizeParams Params;
     Params.Size = 0;
@@ -5339,7 +5339,7 @@ bool /* __fastcall */ TTerminal::CopyToRemote(TStrings * FilesToCopy,
     OperationProgress.Start((Params & cpDelete ? foMove : foCopy), osLocal,
       FilesToCopy->Count, (Params & cpTemporary) > 0, TargetDir, CopyParam->GetCPSLimit());
 
-    FOperationProgress = &OperationProgress;
+    FOperationProgress = &OperationProgress; //-V506
     TRY_FINALLY (
     {
       if (CopyParam->GetCalculateSize())
@@ -5419,7 +5419,7 @@ bool /* __fastcall */ TTerminal::CopyToLocal(TStrings * FilesToCopy,
   bool OwnsFileList = (FilesToCopy == NULL);
   TOnceDoneOperation OnceDoneOperation = odoIdle;
 
-  TRY_FINALLY (
+  TRY_FINALLY ( //-V506
   {
     if (OwnsFileList)
     {

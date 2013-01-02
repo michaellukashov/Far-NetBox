@@ -253,6 +253,7 @@ void __fastcall TConfiguration::Save(bool All, bool Explicit)
 void __fastcall TConfiguration::Export(const UnicodeString & FileName)
 {
   Classes::Error(SNotImplemented, 3004);
+  /*
   THierarchicalStorage * Storage = NULL;
   THierarchicalStorage * ExportStorage = NULL;
   TRY_FINALLY (
@@ -279,6 +280,7 @@ void __fastcall TConfiguration::Export(const UnicodeString & FileName)
   );
 
   StoredSessions->Export(FileName);
+  */
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::LoadData(THierarchicalStorage * Storage)

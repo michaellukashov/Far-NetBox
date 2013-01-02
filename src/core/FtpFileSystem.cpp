@@ -758,10 +758,10 @@ void __fastcall TFTPFileSystem::ChangeFileProperties(const UnicodeString & AFile
   TChmodSessionAction & Action)
 {
   assert(Properties);
-  assert(!Properties->Valid.Contains(vpGroup));
-  assert(!Properties->Valid.Contains(vpOwner));
-  assert(!Properties->Valid.Contains(vpLastAccess));
-  assert(!Properties->Valid.Contains(vpModification));
+  assert(!Properties->Valid.Contains(vpGroup)); //-V595
+  assert(!Properties->Valid.Contains(vpOwner)); //-V595
+  assert(!Properties->Valid.Contains(vpLastAccess)); //-V595
+  assert(!Properties->Valid.Contains(vpModification)); //-V595
 
   if (Properties && Properties->Valid.Contains(vpRights))
   {

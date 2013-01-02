@@ -344,7 +344,7 @@ bool __fastcall TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
           TRACEFMT("size1 [%d]", (int)Data->size1);
           TRACEFMT("size2 [%d]", (int)Data->size2);
           TRACEFMT("time1 [%x]", Data->time1);
-          TRACEFMT("time1 [%d]", Data->time1->GetTime());
+          TRACEFMT("time1 [%d]", ((Data->time1 != NULL) ? Data->time1->GetTime() : 0));
           TRACEFMT("time2 [%x]", Data->time2);
           TRACEFMT("time2 [%d]", ((Data->time2 != NULL) ? Data->time2->GetTime() : 0));
           TRACEFMT("HasTime1 [%d]", (Data->time1 != NULL) && ((Data->time1->GetHour() != 0) || (Data->time1->GetMinute() != 0)));

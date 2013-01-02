@@ -3539,7 +3539,7 @@ bool __fastcall TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
     TFileOperationProgressType Progress(MAKE_CALLBACK(TTerminal::DoProgress, FTerminal), MAKE_CALLBACK(TTerminal::DoFinished, FTerminal));
     Progress.Start(foGetProperties, osRemote, FileList->Count);
 
-    FTerminal->FOperationProgress = &Progress;
+    FTerminal->FOperationProgress = &Progress; //-V506
 
     static int LoadFilesPropertiesQueueLen = 5;
     TSFTPLoadFilesPropertiesQueue Queue(this, GetSessionData()->GetCodePageAsNumber());
@@ -3719,7 +3719,7 @@ void __fastcall TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Al
   TFileOperationProgressType Progress(MAKE_CALLBACK(TTerminal::DoProgress, FTerminal), MAKE_CALLBACK(TTerminal::DoFinished, FTerminal));
   Progress.Start(foCalculateChecksum, osRemote, FileList->Count);
 
-  FTerminal->FOperationProgress = &Progress;
+  FTerminal->FOperationProgress = &Progress; //-V506
 
   TRY_FINALLY (
   {
@@ -4155,7 +4155,7 @@ void __fastcall TSFTPFileSystem::SFTPSource(const UnicodeString & FileName,
 
   bool Dir = FLAGSET(OpenParams.LocalFileAttrs, faDirectory);
 
-  TRY_FINALLY (
+  TRY_FINALLY ( //-V614
   {
     TRACE("7");
     OperationProgress->SetFileInProgress();
