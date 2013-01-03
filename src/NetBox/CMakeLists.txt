@@ -14,9 +14,9 @@ IF(NOT DEFINED FAR_VERSION)
   set ( FAR_VERSION Far2 )
 ENDIF()
 IF(NOT DEFINED CONF)
-  set ( CONF x86 )
+  set ( CONF "x86" )
 ENDIF()
-IF (CONF EQUAL x86)
+IF (CONF STREQUAL "x86")
   set ( PLATFORM "Win32" )
 ELSE()
   set ( PLATFORM "x64" )
@@ -42,12 +42,12 @@ set ( CMAKE_CXX_FLAGS
 "
 )
 
-IF (CONF EQUAL x64)
+IF (PLATFORM STREQUAL "x64")
     set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}
         -DWIN64
-"
-    set ( BOOST_LINK_DIR ${LIBS_ROOT}/boost/stage/x64 )
+    "
     )
+    set ( BOOST_LINK_DIR ${LIBS_ROOT}/boost/stage/x64 )
 ELSE()
     set ( BOOST_LINK_DIR ${LIBS_ROOT}/boost/stage )
 ENDIF()
