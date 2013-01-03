@@ -185,11 +185,6 @@ public:
 	void DelayRenderFileData(CLIPFORMAT cfFormat,
 		LPFORMATETC lpFormatEtc = NULL);    // for CFile* based delayed render
 
-	// Clipboard and Drag/Drop access
-	DROPEFFECT DoDragDrop(
-		DWORD dwEffects = DROPEFFECT_COPY|DROPEFFECT_MOVE|DROPEFFECT_LINK,
-		LPCRECT lpRectStartDrag = NULL,
-		COleDropSource* pDropSource = NULL);
 	void SetClipboard();
 	static void PASCAL FlushClipboard();
 	static COleDataSource* PASCAL GetClipboardOwner();
@@ -519,7 +514,6 @@ public:
 
 // Overridables
 	virtual SCODE QueryContinueDrag(BOOL bEscapePressed, DWORD dwKeyState);
-	virtual SCODE GiveFeedback(DROPEFFECT dropEffect);
 	virtual BOOL OnBeginDrag(CWnd* pWnd);
 
 // Implementation

@@ -1319,7 +1319,7 @@ void TCustomFarPlugin::FarCopyToClipboard(TStrings * Strings)
 TPoint TCustomFarPlugin::TerminalInfo(TPoint * Size, TPoint * Cursor)
 {
   // DEBUG_PRINTF(L"begin");
-  CONSOLE_SCREEN_BUFFER_INFO BufferInfo;
+  CONSOLE_SCREEN_BUFFER_INFO BufferInfo = {0};
   GetConsoleScreenBufferInfo(FConsoleOutput, &BufferInfo);
 
   TPoint Result(BufferInfo.dwSize.X, BufferInfo.dwSize.Y);
