@@ -11317,9 +11317,9 @@ client_ssl_callback(void * userdata, ne_session * sess,
               clicert))
         {
           ne_ssl_set_clicert(sess, clicert);
-          ne_ssl_clicert_free(clicert);
-          clicert = NULL;
         }
+        ne_ssl_clicert_free(clicert);
+        clicert = NULL;
         break;
       }
     }
