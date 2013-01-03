@@ -13,9 +13,11 @@ ENDIF()
 IF(NOT DEFINED FAR_VERSION)
   set ( FAR_VERSION Far2 )
 ENDIF()
+
 IF(NOT DEFINED CONF)
   set ( CONF "x86" )
 ENDIF()
+
 IF (CONF STREQUAL "x86")
   set ( PLATFORM "Win32" )
 ELSE()
@@ -176,6 +178,7 @@ add_library (libeay32 STATIC IMPORTED)
 set_property (TARGET libeay32
     # PROPERTY IMPORTED_IMPLIB ${LIBS_ROOT}/openssl/${CONF}/libeay32.lib )
     PROPERTY IMPORTED_LOCATION ${LIBS_ROOT}/openssl/${CONF}/libeay32.lib )
+
 add_library (ssleay32 STATIC IMPORTED)
 set_property (TARGET ssleay32
     PROPERTY IMPORTED_LOCATION ${LIBS_ROOT}/openssl/${CONF}/ssleay32.lib )
@@ -217,6 +220,7 @@ ELSE()
 ENDIF()
 
 add_library ( NetBox SHARED ${NETBOX_SOURCES} )
+
 set_target_properties ( NetBox
     PROPERTIES
     COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
@@ -529,6 +533,7 @@ set ( TESTNETBOX_01_SOURCES
 )
 
 add_executable ( testnetbox_01 ${TESTNETBOX_01_SOURCES} )
+
 set_target_properties ( testnetbox_01
     PROPERTIES
     COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
@@ -557,11 +562,13 @@ set ( TESTNETBOX_02_SOURCES
 )
 
 add_executable ( testnetbox_02 ${TESTNETBOX_02_SOURCES} )
+
 set_target_properties ( testnetbox_02
     PROPERTIES
     COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
     LINK_FLAGS "${CMAKE_LINK_FLAGS} /verbose:lib"
 )
+
 add_dependencies ( testnetbox_02
     atlmfc
     libputty
@@ -587,11 +594,13 @@ set ( TESTNETBOX_03_SOURCES
 )
 
 add_executable ( testnetbox_03 ${TESTNETBOX_03_SOURCES} )
+
 set_target_properties ( testnetbox_03
     PROPERTIES
     COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
     LINK_FLAGS "${CMAKE_LINK_FLAGS}"
 )
+
 add_dependencies ( testnetbox_03
     libputty
     libtinyxml2
@@ -607,21 +616,26 @@ target_link_libraries ( testnetbox_03 ${NETBOX_LIBRARIES} )
 # target testnetbox_04
 
 set ( TESTNETBOX_04_DIR ${TESTS_ROOT} )
+
 set ( TESTNETBOX_04_SOURCES
     ${SRC_ROOT}/NetBox/UnityBuildCore.cpp
     ${SRC_ROOT}/NetBox/UnityBuildMain.cpp
     ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
     ${TESTNETBOX_04_DIR}/testnetbox_04.cpp
 )
+
 add_executable ( testnetbox_04 ${TESTNETBOX_04_SOURCES} )
+
 set_target_properties ( testnetbox_04
     PROPERTIES
     COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
     LINK_FLAGS "${CMAKE_LINK_FLAGS} /verbose:lib"
 )
+
 add_dependencies ( testnetbox_04 ${NETBOX_LIBRARIES}
     calculator_dll
 )
+
 target_link_libraries ( testnetbox_04 ${NETBOX_LIBRARIES}
 )
 
