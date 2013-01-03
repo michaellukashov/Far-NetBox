@@ -12325,8 +12325,8 @@ void __fastcall TWebDAVFileSystem::Init()
   FFileSystemInfo.ProtocolBaseName = CONST_WEBDAV_PROTOCOL_BASE_NAME;
   FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
 
-  if (apr_pool_initialize() != APR_SUCCESS)
-    throw ExtException(UnicodeString(L"Cannot init APR"), NULL);
+  if (apr_initialize() != APR_SUCCESS)
+    throw ExtException(UnicodeString(L"Cannot init APR"));
   apr_pool_create(&webdav_pool, NULL);
 }
 //---------------------------------------------------------------------------
