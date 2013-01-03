@@ -49,6 +49,7 @@ void Abort()
 {
   throw Sysutils::EAbort(L"");
 }
+
 //---------------------------------------------------------------------------
 void Error(int ErrorID, intptr_t data)
 {
@@ -105,14 +106,17 @@ TList::TList()
   Count(this);
   Items(this);
 }
+
 TList::~TList()
 {
   Clear();
 }
+
 intptr_t TList::GetCount() const
 {
   return static_cast<intptr_t>(FList.size());
 }
+
 void TList::SetCount(intptr_t NewCount)
 {
   if (NewCount == NPOS)
@@ -134,10 +138,12 @@ void * TList::operator [](intptr_t Index) const
 {
   return FList[Index];
 }
+
 void *& TList::GetItem(intptr_t Index)
 {
   return FList[Index];
 }
+
 void TList::SetItem(intptr_t Index, void * Item)
 {
   if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FList.size())))
@@ -153,6 +159,7 @@ intptr_t TList::Add(void * Value)
   FList.push_back(Value);
   return Result;
 }
+
 void * TList::Extract(void * item)
 {
   if (Remove(item) != NPOS)
@@ -164,6 +171,7 @@ void * TList::Extract(void * item)
     return NULL;
   }
 }
+
 intptr_t TList::Remove(void * item)
 {
   intptr_t Result = IndexOf(item);
@@ -173,6 +181,7 @@ intptr_t TList::Remove(void * item)
   }
   return Result;
 }
+
 void TList::Move(intptr_t CurIndex, intptr_t NewIndex)
 {
   if (CurIndex != NewIndex)
@@ -188,6 +197,7 @@ void TList::Move(intptr_t CurIndex, intptr_t NewIndex)
     FList[NewIndex] = Item;
   }
 }
+
 void TList::Delete(intptr_t Index)
 {
   if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FList.size())))
@@ -201,6 +211,7 @@ void TList::Delete(intptr_t Index)
     Notify(Temp, lnDeleted);
   }
 }
+
 void TList::Insert(intptr_t Index, void * Item)
 {
   if ((Index == NPOS) || (Index > static_cast<intptr_t>(FList.size())))
@@ -216,6 +227,7 @@ void TList::Insert(intptr_t Index, void * Item)
     Notify(Item, lnAdded);
   }
 }
+
 intptr_t TList::IndexOf(void * Value) const
 {
   intptr_t Result = 0;
@@ -229,6 +241,7 @@ intptr_t TList::IndexOf(void * Value) const
   }
   return Result;
 }
+
 void TList::Clear()
 {
   SetCount(0);
@@ -276,23 +289,27 @@ void TList::Sort(CompareFunc Func)
     QuickSort(FList, 0, Count - 1, Func);
   }
 }
+
 void TList::Notify(void * Ptr, TListNotification Action)
 {
   (void)Ptr;
   (void)Action;
 }
+
 void TList::Sort()
 {
   // if (FList.size() > 1)
     // QuickSort(FList, 0, GetCount() - 1, Compare);
   Classes::Error(SNotImplemented, 15);
 }
+
 //---------------------------------------------------------------------------
 TObjectList::TObjectList() :
   FOwnsObjects(true)
 {
   Items(this);
 }
+
 TObjectList::~TObjectList()
 {
   Clear();
@@ -302,10 +319,12 @@ TObject * TObjectList::operator [](intptr_t Index) const
 {
   return static_cast<TObject *>(parent::operator[](Index));
 }
+
 TObject *& TObjectList::GetItem(intptr_t Index)
 {
   return reinterpret_cast<TObject *&>(parent::GetItem(Index));
 }
+
 void TObjectList::SetItem(intptr_t Index, TObject * Value)
 {
   parent::SetItem(Index, Value);
@@ -315,34 +334,42 @@ intptr_t TObjectList::Add(TObject * Value)
 {
   return parent::Add(Value);
 }
+
 intptr_t TObjectList::Remove(TObject * Value)
 {
   return parent::Remove(Value);
 }
+
 void TObjectList::Extract(TObject * Value)
 {
   parent::Extract(Value);
 }
+
 void TObjectList::Move(intptr_t Index, intptr_t To)
 {
   parent::Move(Index, To);
 }
+
 void TObjectList::Delete(intptr_t Index)
 {
   parent::Delete(Index);
 }
+
 void TObjectList::Insert(intptr_t Index, TObject * Value)
 {
   parent::Insert(Index, Value);
 }
+
 intptr_t TObjectList::IndexOf(TObject * Value) const
 {
   return parent::IndexOf(Value);
 }
+
 void TObjectList::Clear()
 {
   parent::Clear();
 }
+
 bool TObjectList::GetOwnsObjects() const
 {
   return FOwnsObjects;
@@ -357,6 +384,7 @@ void TObjectList::Sort(CompareFunc func)
 {
   parent::Sort(func);
 }
+
 void TObjectList::Notify(void * Ptr, TListNotification Action)
 {
   if (GetOwnsObjects())
@@ -369,6 +397,7 @@ void TObjectList::Notify(void * Ptr, TListNotification Action)
   }
   parent::Notify(Ptr, Action);
 }
+
 //---------------------------------------------------------------------------
 const UnicodeString sLineBreak = L"\r\n";
 const int MonthsPerYear = 12;
@@ -404,9 +433,11 @@ TStrings::TStrings() :
   Names(this);
   Values(this);
 }
+
 TStrings::~TStrings()
 {
 }
+
 void TStrings::SetTextStr(const UnicodeString & Text)
 {
   BeginUpdate();
@@ -458,6 +489,7 @@ UnicodeString TStrings::GetCommaText()
   );
   return Result;
 }
+
 UnicodeString TStrings::GetDelimitedText() const
 {
   UnicodeString Result;
@@ -1010,6 +1042,7 @@ void TStringList::InsertItem(intptr_t Index, const UnicodeString & S, TObject * 
   FList.insert(FList.begin() + Index, Item);
   Changed();
 }
+
 UnicodeString & TStringList::GetString(intptr_t Index)
 {
   // DEBUG_PRINTF(L"Index = %d, FList.size = %d", Index, FList.size());
@@ -1173,6 +1206,7 @@ void TStringList::CustomSort(TStringListSortCompare ACompareFunc)
     Changed();
   }
 }
+
 void TStringList::QuickSort(intptr_t L, intptr_t R, TStringListSortCompare SCompare)
 {
   intptr_t I, J, P;
@@ -1291,6 +1325,7 @@ TDateTime::TDateTime(unsigned short Hour,
 {
   FValue = ::EncodeTimeVerbose(Hour, Min, Sec, MSec);
 }
+
 //---------------------------------------------------------------------------
 UnicodeString TDateTime::DateString() const
 {
@@ -1299,6 +1334,7 @@ UnicodeString TDateTime::DateString() const
   UnicodeString Result = FORMAT(L"%02d.%02d.%04d", D, M, Y);
   return Result;
 }
+
 //---------------------------------------------------------------------------
 UnicodeString TDateTime::TimeString() const
 {
@@ -1307,6 +1343,7 @@ UnicodeString TDateTime::TimeString() const
   UnicodeString Result = FORMAT(L"%02d.%02d.%02d.%03d", H, N, S, MS);
   return Result;
 }
+
 //---------------------------------------------------------------------------
 UnicodeString TDateTime::FormatString(wchar_t * fmt) const
 {
@@ -1316,17 +1353,20 @@ UnicodeString TDateTime::FormatString(wchar_t * fmt) const
   UnicodeString Result = FORMAT(L"%02d.%02d.%02d.%03d", H, N, S, MS);
   return Result;
 }
+
 //---------------------------------------------------------------------------
 void TDateTime::DecodeDate(unsigned short & Y,
                            unsigned short & M, unsigned short & D) const
 {
   ::DecodeDate(*this, Y, M, D);
 }
+
 void TDateTime::DecodeTime(unsigned short & H,
                            unsigned short & N, unsigned short & S, unsigned short & MS) const
 {
   ::DecodeTime(*this, H, N, S, MS);
 }
+
 //---------------------------------------------------------------------------
 TDateTime Now()
 {
@@ -1337,6 +1377,7 @@ TDateTime Now()
            EncodeTime(SystemTime.wHour, SystemTime.wMinute, SystemTime.wSecond, SystemTime.wMilliseconds);
   return result;
 }
+
 //---------------------------------------------------------------------------
 TSHFileInfo::TSHFileInfo()
 {
@@ -1474,6 +1515,7 @@ THandleStream::THandleStream(HANDLE AHandle) :
   FHandle(AHandle)
 {
 }
+
 THandleStream::~THandleStream()
 {
   // if (FHandle > 0)
@@ -1494,11 +1536,13 @@ __int64 THandleStream::Write(const void * Buffer, __int64 Count)
   if (Result == -1) { Result = 0; }
   return Result;
 }
+
 __int64 THandleStream::Seek(__int64 Offset, int Origin)
 {
   __int64 Result = ::FileSeek(FHandle, Offset, Origin);
   return Result;
 }
+
 __int64 THandleStream::Seek(const __int64 Offset, TSeekOrigin Origin)
 {
   int origin = FILE_BEGIN;
@@ -1766,6 +1810,7 @@ void TRegistry::SetAccess(int access)
 {
   FAccess = access;
 }
+
 void TRegistry::SetRootKey(HKEY ARootKey)
 {
   if (FRootKey != ARootKey)
@@ -1779,6 +1824,7 @@ void TRegistry::SetRootKey(HKEY ARootKey)
     CloseKey();
   }
 }
+
 void TRegistry::GetValueNames(TStrings * Strings) const
 {
   Strings->Clear();
@@ -2107,24 +2153,29 @@ void TRegistry::WriteBool(const UnicodeString & Name, bool Value)
 {
   WriteInteger(Name, Value);
 }
+
 void TRegistry::WriteDateTime(const UnicodeString & Name, TDateTime & Value)
 {
   double Val = Value.operator double();
   PutData(Name, &Val, sizeof(double), rdBinary);
 }
+
 void TRegistry::WriteFloat(const UnicodeString & Name, double Value)
 {
   PutData(Name, &Value, sizeof(double), rdBinary);
 }
+
 void TRegistry::WriteString(const UnicodeString & Name, const UnicodeString & Value)
 {
   // DEBUG_PRINTF(L"Value = %s, Value.size = %d", Value.c_str(), Value.size());
   PutData(Name, static_cast<const void *>(Value.c_str()), Value.Length() * sizeof(wchar_t) + 1, rdString);
 }
+
 void TRegistry::WriteStringRaw(const UnicodeString & Name, const UnicodeString & Value)
 {
   PutData(Name, Value.c_str(), Value.Length() * sizeof(wchar_t) + 1, rdString);
 }
+
 void TRegistry::WriteInteger(const UnicodeString & Name, int Value)
 {
   DWORD Val = Value;
@@ -2136,6 +2187,7 @@ void TRegistry::WriteInt64(const UnicodeString & Name, __int64 Value)
 {
   WriteBinaryData(Name, &Value, sizeof(Value));
 }
+
 void TRegistry::WriteBinaryData(const UnicodeString & Name,
                                 const void * Buffer, size_t BufSize)
 {
@@ -2191,10 +2243,12 @@ TShortCut::TShortCut(int Value)
 {
   FValue = Value;
 }
+
 TShortCut::operator int() const
 {
   return FValue;
 }
+
 bool TShortCut::operator < (const TShortCut & rhs) const
 {
   return FValue < rhs.FValue;

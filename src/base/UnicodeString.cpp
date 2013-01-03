@@ -256,6 +256,7 @@ const RawByteString & RawByteString::operator +=(const RawByteString & rhs)
   Data.append(reinterpret_cast<const unsigned char *>(rhs.c_str()), rhs.size());
   return *this;
 }
+
 const RawByteString & RawByteString::operator +=(const UTF8String & rhs)
 {
   Data.append(reinterpret_cast<const unsigned char *>(rhs.c_str()), rhs.size());
@@ -350,6 +351,7 @@ const UTF8String & UTF8String::operator +=(const UTF8String & rhs)
   Data.append(rhs.Data.c_str(), rhs.size());
   return *this;
 }
+
 const UTF8String & UTF8String::operator +=(const RawByteString & rhs)
 {
   UTF8String s(rhs.c_str(), rhs.size());
