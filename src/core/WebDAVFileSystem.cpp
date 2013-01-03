@@ -8756,7 +8756,7 @@ session_open(
       ne_uri * corrected_URI = NULL;
       WEBDAV_ERR(parse_ne_uri(&corrected_URI, session_URL, sesspool));
       if (corrected_URI->path) ne_free(corrected_URI->path);
-      corrected_URI->path = (char *)strdup(corrected_url);
+      corrected_URI->path = ne_strdup(corrected_url);
       corrected_url = neon_uri_unparse(corrected_URI, pool);
     }
     *corrected_url_p = uri_canonicalize(corrected_url, pool);
@@ -8873,7 +8873,7 @@ client_url_from_path2(const char ** url,
     ne_uri * uri = NULL;
     WEBDAV_ERR(parse_ne_uri(&uri, session_url->data, result_pool));
     if (uri->path) ne_free(uri->path);
-    uri->path = (char *)strdup(path_or_url);
+    uri->path = ne_strdup(path_or_url);
     const char * corrected_url = neon_uri_unparse(uri, result_pool);
     *url = uri_canonicalize(corrected_url, result_pool);
   }
