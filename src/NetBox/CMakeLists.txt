@@ -42,27 +42,6 @@ set ( CMAKE_CXX_FLAGS
 "
 )
 
-IF (PLATFORM STREQUAL "x64")
-    set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}
-        -DWIN64
-"
-    )
-ENDIF()
-
-IF (CONF EQUAL x64)
-    set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}
-        -DWIN64
-"
-    )
-ENDIF()
-
-IF (CONF EQUAL x64)
-    set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}
-        -DWIN64
-"
-    )
-ENDIF()
-
 IF (CONF EQUAL x64)
     set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}
         -DWIN64
