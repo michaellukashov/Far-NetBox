@@ -25,23 +25,27 @@ Exception::Exception(Exception * E) :
   Message(E ? E->Message : L"")
 {
 }
+
 //---------------------------------------------------------------------------
 Exception::Exception(const UnicodeString & Msg) :
   std::exception(""),
   Message(Msg)
 {
 }
+
 //---------------------------------------------------------------------------
 Exception::Exception(const wchar_t *Msg) :
   std::exception(""),
   Message(Msg)
 {
 }
+
 //---------------------------------------------------------------------------
 Exception::Exception(std::exception * E) :
   std::exception(E ? E->what() : "")
 {
 }
+
 Exception::Exception(const UnicodeString & Msg, int AHelpContext) :
   std::exception(""),
   Message(Msg)
@@ -69,6 +73,7 @@ UnicodeString IntToStr(int Value)
   Result.sprintf(L"%d", Value);
   return Result;
 }
+
 //---------------------------------------------------------------------------
 UnicodeString Int64ToStr(__int64 Value)
 {
@@ -76,6 +81,7 @@ UnicodeString Int64ToStr(__int64 Value)
   Result.sprintf(L"%lld", Value);
   return Result;
 }
+
 //---------------------------------------------------------------------------
 int StrToInt(const UnicodeString & Value)
 {
@@ -197,6 +203,7 @@ UnicodeString LowerCase(const UnicodeString & Str)
   std::transform(Result.begin(), Result.end(), Result.begin(), ::tolower);
   return Result;
 }
+
 //---------------------------------------------------------------------------
 
 wchar_t UpCase(const wchar_t c)
@@ -345,6 +352,7 @@ double StrToFloat(const UnicodeString & Value)
 {
   return StrToFloatDef(Value, 0.0);
 }
+
 //---------------------------------------------------------------------------
 double StrToFloatDef(const UnicodeString & Value, double DefVal)
 {
@@ -359,6 +367,7 @@ double StrToFloatDef(const UnicodeString & Value, double DefVal)
   }
   return Result;
 }
+
 //---------------------------------------------------------------------------
 UnicodeString FormatFloat(const UnicodeString & Format, double Value)
 {
@@ -654,6 +663,7 @@ NextWord(const wchar_t * input)
 
   return buffer;
 }
+
 //---------------------------------------------------------------------------
 UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
 {
@@ -807,6 +817,7 @@ UnicodeString TranslateExceptionMessage(std::exception * E)
     return UnicodeString();
   }
 }
+
 //---------------------------------------------------------------------------
 void AppendWChar(UnicodeString & Str, const wchar_t ch)
 {
@@ -1018,6 +1029,7 @@ bool Win32Check(bool RetVal)
   }
   return RetVal;
 }
+
 //---------------------------------------------------------------------------
 
 UnicodeString SysErrorMessage(int ErrorCode)
@@ -1184,6 +1196,7 @@ UnicodeString StrToHex(const UnicodeString & Str, bool UpperCase, char Separator
   }
   return Result;
 }
+
 //---------------------------------------------------------------------------
 UnicodeString HexToStr(const UnicodeString & Hex)
 {
@@ -1209,6 +1222,7 @@ UnicodeString HexToStr(const UnicodeString & Hex)
   }
   return UnicodeString(Result);
 }
+
 //---------------------------------------------------------------------------
 unsigned int HexToInt(const UnicodeString & Hex, size_t MinChars)
 {
@@ -1233,6 +1247,7 @@ unsigned int HexToInt(const UnicodeString & Hex, size_t MinChars)
   }
   return Result;
 }
+
 //---------------------------------------------------------------------------
 UnicodeString IntToHex(unsigned int Int, size_t MinChars)
 {
@@ -1248,17 +1263,20 @@ UnicodeString IntToHex(unsigned int Int, size_t MinChars)
   }
   return Result;
 }
+
 //---------------------------------------------------------------------------
 char HexToChar(const UnicodeString & Hex, size_t MinChars)
 {
   return static_cast<char>(HexToInt(Hex, MinChars));
 }
+
 //---------------------------------------------------------------------------
 void ConvertError(int ErrorID)
 {
   UnicodeString Msg = FMTLOAD(ErrorID, 0);
   throw EConvertError(Msg);
 }
+
 //---------------------------------------------------------------------------
 static void DivMod(const int Dividend, const unsigned int Divisor,
   unsigned int & Result, unsigned int & Remainder)
@@ -1332,6 +1350,7 @@ static bool DecodeDateFully(const TDateTime & DateTime,
   }
   return Result;
 }
+
 //---------------------------------------------------------------------------
 void DecodeDate(const TDateTime &DateTime, unsigned short &Year,
   unsigned short &Month, unsigned short &Day)
@@ -1403,6 +1422,7 @@ TDateTime EncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsi
   }
   return Result;
 }
+
 TDateTime StrToDateTime(const UnicodeString & Value)
 {
   (void)Value;
@@ -1490,6 +1510,7 @@ void Randomize()
 {
   srand(static_cast<unsigned int>(time(NULL)));
 }
+
 //---------------------------------------------------------------------------
 
 void IncAMonth(Word & Year, Word & Month, Word & Day, Int64 NumberOfMonths = 1)
@@ -1606,24 +1627,28 @@ TCriticalSection::TCriticalSection()
   FAcquired = 0;
   InitializeCriticalSection(&FSection);
 }
+
 //---------------------------------------------------------------------------
 TCriticalSection::~TCriticalSection()
 {
   assert(FAcquired == 0);
   DeleteCriticalSection(&FSection);
 }
+
 //---------------------------------------------------------------------------
 void TCriticalSection::Enter()
 {
   EnterCriticalSection(&FSection);
   FAcquired++;
 }
+
 //---------------------------------------------------------------------------
 void TCriticalSection::Leave()
 {
   FAcquired--;
   LeaveCriticalSection(&FSection);
 }
+
 //---------------------------------------------------------------------------
 
 } // namespace Sysutils

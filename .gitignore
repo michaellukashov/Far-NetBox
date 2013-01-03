@@ -12,6 +12,7 @@ libs/boost/
 libs/
 dlls/
 ipch/
+*.tmp
 *.opensdf
 *.sdf
 *.suo
