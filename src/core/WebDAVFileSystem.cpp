@@ -4279,7 +4279,7 @@ auth_get_ssl_client_cert_pw_prompt_provider(auth_provider_object_t ** provider,
 /* The description string that's combined with unencrypted data by the
    Windows CryptoAPI. Used during decryption to verify that the
    encrypted data were valid. */
-static const WCHAR description[] = L"auth_svn.simple.wincrypt";
+static const WCHAR description[] = L"auth.simple.wincrypt";
 
 /* Implementation of auth_password_set_t that encrypts
    the incoming password using the Windows CryptoAPI. */
@@ -12782,9 +12782,9 @@ bool __fastcall TWebDAVFileSystem::ConfirmOverwrite(UnicodeString & FileName,
     QueryParams.AliasesCount = LENOF(Aliases);
     SUSPEND_OPERATION (
       Answer = FTerminal->ConfirmFileOverwrite(FileName, FileParams,
-               Answers, &QueryParams,
-               OperationProgress->Side == osLocal ? osRemote : osLocal,
-               Params, OperationProgress);
+                 Answers, &QueryParams,
+                 OperationProgress->Side == osLocal ? osRemote : osLocal,
+                 Params, OperationProgress);
     )
   }
 
@@ -13196,6 +13196,10 @@ void __fastcall TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & D
     UnicodeString path = DirectoryName + L"*.*";
     findHandle = FindFirstFile(path.c_str(), &SearchRec);
     FindOK = (findHandle != 0);
+    if (!FindOK)
+    {
+      FindCheck(GetLastError());
+    }
   );
 
   bool CreateDir = true;
@@ -13231,6 +13235,10 @@ void __fastcall TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & D
 
       FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
         FindOK = (::FindNextFile(findHandle, &SearchRec) != 0);
+        if (!FindOK)
+        {
+          FindCheck(GetLastError());
+        }
       );
     }
   }

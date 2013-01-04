@@ -13,12 +13,13 @@ struct TFileTransferData;
 namespace webdav {
   struct session_t;
   typedef int error_t;
-}
+} // namespace webdav
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 class TWebDAVFileSystem : public TCustomFileSystem
 {
   friend class TWebDAVFileListHelper;
+
 public:
   explicit TWebDAVFileSystem(TTerminal * ATerminal);
   virtual /* __fastcall */ ~TWebDAVFileSystem();
