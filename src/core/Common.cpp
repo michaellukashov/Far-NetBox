@@ -1001,6 +1001,30 @@ unsigned char __fastcall HexToByte(const UnicodeString & Hex)
     static_cast<unsigned char>(((P1 <= 0) || (P2 <= 0)) ? 0 : (((P1 - 1) << 4) + (P2 - 1)));
 }
 //---------------------------------------------------------------------------
+int __fastcall FindCheck(int Result)
+{
+  if ((Result != ERROR_SUCCESS) &&
+      (Result != ERROR_FILE_NOT_FOUND) &&
+      (Result != ERROR_NO_MORE_FILES))
+  {
+    RaiseLastOSError();
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+int __fastcall FindFirstChecked(const UnicodeString & Path, int Attr, TSearchRec & F)
+{
+  return FindCheck(FindFirst(Path, Attr, F));
+}
+//---------------------------------------------------------------------------
+// It can make sense to use FindNextChecked, even if unchecked FindFirst is used.
+// I.e. even if we do not care that FindFirst failed, if FindNext
+// failes after successfull FindFirst, it mean some terrible problem
+int __fastcall FindNextChecked(TSearchRec & F)
+{
+  return FindCheck(FindNext(F));
+}
+//---------------------------------------------------------------------------
 bool __fastcall FileSearchRec(const UnicodeString & FileName, TSearchRec & Rec)
 {
   int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
