@@ -165,7 +165,6 @@ set ( NETBOX_SOURCES
     ${SRC_ROOT}/NetBox/UnityBuildCore.cpp
     ${SRC_ROOT}/NetBox/UnityBuildMain.cpp
     ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
-    # ${SRC_ROOT}/NetBox/NetBox.cpp
     ${SRC_ROOT}/resource/TextsCore1.rc
     ${SRC_ROOT}/resource/TextsCore2.rc
     ${SRC_ROOT}/resource/rtlconsts.rc
@@ -173,6 +172,28 @@ set ( NETBOX_SOURCES
     ${SRC_ROOT}/NetBox/NetBox.rc
     ${SRC_ROOT}/NetBox/NetBox.def
 )
+
+IF (PLATFORM STREQUAL "Win32")
+    FIND_PROGRAM(MASM_EXECUTABLE ml)
+    # message ( "masm: ${MASM_EXECUTABLE}" )
+    SET ( ASM_OBJECTS )
+    FOREACH (src vc10)
+       SET ( ASM_SOURCE ${SRC_ROOT}/NetBox/${src}.asm )
+       SET ( ASM_OBJECT ${CMAKE_CURRENT_BINARY_DIR}/${src}.obj )
+       SET ( ASM_OBJECTS ${ASM_OBJECTS} ${ASM_OBJECT} )
+       ADD_CUSTOM_COMMAND (
+         OUTPUT ${ASM_OBJECT}
+         COMMAND ${MASM_EXECUTABLE}
+         ARGS   /c /Fo ${ASM_OBJECT} ${ASM_SOURCE}
+         DEPENDS ${ASM_SOURCE}
+       )
+    ENDFOREACH (src)
+
+    set ( NETBOX_SOURCES ${NETBOX_SOURCES}
+        ${SRC_ROOT}/NetBox/vc10wrapper.cpp
+        ${ASM_OBJECTS}
+    )
+ENDIF()
 
 add_library (libeay32 STATIC IMPORTED)
 set_property (TARGET libeay32
