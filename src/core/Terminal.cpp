@@ -754,6 +754,7 @@ void __fastcall TTerminal::Open()
         {
           ResetConnection();
           FStatus = ssOpening;
+
           TRY_FINALLY (
           {
             TRACE("Open 2");
@@ -2411,8 +2412,14 @@ void /* __fastcall */ TTerminal::EnsureNonExistence(const UnicodeString & FileNa
     TRemoteFile * File = FFiles->FindFile(FileName);
     if (File)
     {
-      if (File->GetIsDirectory()) { throw ECommand(NULL, FMTLOAD(RENAME_CREATE_DIR_EXISTS, FileName.c_str())); }
-      else { throw ECommand(NULL, FMTLOAD(RENAME_CREATE_FILE_EXISTS, FileName.c_str())); }
+      if (File->GetIsDirectory())
+      {
+        throw ECommand(NULL, FMTLOAD(RENAME_CREATE_DIR_EXISTS, FileName.c_str()));
+      }
+      else
+      {
+        throw ECommand(NULL, FMTLOAD(RENAME_CREATE_FILE_EXISTS, FileName.c_str()));
+      }
     }
   }
 }
