@@ -1,16 +1,16 @@
-NetBox: SFTP/FTP(S)/SCP/WebDAV client for Far Manager 2.0/3.0
+NetBox: SFTP/FTP/FTP(S)/SCP/WebDAV client for Far Manager 2.0/3.0 x86/x64
 ==============
 
-    Based on WinSCP: SFTP/FTP/SCP client for FAR version 1.6.2 Copyright (c) 2000-2009 Martin Prikryl  
-    Based on [WinSCP](http://winscp.net/eng/index.php) version 5.1.2 Copyright (c) 2000-2012 Martin Prikryl  
-    SSH and SCP code based on PuTTY 0.62 Copyright (c) 1997-2011 Simon Tatham  
-    FTP code based on FileZilla 2.2.32 Copyright (c) 2001-2007 Tim Kosse  
+Based on [WinSCP as FAR Plugin: SFTP/FTP/SCP client for FAR version 1.6.2](http://winscp.net/download/winscpfar162setup.exe) Copyright (c) 2000-2009 Martin Prikryl  
+Based on [WinSCP](http://winscp.net/eng/index.php) version 5.1.2 Copyright (c) 2000-2012 Martin Prikryl  
+SSH and SCP code based on PuTTY 0.62 Copyright (c) 1997-2011 Simon Tatham  
+FTP code based on FileZilla 2.2.32 Copyright (c) 2001-2007 Tim Kosse  
 
 How to install
 ==============
 
 You can either download an appropriate binary package for your  
-platform or build from source. Binaries can be obtained from [here](https://github.com/michaellukashov/Far-NetBox/downloads/). 
+platform or build from source. Binaries can be obtained from [here](http://plugring.farmanager.com/plugin.php?pid=859&l=en). 
 
 Unpack the archive in the plugin directory Far (... Far \ Plugins).
 

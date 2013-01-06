@@ -1100,34 +1100,7 @@ void __fastcall TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       }
       else
       {
-        bool Empty = true;
-        if (ListCurrentDirectory)
-        {
-          // Empty file list -> probably "permission denied", we
-          // at least get link to parent directory ("..")
-          FTerminal->ReadFile(
-            UnixIncludeTrailingBackslash(FTerminal->FFiles->GetDirectory()) +
-              PARENTDIRECTORY, File);
-          Empty = (File == NULL) || (wcscmp(File->GetFileName().c_str(), PARENTDIRECTORY) == 0);
-          if (!Empty)
-          {
-            assert(File->GetIsParentDirectory());
-            FileList->AddFile(File);
-          }
-          else
-          {
-            delete File;
-          }
-        }
-        else
-        {
-          Empty = true;
-        }
-
-        if (Empty)
-        {
-          throw Exception(FMTLOAD(EMPTY_DIRECTORY, FileList->GetDirectory().c_str()));
-        }
+        throw Exception(FMTLOAD(EMPTY_DIRECTORY, FileList->GetDirectory().c_str()));
       }
 
       if (FLsFullTime == asAuto)
@@ -1150,7 +1123,7 @@ void __fastcall TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           Again = true;
           FTerminal->LogEvent(
             FORMAT(L"Directory listing with %s failed, try again regular listing.",
-            FullTimeOption));
+              FullTimeOption));
         }
         else
         {

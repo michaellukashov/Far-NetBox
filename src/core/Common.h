@@ -109,6 +109,9 @@ UnicodeString __fastcall WindowsProductName();
 DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
   const UnicodeString & /* FileName */, const TSearchRec & /* Rec */, void * /* Param */);
 bool __fastcall FileSearchRec(const UnicodeString & FileName, TSearchRec & Rec);
+int __fastcall FindCheck(int Result);
+int __fastcall FindFirstChecked(const UnicodeString & Path, int Attr, TSearchRec & F);
+int __fastcall FindNextChecked(TSearchRec & F);
 void __fastcall ProcessLocalDirectory(const UnicodeString & DirName,
   TProcessLocalFileEvent CallBackFunc, void * Param = NULL, int FindAttrs = -1);
 //---------------------------------------------------------------------------

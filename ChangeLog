@@ -1,6 +1,7 @@
 NetBox 2.1.21 ??.01.2013
 --------------------
-  * Bugfix: Filename chars not valid on windows not replaced
+  * Fix some memleaks
+  * Bugfix: Replace filename chars not valid on windows
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=101701#p101663)
   * Bugfix: Cannot use .ppk authentication if path contains non-ASCII characters
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=101701#p101568)

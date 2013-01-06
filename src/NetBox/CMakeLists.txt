@@ -13,9 +13,11 @@ ENDIF()
 IF(NOT DEFINED FAR_VERSION)
   set ( FAR_VERSION Far3 )
 ENDIF()
+
 IF(NOT DEFINED CONF)
   set ( CONF "x86" )
 ENDIF()
+
 IF (CONF STREQUAL "x86")
   set ( PLATFORM "Win32" )
 ELSE()
@@ -158,89 +160,12 @@ include_directories (
 link_directories ( ${BOOST_LINK_DIR} )
 
 #-------------------------------------------------------------------------------
-
-set ( COMMON_SOURCES
-    ${SRC_ROOT}/base/Classes.cpp
-    ${SRC_ROOT}/base/Sysutils.cpp
-    ${SRC_ROOT}/base/UnicodeString.cpp
-    ${SRC_ROOT}/base/local.cpp
-    ${SRC_ROOT}/core/RemoteFiles.cpp
-    ${SRC_ROOT}/core/Terminal.cpp
-    ${SRC_ROOT}/core/Exceptions.cpp
-    ${SRC_ROOT}/core/FileOperationProgress.cpp
-    ${SRC_ROOT}/core/Queue.cpp
-    ${SRC_ROOT}/core/SecureShell.cpp
-    ${SRC_ROOT}/core/SessionInfo.cpp
-    ${SRC_ROOT}/core/CoreMain.cpp
-    ${SRC_ROOT}/core/FileMasks.cpp
-    ${SRC_ROOT}/core/CopyParam.cpp
-    ${SRC_ROOT}/core/SessionData.cpp
-    ${SRC_ROOT}/core/Configuration.cpp
-    ${SRC_ROOT}/core/ScpFileSystem.cpp
-    ${SRC_ROOT}/core/FtpFileSystem.cpp
-    ${SRC_ROOT}/core/SftpFileSystem.cpp
-    ${SRC_ROOT}/core/WebDAVFileSystem.cpp
-    ${SRC_ROOT}/core/PuttyIntf.cpp
-    ${SRC_ROOT}/core/FileBuffer.cpp
-    ${SRC_ROOT}/core/NamedObjs.cpp
-    ${SRC_ROOT}/core/HierarchicalStorage.cpp
-    ${SRC_ROOT}/core/Option.cpp
-    ${SRC_ROOT}/core/FileInfo.cpp
-    ${SRC_ROOT}/core/FileSystems.cpp
-    ${SRC_ROOT}/core/Bookmarks.cpp
-    ${SRC_ROOT}/core/Cryptography.cpp
-    ${SRC_ROOT}/core/WinSCPSecurity.cpp
-    ${SRC_ROOT}/core/Common.cpp
-    ${SRC_ROOT}/windows/SynchronizeController.cpp
-    ${SRC_ROOT}/windows/GUIConfiguration.cpp
-    ${SRC_ROOT}/windows/GUITools.cpp
-    ${SRC_ROOT}/NetBox/stdafx.cpp
-    ${SRC_ROOT}/NetBox/FarUtil.cpp
-    ${SRC_ROOT}/NetBox/FarPlugin.cpp
-    ${SRC_ROOT}/NetBox/FarDialog.cpp
-    ${SRC_ROOT}/NetBox/WinSCPDialogs.cpp
-    ${SRC_ROOT}/NetBox/WinSCPFileSystem.cpp
-    ${SRC_ROOT}/NetBox/WinSCPPlugin.cpp
-    ${SRC_ROOT}/NetBox/FarInterface.cpp
-    ${SRC_ROOT}/NetBox/FarConfiguration.cpp
-    ${SRC_ROOT}/NetBox/XmlStorage.cpp
-    ${SRC_ROOT}/resource/TextsCore1.rc
-    ${SRC_ROOT}/resource/TextsCore2.rc
-    ${SRC_ROOT}/resource/rtlconsts.rc
-    ${SRC_ROOT}/resource/TextsFileZilla.rc
-    ${SRC_ROOT}/filezilla/FileZillaIntf.cpp
-    ${SRC_ROOT}/filezilla/FileZillaIntern.cpp
-    ${SRC_ROOT}/filezilla/ApiLog.cpp
-    ${SRC_ROOT}/filezilla/ServerPath.cpp
-    ${SRC_ROOT}/filezilla/AsyncSslSocketLayer.cpp
-    ${SRC_ROOT}/filezilla/AsyncSocketExLayer.cpp
-    ${SRC_ROOT}/filezilla/AsyncSocketEx.cpp
-    ${SRC_ROOT}/filezilla/FileZillaApi.cpp
-    ${SRC_ROOT}/filezilla/FzApiStructures.cpp
-    ${SRC_ROOT}/filezilla/Crypt.cpp
-    ${SRC_ROOT}/filezilla/ControlSocket.cpp
-    ${SRC_ROOT}/filezilla/FtpControlSocket.cpp
-    ${SRC_ROOT}/filezilla/MainThread.cpp
-    ${SRC_ROOT}/filezilla/TransferSocket.cpp
-    ${SRC_ROOT}/filezilla/PathFunctions.cpp
-    ${SRC_ROOT}/filezilla/FtpListResult.cpp
-    ${SRC_ROOT}/filezilla/AsyncProxySocketLayer.cpp
-    ${SRC_ROOT}/filezilla/structures.cpp
-    ${SRC_ROOT}/filezilla/MFC64bitFix.cpp
-    ${SRC_ROOT}/filezilla/Options.cpp
-    ${SRC_ROOT}/filezilla/afxdll.cpp
-    ${SRC_ROOT}/filezilla/misc/Fzutf8.cpp
-    ${SRC_ROOT}/filezilla/misc/CBase64Coding.cpp
-)
-
-#-------------------------------------------------------------------------------
 # target NetBox
 
-set ( NETBOX_SOURCES # ${COMMON_SOURCES}
+set ( NETBOX_SOURCES
     ${SRC_ROOT}/NetBox/UnityBuildCore.cpp
     ${SRC_ROOT}/NetBox/UnityBuildMain.cpp
     ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
-    # ${SRC_ROOT}/NetBox/NetBox.cpp
     ${SRC_ROOT}/resource/TextsCore1.rc
     ${SRC_ROOT}/resource/TextsCore2.rc
     ${SRC_ROOT}/resource/rtlconsts.rc
@@ -249,10 +174,33 @@ set ( NETBOX_SOURCES # ${COMMON_SOURCES}
     ${SRC_ROOT}/NetBox/NetBox.def
 )
 
+IF (PLATFORM STREQUAL "Win32")
+    FIND_PROGRAM(MASM_EXECUTABLE ml)
+    # message ( "masm: ${MASM_EXECUTABLE}" )
+    SET ( ASM_OBJECTS )
+    FOREACH (src vc10)
+       SET ( ASM_SOURCE ${SRC_ROOT}/NetBox/${src}.asm )
+       SET ( ASM_OBJECT ${CMAKE_CURRENT_BINARY_DIR}/${src}.obj )
+       SET ( ASM_OBJECTS ${ASM_OBJECTS} ${ASM_OBJECT} )
+       ADD_CUSTOM_COMMAND (
+         OUTPUT ${ASM_OBJECT}
+         COMMAND ${MASM_EXECUTABLE}
+         ARGS   /c /Fo ${ASM_OBJECT} ${ASM_SOURCE}
+         DEPENDS ${ASM_SOURCE}
+       )
+    ENDFOREACH (src)
+
+    set ( NETBOX_SOURCES ${NETBOX_SOURCES}
+        ${SRC_ROOT}/NetBox/vc10wrapper.cpp
+        ${ASM_OBJECTS}
+    )
+ENDIF()
+
 add_library (libeay32 STATIC IMPORTED)
 set_property (TARGET libeay32
     # PROPERTY IMPORTED_IMPLIB ${LIBS_ROOT}/openssl/${CONF}/libeay32.lib )
     PROPERTY IMPORTED_LOCATION ${LIBS_ROOT}/openssl/${CONF}/libeay32.lib )
+
 add_library (ssleay32 STATIC IMPORTED)
 set_property (TARGET ssleay32
     PROPERTY IMPORTED_LOCATION ${LIBS_ROOT}/openssl/${CONF}/ssleay32.lib )
@@ -330,6 +278,7 @@ ELSE()
 ENDIF()
 
 add_library ( NetBox SHARED ${NETBOX_SOURCES} )
+
 set_target_properties ( NetBox
     PROPERTIES
     COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
@@ -642,6 +591,7 @@ set ( TESTNETBOX_01_SOURCES
 )
 
 add_executable ( testnetbox_01 ${TESTNETBOX_01_SOURCES} )
+
 set_target_properties ( testnetbox_01
     PROPERTIES
     COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
@@ -670,11 +620,13 @@ set ( TESTNETBOX_02_SOURCES
 )
 
 add_executable ( testnetbox_02 ${TESTNETBOX_02_SOURCES} )
+
 set_target_properties ( testnetbox_02
     PROPERTIES
     COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
     LINK_FLAGS "${CMAKE_LINK_FLAGS} /verbose:lib"
 )
+
 add_dependencies ( testnetbox_02
     atlmfc
     libputty
@@ -700,11 +652,13 @@ set ( TESTNETBOX_03_SOURCES
 )
 
 add_executable ( testnetbox_03 ${TESTNETBOX_03_SOURCES} )
+
 set_target_properties ( testnetbox_03
     PROPERTIES
     COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
     LINK_FLAGS "${CMAKE_LINK_FLAGS}"
 )
+
 add_dependencies ( testnetbox_03
     libputty
     libtinyxml2
@@ -720,21 +674,26 @@ target_link_libraries ( testnetbox_03 ${NETBOX_LIBRARIES} )
 # target testnetbox_04
 
 set ( TESTNETBOX_04_DIR ${TESTS_ROOT} )
+
 set ( TESTNETBOX_04_SOURCES
     ${SRC_ROOT}/NetBox/UnityBuildCore.cpp
     ${SRC_ROOT}/NetBox/UnityBuildMain.cpp
     ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
     ${TESTNETBOX_04_DIR}/testnetbox_04.cpp
 )
+
 add_executable ( testnetbox_04 ${TESTNETBOX_04_SOURCES} )
+
 set_target_properties ( testnetbox_04
     PROPERTIES
     COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
     LINK_FLAGS "${CMAKE_LINK_FLAGS} /verbose:lib"
 )
+
 add_dependencies ( testnetbox_04 ${NETBOX_LIBRARIES}
     calculator_dll
 )
+
 target_link_libraries ( testnetbox_04 ${NETBOX_LIBRARIES}
 )
 
