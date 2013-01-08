@@ -177,9 +177,12 @@ public:
   const UnicodeString & operator +=(const wchar_t rhs);
 
   bool operator ==(const UnicodeString & Str) const { return Data == Str.Data; }
-  bool operator ==(const wchar_t * Str) const { return wcscmp(Data.c_str(), Str) == 0; }
   bool operator !=(const UnicodeString & Str) const { return Data != Str.Data; }
-  bool operator !=(const wchar_t * Str) const { return wcscmp(Data.c_str(), Str) != 0; }
+
+  friend bool operator ==(const UnicodeString & lhs, const wchar_t * rhs);
+  friend bool operator ==(const wchar_t * rhs, const UnicodeString & lhs);
+  friend bool operator !=(const UnicodeString & lhs, const wchar_t * rhs);
+  friend bool operator !=(const wchar_t * rhs, const UnicodeString & lhs);
 
   wchar_t operator [](intptr_t Idx) const
   {
