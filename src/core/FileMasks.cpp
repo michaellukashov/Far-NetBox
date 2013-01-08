@@ -161,6 +161,7 @@ UnicodeString __fastcall TFileMasks::ComposeMaskStr(
   TStrings * MasksStr, bool Directory)
 {
   UnicodeString Result;
+  UnicodeString ResultNoDirMask;
   for (int I = 0; I < MasksStr->Count; I++)
   {
     UnicodeString Str = MasksStr->Strings[I].Trim();
@@ -175,8 +176,10 @@ UnicodeString __fastcall TFileMasks::ComposeMaskStr(
         }
       }
 
+      UnicodeString StrNoDirMask;
       if (Directory)
       {
+        StrNoDirMask = Str;
         Str = MakeDirectoryMask(Str);
       }
       else
@@ -185,11 +188,21 @@ UnicodeString __fastcall TFileMasks::ComposeMaskStr(
         {
           Str.SetLength(Str.Length() - 1);
         }
+        StrNoDirMask = Str;
       }
 
       AddToList(Result, Str, FileMasksDelimiterStr);
+      AddToList(ResultNoDirMask, StrNoDirMask, FileMasksDelimiterStr);
     }
   }
+
+  // For directories, the above will add slash ay the end of masks,
+  // breaking size and time masks and thus circumverting their validation.
+  // This performes as hoc validation to cover the scenario.
+  // For files this makes no difference, but no harm either
+  TFileMasks Temp(Directory ? 1 : 0);
+  Temp = ResultNoDirMask;
+
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -219,18 +232,16 @@ UnicodeString __fastcall TFileMasks::ComposeMaskStr(
   Init();
 }
 //---------------------------------------------------------------------------
-/* __fastcall */ TFileMasks::TFileMasks(int ForceDirectoryMasks, bool NoImplicitMatch)
+/* __fastcall */ TFileMasks::TFileMasks(int ForceDirectoryMasks)
 {
   Init();
   FForceDirectoryMasks = ForceDirectoryMasks;
-  FNoImplicitMatch = NoImplicitMatch;
 }
 //---------------------------------------------------------------------------
 /* __fastcall */ TFileMasks::TFileMasks(const TFileMasks & Source)
 {
   Init();
   FForceDirectoryMasks = Source.FForceDirectoryMasks;
-  FNoImplicitMatch = Source.FNoImplicitMatch;
   SetStr(Source.GetMasks(), false);
 }
 //---------------------------------------------------------------------------
@@ -252,7 +263,6 @@ void __fastcall TFileMasks::Init()
   {
     FMasksStr[Index] = NULL;
   }
-  FNoImplicitMatch = false;
 
   DoInit(false);
 }
@@ -415,14 +425,15 @@ bool __fastcall TFileMasks::Matches(const UnicodeString & FileName, bool Directo
   const UnicodeString & Path, const TParams * Params,
   bool & ImplicitMatch) const
 {
-  TRACEFMT("1 [%s] [%d] [%s] [%d] %s", FileName.c_str(), int(Directory), Path.c_str(), int(FNoImplicitMatch), UnicodeString((Params == NULL) ? L"<null>" : Params->ToString()).c_str());
-  bool ImplicitIncludeMatch = (!FNoImplicitMatch && FMasks[MASK_INDEX(Directory, true)].empty());
+  TRACEFMT("1 [%s] [%d] [%s] %s", FileName.c_str(), int(Directory), Path.c_str(), UnicodeString((Params == NULL) ? L"<null>" : Params->ToString()).c_str());
+  bool ImplicitIncludeMatch = (FMasks[MASK_INDEX(Directory, true)].empty());
   bool ExplicitIncludeMatch = MatchesMasks(FileName, Directory, Path, Params, FMasks[MASK_INDEX(Directory, true)], true);
   bool Result =
     (ImplicitIncludeMatch || ExplicitIncludeMatch) &&
     !MatchesMasks(FileName, Directory, Path, Params, FMasks[MASK_INDEX(Directory, false)], false);
-  ImplicitMatch = Result && ImplicitIncludeMatch && !ExplicitIncludeMatch;
-  TRACEFMT("2 [%d]", int(Result));
+  ImplicitMatch =
+    Result && ImplicitIncludeMatch && !ExplicitIncludeMatch &&
+    FMasks[MASK_INDEX(Directory, false)].empty();
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -495,7 +506,6 @@ TFileMasks & __fastcall TFileMasks::operator =(const UnicodeString & rhs)
 TFileMasks & __fastcall TFileMasks::operator =(const TFileMasks & rhm)
 {
   FForceDirectoryMasks = rhm.FForceDirectoryMasks;
-  FNoImplicitMatch = rhm.FNoImplicitMatch;
   SetMasks(rhm.GetMasks());
   return *this;
 }

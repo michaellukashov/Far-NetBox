@@ -349,7 +349,7 @@ public:
   virtual void Assign(TPersistent * Source);
   bool __fastcall ParseUrl(const UnicodeString & Url, TOptions * Options,
     TStoredSessionList * StoredSessions, bool & DefaultsOnly,
-    UnicodeString * FileName, bool * AProtocolDefined);
+    UnicodeString * FileName, bool * AProtocolDefined, UnicodeString * MaskedUrl);
   bool __fastcall ParseOptions(TOptions * Options);
   void __fastcall ConfigureTunnel(int PortNumber);
   void __fastcall RollbackTunnel();
@@ -512,7 +512,7 @@ public:
   TSessionData * __fastcall FindSame(TSessionData * Data);
   TSessionData * __fastcall NewSession(UnicodeString SessionName, TSessionData * Session);
   TSessionData * __fastcall ParseUrl(const UnicodeString & Url, TOptions * Options, bool & DefaultsOnly,
-    UnicodeString * FileName = NULL, bool * ProtocolDefined = NULL);
+    UnicodeString * FileName = NULL, bool * ProtocolDefined = NULL, UnicodeString * MaskedUrl = NULL);
   TSessionData * __fastcall GetSession(intptr_t Index) { return static_cast<TSessionData *>(AtObject(Index)); }
   TSessionData * __fastcall GetDefaultSettings() const { return FDefaultSettings; }
   void __fastcall SetDefaultSettings(TSessionData * Value);
