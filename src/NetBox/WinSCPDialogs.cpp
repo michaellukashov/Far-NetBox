@@ -5834,7 +5834,7 @@ bool TWinSCPFileSystem::LinkDialog(UnicodeString & FileName,
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 DEFINE_CALLBACK_TYPE3(TFeedFileSystemDataEvent, void,
-  TObject * /* Control */, int /* Label */, UnicodeString /* Value */);
+  TObject * /* Control */, int /* Label */, const UnicodeString & /* Value */);
 //---------------------------------------------------------------------------
 class TLabelList;
 class TFileSystemInfoDialog : TTabbedDialog
@@ -5854,9 +5854,9 @@ protected:
   UnicodeString CapabilityStr(TFSCapability Capability1,
     TFSCapability Capability2);
   UnicodeString SpaceStr(__int64 Bytes);
-  void ControlsAddItem(TObject * Control, int Label, UnicodeString Value);
-  void CalculateMaxLenAddItem(TObject * Control, int Label, UnicodeString Value);
-  void ClipboardAddItem(TObject * Control, int Label, UnicodeString Value);
+  void ControlsAddItem(TObject * Control, int Label, const UnicodeString & Value);
+  void CalculateMaxLenAddItem(TObject * Control, int Label, const UnicodeString & Value);
+  void ClipboardAddItem(TObject * Control, int Label, const UnicodeString & Value);
   void FeedControls();
   void UpdateControls();
   TLabelList * CreateLabelArray(int Count);
@@ -6127,7 +6127,7 @@ void TFileSystemInfoDialog::Feed(TFeedFileSystemDataEvent AddItem)
 }
 //---------------------------------------------------------------------
 void TFileSystemInfoDialog::ControlsAddItem(TObject * Control,
-  int Label, UnicodeString Value)
+  int Label, const UnicodeString & Value)
 {
   if (FLastFeededControl != Control)
   {
@@ -6174,7 +6174,7 @@ void TFileSystemInfoDialog::ControlsAddItem(TObject * Control,
 }
 //---------------------------------------------------------------------
 void TFileSystemInfoDialog::CalculateMaxLenAddItem(TObject * Control,
-    int Label, UnicodeString Value)
+  int Label, const UnicodeString & )
 {
   TLabelList * List = dynamic_cast<TLabelList *>(Control);
   if (List != NULL)
@@ -6188,7 +6188,7 @@ void TFileSystemInfoDialog::CalculateMaxLenAddItem(TObject * Control,
 }
 //---------------------------------------------------------------------
 void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
-    int Label, UnicodeString Value)
+  int Label, const UnicodeString & Value)
 {
   TFarDialogItem * Control = dynamic_cast<TFarDialogItem *>(AControl);
   // check for Enabled instead of Visible, as Visible is false
@@ -6228,12 +6228,13 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
         LabelStr.SetLength(LabelStr.Length() - 1);
       }
 
-      if ((Value.Length() >= 2) && (Value.SubString(Value.Length() - 1, 2) == L"\r\n"))
+      UnicodeString Value2 = Value;
+      if ((Value2.Length() >= 2) && (Value2.SubString(Value2.Length() - 1, 2) == L"\r\n"))
       {
-        Value.SetLength(Value.Length() - 2);
+        Value2.SetLength(Value2.Length() - 2);
       }
 
-      FClipboard += FORMAT(L"%s\r\n%s\r\n", LabelStr.c_str(), Value.c_str());
+      FClipboard += FORMAT(L"%s\r\n%s\r\n", LabelStr.c_str(), Value2.c_str());
     }
     else
     {
