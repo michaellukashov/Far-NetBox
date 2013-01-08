@@ -5187,7 +5187,7 @@ void /* __fastcall */ TTerminal::FileFind(const UnicodeString & FileName,
     MaskParams.Modification = File->GetModification();
 
     UnicodeString FullFileName = UnixExcludeTrailingBackslash(File->GetFullFileName());
-    bool ImplicitMatch;
+    bool ImplicitMatch = false;
     if (AParams->FileMask.Matches(FullFileName, false,
          File->GetIsDirectory(), &MaskParams, ImplicitMatch))
     {
