@@ -92,7 +92,8 @@ intptr_t __fastcall ContinueAnswer(intptr_t Answers);
 UnicodeString __fastcall LoadStr(int Ident, intptr_t MaxLength = 0);
 UnicodeString __fastcall LoadStrPart(int Ident, int Part);
 UnicodeString __fastcall EscapeHotkey(const UnicodeString & Caption);
-bool __fastcall CutToken(UnicodeString & Str, UnicodeString & Token);
+bool __fastcall CutToken(UnicodeString & Str, UnicodeString & Token,
+  UnicodeString * RawToken = NULL);
 void __fastcall AddToList(UnicodeString & List, const UnicodeString & Value, const UnicodeString & Delimiter);
 bool __fastcall Is2000();
 bool __fastcall IsWin7();

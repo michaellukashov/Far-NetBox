@@ -1031,9 +1031,19 @@ void __fastcall TSessionData::Remove()
   );
 }
 //---------------------------------------------------------------------
+inline void __fastcall MoveStr(UnicodeString & Source, UnicodeString * Dest, int Count)
+{
+  if (Dest != NULL)
+  {
+    (*Dest) += Source.SubString(1, Count);
+  }
+
+  Source.Delete(1, Count);
+}
+//---------------------------------------------------------------------
 bool __fastcall TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
   TStoredSessionList * StoredSessions, bool & DefaultsOnly, UnicodeString * FileName,
-  bool * AProtocolDefined)
+  bool * AProtocolDefined, UnicodeString * MaskedUrl)
 {
   CALLSTACK;
   UnicodeString url = Url;
@@ -1061,7 +1071,7 @@ bool __fastcall TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Opt
     TRACE("1");
     AFSProtocol = fsSCPonly;
     APortNumber = SshPortNumber;
-    url.Delete(1, 4);
+    MoveStr(url, MaskedUrl, 4);
     ProtocolDefined = true;
   }
   else if (url.SubString(1, 5).LowerCase() == L"sftp:")
@@ -1069,7 +1079,7 @@ bool __fastcall TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Opt
     TRACE("2");
     AFSProtocol = fsSFTPonly;
     APortNumber = SshPortNumber;
-    url.Delete(1, 5);
+    MoveStr(url, MaskedUrl, 5);
     ProtocolDefined = true;
   }
   else if (url.SubString(1, 4).LowerCase() == L"ftp:")
@@ -1078,7 +1088,7 @@ bool __fastcall TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Opt
     AFSProtocol = fsFTP;
     SetFtps(ftpsNone);
     APortNumber = FtpPortNumber;
-    url.Delete(1, 4);
+    MoveStr(url, MaskedUrl, 4);
     ProtocolDefined = true;
   }
   else if (url.SubString(1, 5).LowerCase() == L"ftps:")
@@ -1087,7 +1097,7 @@ bool __fastcall TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Opt
     AFSProtocol = fsFTP;
     AFtps = ftpsImplicit;
     APortNumber = FtpsImplicitPortNumber;
-    url.Delete(1, 5);
+    MoveStr(url, MaskedUrl, 5);
     ProtocolDefined = true;
   }
   else if (url.SubString(1, 5).LowerCase() == L"http:")
@@ -1095,7 +1105,7 @@ bool __fastcall TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Opt
     AFSProtocol = fsWebDAV;
     AFtps = ftpsNone;
     APortNumber = HTTPPortNumber;
-    url.Delete(1, 5);
+    MoveStr(url, MaskedUrl, 5);
     ProtocolDefined = true;
   }
   else if (url.SubString(1, 6).LowerCase() == L"https:")
@@ -1103,14 +1113,14 @@ bool __fastcall TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Opt
     AFSProtocol = fsWebDAV;
     AFtps = ftpsImplicit;
     APortNumber = HTTPSPortNumber;
-    url.Delete(1, 6);
+    MoveStr(url, MaskedUrl, 6);
     ProtocolDefined = true;
   }
 
   if (ProtocolDefined && (url.SubString(1, 2) == L"//"))
   {
     TRACE("5");
-    url.Delete(1, 2);
+    MoveStr(url, MaskedUrl, 2);
   }
 
   if (AProtocolDefined != NULL)
@@ -1166,6 +1176,11 @@ bool __fastcall TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Opt
         // only modified, implicit
         StoredSessions->Save(false, false);
       }
+
+      if (MaskedUrl != NULL)
+      {
+        (*MaskedUrl) += Url;
+      }
     }
     else
     {
@@ -1199,6 +1214,7 @@ bool __fastcall TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Opt
         HostInfo = ConnectInfo;
       }
 
+      UnicodeString OrigHostInfo = HostInfo;
       if ((HostInfo.Length() >= 2) && (HostInfo[1] == L'[') && ((P = HostInfo.Pos(L"]")) > 0))
       {
         SetHostName(HostInfo.SubString(2, P - 2));
@@ -1232,8 +1248,22 @@ bool __fastcall TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Opt
         SetFtps(AFtps);
       }
 
-      SetUserName(DecodeUrlChars(CutToChar(UserInfo, L':', false)));
+      UnicodeString RawUserName = CutToChar(UserInfo, L':', false);
+      SetUserName(DecodeUrlChars(RawUserName));
+
       SetPassword(DecodeUrlChars(UserInfo));
+
+      ARemoteDirectory = url.SubString(PSlash, Url.Length() - PSlash + 1);
+
+      if (MaskedUrl != NULL)
+      {
+        (*MaskedUrl) += RawUserName;
+        if (!UserInfo.IsEmpty())
+        {
+          (*MaskedUrl) += L":***";
+        }
+        (*MaskedUrl) += L"@" + OrigHostInfo + ARemoteDirectory;
+      }
 
       if (PSlash <= url.Length())
       {
@@ -3128,12 +3158,12 @@ void __fastcall TStoredSessionList::ImportHostKeys(const UnicodeString & TargetK
 //---------------------------------------------------------------------------
 TSessionData * __fastcall TStoredSessionList::ParseUrl(const UnicodeString & Url,
   TOptions * Options, bool & DefaultsOnly, UnicodeString * FileName,
-  bool * AProtocolDefined)
+  bool * AProtocolDefined, UnicodeString * MaskedUrl)
 {
   TSessionData * Data = new TSessionData(L"");
   try
   {
-    Data->ParseUrl(Url, Options, this, DefaultsOnly, FileName, AProtocolDefined);
+    Data->ParseUrl(Url, Options, this, DefaultsOnly, FileName, AProtocolDefined, MaskedUrl);
   }
   catch(...)
   {
