@@ -115,7 +115,7 @@ set ( CMAKE_LINK_FLAGS
     /DELAYLOAD:winspool.drv
     /DELAYLOAD:comdlg32.dll
     /MANIFEST:NO
-    /TLBID:1 /DYNAMICBASE
+    /TLBID:1 /DYNAMICBASE /SUBSYSTEM:WINDOWS
 "
 )
 
@@ -312,6 +312,8 @@ add_library (atlmfc STATIC
     ${LIBS_ROOT}/atlmfc/src/mfc/olecli1.cpp
     ${LIBS_ROOT}/atlmfc/src/mfc/inet.cpp
 )
+
+#-------------------------------------------------------------------------------
 
 set_target_properties ( atlmfc
     PROPERTIES
