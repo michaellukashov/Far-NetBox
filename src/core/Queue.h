@@ -248,7 +248,7 @@ public:
   void __fastcall SetMasks(const UnicodeString & Value);
 };
 //---------------------------------------------------------------------------
-class TTerminalQueueStatus
+class TTerminalQueueStatus : public TObject
 {
 friend class TTerminalQueue;
 friend class TQueueItemProxy;

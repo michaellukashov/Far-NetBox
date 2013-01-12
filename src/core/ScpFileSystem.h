@@ -10,70 +10,72 @@ class TSecureShell;
 class TSCPFileSystem : public TCustomFileSystem
 {
 public:
-  explicit /* __fastcall */ TSCPFileSystem(TTerminal * ATerminal);
-  void Init(TSecureShell * SecureShell);
-  virtual /* __fastcall */ ~TSCPFileSystem();
+  explicit TSCPFileSystem(TTerminal * ATerminal);
+  virtual ~TSCPFileSystem();
 
-  virtual void __fastcall Open();
-  virtual void __fastcall Close();
-  virtual bool __fastcall GetActive();
-  virtual void __fastcall Idle();
-  virtual UnicodeString __fastcall AbsolutePath(const UnicodeString & Path, bool Local);
-  virtual void __fastcall AnyCommand(const UnicodeString & Command,
+  virtual void Init(void *); // TSecureShell *
+  virtual void FileTransferProgress(__int64 TransferSize, __int64 Bytes) {}
+
+  virtual void Open();
+  virtual void Close();
+  virtual bool GetActive();
+  virtual void Idle();
+  virtual UnicodeString AbsolutePath(const UnicodeString & Path, bool Local);
+  virtual void AnyCommand(const UnicodeString & Command,
     TCaptureOutputEvent OutputEvent);
-  virtual void __fastcall ChangeDirectory(const UnicodeString & Directory);
-  virtual void __fastcall CachedChangeDirectory(const UnicodeString & Directory);
-  virtual void __fastcall AnnounceFileListOperation();
-  virtual void __fastcall ChangeFileProperties(const UnicodeString & FileName,
+  virtual void ChangeDirectory(const UnicodeString & Directory);
+  virtual void CachedChangeDirectory(const UnicodeString & Directory);
+  virtual void AnnounceFileListOperation();
+  virtual void ChangeFileProperties(const UnicodeString & FileName,
     const TRemoteFile * File, const TRemoteProperties * Properties,
     TChmodSessionAction & Action);
-  virtual bool __fastcall LoadFilesProperties(TStrings * FileList);
-  virtual void __fastcall CalculateFilesChecksum(const UnicodeString & Alg,
+  virtual bool LoadFilesProperties(TStrings * FileList);
+  virtual void CalculateFilesChecksum(const UnicodeString & Alg,
     TStrings * FileList, TStrings * Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum);
-  virtual void __fastcall CopyToLocal(TStrings * FilesToCopy,
+  virtual void CopyToLocal(TStrings * FilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
     int Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
-  virtual void __fastcall CopyToRemote(TStrings * FilesToCopy,
+  virtual void CopyToRemote(TStrings * FilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
     int Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
-  virtual void __fastcall CreateDirectory(const UnicodeString & DirName);
-  virtual void __fastcall CreateLink(const UnicodeString & FileName, const UnicodeString & PointTo, bool Symbolic);
-  virtual void __fastcall DeleteFile(const UnicodeString & FileName,
+  virtual void CreateDirectory(const UnicodeString & DirName);
+  virtual void CreateLink(const UnicodeString & FileName, const UnicodeString & PointTo, bool Symbolic);
+  virtual void DeleteFile(const UnicodeString & FileName,
     const TRemoteFile * File, int Params, TRmSessionAction & Action);
-  virtual void /* __fastcall */ CustomCommandOnFile(const UnicodeString & FileName,
+  virtual void CustomCommandOnFile(const UnicodeString & FileName,
     const TRemoteFile * File, const UnicodeString & Command, int Params, TCaptureOutputEvent OutputEvent);
-  virtual void __fastcall DoStartup();
-  virtual void __fastcall HomeDirectory();
-  virtual bool __fastcall IsCapable(int Capability) const;
-  virtual void __fastcall LookupUsersGroups();
-  virtual void __fastcall ReadCurrentDirectory();
-  virtual void __fastcall ReadDirectory(TRemoteFileList * FileList);
-  virtual void __fastcall ReadFile(const UnicodeString & FileName,
+  virtual void DoStartup();
+  virtual void HomeDirectory();
+  virtual bool IsCapable(int Capability) const;
+  virtual void LookupUsersGroups();
+  virtual void ReadCurrentDirectory();
+  virtual void ReadDirectory(TRemoteFileList * FileList);
+  virtual void ReadFile(const UnicodeString & FileName,
     TRemoteFile *& File);
-  virtual void __fastcall ReadSymlink(TRemoteFile * SymlinkFile,
+  virtual void ReadSymlink(TRemoteFile * SymlinkFile,
     TRemoteFile *& File);
-  virtual void __fastcall RenameFile(const UnicodeString & FileName,
+  virtual void RenameFile(const UnicodeString & FileName,
     const UnicodeString & NewName);
-  virtual void __fastcall CopyFile(const UnicodeString & FileName,
+  virtual void CopyFile(const UnicodeString & FileName,
     const UnicodeString & NewName);
-  virtual UnicodeString __fastcall FileUrl(const UnicodeString & FileName);
-  virtual TStrings * __fastcall GetFixedPaths();
-  virtual void __fastcall SpaceAvailable(const UnicodeString & Path,
+  virtual UnicodeString FileUrl(const UnicodeString & FileName);
+  virtual TStrings * GetFixedPaths();
+  virtual void SpaceAvailable(const UnicodeString & Path,
     TSpaceAvailable & ASpaceAvailable);
-  virtual const TSessionInfo & __fastcall GetSessionInfo();
-  virtual const TFileSystemInfo & __fastcall GetFileSystemInfo(bool Retrieve);
-  virtual bool __fastcall TemporaryTransferFile(const UnicodeString & FileName);
-  virtual bool __fastcall GetStoredCredentialsTried();
-  virtual UnicodeString __fastcall GetUserName();
+  virtual const TSessionInfo & GetSessionInfo();
+  virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve);
+  virtual bool TemporaryTransferFile(const UnicodeString & FileName);
+  virtual bool GetStoredCredentialsTried();
+  virtual UnicodeString GetUserName();
 
 protected:
-  TStrings * __fastcall GetOutput() { return FOutput; };
-  int __fastcall GetReturnCode() { return FReturnCode; }
+  TStrings * GetOutput() { return FOutput; };
+  int GetReturnCode() { return FReturnCode; }
 
-  virtual UnicodeString __fastcall GetCurrentDirectory();
+  virtual UnicodeString GetCurrentDirectory();
 
 private:
   TSecureShell * FSecureShell;
@@ -87,50 +89,50 @@ private:
   int FLsFullTime;
   TCaptureOutputEvent FOnCaptureOutput;
 
-  void __fastcall ClearAliases();
-  void __fastcall ClearAlias(UnicodeString Alias);
-  void __fastcall CustomReadFile(const UnicodeString & FileName,
+  void ClearAliases();
+  void ClearAlias(UnicodeString Alias);
+  void CustomReadFile(const UnicodeString & FileName,
     TRemoteFile *& File, TRemoteFile * ALinkedByFile);
-  static UnicodeString __fastcall DelimitStr(UnicodeString Str);
-  void __fastcall DetectReturnVar();
-  bool __fastcall IsLastLine(UnicodeString & Line);
-  static bool __fastcall IsTotalListingLine(const UnicodeString & Line);
-  void __fastcall EnsureLocation();
-  void __fastcall ExecCommand(const UnicodeString & Cmd, int Params,
+  static UnicodeString DelimitStr(UnicodeString Str);
+  void DetectReturnVar();
+  bool IsLastLine(UnicodeString & Line);
+  static bool IsTotalListingLine(const UnicodeString & Line);
+  void EnsureLocation();
+  void ExecCommand(const UnicodeString & Cmd, int Params,
     const UnicodeString & CmdString);
 #ifndef _MSC_VER
-  void __fastcall ExecCommand(TFSCommand Cmd, const TVarRec * args = NULL,
+  void ExecCommand(TFSCommand Cmd, const TVarRec * args = NULL,
     int size = 0, int Params = -1);
 #else
-  void __fastcall ExecCommand2(TFSCommand Cmd, ...);
+  void ExecCommand2(TFSCommand Cmd, ...);
 #endif
-  void __fastcall ReadCommandOutput(int Params, const UnicodeString * Cmd = NULL);
-  void __fastcall SCPResponse(bool * GotLastLine = NULL);
-  void __fastcall SCPDirectorySource(const UnicodeString & DirectoryName,
+  void ReadCommandOutput(int Params, const UnicodeString * Cmd = NULL);
+  void SCPResponse(bool * GotLastLine = NULL);
+  void SCPDirectorySource(const UnicodeString & DirectoryName,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int Params,
     TFileOperationProgressType * OperationProgress, int Level);
-  void __fastcall SCPError(const UnicodeString & Message, bool Fatal);
-  void __fastcall SCPSendError(const UnicodeString & Message, bool Fatal);
-  void __fastcall SCPSink(const UnicodeString & FileName,
+  void SCPError(const UnicodeString & Message, bool Fatal);
+  void SCPSendError(const UnicodeString & Message, bool Fatal);
+  void SCPSink(const UnicodeString & FileName,
     const TRemoteFile * File, const UnicodeString & TargetDir,
     const UnicodeString & SourceDir,
     const TCopyParamType * CopyParam, bool & Success,
     TFileOperationProgressType * OperationProgress, int Params, int Level);
-  void __fastcall SCPSource(const UnicodeString & FileName,
+  void SCPSource(const UnicodeString & FileName,
     const TRemoteFile * File,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int Params,
     TFileOperationProgressType * OperationProgress, int Level);
-  void __fastcall SendCommand(const UnicodeString & Cmd);
-  void __fastcall SkipFirstLine();
-  void __fastcall SkipStartupMessage();
-  void __fastcall UnsetNationalVars();
-  TRemoteFile * __fastcall CreateRemoteFile(const UnicodeString & ListingStr,
+  void SendCommand(const UnicodeString & Cmd);
+  void SkipFirstLine();
+  void SkipStartupMessage();
+  void UnsetNationalVars();
+  TRemoteFile * CreateRemoteFile(const UnicodeString & ListingStr,
     TRemoteFile * LinkedByFile = NULL);
-  void /* __fastcall */ CaptureOutput(const UnicodeString & AddedLine, bool StdError);
-  void __fastcall ChangeFileToken(const UnicodeString & DelimitedName,
+  void CaptureOutput(const UnicodeString & AddedLine, bool StdError);
+  void ChangeFileToken(const UnicodeString & DelimitedName,
     const TRemoteToken & Token, TFSCommand Cmd, const UnicodeString & RecursiveStr);
 
-  static bool __fastcall RemoveLastLine(UnicodeString & Line,
+  static bool RemoveLastLine(UnicodeString & Line,
     int & ReturnCode, UnicodeString LastLine = L"");
 private:
   TSCPFileSystem(const TSCPFileSystem &);

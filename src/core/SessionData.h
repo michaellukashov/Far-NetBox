@@ -42,7 +42,6 @@ extern const wchar_t SshProtList[][10];
 extern const wchar_t ProxyMethodList[][10];
 extern const TCipher DefaultCipherList[CIPHER_COUNT];
 extern const TKex DefaultKexList[KEX_COUNT];
-extern const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][11];
 extern const int DefaultSendBuf;
 extern const UnicodeString AnonymousUserName;
 extern const UnicodeString AnonymousPassword;
@@ -230,7 +229,7 @@ public:
   UnicodeString __fastcall GetSessionUrl();
   void __fastcall SetProtocol(TProtocol Value);
   void __fastcall SetFSProtocol(TFSProtocol Value);
-  UnicodeString __fastcall GetFSProtocolStr();
+  UnicodeString __fastcall GetFSProtocolStr() const;
   void __fastcall SetLocalDirectory(const UnicodeString & Value);
   void __fastcall SetRemoteDirectory(const UnicodeString & Value);
   void __fastcall SetSynchronizeBrowsing(bool Value);
@@ -471,12 +470,16 @@ public:
   void __fastcall SetNumberOfRetries(int Value) { FNumberOfRetries = Value; }
   uintptr_t __fastcall GetSessionVersion() const { return FSessionVersion; }
   void __fastcall SetSessionVersion(uintptr_t Value) { FSessionVersion = Value; }
-protected:
+
+private:
   uintptr_t __fastcall GetDefaultVersion() { return ::GetVersionNumber219(); }
   TFSProtocol __fastcall TranslateFSProtocolNumber(int FSProtocol);
+  TFSProtocol __fastcall TranslateFSProtocol(const UnicodeString & ProtocolID);
   TFtps __fastcall TranslateFtpEncryptionNumber(int FtpEncryption);
+
 private:
   mutable TIEProxyConfig * FIEProxyConfig;
+
 private:
   TProxyMethod __fastcall GetSystemProxyMethod() const;
   void  __fastcall PrepareProxyData() const;
