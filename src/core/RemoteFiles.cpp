@@ -611,12 +611,12 @@ void TRemoteTokenList::Add(const TRemoteToken & Token)
   FTokens.push_back(Token);
   if (Token.GetIDValid())
   {
-    std::pair<TIDMap::iterator, bool> Position =
+    // std::pair<TIDMap::iterator, bool> Position =
       FIDMap.insert(TIDMap::value_type(Token.GetID(), FTokens.size() - 1));
   }
   if (Token.GetNameValid())
   {
-    std::pair<TNameMap::iterator, bool> Position =
+    // std::pair<TNameMap::iterator, bool> Position =
       FNameMap.insert(TNameMap::value_type(Token.GetName(), FTokens.size() - 1));
   }
 }
