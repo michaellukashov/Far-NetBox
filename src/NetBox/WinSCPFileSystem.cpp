@@ -4015,14 +4015,12 @@ void TWinSCPFileSystem::MultipleEdit()
 
     if (FileList != NULL)
     {
+      std::auto_ptr<TStrings> FileListPtr;
+      FileListPtr.reset(FileList);
+      if (FileList->Count == 1)
       {
-        std::auto_ptr<TStrings> FileListPtr;
-        FileListPtr.reset(FileList);
-        if (FileList->Count == 1)
-        {
-          MultipleEdit(FTerminal->GetCurrentDirectory(), FileList->Strings[0],
-            static_cast<TRemoteFile *>(FileList->Objects[0]));
-        }
+        MultipleEdit(FTerminal->GetCurrentDirectory(), FileList->Strings[0],
+          static_cast<TRemoteFile *>(FileList->Objects[0]));
       }
     }
   }

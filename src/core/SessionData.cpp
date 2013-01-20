@@ -461,6 +461,7 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
   SetRekeyData(Storage->ReadString(L"RekeyBytes", GetRekeyData()));
   SetRekeyTime(Storage->ReadInteger(L"RekeyTime", GetRekeyTime()));
 
+  DEBUG_PRINTF(L"GetSessionVersion() = %x", GetSessionVersion());
   if (GetSessionVersion() < GetVersionNumber2121())
   {
     SetFSProtocol(TranslateFSProtocolNumber(Storage->ReadInteger(L"FSProtocol", GetFSProtocol())));
@@ -1833,7 +1834,7 @@ void __fastcall TSessionData::SetDetectReturnVar(bool Value)
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TSessionData::GetDetectReturnVar()
+bool __fastcall TSessionData::GetDetectReturnVar() const
 {
   return GetReturnVar().IsEmpty();
 }

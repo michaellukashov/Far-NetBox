@@ -81,26 +81,26 @@ public:
   UnicodeString GetFirstLine() const;
   bool GetInteractiveCommand(TFSCommand Cmd) const;
   UnicodeString GetLastLine() const;
-  UnicodeString GetReturnVar();
+  UnicodeString GetReturnVar() const;
 public:
   TCommandSet(TSessionData *aSessionData);
   void Default();
   void CopyFrom(TCommandSet * Source);
 #ifndef _MSC_VER
-  UnicodeString Command(TFSCommand Cmd, const TVarRec * args, int size);
+  UnicodeString Command(TFSCommand Cmd, const TVarRec * args, int size) const;
 #else
-  UnicodeString Command(TFSCommand Cmd, ...);
-  UnicodeString Command(TFSCommand Cmd, va_list args);
+  UnicodeString Command(TFSCommand Cmd, ...) const;
+  UnicodeString Command(TFSCommand Cmd, va_list args) const;
 #endif
   TStrings * CreateCommandList();
 #ifndef _MSC_VER
-  UnicodeString FullCommand(TFSCommand Cmd, const TVarRec * args, int size);
+  UnicodeString FullCommand(TFSCommand Cmd, const TVarRec * args, int size) const;
 #else
-  UnicodeString FullCommand(TFSCommand Cmd, ...);
-  UnicodeString FullCommand(TFSCommand Cmd, va_list args);
+  UnicodeString FullCommand(TFSCommand Cmd, ...) const;
+  UnicodeString FullCommand(TFSCommand Cmd, va_list args) const;
 #endif
-  static UnicodeString ExtractCommand(UnicodeString Command);
-  TSessionData * GetSessionData() { return FSessionData; }
+  static UnicodeString ExtractCommand(const UnicodeString & Command);
+  TSessionData * GetSessionData() const { return FSessionData; }
   void SetSessionData(TSessionData * Value) { FSessionData = Value; }
   void SetReturnVar(const UnicodeString & Value) { FReturnVar = Value; }
 };
@@ -213,7 +213,7 @@ UnicodeString TCommandSet::GetCommands(TFSCommand Cmd) const
 }
 //---------------------------------------------------------------------------
 #ifndef _MSC_VER
-UnicodeString TCommandSet::Command(TFSCommand Cmd, const TVarRec * args, int size)
+UnicodeString TCommandSet::Command(TFSCommand Cmd, const TVarRec * args, int size) const
 {
   if (args)
     return Format(GetCommands(Cmd), args, size);
@@ -222,7 +222,7 @@ UnicodeString TCommandSet::Command(TFSCommand Cmd, const TVarRec * args, int siz
 }
 #endif
 //---------------------------------------------------------------------------
-UnicodeString TCommandSet::Command(TFSCommand Cmd, ...)
+UnicodeString TCommandSet::Command(TFSCommand Cmd, ...) const
 {
   UnicodeString result;
   va_list args;
@@ -232,7 +232,7 @@ UnicodeString TCommandSet::Command(TFSCommand Cmd, ...)
   return result;
 }
 //---------------------------------------------------------------------------
-UnicodeString TCommandSet::Command(TFSCommand Cmd, va_list args)
+UnicodeString TCommandSet::Command(TFSCommand Cmd, va_list args) const
 {
   UnicodeString result;
   result = ::Format(GetCommands(Cmd).c_str(), args);
@@ -261,7 +261,7 @@ UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, const TVarRec * args, int
 }
 #endif
 //---------------------------------------------------------------------------
-UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, ...)
+UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, ...) const
 {
   UnicodeString Result;
   va_list args;
@@ -271,7 +271,7 @@ UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, ...)
   return Result.c_str();
 }
 //---------------------------------------------------------------------------
-UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, va_list args)
+UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, va_list args) const
 {
   UnicodeString Separator;
   if (GetOneLineCommand(Cmd))
@@ -313,7 +313,7 @@ UnicodeString TCommandSet::GetLastLine() const
   return LAST_LINE;
 }
 //---------------------------------------------------------------------------
-UnicodeString TCommandSet::GetReturnVar()
+UnicodeString TCommandSet::GetReturnVar() const
 {
   assert(GetSessionData());
   if (!FReturnVar.IsEmpty())
@@ -330,14 +330,15 @@ UnicodeString TCommandSet::GetReturnVar()
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString TCommandSet::ExtractCommand(UnicodeString Command)
+UnicodeString TCommandSet::ExtractCommand(const UnicodeString & Command)
 {
-  intptr_t P = Command.Pos(L" ");
+  UnicodeString Result = Command;
+  intptr_t P = Result.Pos(L" ");
   if (P > 0)
   {
-    Command.SetLength(P-1);
+    Result.SetLength(P-1);
   }
-  return Command;
+  return Result;
 }
 //---------------------------------------------------------------------------
 TStrings * TCommandSet::CreateCommandList()
@@ -1065,8 +1066,6 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           Params);
       }
 
-      TRemoteFile * File = NULL;
-
       // If output is not empty, we have succesfully got file listing,
       // otherwise there was an error, in case it was "permission denied"
       // we try to get at least parent directory (see "else" statement below)
@@ -1087,8 +1086,9 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
             OutputCopy->Delete(0);
           }
 
-          for (int Index = 0; Index < OutputCopy->Count; Index++)
+          for (intptr_t Index = 0; Index < OutputCopy->Count; Index++)
           {
+            TRemoteFile * File = NULL;
             File = CreateRemoteFile(OutputCopy->Strings[Index]);
             FileList->AddFile(File);
           }
