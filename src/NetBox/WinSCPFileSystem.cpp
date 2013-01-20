@@ -3553,7 +3553,7 @@ UnicodeString TWinSCPFileSystem::ProgressBar(intptr_t Percentage, intptr_t Width
   // 0xDB - 0x2588
   Result = ::StringOfChar(0x2588, (Width - 5) * (Percentage > 100 ? 100 : Percentage) / 100);
   Result += ::StringOfChar(0x2591, (Width - 5) - Result.Length());
-  Result += FORMAT(L"%4d%%", Percentage);
+  Result += FORMAT(L"%4d%%", Percentage > 100 ? 100 : Percentage);
   return Result;
 }
 //---------------------------------------------------------------------------
