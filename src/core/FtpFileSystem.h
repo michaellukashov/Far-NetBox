@@ -114,7 +114,7 @@ protected:
   void ResetReply();
   void HandleReplyStatus(const UnicodeString & Response);
   void DoWaitForReply(unsigned int & ReplyToAwait, bool WantLastCode);
-  bool KeepWaitingForReply(unsigned int & ReplyToAwait, bool WantLastCode);
+  bool KeepWaitingForReply(unsigned int & ReplyToAwait, bool WantLastCode) const;
   inline bool NoFinalLastCode() const;
 
   bool HandleStatus(const wchar_t * Status, int Type);

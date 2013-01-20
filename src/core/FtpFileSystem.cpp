@@ -2583,7 +2583,7 @@ bool  TFTPFileSystem::NoFinalLastCode() const
   return (FLastCodeClass == 0) || (FLastCodeClass == 1);
 }
 //---------------------------------------------------------------------------
-bool  TFTPFileSystem::KeepWaitingForReply(unsigned int & ReplyToAwait, bool WantLastCode)
+bool TFTPFileSystem::KeepWaitingForReply(unsigned int & ReplyToAwait, bool WantLastCode) const
 {
   CALLSTACK;
   TRACEFMT("FReply[%d] ReplyToAwait[%d] WantLastCode[%d] FLastCodeClass[%d]", int(FReply), int(ReplyToAwait), int(WantLastCode), int(FLastCodeClass));
