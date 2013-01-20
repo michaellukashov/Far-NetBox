@@ -164,7 +164,7 @@ void TTabbedDialog::HideTabs()
   }
 }
 //---------------------------------------------------------------------------
-void TTabbedDialog::SelectTab(int Tab)
+void TTabbedDialog::SelectTab(intptr_t Tab)
 {
   /*for (int i = FTabCount - 1; i >= 1; i--)
   {
@@ -1494,7 +1494,7 @@ public:
 protected:
   virtual void Change();
   virtual bool CloseQuery();
-  virtual void SelectTab(int Tab);
+  virtual void SelectTab(intptr_t Tab);
 
 private:
   TSessionActionEnum FAction;
@@ -1625,15 +1625,15 @@ private:
   TFarCheckBox * SslSessionReuseCheck;
   TFarCheckBox * WebDAVCompressionCheck;
   TObjectList * FTabs;
-  int FFirstVisibleTabIndex;
+  intptr_t FFirstVisibleTabIndex;
 
   void LoadPing(TSessionData * SessionData);
   void SavePing(TSessionData * SessionData);
-  int LoginTypeToIndex(TLoginType LoginType);
-  int ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Items);
+  intptr_t LoginTypeToIndex(TLoginType LoginType);
+  intptr_t ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Items);
   TProxyMethod IndexToProxyMethod(intptr_t Index, TFarList * Items);
   TFarComboBox * GetProxyMethodCombo();
-  int FSProtocolToIndex(TFSProtocol FSProtocol, bool & AllowScpFallback);
+  intptr_t FSProtocolToIndex(TFSProtocol FSProtocol, bool & AllowScpFallback);
   TFSProtocol IndexToFSProtocol(intptr_t Index, bool AllowScpFallback);
   TFSProtocol GetFSProtocol();
   intptr_t LastSupportedFtpProxyMethod();
@@ -3824,8 +3824,8 @@ intptr_t TSessionDialog::LoginTypeToIndex(TLoginType LoginType)
   return static_cast<intptr_t>(LoginType);
 }
 //---------------------------------------------------------------------------
-int TSessionDialog::FSProtocolToIndex(TFSProtocol FSProtocol,
-    bool & AllowScpFallback)
+intptr_t TSessionDialog::FSProtocolToIndex(TFSProtocol FSProtocol,
+  bool & AllowScpFallback)
 {
   if (FSProtocol == fsSFTP)
   {
@@ -4085,11 +4085,11 @@ bool TSessionDialog::CloseQuery()
   return CanClose;
 }
 //---------------------------------------------------------------------------
-void TSessionDialog::SelectTab(int Tab)
+void TSessionDialog::SelectTab(intptr_t Tab)
 {
   TTabbedDialog::SelectTab(Tab);
   TTabButton * SelectedTabBtn = TabButton(Tab);
-  int Index;
+  intptr_t Index;
   /*for (Index = 0; Index < FTabs->Count; Index++)
   {
     TTabButton * TabBtn = dynamic_cast<TTabButton *>(FTabs->Items[Index]);
