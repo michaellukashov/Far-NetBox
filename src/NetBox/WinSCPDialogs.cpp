@@ -1727,7 +1727,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   TRect CRect = GetClientRect();
 
   TFarButton * Button;
-  TTabButton * Tab;
+  // TTabButton * Tab;
   TFarSeparator * Separator;
   TFarText * Text;
   int GroupTop;
@@ -1735,7 +1735,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   intptr_t Index;
 
   Index = AddTab(tabSession, GetMsg(LOGIN_TAB_SESSION).c_str());
-  Tab = dynamic_cast<TTabButton *>(GetItem(Index));
+  // Tab = dynamic_cast<TTabButton *>(GetItem(Index));
 
   SetNextItemPosition(ipRight);
 
