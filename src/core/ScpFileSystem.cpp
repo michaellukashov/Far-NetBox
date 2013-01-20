@@ -1065,8 +1065,6 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           Params);
       }
 
-      TRemoteFile * File = NULL;
-
       // If output is not empty, we have succesfully got file listing,
       // otherwise there was an error, in case it was "permission denied"
       // we try to get at least parent directory (see "else" statement below)
@@ -1087,8 +1085,9 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
             OutputCopy->Delete(0);
           }
 
-          for (int Index = 0; Index < OutputCopy->Count; Index++)
+          for (intptr_t Index = 0; Index < OutputCopy->Count; Index++)
           {
+            TRemoteFile * File = NULL;
             File = CreateRemoteFile(OutputCopy->Strings[Index]);
             FileList->AddFile(File);
           }
