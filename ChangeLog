@@ -1,5 +1,7 @@
-NetBox 2.1.21 ??.01.2013
+NetBox 2.1.21 20.01.2013
 --------------------
+  * FTP: By default, treat symlink as file, not a directory
+    (https://github.com/michaellukashov/Far-NetBox/issues/18#issuecomment-12432092)
   * WinSCP core upgraded to 5.1.3
   * Fix some memleaks
   * Bugfix: Replace filename chars not valid on windows
