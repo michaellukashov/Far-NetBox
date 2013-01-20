@@ -115,7 +115,7 @@ protected:
   void HandleReplyStatus(const UnicodeString & Response);
   void DoWaitForReply(unsigned int & ReplyToAwait, bool WantLastCode);
   bool KeepWaitingForReply(unsigned int & ReplyToAwait, bool WantLastCode);
-  inline bool NoFinalLastCode();
+  inline bool NoFinalLastCode() const;
 
   bool HandleStatus(const wchar_t * Status, int Type);
   bool HandleAsynchRequestOverwrite(
@@ -126,7 +126,7 @@ protected:
   bool HandleAsynchRequestVerifyCertificate(
     const TFtpsCertificateData & Data, int & RequestResult);
   bool HandleAsynchRequestNeedPass(
-    struct TNeedPassRequestData & Data, int & RequestResult);
+    struct TNeedPassRequestData & Data, int & RequestResult) const;
   bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
     unsigned int Count);
   bool HandleTransferStatus(bool Valid, __int64 TransferSize,

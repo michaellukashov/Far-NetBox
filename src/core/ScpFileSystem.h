@@ -73,7 +73,7 @@ public:
 
 protected:
   TStrings * GetOutput() { return FOutput; };
-  int GetReturnCode() { return FReturnCode; }
+  int GetReturnCode() const { return FReturnCode; }
 
   virtual UnicodeString GetCurrentDirectory();
 

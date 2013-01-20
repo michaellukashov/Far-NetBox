@@ -2578,7 +2578,7 @@ void  TFTPFileSystem::PoolForFatalNonCommandReply()
   }
 }
 //---------------------------------------------------------------------------
-bool  TFTPFileSystem::NoFinalLastCode()
+bool  TFTPFileSystem::NoFinalLastCode() const
 {
   return (FLastCodeClass == 0) || (FLastCodeClass == 1);
 }
@@ -3605,7 +3605,7 @@ bool  TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 }
 //---------------------------------------------------------------------------
 bool  TFTPFileSystem::HandleAsynchRequestNeedPass(
-  struct TNeedPassRequestData & Data, int & RequestResult)
+  struct TNeedPassRequestData & Data, int & RequestResult) const
 {
   CALLSTACK;
   if (!FActive)
