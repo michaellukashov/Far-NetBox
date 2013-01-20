@@ -242,7 +242,7 @@ public:
   UnicodeString __fastcall GetInfoTip();
   bool __fastcall GetDefaultShell();
   void __fastcall SetDetectReturnVar(bool Value);
-  bool __fastcall GetDetectReturnVar();
+  bool __fastcall GetDetectReturnVar() const;
   void __fastcall SetListingCommand(const UnicodeString & Value);
   void __fastcall SetClearAliases(bool Value);
   void __fastcall SetDefaultShell(bool Value);

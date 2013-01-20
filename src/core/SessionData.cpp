@@ -1834,7 +1834,7 @@ void __fastcall TSessionData::SetDetectReturnVar(bool Value)
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TSessionData::GetDetectReturnVar()
+bool __fastcall TSessionData::GetDetectReturnVar() const
 {
   return GetReturnVar().IsEmpty();
 }
