@@ -31,7 +31,7 @@ struct TSessionInfo
   UnicodeString Certificate;
 };
 //---------------------------------------------------------------------------
-enum TFSCapability { fcUserGroupListing, fcModeChanging, fcGroupChanging,
+enum TFSCapability { fcUserGroupListing = 0, fcModeChanging, fcGroupChanging,
   fcOwnerChanging, fcGroupOwnerChangingByID, fcAnyCommand, fcHardLink,
   fcSymbolicLink, fcResolveSymlink,
   fcTextMode, fcRename, fcNativeTextMode, fcNewerOnlyUpload, fcRemoteCopy,

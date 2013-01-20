@@ -9,8 +9,6 @@
 #include <GUIConfiguration.h>
 #include <SynchronizeController.h>
 #include <Queue.h>
-#include <list>
-#include <map>
 //---------------------------------------------------------------------------
 class TTerminal;
 class TSessionData;
@@ -83,6 +81,7 @@ class TWinSCPFileSystem : public TCustomFarFileSystem
   friend class TNetBoxPlugin;
   friend class TKeepaliveThread;
   friend class TQueueDialog;
+
 public:
   explicit TWinSCPFileSystem(TCustomFarPlugin * APlugin);
   void Init(TSecureShell * SecureShell);
@@ -122,6 +121,7 @@ protected:
     bool Force);
   bool SessionDialog(TSessionData * Data, TSessionActionEnum & Action);
   void EditConnectSession(TSessionData * Data, bool Edit);
+  void EditConnectSession(TSessionData * Data, bool Edit, bool NewData, bool FillInConnect);
   void DuplicateRenameSession(TSessionData * Data,
     bool Duplicate);
   void FocusSession(TSessionData * Data);
@@ -336,6 +336,7 @@ private:
   void GetSpaceAvailable(const UnicodeString & Path,
     TSpaceAvailable & ASpaceAvailable, bool & Close);
   void QueueAddItem(TQueueItem * Item);
+
 private:
   UnicodeString GetFileNameHash(const UnicodeString & FileName);
 };

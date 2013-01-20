@@ -796,7 +796,7 @@ void __fastcall TTerminal::Open()
 #else*/
                 FFSProtocol = cfsFTP;
                 FFileSystem = new TFTPFileSystem(this);
-                FFileSystem->Init();
+                FFileSystem->Init(NULL);
                 FFileSystem->Open();
                 GetLog()->AddSeparator();
                 LogEvent(L"Using FTP protocol.");
@@ -810,7 +810,7 @@ void __fastcall TTerminal::Open()
 #else*/
                 FFSProtocol = cfsFTPS;
                 FFileSystem = new TFTPFileSystem(this);
-                FFileSystem->Init();
+                FFileSystem->Init(NULL);
                 FFileSystem->Open();
                 GetLog()->AddSeparator();
                 LogEvent(L"Using FTPS protocol.");
@@ -821,7 +821,7 @@ void __fastcall TTerminal::Open()
                 TRACE("Open 7");
                 FFSProtocol = cfsWebDAV;
                 FFileSystem = new TWebDAVFileSystem(this);
-                FFileSystem->Init();
+                FFileSystem->Init(NULL);
                 FFileSystem->Open();
                 GetLog()->AddSeparator();
                 LogEvent(L"Using WebDAV protocol.");
@@ -863,7 +863,7 @@ void __fastcall TTerminal::Open()
                     TRACE("Open 9");
                     FFSProtocol = cfsSCP;
                     FFileSystem = new TSCPFileSystem(this);
-                    (static_cast<TSCPFileSystem *>(FFileSystem))->Init(FSecureShell);
+                    FFileSystem->Init(FSecureShell);
                     FSecureShell = NULL; // ownership passed
                     LogEvent(L"Using SCP protocol.");
                   }
@@ -872,7 +872,7 @@ void __fastcall TTerminal::Open()
                     TRACE("Open 10");
                     FFSProtocol = cfsSFTP;
                     FFileSystem = new TSFTPFileSystem(this);
-                    (static_cast<TSFTPFileSystem *>(FFileSystem))->Init(FSecureShell);
+                    FFileSystem->Init(FSecureShell);
                     FSecureShell = NULL; // ownership passed
                     LogEvent(L"Using SFTP protocol.");
                   }

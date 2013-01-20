@@ -104,7 +104,7 @@ public:
 
 protected:
   void HideTabs();
-  virtual void SelectTab(int Tab);
+  virtual void SelectTab(intptr_t Tab);
   void TabButtonClick(TFarButton * Sender, bool & Close);
   virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
   virtual UnicodeString TabName(int Tab);
@@ -113,8 +113,8 @@ protected:
 
 private:
   UnicodeString FOrigCaption;
-  int FTab;
-  int FTabCount;
+  intptr_t FTab;
+  intptr_t FTabCount;
 };
 //---------------------------------------------------------------------------
 class TTabButton : public TFarButton
@@ -122,13 +122,13 @@ class TTabButton : public TFarButton
 public:
   explicit TTabButton(TTabbedDialog * Dialog);
 
-  int GetTab() { return FTab; }
-  void SetTab(int Value) { FTab = Value; }
+  intptr_t GetTab() { return FTab; }
+  void SetTab(intptr_t Value) { FTab = Value; }
   UnicodeString GetTabName() const { return FTabName; }
 
 private:
   UnicodeString FTabName;
-  int FTab;
+  intptr_t FTab;
 
 public:
   void SetTabName(const UnicodeString & Value);
@@ -1642,7 +1642,7 @@ private:
   bool SupportedFtpProxyMethod(intptr_t Method);
   TProxyMethod GetProxyMethod();
   intptr_t GetFtpProxyLogonType();
-  TFtps IndexToFtps(int Index);
+  TFtps IndexToFtps(intptr_t Index);
   TFtps GetFtps();
   TLoginType IndexToLoginType(intptr_t Index);
   TLoginType GetLoginType();
@@ -1752,13 +1752,13 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   ScpTab = dynamic_cast<TTabButton *>(GetItem(Index));
 
   PrevTab = new TTabButton(this);
-  PrevTab->SetTabName(UnicodeString(''));
+  PrevTab->SetTabName(UnicodeString('\x11'));
   PrevTab->SetBrackets(brNone);
   PrevTab->SetCenterGroup(false);
   PrevTab->SetOnClick(MAKE_CALLBACK(TSessionDialog::PrevTabClick, this));
 
   NextTab = new TTabButton(this);
-  NextTab->SetTabName(UnicodeString(''));
+  NextTab->SetTabName(UnicodeString('\x10'));
   NextTab->SetBrackets(brNone);
   NextTab->SetCenterGroup(false);
   NextTab->SetOnClick(MAKE_CALLBACK(TSessionDialog::NextTabClick, this));
@@ -3821,9 +3821,9 @@ void TSessionDialog::SavePing(TSessionData * SessionData)
   }
 }
 //---------------------------------------------------------------------------
-int TSessionDialog::LoginTypeToIndex(TLoginType LoginType)
+intptr_t TSessionDialog::LoginTypeToIndex(TLoginType LoginType)
 {
-  return static_cast<int>(LoginType);
+  return static_cast<intptr_t>(LoginType);
 }
 //---------------------------------------------------------------------------
 int TSessionDialog::FSProtocolToIndex(TFSProtocol FSProtocol,
@@ -3850,9 +3850,9 @@ int TSessionDialog::FSProtocolToIndex(TFSProtocol FSProtocol,
   }
 }
 //---------------------------------------------------------------------------
-int TSessionDialog::ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Items)
+intptr_t TSessionDialog::ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Items)
 {
-  for (int Index = 0; Index < Items->Count; Index++)
+  for (intptr_t Index = 0; Index < Items->Count; Index++)
   {
     TObject * Obj = static_cast<TObject *>(Items->Objects[Index]);
     TProxyMethod Method = static_cast<TProxyMethod>(reinterpret_cast<size_t>(Obj));
@@ -3940,7 +3940,7 @@ intptr_t TSessionDialog::GetFtpProxyLogonType()
   return Result;
 }
 //---------------------------------------------------------------------------
-TFtps TSessionDialog::IndexToFtps(int Index)
+TFtps TSessionDialog::IndexToFtps(intptr_t Index)
 {
   bool InBounds = (Index != NPOS) && (Index < FtpEncryptionCombo->GetItems()->Count);
   assert(InBounds);
@@ -5836,7 +5836,7 @@ bool TWinSCPFileSystem::LinkDialog(UnicodeString & FileName,
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 DEFINE_CALLBACK_TYPE3(TFeedFileSystemDataEvent, void,
-  TObject * /* Control */, int /* Label */, UnicodeString /* Value */);
+  TObject * /* Control */, int /* Label */, const UnicodeString & /* Value */);
 //---------------------------------------------------------------------------
 class TLabelList;
 class TFileSystemInfoDialog : TTabbedDialog
@@ -5856,13 +5856,13 @@ protected:
   UnicodeString CapabilityStr(TFSCapability Capability1,
     TFSCapability Capability2);
   UnicodeString SpaceStr(__int64 Bytes);
-  void ControlsAddItem(TObject * Control, int Label, UnicodeString Value);
-  void CalculateMaxLenAddItem(TObject * Control, int Label, UnicodeString Value);
-  void ClipboardAddItem(TObject * Control, int Label, UnicodeString Value);
+  void ControlsAddItem(TObject * Control, int Label, const UnicodeString & Value);
+  void CalculateMaxLenAddItem(TObject * Control, int Label, const UnicodeString & Value);
+  void ClipboardAddItem(TObject * Control, int Label, const UnicodeString & Value);
   void FeedControls();
   void UpdateControls();
   TLabelList * CreateLabelArray(int Count);
-  virtual void SelectTab(int Tab);
+  virtual void SelectTab(intptr_t Tab);
   virtual void Change();
   void SpaceAvailableButtonClick(TFarButton * Sender, bool & Close);
   void ClipboardButtonClick(TFarButton * Sender, bool & Close);
@@ -6129,7 +6129,7 @@ void TFileSystemInfoDialog::Feed(TFeedFileSystemDataEvent AddItem)
 }
 //---------------------------------------------------------------------
 void TFileSystemInfoDialog::ControlsAddItem(TObject * Control,
-  int Label, UnicodeString Value)
+  int Label, const UnicodeString & Value)
 {
   if (FLastFeededControl != Control)
   {
@@ -6176,7 +6176,7 @@ void TFileSystemInfoDialog::ControlsAddItem(TObject * Control,
 }
 //---------------------------------------------------------------------
 void TFileSystemInfoDialog::CalculateMaxLenAddItem(TObject * Control,
-    int Label, UnicodeString Value)
+  int Label, const UnicodeString & )
 {
   TLabelList * List = dynamic_cast<TLabelList *>(Control);
   if (List != NULL)
@@ -6190,7 +6190,7 @@ void TFileSystemInfoDialog::CalculateMaxLenAddItem(TObject * Control,
 }
 //---------------------------------------------------------------------
 void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
-    int Label, UnicodeString Value)
+  int Label, const UnicodeString & Value)
 {
   TFarDialogItem * Control = dynamic_cast<TFarDialogItem *>(AControl);
   // check for Enabled instead of Visible, as Visible is false
@@ -6230,12 +6230,13 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
         LabelStr.SetLength(LabelStr.Length() - 1);
       }
 
-      if ((Value.Length() >= 2) && (Value.SubString(Value.Length() - 1, 2) == L"\r\n"))
+      UnicodeString Value2 = Value;
+      if ((Value2.Length() >= 2) && (Value2.SubString(Value2.Length() - 1, 2) == L"\r\n"))
       {
-        Value.SetLength(Value.Length() - 2);
+        Value2.SetLength(Value2.Length() - 2);
       }
 
-      FClipboard += FORMAT(L"%s\r\n%s\r\n", LabelStr.c_str(), Value.c_str());
+      FClipboard += FORMAT(L"%s\r\n%s\r\n", LabelStr.c_str(), Value2.c_str());
     }
     else
     {
@@ -6257,7 +6258,7 @@ void TFileSystemInfoDialog::FeedControls()
   InfoLister->SetRight(GetBorderBox()->GetRight() - (InfoLister->GetScrollBar() ? 0 : 1));
 }
 //---------------------------------------------------------------------------
-void TFileSystemInfoDialog::SelectTab(int Tab)
+void TFileSystemInfoDialog::SelectTab(intptr_t Tab)
 {
   TTabbedDialog::SelectTab(Tab);
   if (InfoLister->GetVisible())

@@ -182,6 +182,7 @@ BEGIN
   DELETE_LOCAL_FILE_ERROR, "Error deleting file '%s'."
   URL_OPTION_BOOL_VALUE_ERROR, "Invalid switch value '%s'. Valid values are 'on' and 'off'."
   FTP_ACCESS_DENIED_EMPTY_PASSWORD, "Access without password denied."
+  PROTOCOL_UNKNOWN, "Protocol '%s' is unknown."
 
   CORE_CONFIRMATION_STRINGS, "CORE_CONFIRMATION"
   CONFIRM_PROLONG_TIMEOUT3, "Host is not communicating for %d seconds.\n\nWait for another %d seconds?"

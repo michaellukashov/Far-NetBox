@@ -24,7 +24,7 @@ distribution.
 #ifndef TINYXML2_INCLUDED
 #define TINYXML2_INCLUDED
 
-#ifdef ANDROID_NDK
+#if defined(ANDROID_NDK) || defined(__BORLANDC__)
 #   include <ctype.h>
 #   include <limits.h>
 #   include <stdio.h>
@@ -1301,15 +1301,15 @@ public:
     			 to the requested type, and XML_NO_TEXT_NODE if there is no child text to query.
 
     */
-    XMLError QueryIntText( int* _value ) const;
+    XMLError QueryIntText( int* ival ) const;
     /// See QueryIntText()
-    XMLError QueryUnsignedText( unsigned* _value ) const;
+    XMLError QueryUnsignedText( unsigned* uval ) const;
     /// See QueryIntText()
-    XMLError QueryBoolText( bool* _value ) const;
+    XMLError QueryBoolText( bool* bval ) const;
     /// See QueryIntText()
-    XMLError QueryDoubleText( double* _value ) const;
+    XMLError QueryDoubleText( double* dval ) const;
     /// See QueryIntText()
-    XMLError QueryFloatText( float* _value ) const;
+    XMLError QueryFloatText( float* fval ) const;
 
     // internal:
     enum {

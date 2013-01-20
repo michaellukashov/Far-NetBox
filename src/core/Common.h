@@ -368,6 +368,7 @@ uintptr_t __fastcall StrToVersionNumber(const UnicodeString & VersionMumberStr);
 UnicodeString __fastcall VersionNumberToStr(uintptr_t VersionNumber);
 uintptr_t inline __fastcall GetVersionNumber219() { return MAKEVERSIONNUMBER(2,1,9); }
 uintptr_t inline __fastcall GetVersionNumber2110() { return MAKEVERSIONNUMBER(2,1,10); }
+uintptr_t inline __fastcall GetVersionNumber2121() { return MAKEVERSIONNUMBER(2,1,21); }
 uintptr_t inline __fastcall GetCurrentVersionNumber() { return StrToVersionNumber(NETBOX_VERSION_NUMBER); }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall FormatBytes(__int64 Bytes, bool UseOrders = true);

@@ -461,7 +461,14 @@ void __fastcall TSessionData::DoLoad(THierarchicalStorage * Storage, bool & Rewr
   SetRekeyData(Storage->ReadString(L"RekeyBytes", GetRekeyData()));
   SetRekeyTime(Storage->ReadInteger(L"RekeyTime", GetRekeyTime()));
 
-  SetFSProtocol(TranslateFSProtocolNumber(Storage->ReadInteger(L"FSProtocol", GetFSProtocol())));
+  if (GetSessionVersion() < GetVersionNumber2121())
+  {
+    SetFSProtocol(TranslateFSProtocolNumber(Storage->ReadInteger(L"FSProtocol", GetFSProtocol())));
+  }
+  else
+  {
+    SetFSProtocol(TranslateFSProtocol(Storage->ReadString(L"FSProtocol", GetFSProtocol())));
+  }
   SetLocalDirectory(Storage->ReadString(L"LocalDirectory", GetLocalDirectory()));
   SetRemoteDirectory(Storage->ReadString(L"RemoteDirectory", GetRemoteDirectory()));
   SetSynchronizeBrowsing(Storage->ReadBool(L"SynchronizeBrowsing", GetSynchronizeBrowsing()));
@@ -755,7 +762,7 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
     {
       WRITE_DATA(String, UserName);
       WRITE_DATA(String, PublicKeyFile);
-      WRITE_DATA(Integer, FSProtocol);
+      WRITE_DATA_EX(String, L"FSProtocol", GetFSProtocolStr(), );
       WRITE_DATA(String, LocalDirectory);
       WRITE_DATA(String, RemoteDirectory);
       WRITE_DATA(Bool, SynchronizeBrowsing);
@@ -1805,10 +1812,17 @@ void __fastcall TSessionData::SetFSProtocol(TFSProtocol Value)
   SET_SESSION_PROPERTY(FSProtocol);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall TSessionData::GetFSProtocolStr()
+UnicodeString __fastcall TSessionData::GetFSProtocolStr() const
 {
-  assert(GetFSProtocol() >= 0 && GetFSProtocol() < FSPROTOCOL_COUNT);
-  return FSProtocolNames[GetFSProtocol()];
+  // DEBUG_PRINTF(L"begin");
+  assert(GetFSProtocol() >= 0);
+  if (GetFSProtocol() < FSPROTOCOL_COUNT)
+  {
+    return FSProtocolNames[GetFSProtocol()];
+  }
+  assert(false);
+  // DEBUG_PRINTF(L"end");
+  return UnicodeString(L"");
 }
 //---------------------------------------------------------------------------
 void __fastcall TSessionData::SetDetectReturnVar(bool Value)
@@ -2644,6 +2658,24 @@ TFSProtocol __fastcall TSessionData::TranslateFSProtocolNumber(int FSProtocol)
         break;
     }
   }
+  assert(Result != -1);
+  return Result;
+}
+//---------------------------------------------------------------------
+TFSProtocol __fastcall TSessionData::TranslateFSProtocol(const UnicodeString & ProtocolID)
+{
+  // Find protocol by string id
+  TFSProtocol Result = static_cast<TFSProtocol>(-1);
+  for (intptr_t Index = 0; Index < FSPROTOCOL_COUNT; ++Index)
+  {
+    if (FSProtocolNames[Index] == ProtocolID)
+    {
+      Result = static_cast<TFSProtocol>(Index);
+      break;
+    }
+  }
+  if (Result == -1)
+    Result = fsSCPonly;
   assert(Result != -1);
   return Result;
 }

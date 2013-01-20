@@ -627,7 +627,6 @@ void TWinSCPFileSystem::FocusSession(TSessionData * Data)
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
 {
-  TSessionData * OrigData = Data;
   bool NewData = !Data;
   bool FillInConnect = !Edit && !Data->GetCanLogin();
   if (NewData || FillInConnect)
@@ -637,84 +636,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
 
   TRY_FINALLY (
   {
-    if (FillInConnect)
-    {
-      Data->Assign(OrigData);
-      Data->SetName(L"");
-    }
-
-    TSessionActionEnum Action;
-    if (Edit || FillInConnect)
-    {
-      Action = (FillInConnect ? saConnect : (OrigData == NULL ? saAdd : saEdit));
-      if (SessionDialog(Data, Action))
-      {
-        if ((!NewData && !FillInConnect) || (Action != saConnect))
-        {
-          TSessionData * SelectSession = NULL;
-          if (NewData)
-          {
-            // UnicodeString Name =
-            //    IncludeTrailingBackslash(FSessionsFolder) + Data->GetSessionName();
-            UnicodeString Name;
-            if (!FSessionsFolder.IsEmpty())
-            {
-              Name = UnixIncludeTrailingBackslash(FSessionsFolder);
-            }
-            Name += Data->GetSessionName();
-            if (WinSCPPlugin()->InputBox(GetMsg(NEW_SESSION_NAME_TITLE),
-                                  GetMsg(NEW_SESSION_NAME_PROMPT), Name, 0) &&
-                !Name.IsEmpty())
-            {
-              if (StoredSessions->FindByName(Name))
-              {
-                throw Exception(FORMAT(GetMsg(SESSION_ALREADY_EXISTS_ERROR).c_str(), Name.c_str()));
-              }
-              else
-              {
-                SelectSession = StoredSessions->NewSession(Name, Data);
-                FSessionsFolder = ExcludeTrailingBackslash(UnixExtractFilePath(Name));
-              }
-            }
-          }
-          else if (FillInConnect)
-          {
-            UnicodeString OrigName = OrigData->GetName();
-            OrigData->Assign(Data);
-            OrigData->SetName(OrigName);
-          }
-
-          // modified only, explicit
-          StoredSessions->Save(false, true);
-          if (UpdatePanel())
-          {
-            if (SelectSession != NULL)
-            {
-              FocusSession(SelectSession);
-            }
-            // rarely we need to redraw even when new session is created
-            // (e.g. when there there were only the focused hint line before)
-            RedrawPanel();
-          }
-        }
-      }
-    }
-    else
-    {
-      Action = saConnect;
-    }
-
-    if ((Action == saConnect) && Connect(Data))
-    {
-      if (UpdatePanel())
-      {
-        RedrawPanel();
-        if (GetPanelInfo()->GetItemCount())
-        {
-          GetPanelInfo()->SetFocusedIndex(0);
-        }
-      }
-    }
+    EditConnectSession(Data, Edit, NewData, FillInConnect);
   }
   ,
   {
@@ -724,6 +646,89 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
     }
   }
   );
+}
+//---------------------------------------------------------------------------
+void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit, bool NewData, bool FillInConnect)
+{
+  TSessionData * OrigData = Data;
+  if (FillInConnect)
+  {
+    Data->Assign(OrigData);
+    Data->SetName(L"");
+  }
+
+  TSessionActionEnum Action;
+  if (Edit || FillInConnect)
+  {
+    Action = (FillInConnect ? saConnect : (OrigData == NULL ? saAdd : saEdit));
+    if (SessionDialog(Data, Action))
+    {
+      if ((!NewData && !FillInConnect) || (Action != saConnect))
+      {
+        TSessionData * SelectSession = NULL;
+        if (NewData)
+        {
+          // UnicodeString Name =
+          //    IncludeTrailingBackslash(FSessionsFolder) + Data->GetSessionName();
+          UnicodeString Name;
+          if (!FSessionsFolder.IsEmpty())
+          {
+            Name = UnixIncludeTrailingBackslash(FSessionsFolder);
+          }
+          Name += Data->GetSessionName();
+          if (WinSCPPlugin()->InputBox(GetMsg(NEW_SESSION_NAME_TITLE),
+                                GetMsg(NEW_SESSION_NAME_PROMPT), Name, 0) &&
+              !Name.IsEmpty())
+          {
+            if (StoredSessions->FindByName(Name))
+            {
+              throw Exception(FORMAT(GetMsg(SESSION_ALREADY_EXISTS_ERROR).c_str(), Name.c_str()));
+            }
+            else
+            {
+              SelectSession = StoredSessions->NewSession(Name, Data);
+              FSessionsFolder = ExcludeTrailingBackslash(UnixExtractFilePath(Name));
+            }
+          }
+        }
+        else if (FillInConnect)
+        {
+          UnicodeString OrigName = OrigData->GetName();
+          OrigData->Assign(Data);
+          OrigData->SetName(OrigName);
+        }
+
+        // modified only, explicit
+        StoredSessions->Save(false, true);
+        if (UpdatePanel())
+        {
+          if (SelectSession != NULL)
+          {
+            FocusSession(SelectSession);
+          }
+          // rarely we need to redraw even when new session is created
+          // (e.g. when there there were only the focused hint line before)
+          RedrawPanel();
+        }
+      }
+    }
+  }
+  else
+  {
+    Action = saConnect;
+  }
+
+  if ((Action == saConnect) && Connect(Data))
+  {
+    if (UpdatePanel())
+    {
+      RedrawPanel();
+      if (GetPanelInfo()->GetItemCount())
+      {
+        GetPanelInfo()->SetFocusedIndex(0);
+      }
+    }
+  }
 }
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::ProcessPanelEventEx(intptr_t Event, void *Param)
@@ -3026,14 +3031,21 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
     // TODO: Create instance of TKeepaliveThread here, once its implementation
     // is complete
 
-    Result = true;
+    Result = FTerminal->GetActive();
+    if (!Result)
+    {
+      throw Exception(FORMAT(GetMsg(CANNOT_INIT_SESSION).c_str(), Data->GetSessionName().c_str()));
+    }
   }
   catch(Exception &E)
   {
     FTerminal->ShowExtendedException(&E);
     SAFE_DESTROY(FTerminal);
-    delete FQueue;
+    FTerminal = NULL;
+    SAFE_DESTROY(FQueue);
     FQueue = NULL;
+    SAFE_DESTROY(FQueueStatus);
+    FQueueStatus = NULL;
   }
 
   if (FTerminal != NULL)

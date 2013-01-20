@@ -131,6 +131,7 @@
 
 "Not supported"
 "Current protocol %s does not support required operation."
+"Cannot initialize session '%s'."
 
 "Session named '%s' already exists."
 "Save session as"
