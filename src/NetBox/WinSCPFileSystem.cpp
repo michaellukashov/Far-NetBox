@@ -3819,7 +3819,7 @@ void TWinSCPFileSystem::UploadOnSave(bool NoReload)
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
 {
-  // EE_REDRAW is the first for optimalisation
+  // EE_REDRAW is the first for optimisation
   if (Event == EE_REDRAW)
   {
     if (FEditorPendingSave)
