@@ -1373,7 +1373,7 @@ bool __fastcall TryRelativeStrToDateTime(const UnicodeString & Str, TDateTime & 
     Index++;
   }
   UnicodeString NumberStr = S.SubString(1, Index - 1);
-  int Number;
+  int Number = 0;
   bool Result = TryStrToInt(NumberStr, Number);
   if (Result)
   {
