@@ -1513,7 +1513,7 @@ void Randomize()
 
 //---------------------------------------------------------------------------
 
-void IncAMonth(Word & Year, Word & Month, Word & Day, Int64 NumberOfMonths = 1)
+static void IncAMonth(Word & Year, Word & Month, Word & Day, Int64 NumberOfMonths = 1)
 {
   Integer Sign;
   if (NumberOfMonths >= 0)
@@ -1532,7 +1532,7 @@ void IncAMonth(Word & Year, Word & Month, Word & Day, Int64 NumberOfMonths = 1)
   if (Day > (*DayTable)[Month]) Day = static_cast<Word>(*DayTable[Month]);
 }
 
-void ReplaceTime(TDateTime &DateTime, const TDateTime NewTime)
+static void ReplaceTime(TDateTime & DateTime, const TDateTime & NewTime)
 {
   DateTime = Trunc(DateTime);
   if (DateTime >= 0)
@@ -1541,14 +1541,14 @@ void ReplaceTime(TDateTime &DateTime, const TDateTime NewTime)
     DateTime = DateTime - Abs(Frac(NewTime));
 }
 
-TDateTime IncYear(const TDateTime AValue, const Int64 ANumberOfYears)
+TDateTime IncYear(const TDateTime & AValue, const Int64 ANumberOfYears)
 {
   TDateTime Result;
   Result = IncMonth(AValue, ANumberOfYears * MonthsPerYear);
   return Result;
 }
 
-TDateTime IncMonth(const TDateTime AValue, const Int64 NumberOfMonths)
+TDateTime IncMonth(const TDateTime & AValue, const Int64 NumberOfMonths)
 {
   TDateTime Result;
   Word Year, Month, Day;
@@ -1559,21 +1559,21 @@ TDateTime IncMonth(const TDateTime AValue, const Int64 NumberOfMonths)
   return Result;
 }
 
-TDateTime IncWeek(const TDateTime AValue, const Int64 ANumberOfWeeks)
+TDateTime IncWeek(const TDateTime & AValue, const Int64 ANumberOfWeeks)
 {
   TDateTime Result;
   Result = AValue + ANumberOfWeeks * DaysPerWeek;
   return Result;
 }
 
-TDateTime IncDay(const TDateTime AValue, const Int64 ANumberOfDays)
+TDateTime IncDay(const TDateTime & AValue, const Int64 ANumberOfDays)
 {
   TDateTime Result;
   Result = AValue + ANumberOfDays;
   return Result;
 }
 
-TDateTime IncHour(const TDateTime AValue, const Int64 ANumberOfHours)
+TDateTime IncHour(const TDateTime & AValue, const Int64 ANumberOfHours)
 {
   TDateTime Result;
   if (AValue > 0)
@@ -1583,7 +1583,7 @@ TDateTime IncHour(const TDateTime AValue, const Int64 ANumberOfHours)
   return Result;
 }
 
-TDateTime IncMinute(const TDateTime AValue, const Int64 ANumberOfMinutes)
+TDateTime IncMinute(const TDateTime & AValue, const Int64 ANumberOfMinutes)
 {
   TDateTime Result;
   if (AValue > 0)
@@ -1593,7 +1593,7 @@ TDateTime IncMinute(const TDateTime AValue, const Int64 ANumberOfMinutes)
   return Result;
 }
 
-TDateTime IncSecond(const TDateTime AValue, const Int64 ANumberOfSeconds)
+TDateTime IncSecond(const TDateTime & AValue, const Int64 ANumberOfSeconds)
 {
   TDateTime Result;
   if (AValue > 0)
@@ -1603,7 +1603,7 @@ TDateTime IncSecond(const TDateTime AValue, const Int64 ANumberOfSeconds)
   return Result;
 }
 
-TDateTime IncMilliSecond(const TDateTime AValue, const Int64 ANumberOfMilliSeconds)
+TDateTime IncMilliSecond(const TDateTime & AValue, const Int64 ANumberOfMilliSeconds)
 {
   TDateTime Result;
   if (AValue > 0)
