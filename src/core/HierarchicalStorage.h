@@ -17,16 +17,16 @@ public:
   bool __fastcall OpenSubKey(const UnicodeString & SubKey, bool CanCreate, bool Path = false);
   virtual void __fastcall CloseSubKey();
   virtual bool __fastcall DeleteSubKey(const UnicodeString & SubKey) = 0;
-  virtual void __fastcall GetSubKeyNames(Classes::TStrings* Strings) = 0;
-  virtual void __fastcall GetValueNames(Classes::TStrings* Strings) = 0;
+  virtual void GetSubKeyNames(Classes::TStrings * Strings) = 0;
+  virtual void GetValueNames(Classes::TStrings * Strings) = 0;
   bool __fastcall HasSubKeys();
   bool __fastcall HasSubKey(const UnicodeString & SubKey);
   bool __fastcall KeyExists(const UnicodeString & SubKey);
   virtual bool __fastcall ValueExists(const UnicodeString & Value) = 0;
   virtual void __fastcall RecursiveDeleteSubKey(const UnicodeString & Key);
   virtual void __fastcall ClearSubKeys();
-  virtual void __fastcall ReadValues(Classes::TStrings* Strings, bool MaintainKeys = false);
-  virtual void __fastcall WriteValues(Classes::TStrings* Strings, bool MaintainKeys = false);
+  virtual void ReadValues(Classes::TStrings * Strings, bool MaintainKeys = false);
+  virtual void WriteValues(Classes::TStrings * Strings, bool MaintainKeys = false);
   virtual void __fastcall ClearValues();
   virtual bool __fastcall DeleteValue(const UnicodeString & Name) = 0;
 
@@ -104,7 +104,7 @@ public:
   virtual void __fastcall CloseSubKey();
   virtual bool __fastcall DeleteSubKey(const UnicodeString & SubKey);
   virtual bool __fastcall DeleteValue(const UnicodeString & Name);
-  virtual void __fastcall GetSubKeyNames(Classes::TStrings* Strings);
+  virtual void GetSubKeyNames(Classes::TStrings * Strings);
   virtual bool __fastcall ValueExists(const UnicodeString & Value);
 
   virtual size_t __fastcall BinaryDataSize(const UnicodeString & Name);
@@ -125,7 +125,7 @@ public:
   virtual void __fastcall WriteStringRaw(const UnicodeString & Name, const UnicodeString & Value);
   virtual void __fastcall WriteBinaryData(const UnicodeString & Name, const void * Buffer, size_t Size);
 
-  virtual void __fastcall GetValueNames(Classes::TStrings* Strings);
+  virtual void GetValueNames(Classes::TStrings * Strings);
 
   int __fastcall GetFailed();
   void __fastcall SetFailed(int value) { FFailed = value; }
@@ -151,7 +151,7 @@ public:
 
   virtual bool __fastcall DeleteSubKey(const UnicodeString & SubKey);
   virtual bool __fastcall DeleteValue(const UnicodeString & Name);
-  virtual void __fastcall GetSubKeyNames(Classes::TStrings* Strings);
+  virtual void GetSubKeyNames(Classes::TStrings * Strings);
   virtual bool __fastcall ValueExists(const UnicodeString & Value);
 
   virtual size_t __fastcall BinaryDataSize(const UnicodeString & Name);
@@ -172,7 +172,7 @@ public:
   virtual void __fastcall WriteStringRaw(const UnicodeString & Name, const UnicodeString & Value);
   virtual void __fastcall WriteBinaryData(const UnicodeString & Name, const void * Buffer, size_t Size);
 
-  virtual void __fastcall GetValueNames(Classes::TStrings* Strings);
+  virtual void GetValueNames(Classes::TStrings * Strings);
 
 private:
   UnicodeString __fastcall GetCurrentSection() const;
