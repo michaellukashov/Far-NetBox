@@ -485,7 +485,7 @@ public:
 
   const TSessionInfo & GetSessionInfo() const;
   const TFileSystemInfo & GetFileSystemInfo(bool Retrieve = false);
-  void /* inline */ LogEvent(const UnicodeString & Str);
+  void LogEvent(const UnicodeString & Str);
 
   static bool IsAbsolutePath(const UnicodeString & Path);
   static UnicodeString ExpandFileName(const UnicodeString & Path,

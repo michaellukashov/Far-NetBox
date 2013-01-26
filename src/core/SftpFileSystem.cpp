@@ -915,7 +915,7 @@ public:
     }
   }
 
-  /* inline */ void Add(const void * AData, intptr_t ALength)
+  void Add(const void * AData, intptr_t ALength)
   {
     if (GetLength() + ALength > GetCapacity())
     {
@@ -2245,7 +2245,7 @@ void TSFTPFileSystem::RemoveReservation(intptr_t Reservation)
   FPacketReservations->Delete(Reservation);
 }
 //---------------------------------------------------------------------------
-/* inline */ int TSFTPFileSystem::PacketLength(unsigned char * LenBuf, int ExpectedType)
+int TSFTPFileSystem::PacketLength(unsigned char * LenBuf, int ExpectedType)
 {
   int Length = GET_32BIT(LenBuf);
   if (Length > SFTP_MAX_PACKET_LEN)

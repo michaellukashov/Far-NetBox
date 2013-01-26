@@ -117,7 +117,7 @@ protected:
   virtual UnicodeString GetCurrentDirectory();
   UnicodeString GetHomeDirectory();
   unsigned long GotStatusPacket(TSFTPPacket * Packet, int AllowStatus);
-  bool /* inline */ IsAbsolutePath(const UnicodeString & Path);
+  bool IsAbsolutePath(const UnicodeString & Path);
   bool RemoteFileExists(const UnicodeString & FullPath, TRemoteFile ** File = NULL);
   TRemoteFile * LoadFile(TSFTPPacket * Packet,
     TRemoteFile * ALinkedByFile, const UnicodeString & FileName,

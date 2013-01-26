@@ -2416,7 +2416,7 @@ void TTerminal::EnsureNonExistence(const UnicodeString & FileName)
   }
 }
 //---------------------------------------------------------------------------
-void /* inline */ TTerminal::LogEvent(const UnicodeString & Str)
+void TTerminal::LogEvent(const UnicodeString & Str)
 {
   TRACEFMT("[%s]", Str.c_str());
   if (GetLog()->GetLogging())

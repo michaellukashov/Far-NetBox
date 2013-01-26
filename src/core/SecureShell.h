@@ -100,7 +100,7 @@ protected:
   void AddStdError(const UnicodeString & Str);
   void AddStdErrorLine(const UnicodeString & Str);
   void FatalError(Exception * E, const UnicodeString & Msg);
-  void /* inline */ LogEvent(const UnicodeString & Str);
+  void LogEvent(const UnicodeString & Str);
   void FatalError(const UnicodeString & Error);
   static void ClearConfig(Config * cfg);
   static void StoreToConfig(TSessionData * Data, Config * cfg, bool Simple);

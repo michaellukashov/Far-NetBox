@@ -1281,7 +1281,7 @@ void TSecureShell::FatalError(const UnicodeString & Error)
   FUI->FatalError(NULL, Error);
 }
 //---------------------------------------------------------------------------
-void /* inline */ TSecureShell::LogEvent(const UnicodeString & Str)
+void TSecureShell::LogEvent(const UnicodeString & Str)
 {
   TRACEFMT("[%s]", Str.c_str());
   if (FLog->GetLogging())
