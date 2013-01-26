@@ -106,7 +106,7 @@ void __fastcall TBookmarks::LoadLevel(THierarchicalStorage * Storage, const Unic
         Directory = L""; // use only in case of malformed config
         ShortCut = static_cast<TShortCut>(Storage->ReadInteger(Name, 0));
       }
-      if (IsNumber(Name))
+      if (Name.ToInt() > 0)
       {
         assert(IsDirectory); // unless malformed
         Name = Directory;
