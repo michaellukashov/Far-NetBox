@@ -103,7 +103,7 @@ void __fastcall TBookmarks::LoadLevel(THierarchicalStorage * Storage, const Unic
       }
       else
       {
-        Directory = L""; // use only in cased of malformed config
+        Directory = L""; // use only in case of malformed config
         ShortCut = static_cast<TShortCut>(Storage->ReadInteger(Name, 0));
       }
       if (IsNumber(Name))
