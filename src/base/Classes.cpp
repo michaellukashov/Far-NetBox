@@ -1831,10 +1831,10 @@ void TRegistry::GetValueNames(TStrings * Strings) const
   if (GetKeyInfo(Info))
   {
     S.SetLength(Info.MaxValueLen + 1);
-    for (unsigned int I = 0; I < Info.NumValues; I++)
+    for (DWORD I = 0; I < Info.NumValues; I++)
     {
       DWORD Len = Info.MaxValueLen + 1;
-      RegEnumValue(GetCurrentKey(), static_cast<DWORD>(I), &S[1], &Len, NULL, NULL, NULL, NULL);
+      RegEnumValue(GetCurrentKey(), I, &S[1], &Len, NULL, NULL, NULL, NULL);
       Strings->Add(S.c_str());
     }
   }
