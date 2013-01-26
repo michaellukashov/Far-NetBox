@@ -4,6 +4,7 @@
 
 #define TRACE_FILE_APPL_INFO NOTRACING
 
+#include <shlobj.h>
 #include <FileInfo.h>
 
 #include "Exceptions.h"
@@ -14,10 +15,6 @@
 #include "Interface.h"
 #include "CoreMain.h"
 #include "WinSCPSecurity.h"
-#include <shlobj.h>
-#ifndef _MSC_VER
-#include <System.IOUtils.hpp>
-#endif
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
@@ -160,11 +157,7 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
 #endif
   else
   {
-#ifndef _MSC_VER
-    return new TIniFileStorage(GetIniFileStorageName());
-#else
-    return new TRegistryStorage(GetRegistryStorageKey());
-#endif
+    Classes::Error(SNotImplemented, 3005);
   }
 }
 //---------------------------------------------------------------------------
