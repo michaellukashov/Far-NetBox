@@ -103,7 +103,7 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
     ResetCachedInfo();
     memset(&FStartupInfo, 0, sizeof(FStartupInfo));
     memmove(&FStartupInfo, Info,
-            Info->StructSize >= sizeof(FStartupInfo) ?
+            Info->StructSize >= static_cast<intptr_t>(sizeof(FStartupInfo)) ?
             sizeof(FStartupInfo) : static_cast<size_t>(Info->StructSize));
     // the minimum we really need
     assert(FStartupInfo.GetMsg != NULL);
