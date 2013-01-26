@@ -70,25 +70,25 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\Far2_x86\Plugins\NetBox\</OutDir>
-    <IntDir>..\..\Temp\$(SolutionName)\$(Configuration)\x86\</IntDir>
+    <IntDir>..\..\build\$(SolutionName)\$(Configuration)\x86\</IntDir>
     <GenerateManifest>false</GenerateManifest>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\Far2_x64\Plugins\NetBox\</OutDir>
-    <IntDir>..\..\Temp\$(SolutionName)\$(Configuration)\x64\</IntDir>
+    <IntDir>..\..\build\$(SolutionName)\$(Configuration)\x64\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\Far2_x86\Plugins\NetBox\</OutDir>
-    <IntDir>..\..\Temp\$(SolutionName)\$(Configuration)\x86\</IntDir>
+    <IntDir>..\..\build\$(SolutionName)\$(Configuration)\x86\</IntDir>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\Far2_x64\Plugins\NetBox\</OutDir>
-    <IntDir>..\..\Temp\$(SolutionName)\$(Configuration)\x64\</IntDir>
+    <IntDir>..\..\build\$(SolutionName)\$(Configuration)\x64\</IntDir>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -108,7 +108,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\Temp\$(SolutionName)\$(Configuration)\x86\mfc;..\..\libs\openssl\x86;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libputty;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libtinyxml2;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libneon;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libapr;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libexpat;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\build\$(SolutionName)\$(Configuration)\x86\mfc;..\..\libs\openssl\x86;..\..\build\$(SolutionName)\$(Configuration)\x86\libputty;..\..\build\$(SolutionName)\$(Configuration)\x86\libtinyxml2;..\..\build\$(SolutionName)\$(Configuration)\x86\libneon;..\..\build\$(SolutionName)\$(Configuration)\x86\libapr;..\..\build\$(SolutionName)\$(Configuration)\x86\libexpat;</AdditionalLibraryDirectories>
       <AdditionalDependencies>mfc.lib;shell32.lib;shlwapi.lib;gdi32.lib;libcmtd.lib;libcpmtd.lib;libtinyxml2.lib;libeay32.lib;ssleay32.lib;libputty.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>uafxcwd.lib;mfcs100ud.lib;msvcrtd.lib;msvcurtd.lib;msvcprtd.lib;libc.lib;libcmt.lib;msvcrt.lib;libcmtd.lib;mfc100ud.lib;Atl.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
@@ -132,7 +132,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\Temp\$(SolutionName)\$(Configuration)\x64\mfc;..\..\libs\openssl\x64;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libputty;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libtinyxml2;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libneon;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libapr;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libexpat;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\build\$(SolutionName)\$(Configuration)\x64\mfc;..\..\libs\openssl\x64;..\..\build\$(SolutionName)\$(Configuration)\x64\libputty;..\..\build\$(SolutionName)\$(Configuration)\x64\libtinyxml2;..\..\build\$(SolutionName)\$(Configuration)\x64\libneon;..\..\build\$(SolutionName)\$(Configuration)\x64\libapr;..\..\build\$(SolutionName)\$(Configuration)\x64\libexpat;</AdditionalLibraryDirectories>
       <AdditionalDependencies>mfc.lib;shell32.lib;shlwapi.lib;gdi32.lib;libcmtd.lib;libcpmtd.lib;libtinyxml2.lib;libeay32.lib;ssleay32.lib;libputty.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>uafxcwd.lib;mfc100ud.lib;msvcrtd.lib;msvcurtd.lib;msvcprtd.lib;libc.lib;libcmt.lib;msvcrt.lib;libcmtd.lib;Atl.lib;mfcs100ud.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
@@ -171,7 +171,7 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\..\Temp\$(SolutionName)\$(Configuration)\x86\mfc;..\..\libs\openssl\x86;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libputty;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libtinyxml2;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libneon;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libapr;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libexpat;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\build\$(SolutionName)\$(Configuration)\x86\mfc;..\..\libs\openssl\x86;..\..\build\$(SolutionName)\$(Configuration)\x86\libputty;..\..\build\$(SolutionName)\$(Configuration)\x86\libtinyxml2;..\..\build\$(SolutionName)\$(Configuration)\x86\libneon;..\..\build\$(SolutionName)\$(Configuration)\x86\libapr;..\..\build\$(SolutionName)\$(Configuration)\x86\libexpat;</AdditionalLibraryDirectories>
       <AdditionalDependencies>mfc.lib;shell32.lib;shlwapi.lib;gdi32.lib;libcmt.lib;libcpmt.lib;libtinyxml2.lib;libeay32.lib;ssleay32.lib;libputty.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <IgnoreSpecificDefaultLibraries>uafxcw.lib;mfc100u.lib;Atl.lib;msvcrt.lib;msvcurt.lib;msvcprt.lib;libc.lib;msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -210,7 +210,7 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\..\Temp\$(SolutionName)\$(Configuration)\x64\mfc;..\..\libs\openssl\x64;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libputty;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libtinyxml2;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libneon;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libapr;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libexpat;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\build\$(SolutionName)\$(Configuration)\x64\mfc;..\..\libs\openssl\x64;..\..\build\$(SolutionName)\$(Configuration)\x64\libputty;..\..\build\$(SolutionName)\$(Configuration)\x64\libtinyxml2;..\..\build\$(SolutionName)\$(Configuration)\x64\libneon;..\..\build\$(SolutionName)\$(Configuration)\x64\libapr;..\..\build\$(SolutionName)\$(Configuration)\x64\libexpat;</AdditionalLibraryDirectories>
       <AdditionalDependencies>mfc.lib;shell32.lib;shlwapi.lib;gdi32.lib;libcmt.lib;libcpmt.lib;libtinyxml2.lib;libeay32.lib;ssleay32.lib;libputty.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <IgnoreSpecificDefaultLibraries>uafxcw.lib;mfc100u.lib;Atl.lib;msvcrt.lib;msvcurt.lib;msvcprt.lib;libc.lib;msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
