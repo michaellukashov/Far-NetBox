@@ -1373,7 +1373,7 @@ bool __fastcall TryRelativeStrToDateTime(const UnicodeString & Str, TDateTime & 
     Index++;
   }
   UnicodeString NumberStr = S.SubString(1, Index - 1);
-  int Number;
+  int Number = 0;
   bool Result = TryStrToInt(NumberStr, Number);
   if (Result)
   {
@@ -1711,11 +1711,12 @@ UnicodeString __fastcall StandardTimestamp(const TDateTime & DateTime)
 #ifndef _MSC_VER
   return FormatDateTime(L"yyyy'-'mm'-'dd'T'hh':'nn':'ss'.'zzz'Z'", ConvertTimestampToUTC(DateTime));
 #else
+  TDateTime DT = ConvertTimestampToUTC(DateTime);
   unsigned short Y, M, D, H, N, S, MS;
-  DateTime.DecodeDate(Y, M, D);
-  DateTime.DecodeTime(H, N, S, MS);
-  UnicodeString dt = FORMAT(L"%04d-%02d-%02dT%02d:%02d:%02d.%03dZ", Y, M, D, H, N, S, MS);
-  return dt;
+  DT.DecodeDate(Y, M, D);
+  DT.DecodeTime(H, N, S, MS);
+  UnicodeString Result = FORMAT(L"%04d-%02d-%02dT%02d:%02d:%02d.%03dZ", Y, M, D, H, N, S, MS);
+  return Result;
 #endif
 }
 //---------------------------------------------------------------------------
@@ -1865,41 +1866,14 @@ intptr_t __fastcall ContinueAnswer(intptr_t Answers)
   return Result;
 }
 //---------------------------------------------------------------------------
-#ifndef _MSC_VER
-TLibModule * __fastcall FindModule(void * Instance)
-{
-  TLibModule * CurModule;
-  CurModule = reinterpret_cast<TLibModule*>(LibModuleList);
-
-  while (CurModule)
-  {
-    if (CurModule->Instance == (unsigned)Instance)
-    {
-      break;
-    }
-    else
-    {
-      CurModule = CurModule->Next;
-    }
-  }
-  return CurModule;
-}
-#endif
-//---------------------------------------------------------------------------
 UnicodeString __fastcall LoadStr(int Ident, intptr_t MaxLength)
 {
-#ifndef _MSC_VER
-  TLibModule * MainModule = FindModule(HInstance);
-  assert(MainModule != NULL);
-#else
   UnicodeString Result;
   Result.SetLength(MaxLength > 0 ? MaxLength : 1024);
   HINSTANCE hInstance = FarPlugin ? FarPlugin->GetHandle() : GetModuleHandle(0);
   assert(hInstance != 0);
   intptr_t Length = static_cast<intptr_t>(::LoadString(hInstance, Ident, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Result.c_str())), (int)Result.Length()));
-#endif
   Result.SetLength(Length);
-
   return Result;
 }
 //---------------------------------------------------------------------------

@@ -1041,12 +1041,12 @@ intptr_t TFarDialogContainer::GetItemCount() const
 //---------------------------------------------------------------------------
 TFarDialogItem::TFarDialogItem(TFarDialog * ADialog, uintptr_t AType) :
   TObject(),
-  FDefaultType(0),
+  FDefaultType(AType),
   FGroup(0),
   FTag(0),
   FOnExit(NULL),
   FOnMouseClick(NULL),
-  FDialog(NULL),
+  FDialog(ADialog),
   FEnabledFollow(NULL),
   FEnabledDependency(NULL),
   FEnabledDependencyNegative(NULL),
@@ -1058,9 +1058,6 @@ TFarDialogItem::TFarDialogItem(TFarDialog * ADialog, uintptr_t AType) :
   FColorMask(0)
 {
   assert(ADialog);
-  FDialog = ADialog;
-  FDefaultType = AType;
-
   GetDialog()->Add(this);
 
   GetDialogItem()->Type = static_cast<int>(AType);
@@ -2191,13 +2188,14 @@ void TFarList::Changed()
       PrevSelected = GetSelected();
       PrevTopIndex = GetTopIndex();
     }
-    if (FListItems->ItemsNumber != static_cast<int>(GetCount()))
+    intptr_t Count = GetCount();
+    if (FListItems->ItemsNumber != Count)
     {
       FarListItem * Items = FListItems->Items;
-      if (GetCount())
+      if (Count)
       {
-        FListItems->Items = new FarListItem[GetCount()];
-        for (size_t Index = 0; Index < (size_t)GetCount(); Index++)
+        FListItems->Items = new FarListItem[Count];
+        for (intptr_t Index = 0; Index < Count; ++Index)
         {
           memset(&FListItems->Items[Index], 0, sizeof(FListItems->Items[Index]));
           if (Index < FListItems->ItemsNumber)

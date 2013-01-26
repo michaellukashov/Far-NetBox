@@ -1951,7 +1951,7 @@ void __fastcall TLocatedQueueItem::DoExecute(TTerminal * Terminal)
     else
     {
       ExtractCommonPath(FilesToCopy, FInfo->Source);
-      // this way the trailing backslash is preserved for root directories like D:\\ 
+      // this way the trailing backslash is preserved for root directories like "D:\\"
       FInfo->Source = ExtractFileDir(IncludeTrailingBackslash(FInfo->Source));
       FInfo->ModifiedLocal = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
         IncludeTrailingBackslash(FInfo->Source);

@@ -127,14 +127,6 @@ TSpaceAvailable::TSpaceAvailable() :
 {
 }
 //---------------------------------------------------------------------------
-TOverwriteFileParams::TOverwriteFileParams()
-{
-  SourceSize = 0;
-  DestSize = 0;
-  SourcePrecision = mfFull;
-  DestPrecision = mfFull;
-}
-//---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TSynchronizeChecklist::TItem::TItem() :
   Action(saNone), IsDirectory(false), ImageIndex(-1), Checked(true), RemoteFile(NULL)
