@@ -584,8 +584,8 @@ public:
   virtual void __fastcall Idle();
   void __fastcall RecryptPasswords();
 
-  TTerminal * __fastcall GetTerminal(int Index);
-  int __fastcall GetActiveCount();
+  TTerminal * __fastcall GetTerminal(intptr_t Index);
+  intptr_t __fastcall GetActiveCount();
 
 protected:
   virtual TTerminal * __fastcall CreateTerminal(TSessionData * Data);

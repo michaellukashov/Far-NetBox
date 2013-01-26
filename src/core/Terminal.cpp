@@ -5768,16 +5768,16 @@ void /* __fastcall */ TTerminalList::FreeAndNullTerminal(TTerminal * & Terminal)
   FreeTerminal(T);
 }
 //---------------------------------------------------------------------------
-TTerminal * /* __fastcall */ TTerminalList::GetTerminal(int Index)
+TTerminal * /* __fastcall */ TTerminalList::GetTerminal(intptr_t Index)
 {
   return dynamic_cast<TTerminal *>(Items[Index]);
 }
 //---------------------------------------------------------------------------
-int /* __fastcall */ TTerminalList::GetActiveCount()
+intptr_t /* __fastcall */ TTerminalList::GetActiveCount()
 {
-  int Result = 0;
+  intptr_t Result = 0;
   TTerminal * Terminal;
-  for (int I = 0; I < GetCount(); ++I)
+  for (intptr_t I = 0; I < GetCount(); ++I)
   {
     Terminal = GetTerminal(I);
     if (Terminal->GetActive())

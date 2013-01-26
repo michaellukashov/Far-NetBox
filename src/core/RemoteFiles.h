@@ -86,7 +86,7 @@ private:
   TDateTime FModification;
   TDateTime FLastAccess;
   TRemoteToken FGroup;
-  Integer FIconIndex;
+  intptr_t FIconIndex;
   Boolean FIsSymLink;
   TRemoteFile * FLinkedFile;
   TRemoteFile * FLinkedByFile;
@@ -101,7 +101,7 @@ private:
   UnicodeString FTypeName;
 
 public:
-  int GetAttr();
+  intptr_t GetAttr();
   bool GetBrokenLink();
   bool GetIsDirectory() const;
   TRemoteFile * GetLinkedFile();
@@ -117,7 +117,7 @@ public:
   void SetRights(TRights * Value);
   UnicodeString GetFullFileName() const;
   bool GetHaveFullFileName() const;
-  int GetIconIndex() const;
+  intptr_t GetIconIndex() const;
   UnicodeString GetTypeName();
   bool GetIsHidden();
   void SetIsHidden(bool Value);

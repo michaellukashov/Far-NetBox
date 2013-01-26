@@ -350,7 +350,7 @@ bool __fastcall TCopyParamType::UseAsciiTransfer(const UnicodeString & FileName,
   }
 }
 //---------------------------------------------------------------------------
-TRights __fastcall TCopyParamType::RemoteFileRights(Integer Attrs) const
+TRights __fastcall TCopyParamType::RemoteFileRights(intptr_t Attrs) const
 {
   CALLSTACK;
   TRights R = GetRights();

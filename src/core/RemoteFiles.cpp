@@ -812,7 +812,7 @@ void TRemoteFile::LoadTypeInfo()
   FIconIndex = FakeFileImageIndex(DumbFileName, Attrs, &FTypeName); */
 }
 //---------------------------------------------------------------------------
-Integer TRemoteFile::GetIconIndex() const
+intptr_t TRemoteFile::GetIconIndex() const
 {
   CCALLSTACK(TRACE_IMAGEINDEX);
   if (FIconIndex == -1)
@@ -1364,9 +1364,9 @@ bool TRemoteFile::GetHaveFullFileName() const
   return !FFullFileName.IsEmpty() || (GetDirectory() != NULL);
 }
 //---------------------------------------------------------------------------
-Integer TRemoteFile::GetAttr()
+intptr_t TRemoteFile::GetAttr()
 {
-  Integer Result = 0;
+  intptr_t Result = 0;
   if (GetRights()->GetReadOnly()) { Result |= faReadOnly; }
   if (GetIsHidden()) { Result |= faHidden; }
   return Result;

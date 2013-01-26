@@ -705,7 +705,7 @@ void __fastcall TSecureShell::GotHostKey()
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSecureShell::CWrite(const char * Data, int Length)
+void __fastcall TSecureShell::CWrite(const char * Data, intptr_t Length)
 {
   CALLSTACK;
   // some messages to stderr may indicate that something has changed with the
@@ -746,7 +746,7 @@ void __fastcall TSecureShell::UnregisterReceiveHandler(TNotifyEvent Handler)
   FOnReceive = NULL;
 }
 //---------------------------------------------------------------------------
-void __fastcall TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, int Length)
+void __fastcall TSecureShell::FromBackend(bool IsStdErr, const unsigned char * Data, intptr_t Length)
 {
   CCALLSTACK(TRACE_TRANSMIT);
   CheckConnection();
@@ -831,7 +831,7 @@ void __fastcall TSecureShell::FromBackend(bool IsStdErr, const unsigned char * D
   CTRACE(TRACE_TRANSMIT, "/");
 }
 //---------------------------------------------------------------------------
-bool __fastcall TSecureShell::Peek(unsigned char *& Buf, int Len) const
+bool __fastcall TSecureShell::Peek(unsigned char *& Buf, intptr_t Len) const
 {
   bool Result = (int(PendLen) >= Len);
 
@@ -843,7 +843,7 @@ bool __fastcall TSecureShell::Peek(unsigned char *& Buf, int Len) const
   return Result;
 }
 //---------------------------------------------------------------------------
-Integer __fastcall TSecureShell::Receive(unsigned char * Buf, Integer Len)
+intptr_t __fastcall TSecureShell::Receive(unsigned char * Buf, intptr_t Len)
 {
   CCALLSTACK(TRACE_TRANSMIT);
   CheckConnection();
@@ -1084,7 +1084,7 @@ void __fastcall TSecureShell::DispatchSendBuffer(int BufSize)
   while (BufSize > MAX_BUFSIZE);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSecureShell::Send(const unsigned char * Buf, Integer Len)
+void __fastcall TSecureShell::Send(const unsigned char * Buf, intptr_t Len)
 {
   CCALLSTACK(TRACE_TRANSMIT);
   CheckConnection();

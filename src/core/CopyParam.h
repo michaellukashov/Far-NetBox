@@ -75,7 +75,7 @@ public:
   UnicodeString __fastcall ChangeFileName(const UnicodeString & FileName,
     TOperationSide Side, bool FirstLevel) const;
   int __fastcall LocalFileAttrs(const TRights & Rights) const;
-  TRights __fastcall RemoteFileRights(int Attrs) const;
+  TRights __fastcall RemoteFileRights(intptr_t Attrs) const;
   bool __fastcall UseAsciiTransfer(const UnicodeString & FileName, TOperationSide Side,
     const TFileMasks::TParams & Params) const;
   bool __fastcall AllowResume(__int64 Size) const;

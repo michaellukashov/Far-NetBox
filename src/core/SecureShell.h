@@ -112,10 +112,10 @@ public:
   void __fastcall Open();
   void __fastcall Close();
   void __fastcall KeepAlive();
-  int __fastcall Receive(unsigned char * Buf, int Len);
-  bool __fastcall Peek(unsigned char *& Buf, int Len) const;
+  intptr_t __fastcall Receive(unsigned char * Buf, intptr_t Len);
+  bool __fastcall Peek(unsigned char *& Buf, intptr_t Len) const;
   UnicodeString __fastcall ReceiveLine();
-  void __fastcall Send(const unsigned char * Buf, int Len);
+  void __fastcall Send(const unsigned char * Buf, intptr_t Len);
   void __fastcall SendStr(const UnicodeString & Str);
   void __fastcall SendSpecial(int Code);
   void __fastcall Idle(unsigned int MSec = 0);
@@ -141,8 +141,8 @@ public:
     const UnicodeString & AName, bool NameRequired,
     const UnicodeString & Instructions, bool InstructionsRequired,
     TStrings * Prompts, TStrings * Results);
-  void __fastcall FromBackend(bool IsStdErr, const unsigned char * Data, int Length);
-  void __fastcall CWrite(const char * Data, int Length);
+  void __fastcall FromBackend(bool IsStdErr, const unsigned char * Data, intptr_t Length);
+  void __fastcall CWrite(const char * Data, intptr_t Length);
   const UnicodeString & __fastcall GetStdError() const;
   void __fastcall VerifyHostKey(const UnicodeString & Host, int Port,
     const UnicodeString & KeyType, const UnicodeString & KeyStr, const UnicodeString & Fingerprint);
