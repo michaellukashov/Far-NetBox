@@ -4500,7 +4500,7 @@ void TRightsContainer::Change()
 //---------------------------------------------------------------------------
 TFarCheckBox * TRightsContainer::GetChecks(TRights::TRight Right)
 {
-  assert((Right >= 0) && (Right < LENOF(FCheckBoxes)));
+  assert((Right >= 0) && (Right < static_cast<intptr_t>(LENOF(FCheckBoxes))));
   return FCheckBoxes[Right];
 }
 //---------------------------------------------------------------------------
@@ -7468,7 +7468,7 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(
   }
 
   intptr_t Action = static_cast<intptr_t>(ChecklistItem->Action - 1);
-  assert((Action != NPOS) && (Action < LENOF(FActions)));
+  assert((Action != NPOS) && (Action < static_cast<intptr_t>(LENOF(FActions))));
   AddColumn(Line, FActions[Action], 4);
 
   if (ChecklistItem->Action == TSynchronizeChecklist::saDeleteLocal)

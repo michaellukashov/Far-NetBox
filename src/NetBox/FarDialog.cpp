@@ -2191,13 +2191,14 @@ void TFarList::Changed()
       PrevSelected = GetSelected();
       PrevTopIndex = GetTopIndex();
     }
-    if (FListItems->ItemsNumber != static_cast<int>(GetCount()))
+    intptr_t Count = GetCount();
+    if (FListItems->ItemsNumber != Count)
     {
       FarListItem * Items = FListItems->Items;
-      if (GetCount())
+      if (Count)
       {
-        FListItems->Items = new FarListItem[GetCount()];
-        for (size_t Index = 0; Index < (size_t)GetCount(); Index++)
+        FListItems->Items = new FarListItem[Count];
+        for (intptr_t Index = 0; Index < Count; ++Index)
         {
           memset(&FListItems->Items[Index], 0, sizeof(FListItems->Items[Index]));
           if (Index < FListItems->ItemsNumber)

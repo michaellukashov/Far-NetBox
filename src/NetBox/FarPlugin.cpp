@@ -191,7 +191,7 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo & Info)
   if (Info.StructSize)
   {
     #define FREESTRINGARRAY(NAME) \
-      for (size_t Index = 0; Index < Info.NAME ## Number; Index++) \
+      for (intptr_t Index = 0; Index < Info.NAME ## Number; Index++) \
       { \
         delete[] Info.NAME[Index]; \
       } \
@@ -1932,7 +1932,7 @@ void TCustomFarFileSystem::FreeFindData(
       delete[] PanelItem[Index].FindData.lpwszFileName;
       delete[] PanelItem[Index].Description;
       delete[] PanelItem[Index].Owner;
-      for (size_t CustomIndex = 0; CustomIndex < PanelItem[Index].CustomColumnNumber; CustomIndex++)
+      for (intptr_t CustomIndex = 0; CustomIndex < PanelItem[Index].CustomColumnNumber; ++CustomIndex)
       {
         delete[] PanelItem[Index].CustomColumnData[CustomIndex];
       }
@@ -2341,7 +2341,7 @@ void TFarKeyBarTitles::ClearKeyBarTitle(TFarShiftStatus ShiftStatus,
 void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
   int FunctionKey, const UnicodeString & Title)
 {
-  assert(FunctionKey >= 1 && FunctionKey <= LENOF(FKeyBarTitles.Titles));
+  assert(FunctionKey >= 1 && FunctionKey <= static_cast<intptr_t>(LENOF(FKeyBarTitles.Titles)));
   wchar_t ** Titles = NULL;
   switch (ShiftStatus)
   {
